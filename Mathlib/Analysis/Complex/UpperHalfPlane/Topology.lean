@@ -18,7 +18,6 @@ In this file we introduce a `TopologicalSpace` structure on the upper half plane
 various instances.
 -/
 
-
 noncomputable section
 
 open Complex Filter Function Set TopologicalSpace Topology
@@ -67,6 +66,12 @@ instance : NoncompactSpace ℍ := by
 
 instance : LocallyCompactSpace ℍ :=
   isOpenEmbedding_coe.locallyCompactSpace
+
+/-- Each element of `GL(2, ℝ)⁺` defines a continuous map `ℍ → ℍ`. -/
+instance instContinuousGLPosSMul : ContinuousConstSMul (Matrix.GLPos (Fin 2) ℝ) ℍ where
+  continuous_const_smul g := by
+    refine continuous_induced_rng.mpr <| .div ?_ ?_ (denom_ne_zero g) <;>
+    exact (continuous_const.mul continuous_coe).add continuous_const
 
 section strips
 

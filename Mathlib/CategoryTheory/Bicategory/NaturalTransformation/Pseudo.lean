@@ -11,18 +11,22 @@ import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 # Strong transformations of pseudofunctors
 
-A strong transformation is an oplax transformation such that each component 2-cell
-is an isomorphism.
+There are three types of transformations between pseudofunctors, depending on the direction
+or invertibility of the 2-morphism witnessing the naturality condition.
+
+In this file we define strong transformations, which require the 2-morphism to be invertible.
 
 ## Main definitions
 
-* `StrongTrans F G` : strong transformations between oplax functors `F` and `G`.
-* `mkOfOplax η η'` : given an oplax transformation `η` such that each component 2-cell
-  is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
-* `StrongTrans.vcomp η θ` : the vertical composition of strong transformations `η`
+* `Pseudofunctor.StrongTrans F G`: strong transformations between pseudofunctors `F` and `G`.
+* `Pseudofunctor.mkOfOplax η η'`: Given two pseudofunctors, and a strong transformation `η` between
+  their underlying oplax functors, `mkOfOplax` lifts this to a strong transformation between the
+  pseudofunctors.
+* `Pseudofunctor.StrongTrans.vcomp η θ`: the vertical composition of strong transformations `η`
   and `θ`.
-* `StrongTrans.category F G` : a category structure on Pseudofunctors between `F` and `G`,
-  where the morphisms are strong transformations.
+
+Using this we obtain a `CategoryStruct` on pseudofunctors, where the arrows are given by
+strong transformations. See `Pseudofunctor.categoryStruct`.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
@@ -32,8 +36,6 @@ is an isomorphism.
 namespace CategoryTheory.Pseudofunctor
 
 open Category Bicategory Oplax
-
-open scoped Bicategory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
@@ -54,19 +56,16 @@ structure StrongTrans (F G : Pseudofunctor B C) where
   /-- The 2-isomorphisms underlying the strong naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ app b ≅ app a ≫ G.map f
   /-- Naturality of the strong naturality constraint. -/
-  naturality_naturality :
-    ∀ {a b : B} {f g : a ⟶ b} (η : f ⟶ g),
+  naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       F.map₂ η ▷ app b ≫ (naturality g).hom = (naturality f).hom ≫ app a ◁ G.map₂ η := by
     aesop_cat
   /-- Oplax unity. -/
-  naturality_id :
-    ∀ a : B,
+  naturality_id (a : B) :
       (naturality (𝟙 a)).hom ≫ app a ◁ (G.mapId a).hom =
         (F.mapId a).hom ▷ app a ≫ (λ_ (app a)).hom ≫ (ρ_ (app a)).inv := by
     aesop_cat
   /-- Oplax functoriality. -/
-  naturality_comp :
-    ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
+  naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       (naturality (f ≫ g)).hom ≫ app a ◁ (G.mapComp f g).hom =
         (F.mapComp f g).hom ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (naturality g).hom ≫
         (α_ _ _ _).inv ≫ (naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom := by
@@ -75,56 +74,66 @@ structure StrongTrans (F G : Pseudofunctor B C) where
 attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
   StrongTrans.naturality_id StrongTrans.naturality_comp
 
-/-- A structure on an oplax transformation that promotes it to a strong transformation.
-See `Pseudofunctor.StrongTrans.mkOfOplax`. -/
-structure StrongCore {F G : Pseudofunctor B C} (η : OplaxTrans F.toOplax G) where
-  /-- The underlying 2-isomorphisms of the naturality constraint. -/
-  naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f
-  /-- The 2-isomorphisms agree with the underlying 2-morphism of the oplax transformation. -/
-  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by aesop_cat
-
-attribute [simp] StrongCore.naturality_hom
-
 namespace StrongTrans
-
-section
 
 variable {F G : Pseudofunctor B C}
 
-/-- The underlying oplax transformation of a strong transformation. -/
+/-- The strong transformation between underlying pseudofunctors. -/
 @[simps]
-def toOplax (η : StrongTrans F G) : F.toOplax ⟶ G.toOplax where
+def toOplax (η : StrongTrans F G) : Oplax.StrongTrans F.toOplax G.toOplax where
   app := η.app
-  naturality f := (η.naturality f).hom
+  naturality f := η.naturality f
 
-instance hasCoeToOplax : Coe (StrongTrans F G) (F.toOplax ⟶ G) :=
+instance hasCoeToOplax : Coe (StrongTrans F G) (Oplax.StrongTrans F.toOplax G.toOplax) :=
   ⟨toOplax⟩
 
-/-- Construct a strong transformation from an oplax transformation whose
-naturality 2-morphism is an isomorphism. -/
+/-- Construct a strong transformation of pseudofunctors from a strong transformation of the
+underlying oplax functors. -/
 @[simps]
-def mkOfOplax {F G : Pseudofunctor B C} (η : F.toOplax ⟶ G) (η' : StrongCore η) :
+def mkOfOplax (η : Oplax.StrongTrans F.toOplax G.toOplax) :
     StrongTrans F G where
   app := η.app
-  naturality := η'.naturality
-  -- Not automatic as simp must convert F.toOplax.map₂ to F.map₂ in η.naturality_naturality etc
-  naturality_naturality θ := by simpa using η.naturality_naturality θ
-  naturality_id a := by simpa using η.naturality_id a
-  naturality_comp f g := by simpa using η.naturality_comp f g
+  naturality := η.naturality
+  naturality_naturality θ := η.naturality_naturality θ
+  naturality_id a := η.naturality_id a
+  naturality_comp f g := η.naturality_comp f g
 
-/-- Construct a strong transformation from an oplax transformation whose
-naturality 2-morphism is an isomorphism. -/
-@[simps]
-noncomputable def mkOfOplax' {F G : Pseudofunctor B C} (η : F.toOplax ⟶ G)
-    [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongTrans F G where
-  app := η.app
-  naturality := fun f => asIso (η.naturality _)
-  naturality_naturality θ := by simpa using η.naturality_naturality θ
-  naturality_id a := by simpa using η.naturality_id a
-  naturality_comp f g := by simpa using η.naturality_comp f g
+variable (F) in
+/-- The identity strong transformation. -/
+def id : StrongTrans F F where
+  app a := 𝟙 (F.obj a)
+  naturality {a b} f := (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm
 
+instance : Inhabited (StrongTrans F F) :=
+  ⟨id F⟩
 
-variable {H : Pseudofunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H)
+variable {H : Pseudofunctor B C}
+
+/-- Vertical composition of strong transformations. -/
+def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) : StrongTrans F H :=
+  mkOfOplax (Oplax.StrongTrans.vcomp η.toOplax θ.toOplax)
+
+/-- `CategoryStruct` on `Pseudofunctor B C` where the (1-)morphisms are given by strong
+transformations. -/
+@[simps! id_app id_naturality_hom id_naturality_inv comp_naturality_hom
+comp_naturality_inv]
+scoped instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
+  Hom F G := StrongTrans F G
+  id F := StrongTrans.id F
+  comp := StrongTrans.vcomp
+
+variable (η : F ⟶ G) (θ : G ⟶ H)
+
+@[simp]
+lemma comp_app (η : F ⟶ G) (θ : G ⟶ H) (a : B) :
+    (η ≫ θ).app a = η.app a ≫ θ.app a :=
+  rfl
+
+variable (F) in
+@[simp]
+lemma id.toOplax : Oplax.StrongTrans.id F.toOplax = 𝟙 F :=
+  rfl
+
 
 section
 
@@ -178,49 +187,4 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
 
 end
 
-variable (F) in
-/-- The identity strong transformation. -/
-def id : StrongTrans F F where
-  app a := 𝟙 (F.obj a)
-  naturality {a b} f := (ρ_ (F.map f)) ≪≫ (λ_ (F.map f)).symm
-
-instance : Inhabited (StrongTrans F F) :=
-  ⟨id F⟩
-
-/-- Vertical composition of strong transformations. -/
-def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) :
-    StrongTrans F H :=
-  mkOfOplax (OplaxTrans.vcomp η.toOplax θ.toOplax)
-    { naturality := fun {a b} f ↦
-        (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
-        (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
-
-end
-
-end StrongTrans
-
-variable (B C)
-
-@[simps! id_app id_naturality_hom id_naturality_inv comp_naturality_hom
-comp_naturality_inv]
-instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
-  Hom F G := StrongTrans F G
-  id F := StrongTrans.id F
-  comp := StrongTrans.vcomp
-
-section
-
-variable {F G H : Pseudofunctor B C}
-
-@[simp]
-lemma StrongTrans.comp_app (η : F ⟶ G) (θ : G ⟶ H) (a : B) :
-    (η ≫ θ).app a = η.app a ≫ θ.app a :=
-  rfl
-
-end
-
-@[simp]
-lemma id.toOplax (F : Pseudofunctor B C) : 𝟙 F = 𝟙 F.toOplax :=
-  rfl
-
-end CategoryTheory.Pseudofunctor
+end CategoryTheory.Pseudofunctor.StrongTrans

@@ -266,7 +266,7 @@ theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ �
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   have := ((hasSum_aeval ha.hasEval f).map (coeff S e) (continuous_coeff S e))
-  rw [← coe_substAlgHom ha, substAlgHom,  ← this.tsum_eq, tsum_def, dif_pos this.summable]
+  rw [← coe_substAlgHom ha, substAlgHom, ← this.tsum_eq, tsum_def, dif_pos this.summable]
   exact if_pos (coeff_subst_finite ha f e)
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
@@ -503,7 +503,8 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
   · intro hn
     simpa using hn
 
-/-- Rescale a multivariate power series, as an `AlgHom` in the scaling parameters. -/
+/-- Rescale a multivariate power series, as an `AlgHom` in the scaling parameters,
+by multiplying each variable `x` by the value `a x`. -/
 noncomputable def rescaleAlgHom (a : σ → R) :
     MvPowerSeries σ R →ₐ[R] MvPowerSeries σ R :=
   substAlgHom (HasSubst.smul_X a)

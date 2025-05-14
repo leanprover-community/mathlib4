@@ -6,6 +6,7 @@ Authors: Eric Wieser, Zhangir Azerbayev
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
 import Mathlib.LinearAlgebra.Multilinear.Basis
+import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Alternating Maps
@@ -542,6 +543,19 @@ theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
     (g₁ g₂ : M [⋀^ι]→ₗ[R] N) : g₁.compLinearMap f = g₂.compLinearMap f ↔ g₁ = g₂ :=
   (compLinearMap_injective _ hf).eq_iff
 
+/-- If two `R`-alternating maps from `R` are equal on 1, then they are equal.
+
+This is the alternating version of `LinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring {R} [CommSemiring R] [Module R N] [Finite ι] ⦃f g : R [⋀^ι]→ₗ[R] N⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
+  coe_multilinearMap_injective <| MultilinearMap.ext_ring h
+
+/-- The only `R`-alternating map from two or more copies of `R` is the zero map. -/
+instance uniqueOfCommRing {R} [CommSemiring R] [Module R N] [Finite ι] [Nontrivial ι] :
+    Unique (R [⋀^ι]→ₗ[R] N) where
+  uniq f := let ⟨_, _, hij⟩ := exists_pair_ne ι; ext_ring <| f.map_eq_zero_of_eq _ rfl hij
+
 section DomLcongr
 
 variable (ι R N)
@@ -863,13 +877,12 @@ are distinct basis vectors. -/
 theorem Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
     (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
     f = g := by
-  classical
-    refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v => ?_)
-    by_cases hi : Function.Injective v
-    · exact h v hi
-    · have : ¬Function.Injective fun i => e (v i) := hi.imp Function.Injective.of_comp
-      rw [coe_multilinearMap, coe_multilinearMap, f.map_eq_zero_of_not_injective _ this,
-        g.map_eq_zero_of_not_injective _ this]
+  refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear (fun _ ↦ e) fun v => ?_)
+  by_cases hi : Function.Injective v
+  · exact h v hi
+  · have : ¬Function.Injective fun i => e (v i) := hi.imp Function.Injective.of_comp
+    rw [coe_multilinearMap, coe_multilinearMap, f.map_eq_zero_of_not_injective _ this,
+      g.map_eq_zero_of_not_injective _ this]
 
 end Basis
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yael Dillies
 -/
 import Batteries.Tactic.Init
-import Mathlib.Algebra.Notation.Defs
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
