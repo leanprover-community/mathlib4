@@ -142,8 +142,8 @@ def deprecateFilePath (fname : String) (comment : Option String) :
   return (msgs, deprecatedFile)
 
 run_cmd
-  let (msgs, file) ← deprecateFilePath "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean" (some "J")
-  logInfo file
+  let (msgs, _file) ← deprecateFilePath "Mathlib/LinearAlgebra/RootSystem/Finite/g2.lean" (some "J")
+  --logInfo file
   logInfo <| .joinSep msgs.toList "\n"
 
 elab_rules : command
@@ -196,32 +196,14 @@ elab_rules : command
       m!"The files were not deprecated. Use '{stx}' if you wish to deprecate them."
   logInfoAt tk <| .joinSep msgs.toList "\n"
 | `(#create_deprecated_modules%$tk $id:ident $[$comment:str]? $[write%$write?]?) => do
-  let mut msgs : Array MessageData := #[]
   let modName := id.getId
   let srcPath ← getSrcSearchPath
   if let some path := ← srcPath.findModuleWithExt "lean" modName then
     logWarningAt id m!"The file {path} exists: I cannot deprecate it!"
     return
-  -- Get the hash and the commit message of the commit at `git log -n`
-  -- (and throw an error if that doesn't exist).
-  --let getHashAndMessage (n : Nat) : CommandElabM (String × MessageData) := do
   let fname := System.mkFilePath (modName.components.map (·.toString)) |>.addExtension "lean" |>.toString
-  let log ← IO.Process.run {cmd := "git", args := #["log", "--pretty=oneline", "--all", "-2", "--", fname]}
-  let [deleted, lastModified] := log.trim.splitOn "\n" | throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2!"
-  let deleteHash := deleted.takeWhile (!·.isWhitespace)
-  let deletePRdescr := (deleted.drop deleteHash.length).trim
-  let pastHash := lastModified.takeWhile (!·.isWhitespace)
-  let PRdescr := (lastModified.drop pastHash.length).trim
-  msgs := msgs.push <| m!"The file {fname} was\n"
-  msgs := msgs.push <| .trace {cls := `Commit} m!"last modified in the PR {PRdescr}" #[m!"{pastHash}"]
-  msgs := msgs.push <| .trace {cls := `Commit} m!"deleted in the PR {deletePRdescr}" #[m!"{deleteHash}"]
-  let deprecation ← if let some cmt := comment then mkDeprecation cmt.getString else mkDeprecation
-  msgs := msgs.push ""
-  -- Generate a module deprecation for the file `fname`.
-  let file ← IO.Process.run {cmd := "git", args := #["show", s!"{pastHash}:{fname}"]}
-  let fileHeader ← getHeader fname file false
-  let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
-  msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
+  let (msgs, deprecatedFile) ← deprecateFilePath fname (comment.map (·.getString))
+  let mut msgs : Array MessageData := msgs
   if write?.isSome then
     IO.FS.writeFile fname deprecatedFile
   if write?.isNone then
