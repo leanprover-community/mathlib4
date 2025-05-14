@@ -89,24 +89,26 @@ syntax "#create_deprecated_modules" (ppSpace num)? (ppSpace str)? (&" write")? :
 elab_rules : command
 | `(#create_deprecated_modules%$tk $[$nc:num]? $[$comment:str]? $[write%$write?]?) => do
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
-  let mut msgs := #[]
-  -- Get the hash of the commit at `git log -n` (and throw an error if that doesn't exist).
-  let getHash (n : Nat) := do
+  let mut msgs : Array MessageData := #[]
+  -- Get the hash and the commit message of the commit at `git log -n`
+  -- (and throw an error if that doesn't exist).
+  let getHashAndMessage (n : Nat) : CommandElabM (String × MessageData) := do
     let log ← IO.Process.run {cmd := "git", args := #["log", "--pretty=oneline", s!"-{n}"]}
     let some last := log.trim.splitOn "\n" |>.getLast? | throwError "Found no commits!"
     let commitHash := last.takeWhile (!·.isWhitespace)
-    return commitHash
+    let PRdescr := (last.drop commitHash.length).trim
+    return (commitHash, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
   let getFilesAtHash (hash : String) := do
     let files ← IO.Process.run
       {cmd := "git", args := #["ls-tree", "-r", "--name-only", hash, "Mathlib/"]}
     let h : Std.HashSet String := .ofList <| files.splitOn "\n"
     return h
-  let currentHash ← getHash 1
+  let (currentHash, currentPRdescr) ← getHashAndMessage 1
   let currentFiles ← getFilesAtHash currentHash
-  msgs := msgs.push m!"{currentFiles.size} files at the current hash {currentHash}\n"
-  let pastHash ← getHash n
+  msgs := msgs.push m!"{currentFiles.size} files at the current commit {currentPRdescr}"
+  let (pastHash, pastPRdescr) ← getHashAndMessage n
   let pastFiles ← getFilesAtHash pastHash
-  msgs := msgs.push m!"{pastFiles.size} files at the past hash {pastHash}\n"
+  msgs := msgs.push m!"{pastFiles.size} files at the past commit {pastPRdescr}"
   let onlyPastFiles := pastFiles.filter fun fil ↦ fil.endsWith ".lean" && !currentFiles.contains fil
   let noFiles := onlyPastFiles.size
   msgs := msgs.push
