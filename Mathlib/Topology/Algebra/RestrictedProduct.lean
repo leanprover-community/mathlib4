@@ -937,8 +937,6 @@ variable [Π i, SetLike (S₁ i) (R₁ i)] [Π j, SetLike (S₂ j) (R₂ j)]
 variable {B₁ : Π i, S₁ i} {B₂ : Π j, S₂ j}
 variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
-section set
-
 variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, A₁ (f j) ⊆ φ j ⁻¹' A₂ j)
 
 theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R₁ R₂ f hf φ hφ) := by
@@ -956,8 +954,6 @@ theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R�
   exact continuous_inclusion _ |>.comp <|
     continuous_rng_of_principal.mpr <|
     continuous_pi fun j ↦ φ_cont j |>.comp <| continuous_eval (f j)
-
-end set
 
 end map_continuous
 
