@@ -103,7 +103,7 @@ theorem integrableOn_zero : IntegrableOn (fun _ => (0 : ε')) s μ :=
   integrable_zero _ _ _
 
 @[simp]
-theorem integrableOn_const {C : ε'} (hC : ‖C‖ₑ ≠ ∞) :
+theorem integrableOn_const {C : ε'} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn (fun _ ↦ C) s μ ↔ C = 0 ∨ μ s < ∞ := by
   rw [IntegrableOn, ← enorm_eq_zero, integrable_const_iff_enorm hC, isFiniteMeasure_restrict,
     lt_top_iff_ne_top]
