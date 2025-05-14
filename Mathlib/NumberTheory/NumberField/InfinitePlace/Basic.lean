@@ -3,6 +3,7 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
@@ -36,7 +37,7 @@ This file defines the infinite places of a number field.
 number field, infinite places
 -/
 
-open scoped Finset
+open scoped Finset Topology
 
 open NumberField Fintype Module
 
@@ -496,3 +497,155 @@ lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
   ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
 
 end Rat
+
+/-!
+
+## Weak approximation for infinite places
+
+-/
+
+namespace NumberField.InfinitePlace
+
+variable {K : Type*} [Field K] {v : InfinitePlace K} (w : InfinitePlace K)
+
+theorem pos_of_pos {x : K} (hv : 0 < v x) : 0 < w x := by
+  rw [coe_apply] at hv ⊢
+  exact v.1.pos_of_pos _ hv
+
+variable {w}
+
+/--
+If $v$ and `w` are infinite places of `K` and `v = w ^ t` for some `t` then `t = 1`.
+-/
+theorem rpow_one_of_rpow_eq {t : ℝ} (h : (fun x => w x ^ t) = v) : t = 1 := by
+  let ⟨ψv, hψv⟩ := v.2
+  let ⟨ψw, hψw⟩ := w.2
+  simp only [coe_apply, ← hψv, ← hψw, funext_iff] at h
+  simpa [place_apply, map_ofNat] using congrArg (Real.logb 2) (h 2)
+
+/--
+If `v` and `w` are infinite places of `K` with equivalent underlying absolute values, then `v = w`.
+-/
+theorem eq_of_isEquiv (h : w.1.IsEquiv v.1) : w = v := by
+  let ⟨t, _, h⟩ := h
+  simp [funext_iff, rpow_one_of_rpow_eq h] at h
+  exact Subtype.ext <| AbsoluteValue.ext h
+
+variable (v)
+
+/--
+Infinite places are represented by non-trivial absolute values.
+-/
+theorem isNontrivial : v.1.IsNontrivial := by
+  refine AbsoluteValue.isNontrivial_iff_exists_abv_one_lt.2 ⟨2, let ⟨φ, hφ⟩ := v.2; ?_⟩
+  simp [← hφ, place_apply, map_ofNat]
+
+variable {v}
+
+open Filter in
+/--
+- $K$: field;
+- $v$: infinite place of $K$;
+- $c \in K$;
+- $1 < v(c)$;
+- $w(c) > 1$ for any infinite place $w\neq v$.
+There is a sequence in $K$ that tends to $1$ with respect
+to $v$ and tends to $0$ with respect to all other $w\neq v$.
+Such a sequence is given by $\frac{1}{1 + c ^ {-n}}$.
+-/
+theorem exists_tendsto_one_tendsto_zero {v : InfinitePlace K} {c : K} (hv : 1 < v c)
+    (h : ∀ w : InfinitePlace K, w ≠ v → w c < 1) :
+    ∃ a : ℕ → K, atTop.Tendsto (β := WithAbs v.1) a (𝓝 1) ∧
+      (∀ w ≠ v, atTop.Tendsto (β := WithAbs w.1) a (𝓝 0)) := by
+  refine ⟨fun n => 1 / (1 + c⁻¹ ^ n), ?_, fun w hwv => ?_⟩
+  · nth_rw 3 [show (1 : WithAbs v.1) = 1 / 1 by norm_num]
+    apply Tendsto.div tendsto_const_nhds _ one_ne_zero
+    nth_rw 2 [← add_zero (1 : WithAbs v.1)]
+    apply Tendsto.const_add
+    rw [tendsto_zero_iff_norm_tendsto_zero]
+    have hx₁ := map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv
+    simpa using tendsto_pow_atTop_nhds_zero_of_lt_one (AbsoluteValue.nonneg _ _) hx₁
+  · simp_rw [div_eq_mul_inv, one_mul]
+    rw [tendsto_zero_iff_norm_tendsto_zero]
+    simp_rw [norm_inv]
+    apply Tendsto.inv_tendsto_atTop
+    have (a : WithAbs w.1) (n : ℕ) : ‖a ^ n‖ - 1 ≤  ‖1 + a ^ n‖  := by
+      simp_rw [add_comm, ← norm_one (α := WithAbs w.1), tsub_le_iff_right]
+      exact norm_le_add_norm_add _ _
+    apply tendsto_atTop_mono (this _) (tendsto_atTop_add_right_of_le _ (-1) _ (fun _ => le_rfl))
+    refine tendsto_atTop_of_geom_le (c := w c⁻¹) (by simp) ?_ (fun n => ?_)
+    · exact map_inv₀ w _ ▸ (one_lt_inv₀ (pos_of_pos w (by linarith))).2 (h w hwv)
+    · simp only [map_inv₀, norm_inv, norm_pow]
+      rw [pow_add, pow_one, mul_comm]
+      exact le_rfl
+
+/--
+- $K$: field;
+- $v$: infinite place of $K$;
+- $\exists w \neq v$;
+There is an $x\in K$ such that $v(x) > 1$ and $w(x) < 1$ for all $w\neq v$.
+-/
+theorem exists_one_lt_lt_one [NumberField K] (h : 1 < Fintype.card (InfinitePlace K)) :
+    ∃ (x : K), 1 < v x ∧ ∀ w ≠ v, w x < 1 := by
+  let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin (InfinitePlace K)
+  have : 1 < n := by linarith [Fintype.card_fin n ▸ Fintype.card_eq.2 ⟨e⟩]
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le' this
+  let ⟨m, hm⟩ := e.symm.surjective v
+  let e₀ := e.trans (Equiv.swap 0 m)
+  let ⟨x, hx⟩ := AbsoluteValue.exists_one_lt_lt_one (fun i => (e₀.symm i).isNontrivial)
+      (fun i j hj => mt eq_of_isEquiv <| e₀.symm.injective.ne hj)
+  refine ⟨x, hm ▸ hx.1, fun w hw => ?_⟩
+  have he₀ : e₀ v = 0 := by simp [e₀, e.symm_apply_eq.1 hm]
+  exact e₀.symm_apply_apply _ ▸ hx.2 (e₀ w) <| he₀ ▸ e₀.injective.ne hw
+
+open scoped Classical in
+open Filter in
+variable (K) in
+/--
+*Weak approximation for infinite places*
+The number field $K$ is dense in $\prod_v (K, v)$, where $v$ ranges over the infinite places
+of $K$ and $(K, v)$ denotes $K$ equipped with the topology induced by $v$. In other words,
+for any $(x_v)_v$, with $x_v\in K$, there exists a $y\in K$ such that each $|y - x_v|_v$ is
+arbitrarily small.
+-/
+theorem denseRange_algebraMap_pi [NumberField K] :
+    DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.1) := by
+  by_cases hcard : Fintype.card (InfinitePlace K) = 1
+  · -- If there is only one infinite place this is the identity map
+    letI := Fintype.equivFinOfCardEq hcard |>.unique
+    let f := Homeomorph.funUnique (InfinitePlace K) (WithAbs this.default.1)
+    convert DenseRange.comp f.symm.surjective.denseRange denseRange_id f.continuous_invFun <;>
+    exact this.uniq _
+  -- We have to show that for some `(zᵥ)ᵥ` there is a `y` in `K` that is arbitrarily close to `z`
+  -- under the embedding `y ↦ (y)ᵥ`
+  refine Metric.denseRange_iff.2 fun z r hr => ?_
+  -- For some `v`, by previous results we can select a sequence `xᵥₙ → 1` in `v`'s topology
+  -- and `→ 0` in any other infinite place topology
+  have (v : InfinitePlace K) : ∃ (x : ℕ → WithAbs v.1),
+    atTop.Tendsto (fun n => x n) (𝓝 1) ∧ ∀ w ≠ v,
+        atTop.Tendsto (β := WithAbs w.1) (fun n => x n) (𝓝 0) := by
+    haveI : 0 < Fintype.card (InfinitePlace K) := Fintype.card_pos
+    let ⟨_, hx⟩ := v.exists_one_lt_lt_one (by omega)
+    exact exists_tendsto_one_tendsto_zero hx.1 hx.2
+  choose x h using this
+  -- Define the sequence `yₙ = ∑ v, xᵥₙ * zᵥ` in `K`
+  let y := fun n => ∑ v, x v n * z v
+  -- At each place `w` the limit of `y` with respect to `w`'s topology is `z w`.
+  have : atTop.Tendsto (fun n w => (∑ v, x v n * z v : WithAbs w.1)) (𝓝 z) := by
+    refine tendsto_pi_nhds.2 fun w => ?_
+    simp_rw [← Finset.sum_ite_eq_of_mem _ _ _ (Finset.mem_univ w)]
+    -- In `w`'s topology we have that `x v n * z v → z v`  if `v = w` else `→ 0`
+    refine tendsto_finset_sum _ fun v _ => ?_
+    by_cases hw : w = v
+    · -- because `x w → 1` in `w`'s topology
+      simp only [hw, if_true, ← congrArg (β := ℕ → K) x hw, ← congrArg z hw]
+      nth_rw 2 [← one_mul (z w)]
+      exact Tendsto.mul_const _ (h w).1
+    · -- while `x v → 0` in `w`'s topology (v ≠ w)
+      simp only [hw, if_false]
+      rw [← zero_mul (z v)]
+      exact Tendsto.mul_const _ <| (h v).2 w hw
+  let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
+  exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩
+
+end NumberField.InfinitePlace
