@@ -710,7 +710,7 @@ variable {F : Type*} [FunLike F R S]
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
     [MulSemiringActionSemiHomClass F φ R S]
     (f : F) : R →ₑ+*[φ] S :=
- { (f : R →+* S), (f : R →ₑ+[φ] S) with }
+  { (f : R →+* S), (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
