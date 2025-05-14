@@ -29,9 +29,9 @@ open Category Bicategory
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-  {F G : OplaxFunctor B C}
+  {F G : OplaxFunctor B C} (η θ : F ⟶ G)
 
-namespace OplaxTrans
+variable {F G : OplaxFunctor B C}
 
 /-- A modification `Γ` between oplax natural transformations `η` and `θ` consists of a family of
 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which satisfies the equation
@@ -74,7 +74,7 @@ end Modification
 
 /-- Category structure on the oplax natural transformations between OplaxFunctors. -/
 @[simps]
-scoped instance homcategory (F G : OplaxFunctor B C) : Category (F ⟶ G) where
+instance homcategory (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   Hom := Modification
   id η := { app := fun a ↦ 𝟙 (η.app a) }
   comp Γ Δ := { app := fun a => Γ.app a ≫ Δ.app a }
@@ -100,76 +100,5 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
     { app := fun a => (app a).inv
       naturality := fun {a b} f => by
         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
-
-end OplaxTrans
-
-namespace StrongTrans
-
--- TODO: should add coercions?
-abbrev Modification (η θ : StrongTrans F G) := OplaxTrans.Modification η.toOplax θ.toOplax
-
-namespace Modification
-
-variable {η θ : StrongTrans F G} (Γ : Modification η θ)
-
-
-@[reassoc (attr := simp)]
-lemma naturality {a b : B} (f : a ⟶ b) :
-    F.map f ◁ Γ.app b ≫ (θ.naturality f).hom = (η.naturality f).hom ≫ Γ.app a ▷ G.map f :=
-  OplaxTrans.Modification.naturality Γ f
-
-section
-
-variable {a b c : B} {a' : C}
-
-@[reassoc (attr := simp)]
-theorem whiskerLeft_naturality (f : a' ⟶ F.obj b) (g : b ⟶ c) :
-    f ◁ F.map g ◁ Γ.app c ≫ f ◁ (θ.naturality g).hom = f ◁ (η.naturality g).hom ≫
-      f ◁ Γ.app b ▷ G.map g :=
-  OplaxTrans.Modification.whiskerLeft_naturality Γ f g
-
-@[reassoc (attr := simp)]
-theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
-    F.map f ◁ Γ.app b ▷ g ≫ (α_ _ _ _).inv ≫ (θ.naturality f).hom ▷ g =
-      (α_ _ _ _).inv ≫ (η.naturality f).hom ▷ g ≫ Γ.app a ▷ G.map f ▷ g :=
-  OplaxTrans.Modification.whiskerRight_naturality Γ f g
-
-end
-
-end Modification
-
-variable (F G) in
-/-- Category structure on the oplax natural transformations between OplaxFunctors. -/
-@[simps]
-scoped instance homcategory : Category (F ⟶ G) where
-  Hom := Modification
-  id η := { app := fun a ↦ 𝟙 (η.app a) }
-  comp {η θ ζ} Γ Δ := { app := fun a => Γ.app a ≫ Δ.app a }
-
-instance (η : F ⟶ G) : Inhabited (Modification η η) :=
-  ⟨𝟙 η⟩
-
-@[ext]
-lemma homcategory.ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β}
-    (w : ∀ b, m.app b = n.app b) : m = n :=
-  OplaxTrans.Modification.ext (funext w)
-
--- TODO: need alias for this or no?
-/- /-- Construct a modification isomorphism between oplax natural transformations
-by giving object level isomorphisms, and checking naturality only in the forward direction.
--/
-@[simps]
-def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
-    (naturality : ∀ {a b} (f : a ⟶ b),
-      F.map f ◁ (app b).hom ≫ θ.naturality f =
-        η.naturality f ≫ (app a).hom ▷ G.map f := by aesop_cat) : η ≅ θ where
-  hom := { app := fun a => (app a).hom }
-  inv :=
-    { app := fun a => (app a).inv
-      naturality := fun {a b} f => by
-        simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
- -/
-
-end StrongTrans
 
 end CategoryTheory.Oplax
