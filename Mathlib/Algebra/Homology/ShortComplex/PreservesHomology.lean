@@ -362,7 +362,7 @@ variable [hl₁.IsPreservedBy F] [hl₂.IsPreservedBy F]
 lemma map_cyclesMap' : F.map (ShortComplex.cyclesMap' φ hl₁ hl₂) =
     ShortComplex.cyclesMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
   have γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
-  rw [γ.cyclesMap'_eq, (γ.map F).cyclesMap'_eq,  ShortComplex.LeftHomologyMapData.map_φK]
+  rw [γ.cyclesMap'_eq, (γ.map F).cyclesMap'_eq, ShortComplex.LeftHomologyMapData.map_φK]
 
 lemma map_leftHomologyMap' : F.map (ShortComplex.leftHomologyMap' φ hl₁ hl₂) =
     ShortComplex.leftHomologyMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
@@ -379,7 +379,7 @@ variable [hr₁.IsPreservedBy F] [hr₂.IsPreservedBy F]
 lemma map_opcyclesMap' : F.map (ShortComplex.opcyclesMap' φ hr₁ hr₂) =
     ShortComplex.opcyclesMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
   have γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
-  rw [γ.opcyclesMap'_eq, (γ.map F).opcyclesMap'_eq,  ShortComplex.RightHomologyMapData.map_φQ]
+  rw [γ.opcyclesMap'_eq, (γ.map F).opcyclesMap'_eq, ShortComplex.RightHomologyMapData.map_φQ]
 
 lemma map_rightHomologyMap' : F.map (ShortComplex.rightHomologyMap' φ hr₁ hr₂) =
     ShortComplex.rightHomologyMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
