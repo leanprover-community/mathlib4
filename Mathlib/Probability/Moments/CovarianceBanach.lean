@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.L2Space
+import Mathlib.Probability.Variance
 
 /-!
 # Covariance in Banach spaces
@@ -229,6 +230,11 @@ lemma covarianceBilin_apply [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L₁ L₂ 
   · simp [← ContinuousLinearMap.integral_comm_of_memLp_id (h.mono_exponent (by simp))]
   · fun_prop
   · exact Measurable.aestronglyMeasurable <| by fun_prop
+
+lemma covarianceBilin_same_eq_variance [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L : E →L[ℝ] ℝ) :
+    covarianceBilin μ h L L = Var[L; μ] := by
+  rw [covarianceBilin_apply, variance_eq_integral (by fun_prop)]
+  simp_rw [pow_two]
 
 end Covariance
 
