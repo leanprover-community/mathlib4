@@ -515,7 +515,7 @@ theorem isCompact_generateFrom [T : TopologicalSpace X]
     {S : Set (Set X)} (hTS : T = generateFrom S) {s : Set X}
     (h : ∀ P ⊆ S, s ⊆ ⋃₀ P → ∃ Q ⊆ P, Q.Finite ∧ s ⊆ ⋃₀ Q) :
     IsCompact s := by
-  rw [hTS, @isCompact_iff_ultrafilter_le_nhds']
+  rw [isCompact_iff_ultrafilter_le_nhds', hTS]
   intro F hsF
   by_contra hF
   have hSF : ∀ x ∈ s, ∃ t, x ∈ t ∧ t ∈ S ∧ t ∉ F := by simpa [nhds_generateFrom] using hF
@@ -729,7 +729,7 @@ there is a finite subcover.
 theorem compactSpace_generateFrom [T : TopologicalSpace X] {S : Set (Set X)}
     (hTS : T = generateFrom S) (h : ∀ P ⊆ S, ⋃₀ P = univ → ∃ Q ⊆ P, Q.Finite ∧ ⋃₀ Q = univ) :
     CompactSpace X := by
-  rw [← @isCompact_univ_iff]
+  rw [← isCompact_univ_iff]
   exact isCompact_generateFrom hTS <| by simpa
 
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
