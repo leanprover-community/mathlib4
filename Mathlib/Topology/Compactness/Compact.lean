@@ -511,21 +511,22 @@ omit [TopologicalSpace X] in
 a subset of `X`. Then `s` is compact if for any open cover of `s` with all elements taken from `S`,
 there is a finite subcover.
 -/
-theorem isCompact_generateFrom {S : Set (Set X)} (s : Set X)
+theorem isCompact_generateFrom [T : TopologicalSpace X]
+    {S : Set (Set X)} (hTS : T = generateFrom S) {s : Set X}
     (h : ∀ P ⊆ S, s ⊆ ⋃₀ P → ∃ Q ⊆ P, Q.Finite ∧ s ⊆ ⋃₀ Q) :
-    @IsCompact X (generateFrom S) s := by
-  rw [@isCompact_iff_ultrafilter_le_nhds']
-  intro F hF'
+    IsCompact s := by
+  rw [hTS, @isCompact_iff_ultrafilter_le_nhds']
+  intro F hsF
   by_contra hF
   have hSF : ∀ x ∈ s, ∃ t, x ∈ t ∧ t ∈ S ∧ t ∉ F := by simpa [nhds_generateFrom] using hF
   choose! U hxU hSU hUF using hSF
-  obtain ⟨Q, hQP, hQ1, hQ2⟩ := h (U '' s) (by simpa [Set.subset_def])
+  obtain ⟨Q, hQU, hQ, hsQ⟩ := h (U '' s) (by simpa [Set.subset_def])
     (fun x hx ↦ Set.mem_sUnion_of_mem (hxU _ hx) (by aesop))
-  have : ∀ s ∈ Q, s ∉ F := fun s hsQ ↦ (hQP hsQ).choose_spec.2 ▸ hUF _ (hQP hsQ).choose_spec.1
-  have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by simpa [Filter.biInter_mem hQ1, F.compl_mem_iff_not_mem]
+  have : ∀ s ∈ Q, s ∉ F := fun s hsQ ↦ (hQU hsQ).choose_spec.2 ▸ hUF _ (hQU hsQ).choose_spec.1
+  have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by simpa [Filter.biInter_mem hQ, F.compl_mem_iff_not_mem]
   have : ⋃₀ Q ∉ F := by
-    simpa [-Set.sInter_image, ← Set.compl_sUnion, hQ2, F.compl_mem_iff_not_mem] using hQF
-  exact this (F.mem_of_superset hF' hQ2)
+    simpa [-Set.sInter_image, ← Set.compl_sUnion, hsQ, F.compl_mem_iff_not_mem] using hQF
+  exact this (F.mem_of_superset hsF hsQ)
 
 namespace Filter
 
@@ -725,11 +726,11 @@ The `CompactSpace` version of **Alexander's subbasis theorem**. If `X` is a topo
 subbasis `S`, then `X` is compact if for any open cover of `X` all of whose elements belong to `S`,
 there is a finite subcover.
 -/
-theorem compactSpace_generateFrom {S : Set (Set X)}
-    (h : ∀ P ⊆ S, ⋃₀ P = univ → ∃ Q ⊆ P, Q.Finite ∧ ⋃₀ Q = univ) :
-    @CompactSpace X (generateFrom S) := by
+theorem compactSpace_generateFrom [T : TopologicalSpace X] {S : Set (Set X)}
+    (hTS : T = generateFrom S) (h : ∀ P ⊆ S, ⋃₀ P = univ → ∃ Q ⊆ P, Q.Finite ∧ ⋃₀ Q = univ) :
+    CompactSpace X := by
   rw [← @isCompact_univ_iff]
-  exact isCompact_generateFrom univ <| by simpa
+  exact isCompact_generateFrom hTS <| by simpa
 
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)
