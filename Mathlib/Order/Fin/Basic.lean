@@ -206,6 +206,10 @@ alias ⟨_, _root_.GCongr.Fin.succAbove_lt_succAbove⟩ := succAbove_lt_succAbov
 theorem natAdd_inj (m) {i j : Fin n} : natAdd m i = natAdd m j ↔ i = j :=
   (strictMono_natAdd _).injective.eq_iff
 
+theorem natAdd_injective (m n : ℕ) :
+    Function.Injective (Fin.natAdd n : Fin m → _) :=
+  (strictMono_natAdd _).injective
+
 @[simp]
 theorem natAdd_le_natAdd_iff (m) {i j : Fin n} : natAdd m i ≤ natAdd m j ↔ i ≤ j :=
   (strictMono_natAdd _).le_iff_le

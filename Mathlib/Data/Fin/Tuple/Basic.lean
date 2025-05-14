@@ -416,12 +416,9 @@ theorem append_injective_iff {α : Type*} {m n : ℕ} {x : Fin m → α} {y : Fi
       Function.Injective x ∧ Function.Injective y ∧ Disjoint (Set.range x) (Set.range y) := by
   constructor
   · intro H
-    constructor
-    · intro i j h
-      rwa [← Fin.castAdd_inj, ← H.eq_iff, Fin.append_left, Fin.append_left]
-    constructor
-    · intro i j h
-      rwa [← Fin.natAdd_inj, ← H.eq_iff, Fin.append_right, Fin.append_right]
+    refine ⟨?_, ?_, ?_⟩
+    · simpa [Function.comp_def] using H.comp (castAdd_injective _ _)
+    · simpa [Function.comp_def] using H.comp (natAdd_injective _ _)
     · rw [Set.disjoint_iff_forall_ne]
       rintro _ ⟨i, rfl⟩ _ ⟨j, rfl⟩
       rw [← Fin.append_left x y i, ← Fin.append_right x y j, H.ne_iff]
