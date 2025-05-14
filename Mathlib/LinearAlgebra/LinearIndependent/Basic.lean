@@ -78,9 +78,8 @@ theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Modu
 
 variable (R) in
 theorem LinearIndependent.restrict_scalars' [Semiring K] [SMulWithZero R K] [Module K M]
-    [IsScalarTower R K M] [FaithfulSMul R K] [IsScalarTower R K K] [IsScalarTower R K M]
-    {v : ι → M} (li : LinearIndependent K v) :
-    LinearIndependent R v :=
+    [IsScalarTower R K M] [FaithfulSMul R K] [IsScalarTower R K K] {v : ι → M}
+    (li : LinearIndependent K v) : LinearIndependent R v :=
   restrict_scalars ((faithfulSMul_iff_injective_smul_one R K).mp inferInstance) li
 
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
