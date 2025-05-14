@@ -25,7 +25,7 @@ enough to show that, for all (natural) primes `p ∈ Finset.Icc 1 ⌊(M K)⌋₊
 such that `p ^ (span ({p}).inertiaDeg P)` are principal. This is the standard technique to prove
 that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 
-The way this theorem should be used is to first of all compute `⌊(M K)⌋₊` and then use `fin_cases`
+The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
 to deal with the finite number of primes `p` in the interval.
 -/
 
