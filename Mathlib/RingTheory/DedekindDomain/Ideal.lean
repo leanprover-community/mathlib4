@@ -1197,7 +1197,7 @@ theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Asso
 
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
 theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
-    [(p : Associates (Ideal R)) → Decidable (Irreducible p)]
+    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
     {a a₀ x : R} {n : ℕ} (hx : Prime x) (ha : ¬x ∣ a) (heq : a₀ = x ^ n * a) :
     (Associates.mk (span {x})).count (Associates.mk (span {a₀})).factors = n := by
   have hx0 : x ≠ 0 := Prime.ne_zero hx
@@ -1217,7 +1217,7 @@ theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
 
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
 theorem Ideal.count_associates_eq' [DecidableEq (Associates (Ideal R))]
-    [(p : Associates (Ideal R)) → Decidable (Irreducible p)]
+    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
     {a x : R} (hx : Prime x) {n : ℕ} (hle : x ^ n ∣ a) (hlt : ¬x ^ (n + 1) ∣ a) :
     (Associates.mk (span {x})).count (Associates.mk (span {a})).factors = n := by
   obtain ⟨q, hq⟩ := hle
