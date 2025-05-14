@@ -30,7 +30,7 @@ namespace Fin.Embedding
 
 variable {α : Type*}
 
-/-- Remove the first element from an injective (n + 1)-tuple -/
+/-- Remove the first element from an injective (n + 1)-tuple. -/
 def tail {n : ℕ} (x : Fin (n + 1) ↪ α) : Fin n ↪ α :=
   ⟨Fin.tail x, x.injective.comp <| Fin.succ_injective _⟩
 
@@ -48,7 +48,7 @@ theorem coe_cons {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
 theorem tail_cons {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
     tail (cons x ha) = x := rfl
 
-/-- Remove the last element from an injective (n + 1)-tuple -/
+/-- Remove the last element from an injective (n + 1)-tuple. -/
 def init {n : ℕ} (x : Fin (n + 1) ↪ α) : Fin n ↪ α :=
   ⟨Fin.init x, x.injective.comp <| castSucc_injective _⟩
 
@@ -73,16 +73,7 @@ theorem snoc_last {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range ⇑x} 
     snoc x ha (last n) = a := by
   rw [coe_snoc, Fin.snoc_last]
 
--- Mathlib.Data.Fin.Basic
-theorem _root_.Fin.exists_eq_castAdd_or_exists_eq_natAdd {m n : ℕ} (i : Fin (m + n)) :
-    (∃ i' : Fin m, i = castAdd n i') ∨ ∃ i', i = natAdd m i' := by
-  rcases Nat.lt_or_ge i.val m with hi | hi
-  · exact Or.inl ⟨⟨i.val, hi⟩, by rw [castAdd_mk]⟩
-  · exact Or.inr
-      ⟨⟨i.val - m, by simp [Nat.sub_lt_iff_lt_add' hi, i.prop]⟩,
-        by simp only [natAdd_mk, ← Fin.val_inj, Nat.add_sub_of_le hi]⟩
-
-/-- Append a `Fin n ↪ α` at the end of a `Fin m ↪ α` if their ranges are disjoint -/
+/-- Append a `Fin n ↪ α` at the end of a `Fin m ↪ α` if their ranges are disjoint. -/
 def append {m n : ℕ} {x : Fin m ↪ α} {y : Fin n ↪ α}
     (h : Disjoint (range ⇑x) (range ⇑y)) : Fin (m + n) ↪ α :=
   ⟨Fin.append x y, Fin.append_injective_iff.mpr ⟨x.inj', y.inj', h⟩⟩
