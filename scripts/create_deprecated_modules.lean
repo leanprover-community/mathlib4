@@ -175,7 +175,7 @@ It then proposes `Try these:` suggestions calling the `#create_deprecated_module
 to finalize the deprecation.
 
 Unlike what usually happens with `Try these:`, the original `#find_deleted_files` does not get
-replaced by the suggestion, which means that you can click multiple suggestions and proceed with
+replaced by the suggestion, which means that you can click on multiple suggestions and proceed with
 the deprecations later on.
 
 If the number of commits is not explicitly used, `#find_deleted_files` defaults to `2`,
@@ -246,6 +246,10 @@ to find files that existed then and do not exist now.
 The exact value is not important: we are just looking for a file name.
 Once you found what you were looking for, click on all the relevant `Try these:` suggestions
 and continue following the instructions on these commands.
+
+Unlike what usually happens with `Try these:`, the original `#find_deleted_files` does not get
+replaced by the suggestion, which means that you can click on multiple suggestions and proceed with
+the deprecations later on.
 -/
 --#find_deleted_files 10
 
