@@ -3,9 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.LeftRightNhds
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Topology.Algebra.Group.Defs
+import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Topology on a linear ordered commutative group
@@ -20,7 +20,8 @@ open Set Filter Function
 
 open scoped Topology
 
-variable {G : Type*} [TopologicalSpace G] [LinearOrderedCommGroup G] [OrderTopology G]
+variable {G : Type*} [TopologicalSpace G] [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+  [OrderTopology G]
 
 -- see Note [lower instance priority]
 @[to_additive]

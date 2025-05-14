@@ -37,7 +37,6 @@ noncomputable def double : HomologicalComplex C c where
   d k k' :=
     if hk : k = i₀ ∧ k' = i₁ ∧ i₀ ≠ i₁ then
       eqToHom (if_pos hk.1) ≫ f ≫ eqToHom (by
-        dsimp
         rw [if_neg, if_pos hk.2.1]
         aesop)
     else 0
@@ -183,7 +182,7 @@ noncomputable def evalCompCoyonedaCorepresentableBySingle (i : ι) [DecidableEq 
       right_inv f := by simp }
   homEquiv_comp := by simp
 
-variable [c.HasNoLoop] [DecidableEq ι]
+variable [c.HasNoLoop]
 
 open Classical in
 /-- Given a complex shape `c : ComplexShape ι` (with no loop), `X : C` and `j : ι`,
@@ -202,12 +201,11 @@ noncomputable def evalCompCoyonedaCorepresentable (X : C) (j : ι) :
     (eval C c j ⋙ coyoneda.obj (op X)).CorepresentableBy
       (evalCompCoyonedaCorepresentative c X j) := by
   dsimp [evalCompCoyonedaCorepresentative]
-  by_cases h : ∃ (k : ι), c.Rel j k
-  · rw [dif_pos h]
-    exact evalCompCoyonedaCorepresentableByDoubleId _
+  classical
+  split_ifs with h
+  · exact evalCompCoyonedaCorepresentableByDoubleId _
       (fun hj ↦ c.not_rel_of_eq hj h.choose_spec) _
-  · rw [dif_neg h]
-    apply evalCompCoyonedaCorepresentableBySingle
+  · apply evalCompCoyonedaCorepresentableBySingle
     obtain _ | _ := c.exists_distinct_prev_or j <;> tauto
 
 instance (X : C) (j : ι) : (eval C c j ⋙ coyoneda.obj (op X)).IsCorepresentable where

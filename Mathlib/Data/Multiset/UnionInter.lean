@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Perm.Lattice
 import Mathlib.Data.Multiset.Filter
 import Mathlib.Order.MinMax
+import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets
@@ -64,7 +65,7 @@ lemma mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
 lemma map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f) {s t : Multiset α} :
     map f (s ∪ t) = map f s ∪ map f t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ =>
-    congr_arg ofList (by rw [List.map_append f, List.map_diff finj])
+    congr_arg ofList (by rw [List.map_append, List.map_diff finj])
 
 @[simp] lemma zero_union : 0 ∪ s = s := by simp [union_def, Multiset.zero_sub]
 @[simp] lemma union_zero : s ∪ 0 = s := by simp [union_def]

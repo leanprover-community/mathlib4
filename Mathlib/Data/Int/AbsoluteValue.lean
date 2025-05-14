@@ -21,7 +21,7 @@ This file contains some results on absolute values applied to integers.
 -/
 
 
-variable {R S : Type*} [Ring R] [LinearOrderedCommRing S]
+variable {R S : Type*} [Ring R] [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
 
 @[simp]
 theorem AbsoluteValue.map_units_int (abv : AbsoluteValue ℤ S) (x : ℤˣ) : abv x = 1 := by

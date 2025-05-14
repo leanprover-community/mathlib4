@@ -289,6 +289,14 @@ theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).sy
   rfl
 
 @[simp]
+theorem coe_toMulEquiv_symm (e : R ≃+* S) : (e.symm : S ≃* R) = (e : R ≃* S).symm :=
+  rfl
+
+@[simp]
+theorem coe_toAddEquiv_symm (e : R ≃+* S) : (e.symm : S ≃+ R) = (e : R ≃+ S).symm :=
+  rfl
+
+@[simp]
 theorem apply_symm_apply (e : R ≃+* S) : ∀ x, e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply
 
