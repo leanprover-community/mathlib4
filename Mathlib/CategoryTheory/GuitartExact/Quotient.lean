@@ -21,8 +21,8 @@ that are given by an isomorphism `T ⋙ R ⟶ L ⋙ B`,
 when `T` is full and essentially surjective, `B` is full,
 and the following additional condition holds. Given
 two morphisms `f₀` and `f₁` in `L.obj X₀ ⟶ Y` (for any
-`X₀ : C₀` and `Y : C`), there exists a "cylinder"
-object `Cyl : C₀` equipped with two morphisms
+`X₀ : C₀` and `Y : C`) such that `B.map f₀ = B.map f₁`,
+there exists a "cylinder" object `Cyl : C₀` equipped with two morphisms
 `i₀ : X₀ ⟶ Cyl` and `i₁ : X₀ ⟶ Cyl` such that `T.map i₀ = T.map i₁`,
 and `φ : L.obj Cyl ⟶ Y`, such that `L.map i₀ ≫ φ = f₀`
 and `L.map i₁ ≫ φ = f₁`.
@@ -31,7 +31,8 @@ This is meant to be applied in the case `C` is the category
 of cochain complexes in an additive category, `H` is its
 homotopy category, `H₀` is a (strictly full)
 triangulated subcategory of `H`, and `C₀` is the corresponding
-full subcategory of `C`.
+full subcategory of `C`. In that case, `Cyl` can be chosen to be
+the cylinder object of `X₀`.
 
 -/
 
