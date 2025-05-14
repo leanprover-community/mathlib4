@@ -232,20 +232,3 @@ theorem probChar_ne_one : probChar ≠ 1 := by
   simpa only [probChar_apply'] using Circle.exp_pi_ne_one
 
 end Real
-
-namespace Circle
-
-lemma exp_nat_mul (n : ℕ) (t : ℝ) : exp (n * t) = exp t ^ n := by
-  simpa using Real.probChar.map_nsmul_eq_pow n t
-
-open Real in
-@[simp]
-lemma exp_two_pi : exp (2 * π) = 1 := by
-  simp [exp]
-  rfl
-
-open Real in
-lemma exp_nat_mul_two_pi (n : ℕ) : exp (n * (2 * π)) = 1 := by
-  simp [exp_nat_mul]
-
-end Circle
