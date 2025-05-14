@@ -154,7 +154,7 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
 /-! ### Edge-vertex incidence -/
 
 /-- The unary incidence predicate of `G`. `G.Inc e x` means that the vertex `x`
-is one of the ends of the edge `e`. -/
+is one or both of the ends of the edge `e`. -/
 def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
 
 @[simp]
@@ -189,8 +189,8 @@ lemma isLink_iff_inc : G.IsLink e x y ↔ G.Inc e x ∧ G.Inc e y ∧ ∀ z, G.I
     exact hy'.symm
   assumption
 
-/-- Given a proof that `e` is incident with `x`, noncomputably find the other end of `e`.
-(If `e` is a loop, this is equal to `x` itself). -/
+/-- Given a proof that the edge `e` is incident with the vertex `x` in `G`,
+noncomputably find the other end of `e`. (If `e` is a loop, this is equal to `x` itself). -/
 noncomputable def Inc.other (h : G.Inc e x) : α := h.choose
 
 @[simp]
@@ -209,7 +209,7 @@ lemma Inc.eq_or_eq_or_eq_of_inc_of_inc (hx : G.Inc e x) (hy : G.Inc e y) (hz : G
   obtain rfl := hz.eq_of_isLink_of_ne_left hx' hcon.2.1.symm
   exact hcon.2.2 rfl
 
-/-- `G.IsLoopAt e x` means that both ends of `e` are equal to `x`. -/
+/-- `G.IsLoopAt e x` means that both ends of the edge `e` are equal to the vertex `x`. -/
 def IsLoopAt (G : Graph α β) (e : β) (x : α) : Prop := G.IsLink e x x
 
 @[simp]
@@ -229,7 +229,7 @@ lemma IsLoopAt.edge_mem (h : G.IsLoopAt e x) : e ∈ E(G) :=
 lemma IsLoopAt.vertex_mem (h : G.IsLoopAt e x) : x ∈ V(G) :=
   h.inc.vertex_mem
 
-/-- `G.IsNonloopAt e x` means that `e` is an edge from `x` to some `y ≠ x`,
+/-- `G.IsNonloopAt e x` means that the vertex `x` is one but not both of the ends of the edge =`e`,
 or equivalently that `e` is incident with `x` but not a loop at `x` -
 see `Graph.isNonloopAt_iff_inc_not_isLoopAt`. -/
 def IsNonloopAt (G : Graph α β) (e : β) (x : α) : Prop := ∃ y ≠ x, G.IsLink e x y
@@ -264,7 +264,7 @@ lemma Inc.isLoopAt_or_isNonloopAt (h : G.Inc e x) : G.IsLoopAt e x ∨ G.IsNonlo
 
 /-! ### Adjacency -/
 
-/-- `G.Adj x y` means that `G` has an edge from `x` to `y`. -/
+/-- `G.Adj x y` means that `G` has an edge whose ends are the vertices `x` and `y`. -/
 def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
 
 lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
@@ -286,13 +286,16 @@ lemma IsLink.adj (h : G.IsLink e x y) : G.Adj x y :=
 
 /-! ### Extensionality -/
 
-/-- The graph constructed from `G.vertexSet` and `G.IsLink` using the default value for `edgeSet`
-is equal to `G`. -/
+/-- `edgeSet` can be determined using `IsLink`, so the graph constructed from `G.vertexSet` and
+`G.IsLink` using any value for `edgeSet` is equal to `G` itself. -/
 @[simp]
-lemma mk_eq_self (G : Graph α β) : Graph.mk V(G) G.IsLink {e | ∃ x y, G.IsLink e x y}
-    (by simpa [← G.edgeSet_eq_setOf_exists_isLink] using G.isLink_symm)
-    (fun _ _ _ _ _ h h' ↦ h.left_eq_or_eq_of_isLink h') (fun _ ↦ Iff.rfl)
+lemma mk_eq_self (G : Graph α β) {E : Set β} (hE : ∀ e, e ∈ E ↔ ∃ x y, G.IsLink e x y) :
+    Graph.mk V(G) G.IsLink E
+    (by simpa [show E = E(G) by simp [Set.ext_iff, hE, G.edge_mem_iff_exists_isLink]]
+      using G.isLink_symm)
+    (fun _ _ _ _ _ h h' ↦ h.left_eq_or_eq_of_isLink h') hE
     (fun _ _ _ ↦ IsLink.left_mem) = G := by
+  obtain rfl : E = E(G) := by simp [Set.ext_iff, hE, G.edge_mem_iff_exists_isLink]
   cases G with | _ _ _ _ _ _ h _ => simp [← h]
 
 /-- Two graphs with the same vertex set and binary incidences are equal.
@@ -301,10 +304,11 @@ to the definition of `Graph`, so it doesn't require equality of the edge sets.) 
 @[ext]
 protected lemma ext {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂))
     (h : ∀ e x y, G₁.IsLink e x y ↔ G₂.IsLink e x y) : G₁ = G₂ := by
-  rw [← G₁.mk_eq_self, ← G₂.mk_eq_self]
-  simp_rw [hV]
-  convert rfl using 2 <;>
-  simp [funext_iff, h]
+  rw [← G₁.mk_eq_self G₁.edge_mem_iff_exists_isLink, ← G₂.mk_eq_self G₂.edge_mem_iff_exists_isLink]
+  convert rfl using 2
+  · exact hV.symm
+  · simp [funext_iff, h]
+  simp [edgeSet_eq_setOf_exists_isLink, h]
 
 /-- Two graphs with the same vertex set and unary incidences are equal. -/
 lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G₁.Inc e x ↔ G₂.Inc e x) :
