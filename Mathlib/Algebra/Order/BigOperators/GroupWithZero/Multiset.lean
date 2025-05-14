@@ -34,8 +34,8 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : Multiset ι} (f : ι → R) (g
   simp only [quot_mk_to_coe, mem_coe, map_coe, prod_coe] at *
   apply List.prod_map_le_prod_map₀ f g h0 h
 
-theorem prod_map_le_pow_card {F L : Type*} [MulPosMono R] [FunLike F L R] {f : F} {r : R}
-    {t : Multiset L} (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
+theorem prod_map_le_pow_card {F L : Type*} [FunLike F L R] {f : F} {r : R} {t : Multiset L}
+    (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
     (map f t).prod ≤ r ^ card t := by
   induction t using Quotient.inductionOn
   simp_all [List.prod_map_le_pow_length₀]
