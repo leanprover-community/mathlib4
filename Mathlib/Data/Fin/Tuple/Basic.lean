@@ -787,17 +787,22 @@ def snocInduction {α : Sort*}
 theorem snoc_injective_of_injective {α} {x₀ : α} {x : Fin n → α}
     (hx : Function.Injective x) (hx₀ : x₀ ∉ Set.range x) :
     Function.Injective (snoc x x₀ : Fin n.succ → α) := fun i j h ↦ by
-  rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | hi
-  · rcases Fin.eq_castSucc_or_eq_last j with ⟨j, rfl⟩ | hj
-    · simpa only [castSucc_inj, ← Injective.eq_iff hx, snoc_castSucc] using h
-    · simp only [snoc_castSucc, hj, snoc_last] at h
+  induction i using lastCases with
+  | cast i =>
+    induction j using lastCases with
+    | cast j =>
+      simpa only [castSucc_inj, ← Injective.eq_iff hx, snoc_castSucc] using h
+    | last =>
+      simp only [snoc_castSucc, snoc_last] at h
       rw [← h] at hx₀
       apply hx₀.elim (Set.mem_range_self i)
-  · rcases Fin.eq_castSucc_or_eq_last j with ⟨j, rfl⟩ | hj
-    · simp only [snoc_castSucc, hi, snoc_last] at h
+  | last =>
+    induction j using lastCases with
+    | cast j =>
+      simp only [snoc_castSucc, snoc_last] at h
       rw [h] at hx₀
       apply hx₀.elim (Set.mem_range_self j)
-    · simp only [hi, hj]
+    | last => simp
 
 theorem snoc_injective_iff {α} {x₀ : α} {x : Fin n → α} :
     Function.Injective (snoc x x₀ : Fin n.succ → α) ↔ Function.Injective x ∧ x₀ ∉ Set.range x := by
