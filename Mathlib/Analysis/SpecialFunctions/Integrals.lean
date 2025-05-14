@@ -332,7 +332,7 @@ theorem intervalIntegrable_cos : IntervalIntegrable cos μ a b :=
   continuous_cos.intervalIntegrable a b
 
 /--
-The function `log ∘ sin` is invervalintegrable over every interval.
+The function `log ∘ sin` is interval integrable over every interval.
 -/
 @[simp]
 theorem intervalIntegrable_log_sin {a b : ℝ} :
