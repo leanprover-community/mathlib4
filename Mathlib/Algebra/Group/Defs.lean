@@ -327,18 +327,6 @@ section
 
 variable {M : Type u}
 
-/-- The fundamental power operation in a monoid. `npowRec n a = a*a*...*a` n times.
-Use instead `a ^ n`, which has better definitional behavior. -/
-def npowRec [One M] [Mul M] : ℕ → M → M
-  | 0, _ => 1
-  | n + 1, a => npowRec n a * a
-
-/-- The fundamental scalar multiplication in an additive monoid. `nsmulRec n a = a+a+...+a` n
-times. Use instead `n • a`, which has better definitional behavior. -/
-def nsmulRec [Zero M] [Add M] : ℕ → M → M
-  | 0, _ => 0
-  | n + 1, a => nsmulRec n a + a
-
 attribute [to_additive existing] npowRec
 
 variable [One M] [Semigroup M] (m n : ℕ) (hn : n ≠ 0) (a : M) (ha : 1 * a = a)
@@ -445,7 +433,7 @@ where
     k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
 
 /--
-A variant of `npowRec` which is a semigroup homomorphisms from `ℕ₊` to `M`.
+A variant of `npowRec` which is a semigroup homomorphism from `ℕ₊` to `M`.
 -/
 def npowRec' {M : Type*} [One M] [Mul M] : ℕ → M → M
   | 0, _ => 1
@@ -453,7 +441,7 @@ def npowRec' {M : Type*} [One M] [Mul M] : ℕ → M → M
   | k + 2, m => npowRec' (k + 1) m * m
 
 /--
-A variant of `nsmulRec` which is a semigroup homomorphisms from `ℕ₊` to `M`.
+A variant of `nsmulRec` which is a semigroup homomorphism from `ℕ₊` to `M`.
 -/
 def nsmulRec' {M : Type*} [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0

@@ -101,7 +101,7 @@ where
   pos : ∀ n : ℕ, C (b + n)
   | 0 => cast (by simp) H0
   | n+1 => cast (by rw [Int.add_assoc]; rfl) <|
-    Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
+    Hs _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
 
   /-- The negative case of `Int.inductionOn'`. -/
   neg : ∀ n : ℕ, C (b + -[n+1])
