@@ -3,13 +3,9 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.GroupTheory.OreLocalization.Basic
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.GroupTheory.Finiteness
+import Mathlib.GroupTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids
@@ -1362,3 +1358,4 @@ protected def localizationMap : S.LocalizationMap R[S⁻¹] := Localization.mono
 protected noncomputable def equivMonoidLocalization : Localization S ≃* R[S⁻¹] := MulEquiv.refl _
 
 end OreLocalization
+#min_imports
