@@ -23,7 +23,8 @@ variable
 open Filter MeromorphicOn Metric Real
 
 /--
-If `f` is meromorphic on the complex plane, then `log ‖f ·‖` is circle integrable over every circle.
+If `f` is meromorphic on a circle in the complex plane, then `log ‖f ·‖` is circle integrable over
+that circle.
 -/
 @[simp]
 theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c |R|)) :
@@ -63,8 +64,8 @@ theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c 
     apply CircleIntegrable.congr_codiscreteWithin this.symm (circleIntegrable_const 0 c R)
 
 /--
-If `f` is meromorphic on the complex plane, then `log⁺ ‖f ·‖` is circle integrable over every
-circle.
+If `f` is meromorphic on a circle in the complex plane, then `log⁺ ‖f ·‖` is circle integrable over
+that circle.
 -/
 @[simp]
 theorem circleIntegrable_posLog_norm_meromorphicOn (hf : MeromorphicOn f (sphere c |R|)) :
