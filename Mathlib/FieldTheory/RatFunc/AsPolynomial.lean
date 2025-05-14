@@ -218,24 +218,23 @@ variable {Γ : Type*}
 
 section LinearOrderedCommMonoidWithZero
 
-variable [LinearOrderedCommMonoidWithZero Γ]
+variable [LinearOrderedCommMonoidWithZero Γ] {v : Valuation (RatFunc K) Γ}
 
 open Valuation
 
 /-- If a valuation `v` is trivial on constants then for every `n : ℕ` the valuation of
 `(monomial n a)` is equal to `(v RatFunc.X) ^ n`. -/
-lemma valuation_monomial_eq_valuation_X_pow {v : Valuation (RatFunc K) Γ}
-    (hv : ∀ a : K, a ≠ 0 → v (C a) = 1) (n : ℕ) {a : K} (ha : a ≠ 0) :
-    v (monomial n a) = v RatFunc.X ^ n := by
+lemma valuation_monomial_eq_valuation_X_pow (hv : ∀ a : K, a ≠ 0 → v (C a) = 1) (n : ℕ) {a : K}
+    (ha : a ≠ 0) : v (monomial n a) = v RatFunc.X ^ n := by
   simp_all [RatFunc.coePolynomial, ← C_mul_X_pow_eq_monomial]
 
 /-- If a valuation `v` is trivial on constants and `1 < v RatFunc.X` then for every polynomial `p`,
 `v p = v RatFunc.X ^ p.natDegree`.
 
 Note: The condition `1 < v RatFunc.X` is typically satisfied by the valuation at infinity. -/
-theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X {v : Valuation (RatFunc K) Γ}
-    [Nontrivial Γ] [PosMulStrictMono Γ] (hlt : 1 < v RatFunc.X) (h : ∀ a : K, a ≠ 0 → v (C a) = 1)
-    {p : K[X]} (hp : p ≠ 0) : v p = v RatFunc.X ^ p.natDegree := by
+theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X [Nontrivial Γ]
+    [PosMulStrictMono Γ] (hlt : 1 < v RatFunc.X) (h : ∀ a : K, a ≠ 0 → v (C a) = 1) {p : K[X]}
+    (hp : p ≠ 0) : v p = v RatFunc.X ^ p.natDegree := by
   replace h : ∀ a : K, a ≠ 0 → v (RatFunc.C a) = 1 := h
   rw [RatFunc.coePolynomial,
     ← valuation_monomial_eq_valuation_X_pow _ h _ (leadingCoeff_ne_zero.mpr hp)]
@@ -254,8 +253,8 @@ theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X {v : Valuat
 
 /-- If a valuation `v` is trivial on constants and `v RatFunc.X ≤ 1` then `for every polynomial `p`,
 `v p ≤ 1`. -/
-theorem valuation_le_one_of_valuation_X_le_one {v : Valuation (RatFunc K) Γ}
-    (h : ∀ a : K, a ≠ 0 → v (C a) = 1) (hle : v RatFunc.X ≤ 1) (p : K[X]) : v p ≤ 1 := by
+theorem valuation_le_one_of_valuation_X_le_one (h : ∀ a : K, a ≠ 0 → v (C a) = 1)
+    (hle : v RatFunc.X ≤ 1) (p : K[X]) : v p ≤ 1 := by
   rw [as_sum_range p, RatFunc.coePolynomial, map_sum]
   apply map_sum_le v
   intro i _
@@ -268,14 +267,13 @@ end LinearOrderedCommMonoidWithZero
 
 section LinearOrderedCommGroupWithZero
 
-variable [LinearOrderedCommGroupWithZero Γ]
+variable [LinearOrderedCommGroupWithZero Γ] {v : Valuation (RatFunc K) Γ}
 
 /-- If a valuation `v` is trivial on constants then for every `n : ℕ` the valuation of
 `1 / (monomial n a)` (as an element of the field of rational functions) is equal
 to `(v RatFunc.X) ^ (- n)`. -/
-lemma valuation_inv_monomial_eq_valuation_X_zpow {v : Valuation (RatFunc K) Γ}
-    (hv : ∀ a : K, a ≠ 0 → v (C a) = 1) (n : ℕ) {a : K} (ha : a ≠ 0) :
-    v (1 / monomial n a) = v RatFunc.X ^ (- (n : ℤ)) := by
+lemma valuation_inv_monomial_eq_valuation_X_zpow (hv : ∀ a : K, a ≠ 0 → v (C a) = 1)
+    (n : ℕ) {a : K} (ha : a ≠ 0) : v (1 / monomial n a) = v RatFunc.X ^ (- (n : ℤ)) := by
   simpa using valuation_monomial_eq_valuation_X_pow _ hv n ha
 
 end LinearOrderedCommGroupWithZero
