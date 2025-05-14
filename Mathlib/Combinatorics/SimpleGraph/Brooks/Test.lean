@@ -1,16 +1,14 @@
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Basic
 
-variable {α : Type*} {a : α} (f : Set α → Set α)
+variable {α : Type*} {a : α}
 
-def cardOf (s : Set α) [Fintype (f s)] : ℕ := Fintype.card (f s)
+def Null (f : Set α → Set α) (s : Set α) [Nonempty (f s)] : ℕ := 0
 
-lemma cardOf_set (s : Set α) (h : a ∈ s) [Fintype (f s)] : cardOf f s = Fintype.card (f s) := rfl
+lemma Null_set (f : Set α → Set α) (s : Set α) (_h : a ∈ s) [Nonempty (f s)] : Null f s = 0 := rfl
 
-lemma cardOf_finset (s : Finset α) [Fintype (f s)] (h : a ∈ s) : cardOf f s = Fintype.card (f s) :=
-  cardOf_set f _ h -- failed to synthesize Fintype ↑(f (Membership.mem s.val))
--- cardOf_set f s h -- works
--- cardOf_set f _ (by exact h) -- works
--- rfl -- works
-variable {t : Finset α}
-#check (t : Set α)
-#check (t.val : Multiset α)
+lemma Null_finset (f : Set α → Set α) (s : Finset α) (h : a ∈ s) [Nonempty (f s)] :
+    Null f s = 0 := by
+  exact Null_set f _ h  -- failed to synthesize Nonempty ↑(f (Membership.mem s.val))
+-- exact Null_set f s h            -- works
+-- exact Null_set f _ (by exact h) -- works
+-- rfl                             -- works
