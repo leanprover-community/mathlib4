@@ -25,6 +25,10 @@ instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) :=
 
 instance : BraidedCategory (Type u) := .ofChosenFiniteProducts
 
+lemma types_tensorObj {X Y : Type u} : (X ⊗ Y) = (X × Y) := rfl
+
+lemma types_tensorUnit : 𝟙_ (Type u) = PUnit := rfl
+
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :
     (f ⊗ g) p = (f p.1, g p.2) :=

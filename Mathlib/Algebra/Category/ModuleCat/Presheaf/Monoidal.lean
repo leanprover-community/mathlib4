@@ -57,7 +57,7 @@ noncomputable def tensorObj : PresheafOfModules (R ⋙ forget₂ _ _) where
     rfl) -- `ModuleCat.restrictScalarsId'App_inv_apply` doesn't get picked up due to type mismatch
   map_comp f g := ModuleCat.MonoidalCategory.tensor_ext (by
     intro m₁ m₂
-    dsimp [tensorObjMap]
+    dsimp [tensorObjMap, -ModuleCat.carrier_tensorObj]
     simp)
 
 variable {M₁ M₂ M₃ M₄}
@@ -74,7 +74,7 @@ lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂
 noncomputable def tensorHom (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) : tensorObj M₁ M₃ ⟶ tensorObj M₂ M₄ where
   app X := f.app X ⊗ g.app X
   naturality {X Y} φ := ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₃ ↦ by
-    dsimp
+    dsimp [-ModuleCat.carrier_tensorObj]
     rw [tensorObj_map_tmul]
     -- Need `erw` because of the type mismatch in `map` and the tensor product.
     erw [ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul]

@@ -51,6 +51,9 @@ theorem hom_map_free {X Y : Type u} (f : X → Y) :
 /-- Constructor for elements in the module `(free R).obj X`. -/
 noncomputable abbrev freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
 
+lemma freeMk_def {X : Type u} (x : X) :
+    (freeMk x : (free R).obj X) = Finsupp.single x 1 := rfl
+
 @[ext 1200]
 lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
     (h : ∀ (x : X), f (freeMk x) = g (freeMk x)) :
@@ -150,14 +153,16 @@ def μIso (X Y : Type u) :
 
 @[simp]
 lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
-    (μIso R X Y).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
+    DFunLike.coe (F := TensorProduct R (X →₀ R) (Y →₀ R) →ₗ[R] X ⊗ Y →₀ R)
+      (μIso R X Y).hom.hom (freeMk x ⊗ₜ[R] freeMk y) = freeMk ⟨x, y⟩ := by
   dsimp [μIso, freeMk]
   erw [finsuppTensorFinsupp'_single_tmul_single]
   rw [mul_one]
 
 @[simp]
 lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
-    (μIso R X Y).inv (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
+    DFunLike.coe (F := (X ⊗ Y →₀ R) →ₗ[R] TensorProduct R (X →₀ R) (Y →₀ R))
+      (μIso R X Y).inv.hom (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
   dsimp [μIso, freeMk]
   erw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
@@ -171,26 +176,26 @@ instance : (free R).Monoidal :=
       μIso := μIso R
       μIso_hom_natural_left := fun {X Y} f X' ↦ by
         rw [← cancel_epi (μIso R X X').inv]
-        aesop
+        ext x
+        simp [μIso_inv_freeMk R, μIso_hom_freeMk_tmul_freeMk R]
       μIso_hom_natural_right := fun {X Y} X' f ↦ by
         rw [← cancel_epi (μIso R X' X).inv]
-        aesop
+        ext x
+        simp [μIso_inv_freeMk R, μIso_hom_freeMk_tmul_freeMk R]
       associativity := fun X Y Z ↦ by
         rw [← cancel_epi ((μIso R X Y).inv ▷ _), ← cancel_epi (μIso R _ _).inv]
         ext ⟨⟨x, y⟩, z⟩
-        dsimp
-        rw [μIso_inv_freeMk, MonoidalCategory.whiskerRight_apply, μIso_inv_freeMk,
-          MonoidalCategory.whiskerRight_apply, μIso_hom_freeMk_tmul_freeMk,
-          μIso_hom_freeMk_tmul_freeMk, free_map_apply,
-          CategoryTheory.associator_hom_apply, MonoidalCategory.associator_hom_apply,
-          MonoidalCategory.whiskerLeft_apply, μIso_hom_freeMk_tmul_freeMk,
-          μIso_hom_freeMk_tmul_freeMk]
+        simp [μIso_inv_freeMk R, μIso_hom_freeMk_tmul_freeMk R]
       left_unitality := fun X ↦ by
         rw [← cancel_epi (λ_ _).inv, Iso.inv_hom_id]
-        aesop
+        ext
+        simp [types_tensorUnit, ← freeMk_def, μIso_hom_freeMk_tmul_freeMk R,
+          leftUnitor_hom_apply]
       right_unitality := fun X ↦ by
         rw [← cancel_epi (ρ_ _).inv, Iso.inv_hom_id]
-        aesop }
+        ext
+        simp [types_tensorUnit, ← freeMk_def, μIso_hom_freeMk_tmul_freeMk R,
+          rightUnitor_hom_apply] }
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
