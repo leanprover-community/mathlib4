@@ -199,11 +199,9 @@ def inftyValuation : Valuation (RatFunc Fq) ℤₘ₀ where
 theorem inftyValuation_apply {x : RatFunc Fq} : inftyValuation Fq x = inftyValuationDef Fq x :=
   rfl
 
-@[simp]
 theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
     inftyValuationDef Fq (RatFunc.C k) = Multiplicative.ofAdd (0 : ℤ) := by
-  have hCk : RatFunc.C k ≠ 0 := (map_ne_zero _).mpr hk
-  rw [inftyValuationDef, if_neg hCk, RatFunc.intDegree_C]
+  simp [hk]
 
 @[simp]
 theorem inftyValuation.X : inftyValuationDef Fq RatFunc.X = Multiplicative.ofAdd (1 : ℤ) := by

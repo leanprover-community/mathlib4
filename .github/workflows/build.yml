@@ -69,12 +69,12 @@ jobs:
 
       - name: install Python
         if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
-        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: 3.8
 
       - name: Configure Lean
-        uses: leanprover/lean-action@e18f2df7f0d4f30d11a4b963bff9b1140999480c # 2025-04-22
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
         with:
           auto-config: false
           use-github-cache: false
@@ -118,7 +118,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Configure Lean
-        uses: leanprover/lean-action@e18f2df7f0d4f30d11a4b963bff9b1140999480c # 2025-04-22
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
         with:
           auto-config: false
           use-github-cache: false
@@ -174,9 +174,9 @@ jobs:
 
       - name: build mathlib
         id: build
-        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
+        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
-          linters: gcc
+          linters: lean
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
@@ -211,7 +211,8 @@ jobs:
             cp ../lean-toolchain .
             MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
             lake exe cache get || (sleep 1; lake exe cache get)
-            lake build Plausible ProofWidgets
+            # We need to run `lake build ProofWidgets` here to retrieve ProofWidgets via Reservoir.
+            lake build ProofWidgets
             lake build --no-build Mathlib
           fi
 
@@ -294,15 +295,15 @@ jobs:
 
       - name: test mathlib
         id: test
-        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
+        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
-          linters: gcc
+          linters: lean
           run:
             lake --iofail test
 
       - name: check for unused imports
         id: shake
-        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
+        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
@@ -310,7 +311,7 @@ jobs:
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
+        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
@@ -360,8 +361,6 @@ jobs:
     needs: [style_lint, build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
       - id: PR
         uses: 8BitJonny/gh-get-current-pr@08e737c57a3a4eb24cec6487664b243b77eb5e36 # 3.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
