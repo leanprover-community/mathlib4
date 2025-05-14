@@ -287,7 +287,7 @@ noncomputable def ofBijective {f : A →ₐc[R] B} (hf : Function.Bijective f) :
   __ := AlgEquiv.ofBijective (f : A →ₐ[R] B) hf
 
 @[simp]
-theorem coe_ofBijective {f : A →ₐc[R] B} {hf : Function.Bijective f} :
+theorem coe_ofBijective {f : A →ₐc[R] B} (hf : Function.Bijective f) :
     (BialgEquiv.ofBijective hf : A → B) = f :=
   rfl
 
