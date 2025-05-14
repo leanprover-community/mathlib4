@@ -349,7 +349,7 @@ theorem exists_one_lt_lt_one {n : ℕ} {v : Fin (n + 2) → AbsoluteValue F ℝ}
     · refine ⟨a, ha.1, fun j hj => ?_⟩
       by_cases hj' : j = Fin.last (n + 2)
       · exact hj' ▸ ha₀
-      · exact ha.2 (Fin.castPred _ (ne_eq _ _ ▸  hj')) <| mt (Fin.castPred_eq_zero _) hj
+      · exact ha.2 (Fin.castPred _ (ne_eq _ _ ▸  hj')) <| mt (Fin.castPred_eq_zero _).1 hj
     -- If `v last = 1` then this is given by `exists_one_lt_lt_one_lt_one_of_eq_one` with
     -- `w = v last`.
     · by_cases ha₁ : v (Fin.last _) a = 1
@@ -357,7 +357,7 @@ theorem exists_one_lt_lt_one {n : ℕ} {v : Fin (n + 2) → AbsoluteValue F ℝ}
           (v := fun i : Fin (n + 2) => v i.castSucc) ha.1 ha.2 ha₁ hb.1 hb.2
         refine ⟨k, hk.1, fun j hj => ?_⟩
         by_cases h : j ≠ Fin.last (n + 2)
-        · exact ne_eq _ _ ▸ hk.2.1 (j.castPred h) <| mt (Fin.castPred_eq_zero _) hj
+        · exact ne_eq _ _ ▸ hk.2.1 (j.castPred h) <| mt (Fin.castPred_eq_zero _).1 hj
         · exact not_ne_iff.1 h ▸ hk.2.2
       -- The last cast `1 < v last` is given by `exists_one_lt_lt_one_lt_one_of_one_lt` with
       -- `w = v last`.
