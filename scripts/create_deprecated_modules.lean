@@ -243,7 +243,7 @@ If, instead, you are looking for a file to be deprecated, uncomment the
 
 You can play around with `10`: it represents the number of past commits that the command considers
 to find files that existed then and do not exist now.
-The exact valueis not too important: we are essentially after a file name.
+The exact value is not important: we are just looking for a file name.
 Once you found what you were looking for, click on all the relevant `Try these:` suggestions
 and continue following the instructions on these commands.
 -/
