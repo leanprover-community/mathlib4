@@ -65,9 +65,14 @@ open Set
 
 /-- A multigraph with vertex set `vertexSet : Set α` and edge set `edgeSet : Set β`,
 as described by a predicate `IsLink` describing whether an edge `e : β` has ends `x` and `y`.
-For definitional reasons, we include `edgeSet` as a structure field
-even though it can be inferred from `IsLink` via `edge_mem_iff_exists_isLink`;
-The default value for `edgeSet` infers its value in this way.
+
+The `edgeSet` structure field can be inferred from `IsLink`
+via `edge_mem_iff_exists_isLink` (and this structure provides default values
+for `edgeSet` and `edge_mem_iff_exists_isLink` that use `IsLink`).
+While the field is not strictly necessary, when defining a graph we often
+immediately know what the edge set should be,
+and furthermore having `edgeSet` separate can be convenient for
+definitional equality reasons.
 -/
 structure Graph (α β : Type*) where
   /-- The vertex set. -/
