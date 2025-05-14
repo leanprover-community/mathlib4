@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 
-import Mathlib.LinearAlgebra.Finsupp.Pi
 import Mathlib.RingTheory.MvPowerSeries.Substitution
 import Mathlib.RingTheory.PowerSeries.Evaluation
-import Mathlib.RingTheory.PowerSeries.Basic
 
 /-! # Substitutions in power series
 
@@ -32,7 +30,7 @@ variable
 
 open MvPowerSeries.WithPiTopology
 
-/-- (Possibly multivariate) power series which can be substituted in a `PowerSeries` -/
+/-- (Possibly multivariate) power series which can be substituted in a `PowerSeries`. -/
 abbrev HasSubst (a : MvPowerSeries τ S) : Prop :=
   IsNilpotent (MvPowerSeries.constantCoeff τ S a)
 
@@ -62,7 +60,7 @@ theorem HasSubst.of_constantCoeff_zero {a : MvPowerSeries τ S}
   simp [HasSubst, ha]
 
 /-- A variant of `HasSubst.of_constantCoeff_zero` for `PowerSeries`
-to avoid the expansion of `Unit` -/
+to avoid the expansion of `Unit`. -/
 theorem HasSubst.of_constantCoeff_zero' {a : PowerSeries S}
     (ha : PowerSeries.constantCoeff S a = 0) : HasSubst a :=
   HasSubst.of_constantCoeff_zero ha
@@ -73,7 +71,7 @@ protected theorem HasSubst.X (t : τ) :
 
 /-- The univariate `X : R⟦X⟧` can be substituted in power series
 
-This lemma is added because `simp` doesn't find it from `HasSubst.X` -/
+This lemma is added because `simp` doesn't find it from `HasSubst.X`. -/
 protected theorem HasSubst.X' : HasSubst (X : R⟦X⟧) :=
   HasSubst.X _
 
@@ -87,7 +85,7 @@ protected theorem HasSubst.monomial {n : τ →₀ ℕ} (hn : n ≠ 0) (s : S) :
   rw [← MvPowerSeries.coeff_zero_eq_constantCoeff, MvPowerSeries.coeff_monomial,
     if_neg hn.symm]
 
-/-- A variant of `HasSubst.monomial` to avoid the expansion of `Unit` -/
+/-- A variant of `HasSubst.monomial` to avoid the expansion of `Unit`. -/
 protected theorem HasSubst.monomial' {n : ℕ} (hn : n ≠ 0) (s : S) :
     HasSubst (monomial S n s) :=
   HasSubst.monomial (Finsupp.single_ne_zero.mpr hn) s
@@ -96,38 +94,40 @@ theorem HasSubst.zero : HasSubst (0 : MvPowerSeries τ R) := by
   rw [hasSubst_iff]
   exact MvPowerSeries.HasSubst.zero
 
-/-- A variant of `HasSubst.zero` to avoid the expansion of `Unit` -/
+/-- A variant of `HasSubst.zero` to avoid the expansion of `Unit`. -/
 theorem HasSubst.zero' : HasSubst (0 : PowerSeries R) :=
   PowerSeries.HasSubst.zero
 
-theorem HasSubst.add {f g : MvPowerSeries τ R} (hf : HasSubst f) (hg : HasSubst g) :
-    HasSubst (f + g) := by
-  simp only [HasSubst, map_add]
-  exact Commute.isNilpotent_add (Commute.all _ _) hf hg
+variable {f g : MvPowerSeries τ R}
 
-theorem HasSubst.mul_left {f g : MvPowerSeries τ R} (hf : HasSubst f) :
+theorem HasSubst.add (hf : HasSubst f) (hg : HasSubst g) :
+    HasSubst (f + g) :=
+  (Commute.all _ _).isNilpotent_add hf hg
+
+
+theorem HasSubst.mul_left (hf : HasSubst f) :
     HasSubst (f * g) := by
   simp only [HasSubst, map_mul]
-  exact Commute.isNilpotent_mul_left (Commute.all _ _) hf
+  exact (Commute.all _ _).isNilpotent_mul_left hf
 
-theorem HasSubst.mul_right {f g : MvPowerSeries τ R} (hf : HasSubst f) :
+theorem HasSubst.mul_right (hf : HasSubst f) :
     HasSubst (g * f) := by
   simp only [HasSubst, map_mul]
-  exact Commute.isNilpotent_mul_right (Commute.all _ _) hf
+  exact (Commute.all _ _).isNilpotent_mul_right hf
 
 theorem HasSubst.smul (r : MvPowerSeries τ S) {a : MvPowerSeries τ S}
     (ha : HasSubst a) :
   HasSubst (r • a) := ha.mul_right
 
-/-- Families of `PowerSeries` that can be substituted, as an `Ideal` -/
+/-- Families of `PowerSeries` that can be substituted, as an `Ideal`. -/
 noncomputable def HasSubst.ideal : Ideal (MvPowerSeries τ S) where
   carrier := setOf HasSubst
   add_mem' := HasSubst.add
   zero_mem' := HasSubst.zero
   smul_mem' := HasSubst.smul
 
-/-- A more general version of `HasSubst.smul` -/
-theorem HasSubst.smul' (a : A) {f : MvPowerSeries τ R} (hf : HasSubst f) :
+/-- A more general version of `HasSubst.smul`. -/
+theorem HasSubst.smul' (a : A) (hf : HasSubst f) :
     HasSubst (a • f) := by
   simp only [HasSubst, MvPowerSeries.constantCoeff_smul]
   exact IsNilpotent.smul hf _
@@ -141,14 +141,14 @@ theorem HasSubst.smul_X' (a : A) : HasSubst (a • X : R⟦X⟧) :=
 
 variable {υ : Type*} {T : Type*} [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T]
 
-/-- Substitution of power series into a power series -/
+/-- Substitution of power series into a power series. -/
 noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :
     MvPowerSeries τ S :=
   MvPowerSeries.subst (fun _ ↦ a) f
 
 variable {a : MvPowerSeries τ S} {b : S⟦X⟧}
 
-/-- Substitution of power series into a power series -/
+/-- Substitution of power series into a power series, as an `AlgHom`. -/
 noncomputable def substAlgHom (ha : HasSubst a) :
     PowerSeries R →ₐ[R] MvPowerSeries τ S :=
   MvPowerSeries.substAlgHom ha.const
