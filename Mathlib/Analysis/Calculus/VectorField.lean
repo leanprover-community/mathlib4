@@ -116,8 +116,10 @@ lemma lieBracketWithin_fmul_right {f : E → 𝕜}
     (hW : DifferentiableWithinAt 𝕜 W s x)
     (hs: UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 V (fun y => f y • W y) s x =
-      (fderivWithin 𝕜 f s x) (V x) • (W x)  + (f • lieBracketWithin 𝕜 V W s) x := by
-  simp [lieBracketWithin, fderivWithin_smul hs hf hW, smul_sub, add_comm, add_sub_assoc]
+      (fderivWithin 𝕜 f s x) (V x) • (W x)  + (f x) • lieBracketWithin 𝕜 V W s x := by
+  rw [lieBracketWithin, lieBracketWithin, fderivWithin_smul hs hf hW, ContinuousLinearMap.add_apply]
+  rw [map_smul, ContinuousLinearMap.smulRight_apply, add_comm, ContinuousLinearMap.coe_smul']
+  simp only [Pi.smul_apply, smul_sub, add_sub_assoc]
 
 /--
 Product rule for Lie Brackets: given two vector fields `V W : E → E` and a function `f : E → 𝕜`,
@@ -127,11 +129,39 @@ lemma lieBracket_fmul_right {f : E → 𝕜}
     (hf : DifferentiableAt 𝕜 f x)
     (hW : DifferentiableAt 𝕜 W x) :
     lieBracket 𝕜 V (fun y => f y • W y) x =
-      (fderiv 𝕜 f x) (V x) • (W x)  + (f • lieBracket 𝕜 V W) x := by
+      (fderiv 𝕜 f x) (V x) • (W x)  + (f x) • lieBracket 𝕜 V W x := by
   simp only [← differentiableWithinAt_univ, ← lieBracketWithin_univ] at hW ⊢
   simp only [← differentiableWithinAt_univ, ← lieBracketWithin_univ] at hf ⊢
   rw [fderiv]
   exact lieBracketWithin_fmul_right hf hW uniqueDiffWithinAt_univ
+
+/--
+Product rule for Lie Brackets: given two vector fields `V W : E → E` and a function `f : E → 𝕜`,
+we have `[f • V, W] = - (df W) • V + f • [V, W]`
+-/
+lemma lieBracketWithin_fmul_left {f : E → 𝕜}
+    (hf : DifferentiableWithinAt 𝕜 f s x)
+    (hV : DifferentiableWithinAt 𝕜 V s x)
+    (hs: UniqueDiffWithinAt 𝕜 s x) :
+    lieBracketWithin 𝕜 (fun y => f y • V y) W s x =
+      - (fderivWithin 𝕜 f s x) (W x) • (V x)  + (f x) • lieBracketWithin 𝕜 V W s x := by
+  rw [lieBracketWithin_swap, Pi.neg_apply, lieBracketWithin_fmul_right hf hV hs, lieBracketWithin_swap]
+  rw [neg_add, Pi.neg_apply, smul_neg, neg_neg, neg_smul]
+
+
+/--
+Product rule for Lie Brackets: given two vector fields `V W : E → E` and a function `f : E → 𝕜`,
+we have `[f • V, W] = - (df W) • V + f • [V, W]`
+-/
+lemma lieBracket_fmul_left {f : E → 𝕜}
+    (hf : DifferentiableAt 𝕜 f x)
+    (hV : DifferentiableAt 𝕜 V x) :
+    lieBracket 𝕜 (fun y => f y • V y) W x =
+      - (fderiv 𝕜 f x) (W x) • (V x)  + (f x) • lieBracket 𝕜 V W x := by
+  simp only [← differentiableWithinAt_univ, ← lieBracketWithin_univ] at hV ⊢
+  simp only [← differentiableWithinAt_univ, ← lieBracketWithin_univ] at hf ⊢
+  rw [fderiv]
+  exact lieBracketWithin_fmul_left hf hV uniqueDiffWithinAt_univ
 
 lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
     (hV₁ : DifferentiableWithinAt 𝕜 V₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
