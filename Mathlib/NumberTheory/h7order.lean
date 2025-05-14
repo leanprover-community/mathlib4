@@ -83,7 +83,7 @@ lemma analytic_iter_deriv (k : ℕ) (f : ℂ → ℂ) z (hf : AnalyticAt ℂ f z
 
 -- iteratedDeriv_one
 
-lemma test (p : A → Prop) :
+lemma unfilter (p : A → Prop) :
     (∀ᶠ z in f, p z) ↔ ∃ U ∈ f, ∀ z ∈ U, p z := by {
       unfold Filter.Eventually
       constructor
@@ -99,6 +99,12 @@ lemma test (p : A → Prop) :
         exact Filter.mem_of_superset hU hUp
     }
 
+lemma test1 (f g : ℂ → ℂ) (hf : AnalyticAt ℂ f z) (hg : AnalyticAt ℂ g z):
+    deriv (fun z => f z + g z) z = deriv f z + deriv g z := by
+  refine deriv_add ?_ ?_
+  · exact AnalyticAt.differentiableAt hf
+  · exact AnalyticAt.differentiableAt hg
+
 -- lemma: if the order of f is n > 0, then the order of the *single* derivative of f is n - 1
 lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f z₀)
   (hfdev : AnalyticAt ℂ (deriv f) z₀) (n : ℕ) :
@@ -113,7 +119,24 @@ lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
     · sorry
     · constructor
       · sorry
-      · sorry
+      · rw [unfilter] at *
+        rcases hexp with ⟨U, hU, hUf⟩
+        use U
+        constructor
+        · exact hU
+        · intros z Hz
+          have := hUf z Hz
+
+
+
+
+          have : f = fun z => (z - z₀) ^ n • g z := by
+            ext z'
+            simp at hUf
+
+            sorry
+
+        sorry
 
   }
 
