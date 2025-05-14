@@ -3,7 +3,6 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 -/
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Sym.Card
@@ -128,44 +127,6 @@ theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).
 
 end EdgeFinset
 
-theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
-    [Fintype (G.deleteEdges s).edgeSet] :
-    (G.deleteEdges s).edgeFinset = G.edgeFinset \ s := by
-  ext e
-  simp [edgeSet_deleteEdges]
-
-section DeleteFar
-
-variable {𝕜 : Type*} [Ring 𝕜] [PartialOrder 𝕜]
-  [Fintype G.edgeSet] {p : SimpleGraph V → Prop} {r r₁ r₂ : 𝕜}
-
-/-- A graph is `r`-*delete-far* from a property `p` if we must delete at least `r` edges from it to
-get a graph with the property `p`. -/
-def DeleteFar (p : SimpleGraph V → Prop) (r : 𝕜) : Prop :=
-  ∀ ⦃s⦄, s ⊆ G.edgeFinset → p (G.deleteEdges s) → r ≤ #s
-
-variable {G}
-
-theorem deleteFar_iff [Fintype (Sym2 V)] :
-    G.DeleteFar p r ↔ ∀ ⦃H : SimpleGraph _⦄ [DecidableRel H.Adj],
-      H ≤ G → p H → r ≤ #G.edgeFinset - #H.edgeFinset := by
-  classical
-  refine ⟨fun h H _ hHG hH ↦ ?_, fun h s hs hG ↦ ?_⟩
-  · have := h (sdiff_subset (t := H.edgeFinset))
-    simp only [deleteEdges_sdiff_eq_of_le hHG, edgeFinset_mono hHG, card_sdiff,
-      card_le_card, coe_sdiff, coe_edgeFinset, Nat.cast_sub] at this
-    exact this hH
-  · classical
-    simpa [card_sdiff hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
-      card_le_card hs] using h (G.deleteEdges_le s) hG
-
-alias ⟨DeleteFar.le_card_sub_card, _⟩ := deleteFar_iff
-
-theorem DeleteFar.mono (h : G.DeleteFar p r₂) (hr : r₁ ≤ r₂) : G.DeleteFar p r₁ := fun _ hs hG =>
-  hr.trans <| h hs hG
-
-end DeleteFar
-
 section FiniteAt
 
 /-!
@@ -255,6 +216,10 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
   induction e
   simp [mk'_mem_incidenceSet_iff]
 
+theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
+    G.incidenceFinset v ⊆ G.edgeFinset :=
+  Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
+
 variable {G v}
 
 /-- If `G ≤ H` then `G.degree v ≤ H.degree v` for any vertex `v`. -/
@@ -310,7 +275,7 @@ theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
 
 @[simp]
 theorem complete_graph_degree [DecidableEq V] (v : V) :
-    (⊤ : SimpleGraph V).degree v = Fintype.card V - 1 := by
+    (completeGraph V).degree v = Fintype.card V - 1 := by
   simp_rw [degree, neighborFinset_eq_filter, top_adj, filter_ne]
   rw [card_erase_of_mem (mem_univ v), card_univ]
 
@@ -475,9 +440,7 @@ lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
 instance : DecidablePred (· ∈ G.support) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
 
-variable [DecidableEq V]
-
-theorem map_edgeFinset_induce :
+theorem map_edgeFinset_induce [DecidableEq V] :
     (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map
       = G.edgeFinset ∩ s.toFinset.sym2 := by
   simp_rw [Finset.ext_iff, Sym2.forall, mem_inter, mk_mem_sym2_iff, mem_map, Sym2.exists,
@@ -495,6 +458,7 @@ theorem map_edgeFinset_induce :
 
 theorem map_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
     (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map = G.edgeFinset := by
+  classical
   simpa [map_edgeFinset_induce] using edgeFinset_subset_sym2_of_support_subset h
 
 /-- If the support of the simple graph `G` is a subset of the set `s`, then the induced subgraph of
@@ -507,13 +471,14 @@ theorem card_edgeFinset_induce_support :
     #(G.induce G.support).edgeFinset = #G.edgeFinset :=
   card_edgeFinset_induce_of_support_subset subset_rfl
 
-theorem map_neighborFinset_induce (v : s) :
+theorem map_neighborFinset_induce [DecidableEq V] (v : s) :
     ((G.induce s).neighborFinset v).map (.subtype s)
       = G.neighborFinset v ∩ s.toFinset := by
   ext; simp [Set.mem_def]
 
 theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
     ((G.induce s).neighborFinset v).map (.subtype s) = G.neighborFinset v := by
+  classical
   rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
     ← map_neighborFinset_induce v] at h
 

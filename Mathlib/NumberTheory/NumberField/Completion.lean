@@ -6,7 +6,7 @@ Authors: Salvatore Mercuri
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Field.WithAbs
-import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # The completion of a number field at an infinite place
@@ -32,10 +32,10 @@ field at an infinite place is then derived in this file, as `InfinitePlace` is a
  - `NumberField.InfinitePlace.Completion.extensionEmbeddingOfIsReal` : if the infinite place `v`
   is real, then this extends the embedding `v.embedding_of_isReal : K →+* ℝ` to
   `v.Completion →+* ℝ`.
- - `NumberField.InfinitePlace.Completion.equiv_real_of_isReal` : the ring isomorphism
+ - `NumberField.InfinitePlace.Completion.ringEquivRealOfIsReal` : the ring isomorphism
   `v.Completion ≃+* ℝ` when `v` is a real infinite place; the forward direction of this is
   `extensionEmbeddingOfIsReal`.
- - `NumberField.InfinitePlace.Completion.equiv_complex_of_isComplex` : the ring isomorphism
+ - `NumberField.InfinitePlace.Completion.ringEquivComplexOfIsComplex` : the ring isomorphism
   `v.Completion ≃+* ℂ` when `v` is a complex infinite place; the forward direction of this is
   `extensionEmbedding`.
 

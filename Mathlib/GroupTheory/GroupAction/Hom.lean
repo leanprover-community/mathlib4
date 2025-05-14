@@ -312,7 +312,7 @@ def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' �
 @[to_additive]
 lemma inverse_eq_inverse' (f : X →[M] Y₁) (g : Y₁ → X)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
-  inverse f g h₁ h₂ =  inverse' f g (congrFun rfl) h₁ h₂ := by
+  inverse f g h₁ h₂ = inverse' f g (congrFun rfl) h₁ h₂ := by
   rfl
 
 @[to_additive]
@@ -491,7 +491,7 @@ variable {F : Type*} [FunLike F A B]
 def _root_.DistribMulActionSemiHomClass.toDistribMulActionHom
     [DistribMulActionSemiHomClass F φ A B]
     (f : F) : A →ₑ+[φ] B :=
-  { (f : A →+ B),  (f : A →ₑ[φ] B) with }
+  { (f : A →+ B), (f : A →ₑ[φ] B) with }
 
 /-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom`
 via `MulActionHomClass.toMulActionHom`. -/
@@ -645,20 +645,8 @@ variable (S : Type*) [Semiring S] [MulSemiringAction N S]
 variable (S' : Type*) [Ring S'] [MulSemiringAction N S']
 variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 
--- variable {R S M' N'}
--- variable [AddMonoid M'] [DistribMulAction R M']
--- variable [AddMonoid N'] [DistribMulAction S N']
-
 /-- Equivariant ring homomorphisms. -/
 structure MulSemiringActionHom extends R →ₑ+[φ] S, R →+* S
-
-/-
-/-- Equivariant ring homomorphism -/
-abbrev MulSemiringActionHom
-  (M : Type*) [Monoid M]
-  (R : Type*) [Semiring R] [MulSemiringAction M R]
-  (S : Type*) [Semiring S] [MulSemiringAction M S]:= MulSemiringActionHom (MonoidHom.id M) R S
--/
 
 /-- Reinterpret an equivariant ring homomorphism as a ring homomorphism. -/
 add_decl_doc MulSemiringActionHom.toRingHom
@@ -722,7 +710,7 @@ variable {F : Type*} [FunLike F R S]
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
     [MulSemiringActionSemiHomClass F φ R S]
     (f : F) : R →ₑ+*[φ] S :=
- { (f : R →+* S),  (f : R →ₑ+[φ] S) with }
+ { (f : R →+* S), (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/

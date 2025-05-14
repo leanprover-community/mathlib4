@@ -24,144 +24,6 @@ section LinearOrderedSemifield
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α} {m n : ℤ}
 
 /-!
-### Relating one division with another term.
--/
-
-@[deprecated lt_div_iff₀ (since := "2024-10-02")]
-theorem lt_div_iff (hc : 0 < c) : a < b / c ↔ a * c < b := lt_div_iff₀ hc
-
-@[deprecated lt_div_iff₀' (since := "2024-10-02")]
-theorem lt_div_iff' (hc : 0 < c) : a < b / c ↔ c * a < b := lt_div_iff₀' hc
-
-@[deprecated div_lt_iff₀ (since := "2024-10-02")]
-theorem div_lt_iff (hc : 0 < c) : b / c < a ↔ b < a * c := div_lt_iff₀ hc
-
-@[deprecated div_lt_iff₀' (since := "2024-10-02")]
-theorem div_lt_iff' (hc : 0 < c) : b / c < a ↔ b < c * a := div_lt_iff₀' hc
-
-@[deprecated inv_mul_le_iff₀ (since := "2024-10-02")]
-theorem inv_mul_le_iff (h : 0 < b) : b⁻¹ * a ≤ c ↔ a ≤ b * c := inv_mul_le_iff₀ h
-
-@[deprecated inv_mul_le_iff₀' (since := "2024-10-02")]
-theorem inv_mul_le_iff' (h : 0 < b) : b⁻¹ * a ≤ c ↔ a ≤ c * b := inv_mul_le_iff₀' h
-
-@[deprecated mul_inv_le_iff₀' (since := "2024-10-02")]
-theorem mul_inv_le_iff (h : 0 < b) : a * b⁻¹ ≤ c ↔ a ≤ b * c := mul_inv_le_iff₀' h
-
-@[deprecated mul_inv_le_iff₀ (since := "2024-10-02")]
-theorem mul_inv_le_iff' (h : 0 < b) : a * b⁻¹ ≤ c ↔ a ≤ c * b := mul_inv_le_iff₀ h
-
-@[deprecated inv_mul_lt_iff₀ (since := "2024-10-02")]
-theorem inv_mul_lt_iff (h : 0 < b) : b⁻¹ * a < c ↔ a < b * c := inv_mul_lt_iff₀ h
-
-@[deprecated inv_mul_lt_iff₀' (since := "2024-10-02")]
-theorem inv_mul_lt_iff' (h : 0 < b) : b⁻¹ * a < c ↔ a < c * b := inv_mul_lt_iff₀' h
-
-@[deprecated mul_inv_lt_iff₀' (since := "2024-10-02")]
-theorem mul_inv_lt_iff (h : 0 < b) : a * b⁻¹ < c ↔ a < b * c := mul_inv_lt_iff₀' h
-
-@[deprecated mul_inv_lt_iff₀ (since := "2024-10-02")]
-theorem mul_inv_lt_iff' (h : 0 < b) : a * b⁻¹ < c ↔ a < c * b := mul_inv_lt_iff₀ h
-
-@[deprecated inv_le_iff_one_le_mul₀ (since := "2024-10-03")]
-theorem inv_pos_le_iff_one_le_mul (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ b * a := inv_le_iff_one_le_mul₀ ha
-
-@[deprecated inv_le_iff_one_le_mul₀' (since := "2024-10-03")]
-theorem inv_pos_le_iff_one_le_mul' (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ a * b := inv_le_iff_one_le_mul₀' ha
-
-@[deprecated inv_lt_iff_one_lt_mul₀ (since := "2024-10-03")]
-theorem inv_pos_lt_iff_one_lt_mul (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := inv_lt_iff_one_lt_mul₀ ha
-
-@[deprecated inv_lt_iff_one_lt_mul₀' (since := "2024-10-03")]
-theorem inv_pos_lt_iff_one_lt_mul' (ha : 0 < a) : a⁻¹ < b ↔ 1 < a * b := inv_lt_iff_one_lt_mul₀' ha
-
-/-- One direction of `div_le_iff` where `b` is allowed to be `0` (but `c` must be nonnegative) -/
-@[deprecated div_le_of_le_mul₀ (since := "2024-10-03")]
-theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * b) : a / b ≤ c :=
-  div_le_of_le_mul₀ hb hc h
-
-/-- One direction of `div_le_iff` where `c` is allowed to be `0` (but `b` must be nonnegative) -/
-@[deprecated mul_le_of_le_div₀ (since := "2024-10-03")]
-lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c) : a * c ≤ b :=
-  mul_le_of_le_div₀ hb hc h
-
-@[deprecated div_le_one_of_le₀ (since := "2024-10-03")]
-theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 := div_le_one_of_le₀ h hb
-
-@[deprecated mul_inv_le_one_of_le₀ (since := "2024-10-03")]
-lemma mul_inv_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a * b⁻¹ ≤ 1 := mul_inv_le_one_of_le₀ h hb
-
-@[deprecated inv_mul_le_one_of_le₀ (since := "2024-10-03")]
-lemma inv_mul_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 := inv_mul_le_one_of_le₀ h hb
-
-/-!
-### Bi-implications of inequalities using inversions
--/
-
-@[deprecated inv_anti₀ (since := "2024-10-05")]
-theorem inv_le_inv_of_le (ha : 0 < a) (h : a ≤ b) : b⁻¹ ≤ a⁻¹ := inv_anti₀ ha h
-
-/-- See `inv_le_inv_of_le` for the implication from right-to-left with one fewer assumption. -/
-@[deprecated inv_le_inv₀ (since := "2024-10-05")]
-theorem inv_le_inv (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := inv_le_inv₀ ha hb
-
-/-- In a linear ordered field, for positive `a` and `b` we have `a⁻¹ ≤ b ↔ b⁻¹ ≤ a`.
-See also `inv_le_of_inv_le` for a one-sided implication with one fewer assumption. -/
-@[deprecated inv_le_comm₀ (since := "2024-10-05")]
-theorem inv_le (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b ↔ b⁻¹ ≤ a := inv_le_comm₀ ha hb
-
-@[deprecated inv_le_of_inv_le₀ (since := "2024-10-05")]
-theorem inv_le_of_inv_le (ha : 0 < a) (h : a⁻¹ ≤ b) : b⁻¹ ≤ a := inv_le_of_inv_le₀ ha h
-
-@[deprecated le_inv_comm₀ (since := "2024-10-05")]
-theorem le_inv (ha : 0 < a) (hb : 0 < b) : a ≤ b⁻¹ ↔ b ≤ a⁻¹ := le_inv_comm₀ ha hb
-
-/-- See `inv_lt_inv_of_lt` for the implication from right-to-left with one fewer assumption. -/
-@[deprecated inv_lt_inv₀ (since := "2024-10-05")]
-theorem inv_lt_inv (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b⁻¹ ↔ b < a := inv_lt_inv₀ ha hb
-
-@[deprecated inv_strictAnti₀ (since := "2024-10-05")]
-theorem inv_lt_inv_of_lt (hb : 0 < b) (h : b < a) : a⁻¹ < b⁻¹ := inv_strictAnti₀ hb h
-
-/-- In a linear ordered field, for positive `a` and `b` we have `a⁻¹ < b ↔ b⁻¹ < a`.
-See also `inv_lt_of_inv_lt` for a one-sided implication with one fewer assumption. -/
-@[deprecated inv_lt_comm₀ (since := "2024-10-05")]
-theorem inv_lt (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b ↔ b⁻¹ < a := inv_lt_comm₀ ha hb
-
-@[deprecated inv_lt_of_inv_lt₀ (since := "2024-10-05")]
-theorem inv_lt_of_inv_lt (ha : 0 < a) (h : a⁻¹ < b) : b⁻¹ < a := inv_lt_of_inv_lt₀ ha h
-
-@[deprecated lt_inv_comm₀ (since := "2024-10-05")]
-theorem lt_inv (ha : 0 < a) (hb : 0 < b) : a < b⁻¹ ↔ b < a⁻¹ := lt_inv_comm₀ ha hb
-
-@[deprecated inv_lt_one_of_one_lt₀ (since := "2024-10-05")]
-theorem inv_lt_one (ha : 1 < a) : a⁻¹ < 1 := inv_lt_one_of_one_lt₀ ha
-
-@[deprecated one_lt_inv₀ (since := "2024-10-05")]
-theorem one_lt_inv (h₁ : 0 < a) (h₂ : a < 1) : 1 < a⁻¹ := (one_lt_inv₀ h₁).2 h₂
-
-@[deprecated inv_le_one_of_one_le₀ (since := "2024-10-05")]
-theorem inv_le_one (ha : 1 ≤ a) : a⁻¹ ≤ 1 := inv_le_one_of_one_le₀ ha
-
-@[deprecated one_le_inv₀ (since := "2024-10-05")]
-theorem one_le_inv (h₁ : 0 < a) (h₂ : a ≤ 1) : 1 ≤ a⁻¹ := (one_le_inv₀ h₁).2 h₂
-
-@[deprecated inv_lt_one₀ (since := "2024-10-05")]
-theorem inv_lt_one_iff_of_pos (h₀ : 0 < a) : a⁻¹ < 1 ↔ 1 < a := inv_lt_one₀ h₀
-
-@[deprecated inv_lt_one_iff₀ (since := "2024-10-05")]
-theorem inv_lt_one_iff : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := inv_lt_one_iff₀
-
-@[deprecated one_lt_inv_iff₀ (since := "2024-10-05")]
-theorem one_lt_inv_iff : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 := one_lt_inv_iff₀
-
-@[deprecated inv_le_one_iff₀ (since := "2024-10-05")]
-theorem inv_le_one_iff : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := inv_le_one_iff₀
-
-@[deprecated one_le_inv_iff₀ (since := "2024-10-05")]
-theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 := one_le_inv_iff₀
-
-/-!
 ### Relating two divisions.
 -/
 
@@ -432,6 +294,25 @@ theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
 theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
+/-! ### Results about `IsLUB` -/
+
+
+theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
+    IsLUB ((fun b => a * b) '' s) (a * b) := by
+  obtain ha | rfl := ha.lt_or_eq
+  · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
+  · simp_rw [zero_mul]
+    obtain rfl | ne := s.eq_empty_or_nonempty
+    · simp only [Set.image_empty, isLUB_empty_iff] at hs ⊢
+      have hb := hs (b + b)
+      rw [le_add_iff_nonneg_right] at hb
+      exact hs.mono hb
+    rw [ne.image_const]
+    exact isLUB_singleton
+
+theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
+    IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+
 end LinearOrderedSemifield
 
 section
@@ -691,22 +572,6 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   convert (one_div a).le.trans (inv_anti₀ zero_lt_two a2) using 1
   -- show `1 - 1 / 2 = 1 / 2`.
   rw [sub_eq_iff_eq_add, ← two_mul, mul_inv_cancel₀ two_ne_zero]
-
-/-! ### Results about `IsLUB` -/
-
-
--- TODO: Generalize to `LinearOrderedSemifield`
-theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => a * b) '' s) (a * b) := by
-  rcases lt_or_eq_of_le ha with (ha | rfl)
-  · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
-  · simp_rw [zero_mul]
-    rw [hs.nonempty.image_const]
-    exact isLUB_singleton
-
--- TODO: Generalize to `LinearOrderedSemifield`
-theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
 /-! ### Miscellaneous lemmas -/
 

@@ -233,7 +233,7 @@ theorem toFinsupp_pow (a : R[X]) (n : ℕ) : (a ^ n).toFinsupp = a.toFinsupp ^ n
   cases a
   rw [← ofFinsupp_pow]
 
-theorem _root_.IsSMulRegular.polynomial {S : Type*} [Monoid S] [DistribMulAction S R] {a : S}
+theorem _root_.IsSMulRegular.polynomial {S : Type*} [SMulZeroClass S R] {a : S}
     (ha : IsSMulRegular R a) : IsSMulRegular R[X] a
   | ⟨_x⟩, ⟨_y⟩, h => congr_arg _ <| ha.finsupp (Polynomial.ofFinsupp.inj h)
 
@@ -725,14 +725,14 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 
-theorem addHom_ext {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
+theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
   AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <| by
     rintro p ⟨n, a, rfl⟩
     exact h n a
 
 @[ext high]
-theorem addHom_ext' {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
+theorem addHom_ext' {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
   addHom_ext fun n => DFunLike.congr_fun (h n)
 

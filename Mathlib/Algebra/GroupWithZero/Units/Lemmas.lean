@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Tactic.MinImports
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -32,9 +31,6 @@ lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G₀ 
       rw [← one_mul (f (t * 0)), mul_zero] at this
       exact (h.mul_right_cancel this).symm
     · exact ⟨⟨a, a⁻¹, mul_inv_cancel₀ h, inv_mul_cancel₀ h⟩, rfl⟩
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_exists_map_ne_one := isLocalHom_of_exists_map_ne_one
 
 instance [GroupWithZero G₀] [FunLike F G₀ M₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial M₀]
     (f : F) : IsLocalHom f :=

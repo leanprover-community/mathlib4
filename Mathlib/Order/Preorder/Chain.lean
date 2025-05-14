@@ -7,7 +7,6 @@ import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.Directed
 import Mathlib.Order.Hom.Set
-import Mathlib.Tactic.MinImports
 
 /-!
 # Chains and flags
@@ -311,11 +310,12 @@ variable [PartialOrder α]
 
 theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt_of_le
 
-instance [DecidableLE α] [DecidableLT α] (s : Flag α) : LinearOrder s :=
+instance [DecidableLE α] [DecidableLT α] [DecidableEq α] (s : Flag α) : LinearOrder s :=
   { Subtype.partialOrder _ with
     le_total := fun a b => s.le_or_le a.2 b.2
-    decidableLE := Subtype.decidableLE
-    decidableLT := Subtype.decidableLT }
+    toDecidableLE := Subtype.decidableLE
+    toDecidableLT := Subtype.decidableLT
+    toDecidableEq := Subtype.instDecidableEq }
 
 end PartialOrder
 

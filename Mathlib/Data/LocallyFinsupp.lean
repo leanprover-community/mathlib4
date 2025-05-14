@@ -102,6 +102,20 @@ lemma apply_eq_zero_of_not_mem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     D z = 0 := nmem_support.mp fun a ↦ hz (D.supportWithinDomain a)
 
 /--
+On a T1 space, the support of a function with locally finite support within `U` is discrete within
+`U`.
+-/
+theorem eq_zero_codiscreteWithin [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
+    D =ᶠ[Filter.codiscreteWithin U] 0 := by
+  apply codiscreteWithin_iff_locallyFiniteComplementWithin.2
+  have : D.support = (U \ {x | D x = (0 : X → Y) x}) := by
+    ext x
+    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_diff, Set.mem_setOf_eq, iff_and_self]
+    exact (support_subset_iff.1 D.supportWithinDomain) x
+  rw [← this]
+  exact D.supportLocallyFiniteWithinDomain
+
+/--
 On a T1 space, the support of a functions with locally finite support within `U` is discrete.
 -/
 theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
@@ -308,10 +322,8 @@ instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
 /--
 Functions with locally finite support within `U` form an ordered commutative group.
 -/
-instance [LinearOrderedAddCommGroup Y] :
-    OrderedAddCommGroup (locallyFinsuppWithin U Y) where
-  __ := inferInstanceAs (AddCommGroup (locallyFinsuppWithin U Y))
-  __ := inferInstanceAs (Lattice (locallyFinsuppWithin U Y))
+instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]:
+    IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
 
 /-!
