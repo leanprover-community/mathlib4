@@ -67,20 +67,22 @@ open Set
 as described by a predicate `IsLink` describing whether an edge `e : β` has ends `x` and `y`.
 For definitional reasons, we include `edgeSet` as a structure field
 even though it can be inferred from `IsLink` via `edge_mem_iff_exists_isLink`;
-see `Graph.mk'` for a constructor that does not use `edgeSet`. -/
+The default value for `edgeSet` infers its value in this way.
+-/
 structure Graph (α β : Type*) where
   /-- The vertex set. -/
   vertexSet : Set α
-  /-- The edge set. -/
-  edgeSet : Set β
-  /-- The binary incidence predicate, stating that `x` and `y` are the ends of an edge `e`. -/
+  /-- The binary incidence predicate, stating that `x` and `y` are the ends of an edge `e`.
+  If `G.IsLink e x y` then we refer to `e` as `edge` and `x` and `y` as `left` and `right`. -/
   IsLink : β → α → α → Prop
+  /-- The edge set. -/
+  edgeSet : Set β := {e | ∃ x y, IsLink e x y}
   /-- If `e` goes from `x` to `y`, it goes from `y` to `x`. -/
   isLink_symm : ∀ ⦃e⦄, e ∈ edgeSet → (Symmetric <| IsLink e)
   /-- An edge is incident with at most one pair of vertices. -/
   eq_or_eq_of_isLink_of_isLink : ∀ ⦃e x y v w⦄, IsLink e x y → IsLink e v w → x = v ∨ x = w
   /-- An edge `e` is incident to something if and only if `e` is in the edge set. -/
-  edge_mem_iff_exists_isLink : ∀ e, e ∈ edgeSet ↔ ∃ x y, IsLink e x y
+  edge_mem_iff_exists_isLink : ∀ e, e ∈ edgeSet ↔ ∃ x y, IsLink e x y := by exact fun _ ↦ Iff.rfl
   /-- If some edge `e` is incident to `x`, then `x ∈ V`. -/
   left_mem_of_isLink : ∀ ⦃e x y⦄, IsLink e x y → x ∈ vertexSet
 
@@ -151,7 +153,8 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
 
 /-! ### Edge-vertex incidence -/
 
-/-- The unary incidence predicate of `G`. `G.Inc e x` means that `x` is one of the ends of `e`. -/
+/-- The unary incidence predicate of `G`. `G.Inc e x` means that the vertex `x`
+is one of the ends of the edge `e`. -/
 def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
 
 @[simp]
@@ -283,26 +286,14 @@ lemma IsLink.adj (h : G.IsLink e x y) : G.Adj x y :=
 
 /-! ### Extensionality -/
 
-/-- A constructor for `Graph` in which the edge set is inferred from the incidence predicate
-rather than being supplied explicitly. -/
-@[simps]
-protected def mk' (vertexSet : Set α) (IsLink : β → α → α → Prop)
-    (isLink_symm : ∀ ⦃e x y⦄, IsLink e x y → IsLink e y x)
-    (eq_or_eq_of_isLink_of_isLink : ∀ ⦃e x y v w⦄, IsLink e x y → IsLink e v w → x = v ∨ x = w)
-    (left_mem_of_isLink : ∀ ⦃e x y⦄, IsLink e x y → x ∈ vertexSet) : Graph α β where
-  vertexSet := vertexSet
-  edgeSet := {e | ∃ x y, IsLink e x y}
-  IsLink := IsLink
-  isLink_symm _ _ _ _ h := isLink_symm h
-  eq_or_eq_of_isLink_of_isLink := eq_or_eq_of_isLink_of_isLink
-  edge_mem_iff_exists_isLink _ := Iff.rfl
-  left_mem_of_isLink := left_mem_of_isLink
-
+/-- The graph constructed from `G.vertexSet` and `G.IsLink` using the default value for `edgeSet`
+is equal to `G`. -/
 @[simp]
-lemma mk'_eq_self (G : Graph α β) : Graph.mk' V(G) G.IsLink (fun _ _ _ ↦ IsLink.symm)
-  (fun _ _ _ _ _ h h' ↦ h.left_eq_or_eq_of_isLink h') (fun _ _ _ ↦ IsLink.left_mem) = G := by
-  have h := G.edgeSet_eq_setOf_exists_isLink
-  cases G with | mk V E IsLink _ _ _ => simpa [Graph.mk'] using h.symm
+lemma mk_eq_self (G : Graph α β) : Graph.mk V(G) G.IsLink {e | ∃ x y, G.IsLink e x y}
+    (by simpa [← G.edgeSet_eq_setOf_exists_isLink] using G.isLink_symm)
+    (fun _ _ _ _ _ h h' ↦ h.left_eq_or_eq_of_isLink h') (fun _ ↦ Iff.rfl)
+    (fun _ _ _ ↦ IsLink.left_mem) = G := by
+  cases G with | _ _ _ _ _ _ h _ => simp [← h]
 
 /-- Two graphs with the same vertex set and binary incidences are equal.
 (We use this as the default extensionality lemma rather than adding `@[ext]`
@@ -310,11 +301,10 @@ to the definition of `Graph`, so it doesn't require equality of the edge sets.) 
 @[ext]
 protected lemma ext {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂))
     (h : ∀ e x y, G₁.IsLink e x y ↔ G₂.IsLink e x y) : G₁ = G₂ := by
-  rw [← G₁.mk'_eq_self, ← G₂.mk'_eq_self]
+  rw [← G₁.mk_eq_self, ← G₂.mk_eq_self]
   simp_rw [hV]
-  convert rfl using 2
-  ext
-  rw [h]
+  convert rfl using 2 <;>
+  simp [funext_iff, h]
 
 /-- Two graphs with the same vertex set and unary incidences are equal. -/
 lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G₁.Inc e x ↔ G₂.Inc e x) :
