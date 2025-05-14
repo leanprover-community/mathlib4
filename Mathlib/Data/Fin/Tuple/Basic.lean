@@ -412,8 +412,8 @@ theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
   simp
 
 theorem append_injective_iff {α : Type*} {m n : ℕ} {x : Fin m → α} {y : Fin n → α} :
-  Function.Injective (Fin.append x y) ↔
-    Function.Injective x ∧ Function.Injective y ∧ Disjoint (Set.range x) (Set.range y) := by
+    Function.Injective (Fin.append x y) ↔
+      Function.Injective x ∧ Function.Injective y ∧ Disjoint (Set.range x) (Set.range y) := by
   constructor
   · intro H
     constructor
