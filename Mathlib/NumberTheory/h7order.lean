@@ -58,6 +58,17 @@ theorem order_inf_if_zero : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ 
   · exact trivial
   · exact analyticAt_const
 
+
+
+
+
+
+
+
+
+
+
+
 lemma zero_iff_order_inf : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f z),
   (∀ z, f z = 0) ↔ AnalyticAt.order (hf z) = ⊤ := by
   intros f z hf
@@ -65,21 +76,46 @@ lemma zero_iff_order_inf : ∀ (f : ℂ → ℂ) z (hf : ∀ z, AnalyticAt ℂ f
   · exact zero_if_order_inf f z hf
   · exact order_inf_if_zero f z hf
 
-lemma analytic_iter_deriv (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z) :
-  ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z := by
-  intro z
+lemma analytic_iter_deriv (k : ℕ) (f : ℂ → ℂ) z (hf : AnalyticAt ℂ f z) :
+  AnalyticAt ℂ (iteratedDeriv k f) z := by
   rw [← Eq.symm iteratedDeriv_eq_iterate]
-  exact AnalyticAt.iterated_deriv (hf z) k
+  exact AnalyticAt.iterated_deriv hf k
+
+-- iteratedDeriv_one
+
+lemma test (p : A → Prop) :
+    (∀ᶠ z in f, p z) ↔ ∃ U ∈ f, ∀ z ∈ U, p z := by {
+      unfold Filter.Eventually
+      constructor
+      · intro h
+        simp at h
+        use {x | p x}
+        constructor
+        · exact h
+        · aesop
+      · intro h
+        simp
+        rcases h with ⟨U, ⟨hU, hUp⟩⟩
+        exact Filter.mem_of_superset hU hUp
+    }
 
 -- lemma: if the order of f is n > 0, then the order of the *single* derivative of f is n - 1
-lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
-   (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z)  :
- (∀ z : ℂ, 0 < AnalyticAt.order (hf z)) →
-   ∀ z, AnalyticAt.order (hfdev z) = AnalyticAt.order (hf z) - 1 := by {
-    intros H
-    intros z
-    sorry
-   }
+lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f z₀)
+  (hfdev : AnalyticAt ℂ (deriv f) z₀) (n : ℕ) :
+  AnalyticAt.order hf = n → n > 0 →
+      AnalyticAt.order (AnalyticAt.deriv hf) = (n - 1:ℕ) := by {
+    intros horder hn
+    rw [order_eq_nat_iff] at horder
+    obtain ⟨g, hg, ⟨hgneq0, hexp⟩⟩ := horder
+    rw [order_eq_nat_iff]
+    use fun z => n • g z + (z - z₀) • deriv g z
+    constructor
+    · sorry
+    · constructor
+      · sorry
+      · sorry
+
+  }
 
 #check order_eq_nat_iff
 lemma order_geq_k_then_deriv_n_neg_1 (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
@@ -125,6 +161,7 @@ lemma order_geq_k_then_deriv_n_neg_1 (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, An
               norm_cast
               exact pos_iff_ne_zero.mp h2
               }
+            sorry
             --simp only [ENat.toNat_eq_zero, not_or, and_imp] at this
             --intros Hd
 

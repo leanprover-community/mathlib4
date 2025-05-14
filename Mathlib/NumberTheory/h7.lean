@@ -58,17 +58,18 @@ def c' (α : K) : ℤ := c'_both α
 
 lemma c'_IsIntegral (α : K) : IsIntegral ℤ (c' K α • α) := (c'_both α).2.2
 
-def c₁ := (abs ((c' K α') * (c' K β') * (c' K γ')))
+def c₁ := (abs (((c' K α') * (c' K β') * (c' K γ'))))
 
 lemma c₁_α : IsIntegral ℤ (c₁ K α' β' γ' • α') := by
   have h := IsIntegral_assoc (x := c' K γ') (y := c' K β') K (c' K α') α' (c'_IsIntegral K α')
   rw [c₁]
   conv => enter [2]; rw [mul_comm, mul_comm (c' K α') (c' K β'), ← mul_assoc]
-  cases' abs_choice (c' K γ' * c' K β' * c' K α') with H1 H2
+  cases' abs_choice (( c' K γ' * c' K β' * c' K α')) with H1 H2
   · rw [H1];
-    exact h
+    simp_all only [zsmul_eq_mul, Int.cast_mul, abs_eq_self]
   · rw [H2]
     simp_all only [zsmul_eq_mul, Int.cast_mul, abs_eq_neg_self, neg_smul, IsIntegral.neg_iff]
+
 
 lemma c₁_β : IsIntegral ℤ (c₁ K α' β' γ' • β') := by
   have h := IsIntegral_assoc (x := c' K γ') (y := c' K α') K (c' K β') β' (c'_IsIntegral K β')
@@ -1263,7 +1264,7 @@ def l₀ : Fin (m K) :=
   (exists_l₀_with_order_r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq).choose
 -- after that, you can define l₀ already!
 -- these lemmas should go directly after the defintion of r
---on the board 1st lemma
+-- on the board 1st lemma
 lemma exists_nonzero_iteratedFDeriv :
   let r := r α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
   let R := R α β hirr htriv K σ hd α' β' γ' habc q u hq0 h2mq t
@@ -1277,7 +1278,9 @@ lemma exists_nonzero_iteratedFDeriv :
   have := iterated_deriv_eq_zero_iff_order_eq_n (k := k) (n K q) R l ?_ ?_
   · sorry
   · exact analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  · sorry
+  · have := order_neq_top α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+    unfold _root_.order at this
+    sorry
   }
 
 -- you want somewhere a lemma that the order of R in each l is ≥ n
@@ -1301,6 +1304,20 @@ lemma order_geq_n :
     unfold _root_.order at this
     sorry
   · sorry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1450,6 +1467,7 @@ lemma eq5zero :
       rw [one_le_pow_iff_of_nonneg]
       · rw [Int.norm_eq_abs]
         rw [Int.norm_eq_abs] at h0
+        unfold _root_.cρ -- needs the fact that c₁ is geq 1
         sorry
       · apply norm_nonneg
       · have : 0 < Module.finrank ℚ K  := by {exact Module.finrank_pos}
@@ -1469,7 +1487,8 @@ lemma eq5zero :
   · nth_rw 1 [← mul_one (‖_root_.cρ α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq‖
        ^ Module.finrank ℚ K)]
     rw [mul_le_mul_left]
-    · sorry
+    · unfold rho
+      sorry
     · rw [le_iff_eq_or_lt] at h1
       cases' h1 with h1 h1
       · rw [← h1]
@@ -1577,7 +1596,7 @@ lemma eq5 :
         simp only [lt_sup_iff, Nat.one_lt_ofNat, true_or]
         sorry
     · have : 1 ≤ (c₁) ^ (↑(h K) * ((↑r) + 2 * ↑(m K) * (↑q))) := sorry
-      calc (0 : ℝ) < 1 := sorry
+      calc (0 : ℝ) < 1 := by {simp only [zero_lt_one, ρ]} --needs the fact that 1 ≤ c₁
            (1 : ℝ) ≤ c₁ ^ (↑(h K) * ((↑r) + 2 * ↑(m K) * (↑q))) := sorry
   · unfold _root_.cρ
     rw [← pow_add]
@@ -1785,10 +1804,6 @@ lemma eq6 :
     · simp_all only [Nat.cast_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]
   · sorry
 }
-
-
-
-
 
 
 

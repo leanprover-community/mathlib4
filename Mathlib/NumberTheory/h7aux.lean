@@ -85,13 +85,13 @@ lemma IsIntegral_assoc (K : Type) [Field K]
 --   conv => enter [2]; rw [this]
 --   apply IsIntegral.smul _ ha
 
-lemma IsIntegral.Cast(K : Type) [Field K]  (a : ℤ) : IsIntegral ℤ (a : K) :=
+lemma IsIntegral.Cast(K : Type) [Field K] (a : ℤ) : IsIntegral ℤ (a : K) :=
   map_isIntegral_int (algebraMap ℤ K) (Algebra.IsIntegral.isIntegral _)
 
 lemma IsIntegral.Nat (K : Type) [Field K] (a : ℕ) : IsIntegral ℤ (a : K) := by
   have : (a : K) = ((a : ℤ) : K) := by simp only [Int.cast_natCast]
   rw [this]; apply IsIntegral.Cast
 
-lemma triple_comm (K : Type) [Field K]  (a b c : ℤ) (x y z : K) :
+lemma triple_comm (K : Type) [Field K] (a b c : ℤ) (x y z : K) :
  ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
   simp only [zsmul_eq_mul, Int.cast_mul]; ring
