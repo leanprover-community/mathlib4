@@ -187,11 +187,14 @@ lemma exp_nat_mul (n : ℕ) (t : ℝ) : exp (n * t) = exp t ^ n := by
   rfl
 
 open Real in
+@[simp]
+lemma exp_two_pi : exp (2 * π) = 1 := by
+  simp [exp]
+  rfl
+
+open Real in
 lemma exp_nat_mul_two_pi (n : ℕ) : exp (n * (2 * π)) = 1 := by
-      have e1 : ↑n * (2 * ↑π) * I = ↑n * (2 * π * I) := mul_assoc _ _ _
-      simp only [exp, ContinuousMap.coe_mk, ofReal_mul, ofReal_natCast, ofReal_ofNat, e1,
-        exp_nat_mul_two_pi_mul_I]
-      rfl
+  simp [exp_nat_mul]
 
 end Circle
 
