@@ -71,13 +71,20 @@ theorem map_span_le [RingHomSurjective σ₁₂] (f : F) (s : Set M) (N : Submod
 
 alias _root_.LinearMap.map_span_le := Submodule.map_span_le
 
--- See also `span_preimage_eq` below.
+/-- See also `Submodule.span_preimage_eq`. -/
 theorem span_preimage_le (f : F) (s : Set M₂) :
     span R (f ⁻¹' s) ≤ (span R₂ s).comap f := by
   rw [span_le, comap_coe]
   exact preimage_mono subset_span
 
 alias _root_.LinearMap.span_preimage_le := Submodule.span_preimage_le
+
+include σ₁₂ in
+theorem mapsTo_span {f : F} {s : Set M} {t : Set M₂} (h : MapsTo f s t) :
+    MapsTo f (span R s) (span R₂ t) :=
+  (span_mono h).trans (span_preimage_le (σ₁₂ := σ₁₂) f t)
+
+alias _root_.Set.MapsTo.submoduleSpan := mapsTo_span
 
 section
 
@@ -393,6 +400,26 @@ lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [C
   | smul_left t u v hu hv huv => simpa using Submodule.smul_mem _ _ huv
   | smul_right t u v hu hv huv => simpa using Submodule.smul_mem _ _ huv
 
+@[simp]
+lemma biSup_comap_subtype_eq_top {ι : Type*} (s : Set ι) (p : ι → Submodule R M) :
+    ⨆ i ∈ s, (p i).comap (⨆ i ∈ s, p i).subtype = ⊤ := by
+  refine eq_top_iff.mpr fun ⟨x, hx⟩ _ ↦ ?_
+  suffices x ∈ (⨆ i ∈ s, (p i).comap (⨆ i ∈ s, p i).subtype).map (⨆ i ∈ s, (p i)).subtype by
+    obtain ⟨y, hy, rfl⟩ := Submodule.mem_map.mp this
+    exact hy
+  suffices ∀ i ∈ s, (comap (⨆ i ∈ s, p i).subtype (p i)).map (⨆ i ∈ s, p i).subtype = p i by
+    simpa only [map_iSup, biSup_congr this]
+  intro i hi
+  rw [map_comap_eq, range_subtype, inf_eq_right]
+  exact le_biSup p hi
+
+theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N →ₛₗ[σ₁₂] M₂}
+    (h : f ≠ 0) (s : Set (Submodule R M)) (hs : sSup s = N):
+    ∃ m, ∃ h : m ∈ s, f ∘ₛₗ inclusion ((le_sSup h).trans_eq hs) ≠ 0 :=
+  have ⟨_, ⟨m, hm, rfl⟩, ne⟩ := LinearMap.exists_ne_zero_of_sSup_eq_top h (comap N.subtype '' s) <|
+    by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
+  ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
+
 end AddCommMonoid
 
 section AddCommGroup
@@ -500,19 +527,6 @@ lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂]
   rw [← hf]
   exact LinearMap.range_domRestrict_eq_range_iff
 
-@[simp]
-lemma biSup_comap_subtype_eq_top {ι : Type*} (s : Set ι) (p : ι → Submodule R M) :
-    ⨆ i ∈ s, (p i).comap (⨆ i ∈ s, p i).subtype = ⊤ := by
-  refine eq_top_iff.mpr fun ⟨x, hx⟩ _ ↦ ?_
-  suffices x ∈ (⨆ i ∈ s, (p i).comap (⨆ i ∈ s, p i).subtype).map (⨆ i ∈ s, (p i)).subtype by
-    obtain ⟨y, hy, rfl⟩ := Submodule.mem_map.mp this
-    exact hy
-  suffices ∀ i ∈ s, (comap (⨆ i ∈ s, p i).subtype (p i)).map (⨆ i ∈ s, p i).subtype = p i by
-    simpa only [map_iSup, biSup_congr this]
-  intro i hi
-  rw [map_comap_eq, range_subtype, inf_eq_right]
-  exact le_biSup p hi
-
 lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempty)
     (p : ι → Submodule R₂ M₂) (hp : ⨆ i ∈ s, p i = ⊤)
     (f : M →ₛₗ[τ₁₂] M₂) (hf : Surjective f) :
@@ -524,7 +538,7 @@ lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempt
   rw [← comap_map_eq, map_iSup_comap_of_sujective hf, hp, comap_top]
 
 lemma biSup_comap_eq_top_of_range_eq_biSup
-    {R R₂ : Type*} [Ring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
+    {R R₂ : Type*} [Semiring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
     [Module R M] [Module R₂ M₂] {ι : Type*} (s : Set ι) (hs : s.Nonempty)
     (p : ι → Submodule R₂ M₂) (f : M →ₛₗ[τ₁₂] M₂) (hf : LinearMap.range f = ⨆ i ∈ s, p i) :
     ⨆ i ∈ s, (p i).comap f = ⊤ := by
@@ -652,6 +666,16 @@ theorem isIdempotentElem_apply_one_iff {f : Module.End R R} :
     LinearMap.ext_iff]
   simp_rw [Module.End.mul_apply]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
+
+theorem range_toSpanSingleton (x : M) :
+    range (toSpanSingleton R M x) = .span R {x} :=
+  SetLike.coe_injective (Submodule.span_singleton_eq_range R x).symm
+
+theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x ∈ N) :
+    (span R {x}).submoduleOf N = span R {⟨x, hx⟩} := by
+  ext y
+  simp_rw [submoduleOf, mem_comap, subtype_apply, mem_span_singleton]
+  aesop
 
 end
 

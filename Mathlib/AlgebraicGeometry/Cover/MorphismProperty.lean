@@ -315,6 +315,7 @@ A morphism between covers `𝒰 ⟶ 𝒱` indicates that `𝒰` is a refinement 
 Since covers of schemes are indexed, the definition also involves a map on the
 indexing types.
 -/
+@[ext]
 structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} P X) where
   /-- The map on indexing types associated to a morphism of covers. -/
   idx : 𝒰.J → 𝒱.J

@@ -431,10 +431,9 @@ theorem mem_periodicOrbit_iff (hx : x ∈ periodicPts f) :
   use n % minimalPeriod f x, mod_lt _ (minimalPeriod_pos_of_mem_periodicPts hx)
   rw [iterate_mod_minimalPeriod_eq]
 
-@[simp]
 theorem iterate_mem_periodicOrbit (hx : x ∈ periodicPts f) (n : ℕ) :
-    f^[n] x ∈ periodicOrbit f x :=
-  (mem_periodicOrbit_iff hx).2 ⟨n, rfl⟩
+    f^[n] x ∈ periodicOrbit f x := by
+  simp [hx]
 
 @[simp]
 theorem self_mem_periodicOrbit (hx : x ∈ periodicPts f) : x ∈ periodicOrbit f x :=
@@ -596,12 +595,12 @@ theorem pow_period_add_smul (n : ℕ) (m : M) (a : α) :
 @[to_additive (attr := simp)]
 theorem zpow_add_period_smul (i : ℤ) (g : G) (a : α) :
     g ^ (i + period g a) • a = g ^ i • a := by
-  rw [← zpow_mod_period_smul, Int.add_emod_self, zpow_mod_period_smul]
+  rw [← zpow_mod_period_smul, Int.add_emod_right, zpow_mod_period_smul]
 
 @[to_additive (attr := simp)]
 theorem zpow_period_add_smul (i : ℤ) (g : G) (a : α) :
     g ^ (period g a + i) • a = g ^ i • a := by
-  rw [← zpow_mod_period_smul, Int.add_emod_self_left, zpow_mod_period_smul]
+  rw [← zpow_mod_period_smul, Int.add_emod_left, zpow_mod_period_smul]
 
 variable {a : G} {b : α}
 
