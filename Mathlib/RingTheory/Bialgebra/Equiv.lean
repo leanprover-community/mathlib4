@@ -274,7 +274,7 @@ theorem coe_bialgHom_ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ 
 
 @[simp]
 theorem ofBialgHom_coe_bialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
-    ofBialgHom (↑f) g h₁ h₂ = f := by
+    ofBialgHom f g h₁ h₂ = f := by
   ext; simp
 
 theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
