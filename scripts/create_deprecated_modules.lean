@@ -99,7 +99,6 @@ def processPrettyOneLine (log msg : String) : String × MessageData :=
   let PRdescr := (log.drop hash.length).trim
   (hash, m!"{msg} in " ++
         .trace {cls := .str .anonymous ("_" ++ hash.take 7)} m!"{PRdescr}" #[m!"{hash}"])
-  --(hash, .trace {cls := `Commit} m!"{msg} in the PR {PRdescr}" #[m!"{hash}"])
 
 /--
 `deprecateFilePath fname comment` takes as input
