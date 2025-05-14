@@ -73,12 +73,6 @@ lemma periodic_exp : Periodic exp (2 * π) := fun z ↦ exp_eq_exp.2 ⟨1, by rw
 lemma exp_int_mul_two_pi (n : ℤ) : exp (n * (2 * π)) = 1 :=
   ext <| by simpa [mul_assoc] using Complex.exp_int_mul_two_pi_mul_I n
 
-lemma exp_nat_mul (n : ℕ) (t : ℝ) : exp (n * t) = exp t ^ n := by
-  simpa using Real.probChar.map_nsmul_eq_pow n t
-
-lemma exp_nat_mul_two_pi (n : ℕ) : exp (n * (2 * π)) = 1 := by
-  simp [exp_nat_mul]
-
 lemma exp_two_pi_mul_int (n : ℤ) : exp (2 * π * n) = 1 := by
   simpa only [mul_comm] using exp_int_mul_two_pi n
 
