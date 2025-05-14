@@ -35,6 +35,7 @@ the constant zero, the successor, projections, the oracle `g`, and is closed und
 pairing, composition, primitive recursion, and μ-recursion.
 
 ## References
+
 * [Carneiro2018] Carneiro, Mario.
   *Formalizing Computability Theory via Partial Recursive Functions*.
   arXiv preprint arXiv:1810.08380, 2018.
@@ -45,17 +46,13 @@ pairing, composition, primitive recursion, and μ-recursion.
 * [Gu2015] Gu, Yi-Zhi. *Turing Degrees*. Institute for Advanced Study, 2015.
 
 ## Tags
+
 Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
+
 open Primrec Nat.Partrec Part
 
 variable {f g h : ℕ →. ℕ}
-
-/-!
-This section defines a model of oracle computability and defines
-Turing reducibility and Turing equivalence. We define the Turing Degrees as the quotient under
-Turing equivalence relation
--/
 
 /--
 The type of partial functions recursive in a set of oracle `O` is the smallest type containing
