@@ -480,7 +480,8 @@ theorem ContinuousOn.locallyIntegrableOn [IsLocallyFiniteMeasure μ]
 
 variable [IsFiniteMeasureOnCompacts μ]
 
-variable {f g : X → E}
+--variable {f g : X → E}
+variable [PseudoMetrizableSpace ε]
 
 /-- A function `f` continuous on a compact set `K` is integrable on this set with respect to any
 locally finite measure. -/
@@ -489,9 +490,10 @@ theorem ContinuousOn.integrableOn_compact'
     IntegrableOn f K μ := by
   refine ⟨ContinuousOn.aestronglyMeasurable_of_isCompact hf hK h'K, ?_⟩
   have : Fact (μ K < ∞) := ⟨hK.measure_lt_top⟩
-  obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
-    IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
-  apply hasFiniteIntegral_of_bounded (C := C)
+  -- TODO: prove IsBounded.exists_enorm_le, then use it
+  obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ₑ ≤ C :=
+    sorry -- old proof was `IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded`
+  apply hasFiniteIntegral_of_bounded_enorm (C := C)
   filter_upwards [ae_restrict_mem h'K] with x hx using hC _ (mem_image_of_mem f hx)
 
 theorem ContinuousOn.integrableOn_compact [T2Space X]
@@ -524,7 +526,8 @@ theorem Continuous.integrableOn_uIoc [LinearOrder X] [CompactIccSpace X] [T2Spac
   hf.integrableOn_Ioc
 
 /-- A continuous function with compact support is integrable on the whole space. -/
-theorem Continuous.integrable_of_hasCompactSupport (hf : Continuous f) (hcf : HasCompactSupport f) :
+theorem Continuous.integrable_of_hasCompactSupport
+    [PseudoMetrizableSpace ε''] {f : X → ε''} (hf : Continuous f) (hcf : HasCompactSupport f) :
     Integrable f μ :=
   (integrableOn_iff_integrable_of_support_subset (subset_tsupport f)).mp <|
     hf.continuousOn.integrableOn_compact' hcf (isClosed_tsupport _).measurableSet
@@ -537,15 +540,17 @@ section Monotone
 
 variable [BorelSpace X] [ConditionallyCompleteLinearOrder X] [ConditionallyCompleteLinearOrder E]
   [OrderTopology X] [OrderTopology E] [SecondCountableTopology E] {p : ℝ≥0∞}
-  {f g : X → E}
+  {f g : X → ε}
 
-theorem MonotoneOn.memLp_top (hmono : MonotoneOn f s) {a b : X}
+theorem MonotoneOn.memLp_top [Preorder ε] [Bornology ε] (hmono : MonotoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (h's : MeasurableSet s) :
     MemLp f ∞ (μ.restrict s) := by
-  borelize E
+  borelize ε
   have hbelow : BddBelow (f '' s) := ⟨f a, fun x ⟨y, hy, hyx⟩ => hyx ▸ hmono ha.1 hy (ha.2 hy)⟩
   have habove : BddAbove (f '' s) := ⟨f b, fun x ⟨y, hy, hyx⟩ => hyx ▸ hmono hy hb.1 (hb.2 hy)⟩
-  have : IsBounded (f '' s) := Metric.isBounded_of_bddAbove_of_bddBelow habove hbelow
+  have : IsBounded (f '' s) := sorry
+    -- TODO: does a pseudometrisable space also suffice? that would work here...
+    -- Metric.isBounded_of_bddAbove_of_bddBelow habove hbelow
   rcases isBounded_iff_forall_norm_le.mp this with ⟨C, hC⟩
   have A : MemLp (fun _ => C) ⊤ (μ.restrict s) := memLp_top_const _
   apply MemLp.mono A (aemeasurable_restrict_of_monotoneOn h's hmono).aestronglyMeasurable
