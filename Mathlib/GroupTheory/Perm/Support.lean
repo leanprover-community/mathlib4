@@ -435,7 +435,7 @@ theorem support_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert i s hi hrec =>
+  | insert i s hi hrec =>
     have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
       hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
     rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.biUnion_insert]
