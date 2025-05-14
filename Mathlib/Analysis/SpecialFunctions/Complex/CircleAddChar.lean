@@ -96,7 +96,7 @@ noncomputable def expHom (n : ℕ) [NeZero n] : AddChar (ZMod n) (rootsOfUnity n
     have e1 : ↑n * (2 * π * (↑x.val / ↑n)) = ↑x.val * (2 * π) := by
       rw [mul_comm, mul_assoc, natCast_val, div_mul_cancel_of_invertible, mul_comm]
     simp_rw [_root_.mem_rootsOfUnity, toCircle_eq_circleExp, ← map_pow,
-      ← Circle.exp_nat_mul, e1, Circle.exp_nat_mul_two_pi_mul_I]
+      ← Circle.exp_nat_mul, e1, Circle.exp_nat_mul_two_pi]
     simp only [natCast_val, map_one]⟩
   map_zero_eq_one' := by
     simp only [AddChar.map_zero_eq_one, map_one, Subgroup.mk_eq_one]
