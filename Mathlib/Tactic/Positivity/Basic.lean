@@ -198,22 +198,41 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not *"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ q(Semiring $α)
-  let _a ← synthInstanceQ q(PartialOrder $α)
-  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-  assumeInstancesCommute
+  let _a ← synthInstanceQ q(Mul $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HMul.hMul)
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
-  | .positive pa, .positive pb => pure (.positive q(mul_pos $pa $pb))
-  | .positive pa, .nonnegative pb => pure (.nonnegative q(mul_nonneg_of_pos_of_nonneg $pa $pb))
-  | .nonnegative pa, .positive pb => pure (.nonnegative q(mul_nonneg_of_nonneg_of_pos $pa $pb))
-  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(mul_nonneg $pa $pb))
+  | .positive pa, .positive pb =>
+    let _a ← synthInstanceQ q(MulZeroClass $α)
+    let _a ← synthInstanceQ q(PosMulStrictMono $α)
+    assumeInstancesCommute
+    pure (.positive q(mul_pos $pa $pb))
+  | .positive pa, .nonnegative pb =>
+    let _a ← synthInstanceQ q(Semiring $α)
+    let _a ← synthInstanceQ q(IsOrderedRing $α)
+    assumeInstancesCommute
+    pure (.nonnegative q(mul_nonneg_of_pos_of_nonneg $pa $pb))
+  | .nonnegative pa, .positive pb =>
+    let _a ← synthInstanceQ q(Semiring $α)
+    let _a ← synthInstanceQ q(IsOrderedRing $α)
+    assumeInstancesCommute
+    pure (.nonnegative q(mul_nonneg_of_nonneg_of_pos $pa $pb))
+  | .nonnegative pa, .nonnegative pb =>
+    let _a ← synthInstanceQ q(MulZeroClass $α)
+    let _a ← synthInstanceQ q(PosMulMono $α)
+    assumeInstancesCommute
+    pure (.nonnegative q(mul_nonneg $pa $pb))
   | .positive pa, .nonzero pb =>
+    let _a ← synthInstanceQ q(Semiring $α)
+    let _a ← synthInstanceQ q(IsOrderedRing $α)
     let _a ← synthInstanceQ q(NoZeroDivisors $α)
+    assumeInstancesCommute
     pure (.nonzero q(mul_ne_zero_of_pos_of_ne_zero $pa $pb))
   | .nonzero pa, .positive pb =>
+    let _a ← synthInstanceQ q(Semiring $α)
+    let _a ← synthInstanceQ q(IsOrderedRing $α)
     let _a ← synthInstanceQ q(NoZeroDivisors $α)
+    assumeInstancesCommute
     pure (.nonzero q(mul_ne_zero_of_ne_zero_of_pos $pa $pb))
   | .nonzero pa, .nonzero pb =>
     let _a ← synthInstanceQ q(NoZeroDivisors $α)
