@@ -479,3 +479,93 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
   · exact Finset.compl_univ
   simp only [Finset.mem_univ, forall_true_left, Finset.filter_eq_empty_iff]
   exact InfinitePlace.isUnramifiedIn K
+
+section Extension
+
+namespace NumberField.InfinitePlace
+
+open ComplexEmbedding
+
+variable {K : Type*} (L : Type*) [Field K] [Field L] [Algebra K L]
+
+/--
+If `L / K` are fields and `v` is an infinite place of `K`, then we say an infinite place `w`
+of `L` _extends_ `v` if `v` is the restriction of `w` to `K`.
+-/
+abbrev Extension (v : InfinitePlace K) :=
+  { w : InfinitePlace L // w.comap (algebraMap K L) = v }
+
+namespace Extension
+
+variable {L} {v : InfinitePlace K} (w : v.Extension L)
+
+theorem isComplex_of_isComplex (hv : v.IsComplex) :
+    w.1.IsComplex := by
+  rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv ⊢
+  let ⟨x, hx⟩ := hv
+  use algebraMap K L x
+  rw [← w.2, ← mk_embedding w.1, comap_mk] at hx
+  cases embedding_mk_eq (w.1.embedding.comp (algebraMap K L)) with
+  | inl hl => simp_all
+  | inr hr => aesop
+
+theorem isReal (hw : w.1.IsReal) : v.IsReal := by
+  simp_all only [← not_isComplex_iff_isReal]
+  exact mt w.isComplex_of_isComplex hw
+
+theorem mk_embedding_comp : mk (w.1.embedding.comp (algebraMap K L)) = v := by
+  rw [← comap_mk, w.1.mk_embedding, w.2]
+
+/-- If `w : InfinitePlace L` extends `v : InfinitePlace K`, then either `w.embedding`
+extends `v.embedding` as complex embeddings, or `conjugate w.embedding` extends `v.embedding`. -/
+theorem isExtension_or_isExtension_conjugate :
+    IsExtension v.embedding w.1.embedding ∨ IsExtension v.embedding (conjugate w.1.embedding) := by
+  cases embedding_mk_eq (w.1.embedding.comp (algebraMap K L)) with
+  | inl hl =>
+    convert Or.inl <| hl ▸ congrArg InfinitePlace.embedding w.mk_embedding_comp
+  | inr hr =>
+    convert Or.inr <| hr ▸ congrArg InfinitePlace.embedding w.mk_embedding_comp
+
+theorem isExtension_conjugate_of_not_isExtension (h : ¬IsExtension v.embedding w.1.embedding) :
+    IsExtension v.embedding (conjugate w.1.embedding) :=
+  w.isExtension_or_isExtension_conjugate.resolve_left h
+
+variable (L v)
+
+/--
+If `w` is an infinite place of `L` lying above the infinite place `v` of
+`K`, then there are two possibilities:
+- `w.embedding` extends `v.embedding`.
+- `conjugate w.embedding` extends `v.embedding`.
+`IsLift` is a class encoding the first case.
+-/
+class IsLift where
+  isExtension' : IsExtension v.embedding w.1.embedding
+
+theorem IsLift.isExtension [w.IsLift L v] : IsExtension v.embedding w.1.embedding :=
+  IsLift.isExtension'
+
+/--
+If `w` is an infinite place of `L` lying above the infinite place `v` of
+`K`, then there are two possibilities:
+- `w.embedding` extends `v.embedding`.
+- `conjugate w.embedding` extends `v.embedding`.
+`IsConjugateLift` is a class encoding the second case.
+-/
+class IsConjugateLift where
+  isExtension' : IsExtension v.embedding (conjugate w.1.embedding)
+
+theorem IsConjugateLift.isExtension [w.IsConjugateLift L v] :
+    IsExtension v.embedding (conjugate w.1.embedding) := IsConjugateLift.isExtension'
+
+theorem isLift_or_isConjugateLift (v : InfinitePlace K) (w : v.Extension L) :
+    w.IsLift L v ∨ w.IsConjugateLift L v := by
+  cases isExtension_or_isExtension_conjugate w with
+  | inl hl => exact Or.inl ⟨hl⟩
+  | inr hr => exact Or.inr ⟨hr⟩
+
+end Extension
+
+end NumberField.InfinitePlace
+
+end Extension
