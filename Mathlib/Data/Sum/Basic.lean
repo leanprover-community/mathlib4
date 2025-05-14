@@ -217,6 +217,12 @@ theorem Injective.sumMap {f : α → β} {g : α' → β'} (hf : Injective f) (h
 
 @[deprecated (since := "2025-02-20")] alias Injective.sum_map := Injective.sumMap
 
+@[simp]
+theorem injective_sumMap_iff {f : α → γ} {g : α' → β'} :
+    Injective (Sum.map f g) ↔ Injective f ∧ Injective g where
+  mp h := ⟨.of_comp <| h.comp inl_injective, .of_comp <| h.comp inr_injective⟩
+  mpr | ⟨hf, hg⟩ => hf.sumMap hg
+
 theorem Surjective.sumMap {f : α → β} {g : α' → β'} (hf : Surjective f) (hg : Surjective g) :
     Surjective (Sum.map f g)
   | inl y =>
@@ -241,17 +247,21 @@ namespace Sum
 open Function
 
 @[simp]
+theorem elim_injective {f : α → γ} {g : β → γ} :
+    Injective (Sum.elim f g) ↔ Injective f ∧ Injective g ∧ ∀ a b, f a ≠ g b where
+  mp h := ⟨h.comp inl_injective, h.comp inr_injective, fun _ _ => h.ne inl_ne_inr⟩
+  mpr | ⟨hf, hg, hfg⟩ => hf.sumElim hg hfg
+
+@[simp]
 theorem map_injective {f : α → γ} {g : β → δ} :
-    Injective (Sum.map f g) ↔ Injective f ∧ Injective g :=
-  ⟨fun h =>
-    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha :), fun b₁ b₂ hb =>
-      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb :)⟩,
-    fun h => h.1.sumMap h.2⟩
+    Injective (Sum.map f g) ↔ Injective f ∧ Injective g  where
+  mp h := ⟨.of_comp <| h.comp inl_injective, .of_comp <| h.comp inr_injective⟩
+  mpr | ⟨hf, hg⟩ => hf.sumMap hg
 
 @[simp]
 theorem map_surjective {f : α → γ} {g : β → δ} :
-    Surjective (Sum.map f g) ↔ Surjective f ∧ Surjective g :=
-  ⟨ fun h => ⟨
+    Surjective (Sum.map f g) ↔ Surjective f ∧ Surjective g where
+  mp h := ⟨
       (fun c => by
         obtain ⟨a | b, h⟩ := h (inl c)
         · exact ⟨a, inl_injective h⟩
@@ -259,8 +269,8 @@ theorem map_surjective {f : α → γ} {g : β → δ} :
       (fun d => by
         obtain ⟨a | b, h⟩ := h (inr d)
         · cases h
-        · exact ⟨b, inr_injective h⟩)⟩,
-    fun h => h.1.sumMap h.2⟩
+        · exact ⟨b, inr_injective h⟩)⟩
+  mpr | ⟨hf, hg⟩ => hf.sumMap hg
 
 @[simp]
 theorem map_bijective {f : α → γ} {g : β → δ} :
