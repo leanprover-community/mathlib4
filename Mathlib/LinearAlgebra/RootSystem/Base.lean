@@ -29,12 +29,12 @@ For infinite root systems, `RootSystem.Base` is usually not the right notion: li
 is too strong.
 
 ## Main definitions / results:
- * `RootSystem.Base`: a base of a root pairing.
+* `RootSystem.Base`: a base of a root pairing.
 
 ## TODO
 
- * Develop a theory of base / separation / positive roots for infinite systems which specialises to
-   the concept here for finite systems.
+* Develop a theory of base / separation / positive roots for infinite systems which specialises to
+  the concept here for finite systems.
 
 -/
 

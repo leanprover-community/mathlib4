@@ -27,8 +27,8 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 
 ### Main statements
 
- * `tendsto_cofinite_cocompact_iff`:
- * `IsClosed.tendsto_coe_cofinite_iff`:
+* `tendsto_cofinite_cocompact_iff`:
+* `IsClosed.tendsto_coe_cofinite_iff`:
 
 ## Co-discrete open sets
 

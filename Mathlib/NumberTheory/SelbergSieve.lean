@@ -18,26 +18,26 @@ We mostly follow the treatment outlined by Heath-Brown in the notes to an old gr
 minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(n)}{n}$.
 
 ## Results
- * `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
+* `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
  on the size of the sifted set in terms of `mainSum` and `errSum`
 
 ## Notation
 The `SelbergSieve.Notation` namespace includes common shorthand for the variables included in the
 `SelbergSieve` structure.
- * `A` for `support`
- * `𝒜 d` for `multSum d` - the combined weight of the elements of `A` that are divisible by `d`
- * `P` for `prodPrimes`
- * `a` for `weights`
- * `X` for `totalMass`
- * `ν` for `nu`
- * `y` for `level`
- * `R d` for `rem d`
- * `g d` for `selbergTerms d`
+* `A` for `support`
+* `𝒜 d` for `multSum d` - the combined weight of the elements of `A` that are divisible by `d`
+* `P` for `prodPrimes`
+* `a` for `weights`
+* `X` for `totalMass`
+* `ν` for `nu`
+* `y` for `level`
+* `R d` for `rem d`
+* `g d` for `selbergTerms d`
 
 ## References
 
- * [Heath-Brown, *Lectures on sieves*][heathbrown2002lecturessieves]
- * [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
+* [Heath-Brown, *Lectures on sieves*][heathbrown2002lecturessieves]
+* [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
 
 -/
 
