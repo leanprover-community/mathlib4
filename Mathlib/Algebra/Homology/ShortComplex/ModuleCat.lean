@@ -109,9 +109,12 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
   wπ := by aesop
   hπ := ModuleCat.cokernelIsColimit (ModuleCat.ofHom S.moduleCatToCycles)
 
+/-- The homology of a short complex of modules as a concrete quotient. -/
 @[deprecated "This abbreviation is now inlined" (since := "2025-05-13")]
 alias moduleCatHomology := moduleCatLeftHomologyData_H
 
+/-- The natural projection map to the homology of a short complex of modules as a
+concrete quotient. -/
 @[deprecated "This abbreviation is now inlined" (since := "2025-05-13")]
 alias moduleCatHomologyπ := moduleCatLeftHomologyData_π_hom
 
