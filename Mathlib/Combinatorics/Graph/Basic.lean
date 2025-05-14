@@ -188,6 +188,9 @@ lemma Inc.eq_or_eq_of_isLink (h : G.Inc e x) (h' : G.IsLink e y z) : x = y ∨ x
 lemma Inc.eq_of_isLink_of_ne_left (h : G.Inc e x) (h' : G.IsLink e y z) (hxy : x ≠ y) : x = z :=
   (h.eq_or_eq_of_isLink h').elim (False.elim ∘ hxy) id
 
+lemma IsLink.isLink_iff_eq (h : G.IsLink e x y) : G.IsLink e x z ↔ z = y :=
+  ⟨fun h' ↦ h'.right_unique h, fun h' ↦ h' ▸ h⟩
+
 /-- The binary incidence predicate can be expressed in terms of the unary one. -/
 lemma isLink_iff_inc : G.IsLink e x y ↔ G.Inc e x ∧ G.Inc e y ∧ ∀ z, G.Inc e z → z = x ∨ z = y := by
   refine ⟨fun h ↦ ⟨h.inc_left, h.inc_right, fun z h' ↦ h'.eq_or_eq_of_isLink h⟩, ?_⟩
@@ -279,8 +282,8 @@ def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
 protected lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
   ⟨_, h.choose_spec.symm⟩
 
-lemma adj_comm : G.Adj x y ↔ G.Adj y x :=
-  ⟨Adj.symm, Adj.symm⟩
+lemma adj_comm (x y) : G.Adj x y ↔ G.Adj y x :=
+  ⟨.symm, .symm⟩
 
 @[simp]
 lemma Adj.left_mem (h : G.Adj x y) : x ∈ V(G) :=
