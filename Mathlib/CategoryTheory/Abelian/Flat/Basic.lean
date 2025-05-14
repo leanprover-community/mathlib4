@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory
+import Mathlib.Algebra.Homology.LeftResolutions.Basic
 
 /-!
 # Flat objects
@@ -41,5 +42,13 @@ instance : (flat (A := A)).IsClosedUnderIsomorphisms where
         ((curriedTensor A).flip.mapIso e) h.2⟩
 
 end ObjectProperty
+
+namespace Abelian
+
+variable (A) in
+abbrev HasFunctorialFlatResolutions : Prop :=
+  Nonempty (LeftResolutions (ObjectProperty.flat.ι : _ ⥤ A))
+
+end Abelian
 
 end CategoryTheory

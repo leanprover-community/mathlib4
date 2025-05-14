@@ -10,6 +10,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.MonoidalTriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 import Mathlib.Algebra.Homology.HomotopyCategory.PreservesQuasiIso
 import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
+import Mathlib.Algebra.Homology.LeftResolutions.Reduced
 import Mathlib.CategoryTheory.Abelian.Flat.Basic
 import Mathlib.CategoryTheory.Monoidal.KFlat
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
@@ -315,5 +316,18 @@ lemma cochainComplex_kFlat_isLeftDerivabilityStructure :
   sorry-/
 
 end LeftResolutions
+
+/-instance : IsIdempotentComplete (ObjectProperty.flat (A := A)).FullSubcategory := sorry
+instance : HasFiniteCoproducts (ObjectProperty.flat (A := A)).FullSubcategory := sorry
+
+instance [HasFunctorialFlatResolutions A] :
+    (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure := by
+  let Λ : LeftResolutions (ObjectProperty.flat.ι : _ ⥤ A) := Classical.arbitrary _
+  exact Λ.reduced.cochainComplex_kFlat_isLeftDerivabilityStructure (by simp)
+
+instance [HasFunctorialFlatResolutions A] :
+    (HomotopyCategory.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure := by
+  let Λ : LeftResolutions (ObjectProperty.flat.ι : _ ⥤ A) := Classical.arbitrary _
+  exact Λ.reduced.homotopyCategory_kFlat_isLeftDerivabilityStructure (by simp)-/
 
 end CategoryTheory.Abelian

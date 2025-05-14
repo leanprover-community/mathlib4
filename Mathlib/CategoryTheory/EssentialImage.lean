@@ -207,4 +207,10 @@ variable {J C D : Type*} [Category J] [Category C] [Category D]
 
 end Functor
 
+@[simp]
+lemma ObjectProperty.essImage_ι (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms] :
+    P.ι.essImage = P := by
+  ext X
+  exact ⟨fun ⟨⟨Y, hY⟩, ⟨e⟩⟩ ↦ P.prop_of_iso e hY, fun hX ↦ ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩⟩
+
 end CategoryTheory

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.Opposite
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
@@ -23,6 +24,19 @@ namespace CategoryTheory
 open Limits ZeroObject Opposite
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+
+-- to be moved
+lemma IsZero.of_full_of_faithful_of_isZero
+    (F : C ⥤ D) [F.Full] [F.Faithful] (X : C) (hX : IsZero (F.obj X)) :
+    IsZero X := by
+      have h : F.FullyFaithful := .ofFullyFaithful _
+      constructor
+      · intro Y
+        have := (hX.unique_to (F.obj Y)).some
+        exact ⟨h.homEquiv.unique⟩
+      · intro Y
+        have := (hX.unique_from (F.obj Y)).some
+        exact ⟨h.homEquiv.unique⟩
 
 namespace ObjectProperty
 
@@ -87,6 +101,11 @@ instance (P : ObjectProperty Cᵒᵖ) [P.ContainsZero] : P.unop.ContainsZero whe
   exists_zero := by
     obtain ⟨Z, hZ, mem⟩ := P.exists_prop_of_containsZero
     exact ⟨Z.unop, hZ.unop, mem⟩
+
+instance [P.ContainsZero] : HasZeroObject P.FullSubcategory where
+  zero := by
+    obtain ⟨X, h₁, h₂⟩ := P.exists_prop_of_containsZero
+    exact ⟨_, IsZero.of_full_of_faithful_of_isZero P.ι ⟨X, h₂⟩ h₁⟩
 
 end ObjectProperty
 
