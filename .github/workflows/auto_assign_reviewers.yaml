@@ -23,7 +23,7 @@ jobs:
           # The assignments file has entries of the form "2234": "user_handle".
           # Use grep to select only the PR numbers, and sed to the trailing comma, as well as
           # any whitespace (both at the line start and after the colon).
-          lines=$(jq "." assignments.json | grep '"' | sed 's/,*$//' | sed 's/ *//')
+          lines=$(jq "." assignments.json | grep '"' | sed 's/,*$//' | sed 's/ *//' | sed 's/ //')
           for line in $lines; do
             # |line| has the form _"234":"user_handle"_ (without the underscores).
             # Use cut to extract the parts around the colon, and sed to remove the quotes.
