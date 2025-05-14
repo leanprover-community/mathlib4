@@ -33,7 +33,7 @@ if `w` is reduced (i.e none its letters are in the image of the base monoid), an
 ## References
 
 * The normal form theorem follows these [notes](https://webspace.maths.qmul.ac.uk/i.m.chiswell/ggt/lecture_notes/lecture2.pdf)
-from Queen Mary University
+  from Queen Mary University
 
 ## Tags
 
@@ -267,7 +267,7 @@ instance : Inhabited (NormalWord d) := ⟨NormalWord.empty⟩
 
 instance (i : ι) : Inhabited (Pair d i) :=
   ⟨{ (empty : NormalWord d) with
-      head := 1,
+      head := 1, tail := _,
       fstIdx_ne := fun h => by cases h }⟩
 
 @[ext]
@@ -494,7 +494,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
     (empty : motive empty)
     (cons : ∀ (i : ι) (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
       (_hgn : g ∈ d.set i) (hgr : g ∉ (φ i).range) (_hw1 : w.head = 1),
-      motive w →  motive (cons g w hmw hgr))
+      motive w → motive (cons g w hmw hgr))
     (base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
       (base φ h • w)) : motive w := by
   rcases w with ⟨w, head, h3⟩
@@ -504,20 +504,20 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
     | empty => exact empty
     | cons i g w h1 hg1 ih =>
       convert cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
-        h1 (h3 _ _ (List.mem_cons_self _ _)) ?_ rfl
+        h1 (h3 _ _ List.mem_cons_self) ?_ rfl
         (ih ?_)
       · ext
         simp only [Word.cons, Option.mem_def, NormalWord.cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
-          (h3 _ _ (List.mem_cons_self _ _))]
+          (h3 _ _ List.mem_cons_self)]
       · apply d.injective i
         simp only [NormalWord.cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
           map_one, mul_one, mul_inv_cancel, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
-          (h3 _ _ (List.mem_cons_self _ _))]
+          (h3 _ _ List.mem_cons_self)]
       · rwa [← SetLike.mem_coe,
           ← coe_equiv_snd_eq_one_iff_mem (d.compl i) (d.one_mem _),
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
-          (h3 _ _ (List.mem_cons_self _ _))]
+          (h3 _ _ List.mem_cons_self)]
 
 
 theorem cons_eq_smul {i : ι} (g : G i)
@@ -627,7 +627,7 @@ theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw 
       ⟨w', hw'prod, hw'map⟩
     refine ⟨cons g w' ?_ ?_, ?_⟩
     · rwa [Word.fstIdx, ← List.head?_map, hw'map, List.head?_map]
-    · exact hw _ (List.mem_cons_self _ _)
+    · exact hw _ List.mem_cons_self
     · simp [hw'prod, hw'map]
 
 /-- For any word `w` in the coproduct,

@@ -5,7 +5,7 @@ Authors: Shing Tak Lam, Frédéric Dupuis
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 
 /-!
 # Unitary elements of a star monoid
@@ -122,16 +122,18 @@ def toUnits : unitary R →* Rˣ where
 theorem toUnits_injective : Function.Injective (toUnits : unitary R → Rˣ) := fun _ _ h =>
   Subtype.ext <| Units.ext_iff.mp h
 
-theorem _root_.IsUnit.mem_unitary_of_star_mul_self {u : R} (hu : IsUnit u)
-    (h_mul : star u * u = 1) : u ∈ unitary R := by
-  refine unitary.mem_iff.mpr ⟨h_mul, ?_⟩
+theorem _root_.IsUnit.mem_unitary_iff_star_mul_self {u : R} (hu : IsUnit u) :
+    u ∈ unitary R ↔ star u * u = 1 := by
+  rw [unitary.mem_iff, and_iff_left_of_imp fun h_mul => ?_]
   lift u to Rˣ using hu
   exact left_inv_eq_right_inv h_mul u.mul_inv ▸ u.mul_inv
 
-theorem _root_.IsUnit.mem_unitary_of_mul_star_self {u : R} (hu : IsUnit u)
-    (h_mul : u * star u = 1) : u ∈ unitary R :=
-  star_star u ▸
-    (hu.star.mem_unitary_of_star_mul_self ((star_star u).symm ▸ h_mul) |> unitary.star_mem)
+theorem _root_.IsUnit.mem_unitary_iff_mul_star_self {u : R} (hu : IsUnit u) :
+    u ∈ unitary R ↔ u * star u = 1 := by
+  rw [← star_mem_iff, hu.star.mem_unitary_iff_star_mul_self, star_star]
+
+alias ⟨_, _root_.IsUnit.mem_unitary_of_star_mul_self⟩ := IsUnit.mem_unitary_iff_star_mul_self
+alias ⟨_, _root_.IsUnit.mem_unitary_of_mul_star_self⟩ := IsUnit.mem_unitary_iff_mul_star_self
 
 instance instIsStarNormal (u : unitary R) : IsStarNormal u where
   star_comm_self := star_mul_self u |>.trans <| (mul_star_self u).symm

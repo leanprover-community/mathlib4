@@ -114,6 +114,12 @@ def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
   unitIso := Iso.refl (𝟭 Cᵒᵖᵒᵖ)
   counitIso := Iso.refl (opOp C ⋙ unopUnop C)
 
+instance : (opOp C).IsEquivalence :=
+  (opOpEquivalence C).isEquivalence_inverse
+
+instance : (unopUnop C).IsEquivalence :=
+  (opOpEquivalence C).isEquivalence_functor
+
 end
 
 /-- If `f` is an isomorphism, so is `f.op` -/
@@ -492,6 +498,12 @@ def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
     apply Quiver.Hom.op_inj
     dsimp
     simp
+
+/-- An equivalence between `C` and `Dᵒᵖ` gives an equivalence between `Cᵒᵖ` and `D`. -/
+@[simps!] def leftOp (e : C ≌ Dᵒᵖ) : Cᵒᵖ ≌ D := e.op.trans (opOpEquivalence D)
+
+/-- An equivalence between `Cᵒᵖ` and `D` gives an equivalence between `C` and `Dᵒᵖ`. -/
+@[simps!] def rightOp (e : Cᵒᵖ ≌ D) : C ≌ Dᵒᵖ := (opOpEquivalence C).symm.trans e.op
 
 end Equivalence
 
