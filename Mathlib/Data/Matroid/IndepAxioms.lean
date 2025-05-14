@@ -279,7 +279,7 @@ provided independence is determined by its behaviour on finite sets. -/
         refine not_lt.1 fun hlt ↦ ?_
         obtain ⟨f, hfI, hfJ, hfi⟩ := indep_aug hJ hJfin heI₀i (hI₀fin.insert e) hlt
         have hfE₀ : f ∈ E₀ := mem_of_mem_of_subset hfI (insert_subset_insert subset_union_left)
-        exact hfJ <| insert_eq_self.1 <| le_imp_eq_iff_le_imp_le.2 (hJmax
+        exact hfJ <| insert_eq_self.1 <| le_imp_eq_iff_le_imp_ge'.2 (hJmax
           ⟨hB₀J.trans <| subset_insert _ _, hfi, insert_subset hfE₀ hJss⟩) (subset_insert _ _)
 
       -- But this means `|I₀| < |J|`, and extending `I₀` into `J` gives a contradiction
