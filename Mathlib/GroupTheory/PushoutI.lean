@@ -33,7 +33,7 @@ if `w` is reduced (i.e none its letters are in the image of the base monoid), an
 ## References
 
 * The normal form theorem follows these [notes](https://webspace.maths.qmul.ac.uk/i.m.chiswell/ggt/lecture_notes/lecture2.pdf)
-from Queen Mary University
+  from Queen Mary University
 
 ## Tags
 

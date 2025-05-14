@@ -30,9 +30,9 @@ of products.
   all homotopies are done relative to some set S ⊆ A.
 
 - `ContinuousMap.Homotopy.prod F G` is the product of homotopies F and G,
-   where F is a homotopy between f₀ and f₁, G is a homotopy between g₀ and g₁.
-   The result F × G is a homotopy between (f₀ × g₀) and (f₁ × g₁).
-   Again, all homotopies are done relative to S.
+  where F is a homotopy between f₀ and f₁, G is a homotopy between g₀ and g₁.
+  The result F × G is a homotopy between (f₀ × g₀) and (f₁ × g₁).
+  Again, all homotopies are done relative to S.
 
 - `ContinuousMap.HomotopyRel.prod F G`: Same as `ContinuousMap.Homotopy.prod`, but
   all homotopies are done relative to some set S ⊆ A.
