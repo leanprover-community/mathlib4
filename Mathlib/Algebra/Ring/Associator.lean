@@ -19,9 +19,7 @@ as well as the bundled version of `mulLeft₃` and `mulRight₃`, the multiplica
 `x * (y * z)`.
 -/
 
-universe u
-
-variable {R : Type u}
+variable {R : Type*}
 
 section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing R]
