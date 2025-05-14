@@ -498,17 +498,14 @@ theorem eLpNorm'_enorm_rpow (f : α → ε) (p q : ℝ) (hq_pos : 0 < q) :
   simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
     mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, enorm_eq_self, ← ENNReal.rpow_mul, mul_comm]
 
--- TODO: where is a good home for this lemma? minimal imports are
--- Mathlib.Analysis.Normed.{Group.Continuity, Ring.Basic}; #find_home! is not helpful
-lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ:= by
-  simpa using (Real.enorm_of_nonneg ha).symm
-
 -- XXX: should this lemma be added?
+/-- `f : α → ℝ` and `ENNReal.ofReal ∘ f: α → ℝ≥0∞` have the same `eLpNorm'`.
+Usually, you should not use this lemma (but use enorms everywhere.) -/
 lemma eLpNorm'_ofReal (f : α → ℝ) (hf : ∀ᵐ x ∂μ, 0 ≤ f x) (p : ℝ) :
     eLpNorm' (ENNReal.ofReal ∘ f) p μ = eLpNorm' f p μ :=
   eLpNorm'_congr_enorm_ae <| hf.mono fun _x hx ↦ enorm_ofReal_of_nonneg hx
 
-/-- `f : α → ℝ` and `ENNReal.ofReal ∘ f: α → ℝ≥0∞` have the same enorm.
+/-- `f : α → ℝ` and `ENNReal.ofReal ∘ f: α → ℝ≥0∞` have the same `eLpNorm`.
 Usually, you should not use this lemma (but use enorms everywhere.) -/
 lemma eLpNorm_ofReal (f : α → ℝ) (hf : ∀ᵐ x ∂μ, 0 ≤ f x) :
     eLpNorm (ENNReal.ofReal ∘ f) p μ = eLpNorm f p μ :=
