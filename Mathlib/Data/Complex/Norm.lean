@@ -173,7 +173,7 @@ protected theorem sq_norm (z : ℂ) : ‖z‖ ^ 2 = normSq z := (normSq_eq_norm_
 
 @[simp]
 theorem sq_norm_sub_sq_re (z : ℂ) : ‖z‖ ^ 2 - z.re ^ 2 = z.im ^ 2 := by
-   rw [Complex.sq_norm, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
+  rw [Complex.sq_norm, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
 
 @[simp]
 theorem sq_norm_sub_sq_im (z : ℂ) : ‖z‖ ^ 2 - z.im ^ 2 = z.re ^ 2 := by
