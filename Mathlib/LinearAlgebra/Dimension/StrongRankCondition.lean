@@ -523,7 +523,7 @@ for a version with different typeclass constraints. -/
 lemma Module.finrank_bot_le_finrank_of_isScalarTower
     (R S T : Type*) [CommSemiring R] [CommSemiring S] [Semiring T] [StrongRankCondition R]
     [Algebra R T] [Algebra S T] [Algebra R S] [IsScalarTower R S T] [FaithfulSMul S T]
-    [Module.Finite R S] [Module.Finite R T] :
+    [Module.Finite R T] :
     finrank R S ≤ finrank R T :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_bot_le_lift_rank_of_isScalarTower R S T)
     (Module.rank_lt_aleph0 _ _)
