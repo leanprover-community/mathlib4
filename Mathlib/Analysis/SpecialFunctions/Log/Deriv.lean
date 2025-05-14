@@ -83,6 +83,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
     simp
   · exact A x hx
 
+@[fun_prop]
 theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
   intro x hx
   simp only [mem_compl_iff, mem_singleton_iff] at hx
@@ -157,17 +158,21 @@ theorem DifferentiableAt.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
     DifferentiableAt ℝ (fun x => log (f x)) x :=
   (hf.hasFDerivAt.log hx).differentiableAt
 
+@[fun_prop]
 theorem ContDiffAt.log {n} (hf : ContDiffAt ℝ n f x) (hx : f x ≠ 0) :
     ContDiffAt ℝ n (fun x => log (f x)) x :=
   (contDiffAt_log.2 hx).comp x hf
 
+@[fun_prop]
 theorem ContDiffWithinAt.log {n} (hf : ContDiffWithinAt ℝ n f s x) (hx : f x ≠ 0) :
     ContDiffWithinAt ℝ n (fun x => log (f x)) s x :=
   (contDiffAt_log.2 hx).comp_contDiffWithinAt x hf
 
+@[fun_prop]
 theorem ContDiffOn.log {n} (hf : ContDiffOn ℝ n f s) (hs : ∀ x ∈ s, f x ≠ 0) :
     ContDiffOn ℝ n (fun x => log (f x)) s := fun x hx => (hf x hx).log (hs x hx)
 
+@[fun_prop]
 theorem ContDiff.log {n} (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) :
     ContDiff ℝ n fun x => log (f x) :=
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.log (h x)

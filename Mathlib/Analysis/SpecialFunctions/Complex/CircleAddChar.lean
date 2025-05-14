@@ -63,20 +63,17 @@ lemma toCircle_apply (j : ZMod N) :
     toCircle j = exp (2 * π * I * j.val / N) := by
   rw [← toCircle_natCast, natCast_zmod_val]
 
-lemma toCircle_eq_Circle_exp (j : ZMod N) :
+lemma toCircle_eq_circleExp (j : ZMod N) :
     toCircle j = Circle.exp (2 * π * (j.val / N)) := by
   ext
   rw [toCircle_apply, Circle.coe_exp]
-  congr
-  rw [mul_assoc, mul_div_assoc, mul_div_assoc, mul_comm I, ← mul_assoc, mul_left_inj' I_ne_zero,
-    ofReal_mul, ofReal_div, ofReal_mul, ofReal_ofNat, mul_right_inj'
-    (by rw [← ofReal_ofNat, ← ofReal_mul, ofReal_ne_zero]; exact Real.two_pi_ne_zero)]
-  simp only [ofReal_natCast]
+  push_cast
+  ring_nf
 
 lemma rootsOfUnity_exp_eq (k : ZMod N) : rootsOfUnity.exp N k = (ZMod.toCircle k).toUnits := by
   rw [rootsOfUnity.exp]
   simp only
-  rw [Units.exp, comp_apply, toCircle_eq_Circle_exp]
+  rw [Units.exp, comp_apply, toCircle_eq_circleExp]
 
 lemma injective_toCircle : Injective (toCircle : ZMod N → Circle) :=
   (AddCircle.injective_toCircle one_ne_zero).comp (toAddCircle_injective N)

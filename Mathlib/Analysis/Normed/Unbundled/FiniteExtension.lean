@@ -65,7 +65,7 @@ protected theorem norm_zero : B.norm 0 = 0 := by
 
 /-- For any `K`-basis of `L`, and any `x : L`, we have `B.norm (-x) = B.norm x`. -/
 protected theorem norm_neg (x : L) : B.norm (-x) = B.norm x := by
-  simp [norm, map_neg,  Pi.neg_apply, _root_.norm_neg]
+  simp [norm, map_neg, Pi.neg_apply, _root_.norm_neg]
 
 /-- For any `K`-basis of `L`, and any `x : L`, we have `0 ≤ B.norm x`. -/
 protected theorem norm_nonneg (x : L) : 0 ≤ B.norm x := by
