@@ -63,8 +63,9 @@ variable {α β : Type*} {x y z u v w : α} {e f : β}
 
 open Set
 
-/-- A multigraph with vertex set `vertexSet : Set α` and edge set `edgeSet : Set β`,
-as described by a predicate `IsLink` describing whether an edge `e : β` has ends `x` and `y`.
+/-- A multigraph with vertices of type `α` and edges of type `β`,
+as described by vertex and edge sets `vertexSet : Set α` and `edgeSet : Set β`,
+and a predicate `IsLink` describing whether an edge `e : β` has vertices `x y : α` as its ends.
 
 The `edgeSet` structure field can be inferred from `IsLink`
 via `edge_mem_iff_exists_isLink` (and this structure provides default values
