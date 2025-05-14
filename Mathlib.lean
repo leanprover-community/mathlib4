@@ -1681,6 +1681,7 @@ import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.Normed.Ring.WithAbs
 import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
+import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
 import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
 import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
