@@ -19,15 +19,16 @@ Then we prove some results on the unique factorization monoid structure of the i
 
 ## Main definitions
 
- - `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
-   every nonzero fractional ideal is invertible.
- - `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
-   fractions.
- - `IsDedekindDomain.HeightOneSpectrum` defines the type of nonzero prime ideals of `R`.
+- `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
+  every nonzero fractional ideal is invertible.
+- `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
+  fractions.
+- `IsDedekindDomain.HeightOneSpectrum` defines the type of nonzero prime ideals of `R`.
 
 ## Main results:
- - `isDedekindDomain_iff_isDedekindDomainInv`
- - `Ideal.uniqueFactorizationMonoid`
+
+- `isDedekindDomain_iff_isDedekindDomainInv`
+- `Ideal.uniqueFactorizationMonoid`
 
 ## Implementation notes
 
