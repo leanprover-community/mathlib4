@@ -693,8 +693,8 @@ lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
     use i
 
 /-- Adding a gift horse left option does not change the value of `x`. A gift horse left option is
- a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
- "gift" of a new option, but actually the value of the game did not change. -/
+a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
+"gift" of a new option, but actually the value of the game did not change. -/
 lemma insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈ x := by
   rw [equiv_def]
   constructor
