@@ -83,21 +83,13 @@ lemma analytic_iter_deriv (k : ℕ) (f : ℂ → ℂ) z (hf : AnalyticAt ℂ f z
 
 -- iteratedDeriv_one
 
-lemma unfilter (p : A → Prop) :
-    (∀ᶠ z in f, p z) ↔ ∃ U ∈ f, ∀ z ∈ U, p z := by {
-      unfold Filter.Eventually
-      constructor
-      · intro h
-        simp at h
-        use {x | p x}
-        constructor
-        · exact h
-        · aesop
-      · intro h
-        simp
-        rcases h with ⟨U, ⟨hU, hUp⟩⟩
-        exact Filter.mem_of_superset hU hUp
-    }
+lemma unfilter {A f} (p : A → Prop) :
+  (∀ᶠ z in f, p z) ↔ ∃ U ∈ f, ∀ z ∈ U, p z := by
+    constructor
+    · intro h; use {x | p x}; exact ⟨h, by aesop⟩
+    · intro h
+      rcases h with ⟨U, ⟨hU, hUp⟩⟩
+      exact Filter.mem_of_superset hU hUp
 
 lemma test1 (f g : ℂ → ℂ) (hf : AnalyticAt ℂ f z) (hg : AnalyticAt ℂ g z):
     deriv (fun z => f z + g z) z = deriv f z + deriv g z := by
@@ -109,38 +101,74 @@ lemma test1 (f g : ℂ → ℂ) (hf : AnalyticAt ℂ f z) (hg : AnalyticAt ℂ g
 lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f z₀)
   (hfdev : AnalyticAt ℂ (deriv f) z₀) (n : ℕ) :
   AnalyticAt.order hf = n → n > 0 →
-      AnalyticAt.order (AnalyticAt.deriv hf) = (n - 1:ℕ) := by {
+      AnalyticAt.order (AnalyticAt.deriv hf) = (n - 1 : ℕ) := by {
     intros horder hn
     rw [order_eq_nat_iff] at horder
     obtain ⟨g, hg, ⟨hgneq0, hexp⟩⟩ := horder
     rw [order_eq_nat_iff]
     use fun z => n • g z + (z - z₀) • deriv g z
     constructor
-    · sorry
+    · refine AnalyticAt.fun_add ?_ ?_
+      · simp only [nsmul_eq_mul]
+        exact AnalyticAt.fun_const_smul hg
+      · refine fun_mul ?_ ?_
+        · refine fun_sub ?_ ?_
+          · refine Differentiable.analyticAt ?_ z₀
+            exact differentiable_id'
+          · refine Differentiable.analyticAt ?_ z₀
+            exact differentiable_const z₀
+        · exact AnalyticAt.deriv hg
     · constructor
-      · sorry
-      · rw [unfilter] at *
+      · aesop
+      ·
+
+        rw [unfilter] at *
         rcases hexp with ⟨U, hU, hUf⟩
         use U
         constructor
         · exact hU
         · intros z Hz
-          have := hUf z Hz
+          simp only [nsmul_eq_mul, smul_eq_mul]
+          rw [mul_add]
+          --(z - z₀) ^ (n - 1) * (↑n * g z) + (z - z₀) ^ (n - 1) * ((z - z₀) * deriv g z)
+          -- have : deriv (fun z => (z - z₀)^n • g z) z₀ =
+          --   (z - z₀) ^ (n - 1) * (↑n * g z) + (z - z₀) ^ (n - 1) * ((z - z₀) * deriv g z) := by {
+          --     --rw [deriv_add]
+          --     rw [deriv_smul]
+          --     simp only [smul_eq_mul, differentiableAt_id', differentiableAt_const,
+          --       DifferentiableAt.sub, deriv_pow'', deriv_sub, deriv_id'', deriv_const', sub_zero,
+          --       mul_one]
+          --     sorry
+          --     · aesop
+          --     · exact AnalyticAt.differentiableAt hg
+          --   }
+
+
+          -- have hDeriv : HasDerivAtFilter f ((z - z₀) ^ (n - 1) • (n • g z + (z - z₀) • deriv g z)) z₀ (nhds z₀) := by {
+          --   unfold HasDerivAtFilter
 
 
 
 
-          have : f = fun z => (z - z₀) ^ n • g z := by
-            ext z'
-            simp at hUf
+          -- }
 
-            sorry
 
-        sorry
+
+
+        --   intros z Hz
+        --   have := hUf z Hz
+          -- have : f = fun z => (z - z₀) ^ n • g z := by
+          --   ext z'
+          --   simp at hUf
+          --   sorry
+
+
+        --     sorry
+
+        -- sorry
 
   }
-
-#check order_eq_nat_iff
+#exit
 lemma order_geq_k_then_deriv_n_neg_1 (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
    (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z) :
    (∀ z : ℂ, k ≤ AnalyticAt.order (hf z)) → ∀ z, AnalyticAt.order (hfdev z) =
