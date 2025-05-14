@@ -5,8 +5,7 @@ This folder contains order theory in a broad sense.
 ## Order hierarchy
 
 The basic order hierarchy is split across a series of subfolders that each depend on the previous:
-* `Order.Preorder` for preorders, partial orders
-* `Order.Lattice` for lattices, linear orders
+* `Order.Preorder` for preorders, partial orders, lattices, linear orders
 * `Order.BooleanAlgebra` for heyting/biheyting/coheyting/boolean algebras
 * `Order.CompleteLattice` for frames, coframes, complete lattices
 * `Order.ConditionallyCompleteLattice` for conditionally complete lattices
