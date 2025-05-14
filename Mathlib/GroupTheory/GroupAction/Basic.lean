@@ -250,7 +250,7 @@ variable {g h k : G} {a b c : α}
 def stabilizerEquivStabilizer (hg : b = g • a) : stabilizer G a ≃* stabilizer G b :=
   ((MulAut.conj g).subgroupMap (stabilizer G a)).trans
     (MulEquiv.subgroupCongr (by
-      rw [hg, stabilizer_smul_eq_stabilizer_map_conj g a, ← @MulEquiv.toMonoidHom_eq_coe]))
+      rw [hg, stabilizer_smul_eq_stabilizer_map_conj g a, ← MulEquiv.toMonoidHom_eq_coe]))
 
 theorem stabilizerEquivStabilizer_apply (hg : b = g • a) (x : stabilizer G a) :
     stabilizerEquivStabilizer hg x = MulAut.conj g x := by
@@ -260,7 +260,7 @@ theorem stabilizerEquivStabilizer_symm_apply (hg : b = g • a) (x : stabilizer 
     (stabilizerEquivStabilizer hg).symm x = MulAut.conj g⁻¹ x := by
   simp [stabilizerEquivStabilizer]
 
-theorem stabilizerEquivStabilizer_trans {hg : b = g • a} {hh : c = h • b} {hk : c = k • a}
+theorem stabilizerEquivStabilizer_trans (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
     (H : k = h * g) :
     (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh) =
       stabilizerEquivStabilizer hk := by
@@ -307,7 +307,7 @@ variable {g h k : G} {a b c : α}
 def stabilizerEquivStabilizer (hg : b = g +ᵥ a) : stabilizer G a ≃+ stabilizer G b :=
   AddEquiv.trans ((AddAut.conj g).toMul.addSubgroupMap _)
     (AddEquiv.addSubgroupCongr (by
-      rw [hg, stabilizer_vadd_eq_stabilizer_map_conj g a, ← @AddEquiv.toAddMonoidHom_eq_coe]))
+      rw [hg, stabilizer_vadd_eq_stabilizer_map_conj g a, ← AddEquiv.toAddMonoidHom_eq_coe]))
 
 theorem stabilizerEquivStabilizer_apply (hg : b = g +ᵥ a) (x : stabilizer G a) :
     stabilizerEquivStabilizer hg x = (AddAut.conj g).toMul x := by
@@ -318,7 +318,7 @@ theorem stabilizerEquivStabilizer_symm_apply (hg : b = g +ᵥ b) (x : stabilizer
   simp [stabilizerEquivStabilizer]
 
 theorem stabilizerEquivStabilizer_trans
-    {hg : b = g +ᵥ a} {hh : c = h +ᵥ b} {hk : c = k +ᵥ a} (H : k = h + g):
+    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g):
     (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh)
       = stabilizerEquivStabilizer hk := by
   ext; simp [stabilizerEquivStabilizer_apply, H]
