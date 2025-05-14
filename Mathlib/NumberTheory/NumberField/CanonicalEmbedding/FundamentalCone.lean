@@ -458,9 +458,9 @@ theorem integerSetEquivNorm_apply_fst {n : ℕ}
     (a : {a : integerSet K // mixedEmbedding.norm (a : mixedSpace K) = n}) :
     ((integerSetEquivNorm K n a).1 : Ideal (𝓞 K)) =
       span {(preimageOfMemIntegerSet a.val : 𝓞 K)} := by
- simp_rw [integerSetEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.instTrans_trans,
-   Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
-   Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integerSetEquiv_apply_fst]
+  simp_rw [integerSetEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.instTrans_trans,
+    Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
+    Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integerSetEquiv_apply_fst]
 
 variable (K)
 
