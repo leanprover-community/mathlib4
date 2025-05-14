@@ -1358,4 +1358,3 @@ protected def localizationMap : S.LocalizationMap R[S⁻¹] := Localization.mono
 protected noncomputable def equivMonoidLocalization : Localization S ≃* R[S⁻¹] := MulEquiv.refl _
 
 end OreLocalization
-#min_imports
