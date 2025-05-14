@@ -252,16 +252,6 @@ def stabilizerEquivStabilizer (hg : b = g • a) : stabilizer G a ≃* stabilize
     (MulEquiv.subgroupCongr (by
       rw [hg, stabilizer_smul_eq_stabilizer_map_conj g a, ← @MulEquiv.toMonoidHom_eq_coe]))
 
-@[simp]
-theorem MulAut.inv_apply {M : Type*} [Mul M] (e : MulAut M) (x : M) :
-      e⁻¹ x = e.symm x := by
-  rw [MulAut.inv_def]
-
-@[simp]
-theorem MulAut.symm_inv_apply {M : Type*} [Mul M] (e : MulAut M) (x : M) :
-      (e⁻¹).symm x = e x := by
-  simp only [MulAut.inv_def, MulEquiv.symm_symm]
-
 theorem stabilizerEquivStabilizer_apply (hg : b = g • a) (x : stabilizer G a) :
     stabilizerEquivStabilizer hg x = MulAut.conj g x := by
   simp [stabilizerEquivStabilizer]
