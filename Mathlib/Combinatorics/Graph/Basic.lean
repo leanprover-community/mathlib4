@@ -56,6 +56,7 @@ the vertex or edge set. This is an issue, but is likely amenable to automation.
 
 Reflecting written mathematics, we use the compact notations `V(G)` and `E(G)` to
 refer to the `vertexSet` and `edgeSet` of `G : Graph α β`.
+If `G.IsLink e x y` then we refer to `e` as `edge` and `x` and `y` as `left` and `right` in names.
 -/
 
 variable {α β : Type*} {x y z u v w : α} {e f : β}
@@ -72,16 +73,15 @@ structure Graph (α β : Type*) where
   vertexSet : Set α
   /-- The edge set. -/
   edgeSet : Set β
-  /-- The binary incidence predicate; `G.IsLink e x y` means the edge `e` has ends `x` and `y`.
-  If this holds, we refer to `e` as `edge` and `x` and `y` as `left` and `right` in lemma names. -/
+  /-- The binary incidence predicate, stating that `x` and `y` are the ends of an edge `e`. -/
   IsLink : β → α → α → Prop
   /-- If `e` goes from `x` to `y`, it goes from `y` to `x`. -/
   isLink_symm : ∀ ⦃e⦄, e ∈ edgeSet → (Symmetric <| IsLink e)
   /-- An edge is incident with at most one pair of vertices. -/
   eq_or_eq_of_isLink_of_isLink : ∀ ⦃e x y v w⦄, IsLink e x y → IsLink e v w → x = v ∨ x = w
-  /-- An edge `e` is incident to some vertex if and only if `e` is in the edge set. -/
+  /-- An edge `e` is incident to something if and only if `e` is in the edge set. -/
   edge_mem_iff_exists_isLink : ∀ e, e ∈ edgeSet ↔ ∃ x y, IsLink e x y
-  /-- If some edge `e` is incident to the vertex `x`, then `x ∈ V`. -/
+  /-- If some edge `e` is incident to `x`, then `x ∈ V`. -/
   left_mem_of_isLink : ∀ ⦃e x y⦄, IsLink e x y → x ∈ vertexSet
 
 namespace Graph
@@ -124,20 +124,19 @@ lemma IsLink.left_eq_of_isLink_of_ne (h : G.IsLink e x y) (h' : G.IsLink e z w) 
     x = w :=
   (h.left_eq_or_eq_of_isLink h').elim (False.elim ∘ hzx) id
 
-lemma IsLink.right_eq_of_isLink (h : G.IsLink e x y) (h' : G.IsLink e x z) : y = z := by
+lemma IsLink.right_unique (h : G.IsLink e x y) (h' : G.IsLink e x z) : y = z := by
   obtain rfl | rfl := h.symm.left_eq_or_eq_of_isLink h'.symm
   · rfl
   obtain rfl | rfl := h'.symm.left_eq_or_eq_of_isLink h.symm <;> rfl
 
+lemma IsLink.left_unique (h : G.IsLink e x z) (h' : G.IsLink e y z) : x = y :=
+  h.symm.right_unique h'.symm
+
 lemma IsLink.eq_and_eq_or_eq_and_eq_of_isLink {x' y' : α} (h : G.IsLink e x y)
     (h' : G.IsLink e x' y') : (x = x' ∧ y = y') ∨ (x = y' ∧ y = x') := by
   obtain rfl | rfl := h.left_eq_or_eq_of_isLink h'
-  · obtain rfl | rfl := h.symm.left_eq_or_eq_of_isLink h'
-    · obtain rfl | rfl := h'.symm.left_eq_or_eq_of_isLink h <;> simp
-    simp
-  obtain rfl | rfl := h.symm.left_eq_or_eq_of_isLink h'
-  · simp
-  obtain rfl | rfl := h'.left_eq_or_eq_of_isLink h <;> simp
+  · simp [h.right_unique h']
+  simp [h'.symm.right_unique h]
 
 lemma IsLink.isLink_iff (h : G.IsLink e x y) {x' y' : α} :
     G.IsLink e x' y' ↔ (x = x' ∧ y = y') ∨ (x = y' ∧ y = x') := by
@@ -152,8 +151,7 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
 
 /-! ### Edge-vertex incidence -/
 
-/-- The unary incidence predicate. `G.Inc e x` means that `x` is one of the ends of `e`.
-If `G.Inc e x`, then we refer to `e` as `edge` and `x` as `vertex` in lemma names. -/
+/-- The unary incidence predicate of `G`. `G.Inc e x` means that `x` is one of the ends of `e`. -/
 def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
 
 @[simp]
@@ -263,8 +261,7 @@ lemma Inc.isLoopAt_or_isNonloopAt (h : G.Inc e x) : G.IsLoopAt e x ∨ G.IsNonlo
 
 /-! ### Adjacency -/
 
-/-- `G.Adj x y` means that `G` has an edge from `x` to `y`. We refer to `x` and `y` as `left`
-and `right` in lemma names. -/
+/-- `G.Adj x y` means that `G` has an edge from `x` to `y`. -/
 def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
 
 lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
