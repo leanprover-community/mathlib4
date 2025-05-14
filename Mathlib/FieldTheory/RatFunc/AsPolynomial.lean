@@ -228,7 +228,9 @@ lemma valuation_monomial_eq_valuation_X_pow
     RatFunc.algebraMap_X, h, hv a ha, one_mul]
 
 /-- If a valuation `v` is trivial on constants and `1 < v RatFunc.X` then for every polynomial `p`,
-`v p = v RatFunc.X ^ p.natDegree`. -/
+`v p = v RatFunc.X ^ p.natDegree`.
+
+Note: The condition `1 < v RatFunc.X` is typically satisfied by the valuation at infinity. -/
 theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
     [Nontrivial Γ] [PosMulStrictMono Γ] (hlt : 1 < v RatFunc.X)
     (h : ∀ a : K, a ≠ 0 → v (algebraMap K (RatFunc K) a) = 1) {p : Polynomial K} (hp : p ≠ 0) :
