@@ -484,7 +484,7 @@ section Extension
 
 namespace NumberField.InfinitePlace
 
-variable (K : Type*) (L : Type*) [Field K] [Field L] [Algebra K L] (w : InfinitePlace L)
+variable (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L)
 
 open scoped Classical in
 /-- If `w` is unramified over `K` then the ramification index is `1`, else `2`. -/
