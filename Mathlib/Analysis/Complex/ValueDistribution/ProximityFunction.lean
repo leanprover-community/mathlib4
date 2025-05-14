@@ -18,10 +18,9 @@ The proximity function is a logarithmically weighted measure quantifying how wel
 function `f` approximates the constant function `a` on the circle of radius `R` in the complex
 plane.  The definition ensures that large values correspond to good approximation.
 
-See Section~VI.2 of [Lang: Introduction to Complex Hyperbolic
-Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) or Section~1.1 of
-[Noguchi-Winkelmann: Nevanlinna Theory in Several Complex Variables and Diophantine
-Approximation](https://link.springer.com/book/10.1007/978-4-431-54571-2) for a detailed discussion.
+See Section~VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section~1.1 of
+[Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
+Approximation*][MR3156076] for a detailed discussion.
 -/
 
 open Metric Real Set
