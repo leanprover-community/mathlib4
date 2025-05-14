@@ -247,8 +247,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     obtain rfl | rfl := hx'
     · rw [hw _ hM1xb, ← hw _ hl.1.symm]
       exact hadj.symm
-    · subst h2
-      rw [hw.2 _ hM1xb.symm, ← hw.2 _ hl.1.symm]
+    · rw [hw _ hM1xb.symm, ← hw _ hl.1.symm]
       exact hadj
   simp only [Finset.mem_insert, Finset.mem_singleton, cycles] at hx'
   obtain rfl | rfl := hx'
