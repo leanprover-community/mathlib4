@@ -95,6 +95,19 @@ def moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom where
   map_add' x y := by aesop
   map_smul' a x := by aesop
 
+/-- The homology of `S`, defined as the quotient of the kernel of `S.g` by
+the image of `S.moduleCatToCycles` -/
+@[deprecated "This abbreviation is now inlined, as `S.moduleCatLeftHomologyData.H`"
+(since := "2025-05-13")]
+abbrev moduleCatHomology :=
+  ModuleCat.of R (LinearMap.ker S.g.hom ⧸ LinearMap.range S.moduleCatToCycles)
+
+/-- The canonical map `ModuleCat.of R (LinearMap.ker S.g) ⟶ S.moduleCatHomology`. -/
+@[deprecated "This abbreviation is now inlined, as `S.moduleCatLeftHomologyData.π`"
+(since := "2025-05-13")]
+abbrev moduleCatHomologyπ : ModuleCat.of R (LinearMap.ker S.g.hom) ⟶ S.moduleCatHomology :=
+  ModuleCat.ofHom (LinearMap.range S.moduleCatToCycles).mkQ
+
 /-- The explicit left homology data of a short complex of modules that is
 given by a kernel and a quotient given by the `LinearMap` API. The projections to `K` and `H` are
 not simp lemmas because the generic lemmas about `LeftHomologyData` are more useful here. -/
@@ -108,15 +121,6 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
   hi := ModuleCat.kernelIsLimit _
   wπ := by aesop
   hπ := ModuleCat.cokernelIsColimit (ModuleCat.ofHom S.moduleCatToCycles)
-
-/-- The homology of a short complex of modules as a concrete quotient. -/
-@[deprecated "This abbreviation is now inlined" (since := "2025-05-13")]
-alias moduleCatHomology := moduleCatLeftHomologyData_H
-
-/-- The natural projection map to the homology of a short complex of modules as a
-concrete quotient. -/
-@[deprecated "This abbreviation is now inlined" (since := "2025-05-13")]
-alias moduleCatHomologyπ := moduleCatLeftHomologyData_π_hom
 
 @[deprecated (since := "2025-05-09")]
 alias moduleCatLeftHomologyData_i := moduleCatLeftHomologyData_i_hom
