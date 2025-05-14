@@ -492,7 +492,7 @@ theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf
   · refine measure_mono_null (fun x hx ↦ ?_) H
     simp only [Pi.zero_apply, sub_nonneg, mem_compl_iff, mem_setOf_eq, not_le] at hx
     exact hx.le
-  · exact hf.sub ((integrableOn_const enorm_ne_top).2 <| Or.inr <| lt_top_iff_ne_top.2 hμ₁)
+  · exact hf.sub ((integrableOn_const).2 <| Or.inr <| lt_top_iff_ne_top.2 hμ₁)
   · rwa [pos_iff_ne_zero, inter_comm, ← diff_compl, ← diff_inter_self_eq_diff, measure_diff_null]
     refine measure_mono_null ?_ (measure_inter_eq_zero_of_restrict H)
     exact inter_subset_inter_left _ fun a ha => (sub_eq_zero.1 <| of_not_not ha).le
@@ -809,7 +809,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
       (Eventually.of_forall (fun x ↦ ?_))
     · apply (Integrable.sub h''i _).norm.const_mul
       change IntegrableOn (fun _ ↦ c) (a i) μ
-      simp [integrableOn_const, mu_ai]
+      simp [mu_ai]
     · dsimp; gcongr; simpa using h'i x
   have := L0.add (hg.smul_const c)
   simp only [one_smul, zero_add] at this
