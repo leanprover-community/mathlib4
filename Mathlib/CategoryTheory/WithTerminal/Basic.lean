@@ -448,46 +448,70 @@ def equivComma : (WithTerminal C ⥤ D) ≌ Comma (𝟭 (C ⥤ D)) (Functor.cons
 
 end
 
-open CategoryTheory.Limits CategoryTheory.Limits.WidePullbackShape in
+open CategoryTheory.Limits CategoryTheory.Limits.WidePullbackShape
+
+instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)) := fun _ _ => by
+  constructor
+  intro a b
+  casesm* WithTerminal _, (_ : WithTerminal _) ⟶ (_ : WithTerminal _)
+  · exact congr_arg (ULift.up ∘ PLift.up) rfl
+  · rfl
+  · rfl
+
+private def widePullbackShapeEquivObj {J : Type*} :
+    WidePullbackShape J ≃ WithTerminal (Discrete J) where
+  toFun
+  | .some x => .of <| .mk x
+  | .none => .star
+  invFun
+  | .of x => .some <| Discrete.as x
+  | .star => .none
+  left_inv  x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+
+private def widePullbackShapeEquivMap {J : Type*} (x y: WidePullbackShape J):
+    (x ⟶ y) ≃ (widePullbackShapeEquivObj x ⟶ widePullbackShapeEquivObj y) where
+  toFun
+  | Hom.term _ => PUnit.unit
+  | Hom.id _ => 𝟙 _
+  invFun f := match x, y with
+  | some x, some y =>
+    cast (by
+        have eq : x = y := PLift.down (ULift.down (down f))
+        rw [eq]
+        rfl
+    ) (Hom.id (some y))
+  | none, some y => by cases f
+  | some x, none => Hom.term x
+  | none, none => Hom.id none
+  left_inv f := by apply Subsingleton.allEq
+  right_inv f := match x, y with
+  | some x, some y => by apply Subsingleton.allEq
+  | none, some y => by cases f
+  | some x, none
+  | none, none => rfl
+
 /-- In the case of a discrete category, `WithTerminal` is the same category as `WidePullbackShape`
 -/
+@[simps!]
 def widePullbackShapeEquiv {J : Type*} : WidePullbackShape J ≌ WithTerminal (Discrete J) where
-  functor := wideCospan WithTerminal.star (WithTerminal.of ∘ Discrete.mk) (fun j ↦ PUnit.unit)
-  inverse := WithTerminal.lift
-    (Discrete.functor .some) (fun x ↦ (Hom.term (Discrete.as x))) (by aesop_cat)
-  unitIso.hom.app
-  | .some x => Hom.id (.some x)
-  | .none => Hom.id (.none)
-  unitIso.inv.app
-  | .some x => Hom.id (.some x)
-  | .none => Hom.id (.none)
-  counitIso.hom.app
-  | .of x => WithTerminal.id (.of x)
-  | .star => WithTerminal.id .star
-  counitIso.hom.naturality {x y} f := match x, y with
-  | .of x, .of y => by
-    by_cases h : x = y
-    · aesop_cat
-    have f := WithTerminal.down f
-    cases f with
-    | up f =>
-      have := Discrete.ext <| PLift.down f
-      contradiction
-  | _, .star => by aesop_cat
-  | .star, .of _ => by contradiction
-  counitIso.inv.app
-  | .of _ | .star => 𝟙 _
-  counitIso.inv.naturality {x y} f := match x, y with
-  | _, .star => by aesop_cat
-  | .star, .of _ => by contradiction
-  | .of x, .of y => by
-    by_cases h : x = y
-    · aesop_cat
-    have := WithTerminal.down f
-    cases f with
-    | up f =>
-      have := Discrete.ext <| PLift.down f
-      contradiction
+  functor.obj := widePullbackShapeEquivObj
+  functor.map {X Y} := widePullbackShapeEquivMap X Y
+  functor.map_comp _ _ := by apply Subsingleton.allEq
+  inverse.obj := widePullbackShapeEquivObj.symm
+  inverse.map {X Y} := cast (by
+    have eqX := Equiv.apply_symm_apply widePullbackShapeEquivObj X;
+    have eqY := Equiv.apply_symm_apply widePullbackShapeEquivObj Y;
+    rw [eqX, eqY];)
+    (widePullbackShapeEquivMap
+      (widePullbackShapeEquivObj.symm X) (widePullbackShapeEquivObj.symm Y)).invFun
+  inverse.map_id _ := by apply Subsingleton.allEq
+  inverse.map_comp _ _ := by apply Subsingleton.allEq
+  unitIso.hom.app x := cast (by cases x <;> simp) (𝟙 x)
+  unitIso.inv.app x := cast (by cases x <;> simp) (𝟙 x)
+  counitIso.hom.app x := cast (by cases x <;> simp) (𝟙 x)
+  counitIso.inv.app x := cast (by cases x <;> simp) (𝟙 x)
+  functor_unitIso_comp x := by apply Subsingleton.allEq
 
 end WithTerminal
 
