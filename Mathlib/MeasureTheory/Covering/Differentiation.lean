@@ -803,7 +803,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
         _ < ∞ + ∞ :=
           haveI I : Integrable ((A.set n).indicator fun _ : α => c) μ := by
             simp only [integrable_indicator_iff (IsOpen.measurableSet (A.set_mem n)),
-              integrableOn_const (C := c), A.finite n, or_true]
+              integrableOn_const (enorm_ne_top (x := c)), A.finite n, or_true]
           ENNReal.add_lt_add hf.2 I.2
   filter_upwards [main, v.ae_eventually_measure_pos] with x hx h'x
   have M c (hc : c ∈ t) :
