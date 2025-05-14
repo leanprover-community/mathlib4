@@ -1005,6 +1005,7 @@ import Mathlib.Algebra.Ring.Action.Submonoid
 import Mathlib.Algebra.Ring.Action.Subobjects
 import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Algebra.Ring.Associated
+import Mathlib.Algebra.Ring.Associator
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.BooleanRing
@@ -1104,6 +1105,7 @@ import Mathlib.AlgebraicGeometry.AffineSpace
 import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.AlgebraicGeometry.Cover.Over
+import Mathlib.AlgebraicGeometry.Cover.Sigma
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
@@ -5588,6 +5590,7 @@ import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.ExtractGoal
+import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
@@ -5630,6 +5633,7 @@ import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Lift
+import Mathlib.Tactic.LiftLets
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Linarith.Frontend
@@ -5833,6 +5837,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 import Mathlib.Topology.Algebra.IntermediateField
 import Mathlib.Topology.Algebra.IsOpenUnits
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
@@ -6136,6 +6141,7 @@ import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bilipschitz
 import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.BundledFun
 import Mathlib.Topology.MetricSpace.CantorScheme
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 import Mathlib.Topology.MetricSpace.Cauchy
