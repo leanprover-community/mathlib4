@@ -181,7 +181,6 @@ lemma gaussianPDF_ne_top {μ : ℝ} {v : ℝ≥0} {x : ℝ} : gaussianPDF μ v x
 @[simp]
 lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
     Function.support (gaussianPDF μ v) = Set.univ := by
-  rw [Function.support]
   ext x
   simp only [ne_eq, Set.mem_setOf_eq, Set.mem_univ, iff_true]
   exact (gaussianPDF_pos _ hv x).ne'
