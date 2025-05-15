@@ -83,7 +83,7 @@ theorem FieldAxiom.realize_toSentence_iff_toProp {K : Type*}
     (ax : FieldAxiom) :
     (K ⊨ (ax.toSentence : Sentence Language.ring)) ↔ ax.toProp K := by
   cases ax <;>
-  simp [Sentence.Realize, Formula.Realize]
+  simp [Sentence.Realize, Formula.Realize, Fin.snoc]
 
 theorem FieldAxiom.toProp_of_model {K : Type*}
     [Add K] [Mul K] [Neg K] [Zero K] [One K] [CompatibleRing K]
