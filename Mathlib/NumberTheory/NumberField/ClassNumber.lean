@@ -125,8 +125,7 @@ The way this theorem should be used is to first compute `⌊(M K)⌋₊` and the
 to deal with the finite number of primes `p` in the interval. -/
 theorem isPrincipalIdealRing_of_isPrincipal_of_pow_inertiaDeg_le_of_mem_primesOver_of_mem_Icc
     (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, p.Prime → ∀ (P : Ideal (𝓞 K)),
-      P ∈ Ideal.primesOver (span {(p : ℤ)}) (𝓞 K) →
-      p ^ ((span ({↑p} : Set ℤ)).inertiaDeg P) ≤ ⌊(M K)⌋₊ →
+      P ∈ primesOver (span {(p : ℤ)}) (𝓞 K) → p ^ ((span ({↑p} : Set ℤ)).inertiaDeg P) ≤ ⌊(M K)⌋₊ →
       Submodule.IsPrincipal P) : IsPrincipalIdealRing (𝓞 K) := by
   refine isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime <|
     fun ⟨P, HP⟩ hP hPN ↦ ?_
