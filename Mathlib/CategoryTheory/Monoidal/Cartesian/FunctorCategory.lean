@@ -3,8 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 # Functor categories have chosen finite products
@@ -15,9 +15,9 @@ If `C` is a category with chosen finite products, then so is `J ⥤ C`.
 
 namespace CategoryTheory
 
-open Limits MonoidalCategory Category
+open Limits MonoidalCategory Category CartesianMonoidalCategory
 
-variable (J C : Type*) [Category J] [Category C] [ChosenFiniteProducts C]
+variable (J C : Type*) [Category J] [Category C] [CartesianMonoidalCategory C]
 
 namespace Functor
 
@@ -27,7 +27,7 @@ abbrev chosenTerminal : J ⥤ C := (Functor.const J).obj (𝟙_ C)
 /-- The chosen terminal object in `J ⥤ C` is terminal. -/
 def chosenTerminalIsTerminal : IsTerminal (chosenTerminal J C) :=
   evaluationJointlyReflectsLimits _
-    (fun _ => isLimitChangeEmptyCone _ ChosenFiniteProducts.terminal.2 _ (Iso.refl _))
+    fun _ ↦ isLimitChangeEmptyCone _ isTerminalTensorUnit _ (.refl _)
 
 section
 
@@ -44,31 +44,31 @@ namespace chosenProd
 
 /-- The first projection `chosenProd F₁ F₂ ⟶ F₁`. -/
 def fst : chosenProd F₁ F₂ ⟶ F₁ where
-  app _ := ChosenFiniteProducts.fst _ _
+  app _ := CartesianMonoidalCategory.fst _ _
 
 /-- The second projection `chosenProd F₁ F₂ ⟶ F₂`. -/
 def snd : chosenProd F₁ F₂ ⟶ F₂ where
-  app _ := ChosenFiniteProducts.snd _ _
+  app _ := CartesianMonoidalCategory.snd _ _
 
 /-- `Functor.chosenProd F₁ F₂` is a binary product of `F₁` and `F₂`. -/
 def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
   evaluationJointlyReflectsLimits _ (fun j =>
     (IsLimit.postcomposeHomEquiv (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
-      (IsLimit.ofIsoLimit (ChosenFiniteProducts.product (X := F₁.obj j) (Y := F₂.obj j)).2
+      (IsLimit.ofIsoLimit
+        (tensorProductIsBinaryProduct (X := F₁.obj j) (Y := F₂.obj j))
         (Cones.ext (Iso.refl _) (by rintro ⟨_|_⟩; all_goals aesop_cat))))
 
 end chosenProd
 
 end
 
-instance chosenFiniteProducts :
-    ChosenFiniteProducts (J ⥤ C) where
-  terminal := ⟨_, chosenTerminalIsTerminal J C⟩
-  product F₁ F₂ := ⟨_, chosenProd.isLimit F₁ F₂⟩
+instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) :=
+  .ofChosenFiniteProducts ⟨_, chosenTerminalIsTerminal J C⟩
+    fun F₁ F₂ ↦ ⟨_, chosenProd.isLimit F₁ F₂⟩
 
 namespace Monoidal
 
-open ChosenFiniteProducts
+open CartesianMonoidalCategory
 
 variable {J C}
 
@@ -87,7 +87,7 @@ lemma snd_app (F₁ F₂ : J ⥤ C) (j : J) : (snd F₁ F₂).app j = snd (F₁.
 
 @[simp]
 lemma leftUnitor_hom_app (F : J ⥤ C) (j : J) :
-    (λ_ F).hom.app j = (λ_ (F.obj j)).hom := rfl
+    (λ_ F).hom.app j = (λ_ (F.obj j)).hom := (leftUnitor_hom _).symm
 
 @[simp]
 lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
@@ -97,7 +97,7 @@ lemma leftUnitor_inv_app (F : J ⥤ C) (j : J) :
 
 @[simp]
 lemma rightUnitor_hom_app (F : J ⥤ C) (j : J) :
-    (ρ_ F).hom.app j = (ρ_ (F.obj j)).hom := rfl
+    (ρ_ F).hom.app j = (ρ_ (F.obj j)).hom := (rightUnitor_hom _).symm
 
 @[simp]
 lemma rightUnitor_inv_app (F : J ⥤ C) (j : J) :

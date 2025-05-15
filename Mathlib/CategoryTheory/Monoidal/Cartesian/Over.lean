@@ -3,34 +3,41 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 
 /-!
 
-# `ChosenFiniteProducts` for `Over X`
+# `CartesianMonoidalCategory` for `Over X`
 
-We provide a `ChosenFiniteProducts (Over X)` instance via pullbacks, and provide simp lemmas
+We provide a `CartesianMonoidalCategory (Over X)` instance via pullbacks, and provide simp lemmas
 for the induced `MonoidalCategory (Over X)` instance.
 
 -/
 
 namespace CategoryTheory.Over
 
-open Limits
+open Limits CartesianMonoidalCategory
 
 variable {C : Type*} [Category C] [HasPullbacks C]
 
 /-- A choice of finite products of `Over X` given by `Limits.pullback`. -/
-@[reducible]
-noncomputable
-def chosenFiniteProducts (X : C) : ChosenFiniteProducts (Over X) where
-  product Y Z := ⟨pullbackConeEquivBinaryFan.functor.obj (pullback.cone Y.hom Z.hom),
+noncomputable abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
+  .ofChosenFiniteProducts
+    ⟨asEmptyCone (Over.mk (𝟙 X)), IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
+      fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
+    fun Y Z ↦ ⟨pullbackConeEquivBinaryFan.functor.obj (pullback.cone Y.hom Z.hom),
     (pullback.isLimit _ _).pullbackConeEquivBinaryFanFunctor⟩
-  terminal := ⟨asEmptyCone (Over.mk (𝟙 X)), IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
-    fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
 
-attribute [local instance] chosenFiniteProducts
+@[deprecated (since := "2025-05-15")] alias chosenFiniteProducts := cartesianMonoidalCategory
+
+attribute [local instance] cartesianMonoidalCategory
+
+/-- `Over X` is braided wrt the cartesian monoidal structure given by `Limits.pullback`. -/
+noncomputable abbrev braidedCategory (X : C) : BraidedCategory (Over X) :=
+  .ofCartesianMonoidalCategory
+
+attribute [local instance] braidedCategory
 
 open MonoidalCategory
 
@@ -56,11 +63,10 @@ lemma tensorUnit_hom : (𝟙_ (Over X)).hom = 𝟙 X := rfl
 
 @[simp]
 lemma lift_left {R S T : Over X} (f : R ⟶ S) (g : R ⟶ T) :
-    (ChosenFiniteProducts.lift f g).left =
-      pullback.lift f.left g.left (f.w.trans g.w.symm) := rfl
+    (lift f g).left = pullback.lift f.left g.left (f.w.trans g.w.symm) := rfl
 
 @[simp]
-lemma toUnit_left {R : Over X} : (ChosenFiniteProducts.toUnit R).left = R.hom := rfl
+lemma toUnit_left {R : Over X} : (toUnit R).left = R.hom := rfl
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_fst (R S T : Over X) :

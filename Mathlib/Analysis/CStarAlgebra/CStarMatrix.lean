@@ -439,9 +439,9 @@ def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A
   map_add' := by simp [map_add]
   map_mul' M N := by
     ext
-    simp only [mapₗ_apply, map, LinearMap.coe_coe, ofMatrix_apply]
-    simp_rw [mul_apply, map_sum, map_mul]
-    rfl
+    -- Un-squeezing this `simp` seems to add about half a second elaboration time.
+    simp only [mapₗ_apply, map, LinearMap.coe_coe, ofMatrix_apply, mul_apply, map_sum, map_mul,
+      ofMatrix_apply]
   map_star' M := by ext; simp [map, star_apply, map_star]
 
 theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A]
@@ -631,8 +631,8 @@ private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :
   .ofCore CStarMatrix.normedSpaceCore
 
 /- In this `Aux` section, we locally activate the following instances: a norm on `CStarMatrix`
- which induces a topology that is not defeq with the matrix one, and the elementwise norm on
- matrices, in order to show that the two topologies are in fact equal -/
+which induces a topology that is not defeq with the matrix one, and the elementwise norm on
+matrices, in order to show that the two topologies are in fact equal -/
 attribute [local instance] normedSpaceAux Matrix.normedAddCommGroup Matrix.normedSpace
 
 private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
