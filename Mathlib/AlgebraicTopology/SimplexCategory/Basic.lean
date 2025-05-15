@@ -410,8 +410,7 @@ lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n+1⦌) (j : Fin (n+2))
   cases j using cases with
   | zero =>
     ext
-    unfold predAbove
-    simp only [castSucc_zero, lt_self_iff_false, ↓reduceDIte]
+    simp only [predAbove, castSucc_zero, lt_self_iff_false, ↓reduceDIte]
     split
     · simp
     · simp only [zero_succAbove, val_succ, coe_castPred]
