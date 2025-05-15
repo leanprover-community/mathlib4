@@ -156,7 +156,7 @@ def ofIso (i : A ≅ B) : A ≃ₐ[R] B where
 /-- Algebra equivalences between `Algebra`s are the same as (isomorphic to) isomorphisms in
 `CommAlgCat`. -/
 @[simps]
-def isoEquivalgEquiv : (of R X ≅ of R Y) ≅ (X ≃ₐ[R] Y) where
+def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where
   hom := ofIso
   inv := isoMk
 
