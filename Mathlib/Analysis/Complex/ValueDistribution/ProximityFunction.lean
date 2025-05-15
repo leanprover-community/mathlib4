@@ -69,8 +69,7 @@ lemma proximity_zero_of_complexValued {f : ℂ → ℂ} :
 /--
 Expand the definition of `proximity f a` in case where `a₀ = ⊤`.
 -/
-lemma proximity_top :
-    proximity f ⊤ = circleAverage (log⁺ ‖f ·‖) 0 := by
+lemma proximity_top : proximity f ⊤ = circleAverage (log⁺ ‖f ·‖) 0 := by
   simp [proximity]
 
 /-!
