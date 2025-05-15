@@ -70,7 +70,7 @@ theorem monoidalClosed_uncurry
 should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments in the identity map
 `Hom(M, N) ⟶ (M ⟶ N)` and uncurry the resulting map `M ⟶ Hom(M, N) ⟶ N.` -/
 theorem ihom_ev_app (M N : ModuleCat.{u} R) :
-    (ihom.ev M).app N = ModuleCat.ofHom (TensorProduct.uncurry R M ((ihom M).obj N) N
+    (ihom.ev M).app N = ModuleCat.ofHom (TensorProduct.uncurry M ((ihom M).obj N) N (.id R)
       (LinearMap.lcomp _ _ homLinearEquiv.toLinearMap ∘ₗ LinearMap.id.flip)) := by
   rw [← MonoidalClosed.uncurry_id_eq_ev]
   ext : 1

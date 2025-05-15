@@ -105,8 +105,8 @@ variable (R M N P)
 /-- The associator for tensor product of R-modules, as a linear equivalence. -/
 protected def assoc : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] M ⊗[R] N ⊗[R] P := by
   refine
-      LinearEquiv.ofLinear (lift <| lift <| comp (lcurry R _ _ _) <| mk _ _ _)
-        (lift <| comp (uncurry R _ _ _) <| curry <| mk _ _ _)
+      LinearEquiv.ofLinear (lift <| lift <| comp (lcurry _ _ _ (.id R)) <| mk _ _ _)
+        (lift <| comp (uncurry _ _ _ (.id R)) <| curry <| mk _ _ _)
         (ext <| LinearMap.ext fun m => ext' fun n p => ?_)
         (ext <| flip_inj <| LinearMap.ext fun p => ext' fun m n => ?_) <;>
     repeat'
