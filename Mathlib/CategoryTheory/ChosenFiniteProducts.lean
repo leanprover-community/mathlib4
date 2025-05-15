@@ -1,13 +1,12 @@
 /-
-Copyright (c) 2024 Adam Topaz. All rights reserved.
+Copyright (c) 2019 Kim Morrison, Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Robin Carlier
+Authors: Kim Morrison, Simon Hudon, Adam Topaz, Robin Carlier
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 
 /-!
 # Categories with chosen finite products
@@ -67,6 +66,124 @@ class ChosenFiniteProducts (C : Type u) [Category.{v} C] extends MonoidalCategor
   snd_def (X Y : C) : snd X Y = isTerminalTensorUnit.from X ▷ Y ≫ (λ_ Y).hom := by aesop_cat
 
 namespace ChosenFiniteProducts
+
+variable {C : Type u} [Category.{v} C]
+
+section OfChosenFiniteProducts
+variable (𝒯 : LimitCone (Functor.empty.{0} C)) (ℬ : ∀ X Y : C, LimitCone (pair X Y))
+  {X₁ X₂ X₃ Y₁ Y₂ Y₃ Z₁ Z₂ : C}
+
+namespace ofChosenFiniteProducts
+
+/-- Implementation of the tensor product for `ChosenFiniteProducts.ofCartesianMonoidalCategory`. -/
+abbrev tensorObj (X Y : C) : C := (ℬ X Y).cone.pt
+
+/-- Implementation of the tensor product of morphisms for
+`ChosenFiniteProducts.ofCartesianMonoidalCategory`. -/
+abbrev tensorHom (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : tensorObj ℬ X₁ X₂ ⟶ tensorObj ℬ Y₁ Y₂ :=
+  (BinaryFan.IsLimit.lift' (ℬ Y₁ Y₂).isLimit ((ℬ X₁ X₂).cone.π.app ⟨.left⟩ ≫ f)
+      (((ℬ X₁ X₂).cone.π.app ⟨.right⟩ : (ℬ X₁ X₂).cone.pt ⟶ X₂) ≫ g)).val
+
+lemma tensor_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensorObj ℬ X Y) :=
+  (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
+
+lemma tensor_comp (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+    tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ :=
+  (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
+
+lemma pentagon (W X Y Z : C) :
+    tensorHom ℬ (BinaryFan.associatorOfLimitCone ℬ W X Y).hom (𝟙 Z) ≫
+        (BinaryFan.associatorOfLimitCone ℬ W (tensorObj ℬ X Y) Z).hom ≫
+          tensorHom ℬ (𝟙 W) (BinaryFan.associatorOfLimitCone ℬ X Y Z).hom =
+      (BinaryFan.associatorOfLimitCone ℬ (tensorObj ℬ W X) Y Z).hom ≫
+        (BinaryFan.associatorOfLimitCone ℬ W X (tensorObj ℬ Y Z)).hom := by
+  dsimp [tensorHom]
+  apply (ℬ _ _).isLimit.hom_ext
+  rintro ⟨_ | _⟩
+  · simp
+  apply (ℬ _ _).isLimit.hom_ext
+  rintro ⟨_ | _⟩
+  · simp
+  apply (ℬ _ _).isLimit.hom_ext
+  rintro ⟨_ | _⟩ <;> simp
+
+lemma triangle (X Y : C) :
+    (BinaryFan.associatorOfLimitCone ℬ X 𝒯.cone.pt Y).hom ≫
+        tensorHom ℬ (𝟙 X) (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt Y).isLimit).hom =
+      tensorHom ℬ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit).hom (𝟙 Y) :=
+  (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp
+
+lemma leftUnitor_naturality (f : X₁ ⟶ X₂) :
+    tensorHom ℬ (𝟙 𝒯.cone.pt) f ≫ (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₂).isLimit).hom =
+      (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₁).isLimit).hom ≫ f := by
+  simp [tensorHom]
+
+lemma rightUnitor_naturality (f : X₁ ⟶ X₂) :
+    tensorHom ℬ f (𝟙 𝒯.cone.pt) ≫ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₂ 𝒯.cone.pt).isLimit).hom =
+      (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₁ 𝒯.cone.pt).isLimit).hom ≫ f := by
+  simp [tensorHom]
+
+lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
+    tensorHom ℬ (tensorHom ℬ f₁ f₂) f₃ ≫ (BinaryFan.associatorOfLimitCone ℬ Y₁ Y₂ Y₃).hom =
+      (BinaryFan.associatorOfLimitCone ℬ X₁ X₂ X₃).hom ≫ tensorHom ℬ f₁ (tensorHom ℬ f₂ f₃) := by
+  dsimp [tensorHom]
+  apply (ℬ _ _).isLimit.hom_ext
+  rintro ⟨_ | _⟩
+  · simp
+  apply (ℬ _ _).isLimit.hom_ext
+  rintro ⟨_ | _⟩ <;> simp
+
+end ofChosenFiniteProducts
+
+open ofChosenFiniteProducts
+
+/-- Construct an instance of `ChosenFiniteProducts C` given a terminal object and limit cones
+over arbitrary pairs of objects. -/
+abbrev ofChosenFiniteProducts : ChosenFiniteProducts C :=
+  letI : MonoidalCategoryStruct C := {
+    tensorUnit := 𝒯.cone.pt
+    tensorObj := tensorObj ℬ
+    tensorHom := tensorHom ℬ
+    whiskerLeft X {_ _} g := tensorHom ℬ (𝟙 X) g
+    whiskerRight {_ _} f Y := tensorHom ℬ f (𝟙 Y)
+    associator := BinaryFan.associatorOfLimitCone ℬ
+    leftUnitor X := BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X).isLimit
+    rightUnitor X := BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit
+  }
+  {
+  toMonoidalCategory := .ofTensorHom
+    (tensor_id := tensor_id ℬ)
+    (tensor_comp := tensor_comp ℬ)
+    (pentagon := pentagon ℬ)
+    (triangle := triangle 𝒯 ℬ)
+    (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
+    (rightUnitor_naturality := rightUnitor_naturality 𝒯 ℬ)
+    (associator_naturality := associator_naturality ℬ)
+  isTerminalTensorUnit :=
+    .ofUniqueHom (𝒯.isLimit.lift <| asEmptyCone ·) fun _ _ ↦ 𝒯.isLimit.hom_ext (by simp)
+  fst X Y := BinaryFan.fst (ℬ X Y).cone
+  snd X Y := BinaryFan.snd (ℬ X Y).cone
+  tensorProductIsBinaryProduct X Y := BinaryFan.IsLimit.mk _
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).1)
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.1)
+    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.2)
+    (fun f g m hf hg ↦
+      BinaryFan.IsLimit.hom_ext (ℬ X Y).isLimit (by simpa using hf) (by simpa using hg))
+  fst_def X Y := (((ℬ X 𝒯.cone.pt).isLimit.fac
+    (BinaryFan.mk _ _) ⟨.left⟩).trans (Category.comp_id _)).symm
+  snd_def X Y := (((ℬ 𝒯.cone.pt Y).isLimit.fac
+    (BinaryFan.mk _ _) ⟨.right⟩).trans (Category.comp_id _)).symm
+  }
+
+omit 𝒯 in
+/-- Construct an instance of `ChosenFiniteProducts C` given the existence of finite products
+in `C`. -/
+noncomputable abbrev ofHasFiniteProducts [HasFiniteProducts C] : ChosenFiniteProducts C :=
+  .ofChosenFiniteProducts (getLimitCone (.empty C)) (getLimitCone <| pair · ·)
+
+@[deprecated (since := "2025-05-08")] alias ofFiniteProducts := ofHasFiniteProducts
+
+end OfChosenFiniteProducts
 
 variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
 
@@ -323,37 +440,6 @@ instance : Subsingleton (SymmetricCategory C) where
   allEq := by rintro ⟨_⟩ ⟨_⟩; congr; exact Subsingleton.elim _ _
 
 end BraidedCategory
-
-/--
-Construct an instance of `ChosenFiniteProducts C` given
-a terminal object and limit cones over arbitrary pairs of objects.
--/
-abbrev ofChosenFiniteProducts
-    (𝒯 : LimitCone (Functor.empty C)) (ℬ : (X Y : C) → LimitCone (pair X Y)) :
-    ChosenFiniteProducts C where
-  __ := monoidalOfChosenFiniteProducts 𝒯 ℬ
-  isTerminalTensorUnit :=
-    .ofUniqueHom (𝒯.isLimit.lift <| asEmptyCone ·) fun _ _ ↦ 𝒯.isLimit.hom_ext (by simp)
-  fst X Y := BinaryFan.fst (ℬ X Y).cone
-  snd X Y := BinaryFan.snd (ℬ X Y).cone
-  tensorProductIsBinaryProduct X Y := BinaryFan.IsLimit.mk _
-    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).1)
-    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.1)
-    (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.2)
-    (fun f g m hf hg ↦
-      BinaryFan.IsLimit.hom_ext (ℬ X Y).isLimit (by simpa using hf) (by simpa using hg))
-  fst_def X Y := (((ℬ X 𝒯.cone.pt).isLimit.fac
-    (BinaryFan.mk _ _) ⟨.left⟩).trans (Category.comp_id _)).symm
-  snd_def X Y := (((ℬ 𝒯.cone.pt Y).isLimit.fac
-    (BinaryFan.mk _ _) ⟨.right⟩).trans (Category.comp_id _)).symm
-
-/--
-Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
--/
-noncomputable abbrev ofFiniteProducts (C : Type u) [Category.{v} C] [HasFiniteProducts C] :
-    ChosenFiniteProducts C :=
-  .ofChosenFiniteProducts
-    (getLimitCone (Functor.empty C)) (getLimitCone <| pair · ·)
 
 instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
