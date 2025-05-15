@@ -519,7 +519,7 @@ lemma range_comap_fst :
   obtain ⟨p, hp, eq⟩ | ⟨p, hp, eq⟩ := p.1.ideal_prod_prime.mp p.2
   · exact ⟨⟨p, hp⟩, PrimeSpectrum.ext <| by simpa [Ideal.prod] using eq.symm⟩
   · refine (hp.ne_top <| (Ideal.eq_top_iff_one _).mpr ?_).elim
-    simpa [eq] using h (show (0, 1) ∈ RingHom.ker (RingHom.fst R S) from rfl)
+    simpa [eq] using h (show (0, 1) ∈ RingHom.ker (RingHom.fst R S) by simp)
 
 lemma range_comap_snd :
     Set.range (comap (RingHom.snd R S)) = zeroLocus (RingHom.ker (RingHom.snd R S)) := by
@@ -527,7 +527,7 @@ lemma range_comap_snd :
   · rintro ⟨I, hI, rfl⟩; exact Ideal.comap_mono bot_le
   obtain ⟨p, hp, eq⟩ | ⟨p, hp, eq⟩ := p.1.ideal_prod_prime.mp p.2
   · refine (hp.ne_top <| (Ideal.eq_top_iff_one _).mpr ?_).elim
-    simpa [eq] using h (show (1, 0) ∈ RingHom.ker (RingHom.snd R S) from rfl)
+    simpa [eq] using h (show (1, 0) ∈ RingHom.ker (RingHom.snd R S) by simp)
   · exact ⟨⟨p, hp⟩, PrimeSpectrum.ext <| by simpa [Ideal.prod] using eq.symm⟩
 
 lemma isClosedEmbedding_comap_fst : IsClosedEmbedding (comap (RingHom.fst R S)) :=
@@ -676,7 +676,7 @@ lemma iSup_basicOpen_eq_top_iff {ι : Type*} {f : ι → R} :
   simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Opens.coe_top, ← Set.compl_iInter,
     ← PrimeSpectrum.zeroLocus_iUnion]
   rw [← PrimeSpectrum.zeroLocus_empty_iff_eq_top, compl_involutive.eq_iff]
-  simp only [Set.iUnion_singleton_eq_range,  Set.compl_univ, PrimeSpectrum.zeroLocus_span]
+  simp only [Set.iUnion_singleton_eq_range, Set.compl_univ, PrimeSpectrum.zeroLocus_span]
 
 lemma iSup_basicOpen_eq_top_iff' {s : Set R} :
     (⨆ i ∈ s, PrimeSpectrum.basicOpen i) = ⊤ ↔ Ideal.span s = ⊤ := by

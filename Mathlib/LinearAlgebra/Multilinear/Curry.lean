@@ -256,7 +256,7 @@ theorem currySum_apply' {N : Type*} [AddCommMonoid N] [Module R N]
     currySum f u v = f (Sum.elim u v) := rfl
 
 @[simp]
-lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂):
+lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂) :
     currySum (f₁ + f₂) = currySum f₁ + currySum f₂ := rfl
 
 @[simp]
@@ -315,8 +315,8 @@ lemma uncurrySum_currySum (f : MultilinearMap R N M₂) :
 lemma currySum_uncurrySum
     (g : MultilinearMap R (fun i : ι ↦ N (.inl i))
       (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
-  currySum (uncurrySum g) = g :=
-    rfl
+    currySum (uncurrySum g) = g :=
+  rfl
 
 /-- Multilinear maps on `N : (ι ⊕ ι') → Type*` identify to multilinear maps
 from `(fun (i : ι) ↦ N (.inl i))` taking values in the space of

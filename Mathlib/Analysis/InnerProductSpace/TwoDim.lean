@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Orientation
+import Mathlib.LinearAlgebra.Alternating.Curry
 import Mathlib.Tactic.LinearCombination
 import Mathlib.LinearAlgebra.Alternating.Curry
 
