@@ -140,7 +140,13 @@ def deprecateFilePath (fname : String) (comment : Option String) :
   msgs := msgs.push <| m!"The file {fname} was\n"
   msgs := msgs.push modifiedMsg
   msgs := msgs.push deletedMsg
-  let deprecation ← if let some cmt := comment then mkDeprecation cmt else mkDeprecation
+
+  -- Get the commit date (in YYYY-MM-DD) of the commit deleting the file.
+  let log' ← IO.Process.run {cmd := "git", args := #[
+    "log", "--format=%cs", "--all", "-2", "--", fname]
+  }
+  let deletionDate := (log'.trim.splitOn "\n")[0]!
+  let deprecation ← if let some cmt := comment then mkDeprecationWithDate cmt deletionDate else mkDeprecation deletionDate
   msgs := msgs.push ""
   -- Retrieves the final version of the file, before it was deleted.
   let file ← IO.Process.run {cmd := "git", args := #["show", s!"{modifiedHash}:{fname}"]}
@@ -203,12 +209,6 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
     let commitHash := last.takeWhile (!·.isWhitespace)
     let PRdescr := (last.drop commitHash.length).trim
     return (commitHash, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
-  -- Get the commit date (in YYYY-MM-DD) of the comit at `git log -n`
-  -- (and throw an error if that doesn't exist).
-  let getCommitDate (n : Nat) : CommandElabM String := do
-    let log ← IO.Process.run {cmd := "git", args := #["log", "--format=%cs", s!"-{n}"]}
-    let some date := log.trim.splitOn "\n" |>.getLast? | throwError "Found no commits!"
-    return date
   let getFilesAtHash (hash : String) := do
     let files ← IO.Process.run
       {cmd := "git", args := #["ls-tree", "-r", "--name-only", hash, "Mathlib/"]}
