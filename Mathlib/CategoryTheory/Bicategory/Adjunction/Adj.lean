@@ -35,10 +35,75 @@ namespace Bicategory
 
 variable {B : Type u} [Bicategory.{w, v} B]
 
+namespace Adjunction
+
+/- TODO: refactor `mateEquiv` by using `homEquiv₁/₂`.  -/
+variable {a b c d : B} {l : b ⟶ c} {r : c ⟶ b} (adj : l ⊣ r)
+
+@[simps -isSimp]
+def homEquiv₁ {g : b ⟶ d} {h : c ⟶ d} : (g ⟶ l ≫ h) ≃ (r ≫ g ⟶ h) where
+  toFun γ := r ◁ γ ≫ (α_ _ _ _).inv ≫ adj.counit ▷ h ≫ (λ_ _).hom
+  invFun β := (λ_ _).inv ≫ adj.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l ◁ β
+  left_inv γ :=
+    calc
+      _ = 𝟙 _ ⊗≫ (adj.unit ▷ g ≫ (l ≫ r) ◁ γ) ⊗≫ l ◁ adj.counit ▷ h ⊗≫ 𝟙 _:= by
+        bicategory
+      _ = γ ⊗≫ leftZigzag adj.unit adj.counit ▷ h ⊗≫ 𝟙 _ := by
+        rw [← whisker_exchange]
+        bicategory
+      _ = γ := by
+        rw [adj.left_triangle]
+        bicategory
+  right_inv β := by
+    calc
+      _ = 𝟙 _ ⊗≫ r ◁ adj.unit ▷ g ⊗≫ ((r ≫ l) ◁ β ≫ adj.counit ▷ h) ⊗≫ 𝟙 _ := by
+        bicategory
+      _ = 𝟙 _ ⊗≫ rightZigzag adj.unit adj.counit ▷ g ⊗≫ β := by
+        rw [whisker_exchange]
+        bicategory
+      _ = β := by
+        rw [adj.right_triangle]
+        bicategory
+
+@[simps -isSimp]
+def homEquiv₂ {g : a ⟶ b} {h : a ⟶ c} : (g ≫ l ⟶ h) ≃ (g ⟶ h ≫ r) where
+  toFun α := (ρ_ _).inv ≫ g ◁ adj.unit ≫ (α_ _ _ _).inv ≫ α ▷ r
+  invFun γ := γ ▷ l ≫ (α_ _ _ _ ).hom ≫ h ◁ adj.counit ≫ (ρ_ _).hom
+  left_inv α :=
+    calc
+      _ = 𝟙 _ ⊗≫ g ◁ adj.unit ▷ l ⊗≫ (α ▷ (r ≫ l) ≫ h ◁ adj.counit) ⊗≫ 𝟙 _ := by
+        bicategory
+      _ = 𝟙 _ ⊗≫ g ◁ leftZigzag adj.unit adj.counit ⊗≫ α := by
+        rw [← whisker_exchange]
+        bicategory
+      _ = α := by
+        rw [adj.left_triangle]
+        bicategory
+  right_inv γ :=
+    calc
+      _ = 𝟙 _ ⊗≫ (g ◁ adj.unit ≫ γ ▷ (l ≫ r)) ⊗≫ h ◁ adj.counit ▷ r ⊗≫ 𝟙 _ := by
+        bicategory
+      _ = 𝟙 _ ⊗≫ γ ⊗≫ h ◁ rightZigzag adj.unit adj.counit ⊗≫ 𝟙 _ := by
+        rw [whisker_exchange]
+        bicategory
+      _ = γ := by
+        rw [adj.right_triangle]
+        bicategory
+
+end Adjunction
+
 section
 
 variable {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
   {l₂ : c ⟶ d} {r₂ : d ⟶ c} (adj₂ : l₂ ⊣ r₂)
+
+lemma mateEquiv_eq_trans {g : a ⟶ c} {h : b ⟶ d} :
+    mateEquiv adj₁ adj₂ (g := g) (h := h) =
+      adj₂.homEquiv₂.trans
+        ((Iso.homCongr (Iso.refl _) (α_ _ _ _)).trans adj₁.homEquiv₁) := by
+  ext γ
+  dsimp [mateEquiv, Adjunction.homEquiv₁, Adjunction.homEquiv₂]
+  bicategory
 
 lemma mateEquiv_eq_iff {g : a ⟶ c} {h : b ⟶ d}
     (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h ≫ r₂) :
@@ -46,14 +111,11 @@ lemma mateEquiv_eq_iff {g : a ⟶ c} {h : b ⟶ d}
     (λ_ _).inv ≫ adj₁.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l₁ ◁ β =
       (ρ_ _).inv ≫ g ◁ adj₂.unit ≫
         (α_ _ _ _).inv ≫ α ▷ r₂ ≫ (α_ _ _ _).hom := by
-  let ψ (γ : r₁ ≫ g ⟶ h ≫ r₂) :=
-      (λ_ _).inv ≫ adj₁.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l₁ ◁ γ
-  have H : Function.Injective ψ := sorry
-  conv_lhs => rw [eq_comm, ← H.eq_iff']
+  conv_lhs => rw [eq_comm, ← adj₁.homEquiv₁.symm.injective.eq_iff']
   convert Iff.rfl using 2
-  dsimp [ψ, mateEquiv, bicategoricalComp]
-  simp
-  sorry
+  rw [mateEquiv_eq_trans, Equiv.trans_apply, Equiv.trans_apply, Iso.homCongr_apply,
+    Iso.refl_inv, Category.id_comp, Equiv.symm_apply_apply, Adjunction.homEquiv₂_apply,
+    Category.assoc, Category.assoc, Category.assoc]
 
 variable {f : a ⟶ c} {g : b ⟶ d}
 
