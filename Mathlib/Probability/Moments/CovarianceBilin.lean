@@ -104,12 +104,11 @@ section ContinuousLinearMap
 
 variable {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [OpensMeasurableSpace E]
 
-/-- `MemLp.toLp` as a continuous linear map from the continuous linear forms `E →L[𝕜] 𝕜` to
-`Lp 𝕜 p μ`. -/
+/-- `MemLp.toLp` as a continuous linear map from `Dual 𝕜 E` to `Lp 𝕜 p μ`. -/
 noncomputable
 def ContinuousLinearMap.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ)
     (hp : p ≠ ∞) :
-    (E →L[𝕜] 𝕜) →L[𝕜] Lp 𝕜 p μ where
+    Dual 𝕜 E →L[𝕜] Lp 𝕜 p μ where
   toLinearMap := ContinuousLinearMap.toLpₗ μ p h_Lp
   cont := by
     refine LinearMap.continuous_of_locally_bounded _ fun s hs ↦ ?_
@@ -126,7 +125,7 @@ def ContinuousLinearMap.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] 
 
 @[simp]
 lemma ContinuousLinearMap.toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (hp : p ≠ ∞)
-    (L : E →L[𝕜] 𝕜) :
+    (L : Dual 𝕜 E) :
     L.toLp μ p h_Lp hp = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := rfl
 
 end ContinuousLinearMap
@@ -141,7 +140,7 @@ variable [NormedSpace ℝ E] [OpensMeasurableSpace E]
 This is equal to the covariance only if `μ` is centered. -/
 noncomputable
 def centeredCovarianceBilin (μ : Measure E) (h : MemLp id 2 μ) :
-    (Dual ℝ E) →L[ℝ] (Dual ℝ E) →L[ℝ] ℝ :=
+    Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ] ℝ :=
   ContinuousLinearMap.bilinearComp (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
     (ContinuousLinearMap.toLp μ 2 h (by simp)) (ContinuousLinearMap.toLp μ 2 h (by simp))
 
