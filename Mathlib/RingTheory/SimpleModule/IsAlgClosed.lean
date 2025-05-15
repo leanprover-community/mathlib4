@@ -12,6 +12,9 @@ import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 variable (F R : Type*) [Field F] [IsAlgClosed F] [Ring R] [Algebra F R]
 
+/-- The **Wedderburn–Artin Theorem** over algebraically closed fields: a finite-dimensional
+simple algebra over an algebraically closed field is isomorphic to a matrix algebra over the field.
+-/
 theorem IsSimpleRing.exists_algEquiv_matrix_of_isAlgClosed
     [IsSimpleRing R] [FiniteDimensional F R] :
     ∃ (n : ℕ) (_ : NeZero n), Nonempty (R ≃ₐ[F] Matrix (Fin n) (Fin n) F) :=
@@ -20,6 +23,9 @@ theorem IsSimpleRing.exists_algEquiv_matrix_of_isAlgClosed
   ⟨n, hn, ⟨e.trans <| .mapMatrix <| .symm <| .ofBijective (Algebra.ofId F D)
     IsAlgClosed.algebraMap_bijective_of_isIntegral⟩⟩
 
+/-- The **Wedderburn–Artin Theorem** over algebraically closed fields: a finite-dimensional
+semisimple algebra over an algebraically closed field is isomorphic to a product of matrix algebras
+over the field. -/
 theorem IsSemisimpleRing.exists_algEquiv_pi_matrix_of_isAlgClosed
     [IsSemisimpleRing R] [FiniteDimensional F R] :
     ∃ (n : ℕ) (d : Fin n → ℕ), (∀ i, NeZero (d i)) ∧
