@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.WithTerminal.Cone
 
 Suppose we are given categories `C` and `D`, and object `X : C`, and a functor `F : C ⥤ D`.
 `F` induces a functor `Over.post F : Over X ⥤ Over (F.obj X)`. If `F` preserves limits of a
-certain shape `J`, then `Over.post F` preserves limits of shape `WithTerminal J`.
+certain shape `WithTerminal J`, then `Over.post F` preserves limits of shape `J`.
 As a corollary, if `F` preserves finite limits, or limits of a certain size, so does `Over.post F`.
 
 Dually, if `F` preserves certain colimits, `Under.post F` will preserve certain colimits as well.
