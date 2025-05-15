@@ -21,22 +21,7 @@ This file expands on the development in the core library.
 ### Induction principles
 
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
-* `Fin.succRec` : Define `C n i` by induction on `i : Fin n` interpreted
-  as `(0 : Fin (n - i)).succ.succ…`. This function has two arguments: `H0 n` defines
-  `0`-th element `C (n+1) 0` of an `(n+1)`-tuple, and `Hs n i` defines `(i+1)`-st element
-  of `(n+1)`-tuple based on `n`, `i`, and `i`-th element of `n`-tuple.
-* `Fin.succRecOn` : same as `Fin.succRec` but `i : Fin n` is the first argument;
-* `Fin.induction` : Define `C i` by induction on `i : Fin (n + 1)`, separating into the
-  `Nat`-like base cases of `C 0` and `C (i.succ)`.
-* `Fin.inductionOn` : same as `Fin.induction` but with `i : Fin (n + 1)` as the first argument.
-* `Fin.cases` : define `f : Π i : Fin n.succ, C i` by separately handling the cases `i = 0` and
-  `i = Fin.succ j`, `j : Fin n`, defined using `Fin.induction`.
-* `Fin.reverseInduction`: reverse induction on `i : Fin (n + 1)`; given `C (Fin.last n)` and
-  `∀ i : Fin n, C (Fin.succ i) → C (Fin.castSucc i)`, constructs all values `C i` by going down;
-* `Fin.lastCases`: define `f : Π i, Fin (n + 1), C i` by separately handling the cases
-  `i = Fin.last n` and `i = Fin.castSucc j`, a special case of `Fin.reverseInduction`;
-* `Fin.addCases`: define a function on `Fin (m + n)` by separately handling the cases
-  `Fin.castAdd n i` and `Fin.natAdd m i`.
+Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 
 ### Embeddings and isomorphisms
 
@@ -52,8 +37,6 @@ This file expands on the development in the core library.
 
 ### Other casts
 
-* `Fin.ofNat'`: given a positive number `n` (deduced from `[NeZero n]`), `Fin.ofNat' i` is
-  `i % n` interpreted as an element of `Fin n`;
 * `Fin.divNat i` : divides `i : Fin (m * n)` by `n`;
 * `Fin.modNat i` : takes the mod of `i : Fin (m * n)` by `n`;
 
@@ -875,20 +858,21 @@ theorem castPred_inj {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n}
     castPred i hi = castPred j hj ↔ i = j := by
   simp_rw [Fin.ext_iff, le_antisymm_iff, ← le_def, castPred_le_castPred_iff]
 
-theorem castPred_zero' [NeZero n] (h := Fin.ext_iff.not.2 last_pos'.ne) :
-    castPred (0 : Fin (n + 1)) h = 0 := rfl
+@[simp]
+theorem castPred_zero [NeZero n] :
+    castPred (0 : Fin (n + 1)) (Fin.ext_iff.not.2 last_pos'.ne) = 0 := rfl
 
-theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne) :
-    castPred (0 : Fin (n + 2)) h = 0 := rfl
+@[deprecated (since := "2025-05-11")]
+alias castPred_zero' := castPred_zero
 
 @[simp]
 theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
     Fin.castPred i h = 0 ↔ i = 0 := by
-  rw [← castPred_zero', castPred_inj]
+  rw [← castPred_zero, castPred_inj]
 
 @[simp]
-theorem castPred_one [NeZero n] (h := Fin.ext_iff.not.2 one_lt_last.ne) :
-    castPred (1 : Fin (n + 2)) h = 1 := by
+theorem castPred_one [NeZero n] :
+    castPred (1 : Fin (n + 2)) (Fin.ext_iff.not.2 one_lt_last.ne) = 1 := by
   cases n
   · exact subsingleton_one.elim _ 1
   · rfl
@@ -1259,14 +1243,12 @@ lemma predAbove_castPred_self (p : Fin (n + 1)) (hp : p ≠ last n) :
 lemma predAbove_zero_succ [NeZero n] {i : Fin n} : predAbove 0 i.succ = i := by
   rw [predAbove_succ_of_le _ _ (Fin.zero_le' _)]
 
-@[simp]
-lemma succ_predAbove_zero [NeZero n] {j : Fin (n + 1)} (h : j ≠ 0) : succ (predAbove 0 j) = j := by
-  rcases exists_succ_eq_of_ne_zero h with ⟨k, rfl⟩
-  rw [predAbove_zero_succ]
-
 @[simp] lemma predAbove_zero_of_ne_zero [NeZero n] {i : Fin (n + 1)} (hi : i ≠ 0) :
     predAbove 0 i = i.pred hi := by
   obtain ⟨y, rfl⟩ := exists_succ_eq.2 hi; exact predAbove_zero_succ
+
+lemma succ_predAbove_zero [NeZero n] {j : Fin (n + 1)} (h : j ≠ 0) : succ (predAbove 0 j) = j := by
+  simp [*]
 
 lemma predAbove_zero [NeZero n] {i : Fin (n + 1)} :
     predAbove (0 : Fin n) i = if hi : i = 0 then 0 else i.pred hi := by

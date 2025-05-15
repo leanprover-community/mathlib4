@@ -646,4 +646,7 @@ instance [IsAffine X] [IsAffine Y] : IsAffine (X ⨿ Y) :=
 
 end Coproduct
 
+instance : ChosenFiniteProducts Scheme := .ofHasFiniteProducts
+instance : BraidedCategory Scheme := .ofChosenFiniteProducts
+
 end AlgebraicGeometry

@@ -155,6 +155,17 @@ theorem IsIsotypic.submodule_linearEquiv_fun {m : Submodule R M} [Module.Finite 
 
 end Finsupp
 
+/-- A submodule `N` an `R`-module `M` is fully invariant if `N` is mapped into itself by all
+`R`-linear endomorphisms of `M`.
+
+TODO: If `M` is semisimple, this is equivalent to `N` being a sum of isotypic components of `M`. -/
+def Submodule.IsFullyInvariant (N : Submodule R M) : Prop :=
+  ∀ f : Module.End R M, N ≤ N.comap f
+
+theorem isFullyInvariant_iff_isTwoSided {I : Ideal R} : I.IsFullyInvariant ↔ I.IsTwoSided := by
+  simpa only [Submodule.IsFullyInvariant, ← MulOpposite.opEquiv.trans (RingEquiv.moduleEndSelf R
+    |>.toEquiv) |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using forall_comm
+
 variable (R M S)
 
 /-- If `S` is a simple `R`-module, the `S`-isotypic component in an `R`-module `M` is the sum of
@@ -166,6 +177,7 @@ def isotypicComponents : Set (Submodule R M) :=
   { m | ∃ S : Submodule R M, IsSimpleModule R S ∧ m = isotypicComponent R M S }
 
 variable {R M}
+
 theorem Submodule.le_isotypicComponent (m : Submodule R M) : m ≤ isotypicComponent R M m :=
   le_sSup ⟨.refl ..⟩
 

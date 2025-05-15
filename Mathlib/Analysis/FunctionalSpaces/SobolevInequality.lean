@@ -326,7 +326,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
     _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖ₑ) ^ p := by
         -- apply the grid-lines lemma
         apply lintegral_prod_lintegral_pow_le _ hp
-        have : Continuous (fderiv ℝ u) := hu.continuous_fderiv le_rfl
         fun_prop
   -- we estimate |u x| using the fundamental theorem of calculus.
   gcongr with x i
@@ -417,15 +416,13 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
         apply ContinuousLinearMap.opENorm_comp_le
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖ₑ * ∫⁻ y, ‖fderiv ℝ u (e.symm y)‖ₑ) ^ p := by
         rw [lintegral_mul_const, mul_comm]
-        refine (Continuous.nnnorm ?_).measurable.coe_nnreal_ennreal
-        exact (hu.continuous_fderiv le_rfl).comp e.symm.continuous
+        fun_prop
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p : ℝ≥0) * (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖ₑ) ^ p := by
         rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, enorm_eq_nnnorm, ← ENNReal.coe_rpow_of_nonneg _ h0p]
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p : ℝ≥0)
         * (∫⁻ x, ‖fderiv ℝ u x‖ₑ ∂(volume : Measure (ι → ℝ)).map e.symm) ^ p := by
         congr
         rw [lintegral_map _ e.symm.continuous.measurable]
-        have : Continuous (fderiv ℝ u) := hu.continuous_fderiv le_rfl
         fun_prop
   rw [← ENNReal.mul_le_mul_left h3c ENNReal.coe_ne_top, ← mul_assoc, ← ENNReal.coe_mul, ← hC,
     ENNReal.coe_mul] at this
@@ -458,7 +455,7 @@ def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
   let n := finrank ℝ E
   eLpNormLESNormFDerivOneConst μ (NNReal.conjExponent n) * (p * (n - 1) / (n - p)).toNNReal
 
-variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
+variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
@@ -512,7 +509,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     rw [← inv_pos, hp', sub_pos]
     exact inv_strictAnti₀ hq.pos h2p
   have h2q : 1 / n' - 1 / q = 1 / p' := by
-    simp_rw (config := {zeta := false}) [one_div, hp']
+    simp_rw -zeta [one_div, hp']
     rw [← hq.one_sub_inv, ← hn.coe.one_sub_inv, sub_sub_sub_cancel_left]
     simp only [NNReal.coe_natCast, NNReal.coe_inv]
   let γ : ℝ≥0 := ⟨p * (n - 1) / (n - p), by positivity⟩
@@ -540,7 +537,6 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have h6u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=
     ENNReal.rpow_ne_top_of_nonneg (div_nonneg zero_le_one hq.symm.nonneg) h4u
   have h7u := hu.continuous -- for fun_prop
-  have h8u := (hu.fderiv_right (m := 0) le_rfl).continuous -- for fun_prop
   let v : E → ℝ := fun x ↦ ‖u x‖ ^ (γ : ℝ)
   have hv : ContDiff ℝ 1 v := hu.norm_rpow h1γ
   have h2v : HasCompactSupport v := h2u.norm.rpow_const h4γ
