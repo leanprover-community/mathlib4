@@ -10,7 +10,7 @@ import Mathlib.Tactic.ComputeDegree
 # Division polynomials of Weierstrass curves
 
 This file computes the leading terms of certain polynomials associated to division polynomials of
-Weierstrass curves defined in `Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic`.
+Weierstrass curves defined in `Mathlib/AlgebraicGeometry/EllipticCurve/DivisionPolynomial/Basic.lean`.
 
 ## Mathematical background
 

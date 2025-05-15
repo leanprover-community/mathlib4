@@ -12,7 +12,7 @@ import Mathlib.Logic.Embedding.Basic
 # More lemmas about group actions
 
 This file contains lemmas about group actions that require more imports than
-`Mathlib.Algebra.Group.Action.Defs` offers.
+`Mathlib/Algebra/Group/Action/Defs.lean` offers.
 -/
 
 assert_not_exists MonoidWithZero Equiv.Perm.permGroup

@@ -15,7 +15,7 @@ In this file we defined the type `Module.End.invtSubmodule`, associated to a lin
 a module. Its utility stems primarily from those occasions on which we wish to take advantage of the
 lattice structure of invariant submodules.
 
-See also `Mathlib.Algebra.Polynomial.Module.AEval`.
+See also `Mathlib/Algebra/Polynomial/Module/AEval.lean`.
 
 -/
 

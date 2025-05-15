@@ -17,7 +17,7 @@ import Mathlib.Tactic.Tauto
 # Basic facts for ordered rings and semirings
 
 This file develops the basics of ordered (semi)rings in an unbundled fashion for later use with
-the bundled classes from `Mathlib.Algebra.Order.Ring.Defs`.
+the bundled classes from `Mathlib/Algebra/Order/Ring/Defs.lean`.
 
 The set of typeclass variables here comprises
 * an algebraic class (`Semiring`, `CommSemiring`, `Ring`, `CommRing`)

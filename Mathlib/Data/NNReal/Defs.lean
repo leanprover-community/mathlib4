@@ -30,7 +30,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   - `ConditionallyCompleteLinearOrderBot ℝ≥0`.
 
   These instances are derived from corresponding instances about the type `{x : α // 0 ≤ x}` in an
-  appropriate ordered field/ring/group/monoid `α`, see `Mathlib.Algebra.Order.Nonneg.OrderedRing`.
+  appropriate ordered field/ring/group/monoid `α`, see `Mathlib/Algebra/Order/Nonneg/OrderedRing.lean`.
 
 * `Real.toNNReal x` is defined as `⟨max x 0, _⟩`, i.e. `↑(Real.toNNReal x) = x` when `0 ≤ x` and
   `↑(Real.toNNReal x) = 0` otherwise.
@@ -704,7 +704,7 @@ section Sub
 
 In this section we provide a few lemmas about subtraction that do not fit well into any other
 typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSub` in the file
-`Mathlib.Algebra.Order.Sub.Basic`. See also `mul_tsub` and `tsub_mul`.
+`Mathlib/Algebra/Order/Sub/Basic.lean`. See also `mul_tsub` and `tsub_mul`.
 -/
 
 theorem sub_def {r p : ℝ≥0} : r - p = Real.toNNReal (r - p) :=

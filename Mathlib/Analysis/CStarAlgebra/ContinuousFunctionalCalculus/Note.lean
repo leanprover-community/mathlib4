@@ -166,7 +166,7 @@ require manual intervention.
 
 The criterion for determining where to place files about general theory of functions pertaining to
 the continuous functional calculus is whether the import
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic` is needed, which contains the
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean` is needed, which contains the
 instances of the continuous functional calculus for `CStarAlgebra`, and therefore pulls in many
 imports. If this import is not needed, then the file should be placed in the directory
 `Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus`. If this import is needed, then

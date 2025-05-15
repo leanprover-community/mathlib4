@@ -22,7 +22,7 @@ group naturally induces a uniform structure.
 * `IsTopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
   to construct a canonical uniformity for a topological add group.
 
-See `Mathlib.Topology.Algebra.IsUniformGroup.Basic` for further results.
+See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
 -/
 
 assert_not_exists Cauchy

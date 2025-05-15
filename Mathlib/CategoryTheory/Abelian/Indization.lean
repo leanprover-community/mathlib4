@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 We show that if `C` is a small abelian category, then `Ind C` is an abelian category.
 
-In the file `Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization`, we show that in this
+In the file `Mathlib/CategoryTheory/Abelian/GrothendieckAxioms/Indization.lean`, we show that in this
 situation `Ind C` is in fact Grothendieck abelian.
 -/
 

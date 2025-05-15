@@ -802,7 +802,7 @@ Projects:
 * Check that `Mon_ TopCat ≌ [bundled topological monoids]`.
 * Check that `Mon_ AddCommGrp ≌ RingCat`.
   (We've already got `Mon_ (ModuleCat R) ≌ AlgCat R`,
-  in `Mathlib.CategoryTheory.Monoidal.Internal.Module`.)
+  in `Mathlib/CategoryTheory/Monoidal/Internal/Module.lean`.)
 * Can you transport this monoidal structure to `RingCat` or `AlgCat R`?
   How does it compare to the "native" one?
 * Show that when `F` is a lax braided functor `C ⥤ D`, the functor `map_Mon F : Mon_ C ⥤ Mon_ D`

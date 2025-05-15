@@ -52,7 +52,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
 -- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
--- The file `Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone` slows down by
+-- The file `Mathlib/NumberTheory/NumberField/CanonicalEmbedding/FundamentalCone.lean` slows down by
 -- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/pull/18040).
 -- attribute [simp] AlgHomClass.commutes
 

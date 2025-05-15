@@ -31,7 +31,7 @@ disintegrated by some kernel, then `κ` itself is disintegrated by a kernel, nam
 
 ## See also
 
-`Mathlib.Probability.Kernel.Disintegration.StandardBorel` for a **construction** of disintegrating
+`Mathlib/Probability/Kernel/Disintegration/StandardBorel.lean` for a **construction** of disintegrating
 kernels.
 -/
 

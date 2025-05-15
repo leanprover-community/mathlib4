@@ -63,7 +63,7 @@ def parseSetOption : Syntax → Option Name
   | `(tactic|set_option $name:ident $_val in $_x) => some name.getId
   | _ => none
 
-/-- Deprecated alias for `Mathlib.Linter.Style.setOption.parseSetOption`. -/
+/-- Deprecated alias for `Mathlib/Linter/Style/setOption/parseSetOption.lean`. -/
 @[deprecated parseSetOption (since := "2024-12-07")]
 def parse_set_option := @parseSetOption
 
@@ -71,7 +71,7 @@ def parse_set_option := @parseSetOption
 def isSetOption : Syntax → Bool :=
   fun stx ↦ parseSetOption stx matches some _name
 
-/-- Deprecated alias for `Mathlib.Linter.Style.setOption.isSetOption`. -/
+/-- Deprecated alias for `Mathlib/Linter/Style/setOption/isSetOption.lean`. -/
 @[deprecated isSetOption (since := "2024-12-07")]
 def is_set_option := @isSetOption
 

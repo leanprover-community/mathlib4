@@ -22,11 +22,11 @@ as a coalgebra morphism.
 We keep the linear maps underlying `Δ, ε` and other definitions in this file syntactically equal
 to the corresponding definitions for tensor products of modules in the hope that this makes
 life easier. However, to fill in prop fields, we use the API in
-`Mathlib.Algebra.Category.CoalgCat.ComonEquivalence`. That file defines the monoidal category
+`Mathlib/Algebra/Category/CoalgCat/ComonEquivalence.lean`. That file defines the monoidal category
 structure on coalgebras induced by an equivalence with comonoid objects in the category of modules,
 `CoalgCat.instMonoidalCategoryAux`, but we do not declare this as an instance - we just use it
 to prove things. Then, we use the definitions in this file to make a monoidal category instance on
-`CoalgCat R` in `Mathlib.Algebra.Category.CoalgCat.Monoidal` that has simpler data.
+`CoalgCat R` in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` that has simpler data.
 
 However, this approach forces our coalgebras to be in the same universe as the base ring `R`,
 since it relies on the monoidal category structure on `ModuleCat R`, which is currently

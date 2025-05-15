@@ -28,7 +28,7 @@ For a ring `R`:
 
 ## Notes
 
-The corresponding hom classes are defined in `Mathlib.Analysis.Order.Hom.Basic` to be used by
+The corresponding hom classes are defined in `Mathlib/Analysis/Order/Hom/Basic.lean` to be used by
 absolute values.
 
 ## References

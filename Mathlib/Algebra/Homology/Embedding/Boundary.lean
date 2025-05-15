@@ -9,11 +9,11 @@ import Mathlib.Algebra.Homology.HomologicalComplex
 /-!
 # Boundary of an embedding of complex shapes
 
-In the file `Mathlib.Algebra.Homology.Embedding.Basic`, given `p : ℤ`, we have defined
+In the file `Mathlib/Algebra/Homology/Embedding/Basic.lean`, given `p : ℤ`, we have defined
 an embedding `embeddingUpIntGE p` of `ComplexShape.up ℕ` in `ComplexShape.up ℤ`
 which sends `n : ℕ` to `p + n`. The (canonical) truncation (`≥ p`) of
 `K : CochainComplex C ℤ` shall be defined as the extension to `ℤ`
-(see `Mathlib.Algebra.Homology.Embedding.Extend`) of
+(see `Mathlib/Algebra/Homology/Embedding/Extend.lean`) of
 a certain cochain complex indexed by `ℕ`:
 
 `Q ⟶ K.X (p + 1) ⟶ K.X (p + 2) ⟶ K.X (p + 3) ⟶ ...`
