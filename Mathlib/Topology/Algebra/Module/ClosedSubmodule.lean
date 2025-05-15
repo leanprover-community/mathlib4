@@ -182,8 +182,8 @@ variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
 
-
-We use continuous maps here so that the `comap` of `f` is also a map between closed submodules. -/
+`ClosedSubmodule.map f` is left-adjoint to `ClosedSubmodule.comap f`.
+See `ClosedSubmodule.gc_map_comap`. -/
 def map (f : M →L[R] N) (s : ClosedSubmodule R M) : ClosedSubmodule R N :=
   (s.toSubmodule.map f).closure
 
