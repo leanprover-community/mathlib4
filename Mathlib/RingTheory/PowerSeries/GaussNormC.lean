@@ -18,8 +18,9 @@ values of `v (f.coeff R i) * c ^ i` for all `i : ℕ`.
   real number.
 * `PowerSeries.gaussNormC_nonneg`: if `v` is a non-negative function, then the Gauss norm is
   non-negative.
-* `PowerSeries.gaussNormC_eq_zero_iff`: if `v x = 0 ↔ x = 0` for all `x : R`, then the Gauss
-  norm is zero if and only if the power series is zero.
+* `PowerSeries.gaussNormC_eq_zero_iff`: if `v` is a non-negative function and `v x = 0 ↔ x = 0` for
+  all `x : R` and `c` is positive, then the Gauss norm is zero if and only if the power series is
+  zero.
 -/
 
 namespace PowerSeries
@@ -36,22 +37,20 @@ theorem gaussNormC_zero [ZeroHomClass F R ℝ] : gaussNormC v c 0 = 0 := by simp
 private lemma gaussNormC_nonempty : {x | ∃ i, v (f.coeff R i) * c ^ i = x}.Nonempty := by
   use v (f.coeff R 0) * c ^ 0, 0
 
-lemma le_gaussNormC [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
-    (hbd : BddAbove {x | ∃ i, v (f.coeff R i) * c ^ i = x}) (i : ℕ) :
+lemma le_gaussNormC (hbd : BddAbove {x | ∃ i, v (f.coeff R i) * c ^ i = x}) (i : ℕ) :
   v (f.coeff R i) * c ^ i ≤ f.gaussNormC v c := by
   apply le_csSup hbd
   simp
 
 theorem gaussNormC_nonneg [NonnegHomClass F R ℝ] : 0 ≤ f.gaussNormC v c := by
   rw [gaussNormC]
-  by_cases h : ¬ BddAbove {x | ∃ i, v (f.coeff R i) * c ^ i = x}
-  · simp [h]
-  · rw [not_not] at h
-    rw [Real.le_sSup_iff h <| gaussNormC_nonempty v c f]
+  by_cases h : BddAbove {x | ∃ i, v (f.coeff R i) * c ^ i = x}
+  · rw [Real.le_sSup_iff h <| gaussNormC_nonempty v c f]
     simp only [Set.mem_setOf_eq, zero_add, exists_exists_eq_and]
     intro ε hε
     use 0
     simpa using lt_of_lt_of_le hε <| apply_nonneg v (f.constantCoeff R)
+  · simp [h]
 
 @[simp]
 theorem gaussNormC_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {v : F}
