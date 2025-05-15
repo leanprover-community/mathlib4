@@ -19,7 +19,7 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 
 ## Results
 * `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
- on the size of the sifted set in terms of `mainSum` and `errSum`
+  on the size of the sifted set in terms of `mainSum` and `errSum`
 
 ## Notation
 The `SelbergSieve.Notation` namespace includes common shorthand for the variables included in the

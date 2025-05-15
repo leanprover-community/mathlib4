@@ -90,4 +90,15 @@ lemma isPrimitive_stdAddChar (N : ℕ) [NeZero N] :
   refine AddChar.zmod_char_primitive_of_eq_one_only_at_zero _ _ (fun t ht ↦ ?_)
   rwa [← (stdAddChar (N := N)).map_zero_eq_one, injective_stdAddChar.eq_iff] at ht
 
+/-- `ZMod.toCircle` as an `AddChar` into `rootsOfUnity n Circle`. -/
+noncomputable def rootsOfUnityAddChar (n : ℕ) [NeZero n] :
+    AddChar (ZMod n) (rootsOfUnity n Circle) where
+  toFun x := ⟨toUnits (ZMod.toCircle x), by ext; simp [← AddChar.map_nsmul_eq_pow]⟩
+  map_zero_eq_one' := by simp
+  map_add_eq_mul' _ _:= by ext; simp [AddChar.map_add_eq_mul]
+
+@[simp] lemma rootsOfUnityAddChar_val (n : ℕ) [NeZero n] (x : ZMod n) :
+    (rootsOfUnityAddChar n x).val = toCircle x := by
+  rfl
+
 end ZMod
