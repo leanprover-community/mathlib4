@@ -14,8 +14,8 @@ This file proves relations between the various finset intervals in a successor/p
 ## Notes
 
 Please keep in sync with:
-* `Mathlib.Algebra.Order.Interval.Finset.SuccPred`
-* `Mathlib.Algebra.Order.Interval.Set.SuccPred`
+* `Mathlib/Algebra/Order/Interval/Finset/SuccPred.lean`
+* `Mathlib/Algebra/Order/Interval/Set/SuccPred.lean`
 * `Mathlib.Order.Interval.Set.SuccPred`
 
 ## TODO

@@ -14,7 +14,7 @@ import Mathlib.Tactic.Monotonicity.Attr
 /-!
 # Lemmas on the monotone multiplication typeclasses
 
-This file builds on `Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs` by proving several lemmas
+This file builds on `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` by proving several lemmas
 that do not immediately follow from the typeclass specifications.
 -/
 

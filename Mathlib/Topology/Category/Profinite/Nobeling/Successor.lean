@@ -36,7 +36,7 @@ sequence mentioned in the previous paragraph (see `succ_mono` and `succ_exact`).
 the penultimate paragraph of the proof in [scholze2019condensed]. The second one, `GoodProducts`
 corresponds to the last paragraph in the proof in [scholze2019condensed].
 
-For the overall proof outline see `Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
 ## Main definitions
 

@@ -14,8 +14,8 @@ This file proves relations between the various set intervals in a successor/pred
 ## Notes
 
 Please keep in sync with:
-* `Mathlib.Algebra.Order.Interval.Finset.SuccPred`
-* `Mathlib.Algebra.Order.Interval.Set.SuccPred`
+* `Mathlib/Algebra/Order/Interval/Finset/SuccPred.lean`
+* `Mathlib/Algebra/Order/Interval/Set/SuccPred.lean`
 * `Mathlib.Order.Interval.Finset.SuccPred`
 
 ## TODO

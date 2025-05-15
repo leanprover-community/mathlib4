@@ -15,7 +15,7 @@ the `SMul` instances are already defined in `Mathlib.Algebra.Order.Group.Synonym
 
 ## See also
 
-* `Mathlib.Algebra.Order.Group.Action.Synonym`
+* `Mathlib/Algebra/Order/Group/Action/Synonym.lean`
 * `Mathlib.Algebra.Order.Module.Synonym`
 -/
 
