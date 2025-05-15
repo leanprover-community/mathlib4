@@ -225,7 +225,7 @@ Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Par
 and `endPos` is the position of the end of the header.
 -/
 def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
-    IO (System.FilePath × Parser.InputContext × Syntax × String.Pos) := do
+    IO (System.FilePath × Parser.InputContext × TSyntax ``Parser.Module.header × String.Pos) := do
   -- Parse the input file
   let some path ← srcSearchPath.findModuleWithExt "lean" mod
     | throw <| .userError "error: failed to find source file for {mod}"
@@ -292,7 +292,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
   if githubStyle then
     try
       let (path, inputCtx, header, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
-      for stx in header[1].getArgs do
+      for stx in header.raw[2].getArgs do
         if toRemove.any fun i => s.modNames[i]! == stx[2].getId then
           let pos := inputCtx.fileMap.toPosition stx.getPos?.get!
           println! "{path}:{pos.line}:{pos.column+1}: warning: unused import \
@@ -604,7 +604,7 @@ def main (args : List String) : IO UInt32 := do
     let mut pos : String.Pos := 0
     let mut out : String := ""
     let mut seen : NameSet := {}
-    for stx in header[1].getArgs do
+    for stx in header.raw[2].getArgs do
       let mod := stx[2].getId
       if remove.contains mod || seen.contains mod then
         out := out ++ text.extract pos stx.getPos?.get!
