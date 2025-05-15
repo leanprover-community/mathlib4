@@ -226,8 +226,7 @@ lemma toStrictSegal₂.mk_naturality_σ1i (i : Fin 2) :
       rw [δ₂_two_comp_σ₂_one]
       exact (toStrictSegal₂.mk.naturalityProperty sy F).id_mem _
   · show _ ≫ _ ≫ Y.map (δ₂ _).op = _ ≫ Y.map (_ ≫ (δ₂ _).op)
-    rw [← op_comp]
-    rw [← toStrictSegal₂.mk_naturality_δ1i sy F hyp, ← assoc, ← map_comp, ← op_comp]
+    rw [← op_comp, ← toStrictSegal₂.mk_naturality_δ1i sy F hyp, ← assoc, ← map_comp, ← op_comp]
     change toStrictSegal₂.mk.naturalityProperty sy F (δ₂ 0 ≫ σ₂ i)
     fin_cases i <;> dsimp only [Fin.zero_eta, Fin.isValue, Fin.mk_one]
     · rw [δ₂_zero_comp_σ₂_zero]
