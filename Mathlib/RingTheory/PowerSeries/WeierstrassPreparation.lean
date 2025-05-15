@@ -18,7 +18,7 @@ Weierstrass preparation theorem.
 
 We assume that a ring is adic complete with respect to some ideal.
 If such ideal is a maximal ideal, then by `isLocalRing_of_isAdicComplete_maximal`,
-such ring has only on maximal ideal, and hence such ring is a complete local ring.
+such ring has only on maximal ideal, and hence it is a complete local ring.
 
 ## Main definitions
 
@@ -45,7 +45,7 @@ such ring has only on maximal ideal, and hence such ring is a complete local rin
   Let `n` be the order of the image of `g` in the residue field. Then there exists a power series
   `q` and a polynomial `r` of degree `< n`, such that `f = g * q + r`.
 
-- `PowerSeries.IsWeierstrassDivision.elim`: The `q` and `r` in the Weierstrass division is unique.
+- `PowerSeries.IsWeierstrassDivision.elim`: `q` and `r` in the Weierstrass division are unique.
 
 - `PowerSeries.exists_isWeierstrassFactorization`: **Weierstrass preparation theorem**
   ([washington_cyclotomic], Theorem 7.3): let `g` be a power series
@@ -53,8 +53,8 @@ such ring has only on maximal ideal, and hence such ring is a complete local rin
   not zero. Then there exists a distinguished polynomial `f` and a power series `h`
   which is a unit, such that `g = f * h`.
 
-- `PowerSeries.IsWeierstrassFactorization.elim`: The `f` and `h` in Werierstrass preparation
-  theorem is unique.
+- `PowerSeries.IsWeierstrassFactorization.elim`: `f` and `h` in Werierstrass preparation
+  theorem are unique.
 
 ## References
 
@@ -62,7 +62,7 @@ such ring has only on maximal ideal, and hence such ring is a complete local rin
 
 -/
 
-open scoped Polynomial PowerSeries
+open scoped Polynomial
 
 namespace PowerSeries
 
@@ -141,7 +141,7 @@ private theorem coeff_trunc_order_mem (i : ℕ) :
     (g.trunc (g.map (Ideal.Quotient.mk I)).order.toNat).coeff i ∈ I := by
   rw [coeff_trunc]
   split_ifs with h
-  · simpa only [coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] using coeff_of_lt_order_toNat _ h
+  · simpa [← RingHom.mem_ker] using coeff_of_lt_order_toNat _ h
   · exact zero_mem _
 
 namespace IsWeierstrassDivisorAt
@@ -151,7 +151,7 @@ include H
 
 theorem isUnit_shift : IsUnit <| PowerSeries.mk fun i ↦
     coeff A (i + (g.map (Ideal.Quotient.mk I)).order.toNat) g := by
-  simpa only [isUnit_iff_constantCoeff, constantCoeff_mk, zero_add]
+  simpa [isUnit_iff_constantCoeff]
 
 /-- The inductively constructed sequence `qₖ` in the proof of Weierstrass division. -/
 noncomputable def seq (H : g.IsWeierstrassDivisorAt I) (f : A⟦X⟧) : ℕ → A⟦X⟧
@@ -197,7 +197,7 @@ theorem coeff_seq_succ_sub_seq_mem (k : ℕ) :
   simp_rw [seq, add_sub_cancel_left]
   refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' fun i ↦ ?_
   rw [coeff_mk]
-  exact H.coeff_seq_mem k (i + _) (by simp)
+  exact H.coeff_seq_mem k _ (by simp)
 
 @[simp]
 theorem seq_zero : H.seq f 0 = 0 := rfl
@@ -232,7 +232,7 @@ theorem coeff_div [IsPrecomplete I A] : ∀ i, coeff A i (H.div f) = (H.divCoeff
 theorem coeff_div_sub_seq_mem [IsPrecomplete I A] (k : ℕ) :
     ∀ i, coeff A i (H.div f - (H.seq f k)) ∈ I ^ k := fun i ↦ by
   rw [map_sub, coeff_div]
-  simpa only [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] using ((H.divCoeff f i).2 k).symm
+  simpa [SModEq.sub_mem] using ((H.divCoeff f i).2 k).symm
 
 variable (f)
 
