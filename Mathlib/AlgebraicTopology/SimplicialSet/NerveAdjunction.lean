@@ -280,7 +280,7 @@ theorem toStrictSegal₂.ext (F G : X ⟶ Y) (sy : StrictSegal Y)
   | 0 => apply eq₀
   | 1 => apply eq₁
   | 2 =>
-    apply (StrictSegal.spineInjective sy 2)
+    apply sy.spineInjective 2
     unfold StrictSegal.spineEquiv
     simp only [Nat.reduceAdd, Equiv.coe_fn_mk]
     ext i
