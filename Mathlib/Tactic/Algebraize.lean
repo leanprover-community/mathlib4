@@ -177,16 +177,18 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
     -- lemma/constructor.
     | some p =>
       let cinfo ← try getConstInfo p catch _ => return
+      let p' ← mkConstWithFreshMVarLevels p
+      let (pargs,_,_) ← forallMetaTelescope (← inferType p')
+      let tp' ← mkAppOptM' p' (pargs.map Option.some)
+
       /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
       is definitionally the same as the `RingHom` property. Then, we just need to construct its type
       and the local declaration will already give a valid term. -/
       if cinfo.isInductive then
-        /- The following dance makes a full application of p, while avoiding universe issues and
-          unwanted instance synthesis. -/
-        let tp' ← mkAppOptM p ((args.take 2).map Option.some)
-        let (pargs,_,_) ← forallMetaTelescope (← inferType tp')
-        let tp ← mkAppOptM' tp' (pargs.map Option.some)
+        pargs[0]!.mvarId!.assignIfDefEq (args[0]!)
+        pargs[1]!.mvarId!.assignIfDefEq (args[1]!)
         -- This should be the type `Algebra.Property A B`
+        let tp ← instantiateMVars tp'
         if ← isDefEqGuarded decl.type tp then
         /- Find all arguments to `Algebra.Property A B` which are of the form
           `RingHom.toAlgebra x` or `Algebra.toModule (ringHom.toAlgebra x)`. -/
@@ -206,11 +208,8 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       In this case, we assume that the `RingHom` property is the last argument of the lemma or
       constructor (and that this is all we need to supply explicitly). -/
       else
-        let p' ← mkConstWithFreshMVarLevels p
-        let (pargs,_,_) ← forallMetaTelescope (← inferType p')
-        let val ← mkAppOptM' p' (pargs.map Option.some)
         try pargs.back!.mvarId!.assignIfDefEq decl.toExpr catch _ => return
-        let val ← instantiateMVars val
+        let val ← instantiateMVars tp'
         let tp ← inferType val -- This should be the type `Algebra.Property A B`.
         /- Find all arguments to `Algebra.Property A B` which are of the form
           `RingHom.toAlgebra x` or `Algebra.toModule (ringHom.toAlgebra x)`. -/
