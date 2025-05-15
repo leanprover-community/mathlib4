@@ -210,7 +210,7 @@ lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
 
 lemma toStrictSegal₂.mk_naturality_σ1i (i : Fin 2) :
     toStrictSegal₂.mk.naturalityProperty sy F (σ₂ i) := by
-  have : Mono (segalSpine (Z := Y)) := StrictSegal.segalSpineMono sy
+  have : Mono (segalSpine (Z := Y)) := StrictSegal.mono_spine sy
   apply (cancel_mono (segalSpine (Z := Y)) ).1
   simp only [segalSpine, prod.comp_lift, assoc]
   congr 1 <;> rw [← map_comp]

@@ -229,7 +229,7 @@ theorem StrictSegal.mono_spine (sz : StrictSegal Z) :
 
 instance [IsStrictSegal Z] :
     Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
-  StrictSegal.spineMonic (Truncated.StrictSegal.ofIsStrictSegal Z)
+  StrictSegal.mono_spine (StrictSegal.ofIsStrictSegal Z)
 
 variable (Z) in
 /-- Paths of length two in a 2-truncated simplicial set include into pairs of 1-simplices. -/
@@ -286,7 +286,7 @@ theorem StrictSegal.mono_segalSpine (sz : StrictSegal Z) : Mono (segalSpine Z) :
       rwa [pathToPair_snd_apply, pathToPair_snd_apply] at hyp
 
 instance [IsStrictSegal Z] : Mono (segalSpine (Z := Z)) :=
-  StrictSegal.segalSpineMono (StrictSegal.ofIsStrictSegal Z)
+  StrictSegal.mono_segalSpine (StrictSegal.ofIsStrictSegal Z)
 
 end
 
