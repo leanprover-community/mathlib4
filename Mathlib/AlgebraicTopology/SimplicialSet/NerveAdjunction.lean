@@ -193,8 +193,7 @@ lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
     have :=
       StrictSegal.spineToSimplex_arrow sy 2 (by omega) 0 (oneTruncation₂.pathMap F (X.spine 2 _ φ))
     rw [← δ₂_two_eq_mkOfSucc] at this
-    rw [this]
-    rw [oneTruncation₂.pathMap_arrow]
+    rw [this, oneTruncation₂.pathMap_arrow]
     fapply ReflPrefunctor.congr_map_edge
     · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
       simp only [spine_vertex]
