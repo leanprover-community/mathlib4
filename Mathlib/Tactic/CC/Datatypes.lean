@@ -31,7 +31,7 @@ def isValue (e : Expr) : Bool :=
 
 /-- Return true if `e` represents a value (nat/int numeral, character, or string).
 
-In addition to the conditions in `Mathlib.Tactic.CC.isValue`, this also checks that
+In addition to the conditions in `Mathlib/Tactic/CC/isValue.lean`, this also checks that
 kernel computation can compare the values for equality. -/
 def isInterpretedValue (e : Expr) : MetaM Bool := do
   if e.isCharLit || e.isStringLit then

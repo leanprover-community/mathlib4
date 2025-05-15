@@ -30,7 +30,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   - `ConditionallyCompleteLinearOrderBot ℝ≥0`.
 
   These instances are derived from corresponding instances about the type `{x : α // 0 ≤ x}` in an
-  appropriate ordered field/ring/group/monoid `α`, see `Mathlib/Algebra/Order/Nonneg/OrderedRing.lean`.
+  appropriate ordered field/ring/group/monoid `α`, see `Mathlib/Algebra/Order/Nonneg/Ring.lean`.
 
 * `Real.toNNReal x` is defined as `⟨max x 0, _⟩`, i.e. `↑(Real.toNNReal x) = x` when `0 ≤ x` and
   `↑(Real.toNNReal x) = 0` otherwise.

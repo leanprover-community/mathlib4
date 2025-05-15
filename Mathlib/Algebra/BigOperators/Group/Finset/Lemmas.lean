@@ -11,8 +11,8 @@ import Mathlib.Algebra.Group.Support
 /-!
 # Miscellaneous lemmas on big operators
 
-The lemmas in this file have been moved out of `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`
-to reduce its imports.
+The lemmas in this file have been moved out of
+`Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean` to reduce its imports.
 -/
 
 variable {ι α β γ : Type*}

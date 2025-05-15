@@ -9,9 +9,10 @@ import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 # Topological entropy via nets
 We implement Bowen-Dinaburg's definitions of the topological entropy, via nets.
 
-The major design decisions are the same as in `Mathlib/Dynamics/TopologicalEntropy/CoverEntropy.lean`,
-and are explained in detail there: use of uniform spaces, definition of the topological entropy of
-a subset, and values taken in `EReal`.
+The major design decisions are the same as in
+`Mathlib/Dynamics/TopologicalEntropy/CoverEntropy.lean`, and are explained in detail there:
+use of uniform spaces, definition of the topological entropy of a subset, and values taken in
+`EReal`.
 
 Given a map `T : X → X` and a subset `F ⊆ X`, the topological entropy is loosely defined using
 nets as the exponential growth (in `n`) of the number of distinguishable orbits of length `n`

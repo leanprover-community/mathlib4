@@ -571,7 +571,8 @@ section Instances
 /-!
 We define several instances for constants and operations on `Part α` inherited from `α`.
 
-This section could be moved to a separate file to avoid the import of `Mathlib/Algebra/Group/Defs.lean`.
+This section could be moved to a separate file to avoid the import of
+`Mathlib/Algebra/Notation/Defs.lean`.
 -/
 
 @[to_additive]

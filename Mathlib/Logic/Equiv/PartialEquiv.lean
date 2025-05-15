@@ -71,8 +71,8 @@ open Lean Meta Elab Tactic
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
 functions (`PartialEquiv`, `PartialHomeomorph`, etc).
 
-This is in a separate file from `Mathlib/Logic/Equiv/MfldSimpsAttr.lean` because attributes need a new
-file to become functional.
+This is in a separate file from `Mathlib/Logic/Equiv/MfldSimpsAttr.lean` because attributes need a
+new file to become functional.
 -/
 
 /-- Common `@[simps]` configuration options used for manifold-related declarations. -/

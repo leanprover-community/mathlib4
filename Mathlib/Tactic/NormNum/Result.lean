@@ -79,7 +79,7 @@ def mkRawRatLit (q : ℚ) : Q(ℚ) :=
   q(mkRat $nlit $dlit)
 
 /-- Extract the raw natlit representing the absolute value of a raw integer literal
-(of the type produced by `Mathlib.Meta.NormNum.mkRawIntLit`) along with an equality proof. -/
+(of the type produced by `Mathlib/Meta/NormNum/mkRawIntLit.lean`) along with an equality proof. -/
 def rawIntLitNatAbs (n : Q(ℤ)) : (m : Q(ℕ)) × Q(Int.natAbs $n = $m) :=
   if n.isAppOfArity ``Int.ofNat 1 then
     have m : Q(ℕ) := n.appArg!

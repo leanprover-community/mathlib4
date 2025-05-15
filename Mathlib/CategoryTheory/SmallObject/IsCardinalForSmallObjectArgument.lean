@@ -24,8 +24,8 @@ to `κ.ord`), and the technical assumption that if `A` is the
 a morphism in `I`, then the functor `Hom(A, _)` should commute
 with the filtering colimits corresponding to relative
 `I`-cell complexes. (This last condition shall hold when `κ`
-is the successor of an infinite cardinal `c` such that all
-these objects `A` are `c`-presentable, see the file `Mathlib/CategoryTheory/Presentable/Basic.lean`.)
+is the successor of an infinite cardinal `c` such that all these objects `A` are `c`-presentable,
+see `Mathlib/CategoryTheory/Presentable/Basic.lean`.)
 
 Given `I : MorphismProperty C`, we shall say that `I` permits
 the small object argument if there exists `κ` such that

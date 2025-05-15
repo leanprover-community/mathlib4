@@ -63,7 +63,7 @@ file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
 4. (In the file `Mathlib/MeasureTheory/Integral/DominatedConvergence.lean`)
   `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 
-5. (In the file `Mathlib/MeasureTheory/Integral/SetIntegral.lean`) integration commutes with continuous
+5. (In `Mathlib/MeasureTheory/Integral/SetIntegral.lean`) integration commutes with continuous
   linear maps.
 
   * `ContinuousLinearMap.integral_comp_comm`

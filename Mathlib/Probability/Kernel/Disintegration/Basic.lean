@@ -31,8 +31,8 @@ disintegrated by some kernel, then `κ` itself is disintegrated by a kernel, nam
 
 ## See also
 
-`Mathlib/Probability/Kernel/Disintegration/StandardBorel.lean` for a **construction** of disintegrating
-kernels.
+`Mathlib/Probability/Kernel/Disintegration/StandardBorel.lean` for a **construction** of
+disintegrating kernels.
 -/
 
 open MeasureTheory Set Filter MeasurableSpace ProbabilityTheory

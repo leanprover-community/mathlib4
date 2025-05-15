@@ -12,7 +12,8 @@ import Mathlib.Topology.ContinuousMap.Basic
 We introduce the bundled category `TopCat` of topological spaces together with the functors
 `TopCat.discrete` and `TopCat.trivial` from the category of types to `TopCat` which equip a type
 with the corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
-resp. right adjoint to the forgetful functor, see `Mathlib/Topology/Category/TopCat/Adjunctions.lean`.
+resp. right adjoint to the forgetful functor, see
+`Mathlib/Topology/Category/TopCat/Adjunctions.lean`.
 -/
 
 assert_not_exists Module

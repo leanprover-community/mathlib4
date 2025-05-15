@@ -51,8 +51,8 @@ TODO: add the similar result for the series of homogeneous components.
 
 ## Implementation Notes
 
-In `Mathlib/RingTheory/MvPowerSeries/LinearTopology.lean`, we generalize the criterion for topological
-nilpotency by proving that, if the base ring is equipped with a *linear* topology, then
+In `Mathlib/RingTheory/MvPowerSeries/LinearTopology.lean`, we generalize the criterion for
+topological nilpotency by proving that, if the base ring is equipped with a *linear* topology, then
 a power series is topologically nilpotent if and only if its constant coefficient is.
 This is lemma `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`.
 
