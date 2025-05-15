@@ -76,7 +76,7 @@ noncomputable section
 variable {𝕜 E F G : Type*}
 
 open Topology NNReal Filter ENNReal Set Asymptotics
-open scoped Pointwise in
+open scoped Pointwise
 
 namespace FormalMultilinearSeries
 
