@@ -231,56 +231,16 @@ the range to the original frame. -/
 def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
 
 lemma factorizes_iff_le : n ∘ m = m ↔ n ≤ m where
-  mpr h := by
-    ext x
-    exact le_antisymm (le_trans (h (m x)) (m.idempotent' x)) le_apply
+  mpr h := funext_iff.mpr <| fun _ ↦ le_antisymm (le_trans (h (m _)) (m.idempotent' _)) le_apply
   mp h := by
     rw [← coe_le_coe, ← h]
     exact fun _ ↦ monotone le_apply
 
--- TODO better name
 lemma range_subset_iff : range m ⊆ range n ↔ n ≤ m  where
   mp h x := by
     rw [← mem_range.mp (Set.range_subset_iff.mp h x)]
     exact n.monotone (m.le_apply)
   mpr h := range_subset_range_iff_exists_comp.mpr (Exists.intro ↑m ((factorizes_iff_le.mpr) h).symm)
-
-/-
-structure Sublocale' (X : Type*) [Order.Frame X] where
-  carrier : Set X
-  frm : Order.Frame carrier
-  l : @InfHom  X ↑carrier _ (frm.toMin)
-  gc : @GaloisConnection _ _ _ (frm.toPreorder) l Subtype.val
-
-instance {s : Sublocale X} : Order.Frame s.carrier := s.frm
-
-def Sublocale.toNucleus (s : Sublocale X) : Nucleus X where
-  toFun x := Subtype.val (s.l x)
-  map_inf' x y := by
-    rw [InfHomClass.map_inf]
-
-    let test := @GaloisConnection.u_inf X s.carrier (s.l x) (s.l y) _ _ s.l Subtype.val s.gc
-    let test2 := s.gc
-
-    sorry
-
-  le_apply' x := GaloisConnection.le_u_l s.gc x
-  idempotent' x := s.gc.monotone_u (s.gc.l_u_le _)
-
-def sublocale_to_Nucleus (S : Type*) [Order.Frame S] {l : InfHom X S} {u : S → X}
-      (gc : GaloisConnection l u) : Nucleus X where
-  toFun x := u (l x)
-  map_inf' x y := by
-    rw [InfHomClass.map_inf]
-    exact GaloisConnection.u_inf gc
-  le_apply' x := GaloisConnection.le_u_l gc x
-  idempotent' x := gc.monotone_u (gc.l_u_le _)
-
-lemma Nucleus_equiv_sublocale (n : Nucleus X) :
-    n = sublocale_to_Nucleus (range n) (n.giRestrict.gc) := by
-  ext x
-  simp [sublocale_to_Nucleus]
--/
 
 end Frame
 end Nucleus

@@ -31,9 +31,10 @@ instance instCompleteLattice : CompleteLattice S where
   inf_le_left _ _ := inf_le_left
   inf_le_right _ _ := inf_le_right
   le_inf _ _ _ h1 h2 := le_inf h1 h2
-  __ := completeLatticeOfInf S (by simp_all only [IsGLB, IsGreatest, lowerBounds, Subtype.forall,
+  -- squeezed simp for performance
+  __ := completeLatticeOfInf S <| by simp_all only [IsGLB, IsGreatest, lowerBounds, Subtype.forall,
     sInf, mem_setOf_eq, Subtype.mk_le_mk, sInf_le_iff, mem_image, Subtype.exists, exists_and_right,
-    exists_eq_right, forall_exists_index, implies_true, upperBounds, le_sInf_iff, and_self])
+    exists_eq_right, forall_exists_index, implies_true, upperBounds, le_sInf_iff, and_self]
 
 lemma coe_inf (a b : S) : (a ⊓ b).val = ↑a ⊓ ↑b :=  rfl
 
@@ -119,7 +120,6 @@ lemma toNucleus.range : range S.toNucleus = S.carrier := by
     use x'
     exact hx'
 
-
 lemma mem_iff (x : X) : x ∈ S ↔ x ∈ S.carrier := by exact Eq.to_iff rfl
 
 lemma le_iff' (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s1.carrier ⊆ s2.carrier where
@@ -184,6 +184,12 @@ def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
       rw [Sublocale.le_iff']
       apply h
 
+#check orderiso.injective
+instance : Order.Coframe (Nucleus X)ᵒᵈ := OrderDual.instCoframe
+
+instance : Order.Coframe (Sublocale X) where
+  __ := orderiso.injective
+
 lemma Sublocale.le_iff (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s2.toNucleus ≤ s1.toNucleus := by
   apply Iff.intro
   . intro h
@@ -196,6 +202,7 @@ lemma Sublocale.le_iff (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s2.toNucleus ≤ s1
     rw [Sublocale.le_iff']
     repeat rw [Sublocale.toNucleus.range] at h
     exact h
+
 @[ext]
 structure Open (X : Type*) [Order.Frame X] where
   element : X
@@ -224,3 +231,18 @@ instance : PartialOrder (Open X) where
   le_refl _ := le_refl _
   le_trans _ _ _ h1 h2 := le_trans h1 h2
   le_antisymm _ _ h1 h2 := Open.ext_iff.mpr (le_antisymm h1 h2)
+
+variable {U V : Open X}
+
+lemma le_def : U ≤ V ↔ U.element ≤ V.element := ge_iff_le
+
+instance : BoundedOrder (Open X) where
+  top := ⟨⊤⟩
+  le_top _ := le_def.mpr le_top
+  bot := ⟨⊥⟩
+  bot_le _ := le_def.mpr bot_le
+
+instance : CompleteSemilatticeSup (Open X) where
+  sSup s := ⟨sSup s⟩
+
+end Open
