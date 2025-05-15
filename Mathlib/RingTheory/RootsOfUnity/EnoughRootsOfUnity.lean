@@ -81,19 +81,9 @@ lemma map_of_rootsOfUnityEquiv {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M]
   prim := by
     obtain ⟨m, hm⟩ := hm.prim
     use (e hm.toRootsOfUnity).val.val
-    simp_all only [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.coe_submonoidClass_iff]
-    apply  IsPrimitiveRoot.map_of_injective _ e.injective
-    constructor
-    · ext : 2
-      simp_all only [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val,
-        IsPrimitiveRoot.val_toRootsOfUnity_coe, OneMemClass.coe_one, Units.val_one, hm.pow_eq_one]
-    · intro l hl
-      apply (hm.pow_eq_one_iff_dvd l).mp
-      have e3 : (hm.toRootsOfUnity ^ l).val.val = 1 := by
-        simp_all only [map_one]
-        norm_cast
-      rw [← e3]
-      norm_cast
+    rw [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.coe_submonoidClass_iff]
+    refine .map_of_injective ?_ e.injective
+    rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, ← IsPrimitiveRoot.coe_units_iff]
   cyc := isCyclic_of_surjective e e.surjective
 
 end HasEnoughRootsOfUnity
