@@ -370,37 +370,37 @@ section succ
 
 @[to_additive]
 theorem prod_Icc_succ (f : Fin (n + 1) → M) (a b : Fin n) :
-    ∏ i ∈ Icc (a.succ) (b.succ), f i = ∏ i ∈ Icc a b, f (i.succ) := by
+    ∏ i ∈ Icc a.succ b.succ, f i = ∏ i ∈ Icc a b, f i.succ := by
   simp [← map_succEmb_Icc]
 
 @[to_additive]
 theorem prod_Ico_succ (f : Fin (n + 1) → M) (a b : Fin n) :
-    ∏ i ∈ Ico (a.succ) (b.succ), f i = ∏ i ∈ Ico a b, f (i.succ) := by
+    ∏ i ∈ Ico a.succ b.succ, f i = ∏ i ∈ Ico a b, f i.succ := by
   simp [← map_succEmb_Ico]
 
 @[to_additive]
 theorem prod_Ioc_succ (f : Fin (n + 1) → M) (a b : Fin n) :
-    ∏ i ∈ Ioc (a.succ) (b.succ), f i = ∏ i ∈ Ioc a b, f (i.succ) := by
+    ∏ i ∈ Ioc a.succ b.succ, f i = ∏ i ∈ Ioc a b, f i.succ := by
   simp [← map_succEmb_Ioc]
 
 @[to_additive]
 theorem prod_Ioo_succ (f : Fin (n + 1) → M) (a b : Fin n) :
-    ∏ i ∈ Ioo (a.succ) (b.succ), f i = ∏ i ∈ Ioo a b, f (i.succ) := by
+    ∏ i ∈ Ioo a.succ b.succ, f i = ∏ i ∈ Ioo a b, f i.succ := by
   simp [← map_succEmb_Ioo]
 
 @[to_additive]
 theorem prod_uIcc_succ (f : Fin (n + 1) → M) (a b : Fin n) :
-    ∏ i ∈ uIcc (a.succ) (b.succ), f i = ∏ i ∈ uIcc a b, f (i.succ) := by
+    ∏ i ∈ uIcc a.succ b.succ, f i = ∏ i ∈ uIcc a b, f i.succ := by
   simp [← map_succEmb_uIcc]
 
 @[to_additive]
 theorem prod_Ici_succ (f : Fin (n + 1) → M) (a : Fin n) :
-    ∏ i ≥ a.succ, f i = ∏ i ≥ a, f (i.succ) := by
+    ∏ i ≥ a.succ, f i = ∏ i ≥ a, f i.succ := by
   simp [← map_succEmb_Ici]
 
 @[to_additive (attr := simp)]
 theorem prod_Ioi_succ (f : Fin (n + 1) → M) (a : Fin n) :
-    ∏ i > a.succ, f i = ∏ i > a, f (i.succ) := by
+    ∏ i > a.succ, f i = ∏ i > a, f i.succ := by
   simp [← map_succEmb_Ioi]
 
 @[to_additive]
