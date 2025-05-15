@@ -13,8 +13,6 @@ import Mathlib.Tactic.NormNum.PowMod
 
 Note that `Mathlib.Tactic.NormNum.PowMod` contains a similar tactic, but that runs significantly
 slower and less efficiently than the one here.
-
-TODO: add Anand's optimisation
 -/
 
 open Nat
@@ -52,6 +50,82 @@ lemma powMod_eq (a : ℕ) {a' b n m : ℕ} (h : powModAux a' b 1 n = m) (ha : a 
 lemma powMod_ne {a b n m : ℕ} (m' : ℕ) (hm : bne m' m) (h : powMod a b n = m') :
     powMod a b n ≠ m := by
   simp_all
+
+def powModTR (a b n : ℕ) : ℕ :=
+  aux (a % n) b 1 (b + 1) (by omega) where
+  aux (a b c : ℕ) (fuel : ℕ) (hfuel : b < fuel) : ℕ :=
+    match fuel with
+    | 0 => by omega
+    | fuel + 1 =>
+      if hb : b = 0 then c % n
+      else if b = 1 then (a * c) % n
+      else if b % 2 = 0 then
+        aux (a * a % n) (b / 2) c fuel (by omega)
+      else
+        aux (a * a % n) (b / 2) (a * c % n) fuel (by omega)
+
+set_option allowUnsafeReducibility true
+
+@[semireducible]
+partial def aux (n a b c : ℕ) : ℕ :=
+    if b = 0 then c % n
+    else if b = 1 then (a * c) % n
+    else if b % 2 = 0 then
+      aux n (a * a % n) (b / 2) c
+    else
+      aux n (a * a % n) (b / 2) (a * c % n)
+
+def powModTR' (a b n : ℕ) : ℕ :=
+  let rec @[semireducible] aux (a b c : ℕ) : ℕ :=
+    if b = 0 then c % n
+    else if b = 1 then (a * c) % n
+    else if b % 2 = 0 then
+      aux (a * a % n) (b / 2) c
+    else
+      aux (a * a % n) (b / 2) (a * c % n)
+    partial_fixpoint
+  aux (a % n) b 1
+
+-- #print powModTR'.aux
+
+-- #exit
+
+lemma powModTR_aux_congr (n a b c fuel1 fuel2) (hfuel1 : b < fuel1) (hfuel2 : b < fuel2) :
+    powModTR.aux n a b c fuel1 hfuel1 = powModTR.aux n a b c fuel2 hfuel2 :=
+  match fuel1, fuel2 with
+  | 0, _ => by omega
+  | _, 0 => by omega
+  | fuel1 + 1, fuel2 + 1 => by
+    simp only [powModTR.aux]
+    split
+    · simp
+    split
+    · simp
+    split
+    · rw [powModTR_aux_congr]
+    · rw [powModTR_aux_congr]
+
+lemma powModTR_aux_eq (n a b c fuel) (hfuel : b < fuel) :
+    powModTR.aux n a b c fuel hfuel = powModAux a b c n := by
+  induction a, b, c, fuel, hfuel using powModTR.aux.induct n with
+  | case1 a b c hfuel => omega
+  | case2 a c fuel hfuel =>
+    rw [powModTR.aux, dif_pos rfl]
+    exact (powModAux_zero_eq rfl).symm
+  | case3 a c fuel hfuel h =>
+    rw [powModTR.aux, dif_neg h, if_pos rfl]
+    exact (powModAux_one_eq rfl).symm
+  | case4 a b c fuel hfuel h₁ h₂ h₃ ih1 =>
+    rw [powModTR.aux, dif_neg h₁, if_neg h₂, if_pos h₃, ih1]
+    exact (powModAux_even_eq rfl (by omega) rfl).symm
+  | case5 a b c fuel hfuel h₁ h₂ h₃ ih1 =>
+    rw [powModTR.aux, dif_neg h₁, if_neg h₂, if_neg h₃, ih1]
+    exact (powModAux_odd_eq (by omega) rfl rfl rfl).symm
+
+lemma powModTR_eq (a b n) :
+    powModTR a b n = powMod a b n := by
+  apply (powMod_eq _ _ rfl).symm
+  rw [powModTR, powModTR_aux_eq]
 
 namespace Tactic.powMod
 
@@ -147,12 +221,25 @@ elab "prove_pow_mod" : tactic =>
 
 end Tactic.powMod
 
+macro "prove_pow_mod2" : tactic => `(tactic| {rw [← powModTR_eq]; decide +native})
+
+#time
 example :
-    powMod
-      5
-      85083351022467190124442353598696803287939269665616
-      85083351022467190124442353598696803287939269665617 = 1 := by
+    powMod 2
+      2112421871326486211461011031931945323874719289347729538762174157135451276986
+      2112421871326486211461011031931945323874719289347729538762174157135451276987 =
+      1 := by
   prove_pow_mod
+
+#time
+example :
+    powMod 2
+      2112421871326486211461011031931945323874719289347729538762174157135451276986
+      2112421871326486211461011031931945323874719289347729538762174157135451276987 =
+      1 := by
+  prove_pow_mod2
+
+#exit
 
 example : powMod 2304821 1 2308 = 1437 := by
   prove_pow_mod

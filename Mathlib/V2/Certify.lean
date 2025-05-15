@@ -30,8 +30,6 @@ def PrattEntry.out : PrattEntry → ℕ
   | .small n => n
   | .big n _ _ => n
 
-def testPratt : PrattCertificate := [.small 2, .big 3 2 [2], .big 37 2 [2, 3]]
-
 def MPrattCertificate.out : MPrattCertificate → ℕ
   | .small n => n
   | .big n _ _ => n
@@ -164,7 +162,6 @@ def extractFactor.acc (p q i : ℕ) (hq : 1 < q) : ℕ × ℕ :=
     have : p / q < p := Nat.div_lt_self (by omega) hq
     acc (p / q) q (i + 1) hq
   else (p, i)
-  -- partial_fixpoint
 
 /--
 Given `p q : ℕ`, find the unique `r k : ℕ` such that `r * q ^ k = p` and `r` is not divisible by `q`
@@ -273,9 +270,9 @@ def prove_prime (cert : PrattCertificate) (n : ℕ) : MetaM Expr := do
   let some ent := data.get? n | throwError "the certificate doesn't prove {n} is prime"
   ent.uses.foldrM (init := ent.pf) fun q pf => do
     let some entq := data.get? q | throwError "internal error 1"
-    -- entq.metaVar.mvarId! |>.assign entq.pf
-    -- return pf
-    mkLetFun entq.metaVar entq.pf pf
+    entq.metaVar.mvarId! |>.assign entq.pf
+    return pf
+    -- mkLetFun entq.metaVar entq.pf pf
 
 elab "pratt" ppSpace certificate:pratt_certificate : tactic => liftMetaFinishingTactic fun goal ↦ do
   match certificate with
@@ -321,7 +318,7 @@ structure SageError where
 /-- The result of a sage call. -/
 def SageResult := Except SageError SageSuccess
 
-def extractCertificate (env : Environment) (out : String) : Except String Syntax := do
+def extractSageCertificate (env : Environment) (out : String) : Except String Syntax := do
   let out ← Json.parse out
   if let .ok true := out.getObjValAs? Bool "success" then
     let stdout ← out.getObjValAs? String "stdout"
@@ -332,6 +329,66 @@ def extractCertificate (env : Environment) (out : String) : Except String Syntax
     let errorName ← executeReply.getObjValAs? String "ename"
     let errorValue ← executeReply.getObjValAs? String "evalue"
     .error s!"SageMath error: {errorName}: {errorValue}"
+
+def powMod (a b n : ℕ) : ℕ :=
+  powModAux (a % n) b 1 where
+  powModAux (a b c : ℕ) : ℕ :=
+    if b = 0 then c % n
+    else if b = 1 then (a * c) % n
+    else if b % 2 = 0 then
+      powModAux (a * a % n) (b / 2) c
+    else
+      powModAux (a * a % n) (b / 2) (a * c % n)
+    partial_fixpoint
+
+def testPrimitiveRoot (n a : ℕ) (facs : List ℕ) : Bool :=
+  facs.all fun q ↦ powMod a ((n - 1) / q) n ≠ 1
+
+def makePrimitiveRoot (n : ℕ) (facs : List ℕ) : Except String ℕ :=
+  go 2 where
+  go (a : ℕ) : Except String ℕ :=
+    if a.gcd n > 1 then .error s!"composite: found factor {a}" else
+    if a < n then
+      if powMod a (n - 1) n ≠ 1 then .error s!"composite: fails fermat test at {a}"
+      else if testPrimitiveRoot n a facs
+        then .ok a
+        else go (a + 1)
+    else .error "no primitive root found"
+
+partial def pollardRho (n : ℕ) : Option ℕ := do
+  let f (x : ℕ) : ℕ := (x * x + 1) % n
+  let rec loop (x y : ℕ) : ℕ :=
+    let x' := f x
+    let y' := f (f y)
+    let d := n.gcd (max (x' - y') (y' - x'))
+    if d = 1 then loop x' y' else d
+  for i in [2:n] do
+    let d := loop i i
+    if d < n then return d
+  none
+
+partial def minFacTo (n : ℕ) : Option ℕ :=
+  if n ≤ 2 then return 2 else
+  minFacAux n 3 where
+  minFacAux (n : ℕ) (i : ℕ) : Option ℕ :=
+    if i > 10 ^ 5 then none else
+    if i * i > n then return n else
+    if n % i = 0 then return i else
+    minFacAux n (i + 2)
+
+def factorList (n : ℕ) : List ℕ :=
+  sorry
+
+-- #eval minFacTo (1123145497 * 90101681149415123)
+-- #eval pollardRho (1123145497 * 90101681149415123)
+
+partial def makeNativeCertificate (n : ℕ) : MetaM MPrattCertificate := do
+  if n < 100 then return .small n else
+  let facs := (Nat.primeFactorsList (n - 1)).destutter (· ≠ ·)
+  match makePrimitiveRoot n facs with
+  | .ok a =>
+    return .big n a (← facs.mapM makeNativeCertificate)
+  | .error e => throwError e
 
 def makeCertificate (n : ℕ) (gen : Primality.Generator) : MetaM PrattCertificate := do
   match gen with
@@ -344,29 +401,29 @@ def makeCertificate (n : ℕ) (gen : Primality.Generator) : MetaM PrattCertifica
       IO.throwServerError <|
         "Could not send API request to SageMath. " ++
         s!"curl exited with code {out.exitCode}:\n{out.stderr}"
-    match extractCertificate (← getEnv) out.stdout with
+    match extractSageCertificate (← getEnv) out.stdout with
     | .error e =>
       IO.throwServerError <|
-        s!"Could not parse SageMath output (error: {e})\nSageMath output:\n{out.stdout}\n\
-        The most likely reason for this is that the input {n} was not prime."
+        s!"Could not parse SageMath output (error: {e})\nSageMath output:\n{out.stdout}\n"
     | .ok certStx =>
       let certStx : TSyntax `bpratt_certificate := .mk certStx
       let certStx ← `(pratt_certificate| $certStx:bpratt_certificate)
       PrattCertificate.ofSyntax certStx
 
-  | .native => throwError "native computation not implemented"
+  | .native =>
+    let mcert ← makeNativeCertificate n
+    return reformat mcert
   | .mathematica =>
     let code := mathematicaScript n
     let out ← IO.Process.output {cmd := "wolframscript", args := #["-code", code]}
     if out.exitCode != 0 then
       IO.throwServerError <|
-        "Could not make call request to wolframscript. " ++
-        s!"curl exited with code {out.exitCode}:\n{out.stderr}"
+        "Could not make request to wolframscript. " ++
+        s!"Exited with code {out.exitCode}:\n{out.stderr}"
     let out := out.stdout
     match Parser.runParserCategory (← getEnv) `mpratt_certificate out with
       | .error e =>
         throwError s!"failed to parse mathematica certificate output\n\
-          The most likely reason for this is that the input {n} was not prime.\n\
           parser error: {e}\noutput: {out}"
       | .ok certStx =>
         let certStx : TSyntax `mpratt_certificate := .mk certStx
@@ -393,9 +450,28 @@ elab_rules : tactic
 
 end
 
+#eval Nat.primeFactorsList 2000
+
+-- #eval makePrimitiveRoot 561 (Nat.primeFactorsList 560)
+
+-- #eval pollardRho 4786668800476149
+
+-- example : Nat.Prime 47867742232066880047611079 := by pratt
+--   [2, 3, 5, 7, 11, 17, 23, 29, 31, 37, 47, 67, 83, (167, 5, [2, 83]), (283, 3, [2, 3, 47]),
+--       (4663, 3, [2, 3, 7, 37]), (5011, 2, [2, 3, 5, 167]), (62311, 6, [2, 3, 5, 31, 67]),
+--       (214499, 2, [2, 23, 4663]), (1123145497, 7, [2, 3, 11, 283, 5011]),
+--       (90101681149415123, 2, [2, 11, 17, 214499, 1123145497]),
+--       (47867742232066880047611079, 3, [2, 3, 7, 29, 62311, 90101681149415123])]
+
 end Tactic.Prime
 
--- example : Nat.Prime 683 := by prime (generator := .sage)
+-- #eval 47867742232066880047611079 / (2 * 3 * 5 * 7 * 11)
+-- #eval Nat.primeFactorsList (1123145497 * 90101681149415123)
+
+-- example : Nat.Prime 16832933729 := by prime (generator := .mathematica)
+-- example : Nat.Prime 8369754337237770931 := by prime (generator := .native)
+-- example : Nat.Prime 16832933729 := by prime (generator := .sage)
+
 example : Nat.Prime 101 := by pratt [2, 5, (101, 2, [2, 5])]
 -- example : Nat.Prime 683 := by prime (generator := .mathematica)
 
