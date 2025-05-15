@@ -247,7 +247,6 @@ theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e
   rfl
 
 /-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
-@[simps]
 def ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ : f.comp g = CoalgHom.id R B)
     (h₂ : g.comp f = CoalgHom.id R A) : A ≃ₗc[R] B where
   __ := f
@@ -256,30 +255,27 @@ def ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ : f.comp g = Coal
   left_inv := CoalgHom.ext_iff.1 h₂
   right_inv := CoalgHom.ext_iff.1 h₁
 
-theorem coe_coalgHom_ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
-    ↑(ofCoalgHom f g h₁ h₂) = f :=
-  rfl
-
 @[simp]
-theorem ofCoalgHom_coe_coalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
-    ofCoalgHom (↑f) g h₁ h₂ = f := by
-  ext; simp
+theorem coe_ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
+    ofCoalgHom f g h₁ h₂ = f :=
+  rfl
 
 theorem ofCoalgHom_symm (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
     (ofCoalgHom f g h₁ h₂).symm = ofCoalgHom g f h₂ h₁ :=
   rfl
 
+variable {f : A →ₗc[R] B} (hf : Function.Bijective f)
+
 /-- Promotes a bijective coalgebra homomorphism to a coalgebra equivalence. -/
-noncomputable def ofBijective (f : A →ₗc[R] B) (hf : Function.Bijective f) : A ≃ₗc[R] B :=
-  { LinearEquiv.ofBijective (f : A →ₗ[R] B) hf, f with }
+noncomputable def ofBijective : A ≃ₗc[R] B where
+  __ := f
+  __ := LinearEquiv.ofBijective (f : A →ₗ[R] B) hf
 
 @[simp]
-theorem coe_ofBijective {f : A →ₗc[R] B} {hf : Function.Bijective f} :
-    (CoalgEquiv.ofBijective f hf : A → B) = f :=
+theorem coe_ofBijective : (CoalgEquiv.ofBijective hf : A → B) = f :=
   rfl
 
-theorem ofBijective_apply {f : A →ₗc[R] B} {hf : Function.Bijective f} (a : A) :
-    (CoalgEquiv.ofBijective f hf) a = f a :=
+theorem ofBijective_apply (a : A) : (CoalgEquiv.ofBijective hf) a = f a :=
   rfl
 
 end
