@@ -49,6 +49,8 @@ def span (s : Set M) : Submodule R M :=
 class IsPrincipal (S : Submodule R M) : Prop where
   principal (S) : ∃ a, S = span R {a}
 
+instance (x : R) : (span R {x}).IsPrincipal := ⟨x, rfl⟩
+
 end
 
 variable {s t : Set M}

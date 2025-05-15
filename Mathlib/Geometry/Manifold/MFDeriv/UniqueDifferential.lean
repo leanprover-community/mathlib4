@@ -11,7 +11,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 In this file, we prove various properties of unique derivative sets in manifolds.
 * `image_denseRange`: suppose `f` is differentiable on `s` and its derivative at every point of `s`
-has dense range. If `s` has the unique differential property, then so does `f '' s`.
+  has dense range. If `s` has the unique differential property, then so does `f '' s`.
 * `uniqueMDiffOn_preimage`: the unique differential property is preserved by local diffeomorphisms
 * `uniqueDiffOn_target_inter`: the unique differential property is preserved by
   pullbacks of extended charts

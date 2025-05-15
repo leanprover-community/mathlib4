@@ -216,10 +216,6 @@ theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
 
 section Indexed
 
-theorem LinearIndepOn.mono {t s : Set ι} (hs : LinearIndepOn R v s) (h : t ⊆ s) :
-    LinearIndepOn R v t :=
-  hs.comp _ <| Set.inclusion_injective h
-
 @[deprecated (since := "2025-02-15")] alias LinearIndependent.mono := LinearIndepOn.mono
 
 theorem linearIndepOn_of_finite (s : Set ι) (H : ∀ t ⊆ s, Set.Finite t → LinearIndepOn R v t) :

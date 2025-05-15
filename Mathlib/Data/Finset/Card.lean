@@ -135,9 +135,8 @@ theorem card_pair_eq_one_or_two : #{a, b} = 1 ∨ #{a, b} = 2 := by
   simp [card_insert_eq_ite]
   tauto
 
-@[simp]
 theorem card_pair (h : a ≠ b) : #{a, b} = 2 := by
-  rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
+  simp [h]
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]

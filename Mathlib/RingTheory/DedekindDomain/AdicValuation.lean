@@ -18,12 +18,12 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
 `v.adicCompletion`, and its ring of integers, denoted `v.adicCompletionIntegers`.
 
 ## Main definitions
- - `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
- - `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
- - `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
-    to its `v`-adic valuation.
- - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
-    `v.adicCompletion`.
+- `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
+- `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
+- `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
+  to its `v`-adic valuation.
+- `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
+  `v.adicCompletion`.
 
 ## Main results
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is

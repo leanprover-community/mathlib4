@@ -19,15 +19,16 @@ Then we prove some results on the unique factorization monoid structure of the i
 
 ## Main definitions
 
- - `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
-   every nonzero fractional ideal is invertible.
- - `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
-   fractions.
- - `IsDedekindDomain.HeightOneSpectrum` defines the type of nonzero prime ideals of `R`.
+- `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
+  every nonzero fractional ideal is invertible.
+- `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
+  fractions.
+- `IsDedekindDomain.HeightOneSpectrum` defines the type of nonzero prime ideals of `R`.
 
 ## Main results:
- - `isDedekindDomain_iff_isDedekindDomainInv`
- - `Ideal.uniqueFactorizationMonoid`
+
+- `isDedekindDomain_iff_isDedekindDomainInv`
+- `Ideal.uniqueFactorizationMonoid`
 
 ## Implementation notes
 
@@ -1187,7 +1188,7 @@ theorem Ideal.count_normalizedFactors_eq {p x : Ideal R} [hp : p.IsPrime] {n : �
     (normalize_eq _) (Ideal.dvd_iff_le.mpr hle) (mt Ideal.le_of_dvd hlt)
 
 /-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
- when regarding these ideals as associated elements of the monoid of ideals. -/
+when regarding these ideals as associated elements of the monoid of ideals. -/
 theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Associates (Ideal R)]
     [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
     {I J : Ideal R} (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :

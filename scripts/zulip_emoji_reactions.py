@@ -125,7 +125,7 @@ for message in messages:
                 remove_reaction('maintainer-merge', 'hammer')
             continue
 
-        # Othewise, remove all previous mutually exclusive emoji reactions.
+        # Otherwise, remove all previous mutually exclusive emoji reactions.
         # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
         print("Removing previous reactions, if present.")
         if has_peace_sign:
