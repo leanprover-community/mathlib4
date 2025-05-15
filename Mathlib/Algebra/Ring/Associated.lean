@@ -19,4 +19,8 @@ lemma neg_left (h : Associated a b) : Associated (-a) b := let ⟨u, hu⟩ := h;
 lemma neg_right (h : Associated a b) : Associated a (-b) := h.symm.neg_left.symm
 lemma neg_neg (h : Associated a b) : Associated (-a) (-b) := h.neg_left.neg_right
 
+@[simp]
+lemma neg_left_iff : Associated (-a) b ↔ Associated a b :=
+  ⟨fun h ↦ _root_.neg_neg a ▸ h.neg_left, fun h ↦ h.neg_left⟩
+
 end Associated

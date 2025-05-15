@@ -132,8 +132,9 @@ theorem Associated.abs_right (h : Associated x y) :
     Associated x |y| :=
   (h.symm.abs_left).symm
 
-theorem associated_abs (x : R) :
-    Associated x |x| :=
-  Associated.rfl.abs_right
+theorem Associated.abs_left_iff :
+    Associated |x| y ↔ Associated x y := by
+  obtain h | h := abs_choice x <;>
+  simp [h]
 
 end misc

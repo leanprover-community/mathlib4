@@ -60,8 +60,7 @@ noncomputable def norm : S →* R :=
 theorem norm_apply (x : S) : norm R x = LinearMap.det (lmul R S x) := rfl
 
 @[simp]
-theorem norm_self :
-    Algebra.norm R = MonoidHom.id R := by
+theorem norm_self : Algebra.norm R = MonoidHom.id R := by
   ext
   simp [norm_apply]
 
