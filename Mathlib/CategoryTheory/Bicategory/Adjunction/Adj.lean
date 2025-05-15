@@ -57,8 +57,8 @@ end
 
 section
 
-variable {a b : B} {f : a ⟶ b} {g : b ⟶ a} (adj : f ⊣ g)
-    {f' : a ⟶ b} {g' : b ⟶ a} (adj' : f' ⊣ g') (φ : f' ⟶ f)
+variable {a b : B} {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r)
+    {l' : a ⟶ b} {r' : b ⟶ a} (adj' : l' ⊣ r') (φ : l' ⟶ l)
 
 lemma conjugateEquiv_id_comp_right_apply :
     conjugateEquiv adj ((Adjunction.id _).comp adj') ((λ_ _).hom ≫ φ) =
@@ -76,6 +76,61 @@ lemma conjugateEquiv_comp_id_right_apply :
   bicategory
 
 end
+
+section
+
+variable {a b : B} {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r)
+
+@[simp]
+lemma mateEquiv_leftUnitor_hom_rightUnitor_inv :
+    mateEquiv adj adj ((λ_ _).hom ≫ (ρ_ _).inv) = (ρ_ _).hom ≫ (λ_ _).inv := by
+  simp only [← cancel_mono (λ_ r).hom, ← cancel_epi (ρ_ r).inv,
+    Category.assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id,
+    ← conjugateEquiv_id adj, conjugateEquiv_apply, Category.id_comp]
+
+end
+
+section
+
+variable {a b c : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
+  {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
+  {l₂' : b ⟶ c} {r₂' : c ⟶ b} (adj₂' : l₂' ⊣ r₂')
+
+lemma conjugateEquiv_whiskerLeft (φ : l₂' ⟶ l₂) :
+    conjugateEquiv (adj₁.comp adj₂) (adj₁.comp adj₂') (l₁ ◁ φ) =
+      conjugateEquiv adj₂ adj₂' φ ▷ r₁ := by
+  have := mateEquiv_hcomp adj₁ adj₁ adj₂ adj₂' ((λ_ _).hom ≫ (ρ_ _).inv)
+    ((λ_ _).hom ≫ φ ≫ (ρ_ _).inv)
+  dsimp [leftAdjointSquare.hcomp, rightAdjointSquare.hcomp] at this
+  simp only [comp_whiskerRight, leftUnitor_whiskerRight, Category.assoc, whiskerLeft_comp,
+    whiskerLeft_rightUnitor_inv, Iso.hom_inv_id, Category.comp_id, triangle_assoc,
+    inv_hom_whiskerRight_assoc, Iso.inv_hom_id_assoc, mateEquiv_leftUnitor_hom_rightUnitor_inv,
+    whiskerLeft_rightUnitor, triangle_assoc_comp_left_inv_assoc, Iso.hom_inv_id_assoc] at this
+  simp [conjugateEquiv_apply, this]
+
+end
+
+section
+
+variable {a b c : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
+  {l₁' : a ⟶ b} {r₁' : b ⟶ a} (adj₁' : l₁' ⊣ r₁')
+  {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
+  {l₂' : b ⟶ c} {r₂' : c ⟶ b} (adj₂' : l₂' ⊣ r₂')
+
+lemma conjugateEquiv_whiskerRight (φ : l₁' ⟶ l₁) :
+    conjugateEquiv (adj₁.comp adj₂) (adj₁'.comp adj₂) (φ ▷ l₂) =
+      r₂ ◁ conjugateEquiv adj₁ adj₁' φ := by
+  have := mateEquiv_hcomp adj₁ adj₁' adj₂ adj₂
+    ((λ_ _).hom ≫ φ ≫ (ρ_ _).inv) ((λ_ _).hom ≫ (ρ_ _).inv)
+  dsimp [leftAdjointSquare.hcomp, rightAdjointSquare.hcomp] at this
+  simp only [comp_whiskerRight, leftUnitor_whiskerRight, Category.assoc, whiskerLeft_comp,
+    whiskerLeft_rightUnitor_inv, Iso.hom_inv_id, Category.comp_id, triangle_assoc,
+    inv_hom_whiskerRight_assoc, Iso.inv_hom_id_assoc, mateEquiv_leftUnitor_hom_rightUnitor_inv,
+    leftUnitor_inv_whiskerRight, Iso.inv_hom_id, triangle_assoc_comp_right_assoc] at this
+  simp [conjugateEquiv_apply, this]
+
+end
+
 
 variable (B) in
 /--
@@ -186,7 +241,8 @@ def iso₂Mk {α β : a ⟶ b} (ef : α.f ≅ β.f) (eg : β.g ≅ α.g)
 /-- The associator in the bicategory `Adj B`. -/
 @[simps!]
 def associator (α : a ⟶ b) (β : b ⟶ c) (γ : c ⟶ d) : (α ≫ β) ≫ γ ≅ α ≫ β ≫ γ :=
-  iso₂Mk (α_ _ _ _) (α_ _ _ _) sorry
+  iso₂Mk (α_ _ _ _) (α_ _ _ _) (by
+    sorry)
 
 /-- The left unitor in the bicategory `Adj B`. -/
 @[simps!]
@@ -206,17 +262,17 @@ def whiskerLeft (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') : α ≫ β �
   τf := _ ◁ y.τf
   τg := y.τg ▷ _
   conjugateEquiv_τf := by
-    rw [← Hom₂.conjugateEquiv_τf]
-    -- there should be lemma `conjugateEquiv_whiskerLeft`
-    --rw [← iterated_mateEquiv_conjugateEquiv]
-    sorry
+    dsimp
+    simp only [conjugateEquiv_whiskerLeft, Hom₂.conjugateEquiv_τf]
 
 /-- The right whiskering in the bicategory `Adj B`. -/
 @[simps]
 def whiskerRight {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) : α ≫ β ⟶ α' ≫ β where
   τf := x.τf ▷ _
   τg := _ ◁ x.τg
-  conjugateEquiv_τf := sorry
+  conjugateEquiv_τf := by
+    dsimp
+    simp only [conjugateEquiv_whiskerRight, Hom₂.conjugateEquiv_τf]
 
 attribute [local simp] whisker_exchange
 
