@@ -43,12 +43,17 @@ variable {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁
 lemma mateEquiv_eq_iff {g : a ⟶ c} {h : b ⟶ d}
     (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h ≫ r₂) :
   mateEquiv adj₁ adj₂ α = β ↔
-    adj₁.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l₁ ◁ β =
-      (λ_ _).hom ≫ (ρ_ _).inv ≫ g ◁ adj₂.unit ≫
+    (λ_ _).inv ≫ adj₁.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l₁ ◁ β =
+      (ρ_ _).inv ≫ g ◁ adj₂.unit ≫
         (α_ _ _ _).inv ≫ α ▷ r₂ ≫ (α_ _ _ _).hom := by
-  constructor
-  · sorry
-  · sorry
+  let ψ (γ : r₁ ≫ g ⟶ h ≫ r₂) :=
+      (λ_ _).inv ≫ adj₁.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l₁ ◁ γ
+  have H : Function.Injective ψ := sorry
+  conv_lhs => rw [eq_comm, ← H.eq_iff']
+  convert Iff.rfl using 2
+  dsimp [ψ, mateEquiv, bicategoricalComp]
+  simp
+  sorry
 
 variable {f : a ⟶ c} {g : b ⟶ d}
 
