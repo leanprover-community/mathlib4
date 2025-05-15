@@ -130,13 +130,6 @@ instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgebraCat.{v} R) 
 @[simp] lemma forget₂_commAlgCat_map (f : A ⟶ B) :
     (forget₂ (CommAlgCat.{v} R) (AlgebraCat.{v} R)).map f = AlgebraCat.ofHom f.hom := rfl
 
-/-- Forgetting to the underlying type and then building the bundled object returns the original
-algebra. -/
-@[simps]
-def ofSelfIso (A : CommAlgCat.{v} R) : of R A ≅ A where
-  hom := 𝟙 A
-  inv := 𝟙 A
-
 /-- Build an isomorphism in the category `CommAlgCat R` from a `AlgEquiv` between `Algebra`s. -/
 @[simps]
 def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Algebra R X} {_ : Algebra R Y}
