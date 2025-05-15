@@ -6,24 +6,34 @@ Authors: Rémy Degenne
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.L2Space
+import Mathlib.Probability.Variance
 
 /-!
 # Covariance in Banach spaces
 
-We define the covariance of a measure in a separable Banach space, as a continous bilinear form.
+We define the covariance of a finite measure in a separable Banach space `E`,
+as a continous bilinear form on the dual `E →L[ℝ] ℝ`.
 
 ## Main definitions
 
-Let `μ` be a finite measure on a separable Banach space `E` with the Borel σ-algebra, such that
-`∫ x, ‖x‖^2 ∂μ < ∞`.
+Let `μ` be a finite measure on a normed space `E` with the Borel σ-algebra. We then define
 
-* `covarianceBilin` : covariance of the measure `μ` as a continuous bilinear form
-  `(E →L[ℝ] ℝ) →L[ℝ] (E →L[ℝ] ℝ) →L[ℝ] ℝ`
+* `ContinuousLinearMap.toLp`: the function `MemLp.toLp` as a continuous linear map from
+  `E →L[𝕜] 𝕜` (for `RCLike 𝕜`) into the space `Lp 𝕜 p μ` for finite `p ≥ 1`.
+  This needs a hypothesis `MemLp id p μ`.
+* `covarianceBilin` : covariance of a measure `μ` with `∫ x, ‖x‖^2 ∂μ < ∞` on a separable Banach
+  space, as a continuous bilinear form `(E →L[ℝ] ℝ) →L[ℝ] (E →L[ℝ] ℝ) →L[ℝ] ℝ`.
+  If the second moment of `μ` is not finite, we set `covarianceBilin μ = 0`.
 
 ## Main statements
 
 * `covarianceBilin_apply` : the covariance of `μ` on `L₁, L₂ : E →L[ℝ] ℝ` is equal to
   `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ`.
+* `covarianceBilin_same_eq_variance`: `covarianceBilin μ L L = Var[L; μ]`.
+
+## Implementation notes
+
+The hypothesis that `μ` has a second moment is written as `MemLp id 2 μ` in the code.
 
 -/
 
@@ -33,40 +43,28 @@ open scoped ENNReal NNReal Real Topology
 
 namespace ProbabilityTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {mE : MeasurableSpace E} {μ : Measure E}
+variable {E : Type*} [NormedAddCommGroup E] {mE : MeasurableSpace E} {μ : Measure E} {p : ℝ≥0∞}
 
 section ToLp
 
-variable [OpensMeasurableSpace E] {p : ℝ≥0∞}
+section LinearMap
 
-lemma _root_.MeasureTheory.MemLp.continuousLinearMap (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) :
-    MemLp L p μ := by
-  refine MemLp.mono (g := fun x ↦ ‖L‖ • x) (h_Lp.const_smul _) ?_ ?_
-  · exact Measurable.aestronglyMeasurable <| by fun_prop
-  refine ae_of_all _ fun x ↦ ?_
-  simp only [norm_smul, norm_norm]
-  exact L.le_opNorm x
-
-lemma _root_.MeasureTheory.MemLp.integrable_continuousLinearMap
-    (h_Lp : MemLp id 1 μ) (L : E →L[ℝ] ℝ) :
-    Integrable L μ := by
-  rw [← memLp_one_iff_integrable]
-  exact h_Lp.continuousLinearMap L
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
 /-- `MemLp.toLp` as a `LinearMap` from the continuous linear maps. -/
 noncomputable
 def ContinuousLinearMap.toLpₗ (μ : Measure E) (p : ℝ≥0∞) (h_Lp : MemLp id p μ) :
-    (E →L[ℝ] ℝ) →ₗ[ℝ] Lp ℝ p μ where
-  toFun := fun L ↦ MemLp.toLp L (h_Lp.continuousLinearMap L)
+    (E →L[𝕜] 𝕜) →ₗ[𝕜] Lp 𝕜 p μ where
+  toFun := fun L ↦ MemLp.toLp L (h_Lp.continuousLinearMap_comp L)
   map_add' u v := by push_cast; rw [MemLp.toLp_add]
   map_smul' c L := by push_cast; rw [MemLp.toLp_const_smul]; rfl
 
 @[simp]
-lemma ContinuousLinearMap.toLpₗ_apply (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) :
-    L.toLpₗ μ p h_Lp = MemLp.toLp L (h_Lp.continuousLinearMap L) := rfl
+lemma ContinuousLinearMap.toLpₗ_apply (h_Lp : MemLp id p μ) (L : E →L[𝕜] 𝕜) :
+    L.toLpₗ μ p h_Lp = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := rfl
 
-lemma norm_toLpₗ_le (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
+lemma norm_toLpₗ_le [OpensMeasurableSpace E]
+    (h_Lp : MemLp id p μ) (L : E →L[𝕜] 𝕜) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
     ‖L.toLpₗ μ p h_Lp‖ ≤ ‖L‖ * (eLpNorm id p μ).toReal := by
   have h0 : 0 < p.toReal := by simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, hp, hp_top.lt_top]
   suffices ‖L.toLpₗ μ p h_Lp‖
@@ -101,11 +99,18 @@ lemma norm_toLpₗ_le (h_Lp : MemLp id p μ) (L : E →L[ℝ] ℝ) (hp : p ≠ 0
     exact L.le_opNorm x
   _ = ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ := by rw [lintegral_const_mul]; fun_prop
 
-/-- `MemLp.toLp` as a `ContinuousLinearMap` from the continuous linear forms. -/
+end LinearMap
+
+section ContinuousLinearMap
+
+variable {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [OpensMeasurableSpace E]
+
+/-- `MemLp.toLp` as a continuous linear map from the continuous linear forms `E →L[𝕜] 𝕜` to
+`Lp 𝕜 p μ`. -/
 noncomputable
 def ContinuousLinearMap.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ)
     (hp : p ≠ ∞) :
-    (E →L[ℝ] ℝ) →L[ℝ] Lp ℝ p μ where
+    (E →L[𝕜] 𝕜) →L[𝕜] Lp 𝕜 p μ where
   toLinearMap := ContinuousLinearMap.toLpₗ μ p h_Lp
   cont := by
     refine LinearMap.continuous_of_locally_bounded _ fun s hs ↦ ?_
@@ -121,45 +126,47 @@ def ContinuousLinearMap.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] 
     gcongr
 
 @[simp]
-lemma ContinuousLinearMap.toLp_apply (L : E →L[ℝ] ℝ)
-    [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (hp : p ≠ ∞) :
-    L.toLp μ p h_Lp hp = MemLp.toLp L (h_Lp.continuousLinearMap L) := rfl
+lemma ContinuousLinearMap.toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (hp : p ≠ ∞)
+    (L : E →L[𝕜] 𝕜) :
+    L.toLp μ p h_Lp hp = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := rfl
+
+end ContinuousLinearMap
 
 end ToLp
 
-section Covariance
-
 section Centered
 
-variable [OpensMeasurableSpace E]
+variable [NormedSpace ℝ E] [OpensMeasurableSpace E]
 
 /-- Continuous bilinear form with value `∫ x, L₁ x * L₂ x ∂μ` on `(L₁, L₂)`.
-This is the covariance only if `μ` is centered. -/
+This is equal to the covariance only if `μ` is centered. -/
 noncomputable
-def centeredCovariance (μ : Measure E) (h : MemLp id 2 μ) :
+def centeredCovarianceBilin (μ : Measure E) (h : MemLp id 2 μ) :
     (E →L[ℝ] ℝ) →L[ℝ] (E →L[ℝ] ℝ) →L[ℝ] ℝ :=
   ContinuousLinearMap.bilinearComp (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
     (ContinuousLinearMap.toLp μ 2 h (by simp)) (ContinuousLinearMap.toLp μ 2 h (by simp))
 
-lemma centeredCovariance_apply (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
-    centeredCovariance μ h L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
-  simp only [centeredCovariance, ContinuousLinearMap.bilinearComp_apply,
+lemma centeredCovarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
+    centeredCovarianceBilin μ h L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
+  simp only [centeredCovarianceBilin, ContinuousLinearMap.bilinearComp_apply,
     ContinuousLinearMap.toLp_apply, L2.inner_def,
     RCLike.inner_apply, conj_trivial]
   refine integral_congr_ae ?_
-  filter_upwards [MemLp.coeFn_toLp (h.continuousLinearMap L₁),
-    MemLp.coeFn_toLp (h.continuousLinearMap L₂)] with x hxL₁ hxL₂
+  filter_upwards [MemLp.coeFn_toLp (h.continuousLinearMap_comp L₁),
+    MemLp.coeFn_toLp (h.continuousLinearMap_comp L₂)] with x hxL₁ hxL₂
+  simp only [id_eq] at hxL₁ hxL₂
   rw [hxL₁, hxL₂, mul_comm]
 
-lemma norm_centeredCovariance_le (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
-    ‖centeredCovariance μ h L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
-  calc ‖centeredCovariance μ h L₁ L₂‖
-  _ = ‖∫ x, L₁ x * L₂ x ∂μ‖ := by rw [centeredCovariance_apply]
+lemma norm_centeredCovarianceBilin_le (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
+    ‖centeredCovarianceBilin μ h L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
+  calc ‖centeredCovarianceBilin μ h L₁ L₂‖
+  _ = ‖∫ x, L₁ x * L₂ x ∂μ‖ := by rw [centeredCovarianceBilin_apply]
   _ ≤ ∫ x, ‖L₁ x‖ * ‖L₂ x‖ ∂μ := (norm_integral_le_integral_norm _).trans (by simp)
   _ ≤ ∫ x, ‖L₁‖ * ‖x‖ * ‖L₂‖ * ‖x‖ ∂μ := by
     refine integral_mono_ae ?_ ?_ (ae_of_all _ fun x ↦ ?_)
     · simp_rw [← norm_mul]
-      exact (MemLp.integrable_mul (h.continuousLinearMap L₁) (h.continuousLinearMap L₂)).norm
+      exact (MemLp.integrable_mul (h.continuousLinearMap_comp L₁)
+        (h.continuousLinearMap_comp L₂)).norm
     · simp_rw [mul_assoc]
       refine Integrable.const_mul ?_ _
       simp_rw [← mul_assoc, mul_comm _ (‖L₂‖), mul_assoc, ← pow_two]
@@ -177,24 +184,42 @@ lemma norm_centeredCovariance_le (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] �
 
 end Centered
 
-variable [BorelSpace E] [SecondCountableTopology E] [CompleteSpace E]
+section Covariance
 
-/-- Continuous bilinear form with value `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ` on `(L₁, L₂)`. -/
+variable [NormedSpace ℝ E] [BorelSpace E] [SecondCountableTopology E] [IsFiniteMeasure μ]
+
+open Classical in
+/-- Continuous bilinear form with value `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ` on `(L₁, L₂)`
+if `MemLp id 2 μ`. If not, we set it to zero. -/
 noncomputable
-def covarianceBilin (μ : Measure E) [IsFiniteMeasure μ] (h : MemLp id 2 μ) :
+def covarianceBilin (μ : Measure E) [IsFiniteMeasure μ] :
     (E →L[ℝ] ℝ) →L[ℝ] (E →L[ℝ] ℝ) →L[ℝ] ℝ :=
-  centeredCovariance (μ.map (fun x ↦ x - ∫ x, x ∂μ)) <| by
-    rw [memLp_map_measure_iff]
-    · exact h.sub (memLp_const _)
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
-    · fun_prop
+  if h : MemLp id 2 μ then
+    centeredCovarianceBilin (μ.map (fun x ↦ x - ∫ x, x ∂μ))
+      ((memLp_map_measure_iff (by fun_prop) (by fun_prop)).mpr <| h.sub (memLp_const _))
+  else 0
 
-lemma covarianceBilin_apply [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
-    covarianceBilin μ h L₁ L₂ = ∫ x, (L₁ x - ∫ x, L₁ x ∂μ) * (L₂ x - ∫ x, L₂ x ∂μ) ∂μ := by
-  rw [covarianceBilin, centeredCovariance_apply, integral_map]
-  · simp [← ContinuousLinearMap.integral_comm_of_integrable_id (h.integrable (by simp))]
-  · fun_prop
-  · exact Measurable.aestronglyMeasurable <| by fun_prop
+lemma covarianceBilin_of_memLp (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
+    covarianceBilin μ L₁ L₂ = centeredCovarianceBilin (μ.map (fun x ↦ x - ∫ x, x ∂μ))
+      ((memLp_map_measure_iff (by fun_prop) (by fun_prop)).mpr <| h.sub (memLp_const _)) L₁ L₂ := by
+  rw [covarianceBilin, dif_pos h]
+
+lemma covarianceBilin_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
+    covarianceBilin μ L₁ L₂ = 0 := by
+  simp [covarianceBilin, dif_neg h]
+
+variable [CompleteSpace E]
+
+lemma covarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : E →L[ℝ] ℝ) :
+    covarianceBilin μ L₁ L₂ = ∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ := by
+  rw [covarianceBilin_of_memLp h, centeredCovarianceBilin_apply,
+    integral_map (by fun_prop) (by fun_prop)]
+  simp [← ContinuousLinearMap.integral_comm_of_integrable_id (h.integrable (by simp))]
+
+lemma covarianceBilin_same_eq_variance (h : MemLp id 2 μ) (L : E →L[ℝ] ℝ) :
+    covarianceBilin μ L L = Var[L; μ] := by
+  rw [covarianceBilin_apply h, variance_eq_integral (by fun_prop)]
+  simp_rw [pow_two]
 
 end Covariance
 
