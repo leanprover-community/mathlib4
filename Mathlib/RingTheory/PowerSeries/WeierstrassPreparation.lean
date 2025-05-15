@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
 import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
