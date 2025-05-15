@@ -60,8 +60,9 @@ noncomputable def norm : S →* R :=
 theorem norm_apply (x : S) : norm R x = LinearMap.det (lmul R S x) := rfl
 
 @[simp]
-theorem norm_self_apply (x : R) :
-    Algebra.norm R x = x := by
+theorem norm_self :
+    Algebra.norm R = MonoidHom.id R := by
+  ext
   simp [norm_apply]
 
 theorem norm_eq_one_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) (x : S) :

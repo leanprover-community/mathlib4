@@ -120,10 +120,20 @@ end CommRing
 
 section misc
 
-theorem associated_abs [Ring R] [LinearOrder R] (x : R) :
-    Associated x |x| := by
-  obtain h | h := abs_choice x
-  · rw [h]
-  · exact h ▸ associated_neg_self_right _
+variable [Ring R] [LinearOrder R] {x y : R}
+
+theorem Associated.abs_left (h : Associated x y) :
+    Associated |x| y := by
+  obtain ha | ha := abs_choice x
+  · simpa [ha]
+  · simpa [ha] using h.neg_left
+
+theorem Associated.abs_right (h : Associated x y) :
+    Associated x |y| :=
+  (h.symm.abs_left).symm
+
+theorem associated_abs (x : R) :
+    Associated x |x| :=
+  Associated.rfl.abs_right
 
 end misc
