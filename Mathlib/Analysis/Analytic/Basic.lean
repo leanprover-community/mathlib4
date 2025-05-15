@@ -507,34 +507,34 @@ theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f
     abel
 
 theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y : E) :
-    HasFPowerSeriesAt (fun (z : E) ↦ f (z - y)) p (x + y) := by
+    HasFPowerSeriesAt (fun z ↦ f (z - y)) p (x + y) := by
   obtain ⟨r, hf⟩ := hf
   exact ⟨r, hf.comp_sub _⟩
 
 theorem HasFPowerSeriesWithinAt.comp_sub (hf : HasFPowerSeriesWithinAt f p s x) (y : E) :
-    HasFPowerSeriesWithinAt (fun (z : E) ↦ f (z - y)) p (s + {y}) (x + y) := by
+    HasFPowerSeriesWithinAt (fun z ↦ f (z - y)) p (s + {y}) (x + y) := by
   obtain ⟨r, hf⟩ := hf
   exact ⟨r, hf.comp_sub _⟩
 
 theorem AnalyticAt.comp_sub (hf : AnalyticAt 𝕜 f x) (y : E) :
-    AnalyticAt 𝕜 (fun (z : E) ↦ f (z - y)) (x + y) := by
+    AnalyticAt 𝕜 (fun z ↦ f (z - y)) (x + y) := by
   obtain ⟨p, hf⟩ := hf
   exact ⟨p, hf.comp_sub _⟩
 
 theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
-    AnalyticOnNhd 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) := by
+    AnalyticOnNhd 𝕜 (fun z ↦ f (z - y)) (s + {y}) := by
   intro x hx
   simp only [add_singleton, image_add_right, mem_preimage] at hx
   rw [show x = (x - y) + y by abel]
   apply (hf (x - y) (by convert hx using 1; abel)).comp_sub
 
 theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y : E) :
-    AnalyticWithinAt 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) (x + y) := by
+    AnalyticWithinAt 𝕜 (fun z ↦ f (z - y)) (s + {y}) (x + y) := by
   obtain ⟨p, hf⟩ := hf
   exact ⟨p, hf.comp_sub _⟩
 
 theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y : E) :
-    AnalyticOn 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) := by
+    AnalyticOn 𝕜 (fun z ↦ f (z - y)) (s + {y}) := by
   intro x hx
   simp only [add_singleton, image_add_right, mem_preimage] at hx
   rw [show x = (x - y) + y by abel]
