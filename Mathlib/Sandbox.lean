@@ -80,14 +80,24 @@ theorem Algebra.norm_self_apply {R : Type*} [CommRing R] (x : R) :
     Algebra.norm R x = x := by
   simp [norm_apply]
 
-theorem associated_abs {α : Type*} [Ring α] [LinearOrder α] (x : α) :
-    Associated x |x| := by
+theorem associated_neg_rfl {M : Type*} [Monoid M] [HasDistribNeg M] {a : M} :
+    Associated (-a) a :=
+  Associated.rfl.neg_left
+
+theorem associated_rfl_neg {M : Type*} [Monoid M] [HasDistribNeg M] {a : M} :
+    Associated a (-a) :=
+  Associated.rfl.neg_right
+
+theorem associated_abs {R : Type*} [Ring R] [LinearOrder R] (x : R) :
+    Associated |x| x := by
   obtain h | h := abs_choice x
   · rw [h]
-  · rw [h]
-    refine ⟨-1, by simp⟩
+  · exact h ▸ associated_neg_rfl
 
-#find_home associated_abs
+example {R : Type*} [CommRing R] [IsDomain R] [LinearOrder R] (x : R) :
+    Ideal.span {|x|} = Ideal.span {x} := by
+  rw [Ideal.span_singleton_eq_span_singleton]
+  exact associated_abs x
 
 section Int.Ideal
 
