@@ -421,7 +421,7 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
     apply Ext.comp_assoc
     all_goals omega
 
-section
+section biproduct
 
 attribute [local simp] Ext.mk₀_add
 
@@ -481,7 +481,7 @@ noncomputable def Ext.addEquivBiproduct : Ext X c.pt n ≃+ Π i, Ext X (Y i) n 
     simp only [add_comp]
     rfl
 
-end
+end biproduct
 
 section ChangeOfUniverse
 
