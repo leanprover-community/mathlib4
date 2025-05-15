@@ -235,6 +235,13 @@ theorem span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
   simp only [mem_span_singleton']
   exact ⟨fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_comm y x⟩, fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_neg y x⟩⟩
 
+@[simp]
+theorem span_singleton_abs [LinearOrder α] (x : α) :
+    span {|x|} = span {x} := by
+  obtain h | h := abs_choice x
+  · rw [h]
+  · exact  h ▸ span_singleton_neg _
+
 end Ideal
 
 end Ring

@@ -89,6 +89,7 @@ lemma add_pow_dvd_pow_of_pow_eq_zero_left (hp : n + m ≤ p + 1) (h_comm : Commu
     (hy : y ^ n = 0) : (x + y) ^ m ∣ x ^ p :=
   add_comm x y ▸ h_comm.symm.add_pow_dvd_pow_of_pow_eq_zero_right hp hy
 
+
 end Ring
 
 end Commute
@@ -117,3 +118,13 @@ lemma dvd_mul_sub_mul_mul_gcd_of_dvd {p a b c d x y : R} [IsDomain R] [GCDMonoid
     dvd_mul_sub_mul_mul_right_of_dvd h1 h2⟩
 
 end CommRing
+
+section misc
+
+theorem associated_abs [Ring R] [LinearOrder R] (x : R) :
+    Associated x |x| := by
+  obtain h | h := abs_choice x
+  · rw [h]
+  · exact h ▸ associated_neg_self_right _
+
+end misc

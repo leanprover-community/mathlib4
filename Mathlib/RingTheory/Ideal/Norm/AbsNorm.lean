@@ -406,4 +406,16 @@ end Ideal
 
 end RingOfIntegers
 
+section Int
+
+open Ideal
+
+theorem Int.ideal_eq_span_absNorm_self (J : Ideal ℤ) :
+    J = span {(absNorm J : ℤ)} := by
+  obtain ⟨g, rfl⟩ := IsPrincipalIdealRing.principal J
+  rw [submodule_span_eq, absNorm_span_singleton, Int.natCast_natAbs, Algebra.norm_self_apply]
+  exact (span_singleton_abs g).symm
+
+end Int
+
 end abs_norm
