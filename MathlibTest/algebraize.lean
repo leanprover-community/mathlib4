@@ -202,7 +202,7 @@ example {A B : Type*} [CommRing A] [CommRing B] (f g : A →+* B)
 
 -- check that there is no issue with trying the lemma on a mismatching argument.
 example {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
-  (hf : Buz.testProperty1 ⟨.inr f⟩) : True := by
+    (hf : Buz.testProperty1 ⟨.inr f⟩) : True := by
   algebraize [f] -- this could error if it tried applying `testProperty1_ofBuz_inl` to `hf`
   fail_if_success
     guard_hyp algebraizeInst
