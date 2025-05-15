@@ -167,5 +167,4 @@ instance (priority := low) Surjective.of_universallyClosed_of_isDominant
   rw [surjective_iff, ← Set.range_eq_univ, ← f.denseRange.closure_range,
     f.isClosedMap.isClosed_range.closure_eq]
 
-
 end AlgebraicGeometry

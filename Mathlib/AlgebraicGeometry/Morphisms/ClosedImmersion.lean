@@ -194,14 +194,6 @@ lemma overEquivIdealSheafData_functor_obj_of_isIso {X Y : Scheme.{u}} (f : Y ⟶
     (overEquivIdealSheafData X).functor.obj (op <| .mk _ f inferInstance) = ⊥ := by
   simp [overEquivIdealSheafData]
 
-instance {X : Scheme} : IsIso (⊥ : X.IdealSheafData).subschemeι := by
-  rw [← overEquivIdealSheafData_functor_obj_of_isIso (𝟙 _)]
-  convert_to IsIso ((overEquivIdealSheafData X).unitIso.hom.app
-    (op (.mk ⊤ (𝟙 X) inferInstance))).unop.left
-  · simpa using ((overEquivIdealSheafData X).unitIso.app
-      (op <| .mk _ (𝟙 X) inferInstance)).hom.unop.w.symm
-  · infer_instance
-
 /-- The universal property of closed immersions:
 For a closed immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z` whose kernel
 contains the kernel of `X` in `Z`, we can lift this morphism to a unique `Y ⟶ X` that

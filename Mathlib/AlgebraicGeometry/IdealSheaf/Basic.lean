@@ -522,6 +522,26 @@ lemma vanishingIdeal_support {I : IdealSheafData X} :
   rw [Set.image_preimage_eq_inter_range, IsAffineOpen.range_fromSpec,
     IsAffineOpen.fromSpec_image_zeroLocus, coe_support_inter]
 
+@[simp] lemma vanishingIdeal_bot : vanishingIdeal (X := X) ⊥ = ⊤ := gc.u_top
+
+@[simp] lemma vanishingIdeal_iSup {ι : Sort*} (Z : ι → Closeds X) :
+    vanishingIdeal (iSup Z) = ⨅ i, vanishingIdeal (Z i) := gc.u_iInf
+
+@[simp] lemma vanishingIdeal_sSup (Z : Set (Closeds X)) :
+    vanishingIdeal (sSup Z) = ⨅ z ∈ Z, vanishingIdeal z := gc.u_sInf
+
+@[simp] lemma vanishingIdeal_sup (Z Z' : TopologicalSpace.Closeds X) :
+    vanishingIdeal (Z ⊔ Z') = vanishingIdeal Z ⊓ vanishingIdeal Z'  := gc.u_inf
+
+@[simp] lemma support_sup (I J : X.IdealSheafData) :
+    (I ⊔ J).support = I.support ⊓ J.support := gc.l_sup
+
+@[simp] lemma support_iSup {ι : Sort*} (I : ι → X.IdealSheafData) :
+    (iSup I).support = ⨅ i, (I i).support := gc.l_iSup
+
+@[simp] lemma support_sSup (I : Set X.IdealSheafData) :
+    (sSup I).support = ⨅ i ∈ I, i.support := gc.l_sSup
+
 end ofIsClosed
 
 end IdealSheafData
