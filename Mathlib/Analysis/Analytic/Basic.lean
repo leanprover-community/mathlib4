@@ -525,9 +525,8 @@ theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
     AnalyticOnNhd 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) := by
   intro x hx
   simp only [add_singleton, image_add_right, mem_preimage] at hx
-  specialize hf (x - y) (by convert hx using 1; abel)
   rw [show x = (x - y) + y by abel]
-  apply hf.comp_sub
+  apply (hf (x - y) (by convert hx using 1; abel)).comp_sub
 
 theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y : E) :
     AnalyticWithinAt 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) (x + y) := by
@@ -538,9 +537,8 @@ theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y : E) :
     AnalyticOn 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) := by
   intro x hx
   simp only [add_singleton, image_add_right, mem_preimage] at hx
-  specialize hf (x - y) (by convert hx using 1; abel)
   rw [show x = (x - y) + y by abel]
-  apply hf.comp_sub
+  apply (hf (x - y) (by convert hx using 1; abel)).comp_sub
 
 theorem HasFPowerSeriesWithinOnBall.hasSum_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) {y : E}
     (hy : y ∈ (insert x s) ∩ EMetric.ball x r) :
