@@ -20,26 +20,26 @@ A divisibility sequence is a sequence `W : ℤ → R` satisfying `W(m) ∣ W(n)`
 that `m ∣ n`. An elliptic divisibility sequence is simply a divisibility sequence that is elliptic.
 
 Some examples of EDSs include
- * the identity sequence,
- * certain terms of Lucas sequences, and
- * division polynomials of elliptic curves.
+* the identity sequence,
+* certain terms of Lucas sequences, and
+* division polynomials of elliptic curves.
 
 ## Main definitions
 
- * `IsEllSequence`: a sequence indexed by integers is an elliptic sequence.
- * `IsDivSequence`: a sequence indexed by integers is a divisibility sequence.
- * `IsEllDivSequence`: a sequence indexed by integers is an EDS.
- * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
- * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
- * `complEDS₂`: the 2-complement sequence for a normalised EDS indexed by `ℕ`.
- * `normEDS`: the canonical example of a normalised EDS indexed by `ℤ`.
- * `complEDS'`: the complement sequence for a normalised EDS indexed by `ℕ`.
- * `complEDS`: the complement sequence for a normalised EDS indexed by `ℤ`.
+* `IsEllSequence`: a sequence indexed by integers is an elliptic sequence.
+* `IsDivSequence`: a sequence indexed by integers is a divisibility sequence.
+* `IsEllDivSequence`: a sequence indexed by integers is an EDS.
+* `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
+* `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
+* `complEDS₂`: the 2-complement sequence for a normalised EDS indexed by `ℕ`.
+* `normEDS`: the canonical example of a normalised EDS indexed by `ℤ`.
+* `complEDS'`: the complement sequence for a normalised EDS indexed by `ℕ`.
+* `complEDS`: the complement sequence for a normalised EDS indexed by `ℤ`.
 
 ## Main statements
 
- * TODO: prove that `normEDS` satisfies `IsEllDivSequence`.
- * TODO: prove that a normalised sequence satisfying `IsEllDivSequence` can be given by `normEDS`.
+* TODO: prove that `normEDS` satisfies `IsEllDivSequence`.
+* TODO: prove that a normalised sequence satisfying `IsEllDivSequence` can be given by `normEDS`.
 
 ## Implementation notes
 
@@ -355,9 +355,9 @@ lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
 @[deprecated (since := "2025-05-15")] alias normEDS_odd_ofNat := normEDS_odd
 
 /-- Strong recursion principle for a normalised EDS: if we have
- * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
- * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
- * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
+* `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
+* for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
+* for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec' {P : ℕ → Sort u}
@@ -368,11 +368,11 @@ noncomputable def normEDSRec' {P : ℕ → Sort u}
     (by rintro (_ | _ | _) h; exacts [one, three, odd _ h])
 
 /-- Recursion principle for a normalised EDS: if we have
- * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
- * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
-    `P (m + 4)`, and `P (m + 5)`, and
- * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
-    and `P (m + 4)`,
+* `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
+* for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
+  `P (m + 4)`, and `P (m + 5)`, and
+* for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
+  and `P (m + 4)`,
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec {P : ℕ → Sort u}

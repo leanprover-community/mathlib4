@@ -114,6 +114,10 @@ alias evariance_lt_top_iff_memℒp := evariance_lt_top_iff_memLp
 lemma evariance_eq_top_iff [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ) :
     evariance X μ = ∞ ↔ ¬ MemLp X 2 μ := by simp [← evariance_lt_top_iff_memLp hX]
 
+lemma variance_of_not_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ)
+    (hX_not : ¬ MemLp X 2 μ) :
+    variance X μ = 0 := by simp [variance, (evariance_eq_top_iff hX).mpr hX_not]
+
 theorem ofReal_variance [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
     .ofReal (variance X μ) = evariance X μ := by
   rw [variance, ENNReal.ofReal_toReal]
@@ -199,6 +203,58 @@ theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2
     integral_const_mul, Pi.pow_apply]
   ring
 
+lemma variance_add_const [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X μ) (c : ℝ) :
+    Var[fun ω ↦ X ω + c; μ] = Var[X; μ] := by
+  by_cases hX_Lp : MemLp X 2 μ
+  · have hX_int : Integrable X μ := hX_Lp.integrable one_le_two
+    rw [variance_eq_integral (hX.add_const _).aemeasurable,
+      integral_add hX_int (by fun_prop), integral_const, variance_eq_integral hX.aemeasurable]
+    simp
+  · rw [variance_of_not_memLp (hX.add_const _), variance_of_not_memLp hX hX_Lp]
+    refine fun h_memLp ↦ hX_Lp ?_
+    have : X = fun ω ↦ X ω + c - c := by ext; ring
+    rw [this]
+    exact h_memLp.sub (memLp_const c)
+
+lemma variance_const_add [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X μ) (c : ℝ) :
+    Var[fun ω ↦ c + X ω; μ] = Var[X; μ] := by
+  simp_rw [add_comm c, variance_add_const hX c]
+
+lemma variance_fun_neg : Var[fun ω ↦ -X ω; μ] = Var[X; μ] := by
+  convert variance_mul (-1) X μ
+  · ext; ring
+  · simp
+
+lemma variance_neg : Var[-X; μ] = Var[X; μ] := variance_fun_neg
+
+lemma variance_sub_const [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X μ) (c : ℝ) :
+    Var[fun ω ↦ X ω - c; μ] = Var[X; μ] := by
+  simp_rw [sub_eq_add_neg, variance_add_const hX (-c)]
+
+lemma variance_const_sub [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X μ) (c : ℝ) :
+    Var[fun ω ↦ c - X ω; μ] = Var[X; μ] := by
+  simp_rw [sub_eq_add_neg]
+  rw [variance_const_add (by fun_prop) c, variance_fun_neg]
+
+@[simp]
+lemma variance_dirac [MeasurableSingletonClass Ω] (x : Ω) : Var[X; Measure.dirac x] = 0 := by
+  rw [variance_eq_integral]
+  · simp
+  · exact aemeasurable_dirac
+
+lemma variance_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
+    {Y : Ω' → Ω} (hX : AEMeasurable X (μ.map Y)) (hY : AEMeasurable Y μ) :
+    Var[X; μ.map Y] = Var[X ∘ Y; μ] := by
+  rw [variance_eq_integral hX, integral_map hY, variance_eq_integral (hX.comp_aemeasurable hY),
+    integral_map hY]
+  · congr
+  · exact hX.aestronglyMeasurable
+  · refine AEStronglyMeasurable.pow ?_ _
+    exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+
+lemma variance_id_map (hX : AEMeasurable X μ) : Var[id; μ.map X] = Var[X; μ] := by
+  simp [variance_map measurable_id.aemeasurable hX]
+
 theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
     (hm : AEStronglyMeasurable X μ) : variance X μ ≤ μ[X ^ 2] := by
   by_cases hX : MemLp X 2 μ
@@ -239,6 +295,7 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
       or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two
 
+set_option linter.deprecated false in
 /-- **Chebyshev's inequality** for `ℝ≥0∞`-valued variance. -/
 theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable X μ) {c : ℝ≥0}
     (hc : c ≠ 0) : μ {ω | ↑c ≤ |X ω - μ[X]|} ≤ evariance X μ / c ^ 2 := by

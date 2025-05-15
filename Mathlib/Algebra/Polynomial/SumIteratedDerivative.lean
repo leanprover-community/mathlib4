@@ -31,7 +31,7 @@ as a linear map. This is used in particular in the proof of the Lindemann-Weiers
 * `Polynomial.aeval_iterate_derivative_of_lt`, `Polynomial.aeval_iterate_derivative_self`,
   `Polynomial.aeval_iterate_derivative_of_ge`: applying `Polynomial.aeval` to iterated derivatives
 * `Polynomial.aeval_sumIDeriv`, `Polynomial.aeval_sumIDeriv_of_pos`: applying `Polynomial.aeval` to
-   `Polynomial.sumIDeriv`
+  `Polynomial.sumIDeriv`
 
 -/
 

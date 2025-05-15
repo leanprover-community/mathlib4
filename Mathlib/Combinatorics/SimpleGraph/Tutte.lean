@@ -83,7 +83,8 @@ if the graph decomposes into cliques, it has a perfect matching. -/
 theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     (hveven : Even (Nat.card V)) (h : ¬G.IsTutteViolator G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
-    G.deleteUniversalVerts.coe.IsClique K.supp) : ∃ (M : Subgraph G), M.IsPerfectMatching := by
+      G.deleteUniversalVerts.coe.IsClique K.supp) :
+    ∃ (M : Subgraph G), M.IsPerfectMatching := by
   classical
   obtain ⟨M, hM, hsub⟩ := IsMatching.exists_verts_compl_subset_universalVerts h h'
   obtain ⟨M', hM'⟩ := ((G.isClique_universalVerts.subset hsub).even_iff_exists_isMatching
