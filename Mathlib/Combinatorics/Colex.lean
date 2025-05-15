@@ -104,15 +104,15 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
     (has : a ∈ s) (hat : a ∉ t) : ∃ b, b ∈ u ∧ b ∉ s ∧ a ≤ b := by
   classical
   let s' : Finset α := {b ∈ s | b ∉ t ∧ a ≤ b}
-  have ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [s', has, hat]⟩
+  have ⟨b, hb, hbmax⟩ := s'.exists_maximal ⟨a, by simp [s', has, hat]⟩
   simp only [s', mem_filter, and_imp] at hb hbmax
   have ⟨c, hct, hcs, hbc⟩ := hst hb.1 hb.2.1
   by_cases hcu : c ∈ u
   · exact ⟨c, hcu, hcs, hb.2.2.trans hbc⟩
   have ⟨d, hdu, hdt, hcd⟩ := htu hct hcu
   have had : a ≤ d := hb.2.2.trans <| hbc.trans hcd
-  refine ⟨d, hdu, fun hds ↦ ?_, had⟩
-  exact hbmax d hds hdt had <| hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
+  refine ⟨d, hdu, fun hds ↦ not_lt_iff_le_imp_le.2 (hbmax hds hdt had) ?_, had⟩
+  exact hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
 
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
@@ -245,7 +245,7 @@ lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
   simpa using toColex_sdiff_le_toColex_sdiff (inter_subset_left (s₁ := s)) inter_subset_right
 
 @[simp] lemma toColex_sdiff_lt_toColex_sdiff' :
- toColex (s \ t) < toColex (t \ s) ↔ toColex s < toColex t := by
+    toColex (s \ t) < toColex (t \ s) ↔ toColex s < toColex t := by
   simpa using toColex_sdiff_lt_toColex_sdiff (inter_subset_left (s₁ := s)) inter_subset_right
 
 end DecidableEq

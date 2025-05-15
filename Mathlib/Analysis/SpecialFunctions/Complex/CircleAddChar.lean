@@ -63,6 +63,13 @@ lemma toCircle_apply (j : ZMod N) :
     toCircle j = exp (2 * π * I * j.val / N) := by
   rw [← toCircle_natCast, natCast_zmod_val]
 
+lemma toCircle_eq_circleExp (j : ZMod N) :
+    toCircle j = Circle.exp (2 * π * (j.val / N)) := by
+  ext
+  rw [toCircle_apply, Circle.coe_exp]
+  push_cast
+  congr; ring
+
 lemma injective_toCircle : Injective (toCircle : ZMod N → Circle) :=
   (AddCircle.injective_toCircle one_ne_zero).comp (toAddCircle_injective N)
 
@@ -82,5 +89,16 @@ lemma isPrimitive_stdAddChar (N : ℕ) [NeZero N] :
     (stdAddChar (N := N)).IsPrimitive := by
   refine AddChar.zmod_char_primitive_of_eq_one_only_at_zero _ _ (fun t ht ↦ ?_)
   rwa [← (stdAddChar (N := N)).map_zero_eq_one, injective_stdAddChar.eq_iff] at ht
+
+/-- `ZMod.toCircle` as an `AddChar` into `rootsOfUnity n Circle`. -/
+noncomputable def rootsOfUnityAddChar (n : ℕ) [NeZero n] :
+    AddChar (ZMod n) (rootsOfUnity n Circle) where
+  toFun x := ⟨toUnits (ZMod.toCircle x), by ext; simp [← AddChar.map_nsmul_eq_pow]⟩
+  map_zero_eq_one' := by simp
+  map_add_eq_mul' _ _:= by ext; simp [AddChar.map_add_eq_mul]
+
+@[simp] lemma rootsOfUnityAddChar_val (n : ℕ) [NeZero n] (x : ZMod n) :
+    (rootsOfUnityAddChar n x).val = toCircle x := by
+  rfl
 
 end ZMod

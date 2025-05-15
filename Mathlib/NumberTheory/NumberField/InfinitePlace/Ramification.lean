@@ -50,6 +50,14 @@ lemma comap_id (w : InfinitePlace K) : w.comap (RingHom.id K) = w := rfl
 lemma comap_comp (w : InfinitePlace K) (f : F →+* K) (g : k →+* F) :
     w.comap (f.comp g) = (w.comap f).comap g := rfl
 
+@[simp]
+lemma comap_apply (w : InfinitePlace K) (f : k →+* K) (x : k) :
+    w.comap f x = w (f x) := rfl
+
+lemma comp_of_comap_eq {v : InfinitePlace k} {w : InfinitePlace K} {f : k →+* K}
+    (h : w.comap f = v) (x : k) : w (f x) = v x := by
+  simp [← h]
+
 lemma comap_mk_lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
     (mk (ComplexEmbedding.lift K φ)).comap (algebraMap k K) = mk φ := by simp
 
