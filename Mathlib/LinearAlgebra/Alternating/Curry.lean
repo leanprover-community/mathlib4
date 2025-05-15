@@ -6,6 +6,7 @@ Authors: Eric Wieser, Yury Kudryashov
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Multilinear.Curry
 import Mathlib.GroupTheory.Perm.Fin
+import Mathlib.Data.Fin.Parity
 
 /-!
 # Currying alternating forms
@@ -90,24 +91,17 @@ variable {R : Type*} {M M₂ N N₂ : Type*} [CommRing R] [AddCommGroup M]
   [AddCommGroup M₂] [AddCommGroup N] [AddCommGroup N₂] [Module R M] [Module R M₂]
   [Module R N] [Module R N₂] {n : ℕ}
 
-theorem neg_one_pow_smul_apply_insertNth (f : M [⋀^Fin (n + 1)]→ₗ[R] N) (x : M)
-    (v : Fin n → M) (i : Fin (n + 1)) :
-    f (i.insertNth x v) = (-1) ^ i.val • f (Fin.cons x v) := by
-  induction i using Fin.induction with
-  | zero => simp
-  | succ i ih =>
-    rw [Fin.insertNth_succ, f.map_swap _ Fin.lt_succ.ne, ih, Fin.val_succ, Fin.coe_castSucc,
-      pow_succ', mul_smul, neg_one_smul]
+theorem apply_insertNth (f : M [⋀^Fin (n + 1)]→ₗ[R] N) (p : Fin (n + 1)) (x : M) (v : Fin n → M) :
+    f (p.insertNth x v) = (-1) ^ p.val • f (Fin.cons x v) := by
+  rw [← Fin.cons_comp_cycleRange, map_perm]
+  simp [Units.smul_def]
 
 theorem neg_one_pow_smul_apply_removeNth_add_eq_zero_of_eq
     (f : M [⋀^Fin n]→ₗ[R] N) {v : Fin (n + 1) → M} {i j : Fin (n + 1)}
     (hvij : v i = v j) (hij : i ≠ j) :
     (-1) ^ i.val • f (i.removeNth v) + (-1) ^ j.val • f (j.removeNth v) = 0 := by
-  obtain ⟨m, rfl⟩ : ∃ m, m + 1 = n := by
-    cases n
-    · exact absurd ((Fin.subsingleton_iff_le_one.mpr le_rfl).elim i j) hij
-    · exact ⟨_, rfl⟩
   rcases Fin.exists_succAbove_eq hij with ⟨i, rfl⟩
+  obtain ⟨m, rfl⟩ : ∃ m, m + 1 = n := by simp [i.pos]
   set w := i.removeNth (j.removeNth v)
   have hw₁ : i.insertNth (v j) w = j.removeNth v := by
     rw [← hvij]
@@ -116,8 +110,11 @@ theorem neg_one_pow_smul_apply_removeNth_add_eq_zero_of_eq
     simp only [w]
     rw [Fin.removeNth_removeNth_eq_swap, Fin.insertNth_removeNth, update_eq_self_iff,
       Fin.removeNth, Fin.succAbove_succAbove_predAbove]
-  simp only [← hw₁, ← hw₂, neg_one_pow_smul_apply_insertNth, smul_smul, ← pow_add,
-    Fin.neg_one_pow_succAbove_add_predAbove, pow_succ', neg_one_mul, neg_smul, neg_add_cancel]
+  have : (-1) ^ (j.succAbove i + i.predAbove j : ℕ) = (-1) ^ (j + i + 1 : ℕ) := by
+    apply neg_one_pow_congr
+    simp [Fin.even_succAbove_add_predAbove, Nat.even_add_one]
+  simp only [← hw₁, ← hw₂, apply_insertNth, smul_smul, ← pow_add,
+    this, pow_succ', neg_one_mul, neg_smul, neg_add_cancel]
 
 /-- Given a function which is linear in the first argument
 and is alternating form in the other `n` arguments,
@@ -128,7 +125,7 @@ since we want to avoid division in this definition. -/
 def uncurryFin (f : M →ₗ[R] (M [⋀^Fin n]→ₗ[R] N)) :
     M [⋀^Fin (n + 1)]→ₗ[R] N where
   toMultilinearMap :=
-    ∑ i, (-1) ^ i.val • LinearMap.uncurryMid i ((toMultilinearMapLM (S := R)).comp f)
+    ∑ p, (-1) ^ p.val • LinearMap.uncurryMid p ((toMultilinearMapLM (S := R)).comp f)
   map_eq_zero_of_eq' := by
     intro v i j hvij hij
     suffices ∑ k : Fin (n + 1), (-1) ^ k.val • f (v k) (k.removeNth v) = 0 by simpa

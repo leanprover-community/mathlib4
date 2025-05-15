@@ -363,6 +363,13 @@ instance noZeroSMulDivisors [NoZeroSMulDivisors S N] :
     NoZeroSMulDivisors S (M [⋀^ι]→ₗ[R] N) :=
   coe_injective.noZeroSMulDivisors _ rfl coeFn_smul
 
+/-- Embedding of alternating maps into multilinear maps as a linear map. -/
+@[simps]
+def toMultilinearMapLM : (M [⋀^ι]→ₗ[R] N) →ₗ[S] MultilinearMap R (fun _ : ι ↦ M) N where
+  toFun := toMultilinearMap
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
 end Module
 
 section
