@@ -70,9 +70,9 @@ Note that we cannot drop the continuity assumption.
 Indeed, let `ℝ₀` be a copy or `ℝ` with zero norm and indiscrete topology.
 Then `f : (Unit → ℝ₀) → ℝ` given by `f x = x ()`
 sends vector `1` with zero norm to number `1` with nonzero norm. -/
-nonrec theorem norm_map_coord_zero (f : E [⋀^ι]→ₗ[𝕜] F) (hf : Continuous f)
+theorem norm_map_coord_zero (f : E [⋀^ι]→ₗ[𝕜] F) (hf : Continuous f)
     {m : ι → E} {i : ι} (hi : ‖m i‖ = 0) : ‖f m‖ = 0 :=
-  f.norm_map_coord_zero hf hi
+  f.1.norm_map_coord_zero hf hi
 
 variable [Fintype ι]
 
