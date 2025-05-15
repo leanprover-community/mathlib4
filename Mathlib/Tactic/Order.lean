@@ -5,7 +5,7 @@ Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.Order.Preprocessing
-import Mathlib.Tactic.Order.ToNat
+import Mathlib.Tactic.Order.ToInt
 import Mathlib.Tactic.Order.Graph.Basic
 import Mathlib.Tactic.Order.Graph.Tarjan
 
@@ -260,7 +260,7 @@ elab "order" : tactic => focus do
       let .succ u ← getLevel type | throwError "Unexpected Prop"
       let type : Q(Type u) := type
       let instLinearOrder ← synthInstanceQ q(LinearOrder $type)
-      let (_, factsNat) := translateToNat type instLinearOrder idxToAtom facts
+      let (_, factsNat) := translateToInt type instLinearOrder idxToAtom facts
       let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
         match factNat with
         | .eq _ _ proof => some proof
