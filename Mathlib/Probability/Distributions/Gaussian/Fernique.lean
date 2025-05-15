@@ -457,6 +457,28 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self {μ : Measure E} [IsProba
     simp only [one_mul]
     gcongr
 
+lemma exists_integrable_exp_sq_of_map_rotation_eq_self'' {μ : Measure E} [IsFiniteMeasure μ]
+    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) :
+    ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
+  by_cases hμ_zero : μ = 0
+  · exact ⟨1, by positivity, by simp [hμ_zero]⟩
+  let μ' := cond μ .univ
+  have hμ'_eq : μ' = (μ .univ)⁻¹ • μ := by simp [μ', cond]
+  have hμ' : IsProbabilityMeasure μ' := cond_isProbabilityMeasure <| by simp [hμ_zero]
+  have h_rot : (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4))) = μ'.prod μ' := by
+    calc (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4)))
+    _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹)
+        • (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) := sorry
+    _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹) • (μ.prod μ) := by rw [h_rot]
+    _ = μ'.prod μ' := by
+      rw [hμ'_eq]
+      sorry
+  obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq_of_map_rotation_eq_self (μ := μ') h_rot
+  refine ⟨C, hC_pos, ?_⟩
+  rwa [hμ'_eq, integrable_smul_measure] at hC
+  · simp [hμ_zero]
+  · simp [hμ_zero]
+
 variable [CompleteSpace E]
 
 lemma IsGaussian.measure_le_mul_measure_gt_le (hμ : IsCentered μ) (a b : ℝ) :
