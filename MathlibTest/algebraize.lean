@@ -150,10 +150,10 @@ structure Bar (A B : Type*) [CommRing A] [CommRing B] where
   f : A →+* B
 
 @[algebraize testProperty1_of_bar]
-def Bar.testProperty1 {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) : Prop :=
+def Bar.TestProperty1 {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) : Prop :=
   ∀ z, b.f z = 0
 
-lemma testProperty1_of_bar {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.testProperty1) :
+lemma testProperty1_of_bar {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B) (h : b.TestProperty1) :
   @Algebra.TestProperty1 A B _ _ b.f.toAlgebra := @Algebra.TestProperty1.mk A B _ _ b.f.toAlgebra h
 
 @[algebraize testProperty2_of_bar]
@@ -165,8 +165,8 @@ lemma testProperty2_of_bar {A B : Type*} [CommRing A] [CommRing B] (b : Bar A B)
   @Module.TestProperty2 A B _ _ b.f.toAlgebra.toModule :=
     @Module.TestProperty2.mk A B _ _ b.f.toAlgebra.toModule h
 
-example {A B : Type*} [CommRing A] [CommRing B] (b c : Bar A B) (hb : b.testProperty1)
-    (hc : c.testProperty1) : True := by
+example {A B : Type*} [CommRing A] [CommRing B] (b c : Bar A B) (hb : b.TestProperty1)
+    (hc : c.TestProperty1) : True := by
   algebraize [b.f]
   guard_hyp algebraizeInst : @Algebra.TestProperty1 A B _ _ b.f.toAlgebra
   fail_if_success -- make sure that only arguments are used
@@ -185,15 +185,15 @@ structure Buz (A B : Type*) [CommRing A] [CommRing B] where
   x : (A →+* B) ⊕ (A →+* B)
 
 @[algebraize testProperty1_of_buz_inl]
-def Buz.testProperty1 {A B : Type*} [CommRing A] [CommRing B] (b : Buz A B) :=
+def Buz.TestProperty1 {A B : Type*} [CommRing A] [CommRing B] (b : Buz A B) :=
   b.x.elim (@Algebra.TestProperty1 A B _ _ ·.toAlgebra) (fun _ => False)
 
 lemma testProperty1_of_buz_inl {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) :
-  Buz.testProperty1 ⟨.inl f⟩ → @Algebra.TestProperty1 A B _ _ f.toAlgebra := id
+  Buz.TestProperty1 ⟨.inl f⟩ → @Algebra.TestProperty1 A B _ _ f.toAlgebra := id
 
 -- check that this also works when the argument *contains* a ringhom
 example {A B : Type*} [CommRing A] [CommRing B] (f g : A →+* B)
-    (hf : Buz.testProperty1 ⟨.inl f⟩) (hg : Buz.testProperty1 ⟨.inl g⟩) : True := by
+    (hf : Buz.TestProperty1 ⟨.inl f⟩) (hg : Buz.TestProperty1 ⟨.inl g⟩) : True := by
   algebraize [f]
   guard_hyp algebraizeInst : @Algebra.TestProperty1 A B _ _ f.toAlgebra
   fail_if_success
@@ -202,7 +202,7 @@ example {A B : Type*} [CommRing A] [CommRing B] (f g : A →+* B)
 
 -- check that there is no issue with trying the lemma on a mismatching argument.
 example {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
-    (hf : Buz.testProperty1 ⟨.inr f⟩) : True := by
+    (hf : Buz.TestProperty1 ⟨.inr f⟩) : True := by
   algebraize [f] -- this could error if it tried applying `testProperty1_ofBuz_inl` to `hf`
   fail_if_success
     guard_hyp algebraizeInst
