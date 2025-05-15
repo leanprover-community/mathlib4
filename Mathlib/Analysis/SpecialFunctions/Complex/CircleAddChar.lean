@@ -129,13 +129,13 @@ instance : HasEnoughRootsOfUnity Circle n := HasEnoughRootsOfUnity.map_of_rootsO
   (IsAlgClosed.hasEnoughRootsOfUnity ℂ n) (rootsOfUnityCircleEquiv n).symm
 
 theorem rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_Surjective (n : ℕ) [NeZero n] :
-    Function.Surjective (rootsOfUnityCircleEquiv n ∘ rootsOfUnityAddChar n) := fun ⟨w,hw⟩ => by
+    Function.Surjective (rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) := fun ⟨w,hw⟩ => by
   obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity n w).mp hw
   exact ⟨j, by
     rw [comp_apply]
     rw [MulEquiv.apply_eq_iff_symm_apply]
     ext
-    rw [rootsOfUnityAddChar_val]
+    rw [ZMod.rootsOfUnityAddChar_val]
     rw [ZMod.toCircle_natCast]
     simp_rw [← mul_div_assoc] at hj2
     rw [hj2]
