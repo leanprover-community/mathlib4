@@ -30,13 +30,10 @@ instance PreservesLimitsOfShape.overPost
     [PreservesLimitsOfShape (WithTerminal J) F] :
     PreservesLimitsOfShape J (Over.post F (X := X)) where
   preservesLimit {K} := {
-    preserves {coneK} isLimitConeK := by
-      let coneC := coneEquiv.functor.obj coneK
-      obtain ⟨isLimitConeD⟩ : Nonempty (IsLimit (F.mapCone coneC)) :=
-        PreservesLimitsOfShape.preservesLimit.preserves <| isLimitEquiv.symm isLimitConeK
-      replace isLimitConeD :=
-        (IsLimit.postcomposeHomEquiv liftFromOverComp.symm (F.mapCone coneC)).symm isLimitConeD
-      exact ⟨isLimitEquiv <| isLimitConeD.ofIsoLimit <|
+    preserves {coneK} isLimitConeK :=
+      have isLimitConeD := (IsLimit.postcomposeHomEquiv liftFromOverComp.symm _).symm <|
+        isLimitOfPreserves F (isLimitEquiv.symm isLimitConeK)
+      ⟨isLimitEquiv <| isLimitConeD.ofIsoLimit <|
         Cones.ext (.refl _) fun | .star | .of a => by aesop⟩
   }
 
