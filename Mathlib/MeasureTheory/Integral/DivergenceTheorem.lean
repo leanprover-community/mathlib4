@@ -380,8 +380,7 @@ interval and is differentiable off a countable set `s`.
 See also
 
 * `intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le` for a version that only assumes right
-differentiability of `f`;
-
+  differentiability of `f`;
 * `MeasureTheory.integral_eq_of_hasDerivWithinAt_off_countable` for a version that works both
   for `a ≤ b` and `b ≤ a` at the expense of using unordered intervals instead of `Set.Icc`. -/
 theorem integral_eq_of_hasDerivAt_off_countable_of_le [CompleteSpace E] (f f' : ℝ → E)

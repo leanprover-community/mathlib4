@@ -84,7 +84,7 @@ instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     LocallyCompactSpace (X × Y) :=
   have := fun x : X × Y => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
- .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
+  .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
 
 section Pi
 

@@ -38,7 +38,7 @@ if it is full, faithful and essentially surjective.
 * `Functor.EssSurj`: type class on a functor `F` containing the data of the preimages
   and the isomorphisms `F.obj (preimage d) ≅ d`.
 * `Functor.IsEquivalence`: type class on a functor `F` which is full, faithful and
-essentially surjective.
+  essentially surjective.
 
 ## Main results
 
@@ -46,8 +46,8 @@ essentially surjective.
 * `isEquivalence_iff_of_iso`: when `F` and `G` are isomorphic functors,
 `F` is an equivalence iff `G` is.
 * `Functor.asEquivalenceFunctor`: construction of an equivalence of categories from
-a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
-and essentially surjective).
+  a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
+  and essentially surjective).
 
 ## Notations
 
@@ -663,13 +663,13 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
     ≪≫ isoWhiskerLeft G.inverse i
 
 /-- As a special case, given two equivalences `G` and `G'` between the same categories,
- construct an isomorphism `G.inverse ≅ G.inverse` from an isomorphism `G.functor ≅ G.functor`. -/
+construct an isomorphism `G.inverse ≅ G.inverse` from an isomorphism `G.functor ≅ G.functor`. -/
 @[simps!]
 def isoInverseOfIsoFunctor {G G' : C ≌ D} (i : G.functor ≅ G'.functor) : G.inverse ≅ G'.inverse :=
   isoCompInverse ((isoWhiskerLeft G.inverse i).symm ≪≫ G.counitIso) ≪≫ leftUnitor G'.inverse
 
 /-- As a special case, given two equivalences `G` and `G'` between the same categories,
- construct an isomorphism `G.functor ≅ G.functor` from an isomorphism `G.inverse ≅ G.inverse`. -/
+construct an isomorphism `G.functor ≅ G.functor` from an isomorphism `G.inverse ≅ G.inverse`. -/
 @[simps!]
 def isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inverse ≅ G'.inverse) : G.functor ≅ G'.functor :=
   isoInverseOfIsoFunctor (G := G.symm) (G' := G'.symm) i
