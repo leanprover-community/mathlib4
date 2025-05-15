@@ -503,7 +503,7 @@ theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f
       simp only [add_singleton, image_add_right, mem_insert_iff, add_eq_left, mem_preimage] at hz1 ⊢
       abel_nf at hz1
       assumption
-    convert hf.hasSum (y := z) this hz2 using 2
+    convert hf.hasSum this hz2 using 2
     abel
 
 theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y : E) :
