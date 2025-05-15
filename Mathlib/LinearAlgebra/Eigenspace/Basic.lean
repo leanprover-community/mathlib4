@@ -556,10 +556,9 @@ theorem hasEigenvalue_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
   hμ.lt zero_lt_one
 
 /-- Generalized eigenvalues are actually just eigenvalues. -/
-@[simp]
 theorem hasGenEigenvalue_iff_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
-    f.HasGenEigenvalue μ k ↔ f.HasEigenvalue μ :=
-  hasUnifEigenvalue_iff_hasUnifEigenvalue_one <| by simpa using hk
+    f.HasGenEigenvalue μ k ↔ f.HasEigenvalue μ := by
+  simp [hk]
 
 theorem maxGenEigenspace_eq_genEigenspace_finrank
     [FiniteDimensional K V] (f : End K V) (μ : K) :

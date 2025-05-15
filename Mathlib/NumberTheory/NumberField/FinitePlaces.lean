@@ -5,7 +5,7 @@ Authors: Fabrizio Barroero
 -/
 import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Data.Int.WithZero
-import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
@@ -22,11 +22,11 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
 `v`-adic completion `v.adicCompletion K` of `K`, where `v` is a non-zero prime ideal of `𝓞 K`
 * `NumberField.FinitePlace.norm_def`: the norm of `embedding v x` is the same as the `v`-adic
-absolute value of `x`. See also `NumberField.FinitePlace.norm_def'` and
-`NumberField.FinitePlace.norm_def_int` for versions where the `v`-adic absolute value is
-unfolded.
+  absolute value of `x`. See also `NumberField.FinitePlace.norm_def'` and
+  `NumberField.FinitePlace.norm_def_int` for versions where the `v`-adic absolute value is
+  unfolded.
 * `NumberField.FinitePlace.mulSupport_finite`: the `v`-adic absolute value of a non-zero element of
-`K` is different from 1 for at most finitely many `v`.
+  `K` is different from 1 for at most finitely many `v`.
 
 ## Tags
 number field, places, finite places
