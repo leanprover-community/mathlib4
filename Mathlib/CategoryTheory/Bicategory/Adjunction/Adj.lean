@@ -108,14 +108,9 @@ lemma mateEquiv_eq_trans {g : a ⟶ c} {h : b ⟶ d} :
 lemma mateEquiv_eq_iff {g : a ⟶ c} {h : b ⟶ d}
     (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h ≫ r₂) :
   mateEquiv adj₁ adj₂ α = β ↔
-    (λ_ _).inv ≫ adj₁.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l₁ ◁ β =
-      (ρ_ _).inv ≫ g ◁ adj₂.unit ≫
-        (α_ _ _ _).inv ≫ α ▷ r₂ ≫ (α_ _ _ _).hom := by
+    adj₁.homEquiv₁.symm β = adj₂.homEquiv₂ α ≫ (α_ _ _ _).hom := by
   conv_lhs => rw [eq_comm, ← adj₁.homEquiv₁.symm.injective.eq_iff']
-  convert Iff.rfl using 2
-  rw [mateEquiv_eq_trans, Equiv.trans_apply, Equiv.trans_apply, Iso.homCongr_apply,
-    Iso.refl_inv, Category.id_comp, Equiv.symm_apply_apply, Adjunction.homEquiv₂_apply,
-    Category.assoc, Category.assoc, Category.assoc]
+  simp [mateEquiv_eq_trans]
 
 variable {f : a ⟶ c} {g : b ⟶ d}
 
@@ -218,10 +213,9 @@ variable {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁
 lemma conjugateEquiv_associator_hom :
     conjugateEquiv (adj₁.comp (adj₂.comp adj₃))
       ((adj₁.comp adj₂).comp adj₃) (α_ _ _ _).hom = (α_ _ _ _).hom := by
-  rw [← cancel_epi (ρ_ _).hom, ← cancel_mono (λ_ _).inv, conjugateEquiv_apply,
-    Iso.hom_inv_id_assoc, Category.assoc, Iso.hom_inv_id, Category.comp_id,
-    Category.assoc, mateEquiv_eq_iff]
-  simp
+  simp [← cancel_epi (ρ_ ((r₃ ≫ r₂) ≫ r₁)).hom, ← cancel_mono (λ_ (r₃ ≫ r₂ ≫ r₁)).inv,
+    conjugateEquiv_apply, mateEquiv_eq_iff, Adjunction.homEquiv₁_symm_apply,
+    Adjunction.homEquiv₂_apply]
   bicategory
 
 end
