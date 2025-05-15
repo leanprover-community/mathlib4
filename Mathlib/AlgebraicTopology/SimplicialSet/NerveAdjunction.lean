@@ -262,12 +262,8 @@ theorem oneTruncation₂_toStrictSegal₂Mk :
   · dsimp [oneTruncation₂]
     ext
     dsimp
-    refine
-      ReflPrefunctor.congr_map_edge F { edge := f.edge, src_eq := rfl, tgt_eq := rfl } f ?_ ?_ ?_
-    · rw [f.src_eq]
-    · rw [f.tgt_eq]
-    · simp only [OneTruncation₂.Quiver_homOfEq]
-      rfl
+    exact ReflPrefunctor.congr_map_edge F { edge := f.edge, src_eq := rfl, tgt_eq := rfl }
+      f f.src_eq f.tgt_eq (by simp only [OneTruncation₂.Quiver_homOfEq]; rfl)
 
 end
 
