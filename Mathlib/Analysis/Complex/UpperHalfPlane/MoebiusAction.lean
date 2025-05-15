@@ -126,25 +126,25 @@ lemma σ_mul_comm (g g' : GL (Fin 2) ℝ) (x : ℂ) : σ g (σ g' x) = σ g' (σ
   split_ifs <;> simp
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
-private def smulAux₁ (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := σ g (num g z / denom g z)
+def smulAux' (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := σ g (num g z / denom g z)
 
-private lemma smulAux₁_im (g : GL (Fin 2) ℝ) (z : ℂ) :
-    (smulAux₁ g z).im = |g.det.val| * z.im / Complex.normSq (denom g z) := by
-  simp only [smulAux₁, σ]
+lemma smulAux'_im (g : GL (Fin 2) ℝ) (z : ℂ) :
+    (smulAux' g z).im = |g.det.val| * z.im / Complex.normSq (denom g z) := by
+  simp only [smulAux', σ]
   split_ifs with h <;>
   [rw [abs_of_pos h]; rw [abs_of_nonpos (not_lt.mp h)]] <;>
   simpa only [starRingAut_apply, Complex.star_def, Complex.conj_im,
     neg_mul, neg_div, neg_inj] using moebius_im g z
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
-private def smulAux (g : GL (Fin 2) ℝ) (z : ℍ) : ℍ :=
-  mk (smulAux₁ g z) <| by
-    rw [smulAux₁_im]
+def smulAux (g : GL (Fin 2) ℝ) (z : ℍ) : ℍ :=
+  mk (smulAux' g z) <| by
+    rw [smulAux'_im]
     exact div_pos (mul_pos (abs_pos.mpr g.det.ne_zero) z.im_pos) (normSq_denom_pos _ z.im_ne_zero)
 
-private lemma denom_cocycle' (x y : GL (Fin 2) ℝ) (z : ℍ) :
+lemma denom_cocycle' (x y : GL (Fin 2) ℝ) (z : ℍ) :
     denom (x * y) z = σ y (denom x (smulAux y z)) * denom y z := by
-  simp only [smulAux, smulAux₁, coe_mk, map_div₀, σ_num, σ_denom, σ_sq]
+  simp only [smulAux, smulAux', coe_mk, map_div₀, σ_num, σ_denom, σ_sq]
   change _ = (_ * (_ / _) + _) * _
   field_simp [denom_ne_zero y z]
   simp only [denom, Units.val_mul, mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
@@ -152,10 +152,10 @@ private lemma denom_cocycle' (x y : GL (Fin 2) ℝ) (z : ℍ) :
     Complex.ofReal_mul, num]
   ring
 
-private theorem mul_smul' (x y : GL (Fin 2) ℝ) (z : ℍ) :
+theorem mul_smul' (x y : GL (Fin 2) ℝ) (z : ℍ) :
     smulAux (x * y) z = smulAux x (smulAux y z) := by
   ext : 1
-  simp only [smulAux, coe_mk, smulAux₁, map_div₀, σ_num, σ_denom, σ_mul]
+  simp only [smulAux, coe_mk, smulAux', map_div₀, σ_num, σ_denom, σ_mul]
   generalize h : σ x (σ y z) = u
   have hu : u.im ≠ 0 := by simpa only [← h, σ_im_ne_zero] using z.im_ne_zero
   have hu' : (num y u / denom y u).im ≠ 0 := by
@@ -177,7 +177,7 @@ instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
   smul := smulAux
   one_smul z := by
     show smulAux 1 z = z
-    simp [UpperHalfPlane.ext_iff, smulAux, coe_mk, smulAux₁, num, denom, σ]
+    simp [UpperHalfPlane.ext_iff, smulAux, coe_mk, smulAux', num, denom, σ]
   mul_smul := mul_smul'
 
 lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
@@ -185,8 +185,8 @@ lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
 
 lemma coe_smul_of_det_pos {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     ↑(g • z) = num g z / denom g z := by
-  show smulAux₁ g z = _
-  rw [smulAux₁, σ, if_pos hg, RingEquiv.refl_apply, num, denom]
+  show smulAux' g z = _
+  rw [smulAux', σ, if_pos hg, RingEquiv.refl_apply, num, denom]
 
 lemma denom_cocycle_σ (x y : GL (Fin 2) ℝ) (z : ℍ) :
     denom (x * y) z = σ y (denom x ↑(y • z)) * denom y z :=
@@ -199,15 +199,15 @@ lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
 variable (g : GL (Fin 2) ℝ) (z : ℍ)
 
 theorem im_smul : (g • z).im = |(num g z / denom g z).im| := by
-  show (smulAux₁ g z).im = _
-  simp only [smulAux₁, σ, DFunLike.ite_apply, RingEquiv.refl_apply, starRingAut_apply,
+  show (smulAux' g z).im = _
+  simp only [smulAux', σ, DFunLike.ite_apply, RingEquiv.refl_apply, starRingAut_apply,
     Complex.star_def, apply_ite, moebius_im, Complex.conj_im, ← neg_div, ← neg_mul, abs_div,
     abs_mul, abs_of_pos (show 0 < (z : ℂ).im from z.coe_im ▸ z.im_pos),
     abs_of_nonneg <| Complex.normSq_nonneg _]
   split_ifs with h <;> [rw [abs_of_pos h]; rw [abs_of_nonpos (not_lt.mp h)]]
 
 lemma im_smul_eq_div_normSq : (g • z).im = |g.det.val| * z.im / Complex.normSq (denom g z) :=
-  smulAux₁_im g z
+  smulAux'_im g z
 
 theorem c_mul_im_sq_le_normSq_denom : (g 1 0 * z.im) ^ 2 ≤ Complex.normSq (denom g z) := by
   set c := g 1 0
