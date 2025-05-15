@@ -249,12 +249,12 @@ theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e
 /-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
 @[simps]
 def ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ : f.comp g = CoalgHom.id R B)
-    (h₂ : g.comp f = CoalgHom.id R A) : A ≃ₗc[R] B :=
-  { f with
-    toFun := f
-    invFun := g
-    left_inv := CoalgHom.ext_iff.1 h₂
-    right_inv := CoalgHom.ext_iff.1 h₁ }
+    (h₂ : g.comp f = CoalgHom.id R A) : A ≃ₗc[R] B where
+  __ := f
+  toFun := f
+  invFun := g
+  left_inv := CoalgHom.ext_iff.1 h₂
+  right_inv := CoalgHom.ext_iff.1 h₁
 
 theorem coe_coalgHom_ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
     ↑(ofCoalgHom f g h₁ h₂) = f :=
