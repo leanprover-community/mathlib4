@@ -9,6 +9,7 @@ import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Compactness.LocallyCompact
 import Mathlib.Topology.Bases
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Separation properties of topological spaces
@@ -68,6 +69,7 @@ section Separation
 /-- A T₀ space, also known as a Kolmogorov space, is a topological space such that for every pair
 `x ≠ y`, there is an open set containing one but not the other. We formulate the definition in terms
 of the `Inseparable` relation. -/
+@[stacks 004X "(2)"]
 class T0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Two inseparable points in a T₀ space are equal. -/
   t0 : ∀ ⦃x y : X⦄, Inseparable x y → x = y
@@ -230,6 +232,7 @@ alias Embedding.t0Space := IsEmbedding.t0Space
 protected theorem Homeomorph.t0Space [TopologicalSpace Y] [T0Space X] (h : X ≃ₜ Y) : T0Space Y :=
   h.symm.isEmbedding.t0Space
 
+@[stacks 0B31 "part 1"]
 instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
   IsEmbedding.subtypeVal.t0Space
 
@@ -651,7 +654,7 @@ theorem Dense.diff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set 
   classical
   induction t using Finset.induction_on with
   | empty => simpa using hs
-  | insert _ ih =>
+  | insert _ _ _ ih =>
     rw [Finset.coe_insert, ← union_singleton, ← diff_diff]
     exact ih.diff_singleton _
 
@@ -823,9 +826,6 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
   apply isClosed_set_pi
   simp [forall_update_iff, hs, isClosed_singleton]
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_update := isClosedEmbedding_update
-
 /-! ### R₁ (preregular) spaces -/
 
 section R1Space
@@ -861,6 +861,13 @@ theorem r1Space_iff_inseparable_or_disjoint_nhds {X : Type*} [TopologicalSpace X
 theorem Inseparable.of_nhds_neBot {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
     Inseparable x y :=
   (r1Space_iff_inseparable_or_disjoint_nhds.mp ‹_› _ _).resolve_right fun h' => h.ne h'.eq_bot
+
+theorem r1_separation {x y : X} (h : ¬Inseparable x y) :
+    ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v := by
+  rw [← disjoint_nhds_nhds_iff_not_inseparable,
+    (nhds_basis_opens x).disjoint_iff (nhds_basis_opens y)] at h
+  obtain ⟨u, ⟨hxu, hu⟩, v, ⟨hyv, hv⟩, huv⟩ := h
+  exact ⟨u, v, hu, hv, hxu, hyv, huv⟩
 
 /-- Limits are unique up to separability.
 
@@ -954,8 +961,7 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
   | empty =>
     refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
     simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
-  | insert hx ih =>
-    rename_i x t
+  | insert x t hx ih =>
     simp only [Finset.set_biUnion_insert] at hsC
     simp only [Finset.forall_mem_insert] at hU
     have hU' : ∀ i ∈ t, IsOpen (U i) := fun i hi => hU.2 i hi

@@ -18,26 +18,26 @@ The theory is developed analogously to the [Fréchet
 derivatives](./fderiv.html). We first introduce predicates defined in terms
 of the corresponding predicates for Fréchet derivatives:
 
- - `HasDerivAtFilter f f' x L` states that the function `f` has the
-    derivative `f'` at the point `x` as `x` goes along the filter `L`.
+- `HasDerivAtFilter f f' x L` states that the function `f` has the
+  derivative `f'` at the point `x` as `x` goes along the filter `L`.
 
- - `HasDerivWithinAt f f' s x` states that the function `f` has the
-    derivative `f'` at the point `x` within the subset `s`.
+- `HasDerivWithinAt f f' s x` states that the function `f` has the
+  derivative `f'` at the point `x` within the subset `s`.
 
- - `HasDerivAt f f' x` states that the function `f` has the derivative `f'`
-    at the point `x`.
+- `HasDerivAt f f' x` states that the function `f` has the derivative `f'`
+  at the point `x`.
 
- - `HasStrictDerivAt f f' x` states that the function `f` has the derivative `f'`
-    at the point `x` in the sense of strict differentiability, i.e.,
-   `f y - f z = (y - z) • f' + o (y - z)` as `y, z → x`.
+- `HasStrictDerivAt f f' x` states that the function `f` has the derivative `f'`
+  at the point `x` in the sense of strict differentiability, i.e.,
+  `f y - f z = (y - z) • f' + o (y - z)` as `y, z → x`.
 
 For the last two notions we also define a functional version:
 
-  - `derivWithin f s x` is a derivative of `f` at `x` within `s`. If the
-    derivative does not exist, then `derivWithin f s x` equals zero.
+- `derivWithin f s x` is a derivative of `f` at `x` within `s`. If the
+  derivative does not exist, then `derivWithin f s x` equals zero.
 
-  - `deriv f x` is a derivative of `f` at `x`. If the derivative does not
-    exist, then `deriv f x` equals zero.
+- `deriv f x` is a derivative of `f` at `x`. If the derivative does not
+  exist, then `deriv f x` equals zero.
 
 The theorems `fderivWithin_derivWithin` and `fderiv_deriv` show that the
 one-dimensional derivatives coincide with the general Fréchet derivatives.
@@ -230,6 +230,15 @@ variable {x : 𝕜}
 variable {s t : Set 𝕜}
 variable {L L₁ L₂ : Filter 𝕜}
 
+theorem derivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : derivWithin f s x = 0 := by
+  rw [derivWithin, fderivWithin_zero_of_not_accPt h, ContinuousLinearMap.zero_apply]
+
+theorem derivWithin_zero_of_not_uniqueDiffWithinAt (h : ¬UniqueDiffWithinAt 𝕜 s x) :
+    derivWithin f s x = 0 :=
+  derivWithin_zero_of_not_accPt <| mt AccPt.uniqueDiffWithinAt h
+
+set_option linter.deprecated false in
+@[deprecated derivWithin_zero_of_not_accPt (since := "2025-04-20")]
 theorem derivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : derivWithin f s x = 0 := by
   rw [derivWithin, fderivWithin_zero_of_isolated h, ContinuousLinearMap.zero_apply]
 

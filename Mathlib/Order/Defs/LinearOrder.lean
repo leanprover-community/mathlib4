@@ -131,8 +131,6 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
 
--- Porting note: no `min_tac` tactic in the following series of lemmas
-
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]

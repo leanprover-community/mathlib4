@@ -5,7 +5,7 @@ Authors: Nailin Guan
 -/
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.Galois.GaloisClosure
-import Mathlib.Topology.Algebra.ClosedSubgroup
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 /-!
 
 # The Fundamental Theorem of Infinite Galois Theory
@@ -150,7 +150,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
     apply sub'
     simp only [← muleq, ← eq]
     apply Set.smul_mem_smul_set
-    exact (IntermediateField.fixingSubgroup.antimono (IntermediateField.le_normalClosure L) hτ)
+    exact (L.fixingSubgroup_le (IntermediateField.le_normalClosure L) hτ)
   have fix : ∀ x ∈ IntermediateField.fixedField H.toSubgroup ⊓ ↑L', σ x = x :=
     fun x hx ↦ ((mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mp hσ) x hx.1
   rw [restrict_fixedField H.1 L'.1] at fix
