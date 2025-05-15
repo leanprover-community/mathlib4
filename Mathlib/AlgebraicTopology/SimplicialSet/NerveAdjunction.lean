@@ -259,9 +259,7 @@ def toStrictSegal₂.mk : X ⟶ Y where
 theorem oneTruncation₂_toStrictSegal₂Mk :
     oneTruncation₂.map (toStrictSegal₂.mk sy F hyp) = F := by
   refine ReflPrefunctor.ext' (fun _ ↦ rfl) (fun X Y f ↦ ?_)
-  · dsimp
-    unfold oneTruncation₂
-    dsimp
+  · dsimp [oneTruncation₂]
     ext
     dsimp
     refine
