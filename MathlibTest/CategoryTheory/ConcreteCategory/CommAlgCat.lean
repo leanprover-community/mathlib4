@@ -11,28 +11,28 @@ variable (R : Type u) [CommRing R]
 
 /- We test if all the coercions and `map_add` lemmas trigger correctly. -/
 
-example (X : Type v) [AddCommGroup X] [Module R X] : ⇑(𝟙 (of R X)) = id := by simp
+example (X : Type v) [CommRing X] [Algebra R X] : ⇑(𝟙 (of R X)) = id := by simp
 
-example {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y) :
+example {X Y : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y] (f : X →ₐ[R] Y) :
     ⇑(CommAlgCat.ofHom f) = ⇑f := by simp
 
-example {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y)
+example {X Y : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y] (f : X →ₐ[R] Y)
     (x : X) : (CommAlgCat.ofHom f) x = f x := by simp
 
 example {X Y Z : CommAlgCat R} (f : X ⟶ Y) (g : Y ⟶ Z) : ⇑(f ≫ g) = ⇑g ∘ ⇑f := by simp
 
-example {X Y Z : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] [Ring Z]
-    [Algebra R Z] (f : X →ₗ[R] Y) (g : Y →ₗ[R] Z) :
+example {X Y Z : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y] [CommRing Z]
+    [Algebra R Z] (f : X →ₐ[R] Y) (g : Y →ₐ[R] Z) :
     ⇑(CommAlgCat.ofHom f ≫ CommAlgCat.ofHom g) = g ∘ f := by simp
 
-example {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] {Z : CommAlgCat R}
-    (f : X →ₗ[R] Y) (g : of R Y ⟶ Z) :
+example {X Y : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y] {Z : CommAlgCat R}
+    (f : X →ₐ[R] Y) (g : of R Y ⟶ Z) :
     ⇑(CommAlgCat.ofHom f ≫ g) = g ∘ f := by simp
 
-example {X Y : CommAlgCat R} {Z : Type v} [Ring Z] [Algebra R Z] (f : X ⟶ Y) (g : Y ⟶ of R Z) :
+example {X Y : CommAlgCat R} {Z : Type v} [CommRing Z] [Algebra R Z] (f : X ⟶ Y) (g : Y ⟶ of R Z) :
     ⇑(f ≫ g) = g ∘ f := by simp
 
-example {Y Z : CommAlgCat R} {X : Type v} [AddCommGroup X] [Module R X] (f : of R X ⟶ Y) (g : Y ⟶ Z) :
+example {Y Z : CommAlgCat R} {X : Type v} [CommRing X] [Algebra R X] (f : of R X ⟶ Y) (g : Y ⟶ Z) :
     ⇑(f ≫ g) = g ∘ f := by simp
 
 example {X Y Z : CommAlgCat R} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) := by simp
