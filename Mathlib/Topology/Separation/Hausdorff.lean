@@ -470,24 +470,6 @@ lemma unique_lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Spa
   simp [← hfg]
 
 end T2Quotient
-
-namespace t2Quotient
-
-@[deprecated (since := "2025-05-15")] alias instTopologicalSpace := T2Quotient.instTopologicalSpace
-@[deprecated (since := "2025-05-15")] alias mk := T2Quotient.mk
-@[deprecated (since := "2025-05-15")] alias mk_eq := T2Quotient.mk_eq
-@[deprecated (since := "2025-05-15")] alias surjective_mk := T2Quotient.surjective_mk
-@[deprecated (since := "2025-05-15")] alias continuous_mk := T2Quotient.continuous_mk
-@[deprecated (since := "2025-05-15")] protected alias inductionOn := T2Quotient.inductionOn
-@[deprecated (since := "2025-05-15")] protected alias inductionOn₂ := T2Quotient.inductionOn₂
-@[deprecated (since := "2025-05-15")] alias instT2Space := T2Quotient.instT2Space
-@[deprecated (since := "2025-05-15")] alias compatible := T2Quotient.compatible
-@[deprecated (since := "2025-05-15")] alias lift := T2Quotient.lift
-@[deprecated (since := "2025-05-15")] alias continuous_lift := T2Quotient.continuous_lift
-@[deprecated (since := "2025-05-15")] alias lift_mk := T2Quotient.lift_mk
-@[deprecated (since := "2025-05-15")] alias unique_lift := T2Quotient.unique_lift
-
-end t2Quotient
 end
 
 variable {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z]
