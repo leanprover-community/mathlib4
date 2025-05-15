@@ -46,7 +46,7 @@ theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
   rw [Rat.cast_def, NNRat.cast_def, NNRat.cast_def]
   have hn := @num_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
   on_goal 1 => have hd := @den_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
-  case hdp => simpa only [Int.ofNat_pos] using q.den_pos
+  case hdp => simpa only [Int.natCast_pos] using q.den_pos
   simp only [Int.cast_natCast, Nat.cast_inj] at hn hd
   rw [hn, hd, Int.cast_natCast]
 
