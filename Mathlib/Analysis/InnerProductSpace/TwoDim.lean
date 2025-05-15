@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Orientation
+import Mathlib.LinearAlgebra.Alternating.Curry
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -92,7 +93,7 @@ irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
     AlternatingMap.constLinearEquivOfIsEmpty.symm
   let y : E [⋀^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
     LinearMap.llcomp ℝ E (E [⋀^Fin 0]→ₗ[ℝ] ℝ) ℝ z ∘ₗ AlternatingMap.curryLeftLinearMap
-  exact y ∘ₗ AlternatingMap.curryLeftLinearMap (R' := ℝ) o.volumeForm
+  exact y ∘ₗ AlternatingMap.curryLeftLinearMap o.volumeForm
 
 local notation "ω" => o.areaForm
 

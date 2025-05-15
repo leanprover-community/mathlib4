@@ -18,19 +18,19 @@ associated to a number field of signature `K` and proves several existence theor
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.convexBodyLT`: The set of points `x` such that `‖x w‖ < f w` for all
-infinite places `w` with `f : InfinitePlace K → ℝ≥0`.
+  infinite places `w` with `f : InfinitePlace K → ℝ≥0`.
 
 * `NumberField.mixedEmbedding.convexBodySum`: The set of points `x` such that
-`∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`
+  `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`
 
 * `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_lt`: Let `I` be a fractional ideal of `K`.
-Assume that `f` is such that `minkowskiBound K I < volume (convexBodyLT K f)`, then there exists a
-nonzero algebraic number `a` in `I` such that `w a < f w` for all infinite places `w`.
+  Assume that `f` is such that `minkowskiBound K I < volume (convexBodyLT K f)`, then there exists a
+  nonzero algebraic number `a` in `I` such that `w a < f w` for all infinite places `w`.
 
 * `NumberField.mixedEmbedding.exists_ne_zero_mem_ideal_of_norm_le`: Let `I` be a fractional ideal
-of `K`. Assume that `B` is such that `minkowskiBound K I < volume (convexBodySum K B)` (see
-`convexBodySum_volume` for the computation of this volume), then there exists a nonzero algebraic
-number `a` in `I` such that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`.
+  of `K`. Assume that `B` is such that `minkowskiBound K I < volume (convexBodySum K B)` (see
+  `convexBodySum_volume` for the computation of this volume), then there exists a nonzero algebraic
+  number `a` in `I` such that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`.
 
 ## Tags
 
@@ -290,7 +290,7 @@ theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
   conv =>
     enter [1, w, hw]
     rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
-      (mem_nonZeroDivisors_iff_ne_zero.mpr <| Nat.cast_ne_zero.mpr mult_ne_zero)]
+      (mem_nonZeroDivisors_iff_ne_zero.mpr mult_coe_ne_zero)]
   simp_rw [Finset.mem_univ, true_implies]
 
 open scoped Classical in
