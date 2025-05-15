@@ -1,64 +1,64 @@
 import Mathlib
 
-section cyclo
+-- section cyclo
 
-theorem IsIntegralClosure.subalgebra_eq_of_integralClosure {R A : Type*} [CommRing R] [CommRing A]
-    [Algebra R A] {S : Subalgebra R A} (hS : IsIntegralClosure S R A) :
-    S = integralClosure R A := by
-  ext x
-  rw [mem_integralClosure_iff, hS.isIntegral_iff]
-  refine ⟨fun hx ↦ ⟨⟨x, hx⟩, rfl⟩, ?_⟩
-  rintro ⟨y, rfl⟩
-  exact y.prop
+-- theorem IsIntegralClosure.subalgebra_eq_of_integralClosure {R A : Type*} [CommRing R] [CommRing A]
+--     [Algebra R A] {S : Subalgebra R A} (hS : IsIntegralClosure S R A) :
+--     S = integralClosure R A := by
+--   ext x
+--   rw [mem_integralClosure_iff, hS.isIntegral_iff]
+--   refine ⟨fun hx ↦ ⟨⟨x, hx⟩, rfl⟩, ?_⟩
+--   rintro ⟨y, rfl⟩
+--   exact y.prop
 
-open NumberField
+-- open NumberField
 
-example {p : ℕ+} {k : ℕ} {K : Type*} [Field K] {ζ : K} [hp : Fact (Nat.Prime p)] [NumberField K]
-    [hcycl : IsCyclotomicExtension {p ^ k} ℚ K] (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :
-    Algebra.adjoin ℤ {(hζ.toInteger : 𝓞 K)} = ⊤ := by
-  have := IsCyclotomicExtension.Rat.isIntegralClosure_adjoin_singleton_of_prime_pow hζ
-  have k := IsIntegralClosure.subalgebra_eq_of_integralClosure this
+-- example {p : ℕ+} {k : ℕ} {K : Type*} [Field K] {ζ : K} [hp : Fact (Nat.Prime p)] [NumberField K]
+--     [hcycl : IsCyclotomicExtension {p ^ k} ℚ K] (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :
+--     Algebra.adjoin ℤ {(hζ.toInteger : 𝓞 K)} = ⊤ := by
+--   have := IsCyclotomicExtension.Rat.isIntegralClosure_adjoin_singleton_of_prime_pow hζ
+--   have k := IsIntegralClosure.subalgebra_eq_of_integralClosure this
 
-  let f : 𝓞 K →ₐ[ℤ] K := by exact Algebra.algHom ℤ (𝓞 K) K
-  let g := Subalgebra.map f
-  have : Function.Injective g := sorry
-  rw [← this.eq_iff]
-  simp [g, f]
-  convert k
-  unfold RingOfIntegers
-  
-  apply IsIntegralClosure.subalgebra_eq_of_integralClosure
+--   let f : 𝓞 K →ₐ[ℤ] K := by exact Algebra.algHom ℤ (𝓞 K) K
+--   let g := Subalgebra.map f
+--   have : Function.Injective g := sorry
+--   rw [← this.eq_iff]
+--   simp [g, f]
+--   convert k
+--   unfold RingOfIntegers
 
-
-#exit
-
-  apply IsIntegralClosure.subalgebra_integralClosure_eq_top
-  convert IsCyclotomicExtension.Rat.isIntegralClosure_adjoin_singleton_of_prime_pow hζ
+--   apply IsIntegralClosure.subalgebra_eq_of_integralClosure
 
 
-#exit
-  refine Algebra.eq_top_iff.mpr fun x ↦ ?_
-  have : x = hζ.adjoinEquivRingOfIntegers (hζ.adjoinEquivRingOfIntegers.symm x) := by
-    exact (AlgEquiv.symm_apply_eq hζ.adjoinEquivRingOfIntegers).mp rfl
-  rw [this]
-  simp
+-- #exit
+
+--   apply IsIntegralClosure.subalgebra_integralClosure_eq_top
+--   convert IsCyclotomicExtension.Rat.isIntegralClosure_adjoin_singleton_of_prime_pow hζ
 
 
-
-
-#exit
+-- #exit
+--   refine Algebra.eq_top_iff.mpr fun x ↦ ?_
+--   have : x = hζ.adjoinEquivRingOfIntegers (hζ.adjoinEquivRingOfIntegers.symm x) := by
+--     exact (AlgEquiv.symm_apply_eq hζ.adjoinEquivRingOfIntegers).mp rfl
+--   rw [this]
+--   simp
 
 
 
 
-
-  obtain ⟨y, hy⟩ := hζ.adjoinEquivRingOfIntegers.symm x
-  have := hζ.adjoinEquivRingOfIntegers_symm_apply x
-  have : x = ⟨y, sorry⟩ := sorry
-  rw [this]
+-- #exit
 
 
-end cyclo
+
+
+
+--   obtain ⟨y, hy⟩ := hζ.adjoinEquivRingOfIntegers.symm x
+--   have := hζ.adjoinEquivRingOfIntegers_symm_apply x
+--   have : x = ⟨y, sorry⟩ := sorry
+--   rw [this]
+
+
+-- end cyclo
 
 @[to_additive]
 theorem Monoid.exponent_eq_sInf {G : Type*} [Monoid G] :
@@ -86,6 +86,8 @@ theorem associated_abs {α : Type*} [Ring α] [LinearOrder α] (x : α) :
   · rw [h]
   · rw [h]
     refine ⟨-1, by simp⟩
+
+#find_home associated_abs
 
 section Int.Ideal
 
@@ -164,6 +166,8 @@ theorem IsCoatom.sup_eq_top_iff {α : Type*} {a b : α} [SemilatticeSup α] [Ord
   by_cases hb : b = ⊤
   · simpa [hb] using ha.1
   · exact ⟨fun h ↦ left_lt_sup.mp (h ▸ IsCoatom.lt_top ha), fun h ↦ ha.2 _ (left_lt_sup.mpr h)⟩
+
+#find_home! IsCoatom.sup_eq_top_iff
 
 theorem adjoin_eq_top_of_conductor_eq_top {R : Type*} {S : Type*} [CommRing R] [CommRing S]
     [Algebra R S] {x : S} (h : conductor R x = ⊤) :
