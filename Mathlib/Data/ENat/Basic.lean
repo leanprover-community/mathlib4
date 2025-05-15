@@ -298,7 +298,7 @@ lemma add_one_lt_add_one_iff {a b : ℕ∞} : a < b ↔ a + 1 < b + 1 := by
   · refine ⟨fun lt ↦ ?_, fun lt ↦ ?_⟩
     · simpa [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff lt.ne_top] using lt
     · have lttop : a < ⊤ := lt_of_add_lt_add_right (lt_top_of_lt lt)
-      simpa [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff (LT.lt.ne_top lttop)] using lt
+      simpa [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff lttop.ne_top] using lt
 
 theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
   lt_add_one_iff (coe_ne_top n)
