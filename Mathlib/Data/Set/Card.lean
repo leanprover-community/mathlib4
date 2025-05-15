@@ -620,17 +620,25 @@ theorem ncard_le_ncard_insert (a : α) (s : Set α) : s.ncard ≤ (insert a s).n
     s.finite_or_infinite.elim (fun h ↦ ?_) (fun h ↦ by (rw [h.ncard]; exact Nat.zero_le _))
   rw [ncard_insert_eq_ite h]; split_ifs <;> simp
 
-@[simp] theorem ncard_pair {a b : α} (h : a ≠ b) : ({a, b} : Set α).ncard = 2 := by
-  rw [ncard_insert_of_not_mem, ncard_singleton]; simpa
+theorem ncard_pair {a b : α} (h : a ≠ b) : ({a, b} : Set α).ncard = 2 := by
+  simp [h]
 
-@[simp] theorem ncard_diff_singleton_add_one {a : α} (h : a ∈ s)
+theorem ncard_diff_singleton_add_one {a : α} (h : a ∈ s)
     (hs : s.Finite := by toFinite_tac) : (s \ {a}).ncard + 1 = s.ncard := by
-  to_encard_tac; rw [hs.cast_ncard_eq, hs.diff.cast_ncard_eq,
-    encard_diff_singleton_add_one h]
+  to_encard_tac
+  rw [hs.cast_ncard_eq, hs.diff.cast_ncard_eq, encard_diff_singleton_add_one h]
 
-@[simp] theorem ncard_diff_singleton_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := by toFinite_tac) :
-    (s \ {a}).ncard = s.ncard - 1 :=
-  eq_tsub_of_add_eq (ncard_diff_singleton_add_one h hs)
+@[simp] theorem ncard_diff_singleton_of_mem {a : α} (h : a ∈ s) :
+    (s \ {a}).ncard = s.ncard - 1 := by
+  rcases s.infinite_or_finite with hs | hs
+  · simp_all [ncard, Infinite.diff hs (finite_singleton a)]
+  · exact eq_tsub_of_add_eq (ncard_diff_singleton_add_one h hs)
+
+-- A variant of `ncard_diff_singleton_add_one` whose left hand side is in simp normal form.
+@[simp] theorem ncard_sub_add_one_of_mem {a : α} (h : a ∈ s)
+    (hs : s.Finite := by toFinite_tac) : s.ncard - 1 + 1 = s.ncard := by
+  rw [← Set.ncard_diff_singleton_of_mem h]
+  exact ncard_diff_singleton_add_one h hs
 
 theorem ncard_diff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := by toFinite_tac) :
     (s \ {a}).ncard < s.ncard := by
@@ -643,13 +651,10 @@ theorem ncard_diff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.nc
   exact (hs.diff (by simp : Set.Finite {a})).ncard
 
 theorem pred_ncard_le_ncard_diff_singleton (s : Set α) (a : α) : s.ncard - 1 ≤ (s \ {a}).ncard := by
-  rcases s.finite_or_infinite with hs | hs
-  · by_cases h : a ∈ s
-    · rw [ncard_diff_singleton_of_mem h hs]
-    rw [diff_singleton_eq_self h]
-    apply Nat.pred_le
-  convert Nat.zero_le _
-  rw [hs.ncard]
+  by_cases h : a ∈ s
+  · rw [ncard_diff_singleton_of_mem h]
+  rw [diff_singleton_eq_self h]
+  apply Nat.pred_le
 
 theorem ncard_exchange {a b : α} (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).ncard = s.ncard :=
   congr_arg ENat.toNat <| encard_exchange ha hb
