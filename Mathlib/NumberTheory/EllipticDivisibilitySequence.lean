@@ -212,9 +212,11 @@ lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
       Int.add_sub_cancel]
     norm_cast
     simpa only [preNormEDS_ofNat] using preNormEDS'_even ..
-  | neg h m =>
-    simp_rw [mul_neg, ← sub_neg_eq_add, ← neg_sub', ← neg_add', preNormEDS_neg, h]
+  | neg ih m =>
+    simp_rw [mul_neg, ← sub_neg_eq_add, ← neg_sub', ← neg_add', preNormEDS_neg, ih]
     ring1
+
+@[deprecated (since := "2025-05-15")] alias preNormEDS_even_ofNat := preNormEDS_even
 
 lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
     preNormEDS b c d (m + 2) * preNormEDS b c d m ^ 3 * (if Even m then b else 1) -
@@ -226,13 +228,15 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
     simp_rw [Nat.cast_succ, Int.add_sub_cancel, Int.even_add_one, not_not, Int.even_coe_nat]
     norm_cast
     simpa only [preNormEDS_ofNat] using preNormEDS'_odd ..
-  | neg h m =>
+  | neg ih m =>
     rcases m with _ | m
     · simp
     simp_rw [Nat.cast_succ, show 2 * -(m + 1 : ℤ) + 1 = -(2 * m + 1) by rfl,
       show -(m + 1 : ℤ) + 2 = -(m - 1) by ring1, show -(m + 1 : ℤ) - 1 = -(m + 2) by rfl,
-      show -(m + 1 : ℤ) + 1 = -m by ring1, preNormEDS_neg, even_neg, Int.even_add_one, ite_not, h]
+      show -(m + 1 : ℤ) + 1 = -m by ring1, preNormEDS_neg, even_neg, Int.even_add_one, ite_not, ih]
     ring1
+
+@[deprecated (since := "2025-05-15")] alias preNormEDS_odd_ofNat := preNormEDS_odd
 
 /-- The 2-complement sequence `Wᶜ₂ : ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
 `W(k) ∣ W(2 * k)`. In other words, `W(k) * Wᶜ₂(k) = W(2 * k)` for any `k ∈ ℤ`.
@@ -266,6 +270,11 @@ lemma complEDS₂_four : complEDS₂ b c d 4 =
 @[simp]
 lemma complEDS₂_neg (k : ℤ) : complEDS₂ b c d (-k) = complEDS₂ b c d k := by
   simp_rw [complEDS₂, ← neg_add', ← sub_neg_eq_add, ← neg_sub', preNormEDS_neg, even_neg]
+  ring1
+
+lemma preNormEDS_mul_complEDS₂ (k : ℤ) : preNormEDS (b ^ 4) c d k * complEDS₂ b c d k =
+    preNormEDS (b ^ 4) c d (2 * k) * if Even k then 1 else b := by
+  rw [complEDS₂, preNormEDS_even]
   ring1
 
 end PreNormEDS
@@ -308,12 +317,33 @@ lemma normEDS_four : normEDS b c d 4 = d * b := by
 lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
   simp_rw [normEDS, preNormEDS_neg, even_neg, neg_mul]
 
+lemma normEDS_mul_complEDS₂ (k : ℤ) :
+    normEDS b c d k * complEDS₂ b c d k = normEDS b c d (2 * k) := by
+  simp_rw [normEDS, mul_right_comm, preNormEDS_mul_complEDS₂, mul_assoc, apply_ite₂, one_mul,
+    mul_one, ite_self, if_pos <| even_two_mul k]
+
+lemma normEDS_dvd_normEDS_two_mul (k : ℤ) : normEDS b c d k ∣ normEDS b c d (2 * k) :=
+  ⟨complEDS₂ .., (normEDS_mul_complEDS₂ ..).symm⟩
+
+lemma complEDS₂_mul_b (k : ℤ) : complEDS₂ b c d k * b =
+    normEDS b c d (k - 1) ^ 2 * normEDS b c d (k + 2) -
+      normEDS b c d (k - 2) * normEDS b c d (k + 1) ^ 2 := by
+  induction k using Int.negInduction with
+  | nat k =>
+    simp_rw [complEDS₂, normEDS, Int.even_add, Int.even_sub, even_two, iff_true, Int.not_even_one,
+      iff_false]
+    split_ifs <;> ring1
+  | neg ih =>
+    simp_rw [complEDS₂_neg, ← sub_neg_eq_add, ← neg_sub', ← neg_add', normEDS_neg, ih]
+    ring1
+
 lemma normEDS_even (m : ℤ) : normEDS b c d (2 * m) * b =
     normEDS b c d (m - 1) ^ 2 * normEDS b c d m * normEDS b c d (m + 2) -
       normEDS b c d (m - 2) * normEDS b c d m * normEDS b c d (m + 1) ^ 2 := by
-  simp_rw [normEDS, preNormEDS_even, if_pos <| even_two_mul _, Int.even_add, Int.even_sub, even_two,
-    iff_true, Int.not_even_one, iff_false]
-  split_ifs <;> ring1
+  rw [← normEDS_mul_complEDS₂, mul_assoc, complEDS₂_mul_b]
+  ring1
+
+@[deprecated (since := "2025-05-15")] alias normEDS_even_ofNat := normEDS_even
 
 lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
     normEDS b c d (m + 2) * normEDS b c d m ^ 3 -
@@ -321,6 +351,8 @@ lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
   simp_rw [normEDS, preNormEDS_odd, if_neg m.not_even_two_mul_add_one, Int.even_add, Int.even_sub,
     even_two, iff_true, Int.not_even_one, iff_false]
   split_ifs <;> ring1
+
+@[deprecated (since := "2025-05-15")] alias normEDS_odd_ofNat := normEDS_odd
 
 /-- Strong recursion principle for a normalised EDS: if we have
  * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
@@ -425,7 +457,7 @@ lemma complEDS_even (m : ℤ) :
     · simp
     norm_cast
     simpa only [complEDS_ofNat] using complEDS'_even ..
-  | neg h => simp_rw [mul_neg, complEDS_neg, h, neg_mul, complEDS₂_neg]
+  | neg ih => simp_rw [mul_neg, complEDS_neg, ih, neg_mul, complEDS₂_neg]
 
 lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
     complEDS b c d k m ^ 2 * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) -
@@ -436,12 +468,12 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
     · simp
     norm_cast
     simpa only [complEDS_ofNat] using complEDS'_odd ..
-  | neg h m =>
+  | neg ih m =>
     rcases m with _ | m
     · simp
     simp_rw [Nat.cast_succ, show 2 * -(m + 1 : ℤ) + 1 = -(2 * m + 1) by rfl,
       show (-(m + 1 : ℤ) + 1) = -m by ring1, neg_mul, ← sub_neg_eq_add, ← neg_sub', sub_neg_eq_add,
-      ← neg_add', complEDS_neg, normEDS_neg, h]
+      ← neg_add', complEDS_neg, normEDS_neg, ih]
     ring1
 
 /-- Strong recursion principle for the complement sequence for a normalised EDS: if we have

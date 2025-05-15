@@ -220,16 +220,6 @@ lemma preΨ_three : W.preΨ 3 = W.Ψ₃ :=
 lemma preΨ_four : W.preΨ 4 = W.preΨ₄ :=
   preNormEDS_four ..
 
-lemma preΨ_even_ofNat (m : ℕ) : W.preΨ (2 * (m + 3)) =
-    W.preΨ (m + 2) ^ 2 * W.preΨ (m + 3) * W.preΨ (m + 5) -
-      W.preΨ (m + 1) * W.preΨ (m + 3) * W.preΨ (m + 4) ^ 2 :=
-  preNormEDS_even_ofNat ..
-
-lemma preΨ_odd_ofNat (m : ℕ) : W.preΨ (2 * (m + 2) + 1) =
-    W.preΨ (m + 4) * W.preΨ (m + 2) ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
-      W.preΨ (m + 1) * W.preΨ (m + 3) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
-  preNormEDS_odd_ofNat ..
-
 @[simp]
 lemma preΨ_neg (n : ℤ) : W.preΨ (-n) = -W.preΨ n :=
   preNormEDS_neg ..
@@ -239,10 +229,14 @@ lemma preΨ_even (m : ℤ) : W.preΨ (2 * m) =
       W.preΨ (m - 2) * W.preΨ m * W.preΨ (m + 1) ^ 2 :=
   preNormEDS_even ..
 
+@[deprecated (since := "2025-05-15")] alias preΨ_even_ofNat := preΨ_even
+
 lemma preΨ_odd (m : ℤ) : W.preΨ (2 * m + 1) =
     W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
       W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
   preNormEDS_odd ..
+
+@[deprecated (since := "2025-05-15")] alias preΨ_odd_ofNat := preΨ_odd
 
 end preΨ
 
@@ -256,7 +250,7 @@ noncomputable def ΨSq (n : ℤ) : R[X] :=
 
 @[simp]
 lemma ΨSq_ofNat (n : ℕ) : W.ΨSq n = W.preΨ' n ^ 2 * if Even n then W.Ψ₂Sq else 1 := by
-  simp only [ΨSq, preΨ_ofNat, Int.even_coe_nat]
+  simp_rw [ΨSq, preΨ_ofNat, Int.even_coe_nat]
 
 @[simp]
 lemma ΨSq_zero : W.ΨSq 0 = 0 := by
@@ -278,29 +272,23 @@ lemma ΨSq_three : W.ΨSq 3 = W.Ψ₃ ^ 2 := by
 lemma ΨSq_four : W.ΨSq 4 = W.preΨ₄ ^ 2 * W.Ψ₂Sq := by
   rw [← Nat.cast_four, ΨSq_ofNat, preΨ'_four, if_pos <| by decide]
 
-lemma ΨSq_even_ofNat (m : ℕ) : W.ΨSq (2 * (m + 3)) =
-    (W.preΨ' (m + 2) ^ 2 * W.preΨ' (m + 3) * W.preΨ' (m + 5) -
-      W.preΨ' (m + 1) * W.preΨ' (m + 3) * W.preΨ' (m + 4) ^ 2) ^ 2 * W.Ψ₂Sq := by
-  rw_mod_cast [ΨSq_ofNat, preΨ'_even, if_pos <| even_two_mul _]
-
-lemma ΨSq_odd_ofNat (m : ℕ) : W.ΨSq (2 * (m + 2) + 1) =
-    (W.preΨ' (m + 4) * W.preΨ' (m + 2) ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
-      W.preΨ' (m + 1) * W.preΨ' (m + 3) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2)) ^ 2 := by
-  rw_mod_cast [ΨSq_ofNat, preΨ'_odd, if_neg (m + 2).not_even_two_mul_add_one, mul_one]
-
 @[simp]
 lemma ΨSq_neg (n : ℤ) : W.ΨSq (-n) = W.ΨSq n := by
-  simp only [ΨSq, preΨ_neg, neg_sq, even_neg]
+  simp_rw [ΨSq, preΨ_neg, neg_sq, even_neg]
 
 lemma ΨSq_even (m : ℤ) : W.ΨSq (2 * m) =
     (W.preΨ (m - 1) ^ 2 * W.preΨ m * W.preΨ (m + 2) -
       W.preΨ (m - 2) * W.preΨ m * W.preΨ (m + 1) ^ 2) ^ 2 * W.Ψ₂Sq := by
-  rw [ΨSq, preΨ_even, if_pos <| even_two_mul _]
+  rw [ΨSq, preΨ_even, if_pos <| even_two_mul m]
+
+@[deprecated (since := "2025-05-15")] alias ΨSq_even_ofNat := ΨSq_even
 
 lemma ΨSq_odd (m : ℤ) : W.ΨSq (2 * m + 1) =
     (W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
       W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2)) ^ 2 := by
   rw [ΨSq, preΨ_odd, if_neg m.not_even_two_mul_add_one, mul_one]
+
+@[deprecated (since := "2025-05-15")] alias ΨSq_odd_ofNat := ΨSq_odd
 
 end ΨSq
 
@@ -316,7 +304,7 @@ open WeierstrassCurve (Ψ)
 
 @[simp]
 lemma Ψ_ofNat (n : ℕ) : W.Ψ n = C (W.preΨ' n) * if Even n then W.ψ₂ else 1 := by
-  simp only [Ψ, preΨ_ofNat, Int.even_coe_nat]
+  simp_rw [Ψ, preΨ_ofNat, Int.even_coe_nat]
 
 @[simp]
 lemma Ψ_zero : W.Ψ 0 = 0 := by
@@ -338,45 +326,32 @@ lemma Ψ_three : W.Ψ 3 = C W.Ψ₃ := by
 lemma Ψ_four : W.Ψ 4 = C W.preΨ₄ * W.ψ₂ := by
   rw [← Nat.cast_four, Ψ_ofNat, preΨ'_four, if_pos <| by decide]
 
-lemma Ψ_even_ofNat (m : ℕ) : W.Ψ (2 * (m + 3)) * W.ψ₂ =
-    W.Ψ (m + 2) ^ 2 * W.Ψ (m + 3) * W.Ψ (m + 5) - W.Ψ (m + 1) * W.Ψ (m + 3) * W.Ψ (m + 4) ^ 2 := by
-  repeat rw_mod_cast [Ψ_ofNat]
-  simp_rw [preΨ'_even, if_pos <| even_two_mul _, Nat.even_add_one, ite_not]
-  split_ifs <;> C_simp <;> ring1
-
-lemma Ψ_odd_ofNat (m : ℕ) : W.Ψ (2 * (m + 2) + 1) =
-    W.Ψ (m + 4) * W.Ψ (m + 2) ^ 3 - W.Ψ (m + 1) * W.Ψ (m + 3) ^ 3 +
-      W.toAffine.polynomial * (16 * W.toAffine.polynomial - 8 * W.ψ₂ ^ 2) *
-        C (if Even m then W.preΨ' (m + 4) * W.preΨ' (m + 2) ^ 3
-            else -W.preΨ' (m + 1) * W.preΨ' (m + 3) ^ 3) := by
-  repeat rw_mod_cast [Ψ_ofNat]
-  simp_rw [preΨ'_odd, if_neg (m + 2).not_even_two_mul_add_one, Nat.even_add_one, ite_not]
-  split_ifs <;> C_simp <;> rw [C_Ψ₂Sq] <;> ring1
-
 @[simp]
 lemma Ψ_neg (n : ℤ) : W.Ψ (-n) = -W.Ψ n := by
-  simp only [Ψ, preΨ_neg, C_neg, neg_mul (α := R[X][Y]), even_neg]
+  simp_rw [Ψ, preΨ_neg, C_neg, neg_mul, even_neg]
 
 lemma Ψ_even (m : ℤ) : W.Ψ (2 * m) * W.ψ₂ =
     W.Ψ (m - 1) ^ 2 * W.Ψ m * W.Ψ (m + 2) - W.Ψ (m - 2) * W.Ψ m * W.Ψ (m + 1) ^ 2 := by
-  repeat rw [Ψ]
-  simp_rw [preΨ_even, if_pos <| even_two_mul _, Int.even_add_one, show m + 2 = m + 1 + 1 by ring1,
-    Int.even_add_one, show m - 2 = m - 1 - 1 by ring1, Int.even_sub_one, ite_not]
+  simp_rw [Ψ, preΨ_even, if_pos <| even_two_mul m, Int.even_add, Int.even_sub, even_two,
+    iff_true, Int.not_even_one, iff_false]
   split_ifs <;> C_simp <;> ring1
+
+@[deprecated (since := "2025-05-15")] alias Ψ_even_ofNat := Ψ_even
 
 lemma Ψ_odd (m : ℤ) : W.Ψ (2 * m + 1) =
     W.Ψ (m + 2) * W.Ψ m ^ 3 - W.Ψ (m - 1) * W.Ψ (m + 1) ^ 3 +
       W.toAffine.polynomial * (16 * W.toAffine.polynomial - 8 * W.ψ₂ ^ 2) *
         C (if Even m then W.preΨ (m + 2) * W.preΨ m ^ 3
             else -W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3) := by
-  repeat rw [Ψ]
-  simp_rw [preΨ_odd, if_neg m.not_even_two_mul_add_one, show m + 2 = m + 1 + 1 by ring1,
-    Int.even_add_one, Int.even_sub_one, ite_not]
+  simp_rw [Ψ, preΨ_odd, if_neg m.not_even_two_mul_add_one, Int.even_add, Int.even_sub, even_two,
+    iff_true, Int.not_even_one, iff_false]
   split_ifs <;> C_simp <;> rw [C_Ψ₂Sq] <;> ring1
 
+@[deprecated (since := "2025-05-15")] alias Ψ_odd_ofNat := Ψ_odd
+
 lemma Affine.CoordinateRing.mk_Ψ_sq (n : ℤ) : mk W (W.Ψ n) ^ 2 = mk W (C <| W.ΨSq n) := by
-  simp only [Ψ, ΨSq, map_one, map_mul, map_pow, one_pow, mul_pow, ite_pow, apply_ite C,
-    apply_ite <| mk W, mk_ψ₂_sq]
+  simp_rw [Ψ, ΨSq, map_mul, apply_ite C, apply_ite <| mk W, mul_pow, ite_pow, mk_ψ₂_sq, map_one,
+    one_pow, map_pow]
 
 end Ψ
 
@@ -394,9 +369,9 @@ open WeierstrassCurve (Φ)
 lemma Φ_ofNat (n : ℕ) : W.Φ (n + 1) =
     X * W.preΨ' (n + 1) ^ 2 * (if Even n then 1 else W.Ψ₂Sq) -
       W.preΨ' (n + 2) * W.preΨ' n * (if Even n then W.Ψ₂Sq else 1) := by
-  rw [Φ, ← Nat.cast_one, ← Nat.cast_add, ΨSq_ofNat, ← mul_assoc, ← Nat.cast_add, preΨ_ofNat,
-    Nat.cast_add, add_sub_cancel_right, preΨ_ofNat, ← Nat.cast_add]
-  simp only [Nat.even_add_one, Int.even_add_one, Int.even_coe_nat, ite_not]
+  rw [Φ, add_sub_cancel_right]
+  norm_cast
+  simp_rw [ΨSq_ofNat, Nat.even_add_one, ite_not, ← mul_assoc, preΨ_ofNat]
 
 @[simp]
 lemma Φ_zero : W.Φ 0 = 1 := by
@@ -429,8 +404,8 @@ lemma Φ_four : W.Φ 4 = X * W.preΨ₄ ^ 2 * W.Ψ₂Sq - W.Ψ₃ * (W.preΨ₄ 
 
 @[simp]
 lemma Φ_neg (n : ℤ) : W.Φ (-n) = W.Φ n := by
-  simp only [Φ, ΨSq_neg, neg_add_eq_sub, ← neg_sub n, preΨ_neg, ← neg_add', preΨ_neg, neg_mul_neg,
-    mul_comm <| W.preΨ <| n - 1, even_neg]
+  simp_rw [Φ, ΨSq_neg, ← sub_neg_eq_add, ← neg_sub', sub_neg_eq_add, ← neg_add', preΨ_neg,
+    neg_mul_neg, mul_comm <| W.preΨ <| n - 1, even_neg]
 
 end Φ
 
@@ -464,14 +439,6 @@ lemma ψ_three : W.ψ 3 = C W.Ψ₃ :=
 lemma ψ_four : W.ψ 4 = C W.preΨ₄ * W.ψ₂ :=
   normEDS_four ..
 
-lemma ψ_even_ofNat (m : ℕ) : W.ψ (2 * (m + 3)) * W.ψ₂ =
-    W.ψ (m + 2) ^ 2 * W.ψ (m + 3) * W.ψ (m + 5) - W.ψ (m + 1) * W.ψ (m + 3) * W.ψ (m + 4) ^ 2 :=
-  normEDS_even_ofNat ..
-
-lemma ψ_odd_ofNat (m : ℕ) : W.ψ (2 * (m + 2) + 1) =
-    W.ψ (m + 4) * W.ψ (m + 2) ^ 3 - W.ψ (m + 1) * W.ψ (m + 3) ^ 3 :=
-  normEDS_odd_ofNat ..
-
 @[simp]
 lemma ψ_neg (n : ℤ) : W.ψ (-n) = -W.ψ n :=
   normEDS_neg ..
@@ -480,12 +447,16 @@ lemma ψ_even (m : ℤ) : W.ψ (2 * m) * W.ψ₂ =
     W.ψ (m - 1) ^ 2 * W.ψ m * W.ψ (m + 2) - W.ψ (m - 2) * W.ψ m * W.ψ (m + 1) ^ 2 :=
   normEDS_even ..
 
+@[deprecated (since := "2025-05-15")] alias ψ_even_ofNat := ψ_even
+
 lemma ψ_odd (m : ℤ) : W.ψ (2 * m + 1) =
     W.ψ (m + 2) * W.ψ m ^ 3 - W.ψ (m - 1) * W.ψ (m + 1) ^ 3 :=
   normEDS_odd ..
 
+@[deprecated (since := "2025-05-15")] alias ψ_odd_ofNat := ψ_odd
+
 lemma Affine.CoordinateRing.mk_ψ (n : ℤ) : mk W (W.ψ n) = mk W (W.Ψ n) := by
-  simp only [ψ, normEDS, Ψ, preΨ, map_mul, map_pow, map_preNormEDS, ← mk_ψ₂_sq, ← pow_mul]
+  simp_rw [ψ, normEDS, Ψ, preΨ, map_mul, map_preNormEDS, map_pow, ← mk_ψ₂_sq, ← pow_mul]
 
 end ψ
 
@@ -527,12 +498,12 @@ lemma φ_four :
 
 @[simp]
 lemma φ_neg (n : ℤ) : W.φ (-n) = W.φ n := by
-  rw [φ, ψ_neg, neg_sq (R := R[X][Y]), neg_add_eq_sub, ← neg_sub n, ψ_neg, ← neg_add', ψ_neg,
-    neg_mul_neg (α := R[X][Y]), mul_comm <| W.ψ _, φ]
+  simp_rw [φ, ψ_neg, neg_sq, ← sub_neg_eq_add, ← neg_sub', sub_neg_eq_add, ← neg_add', ψ_neg,
+    neg_mul_neg, mul_comm <| W.ψ <| n - 1]
 
 lemma Affine.CoordinateRing.mk_φ (n : ℤ) : mk W (W.φ n) = mk W (C <| W.Φ n) := by
   simp_rw [φ, Φ, map_sub, map_mul, map_pow, mk_ψ, mk_Ψ_sq, Ψ, map_mul,
-    mul_mul_mul_comm _ <| mk W <| ite .., Int.even_add_one, Int.even_sub_one, ← sq, ite_not,
+    mul_mul_mul_comm _ <| mk W <| ite .., Int.even_add_one, Int.even_sub_one, ite_not, ← sq,
     apply_ite C, apply_ite <| mk W, ite_pow, map_one, one_pow, mk_ψ₂_sq]
 
 end φ
@@ -546,46 +517,46 @@ open WeierstrassCurve (Ψ Φ ψ φ)
 variable (f : R →+* S)
 
 lemma map_ψ₂ : (W.map f).ψ₂ = W.ψ₂.map (mapRingHom f) := by
-  simp only [ψ₂, Affine.map_polynomialY]
+  simp_rw [ψ₂, Affine.map_polynomialY]
 
 lemma map_Ψ₂Sq : (W.map f).Ψ₂Sq = W.Ψ₂Sq.map f := by
-  simp only [Ψ₂Sq, map_b₂, map_b₄, map_b₆]
+  simp_rw [Ψ₂Sq, map_b₂, map_b₄, map_b₆]
   map_simp
 
 lemma map_Ψ₃ : (W.map f).Ψ₃ = W.Ψ₃.map f := by
-  simp only [Ψ₃, map_b₂, map_b₄, map_b₆, map_b₈]
+  simp_rw [Ψ₃, map_b₂, map_b₄, map_b₆, map_b₈]
   map_simp
 
 lemma map_preΨ₄ : (W.map f).preΨ₄ = W.preΨ₄.map f := by
-  simp only [preΨ₄, map_b₂, map_b₄, map_b₆, map_b₈]
+  simp_rw [preΨ₄, map_b₂, map_b₄, map_b₆, map_b₈]
   map_simp
 
 lemma map_preΨ' (n : ℕ) : (W.map f).preΨ' n = (W.preΨ' n).map f := by
-  simp only [preΨ', map_Ψ₂Sq, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_preNormEDS']
+  simp_rw [preΨ', map_Ψ₂Sq, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_preNormEDS']
   map_simp
 
 lemma map_preΨ (n : ℤ) : (W.map f).preΨ n = (W.preΨ n).map f := by
-  simp only [preΨ, map_Ψ₂Sq, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_preNormEDS]
+  simp_rw [preΨ, map_Ψ₂Sq, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_preNormEDS]
   map_simp
 
 lemma map_ΨSq (n : ℤ) : (W.map f).ΨSq n = (W.ΨSq n).map f := by
-  simp only [ΨSq, map_preΨ, map_Ψ₂Sq, ← coe_mapRingHom]
+  simp_rw [ΨSq, map_preΨ, map_Ψ₂Sq, ← coe_mapRingHom]
   map_simp
 
 lemma map_Ψ (n : ℤ) : (W.map f).Ψ n = (W.Ψ n).map (mapRingHom f) := by
-  simp only [Ψ, map_preΨ, map_ψ₂, ← coe_mapRingHom]
+  simp_rw [Ψ, map_preΨ, map_ψ₂, ← coe_mapRingHom]
   map_simp
 
 lemma map_Φ (n : ℤ) : (W.map f).Φ n = (W.Φ n).map f := by
-  simp only [Φ, map_ΨSq, map_preΨ, map_Ψ₂Sq, ← coe_mapRingHom]
+  simp_rw [Φ, map_ΨSq, map_preΨ, map_Ψ₂Sq, ← coe_mapRingHom]
   map_simp
 
 lemma map_ψ (n : ℤ) : (W.map f).ψ n = (W.ψ n).map (mapRingHom f) := by
-  simp only [ψ, map_ψ₂, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_normEDS]
+  simp_rw [ψ, map_ψ₂, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_normEDS]
   map_simp
 
 lemma map_φ (n : ℤ) : (W.map f).φ n = (W.φ n).map (mapRingHom f) := by
-  simp only [φ, map_ψ]
+  simp_rw [φ, map_ψ]
   map_simp
 
 end Map
