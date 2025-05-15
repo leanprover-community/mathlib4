@@ -609,4 +609,72 @@ lemma ring_depth_invariant [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤)
   apply moduleDepth_eq_moduleDepth_shrink I (R ⧸ I) R smul_lt
   simp [Module.support_eq_zeroLocus, Ideal.annihilator_quotient]
 
+lemma ENat.lt_of_add_one_lt {a b : ℕ∞} (lt : a + 1 < b + 1) : a < b := by
+  have lttop : a < ⊤ := lt_of_add_lt_add_right (lt_top_of_lt lt)
+  by_cases eqtop : b = ⊤
+  · simpa [eqtop] using lttop
+  · rw [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff (LT.lt.ne_top lttop)] at lt
+    exact lt
+
+lemma ENat.add_one_lt_of_lt {a b : ℕ∞} (lt : a < b) : a + 1 < b + 1 := by
+  have lttop : a < ⊤ := (lt_top_of_lt lt)
+  by_cases eqtop : b = ⊤
+  · simpa [eqtop, lttop] using Ne.lt_top' ENat.one_ne_top.symm
+  · rw [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff (LT.lt.ne_top lt)]
+    exact lt
+
+lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R)
+    (reg : IsSMulRegular M x) (mem : x ∈ Module.annihilator R N) :
+    moduleDepth N (ModuleCat.of R (QuotSMulTop x M)) + 1 = moduleDepth N M := by
+  simp only [moduleDepth, add_comm]
+  have iff (i : ℕ) : Subsingleton (Ext N (ModuleCat.of R (QuotSMulTop x M)) i) ↔
+    (Subsingleton (Ext N M i) ∧ Subsingleton (Ext N M (i + 1))) := by
+    refine ⟨fun h ↦ ?_, fun ⟨h1, h3⟩ ↦ ?_⟩
+    · constructor
+      · exact @Function.Injective.subsingleton _ _ _ ((AddCommGrp.mono_iff_injective _).mp
+          (ShortComplex.Exact.mono_g
+          (Ext.covariant_sequence_exact₂' N reg.smulShortComplex_shortExact i)
+          (ext_hom_eq_zero_of_mem_ann mem i))) h
+      · exact @Function.Surjective.subsingleton _ _ _ h ((AddCommGrp.epi_iff_surjective _).mp
+          (ShortComplex.Exact.epi_f
+          (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact i (i + 1) rfl)
+          (ext_hom_eq_zero_of_mem_ann mem (i + 1))))
+    · exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+        (Ext.covariant_sequence_exact₃' N reg.smulShortComplex_shortExact i (i + 1) rfl)
+        ((@AddCommGrp.isZero_of_subsingleton _ h1).eq_zero_of_src _)
+        ((@AddCommGrp.isZero_of_subsingleton _ h3).eq_zero_of_tgt _)
+  apply le_antisymm
+  · rw [ENat.add_sSup ⟨0, by simp⟩]
+    apply iSup_le (fun n ↦ iSup_le (fun hn ↦ ?_))
+    apply le_sSup
+    intro i hi
+    by_cases eq0 : i = 0
+    · rw [eq0, Ext.addEquiv₀.subsingleton_congr, ModuleCat.homAddEquiv.subsingleton_congr]
+      exact hom_subsingleton_of_mem_ann_isSMulRegular reg mem
+    · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
+      have : i - 1 < n := by
+        rw [add_comm, ← eq, ENat.coe_add, ENat.coe_sub, ENat.coe_one] at hi
+        exact ENat.lt_of_add_one_lt hi
+      have := ((iff (i - 1)).mp (hn (i - 1) this)).2
+      simpa only [eq] using this
+  · apply sSup_le (fun n hn ↦ ?_)
+    by_cases eq0 : n = 0
+    · simp [eq0]
+    · have : n - 1 + 1 = n := by
+        by_cases eqtop : n = ⊤
+        · simp [eqtop]
+        · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨m, hm⟩
+          simp only [← hm, ← ENat.coe_zero, ENat.coe_inj] at eq0
+          rw [← hm, ← ENat.coe_one, ← ENat.coe_sub, ← ENat.coe_add, ENat.coe_inj,
+            Nat.sub_one_add_one eq0]
+      rw [add_comm, ← this]
+      apply add_le_add_right
+      apply le_sSup
+      intro i hi
+      have lt2 : i + 1 < n := by
+        rw [← this]
+        exact ENat.add_one_lt_of_lt hi
+      have lt1 : i < n := lt_of_le_of_lt (self_le_add_right _ _) lt2
+      exact (iff i).mpr ⟨hn i lt1, hn (i + 1) lt2⟩
+
 end depth
