@@ -318,21 +318,27 @@ theorem _root_.Filter.HasBasis.compactConvergenceUniformity_of_compact
     (fun _U hU ↦ (h.mem_iff.mp hU).imp fun _i ⟨hpi, hi⟩ ↦ ⟨hpi, fun _ h a ↦ hi <| h a⟩)
     fun i hi ↦ ⟨V i, h.mem_of_mem hi, .rfl⟩
 
+open UniformFun in
+theorem isUniformEmbedding_uniformFunOfFun :
+    IsUniformEmbedding ((ofFun ·) : C(α, β) → α →ᵤ β) where
+  comap_uniformity := UniformOnFun.uniformEquivUniformFun β _ isCompact_univ
+    |>.isUniformInducing.comp isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing
+    |>.comap_uniformity
+  injective := DFunLike.coe_injective
+
 /-- Convergence in the compact-open topology is the same as uniform convergence for sequences of
 continuous functions on a compact space. -/
 theorem tendsto_iff_tendstoUniformly :
     Tendsto F p (𝓝 f) ↔ TendstoUniformly (fun i a => F i a) f p := by
-  rw [tendsto_iff_forall_isCompact_tendstoUniformlyOn, ← tendstoUniformlyOn_univ]
-  exact ⟨fun h => h univ isCompact_univ, fun h K _hK => h.mono (subset_univ K)⟩
+  simp [isUniformEmbedding_uniformFunOfFun.isInducing.tendsto_nhds_iff,
+    UniformFun.tendsto_iff_tendstoUniformly, Function.comp_def]
 
 open UniformFun in
 /-- When `α` is compact, `f : X → C(α, β)` is continuous if any only if it is continuous when
 reinterpreted as a map `f : X → α →ᵤ β`. -/
 theorem continuous_iff_continuous_uniformFun {X : Type*} [TopologicalSpace X] (f : X → C(α, β)) :
-    Continuous f ↔ Continuous (fun x ↦ ofFun (f x)) := by
-  rw [continuous_iff_continuous_uniformOnFun]
-  exact UniformOnFun.uniformEquivUniformFun β _ isCompact_univ
-    |>.isUniformInducing.isInducing.continuous_iff
+    Continuous f ↔ Continuous (fun x ↦ ofFun (f x)) :=
+  isUniformEmbedding_uniformFunOfFun.isInducing.continuous_iff
 
 end CompactDomain
 
