@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.Probability.Variance
 
 /-!
