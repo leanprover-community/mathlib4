@@ -14,11 +14,11 @@ import Mathlib.RingTheory.RootsOfUnity.Minpoly
 # Construction of an algebraic number that is not solvable by radicals.
 
 The main ingredients are:
- * `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
+* `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
   an irreducible polynomial with an `IsSolvableByRad` root has solvable Galois group
- * `galActionHom_bijective_of_prime_degree'` in `Mathlib/FieldTheory/PolynomialGaloisGroup.lean` :
+* `galActionHom_bijective_of_prime_degree'` in `Mathlib/FieldTheory/PolynomialGaloisGroup.lean` :
   an irreducible polynomial of prime degree with 1-3 non-real roots has full Galois group
- * `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
+* `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
   solvable
 
 Then all that remains is the construction of a specific polynomial satisfying the conditions of

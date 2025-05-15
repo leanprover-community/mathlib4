@@ -102,6 +102,7 @@ theorem integrable_coeFn (f : α →₁[μ] β) : Integrable f μ := by
 theorem hasFiniteIntegral_coeFn (f : α →₁[μ] β) : HasFiniteIntegral f μ :=
   (integrable_coeFn f).hasFiniteIntegral
 
+@[fun_prop]
 theorem stronglyMeasurable_coeFn (f : α →₁[μ] β) : StronglyMeasurable f :=
   Lp.stronglyMeasurable f
 
@@ -109,9 +110,11 @@ theorem stronglyMeasurable_coeFn (f : α →₁[μ] β) : StronglyMeasurable f :
 theorem measurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[μ] β) : Measurable f :=
   (Lp.stronglyMeasurable f).measurable
 
+@[fun_prop]
 theorem aestronglyMeasurable_coeFn (f : α →₁[μ] β) : AEStronglyMeasurable f μ :=
   Lp.aestronglyMeasurable f
 
+@[fun_prop]
 theorem aemeasurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[μ] β) : AEMeasurable f μ :=
   (Lp.stronglyMeasurable f).measurable.aemeasurable
 
@@ -197,7 +200,8 @@ theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
   simp [toL1, Lp.norm_toLp, eLpNorm, eLpNorm'_eq_lintegral_enorm]
 
 theorem enorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ = ∫⁻ a, ‖f a‖ₑ ∂μ := by
-  simpa [Integrable.toL1, eLpNorm, eLpNorm', enorm] using ENNReal.coe_toNNReal hf.2.ne
+  simp only [Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
+  simp [Integrable.toL1, eLpNorm, eLpNorm', enorm]
 
 @[deprecated (since := "2025-01-20")] alias nnnorm_toL1 := enorm_toL1
 

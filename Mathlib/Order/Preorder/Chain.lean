@@ -7,7 +7,6 @@ import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.Directed
 import Mathlib.Order.Hom.Set
-import Mathlib.Tactic.MinImports
 
 /-!
 # Chains and flags
