@@ -314,6 +314,11 @@ lemma map_intCast_injective [CharZero R] :
     Matrix.map_apply, Int.cast_inj]
   tauto
 
+@[simp]
+lemma map_intCast_inj [CharZero R] {x y : SpecialLinearGroup n ℤ} :
+    (x : SpecialLinearGroup n R) = y ↔ x = y :=
+  map_intCast_injective.eq_iff
+
 end cast
 
 section Neg
