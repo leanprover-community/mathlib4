@@ -198,6 +198,14 @@ lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
 
 variable (g : GL (Fin 2) ℝ) (z : ℍ)
 
+theorem im_smul : (g • z).im = |(num g z / denom g z).im| := by
+  show (smulAux₁ g z).im = _
+  simp only [smulAux₁, σ, DFunLike.ite_apply, RingEquiv.refl_apply, starRingAut_apply,
+    Complex.star_def, apply_ite, moebius_im, Complex.conj_im, ← neg_div, ← neg_mul, abs_div,
+    abs_mul, abs_of_pos (show 0 < (z : ℂ).im from z.coe_im ▸ z.im_pos),
+    abs_of_nonneg <| Complex.normSq_nonneg _]
+  split_ifs with h <;> [rw [abs_of_pos h]; rw [abs_of_nonpos (not_lt.mp h)]]
+
 lemma im_smul_eq_div_normSq : (g • z).im = |g.det.val| * z.im / Complex.normSq (denom g z) :=
   smulAux₁_im g z
 
@@ -220,7 +228,7 @@ lemma denom_one : denom 1 z = 1 := by
 
 section SLAction
 
-instance slAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.toGL.comp <| map (algebraMap R ℝ)
 
 -- Porting note: in the statement, we used to have coercions `↑· : ℝ`
