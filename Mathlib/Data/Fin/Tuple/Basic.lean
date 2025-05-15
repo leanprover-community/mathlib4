@@ -387,27 +387,16 @@ theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
 theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
     Function.Injective (Fin.append xs ys) ↔
       Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
-  constructor
-  · intro H
-    have := H.comp ((castAdd_injective _ _).sumElim (natAdd_injective _ _) fun i j => ?_)
-    · rwa [append_comp_sumElim, Sum.elim_injective] at this
-    · apply Fin.ne_of_lt
-      simp only [lt_iff_val_lt_val, coe_castAdd, coe_natAdd]
-      exact i.prop.trans_le (Nat.le_add_right m ↑j)
-  · rintro ⟨Hx, Hy, H⟩ i j h
-    induction i using Fin.addCases with
-    | left i =>
-      induction j using Fin.addCases with
-      | left j => simpa [castAdd_inj, Hx.eq_iff] using h
-      | right j =>
-        simp only [append_left, append_right] at h
-        exact False.elim (H _ _ h)
-    | right i =>
-      induction j using Fin.addCases with
-      | left j =>
-        simp only [append_left, append_right] at h
-        exact False.elim (H _ _ h.symm)
-      | right j => simpa [append_right, Hy.eq_iff] using h
+  rw [← Sum.elim_injective, ← append_comp_sumElim]
+  refine Function.Injective.of_comp_iff' _ ⟨?_, ?_⟩ |>.symm
+  -- Note this is `finSumFinEquiv (m := m) (n := n)).bijective`, but we don't have that imported
+  -- here.
+  · refine (castAdd_injective _ _).sumElim (natAdd_injective _ _) fun i j => ?_
+    apply Fin.ne_of_lt
+    simp only [lt_iff_val_lt_val, coe_castAdd, coe_natAdd]
+    exact i.prop.trans_le (Nat.le_add_right m ↑j)
+  · intro x
+    induction x using Fin.addCases <;> simp
 
 end Append
 
