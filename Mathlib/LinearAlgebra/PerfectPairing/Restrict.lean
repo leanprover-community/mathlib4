@@ -92,7 +92,7 @@ variable {S M' N' : Type*}
 private def restrictScalarsAux
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     M' →ₗ[S] N' →ₗ[S] S :=
- LinearMap.restrictScalarsRange₂ i j (Algebra.linearMap S R)
+  LinearMap.restrictScalarsRange₂ i j (Algebra.linearMap S R)
     (FaithfulSMul.algebraMap_injective S R) p.toLinearMap hp
 
 private lemma restrictScalarsAux_injective

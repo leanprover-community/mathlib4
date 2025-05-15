@@ -11,11 +11,11 @@ import Mathlib.NumberTheory.Padics.PadicVal.Defs
 /-!
 # Prime factorizations
 
- `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
- mapping each prime factor of `n` to its multiplicity in `n`.  For example, since 2000 = 2^4 * 5^3,
-  * `factorization 2000 2` is 4
-  * `factorization 2000 5` is 3
-  * `factorization 2000 k` is 0 for all other `k : ℕ`.
+`n.factorization` is the finitely supported function `ℕ →₀ ℕ`
+mapping each prime factor of `n` to its multiplicity in `n`.  For example, since 2000 = 2^4 * 5^3,
+* `factorization 2000 2` is 4
+* `factorization 2000 5` is 3
+* `factorization 2000 k` is 0 for all other `k : ℕ`.
 
 ## TODO
 
@@ -41,7 +41,7 @@ namespace Nat
 variable {a b m n p : ℕ}
 
 /-- `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
- mapping each prime factor of `n` to its multiplicity in `n`. -/
+mapping each prime factor of `n` to its multiplicity in `n`. -/
 def factorization (n : ℕ) : ℕ →₀ ℕ where
   support := n.primeFactors
   toFun p := if p.Prime then padicValNat p n else 0

@@ -1139,7 +1139,7 @@ lemma curry_single (a : α × β) (m : M) :
 
 theorem sum_curry_index [AddCommMonoid N] (f : α × β →₀ M) (g : α → β → M → N) :
     (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
-   rw [← sum_uncurry_index', uncurry_curry]
+  rw [← sum_uncurry_index', uncurry_curry]
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/

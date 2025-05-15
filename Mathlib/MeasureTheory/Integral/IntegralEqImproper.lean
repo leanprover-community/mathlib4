@@ -400,7 +400,7 @@ theorem AECover.integrable_of_lintegral_enorm_bounded [l.NeBot] [l.IsCountablyGe
 
 @[deprecated (since := "2025-01-22")]
 alias AECover.integrable_of_lintegral_nnnorm_bounded :=
- AECover.integrable_of_lintegral_enorm_bounded
+  AECover.integrable_of_lintegral_enorm_bounded
 
 theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfm : AEStronglyMeasurable f μ)
@@ -413,7 +413,7 @@ theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGe
 
 @[deprecated (since := "2025-01-22")]
 alias AECover.integrable_of_lintegral_nnnorm_tendsto :=
- AECover.integrable_of_lintegral_enorm_tendsto
+  AECover.integrable_of_lintegral_enorm_tendsto
 
 theorem AECover.integrable_of_lintegral_enorm_bounded' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
@@ -423,7 +423,7 @@ theorem AECover.integrable_of_lintegral_enorm_bounded' [l.NeBot] [l.IsCountablyG
 
 @[deprecated (since := "2025-01-22")]
 alias AECover.integrable_of_lintegral_nnnorm_bounded' :=
- AECover.integrable_of_lintegral_enorm_bounded'
+  AECover.integrable_of_lintegral_enorm_bounded'
 
 theorem AECover.integrable_of_lintegral_enorm_tendsto' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
@@ -433,7 +433,7 @@ theorem AECover.integrable_of_lintegral_enorm_tendsto' [l.NeBot] [l.IsCountablyG
 
 @[deprecated (since := "2025-01-22")]
 alias AECover.integrable_of_lintegral_nnnorm_tendsto' :=
- AECover.integrable_of_lintegral_enorm_tendsto'
+  AECover.integrable_of_lintegral_enorm_tendsto'
 
 theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfi : ∀ i, IntegrableOn f (φ i) μ)

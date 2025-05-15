@@ -385,7 +385,6 @@ theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
   rw [← hh, vadd_vadd, vadd_vadd]
   simp
 
-@[to_additive existing]
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (H.map (MulAut.conj g).toMonoidHom) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
@@ -424,9 +423,9 @@ theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
 
 variable (G) in
 /-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
-  for the action of `G` -/
+for the action of `G` -/
 @[to_additive "For `VAdd G X`, a block system of `X` is a partition of `X` into blocks
- for the additive action of `G`"]
+for the additive action of `G`"]
 def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄, B ∈ ℬ → IsBlock G B
 
 /-- Translates of a block form a block system -/
@@ -590,10 +589,10 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H)
 variable (G)
 
 /-- Order equivalence between blocks in `X` containing a point `a`
- and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5) -/
+and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5) -/
 @[to_additive
-  "Order equivalence between blocks in `X` containing a point `a`
- and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)"]
+"Order equivalence between blocks in `X` containing a point `a`
+and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)"]
 def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     { B : Set X // a ∈ B ∧ IsBlock G B } ≃o Set.Ici (stabilizer G a) where
   toFun := fun ⟨B, ha, hB⟩ => ⟨stabilizer G B, hB.stabilizer_le ha⟩

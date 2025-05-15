@@ -60,7 +60,7 @@ noncomputable def norm : S →* R :=
 theorem norm_apply (x : S) : norm R x = LinearMap.det (lmul R S x) := rfl
 
 @[simp]
-theorem norm_self_apply {R : Type*} [CommRing R] (x : R) :
+theorem norm_self_apply (x : R) :
     Algebra.norm R x = x := by
   simp [norm_apply]
 

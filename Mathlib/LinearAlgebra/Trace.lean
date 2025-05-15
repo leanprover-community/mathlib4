@@ -121,7 +121,7 @@ variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R 
 variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
- `End(M) ≃ M* ⊗ M` -/
+`End(M) ≃ M* ⊗ M` -/
 theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
   classical

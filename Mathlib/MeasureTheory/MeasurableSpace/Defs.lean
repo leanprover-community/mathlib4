@@ -140,7 +140,7 @@ theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable
 
 theorem Set.Finite.measurableSet_biInter {f : β → Set α} {s : Set β} (hs : s.Finite)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
- .biInter hs.countable h
+  .biInter hs.countable h
 
 theorem Finset.measurableSet_biInter {f : β → Set α} (s : Finset β)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=

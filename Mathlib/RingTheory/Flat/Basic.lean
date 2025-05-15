@@ -298,7 +298,7 @@ lemma iff_lTensor_preserves_injective_linearMap : Flat R M ↔
 /--
 Define the character module of `M` to be `M →+ ℚ ⧸ ℤ`.
 The character module of `M` is an injective module if and only if
- `f ⊗ 𝟙 M` is injective for any linear map `f` in the same universe as `M`.
+`f ⊗ 𝟙 M` is injective for any linear map `f` in the same universe as `M`.
 -/
 lemma injective_characterModule_iff_rTensor_preserves_injective_linearMap :
     Module.Injective R (CharacterModule M) ↔

@@ -100,9 +100,9 @@ namespace PNat
 open Nat
 
 /-- We now define a long list of structures on `ℕ+` induced by
- similar structures on `ℕ`. Most of these behave in a completely
- obvious way, but there are a few things to be said about
- subtraction, division and powers.
+similar structures on `ℕ`. Most of these behave in a completely
+obvious way, but there are a few things to be said about
+subtraction, division and powers.
 -/
 @[simp, norm_cast]
 theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=

@@ -1308,6 +1308,28 @@ partial def transformDecl (cfg : Config) (src tgt : Name) : CoreM (Array Name) :
   transformDeclAux cfg src tgt src
   copyMetaData cfg src tgt
 
+/-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
+partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) : MetaM Unit := do
+  let mut srcDecl ← getConstInfo src
+  let tgtDecl ← getConstInfo tgt
+  if 0 ∈ reorder.flatten then
+    srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
+  unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
+    throwError "`to_additive` validation failed:\n  expected {srcDecl.levelParams.length} universe \
+      levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
+  -- instantiate both types with the same universes. `instantiateLevelParams` applies some
+  -- normalization, so we have to apply it to both types.
+  let type := srcDecl.type.instantiateLevelParams
+    srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+  let tgtType := tgtDecl.type.instantiateLevelParams
+    tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+  let type ←
+    applyReplacementFun <| ← reorderForall reorder <| ← expand <| ← unfoldAuxLemmas type
+  -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
+  unless ← withReducible <| isDefEq type tgtType do
+    throwError "`to_additive` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
+      type{indentExpr tgtType}"
+
 /-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.
 It returns an array with names of additive declarations (usually 1, but more if there are nested
@@ -1326,6 +1348,8 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
            `@[to_additive existing]`."
       else
         "The additive declaration doesn't exist. Please remove the option `existing`."
+  if alreadyExists then
+    MetaM.run' <| checkExistingType src tgt cfg.reorder
   if cfg.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder

@@ -117,3 +117,13 @@ lemma dvd_mul_sub_mul_mul_gcd_of_dvd {p a b c d x y : R} [IsDomain R] [GCDMonoid
     dvd_mul_sub_mul_mul_right_of_dvd h1 h2⟩
 
 end CommRing
+
+section misc
+
+theorem associated_abs [Ring R] [LinearOrder R] (x : R) :
+    Associated x |x| := by
+  obtain h | h := abs_choice x
+  · rw [h]
+  · exact h ▸ associated_neg_self_right _
+
+end misc

@@ -78,7 +78,7 @@ for the identity homomorphism of every ring. -/
 def RingHom.ContainsIdentities := ∀ (R : Type u) [CommRing R], P (RingHom.id R)
 
 /-- A property `P` of ring homs is said to be preserved by localization
- if `P` holds for `M⁻¹R →+* M⁻¹S` whenever `P` holds for `R →+* S`. -/
+if `P` holds for `M⁻¹R →+* M⁻¹S` whenever `P` holds for `R →+* S`. -/
 def RingHom.LocalizationPreserves :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (M : Submonoid R) (R' S' : Type u)
     [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [IsLocalization M R']
@@ -86,7 +86,7 @@ def RingHom.LocalizationPreserves :=
     P f → P (IsLocalization.map S' f (Submonoid.le_comap_map M) : R' →+* S')
 
 /-- A property `P` of ring homs is said to be preserved by localization away
- if `P` holds for `Rᵣ →+* Sᵣ` whenever `P` holds for `R →+* S`. -/
+if `P` holds for `Rᵣ →+* Sᵣ` whenever `P` holds for `R →+* S`. -/
 def RingHom.LocalizationAwayPreserves :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (r : R) (R' S' : Type u)
     [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [IsLocalization.Away r R']
@@ -114,7 +114,7 @@ def RingHom.OfLocalizationSpan :=
     (_ : ∀ r : s, P (Localization.awayMap f r)), P f
 
 /-- A property `P` of ring homs satisfies `RingHom.HoldsForLocalizationAway`
- if `P` holds for each localization map `R →+* Rᵣ`. -/
+if `P` holds for each localization map `R →+* Rᵣ`. -/
 def RingHom.HoldsForLocalizationAway : Prop :=
   ∀ ⦃R : Type u⦄ (S : Type u) [CommRing R] [CommRing S] [Algebra R S] (r : R)
     [IsLocalization.Away r S], P (algebraMap R S)

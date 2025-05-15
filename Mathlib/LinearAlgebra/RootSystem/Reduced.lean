@@ -13,7 +13,7 @@ This file contains basic definitions and results related to reduced root pairing
 ## Main definitions:
 
 * `RootPairing.IsReduced`: A root pairing is said to be reduced if two linearly dependent roots are
- always related by a sign.
+  always related by a sign.
 * `RootPairing.linearIndependent_iff_coxeterWeight_ne_four`: for a finite root pairing, two
   roots are linearly independent iff their Coxeter weight is not four.
 

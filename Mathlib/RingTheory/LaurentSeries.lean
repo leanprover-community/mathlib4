@@ -721,7 +721,7 @@ section Complete
 open Filter Multiplicative
 
 /- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
- uniformity with which `K` is endowed). -/
+uniformity with which `K` is endowed). -/
 theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
     UniformContinuous fun f : K⸨X⸩ ↦ f.coeff d := by
   refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_

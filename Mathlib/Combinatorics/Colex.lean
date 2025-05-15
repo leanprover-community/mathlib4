@@ -245,7 +245,7 @@ lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
   simpa using toColex_sdiff_le_toColex_sdiff (inter_subset_left (s₁ := s)) inter_subset_right
 
 @[simp] lemma toColex_sdiff_lt_toColex_sdiff' :
- toColex (s \ t) < toColex (t \ s) ↔ toColex s < toColex t := by
+    toColex (s \ t) < toColex (t \ s) ↔ toColex s < toColex t := by
   simpa using toColex_sdiff_lt_toColex_sdiff (inter_subset_left (s₁ := s)) inter_subset_right
 
 end DecidableEq

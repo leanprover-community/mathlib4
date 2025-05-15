@@ -84,7 +84,7 @@ structure MulActionHom where
   protected map_smul' : ∀ (m : M) (x : X), toFun (m • x) = (φ m) • toFun x
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
- see https://github.com/leanprover/lean4/issues/2000 -/
+see https://github.com/leanprover/lean4/issues/2000 -/
 /-- `φ`-equivariant functions `X → Y`,
 where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively. -/
 notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
@@ -438,7 +438,7 @@ add_decl_doc DistribMulActionHom.toAddMonoidHom
 add_decl_doc DistribMulActionHom.toMulActionHom
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
- see https://github.com/leanprover/lean4/issues/2000 -/
+see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
 notation:25 (name := «DistribMulActionHomLocal≺»)
   A " →ₑ+[" φ:25 "] " B:0 => DistribMulActionHom φ A B
@@ -655,7 +655,7 @@ add_decl_doc MulSemiringActionHom.toRingHom
 add_decl_doc MulSemiringActionHom.toDistribMulActionHom
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
- see https://github.com/leanprover/lean4/issues/2000 -/
+see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
 notation:25 (name := «MulSemiringActionHomLocal≺»)
   R " →ₑ+*[" φ:25 "] " S:0 => MulSemiringActionHom φ R S
@@ -710,7 +710,7 @@ variable {F : Type*} [FunLike F R S]
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
     [MulSemiringActionSemiHomClass F φ R S]
     (f : F) : R →ₑ+*[φ] S :=
- { (f : R →+* S), (f : R →ₑ+[φ] S) with }
+  { (f : R →+* S), (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/

@@ -749,7 +749,7 @@ instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
 /-- Change of coefficients in power series, as an `AlgHom` -/
 def mapAlgHom (φ : A →ₐ[R] B) :
     PowerSeries A →ₐ[R] PowerSeries B :=
- MvPowerSeries.mapAlgHom φ
+  MvPowerSeries.mapAlgHom φ
 
 theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : A⟦X⟧) :
     mapAlgHom φ f = f.map φ :=

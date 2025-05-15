@@ -313,10 +313,10 @@ theorem condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable
     [NormedAddCommGroup F] {f : Ω → F} [NormedSpace ℝ F] [CompleteSpace F]
     (hm : m ≤ mΩ) (hf : StronglyMeasurable f) (hf_int : Integrable f μ) :
     μ[f|m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
- refine StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm ?_ ?_ ?_
- · exact stronglyMeasurable_condExp
- · exact hf.integral_condExpKernel
- · exact condExp_ae_eq_integral_condExpKernel hm hf_int
+  refine StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm ?_ ?_ ?_
+  · exact stronglyMeasurable_condExp
+  · exact hf.integral_condExpKernel
+  · exact condExp_ae_eq_integral_condExpKernel hm hf_int
 
 /-- The conditional expectation of `f` with respect to a σ-algebra `m` is
 (`μ.trim hm`)-almost everywhere equal to the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/

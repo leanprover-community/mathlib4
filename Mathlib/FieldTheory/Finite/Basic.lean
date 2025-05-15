@@ -690,9 +690,9 @@ theorem Subfield.splits_bot :
     Fintype.card_eq_nat_card, card_bot F p]
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
-   have := roots_X_pow_char_sub_X_bot F p ▸
-     Polynomial.roots_map (Subfield.subtype _) (splits_bot F p) ▸ Multiset.mem_map (b := x)
-   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
+  have := roots_X_pow_char_sub_X_bot F p ▸
+      Polynomial.roots_map (Subfield.subtype _) (splits_bot F p) ▸ Multiset.mem_map (b := x)
+  simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
 
 end prime_subfield
 

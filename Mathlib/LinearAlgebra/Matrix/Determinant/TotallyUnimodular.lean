@@ -14,14 +14,14 @@ This file defines totally unimodular matrices and provides basic API for them.
 
 ## Main definitions
 
- - `Matrix.IsTotallyUnimodular`: a matrix is totally unimodular iff every square submatrix
-    (not necessarily contiguous) has determinant `0` or `1` or `-1`.
+- `Matrix.IsTotallyUnimodular`: a matrix is totally unimodular iff every square submatrix
+  (not necessarily contiguous) has determinant `0` or `1` or `-1`.
 
 ## Main results
 
- - `Matrix.isTotallyUnimodular_iff`: a matrix is totally unimodular iff every square submatrix
-    (possibly with repeated rows and/or repeated columns) has determinant `0` or `1` or `-1`.
- - `Matrix.IsTotallyUnimodular.apply`: entry in a totally unimodular matrix is `0` or `1` or `-1`.
+- `Matrix.isTotallyUnimodular_iff`: a matrix is totally unimodular iff every square submatrix
+  (possibly with repeated rows and/or repeated columns) has determinant `0` or `1` or `-1`.
+- `Matrix.IsTotallyUnimodular.apply`: entry in a totally unimodular matrix is `0` or `1` or `-1`.
 
 -/
 

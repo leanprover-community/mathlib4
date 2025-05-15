@@ -124,7 +124,7 @@ theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
 
 /-- This lemma works in the case in which `a ≠ 0`.  The version where
- `ZMod n` is not infinite, i.e. `n ≠ 0`, is `addOrderOf_coe`. -/
+`ZMod n` is not infinite, i.e. `n ≠ 0`, is `addOrderOf_coe`. -/
 @[simp]
 theorem addOrderOf_coe' {a : ℕ} (n : ℕ) (a0 : a ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a0, ZMod.addOrderOf_one]
@@ -1245,14 +1245,14 @@ end AddGroup
 section Group
 variable {α : Type*} [Group α] {n : ℕ}
 
--- TODO: Without the `existing`, `to_additive` chokes on `Inv (ZMod n)`.
-@[to_additive existing (attr := simp) nsmul_zmod_val_inv_nsmul]
+-- TODO: we can't use `to_additive`, because it tries to translate `n⁻¹` into `-n`
+@[simp]
 lemma pow_zmod_val_inv_pow (hn : (Nat.card α).Coprime n) (a : α) :
     (a ^ (n⁻¹ : ZMod (Nat.card α)).val) ^ n = a := by
   rw [← pow_mul', ← pow_mod_natCard, ← ZMod.val_natCast, Nat.cast_mul, ZMod.mul_val_inv hn.symm,
     ZMod.val_one_eq_one_mod, pow_mod_natCard, pow_one]
 
-@[to_additive existing (attr := simp) zmod_val_inv_nsmul_nsmul]
+@[simp]
 lemma pow_pow_zmod_val_inv (hn : (Nat.card α).Coprime n) (a : α) :
     (a ^ n) ^ (n⁻¹ : ZMod (Nat.card α)).val = a := by rw [pow_right_comm, pow_zmod_val_inv_pow hn]
 

@@ -508,7 +508,7 @@ theorem polynomial_mem_ideal_of_coeff_mem_ideal (I : Ideal R[X]) (p : R[X])
   sum_C_mul_X_pow_eq p ▸ Submodule.sum_mem I fun n _ => I.mul_mem_right _ (hp n)
 
 /-- The push-forward of an ideal `I` of `R` to `R[X]` via inclusion
- is exactly the set of polynomials whose coefficients are in `I` -/
+is exactly the set of polynomials whose coefficients are in `I` -/
 theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     f ∈ (Ideal.map (C : R →+* R[X]) I : Ideal R[X]) ↔ ∀ n : ℕ, f.coeff n ∈ I := by
   constructor
@@ -1082,7 +1082,7 @@ theorem mem_ideal_of_coeff_mem_ideal (I : Ideal (MvPolynomial σ R)) (p : MvPoly
   simpa [Ideal.mem_comap] using hcoe m
 
 /-- The push-forward of an ideal `I` of `R` to `MvPolynomial σ R` via inclusion
- is exactly the set of polynomials whose coefficients are in `I` -/
+is exactly the set of polynomials whose coefficients are in `I` -/
 theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
     f ∈ (Ideal.map (C : R →+* MvPolynomial σ R) I : Ideal (MvPolynomial σ R)) ↔
       ∀ m : σ →₀ ℕ, f.coeff m ∈ I := by

@@ -31,7 +31,7 @@ We also define variants for locally uniform convergence on a subset, called
 ## Tags
 
 Uniform limit, uniform convergence, tends uniformly to
- -/
+-/
 
 noncomputable section
 

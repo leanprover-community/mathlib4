@@ -40,8 +40,8 @@ This is demonstrated by means of the following four lemmas:
 * `CompleteLattice.IsSupClosedCompact.wellFounded`
 * `CompleteLattice.isSupFiniteCompact_iff_all_elements_compact`
 
- We also show well-founded lattices are compactly generated
- (`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
+We also show well-founded lattices are compactly generated
+(`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
 
 ## References
 - [G. Călugăreanu, *Lattice Concepts of Module Theory*][calugareanu]

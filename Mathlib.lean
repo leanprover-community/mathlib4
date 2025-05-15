@@ -1461,6 +1461,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
+import Mathlib.Analysis.Complex.ValueDistribution.ProximityFunction
 import Mathlib.Analysis.ConstantSpeed
 import Mathlib.Analysis.Convex.AmpleSet
 import Mathlib.Analysis.Convex.Basic
@@ -1681,6 +1682,7 @@ import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.Normed.Ring.WithAbs
 import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
+import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
 import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
 import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
@@ -2611,6 +2613,7 @@ import Mathlib.Combinatorics.Enumerative.IncidenceAlgebra
 import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
+import Mathlib.Combinatorics.Graph.Basic
 import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite

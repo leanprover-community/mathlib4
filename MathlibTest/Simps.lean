@@ -484,8 +484,8 @@ def IdentityPreunctor : Prefunctor (Type u) Nat where
 namespace coercing
 
 structure FooStr where
- (c : Type)
- (x : c)
+  (c : Type)
+  (x : c)
 
 instance : CoeSort FooStr Type := ⟨FooStr.c⟩
 
@@ -496,8 +496,8 @@ example {x : Type} (h : ℕ = x) : foo = x := by simp only [foo_c]; rw [h]
 example {x : ℕ} (h : (3 : ℕ) = x) : foo.x = x := by simp only [foo_x]; rw [h]
 
 structure VooStr (n : ℕ) where
- (c : Type)
- (x : c)
+  (c : Type)
+  (x : c)
 
 instance (n : ℕ) : CoeSort (VooStr n) Type := ⟨VooStr.c⟩
 

@@ -31,7 +31,7 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
   well-ordered on the set of lists of elements of `s`. The result was originally published by
   Higman, but this proof more closely follows Nash-Williams.
 * `Set.wellFoundedOn_iff` relates `well_founded_on` to the well-foundedness of a relation on the
- original type, to avoid dealing with subtypes.
+  original type, to avoid dealing with subtypes.
 * `Set.IsWF.mono` shows that a subset of a well-founded subset is well-founded.
 * `Set.IsWF.union` shows that the union of two well-founded subsets is well-founded.
 * `Finset.isWF` shows that all `Finset`s are well-founded.
