@@ -215,8 +215,7 @@ lemma toStrictSegal₂.mk_naturality_σ1i (i : Fin 2) :
   simp only [segalSpine, prod.comp_lift, assoc]
   congr 1 <;> rw [← map_comp]
   · show _ ≫ _ ≫ Y.map (δ₂ _).op = _ ≫ Y.map (_ ≫ (δ₂ _).op)
-    rw [← op_comp]
-    rw [← toStrictSegal₂.mk_naturality_δ1i sy F hyp, ← assoc, ← map_comp, ← op_comp]
+    rw [← op_comp, ← toStrictSegal₂.mk_naturality_δ1i sy F hyp, ← assoc, ← map_comp, ← op_comp]
     change toStrictSegal₂.mk.naturalityProperty sy F (δ₂ 2 ≫ σ₂ i)
     fin_cases i
     · dsimp only [Fin.zero_eta]
