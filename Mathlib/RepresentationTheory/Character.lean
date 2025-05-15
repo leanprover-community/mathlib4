@@ -109,12 +109,7 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
   -- First, we can rewrite the summand `V.character g * W.character g⁻¹` as the character
   -- of the representation `V ⊗ W* ≅ Hom(W, V)` applied to `g`.
   -- Porting note: Originally `conv in V.character _ * W.character _ =>`
-  conv_lhs =>
-    enter [2, 2, g]
-    rw [mul_comm, ← char_dual, ← Pi.mul_apply, ← char_tensor]
-    rw [char_iso (FDRep.dualTensorIsoLinHom W.ρ V)]
-  -- The average over the group of the character of a representation equals the dimension of the
-  -- space of invariants.
+  conv_lhs => congr; rfl; congr; rfl; intro g; rw [mul_comm, ← FDRep.char_linHom]
   rw [average_char_eq_finrank_invariants, ← FDRep.endRingEquiv_comp_ρ (of _),
       FDRep.of_ρ (linHom W.ρ V.ρ)]
   -- The space of invariants of `Hom(W, V)` is the subspace of `G`-equivariant linear maps,
@@ -122,6 +117,20 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
   erw [(linHom.invariantsEquivFDRepHom W V).finrank_eq] -- Porting note: Changed `rw` to `erw`
   -- By Schur's Lemma, the dimension of `Hom_G(W, V)` is `1` is `V ≅ W` and `0` otherwise.
   rw_mod_cast [finrank_hom_simple_simple W V, Iso.nonempty_iso_symm]
+
+variable (V W : FDRep k G)
+
+/-!
+Doc string.
+-/
+omit [IsAlgClosed k] in
+theorem char_orthonormal' (V W : FDRep k G) :
+    ⅟ (Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
+    Module.finrank k (W ⟶ V) := by
+  conv_lhs => congr; rfl; congr; rfl; intro g; rw [mul_comm, ← FDRep.char_linHom]
+  rw [FDRep.average_char_eq_finrank_invariants]
+  rw [← LinearEquiv.finrank_eq (Representation.linHom.invariantsEquivFDRepHom W V)]
+  simp only [FGModuleCat.of_carrier, of_ρ']
 
 end Orthogonality
 

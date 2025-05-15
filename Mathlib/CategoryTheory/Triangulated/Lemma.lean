@@ -109,6 +109,10 @@ abbrev map_for_Q (n : ℤ) :
 def Q (n : ℤ) : C := Abelian.image (map_for_Q F n)
 
 /-
+Making `Q` into a complex: First we constr
+-/
+
+/-
 First statement: `Q n ⊆ P n` for every `n` (i.e. the obvious map from `Q n` to `(F.obj n).n`
 factors through `P n`), and the `Q n` and `P n` extend to complexes (using the differentials of
 `A`).
