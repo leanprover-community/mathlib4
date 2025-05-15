@@ -217,12 +217,6 @@ theorem Injective.sumMap {f : α → β} {g : α' → β'} (hf : Injective f) (h
 
 @[deprecated (since := "2025-02-20")] alias Injective.sum_map := Injective.sumMap
 
-@[simp]
-theorem injective_sumMap_iff {f : α → γ} {g : α' → β'} :
-    Injective (Sum.map f g) ↔ Injective f ∧ Injective g where
-  mp h := ⟨.of_comp <| h.comp inl_injective, .of_comp <| h.comp inr_injective⟩
-  mpr | ⟨hf, hg⟩ => hf.sumMap hg
-
 theorem Surjective.sumMap {f : α → β} {g : α' → β'} (hf : Surjective f) (hg : Surjective g) :
     Surjective (Sum.map f g)
   | inl y =>
