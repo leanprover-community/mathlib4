@@ -146,8 +146,8 @@ instance Spec_map_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.
   IsClosedImmersion.spec_of_surjective (X.residue x)
     Ideal.Quotient.mk_surjective
 
-instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
-  isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
+instance (priority := low) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsAffineHom f :=
+  isAffineHom_of_isInducing _ f.isClosedEmbedding.isInducing f.isClosedEmbedding.isClosed_range
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsClosedImmersion f] :
     IsIso f.toImage := by
@@ -296,7 +296,6 @@ variable (f)
 the induced map on global sections is surjective. -/
 theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
     IsAffine X ∧ Function.Surjective (f.appTop) := by
-  have := isAffineHom_of_isInducing f f.isClosedEmbedding.isInducing f.isClosedEmbedding.2
   refine ⟨isAffine_of_isAffineHom f, ?_⟩
   simp only [← f.toImage_imageι, Scheme.comp_appTop, CommRingCat.hom_comp, RingHom.coe_comp,
     Scheme.Hom.image, Scheme.Hom.imageι]
@@ -339,17 +338,6 @@ instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmers
     (fun X _ f ↦ IsAffine X ∧ Function.Surjective (f.appTop)) := by
   convert HasAffineProperty.of_isLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
-
-instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
-    IsAffineHom f := by
-  wlog hY : IsAffine Y
-  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsAffineHom) _
-      (iSup_affineOpens_eq_top Y)]
-    intro U
-    have H : IsClosedImmersion (f ∣_ U) := IsLocalAtTarget.restrict h U
-    exact this _ U.2
-  rw [HasAffineProperty.iff_of_isAffine (P := @IsAffineHom)]
-  exact (IsClosedImmersion.isAffine_surjective_of_isAffine f).1
 
 /-- Being a closed immersion is stable under base change. -/
 instance IsClosedImmersion.isStableUnderBaseChange :
