@@ -88,6 +88,29 @@ lemma two_mul_mul_le_mul_add_div {a b ε : ℝ} (hε : 0 < ε) :
   _ ≤ ((ε * a) ^ 2 + b ^ 2) / ε := by gcongr
   _ = ε * a ^ 2 + (1 / ε) * b ^ 2  := by field_simp; ring
 
+lemma Nat.le_two_pow (n : ℕ) : n ≤ 2 ^ n := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [pow_succ, mul_two]
+    gcongr
+    exact Nat.one_le_two_pow
+
+lemma aux {c : ℝ} (hc : c < 0) :
+    ∑' i, .ofReal (rexp (c * 2 ^ i)) < ∞ := by
+  calc ∑' i, .ofReal (rexp (c * 2 ^ i))
+  _ ≤ ∑' i : ℕ, .ofReal (rexp (i * c)) := by
+    simp_rw [mul_comm _ c]
+    refine ENNReal.tsum_le_tsum fun i ↦ ?_
+    refine ENNReal.ofReal_le_ofReal ?_
+    refine Real.exp_monotone ?_
+    refine mul_le_mul_of_nonpos_left ?_ hc.le
+    exact mod_cast Nat.le_two_pow i
+  _ < ∞ := by
+    have h_sum : Summable fun i : ℕ ↦ rexp (i * c) := Real.summable_exp_nat_mul_iff.mpr hc
+    rw [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
+    simp
+
 -- todo: replace `Measurable f`
 @[to_additive]
 lemma integrable_mconv_iff {M F : Type*} [Monoid M] {mM : MeasurableSpace M} [MeasurableMul₂ M]
@@ -113,9 +136,11 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 
 section Fernique
 
-variable [SecondCountableTopology E] [CompleteSpace E]
+variable [SecondCountableTopology E]
 
-lemma IsGaussian.measure_le_mul_measure_gt_le (hμ : IsCentered μ) (a b : ℝ) :
+lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self {μ : Measure E} [SFinite μ]
+    (h : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
+    (a b : ℝ) :
     μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖} ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 := by
   calc μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖}
   _ = (μ.prod μ) ({x | ‖x‖ ≤ a} ×ˢ {y | b < ‖y‖}) := by rw [Measure.prod_prod]
@@ -123,7 +148,7 @@ lemma IsGaussian.measure_le_mul_measure_gt_le (hμ : IsCentered μ) (a b : ℝ) 
   _ = (μ.prod μ) {p | ‖p.1‖ ≤ a ∧ b < ‖p.2‖} := rfl
   _ = ((μ.prod μ).map (ContinuousLinearMap.rotation (- (π/4)))) {p | ‖p.1‖ ≤ a ∧ b < ‖p.2‖} := by
     -- we can rotate the bands since `μ.prod μ` is invariant under rotation
-    rw [map_rotation_eq_self hμ]
+    rw [h]
   _ = (μ.prod μ) {p | ‖p.1 - p.2‖ / √2 ≤ a ∧ b < ‖p.1 + p.2‖ / √2} := by
     rw [Measure.map_apply]
     rotate_left
@@ -167,125 +192,14 @@ lemma IsGaussian.measure_le_mul_measure_gt_le (hμ : IsCentered μ) (a b : ℝ) 
   _ = (μ.prod μ) ({x | (b - a) / √2 < ‖x‖} ×ˢ {y | (b - a) / √2 < ‖y‖}) := rfl
   _ ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 := by rw [Measure.prod_prod, pow_two]
 
-lemma Nat.le_two_pow (n : ℕ) : n ≤ 2 ^ n := by
-  induction n with
-  | zero => simp
-  | succ n hn =>
-    rw [pow_succ, mul_two]
-    gcongr
-    exact Nat.one_le_two_pow
-
-lemma aux {c : ℝ} (hc : c < 0) :
-    ∑' i, .ofReal (rexp (c * 2 ^ i)) < ∞ := by
-  calc ∑' i, .ofReal (rexp (c * 2 ^ i))
-  _ ≤ ∑' i : ℕ, .ofReal (rexp (i * c)) := by
-    simp_rw [mul_comm _ c]
-    refine ENNReal.tsum_le_tsum fun i ↦ ?_
-    refine ENNReal.ofReal_le_ofReal ?_
-    refine Real.exp_monotone ?_
-    refine mul_le_mul_of_nonpos_left ?_ hc.le
-    exact mod_cast Nat.le_two_pow i
-  _ < ∞ := by
-    have h_sum : Summable fun i : ℕ ↦ rexp (i * c) := Real.summable_exp_nat_mul_iff.mpr hc
-    rw [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
-    simp
-
-/-- See `IsGaussian.eq_dirac_of_variance_eq_zero` for the same statement without the `IsCentered μ`
-hypothesis. -/
-private lemma IsGaussian.eq_dirac_of_variance_eq_zero_of_isCentered (hμ : IsCentered μ)
-    (h : ∀ (L : E →L[ℝ] ℝ), Var[L; μ] = 0) :
-    μ = Measure.dirac 0 := by
-  refine ext_of_charFunCLM ?_
-  ext L
-  rw [charFunCLM_dirac, IsGaussian.charFunCLM_eq_of_isCentered hμ L, h L]
-  simp
-
-/-- See `IsGaussian.noAtoms` for the same statement without the `IsCentered μ` hypothesis. -/
-private lemma IsGaussian.noAtoms_of_isCentered (hμ : IsCentered μ) (h : μ ≠ Measure.dirac 0) :
-    NoAtoms μ where
-  measure_singleton x := by
-    obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L; μ] ≠ 0 := by
-      contrapose! h
-      exact eq_dirac_of_variance_eq_zero_of_isCentered hμ h
-    have hL_zero : μ.map L {L x} = 0 := by
-      have : NoAtoms (μ.map L) := by
-        rw [IsGaussian.map_eq_gaussianReal L]
-        refine noAtoms_gaussianReal ?_
-        simp only [ne_eq, Real.toNNReal_eq_zero, not_le]
-        exact lt_of_le_of_ne (variance_nonneg _ _) hL.symm
-      rw [measure_singleton]
-    rw [Measure.map_apply (by fun_prop) (measurableSet_singleton _)] at hL_zero
-    refine measure_mono_null ?_ hL_zero
-    exact fun ⦃a⦄ ↦ congrArg ⇑L
-
-lemma IsGaussian.measure_closedBall_lt_one (hμ : IsCentered μ) (h : μ ≠ Measure.dirac 0)
-    (a : ℝ) :
-    μ {x | ‖x‖ ≤ a} < 1 := by
-  obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L; μ] ≠ 0 := by
-    contrapose! h
-    exact eq_dirac_of_variance_eq_zero_of_isCentered hμ h
-  by_contra! h_eq_one
-  replace h_eq_one : μ {x | ‖x‖ ≤ a} = 1 :=
-    le_antisymm ((measure_mono (Set.subset_univ _)).trans_eq (by simp)) h_eq_one
-  have h_eq_one' : μ.map L {x | |x| ≤ a * ‖L‖} = 1 := by
-    rw [Measure.map_apply (by fun_prop)]
-    swap; · exact measurableSet_le (by fun_prop) (by fun_prop)
-    simp only [Set.preimage_setOf_eq]
-    refine le_antisymm ((measure_mono (Set.subset_univ _)).trans_eq (by simp)) ?_
-    rw [← h_eq_one]
-    refine measure_mono fun x hx ↦ ?_
-    simp only [Set.mem_setOf_eq] at hx ⊢
-    calc ‖L x‖
-    _ ≤ ‖L‖ * ‖x‖ := L.le_opNorm x
-    _ ≤ a * ‖L‖ := by rw [mul_comm]; gcongr
-  have h_lt_one : μ.map L {y | |y| ≤ a * ‖L‖} < 1 := by
-    rw [IsGaussian.map_eq_gaussianReal L]
-    refine gaussianReal_closedBall_lt_one ?_ (a * ‖L‖)
-    simp only [ne_eq, Real.toNNReal_eq_zero, not_le]
-    exact lt_of_le_of_ne (variance_nonneg _ _) hL.symm
-  exact h_lt_one.ne h_eq_one'
-
-lemma IsGaussian.exists_measure_norm_mem_Ioo (hμ : IsCentered μ) (h : μ ≠ Measure.dirac 0)
-    {y : ℝ≥0∞} (hy : y < 1) :
-    ∃ a, μ {x | ‖x‖ ≤ a} ∈ Set.Ioo y 1 := by
-  simp only [Set.mem_Ioo, IsGaussian.measure_closedBall_lt_one hμ h, and_true]
-  by_contra! h_le
-  suffices μ Set.univ ≤ y by simp only [measure_univ] at this; exact hy.not_le this
-  have : (Set.univ : Set E) = ⋃ a : ℝ, {x : E | ‖x‖ ≤ a} := by
-    ext x
-    simp only [Set.mem_univ, Set.mem_iUnion, Set.mem_setOf_eq, true_iff]
-    exact ⟨‖x‖, le_rfl⟩
-  rw [this, Monotone.measure_iUnion]
-  · simp only [iSup_le_iff]
-    intro i
-    exact h_le i
-  · intro a b hab x
-    simp only [Set.mem_setOf_eq]
-    exact fun hxa ↦ hxa.trans hab
-
 open Metric Filter in
-/-- Special case of Fernique's theorem for centered Gaussian distributions. -/
-lemma IsGaussian.exists_integrable_exp_sq_of_isCentered (hμ : IsCentered μ) :
+/-- Auxiliary lemma for `exists_integrable_exp_sq_of_map_rotation_eq_self`. -/
+lemma exists_integrable_exp_sq_of_map_rotation_eq_self' {μ : Measure E} [IsProbabilityMeasure μ]
+    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
+    (h_meas_Ioo : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1) :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
-  by_cases hμ' : μ = Measure.dirac 0
-  · refine ⟨1, by positivity, ?_⟩
-    rw [hμ']
-    exact integrable_dirac' <| Measurable.stronglyMeasurable <| by fun_prop
-  obtain ⟨a, hc_gt, hc_lt⟩ : ∃ a, 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1 :=
-    IsGaussian.exists_measure_norm_mem_Ioo hμ hμ' (by simp)
-  have ha_pos : 0 < a := by
-    by_contra! ha
-    have : {x : E | ‖x‖ ≤ a} ⊆ {0} := by
-      intro x hx
-      simp only [Set.mem_setOf_eq] at hx
-      suffices ‖x‖ = 0 from norm_eq_zero.mp this
-      exact le_antisymm (hx.trans ha) (norm_nonneg x)
-    have h_not_lt : ¬ (2 : ℝ≥0∞)⁻¹ < 0 := by simp
-    refine h_not_lt (hc_gt.trans_le ?_)
-    simp only [nonpos_iff_eq_zero]
-    refine measure_mono_null this ?_
-    have : NoAtoms μ := IsGaussian.noAtoms_of_isCentered hμ hμ'
-    simp
+  obtain ⟨a, ha_pos, hc_gt, hc_lt⟩ : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1 :=
+    h_meas_Ioo
   let c := μ {x | ‖x‖ ≤ a}
   replace hc_gt : 2⁻¹ < c := hc_gt
   have hc_pos : 0 < c := lt_of_lt_of_le (by simp) hc_gt.le
@@ -388,7 +302,7 @@ lemma IsGaussian.exists_integrable_exp_sq_of_isCentered (hμ : IsCentered μ) :
       · exact measurableSet_le (by fun_prop) (by fun_prop)
     | succ n hn =>
       have h_mul_le : c * μ {x | t (n + 1) < ‖x‖} ≤ μ {x | t n < ‖x‖} ^ 2 := by
-        convert IsGaussian.measure_le_mul_measure_gt_le hμ _ _
+        convert measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
         rw [ht_succ_def]
         field_simp
       calc μ {x | t (n + 1) < ‖x‖}
@@ -501,12 +415,67 @@ lemma IsGaussian.exists_integrable_exp_sq_of_isCentered (hμ : IsCentered μ) :
       rw [ENNReal.toReal_lt_toReal hc_one_sub_lt_top.ne hc_lt_top.ne]
       exact h_one_sub_lt_self
 
+lemma exists_integrable_exp_sq_of_map_rotation_eq_self {μ : Measure E} [IsProbabilityMeasure μ]
+    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) :
+    ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
+  by_cases h_meas_Ioo : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1
+  · exact exists_integrable_exp_sq_of_map_rotation_eq_self' h_rot h_meas_Ioo
+  obtain ⟨b, hb⟩ : ∃ b, μ {x | ‖x‖ ≤ b} = 1 := by
+    by_contra h_ne
+    push_neg at h_meas_Ioo h_ne
+    suffices μ .univ ≤ 2 ⁻¹ by simp at this
+    have h_le a : μ {x | ‖x‖ ≤ a} ≤ 2⁻¹ := by
+      have h_of_pos a' (ha : 0 < a') : μ {x | ‖x‖ ≤ a'} ≤ 2⁻¹ := by
+        by_contra h_lt
+        refine h_ne a' ?_
+        exact le_antisymm prob_le_one (h_meas_Ioo a' ha (not_le.mp h_lt))
+      rcases le_or_lt a 0 with ha | ha
+      · calc μ {x | ‖x‖ ≤ a}
+        _ ≤ μ {x | ‖x‖ ≤ 1} := measure_mono fun x hx ↦ hx.trans (ha.trans (by positivity))
+        _ ≤ 2⁻¹ := h_of_pos _ (by positivity)
+      · exact h_of_pos a ha
+    have h_univ : (Set.univ : Set E) = ⋃ a : ℕ, {x | ‖x‖ ≤ a} := by
+      ext x
+      simp only [Set.mem_univ, Set.mem_iUnion, Set.mem_setOf_eq, true_iff]
+      exact exists_nat_ge _
+    rw [h_univ, Monotone.measure_iUnion]
+    · simp [h_le]
+    · intro a b hab x hx
+      simp only [Set.mem_setOf_eq] at hx ⊢
+      exact hx.trans (mod_cast hab)
+  have hb' : ∀ᵐ x ∂μ, ‖x‖ ≤ b := by
+    rw [ae_iff]
+    change μ {x | ‖x‖ ≤ b}ᶜ = 0
+    rw [prob_compl_eq_one_sub]
+    · simp [hb]
+    · exact measurableSet_le (by fun_prop) (by fun_prop)
+  refine ⟨1, by positivity, ?_⟩
+  refine integrable_of_le_of_le (g₁ := 0) (g₂ := fun _ ↦ rexp (b ^ 2)) (by fun_prop)
+    ?_ ?_ (integrable_const _) (integrable_const _)
+  · exact ae_of_all _ fun _ ↦ by positivity
+  · filter_upwards [hb'] with x hx
+    simp only [one_mul]
+    gcongr
+
+variable [CompleteSpace E]
+
+lemma IsGaussian.measure_le_mul_measure_gt_le (hμ : IsCentered μ) (a b : ℝ) :
+    μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖} ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 :=
+  measure_le_mul_measure_gt_le_of_map_rotation_eq_self (map_rotation_eq_self hμ _) a b
+
 /-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
 `x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
 theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
-  obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq_of_isCentered
-    (isCentered_conv_map_neg (μ := μ))
+  -- Since `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` is a centered Gaussian measure, it is invariant
+  -- under rotation. We can thus apply a version of Fernique's theorem to it.
+  obtain ⟨C, hC_pos, hC⟩ : ∃ C, 0 < C
+      ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) (μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)) :=
+    exists_integrable_exp_sq_of_map_rotation_eq_self
+      (map_rotation_eq_self (isCentered_conv_map_neg (μ := μ)) _)
+  -- We must now prove that the integrability with respect to
+  -- `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` implies integrability with respect to `μ` for
+  -- another constant `C' < C`.
   have h_int : ∀ᵐ y ∂μ, Integrable (fun x ↦ rexp (C * ‖x - y‖^2)) μ := by
     rw [integrable_conv_iff (by fun_prop)] at hC
     replace hC := hC.1
@@ -518,7 +487,7 @@ theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
       norm_nonneg, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_left_inj₀]
     left
     simp_rw [← sub_eq_add_neg, norm_sub_rev]
-  obtain ⟨y, hy⟩ := h_int.exists
+  obtain ⟨y, hy⟩ : ∃ y, Integrable (fun x ↦ rexp (C * ‖x - y‖ ^ 2)) μ := h_int.exists
   obtain ⟨C', hC'_pos, hC'_lt⟩ : ∃ C', 0 < C' ∧ C' < C := ⟨C / 2, by positivity, by simp [hC_pos]⟩
   refine ⟨C', hC'_pos, ?_⟩
   let ε := (C - C') / C'
