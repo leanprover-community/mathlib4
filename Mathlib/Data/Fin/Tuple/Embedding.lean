@@ -73,10 +73,6 @@ theorem snoc_last {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range ⇑x} 
     snoc x ha (last n) = a := by
   rw [coe_snoc, Fin.snoc_last]
 
-theorem _root_.Set.disjoint_range_iff {α β γ : Type*} {x : α → γ} {y : β → γ} :
-    Disjoint (range x) (range y) ↔ ∀ i j, x i ≠ y j := by
-  simp [Set.disjoint_iff_forall_ne]
-
 /-- Append a `Fin n ↪ α` at the end of a `Fin m ↪ α` if their ranges are disjoint. -/
 def append {m n : ℕ} {x : Fin m ↪ α} {y : Fin n ↪ α}
     (h : Disjoint (range ⇑x) (range ⇑y)) : Fin (m + n) ↪ α :=

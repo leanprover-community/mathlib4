@@ -119,7 +119,7 @@ theorem _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s
     t \ s ⊂ t := by
   simpa [inter_eq_self_of_subset_right hst]
 
-theorem disjoint_range_iff {β γ : Type*} {x : β → α} {y : γ → α} :
+theorem disjoint_range_iff {β γ : Sort*} {x : β → α} {y : γ → α} :
     Disjoint (range x) (range y) ↔ ∀ i j, x i ≠ y j := by
   simp [Set.disjoint_iff_forall_ne]
 
