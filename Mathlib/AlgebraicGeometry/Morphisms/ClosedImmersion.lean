@@ -190,9 +190,11 @@ def overEquivIdealSheafData (X : Scheme.{u}) :
       simp
   counitIso := NatIso.ofComponents (fun I ↦ eqToIso (by simp))
 
-lemma overEquivIdealSheafData_functor_obj_of_isIso {X Y : Scheme.{u}} (f : Y ⟶ X) [IsIso f] :
-    (overEquivIdealSheafData X).functor.obj (op <| .mk _ f inferInstance) = ⊥ := by
-  simp [overEquivIdealSheafData]
+lemma isIso_iff_ker_eq_bot {X Y : Scheme.{u}} {f : X ⟶ Y} [IsClosedImmersion f] :
+    IsIso f ↔ f.ker = ⊥ := by
+  refine ⟨fun _ ↦ f.ker_eq_bot_of_isIso, fun H ↦ ?_⟩
+  have : IsIso f.imageι := by simpa [Scheme.Hom.imageι, Scheme.Hom.image] using H ▸ inferInstance
+  exact f.toImage_imageι ▸ inferInstance
 
 /-- The universal property of closed immersions:
 For a closed immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z` whose kernel
@@ -285,11 +287,8 @@ namespace IsClosedImmersion
 sections is injective, `f` is an isomorphism. -/
 theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
     (hf : Function.Injective (f.appTop)) : IsIso f :=
-  have : f.ker = ⊥ := Scheme.IdealSheafData.ext_of_isAffine
-    (by simpa [f.ker_apply ⟨⊤, isAffineOpen_top Y⟩, ← RingHom.injective_iff_ker_eq_bot])
-  have : IsIso f.imageι := by
-    simpa only [Scheme.Hom.imageι, Scheme.Hom.image] using this ▸ inferInstance
-  f.toImage_imageι ▸ inferInstance
+  isIso_iff_ker_eq_bot.mpr (Scheme.IdealSheafData.ext_of_isAffine
+    (by simpa [f.ker_apply ⟨⊤, isAffineOpen_top Y⟩, ← RingHom.injective_iff_ker_eq_bot]))
 
 variable (f)
 
@@ -379,26 +378,9 @@ instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersi
 lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
     [IsClosedImmersion f] [Surjective f] [IsReduced Y] :
     IsIso f := by
-  wlog hY : IsAffine Y
-  · refine (IsLocalAtTarget.iff_of_openCover (P := .isomorphisms Scheme) Y.affineCover).mpr ?_
-    intro i
-    apply (config := { allowSynthFailures := true }) this
-    · exact MorphismProperty.pullback_snd _ _ inferInstance
-    · exact IsLocalAtTarget.of_isPullback (.of_hasPullback f (Y.affineCover.map i)) ‹_›
-    · exact isReduced_of_isOpenImmersion (Y.affineCover.map i)
-    · infer_instance
-  apply IsClosedImmersion.isIso_of_injective_of_isAffine
-  obtain ⟨hX, hf⟩ := HasAffineProperty.iff_of_isAffine.mp ‹IsClosedImmersion f›
-  let φ := f.appTop
-  suffices RingHom.ker φ.hom ≤ nilradical _ by
-    rwa [nilradical_eq_zero, Submodule.zero_eq_bot, le_bot_iff,
-      ← RingHom.injective_iff_ker_eq_bot] at this
-  refine (PrimeSpectrum.zeroLocus_eq_univ_iff _).mp ?_
-  rw [← range_specComap_of_surjective _ _ hf, Set.range_eq_univ]
-  have : Surjective (Spec.map f.appTop) :=
-    (MorphismProperty.arrow_mk_iso_iff @Surjective (arrowIsoSpecΓOfIsAffine f)).mp
-    (inferInstanceAs (Surjective f))
-  exact this.1
+  rw [IsClosedImmersion.isIso_iff_ker_eq_bot, ← Scheme.IdealSheafData.support_eq_top_iff,
+    ← SetLike.coe_injective.eq_iff, Scheme.Hom.support_ker]
+  simp
 
 section Section
 
