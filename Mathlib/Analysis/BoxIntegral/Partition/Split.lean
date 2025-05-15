@@ -19,7 +19,7 @@ We introduce the following definitions.
 * `BoxIntegral.Box.splitLower I i a` and `BoxIntegral.Box.splitUpper I i a` are these boxes (as
   `WithBot (BoxIntegral.Box ι)`);
 * `BoxIntegral.Prepartition.split I i a` is the partition of `I` made of these two boxes (or of one
-   box `I` if one of these boxes is empty);
+  box `I` if one of these boxes is empty);
 * `BoxIntegral.Prepartition.splitMany I s`, where `s : Finset (ι × ℝ)` is a finite set of
   hyperplanes `{x : ι → ℝ | x i = a}` encoded as pairs `(i, a)`, is the partition of `I` made by
   cutting it along all the hyperplanes in `s`.
@@ -81,7 +81,7 @@ theorem splitLower_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.upper fun j y => I.lower j < y).2
         ⟨h.1, fun _ _ => I.lower_lt_upper _⟩) :
     I.splitLower i x = (⟨I.lower, update I.upper i x, h'⟩ : Box ι) := by
-  simp (config := { unfoldPartialApp := true }) only [splitLower, mk'_eq_coe, min_eq_left h.2.le,
+  simp +unfoldPartialApp only [splitLower, mk'_eq_coe, min_eq_left h.2.le,
     update, and_self]
 
 open scoped Classical in
@@ -120,7 +120,7 @@ theorem splitUpper_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.lower fun j y => y < I.upper j).2
         ⟨h.2, fun _ _ => I.lower_lt_upper _⟩) :
     I.splitUpper i x = (⟨update I.lower i x, I.upper, h'⟩ : Box ι) := by
-  simp (config := { unfoldPartialApp := true }) only [splitUpper, mk'_eq_coe, max_eq_left h.1.le,
+  simp +unfoldPartialApp only [splitUpper, mk'_eq_coe, max_eq_left h.1.le,
     update, and_self]
 
 theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :

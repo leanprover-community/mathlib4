@@ -104,7 +104,7 @@ private theorem distinctPairs_increment :
 private lemma pairwiseDisjoint_distinctPairs :
     (P.parts.offDiag.attach : Set {x // x ∈ P.parts.offDiag}).PairwiseDisjoint
       (distinctPairs hP G ε) := by
-  simp (config := { unfoldPartialApp := true }) only [distinctPairs, Set.PairwiseDisjoint,
+  simp +unfoldPartialApp only [distinctPairs, Set.PairwiseDisjoint,
     Function.onFun, disjoint_left, inf_eq_inter, mem_inter, mem_product]
   rintro ⟨⟨s₁, s₂⟩, hs⟩ _ ⟨⟨t₁, t₂⟩, ht⟩ _ hst ⟨u, v⟩ huv₁ huv₂
   rw [mem_offDiag] at hs ht

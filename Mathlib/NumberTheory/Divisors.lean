@@ -5,10 +5,12 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.PrimeFin
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!
@@ -19,10 +21,10 @@ for defining Dirichlet convolution.
 
 ## Main Definitions
 Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
- * `divisors n` is the `Finset` of natural numbers that divide `n`.
- * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
- * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
- * `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
+* `divisors n` is the `Finset` of natural numbers that divide `n`.
+* `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
+* `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
+* `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
 
 ## Conventions
 
@@ -89,7 +91,8 @@ theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n 
   simp only [and_comm, ← filter_dvd_eq_properDivisors hm, mem_filter, mem_range]
 
 theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
-  rw [divisors, properDivisors, Ico_succ_right_eq_insert_Ico (one_le_iff_ne_zero.2 h),
+  rw [divisors, properDivisors,
+    ← Finset.insert_Ico_right_eq_Ico_add_one (one_le_iff_ne_zero.2 h),
     Finset.filter_insert, if_pos (dvd_refl n)]
 
 theorem cons_self_properDivisors (h : n ≠ 0) :
