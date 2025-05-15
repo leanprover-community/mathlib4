@@ -46,7 +46,7 @@ So far it is just a 2d-array carrying dimensions (that are supposed to match wit
 dimensions of `data`), but the plan is to add some `Prop`-data and make the structure strict and
 safe.
 
-Note: we avoid using the `Matrix` from `Mathlib.Data.Matrix` because it is far more efficient to
+Note: we avoid using the `Matrix` from `Mathlib/Data/Matrix.lean` because it is far more efficient to
 store matrix as its entries than as function between `Fin`-s.
 -/
 structure DenseMatrix (n m : Nat) where

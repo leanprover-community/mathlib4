@@ -7,7 +7,7 @@ info: Found 2 uses among over 600 syntax declarations
 In `MathlibTest.FindSyntax`:
   «term_#find_syntax_add_»: '#find_syntax_add'
 
-In `Mathlib.Tactic.FindSyntax`:
+In `Mathlib/Tactic/FindSyntax.lean`:
   Mathlib.FindSyntax.«command#find_syntax_Approx»: '#find_syntax  _  approx'
 -/
 #guard_msgs in

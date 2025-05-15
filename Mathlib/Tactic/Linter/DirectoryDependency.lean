@@ -128,8 +128,8 @@ should not import modules with the second prefix (except if specifically allowed
 
 For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
 ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
-because modules in `Mathlib.Algebra.Notation` cannot import modules in `Mathlib.Algebra` that are
-outside `Mathlib.Algebra.Notation`.
+because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
+outside `Mathlib/Algebra/Notation.lean`.
 -/
 def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra),
@@ -458,8 +458,8 @@ prefix are allowed to import modules with the second prefix, even if disallowed 
 
 For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
 ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
-because modules in `Mathlib.Algebra.Notation` cannot import modules in `Mathlib.Algebra` that are
-outside `Mathlib.Algebra.Notation`.
+because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
+outside `Mathlib/Algebra/Notation.lean`.
 -/
 def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),

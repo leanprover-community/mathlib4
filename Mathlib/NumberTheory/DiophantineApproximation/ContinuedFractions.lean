@@ -8,7 +8,7 @@ import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 import Mathlib.NumberTheory.DiophantineApproximation.Basic
 
 /-!
-# Restatements of results from Diophantine Approximation using `Mathlib.Algebra.ContinuedFractions`.
+# Restatements of results from Diophantine Approximation using `Mathlib/Algebra/ContinuedFractions.lean`.
 
 ## Main statements
 

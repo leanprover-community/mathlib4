@@ -21,7 +21,7 @@ There are a couple different notions equivalent to `s ∈ 𝓝ˢ t`:
 Furthermore, we have the following results:
 * `monotone_nhdsSet`: `𝓝ˢ` is monotone
 * In T₁-spaces, `𝓝ˢ`is strictly monotone and hence injective:
-  `strict_mono_nhdsSet`/`injective_nhdsSet`. These results are in `Mathlib.Topology.Separation`.
+  `strict_mono_nhdsSet`/`injective_nhdsSet`. These results are in `Mathlib/Topology/Separation.lean`.
 
 -/
 

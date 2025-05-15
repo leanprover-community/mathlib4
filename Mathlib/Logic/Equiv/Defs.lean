@@ -21,7 +21,7 @@ In this file we define two types:
   not equality!) to express that various `Type`s or `Sort`s are equivalent.
 
 * `Equiv.Perm α`: the group of permutations `α ≃ α`. More lemmas about `Equiv.Perm` can be found in
-  `Mathlib.GroupTheory.Perm`.
+  `Mathlib/GroupTheory/Perm.lean`.
 
 Then we define
 

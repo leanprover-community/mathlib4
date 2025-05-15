@@ -22,7 +22,7 @@ open Qq Lean Meta Finset
 
 /-- Extension for `Finset.card`. `#s` is positive if `s` is nonempty.
 
-It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
+It calls `Mathlib/Meta/proveFinsetNonempty.lean` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.card _]
 def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
@@ -44,7 +44,7 @@ def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `Finset.dens`. `s.dens` is positive if `s` is nonempty.
 
-It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
+It calls `Mathlib/Meta/proveFinsetNonempty.lean` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.dens _]
 def evalFinsetDens : PositivityExt where eval {u 𝕜} _ _ e := do
   match u, 𝕜, e with

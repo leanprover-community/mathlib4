@@ -24,7 +24,7 @@ which is constructed in `AlgebraicGeometry.StructureSheaf`.)
 /-- The prime spectrum of a commutative (semi)ring `R` is the type of all prime ideals of `R`.
 
 It is naturally endowed with a topology (the Zariski topology),
-and a sheaf of commutative rings (see `Mathlib.AlgebraicGeometry.StructureSheaf`).
+and a sheaf of commutative rings (see `Mathlib/AlgebraicGeometry/StructureSheaf.lean`).
 It is a fundamental building block in algebraic geometry. -/
 @[ext]
 structure PrimeSpectrum (R : Type*) [CommSemiring R] where
