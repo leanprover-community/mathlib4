@@ -199,30 +199,30 @@ theorem bounds_bddBelow {f : E [⋀^ι]→L[𝕜] F} :
     BddBelow {c | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} :=
   ContinuousMultilinearMap.bounds_bddBelow
 
-nonrec theorem isLeast_opNorm (f : E [⋀^ι]→L[𝕜] F) :
+theorem isLeast_opNorm (f : E [⋀^ι]→L[𝕜] F) :
     IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ :=
-  f.isLeast_opNorm
+  f.1.isLeast_opNorm
 
 /-- The fundamental property of the operator norm of a continuous alternating map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`. -/
 theorem le_opNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.1.le_opNorm m
 
-nonrec theorem le_mul_prod_of_opNorm_le_of_le
+theorem le_mul_prod_of_opNorm_le_of_le
     {m : ι → E} {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
     ‖f m‖ ≤ C * ∏ i, b i :=
-  f.le_mul_prod_of_opNorm_le_of_le hC hm
+  f.1.le_mul_prod_of_opNorm_le_of_le hC hm
 
 theorem le_opNorm_mul_prod_of_le (f : E [⋀^ι]→L[𝕜] F) {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) :
     ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
   f.1.le_opNorm_mul_prod_of_le hm
 
-nonrec theorem le_opNorm_mul_pow_card_of_le (f : E [⋀^ι]→L[𝕜] F) {m b} (hm : ‖m‖ ≤ b) :
+theorem le_opNorm_mul_pow_card_of_le (f : E [⋀^ι]→L[𝕜] F) {m b} (hm : ‖m‖ ≤ b) :
     ‖f m‖ ≤ ‖f‖ * b ^ Fintype.card ι :=
-  f.le_opNorm_mul_pow_card_of_le hm
+  f.1.le_opNorm_mul_pow_card_of_le hm
 
-nonrec theorem le_opNorm_mul_pow_of_le {n} (f : E [⋀^Fin n]→L[𝕜] F) {m b} (hm : ‖m‖ ≤ b) :
+theorem le_opNorm_mul_pow_of_le {n} (f : E [⋀^Fin n]→L[𝕜] F) {m b} (hm : ‖m‖ ≤ b) :
     ‖f m‖ ≤ ‖f‖ * b ^ n :=
-  f.le_opNorm_mul_pow_of_le hm
+  f.1.le_opNorm_mul_pow_of_le hm
 
 theorem le_of_opNorm_le {C : ℝ} (h : ‖f‖ ≤ C) (m : ι → E) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
   f.1.le_of_opNorm_le h m
