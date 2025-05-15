@@ -181,21 +181,7 @@ lemma hom_ext {Y : C} {φ φ' : Y ⟶ h.chosenPullback.pullback}
   · apply h₁₂.isPullback.hom_ext <;> simpa
   · apply h₂₃.isPullback.hom_ext <;> simpa
 
-lemma isPullback₁ : IsPullback h.p₁₃ h.p₂₃ h₁₃.p₂ h₂₃.p₂ :=
-  .mk' (by simp) (fun _ _ _ h₁ h₂ ↦ by
-    apply h.hom_ext
-    · simpa using h₁ =≫ h₁₃.p₁
-    · simpa using h₂ =≫ h₂₃.p₁
-    · simpa using h₁ =≫ h₁₃.p₂)
-    (fun _ a b w ↦ by
-      obtain ⟨φ, hφ₁, hφ₂, hφ₃⟩ :=
-        h.exists_lift (a ≫ h₁₃.p₁) (b ≫ h₂₃.p₁) (a ≫ h₁₃.p₂) _ rfl
-          (by simpa using w.symm =≫ f₃) (by simp)
-      refine ⟨φ, ?_, ?_⟩
-      · apply h₁₃.isPullback.hom_ext <;> simpa
-      · apply h₂₃.isPullback.hom_ext <;> aesop)
-
-lemma isPullback₃ : IsPullback h.p₁₂ h.p₁₃ h₁₂.p₁ h₁₃.p₁ :=
+lemma isPullback₁ : IsPullback h.p₁₂ h.p₁₃ h₁₂.p₁ h₁₃.p₁ :=
   .mk' (by simp) (fun _ _ _ h₁ h₂ ↦ by
     apply h.hom_ext
     · simpa using h₁ =≫ h₁₂.p₁
@@ -208,6 +194,20 @@ lemma isPullback₃ : IsPullback h.p₁₂ h.p₁₃ h₁₂.p₁ h₁₃.p₁ :
       refine ⟨φ, ?_, ?_⟩
       · apply h₁₂.isPullback.hom_ext <;> simpa
       · apply h₁₃.isPullback.hom_ext <;> aesop)
+
+lemma isPullback₃ : IsPullback h.p₁₃ h.p₂₃ h₁₃.p₂ h₂₃.p₂ :=
+  .mk' (by simp) (fun _ _ _ h₁ h₂ ↦ by
+    apply h.hom_ext
+    · simpa using h₁ =≫ h₁₃.p₁
+    · simpa using h₂ =≫ h₂₃.p₁
+    · simpa using h₁ =≫ h₁₃.p₂)
+    (fun _ a b w ↦ by
+      obtain ⟨φ, hφ₁, hφ₂, hφ₃⟩ :=
+        h.exists_lift (a ≫ h₁₃.p₁) (b ≫ h₂₃.p₁) (a ≫ h₁₃.p₂) _ rfl
+          (by simpa using w.symm =≫ f₃) (by simp)
+      refine ⟨φ, ?_, ?_⟩
+      · apply h₁₃.isPullback.hom_ext <;> simpa
+      · apply h₂₃.isPullback.hom_ext <;> aesop)
 
 end ChosenPullback₃
 
