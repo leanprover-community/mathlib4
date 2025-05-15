@@ -288,7 +288,7 @@ lemma eq_mul_of_inv_mul_eq₀ (hc : c ≠ 0) (h : b⁻¹ * a = c) : a = b * c :=
 lemma eq_mul_of_mul_inv_eq₀ (hb : b ≠ 0) (h : a * c⁻¹ = b) : a = b * c := by
   rwa [← mul_inv_eq_iff_eq_mul₀]; rintro rfl; simp [hb.symm] at h
 
-@[simp] lemma div_mul_cancel₀ (a : G₀) (h : b ≠ 0) : a / b * b = a := h.isUnit.div_mul_cancel _
+lemma div_mul_cancel₀ (a : G₀) (h : b ≠ 0) : a / b * b = a := by simp [h]
 
 lemma mul_one_div_cancel (h : a ≠ 0) : a * (1 / a) = 1 := h.isUnit.mul_one_div_cancel
 
