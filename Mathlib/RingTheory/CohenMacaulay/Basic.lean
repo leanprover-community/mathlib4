@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
 import Mathlib.RingTheory.Regular.Depth
-import Mathlib.RingTheory.KrullDimension.Module
+import Mathlib.RingTheory.KrullDimension.Regular
 import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 
 /-!
@@ -21,6 +21,11 @@ open RingTheory.Sequence IsLocalRing ModuleCat
 class ModuleCat.IsCohenMacaulay [IsLocalRing R] [Small.{v} R]
     [Small.{v} (R ⧸ (maximalIdeal R))] (M : ModuleCat.{v} R) : Prop where
   depth_eq_dim : Subsingleton M ∨ Module.supportDim R M = IsLocalRing.depth M
+
+lemma ModuleCat.isCohenMacaulay_iff [IsLocalRing R] [Small.{v} R]
+    [Small.{v} (R ⧸ (maximalIdeal R))] (M : ModuleCat.{v} R) :
+    M.IsCohenMacaulay ↔ Subsingleton M ∨ Module.supportDim R M = IsLocalRing.depth M :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 --isCohenMacaulay under iso
 
@@ -67,13 +72,38 @@ lemma localize_at_prime_depth_eq_of_isCohenMacaulay [IsLocalRing R] [IsNoetheria
   isLocalize_at_prime_depth_eq_of_isCohenMacaulay p M _
     (LocalizedModule.mkLinearMap p.primeCompl M)
 
+lemma ENat.add_right_cancel_iff (a b c : ℕ∞) (netop : c ≠ ⊤) : a + c = b + c ↔ a = b :=
+  ⟨fun h ↦ ENat.add_left_injective_of_ne_top netop h, fun h ↦ by rw [h]⟩
+
+lemma withBotENat_add_coe_cancel (a b : WithBot ℕ∞) (c : ℕ) : a + c = b + c ↔ a = b := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
+  by_cases eqbot : a = ⊥
+  · simp [eqbot, WithBot.bot_add] at h
+    rw [WithBot.add_coe_eq_bot_iff.mp h.symm, eqbot]
+  · by_cases eqbot' : b = ⊥
+    · absurd eqbot
+      simpa [eqbot'] using h
+    · have : a.unbot eqbot + c = b.unbot eqbot' + c := by
+        apply WithBot.coe_inj.mp
+        convert h
+        repeat simp;rfl
+      rw [← WithBot.coe_unbot a eqbot, ← WithBot.coe_unbot b eqbot', WithBot.coe_inj]
+      simpa [ENat.add_right_cancel_iff _ _ _ (ENat.coe_ne_top c)] using this
+
 lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
     [Small.{v} R] [Small.{v} (R ⧸ maximalIdeal R)]
-    (rs : List R) (M : ModuleCat.{v} R) (reg : IsRegular M rs)
-    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
+    (M : ModuleCat.{v} R) [Module.Finite R M] (rs : List R) (reg : IsRegular M rs) :
     M.IsCohenMacaulay ↔
     (ModuleCat.of R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M))).IsCohenMacaulay := by
-  sorry
+  have ntr2 : Nontrivial (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M)) :=
+    (IsRegular.quot_ofList_smul_nontrivial reg ⊤)
+  have ntr1 : Nontrivial M := Function.Surjective.nontrivial (Submodule.mkQ_surjective
+    (Ideal.ofList rs • (⊤ : Submodule R M)))
+  simp only [isCohenMacaulay_iff, ← not_nontrivial_iff_subsingleton, ntr1, not_true_eq_false,
+    false_or, ntr2]
+  rw [← Module.supportDim_regular_sequence_add_length_eq_supportDim rs reg,
+    ← depth_quotient_regular_sequence_add_length_eq_depth M rs reg, WithBot.coe_add]
+  exact withBotENat_add_coe_cancel _ _ rs.length
 
 variable (R)
 
