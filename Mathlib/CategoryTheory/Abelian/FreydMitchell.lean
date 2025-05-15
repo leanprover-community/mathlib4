@@ -38,7 +38,7 @@ functor `Hom(G, ·) : Dᵒᵖ ⥤ Module (End G)ᵐᵒᵖ` is faithful (because 
 (because it is a hom functor), right exact (because `G` is projective) and full (because of a
 combination of the aforementioned properties, see `Mathlib.CategoryTheory.Abelian.Yoneda`).
 We put this all together in the file
-`Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite`.
+`Mathlib/CategoryTheory/Abelian/GrothendieckCategory/ModuleEmbedding/Opposite.lean`.
 
 To prove (2), there are multiple options.
 

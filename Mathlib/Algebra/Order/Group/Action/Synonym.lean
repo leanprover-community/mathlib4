@@ -13,7 +13,7 @@ This PR transfers group action instances from a type `α` to `αᵒᵈ` and `Lex
 
 ## See also
 
-* `Mathlib.Algebra.Order.GroupWithZero.Action.Synonym`
+* `Mathlib/Algebra/Order/GroupWithZero/Action/Synonym.lean`
 * `Mathlib.Algebra.Order.Module.Synonym`
 -/
 

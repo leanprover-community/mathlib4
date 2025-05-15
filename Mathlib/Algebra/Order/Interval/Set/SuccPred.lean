@@ -15,7 +15,7 @@ order.
 ## Notes
 
 Please keep in sync with:
-* `Mathlib.Algebra.Order.Interval.Finset.SuccPred`
+* `Mathlib/Algebra/Order/Interval/Finset/SuccPred.lean`
 * `Mathlib.Order.Interval.Finset.SuccPred`
 * `Mathlib.Order.Interval.Set.SuccPred`
 
