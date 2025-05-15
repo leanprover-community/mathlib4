@@ -677,4 +677,24 @@ lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R
       have lt1 : i < n := lt_of_le_of_lt (self_le_add_right _ _) lt2
       exact (iff i).mpr ⟨hn i lt1, hn (i + 1) lt2⟩
 
+lemma moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth (N M : ModuleCat.{v} R)
+    (rs : List R) (reg : IsWeaklyRegular M rs) (h : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
+    moduleDepth N (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
+    moduleDepth N M := by
+  generalize len : rs.length = n
+  induction' n with n hn generalizing M rs
+  · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
+    simpa using moduleDepth_eq_of_iso_snd N (Submodule.quotEquivOfEqBot ⊥ rfl).toModuleIso
+  · match rs with
+    | [] => simp at len
+    | x :: rs' =>
+      simp only [List.length_cons, Nat.cast_add, Nat.cast_one]
+      simp only [List.length_cons, Nat.add_right_cancel_iff] at len
+      have : IsSMulRegular M x := ((isWeaklyRegular_cons_iff M _ _).mp reg).1
+      rw [moduleDepth_eq_of_iso_snd N
+        (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x rs').toModuleIso,
+        ← moduleDepth_quotSMulTop_succ_eq_moduleDepth N M x this (h x List.mem_cons_self),
+        ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' ((isWeaklyRegular_cons_iff M _ _).mp reg).2
+        (fun r hr ↦ h r (List.mem_cons_of_mem x hr)) len, add_assoc]
+
 end depth
