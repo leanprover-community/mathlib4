@@ -149,13 +149,48 @@ lemma isoMapOfCommSq_eq (φ : X₁ ⟶ Y₂) (hφ : t ≫ r = φ) :
   subst hφ
   simp [isoMapOfCommSq, mapComp'_eq_mapComp]
 
+lemma isoMapOfCommSq_hom_eq (φ : X₁ ⟶ Y₂) (hφ : t ≫ r = φ) :
+    (F.isoMapOfCommSq sq).hom =
+    (F.mapComp' t r φ (by rw [hφ])).inv ≫
+      (F.mapComp' l b φ (by rw [← hφ, sq.w])).hom := by
+  simp [F.isoMapOfCommSq_eq sq _ hφ]
+
 lemma isoMapOfCommSq_flip : F.isoMapOfCommSq sq.flip =
     (F.isoMapOfCommSq sq).symm := by
   rw [F.isoMapOfCommSq_eq sq.flip (t ≫ r) sq.w.symm,
     F.isoMapOfCommSq_eq sq (t ≫ r) rfl,
     Iso.trans_symm, Iso.symm_symm_eq]
 
+lemma mapComp'_isoMapOfCommSq {tr'} (htr' : t ≫ r = tr') :
+    (F.mapComp' t r tr' htr') ≪≫ F.isoMapOfCommSq sq =
+      F.mapComp' l b tr' (by rw [← htr', sq.w]) := by
+  subst htr'
+  simp [F.isoMapOfCommSq_eq sq _ rfl]
+
+@[reassoc]
+lemma mapComp'_hom_isoMapOfCommSq_hom {tr'} (htr' : t ≫ r = tr') :
+    (F.mapComp' t r tr' htr').hom ≫ (F.isoMapOfCommSq sq).hom =
+      (F.mapComp' l b tr' (by rw [← htr', sq.w])).hom := by
+  simp [← F.mapComp'_isoMapOfCommSq sq htr']
+
+lemma isoMapOfCommSq_mapComp'_symm {tr'} (htr' : t ≫ r = tr') :
+    F.isoMapOfCommSq sq ≪≫ (F.mapComp' l b tr' (by rw [← htr', sq.w])).symm =
+      (F.mapComp' t r tr' htr').symm := by
+  subst htr'
+  simp [F.isoMapOfCommSq_eq sq _ rfl]
+
+@[reassoc]
+lemma isoMapOfCommSq_hom_mapComp'_inv {tr'} (htr' : t ≫ r = tr') :
+    (F.isoMapOfCommSq sq).hom ≫ (F.mapComp' l b tr' (by rw [← htr', sq.w])).inv =
+      (F.mapComp' t r tr' htr').inv := by
+  simp [← F.mapComp'_isoMapOfCommSq sq htr']
+
 end
+
+@[simp]
+lemma isoMapOfCommSq_self_self (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) :
+    F.isoMapOfCommSq (t := f) (l := f) (r := g) (b := g) ⟨rfl⟩ = Iso.refl _ := by
+  simp [isoMapOfCommSq, mapComp']
 
 /-- Equational lemma for `Pseudofunctor.isoMapOfCommSq` when
 both vertical maps of the square are the same and horizontal maps are identities. -/

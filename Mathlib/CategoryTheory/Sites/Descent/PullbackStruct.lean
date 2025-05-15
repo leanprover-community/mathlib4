@@ -135,6 +135,15 @@ lemma p₂₃_p : h.p₂₃ ≫ h₂₃.p = h.p := by
 lemma p₁₃_p : h.p₁₃ ≫ h₁₃.p = h.p := by
   rw [← h₁₃.hp₁, p₁₃_p₁_assoc, w₁]
 
+lemma p₁₂_eq_lift : h.p₁₂ = h₁₂.isPullback.lift h.p₁ h.p₂ (by simp) := by
+  apply h₁₂.isPullback.hom_ext <;> simp
+
+lemma p₂₃_eq_lift : h.p₂₃ = h₂₃.isPullback.lift h.p₂ h.p₃ (by simp) := by
+  apply h₂₃.isPullback.hom_ext <;> simp
+
+lemma p₁₃_eq_lift : h.p₁₃ = h₁₃.isPullback.lift h.p₁ h.p₃ (by simp) := by
+  apply h₁₃.isPullback.hom_ext <;> simp
+
 lemma exists_lift {Y : C} (g₁ : Y ⟶ X₁) (g₂ : Y ⟶ X₂) (g₃ : Y ⟶ X₃) (b : Y ⟶ S)
     (hg₁ : g₁ ≫ f₁ = b) (hg₂ : g₂ ≫ f₂ = b) (hg₃ : g₃ ≫ f₃ = b) :
     ∃ (φ : Y ⟶ h.chosenPullback.pullback), φ ≫ h.p₁ = g₁ ∧ φ ≫ h.p₂ = g₂ ∧ φ ≫ h.p₃ = g₃ := by
