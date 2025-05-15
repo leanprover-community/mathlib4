@@ -160,7 +160,7 @@ Returns a pair `(imps, transImps)` where:
 
 * `j ∈ imps` if `j` is one of the module indexes in `imports`
 * `j ∈ transImps` if module `j` is transitively reachable from `imports`
- -/
+-/
 partial def loadModules (imports : Array Import) : StateT State IO (Array USize × Bitset) := do
   let mut imps := #[]
   let mut transImps := 0
@@ -250,7 +250,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
   be initialized if `downstream` mode is disabled so we pass it in here
 * `edits`: accumulates the list of edits to apply if `--fix` is true
 * `downstream`: if true, then we report downstream files that need to be fixed too
- -/
+-/
 def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     (i : Nat) (needs : Bitset) (edits : Edits)
     (downstream := true) (githubStyle := false) (explain := false) : IO Edits := do
