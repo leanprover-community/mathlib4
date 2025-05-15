@@ -51,7 +51,7 @@ Additionally, let `f` be a function from `E` to `F`.
 * `AnalyticOnNhd 𝕜 f s`: the function `f` is analytic at every point of `s`.
 
 We also define versions of `HasFPowerSeriesOnBall`, `AnalyticAt`, and `AnalyticOnNhd` restricted to
-a set, similar to `ContinuousWithinAt`. See `Mathlib.Analysis.Analytic.Within` for basic properties.
+a set, similar to `ContinuousWithinAt`. See `Mathlib/Analysis/Analytic/Within.lean` for basic properties.
 
 * `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[s ∪ {x}] x`.
 * `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.

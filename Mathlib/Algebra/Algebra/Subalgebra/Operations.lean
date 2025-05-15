@@ -9,9 +9,9 @@ import Mathlib.RingTheory.Ideal.Maps
 /-!
 # More operations on subalgebras
 
-In this file we relate the definitions in `Mathlib.RingTheory.Ideal.Operations` to subalgebras.
+In this file we relate the definitions in `Mathlib/RingTheory/Ideal/Operations.lean` to subalgebras.
 The contents of this file are somewhat random since both `Mathlib/Algebra/Algebra/Subalgebra/Basic.lean`
-and `Mathlib.RingTheory.Ideal.Operations` are somewhat of a grab-bag of definitions, and this is
+and `Mathlib/RingTheory/Ideal/Operations.lean` are somewhat of a grab-bag of definitions, and this is
 whatever ends up in the intersection.
 -/
 

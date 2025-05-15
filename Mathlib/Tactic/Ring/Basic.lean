@@ -1192,7 +1192,7 @@ theorem of_eq {α} {a b c : α} (_ : (a : α) = c) (_ : b = c) : a = b := by sub
 
 /--
 This is a routine which is used to clean up the unsolved subgoal
-of a failed `ring1` application. It is overridden in `Mathlib.Tactic.Ring.RingNF`
+of a failed `ring1` application. It is overridden in `Mathlib/Tactic/Ring/RingNF.lean`
 to apply the `ring_nf` simp set to the goal.
 -/
 initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure

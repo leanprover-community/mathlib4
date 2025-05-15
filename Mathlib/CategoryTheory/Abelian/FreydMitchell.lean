@@ -31,12 +31,12 @@ abelian categories, we have that Grothendieck abelian categories have all limits
 2. Using the small object argument, it is shown that Grothendieck abelian categories have enough
 injectives (see `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/EnoughInjectives.lean`).
 3. Putting these two together, it follows that Grothendieck abelian categories have an injective
-cogenerator (see `Mathlib.CategoryTheory.Generator.Abelian`).
+cogenerator (see `Mathlib/CategoryTheory/Generator/Abelian.lean`).
 4. By taking a coproduct of copies of the injective cogenerator, we find a projective separator `G`
 in `Dᵒᵖ` such that every object in the image of `F` is a quotient of `G`. Then the additive Hom
 functor `Hom(G, ·) : Dᵒᵖ ⥤ Module (End G)ᵐᵒᵖ` is faithful (because `G` is a separator), left exact
 (because it is a hom functor), right exact (because `G` is projective) and full (because of a
-combination of the aforementioned properties, see `Mathlib.CategoryTheory.Abelian.Yoneda`).
+combination of the aforementioned properties, see `Mathlib/CategoryTheory/Abelian/Yoneda.lean`).
 We put this all together in the file
 `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/ModuleEmbedding/Opposite.lean`.
 
@@ -51,7 +51,7 @@ To prove (2), there are multiple options.
   sheafification adjunction from a category of `Ab`-valued presheaves, which in turn inherits many
   interesting properties from the category of abelian groups.
 * Kashiwara and Schapira choose `D := Ind Cᵒᵖ`, which can be shown to be equivalent to
-  `LeftExactFunctor C Ab` (see the file `Mathlib.CategoryTheory.Preadditive.Indization`).
+  `LeftExactFunctor C Ab` (see the file `Mathlib/CategoryTheory/Preadditive/Indization.lean`).
   This approach deduces most interesting properties from the category of types.
 
 When work on this theorem commenced in early 2022, all three approaches were quite out of reach.

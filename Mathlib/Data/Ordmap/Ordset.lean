@@ -8,7 +8,7 @@ import Mathlib.Data.Ordmap.Invariants
 /-!
 # Verification of `Ordnode`
 
-This file uses the invariants defined in `Mathlib.Data.Ordmap.Invariants` to construct `Ordset α`,
+This file uses the invariants defined in `Mathlib/Data/Ordmap/Invariants.lean` to construct `Ordset α`,
 a wrapper around `Ordnode α` which includes the correctness invariant of the type. It exposes
 parallel operations like `insert` as functions on `Ordset` that do the same thing but bundle the
 correctness proofs.

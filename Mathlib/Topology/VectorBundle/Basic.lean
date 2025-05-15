@@ -46,7 +46,7 @@ We define constructions on vector bundles like pullbacks and direct sums in othe
 ## Implementation notes
 
 The implementation choices in the vector bundle definition are discussed in the "Implementation
-notes" section of `Mathlib.Topology.FiberBundle.Basic`.
+notes" section of `Mathlib/Topology/FiberBundle/Basic.lean`.
 
 ## Tags
 Vector bundle

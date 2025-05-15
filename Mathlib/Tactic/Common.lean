@@ -24,7 +24,7 @@ import Mathlib.Tactic.Linter.Lint
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Tactic.ApplyCongr
--- ApplyFun imports `Mathlib.Order.Monotone.Basic`
+-- ApplyFun imports `Mathlib/Order/Monotone/Basic.lean`
 -- import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyWith
@@ -95,7 +95,7 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TermCongr
--- TFAE imports `Mathlib.Data.List.TFAE` and thence `Mathlib.Data.List.Basic`.
+-- TFAE imports `Mathlib/Data/List/TFAE.lean` and thence `Mathlib/Data/List/Basic.lean`.
 -- import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel

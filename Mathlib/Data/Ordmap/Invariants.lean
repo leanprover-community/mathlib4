@@ -11,7 +11,7 @@ import Mathlib.Tactic.Abel
 /-!
 # Invariants for the verification of `Ordnode`
 
-An `Ordnode`, defined in `Mathlib.Data.Ordmap.Ordnode`, is an inductive type which describes a
+An `Ordnode`, defined in `Mathlib/Data/Ordmap/Ordnode.lean`, is an inductive type which describes a
 tree which stores the `size` at internal nodes.
 
 In this file we define the correctness invariant of an `Ordnode`, comprising:
@@ -30,7 +30,7 @@ In this file we define the correctness invariant of an `Ordnode`, comprising:
 
 This whole file is in the `Ordnode` namespace, because we first have to prove the correctness of
 all the operations (and defining what correctness means here is somewhat subtle).
-The actual `Ordset` operations are in `Mathlib.Data.Ordmap.Ordset`.
+The actual `Ordset` operations are in `Mathlib/Data/Ordmap/Ordset.lean`.
 
 ## TODO
 

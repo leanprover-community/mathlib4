@@ -387,7 +387,7 @@ open Coalgebra
 variable {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
   [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
 
-/-- See `Mathlib.RingTheory.Coalgebra.TensorProduct` for the `Coalgebra` instance. -/
+/-- See `Mathlib/RingTheory/Coalgebra/TensorProduct.lean` for the `Coalgebra` instance. -/
 instance instCoalgebraStruct : CoalgebraStruct R (A ⊗[R] B) where
   comul := TensorProduct.tensorTensorTensorComm R A A B B ∘ₗ TensorProduct.map comul comul
   counit := LinearMap.mul' R R ∘ₗ TensorProduct.map counit counit

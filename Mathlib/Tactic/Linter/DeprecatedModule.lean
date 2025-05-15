@@ -63,7 +63,7 @@ current module name and the array of its direct imports.
 It ignores the `Init` import, since this is a special module that is expected to be imported
 by all files.
 
-It also ignores the `Mathlib.Tactic.Linter.DeprecatedModule` import (namely, the current file),
+It also ignores the `Mathlib/Tactic/Linter/DeprecatedModule.lean` import (namely, the current file),
 since there is no need to import this module.
 -/
 def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotation m]

@@ -9,7 +9,7 @@ import Mathlib.GroupTheory.GroupAction.Quotient
 /-!
 # A consequence of Burnside's lemma
 
-See `Mathlib.GroupTheory.GroupAction.Quotient` for Burnside's lemma itself.
+See `Mathlib/GroupTheory/GroupAction/Quotient.lean` for Burnside's lemma itself.
 This lemma is separate because it requires `Nat.card`
 and hence transitively the development of cardinals.
 -/

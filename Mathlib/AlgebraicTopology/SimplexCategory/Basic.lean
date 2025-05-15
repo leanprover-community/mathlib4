@@ -11,7 +11,7 @@ import Mathlib.Tactic.Linarith
 
 /-! # Basic properties of the simplex category
 
-In `Mathlib.AlgebraicTopology.SimplexCategory.Defs`, we define the simplex
+In `Mathlib/AlgebraicTopology/SimplexCategory/Defs.lean`, we define the simplex
 category with objects `ℕ` and morphisms `n ⟶ m` the monotone maps from
 `Fin (n + 1)` to `Fin (m + 1)`.
 

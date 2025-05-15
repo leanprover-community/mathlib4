@@ -19,9 +19,9 @@ logarithm between `EReal` and `ℝ≥0∞` respect the operations. Note that the
 on `ℝ≥0∞` is enforced by measure theory. Subtraction, defined as `x - y = x + (-y)`, does not have
 nice properties but is sometimes convenient to have.
 
-There is also a `CommMonoidWithZero` structure on `EReal`, but `Mathlib.Data.EReal.Basic` only
+There is also a `CommMonoidWithZero` structure on `EReal`, but `Mathlib/Data/EReal/Basic.lean` only
 provides `MulZeroOneClass` because a proof of associativity by hand would have 125 cases.
-The `CommMonoidWithZero` instance is instead delivered in `Mathlib.Data.EReal.Inv`.
+The `CommMonoidWithZero` instance is instead delivered in `Mathlib/Data/EReal/Inv.lean`.
 
 We define `0 * x = x * 0 = 0` for any `x`, with the other cases defined non-ambiguously.
 This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1 * ⊥ + (-1) * ⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.

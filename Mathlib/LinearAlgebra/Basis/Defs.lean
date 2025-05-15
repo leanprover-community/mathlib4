@@ -58,7 +58,7 @@ basis, bases
 
 assert_not_exists LinearMap.pi LinearIndependent Cardinal
 -- TODO: assert_not_exists Submodule
--- (should be possible after splitting `Mathlib.LinearAlgebra.Finsupp.LinearCombination`)
+-- (should be possible after splitting `Mathlib/LinearAlgebra/Finsupp/LinearCombination.lean`)
 
 noncomputable section
 

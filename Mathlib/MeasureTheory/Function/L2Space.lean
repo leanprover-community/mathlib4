@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 /-! # `L^2` space
 
 If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
-(defined in `Mathlib.MeasureTheory.Function.LpSpace`)
+(defined in `Mathlib/MeasureTheory/Function/LpSpace.lean`)
 is also an inner product space, with inner product defined as `inner f g := ∫ a, ⟪f a, g a⟫ ∂μ`.
 
 ### Main results

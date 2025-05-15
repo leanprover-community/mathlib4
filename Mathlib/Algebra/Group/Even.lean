@@ -20,7 +20,7 @@ This file defines square and even elements in a monoid.
 ## Note
 
 * Many lemmas about `Even` / `IsSquare`, including important `simp` lemmas,
-  are in `Mathlib.Algebra.Ring.Parity`.
+  are in `Mathlib/Algebra/Ring/Parity.lean`.
 
 ## TODO
 
@@ -32,7 +32,7 @@ This file defines square and even elements in a monoid.
 
 ## See also
 
-`Mathlib.Algebra.Ring.Parity` for the definition of odd elements as well as facts about
+`Mathlib/Algebra/Ring/Parity.lean` for the definition of odd elements as well as facts about
 `Even` / `IsSquare` in rings.
 -/
 

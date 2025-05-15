@@ -376,7 +376,7 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M :=
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
--- See `Mathlib.RingTheory.Artinian.Ring`
+-- See `Mathlib/RingTheory/Artinian/Ring.lean`
 assert_not_exists IsLocalization LocalRing
 
 /-- A ring is Artinian if it is Artinian as a module over itself.
@@ -384,7 +384,7 @@ assert_not_exists IsLocalization LocalRing
 Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
 convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`.
 
-For equivalent definitions, see `Mathlib.RingTheory.Artinian.Ring`.
+For equivalent definitions, see `Mathlib/RingTheory/Artinian/Ring.lean`.
 -/
 @[stacks 00J5]
 abbrev IsArtinianRing (R) [Semiring R] :=

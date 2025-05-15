@@ -193,7 +193,7 @@ end Fintype
 end Pi
 
 -- TODO: this is a basic theorem about `Fintype.card`,
--- and ideally could be moved to `Mathlib.Data.Fintype.Card`.
+-- and ideally could be moved to `Mathlib/Data/Fintype/Card.lean`.
 theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
   simp

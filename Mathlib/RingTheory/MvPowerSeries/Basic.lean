@@ -52,11 +52,11 @@ conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
 
 This file sets up the (semi)ring structure on multivariate power series:
 additional results are in:
-* `Mathlib.RingTheory.MvPowerSeries.Inverse` : invertibility,
+* `Mathlib/RingTheory/MvPowerSeries/Inverse.lean` : invertibility,
   formal power series over a local ring form a local ring;
-* `Mathlib.RingTheory.MvPowerSeries.Trunc`: truncation of power series.
+* `Mathlib/RingTheory/MvPowerSeries/Trunc.lean`: truncation of power series.
 
-In `Mathlib.RingTheory.PowerSeries.Basic`, formal power series in one variable
+In `Mathlib/RingTheory/PowerSeries/Basic.lean`, formal power series in one variable
 will be obtained as a particular case, defined by
   `PowerSeries R := MvPowerSeries Unit R`.
 See that file for a specific description.

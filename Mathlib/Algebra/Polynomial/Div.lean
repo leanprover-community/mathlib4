@@ -701,7 +701,7 @@ lemma eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
 
 /- Porting note: the ML3 proof no longer worked because of a conflict in the
 inferred type and synthesized type for `DecidableRel` when using `Nat.le_find_iff` from
-`Mathlib.Algebra.Polynomial.Div` After some discussion on [Zulip]
+`Mathlib/Algebra/Polynomial/Div.lean` After some discussion on [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/decidability.20leakage)
 introduced `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the issue
 -/

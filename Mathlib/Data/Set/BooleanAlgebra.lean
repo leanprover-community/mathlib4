@@ -10,7 +10,7 @@ import Mathlib.Order.CompleteBooleanAlgebra
 
 This file contains only the definition of the complete atomic boolean algebra structure on `Set`.
 Indexed union/intersection are defined in `Mathlib.Order.SetNotation`; lemmas are available in
-`Mathlib.Data.Set.Lattice`.
+`Mathlib/Data/Set/Lattice.lean`.
 
 ## Main declarations
 

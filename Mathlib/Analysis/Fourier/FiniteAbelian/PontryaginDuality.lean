@@ -20,7 +20,7 @@ Structure Theorem.
 
 ## TODO
 
-Reuse the work done in `Mathlib.GroupTheory.FiniteAbelian.Duality`. This requires to write some more
+Reuse the work done in `Mathlib/GroupTheory/FiniteAbelian/Duality.lean`. This requires to write some more
 glue.
 -/
 

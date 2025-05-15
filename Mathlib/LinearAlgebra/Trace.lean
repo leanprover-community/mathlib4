@@ -314,7 +314,7 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
   have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?
   rw [hμ, comp_add, map_add, hg, add_zero, this, LinearMap.map_smul, smul_eq_mul]
 
--- This result requires `Mathlib.RingTheory.TensorProduct.Free`. Maybe it should move elsewhere?
+-- This result requires `Mathlib/RingTheory/TensorProduct/Free.lean`. Maybe it should move elsewhere?
 @[simp]
 lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
     (f : M →ₗ[R] M) (A : Type*) [CommRing A] [Algebra R A] :

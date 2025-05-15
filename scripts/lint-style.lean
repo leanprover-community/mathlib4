@@ -14,7 +14,7 @@ import Cli.Basic
 # Text-based style linters
 
 This file defines the `lint-style` executable which runs all text-based style linters.
-The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
+The linters themselves are defined in `Mathlib/Tactic/Linter/TextBased.lean`.
 
 In addition, this checks that
 - `Mathlib.Init` is (transitively) imported in all of mathlib, and
@@ -120,7 +120,7 @@ def missingInitImports (opts : Lean.Options) : IO Nat := do
   -- Now, it only remains to check that every module (except for the Header linter itself)
   -- imports some file in Mathlib.
   let missing := modulesWithoutMathlibImports.erase `Mathlib.Tactic.Linter.Header
-    -- This file is imported by `Mathlib.Tactic.Linter.Header`.
+    -- This file is imported by `Mathlib/Tactic/Linter/Header.lean`.
     |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \

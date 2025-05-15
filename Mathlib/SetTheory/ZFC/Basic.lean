@@ -12,9 +12,9 @@ import Mathlib.SetTheory.ZFC.PSet
 # A model of ZFC
 
 In this file, we model Zermelo-Fraenkel set theory (+ choice) using Lean's underlying type theory,
-building on the pre-sets defined in `Mathlib.SetTheory.ZFC.PSet`.
+building on the pre-sets defined in `Mathlib/SetTheory/ZFC/PSet.lean`.
 
-The theory of classes is developed in `Mathlib.SetTheory.ZFC.Class`.
+The theory of classes is developed in `Mathlib/SetTheory/ZFC/Class.lean`.
 
 ## Main definitions
 

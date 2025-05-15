@@ -319,7 +319,7 @@ def natMod (m n : ℤ) : ℕ := (m % n).toNat
 lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
   (toNat_lt'' hn).2 <| emod_lt_of_pos _ <| by omega
 
-/-- For use in `Mathlib.Tactic.NormNum.Pow` -/
+/-- For use in `Mathlib/Tactic/NormNum/Pow.lean` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
 
 end Int

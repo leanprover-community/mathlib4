@@ -34,7 +34,7 @@ We then provide `LinearMap` with the following instances:
 
 To ensure that composition works smoothly for semilinear maps, we use the typeclasses
 `RingHomCompTriple`, `RingHomInvPair` and `RingHomSurjective` from
-`Mathlib.Algebra.Ring.CompTypeclasses`.
+`Mathlib/Algebra/Ring/CompTypeclasses.lean`.
 
 ## Notation
 

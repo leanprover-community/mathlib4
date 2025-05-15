@@ -28,7 +28,7 @@ We prove the basic identities
 
 ## Notes
 
-See also `Mathlib.Analysis.SpecialFunctions.Bernstein`, which defines the Bernstein approximations
+See also `Mathlib/Analysis/SpecialFunctions/Bernstein.lean`, which defines the Bernstein approximations
 of a continuous function `f : C([0,1], ℝ)`, and shows that these converge uniformly to `f`.
 -/
 

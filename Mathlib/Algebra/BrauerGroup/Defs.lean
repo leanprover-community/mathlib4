@@ -31,7 +31,7 @@ Brauer group, Central simple algebra, Galois Cohomology
 universe u v
 
 /-- `CSA` is the set of all finite dimensional central simple algebras over field `K`, for its
-  generalisation over a `CommRing` please find `IsAzumaya` in `Mathlib.Algebra.Azumaya.Defs`. -/
+  generalisation over a `CommRing` please find `IsAzumaya` in `Mathlib/Algebra/Azumaya/Defs.lean`. -/
 structure CSA (K : Type u) [Field K] extends AlgCat.{v} K where
   /-- Any member of `CSA` is central. -/
   [isCentral : Algebra.IsCentral K carrier]

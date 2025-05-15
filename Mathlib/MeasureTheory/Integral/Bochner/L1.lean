@@ -16,11 +16,11 @@ for L1 functions by extending the integral on simple functions. See the file
 ## Main definitions
 
 The Bochner integral is defined through the extension process described in the file
-`Mathlib.MeasureTheory.Integral.SetToL1`, which follows these steps:
+`Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
 1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s * x`.
   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
-  (defined in the file `Mathlib.MeasureTheory.Integral.SetToL1`) with respect to the set `s`.
+  (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
 2. Define the integral on simple functions of the type `SimpleFunc α E` (notation : `α →ₛ E`)
   where `E` is a real normed space. (See `SimpleFunc.integral` for details.)

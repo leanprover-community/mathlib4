@@ -17,7 +17,7 @@ this provides an example of an adjunction is proved in
 
 Another result says that adjoining to a group an element `zero` gives a `GroupWithZero`. For more
 information about these structures (which are not that standard in informal mathematics, see
-`Mathlib.Algebra.GroupWithZero.Basic`)
+`Mathlib/Algebra/GroupWithZero/Basic.lean`)
 
 ## TODO
 

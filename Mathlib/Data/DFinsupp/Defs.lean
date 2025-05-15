@@ -12,7 +12,7 @@ import Mathlib.Algebra.Notation.Prod
 /-!
 # Dependent functions with finite support
 
-For a non-dependent version see `Mathlib.Data.Finsupp.Defs`.
+For a non-dependent version see `Mathlib/Data/Finsupp/Defs.lean`.
 
 ## Notation
 
