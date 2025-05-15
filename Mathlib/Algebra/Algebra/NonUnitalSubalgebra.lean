@@ -153,8 +153,10 @@ Useful to fix definitional equalities. -/
 protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
-    smul_mem' := fun r a (ha : a ∈ s) => by
-      change r • a ∈ s
+    smul_mem' := fun r a ha => by
+      simp_rw [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+        NonUnitalSubsemiring.mem_toAddSubmonoid, ← SetLike.mem_coe,
+        NonUnitalSubsemiring.coe_copy _ _ hs] at ha ⊢
       rw [hs] at ha ⊢
       exact S.smul_mem' r ha }
 
