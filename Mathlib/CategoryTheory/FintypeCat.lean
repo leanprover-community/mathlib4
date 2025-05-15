@@ -76,11 +76,11 @@ theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
 theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   rfl
 
--- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
+-- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib/CategoryTheory/Elementwise.lean`.
 lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
   congr_fun f.hom_inv_id x
 
--- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
+-- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib/CategoryTheory/Elementwise.lean`.
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
   congr_fun f.inv_hom_id y
 

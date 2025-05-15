@@ -34,7 +34,7 @@ The strong definition easily implies the weaker definition (see below),
 but we can not prove the reverse implication.
 This is because in Lean's type theory, while `max u v` is at least at big as `u` and `v`,
 it could be bigger than both!
-See also `Mathlib.CategoryTheory.UnivLE` for the statement that the stronger definition is
+See also `Mathlib/CategoryTheory/UnivLE.lean` for the statement that the stronger definition is
 equivalent to `EssSurj (uliftFunctor : Type v ⥤ Type max u v)`.
 -/
 @[pp_with_univ, mk_iff]

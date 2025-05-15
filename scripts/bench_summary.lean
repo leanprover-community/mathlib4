@@ -87,7 +87,7 @@ def summary (bc : Bench) : String :=
 /--
 `toTable bcs` formats an array of `Bench`es into a markdown table whose columns are
 the file name, the absolute change in instruction counts and the relative change as a percentage.
-A typical entry may look like ``|`Mathlib.Analysis.Seminorm`|+2.509⬝10⁹|(+1.41%)|``.
+A typical entry may look like ``|`Mathlib/Analysis/Seminorm.lean`|+2.509⬝10⁹|(+1.41%)|``.
 -/
 def toTable (bcs : Array Bench) : String :=
   let header := "|File|Instructions|%|\n|-|-:|:-:|"

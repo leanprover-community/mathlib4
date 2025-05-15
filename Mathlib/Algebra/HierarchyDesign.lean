@@ -70,7 +70,7 @@ when applicable:
   instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```
 * Instances transferred to `MulOpposite M`, like `MulOpposite.Monoid`.
-  See `Mathlib.Algebra.Opposites` for more examples.
+  See `Mathlib/Algebra/Opposites.lean` for more examples.
   ```
   instance MulOpposite.Z [Z M] : Z (MulOpposite M) := ...
   ```
@@ -97,7 +97,7 @@ when applicable:
   instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathlib.Algebra.Pointwise` for more examples.
+  See `Mathlib/Algebra/Pointwise.lean` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
