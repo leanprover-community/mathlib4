@@ -223,7 +223,7 @@ in paths. -/
 noncomputable def segalSpine : Z _⦋2⦌₂ ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
   prod.lift (Z.map (δ 2).op) (Z.map (δ 0).op)
 
-theorem StrictSegal.spineMonic (sz : StrictSegal Z) :
+theorem StrictSegal.mono_spine (sz : StrictSegal Z) :
     Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
   (CategoryTheory.mono_iff_injective _).mpr (StrictSegal.spineInjective sz 2 _)
 
