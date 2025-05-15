@@ -20,7 +20,7 @@ members.
 * `CommGroupWithZero`
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 universe u
 
@@ -154,8 +154,8 @@ lemma IsRightCancelMulZero.to_isCancelMulZero [IsRightCancelMulZero M₀] :
 end CommSemigroup
 
 /-- A type `M` is a `CancelCommMonoidWithZero` if it is a commutative monoid with zero element,
- `0` is left and right absorbing,
-  and left/right multiplication by a non-zero element is injective. -/
+`0` is left and right absorbing,
+and left/right multiplication by a non-zero element is injective. -/
 class CancelCommMonoidWithZero (M₀ : Type*) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
 
 -- See note [lower cancel priority]
