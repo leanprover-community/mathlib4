@@ -380,36 +380,33 @@ theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
   unfold append addCases
   simp
 
-theorem append_injective_iff {α : Type*} {m n : ℕ} {x : Fin m → α} {y : Fin n → α} :
-    Function.Injective (Fin.append x y) ↔
-      Function.Injective x ∧ Function.Injective y ∧ Disjoint (Set.range x) (Set.range y) := by
+theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
+    Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
+  ext (i | j) <;> simp
+
+theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
+    Function.Injective (Fin.append xs ys) ↔
+      Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
   constructor
   · intro H
-    refine ⟨?_, ?_, ?_⟩
-    · simpa [Function.comp_def] using H.comp (castAdd_injective _ _)
-    · simpa [Function.comp_def] using H.comp (natAdd_injective _ _)
-    · rw [Set.disjoint_iff_forall_ne]
-      rintro _ ⟨i, rfl⟩ _ ⟨j, rfl⟩
-      rw [← Fin.append_left x y i, ← Fin.append_right x y j, H.ne_iff]
-      apply Fin.ne_of_lt
+    have := H.comp ((castAdd_injective _ _).sumElim (natAdd_injective _ _) fun i j => ?_)
+    · rwa [append_comp_sumElim, Sum.elim_injective] at this
+    · apply Fin.ne_of_lt
       simp only [lt_iff_val_lt_val, coe_castAdd, coe_natAdd]
-      exact lt_of_lt_of_le i.prop (Nat.le_add_right m ↑j)
-  · rintro ⟨Hx, Hy, H⟩
-    intro i j h
+      exact i.prop.trans_le (Nat.le_add_right m ↑j)
+  · rintro ⟨Hx, Hy, H⟩ i j h
     induction i using Fin.addCases with
     | left i =>
       induction j using Fin.addCases with
       | left j => simpa [castAdd_inj, Hx.eq_iff] using h
       | right j =>
         simp only [append_left, append_right] at h
-        rw [Set.disjoint_iff_forall_ne] at H
-        exact False.elim (H (Set.mem_range_self i) (Set.mem_range_self j) h)
+        exact False.elim (H _ _ h)
     | right i =>
       induction j using Fin.addCases with
       | left j =>
         simp only [append_left, append_right] at h
-        rw [Set.disjoint_iff_forall_ne] at H
-        exact False.elim (H (Set.mem_range_self j) (Set.mem_range_self i) h.symm)
+        exact False.elim (H _ _ h.symm)
       | right j => simpa [append_right, Hy.eq_iff] using h
 
 end Append
