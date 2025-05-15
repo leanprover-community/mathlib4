@@ -10,7 +10,7 @@ import Mathlib.Order.Antisymmetrization
 # Oracle Computability and Turing Degrees
 
 This file defines a model of oracle computability using partial recursive functions.
-THis file introduces Turing reducibility and equivalence, prove that Turing equivalence is an
+This file introduces Turing reducibility and equivalence, prove that Turing equivalence is an
 equivalence relation, and define Turing degrees as the quotient under this relation.
 
 ## Main Definitions
@@ -30,9 +30,9 @@ equivalence relation, and define Turing degrees as the quotient under this relat
 
 ## Implementation Notes
 
-The type of partial functions recursive in an oracle `g` is the smallest type containing
-the constant zero, the successor, projections, the oracle `g`, and is closed under
-pairing, composition, primitive recursion, and μ-recursion.
+The type of partial functions recursive in a set of oracle `O` is the smallest type containing
+the constant zero, the successor, left and right projections, each oracle `g ∈ O`,
+and is closed under pairing, composition, primitive recursion, and μ-recursion.
 
 ## References
 
@@ -50,7 +50,7 @@ open Primrec Nat.Partrec Part
 variable {f g h : ℕ →. ℕ}
 
 /--
-The type of partial functions recursive in a set of oracle `O` is the smallest type containing
+The type of partial functions recursive in a set of oracles `O` is the smallest type containing
 the constant zero, the successor, left and right projections, each oracle `g ∈ O`,
 and is closed under pairing, composition, primitive recursion, and μ-recursion.
 -/
