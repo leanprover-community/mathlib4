@@ -697,4 +697,25 @@ lemma moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth (N M : Mod
         ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' ((isWeaklyRegular_cons_iff M _ _).mp reg).2
         (fun r hr ↦ h r (List.mem_cons_of_mem x hr)) len, add_assoc]
 
+lemma ideal_depth_quotient_regular_sequence_add_length_eq_ideal_depth (I : Ideal R)
+    [Small.{v} (R ⧸ I)] (M : ModuleCat.{v} R) (rs : List R) (reg : IsWeaklyRegular M rs)
+    (h : ∀ r ∈ rs, r ∈ I) :
+    I.depth (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
+    I.depth M := by
+  apply moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth _ M rs reg
+  convert h
+  rw [LinearEquiv.annihilator_eq (Shrink.linearEquiv (R ⧸ I) R), Ideal.annihilator_quotient]
+
+lemma depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRing R]
+    [Small.{v} (R ⧸ maximalIdeal R)] (M : ModuleCat.{v} R) (rs : List R)
+    (reg : IsRegular M rs) :
+    IsLocalRing.depth (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
+    IsLocalRing.depth M := by
+  apply ideal_depth_quotient_regular_sequence_add_length_eq_ideal_depth _ M rs reg.toIsWeaklyRegular
+  intro r hr
+  simp only [mem_maximalIdeal, mem_nonunits_iff]
+  by_contra isu
+  absurd reg.2
+  simp [eq_top_of_isUnit_mem (ofList rs) (Ideal.subset_span hr) isu]
+
 end depth
