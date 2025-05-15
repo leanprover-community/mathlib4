@@ -43,7 +43,7 @@ lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → 
   aesop
 
 /-- The graph isomorphism from a graph `G` that `IsCompleteMultipartite` to the corresponding
-`completeMultipartiteGraph` -/
+`completeMultipartiteGraph` (see also `isCompleteMultipartite_iff`) -/
 def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
     G ≃g completeMultipartiteGraph (fun (c : Quotient h.setoid) ↦ {x // h.setoid.r c.out x}) where
   toFun := fun x ↦ ⟨_, ⟨_, Quotient.mk_out x⟩⟩
@@ -57,7 +57,7 @@ def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
     rw [not_not]
 
 lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u) (V : ι → Type u)
-    (_ : ∀ i, Nonempty (V i)), Nonempty (G ≃g (completeMultipartiteGraph V)) := by
+    (_ : ∀ i, Nonempty (V i)), Nonempty (G ≃g completeMultipartiteGraph V) := by
   constructor <;> intro h
   · exact ⟨_, _, fun _ ↦ ⟨_, h.setoid.refl _⟩, ⟨h.iso⟩⟩
   · obtain ⟨_, _, _, ⟨e⟩⟩ := h
@@ -73,22 +73,30 @@ lemma IsCompleteMultipartite.colorable_of_cliqueFree {n : ℕ} (h : G.IsComplete
 variable (G) in
 /--
 The vertices `v, w₁, w₂` form an `IsPathGraph3Compl` in `G` iff `w₁w₂` is the only edge present
-between these three vertices. It is a witness to the non-complete-multipartite-ness of `G`
+between these three vertices. It is a witness to the non-complete-multipartite-ness of `G` (see
+`not_isCompleteMultipartite_iff_exists_isPathGraph3Compl`). This structure is an explicit way of
+saying that the induced graph on `{v, w₁, w₂}` is the complement of `P3`.
 -/
 structure IsPathGraph3Compl (v w₁ w₂ : α) : Prop where
   adj : G.Adj w₁ w₂
-  not_adj : ¬ G.Adj v w₁ ∧ ¬ G.Adj v w₂
+  not_adj_fst : ¬ G.Adj v w₁
+  not_adj_snd : ¬ G.Adj v w₂
 
 namespace IsPathGraph3Compl
 
 variable {v w₁ w₂ : α}
 
-lemma ne (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₁ ∧ v ≠ w₂ :=
-  ⟨fun h ↦ h2.not_adj.2 (h.symm ▸ h2.adj), fun h ↦ h2.not_adj.1 (h ▸ h2.adj.symm)⟩
+lemma ne_fst (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₁ :=
+  fun h ↦ h2.not_adj_snd (h.symm ▸ h2.adj)
 
-lemma symm (h : G.IsPathGraph3Compl v w₁ w₂) : G.IsPathGraph3Compl v w₂ w₁ := by
-  obtain ⟨h1, ⟨h2, h3⟩⟩ := h
-  exact ⟨h1.symm, ⟨h3, h2⟩⟩
+lemma ne_snd (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₂ :=
+  fun h ↦ h2.not_adj_fst (h ▸ h2.adj.symm)
+
+lemma fst_ne_snd (h2 : G.IsPathGraph3Compl v w₁ w₂) : w₁ ≠ w₂ := h2.adj.ne
+
+@[symm] lemma symm (h : G.IsPathGraph3Compl v w₁ w₂) : G.IsPathGraph3Compl v w₂ w₁ := by
+  obtain ⟨h1, h2, h3⟩ := h
+  exact ⟨h1.symm, h3, h2⟩
 
 end IsPathGraph3Compl
 
@@ -117,7 +125,8 @@ def IsPathGraph3Compl.pathGraph3ComplEmbedding {v w₁ w₂ : α} (h : G.IsPathG
     | 2 => w₂
   inj' := by
     intro _ _ _
-    have := h.ne
+    have := h.ne_fst
+    have := h.ne_snd
     have := h.adj.ne
     aesop
   map_rel_iff' := by
@@ -125,11 +134,12 @@ def IsPathGraph3Compl.pathGraph3ComplEmbedding {v w₁ w₂ : α} (h : G.IsPathG
     simp_rw [Function.Embedding.coeFn_mk, compl_adj, ne_eq, pathGraph_adj, not_or]
     have := h.adj
     have := h.adj.symm
-    have ⟨h1, h2⟩ := h.not_adj
+    have h1 := h.not_adj_fst
+    have h2 := h.not_adj_snd
     have ⟨_, _⟩ : ¬ G.Adj w₁ v ∧ ¬ G.Adj w₂ v := by rw [adj_comm] at h1 h2; exact ⟨h1, h2⟩
     aesop
 
-/-- Embedding of `pathGraph 3` into `G` that is not complete-multipartite. -/
+/-- Embedding of `(pathGraph 3)ᶜ` into `G` that is not complete-multipartite. -/
 noncomputable def pathGraph3ComplEmbeddingOf (h : ¬ G.IsCompleteMultipartite) :
     (pathGraph 3)ᶜ ↪g G :=
   IsPathGraph3Compl.pathGraph3ComplEmbedding
