@@ -274,7 +274,7 @@ theorem segalSpine_eq : segalSpine (Z := Z) = (Z.spine 2) ≫ pathToPair _ := by
     rw [δ_zero_eq_mkOfSucc]
     congr!
 
-theorem StrictSegal.segalSpineMono (sz : StrictSegal Z) : Mono (segalSpine Z) := by
+theorem StrictSegal.mono_segalSpine (sz : StrictSegal Z) : Mono (segalSpine Z) := by
   rw [CategoryTheory.mono_iff_injective, segalSpine_eq]
   refine Function.Injective.comp ?_ (StrictSegal.spineInjective sz 2)
   · intro p q hyp
