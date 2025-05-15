@@ -68,9 +68,14 @@ variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
 /-- If `R` and `A` have a bijective `algebraMap R A` and act identically on `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
-@[simps! repr_apply_support_val repr_apply_toFun]
+@[simps! repr_apply_toFun]
 noncomputable def Basis.algebraMapCoeffs : Basis ι A M :=
   b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
+
+@[simp]
+theorem Basis.algebraMapCoeffs_repr (m : M) :
+    (b.algebraMapCoeffs A h).repr m = (b.repr m).mapRange (algebraMap R A) (map_zero _) := by
+  rfl
 
 theorem Basis.algebraMapCoeffs_apply (i : ι) : b.algebraMapCoeffs A h i = b i :=
   b.mapCoeffs_apply _ _ _
