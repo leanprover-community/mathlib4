@@ -495,10 +495,10 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
 
 open Pointwise in
 theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) (y : E) :
-    HasFPowerSeriesWithinOnBall (fun (z : E) ↦ f (z - y)) p (s + {y}) (x + y) r where
+    HasFPowerSeriesWithinOnBall (fun z ↦ f (z - y)) p (s + {y}) (x + y) r where
   r_le := hf.r_le
   r_pos := hf.r_pos
-  hasSum := fun {z} hz1 hz2 => by
+  hasSum {z} hz1 hz2 := by
     have : x + z ∈ insert x s := by
       simp only [add_singleton, image_add_right, mem_insert_iff, add_eq_left, mem_preimage] at hz1 ⊢
       abel_nf at hz1
@@ -509,8 +509,7 @@ theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f
 theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y : E) :
     HasFPowerSeriesAt (fun (z : E) ↦ f (z - y)) p (x + y) := by
   obtain ⟨r, hf⟩ := hf
-  use r
-  apply HasFPowerSeriesOnBall.comp_sub hf
+  exact ⟨r, hf.comp_sub _⟩
 
 open Pointwise in
 theorem HasFPowerSeriesWithinAt.comp_sub (hf : HasFPowerSeriesWithinAt f p s x) (y : E) :
