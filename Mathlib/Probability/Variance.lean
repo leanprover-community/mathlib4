@@ -220,10 +220,12 @@ lemma variance_const_add [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
     Var[fun ω ↦ c + X ω; μ] = Var[X; μ] := by
   simp_rw [add_comm c, variance_add_const hX c]
 
-lemma variance_neg : Var[fun ω ↦ -X ω; μ] = Var[X; μ] := by
+lemma variance_fun_neg : Var[fun ω ↦ -X ω; μ] = Var[X; μ] := by
   convert variance_mul (-1) X μ
   · ext; ring
   · simp
+
+lemma variance_neg : Var[-X; μ] = Var[X; μ] := variance_fun_neg
 
 lemma variance_sub_const [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X μ) (c : ℝ) :
     Var[fun ω ↦ X ω - c; μ] = Var[X; μ] := by
@@ -232,7 +234,7 @@ lemma variance_sub_const [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
 lemma variance_const_sub [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X μ) (c : ℝ) :
     Var[fun ω ↦ c - X ω; μ] = Var[X; μ] := by
   simp_rw [sub_eq_add_neg]
-  rw [variance_const_add (by fun_prop) c, variance_neg]
+  rw [variance_const_add (by fun_prop) c, variance_fun_neg]
 
 @[simp]
 lemma variance_dirac [MeasurableSingletonClass Ω] (x : Ω) : Var[X; Measure.dirac x] = 0 := by

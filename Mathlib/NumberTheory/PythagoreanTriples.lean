@@ -90,7 +90,7 @@ def IsClassified (_ : PythagoreanTriple x y z) :=
       Int.gcd m n = 1
 
 /-- A primitive Pythagorean triple `x, y, z` is a Pythagorean triple with `x` and `y` coprime.
- Such a triple is “primitively classified” if there exist coprime integers `m, n` such that either
+Such a triple is “primitively classified” if there exist coprime integers `m, n` such that either
 * `x = m ^ 2 - n ^ 2` and `y = 2 * m * n`, or
 * `x = 2 * m * n` and `y = m ^ 2 - n ^ 2`.
 -/
@@ -252,7 +252,7 @@ For the classification of Pythagorean triples, we will use a parametrization of 
 variable {K : Type*} [Field K]
 
 /-- A parameterization of the unit circle that is useful for classifying Pythagorean triples.
- (To be applied in the case where `K = ℚ`.) -/
+(To be applied in the case where `K = ℚ`.) -/
 def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
     K ≃ { p : K × K // p.1 ^ 2 + p.2 ^ 2 = 1 ∧ p.2 ≠ -1 } where
   toFun x :=
