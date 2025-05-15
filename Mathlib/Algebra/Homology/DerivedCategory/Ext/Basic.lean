@@ -421,7 +421,7 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
     apply Ext.comp_assoc
     all_goals omega
 
-section
+section biproduct
 
 attribute [local simp] Ext.mk₀_add
 
@@ -439,8 +439,7 @@ lemma Ext.sum_comp {X Y Z : C} {p : ℕ} {ι : Type*} [Fintype ι] (α : ι → 
     (∑ i, α i).comp β h = ∑ i, (α i).comp β h :=
   map_sum (β.postcomp X h) _ _
 
-lemma Ext.mk₀_sum {X Y : C} {ι : Type*} [Fintype ι]
-    (f : ι → (X ⟶ Y)) :
+lemma Ext.mk₀_sum {X Y : C} {ι : Type*} [Fintype ι] (f : ι → (X ⟶ Y)) :
     mk₀ (∑ i, f i) = ∑ i, mk₀ (f i) :=
   map_sum addEquiv₀.symm _ _
 
@@ -482,7 +481,7 @@ noncomputable def Ext.addEquivBiproduct : Ext X c.pt n ≃+ Π i, Ext X (Y i) n 
     simp only [add_comp]
     rfl
 
-end
+end biproduct
 
 section ChangeOfUniverse
 
