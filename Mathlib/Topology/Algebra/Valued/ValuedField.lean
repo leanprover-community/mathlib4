@@ -107,7 +107,6 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
 
 section
 
-
 -- This is false, the zero topology on Γ₀ is too fine in general
 -- if the valuation is not surjective
 
@@ -115,26 +114,28 @@ open WithZeroTopology
 
 open Valued
 
-lemma continuous_iff_rangeGroup₀_restrict_continuous [Valued K Γ₀] :
-    Continuous (Valued.v : K → Γ₀) ↔
-      Continuous (Valued.v.rangeGroup₀_restrict (R := K)) := by
-  simp [v.coe_comp_rangeGroup₀_restrict, continuous_induced_rng]
-
--- This should be false if the valuation is not surjective
-theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) := by
-  rw [continuous_iff_continuousAt]
+/- A valuation `v` is continuous if it is considered valued
+into `v.rangeGroup₀` for the `WithZeroTopology` on the codomain. -/
+theorem Valued.continuous_valuation [Valued K Γ₀] :
+    @Continuous K v.rangeGroup₀ _ WithZeroTopology.topologicalSpace
+      (v.rangeGroup₀_restrict : K → v.rangeGroup₀) := by
+  rw [@continuous_iff_continuousAt]
   intro x
   rcases eq_or_ne x 0 with (rfl | h)
-  · rw [ContinuousAt, map_zero, WithZeroTopology.tendsto_zero]
+  · unfold ContinuousAt
+    rw [map_zero, WithZeroTopology.tendsto_zero]
     intro γ hγ
     rw [Filter.Eventually, Valued.mem_nhds_zero]
     simp only [Units.coe_map, Submonoid.subtype_apply, setOf_subset_setOf]
-    -- no hope if γ is infinitesimally small wrt v.rangeGroup₀
-    sorry
-    -- use Units.mk0 γ hγ; rfl
+    use (isUnit_iff_ne_zero.mpr hγ).unit
+    intro a
+    simp [IsUnit.unit_spec, ← Subtype.coe_lt_coe]
   · have v_ne : (v x : Γ₀) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
-    rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero v_ne]
-    apply Valued.loc_const v_ne
+    unfold ContinuousAt
+    rw [@WithZeroTopology.tendsto_of_ne_zero]
+    · simp only [← Subtype.coe_inj, v.coe_rangeGroup₀_restrict]
+      exact Valued.loc_const v_ne
+    · simpa [ne_eq, ← Subtype.coe_inj] using v_ne
 
 end
 
@@ -155,7 +156,7 @@ instance (priority := 100) completable : CompletableTopField K :=
   { ValuedRing.separated with
     nice := by
       rintro F hF h0
-      have : ∃ γ₀ : Valued.v.rangeGroup (R := K), ∃ M ∈ F, ∀ x ∈ M, (γ₀.1 : Γ₀) ≤ v x := by
+      have : ∃ γ₀ : (Valued.v.rangeGroup₀ (R := K))ˣ, ∃ M ∈ F, ∀ x ∈ M, (γ₀ : Γ₀) ≤ v x := by
         rcases Filter.inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
         rcases Valued.mem_nhds_zero.mp U_in with ⟨γ₀, hU⟩
         exists γ₀, M, M_in
@@ -184,33 +185,46 @@ instance (priority := 100) completable : CompletableTopField K :=
         apply Valuation.inversion_estimate
         · have : (v x : Γ₀) ≠ 0 := by
             intro h
-            rw [h] at x_in₀
-            simp at x_in₀
+            apply γ₀.ne_zero
+            rw [h, le_zero_iff] at x_in₀
+            rw [← Subtype.coe_inj, x_in₀]
+            simp
           exact (Valuation.ne_zero_iff _).mp this
         · refine lt_of_lt_of_le H₁ ?_
-          rw [v.rangeGroup_min/- , Units.min_val -/]
-          apply min_le_min _ x_in₀
-          rw [mul_assoc]
-          have : ((γ₀ * γ₀ : Γ₀ˣ) : Γ₀) ≤ v x * v x :=
+          have : γ₀ * γ₀ ≤ v x * v x :=
             calc
               γ₀.1 * γ₀.1 ≤ γ₀.1 * v x := mul_le_mul_left' x_in₀ _
               _ ≤ _ := mul_le_mul_right' x_in₀ (v x)
-          simp only [Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul, ge_iff_le]
-          exact mul_le_mul_left' this _ }
+          simp [mul_assoc, x_in₀, mul_le_mul_left' this γ] }
 
 open WithZeroTopology
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
-noncomputable def extension : hat K → Γ₀ :=
-  Completion.isDenseInducing_coe.extend (v : K → Γ₀)
+noncomputable def rangeGroup₀_extension :
+    hat K → hv.v.rangeGroup₀ :=
+  @Completion.isDenseInducing_coe.extend K (hat K) v.rangeGroup₀
+    _ _ _ topologicalSpace v.rangeGroup₀_restrict
 
-theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
-  refine Completion.isDenseInducing_coe.continuous_extend ?_
+@[simp, norm_cast]
+theorem rangeGroup₀_extension_extends (x : K) :
+    rangeGroup₀_extension (x : hat K) = v.rangeGroup₀_restrict x := by
+  have := WithZeroTopology.t5Space (Γ₀ := hv.v.rangeGroup₀)
+  apply @Completion.isDenseInducing_coe.extend_eq_of_tendsto
+  · infer_instance
+  rw [← @Completion.isDenseInducing_coe.nhds_eq_comap]
+  apply @Valued.continuous_valuation.continuousAt
+
+theorem continuous_rangeGroup₀_extension :
+    @Continuous _ _ _ topologicalSpace (hv.rangeGroup₀_extension) := by
+  have := WithZeroTopology.t5Space (Γ₀ := hv.v.rangeGroup₀)
+  apply @Completion.isDenseInducing_coe.continuous_extend
+  · infer_instance
   intro x₀
   rcases eq_or_ne x₀ 0 with (rfl | h)
   · refine ⟨0, ?_⟩
-    erw [← Completion.isDenseInducing_coe.isInducing.nhds_eq_comap]
-    exact Valued.continuous_valuation.tendsto' 0 0 (map_zero v)
+    erw [← @Completion.isDenseInducing_coe.isInducing.nhds_eq_comap]
+    apply @Valued.continuous_valuation.tendsto'
+    simp only [map_zero]
   · have preimage_one : v ⁻¹' {(1 : Γ₀)} ∈ 𝓝 (1 : K) := by
       have : (v (1 : K) : Γ₀) ≠ 0 := by
         rw [Valuation.map_one]
@@ -262,26 +276,32 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       exact mul_ne_zero (ne_of_mem_of_not_mem y₀_in zeroV') h H
     rcases this with ⟨z₀, y₀, y₀_in, hz₀, z₀_ne⟩
     have vz₀_ne : (v z₀ : Γ₀) ≠ 0 := by rwa [Valuation.ne_zero_iff]
-    refine ⟨v z₀, ?_⟩
-    rw [WithZeroTopology.tendsto_of_ne_zero vz₀_ne, eventually_comap]
-    filter_upwards [nhds_right] with x x_in a ha
-    rcases x_in with ⟨y, y_in, rfl⟩
-    have : (v (a * z₀⁻¹) : Γ₀) = 1 := by
-      apply hV
-      have : (z₀⁻¹ : K) = (z₀ : hat K)⁻¹ := map_inv₀ (Completion.coeRingHom : K →+* hat K) z₀
-      rw [Completion.coe_mul, this, ha, hz₀, mul_inv, mul_comm y₀⁻¹, ← mul_assoc, mul_assoc y,
-        mul_inv_cancel₀ h, mul_one]
-      solve_by_elim
-    calc
-      v a = v (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel₀ z₀_ne, mul_one]
-      _ = v (a * z₀⁻¹) * v z₀ := Valuation.map_mul _ _ _
-      _ = v z₀ := by rw [this, one_mul]
+    refine ⟨⟨v z₀, v.mem_rangeGroup₀⟩, ?_⟩
+    rw [WithZeroTopology.tendsto_of_ne_zero _, eventually_comap]
+    · filter_upwards [nhds_right] with x x_in a ha
+      rcases x_in with ⟨y, y_in, rfl⟩
+      rw [← Subtype.coe_inj, v.coe_rangeGroup₀_restrict, Subtype.coe_mk]
+      have : (v (a * z₀⁻¹) : Γ₀) = 1 := by
+        apply hV
+        have : (z₀⁻¹ : K) = (z₀ : hat K)⁻¹ := map_inv₀ (Completion.coeRingHom : K →+* hat K) z₀
+        rw [Completion.coe_mul, this, ha, hz₀, mul_inv, mul_comm y₀⁻¹, ← mul_assoc, mul_assoc y,
+          mul_inv_cancel₀ h, mul_one]
+        solve_by_elim
+      calc
+        v a = v (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel₀ z₀_ne, mul_one]
+        _ = v (a * z₀⁻¹) * v z₀ := Valuation.map_mul _ _ _
+        _ = v z₀ := by rw [this, one_mul]
+    · rw [ne_eq, ← Subtype.coe_inj]
+      simpa using z₀_ne
+
+/-- The extension of the valuation of a valued field to the completion of the field. -/
+noncomputable def extension : hat K → Γ₀ :=
+  hv.v.rangeGroup₀.subtype ∘ hv.rangeGroup₀_extension
 
 @[simp, norm_cast]
 theorem extension_extends (x : K) : extension (x : hat K) = v x := by
-  refine Completion.isDenseInducing_coe.extend_eq_of_tendsto ?_
-  rw [← Completion.isDenseInducing_coe.nhds_eq_comap]
-  exact Valued.continuous_valuation.continuousAt
+  unfold extension
+  simp
 
 /-- the extension of a valuation on a division ring to its completion. -/
 noncomputable def extensionValuation : Valuation (hat K) Γ₀ where

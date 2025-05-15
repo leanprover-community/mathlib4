@@ -1270,6 +1270,7 @@ def rangeGroup₀_restrict : Valuation R v.rangeGroup₀ where
   map_mul' x y := by simp [← Subtype.coe_inj]
   map_add_le_max' x y := v.map_add x y
 
+@[simp]
 lemma coe_rangeGroup₀_restrict (x : R) :
     (v.rangeGroup₀_restrict x : Γ₀) = v x := rfl
 
