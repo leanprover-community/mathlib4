@@ -20,7 +20,7 @@ members.
 * `CommGroupWithZero`
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 universe u
 
