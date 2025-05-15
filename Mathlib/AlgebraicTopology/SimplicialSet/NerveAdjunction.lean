@@ -284,12 +284,10 @@ theorem toStrictSegal₂.ext (F G : X ⟶ Y) (sy : StrictSegal Y)
     unfold StrictSegal.spineEquiv
     simp only [Nat.reduceAdd, Equiv.coe_fn_mk]
     ext i
-    simp only [spine_arrow]
     have h1 := congr_fun (F.naturality (Hom.tr (mkOfSucc i)).op) x
     have h2 := congr_fun (G.naturality (Hom.tr (mkOfSucc i)).op) x
     simp only [types_comp_apply, Nat.reduceAdd] at h1 h2
-    rw [← h1, ← h2]
-    apply eq₁
+    simp only [Equiv.coe_fn_mk, spine_arrow, ← h1, ← h2, eq₁]
 
 end
 
