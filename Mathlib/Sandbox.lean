@@ -170,16 +170,12 @@ theorem Int.quotientSpanNatEquivZMod_comp_castRingHom_eq (n : ℕ) :
     RingHom.comp (Int.quotientSpanNatEquivZMod n).symm (Int.castRingHom (ZMod n)) =
       Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
 
-#find_home! Int.quotientSpanNatEquivZMod_comp_Quotient_mk_eq
-
 theorem IsCoatom.sup_eq_top_iff {α : Type*} {a b : α} [SemilatticeSup α] [OrderTop α]
     (ha : IsCoatom a) :
     a ⊔ b = ⊤ ↔ ¬ b ≤ a := by
   by_cases hb : b = ⊤
   · simpa [hb] using ha.1
   · exact ⟨fun h ↦ left_lt_sup.mp (h ▸ IsCoatom.lt_top ha), fun h ↦ ha.2 _ (left_lt_sup.mpr h)⟩
-
-#find_home! IsCoatom.sup_eq_top_iff
 
 theorem adjoin_eq_top_of_conductor_eq_top {R : Type*} {S : Type*} [CommRing R] [CommRing S]
     [Algebra R S] {x : S} (h : conductor R x = ⊤) :
@@ -219,8 +215,6 @@ theorem Int.ideal_span_isMaximal_of_prime (p : ℕ) [hp : Fact (Nat.Prime p)] :
     (Ideal.span {(p : ℤ)}).IsMaximal :=
   Ideal.Quotient.maximal_of_isField _ <|
     (Int.quotientSpanNatEquivZMod p).toMulEquiv.isField _ (Field.toIsField _)
-
-
 
 variable {α : Type*}
 
@@ -335,3 +329,11 @@ theorem Ideal.primesOver_eq_normalizedFactors {A : Type*} [CommRing A] [IsDedeki
   · rw [prime_iff_isPrime (ne_bot_of_le_comap_algebra P hp h₂)] at h₁
     refine ((IsCoatom.le_iff_eq (isMaximal_def.mp h) ?_).mp h₂).symm
     exact comap_ne_top (algebraMap A B) (IsPrime.ne_top h₁)
+
+open Polynomial UniqueFactorizationMonoid in
+theorem Polynomial.mem_normalizedFactors_iff {K : Type*} [Field K] [DecidableEq K] {P Q : K[X]}
+    (hQ : Q ≠ 0) :
+    P ∈ normalizedFactors Q ↔ Irreducible P ∧ P.Monic ∧ P ∣ Q := by
+  by_cases hP : P = 0
+  · simpa [hP] using zero_notMem_normalizedFactors
+  · rw [mem_normalizedFactors_iff' hQ, normalize_eq_self_iff_monic hP]
