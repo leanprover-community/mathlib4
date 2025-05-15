@@ -157,8 +157,10 @@ def ofIso (i : A ≅ B) : A ≃ₐ[R] B where
 `CommAlgCat`. -/
 @[simps]
 def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where
-  hom := ofIso
-  inv := isoMk
+  toFun := ofIso
+  invFun := isoMk
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 instance reflectsIsomorphisms_forget_commAlgCat :
     (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where
