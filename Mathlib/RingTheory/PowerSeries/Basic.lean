@@ -29,10 +29,9 @@ We provide the natural inclusion from polynomials to formal power series.
 Additional results can be found in:
 * `Mathlib.RingTheory.PowerSeries.Trunc`, truncation of power series;
 * `Mathlib.RingTheory.PowerSeries.Inverse`, about inverses of power series,
-and the fact that power series over a local ring form a local ring;
+  and the fact that power series over a local ring form a local ring;
 * `Mathlib.RingTheory.PowerSeries.Order`, the order of a power series at 0,
-and application to the fact that power series over an integral domain
-form an integral domain.
+  and application to the fact that power series over an integral domain form an integral domain.
 
 ## Implementation notes
 
@@ -750,7 +749,7 @@ instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
 /-- Change of coefficients in power series, as an `AlgHom` -/
 def mapAlgHom (φ : A →ₐ[R] B) :
     PowerSeries A →ₐ[R] PowerSeries B :=
- MvPowerSeries.mapAlgHom φ
+  MvPowerSeries.mapAlgHom φ
 
 theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : A⟦X⟧) :
     mapAlgHom φ f = f.map φ :=

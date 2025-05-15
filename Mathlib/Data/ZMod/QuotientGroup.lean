@@ -12,10 +12,10 @@ This file relates `ZMod n` to the quotient group `ℤ / AddSubgroup.zmultiples (
 
 ## Main definitions
 
- - `ZMod.quotientZMultiplesNatEquivZMod` and `ZMod.quotientZMultiplesEquivZMod`:
-   `ZMod n` is the group quotient of `ℤ` by `n ℤ := AddSubgroup.zmultiples (n)`,
-   (where `n : ℕ` and `n : ℤ` respectively)
- - `ZMod.lift n f` is the map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`.
+- `ZMod.quotientZMultiplesNatEquivZMod` and `ZMod.quotientZMultiplesEquivZMod`:
+  `ZMod n` is the group quotient of `ℤ` by `n ℤ := AddSubgroup.zmultiples (n)`,
+  (where `n : ℕ` and `n : ℤ` respectively)
+- `ZMod.lift n f` is the map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`.
 
 ## Tags
 

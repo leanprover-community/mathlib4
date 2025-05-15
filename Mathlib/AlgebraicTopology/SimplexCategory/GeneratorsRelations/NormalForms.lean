@@ -29,7 +29,7 @@ stones towards proving that the canonical functor
 * [Kerodon Tag 04FT](https://kerodon.net/tag/04FT)
 
 ## TODOs:
- - Show that every `P_δ` admits a unique normal form.
+- Show that every `P_δ` admits a unique normal form.
 -/
 
 namespace SimplexCategoryGenRel
@@ -88,7 +88,7 @@ lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
 
 /-- The tail of an `m`-admissible list is (m+1)-admissible. -/
 lemma tail (a : ℕ) (l : List ℕ) (h : IsAdmissible m (a::l)) :
-      IsAdmissible (m + 1) l := by
+    IsAdmissible (m + 1) l := by
   refine ⟨(List.sorted_cons.mp h.sorted).right, ?_⟩
   intro k _
   simpa [Nat.add_assoc, Nat.add_comm 1] using h.le (k + 1) (by simpa)
@@ -118,7 +118,7 @@ def simplicialInsert (a : ℕ) : List ℕ → List ℕ
   | [] => [a]
   | b :: l => if a < b then a :: b :: l else b :: simplicialInsert (a + 1) l
 
-/-- `simplicialInsert ` just adds one to the length. -/
+/-- `simplicialInsert` just adds one to the length. -/
 lemma simplicialInsert_length (a : ℕ) (L : List ℕ) :
     (simplicialInsert a L).length = L.length + 1 := by
   induction L generalizing a with

@@ -47,7 +47,7 @@ def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
         Orientation.areaForm_rightAngleRotation_left, Orientation.inner_rightAngleRotation_left,
         Orientation.inner_rightAngleRotation_right, inner_add_left, inner_smul_left,
         inner_add_right, inner_smul_right]
-      linear_combination inner (𝕜 := ℝ) x y * θ.cos_sq_add_sin_sq)
+      linear_combination ⟪x, y⟫ * θ.cos_sq_add_sin_sq)
 
 @[simp]
 theorem rotationAux_apply (θ : Real.Angle) (x : V) :
@@ -213,12 +213,10 @@ theorem oangle_rotation_right {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real
   · exact o.kahler_ne_zero hx hy
 
 /-- The rotation of a vector by `θ` has an angle of `-θ` from that vector. -/
-@[simp]
 theorem oangle_rotation_self_left {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle (o.rotation θ x) x = -θ := by simp [hx]
 
 /-- A vector has an angle of `θ` from the rotation of that vector by `θ`. -/
-@[simp]
 theorem oangle_rotation_self_right {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle x (o.rotation θ x) = θ := by simp [hx]
 

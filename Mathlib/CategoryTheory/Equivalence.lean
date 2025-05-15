@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.Tactic.CategoryTheory.Slice
@@ -38,7 +38,7 @@ if it is full, faithful and essentially surjective.
 * `Functor.EssSurj`: type class on a functor `F` containing the data of the preimages
   and the isomorphisms `F.obj (preimage d) ≅ d`.
 * `Functor.IsEquivalence`: type class on a functor `F` which is full, faithful and
-essentially surjective.
+  essentially surjective.
 
 ## Main results
 
@@ -46,8 +46,8 @@ essentially surjective.
 * `isEquivalence_iff_of_iso`: when `F` and `G` are isomorphic functors,
 `F` is an equivalence iff `G` is.
 * `Functor.asEquivalenceFunctor`: construction of an equivalence of categories from
-a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
-and essentially surjective).
+  a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
+  and essentially surjective).
 
 ## Notations
 
@@ -619,17 +619,20 @@ noncomputable instance inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
 noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [F.Full] [F.Faithful] :
     IsEquivalence F.toEssImage where
 
-/-- A biimplication of properties on the objects of a category `C` induces an equivalence of the
+end Equivalence
+
+/-- An equality of properties of objects of a category `C` induces an equivalence of the
 respective induced full subcategories of `C`. -/
 @[simps]
-def ofFullSubcategory {Z Z' : C → Prop} (h : ∀ X, Z X ↔ Z' X) :
-    FullSubcategory Z ≌ FullSubcategory Z' where
-  functor := FullSubcategory.map (fun _ => (h _).mp)
-  inverse := FullSubcategory.map (fun _ => (h _).mpr)
-  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
-  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+def ObjectProperty.fullSubcategoryCongr {P P' : ObjectProperty C} (h : P = P') :
+    P.FullSubcategory ≌ P'.FullSubcategory where
+  functor := ObjectProperty.ιOfLE h.le
+  inverse := ObjectProperty.ιOfLE h.symm.le
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
-end Equivalence
+@[deprecated (since := "2025-03-04")]
+alias Equivalence.ofFullSubcategory := ObjectProperty.fullSubcategoryCongr
 
 namespace Iso
 
@@ -660,13 +663,13 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
     ≪≫ isoWhiskerLeft G.inverse i
 
 /-- As a special case, given two equivalences `G` and `G'` between the same categories,
- construct an isomorphism `G.inverse ≅ G.inverse` from an isomorphism `G.functor ≅ G.functor`. -/
+construct an isomorphism `G.inverse ≅ G.inverse` from an isomorphism `G.functor ≅ G.functor`. -/
 @[simps!]
 def isoInverseOfIsoFunctor {G G' : C ≌ D} (i : G.functor ≅ G'.functor) : G.inverse ≅ G'.inverse :=
   isoCompInverse ((isoWhiskerLeft G.inverse i).symm ≪≫ G.counitIso) ≪≫ leftUnitor G'.inverse
 
 /-- As a special case, given two equivalences `G` and `G'` between the same categories,
- construct an isomorphism `G.functor ≅ G.functor` from an isomorphism `G.inverse ≅ G.inverse`. -/
+construct an isomorphism `G.functor ≅ G.functor` from an isomorphism `G.inverse ≅ G.inverse`. -/
 @[simps!]
 def isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inverse ≅ G'.inverse) : G.functor ≅ G'.functor :=
   isoInverseOfIsoFunctor (G := G.symm) (G' := G'.symm) i
