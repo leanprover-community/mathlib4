@@ -16,6 +16,23 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
+open Limits in
+lemma IsPullback.mk' {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
+    (w : fst ≫ f = snd ≫ g) (hom_ext : ∀ ⦃T : C⦄ ⦃φ φ' : T ⟶ P⦄ (_ : φ ≫ fst = φ' ≫ fst)
+    (_ : φ ≫ snd = φ' ≫ snd), φ = φ') (exists_lift : ∀ ⦃T : C⦄ (a : T ⟶ X) (b : T ⟶ Y)
+    (_ : a ≫ f = b ≫ g), ∃ (l : T ⟶ P), l ≫ fst = a ∧ l ≫ snd = b) :
+    IsPullback fst snd f g where
+  w := w
+  isLimit' := by
+    let l (s : PullbackCone f g) : s.pt ⟶ P := (exists_lift _ _ s.condition).choose
+    exact ⟨Limits.PullbackCone.IsLimit.mk _
+      (fun s ↦ (exists_lift _ _ s.condition).choose)
+      (fun s ↦ (exists_lift _ _ s.condition).choose_spec.1)
+      (fun s ↦ (exists_lift _ _ s.condition).choose_spec.2)
+      (fun s m h₁ h₂ ↦ hom_ext
+        (h₁.trans (exists_lift _ _ s.condition).choose_spec.1.symm)
+        (h₂.trans (exists_lift _ _ s.condition).choose_spec.2.symm))⟩
+
 namespace Limits
 
 structure ChosenPullback {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S) where
@@ -78,9 +95,9 @@ variable {X₁ X₂ X₃ S : C} {f₁ : X₁ ⟶ S} {f₂ : X₂ ⟶ S} {f₃ : 
 structure ChosenPullback₃ where
   chosenPullback : ChosenPullback h₁₂.p₂ h₂₃.p₁
   p : chosenPullback.pullback ⟶ S := chosenPullback.p₁ ≫ h₁₂.p
-  l : h₁₃.LiftStruct (chosenPullback.p₁ ≫ h₁₂.p₁) (chosenPullback.p₂ ≫ h₂₃.p₂) p
   p₁ : chosenPullback.pullback ⟶ X₁ := chosenPullback.p₁ ≫ h₁₂.p₁
   p₃ : chosenPullback.pullback ⟶ X₃ := chosenPullback.p₂ ≫ h₂₃.p₂
+  l : h₁₃.LiftStruct p₁ p₃ p
   hp₁ : chosenPullback.p₁ ≫ h₁₂.p₁ = p₁ := by aesop_cat
   hp₃ : chosenPullback.p₂ ≫ h₂₃.p₂ = p₃ := by aesop_cat
 
@@ -154,6 +171,43 @@ lemma exists_lift {Y : C} (g₁ : Y ⟶ X₁) (g₂ : Y ⟶ X₂) (g₃ : Y ⟶ 
   · rw [← w₁, ← w₁₂, Category.assoc, ← p₁₂, p₁₂_p₁]
   · rw [← w₂, ← w₁₂, Category.assoc, ← p₁₂, p₁₂_p₂]
   · rw [← w₃, ← w₂₃, Category.assoc, ← p₂₃, p₂₃_p₃]
+
+lemma isPullback₂ : IsPullback h.p₁₂ h.p₂₃ h₁₂.p₂ h₂₃.p₁ := h.chosenPullback.isPullback
+
+lemma hom_ext {Y : C} {φ φ' : Y ⟶ h.chosenPullback.pullback}
+    (h₁ : φ ≫ h.p₁ = φ' ≫ h.p₁) (h₂ : φ ≫ h.p₂ = φ' ≫ h.p₂)
+    (h₃ : φ ≫ h.p₃ = φ' ≫ h.p₃) : φ = φ' := by
+  apply h.isPullback₂.hom_ext
+  · apply h₁₂.isPullback.hom_ext <;> simpa
+  · apply h₂₃.isPullback.hom_ext <;> simpa
+
+lemma isPullback₁ : IsPullback h.p₁₃ h.p₂₃ h₁₃.p₂ h₂₃.p₂ :=
+  .mk' (by simp) (fun _ _ _ h₁ h₂ ↦ by
+    apply h.hom_ext
+    · simpa using h₁ =≫ h₁₃.p₁
+    · simpa using h₂ =≫ h₂₃.p₁
+    · simpa using h₁ =≫ h₁₃.p₂)
+    (fun _ a b w ↦ by
+      obtain ⟨φ, hφ₁, hφ₂, hφ₃⟩ :=
+        h.exists_lift (a ≫ h₁₃.p₁) (b ≫ h₂₃.p₁) (a ≫ h₁₃.p₂) _ rfl
+          (by simpa using w.symm =≫ f₃) (by simp)
+      refine ⟨φ, ?_, ?_⟩
+      · apply h₁₃.isPullback.hom_ext <;> simpa
+      · apply h₂₃.isPullback.hom_ext <;> aesop)
+
+lemma isPullback₃ : IsPullback h.p₁₂ h.p₁₃ h₁₂.p₁ h₁₃.p₁ :=
+  .mk' (by simp) (fun _ _ _ h₁ h₂ ↦ by
+    apply h.hom_ext
+    · simpa using h₁ =≫ h₁₂.p₁
+    · simpa using h₁ =≫ h₁₂.p₂
+    · simpa using h₂ =≫ h₁₃.p₂)
+    (fun _ a b w ↦ by
+      obtain ⟨φ, hφ₁, hφ₂, hφ₃⟩ :=
+        h.exists_lift (a ≫ h₁₂.p₁) (a ≫ h₁₂.p₂) (b ≫ h₁₃.p₂) _ rfl
+          (by simp) (by simpa using w.symm =≫ f₁)
+      refine ⟨φ, ?_, ?_⟩
+      · apply h₁₂.isPullback.hom_ext <;> simpa
+      · apply h₁₃.isPullback.hom_ext <;> aesop)
 
 end ChosenPullback₃
 
