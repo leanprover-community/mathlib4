@@ -247,7 +247,7 @@ theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X [Nontrivial
     leadingCoeff_eq_zero, not_false_eq_true, one_mul, gt_iff_lt]
   by_cases h0 : (p.coeff i) = 0
   · simpa [h0, _root_.map_zero, zero_mul, one_mul] using pow_pos (lt_trans zero_lt_one hlt) _
-  simp only [h _ h0, one_mul, pow_lt_pow_right₀ hlt hi]
+  simp [h _ h0, pow_lt_pow_right₀ hlt hi]
 
 /-- If a valuation `v` is trivial on constants and `v RatFunc.X ≤ 1` then for every polynomial `p`,
 `v p ≤ 1`. -/
