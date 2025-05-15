@@ -514,14 +514,12 @@ theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y : E) :
 theorem HasFPowerSeriesWithinAt.comp_sub (hf : HasFPowerSeriesWithinAt f p s x) (y : E) :
     HasFPowerSeriesWithinAt (fun (z : E) ↦ f (z - y)) p (s + {y}) (x + y) := by
   obtain ⟨r, hf⟩ := hf
-  use r
-  apply HasFPowerSeriesWithinOnBall.comp_sub hf
+  exact ⟨r, hf.comp_sub _⟩
 
 theorem AnalyticAt.comp_sub (hf : AnalyticAt 𝕜 f x) (y : E) :
     AnalyticAt 𝕜 (fun (z : E) ↦ f (z - y)) (x + y) := by
   obtain ⟨p, hf⟩ := hf
-  use p
-  apply hf.comp_sub
+  exact ⟨p, hf.comp_sub _⟩
 
 theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
     AnalyticOnNhd 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) := by
@@ -534,8 +532,7 @@ theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
 theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y : E) :
     AnalyticWithinAt 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) (x + y) := by
   obtain ⟨p, hf⟩ := hf
-  use p
-  apply hf.comp_sub
+  exact ⟨p, hf.comp_sub _⟩
 
 theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y : E) :
     AnalyticOn 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) := by
@@ -549,8 +546,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_sub (hf : HasFPowerSeriesWithinOnBall
     (hy : y ∈ (insert x s) ∩ EMetric.ball x r) :
     HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
   have : y - x ∈ EMetric.ball (0 : E) r := by simpa [edist_eq_enorm_sub] using hy.2
-  have := hf.hasSum (by simpa only [add_sub_cancel] using hy.1) this
-  simpa only [add_sub_cancel]
+  simpa only [add_sub_cancel] using hf.hasSum (by simpa only [add_sub_cancel] using hy.1) this
 
 theorem HasFPowerSeriesOnBall.hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball x r) : HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
