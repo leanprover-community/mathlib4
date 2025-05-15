@@ -76,6 +76,12 @@ lemma isClosed (s : ClosedSubmodule R M) : IsClosed (s : Set M) := s.isClosed'
 
 initialize_simps_projections ClosedSubmodule (carrier → coe, as_prefix coe)
 
+instance : CanLift (Submodule R M) (ClosedSubmodule R M) toSubmodule (IsClosed (X := M) ·) where
+  prf s hs := ⟨⟨s, hs⟩, rfl⟩
+
+@[simp, norm_cast] lemma toSubmodule_le_toSubmodule {s t : ClosedSubmodule R M} :
+    s.toSubmodule ≤ t.toSubmodule ↔ s ≤ t := .rfl
+
 /-- The preimage of a closed submodule under a continuous linear map as a closed submodule. -/
 @[simps!]
 def comap (f : M →L[R] N) (s : ClosedSubmodule R N) : ClosedSubmodule R M where
@@ -84,6 +90,9 @@ def comap (f : M →L[R] N) (s : ClosedSubmodule R N) : ClosedSubmodule R M wher
 
 @[simp]
 lemma mem_comap {f : M →L[R] N} {s : ClosedSubmodule R N} {x : M} : x ∈ s.comap f ↔ f x ∈ s := .rfl
+
+@[simp] lemma toSubmodule_comap (f : M →L[R] N) (s : ClosedSubmodule R N) :
+    (s.comap f).toSubmodule = s.toSubmodule.comap f := rfl
 
 @[simp] lemma comap_id (s : ClosedSubmodule R M) : s.comap (.id _ _) = s := rfl
 
@@ -162,18 +171,30 @@ protected def closure (s : Submodule R M) : ClosedSubmodule R M where
   toSubmodule := s.topologicalClosure
   isClosed' := isClosed_closure
 
+@[simp] lemma closure_le {s : Submodule R M} {t : ClosedSubmodule R M} : s.closure ≤ t ↔ s ≤ t :=
+  t.isClosed.closure_subset_iff
+
 end Submodule
 
 namespace ClosedSubmodule
-variable [ContinuousAdd N] [ContinuousConstSMul R N]
+variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 
-/-- The closure of image of a proper cone under a continuous `R`-linear map is a proper cone. We
-use continuous maps here so that the comap of f is also a map between proper cones. -/
+/-- The closure of the image of a closed submodule under a continuous linear map is a closed
+submodule.
+
+
+We use continuous maps here so that the `comap` of `f` is also a map between closed submodules. -/
 def map (f : M →L[R] N) (s : ClosedSubmodule R M) : ClosedSubmodule R N :=
   (s.toSubmodule.map f).closure
 
 @[simp]
 lemma map_id [ContinuousAdd M] [ContinuousConstSMul R M] (s : ClosedSubmodule R M) :
     s.map (.id _ _) = s := SetLike.coe_injective <| by simpa [map] using s.isClosed.closure_eq
+
+lemma map_le_iff_le_comap {s : ClosedSubmodule R M} {t : ClosedSubmodule R N} :
+    map f s ≤ t ↔ s ≤ comap f t := by
+  simp [map, Submodule.map_le_iff_le_comap]; simp [← toSubmodule_le_toSubmodule]
+
+lemma gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_iff_le_comap
 
 end ClosedSubmodule
