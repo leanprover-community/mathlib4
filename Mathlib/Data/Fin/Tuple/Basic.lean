@@ -387,6 +387,8 @@ theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
 theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
     Function.Injective (Fin.append xs ys) ↔
       Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
+  -- TODO: move things around so we can just import this.
+  -- We inline it because it's still shorter than proving from scratch.
   let finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) :=
   { toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
     invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
