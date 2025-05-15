@@ -252,7 +252,7 @@ theorem toStrictSegal₂.mk_naturality : toStrictSegal₂.mk.naturalityProperty 
 `StrictSegal.spineToDiagonal sy 2 (by omega) (oneTruncation₂.pathMap F (X.spine _ _ φ)))`. -/
 @[simps!]
 def toStrictSegal₂.mk : X ⟶ Y where
-  app := fun n => toStrictSegal₂.mk.app sy F n.unop
+  app n := toStrictSegal₂.mk.app sy F n.unop
   naturality _ _ α := MorphismProperty.of_eq_top (toStrictSegal₂.mk_naturality sy F hyp) α.unop
 
 /-- A computation about `toStrictSegal₂.mk`. -/
