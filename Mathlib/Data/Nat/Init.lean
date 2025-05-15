@@ -45,10 +45,10 @@ The relevant files are:
 * `Mathlib.Algebra.Group.Int` for the group instance on `ℤ`
 * `Mathlib.Algebra.Ring.Nat` for the semiring instance on `ℕ`
 * `Mathlib.Algebra.Ring.Int` for the ring instance on `ℤ`
-* `Mathlib.Algebra.Order.Group.Nat` for the ordered monoid instance on `ℕ`
-* `Mathlib.Algebra.Order.Group.Int` for the ordered group instance on `ℤ`
-* `Mathlib.Algebra.Order.Ring.Nat` for the ordered semiring instance on `ℕ`
-* `Mathlib.Algebra.Order.Ring.Int` for the ordered ring instance on `ℤ`
+* `Mathlib/Algebra/Order/Group/Nat.lean` for the ordered monoid instance on `ℕ`
+* `Mathlib/Algebra/Order/Group/Int.lean` for the ordered group instance on `ℤ`
+* `Mathlib/Algebra/Order/Ring/Nat.lean` for the ordered semiring instance on `ℕ`
+* `Mathlib/Algebra/Order/Ring/Int.lean` for the ordered ring instance on `ℤ`
 -/
 
 /- We don't want to import the algebraic hierarchy in this file. -/

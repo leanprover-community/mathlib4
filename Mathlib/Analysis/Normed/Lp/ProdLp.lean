@@ -32,7 +32,7 @@ statements for the coordinate functions, for instance.
 
 # Implementation notes
 
-This file is a straight-forward adaptation of `Mathlib.Analysis.Normed.Lp.PiLp`.
+This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.lean`.
 
 -/
 

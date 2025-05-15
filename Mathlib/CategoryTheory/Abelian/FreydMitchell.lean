@@ -27,9 +27,9 @@ To prove (1), we proceed as follows:
 
 1. Using the Special Adjoint Functor Theorem and the duality between subobjects and quotients in
 abelian categories, we have that Grothendieck abelian categories have all limits (this is shown in
-`Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic`).
+`Mathlib/CategoryTheory/Abelian/GrothendieckCategory/Basic.lean`).
 2. Using the small object argument, it is shown that Grothendieck abelian categories have enough
-injectives (see `Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives`).
+injectives (see `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/EnoughInjectives.lean`).
 3. Putting these two together, it follows that Grothendieck abelian categories have an injective
 cogenerator (see `Mathlib.CategoryTheory.Generator.Abelian`).
 4. By taking a coproduct of copies of the injective cogenerator, we find a projective separator `G`

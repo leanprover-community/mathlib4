@@ -228,7 +228,7 @@ list are in strictly increasing order by natural-number index.
 
 By forgetting the natural number indices, an expression representing a `Mathlib.Tactic.Module.NF`
 object can be built from a `Module.qNF` object; this construction is provided as
-`Mathlib.Tactic.Module.qNF.toNF`. -/
+`Mathlib/Tactic/Module/qNF/toNF.lean`. -/
 abbrev qNF (R : Q(Type u)) (M : Q(Type v)) := List ((Q($R) × Q($M)) × ℕ)
 
 namespace qNF

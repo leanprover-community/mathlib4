@@ -24,7 +24,7 @@ path to Hölder's and Minkowski's inequalities and after that to Lp spaces and m
 theory.
 
 (Strict) concavity of `fun x ↦ x ^ p` for `0 < p < 1` (`0 ≤ p ≤ 1`) can be found in
-`Mathlib.Analysis.Convex.SpecificFunctions.Pow`.
+`Mathlib/Analysis/Convex/SpecificFunctions/Pow.lean`.
 
 ## See also
 

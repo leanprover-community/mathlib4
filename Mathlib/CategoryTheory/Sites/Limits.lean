@@ -218,7 +218,7 @@ If every cocone on a diagram of sheaves which is a colimit on the level of presh
 the condition that the cocone point is a sheaf, then the functor from sheaves to preseheaves
 creates colimits of the diagram.
 Note: this almost never holds in sheaf categories in general, but it does for the extensive
-topology (see `Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits`).
+topology (see `Mathlib/CategoryTheory/Sites/Coherent/ExtensiveColimits.lean`).
 -/
 def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
     (h : ∀ (c : Cocone (F ⋙ sheafToPresheaf J D)) (_ : IsColimit c), Presheaf.IsSheaf J c.pt) :

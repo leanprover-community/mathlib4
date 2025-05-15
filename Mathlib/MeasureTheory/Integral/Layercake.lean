@@ -49,7 +49,7 @@ are also included.
 ## See also
 
 Another common application, a representation of the integral of a real power of a nonnegative
-function, is given in `Mathlib.Analysis.SpecialFunctions.Pow.Integral`.
+function, is given in `Mathlib/Analysis/SpecialFunctions/Pow/Integral.lean`.
 
 ## Tags
 

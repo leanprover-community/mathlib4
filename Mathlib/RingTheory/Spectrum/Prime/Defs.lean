@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Ideal.Prime
 
 The prime spectrum of a commutative (semi)ring is the type of all prime ideals.
 
-For the Zariski topology, see `Mathlib.RingTheory.Spectrum.Prime.Topology`.
+For the Zariski topology, see `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 
 (It is also naturally endowed with a sheaf of rings,
 which is constructed in `AlgebraicGeometry.StructureSheaf`.)

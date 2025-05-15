@@ -18,7 +18,7 @@ sense of `Icc`/`Ico`/`Ioc`/`Ioo` as lists, multisets, or finsets.
 Further, if the order is bounded above (resp. below), then we can also make sense of the
 "unbounded" intervals `Ici`/`Ioi` (resp. `Iic`/`Iio`).
 
-Many theorems about these intervals can be found in `Mathlib.Order.Interval.Finset.Basic`.
+Many theorems about these intervals can be found in `Mathlib/Order/Interval/Finset/Basic.lean`.
 
 ## Examples
 

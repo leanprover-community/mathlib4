@@ -9,7 +9,7 @@ import Mathlib.Data.Set.Basic
 /-!
 # Further lemmas about the natural numbers
 
-The distinction between this file and `Mathlib.Algebra.Order.Ring.Nat` is not particularly clear.
+The distinction between this file and `Mathlib/Algebra/Order/Ring/Nat.lean` is not particularly clear.
 They were separated for now to minimize the porting requirements for tactics
 during the transition to mathlib4. Please feel free to reorganize these two files.
 -/

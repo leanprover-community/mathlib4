@@ -14,7 +14,7 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 This file provides the space `Lp E p μ` as the subtype of elements of `α →ₘ[μ] E`
 (see `MeasureTheory.AEEqFun`) such that `eLpNorm f p μ` is finite.
 For `1 ≤ p`, `eLpNorm` defines a norm and `Lp` is a complete metric space
-(the latter is proved at `Mathlib.MeasureTheory.Function.LpSpace.Complete`).
+(the latter is proved at `Mathlib/MeasureTheory/Function/LpSpace/Complete.lean`).
 
 ## Main definitions
 

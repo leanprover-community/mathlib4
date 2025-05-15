@@ -56,7 +56,7 @@ Preservation of finite-dimensionality and formulas for the dimension are given f
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
 Plenty of the results hold for general fg modules or notherian modules, and they can be found in
-`Mathlib.LinearAlgebra.FreeModule.Finite.Rank` and `Mathlib.RingTheory.Noetherian`.
+`Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib.RingTheory.Noetherian`.
 -/
 
 assert_not_exists Module.Projective Subalgebra
