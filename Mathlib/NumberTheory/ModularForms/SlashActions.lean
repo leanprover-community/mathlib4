@@ -130,7 +130,7 @@ theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL (Fin 2) ℝ
 
 theorem SL_slash_def (γ : SL(2, ℤ)) :
     f ∣[k] γ = fun τ ↦ f (γ • τ) * denom γ τ ^ (-k) := by
-  ext τ
+  ext
   simp [SL_slash, slash_def, σ]
 
 theorem SL_slash_apply (γ : SL(2, ℤ)) (τ : ℍ) :

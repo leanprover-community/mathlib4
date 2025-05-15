@@ -82,14 +82,14 @@ lemma denom_cocycle (x y : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
   ring
 
 lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
-    (num g z / denom g z).im = g.val.det * z.im / Complex.normSq (denom g z) := by
+    (num g z / denom g z).im = g.det.val * z.im / Complex.normSq (denom g z) := by
   simp only [num, denom, Complex.div_im, Complex.add_im, Complex.mul_im, Complex.ofReal_re,
     Complex.ofReal_im, zero_mul, add_zero, Complex.add_re, Complex.mul_re, sub_zero, ← sub_div,
-    g.1.det_fin_two]
+    GeneralLinearGroup.val_det_apply, g.1.det_fin_two]
   ring
 
 /-- Automorphism of `ℂ`: the identity if `0 < det g` and conjugation otherwise. -/
-def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ := if 0 < g.val.det then RingHom.id ℂ else starRingEnd ℂ
+def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ := if 0 < g.det.val then RingHom.id ℂ else starRingEnd ℂ
 
 lemma σ_ofReal (g : GL (Fin 2) ℝ) (y : ℝ) : σ g y = y := by
   simp only [σ]
@@ -113,9 +113,9 @@ lemma σ_mul (g g' : GL (Fin 2) ℝ) (x : ℂ) : σ (g * g') x = σ g (σ g' x) 
   simp only [σ, map_mul, Units.val_mul]
   rcases g.det_ne_zero.lt_or_lt with (h | h) <;>
   rcases g'.det_ne_zero.lt_or_lt with (h' | h')
-  · simp [mul_pos_of_neg_of_neg h h', not_lt_of_gt h, not_lt_of_gt h']
-  · simp [not_lt_of_gt <| mul_neg_of_neg_of_pos h h', not_lt_of_gt h, h']
-  · simp [not_lt_of_gt <| mul_neg_of_pos_of_neg h h', h, not_lt_of_gt h']
+  · simp [mul_pos_of_neg_of_neg h h', h.not_lt, h'.not_lt]
+  · simp [(mul_neg_of_neg_of_pos h h').not_lt, h.not_lt, h']
+  · simp [(mul_neg_of_pos_of_neg h h').not_lt, h, h'.not_lt]
   · simp [mul_pos h h', h, h']
 
 lemma σ_mul_comm (g g' : GL (Fin 2) ℝ) (x : ℂ) : σ g (σ g' x) = σ g' (σ g x) := by
@@ -126,7 +126,7 @@ lemma σ_mul_comm (g g' : GL (Fin 2) ℝ) (x : ℂ) : σ g (σ g' x) = σ g' (σ
 def smulAux' (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := σ g (num g z / denom g z)
 
 lemma smulAux'_im (g : GL (Fin 2) ℝ) (z : ℂ) :
-    (smulAux' g z).im = |g.val.det| * z.im / Complex.normSq (denom g z) := by
+    (smulAux' g z).im = |g.det.val| * z.im / Complex.normSq (denom g z) := by
   simp only [smulAux', σ]
   split_ifs with h <;>
   [rw [abs_of_pos h]; rw [abs_of_nonpos (not_lt.mp h)]] <;>
@@ -180,7 +180,7 @@ instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
 lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
     ↑(g • z) = σ g (num g z / denom g z) := rfl
 
-lemma coe_smul_of_det_pos {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (z : ℍ) :
+lemma coe_smul_of_det_pos {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     ↑(g • z) = num g z / denom g z := by
   change smulAux' g z = _
   rw [smulAux', σ, if_pos hg, RingHom.id_apply, num, denom]
@@ -189,7 +189,7 @@ lemma denom_cocycle_σ (x y : GL (Fin 2) ℝ) (z : ℍ) :
     denom (x * y) z = σ y (denom x ↑(y • z)) * denom y z :=
   denom_cocycle' x y z
 
-lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (z : ℍ) :
+lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     g • z = mk (num g z / denom g z) (coe_smul_of_det_pos hg z ▸ (g • z).property) := by
   ext; simp [coe_smul_of_det_pos hg]
 
