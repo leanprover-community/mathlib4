@@ -98,6 +98,20 @@ theorem integral_comp_L1_comm (L : E →L[𝕜] F) (φ : X →₁[μ] E) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) :=
   L.integral_comp_comm (L1.integrable_coeFn φ)
 
+lemma integral_comm_of_integrable_id {mE : MeasurableSpace E} {μ : Measure E}
+    (h_int : Integrable _root_.id μ) (L : E →L[ℝ] ℝ) :
+    ∫ x, L x ∂μ = L (∫ x, x ∂μ) := by
+  have h_Lp : MemLp _root_.id 1 μ := by rwa [memLp_one_iff_integrable]
+  have h := L.integral_comp_L1_comm (h_Lp.toLp _root_.id)
+  refine (trans ?_ h).trans ?_
+  · refine integral_congr_ae ?_
+    filter_upwards [MemLp.coeFn_toLp h_Lp] with x hx
+    rw [hx, id_eq]
+  · congr 1
+    refine integral_congr_ae ?_
+    filter_upwards [MemLp.coeFn_toLp h_Lp] with x hx
+    rw [hx, id_eq]
+
 end ContinuousLinearMap
 
 namespace LinearIsometry
