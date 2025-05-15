@@ -29,6 +29,17 @@ such ring has only on maximal ideal, and hence it is a complete local ring.
 - `PowerSeries.IsWeierstrassDivision`: version of `PowerSeries.IsWeierstrassDivisionAt`
   for local rings with respect to its maximal ideal.
 
+- `PowerSeries.IsWeierstrassDivisorAt g I`: let `g` be a power series over `A`, `I` be an ideal of
+  `A`, this is a `Prop` which asserts that the `n`-th coefficient
+  of `g` is a unit, where `n` is the order of the image of `g` in `(A / I)⟦X⟧`
+  (defined to be zero if such image is zero, in which case it's mathematically not considered).
+
+  This property guarantees that if the `A` is `I`-adic complete, then `g` can be used as a divisor
+  in Weierstrass division (`PowerSeries.IsWeierstrassDivisorAt.isWeierstrassDivisionAt_div_mod`).
+
+- `PowerSeries.IsWeierstrassDivisor`: version of `PowerSeries.IsWeierstrassDivisorAt` for
+  local rings with respect to its maximal ideal.
+
 ## Main results
 
 - `PowerSeries.exists_isWeierstrassDivision`: **Weierstrass division**
