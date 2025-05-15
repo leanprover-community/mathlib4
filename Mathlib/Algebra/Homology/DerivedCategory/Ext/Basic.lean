@@ -439,8 +439,7 @@ lemma Ext.sum_comp {X Y Z : C} {p : ℕ} {ι : Type*} [Fintype ι] (α : ι → 
     (∑ i, α i).comp β h = ∑ i, (α i).comp β h :=
   map_sum (β.postcomp X h) _ _
 
-lemma Ext.mk₀_sum {X Y : C} {ι : Type*} [Fintype ι]
-    (f : ι → (X ⟶ Y)) :
+lemma Ext.mk₀_sum {X Y : C} {ι : Type*} [Fintype ι] (f : ι → (X ⟶ Y)) :
     mk₀ (∑ i, f i) = ∑ i, mk₀ (f i) :=
   map_sum addEquiv₀.symm _ _
 
