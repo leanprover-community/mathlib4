@@ -14,13 +14,13 @@ This file contains basic results relevant to the triangularizability of linear e
 
 ## Main definitions / results
 
- * `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
-   linear endomorphism has an eigenvalue.
- * `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
-   closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
- * `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
-   generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
-   its restriction to any invariant submodule.
+* `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
+  linear endomorphism has an eigenvalue.
+* `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
+  closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
+* `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
+  generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
+  its restriction to any invariant submodule.
 
 ## References
 
