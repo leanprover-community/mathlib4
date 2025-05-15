@@ -101,4 +101,39 @@ noncomputable def rootsOfUnityAddChar (n : ℕ) [NeZero n] :
     (rootsOfUnityAddChar n x).val = toCircle x := by
   rfl
 
+-- TODO: Duplication with https://github.com/leanprover-community/mathlib4/pull/24591
+/-- nth roots of unity of the complex numbers embeded into the Circle -/
+noncomputable def rootsOfUnitytoCircle (n : ℕ) [NeZero n] : (rootsOfUnity n ℂ) →* Circle where
+  toFun := fun z => ⟨z.val.val,
+    mem_sphere_zero_iff_norm.2 (Complex.norm_eq_one_of_mem_rootsOfUnity z.prop)⟩
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+-- TODO: Duplication with https://github.com/leanprover-community/mathlib4/pull/24591
+/-- Equivalence of the nth roots of unity of the Circle with nth roots of unity of the complex
+numbers -/
+noncomputable def rootsOfUnityCircleEquiv (n : ℕ) [NeZero n] :
+    rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
+  __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
+  invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
+    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← MonoidHom.map_pow,
+      ← (rootsOfUnitytoCircle n).map_one]
+    congr
+    aesop⟩
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
+theorem rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_Surjective (n : ℕ) [NeZero n] :
+    Function.Surjective (rootsOfUnityCircleEquiv n ∘ rootsOfUnityAddChar n) := fun ⟨w,hw⟩ => by
+  obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity n w).mp hw
+  exact ⟨j, by
+    rw [comp_apply]
+    rw [MulEquiv.apply_eq_iff_symm_apply]
+    ext
+    rw [rootsOfUnityAddChar_val]
+    rw [ZMod.toCircle_natCast]
+    simp_rw [← mul_div_assoc] at hj2
+    rw [hj2]
+    aesop⟩
+
 end ZMod
