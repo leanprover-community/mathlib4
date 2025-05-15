@@ -525,7 +525,6 @@ lemma _root_.Monotone.expGrowthInf_comp_le (h : Monotone u)
   · rw [mul_comm a, ← le_div_iff_mul_le a_0 a_top, EReal.div_eq_inv_mul] at aM_M'
     apply Nat.cast_le.1 <| aM_M'.trans <| an_k.trans' _
     gcongr
-    exact inv_nonneg_of_nonneg a_0.le
   · rw [comp_apply, mul_comm a b, mul_assoc b a]
     rw [← EReal.div_eq_inv_mul, le_div_iff_mul_le a_0' (ne_top_of_lt a_a'), mul_comm] at k_an'
     rw [← EReal.div_eq_inv_mul, div_le_iff_le_mul a_0 a_top] at an_k
@@ -564,9 +563,8 @@ lemma _root_.Monotone.le_expGrowthSup_comp (h : Monotone u)
   obtain ⟨n, n_M', ⟨bn_un, _⟩, k, an_k', k_an⟩ := frequently_atTop.1 b_u M'
   refine ⟨k, ?_, fun ak_vk' ↦ ?_⟩
   · rw [mul_comm a', ← le_div_iff_mul_le a_0' a_top', EReal.div_eq_inv_mul] at aM_M'
-    apply Nat.cast_le.1 <| aM_M'.trans <| an_k'.trans' _
+    apply Nat.cast_le.1 <| aM_M'.trans <| le_trans _ an_k'
     gcongr
-    exact inv_nonneg_of_nonneg a_0'.le
   · rw [comp_apply, mul_comm a b, mul_assoc b a]
     rw [← EReal.div_eq_inv_mul, div_le_iff_le_mul a_0' a_top'] at an_k'
     rw [← EReal.div_eq_inv_mul, le_div_iff_mul_le a_0 (ne_top_of_lt a_a'), mul_comm] at k_an
