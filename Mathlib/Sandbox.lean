@@ -109,7 +109,7 @@ theorem Int.ideal_eq_span_absNorm_self (J : Ideal ℤ) :
   obtain ⟨g, rfl⟩ := this
   rw [submodule_span_eq, span_singleton_eq_span_singleton, absNorm_span_singleton,
     Int.natCast_natAbs, Algebra.norm_self_apply]
-  exact associated_abs _
+  sorry
 
 theorem Int.cast_mem_ideal_iff {R : Type*} [Ring R] [Algebra ℤ R] {I : Ideal R} {d : ℤ} :
     (d : R) ∈ I ↔ (absNorm (under ℤ I) : ℤ) ∣ d := by
@@ -169,6 +169,8 @@ theorem Int.quotientSpanNatEquivZMod_comp_Quotient_mk_eq (n :ℕ) :
 theorem Int.quotientSpanNatEquivZMod_comp_castRingHom_eq (n : ℕ) :
     RingHom.comp (Int.quotientSpanNatEquivZMod n).symm (Int.castRingHom (ZMod n)) =
       Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
+
+#find_home! Int.quotientSpanNatEquivZMod_comp_Quotient_mk_eq
 
 theorem IsCoatom.sup_eq_top_iff {α : Type*} {a b : α} [SemilatticeSup α] [OrderTop α]
     (ha : IsCoatom a) :
