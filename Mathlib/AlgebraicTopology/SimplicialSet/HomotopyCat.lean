@@ -151,10 +151,10 @@ lemma OneTruncation₂.homOfEq_edge
 map on paths. -/
 def oneTruncation₂.pathMap {X Y : SSet.Truncated.{u} 2} (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
     {n : ℕ} (σ : Truncated.Path X n) : Truncated.Path Y n where
-      vertex i := F.obj (σ.vertex i)
-      arrow i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).edge
-      arrow_src i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).src_eq
-      arrow_tgt i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).tgt_eq
+  vertex i := F.obj (σ.vertex i)
+  arrow i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).edge
+  arrow_src i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).src_eq
+  arrow_tgt i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).tgt_eq
 
 @[simp]
 lemma oneTruncation₂.pathMap_vertex {X Y : SSet.Truncated.{u} 2}
