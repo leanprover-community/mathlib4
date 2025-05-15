@@ -6001,8 +6001,9 @@ import Mathlib.Topology.Closure
 import Mathlib.Topology.ClusterPt
 import Mathlib.Topology.Coherent
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Compactification.OnePoint
-import Mathlib.Topology.Compactification.OnePointEquiv
+import Mathlib.Topology.Compactification.OnePoint.Basic
+import Mathlib.Topology.Compactification.OnePoint.OnePointEquiv
+import Mathlib.Topology.Compactification.OnePoint.Sphere
 import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
