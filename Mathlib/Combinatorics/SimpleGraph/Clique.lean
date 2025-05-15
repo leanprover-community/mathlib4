@@ -151,7 +151,7 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
   simpa
 
 /-- If a set of vertices `A` is a clique in subgraph of `G` induced by a superset of `A`,
- its embedding is a clique in `G`. -/
+its embedding is a clique in `G`. -/
 theorem IsClique.of_induce {S : Subgraph G} {F : Set α} {A : Set F}
     (c : (S.induce F).coe.IsClique A) : G.IsClique (Subtype.val '' A) := by
   simp only [Set.Pairwise, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
@@ -287,7 +287,7 @@ theorem is3Clique_iff_exists_cycle_length_three :
     (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
 
 /-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
- its embedding is an `n`-clique in `G`. -/
+its embedding is an `n`-clique in `G`. -/
 theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
     (cc : (S.induce F).coe.IsNClique n s) :
     G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
@@ -342,10 +342,10 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
   convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
   exact hb.symm
 
-theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty ((⊤ : SimpleGraph (Fin n)) ↪g G) :=
+theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGraph (Fin n) ↪g G) :=
   ⟨fun h ↦ ⟨topEmbeddingOfNotCliqueFree h⟩, fun ⟨f⟩ ↦ not_cliqueFree_of_top_embedding f⟩
 
-theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty ((⊤ : SimpleGraph (Fin n)) ↪g G) := by
+theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
   rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
 
 theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGraph α) ↪g G) :
@@ -771,7 +771,7 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge
   · exact (c vins).left rfl
 
 /-- The neighbors of a vertex `v` form an independent set in a triangle free graph `G`. -/
-theorem isIndepSet_neighborSet_of_triangleFree (h: G.CliqueFree 3) (v : α) :
+theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
     G.IsIndepSet (G.neighborSet v) := by
   classical
   by_contra nind
@@ -782,7 +782,7 @@ theorem isIndepSet_neighborSet_of_triangleFree (h: G.CliqueFree 3) (v : α) :
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
 /-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
- set in `G` and vice versa. -/
+set in `G` and vice versa. -/
 theorem isIndepSet_induce {F : Set α} {s : Set F} :
     ((⊤ : Subgraph G).induce F).coe.IsIndepSet s ↔ G.IsIndepSet (Subtype.val '' s) := by
   simp [Set.Pairwise]
