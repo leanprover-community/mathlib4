@@ -33,25 +33,51 @@ namespace CategoryTheory
 
 namespace Bicategory
 
-variable (B : Type u) [Bicategory.{w, v} B]
+variable {B : Type u} [Bicategory.{w, v} B]
 
 section
 
-variable {B} {c d e f : B} {g : c ⟶ e} {h : d ⟶ f}
-  {l₁ : c ⟶ d} {r₁ : d ⟶ c} {l₂ : e ⟶ f} {r₂ : f ⟶ e}
-  (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂)
+variable {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
+  {l₂ : c ⟶ d} {r₂ : d ⟶ c} (adj₂ : l₂ ⊣ r₂)
+  {f : a ⟶ c} {g : b ⟶ d}
 
-/-
---Would this be helpful?
-lemma mateEquiv_eq_iff (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h ≫ r₂) :
-  mateEquiv adj₁ adj₂ α = β ↔
-    (λ_ _).inv ≫ adj₁.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l₁ ◁ β =
-      (ρ_ _).inv ≫ g ◁ adj₂.unit ≫
-        (α_ _ _ _).inv ≫ α ▷ r₂ ≫ (α_ _ _ _).hom := by
-  sorry-/
+lemma mateEquiv_id_comp_right (φ : f ≫ 𝟙 _ ≫ l₂ ⟶ l₁ ≫ g) :
+    mateEquiv adj₁ ((Adjunction.id _).comp adj₂) φ =
+      mateEquiv adj₁ adj₂ (f ◁ (λ_ l₂).inv ≫ φ) ≫ (ρ_ _).inv ≫ (α_ _ _ _).hom := by
+  dsimp [mateEquiv_apply, Adjunction.id]
+  bicategory
+
+lemma mateEquiv_comp_id_right (φ : f ≫ l₂ ≫ 𝟙 d ⟶ l₁ ≫ g) :
+    mateEquiv adj₁ (adj₂.comp (Adjunction.id _)) φ =
+      mateEquiv adj₁ adj₂ ((ρ_ _).inv ≫ (α_ _ _ _).hom ≫ φ) ≫ g ◁ (λ_ r₂).inv := by
+  dsimp [mateEquiv_apply, Adjunction.id]
+  bicategory
 
 end
 
+section
+
+variable {a b : B} {f : a ⟶ b} {g : b ⟶ a} (adj : f ⊣ g)
+    {f' : a ⟶ b} {g' : b ⟶ a} (adj' : f' ⊣ g') (φ : f' ⟶ f)
+
+lemma conjugateEquiv_id_comp_right_apply :
+    conjugateEquiv adj ((Adjunction.id _).comp adj') ((λ_ _).hom ≫ φ) =
+      conjugateEquiv adj adj' φ ≫ (ρ_ _).inv := by
+  simp only [conjugateEquiv_apply, mateEquiv_id_comp_right,
+    id_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc]
+  bicategory
+
+lemma conjugateEquiv_comp_id_right_apply :
+    conjugateEquiv adj (adj'.comp (Adjunction.id _)) ((ρ_ _).hom ≫ φ) =
+      conjugateEquiv adj adj' φ ≫ (λ_ _).inv := by
+  simp only [conjugateEquiv_apply, Category.assoc, mateEquiv_comp_id_right, id_whiskerLeft,
+    Iso.inv_hom_id, Category.comp_id, Iso.hom_inv_id, Iso.cancel_iso_inv_left,
+    EmbeddingLike.apply_eq_iff_eq]
+  bicategory
+
+end
+
+variable (B) in
 /--
 The bicategory that has the same objects as a bicategory `B`, in which `1`-morphisms
 are adjunctions, and `2`-morphisms are tuples of mate maps between the left and right
@@ -60,8 +86,6 @@ adjoints (where the map between right adjoints is in the opposite direction).
 def Adj : Type u := B
 
 namespace Adj
-
-variable {B}
 
 abbrev obj (a : Adj B) : B := a
 
@@ -167,12 +191,14 @@ def associator (α : a ⟶ b) (β : b ⟶ c) (γ : c ⟶ d) : (α ≫ β) ≫ γ
 /-- The left unitor in the bicategory `Adj B`. -/
 @[simps!]
 def leftUnitor (α : a ⟶ b) : 𝟙 a ≫ α ≅ α :=
-  iso₂Mk (λ_ _) (ρ_ _).symm sorry
+  iso₂Mk (λ_ _) (ρ_ _).symm
+    (by simpa using conjugateEquiv_id_comp_right_apply α.adj α.adj (𝟙 _))
 
 /-- The right unitor in the bicategory `Adj B`. -/
 @[simps!]
 def rightUnitor (α : a ⟶ b) : α ≫ 𝟙 b ≅ α :=
-  iso₂Mk (ρ_ _) (λ_ _).symm sorry
+  iso₂Mk (ρ_ _) (λ_ _).symm
+    (by simpa using conjugateEquiv_comp_id_right_apply α.adj α.adj (𝟙 _) )
 
 /-- The left whiskering in the bicategory `Adj B`. -/
 @[simps]

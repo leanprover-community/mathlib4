@@ -65,7 +65,7 @@ Then we have a bijection between natural transformations `g ≫ l₂ ⟶ l₁ �
 
 Note that if one of the transformations is an iso, it does not imply the other is an iso.
 -/
-@[simps]
+@[simps -isSimp]
 def mateEquiv : (g ≫ l₂ ⟶ l₁ ≫ h) ≃ (r₁ ≫ g ⟶ h ≫ r₂) where
   toFun α   := 𝟙 _ ⊗≫ r₁ ◁ g ◁ adj₂.unit ⊗≫ r₁ ◁ α ▷ r₂ ⊗≫ adj₁.counit ▷ h ▷ r₂ ⊗≫ 𝟙 _
   invFun β  := 𝟙 _ ⊗≫ adj₁.unit ▷ g ▷ l₂ ⊗≫ l₁ ◁ β ▷ l₂ ⊗≫ l₁ ◁ h ◁ adj₂.counit ⊗≫ 𝟙 _
