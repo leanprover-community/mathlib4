@@ -46,18 +46,28 @@ def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := 
 def getHeaderFromFileName (fname : String) (keepTrailing : Bool) : IO String := do
   getHeader fname (← IO.FS.readFile fname) keepTrailing
 
+
+/--
+`mkDeprecationWithDate customMessage date` returns the formatted syntax
+`deprecated_module "customMessage" (since := "date")`,
+where the date is of the form "YYYY-MM-DD".
+-/
+def mkDeprecationWithDate (customMessage : String := "Auto-generated deprecation") (date : String) :
+    CommandElabM Format := do
+  let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
+  let dateStx := Syntax.mkStrLit date
+  let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
+  liftCoreM <| PrettyPrinter.ppCategory `command stx
+
 /--
 `mkDeprecation customMessage` returns the formatted syntax
-`deprecated_module "customMessage" (since := "YYYY-MM-DD")`,
-where the date is today's date.
+`deprecated_module "customMessage" (since := "YYYY-MM-DD")`, where the date is today's date.
 -/
 def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
     CommandElabM Format := do
-  let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
   -- Get the current date in UTC: we don't want this to depend on the user computer's time zone.
-  let dateStx := Syntax.mkStrLit s!"{(← Std.Time.DateTime.now (tz := .UTC)).toPlainDate}"
-  let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
-  liftCoreM <| PrettyPrinter.ppCategory `command stx
+  let date := s!"{(← Std.Time.DateTime.now (tz := .UTC)).toPlainDate}"
+  mkDeprecationWithDate customMessage date
 
 /--
 The command `#create_deprecated_module filePath (comment)? (write)?` generates a module deprecation.
