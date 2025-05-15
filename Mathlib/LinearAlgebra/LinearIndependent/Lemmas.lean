@@ -144,7 +144,7 @@ theorem LinearIndependent.iSupIndep_span_singleton (hv : LinearIndependent R v) 
   rw [← span_range_eq_iSup] at hm
   obtain ⟨⟨r, rfl⟩, hm⟩ := hm
   suffices r = 0 by simp [this]
-  apply hv.not_smul_mem_span i
+  apply hv.eq_zero_of_smul_mem_span i
   convert hm
   ext
   simp
