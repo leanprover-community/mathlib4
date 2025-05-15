@@ -215,15 +215,17 @@ section OnFinset
 
 variable [Zero M]
 
+private irreducible_def onFinset_support (s : Finset α) (f : α → M) : Finset α :=
+  haveI := Classical.decEq M
+  {a ∈ s | f a ≠ 0}
+
 /-- `Finsupp.onFinset s f hf` is the finsupp function representing `f` restricted to the finset `s`.
 The function must be `0` outside of `s`. Use this when the set needs to be filtered anyways,
 otherwise a better set representation is often available. -/
 def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
-  support :=
-    haveI := Classical.decEq M
-    {a ∈ s | f a ≠ 0}
+  support := onFinset_support s f
   toFun := f
-  mem_support_toFun := by classical simpa
+  mem_support_toFun := by classical simpa [onFinset_support_def]
 
 @[simp, norm_cast] lemma coe_onFinset (s : Finset α) (f : α → M) (hf) : onFinset s f hf = f := rfl
 
@@ -231,19 +233,21 @@ def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) 
 theorem onFinset_apply {s : Finset α} {f : α → M} {hf a} : (onFinset s f hf : α →₀ M) a = f a :=
   rfl
 
+theorem support_onFinset [DecidableEq M] {s : Finset α} {f : α → M}
+    (hf : ∀ a : α, f a ≠ 0 → a ∈ s) :
+    (Finsupp.onFinset s f hf).support = {a ∈ s | f a ≠ 0} := by
+  dsimp [onFinset]; rw [onFinset_support]; congr
+
 @[simp]
 theorem support_onFinset_subset {s : Finset α} {f : α → M} {hf} :
     (onFinset s f hf).support ⊆ s := by
-  classical convert filter_subset (f · ≠ 0) s
+  classical
+  rw [support_onFinset]
+  exact filter_subset (f · ≠ 0) s
 
 theorem mem_support_onFinset {s : Finset α} {f : α → M} (hf : ∀ a : α, f a ≠ 0 → a ∈ s) {a : α} :
     a ∈ (Finsupp.onFinset s f hf).support ↔ f a ≠ 0 := by
   rw [Finsupp.mem_support_iff, Finsupp.onFinset_apply]
-
-theorem support_onFinset [DecidableEq M] {s : Finset α} {f : α → M}
-    (hf : ∀ a : α, f a ≠ 0 → a ∈ s) :
-    (Finsupp.onFinset s f hf).support = {a ∈ s | f a ≠ 0} := by
-  dsimp [onFinset]; congr
 
 end OnFinset
 
