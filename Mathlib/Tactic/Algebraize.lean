@@ -181,10 +181,10 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       let (pargs,_,_) ← forallMetaTelescope (← inferType p')
       let tp' ← mkAppOptM' p' (pargs.map Option.some)
 
-      /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
-      is definitionally the same as the `RingHom` property. Then, we just need to construct its type
-      and the local declaration will already give a valid term. -/
       let getValType : MetaM (Option (Expr × Expr)) := do
+        /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
+        is definitionally the same as the `RingHom` property. Then, we just need to construct its
+        type and the local declaration will already give a valid term. -/
         if cinfo.isInductive then
           pargs[0]!.mvarId!.assignIfDefEq args[0]!
           pargs[1]!.mvarId!.assignIfDefEq args[1]!
@@ -195,7 +195,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
         /- Otherwise, the attribute points to a lemma or a constructor for the `Algebra` property.
         In this case, we assume that the `RingHom` property is the last argument of the lemma or
         constructor (and that this is all we need to supply explicitly). -/
-        else do
+        else
           try pargs.back!.mvarId!.assignIfDefEq decl.toExpr catch _ => return .none
           let val ← instantiateMVars tp'
           let tp ← inferType val -- This should be the type `Algebra.Property A B`.
