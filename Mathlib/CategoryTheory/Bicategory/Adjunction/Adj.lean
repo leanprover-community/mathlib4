@@ -131,6 +131,63 @@ lemma conjugateEquiv_whiskerRight (φ : l₁' ⟶ l₁) :
 
 end
 
+section
+
+variable {a b c d a' b' c' d' : B}
+  {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
+  {l₁' : a' ⟶ b'} {r₁' : b' ⟶ a'} (adj₁' : l₁' ⊣ r₁')
+  {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
+  {l₂' : b' ⟶ c'} {r₂' : c' ⟶ b'} (adj₂' : l₂' ⊣ r₂')
+  {l₃ : c ⟶ d} {r₃ : d ⟶ c} (adj₃ : l₃ ⊣ r₃)
+  {l₃' : c' ⟶ d'} {r₃' : d' ⟶ c'} (adj₃' : l₃' ⊣ r₃')
+  {f : a ⟶ a'} {g : b ⟶ b'} {h : c ⟶ c'} {i : d ⟶ d'}
+  (φ₁ : f ≫ l₁' ⟶ l₁ ≫ g) (φ₂ : g ≫ l₂' ⟶ l₂ ≫ h) (φ₃ : h ≫ l₃' ⟶ l₃ ≫ i)
+
+lemma test : (𝟙 (f ≫ (l₁' ≫ l₂') ≫ l₃') ⊗≫ φ₁ ▷ (l₂' ≫ l₃') ⊗≫ l₁ ◁ φ₂ ▷ l₃' ⊗≫ (l₁ ≫ l₂) ◁ φ₃ ⊗≫
+        𝟙 ((l₁ ≫ l₂ ≫ l₃) ≫ i)) =
+  (α_ _ _ _).inv ≫ (((α_ _ _ _).inv ≫ φ₁ ▷ _ ≫ (α_ _ _ _).hom ≫ _ ◁ φ₂) ▷ _) ≫
+    (α_ _ _ _).hom ≫ (_ ◁ ((α_ _ _ _).hom ≫ l₂ ◁ φ₃)) ≫ _ ◁ (α_ _ _ _).inv ≫ (α_ _ _ _ ).inv := by
+  bicategory
+
+lemma mateEquiv_assoc :
+    mateEquiv (adj₁.comp (adj₂.comp adj₃)) ((adj₁'.comp adj₂').comp adj₃')
+      ((α_ _ _ _).inv ≫ (((α_ _ _ _).inv ≫ φ₁ ▷ _ ≫ (α_ _ _ _).hom ≫ _ ◁ φ₂) ▷ _) ≫
+    (α_ _ _ _).hom ≫ (_ ◁ ((α_ _ _ _).hom ≫ l₂ ◁ φ₃)) ≫ _ ◁ (α_ _ _ _).inv ≫ (α_ _ _ _ ).inv) =
+      (α_ _ _ _).hom ≫ _ ◁ mateEquiv adj₁ adj₁' φ₁ ≫ (α_ _ _ _).hom ≫
+        r₃ ◁ ((α_ _ _ _ ).inv ≫ mateEquiv adj₂ adj₂' φ₂ ▷ r₁') ≫
+          r₃ ◁ (α_ _ _ _ ).hom ≫ (α_ _ _ _ ).inv ≫
+    mateEquiv adj₃ adj₃' φ₃ ▷ _ ≫ (α_ _ _ _ ).hom := by
+  sorry
+
+end
+section
+
+variable {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
+  {l₁' : a ⟶ b} {r₁' : b ⟶ a} (adj₁' : l₁' ⊣ r₁')
+  {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
+  {l₂' : b ⟶ c} {r₂' : c ⟶ b} (adj₂' : l₂' ⊣ r₂')
+  {l₃ : c ⟶ d} {r₃ : d ⟶ c} (adj₃ : l₃ ⊣ r₃)
+  {l₃' : c ⟶ d} {r₃' : d ⟶ c} (adj₃' : l₃' ⊣ r₃')
+  (φ₁ : l₁' ⟶ l₁) (φ₂ : l₂' ⟶ l₂) (φ₃ : l₃' ⟶ l₃)
+
+lemma conjugateEquiv_assoc :
+    conjugateEquiv (adj₁.comp (adj₂.comp adj₃))
+      ((adj₁'.comp adj₂').comp adj₃') ((α_ _ _ _).hom ≫ φ₁ ▷ _ ≫ l₁ ◁ (φ₂ ▷ _ ≫ _ ◁ φ₃)) =
+      _ ◁ conjugateEquiv adj₁ adj₁' φ₁ ≫
+        ((_ ◁ conjugateEquiv adj₂ adj₂' φ₂ ≫
+          conjugateEquiv adj₃ adj₃' φ₃ ▷ _) ▷ _) ≫ (α_ _ _ _).hom := by
+  have := mateEquiv_assoc adj₁ adj₁' adj₂ adj₂' adj₃ adj₃'
+    ((λ_ _).hom ≫ φ₁ ≫ (ρ_ _).inv) ((λ_ _).hom ≫ φ₂ ≫ (ρ_ _).inv) ((λ_ _).hom ≫ φ₃ ≫ (ρ_ _).inv)
+  simp at this
+  rw [← cancel_epi (ρ_ _).hom, ← cancel_mono (λ_ _).inv]
+  simp [conjugateEquiv]
+  convert this using 1
+  · congr 1
+    bicategory
+  · bicategory
+
+end
+
 
 variable (B) in
 /--
@@ -241,8 +298,8 @@ def iso₂Mk {α β : a ⟶ b} (ef : α.f ≅ β.f) (eg : β.g ≅ α.g)
 /-- The associator in the bicategory `Adj B`. -/
 @[simps!]
 def associator (α : a ⟶ b) (β : b ⟶ c) (γ : c ⟶ d) : (α ≫ β) ≫ γ ≅ α ≫ β ≫ γ :=
-  iso₂Mk (α_ _ _ _) (α_ _ _ _) (by
-    sorry)
+  iso₂Mk (α_ _ _ _) (α_ _ _ _)
+    (by simpa using conjugateEquiv_assoc α.adj α.adj β.adj β.adj γ.adj γ.adj (𝟙 _) (𝟙 _) (𝟙 _))
 
 /-- The left unitor in the bicategory `Adj B`. -/
 @[simps!]
