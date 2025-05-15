@@ -67,6 +67,9 @@ def det : GL n R →* Rˣ where
   map_one' := Units.ext det_one
   map_mul' _ _ := Units.ext <| det_mul _ _
 
+lemma det_ne_zero [Nontrivial R] (g : GL n R) : g.val.det ≠ 0 :=
+  g.det.ne_zero
+
 /-- The groups `GL n R` (notation for `Matrix.GeneralLinearGroup n R`) and
 `LinearMap.GeneralLinearGroup R (n → R)` are multiplicatively equivalent -/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
