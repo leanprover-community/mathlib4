@@ -41,19 +41,17 @@ open Topology InnerProductSpace Set
 
 noncomputable section
 
-variable {𝕜 F : Type*} [IsROrC 𝕜]
-
+variable {𝕜 F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
-
 variable {f : F → 𝕜} {f' x : F}
 
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if
-  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`.-/
+  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`. -/
 def HasGradientAtFilter (f : F → 𝕜) (f' x : F) (L : Filter F) :=
   HasFDerivAtFilter f (toDual 𝕜 F f') x L
 
 /-- `f` has the gradient `f'` at the point `x` within the subset `s` if
-  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`.-/
+  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`. -/
 def HasGradientWithinAt (f : F → 𝕜) (f' : F) (s : Set F) (x : F) :=
   HasGradientAtFilter f f' x (𝓝[s] x)
 
@@ -70,6 +68,7 @@ def gradientWithin (f : F → 𝕜) (s : Set F) (x : F) : F :=
   (toDual 𝕜 F).symm (fderivWithin 𝕜 f s x)
 
 /-- Gradient of `f` at the point `x`, if it exists.  Zero otherwise.
+Denoted as `∇` within the Gradient namespace.
 
 If the derivative exists (i.e., `∃ f', HasGradientAt f f' x`), then
 `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x`. -/
@@ -79,7 +78,7 @@ def gradient (f : F → 𝕜) (x : F) : F :=
 @[inherit_doc]
 scoped[Gradient] notation "∇" => gradient
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped Gradient
 
@@ -157,14 +156,14 @@ variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g'
-  · ext; simp
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
+    ext; simp
   rwa [HasDerivAtFilter, this]
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g')
-  · ext; simp
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
+    ext; simp
   rwa [HasGradientAtFilter, ← this]
 
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
@@ -179,7 +178,7 @@ theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
 
 theorem gradient_eq_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
   by_cases h : DifferentiableAt 𝕜 g u
-  · rw [h.hasGradientAt.hasDerivAt.deriv, IsROrC.conj_conj]
+  · rw [h.hasGradientAt.hasDerivAt.deriv, RCLike.conj_conj]
   · rw [gradient_eq_zero_of_not_differentiableAt h, deriv_zero_of_not_differentiableAt h, map_zero]
 
 end OneDimension
@@ -254,7 +253,7 @@ section congr
 
 /-! ### Congruence properties of the Gradient -/
 
-variable {f₀ f₁ : F → 𝕜} {f₀' f₁' : F} {x₀ x₁ : F} {s₀ s₁ t : Set F} {L₀ L₁ : Filter F}
+variable {f₀ f₁ : F → 𝕜} {f₀' f₁' : F} {t : Set F}
 
 theorem Filter.EventuallyEq.hasGradientAtFilter_iff (h₀ : f₀ =ᶠ[L] f₁) (hx : f₀ x = f₁ x)
     (h₁ : f₀' = f₁') : HasGradientAtFilter f₀ f₀' x L ↔ HasGradientAtFilter f₁ f₁' x L :=
@@ -286,7 +285,7 @@ theorem HasGradientWithinAt.congr_of_eventuallyEq_of_mem (h : HasGradientWithinA
 
 theorem HasGradientAt.congr_of_eventuallyEq (h : HasGradientAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasGradientAt f₁ f' x :=
-  HasGradientAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ : _)
+  HasGradientAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ :)
 
 theorem Filter.EventuallyEq.gradient_eq (hL : f₁ =ᶠ[𝓝 x] f) : ∇ f₁ x = ∇ f x := by
   unfold gradient

@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Floris van Doorn
 -/
 
-import Lean
-
+import Mathlib.Init
 /-!
 ## Definitions on Arrays
 
@@ -13,9 +12,10 @@ This file contains various definitions on `Array`. It does not contain
 proofs about these definitions, those are contained in other files in `Mathlib.Data.Array`.
 -/
 
-set_option autoImplicit true
-
 namespace Array
+
+universe u
+variable {α : Type u}
 
 /-- Permute the array using a sequence of indices defining a cyclic permutation.
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
@@ -32,3 +32,5 @@ where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
 /-- Permute the array using a list of cycles. -/
 def permute! [Inhabited α] (a : Array α) (ls : List (List Nat)) : Array α :=
 ls.foldl (init := a) (·.cyclicPermute! ·)
+
+end Array

@@ -4,22 +4,20 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
+import Mathlib.Algebra.CharP.Basic
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Algebra.Field.Basic
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Data.Nat.Prime
 
 /-!
-
 # First order theory of fields
 
 This file defines the first order theory of fields of characteristic `p` as a theory over the
 language of rings
 
 ## Main definitions
-* `FirstOrder.Language.Theory.fieldOfChar` : the first order theory of fields of characteristic `p`
-  as a theory over the language of rings
 
+- `FirstOrder.Language.Theory.fieldOfChar` : the first order theory of fields of characteristic `p`
+  as a theory over the language of rings
 -/
 
 variable {p : ℕ} {K : Type*}

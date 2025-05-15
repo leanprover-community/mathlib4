@@ -3,8 +3,8 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian
-import Mathlib.Probability.Notation
+import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+import Mathlib.Probability.Moments.ComplexMGF
 
 /-!
 # Gaussian distributions over ℝ
@@ -13,13 +13,13 @@ We define a Gaussian measure over the reals.
 
 ## Main definitions
 
-* `gaussianPdfReal`: the function `μ v x ↦ (1 / (sqrt (2 * pi * v))) * exp (- (x - μ)^2 / (2 * v))`,
+* `gaussianPDFReal`: the function `μ v x ↦ (1 / (sqrt (2 * pi * v))) * exp (- (x - μ)^2 / (2 * v))`,
   which is the probability density function of a Gaussian distribution with mean `μ` and
   variance `v` (when `v ≠ 0`).
-* `gaussianPdf`: `ℝ≥0∞`-valued pdf, `gaussianPdf μ v x = ENNReal.ofReal (gaussianPdfReal μ v x)`.
+* `gaussianPDF`: `ℝ≥0∞`-valued pdf, `gaussianPDF μ v x = ENNReal.ofReal (gaussianPDFReal μ v x)`.
 * `gaussianReal`: a Gaussian measure on `ℝ`, parametrized by its mean `μ` and variance `v`.
   If `v = 0`, this is `dirac μ`, otherwise it is defined as the measure with density
-  `gaussianPdf μ v` with respect to the Lebesgue measure.
+  `gaussianPDF μ v` with respect to the Lebesgue measure.
 
 ## Main results
 
@@ -30,60 +30,63 @@ We define a Gaussian measure over the reals.
 
 -/
 
-open scoped ENNReal NNReal Real
+open scoped ENNReal NNReal Real Complex
 
 open MeasureTheory
 
 namespace ProbabilityTheory
 
-section GaussianPdf
+section GaussianPDF
 
 /-- Probability density function of the gaussian distribution with mean `μ` and variance `v`. -/
 noncomputable
-def gaussianPdfReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ :=
-  (Real.sqrt (2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v))
+def gaussianPDFReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ :=
+  (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v))
 
-lemma gaussianPdfReal_def (μ : ℝ) (v : ℝ≥0) :
-    gaussianPdfReal μ v =
-      fun x ↦ (Real.sqrt (2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v)) := rfl
+lemma gaussianPDFReal_def (μ : ℝ) (v : ℝ≥0) :
+    gaussianPDFReal μ v =
+      fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v)) := rfl
 
 @[simp]
-lemma gaussianPdfReal_zero_var (m : ℝ) : gaussianPdfReal m 0 = 0 := by
+lemma gaussianPDFReal_zero_var (m : ℝ) : gaussianPDFReal m 0 = 0 := by
   ext1 x
-  simp [gaussianPdfReal]
+  simp [gaussianPDFReal]
 
 /-- The gaussian pdf is positive when the variance is not zero. -/
-lemma gaussianPdfReal_pos (μ : ℝ) (v : ℝ≥0) (x : ℝ) (hv : v ≠ 0) : 0 < gaussianPdfReal μ v x := by
-  rw [gaussianPdfReal]
+lemma gaussianPDFReal_pos (μ : ℝ) (v : ℝ≥0) (x : ℝ) (hv : v ≠ 0) : 0 < gaussianPDFReal μ v x := by
+  rw [gaussianPDFReal]
   positivity
 
-/--The gaussian pdf is nonnegative. -/
-lemma gaussianPdfReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussianPdfReal μ v x := by
-  rw [gaussianPdfReal]
+/-- The gaussian pdf is nonnegative. -/
+lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussianPDFReal μ v x := by
+  rw [gaussianPDFReal]
   positivity
 
 /-- The gaussian pdf is measurable. -/
-lemma measurable_gaussianPdfReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPdfReal μ v) :=
+@[fun_prop]
+lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) :=
   (((measurable_id.add_const _).pow_const _).neg.div_const _).exp.const_mul _
 
 /-- The gaussian pdf is strongly measurable. -/
-lemma stronglyMeasurable_gaussianPdfReal (μ : ℝ) (v : ℝ≥0) :
-    StronglyMeasurable (gaussianPdfReal μ v) :=
-  (measurable_gaussianPdfReal μ v).stronglyMeasurable
+@[fun_prop]
+lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
+    StronglyMeasurable (gaussianPDFReal μ v) :=
+  (measurable_gaussianPDFReal μ v).stronglyMeasurable
 
-lemma integrable_gaussianPdfReal (μ : ℝ) (v : ℝ≥0) :
-    Integrable (gaussianPdfReal μ v) := by
-  rw [gaussianPdfReal_def]
+@[fun_prop]
+lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
+    Integrable (gaussianPDFReal μ v) := by
+  rw [gaussianPDFReal_def]
   by_cases hv : v = 0
   · simp [hv]
-  let g : ℝ → ℝ := fun x ↦ (Real.sqrt (2 * π * v))⁻¹ * rexp (- x ^ 2 / (2 * v))
+  let g : ℝ → ℝ := fun x ↦ (√(2 * π * v))⁻¹ * rexp (- x ^ 2 / (2 * v))
   have hg : Integrable g := by
-    suffices g = fun x ↦ (Real.sqrt (2 * π * v))⁻¹ * rexp (- (2 * v)⁻¹ * x ^ 2) by
+    suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (2 * v)⁻¹ * x ^ 2) by
       rw [this]
-      refine (integrable_exp_neg_mul_sq ?_).const_mul (Real.sqrt (2 * π * v))⁻¹
+      refine (integrable_exp_neg_mul_sq ?_).const_mul (√(2 * π * v))⁻¹
       simp [lt_of_le_of_ne (zero_le _) (Ne.symm hv)]
     ext x
-    simp only [zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe, Real.sqrt_mul',
+    simp only [g, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe, Real.sqrt_mul',
       mul_inv_rev, NNReal.coe_mul, NNReal.coe_inv, NNReal.coe_ofNat, neg_mul, mul_eq_mul_left_iff,
       Real.exp_eq_exp, mul_eq_zero, inv_eq_zero, Real.sqrt_eq_zero, NNReal.coe_eq_zero, hv,
       false_or]
@@ -92,16 +95,15 @@ lemma integrable_gaussianPdfReal (μ : ℝ) (v : ℝ≥0) :
     field_simp
   exact Integrable.comp_sub_right hg μ
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
-lemma lintegral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
-    ∫⁻ x, ENNReal.ofReal (gaussianPdfReal μ v x) = 1 := by
+/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
+lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
+    ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
   rw [← ENNReal.toReal_eq_one_iff]
-  have hfm : AEStronglyMeasurable (gaussianPdfReal μ v) volume :=
-    (stronglyMeasurable_gaussianPdfReal μ v).aestronglyMeasurable
-  have hf : 0 ≤ₐₛ gaussianPdfReal μ v := ae_of_all _ (gaussianPdfReal_nonneg μ v)
+  have hfm : AEStronglyMeasurable (gaussianPDFReal μ v) volume := by fun_prop
+  have hf : 0 ≤ₐₛ gaussianPDFReal μ v := ae_of_all _ (gaussianPDFReal_nonneg μ v)
   rw [← integral_eq_lintegral_of_nonneg_ae hf hfm]
-  simp only [gaussianPdfReal, zero_lt_two, mul_nonneg_iff_of_pos_right, one_div,
-    Nat.cast_ofNat, integral_mul_left]
+  simp only [gaussianPDFReal, zero_lt_two, mul_nonneg_iff_of_pos_right, one_div,
+    Nat.cast_ofNat, integral_const_mul]
   rw [integral_sub_right_eq_self (μ := volume) (fun a ↦ rexp (-a ^ 2 / ((2 : ℝ) * v))) μ]
   simp only [zero_lt_two, mul_nonneg_iff_of_pos_right, div_eq_inv_mul, mul_inv_rev,
     mul_neg]
@@ -111,84 +113,91 @@ lemma lintegral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ring
   · positivity
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
-lemma integral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
-    ∫ x, gaussianPdfReal μ v x = 1 := by
-  have h := lintegral_gaussianPdfReal_eq_one μ hv
-  rw [← ofReal_integral_eq_lintegral_ofReal (integrable_gaussianPdfReal _ _)
-    (ae_of_all _ (gaussianPdfReal_nonneg _ _)), ← ENNReal.ofReal_one] at h
-  rwa [← ENNReal.ofReal_eq_ofReal_iff (integral_nonneg (gaussianPdfReal_nonneg _ _)) zero_le_one]
+/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
+lemma integral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
+    ∫ x, gaussianPDFReal μ v x = 1 := by
+  have h := lintegral_gaussianPDFReal_eq_one μ hv
+  rw [← ofReal_integral_eq_lintegral_ofReal (integrable_gaussianPDFReal _ _)
+    (ae_of_all _ (gaussianPDFReal_nonneg _ _)), ← ENNReal.ofReal_one] at h
+  rwa [← ENNReal.ofReal_eq_ofReal_iff (integral_nonneg (gaussianPDFReal_nonneg _ _)) zero_le_one]
 
-lemma gaussianPdfReal_sub {μ : ℝ} {v : ℝ≥0} (x y : ℝ) :
-    gaussianPdfReal μ v (x - y) = gaussianPdfReal (μ + y) v x := by
-  simp only [gaussianPdfReal]
+lemma gaussianPDFReal_sub {μ : ℝ} {v : ℝ≥0} (x y : ℝ) :
+    gaussianPDFReal μ v (x - y) = gaussianPDFReal (μ + y) v x := by
+  simp only [gaussianPDFReal]
   rw [sub_add_eq_sub_sub_swap]
 
-lemma gaussianPdfReal_add {μ : ℝ} {v : ℝ≥0} (x y : ℝ) :
-    gaussianPdfReal μ v (x + y) = gaussianPdfReal (μ - y) v x := by
-  rw [sub_eq_add_neg, ← gaussianPdfReal_sub, sub_eq_add_neg, neg_neg]
+lemma gaussianPDFReal_add {μ : ℝ} {v : ℝ≥0} (x y : ℝ) :
+    gaussianPDFReal μ v (x + y) = gaussianPDFReal (μ - y) v x := by
+  rw [sub_eq_add_neg, ← gaussianPDFReal_sub, sub_eq_add_neg, neg_neg]
 
-lemma gaussianPdfReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
-    gaussianPdfReal μ v (c⁻¹ * x) = |c| * gaussianPdfReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) x := by
-  simp only [gaussianPdfReal._eq_1, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe,
+lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
+    gaussianPDFReal μ v (c⁻¹ * x) = |c| * gaussianPDFReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) x := by
+  simp only [gaussianPDFReal.eq_1, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe,
     Real.sqrt_mul', one_div, mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk, NNReal.coe_pos]
   rw [← mul_assoc]
   refine congr_arg₂ _ ?_ ?_
   · field_simp
     rw [Real.sqrt_sq_eq_abs]
     ring_nf
-    calc (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹
-      = (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹ * (|c| * |c|⁻¹) := by
-          rw [mul_inv_cancel, mul_one]
+    calc (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹
+      = (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹ * (|c| * |c|⁻¹) := by
+          rw [mul_inv_cancel₀, mul_one]
           simp only [ne_eq, abs_eq_zero, hc, not_false_eq_true]
-    _ = (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹ * |c| * |c|⁻¹ := by ring
+    _ = (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹ * |c| * |c|⁻¹ := by ring
   · congr 1
     field_simp
     congr 1
     ring
 
-lemma gaussianPdfReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
-    gaussianPdfReal μ v (c * x)
-      = |c⁻¹| * gaussianPdfReal (c⁻¹ * μ) (⟨(c^2)⁻¹, inv_nonneg.mpr (sq_nonneg _)⟩ * v) x := by
-  conv_lhs => rw [← inv_inv c, gaussianPdfReal_inv_mul (inv_ne_zero hc)]
+lemma gaussianPDFReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
+    gaussianPDFReal μ v (c * x)
+      = |c⁻¹| * gaussianPDFReal (c⁻¹ * μ) (⟨(c^2)⁻¹, inv_nonneg.mpr (sq_nonneg _)⟩ * v) x := by
+  conv_lhs => rw [← inv_inv c, gaussianPDFReal_inv_mul (inv_ne_zero hc)]
   simp
 
 /-- The pdf of a Gaussian distribution on ℝ with mean `μ` and variance `v`. -/
 noncomputable
-def gaussianPdf (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ≥0∞ := ENNReal.ofReal (gaussianPdfReal μ v x)
+def gaussianPDF (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ≥0∞ := ENNReal.ofReal (gaussianPDFReal μ v x)
 
-lemma gaussianPdf_def (μ : ℝ) (v : ℝ≥0) :
-    gaussianPdf μ v = fun x ↦ ENNReal.ofReal (gaussianPdfReal μ v x) := rfl
-
-@[simp]
-lemma gaussianPdf_zero_var (μ : ℝ) : gaussianPdf μ 0 = 0 := by
-  ext
-  simp [gaussianPdf]
-
-lemma gaussianPdf_pos (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) (x : ℝ) : 0 < gaussianPdf μ v x := by
-  rw [gaussianPdf, ENNReal.ofReal_pos]
-  exact gaussianPdfReal_pos _ _ _ hv
-
-@[measurability]
-lemma measurable_gaussianPdf (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPdf μ v) :=
-  (measurable_gaussianPdfReal _ _).ennreal_ofReal
+lemma gaussianPDF_def (μ : ℝ) (v : ℝ≥0) :
+    gaussianPDF μ v = fun x ↦ ENNReal.ofReal (gaussianPDFReal μ v x) := rfl
 
 @[simp]
-lemma lintegral_gaussianPdf_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
-    ∫⁻ x, gaussianPdf μ v x = 1 :=
-  lintegral_gaussianPdfReal_eq_one μ h
+lemma gaussianPDF_zero_var (μ : ℝ) : gaussianPDF μ 0 = 0 := by ext; simp [gaussianPDF]
 
-end GaussianPdf
+@[simp]
+lemma toReal_gaussianPDF {μ : ℝ} {v : ℝ≥0} (x : ℝ) :
+    (gaussianPDF μ v x).toReal = gaussianPDFReal μ v x := by
+  rw [gaussianPDF, ENNReal.toReal_ofReal (gaussianPDFReal_nonneg μ v x)]
+
+lemma gaussianPDF_pos (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) (x : ℝ) : 0 < gaussianPDF μ v x := by
+  rw [gaussianPDF, ENNReal.ofReal_pos]
+  exact gaussianPDFReal_pos _ _ _ hv
+
+lemma gaussianPDF_lt_top {μ : ℝ} {v : ℝ≥0} {x : ℝ} : gaussianPDF μ v x < ∞ := by simp [gaussianPDF]
+
+lemma gaussianPDF_ne_top {μ : ℝ} {v : ℝ≥0} {x : ℝ} : gaussianPDF μ v x ≠ ∞ := by simp [gaussianPDF]
+
+@[measurability, fun_prop]
+lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) :=
+  (measurable_gaussianPDFReal _ _).ennreal_ofReal
+
+@[simp]
+lemma lintegral_gaussianPDF_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
+    ∫⁻ x, gaussianPDF μ v x = 1 :=
+  lintegral_gaussianPDFReal_eq_one μ h
+
+end GaussianPDF
 
 section GaussianReal
 
 /-- A Gaussian distribution on `ℝ` with mean `μ` and variance `v`. -/
 noncomputable
 def gaussianReal (μ : ℝ) (v : ℝ≥0) : Measure ℝ :=
-  if v = 0 then Measure.dirac μ else volume.withDensity (gaussianPdf μ v)
+  if v = 0 then Measure.dirac μ else volume.withDensity (gaussianPDF μ v)
 
 lemma gaussianReal_of_var_ne_zero (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
-    gaussianReal μ v = volume.withDensity (gaussianPdf μ v) := if_neg hv
+    gaussianReal μ v = volume.withDensity (gaussianPDF μ v) := if_neg hv
 
 @[simp]
 lemma gaussianReal_zero_var (μ : ℝ) : gaussianReal μ 0 = Measure.dirac μ := if_pos rfl
@@ -198,15 +207,15 @@ instance instIsProbabilityMeasureGaussianReal (μ : ℝ) (v : ℝ≥0) :
   measure_univ := by by_cases h : v = 0 <;> simp [gaussianReal_of_var_ne_zero, h]
 
 lemma gaussianReal_apply (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) (s : Set ℝ) :
-    gaussianReal μ v s = ∫⁻ x in s, gaussianPdf μ v x := by
+    gaussianReal μ v s = ∫⁻ x in s, gaussianPDF μ v x := by
   rw [gaussianReal_of_var_ne_zero _ hv, withDensity_apply' _ s]
 
 lemma gaussianReal_apply_eq_integral (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) (s : Set ℝ) :
-    gaussianReal μ v s = ENNReal.ofReal (∫ x in s, gaussianPdfReal μ v x) := by
+    gaussianReal μ v s = ENNReal.ofReal (∫ x in s, gaussianPDFReal μ v x) := by
   rw [gaussianReal_apply _ hv s, ofReal_integral_eq_lintegral_ofReal]
   · rfl
-  · exact (integrable_gaussianPdfReal _ _).restrict
-  · exact ae_of_all _ (gaussianPdfReal_nonneg _ _)
+  · exact (integrable_gaussianPDFReal _ _).restrict
+  · exact ae_of_all _ (gaussianPDFReal_nonneg _ _)
 
 lemma gaussianReal_absolutelyContinuous (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     gaussianReal μ v ≪ volume := by
@@ -216,19 +225,25 @@ lemma gaussianReal_absolutelyContinuous (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) 
 lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     volume ≪ gaussianReal μ v := by
   rw [gaussianReal_of_var_ne_zero _ hv]
-  refine withDensity_absolutelyContinuous' ?_ ?_ ?_
-  · exact (measurable_gaussianPdf _ _).aemeasurable
-  · exact ae_of_all _ (fun _ ↦ (gaussianPdf_pos _ hv _).ne')
-  · exact ae_of_all _ (fun _ ↦ ENNReal.ofReal_ne_top)
+  refine withDensity_absolutelyContinuous' ?_ ?_
+  · exact (measurable_gaussianPDF _ _).aemeasurable
+  · exact ae_of_all _ (fun _ ↦ (gaussianPDF_pos _ hv _).ne')
 
 lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
-    ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPdf μ v := by
+    ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPDF μ v := by
   by_cases hv : v = 0
-  · simp only [hv, gaussianReal_zero_var, gaussianPdf_zero_var]
+  · simp only [hv, gaussianReal_zero_var, gaussianPDF_zero_var]
     refine (Measure.eq_rnDeriv measurable_zero (mutuallySingular_dirac μ volume) ?_).symm
     rw [withDensity_zero, add_zero]
   · rw [gaussianReal_of_var_ne_zero _ hv]
-    exact Measure.rnDeriv_withDensity _ (measurable_gaussianPdf μ v)
+    exact Measure.rnDeriv_withDensity _ (measurable_gaussianPDF μ v)
+
+lemma integral_gaussianReal_eq_integral_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {μ : ℝ} {v : ℝ≥0} {f : ℝ → E} (hv : v ≠ 0) :
+    ∫ x, f x ∂(gaussianReal μ v) = ∫ x, gaussianPDFReal μ v x • f x := by
+  simp [gaussianReal, hv,
+    integral_withDensity_eq_integral_toReal_smul (measurable_gaussianPDF _ _)
+      (ae_of_all _ fun _ ↦ gaussianPDF_lt_top)]
 
 section Transformations
 
@@ -238,18 +253,18 @@ lemma _root_.MeasurableEmbedding.gaussianReal_comap_apply (hv : v ≠ 0)
     {f : ℝ → ℝ} (hf : MeasurableEmbedding f)
     {f' : ℝ → ℝ} (h_deriv : ∀ x, HasDerivAt f (f' x) x) {s : Set ℝ} (hs : MeasurableSet s) :
     (gaussianReal μ v).comap f s
-      = ENNReal.ofReal (∫ x in s, |f' x| * gaussianPdfReal μ v (f x)) := by
-  rw [gaussianReal_of_var_ne_zero _ hv, gaussianPdf_def]
+      = ENNReal.ofReal (∫ x in s, |f' x| * gaussianPDFReal μ v (f x)) := by
+  rw [gaussianReal_of_var_ne_zero _ hv, gaussianPDF_def]
   exact hf.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul' hs h_deriv
-    (ae_of_all _ (gaussianPdfReal_nonneg _ _)) (integrable_gaussianPdfReal _ _)
+    (ae_of_all _ (gaussianPDFReal_nonneg _ _)) (integrable_gaussianPDFReal _ _)
 
 lemma _root_.MeasurableEquiv.gaussianReal_map_symm_apply (hv : v ≠ 0) (f : ℝ ≃ᵐ ℝ) {f' : ℝ → ℝ}
     (h_deriv : ∀ x, HasDerivAt f (f' x) x) {s : Set ℝ} (hs : MeasurableSet s) :
     (gaussianReal μ v).map f.symm s
-      = ENNReal.ofReal (∫ x in s, |f' x| * gaussianPdfReal μ v (f x)) := by
-  rw [gaussianReal_of_var_ne_zero _ hv, gaussianPdf_def]
+      = ENNReal.ofReal (∫ x in s, |f' x| * gaussianPDFReal μ v (f x)) := by
+  rw [gaussianReal_of_var_ne_zero _ hv, gaussianPDF_def]
   exact f.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul' hs h_deriv
-    (ae_of_all _ (gaussianPdfReal_nonneg _ _)) (integrable_gaussianPdfReal _ _)
+    (ae_of_all _ (gaussianPDFReal_nonneg _ _)) (integrable_gaussianPDFReal _ _)
 
 /-- The map of a Gaussian distribution by addition of a constant is a Gaussian. -/
 lemma gaussianReal_map_add_const (y : ℝ) :
@@ -264,7 +279,7 @@ lemma gaussianReal_map_add_const (y : ℝ) :
   rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
   simp only [abs_neg, abs_one, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, one_mul, ne_eq]
   rw [gaussianReal_apply_eq_integral _ hv s']
-  simp [gaussianPdfReal_sub _ y, Homeomorph.addRight, ← sub_eq_add_neg]
+  simp [e, gaussianPDFReal_sub _ y, Homeomorph.addRight, ← sub_eq_add_neg]
 
 /-- The map of a Gaussian distribution by addition of a constant is a Gaussian. -/
 lemma gaussianReal_map_const_add (y : ℝ) :
@@ -283,27 +298,26 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     rw [Measure.map_const]
     simp only [ne_eq, measure_univ, one_smul, mul_eq_zero]
     convert (gaussianReal_zero_var 0).symm
-    simp only [ne_eq, zero_pow', mul_eq_zero, hv, or_false, not_false_eq_true]
-    rfl
+    simp only [ne_eq, zero_pow, mul_eq_zero, hv, or_false, not_false_eq_true, reduceCtorEq,
+      NNReal.mk_zero]
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ c hc).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
     suffices ∀ x, HasDerivAt (fun x => c⁻¹ * x) (c⁻¹ * 1) x by rwa [mul_one] at this
     exact fun _ ↦ HasDerivAt.const_mul _ (hasDerivAt_id _)
   change (gaussianReal μ v).map e.symm = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
   ext s' hs'
-  rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
-  simp only [MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, ne_eq, mul_eq_zero]
-  rw [gaussianReal_apply_eq_integral _ _ s']
+  rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs',
+    gaussianReal_apply_eq_integral _ _ s']
   swap
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
-    rw [← NNReal.coe_eq]
+    rw [← NNReal.coe_inj]
     simp [hc]
-  simp only [Homeomorph.mulLeft₀, Equiv.toFun_as_coe, Equiv.mulLeft₀_apply, Equiv.invFun_as_coe,
+  simp only [e, Homeomorph.mulLeft₀, Equiv.toFun_as_coe, Equiv.mulLeft₀_apply, Equiv.invFun_as_coe,
     Equiv.mulLeft₀_symm_apply, Homeomorph.toMeasurableEquiv_coe, Homeomorph.homeomorph_mk_coe_symm,
-    Equiv.coe_fn_symm_mk, gaussianPdfReal_inv_mul hc]
+    Equiv.coe_fn_symm_mk, gaussianPDFReal_inv_mul hc]
   congr with x
   suffices |c⁻¹| * |c| = 1 by rw [← mul_assoc, this, one_mul]
-  rw [abs_inv, inv_mul_cancel]
+  rw [abs_inv, inv_mul_cancel₀]
   rwa [ne_eq, abs_eq_zero]
 
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
@@ -347,6 +361,78 @@ lemma gaussianReal_mul_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussian
   exact gaussianReal_const_mul hX c
 
 end Transformations
+
+section CharacteristicFunction
+
+open Real Complex
+
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
+
+/-- The complex moment generating function of a Gaussian distribution with mean `μ` and variance `v`
+is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
+theorem complexMGF_id_gaussianReal (z : ℂ) :
+    complexMGF id (gaussianReal μ v) z = cexp (z * μ + v * z ^ 2 / 2) := by
+  by_cases hv : v = 0
+  · simp [complexMGF, hv]
+  calc ∫ x, cexp (z * x) ∂gaussianReal μ v
+    _ = ∫ x, gaussianPDFReal μ v x * cexp (z * x) ∂ℙ := by
+      simp_rw [integral_gaussianReal_eq_integral_smul hv, Complex.real_smul]
+    _ = (√(2 * π * v))⁻¹
+        * ∫ x : ℝ, cexp (-(2 * v)⁻¹ * x ^ 2 + (z + μ / v) * x + -μ ^ 2 / (2 * v)) ∂ℙ := by
+      unfold gaussianPDFReal
+      push_cast
+      simp_rw [mul_assoc, integral_const_mul, ← Complex.exp_add]
+      congr with x
+      congr 1
+      ring
+    _ = (√(2 * π * v))⁻¹ * (π / - -(2 * v)⁻¹) ^ (1 / 2 : ℂ)
+        * cexp (-μ ^ 2 / (2 * v) - (z + μ / v) ^ 2 / (4 * -(2 * v)⁻¹)) := by
+      rw [integral_cexp_quadratic (by simpa using pos_iff_ne_zero.mpr hv), ← mul_assoc]
+    _ = 1 * cexp (-μ ^ 2 / (2 * v) - (z + μ / v) ^ 2 / (4 * -(2 * v)⁻¹)) := by
+      congr 1
+      field_simp [Real.sqrt_eq_rpow]
+      rw [Complex.ofReal_cpow (by positivity)]
+      push_cast
+      ring_nf
+    _ = cexp (z * μ + v * z ^ 2 / 2) := by
+      rw [one_mul]
+      congr 1
+      have : (v : ℂ) ≠ 0 := by simpa
+      field_simp
+      ring
+
+/-- The complex moment generating function of a random variable with Gaussian distribution
+with mean `μ` and variance `v` is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
+theorem complexMGF_gaussianReal (hX : p.map X = gaussianReal μ v) (z : ℂ) :
+    complexMGF X p z = cexp (z * μ + v * z ^ 2 / 2) := by
+  have hX_meas : AEMeasurable X p := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
+  rw [← complexMGF_id_map hX_meas, hX, complexMGF_id_gaussianReal]
+
+/-- The characteristic function of a Gaussian distribution with mean `μ` and variance `v`
+is given by `t ↦ exp (t * μ - v * t ^ 2 / 2)`. -/
+theorem charFun_gaussianReal (t : ℝ) :
+    charFun (gaussianReal μ v) t = cexp (t * μ * I - v * t ^ 2 / 2) := by
+  rw [← complexMGF_id_mul_I, complexMGF_id_gaussianReal]
+  congr
+  simp only [mul_pow, I_sq, mul_neg, mul_one, sub_eq_add_neg]
+  ring_nf
+
+/-- The moment generating function of a random variable with Gaussian distribution
+with mean `μ` and variance `v` is given by `t ↦ exp (μ * t + v * t ^ 2 / 2)`. -/
+theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
+    mgf X p t = rexp (μ * t + v * t ^ 2 / 2) := by
+  suffices (mgf X p t : ℂ) = rexp (μ * t + ↑v * t ^ 2 / 2) from mod_cast this
+  have hX_meas : AEMeasurable X p := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
+  rw [← mgf_id_map hX_meas, ← complexMGF_ofReal, hX, complexMGF_id_gaussianReal, mul_comm μ]
+  norm_cast
+
+/-- The cumulant generating function of a random variable with Gaussian distribution
+with mean `μ` and variance `v` is given by `t ↦ μ * t + v * t ^ 2 / 2`. -/
+theorem cgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
+    cgf X p t = μ * t + v * t ^ 2 / 2 := by
+  rw [cgf, mgf_gaussianReal hX t, Real.log_exp]
+
+end CharacteristicFunction
 
 end GaussianReal
 

@@ -1,12 +1,10 @@
 /-
 Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon, E.W.Ayers
+Authors: Simon Hudon, Edward Ayers
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Equiv.Defs
-
-#align_import control.monad.writer from "leanprover-community/mathlib"@"9407b03373c8cd201df99d6bc5514fc2db44054f"
 
 /-!
 # Writer monads
@@ -21,13 +19,12 @@ computation progresses.
 
 -/
 
-set_option autoImplicit true
+universe u v
 
 def WriterT (ω : Type u) (M : Type u → Type v) (α : Type u) : Type v :=
   M (α × ω)
 
-@[reducible]
-def Writer ω := WriterT ω Id
+abbrev Writer ω := WriterT ω Id
 
 class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
   tell : ω → M PUnit
@@ -36,14 +33,14 @@ class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
 
 export MonadWriter (tell listen pass)
 
-variable {M : Type u → Type v} [Monad M]
+variable {M : Type u → Type v} {α ω ρ σ : Type u}
 
 instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
   tell w := (tell w : M _)
   listen x r := listen <| x r
   pass x r := pass <| x r
 
-instance [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
+instance [Monad M] [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
   tell w := (tell w : M _)
   listen x s := (fun ((a,w), s) ↦ ((a,s), w)) <$> listen (x s)
   pass x s := pass <| (fun ((a, f), s) ↦ ((a, s), f)) <$> (x s)
@@ -60,12 +57,12 @@ protected def runThe (ω : Type u) (cmd : WriterT ω M α) : M (α × ω) := cmd
 @[ext]
 protected theorem ext {ω : Type u} (x x' : WriterT ω M α) (h : x.run = x'.run) : x = x' := h
 
-variable {ω : Type u} {α β : Type u}
+variable [Monad M]
 
-/-- Creates an instance of Monad, with an explicitly given empty and append operation.
+/-- Creates an instance of `Monad`, with explicitly given `empty` and `append` operations.
 
 Previously, this would have used an instance of `[Monoid ω]` as input.
-In practice, however, WriterT is used for logging and creating lists so restricting to
+In practice, however, `WriterT` is used for logging and creating lists so restricting to
 monoids with `Mul` and `One` can make `WriterT` cumbersome to use.
 
 This is used to derive instances for both `[EmptyCollection ω] [Append ω]` and `[Monoid ω]`.
@@ -100,7 +97,7 @@ instance : MonadWriter ω (WriterT ω M) where
   listen := fun cmd ↦ WriterT.mk <| (fun (a,w) ↦ ((a,w), w)) <$> cmd
   pass := fun cmd ↦ WriterT.mk <| (fun ((a,f), w) ↦ (a, f w)) <$> cmd
 
-instance [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
+instance {ε : Type*} [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
   throw := fun e ↦ WriterT.mk <| throw e
   tryCatch := fun cmd c ↦ WriterT.mk <| tryCatch cmd fun e ↦ (c e).run
 
@@ -129,6 +126,7 @@ class MonadWriterAdapter (ω : outParam (Type u)) (m : Type u → Type v) where
 
 export MonadWriterAdapter (adaptWriter)
 
+variable {m : Type u → Type*}
 /-- Transitivity.
 
 see Note [lower instance priority] -/
@@ -139,6 +137,7 @@ instance (priority := 100) monadWriterAdapterTrans {n : Type u → Type v}
 instance [Monad m] : MonadWriterAdapter ω (WriterT ω m) where
   adaptWriter := WriterT.adapt
 
+universe u₀ u₁ v₀ v₁ in
 /-- reduce the equivalence between two writer monads to the equivalence between
 their underlying monad -/
 def WriterT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁}
