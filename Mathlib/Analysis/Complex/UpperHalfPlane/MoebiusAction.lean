@@ -195,6 +195,10 @@ lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
 
 variable (g : GL (Fin 2) ℝ) (z : ℍ)
 
+theorem re_smul : (g • z).re = (num g z / denom g z).re := by
+  change (smulAux' g z).re = _
+  simp +contextual [smulAux', σ, DFunLike.ite_apply, apply_ite, Complex.div_re]
+
 theorem im_smul : (g • z).im = |(num g z / denom g z).im| := by
   change (smulAux' g z).im = _
   simp only [smulAux', σ, DFunLike.ite_apply, RingHom.id_apply, apply_ite, moebius_im,
