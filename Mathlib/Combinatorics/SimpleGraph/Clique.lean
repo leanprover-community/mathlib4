@@ -45,7 +45,7 @@ abbrev IsClique (s : Set α) : Prop :=
 theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
   Iff.rfl
 
-lemma not_isClique_iff : ¬G.IsClique s ↔ ∃ (v w : s), v ≠ w ∧ ¬ G.Adj v w := by
+lemma not_isClique_iff : ¬ G.IsClique s ↔ ∃ (v w : s), v ≠ w ∧ ¬ G.Adj v w := by
   aesop (add simp [isClique_iff, Set.Pairwise])
 
 /-- A clique is a set of vertices whose induced graph is complete. -/
