@@ -68,8 +68,8 @@ theorem supportDim_le_supportDim_quotSMulTop_succ (x : R) (mem : x ∈ maximalId
   · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
     rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
   have : Nontrivial M := not_subsingleton_iff_nontrivial.mp h
-  let p := LTSeries.longestOf (Module.support R M)
-  have : supportDim R M = p.length := Order.krullDim_eq_length_of_finiteDimensionalOrder
+  apply iSup_le_iff.mpr
+  intro p
   sorry
 
 theorem supportDim_quotSMulTop_succ_eq_supportDim (x : R) (reg : IsSMulRegular M x)
