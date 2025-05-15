@@ -53,7 +53,7 @@ def Lean.Environment.importPath (env : Environment) (imported : Name) : Array Na
 
 namespace Mathlib.Linter
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 /--
 The `directoryDependency` linter detects detects imports between directories that are supposed to be
@@ -474,7 +474,7 @@ open DirectoryDependency
 
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
 def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageData) := do
-  unless Linter.getLinterValue linter.directoryDependency (← getOptions) do
+  unless getLinterValue linter.directoryDependency (← getLinterOptions) do
     return none
   let env ← getEnv
   let imports := env.allImportedModuleNames
