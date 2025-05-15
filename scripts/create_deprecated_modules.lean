@@ -123,7 +123,8 @@ def deprecateFilePath (fname : String) (comment : Option String) :
       args := #["log", "--pretty=oneline", "--all", "-2", "--", fname]
     }
   let [deleted, lastModified] := log.trim.splitOn "\n" |
-    throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2!"
+    throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2! \
+      Please make sure the file {fname} actually exists"
   let (_deleteHash, deletedMsg) := processPrettyOneLine deleted "deleted"
   let (modifiedHash, modifiedMsg) := processPrettyOneLine lastModified "last modified"
   msgs := msgs.push <| m!"The file {fname} was\n"
