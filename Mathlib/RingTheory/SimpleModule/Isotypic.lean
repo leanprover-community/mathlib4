@@ -479,7 +479,6 @@ noncomputable def endAlgEquiv :
 of its isotypic components. -/
 noncomputable def endRingEquiv :
     Module.End R M ≃+* Π c : isotypicComponents R M, Module.End R c.1 :=
-  ((sSupIndep_iff _).mp <| sSupIndep_isotypicComponents R M).ringEquiv
-    ((sSup_eq_iSup' _).symm.trans <| sSup_isotypicComponents R M) (.of_mem_isotypicComponents ·.2)
+  (endAlgEquiv ℕ R M).toRingEquiv
 
 end IsSemisimpleModule
