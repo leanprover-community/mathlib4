@@ -387,16 +387,13 @@ theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
 theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
     Function.Injective (Fin.append xs ys) ↔
       Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
-  rw [← Sum.elim_injective, ← append_comp_sumElim]
-  refine Function.Injective.of_comp_iff' _ ⟨?_, ?_⟩ |>.symm
-  -- Note this is `finSumFinEquiv (m := m) (n := n)).bijective`, but we don't have that imported
-  -- here.
-  · refine (castAdd_injective _ _).sumElim (natAdd_injective _ _) fun i j => ?_
-    apply Fin.ne_of_lt
-    simp only [lt_iff_val_lt_val, coe_castAdd, coe_natAdd]
-    exact i.prop.trans_le (Nat.le_add_right m ↑j)
-  · intro x
-    induction x using Fin.addCases <;> simp
+  let finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) :=
+  { toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
+    invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
+    left_inv x := by rcases x with y | y <;> dsimp <;> simp
+    right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp }
+  rw [← Sum.elim_injective, ← append_comp_sumElim, ← finSumFinEquiv.injective_comp,
+    Equiv.coe_fn_mk]
 
 end Append
 
