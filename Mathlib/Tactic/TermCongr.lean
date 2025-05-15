@@ -24,7 +24,7 @@ The implementation strategy is the following:
    and again with each hole replaced by the RHS. We do not force the hole to
    have any particular type while elaborating, but if the hole has a type
    with an obvious LHS or RHS, then we propagate this information outward.
-   We use `Mathlib.Tactic.TermCongr.cHole` with metadata for these replacements
+   We use `Mathlib/Tactic/TermCongr/cHole.lean` with metadata for these replacements
    to hold onto the hole itself.
 2. Once the pattern has been elaborated twice,
    we unify them against the respective LHS and RHS of the target type
@@ -104,7 +104,7 @@ We need to decouple these to support letting the proof's elaboration be deferred
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
 Later, the congruence generator handles any discrepancies.
-See `Mathlib.Tactic.TermCongr.CongrResult`. -/
+See `Mathlib/Tactic/TermCongr/CongrResult.lean`. -/
 @[reducible, nolint unusedArguments]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
 

@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 # Functor categories have finite limits when the target category does
 
-These declarations cannot be in the file `Mathlib.CategoryTheory.Limits.FunctorCategory` because
+These declarations cannot be in the file `Mathlib/CategoryTheory/Limits/FunctorCategory.lean` because
 that file shouldn't import `Mathlib/CategoryTheory/Limits/Shapes/FiniteProducts.lean`.
 -/
 

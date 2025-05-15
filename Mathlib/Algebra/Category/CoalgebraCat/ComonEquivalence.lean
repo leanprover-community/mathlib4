@@ -15,7 +15,7 @@ Given a commutative ring `R`, this file defines the equivalence of categories be
 `R`-coalgebras and comonoid objects in the category of `R`-modules.
 
 We then use this to set up boilerplate for the `Coalgebra` instance on a tensor product of
-coalgebras defined in `Mathlib.RingTheory.Coalgebra.TensorProduct`.
+coalgebras defined in `Mathlib/RingTheory/Coalgebra/TensorProduct.lean`.
 
 ## Implementation notes
 

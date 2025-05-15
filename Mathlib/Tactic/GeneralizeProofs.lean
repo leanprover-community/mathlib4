@@ -62,7 +62,7 @@ structure GState where
   propToFVar : ExprMap Expr
 
 /-- Monad used to generalize proofs.
-Carries `Mathlib.Tactic.GeneralizeProofs.Config` and `Mathlib.Tactic.GeneralizeProofs.State`. -/
+Carries `Mathlib/Tactic/GeneralizeProofs/Config.lean` and `Mathlib/Tactic/GeneralizeProofs/State.lean`. -/
 abbrev MGen := ReaderT Config <| StateRefT GState MetaM
 
 /-- Inserts a prop/fvar pair into the `propToFVar` map. -/
@@ -94,8 +94,8 @@ structure AState where
 /--
 Monad used to abstract proofs, to prepare for generalization.
 Has a cache (of expr/type? pairs),
-and it also has a reader context `Mathlib.Tactic.GeneralizeProofs.AContext`
-and a state `Mathlib.Tactic.GeneralizeProofs.AState`.
+and it also has a reader context `Mathlib/Tactic/GeneralizeProofs/AContext.lean`
+and a state `Mathlib/Tactic/GeneralizeProofs/AState.lean`.
 -/
 abbrev MAbs := ReaderT AContext <| MonadCacheT (Expr × Option Expr) Expr <| StateRefT AState MetaM
 

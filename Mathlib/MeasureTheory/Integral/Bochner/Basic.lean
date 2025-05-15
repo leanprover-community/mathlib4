@@ -19,7 +19,7 @@ the L1 Bochner integral constructed in the file `Mathlib/MeasureTheory/Integral/
 ## Main definitions
 
 The Bochner integral is defined through the extension process described in the file
-`Mathlib.MeasureTheory.Integral.SetToL1`, which follows these steps:
+`Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
 * `MeasureTheory.integral`: the Bochner integral on functions defined as the Bochner integral of
   its equivalence class in L1 space, if it is in L1, and 0 otherwise.
@@ -27,7 +27,7 @@ The Bochner integral is defined through the extension process described in the f
 The result of that construction is `∫ a, f a ∂μ`, which is definitionally equal to
 `setToFun (dominatedFinMeasAdditive_weightedSMul μ) f`. Some basic properties of the integral
 (like linearity) are particular cases of the properties of `setToFun` (which are described in the
-file `Mathlib.MeasureTheory.Integral.SetToL1`).
+file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
 
 ## Main statements
 
@@ -60,10 +60,10 @@ file `Mathlib.MeasureTheory.Integral.SetToL1`).
     where `f⁺` is the positive part of `f` and `f⁻` is the negative part of `f`.
   * `integral_eq_lintegral_of_nonneg_ae`          : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
 
-4. (In the file `Mathlib.MeasureTheory.Integral.DominatedConvergence`)
+4. (In the file `Mathlib/MeasureTheory/Integral/DominatedConvergence.lean`)
   `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 
-5. (In the file `Mathlib.MeasureTheory.Integral.SetIntegral`) integration commutes with continuous
+5. (In the file `Mathlib/MeasureTheory/Integral/SetIntegral.lean`) integration commutes with continuous
   linear maps.
 
   * `ContinuousLinearMap.integral_comp_comm`
@@ -76,7 +76,7 @@ Some tips on how to prove a proposition if the API for the Bochner integral is n
 you need to unfold the definition of the Bochner integral and go back to simple functions.
 
 One method is to use the theorem `Integrable.induction` in the file
-`Mathlib.MeasureTheory.Function.SimpleFuncDenseLp` (or one of the related results, like
+`Mathlib/MeasureTheory/Function/SimpleFuncDenseLp.lean` (or one of the related results, like
 `Lp.induction` for functions in `Lp`), which allows you to prove something for an arbitrary
 integrable function.
 

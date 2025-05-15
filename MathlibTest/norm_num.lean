@@ -578,7 +578,7 @@ attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
   "'Mathlib.Meta.NormNum.evalPow' does not have [norm_num] attribute".
 
   This checks that the `norm_num` attribute is indeed considered to be erased from
-  `Mathlib.Meta.NormNum.evalPow` in this scope.
+  `Mathlib/Meta/NormNum/evalPow.lean` in this scope.
 -/
 -- attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
 

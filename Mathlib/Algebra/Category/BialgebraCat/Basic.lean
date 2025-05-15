@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Bialgebra.Equiv
 We introduce the bundled category `BialgebraCat` of bialgebras over a fixed commutative ring `R`
 along with the forgetful functors to `CoalgebraCat` and `AlgebraCat`.
 
-This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
+This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
 
 -/
 

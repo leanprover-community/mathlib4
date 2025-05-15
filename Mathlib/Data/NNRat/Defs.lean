@@ -17,7 +17,7 @@ import Mathlib.Order.GaloisConnection.Defs
 This file defines the nonnegative rationals as a subtype of `Rat` and provides its basic algebraic
 order structure.
 
-Note that `NNRat` is not declared as a `Semifield` here. See `Mathlib.Algebra.Field.Rat` for that
+Note that `NNRat` is not declared as a `Semifield` here. See `Mathlib/Algebra/Field/Rat.lean` for that
 instance.
 
 We also define an instance `CanLift ℚ ℚ≥0`. This instance can be used by the `lift` tactic to

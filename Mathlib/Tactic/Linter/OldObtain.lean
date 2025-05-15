@@ -60,7 +60,7 @@ def isObtainWithoutProof : Syntax → Bool
   | `(tactic|obtain : $_type) | `(tactic|obtain $_pat : $_type) => true
   | _ => false
 
-/-- Deprecated alias for `Mathlib.Linter.Style.isObtainWithoutProof`. -/
+/-- Deprecated alias for `Mathlib/Linter/Style/isObtainWithoutProof.lean`. -/
 @[deprecated isObtainWithoutProof (since := "2024-12-07")]
 def is_obtain_without_proof := @isObtainWithoutProof
 

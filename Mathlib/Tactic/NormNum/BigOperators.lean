@@ -12,7 +12,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 This file adds `norm_num` plugins for `Finset.prod` and `Finset.sum`.
 
-The driving part of this plugin is `Mathlib.Meta.NormNum.evalFinsetBigop`.
+The driving part of this plugin is `Mathlib/Meta/NormNum/evalFinsetBigop.lean`.
 We repeatedly use `Finset.proveEmptyOrCons` to try to find a proof that the given set is empty,
 or that it consists of one element inserted into a strict subset, and evaluate the big operator
 on that subset until the set is completely exhausted.

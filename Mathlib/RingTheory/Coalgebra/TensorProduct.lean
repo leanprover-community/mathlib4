@@ -11,7 +11,7 @@ import Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence
 Given two `R`-coalgebras `M, N`, we can define a natural comultiplication map
 `Δ : M ⊗[R] N → (M ⊗[R] N) ⊗[R] (M ⊗[R] N)` and counit map `ε : M ⊗[R] N → R` induced by
 the comultiplication and counit maps of `M` and `N`. These `Δ, ε` are declared as linear maps
-in `TensorProduct.instCoalgebraStruct` in `Mathlib.RingTheory.Coalgebra.Basic`.
+in `TensorProduct.instCoalgebraStruct` in `Mathlib/RingTheory/Coalgebra/Basic.lean`.
 
 In this file we show that `Δ, ε` satisfy the axioms of a coalgebra, and also define other data
 in the monoidal structure on `R`-coalgebras, like the tensor product of two coalgebra morphisms

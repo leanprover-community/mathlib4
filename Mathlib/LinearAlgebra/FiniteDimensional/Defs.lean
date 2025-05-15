@@ -29,7 +29,7 @@ that all these points of view are equivalent, with the following lemmas
 
 - `Module.finBasis` and `Module.finBasisOfFinrankEq`
   are bases for finite dimensional vector spaces, where the index type
-  is `Fin` (in `Mathlib.LinearAlgebra.Dimension.Free`)
+  is `Fin` (in `Mathlib/LinearAlgebra/Dimension/Free.lean`)
 - `fintypeBasisIndex` states that a finite-dimensional
   vector space has a finite basis
 - `of_fintype_basis` states that the existence of a basis indexed by a

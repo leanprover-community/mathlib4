@@ -12,7 +12,7 @@ import Mathlib.Util.AssertExists
 /-!
 # Basic operations on the natural numbers
 
-This file builds on `Mathlib.Data.Nat.Init` by adding basic lemmas on natural numbers
+This file builds on `Mathlib/Data/Nat/Init.lean` by adding basic lemmas on natural numbers
 depending on Mathlib definitions.
 
 See note [foundational algebra order theory].

@@ -12,7 +12,7 @@ import Mathlib.RingTheory.HopfAlgebra.Basic
 We introduce the bundled category `HopfAlgebraCat` of Hopf algebras over a fixed commutative ring
 `R` along with the forgetful functor to `BialgebraCat`.
 
-This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
+This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
 
 -/
 

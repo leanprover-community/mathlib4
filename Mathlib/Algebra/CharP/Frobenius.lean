@@ -16,7 +16,7 @@ Frobenius endomorphism
 ## Implementation notes
 
 The definitions of `frobenius` and `iterateFrobenius` ring homomorphisms are in
-`Mathlib.Algebra.CharP.Lemmas` as they are needed for some results that in turn are used in files
+`Mathlib/Algebra/CharP/Lemmas.lean` as they are needed for some results that in turn are used in files
 forbidding to import algebra-related definitions (see `Mathlib/Algebra/CharP/Two/lean.lean`).
 -/
 

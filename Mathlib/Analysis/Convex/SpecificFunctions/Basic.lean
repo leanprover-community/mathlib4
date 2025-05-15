@@ -28,7 +28,7 @@ theory.
 
 ## See also
 
-`Mathlib.Analysis.Convex.Mul` for convexity of `x ↦ x ^ n`
+`Mathlib/Analysis/Convex/Mul.lean` for convexity of `x ↦ x ^ n`
 -/
 
 open Real Set NNReal
