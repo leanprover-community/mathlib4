@@ -76,6 +76,7 @@ noncomputable section
 variable {𝕜 E F G : Type*}
 
 open Topology NNReal Filter ENNReal Set Asymptotics
+open scoped Pointwise in
 
 namespace FormalMultilinearSeries
 
@@ -493,7 +494,6 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
       convert hf.hasSum hz using 2
       abel }
 
-open Pointwise in
 theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) (y : E) :
     HasFPowerSeriesWithinOnBall (fun z ↦ f (z - y)) p (s + {y}) (x + y) r where
   r_le := hf.r_le
@@ -511,7 +511,6 @@ theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y : E) :
   obtain ⟨r, hf⟩ := hf
   exact ⟨r, hf.comp_sub _⟩
 
-open Pointwise in
 theorem HasFPowerSeriesWithinAt.comp_sub (hf : HasFPowerSeriesWithinAt f p s x) (y : E) :
     HasFPowerSeriesWithinAt (fun (z : E) ↦ f (z - y)) p (s + {y}) (x + y) := by
   obtain ⟨r, hf⟩ := hf
@@ -524,7 +523,6 @@ theorem AnalyticAt.comp_sub (hf : AnalyticAt 𝕜 f x) (y : E) :
   use p
   apply hf.comp_sub
 
-open Pointwise in
 theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
     AnalyticOnNhd 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) := by
   intro x hx
@@ -533,14 +531,12 @@ theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
   rw [show x = (x - y) + y by abel]
   apply hf.comp_sub
 
-open Pointwise in
 theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y : E) :
     AnalyticWithinAt 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) (x + y) := by
   obtain ⟨p, hf⟩ := hf
   use p
   apply hf.comp_sub
 
-open Pointwise in
 theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y : E) :
     AnalyticOn 𝕜 (fun (z : E) ↦ f (z - y)) (s + {y}) := by
   intro x hx
