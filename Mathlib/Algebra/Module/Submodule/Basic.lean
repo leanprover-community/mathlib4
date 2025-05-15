@@ -133,6 +133,9 @@ theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
 
+@[gcongr]
+protected alias ⟨_, _root_.GCongr.Submodule.toAddSubgroup_le⟩ := Submodule.toAddSubgroup_le
+
 -- See `neg_coe_set`
 theorem neg_coe : -(p : Set M) = p :=
   Set.ext fun _ => p.neg_mem_iff

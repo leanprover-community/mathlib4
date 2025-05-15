@@ -16,6 +16,7 @@ A regular monomorphism is a morphism that is the equalizer of some parallel pair
 We give the constructions
 * `IsSplitMono → RegularMono` and
 * `RegularMono → Mono`
+
 as well as the dual constructions for regular epimorphisms. Additionally, we give the construction
 * `RegularEpi ⟶ StrongEpi`.
 
