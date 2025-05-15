@@ -99,7 +99,7 @@ syntax "#create_deprecated_module " str (ppSpace str)? (&" write")? ppLine :
 It expects `log` to be a line in the output of `git log --pretty=oneline`:
 it should look like `<hash> <PRdescr>`.
 
-It also expects `log` to be either `last modified` or `deleted` and
+It also expects `msg` to be either `last modified` or `deleted` and
 it returns the pair `(<hash>, <msg> in <PRdescr> <hash>)`, formatted as a collapsible message.
 -/
 def processPrettyOneLine (log msg : String) : String × MessageData :=
