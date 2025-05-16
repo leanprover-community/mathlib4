@@ -78,8 +78,8 @@ example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
 example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
   linarith
 
-example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
- by linarith
+example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε := by
+  linarith
 
 example (x y z : Rat) (h1 : 2 * x < 3 * y) (h2 : -4 * x + z / 2 < 0)
     (h3 : 12 * y - z < 0) : False := by

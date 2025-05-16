@@ -3,7 +3,7 @@ Copyright (c) 2023 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
@@ -13,13 +13,13 @@ The category of comonoid objects in a cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.
 -/
 
-open CategoryTheory MonoidalCategory ChosenFiniteProducts Limits
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits
 
 universe v u
 
 noncomputable section
 
-variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C]
+variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C]
 
 attribute [local simp] leftUnitor_hom rightUnitor_hom
 
