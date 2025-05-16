@@ -108,6 +108,18 @@ lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice 
     _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_left
     _ ≤ v := hv
 
+nonrec
+lemma Nat.tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice α] {β : Type*}
+    [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {u : ℕ → α → β} {c : β}
+    (h_all : ∀ n, Tendsto (u n) atTop (𝓝 c))
+    (h_limsup : Tendsto (fun r : α ↦ limsup (fun n ↦ u n r) atTop) atTop (𝓝 c))
+    (h_anti : ∀ n, Antitone (u n)) :
+    Tendsto (fun r : α ↦ ⨆ n, u n r) atTop (𝓝 c) := by
+  refine tendsto_iSup_of_tendsto_limsup  h_all ?_ h_anti
+  convert h_limsup
+  exact cofinite_eq_atTop
+
 namespace MeasureTheory
 
 variable {E : Type*} {mE : MeasurableSpace E} {S : Set (Measure E)}
@@ -170,21 +182,28 @@ section Sequence
 
 variable [BorelSpace E] [ProperSpace E] {μ : ℕ → Measure E} [∀ i, IsFiniteMeasure (μ i)]
 
+/-- For a sequence of measures indexed by `ℕ`, if the function
+`r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop` tends to 0 at infinity, then the set of measures
+in the sequence is tight.
+Compared to `isTightMeasureSet_of_tendsto_measure_norm_gt`, this lemma replaces a supremum over
+all measures by a limsup. -/
 lemma isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt
     (h : Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0)) :
     IsTightMeasureSet (Set.range μ) := by
   refine isTightMeasureSet_of_tendsto_measure_norm_gt ?_
   simp_rw [iSup_range]
-  refine tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) ?_ fun n u v huv ↦ ?_
+  refine Nat.tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) h fun n u v huv ↦ ?_
   · have h_tight : IsTightMeasureSet {μ n} := isTightMeasureSet_singleton
     rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h_tight
     simpa using h_tight
-  · convert h
-    exact Nat.cofinite_eq_atTop
   · refine measure_mono fun x hx ↦ ?_
     simp only [Set.mem_setOf_eq] at hx ⊢
     exact huv.trans_lt hx
 
+/-- For a sequence of measures indexed by `ℕ`, the set of measures in the sequence is tight if and
+only if the function `r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop` tends to 0 at infinity.
+Compared to `isTightMeasureSet_iff_tendsto_measure_norm_gt`, this lemma replaces a supremum over
+all measures by a limsup. -/
 lemma isTightMeasureSet_range_iff_tendsto_limsup_measure_norm_gt :
     IsTightMeasureSet (Set.range μ)
       ↔ Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0) := by
@@ -282,7 +301,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner
     IsTightMeasureSet (Set.range μ) := by
   refine isTightMeasureSet_of_inner_tendsto 𝕜 fun z ↦ ?_
   simp_rw [iSup_range]
-  refine tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) ?_ fun n u v huv ↦ ?_
+  refine Nat.tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) (h z) fun n u v huv ↦ ?_
   · have h_tight : IsTightMeasureSet {(μ n).map (fun x ↦ ⟪z, x⟫_𝕜)} := isTightMeasureSet_singleton
     rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h_tight
     have h_map r : (μ n).map (fun x ↦ ⟪z, x⟫_𝕜) {x | r < ‖x‖} = μ n {x | r < ‖⟪z, x⟫_𝕜‖} := by
@@ -290,8 +309,6 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner
       · simp
       · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
     simpa [h_map] using h_tight
-  · convert h z
-    exact Nat.cofinite_eq_atTop
   · exact measure_mono fun x hx ↦ huv.trans_lt hx
 
 /-- In a finite-dimensional inner product space, the range of a sequence of measures
