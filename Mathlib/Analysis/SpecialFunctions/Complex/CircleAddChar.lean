@@ -125,8 +125,7 @@ noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUn
   left_inv _ := by aesop
   right_inv _ := by aesop
 
-instance : HasEnoughRootsOfUnity Circle n := HasEnoughRootsOfUnity.map_of_rootsOfUnityEquiv
-  (IsAlgClosed.hasEnoughRootsOfUnity ℂ n) (rootsOfUnityCircleEquiv n).symm
+instance : HasEnoughRootsOfUnity Circle n := (rootsOfUnityCircleEquiv n).symm.hasEnoughRootsOfUnity
 
 open Real in
 lemma rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_val (j : ZMod n) :
