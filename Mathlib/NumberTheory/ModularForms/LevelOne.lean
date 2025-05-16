@@ -55,7 +55,8 @@ variable [ModularFormClass F Γ(1) k]
 private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
     Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0)) (Metric.ball 0 1) := by
   refine eq_const_of_exists_le (fun q hq ↦ ?_) (exp_nonneg (-π)) ?_ (fun q hq ↦ ?_)
-  · exact (differentiableAt_cuspFunction 1 f (mem_ball_zero_iff.mp hq)).differentiableWithinAt
+  · exact (differentiableAt_cuspFunction f (dvd_of_eq <| Gamma_width 1)
+      (mem_ball_zero_iff.mp hq)).differentiableWithinAt
   · simp only [exp_lt_one_iff, Left.neg_neg_iff, pi_pos]
   · simp only [Metric.mem_closedBall, dist_zero_right]
     rcases eq_or_ne q 0 with rfl | hq'
@@ -63,17 +64,14 @@ private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
     · obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f
         ⟨_, im_invQParam_pos_of_norm_lt_one Real.zero_lt_one (mem_ball_zero_iff.mp hq) hq'⟩
       exact ⟨_, norm_qParam_le_of_one_half_le_im hξ,
-        by simpa only [← eq_cuspFunction 1 f, Nat.cast_one, coe_mk_subtype,
-          qParam_right_inv one_ne_zero hq'] using hξ₂⟩
+        by simpa [← eq_cuspFunction f (dvd_of_eq <| Gamma_width 1),
+          Nat.cast_one, coe_mk_subtype, qParam_right_inv one_ne_zero hq'] using hξ₂⟩
 
 private theorem levelOne_nonpos_wt_const (hk : k ≤ 0) (f : F) :
-    ⇑f = Function.const _ (cuspFunction 1 f 0) := by
-  ext z
-  have hQ : 𝕢 1 z ∈ (Metric.ball 0 1) := by
-    simpa only [Metric.mem_ball, dist_zero_right, neg_mul, mul_zero, div_one, Real.exp_zero]
-      using (norm_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
-  simpa only [← eq_cuspFunction 1 f z, Nat.cast_one, Function.const_apply] using
-    (cuspFunction_eqOn_const_of_nonpos_wt hk f) hQ
+    ⇑f = Function.const _ (cuspFunction 1 f 0) := funext fun z ↦ by
+  have hQ : 𝕢 1 z ∈ Metric.ball 0 1 := by simpa using (norm_qParam_lt_iff zero_lt_one 0 _).mpr z.2
+  simpa [← eq_cuspFunction f (dvd_of_eq <| Gamma_width 1)] using
+    cuspFunction_eqOn_const_of_nonpos_wt hk f hQ
 
 lemma levelOne_neg_weight_eq_zero (hk : k < 0) (f : F) : ⇑f = 0 := by
   have hf := levelOne_nonpos_wt_const hk.le f

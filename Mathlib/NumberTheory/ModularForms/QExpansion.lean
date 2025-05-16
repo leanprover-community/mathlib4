@@ -5,8 +5,9 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.Complex.TaylorSeries
 import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.Identities
-import Mathlib.NumberTheory.ModularForms.SlashCompose
 import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
@@ -179,39 +180,60 @@ end ModularFormClass
 
 open ModularFormClass
 
+namespace UpperHalfPlane.IsZeroAtImInfty
+
+variable {f}
+
+lemma zeroAtFilter_comp_ofComplex {α : Type*} [Zero α] [TopologicalSpace α] {f : ℍ → α}
+    (hf : IsZeroAtImInfty f) : ZeroAtFilter I∞ (f ∘ ofComplex) := by
+  simpa using hf.comp tendsto_comap_im_ofComplex
+
+theorem cuspFunction_apply_zero [NeZero n] (hf : IsZeroAtImInfty f) :
+    cuspFunction n f 0 = 0 :=
+  Periodic.cuspFunction_zero_of_zero_at_inf (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
+    hf.zeroAtFilter_comp_ofComplex
+
+/-- A modular form which vanishes at the cusp `∞` actually must decay at least as fast as
+`Real.exp (-2 * π * τ.im / n)`, if `n` divides the cusp with.
+
+(Note that `Γ` need not be finite index here). -/
+theorem exp_decay_atImInfty_of_width_dvd [ModularFormClass F Γ k]
+    (hf : IsZeroAtImInfty f) (hn : Γ.width ∣ n) :
+    f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / n) := by
+  -- If `n = 0` the statement is uninteresting, but true, so let's prove it.
+  rcases eq_or_ne n 0 with rfl | hn'
+  · simp only [Nat.cast_zero, div_zero, Real.exp_zero]
+    exact hf.isBoundedAtImInfty
+  -- Now the interesting case.
+  · haveI : NeZero n := ⟨hn'⟩
+    simpa [comp_def] using
+      ((periodic_comp_ofComplex f hn).exp_decay_of_zero_at_inf
+        (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
+        (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
+          fun _ ↦ differentiableAt_comp_ofComplex f)
+        (hf.zeroAtFilter_comp_ofComplex)).comp_tendsto tendsto_coe_atImInfty
+
+/-- A modular form which vanishes at the cusp `∞` actually has exponentially rapid decay there. -/
+theorem exp_decay_atImInfty [ModularFormClass F Γ k] (hf : IsZeroAtImInfty f) [Γ.FiniteIndex] :
+    ∃ a, 0 < a ∧ f =O[atImInfty] fun τ ↦ Real.exp (-a * τ.im) := by
+  haveI := Γ.width_ne_zero
+  haveI := NeZero.mk this -- need both "bundled" and "unbundled" versions in context for next line
+  refine ⟨2 * π / Γ.width, by positivity, ?_⟩
+  convert hf.exp_decay_atImInfty_of_width_dvd dvd_rfl using 3
+  ring
+
+end UpperHalfPlane.IsZeroAtImInfty
+
 namespace CuspFormClass
 
 variable [hF : CuspFormClass F Γ k]
 include hF
 
-theorem zero_at_infty_comp_ofComplex : ZeroAtFilter I∞ (f ∘ ofComplex) := by
-  simpa using (zero_at_infty f 1).comp tendsto_comap_im_ofComplex
-
-theorem cuspFunction_apply_zero [NeZero n] : cuspFunction n f 0 = 0 :=
-  Periodic.cuspFunction_zero_of_zero_at_inf (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
-    (zero_at_infty_comp_ofComplex f)
-
-theorem exp_decay_atImInfty [NeZero n] (hn : Γ.width ∣ n) :
-    f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / n) := by
-  simpa [comp_def] using
-    ((periodic_comp_ofComplex f hn).exp_decay_of_zero_at_inf
-      (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
-      (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
-        fun _ ↦ differentiableAt_comp_ofComplex f)
-      (zero_at_infty_comp_ofComplex f)).comp_tendsto tendsto_coe_atImInfty
-
-theorem exp_decay_atImInfty' [Γ.FiniteIndex] :
-    ∃ a, 0 < a ∧ f =O[atImInfty] fun τ ↦ Real.exp (-a * τ.im) := by
-  have := Γ.width_ne_zero
-  have := NeZero.mk this
-  refine ⟨2 * π / Γ.width, by positivity, ?_⟩
-  convert exp_decay_atImInfty f dvd_rfl using 3
-  ring
-
-theorem exp_decay_slash [Γ.FiniteIndex] (γ : SL(2, ℤ)) :
+/-- If `f` is cuspidal, then it has exponentially rapid decay at every cusp. -/
+theorem exp_decay_atImInfty_translate [Γ.FiniteIndex] (γ : SL(2, ℤ)) :
     ∃ a, 0 < a ∧ (f ∣[k] γ) =O[atImInfty] fun τ ↦ Real.exp (-a * τ.im) := by
-  suffices (Γ.map <| MulAut.conj γ⁻¹ : Subgroup SL(2, ℤ)).FiniteIndex from
-    exp_decay_atImInfty' (CuspFormClass.translate f γ)
+  have hf : IsZeroAtImInfty (CuspForm.translate f γ) := CuspFormClass.zero_at_infty f γ
+  suffices (Γ.map <| MulAut.conj γ⁻¹ : Subgroup SL(2, ℤ)).FiniteIndex from hf.exp_decay_atImInfty
   constructor
   rw [Γ.index_map_of_bijective (EquivLike.bijective _)]
   apply Subgroup.FiniteIndex.index_ne_zero

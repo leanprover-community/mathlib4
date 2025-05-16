@@ -128,73 +128,98 @@ lemma UpperHalfPlane.petersson_slash (k : ℤ) (f f' : ℍ → ℂ) (g : GL(2, �
   _ = D ^ (k - 2) * (conj (f (g • τ)) * (f' (g • τ)) * (im (g • τ)) ^ k) := by
     rw [im_smul_eq_div_normSq, Complex.ofReal_div, Complex.ofReal_mul]
 
-lemma SlashInvariantFormClass.petersson_smul {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F : Type*}
-    [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k] {f f' : F} {g : SL(2, ℤ)} (hg : g ∈ Γ) (τ : ℍ) :
+lemma UpperHalfPlane.petersson_slash_SL (k : ℤ) (f f' : ℍ → ℂ) (g : SL(2, ℤ)) (τ : ℍ) :
+    petersson k (f ∣[k] g) (f' ∣[k] g) τ = petersson k f f' (g • τ) := by
+  simp [UpperHalfPlane.petersson_slash]
+
+lemma SlashInvariantFormClass.petersson_smul {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F F' : Type*}
+    [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k] {f : F}
+    [FunLike F' ℍ ℂ] [SlashInvariantFormClass F' Γ k] {f' : F'}
+    {g : SL(2, ℤ)} (hg : g ∈ Γ) {τ : ℍ} :
     petersson k f f' (g • τ) = petersson k f f' τ := by
   simpa [← ModularForm.SL_slash, SlashInvariantFormClass.slash_action_eq _ _ hg]
     using (petersson_slash k f f' g τ).symm
 
-lemma SlashInvariantFormClass.petersson_continuous {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F : Type*}
-    [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k] {f f' : F}
+lemma SlashInvariantFormClass.petersson_continuous (k : ℤ) (Γ : Subgroup SL(2, ℤ)) {F F' : Type*}
+    [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k]
+    [FunLike F' ℍ ℂ] [SlashInvariantFormClass F' Γ k] {f : F} {f' : F'}
     (hf : Continuous f) (hf' : Continuous f') : Continuous (petersson k f f') := by
   apply ((Complex.continuous_conj.comp hf).mul hf').mul
   apply (Complex.continuous_ofReal.comp UpperHalfPlane.continuous_im).zpow₀
   exact fun τ ↦ .inl <| Complex.ofReal_ne_zero.mpr τ.im_ne_zero
 
+lemma ModularFormClass.petersson_continuous (k : ℤ) (Γ : Subgroup SL(2, ℤ)) {F F' : Type*}
+    [FunLike F ℍ ℂ] [ModularFormClass F Γ k]
+    [FunLike F' ℍ ℂ] [ModularFormClass F' Γ k] (f : F) (f' : F') :
+    Continuous (petersson k f f') :=
+  SlashInvariantFormClass.petersson_continuous k Γ
+    (ModularFormClass.holo f).continuous (ModularFormClass.holo f').continuous
+
+lemma UpperHalfPlane.IsZeroAtImInfty.petersson_isZeroAtImInfty_left
+    (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex]
+    {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] {f : F} (h_bd : IsZeroAtImInfty f)
+    {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f' : F) :
+    IsZeroAtImInfty (petersson k f f') := by
+  unfold petersson
+  simp only [IsZeroAtImInfty, ZeroAtFilter, ← Asymptotics.isLittleO_one_iff (F := ℝ),
+    ← Asymptotics.isLittleO_norm_left (E' := ℂ), norm_mul, Complex.norm_conj]
+  have hf' : IsBoundedAtImInfty f' := by simpa using ModularFormClass.bdd_at_infty f' 1
+  simp only [mul_comm ‖f _‖ ‖f' _‖, mul_assoc, norm_zpow, Complex.norm_real,
+      Real.norm_of_nonneg (fun {τ : ℍ} ↦ τ.im_pos).le]
+  rw [(by simp : (1 : ℝ) = 1 * 1)]
+  apply hf'.norm_left.mul_isLittleO
+  obtain ⟨a, ha, haf⟩ := h_bd.exp_decay_atImInfty
+  refine (haf.norm_left.mul <| Asymptotics.isBigO_refl (fun τ ↦ (im τ) ^ k) _).trans_isLittleO ?_
+  rw [Asymptotics.isLittleO_one_iff]
+  refine .comp (g := fun t ↦ Real.exp (-a * t) * t ^ k) ?_ tendsto_comap
+  exact (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero k a ha).congr fun t ↦ by norm_cast; ring
+
+lemma UpperHalfPlane.IsZeroAtImInfty.petersson_isZeroAtImInfty_right
+    (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] {F : Type*}
+    [FunLike F ℍ ℂ] [ModularFormClass F Γ k] {f f' : F}
+    (h_bd : IsZeroAtImInfty f') : IsZeroAtImInfty (petersson k f f') := by
+  have := h_bd.petersson_isZeroAtImInfty_left k Γ f
+  rw [IsZeroAtImInfty, ZeroAtFilter, tendsto_zero_iff_norm_tendsto_zero] at this ⊢
+  refine this.congr fun τ ↦ ?_
+  simp only [petersson, norm_mul, Complex.norm_conj, mul_comm]
+
+/-- If `f` is a cusp form and `f'` a modular form, then `petersson k f f'` is bounded. -/
+lemma CuspFormClass.petersson_bounded_left
+    (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] {F F' : Type*} (f : F) (f' : F')
+    [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [CuspFormClass F Γ k] [ModularFormClass F' Γ k] :
+    ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C := by
+  refine ModularGroup.exists_bound_of_subgroup_invariant (Γ := Γ)
+      (ModularFormClass.petersson_continuous k Γ f f') (fun g ↦ ?_)
+      fun g hg τ ↦ SlashInvariantFormClass.petersson_smul hg
+  apply IsZeroAtImInfty.isBoundedAtImInfty
+  simp_rw [← UpperHalfPlane.petersson_slash_SL]
+  let Γ' : Subgroup SL(2, ℤ) := Subgroup.map (MulAut.conj g⁻¹) Γ
+  let ft₀ : CuspForm Γ' k := CuspForm.translate f g
+  have : Γ'.FiniteIndex := by
+    constructor
+    rw [Γ.index_map_of_bijective (EquivLike.bijective _)]
+    apply Subgroup.FiniteIndex.index_ne_zero
+  convert UpperHalfPlane.IsZeroAtImInfty.petersson_isZeroAtImInfty_left k Γ'
+    (by simpa using CuspFormClass.zero_at_infty ft₀ 1)
+    (ModularForm.translate f' g) -- "exact" fails here -- why?
+
+/-- If `f` is a modular form and `f'` a cusp form, then `petersson k f f'` is bounded. -/
+lemma CuspFormClass.petersson_bounded_right
+    (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] {F F' : Type*} (f : F) (f' : F')
+    [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [ModularFormClass F Γ k] [CuspFormClass F' Γ k] :
+    ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C := by
+  simpa [petersson, mul_comm] using petersson_bounded_left k Γ f' f
+
+/-- A weight `k` cusp form is bounded in norm by `(im τ) ^ (k / 2)`. -/
 lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex]
-    {F : Type*} [FunLike F ℍ ℂ] [CuspFormClass F Γ k] {f : F} :
+    {F : Type*} [FunLike F ℍ ℂ] [CuspFormClass F Γ k] (f : F) :
     ∃ C, ∀ τ, ‖f τ‖ * τ.im ^ (k / 2 : ℝ) ≤ C := by
-  conv =>
-    enter [1, C, τ]
-    rw [← Real.norm_of_nonneg τ.im_pos.le, ← Real.norm_rpow_of_nonneg τ.im_pos.le,
-      ← Complex.norm_real, ← norm_mul, ← norm_norm]
-  apply ModularGroup.exists_bound_of_subgroup_invariant (Γ := Γ)
-  · apply continuous_norm.comp
-    apply Continuous.mul
-    · exact continuous_iff_continuousAt.mpr fun τ ↦ (ModularFormClass.holo f τ).continuousAt
-    · apply Complex.continuous_ofReal.comp
-      rw [continuous_iff_continuousAt]
-      exact fun τ ↦ UpperHalfPlane.continuous_im.continuousAt.rpow_const (.inl τ.im_ne_zero)
-  · sorry
-  · intro g hg τ
-    have := SlashInvariantForm.slash_action_eqn'' f hg τ
-    rw [this, ModularGroup.sl_moeb, UpperHalfPlane.im_smul_eq_div_normSq,
-      ModularGroup.det_coe, one_mul, norm_mul, norm_mul, norm_mul, Complex.norm_real,
-      Complex.norm_real, Real.div_rpow (by positivity) (Complex.normSq_nonneg _),
-      norm_div, mul_div, mul_div_right_comm, mul_div_right_comm, Complex.normSq_eq_norm_sq,
-      ← Real.rpow_natCast, Nat.cast_two, ← Real.rpow_mul (norm_nonneg _),
-      mul_div_cancel₀ _ two_ne_zero, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm,
-      Real.rpow_intCast, norm_zpow, div_self, one_mul]
-    exact zpow_ne_zero _ <| norm_ne_zero_iff.mpr <| denom_ne_zero _ _
-
-
-
-namespace SlashInvariantFormClass
-  -- by
-  --   simpa [ModularForm.SL_slash, ModularForm.slash_def, ModularForm.slash] using
-  --     congr_fun (slash_action_eq f g (by tauto)) τ
-
-/-- A function on `ℍ` which is weight 0 invariant under `SL(2, ℤ)` and bounded at `∞` is in fact
-bounded. -/
-lemma isBounded_of_level_one {F : Type*} [FunLike F ℍ ℂ] [SlashInvariantFormClass F ⊤ 0]
-    {f : F} (hf_cont : Continuous f) (hf_infinity : IsBoundedUnder LE.le atImInfty (‖f ·‖)) :
-    ∃ C, ∀ τ, ‖f τ‖ ≤ C := by
-  obtain ⟨D, hD⟩ := hf_infinity
-  rw [eventually_map, atImInfty, eventually_comap, eventually_atTop] at hD
-  obtain ⟨y, hy⟩ := hD
-  let S := {τ | τ ∈ 𝒟 ∧ τ.im ≤ y}
-  obtain ⟨E, hE⟩ := (ModularGroup.isCompact_truncatedFundamentalDomain
-    y).exists_bound_of_continuousOn hf_cont.continuousOn
-  use max D E
-  intro τ
-  obtain ⟨g, hg⟩ := ModularGroup.exists_smul_mem_fd τ
-  have hg' : f (g • τ) = f τ := by
-    simpa [ModularForm.SL_slash, ModularForm.slash_def, ModularForm.slash] using
-      congr_fun (slash_action_eq f g (by tauto)) τ
-  by_cases h : (g • τ).im ≤ y
-  · rw [← hg']
-    refine (hE _ ⟨hg, h⟩).trans (le_max_right _ _)
-  · rw [← hg']
-    exact (hy (g • τ).im (by linarith) _ rfl).trans (le_max_left _ _)
-
-end SlashInvariantFormClass
+  obtain ⟨C, hC⟩ := petersson_bounded_left k Γ f f
+  refine ⟨C.sqrt, fun τ ↦ ?_⟩
+  specialize hC τ
+  rw [← Real.sqrt_le_sqrt_iff ((norm_nonneg _).trans hC)] at hC
+  refine (le_of_eq ?_).trans hC
+  simp only [petersson, norm_mul, Complex.norm_conj]
+  rw [Real.sqrt_mul (by positivity), Real.sqrt_mul_self (by positivity), norm_zpow,
+    Complex.norm_real, Real.sqrt_eq_rpow, ← Real.rpow_intCast_mul (by positivity), mul_one_div,
+    Real.norm_of_nonneg τ.im_pos.le]
