@@ -679,9 +679,6 @@ theorem exists_contMDiff_section_forall_mem_convex_of_local
     -- This follows from the smoothness of each `ρ j • s_loc j` in its chart.
     · apply ρ.contMDiffAt_finsum
       intro j h_x₀_in_tsupport_ρj
-      have h_x₀_in_Umap_j_interior : x₀ ∈ interior (U_map j) := hρ_subord j h_x₀_in_tsupport_ρj
-      have h_x₀_in_Umap_j : x₀ ∈ U_map j := interior_subset h_x₀_in_Umap_j_interior
-
       have h_slocj_smooth_at_x₀ : ContMDiffAt I (I.prod 𝓘(ℝ, F_fiber)) n
         (fun x => (TotalSpace.mk x (s_loc j x) : TotalSpace F_fiber V)) x₀ :=
         (h_smooth_s_loc j).contMDiffAt
