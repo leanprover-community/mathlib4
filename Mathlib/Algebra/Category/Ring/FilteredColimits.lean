@@ -357,6 +357,11 @@ protected lemma nontrivial {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
     (Types.FilteredColimit.isColimit_eq_iff' (isColimitOfPreserves (forget _) hc) _ _).mp h
   exact zero_ne_one (((F.map f).hom.map_zero.symm.trans e).trans (F.map f).hom.map_one)
 
+omit [IsFiltered J] in
+instance {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
+    [HasColimit F] [∀ i, Nontrivial (F.obj i)] : Nontrivial ↑(Limits.colimit F) :=
+  FilteredColimits.nontrivial (getColimitCocone F).2
+
 end
 
 end CommRingCat.FilteredColimits
