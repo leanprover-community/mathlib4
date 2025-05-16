@@ -3,7 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Module.Prod
 
 /-!
 # The R-algebra structure on products of R-algebras
@@ -110,3 +111,27 @@ def prodMap {D : Type*} [Semiring D] [Algebra R D] (f : A →ₐ[R] B) (g : C �
     commutes' := fun r => by simp [commutes] }
 
 end AlgHom
+
+namespace AlgEquiv
+
+section
+
+variable {S T A B : Type*} [Semiring A] [Semiring B]
+  [Semiring S] [Semiring T] [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
+
+/-- Product of algebra isomorphisms. -/
+@[simps! apply_fst apply_snd]
+def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B :=
+  .ofRingEquiv (f := RingEquiv.prodCongr l r) <| by simp
+
+variable (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B)
+
+@[simp]
+lemma prodCongr_symm_apply_fst (x : A × B) : ((prodCongr l r).symm x).fst = l.symm x.fst := rfl
+
+@[simp]
+lemma prodCongr_symm_apply_snd (x : A × B) : ((prodCongr l r).symm x).snd = r.symm x.snd := rfl
+
+end
+
+end AlgEquiv

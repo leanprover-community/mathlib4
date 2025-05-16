@@ -3,7 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -120,3 +121,88 @@ protected def compLeft (f : A →ₐ[R] B) (ι : Type*) : (ι → A) →ₐ[R] �
       exact f.commutes' c }
 
 end AlgHom
+
+namespace AlgEquiv
+
+variable {R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
+variable [CommSemiring R] [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Semiring (A₃ i)]
+variable [∀ i, Algebra R (A₁ i)] [∀ i, Algebra R (A₂ i)] [∀ i, Algebra R (A₃ i)]
+
+/-- A family of algebra equivalences `∀ i, (A₁ i ≃ₐ A₂ i)` generates a
+multiplicative equivalence between `Π i, A₁ i` and `Π i, A₂ i`.
+
+This is the `AlgEquiv` version of `Equiv.piCongrRight`, and the dependent version of
+`AlgEquiv.arrowCongr`.
+-/
+@[simps apply]
+def piCongrRight (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) : (Π i, A₁ i) ≃ₐ[R] Π i, A₂ i :=
+  { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i ↦ (e i).toRingEquiv with
+    toFun := fun x j ↦ e j (x j)
+    invFun := fun x j ↦ (e j).symm (x j)
+    commutes' := fun r ↦ by
+      ext i
+      simp }
+
+@[simp]
+theorem piCongrRight_refl :
+    (piCongrRight fun i ↦ (AlgEquiv.refl : A₁ i ≃ₐ[R] A₁ i)) = AlgEquiv.refl :=
+  rfl
+
+@[simp]
+theorem piCongrRight_symm (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) :
+    (piCongrRight e).symm = piCongrRight fun i ↦ (e i).symm :=
+  rfl
+
+@[simp]
+theorem piCongrRight_trans (e₁ : ∀ i, A₁ i ≃ₐ[R] A₂ i) (e₂ : ∀ i, A₂ i ≃ₐ[R] A₃ i) :
+    (piCongrRight e₁).trans (piCongrRight e₂) = piCongrRight fun i ↦ (e₁ i).trans (e₂ i) :=
+  rfl
+
+variable (R A₁) in
+/--
+Transport dependent functions through an equivalence of the base space.
+
+This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
+-/
+@[simps! apply symm_apply]
+def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) :=
+  .ofRingEquiv (f := .piCongrLeft' A₁ e) (by intro; ext; simp)
+
+variable (R A₁) in
+/--
+Transport dependent functions through an equivalence of the base space, expressed as
+"simplification".
+
+This is `Equiv.piCongrLeft` as an `AlgEquiv`.
+-/
+@[simps! -isSimp]
+def piCongrLeft {ι' : Type*} (e : ι' ≃ ι) : (Π i, A₁ (e i)) ≃ₐ[R] Π i, A₁ i :=
+  (AlgEquiv.piCongrLeft' R A₁ e.symm).symm
+
+section
+
+variable (S : Type*) [Semiring S] [Algebra R S]
+
+variable (ι R) in
+/-- If `ι` as a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
+@[simps!]
+def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
+  .ofRingEquiv (f := .piUnique (fun i : ι ↦ S)) (by simp)
+
+variable (R) in
+/-- `Equiv.sumArrowEquivProdArrow` as an algebra equivalence. -/
+@[simps! apply_fst apply_snd]
+def sumArrowEquivProdArrow (α β : Type*) : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
+  .ofRingEquiv (f := .sumArrowEquivProdArrow S α β) (by intro; ext <;> simp)
+
+@[simp]
+lemma sumArrowEquivProdArrow_symm_apply_inl (α β) (x : (α → S) × (β → S)) (a : α) :
+    (sumArrowEquivProdArrow R S α β).symm x (Sum.inl a) = x.fst a := rfl
+
+@[simp]
+lemma sumArrowEquivProdArrow_symm_apply_inr (α β) (x : (α → S) × (β → S)) (b : β) :
+    (sumArrowEquivProdArrow R S α β).symm x (Sum.inr b) = x.snd b := rfl
+
+end
+
+end AlgEquiv
