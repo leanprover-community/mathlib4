@@ -3,13 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-<<<<<<< HEAD
 import Mathlib.Probability.Distributions.Gaussian.Real
 import Mathlib.Probability.Moments.Covariance
 import Mathlib.Probability.Moments.CovarianceBilin
-=======
-import Mathlib.Probability.Distributions.Gaussian
->>>>>>> origin/master
 
 /-!
 # Gaussian distributions in Banach spaces
