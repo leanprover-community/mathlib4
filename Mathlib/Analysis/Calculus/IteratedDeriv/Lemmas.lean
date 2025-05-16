@@ -234,18 +234,18 @@ theorem AnalyticOn.hasFPowerSeriesOnBall {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 
     (hr_pos : 0 < r) (h : AnalyticOn 𝕜 f (EMetric.ball x r)) :
     let p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
     r ≤ p.radius → HasFPowerSeriesOnBall f p x r := by
-  rw [IsOpen.analyticOn_iff_analyticOnNhd EMetric.isOpen_ball] at h
+  rw [EMetric.isOpen_ball.analyticOn_iff_analyticOnNhd] at h
   intro p hr
   let g (t : 𝕜) := p.sum (t - x)
   have hg : HasFPowerSeriesOnBall g p x p.radius := by
     simpa using
-      HasFPowerSeriesOnBall.comp_sub (p.hasFPowerSeriesOnBall (lt_of_lt_of_le hr_pos hr)) x
+      (p.hasFPowerSeriesOnBall (lt_of_lt_of_le hr_pos hr)).comp_sub x
   have hg' : AnalyticOnNhd 𝕜 g (EMetric.ball x p.radius) := by
     simpa using AnalyticOnNhd.comp_sub p.AnalyticOnNhd x
   replace hg' : AnalyticOnNhd 𝕜 g (EMetric.ball x r) :=
-    AnalyticOnNhd.mono hg' (EMetric.ball_subset_ball hr)
-  apply AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq h at hg'
-  apply HasFPowerSeriesOnBall.congr (hg.mono hr_pos hr)
+    hg'.mono (EMetric.ball_subset_ball hr)
+  apply h.eqOn_of_preconnected_of_eventuallyEq at hg'
+  apply (hg.mono hr_pos hr).congr
   symm
   apply hg' (IsConnected.isPreconnected (Metric.isConnected_eball hr_pos))
     (show x ∈ EMetric.ball x r by simpa) ?_
