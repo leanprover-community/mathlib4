@@ -242,10 +242,10 @@ lemma mu_eq {p n : ℕ} [hp : Fact (Nat.Prime p)] :
   | succ n h =>
     rw [pow_succ', hp.out.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
 
-/-- An auxilliary function -/
-def aux {A B : Type} (h : A ≃ B) : Equiv.Perm A ≃* Equiv.Perm B where
-  toFun x := h.symm.trans (x.trans h)
-  invFun y := h.trans (y.trans h.symm)
+/-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. -/
+def Equiv.permCongrHom {α β : Type} (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
+  toFun x := e.symm.trans (x.trans e)
+  invFun y := e.trans (y.trans e.symm)
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
   map_mul' _ _ := by ext; simp
@@ -254,7 +254,7 @@ def aux {A B : Type} (h : A ≃ B) : Equiv.Perm A ≃* Equiv.Perm B where
 noncomputable def f {p n : ℕ} (D : Sylow p (Equiv.Perm (Fin (p^n))))
     (G : Type) [Finite G] [Group G] (h : Nat.card G = p) :
     D ≀ᵣ G →* Equiv.Perm (Fin (p^(n+1))) :=
-  (aux ((Equiv.prodCongrRight fun _ =>
+  (Equiv.permCongrHom ((Equiv.prodCongrRight fun _ =>
   (Finite.equivFinOfCardEq h)).trans finProdFinEquiv)).toMonoidHom.comp
   (RegularWreathProduct.toPerm D G (Fin (p^n)))
 
@@ -264,7 +264,7 @@ lemma f_injective {p n : ℕ} [Fact (Nat.Prime p)] (D : Sylow p (Equiv.Perm (Fin
   have : Function.Injective (RegularWreathProduct.toPerm D G (Fin (p^n))) :=
     RegularWreathProduct.toPermInj D G (Fin (p^n))
   exact (fun a b => Function.Injective.comp a b)
-    (aux (((Equiv.prodCongrRight fun _ =>
+    (Equiv.permCongrHom (((Equiv.prodCongrRight fun _ =>
     (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))).injective this
 
 /-- The Sylow p-subgroups of S_{p^n} are isomorphic to the iterated wreathproduct -/
