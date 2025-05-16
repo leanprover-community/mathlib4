@@ -281,7 +281,7 @@ theorem mem_normalizedFactors_iff' {a x : α} (h : a ≠ 0) :
     x ∈ normalizedFactors a ↔ Irreducible x ∧ normalize x = x ∧ x ∣ a := by
   refine ⟨fun h ↦ ⟨irreducible_of_normalized_factor x h, normalize_normalized_factor x h,
     dvd_of_normalized_factor x h⟩, fun ⟨h₁, h₂, h₃⟩ ↦ ?_⟩
-  obtain ⟨y, hy₁, hy₂⟩ := UniqueFactorizationMonoid.exists_mem_factors_of_dvd h h₁ h₃
+  obtain ⟨y, hy₁, hy₂⟩ := exists_mem_factors_of_dvd h h₁ h₃
   exact Multiset.mem_map.mpr ⟨y, hy₁, by rwa [← h₂, normalize_eq_iff_associated, Associated.comm]⟩
 
 def normalizedFactorsEquiv {β : Type*} [CancelCommMonoidWithZero β]
