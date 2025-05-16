@@ -1048,6 +1048,7 @@ import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Semireal.Defs
 import Mathlib.Algebra.Ring.Subgroup
+import Mathlib.Algebra.Ring.Submonoid
 import Mathlib.Algebra.Ring.Submonoid.Basic
 import Mathlib.Algebra.Ring.Submonoid.Pointwise
 import Mathlib.Algebra.Ring.Subring.Basic
@@ -2577,6 +2578,7 @@ import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.UnivLE
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Widesubcategory
+import Mathlib.CategoryTheory.WithTerminal
 import Mathlib.CategoryTheory.WithTerminal.Basic
 import Mathlib.CategoryTheory.WithTerminal.Cone
 import Mathlib.CategoryTheory.WithTerminal.FinCategory
@@ -4867,6 +4869,7 @@ import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Exponential
 import Mathlib.Probability.Distributions.Gamma
 import Mathlib.Probability.Distributions.Gaussian
+import Mathlib.Probability.Distributions.Gaussian.Basic
 import Mathlib.Probability.Distributions.Geometric
 import Mathlib.Probability.Distributions.Pareto
 import Mathlib.Probability.Distributions.Poisson
@@ -4925,6 +4928,7 @@ import Mathlib.Probability.Martingale.Upcrossing
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.ComplexMGF
 import Mathlib.Probability.Moments.Covariance
+import Mathlib.Probability.Moments.CovarianceBilin
 import Mathlib.Probability.Moments.IntegrableExpMul
 import Mathlib.Probability.Moments.MGFAnalytic
 import Mathlib.Probability.Moments.SubGaussian
