@@ -536,8 +536,7 @@ lemma prod_indicator_index_eq_prod_attach [Zero M] [CommMonoid N]
   rw [indicator_of_mem]
 
 @[to_additive (attr := simp)]
-lemma prod_attach_index [Zero M] [CommMonoid N]
-    {s : Finset α} (f : α → M) {h : α → M → N} :
+lemma prod_attach_index [CommMonoid N] {s : Finset α} (f : α → M) {h : α → M → N} :
     ∏ x ∈ s.attach, h x (f x) = ∏ x ∈ s, h x (f x) :=
   prod_attach _ fun x ↦ h x (f x)
 
