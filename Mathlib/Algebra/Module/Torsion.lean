@@ -105,7 +105,7 @@ but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/
 theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
     [AddCommGroup M] [Module R M] (hv : iSupIndep fun i => R ∙ v i)
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
-  refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
+  refine linearIndependent_iff_eq_zero_of_smul_mem_span.mpr fun i r hi => ?_
   replace hv := iSupIndep_def.mp hv i
   simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
   have : r • v i ∈ (⊥ : Submodule R M) := by
@@ -911,8 +911,16 @@ variable (A : Type*) [AddCommGroup A] (n : ℤ)
 def torsionBy : AddSubgroup A :=
   (Submodule.torsionBy ℤ A n).toAddSubgroup
 
-@[inherit_doc]
-scoped notation:max (priority := high) A"["n"]" => torsionBy A n
+@[inherit_doc torsionBy]
+scoped syntax:max (name := torsionByStx) (priority := high) term noWs "[" term "]" : term
+
+macro_rules | `($A[$n]) => `(torsionBy $A $n)
+
+/-- Unexpander for `torsionBy`. -/
+@[scoped app_unexpander torsionBy]
+def torsionByUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $A $n) => `($A[$n])
+  | _ => throw ()
 
 lemma torsionBy.neg : A[-n] = A[n] := by
   ext a

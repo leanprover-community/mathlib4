@@ -152,7 +152,7 @@ lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
   have : ∀ (m) (hm : n = m), p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) =
       p m ((t.map (finCongr hm).toEmbedding).piecewise (fun _ ↦ x) fun _ ↦ y) := by
     rintro m rfl
-    simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
+    simp +unfoldPartialApp [Finset.piecewise]
   simp_rw [changeOriginSeriesTerm_apply, eq_comm]; apply this
 
 theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :

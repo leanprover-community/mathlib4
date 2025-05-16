@@ -138,7 +138,7 @@ the notion of Fréchet derivative along the set `s`. -/
 @[mk_iff hasFDerivAtFilter_iff_isLittleOTVS]
 structure HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) : Prop where
   of_isLittleOTVS ::
-    isLittleOTVS : (fun x' => f x' - f x - f' (x' - x)) =o[𝕜;L] (fun x' => x' - x)
+    isLittleOTVS : (fun x' => f x' - f x - f' (x' - x)) =o[𝕜; L] (fun x' => x' - x)
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` within a set `s` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x` inside `s`. -/
@@ -161,7 +161,7 @@ structure HasStrictFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) where
   of_isLittleOTVS ::
     isLittleOTVS :
       (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2))
-        =o[𝕜;𝓝 (x, x)] (fun p : E × E => p.1 - p.2)
+        =o[𝕜; 𝓝 (x, x)] (fun p : E × E => p.1 - p.2)
 
 variable (𝕜)
 
@@ -390,6 +390,7 @@ lemma hasFDerivWithinAt_of_isOpen (h : IsOpen s) (hx : x ∈ s) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x :=
   hasFDerivWithinAt_of_mem_nhds (h.mem_nhds hx)
 
+@[simp]
 theorem hasFDerivWithinAt_insert {y : E} :
     HasFDerivWithinAt f f' (insert y s) x ↔ HasFDerivWithinAt f f' s x := by
   rcases eq_or_ne x y with (rfl | h)
@@ -405,9 +406,41 @@ protected theorem HasFDerivWithinAt.insert (h : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt g g' (insert x s) x :=
   h.insert'
 
+@[simp]
 theorem hasFDerivWithinAt_diff_singleton (y : E) :
     HasFDerivWithinAt f f' (s \ {y}) x ↔ HasFDerivWithinAt f f' s x := by
   rw [← hasFDerivWithinAt_insert, insert_diff_singleton, hasFDerivWithinAt_insert]
+
+@[simp]
+protected theorem HasFDerivWithinAt.empty : HasFDerivWithinAt f f' ∅ x := by
+  simp [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleOTVS]
+
+@[simp]
+protected theorem DifferentiableWithinAt.empty : DifferentiableWithinAt 𝕜 f ∅ x :=
+  ⟨0, .empty⟩
+
+theorem HasFDerivWithinAt.of_finite (h : s.Finite) : HasFDerivWithinAt f f' s x := by
+  induction s, h using Set.Finite.induction_on with
+  | empty => exact .empty
+  | insert _ _ ih => exact ih.insert'
+
+theorem DifferentiableWithinAt.of_finite (h : s.Finite) : DifferentiableWithinAt 𝕜 f s x :=
+  ⟨0, .of_finite h⟩
+
+@[simp]
+protected theorem HasFDerivWithinAt.singleton {y} : HasFDerivWithinAt f f' {x} y :=
+  .of_finite <| finite_singleton _
+
+@[simp]
+protected theorem DifferentiableWithinAt.singleton {y} : DifferentiableWithinAt 𝕜 f {x} y :=
+  ⟨0, .singleton⟩
+
+theorem HasFDerivWithinAt.of_subsingleton (h : s.Subsingleton) : HasFDerivWithinAt f f' s x :=
+  .of_finite h.finite
+
+theorem DifferentiableWithinAt.of_subsingleton (h : s.Subsingleton) :
+    DifferentiableWithinAt 𝕜 f s x :=
+  .of_finite h.finite
 
 theorem HasStrictFDerivAt.isBigO_sub (hf : HasStrictFDerivAt f f' x) :
     (fun p : E × E => f p.1 - f p.2) =O[𝓝 (x, x)] fun p : E × E => p.1 - p.2 :=
@@ -482,23 +515,37 @@ theorem DifferentiableWithinAt.differentiableAt (h : DifferentiableWithinAt 𝕜
 
 /-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
-theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) :
-    HasFDerivWithinAt f f' s x := by
+theorem HasFDerivWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) : HasFDerivWithinAt f f' s x := by
+  rw [accPt_principal_iff_nhdsWithin, not_neBot] at h
   rw [← hasFDerivWithinAt_diff_singleton x, HasFDerivWithinAt, h,
     hasFDerivAtFilter_iff_isLittleOTVS]
   exact .bot
 
+/-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
+as this statement is empty. -/
+@[deprecated HasFDerivWithinAt.of_not_accPt (since := "2025-04-20")]
+theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s \ {x}] x = ⊥) :
+    HasFDerivWithinAt f f' s x :=
+  .of_not_accPt <| by rwa [accPt_principal_iff_nhdsWithin, not_neBot]
+
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
-theorem hasFDerivWithinAt_of_nmem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
-  .of_nhdsWithin_eq_bot <| eq_bot_mono (nhdsWithin_mono _ diff_subset) <| by
-    rwa [mem_closure_iff_nhdsWithin_neBot, not_neBot] at h
+theorem HasFDerivWithinAt.of_not_mem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
+  .of_not_accPt (h ·.clusterPt.mem_closure)
 
+@[deprecated (since := "2025-04-20")]
+alias hasFDerivWithinAt_of_nmem_closure := HasFDerivWithinAt.of_not_mem_closure
+
+theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : fderivWithin 𝕜 f s x = 0 := by
+  rw [fderivWithin, if_pos (.of_not_accPt h)]
+
+set_option linter.deprecated false in
+@[deprecated fderivWithin_zero_of_not_accPt (since := "2025-04-20")]
 theorem fderivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : fderivWithin 𝕜 f s x = 0 := by
   rw [fderivWithin, if_pos (.of_nhdsWithin_eq_bot h)]
 
-theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 := by
-  rw [fderivWithin, if_pos (hasFDerivWithinAt_of_nmem_closure h)]
+theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 :=
+  fderivWithin_zero_of_not_accPt (h ·.clusterPt.mem_closure)
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
@@ -1050,18 +1097,18 @@ theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
 theorem hasFDerivAtFilter_zero (x : E) (L : Filter E) :
     HasFDerivAtFilter (0 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
 
-theorem hasFDerivAtFilter_one [One F]  (x : E) (L : Filter E) :
+theorem hasFDerivAtFilter_one [One F] (x : E) (L : Filter E) :
     HasFDerivAtFilter (1 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
 
-theorem hasFDerivAtFilter_natCast [NatCast F] (n : ℕ)  (x : E) (L : Filter E) :
+theorem hasFDerivAtFilter_natCast [NatCast F] (n : ℕ) (x : E) (L : Filter E) :
     HasFDerivAtFilter (n : E → F) (0 : E →L[𝕜] F) x L :=
   hasFDerivAtFilter_const _ _ _
 
-theorem hasFDerivAtFilter_intCast [IntCast F] (z : ℤ)  (x : E) (L : Filter E) :
+theorem hasFDerivAtFilter_intCast [IntCast F] (z : ℤ) (x : E) (L : Filter E) :
     HasFDerivAtFilter (z : E → F) (0 : E →L[𝕜] F) x L :=
   hasFDerivAtFilter_const _ _ _
 
-theorem hasFDerivAtFilter_ofNat (n : ℕ) [OfNat F n]  (x : E) (L : Filter E) :
+theorem hasFDerivAtFilter_ofNat (n : ℕ) [OfNat F n] (x : E) (L : Filter E) :
     HasFDerivAtFilter (ofNat(n) : E → F) (0 : E →L[𝕜] F) x L :=
   hasFDerivAtFilter_const _ _ _
 
@@ -1075,21 +1122,21 @@ theorem hasFDerivWithinAt_zero (x : E) (s : Set E) :
     HasFDerivWithinAt (0 : E → F) (0 : E →L[𝕜] F) s x := hasFDerivWithinAt_const _ _ _
 
 @[fun_prop]
-theorem hasFDerivWithinAt_one [One F]  (x : E) (s : Set E) :
+theorem hasFDerivWithinAt_one [One F] (x : E) (s : Set E) :
     HasFDerivWithinAt (1 : E → F) (0 : E →L[𝕜] F) s x := hasFDerivWithinAt_const _ _ _
 
 @[fun_prop]
-theorem hasFDerivWithinAt_natCast [NatCast F] (n : ℕ)  (x : E) (s : Set E) :
+theorem hasFDerivWithinAt_natCast [NatCast F] (n : ℕ) (x : E) (s : Set E) :
     HasFDerivWithinAt (n : E → F) (0 : E →L[𝕜] F) s x :=
   hasFDerivWithinAt_const _ _ _
 
 @[fun_prop]
-theorem hasFDerivWithinAt_intCast [IntCast F] (z : ℤ)  (x : E) (s : Set E) :
+theorem hasFDerivWithinAt_intCast [IntCast F] (z : ℤ) (x : E) (s : Set E) :
     HasFDerivWithinAt (z : E → F) (0 : E →L[𝕜] F) s x :=
   hasFDerivWithinAt_const _ _ _
 
 @[fun_prop]
-theorem hasFDerivWithinAt_ofNat (n : ℕ) [OfNat F n]  (x : E) (s : Set E) :
+theorem hasFDerivWithinAt_ofNat (n : ℕ) [OfNat F n] (x : E) (s : Set E) :
     HasFDerivWithinAt (ofNat(n) : E → F) (0 : E →L[𝕜] F) s x :=
   hasFDerivWithinAt_const _ _ _
 
@@ -1170,9 +1217,13 @@ theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ => c) s x = 
   apply hasFDerivWithinAt_const
 
 @[simp]
-theorem fderivWithin_const (c : F) : fderivWithin 𝕜 (fun _ ↦ c) s = 0 := by
+theorem fderivWithin_fun_const (c : F) : fderivWithin 𝕜 (fun _ ↦ c) s = 0 := by
   ext
   rw [fderivWithin_const_apply, Pi.zero_apply]
+
+@[simp]
+theorem fderivWithin_const (c : F) : fderivWithin 𝕜 (Function.const E c) s = 0 :=
+  fderivWithin_fun_const c
 
 @[simp]
 theorem fderivWithin_zero : fderivWithin 𝕜 (0 : E → F) s = 0 := fderivWithin_const _
@@ -1196,8 +1247,12 @@ theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 :=
   (hasFDerivAt_const c x).fderiv
 
 @[simp]
-theorem fderiv_const (c : F) : (fderiv 𝕜 fun _ : E => c) = 0 := by
-  rw [← fderivWithin_univ, fderivWithin_const]
+theorem fderiv_fun_const (c : F) : fderiv 𝕜 (fun _ : E => c) = 0 := by
+  rw [← fderivWithin_univ, fderivWithin_fun_const]
+
+@[simp]
+theorem fderiv_const (c : F) : fderiv 𝕜 (Function.const E c) = 0 :=
+  fderiv_fun_const c
 
 @[simp]
 theorem fderiv_zero : fderiv 𝕜 (0 : E → F) = 0 := fderiv_const _

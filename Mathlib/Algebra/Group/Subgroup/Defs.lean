@@ -286,12 +286,6 @@ add_decl_doc AddSubgroup.toAddSubmonoid
 
 namespace Subgroup
 
-/-- The actual `Subgroup` obtained from an element of a `SubgroupClass` -/
-@[to_additive "The actual `AddSubgroup` obtained from an element of a `AddSubgroupClass`"]
-def ofClass {S G : Type*} [Group G] [SetLike S G] [SubgroupClass S G]
-    (s : S) : Subgroup G :=
-  ⟨⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩, InvMemClass.inv_mem⟩
-
 @[to_additive]
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
@@ -300,8 +294,18 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
     congr
 
+initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
+
+/-- The actual `Subgroup` obtained from an element of a `SubgroupClass` -/
+@[to_additive (attr := simps) "The actual `AddSubgroup` obtained from an element of a
+`AddSubgroupClass`"]
+def ofClass {S G : Type*} [Group G] [SetLike S G] [SubgroupClass S G]
+    (s : S) : Subgroup G :=
+  ⟨⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩, InvMemClass.inv_mem⟩
+
 @[to_additive]
-instance : CanLift (Set G) (Subgroup G) (↑)
+instance (priority := 100) : CanLift (Set G) (Subgroup G) (↑)
     (fun s ↦ 1 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ {x}, x ∈ s → x⁻¹ ∈ s) where
   prf s h := ⟨{ carrier := s, one_mem' := h.1, mul_mem' := h.2.1, inv_mem' := h.2.2}, rfl⟩
 
@@ -332,9 +336,6 @@ theorem coe_set_mk {s : Set G} (h_one) (h_mul) (h_inv) :
 theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv') :
     mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ≤ mk ⟨⟨t, h_one'⟩, h_mul'⟩ h_inv' ↔ s ⊆ t :=
   Iff.rfl
-
-initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
-initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem coe_toSubmonoid (K : Subgroup G) : (K.toSubmonoid : Set G) = K :=
@@ -693,35 +694,27 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-/-- Commutativity of a subgroup -/
-structure IsCommutative : Prop where
-  /-- `*` is commutative on `H` -/
-  is_comm : Std.Commutative (α := H) (· * ·)
-
-attribute [class] IsCommutative
-
-/-- Commutativity of an additive subgroup -/
-structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
-  /-- `+` is commutative on `H` -/
-  is_comm : Std.Commutative (α := H) (· + ·)
-
-attribute [to_additive] Subgroup.IsCommutative
-
-attribute [class] AddSubgroup.IsCommutative
-
-/-- A commutative subgroup is commutative. -/
-@[to_additive "A commutative subgroup is commutative."]
-instance IsCommutative.commGroup [h : H.IsCommutative] : CommGroup H :=
-  { H.toGroup with mul_comm := h.is_comm.comm }
+@[deprecated (since := "2025-04-09")] alias IsCommutative := IsMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.IsCommutative := IsAddCommutative
 
 /-- A subgroup of a commutative group is commutative. -/
 @[to_additive "A subgroup of a commutative group is commutative."]
-instance commGroup_isCommutative {G : Type*} [CommGroup G] (H : Subgroup G) : H.IsCommutative :=
+instance commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
+    IsMulCommutative H :=
   ⟨CommMagma.to_isCommutative⟩
 
+@[deprecated (since := "2025-04-09")] alias commGroup_isCommutative := commGroup_isMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.addCommGroup_isCommutative :=
+  commGroup_isMulCommutative
+
 @[to_additive]
-lemma mul_comm_of_mem_isCommutative [H.IsCommutative] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
+lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
     a * b = b * a := by
   simpa only [MulMemClass.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
+
+@[deprecated (since := "2025-04-09")] alias mul_comm_of_mem_isCommutative :=
+  mul_comm_of_mem_isMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.add_comm_of_mem_isCommutative :=
+  _root_.AddSubgroup.add_comm_of_mem_isAddCommutative
 
 end Subgroup

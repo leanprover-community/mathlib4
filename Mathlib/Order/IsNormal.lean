@@ -40,7 +40,7 @@ variable [LinearOrder α] [LinearOrder β] [LinearOrder γ]
 /-- This condition is the LHS of the `IsLUB (f '' Iio a) (f a)` predicate. -/
 theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
     (hl : ∀ {a}, IsSuccLimit a → f a ∈ lowerBounds (upperBounds (f '' Iio a))) : IsNormal f := by
-  refine ⟨hf, @fun a ha ↦ ⟨?_, hl ha⟩⟩
+  refine ⟨hf, fun {a} ha ↦ ⟨?_, hl ha⟩⟩
   rintro - ⟨b, hb, rfl⟩
   exact (hf hb).le
 
@@ -49,13 +49,13 @@ theorem of_succ_lt [SuccOrder α] [WellFoundedLT α]
     IsNormal f := by
   refine ⟨fun a b ↦ ?_, hl⟩
   induction b using SuccOrder.limitRecOn with
-  | hm b hb => exact hb.not_lt.elim
-  | hs b hb IH =>
+  | isMin b hb => exact hb.not_lt.elim
+  | succ b hb IH =>
     intro hab
     obtain rfl | h := (lt_succ_iff_eq_or_lt_of_not_isMax hb).1 hab
     · exact hs a
     · exact (IH h).trans (hs b)
-  | hl b hb IH =>
+  | isSuccLimit b hb IH =>
     intro hab
     have hab' := hb.succ_lt hab
     exact (IH _ hab' (lt_succ_of_not_isMax hab.not_isMax)).trans_le

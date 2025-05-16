@@ -98,7 +98,6 @@ initialize_simps_projections AlternatingMap (toFun → apply)
 theorem toFun_eq_coe : f.toFun = f :=
   rfl
 
--- Porting note: changed statement to reflect new `mk` signature
 @[simp]
 theorem coe_mk (f : MultilinearMap R (fun _ : ι => M) N) (h) :
     ⇑(⟨f, h⟩ : M [⋀^ι]→ₗ[R] N) = f :=
@@ -134,9 +133,6 @@ theorem coe_multilinearMap_injective :
     Function.Injective ((↑) : M [⋀^ι]→ₗ[R] N → MultilinearMap R (fun _ : ι => M) N) :=
   fun _ _ h => ext <| MultilinearMap.congr_fun h
 
--- Porting note: changed statement to reflect new `mk` signature.
--- Porting note: removed `simp`
--- @[simp]
 theorem coe_multilinearMap_mk (f : (ι → M) → N) (h₁ h₂ h₃) :
     ((⟨⟨f, h₁, h₂⟩, h₃⟩ : M [⋀^ι]→ₗ[R] N) : MultilinearMap R (fun _ : ι => M) N) =
       ⟨f, @h₁, @h₂⟩ := by
@@ -546,6 +542,19 @@ theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
     (g₁ g₂ : M [⋀^ι]→ₗ[R] N) : g₁.compLinearMap f = g₂.compLinearMap f ↔ g₁ = g₂ :=
   (compLinearMap_injective _ hf).eq_iff
 
+/-- If two `R`-alternating maps from `R` are equal on 1, then they are equal.
+
+This is the alternating version of `LinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring {R} [CommSemiring R] [Module R N] [Finite ι] ⦃f g : R [⋀^ι]→ₗ[R] N⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
+  coe_multilinearMap_injective <| MultilinearMap.ext_ring h
+
+/-- The only `R`-alternating map from two or more copies of `R` is the zero map. -/
+instance uniqueOfCommRing {R} [CommSemiring R] [Module R N] [Finite ι] [Nontrivial ι] :
+    Unique (R [⋀^ι]→ₗ[R] N) where
+  uniq f := let ⟨_, _, hij⟩ := exists_pair_ne ι; ext_ring <| f.map_eq_zero_of_eq _ rfl hij
+
 section DomLcongr
 
 variable (ι R N)
@@ -638,10 +647,7 @@ theorem map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm �
     g (v ∘ σ) = Equiv.Perm.sign σ • g v := by
   induction σ using Equiv.Perm.swap_induction_on' with
   | one => simp
-  | mul_swap s x y hxy hI =>
-    -- Porting note: `← Function.comp_assoc` & `-Equiv.Perm.sign_swap'` are required.
-    simpa [← Function.comp_assoc, g.map_swap (v ∘ s) hxy,
-      Equiv.Perm.sign_swap hxy, -Equiv.Perm.sign_swap'] using hI
+  | mul_swap s x y hxy hI => simp_all [← Function.comp_assoc, g.map_swap]
 
 theorem map_congr_perm [DecidableEq ι] [Fintype ι] (σ : Equiv.Perm ι) :
     g v = Equiv.Perm.sign σ • g (v ∘ σ) := by
@@ -757,11 +763,9 @@ theorem map_linearDependent {K : Type*} [Ring K] {M : Type*} [AddCommGroup M] [M
   suffices f (update v i (g i • v i)) = 0 by
     rw [f.map_update_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz
-  -- Porting note: Was `conv at h in .. => ..`.
-  rw [← (funext fun x => ite_self (c := i = x) (d := Classical.decEq ι i x) (g x • v x))] at h
-  rw [Finset.sum_ite, Finset.filter_eq, Finset.filter_ne, if_pos hi, Finset.sum_singleton,
-    add_eq_zero_iff_eq_neg] at h
-  rw [h, f.map_update_neg, f.map_update_sum, neg_eq_zero]; apply Finset.sum_eq_zero
+  rw [← Finset.insert_erase hi, Finset.sum_insert (s.not_mem_erase i), add_eq_zero_iff_eq_neg] at h
+  rw [h, f.map_update_neg, f.map_update_sum, neg_eq_zero]
+  apply Finset.sum_eq_zero
   intro j hj
   obtain ⟨hij, _⟩ := Finset.mem_erase.mp hj
   rw [f.map_update_smul, f.map_update_self _ hij.symm, smul_zero]
@@ -796,8 +800,7 @@ private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _
   rw [sum_apply]
   exact
     Finset.sum_involution (fun σ _ => swap i j * σ)
-      -- Porting note: `-Equiv.Perm.sign_swap'` is required.
-      (fun σ _ => by simp [Perm.sign_swap i_ne_j, apply_swap_eq_self hv, -Equiv.Perm.sign_swap'])
+      (fun σ _ => by simp [Perm.sign_swap i_ne_j, apply_swap_eq_self hv])
       (fun σ _ _ => (not_congr swap_mul_eq_iff).mpr i_ne_j) (fun σ _ => Finset.mem_univ _)
       fun σ _ => swap_mul_involutive i j σ
 
@@ -873,93 +876,23 @@ are distinct basis vectors. -/
 theorem Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
     (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
     f = g := by
-  classical
-    refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v => ?_)
-    by_cases hi : Function.Injective v
-    · exact h v hi
-    · have : ¬Function.Injective fun i => e (v i) := hi.imp Function.Injective.of_comp
-      rw [coe_multilinearMap, coe_multilinearMap, f.map_eq_zero_of_not_injective _ this,
-        g.map_eq_zero_of_not_injective _ this]
+  refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear (fun _ ↦ e) fun v => ?_)
+  by_cases hi : Function.Injective v
+  · exact h v hi
+  · have : ¬Function.Injective fun i => e (v i) := hi.imp Function.Injective.of_comp
+    rw [coe_multilinearMap, coe_multilinearMap, f.map_eq_zero_of_not_injective _ this,
+      g.map_eq_zero_of_not_injective _ this]
 
 end Basis
-
-/-! ### Currying -/
-
-
-section Currying
 
 variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddCommMonoid M'']
   [AddCommMonoid M₂''] [AddCommMonoid N''] [AddCommMonoid N₂''] [Module R' M''] [Module R' M₂'']
   [Module R' N''] [Module R' N₂'']
 
-namespace AlternatingMap
-
-/-- Given an alternating map `f` in `n+1` variables, split the first variable to obtain
-a linear map into alternating maps in `n` variables, given by `x ↦ (m ↦ f (Matrix.vecCons x m))`.
-It can be thought of as a map $Hom(\bigwedge^{n+1} M, N) \to Hom(M, Hom(\bigwedge^n M, N))$.
-
-This is `MultilinearMap.curryLeft` for `AlternatingMap`. See also
-`AlternatingMap.curryLeftLinearMap`. -/
-@[simps]
-def curryLeft {n : ℕ} (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') :
-    M'' →ₗ[R'] M'' [⋀^Fin n]→ₗ[R'] N'' where
-  toFun m :=
-    { f.toMultilinearMap.curryLeft m with
-      toFun := fun v => f (Matrix.vecCons m v)
-      map_eq_zero_of_eq' := fun v i j hv hij =>
-        f.map_eq_zero_of_eq _ (by
-          rwa [Matrix.cons_val_succ, Matrix.cons_val_succ]) ((Fin.succ_injective _).ne hij) }
-  map_add' _ _ := ext fun _ => f.map_vecCons_add _ _ _
-  map_smul' _ _ := ext fun _ => f.map_vecCons_smul _ _ _
-
-@[simp]
-theorem curryLeft_zero {n : ℕ} : curryLeft (0 : M'' [⋀^Fin n.succ]→ₗ[R'] N'') = 0 :=
-  rfl
-
-@[simp]
-theorem curryLeft_add {n : ℕ} (f g : M'' [⋀^Fin n.succ]→ₗ[R'] N'') :
-    curryLeft (f + g) = curryLeft f + curryLeft g :=
-  rfl
-
-@[simp]
-theorem curryLeft_smul {n : ℕ} (r : R') (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') :
-    curryLeft (r • f) = r • curryLeft f :=
-  rfl
-
-/-- `AlternatingMap.curryLeft` as a `LinearMap`. This is a separate definition as dot notation
-does not work for this version. -/
-@[simps]
-def curryLeftLinearMap {n : ℕ} :
-    (M'' [⋀^Fin n.succ]→ₗ[R'] N'') →ₗ[R'] M'' →ₗ[R'] M'' [⋀^Fin n]→ₗ[R'] N'' where
-  toFun f := f.curryLeft
-  map_add' := curryLeft_add
-  map_smul' := curryLeft_smul
-
-/-- Currying with the same element twice gives the zero map. -/
-@[simp]
-theorem curryLeft_same {n : ℕ} (f : M'' [⋀^Fin n.succ.succ]→ₗ[R'] N'') (m : M'') :
-    (f.curryLeft m).curryLeft m = 0 :=
-  ext fun _ => f.map_eq_zero_of_eq _ (by simp) Fin.zero_ne_one
-
-@[simp]
-theorem curryLeft_compAlternatingMap {n : ℕ} (g : N'' →ₗ[R'] N₂'')
-    (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') (m : M'') :
-    (g.compAlternatingMap f).curryLeft m = g.compAlternatingMap (f.curryLeft m) :=
-  rfl
-
-@[simp]
-theorem curryLeft_compLinearMap {n : ℕ} (g : M₂'' →ₗ[R'] M'')
-    (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') (m : M₂'') :
-    (f.compLinearMap g).curryLeft m = (f.curryLeft (g m)).compLinearMap g :=
-  ext fun v => congr_arg f <| funext <| by
-    refine Fin.cases ?_ ?_
-    · rfl
-    · simp
-
 /-- The space of constant maps is equivalent to the space of maps that are alternating with respect
 to an empty family. -/
 @[simps]
-def constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[R'] N'') where
+def AlternatingMap.constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[R'] N'') where
   toFun := AlternatingMap.constOfIsEmpty R' M'' ι
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -967,6 +900,3 @@ def constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[
   left_inv _ := rfl
   right_inv f := ext fun _ => AlternatingMap.congr_arg f <| Subsingleton.elim _ _
 
-end AlternatingMap
-
-end Currying

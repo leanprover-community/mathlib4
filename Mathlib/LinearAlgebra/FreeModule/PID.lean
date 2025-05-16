@@ -25,13 +25,13 @@ it would be equal to `finrank R M` if `R` is a field and `M` is a vector space.
 In this section, `M` is a free and finitely generated `R`-module, and
 `N` is a submodule of `M`.
 
- - `Submodule.inductionOnRank`: if `P` holds for `⊥ : Submodule R M` and if
+- `Submodule.inductionOnRank`: if `P` holds for `⊥ : Submodule R M` and if
   `P N` follows from `P N'` for all `N'` that are of lower rank, then `P` holds
-   on all submodules
+  on all submodules
 
- - `Submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
-   free and finitely generated. This is the first part of the structure theorem
-   for modules.
+- `Submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
+  free and finitely generated. This is the first part of the structure theorem
+  for modules.
 
 - `Submodule.smithNormalForm`: if `R` is a PID, then `M` has a basis
   `bM` and `N` has a basis `bN` such that `bN i = a i • bM i`.
@@ -217,8 +217,8 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
         )
   have ϕy'_ne_zero : ϕ ⟨y', y'M⟩ ≠ 0 := by simpa only [ϕy'_eq] using one_ne_zero
   -- `M' := ker (ϕ : M → R)` is smaller than `M` and `N' := ker (ϕ : N → R)` is smaller than `N`.
-  let M' : Submodule R O := ϕ.ker.map M.subtype
-  let N' : Submodule R O := (ϕ.comp (inclusion N_le_M)).ker.map N.subtype
+  let M' : Submodule R O := (LinearMap.ker ϕ).map M.subtype
+  let N' : Submodule R O := (LinearMap.ker (ϕ.comp (inclusion N_le_M))).map N.subtype
   have M'_le_M : M' ≤ M := M.map_subtype_le (LinearMap.ker ϕ)
   have N'_le_M' : N' ≤ M' := by
     intro x hx
@@ -433,7 +433,7 @@ lemma repr_eq_zero_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   obtain ⟨m, hm⟩ := m
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hi : ∀ j, snf.f j ≠ i := by simpa using hi
-  simp [Finsupp.single_apply, hi, snf.snf, map_finsupp_sum]
+  simp [Finsupp.single_apply, hi, snf.snf, map_finsuppSum]
 
 lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
@@ -445,9 +445,9 @@ lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hm : (⟨Finsupp.sum c fun i t ↦ t • (↑(snf.bN i) : M), hm⟩ : N) =
       Finsupp.sum c fun i t ↦ t • ⟨snf.bN i, (snf.bN i).2⟩ := by
-    ext; change _ = N.subtype _; simp [map_finsupp_sum]
+    ext; change _ = N.subtype _; simp [map_finsuppSum]
   classical
-  simp_rw [hm, map_smul, map_finsupp_sum, map_smul, Subtype.coe_eta, repr_self,
+  simp_rw [hm, map_smul, map_finsuppSum, map_smul, Subtype.coe_eta, repr_self,
     Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_single, Finsupp.smul_apply, snf.snf,
     map_smul, repr_self, Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_apply,
     Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Finsupp.sum_ite_eq',

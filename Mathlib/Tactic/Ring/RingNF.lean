@@ -64,6 +64,8 @@ structure Config where
   zetaDelta := false
   /-- if true, atoms inside ring expressions will be reduced recursively -/
   recursive := true
+  /-- if true, then fail if no progress is made -/
+  failIfUnchanged := true
   /-- The normalization style. -/
   mode := RingMode.SOP
   deriving Inhabited, BEq, Repr
@@ -97,9 +99,9 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         let e ← withReducible <| whnf e
         guard e.isApp -- all interesting ring expressions are applications
         let ⟨u, α, e⟩ ← inferTypeQ' e
-        let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
+        let sα ← synthInstanceQ q(CommSemiring $α)
         let c ← mkCache sα
-        let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable sα c e rctx s with
+        let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sα) c q($e) rctx s with
         | none => eval sα c e rctx s -- `none` indicates that `eval` will find something algebraic.
         | some none => failure -- No point rewriting atoms
         | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
@@ -177,7 +179,10 @@ def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withM
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
-    replaceMainGoal [← applySimpResultToTarget goal tgt r]
+    let newGoal ← applySimpResultToTarget goal tgt r
+    if cfg.failIfUnchanged && goal == newGoal then
+      throwError "ring_nf made no progress"
+    replaceMainGoal [newGoal]
 
 /-- Use `ring_nf` to rewrite hypothesis `h`. -/
 def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
@@ -187,7 +192,10 @@ def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
   let myres ← M.run s cfg <| rewrite tgt
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
-  | some (_, newGoal) => replaceMainGoal [newGoal]
+  | some (_, newGoal) =>
+    if cfg.failIfUnchanged && goal == newGoal then
+      throwError "ring_nf made no progress"
+    replaceMainGoal [newGoal]
 
 /--
 Simplification tactic for expressions in the language of commutative (semi)rings,

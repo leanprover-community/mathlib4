@@ -126,7 +126,7 @@ section CommRing
 
 variable [CommRing R] [Module R M]
 
-theorem associated_generator_span_self [IsPrincipalIdealRing R] [IsDomain R] (r : R) :
+theorem associated_generator_span_self [IsDomain R] (r : R) :
     Associated (generator <| Ideal.span {r}) r := by
   rw [← Ideal.span_singleton_eq_span_singleton]
   exact Ideal.span_singleton_generator _
@@ -295,7 +295,7 @@ namespace PrincipalIdealRing
 
 open IsPrincipalIdealRing
 
-theorem isMaximal_of_irreducible [CommRing R] [IsPrincipalIdealRing R] {p : R}
+theorem isMaximal_of_irreducible [CommSemiring R] [IsPrincipalIdealRing R] {p : R}
     (hp : Irreducible p) : Ideal.IsMaximal (span R ({p} : Set R)) :=
   ⟨⟨mt Ideal.span_singleton_eq_top.1 hp.1, fun I hI => by
       rcases principal I with ⟨a, rfl⟩
@@ -332,8 +332,8 @@ theorem mem_submonoid_of_factors_subset_of_units_subset (s : Submonoid R) {a : R
 /-- If a `RingHom` maps all units and all factors of an element `a` into a submonoid `s`, then it
 also maps `a` into that submonoid. -/
 theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type*} [CommRing R]
-    [IsDomain R] [IsPrincipalIdealRing R] [Semiring S] (f : R →+* S) (s : Submonoid S) (a : R)
-    (ha : a ≠ 0) (h : ∀ b ∈ factors a, f b ∈ s) (hf : ∀ c : Rˣ, f c ∈ s) : f a ∈ s :=
+    [IsDomain R] [IsPrincipalIdealRing R] [NonAssocSemiring S] (f : R →+* S) (s : Submonoid S)
+    (a : R) (ha : a ≠ 0) (h : ∀ b ∈ factors a, f b ∈ s) (hf : ∀ c : Rˣ, f c ∈ s) : f a ∈ s :=
   mem_submonoid_of_factors_subset_of_units_subset (s.comap f.toMonoidHom) ha h hf
 
 -- see Note [lower instance priority]

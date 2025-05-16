@@ -26,20 +26,20 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 ## Notation
 The `SelbergSieve.Notation` namespace includes common shorthand for the variables included in the
 `SelbergSieve` structure.
- * `A` for `support`
- * `𝒜 d` for `multSum d` - the combined weight of the elements of `A` that are divisible by `d`
- * `P` for `prodPrimes`
- * `a` for `weights`
- * `X` for `totalMass`
- * `ν` for `nu`
- * `y` for `level`
- * `R d` for `rem d`
- * `g d` for `selbergTerms d`
+* `A` for `support`
+* `𝒜 d` for `multSum d` - the combined weight of the elements of `A` that are divisible by `d`
+* `P` for `prodPrimes`
+* `a` for `weights`
+* `X` for `totalMass`
+* `ν` for `nu`
+* `y` for `level`
+* `R d` for `rem d`
+* `g d` for `selbergTerms d`
 
 ## References
 
- * [Heath-Brown, *Lectures on sieves*][heathbrown2002lecturessieves]
- * [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
+* [Heath-Brown, *Lectures on sieves*][heathbrown2002lecturessieves]
+* [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
 
 -/
 
@@ -237,7 +237,7 @@ theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : 
     congr with d
     dsimp only [rem]; ring
   case caseB =>
-    apply _root_.add_le_add (le_rfl)
+    apply add_le_add_left
     apply sum_le_sum; intro d _
     rw [←abs_mul]
     exact le_abs_self (muPlus d * R d)
@@ -256,13 +256,17 @@ private theorem lambdaSquared_eq_zero_of_not_le_height_aux {w : ℕ → ℝ} {he
     (hw : ∀ (d : ℕ), ¬d ^ 2 ≤ height → w d = 0) {d : ℕ} (hd : ¬↑d ≤ height) (d1 : ℕ) (d2 : ℕ)
     (h : d = Nat.lcm d1 d2) (hle : d1 ≤ d2) :
     w d1 * w d2 = 0 := by
+  by_cases hd1 : d1 = 0
+  · simp_all
+  by_cases hd2 : d2 = 0
+  · simp_all
   rw [hw d2]
   · ring
   by_contra hyp; apply hd
   apply le_trans _ hyp
   norm_cast
   calc _ ≤ d1.lcm d2 := by rw [h]
-      _ ≤ d1 * d2 := Nat.lcm_le_mul _ _
+      _ ≤ d1 * d2 := Nat.lcm_le_mul (by omega) (by omega)
       _ ≤ _       := ?_
   · rw [sq]; gcongr
 

@@ -170,7 +170,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
     nerve_obj, oneTruncation₂_obj, ReflQuiv.of_val, Nat.reduceAdd, mk.app_two,
     Functor.comp_map, op_map, Quiver.Hom.unop_op]
   unfold δ₂ inclusion
-  simp only [fullSubcategoryInclusion.map]
+  simp only [ObjectProperty.ι_map]
   fin_cases i
   · simp only [Fin.zero_eta]
     show _ = (nerve C).δ 0 _

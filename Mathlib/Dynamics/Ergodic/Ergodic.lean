@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Ergodic maps and measures
@@ -18,13 +19,13 @@ preserving condition is relaxed to quasi measure preserving.
 
 # Main definitions:
 
- * `PreErgodic`: the ergodicity condition without the measure preserving condition. This exists
-   to share code between the `Ergodic` and `QuasiErgodic` definitions.
- * `Ergodic`: the definition of ergodic maps / measures.
- * `QuasiErgodic`: the definition of quasi ergodic maps / measures.
- * `Ergodic.quasiErgodic`: an ergodic map / measure is quasi ergodic.
- * `QuasiErgodic.ae_empty_or_univ'`: when the map is quasi measure preserving, one may relax the
-   strict invariance condition to almost invariance in the ergodicity condition.
+* `PreErgodic`: the ergodicity condition without the measure preserving condition. This exists
+  to share code between the `Ergodic` and `QuasiErgodic` definitions.
+* `Ergodic`: the definition of ergodic maps / measures.
+* `QuasiErgodic`: the definition of quasi ergodic maps / measures.
+* `Ergodic.quasiErgodic`: an ergodic map / measure is quasi ergodic.
+* `QuasiErgodic.ae_empty_or_univ'`: when the map is quasi measure preserving, one may relax the
+  strict invariance condition to almost invariance in the ergodicity condition.
 
 -/
 

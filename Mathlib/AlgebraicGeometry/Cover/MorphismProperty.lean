@@ -77,7 +77,7 @@ lemma Cover.exists_eq (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.map i).base y 
   ⟨_, 𝒰.covers x⟩
 
 /-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly
-cover `X`, this an associated `P`-cover of `X`. -/
+cover `X`, `Cover.mkOfCovers` is an associated `P`-cover of `X`. -/
 @[simps]
 def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj j ⟶ X)
     (covers : ∀ x, ∃ j y, (map j).base y = x)
@@ -315,6 +315,7 @@ A morphism between covers `𝒰 ⟶ 𝒱` indicates that `𝒰` is a refinement 
 Since covers of schemes are indexed, the definition also involves a map on the
 indexing types.
 -/
+@[ext]
 structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} P X) where
   /-- The map on indexing types associated to a morphism of covers. -/
   idx : 𝒰.J → 𝒱.J

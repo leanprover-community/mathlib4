@@ -82,9 +82,9 @@ theorem withDensityᵥ_add (hf : Integrable f μ) (hg : Integrable g μ) :
   rw [withDensityᵥ_apply (hf.add hg) hi, VectorMeasure.add_apply, withDensityᵥ_apply hf hi,
     withDensityᵥ_apply hg hi]
   simp_rw [Pi.add_apply]
-  rw [integral_add] <;> rw [← integrableOn_univ]
-  · exact hf.integrableOn.restrict MeasurableSet.univ
-  · exact hg.integrableOn.restrict MeasurableSet.univ
+  rw [integral_add]
+  · exact hf.integrableOn
+  · exact hg.integrableOn
 
 theorem withDensityᵥ_add' (hf : Integrable f μ) (hg : Integrable g μ) :
     (μ.withDensityᵥ fun x => f x + g x) = μ.withDensityᵥ f + μ.withDensityᵥ g :=
@@ -173,8 +173,8 @@ theorem withDensityᵥ_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) 
   have hfi := integrable_toReal_of_lintegral_ne_top hfm hf
   haveI := isFiniteMeasure_withDensity hf
   ext i hi
-  rw [withDensityᵥ_apply hfi hi, toSignedMeasure_apply_measurable hi, withDensity_apply _ hi,
-    integral_toReal hfm.restrict]
+  rw [withDensityᵥ_apply hfi hi, toSignedMeasure_apply_measurable hi, measureReal_def,
+    withDensity_apply _ hi, integral_toReal hfm.restrict]
   refine ae_lt_top' hfm.restrict (ne_top_of_le_ne_top hf ?_)
   conv_rhs => rw [← setLIntegral_univ]
   exact lintegral_mono_set (Set.subset_univ _)
@@ -192,7 +192,8 @@ theorem withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part {f : α 
   rw [withDensityᵥ_apply hfi hi,
     integral_eq_lintegral_pos_part_sub_lintegral_neg_part hfi.integrableOn,
     VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
-    toSignedMeasure_apply_measurable hi, withDensity_apply _ hi, withDensity_apply _ hi]
+    toSignedMeasure_apply_measurable hi, measureReal_def, measureReal_def,
+    withDensity_apply _ hi, withDensity_apply _ hi]
 
 theorem Integrable.withDensityᵥ_trim_eq_integral {m m0 : MeasurableSpace α} {μ : Measure α}
     (hm : m ≤ m0) {f : α → ℝ} (hf : Integrable f μ) {i : Set α} (hi : MeasurableSet[m] i) :
