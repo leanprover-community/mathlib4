@@ -15,12 +15,12 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
 
 ## Main definitions:
 
- * `RootPairing.IsValuedIn`: Given a commutative ring `S` and an `S`-algebra `R`, a root pairing
-   over `R` is valued in `S` if all root-coroot pairings lie in the image of `algebraMap S R`.
- * `RootPairing.IsCrystallographic`: A root pairing is said to be crystallographic if the pairing
-   between a root and coroot is always an integer.
- * `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
- * `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
+* `RootPairing.IsValuedIn`: Given a commutative ring `S` and an `S`-algebra `R`, a root pairing
+  over `R` is valued in `S` if all root-coroot pairings lie in the image of `algebraMap S R`.
+* `RootPairing.IsCrystallographic`: A root pairing is said to be crystallographic if the pairing
+  between a root and coroot is always an integer.
+* `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
+* `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
 
 -/
 

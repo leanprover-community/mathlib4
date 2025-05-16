@@ -11,13 +11,13 @@ import Mathlib.Analysis.Analytic.Basic
 This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in terms of scalars
 `c₀, c₁, c₂, …`.
 ## Main definitions / results:
- * `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
- * `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
-   otherwise.
- * `FormalMultilinearSeries.ofScalars_radius_eq_(zero/inv/top)_of_tendsto`:
-   the ratio test for an analytic function defined in terms of a formal power series `∑ cᵢ • xⁱ`.
- * `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
-   the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
+* `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
+* `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
+  otherwise.
+* `FormalMultilinearSeries.ofScalars_radius_eq_(zero/inv/top)_of_tendsto`:
+  the ratio test for an analytic function defined in terms of a formal power series `∑ cᵢ • xⁱ`.
+* `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
+  the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
 -/
 
 namespace FormalMultilinearSeries
