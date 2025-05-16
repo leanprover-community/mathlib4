@@ -3,7 +3,9 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Rat.Denumerable
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Finset.Sort
 import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Fraisse
 import Mathlib.Order.CountableDenseLinearOrder
@@ -125,7 +127,7 @@ def Term.lt (t₁ t₂ : L.Term (α ⊕ (Fin n))) : L.BoundedFormula α n :=
 variable (L)
 
 /-- The language homomorphism sending the unique symbol `≤` of `Language.order` to `≤` in an ordered
- language. -/
+language. -/
 @[simps] def orderLHom : Language.order →ᴸ L where
   onRelation | _, .le => leSymb
 
@@ -164,7 +166,7 @@ example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
     S ⊨ L.linearOrderTheory := inferInstance
 
 /-- A sentence indicating that an order has no top element:
-$\forall x, \exists y, \neg y \le x$.   -/
+$\forall x, \exists y, \neg y \le x$. -/
 def noTopOrderSentence : L.Sentence :=
   ∀'∃'∼((&1).le &0)
 
@@ -363,9 +365,9 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
 -- because it will match with any `LE` typeclass search
 @[local instance]
 def decidableLEOfStructure
-    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     letI := L.leOfStructure M
-    DecidableRel ((· : M) ≤ ·) := h
+    DecidableLE M := h
 
 /-- Any model of a theory of preorders is a preorder. -/
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
@@ -383,12 +385,12 @@ def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
 
 /-- Any model of a theory of linear orders is a linear order. -/
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
-    [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
   __ := L.partialOrderOfModels M
   le_total := Relations.realize_total.1 ((Theory.model_iff _).1 h _
     (by simp only [linearOrderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, true_or]))
-  decidableLE := inferInstance
+  toDecidableLE := inferInstance
 
 end structure_to_order
 
@@ -437,8 +439,8 @@ lemma strictMono [EmbeddingLike F M N] [PartialOrder M] [L.OrderedStructure M]
 end HomClass
 
 /-- This is not an instance because it would form a loop with
-  `FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
-  As both types are `Prop`s, it would only cause a slowdown.  -/
+`FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
+As both types are `Prop`s, it would only cause a slowdown. -/
 lemma StrongHomClass.toOrderIsoClass
     (L : Language) [L.IsOrdered] (M : Type*) [L.Structure M] [LE M] [L.OrderedStructure M]
     (N : Type*) [L.Structure N] [LE N] [L.OrderedStructure N]
@@ -482,8 +484,8 @@ lemma dlo_isExtensionPair
         Substructure.closure_eq])).toOrderEmbedding.trans g)
   use StrongHomClass.toEmbedding g'
   ext ⟨x, xS⟩
-  refine ((funext_iff.1 hg) ⟨x, ?_⟩).symm
-  simp only [Set.Finite.coe_toFinset, SetLike.mem_coe, xS]
+  refine congr_fun hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩
+  simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
 
 instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
     Infinite M := by

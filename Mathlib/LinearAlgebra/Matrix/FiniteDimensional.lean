@@ -7,7 +7,6 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.Algebra.Module.Algebra
 
 /-!
 # The finite-dimensional space of matrices
@@ -18,8 +17,8 @@ exists only to provide an entry in the instance list for `FiniteDimensional`.
 
 ## Main definitions
 
- * `Matrix.finiteDimensional`: matrices form a finite dimensional vector space over a field `K`
- * `LinearMap.finiteDimensional`
+* `Matrix.finiteDimensional`: matrices form a finite dimensional vector space over a field `K`
+* `LinearMap.finiteDimensional`
 
 ## Tags
 
@@ -58,6 +57,6 @@ variable {A : Type*} [Ring A] [Algebra K A] [Module A V] [IsScalarTower K A V] [
 /-- Linear maps over a `k`-algebra are finite dimensional (over `k`) if both the source and
 target are, as they form a subspace of all `k`-linear maps. -/
 instance finiteDimensional' : FiniteDimensional K (V →ₗ[A] W) :=
-  FiniteDimensional.of_injective (restrictScalarsLinearMap K A V W) (restrictScalars_injective _)
+  FiniteDimensional.of_injective (restrictScalarsₗ K A V W K) (restrictScalars_injective _)
 
 end LinearMap

@@ -5,6 +5,7 @@ Authors: Reid Barton
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Topology.DenseEmbedding
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-! # Stone-Čech compactification
 
@@ -29,7 +30,7 @@ case is different because the equivalence relation on spaces of ultrafilters des
 by Stekelenburg causes issues with universes since it involves a condition
 on all compact Hausdorff spaces. We replace it by a two steps construction.
 The first step called `PreStoneCech` guarantees the expected universal property but
-not the Hausdorff condition. We then define `StoneCech α` as `t2Quotient (PreStoneCech α)`.
+not the Hausdorff condition. We then define `StoneCech α` as `T2Quotient (PreStoneCech α)`.
 -/
 
 
@@ -156,10 +157,7 @@ theorem isDenseInducing_pure : @IsDenseInducing _ _ ⊥ _ (pure : α → Ultrafi
 /-- `pure : α → Ultrafilter α` defines a dense embedding of `α` in `Ultrafilter α`. -/
 theorem isDenseEmbedding_pure : @IsDenseEmbedding _ _ ⊥ _ (pure : α → Ultrafilter α) :=
   letI : TopologicalSpace α := ⊥
-  { isDenseInducing_pure with inj := ultrafilter_pure_injective }
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_pure := isDenseEmbedding_pure
+  { isDenseInducing_pure with injective := ultrafilter_pure_injective }
 
 end Embedding
 
@@ -255,7 +253,7 @@ theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreS
     exact Quot.sound ⟨x, pure_le_nhds x, gx⟩
 
 theorem denseRange_preStoneCechUnit : DenseRange (preStoneCechUnit : α → PreStoneCech α) :=
-  (surjective_quot_mk _).denseRange.comp denseRange_pure continuous_coinduced_rng
+  Quot.mk_surjective.denseRange.comp denseRange_pure continuous_coinduced_rng
 
 
 section Extension
@@ -312,15 +310,15 @@ variable (α : Type u) [TopologicalSpace α]
 
 /-- The Stone-Čech compactification of a topological space. -/
 def StoneCech : Type u :=
-  t2Quotient (PreStoneCech α)
+  T2Quotient (PreStoneCech α)
 
 variable {α}
 
 instance : TopologicalSpace (StoneCech α) :=
-  inferInstanceAs <| TopologicalSpace <| t2Quotient _
+  inferInstanceAs <| TopologicalSpace <| T2Quotient _
 
 instance : T2Space (StoneCech α) :=
-  inferInstanceAs <| T2Space <| t2Quotient _
+  inferInstanceAs <| T2Space <| T2Quotient _
 
 instance : CompactSpace (StoneCech α) :=
   Quot.compactSpace
@@ -330,17 +328,17 @@ instance [Inhabited α] : Inhabited (StoneCech α) :=
 
 /-- The natural map from α to its Stone-Čech compactification. -/
 def stoneCechUnit (x : α) : StoneCech α :=
-  t2Quotient.mk (preStoneCechUnit x)
+  T2Quotient.mk (preStoneCechUnit x)
 
 theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech α) :=
-  (t2Quotient.continuous_mk _).comp continuous_preStoneCechUnit
+  (T2Quotient.continuous_mk _).comp continuous_preStoneCechUnit
 
 /-- The image of `stoneCechUnit` is dense. (But `stoneCechUnit` need
   not be an embedding, for example if the original space is not Hausdorff.) -/
 theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech α) := by
-  unfold stoneCechUnit t2Quotient.mk
-  have : Function.Surjective (t2Quotient.mk : PreStoneCech α → StoneCech α) := by
-    exact surjective_quot_mk _
+  unfold stoneCechUnit T2Quotient.mk
+  have : Function.Surjective (T2Quotient.mk : PreStoneCech α → StoneCech α) := by
+    exact Quot.mk_surjective
   exact this.denseRange.comp denseRange_preStoneCechUnit continuous_coinduced_rng
 
 section Extension
@@ -360,11 +358,11 @@ variable [CompactSpace β]
   Hausdorff space `β` to the Stone-Čech compactification of `α`.
   This extension implements the universal property of this compactification. -/
 def stoneCechExtend : StoneCech α → β :=
-  t2Quotient.lift (continuous_preStoneCechExtend hg)
+  T2Quotient.lift (continuous_preStoneCechExtend hg)
 
 theorem stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
   ext x
-  rw [stoneCechExtend, Function.comp_apply, stoneCechUnit, t2Quotient.lift_mk]
+  rw [stoneCechExtend, Function.comp_apply, stoneCechUnit, T2Quotient.lift_mk]
   apply congrFun (preStoneCechExtend_extends hg)
 
 theorem continuous_stoneCechExtend : Continuous (stoneCechExtend hg) :=

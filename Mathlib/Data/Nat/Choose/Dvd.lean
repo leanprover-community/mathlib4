@@ -13,8 +13,6 @@ import Mathlib.Data.Nat.Prime.Factorial
 
 namespace Nat
 
-open Nat
-
 namespace Prime
 
 variable {p a b k : ℕ}

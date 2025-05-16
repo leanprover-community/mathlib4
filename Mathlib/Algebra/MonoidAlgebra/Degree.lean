@@ -3,6 +3,7 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Order.Filter.Extr
 
@@ -298,7 +299,7 @@ theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [Ad
     split_ifs; exacts [bot_le, hzero.le]
   · intro i s his ih
     rw [Finset.prod_insert his, Finset.sum_insert his]
-    exact (supDegree_mul_le hadd).trans (add_le_add_left ih _)
+    exact (supDegree_mul_le hadd).trans (by gcongr)
 
 theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     [AddLeftStrictMono B] [AddRightStrictMono B]
@@ -410,7 +411,10 @@ lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 :
   rw [leadingCoeff, ← Ne, ← Finsupp.mem_support_iff]
   exact supDegree_mem_support hD h
 
-lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [CommRing R] {p q : R[A]}
+lemma leadingCoeff_ne_zero (hD : D.Injective) : p.leadingCoeff D ≠ 0 ↔ p ≠ 0 :=
+  (leadingCoeff_eq_zero hD).ne
+
+lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [Ring R] {p q : R[A]}
     (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D = q.leadingCoeff D) :
     (p - q).supDegree D < p.supDegree D ∨ p = q := by
   rw [or_iff_not_imp_right]

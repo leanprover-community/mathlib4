@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Clopen sets
@@ -69,7 +69,7 @@ theorem Set.Finite.isClopen_biUnion {Y} {s : Set Y} {f : Y → Set X} (hs : s.Fi
 
 theorem isClopen_biUnion_finset {Y} {s : Finset Y} {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen <| f i) : IsClopen (⋃ i ∈ s, f i) :=
- s.finite_toSet.isClopen_biUnion h
+  s.finite_toSet.isClopen_biUnion h
 
 theorem isClopen_iInter_of_finite {Y} [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
     IsClopen (⋂ i, s i) :=
@@ -118,10 +118,10 @@ theorem isClopen_range_inr : IsClopen (range (Sum.inr : Y → X ⊕ Y)) :=
 
 theorem isClopen_range_sigmaMk {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {i : ι} :
     IsClopen (Set.range (@Sigma.mk ι X i)) :=
-  ⟨isClosedEmbedding_sigmaMk.isClosed_range, isOpenEmbedding_sigmaMk.isOpen_range⟩
+  ⟨IsClosedEmbedding.sigmaMk.isClosed_range, IsOpenEmbedding.sigmaMk.isOpen_range⟩
 
-protected theorem IsQuotientMap.isClopen_preimage {f : X → Y} (hf : IsQuotientMap f) {s : Set Y} :
-    IsClopen (f ⁻¹' s) ↔ IsClopen s :=
+protected theorem Topology.IsQuotientMap.isClopen_preimage {f : X → Y} (hf : IsQuotientMap f)
+    {s : Set Y} : IsClopen (f ⁻¹' s) ↔ IsClopen s :=
   and_congr hf.isClosed_preimage hf.isOpen_preimage
 
 @[deprecated (since := "2024-10-22")]

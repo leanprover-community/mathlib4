@@ -97,7 +97,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
           (nsmul_ne_zero_of_lt_addOrderOf one_ne_zero (Nat.succ_le_iff.mp o2))
       simp only [a0, single_eq_of_ne, Ne, not_false_iff]
     · simpa only [single_eq_same] using zero_ne_one
-  · convert Commute.geom_sum₂_mul (α := AddMonoidAlgebra R A) _ (addOrderOf a) using 3
+  · convert Commute.geom_sum₂_mul (R := AddMonoidAlgebra R A) _ (addOrderOf a) using 3
     · rw [single_zero_one, one_pow, mul_one]
     · rw [single_pow, one_pow, addOrderOf_nsmul_eq_zero, single_zero_one, one_pow, sub_self]
     · simp only [single_zero_one, Commute.one_right]
@@ -235,7 +235,7 @@ example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 
 example {α} [Zero α] :
     2 • (Finsupp.single 0 1 : α →₀ F) = (Finsupp.single 0 1 : α →₀ F)
       ∧ (Finsupp.single 0 1 : α →₀ F) ≠ 0 :=
-  ⟨smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero, z01.ne]⟩
+  ⟨Finsupp.smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero, z01.ne]⟩
 
 end F
 

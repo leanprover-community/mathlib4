@@ -20,14 +20,14 @@ such as Hensel's lemma and Jordan-Chevalley decomposition.
 
 ## Main definitions / results:
 
- * `Polynomial.newtonMap`: the map `x ↦ x - P(x) / P'(x)`, where `P'` is the derivative of the
-   polynomial `P`.
- * `Polynomial.isFixedPt_newtonMap_of_isUnit_iff`: `x` is a fixed point for Newton iteration iff
-   it is a root of `P` (provided `P'(x)` is a unit).
- * `Polynomial.exists_unique_nilpotent_sub_and_aeval_eq_zero`: if `x` is almost a root of `P` in the
-   sense that `P(x)` is nilpotent (and `P'(x)` is a unit) then we may write `x` as a sum
-   `x = n + r` where `n` is nilpotent and `r` is a root of `P`. This can be used to prove the
-   Jordan-Chevalley decomposition of linear endomorphims.
+* `Polynomial.newtonMap`: the map `x ↦ x - P(x) / P'(x)`, where `P'` is the derivative of the
+  polynomial `P`.
+* `Polynomial.isFixedPt_newtonMap_of_isUnit_iff`: `x` is a fixed point for Newton iteration iff
+  it is a root of `P` (provided `P'(x)` is a unit).
+* `Polynomial.existsUnique_nilpotent_sub_and_aeval_eq_zero`: if `x` is almost a root of `P` in the
+  sense that `P(x)` is nilpotent (and `P'(x)` is a unit) then we may write `x` as a sum
+  `x = n + r` where `n` is nilpotent and `r` is a root of `P`. This can be used to prove the
+  Jordan-Chevalley decomposition of linear endomorphims.
 
 -/
 
@@ -77,7 +77,7 @@ theorem isFixedPt_newtonMap_of_isUnit_iff (h : IsUnit <| aeval x (derivative P))
   rw [IsFixedPt, newtonMap_apply, sub_eq_self, Ring.inverse_mul_eq_iff_eq_mul _ _ _ h, mul_zero]
 
 /-- This is really an auxiliary result, en route to
-`Polynomial.exists_unique_nilpotent_sub_and_aeval_eq_zero`. -/
+`Polynomial.existsUnique_nilpotent_sub_and_aeval_eq_zero`. -/
 theorem aeval_pow_two_pow_dvd_aeval_iterate_newtonMap
     (h : IsNilpotent (aeval x P)) (h' : IsUnit (aeval x <| derivative P)) (n : ℕ) :
     (aeval x P) ^ (2 ^ n) ∣ aeval (P.newtonMap^[n] x) P := by
@@ -103,15 +103,15 @@ unit) then we may write `x` as a sum `x = n + r` where `n` is nilpotent and `r` 
 Moreover, `n` and `r` are unique.
 
 This can be used to prove the Jordan-Chevalley decomposition of linear endomorphims. -/
-theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
+theorem existsUnique_nilpotent_sub_and_aeval_eq_zero
     (h : IsNilpotent (aeval x P)) (h' : IsUnit (aeval x <| derivative P)) :
     ∃! r, IsNilpotent (x - r) ∧ aeval r P = 0 := by
   simp_rw [(neg_sub _ x).symm, isNilpotent_neg_iff]
-  refine exists_unique_of_exists_of_unique ?_ fun r₁ r₂ ⟨hr₁, hr₁'⟩ ⟨hr₂, hr₂'⟩ ↦ ?_
+  refine existsUnique_of_exists_of_unique ?_ fun r₁ r₂ ⟨hr₁, hr₁'⟩ ⟨hr₂, hr₂'⟩ ↦ ?_
   · -- Existence
     obtain ⟨n, hn⟩ := id h
     refine ⟨P.newtonMap^[n] x, isNilpotent_iterate_newtonMap_sub_of_isNilpotent h n, ?_⟩
-    rw [← zero_dvd_iff, ← pow_eq_zero_of_le n.lt_two_pow.le hn]
+    rw [← zero_dvd_iff, ← pow_eq_zero_of_le (n.lt_two_pow_self).le hn]
     exact aeval_pow_two_pow_dvd_aeval_iterate_newtonMap h h' n
   · -- Uniqueness
     have ⟨u, hu⟩ := binomExpansion (P.map (algebraMap R S)) r₁ (r₂ - r₁)
@@ -124,5 +124,8 @@ theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
     rw [← sub_sub_sub_cancel_right r₂ r₁ x]
     refine IsNilpotent.isUnit_add_left_of_commute ?_ this (Commute.all _ _)
     exact (Commute.all _ _).isNilpotent_mul_right <| (Commute.all _ _).isNilpotent_sub hr₂ hr₁
+
+@[deprecated (since := "2024-12-17")]
+alias exists_unique_nilpotent_sub_and_aeval_eq_zero := existsUnique_nilpotent_sub_and_aeval_eq_zero
 
 end Polynomial

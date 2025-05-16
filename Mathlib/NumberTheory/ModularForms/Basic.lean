@@ -22,17 +22,20 @@ modular form.
 
 open Complex UpperHalfPlane
 
-open scoped Topology Manifold UpperHalfPlane
+open scoped Topology Manifold MatrixGroups
 
 noncomputable section
-
-local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
-
-local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 
 section ModularForm
 
 open ModularForm
+
+/-- The weight `k` slash action of `GL(2, ℝ)⁺` preserves holomorphic functions. -/
+lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
+    (k : ℤ) (g : GL(2, ℝ)⁺) :
+    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
+  refine .mul (.mul ?_ mdifferentiable_const) (UpperHalfPlane.mdifferentiable_denom_zpow g _)
+  exact hf.comp (UpperHalfPlane.mdifferentiable_smul g)
 
 variable (F : Type*) (Γ : Subgroup SL(2, ℤ)) (k : ℤ)
 
@@ -58,7 +61,7 @@ add_decl_doc CuspForm.toSlashInvariantForm
 `SlashInvariantFormClass` by requiring that the functions be holomorphic and bounded
 at infinity. -/
 class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
-    [FunLike F ℍ ℂ] extends SlashInvariantFormClass F Γ k : Prop where
+    [FunLike F ℍ ℂ] : Prop extends SlashInvariantFormClass F Γ k where
   holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
   bdd_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsBoundedAtImInfty (f ∣[k] A)
 
@@ -66,7 +69,7 @@ class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k :
 `SlashInvariantFormClass` by requiring that the functions be holomorphic and zero
 at infinity. -/
 class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : outParam ℤ)
-    [FunLike F ℍ ℂ] extends SlashInvariantFormClass F Γ k : Prop where
+    [FunLike F ℍ ℂ] : Prop extends SlashInvariantFormClass F Γ k where
   holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
   zero_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsZeroAtImInfty (f ∣[k] A)
 
@@ -134,7 +137,7 @@ namespace ModularForm
 
 open SlashInvariantForm
 
-variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
+variable {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
 instance add : Add (ModularForm Γ k) :=
   ⟨fun f g =>
@@ -231,10 +234,7 @@ def mul {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1) (g :
   toSlashInvariantForm := f.1.mul g.1
   holo' := f.holo'.mul g.holo'
   bdd_at_infty' A := by
-    -- Porting note: was `by simpa using ...`
-    -- `mul_slash_SL2` is no longer a `simp` and `simpa only [mul_slash_SL2] using ...` failed
-    rw [SlashInvariantForm.coe_mul, mul_slash_SL2]
-    exact (f.bdd_at_infty' A).mul (g.bdd_at_infty' A)
+    simpa only [coe_mul, mul_slash_SL2] using (f.bdd_at_infty' A).mul (g.bdd_at_infty' A)
 
 @[simp]
 theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1)
@@ -242,13 +242,15 @@ theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k
   rfl
 
 /-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
-@[simps! (config := .asFn) toFun toSlashInvariantForm]
 def const (x : ℂ) : ModularForm Γ 0 where
   toSlashInvariantForm := .const x
   holo' _ := mdifferentiableAt_const
   bdd_at_infty' A := by
     simpa only [SlashInvariantForm.const_toFun,
       ModularForm.is_invariant_const] using atImInfty.const_boundedAtFilter x
+
+@[simp]
+lemma const_apply (x : ℂ) (τ : ℍ) : (const x : ModularForm Γ 0) τ = x := rfl
 
 instance : One (ModularForm Γ 0) where
   one := { const 1 with toSlashInvariantForm := 1 }
@@ -435,3 +437,33 @@ example (Γ : Subgroup SL(2, ℤ)) : Algebra ℂ (⨁ i, ModularForm Γ i) := in
 end GradedRing
 
 end ModularForm
+
+section translate
+open ModularForm
+
+variable {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F : Type*} [FunLike F ℍ ℂ] (f : F) (g : SL(2, ℤ))
+
+/-- Translating a `ModularForm` by `SL(2, ℤ)`, to obtain a new `ModularForm`.
+
+(TODO : Define this more generally for `GL(2, ℚ)⁺`.) -/
+noncomputable def ModularForm.translate [ModularFormClass F Γ k] :
+    ModularForm (Γ.map <| MulAut.conj g⁻¹) k where
+  __ := SlashInvariantForm.translate f g
+  bdd_at_infty' h := by simpa [SlashAction.slash_mul] using ModularFormClass.bdd_at_infty f (g * h)
+  holo' := (ModularFormClass.holo f).slash k g
+
+@[simp]
+lemma ModularForm.coe_translate [ModularFormClass F Γ k] : translate f g = ⇑f ∣[k] g := rfl
+
+/-- Translating a `CuspForm` by `SL(2, ℤ)`, to obtain a new `CuspForm`.
+
+(TODO : Define this more generally for `GL(2, ℚ)⁺`.) -/
+noncomputable def CuspForm.translate [CuspFormClass F Γ k] :
+    CuspForm (Γ.map <| MulAut.conj g⁻¹) k where
+  __ := ModularForm.translate f g
+  zero_at_infty' h := by simpa [SlashAction.slash_mul] using CuspFormClass.zero_at_infty f (g * h)
+
+@[simp]
+lemma CuspForm.coe_translate [CuspFormClass F Γ k] : translate f g = ⇑f ∣[k] g := rfl
+
+end translate

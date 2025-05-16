@@ -3,8 +3,9 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
 # The group of units of a complete normed ring
@@ -87,8 +88,6 @@ end nonunits
 
 namespace NormedRing
 
-open scoped Classical
-
 open Asymptotics Filter Metric Finset Ring
 
 theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
@@ -109,7 +108,7 @@ theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
     inverse ((1 : R) - t) = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) :=
   have := _root_.summable_geometric_of_norm_lt_one ht
   calc inverse (1 - t) = ∑' i : ℕ, t ^ i := inverse_one_sub t ht
-    _ = ∑ i ∈ range n, t ^ i + ∑' i : ℕ, t ^ (i + n) := (sum_add_tsum_nat_add _ this).symm
+    _ = ∑ i ∈ range n, t ^ i + ∑' i : ℕ, t ^ (i + n) := (this.sum_add_tsum_nat_add _).symm
     _ = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) := by
       simp only [inverse_one_sub t ht, add_comm _ n, pow_add, this.tsum_mul_left]; rfl
 
@@ -137,16 +136,13 @@ theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t
   simp only [IsBigO, IsBigOWith, Metric.eventually_nhds_iff]
   refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by norm_num, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht
-  have ht' : ‖t‖ < 1 := by
-    have : (2 : ℝ)⁻¹ < 1 := by cancel_denoms
-    linarith
+  have ht' : ‖t‖ < 1 := by linarith
   simp only [inverse_one_sub t ht', norm_one, mul_one, Set.mem_setOf_eq]
   change ‖∑' n : ℕ, t ^ n‖ ≤ _
   have := tsum_geometric_le_of_norm_lt_one t ht'
   have : (1 - ‖t‖)⁻¹ ≤ 2 := by
     rw [← inv_inv (2 : ℝ)]
     refine inv_anti₀ (by norm_num) ?_
-    have : (2 : ℝ)⁻¹ + (2 : ℝ)⁻¹ = 1 := by ring
     linarith
   linarith
 
@@ -201,12 +197,9 @@ open MulOpposite Filter NormedRing
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open embedding. -/
 theorem isOpenEmbedding_val : IsOpenEmbedding (val : Rˣ → R) where
-  toEmbedding := embedding_val_mk'
+  toIsEmbedding := isEmbedding_val_mk'
     (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
   isOpen_range := by simpa only [_root_.isUnit_iff] using Units.isOpen
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_val := isOpenEmbedding_val
 
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open map. -/

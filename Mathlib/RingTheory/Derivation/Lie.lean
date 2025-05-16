@@ -18,7 +18,7 @@ namespace Derivation
 
 variable {R : Type*} [CommRing R]
 variable {A : Type*} [CommRing A] [Algebra R A]
-variable (D : Derivation R A A) {D1 D2 : Derivation R A A} (a : A)
+variable {D1 D2 : Derivation R A A} (a : A)
 
 section LieStructures
 
@@ -29,7 +29,7 @@ section LieStructures
 instance : Bracket (Derivation R A A) (Derivation R A A) :=
   ⟨fun D1 D2 =>
     mk' ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ fun a b => by
-      simp only [Ring.lie_def, map_add, Algebra.id.smul_eq_mul, LinearMap.mul_apply, leibniz,
+      simp only [Ring.lie_def, map_add, Algebra.id.smul_eq_mul, Module.End.mul_apply, leibniz,
         coeFn_coe, LinearMap.sub_apply]
       ring⟩
 

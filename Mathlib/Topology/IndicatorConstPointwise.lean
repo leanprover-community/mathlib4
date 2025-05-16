@@ -3,6 +3,7 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Topology.Separation.Basic
 
 /-!
@@ -23,8 +24,8 @@ equivalent:
  (c) `Tendsto As _ <| Filter.pi (pure <| · ∈ A)`.
 
 The results stating these in the case when the indicators take values in a Fréchet space are:
- * `tendsto_indicator_const_iff_forall_eventually` is the equivalence (a) ↔ (b);
- * `tendsto_indicator_const_iff_tendsto_pi_pure` is the equivalence (a) ↔ (c).
+* `tendsto_indicator_const_iff_forall_eventually` is the equivalence (a) ↔ (b);
+* `tendsto_indicator_const_iff_tendsto_pi_pure` is the equivalence (a) ↔ (c).
 
 -/
 

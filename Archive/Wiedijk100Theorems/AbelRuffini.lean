@@ -6,18 +6,19 @@ Authors: Thomas Browning
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.FieldTheory.AbelRuffini
+import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
+import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
-import Mathlib.RingTheory.EisensteinCriterion
 
 /-!
 # Construction of an algebraic number that is not solvable by radicals.
 
 The main ingredients are:
- * `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
+* `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
   an irreducible polynomial with an `IsSolvableByRad` root has solvable Galois group
- * `galActionHom_bijective_of_prime_degree'` in `Mathlib/FieldTheory/PolynomialGaloisGroup.lean` :
+* `galActionHom_bijective_of_prime_degree'` in `Mathlib/FieldTheory/PolynomialGaloisGroup.lean` :
   an irreducible polynomial of prime degree with 1-3 non-real roots has full Galois group
- * `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
+* `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
   solvable
 
 Then all that remains is the construction of a specific polynomial satisfying the conditions of
@@ -83,7 +84,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
       rw [mem_span_singleton]
       rw [degree_Phi] at hn; norm_cast at hn
       interval_cases n <;>
-      simp (config := {decide := true}) only [Φ, coeff_X_pow, coeff_C, Int.natCast_dvd_natCast.mpr,
+      simp +decide only [Φ, coeff_X_pow, coeff_C, Int.natCast_dvd_natCast.mpr,
         hpb, if_true, coeff_C_mul, if_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero,
         coeff_sub, add_zero, zero_sub, dvd_neg, neg_zero, dvd_mul_of_dvd_left]
     · simp only [degree_Phi, ← WithBot.coe_zero, WithBot.coe_lt_coe, Nat.succ_pos']
@@ -125,8 +126,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
       calc
         f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
           norm_num [hf, ← sq, sub_eq_add_neg, add_comm, Odd.neg_pow (by decide : Odd 5)]
-        _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by
-          refine add_le_add (sub_le_sub_left (pow_right_mono₀ ha ?_) _) ?_ <;> linarith
+        _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by gcongr <;> linarith
         _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
         _ ≤ 0 := by nlinarith
     have ha' := neg_nonpos.mpr (hle.trans ha)

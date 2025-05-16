@@ -3,12 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.GroupCompletion
+import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.Algebra
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # The completion of a metric space
@@ -45,7 +45,7 @@ protected theorem uniformContinuous_dist :
 /-- The new distance is continuous. -/
 protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x ↦ dist (f x) (g x) :=
-  Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg : _)
+  Completion.uniformContinuous_dist.continuous.comp (hf.prodMk hg :)
 
 /-- The new distance is an extension of the original distance. -/
 @[simp]
@@ -143,7 +143,7 @@ protected theorem uniformity_dist' :
   · simp [Completion.mem_uniformity_dist, subset_def]
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
     use ⟨min r p, lt_min hr hp⟩
-    simp (config := { contextual := true }) [lt_min_iff]
+    simp +contextual [lt_min_iff]
 
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
@@ -158,10 +158,6 @@ instance instMetricSpace : MetricSpace (Completion α) :=
       toUniformSpace := inferInstance
       uniformity_dist := Completion.uniformity_dist } _
 
-@[deprecated eq_of_dist_eq_zero (since := "2024-03-10")]
-protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y :=
-  eq_of_dist_eq_zero h
-
 /-- The embedding of a metric space in its completion is an isometry. -/
 theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
   Isometry.of_dist_eq Completion.dist_eq
@@ -170,8 +166,8 @@ theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
 protected theorem edist_eq (x y : α) : edist (x : Completion α) y = edist x y :=
   coe_isometry x y
 
-instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [BoundedSMul M α] :
-    BoundedSMul M (Completion α) where
+instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [IsBoundedSMul M α] :
+    IsBoundedSMul M (Completion α) where
   dist_smul_pair' c x₁ x₂ := by
     induction x₁, x₂ using induction_on₂ with
     | hp =>
@@ -179,7 +175,7 @@ instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [BoundedSMul M
         ((continuous_fst.const_smul _).dist (continuous_snd.const_smul _))
         (continuous_const.mul (continuous_fst.dist continuous_snd))
     | ih x₁ x₂ =>
-      rw [← coe_smul, ← coe_smul, Completion.dist_eq,  Completion.dist_eq]
+      rw [← coe_smul, ← coe_smul, Completion.dist_eq, Completion.dist_eq]
       exact dist_smul_pair c x₁ x₂
   dist_pair_smul' c₁ c₂ x := by
     induction x using induction_on with

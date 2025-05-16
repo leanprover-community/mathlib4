@@ -16,9 +16,9 @@ measure, which gives measure `1` to the parallelepiped spanned by the basis.
 
 * `parallelepiped v` is the parallelepiped spanned by a finite family of vectors.
 * `Basis.parallelepiped` is the parallelepiped associated to a basis, seen as a compact set with
-nonempty interior.
+  nonempty interior.
 * `Basis.addHaar` is the Lebesgue measure associated to a basis, giving measure `1` to the
-corresponding parallelepiped.
+  corresponding parallelepiped.
 
 In particular, we declare a `MeasureSpace` instance on any finite-dimensional inner product space,
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent
@@ -55,7 +55,7 @@ theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
   classical
   ext x
   simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
-    _root_.map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
+    map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
     mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
     Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
   aesop
@@ -105,18 +105,18 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     · intro x hx
       refine ⟨x 0, ⟨hx.1 0, hx.2 0⟩, ?_⟩
       ext j
-      simp only [Subsingleton.elim j 0]
+      simp only [F, Subsingleton.elim j 0]
     · rintro x ⟨y, hy, rfl⟩
       exact ⟨fun _j => hy.1, fun _j => hy.2⟩
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
     simp_rw [parallelepiped, H, A, Algebra.id.smul_eq_mul, mul_one]
-    simp only [Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, ← image_comp,
-      Function.comp_apply, image_id']
+    simp only [F, Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton,
+      ← image_comp, Function.comp_apply, image_id']
   · right
     simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
-      Finset.sum_singleton, ← image_comp, Function.comp, image_neg, preimage_neg_Icc, neg_zero]
+      Finset.sum_singleton, ← image_comp, Function.comp, image_neg_eq_neg, neg_Icc, neg_zero]
 
 theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) := by
   ext
@@ -205,16 +205,12 @@ theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
 
 theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
-    (have := FiniteDimensional.of_fintype_basis b
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis b
     LinearMap.continuous_of_finiteDimensional e.toLinearMap)
-    (have := FiniteDimensional.of_fintype_basis (b.map e)
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis (b.map e)
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 
--- removing this option makes elaboration approximately 1 second slower
-set_option tactic.skipAssignedInstances false in
 theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
   ext x

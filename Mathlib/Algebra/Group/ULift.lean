@@ -3,7 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Logic.Nontrivial.Basic
 
@@ -17,12 +17,11 @@ This file defines instances for group, monoid, semigroup and related structures 
 We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
-universe u v
+universe u v w
 
-variable {α : Type u} {β : Type*} {x y : ULift.{v} α}
+variable {α : Type u} {β : Type v} {x y : ULift.{w} α}
 
 namespace ULift
 
@@ -63,15 +62,15 @@ instance smul [SMul α β] : SMul α (ULift β) :=
   ⟨fun n x => up (n • x.down)⟩
 
 @[to_additive (attr := simp)]
-theorem smul_down [SMul α β] (a : α) (b : ULift.{v} β) : (a • b).down = a • b.down :=
+theorem smul_down [SMul α β] (a : α) (b : ULift.{w} β) : (a • b).down = a • b.down :=
   rfl
 
 @[to_additive existing (reorder := 1 2) smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 
-@[to_additive existing (attr := simp) (reorder := 1 2) smul_down]
-theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down ^ b :=
+@[to_additive existing (attr := simp) (reorder := 1 2, 4 5) smul_down]
+theorem pow_down [Pow α β] (a : ULift.{w} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 
 /-- The multiplicative equivalence between `ULift α` and `α`.
@@ -80,14 +79,9 @@ theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down
 def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }
 
--- Porting note: below failed due to error above, manually added
---@[to_additive]
+@[to_additive]
 instance semigroup [Semigroup α] : Semigroup (ULift α) :=
   (MulEquiv.ulift.injective.semigroup _) fun _ _ => rfl
-
-instance addSemigroup [AddSemigroup α] : AddSemigroup (ULift α) :=
-  (Equiv.ulift.injective.addSemigroup _) fun _ _ => rfl
-
 
 @[to_additive]
 instance commSemigroup [CommSemigroup α] : CommSemigroup (ULift α) :=
@@ -112,10 +106,9 @@ instance instIntCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
 theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem up_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    up (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
+    up (ofNat(n) : α) = ofNat(n) :=
   rfl
 
 @[simp, norm_cast]
@@ -126,10 +119,9 @@ theorem up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
 theorem down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem down_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    down (no_index (OfNat.ofNat n : ULift α)) = OfNat.ofNat n :=
+    down (ofNat(n) : ULift α) = ofNat(n) :=
   rfl
 
 @[simp, norm_cast]

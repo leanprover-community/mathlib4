@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Clopen
 
 /-!
 # Closed sets
@@ -31,7 +32,7 @@ namespace TopologicalSpace
 structure Closeds (α : Type*) [TopologicalSpace α] where
   /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
-  closed' : IsClosed carrier
+  isClosed' : IsClosed carrier
 
 namespace Closeds
 
@@ -42,13 +43,18 @@ instance : SetLike (Closeds α) α where
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
 
-theorem closed (s : Closeds α) : IsClosed (s : Set α) :=
-  s.closed'
+theorem isClosed (s : Closeds α) : IsClosed (s : Set α) :=
+  s.isClosed'
+
+@[deprecated (since := "2025-04-20")] alias closed := isClosed
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Closeds α) : Set α := s
 
 initialize_simps_projections Closeds (carrier → coe, as_prefix coe)
+
+@[simp]
+lemma carrier_eq_coe (s : Closeds α) : s.carrier = (s : Set α) := rfl
 
 @[ext]
 protected theorem ext {s t : Closeds α} (h : (s : Set α) = t) : s = t :=
@@ -57,6 +63,10 @@ protected theorem ext {s t : Closeds α} (h : (s : Set α) = t) : s = t :=
 @[simp]
 theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
+
+@[simp]
+lemma mem_mk {s : Set α} {hs : IsClosed s} {x : α} : x ∈ (⟨s, hs⟩ : Closeds α) ↔ x ∈ s :=
+  .rfl
 
 /-- The closure of a set, as an element of `TopologicalSpace.Closeds`. -/
 @[simps]
@@ -67,16 +77,20 @@ protected def closure (s : Set α) : Closeds α :=
 theorem mem_closure {s : Set α} {x : α} : x ∈ Closeds.closure s ↔ x ∈ closure s := .rfl
 
 theorem gc : GaloisConnection Closeds.closure ((↑) : Closeds α → Set α) := fun _ U =>
-  ⟨subset_closure.trans, fun h => closure_minimal h U.closed⟩
+  ⟨subset_closure.trans, fun h => closure_minimal h U.isClosed⟩
 
-/-- The galois coinsertion between sets and opens. -/
+@[simp]
+lemma closure_le {s : Set α} {t : Closeds α} : .closure s ≤ t ↔ s ⊆ t :=
+  t.isClosed.closure_subset_iff
+
+/-- The galois insertion between sets and closeds. -/
 def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice s hs := ⟨s, closure_eq_iff_isClosed.1 <| hs.antisymm subset_closure⟩
   gc := gc
   le_l_u _ := subset_closure
   choice_eq _s hs := SetLike.coe_injective <| subset_closure.antisymm hs
 
-instance completeLattice : CompleteLattice (Closeds α) :=
+instance instCompleteLattice : CompleteLattice (Closeds α) :=
   CompleteLattice.copy
     (GaloisInsertion.liftCompleteLattice gi)
     -- le
@@ -145,8 +159,6 @@ theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
     (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Closeds α) (Set α)) _ _
 
--- Porting note: Lean 3 proofs didn't work as expected, so I reordered lemmas to fix&golf the proofs
-
 @[simp]
 theorem mem_sInf {S : Set (Closeds α)} {x : α} : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := mem_iInter₂
 
@@ -178,6 +190,11 @@ def singleton [T1Space α] (x : α) : Closeds α :=
   ⟨{x}, isClosed_singleton⟩
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+
+/-- The preimage of a closed set under a continuous map. -/
+@[simps]
+def preimage (s : Closeds β) {f : α → β} (hf : Continuous f) : Closeds α :=
+  ⟨f ⁻¹' s, s.isClosed.preimage hf⟩
 
 end Closeds
 
@@ -271,15 +288,20 @@ instance : SetLike (Clopens α) α where
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
 
+lemma isOpen (s : Clopens α) : IsOpen (s : Set α) := s.isClopen.isOpen
+
+lemma isClosed (s : Clopens α) : IsClosed (s : Set α) := s.isClopen.isClosed
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Clopens α) : Set α := s
 
-initialize_simps_projections Clopens (carrier → coe)
+initialize_simps_projections Clopens (carrier → coe, as_prefix coe)
 
 /-- Reinterpret a clopen as an open. -/
-@[simps]
-def toOpens (s : Clopens α) : Opens α :=
-  ⟨s, s.isClopen.isOpen⟩
+@[simps] def toOpens (s : Clopens α) : Opens α := ⟨s, s.isOpen⟩
+
+/-- Reinterpret a clopen as a closed. -/
+@[simps] def toCloseds (s : Clopens α) : Closeds α := ⟨s, s.isClosed⟩
 
 @[ext]
 protected theorem ext {s t : Clopens α} (h : (s : Set α) = t) : s = t :=
@@ -291,8 +313,8 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 
 @[simp] lemma mem_mk {s : Set α} {x h} : x ∈ mk s h ↔ x ∈ s := .rfl
 
-instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
-instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
+instance : Max (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
+instance : Min (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
 instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
 instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
 instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
@@ -319,6 +341,18 @@ instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
 @[simp]
 protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
     x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t := .rfl
+
+@[simp]
+lemma coe_finset_sup (s : Finset ι) (U : ι → Clopens α) :
+    (↑(s.sup U) : Set α) = ⋃ i ∈ s, U i := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert _ _ _ IH => simp [IH]
+
+@[simp, norm_cast]
+lemma coe_disjoint {s t : Clopens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by
+  simp [disjoint_iff, ← SetLike.coe_set_eq]
 
 end Clopens
 
@@ -386,13 +420,13 @@ def equivSubtype' : IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsI
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x }` is an
-order isomorphism.-/
+order isomorphism. -/
 def orderIsoSubtype : IrreducibleCloseds α ≃o { x : Set α // IsIrreducible x ∧ IsClosed x } :=
   equivSubtype.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x }` is an
-order isomorphism.-/
+order isomorphism. -/
 def orderIsoSubtype' : IrreducibleCloseds α ≃o { x : Set α // IsClosed x ∧ IsIrreducible x } :=
   equivSubtype'.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
 
