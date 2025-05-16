@@ -860,7 +860,7 @@ theorem exists_contMDiff_section_forall_mem_convex_of_local
             (fun y ↦ (e₀ ⟨x, y⟩).2) (∑ᶠ i, ρ i x • s_loc i x) =
               ∑ᶠ i, ρ i x • (fun y ↦ (e₀ ⟨x, y⟩).2) (s_loc i x) := by
           simpa only [LinearMap.toAddMonoidHom_coe, map_smul] using
-            (Llin.toAddMonoidHom).map_finsum hfin
+            Llin.toAddMonoidHom.map_finsum hfin
         exact h_map
       exact this
 
