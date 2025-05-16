@@ -10,8 +10,6 @@ import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.GroupTheory.GroupAction.Hom
 
-import Mathlib.Tactic.FunProp
-
 /-!
 # (Semi)linear maps
 
