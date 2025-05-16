@@ -72,11 +72,6 @@ theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Ioc_of_lt⟩ := nonempty_Ioc
 
--- TODO: This is nonsense. A locally finite order is never densely ordered
-@[simp]
-theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b := by
-  rw [← coe_nonempty, coe_Ioo, Set.nonempty_Ioo]
-
 @[simp]
 theorem Icc_eq_empty_iff : Icc a b = ∅ ↔ ¬a ≤ b := by
   rw [← coe_eq_empty, coe_Icc, Set.Icc_eq_empty_iff]
@@ -88,11 +83,6 @@ theorem Ico_eq_empty_iff : Ico a b = ∅ ↔ ¬a < b := by
 @[simp]
 theorem Ioc_eq_empty_iff : Ioc a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioc, Set.Ioc_eq_empty_iff]
-
--- TODO: This is nonsense. A locally finite order is never densely ordered
-@[simp]
-theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
-  rw [← coe_eq_empty, coe_Ioo, Set.Ioo_eq_empty_iff]
 
 alias ⟨_, Icc_eq_empty⟩ := Icc_eq_empty_iff
 
@@ -318,6 +308,38 @@ theorem filter_le_le_eq_Icc [DecidablePred fun j => a ≤ j ∧ j ≤ b] :
     ({j | a ≤ j ∧ j ≤ b} : Finset _) = Icc a b := by ext; simp
 
 end Filter
+
+section DenselyOrdered
+
+theorem _root_.not_lt_of_locallyFiniteOrder_of_denselyOrdered [DenselyOrdered α] : ¬a < b := by
+  intro hab
+  generalize hn : (Finset.Icc a b).card = n
+  induction n using Nat.strongRecOn generalizing b with
+  | ind n ih =>
+    subst hn
+    obtain ⟨c, hac, hcb⟩ := exists_between hab
+    refine ih _ ?_ hac rfl
+    apply card_lt_card
+    apply (Icc_subset_Icc_right hcb.le).ssubset_of_ne
+    apply ne_of_apply_ne (b ∈ ·)
+    simp [hab.le, hcb.not_le]
+
+theorem _root_.le_symm_of_locallyFiniteOrder_of_denselyOrdered [DenselyOrdered α]
+    (hab : a ≤ b) : b ≤ a :=
+  Classical.byContradiction fun hba =>
+    not_lt_of_locallyFiniteOrder_of_denselyOrdered (lt_of_le_not_le hab hba)
+
+-- TODO: This is nonsense. A locally finite order is never densely ordered
+@[simp]
+theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b := by
+  rw [← coe_nonempty, coe_Ioo, Set.nonempty_Ioo]
+
+-- TODO: This is nonsense. A locally finite order is never densely ordered
+@[simp]
+theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
+  rw [← coe_eq_empty, coe_Ioo, Set.Ioo_eq_empty_iff]
+
+end DenselyOrdered
 
 end LocallyFiniteOrder
 
