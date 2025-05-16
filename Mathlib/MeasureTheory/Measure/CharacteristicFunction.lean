@@ -5,6 +5,8 @@ Authors: Jakob Stiefel, Rémy Degenne, Thomas Zhu
 -/
 import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.Analysis.Fourier.FourierTransform
+import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
 import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
@@ -31,6 +33,9 @@ and `L`.
 * `charFun μ t`: the characteristic function of a measure `μ` at `t` in an inner product space `E`.
   This is defined as `∫ x, exp (⟪x, t⟫ * I) ∂μ`, where `⟪x, t⟫` is the inner product on `E`.
   It is equal to `∫ v, innerProbChar w v ∂P` (see `charFun_eq_integral_innerProbChar`).
+* `probCharDual`: the bounded continuous map `x ↦ exp (L x * I)`, for a continuous linear form `L`.
+* `charFunDual μ L`: the characteristic function of a measure `μ` at `L : Dual ℝ E` in
+  a normed space `E`. This is the integral `∫ v, exp (L v * I) ∂μ`.
 
 ## Main statements
 
@@ -38,14 +43,17 @@ and `L`.
   with respect to two finite measures `P` and `P'` coincide, then `P = P'`.
 * `Measure.ext_of_charFun`: If the characteristic functions `charFun` of two finite measures
   `μ` and `ν` on a complete second-countable inner product space coincide, then `μ = ν`.
+* `Measure.ext_of_charFunDual`: If the characteristic functions `charFunDual` of two finite measures
+  `μ` and `ν` on a Banach space coincide, then `μ = ν`.
 
 -/
 
-open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate
+open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate NormedSpace
 
 namespace BoundedContinuousFunction
 
-variable {E : Type*} [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E F : Type*} [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
+  [SeminormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- The bounded continuous map `x ↦ exp(⟪x, t⟫ * I)`. -/
 noncomputable
@@ -56,6 +64,17 @@ lemma innerProbChar_apply (t x : E) : innerProbChar t x = exp (⟪x, t⟫ * I) :
 
 @[simp]
 lemma innerProbChar_zero : innerProbChar (0 : E) = 1 := by simp [innerProbChar]
+
+/-- The bounded continuous map `x ↦ exp (L x * I)`, for a continuous linear form `L`. -/
+noncomputable
+def probCharDual (L : Dual ℝ F) : F →ᵇ ℂ :=
+  char continuous_probChar (L := isBoundedBilinearMap_apply.symm.toContinuousLinearMap.toLinearMap₂)
+    isBoundedBilinearMap_apply.symm.continuous L
+
+lemma probCharDual_apply (L : Dual ℝ F) (x : F) : probCharDual L x = exp (L x * I) := rfl
+
+@[simp]
+lemma probCharDual_zero : probCharDual (0 : Dual ℝ F) = 1 := by simp [probCharDual]
 
 end BoundedContinuousFunction
 
@@ -154,7 +173,7 @@ lemma norm_one_sub_charFun_le_two [IsProbabilityMeasure μ] : ‖1 - charFun μ 
   _ ≤ 1 + 1 := by simp [norm_charFun_le_one]
   _ = 2 := by norm_num
 
-@[measurability]
+@[fun_prop, measurability]
 lemma stronglyMeasurable_charFun [OpensMeasurableSpace E] [SecondCountableTopology E] [SFinite μ] :
     StronglyMeasurable (charFun μ) :=
   (Measurable.stronglyMeasurable (by fun_prop)).integral_prod_left
@@ -178,12 +197,13 @@ lemma charFun_map_smul [BorelSpace E] [SecondCountableTopology E] (r : ℝ) (t :
 lemma charFun_map_mul {μ : Measure ℝ} (r t : ℝ) :
     charFun (μ.map (r * ·)) t = charFun μ (r * t) := charFun_map_smul r t
 
+variable {E : Type*} [MeasurableSpace E] {μ ν : Measure E} {t : E}
+  [NormedAddCommGroup E] [InnerProductSpace ℝ E] [BorelSpace E] [SecondCountableTopology E]
+
 /-- If the characteristic functions `charFun` of two finite measures `μ` and `ν` on
 a complete second-countable inner product space coincide, then `μ = ν`. -/
-theorem Measure.ext_of_charFun {E : Type*} [MeasurableSpace E]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E] [BorelSpace E]
-    [SecondCountableTopology E] {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (h : charFun μ = charFun ν) :
+theorem Measure.ext_of_charFun [CompleteSpace E]
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : charFun μ = charFun ν) :
     μ = ν := by
   simp_rw [funext_iff, charFun_eq_integral_innerProbChar] at h
   refine ext_of_integral_char_eq continuous_probChar probChar_ne_one (L := bilinFormOfRealInner)
@@ -350,7 +370,8 @@ lemma measure_abs_ge_le_charFun {μ : Measure ℝ} [IsProbabilityMeasure μ] {r 
       integral_charFun_Icc (by positivity)]
     simp
 
-lemma measure_abs_inner_ge_le_charFun [BorelSpace E] {μ : Measure E} [IsProbabilityMeasure μ]
+omit [SecondCountableTopology E] in
+lemma measure_abs_inner_ge_le_charFun {μ : Measure E} [IsProbabilityMeasure μ]
     {a : E} {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |⟪a, x⟫|}
       ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖ := by
@@ -371,5 +392,84 @@ lemma measure_abs_inner_ge_le_charFun [BorelSpace E] {μ : Measure E} [IsProbabi
 end bounds
 
 end InnerProductSpace
+
+section NormedSpace
+
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
+  {μ : Measure E} {ν : Measure F}
+
+/-- The characteristic function of a measure in a normed space, function from `Dual ℝ E` to `ℂ`
+with `charFunDual μ L = ∫ v, exp (L v * I) ∂μ`. -/
+noncomputable
+def charFunDual (μ : Measure E) (L : Dual ℝ E) : ℂ := ∫ v, probCharDual L v ∂μ
+
+lemma charFunDual_apply (L : Dual ℝ E) : charFunDual μ L = ∫ v, exp (L v * I) ∂μ := rfl
+
+lemma charFunDual_eq_charFun_map_one [OpensMeasurableSpace E] (L : Dual ℝ E) :
+    charFunDual μ L = charFun (μ.map L) 1 := by
+  rw [charFunDual_apply]
+  have : ∫ x, cexp (L x * I) ∂μ = ∫ x, cexp (x * I) ∂(μ.map L) := by
+    rw [integral_map]
+    · fun_prop
+    · exact Measurable.aestronglyMeasurable <| by fun_prop
+  rw [this, charFun_apply]
+  simp
+
+lemma charFun_map_eq_charFunDual_smul [OpensMeasurableSpace E] (L : Dual ℝ E) (u : ℝ) :
+    charFun (μ.map L) u = charFunDual μ (u • L) := by
+  rw [charFunDual_apply]
+  have : ∫ x, cexp ((u • L) x * I) ∂μ = ∫ x, cexp (u * x * I) ∂(μ.map L) := by
+    rw [integral_map]
+    · simp
+    · fun_prop
+    · exact Measurable.aestronglyMeasurable <| by fun_prop
+  rw [this, charFun_apply]
+  simp
+
+lemma charFun_eq_charFunDual_toDualMap {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    {mE : MeasurableSpace E} {μ : Measure E} (t : E) :
+    charFun μ t = charFunDual μ (InnerProductSpace.toDualMap ℝ E t) := by
+  simp [charFunDual_apply, charFun_apply, real_inner_comm]
+
+lemma charFunDual_map [OpensMeasurableSpace E] [BorelSpace F] (L : E →L[ℝ] F) (L' : Dual ℝ F) :
+    charFunDual (μ.map L) L' = charFunDual μ (L'.comp L) := by
+  rw [charFunDual_eq_charFun_map_one, charFunDual_eq_charFun_map_one,
+    Measure.map_map (by fun_prop) (by fun_prop)]
+  simp
+
+@[simp]
+lemma charFunDual_dirac [OpensMeasurableSpace E] {x : E} (L : Dual ℝ E) :
+    charFunDual (Measure.dirac x) L = cexp (L x * I) := by
+  rw [charFunDual_apply, integral_dirac]
+
+/-- The characteristic function of a product of measures is a product of
+characteristic functions. -/
+lemma charFunDual_prod [SFinite μ] [SFinite ν] (L : Dual ℝ (E × F)) :
+    charFunDual (μ.prod ν) L
+      = charFunDual μ (L.comp (.inl ℝ E F)) * charFunDual ν (L.comp (.inr ℝ E F)) := by
+  let L₁ : Dual ℝ E := L.comp (.inl ℝ E F)
+  let L₂ : Dual ℝ F := L.comp (.inr ℝ E F)
+  simp_rw [charFunDual_apply, ← L.comp_inl_add_comp_inr, ofReal_add, add_mul,
+    Complex.exp_add]
+  rw [integral_prod_mul (f := fun x ↦ cexp ((L₁ x * I))) (g := fun x ↦ cexp ((L₂ x * I)))]
+
+variable [CompleteSpace E] [BorelSpace E] [SecondCountableTopology E]
+
+/-- If two finite measures have the same characteristic function, then they are equal. -/
+theorem Measure.ext_of_charFunDual {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : charFunDual μ = charFunDual ν) :
+    μ = ν := by
+  refine ext_of_integral_char_eq continuous_probChar probChar_ne_one
+    ?_ ?_ (fun L ↦ funext_iff.mp h L)
+  · intro v hv
+    rw [ne_eq, LinearMap.ext_iff]
+    simp only [ContinuousLinearMap.toLinearMap₂_apply, LinearMap.zero_apply, not_forall]
+    change ∃ L : Dual ℝ E, L v ≠ 0
+    by_contra! h
+    exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)
+  · exact isBoundedBilinearMap_apply.symm.continuous
+
+end NormedSpace
 
 end MeasureTheory

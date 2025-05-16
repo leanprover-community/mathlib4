@@ -62,7 +62,7 @@ theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
     simp [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp, comp_def]
   | succ n IH =>
     rw [iteratedFDerivWithin_succ_eq_comp_left, IH]
-    simp only [Pi.zero_def, comp_def, fderivWithin_const, map_zero]
+    simp only [Pi.zero_def, comp_def, fderivWithin_fun_const, map_zero]
 
 @[simp]
 theorem iteratedFDerivWithin_zero_fun {i : ℕ} :
@@ -1238,7 +1238,7 @@ protected theorem ContDiffAt.fderiv {f : E → F → G} {g : E → F}
 
 @[fun_prop]
 protected theorem ContDiffAt.fderiv_succ {f : E → F → G} {g : E → F}
-    (hf : ContDiffAt 𝕜 (m+1) (Function.uncurry f) (x₀, g x₀)) (hg : ContDiffAt 𝕜 m g x₀) :
+    (hf : ContDiffAt 𝕜 (m + 1) (Function.uncurry f) (x₀, g x₀)) (hg : ContDiffAt 𝕜 m g x₀) :
     ContDiffAt 𝕜 m (fun x => fderiv 𝕜 (f x) (g x)) x₀ :=
   ContDiffAt.fderiv hf hg (le_refl _)
 
@@ -1247,7 +1247,7 @@ theorem ContDiffAt.fderiv_right (hf : ContDiffAt 𝕜 n f x₀) (hmn : m + 1 ≤
     ContDiffAt 𝕜 m (fderiv 𝕜 f) x₀ :=
   ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id hmn
 
-theorem ContDiffAt.fderiv_right_succ (hf : ContDiffAt 𝕜 (n+1) f x₀) :
+theorem ContDiffAt.fderiv_right_succ (hf : ContDiffAt 𝕜 (n + 1) f x₀) :
     ContDiffAt 𝕜 n (fderiv 𝕜 f) x₀ :=
   ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id (le_refl (n+1))
 
@@ -1264,7 +1264,7 @@ protected theorem ContDiff.fderiv {f : E → F → G} {g : E → F}
 
 @[fun_prop]
 protected theorem ContDiff.fderiv_succ {f : E → F → G} {g : E → F}
-    (hf : ContDiff 𝕜 (n+1) <| Function.uncurry f) (hg : ContDiff 𝕜 n g)  :
+    (hf : ContDiff 𝕜 (n + 1) <| Function.uncurry f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) :=
   contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl (n+1))
 
@@ -1278,7 +1278,7 @@ theorem ContDiff.iteratedFDeriv_right {i : ℕ} (hf : ContDiff 𝕜 n f)
   contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.iteratedFDeriv_right hmn
 
 @[fun_prop]
-theorem ContDiff.iteratedFDeriv_right' {i : ℕ} (hf : ContDiff 𝕜 (m+i) f) :
+theorem ContDiff.iteratedFDeriv_right' {i : ℕ} (hf : ContDiff 𝕜 (m + i) f) :
     ContDiff 𝕜 m (iteratedFDeriv 𝕜 i f) :=
   contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.iteratedFDeriv_right (le_refl _)
 
@@ -1296,7 +1296,7 @@ theorem Continuous.fderiv_one {f : E → F → G} {g : E → F}
 
 @[fun_prop]
 protected theorem Differentiable.fderiv_two {f : E → F → G} {g : E → F}
-    (hf : ContDiff 𝕜 2 <| Function.uncurry f) (hg : ContDiff 𝕜 1 g)  :
+    (hf : ContDiff 𝕜 2 <| Function.uncurry f) (hg : ContDiff 𝕜 1 g) :
     Differentiable 𝕜 fun x => fderiv 𝕜 (f x) (g x) :=
   ContDiff.differentiable
     (contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl 2))
@@ -1447,7 +1447,7 @@ theorem ContDiff.differentiable_deriv_two (h : ContDiff 𝕜 2 f₂) : Different
   unfold deriv; fun_prop
 
 @[fun_prop]
-theorem ContDiff.deriv' (h : ContDiff 𝕜 (n+1) f₂) : ContDiff 𝕜 n (deriv f₂) := by
+theorem ContDiff.deriv' (h : ContDiff 𝕜 (n + 1) f₂) : ContDiff 𝕜 n (deriv f₂) := by
   unfold deriv; fun_prop
 
 @[fun_prop]

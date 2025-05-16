@@ -279,7 +279,7 @@ theorem ContDiff.differentiable_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h 
     (mod_cast (lt_add_one m))
 
 @[fun_prop]
-theorem ContDiff.differentiable_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 (m+1) f) :
+theorem ContDiff.differentiable_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 (m + 1) f) :
     Differentiable 𝕜 (iteratedDeriv m f) :=
   h.differentiable_iteratedDeriv m (Nat.cast_lt.mpr m.lt_succ_self)
 
