@@ -114,7 +114,8 @@ private lemma aux (i j : Fin (n + 1))  :
   rw [← inner_add_right]
   by_cases hn : n = 1
   · subst hn
-    have h {i j} (hi : i ≠ j) : affineSpan ℝ (Set.range (s.faceOpposite i).points) = affineSpan ℝ {s.points j} := by
+    have h {i j} (hi : i ≠ j) :
+        affineSpan ℝ (Set.range (s.faceOpposite i).points) = affineSpan ℝ {s.points j} := by
       congr
       rw [range_faceOpposite_points, ← Set.image_singleton]
       refine congr_arg _ ?_
