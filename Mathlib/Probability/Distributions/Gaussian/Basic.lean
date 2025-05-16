@@ -3,9 +3,13 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+<<<<<<< HEAD
 import Mathlib.Probability.Distributions.Gaussian.Real
 import Mathlib.Probability.Moments.Covariance
 import Mathlib.Probability.Moments.CovarianceBilin
+=======
+import Mathlib.Probability.Distributions.Gaussian
+>>>>>>> origin/master
 
 /-!
 # Gaussian distributions in Banach spaces
@@ -66,7 +70,7 @@ end Centered
 
 /-- A measure is Gaussian if its map by every continuous linear form is a real Gaussian measure. -/
 class IsGaussian {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
-  {mE : MeasurableSpace E} (μ : Measure E) : Prop where
+    {mE : MeasurableSpace E} (μ : Measure E) : Prop where
   map_eq_gaussianReal (L : E →L[ℝ] ℝ) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal
 
 /-- A real Gaussian measure is Gaussian. -/
@@ -92,9 +96,8 @@ instance {x : E} : IsGaussian (Measure.dirac x) where
 /-- A Gaussian measure is a probability measure. -/
 instance : IsProbabilityMeasure μ where
   measure_univ := by
-    let L : Dual ℝ E := Nonempty.some inferInstance
-    have : μ.map L Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal L]
-    simpa [Measure.map_apply (by fun_prop : Measurable L) .univ] using this
+    have : μ.map (0 : Dual ℝ E) Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal]
+    simpa [Measure.map_apply (by fun_prop : Measurable (0 : Dual ℝ E)) .univ] using this
 
 lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E)
     (p : ℝ≥0∞) (hp : p ≠ ∞) :
@@ -109,6 +112,30 @@ lemma IsGaussian.integrable_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ 
     Integrable L μ := by
   rw [← memLp_one_iff_integrable]
   exact IsGaussian.memLp_dual μ L 1 (by simp)
+
+/-- The map of a Gaussian measure by a continuous linear map is Gaussian. -/
+instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) where
+  map_eq_gaussianReal L' := by
+    rw [Measure.map_map (by fun_prop) (by fun_prop)]
+    change Measure.map (L'.comp L) μ = _
+    rw [IsGaussian.map_eq_gaussianReal (L'.comp L)]
+    congr
+    · rw [integral_map (by fun_prop) (by fun_prop)]
+      simp
+    · rw [← variance_id_map (by fun_prop)]
+      conv_rhs => rw [← variance_id_map (by fun_prop)]
+      rw [Measure.map_map (by fun_prop) (by fun_prop)]
+      simp
+
+instance isGaussian_map_equiv (L : E ≃L[ℝ] F) : IsGaussian (μ.map L) :=
+  isGaussian_map (L : E →L[ℝ] F)
+
+lemma isGaussian_map_equiv_iff {μ : Measure E} (L : E ≃L[ℝ] F) :
+    IsGaussian (μ.map L) ↔ IsGaussian μ := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  suffices μ = (μ.map L).map L.symm by rw [this]; infer_instance
+  rw [Measure.map_map (by fun_prop) (by fun_prop)]
+  simp
 
 section charFunDual
 
@@ -181,23 +208,6 @@ instance isGaussian_conv [SecondCountableTopology E]
 section Map
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
-
-/-- The map of a Gaussian measure by a continuous linear map is Gaussian. -/
-instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) where
-  map_eq_gaussianReal L' := by
-    rw [Measure.map_map (by fun_prop) (by fun_prop)]
-    change Measure.map (L'.comp L) μ = _
-    rw [IsGaussian.map_eq_gaussianReal (L'.comp L)]
-    congr
-    · rw [integral_map (by fun_prop) (by fun_prop)]
-      simp
-    · rw [← variance_id_map (by fun_prop)]
-      conv_rhs => rw [← variance_id_map (by fun_prop)]
-      rw [Measure.map_map (by fun_prop) (by fun_prop)]
-      simp
-
-instance isGaussian_map_equiv (L : E ≃L[ℝ] F) : IsGaussian (μ.map L) :=
-  isGaussian_map (L : E →L[ℝ] F)
 
 lemma isCentered_conv_map_neg [SecondCountableTopology E] :
     IsCentered (μ ∗ (μ.map (ContinuousLinearEquiv.neg ℝ))) := by
