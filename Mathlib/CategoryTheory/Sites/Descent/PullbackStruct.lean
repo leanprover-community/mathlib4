@@ -79,6 +79,26 @@ include l in
 lemma w : g₁ ≫ f₁ = g₂ ≫ f₂ := by
   simp only [← l.f_p₁, ← l.f_p₂, Category.assoc, h.w]
 
+instance : Subsingleton (h.LiftStruct g₁ g₂ b) where
+  allEq := by
+    rintro ⟨f, f_p₁, f_p₂, _⟩ ⟨f', f'_p₁, f'_p₂, _⟩
+    obtain rfl : f = f' := by
+      apply h.isPullback.hom_ext
+      · rw [f_p₁, f'_p₁]
+      · rw [f_p₂, f'_p₂]
+    rfl
+
+lemma nonempty (w : g₁ ≫ f₁ = g₂ ≫ f₂) (hf₁ : g₁ ≫ f₁ = b) :
+    Nonempty (h.LiftStruct g₁ g₂ b) := by
+  obtain ⟨l, h₁, h₂⟩ := h.isPullback.exists_lift g₁ g₂ w
+  exact ⟨{
+    f := l
+    f_p₁ := h₁
+    f_p₂ := h₂
+    f_p := by
+      rw [← h.hp₁, ← hf₁, reassoc_of% h₁]
+  }⟩
+
 end LiftStruct
 
 end
@@ -86,6 +106,8 @@ end
 variable {X S : C} {f : X ⟶ S} (h : ChosenPullback f f)
 
 abbrev Diagonal := h.LiftStruct (𝟙 X) (𝟙 X) f
+
+instance : Nonempty h.Diagonal := by apply LiftStruct.nonempty <;> aesop
 
 end ChosenPullback
 
