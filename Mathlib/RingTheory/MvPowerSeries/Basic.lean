@@ -834,11 +834,10 @@ theorem coe_X (s : σ) : ((X s : MvPolynomial σ R) : MvPowerSeries σ R) = MvPo
 
 variable (σ R)
 
-theorem coe_injective : Function.Injective (Coe.coe : MvPolynomial σ R → MvPowerSeries σ R) :=
-    fun x y h => by
+theorem coe_injective : Function.Injective ((↑) : MvPolynomial σ R → MvPowerSeries σ R) := by
+  intro x y h
   ext
-  simp_rw [← coeff_coe]
-  congr
+  simp_rw [← coeff_coe, h]
 
 variable {σ R φ ψ}
 
