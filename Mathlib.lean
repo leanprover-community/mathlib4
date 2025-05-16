@@ -2573,6 +2573,7 @@ import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.UnivLE
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Widesubcategory
+import Mathlib.CategoryTheory.WithTerminal
 import Mathlib.CategoryTheory.WithTerminal.Basic
 import Mathlib.CategoryTheory.WithTerminal.Cone
 import Mathlib.CategoryTheory.WithTerminal.FinCategory
