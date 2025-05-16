@@ -192,7 +192,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
     apply tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux hs ht hts h'ts
         hnφ hlφ hiφ h'iφ
     · apply hmg.sub
-      simp only [integrable_indicator_iff ht, integrableOn_const (C := a), ht,
+      simp only [integrable_indicator_iff ht, integrableOn_const_iff (C := a), ht,
         Measure.restrict_apply]
       right
       exact lt_of_le_of_lt (measure_mono inter_subset_left) (h't.lt_top)
@@ -300,8 +300,8 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
           t' ^ n * μ.real (v ∩ s) = ∫ _ in v ∩ s, t' ^ n ∂μ := by simp [mul_comm]
           _ ≤ ∫ y in v ∩ s, c y ^ n ∂μ := by
             apply setIntegral_mono_on _ _ (v_open.measurableSet.inter hs.measurableSet) _
-            · apply integrableOn_const
-              exact lt_of_le_of_lt (measure_mono inter_subset_right) hs.measure_lt_top
+            · refine integrableOn_const (C := t' ^ n) ?_
+              exact (lt_of_le_of_lt (measure_mono inter_subset_right) hs.measure_lt_top).ne
             · exact (I n).mono inter_subset_right le_rfl
             · intro x hx
               exact pow_le_pow_left₀ t'_pos.le (hv hx).le _
