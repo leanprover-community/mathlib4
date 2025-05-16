@@ -7,7 +7,6 @@ Authors: Michael Rothgang
 import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Linter.TextBased
-import Lake.Util.Casing
 import Cli.Basic
 
 /-!
@@ -103,52 +102,6 @@ def undocumentedScripts : IO Nat := do
       please describe the script(s) in 'scripts/README.md'\n  \
       {String.intercalate "," undocumented.toList}"
   return undocumented.size
-
-/-- Verifies that all modules in `modules` are named in `UpperCamelCase`
-(except for explicitly discussed exceptions, which are hard-coded here).
-Return the number of modules violating this. -/
-def modulesNotUpperCamelCase (modules : Array Lean.Name) : IO Nat := do
-  -- Exceptions to this list should be discussed on zulip!
-  let exceptions := [
-    `Mathlib.Analysis.CStarAlgebra.lpSpace,
-    `Mathlib.Analysis.InnerProductSpace.l2Space,
-    `Mathlib.Analysis.Normed.Lp.lpSpace
-  ]
-  -- We allow only names in UpperCamelCase, possibly with a trailing underscore.
-  let badNames := modules.filter fun name ↦
-    let upperCamelName := Lake.toUpperCamelCase name
-    !exceptions.contains name &&
-    (upperCamelName != name && s!"{upperCamelName}_" != name.toString)
-  for bad in badNames do
-    let upperCamelName := Lake.toUpperCamelCase bad
-    let good := if bad.toString.endsWith "_" then s!"{upperCamelName}_" else upperCamelName.toString
-    IO.eprintln s!"error: module name '{bad}' is not in 'UpperCamelCase': it should be '{good}' instead"
-  return badNames.size
-
-/-- Some unit tests for `modulesNotUpperCamelCase` -/
-def testModulesNotUpperCamelCase : IO Unit := do
-  assert!((← modulesNotUpperCamelCase #[]) == 0)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.Fine]) == 0)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.AlsoFine_]) == 0)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.NotFine_.Foo]) == 1)
-
-  assert!((← modulesNotUpperCamelCase #[`bad_module]) == 1)
-  assert!((← modulesNotUpperCamelCase #[`GoodName, `bad_module, `bad_module]) == 2)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.BadModule__]) == 1)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.lowerCase]) == 1)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.snake_case]) == 1)
-
-/--
-info: error: module name 'Mathlib.NotFine_.Foo' is not in 'UpperCamelCase': it should be 'Mathlib.NotFine.Foo' instead
-error: module name 'bad_module' is not in 'UpperCamelCase': it should be 'BadModule' instead
-error: module name 'bad_module' is not in 'UpperCamelCase': it should be 'BadModule' instead
-error: module name 'bad_module' is not in 'UpperCamelCase': it should be 'BadModule' instead
-error: module name 'Mathlib.BadModule__' is not in 'UpperCamelCase': it should be 'Mathlib.BadModule_' instead
-error: module name 'Mathlib.lowerCase' is not in 'UpperCamelCase': it should be 'Mathlib.LowerCase' instead
-error: module name 'Mathlib.snake_case' is not in 'UpperCamelCase': it should be 'Mathlib.SnakeCase' instead
--/
-#guard_msgs in
-#eval testModulesNotUpperCamelCase
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
