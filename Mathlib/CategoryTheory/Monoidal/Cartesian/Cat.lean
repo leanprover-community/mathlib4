@@ -3,12 +3,12 @@ Copyright (c) 2024 Nicolas Rolland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolas Rolland
 -/
-import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 /-!
 # Chosen finite products in `Cat`
 
 This file proves that the cartesian product of a pair of categories agrees with the
-product in `Cat`, and provides the associated `ChosenFiniteProducts` instance.
+product in `Cat`, and provides the associated `CartesianMonoidalCategory` instance.
 -/
 
 universe v u
@@ -37,14 +37,17 @@ def isLimitProdCone (X Y : Cat) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk
       (fun _ ↦ Prod.ext (by simp [← h1]) (by simp [← h2]))
       (fun _ _ _ ↦ by dsimp; rw [← h1, ← h2]; rfl))
 
-instance : ChosenFiniteProducts Cat where
-  product (X Y : Cat) := { cone := X.prodCone Y, isLimit := isLimitProdCone X Y }
-  terminal  := { cone := asEmptyCone chosenTerminal, isLimit := chosenTerminalIsTerminal }
+instance : CartesianMonoidalCategory Cat :=
+  .ofChosenFiniteProducts ⟨_, chosenTerminalIsTerminal⟩ fun X Y ↦
+    { cone := X.prodCone Y, isLimit := isLimitProdCone X Y }
 
-/-- A monoidal instance for Cat is provided through monoidalOfChosenFiniteProducts -/
+instance : BraidedCategory Cat := .ofCartesianMonoidalCategory
+
+/-- A monoidal instance for `Cat` is provided from the `CartesianMonoidalCategory` instance. -/
 example : MonoidalCategory Cat := by infer_instance
 
-/-- A symmetric monoidal instance for Cat is provided through symmetricOfChosenFiniteProducts -/
+/-- A symmetric monoidal instance for `Cat` is provided through
+`CartesianMonoidalCategory.toSymmetricCategory`. -/
 example : SymmetricCategory Cat := by infer_instance
 
 end Cat

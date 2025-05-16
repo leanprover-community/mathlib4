@@ -29,8 +29,8 @@ This defines a vector bundle `TangentBundle` with fibers `TangentSpace`.
 * `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 
 * When `M` is a `C^{n+1}` manifold, `TangentBundle I M` has a `C^n` vector bundle
-structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
-and a `C^n` manifold.
+  structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
+  and a `C^n` manifold.
 -/
 
 
