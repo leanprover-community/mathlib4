@@ -74,6 +74,10 @@ lemma homEquiv_symm_pullHom' ⦃X₁ X₂ : C⦄
     ((F.map gp₁.op.toLoc).adj.toCategory.homEquiv _ _ ).symm (pullHom'' hom g gp₁ gp₂ hgp₁ hgp₂) =
       pullHom (F := F.comp Adj.forget₁)
         ((((F.map p₁.op.toLoc).adj.toCategory).homEquiv _ _ ).symm hom) g gp₁ gp₂ hgp₁ hgp₂ := by
+  rw [Adjunction.homEquiv_counit, Adjunction.homEquiv_counit]
+  dsimp [pullHom'', pullHom]
+  simp only [Functor.map_comp, Category.assoc]
+  -- needs simp lemma for `((F.comp Adj.forget₁).mapComp' _ _ _).hom/inv.app`.
   sorry
 
 end DescentData''
