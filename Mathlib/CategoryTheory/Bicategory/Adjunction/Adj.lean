@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 import Mathlib.CategoryTheory.Bicategory.Opposite
+import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 
 /-!
 # The bicategory of adjunctions in a bicategory
@@ -408,6 +409,13 @@ def gIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj�
   inv := e.hom.τg
   hom_inv_id := by rw [← comp_τg, e.hom_inv_id, id_τg]
   inv_hom_id := by rw [← comp_τg, e.inv_hom_id, id_τg]
+
+lemma comp_forget₁_mapComp' {B : Type*} [Bicategory B] (F : Pseudofunctor B (Adj Cat))
+    {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c) (hfg : f ≫ g = fg) :
+    (F.comp forget₁).mapComp' f g fg hfg = fIso (F.mapComp' f g fg hfg) := by
+  subst hfg
+  ext
+  simp [Pseudofunctor.mapComp'_eq_mapComp, forget₁]
 
 end Adj
 

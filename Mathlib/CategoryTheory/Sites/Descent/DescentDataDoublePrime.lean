@@ -5,6 +5,7 @@ Authors: Joël Riou, Christian Merten
 -/
 import Mathlib.CategoryTheory.Sites.Descent.DescentDataPrime
 import Mathlib.CategoryTheory.Sites.Descent.DescentDataAsCoalgebra
+import Mathlib.CategoryTheory.Sites.Descent.IsStack
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 
 /-!
@@ -21,7 +22,19 @@ namespace Pseudofunctor
 open LocallyDiscreteOpToCat
 
 variable {C : Type*} [Category C] (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) (Adj Cat))
-  {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S}
+
+instance {X Y : C} (f : X ⟶ Y) [IsIso f] (F : Pseudofunctor (LocallyDiscrete C) (Adj Cat)) :
+    (F.map (.toLoc f)).f.IsEquivalence := by
+  change ((F.comp Adj.forget₁).map f.toLoc).IsEquivalence
+  infer_instance
+
+instance (X : LocallyDiscrete C)  (F : Pseudofunctor (LocallyDiscrete C) (Adj Cat)) :
+    (F.map (𝟙 X)).f.IsEquivalence := by
+  obtain ⟨X⟩ := X
+  change (F.map (𝟙 X).toLoc).f.IsEquivalence
+  infer_instance
+
+variable {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S}
   (sq : ∀ i j, ChosenPullback (f i) (f j))
   (sq₃ : ∀ (i₁ i₂ i₃ : ι), ChosenPullback₃ (sq i₁ i₂) (sq i₂ i₃) (sq i₁ i₃))
 
@@ -65,7 +78,7 @@ def pullHom'' ⦃Y₁₂ : C⦄ (p₁₂ : Y₁₂ ⟶ X₁₂) (q₁ : Y₁₂ 
 
 end
 
-lemma homEquiv_symm_pullHom' ⦃X₁ X₂ : C⦄
+lemma homEquiv_symm_pullHom'' ⦃X₁ X₂ : C⦄
     ⦃obj₁ : (F.obj (.mk (op X₁))).obj⦄ ⦃obj₂ : (F.obj (.mk (op X₂))).obj⦄
     ⦃X₁₂ : C⦄ ⦃p₁ : X₁₂ ⟶ X₁⦄ ⦃p₂ : X₁₂ ⟶ X₂⦄
     (hom : obj₁ ⟶ (F.map p₁.op.toLoc).g.obj ((F.map p₂.op.toLoc).f.obj obj₂))
@@ -76,8 +89,10 @@ lemma homEquiv_symm_pullHom' ⦃X₁ X₂ : C⦄
         ((((F.map p₁.op.toLoc).adj.toCategory).homEquiv _ _ ).symm hom) g gp₁ gp₂ hgp₁ hgp₂ := by
   rw [Adjunction.homEquiv_counit, Adjunction.homEquiv_counit]
   dsimp [pullHom'', pullHom]
-  simp only [Functor.map_comp, Category.assoc]
-  -- needs simp lemma for `((F.comp Adj.forget₁).mapComp' _ _ _).hom/inv.app`.
+  simp only [Functor.map_comp, Category.assoc, Adj.comp_forget₁_mapComp', Adj.fIso_hom,
+    Adj.fIso_inv]
+  erw [← NatTrans.naturality_assoc]
+  congr 1
   sorry
 
 end DescentData''
@@ -119,7 +134,7 @@ lemma hom_self_iff_dataEquivDescentData' ⦃i : ι⦄ (δ : (sq i i).Diagonal) :
     rw [← Adjunction.toCategory_unit, ← Adjunction.homEquiv_id,
       Equiv.apply_eq_iff_eq_symm_apply, Equiv.symm_symm]
   · convert Iff.rfl using 2
-    have := homEquiv_symm_pullHom' (hom _ _) δ.f (𝟙 _) (𝟙 _) (by simp) (by simp)
+    have := homEquiv_symm_pullHom'' (hom _ _) δ.f (𝟙 _) (𝟙 _) (by simp) (by simp)
     dsimp at this ⊢
     rw [this]
     apply DescentData'.pullHom'_eq_pullHom <;> simp
@@ -153,7 +168,26 @@ noncomputable def dataEquivCoalgebra
 lemma hom_self_iff_dataEquivCoalgebra ⦃i : ι⦄ (δ : (sq i i).Diagonal):
     pullHom'' (hom i i) δ.f (𝟙 _) (𝟙 _) = (F.map (𝟙 (.mk (op (X i))))).adj.unit.app _ ↔
     dataEquivCoalgebra hom i i ≫ (F.map (f i).op.toLoc).adj.counit.app _ = 𝟙 _ := by
-  sorry
+  obtain ⟨hom, rfl⟩ := dataEquivCoalgebra.symm.surjective hom
+  rw [Equiv.apply_symm_apply]
+  dsimp [dataEquivCoalgebra]
+  rw [Category.id_comp,
+    ← ((F.map (𝟙 (X i)).op.toLoc).adj.toCategory.homEquiv _ _ ).symm.injective.eq_iff,
+    homEquiv_symm_pullHom'']
+  dsimp
+  rw [← Adjunction.toCategory_unit, ← Adjunction.homEquiv_id, Equiv.symm_apply_apply]
+  trans (F.map (𝟙 { as := op (X i) })).f.map
+      (hom i i ≫ (F.map (f i).op.toLoc).adj.counit.app (obj i)) = 𝟙 _ ; swap
+  · rw [← Functor.map_id]
+    have : Functor.Faithful (F.map (𝟙 { as := op (X i) })).f := inferInstance
+    rw [Functor.map_injective_iff]
+  · convert Iff.rfl using 2
+    dsimp [pullHom]
+    simp [Adjunction.homEquiv_counit]
+    erw [← NatTrans.naturality_assoc]
+    congr 1
+    -- the equality no longer involves `hom`
+    sorry
 
 lemma hom_comp_iff_dataEquivCoalgebra (i₁ i₂ i₃ : ι) :
     homComp sq₃ hom i₁ i₂ i₃ = pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _ ↔
