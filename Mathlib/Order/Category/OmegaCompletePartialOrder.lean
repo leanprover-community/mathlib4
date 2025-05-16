@@ -18,8 +18,8 @@ an `OmegaCompletePartialOrder`.
 
 ## Main definitions
 
- * `ωCPO`
-   * an instance of `Category` and `ConcreteCategory`
+* `ωCPO`
+  * an instance of `Category` and `ConcreteCategory`
 
 -/
 
