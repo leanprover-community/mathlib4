@@ -254,6 +254,8 @@ def between (s t : Set V) (G : SimpleGraph V) : SimpleGraph V where
 
 lemma between_adj : (G.between s t).Adj v w ↔ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s) := by rfl
 
+lemma between_le : G.between s t ≤ G := fun _ _ h ↦ h.1
+
 lemma between_comm : G.between s t = G.between t s := by
   ext v w; simp [between_adj, or_comm]
 
