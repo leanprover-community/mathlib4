@@ -536,10 +536,16 @@ lemma prod_indicator_index_eq_prod_attach [Zero M] [CommMonoid N]
   rw [indicator_of_mem]
 
 @[to_additive (attr := simp)]
+lemma prod_attach_index [Zero M] [CommMonoid N]
+    {s : Finset α} (f : α → M) {h : α → M → N} :
+    ∏ x ∈ s.attach, h x (f x) = ∏ x ∈ s, h x (f x) :=
+  prod_attach _ fun x ↦ h x (f x)
+
+@[to_additive]
 lemma prod_indicator_index [Zero M] [CommMonoid N]
     {s : Finset α} (f : α → M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
-    (indicator s (fun x _ ↦ f x)).prod h = ∏ x ∈ s, h x (f x) :=
-  (prod_indicator_index_eq_prod_attach _ h_zero).trans <| prod_attach _ fun x ↦ h x (f x)
+    (indicator s (fun x _ ↦ f x)).prod h = ∏ x ∈ s, h x (f x) := by
+  simp_all
 
 @[to_additive]
 lemma prod_mul_eq_prod_mul_of_exists [Zero M] [CommMonoid N]
