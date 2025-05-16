@@ -127,6 +127,23 @@ lemma integrable_mconv_iff {M F : Type*} [Monoid M] {mM : MeasurableSpace M} [Me
   · fun_prop
   · fun_prop
 
+lemma MeasureTheory.Measure.prod_smul_left {α β : Type*}
+    {_ : MeasurableSpace α} {_ : MeasurableSpace β}
+    {μ : Measure α} {ν : Measure β} [SFinite ν] (c : ℝ≥0∞) :
+    (c • μ).prod ν = c • (μ.prod ν) := by
+  ext s hs
+  rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs]
+  simp
+
+lemma MeasureTheory.Measure.prod_smul_right {α β : Type*}
+    {_ : MeasurableSpace α} {_ : MeasurableSpace β}
+    {μ : Measure α} {ν : Measure β} [SFinite ν] (c : ℝ≥0∞) :
+    μ.prod (c • ν) = c • (μ.prod ν) := by
+  ext s hs
+  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, smul_eq_mul]
+  rw [lintegral_const_mul]
+  exact measurable_measure_prodMk_left hs
+
 end Aux
 
 namespace ProbabilityTheory
@@ -468,11 +485,11 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self'' {μ : Measure E} [IsFin
   have h_rot : (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4))) = μ'.prod μ' := by
     calc (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4)))
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹)
-        • (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) := sorry
+        • (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) := by
+      simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹) • (μ.prod μ) := by rw [h_rot]
     _ = μ'.prod μ' := by
-      rw [hμ'_eq]
-      sorry
+      simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]
   obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq_of_map_rotation_eq_self (μ := μ') h_rot
   refine ⟨C, hC_pos, ?_⟩
   rwa [hμ'_eq, integrable_smul_measure] at hC
