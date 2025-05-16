@@ -34,11 +34,11 @@ This file is a place to collect results which are specific to bimodules.
 
 ## Main definitions
 
- * `Subbimodule.mk`
- * `Subbimodule.smul_mem`
- * `Subbimodule.smul_mem'`
- * `Subbimodule.toSubmodule`
- * `Subbimodule.toSubmodule'`
+* `Subbimodule.mk`
+* `Subbimodule.smul_mem`
+* `Subbimodule.smul_mem'`
+* `Subbimodule.toSubmodule`
+* `Subbimodule.toSubmodule'`
 
 ## Implementation details
 

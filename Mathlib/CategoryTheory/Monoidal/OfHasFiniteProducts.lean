@@ -19,14 +19,10 @@ As this works with either products or coproducts,
 and sometimes we want to think of a different monoidal structure entirely,
 we don't set up either construct as an instance.
 
-## Implementation
-We had previously chosen to rely on `HasTerminal` and `HasBinaryProducts` instead of
-`HasBinaryProducts`, because we were later relying on the definitional form of the tensor product.
-Now that `has_limit` has been refactored to be a `Prop`,
-this issue is irrelevant and we could simplify the construction here.
+## TODO
 
-See `CategoryTheory.monoidalOfChosenFiniteProducts` for a variant of this construction
-which allows specifying a particular choice of terminal object and binary products.
+Replace `monoidalOfHasFiniteProducts` and `symmetricOfHasFiniteProducts`
+with `CartesianMonoidalCategory.ofHasFiniteProducts`.
 -/
 
 
@@ -307,7 +303,7 @@ instance (X Y : C) : IsIso (δ F X Y) := by dsimp [δ_eq]; infer_instance
 
 /-- Promote a finite products preserving functor to a monoidal functor between
 categories equipped with the monoidal category structure given by finite products. -/
-instance : F.Monoidal := Functor.Monoidal.ofOplaxMonoidal F
+instance : F.Monoidal := .ofOplaxMonoidal F
 
 end monoidalOfHasFiniteProducts
 
