@@ -3,11 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.ChosenFiniteProducts.Over
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
 /-!
 # Fibred products of schemes
@@ -696,12 +696,12 @@ lemma diagonal_Spec_map :
 
 end Spec
 
-section ChosenFiniteProducts
+section CartesianMonoidalCategory
 variable {S : Scheme}
 
-instance : ChosenFiniteProducts (Over S) := Over.chosenFiniteProducts _
-instance : BraidedCategory (Over S) := .ofChosenFiniteProducts
+instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
+instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
 
-end ChosenFiniteProducts
+end CartesianMonoidalCategory
 
 end AlgebraicGeometry
