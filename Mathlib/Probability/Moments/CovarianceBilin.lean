@@ -17,7 +17,7 @@ as a continous bilinear form on `Dual ℝ E`.
 
 Let `μ` be a finite measure on a normed space `E` with the Borel σ-algebra. We then define
 
-* `ContinuousLinearMap.toLp`: the function `MemLp.toLp` as a continuous linear map from
+* `Dual.toLp`: the function `MemLp.toLp` as a continuous linear map from
   `Dual 𝕜 E` (for `RCLike 𝕜`) into the space `Lp 𝕜 p μ` for finite `p ≥ 1`.
   This needs a hypothesis `MemLp id p μ`.
 * `covarianceBilin` : covariance of a measure `μ` with `∫ x, ‖x‖^2 ∂μ < ∞` on a separable Banach
@@ -106,7 +106,7 @@ variable {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [OpensMeasurableSpace
 
 /-- `MemLp.toLp` as a continuous linear map from `Dual 𝕜 E` to `Lp 𝕜 p μ`. -/
 noncomputable
-def ContinuousLinearMap.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ)
+def _root_.NormedSpace.Dual.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ)
     (hp : p ≠ ∞) :
     Dual 𝕜 E →L[𝕜] Lp 𝕜 p μ where
   toLinearMap := ContinuousLinearMap.toLpₗ μ p h_Lp
@@ -124,8 +124,7 @@ def ContinuousLinearMap.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] 
     gcongr
 
 @[simp]
-lemma ContinuousLinearMap.toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (hp : p ≠ ∞)
-    (L : Dual 𝕜 E) :
+lemma Dual.toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (hp : p ≠ ∞) (L : Dual 𝕜 E) :
     L.toLp μ p h_Lp hp = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := rfl
 
 end ContinuousLinearMap
@@ -142,13 +141,12 @@ noncomputable
 def centeredCovarianceBilin (μ : Measure E) (h : MemLp id 2 μ) :
     Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ] ℝ :=
   ContinuousLinearMap.bilinearComp (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
-    (ContinuousLinearMap.toLp μ 2 h (by simp)) (ContinuousLinearMap.toLp μ 2 h (by simp))
+    (Dual.toLp μ 2 h (by simp)) (Dual.toLp μ 2 h (by simp))
 
 lemma centeredCovarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     centeredCovarianceBilin μ h L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
   simp only [centeredCovarianceBilin, ContinuousLinearMap.bilinearComp_apply,
-    ContinuousLinearMap.toLp_apply, L2.inner_def,
-    RCLike.inner_apply, conj_trivial]
+    Dual.toLp_apply, L2.inner_def, RCLike.inner_apply, conj_trivial]
   refine integral_congr_ae ?_
   filter_upwards [MemLp.coeFn_toLp (h.continuousLinearMap_comp L₁),
     MemLp.coeFn_toLp (h.continuousLinearMap_comp L₂)] with x hxL₁ hxL₂
