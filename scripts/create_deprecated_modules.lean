@@ -100,13 +100,19 @@ It expects `log` to be a line in the output of `git log --pretty=oneline`:
 it should look like `<hash> <PRdescr>`.
 
 It also expects `msg` to be either `last modified` or `deleted` and
-it returns the pair `(<hash>, <msg> in <PRdescr> <hash>)`, formatted as a collapsible message.
+it returns the pair `(<hash>, <msg> in <PRdescr> <hash> <diff of file wrt previous commit>)`,
+formatted as a collapsible message.
 -/
-def processPrettyOneLine (log msg : String) : String × MessageData :=
+def processPrettyOneLine (log msg fname : String) : IO (String × MessageData) := do
   let hash := log.takeWhile (!·.isWhitespace)
   let PRdescr := (log.drop hash.length).trim
-  (hash, m!"{msg} in " ++
-        .trace {cls := .str .anonymous ("_" ++ hash.take 7)} m!"{PRdescr}" #[m!"{hash}"])
+  let gitDiff := ("git", #["diff", s!"{hash}^...{hash}", "--", fname])
+  let gitDiffCLI := " ".intercalate (gitDiff.1::gitDiff.2.toList)
+  let diff ← IO.Process.run { cmd := gitDiff.1, args := gitDiff.2} <|>
+        pure s!"{hash}: Error in computing '{gitDiffCLI}'"
+  let diffCollapsed := .trace {cls := .str .anonymous s!"{hash}"} m!"{gitDiffCLI}" #[m!"{diff}"]
+  return (hash, m!"{msg} in " ++
+        .trace {cls := .str .anonymous ("_" ++ hash.take 7)} m!"{PRdescr}" #[diffCollapsed])
 
 /--
 `deprecateFilePath fname comment` takes as input
@@ -135,8 +141,8 @@ def deprecateFilePath (fname : String) (comment : Option String) :
   let [deleted, lastModified] := log.trim.splitOn "\n" |
     throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2! \
       Please make sure the file {fname} actually exists"
-  let (_deleteHash, deletedMsg) := processPrettyOneLine deleted "deleted"
-  let (modifiedHash, modifiedMsg) := processPrettyOneLine lastModified "last modified"
+  let (_deleteHash, deletedMsg) ← processPrettyOneLine deleted "deleted" fname
+  let (modifiedHash, modifiedMsg) ← processPrettyOneLine lastModified "last modified" fname
   msgs := msgs.push <| m!"The file {fname} was\n"
   msgs := msgs.push modifiedMsg
   msgs := msgs.push deletedMsg
