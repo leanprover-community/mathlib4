@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Group.Subgroup.Order
+import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
@@ -70,7 +71,7 @@ lemma genLTOne_val_eq_genLTOne : ((⊤ : Subgroup H).genLTOne) = H.genLTOne := b
     use k
     norm_cast
     rw [hk]
-  have h2 := Subgroup.genLTOne_zpowers_eq_top (G := G) (H := H)
+  have h2 := genLTOne_zpowers_eq_top (G := G) (H := H)
   replace h2 (x : G) : x ∈ H → ∃ k : ℤ, γ ^ k = x := by
     rw [← Subgroup.mem_zpowers_iff (g := γ) (h := x)]
     intro h_mem
@@ -88,7 +89,7 @@ lemma genLTOne_val_eq_genLTOne : ((⊤ : Subgroup H).genLTOne) = H.genLTOne := b
       obtain ⟨k, hk⟩ := h1 y hy
       rw [Subgroup.mem_zpowers_iff]
       use k
-  rw [zpowers_eq_zpowers_iff] at main
+  rw [Subgroup.zpowers_eq_zpowers_iff] at main
   rcases main with _ | h
   · assumption
   have hγ_lt := H.genLTOne_lt_one
@@ -116,7 +117,7 @@ lemma genLTOne_lt_one : genLTOne G < 1 := (⊤ : Subgroup G).genLTOne_lt_one
 lemma genLTOne_unique (g : G) : g < 1 ∧ Subgroup.zpowers g = ⊤ → g = genLTOne G := by
   rintro ⟨hg_lt, hg_top⟩
   rw [← (⊤ : Subgroup G).genLTOne_zpowers_eq_top] at hg_top
-  rcases zpowers_eq_zpowers_iff.mp hg_top with _ | h
+  rcases Subgroup.zpowers_eq_zpowers_iff.mp hg_top with _ | h
   · assumption
   rw [← one_lt_inv', h] at hg_lt
   exact (not_lt_of_lt hg_lt <| Subgroup.genLTOne_lt_one _).elim
