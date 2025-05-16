@@ -31,10 +31,10 @@ It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMono
 ## TODO
 
 * In a Banach star algebra without a well-defined square root, the natural ordering is given by the
-positive cone which is the _closure_ of the sums of elements `star r * r`. A weaker version of
-`StarOrderedRing` could be defined for this case (again, see
-[*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
-the advantage of not requiring a topology.
+  positive cone which is the _closure_ of the sums of elements `star r * r`. A weaker version of
+  `StarOrderedRing` could be defined for this case (again, see
+  [*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
+  the advantage of not requiring a topology.
 -/
 
 open Set

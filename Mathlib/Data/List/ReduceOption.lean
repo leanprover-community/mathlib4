@@ -34,7 +34,7 @@ theorem reduceOption_map {l : List (Option α)} {f : α → β} :
   induction' l with hd tl hl
   · simp only [reduceOption_nil, map_nil]
   · cases hd <;>
-      simpa [Option.map_some', map, eq_self_iff_true, reduceOption_cons_of_some] using hl
+      simpa [Option.map_some, map, eq_self_iff_true, reduceOption_cons_of_some] using hl
 
 theorem reduceOption_append (l l' : List (Option α)) :
     (l ++ l').reduceOption = l.reduceOption ++ l'.reduceOption :=
@@ -102,7 +102,7 @@ theorem reduceOption_length_eq {l : List (Option α)} :
 
 theorem length_eq_reduceOption_length_add_filter_none {l : List (Option α)} :
     l.length = l.reduceOption.length + (l.filter Option.isNone).length := by
-  simp_rw [reduceOption_length_eq, l.length_eq_length_filter_add Option.isSome, Option.bnot_isSome]
+  simp_rw [reduceOption_length_eq, l.length_eq_length_filter_add Option.isSome, Option.not_isSome]
 
 theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
   rw [length_eq_reduceOption_length_add_filter_none]

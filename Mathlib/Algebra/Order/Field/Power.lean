@@ -85,7 +85,9 @@ lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd
   | Int.ofNat m => by
     simp [pow_eq_neg_pow_iff, hb]
   | Int.negSucc m => by
-    simp [← neg_ofNat_succ, -Nat.cast_add, -Int.natCast_add, neg_inv, pow_eq_neg_pow_iff, hb]
+    simp only [← neg_ofNat_succ, zpow_neg, inv_pow, ← inv_neg, pow_eq_neg_pow_iff hb, inv_inj,
+      zpow_natCast]
+    simp [parity_simps]
 
 lemma zpow_eq_neg_one_iff₀ : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
   simpa using zpow_eq_neg_zpow_iff₀ (α := α) one_ne_zero

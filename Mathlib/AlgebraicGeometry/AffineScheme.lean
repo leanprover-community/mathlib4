@@ -168,15 +168,15 @@ instance Spec_essSurj : Spec.EssSurj := Functor.EssSurj.toEssImage (F := _)
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
 @[simps!]
 def forgetToScheme : AffineScheme ⥤ Scheme :=
-  Scheme.Spec.essImageInclusion
+  Scheme.Spec.essImage.ι
 
 /-! We copy over instances from `Scheme.Spec.essImageInclusion`. -/
 
 instance forgetToScheme_full : forgetToScheme.Full :=
-  inferInstanceAs Scheme.Spec.essImageInclusion.Full
+  inferInstanceAs Scheme.Spec.essImage.ι.Full
 
 instance forgetToScheme_faithful : forgetToScheme.Faithful :=
-  inferInstanceAs Scheme.Spec.essImageInclusion.Faithful
+  inferInstanceAs Scheme.Spec.essImage.ι.Faithful
 
 /-- The global section functor of an affine scheme. -/
 def Γ : AffineSchemeᵒᵖ ⥤ CommRingCat :=
@@ -272,18 +272,12 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
 
 theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     Opens.IsBasis (Set.range (X.basicOpen : Γ(X, ⊤) → X.Opens)) := by
-  delta Opens.IsBasis
-  convert PrimeSpectrum.isBasis_basic_opens.isInducing
+  convert PrimeSpectrum.isBasis_basic_opens.of_isInducing
     (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).isInducing using 1
-  ext
-  simp only [Set.mem_image, exists_exists_eq_and]
-  constructor
-  · rintro ⟨_, ⟨x, rfl⟩, rfl⟩
-    refine ⟨_, ⟨_, ⟨x, rfl⟩, rfl⟩, ?_⟩
-    exact congr_arg Opens.carrier (Scheme.toSpecΓ_preimage_basicOpen _ _)
-  · rintro ⟨_, ⟨_, ⟨x, rfl⟩, rfl⟩, rfl⟩
-    refine ⟨_, ⟨x, rfl⟩, ?_⟩
-    exact congr_arg Opens.carrier (Scheme.toSpecΓ_preimage_basicOpen _ _).symm
+  ext V
+  simp only [Set.mem_range, exists_exists_eq_and, Set.mem_setOf,
+    ← Opens.coe_inj (V := V), ← Scheme.toSpecΓ_preimage_basicOpen]
+  rfl
 
 /-- The canonical map `U ⟶ Spec Γ(X, U)` for an open `U ⊆ X`. -/
 noncomputable
