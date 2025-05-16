@@ -33,45 +33,79 @@ open Filter
 open scoped Topology ENNReal InnerProductSpace
 
 -- todo: what is the correct generality and place for this lemma?
-lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [Nonempty α] [ConditionallyCompleteLattice α]
-    {u : ℕ → α → ℝ≥0∞}
-    (h_all : ∀ n, Tendsto (u n) atTop (𝓝 0))
-    (h_limsup : Tendsto (fun r : α ↦ limsup (fun n ↦ u n r) atTop) atTop (𝓝 0))
+lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice α] {β : Type*}
+    [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {ι : Type*}
+    {u : ι → α → β} {c : β}
+    (h_all : ∀ n, Tendsto (u n) atTop (𝓝 c))
+    (h_limsup : Tendsto (fun r : α ↦ limsup (fun n ↦ u n r) cofinite) atTop (𝓝 c))
     (h_anti : ∀ n, Antitone (u n)) :
-    Tendsto (fun r : α ↦ ⨆ n, u n r) atTop (𝓝 0) := by
-  simp_rw [ENNReal.tendsto_atTop_zero] at h_limsup h_all ⊢
-  intro ε hε
-  by_cases hε_top : ε = ∞
-  · exact ⟨Nonempty.some inferInstance, fun _ _ ↦ by simp [hε_top]⟩
-  simp only [gt_iff_lt, ge_iff_le] at h_limsup h_all hε
-  obtain ⟨r, h⟩ := h_limsup (ε / 2) (ENNReal.half_pos hε.ne')
-  have h' x (hx : r ≤ x) y (hy : ε / 2 < y) : ∀ᶠ n in atTop, u n x < y := by
-    specialize h x hx
-    rw [limsup_le_iff] at h
-    exact h y hy
-  replace h' : ∀ x, r ≤ x → ∀ᶠ n in atTop, u n x < ε :=
-    fun x hx ↦ h' x hx ε (ENNReal.half_lt_self hε.ne' hε_top)
-  simp only [eventually_atTop, ge_iff_le] at h'
-  obtain ⟨N, h⟩ := h' r le_rfl
-  replace h_all : ∀ ε > 0, ∀ n, ∃ N, ∀ n_1 ≥ N, u n n_1 ≤ ε := fun ε hε n ↦ h_all n ε hε
-  choose rs hrs using h_all ε hε
-  refine ⟨r ⊔ ⨆ n : Finset.range N, rs n, fun v hv ↦ ?_⟩
+    Tendsto (fun r : α ↦ ⨆ n, u n r) atTop (𝓝 c) := by
+  classical
+  rcases isEmpty_or_nonempty ι with hι | ⟨⟨n0⟩⟩
+  · simpa using h_limsup
+  refine tendsto_order.2 ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
+  · filter_upwards [] with r
+    have : c ≤ u n0 r := Antitone.le_of_tendsto (h_anti n0) (h_all n0) r
+    exact hb.trans_le (this.trans (le_iSup_iff.mpr fun b a ↦ a n0))
+  let b' := if h : (Set.Ioo c b).Nonempty then h.some else c
+  have hb'b : b' < b := by
+    simp only [b']
+    split_ifs with h
+    exacts [h.some_mem.2, hb]
+  have : ∀ᶠ r in atTop, limsup (fun n ↦ u n r) cofinite ≤ b' := by
+    simp only [b']
+    split_ifs with h
+    · filter_upwards [(tendsto_order.1 h_limsup).2 _ h.some_mem.1] with r hr
+      exact hr.le
+    · filter_upwards [(tendsto_order.1 h_limsup).2 b hb] with r hr
+      contrapose! h
+      exact ⟨limsup (fun n ↦ u n r) cofinite, h, hr⟩
+  obtain ⟨r, hr⟩ : ∃ r, ∀ s ≥ r, limsup (fun n ↦ u n s) cofinite ≤ b' := by simpa using this
+  obtain ⟨b'', hb''b, hb''⟩ : ∃ b'' ∈ Set.Ico b' b, ∀ᶠ n in cofinite, u n r ≤ b'' := by
+    rcases Set.eq_empty_or_nonempty (Set.Ioo b' b) with h | ⟨b'', hb'b'', hb''b⟩
+    · refine ⟨b', ⟨le_rfl, hb'b⟩, ?_⟩
+      have := hr r le_rfl
+      rw [limsup_le_iff] at this
+      filter_upwards [this b hb'b] with n hn
+      contrapose! h
+      exact ⟨u n r, h, hn⟩
+    · refine ⟨b'', ⟨hb'b''.le, hb''b⟩ , ?_⟩
+      have := hr r le_rfl
+      rw [limsup_le_iff] at this
+      filter_upwards [this b'' hb'b''] with n hn using hn.le
+  have A (n) : ∃ r, ∀ s ≥ r, u n s ≤ b'' := by
+    suffices ∀ᶠ r in atTop, u n r ≤ b' by
+      simp only [eventually_atTop, ge_iff_le] at this
+      rcases this with ⟨r, hr⟩
+      exact ⟨r, fun s hs ↦ (hr s hs).trans hb''b.1⟩
+    simp only [b']
+    split_ifs with h
+    · filter_upwards [(tendsto_order.1 (h_all n)).2 _ h.some_mem.1] with r hr
+      exact hr.le
+    · filter_upwards [(tendsto_order.1 (h_all n)).2 b hb] with r hr
+      contrapose! h
+      exact ⟨u n r, h, hr⟩
+  choose rs hrs using A
+  simp only [eventually_atTop, ge_iff_le]
+  refine ⟨r ⊔ ⨆ n : {n | b'' < u n r}, rs n, fun v hv ↦ ?_⟩
+  apply lt_of_le_of_lt _ hb''b.2
   simp only [Set.mem_setOf_eq, iSup_exists, iSup_le_iff, forall_apply_eq_imp_iff]
   intro n
-  by_cases hn : n < N
+  by_cases hn : b'' < u n r
   · refine hrs n v ?_
     calc rs n
-    _ = rs (⟨n, by simp [hn]⟩ : Finset.range N) := rfl
-    _ ≤ ⨆ n : Finset.range N, rs n := by
-      refine le_ciSup (f := fun (x : Finset.range N) ↦ rs x) ?_ (⟨n, by simp [hn]⟩ : Finset.range N)
-      exact Finite.bddAbove_range _
-    _ ≤ r ⊔ ⨆ n : Finset.range N, rs n := le_sup_right
+    _ = rs (⟨n, by simp [hn]⟩ : {n | b'' < u n r}) := rfl
+    _ ≤ ⨆ n : {n | b'' < u n r}, rs n := by
+      refine le_ciSup (f := fun (x : {n | b'' < u n r}) ↦ rs x) ?_
+        (⟨n, by simp [hn]⟩ : {n | b'' < u n r})
+      have : Finite {n | b'' < u n r} := by simpa using hb''
+      apply Finite.bddAbove_range _
+    _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_right
     _ ≤ v := hv
-  · have hn_le : N ≤ n := not_lt.mp hn
-    specialize h n hn_le
-    refine (h_anti n ?_).trans h.le
+  · simp at hn
+    refine (h_anti n ?_).trans hn
     calc r
-    _ ≤ r ⊔ ⨆ n : Finset.range N, rs n := le_sup_left
+    _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_left
     _ ≤ v := hv
 
 namespace MeasureTheory
@@ -141,10 +175,12 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt
     IsTightMeasureSet (Set.range μ) := by
   refine isTightMeasureSet_of_tendsto_measure_norm_gt ?_
   simp_rw [iSup_range]
-  refine tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) h fun n u v huv ↦ ?_
+  refine tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) ?_ fun n u v huv ↦ ?_
   · have h_tight : IsTightMeasureSet {μ n} := isTightMeasureSet_singleton
     rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h_tight
     simpa using h_tight
+  · convert h
+    exact Nat.cofinite_eq_atTop
   · refine measure_mono fun x hx ↦ ?_
     simp only [Set.mem_setOf_eq] at hx ⊢
     exact huv.trans_lt hx
@@ -246,7 +282,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner
     IsTightMeasureSet (Set.range μ) := by
   refine isTightMeasureSet_of_inner_tendsto 𝕜 fun z ↦ ?_
   simp_rw [iSup_range]
-  refine tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) (h z) fun n u v huv ↦ ?_
+  refine tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) ?_ fun n u v huv ↦ ?_
   · have h_tight : IsTightMeasureSet {(μ n).map (fun x ↦ ⟪z, x⟫_𝕜)} := isTightMeasureSet_singleton
     rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h_tight
     have h_map r : (μ n).map (fun x ↦ ⟪z, x⟫_𝕜) {x | r < ‖x‖} = μ n {x | r < ‖⟪z, x⟫_𝕜‖} := by
@@ -254,6 +290,8 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner
       · simp
       · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
     simpa [h_map] using h_tight
+  · convert h z
+    exact Nat.cofinite_eq_atTop
   · exact measure_mono fun x hx ↦ huv.trans_lt hx
 
 /-- In a finite-dimensional inner product space, the range of a sequence of measures
