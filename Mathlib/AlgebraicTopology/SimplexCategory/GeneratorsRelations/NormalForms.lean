@@ -217,8 +217,8 @@ lemma simplicialEvalσ_of_isAdmissible (hL : IsAdmissible m L)
       Functor.map_comp, eqToHom_map, toSimplexCategory_map_σ, SimplexCategory.σ,
       SimplexCategory.mkHom, SimplexCategory.comp_toOrderHom, SimplexCategory.Hom.toOrderHom_mk,
       eqToHom_toOrderHom_eq_cast, Nat.add_eq, Nat.succ_eq_add_one, OrderHom.comp_coe,
-      OrderHom.coe_mk, OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding,
-      Function.comp_apply, Fin.predAbove, simplicialEvalσ, ← this]
+      OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding, Function.comp_apply,
+      Fin.predAboveOrderHom_coe, Fin.predAbove, simplicialEvalσ, ← this]
     split_ifs with h₁ h₂ h₂
     · generalize_proofs _ pf
       rw [Fin.castOrderIso_apply pf ⟨j, hj⟩] at h₁
