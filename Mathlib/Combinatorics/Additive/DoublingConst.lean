@@ -120,16 +120,15 @@ end Fintype
 
 variable {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
 
+-- we can't use `to_additive`, because it tries to translate `/` to `-`
 lemma cast_addConst (A B : Finset G') : (σ[A, B] : 𝕜) = #(A + B) / #A := by
   simp [addConst]
 
 lemma cast_subConst (A B : Finset G') : (δ[A, B] : 𝕜) = #(A - B) / #A := by
   simp [subConst]
 
-@[to_additive existing]
 lemma cast_mulConst (A B : Finset G) : (σₘ[A, B] : 𝕜) = #(A * B) / #A := by simp [mulConst]
 
-@[to_additive existing]
 lemma cast_divConst (A B : Finset G) : (δₘ[A, B] : 𝕜) = #(A / B) / #A := by simp [divConst]
 
 lemma cast_addConst_mul_card (A B : Finset G') : (σ[A, B] * #A : 𝕜) = #(A + B) := by
@@ -144,19 +143,19 @@ lemma card_mul_cast_addConst (A B : Finset G') : (#A * σ[A, B] : 𝕜) = #(A + 
 lemma card_mul_cast_subConst (A B : Finset G') : (#A * δ[A, B] : 𝕜) = #(A - B) := by
   norm_cast; exact card_mul_subConst _ _
 
-@[to_additive (attr := simp) existing cast_addConst_mul_card]
+@[simp]
 lemma cast_mulConst_mul_card (A B : Finset G) : (σₘ[A, B] * #A : 𝕜) = #(A * B) := by
   norm_cast; exact mulConst_mul_card _ _
 
-@[to_additive (attr := simp) existing cast_subConst_mul_card]
+@[simp]
 lemma cast_divConst_mul_card (A B : Finset G) : (δₘ[A, B] * #A : 𝕜) = #(A / B) := by
   norm_cast; exact divConst_mul_card _ _
 
-@[to_additive (attr := simp) existing card_mul_cast_addConst]
+@[simp]
 lemma card_mul_cast_mulConst (A B : Finset G) : (#A * σₘ[A, B] : 𝕜) = #(A * B) := by
   norm_cast; exact card_mul_mulConst _ _
 
-@[to_additive (attr := simp) existing card_mul_cast_subConst]
+@[simp]
 lemma card_mul_cast_divConst (A B : Finset G) : (#A * δₘ[A, B] : 𝕜) = #(A / B) := by
   norm_cast; exact card_mul_divConst _ _
 

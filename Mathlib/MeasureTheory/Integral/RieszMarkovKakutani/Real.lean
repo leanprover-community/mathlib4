@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto, Oliver Butterley
 -/
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Order.Interval.Set.Union
 
 /-!
@@ -66,7 +66,7 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
   obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ)
     ⟨tsupport f, f.hasCompactSupport⟩ (Real.toNNReal_pos.mpr hε)
   simp_rw [NNReal.val_eq_coe, Real.toNNReal_coe] at hg
-  refine le_of_lt (lt_of_le_of_lt (monotone_of_nonneg hΛ ?_) hg.2)
+  refine (monotone_of_nonneg hΛ ?_).trans hg.2.le
   intro x
   by_cases hx : x ∈ tsupport f
   · simpa using le_trans (hf x).2 (hg.1 x hx)
@@ -75,7 +75,7 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
 /-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`. -/
 lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : Set X}
     (hK : IsCompact K) (hfK : ∀ x ∈ K, f x = 1) : rieszMeasure hΛ K ≤ ENNReal.ofReal (Λ f) := by
-  rw [show K = Compacts.mk K hK by exact rfl, rieszMeasure,
+  rw [← Compacts.coe_mk K hK, rieszMeasure,
     Content.measure_eq_content_of_regular _ (contentRegular_rieszContent (toNNRealLinear Λ hΛ))]
   apply ENNReal.coe_le_iff.mpr
   intro p hp
@@ -155,7 +155,7 @@ lemma exists_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X)
       _ ≤ μ.measure V₁ := by simp [measure_mono]
       _ = μ.outerMeasure V₁ := Content.measure_apply μ (V₁.2.measurableSet)
       _ ≤ μ.outerMeasure E + ε.toNNReal := hV₁.2
-      _ = _ := by rw [Content.measure_apply μ hμ']; congr;
+      _ = _ := by rw [Content.measure_apply μ hμ', ENNReal.ofNNReal_toNNReal]
 
 /-- Choose `N` sufficiently large such that a particular quantity is small. -/
 private lemma exists_nat_large (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
@@ -183,13 +183,13 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
       (HasCompactSupport.isCompact_range f.2 f.1.2)).2.subset_ball_lt 0 0
     exact ⟨-r, r, by linarith, hr.2.trans_eq (by simp [Real.ball_eq_Ioo])⟩
   -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
-  obtain ⟨N, hN, hε'⟩ := exists_nat_large (b - a) (2 * (μ K).toReal + |a| + b) hε
+  obtain ⟨N, hN, hε'⟩ := exists_nat_large (b - a) (2 * μ.real K + |a| + b) hε
   let ε' := (b - a) / N
-  replace hε' : 0 < ε' ∧  ε' * (2 * (μ K).toReal + |a| + b + ε') ≤ ε :=
+  replace hε' : 0 < ε' ∧  ε' * (2 * μ.real K + |a| + b + ε') ≤ ε :=
     ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
   -- Take a partition of the support of `f` into sets `E` by partitioning the range.
-  obtain ⟨E, hE⟩ := range_cut_partition f a hε'.1 N (by field_simp [ε', ← mul_div_assoc,
-    mul_div_cancel_left₀, hab.2])
+  obtain ⟨E, hE⟩ := range_cut_partition f a hε'.1 N <| by
+    field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀, hab.2]
   -- Introduce notation for the partition of the range.
   let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
   -- The measure of each `E n` is finite.
@@ -198,7 +198,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     refine lt_top_iff_ne_top.mp ?_
     apply lt_of_le_of_lt <| measure_mono h
     dsimp [μ]
-    rw [rieszMeasure, show f = f.toFun by rfl, Content.measure_apply _ f.2.measurableSet]
+    rw [rieszMeasure, ← coe_toContinuousMap, ← ContinuousMap.toFun_eq_coe,
+      Content.measure_apply _ f.2.measurableSet]
     exact Content.outerMeasure_lt_top_of_isCompact _ f.2
   -- Define sets `V` which are open approximations to the sets `E`
   obtain ⟨V, hV⟩ : ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε') ∧
@@ -210,9 +211,9 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     choose V hV using fun n ↦ exists_open_approx f h_ε' (E n) (h' n) (hE.2.2.2 n) (h n)
     exact ⟨V, hV⟩
   -- Define a partition of unity subordinated to the sets `V`
-  obtain ⟨g, hg⟩ : ∃ (g : Fin N → C_c(X, ℝ)), (∀ n, tsupport (g n) ⊆ (V n).carrier) ∧
-    EqOn (∑ n : Fin N, (g n)) 1 (tsupport f.toFun) ∧ (∀ n x, (g n) x ∈ Icc 0 1) ∧
-    ∀ n, HasCompactSupport (g n) := by
+  obtain ⟨g, hg⟩ : ∃ g : Fin N → C_c(X, ℝ), (∀ n, tsupport (g n) ⊆ (V n).carrier) ∧
+      EqOn (∑ n : Fin N, (g n)) 1 (tsupport f.toFun) ∧ (∀ n x, (g n) x ∈ Icc 0 1) ∧
+      ∀ n, HasCompactSupport (g n) := by
     have : tsupport f ⊆ ⋃ n, (V n).carrier := calc
       _ = ⋃ j, E j := hE.1
       _ ⊆ _ := by gcongr with n; exact (hV n).1
@@ -224,15 +225,15 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     _ = ∑ n, Λ (g n • f) := by simp
     _ ≤ ∑ n, Λ ((y n + ε') • g n) := ?_
     _ = ∑ n, (y n + ε') * Λ (g n) := by simp
-    -- That `y n + ε'` can be negative is bad in the inequalities so we artifically include `|a|`.
+    -- That `y n + ε'` can be negative is bad in the inequalities so we artificially include `|a|`.
     _ = ∑ n, (|a| + y n + ε') * Λ (g n) - |a| * ∑ n, Λ (g n) :=
       by simp [add_assoc, add_mul |a|, Finset.sum_add_distrib, Finset.mul_sum]
-    _ ≤ ∑ n, (|a| + y n + ε') * ((μ (E n)).toReal + ε' / N) - |a| * ∑ n, Λ (g n) := ?_
-    _ ≤ ∑ n, (|a| + y n + ε') * ((μ (E n)).toReal + ε' / N) - |a| * (μ K).toReal := ?_
-    _ = ∑ n, (y n - ε') * (μ (E n)).toReal +
-      2 * ε' * (μ K).toReal + ε' / N * ∑ n, (|a| + y n + ε') := ?_
-    _ ≤ ∫ (x : X), f x ∂μ + 2 * ε' * (μ K).toReal + ε' / N * ∑ n, (|a| + y n + ε') := ?_
-    _ ≤ ∫ (x : X), f x ∂μ + ε' * (2 * (μ K).toReal + |a| + b + ε') := ?_
+    _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * ∑ n, Λ (g n) := ?_
+    _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * μ.real K := ?_
+    _ = ∑ n, (y n - ε') * μ.real (E n) +
+      2 * ε' * μ.real K + ε' / N * ∑ n, (|a| + y n + ε') := ?_
+    _ ≤ ∫ (x : X), f x ∂μ + 2 * ε' * μ.real K + ε' / N * ∑ n, (|a| + y n + ε') := ?_
+    _ ≤ ∫ (x : X), f x ∂μ + ε' * (2 * μ.real K + |a| + b + ε') := ?_
     _ ≤ ∫ (x : X), f x ∂μ + ε := by simp [hε'.2]
   · -- Equality since `∑ i : Fin N, (g i)` is equal to unity on the support of `f`
     congr; ext x
@@ -258,7 +259,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
           (le_of_lt hε'.1) <| Left.add_nonneg (Nat.cast_nonneg' n) (zero_le_one' ℝ)
         _ ≤ _ := by rw [← add_assoc, le_add_iff_nonneg_right]; exact le_of_lt hε'.1
     · calc
-        _ ≤ (μ (V n)).toReal := by
+        _ ≤ μ.real (V n) := by
           apply (ENNReal.ofReal_le_iff_le_toReal _).mp
           · exact le_rieszMeasure_tsupport_subset hΛ (fun x ↦ hg.2.2.1 n x) (hg.1 n)
           · rw [← lt_top_iff_ne_top]
@@ -272,19 +273,20 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
           · exact ENNReal.ofReal_ne_top
   · -- Use that `μ K ≤ Λ (∑ n, g n)`
     gcongr
-    rw [Eq.symm (map_sum Λ g _)]
+    rw [← map_sum Λ g _]
     have h x : 0 ≤ (∑ n, g n) x := by simpa using Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
     apply ENNReal.toReal_le_of_le_ofReal
     · exact hΛ (∑ n, g n) (fun x ↦ h x)
     · have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
       refine rieszMeasure_le_of_eq_one hΛ h f.2 h'
   · -- Rearrange the sums
-    have (n : Fin N) : (|a| + y n + ε') * (μ (E n)).toReal =
-        (|a| + 2 * ε') * (μ (E n)).toReal + (y n - ε') * (μ (E n)).toReal := by linarith
+    have (n : Fin N) : (|a| + y n + ε') * μ.real (E n) =
+        (|a| + 2 * ε') * μ.real (E n) + (y n - ε') * μ.real (E n) := by linarith
     simp_rw [mul_add, this]
-    have : ∑ i, (μ (E i)).toReal = (μ K).toReal := by
+    have : ∑ i, μ.real (E i) = μ.real K := by
       suffices h : μ K = ∑ i, (μ (E i)) by
-        rw [h]; exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ hE' n
+        simp only [measureReal_def, h]
+        exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ hE' n
       dsimp [K]; rw [hE.1]
       rw [measure_iUnion (fun m n hmn ↦ hE.2.1 trivial trivial hmn) hE.2.2.2]
       exact tsum_fintype fun b ↦ μ (E b)
@@ -292,7 +294,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     linarith
   · -- Use that `y n - ε' ≤ f x` on `E n`
     gcongr
-    have h : ∀ n, (y n - ε') * (μ (E n)).toReal ≤ ∫ x in (E n), f x ∂μ := by
+    have h : ∀ n, (y n - ε') * μ.real (E n) ≤ ∫ x in (E n), f x ∂μ := by
       intro n
       apply setIntegral_ge_of_const_le (hE.2.2.2 n) (hE' n)
       · intro x hx

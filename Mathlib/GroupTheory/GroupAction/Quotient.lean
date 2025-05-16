@@ -104,29 +104,6 @@ theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸
   rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out,
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
 
-@[to_additive]
-alias Quotient.mk_smul_out' := Quotient.mk_smul_out
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated Quotient.mk_smul_out (since := "2024-10-19")] Quotient.mk_smul_out'
-attribute [deprecated AddAction.Quotient.mk_vadd_out (since := "2024-10-19")]
-AddAction.Quotient.mk_vadd_out'
-
-@[to_additive]
-alias Quotient.coe_smul_out' := Quotient.coe_smul_out
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated Quotient.coe_smul_out (since := "2024-10-19")] Quotient.coe_smul_out'
-attribute [deprecated AddAction.Quotient.coe_vadd_out (since := "2024-10-19")]
-AddAction.Quotient.coe_vadd_out'
-
-
-@[deprecated (since := "2024-10-19")]
-alias _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem :=
-  QuotientGroup.out_conj_pow_minimalPeriod_mem
-
 end QuotientAction
 
 open QuotientGroup
@@ -324,11 +301,8 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
     let f : Quotient (rightRel H) → orbitRel.Quotient H β :=
       fun a ↦ Quotient.liftOn' a (fun g ↦ ⟦g • b⟧) fun g₁ g₂ r ↦ by
         replace r := Setoid.symm' _ r
-        change (rightRel H).r _ _ at r
         rw [rightRel_eq] at r
-        simp only [Quotient.eq]
-        change g₁ • b ∈ orbit H (g₂ • b)
-        rw [mem_orbit_iff]
+        simp only [Quotient.eq, orbitRel_apply, mem_orbit_iff]
         exact ⟨⟨g₁ * g₂⁻¹, r⟩, by simp [mul_smul]⟩
     exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
       (Quotient.mk''_surjective.comp (MulAction.surjective_smul _ _)))
@@ -345,8 +319,7 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
     rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
-      simp only [← Quotient.eq,
-                 orbitRel.Quotient.subgroup_quotient_eq_iff] at h
+      simp only [← Quotient.eq, orbitRel.Quotient.subgroup_quotient_eq_iff] at h
       simp only [Quotient.eq] at h ⊢
       exact h
   invFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by

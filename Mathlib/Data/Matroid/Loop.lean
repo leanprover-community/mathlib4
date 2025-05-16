@@ -231,7 +231,7 @@ lemma mapEmbedding_isLoop_iff {f : α ↪ β} : (M.mapEmbedding f).IsLoop (f e) 
 
 @[simp]
 lemma comap_loops {M : Matroid β} {f : α → β} : (M.comap f).loops = f ⁻¹' M.loops := by
-   rw [loops, comap_closure_eq, image_empty, loops]
+  rw [loops, comap_closure_eq, image_empty, loops]
 
 @[simp]
 lemma comap_isLoop_iff {M : Matroid β} {f : α → β} : (M.comap f).IsLoop e ↔ M.IsLoop (f e) := by
@@ -241,9 +241,9 @@ lemma comap_isLoop_iff {M : Matroid β} {f : α → β} : (M.comap f).IsLoop e �
 lemma loopyOn_isLoop_iff {E : Set α} : (loopyOn E).IsLoop e ↔ e ∈ E := by
   simp [isLoop_iff, loops]
 
-lemma eq_loopyOn_iff_loops {E : Set α} : M = loopyOn E ↔ M.loops = E ∧ M.E = E :=
-  ⟨fun h ↦ by rw [h, loops]; simp, fun ⟨h,h'⟩ ↦
-    by rw [← h', ← closure_empty_eq_ground_iff, ← loops, h, h']⟩
+lemma eq_loopyOn_iff_loops {E : Set α} : M = loopyOn E ↔ M.loops = E ∧ M.E = E where
+  mp h := by rw [h, loops]; simp
+  mpr | ⟨h, h'⟩ => by rw [← h', ← closure_empty_eq_ground_iff, ← loops, h, h']
 
 lemma restrict_subset_loops_eq (hX : X ⊆ M.loops) : M ↾ X = loopyOn X := by
   rw [eq_loopyOn_iff_loops, restrict_loops_eq', inter_eq_self_of_subset_right hX,
