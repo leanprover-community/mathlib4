@@ -71,10 +71,9 @@ lemma homEquiv_symm_pullHom' ⦃X₁ X₂ : C⦄
     (hom : obj₁ ⟶ (F.map p₁.op.toLoc).g.obj ((F.map p₂.op.toLoc).f.obj obj₂))
     ⦃Y₁₂ : C⦄ (g : Y₁₂ ⟶ X₁₂) (gp₁ : Y₁₂ ⟶ X₁) (gp₂ : Y₁₂ ⟶ X₂)
     (hgp₁ : g ≫ p₁ = gp₁) (hgp₂ : g ≫ p₂ = gp₂) :
-      ((F.map gp₁.op.toLoc).adj.toCategory.homEquiv _ _ ).symm
-        (pullHom'' hom g gp₁ gp₂ hgp₁ hgp₂) =
-        pullHom (F := F.comp Adj.forget₁)
-          ((((F.map p₁.op.toLoc).adj.toCategory).homEquiv _ _ ).symm hom) g gp₁ gp₂ hgp₁ hgp₂ := by
+    ((F.map gp₁.op.toLoc).adj.toCategory.homEquiv _ _ ).symm (pullHom'' hom g gp₁ gp₂ hgp₁ hgp₂) =
+      pullHom (F := F.comp Adj.forget₁)
+        ((((F.map p₁.op.toLoc).adj.toCategory).homEquiv _ _ ).symm hom) g gp₁ gp₂ hgp₁ hgp₂ := by
   sorry
 
 end DescentData''
