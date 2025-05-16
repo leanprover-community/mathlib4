@@ -74,14 +74,6 @@ theorem snoc_last {n : ℕ} {x : Fin n ↪ α}
     snoc x ha (last n) = a := by
   rw [coe_snoc, Fin.snoc_last]
 
-theorem snoc_castSucc {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range ⇑x} {i : Fin n} :
-    snoc x ha i.castSucc  = x i := by
-  rw [coe_snoc, Fin.snoc_castSucc]
-
-theorem snoc_last {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range ⇑x} :
-    snoc x ha (last n) = a := by
-  rw [coe_snoc, Fin.snoc_last]
-
 /-- Append a `Fin n ↪ α` at the end of a `Fin m ↪ α` if their ranges are disjoint. -/
 def append {m n : ℕ} {x : Fin m ↪ α} {y : Fin n ↪ α}
     (h : Disjoint (range ⇑x) (range ⇑y)) : Fin (m + n) ↪ α :=
