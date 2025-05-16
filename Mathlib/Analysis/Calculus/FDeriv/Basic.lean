@@ -390,6 +390,7 @@ lemma hasFDerivWithinAt_of_isOpen (h : IsOpen s) (hx : x ∈ s) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x :=
   hasFDerivWithinAt_of_mem_nhds (h.mem_nhds hx)
 
+@[simp]
 theorem hasFDerivWithinAt_insert {y : E} :
     HasFDerivWithinAt f f' (insert y s) x ↔ HasFDerivWithinAt f f' s x := by
   rcases eq_or_ne x y with (rfl | h)
@@ -405,9 +406,41 @@ protected theorem HasFDerivWithinAt.insert (h : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt g g' (insert x s) x :=
   h.insert'
 
+@[simp]
 theorem hasFDerivWithinAt_diff_singleton (y : E) :
     HasFDerivWithinAt f f' (s \ {y}) x ↔ HasFDerivWithinAt f f' s x := by
   rw [← hasFDerivWithinAt_insert, insert_diff_singleton, hasFDerivWithinAt_insert]
+
+@[simp]
+protected theorem HasFDerivWithinAt.empty : HasFDerivWithinAt f f' ∅ x := by
+  simp [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleOTVS]
+
+@[simp]
+protected theorem DifferentiableWithinAt.empty : DifferentiableWithinAt 𝕜 f ∅ x :=
+  ⟨0, .empty⟩
+
+theorem HasFDerivWithinAt.of_finite (h : s.Finite) : HasFDerivWithinAt f f' s x := by
+  induction s, h using Set.Finite.induction_on with
+  | empty => exact .empty
+  | insert _ _ ih => exact ih.insert'
+
+theorem DifferentiableWithinAt.of_finite (h : s.Finite) : DifferentiableWithinAt 𝕜 f s x :=
+  ⟨0, .of_finite h⟩
+
+@[simp]
+protected theorem HasFDerivWithinAt.singleton {y} : HasFDerivWithinAt f f' {x} y :=
+  .of_finite <| finite_singleton _
+
+@[simp]
+protected theorem DifferentiableWithinAt.singleton {y} : DifferentiableWithinAt 𝕜 f {x} y :=
+  ⟨0, .singleton⟩
+
+theorem HasFDerivWithinAt.of_subsingleton (h : s.Subsingleton) : HasFDerivWithinAt f f' s x :=
+  .of_finite h.finite
+
+theorem DifferentiableWithinAt.of_subsingleton (h : s.Subsingleton) :
+    DifferentiableWithinAt 𝕜 f s x :=
+  .of_finite h.finite
 
 theorem HasStrictFDerivAt.isBigO_sub (hf : HasStrictFDerivAt f f' x) :
     (fun p : E × E => f p.1 - f p.2) =O[𝓝 (x, x)] fun p : E × E => p.1 - p.2 :=
@@ -491,7 +524,8 @@ theorem HasFDerivWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) : HasFDerivWithi
 /-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
 @[deprecated HasFDerivWithinAt.of_not_accPt (since := "2025-04-20")]
-theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) : HasFDerivWithinAt f f' s x :=
+theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s \ {x}] x = ⊥) :
+    HasFDerivWithinAt f f' s x :=
   .of_not_accPt <| by rwa [accPt_principal_iff_nhdsWithin, not_neBot]
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
@@ -1183,9 +1217,13 @@ theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ => c) s x = 
   apply hasFDerivWithinAt_const
 
 @[simp]
-theorem fderivWithin_const (c : F) : fderivWithin 𝕜 (fun _ ↦ c) s = 0 := by
+theorem fderivWithin_fun_const (c : F) : fderivWithin 𝕜 (fun _ ↦ c) s = 0 := by
   ext
   rw [fderivWithin_const_apply, Pi.zero_apply]
+
+@[simp]
+theorem fderivWithin_const (c : F) : fderivWithin 𝕜 (Function.const E c) s = 0 :=
+  fderivWithin_fun_const c
 
 @[simp]
 theorem fderivWithin_zero : fderivWithin 𝕜 (0 : E → F) s = 0 := fderivWithin_const _
@@ -1209,8 +1247,12 @@ theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 :=
   (hasFDerivAt_const c x).fderiv
 
 @[simp]
-theorem fderiv_const (c : F) : (fderiv 𝕜 fun _ : E => c) = 0 := by
-  rw [← fderivWithin_univ, fderivWithin_const]
+theorem fderiv_fun_const (c : F) : fderiv 𝕜 (fun _ : E => c) = 0 := by
+  rw [← fderivWithin_univ, fderivWithin_fun_const]
+
+@[simp]
+theorem fderiv_const (c : F) : fderiv 𝕜 (Function.const E c) = 0 :=
+  fderiv_fun_const c
 
 @[simp]
 theorem fderiv_zero : fderiv 𝕜 (0 : E → F) = 0 := fderiv_const _

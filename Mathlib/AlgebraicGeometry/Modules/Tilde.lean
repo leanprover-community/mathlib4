@@ -96,7 +96,7 @@ lemma sections_smul_localizations_def
 /--
 For any `R`-module `M` and any open subset `U ⊆ Spec R`, `M^~(U)` is an `𝒪_{Spec R}(U)`-submodule
 of `∏_{𝔭 ∈ U} M_𝔭`. -/
-def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
+noncomputable def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     Submodule ((Spec.structureSheaf R).1.obj U) (∀ x : U.unop, Localizations M x.1) where
   carrier := { f | (isLocallyFraction M).pred f }
   zero_mem' x := ⟨unop U, x.2, 𝟙 _, 0, 1, fun y =>
@@ -105,7 +105,7 @@ def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     intro a b ha hb x
     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
     rcases hb x with ⟨Vb, mb, ib, rb, sb, wb⟩
-    refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia,  sb• ra+ sa•rb , sa * sb, ?_⟩
+    refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, sb• ra+ sa•rb , sa * sb, ?_⟩
     intro y
     rcases wa (Opens.infLELeft _ _ y : Va) with ⟨nma, wa⟩
     rcases wb (Opens.infLERight _ _ y : Vb) with ⟨nmb, wb⟩
@@ -202,7 +202,7 @@ lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
 If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `M` to
 `M^~(U)`.
 -/
-def toOpen (U : Opens (PrimeSpectrum.Top R)) :
+noncomputable def toOpen (U : Opens (PrimeSpectrum.Top R)) :
     ModuleCat.of R M ⟶ (tildeInModuleCat M).1.obj (op U) :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`
   -- This suggests `restrictScalars` needs to be redesigned.
@@ -265,7 +265,8 @@ noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
 /-- The ring homomorphism that takes a section of the structure sheaf of `R` on the open set `U`,
 implemented as a subtype of dependent functions to localizations at prime ideals, and evaluates
 the section on the point corresponding to a given prime ideal. -/
-def openToLocalization (U : Opens (PrimeSpectrum R)) (x : PrimeSpectrum R) (hx : x ∈ U) :
+noncomputable def openToLocalization
+    (U : Opens (PrimeSpectrum R)) (x : PrimeSpectrum R) (hx : x ∈ U) :
     (tildeInModuleCat M).obj (op U) ⟶
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)` and `(Y := ...)`

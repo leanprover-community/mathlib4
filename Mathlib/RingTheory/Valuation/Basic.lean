@@ -18,10 +18,10 @@ following T. Wedhorn's unpublished notes “Adic Spaces” ([wedhorn_adic]).
 The definition of a valuation we use here is Definition 1.22 of [wedhorn_adic].
 A valuation on a ring `R` is a monoid homomorphism `v` to a linearly ordered
 commutative monoid with zero, that in addition satisfies the following two axioms:
- * `v 0 = 0`
- * `∀ x y, v (x + y) ≤ max (v x) (v y)`
+* `v 0 = 0`
+* `∀ x y, v (x + y) ≤ max (v x) (v y)`
 
-`Valuation R Γ₀`is the type of valuations `R → Γ₀`, with a coercion to the underlying
+`Valuation R Γ₀` is the type of valuations `R → Γ₀`, with a coercion to the underlying
 function. If `v` is a valuation from `R` to `Γ₀` then the induced group
 homomorphism `Units(R) → Γ₀` is called `unit_map v`.
 
@@ -51,8 +51,8 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 
 In the `DiscreteValuation` locale:
 
- * `ℕₘ₀` is a shorthand for `WithZero (Multiplicative ℕ)`
- * `ℤₘ₀` is a shorthand for `WithZero (Multiplicative ℤ)`
+* `ℕₘ₀` is a shorthand for `WithZero (Multiplicative ℕ)`
+* `ℤₘ₀` is a shorthand for `WithZero (Multiplicative ℤ)`
 
 ## TODO
 
@@ -74,7 +74,7 @@ variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
 structure Valuation extends R →*₀ Γ₀ where
-  /-- The valuation of a a sum is less that the sum of the valuations -/
+  /-- The valuation of a sum is less than or equal to the maximum of the valuations. -/
   map_add_le_max' : ∀ x y, toFun (x + y) ≤ max (toFun x) (toFun y)
 
 /-- `ValuationClass F α β` states that `F` is a type of valuations.
@@ -83,7 +83,7 @@ You should also extend this typeclass when you extend `Valuation`. -/
 class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
     [FunLike F R Γ₀] : Prop
   extends MonoidWithZeroHomClass F R Γ₀ where
-  /-- The valuation of a a sum is less that the sum of the valuations -/
+  /-- The valuation of a sum is less than or equal to the maximum of the valuations. -/
   map_add_le_max (f : F) (x y : R) : f (x + y) ≤ max (f x) (f y)
 
 export ValuationClass (map_add_le_max)
@@ -648,7 +648,7 @@ section Monoid
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where
   coe v := v.toMonoidWithZeroHom.toFun
-  coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+  coe_injective' f g := by cases f; cases g; simp +contextual
 
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀)

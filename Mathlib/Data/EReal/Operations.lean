@@ -270,7 +270,7 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 
 /-- `-a ≤ b` if and only if `-b ≤ a` on `EReal`. -/
 protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by
- rw [← neg_le_neg_iff, neg_neg]
+  rw [← neg_le_neg_iff, neg_neg]
 
 /-- If `-a ≤ b` then `-b ≤ a` on `EReal`. -/
 protected theorem neg_le_of_neg_le {a b : EReal} (h : -a ≤ b) : -b ≤ a := EReal.neg_le.mp h
