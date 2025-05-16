@@ -29,7 +29,7 @@ namespace CategoryTheory
 open Category Limits MonoidalCategory
 
 variable {C : Type u} [Category.{v} C]
-variable [ChosenFiniteProducts C] [CartesianClosed C]
+variable [CartesianMonoidalCategory C] [CartesianClosed C]
 
 /-- If a cartesian closed category has an initial object which is isomorphic to the terminal object,
 then each homset has exactly one element.

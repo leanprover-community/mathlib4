@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
+Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, Antoine Chambert-Loir
 -/
 import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Nat.Find
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Operation on tuples
@@ -379,6 +380,23 @@ theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
   unfold append addCases
   simp
 
+theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
+    Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
+  ext (i | j) <;> simp
+
+theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
+    Function.Injective (Fin.append xs ys) ↔
+      Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
+  -- TODO: move things around so we can just import this.
+  -- We inline it because it's still shorter than proving from scratch.
+  let finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) :=
+  { toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
+    invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
+    left_inv x := by rcases x with y | y <;> dsimp <;> simp
+    right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp }
+  rw [← Sum.elim_injective, ← append_comp_sumElim, ← finSumFinEquiv.injective_comp,
+    Equiv.coe_fn_mk]
+
 end Append
 
 section Repeat
@@ -689,17 +707,22 @@ def snocInduction {α : Sort*}
 theorem snoc_injective_of_injective {α} {x₀ : α} {x : Fin n → α}
     (hx : Function.Injective x) (hx₀ : x₀ ∉ Set.range x) :
     Function.Injective (snoc x x₀ : Fin n.succ → α) := fun i j h ↦ by
-  rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | hi
-  · rcases Fin.eq_castSucc_or_eq_last j with ⟨j, rfl⟩ | hj
-    · simpa only [castSucc_inj, ← Injective.eq_iff hx, snoc_castSucc] using h
-    · simp only [snoc_castSucc, hj, snoc_last] at h
+  induction i using lastCases with
+  | cast i =>
+    induction j using lastCases with
+    | cast j =>
+      simpa only [castSucc_inj, ← Injective.eq_iff hx, snoc_castSucc] using h
+    | last =>
+      simp only [snoc_castSucc, snoc_last] at h
       rw [← h] at hx₀
       apply hx₀.elim (Set.mem_range_self i)
-  · rcases Fin.eq_castSucc_or_eq_last j with ⟨j, rfl⟩ | hj
-    · simp only [snoc_castSucc, hi, snoc_last] at h
+  | last =>
+    induction j using lastCases with
+    | cast j =>
+      simp only [snoc_castSucc, snoc_last] at h
       rw [h] at hx₀
       apply hx₀.elim (Set.mem_range_self j)
-    · simp only [hi, hj]
+    | last => simp
 
 theorem snoc_injective_iff {α} {x₀ : α} {x : Fin n → α} :
     Function.Injective (snoc x x₀ : Fin n.succ → α) ↔ Function.Injective x ∧ x₀ ∉ Set.range x := by
