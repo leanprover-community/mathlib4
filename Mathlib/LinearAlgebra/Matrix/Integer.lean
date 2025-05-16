@@ -33,16 +33,16 @@ them.
 -/
 
 lemma map_mul_natCast {α : Type*} [NonAssocSemiring α] (A B : Matrix n n ℕ) :
-    map (A * B) ((↑) : ℕ → α) = map A (↑) * map B (↑) := by
-  simpa using Matrix.map_mul (f := Nat.castRingHom α)
+    map (A * B) ((↑) : ℕ → α) = map A (↑) * map B (↑) :=
+  Matrix.map_mul (f := Nat.castRingHom α)
 
 lemma map_mul_intCast {α : Type*} [NonAssocRing α]  (A B : Matrix n n ℤ) :
-    map (A * B) ((↑) : ℤ → α) = map A (↑) * map B (↑) := by
-  simpa using Matrix.map_mul (f := Int.castRingHom α)
+    map (A * B) ((↑) : ℤ → α) = map A (↑) * map B (↑) :=
+  Matrix.map_mul (f := Int.castRingHom α)
 
 lemma map_mul_ratCast {α : Type*} [DivisionRing α] [CharZero α] (A B : Matrix n n ℚ) :
-    map (A * B) ((↑) : ℚ → α) = map A (↑) * map B (↑) := by
-  simpa using Matrix.map_mul (f := Rat.castHom α)
+    map (A * B) ((↑) : ℚ → α) = map A (↑) * map B (↑) :=
+  Matrix.map_mul (f := Rat.castHom α)
 
 /-!
 ### Denominator of a rational matrix
@@ -54,7 +54,7 @@ protected def den (A : Matrix m n ℚ) : ℕ := Finset.univ.lcm (fun P : m × n 
 
 /-- The numerator of a matrix of rationals (a matrix of integers, defined so that
 `A.num / A.den = A`). -/
-protected def num (A : Matrix m n ℚ) : Matrix m n ℤ := fun i j ↦ (A i j * A.den).num
+protected def num (A : Matrix m n ℚ) : Matrix m n ℤ := ((A.den : ℚ) • A).map Rat.num
 
 lemma den_ne_zero (A : Matrix m n ℚ) : A.den ≠ 0 := by
   simp [Matrix.den, Finset.lcm_eq_zero_iff]
@@ -66,7 +66,8 @@ lemma den_dvd_iff {A : Matrix m n ℚ} {r : ℕ} :
 lemma num_div_den (A : Matrix m n ℚ) (i : m) (j : n) :
     A i j = A.num i j / A.den := by
   obtain ⟨k, hk⟩ := den_dvd_iff.mp (dvd_refl A.den) i j
-  rw [Matrix.num, eq_div_iff <| Nat.cast_ne_zero.mpr A.den_ne_zero, hk, Nat.cast_mul, ← mul_assoc,
+  rw [Matrix.num, map_apply, smul_apply, smul_eq_mul, mul_comm,
+    eq_div_iff <| Nat.cast_ne_zero.mpr A.den_ne_zero, hk, Nat.cast_mul, ← mul_assoc,
     Rat.mul_den_eq_num, ← Int.cast_natCast k, ← Int.cast_mul, Rat.num_intCast]
 
 lemma inv_denom_smul_num (A : Matrix m n ℚ) :
