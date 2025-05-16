@@ -48,15 +48,13 @@ variable {α : Type*}
 theorem exists_embedding_disjoint_range_of_add_le_ENat_card
     {s : Set α} [Finite s] {n : ℕ} (hs : s.ncard + n ≤ ENat.card α) :
     ∃ y : Fin n ↪ α, Disjoint s (range y) := by
-  suffices Nonempty (Fin n ↪ (sᶜ : Set α)) by
-    obtain ⟨y⟩ := this
-    use y.trans (subtype _)
+  rsuffices ⟨y⟩ : Nonempty (Fin n ↪ (sᶜ : Set α))
+  · use y.trans (subtype _)
     rw [Set.disjoint_right]
     rintro _ ⟨i, rfl⟩
-    simp only [trans_apply, subtype_apply, ← mem_compl_iff]
-    exact Subtype.coe_prop (y i)
+    simpa only [← mem_compl_iff] using Subtype.coe_prop (y i)
   rcases finite_or_infinite α with hα | hα
-  · have _ : Fintype α := Fintype.ofFinite α
+  · let _ : Fintype α := Fintype.ofFinite α
     classical
     apply Function.Embedding.nonempty_of_card_le
     rwa [Fintype.card_fin, ← add_le_add_iff_left s.ncard,
@@ -69,7 +67,7 @@ theorem restrictSurjective_of_add_le_ENatCard
     {m n : ℕ} (hn : m + n ≤ ENat.card α) :
     Function.Surjective (fun (x : Fin (m + n) ↪ α) ↦ (Fin.castAddEmb n).trans x) := by
   intro x
-  obtain ⟨y : Fin n ↪ α, hxy⟩ :=
+  obtain ⟨y, hxy⟩ :=
     exists_embedding_disjoint_range_of_add_le_ENat_card (s := range x)
       (by simpa [← Set.Nat.card_coe_set_eq, Nat.card_range_of_injective x.injective])
   use append hxy
@@ -91,16 +89,13 @@ variable {H β : Type*} [Group H] [MulAction H β]
 variable {σ : G → H} {f : α →ₑ[σ] β} {ι : Type*}
 
 /-- An injective equivariant map `α →ₑ[σ] β` induces
-an equivariant map on embedding types (ι ↪ α) → (ι ↪ β) -/
+an equivariant map on embedding types `(ι ↪ α) → (ι ↪ β)`. -/
 @[to_additive "An injective equivariant map `α →ₑ[σ] β` induces
-an equivariant map on embedding types (ι ↪ α) → (ι ↪ β)"]
+an equivariant map on embedding types `(ι ↪ α) → (ι ↪ β)`."]
 def Function.Injective.mulActionHom_embedding (hf : Function.Injective f) :
     (ι ↪ α) →ₑ[σ] (ι ↪ β) where
   toFun x := ⟨f.toFun ∘ x.toFun, hf.comp x.inj'⟩
-  map_smul' m x := by
-    ext i
-    simp only [smul_apply, coeFn_mk, Function.comp_apply, toFun_eq_coe, smul_apply]
-    rw [f.map_smul']
+  map_smul' m x := by ext; simp [f.map_smul']
 
 @[to_additive (attr := simp)]
 theorem Function.Injective.mulActionHom_embedding_apply
@@ -176,12 +171,12 @@ theorem IsPretransitive.of_embedding_congr {n : Type*}
 
 section Zero
 
-/-- Any action is 0-pretransitive -/
+/-- Any action is 0-pretransitive. -/
 @[to_additive]
 theorem is_zero_pretransitive {n : Type*} [IsEmpty n] :
     IsPretransitive G (n ↪ α) := inferInstance
 
-/-- Any action is 0-pretransitive -/
+/-- Any action is 0-pretransitive. -/
 @[to_additive]
 theorem is_zero_pretransitive' :
     IsMultiplyPretransitive G α 0 := inferInstance
@@ -200,7 +195,7 @@ def _root_.Function.Embedding.oneEmbeddingEquiv {one : Type*} [Unique one] : (on
   left_inv f := by ext; simp [Unique.uniq]
   right_inv a := rfl
 
-/-- For `Unique one`, the equivariant map from `one ↪ α` to `α` -/
+/-- For `Unique one`, the equivariant map from `one ↪ α` to `α`. -/
 @[to_additive "For `Unique one`, the equivariant map from `one ↪ α` to `α`"]
 def _root_.MulActionHom.oneEmbeddingMap {one : Type*} [Unique one] :
     (one ↪ α) →[G] α := {
@@ -212,13 +207,13 @@ theorem _root_.MulActionHom.oneEmbeddingMap_bijective {one : Type*} [Unique one]
     Function.Bijective (oneEmbeddingMap (one := one) (G := G) (α := α)) :=
   oneEmbeddingEquiv.bijective
 
-/-- An action is 1-pretransitive iff it is pretransitive -/
+/-- An action is 1-pretransitive iff it is pretransitive. -/
 @[to_additive]
 theorem oneEmbedding_isPretransitive_iff {one : Type*} [Unique one] :
     IsPretransitive G (one ↪ α) ↔ IsPretransitive G α :=
   isPretransitive_congr Function.surjective_id oneEmbeddingMap_bijective
 
-/-- An action is 1-pretransitive iff it is pretransitive -/
+/-- An action is 1-pretransitive iff it is pretransitive. -/
 @[to_additive]
 theorem is_one_pretransitive_iff :
     IsMultiplyPretransitive G α 1 ↔ IsPretransitive G α :=
@@ -228,17 +223,19 @@ end One
 
 section Two
 
-/-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α` -/
+/-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α`. -/
 def _root_.Function.Embedding.embFinTwo {a b: α} (h : a ≠ b) : Fin 2 ↪ α where
   toFun := ![a, b]
   inj' i j hij := by
-    rcases i.eq_zero_or_one with hi | hi
-    · rcases j.eq_zero_or_one with hj | hj
+    by_cases hi : i = 0
+    · by_cases hj : j = 0
       · rw [hi, hj]
-      · simp [hi, hj] at hij; exact False.elim (h hij)
-    · rcases j.eq_zero_or_one with hj | hj
-      · simp [hi, hj] at hij; exact False.elim (h hij.symm)
-      · rw [hi, hj]
+      · simp [hi, eq_one_of_ne_zero j hj] at hij;
+        exact False.elim (h hij)
+    · rw [eq_one_of_ne_zero i hi] at hij ⊢
+      by_cases hj : j = 0
+      · simp [hj] at hij; exact False.elim (h hij.symm)
+      · rw [eq_one_of_ne_zero j hj]
 
 theorem _root_.Function.Embedding.embFinTwo_apply_zero
     {a b : α} (h : a ≠ b) : embFinTwo h 0 = a := rfl
@@ -246,8 +243,10 @@ theorem _root_.Function.Embedding.embFinTwo_apply_zero
 theorem _root_.Function.Embedding.embFinTwo_apply_one
     {a b : α} (h : a ≠ b) : embFinTwo h 1 = b := rfl
 
-/-- An action is 2-pretransitive iff it is two_pretransitive… -/
-@[to_additive]
+/-- An action is 2-pretransitive iff
+it can move any two distinct elements to any two distinct elements. -/
+@[to_additive "An additive action is 2-pretransitive iff
+it can move any two distinct elements to any two distinct elements."]
 theorem is_two_pretransitive_iff :
     IsMultiplyPretransitive G α 2 ↔
       ∀ {a b c d : α} (_ : a ≠ b) (_ : c ≠ d), ∃ g : G, g • a = c ∧ g • b = d := by
@@ -264,10 +263,12 @@ theorem is_two_pretransitive_iff :
           H (j.injective.ne_iff.mpr Fin.zero_ne_one) (j'.injective.ne_iff.mpr Fin.zero_ne_one)
         use g
         ext i
-        rcases i.eq_zero_or_one with hi | hi <;> simp only [hi, smul_apply, h, h'] }
+        by_cases hi : i = 0
+        · simp [hi, h]
+        · simp [eq_one_of_ne_zero i hi, h'] }
 
-/-- A 2-pretransitive action is pretransitive -/
-@[to_additive]
+/-- A 2-pretransitive action is pretransitive. -/
+@[to_additive "A 2-pretransitive additive action is pretransitive."]
 theorem isPretransitive_of_is_two_pretransitive
     [h2 : IsMultiplyPretransitive G α 2] : IsPretransitive G α where
   exists_smul_eq a b := by
@@ -277,8 +278,8 @@ theorem isPretransitive_of_is_two_pretransitive
       obtain ⟨g, h, _⟩ := h2 h (Ne.symm h)
       exact ⟨g, h⟩
 
-/-- A 2-transitive action is primitive -/
-@[to_additive]
+/-- A 2-transitive action is primitive. -/
+@[to_additive "A 2-transitive additive action is primitive." ]
 theorem isPreprimitive_of_is_two_pretransitive
     (h2 : IsMultiplyPretransitive G α 2) : IsPreprimitive G α := by
   have : IsPretransitive G α := isPretransitive_of_is_two_pretransitive

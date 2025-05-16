@@ -1395,9 +1395,6 @@ lemma eq_one_of_ne_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by fin_omega
 @[deprecated (since := "2025-04-27")]
 alias eq_one_of_neq_zero := eq_one_of_ne_zero
 
-lemma eq_zero_or_one (i : Fin 2) : i = 0 ∨ i = 1 := by
-  fin_omega
-
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
