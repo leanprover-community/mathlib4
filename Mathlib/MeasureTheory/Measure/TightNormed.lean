@@ -32,14 +32,17 @@ open Filter
 
 open scoped Topology ENNReal InnerProductSpace
 
--- todo: what is the correct generality and place for this lemma?
+/-- Let `u : ι → α → β` be a sequence of antitone functions `α → β` indexed by `ι`. Suppose that for
+all `i : ι`, `u i` tends to `c` at infinity, and that furthermore the limsup of `i ↦ u i r` along
+the cofinite filter tends to the same `c` as `r` tends to infinity.
+Then the supremum function `r ↦ ⨆ i, u i r` also tends to `c` at infinity. -/
 lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice α] {β : Type*}
     [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {ι : Type*}
     {u : ι → α → β} {c : β}
-    (h_all : ∀ n, Tendsto (u n) atTop (𝓝 c))
-    (h_limsup : Tendsto (fun r : α ↦ limsup (fun n ↦ u n r) cofinite) atTop (𝓝 c))
-    (h_anti : ∀ n, Antitone (u n)) :
-    Tendsto (fun r : α ↦ ⨆ n, u n r) atTop (𝓝 c) := by
+    (h_all : ∀ i, Tendsto (u i) atTop (𝓝 c))
+    (h_limsup : Tendsto (fun r : α ↦ limsup (fun i ↦ u i r) cofinite) atTop (𝓝 c))
+    (h_anti : ∀ i, Antitone (u i)) :
+    Tendsto (fun r : α ↦ ⨆ i, u i r) atTop (𝓝 c) := by
   classical
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨n0⟩⟩
   · simpa using h_limsup
