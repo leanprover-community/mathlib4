@@ -147,7 +147,7 @@ namespace IsWeierstrassDivisorAt
 variable {g I} (H : g.IsWeierstrassDivisorAt I)
 include H
 
-theorem isUnit_shift : IsUnit <| PowerSeries.mk fun i ↦
+theorem isUnit_shift : IsUnit <| mk fun i ↦
     coeff A (i + (g.map (Ideal.Quotient.mk I)).order.toNat) g := by
   simpa [isUnit_iff_constantCoeff]
 
@@ -155,7 +155,7 @@ theorem isUnit_shift : IsUnit <| PowerSeries.mk fun i ↦
 noncomputable def seq (H : g.IsWeierstrassDivisorAt I) (f : A⟦X⟧) : ℕ → A⟦X⟧
   | 0 => 0
   | k + 1 =>
-    H.seq f k + (PowerSeries.mk fun i ↦ coeff A (i + (g.map (Ideal.Quotient.mk I)).order.toNat)
+    H.seq f k + (mk fun i ↦ coeff A (i + (g.map (Ideal.Quotient.mk I)).order.toNat)
       (f - g * H.seq f k)) * H.isUnit_shift.unit⁻¹
 
 variable {f : A⟦X⟧}
@@ -213,7 +213,7 @@ noncomputable def divCoeff [IsPrecomplete I A] (i : ℕ) :=
   Classical.indefiniteDescription _ <| IsPrecomplete.prec' (I := I)
     (fun k ↦ coeff A i (H.seq f k)) fun {m} {n} hn ↦ by
       induction n, hn using Nat.le_induction with
-      | base => rfl
+      | base => rw [SModEq.def]
       | succ n hn ih =>
         refine ih.trans (SModEq.symm ?_)
         simp_rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top, ← map_sub]
@@ -330,7 +330,7 @@ theorem exists_isWeierstrassDivision [IsLocalRing A] [IsAdicComplete (IsLocalRin
 
 -- Unfortunately there is no Unicode subscript `w`.
 
-/-- The `q` in Werierstrass division, denoted by `f /ʷ g`. Note that when the image of `g` in the
+/-- The `q` in Weierstrass division, denoted by `f /ʷ g`. Note that when the image of `g` in the
 residue field is zero, this is defined to be zero. -/
 noncomputable def weierstrassDiv [IsLocalRing A] [IsPrecomplete (IsLocalRing.maximalIdeal A) A]
     (f g : A⟦X⟧) : A⟦X⟧ :=
@@ -340,7 +340,7 @@ noncomputable def weierstrassDiv [IsLocalRing A] [IsPrecomplete (IsLocalRing.max
   else
     0
 
-/-- The `r` in Werierstrass division, denoted by `f %ʷ g`. Note that when the image of `g` in the
+/-- The `r` in Weierstrass division, denoted by `f %ʷ g`. Note that when the image of `g` in the
 residue field is zero, this is defined to be zero. -/
 noncomputable def weierstrassMod [IsLocalRing A] [IsPrecomplete (IsLocalRing.maximalIdeal A) A]
     (f g : A⟦X⟧) : A[X] :=
