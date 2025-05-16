@@ -5,6 +5,5 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module (since := "2025-04-16")
