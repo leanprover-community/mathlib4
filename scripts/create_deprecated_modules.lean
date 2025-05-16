@@ -48,13 +48,13 @@ def getHeaderFromFileName (fname : String) (keepTrailing : Bool) : IO String := 
 
 
 /--
-`mkDeprecationWithDate customMessage date` returns the formatted syntax
+`mkDeprecationWithDate date customMessage` returns the formatted syntax
 `deprecated_module "customMessage" (since := "date")`,
-where the date is of the form "YYYY-MM-DD".
+where the date is of the form `YYYY-MM-DD`.
 -/
-def mkDeprecationWithDate (customMessage : String := "Auto-generated deprecation") (date : String) :
+def mkDeprecationWithDate (date : String) (customMessage : Option String := some "Auto-generated deprecation") :
     CommandElabM Format := do
-  let msgStx := if customMessage.isEmpty then none else some <| Syntax.mkStrLit customMessage
+  let msgStx := customMessage.map Syntax.mkStrLit
   let dateStx := Syntax.mkStrLit date
   let stx ← `(command|deprecated_module $[$msgStx]? (since := $dateStx))
   liftCoreM <| PrettyPrinter.ppCategory `command stx
@@ -63,11 +63,11 @@ def mkDeprecationWithDate (customMessage : String := "Auto-generated deprecation
 `mkDeprecation customMessage` returns the formatted syntax
 `deprecated_module "customMessage" (since := "YYYY-MM-DD")`, where the date is today's date.
 -/
-def mkDeprecation (customMessage : String := "Auto-generated deprecation") :
+def mkDeprecation (customMessage : Option String := some "Auto-generated deprecation") :
     CommandElabM Format := do
   -- Get the current date in UTC: we don't want this to depend on the user computer's time zone.
   let date := s!"{(← Std.Time.DateTime.now (tz := .UTC)).toPlainDate}"
-  mkDeprecationWithDate customMessage date
+  mkDeprecationWithDate date customMessage
 
 /--
 The command `#create_deprecated_module filePath (comment)? (write)?` generates a module deprecation.
@@ -146,7 +146,7 @@ def deprecateFilePath (fname : String) (comment : Option String) :
     "log", "--format=%cs", "--all", "-2", "--", fname]
   }
   let deletionDate := (log'.trim.splitOn "\n")[0]!
-  let deprecation ← if let some cmt := comment then mkDeprecationWithDate cmt deletionDate else mkDeprecation deletionDate
+  let deprecation ← mkDeprecationWithDate deletionDate comment
   msgs := msgs.push ""
   -- Retrieves the final version of the file, before it was deleted.
   let file ← IO.Process.run {cmd := "git", args := #["show", s!"{modifiedHash}:{fname}"]}
