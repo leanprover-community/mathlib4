@@ -7,7 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Regular.Depth
-
+import Mathlib.Tactic.ENatToNat
 /-!
 # Auslander-Buchsbaum theorem
 
@@ -218,19 +218,9 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
       AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0
     simp [hg1, hg2]
 
-lemma ENat.lt_of_add_one_lt {a b : ℕ∞} (lt : a + 1 < b + 1) : a < b := by
-  have lttop : a < ⊤ := lt_of_add_lt_add_right (lt_top_of_lt lt)
-  by_cases eqtop : b = ⊤
-  · simpa [eqtop] using lttop
-  · rw [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff (LT.lt.ne_top lttop)] at lt
-    exact lt
-
-lemma ENat.add_one_lt_of_lt {a b : ℕ∞} (lt : a < b) : a + 1 < b + 1 := by
-  have lttop : a < ⊤ := (lt_top_of_lt lt)
-  by_cases eqtop : b = ⊤
-  · simpa [eqtop, lttop] using Ne.lt_top' ENat.one_ne_top.symm
-  · rw [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff (LT.lt.ne_top lt)]
-    exact lt
+lemma ENat.add_one_lt_add_one_iff {a b : ℕ∞} : a < b ↔ a + 1 < b + 1 := by
+  enat_to_nat
+  omega
 
 lemma CategoryTheory.Abelian.extFunctorObj_zero_preserve_momoMorphism (L M N : ModuleCat.{v} R)
     (f : M ⟶ N) (mono : Mono f) :
@@ -369,7 +359,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
       have : i - 1 < n := by
         rw [add_comm, ← eq, ENat.coe_add, ENat.coe_sub, ENat.coe_one] at hi
-        exact ENat.lt_of_add_one_lt hi
+        exact ENat.add_one_lt_add_one_iff.mpr hi
       have := ((iff (i - 1)).mp (hn (i - 1) this)).2
       simpa only [eq] using this
   · apply sSup_le (fun n hn ↦ ?_)
@@ -388,7 +378,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       intro i hi
       have lt2 : i + 1 < n := by
         rw [← this]
-        exact ENat.add_one_lt_of_lt hi
+        exact ENat.add_one_lt_add_one_iff.mp hi
       have lt1 : i < n := lt_of_le_of_lt (self_le_add_right _ _) lt2
       exact (iff i).mpr ⟨hn i lt1, hn (i + 1) lt2⟩
 
@@ -526,7 +516,8 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
                 rw [(asIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K
                   (Eq.refl (k - 1 + 1))))).addCommGroupIsoToAddEquiv.nontrivial_congr, eq]
                 exact Nat.find_spec exist
-              · have := ext_iso i <| lt_trans (ENat.add_one_lt_of_lt (ENat.coe_lt_coe.mpr hi)) lt
+              · have := ext_iso i <|
+                  lt_trans (ENat.add_one_lt_add_one_iff.mp (ENat.coe_lt_coe.mpr hi)) lt
                 rw [(asIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K
                   (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
                 exact not_nontrivial_iff_subsingleton.mp
