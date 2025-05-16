@@ -121,11 +121,9 @@ lemma integrable_mconv_iff {M F : Type*} [Monoid M] {mM : MeasurableSpace M} [Me
       ↔ (∀ᵐ x ∂μ, Integrable (fun y ↦ f (x * y)) ν)
         ∧ Integrable (fun x ↦ ∫ y, ‖f (x * y)‖ ∂ν) μ := by
   unfold Measure.mconv
-  rw [integrable_map_measure, integrable_prod_iff]
+  rw [integrable_map_measure (by fun_prop) (by fun_prop), integrable_prod_iff]
   · simp
   · exact Measurable.aestronglyMeasurable <| by fun_prop
-  · fun_prop
-  · fun_prop
 
 lemma MeasureTheory.Measure.prod_smul_left {α β : Type*}
     {_ : MeasurableSpace α} {_ : MeasurableSpace β}

@@ -585,10 +585,6 @@ lemma variance_continuousLinearMap_gaussianReal (L : ℝ →L[ℝ] ℝ) :
 
 end LinearMap
 
-open Complex
-
-variable {μ : ℝ} {v : ℝ≥0}
-
 -- `∗` notation not used because of ambiguous notation : `conv` vs `mconv`
 lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
     Measure.conv (gaussianReal m₁ v₁) (gaussianReal m₂ v₂) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
@@ -596,7 +592,7 @@ lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
   ext t
   simp_rw [charFun_conv, charFun_gaussianReal]
   rw [← Complex.exp_add]
-  simp only [ofReal_add, NNReal.coe_add]
+  simp only [Complex.ofReal_add, NNReal.coe_add]
   ring_nf
 
 lemma gaussianReal_map_prod_add {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
