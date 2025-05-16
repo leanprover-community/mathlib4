@@ -279,7 +279,9 @@ theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
 variable {f : A →ₐc[R] B} (hf : Function.Bijective f)
 
 /-- Promotes a bijective coalgebra homomorphism to a coalgebra equivalence. -/
+@[simps apply]
 noncomputable def ofBijective : A ≃ₐc[R] B where
+  toFun := f
   __ := f
   __ := AlgEquiv.ofBijective (f : A →ₐ[R] B) hf
 
