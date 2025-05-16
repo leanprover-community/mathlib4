@@ -64,18 +64,26 @@ end FiniteDimensionalOrder
 variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
 
+omit [IsNoetherianRing R] in
+theorem IsLocalRing.eq_maximalIdeal_of_isPrime_of_ge (p : Ideal R) [hp : p.IsPrime]
+    (h : p ≥ maximalIdeal R) : p = maximalIdeal R :=
+  le_antisymm (le_maximalIdeal hp.ne_top) h
+
 namespace Module
 
 local notation "𝔪" => IsLocalRing.maximalIdeal R
 
 open RingTheory Sequence IsLocalRing Submodule Ideal
 
-theorem move_chain (p : LTSeries (PrimeSpectrum R)) {x : R} (hx : x ∈ (RelSeries.last p).1) :
+theorem move_chain (p : LTSeries (PrimeSpectrum R)) {x : R} (hx : x ∈ p.last.1) :
     ∃ q : LTSeries (PrimeSpectrum R),
       x ∈ (q 1).1 ∧ q.length = p.length ∧ q 0 = p 0 ∧ q.last = p.last := sorry
 
+example (a b : ℤ) (lt : ¬ a < b) (h : a ≤ b) : a = b := by
+  linarith
+
 open scoped Classical in
-theorem supportDim_le_supportDim_quotSMulTop_succ (x : R) (mem : x ∈ maximalIdeal R) :
+theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   by_cases h : Subsingleton M
   · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
@@ -87,7 +95,17 @@ theorem supportDim_le_supportDim_quotSMulTop_succ (x : R) (mem : x ∈ maximalId
   let p : LTSeries (support R M) :=
     if lt : (q.last).1.1 < 𝔪 then q.snoc ⟨⟨𝔪, IsMaximal.isPrime' 𝔪⟩, hm⟩ lt
     else q
-  sorry
+  have : x ∈ p.last.1.1 := by
+    by_cases lt : (q.last).1.1 < 𝔪
+    · rw [show p = q.snoc ⟨⟨𝔪, IsMaximal.isPrime' 𝔪⟩, hm⟩ lt from dif_pos lt]
+      simp only [RelSeries.last_snoc, hx]
+    · rw [show p = q from dif_neg lt]
+      have : q.last.1.1 = 𝔪 := by
+        contrapose! lt
+        have : q.last.1.1 ≤ 𝔪 := by
+          apply?
+        exact lt_of_le_of_ne this lt
+      sorry
 
 theorem supportDim_quotSMulTop_succ_eq_supportDim (x : R) (reg : IsSMulRegular M x)
     (mem : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M := sorry
