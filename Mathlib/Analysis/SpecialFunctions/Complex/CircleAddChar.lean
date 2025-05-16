@@ -128,8 +128,17 @@ noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUn
 instance : HasEnoughRootsOfUnity Circle n := HasEnoughRootsOfUnity.map_of_rootsOfUnityEquiv
   (IsAlgClosed.hasEnoughRootsOfUnity ℂ n) (rootsOfUnityCircleEquiv n).symm
 
+open Real in
+lemma rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_val (j : ZMod n) :
+    ((rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) j).val
+      = Complex.exp (2 * π * I * j.val / n) := by
+  rw [comp_apply, ← ZMod.toCircle_natCast]
+  rw [ZMod.natCast_val, ZMod.cast_id', id_eq]
+  rfl
+
 theorem rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_Surjective (n : ℕ) [NeZero n] :
-    Function.Surjective (rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) := fun ⟨w,hw⟩ => by
+    Function.Surjective (rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) := by
+  intro ⟨w,hw⟩
   obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity n w).mp hw
   exact ⟨j, by
     rw [comp_apply]
@@ -139,4 +148,4 @@ theorem rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_Surjective (n : ℕ) [N
     rw [ZMod.toCircle_natCast]
     simp_rw [← mul_div_assoc] at hj2
     rw [hj2]
-    aesop⟩
+    rfl⟩
