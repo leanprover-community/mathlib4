@@ -17,9 +17,8 @@ as a continous bilinear form on `Dual ℝ E`.
 
 Let `μ` be a finite measure on a normed space `E` with the Borel σ-algebra. We then define
 
-* `Dual.toLp`: the function `MemLp.toLp` as a continuous linear map from
-  `Dual 𝕜 E` (for `RCLike 𝕜`) into the space `Lp 𝕜 p μ` for finite `p ≥ 1`.
-  This needs a hypothesis `MemLp id p μ`.
+* `Dual.toLp`: the function `MemLp.toLp` as a continuous linear map from `Dual 𝕜 E` (for `RCLike 𝕜`)
+  into the space `Lp 𝕜 p μ` for `p ≥ 1`. This needs a hypothesis `MemLp id p μ`.
 * `covarianceBilin` : covariance of a measure `μ` with `∫ x, ‖x‖^2 ∂μ < ∞` on a Banach space,
   as a continuous bilinear form `Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ] ℝ`.
   If the second moment of `μ` is not finite, we set `covarianceBilin μ = 0`.
