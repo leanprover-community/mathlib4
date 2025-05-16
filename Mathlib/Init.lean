@@ -53,8 +53,8 @@ All linters imported here have no bulk imports;
 
 -- Define a linter set of all mathlib syntax linters which are enabled by default.
 -- Projects depending on mathlib can use `set_option linter.allMathlibLinters true` to enable
--- all these linters. XXX can they also enable them in their lakefile?
-register_linter_set linter.allMathlibLinters :=
+-- all these linters, or add the `weak.linter.mathlibStandardSet` option to their lakefile.
+register_linter_set linter.mathlibStandardSet :=
   linter.oldObtain
   linter.style.cases
   linter.style.refine
