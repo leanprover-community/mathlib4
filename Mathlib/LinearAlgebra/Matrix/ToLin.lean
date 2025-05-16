@@ -30,14 +30,14 @@ In the list below, and in all this file, `R` is a commutative ring (semiring
 is sometimes enough), `M` and its variations are `R`-modules, `ι`, `κ`, `n` and `m` are finite
 types used for indexing.
 
- * `LinearMap.toMatrix`: given bases `v₁ : ι → M₁` and `v₂ : κ → M₂`,
-   the `R`-linear equivalence from `M₁ →ₗ[R] M₂` to `Matrix κ ι R`
- * `Matrix.toLin`: the inverse of `LinearMap.toMatrix`
- * `LinearMap.toMatrix'`: the `R`-linear equivalence from `(m → R) →ₗ[R] (n → R)`
-   to `Matrix m n R` (with the standard basis on `m → R` and `n → R`)
- * `Matrix.toLin'`: the inverse of `LinearMap.toMatrix'`
- * `algEquivMatrix`: given a basis indexed by `n`, the `R`-algebra equivalence between
-   `R`-endomorphisms of `M` and `Matrix n n R`
+* `LinearMap.toMatrix`: given bases `v₁ : ι → M₁` and `v₂ : κ → M₂`,
+  the `R`-linear equivalence from `M₁ →ₗ[R] M₂` to `Matrix κ ι R`
+* `Matrix.toLin`: the inverse of `LinearMap.toMatrix`
+* `LinearMap.toMatrix'`: the `R`-linear equivalence from `(m → R) →ₗ[R] (n → R)`
+  to `Matrix m n R` (with the standard basis on `m → R` and `n → R`)
+* `Matrix.toLin'`: the inverse of `LinearMap.toMatrix'`
+* `algEquivMatrix`: given a basis indexed by `n`, the `R`-algebra equivalence between
+  `R`-endomorphisms of `M` and `Matrix n n R`
 
 ## Issues
 
@@ -284,11 +284,12 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
   invFun := Matrix.mulVecLin
   right_inv M := by
     ext i j
-    simp only [Matrix.mulVec_single_one, Matrix.mulVecLin_apply, of_apply, transpose_apply]
+    simp only [Matrix.mulVec_single_one, col_apply, Matrix.mulVecLin_apply, of_apply,
+      transpose_apply]
   left_inv f := by
     apply (Pi.basisFun R n).ext
     intro j; ext i
-    simp only [Pi.basisFun_apply, Matrix.mulVec_single_one,
+    simp only [Pi.basisFun_apply, Matrix.mulVec_single_one, col_apply,
       Matrix.mulVecLin_apply, of_apply, transpose_apply]
   map_add' f g := by
     ext i j
@@ -328,11 +329,7 @@ theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
 @[simp]
 theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
     LinearMap.toMatrix' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
-  simp only [LinearMap.toMatrix', LinearEquiv.coe_mk, of_apply]
-  congr! with i
-  split_ifs with h
-  · rw [h, Pi.single_eq_same]
-  apply Pi.single_eq_of_ne h
+  simp [toMatrix', ← Pi.single_apply]
 
 @[simp]
 theorem Matrix.toLin'_apply (M : Matrix m n R) (v : n → R) : Matrix.toLin' M v = M *ᵥ v :=
@@ -955,8 +952,8 @@ lemma linearMap_apply (ij : ι₂ × ι₁) :
 lemma linearMap_apply_apply (ij : ι₂ × ι₁) (k : ι₁) :
     (b₁.linearMap b₂ ij) (b₁ k) = if ij.2 = k then b₂ ij.1 else 0 := by
   have := Classical.decEq ι₂
-  rw [linearMap_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
-  dsimp only [Matrix.stdBasisMatrix, of_apply]
+  rw [linearMap_apply, Matrix.stdBasis_eq_single, Matrix.toLin_self]
+  dsimp only [Matrix.single, of_apply]
   simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
 
 /-- The standard basis of the endomorphism algebra of a module

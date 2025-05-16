@@ -263,7 +263,7 @@ theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : In
     · apply mul_ne_top (ht a) (hf'.meas_preimage_singleton_ne_zero a0).ne
   · simp [hg0]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
+variable [NormedSpace ℝ E]
 
 theorem integral_congr {f g : α →ₛ E} (hf : Integrable f μ) (h : f =ᵐ[μ] g) :
     f.integral μ = g.integral μ :=
@@ -289,7 +289,8 @@ theorem integral_sub {f g : α →ₛ E} (hf : Integrable f μ) (hg : Integrable
     integral μ (f - g) = integral μ f - integral μ g :=
   setToSimpleFunc_sub _ weightedSMul_union hf hg
 
-theorem integral_smul (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
+theorem integral_smul [DistribSMul 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+    (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
     integral μ (c • f) = c • integral μ f :=
   setToSimpleFunc_smul _ weightedSMul_union weightedSMul_smul c hf
 
@@ -407,10 +408,9 @@ section SimpleFuncIntegral
 Define the Bochner integral on `α →₁ₛ[μ] E` by extension from the simple functions `α →₁ₛ[μ] E`,
 and prove basic properties of this integral. -/
 
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E]
-
-attribute [local instance] simpleFunc.normedSpace
+attribute [local instance] simpleFunc.isBoundedSMul simpleFunc.module simpleFunc.normedSpace
 
 /-- The Bochner integral over simple functions in L1 space. -/
 def integral (f : α →₁ₛ[μ] E) : E :=
@@ -513,12 +513,12 @@ open SimpleFunc
 
 local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 
-variable [NormedSpace ℝ E] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [NormedSpace ℝ E] [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   [CompleteSpace E]
 
 section IntegrationInL1
 
-attribute [local instance] simpleFunc.normedSpace
+attribute [local instance] simpleFunc.isBoundedSMul simpleFunc.module
 
 open ContinuousLinearMap
 

@@ -173,7 +173,7 @@ lemma forget₂_module_map {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
 variable {R} in
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 algebra. -/
-@[simps]
+@[deprecated Iso.refl (since := "2025-05-15")]
 def ofSelfIso (M : AlgebraCat.{v} R) : AlgebraCat.of R M ≅ M where
   hom := 𝟙 M
   inv := 𝟙 M

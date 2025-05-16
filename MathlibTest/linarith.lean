@@ -78,8 +78,8 @@ example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
 example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
   linarith
 
-example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
- by linarith
+example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε := by
+  linarith
 
 example (x y z : Rat) (h1 : 2 * x < 3 * y) (h2 : -4 * x + z / 2 < 0)
     (h3 : 12 * y - z < 0) : False := by
@@ -622,12 +622,12 @@ example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
 error: don't know how to synthesize placeholder for argument 'x'
 context:
 q : Prop
-p : ℤ → 1 = 2
+p : ∀ (x : ℤ), 1 = 2
 ⊢ ℤ
 ---
 error: unsolved goals
 q : Prop
-p : ℤ → 1 = 2
+p : ∀ (x : ℤ), 1 = 2
 ⊢ 1 = 2
 -/
 #guard_msgs in
@@ -687,20 +687,6 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     False := by
   intros; linarith
 
--- TODO: still broken with Fourier-Motzkin
-/--
-error: linarith failed to find a contradiction
-case h1.h
-a b c d e : ℚ
-ha : 2 * a + b + c + d + e = 4
-hb : a + 2 * b + c + d + e = 5
-hc : a + b + 2 * c + d + e = 6
-hd : a + b + c + 2 * d + e = 7
-he : a + b + c + d + 2 * e = 8
-a✝ : e < 3
-⊢ False
-failed
--/
 #guard_msgs in
 /-- https://github.com/leanprover-community/mathlib4/issues/8875 -/
 example (a b c d e : ℚ)
@@ -712,24 +698,6 @@ example (a b c d e : ℚ)
     e = 3 := by
   linarith (config := { oracle := .fourierMotzkin })
 
-set_option linter.unusedTactic false in
--- TODO: still broken with Fourier-Motzkin
-/--
-error: linarith failed to find a contradiction
-x1 x2 x3 x4 x5 x6 x7 x8 : ℚ
-a✝⁹ : 3 * x4 - x3 - x2 - x1 < 0
-a✝⁸ : x5 - x4 < 0
-a✝⁷ : 2 * (x5 - x4) < 0
-a✝⁶ : -x6 + x3 < 0
-a✝⁵ : -x6 + x2 < 0
-a✝⁴ : 2 * (x6 - x5) < 0
-a✝³ : x8 - x7 < 0
-a✝² : -x8 + x2 < 0
-a✝¹ : -x8 + x7 - x5 + x1 < 0
-a✝ : x7 - x5 < 0
-⊢ False
-failed
--/
 #guard_msgs in
 /-- https://github.com/leanprover-community/mathlib4/issues/2717 -/
 example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
@@ -745,7 +713,6 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     x7 - x5 < 0 → False := by
   intros
   linarith (config := { oracle := .fourierMotzkin })
-
 section findSquares
 
 private abbrev wrapped (z : ℤ) : ℤ := z
