@@ -85,7 +85,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
     (h₂ : e.baseSet = e'.baseSet) : e = e' := by
   cases e; cases e'; congr
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move `ext` here?
+-- TODO: move `ext` here?
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
@@ -169,7 +169,7 @@ theorem preimage_symm_proj_inter (s : Set B) :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' s) ∩ e.baseSet ×ˢ univ = (s ∩ e.baseSet) ×ˢ univ := by
   ext ⟨x, y⟩
   suffices x ∈ e.baseSet → (proj (e.toPartialEquiv.symm (x, y)) ∈ s ↔ x ∈ s) by
-    simpa only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
+    simpa only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
   intro h
   rw [e.proj_symm_apply' h]
 
@@ -622,7 +622,7 @@ theorem continuous_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁
     (h₂ : b ∈ e₂.baseSet) : Continuous (e₁.coordChange e₂ b) := by
   refine continuous_snd.comp (e₂.toPartialHomeomorph.continuousOn.comp_continuous
     (e₁.toPartialHomeomorph.continuousOn_symm.comp_continuous ?_ ?_) ?_)
-  · exact continuous_const.prod_mk continuous_id
+  · fun_prop
   · exact fun x => e₁.mem_target.2 h₁
   · intro x
     rwa [e₂.mem_source, e₁.proj_symm_apply' h₁]
@@ -762,14 +762,14 @@ def liftCM (T : Trivialization F proj) : C(T.source × T.baseSet, T.source) wher
   continuous_toFun := by
     apply Continuous.subtype_mk
     refine T.continuousOn_invFun.comp_continuous ?_ (by simp [mem_target])
-    apply continuous_prod_mk.mpr ⟨by fun_prop, continuous_snd.comp ?_⟩
+    refine .prodMk (by fun_prop) (.snd ?_)
     exact T.continuousOn_toFun.comp_continuous (by fun_prop) (by simp)
 
 variable {ι : Type*} [TopologicalSpace ι] [LocallyCompactPair ι T.baseSet]
   {γ : C(ι, T.baseSet)} {i : ι} {e : T.source}
 
 /-- Extension of `liftCM` to continuous maps taking values in `T.baseSet` (local version of
-homotopy lifting).-/
+homotopy lifting) -/
 def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
     C(T.source × C(ι, T.baseSet), C(ι, T.source)) := by
   let Ψ : C((T.source × C(ι, T.baseSet)) × ι, C(ι, T.baseSet) × ι) :=

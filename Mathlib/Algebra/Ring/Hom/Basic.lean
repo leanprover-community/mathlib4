@@ -6,7 +6,7 @@ Authors: Amelia Livingston, Jireh Loreaux
 import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 /-!
 # Additional lemmas about homomorphisms of semirings and rings
@@ -17,6 +17,7 @@ These lemmas have been banished here to avoid unnecessary imports in
 They could be moved to more natural homes.
 -/
 
+assert_not_exists RelIso Field
 
 open Function
 

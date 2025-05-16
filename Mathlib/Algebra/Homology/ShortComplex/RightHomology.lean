@@ -40,9 +40,9 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 `ι : H ⟶ Q` such that `p` identifies `Q` to the kernel of `f : S.X₁ ⟶ S.X₂`,
 and that `ι` identifies `H` to the kernel of the induced map `g' : Q ⟶ S.X₃` -/
 structure RightHomologyData where
-  /-- a choice of cokernel of `S.f : S.X₁ ⟶ S.X₂`-/
+  /-- a choice of cokernel of `S.f : S.X₁ ⟶ S.X₂` -/
   Q : C
-  /-- a choice of kernel of the induced morphism `S.g' : S.Q ⟶ X₃`-/
+  /-- a choice of kernel of the induced morphism `S.g' : S.Q ⟶ X₃` -/
   H : C
   /-- the projection from `S.X₂` -/
   p : S.X₂ ⟶ Q
@@ -481,6 +481,9 @@ variable [S.HasRightHomology]
 /-- The right homology of a short complex,
 given by the `H` field of a chosen right homology data. -/
 noncomputable def rightHomology : C := S.rightHomologyData.H
+
+-- `S.rightHomology` is the simp normal form.
+@[simp] lemma rightHomologyData_H : S.rightHomologyData.H = S.rightHomology := rfl
 
 /-- The "opcycles" of a short complex, given by the `Q` field of a chosen right homology data.
 This is the dual notion to cycles. -/
@@ -1141,7 +1144,7 @@ namespace RightHomologyMapData
 /-- This right homology map data expresses compatibilities of the right homology data
 constructed by `RightHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
-def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁)
+noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     RightHomologyMapData φ h (RightHomologyData.ofEpiOfIsIsoOfMono φ h) where
   φQ := 𝟙 _
@@ -1288,7 +1291,7 @@ lemma hasKernel [S.HasRightHomology] [HasCokernel S.f] :
   let e : parallelPair (cokernel.desc S.f S.g S.zero) 0 ≅ parallelPair h.g' 0 :=
     parallelPair.ext (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h.hp)
       (Iso.refl _) (coequalizer.hom_ext (by simp)) (by simp)
-  exact hasLimitOfIso e.symm
+  exact hasLimit_of_iso e.symm
 
 end HasRightHomology
 

@@ -11,7 +11,7 @@ import Mathlib.Logic.Equiv.Defs
 -/
 
 /-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
   toFun := PNat.natPred
   invFun := Nat.succPNat

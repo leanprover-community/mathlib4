@@ -365,6 +365,141 @@ theorem of_finrank_sup [FiniteDimensional F A] [FiniteDimensional F B]
     (H : finrank F ↥(A ⊔ B) = finrank F A * finrank F B) : A.LinearDisjoint B :=
   linearDisjoint_iff'.2 <| .of_finrank_sup_of_free (by rwa [← sup_toSubalgebra_of_left])
 
+/-- If `A` and `L` are linearly disjoint over `F`, one of them is algebraic,
+then `[L(A) : L] = [A : F]`. -/
+theorem adjoin_rank_eq_rank_left_of_isAlgebraic (H : A.LinearDisjoint L)
+    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
+    Module.rank L (adjoin L (A : Set E)) = Module.rank F A := by
+  refine Eq.trans ?_ (Subalgebra.LinearDisjoint.adjoin_rank_eq_rank_left H)
+  set L' := (IsScalarTower.toAlgHom F L E).range
+  let i : L ≃ₐ[F] L' := AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)
+  have heq : (adjoin L (A : Set E)).toSubalgebra.toSubsemiring =
+      (Algebra.adjoin L' (A : Set E)).toSubsemiring := by
+    rw [adjoin_toSubalgebra_of_isAlgebraic _ _ halg.symm, Algebra.adjoin_toSubsemiring,
+      Algebra.adjoin_toSubsemiring]
+    congr 2
+    ext x
+    simp only [Set.mem_range, Subtype.exists]
+    exact ⟨fun ⟨y, h⟩ ↦ ⟨x, ⟨y, h⟩, rfl⟩, fun ⟨a, ⟨y, h1⟩, h2⟩ ↦ ⟨y, h1.trans h2⟩⟩
+  refine rank_eq_of_equiv_equiv i (RingEquiv.subsemiringCongr heq).toAddEquiv
+    i.bijective fun a ⟨x, hx⟩ ↦ ?_
+  ext
+  simp_rw [Algebra.smul_def]
+  rfl
+
+theorem adjoin_rank_eq_rank_left_of_isAlgebraic_left (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F A] : Module.rank L (adjoin L (A : Set E)) = Module.rank F A :=
+  H.adjoin_rank_eq_rank_left_of_isAlgebraic (.inl ‹_›)
+
+theorem adjoin_rank_eq_rank_left_of_isAlgebraic_right (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F L] : Module.rank L (adjoin L (A : Set E)) = Module.rank F A :=
+  H.adjoin_rank_eq_rank_left_of_isAlgebraic (.inr ‹_›)
+
+/-- If `A` and `L` are linearly disjoint over `F`, one of them is algebraic,
+then `[L(A) : A] = [L : F]`. Note that in Lean `L(A)` is not naturally an `A`-algebra,
+so this result is stated in a cumbersome way. -/
+theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (H : A.LinearDisjoint L)
+    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
+    Cardinal.lift.{w} (Module.rank A (extendScalars
+      (show A ≤ (adjoin L (A : Set E)).restrictScalars F from subset_adjoin L (A : Set E)))) =
+    Cardinal.lift.{v} (Module.rank F L) := by
+  rw [(AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)).toLinearEquiv.lift_rank_eq,
+    Cardinal.lift_inj, ← Subalgebra.LinearDisjoint.adjoin_rank_eq_rank_right H]
+  set L' := (IsScalarTower.toAlgHom F L E).range
+  have heq : (adjoin L (A : Set E)).toSubalgebra.toSubsemiring =
+      (Algebra.adjoin A (L' : Set E)).toSubsemiring := by
+    rw [adjoin_toSubalgebra_of_isAlgebraic _ _ halg.symm, Algebra.adjoin_toSubsemiring,
+      Algebra.adjoin_toSubsemiring, Set.union_comm]
+    congr 2
+    ext x
+    simp
+  refine rank_eq_of_equiv_equiv (RingHom.id A) (RingEquiv.subsemiringCongr heq).toAddEquiv
+    Function.bijective_id fun ⟨a, ha⟩ ⟨x, hx⟩ ↦ ?_
+  ext
+  simp_rw [Algebra.smul_def]
+  rfl
+
+theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic_left (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F A] :
+    Cardinal.lift.{w} (Module.rank A (extendScalars
+      (show A ≤ (adjoin L (A : Set E)).restrictScalars F from subset_adjoin L (A : Set E)))) =
+    Cardinal.lift.{v} (Module.rank F L) :=
+  H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (.inl ‹_›)
+
+theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic_right (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F L] :
+    Cardinal.lift.{w} (Module.rank A (extendScalars
+      (show A ≤ (adjoin L (A : Set E)).restrictScalars F from subset_adjoin L (A : Set E)))) =
+    Cardinal.lift.{v} (Module.rank F L) :=
+  H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (.inr ‹_›)
+
+/-- If `A` is an intermediate field of `E / F`, `L` is an abstract field between `E / F`,
+such that they are linearly disjoint over `F`, and one of them is algebraic, then
+`[L : F] * [E : L(A)] = [E : A]`. -/
+theorem lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic (H : A.LinearDisjoint L)
+    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
+    Cardinal.lift.{v} (Module.rank F L) * Cardinal.lift.{w} (Module.rank (adjoin L (A : Set E)) E) =
+      Cardinal.lift.{w} (Module.rank A E) := by
+  rw [← H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic halg, ← Cardinal.lift_mul,
+    Cardinal.lift_inj]
+  exact rank_mul_rank A (extendScalars
+    (show A ≤ (adjoin L (A : Set E)).restrictScalars F from subset_adjoin L (A : Set E))) E
+
+theorem lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic_left (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F A] :
+    Cardinal.lift.{v} (Module.rank F L) * Cardinal.lift.{w} (Module.rank (adjoin L (A : Set E)) E) =
+      Cardinal.lift.{w} (Module.rank A E) :=
+  H.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic (.inl ‹_›)
+
+theorem lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic_right (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F L] :
+    Cardinal.lift.{v} (Module.rank F L) * Cardinal.lift.{w} (Module.rank (adjoin L (A : Set E)) E) =
+      Cardinal.lift.{w} (Module.rank A E) :=
+  H.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic (.inr ‹_›)
+
+section
+
+variable {L : Type v} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
+
+/-- The same-universe version of
+`IntermediateField.LinearDisjoint.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic`. -/
+theorem adjoin_rank_eq_rank_right_of_isAlgebraic (H : A.LinearDisjoint L)
+    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
+    Module.rank A (extendScalars (show A ≤ (adjoin L (A : Set E)).restrictScalars F from
+      subset_adjoin L (A : Set E))) = Module.rank F L := by
+  simpa only [Cardinal.lift_id] using H.lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic halg
+
+theorem adjoin_rank_eq_rank_right_of_isAlgebraic_left (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F A] :
+    Module.rank A (extendScalars (show A ≤ (adjoin L (A : Set E)).restrictScalars F from
+      subset_adjoin L (A : Set E))) = Module.rank F L :=
+  H.adjoin_rank_eq_rank_right_of_isAlgebraic (.inl ‹_›)
+
+theorem adjoin_rank_eq_rank_right_of_isAlgebraic_right (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F L] :
+    Module.rank A (extendScalars (show A ≤ (adjoin L (A : Set E)).restrictScalars F from
+      subset_adjoin L (A : Set E))) = Module.rank F L :=
+  H.adjoin_rank_eq_rank_right_of_isAlgebraic (.inr ‹_›)
+
+/-- The same-universe version of
+`IntermediateField.LinearDisjoint.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic`. -/
+theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic (H : A.LinearDisjoint L)
+    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
+    Module.rank F L * Module.rank (adjoin L (A : Set E)) E = Module.rank A E := by
+  simpa only [Cardinal.lift_id] using H.lift_rank_right_mul_lift_adjoin_rank_eq_of_isAlgebraic halg
+
+theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic_left (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F A] :
+    Module.rank F L * Module.rank (adjoin L (A : Set E)) E = Module.rank A E :=
+  H.rank_right_mul_adjoin_rank_eq_of_isAlgebraic (.inl ‹_›)
+
+theorem rank_right_mul_adjoin_rank_eq_of_isAlgebraic_right (H : A.LinearDisjoint L)
+    [Algebra.IsAlgebraic F L] :
+    Module.rank F L * Module.rank (adjoin L (A : Set E)) E = Module.rank A E :=
+  H.rank_right_mul_adjoin_rank_eq_of_isAlgebraic (.inr ‹_›)
+
+end
+
 /-- If `A` and `L` have coprime degree over `F`, then they are linearly disjoint. -/
 theorem of_finrank_coprime (H : (finrank F A).Coprime (finrank F L)) : A.LinearDisjoint L :=
   letI : Field (AlgHom.range (IsScalarTower.toAlgHom F L E)) :=
@@ -445,7 +580,8 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
   have hi : i = (fa.range.mulMap fb.range).comp (Algebra.TensorProduct.congr
       (AlgEquiv.ofInjective fa fa.injective) (AlgEquiv.ofInjective fb fb.injective)) := by
     ext <;> simp [fa, fb]
-  replace H : Function.Injective i := by simpa [hi]
+  replace H : Function.Injective i := by simpa only
+    [hi, AlgHom.coe_comp, AlgHom.coe_coe, EquivLike.injective_comp, fa, this, K, fb]
   change Function.Injective (Ideal.Quotient.mk M) at H
   rwa [RingHom.injective_iff_ker_eq_bot, Ideal.mk_ker] at H
 

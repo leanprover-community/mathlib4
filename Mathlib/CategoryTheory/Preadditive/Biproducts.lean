@@ -3,14 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Group.Ext
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.Tactic.Abel
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Basic facts about biproducts in preadditive categories.
@@ -445,6 +444,28 @@ theorem biprod.map_eq [HasBinaryBiproducts C] {W X Y Z : C} {f : W ⟶ Y} {g : X
     biprod.map f g = biprod.fst ≫ f ≫ biprod.inl + biprod.snd ≫ g ≫ biprod.inr := by
   ext <;> simp
 
+section
+
+variable {Z : C}
+
+lemma biprod.decomp_hom_to (f : Z ⟶ X ⊞ Y) :
+    ∃ f₁ f₂, f = f₁ ≫ biprod.inl + f₂ ≫ biprod.inr :=
+  ⟨f ≫ biprod.fst, f ≫ biprod.snd, by aesop⟩
+
+lemma biprod.ext_to_iff {f g : Z ⟶ X ⊞ Y} :
+    f = g ↔ f ≫ biprod.fst = g ≫ biprod.fst ∧ f ≫ biprod.snd = g ≫ biprod.snd := by
+  aesop
+
+lemma biprod.decomp_hom_from (f : X ⊞ Y ⟶ Z) :
+    ∃ f₁ f₂, f = biprod.fst ≫ f₁ + biprod.snd ≫ f₂ :=
+  ⟨biprod.inl ≫ f, biprod.inr ≫ f, by aesop⟩
+
+lemma biprod.ext_from_iff {f g : X ⊞ Y ⟶ Z} :
+    f = g ↔ biprod.inl ≫ f = biprod.inl ≫ g ∧ biprod.inr ≫ f = biprod.inr ≫ g := by
+  aesop
+
+end
+
 /-- Every split mono `f` with a cokernel induces a binary bicone with `f` as its `inl` and
 the cokernel map as its `snd`.
 We will show in `is_bilimit_binary_bicone_of_split_mono_of_cokernel` that this binary bicone is in
@@ -828,15 +849,16 @@ variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 namespace Limits
 
-section Fintype
+section Finite
 
-variable {J : Type} [Fintype J]
+variable {J : Type} [Finite J]
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
     preserves finite products. -/
 lemma preservesProduct_of_preservesBiproduct {f : J → C} [PreservesBiproduct f F] :
     PreservesLimit (Discrete.functor f) F where
   preserves hc :=
+    let ⟨_⟩ := nonempty_fintype J
     ⟨IsLimit.ofIsoLimit
         ((IsLimit.postcomposeInvEquiv (Discrete.compNatIsoDiscrete _ _) _).symm
           (isBilimitOfPreserves F (biconeIsBilimitOfLimitConeOfIsLimit hc)).isLimit) <|
@@ -859,6 +881,7 @@ end
 lemma preservesBiproduct_of_preservesProduct {f : J → C} [PreservesLimit (Discrete.functor f) F] :
     PreservesBiproduct f F where
   preserves {b} hb :=
+    let ⟨_⟩ := nonempty_fintype J
     ⟨isBilimitOfIsLimit _ <|
       IsLimit.ofIsoLimit
           ((IsLimit.postcomposeHomEquiv (Discrete.compNatIsoDiscrete _ _) (F.mapCone b.toCone)).symm
@@ -905,6 +928,7 @@ lemma preservesBiproductsOfShape_of_preservesProductsOfShape
 lemma preservesCoproduct_of_preservesBiproduct {f : J → C} [PreservesBiproduct f F] :
     PreservesColimit (Discrete.functor f) F where
   preserves {c} hc :=
+    let ⟨_⟩ := nonempty_fintype J
     ⟨IsColimit.ofIsoColimit
         ((IsColimit.precomposeHomEquiv (Discrete.compNatIsoDiscrete _ _) _).symm
           (isBilimitOfPreserves F (biconeIsBilimitOfColimitCoconeOfIsColimit hc)).isColimit) <|
@@ -928,6 +952,7 @@ lemma preservesBiproduct_of_preservesCoproduct {f : J → C}
     [PreservesColimit (Discrete.functor f) F] :
     PreservesBiproduct f F where
   preserves {b} hb :=
+    let ⟨_⟩ := nonempty_fintype J
     ⟨isBilimitOfIsColimit _ <|
       IsColimit.ofIsoColimit
           ((IsColimit.precomposeInvEquiv (Discrete.compNatIsoDiscrete _ _)
@@ -941,7 +966,7 @@ lemma preservesBiproductsOfShape_of_preservesCoproductsOfShape
     [PreservesColimitsOfShape (Discrete J) F] : PreservesBiproductsOfShape J F where
   preserves {_} := preservesBiproduct_of_preservesCoproduct F
 
-end Fintype
+end Finite
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary biproducts
     preserves binary products. -/

@@ -105,7 +105,7 @@ theorem coimage_image_factorisation : coimage.π f ≫ coimageImageComparison f 
   simp [coimageImageComparison]
 
 /-- The coimage-image comparison morphism is functorial. -/
-@[simps!]
+@[simps! obj map]
 def coimageImageComparisonFunctor : Arrow C ⥤ Arrow C where
   obj f := Arrow.mk (coimageImageComparison f.hom)
   map {f g} η := Arrow.homMk

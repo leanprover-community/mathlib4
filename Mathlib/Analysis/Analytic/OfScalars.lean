@@ -11,13 +11,13 @@ import Mathlib.Analysis.Analytic.Basic
 This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in terms of scalars
 `c₀, c₁, c₂, …`.
 ## Main definitions / results:
- * `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
- * `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
-   otherwise.
- * `FormalMultilinearSeries.ofScalars_radius_eq_(zero/inv/top)_of_tendsto`:
-   the ratio test for an analytic function defined in terms of a formal power series `∑ cᵢ • xⁱ`.
- * `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
-   the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
+* `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
+* `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
+  otherwise.
+* `FormalMultilinearSeries.ofScalars_radius_eq_(zero/inv/top)_of_tendsto`:
+  the ratio test for an analytic function defined in terms of a formal power series `∑ cᵢ • xⁱ`.
+* `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
+  the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
 -/
 
 namespace FormalMultilinearSeries
@@ -27,9 +27,9 @@ section Field
 open ContinuousMultilinearMap
 
 variable {𝕜 : Type*} (E : Type*) [Field 𝕜] [Ring E] [Algebra 𝕜 E] [TopologicalSpace E]
-  [TopologicalRing E] {c : ℕ → 𝕜}
+  [IsTopologicalRing E] {c : ℕ → 𝕜}
 
-/-- Formal power series of `∑ cᵢ • xⁱ` for some scalar field `𝕜` and ring algebra `E`-/
+/-- Formal power series of `∑ cᵢ • xⁱ` for some scalar field `𝕜` and ring algebra `E` -/
 def ofScalars (c : ℕ → 𝕜) : FormalMultilinearSeries 𝕜 E E :=
   fun n ↦ c n • ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E
 
@@ -81,6 +81,11 @@ theorem ofScalars_apply_zero (n : ℕ) :
     (ofScalars E c n fun _ => 0) = Pi.single (f := fun _ => E) 0 (c 0 • 1) n := by
   rw [ofScalars]
   cases n <;> simp
+
+@[simp]
+lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ → 𝕜} {n : ℕ} :
+    (FormalMultilinearSeries.ofScalars 𝕜 p).coeff n = p n := by
+  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
 
 theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c + ofScalars E c' := by
   unfold ofScalars
@@ -147,12 +152,8 @@ open scoped Topology NNReal
 variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
--- Also works:
--- `letI : BoundedSMul 𝕜 (ContinuousMultilinearMap 𝕜 (fun i : Fin n ↦ E) E) := inferInstance`
-set_option maxSynthPendingDepth 2 in
 theorem ofScalars_norm_eq_mul :
     ‖ofScalars E c n‖ = ‖c n‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E‖ := by
-  set_option maxSynthPendingDepth 2 in
   rw [ofScalars, norm_smul]
 
 theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := by

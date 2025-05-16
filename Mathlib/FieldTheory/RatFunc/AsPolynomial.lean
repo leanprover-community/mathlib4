@@ -32,8 +32,6 @@ namespace RatFunc
 
 section Eval
 
-open scoped Classical
-
 open scoped nonZeroDivisors Polynomial
 
 open RatFunc
@@ -199,13 +197,13 @@ theorem idealX_span : (idealX K).asIdeal = Ideal.span {X} := rfl
 
 @[simp]
 theorem valuation_X_eq_neg_one :
-    (idealX K).valuation (RatFunc.X : RatFunc K) = Multiplicative.ofAdd (-1 : ℤ) := by
+    (idealX K).valuation (RatFunc K) RatFunc.X = Multiplicative.ofAdd (-1 : ℤ) := by
   rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton]
   · exact Polynomial.X_ne_zero
   · exact idealX_span K
 
 theorem valuation_of_mk (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
-    (Polynomial.idealX K).valuation (RatFunc.mk f g) =
+    (Polynomial.idealX K).valuation _ (RatFunc.mk f g) =
       (Polynomial.idealX K).intValuation f / (Polynomial.idealX K).intValuation g := by
   simp only [RatFunc.mk_eq_mk' _ hg, valuation_of_mk']
 
@@ -217,11 +215,11 @@ open scoped Multiplicative
 
 open Polynomial
 
-instance : Valued (RatFunc K) ℤₘ₀ := Valued.mk' (idealX K).valuation
+instance : Valued (RatFunc K) ℤₘ₀ := Valued.mk' ((idealX K).valuation _)
 
 @[simp]
 theorem WithZero.valued_def {x : RatFunc K} :
-    @Valued.v (RatFunc K) _ _ _ _ x = (idealX K).valuation x := rfl
+    @Valued.v (RatFunc K) _ _ _ _ x = (idealX K).valuation _ x := rfl
 
 end RatFunc
 

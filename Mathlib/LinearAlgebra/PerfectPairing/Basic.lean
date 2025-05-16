@@ -3,30 +3,30 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Perfect pairings of modules
 
 A perfect pairing of two (left) modules may be defined either as:
- 1. A bilinear map `M × N → R` such that the induced maps `M → Dual R N` and `N → Dual R M` are both
-    bijective. It follows from this that both `M` and `N` are reflexive modules.
- 2. A linear equivalence `N ≃ Dual R M` for which `M` is reflexive. (It then follows that `N` is
-    reflexive.)
+1. A bilinear map `M × N → R` such that the induced maps `M → Dual R N` and `N → Dual R M` are both
+  bijective. It follows from this that both `M` and `N` are reflexive modules.
+2. A linear equivalence `N ≃ Dual R M` for which `M` is reflexive. (It then follows that `N` is
+  reflexive.)
 
 In this file we provide a `PerfectPairing` definition corresponding to 1 above, together with logic
 to connect 1 and 2.
 
 ## Main definitions
 
- * `PerfectPairing`
- * `PerfectPairing.flip`
- * `PerfectPairing.dual`
- * `PerfectPairing.toDualLeft`
- * `PerfectPairing.toDualRight`
- * `LinearEquiv.flip`
- * `LinearEquiv.isReflexive_of_equiv_dual_of_isReflexive`
- * `LinearEquiv.toPerfectPairing`
+* `PerfectPairing`
+* `PerfectPairing.flip`
+* `PerfectPairing.dual`
+* `PerfectPairing.toDualLeft`
+* `PerfectPairing.toDualRight`
+* `LinearEquiv.flip`
+* `LinearEquiv.isReflexive_of_equiv_dual_of_isReflexive`
+* `LinearEquiv.toPerfectPairing`
 
 -/
 
@@ -37,16 +37,20 @@ noncomputable section
 variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 /-- A perfect pairing of two (left) modules over a commutative ring. -/
-structure PerfectPairing where
-  toLin : M →ₗ[R] N →ₗ[R] R
-  bijectiveLeft : Bijective toLin
-  bijectiveRight : Bijective toLin.flip
+structure PerfectPairing extends M →ₗ[R] N →ₗ[R] R where
+  bijective_left : Bijective toLinearMap
+  bijective_right : Bijective toLinearMap.flip
 
-attribute [nolint docBlame] PerfectPairing.toLin
+/-- The underlying bilinear map of a perfect pairing. -/
+add_decl_doc PerfectPairing.toLinearMap
 
 variable {R M N}
 
 namespace PerfectPairing
+
+@[deprecated (since := "2025-04-20")] alias toLin := toLinearMap
+@[deprecated (since := "2025-04-20")] alias bijectiveLeft := bijective_left
+@[deprecated (since := "2025-04-20")] alias bijectiveRight := bijective_right
 
 /-- If the coefficients are a field, and one of the spaces is finite-dimensional, it is sufficient
 to check only injectivity instead of bijectivity of the bilinear form. -/
@@ -56,9 +60,9 @@ def mkOfInjective {K V W : Type*}
     (h : Injective B)
     (h' : Injective B.flip) :
     PerfectPairing K V W where
-  toLin := B
-  bijectiveLeft := ⟨h, by rwa [← B.flip_injective_iff₁]⟩
-  bijectiveRight := ⟨h', by
+  toLinearMap := B
+  bijective_left := ⟨h, by rwa [← B.flip_injective_iff₁]⟩
+  bijective_right := ⟨h', by
     have : FiniteDimensional K W := FiniteDimensional.of_injective B.flip h'
     rwa [← B.flip.flip_injective_iff₁, LinearMap.flip_flip]⟩
 
@@ -70,19 +74,20 @@ def mkOfInjective' {K V W : Type*}
     (h : Injective B)
     (h' : Injective B.flip) :
     PerfectPairing K V W where
-  toLin := B
-  bijectiveLeft := ⟨h, by
+  toLinearMap := B
+  bijective_left := ⟨h, by
     have : FiniteDimensional K V := FiniteDimensional.of_injective B h
     rwa [← B.flip_injective_iff₁]⟩
-  bijectiveRight := ⟨h', by rwa [← B.flip.flip_injective_iff₁, LinearMap.flip_flip]⟩
+  bijective_right := ⟨h', by rwa [← B.flip.flip_injective_iff₁, LinearMap.flip_flip]⟩
 
 instance instFunLike : FunLike (PerfectPairing R M N) M (N →ₗ[R] R) where
-  coe f := f.toLin
+  coe f := f.toLinearMap
   coe_injective' x y h := by cases x; cases y; simpa using h
 
 @[simp]
-lemma toLin_apply (p : PerfectPairing R M N) {x : M} : p.toLin x = p x := by
-  rfl
+lemma toLinearMap_apply (p : PerfectPairing R M N) (x : M) : p.toLinearMap x = p x := rfl
+
+@[deprecated (since := "2025-04-20")] alias toLin_apply := toLinearMap_apply
 
 @[simp]
 lemma mk_apply_apply {f : M →ₗ[R] N →ₗ[R] R} {hl} {hr} {x : M} :
@@ -93,9 +98,9 @@ variable (p : PerfectPairing R M N)
 
 /-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 protected def flip : PerfectPairing R N M where
-  toLin := p.toLin.flip
-  bijectiveLeft := p.bijectiveRight
-  bijectiveRight := p.bijectiveLeft
+  toLinearMap := p.toLinearMap.flip
+  bijective_left := p.bijective_right
+  bijective_right := p.bijective_left
 
 @[simp]
 lemma flip_apply_apply {x : M} {y : N} : p.flip y x = p x y :=
@@ -107,7 +112,7 @@ lemma flip_flip : p.flip.flip = p :=
 
 /-- The linear equivalence from `M` to `Dual R N` induced by a perfect pairing. -/
 def toDualLeft : M ≃ₗ[R] Dual R N :=
-  LinearEquiv.ofBijective p.toLin p.bijectiveLeft
+  LinearEquiv.ofBijective p.toLinearMap p.bijective_left
 
 @[simp]
 theorem toDualLeft_apply (a : M) : p.toDualLeft a = p a :=
@@ -179,8 +184,8 @@ instance : EquivLike (PerfectPairing R M N) M (Dual R N) where
     exact LinearMap.congr_fun (LinearEquiv.congr_fun h m) n
 
 instance : LinearEquivClass (PerfectPairing R M N) R M (Dual R N) where
-  map_add p m₁ m₂ := p.toLin.map_add m₁ m₂
-  map_smulₛₗ p t m := p.toLin.map_smul t m
+  map_add p m₁ m₂ := p.toLinearMap.map_add m₁ m₂
+  map_smulₛₗ p t m := p.toLinearMap.map_smul t m
 
 include p in
 theorem finrank_eq [Module.Finite R M] [Module.Free R M] :
@@ -232,11 +237,11 @@ end PerfectPairing
 variable [IsReflexive R M]
 
 /-- A reflexive module has a perfect pairing with its dual. -/
-@[simps]
+@[simps!]
 def IsReflexive.toPerfectPairingDual : PerfectPairing R (Dual R M) M where
-  toLin := LinearMap.id
-  bijectiveLeft := bijective_id
-  bijectiveRight := bijective_dual_eval R M
+  toLinearMap := .id
+  bijective_left := bijective_id
+  bijective_right := bijective_dual_eval R M
 
 @[simp]
 lemma IsReflexive.toPerfectPairingDual_apply {f : Dual R M} {x : M} :
@@ -273,11 +278,10 @@ lemma isReflexive_of_equiv_dual_of_isReflexive : IsReflexive R N := by
   ext; rfl
 
 /-- If `M` is reflexive then a linear equivalence `N ≃ Dual R M` is a perfect pairing. -/
-@[simps]
 def toPerfectPairing : PerfectPairing R N M where
-  toLin := e
-  bijectiveLeft := e.bijective
-  bijectiveRight := e.flip.bijective
+  toLinearMap := e
+  bijective_left := e.bijective
+  bijective_right := e.flip.bijective
 
 end LinearEquiv
 

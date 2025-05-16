@@ -3,7 +3,6 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Star.Basic
 
@@ -57,7 +56,6 @@ instance {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
 
 end Prod
 
--- Porting note: removing @[simp], `simp` simplifies LHS
 theorem Units.embed_product_star [Monoid R] [StarMul R] (u : Rˣ) :
     Units.embedProduct R (star u) = star (Units.embedProduct R u) :=
   rfl

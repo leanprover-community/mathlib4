@@ -52,13 +52,12 @@ three axioms:
 In some sense, a pretopology can be seen as Grothendieck topology with weaker saturation conditions,
 in that each covering is not necessarily downward closed.
 
-See: https://ncatlab.org/nlab/show/Grothendieck+pretopology, or
-https://stacks.math.columbia.edu/tag/00VH, or [MM92] Chapter III, Section 2, Definition 2.
-Note that Stacks calls a category together with a pretopology a site, and [MM92] calls this
-a basis for a topology.
--/
-@[ext]
+See: https://ncatlab.org/nlab/show/Grothendieck+pretopology or [MM92] Chapter III,
+Section 2, Definition 2. -/
+@[ext, stacks 00VH "Note that Stacks calls a category together with a pretopology a site,
+and [MM92] calls this a basis for a topology."]
 structure Pretopology where
+  /-- For all `X : C`, the coverings of `X` (sets of families of morphisms with target `X`) -/
   coverings : ∀ X : C, Set (Presieve X)
   has_isos : ∀ ⦃X Y⦄ (f : Y ⟶ X) [IsIso f], Presieve.singleton f ∈ coverings X
   pullbacks : ∀ ⦃X Y⦄ (f : Y ⟶ X) (S), S ∈ coverings X → pullbackArrows f S ∈ coverings Y

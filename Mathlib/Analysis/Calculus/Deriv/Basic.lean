@@ -18,26 +18,26 @@ The theory is developed analogously to the [Fréchet
 derivatives](./fderiv.html). We first introduce predicates defined in terms
 of the corresponding predicates for Fréchet derivatives:
 
- - `HasDerivAtFilter f f' x L` states that the function `f` has the
-    derivative `f'` at the point `x` as `x` goes along the filter `L`.
+- `HasDerivAtFilter f f' x L` states that the function `f` has the
+  derivative `f'` at the point `x` as `x` goes along the filter `L`.
 
- - `HasDerivWithinAt f f' s x` states that the function `f` has the
-    derivative `f'` at the point `x` within the subset `s`.
+- `HasDerivWithinAt f f' s x` states that the function `f` has the
+  derivative `f'` at the point `x` within the subset `s`.
 
- - `HasDerivAt f f' x` states that the function `f` has the derivative `f'`
-    at the point `x`.
+- `HasDerivAt f f' x` states that the function `f` has the derivative `f'`
+  at the point `x`.
 
- - `HasStrictDerivAt f f' x` states that the function `f` has the derivative `f'`
-    at the point `x` in the sense of strict differentiability, i.e.,
-   `f y - f z = (y - z) • f' + o (y - z)` as `y, z → x`.
+- `HasStrictDerivAt f f' x` states that the function `f` has the derivative `f'`
+  at the point `x` in the sense of strict differentiability, i.e.,
+  `f y - f z = (y - z) • f' + o (y - z)` as `y, z → x`.
 
 For the last two notions we also define a functional version:
 
-  - `derivWithin f s x` is a derivative of `f` at `x` within `s`. If the
-    derivative does not exist, then `derivWithin f s x` equals zero.
+- `derivWithin f s x` is a derivative of `f` at `x` within `s`. If the
+  derivative does not exist, then `derivWithin f s x` equals zero.
 
-  - `deriv f x` is a derivative of `f` at `x`. If the derivative does not
-    exist, then `deriv f x` equals zero.
+- `deriv f x` is a derivative of `f` at `x`. If the derivative does not
+  exist, then `deriv f x` equals zero.
 
 The theorems `fderivWithin_derivWithin` and `fderiv_deriv` show that the
 one-dimensional derivatives coincide with the general Fréchet derivatives.
@@ -230,6 +230,15 @@ variable {x : 𝕜}
 variable {s t : Set 𝕜}
 variable {L L₁ L₂ : Filter 𝕜}
 
+theorem derivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : derivWithin f s x = 0 := by
+  rw [derivWithin, fderivWithin_zero_of_not_accPt h, ContinuousLinearMap.zero_apply]
+
+theorem derivWithin_zero_of_not_uniqueDiffWithinAt (h : ¬UniqueDiffWithinAt 𝕜 s x) :
+    derivWithin f s x = 0 :=
+  derivWithin_zero_of_not_accPt <| mt AccPt.uniqueDiffWithinAt h
+
+set_option linter.deprecated false in
+@[deprecated derivWithin_zero_of_not_accPt (since := "2025-04-20")]
 theorem derivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : derivWithin f s x = 0 := by
   rw [derivWithin, fderivWithin_zero_of_isolated h, ContinuousLinearMap.zero_apply]
 
@@ -631,21 +640,84 @@ end id
 
 section Const
 
-/-! ### Derivative of constant functions -/
+/-! ### Derivative of constant functions
+
+This include the constant functions `0`, `1`, `Nat.cast n`, `Int.cast z`, and other numerals.
+-/
 
 variable (c : F) (s x L)
 
 theorem hasDerivAtFilter_const : HasDerivAtFilter (fun _ => c) 0 x L :=
   (hasFDerivAtFilter_const c x L).hasDerivAtFilter
 
+theorem hasDerivAtFilter_zero : HasDerivAtFilter (0 : 𝕜 → F) 0 x L :=
+  hasDerivAtFilter_const _ _ _
+
+theorem hasDerivAtFilter_one [One F] : HasDerivAtFilter (1 : 𝕜 → F) 0 x L :=
+  hasDerivAtFilter_const _ _ _
+
+theorem hasDerivAtFilter_natCast [NatCast F] (n : ℕ) : HasDerivAtFilter (n : 𝕜 → F) 0 x L :=
+  hasDerivAtFilter_const _ _ _
+
+theorem hasDerivAtFilter_intCast [IntCast F] (z : ℤ) : HasDerivAtFilter (z : 𝕜 → F) 0 x L :=
+  hasDerivAtFilter_const _ _ _
+
+theorem hasDerivAtFilter_ofNat (n : ℕ) [OfNat F n] : HasDerivAtFilter (ofNat(n) : 𝕜 → F) 0 x L :=
+  hasDerivAtFilter_const _ _ _
+
 theorem hasStrictDerivAt_const : HasStrictDerivAt (fun _ => c) 0 x :=
   (hasStrictFDerivAt_const c x).hasStrictDerivAt
+
+theorem hasStrictDerivAt_zero : HasStrictDerivAt (0 : 𝕜 → F) 0 x :=
+  hasStrictDerivAt_const _ _
+
+theorem hasStrictDerivAt_one [One F] : HasStrictDerivAt (1 : 𝕜 → F) 0 x :=
+  hasStrictDerivAt_const _ _
+
+theorem hasStrictDerivAt_natCast [NatCast F] (n : ℕ) : HasStrictDerivAt (n : 𝕜 → F) 0 x :=
+  hasStrictDerivAt_const _ _
+
+theorem hasStrictDerivAt_intCast [IntCast F] (z : ℤ) : HasStrictDerivAt (z : 𝕜 → F) 0 x :=
+  hasStrictDerivAt_const _ _
+
+theorem HasStrictDerivAt_ofNat (n : ℕ) [OfNat F n] : HasStrictDerivAt (ofNat(n) : 𝕜 → F) 0 x :=
+  hasStrictDerivAt_const _ _
 
 theorem hasDerivWithinAt_const : HasDerivWithinAt (fun _ => c) 0 s x :=
   hasDerivAtFilter_const _ _ _
 
+theorem hasDerivWithinAt_zero : HasDerivWithinAt (0 : 𝕜 → F) 0 s x :=
+  hasDerivAtFilter_zero _ _
+
+theorem hasDerivWithinAt_one [One F] : HasDerivWithinAt (1 : 𝕜 → F) 0 s x :=
+  hasDerivWithinAt_const _ _ _
+
+theorem hasDerivWithinAt_natCast [NatCast F] (n : ℕ) : HasDerivWithinAt (n : 𝕜 → F) 0 s x :=
+  hasDerivWithinAt_const _ _ _
+
+theorem hasDerivWithinAt_intCast [IntCast F] (z : ℤ) : HasDerivWithinAt (z : 𝕜 → F) 0 s x :=
+  hasDerivWithinAt_const _ _ _
+
+theorem hasDerivWithinAt_ofNat (n : ℕ) [OfNat F n] : HasDerivWithinAt (ofNat(n) : 𝕜 → F) 0 s x :=
+  hasDerivWithinAt_const _ _ _
+
 theorem hasDerivAt_const : HasDerivAt (fun _ => c) 0 x :=
   hasDerivAtFilter_const _ _ _
+
+theorem hasDerivAt_zero : HasDerivAt (0 : 𝕜 → F) 0 x :=
+  hasDerivAtFilter_zero _ _
+
+theorem hasDerivAt_one [One F] : HasDerivAt (1 : 𝕜 → F) 0 x :=
+  hasDerivAt_const _ _
+
+theorem hasDerivAt_natCast [NatCast F] (n : ℕ) : HasDerivAt (n : 𝕜 → F) 0 x :=
+  hasDerivAt_const _ _
+
+theorem hasDerivAt_intCast [IntCast F] (z : ℤ) : HasDerivAt (z : 𝕜 → F) 0 x :=
+  hasDerivAt_const _ _
+
+theorem hasDerivAt_ofNat (n : ℕ) [OfNat F n] : HasDerivAt (ofNat(n) : 𝕜 → F) 0 x :=
+  hasDerivAt_const _ _
 
 theorem deriv_const : deriv (fun _ => c) x = 0 :=
   HasDerivAt.deriv (hasDerivAt_const x c)
@@ -655,11 +727,46 @@ theorem deriv_const' : (deriv fun _ : 𝕜 => c) = fun _ => 0 :=
   funext fun x => deriv_const x c
 
 @[simp]
-theorem derivWithin_const : derivWithin (fun _ => c) s = 0 := by
+theorem deriv_zero : deriv (0 : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
+
+@[simp]
+theorem deriv_one [One F] : deriv (1 : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
+
+@[simp]
+theorem deriv_natCast [NatCast F] (n : ℕ) : deriv (n : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
+
+@[simp]
+theorem deriv_intCast [IntCast F] (z : ℤ) : deriv (z : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
+
+@[simp low]
+theorem deriv_ofNat (n : ℕ) [OfNat F n] : deriv (ofNat(n) : 𝕜 → F) = 0 :=
+  funext fun _ => deriv_const _ _
+
+@[simp]
+theorem derivWithin_fun_const : derivWithin (fun _ => c) s = 0 := by
   ext; simp [derivWithin]
 
 @[simp]
+theorem derivWithin_const : derivWithin (Function.const 𝕜 c) s = 0 :=
+  derivWithin_fun_const _ _
+
+@[simp]
 theorem derivWithin_zero : derivWithin (0 : 𝕜 → F) s = 0 := derivWithin_const _ _
+
+@[simp]
+theorem derivWithin_one [One F] : derivWithin (1 : 𝕜 → F) s = 0 := derivWithin_const _ _
+
+@[simp]
+theorem derivWithin_natCast [NatCast F] (n : ℕ) : derivWithin (n : 𝕜 → F) s = 0 :=
+  derivWithin_const _ _
+
+@[simp]
+theorem derivWithin_intCast [IntCast F] (z : ℤ) : derivWithin (z : 𝕜 → F) s = 0 :=
+  derivWithin_const _ _
+
+@[simp low]
+theorem derivWithin_ofNat (n : ℕ) [OfNat F n] : derivWithin (ofNat(n) : 𝕜 → F) s = 0 :=
+  derivWithin_const _ _
 
 end Const
 
