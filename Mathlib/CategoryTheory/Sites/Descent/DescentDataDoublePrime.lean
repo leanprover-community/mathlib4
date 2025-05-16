@@ -109,41 +109,29 @@ def dataEquivDescentData' :
   Equiv.piCongrRight (fun i₁ ↦ Equiv.piCongrRight (fun i₂ ↦
     (((F.map (sq i₁ i₂).p₁.op.toLoc).adj.toCategory).homEquiv _ _).symm))
 
-
-lemma hom_self_iff_dataEquivDescentData' :
-    (∀ (i : ι) (δ : (sq i i).Diagonal),
-      pullHom'' (hom i i) δ.f (𝟙 _) (𝟙 _) = (F.map (𝟙 (.mk (op (X i))))).adj.unit.app _) ↔
-    ∀ (i : ι), DescentData'.pullHom' (F := F.comp Adj.forget₁)
+lemma hom_self_iff_dataEquivDescentData' ⦃i : ι⦄ (δ : (sq i i).Diagonal) :
+    pullHom'' (hom i i) δ.f (𝟙 _) (𝟙 _) = (F.map (𝟙 (.mk (op (X i))))).adj.unit.app _ ↔
+    DescentData'.pullHom' (F := F.comp Adj.forget₁)
         (dataEquivDescentData' hom) (f i) (𝟙 (X i)) (𝟙 (X i)) = 𝟙 _ := by
-  refine forall_congr' (fun i ↦ ?_)
-  have δ : (sq i i).Diagonal := Classical.arbitrary _
   trans ((F.map (𝟙 (.mk (op (X i))))).adj.toCategory.homEquiv _ _).symm
     (pullHom'' (hom i i) δ.f (𝟙 (X i)) (𝟙 (X i))) = 𝟙 _
   · dsimp
     rw [← Adjunction.toCategory_unit, ← Adjunction.homEquiv_id,
-      Equiv.apply_eq_iff_eq_symm_apply]
-    constructor
-    · intro h
-      rw [h, Equiv.symm_symm]
-    · intro h δ'
-      obtain rfl := Subsingleton.elim δ δ'
-      exact h
+      Equiv.apply_eq_iff_eq_symm_apply, Equiv.symm_symm]
   · convert Iff.rfl using 2
     have := homEquiv_symm_pullHom' (hom _ _) δ.f (𝟙 _) (𝟙 _) (by simp) (by simp)
     dsimp at this ⊢
     rw [this]
     apply DescentData'.pullHom'_eq_pullHom <;> simp
 
-lemma hom_comp_iff_dataEquivDescentData' :
-    (∀ i₁ i₂ i₃, homComp sq₃ hom i₁ i₂ i₃ = pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _) ↔
-      ∀ (i₁ i₂ i₃ : ι),
-        DescentData'.pullHom' (F := F.comp Adj.forget₁)
-          (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₂ ≫
-        DescentData'.pullHom'
-          (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃ =
-        DescentData'.pullHom'
-          (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃ := by
-  refine forall_congr' (fun i₁ ↦ forall_congr' (fun i₂ ↦ forall_congr' (fun i₃ ↦ ?_)))
+lemma hom_comp_iff_dataEquivDescentData' (i₁ i₂ i₃ : ι) :
+    homComp sq₃ hom i₁ i₂ i₃ = pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _ ↔
+      DescentData'.pullHom' (F := F.comp Adj.forget₁)
+        (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₂ ≫
+      DescentData'.pullHom'
+        (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃ =
+      DescentData'.pullHom'
+        (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃ := by
   sorry
 
 end
@@ -162,23 +150,18 @@ noncomputable def dataEquivCoalgebra
     Iso.homCongr (Iso.refl _)
       ((asIso (F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc)).symm.app _)))
 
-lemma hom_self_iff_dataEquivCoalgebra :
-    (∀ (i : ι) (δ : (sq i i).Diagonal),
-      pullHom'' (hom i i) δ.f (𝟙 _) (𝟙 _) = (F.map (𝟙 (.mk (op (X i))))).adj.unit.app _) ↔
-    ∀ i, dataEquivCoalgebra hom i i ≫ (F.map (f i).op.toLoc).adj.counit.app _ = 𝟙 _ := by
-  refine forall_congr' (fun i ↦ ?_)
+lemma hom_self_iff_dataEquivCoalgebra ⦃i : ι⦄ (δ : (sq i i).Diagonal):
+    pullHom'' (hom i i) δ.f (𝟙 _) (𝟙 _) = (F.map (𝟙 (.mk (op (X i))))).adj.unit.app _ ↔
+    dataEquivCoalgebra hom i i ≫ (F.map (f i).op.toLoc).adj.counit.app _ = 𝟙 _ := by
   sorry
 
-lemma hom_comp_iff_dataEquivCoalgebra :
-    (∀ i₁ i₂ i₃, homComp sq₃ hom i₁ i₂ i₃ = pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _) ↔
-    ∀ (i₁ i₂ i₃ : ι),
-      dataEquivCoalgebra hom i₁ i₂ ≫ (F.map (f i₁).op.toLoc).f.map
-        ((F.map (f i₂).op.toLoc).g.map (dataEquivCoalgebra hom i₂ i₃)) =
-      dataEquivCoalgebra hom i₁ i₃ ≫
-        (F.map (f i₁).op.toLoc).f.map ((F.map (f i₂).op.toLoc).adj.unit.app _) := by
-  refine forall_congr' (fun i₁ ↦ forall_congr' (fun i₂ ↦ forall_congr' (fun i₃ ↦ ?_)))
+lemma hom_comp_iff_dataEquivCoalgebra (i₁ i₂ i₃ : ι) :
+    homComp sq₃ hom i₁ i₂ i₃ = pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _ ↔
+    dataEquivCoalgebra hom i₁ i₂ ≫ (F.map (f i₁).op.toLoc).f.map
+      ((F.map (f i₂).op.toLoc).g.map (dataEquivCoalgebra hom i₂ i₃)) =
+    dataEquivCoalgebra hom i₁ i₃ ≫
+      (F.map (f i₁).op.toLoc).f.map ((F.map (f i₂).op.toLoc).adj.unit.app _) := by
   sorry
-
 
 end
 
