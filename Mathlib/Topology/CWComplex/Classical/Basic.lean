@@ -257,10 +257,9 @@ lemma CWComplex.closed (C : Set X) [CWComplex C] [T2Space X] (A : Set X) (asubc 
   simp_all
 
 lemma RelCWComplex.closedCell_subset_complex [RelCWComplex C D] (n : ℕ) (j : cell C n) :
-    closedCell n j ⊆ C :=  by
+    closedCell n j ⊆ C := by
   simp_rw [← union]
-  apply subset_union_of_subset_right
-  exact subset_iUnion₂ _ _
+  exact subset_union_of_subset_right (subset_iUnion₂ _ _) _
 
 lemma RelCWComplex.openCell_subset_complex [RelCWComplex C D] (n : ℕ) (j : cell C n) :
     openCell n j ⊆ C :=
@@ -297,7 +296,7 @@ lemma RelCWComplex.isClosed [T2Space X] [RelCWComplex C D] : IsClosed C := by
 
 /-- A helper lemma that is essentially the same as `RelCWComplex.iUnion_openCell_eq_skeletonLT`.
 Use that lemma instead. -/
-protected lemma RelCWComplex.iUnion_openCell_eq_iUnion_closedCell [RelCWComplex C D] (n : ℕ∞) :
+private lemma RelCWComplex.iUnion_openCell_eq_iUnion_closedCell [RelCWComplex C D] (n : ℕ∞) :
     D ∪ ⋃ (m : ℕ) (_ : m < n) (j : cell C m), openCell m j =
       D ∪ ⋃ (m : ℕ) (_ : m < n) (j : cell C m), closedCell m j := by
   apply subset_antisymm
