@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Distributions.Gaussian.Real
+import Mathlib.Probability.Moments.Covariance
 import Mathlib.Probability.Moments.CovarianceBanach
 
 /-!
@@ -12,32 +13,28 @@ import Mathlib.Probability.Moments.CovarianceBanach
 We introduce a predicate `IsGaussian` for measures on a Banach space `E` such that the map by
 any continuous linear form is a Gaussian measure on `ℝ`.
 
-For Gaussian distributions in `ℝ`, see `Mathlib.Probability.Distributions.Gaussian.Real`.
+For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distributions.Gaussian`.
 
 ## Main definitions
 
-* `IsGaussian`
+* `IsGaussian`: a measure `μ` is Gaussian if its map by every continuous linear form
+  `L : Dual ℝ E` is a real Gaussian measure.
+  That is, `μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal`.
 
 ## Main statements
 
-* `fooBar_unique`
-
-## Notation
-
-
-
-## Implementation details
-
-
+* `isGaussian_iff_charFunDual_eq`: a finite measure `μ` is Gaussian if and only if
+  its characteristic function has value `exp (μ[L] * I - Var[L; μ] / 2)` for every
+  continuous linear form `L : Dual ℝ E`.
 
 ## References
 
-* [F. Bar, *Quuxes*][bibkey]
+* [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
 
 -/
 
-open MeasureTheory ProbabilityTheory Complex
-open scoped ENNReal NNReal Real
+open MeasureTheory Complex NormedSpace
+open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
 
@@ -79,7 +76,8 @@ instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianR
     simp only [left_eq_sup]
     positivity
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
   {μ : Measure E} [IsGaussian μ]
 
 /-- Dirac measures are Gaussian. -/
@@ -89,11 +87,11 @@ instance {x : E} : IsGaussian (Measure.dirac x) where
 /-- A Gaussian measure is a probability measure. -/
 instance : IsProbabilityMeasure μ where
   measure_univ := by
-    let L : E →L[ℝ] ℝ := Nonempty.some inferInstance
+    let L : Dual ℝ E := Nonempty.some inferInstance
     have : μ.map L Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal L]
     simpa [Measure.map_apply (by fun_prop : Measurable L) .univ] using this
 
-lemma IsGaussian.memLp_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L : E →L[ℝ] ℝ)
+lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E)
     (p : ℝ≥0∞) (hp : p ≠ ∞) :
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
@@ -102,20 +100,22 @@ lemma IsGaussian.memLp_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L :
   simp [hp]
 
 @[fun_prop]
-lemma IsGaussian.integrable_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L : E →L[ℝ] ℝ) :
+lemma IsGaussian.integrable_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E) :
     Integrable L μ := by
   rw [← memLp_one_iff_integrable]
-  exact IsGaussian.memLp_continuousLinearMap μ L 1 (by simp)
+  exact IsGaussian.memLp_dual μ L 1 (by simp)
 
-section CharFunCLM
+section charFunDual
 
-lemma IsGaussian.charFunCLM_eq {μ : Measure E} [IsGaussian μ] (L : E →L[ℝ] ℝ) :
-    charFunCLM μ L = cexp (μ[L] * I - Var[L; μ] / 2) := by
-  calc charFunCLM μ L
-  _ = charFun (μ.map L) 1 := by rw [charFunCLM_eq_charFun_map_one]
+/-- The characteristic function of a Gaussian measure `μ` has value
+`exp (μ[L] * I - Var[L; μ] / 2)` at `L : Dual ℝ E`. -/
+lemma IsGaussian.charFunDual_eq (L : Dual ℝ E) :
+    charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
+  calc charFunDual μ L
+  _ = charFun (μ.map L) 1 := by rw [charFunDual_eq_charFun_map_one]
   _ = charFun (gaussianReal (μ[L]) (Var[L; μ]).toNNReal) 1 := by
     rw [IsGaussian.map_eq_gaussianReal L]
-  _ = cexp (μ[L] * I - Var[L; μ] / 2) := by
+  _ = exp (μ[L] * I - Var[L; μ] / 2) := by
     rw [charFun_gaussianReal]
     simp only [ofReal_one, one_mul, Real.coe_toNNReal', one_pow, mul_one]
     congr
@@ -123,16 +123,18 @@ lemma IsGaussian.charFunCLM_eq {μ : Measure E} [IsGaussian μ] (L : E →L[ℝ]
     · simp only [sup_eq_left]
       exact variance_nonneg _ _
 
-lemma IsGaussian.charFunCLM_eq_of_isCentered (hμ : IsCentered μ) (L : E →L[ℝ] ℝ) :
-    charFunCLM μ L = cexp (- Var[L; μ] / 2) := by
-  rw [IsGaussian.charFunCLM_eq L, integral_complex_ofReal, hμ L]
+lemma IsGaussian.charFunDual_eq_of_isCentered (hμ : IsCentered μ) (L : E →L[ℝ] ℝ) :
+    charFunDual μ L = cexp (- Var[L; μ] / 2) := by
+  rw [IsGaussian.charFunDual_eq L, integral_complex_ofReal, hμ L]
   simp [neg_div]
 
-theorem isGaussian_iff_charFunCLM_eq {μ : Measure E} [IsFiniteMeasure μ] :
-    IsGaussian μ ↔ ∀ L : E →L[ℝ] ℝ, charFunCLM μ L = cexp (μ[L] * I - Var[L; μ] / 2) := by
-  refine ⟨fun h ↦ h.charFunCLM_eq, fun h ↦ ⟨fun L ↦ Measure.ext_of_charFun ?_⟩⟩
+/-- A finite measure is Gaussian iff its characteristic function has value
+`exp (μ[L] * I - Var[L; μ] / 2)` for every `L : Dual ℝ E`. -/
+theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :
+    IsGaussian μ ↔ ∀ L : Dual ℝ E, charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
+  refine ⟨fun h ↦ h.charFunDual_eq, fun h ↦ ⟨fun L ↦ Measure.ext_of_charFun ?_⟩⟩
   ext u
-  rw [charFun_map_eq_charFunCLM_smul L u, h (u • L), charFun_gaussianReal]
+  rw [charFun_map_eq_charFunDual_smul L u, h (u • L), charFun_gaussianReal]
   simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul, ofReal_mul,
     Real.coe_toNNReal']
   congr
@@ -140,9 +142,9 @@ theorem isGaussian_iff_charFunCLM_eq {μ : Measure E} [IsFiniteMeasure μ] :
   · rw [max_eq_left (variance_nonneg _ _), mul_comm, ← ofReal_pow, ← ofReal_mul, ← variance_mul]
     congr
 
-alias ⟨_, isGaussian_of_charFunCLM_eq⟩ := isGaussian_iff_charFunCLM_eq
+alias ⟨_, isGaussian_of_charFunDual_eq⟩ := isGaussian_iff_charFunDual_eq
 
-end CharFunCLM
+end charFunDual
 
 lemma isGaussian_map_prod_add [SecondCountableTopology E]
     {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
@@ -175,6 +177,7 @@ section Map
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
 
+/-- The map of a Gaussian measure by a continuous linear map is Gaussian. -/
 instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) where
   map_eq_gaussianReal L' := by
     rw [Measure.map_map (by fun_prop) (by fun_prop)]
@@ -220,9 +223,9 @@ lemma memLp_comp_inl_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p �
   change MemLp ((L.comp (.inl ℝ E F) ∘ Prod.fst)) p (μ.prod ν)
   rw [← memLp_map_measure_iff]
   · simp only [Measure.map_fst_prod, measure_univ, one_smul]
-    exact IsGaussian.memLp_continuousLinearMap μ (L.comp (.inl ℝ E F)) p hp
+    exact IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) p hp
   · simp only [Measure.map_fst_prod, measure_univ, one_smul]
-    exact (IsGaussian.integrable_continuousLinearMap μ (L.comp (.inl ℝ E F))).1
+    exact (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F))).1
   · fun_prop
 
 lemma memLp_comp_inr_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p ≠ ∞) :
@@ -230,9 +233,9 @@ lemma memLp_comp_inr_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p �
   change MemLp ((L.comp (.inr ℝ E F) ∘ Prod.snd)) p (μ.prod ν)
   rw [← memLp_map_measure_iff]
   · simp only [Measure.map_snd_prod, measure_univ, one_smul]
-    exact IsGaussian.memLp_continuousLinearMap _ (L.comp (.inr ℝ E F)) p hp
+    exact IsGaussian.memLp_dual _ (L.comp (.inr ℝ E F)) p hp
   · simp only [Measure.map_snd_prod, measure_univ, one_smul]
-    exact (IsGaussian.integrable_continuousLinearMap _ (L.comp (.inr ℝ E F))).1
+    exact (IsGaussian.integrable_dual _ (L.comp (.inr ℝ E F))).1
   · fun_prop
 
 lemma memLp_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p ≠ ∞) :
@@ -267,8 +270,8 @@ lemma variance_continuousLinearMap_prod (L : E × F →L[ℝ] ℝ) :
   rw [variance_def' (memLp_prod L (by simp)), integral_continuousLinearMap_prod L,
     variance_def', variance_def']
   rotate_left
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
   let L₁ := L.comp (.inl ℝ E F)
   let L₂ := L.comp (.inr ℝ E F)
   simp only [Pi.pow_apply, Function.comp_apply,
@@ -317,8 +320,8 @@ lemma variance_continuousLinearMap_prod (L : E × F →L[ℝ] ℝ) :
 
 /-- A product of Gaussian distributions is Gaussian. -/
 instance [SecondCountableTopologyEither E F] : IsGaussian (μ.prod ν) := by
-  refine isGaussian_of_charFunCLM_eq fun L ↦ ?_
-  rw [charFunCLM_prod, IsGaussian.charFunCLM_eq, IsGaussian.charFunCLM_eq, ← Complex.exp_add]
+  refine isGaussian_of_charFunDual_eq fun L ↦ ?_
+  rw [charFunDual_prod, IsGaussian.charFunDual_eq, IsGaussian.charFunDual_eq, ← Complex.exp_add]
   congr
   let L₁ := L.comp (.inl ℝ E F)
   let L₂ := L.comp (.inr ℝ E F)
@@ -355,11 +358,11 @@ lemma _root_.ContinuousLinearMap.rotation_apply {E : Type*} [NormedAddCommGroup 
 lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace E]
     (hμ : IsCentered μ) (θ : ℝ) :
     (μ.prod μ).map (ContinuousLinearMap.rotation θ) = μ.prod μ := by
-  refine ext_of_charFunCLM ?_
+  refine Measure.ext_of_charFunDual ?_
   ext L
-  rw [charFunCLM_map, charFunCLM_prod, IsGaussian.charFunCLM_eq_of_isCentered hμ,
-    IsGaussian.charFunCLM_eq_of_isCentered hμ, ← Complex.exp_add, charFunCLM_prod,
-    IsGaussian.charFunCLM_eq_of_isCentered hμ, IsGaussian.charFunCLM_eq_of_isCentered hμ,
+  rw [charFunDual_map, charFunDual_prod, IsGaussian.charFunDual_eq_of_isCentered hμ,
+    IsGaussian.charFunDual_eq_of_isCentered hμ, ← Complex.exp_add, charFunDual_prod,
+    IsGaussian.charFunDual_eq_of_isCentered hμ, IsGaussian.charFunDual_eq_of_isCentered hμ,
     ← Complex.exp_add]
   rw [← add_div, ← add_div, ← neg_add, ← neg_add]
   congr 3
@@ -384,35 +387,35 @@ lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace
       ContinuousLinearMap.coe_smul', Pi.smul_apply, ContinuousLinearMap.inl_apply, smul_eq_mul]
     rw [← L.comp_inl_add_comp_inr]
     simp
-  rw [h1, h2, ← covariance_self (by fun_prop), ← covariance_self (by fun_prop),
-    ← covariance_self (by fun_prop), ← covariance_self (by fun_prop)]
+  rw [h1, h2, ← covariance_same (by fun_prop), ← covariance_same (by fun_prop),
+    ← covariance_same (by fun_prop), ← covariance_same (by fun_prop)]
   simp only [ContinuousLinearMap.coe_sub',
     ContinuousLinearMap.coe_add']
   rw [covariance_sub_left, covariance_sub_right, covariance_sub_right,
     covariance_add_left, covariance_add_right, covariance_add_right]
   rotate_left
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
   · refine MemLp.add ?_ ?_
-    · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-    · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-  · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
+    · exact IsGaussian.memLp_dual _ _ _ (by simp)
+    · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact IsGaussian.memLp_dual _ _ _ (by simp)
   · refine MemLp.sub ?_ ?_
-    · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
-    · exact IsGaussian.memLp_continuousLinearMap _ _ _ (by simp)
+    · exact IsGaussian.memLp_dual _ _ _ (by simp)
+    · exact IsGaussian.memLp_dual _ _ _ (by simp)
   simp only [ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', covariance_smul_right,
     covariance_smul_left]
   ring_nf

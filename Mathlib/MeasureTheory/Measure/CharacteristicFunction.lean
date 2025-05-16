@@ -6,10 +6,8 @@ Authors: Jakob Stiefel, Rémy Degenne, Thomas Zhu
 import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.Analysis.Normed.Module.Dual
+import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
 /-!
 # Characteristic Function of a Finite Measure

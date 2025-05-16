@@ -5,10 +5,7 @@ Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 import Mathlib.Probability.Moments.MGFAnalytic
-<<<<<<< HEAD:Mathlib/Probability/Distributions/Gaussian/Real.lean
 import Mathlib.MeasureTheory.Group.Convolution
-=======
->>>>>>> origin/master:Mathlib/Probability/Distributions/Gaussian.lean
 
 /-!
 # Gaussian distributions over ℝ
@@ -302,10 +299,6 @@ lemma gaussianReal_map_const_add (y : ℝ) :
     (gaussianReal μ v).map (y + ·) = gaussianReal (μ + y) v := by
   simp_rw [add_comm y]
   exact gaussianReal_map_add_const y
-
-lemma gaussianReal_map_sub_const (y : ℝ) :
-    (gaussianReal μ v).map (· - y) = gaussianReal (μ - y) v := by
-  simp_rw [sub_eq_add_neg, gaussianReal_map_add_const]
 
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
 lemma gaussianReal_map_const_mul (c : ℝ) :

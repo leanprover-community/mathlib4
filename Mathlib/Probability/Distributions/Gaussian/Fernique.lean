@@ -583,9 +583,9 @@ lemma IsGaussian.integral_continuousLinearMap (L : E →L[ℝ] ℝ) : μ[L] = L 
 
 lemma IsGaussian.eq_dirac_of_variance_eq_zero (h : ∀ L : E →L[ℝ] ℝ, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by
-  refine ext_of_charFunCLM ?_
+  refine Measure.ext_of_charFunDual ?_
   ext L
-  rw [charFunCLM_dirac, IsGaussian.charFunCLM_eq L, h L, integral_complex_ofReal,
+  rw [charFunDual_dirac, IsGaussian.charFunDual_eq L, h L, integral_complex_ofReal,
     IsGaussian.integral_continuousLinearMap L]
   simp
 
