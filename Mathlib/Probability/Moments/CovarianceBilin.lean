@@ -212,7 +212,8 @@ lemma covarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     covarianceBilin μ L₁ L₂ = ∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ := by
   rw [covarianceBilin_of_memLp h, centeredCovarianceBilin_apply,
     integral_map (by fun_prop) (by fun_prop)]
-  simp [← ContinuousLinearMap.integral_comm_of_integrable_id (h.integrable (by simp))]
+  have hL (L : Dual ℝ E) : μ[L] = L (∫ x, x ∂μ) := L.integral_comp_comm (h.integrable (by simp))
+  simp [← hL]
 
 lemma covarianceBilin_same_eq_variance (h : MemLp id 2 μ) (L : Dual ℝ E) :
     covarianceBilin μ L L = Var[L; μ] := by
