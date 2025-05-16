@@ -350,7 +350,7 @@ lemma coeff_ΨSq (n : ℤ) : (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) = n ^ 2 := by
 
 lemma coeff_ΨSq_ne_zero [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) :
     (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) ≠ 0 := by
-  rwa [coeff_ΨSq, pow_ne_zero_iff two_ne_zero]
+  simpa
 
 @[simp]
 lemma natDegree_ΨSq [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) :
@@ -359,7 +359,7 @@ lemma natDegree_ΨSq [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) :
 
 lemma natDegree_ΨSq_pos [NoZeroDivisors R] {n : ℤ} (hn : 1 < n.natAbs) (h : (n : R) ≠ 0) :
     0 < (W.ΨSq n).natDegree := by
-  rwa [W.natDegree_ΨSq h, Nat.sub_pos_iff_lt, Nat.one_lt_pow_iff two_ne_zero]
+  simpa [W.natDegree_ΨSq h]
 
 @[simp]
 lemma leadingCoeff_ΨSq [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) :
@@ -431,7 +431,7 @@ lemma natDegree_Φ [Nontrivial R] (n : ℤ) : (W.Φ n).natDegree = n.natAbs ^ 2 
   natDegree_eq_of_le_of_coeff_ne_zero (W.natDegree_Φ_le n) <| W.coeff_Φ_ne_zero n
 
 lemma natDegree_Φ_pos [Nontrivial R] {n : ℤ} (hn : n ≠ 0) : 0 < (W.Φ n).natDegree := by
-  rwa [natDegree_Φ, pow_pos_iff two_ne_zero, Int.natAbs_pos]
+  simpa [sq_pos_iff]
 
 @[simp]
 lemma leadingCoeff_Φ [Nontrivial R] (n : ℤ) : (W.Φ n).leadingCoeff = 1 := by

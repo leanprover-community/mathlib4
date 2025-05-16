@@ -174,32 +174,32 @@ def preNormEDS (n : ℤ) : R :=
 @[simp]
 lemma preNormEDS_ofNat (n : ℕ) : preNormEDS b c d n = preNormEDS' b c d n := by
   by_cases hn : n = 0
-  · rw [hn, preNormEDS, Nat.cast_zero, Int.sign_zero, Int.cast_zero, zero_mul, preNormEDS'_zero]
-  · rw [preNormEDS, Int.sign_natCast_of_ne_zero hn, Int.cast_one, one_mul, Int.natAbs_cast]
+  · simp [hn, preNormEDS]
+  · simp [preNormEDS, Int.sign_natCast_of_ne_zero hn]
 
 @[simp]
 lemma preNormEDS_zero : preNormEDS b c d 0 = 0 := by
-  rw [← Nat.cast_zero, preNormEDS_ofNat, preNormEDS'_zero]
+  simp [preNormEDS]
 
 @[simp]
 lemma preNormEDS_one : preNormEDS b c d 1 = 1 := by
-  rw [← Nat.cast_one, preNormEDS_ofNat, preNormEDS'_one]
+  simp [preNormEDS]
 
 @[simp]
 lemma preNormEDS_two : preNormEDS b c d 2 = 1 := by
-  rw [← Nat.cast_two, preNormEDS_ofNat, preNormEDS'_two]
+  simp [preNormEDS, Int.sign_eq_one_of_pos]
 
 @[simp]
 lemma preNormEDS_three : preNormEDS b c d 3 = c := by
-  rw [← Nat.cast_three, preNormEDS_ofNat, preNormEDS'_three]
+  simp [preNormEDS, Int.sign_eq_one_of_pos]
 
 @[simp]
 lemma preNormEDS_four : preNormEDS b c d 4 = d := by
-  rw [← Nat.cast_four, preNormEDS_ofNat, preNormEDS'_four]
+  simp [preNormEDS, Int.sign_eq_one_of_pos]
 
 @[simp]
 lemma preNormEDS_neg (n : ℤ) : preNormEDS b c d (-n) = -preNormEDS b c d n := by
-  rw [preNormEDS, Int.sign_neg, Int.cast_neg, neg_mul, Int.natAbs_neg, preNormEDS]
+  simp [preNormEDS]
 
 lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
     preNormEDS b c d (m - 1) ^ 2 * preNormEDS b c d m * preNormEDS b c d (m + 2) -
@@ -291,27 +291,27 @@ def normEDS (n : ℤ) : R :=
 @[simp]
 lemma normEDS_ofNat (n : ℕ) :
     normEDS b c d n = preNormEDS' (b ^ 4) c d n * if Even n then b else 1 := by
-  simp_rw [normEDS, preNormEDS_ofNat, Int.even_coe_nat]
+  simp [normEDS]
 
 @[simp]
 lemma normEDS_zero : normEDS b c d 0 = 0 := by
-  rw [← Nat.cast_zero, normEDS_ofNat, preNormEDS'_zero, zero_mul]
+  simp [normEDS]
 
 @[simp]
 lemma normEDS_one : normEDS b c d 1 = 1 := by
-  rw [← Nat.cast_one, normEDS_ofNat, preNormEDS'_one, one_mul, if_neg Nat.not_even_one]
+  simp [normEDS]
 
 @[simp]
 lemma normEDS_two : normEDS b c d 2 = b := by
-  rw [← Nat.cast_two, normEDS_ofNat, preNormEDS'_two, one_mul, if_pos even_two]
+  simp [normEDS]
 
 @[simp]
 lemma normEDS_three : normEDS b c d 3 = c := by
-  rw [← Nat.cast_three, normEDS_ofNat, preNormEDS'_three, if_neg <| by decide, mul_one]
+  simp [normEDS, show ¬Even (3 : ℤ) by decide]
 
 @[simp]
 lemma normEDS_four : normEDS b c d 4 = d * b := by
-  rw [← Nat.cast_four, normEDS_ofNat, preNormEDS'_four, if_pos <| by decide]
+  simp [normEDS, show ¬Odd (4 : ℤ) by decide]
 
 @[simp]
 lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
@@ -434,20 +434,20 @@ def complEDS (n : ℤ) : R :=
 @[simp]
 lemma complEDS_ofNat (n : ℕ) : complEDS b c d k n = complEDS' b c d k n := by
   by_cases hn : n = 0
-  · rw [hn, complEDS, Nat.cast_zero, Int.sign_zero, Int.cast_zero, zero_mul, complEDS'_zero]
-  · rw [complEDS, Int.sign_natCast_of_ne_zero hn, Int.cast_one, one_mul, Int.natAbs_cast]
+  · simp [hn, complEDS]
+  · simp [complEDS, Int.sign_natCast_of_ne_zero hn]
 
 @[simp]
 lemma complEDS_zero : complEDS b c d k 0 = 0 := by
-  rw [← Nat.cast_zero, complEDS_ofNat, complEDS'_zero]
+  simp [complEDS]
 
 @[simp]
 lemma complEDS_one : complEDS b c d k 1 = 1 := by
-  rw [← Nat.cast_one, complEDS_ofNat, complEDS'_one]
+  simp [complEDS]
 
 @[simp]
 lemma complEDS_neg (n : ℤ) : complEDS b c d k (-n) = -complEDS b c d k n := by
-  rw [complEDS, Int.sign_neg, Int.cast_neg, neg_mul, Int.natAbs_neg, complEDS]
+  simp [complEDS]
 
 lemma complEDS_even (m : ℤ) :
     complEDS b c d k (2 * m) = complEDS b c d k m * complEDS₂ b c d (m * k) := by
@@ -508,36 +508,42 @@ section Map
 
 variable {S : Type v} [CommRing S] (f : R →+* S)
 
+@[simp]
 lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
   induction n using normEDSRec' with
-  | zero => rw [preNormEDS'_zero, map_zero, preNormEDS'_zero]
-  | one => rw [preNormEDS'_one, map_one, preNormEDS'_one]
-  | two => rw [preNormEDS'_two, map_one, preNormEDS'_two]
-  | three => rw [preNormEDS'_three, preNormEDS'_three]
-  | four => rw [preNormEDS'_four, preNormEDS'_four]
+  | zero => simp
+  | one => simp
+  | two => simp
+  | three => simp
+  | four => simp
   | _ _ ih =>
     simp only [preNormEDS'_even, preNormEDS'_odd, apply_ite f, map_pow, map_mul, map_sub, map_one]
     repeat rw [ih _ <| by linarith only]
 
+@[simp]
 lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c) (f d) n := by
-  simp_rw [preNormEDS, map_mul, map_intCast, map_preNormEDS']
+  simp [preNormEDS]
 
+@[simp]
 lemma map_complEDS₂ (n : ℤ) : f (complEDS₂ b c d n) = complEDS₂ (f b) (f c) (f d) n := by
-  simp only [complEDS₂, map_preNormEDS, apply_ite f, map_pow, map_mul, map_sub, map_one]
+  simp [complEDS₂, apply_ite f]
 
+@[simp]
 lemma map_normEDS (n : ℤ) : f (normEDS b c d n) = normEDS (f b) (f c) (f d) n := by
-  simp_rw [normEDS, map_mul, map_preNormEDS, map_pow, apply_ite f, map_one]
+  simp [normEDS, apply_ite f]
 
+@[simp]
 lemma map_complEDS' (k : ℤ) (n : ℕ) :
     f (complEDS' b c d k n) = complEDS' (f b) (f c) (f d) k n := by
   induction n using complEDSRec' with
-  | zero => rw [complEDS'_zero, map_zero, complEDS'_zero]
-  | one => rw [complEDS'_one, map_one, complEDS'_one]
+  | zero => simp
+  | one => simp
   | _ _ ih =>
     simp only [complEDS'_even, complEDS'_odd, map_normEDS, map_complEDS₂, map_pow, map_mul, map_sub]
     repeat rw [ih _ <| by linarith only]
 
+@[simp]
 lemma map_complEDS (k n : ℤ) : f (complEDS b c d k n) = complEDS (f b) (f c) (f d) k n := by
-  simp_rw [complEDS, map_mul, map_intCast, map_complEDS']
+  simp [complEDS]
 
 end Map
