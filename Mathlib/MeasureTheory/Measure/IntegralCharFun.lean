@@ -10,9 +10,13 @@ import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 /-!
 # Integrals of characteristic functions
 
+This file contains results about integrals of characteristic functions of measures, and lemmas
+relating the measure of some sets to integrals of characteristic functions.
+
 ## Main statements
 
-* `fooBar_unique`
+* `integral_charFun_Icc`: `∫ t in -r..r, charFun μ t = 2 * r * ∫ x, sinc (r * x) ∂μ`
+* TODO
 
 -/
 
@@ -24,10 +28,24 @@ section Real
 
 variable {μ : Measure ℝ} {r : ℝ}
 
+lemma intervalIntegral_integral_swap {α E : Type*} {_ : MeasurableSpace α}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {μ : Measure α} [SFinite μ] {a b : ℝ} {f : ℝ → α → E}
+    (h_int : Integrable (Function.uncurry f) ((volume.restrict (Set.uIoc a b)).prod μ)) :
+    ∫ x in a..b, ∫ y, f x y ∂μ = ∫ y, (∫ x in a..b, f x y) ∂μ := by
+  rcases le_total a b with (hab | hab)
+  · simp_rw [intervalIntegral.integral_of_le hab]
+    simp only [hab, Set.uIoc_of_le] at h_int
+    exact integral_integral_swap h_int
+  · simp_rw [intervalIntegral.integral_of_ge hab]
+    simp only [hab, Set.uIoc_of_ge] at h_int
+    rw [integral_integral_swap h_int, integral_neg]
+
 lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     ∫ t in -r..r, charFun μ t = 2 * r * ∫ x, sinc (r * x) ∂μ := by
-  have h_int r : Integrable (Function.uncurry fun (x y : ℝ) ↦ cexp (x * y * I))
-      ((volume.restrict (Set.Ioc (-r) r)).prod μ) := by
+  have h_int : Integrable (Function.uncurry fun (x y : ℝ) ↦ cexp (x * y * I))
+      ((volume.restrict (Set.uIoc (-r) r)).prod μ) := by
+    simp only [neg_le_self_iff, hr.le, Set.uIoc_of_le]
     -- integrable since bounded and the measure is finite
     rw [← integrable_norm_iff]
     swap; · exact Measurable.aestronglyMeasurable <| by fun_prop
@@ -40,35 +58,8 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     simp only [Function.uncurry_apply_pair, norm_exp_ofReal_mul_I]
   calc ∫ t in -r..r, charFun μ t
   _ = ∫ x in -r..r, ∫ y, cexp (x * y * I) ∂μ := by simp_rw [charFun_apply_real]
-  _ = ∫ y, ∫ x in Set.Ioc (-r) r, cexp (x * y * I) ∂volume ∂μ
-      - ∫ y, ∫ x in Set.Ioc r (-r), cexp (x * y * I) ∂volume ∂μ := by
-    rw [intervalIntegral]
-    congr 1
-    · rw [integral_integral_swap]
-      exact h_int r
-    · rw [integral_integral_swap]
-      convert h_int (-r)
-      simp
-  _ = ∫ y, ∫ x in -r..r, cexp (x * y * I) ∂volume ∂μ:= by
-    have h_le (y : ℝ) a : ‖∫ (x : ℝ) in Set.Ioc (-a) a, cexp (x * y * I)‖ ≤ max (a + a) 0 := by
-      refine (norm_integral_le_integral_norm _).trans_eq ?_
-      norm_cast
-      simp_rw [norm_exp_ofReal_mul_I]
-      simp
-    rw [← integral_sub]
-    · congr
-    · refine Integrable.mono' (integrable_const (max (r + r) 0)) ?_
-        (ae_of_all _ fun y ↦ h_le y r)
-      refine StronglyMeasurable.aestronglyMeasurable ?_
-      refine StronglyMeasurable.integral_prod_left (f := fun (x y : ℝ) ↦ cexp (x * y * I)) ?_
-      exact Measurable.stronglyMeasurable (by fun_prop)
-    · refine Integrable.mono' (integrable_const (max (-r + -r) 0)) ?_
-        (ae_of_all _ fun y ↦ ?_)
-      · refine StronglyMeasurable.aestronglyMeasurable ?_
-        refine StronglyMeasurable.integral_prod_left (f := fun (x y : ℝ) ↦ cexp (x * y * I)) ?_
-        exact Measurable.stronglyMeasurable (by fun_prop)
-      · convert h_le y (-r) using 2
-        simp
+  _ = ∫ y, ∫ x in -r..r, cexp (x * y * I) ∂volume ∂μ := by
+    rw [intervalIntegral_integral_swap h_int]
   _ = ∫ y, if r * y = 0 then 2 * (r : ℂ)
       else y⁻¹ * ∫ x in -(y * r)..y * r, cexp (x * I) ∂volume ∂μ := by
     congr with y
