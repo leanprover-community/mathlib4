@@ -1808,6 +1808,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.SpecificLimits.Normed
@@ -2851,6 +2852,7 @@ import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Fin.Tuple.BubbleSortInduction
 import Mathlib.Data.Fin.Tuple.Curry
+import Mathlib.Data.Fin.Tuple.Embedding
 import Mathlib.Data.Fin.Tuple.Finset
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.Reflection
@@ -4206,6 +4208,7 @@ import Mathlib.MeasureTheory.Function.SpecialFunctions.Arctan
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 import Mathlib.MeasureTheory.Function.SpecialFunctions.RCLike
+import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
