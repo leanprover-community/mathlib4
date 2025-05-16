@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Distributions.Gaussian.Real
 import Mathlib.Probability.Moments.Covariance
-import Mathlib.Probability.Moments.CovarianceBanach
+import Mathlib.Probability.Moments.CovarianceBilin
 
 /-!
 # Gaussian distributions in Banach spaces
