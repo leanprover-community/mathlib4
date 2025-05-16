@@ -106,8 +106,7 @@ lemma integrable_cfc_set' [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set
     simp [fc₂, fc, hx]
 
 open ContinuousMap Set in
-lemma integrable_cfc [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
+lemma integrable_cfc (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
     (hf₁ : ∀ x, ContinuousOn (f x) (spectrum 𝕜 a))
     (hf₂ : AEStronglyMeasurable (fun x ↦ (⟨_, hf₁ x |>.restrict⟩ : C(spectrum 𝕜 a, 𝕜))) μ)
     (hbound : ∀ x, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
@@ -206,8 +205,7 @@ lemma cfc_setIntegral' [NormedAlgebra ℝ A] [TopologicalSpace X] [OpensMeasurab
 
 open ContinuousMap Set in
 /-- The continuous functional calculus commutes with integration. -/
-lemma cfc_integral [NormedAlgebra ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
+lemma cfc_integral [NormedAlgebra ℝ A] (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
     (hf₁ : ∀ x, ContinuousOn (f x) (spectrum 𝕜 a))
     (hf₂ : AEStronglyMeasurable (fun x ↦ (⟨_, hf₁ x |>.restrict⟩ : C(spectrum 𝕜 a, 𝕜))) μ)
     (hbound : ∀ x, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
@@ -413,10 +411,8 @@ lemma cfcₙ_setIntegral' [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasura
 
 open ContinuousMapZero Set in
 /-- The non-unital continuous functional calculus commutes with integration. -/
-lemma cfcₙ_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
-    (hf₁ : ∀ x, ContinuousOn (f x) (quasispectrum 𝕜 a))
-    (hf₂ : ∀ x, f x 0 = 0)
+lemma cfcₙ_integral [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
+    (hf₁ : ∀ x, ContinuousOn (f x) (quasispectrum 𝕜 a)) (hf₂ : ∀ x, f x 0 = 0)
     (hf₃ : AEStronglyMeasurable
       (fun x ↦ (⟨⟨_, hf₁ x |>.restrict⟩, by simp [hf₂]⟩ : C(quasispectrum 𝕜 a, 𝕜)₀)) μ)
     (hbound : ∀ x, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
