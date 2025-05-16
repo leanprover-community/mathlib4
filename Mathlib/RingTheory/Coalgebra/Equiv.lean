@@ -277,9 +277,6 @@ noncomputable def ofBijective : A ≃ₗc[R] B where
 theorem coe_ofBijective : (CoalgEquiv.ofBijective hf : A → B) = f :=
   rfl
 
-theorem ofBijective_apply (a : A) : (CoalgEquiv.ofBijective hf) a = f a :=
-  rfl
-
 end
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
   [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]

@@ -289,8 +289,5 @@ noncomputable def ofBijective : A ≃ₐc[R] B where
 theorem coe_ofBijective : (BialgEquiv.ofBijective hf : A → B) = f :=
   rfl
 
-theorem ofBijective_apply (a : A) : (BialgEquiv.ofBijective hf) a = f a :=
-  rfl
-
 end
 end BialgEquiv
