@@ -390,13 +390,13 @@ theorem ofFixingSubgroup.append_left {n : ℕ} {s : Set α} [Finite s]
     let Hs : Nonempty (Fin (s.ncard) ≃ s) :=
       Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
     ofFixingSubgroup.append x (Fin.castAdd n i) = (Classical.choice Hs) i := by
-  simp [ofFixingSubgroup.append, Fin.Embedding.append_left]
+  simp [ofFixingSubgroup.append]
 
 @[to_additive]
 theorem ofFixingSubgroup.append_right {n : ℕ} {s : Set α} [Finite s]
     (x : Fin n ↪ ofFixingSubgroup M s) (i : Fin n) :
     ofFixingSubgroup.append x (Fin.natAdd s.ncard i) = x i := by
-  simp [ofFixingSubgroup.append, Fin.Embedding.append_right]
+  simp [ofFixingSubgroup.append]
 
 end Construction
 
