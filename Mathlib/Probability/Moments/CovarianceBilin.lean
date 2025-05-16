@@ -10,7 +10,7 @@ import Mathlib.Probability.Variance
 /-!
 # Covariance in Banach spaces
 
-We define the covariance of a finite measure in a separable Banach space `E`,
+We define the covariance of a finite measure in a Banach space `E`,
 as a continous bilinear form on `Dual ℝ E`.
 
 ## Main definitions
@@ -20,8 +20,8 @@ Let `μ` be a finite measure on a normed space `E` with the Borel σ-algebra. We
 * `Dual.toLp`: the function `MemLp.toLp` as a continuous linear map from
   `Dual 𝕜 E` (for `RCLike 𝕜`) into the space `Lp 𝕜 p μ` for finite `p ≥ 1`.
   This needs a hypothesis `MemLp id p μ`.
-* `covarianceBilin` : covariance of a measure `μ` with `∫ x, ‖x‖^2 ∂μ < ∞` on a separable Banach
-  space, as a continuous bilinear form `Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ] ℝ`.
+* `covarianceBilin` : covariance of a measure `μ` with `∫ x, ‖x‖^2 ∂μ < ∞` on a Banach space,
+  as a continuous bilinear form `Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ] ℝ`.
   If the second moment of `μ` is not finite, we set `covarianceBilin μ = 0`.
 
 ## Main statements
@@ -40,11 +40,9 @@ The hypothesis that `μ` has a second moment is written as `MemLp id 2 μ` in th
 open MeasureTheory ProbabilityTheory Complex NormedSpace
 open scoped ENNReal NNReal Real Topology
 
-namespace ProbabilityTheory
-
 variable {E : Type*} [NormedAddCommGroup E] {mE : MeasurableSpace E} {μ : Measure E} {p : ℝ≥0∞}
 
-section ToLp
+namespace NormedSpace.Dual
 
 section LinearMap
 
@@ -52,23 +50,30 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
 /-- `MemLp.toLp` as a `LinearMap` from the dual. -/
 noncomputable
-def _root_.NormedSpace.Dual.toLpₗ (μ : Measure E) (p : ℝ≥0∞) (h_Lp : MemLp id p μ) :
+def toLpₗ (μ : Measure E) (p : ℝ≥0∞) (h_Lp : MemLp id p μ) :
     Dual 𝕜 E →ₗ[𝕜] Lp 𝕜 p μ where
   toFun := fun L ↦ MemLp.toLp L (h_Lp.continuousLinearMap_comp L)
   map_add' u v := by push_cast; rw [MemLp.toLp_add]
   map_smul' c L := by push_cast; rw [MemLp.toLp_const_smul]; rfl
 
 @[simp]
-lemma Dual.toLpₗ_apply (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
+lemma toLpₗ_apply (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
     L.toLpₗ μ p h_Lp = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := rfl
 
-lemma norm_toLpₗ_le [OpensMeasurableSpace E] (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
+lemma norm_toLpₗ_le [OpensMeasurableSpace E]
+    (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
     ‖L.toLpₗ μ p h_Lp‖ ≤ ‖L‖ * (eLpNorm id p μ).toReal := by
   by_cases hp : p = 0
   · simp [hp]
   by_cases hp_top : p = ∞
   · simp only [hp_top, Dual.toLpₗ_apply, Lp.norm_toLp, eLpNorm_exponent_top] at h_Lp ⊢
-    sorry
+    simp only [eLpNormEssSup, id_eq]
+    suffices (essSup (fun x ↦ ‖L x‖ₑ) μ).toReal ≤ (essSup (fun x ↦ ‖L‖ₑ *‖x‖ₑ) μ).toReal by
+      rwa [ENNReal.essSup_const_mul, ENNReal.toReal_mul, toReal_enorm] at this
+    gcongr
+    · rw [ENNReal.essSup_const_mul]
+      exact ENNReal.mul_ne_top (by simp) h_Lp.eLpNorm_ne_top
+    · exact essSup_mono_ae <| ae_of_all _ L.le_opNorm_enorm
   have h0 : 0 < p.toReal := by simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, hp, Ne.lt_top hp_top]
   suffices ‖L.toLpₗ μ p h_Lp‖
       ≤ (‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ).toReal ^ p.toReal⁻¹ by
@@ -95,10 +100,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (h_Lp : MemLp id p μ) (L : Dual 
     rw [← ENNReal.mul_rpow_of_nonneg]
     swap; · positivity
     gcongr
-    simp_rw [← ofReal_norm]
-    rw [← ENNReal.ofReal_mul (by positivity)]
-    gcongr
-    exact L.le_opNorm x
+    exact L.le_opNorm_enorm x
   _ = ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ := by rw [lintegral_const_mul]; fun_prop
 
 end LinearMap
@@ -109,7 +111,7 @@ variable {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [OpensMeasurableSpace
 
 /-- `MemLp.toLp` as a continuous linear map from `Dual 𝕜 E` to `Lp 𝕜 p μ`. -/
 noncomputable
-def _root_.NormedSpace.Dual.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) :
+def toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) :
     Dual 𝕜 E →L[𝕜] Lp 𝕜 p μ where
   toLinearMap := Dual.toLpₗ μ p h_Lp
   cont := by
@@ -119,16 +121,18 @@ def _root_.NormedSpace.Dual.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ 
     obtain ⟨r, hxr⟩ := hs
     refine ⟨r * (eLpNorm id p μ).toReal, fun L hLs ↦ ?_⟩
     specialize hxr L hLs
-    refine (norm_toLpₗ_le h_Lp L).trans ?_
+    refine (Dual.norm_toLpₗ_le h_Lp L).trans ?_
     gcongr
 
 @[simp]
-lemma Dual.toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
+lemma toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
     L.toLp μ p h_Lp = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := rfl
 
 end ContinuousLinearMap
 
-end ToLp
+end NormedSpace.Dual
+
+namespace ProbabilityTheory
 
 section Centered
 
