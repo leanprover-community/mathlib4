@@ -489,7 +489,7 @@ variable {μ : ℝ} {v : ℝ≥0}
 
 /-- The mean of a real Gaussian distribution `gaussianReal μ v` is its mean parameter `μ`. -/
 @[simp]
-lemma integral_fun_id_gaussianReal : ∫ x, x ∂gaussianReal μ v = μ := by
+lemma integral_id_gaussianReal : ∫ x, x ∂gaussianReal μ v = μ := by
   rw [← deriv_mgf_zero (by simp), mgf_fun_id_gaussianReal, _root_.deriv_exp (by fun_prop)]
   simp only [mul_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_div,
     add_zero, Real.exp_zero, one_mul]
@@ -501,7 +501,7 @@ its variance parameter `v`. -/
 @[simp]
 lemma variance_fun_id_gaussianReal : Var[fun x ↦ x; gaussianReal μ v] = v := by
   rw [variance_eq_integral measurable_id'.aemeasurable]
-  simp only [integral_fun_id_gaussianReal]
+  simp only [integral_id_gaussianReal]
   calc ∫ ω, (ω - μ) ^ 2 ∂gaussianReal μ v
   _ = ∫ ω, ω ^ 2 ∂(gaussianReal μ v).map (fun x ↦ x - μ) := by
     rw [integral_map (by fun_prop) (by fun_prop)]
