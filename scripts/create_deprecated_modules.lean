@@ -136,8 +136,6 @@ def deprecateFilePath (fname : String) (comment : Option String) :
   -- the last one is the deletion, the previous one is the last file modification.
   let log ← IO.Process.run {
       cmd := "git"
-      -- An alternative would be to use `--all` or `--first-parent master`, the latter would be
-      -- automatic when running the command on `master`, I think.
       args := #["log", "--pretty=oneline", "-2", "--", fname]
     }
   let [deleted, lastModified] := log.trim.splitOn "\n" |
