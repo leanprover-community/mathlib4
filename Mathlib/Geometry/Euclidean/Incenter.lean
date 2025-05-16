@@ -104,6 +104,138 @@ lemma sum_excenterWeightsUnnorm_empty_pos : 0 < ∑ i, s.excenterWeightsUnnorm �
 lemma excenterExists_empty : s.ExcenterExists ∅ :=
   s.sum_excenterWeightsUnnorm_empty_pos.ne'
 
+private lemma aux (i : Fin (n + 1))  :
+    (inner (s.points i -ᵥ s.points 0) ((s.height 0)⁻¹ ^ 2 • (s.points 0 -ᵥ s.altitudeFoot 0)) : ℝ) =
+    inner (s.points 0 -ᵥ s.points i) ((s.height i)⁻¹ ^ 2 • (s.points i -ᵥ s.altitudeFoot i)) := by
+  obtain rfl | hi := eq_or_ne i 0
+  · simp
+  conv_rhs => rw [← neg_vsub_eq_vsub_rev, inner_neg_left]
+  rw [eq_neg_iff_add_eq_zero]
+  rw [← inner_add_right]
+  by_cases hn : n = 1
+  · subst hn
+    have hi' : i = 1 := by fin_cases i <;> simp at hi ⊢
+    subst hi'
+    have h0 : affineSpan ℝ (Set.range (s.faceOpposite 1).points) = affineSpan ℝ {s.points 0} := by
+      congr
+      rw [range_faceOpposite_points, ← Set.image_singleton]
+      refine congr_arg _ ?_
+      ext i
+      fin_cases i <;> simp
+    have h1 : affineSpan ℝ (Set.range (s.faceOpposite 0).points) = affineSpan ℝ {s.points 1} := by
+      congr
+      rw [range_faceOpposite_points, ← Set.image_singleton]
+      refine congr_arg _ ?_
+      ext i
+      fin_cases i <;> simp
+    rw [height, height, altitudeFoot, altitudeFoot, orthogonalProjectionSpan,
+      orthogonalProjectionSpan, eq_orthogonalProjection_of_eq_subspace h0,
+      eq_orthogonalProjection_of_eq_subspace h1]
+    simp only [orthogonalProjection_affineSpan_singleton]
+    convert inner_zero_right _
+    rw [add_eq_zero_iff_eq_neg, dist_comm, ← smul_neg, neg_vsub_eq_vsub_rev]
+  · have hn2 : #((Finset.univ.erase 0).erase i) = n - 2 + 1 := by
+      simp [Finset.card_erase_of_mem, hi]
+      omega
+    let s' : Simplex ℝ P (n - 2) := s.face hn2
+    have hs'0 : Set.range s'.points ⊆ Set.range (s.faceOpposite 0).points := by
+      simp only [range_face_points, Finset.coe_erase, Finset.coe_univ,
+        range_faceOpposite_points, ne_eq, Set.image_subset_iff, s.independent.injective,
+        Set.preimage_image_eq, Set.diff_singleton_subset_iff, Set.univ_subset_iff, s']
+      ext j
+      by_cases hj : j = 0 <;> simp [hj]
+    have hs'i : Set.range s'.points ⊆ Set.range (s.faceOpposite i).points := by
+      simp only [range_face_points, Finset.coe_erase, Finset.coe_univ,
+        range_faceOpposite_points, ne_eq, Set.image_subset_iff, s.independent.injective,
+        Set.preimage_image_eq, Set.diff_singleton_subset_iff, Set.univ_subset_iff, s']
+      ext j
+      by_cases hj : j = i <;> simp [hj]
+    let p0 : P := s'.orthogonalProjectionSpan (s.points 0)
+    let p00 : P := s.altitudeFoot 0
+    let pi : P := s'.orthogonalProjectionSpan (s.points i)
+    let pii : P := s.altitudeFoot i
+    let vi0 : V := pi -ᵥ p0
+    let v0 : V := p00 -ᵥ p0
+    let v00 : V := (s.points 0) -ᵥ p00
+    let vi : V := pii -ᵥ pi
+    let vii : V := (s.points i) -ᵥ pii
+    simp_rw [height, dist_eq_norm_vsub]
+    suffices ⟪vii + vi + vi0 - v0 - v00, ‖v00‖⁻¹ ^ 2 • v00 + ‖vii‖⁻¹ ^ 2 • vii⟫ = 0 by
+      simpa [vii, vi, v00, v0, vi0] using this
+    have h00 : 0 < ‖v00‖ := by
+      simp [v00, p00]
+    have hii : 0 < ‖vii‖ := by
+      simp [vii, pii]
+    suffices ⟪vii + vi + vi0 - v0 - v00, ‖vii‖ ^ 2 • v00 + ‖v00‖ ^ 2 • vii⟫ = 0 by
+      apply_fun (‖v00‖⁻¹ ^ 2 * ‖vii‖⁻¹ ^ 2 * ·) at this
+      rw [← inner_smul_right, smul_add, smul_smul, smul_smul] at this
+      convert this
+      · simp [hii.ne']
+      · rw [mul_comm, ← mul_assoc]
+        simp [h00.ne']
+      · simp
+    have hi00 : ⟪vi0, v00⟫ = 0 := by
+      refine Submodule.inner_right_of_mem_orthogonal
+        (K := vectorSpan ℝ (Set.range (s.faceOpposite 0).points))
+        (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+          (SetLike.le_def.1 (affineSpan_mono ℝ hs'0) (SetLike.coe_mem _))
+          (SetLike.le_def.1 (affineSpan_mono ℝ hs'0) (SetLike.coe_mem _))) ?_
+      · rw [← direction_affineSpan]
+        exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+    have hi0i : ⟪vi0, vii⟫ = 0 := by
+      refine Submodule.inner_right_of_mem_orthogonal
+        (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
+        (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+          (SetLike.le_def.1 (affineSpan_mono ℝ hs'i) (SetLike.coe_mem _))
+          (SetLike.le_def.1 (affineSpan_mono ℝ hs'i) (SetLike.coe_mem _))) ?_
+      · rw [← direction_affineSpan]
+        exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+    rw [← sub_add_eq_sub_sub, inner_sub_left, inner_add_left, inner_add_right vi0,
+      inner_smul_right, inner_smul_right, hi00, hi0i, mul_zero, mul_zero, add_zero, add_zero,
+      sub_eq_zero, ← real_inner_self_eq_norm_sq, ← real_inner_self_eq_norm_sq]
+    have h000 : ⟪v0, v00⟫ = 0 := by
+      refine Submodule.inner_right_of_mem_orthogonal
+        (K := vectorSpan ℝ (Set.range (s.faceOpposite 0).points))
+        (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+          (SetLike.coe_mem _)
+          (SetLike.le_def.1 (affineSpan_mono ℝ hs'0) (SetLike.coe_mem _))) ?_
+      · rw [← direction_affineSpan]
+        exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+    have hiii : ⟪vi, vii⟫ = 0 := by
+      refine Submodule.inner_right_of_mem_orthogonal
+        (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
+        (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+          (SetLike.coe_mem _)
+          (SetLike.le_def.1 (affineSpan_mono ℝ hs'i) (SetLike.coe_mem _))) ?_
+      · rw [← direction_affineSpan]
+        exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+    have hii0 : ⟪vii + vi, v00⟫ = 0 := by
+      simp only [vsub_add_vsub_cancel, vii, vi]
+      refine Submodule.inner_right_of_mem_orthogonal
+        (K := vectorSpan ℝ (Set.range (s.faceOpposite 0).points))
+        (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+          (mem_affineSpan ℝ ?_)
+          (SetLike.le_def.1 (affineSpan_mono ℝ hs'0) (SetLike.coe_mem _))) ?_
+      · simp only [range_faceOpposite_points, ne_eq, Set.mem_image, Set.mem_setOf_eq]
+        exact ⟨i, hi, rfl⟩
+      · rw [← direction_affineSpan]
+        exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+    have h00i : ⟪v0 + v00, vii⟫ = 0 := by
+      rw [add_comm]
+      simp only [vsub_add_vsub_cancel, v00, v0]
+      refine Submodule.inner_right_of_mem_orthogonal
+        (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
+        (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+          (mem_affineSpan ℝ ?_)
+          (SetLike.le_def.1 (affineSpan_mono ℝ hs'i) (SetLike.coe_mem _))) ?_
+      · simp only [range_faceOpposite_points, ne_eq, Set.mem_image, Set.mem_setOf_eq]
+        exact ⟨0, hi.symm, rfl⟩
+      · rw [← direction_affineSpan]
+        exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+    simp only [inner_add_right, inner_smul_right, hii0, mul_zero, zero_add, h00i, add_zero]
+    simp only [inner_add_left, hiii, add_zero, h000, zero_add]
+    rw [mul_comm]
+
 lemma sum_inv_height_sq_smul_vsub_eq_zero :
     ∑ i, (s.height i)⁻¹ ^ 2 • (s.points i -ᵥ s.altitudeFoot i) = 0 := by
   rw [← Submodule.mem_bot ℝ, ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
@@ -132,130 +264,8 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
       simp only [range_faceOpposite_points, Set.mem_image, Set.mem_setOf_eq]
     · exact ⟨i, hj.1.symm, rfl⟩
     · exact ⟨0, hj.2.symm, rfl⟩
-  · rw [← inner_add_right, eq_comm]
-    by_cases hn : n = 1
-    · subst hn
-      have hi' : i = 1 := by fin_cases i <;> simp at hi ⊢
-      subst hi'
-      have h0 : affineSpan ℝ (Set.range (s.faceOpposite 1).points) = affineSpan ℝ {s.points 0} := by
-        congr
-        rw [range_faceOpposite_points, ← Set.image_singleton]
-        refine congr_arg _ ?_
-        ext i
-        fin_cases i <;> simp
-      have h1 : affineSpan ℝ (Set.range (s.faceOpposite 0).points) = affineSpan ℝ {s.points 1} := by
-        congr
-        rw [range_faceOpposite_points, ← Set.image_singleton]
-        refine congr_arg _ ?_
-        ext i
-        fin_cases i <;> simp
-      rw [height, height, altitudeFoot, altitudeFoot, orthogonalProjectionSpan,
-        orthogonalProjectionSpan, eq_orthogonalProjection_of_eq_subspace h0,
-        eq_orthogonalProjection_of_eq_subspace h1]
-      simp only [orthogonalProjection_affineSpan_singleton]
-      convert inner_zero_right _
-      rw [add_eq_zero_iff_eq_neg, dist_comm, ← smul_neg, neg_vsub_eq_vsub_rev]
-    · have hn2 : #((Finset.univ.erase 0).erase i) = n - 2 + 1 := by
-        simp [Finset.card_erase_of_mem, hi]
-        omega
-      let s' : Simplex ℝ P (n - 2) := s.face hn2
-      have hs'0 : Set.range s'.points ⊆ Set.range (s.faceOpposite 0).points := by
-        simp only [range_face_points, Finset.coe_erase, Finset.coe_univ,
-          range_faceOpposite_points, ne_eq, Set.image_subset_iff, s.independent.injective,
-          Set.preimage_image_eq, Set.diff_singleton_subset_iff, Set.univ_subset_iff, s']
-        ext j
-        by_cases hj : j = 0 <;> simp [hj]
-      have hs'i : Set.range s'.points ⊆ Set.range (s.faceOpposite i).points := by
-        simp only [range_face_points, Finset.coe_erase, Finset.coe_univ,
-          range_faceOpposite_points, ne_eq, Set.image_subset_iff, s.independent.injective,
-          Set.preimage_image_eq, Set.diff_singleton_subset_iff, Set.univ_subset_iff, s']
-        ext j
-        by_cases hj : j = i <;> simp [hj]
-      let p0 : P := s'.orthogonalProjectionSpan (s.points 0)
-      let p00 : P := s.altitudeFoot 0
-      let pi : P := s'.orthogonalProjectionSpan (s.points i)
-      let pii : P := s.altitudeFoot i
-      let vi0 : V := pi -ᵥ p0
-      let v0 : V := p00 -ᵥ p0
-      let v00 : V := (s.points 0) -ᵥ p00
-      let vi : V := pii -ᵥ pi
-      let vii : V := (s.points i) -ᵥ pii
-      simp_rw [height, dist_eq_norm_vsub]
-      suffices ⟪vii + vi + vi0 - v0 - v00, ‖v00‖⁻¹ ^ 2 • v00 + ‖vii‖⁻¹ ^ 2 • vii⟫ = 0 by
-        simpa [vii, vi, v00, v0, vi0] using this
-      have h00 : 0 < ‖v00‖ := by
-        simp [v00, p00]
-      have hii : 0 < ‖vii‖ := by
-        simp [vii, pii]
-      suffices ⟪vii + vi + vi0 - v0 - v00, ‖vii‖ ^ 2 • v00 + ‖v00‖ ^ 2 • vii⟫ = 0 by
-        apply_fun (‖v00‖⁻¹ ^ 2 * ‖vii‖⁻¹ ^ 2 * ·) at this
-        rw [← inner_smul_right, smul_add, smul_smul, smul_smul] at this
-        convert this
-        · simp [hii.ne']
-        · rw [mul_comm, ← mul_assoc]
-          simp [h00.ne']
-        · simp
-      have hi00 : ⟪vi0, v00⟫ = 0 := by
-        refine Submodule.inner_right_of_mem_orthogonal
-          (K := vectorSpan ℝ (Set.range (s.faceOpposite 0).points))
-          (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-            (SetLike.le_def.1 (affineSpan_mono ℝ hs'0) (SetLike.coe_mem _))
-            (SetLike.le_def.1 (affineSpan_mono ℝ hs'0) (SetLike.coe_mem _))) ?_
-        · rw [← direction_affineSpan]
-          exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
-      have hi0i : ⟪vi0, vii⟫ = 0 := by
-        refine Submodule.inner_right_of_mem_orthogonal
-          (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
-          (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-            (SetLike.le_def.1 (affineSpan_mono ℝ hs'i) (SetLike.coe_mem _))
-            (SetLike.le_def.1 (affineSpan_mono ℝ hs'i) (SetLike.coe_mem _))) ?_
-        · rw [← direction_affineSpan]
-          exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
-      rw [← sub_add_eq_sub_sub, inner_sub_left, inner_add_left, inner_add_right vi0,
-        inner_smul_right, inner_smul_right, hi00, hi0i, mul_zero, mul_zero, add_zero, add_zero,
-        sub_eq_zero, ← real_inner_self_eq_norm_sq, ← real_inner_self_eq_norm_sq]
-      have h000 : ⟪v0, v00⟫ = 0 := by
-        refine Submodule.inner_right_of_mem_orthogonal
-          (K := vectorSpan ℝ (Set.range (s.faceOpposite 0).points))
-          (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-            (SetLike.coe_mem _)
-            (SetLike.le_def.1 (affineSpan_mono ℝ hs'0) (SetLike.coe_mem _))) ?_
-        · rw [← direction_affineSpan]
-          exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
-      have hiii : ⟪vi, vii⟫ = 0 := by
-        refine Submodule.inner_right_of_mem_orthogonal
-          (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
-          (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-            (SetLike.coe_mem _)
-            (SetLike.le_def.1 (affineSpan_mono ℝ hs'i) (SetLike.coe_mem _))) ?_
-        · rw [← direction_affineSpan]
-          exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
-      have hii0 : ⟪vii + vi, v00⟫ = 0 := by
-        simp only [vsub_add_vsub_cancel, vii, vi]
-        refine Submodule.inner_right_of_mem_orthogonal
-          (K := vectorSpan ℝ (Set.range (s.faceOpposite 0).points))
-          (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-            (mem_affineSpan ℝ ?_)
-            (SetLike.le_def.1 (affineSpan_mono ℝ hs'0) (SetLike.coe_mem _))) ?_
-        · simp only [range_faceOpposite_points, ne_eq, Set.mem_image, Set.mem_setOf_eq]
-          exact ⟨i, hi, rfl⟩
-        · rw [← direction_affineSpan]
-          exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
-      have h00i : ⟪v0 + v00, vii⟫ = 0 := by
-        rw [add_comm]
-        simp only [vsub_add_vsub_cancel, v00, v0]
-        refine Submodule.inner_right_of_mem_orthogonal
-          (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
-          (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-            (mem_affineSpan ℝ ?_)
-            (SetLike.le_def.1 (affineSpan_mono ℝ hs'i) (SetLike.coe_mem _))) ?_
-        · simp only [range_faceOpposite_points, ne_eq, Set.mem_image, Set.mem_setOf_eq]
-          exact ⟨0, hi.symm, rfl⟩
-        · rw [← direction_affineSpan]
-          exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
-      simp only [inner_add_right, inner_smul_right, hii0, mul_zero, zero_add, h00i, add_zero]
-      simp only [inner_add_left, hiii, add_zero, h000, zero_add]
-      rw [mul_comm]
+  · rw [aux, ← inner_add_left]
+    simp
 
 /-- The inverse of the distance from one vertex to the opposite face, expressed as a sum of
 multiples of that quantity for the other vertices. The multipliers, expressed here in terms of
