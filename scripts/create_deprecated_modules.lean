@@ -136,7 +136,9 @@ def deprecateFilePath (fname : String) (comment : Option String) :
   -- the last one is the deletion, the previous one is the last file modification.
   let log ← IO.Process.run {
       cmd := "git"
-      args := #["log", "--pretty=oneline", "--all", "-2", "--", fname]
+      -- An alternative would be to use `--all` or `--first-parent master`, the latter would be
+      -- automatic when running the command on `master`, I think.
+      args := #["log", "--pretty=oneline", "-2", "--", fname]
     }
   let [deleted, lastModified] := log.trim.splitOn "\n" |
     throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2! \
@@ -146,11 +148,8 @@ def deprecateFilePath (fname : String) (comment : Option String) :
   msgs := msgs.push <| m!"The file {fname} was\n"
   msgs := msgs.push modifiedMsg
   msgs := msgs.push deletedMsg
-
-  -- Get the commit date (in YYYY-MM-DD) of the commit deleting the file.
-  let log' ← IO.Process.run {cmd := "git", args := #[
-    "log", "--format=%cs", "--all", "-2", "--", fname]
-  }
+  -- Get the commit date, in `YYYY-MM-DD` format, of the commit deleting the file.
+  let log' ← IO.Process.run {cmd := "git", args := #["log", "--format=%cs", "-2", "--", fname]}
   let deletionDate := (log'.trim.splitOn "\n")[0]!
   let deprecation ← mkDeprecationWithDate deletionDate comment
   msgs := msgs.push ""
