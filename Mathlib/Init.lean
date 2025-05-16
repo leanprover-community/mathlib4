@@ -71,4 +71,4 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.missingEnd
   linter.style.setOption
   linter.style.maxHeartbeats
-    -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
+  -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
