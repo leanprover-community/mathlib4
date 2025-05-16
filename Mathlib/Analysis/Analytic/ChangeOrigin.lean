@@ -389,7 +389,6 @@ protected theorem FormalMultilinearSeries.AnalyticOnNhd :
     AnalyticOnNhd 𝕜 p.sum (EMetric.ball 0 p.radius) := by
   by_cases hr : p.radius = 0
   · simp [hr]
-  replace hr : 0 < p.radius := pos_of_ne_zero hr
-  exact HasFPowerSeriesOnBall.analyticOnNhd (FormalMultilinearSeries.hasFPowerSeriesOnBall _ hr)
+  exact (FormalMultilinearSeries.hasFPowerSeriesOnBall _ (pos_of_ne_zero hr)).analyticOnNhd
 
 end
