@@ -52,20 +52,25 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
 /-- `MemLp.toLp` as a `LinearMap` from the dual. -/
 noncomputable
-def ContinuousLinearMap.toLpₗ (μ : Measure E) (p : ℝ≥0∞) (h_Lp : MemLp id p μ) :
+def _root_.NormedSpace.Dual.toLpₗ (μ : Measure E) (p : ℝ≥0∞) (h_Lp : MemLp id p μ) :
     Dual 𝕜 E →ₗ[𝕜] Lp 𝕜 p μ where
   toFun := fun L ↦ MemLp.toLp L (h_Lp.continuousLinearMap_comp L)
   map_add' u v := by push_cast; rw [MemLp.toLp_add]
   map_smul' c L := by push_cast; rw [MemLp.toLp_const_smul]; rfl
 
 @[simp]
-lemma ContinuousLinearMap.toLpₗ_apply (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
+lemma Dual.toLpₗ_apply (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
     L.toLpₗ μ p h_Lp = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := rfl
 
 lemma norm_toLpₗ_le [OpensMeasurableSpace E]
-    (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
+    (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) (hp_top : p ≠ ∞) :
     ‖L.toLpₗ μ p h_Lp‖ ≤ ‖L‖ * (eLpNorm id p μ).toReal := by
-  have h0 : 0 < p.toReal := by simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, hp, hp_top.lt_top]
+  by_cases hp : p = 0
+  · simp [hp]
+  by_cases hp_top : p = ∞
+  · simp only [Dual.toLpₗ_apply, Lp.norm_toLp, hp_top, eLpNorm_exponent_top]
+    sorry
+  have h0 : 0 < p.toReal := by simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, hp, Ne.lt_top hp_top]
   suffices ‖L.toLpₗ μ p h_Lp‖
       ≤ (‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ).toReal ^ p.toReal⁻¹ by
     refine this.trans_eq ?_
@@ -74,8 +79,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E]
       ← Real.rpow_mul (by positivity), mul_inv_cancel₀ h0.ne', Real.rpow_one, toReal_enorm]
     rw [eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top, ENNReal.toReal_rpow]
     simp
-  rw [ContinuousLinearMap.toLpₗ_apply, Lp.norm_toLp,
-    eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top]
+  rw [Dual.toLpₗ_apply, Lp.norm_toLp, eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top]
   simp only [ENNReal.toReal_ofNat, ENNReal.rpow_ofNat, one_div]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
   suffices ∫⁻ x, ‖L x‖ₑ ^ p.toReal ∂μ ≤ ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ by
@@ -109,7 +113,7 @@ noncomputable
 def _root_.NormedSpace.Dual.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ)
     (hp : p ≠ ∞) :
     Dual 𝕜 E →L[𝕜] Lp 𝕜 p μ where
-  toLinearMap := ContinuousLinearMap.toLpₗ μ p h_Lp
+  toLinearMap := Dual.toLpₗ μ p h_Lp
   cont := by
     refine LinearMap.continuous_of_locally_bounded _ fun s hs ↦ ?_
     rw [image_isVonNBounded_iff]
@@ -117,10 +121,7 @@ def _root_.NormedSpace.Dual.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ 
     obtain ⟨r, hxr⟩ := hs
     refine ⟨r * (eLpNorm id p μ).toReal, fun L hLs ↦ ?_⟩
     specialize hxr L hLs
-    have hp_ne : p ≠ 0 := by
-      have : 1 ≤ p := Fact.out
-      positivity
-    refine (norm_toLpₗ_le h_Lp L hp_ne hp).trans ?_
+    refine (norm_toLpₗ_le h_Lp L hp).trans ?_
     gcongr
 
 @[simp]
