@@ -131,6 +131,9 @@ lean_exe shake where
 /-- `lake exe lint-style` runs text-based style linters. -/
 lean_exe «lint-style» where
   srcDir := "scripts"
+  supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
