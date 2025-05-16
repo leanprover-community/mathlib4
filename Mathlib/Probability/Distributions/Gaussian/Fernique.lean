@@ -579,7 +579,7 @@ lemma IsGaussian.memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp 
   exact h_subset ⟨by simp [hC_pos], hC_pos⟩
 
 lemma IsGaussian.integral_continuousLinearMap (L : E →L[ℝ] ℝ) : μ[L] = L (∫ x, x ∂μ) :=
-  L.integral_comm_of_memLp_id (IsGaussian.memLp_id μ 1 (by simp))
+  L.integral_comp_comm ((IsGaussian.memLp_id μ 1 (by simp)).integrable le_rfl)
 
 lemma IsGaussian.eq_dirac_of_variance_eq_zero (h : ∀ L : E →L[ℝ] ℝ, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by

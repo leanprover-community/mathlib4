@@ -54,8 +54,13 @@ lemma isCentered_map_sub_integral_id [CompleteSpace E] [BorelSpace E]
   intro L
   rw [integral_map (by fun_prop) (by fun_prop)]
   simp only [map_sub]
-  rw [integral_sub (h_Lp.integrable_continuousLinearMap L) (integrable_const _)]
-  simp [← ContinuousLinearMap.integral_comm_of_memLp_id h_Lp]
+  have hL_int : Integrable L μ := by
+    rw [← memLp_one_iff_integrable]
+    exact h_Lp.continuousLinearMap_comp L
+  rw [integral_sub hL_int (integrable_const _)]
+  have hL := L.integral_comp_comm (h_Lp.integrable le_rfl)
+  simp only [id_eq] at hL
+  simp [← hL]
 
 end Centered
 
