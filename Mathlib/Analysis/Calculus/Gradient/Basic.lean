@@ -311,9 +311,9 @@ theorem hasGradientWithinAt_const : HasGradientWithinAt (fun _ => c) 0 s x :=
 theorem hasGradientAt_const : HasGradientAt (fun _ => c) 0 x :=
   hasGradientAtFilter_const _ _ _
 
-theorem gradient_const : ∇ (const F c) x = 0 := by simp [gradient]
+theorem gradient_fun_const : ∇ (fun _ => c) x = 0 := by simp [gradient]
 
-theorem gradient_fun_const : ∇ (fun _ => c) x = 0 := gradient_const x c
+theorem gradient_const : ∇ (const F c) x = 0 := gradient_fun_const x c
 
 @[simp]
 theorem gradient_fun_const' : (∇ fun _ : F => c) = fun _ => 0 :=

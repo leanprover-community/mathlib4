@@ -1247,12 +1247,12 @@ theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 :=
   (hasFDerivAt_const c x).fderiv
 
 @[simp]
-theorem fderiv_const (c : F) : fderiv 𝕜 (Function.const E c) = 0 := by
-  rw [← fderivWithin_univ, fderivWithin_const]
+theorem fderiv_fun_const (c : F) : fderiv 𝕜 (fun _ : E => c) = 0 := by
+  rw [← fderivWithin_univ, fderivWithin_fun_const]
 
 @[simp]
-theorem fderiv_fun_const (c : F) : fderiv 𝕜 (fun _ : E => c) = 0 :=
-  fderiv_const c
+theorem fderiv_const (c : F) : fderiv 𝕜 (Function.const E c) = 0 :=
+  fderiv_fun_const c
 
 @[simp]
 theorem fderiv_zero : fderiv 𝕜 (0 : E → F) = 0 := fderiv_const _
