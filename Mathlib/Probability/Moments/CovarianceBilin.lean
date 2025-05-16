@@ -183,12 +183,6 @@ section Covariance
 
 variable [NormedSpace ℝ E] [BorelSpace E] [IsFiniteMeasure μ]
 
-theorem _root_.measurableEmbedding_subRight {G : Type*} [AddGroup G] [MeasurableSpace G]
-    [MeasurableAdd G] (g : G) :
-    MeasurableEmbedding fun x ↦ x - g := by
-  simp_rw [sub_eq_add_neg]
-  exact measurableEmbedding_addRight (-g)
-
 open Classical in
 /-- Continuous bilinear form with value `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ` on `(L₁, L₂)`
 if `MemLp id 2 μ`. If not, we set it to zero. -/
@@ -197,12 +191,12 @@ def covarianceBilin (μ : Measure E) [IsFiniteMeasure μ] :
     Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ] ℝ :=
   if h : MemLp id 2 μ then
     centeredCovarianceBilin (μ.map (fun x ↦ x - ∫ x, x ∂μ))
-      (((measurableEmbedding_subRight _).memLp_map_measure_iff).mpr <| h.sub (memLp_const _))
+      ((measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h.sub (memLp_const _))
   else 0
 
 lemma covarianceBilin_of_memLp (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     covarianceBilin μ L₁ L₂ = centeredCovarianceBilin (μ.map (fun x ↦ x - ∫ x, x ∂μ))
-      (((measurableEmbedding_subRight _).memLp_map_measure_iff).mpr <| h.sub (memLp_const _))
+      ((measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h.sub (memLp_const _))
       L₁ L₂ := by
   rw [covarianceBilin, dif_pos h]
 
