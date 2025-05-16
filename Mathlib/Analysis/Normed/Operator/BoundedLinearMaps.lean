@@ -304,8 +304,8 @@ macro_rules (kind:=clmLambdaStx)
 
 open Lean.Parser.Term in
 @[inherit_doc clmLambdaStx]
-macro:max "fun " x:funBinder " =>L[" R:term "] " b:term : term =>
-  `(fun $x ↦L[$R] $b)
+macro:max "fun " xs:funBinder+ " =>L[" R:term "] " b:term : term =>
+  `(fun $xs* ↦L[$R] $b)
 
 /-- Unexpander for `ContinuousLinearMap.mk'` that pretty prints continuous linear maps as
 `fun x ↦L[R] f x` -/
