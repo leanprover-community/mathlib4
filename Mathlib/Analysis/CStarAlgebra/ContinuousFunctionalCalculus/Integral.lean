@@ -51,10 +51,8 @@ lemma cfcHom_integral [NormedAlgebra ℝ A] (a : A) (f : X → C(spectrum 𝕜 a
   cfcL_integral a f hf₁ ha
 
 open ContinuousMap Classical in
-lemma integrable_cfc_set (s : Set X)
-    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A)
-    (hf₁ : ∀ x ∈ s, ContinuousOn (f x) (spectrum 𝕜 a))
+lemma integrable_cfc_set {s : Set X} (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
+    (bound : X → ℝ) (a : A) (hf₁ : ∀ x ∈ s, ContinuousOn (f x) (spectrum 𝕜 a))
     (hf₂ : AEStronglyMeasurable (fun x : X =>
       if h : x ∈ s then (⟨_, (hf₁ x h).restrict⟩ : C(spectrum 𝕜 a, 𝕜)) else 0) (μ.restrict s))
     (hbound : ∀ x ∈ s, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
@@ -87,16 +85,16 @@ lemma integrable_cfc_set (s : Set X)
   exact ContinuousLinearMap.integrable_comp _ fc_integrable
 
 open ContinuousMap Classical in
-lemma integrable_cfc_set' [TopologicalSpace X] [OpensMeasurableSpace X] (s : Set X)
-    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
+lemma integrable_cfc_set' [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
+    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
+    [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
     (hf : Continuous (fun x : s × spectrum 𝕜 a => f x.1 x.2))
     (hbound : ∀ x ∈ s, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound (μ.restrict s)) (ha : p a := by cfc_tac) :
     IntegrableOn (fun x => cfc (f x) a) s μ := by
   let fc : C(s × (spectrum 𝕜 a), 𝕜) := ⟨fun x => f x.1 x.2, hf⟩
   let fc₂ := fc.curry
-  refine integrable_cfc_set s hs f bound a ?_ ?_ hbound hbound_finite_integral
+  refine integrable_cfc_set hs f bound a ?_ ?_ hbound hbound_finite_integral
   · intro x xs
     rw [continuousOn_iff_continuous_restrict]
     exact (fc₂ ⟨x, xs⟩).continuous
@@ -116,7 +114,7 @@ lemma integrable_cfc [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     Integrable (fun x => cfc (f x) a) μ := by
   rw [← integrableOn_univ]
-  refine integrable_cfc_set univ MeasurableSet.univ f bound a ?_ ?_ ?_ ?_ ha
+  refine integrable_cfc_set MeasurableSet.univ f bound a ?_ ?_ ?_ ?_ ha
   · exact fun x _ => hf₁ x
   · simp [hf₂]
   · exact fun x _ => hbound x
@@ -140,9 +138,8 @@ lemma integrable_cfc' [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
 
 open ContinuousMap Classical in
 /-- The continuous functional calculus commutes with integration. -/
-lemma cfc_setIntegral [NormedAlgebra ℝ A] (s : Set X) (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A)
-    (hf₁ : ∀ x ∈ s, ContinuousOn (f x) (spectrum 𝕜 a))
+lemma cfc_setIntegral [NormedAlgebra ℝ A] {s : Set X} (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
+    (bound : X → ℝ) (a : A) (hf₁ : ∀ x ∈ s, ContinuousOn (f x) (spectrum 𝕜 a))
     (hf₂ : AEStronglyMeasurable (fun x : X =>
       if h : x ∈ s then (⟨_, (hf₁ x h).restrict⟩ : C(spectrum 𝕜 a, 𝕜)) else 0) (μ.restrict s))
     (hbound : ∀ x ∈ s, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
@@ -187,16 +184,16 @@ lemma cfc_setIntegral [NormedAlgebra ℝ A] (s : Set X) (hs : MeasurableSet s) (
 
 open ContinuousMap Classical in
 /-- The continuous functional calculus commutes with integration. -/
-lemma cfc_setIntegral' [NormedAlgebra ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] (s : Set X)
-    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
+lemma cfc_setIntegral' [NormedAlgebra ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
+    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
+    [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
     (hf : Continuous (fun x : s × spectrum 𝕜 a => f x.1 x.2))
     (hbound : ∀ x ∈ s, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound (μ.restrict s)) (ha : p a := by cfc_tac) :
     cfc (fun r => ∫ x in s, f x r ∂μ) a = ∫ x in s, cfc (f x) a ∂μ := by
   let fc : C(s × (spectrum 𝕜 a), 𝕜) := ⟨fun x => f x.1 x.2, hf⟩
   let fc₂ := fc.curry
-  refine cfc_setIntegral s hs f bound a ?_ ?_ hbound hbound_finite_integral
+  refine cfc_setIntegral hs f bound a ?_ ?_ hbound hbound_finite_integral
   · intro x xs
     rw [continuousOn_iff_continuous_restrict]
     exact (fc₂ ⟨x, xs⟩).continuous
@@ -219,7 +216,7 @@ lemma cfc_integral [NormedAlgebra ℝ A] [TopologicalSpace X] [OpensMeasurableSp
   have : cfc (fun r => ∫ x, f x r ∂μ) a = cfc (fun r => ∫ x in univ, f x r ∂μ) a := by
     simp [← setIntegral_univ]
   rw [← setIntegral_univ, this]
-  refine cfc_setIntegral univ MeasurableSet.univ f bound a ?_ ?_ ?_ ?_
+  refine cfc_setIntegral MeasurableSet.univ f bound a ?_ ?_ ?_ ?_
   · exact fun x _ => hf₁ x
   · simp [hf₂]
   · exact fun x _ => hbound x
@@ -261,9 +258,7 @@ lemma cfcₙHom_integral [NormedSpace ℝ A] (a : A) (f : X → C(quasispectrum 
   cfcₙL_integral a f hf₁ ha
 
 open ContinuousMapZero Classical in
-lemma integrable_cfcₙ_set (s : Set X)
-    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A)
+lemma integrable_cfcₙ_set {s : Set X} (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
     (hf₁ : ∀ x ∈ s, ContinuousOn (f x) (quasispectrum 𝕜 a))
     (hf₂ : ∀ x ∈ s, f x 0 = 0)
     (hf₃ : AEStronglyMeasurable (fun x : X =>
@@ -300,9 +295,9 @@ lemma integrable_cfcₙ_set (s : Set X)
   exact ContinuousLinearMap.integrable_comp _ fc_integrable
 
 open ContinuousMap Classical in
-lemma integrable_cfcₙ_set' [TopologicalSpace X] [OpensMeasurableSpace X] (s : Set X)
-    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
+lemma integrable_cfcₙ_set' [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
+    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
+    [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
     (hf : Continuous (fun x : s × quasispectrum 𝕜 a => f x.1 x.2))
     (hf₂ : ∀ x ∈ s, f x 0 = 0)
     (hbound : ∀ x ∈ s, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
@@ -318,7 +313,7 @@ lemma integrable_cfcₙ_set' [TopologicalSpace X] [OpensMeasurableSpace X] (s : 
         refine (Topology.IsEmbedding.continuous_iff ?_).mpr this
         apply IsUniformEmbedding.isEmbedding
         exact Isometry.isUniformEmbedding fun x1 ↦ congrFun rfl }
-  refine integrable_cfcₙ_set s hs f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
+  refine integrable_cfcₙ_set hs f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
   · intro x xs
     rw [continuousOn_iff_continuous_restrict]
     exact (fc₂ ⟨x, xs⟩).continuous
@@ -330,10 +325,9 @@ lemma integrable_cfcₙ_set' [TopologicalSpace X] [OpensMeasurableSpace X] (s : 
     simp [fc₂, fc, hx]
 
 open ContinuousMapZero Classical in
-/-- The continuous functional calculus commutes with integration. -/
-lemma cfcₙ_setIntegral [NormedSpace ℝ A] (s : Set X) (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A)
-    (hf₁ : ∀ x ∈ s, ContinuousOn (f x) (quasispectrum 𝕜 a))
+/-- The non-unital continuous functional calculus commutes with integration. -/
+lemma cfcₙ_setIntegral [NormedSpace ℝ A] {s : Set X} (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
+    (bound : X → ℝ) (a : A) (hf₁ : ∀ x ∈ s, ContinuousOn (f x) (quasispectrum 𝕜 a))
     (hf₂ : ∀ x ∈ s, f x 0 = 0)
     (hf₃ : AEStronglyMeasurable (fun x : X =>
       if h : x ∈ s then
@@ -387,10 +381,10 @@ lemma cfcₙ_setIntegral [NormedSpace ℝ A] (s : Set X) (hs : MeasurableSet s) 
   congr
 
 open ContinuousMap Classical in
-/-- The continuous functional calculus commutes with integration. -/
-lemma cfcₙ_setIntegral' [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] (s : Set X)
-    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
-    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
+/-- The non-unital continuous functional calculus commutes with integration. -/
+lemma cfcₙ_setIntegral' [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
+    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
+    [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
     (hf : Continuous (fun x : s × quasispectrum 𝕜 a => f x.1 x.2))
     (hf₂ : ∀ x ∈ s, f x 0 = 0)
     (hbound : ∀ x ∈ s, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
@@ -406,7 +400,7 @@ lemma cfcₙ_setIntegral' [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasura
         refine (Topology.IsEmbedding.continuous_iff ?_).mpr this
         apply IsUniformEmbedding.isEmbedding
         exact Isometry.isUniformEmbedding fun x1 ↦ congrFun rfl }
-  refine cfcₙ_setIntegral s hs f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
+  refine cfcₙ_setIntegral hs f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
   · intro x xs
     rw [continuousOn_iff_continuous_restrict]
     exact (fc₂ ⟨x, xs⟩).continuous
@@ -417,44 +411,53 @@ lemma cfcₙ_setIntegral' [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasura
     ext
     simp [fc₂, fc, hx]
 
-open ContinuousMapZero in
+open ContinuousMapZero Set in
 /-- The non-unital continuous functional calculus commutes with integration. -/
 lemma cfcₙ_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
     (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
     (hf₁ : ∀ x, ContinuousOn (f x) (quasispectrum 𝕜 a))
     (hf₂ : ∀ x, f x 0 = 0)
-    (hf₃ : Continuous (fun x ↦ (⟨⟨_, hf₁ x |>.restrict⟩, hf₂ x⟩ : C(quasispectrum 𝕜 a, 𝕜)₀)))
+    (hf₃ : AEStronglyMeasurable
+      (fun x ↦ (⟨⟨_, hf₁ x |>.restrict⟩, by simp [hf₂]⟩ : C(quasispectrum 𝕜 a, 𝕜)₀)) μ)
     (hbound : ∀ x, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfcₙ (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
-  let fc : X → C(quasispectrum 𝕜 a, 𝕜)₀ := fun x => ⟨⟨_, (hf₁ x).restrict⟩, hf₂ x⟩
-  have fc_integrable : Integrable fc μ := by
-    refine ⟨hf₃.aestronglyMeasurable, ?_⟩
-    refine hbound_finite_integral.mono <| .of_forall fun x ↦ ?_
-    change ‖(fc x : C(quasispectrum  𝕜 a, 𝕜))‖ ≤ ‖bound x‖
-    rw [ContinuousMap.norm_le _ (norm_nonneg (bound x))]
-    exact fun z ↦ hbound x z.1 z.2
-  have h_int_fc : (quasispectrum 𝕜 a).restrict (∫ x, f x · ∂μ) = ∫ x, fc x ∂μ := by
-    ext; simp [integral_apply fc_integrable, fc]
-  have hcont₂ : ContinuousOn (fun r => ∫ x, f x r ∂μ) (quasispectrum 𝕜 a) := by
-    rw [continuousOn_iff_continuous_restrict]
-    convert map_continuous (∫ x, fc x ∂μ)
-  rw [integral_congr_ae (.of_forall fun _ ↦ cfcₙ_apply ..), cfcₙ_apply ..,
-    cfcₙHom_integral _ _ fc_integrable]
-  congr
+  have : cfcₙ (fun r => ∫ x, f x r ∂μ) a = cfcₙ (fun r => ∫ x in univ, f x r ∂μ) a := by
+    simp [← setIntegral_univ]
+  rw [← setIntegral_univ, this]
+  refine cfcₙ_setIntegral MeasurableSet.univ f bound a ?_ ?_ ?_ ?_ ?_
+  · exact fun x _ => hf₁ x
+  · simp [hf₂]
+  · simp [hf₃]
+  · exact fun x _ => hbound x
+  · simp [hbound_finite_integral]
 
 /-- The non-unital continuous functional calculus commutes with integration. -/
 lemma cfcₙ_integral' [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
     (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
-    (hf : Continuous (fun x => (quasispectrum 𝕜 a).restrict (f x)).uncurry)
+    (hf : Continuous (fun x : X × quasispectrum 𝕜 a => f x.1 x.2))
     (hf₂ : ∀ x, f x 0 = 0)
     (hbound : ∀ x, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfcₙ (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
+  let fc : C(X × (quasispectrum 𝕜 a), 𝕜) := ⟨fun x => f x.1 x.2, hf⟩
+  let fc₂ : C(X, C(quasispectrum 𝕜 a, 𝕜)₀) :=
+    { toFun := fun x => ⟨fc.curry x, by simp [fc, hf₂]⟩
+      continuous_toFun := by
+        have : Continuous
+            (ContinuousMapZero.toContinuousMap ∘ (fun x => ⟨fc.curry x, by simp [fc, hf₂]⟩)) :=
+          ContinuousMap.continuous fc.curry
+        refine (Topology.IsEmbedding.continuous_iff ?_).mpr this
+        apply IsUniformEmbedding.isEmbedding
+        exact Isometry.isUniformEmbedding fun x1 ↦ congrFun rfl }
   refine cfcₙ_integral f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
-  · exact (continuousOn_iff_continuous_restrict.mpr <| hf.uncurry_left ·)
-  · let g := ((↑) : C(quasispectrum 𝕜 a, 𝕜)₀ → C(quasispectrum 𝕜 a, 𝕜))
-    refine ((isInducing_iff g).mpr rfl).continuous_iff.mpr ?_
-    exact ContinuousMap.curry ⟨_, hf⟩ |>.continuous
+  · intro x
+    rw [continuousOn_iff_continuous_restrict]
+    exact (fc₂ x).continuous
+  · refine Continuous.aestronglyMeasurable ?_
+    refine fc₂.continuous.congr ?_
+    intro x
+    ext
+    simp [fc₂, fc]
 
 end nonunital
