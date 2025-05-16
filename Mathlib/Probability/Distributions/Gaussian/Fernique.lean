@@ -432,7 +432,8 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' {μ : Measure E} [IsProb
       rw [ENNReal.toReal_lt_toReal hc_one_sub_lt_top.ne hc_lt_top.ne]
       exact h_one_sub_lt_self
 
-lemma exists_integrable_exp_sq_of_map_rotation_eq_self {μ : Measure E} [IsProbabilityMeasure μ]
+lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
+    {μ : Measure E} [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
   by_cases h_meas_Ioo : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1
@@ -474,7 +475,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self {μ : Measure E} [IsProba
     simp only [one_mul]
     gcongr
 
-lemma exists_integrable_exp_sq_of_map_rotation_eq_self'' {μ : Measure E} [IsFiniteMeasure μ]
+lemma exists_integrable_exp_sq_of_map_rotation_eq_self {μ : Measure E} [IsFiniteMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
   by_cases hμ_zero : μ = 0
@@ -490,7 +491,8 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self'' {μ : Measure E} [IsFin
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹) • (μ.prod μ) := by rw [h_rot]
     _ = μ'.prod μ' := by
       simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]
-  obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq_of_map_rotation_eq_self (μ := μ') h_rot
+  obtain ⟨C, hC_pos, hC⟩ :=
+    exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure (μ := μ') h_rot
   refine ⟨C, hC_pos, ?_⟩
   rwa [hμ'_eq, integrable_smul_measure] at hC
   · simp [hμ_zero]
