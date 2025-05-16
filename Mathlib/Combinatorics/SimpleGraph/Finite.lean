@@ -6,7 +6,6 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Sym.Card
-import Mathlib.Order.Minimal
 
 /-!
 # Definitions for finite and locally finite graphs
@@ -424,24 +423,6 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   rw [Finset.card_sdiff]
   · simp [Finset.card_univ, h]
   · simp only [Set.toFinset_subset_toFinset, Set.subset_univ]
-
-variable {G}
-/--If V is finite and `P G` holds then there exists a maximal supergraph H of G
-for which `P H` holds. -/
-lemma exists_maximal_supergraph (P : SimpleGraph V → Prop) (hG : P G) :
-    ∃ H, G ≤ H ∧ Maximal P H :=by
-  simp_rw [maximal_iff_forall_gt]
-  classical
-  revert hG
-  apply WellFounded.recursion (measure fun H  => Hᶜ.edgeFinset.card).wf G
-  intro c hc _
-  by_cases hm: ∀ d, c < d → ¬P d
-  · use c
-  · push_neg at hm
-    obtain ⟨d,hd1,hd2⟩:=hm
-    obtain ⟨e,hle,he⟩:= hc d ((fun h => Finset.card_lt_card <| edgeFinset_ssubset_edgeFinset.2
-        <| compl_lt_compl_iff_lt.2 h) hd1) hd2
-    use e, hd1.le.trans hle
 
 end Finite
 

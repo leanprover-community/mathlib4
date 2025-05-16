@@ -2652,7 +2652,7 @@ import Mathlib.Combinatorics.SetFamily.Shatter
 import Mathlib.Combinatorics.SimpleGraph.Acyclic
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.AndrasfaiErdosSos.AES
-import Mathlib.Combinatorics.SimpleGraph.AndrasfaiErdosSos.Wheel
+import Mathlib.Combinatorics.SimpleGraph.AndrasfaiErdosSos.FiveWheelLike
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
 import Mathlib.Combinatorics.SimpleGraph.Circulant

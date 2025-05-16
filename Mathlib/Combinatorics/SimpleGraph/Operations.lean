@@ -176,8 +176,6 @@ lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
     aesop (add simp [edge_adj, adj_symm])
 
 variable {s t}
-lemma edge_comm : edge s t = edge t s :=by
-  rw [edge, edge, Sym2.eq_swap]
 
 lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by
   rwa [edge, edgeSet_fromEdgeSet, sdiff_eq_left, Set.disjoint_singleton_left, Set.mem_setOf_eq,
