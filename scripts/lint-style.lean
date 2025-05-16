@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
+import Lake.CLI.Main
 import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Linter.TextBased
@@ -20,7 +21,7 @@ In addition, this checks that
 - every file in `scripts` is documented in its top-level README.
 -/
 
-open Cli Mathlib.Linter.TextBased System.FilePath
+open Cli Lean.Linter Mathlib.Linter.TextBased System.FilePath
 
 /-- Parse all imports in a text file at `path` and return just their names:
 this is just a thin wrapper around `Lean.parseImports'`.
@@ -36,12 +37,57 @@ def explicitImports : Array Lean.Name := #[`Batteries, `Std]
 def eraseExplicitImports (names : Array Lean.Name) : Array Lean.Name :=
   explicitImports.foldl Array.erase names
 
+/-- Get the root package of the Lake workspace we are running in. -/
+def getWorkspaceRoot : IO Lake.Package := do
+  let (elanInstall?, leanInstall?, lakeInstall?) ← Lake.findInstall?
+  let config ← Lake.MonadError.runEIO <| Lake.mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
+  let some workspace ← Lake.loadWorkspace config |>.toBaseIO
+    | throw <| IO.userError "failed to load Lake workspace"
+  return workspace.root
+
+/-- Convert the options that Lake knows into the option that Lean knows. -/
+def toLeanOptions (opts : Array Lake.LeanOption) : Lean.Options :=
+  opts.foldl (init := Lean.Options.empty) fun opts o =>
+    -- Strip off the `weak.` prefix, like Lean does when parsing command line arguments.
+    if o.name.getRoot == `weak
+    then
+      opts.insert (o.name.replacePrefix `weak Lean.Name.anonymous) o.value.toDataValue
+    else
+      opts.insert o.name o.value.toDataValue
+
+/-- Determine the `Lean.Options` from the Lakefile of the current project.
+
+We have to do this since style linters do not run in the `CoreM`/`CommandElabM` monads,
+and so they do not get access to the options in scope.
+
+Please do not confuse this with the Lean options at the moment that `lint-style` was compiled.
+-/
+def getLakefileLeanOptions : IO Lean.Options := do
+  let root ← getWorkspaceRoot
+  -- Some projects declare options in the root package.
+  let rootOpts := root.leanOptions
+  -- Other projects, like Mathlib, declare options in the targets.
+  -- Here we use the default targets, since that probably contains the modules we'll be linting.
+  let defaultOpts := root.defaultTargets.flatMap fun target =>
+    if let some lib := root.findLeanLib? target then
+      lib.config.leanOptions
+    else if let some exe := root.findLeanExe? target then
+      exe.config.leanOptions
+    else
+      #[]
+  return toLeanOptions (rootOpts ++ defaultOpts)
+
+/-- Check that `Mathlib.Init` is transitively imported in all of Mathlib -/
+register_option linter.checkInitImports : Bool := { defValue := false }
+
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib.
 Moreover, every file imported in `Mathlib.Init` should in turn import the `Header` linter
 (except for the header linter itself, of course).
 Return the number of modules which violated one of these rules.
 -/
-def missingInitImports : IO Nat := do
+def missingInitImports (opts : Lean.Options) : IO Nat := do
+  unless getLinterValue linter.checkInitImports opts do return 0
+
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
   -- We simply parse `Mathlib.lean`, as CI ensures this file is up to date.
   let allModuleNames := eraseExplicitImports (← findImports "Mathlib.lean")
@@ -82,10 +128,14 @@ def missingInitImports : IO Nat := do
     return missing.size
   return 0
 
+/-- Verify that every file in the `scripts` directory is documented in `scripts/README.md` -/
+register_option linter.allScriptsDocumented : Bool := { defValue := false }
 
 /-- Verifies that every file in the `scripts` directory is documented in `scripts/README.md`.
 Return the number of undocumented scripts. -/
-def undocumentedScripts : IO Nat := do
+def undocumentedScripts (opts : Lean.Options) : IO Nat := do
+  unless getLinterValue linter.allScriptsDocumented opts do return 0
+
   -- Retrieve all scripts (except for the `bench` directory).
   let allScripts ← (walkDir "scripts" fun p ↦ pure (p.components.getD 1 "" != "bench"))
   let allScripts := allScripts.erase ("scripts" / "bench")|>.erase ("scripts" / "README.md")
@@ -105,6 +155,8 @@ def undocumentedScripts : IO Nat := do
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
+  let opts ← getLakefileLeanOptions
+
   let style : ErrorFormat := match args.hasFlag "github" with
     | true => ErrorFormat.github
     | false => ErrorFormat.humanReadable
@@ -124,8 +176,8 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- (For syntax linters, such a bug actually occurred in mathlib.)
   -- This script is re-run each time, hence is immune to such issues.
   let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
-  let numberErrors := (← lintModules nolints allModuleNames style fix)
-    + (← missingInitImports) + (← undocumentedScripts) + (← modulesNotUpperCamelCase allModuleNames)
+  let numberErrors := (← lintModules opts nolints allModuleNames style fix)
+    + (← missingInitImports opts) + (← undocumentedScripts opts) + (← modulesNotUpperCamelCase opts allModuleNames)
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
