@@ -102,8 +102,8 @@ instance isGaussian_map_equiv (L : E ≃L[ℝ] F) : IsGaussian (μ.map L) :=
 section charFunDual
 
 /-- The characteristic function of a Gaussian measure `μ` has value
-`exp (μ[L] * I - Var[L; μ] / 2)` on `L : Dual ℝ E`. -/
-lemma IsGaussian.charFunDual_eq {μ : Measure E} [IsGaussian μ] (L : Dual ℝ E) :
+`exp (μ[L] * I - Var[L; μ] / 2)` at `L : Dual ℝ E`. -/
+lemma IsGaussian.charFunDual_eq (L : Dual ℝ E) :
     charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
   calc charFunDual μ L
   _ = charFun (μ.map L) 1 := by rw [charFunDual_eq_charFun_map_one]
