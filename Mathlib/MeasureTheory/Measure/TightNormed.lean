@@ -195,7 +195,7 @@ variable [BorelSpace E] [ProperSpace E] {μ : ℕ → Measure E} [∀ i, IsFinit
 `r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop` tends to 0 at infinity, then the set of measures
 in the sequence is tight.
 Compared to `isTightMeasureSet_of_tendsto_measure_norm_gt`, this lemma replaces a supremum over
-all measures by a limsup. -/
+all measures by a limsup. This is possible because the sequence is indexed by `ℕ`. -/
 lemma isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt
     (h : Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0)) :
     IsTightMeasureSet (Set.range μ) := by
@@ -212,7 +212,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt
 /-- For a sequence of measures indexed by `ℕ`, the set of measures in the sequence is tight if and
 only if the function `r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop` tends to 0 at infinity.
 Compared to `isTightMeasureSet_iff_tendsto_measure_norm_gt`, this lemma replaces a supremum over
-all measures by a limsup. -/
+all measures by a limsup. This is possible because the sequence is indexed by `ℕ`. -/
 lemma isTightMeasureSet_range_iff_tendsto_limsup_measure_norm_gt :
     IsTightMeasureSet (Set.range μ)
       ↔ Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0) := by
