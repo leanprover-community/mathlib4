@@ -68,7 +68,7 @@ instance : IsProbabilityMeasure μ where
     have : μ.map L Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal L]
     simpa [Measure.map_apply (by fun_prop : Measurable L) .univ] using this
 
-lemma IsGaussian.memLp_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E)
+lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E)
     (p : ℝ≥0∞) (hp : p ≠ ∞) :
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
@@ -77,10 +77,10 @@ lemma IsGaussian.memLp_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L :
   simp [hp]
 
 @[fun_prop]
-lemma IsGaussian.integrable_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E) :
+lemma IsGaussian.integrable_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E) :
     Integrable L μ := by
   rw [← memLp_one_iff_integrable]
-  exact IsGaussian.memLp_continuousLinearMap μ L 1 (by simp)
+  exact IsGaussian.memLp_dual μ L 1 (by simp)
 
 /-- The map of a Gaussian measure by a continuous linear map is Gaussian. -/
 instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) where
