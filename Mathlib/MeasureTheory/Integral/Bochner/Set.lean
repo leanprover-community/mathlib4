@@ -1072,6 +1072,6 @@ lemma continuousOn_integral_of_compact_support
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) :
     ContinuousOn (fun x ↦ ∫ y, f x y ∂μ) s := by
   simpa using continuousOn_integral_bilinear_of_locally_integrable_of_compact_support (lsmul ℝ ℝ)
-    hk hf hfs (integrableOn_const hk.measure_lt_top) (g := fun _ ↦ 1)
+    hk hf hfs (integrableOn_const hk.measure_ne_top) (g := fun _ ↦ 1)
 
 end ParametricIntegral
