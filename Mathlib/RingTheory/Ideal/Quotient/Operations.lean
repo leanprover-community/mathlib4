@@ -398,6 +398,35 @@ lemma Quotient.mk_bijective_iff_eq_bot (I : Ideal A) [I.IsTwoSided] :
     exact (map_eq_bot_iff_le_ker _).mpr <| le_of_eq mk_ker.symm
   · exact fun h => ⟨(injective_iff_ker_eq_bot _).mpr <| by rw [mk_ker, h], mk_surjective⟩
 
+section
+
+/-- `AlgHom` version of `Ideal.Quotient.factor`. -/
+def Quotient.factorₐ {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (hIJ : I ≤ J) :
+    A ⧸ I →ₐ[R₁] A ⧸ J where
+  __ := Ideal.Quotient.factor hIJ
+  commutes' _ := rfl
+
+variable {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (hIJ : I ≤ J)
+
+@[simp]
+lemma Quotient.coe_factorₐ :
+    (Ideal.Quotient.factorₐ R₁ hIJ : A ⧸ I →+* A ⧸ J) = Ideal.Quotient.factor hIJ := rfl
+
+@[simp]
+lemma Quotient.factorₐ_apply_mk (x : A) :
+    Ideal.Quotient.factorₐ R₁ hIJ x = x := rfl
+
+@[simp]
+lemma Quotient.factorₐ_comp_mk :
+    (Ideal.Quotient.factorₐ R₁ hIJ).comp (Ideal.Quotient.mkₐ R₁ I) = Ideal.Quotient.mkₐ R₁ J := rfl
+
+@[simp]
+lemma Quotient.factorₐ_comp {K : Ideal A} [K.IsTwoSided] (hJK : J ≤ K) :
+    (Ideal.Quotient.factorₐ R₁ hJK).comp (Ideal.Quotient.factorₐ R₁ hIJ) =
+      Ideal.Quotient.factorₐ R₁ (hIJ.trans hJK) :=
+  Ideal.Quotient.algHom_ext _ (by ext; simp)
+
+end
 
 variable {R₁}
 

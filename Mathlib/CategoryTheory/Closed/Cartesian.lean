@@ -3,21 +3,13 @@ Copyright (c) 2020 Bhavik Mehta, Edward Ayers, Thomas Read. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers, Thomas Read
 -/
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 # Cartesian closed categories
 
-Given a category with chosen finite products, the cartesian monoidal structure is provided by the
-instance `monoidalOfChosenFiniteProducts`.
-
-We define exponentiable objects to be closed objects with respect to this monoidal structure,
+We define exponentiable objects to be closed objects in a cartesian monoidal category,
 i.e. `(X × -)` is a left adjoint.
 
 We say a category is cartesian closed if every object is exponentiable
@@ -27,10 +19,10 @@ Show that exponential forms a difunctor and define the exponential comparison mo
 
 ## Implementation Details
 
-Cartesian closed categories require a `ChosenFiniteProducts` instance. If one whishes to state that
-a category that `hasFiniteProducts` is cartesian closed, they should first promote the
-`hasFiniteProducts` instance to a `ChosenFiniteProducts` one using
-`CategoryTheory.ChosenFiniteProducts.ofFiniteProducts`.
+Cartesian closed categories require a `CartesianMonoidalCategory` instance. If one wishes to state
+that a category that `hasFiniteProducts` is cartesian closed, they should first promote the
+`hasFiniteProducts` instance to a `CartesianMonoidalCategory` one using
+`CategoryTheory.ofChosenFiniteProducts`.
 
 ## TODO
 Some of the results here are true more generally for closed objects and
@@ -42,20 +34,17 @@ universe v v₂ u u₂
 
 namespace CategoryTheory
 
-open Category Limits MonoidalCategory
+open Category Limits MonoidalCategory CartesianMonoidalCategory
+
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {X X' Y Y' Z : C}
 
 /-- An object `X` is *exponentiable* if `(X × -)` is a left adjoint.
-We define this as being `Closed` in the cartesian monoidal structure.
--/
-
-abbrev Exponentiable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (X : C) :=
-  Closed X
+We define this as being `Closed` in the cartesian monoidal structure. -/
+abbrev Exponentiable (X : C) := Closed X
 
 /-- Constructor for `Exponentiable X` which takes as an input an adjunction
 `MonoidalCategory.tensorLeft X ⊣ exp` for some functor `exp : C ⥤ C`. -/
-abbrev Exponentiable.mk {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (X : C)
-    (exp : C ⥤ C) (adj : MonoidalCategory.tensorLeft X ⊣ exp) :
-    Exponentiable X where
+abbrev Exponentiable.mk (X : C) (exp : C ⥤ C) (adj : tensorLeft X ⊣ exp) : Exponentiable X where
   rightAdj := exp
   adj := adj
 
@@ -63,33 +52,27 @@ abbrev Exponentiable.mk {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (
 This isn't an instance because it's not usually how we want to construct exponentials, we'll usually
 prove all objects are exponential uniformly.
 -/
-def binaryProductExponentiable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] {X Y : C}
-    (hX : Exponentiable X) (hY : Exponentiable Y) : Exponentiable (X ⊗ Y) :=
-  tensorClosed hX hY
+def binaryProductExponentiable (hX : Exponentiable X) (hY : Exponentiable Y) :
+    Exponentiable (X ⊗ Y) := tensorClosed hX hY
 
 /-- The terminal object is always exponentiable.
 This isn't an instance because most of the time we'll prove cartesian closed for all objects
 at once, rather than just for this one.
 -/
-def terminalExponentiable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] :
-    Exponentiable (𝟙_ C) :=
-  unitClosed
+def terminalExponentiable : Exponentiable (𝟙_ C) := unitClosed
 
+variable (C) in
 /-- A category `C` is cartesian closed if it has finite products and every object is exponentiable.
-We define this as `monoidal_closed` with respect to the cartesian monoidal structure.
--/
-abbrev CartesianClosed (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] :=
-  MonoidalClosed C
+We define this as `MonoidalClosed` with respect to the cartesian monoidal structure. -/
+abbrev CartesianClosed := MonoidalClosed C
 
+variable (C) in
 -- Porting note: added to ease the port of `CategoryTheory.Closed.Types`
 /-- Constructor for `CartesianClosed C`. -/
-def CartesianClosed.mk (C : Type u) [Category.{v} C] [ChosenFiniteProducts C]
-    (exp : ∀ (X : C), Exponentiable X) :
-    CartesianClosed C where
+def CartesianClosed.mk (exp : ∀ (X : C), Exponentiable X) : CartesianClosed C where
   closed X := exp X
 
-variable {C : Type u} [Category.{v} C] (A B : C) {X X' Y Y' Z : C}
-variable [ChosenFiniteProducts C] [Exponentiable A]
+variable (A B : C) [Exponentiable A]
 
 /-- This is (-)^A. -/
 abbrev exp : C ⥤ C :=
@@ -238,7 +221,7 @@ def expUnitIsoSelf [Exponentiable (𝟙_ C)] : (𝟙_ C) ⟹ X ≅ X :=
 
 /-- The internal element which points at the given morphism. -/
 def internalizeHom (f : A ⟶ Y) : 𝟙_ C ⟶ A ⟹ Y :=
-  CartesianClosed.curry (ChosenFiniteProducts.fst _ _ ≫ f)
+  CartesianClosed.curry (fst _ _ ≫ f)
 
 section Pre
 
@@ -284,10 +267,10 @@ def internalHom [CartesianClosed C] : Cᵒᵖ ⥤ C ⥤ C where
 /-- If an initial object `I` exists in a CCC, then `A ⨯ I ≅ I`. -/
 @[simps]
 def zeroMul {I : C} (t : IsInitial I) : A ⊗ I ≅ I where
-  hom := ChosenFiniteProducts.snd _ _
+  hom := snd _ _
   inv := t.to _
   hom_inv_id := by
-    have : ChosenFiniteProducts.snd A I = CartesianClosed.uncurry (t.to _) := by
+    have : snd A I = CartesianClosed.uncurry (t.to _) := by
       rw [← curry_eq_iff]
       apply t.hom_ext
     rw [this, ← uncurry_natural_right, ← eq_curry_iff]
@@ -334,7 +317,7 @@ exponentiable object is an isomorphism.
 -/
 theorem strict_initial {I : C} (t : IsInitial I) (f : A ⟶ I) : IsIso f := by
   haveI : Mono f := by
-    rw [← ChosenFiniteProducts.lift_snd (𝟙 A) f, ← zeroMul_hom t]
+    rw [← lift_snd (𝟙 A) f, ← zeroMul_hom t]
     exact mono_comp _ _
   haveI : IsSplitEpi f := IsSplitEpi.mk' ⟨t.to _, t.hom_ext _ _⟩
   apply isIso_of_mono_of_isSplitEpi
@@ -356,7 +339,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 section Functor
 
-variable [ChosenFiniteProducts D]
+variable [CartesianMonoidalCategory D]
 
 /-- Transport the property of being cartesian closed across an equivalence of categories.
 
