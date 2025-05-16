@@ -267,7 +267,9 @@ theorem ofCoalgHom_symm (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ h₂) :
 variable {f : A →ₗc[R] B} (hf : Function.Bijective f)
 
 /-- Promotes a bijective coalgebra homomorphism to a coalgebra equivalence. -/
+@[simps apply]
 noncomputable def ofBijective : A ≃ₗc[R] B where
+  toFun := f
   __ := f
   __ := LinearEquiv.ofBijective (f : A →ₗ[R] B) hf
 
