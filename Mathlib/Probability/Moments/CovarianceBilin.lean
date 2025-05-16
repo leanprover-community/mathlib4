@@ -62,13 +62,12 @@ def _root_.NormedSpace.Dual.toLpₗ (μ : Measure E) (p : ℝ≥0∞) (h_Lp : Me
 lemma Dual.toLpₗ_apply (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
     L.toLpₗ μ p h_Lp = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := rfl
 
-lemma norm_toLpₗ_le [OpensMeasurableSpace E]
-    (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) (hp_top : p ≠ ∞) :
+lemma norm_toLpₗ_le [OpensMeasurableSpace E] (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
     ‖L.toLpₗ μ p h_Lp‖ ≤ ‖L‖ * (eLpNorm id p μ).toReal := by
   by_cases hp : p = 0
   · simp [hp]
   by_cases hp_top : p = ∞
-  · simp only [Dual.toLpₗ_apply, Lp.norm_toLp, hp_top, eLpNorm_exponent_top]
+  · simp only [hp_top, Dual.toLpₗ_apply, Lp.norm_toLp, eLpNorm_exponent_top] at h_Lp ⊢
     sorry
   have h0 : 0 < p.toReal := by simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, hp, Ne.lt_top hp_top]
   suffices ‖L.toLpₗ μ p h_Lp‖
@@ -110,8 +109,7 @@ variable {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [OpensMeasurableSpace
 
 /-- `MemLp.toLp` as a continuous linear map from `Dual 𝕜 E` to `Lp 𝕜 p μ`. -/
 noncomputable
-def _root_.NormedSpace.Dual.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ)
-    (hp : p ≠ ∞) :
+def _root_.NormedSpace.Dual.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) :
     Dual 𝕜 E →L[𝕜] Lp 𝕜 p μ where
   toLinearMap := Dual.toLpₗ μ p h_Lp
   cont := by
@@ -121,12 +119,12 @@ def _root_.NormedSpace.Dual.toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ 
     obtain ⟨r, hxr⟩ := hs
     refine ⟨r * (eLpNorm id p μ).toReal, fun L hLs ↦ ?_⟩
     specialize hxr L hLs
-    refine (norm_toLpₗ_le h_Lp L hp).trans ?_
+    refine (norm_toLpₗ_le h_Lp L).trans ?_
     gcongr
 
 @[simp]
-lemma Dual.toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (hp : p ≠ ∞) (L : Dual 𝕜 E) :
-    L.toLp μ p h_Lp hp = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := rfl
+lemma Dual.toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
+    L.toLp μ p h_Lp = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := rfl
 
 end ContinuousLinearMap
 
@@ -142,7 +140,7 @@ noncomputable
 def centeredCovarianceBilin (μ : Measure E) (h : MemLp id 2 μ) :
     Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ] ℝ :=
   ContinuousLinearMap.bilinearComp (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
-    (Dual.toLp μ 2 h (by simp)) (Dual.toLp μ 2 h (by simp))
+    (Dual.toLp μ 2 h) (Dual.toLp μ 2 h)
 
 lemma centeredCovarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     centeredCovarianceBilin μ h L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
