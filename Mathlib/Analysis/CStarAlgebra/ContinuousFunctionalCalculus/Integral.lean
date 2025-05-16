@@ -311,14 +311,19 @@ lemma integrable_cfcₙ_set' [TopologicalSpace X] [OpensMeasurableSpace X] (s : 
   let fc : C(s × (quasispectrum 𝕜 a), 𝕜) := ⟨fun x => f x.1 x.2, hf⟩
   let fc₂ : C(s, C(quasispectrum 𝕜 a, 𝕜)₀) :=
     { toFun := fun x => ⟨fc.curry x, by simp [fc, hf₂]⟩
-      continuous_toFun := by sorry }
+      continuous_toFun := by
+        have : Continuous
+            (ContinuousMapZero.toContinuousMap ∘ (fun x => ⟨fc.curry x, by simp [fc, hf₂]⟩)) :=
+          ContinuousMap.continuous fc.curry
+        refine (Topology.IsEmbedding.continuous_iff ?_).mpr this
+        apply IsUniformEmbedding.isEmbedding
+        exact Isometry.isUniformEmbedding fun x1 ↦ congrFun rfl }
   refine integrable_cfcₙ_set s hs f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
   · intro x xs
     rw [continuousOn_iff_continuous_restrict]
     exact (fc₂ ⟨x, xs⟩).continuous
   · refine ContinuousOn.aestronglyMeasurable ?_ hs
     rw [continuousOn_iff_continuous_restrict]
-
     refine fc₂.continuous.congr ?_
     intro ⟨x, hx⟩
     ext
@@ -363,18 +368,54 @@ lemma cfcₙ_setIntegral [NormedSpace ℝ A] (s : Set X) (hs : MeasurableSet s) 
   have h₂ : ((quasispectrum 𝕜 a).restrict fun r => ∫ (x : X) in s, f x r ∂μ)
       = (∫ (x : X) in s, fc x ∂μ).toFun := by
     ext r
-    simp [Set.restrict_apply, ContinuousMap.toFun_eq_coe, fc, ContinuousMapZero.integral_apply fc_integrable _]
-    sorry
-    --refine integral_congr_ae ?_
-    --filter_upwards [ae_restrict_mem hs] with x hx
-    --simp [fc, hx]
+    change (quasispectrum 𝕜 a).restrict (fun r ↦ ∫ (x : X) in s, f x r ∂μ) r
+      = (∫ (x : X) in s, fc x ∂μ) r
+    rw [ContinuousMapZero.integral_apply fc_integrable]
+    simp only [Set.restrict_apply, fc]
+    refine integral_congr_ae ?_
+    filter_upwards [ae_restrict_mem hs] with x hx
+    simp [fc, hx]
   have hcont₂ : ContinuousOn (fun r => ∫ x in s, f x r ∂μ) (quasispectrum 𝕜 a) := by
     rw [continuousOn_iff_continuous_restrict]
     convert map_continuous (∫ x in s, fc x ∂μ)
-  sorry
-  --rw [setIntegral_congr_fun hs h₁, ContinuousLinearMap.integral_comp_comm _ fc_integrable,
-  --    cfcₙL_apply, cfcₙ_apply ..]
-  --congr
+  have hf0 : (fun r => ∫ (x : X) in s, f x r ∂μ) 0 = 0 := by
+    simp only [fc]
+    calc ∫ x in s, f x 0 ∂μ = ∫ x in s, 0 ∂μ := setIntegral_congr_fun hs hf₂
+      _ = 0 := by simp
+  rw [setIntegral_congr_fun hs h₁, ContinuousLinearMap.integral_comp_comm _ fc_integrable,
+      cfcₙL_apply, cfcₙ_apply ..]
+  congr
+
+open ContinuousMap Classical in
+/-- The continuous functional calculus commutes with integration. -/
+lemma cfcₙ_setIntegral' [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] (s : Set X)
+    (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜)
+    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
+    (hf : Continuous (fun x : s × quasispectrum 𝕜 a => f x.1 x.2))
+    (hf₂ : ∀ x ∈ s, f x 0 = 0)
+    (hbound : ∀ x ∈ s, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
+    (hbound_finite_integral : HasFiniteIntegral bound (μ.restrict s)) (ha : p a := by cfc_tac) :
+    cfcₙ (fun r => ∫ x in s, f x r ∂μ) a = ∫ x in s, cfcₙ (f x) a ∂μ := by
+  let fc : C(s × (quasispectrum 𝕜 a), 𝕜) := ⟨fun x => f x.1 x.2, hf⟩
+  let fc₂ : C(s, C(quasispectrum 𝕜 a, 𝕜)₀) :=
+    { toFun := fun x => ⟨fc.curry x, by simp [fc, hf₂]⟩
+      continuous_toFun := by
+        have : Continuous
+            (ContinuousMapZero.toContinuousMap ∘ (fun x => ⟨fc.curry x, by simp [fc, hf₂]⟩)) :=
+          ContinuousMap.continuous fc.curry
+        refine (Topology.IsEmbedding.continuous_iff ?_).mpr this
+        apply IsUniformEmbedding.isEmbedding
+        exact Isometry.isUniformEmbedding fun x1 ↦ congrFun rfl }
+  refine cfcₙ_setIntegral s hs f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
+  · intro x xs
+    rw [continuousOn_iff_continuous_restrict]
+    exact (fc₂ ⟨x, xs⟩).continuous
+  · refine ContinuousOn.aestronglyMeasurable ?_ hs
+    rw [continuousOn_iff_continuous_restrict]
+    refine fc₂.continuous.congr ?_
+    intro ⟨x, hx⟩
+    ext
+    simp [fc₂, fc, hx]
 
 open ContinuousMapZero in
 /-- The non-unital continuous functional calculus commutes with integration. -/
