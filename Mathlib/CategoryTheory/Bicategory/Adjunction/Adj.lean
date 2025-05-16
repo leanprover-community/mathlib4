@@ -305,7 +305,7 @@ section
 variable {α β γ : a ⟶ b}
 
 @[simp, reassoc] lemma comp_τf (x : α ⟶ β) (y : β ⟶ γ) : (x ≫ y).τf = x.τf ≫ y.τf := rfl
-@[simp, reassoc] lemma comp_τg (x : α ⟶ β) (y : β ⟶ γ) : (x ≫ y).τf = x.τf ≫ y.τf := rfl
+@[simp, reassoc] lemma comp_τg (x : α ⟶ β) (y : β ⟶ γ) : (x ≫ y).τg = y.τg ≫ x.τg := rfl
 
 end
 
@@ -394,6 +394,20 @@ def forget₂ : Pseudofunctor (Adj B)ᵒᵖ B where
   map₂ α := α.unop.τg
   mapId _ := Iso.refl _
   mapComp _ _ := Iso.refl _
+
+@[simps]
+def fIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.f ≅ adj₂.f where
+  hom := e.hom.τf
+  inv := e.inv.τf
+  hom_inv_id := by rw [← comp_τf, e.hom_inv_id, id_τf]
+  inv_hom_id := by rw [← comp_τf, e.inv_hom_id, id_τf]
+
+@[simps]
+def gIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.g ≅ adj₂.g where
+  hom := e.inv.τg
+  inv := e.hom.τg
+  hom_inv_id := by rw [← comp_τg, e.hom_inv_id, id_τg]
+  inv_hom_id := by rw [← comp_τg, e.inv_hom_id, id_τg]
 
 end Adj
 
