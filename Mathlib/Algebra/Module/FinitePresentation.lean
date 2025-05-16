@@ -583,7 +583,6 @@ noncomputable def Module.FinitePresentation.linearEquivMap [Module.FinitePresent
   IsLocalizedModule.linearEquiv S (LocalizedModule.mkLinearMap S (M →ₗ[R] N))
   (IsLocalizedModule.map S (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N))
 
-@[simp, nolint simpNF]
 lemma Module.FinitePresentation.linearEquivMap_apply [Module.FinitePresentation R M]
     (f : M →ₗ[R] N) : Module.FinitePresentation.linearEquivMap S
     ((LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f) = (IsLocalizedModule.map S
@@ -608,7 +607,6 @@ noncomputable def Module.FinitePresentation.linearEquivMapExtendScalars
   (IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
     (LocalizedModule.mkLinearMap S N) (Localization S))
 
-@[simp, nolint simpNF]
 lemma Module.FinitePresentation.linearEquivMapExtendScalars_apply [Module.FinitePresentation R M]
     (f : M →ₗ[R] N) : Module.FinitePresentation.linearEquivMapExtendScalars S
     ((LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f) = (IsLocalizedModule.mapExtendScalars S
