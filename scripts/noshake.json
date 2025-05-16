@@ -506,6 +506,7 @@
    "Mathlib.Algebra.Module.Equiv.Defs",
    "Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Algebra.Module.LinearMap.Defs": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Algebra.Module.Equiv": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.GroupWithZero.Units.Basic": ["Mathlib.Data.Int.Basic"],
