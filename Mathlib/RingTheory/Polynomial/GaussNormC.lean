@@ -11,7 +11,6 @@ This file defines the Gauss norm for polynomials. Given a polynomial `p` in `R[X
 `v : R → ℝ` and a real number `c`, the Gauss norm is defined as the supremum of the set of all
 values of `v (p.coeff i) * c ^ i` for all `i` in the support of `p`.
 
-
 ## Main Definitions and Results
 * `Polynomial.gaussNormC` is the supremum of the set of all values of `v (p.coeff i) * c ^ i`
   for all `i` in the support of `p`, where `p` is a polynomial in `R[X]`, `v : R → ℝ` is a function
@@ -72,30 +71,24 @@ private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i
   · right
     simp [not_mem_support_iff.mp hi]
 
-private lemma gaussNormC_nonempty : {x | ∃ i, v (p.coeff i) * c ^ i = x}.Nonempty := by
-  use v (p.coeff 0) * c ^ 0, 0
-
 @[simp]
 theorem gaussNormC_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
     {c : ℝ} (hc : 0 ≤ c) : (p.toPowerSeries).gaussNormC v c = p.gaussNormC v c:= by
   by_cases hp : p = 0
   · simp [hp]
   · have h_supp : p.support.Nonempty := support_nonempty.mpr hp
-    simp only [gaussNormC, support_nonempty, ne_eq, hp, not_false_eq_true, ↓reduceDIte,
-      PowerSeries.gaussNormC, coeff_coe]
+    simp only [PowerSeries.gaussNormC, coeff_coe, gaussNormC, support_nonempty, ne_eq, hp,
+      not_false_eq_true, ↓reduceDIte]
     apply le_antisymm
-    · apply Real.sSup_le  _ <| sup'_nonneg_of_ne_zero v h_supp hc
-      intro x hx
-      obtain ⟨i, hi⟩ := hx
-      rw [← hi]
-      by_cases h : i ∈ p.support
+    · apply ciSup_le
+      intro n
+      by_cases h : n ∈ p.support
       · exact Finset.le_sup' (fun j ↦ v (p.coeff j) * c ^ j) h
       · simp_all [sup'_nonneg_of_ne_zero v h_supp hc]
     · obtain ⟨i, hi⟩ := exists_eq_gaussNormC v c p
       simp only [gaussNormC, h_supp, ↓reduceDIte] at hi
       rw [hi]
-      apply le_csSup (aux_bdd v c p)
-      simp
+      exact le_ciSup (aux_bdd v c p) i
 
 @[simp]
 theorem gaussNormC_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]

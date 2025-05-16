@@ -29,33 +29,26 @@ variable {R F : Type*} [Semiring R] [FunLike F R ℝ] (v : F) (c : ℝ) (f : R�
 
 /-- Given a power series `f` in `R⟦X⟧`, a function `v : R → ℝ` and a real number `c`, the Gauss norm
 is defined as the supremum of the set of all values of `v (f.coeff R i) * c ^ i` for all `i : ℕ`. -/
-noncomputable def gaussNormC : ℝ := sSup {v (f.coeff R i) * c ^ i | (i : ℕ)}
+noncomputable def gaussNormC : ℝ :=  ⨆ i : ℕ, v (f.coeff R i) * c ^ i
+
+lemma le_gaussNormC (hbd : BddAbove {x | ∃ i, v (f.coeff R i) * c ^ i = x}) (i : ℕ) :
+  v (f.coeff R i) * c ^ i ≤ f.gaussNormC v c := le_ciSup hbd i
 
 @[simp]
 theorem gaussNormC_zero [ZeroHomClass F R ℝ] : gaussNormC v c 0 = 0 := by simp [gaussNormC]
 
-private lemma gaussNormC_nonempty : {x | ∃ i, v (f.coeff R i) * c ^ i = x}.Nonempty := by
-  use v (f.coeff R 0) * c ^ 0, 0
-
-lemma le_gaussNormC (hbd : BddAbove {x | ∃ i, v (f.coeff R i) * c ^ i = x}) (i : ℕ) :
-  v (f.coeff R i) * c ^ i ≤ f.gaussNormC v c := by
-  apply le_csSup hbd
-  simp
-
 theorem gaussNormC_nonneg [NonnegHomClass F R ℝ] : 0 ≤ f.gaussNormC v c := by
-  rw [gaussNormC]
-  by_cases h : BddAbove {x | ∃ i, v (f.coeff R i) * c ^ i = x}
-  · rw [Real.le_sSup_iff h <| gaussNormC_nonempty v c f]
-    simp only [Set.mem_setOf_eq, zero_add, exists_exists_eq_and]
-    intro ε hε
-    use 0
-    simpa using lt_of_lt_of_le hε <| apply_nonneg v (f.constantCoeff R)
-  · simp [h]
+  by_cases h : BddAbove (Set.range fun i ↦ v (f.coeff R i) * c ^ i)
+  · calc
+    0 ≤ v (f.coeff R 0) * c ^ 0 :=
+      mul_nonneg (apply_nonneg v (f.coeff R 0)) <| pow_nonneg (le_of_lt (zero_lt_one)) 0
+    _ ≤ f.gaussNormC v c := le_ciSup h 0
+  · simp [gaussNormC, h]
 
 @[simp]
 theorem gaussNormC_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {v : F}
     (h_eq_zero : ∀ x : R, v x = 0 → x = 0) {f : R⟦X⟧} {c : ℝ} (hc : 0 < c)
-    (hbd : BddAbove {x | ∃ i, v (f.coeff R i) * c ^ i = x})  :
+    (hbd : BddAbove (Set.range fun i ↦ v (f.coeff R i) * c ^ i))  :
     f.gaussNormC v c = 0 ↔ f = 0 := by
   refine ⟨?_, fun hf ↦ by simp [hf]⟩
   contrapose!
@@ -68,11 +61,6 @@ theorem gaussNormC_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {
     specialize h_eq_zero (f.coeff R n)
     simp_all only [ne_eq, iff_false]
     positivity
-  _ ≤ sSup {x | ∃ i, v (f.coeff R i) * c ^ i = x} := by
-    rw [Real.le_sSup_iff hbd <| gaussNormC_nonempty v c f]
-    simp only [Set.mem_setOf_eq, exists_exists_eq_and]
-    intro ε hε
-    use n
-    simp [hε]
+  _ ≤ gaussNormC v c f := le_ciSup hbd n
 
 end PowerSeries
