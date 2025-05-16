@@ -67,7 +67,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     rw [Subalgebra.topologicalClosure_comap_homeomorph _ W W' w] at p
     -- and precomposing with an affine map takes polynomial functions to polynomial functions.
     rw [polynomialFunctions.comap_compRightAlgHom_iccHomeoI] at p
-    -- 🎉
+    -- 🎉️
     exact p
   · -- Otherwise, `b ≤ a`, and the interval is a subsingleton,
     subsingleton [(Set.subsingleton_Icc_of_ge h).coe_sort]
