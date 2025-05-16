@@ -743,8 +743,12 @@ theorem deriv_ofNat (n : ℕ) [OfNat F n] : deriv (ofNat(n) : 𝕜 → F) = 0 :=
   funext fun _ => deriv_const _ _
 
 @[simp]
-theorem derivWithin_const : derivWithin (fun _ => c) s = 0 := by
+theorem derivWithin_fun_const : derivWithin (fun _ => c) s = 0 := by
   ext; simp [derivWithin]
+
+@[simp]
+theorem derivWithin_const : derivWithin (Function.const 𝕜 c) s = 0 :=
+  derivWithin_fun_const _ _
 
 @[simp]
 theorem derivWithin_zero : derivWithin (0 : 𝕜 → F) s = 0 := derivWithin_const _ _
