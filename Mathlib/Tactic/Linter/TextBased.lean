@@ -347,7 +347,7 @@ def modulesNotUpperCamelCase (modules : Array Lean.Name) : IO Nat := do
   let badNames := modules.filter fun name ↦
     let upperCamelName := Lake.toUpperCamelCase name
     !exceptions.contains name &&
-    (upperCamelName != name && s!"{upperCamelName}_" != name.toString)
+      upperCamelName != name && s!"{upperCamelName}_" != name.toString
   for bad in badNames do
     let upperCamelName := Lake.toUpperCamelCase bad
     let good := if bad.toString.endsWith "_" then s!"{upperCamelName}_" else upperCamelName.toString
