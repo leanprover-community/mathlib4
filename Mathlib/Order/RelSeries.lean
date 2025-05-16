@@ -246,9 +246,13 @@ lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.toList[(i : ℕ)] = p i := by
   simp only [Fin.getElem_fin, toList, List.getElem_ofFn]
 
+lemma toList_getElem_eq_apply_of_lt_length (p : RelSeries r) {i : ℕ} (hi : i < p.length + 1) :
+    p.toList[i]'(by simpa using hi) = p ⟨i, hi⟩ :=
+  p.toList_getElem_eq_apply ⟨i, hi⟩
+
 @[simp]
-lemma toList_getElem_zero_eq_head (p : RelSeries r) : p.toList[0] = p.head := by
-  simp [head, ← toList_getElem_eq_apply]
+lemma toList_getElem_zero_eq_head (p : RelSeries r) : p.toList[0] = p.head :=
+  p.toList_getElem_eq_apply_of_lt_length (by simp)
 
 @[simp]
 lemma toList_fromListChain' (l : List α) (l_ne_nil : l ≠ []) (hl : l.Chain' r) :
@@ -259,7 +263,11 @@ lemma toList_fromListChain' (l : List α) (l_ne_nil : l ≠ []) (hl : l.Chain' r
 lemma head_fromListChain' (l : List α) (l_ne_nil : l ≠ [])
     (hl : l.Chain' r) :
     (fromListChain' l l_ne_nil hl).head = l.head l_ne_nil := by
-  simp [← toList_getElem_zero_eq_head, List.getElem_zero_eq_head]
+  simp [← apply_zero, List.getElem_zero_eq_head]
+
+@[simp]
+lemma getLast_toList (p : RelSeries r) : p.toList.getLast (by simp [toList]) = p.last := by
+  simp [last, ← toList_getElem_eq_apply, List.getLast_eq_getElem]
 
 end
 
@@ -331,6 +339,31 @@ lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
   change _ = _ % _
   simp only [append_length, Fin.val_last, Fin.natAdd_last, Nat.one_mod, Nat.mod_add_mod,
     Nat.mod_succ]
+
+lemma append_assoc (p q w : RelSeries r) (hpq : r p.last q.head) (hqw : r q.last w.head) :
+    (p.append q hpq).append w (by simpa) = p.append (q.append w hqw) (by simpa) := by
+  ext
+  · simp only [append_length, Nat.add_left_inj]
+    omega
+  · simp [append, Fin.append_assoc]
+
+@[simp]
+lemma toList_append (p q : RelSeries r) (connect : r p.last q.head) :
+    (p.append q connect).toList = p.toList ++ q.toList := by
+  apply List.ext_getElem
+  · simp
+    omega
+  · intro i h1 h2
+    have h3' : i < p.length + 1 + (q.length + 1) := by simp_all
+    rw [toList_getElem_eq_apply_of_lt_length _ (by simp; omega)]
+    · simp only [append, Function.comp_apply, Fin.cast_mk, List.getElem_append]
+      split
+      · have : Fin.mk i h3' = Fin.castAdd _ ⟨i, by simp_all⟩ := rfl
+        rw [this, Fin.append_left, toList_getElem_eq_apply_of_lt_length]
+      · simp_all only [length_toList, append_length, List.length_append]
+        have : Fin.mk i h3' = Fin.natAdd _ ⟨i - p.length - 1, by omega⟩ := by simp_all; omega
+        rw [this, Fin.append_right, toList_getElem_eq_apply_of_lt_length]
+        rfl
 
 /--
 For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
@@ -469,11 +502,8 @@ lemma append_singleton_left (p : RelSeries r) (x : α) (hx : r x p.head) :
 @[simp]
 lemma toList_cons (p : RelSeries r) (x : α) (hx : r x p.head) :
     (p.cons x hx).toList = x :: p.toList := by
-  simp only [toList, cons_length, List.ofFn_succ, Fin.cast_zero, apply_zero, head_cons,
-    Fin.cast_succ_eq, singleton_length, List.cons.injEq, List.ofFn_inj, true_and]
-  refine ⟨rfl, ?_⟩
-  ext i
-  simp [cons, append, singleton, Fin.append, Fin.addCases, Fin.subNat, Fin.succ]
+  rw [cons, toList_append]
+  simp
 
 lemma fromListChain'_cons (l : List α) (l_ne_nil : l ≠ [])
     (hl : l.Chain' r) (x : α) (hx : r x (l.head l_ne_nil)) :
@@ -485,16 +515,7 @@ lemma fromListChain'_cons (l : List α) (l_ne_nil : l ≠ [])
 lemma append_cons {p q : RelSeries r} {x : α} (hx : r x p.head) (hq : r p.last q.head) :
     (p.cons x hx).append q (by simpa) = (p.append q hq).cons x (by simpa) := by
   simp only [cons]
-  ext n
-  · simp
-    omega
-  · simp only [singleton, Nat.reduceAdd, append, Fin.append, cons, id_eq, eq_mpr_eq_cast,
-      Function.comp_apply, Fin.addCases, Fin.coe_cast, zero_add, Fin.coe_castLT, Nat.lt_one_iff,
-      Fin.cast_trans, Fin.subNat, Fin.natAdd_mk, eq_rec_constant, Int.reduceNeg,
-      Int.cast_ofNat_Int, Fin.cast_mk, Fin.castLT_mk, Fin.subNat_mk]
-    split_ifs <;> try rfl; <;> try omega
-    congr 2
-    omega
+  rw [append_assoc]
 
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
@@ -565,26 +586,24 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   exact Nat.succ_pred_eq_of_pos (by simpa [Nat.pos_iff_ne_zero] using len_pos)
 
 @[simp]
+lemma toList_tail {p : RelSeries r} (hp : p.length ≠ 0) : (p.tail hp).toList = p.toList.tail := by
+  refine List.ext_getElem ?_ fun i h1 h2 ↦ ?_
+  · simp
+    omega
+  · rw [List.getElem_tail, toList_getElem_eq_apply_of_lt_length _ (by simp_all),
+      toList_getElem_eq_apply_of_lt_length _ (by simp_all)]
+    simp_all [Fin.tail]
+
+@[simp]
 lemma tail_cons (p : RelSeries r) (x : α) (hx : r x p.head) :
     (p.cons x hx).tail (by simp) = p := by
-  ext n
-  · simp
-  · simp [-append_singleton_left, Fin.tail, cons, append, Fin.append, Fin.addCases,
-      Fin.subNat, Fin.cast]
+  apply toList_injective
+  simp
 
 lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
     (p.tail hp).cons p.head (p.3 ⟨0, Nat.zero_lt_of_ne_zero hp⟩) = p := by
-  ext n
-  · rw [cons_length, tail_length]
-    exact (Nat.succ_pred_eq_of_ne_zero hp)
-  unfold cons append Fin.append Fin.addCases
-  by_cases h : n.1 = 0
-  · have : n = 0 := Fin.eq_of_val_eq h
-    simp [this, apply_zero]
-  · simp only [singleton_length, Nat.reduceAdd, Nat.lt_one_iff,
-      tail_toFun, Function.comp_apply, Fin.tail, eq_rec_constant, Fin.coe_cast, dif_neg h]
-    congr
-    exact Fin.val_inj.mp (Nat.succ_pred_eq_of_ne_zero h)
+  apply toList_injective
+  simp [← head_toList, List.head_cons_tail]
 
 /--
 To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
@@ -613,19 +632,9 @@ def inductionOn (motive : RelSeries r → Sort*)
   exact this rfl
 
 @[simp]
-lemma toList_tail (p : RelSeries r) (hp : p.length ≠ 0) :
-    (p.tail hp).toList = p.toList.tail := by
-  induction p using inductionOn
-  · simp at hp
-  · simp
-
-lemma append_toList (p q : RelSeries r) (rel : r p.last q.head) :
-    (p.append q rel).toList = p.toList ++ q.toList := by
-  induction p using RelSeries.inductionOn with
-  | singleton => simp
-  | cons p x hx hp =>
-    simp only [last_cons] at rel
-    simpa [toList_cons, List.cons_append, append_cons _ rel] using hp rel
+lemma toList_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
+    (p.snoc newLast rel).toList = p.toList ++ [newLast] := by
+  simp [snoc]
 
 /--
 If a series ``a₀ -r→ a₁ -r→ ... -r→ aₙ``, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
@@ -648,18 +657,19 @@ lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
   convert p.step ⟨p.length - 1, by omega⟩
   simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
 
+@[simp]
+lemma toList_eraseLast (p : RelSeries r) (hp : p.length ≠ 0) :
+    p.eraseLast.toList = p.toList.dropLast := by
+  apply List.ext_getElem
+  · simpa using Nat.succ_pred_eq_of_ne_zero hp
+  · intro i hi h2
+    rw [toList_getElem_eq_apply_of_lt_length _ (hi.trans_eq (by simp))]
+    simp [← toList_getElem_eq_apply_of_lt_length]
+
 lemma snoc_self_eraseLast (p : RelSeries r) (h : p.length ≠ 0) :
     p.eraseLast.snoc p.last (p.eraseLast_last_rel_last h) = p := by
-  symm
-  have len : p.length - 1 + 1 = p.length := Nat.succ_pred_eq_of_ne_zero h
-  ext n
-  · simpa using len.symm
-  by_cases eq : n.1 < p.length - 1 + 1
-  · simp [snoc, append, Fin.append, Fin.addCases, eq]
-  · have : n = p.length := by
-      rw [len] at eq
-      exact Fin.eq_of_val_eq (by simp [Nat.eq_of_lt_succ_of_not_lt n.2 eq])
-    simp [snoc, append, Fin.append, Fin.addCases, eq, this, last]
+  apply toList_injective
+  rw [toList_snoc, ← getLast_toList, toList_eraseLast _ h, List.dropLast_append_getLast]
 
 /--
 To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
