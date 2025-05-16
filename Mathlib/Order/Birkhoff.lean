@@ -93,7 +93,7 @@ variable [Finite α]
   refine ⟨fun hs ↦ ?_, ?_⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal (coe_nonempty.2 hs.ne_bot)
     exact ⟨a, (hs.2 <| erase_sup_Iic ha fun b hb ↦
-      le_imp_eq_iff_le_imp_ge'.2 <| has h).resolve_left (erase_lt.2 ha).ne⟩
+      le_imp_eq_iff_le_imp_ge'.2 <| has hb).resolve_left (erase_lt.2 ha).ne⟩
   · rintro ⟨a, rfl⟩
     exact supIrred_Iic _
 
