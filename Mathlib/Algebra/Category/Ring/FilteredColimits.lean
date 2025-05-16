@@ -345,12 +345,11 @@ instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget Co
   Limits.comp_preservesFilteredColimits (forget₂ CommRingCat RingCat) (forget RingCat.{u})
 
 omit [IsFiltered J] in
-protected lemma nontrivial {F : J ⥤ CommRingCat.{v}} [IsFiltered J]
+protected lemma nontrivial {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
     [∀ i, Nontrivial (F.obj i)] {c : Cocone F} (hc : IsColimit c) : Nontrivial c.pt := by
   classical
   cases isEmpty_or_nonempty J
-  · exact ((isColimitEquivIsInitialOfIsEmpty _ _ hc).to
-      (CommRingCat.of (ULift ℤ))).hom.domain_nontrivial
+  · exact ((isColimitEquivIsInitialOfIsEmpty _ _ hc).to (.of (ULift ℤ))).hom.domain_nontrivial
   have i := ‹Nonempty J›.some
   refine ⟨c.ι.app i 0, c.ι.app i 1, fun h ↦ ?_⟩
   have : IsFiltered J := ⟨⟩
