@@ -100,8 +100,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
 lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
   rw [← ENNReal.toReal_eq_one_iff]
-  have hfm : AEStronglyMeasurable (gaussianPDFReal μ v) volume :=
-    (stronglyMeasurable_gaussianPDFReal μ v).aestronglyMeasurable
+  have hfm : AEStronglyMeasurable (gaussianPDFReal μ v) volume := by fun_prop
   have hf : 0 ≤ₐₛ gaussianPDFReal μ v := ae_of_all _ (gaussianPDFReal_nonneg μ v)
   rw [← integral_eq_lintegral_of_nonneg_ae hf hfm]
   simp only [gaussianPDFReal, zero_lt_two, mul_nonneg_iff_of_pos_right, one_div,
@@ -604,23 +603,6 @@ lemma gaussianReal_map_prod_add {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
     ((gaussianReal m₁ v₁).prod (gaussianReal m₂ v₂)).map (fun p ↦ p.1 + p.2)
       = gaussianReal (m₁ + m₂) (v₁ + v₂) :=
   gaussianReal_conv_gaussianReal
-
-lemma gaussianReal_Ioi_pos (hv : v ≠ 0) (x : ℝ) : 0 < gaussianReal μ v (Set.Ioi x) := by
-  rw [gaussianReal_of_var_ne_zero _ hv]
-  simp only [measurableSet_Ioi, withDensity_apply]
-  rw [setLIntegral_pos_iff (by fun_prop)]
-  simp [hv]
-
-lemma gaussianReal_closedBall_lt_one (hv : v ≠ 0) (x : ℝ) : gaussianReal μ v {y | |y| ≤ x} < 1 := by
-  suffices 0 < gaussianReal μ v {y | x < |y|} by
-    have h_eq_compl : {y | x < |y|} = {y | |y| ≤ x}ᶜ := by ext; simp
-    rw [h_eq_compl, measure_compl, measure_univ] at this
-    · simpa using this
-    · exact measurableSet_le (by fun_prop) (by fun_prop)
-    · simp
-  refine (gaussianReal_Ioi_pos hv x).trans_le (measure_mono fun y hy ↦ ?_)
-  simp only [Set.mem_Ioi, Set.mem_setOf_eq] at hy ⊢
-  exact hy.trans_le (le_abs_self y)
 
 end GaussianReal
 
