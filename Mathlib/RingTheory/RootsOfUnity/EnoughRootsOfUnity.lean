@@ -75,8 +75,10 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     simp only [mem_rootsOfUnity, PNat.mk_coe]
     rw [← Units.eq_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
 
-lemma _root_.MulEquiv.hasEnoughRootsOfUnity {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M] [CommMonoid N]
-    [hm : HasEnoughRootsOfUnity M n] (e : rootsOfUnity n M ≃* rootsOfUnity n N) :
+end HasEnoughRootsOfUnity
+
+lemma MulEquiv.hasEnoughRootsOfUnity {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M]
+    [CommMonoid N] [hm : HasEnoughRootsOfUnity M n] (e : rootsOfUnity n M ≃* rootsOfUnity n N) :
     HasEnoughRootsOfUnity N n where
   prim := by
     obtain ⟨m, hm⟩ := hm.prim
@@ -85,8 +87,6 @@ lemma _root_.MulEquiv.hasEnoughRootsOfUnity {n : ℕ} [NeZero n] {M N : Type*} [
     refine .map_of_injective ?_ e.injective
     rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, ← IsPrimitiveRoot.coe_units_iff]
   cyc := isCyclic_of_surjective e e.surjective
-
-end HasEnoughRootsOfUnity
 
 section cyclic
 
