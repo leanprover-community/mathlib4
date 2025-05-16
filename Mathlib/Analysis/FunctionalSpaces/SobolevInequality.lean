@@ -396,7 +396,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
     simp_rw [c, ι, C, e, lintegralPowLePowLIntegralFDerivConst]
   have hC : C * c ^ p = c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p := by
     rw [h0C, inv_mul_cancel_right₀ (NNReal.rpow_pos hc).ne']
-  rw [h2c, ENNReal.smul_def, lintegral_smul_measure, lintegral_smul_measure]
+  simp only [h2c, ENNReal.smul_def, lintegral_smul_measure, smul_eq_mul]
   let v : (ι → ℝ) → F := u ∘ e.symm
   have hv : ContDiff ℝ 1 v := hu.comp e.symm.contDiff
   have h2v : HasCompactSupport v := h2u.comp_homeomorph e.symm.toHomeomorph

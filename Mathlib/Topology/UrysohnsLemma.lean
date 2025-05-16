@@ -457,13 +457,13 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
     have fnx : f n x = 0 := fm _ (by simp [hn])
     have : g x < 1 := by
       apply lt_of_lt_of_le ?_ hu.le
-      exact tsum_lt_tsum (i := n) (fun i ↦ I i x) (by simp [fnx, u_pos n]) (S x) u_sum
+      exact (S x).tsum_lt_tsum (i := n) (fun i ↦ I i x) (by simp [fnx, u_pos n]) u_sum
     simpa using this.ne
   · exact HasCompactSupport.of_support_subset_isCompact m_comp
       (Function.support_subset_iff'.mpr hgmc)
   · exact tsum_nonneg (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1)
   · apply le_trans _ hu.le
-    exact tsum_le_tsum (fun n ↦ I n x) (S x) u_sum
+    exact (S x).tsum_le_tsum (fun n ↦ I n x) u_sum
 
 /-- A variation of Urysohn's lemma. In a `T2Space X`, for a closed set `t` and a relatively
 compact open set `s` such that `t ⊆ s`, there is a continuous function `f` supported in `s`,

@@ -60,6 +60,7 @@ variable {φ : R →+* S}
 open WithPiTopology
 
 /-- Families at which power series can be consistently evaluated -/
+@[mk_iff hasEval_def]
 structure HasEval (a : σ → S) : Prop where
   hpow : ∀ s, IsTopologicallyNilpotent (a s)
   tendsto_zero : Tendsto a cofinite (𝓝 0)
@@ -94,9 +95,9 @@ theorem HasEval.map (hφ : Continuous φ) {a : σ → R} (ha : HasEval a) :
   hpow s := (ha.hpow s).map hφ
   tendsto_zero := (map_zero φ ▸ hφ.tendsto 0).comp ha.tendsto_zero
 
-protected theorem HasEval.X:
+protected theorem HasEval.X :
     HasEval (fun s ↦ (MvPowerSeries.X s : MvPowerSeries σ R)) where
-  hpow s := tendsto_pow_zero_of_constantCoeff_zero (constantCoeff_X s)
+  hpow s := isTopologicallyNilpotent_of_constantCoeff_zero (constantCoeff_X s)
   tendsto_zero := variables_tendsto_zero
 
 variable [IsTopologicalRing S] [IsLinearTopology S S]

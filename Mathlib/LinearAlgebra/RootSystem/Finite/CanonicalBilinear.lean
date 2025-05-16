@@ -235,7 +235,8 @@ end Fintype
 
 section IsValuedInOrdered
 
-variable (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
+variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+  [Algebra S R] [FaithfulSMul S R]
   [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] {i j : ι}
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a

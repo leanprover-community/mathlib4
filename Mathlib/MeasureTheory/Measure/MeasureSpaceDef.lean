@@ -238,6 +238,9 @@ theorem exists_measure_pos_of_not_measure_iUnion_null [Countable ι] {s : ι →
 theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < ∞ :=
   lt_of_le_of_lt (μ.mono hst) hs.lt_top
 
+theorem measure_ne_top_of_subset (h : t ⊆ s) (ht : μ s ≠ ∞) : μ t ≠ ∞ :=
+  (measure_lt_top_of_subset h ht).ne
+
 theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ :=
   measure_lt_top_of_subset inter_subset_left hs_finite
 

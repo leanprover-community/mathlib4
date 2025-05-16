@@ -36,36 +36,9 @@ attribute [trans] Setoid.trans
 
 variable {α : Type*} {β : Type*}
 
-/-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/
-@[deprecated "No deprecation message was provided."  (since := "2024-10-09")]
-def Setoid.Rel (r : Setoid α) : α → α → Prop :=
-  @Setoid.r _ r
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-10-09")]
-instance Setoid.decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r.Rel :=
-  h
-
-set_option linter.deprecated false in
-/-- A version of `Quotient.eq'` compatible with `Setoid.Rel`, to make rewriting possible. -/
-@[deprecated Quotient.eq' (since := "2024-10-09")]
-theorem Quotient.eq_rel {r : Setoid α} {x y} :
-    (Quotient.mk' x : Quotient r) = Quotient.mk' y ↔ r.Rel x y :=
-  Quotient.eq
-
 namespace Setoid
 
 attribute [ext] ext
-
-set_option linter.deprecated false in
-@[deprecated Setoid.ext (since := "2024-10-09")]
-theorem ext' {r s : Setoid α} (H : ∀ a b, r.Rel a b ↔ s.Rel a b) : r = s :=
-  ext H
-
-set_option linter.deprecated false in
-@[deprecated Setoid.ext_iff (since := "2024-10-09")]
-theorem ext'_iff {r s : Setoid α} : r = s ↔ ∀ a b, r.Rel a b ↔ s.Rel a b :=
-  ⟨fun h _ _ => h ▸ Iff.rfl, ext'⟩
 
 /-- Two equivalence relations are equal iff their underlying binary operations are equal. -/
 theorem eq_iff_rel_eq {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ ⇑r₁ = ⇑r₂ :=

@@ -146,13 +146,8 @@ theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := by
   rfl
 
 @[simp]
-theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
-  ext x
-  simp only [mem_range, Path.symm, DFunLike.coe, unitInterval.symm, SetCoe.exists, comp_apply,
-    Subtype.coe_mk]
-  constructor <;> rintro ⟨y, hy, hxy⟩ <;> refine ⟨1 - y, mem_iff_one_sub_mem.mp hy, ?_⟩ <;>
-    convert hxy
-  simp
+theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ :=
+  symm_involutive.surjective.range_comp γ
 
 /-! #### Space of paths -/
 
@@ -166,13 +161,6 @@ instance topologicalSpace : TopologicalSpace (Path x y) :=
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
 instance : ContinuousEval (Path x y) I X := .of_continuous_forget continuous_induced_dom
-
-@[deprecated (since := "2024-10-04")] protected alias continuous_eval := continuous_eval
-
-@[deprecated Continuous.eval (since := "2024-10-04")]
-theorem _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y} {g : Y → I}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun y => f y (g y) := by
-  fun_prop
 
 theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
     Continuous ↿g ↔ Continuous g :=
@@ -234,6 +222,13 @@ theorem extend_of_one_le {a b : X} (γ : Path a b) {t : ℝ}
 theorem refl_extend {a : X} : (Path.refl a).extend = fun _ => a :=
   rfl
 
+theorem extend_symm_apply (γ : Path x y) (t : ℝ) : γ.symm.extend t = γ.extend (1 - t) :=
+  congrArg γ <| symm_projIcc _
+
+@[simp]
+theorem extend_symm (γ : Path x y) : γ.symm.extend = (γ.extend <| 1 - ·) :=
+  funext γ.extend_symm_apply
+
 /-- The path obtained from a map defined on `ℝ` by restriction to the unit interval. -/
 def ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y) : Path x y where
   toFun := f ∘ ((↑) : unitInterval → ℝ)
@@ -243,6 +238,11 @@ def ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 
 
 theorem ofLine_mem {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y) :
     ∀ t, ofLine hf h₀ h₁ t ∈ f '' I := fun ⟨t, t_in⟩ => ⟨t, t_in, rfl⟩
+
+@[simp]
+theorem ofLine_extend (γ : Path x y) : ofLine (by fun_prop) (extend_zero γ) (extend_one γ) = γ := by
+  ext t
+  simp [ofLine]
 
 attribute [local simp] Iic_def
 

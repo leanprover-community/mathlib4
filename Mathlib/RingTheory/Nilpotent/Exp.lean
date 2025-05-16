@@ -65,7 +65,7 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
 
 theorem exp_smul_eq_sum {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M] {a : A} {m : M}
     {k : ℕ} (h : (a ^ k) • m = 0) (hn : IsNilpotent a) :
-      exp a • m = ∑ i ∈ range k, (i.factorial : ℚ)⁻¹ • (a ^ i) • m := by
+    exp a • m = ∑ i ∈ range k, (i.factorial : ℚ)⁻¹ • (a ^ i) • m := by
   rcases le_or_lt (nilpotencyClass a) k with h₀ | h₀
   · simp_rw [exp_eq_sum (pow_eq_zero_of_le h₀ (pow_nilpotencyClass hn)), sum_smul, smul_assoc]
   rw [exp, sum_smul, ← sum_range_add_sum_Ico _ (Nat.le_of_succ_le h₀)]

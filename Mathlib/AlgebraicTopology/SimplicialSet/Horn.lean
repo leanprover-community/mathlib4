@@ -79,7 +79,7 @@ open SimplexCategory Finset Opposite
 
 section
 
-variable (n : ℕ) (i k : Fin (n+3))
+variable (n : ℕ) (i k : Fin (n + 3))
 
 /-- The (degenerate) subsimplex of `Λ[n+2, i]` concentrated in vertex `k`. -/
 def const (m : SimplexCategoryᵒᵖ) : Λ[n+2, i].obj m :=

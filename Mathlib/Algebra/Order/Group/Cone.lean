@@ -3,8 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Artie Khovanov
 -/
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Submonoid
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Construct ordered groups from groups with a specified positive cone.
@@ -74,7 +74,7 @@ export IsMaxCone (mem_or_neg_mem)
 export IsMaxMulCone (mem_or_inv_mem)
 
 namespace GroupCone
-variable {H : Type*} [OrderedCommGroup H] {a : H}
+variable {H : Type*} [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] {a : H}
 
 variable (H) in
 /-- The cone of elements that are at least 1. -/
@@ -91,31 +91,36 @@ lemma mem_oneLE : a ∈ oneLE H ↔ 1 ≤ a := Iff.rfl
 lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
 @[to_additive nonneg.isMaxCone]
-instance oneLE.isMaxMulCone {H : Type*} [LinearOrderedCommGroup H] : IsMaxMulCone (oneLE H) where
+instance oneLE.isMaxMulCone {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
+    IsMaxMulCone (oneLE H) where
   mem_or_inv_mem := by simpa using le_total 1
 
 end GroupCone
 
 variable {S G : Type*} [CommGroup G] [SetLike S G] (C : S)
 
-/-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/
-@[to_additive (attr := reducible)
-"Construct a partially ordered abelian group by designating a cone in an abelian group."]
-def OrderedCommGroup.mkOfCone [GroupConeClass S G] :
-    OrderedCommGroup G where
+/-- Construct a partial order by designating a cone in an abelian group. -/
+@[to_additive "Construct a partial order by designating a cone in an abelian group."]
+abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
   le a b := b / a ∈ C
   le_refl a := by simp [one_mem]
   le_trans a b c nab nbc := by simpa using mul_mem nbc nab
   le_antisymm a b nab nba := by
     simpa [div_eq_one, eq_comm] using eq_one_of_mem_of_inv_mem nab (by simpa using nba)
-  mul_le_mul_left a b nab c := by simpa using nab
 
-/-- Construct a linearly ordered abelian group by designating a maximal cone in an abelian group. -/
-@[to_additive (attr := reducible)
-"Construct a linearly ordered abelian group by designating a maximal cone in an abelian group."]
-def LinearOrderedCommGroup.mkOfCone
-    [GroupConeClass S G] [IsMaxMulCone C] (dec : DecidablePred (· ∈ C)) :
-    LinearOrderedCommGroup G where
-  __ := OrderedCommGroup.mkOfCone C
+/-- Construct a linear order by designating a maximal cone in an abelian group. -/
+@[to_additive "Construct a linear order by designating a maximal cone in an abelian group."]
+abbrev LinearOrder.mkOfGroupCone
+    [GroupConeClass S G] [IsMaxMulCone C] (dec : DecidablePred (· ∈ C)) : LinearOrder G where
+  __ := PartialOrder.mkOfGroupCone C
   le_total a b := by simpa using mem_or_inv_mem (b / a)
   decidableLE _ _ := dec _
+
+/-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/
+@[to_additive
+  "Construct a partially ordered abelian group by designating a cone in an abelian group."]
+lemma IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
+    let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
+    IsOrderedMonoid G :=
+  let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
+  { mul_le_mul_left := fun a b nab c ↦ by simpa [· ≤ ·] using nab }

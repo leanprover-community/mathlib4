@@ -158,9 +158,10 @@ theorem restrict_zero {_m0 : MeasurableSpace α} (s : Set α) : (0 : Measure α)
   (restrictₗ s).map_zero
 
 @[simp]
-theorem restrict_smul {_m0 : MeasurableSpace α} (c : ℝ≥0∞) (μ : Measure α) (s : Set α) :
-    (c • μ).restrict s = c • μ.restrict s :=
-  (restrictₗ s).map_smul c μ
+theorem restrict_smul {_m0 : MeasurableSpace α} {R : Type*} [SMul R ℝ≥0∞]
+    [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) (μ : Measure α) (s : Set α) :
+    (c • μ).restrict s = c • μ.restrict s := by
+  simpa only [smul_one_smul] using (restrictₗ s).map_smul (c • 1) μ
 
 theorem restrict_restrict₀ (hs : NullMeasurableSet s (μ.restrict t)) :
     (μ.restrict t).restrict s = μ.restrict (s ∩ t) :=

@@ -3,11 +3,10 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Image
+import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Tactic.Ring
 
 /-!

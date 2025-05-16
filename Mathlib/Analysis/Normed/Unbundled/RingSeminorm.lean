@@ -221,6 +221,8 @@ end RingSeminorm
 
 namespace RingNorm
 
+section NonUnitalRing
+
 variable [NonUnitalRing R]
 
 instance funLike : FunLike (RingNorm R) R ℝ where
@@ -259,6 +261,15 @@ theorem apply_one [DecidableEq R] (x : R) : (1 : RingNorm R) x = if x = 0 then 0
 
 instance [DecidableEq R] : Inhabited (RingNorm R) :=
   ⟨1⟩
+
+end NonUnitalRing
+
+/-- The `NormedRing` stucture on a ring `R` determined by a `RingNorm`. -/
+-- See note |reducible non instances]
+abbrev toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
+  __ := ‹Ring R›
+  __ := f.toAddGroupNorm.toNormedAddCommGroup
+  norm_mul_le := map_mul_le_mul f
 
 end RingNorm
 

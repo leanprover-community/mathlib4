@@ -459,7 +459,7 @@ theorem coe_X : ((X : RatFunc F) : F⸨X⸩) = single 1 1 := by
      PowerSeries.coe_one, div_one]
   simp only [ofPowerSeries_X]  -- Porting note: added
 
-theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
+theorem single_one_eq_pow {R : Type _} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   induction' n with n h_ind
   · simp

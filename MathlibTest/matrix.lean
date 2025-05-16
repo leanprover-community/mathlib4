@@ -115,45 +115,16 @@ TODO: the below lemmas rely on simp lemmas assuming the indexing numerals are as
 /-
 example {a b c d : α} : submatrix !![a, b; c, d] ![1, 0] ![0] = !![c; a] := by
   ext; simp
-
-example {a b c : α} : ![a, b, c] 0 = a := by simp
-example {a b c : α} : ![a, b, c] 1 = b := by simp
-example {a b c : α} : ![a, b, c] 2 = c := by simp
-
-example {a b c d : α} : ![a, b, c, d] 0 = a := by simp
-example {a b c d : α} : ![a, b, c, d] 1 = b := by simp
-example {a b c d : α} : ![a, b, c, d] 2 = c := by simp
-example {a b c d : α} : ![a, b, c, d] 3 = d := by simp
-example {a b c d : α} : ![a, b, c, d] 42 = c := by simp
-
-example {a b c d e : α} : ![a, b, c, d, e] 0 = a := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 1 = b := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 2 = c := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 3 = d := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 4 = e := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 5 = a := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 6 = b := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 7 = c := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 8 = d := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 9 = e := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 123 = d := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 123456789 = e := by simp
-
-example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 5 = f := by simp
-example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 7 = h := by simp
-example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 37 = f := by simp
-example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 99 = d := by simp
 -/
-
 example {α : Type _} [CommRing α] {a b c d : α} :
     Matrix.det !![a, b; c, d] = a * d - b * c := by
   simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
     simp only [det_succ_row_zero, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, of_apply,
       cons_val', cons_val_fin_one, cons_val_zero, det_unique, Fin.default_eq_zero, submatrix_apply,
-      Fin.succ_zero_eq_one, cons_val_one, head_fin_const, Fin.sum_univ_succ, Fin.val_zero, pow_zero,
-      one_mul, Fin.zero_succAbove, head_cons, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero,
-      zero_add, pow_one, cons_val_succ, neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib,
-      Finset.sum_const, Finset.card_singleton, one_smul]
+      Fin.succ_zero_eq_one, cons_val_one, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul,
+      Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero, zero_add, pow_one,
+      cons_val_succ, neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib, Finset.sum_const,
+      Finset.card_singleton, one_smul]
   ring
 
 example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
@@ -162,12 +133,12 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
   simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
     simp only [det_succ_row_zero, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, of_apply,
       cons_val', cons_val_fin_one, cons_val_zero, submatrix_apply, Fin.succ_zero_eq_one,
-      cons_val_one, head_cons, submatrix_submatrix, det_unique, Fin.default_eq_zero,
-      Function.comp_apply, Fin.succ_one_eq_two, cons_val_two, tail_cons, head_fin_const,
-      Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique,
-      Fin.val_succ, Fin.val_eq_zero, zero_add, pow_one, neg_mul, Fin.succ_succAbove_zero,
-      Finset.sum_neg_distrib, Finset.sum_singleton, cons_val_succ, Fin.succ_succAbove_one, even_two,
-      Even.neg_pow, one_pow, Finset.sum_const, Finset.card_singleton, one_smul]
+      cons_val_one, submatrix_submatrix, det_unique, Fin.default_eq_zero, Function.comp_apply,
+      Fin.succ_one_eq_two, cons_val, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul,
+      Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero, zero_add, pow_one,
+      neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib, Finset.sum_singleton, cons_val_succ,
+      Fin.succ_succAbove_one, even_two, Even.neg_pow, one_pow, Finset.sum_const,
+      Finset.card_singleton, one_smul]
   ring
 
 example {R : Type*} [Semiring R] {a b c d : R} :

@@ -129,9 +129,6 @@ theorem IsIrreducible.closure_genericPoint [QuasiSober α] {S : Set α}
     closure ({hS.genericPoint} : Set α) = S :=
   hS.isGenericPoint_genericPoint_closure.trans hS'.closure_eq
 
-@[deprecated (since := "2024-10-03")]
-alias IsIrreducible.genericPoint_spec := IsIrreducible.isGenericPoint_genericPoint_closure
-
 variable (α)
 
 /-- A generic point of a sober irreducible space. -/

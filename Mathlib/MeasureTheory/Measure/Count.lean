@@ -148,6 +148,9 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
   rw [← finite_image_iff hf.injOn] at hs
   rw [count_apply_infinite hs]
 
+instance count.instSigmaFinite [MeasurableSingletonClass α] [Countable α] :
+    SigmaFinite (count : Measure α) := by simp [sigmaFinite_iff_measure_singleton_lt_top]
+
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
   ⟨by cases nonempty_fintype α; simp [Measure.count_apply, finite_univ]⟩

@@ -27,7 +27,7 @@ namespace List
 
 section OrderedRing
 
-variable [OrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points in a list are weakly in that order on a line. -/
@@ -177,7 +177,8 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
+variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
 
 lemma Sorted.wbtw {l : List R} (h : l.Sorted (· ≤ ·)) : l.Wbtw R := by

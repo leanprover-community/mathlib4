@@ -334,6 +334,21 @@ lemma Scheme.Hom.isoImage_inv_ι
     (f.isoImage U).inv ≫ U.ι ≫ f = (f ''ᵁ U).ι :=
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
+/-- If `f : X ⟶ Y` is an open immersion, then `X` is isomorphic to its image in `Y`. -/
+def Scheme.Hom.isoOpensRange {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
+    X ≅ f.opensRange :=
+  IsOpenImmersion.isoOfRangeEq f f.opensRange.ι (by simp)
+
+@[reassoc (attr := simp)]
+lemma Scheme.Hom.isoOpensRange_hom_ι {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
+    f.isoOpensRange.hom ≫ f.opensRange.ι = f := by
+  simp [isoOpensRange]
+
+@[reassoc (attr := simp)]
+lemma Scheme.Hom.isoOpensRange_inv_comp {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
+    f.isoOpensRange.inv ≫ f = f.opensRange.ι := by
+  simp [isoOpensRange]
+
 @[deprecated (since := "2024-10-20")]
 alias Scheme.restrictRestrict := Scheme.Hom.isoImage
 @[deprecated (since := "2024-10-20")]

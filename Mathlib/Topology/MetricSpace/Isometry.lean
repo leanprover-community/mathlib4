@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
@@ -92,8 +93,6 @@ protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoE
     Isometry (Pi.map f) := fun x y => by
   simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
 
-@[deprecated (since := "2024-10-06")] alias _root_.isometry_dcomp := Isometry.piMap
-
 /-- The composition of isometries is an isometry. -/
 theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
   fun _ _ => (hg _ _).trans (hf _ _)
@@ -105,9 +104,6 @@ protected theorem uniformContinuous (hf : Isometry f) : UniformContinuous f :=
 /-- An isometry from a metric space is a uniform inducing map -/
 theorem isUniformInducing (hf : Isometry f) : IsUniformInducing f :=
   hf.antilipschitz.isUniformInducing hf.uniformContinuous
-
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing := isUniformInducing
 
 theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
@@ -172,8 +168,6 @@ protected theorem injective (h : Isometry f) : Injective f :=
 /-- An isometry from an emetric space is a uniform embedding -/
 lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
   hf.antilipschitz.isUniformEmbedding hf.lipschitz.uniformContinuous
-
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 /-- An isometry from an emetric space is an embedding -/
 theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.isEmbedding
@@ -245,9 +239,6 @@ theorem IsUniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β
     (h : IsUniformEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
-
-@[deprecated (since := "2024-10-01")]
-alias UniformEmbedding.to_isometry := IsUniformEmbedding.to_isometry
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/

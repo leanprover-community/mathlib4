@@ -181,15 +181,15 @@ variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfS
 instance {j : J} (g : ⊥ ⟶ j) : IsIso (h.F.map g) := by
   obtain rfl : g = homOfLE bot_le := rfl
   induction j using SuccOrder.limitRecOn with
-  | hm j hj =>
+  | isMin j hj =>
     obtain rfl := hj.eq_bot
     dsimp
     infer_instance
-  | hs j hj hj' =>
+  | succ j hj hj' =>
     have : IsIso _ := h.map_mem j hj
     rw [← homOfLE_comp bot_le (Order.le_succ j), h.F.map_comp]
     infer_instance
-  | hl j hj hj' =>
+  | isSuccLimit j hj hj' =>
     letI : OrderBot (Set.Iio j) :=
       { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
         bot_le j := bot_le }

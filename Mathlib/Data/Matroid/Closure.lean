@@ -11,8 +11,8 @@ import Mathlib.Order.CompleteLatticeIntervals
 # Matroid Closure
 
 A flat (`IsFlat`) of a matroid `M` is a combinatorial analogue of a subspace of a vector space,
-and is defined to be a subset `F` of the ground set of `M` such that for each isBasis
-`I` for `M`, every set having `I` as a isBasis is contained in `F`.
+and is defined to be a subset `F` of the ground set of `M` such that for each basis
+`I` for `F`, every set having `I` as a basis is contained in `F`.
 
 The *closure* of a set `X` in a matroid `M` is the intersection of all flats of `M` containing `X`.
 This is a combinatorial analogue of the linear span of a set of vectors.

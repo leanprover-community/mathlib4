@@ -523,7 +523,7 @@ variable {I : Type*} [Fintype I] {e : I → R}
 
 /-- A complete orthogonal family of central idempotents in a semiring
 give rise to a direct product decomposition. -/
-def CompleteOrthogonalIdempotents.mulEquivOfIsMulCentral [Semiring R]
+def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
     (he : CompleteOrthogonalIdempotents e) (hc : ∀ i, IsMulCentral (e i)) :
     R ≃+* Π i, (he.idem i).Corner where
   toFun r i := ⟨_, r, rfl⟩
@@ -547,8 +547,14 @@ def CompleteOrthogonalIdempotents.mulEquivOfIsMulCentral [Semiring R]
 
 /-- A complete orthogonal family of idempotents in a commutative semiring
 give rise to a direct product decomposition. -/
-def CompleteOrthogonalIdempotents.mulEquivOfComm [CommSemiring R]
+def CompleteOrthogonalIdempotents.ringEquivOfComm [CommSemiring R]
     (he : CompleteOrthogonalIdempotents e) : R ≃+* Π i, (he.idem i).Corner :=
-  he.mulEquivOfIsMulCentral fun _ ↦ Semigroup.mem_center_iff.mpr fun _ ↦ mul_comm ..
+  he.ringEquivOfIsMulCentral fun _ ↦ Semigroup.mem_center_iff.mpr fun _ ↦ mul_comm ..
+
+@[deprecated (since := "2025-04-14")] alias CompleteOrthogonalIdempotents.mulEquivOfIsMulCentral :=
+  CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral
+
+@[deprecated (since := "2025-04-14")] alias CompleteOrthogonalIdempotents.mulEquivOfComm :=
+  CompleteOrthogonalIdempotents.ringEquivOfComm
 
 end corner

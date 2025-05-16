@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Eric Wieser
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 
@@ -134,6 +134,58 @@ theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → �
     vecCons x u ⟨i.succ, h⟩ = u ⟨i, Nat.lt_of_succ_lt_succ h⟩ := by
   simp only [vecCons, Fin.cons, Fin.cases_succ']
 
+section simprocs
+open Lean Qq
+
+/-- Parses a chain of `Matrix.vecCons` calls into elements, leaving everything else in the tail.
+
+`let ⟨xs, tailn, tail⟩ ← matchVecConsPrefix n e` decomposes `e : Fin n → _` in the form
+`vecCons x₀ <| ... <| vecCons xₙ <| tail` where `tail : Fin tailn → _`. -/
+partial def matchVecConsPrefix (n : Q(Nat)) (e : Expr) : MetaM <| List Expr × Q(Nat) × Expr := do
+  match_expr ← Meta.whnfR e with
+  | Matrix.vecCons _ n x xs => do
+    let (elems, n', tail) ← matchVecConsPrefix n xs
+    return (x :: elems, n', tail)
+  | _ =>
+    return ([], n, e)
+
+open Qq in
+/-- A simproc that handles terms of the form `Matrix.vecCons a f i` where `i` is a numeric literal.
+
+In practice, this is most effective at handling `![a, b, c] i`-style terms. -/
+dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
+  let_expr Matrix.vecCons α en x xs' ei := ← Meta.whnfR e | return .continue
+  let some i := ei.int? | return .continue
+  let (xs, etailn, tail) ← matchVecConsPrefix en xs'
+  let xs := x :: xs
+  -- Determine if the tail is a numeral or only an offset.
+  let (tailn, variadic, etailn) ← do
+    let etailn_whnf : Q(ℕ) ← Meta.whnfD etailn
+    if let Expr.lit (.natVal length) := etailn_whnf then
+      pure (length, false, q(OfNat.ofNat $etailn_whnf))
+    else if let .some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
+      let offset_e : Q(ℕ) := mkNatLit offset
+      pure (offset, true, q($base + $offset))
+    else
+      pure (0, true, etailn)
+  -- Wrap the index if possible, and abort if not
+  let wrapped_i ←
+    if variadic then
+      -- can't wrap as we don't know the length
+      unless 0 ≤ i ∧ i < xs.length + tailn do return .continue
+      pure i.toNat
+    else
+      pure (i % (xs.length + tailn)).toNat
+  if h : wrapped_i < xs.length then
+    return .continue xs[wrapped_i]
+  else
+    -- Within the `tail`
+    let _ ← synthInstanceQ q(NeZero $etailn)
+    have i_lit : Q(ℕ) := mkRawNatLit (wrapped_i - xs.length)
+    return .continue (.some <| .app tail q(OfNat.ofNat $i_lit : Fin $etailn))
+
+end simprocs
+
 @[simp]
 theorem head_cons (x : α) (u : Fin m → α) : vecHead (vecCons x u) = x :=
   rfl
@@ -179,19 +231,15 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   `cons_val_succ`, because `1 : Fin 1 = 0 : Fin 1`.
 -/
 @[simp]
-theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead u :=
+theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = u 0 :=
   rfl
 
-@[simp]
-theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) :=
-  rfl
+theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) := rfl
 
-@[simp]
 lemma cons_val_three (x : α) (u : Fin m.succ.succ.succ → α) :
     vecCons x u 3 = vecHead (vecTail (vecTail u)) :=
   rfl
 
-@[simp]
 lemma cons_val_four (x : α) (u : Fin m.succ.succ.succ.succ → α) :
     vecCons x u 4 = vecHead (vecTail (vecTail (vecTail u))) :=
   rfl
@@ -328,12 +376,10 @@ theorem vecHead_vecAlt0 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) 
 theorem vecHead_vecAlt1 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) :
     vecHead (vecAlt1 hm v) = v 1 := by simp [vecHead, vecAlt1]
 
-@[simp]
 theorem cons_vec_bit0_eq_alt0 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u (i + i) = vecAlt0 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt0_vecAppend]; rfl
 
-@[simp]
 theorem cons_vec_bit1_eq_alt1 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u ((i + i) + 1) = vecAlt1 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt1_vecAppend]; rfl
@@ -350,8 +396,6 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   · simp only [← Nat.add_assoc, Nat.add_right_comm, cons_val_succ',
       cons_vecAppend, Nat.add_eq, vecAlt0]
 
--- Although proved by simp, extracting element 8 of a five-element
--- vector does not work by simp unless this lemma is present.
 @[simp]
 theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by
   simp [eq_iff_true_of_subsingleton]
@@ -365,8 +409,6 @@ theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   · rfl
   · simp [vecAlt1, Nat.add_right_comm, ← Nat.add_assoc]
 
--- Although proved by simp, extracting element 9 of a five-element
--- vector does not work by simp unless this lemma is present.
 @[simp]
 theorem empty_vecAlt1 (α) {h} : vecAlt1 h (![] : Fin 0 → α) = ![] := by
   simp [eq_iff_true_of_subsingleton]

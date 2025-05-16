@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
@@ -342,6 +343,9 @@ theorem Topology.IsEmbedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X �
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t25Space := IsEmbedding.t25Space
 
+protected theorem Homeomorph.t25Space [TopologicalSpace Y] [T25Space X] (h : X ≃ₜ Y) : T25Space Y :=
+  h.symm.isEmbedding.t25Space
+
 instance Subtype.instT25Space [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
   IsEmbedding.subtypeVal.t25Space
 
@@ -374,6 +378,9 @@ protected theorem Topology.IsEmbedding.t3Space [TopologicalSpace Y] [T3Space Y] 
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t3Space := IsEmbedding.t3Space
+
+protected theorem Homeomorph.t3Space [TopologicalSpace Y] [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
+  h.symm.isEmbedding.t3Space
 
 instance Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
   IsEmbedding.subtypeVal.t3Space
@@ -445,6 +452,10 @@ protected theorem Topology.IsClosedEmbedding.normalSpace [TopologicalSpace Y] [N
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.normalSpace := IsClosedEmbedding.normalSpace
 
+protected theorem Homeomorph.normalSpace [TopologicalSpace Y] [NormalSpace X] (h : X ≃ₜ Y) :
+    NormalSpace Y :=
+  h.symm.isClosedEmbedding.normalSpace
+
 instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] [R1Space X] :
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
@@ -484,6 +495,9 @@ protected theorem Topology.IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Spa
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.t4Space := IsClosedEmbedding.t4Space
+
+protected theorem Homeomorph.t4Space [TopologicalSpace Y] [T4Space X] (h : X ≃ₜ Y) : T4Space Y :=
+  h.symm.isClosedEmbedding.t4Space
 
 instance ULift.instT4Space [T4Space X] : T4Space (ULift X) := IsClosedEmbedding.uliftDown.t4Space
 
@@ -555,6 +569,9 @@ theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X →
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t5Space := IsEmbedding.t5Space
+
+protected theorem Homeomorph.t5Space [TopologicalSpace Y] [T5Space X] (h : X ≃ₜ Y) : T5Space Y :=
+  h.symm.isClosedEmbedding.t5Space
 
 -- see Note [lower instance priority]
 /-- A `T₅` space is a `T₄` space. -/

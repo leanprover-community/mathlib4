@@ -85,27 +85,37 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAdjoint  :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
+open Limits
+
+/-- The category over any object `X` factors through the category over the terminal object `T`. -/
+@[simps!]
+noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T)  :
+    forget X ≅ map (hT.from X) ⋙ (equivalenceOfIsTerminal hT).functor :=
+  NatIso.ofComponents fun X ↦ .refl _
+
+section HasBinaryProducts
+variable [HasBinaryProducts C]
+
 /--
 The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`, sometimes denoted `X*`.
 -/
 @[simps! obj_left obj_hom map_left]
-def star [HasBinaryProducts C] : C ⥤ Over X :=
-  cofree _ ⋙ coalgebraToOver X
+def star : C ⥤ Over X := cofree _ ⋙ coalgebraToOver X
 
 /-- The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
 
 Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
 -/
-def forgetAdjStar [HasBinaryProducts C] : forget X ⊣ star X :=
-  (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
+def forgetAdjStar : forget X ⊣ star X := (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
+
+instance : (star X).IsRightAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
 /-- Note that the binary products assumption is necessary: the existence of a right adjoint to
-`Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
--/
-instance [HasBinaryProducts C] : (forget X).IsLeftAdjoint  :=
-  ⟨_, ⟨forgetAdjStar X⟩⟩
+`Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`. -/
+instance : (forget X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
+end HasBinaryProducts
 end Over
 
 namespace Under
@@ -156,14 +166,32 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅
 instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint  :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
 
-/-- If `X : C` is initial, then the under category of `X` is equivalent to `C`. -/
-def equivalenceOfIsInitial {C : Type*} [Category C] {X : C} (hX : IsInitial X) :
-    Under X ≌ C where
-  functor := Under.forget X
-  inverse := { obj Y := Under.mk (hX.to Y), map f := Under.homMk f }
-  unitIso := NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _) (hX.hom_ext _ _))
-  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+/-- The category under any object `X` factors through the category under the initial object `I`. -/
+@[simps!]
+noncomputable def forgetMapInitial {I : C} (hI : IsInitial I) :
+    forget X ≅ map (hI.to X) ⋙ (equivalenceOfIsInitial hI).functor :=
+  NatIso.ofComponents fun X ↦ .refl _
 
+section HasBinaryCoproducts
+variable [HasBinaryCoproducts C]
+
+/-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨿ Y`. -/
+@[simps! obj_left obj_hom map_left]
+def costar : C ⥤ Under X := Monad.free _ ⋙ algebraToUnder X
+
+/-- The functor `Under.forget X : Under X ⥤ C` has a left adjoint given by `costar X`.
+
+Note that the binary coproducts assumption is necessary: the existence of a left adjoint to
+`Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`. -/
+def costarAdjForget : costar X ⊣ forget X := (Monad.adj _).comp (algebraEquivUnder X).toAdjunction
+
+instance : (costar X).IsLeftAdjoint := ⟨_, ⟨costarAdjForget X⟩⟩
+
+/-- Note that the binary coproducts assumption is necessary: the existence of a left adjoint to
+`Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`. -/
+instance : (forget X).IsRightAdjoint := ⟨_, ⟨costarAdjForget X⟩⟩
+
+end HasBinaryCoproducts
 end Under
 
 end CategoryTheory

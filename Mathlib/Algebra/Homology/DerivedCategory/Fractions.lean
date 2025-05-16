@@ -107,7 +107,7 @@ lemma left_fac_of_isStrictlyGE {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.o
     simp only [eq, IsIso.inv_hom_id_assoc, eq']
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category
-with `X` strictly `≥ a` and `≤ b`, and `Y` striclty `≥ a`
+with `X` strictly `≥ a` and `≤ b`, and `Y` strictly `≥ a`
 can be written as `f = inv (Q.map s) ≫ Q.map g` with `s : X' ⟶ X`
 a quasi-isomorphism with `X'` strictly `≥ a` and `≤ b`, and `g : X' ⟶ Y`. -/
 lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
@@ -133,7 +133,7 @@ lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
       Functor.map_comp, assoc, IsIso.hom_inv_id, comp_id]
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category
-with `X` strictly `≤ b`, and `Y` striclty `≥ a` and `≤ b`
+with `X` strictly `≤ b`, and `Y` strictly `≥ a` and `≤ b`
 can be written as `f = Q.map g ≫ inv (Q.map s)` with `g : X ⟶ Y'` and
 `s : Y ⟶ Y'` a quasi-isomorphism with `Y'` strictly `≥ a` and `≤ b`. -/
 lemma left_fac_of_isStrictlyLE_of_isStrictlyGE

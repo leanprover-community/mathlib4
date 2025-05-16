@@ -30,7 +30,7 @@ section convexHull
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommMonoid
 
@@ -159,7 +159,7 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [OrderedCommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+variable [CommSemiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E] [Module 𝕜 E]
 
 theorem convexHull_smul (a : 𝕜) (s : Set E) : convexHull 𝕜 (a • s) = a • convexHull 𝕜 s :=
   (LinearMap.lsmul _ _ a).image_convexHull _ |>.symm
@@ -168,7 +168,7 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [OrderedRing 𝕜]
+variable [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommGroup
 

@@ -22,7 +22,7 @@ where the bases are required to obey certain axioms.
 
 This file gives a definition of a matroid `M` in terms of its bases,
 and some API relating independent sets (subsets of bases) and the notion of a
-isBasis of a set `X` (a maximal independent subset of `X`).
+basis of a set `X` (a maximal independent subset of `X`).
 
 ## Main definitions
 
@@ -154,16 +154,11 @@ There are a few design decisions worth discussing.
 
 ## References
 
-[1] The standard text on matroid theory
-[J. G. Oxley, Matroid Theory, Oxford University Press, New York, 2011.]
-
-[2] The robust axiomatic definition of infinite matroids
-[H. Bruhn, R. Diestel, M. Kriesell, R. Pendavingh, P. Wollan, Axioms for infinite matroids,
-  Adv. Math 239 (2013), 18-46]
-
-[3] Equicardinality of matroid bases is independent of ZFC.
-[N. Bowler, S. Geschke, Self-dual uniform matroids on infinite sets,
-  Proc. Amer. Math. Soc. 144 (2016), 459-471]
+* [J. Oxley, Matroid Theory][oxley2011]
+* [H. Bruhn, R. Diestel, M. Kriesell, R. Pendavingh, P. Wollan, Axioms for infinite matroids,
+  Adv. Math 239 (2013), 18-46][bruhnDiestelKriesselPendavinghWollan2013]
+* [N. Bowler, S. Geschke, Self-dual uniform matroids on infinite sets,
+  Proc. Amer. Math. Soc. 144 (2016), 459-471][bowlerGeschke2015]
 -/
 
 assert_not_exists Field

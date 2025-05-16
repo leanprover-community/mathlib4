@@ -85,7 +85,7 @@ so that the resulting instance uses the compact-open topology.
 -/
 
 open Filter Set Topology UniformSpace
-open scoped Uniformity Topology UniformConvergence
+open scoped Uniformity UniformConvergence
 
 universe u₁ u₂ u₃
 variable {α : Type u₁} {β : Type u₂} [TopologicalSpace α] [UniformSpace β]
@@ -177,9 +177,6 @@ theorem isUniformEmbedding_toUniformOnFunIsCompact :
   comap_uniformity := rfl
   injective := DFunLike.coe_injective
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toUniformOnFunIsCompact := isUniformEmbedding_toUniformOnFunIsCompact
-
 -- The following definitions and theorems
 -- used to be a part of the construction of the `UniformSpace C(α, β)` structure
 -- before it was migrated to `UniformOnFun`
@@ -269,17 +266,11 @@ theorem isUniformInducing_comp (g : C(β, δ)) (hg : IsUniformInducing g) :
     UniformOnFun.postcomp_isUniformInducing hg |>.comp
       isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_comp := isUniformInducing_comp
-
 theorem isUniformEmbedding_comp (g : C(β, δ)) (hg : IsUniformEmbedding g) :
     IsUniformEmbedding (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
   isUniformEmbedding_toUniformOnFunIsCompact.of_comp_iff.mp <|
     UniformOnFun.postcomp_isUniformEmbedding hg |>.comp
       isUniformEmbedding_toUniformOnFunIsCompact
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_comp := isUniformEmbedding_comp
 
 theorem uniformContinuous_comp_left (g : C(α, γ)) :
     UniformContinuous (fun f ↦ f.comp g : C(γ, β) → C(α, β)) :=
@@ -375,20 +366,21 @@ continuous maps `C(α, β)` is complete (wrt the compact convergence uniformity)
 Sufficient conditions on `α` to satisfy this condition are (weak) local compactness (see
 `ContinuousMap.instCompleteSpaceOfWeaklyLocallyCompactSpace`) and sequential compactness (see
 `ContinuousMap.instCompleteSpaceOfSequentialSpace`). -/
-lemma completeSpace_of_restrictGenTopology (h : RestrictGenTopology {K : Set α | IsCompact K}) :
+lemma completeSpace_of_isCoherentWith (h : IsCoherentWith {K : Set α | IsCompact K}) :
     CompleteSpace C(α, β) := by
   rw [completeSpace_iff_isComplete_range
     isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing,
     range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
   exact (UniformOnFun.isClosed_setOf_continuous h).completeSpace_coe
 
+@[deprecated (since := "2025-04-08")]
+alias completeSpace_of_restrictGenTopology := completeSpace_of_isCoherentWith
+
 instance instCompleteSpaceOfWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace α] :
-    CompleteSpace C(α, β) :=
-  completeSpace_of_restrictGenTopology RestrictGenTopology.isCompact_of_weaklyLocallyCompact
+    CompleteSpace C(α, β) := completeSpace_of_isCoherentWith .isCompact_of_weaklyLocallyCompact
 
 instance instCompleteSpaceOfSequentialSpace [SequentialSpace α] :
-    CompleteSpace C(α, β) :=
-  completeSpace_of_restrictGenTopology RestrictGenTopology.isCompact_of_seq
+    CompleteSpace C(α, β) := completeSpace_of_isCoherentWith .isCompact_of_seq
 
 end CompleteSpace
 

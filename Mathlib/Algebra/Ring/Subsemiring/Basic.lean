@@ -478,9 +478,6 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
       zero_mem' := ⟨_, zero⟩ }
   closure_le (t := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
-@[deprecated closure_induction (since := "2024-10-10")]
-alias closure_induction' := closure_induction
-
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[elab_as_elim]
 theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → y ∈ closure s → Prop}

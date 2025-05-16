@@ -94,14 +94,14 @@ def cantorFunction (c : ℝ) (f : ℕ → Bool) : ℝ :=
 
 theorem cantorFunction_le (h1 : 0 ≤ c) (h2 : c < 1) (h3 : ∀ n, f n → g n) :
     cantorFunction c f ≤ cantorFunction c g := by
-  apply tsum_le_tsum _ (summable_cantor_function f h1 h2) (summable_cantor_function g h1 h2)
+  apply (summable_cantor_function f h1 h2).tsum_le_tsum _ (summable_cantor_function g h1 h2)
   intro n; cases h : f n
   · simp [h, cantorFunctionAux_nonneg h1]
   replace h3 : g n = true := h3 n h; simp [h, h3]
 
 theorem cantorFunction_succ (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
     cantorFunction c f = cond (f 0) 1 0 + c * cantorFunction c fun n => f (n + 1) := by
-  rw [cantorFunction, tsum_eq_zero_add (summable_cantor_function f h1 h2)]
+  rw [cantorFunction, (summable_cantor_function f h1 h2).tsum_eq_zero_add]
   rw [cantorFunctionAux_succ, tsum_mul_left, cantorFunctionAux, _root_.pow_zero]
   rfl
 

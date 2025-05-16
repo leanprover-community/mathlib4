@@ -57,13 +57,7 @@ theorem withDensity_rnDeriv_eq (μ ν : Measure α) [HaveLebesgueDecomposition �
     ν.withDensity (rnDeriv μ ν) = μ := by
   suffices μ.singularPart ν = 0 by
     conv_rhs => rw [haveLebesgueDecomposition_add μ ν, this, zero_add]
-  suffices μ.singularPart ν Set.univ = 0 by simpa using this
-  have h_sing := mutuallySingular_singularPart μ ν
-  rw [← measure_add_measure_compl h_sing.measurableSet_nullSet]
-  simp only [MutuallySingular.measure_nullSet, zero_add]
-  refine le_antisymm ?_ (zero_le _)
-  refine (singularPart_le μ ν ?_ ).trans_eq ?_
-  exact h h_sing.measure_compl_nullSet
+  exact (singularPart_eq_zero μ ν).mpr h
 
 variable {μ ν : Measure α}
 
