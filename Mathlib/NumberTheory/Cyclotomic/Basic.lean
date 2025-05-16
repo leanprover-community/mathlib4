@@ -509,6 +509,9 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
   · rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
     exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
 
+instance [NumberField K] : NumberField (CyclotomicField n K) :=
+  IsCyclotomicExtension.numberField {n} K _
+
 end CyclotomicField
 
 end CyclotomicField

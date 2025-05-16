@@ -292,10 +292,6 @@ lemma div_two_mul_two_add_one_of_odd (h : Odd n) : n / 2 * 2 + 1 = n := by
 lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
   rw [← odd_iff.mp h, mod_add_div']
 
-section
-
-end
-
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, two_ne_zero, parity_simps]
@@ -343,14 +339,25 @@ lemma iterate_eq_id (hf : Involutive f) (hne : f ≠ id) : f^[n] = id ↔ Even n
 end Involutive
 end Function
 
-lemma neg_one_pow_eq_ite {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ} :
-    (-1 : R) ^ n = ite (Even n) 1 (-1) := by
+section DistribNeg
+
+variable {R : Type*} [Monoid R] [HasDistribNeg R] {m n : ℕ}
+
+lemma neg_one_pow_eq_ite : (-1 : R) ^ n = if Even n then 1 else (-1) := by
   cases even_or_odd n with
   | inl h => rw [h.neg_one_pow, if_pos h]
   | inr h => rw [h.neg_one_pow, if_neg (by simpa using h)]
 
-lemma neg_one_pow_eq_one_iff_even {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
-    (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n := by simp [neg_one_pow_eq_ite, h]
+lemma neg_one_pow_congr (h : Even m ↔ Even n) : (-1 : R) ^ m = (-1) ^ n := by
+  simp [h, neg_one_pow_eq_ite]
+
+lemma neg_one_pow_eq_one_iff_even (h : (-1 : R) ≠ 1) :
+    (-1 : R) ^ n = 1 ↔ Even n := by simp [neg_one_pow_eq_ite, h]
+
+lemma neg_one_pow_eq_neg_one_iff_odd (h : (-1 : R) ≠ 1) :
+    (-1 : R) ^ n = -1 ↔ Odd n := by simp [neg_one_pow_eq_ite, h.symm]
+
+end DistribNeg
 
 section CharTwo
 

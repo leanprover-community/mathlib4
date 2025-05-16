@@ -13,11 +13,11 @@ import Mathlib.RepresentationTheory.Submodule
 This file contains basic definitions and results about irreducible root systems.
 
 ## Main definitions / results:
- * `RootPairing.isSimpleModule_weylGroupRootRep_iff`: a criterion for the representation of the Weyl
-   group on root space to be irreducible.
- * `RootPairing.IsIrreducible`: a typeclass encoding the fact that a root pairing is irreducible.
- * `RootPairing.IsIrreducible.mk'`: an alternative constructor for irreducibility when the
-   coefficients are a field.
+* `RootPairing.isSimpleModule_weylGroupRootRep_iff`: a criterion for the representation of the Weyl
+  group on root space to be irreducible.
+* `RootPairing.IsIrreducible`: a typeclass encoding the fact that a root pairing is irreducible.
+* `RootPairing.IsIrreducible.mk'`: an alternative constructor for irreducibility when the
+  coefficients are a field.
 
 -/
 
@@ -28,7 +28,7 @@ open MulAction (orbit mem_orbit_self mem_orbit_iff)
 open Module.End (invtSubmodule)
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-   (P : RootPairing ι R M N)
+  (P : RootPairing ι R M N)
 
 namespace RootPairing
 
@@ -78,9 +78,9 @@ lemma isSimpleModule_weylGroupRootRep [P.IsIrreducible] :
 def toRootSystem [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : RootSystem ι R M N :=
   { toRootPairing := P
     span_root_eq_top := IsIrreducible.eq_top_of_invtSubmodule_reflection
-      P.rootSpan P.rootSpan_mem_invtSubmodule_reflection P.rootSpan_ne_bot
+      (P.rootSpan R) P.rootSpan_mem_invtSubmodule_reflection (P.rootSpan_ne_bot R)
     span_coroot_eq_top := IsIrreducible.eq_top_of_invtSubmodule_coreflection
-      P.corootSpan P.corootSpan_mem_invtSubmodule_coreflection P.corootSpan_ne_bot }
+      (P.corootSpan R) P.corootSpan_mem_invtSubmodule_coreflection (P.corootSpan_ne_bot R) }
 
 lemma invtSubmodule_reflection_of_invtSubmodule_coreflection (i : ι) (q : Submodule R N)
     (hq : q ∈ invtSubmodule (P.coreflection i)) :
@@ -104,6 +104,15 @@ lemma IsIrreducible.mk' {K : Type*} [Field K] [Module K M] [Module K N] [Nontriv
     rw [Submodule.map_eq_top_iff, not_imp_comm] at h
     replace ne_bot : q.dualAnnihilator ≠ ⊤ := by simpa
     simpa using h ne_bot
+
+lemma exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule
+    [NeZero (2 : R)] [NoZeroSMulDivisors R M] (q : Submodule R M)
+    (hq : ∀ i, q ∈ invtSubmodule (P.reflection i)) :
+    ∃ Φ : Set ι, (∀ i ∈ Φ, ¬ Disjoint q (R ∙ P.root i)) ∧ (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) := by
+  refine ⟨{i | ¬ Disjoint q (R ∙ P.root i)}, by simp, fun i hi ↦ ?_⟩
+  simp only [mem_setOf_eq, not_not] at hi
+  rw [← Submodule.mem_invtSubmodule_reflection_iff (by simp) hi]
+  exact hq i
 
 variable [NeZero (2 : R)] [P.IsIrreducible]
 
@@ -139,3 +148,29 @@ lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
   simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩
 
 end RootPairing
+
+namespace RootSystem
+
+/-
+Note that this actually holds for `RootPairing` provided we:
+* assume `RootPairing.IsBalanced`,
+* replace the assumption `q ≠ ⊥` with `¬ Disjoint P.rootSpan q`,
+* replace the conclusion `q = ⊤` with `P.rootSpan ≤ q`.
+-/
+lemma eq_top_of_mem_invtSubmodule_of_forall_eq_univ
+    {K : Type*} [Field K] [NeZero (2 : K)] [Module K M] [Module K N]
+    (P : RootSystem ι K M N)
+    (q : Submodule K M)
+    (h₀ : q ≠ ⊥)
+    (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
+    (h₂ : ∀ Φ, Φ.Nonempty → P.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) → Φ = univ) :
+    q = ⊤ := by
+  obtain ⟨Φ, b, c⟩ := P.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q h₁
+  rcases Φ.eq_empty_or_nonempty with rfl | hΦ
+  · replace c : q ≤ ⨅ i, LinearMap.ker (P.coroot' i) := by simpa using c
+    simp [h₀, ← P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot'] at c
+  · replace b : P.root '' Φ ⊆ q := by
+      simpa [Submodule.disjoint_span_singleton' (P.ne_zero _)] using b
+    simpa [h₂ Φ hΦ b c, ← span_le] using b
+
+end RootSystem
