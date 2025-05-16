@@ -34,23 +34,20 @@ end orderIso
 
 section QuotSMulTop
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R] (x : R)
-variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
-
-instance [Subsingleton M] (N : Submodule R M) : Subsingleton (M ⧸ N) := by
+instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Subsingleton M] (N : Submodule R M) :
+    Subsingleton (M ⧸ N) := by
   apply subsingleton_of_forall_eq 0
   rintro ⟨x⟩
   exact congrArg (Quot.mk ⇑N.quotientRel) (Subsingleton.eq_zero x)
 
 end QuotSMulTop
 
+section FiniteDimensionalOrder
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
+open RingTheory Sequence IsLocalRing Submodule Module
+
+variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R] (x : R)
 variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
-
-namespace Module
-
-open RingTheory Sequence IsLocalRing Submodule
 
 instance [Nontrivial M] : FiniteDimensionalOrder (Module.support R M) := by
   rw [support_eq_zeroLocus]
@@ -62,6 +59,22 @@ instance [Nontrivial M] : FiniteDimensionalOrder (Module.support R M) := by
   have : FiniteDimensionalOrder (PrimeSpectrum (R ⧸ annihilator R M)) := inferInstance
   sorry
 
+end FiniteDimensionalOrder
+
+variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
+variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
+
+namespace Module
+
+local notation "𝔪" => IsLocalRing.maximalIdeal R
+
+open RingTheory Sequence IsLocalRing Submodule Ideal
+
+theorem move_chain (p : LTSeries (PrimeSpectrum R)) {x : R} (hx : x ∈ (RelSeries.last p).1) :
+    ∃ q : LTSeries (PrimeSpectrum R),
+      x ∈ (q 1).1 ∧ q.length = p.length ∧ q 0 = p 0 ∧ q.last = p.last := sorry
+
+open scoped Classical in
 theorem supportDim_le_supportDim_quotSMulTop_succ (x : R) (mem : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   by_cases h : Subsingleton M
@@ -69,7 +82,11 @@ theorem supportDim_le_supportDim_quotSMulTop_succ (x : R) (mem : x ∈ maximalId
     rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
   have : Nontrivial M := not_subsingleton_iff_nontrivial.mp h
   apply iSup_le_iff.mpr
-  intro p
+  intro q
+  have hm : ⟨𝔪, IsMaximal.isPrime' 𝔪⟩ ∈ support R M := sorry
+  let p : LTSeries (support R M) :=
+    if lt : (q.last).1.1 < 𝔪 then q.snoc ⟨⟨𝔪, IsMaximal.isPrime' 𝔪⟩, hm⟩ lt
+    else q
   sorry
 
 theorem supportDim_quotSMulTop_succ_eq_supportDim (x : R) (reg : IsSMulRegular M x)
