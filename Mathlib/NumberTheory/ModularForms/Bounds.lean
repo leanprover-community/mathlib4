@@ -3,9 +3,8 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.ModularForms.LevelOne
-import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
-import Mathlib.GroupTheory.Complement
+import Mathlib.NumberTheory.Modular
+import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
 # Bounds for cusp forms
@@ -43,9 +42,9 @@ lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
   rw [Subtype.isCompact_iff, coe_truncatedFundamentalDomain, Metric.isCompact_iff_isClosed_bounded]
   constructor
   · -- show closed
-    refine (isClosed_le continuous_const Complex.continuous_im).inter ?_
-    refine (isClosed_le Complex.continuous_im continuous_const).inter ?_
-    refine (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter ?_
+    apply (isClosed_le continuous_const Complex.continuous_im).inter
+    apply (isClosed_le Complex.continuous_im continuous_const).inter
+    apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter
     exact isClosed_le continuous_const continuous_norm
   · -- show bounded
     rw [Metric.isBounded_iff_subset_closedBall 0]
@@ -109,6 +108,13 @@ end ModularGroup
 noncomputable def UpperHalfPlane.petersson (k : ℤ) (f f' : ℍ → ℂ) (τ : ℍ) :=
   conj (f τ) * f' τ * τ.im ^ k
 
+lemma UpperHalfPlane.petersson_continuous (k : ℤ) {f f' : ℍ → ℂ}
+    (hf : Continuous f) (hf' : Continuous f') :
+    Continuous (petersson k f f') := by
+  apply ((Complex.continuous_conj.comp hf).mul hf').mul
+  apply (Complex.continuous_ofReal.comp UpperHalfPlane.continuous_im).zpow₀
+  exact fun τ ↦ .inl <| Complex.ofReal_ne_zero.mpr τ.im_ne_zero
+
 lemma UpperHalfPlane.petersson_slash (k : ℤ) (f f' : ℍ → ℂ) (g : GL(2, ℝ)⁺) (τ : ℍ) :
     petersson k (f ∣[k] g) (f' ∣[k] g) τ = (↑ₘ[ℝ] g).det ^ (k - 2) * petersson k f f' (g • τ) := by
   let D := (↑ₘ[ℝ] g).det
@@ -131,29 +137,6 @@ lemma UpperHalfPlane.petersson_slash (k : ℤ) (f f' : ℍ → ℂ) (g : GL(2, �
 lemma UpperHalfPlane.petersson_slash_SL (k : ℤ) (f f' : ℍ → ℂ) (g : SL(2, ℤ)) (τ : ℍ) :
     petersson k (f ∣[k] g) (f' ∣[k] g) τ = petersson k f f' (g • τ) := by
   simp [UpperHalfPlane.petersson_slash]
-
-lemma SlashInvariantFormClass.petersson_smul {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F F' : Type*}
-    [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k] {f : F}
-    [FunLike F' ℍ ℂ] [SlashInvariantFormClass F' Γ k] {f' : F'}
-    {g : SL(2, ℤ)} (hg : g ∈ Γ) {τ : ℍ} :
-    petersson k f f' (g • τ) = petersson k f f' τ := by
-  simpa [← ModularForm.SL_slash, SlashInvariantFormClass.slash_action_eq _ _ hg]
-    using (petersson_slash k f f' g τ).symm
-
-lemma SlashInvariantFormClass.petersson_continuous (k : ℤ) (Γ : Subgroup SL(2, ℤ)) {F F' : Type*}
-    [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k]
-    [FunLike F' ℍ ℂ] [SlashInvariantFormClass F' Γ k] {f : F} {f' : F'}
-    (hf : Continuous f) (hf' : Continuous f') : Continuous (petersson k f f') := by
-  apply ((Complex.continuous_conj.comp hf).mul hf').mul
-  apply (Complex.continuous_ofReal.comp UpperHalfPlane.continuous_im).zpow₀
-  exact fun τ ↦ .inl <| Complex.ofReal_ne_zero.mpr τ.im_ne_zero
-
-lemma ModularFormClass.petersson_continuous (k : ℤ) (Γ : Subgroup SL(2, ℤ)) {F F' : Type*}
-    [FunLike F ℍ ℂ] [ModularFormClass F Γ k]
-    [FunLike F' ℍ ℂ] [ModularFormClass F' Γ k] (f : F) (f' : F') :
-    Continuous (petersson k f f') :=
-  SlashInvariantFormClass.petersson_continuous k Γ
-    (ModularFormClass.holo f).continuous (ModularFormClass.holo f').continuous
 
 lemma UpperHalfPlane.IsZeroAtImInfty.petersson_isZeroAtImInfty_left
     (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex]
@@ -182,6 +165,21 @@ lemma UpperHalfPlane.IsZeroAtImInfty.petersson_isZeroAtImInfty_right
   rw [IsZeroAtImInfty, ZeroAtFilter, tendsto_zero_iff_norm_tendsto_zero] at this ⊢
   refine this.congr fun τ ↦ ?_
   simp only [petersson, norm_mul, Complex.norm_conj, mul_comm]
+
+lemma SlashInvariantFormClass.petersson_smul {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F F' : Type*}
+    [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k] {f : F}
+    [FunLike F' ℍ ℂ] [SlashInvariantFormClass F' Γ k] {f' : F'}
+    {g : SL(2, ℤ)} (hg : g ∈ Γ) {τ : ℍ} :
+    petersson k f f' (g • τ) = petersson k f f' τ := by
+  simpa [← ModularForm.SL_slash, SlashInvariantFormClass.slash_action_eq _ _ hg]
+    using (petersson_slash k f f' g τ).symm
+
+lemma ModularFormClass.petersson_continuous (k : ℤ) (Γ : Subgroup SL(2, ℤ)) {F F' : Type*}
+    [FunLike F ℍ ℂ] [ModularFormClass F Γ k]
+    [FunLike F' ℍ ℂ] [ModularFormClass F' Γ k] (f : F) (f' : F') :
+    Continuous (petersson k f f') :=
+  UpperHalfPlane.petersson_continuous k
+    (ModularFormClass.holo f).continuous (ModularFormClass.holo f').continuous
 
 /-- If `f` is a cusp form and `f'` a modular form, then `petersson k f f'` is bounded. -/
 lemma CuspFormClass.petersson_bounded_left
