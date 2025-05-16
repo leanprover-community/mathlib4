@@ -11,7 +11,8 @@ import Mathlib.MeasureTheory.Measure.TightNormed
 
 ## Main statements
 
-* `isTightMeasureSet_of_tendsto_charFun`: if the characteristic functions converge pointwise
+* `isTightMeasureSet_of_tendsto_charFun`: if the characteristic functions of a sequence of measures
+ `μ : ℕ → Measure E` on a finite dimensional inner product space converge pointwise
   to a function which is continuous at 0, then `{μ n | n}` is tight.
 
 -/
