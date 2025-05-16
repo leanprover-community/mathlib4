@@ -11,7 +11,8 @@ import Mathlib.MeasureTheory.Measure.TightNormed
 
 ## Main statements
 
-* `fooBar_unique`
+* `isTightMeasureSet_of_tendsto_charFun`: if the characteristic functions converge pointwise
+  to a function which is continuous at 0, then `{μ n | n}` is tight.
 
 -/
 
@@ -20,8 +21,8 @@ open scoped Topology RealInnerProductSpace ENNReal
 
 namespace MeasureTheory
 
-variable {E : Type*} [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
-  {mE : MeasurableSpace E} {μ : Measure E}
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  [MeasurableSpace E] [BorelSpace E]
 
 /-- If the characteristic functions converge pointwise to a function which is continuous at 0,
 then `{μ n | n}` is tight. -/
@@ -31,7 +32,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     IsTightMeasureSet (Set.range μ) := by
   refine isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one ℝ fun z hz ↦ ?_
   suffices Tendsto (fun r : ℝ ↦ limsup (fun n ↦ (μ n).real {x | r < |⟪z, x⟫|}) atTop) atTop (𝓝 0) by
-    have h_ofReal r : limsup (fun n ↦ μ n {x | r < |⟪z, x⟫|}) atTop
+    have h_ofReal (r : ℝ) : limsup (fun n ↦ μ n {x | r < |⟪z, x⟫|}) atTop
         = ENNReal.ofReal (limsup (fun n ↦ (μ n).real {x | r < |⟪z, x⟫|}) atTop) := by
       simp_rw [measureReal_def,
         ENNReal.limsup_toReal_eq (b := 1) (by simp) (.of_forall fun _ ↦ prob_le_one)]
@@ -39,7 +40,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
       refine ne_top_of_le_ne_top (by simp : 1 ≠ ∞) ?_
       refine limsup_le_of_le ?_ (.of_forall fun _ ↦ prob_le_one)
       exact IsCoboundedUnder.of_frequently_ge <| .of_forall fun _ ↦ zero_le'
-    simp_rw [h_ofReal]
+    simp only [Real.norm_eq_abs, h_ofReal]
     rw [← ENNReal.ofReal_zero]
     exact ENNReal.tendsto_ofReal this
   have h_le_4 n r (hr : 0 < r) :
@@ -61,7 +62,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
       simp only [neg_mul, intervalIntegral.integral_const, sub_neg_eq_add, smul_eq_mul]
       ring_nf
       rw [mul_inv_cancel₀ hr.ne', one_mul]
-  have h_le n r := measure_abs_inner_ge_le_charFun (μ := μ n) (a := z) (r := r)
+  have h_le n r := measureReal_abs_inner_gt_le_integral_charFun (μ := μ n) (a := z) (r := r)
   -- We introduce an upper bound for the limsup.
   -- This is where we use the fact that `charFun (μ n)` converges to `f`.
   have h_limsup_le r (hr : 0 < r) :
