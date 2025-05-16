@@ -10,13 +10,18 @@ import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 /-!
 # Integrals of characteristic functions
 
-This file contains results about integrals of characteristic functions of measures, and lemmas
+This file contains results about integrals of characteristic functions, and lemmas
 relating the measure of some sets to integrals of characteristic functions.
 
 ## Main statements
 
 * `integral_charFun_Icc`: `∫ t in -r..r, charFun μ t = 2 * r * ∫ x, sinc (r * x) ∂μ`
-* TODO
+* `measureReal_abs_gt_le_integral_charFun`: bound on the measure of the set
+  `{x | r < |x|}` in terms of the integral of the characteristic function of `μ`:
+  `μ.real {x | r < |x|} ≤ 2⁻¹ * r * ‖∫ t in (-2 * r⁻¹)..(2 * r⁻¹), 1 - charFun μ t‖`
+* `measureReal_abs_inner_gt_le_integral_charFun`: an application of the previous lemma in an
+  inner product space, which gives for all `a`,
+  `μ.real {x | r < |⟪a, x⟫|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖`
 
 -/
 
@@ -28,27 +33,13 @@ section Real
 
 variable {μ : Measure ℝ} {r : ℝ}
 
-lemma intervalIntegral_integral_swap {α E : Type*} {_ : MeasurableSpace α}
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {μ : Measure α} [SFinite μ] {a b : ℝ} {f : ℝ → α → E}
-    (h_int : Integrable (Function.uncurry f) ((volume.restrict (Set.uIoc a b)).prod μ)) :
-    ∫ x in a..b, ∫ y, f x y ∂μ = ∫ y, (∫ x in a..b, f x y) ∂μ := by
-  rcases le_total a b with (hab | hab)
-  · simp_rw [intervalIntegral.integral_of_le hab]
-    simp only [hab, Set.uIoc_of_le] at h_int
-    exact integral_integral_swap h_int
-  · simp_rw [intervalIntegral.integral_of_ge hab]
-    simp only [hab, Set.uIoc_of_ge] at h_int
-    rw [integral_integral_swap h_int, integral_neg]
-
 lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     ∫ t in -r..r, charFun μ t = 2 * r * ∫ x, sinc (r * x) ∂μ := by
   have h_int : Integrable (Function.uncurry fun (x y : ℝ) ↦ cexp (x * y * I))
       ((volume.restrict (Set.uIoc (-r) r)).prod μ) := by
     simp only [neg_le_self_iff, hr.le, Set.uIoc_of_le]
-    -- integrable since bounded and the measure is finite
-    rw [← integrable_norm_iff]
-    swap; · exact Measurable.aestronglyMeasurable <| by fun_prop
+    -- integrable since the functin has norm 1 everywhere and the measure is finite
+    rw [← integrable_norm_iff (by fun_prop)]
     suffices (fun a => ‖Function.uncurry (fun (x y : ℝ) ↦ cexp (x * y * I)) a‖) = fun _ ↦ 1 by
       rw [this]
       fun_prop
@@ -91,14 +82,13 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     norm_cast
     rw [integral_complex_ofReal, ← integral_const_mul]
 
-lemma integrable_sinc_const_mul [IsFiniteMeasure μ] (r : ℝ) :
-    Integrable (fun x ↦ sinc (r * x)) μ :=
-  (integrable_map_measure stronglyMeasurable_sinc.aestronglyMeasurable (by fun_prop)).mp
-    integrable_sinc
-
+/-- A bound on the measure of the set `{x | r < |x|}` in terms of the integral of
+the characteristic function. -/
 lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 < r) :
-    μ.real {x | r < |x|}
-      ≤ 2⁻¹ * r * ‖∫ t in (-2 * r⁻¹)..(2 * r⁻¹), 1 - charFun μ t‖ := by
+    μ.real {x | r < |x|} ≤ 2⁻¹ * r * ‖∫ t in (-2 * r⁻¹)..(2 * r⁻¹), 1 - charFun μ t‖ := by
+  have integrable_sinc_const_mul (r : ℝ) : Integrable (fun x ↦ sinc (r * x)) μ :=
+    (integrable_map_measure stronglyMeasurable_sinc.aestronglyMeasurable (by fun_prop)).mp
+      integrable_sinc
   calc μ.real {x | r < |x|}
   _ = μ.real {x | 2 < |2 * r⁻¹ * x|} := by
     congr with x
@@ -120,10 +110,10 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
         intro hx0
         simp only [hx0, Set.mem_setOf_eq, mul_zero, abs_zero] at hx
         linarith
-      rw [sinc_of_ne_zero hx_ne, le_sub_iff_add_le, ← le_sub_iff_add_le']
+      rw [le_sub_iff_add_le, ← le_sub_iff_add_le']
       norm_num
       rw [one_div]
-      refine (sin_div_le_inv_abs _).trans ?_
+      refine (sinc_le_inv_abs hx_ne).trans ?_
       exact (inv_le_inv₀ (by positivity) (by positivity)).mpr (le_of_lt hx)
   _ ≤ 2 * ∫ x, 1 - sinc (2 * r⁻¹ * x) ∂μ := by
     gcongr
@@ -151,23 +141,19 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
 
 end Real
 
+/-- A bound on the measure of the set `{x | r < |⟪a, x⟫|}` in terms of the integral of
+the characteristic function. -/
 lemma measureReal_abs_inner_gt_le_integral_charFun {E : Type*} [SeminormedAddCommGroup E]
     [InnerProductSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] {a : E} {r : ℝ} (hr : 0 < r) :
-    μ.real {x | r < |⟪a, x⟫|}
-      ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖ := by
+    μ.real {x | r < |⟪a, x⟫|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖ := by
   have : IsProbabilityMeasure (μ.map (fun x ↦ ⟪a, x⟫)) := isProbabilityMeasure_map (by fun_prop)
-  rw [Measure.real_def]
   convert measureReal_abs_gt_le_integral_charFun (μ := μ.map (fun x ↦ ⟪a, x⟫)) hr with x
-  · rw [Measure.real_def, Measure.map_apply]
+  · rw [map_measureReal_apply (by fun_prop)]
     · simp
-    · fun_prop
     · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
-  · simp_rw [charFun_apply, inner_smul_right]
-    simp only [conj_trivial, ofReal_mul, RCLike.inner_apply]
-    rw [integral_map]
-    · simp_rw [real_inner_comm a]
-    · fun_prop
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
+  · simp only [charFun_apply, inner_smul_right, conj_trivial, ofReal_mul, RCLike.inner_apply]
+    rw [integral_map (by fun_prop) (by fun_prop)]
+    simp_rw [real_inner_comm a]
 
 end MeasureTheory
