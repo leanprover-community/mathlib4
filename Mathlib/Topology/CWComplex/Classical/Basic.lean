@@ -135,7 +135,7 @@ class CWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) where
   /-- The union of all closed cells equals `C`. Use `CWComplex.union` instead. -/
   protected union' : ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C
 
-@[simps]
+@[simps -isSimp]
 instance (priority := high) CWComplex.instRelCWComplex {X : Type*} [TopologicalSpace X] (C : Set X)
     [CWComplex C] : RelCWComplex C ∅ where
   cell := CWComplex.cell C
