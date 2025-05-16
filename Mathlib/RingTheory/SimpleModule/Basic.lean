@@ -182,23 +182,40 @@ theorem IsSemisimpleModule.of_sSup_simples_eq_top
     (h : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M :=
   complementedLattice_of_sSup_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
 
-namespace IsSemisimpleModule
+namespace Module.Finite
 
-variable [IsSemisimpleModule R M]
+variable (R₀ P : Type*) [Semiring R₀] [AddCommMonoid P] [Module R P]
 
 section
 
-variable {R₀ P : Type*} [Semiring R₀] [AddCommMonoid P] [Module R P]
+variable [Module R₀ P] [SMulCommClass R R₀ P] [Module.Finite R₀ (M →ₗ[R] P)]
 
-instance [Module R₀ P] [SMulCommClass R R₀ P] [Module.Finite R₀ (M →ₗ[R] P)] :
-    Module.Finite R₀ (m →ₗ[R] P) :=
+theorem of_isComplemented_domain (h : IsComplemented m) : Module.Finite R₀ (m →ₗ[R] P) :=
+  .of_surjective (.lcomp ..) (LinearMap.surjective_comp_subtype_of_isComplemented h)
+
+instance [IsSemisimpleModule R M] : Module.Finite R₀ (m →ₗ[R] P) :=
   .of_isComplemented_domain _ _ (exists_isCompl m)
 
-instance [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R] [IsScalarTower R₀ R M]
-    [Module.Finite R₀ (P →ₗ[R] M)] : Module.Finite R₀ (P →ₗ[R] m) :=
+end
+
+section
+
+variable [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
+  [IsScalarTower R₀ R M] [Module.Finite R₀ (P →ₗ[R] M)]
+
+theorem of_isComplemented_codomain (h : IsComplemented m) : Module.Finite R₀ (P →ₗ[R] m) :=
+  .of_surjective (.compRight ..) (LinearMap.surjective_comp_linearProjOfIsCompl h.choose_spec)
+
+instance [IsSemisimpleModule R M] : Module.Finite R₀ (P →ₗ[R] m) :=
   .of_isComplemented_codomain _ _ (exists_isCompl m)
 
 end
+
+end Module.Finite
+
+namespace IsSemisimpleModule
+
+variable [IsSemisimpleModule R M]
 
 theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
     (hf : Function.Injective f) (g : N →ₗ[R] P) :

@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.RingTheory.Finiteness.Defs
 
@@ -413,20 +411,3 @@ theorem of_comp_finite {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).F
 end Finite
 
 end AlgHom
-
-namespace Module.Finite
-
-variable (R₀ N : Type*) {R M : Type*} [Semiring R₀] [Ring R] [AddCommGroup M] [AddCommMonoid N]
-  [Module R M] [Module R N] {S : Submodule R M} (h : IsComplemented S)
-include h
-
-theorem of_isComplemented_domain [Module R₀ N] [SMulCommClass R R₀ N]
-    [Module.Finite R₀ (M →ₗ[R] N)] : Module.Finite R₀ (S →ₗ[R] N) :=
-  .of_surjective (.lcomp ..) (LinearMap.surjective_comp_subtype_of_isComplemented h)
-
-theorem of_isComplemented_codomain [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
-    [IsScalarTower R₀ R M] [Module.Finite R₀ (N →ₗ[R] M)] :
-    Module.Finite R₀ (N →ₗ[R] S) :=
-  .of_surjective (.compRight ..) (LinearMap.surjective_comp_linearProjOfIsCompl h.choose_spec)
-
-end Module.Finite
