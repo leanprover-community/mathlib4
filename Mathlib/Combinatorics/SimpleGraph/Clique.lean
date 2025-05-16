@@ -45,6 +45,9 @@ abbrev IsClique (s : Set α) : Prop :=
 theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
   Iff.rfl
 
+lemma not_isClique_iff : ¬ G.IsClique s ↔ ∃ (v w : s), v ≠ w ∧ ¬ G.Adj v w := by
+  aesop (add simp [isClique_iff, Set.Pairwise])
+
 /-- A clique is a set of vertices whose induced graph is complete. -/
 theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   rw [isClique_iff]
@@ -151,7 +154,7 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
   simpa
 
 /-- If a set of vertices `A` is a clique in subgraph of `G` induced by a superset of `A`,
- its embedding is a clique in `G`. -/
+its embedding is a clique in `G`. -/
 theorem IsClique.of_induce {S : Subgraph G} {F : Set α} {A : Set F}
     (c : (S.induce F).coe.IsClique A) : G.IsClique (Subtype.val '' A) := by
   simp only [Set.Pairwise, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
@@ -287,7 +290,7 @@ theorem is3Clique_iff_exists_cycle_length_three :
     (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
 
 /-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
- its embedding is an `n`-clique in `G`. -/
+its embedding is an `n`-clique in `G`. -/
 theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
     (cc : (S.induce F).coe.IsNClique n s) :
     G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
@@ -782,7 +785,7 @@ theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
 /-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
- set in `G` and vice versa. -/
+set in `G` and vice versa. -/
 theorem isIndepSet_induce {F : Set α} {s : Set F} :
     ((⊤ : Subgraph G).induce F).coe.IsIndepSet s ↔ G.IsIndepSet (Subtype.val '' s) := by
   simp [Set.Pairwise]

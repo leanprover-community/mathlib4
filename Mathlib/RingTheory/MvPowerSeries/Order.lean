@@ -260,7 +260,7 @@ private theorem weightedOrder_add_of_weightedOrder_lt.aux
     exact hb
 
 /-- The weighted_order of the sum of two formal power series
- is the minimum of their orders if their orders differ. -/
+is the minimum of their orders if their orders differ. -/
 theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weightedOrder w) :
     weightedOrder w (f + g) = weightedOrder w f ⊓ weightedOrder w g := by
   refine le_antisymm ?_ (min_weightedOrder_le_add w)
@@ -271,7 +271,7 @@ theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weigh
   exact ⟨le_rfl, le_of_lt H₁⟩
 
 /-- The weighted_order of the product of two formal power series
- is at least the sum of their orders. -/
+is at least the sum of their orders. -/
 theorem le_weightedOrder_mul :
     f.weightedOrder w + g.weightedOrder w ≤ weightedOrder w (f * g) := by
   classical
@@ -408,18 +408,18 @@ theorem order_monomial_of_ne_zero {d : σ →₀ ℕ} {a : R} (h : a ≠ 0) :
   exact weightedOrder_monomial_of_ne_zero _ h
 
 /-- The order of the sum of two formal power series
- is at least the minimum of their orders. -/
+is at least the minimum of their orders. -/
 theorem min_order_le_add : min f.order g.order ≤ (f + g).order :=
   min_weightedOrder_le_add _
 
 /-- The order of the sum of two formal power series
- is the minimum of their orders if their orders differ. -/
+is the minimum of their orders if their orders differ. -/
 theorem order_add_of_order_ne (h : f.order ≠ g.order) :
     order (f + g) = order f ⊓ order g :=
   weightedOrder_add_of_weightedOrder_ne _ h
 
 /-- The order of the product of two formal power series
- is at least the sum of their orders. -/
+is at least the sum of their orders. -/
 theorem le_order_mul : f.order + g.order ≤ order (f * g) :=
   le_weightedOrder_mul _
 
@@ -459,7 +459,7 @@ def IsWeightedHomogeneous (f : MvPowerSeries σ R) (p : ℕ) : Prop :=
 
 variable {w} in
 theorem IsWeightedHomogeneous.coeff_eq_zero {f : MvPowerSeries σ R} {p : ℕ}
-    (hf : f.IsWeightedHomogeneous w p) {d : σ →₀ ℕ} (hd : weight w d  ≠ p) :
+    (hf : f.IsWeightedHomogeneous w p) {d : σ →₀ ℕ} (hd : weight w d ≠ p) :
     f.coeff R d = 0 := by
   simpa [Classical.not_not] using mt (@hf d) hd
 
@@ -590,7 +590,7 @@ def IsHomogeneous (f : MvPowerSeries σ R) (p : ℕ) : Prop :=
   IsWeightedHomogeneous 1 f p
 
 theorem IsHomogeneous.coeff_eq_zero {f : MvPowerSeries σ R} {p : ℕ}
-    (hf : f.IsHomogeneous p) {d : σ →₀ ℕ} (hd : degree d  ≠ p) :
+    (hf : f.IsHomogeneous p) {d : σ →₀ ℕ} (hd : degree d ≠ p) :
     f.coeff R d = 0 := by
   apply IsWeightedHomogeneous.coeff_eq_zero hf
   rwa [degree_eq_weight_one] at hd
