@@ -28,16 +28,14 @@ It uses
   content is);
 * `keepTrailing` a boolean to control whether to keep trailing comments.
 
-It returns the content of `fileContent` up to the final import,
-including trailing comments if `keepTrailing = true`
+It returns just the imports of `fileContent`, including trailing comments if `keepTrailing = true`
 (the command always trims trailing whitespace after the last comment).
 -/
 def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := do
   let (stx, _) ← Parser.parseHeader (Parser.mkInputContext fileContent fname)
   let stx := if keepTrailing then stx.raw else stx.raw.unsetTrailing
   let some substring := stx.getSubstring? | throw <| .userError "No substring: we have a problem!"
-  let upToAllImports : Substring := {substring with startPos := 0}
-  return upToAllImports.toString
+  return substring.toString
 
 /--
 `getHeaderFromFileName fname keepTrailing` is similar to `getHeader`, except that it assumes that
@@ -274,14 +272,7 @@ the deprecations later on.
 --#find_deleted_files 10
 
 /--
-info: /-
-Copyright (c) 2025 Damiano Testa. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa
--/
-
---import Mathlib.Init
-import Mathlib.Tactic.Linter.DeprecatedModule
+info: import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
 import Lean.Meta.Tactic.TryThis
 -/
@@ -292,14 +283,7 @@ run_cmd
   logInfo head
 
 /--
-info: /-
-Copyright (c) 2025 Damiano Testa. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa
--/
-
---import Mathlib.Init
-import Mathlib.Tactic.Linter.DeprecatedModule
+info: import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
 import Lean.Meta.Tactic.TryThis
 -- a comment here to test `keepTrailing
