@@ -38,5 +38,4 @@ theorem smul_eq_id_iff_eq_one : ((a • ·) : ℕ → ℕ) = id ↔ a = 1 := by
 
 end MulAction
 
-
 end PermOf

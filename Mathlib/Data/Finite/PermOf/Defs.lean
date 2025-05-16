@@ -3,7 +3,7 @@ Copyright (c) 2024-2025 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
-
+import Mathlib.Tactic.Linter.Style
 import Mathlib.Data.Finite.Prod
 
 
@@ -75,7 +75,7 @@ end GetElem
 @[ext]
 theorem ext (h : ∀ (i : ℕ) (hi : i < n), a[i] = b[i]) : a = b := by
   suffices h : a.toVector = b.toVector ∧ a.invVector = b.invVector by
-    rcases a ; rcases b ; simp_rw [mk.injEq] ; exact h
+    rcases a; rcases b; simp_rw [mk.injEq]; exact h
   simp_rw [Vector.ext_iff]
   refine ⟨h, fun i hi => ?_⟩
   rcases a.getElem_surjective hi with ⟨j, hj, rfl⟩
