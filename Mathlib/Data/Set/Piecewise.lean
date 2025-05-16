@@ -37,7 +37,7 @@ variable [∀ j, Decidable (j ∈ s)]
 
 theorem piecewise_insert [DecidableEq α] (j : α) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = Function.update (s.piecewise f g) j (f j) := by
-  simp (config := { unfoldPartialApp := true }) only [piecewise, mem_insert_iff]
+  simp +unfoldPartialApp only [piecewise, mem_insert_iff]
   ext i
   by_cases h : i = j
   · rw [h]
@@ -81,8 +81,6 @@ theorem piecewise_mono {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
     (h₂ : ∀ i ∉ s, f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
   apply piecewise_le <;> intros <;> simp [*]
 
-@[deprecated (since := "2024-10-06")] alias piecewise_le_piecewise := piecewise_mono
-
 @[simp]
 theorem piecewise_insert_of_ne {i j : α} (h : i ≠ j) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g i = s.piecewise f g i := by simp [piecewise, h]
@@ -95,6 +93,12 @@ theorem piecewise_compl [∀ i, Decidable (i ∈ sᶜ)] : sᶜ.piecewise f g = s
 theorem piecewise_range_comp {ι : Sort*} (f : ι → α) [∀ j, Decidable (j ∈ range f)]
     (g₁ g₂ : α → β) : (range f).piecewise g₁ g₂ ∘ f = g₁ ∘ f :=
   (piecewise_eqOn ..).comp_eq
+
+lemma piecewise_comp (f g : α → γ) (h : β → α) :
+    letI : DecidablePred (· ∈ h ⁻¹' s) := @instDecidablePredComp _ (· ∈ s) _ h _;
+    (s.piecewise f g) ∘ h = (h⁻¹' s).piecewise (f ∘ h) (g ∘ h) := by
+  ext x
+  by_cases hx : h x ∈ s <;> simp [hx]
 
 theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁ f₂ : α → β}
     [∀ i, Decidable (i ∈ s)] (h₁ : MapsTo f₁ (s₁ ∩ s) (t₁ ∩ t))

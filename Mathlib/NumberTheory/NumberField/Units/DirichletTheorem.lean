@@ -20,16 +20,16 @@ subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 * `NumberField.Units.fundSystem`: a fundamental system of units of `K`.
 
 * `NumberField.Units.basisModTorsion`: a `ℤ`-basis of `(𝓞 K)ˣ ⧸ (torsion K)`
-as an additive `ℤ`-module.
+  as an additive `ℤ`-module.
 
 ## Main results
 
 * `NumberField.Units.rank_modTorsion`: the `ℤ`-rank of `(𝓞 K)ˣ ⧸ (torsion K)` is equal to
-`card (InfinitePlace K) - 1`.
+  `card (InfinitePlace K) - 1`.
 
 * `NumberField.Units.exist_unique_eq_mul_prod`: **Dirichlet Unit Theorem**. Any unit of `𝓞 K`
-can be written uniquely as the product of a root of unity and powers of the units of the
-fundamental system `fundSystem`.
+  can be written uniquely as the product of a root of unity and powers of the units of the
+  fundamental system `fundSystem`.
 
 ## Tags
 number field, units, Dirichlet unit theorem
@@ -292,7 +292,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
           rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
           ← mul_assoc, inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
       _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
-        _root_.map_mul _ _ _
+        map_mul _ _ _
       _ < 1 := by
         rw [map_inv₀, mul_inv_lt_iff₀' (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
         exact seq_decreasing K w₁ hB hnm w hw

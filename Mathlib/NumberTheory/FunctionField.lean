@@ -3,7 +3,6 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
 -/
-import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
@@ -32,7 +31,7 @@ adding them back in lemmas when they are needed.
 
 ## References
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
@@ -200,11 +199,9 @@ def inftyValuation : Valuation (RatFunc Fq) ℤₘ₀ where
 theorem inftyValuation_apply {x : RatFunc Fq} : inftyValuation Fq x = inftyValuationDef Fq x :=
   rfl
 
-@[simp]
 theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
     inftyValuationDef Fq (RatFunc.C k) = Multiplicative.ofAdd (0 : ℤ) := by
-  have hCk : RatFunc.C k ≠ 0 := (map_ne_zero _).mpr hk
-  rw [inftyValuationDef, if_neg hCk, RatFunc.intDegree_C]
+  simp [hk]
 
 @[simp]
 theorem inftyValuation.X : inftyValuationDef Fq RatFunc.X = Multiplicative.ofAdd (1 : ℤ) := by

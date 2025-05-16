@@ -482,7 +482,7 @@ theorem TransGen.lift {p : β → β → Prop} {a b : α} (f : α → β) (h : �
 theorem TransGen.lift' {p : β → β → Prop} {a b : α} (f : α → β)
     (h : ∀ a b, r a b → TransGen p (f a) (f b)) (hab : TransGen r a b) :
     TransGen p (f a) (f b) := by
-simpa [transGen_idem] using hab.lift f h
+  simpa [transGen_idem] using hab.lift f h
 
 theorem TransGen.closed {p : α → α → Prop} :
     (∀ a b, r a b → TransGen p a b) → TransGen r a b → TransGen p a b :=
@@ -625,10 +625,6 @@ theorem mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) (h : Eq
   | refl => exact EqvGen.refl _
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
-
-@[deprecated (since := "2024-09-01")] alias _root_.EqvGen.is_equivalence := is_equivalence
-@[deprecated (since := "2024-09-01")] alias _root_.EqvGen.Setoid := setoid
-@[deprecated (since := "2024-09-01")] alias _root_.EqvGen.mono := mono
 
 end EqvGen
 

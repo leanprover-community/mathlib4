@@ -208,7 +208,7 @@ def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
   IsInitial.ofUnique (h := fun R ↦ ⟨⟨ofHom <| (Int.castRingHom R).comp ULift.ringEquiv.toRingHom⟩,
     fun _ ↦ by
       ext : 1
-      rw [← RingHom.cancel_right (f := (ULift.ringEquiv.{0, u} (α := ℤ)).symm.toRingHom)
+      rw [← RingHom.cancel_right (f := (ULift.ringEquiv.{0, u} (R := ℤ)).symm.toRingHom)
         (hf := ULift.ringEquiv.symm.surjective)]
       apply RingHom.ext_int⟩)
 
@@ -324,9 +324,6 @@ theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
       WalkingParallelPair.zero]
   change IsLocalHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _).hom
   infer_instance
-
-@[deprecated (since := "2024-10-10")]
-alias equalizer_ι_isLocalRingHom := equalizer_ι_isLocalHom
 
 open CategoryTheory.Limits.WalkingParallelPair Opposite
 

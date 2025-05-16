@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Common
 
@@ -467,7 +466,7 @@ lemma append_right_injective (h : x ++ₛ a = x ++ₛ b) : a = b := by
   ext n; replace h := congr_arg (fun a ↦ a.get (x.length + n)) h; simpa using h
 
 @[simp] lemma append_right_inj : x ++ₛ a = x ++ₛ b ↔ a = b :=
-  ⟨append_right_injective x a b, by simp (config := {contextual := true})⟩
+  ⟨append_right_injective x a b, by simp +contextual⟩
 
 lemma append_left_injective (h : x ++ₛ a = y ++ₛ b) (hl : x.length = y.length) : x = y := by
   apply List.ext_getElem hl
@@ -495,7 +494,7 @@ theorem mem_append_stream_right : ∀ {a : α} (l : List α) {s : Stream' α}, a
     mem_cons_of_mem _ ih
 
 theorem mem_append_stream_left : ∀ {a : α} {l : List α} (s : Stream' α), a ∈ l → a ∈ l ++ₛ s
-  | _, [], _, h => absurd h (List.not_mem_nil _)
+  | _, [], _, h => absurd h List.not_mem_nil
   | a, List.cons b l, s, h =>
     Or.elim (List.eq_or_mem_of_mem_cons h) (fun aeqb : a = b => Exists.intro 0 aeqb)
       fun ainl : a ∈ l => mem_cons_of_mem b (mem_append_stream_left s ainl)

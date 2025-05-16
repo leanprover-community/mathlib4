@@ -258,6 +258,7 @@ instance (R : D ⥤ C) [MonadicRightAdjoint R] : R.IsRightAdjoint :=
   (monadicAdjunction R).isRightAdjoint
 
 noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget where
+  L := T.free
   adj := T.adj
   eqv := { }
 
@@ -289,6 +290,7 @@ instance (L : C ⥤ D) [ComonadicLeftAdjoint L] : L.IsLeftAdjoint :=
   (comonadicAdjunction L).isLeftAdjoint
 
 noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget where
+  R := G.cofree
   adj := G.adj
   eqv := { }
 
@@ -374,6 +376,7 @@ end Coreflective
     cf Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) monadicOfReflective [Reflective R] :
     MonadicRightAdjoint R where
+  L := reflector R
   adj := reflectorAdjunction R
   eqv := { full := Reflective.comparison_full _ }
 
@@ -381,6 +384,7 @@ instance (priority := 100) monadicOfReflective [Reflective R] :
     cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) comonadicOfCoreflective [Coreflective R] :
     ComonadicLeftAdjoint R where
+  R := coreflector R
   adj := coreflectorAdjunction R
   eqv := { full := Coreflective.comparison_full _ }
 

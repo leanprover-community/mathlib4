@@ -47,15 +47,18 @@ Note that we do not assume that `V` is a concrete category,
 so there may not be an "honest" underlying category at all!
 -/
 class EnrichedCategory (C : Type u₁) where
+  /-- `X ⟶[V] Y` is the `V` object of morphisms from `X` to `Y`. -/
   Hom : C → C → V
+  /-- The identity morphism of this catgeory -/
   id (X : C) : 𝟙_ V ⟶ Hom X X
+  /-- Composition of two morphisms in this category -/
   comp (X Y Z : C) : Hom X Y ⊗ Hom Y Z ⟶ Hom X Z
   id_comp (X Y : C) : (λ_ (Hom X Y)).inv ≫ id X ▷ _ ≫ comp X X Y = 𝟙 _ := by aesop_cat
   comp_id (X Y : C) : (ρ_ (Hom X Y)).inv ≫ _ ◁ id Y ≫ comp X Y Y = 𝟙 _ := by aesop_cat
   assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ comp W X Y ▷ _ ≫ comp W Y Z =
     _ ◁ comp X Y Z ≫ comp W X Z := by aesop_cat
 
-notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
+@[inherit_doc EnrichedCategory.Hom] notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
 
 variable {C : Type u₁} [EnrichedCategory V C]
 
@@ -265,7 +268,9 @@ satisfying the usual axioms.
 -/
 structure EnrichedFunctor (C : Type u₁) [EnrichedCategory V C] (D : Type u₂)
     [EnrichedCategory V D] where
+  /-- The application of this functor to an object -/
   obj : C → D
+  /-- The `V`-morphism from `X ⟶[V] Y` to `F.obj X ⟶[V] F.obj Y`, for all `X Y : C` -/
   map : ∀ X Y : C, (X ⟶[V] Y) ⟶ obj X ⟶[V] obj Y
   map_id : ∀ X : C, eId V X ≫ map X X = eId V (obj X) := by aesop_cat
   map_comp :
@@ -382,7 +387,9 @@ This is the type of morphisms in `V` from `A` to the `V`-object of natural trans
 -/
 @[ext]
 structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
+  /-- The `A`-graded transformation from `F` to `G` -/
   app : ∀ X : C, A.1 ⟶ F.obj X ⟶[V] G.obj X
+  /-- `app` is a natural transformation. -/
   naturality :
     ∀ X Y : C,
       (A.2.β (X ⟶[V] Y)).hom ≫ (F.map X Y ⊗ app Y) ≫ eComp V _ _ _ =
