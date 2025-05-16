@@ -229,6 +229,7 @@ section Rotation
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
   {ν : Measure F} [IsGaussian ν]
 
+omit [BorelSpace F] in
 lemma memLp_comp_inl_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p ≠ ∞) :
     MemLp (fun x ↦ (L.comp (.inl ℝ E F) x.1)) p (μ.prod ν) := by
   change MemLp ((L.comp (.inl ℝ E F) ∘ Prod.fst)) p (μ.prod ν)
@@ -239,6 +240,7 @@ lemma memLp_comp_inl_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p �
     exact (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F))).1
   · fun_prop
 
+omit [BorelSpace E] in
 lemma memLp_comp_inr_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p ≠ ∞) :
     MemLp (fun x ↦ (L.comp (.inr ℝ E F) x.2)) p (μ.prod ν) := by
   change MemLp ((L.comp (.inr ℝ E F) ∘ Prod.snd)) p (μ.prod ν)
@@ -256,11 +258,13 @@ lemma memLp_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p ≠ ∞) :
     exact this
   exact MemLp.add (memLp_comp_inl_prod L hp) (memLp_comp_inr_prod L hp)
 
+omit [BorelSpace F] in
 lemma integrable_comp_inl_prod (L : E × F →L[ℝ] ℝ) :
     Integrable (fun x ↦ (L.comp (.inl ℝ E F) x.1)) (μ.prod ν) := by
   rw [← memLp_one_iff_integrable]
   exact memLp_comp_inl_prod L (by simp)
 
+omit [BorelSpace E] in
 lemma integrable_comp_inr_prod (L : E × F →L[ℝ] ℝ) :
     Integrable (fun x ↦ (L.comp (.inr ℝ E F) x.2)) (μ.prod ν) := by
   rw [← memLp_one_iff_integrable]
