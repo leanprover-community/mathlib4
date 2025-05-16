@@ -2,7 +2,6 @@ import Mathlib.Tactic.Linter.TextBased
 
 /-!
 Unit tests for the module name case check in the text-based linters.
-
 -/
 
 open Mathlib.Linter.TextBased
