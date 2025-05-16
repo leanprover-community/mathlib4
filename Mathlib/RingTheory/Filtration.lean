@@ -228,7 +228,7 @@ open PolynomialModule
 variable (F F')
 
 /-- The `R[IX]`-submodule of `M[X]` associated with an `I`-filtration. -/
-protected def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
+protected noncomputable def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
   carrier := { f | ∀ i, f i ∈ F.N i }
   add_mem' hf hg i := Submodule.add_mem _ (hf i) (hg i)
   zero_mem' _ := Submodule.zero_mem _
@@ -251,7 +251,7 @@ theorem inf_submodule : (F ⊓ F').submodule = F.submodule ⊓ F'.submodule := b
 variable (I M)
 
 /-- `Ideal.Filtration.submodule` as an `InfHom`. -/
-def submoduleInfHom :
+noncomputable def submoduleInfHom :
     InfHom (I.Filtration M) (Submodule (reesAlgebra I) (PolynomialModule R M)) where
   toFun := Ideal.Filtration.submodule
   map_inf' := inf_submodule
