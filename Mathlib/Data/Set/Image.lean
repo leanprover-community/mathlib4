@@ -204,7 +204,8 @@ theorem exists_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
 
 @[congr]
-theorem image_congr {f g : α → β} {s : Set α} (h : ∀ a ∈ s, f a = g a) : f '' s = g '' s := by
+theorem image_congr {f g : α → β} {s : Set α}
+    (h : ∀ a ∈ s, binderNameHint a f (f a) = g a) : f '' s = g '' s := by
   aesop
 
 /-- A common special case of `image_congr` -/

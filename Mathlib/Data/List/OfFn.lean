@@ -42,7 +42,7 @@ theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
 
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
-    ofFn f = ofFn fun i : Fin n => f (Fin.cast h.symm i) := by
+    ofFn f = ofFn fun i : Fin n => binderNameHint i f (f (Fin.cast h.symm i)) := by
   subst h
   simp_rw [Fin.cast_refl, id]
 
