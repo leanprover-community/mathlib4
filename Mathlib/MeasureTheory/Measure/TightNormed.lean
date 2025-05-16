@@ -32,6 +32,7 @@ open Filter
 
 open scoped Topology ENNReal InnerProductSpace
 
+-- TODO: move
 /-- Let `u : ι → α → β` be a sequence of antitone functions `α → β` indexed by `ι`. Suppose that for
 all `i : ι`, `u i` tends to `c` at infinity, and that furthermore the limsup of `i ↦ u i r` along
 the cofinite filter tends to the same `c` as `r` tends to infinity.
@@ -111,6 +112,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice 
     _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_left
     _ ≤ v := hv
 
+-- TODO: move
 /-- Let `u : ℕ → α → β` be a sequence of antitone functions `α → β` indexed by `ℕ`. Suppose that for
 all `n : ℕ`, `u n` tends to `c` at infinity, and that furthermore the limsup of `n ↦ u n r`
 tends to the same `c` as `r` tends to infinity.
