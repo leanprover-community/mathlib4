@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Filtered.Final
 # Inverse limits of schemes with affine transition maps
 
 In this file, we develop API for inverse limits of schemes with affine transition maps,
-following EGA 4.8 and https://stacks.math.columbia.edu/tag/01YT.
+following EGA IV 8 and https://stacks.math.columbia.edu/tag/01YT.
 
 -/
 
