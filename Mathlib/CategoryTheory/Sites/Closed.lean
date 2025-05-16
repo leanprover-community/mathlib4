@@ -26,7 +26,7 @@ that natural closure operators are in bijection with Grothendieck topologies.
 * `CategoryTheory.GrothendieckTopology.closureOperator`: The bundled `ClosureOperator` given
   by `CategoryTheory.GrothendieckTopology.close`.
 * `CategoryTheory.GrothendieckTopology.IsClosed`: A sieve `S` on `X` is closed for the topology `J`
-   if it contains every arrow it covers.
+  if it contains every arrow it covers.
 * `CategoryTheory.Functor.closedSieves`: The presheaf sending `X` to the collection of `J`-closed
   sieves on `X`. This is additionally shown to be a sheaf for `J`, and if this is a sheaf for a
   different topology `J'`, then `J' ≤ J`.
