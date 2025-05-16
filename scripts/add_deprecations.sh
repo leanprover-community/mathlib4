@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
  : <<'BASH_MODULE_DOC'
 
@@ -9,7 +9,7 @@ confused.
 
 ** Assumptions **
 The script works under the assumption that the only modifications between `master` and the current
-branch are renames of lemmas that sould be deprecated.
+branch are renames of lemmas that should be deprecated.
 The script inspects the relevant `git diff`, extracts the old name and the new one and uses this
 information to insert deprecated aliases as needed.
 

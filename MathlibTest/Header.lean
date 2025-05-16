@@ -9,7 +9,7 @@ import Lake
 import Mathlib.Tactic.Linter.Header
 import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
 import Mathlib.Tactic.Have
-import Mathlib.Deprecated.Subfield
+import Mathlib.Deprecated.Aliases
 
 /--
 warning: In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to silence this linter.
@@ -21,11 +21,14 @@ note: this linter can be disabled with `set_option linter.style.header false`
 warning: 'Mathlib.Tactic.Have' defines a deprecated form of the 'have' tactic; please do not use it in mathlib.
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
-warning: Files in the `Deprecated` directory are not supposed to be imported.
-note: this linter can be disabled with `set_option linter.style.header false`
----
 warning: Duplicate imports: 'Mathlib.Tactic.Linter.Header' already imported
 note: this linter can be disabled with `set_option linter.style.header false`
+---
+warning: Modules starting with MathlibTest.Header are not allowed to import modules starting with Mathlib.Deprecated.
+This module depends on Mathlib.Deprecated.Aliases
+which is imported by this module.
+(Exceptions can be added to `overrideAllowedImportDirs`.)
+note: this linter can be disabled with `set_option linter.directoryDependency false`
 ---
 warning: The module doc-string for a file should be the first command after the imports.
 Please, add a module doc-string before `/-!# Tests for the `docModule` linter

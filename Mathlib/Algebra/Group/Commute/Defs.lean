@@ -24,8 +24,7 @@ This file defines only a few operations (`mul_left`, `inv_right`, etc).  Other o
 Most of the proofs come from the properties of `SemiconjBy`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {G M S : Type*}
 
@@ -149,9 +148,9 @@ theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 -- todo: should nat power be called `nsmul` here?
-@[to_additive (attr := simp)]
-theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
-  (h.pow_left m).pow_right n
+@[to_additive]
+theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) := by
+  simp [h]
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 @[to_additive]

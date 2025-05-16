@@ -57,7 +57,7 @@ private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) :
         = x ! * (c + 1) * x ! ^ c * c ! *
             ∏ j ∈ Finset.range (c + 1), (j * x + x - 1).choose (x - 1) := by
         rw [factorial_succ, pow_succ]; ring
-      _ = (x ! ^ c * c ! * ∏ j in Finset.range c, (j * x + x - 1).choose (x - 1)) *
+      _ = (x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1)) *
             (c * x + x - 1).choose (x - 1) * x ! * (c + 1)  := by
         rw [Finset.prod_range_succ]; ring
       _ = (c + 1) * (c * x + x - 1).choose (x - 1) * (x * c)! * x ! := by
@@ -106,7 +106,7 @@ theorem bell_eq (m : Multiset ℕ) :
     apply Nat.dvd_mul_left
   · rw [← Nat.pos_iff_ne_zero]
     apply Nat.mul_pos
-    · simp only [gt_iff_lt, CanonicallyOrderedCommSemiring.multiset_prod_pos, mem_map,
+    · simp only [gt_iff_lt, CanonicallyOrderedAdd.multiset_prod_pos, mem_map,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       exact fun _ _ ↦ Nat.factorial_pos _
     · apply Finset.prod_pos
@@ -156,7 +156,7 @@ theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   · simp only [toFinset_replicate]
     split_ifs with hm
     · rw [hm, factorial_zero, eq_comm]
-      rw [show (∅ : Finset ℕ).erase 0 = ∅ from rfl,  Finset.prod_empty]
+      rw [show (∅ : Finset ℕ).erase 0 = ∅ from rfl, Finset.prod_empty]
     · rw [show ({n} : Finset ℕ).erase 0 = {n} by simp [Ne.symm hn]]
       simp only [Finset.prod_singleton, count_replicate_self]
   · simp

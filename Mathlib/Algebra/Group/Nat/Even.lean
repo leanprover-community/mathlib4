@@ -4,15 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Data.Nat.Sqrt
 
 /-!
 # `IsSquare` and `Even` for natural numbers
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 namespace Nat
 
@@ -44,10 +43,10 @@ lemma not_even_iff : ¬ Even n ↔ n % 2 = 1 := by rw [even_iff, mod_two_not_eq_
 
 @[parity_simps] lemma even_add_one : Even (n + 1) ↔ ¬Even n := by simp [even_add]
 
-lemma succ_mod_two_eq_zero_iff {m : ℕ} : (m + 1) % 2 = 0 ↔ m % 2 = 1 := by
+lemma succ_mod_two_eq_zero_iff : (m + 1) % 2 = 0 ↔ m % 2 = 1 := by
   simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
 
-lemma succ_mod_two_eq_one_iff {m : ℕ} : (m + 1) % 2 = 1 ↔ m % 2 = 0 := by
+lemma succ_mod_two_eq_one_iff : (m + 1) % 2 = 1 ↔ m % 2 = 0 := by
   simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
 
 lemma two_not_dvd_two_mul_add_one (n : ℕ) : ¬2 ∣ 2 * n + 1 := by simp [add_mod]
@@ -73,7 +72,7 @@ lemma even_pow' (h : n ≠ 0) : Even (m ^ n) ↔ Even m := even_pow.trans <| and
 lemma even_mul_succ_self (n : ℕ) : Even (n * (n + 1)) := by rw [even_mul, even_add_one]; exact em _
 
 lemma even_mul_pred_self : ∀ n : ℕ, Even (n * (n - 1))
-  | 0 => even_zero
+  | 0 => .zero
   | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
 
 lemma two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h ↦
@@ -82,13 +81,13 @@ lemma two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h ↦
 lemma div_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
   fun h ↦ Nat.div_mul_cancel ((even_iff_exists_two_nsmul _).1 h)
 
-theorem one_lt_of_ne_zero_of_even {n : ℕ} (h0 : n ≠ 0) (hn : Even n) : 1 < n := by
+theorem one_lt_of_ne_zero_of_even (h0 : n ≠ 0) (hn : Even n) : 1 < n := by
   refine Nat.one_lt_iff_ne_zero_and_ne_one.mpr (And.intro h0 ?_)
   intro h
   rw [h] at hn
   exact Nat.not_even_one hn
 
-theorem add_one_lt_of_even {n m : ℕ} (hn : Even n) (hm : Even m) (hnm : n < m) :
+theorem add_one_lt_of_even (hn : Even n) (hm : Even m) (hnm : n < m) :
     n + 1 < m := by
   rcases hn with ⟨n, rfl⟩
   rcases hm with ⟨m, rfl⟩
@@ -97,7 +96,6 @@ theorem add_one_lt_of_even {n m : ℕ} (hn : Even n) (hm : Even m) (hnm : n < m)
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by simp [*, parity_simps]
 
--- Porting note: the `simp` lemmas about `bit*` no longer apply.
 example : ¬Even 25394535 := by decide
 
 end Nat

@@ -17,15 +17,15 @@ symmetric operators on a finite-dimensional inner product space.
 # Main Result
 
 * `LinearMap.IsSymmetric.directSum_isInternal_of_commute` establishes that in finite dimensions
-   if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `Commute A B` imply that
-   `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
-   `eigenspace B μ ⊓ eigenspace A ν`
+  if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `Commute A B` imply that
+  `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
+  `eigenspace B μ ⊓ eigenspace A ν`
 * `LinearMap.IsSymmetric.iSup_iInf_eigenspace_eq_top_of_commute` establishes that in finite
-   dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of symmetric
-   linear operators equals `⊤`
+  dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of symmetric
+  linear operators equals `⊤`
 * `LinearMap.IsSymmetric.directSum_isInternal_of_pairwise_commute` establishes the
-   analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for commuting
-   tuples of symmetric operators.
+  analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for commuting
+  tuples of symmetric operators.
 
 ## TODO
 
@@ -58,7 +58,7 @@ variable {α : 𝕜} {A B : E →ₗ[𝕜] E} {T : n → Module.End 𝕜 E}
 theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.IsSymmetric) :
     OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => (eigenspace A i.2 ⊓ eigenspace B i.1 : Submodule 𝕜 E))
       fun i => (eigenspace A i.2 ⊓ eigenspace B i.1).subtypeₗᵢ :=
-     OrthogonalFamily.of_pairwise fun i j hij v ⟨hv1 , hv2⟩ ↦ by
+  OrthogonalFamily.of_pairwise fun i j hij v ⟨hv1 , hv2⟩ ↦ by
     obtain (h₁ | h₂) : i.1 ≠ j.1 ∨ i.2 ≠ j.2 := by rwa [Ne.eq_def, Prod.ext_iff, not_and_or] at hij
     all_goals intro w ⟨hw1, hw2⟩
     · exact hB.orthogonalFamily_eigenspaces.pairwise h₁ hv2 w hw2
@@ -110,6 +110,8 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
   apply (orthogonalFamily_eigenspace_inf_eigenspace hA hB).isInternal_iff.mpr
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute hA hB hAB
+
+open scoped Function -- required for scoped `on` notation
 
 /-- A commuting family of symmetric linear maps on a finite dimensional inner
 product space is simultaneously diagonalizable. -/

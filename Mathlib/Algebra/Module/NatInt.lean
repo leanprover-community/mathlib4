@@ -19,18 +19,14 @@ This file concerns modules where the scalars are the natural numbers or the inte
 
 ## Main results
 
- * `AddCommMonoid.uniqueNatModule`: there is an unique `AddCommMonoid ℕ M` structure for any `M`
+* `AddCommMonoid.uniqueNatModule`: there is an unique `AddCommMonoid ℕ M` structure for any `M`
 
 ## Tags
 
 semimodule, module, vector space
 -/
 
-assert_not_exists Field
-assert_not_exists Invertible
-assert_not_exists Multiset
-assert_not_exists Pi.single_smul₀
-assert_not_exists Set.indicator
+assert_not_exists RelIso Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
 open Function Set
 
@@ -66,8 +62,7 @@ instance AddCommGroup.toIntModule : Module ℤ M where
 
 end AddCommGroup
 
-variable (R)
-
+variable (R) in
 /-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
 structure.
 See note [reducible non-instances]. -/
@@ -83,8 +78,6 @@ abbrev Module.addCommMonoidToAddCommGroup
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
     zsmul_neg' := fun z a => by simp [← smul_assoc, neg_one_smul] }
-
-variable {R}
 
 section AddCommMonoid
 
@@ -102,13 +95,8 @@ lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
   | succ n ih => rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
--- See note [no_index around OfNat.ofNat]
 lemma ofNat_smul_eq_nsmul (n : ℕ) [n.AtLeastTwo] (b : M) :
-    (no_index (OfNat.ofNat n) : R) • b = OfNat.ofNat n • b := Nat.cast_smul_eq_nsmul ..
-
-/-- `nsmul` is equal to any other module structure via a cast. -/
-@[deprecated Nat.cast_smul_eq_nsmul (since := "2024-07-23")]
-lemma nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := (Nat.cast_smul_eq_nsmul ..).symm
+    (ofNat(n) : R) • b = ofNat(n) • b := Nat.cast_smul_eq_nsmul ..
 
 end
 
@@ -142,6 +130,3 @@ theorem Nat.smul_one_eq_cast {R : Type*} [NonAssocSemiring R] (m : ℕ) : m • 
 
 theorem Int.smul_one_eq_cast {R : Type*} [NonAssocRing R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
-
-@[deprecated (since := "2024-05-03")] alias Nat.smul_one_eq_coe := Nat.smul_one_eq_cast
-@[deprecated (since := "2024-05-03")] alias Int.smul_one_eq_coe := Int.smul_one_eq_cast

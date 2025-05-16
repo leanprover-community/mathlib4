@@ -10,6 +10,8 @@ import Mathlib.Data.ENat.Lattice
 # Sum of suprema in `ENat`
 -/
 
+assert_not_exists Field
+
 namespace ENat
 
 lemma sum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℕ∞}

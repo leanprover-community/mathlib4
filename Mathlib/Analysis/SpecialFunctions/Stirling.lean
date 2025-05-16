@@ -22,8 +22,8 @@ We proceed in two parts.
 **Part 1**: We consider the sequence $a_n$ of fractions $\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}$
 and prove that this sequence converges to a real, positive number $a$. For this the two main
 ingredients are
- - taking the logarithm of the sequence and
- - using the series expansion of $\log(1 + x)$.
+- taking the logarithm of the sequence and
+- using the series expansion of $\log(1 + x)$.
 
 **Part 2**: We use the fact that the series defined in part 1 converges against a real number $a$
 and prove that $a = \sqrt{\pi}$. Here the main ingredient is the convergence of Wallis' product
@@ -38,8 +38,8 @@ open Finset Filter Nat Real
 namespace Stirling
 
 /-!
- ### Part 1
- https://proofwiki.org/wiki/Stirling%27s_Formula#Part_1
+### Part 1
+https://proofwiki.org/wiki/Stirling%27s_Formula#Part_1
 -/
 
 
@@ -118,7 +118,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   have h₃ : (0 : ℝ) < (2 * ((n : ℝ) + 1) + 1) ^ 2 := by positivity
   have h₂ : (0 : ℝ) < 1 - (1 / (2 * ((n : ℝ) + 1) + 1)) ^ 2 := by
     rw [← mul_lt_mul_right h₃]
-    have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [@cast_nonneg ℝ _ n]
+    have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [cast_nonneg (α := ℝ) n]
     convert H using 1 <;> field_simp [h₃.ne']
   refine (log_stirlingSeq_diff_le_geo_sum n).trans ?_
   push_cast
@@ -129,7 +129,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   norm_cast
   omega
 
-/-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2`  -/
+/-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2` -/
 theorem log_stirlingSeq_bounded_aux :
     ∃ c : ℝ, ∀ n : ℕ, log (stirlingSeq 1) - log (stirlingSeq (n + 1)) ≤ c := by
   let d : ℝ := ∑' k : ℕ, (1 : ℝ) / (↑(k + 1) : ℝ) ^ 2
@@ -140,7 +140,7 @@ theorem log_stirlingSeq_bounded_aux :
     convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field_simp
   have h₂ : (∑ k ∈ range n, 1 / (↑(k + 1) : ℝ) ^ 2) ≤ d := by
     have := (summable_nat_add_iff 1).mpr <| Real.summable_one_div_nat_pow.mpr one_lt_two
-    exact sum_le_tsum (range n) (fun k _ => by positivity) this
+    exact this.sum_le_tsum (range n) (fun k _ => by positivity)
   calc
     log (stirlingSeq 1) - log (stirlingSeq (n + 1)) = log_stirlingSeq' 0 - log_stirlingSeq' n :=
       rfl
@@ -155,13 +155,13 @@ theorem log_stirlingSeq_bounded_by_constant : ∃ c, ∀ n : ℕ, c ≤ log (sti
   obtain ⟨d, h⟩ := log_stirlingSeq_bounded_aux
   exact ⟨log (stirlingSeq 1) - d, fun n => sub_le_comm.mp (h n)⟩
 
-/-- The sequence `stirlingSeq` is positive for `n > 0`  -/
+/-- The sequence `stirlingSeq` is positive for `n > 0` -/
 theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirlingSeq; positivity
 
 /-- The sequence `stirlingSeq` has a positive lower bound.
 -/
 theorem stirlingSeq'_bounded_by_pos_constant : ∃ a, 0 < a ∧ ∀ n : ℕ, a ≤ stirlingSeq (n + 1) := by
-  cases' log_stirlingSeq_bounded_by_constant with c h
+  obtain ⟨c, h⟩ := log_stirlingSeq_bounded_by_constant
   refine ⟨exp c, exp_pos _, fun n => ?_⟩
   rw [← le_log_iff_exp_le (stirlingSeq'_pos n)]
   exact h n
@@ -179,8 +179,8 @@ theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq
   exact tendsto_atTop_ciInf stirlingSeq'_antitone ⟨x, hx'⟩
 
 /-!
- ### Part 2
- https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
+### Part 2
+https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
 -/
 
 

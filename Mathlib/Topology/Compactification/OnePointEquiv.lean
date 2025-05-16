@@ -32,7 +32,7 @@ namespace OnePoint
 variable (K : Type*) [DivisionRing K] [DecidableEq K]
 
 /-- The one-point compactification of a division ring `K` is equivalent to
- the projectivivization `ℙ K (K × K)`. -/
+the projectivivization `ℙ K (K × K)`. -/
 def equivProjectivization :
     OnePoint K ≃ ℙ K (K × K) where
   toFun p := p.elim (mk K (1, 0) (by simp)) (fun t ↦ mk K (t, 1) (by simp))
@@ -44,7 +44,7 @@ def equivProjectivization :
     by_cases h₀ : y = 0 <;> simp [h₀, ht, mul_assoc]
   left_inv p := by cases p <;> simp
   right_inv p := by
-    induction' p using ind with p hp
+    induction p using ind with | h p hp =>
     obtain ⟨x, y⟩ := p
     by_cases h₀ : y = 0 <;> simp only [mk_eq_mk_iff', h₀, Projectivization.lift_mk, if_true,
       if_false, OnePoint.elim_infty, OnePoint.elim_some, Prod.smul_mk, Prod.mk.injEq, smul_eq_mul,

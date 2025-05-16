@@ -44,15 +44,15 @@ traversable iterator functor applicative
 
 ## References
 
- * "Applicative Programming with Effects", by Conor McBride and Ross Paterson,
-   Journal of Functional Programming 18:1 (2008) 1-13, online at
-   <http://www.soi.city.ac.uk/~ross/papers/Applicative.html>
- * "The Essence of the Iterator Pattern", by Jeremy Gibbons and Bruno Oliveira,
-   in Mathematically-Structured Functional Programming, 2006, online at
-   <http://web.comlab.ox.ac.uk/oucl/work/jeremy.gibbons/publications/#iterator>
- * "An Investigation of the Laws of Traversals", by Mauro Jaskelioff and Ondrej Rypacek,
-   in Mathematically-Structured Functional Programming, 2012,
-   online at <http://arxiv.org/pdf/1202.2919>
+* "Applicative Programming with Effects", by Conor McBride and Ross Paterson,
+  Journal of Functional Programming 18:1 (2008) 1-13, online at
+  <http://www.soi.city.ac.uk/~ross/papers/Applicative.html>
+* "The Essence of the Iterator Pattern", by Jeremy Gibbons and Bruno Oliveira,
+  in Mathematically-Structured Functional Programming, 2006, online at
+  <http://web.comlab.ox.ac.uk/oucl/work/jeremy.gibbons/publications/#iterator>
+* "An Investigation of the Laws of Traversals", by Mauro Jaskelioff and Ondrej Rypacek,
+  in Mathematically-Structured Functional Programming, 2012,
+  online at <http://arxiv.org/pdf/1202.2919>
 -/
 
 open Function hiding comp
@@ -219,8 +219,7 @@ send the composition of applicative functors to the composition of the
 `traverse` of each, send each function `f` to `fun x ↦ f <$> x`, and
 satisfy a naturality condition with respect to applicative
 transformations. -/
-class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
-    Prop where
+class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends LawfulFunctor t where
   /-- `traverse` plays well with `pure` of the identity monad -/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
   /-- `traverse` plays well with composition of applicative functors. -/

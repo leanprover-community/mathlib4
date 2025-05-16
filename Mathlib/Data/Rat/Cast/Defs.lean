@@ -6,10 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Order.Nat
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Casts for Rational Numbers
@@ -24,7 +24,7 @@ casting lemmas showing the well-behavedness of this injection.
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
 
-assert_not_exists OrderedAddCommMonoid
+assert_not_exists MulAction OrderedAddCommMonoid
 
 variable {F ι α β : Type*}
 
@@ -33,9 +33,8 @@ variable [DivisionSemiring α] {q r : ℚ≥0}
 
 @[simp, norm_cast] lemma cast_natCast (n : ℕ) : ((n : ℚ≥0) : α) = n := by simp [cast_def]
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
-    no_index (OfNat.ofNat n : ℚ≥0) = (OfNat.ofNat n : α) := cast_natCast _
+    (ofNat(n) : ℚ≥0) = (ofNat(n) : α) := cast_natCast _
 
 @[simp, norm_cast] lemma cast_zero : ((0 : ℚ≥0) : α) = 0 := (cast_natCast _).trans Nat.cast_zero
 @[simp, norm_cast] lemma cast_one : ((1 : ℚ≥0) : α) = 1 := (cast_natCast _).trans Nat.cast_one
@@ -115,12 +114,9 @@ theorem cast_intCast (n : ℤ) : ((n : ℚ) : α) = n :=
 theorem cast_natCast (n : ℕ) : ((n : ℚ) : α) = n := by
   rw [← Int.cast_natCast, cast_intCast, Int.cast_natCast]
 
-@[deprecated (since := "2024-03-21")] alias cast_coe_int := cast_intCast
-@[deprecated (since := "2024-03-21")] alias cast_coe_nat := cast_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : ℚ)) : α) = (OfNat.ofNat n : α) := by
+    ((ofNat(n) : ℚ) : α) = (ofNat(n) : α) := by
   simp [cast_def]
 
 @[simp, norm_cast]
@@ -145,11 +141,11 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
   have b0' : b ≠ 0 := by
     refine mt ?_ b0
     simp +contextual
-  cases' e : a /. b with n d h c
+  rcases e : a /. b with ⟨n, d, h, c⟩
   have d0 : (d : α) ≠ 0 := by
     intro d0
     have dd := den_dvd a b
-    cases' show (d : ℤ) ∣ b by rwa [e] at dd with k ke
+    rcases show (d : ℤ) ∣ b by rwa [e] at dd with ⟨k, ke⟩
     have : (b : α) = (d : α) * (k : α) := by rw [ke, Int.cast_mul, Int.cast_natCast]
     rw [d0, zero_mul] at this
     contradiction
@@ -296,29 +292,3 @@ instance NNRat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ
 
 instance Rat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩
-
-/-! ### Scalar multiplication -/
-
-namespace NNRat
-variable [DivisionSemiring α]
-
-instance (priority := 100) instDistribSMul : DistribSMul ℚ≥0 α where
-  smul_zero a := by rw [smul_def, mul_zero]
-  smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
-
-instance instIsScalarTowerRight : IsScalarTower ℚ≥0 α α where
-  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
-
-end NNRat
-
-namespace Rat
-variable [DivisionRing α]
-
-instance (priority := 100) instDistribSMul : DistribSMul ℚ α where
-  smul_zero a := by rw [smul_def, mul_zero]
-  smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
-
-instance instIsScalarTowerRight : IsScalarTower ℚ α α where
-  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
-
-end Rat

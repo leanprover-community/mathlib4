@@ -3,8 +3,9 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Sym.Basic
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -29,8 +30,9 @@ Under the additional assumption of `[DecidableEq α]`, this is available as
 is only needed for one direction. -/
 def toMultiset : (α →₀ ℕ) →+ Multiset α where
   toFun f := Finsupp.sum f fun a n => n • {a}
-  -- Porting note: times out if h is not specified
-  map_add' _f _g := sum_add_index' (h := fun a n => n • ({a} : Multiset α))
+  -- Porting note: have to specify `h` or add a `dsimp only` before `sum_add_index'`.
+  -- see also: https://github.com/leanprover-community/mathlib4/issues/12129
+  map_add' _f _g := sum_add_index' (h := fun _ n => n • _)
     (fun _ ↦ zero_nsmul _) (fun _ ↦ add_nsmul _)
   map_zero' := sum_zero_index
 
@@ -53,11 +55,11 @@ theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
 
 theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
     Finsupp.toMultiset (∑ i ∈ s, single i n) = n • s.val := by
-  simp_rw [toMultiset_sum, Finsupp.toMultiset_single, sum_nsmul, sum_multiset_singleton]
+  simp_rw [toMultiset_sum, Finsupp.toMultiset_single, Finset.sum_nsmul, sum_multiset_singleton]
 
 @[simp]
 theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
-  simp [toMultiset_apply, map_finsupp_sum, Function.id_def]
+  simp [toMultiset_apply, map_finsuppSum, Function.id_def]
 
 theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by

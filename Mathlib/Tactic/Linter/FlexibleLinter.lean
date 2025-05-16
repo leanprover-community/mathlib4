@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
-import Mathlib.Init
+import Mathlib.Tactic.Linter.Header
 
 /-!
 #  The "flexible" linter
@@ -145,10 +145,10 @@ variable (take? : Syntax → Bool) in
 an `InfoTree` and returns the array of pairs `(stx, mvars)`,
 where `stx` is a syntax node such that `take? stx` is `true` and
 `mvars` indicates the goal state:
- * the context before `stx`
- * the context after `stx`
- * a list of metavariables closed by `stx`
- * a list of metavariables created by `stx`
+* the context before `stx`
+* the context after `stx`
+* a list of metavariables closed by `stx`
+* a list of metavariables created by `stx`
 
 A typical usage is to find the goals following a `simp` application.
 -/
@@ -295,7 +295,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.normNum,
     `linarith,
     `nlinarith,
-    ``Lean.Parser.Tactic.tacticNorm_cast_,
+    ``Lean.Parser.Tactic.tacticNorm_cast__,
     `Aesop.Frontend.Parser.aesopTactic,
     `Mathlib.Tactic.Tauto.tauto,
     `Mathlib.Meta.FunProp.funPropTacStx,

@@ -42,12 +42,9 @@ instance semiringObj (j) : Semiring ((F ⋙ forget SemiRingCat).obj j) :=
 
 /-- The flat sections of a functor into `SemiRingCat` form a subsemiring of all sections. -/
 def sectionsSubsemiring : Subsemiring (∀ j, F.obj j) :=
-  -- Porting note: if `f` and `g` were inlined, it does not compile
-  letI f : J ⥤ AddMonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
-    forget₂ AddCommMonCat AddMonCat
-  letI g : J ⥤ MonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} MonCat.{u}
-  { (MonCat.sectionsSubmonoid (J := J) g),
-    (AddMonCat.sectionsAddSubmonoid (J := J) f) with
+  { (MonCat.sectionsSubmonoid (J := J) (F ⋙ forget₂ SemiRingCat.{u} MonCat.{u})),
+    (AddMonCat.sectionsAddSubmonoid (J := J) (F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
+      forget₂ AddCommMonCat AddMonCat)) with
     carrier := (F ⋙ forget SemiRingCat).sections }
 
 instance sectionsSemiring : Semiring (F ⋙ forget SemiRingCat.{u}).sections :=
@@ -57,18 +54,17 @@ variable [Small.{u} (Functor.sections (F ⋙ forget SemiRingCat.{u}))]
 
 instance limitSemiring :
     Semiring (Types.Small.limitCone.{v, u} (F ⋙ forget SemiRingCat.{u})).pt :=
-  letI : Semiring (F ⋙ forget SemiRingCat).sections := (sectionsSubsemiring F).toSemiring
+  let _ : Semiring (F ⋙ forget SemiRingCat).sections := (sectionsSubsemiring F).toSemiring
   inferInstanceAs <| Semiring (Shrink (F ⋙ forget SemiRingCat).sections)
 
 /-- `limit.π (F ⋙ forget SemiRingCat) j` as a `RingHom`. -/
 def limitπRingHom (j) :
     (Types.Small.limitCone.{v, u} (F ⋙ forget SemiRingCat)).pt →+* (F ⋙ forget SemiRingCat).obj j :=
-  -- Porting note: if `f` and `g` were inlined, it does not compile
-  letI f : J ⥤ AddMonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
+  let f : J ⥤ AddMonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
     forget₂ AddCommMonCat AddMonCat
-  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget SemiRingCat.{u}))
-  letI : Small.{u} (Functor.sections (f ⋙ forget AddMonCat)) :=
+  let _ : Small.{u} (Functor.sections (f ⋙ forget AddMonCat)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget SemiRingCat.{u}))
   { AddMonCat.limitπAddMonoidHom f j,
     MonCat.limitπMonoidHom (F ⋙ forget₂ SemiRingCat MonCat.{u}) j with
@@ -100,7 +96,7 @@ def limitConeIsLimit : IsLimit (limitCone F) := by
     rfl
   · intro x y
     simp only [Functor.comp_obj, Equiv.toFun_as_coe, Functor.mapCone_pt, Functor.mapCone_π_app,
-          forget_map, map_mul]
+      forget_map, map_mul]
     rw [← equivShrink_mul]
     rfl
   · simp only [Functor.mapCone_π_app, forget_map, map_zero]
@@ -133,7 +129,7 @@ Auxiliary lemma to prove the cone induced by `limitCone` is a limit cone.
 -/
 def forget₂AddCommMonPreservesLimitsAux :
     IsLimit ((forget₂ SemiRingCat AddCommMonCat).mapCone (limitCone F)) := by
-  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ AddCommMonCat) ⋙ forget _)) :=
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ AddCommMonCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget SemiRingCat))
   apply AddCommMonCat.limitConeIsLimit.{v, u}
 
@@ -154,7 +150,7 @@ instance forget₂AddCommMon_preservesLimits :
 -/
 def forget₂MonPreservesLimitsAux :
     IsLimit ((forget₂ SemiRingCat MonCat).mapCone (limitCone F)) := by
-  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget SemiRingCat))
   apply MonCat.HasLimits.limitConeIsLimit (F ⋙ forget₂ SemiRingCat MonCat.{u})
 
@@ -196,7 +192,7 @@ variable [Small.{u} (Functor.sections (F ⋙ forget CommSemiRingCat))]
 
 instance limitCommSemiring :
     CommSemiring (Types.Small.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{u})).pt :=
-  letI : CommSemiring (F ⋙ forget CommSemiRingCat.{u}).sections :=
+  let _ : CommSemiring (F ⋙ forget CommSemiRingCat.{u}).sections :=
     @Subsemiring.toCommSemiring (∀ j, F.obj j) _
       (SemiRingCat.sectionsSubsemiring.{v, u} (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u}))
   inferInstanceAs <| CommSemiring (Shrink (F ⋙ forget CommSemiRingCat.{u}).sections)
@@ -208,15 +204,11 @@ and then reuse the existing limit.
 -/
 instance :
     CreatesLimit F (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) :=
-  -- Porting note: `CommSemiRingCat ⥤ Type` reflecting isomorphism is needed to make Lean see that
-  -- `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism. `CommSemiRingCat ⥤ Type` reflecting
-  -- isomorphism is added manually since Lean can't see it, but even with this addition Lean can not
-  -- see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this instance is also added.
-  letI : (forget CommSemiRingCat.{u}).ReflectsIsomorphisms :=
-    CommSemiRingCat.forgetReflectIsos.{u}
-  letI : (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}).ReflectsIsomorphisms :=
+  -- Porting note: Lean can not see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
+  -- instance is added.
+  let _ : (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCat.{u} SemiRingCat.{u}
-  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget CommSemiRingCat))
   let c : Cone F :=
     { pt := CommSemiRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
@@ -237,7 +229,7 @@ instance :
 (Generally, you'll just want to use `limit F`.)
 -/
 def limitCone : Cone F :=
-  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat.{u}) ⋙ forget _)) :=
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat.{u}) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u}))
 
@@ -297,10 +289,10 @@ instance ringObj (j) : Ring ((F ⋙ forget RingCat).obj j) :=
 /-- The flat sections of a functor into `RingCat` form a subring of all sections.
 -/
 def sectionsSubring : Subring (∀ j, F.obj j) :=
-  letI f : J ⥤ AddGrp.{u} :=
+  let f : J ⥤ AddGrp.{u} :=
     F ⋙ forget₂ RingCat.{u} AddCommGrp.{u} ⋙
     forget₂ AddCommGrp.{u} AddGrp.{u}
-  letI g : J ⥤ SemiRingCat.{u} := F ⋙ forget₂ RingCat.{u} SemiRingCat.{u}
+  let g : J ⥤ SemiRingCat.{u} := F ⋙ forget₂ RingCat.{u} SemiRingCat.{u}
   { AddGrp.sectionsAddSubgroup (J := J) f,
     SemiRingCat.sectionsSubsemiring (J := J) g with
     carrier := (F ⋙ forget RingCat.{u}).sections }
@@ -308,7 +300,7 @@ def sectionsSubring : Subring (∀ j, F.obj j) :=
 variable [Small.{u} (Functor.sections (F ⋙ forget RingCat.{u}))]
 
 instance limitRing : Ring.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget RingCat.{u})).pt :=
-  letI : Ring (F ⋙ forget RingCat.{u}).sections := (sectionsSubring F).toRing
+  let _ : Ring (F ⋙ forget RingCat.{u}).sections := (sectionsSubring F).toRing
   inferInstanceAs <| Ring (Shrink _)
 
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
@@ -338,7 +330,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
 (Generally, you'll just want to use `limit F`.)
 -/
 def limitCone : Cone F :=
-  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   liftLimit (limit.isLimit (F ⋙ forget₂ RingCat.{u} SemiRingCat.{u}))
 
@@ -350,7 +342,7 @@ def limitConeIsLimit : IsLimit (limitCone F) :=
 
 /-- If `(F ⋙ forget RingCat).sections` is `u`-small, `F` has a limit. -/
 instance hasLimit : HasLimit F :=
-  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   hasLimit_of_created F (forget₂ RingCat.{u} SemiRingCat.{u})
 
@@ -379,11 +371,9 @@ instance forget₂SemiRing_preservesLimits : PreservesLimits (forget₂ RingCat 
 -/
 def forget₂AddCommGroupPreservesLimitsAux :
     IsLimit ((forget₂ RingCat.{u} AddCommGrp).mapCone (limitCone.{v, u} F)) := by
-  -- Porting note: inline `f` would not compile
-  letI f := F ⋙ forget₂ RingCat.{u} AddCommGrp.{u}
-  letI : Small.{u} (Functor.sections (f ⋙ forget _)) :=
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ RingCat.{u} AddCommGrp.{u}) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
-  apply AddCommGrp.limitConeIsLimit.{v, u} f
+  apply AddCommGrp.limitConeIsLimit.{v, u} _
 
 /-- The forgetful functor from rings to additive commutative groups preserves all limits.
 -/
@@ -424,7 +414,7 @@ variable [Small.{u} (Functor.sections (F ⋙ forget CommRingCat))]
 
 instance limitCommRing :
     CommRing.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget CommRingCat.{u})).pt :=
-  letI : CommRing (F ⋙ forget CommRingCat).sections := @Subring.toCommRing (∀ j, F.obj j) _
+  let _ : CommRing (F ⋙ forget CommRingCat).sections := @Subring.toCommRing (∀ j, F.obj j) _
     (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u}))
   inferInstanceAs <| CommRing (Shrink _)
 
@@ -433,8 +423,7 @@ instance limitCommRing :
 All we need to do is notice that the limit point has a `CommRing` instance available,
 and then reuse the existing limit.
 -/
-instance :
-   CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
+instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
   /-
     A terse solution here would be
     ```
@@ -472,19 +461,17 @@ instance :
 (Generally, you'll just want to use `limit F`.)
 -/
 def limitCone : Cone F :=
-  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommRingCat.{u} RingCat.{u}))
 
-/-- The chosen cone is a limit cone.
-(Generally, you'll just want to use `limit.cone F`.)
--/
+/-- The chosen cone is a limit cone. (Generally, you'll just want to use `limit.cone F`.) -/
 def limitConeIsLimit : IsLimit (limitCone.{v, u} F) :=
   liftedLimitIsLimit _
 
 /-- If `(F ⋙ forget CommRingCat).sections` is `u`-small, `F` has a limit. -/
 instance hasLimit : HasLimit F :=
-  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   hasLimit_of_created F (forget₂ CommRingCat.{u} RingCat.{u})
 
@@ -514,7 +501,7 @@ instance forget₂Ring_preservesLimits : PreservesLimits (forget₂ CommRingCat 
 -/
 def forget₂CommSemiRingPreservesLimitsAux :
     IsLimit ((forget₂ CommRingCat CommSemiRingCat).mapCone (limitCone F)) := by
-  letI : Small.{u} ((F ⋙ forget₂ _ CommSemiRingCat) ⋙ forget _).sections :=
+  let _ : Small.{u} ((F ⋙ forget₂ _ CommSemiRingCat) ⋙ forget _).sections :=
     inferInstanceAs <| Small.{u} (F ⋙ forget _).sections
   apply CommSemiRingCat.limitConeIsLimit (F ⋙ forget₂ CommRingCat CommSemiRingCat.{u})
 

@@ -6,6 +6,7 @@ Authors: Andrew Yang, Jujian Zhang
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Localized Module
@@ -49,15 +50,44 @@ theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseCha
     LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, IsBaseChange.equiv_symm_apply,
     IsBaseChange.equiv_tmul, one_smul]
 
+open TensorProduct
+
+variable (M) in
+/-- The localization of an `R`-module `M` at a submonoid `S` is isomorphic to `S⁻¹R ⊗[R] M` as
+an `S⁻¹R`-module. -/
+noncomputable def LocalizedModule.equivTensorProduct :
+    LocalizedModule S M ≃ₗ[Localization S] Localization S ⊗[R] M :=
+  IsLocalizedModule.isBaseChange S (Localization S)
+    (LocalizedModule.mkLinearMap S M) |>.equiv.symm
+
+@[simp]
+lemma LocalizedModule.equivTensorProduct_symm_apply_tmul (x : M) (r : R) (s : S) :
+    (equivTensorProduct S M).symm (Localization.mk r s ⊗ₜ[R] x) = r • mk x s := by
+  simp [equivTensorProduct, IsBaseChange.equiv_tmul, mk_smul_mk, smul'_mk]
+
+@[simp]
+lemma LocalizedModule.equivTensorProduct_symm_apply_tmul_one (x : M) :
+    (equivTensorProduct S M).symm (1 ⊗ₜ[R] x) = mk x 1 := by
+  simp [← Localization.mk_one]
+
+@[simp]
+lemma LocalizedModule.equivTensorProduct_apply_mk (x : M) (s : S) :
+    equivTensorProduct S M (mk x s) = Localization.mk 1 s ⊗ₜ[R] x := by
+  apply (equivTensorProduct S M).symm.injective
+  simp
+
 namespace IsLocalization
 
-include S
 open TensorProduct Algebra.TensorProduct
+
+instance tensorProduct_isLocalizedModule : IsLocalizedModule S (TensorProduct.mk R A M 1) :=
+  (isLocalizedModule_iff_isBaseChange _ A _).mpr (TensorProduct.isBaseChange _ _ _)
 
 variable (M₁ M₂ B C) [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
   [Module A M₁] [Module A M₂] [IsScalarTower R A M₁] [IsScalarTower R A M₂]
   [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
   [Semiring C] [Algebra R C] [Algebra A C] [IsScalarTower R A C]
+include S
 
 theorem tensorProduct_compatibleSMul : CompatibleSMul R A M₁ M₂ where
   smul_tmul a _ _ := by
@@ -112,8 +142,7 @@ instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
     [IsLocalizedModule S f] : IsLocalizedModule S (Finsupp.mapRange.linearMap (α := α) f) := by
   classical
   let e : Localization S ⊗[R] M ≃ₗ[R] Mₛ :=
-    (IsLocalizedModule.isBaseChange S (Localization S)
-      (LocalizedModule.mkLinearMap S M)).equiv.restrictScalars R ≪≫ₗ IsLocalizedModule.iso S f
+    (LocalizedModule.equivTensorProduct S M).symm.restrictScalars R ≪≫ₗ IsLocalizedModule.iso S f
   let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ Mₛ) :=
     finsuppRight R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
   suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by
@@ -131,3 +160,33 @@ instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
   split_ifs with h
   · simp [e, IsBaseChange.equiv_tmul]
   · simp only [tmul_zero, LinearEquiv.trans_apply, LinearEquiv.restrictScalars_apply, map_zero]
+
+section
+
+variable (S : Submonoid A) {N : Type*} [AddCommMonoid N] [Module R N]
+variable [Module A M] [IsScalarTower R A M]
+
+open TensorProduct
+
+/-- `S⁻¹M ⊗[R] N = S⁻¹(M ⊗[R] N)`. -/
+instance IsLocalizedModule.rTensor (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
+    IsLocalizedModule S (AlgebraTensorModule.rTensor R N g) := by
+  let Aₚ := Localization S
+  letI : Module Aₚ M' := (IsLocalizedModule.iso S g).symm.toAddEquiv.module Aₚ
+  haveI : IsScalarTower A Aₚ M' := (IsLocalizedModule.iso S g).symm.isScalarTower Aₚ
+  haveI : IsScalarTower R Aₚ M' :=
+    IsScalarTower.of_algebraMap_smul <| fun r x ↦ by simp [IsScalarTower.algebraMap_apply R A Aₚ]
+  rw [isLocalizedModule_iff_isBaseChange (S := S) (A := Aₚ)] at h ⊢
+  exact isBaseChange_tensorProduct_map _ h
+
+variable {P : Type*} [AddCommMonoid P] [Module R P] (f : N →ₗ[R] P)
+
+lemma IsLocalizedModule.map_lTensor (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
+    IsLocalizedModule.map S (AlgebraTensorModule.rTensor R N g) (AlgebraTensorModule.rTensor R P g)
+      (AlgebraTensorModule.lTensor A M f) = AlgebraTensorModule.lTensor A M' f := by
+  apply linearMap_ext S (AlgebraTensorModule.rTensor R N g) (AlgebraTensorModule.rTensor R P g)
+  rw [map_comp]
+  ext
+  simp
+
+end

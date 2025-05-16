@@ -6,7 +6,7 @@ Authors: Justus Springer, Andrew Yang
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Topology.Sheaves.Stalks
 
@@ -35,7 +35,8 @@ open TopCat.Presheaf
 namespace AlgebraicGeometry
 
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
-abbrev RingedSpace : TypeMax.{u+1, v+1} :=
+@[nolint checkUnivs] -- The universes appear together in the type, but separately in the value.
+abbrev RingedSpace : Type max (u+1) (v+1) :=
   SheafedSpace.{v+1, v, u} CommRingCat.{v}
 
 namespace RingedSpace
@@ -44,8 +45,7 @@ open SheafedSpace
 
 @[simp]
 lemma res_zero {X : RingedSpace.{u}} {U V : TopologicalSpace.Opens X}
-    (hUV : U ≤ V) : (0 : X.presheaf.obj (op V)) |_ U =
-      (0 : (CategoryTheory.forget CommRingCat).obj (X.presheaf.obj (op U))) :=
+    (hUV : U ≤ V) : (0 : X.presheaf.obj (op V)) |_ U = (0 : X.presheaf.obj (op U)) :=
   RingHom.map_zero _
 
 variable (X : RingedSpace)
@@ -92,29 +92,8 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   simp only [map_mul, map_one] at heq'
   simpa using isUnit_of_mul_eq_one _ _ heq'
 
-/-- Specialize `TopCat.Presheaf.germ_res_apply` to sheaves of rings.
-
-This is unfortunately needed because the results on presheaves are stated using the
-`ConcreteCategory.instFunLike` instance, which is not reducibly equal to the actual coercion of
-morphisms in `CommRingCat` to functions.
--/
-lemma _root_.CommRingCat.germ_res_apply
-    {X : TopCat} (F : Presheaf CommRingCat X)
-    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) (s) :
-    F.germ U x hx (F.map i.op s) = F.germ V x (i.le hx) s :=
-  F.germ_res_apply _ _ _ _
-
-/-- Specialize `TopCat.Presheaf.germ_res_apply'` to sheaves of rings.
-
-This is unfortunately needed because the results on presheaves are stated using the
-`ConcreteCategory.instFunLike` instance, which is not reducibly equal to the actual coercion of
-morphisms in `CommRingCat` to functions.
--/
-lemma _root_.CommRingCat.germ_res_apply'
-    {X : TopCat} (F : Presheaf CommRingCat X)
-    {U V : Opens X} (i : op V ⟶ op U) (x : X) (hx : x ∈ U) (s) :
-    F.germ U x hx (F.map i s) = F.germ V x (i.unop.le hx) s :=
-  F.germ_res_apply' _ _ _ _
+@[deprecated (since := "2025-02-08")] alias _root_.CommRingCat.germ_res_apply := germ_res_apply
+@[deprecated (since := "2025-02-08")] alias _root_.CommRingCat.germ_res_apply' := germ_res_apply'
 
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
@@ -137,25 +116,25 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     -- Porting note: now need explicitly typing the rewrites
     -- note: this is bad, I think we should replace the `FunLike` on
     -- concrete category with `CoeFun`
-    rw [← CommRingCat.germ_res_apply X.presheaf (iVU x) z hzVx f]
+    rw [← germ_res_apply X.presheaf (iVU x) z hzVx f]
     -- Porting note: change was not necessary in Lean3
     change X.presheaf.germ _ z hzVx _ * (X.presheaf.germ _ z hzVx _) =
       X.presheaf.germ _ z hzVx _ * X.presheaf.germ _ z hzVy (g y)
     rw [← RingHom.map_mul,
       congr_arg (X.presheaf.germ (V x) z hzVx) (hg x),
-      CommRingCat.germ_res_apply X.presheaf _ _ _ f,
-      ← CommRingCat.germ_res_apply X.presheaf (iVU y) z hzVy f,
+      germ_res_apply X.presheaf _ _ _ f,
+      ← germ_res_apply X.presheaf (iVU y) z hzVy f,
       ← RingHom.map_mul,
       congr_arg (X.presheaf.germ (V y) z hzVy) (hg y), RingHom.map_one, RingHom.map_one]
   -- We claim that these local inverses glue together to a global inverse of `f`.
   obtain ⟨gl, gl_spec, -⟩ :
-    -- We need to rephrase the result from `ConcreteCategory` to `CommRingCat`.
+    -- We need to rephrase the result from `HasForget` to `CommRingCat`.
     ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).val.map (iVU i).op) gl = g i) ∧ _ :=
     X.sheaf.existsUnique_gluing' V U iVU hcover g ic
   apply isUnit_of_mul_eq_one f gl
   apply X.sheaf.eq_of_locally_eq' V U iVU hcover
   intro i
-  -- We need to rephrase the goal from `ConcreteCategory` to `CommRingCat`.
+  -- We need to rephrase the goal from `HasForget` to `CommRingCat`.
   show ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
   rw [RingHom.map_one, RingHom.map_mul, gl_spec]
   exact hg i
@@ -207,11 +186,11 @@ theorem basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj 
     @basicOpen X (unop V) (X.presheaf.map i f) = unop V ⊓ @basicOpen X (unop U) f := by
   ext x; constructor
   · rintro ⟨hxV, hx⟩
-    rw [CommRingCat.germ_res_apply' X.presheaf] at hx
+    rw [germ_res_apply' X.presheaf] at hx
     exact ⟨hxV, i.unop.le hxV, hx⟩
   · rintro ⟨hxV, _, hx⟩
     refine ⟨hxV, ?_⟩
-    rw [CommRingCat.germ_res_apply' X.presheaf]
+    rw [germ_res_apply' X.presheaf]
     exact hx
 
 -- This should fire before `basicOpen_res`.

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Equiv.Defs
@@ -29,10 +30,7 @@ This file is similar to `Order.Synonym`.
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
-assert_not_exists MonoidHom
-assert_not_exists Finite
+assert_not_exists MonoidWithZero DenselyOrdered MonoidHom Finite
 
 universe u v
 
@@ -310,6 +308,12 @@ instance Additive.addCommMonoid [CommMonoid α] : AddCommMonoid (Additive α) :=
 instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicative α) :=
   { Multiplicative.monoid, Multiplicative.commSemigroup with }
 
+instance Additive.instAddCancelCommMonoid [CancelCommMonoid α] :
+    AddCancelCommMonoid (Additive α) where
+
+instance Multiplicative.instCancelCommMonoid [AddCancelCommMonoid α] :
+    CancelCommMonoid (Multiplicative α) where
+
 instance Additive.neg [Inv α] : Neg (Additive α) :=
   ⟨fun x => ofAdd x.toMul⁻¹⟩
 
@@ -422,6 +426,12 @@ instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
 instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) :=
   { Multiplicative.group, Multiplicative.commMonoid with }
 
+instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) where
+  nsmul_right_injective _ := pow_left_injective (M := α)
+
+instance [AddMonoid α] [IsAddTorsionFree α] : IsMulTorsionFree (Multiplicative α) where
+  pow_left_injective _ := nsmul_right_injective (M := α)
+
 /-- If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.
 
@@ -448,7 +458,7 @@ lemma Pi.mulSingle_multiplicativeOfAdd_eq {ι : Type*} [DecidableEq ι] {M : ι 
       Multiplicative.ofAdd ((Pi.single i a) j) := by
   rcases eq_or_ne j i with rfl | h
   · simp only [mulSingle_eq_same, single_eq_same]
-  · simp only [mulSingle, ne_eq, h, not_false_eq_true, Function.update_noteq, one_apply, single,
+  · simp only [mulSingle, ne_eq, h, not_false_eq_true, Function.update_of_ne, one_apply, single,
       zero_apply, ofAdd_zero]
 
 lemma Pi.single_additiveOfMul_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
@@ -457,5 +467,5 @@ lemma Pi.single_additiveOfMul_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*
       Additive.ofMul ((Pi.mulSingle i a) j) := by
   rcases eq_or_ne j i with rfl | h
   · simp only [mulSingle_eq_same, single_eq_same]
-  · simp only [single, ne_eq, h, not_false_eq_true, Function.update_noteq, zero_apply, mulSingle,
+  · simp only [single, ne_eq, h, not_false_eq_true, Function.update_of_ne, zero_apply, mulSingle,
       one_apply, ofMul_one]

@@ -3,7 +3,7 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
 /-!
@@ -17,15 +17,15 @@ These are defined in terms of the auxiliary sequences for normalised elliptic di
 
 Let `W` be a Weierstrass curve over a commutative ring `R`. The sequence of `n`-division polynomials
 `ψₙ ∈ R[X, Y]` of `W` is the normalised EDS with initial values
- * `ψ₀ := 0`,
- * `ψ₁ := 1`,
- * `ψ₂ := 2Y + a₁X + a₃`,
- * `ψ₃ := 3X⁴ + b₂X³ + 3b₄X² + 3b₆X + b₈`, and
- * `ψ₄ := ψ₂ ⬝ (2X⁶ + b₂X⁵ + 5b₄X⁴ + 10b₆X³ + 10b₈X² + (b₂b₈ - b₄b₆)X + (b₄b₈ - b₆²))`.
+* `ψ₀ := 0`,
+* `ψ₁ := 1`,
+* `ψ₂ := 2Y + a₁X + a₃`,
+* `ψ₃ := 3X⁴ + b₂X³ + 3b₄X² + 3b₆X + b₈`, and
+* `ψ₄ := ψ₂ ⬝ (2X⁶ + b₂X⁵ + 5b₄X⁴ + 10b₆X³ + 10b₈X² + (b₂b₈ - b₄b₆)X + (b₄b₈ - b₆²))`.
 
 Furthermore, define the associated sequences `φₙ, ωₙ ∈ R[X, Y]` by
- * `φₙ := Xψₙ² - ψₙ₊₁ ⬝ ψₙ₋₁`, and
- * `ωₙ := (ψ₂ₙ / ψₙ - ψₙ ⬝ (a₁φₙ + a₃ψₙ²)) / 2`.
+* `φₙ := Xψₙ² - ψₙ₊₁ ⬝ ψₙ₋₁`, and
+* `ωₙ := (ψ₂ₙ / ψₙ - ψₙ ⬝ (a₁φₙ + a₃ψₙ²)) / 2`.
 
 Note that `ωₙ` is always well-defined as a polynomial in `R[X, Y]`. As a start, it can be shown by
 induction that `ψₙ` always divides `ψ₂ₙ` in `R[X, Y]`, so that `ψ₂ₙ / ψₙ` is always well-defined as
@@ -39,34 +39,34 @@ Now, in the coordinate ring `R[W]`, note that `ψ₂²` is congruent to the poly
 `Ψ₂Sq := 4X³ + b₂X² + 2b₄X + b₆ ∈ R[X]`. As such, the recurrences of a normalised EDS show that
 `ψₙ / ψ₂` are congruent to certain polynomials in `R[W]`. In particular, define `preΨₙ ∈ R[X]` as
 the auxiliary sequence for a normalised EDS with extra parameter `Ψ₂Sq²` and initial values
- * `preΨ₀ := 0`,
- * `preΨ₁ := 1`,
- * `preΨ₂ := 1`,
- * `preΨ₃ := ψ₃`, and
- * `preΨ₄ := ψ₄ / ψ₂`.
+* `preΨ₀ := 0`,
+* `preΨ₁ := 1`,
+* `preΨ₂ := 1`,
+* `preΨ₃ := ψ₃`, and
+* `preΨ₄ := ψ₄ / ψ₂`.
 
 The corresponding normalised EDS `Ψₙ ∈ R[X, Y]` is then given by
- * `Ψₙ := preΨₙ ⬝ ψ₂` if `n` is even, and
- * `Ψₙ := preΨₙ` if `n` is odd.
+* `Ψₙ := preΨₙ ⬝ ψ₂` if `n` is even, and
+* `Ψₙ := preΨₙ` if `n` is odd.
 
 Furthermore, define the associated sequences `ΨSqₙ, Φₙ ∈ R[X]` by
- * `ΨSqₙ := preΨₙ² ⬝ Ψ₂Sq` if `n` is even,
- * `ΨSqₙ := preΨₙ²` if `n` is odd,
- * `Φₙ := XΨSqₙ - preΨₙ₊₁ ⬝ preΨₙ₋₁` if `n` is even, and
- * `Φₙ := XΨSqₙ - preΨₙ₊₁ ⬝ preΨₙ₋₁ ⬝ Ψ₂Sq` if `n` is odd.
+* `ΨSqₙ := preΨₙ² ⬝ Ψ₂Sq` if `n` is even,
+* `ΨSqₙ := preΨₙ²` if `n` is odd,
+* `Φₙ := XΨSqₙ - preΨₙ₊₁ ⬝ preΨₙ₋₁` if `n` is even, and
+* `Φₙ := XΨSqₙ - preΨₙ₊₁ ⬝ preΨₙ₋₁ ⬝ Ψ₂Sq` if `n` is odd.
 
 With these definitions, `ψₙ ∈ R[X, Y]` and `φₙ ∈ R[X, Y]` are congruent in `R[W]` to `Ψₙ ∈ R[X, Y]`
 and `Φₙ ∈ R[X]` respectively, which are defined in terms of `Ψ₂Sq ∈ R[X]` and `preΨₙ ∈ R[X]`.
 
 ## Main definitions
 
- * `WeierstrassCurve.preΨ`: the univariate polynomials `preΨₙ`.
- * `WeierstrassCurve.ΨSq`: the univariate polynomials `ΨSqₙ`.
- * `WeierstrassCurve.Ψ`: the bivariate polynomials `Ψₙ`.
- * `WeierstrassCurve.Φ`: the univariate polynomials `Φₙ`.
- * `WeierstrassCurve.ψ`: the bivariate `n`-division polynomials `ψₙ`.
- * `WeierstrassCurve.φ`: the bivariate polynomials `φₙ`.
- * TODO: the bivariate polynomials `ωₙ`.
+* `WeierstrassCurve.preΨ`: the univariate polynomials `preΨₙ`.
+* `WeierstrassCurve.ΨSq`: the univariate polynomials `ΨSqₙ`.
+* `WeierstrassCurve.Ψ`: the bivariate polynomials `Ψₙ`.
+* `WeierstrassCurve.Φ`: the univariate polynomials `Φₙ`.
+* `WeierstrassCurve.ψ`: the bivariate `n`-division polynomials `ψₙ`.
+* `WeierstrassCurve.φ`: the bivariate polynomials `φₙ`.
+* TODO: the bivariate polynomials `ωₙ`.
 
 ## Implementation notes
 
@@ -401,11 +401,11 @@ lemma Φ_ofNat (n : ℕ) : W.Φ (n + 1) =
 @[simp]
 lemma Φ_zero : W.Φ 0 = 1 := by
   rw [Φ, ΨSq_zero, mul_zero, zero_sub, zero_add, preΨ_one, one_mul, zero_sub, preΨ_neg, preΨ_one,
-    neg_one_mul, neg_neg, if_pos even_zero]
+    neg_one_mul, neg_neg, if_pos Even.zero]
 
 @[simp]
 lemma Φ_one : W.Φ 1 = X := by
-  rw [show 1 = ((0 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_one, one_pow, mul_one, if_pos even_zero,
+  rw [show 1 = ((0 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_one, one_pow, mul_one, if_pos Even.zero,
     mul_one, preΨ'_zero, mul_zero, zero_mul, sub_zero]
 
 @[simp]
@@ -423,8 +423,8 @@ lemma Φ_three : W.Φ 3 = X * W.Ψ₃ ^ 2 - W.preΨ₄ * W.Ψ₂Sq := by
 @[simp]
 lemma Φ_four : W.Φ 4 = X * W.preΨ₄ ^ 2 * W.Ψ₂Sq - W.Ψ₃ * (W.preΨ₄ * W.Ψ₂Sq ^ 2 - W.Ψ₃ ^ 3) := by
   rw [show 4 = ((3 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_four, if_neg <| by decide,
-    show 3 + 2 = 2 * 2 + 1 by rfl, preΨ'_odd, preΨ'_four, preΨ'_two, if_pos even_zero, preΨ'_one,
-    preΨ'_three, if_pos even_zero, if_neg <| by decide]
+    show 3 + 2 = 2 * 2 + 1 by rfl, preΨ'_odd, preΨ'_four, preΨ'_two, if_pos Even.zero, preΨ'_one,
+    preΨ'_three, if_pos Even.zero, if_neg <| by decide]
   ring1
 
 @[simp]

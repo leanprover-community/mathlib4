@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Central Algebras
@@ -47,7 +47,7 @@ variable (k D : Type*) [Field k] [Ring D] [Algebra k D]
 variable [Algebra.IsCentral k D] [IsSimpleRing D]
 variable [FiniteDimensional k D]
 ```
-where `FiniteDimensional k D` is almost always assumed in most references, but some results does not
+where `FiniteDimensional k D` is almost always assumed in most references, but some results do not
 need this assumption.
 
 ## Tags

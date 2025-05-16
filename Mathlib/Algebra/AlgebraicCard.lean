@@ -25,11 +25,12 @@ open Cardinal Polynomial
 
 namespace Algebraic
 
-theorem infinite_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
-    [CharZero A] : { x : A | IsAlgebraic R x }.Infinite :=
-  infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_nat
+theorem infinite_of_charZero (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
+    [CharZero A] : { x : A | IsAlgebraic R x }.Infinite := by
+  letI := MulActionWithZero.nontrivial R A
+  exact infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_nat
 
-theorem aleph0_le_cardinalMk_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A]
+theorem aleph0_le_cardinalMk_of_charZero (R A : Type*) [CommRing R] [Ring A]
     [Algebra R A] [CharZero A] : ℵ₀ ≤ #{ x : A // IsAlgebraic R x } :=
   infinite_iff.1 (Set.infinite_coe_iff.2 <| infinite_of_charZero R A)
 
@@ -66,7 +67,7 @@ theorem cardinalMk_lift_of_infinite [Infinite R] :
     Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } = Cardinal.lift.{v} #R :=
   ((cardinalMk_lift_le_max R A).trans_eq (max_eq_left <| aleph0_le_mk _)).antisymm <|
     lift_mk_le'.2 ⟨⟨fun x => ⟨algebraMap R A x, isAlgebraic_algebraMap _⟩, fun _ _ h =>
-      NoZeroSMulDivisors.algebraMap_injective R A (Subtype.ext_iff.1 h)⟩⟩
+      FaithfulSMul.algebraMap_injective R A (Subtype.ext_iff.1 h)⟩⟩
 
 @[deprecated (since := "2024-11-10")]
 alias cardinal_mk_lift_of_infinite := cardinalMk_lift_of_infinite
@@ -80,7 +81,7 @@ protected theorem countable : Set.Countable { x : A | IsAlgebraic R x } := by
   simp
 
 @[simp]
-theorem cardinalMk_of_countable_of_charZero [CharZero A] [IsDomain R] :
+theorem cardinalMk_of_countable_of_charZero [CharZero A] :
     #{ x : A // IsAlgebraic R x } = ℵ₀ :=
   (Algebraic.countable R A).le_aleph0.antisymm (aleph0_le_cardinalMk_of_charZero R A)
 

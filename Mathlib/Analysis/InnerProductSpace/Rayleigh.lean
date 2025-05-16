@@ -39,7 +39,7 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped NNReal
 
@@ -57,8 +57,6 @@ theorem rayleigh_smul (x : E) {c : 𝕜} (hc : c ≠ 0) :
     rayleighQuotient T (c • x) = rayleighQuotient T x := by
   by_cases hx : x = 0
   · simp [hx]
-  have : ‖c‖ ≠ 0 := by simp [hc]
-  have : ‖x‖ ≠ 0 := by simp [hx]
   field_simp [norm_smul, T.reApplyInnerSelf_smul]
   ring
 
@@ -149,7 +147,6 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
     apply smul_right_injective F hb
     simp [c, eq_neg_of_add_eq_zero_left h₂, ← mul_smul, this]
   convert hc
-  have : ‖x₀‖ ≠ 0 := by simp [hx₀]
   have := congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
   field_simp [inner_smul_left, real_inner_self_eq_norm_mul_norm, sq] at this ⊢
   exact this

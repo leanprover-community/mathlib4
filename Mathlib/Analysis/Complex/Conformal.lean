@@ -45,7 +45,7 @@ this file.
 
 * The classical form of Cauchy-Riemann equations
 * On a connected open set `u`, a function which is `ConformalAt` each point is either holomorphic
-throughout or antiholomorphic throughout.
+  throughout or antiholomorphic throughout.
 -/
 
 
@@ -73,8 +73,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
     simp only [map.coe_coe, map.map_smul, norm_smul, norm_inv, norm_norm]
     field_simp only [one_mul]
   · ext1
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`; explicitly supplied simp lemma
-    simp [smul_inv_smul₀ minor₁]
+    simp [minor₁]
 
 theorem isConformalMap_complex_linear_conj {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap ((map.restrictScalars ℝ).comp (conjCLE : ℂ →L[ℝ] ℂ)) :=

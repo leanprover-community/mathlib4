@@ -3,8 +3,8 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.TypeTags.Hom
+import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Additive and Multiplicative for group actions
@@ -14,7 +14,7 @@ import Mathlib.Algebra.Group.TypeTags.Hom
 group action
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero MonoidHom
 
 open Function (Injective Surjective)
 
@@ -55,18 +55,3 @@ instance Multiplicative.smulCommClass [VAdd α γ] [VAdd β γ] [VAddCommClass �
   ⟨@vadd_comm α β _ _ _ _⟩
 
 end
-
-/-- The tautological additive action by `Additive (Function.End α)` on `α`. -/
-instance AddAction.functionEnd : AddAction (Additive (Function.End α)) α := inferInstance
-
-/-- The additive monoid hom representing an additive monoid action.
-
-When `M` is a group, see `AddAction.toPermHom`. -/
-def AddAction.toEndHom [AddMonoid M] [AddAction M α] : M →+ Additive (Function.End α) :=
-  MonoidHom.toAdditive'' MulAction.toEndHom
-
-/-- The additive action induced by a hom to `Additive (Function.End α)`
-
-See note [reducible non-instances]. -/
-abbrev AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
-  AddAction.compHom α f
