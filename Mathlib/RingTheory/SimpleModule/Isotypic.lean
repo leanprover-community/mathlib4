@@ -31,7 +31,7 @@ import Mathlib.RingTheory.SimpleModule.Basic
   is simply a two-sided ideal, see `isFullyInvariant_iff_isTwoSided`.
 
 * `iSupIndep.ringEquiv`, `iSupIndep.algEquiv`: if `M` is the direct sum of fully invariant
-  submodules `Nᵢ`, then `End R M` is isomorphic to `Π i, End R Nᵢ`. This can be applied to
+  submodules `Nᵢ`, then `End R M` is isomorphic to `Πᵢ End R Nᵢ`. This can be applied to
   the isotypic components of a semisimple module `M`, yielding `IsSemisimpleModule.endAlgEquiv`.
 
 ## Keywords
@@ -342,7 +342,7 @@ variable {ι : Type*} [DecidableEq ι] {N : ι → Submodule R M}
   (ind : iSupIndep N) (iSup_top : ⨆ i, N i = ⊤) (invar : ∀ i, (N i).IsFullyInvariant)
 
 /-- If an `R`-module `M` is the direct sum of fully invariant submodules `Nᵢ`,
-then `End R M` is isomorphic to `Π i, End R Nᵢ` as a ring. -/
+then `End R M` is isomorphic to `Πᵢ End R Nᵢ` as a ring. -/
 noncomputable def iSupIndep.ringEquiv : Module.End R M ≃+* Π i, Module.End R (N i) where
   toFun f i := f.restrict (invar i f)
   invFun f := letI e := ind.linearEquiv iSup_top; e ∘ₗ DFinsupp.mapRange.linearMap f ∘ₗ e.symm
@@ -355,7 +355,7 @@ noncomputable def iSupIndep.ringEquiv : Module.End R M ≃+* Π i, Module.End R 
   map_mul' _ _ := rfl
 
 /-- If an `R`-module `M` is the direct sum of fully invariant submodules `Nᵢ`,
-then `End R M` is isomorphic to `Π i, End R Nᵢ` as an algebra. -/
+then `End R M` is isomorphic to `Πᵢ End R Nᵢ` as an algebra. -/
 noncomputable def iSupIndep.algEquiv [Module R₀ M] [IsScalarTower R₀ R M] :
     Module.End R M ≃ₐ[R₀] Π i, Module.End R (N i) where
   __ := ind.ringEquiv iSup_top invar
