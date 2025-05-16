@@ -16,9 +16,9 @@ modularity of Mathlib.
 -- XXX: is there a better long-time place for this
 /-- Parse all imports in a text file at `path` and return just their names:
 this is just a thin wrapper around `Lean.parseImports'`.
-Omit `Init` (which is part of the prelude). -/
+Omit `Init (which is part of the prelude). -/
 def findImports (path : System.FilePath) : IO (Array Lean.Name) := do
-  return (← Lean.parseImports' (← IO.FS.readFile path) path.toString)
+  return (← Lean.parseImports' (← IO.FS.readFile path) path.toString).imports
     |>.map (fun imp ↦ imp.module) |>.erase `Init
 
 /-- Find the longest prefix of `n` such that `f` returns `some` (or return `none` otherwise). -/

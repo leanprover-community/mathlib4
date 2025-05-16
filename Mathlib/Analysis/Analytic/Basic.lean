@@ -994,8 +994,8 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     (hf : HasFPowerSeriesOnBall f p x r) (h : (r' : ℝ≥0∞) < r) :
     ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
       ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n := by
-   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
-   simpa using hf.uniform_geometric_approx' h
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa using hf.uniform_geometric_approx' h
 
 /-- If a function admits a power series expansion within a set in a ball, then it is exponentially
 close to the partial sums of this power series on strict subdisks of the disk of convergence. -/
@@ -1321,6 +1321,14 @@ protected theorem AnalyticWithinAt.continuousWithinAt (hf : AnalyticWithinAt �
 protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : ContinuousAt f x :=
   let ⟨_, hp⟩ := hf
   hp.continuousAt
+
+protected theorem AnalyticAt.eventually_continuousAt (hf : AnalyticAt 𝕜 f x) :
+    ∀ᶠ y in 𝓝 x, ContinuousAt f y := by
+  rcases hf with ⟨g, r, hg⟩
+  have : EMetric.ball x r ∈ 𝓝 x := EMetric.ball_mem_nhds _ hg.r_pos
+  filter_upwards [this] with y hy
+  apply hg.continuousOn.continuousAt
+  exact EMetric.isOpen_ball.mem_nhds hy
 
 protected theorem AnalyticOnNhd.continuousOn {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) :
     ContinuousOn f s :=
