@@ -252,7 +252,7 @@ theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?,
 
 lemma Chain'.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
     (hl : Chain' R l) (h : R x (l.head l_ne_nil)) : Chain' R (x :: l) := by
-  refine List.Chain'.cons' hl (fun y hy ↦ ?_)
+  refine hl.cons' fun y hy ↦ ?_
   convert h
   simpa [l.head?_eq_head l_ne_nil] using hy.symm
 
