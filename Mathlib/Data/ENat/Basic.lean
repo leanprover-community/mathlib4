@@ -292,14 +292,6 @@ lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
-lemma add_one_lt_add_one_iff {a b : ℕ∞} : a < b ↔ a + 1 < b + 1 := by
-  by_cases eqtop : b = ⊤
-  · simp [eqtop]
-  · refine ⟨fun lt ↦ ?_, fun lt ↦ ?_⟩
-    · simpa [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff lt.ne_top] using lt
-    · have lttop : a < ⊤ := lt_of_add_lt_add_right (lt_top_of_lt lt)
-      simpa [ENat.lt_add_one_iff eqtop, ENat.add_one_le_iff lttop.ne_top] using lt
-
 theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
   lt_add_one_iff (coe_ne_top n)
 
