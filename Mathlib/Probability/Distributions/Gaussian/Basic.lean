@@ -16,14 +16,14 @@ For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distribut
 ## Main definitions
 
 * `IsGaussian`: a measure `μ` is Gaussian if its map by every continuous linear form
-  `L : E →L[ℝ] ℝ` is a real Gaussian measure.
+  `L : Dual ℝ E` is a real Gaussian measure.
   That is, `μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal`.
 
 ## Main statements
 
-* `isGaussian_iff_charFunCLM_eq`: a finite measure `μ` is Gaussian if and only if
+* `isGaussian_iff_charFunDual_eq`: a finite measure `μ` is Gaussian if and only if
   its characteristic function has value `exp (μ[L] * I - Var[L; μ] / 2)` for every
-  continuous linear form `L : E →L[ℝ] ℝ`.
+  continuous linear form `L : Dual ℝ E`.
 
 ## References
 
@@ -31,7 +31,7 @@ For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distribut
 
 -/
 
-open MeasureTheory Complex
+open MeasureTheory Complex NormedSpace
 open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
@@ -64,11 +64,11 @@ instance {x : E} : IsGaussian (Measure.dirac x) where
 /-- A Gaussian measure is a probability measure. -/
 instance : IsProbabilityMeasure μ where
   measure_univ := by
-    let L : E →L[ℝ] ℝ := Nonempty.some inferInstance
+    let L : Dual ℝ E := Nonempty.some inferInstance
     have : μ.map L Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal L]
     simpa [Measure.map_apply (by fun_prop : Measurable L) .univ] using this
 
-lemma IsGaussian.memLp_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L : E →L[ℝ] ℝ)
+lemma IsGaussian.memLp_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E)
     (p : ℝ≥0∞) (hp : p ≠ ∞) :
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
@@ -77,7 +77,7 @@ lemma IsGaussian.memLp_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L :
   simp [hp]
 
 @[fun_prop]
-lemma IsGaussian.integrable_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L : E →L[ℝ] ℝ) :
+lemma IsGaussian.integrable_continuousLinearMap (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E) :
     Integrable L μ := by
   rw [← memLp_one_iff_integrable]
   exact IsGaussian.memLp_continuousLinearMap μ L 1 (by simp)
@@ -99,14 +99,14 @@ instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) where
 instance isGaussian_map_equiv (L : E ≃L[ℝ] F) : IsGaussian (μ.map L) :=
   isGaussian_map (L : E →L[ℝ] F)
 
-section CharFunCLM
+section charFunDual
 
 /-- The characteristic function of a Gaussian measure `μ` has value
-`exp (μ[L] * I - Var[L; μ] / 2)` on `L : E →L[ℝ] ℝ`. -/
-lemma IsGaussian.charFunCLM_eq {μ : Measure E} [IsGaussian μ] (L : E →L[ℝ] ℝ) :
-    charFunCLM μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
-  calc charFunCLM μ L
-  _ = charFun (μ.map L) 1 := by rw [charFunCLM_eq_charFun_map_one]
+`exp (μ[L] * I - Var[L; μ] / 2)` on `L : Dual ℝ E`. -/
+lemma IsGaussian.charFunDual_eq {μ : Measure E} [IsGaussian μ] (L : Dual ℝ E) :
+    charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
+  calc charFunDual μ L
+  _ = charFun (μ.map L) 1 := by rw [charFunDual_eq_charFun_map_one]
   _ = charFun (gaussianReal (μ[L]) (Var[L; μ]).toNNReal) 1 := by
     rw [IsGaussian.map_eq_gaussianReal L]
   _ = exp (μ[L] * I - Var[L; μ] / 2) := by
@@ -118,12 +118,12 @@ lemma IsGaussian.charFunCLM_eq {μ : Measure E} [IsGaussian μ] (L : E →L[ℝ]
       exact variance_nonneg _ _
 
 /-- A finite measure is Gaussian iff its characteristic function has value
-`exp (μ[L] * I - Var[L; μ] / 2)` for every `L : E →L[ℝ] ℝ`. -/
-theorem isGaussian_iff_charFunCLM_eq {μ : Measure E} [IsFiniteMeasure μ] :
-    IsGaussian μ ↔ ∀ L : E →L[ℝ] ℝ, charFunCLM μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
-  refine ⟨fun h ↦ h.charFunCLM_eq, fun h ↦ ⟨fun L ↦ Measure.ext_of_charFun ?_⟩⟩
+`exp (μ[L] * I - Var[L; μ] / 2)` for every `L : Dual ℝ E`. -/
+theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :
+    IsGaussian μ ↔ ∀ L : Dual ℝ E, charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
+  refine ⟨fun h ↦ h.charFunDual_eq, fun h ↦ ⟨fun L ↦ Measure.ext_of_charFun ?_⟩⟩
   ext u
-  rw [charFun_map_eq_charFunCLM_smul L u, h (u • L), charFun_gaussianReal]
+  rw [charFun_map_eq_charFunDual_smul L u, h (u • L), charFun_gaussianReal]
   simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul, ofReal_mul,
     Real.coe_toNNReal']
   congr
@@ -131,8 +131,8 @@ theorem isGaussian_iff_charFunCLM_eq {μ : Measure E} [IsFiniteMeasure μ] :
   · rw [max_eq_left (variance_nonneg _ _), mul_comm, ← ofReal_pow, ← ofReal_mul, ← variance_mul]
     congr
 
-alias ⟨_, isGaussian_of_charFunCLM_eq⟩ := isGaussian_iff_charFunCLM_eq
+alias ⟨_, isGaussian_of_charFunDual_eq⟩ := isGaussian_iff_charFunDual_eq
 
-end CharFunCLM
+end charFunDual
 
 end ProbabilityTheory
