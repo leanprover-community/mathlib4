@@ -992,7 +992,7 @@ theorem continuous_parametric_integral_of_continuous
     rw [ae_restrict_iff]
     · filter_upwards with t t_in using hM (mem_image_of_mem _ <| mk_mem_prod x_in t_in)
     · exact (isClosed_le (by fun_prop) (by fun_prop)).measurableSet
-  · exact integrableOn_const hs.measure_lt_top
+  · exact integrableOn_const hs.measure_ne_top
   · filter_upwards using (by fun_prop)
 
 /-- Consider a parameterized integral `x ↦ ∫ y, L (g y) (f x y)` where `L` is bilinear,
