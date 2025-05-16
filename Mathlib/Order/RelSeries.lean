@@ -58,6 +58,7 @@ instance [Nonempty α] : Nonempty (RelSeries r) :=
 
 variable {r}
 
+set_option backward.dsimp.proofs true in
 @[ext (iff := false)]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
     (toFun_eq : x.toFun = y.toFun ∘ Fin.cast (by rw [length_eq])) : x = y := by
