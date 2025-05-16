@@ -65,8 +65,7 @@ lemma withBotENat_add_coe_cancel (a b : WithBot ℕ∞) (c : ℕ) : a + c = b + 
       rw [← WithBot.coe_unbot a eqbot, ← WithBot.coe_unbot b eqbot', WithBot.coe_inj]
       simpa [ENat.add_right_cancel_iff _ _ _ (ENat.coe_ne_top c)] using this
 
-lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
-    [Small.{v} R] [Small.{v} (R ⧸ maximalIdeal R)]
+lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
     (M : ModuleCat.{v} R) [Module.Finite R M] (rs : List R) (reg : IsRegular M rs) :
     M.IsCohenMacaulay ↔
     (ModuleCat.of R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M))).IsCohenMacaulay := by
