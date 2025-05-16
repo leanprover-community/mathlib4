@@ -103,10 +103,14 @@ theorem integrableOn_zero : IntegrableOn (fun _ => (0 : ε')) s μ :=
   integrable_zero _ _ _
 
 @[simp]
-theorem integrableOn_const {C : ε'} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) :
+theorem integrableOn_const_iff {C : ε'} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn (fun _ ↦ C) s μ ↔ C = 0 ∨ μ s < ∞ := by
   rw [IntegrableOn, ← enorm_eq_zero, integrable_const_iff_enorm hC, isFiniteMeasure_restrict,
     lt_top_iff_ne_top]
+
+theorem integrableOn_const {C : ε'} (hs : μ s ≠ ∞ := by finiteness)
+    (hC : ‖C‖ₑ ≠ ∞ := by finiteness) : IntegrableOn (fun _ ↦ C) s μ :=
+  (integrableOn_const_iff hC).2 <| Or.inr <| lt_top_iff_ne_top.2 hs
 
 theorem IntegrableOn.mono (h : IntegrableOn f t ν) (hs : s ⊆ t) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_mono hs hμ
