@@ -111,16 +111,12 @@ theorem gaussNormC_nonneg {c : ℝ} (hc : 0 ≤ c) [NonnegHomClass F R ℝ] : 0 
 
 @[simp]
 lemma gaussNormC_C [ZeroHomClass F R ℝ] (r : R) : (C r).gaussNormC v c = v r := by
-  by_cases hr : r = (0 : R)
-  · simp [gaussNormC, hr]
-  · simp [gaussNormC, support_C, hr]
+  by_cases hr : r = 0 <;> simp [gaussNormC, support_C, hr]
 
 @[simp]
 theorem gaussNormC_monomial [ZeroHomClass F R ℝ] (n : ℕ) (r : R) :
     (monomial n r).gaussNormC v c = v r * c ^ n := by
-  by_cases hr : r = 0
-  · simp [gaussNormC, hr]
-  · simp [gaussNormC, support_monomial, hr]
+  by_cases hr : r = 0 <;> simp [gaussNormC, support_monomial, hr]
 
 lemma le_gaussNormC [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (p : R[X]) {c : ℝ}
     (hc : 0 ≤ c) (i : ℕ) : v (p.coeff i) * c ^ i ≤ p.gaussNormC v c := by
