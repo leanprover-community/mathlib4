@@ -138,7 +138,7 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive "A subset closed under the additive action inherits that action."]
 instance (priority := 50) smul' : SMul M s where
-  smul r x := ⟨r • x.1, have := SMulMemClass.ofIsScalarTower S M N α; smul_mem _ x.2⟩
+  smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
 
 instance (priority := 50) : IsScalarTower M N s where
   smul_assoc m n x := Subtype.ext (smul_assoc m n x.1)
