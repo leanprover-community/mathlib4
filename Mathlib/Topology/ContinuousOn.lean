@@ -1502,8 +1502,8 @@ lemma ContinuousOn.union_continuousAt {f : α → β} (s_op : IsOpen s)
 
 open Classical in
 /-- If a function is continuous on two closed sets, it is also continuous on their union. -/
-theorem ContinuousOn.union_of_isClosed (hs : IsClosed s) (ht : IsClosed t) {f : α → β}
-    (hfs : ContinuousOn f s) (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) := by
+theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
+    (hs : IsClosed s) (ht : IsClosed t) : ContinuousOn f (s ∪ t) := by
   refine fun x hx ↦ .union ?_ ?_
   · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_
     rwa [hs.closure_eq]
@@ -1514,21 +1514,21 @@ theorem ContinuousOn.union_of_isClosed (hs : IsClosed s) (ht : IsClosed t) {f : 
 alias ContinuousOn.union_isClosed := ContinuousOn.union_of_isClosed
 
 /-- A function is continuous on two closed sets iff it is also continuous on their union. -/
-theorem continouousOn_union_isClosed (hs : IsClosed s) (ht : IsClosed t) {f : α → β} :
+theorem continouousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
-   fun h ↦ h.left.union_of_isClosed hs ht h.right⟩
+   fun h ↦ h.left.union_of_isClosed h.right hs ht⟩
 
 /-- If a function is continuous on two open sets, it is also continuous on their union. -/
-theorem ContinuousOn.union_of_isOpen (hs : IsOpen s) (ht : IsOpen t) {f : α → β}
-    (hfs : ContinuousOn f s) (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) :=
+theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
+    (hs : IsOpen s) (ht : IsOpen t) : ContinuousOn f (s ∪ t) :=
   union_continuousAt hs hfs fun _ hx ↦ ht.continuousOn_iff.mp hft hx
 
 /-- A function is continuous on two open sets iff it is also continuous on their union. -/
-theorem continouousOn_union_isOpen (hs : IsOpen s) (ht : IsOpen t) {f : α → β} :
+theorem continouousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : IsOpen t) :
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
-   fun h ↦ h.left.union_of_isOpen hs ht h.right⟩
+   fun h ↦ h.left.union_of_isOpen h.right hs ht⟩
 
 /-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
 the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/
