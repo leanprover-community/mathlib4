@@ -14,14 +14,15 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 This file defines a function field and the ring of integers corresponding to it.
 
 ## Main definitions
- - `FunctionField Fq F` states that `F` is a function field over the (finite) field `Fq`,
-   i.e. it is a finite extension of the field of rational functions in one variable over `Fq`.
- - `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
-    as the integral closure of `Fq[X]` in the function field.
- - `FunctionField.inftyValuation` : The place at infinity on `Fq(t)` is the nonarchimedean
-    valuation on `Fq(t)` with uniformizer `1/t`.
- - `FunctionField.FqtInfty` : The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the
-    valuation at infinity.
+
+- `FunctionField Fq F` states that `F` is a function field over the (finite) field `Fq`,
+  i.e. it is a finite extension of the field of rational functions in one variable over `Fq`.
+- `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
+  as the integral closure of `Fq[X]` in the function field.
+- `FunctionField.inftyValuation` : The place at infinity on `Fq(t)` is the nonarchimedean
+  valuation on `Fq(t)` with uniformizer `1/t`.
+- `FunctionField.FqtInfty` : The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the
+  valuation at infinity.
 
 ## Implementation notes
 The definitions that involve a field of fractions choose a canonical field of fractions,
