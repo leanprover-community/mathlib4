@@ -246,7 +246,7 @@ lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.toList[(i : ℕ)] = p i := by
   simp only [Fin.getElem_fin, toList, List.getElem_ofFn]
 
-lemma toList_getElem_eq_apply_of_lt_length (p : RelSeries r) {i : ℕ} (hi : i < p.length + 1) :
+lemma toList_getElem_eq_apply_of_lt_length {p : RelSeries r} {i : ℕ} (hi : i < p.length + 1) :
     p.toList[i]'(by simpa using hi) = p ⟨i, hi⟩ :=
   p.toList_getElem_eq_apply ⟨i, hi⟩
 
@@ -355,7 +355,7 @@ lemma toList_append (p q : RelSeries r) (connect : r p.last q.head) :
     omega
   · intro i h1 h2
     have h3' : i < p.length + 1 + (q.length + 1) := by simp_all
-    rw [toList_getElem_eq_apply_of_lt_length _ (by simp; omega)]
+    rw [toList_getElem_eq_apply_of_lt_length (by simp; omega)]
     · simp only [append, Function.comp_apply, Fin.cast_mk, List.getElem_append]
       split
       · have : Fin.mk i h3' = Fin.castAdd _ ⟨i, by simp_all⟩ := rfl
@@ -590,8 +590,8 @@ lemma toList_tail {p : RelSeries r} (hp : p.length ≠ 0) : (p.tail hp).toList =
   refine List.ext_getElem ?_ fun i h1 h2 ↦ ?_
   · simp
     omega
-  · rw [List.getElem_tail, toList_getElem_eq_apply_of_lt_length _ (by simp_all),
-      toList_getElem_eq_apply_of_lt_length _ (by simp_all)]
+  · rw [List.getElem_tail, toList_getElem_eq_apply_of_lt_length (by simp_all),
+      toList_getElem_eq_apply_of_lt_length (by simp_all)]
     simp_all [Fin.tail]
 
 @[simp]
@@ -663,7 +663,7 @@ lemma toList_eraseLast (p : RelSeries r) (hp : p.length ≠ 0) :
   apply List.ext_getElem
   · simpa using Nat.succ_pred_eq_of_ne_zero hp
   · intro i hi h2
-    rw [toList_getElem_eq_apply_of_lt_length _ (hi.trans_eq (by simp))]
+    rw [toList_getElem_eq_apply_of_lt_length (hi.trans_eq (by simp))]
     simp [← toList_getElem_eq_apply_of_lt_length]
 
 lemma snoc_self_eraseLast (p : RelSeries r) (h : p.length ≠ 0) :
