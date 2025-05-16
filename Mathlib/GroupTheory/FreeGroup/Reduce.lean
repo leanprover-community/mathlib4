@@ -223,7 +223,7 @@ theorem toWord_mul (x y : FreeGroup α) : toWord (x * y) = reduce (toWord x ++ t
 
 @[to_additive]
 theorem toWord_pow (x : FreeGroup α) (n : ℕ) :
-    toWord (x^n) = reduce (List.replicate n x.toWord).flatten := by
+    toWord (x ^ n) = reduce (List.replicate n x.toWord).flatten := by
   rw [← mk_toWord (x := x)]
   simp
 
@@ -255,7 +255,7 @@ theorem reduce_append_reduce_reduce : reduce (reduce L₁ ++ reduce L₂) = redu
 
 @[to_additive]
 theorem reduce_cons_reduce (a : α × Bool) : reduce (a :: reduce L) = reduce (a :: L) := by
-  simp [reduce.cons, reduce.idem]
+  simp
 
 @[to_additive]
 theorem reduce_invRev_left_cancel : reduce (invRev L ++ L) = [] := by
