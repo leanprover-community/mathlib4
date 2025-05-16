@@ -44,7 +44,7 @@ theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
     ofFn f = ofFn fun i : Fin n => binderNameHint i f (f (Fin.cast h.symm i)) := by
   subst h
-  simp_rw [Fin.cast_refl, id]
+  simp_rw [binderNameHint, Fin.cast_refl, id]
 
 theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
     ofFn f = (ofFn fun i => f (Fin.castSucc i)).concat (f (Fin.last _)) := by
@@ -88,7 +88,8 @@ theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
     calc
       m * i + j < m * (i + 1) :=
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.mul_add, Nat.mul_one])
-      _ ≤ _ := Nat.mul_le_mul_left _ i.prop⟩) := by simp_rw [m.mul_comm, ofFn_mul, Fin.cast_mk]
+      _ ≤ _ := Nat.mul_le_mul_left _ i.prop⟩) := by
+        simp_rw [m.mul_comm, ofFn_mul, Fin.cast_mk, binderNameHint]
 
 @[simp]
 theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
