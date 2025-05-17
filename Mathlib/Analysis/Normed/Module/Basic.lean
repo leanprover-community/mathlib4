@@ -37,6 +37,7 @@ equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ �
 Note that since this requires `SeminormedAddCommGroup` and not `NormedAddCommGroup`, this
 typeclass can be used for "semi normed spaces" too, just as `Module` can be used for
 "semi modules". -/
+@[ext]
 class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
     extends Module 𝕜 E where
   protected norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
@@ -432,6 +433,11 @@ See Note [reducible non-instances].
 -/
 abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' E
+
+theorem NormedSpace.restrictScalars_eq [NormedSpace 𝕜 E] [IsScalarTower 𝕜 𝕜' E] :
+    restrictScalars 𝕜 𝕜' E = ‹_› := by
+  ext
+  apply algebraMap_smul
 
 end NormedSpace
 
