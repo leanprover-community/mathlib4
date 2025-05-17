@@ -27,6 +27,7 @@ We provide
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
 * `def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y`
 * `def «exists_» [HasImages C] (f : X ⟶ Y) : Subobject X ⥤ Subobject Y`
+
 and prove their basic properties and relationships.
 These are all easy consequences of the earlier development
 of the corresponding functors for `MonoOver`.
@@ -96,9 +97,8 @@ with morphisms becoming inequalities, and isomorphisms becoming equations.
 def Subobject (X : C) :=
   ThinSkeleton (MonoOver X)
 
-instance (X : C) : PartialOrder (Subobject X) := by
-  dsimp only [Subobject]
-  infer_instance
+instance (X : C) : PartialOrder (Subobject X) :=
+  inferInstanceAs <| PartialOrder (ThinSkeleton (MonoOver X))
 
 namespace Subobject
 

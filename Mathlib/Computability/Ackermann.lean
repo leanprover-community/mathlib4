@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Computability.Primrec
+import Mathlib.Computability.PartrecCode
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
@@ -18,6 +18,7 @@ definition, we show that this isn't a primitive recursive function.
 - `exists_lt_ack_of_nat_primrec`: any primitive recursive function is pointwise bounded above by
   `ack m` for some `m`.
 - `not_primrec₂_ack`: the two-argument Ackermann function is not primitive recursive.
+- `computable₂_ack`: the two-argument Ackermann function is computable.
 
 ## Proof approach
 
@@ -272,36 +273,37 @@ theorem ack_pair_lt (m n k : ℕ) : ack m (pair n k) < ack (m + 4) (max n k) :=
 /-- If `f` is primitive recursive, there exists `m` such that `f n < ack m n` for all `n`. -/
 theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
     ∃ m, ∀ n, f n < ack m n := by
-  induction' hf with f g hf hg IHf IHg f g hf hg IHf IHg f g hf hg IHf IHg
-  -- Zero function:
-  · exact ⟨0, ack_pos 0⟩
-  -- Successor function:
-  · refine ⟨1, fun n => ?_⟩
+  induction hf with
+  | zero => exact ⟨0, ack_pos 0⟩
+  | succ =>
+    refine ⟨1, fun n => ?_⟩
     rw [succ_eq_one_add]
     apply add_lt_ack
-  -- Left projection:
-  · refine ⟨0, fun n => ?_⟩
+  | left =>
+    refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_left_le n
-  -- Right projection:
-  · refine ⟨0, fun n => ?_⟩
+  | right =>
+    refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
-  all_goals obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
-  -- Pairing:
-  · refine
+  | pair hf hg IHf IHg =>
+    obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
+    refine
       ⟨max a b + 3, fun n =>
         (pair_lt_max_add_one_sq _ _).trans_le <|
           (Nat.pow_le_pow_left (add_le_add_right ?_ _) 2).trans <|
             ack_add_one_sq_lt_ack_add_three _ _⟩
     rw [max_ack_left]
     exact max_le_max (ha n).le (hb n).le
-  -- Composition:
-  · exact
+  | comp hf hg IHf IHg =>
+    obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
+    exact
       ⟨max a b + 2, fun n =>
         (ha _).trans <| (ack_strictMono_right a <| hb n).trans <| ack_ack_lt_ack_max_add_two a b n⟩
-  -- Primitive recursion operator:
-  · -- We prove this simpler inequality first.
+  | @prec f g hf hg IHf IHg =>
+    obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
+    -- We prove this simpler inequality first.
     have :
       ∀ {m n},
         rec (f m) (fun y IH => g <| pair m <| pair y IH) n < ack (max a b + 9) (m + n) := by
@@ -348,3 +350,52 @@ theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by
 /-- The Ackermann function is not primitive recursive. -/
 theorem not_primrec₂_ack : ¬Primrec₂ ack := fun h =>
   not_primrec_ack_self <| h.comp Primrec.id Primrec.id
+
+namespace Nat.Partrec.Code
+
+/-- The code for the partially applied Ackermann function.
+This is used to prove that the Ackermann function is computable. -/
+def pappAck : ℕ → Code
+  | 0 => .succ
+  | n + 1 => step (pappAck n)
+where
+  /-- Yields single recursion step on `pappAck`. -/
+  step (c : Code) : Code :=
+    .curry (.prec (.comp c (.const 1)) (.comp c (.comp .right .right))) 0
+
+lemma primrec_pappAck_step : Primrec pappAck.step := by
+  apply_rules
+    [Code.primrec₂_curry.comp, Code.primrec₂_prec.comp, Code.primrec₂_comp.comp,
+      _root_.Primrec.id, Primrec.const]
+
+@[simp]
+lemma eval_pappAck_step_zero (c : Code) : (pappAck.step c).eval 0 = c.eval 1 := by
+  simp [pappAck.step, Code.eval]
+
+@[simp]
+lemma eval_pappAck_step_succ (c : Code) (n) :
+    (pappAck.step c).eval (n + 1) = ((pappAck.step c).eval n).bind c.eval := by
+  simp [pappAck.step, Code.eval]
+
+lemma primrec_pappAck : Primrec pappAck := by
+  suffices Primrec (Nat.rec Code.succ (fun _ c => pappAck.step c)) by
+    convert this using 2 with n; induction n <;> simp [pappAck, *]
+  apply_rules [Primrec.nat_rec₁, primrec_pappAck_step.comp, Primrec.snd]
+
+@[simp]
+lemma eval_pappAck (m n) : (pappAck m).eval n = Part.some (ack m n) := by
+  induction m, n using ack.induct with
+    | case1 n => simp [Code.eval, pappAck]
+    | case2 m hm => simp [pappAck, hm]
+    | case3 m n hmn₁ hmn₂ => dsimp only [pappAck] at *; simp [hmn₁, hmn₂]
+
+/-- The Ackermann function is computable. -/
+theorem _root_.computable₂_ack : Computable₂ ack := by
+  apply _root_.Partrec.of_eq_tot
+    (f := fun p : ℕ × ℕ => (pappAck p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
+  · change Partrec₂ (fun m n => (pappAck m).eval n)
+    apply_rules only
+      [Code.eval_part.comp₂, Computable.fst, Computable.snd, primrec_pappAck.to_comp.comp]
+  · simp
+
+end Nat.Partrec.Code

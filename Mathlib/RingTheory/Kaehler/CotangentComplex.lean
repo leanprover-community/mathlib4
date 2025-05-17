@@ -262,8 +262,7 @@ lemma Cotangent.map_sub_map (f g : Hom P P') :
   ext
   simp only [val_sub, val_mk, map_sub, AddSubgroupClass.coe_sub, Ideal.cotangentEquivIdeal_apply,
     Ideal.toCotangent_to_quotient_square, Submodule.mkQ_apply, Ideal.Quotient.mk_eq_mk,
-    Hom.subToKer_apply_coe]
-  rfl
+    Hom.subToKer_apply_coe, Hom.toAlgHom_apply]
 
 variable (P) in
 /-- The projection map from the relative cotangent space to the module of differentials. -/
@@ -316,7 +315,7 @@ lemma subsingleton_h1Cotangent (P : Extension R S) :
   simp only [Subtype.ext_iff, Submodule.coe_zero]
 
 /-- The inclusion of `H¹(L_{S/R})` into the conormal space of a presentation. -/
-@[simps!] def h1Cotangentι : P.H1Cotangent →ₗ[S] P.Cotangent := Submodule.subtype _
+@[simps!] noncomputable def h1Cotangentι : P.H1Cotangent →ₗ[S] P.Cotangent := Submodule.subtype _
 
 lemma h1Cotangentι_injective : Function.Injective P.h1Cotangentι := Subtype.val_injective
 
@@ -483,7 +482,7 @@ def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
   have : IsScalarTower R S' S := .of_algebraMap_eq' e.symm.toAlgHom.comp_algebraMap.symm
   have : IsScalarTower S S' S := .of_algebraMap_eq fun _ ↦ (e.symm_apply_apply _).symm
   have : IsScalarTower S' S S' := .of_algebraMap_eq fun _ ↦ (e.apply_symm_apply _).symm
-  { __ := map R R S S'
+  { toFun := map R R S S'
     invFun := map R R S' S
     left_inv x := by
       show ((map R R S' S).restrictScalars S ∘ₗ map R R S S') x = x
@@ -492,7 +491,9 @@ def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
     right_inv x := by
       show ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
       rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
-        Extension.H1Cotangent.map_id, LinearMap.id_apply] }
+        Extension.H1Cotangent.map_id, LinearMap.id_apply]
+    map_add' := LinearMap.map_add (map R R S S')
+    map_smul' := LinearMap.CompatibleSMul.map_smul (map R R S S') }
 
 variable {R S S' T}
 

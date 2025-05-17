@@ -76,6 +76,7 @@ theorem SameCycle.equivalence : Equivalence (SameCycle f) :=
 
 /-- The setoid defined by the `SameCycle` relation. -/
 def SameCycle.setoid (f : Perm α) : Setoid α where
+  r := f.SameCycle
   iseqv := SameCycle.equivalence f
 
 @[simp]

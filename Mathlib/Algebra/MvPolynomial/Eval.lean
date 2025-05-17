@@ -210,12 +210,11 @@ theorem eval₂_congr (g₁ g₂ : σ → S₁)
   apply h hi
   rwa [Finsupp.mem_support_iff] at hc
 
-theorem eval₂_sum (s : Finset S₂) (p : S₂ → MvPolynomial σ R) :
+@[simp] theorem eval₂_sum (s : Finset S₂) (p : S₂ → MvPolynomial σ R) :
     eval₂ f g (∑ x ∈ s, p x) = ∑ x ∈ s, eval₂ f g (p x) :=
   map_sum (eval₂Hom f g) _ s
 
-@[to_additive existing (attr := simp)]
-theorem eval₂_prod (s : Finset S₂) (p : S₂ → MvPolynomial σ R) :
+@[simp] theorem eval₂_prod (s : Finset S₂) (p : S₂ → MvPolynomial σ R) :
     eval₂ f g (∏ x ∈ s, p x) = ∏ x ∈ s, eval₂ f g (p x) :=
   map_prod (eval₂Hom f g) _ s
 
@@ -274,7 +273,6 @@ theorem eval_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) (g 
     eval g (∑ i ∈ s, f i) = ∑ i ∈ s, eval g (f i) :=
   map_sum (eval g) _ _
 
-@[to_additive existing]
 theorem eval_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) (g : σ → R) :
     eval g (∏ i ∈ s, f i) = ∏ i ∈ s, eval g (f i) :=
   map_prod (eval g) _ _
@@ -404,10 +402,12 @@ theorem map_injective_iff : Function.Injective (map (σ := σ) f) ↔ Function.I
 
 theorem map_surjective (hf : Function.Surjective f) :
     Function.Surjective (map f : MvPolynomial σ R → MvPolynomial σ S₁) := fun p => by
-  induction' p using MvPolynomial.induction_on' with i fr a b ha hb
-  · obtain ⟨r, rfl⟩ := hf fr
+  induction p using MvPolynomial.induction_on' with
+  | monomial i fr =>
+    obtain ⟨r, rfl⟩ := hf fr
     exact ⟨monomial i r, map_monomial _ _ _⟩
-  · obtain ⟨a, rfl⟩ := ha
+  | add a b ha hb =>
+    obtain ⟨a, rfl⟩ := ha
     obtain ⟨b, rfl⟩ := hb
     exact ⟨a + b, RingHom.map_add _ _ _⟩
 
@@ -642,7 +642,6 @@ theorem aeval_sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
     aeval f (∑ i ∈ s, φ i) = ∑ i ∈ s, aeval f (φ i) :=
   map_sum (MvPolynomial.aeval f) _ _
 
-@[to_additive existing]
 theorem aeval_prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
     aeval f (∏ i ∈ s, φ i) = ∏ i ∈ s, aeval f (φ i) :=
   map_prod (MvPolynomial.aeval f) _ _
@@ -764,10 +763,10 @@ variable {S T : Type*} [CommSemiring S] [Algebra R S] [CommSemiring T] [Algebra 
 lemma aeval_sumElim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (g : σ → T) :
     (aeval (Sum.elim g (algebraMap S T ∘ f))) p =
       (aeval g) ((aeval (Sum.elim X (C ∘ f))) p) := by
-  induction' p using MvPolynomial.induction_on with r p q hp hq p i h
-  · simp [← IsScalarTower.algebraMap_apply]
-  · simp [hp, hq]
-  · cases i <;> simp [h]
+  induction p using MvPolynomial.induction_on with
+  | C r => simp [← IsScalarTower.algebraMap_apply]
+  | add p q hp hq => simp [hp, hq]
+  | mul_X p i h => cases i <;> simp [h]
 
 @[deprecated (since := "2025-02-21")] alias aeval_sum_elim := aeval_sumElim
 

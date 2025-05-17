@@ -3,7 +3,7 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-! # Continuous bilinear maps on `MeasureTheory.Lp` spaces
 
@@ -20,7 +20,7 @@ When `p q : ℝ≥0∞` are Hölder conjugate (i.e., `HolderConjugate p q`), we 
 natural map `ContinuousLinearMap.lpPairing : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G` given by
 `fun f g ↦ ∫ x, B (f x) (g x) ∂μ`. When `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, this
 is the natural map `Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)`.
- -/
+-/
 
 open ENNReal MeasureTheory Lp
 open scoped NNReal
