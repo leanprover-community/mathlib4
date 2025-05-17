@@ -124,11 +124,8 @@ instance [Finite D] [Finite Q] : Finite (D ≀ᵣ Q) :=
   Finite.of_equiv _ (equivProd D Q).symm
 
 omit [Group D] [Group Q] in
-theorem card [Finite Q] :
-   Nat.card (D ≀ᵣ Q) = (Nat.card D^Nat.card Q) * Nat.card Q := by
-  rw [Nat.card_congr (equivProd D Q)]
-  rw [Nat.card_prod (Q → D) Q]
-  rw [Nat.card_fun]
+theorem card [Finite Q] : Nat.card (D ≀ᵣ Q) = Nat.card D ^ Nat.card Q * Nat.card Q := by
+  rw [Nat.card_congr (equivProd D Q), Nat.card_prod (Q → D) Q, Nat.card_fun]
 
 /-- Define an isomorphism from `D₁ ≀ᵣ Q₁` to `D₂ ≀ᵣ Q₂`
 given isomorphisms `D₁ ≀ᵣ Q₁` and `Q₁ ≃* Q₂`. -/
