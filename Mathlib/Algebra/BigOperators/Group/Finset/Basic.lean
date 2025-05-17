@@ -74,7 +74,7 @@ lemma prod_attach (s : Finset ι) (f : ι → M) : ∏ x ∈ s.attach, f x = ∏
   classical rw [← prod_image Subtype.coe_injective.injOn, attach_image_val]
 
 @[to_additive (attr := congr)]
-theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g := by
+theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, binderNameHint x f (f x) = g x) → s₁.prod f = s₂.prod g := by
   rw [h]; exact fold_congr
 
 @[to_additive]
