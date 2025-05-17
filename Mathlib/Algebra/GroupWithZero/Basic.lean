@@ -34,7 +34,7 @@ and require `0⁻¹ = 0`.
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 open Function
 
