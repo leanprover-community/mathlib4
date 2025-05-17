@@ -145,7 +145,7 @@ lemma SummableLocallyUniformlyOn.of_locally_bounded (f : ι → 𝕜 → 𝕜') 
   apply tendstoUniformlyOn_tsum hu1 fun n x hx ↦ hu2 n ⟨x, hx⟩
 
 theorem derivWithin_tsum {ι F E : Type*} [NontriviallyNormedField E] [IsRCLikeNormedField E]
-    [LocallyCompactSpace E] [NormedField F] [NormedSpace E F] (f : ι → E → F) {s : Set E}
+    [NormedField F] [NormedSpace E F] (f : ι → E → F) {s : Set E}
     (hs : IsOpen s) {x : E} (hx : x ∈ s) (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
     (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (fun z ↦ f n z) s)) s)
     (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
