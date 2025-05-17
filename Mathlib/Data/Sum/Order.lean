@@ -161,7 +161,7 @@ instance instPreorderSum : Preorder (α ⊕ β) :=
   { instLESum, instLTSum with
     le_refl := fun _ => LiftRel.refl _ _ _,
     le_trans := fun _ _ _ => LiftRel.trans _ _,
-    lt_iff_le_not_le := fun a b => by
+    lt_iff_le_not_ge := fun a b => by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩)
         · exact hba.not_lt (inl_lt_inl_iff.1 hab)
@@ -341,7 +341,7 @@ instance preorder : Preorder (α ⊕ₗ β) :=
   { Lex.LE, Lex.LT with
     le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
     le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
-    lt_iff_le_not_le := fun a b => by
+    lt_iff_le_not_ge := fun a b => by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩ | ⟨b, a⟩)
         · exact hba.not_lt (inl_lt_inl_iff.1 hab)

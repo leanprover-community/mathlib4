@@ -101,7 +101,7 @@ instance : Preorder ONote where
   lt x y := repr x < repr y
   le_refl _ := @le_refl Ordinal _ _
   le_trans _ _ _ := @le_trans Ordinal _ _ _ _
-  lt_iff_le_not_le _ _ := @lt_iff_le_not_le Ordinal _ _ _
+  lt_iff_le_not_ge _ _ := @lt_iff_le_not_le Ordinal _ _ _
 
 theorem lt_def {x y : ONote} : x < y ↔ repr x < repr y :=
   Iff.rfl
@@ -1168,7 +1168,7 @@ instance : Preorder NONote where
   lt x y := repr x < repr y
   le_refl _ := @le_refl Ordinal _ _
   le_trans _ _ _ := @le_trans Ordinal _ _ _ _
-  lt_iff_le_not_le _ _ := @lt_iff_le_not_le Ordinal _ _ _
+  lt_iff_le_not_ge _ _ := @lt_iff_le_not_le Ordinal _ _ _
 
 instance : Zero NONote :=
   ⟨⟨0, NF.zero⟩⟩
