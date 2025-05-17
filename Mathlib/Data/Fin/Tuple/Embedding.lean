@@ -29,7 +29,6 @@ open Function.Embedding Fin Set Nat
 namespace Fin.Embedding
 
 variable {α : Type*}
-
 /-- Remove the first element from an injective (n + 1)-tuple. -/
 def tail {n : ℕ} (x : Fin (n + 1) ↪ α) : Fin n ↪ α :=
   ⟨Fin.tail x, x.injective.comp <| Fin.succ_injective _⟩
@@ -65,11 +64,13 @@ theorem init_snoc {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
   apply coe_injective
   simp [snoc, init, init_snoc]
 
-theorem snoc_castSucc {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range ⇑x} {i : Fin n} :
+theorem snoc_castSucc {n : ℕ} {x : Fin n ↪ α}
+    {a : α} {ha : a ∉ range ⇑x} {i : Fin n} :
     snoc x ha i.castSucc  = x i := by
   rw [coe_snoc, Fin.snoc_castSucc]
 
-theorem snoc_last {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range ⇑x} :
+theorem snoc_last {n : ℕ} {x : Fin n ↪ α}
+    {a : α} {ha : a ∉ range ⇑x} :
     snoc x ha (last n) = a := by
   rw [coe_snoc, Fin.snoc_last]
 
