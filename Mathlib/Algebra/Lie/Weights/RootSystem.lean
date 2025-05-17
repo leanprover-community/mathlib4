@@ -469,7 +469,8 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         rw [Set.mem_iUnion] at hi
         obtain ⟨hΦ, hx'⟩ := hi
         have : S.root i ∈ q := by
-          sorry
+          apply hΦ₂
+          simpa
         rw [Set.mem_iUnion]
         use S.root i
         rw [Set.mem_iUnion]
