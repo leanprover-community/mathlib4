@@ -488,6 +488,18 @@ theorem integral_integral_swap ⦃f : α → β → E⦄ (hf : Integrable (uncur
     ∫ x, ∫ y, f x y ∂ν ∂μ = ∫ y, ∫ x, f x y ∂μ ∂ν :=
   (integral_integral hf).trans (integral_prod_symm _ hf)
 
+/-- Change the order of integration, when one of the integrals is an interval integral. -/
+lemma intervalIntegral_integral_swap {a b : ℝ} {f : ℝ → α → E}
+    (h_int : Integrable (uncurry f) ((volume.restrict (Set.uIoc a b)).prod μ)) :
+    ∫ x in a..b, ∫ y, f x y ∂μ = ∫ y, (∫ x in a..b, f x y) ∂μ := by
+  rcases le_total a b with (hab | hab)
+  · simp_rw [intervalIntegral.integral_of_le hab]
+    simp only [hab, Set.uIoc_of_le] at h_int
+    exact integral_integral_swap h_int
+  · simp_rw [intervalIntegral.integral_of_ge hab]
+    simp only [hab, Set.uIoc_of_ge] at h_int
+    rw [integral_integral_swap h_int, integral_neg]
+
 /-- **Fubini's Theorem** for set integrals. -/
 theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
     (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
