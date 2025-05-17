@@ -45,6 +45,14 @@ def num (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := g 0 0 * z + g 0 1
 /-- Denominator of the formula for a fractional linear transformation -/
 def denom (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := g 1 0 * z + g 1 1
 
+@[simp]
+lemma num_neg (g : GL (Fin 2) ℝ) (z : ℂ) : num (-g) z = -(num g z) := by
+  simp [num]; ring
+
+@[simp]
+lemma denom_neg (g : GL (Fin 2) ℝ) (z : ℂ) : denom (-g) z = -(denom g z) := by
+  simp [denom]; ring
+
 theorem linear_ne_zero_of_im {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd ≠ 0) :
     (cd 0 : ℂ) * z + cd 1 ≠ 0 := by
   contrapose! h
@@ -95,16 +103,22 @@ lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
 /-- Automorphism of `ℂ`: the identity if `0 < det g` and conjugation otherwise. -/
 def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ := if 0 < g.det.val then RingHom.id ℂ else starRingEnd ℂ
 
+@[simp]
 lemma σ_ofReal (g : GL (Fin 2) ℝ) (y : ℝ) : σ g y = y := by
   simp only [σ]
   split_ifs <;> simp
 
 lemma σ_num (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (num h z) = num h (σ g z) := by
-  simp only [num, σ_ofReal, map_add, map_mul]
+  simp [num]
 
 lemma σ_denom (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (denom h z) = denom h (σ g z) := by
-  simp only [denom, σ_ofReal, map_add, map_mul]
+  simp [denom]
 
+@[simp]
+lemma σ_neg (g : GL (Fin 2) ℝ) : σ (-g) = σ g := by
+  simp [σ, det_neg]
+
+@[simp]
 lemma σ_sq (g : GL (Fin 2) ℝ) (z : ℂ) : σ g (σ g z) = z := by
   simp only [σ]
   split_ifs <;> simp
@@ -224,9 +238,7 @@ theorem c_mul_im_sq_le_normSq_denom : (g 1 0 * z.im) ^ 2 ≤ Complex.normSq (den
 @[simp]
 theorem neg_smul : -g • z = g • z := by
   ext1
-  simp [coe_smul, (show num (-g) z = -(num g z) by simp [num]; ring),
-    (show denom (-g) z = -(denom g z) by simp [denom]; ring),
-    (show σ (-g) = σ g by unfold σ; simp [det_neg])]
+  simp [coe_smul]
 
 lemma denom_one : denom 1 z = 1 := by
   simp [denom]
