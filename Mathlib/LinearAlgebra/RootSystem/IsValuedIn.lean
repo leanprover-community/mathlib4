@@ -15,12 +15,12 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
 
 ## Main definitions:
 
- * `RootPairing.IsValuedIn`: Given a commutative ring `S` and an `S`-algebra `R`, a root pairing
-   over `R` is valued in `S` if all root-coroot pairings lie in the image of `algebraMap S R`.
- * `RootPairing.IsCrystallographic`: A root pairing is said to be crystallographic if the pairing
-   between a root and coroot is always an integer.
- * `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
- * `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
+* `RootPairing.IsValuedIn`: Given a commutative ring `S` and an `S`-algebra `R`, a root pairing
+  over `R` is valued in `S` if all root-coroot pairings lie in the image of `algebraMap S R`.
+* `RootPairing.IsCrystallographic`: A root pairing is said to be crystallographic if the pairing
+  between a root and coroot is always an integer.
+* `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
+* `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
 
 -/
 
@@ -34,7 +34,7 @@ noncomputable section
 namespace RootPairing
 
 variable {ι R S M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-[Module R N] (P : RootPairing ι R M N) (i j : ι)
+  [Module R N] (P : RootPairing ι R M N) (i j : ι)
 
 /-- If `R` is an `S`-algebra, a root pairing over `R` is said to be valued in `S` if the pairing
 between a root and coroot always belongs to `S`.
@@ -107,7 +107,7 @@ lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsS
 lemma coroot'_apply_apply_mem_of_mem_span [Module S M] [IsScalarTower S R M] [P.IsValuedIn S]
     {x : M} (hx : x ∈ span S (range P.root)) (i : ι) :
     P.coroot' i x ∈ range (algebraMap S R) := by
-  rw [show range (algebraMap S R) = LinearMap.range (Algebra.linearMap S R) from rfl]
+  rw [show range (algebraMap S R) = LinearMap.range (Algebra.linearMap S R) by ext; simp]
   induction hx using Submodule.span_induction with
   | mem x hx =>
     obtain ⟨k, rfl⟩ := hx
@@ -222,9 +222,8 @@ lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
   suffices (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} from
     SetLike.coe_injective <| by ext; simp [this]
   ext x
-  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
-  change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
-  rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
+  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span, ← EquivLike.coe_coe,
+    ← LinearEquiv.coe_toEquiv_symm, ← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
   simp [Set.range_subset_iff]
 
 lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :

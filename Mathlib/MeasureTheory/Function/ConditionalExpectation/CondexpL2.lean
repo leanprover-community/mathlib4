@@ -19,7 +19,7 @@ orthogonal projection on the subspace of almost everywhere `m`-measurable functi
 ## Main definitions
 
 * `condExpL2`: Conditional expectation of a function in L2 with respect to a sigma-algebra: it is
-the orthogonal projection on the subspace `lpMeas`.
+  the orthogonal projection on the subspace `lpMeas`.
 
 ## Implementation notes
 
@@ -215,7 +215,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
     dsimp only
     rw [hx]
     simp
-  · exact (Lp.stronglyMeasurable _).enorm
+  · exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
 
 @[deprecated (since := "2025-01-21")]
 alias condexpL2_ae_eq_zero_of_ae_eq_zero := condExpL2_ae_eq_zero_of_ae_eq_zero
@@ -370,7 +370,7 @@ theorem setLIntegral_nnnorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
-      exact (Lp.stronglyMeasurable _).enorm
+      exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
     _ ≤ μ (s ∩ t) * ‖x‖₊ :=
       mul_le_mul_right' (lintegral_nnnorm_condExpL2_indicator_le_real hs hμs ht hμt) _
 
@@ -469,7 +469,7 @@ theorem setLIntegral_nnnorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
       simp_rw [nnnorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
-      exact (Lp.stronglyMeasurable _).enorm
+      exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
     _ ≤ μ (s ∩ t) * ‖x‖₊ :=
       mul_le_mul_right' (lintegral_nnnorm_condExpL2_indicator_le_real hs hμs ht hμt) _
 

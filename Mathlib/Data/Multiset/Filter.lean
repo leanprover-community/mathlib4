@@ -279,10 +279,9 @@ theorem count_filter_of_pos {p} [DecidablePred p] {a} {s : Multiset α} (h : p a
     apply count_filter
     simpa using h
 
-@[simp]
 theorem count_filter_of_neg {p} [DecidablePred p] {a} {s : Multiset α} (h : ¬p a) :
-    count a (filter p s) = 0 :=
-  Multiset.count_eq_zero_of_not_mem fun t => h (of_mem_filter t)
+    count a (filter p s) = 0 := by
+  simp [h]
 
 theorem count_filter {p} [DecidablePred p] {a} {s : Multiset α} :
     count a (filter p s) = if p a then count a s else 0 := by
