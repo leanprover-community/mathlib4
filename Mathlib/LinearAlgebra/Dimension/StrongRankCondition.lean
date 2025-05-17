@@ -504,6 +504,30 @@ theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Alge
   rw [← Module.finrank_eq_rank R L']
   exact nat_lt_aleph0 (finrank R ↥L')
 
+/-- Also see `Module.finrank_top_le_finrank_of_isScalarTower_of_free`
+for a version with different typeclass constraints. -/
+lemma Module.finrank_top_le_finrank_of_isScalarTower
+    (R S M : Type*) [CommSemiring R] [Semiring S] [AddCommMonoid M]
+    [StrongRankCondition R] [StrongRankCondition S]
+    [Module R M] [Module S M] [Algebra R S] [FaithfulSMul R S] [Module.Finite R M]
+    [IsScalarTower R S M] :
+    finrank S M ≤ finrank R M := by
+  have := Module.Finite.of_restrictScalars_finite R S M
+  rw [finrank, finrank, Cardinal.toNat_le_iff_le_of_lt_aleph0]
+  · exact rank_top_le_rank_of_isScalarTower R S M
+  · exact Module.rank_lt_aleph0 _ _
+  · exact Module.rank_lt_aleph0 _ _
+
+/-- Also see `Module.finrank_bot_le_finrank_of_isScalarTower_of_free`
+for a version with different typeclass constraints. -/
+lemma Module.finrank_bot_le_finrank_of_isScalarTower
+    (R S T : Type*) [CommSemiring R] [CommSemiring S] [Semiring T] [StrongRankCondition R]
+    [Algebra R T] [Algebra S T] [Algebra R S] [IsScalarTower R S T] [FaithfulSMul S T]
+    [Module.Finite R T] :
+    finrank R S ≤ finrank R T :=
+  finrank_le_finrank_of_rank_le_rank (lift_rank_bot_le_lift_rank_of_isScalarTower R S T)
+    (Module.rank_lt_aleph0 _ _)
+
 @[deprecated (since := "2024-11-21")]
 alias LinearMap.finrank_le_of_smul_regular := LinearMap.finrank_le_of_isSMulRegular
 

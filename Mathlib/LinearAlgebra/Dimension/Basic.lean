@@ -379,6 +379,28 @@ lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Modul
 @[deprecated (since := "2024-11-21")]
 alias rank_le_of_smul_regular := rank_le_of_isSMulRegular
 
+variable (R R' M) in
+lemma Module.rank_top_le_rank_of_isScalarTower
+    [Module R' M] [Module R R'] [IsScalarTower R R' M] [FaithfulSMul R R'] [IsScalarTower R R' R'] :
+    Module.rank R' M ≤ Module.rank R M := by
+  rw [Module.rank, Module.rank]
+  exact ciSup_le' fun ⟨s, hs⟩ ↦ le_ciSup_of_le (Cardinal.bddAbove_range _)
+    ⟨s, hs.restrict_scalars (by simpa [← faithfulSMul_iff_injective_smul_one])⟩ le_rfl
+
+lemma Module.lift_rank_bot_le_lift_rank_of_isScalarTower
+    (R : Type*) (S : Type v) (T : Type w) [CommSemiring R] [CommSemiring S] [Semiring T]
+    [Algebra R T] [Algebra S T] [Algebra R S] [IsScalarTower R S T] [FaithfulSMul S T] :
+    Cardinal.lift.{w} (Module.rank R S) ≤ Cardinal.lift (Module.rank R T) :=
+  LinearMap.lift_rank_le_of_injective (IsScalarTower.toAlgHom R S T).toLinearMap
+    (FaithfulSMul.algebraMap_injective _ _)
+
+lemma Module.rank_bot_le_rank_of_isScalarTower
+    (R : Type*) (S T : Type v) [CommSemiring R] [CommSemiring S] [Semiring T]
+    [Algebra R T] [Algebra S T] [Algebra R S] [IsScalarTower R S T] [FaithfulSMul S T] :
+    Module.rank R S ≤ Module.rank R T :=
+  LinearMap.rank_le_of_injective (IsScalarTower.toAlgHom R S T).toLinearMap
+    (FaithfulSMul.algebraMap_injective _ _)
+
 end
 
 end Module

@@ -293,7 +293,8 @@ instance (R : Type*) [NonAssocSemiring R] : FaithfulSMul R R := ⟨fun {r₁ r�
 
 variable (R A : Type*) [CommSemiring R] [Semiring A]
 
-lemma faithfulSMul_iff_injective_smul_one [Module R A] [IsScalarTower R A A] :
+omit [CommSemiring R] in
+lemma faithfulSMul_iff_injective_smul_one [Semiring R] [Module R A] [IsScalarTower R A A] :
     FaithfulSMul R A ↔ Injective (fun r : R ↦ r • (1 : A)) := by
   refine ⟨fun ⟨h⟩ {r₁ r₂} hr ↦ h fun a ↦ ?_, fun h ↦ ⟨fun {r₁ r₂} hr ↦ h ?_⟩⟩
   · simp only at hr
