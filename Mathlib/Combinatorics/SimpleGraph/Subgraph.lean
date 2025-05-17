@@ -450,8 +450,8 @@ instance : BoundedOrder (Subgraph G) where
 def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph :=
   { Subgraph.distribLattice with
     le := (· ≤ ·)
-    sup := (· ⊔ ·)
-    inf := (· ⊓ ·)
+    max := (· ⊔ ·)
+    min := (· ⊓ ·)
     top := ⊤
     bot := ⊥
     le_top := fun G' => ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩

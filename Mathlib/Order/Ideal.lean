@@ -354,7 +354,7 @@ instance : Max (Ideal P) :=
 
 instance : Lattice (Ideal P) :=
   { Ideal.instPartialOrderIdeal with
-    sup := (· ⊔ ·)
+    max := (· ⊔ ·)
     le_sup_left := fun _ J i hi ↦
       let ⟨w, hw⟩ := J.nonempty
       ⟨i, hi, w, hw, le_sup_left⟩
@@ -363,7 +363,7 @@ instance : Lattice (Ideal P) :=
       ⟨w, hw, j, hj, le_sup_right⟩
     sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
       K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     inf_le_left := fun _ _ ↦ inter_subset_left
     inf_le_right := fun _ _ ↦ inter_subset_right
     le_inf := fun _ _ _ ↦ subset_inter }

@@ -455,7 +455,7 @@ variable [DecidableLE α]
 
 instance lattice : Lattice (Interval α) :=
   { Interval.semilatticeSup with
-    inf := fun s t =>
+    min := fun s t =>
       match s, t with
       | ⊥, _ => ⊥
       | _, ⊥ => ⊥
@@ -516,8 +516,7 @@ theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
     rw [inf_bot_eq]
     exact (inter_empty _).symm
   | (s : NonemptyInterval α), (t : NonemptyInterval α) => by
-    simp only [Min.min, coe_coe, NonemptyInterval.coe_def, Icc_inter_Icc,
-      SemilatticeInf.inf, Lattice.inf]
+    simp only [Min.min, coe_coe, NonemptyInterval.coe_def, Icc_inter_Icc]
     split_ifs with h
     · simp only [coe_coe, NonemptyInterval.coe_def]
     · refine (Icc_eq_empty <| mt ?_ h).symm

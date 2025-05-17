@@ -68,11 +68,11 @@ instance : Inter (Finset α) :=
 
 instance : Lattice (Finset α) :=
   { Finset.partialOrder with
-    sup := (· ∪ ·)
+    max := (· ∪ ·)
     sup_le := fun _ _ _ hs ht _ ha => (mem_ndunion.1 ha).elim (fun h => hs h) fun h => ht h
     le_sup_left := fun _ _ _ h => mem_ndunion.2 <| Or.inl h
     le_sup_right := fun _ _ _ h => mem_ndunion.2 <| Or.inr h
-    inf := (· ∩ ·)
+    min := (· ∩ ·)
     le_inf := fun _ _ _ ht hu _ h => mem_ndinter.2 ⟨ht h, hu h⟩
     inf_le_left := fun _ _ _ h => (mem_ndinter.1 h).1
     inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }

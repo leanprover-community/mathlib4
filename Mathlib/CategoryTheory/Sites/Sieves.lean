@@ -330,8 +330,8 @@ instance : CompleteLattice (Sieve X) where
   bot :=
     { arrows := fun _ => ∅
       downward_closed := False.elim }
-  sup := Sieve.union
-  inf := Sieve.inter
+  max := Sieve.union
+  min := Sieve.inter
   sSup := Sieve.sup
   sInf := Sieve.inf
   le_sSup _ S hS _ _ hf := ⟨S, hS, hf⟩

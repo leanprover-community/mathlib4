@@ -331,8 +331,8 @@ noncomputable instance : Min (Associates α) :=
 open Classical in
 noncomputable instance : Lattice (Associates α) :=
   { Associates.instPartialOrder with
-    sup := (· ⊔ ·)
-    inf := (· ⊓ ·)
+    max := (· ⊔ ·)
+    min := (· ⊓ ·)
     sup_le := fun _ _ c hac hbc =>
       factors_prod c ▸ prod_mono (sup_le (factors_mono hac) (factors_mono hbc))
     le_sup_left := fun a _ => le_trans (le_of_eq (factors_prod a).symm) <| prod_mono <| le_sup_left
