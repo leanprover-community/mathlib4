@@ -161,17 +161,11 @@ lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) : (s.height i)⁻¹ =
   convert h using 2 with j
   ring
 
-/-- The angle between two faces can never reach π. -/
-lemma neg_one_lt_inner_height_vsub_altitudeFoot_div (i j : Fin (n + 1)) (hn : 1 < n) :
-    -1 < ⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
-            / (s.height i * s.height j) := by
-  obtain rfl | hij := eq_or_ne i j
-  · rw [real_inner_self_eq_norm_sq, height]
-    refine neg_one_lt_zero.trans_le ?_
-    positivity
-  rw [neg_lt]
-  apply lt_of_abs_lt
-  rw [abs_neg, abs_div, div_lt_one (by simp [height])]
+/-- The angle between two distinct faces can never reach 0 or π. -/
+lemma abs_inner_height_vsub_altitudeFoot_div_lt_one {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
+    |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
+            / (s.height i * s.height j)| < 1 := by
+  rw [abs_div, div_lt_one (by simp [height])]
   apply LE.le.lt_of_ne
   · convert abs_real_inner_le_norm _ _ using 1
     simp only [dist_eq_norm_vsub, abs_eq_self, height]
@@ -179,8 +173,7 @@ lemma neg_one_lt_inner_height_vsub_altitudeFoot_div (i j : Fin (n + 1)) (hn : 1 
   · simp_rw [height, dist_eq_norm_vsub]
     nth_rw 2 [abs_eq_self.2 (by positivity)]
     rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff (by simp) (by simp)]
-    intro h
-    rcases h with ⟨r, hr, h⟩
+    rintro ⟨r, hr, h⟩
     suffices s.points j -ᵥ s.altitudeFoot j = 0 by
       simp at this
     rw [← Submodule.mem_bot ℝ,
@@ -224,6 +217,19 @@ lemma neg_one_lt_inner_height_vsub_altitudeFoot_div (i j : Fin (n + 1)) (hn : 1 
           (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
       · rw [← direction_affineSpan]
         exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+
+/-- The angle between two faces can never reach π. -/
+lemma neg_one_lt_inner_height_vsub_altitudeFoot_div (i j : Fin (n + 1)) (hn : 1 < n) :
+    -1 < ⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
+            / (s.height i * s.height j) := by
+  obtain rfl | hij := eq_or_ne i j
+  · rw [real_inner_self_eq_norm_sq, height]
+    refine neg_one_lt_zero.trans_le ?_
+    positivity
+  rw [neg_lt]
+  refine lt_of_abs_lt ?_
+  rw [abs_neg]
+  exact abs_inner_height_vsub_altitudeFoot_div_lt_one s hij hn
 
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
 quantity for the other vertices. This implies the existence of the excenter opposite that vertex;
