@@ -825,3 +825,45 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / 
       rw [_root_.pow_succ', Nat.factorial_succ, Nat.cast_mul, ← _root_.div_mul_div_comm, norm_mul,
         norm_div, Real.norm_natCast, Nat.cast_succ]
     _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ := by gcongr
+
+section
+
+/-! Limits when `f x * g x` is bounded or convergent and `f` tends to the `cobounded` filter. -/
+
+open Bornology
+
+variable {R : Type*} [NormedRing R] [NormMulClass R]
+
+lemma tendsto_zero_of_isBoundedUnder_mul_of_tendsto_cobounded {f g : α → R} {l : Filter α}
+    (hmul : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f x * g x‖)
+    (hf : Tendsto f l (cobounded R)) :
+    Tendsto g l (𝓝 0) := by
+  obtain ⟨c, hc⟩ := hmul.eventually_le
+  refine Metric.nhds_basis_closedBall.tendsto_right_iff.mpr fun ε hε0 ↦ ?_
+  filter_upwards [hc, hasBasis_cobounded_norm.tendsto_right_iff.mp hf (c / ε) trivial,
+    hf.eventually_ne_cobounded 0] with x hfgc hεf hf0
+  rcases eq_or_gt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
+  · simpa [eq_zero_of_ne_zero_of_mul_left_eq_zero hf0 (norm_le_zero_iff.mp hfgc)] using hε0.le
+  calc
+    _ = ‖g x‖ := by simp
+    _ ≤ c / ‖f x‖ := by rwa [norm_mul, ← le_div_iff₀' (by positivity)] at hfgc
+    _ ≤ c / (c / ε) := by gcongr
+    _ = ε := div_div_cancel₀ hc0.ne'
+
+lemma tendsto_mul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
+    {f₁ f₂ g : α → R} {t : R} {l : Filter α}
+    (hmul : Tendsto (fun x ↦ f₁ x * g x) l (𝓝 t))
+    (hf₁ : Tendsto f₁ l (cobounded R))
+    (hbdd : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f₁ x - f₂ x‖) :
+    Tendsto (fun x ↦ f₂ x * g x) l (𝓝 t) := by
+  apply hmul.congr_dist
+  dsimp
+  simp_rw [dist_eq_norm, ← sub_mul, norm_mul]
+  apply isBoundedUnder_le_mul_tendsto_zero
+  · show IsBoundedUnder _ _ fun _ ↦ _
+    simpa using hbdd
+  · apply tendsto_zero_iff_norm_tendsto_zero.mp ?_
+    exact tendsto_zero_of_isBoundedUnder_mul_of_tendsto_cobounded
+      hmul.norm.isBoundedUnder_le hf₁
+
+end
