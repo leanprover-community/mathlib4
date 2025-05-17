@@ -71,8 +71,6 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
   (foldl_range_subset_of_range_subset hfg.le a).antisymm
     (foldl_range_subset_of_range_subset hfg.ge a)
 
-
-
 /-!
   ### MapAccumr and Foldr
   Some lemmas relation `mapAccumr` and `foldr`
@@ -102,5 +100,13 @@ theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ
     rfl
 
 end MapAccumr
+
+theorem append_cancel_right_length {as bs bs' cs : List α}
+    (eq_length : bs.length = bs'.length) (h : as ++ bs = cs ++ bs') : (as = cs) := by
+  match as, cs with
+  | [], []       => rfl
+  | [], c::cs    => have aux := congrArg length h; simp +arith [eq_length] at aux
+  | a::as, []    => have aux := congrArg length h; simp +arith [eq_length] at aux
+  | a::as, c::cs => injection h with h₁ h₂; subst h₁; rw [append_cancel_right_length eq_length h₂]
 
 end List
