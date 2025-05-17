@@ -18,6 +18,8 @@ import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
 -- This import makes the `#min_imports` command available globally.
 import Mathlib.Tactic.MinImports
+-- This makes the `deprecated_module` command available globally.
+import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
