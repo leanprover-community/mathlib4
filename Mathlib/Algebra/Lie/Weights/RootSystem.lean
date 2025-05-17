@@ -457,6 +457,24 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         exact b i hi disj
     have hΦ₃ : ∀ i ∉ Φ, q ≤ LinearMap.ker (S.coroot' i) := by
       exact c
+    have rrr : (∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i)) → q = ⊥ := by
+      intro h
+      have mmm : q ≤ ⨅ i, LinearMap.ker (S.coroot' i) := by
+        apply le_iInf
+        intro i
+        exact h i
+      rw [S.iInf_ker_coroot'_eq] at mmm
+      have mmm2 : Submodule.span K (Set.range S.coroot') = ⊤ := by
+        exact RootPairing.span_coroot'_eq_top S
+      rw [mmm2, Submodule.dualCoannihilator_top] at mmm
+      exact (Submodule.eq_bot_iff q).mpr mmm
+    rcases Classical.em (Φ = ∅) with h0 | h0
+    · rw [h0] at c
+      have rrr2 : ∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i) := by
+        intro i
+        exact c i (by simp)
+      have := rrr rrr2
+      simp [this]
     let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
     let I := LieSubalgebra.lieSpan K L g
     simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Submodule.carrier_eq_coe,
@@ -475,7 +493,12 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         use S.root i
         rw [Set.mem_iUnion]
         exact ⟨this, hx'⟩
-      · sorry
+      · intro x hx
+        rw [Set.mem_iUnion] at hx
+        obtain ⟨i, hi⟩ := hx
+        rw [Set.mem_iUnion] at hi
+        obtain ⟨hΦ, hx'⟩ := hi
+        sorry
 
     -- Now: i ∈ Φ, x ∈ rootSpace H i
     -- Try to use this i to build ∈ other union
