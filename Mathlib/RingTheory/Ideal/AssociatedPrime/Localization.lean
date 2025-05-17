@@ -21,7 +21,7 @@ TODO: deduce from above that every minimal element in support is in `Ass(M)`
 
 -/
 
-variable (R R' : Type*) [CommRing R] [CommRing R'] [Algebra R R'] (S : Submonoid R)
+variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*)  [CommRing R'] [Algebra R R']
   [IsLocalization S R']
 
 variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
@@ -64,16 +64,10 @@ lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
       rw [this]
       exact Ideal.IsTwoSided.mul_mem_of_left _ ht
 
-lemma mem_associatePrimes_of_comap_mem_associatePrimes_localization
-    (p : Ideal (Localization S)) [p.IsPrime]
-    (ass : p.comap (algebraMap R (Localization S)) ∈ associatedPrimes R M) :
-    p ∈ associatedPrimes (Localization S) (LocalizedModule S M) :=
-  mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
-    R (Localization S) S (LocalizedModule.mkLinearMap S M) p ass
-
 lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes {p : Ideal R} [p.IsPrime]
     (ass : p ∈ associatedPrimes R M) :
     maximalIdeal (Localization.AtPrime p) ∈
     associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M) := by
-  apply mem_associatePrimes_of_comap_mem_associatePrimes_localization
+  apply mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
+    p.primeCompl (Localization.AtPrime p) (LocalizedModule.mkLinearMap p.primeCompl M)
   simpa [Localization.AtPrime.comap_maximalIdeal] using ass
