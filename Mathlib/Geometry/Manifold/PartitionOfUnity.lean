@@ -623,7 +623,7 @@ theorem contMDiff_totalSpace_weighted_sum_of_local_sections
       have hfin : {i : ι | (ρ i x • s_loc i x) ≠ 0}.Finite := by
         refine (ρ.locallyFinite.point_finite x).subset fun i hi_smul_ne_zero => ?_
         contrapose! hi_smul_ne_zero
-        simp [hi_smul_ne_zero]
+        simp only [ne_eq, smul_eq_zero, not_or, mem_setOf_eq, not_and, not_not]
         exact fun a ↦ False.elim (hi_smul_ne_zero a)
       let Llin : V x →ₗ[ℝ] F_fiber :=
         { toFun    := fun y ↦ (e₀ ⟨x, y⟩).2
