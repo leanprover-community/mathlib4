@@ -69,6 +69,12 @@ theorem isOfFinOrder_ofAdd_iff {α : Type*} [AddMonoid α] {x : α} :
 theorem isOfFinOrder_iff_pow_eq_one : IsOfFinOrder x ↔ ∃ n, 0 < n ∧ x ^ n = 1 := by
   simp [IsOfFinOrder, mem_periodicPts, isPeriodicPt_mul_iff_pow_eq_one]
 
+theorem isOfFinOrder_of_isConj [Group α] {x y : α} :
+    IsConj x y → (IsOfFinOrder x → IsOfFinOrder y) := by
+  simp only [isConj_iff, isOfFinOrder_iff_pow_eq_one]
+  refine fun ⟨u, eq⟩ ⟨n, n_gt_0, eq'⟩ ↦ ⟨n, n_gt_0, ?_⟩
+  rw [← eq, conj_pow, eq', mul_one, mul_inv_cancel]
+
 @[to_additive] alias ⟨IsOfFinOrder.exists_pow_eq_one, _⟩ := isOfFinOrder_iff_pow_eq_one
 
 @[to_additive]
