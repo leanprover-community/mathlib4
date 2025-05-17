@@ -64,18 +64,21 @@ lemma den_dvd_iff {A : Matrix m n ℚ} {r : ℕ} :
   simp [Matrix.den]
 
 lemma num_div_den (A : Matrix m n ℚ) (i : m) (j : n) :
-    A i j = A.num i j / A.den := by
+    A.num i j / A.den = A i j := by
   obtain ⟨k, hk⟩ := den_dvd_iff.mp (dvd_refl A.den) i j
   rw [Matrix.num, map_apply, smul_apply, smul_eq_mul, mul_comm,
-    eq_div_iff <| Nat.cast_ne_zero.mpr A.den_ne_zero, hk, Nat.cast_mul, ← mul_assoc,
+    div_eq_iff <| Nat.cast_ne_zero.mpr A.den_ne_zero, hk, Nat.cast_mul, ← mul_assoc,
     Rat.mul_den_eq_num, ← Int.cast_natCast k, ← Int.cast_mul, Rat.num_intCast]
 
 lemma inv_denom_smul_num (A : Matrix m n ℚ) :
-    A = (A.den⁻¹ : ℚ) • A.num.map (↑) := by
+    (A.den⁻¹ : ℚ) • A.num.map (↑) = A := by
   ext i j
-  simp only [Matrix.num_div_den (A := A), smul_apply, map_apply, smul_eq_mul, div_eq_inv_mul]
+  simp only [← Matrix.num_div_den (A := A), smul_apply, map_apply, smul_eq_mul, div_eq_inv_mul]
 
 lemma den_map_intCast (A : Matrix m n ℤ) : (A.map (↑)).den = 1 := by
+  simp [← Nat.dvd_one, Matrix.den_dvd_iff]
+
+lemma den_map_natCast (A : Matrix m n ℕ) : (A.map (↑)).den = 1 := by
   simp [← Nat.dvd_one, Matrix.den_dvd_iff]
 
 end Matrix
