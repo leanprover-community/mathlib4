@@ -70,7 +70,7 @@ variable [Finite α]
 @[simp] lemma infIrred_iff_of_finite : InfIrred s ↔ ∃ a, Ici a = s := by
   refine ⟨fun hs ↦ ?_, ?_⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal (coe_nonempty.2 hs.ne_top)
-    exact ⟨a, (hs.2 <| erase_inf_Ici ha fun b hb ↦ ge_imp_eq_iff_le_imp_le.2 <| has hb).resolve_left
+    exact ⟨a, (hs.2 <| erase_inf_Ici ha fun b hb ↦ le_imp_eq_iff_le_imp_ge.2 <| has hb).resolve_left
       (lt_erase.2 ha).ne'⟩
   · rintro ⟨a, rfl⟩
     exact infIrred_Ici _
@@ -92,8 +92,8 @@ variable [Finite α]
 @[simp] lemma supIrred_iff_of_finite : SupIrred s ↔ ∃ a, Iic a = s := by
   refine ⟨fun hs ↦ ?_, ?_⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal (coe_nonempty.2 hs.ne_bot)
-    exact ⟨a, (hs.2 <| erase_sup_Iic ha fun b hb ↦ le_imp_eq_iff_le_imp_le.2 <| has hb).resolve_left
-      (erase_lt.2 ha).ne⟩
+    exact ⟨a, (hs.2 <| erase_sup_Iic ha fun b hb ↦
+      le_imp_eq_iff_le_imp_ge'.2 <| has hb).resolve_left (erase_lt.2 ha).ne⟩
   · rintro ⟨a, rfl⟩
     exact supIrred_Iic _
 

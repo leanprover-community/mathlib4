@@ -24,7 +24,7 @@ variable {a b m n p : ℕ}
 
 
 theorem factorization_eq_zero_of_lt {n p : ℕ} (h : n < p) : n.factorization p = 0 :=
-  Finsupp.not_mem_support_iff.mp (mt le_of_mem_primeFactors (not_le_of_lt h))
+  Finsupp.not_mem_support_iff.mp (mt le_of_mem_primeFactors (not_le_of_gt h))
 
 @[simp]
 theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=
@@ -305,7 +305,7 @@ theorem ordProj_dvd_ordProj_iff_dvd {a b : ℕ} (ha0 : a ≠ 0) (hb0 : b ≠ 0) 
   refine ⟨fun h => ?_, fun hab p => ordProj_dvd_ordProj_of_dvd hb0 hab p⟩
   rw [← factorization_le_iff_dvd ha0 hb0]
   intro q
-  rcases le_or_lt q 1 with (hq_le | hq1)
+  rcases le_or_gt q 1 with (hq_le | hq1)
   · interval_cases q <;> simp
   exact (pow_dvd_pow_iff_le_right hq1).1 (h q)
 

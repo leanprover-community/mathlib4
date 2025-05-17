@@ -432,11 +432,11 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
       have A1 : min (f z) (f x) ∈ u := by
         by_cases H : f z ≤ f x
         · simpa [H] using h₁ ⟨h₁z, H⟩
-        · simpa [le_of_not_le H]
+        · simpa [le_of_not_ge H]
       have A2 : min (g z) (g x) ∈ v := by
         by_cases H : g z ≤ g x
         · simpa [H] using h₂ ⟨h₂z, H⟩
-        · simpa [le_of_not_le H]
+        · simpa [le_of_not_ge H]
       have : (min (f z) (f x), min (g z) (g x)) ∈ u ×ˢ v := ⟨A1, A2⟩
       calc
         y < min (f z) (f x) + min (g z) (g x) := h this
@@ -447,7 +447,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
       have A1 : min (f z) (f x) ∈ u := by
         by_cases H : f z ≤ f x
         · simpa [H] using h₁ ⟨h₁z, H⟩
-        · simpa [le_of_not_le H]
+        · simpa [le_of_not_ge H]
       have : (min (f z) (f x), g x) ∈ u ×ˢ v := ⟨A1, xv⟩
       calc
         y < min (f z) (f x) + g x := h this
@@ -461,7 +461,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
       have A2 : min (g z) (g x) ∈ v := by
         by_cases H : g z ≤ g x
         · simpa [H] using h₂ ⟨h₂z, H⟩
-        · simpa [le_of_not_le H] using h₂ ⟨z₂lt, le_rfl⟩
+        · simpa [le_of_not_ge H] using h₂ ⟨z₂lt, le_rfl⟩
       have : (f x, min (g z) (g x)) ∈ u ×ˢ v := ⟨xu, A2⟩
       calc
         y < f x + min (g z) (g x) := h this

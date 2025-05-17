@@ -428,7 +428,7 @@ theorem comap_le_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Fun
 
 @[to_additive]
 theorem comap_lt_comap_of_surjective {f : G →* N} {K L : Subgroup N} (hf : Function.Surjective f) :
-    K.comap f < L.comap f ↔ K < L := by simp_rw [lt_iff_le_not_le, comap_le_comap_of_surjective hf]
+    K.comap f < L.comap f ↔ K < L := by simp_rw [lt_iff_le_not_ge, comap_le_comap_of_surjective hf]
 
 @[to_additive]
 theorem comap_injective {f : G →* N} (h : Function.Surjective f) : Function.Injective (comap f) :=

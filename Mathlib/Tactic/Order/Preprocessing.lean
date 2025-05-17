@@ -41,7 +41,7 @@ def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
     match fact with
     | .lt lhs rhs proof =>
       res := res.push <| .le lhs rhs (← mkAppM ``le_of_lt #[proof])
-      res := res.push <| .nle rhs lhs (← mkAppM ``not_le_of_lt #[proof])
+      res := res.push <| .nle rhs lhs (← mkAppM ``not_le_of_gt #[proof])
     | .eq lhs rhs proof =>
       res := res.push <| .le lhs rhs (← mkAppM ``le_of_eq #[proof])
       res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
@@ -83,9 +83,9 @@ def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact) :
       res := res.push <| .le lhs rhs (← mkAppM ``LT.lt.le #[proof])
     | .nle lhs rhs proof =>
       res := res.push <| .ne lhs rhs (← mkAppM ``ne_of_not_le #[proof])
-      res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_le #[proof])
+      res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_ge #[proof])
     | .nlt lhs rhs proof =>
-      res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_lt #[proof])
+      res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_gt #[proof])
     | .eq lhs rhs proof =>
       res := res.push <| .le lhs rhs (← mkAppM ``le_of_eq #[proof])
       res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])

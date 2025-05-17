@@ -347,7 +347,7 @@ theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
   cases h
-  exact (le_of_not_lt h_1).eq_of_not_lt h_2
+  exact (le_of_not_gt h_1).eq_of_not_lt h_2
 
 theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
   sign_eq_zero_iff.not

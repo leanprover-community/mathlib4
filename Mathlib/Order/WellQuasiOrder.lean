@@ -129,7 +129,7 @@ theorem wellQuasiOrderedLE_iff :
       obtain h | rfl | h := lt_trichotomy m n
       · exact hc _ _ (g.strictMono h) hf
       · contradiction
-      · exact h2 _ _ h (lt_of_le_not_le hf (hc _ _ (g.strictMono h)))
+      · exact h2 _ _ h (lt_of_le_not_ge hf (hc _ _ (g.strictMono h)))
     · refine Set.infinite_range_of_injective fun m n (hf : f (g m) = f (g n)) ↦ ?_
       obtain h | rfl | h := lt_trichotomy m n <;>
         (first | rfl | cases (hf ▸ hc _ _ (g.strictMono h)) le_rfl)

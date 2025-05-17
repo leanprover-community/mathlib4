@@ -580,7 +580,7 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
   · simp [not_zero_isLimit, Cardinal.aleph0_ne_zero]
   · simp [not_succ_isLimit, Cardinal.one_lt_aleph0]
   · simp only [l, iff_true]
-    refine le_of_not_lt fun h => ?_
+    refine le_of_not_gt fun h => ?_
     obtain ⟨n, e⟩ := Cardinal.lt_aleph0.1 h
     have := cof_cof o
     rw [e, ord_nat] at this

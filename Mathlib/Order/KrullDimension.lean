@@ -662,10 +662,10 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
   le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
   | ⊥, hm => False.elim <| by
     haveI : Inhabited α := ⟨LTSeries.withLength _ 0 0⟩
-    exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
+    exact not_le_of_gt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
   | some ⊤, _ => le_refl _
   | some (some m), hm => by
-    refine (not_lt_of_le (hm (LTSeries.withLength _ (m + 1))) ?_).elim
+    refine (not_lt_of_ge (hm (LTSeries.withLength _ (m + 1))) ?_).elim
     rw [WithBot.some_eq_coe, ← WithBot.coe_natCast, WithBot.coe_lt_coe,
       WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
     simp

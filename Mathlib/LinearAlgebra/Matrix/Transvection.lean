@@ -407,7 +407,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         simp [n'] at h
       simp only [ne_eq, inl.injEq, Ne.symm h, not_false_eq_true, transvection_mul_apply_of_ne]
       rw [IH]
-      rcases le_or_lt (n + 1) i with (hi | hi)
+      rcases le_or_gt (n + 1) i with (hi | hi)
       · simp only [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]
         · simpa only [hni.symm, not_le, or_false] using Nat.lt_succ_iff_lt_or_eq.1 hi
@@ -484,7 +484,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         tauto
       simp only [IH hnr.le, Ne, mul_transvection_apply_of_ne, Ne.symm h, inl.injEq,
         not_false_eq_true]
-      rcases le_or_lt (n + 1) i with (hi | hi)
+      rcases le_or_gt (n + 1) i with (hi | hi)
       · simp [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]
         · simpa only [not_le] using hi

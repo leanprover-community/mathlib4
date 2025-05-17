@@ -74,7 +74,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
     CompactIccSpace α := by
   refine .mk'' fun {a b} hlt => ?_
-  rcases le_or_lt a b with hab | hab
+  rcases le_or_gt a b with hab | hab
   swap
   · simp [hab]
   refine isCompact_iff_ultrafilter_le_nhds.2 fun f hf => ?_
@@ -215,7 +215,7 @@ theorem cocompact_le_atBot_atTop [CompactIccSpace α] :
   · obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs.1
     obtain ⟨u, hu⟩ := mem_atTop_sets.mp hs.2
     refine ⟨Icc t u, isCompact_Icc, fun x hx ↦ ?_⟩
-    exact (not_and_or.mp hx).casesOn (fun h ↦ ht x (le_of_not_le h)) fun h ↦ hu x (le_of_not_le h)
+    exact (not_and_or.mp hx).casesOn (fun h ↦ ht x (le_of_not_ge h)) fun h ↦ hu x (le_of_not_ge h)
 
 theorem cocompact_le_atBot [OrderTop α] [CompactIccSpace α] :
     cocompact α ≤ atBot := by
@@ -223,7 +223,7 @@ theorem cocompact_le_atBot [OrderTop α] [CompactIccSpace α] :
   · exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
   · obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs
     refine ⟨Icc t ⊤, isCompact_Icc, fun _ hx ↦ ?_⟩
-    exact (not_and_or.mp hx).casesOn (fun h ↦ ht _ (le_of_not_le h)) (fun h ↦ (h le_top).elim)
+    exact (not_and_or.mp hx).casesOn (fun h ↦ ht _ (le_of_not_ge h)) (fun h ↦ (h le_top).elim)
 
 theorem cocompact_le_atTop [OrderBot α] [CompactIccSpace α] :
     cocompact α ≤ atTop :=

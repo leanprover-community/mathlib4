@@ -239,7 +239,7 @@ theorem exists_nat_pow_near (hx : 1 ≤ x) (hy : 1 < y) : ∃ n : ℕ, y ^ n ≤
         pos_iff_ne_zero.2 fun hn0 => by rw [hn0, pow_zero] at hn; exact not_le_of_gt hn hx
       have hnsp : Nat.pred n + 1 = n := Nat.succ_pred_eq_of_pos hnp
       have hltn : Nat.pred n < n := Nat.pred_lt (ne_of_gt hnp)
-      ⟨Nat.pred n, le_of_not_lt (Nat.find_min h hltn), by rwa [hnsp]⟩
+      ⟨Nat.pred n, le_of_not_gt (Nat.find_min h hltn), by rwa [hnsp]⟩
 
 end LinearOrderedSemiring
 
@@ -324,13 +324,13 @@ strictly between `a` and `b`. -/
 lemma exists_zpow_btwn_of_lt_mul {a b c : K} (h : a < b * c) (hb₀ : 0 < b) (hc₀ : 0 < c)
     (hc₁ : c < 1) :
     ∃ n : ℤ, a < c ^ n ∧ c ^ n < b := by
-  rcases le_or_lt a 0 with ha | ha
+  rcases le_or_gt a 0 with ha | ha
   · obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hb₀ hc₁
     exact ⟨n, ha.trans_lt (zpow_pos hc₀ _), mod_cast hn⟩
-  · rcases le_or_lt b 1 with hb₁ | hb₁
+  · rcases le_or_gt b 1 with hb₁ | hb₁
     · obtain ⟨n, hn⟩ := exists_pow_btwn_of_lt_mul h hb₀ hb₁ hc₀ hc₁
       exact ⟨n, mod_cast hn⟩
-    · rcases lt_or_le a 1 with ha₁ | ha₁
+    · rcases lt_or_ge a 1 with ha₁ | ha₁
       · refine ⟨0, ?_⟩
         rw [zpow_zero]
         exact ⟨ha₁, hb₁⟩
@@ -425,9 +425,9 @@ theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 <
   let m := Nat.find ex
   have m_pos : 0 < m := (Nat.find_pos _).mpr <| by simpa [zero_pow hn] using hy
   let q := m.pred * δ
-  have qny : q ^ n < y := lt_of_not_le (Nat.find_min ex <| Nat.pred_lt m_pos.ne')
+  have qny : q ^ n < y := lt_of_not_ge (Nat.find_min ex <| Nat.pred_lt m_pos.ne')
   have q1y : |q| < max 1 y := (abs_eq_self.mpr <| by positivity).trans_lt <| lt_max_iff.mpr
-    (or_iff_not_imp_left.mpr fun q1 ↦ (le_self_pow₀ (le_of_not_lt q1) hn).trans_lt qny)
+    (or_iff_not_imp_left.mpr fun q1 ↦ (le_self_pow₀ (le_of_not_gt q1) hn).trans_lt qny)
   have xqn : max x 0 < q ^ n :=
     calc _ = y - (y - max x 0) := by rw [sub_sub_cancel]
       _ ≤ (m * δ) ^ n - (y - max x 0) := sub_le_sub_right (Nat.find_spec ex) _
@@ -452,12 +452,12 @@ theorem exists_rat_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy :
   refine ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans ?_, hy₂.trans' ?_⟩ <;> assumption_mod_cast
 
 theorem le_of_forall_rat_lt_imp_le (h : ∀ q : ℚ, (q : K) < x → (q : K) ≤ y) : x ≤ y :=
-  le_of_not_lt fun hyx =>
+  le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
     hy.not_le <| h _ hx
 
 theorem le_of_forall_lt_rat_imp_le (h : ∀ q : ℚ, y < q → x ≤ q) : x ≤ y :=
-  le_of_not_lt fun hyx =>
+  le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
     hx.not_le <| h _ hy
 

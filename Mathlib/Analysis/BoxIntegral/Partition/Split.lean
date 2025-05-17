@@ -128,11 +128,11 @@ theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
   rw [← disjoint_withBotCoe, coe_splitLower, coe_splitUpper]
   refine (Disjoint.inf_left' _ ?_).inf_right' _
   rw [Set.disjoint_left]
-  exact fun y (hle : y i ≤ x) hlt => not_lt_of_le hle hlt
+  exact fun y (hle : y i ≤ x) hlt => not_lt_of_ge hle hlt
 
 theorem splitLower_ne_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
     I.splitLower i x ≠ I.splitUpper i x := by
-  rcases le_or_lt x (I.lower i) with h | _
+  rcases le_or_gt x (I.lower i) with h | _
   · rw [splitUpper_eq_self.2 h, splitLower_eq_bot.2 h]
     exact WithBot.bot_ne_coe
   · refine (disjoint_splitLower_splitUpper I i x).ne ?_
@@ -169,7 +169,7 @@ theorem mem_split_iff' : J ∈ split I i x ↔
 
 @[simp]
 theorem iUnion_split (I : Box ι) (i : ι) (x : ℝ) : (split I i x).iUnion = I := by
-  simp [split, ← inter_union_distrib_left, ← setOf_or, le_or_lt]
+  simp [split, ← inter_union_distrib_left, ← setOf_or, le_or_gt]
 
 theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I i x) :=
   isPartition_iff_iUnion_eq.2 <| iUnion_split I i x
