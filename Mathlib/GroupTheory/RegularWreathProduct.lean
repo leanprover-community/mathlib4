@@ -120,9 +120,8 @@ omit [Group D] [Group Q] in
 lemma equivProdInj : Function.Injective (equivProd D Q).toFun := by
   intro a b; simp
 
-instance [Finite D] [Finite Q] : Finite (D ≀ᵣ Q) := by
-  apply (Equiv.finite_iff (equivProd D Q)).mpr
-  apply Finite.instProd
+instance [Finite D] [Finite Q] : Finite (D ≀ᵣ Q) :=
+  Finite.of_equiv _ (equivProd D Q).symm
 
 omit [Group D] [Group Q] in
 theorem card [Finite Q] :
