@@ -188,6 +188,78 @@ lemma inner_vsub_vsub_altitudeFoot_eq_height_sq
   · rw [← direction_affineSpan]
     exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
+/-- The angle between two distinct faces can never reach 0 or π. -/
+lemma abs_inner_height_vsub_altitudeFoot_div_lt_one
+    {n : ℕ} [NeZero n] (s : Simplex ℝ P n) {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
+    |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
+            / (s.height i * s.height j)| < 1 := by
+  rw [abs_div, div_lt_one (by simp [height])]
+  apply LE.le.lt_of_ne
+  · convert abs_real_inner_le_norm _ _ using 1
+    simp only [dist_eq_norm_vsub, abs_eq_self, height]
+    positivity
+  · simp_rw [height, dist_eq_norm_vsub]
+    nth_rw 2 [abs_eq_self.2 (by positivity)]
+    rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff (by simp) (by simp)]
+    rintro ⟨r, hr, h⟩
+    suffices s.points j -ᵥ s.altitudeFoot j = 0 by
+      simp at this
+    rw [← Submodule.mem_bot ℝ,
+      ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
+    refine ⟨vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+      (mem_affineSpan _ (Set.mem_range_self _)) ?_, ?_⟩
+    · refine SetLike.le_def.1 (affineSpan_mono _ ?_) (Subtype.property _)
+      simp
+    · rw [SetLike.mem_coe]
+      have hk : ∃ k, k ≠ i ∧ k ≠ j := by
+        rcases i with ⟨i, hi⟩
+        rcases j with ⟨j, hj⟩
+        simp_rw [← Fin.val_ne_iff]
+        by_cases h0 : 0 ≠ i ∧ 0 ≠ j
+        · exact ⟨0, h0⟩
+        · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
+          · exact ⟨⟨1, by omega⟩, h1⟩
+          · refine ⟨⟨2, by omega⟩, ?_⟩
+            dsimp only
+            omega
+      have hs : vectorSpan ℝ (Set.range s.points) =
+          vectorSpan ℝ (Set.range (s.faceOpposite i).points) ⊔
+            vectorSpan ℝ (Set.range (s.faceOpposite j).points) := by
+        rcases hk with ⟨k, hki, hkj⟩
+        have hki' : s.points k ∈ Set.range (s.faceOpposite i).points := by
+          rw [range_faceOpposite_points]
+          exact Set.mem_image_of_mem _ hki
+        have hkj' : s.points k ∈ Set.range (s.faceOpposite j).points := by
+          rw [range_faceOpposite_points]
+          exact Set.mem_image_of_mem _ hkj
+        convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
+        simp only [range_faceOpposite_points, ← Set.image_union]
+        simp_rw [← Set.image_univ, ← Set.compl_setOf, ← Set.compl_inter,
+          Set.setOf_eq_eq_singleton]
+        rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
+        simpa using hij.symm
+      rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
+      refine ⟨?_, ?_⟩
+      · rw [h, ← direction_affineSpan]
+        exact Submodule.smul_mem _ _
+          (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
+      · rw [← direction_affineSpan]
+        exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+
+/-- The angle between two faces can never reach π. -/
+lemma neg_one_lt_inner_height_vsub_altitudeFoot_div
+    {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i j : Fin (n + 1)) (hn : 1 < n) :
+    -1 < ⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
+            / (s.height i * s.height j) := by
+  obtain rfl | hij := eq_or_ne i j
+  · rw [real_inner_self_eq_norm_sq, height]
+    refine neg_one_lt_zero.trans_le ?_
+    positivity
+  rw [neg_lt]
+  refine lt_of_abs_lt ?_
+  rw [abs_neg]
+  exact abs_inner_height_vsub_altitudeFoot_div_lt_one s hij hn
+
 end Simplex
 
 end Affine
