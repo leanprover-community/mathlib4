@@ -11,7 +11,7 @@ import Mathlib.Order.Estimator
 
 The usual algorithm for computing Levenshtein distances
 provides successively better lower bounds for the Levenshtein distance as it runs,
-as proved in `Mathlib.Data.List.EditDistance.Bounds`.
+as proved in `Mathlib/Data/List/EditDistance/Bounds.lean`.
 
 In this file we package that fact as an instance of
 ```

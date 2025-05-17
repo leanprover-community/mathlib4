@@ -180,7 +180,7 @@ identity to `a`. This is the necessary tool used to establish `cfcHom_comp` and 
 variant `cfc_comp`.
 
 This class has instances, which can be found in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique`, in each of the common cases
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Unique.lean`, in each of the common cases
 `ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem.
 
 This class is separate from `ContinuousFunctionalCalculus` primarily because we will later use

@@ -39,7 +39,7 @@ together.
   On the other hand, it requires the union of all cells to be closed.
   If that is not the case, you need to consider that union as a subspace of itself.
 * For a categorical approach that defines CW complexes via colimits and transfinite compositions,
-  see `Mathlib.Topology.CWComplex.Abstract.Basic`.
+  see `Mathlib/Topology/CWComplex/Abstract/Basic.lean`.
   The two approaches are equivalent but serve different purposes:
   * This approach is more convenient for concrete geometric arguments
   * The categorical approach is more suitable for abstract arguments and generalizations

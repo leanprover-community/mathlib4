@@ -10,7 +10,7 @@ import Mathlib.Data.Set.BooleanAlgebra
 # The set lattice
 
 This file is a collection of results on the complete atomic boolean algebra structure of `Set α`.
-Notation for the complete lattice operations can be found in `Mathlib.Order.SetNotation`.
+Notation for the complete lattice operations can be found in `Mathlib/Order/SetNotation.lean`.
 
 ## Main declarations
 * `Set.sInter_eq_biInter`, `Set.sUnion_eq_biInter`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and

@@ -15,9 +15,9 @@ with finite measure, then to integrable functions, which are limits of integrabl
 
 The main result is a continuous linear map `(α →₁[μ] E) →L[ℝ] F`.
 This extension process is used to define the Bochner integral
-in the `Mathlib.MeasureTheory.Integral.Bochner.Basic` file
+in the `Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` file
 and the conditional expectation of an integrable function
-in `Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1`.
+in `Mathlib/MeasureTheory/Function/ConditionalExpectation/CondexpL1.lean`.
 
 ## Main definitions
 

@@ -20,11 +20,11 @@ As opposed to `Even`, `Odd` does not have a multiplicative counterpart.
 
 Try to generalize `Even` lemmas further. For example, there are still a few lemmas whose `Semiring`
 assumptions I (DT) am not convinced are necessary. If that turns out to be true, they could be moved
-to `Mathlib.Algebra.Group.Even`.
+to `Mathlib/Algebra/Group/Even.lean`.
 
 ## See also
 
-`Mathlib.Algebra.Group.Even` for the definition of even elements.
+`Mathlib/Algebra/Group/Even.lean` for the definition of even elements.
 -/
 
 assert_not_exists DenselyOrdered OrderedRing

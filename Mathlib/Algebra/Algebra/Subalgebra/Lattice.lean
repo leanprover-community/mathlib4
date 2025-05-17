@@ -11,7 +11,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 In this file we define `Algebra.adjoin` and the complete lattice structure on subalgebras.
 
-More lemmas about `adjoin` can be found in `Mathlib.RingTheory.Adjoin.Basic`.
+More lemmas about `adjoin` can be found in `Mathlib/RingTheory/Adjoin/Basic.lean`.
 -/
 
 assert_not_exists Polynomial

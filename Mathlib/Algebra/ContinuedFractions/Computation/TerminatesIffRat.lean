@@ -12,7 +12,7 @@ import Mathlib.Data.Rat.Floor
 
 ## Summary
 We show that the continued fraction for a value `v`, as defined in
-`Mathlib.Algebra.ContinuedFractions.Basic`, terminates if and only if `v` corresponds to a
+`Mathlib/Algebra/ContinuedFractions/Basic.lean`, terminates if and only if `v` corresponds to a
 rational number, that is `↑v = q` for some `q : ℚ`.
 
 ## Main Theorems

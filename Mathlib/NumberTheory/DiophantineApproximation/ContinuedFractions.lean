@@ -8,12 +8,12 @@ import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 import Mathlib.NumberTheory.DiophantineApproximation.Basic
 
 /-!
-# Restatements of results from Diophantine Approximation using `Mathlib.Algebra.ContinuedFractions`.
+# Restatements of results from Diophantine Approximation using `Mathlib/Algebra/ContinuedFractions.lean`.
 
 ## Main statements
 
 There are two versions of Legendre's Theorem.
-`Real.exists_rat_eq_convergent`, defined in `Mathlib.NumberTheory.DiophantineApproximation.Basic`,
+`Real.exists_rat_eq_convergent`, defined in `Mathlib/NumberTheory/DiophantineApproximation/Basic.lean`,
 uses `Real.convergent`, a simple recursive definition of the convergents that is also defined
 in that file. This file provides `Real.exists_convs_eq_rat`, using
 `GenContFract.convs` of `GenContFract.of ξ`.

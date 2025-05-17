@@ -39,7 +39,7 @@ can synthesize a `Fintype` instance for the proxy type, then `derive_fintype%` s
 There are two kinds of `Fintype` instances that we generate, depending on the inductive type.
 
 If it is an enum (an inductive type with only 0-ary constructors), then we generate the
-complete `List` of all constructors; see `Mathlib.Deriving.Fintype.mkFintypeEnum` for more
+complete `List` of all constructors; see `Mathlib/Deriving/Fintype/mkFintypeEnum.lean` for more
 details. The proof has $O(n)$ complexity in the number of constructors.
 
 Otherwise, the strategy we take is to generate a "proxy type", define an equivalence between

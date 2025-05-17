@@ -28,8 +28,8 @@ open scoped Topology
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
--- This needs `Mathlib.Analysis.RCLike.Basic`, so we put it here
--- instead of in `Mathlib.NumberTheory.SmoothNumbers`.
+-- This needs `Mathlib/Analysis/RCLike/Basic.lean`, so we put it here
+-- instead of in `Mathlib/NumberTheory/SmoothNumbers.lean`.
 lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
     (roughNumbersUpTo N k).card ≤
       N * (N.succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 : ℝ) / p) := by

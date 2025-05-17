@@ -9,8 +9,8 @@ import Mathlib.Data.WSeq.Basic
 /-!
 # Miscellaneous definitions concerning weak sequences
 
-These definitions, as well as those in `Mathlib.Data.WSeq.Productive`, are not needed for the
-development of `Mathlib.Data.Seq.Parallel`.
+These definitions, as well as those in `Mathlib/Data/WSeq/Productive.lean`, are not needed for the
+development of `Mathlib/Data/Seq/Parallel.lean`.
 -/
 
 universe u v w

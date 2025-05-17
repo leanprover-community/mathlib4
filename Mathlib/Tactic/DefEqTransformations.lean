@@ -67,7 +67,7 @@ def runDefEqTactic (m : Option FVarId → Expr → MetaM Expr)
       mvarId.change (checkDefEq := checkDefEq) (← m none ty))
     (failed := fun _ => throwError "{tacticName} failed")
 
-/-- Like `Mathlib.Tactic.runDefEqTactic` but for `conv` mode. -/
+/-- Like `Mathlib/Tactic/runDefEqTactic.lean` but for `conv` mode. -/
 def runDefEqConvTactic (m : Expr → MetaM Expr) : TacticM Unit := withMainContext do
   Conv.changeLhs <| ← m (← instantiateMVars <| ← Conv.getLhs)
 

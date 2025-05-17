@@ -24,7 +24,7 @@ import Mathlib.Data.Finset.Sigma
 The main definition of this file is `Equiv.Perm.sign`,
 associating a `ℤˣ` sign with a permutation.
 
-Other lemmas have been moved to `Mathlib.GroupTheory.Perm.Fintype`
+Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Fintype.lean`
 
 -/
 

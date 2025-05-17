@@ -8,7 +8,7 @@ import Mathlib.Topology.Path
 /-!
 # Path connectedness
 
-Continuing from `Mathlib.Topology.Path`, this file defines path components and path-connected
+Continuing from `Mathlib/Topology/Path.lean`, this file defines path components and path-connected
 spaces.
 
 ## Main definitions

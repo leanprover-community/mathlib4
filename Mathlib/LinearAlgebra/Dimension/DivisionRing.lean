@@ -22,7 +22,7 @@ For vector spaces (i.e. modules over a field), we have
   `Module.rank (V/V₁) + Module.rank V₁ = Module.rank V`.
 * `rank_range_add_rank_ker`: the rank-nullity theorem.
 
-See also `Mathlib.LinearAlgebra.Dimension.ErdosKaplansky` for the Erdős-Kaplansky theorem.
+See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
 
 -/
 

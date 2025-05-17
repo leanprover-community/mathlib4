@@ -12,7 +12,7 @@ A pre-set is inductively defined by its indexing type and its members, which are
 pre-sets.
 
 After defining pre-sets we define extensional equality over them, also inductively. We construct a
-`Setoid` instance from it, and in `Mathlib.SetTheory.ZFC.Basic` we define ZFC sets as the quotient
+`Setoid` instance from it, and in `Mathlib/SetTheory/ZFC/Basic.lean` we define ZFC sets as the quotient
 of pre-sets by extensional equality.
 
 ## Main definitions

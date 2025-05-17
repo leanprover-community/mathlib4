@@ -25,7 +25,7 @@ exists because nerves of categories are 2-coskeletal.
 
 We also prove that `nerveFunctor` is fully faithful, demonstrating that `nerveAdjunction` is
 reflective. Since the category of simplicial sets is cocomplete, we conclude in
-`Mathlib.CategoryTheory.Category.Cat.Colimit` that the category of categories has colimits.
+`Mathlib/CategoryTheory/Category/Cat/Colimit.lean` that the category of categories has colimits.
 
 -/
 

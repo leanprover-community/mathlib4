@@ -14,7 +14,7 @@ for `s, t` two such sets, `Disjoint s t → T (s ∪ t) = T s + T t`. `T` is aki
 
 This property is named `FinMeasAdditive` in this file. We also define `DominatedFinMeasAdditive`,
 which requires in addition that the norm on every set is less than the measure of the set
-(up to a multiplicative constant); in `Mathlib.MeasureTheory.Integral.SetToL1` we extend
+(up to a multiplicative constant); in `Mathlib/MeasureTheory/Integral/SetToL1.lean` we extend
 set functions with this stronger property to integrable (L1) functions.
 
 ## Main definitions

@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 # Properties of the module `Π₀ i, M i`
 
 Given an indexed collection of `R`-modules `M i`, the `R`-module structure on `Π₀ i, M i`
-is defined in `Mathlib.Data.DFinsupp.Module`.
+is defined in `Mathlib/Data/DFinsupp/Module.lean`.
 
 In this file we define `LinearMap` versions of various maps:
 

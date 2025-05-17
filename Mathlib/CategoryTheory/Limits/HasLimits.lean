@@ -529,7 +529,7 @@ variable {L : (J ⥤ C) ⥤ C} (adj : Functor.const _ ⊣ L)
 
 /- The fact that the existence of limits of shape `J` is equivalent to the existence
 of a right adjoint to the constant functor `C ⥤ (J ⥤ C)` is obtained in
-the file `Mathlib.CategoryTheory.Limits.ConeCategory`: see the lemma
+the file `Mathlib/CategoryTheory/Limits/ConeCategory.lean`: see the lemma
 `hasLimitsOfShape_iff_isLeftAdjoint_const`. In the definitions below, given an
 adjunction `adj : Functor.const _ ⊣ (L : (J ⥤ C) ⥤ C)`, we directly construct
 a limit cone for any `F : J ⥤ C`. -/

@@ -20,9 +20,9 @@ mathlib's conventions for integrals over finite intervals (see `intervalIntegral
 
 ## See also
 
-- `Mathlib.Analysis.SpecialFunctions.Integrals` -- integrals over finite intervals
-- `Mathlib.Analysis.SpecialFunctions.Gaussian` -- integral of `exp (-x ^ 2)`
-- `Mathlib.Analysis.SpecialFunctions.JapaneseBracket`-- integrability of `(1+‖x‖)^(-r)`.
+- `Mathlib/Analysis/SpecialFunctions/Integrals.lean` -- integrals over finite intervals
+- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean` -- integral of `exp (-x ^ 2)`
+- `Mathlib/Analysis/SpecialFunctions/JapaneseBracket.lean`-- integrability of `(1+‖x‖)^(-r)`.
 -/
 
 
