@@ -377,6 +377,16 @@ theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A�
     (e₁.trans e₂).symm x = e₁.symm (e₂.symm x) :=
   rfl
 
+theorem self_trans_symm_eq_refl (e : A₁ ≃ₐ[R] A₂) :
+    e.trans e.symm = AlgEquiv.refl := by
+  ext
+  simp only [trans_apply, symm_apply_apply, coe_refl, id_eq]
+
+theorem symm_trans_self_eq_refl (e : A₁ ≃ₐ[R] A₂) :
+    e.symm.trans e = AlgEquiv.refl := by
+  ext
+  simp only [trans_apply, apply_symm_apply, coe_refl, id_eq]
+
 end trans
 
 /-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'`, then the type of maps
