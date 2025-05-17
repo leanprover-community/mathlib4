@@ -32,17 +32,19 @@ It can be thought of as a map $Hom(\bigwedge^{n+1} M, N) \to Hom(M, Hom(\bigwedg
 
 This is `MultilinearMap.curryLeft` for `AlternatingMap`. See also
 `AlternatingMap.curryLeftLinearMap`. -/
-@[simps]
-def curryLeft (f : M [⋀^Fin n.succ]→ₗ[R] N) :
-    M →ₗ[R] M [⋀^Fin n]→ₗ[R] N where
+@[simps apply_toMultilinearMap]
+def curryLeft (f : M [⋀^Fin n.succ]→ₗ[R] N) : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N where
   toFun m :=
     { f.toMultilinearMap.curryLeft m with
-      toFun := fun v => f (Matrix.vecCons m v)
-      map_eq_zero_of_eq' := fun v i j hv hij =>
-        f.map_eq_zero_of_eq _ (by
-          rwa [Matrix.cons_val_succ, Matrix.cons_val_succ]) ((Fin.succ_injective _).ne hij) }
+      map_eq_zero_of_eq' v i j hv hij :=
+        f.map_eq_zero_of_eq _ (by simpa) ((Fin.succ_injective _).ne hij) }
   map_add' _ _ := ext fun _ => f.map_vecCons_add _ _ _
   map_smul' _ _ := ext fun _ => f.map_vecCons_smul _ _ _
+
+@[simp]
+theorem curryLeft_apply_apply (f : M [⋀^Fin n.succ]→ₗ[R] N) (x : M) (v : Fin n → M) :
+    curryLeft f x v = f (Matrix.vecCons x v) :=
+  rfl
 
 @[simp]
 theorem curryLeft_zero : curryLeft (0 : M [⋀^Fin n.succ]→ₗ[R] N) = 0 :=
@@ -82,10 +84,7 @@ theorem curryLeft_compAlternatingMap (g : N →ₗ[R] N₂)
 @[simp]
 theorem curryLeft_compLinearMap (g : M₂ →ₗ[R] M) (f : M [⋀^Fin n.succ]→ₗ[R] N) (m : M₂) :
     (f.compLinearMap g).curryLeft m = (f.curryLeft (g m)).compLinearMap g :=
-  ext fun v => congr_arg f <| funext <| by
-    refine Fin.cases ?_ ?_
-    · rfl
-    · simp
+  ext fun v ↦ congr_arg f <| funext fun i ↦ by cases i using Fin.cases <;> simp
 
 end CurryLeft
 
@@ -94,13 +93,13 @@ variable {R : Type*} {M M₂ N N₂ : Type*} [CommRing R] [AddCommGroup M]
   [Module R N] [Module R N₂] {n : ℕ}
 
 theorem map_insertNth (f : M [⋀^Fin (n + 1)]→ₗ[R] N) (p : Fin (n + 1)) (x : M) (v : Fin n → M) :
-    f (p.insertNth x v) = (-1) ^ p.val • f (Fin.cons x v) := by
-  rw [← Fin.cons_comp_cycleRange, map_perm]
+    f (p.insertNth x v) = (-1) ^ p.val • f (Matrix.vecCons x v) := by
+  rw [← Fin.cons_comp_cycleRange, map_perm, Matrix.vecCons]
   simp [Units.smul_def]
 
 theorem neg_one_pow_smul_map_insertNth (f : M [⋀^Fin (n + 1)]→ₗ[R] N) (p : Fin (n + 1)) (x : M)
     (v : Fin n → M) :
-    (-1) ^ p.val • f (p.insertNth x v) = f (Fin.cons x v) := by
+    (-1) ^ p.val • f (p.insertNth x v) = f (Matrix.vecCons x v) := by
   rw [map_insertNth, smul_smul, ← pow_add, Even.neg_one_pow, one_smul]
   use p
 
@@ -119,7 +118,7 @@ theorem neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq (f : M [⋀^Fin n]→�
   rw [← (i.predAbove j).insertNth_self_removeNth (removeNth _ _), ← removeNth_removeNth_eq_swap,
     removeNth, succAbove_succAbove_predAbove, map_insertNth, ← neg_one_pow_smul_map_insertNth,
     insertNth_removeNth, update_eq_self_iff.2, smul_smul, ← pow_add,
-    neg_one_pow_succAbove_add_predAbove (R := ℤ), neg_smul, pow_add, mul_smul,
+    neg_one_pow_succAbove_add_predAbove, neg_smul, pow_add, mul_smul,
     smul_smul (_ ^ i.val), ← sq, ← pow_mul, pow_mul', neg_one_pow_two, one_pow, one_smul,
     neg_add_cancel]
   exact hvij.symm
@@ -130,7 +129,7 @@ build an alternating form in `n + 1` arguments.
 
 Note that the round-trip with `curryFin` multiplies the form by `n + 1`,
 since we want to avoid division in this definition. -/
-def uncurryFin (f : M →ₗ[R] (M [⋀^Fin n]→ₗ[R] N)) :
+def uncurryFin (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
     M [⋀^Fin (n + 1)]→ₗ[R] N where
   toMultilinearMap :=
     ∑ p, (-1) ^ p.val • LinearMap.uncurryMid p ((toMultilinearMapLM (S := R)).comp f)
@@ -146,7 +145,7 @@ def uncurryFin (f : M →ₗ[R] (M [⋀^Fin n]→ₗ[R] N)) :
       _ = 0 := by
         rw [hvij, neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq] <;> assumption
 
-theorem uncurryFin_apply (f : M →ₗ[R] (M [⋀^Fin n]→ₗ[R] N)) (v : Fin (n + 1) → M) :
+theorem uncurryFin_apply (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) (v : Fin (n + 1) → M) :
     uncurryFin f v = ∑ i, (-1) ^ i.val • f (v i) (Fin.removeNth i v) := by
   simp [uncurryFin]
 
@@ -155,6 +154,12 @@ theorem uncurryFin_add (f g : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
     uncurryFin (f + g) = uncurryFin f + uncurryFin g := by
   ext
   simp [uncurryFin_apply, Finset.sum_add_distrib]
+
+@[simp]
+lemma uncurryFin_curryLeft (f : M [⋀^Fin (n + 1)]→ₗ[R] N) :
+    uncurryFin (curryLeft f) = (n + 1) • f := by
+  ext v
+  simp [uncurryFin_apply, ← map_insertNth]
 
 variable {S : Type*} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
 
@@ -176,7 +181,7 @@ def uncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M [⋀^Fin (
 then the twice uncurried `f` is zero. -/
 theorem uncurryFin_uncurryFinLM_comp_of_symmetric {f : M →ₗ[R] M →ₗ[R] M [⋀^Fin n]→ₗ[R] N}
     (hf : ∀ x y, f x y = f y x) :
-    uncurryFin (uncurryFinLM.comp f) = 0 := by
+    uncurryFin (uncurryFinLM ∘ₗ f) = 0 := by
   ext v
   set a : Fin (n + 2) → Fin (n + 1) → N := fun i j ↦
     (-1) ^ (i + j : ℕ) • f (v i) (i.removeNth v j) (j.removeNth (i.removeNth v))
@@ -192,7 +197,7 @@ theorem uncurryFin_uncurryFinLM_comp_of_symmetric {f : M →ₗ[R] M →ₗ[R] M
   intro (i, j)
   simp only [a]
   rw [hf (v i), ← Fin.removeNth_removeNth_eq_swap, Fin.removeNth_apply (i.succAbove j),
-    Fin.succAbove_succAbove_predAbove, Fin.neg_one_pow_succAbove_add_predAbove (R := ℤ), neg_smul,
+    Fin.succAbove_succAbove_predAbove, Fin.neg_one_pow_succAbove_add_predAbove, neg_smul,
     Fin.removeNth_apply, add_neg_cancel]
 
 end AlternatingMap
