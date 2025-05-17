@@ -68,7 +68,7 @@ def getLakefileLeanOptions : IO Lean.Options := do
   let rootOpts := root.leanOptions
   -- Other projects, like Mathlib, declare options in the targets.
   -- Here we use the default targets, since that probably contains the modules we'll be linting.
-  let defaultOpts := root.defaultTargets.flatMap fun target =>
+  let defaultOpts := root.defaultTargets.flatMap fun target ↦
     if let some lib := root.findLeanLib? target then
       lib.config.leanOptions
     else if let some exe := root.findLeanExe? target then
