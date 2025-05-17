@@ -146,14 +146,11 @@ def congr {D₁ Q₁ D₂ Q₂ : Type*} [Group D₁] [Group Q₁] [Group D₂] [
 
 section perm
 
-variable (D : Type*) [Group D]
-variable (Q : Type*) [Group Q] [Nonempty Q]
-variable (Λ : Type*) [Nonempty Λ] [MulAction D Λ]
+variable (D Q Λ : Type*) [Group D] [Group Q] [MulAction D Λ]
 
 instance instSMulRWP : SMul (D ≀ᵣ Q) (Λ × Q) where
   smul w := fun p => ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩
 
-omit [Nonempty Λ] [Nonempty Q] in
 @[simp]
 lemma rsmul {w : D ≀ᵣ Q} {p : Λ × Q} :
     w • p = ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩ := rfl
@@ -163,7 +160,7 @@ instance instMulActionRWP : MulAction (D ≀ᵣ Q) (Λ × Q) where
   mul_smul := by simp [smul_smul, mul_assoc]
 
 variable [FaithfulSMul D Λ]
-instance instFaithfulSMulRWP : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
+instance instFaithfulSMulRWP [Nonempty Q] [Nonempty Λ] : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
   eq_of_smul_eq_smul := by
     simp only [rsmul, Prod.mk.injEq, mul_left_inj, Prod.forall]
     intro m₁ m₂ h
@@ -181,7 +178,7 @@ given `D`-set `Λ`. -/
 def toPerm : D ≀ᵣ Q →* Equiv.Perm (Λ × Q) :=
   MulAction.toPermHom (D ≀ᵣ Q) (Λ × Q)
 
-theorem toPermInj :
+theorem toPermInj [Nonempty Λ] :
   Function.Injective (toPerm D Q Λ) := MulAction.toPerm_injective
 
 end perm
