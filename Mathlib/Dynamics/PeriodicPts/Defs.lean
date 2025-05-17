@@ -435,8 +435,11 @@ theorem iterate_mem_periodicOrbit (hx : x ∈ periodicPts f) (n : ℕ) :
   simp [hx]
 
 @[simp]
-theorem self_mem_periodicOrbit (hx : x ∈ periodicPts f) : x ∈ periodicOrbit f x :=
-  iterate_mem_periodicOrbit hx 0
+theorem exists_iterate_apply_eq_of_mem_periodicPts (hx : x ∈ periodicPts f) : ∃ n, f^[n] x = x := by
+  simpa only [← mem_periodicOrbit_iff hx] using iterate_mem_periodicOrbit hx 0
+
+theorem self_mem_periodicOrbit (hx : x ∈ periodicPts f) : x ∈ periodicOrbit f x := by
+  simp [hx]
 
 theorem nodup_periodicOrbit : (periodicOrbit f x).Nodup := by
   rw [periodicOrbit, Cycle.nodup_coe_iff, List.nodup_map_iff_inj_on List.nodup_range]
