@@ -567,7 +567,7 @@ lemma Spanning.eRk_eq (hX : M.Spanning X) : M.eRk X = M.eRank := by
   exact (M.eRk_le_eRank X).antisymm <| by
     rw [← hB.encard_eq_eRk, ← (hB.isBase_of_spanning hX).encard_eq_eRank]
 
-lemma spanning_iff_eRk' [RankFinite M] : M.Spanning X ↔ M.eRank ≤ M.eRk X ∧ X ⊆ M.E := by
+lemma spanning_iff_eRk_le' [RankFinite M] : M.Spanning X ↔ M.eRank ≤ M.eRk X ∧ X ⊆ M.E := by
   refine ⟨fun h ↦ ⟨h.eRk_eq.symm.le, h.subset_ground⟩, fun ⟨h, hX⟩ ↦ ?_⟩
   obtain ⟨I, hI⟩ := M.exists_isBasis X
   exact (hI.indep.isBase_of_eRk_ge
