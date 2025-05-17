@@ -20,19 +20,22 @@ open CategoryTheory Limits
 
 universe v u
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [CommSemiring R]
 
 /-- The category of R-algebras and their morphisms. -/
 structure AlgebraCat where
   private mk ::
   /-- The underlying type. -/
   carrier : Type v
-  [isRing : Ring carrier]
+  [isSemiring : Semiring carrier]
   [isAlgebra : Algebra R carrier]
 
-attribute [instance] AlgebraCat.isRing AlgebraCat.isAlgebra
+attribute [instance] AlgebraCat.isSemiring AlgebraCat.isAlgebra
 
-initialize_simps_projections AlgebraCat (-isRing, -isAlgebra)
+initialize_simps_projections AlgebraCat (-isSemiring, -isAlgebra)
+
+instance AlgebraCat.isRing {R : Type u} [CommRing R] (self : AlgebraCat.{v} R) :
+    Ring self.carrier := Algebra.semiringToRing R
 
 namespace AlgebraCat
 
@@ -43,10 +46,10 @@ attribute [coe] AlgebraCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
-abbrev of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
+abbrev of (X : Type v) [Semiring X] [Algebra R X] : AlgebraCat.{v} R :=
   ⟨X⟩
 
-lemma coe_of (X : Type v) [Ring X] [Algebra R X] : (of R X : Type v) = X :=
+lemma coe_of (X : Type v) [Semiring X] [Algebra R X] : (of R X : Type v) = X :=
   rfl
 
 variable {R} in
@@ -73,7 +76,7 @@ abbrev Hom.hom {A B : AlgebraCat.{v} R} (f : Hom A B) :=
 
 variable {R} in
 /-- Typecheck an `AlgHom` as a morphism in `AlgebraCat`. -/
-abbrev ofHom {A B : Type v} [Ring A] [Ring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
+abbrev ofHom {A B : Type v} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     of R A ⟶ of R B :=
   ConcreteCategory.ofHom (C := AlgebraCat R) f
 
@@ -108,7 +111,7 @@ lemma hom_ext {A B : AlgebraCat.{v} R} {f g : A ⟶ B} (hf : f.hom = g.hom) : f 
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
+lemma hom_ofHom {R : Type u} [CommSemiring R] {X Y : Type v} [Semiring X] [Algebra R X] [Semiring Y]
     [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
 
 @[simp]
@@ -116,16 +119,16 @@ lemma ofHom_hom {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
     ofHom (Hom.hom f) = f := rfl
 
 @[simp]
-lemma ofHom_id {X : Type v} [Ring X] [Algebra R X] : ofHom (AlgHom.id R X) = 𝟙 (of R X) := rfl
+lemma ofHom_id {X : Type v} [Semiring X] [Algebra R X] : ofHom (AlgHom.id R X) = 𝟙 (of R X) := rfl
 
 @[simp]
-lemma ofHom_comp {X Y Z : Type v} [Ring X] [Ring Y] [Ring Z] [Algebra R X] [Algebra R Y]
+lemma ofHom_comp {X Y Z : Type v} [Semiring X] [Semiring Y] [Semiring Z] [Algebra R X] [Algebra R Y]
     [Algebra R Z] (f : X →ₐ[R] Y) (g : Y →ₐ[R] Z) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
-lemma ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
-    [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
+lemma ofHom_apply {R : Type u} [CommSemiring R] {X Y : Type v} [Semiring X] [Algebra R X]
+    [Semiring Y] [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
 
 lemma inv_hom_apply {A B : AlgebraCat.{v} R} (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by
   rw [← comp_apply]
@@ -144,29 +147,42 @@ lemma forget_map {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
     (forget (AlgebraCat.{v} R)).map f = f :=
   rfl
 
-instance {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
+instance {S : AlgebraCat.{v} R} : Semiring ((forget (AlgebraCat R)).obj S) :=
+  (inferInstance : Semiring S.carrier)
+
+instance (R : Type u) [CommRing R] {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Ring S.carrier)
 
 instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Algebra R S.carrier)
 
-instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
+instance hasForgetToSemiring : HasForget₂ (AlgebraCat.{v} R) SemiRingCat.{v} where
+  forget₂ :=
+    { obj := fun A => SemiRingCat.of A
+      map := fun f => SemiRingCat.ofHom f.hom.toRingHom }
+
+instance hasForgetToRing (R : Type u) [CommRing R] :
+    HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
   forget₂ :=
     { obj := fun A => RingCat.of A
       map := fun f => RingCat.ofHom f.hom.toRingHom }
 
-instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) where
+-- TODO: generalize `ModuleCat` to allow `Semiring`
+instance hasForgetToModule (R : Type u) [CommRing R] :
+    HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
       map := fun f => ModuleCat.ofHom f.hom.toLinearMap }
 
+-- TODO: generalize `ModuleCat` to allow `Semiring`
 @[simp]
-lemma forget₂_module_obj (X : AlgebraCat.{v} R) :
+lemma forget₂_module_obj (R : Type u) [CommRing R] (X : AlgebraCat.{v} R) :
     (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).obj X = ModuleCat.of R X :=
   rfl
 
+-- TODO: generalize `ModuleCat` to allow `Semiring`
 @[simp]
-lemma forget₂_module_map {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
+lemma forget₂_module_map (R : Type u) [CommRing R] {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
     (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.ofHom f.hom.toLinearMap :=
   rfl
 
@@ -202,8 +218,8 @@ variable {X₁ X₂ : Type u}
 
 /-- Build an isomorphism in the category `AlgebraCat R` from a `AlgEquiv` between `Algebra`s. -/
 @[simps]
-def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
-    (e : X₁ ≃ₐ[R] X₂) : AlgebraCat.of R X₁ ≅ AlgebraCat.of R X₂ where
+def AlgEquiv.toAlgebraIso {g₁ : Semiring X₁} {g₂ : Semiring X₂} {m₁ : Algebra R X₁}
+    {m₂ : Algebra R X₂} (e : X₁ ≃ₐ[R] X₂) : AlgebraCat.of R X₁ ≅ AlgebraCat.of R X₂ where
   hom := AlgebraCat.ofHom (e : X₁ →ₐ[R] X₂)
   inv := AlgebraCat.ofHom (e.symm : X₂ →ₐ[R] X₁)
 
@@ -223,7 +239,7 @@ end CategoryTheory.Iso
 /-- Algebra equivalences between `Algebra`s are the same as (isomorphic to) isomorphisms in
 `AlgebraCat`. -/
 @[simps]
-def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
+def algEquivIsoAlgebraIso {X Y : Type u} [Semiring X] [Semiring Y] [Algebra R X] [Algebra R Y] :
     (X ≃ₐ[R] Y) ≅ AlgebraCat.of R X ≅ AlgebraCat.of R Y where
   hom e := e.toAlgebraIso
   inv i := i.toAlgEquiv
