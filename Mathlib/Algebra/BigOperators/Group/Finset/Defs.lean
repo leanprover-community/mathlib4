@@ -70,7 +70,7 @@ theorem prod_val [CommMonoid α] (s : Finset α) : s.1.prod = s.prod id := by
 
 end Finset
 
-library_note "operator precedence of big operators"/--
+library_note2 operatorPrecedenceBigOperators /--
 There is no established mathematical convention
 for the operator precedence of big operators like `∏` and `∑`.
 We will have to make a choice.
