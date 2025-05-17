@@ -3,7 +3,7 @@ Copyright (c) 2023 Ricardo Prado Cunha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ricardo Prado Cunha
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.Projection
 
@@ -24,7 +24,7 @@ Note this is not the same unicode symbol as `⊥` (`Bot`).
 
 open Affine
 
-variable {𝕜 : Type*} {V : Type*} {P : Type*} [IsROrC 𝕜]
+variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
 
 variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [AffineSpace V P]
 
@@ -38,142 +38,104 @@ open AffineEquiv
 def orthogonal (b : P) : AffineSubspace 𝕜 P := mk' b s.directionᗮ
 
 @[inherit_doc]
-infixl:55 "ᗮᗮ " => AffineSubspace.orthogonal
+infixl:55 "ᗮ@ " => AffineSubspace.orthogonal
 
 /-- When a point is in the orthogonal complement. -/
 lemma mem_orthogonal (b c : P) :
-    c ∈ sᗮᗮ b ↔ ∀ (v : V), v ∈ s.direction → @inner 𝕜 _ _ v (c -ᵥ b) = 0 := by
-  apply Iff.intro
-  · intro hc v hv
-    rcases hc with ⟨w, hw, hc⟩
-    rw [hc]
-    simp
-    apply (Submodule.mem_orthogonal _ w).mp
-    <;> assumption
-  · intro h
-    simp [orthogonal]
-    use c -ᵥ b
-    apply And.intro
-    · exact h
-    · simp
+    c ∈ sᗮ@ b ↔ ∀ (v : V), v ∈ s.direction → inner 𝕜 v (c -ᵥ b) = 0 :=
+  Iff.intro (fun hc v hv ↦ hc v hv) id
 
 /-- When a point is in the orthogonal complement, with the inner product the other way around. -/
 lemma mem_orthogonal' (b c : P) :
-    c ∈ sᗮᗮ b ↔ ∀ (v : V), v ∈ s.direction → @inner 𝕜 _ _ (c -ᵥ b) v = 0 := by
-  simp_rw [mem_orthogonal, inner_eq_zero_symm]
+    c ∈ sᗮ@ b ↔ ∀ (v : V), v ∈ s.direction → inner 𝕜 (c -ᵥ b) v = 0 := by
+  simp_rw [inner_eq_zero_symm]
+  apply mem_orthogonal
+
+/-- The direction of the orthogonal complement is the orthogonal complement of the original
+direction. -/
+@[simp]
+lemma orthogonal_direction (b : P) : (sᗮ@ b).direction = s.directionᗮ :=
+  direction_mk' b s.directionᗮ
+
+/-- An orthogonal complement is nonempty. -/
+lemma orthogonal_nonempty (b : P) : (sᗮ@ b : Set P).Nonempty := mk'_nonempty _ _
 
 /-- `orthogonal` reverses the `≤` ordering of two affine subspaces. -/
 lemma orthogonal_le {s₁ s₂ : AffineSubspace 𝕜 P} (b : P) (h : s₁ ≤ s₂) :
-    s₂ᗮᗮ b ≤ s₁ᗮᗮ b := by
-  rw [orthogonal, orthogonal, le_def']
-  intro p hp
-  use p -ᵥ b
-  apply And.intro
-  · rcases hp with ⟨v, hv, rfl⟩
-    simp
-    exact Submodule.orthogonal_le (direction_le h) hv
-  · symm
-    exact vsub_vadd _ _
+    s₂ᗮ@ b ≤ s₁ᗮ@ b :=
+  fun _ hp v hv ↦ hp v (direction_le h hv)
 
 /-- Double application of `orthogonal` preserves the `≤` ordering of two affine subspaces. -/
 lemma orthogonal_orthogonal_monotone {s₁ s₂ : AffineSubspace 𝕜 P} (b₁ b₂ c : P) (h : s₁ ≤ s₂) :
-    s₁ᗮᗮ b₁ᗮᗮ c ≤ s₂ᗮᗮ b₂ᗮᗮ c := by
-  simp [orthogonal, le_def']
-  intro p hp
-  use p -ᵥ c
-  apply And.intro
-  · rcases hp with ⟨v, hv, rfl⟩
-    simp
-    exact Submodule.orthogonal_orthogonal_monotone (direction_le h) hv
-  · symm
-    exact vsub_vadd _ _
+    s₁ᗮ@ b₁ᗮ@ c ≤ s₂ᗮ@ b₂ᗮ@ c := by
+  intro p hp v hv
+  apply hp v
+  simp_rw [orthogonal_direction] at ⊢ hv
+  exact Submodule.orthogonal_le (direction_le h) hv
 
-/-- `s` is contained in `sᗮᗮ bᗮᗮ c` when `c ∈ s`. -/
-lemma le_orthogonal_orthogonal (b c : P) (hc : c ∈ s) : s ≤ sᗮᗮ bᗮᗮ c := by
-  simp [orthogonal, le_def']
-  intros p hp
-  exact ⟨ p -ᵥ c
-        , Submodule.le_orthogonal_orthogonal _ (vsub_mem_direction hp hc)
-        , Eq.symm (vsub_vadd _ _)
-        ⟩
+/-- `s` is contained in `sᗮ@ bᗮ@ c` when `c ∈ s`. -/
+lemma le_orthogonal_orthogonal (b c : P) (hc : c ∈ s) : s ≤ sᗮ@ bᗮ@ c :=
+  fun p hp ↦ (mem_orthogonal (sᗮ@ b) c p).mpr fun q hq ↦
+    Submodule.le_orthogonal_orthogonal s.direction (vsub_mem_direction hp hc) q <|
+      orthogonal_direction s b ▸ hq
 
 @[simp]
-lemma top_orthogonal_eq_mk'_of_bot (b : P) : (⊤ : AffineSubspace 𝕜 P)ᗮᗮ b = mk' b ⊥ := by
-  simp [orthogonal]
+lemma top_orthogonal_eq_mk'_of_bot (b : P) : (⊤ : AffineSubspace 𝕜 P)ᗮ@ b = mk' b ⊥ := by
+  rw [orthogonal, direction_top, Submodule.top_orthogonal_eq_bot]
 
 @[simp]
-lemma bot_orthogonal_eq_top (b : P) : (⊥ : AffineSubspace 𝕜 P)ᗮᗮ b = ⊤ := by
-  simp [orthogonal]
-  ext x
-  exact ⟨by simp, fun _ => ⟨x -ᵥ b, by simp⟩⟩
+lemma orthogonal_neq_bot (b : P) : sᗮ@ b ≠ ⊥ :=
+  nonempty_iff_ne_bot _ |>.mp (orthogonal_nonempty s b)
 
 @[simp]
-lemma mk'_of_bot_orthogonal_eq_top (b c : P) : (mk' b (⊥ : Submodule 𝕜 V))ᗮᗮ c = ⊤ := by
-  rw [orthogonal, direction_mk', Submodule.bot_orthogonal_eq_top]
-  ext x
-  exact ⟨by simp, fun _ => ⟨x -ᵥ c, by simp⟩⟩
+lemma bot_orthogonal_eq_top (b : P) : (⊥ : AffineSubspace 𝕜 P)ᗮ@ b = ⊤ := by
+  rw [orthogonal, direction_bot, Submodule.bot_orthogonal_eq_top, mk'_top]
 
 @[simp]
-lemma orthogonal_eq_top_iff (b : P) : sᗮᗮ b = ⊤ ↔ s.direction = ⊥ := by
+lemma mk'_of_bot_orthogonal_eq_top (b c : P) : (mk' b (⊥ : Submodule 𝕜 V))ᗮ@ c = ⊤ := by
+  rw [orthogonal, direction_mk', Submodule.bot_orthogonal_eq_top, mk'_top]
+
+@[simp]
+lemma orthogonal_eq_top_iff (b : P) : sᗮ@ b = ⊤ ↔ s.direction = ⊥ := by
+  rw [orthogonal]
   apply Iff.intro
   · intro hs
-    rw [orthogonal] at hs
     rw [← Submodule.orthogonal_eq_top_iff, ← direction_mk' b (direction s)ᗮ, hs]
     exact direction_top _ _ _
   · intro hs
-    rw [orthogonal, hs, Submodule.bot_orthogonal_eq_top]
-    ext x
-    exact ⟨by simp, fun _ => ⟨x -ᵥ b, by simp⟩⟩
+    rw [hs, Submodule.bot_orthogonal_eq_top, mk'_top]
 
 /-- The orthogonal complements of two parallel affine subspaces through the same point are equal. -/
 lemma orthogonal_of_parallel_eq (s t : AffineSubspace 𝕜 P) (b : P) (h : s ∥ t) :
-    sᗮᗮ b = tᗮᗮ b := by
-  repeat rw [orthogonal]
-  congr! 2
-  exact h.direction_eq
+    sᗮ@ b = tᗮ@ b := by
+  rw [orthogonal, orthogonal, h.direction_eq]
 
 /-- The orthogonal complements of two parallel subspaces through any two points are also parallel.
 -/
 lemma orthogonal_parallel_of_parallel (s t : AffineSubspace 𝕜 P) (b c : P) :
-    s ∥ t → sᗮᗮ b ∥ tᗮᗮ c := by
+    s ∥ t → sᗮ@ b ∥ tᗮ@ c := by
   intro hpar
-  use c -ᵥ b
-  ext x
-  apply Iff.intro
-  · intro hx
-    use x -ᵥ c +ᵥ b
-    apply And.intro
-    · rcases hx with ⟨w, hw, hx⟩
-      rw [hx]
-      simp
-      rw [← Parallel.direction_eq hpar] at hw
-      exact ⟨w, hw, rfl⟩
-    · simp
-  · intro hx
-    rcases hx with ⟨w, hw, hx⟩
-    rcases hw with ⟨v, hv, hw⟩
-    rw [← hx, hw]
-    simp
-    rw [Parallel.direction_eq hpar] at hv
-    exact ⟨v, hv, rfl⟩
+  apply parallel_iff_direction_eq_and_eq_bot_iff_eq_bot.mpr
+  apply And.intro
+  · rw [orthogonal_direction, orthogonal_direction, Parallel.direction_eq hpar]
+  · simp only [orthogonal_neq_bot]
 
 /-- The orthogonal complements of an affine subspace through any points are parallel. -/
-lemma orthogonal_parallel (b c : P) : sᗮᗮ b ∥ sᗮᗮ c :=
+lemma orthogonal_parallel (b c : P) : sᗮ@ b ∥ sᗮ@ c :=
   orthogonal_parallel_of_parallel s s b c (Parallel.refl s)
 
-/-- The orthogonal complement through a point `c` of the orthogonal complement of an affine subspace
-is equal to the original subspace when `c` is in the original subspace and the `direction` of the
-original subspace is a `CompleteSpace`. -/
-lemma orthogonal_orthogonal [CompleteSpace s.direction] (b c : P) :
-    c ∈ s → sᗮᗮ bᗮᗮ c = s := by
+/-- If the direction of `s` admits orthogonal projections, then the orthogonal complement, through
+one the points of `s`, of an orthogonal complement of `s`, is `s`. -/
+lemma orthogonal_orthogonal [s.direction.HasOrthogonalProjection] (b c : P) :
+    c ∈ s → sᗮ@ bᗮ@ c = s := by
   intro hc
-  simp [orthogonal, hc]
+  simp only [orthogonal, direction_mk', Submodule.orthogonal_orthogonal, hc, mk'_eq]
 
-/-- Two affine subspaces with `direction` being `CompleteSpace`s are parallel iff their orthogonal
-completements through two points are parallel. -/
+/-- Two affine subspaces whose `direction`s admit orthogonal projections are parallel iff their
+orthogonal complements are parallel. -/
 lemma orthogonal_parallel_iff_parallel (s t : AffineSubspace 𝕜 P) [hs : Nonempty s]
     [ht : Nonempty t] [CompleteSpace s.direction] [CompleteSpace t.direction] (b c : P) :
-    s ∥ t ↔ sᗮᗮ b ∥ tᗮᗮ c := by
+    s ∥ t ↔ sᗮ@ b ∥ tᗮ@ c := by
   apply Iff.intro
   · exact orthogonal_parallel_of_parallel _ _ _ _
   · intro hpar
@@ -240,17 +202,17 @@ lemma isOrtho_self {s : AffineSubspace 𝕜 P} : s ⟂⟂ s ↔ s.direction = �
   Submodule.isOrtho_self
 
 @[simp]
-lemma isOrtho_orthogonal_right {s : AffineSubspace 𝕜 P} (b : P) : s ⟂⟂ (sᗮᗮ b) := by
+lemma isOrtho_orthogonal_right {s : AffineSubspace 𝕜 P} (b : P) : s ⟂⟂ (sᗮ@ b) := by
   simp [IsOrtho, orthogonal]
 
 @[simp]
-lemma isOrtho_orthogonal_left {s : AffineSubspace 𝕜 P} (b : P) : (sᗮᗮ b) ⟂⟂ s :=
+lemma isOrtho_orthogonal_left {s : AffineSubspace 𝕜 P} (b : P) : (sᗮ@ b) ⟂⟂ s :=
   IsOrtho.symm (isOrtho_orthogonal_right b)
 
 /-- If a subspace `s` is orthogonal to `t`, then `s` is a subspace of the orthogonal complement to
 `t` through some point `b`. -/
 lemma IsOrtho.le {s t : AffineSubspace 𝕜 P} (h : s ⟂⟂ t) :
-    ∃ (b : P), s ≤ tᗮᗮ b := by
+    ∃ (b : P), s ≤ tᗮ@ b := by
   by_cases hs : s = ⊥
   · cases (AddTorsor.nonempty : Nonempty P) with | intro b =>
     use b
@@ -259,18 +221,13 @@ lemma IsOrtho.le {s t : AffineSubspace 𝕜 P} (h : s ⟂⟂ t) :
   · push_neg at hs
     rw [← nonempty_iff_ne_bot] at hs
     use hs.some
-    rw [le_def', orthogonal]
     intro p hp
-    use p -ᵥ hs.some
-    apply And.intro
-    · rw [IsOrtho] at h
-      apply h.le
-      exact vsub_mem_direction hp hs.some_mem
-    · rw [vsub_vadd]
+    rw [IsOrtho] at h
+    exact h.le (vsub_mem_direction hp hs.some_mem)
 
 /-- If a subspace `s` is orthogonal `t`, then `t` is a subspace of the orthogonal complement to `s`
 through some point `b`. -/
-lemma IsOrtho.ge {s t : AffineSubspace 𝕜 P} (h : s ⟂⟂ t) : ∃ (b : P), t ≤ sᗮᗮ b :=
+lemma IsOrtho.ge {s t : AffineSubspace 𝕜 P} (h : s ⟂⟂ t) : ∃ (b : P), t ≤ sᗮ@ b :=
   h.symm.le
 
 @[simp]
