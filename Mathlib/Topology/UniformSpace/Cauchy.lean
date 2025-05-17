@@ -811,7 +811,7 @@ theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopolo
     rcases hsd.inter_open_nonempty (ball x <| t k) (isOpen_ball x (hto k))
         ⟨x, UniformSpace.mem_ball_self _ (ht_mem k)⟩ with
       ⟨y, hxy, hys⟩
-    refine ⟨_, ⟨y, hys, k, rfl⟩, (hts k).subset hxy, fun z hz => ?_⟩
+    refine ⟨_, ⟨y, hys, k, rfl⟩, hts k hxy, fun z hz => ?_⟩
     exact hUV (ball_subset_of_comp_subset (hk hxy) hUU' (hk hz))
 
 end UniformSpace
