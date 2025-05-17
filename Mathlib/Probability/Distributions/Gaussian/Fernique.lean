@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.Probability.Distributions.Gaussian.Basic
 
 /-!
-# Gaussian distributions in Banach spaces
+# Fernique's theorem for Gaussian measures
 
 ## Main definitions
 
@@ -16,17 +16,9 @@ import Mathlib.Probability.Distributions.Gaussian.Basic
 
 * `fooBar_unique`
 
-## Notation
-
-
-
-## Implementation details
-
-
-
 ## References
 
-* [F. Bar, *Quuxes*][bibkey]
+* [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
 
 -/
 
@@ -39,9 +31,9 @@ lemma norm_add_sub_norm_sub_div_two_le {E : Type*} [NormedAddCommGroup E] (x y :
     (‖x + y‖ - ‖x - y‖) / 2 ≤ ‖x‖ := by
   suffices ‖x + y‖ - ‖x - y‖ ≤ 2 * ‖x‖ by linarith
   calc ‖x + y‖ - ‖x - y‖
-  _ = ‖x + x + y - x‖ - ‖x - y‖ := by congr; rw [add_assoc, add_sub_assoc, add_sub_cancel]
+  _ = ‖x + x + y - x‖ - ‖x - y‖ := by congr; abel
   _ ≤ ‖x + x‖ + ‖y - x‖ - ‖x - y‖ := by gcongr; rw [add_sub_assoc]; exact norm_add_le _ _
-  _ = ‖x + x‖ := by rw [add_sub_assoc, norm_sub_rev]; simp
+  _ = ‖x + x‖ := by rw [norm_sub_rev]; abel
   _ ≤ ‖x‖ + ‖x‖ := norm_add_le _ _
   _ = 2 * ‖x‖ := by rw [two_mul]
 
@@ -51,9 +43,7 @@ lemma norm_add_sub_norm_sub_div_two_le_min {E : Type*} [NormedAddCommGroup E] (x
   rw [norm_sub_rev, add_comm]
   exact norm_add_sub_norm_sub_div_two_le _ _
 
-lemma one_lt_sqrt_two : 1 < √2 := by
-  rw [← Real.sqrt_one]
-  exact Real.sqrt_lt_sqrt (by positivity) (by simp)
+lemma one_lt_sqrt_two : 1 < √2 := by rw [← Real.sqrt_one]; gcongr; simp
 
 lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
   suffices 2 * √2 < 3 by linarith
