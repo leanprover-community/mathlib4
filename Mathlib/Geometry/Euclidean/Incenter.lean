@@ -161,6 +161,74 @@ lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) : (s.height i)⁻¹ =
   convert h using 2 with j
   ring
 
+/-- The angle between two faces can never reach π. -/
+lemma neg_one_lt_inner_height_vsub_altitudeFoot_div (i j : Fin (n + 1)) (hn : 1 < n) :
+    -1 < ⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
+            / (s.height i * s.height j) := by
+  obtain rfl | hij := eq_or_ne i j
+  · rw [real_inner_self_eq_norm_sq, height]
+    refine neg_one_lt_zero.trans_le ?_
+    positivity
+  rw [neg_lt]
+  apply lt_of_abs_lt
+  rw [abs_neg, abs_div, div_lt_one]
+  · apply LE.le.lt_of_ne
+    · convert abs_real_inner_le_norm _ _ using 1
+      simp only [dist_eq_norm_vsub, abs_eq_self, height]
+      positivity
+    · simp_rw [height, dist_eq_norm_vsub]
+      nth_rw 2 [abs_eq_self.2]
+      · rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff]
+        · intro h
+          rcases h with ⟨r, hr, h⟩
+          suffices s.points j -ᵥ s.altitudeFoot j = 0 by
+            simp at this
+          rw [← Submodule.mem_bot ℝ,
+            ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
+          refine ⟨vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+            (mem_affineSpan _ (Set.mem_range_self _)) ?_, ?_⟩
+          · refine SetLike.le_def.1 (affineSpan_mono _ ?_) (Subtype.property _)
+            simp
+          · rw [SetLike.mem_coe]
+            have hk : ∃ k, k ≠ i ∧ k ≠ j := by
+              rcases i with ⟨i, hi⟩
+              rcases j with ⟨j, hj⟩
+              simp_rw [← Fin.val_ne_iff]
+              by_cases h0 : 0 ≠ i ∧ 0 ≠ j
+              · exact ⟨0, h0⟩
+              · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
+                · exact ⟨⟨1, by omega⟩, h1⟩
+                · refine ⟨⟨2, by omega⟩, ?_⟩
+                  dsimp only
+                  omega
+            have hs : vectorSpan ℝ (Set.range s.points) =
+                vectorSpan ℝ (Set.range (s.faceOpposite i).points) ⊔
+                  vectorSpan ℝ (Set.range (s.faceOpposite j).points) := by
+              rcases hk with ⟨k, hki, hkj⟩
+              have hki' : s.points k ∈ Set.range (s.faceOpposite i).points := by
+                rw [range_faceOpposite_points]
+                exact Set.mem_image_of_mem _ hki
+              have hkj' : s.points k ∈ Set.range (s.faceOpposite j).points := by
+                rw [range_faceOpposite_points]
+                exact Set.mem_image_of_mem _ hkj
+              convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
+              simp only [range_faceOpposite_points, ← Set.image_union]
+              simp_rw [← Set.image_univ, ← Set.compl_setOf, ← Set.compl_inter,
+                Set.setOf_eq_eq_singleton]
+              rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
+              simpa using hij.symm
+            rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
+            refine ⟨?_, ?_⟩
+            · rw [h, ← direction_affineSpan]
+              exact Submodule.smul_mem _ _
+                (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
+            · rw [← direction_affineSpan]
+              exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+        · simp
+        · simp
+      · positivity
+  · simp [height]
+
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
 quantity for the other vertices. This implies the existence of the excenter opposite that vertex;
 it also implies that the image of the incenter under a homothety with scale factor 2 about a
@@ -176,64 +244,8 @@ lemma inv_height_lt_sum_inv_height (hn : 1 < n) (i : Fin (n + 1)) :
   · rintro j hj
     refine mul_lt_of_lt_one_left ?_ ?_
     · simp [height_pos]
-    · apply lt_of_abs_lt
-      rw [abs_neg, abs_div, div_lt_one]
-      · apply LE.le.lt_of_ne
-        · convert abs_real_inner_le_norm _ _ using 1
-          simp only [dist_eq_norm_vsub, abs_eq_self, height]
-          positivity
-        · simp_rw [height, dist_eq_norm_vsub]
-          nth_rw 2 [abs_eq_self.2]
-          · rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff]
-            · intro h
-              rcases h with ⟨r, hr, h⟩
-              suffices s.points j -ᵥ s.altitudeFoot j = 0 by
-                simp at this
-              rw [← Submodule.mem_bot ℝ,
-                ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
-              refine ⟨vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-                (mem_affineSpan _ (Set.mem_range_self _)) ?_, ?_⟩
-              · refine SetLike.le_def.1 (affineSpan_mono _ ?_) (Subtype.property _)
-                simp
-              · rw [SetLike.mem_coe]
-                have hk : ∃ k, k ≠ i ∧ k ≠ j := by
-                  rcases i with ⟨i, hi⟩
-                  rcases j with ⟨j, hj⟩
-                  simp_rw [← Fin.val_ne_iff]
-                  by_cases h0 : 0 ≠ i ∧ 0 ≠ j
-                  · exact ⟨0, h0⟩
-                  · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
-                    · exact ⟨⟨1, by omega⟩, h1⟩
-                    · refine ⟨⟨2, by omega⟩, ?_⟩
-                      dsimp only
-                      omega
-                have hs : vectorSpan ℝ (Set.range s.points) =
-                    vectorSpan ℝ (Set.range (s.faceOpposite i).points) ⊔
-                      vectorSpan ℝ (Set.range (s.faceOpposite j).points) := by
-                  rcases hk with ⟨k, hki, hkj⟩
-                  have hki' : s.points k ∈ Set.range (s.faceOpposite i).points := by
-                    rw [range_faceOpposite_points]
-                    exact Set.mem_image_of_mem _ hki
-                  have hkj' : s.points k ∈ Set.range (s.faceOpposite j).points := by
-                    rw [range_faceOpposite_points]
-                    exact Set.mem_image_of_mem _ hkj
-                  convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
-                  simp only [range_faceOpposite_points, ← Set.image_union]
-                  simp_rw [← Set.image_univ, ← Set.compl_setOf, ← Set.compl_inter,
-                    Set.setOf_eq_eq_singleton]
-                  rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
-                  simpa using hj
-                rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
-                refine ⟨?_, ?_⟩
-                · rw [h, ← direction_affineSpan]
-                  exact Submodule.smul_mem _ _
-                    (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
-                · rw [← direction_affineSpan]
-                  exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
-            · simp
-            · simp
-          · positivity
-      · simp [height]
+    · rw [neg_lt]
+      exact neg_one_lt_inner_height_vsub_altitudeFoot_div _ _ _ hn
 
 lemma sum_excenterWeightsUnnorm_singleton_pos (hn : 1 < n) (i : Fin (n + 1)) :
     0 < ∑ j, s.excenterWeightsUnnorm {i} j := by
