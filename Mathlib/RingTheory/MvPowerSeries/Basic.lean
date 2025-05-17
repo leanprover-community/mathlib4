@@ -343,7 +343,7 @@ variable (σ) (R)
 def C : R →+* MvPowerSeries σ R :=
   { monomial R (0 : σ →₀ ℕ) with
     map_one' := rfl
-    map_mul' := fun a b => (monomial_mul_monomial 0 0 a b).symm
+    map_mul' := fun a b => Eq.trans (by simp) (monomial_mul_monomial _ _ a b).symm
     map_zero' := (monomial R 0).map_zero }
 
 variable {σ} {R}
