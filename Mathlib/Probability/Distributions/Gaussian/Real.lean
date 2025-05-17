@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+import Mathlib.MeasureTheory.Group.Convolution
 import Mathlib.Probability.Moments.MGFAnalytic
 
 /-!
@@ -583,6 +584,18 @@ lemma variance_continuousLinearMap_gaussianReal (L : ℝ →L[ℝ] ℝ) :
   variance_linearMap_gaussianReal L
 
 end LinearMap
+
+/-- The convolution of two real Gaussian distributions with means `m₁, m₂` and variances `v₁, v₂`
+is a real Gaussian distribution with mean `m₁ + m₂` and variance `v₁ + v₂`. -/
+lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
+    -- `∗` notation not used because of ambiguous notation : `conv` vs `mconv`
+    (gaussianReal m₁ v₁).conv (gaussianReal m₂ v₂) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
+  refine Measure.ext_of_charFun ?_
+  ext t
+  simp_rw [charFun_conv, charFun_gaussianReal]
+  rw [← Complex.exp_add]
+  simp only [Complex.ofReal_add, NNReal.coe_add]
+  ring_nf
 
 end GaussianReal
 
