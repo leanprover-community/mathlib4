@@ -504,3 +504,8 @@ macro "monicity!" : tactic =>
 end Tactic
 
 end Mathlib.Tactic.ComputeDegree
+
+/-!
+ We register `compute_degree` with the `hint` tactic.
+ -/
+register_hint compute_degree
