@@ -237,6 +237,26 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
     nth_rw 2 [← mul_one a]
     rw [Algebra.TensorProduct.tmul_mul_tmul]
 
+@[simp]
+lemma algebraTensorAlgEquiv_symm_comp_aeval :
+    (((algebraTensorAlgEquiv (σ := σ) R A).symm.restrictScalars R) :
+        MvPolynomial σ A →ₐ[R] A ⊗[R] MvPolynomial σ R).comp
+      (MvPolynomial.mapAlgHom (R := R) (S₁ := R) (S₂ := A) (Algebra.ofId R A)) =
+      MvPolynomial.aeval fun i ↦ 1 ⊗ₜ MvPolynomial.X i := by
+  ext
+  simp
+
+@[simp]
+lemma algebraTensorAlgEquiv_symm_map (x : MvPolynomial σ R) :
+    (algebraTensorAlgEquiv R A).symm (map (algebraMap R A) x) = 1 ⊗ₜ x := by
+  have : (aeval fun i ↦ 1 ⊗ₜ[R] MvPolynomial.X i) x = (1 : A) ⊗ₜ x := by
+    induction x using MvPolynomial.induction_on
+    · simp [Algebra.TensorProduct.tmul_one_eq_one_tmul]
+    · simp_all [TensorProduct.tmul_add]
+    · simp_all
+  rw [← this]
+  exact DFunLike.congr_fun (algebraTensorAlgEquiv_symm_comp_aeval R A) x
+
 lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
     (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by
   induction' p using MvPolynomial.induction_on with a p q hp hq p i h
