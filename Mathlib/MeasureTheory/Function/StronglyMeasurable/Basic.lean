@@ -879,9 +879,9 @@ Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma prove
 **not** strong measurability. This is an intentional decision: for functions taking values in
 ℝ≥0∞, measurability is much more useful than strong measurability. -/
 @[fun_prop, measurability]
-protected theorem enorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β]
-    {f : α → β} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
-  (ENNReal.continuous_coe.comp_stronglyMeasurable hf.nnnorm).measurable
+protected theorem enorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+    {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
+  (continuous_enorm.comp_stronglyMeasurable hf).measurable
 
 @[deprecated (since := "2025-01-21")] alias ennnorm := StronglyMeasurable.enorm
 

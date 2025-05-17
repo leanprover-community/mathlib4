@@ -32,8 +32,8 @@ invariant under the change of variables x ↦ x⁻¹. -/
       "The Lebesgue integral of a function with respect to an inverse invariant measure is
 invariant under the change of variables x ↦ -x."]
 theorem lintegral_inv_eq_self [IsInvInvariant μ] (f : G → ℝ≥0∞) :
-   ∫⁻ x, f x⁻¹ ∂μ = ∫⁻ x, f x ∂μ := by
- simpa using (lintegral_map_equiv f (μ := μ) <| MeasurableEquiv.inv G).symm
+    ∫⁻ x, f x⁻¹ ∂μ = ∫⁻ x, f x ∂μ := by
+  simpa using (lintegral_map_equiv f (μ := μ) <| MeasurableEquiv.inv G).symm
 
 end MeasurableInv
 

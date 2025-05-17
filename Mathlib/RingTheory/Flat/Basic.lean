@@ -98,7 +98,7 @@ lemma _root_.LinearMap.rTensor_injective_iff_subtype {f : N →ₗ[R] P} (hf : F
       Function.Injective ((range <| e.toLinearMap ∘ₗ f).subtype.rTensor M) := by
   simp_rw [← EquivLike.injective_comp <| (LinearEquiv.ofInjective (e.toLinearMap ∘ₗ f)
     (e.injective.comp hf)).rTensor M, ← EquivLike.comp_injective _ (e.rTensor M),
-    ← LinearEquiv.coe_coe, ← coe_comp, LinearEquiv.coe_rTensor,  ← rTensor_comp]
+    ← LinearEquiv.coe_coe, ← coe_comp, LinearEquiv.coe_rTensor, ← rTensor_comp]
   rfl
 
 variable (R M) in
@@ -298,7 +298,7 @@ lemma iff_lTensor_preserves_injective_linearMap : Flat R M ↔
 /--
 Define the character module of `M` to be `M →+ ℚ ⧸ ℤ`.
 The character module of `M` is an injective module if and only if
- `f ⊗ 𝟙 M` is injective for any linear map `f` in the same universe as `M`.
+`f ⊗ 𝟙 M` is injective for any linear map `f` in the same universe as `M`.
 -/
 lemma injective_characterModule_iff_rTensor_preserves_injective_linearMap :
     Module.Injective R (CharacterModule M) ↔
