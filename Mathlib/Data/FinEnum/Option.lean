@@ -40,13 +40,14 @@ Since every `FinEnum` instance implies a `Fintype` instance and `Prop` is squash
 `Fintype.induction_empty_option` can be used if a `Prop` needs to be constructed.
 Cf. `Data.Fintype.Option`
 -/
-def recEmptyOption {P : Type u → Sort v}
+def recEmptyOption {motive : Type u → Sort v}
     (finChoice : (n : ℕ) → Fin (n + 1))
-    (congr : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β)
-    (empty : P PEmpty.{u + 1})
-    (option : {α : Type u} → FinEnum α → P α → P (Option α))
+    (congr : ∀ {α β : Type u} (_ : FinEnum α) (_ : FinEnum β),
+      card β = card α → motive α → motive β)
+    (empty : motive PEmpty.{u + 1})
+    (option : {α : Type u} → FinEnum α → motive α → motive (Option α))
     (α : Type u) [FinEnum α] :
-    P α :=
+    motive α :=
   match cardeq : card α with
   | 0 => congr _ _ cardeq empty
   | n + 1 =>

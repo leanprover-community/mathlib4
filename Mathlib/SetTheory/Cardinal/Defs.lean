@@ -100,9 +100,9 @@ theorem inductionOn {p : Cardinal → Prop} (c : Cardinal) (h : ∀ α, p #α) :
   Quotient.inductionOn c h
 
 @[elab_as_elim]
-theorem inductionOn₂ {p : Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
-    (h : ∀ α β, p #α #β) : p c₁ c₂ :=
-  Quotient.inductionOn₂ c₁ c₂ h
+theorem inductionOn₂ {motive : Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
+    (mk : ∀ α β, motive #α #β) : motive c₁ c₂ :=
+  Quotient.inductionOn₂ c₁ c₂ mk
 
 @[elab_as_elim]
 theorem inductionOn₃ {p : Cardinal → Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
