@@ -69,3 +69,19 @@ instance IsUltraUniformity.pi {ι : Type*} {X : ι → Type*} [U : Π i, Uniform
   suffices @IsUltraUniformity _ (⨅ i, UniformSpace.comap (Function.eval i) (U i)) by
     simpa [Pi.uniformSpace_eq _] using this
   exact .iInf fun i ↦ .comap (h i) (Function.eval i)
+
+instance IsUltraUniformity.bot : @IsUltraUniformity X (⊥ : UniformSpace X) := by
+  letI : UniformSpace X := ⊥
+  have := Filter.hasBasis_principal (idRel (α := X))
+  rw [← bot_uniformity] at this
+  apply mk_of_hasBasis this
+  · simpa using isSymmetricRel_idRel
+  · simpa using isTransitiveRel_idRel
+
+instance IsUltraUniformity.top : @IsUltraUniformity X (⊤ : UniformSpace X) := by
+  letI : UniformSpace X := ⊤
+  have := Filter.hasBasis_top (α := (X × X))
+  rw [← top_uniformity] at this
+  apply mk_of_hasBasis this
+  · simpa using isSymmetricRel_univ
+  · simpa using isTransitiveRel_univ
