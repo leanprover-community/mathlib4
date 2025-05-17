@@ -440,7 +440,7 @@ lemma IsBase.exchange_base_of_not_mem_closure (hB : M.IsBase B) (he : e ∈ B)
     (hf : f ∉ M.closure (B \ {e})) (hfE : f ∈ M.E := by aesop_mat) :
     M.IsBase (insert f (B \ {e})) := by
   obtain rfl | hne := eq_or_ne f e
-  · simpa [he]
+  · simpa [insert_eq_of_mem he]
   have ⟨hi, hfB⟩ : M.Indep (insert f (B \ {e})) ∧ f ∉ B := by
     simpa [(hB.indep.diff _).not_mem_closure_iff, hne] using hf
   exact hB.exchange_isBase_of_indep hfB hi
@@ -623,7 +623,7 @@ lemma indep_iff_forall_closure_diff_ne :
     fun h ↦ ⟨fun e heI ↦ by_contra fun heE ↦ h heI ?_,fun e heI hin ↦ h heI ?_⟩⟩
   · rw [← closure_inter_ground, inter_comm, inter_diff_distrib_left,
       inter_singleton_eq_empty.mpr heE, diff_empty, inter_comm, closure_inter_ground]
-  nth_rw 2 [show I = insert e (I \ {e}) by simp [heI]]
+  nth_rw 2 [show I = insert e (I \ {e}) by simp [insert_eq_of_mem heI]]
   rw [← closure_insert_closure_eq_closure_insert, insert_eq_of_mem hin, closure_closure]
 
 lemma Indep.union_indep_iff_forall_not_mem_closure_right (hI : M.Indep I) (hJ : M.Indep J) :
@@ -656,8 +656,8 @@ lemma indep_iff_forall_closure_ssubset_of_ssubset (hI : I ⊆ M.E := by aesop_ma
   refine ⟨fun h _ ↦ h.closure_ssubset_closure,
     fun h ↦ (indep_iff_forall_not_mem_closure_diff hI).2 fun e heI hecl ↦ ?_⟩
   refine (h (diff_singleton_ssubset.2 heI)).ne ?_
-  rw [show I = insert e (I \ {e}) by simp [heI], ← closure_insert_closure_eq_closure_insert,
-    insert_eq_of_mem hecl]
+  rw [show I = insert e (I \ {e}) by simp [insert_eq_of_mem heI],
+    ← closure_insert_closure_eq_closure_insert, insert_eq_of_mem hecl]
   simp
 
 lemma Indep.closure_diff_ssubset (hI : M.Indep I) (hX : (I ∩ X).Nonempty) :
