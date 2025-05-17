@@ -159,9 +159,9 @@ theorem mul_smul' (x y : GL (Fin 2) ℝ) (z : ℍ) :
     rw [moebius_im]
     exact div_ne_zero (mul_ne_zero y.det_ne_zero hu) (normSq_denom_ne_zero _ hu)
   rw [div_eq_div_iff (denom_ne_zero_of_im _ hu) (denom_ne_zero_of_im _ hu'),
-    denom, mul_div, div_add' _ _ _  (denom_ne_zero_of_im _ hu), mul_div]
+    denom, mul_div, div_add' _ _ _ (denom_ne_zero_of_im _ hu), mul_div]
   conv_rhs => rw [num]
-  rw [mul_div, div_add' _ _ _  (denom_ne_zero_of_im _ hu), div_mul_eq_mul_div]
+  rw [mul_div, div_add' _ _ _ (denom_ne_zero_of_im _ hu), div_mul_eq_mul_div]
   congr 1
   simp only [num, denom, Units.val_mul, mul_apply, Fin.sum_univ_succ,
     Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one,

@@ -79,7 +79,7 @@ private theorem slash_mul (k : ℤ) (A B : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
   ext1 τ
   calc σ (A * B) (f ((A * B) • τ)) * ((A * B).det) ^ (k - 1) * denom (A * B) τ ^ (-k)
   _ = σ B (σ A (f (A • B • τ))) * (A.det ^ (k - 1) * B.det ^ (k - 1)) *
-      (((σ B) (denom A ↑(B • τ) ^ (-k)))  * denom B τ ^ (-k)) := by
+      (((σ B) (denom A ↑(B • τ) ^ (-k))) * denom B τ ^ (-k)) := by
     rw [σ_mul_comm, σ_mul, denom_cocycle_σ, mul_zpow, mul_smul, map_mul, Units.val_mul,
       ofReal_mul, mul_zpow, map_zpow₀]
   _ = σ B (σ A (f (A • B • τ)) * A.det ^ (k - 1) * (denom A ↑(B • τ) ^ (-k)))

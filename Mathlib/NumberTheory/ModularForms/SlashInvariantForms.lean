@@ -215,7 +215,8 @@ instance (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
 @[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
 
-/-- Translating a `SlashInvariantForm` by `SL(2, ℤ)`, to obtain a new `SlashInvariantForm`. -/
+/-- Translating a `SlashInvariantForm` by `g : GL (Fin 2) ℝ`, to obtain a new 
+`SlashInvariantForm` now of level `SL(2, ℤ) ∩ g⁻¹ Γ g`. -/
 noncomputable def translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
     SlashInvariantForm (CongruenceSubgroup.conjGL Γ g) k where
   toFun := f ∣[k] g
