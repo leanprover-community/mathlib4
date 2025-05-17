@@ -18,7 +18,12 @@ open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory M
 
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
-  {G H X Y : C} [Grp_Class G] [Grp_Class H]
+  {M G H X Y : C} [Mon_Class M] [Grp_Class G] [Grp_Class H]
+
+/-- Construct a morphism `G ⟶ H` of `Grp_ C` C from a map `f : G ⟶ H` and a `IsMon_Hom f`
+instance. -/
+@[simps]
+def Grp_.homMk (f : G ⟶ H) [IsMon_Hom f] : .mk' G ⟶ Grp_.mk' H := Mon_.Hom.mk' f
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
@@ -46,15 +51,12 @@ def Grp_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _)
     simp [← Functor.comp_obj]
 
 /-- If `G` is a group object, then `Hom(X, G)` has a group structure. -/
-abbrev Hom.group : Group (X ⟶ G) where
-  __ := monoid
+instance Hom.instGroup : Group (X ⟶ G) where
   inv f := f ≫ ι
   inv_mul_cancel f := calc
     lift (f ≫ ι) f ≫ μ
     _ = (f ≫ lift ι (𝟙 G)) ≫ μ := by simp
     _ = toUnit X ≫ η := by rw [Category.assoc]; simp
-
-attribute [local instance] Hom.group
 
 lemma Hom.inv_def (f : X ⟶ G) : f⁻¹ = f ≫ ι := rfl
 
@@ -122,11 +124,96 @@ lemma essImage_yonedaGrp :
     exact ⟨.mk' X, ⟨yonedaGrpObjIsoOfRepresentableBy X F e⟩⟩
 
 @[reassoc]
+lemma Grp_Class.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMon_Hom g] : f⁻¹ ≫ g = (f ≫ g)⁻¹ := by
+  simp [Hom.inv_def, IsMon_Hom.inv_hom]
+
+@[reassoc]
+lemma Grp_Class.div_comp (f g : X ⟶ G) (h : G ⟶ H) [IsMon_Hom h] :
+    (f / g) ≫ h = (f ≫ h) / (g ≫ h) :=
+  ((yonedaGrp.map (Grp_.homMk h)).app (.op X)).hom.map_div f g
+
+@[reassoc]
+lemma Grp_Class.zpow_comp (f : X ⟶ G) (n : ℤ) (g : G ⟶ H) [IsMon_Hom g] :
+    (f ^ n) ≫ g = (f ≫ g) ^ n :=
+  ((yonedaGrp.map (Grp_.homMk g)).app (.op X)).hom.map_zpow f n
+
+@[reassoc]
 lemma Grp_Class.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)⁻¹ :=
   ((yonedaGrp.obj <| .mk' G).map f.op).hom.map_inv g
 
 @[reassoc]
-lemma Grp_Class.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMon_Hom g] : f⁻¹ ≫ g = (f ≫ g)⁻¹ := by
-  simp [Hom.inv_def,IsMon_Hom.inv_hom]
+lemma Grp_Class.comp_div (f : X ⟶ Y) (g h : Y ⟶ G) : f ≫ (g / h) = f ≫ g / f ≫ h :=
+  ((yonedaGrp.obj (.mk' G)).map f.op).hom.map_div g h
+
+@[reassoc]
+lemma Grp_Class.comp_zpow (f : X ⟶ Y) (g : Y ⟶ G) : ∀ n : ℤ, f ≫ g ^ n = (f ≫ g) ^ n
+  | (n : ℕ) => by simp [comp_pow]
+  | .negSucc n => by simp [comp_pow, comp_inv]
 
 lemma Grp_Class.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
+
+lemma Grp_Class.mul_inv_rev [BraidedCategory C] : μ ≫ ι = (ι[G] ⊗ ι) ≫ (β_ _ _).hom ≫ μ := by
+  simp [mul_eq_mul, inv_eq_inv, mul_comp, comp_inv, comp_mul]
+
+instance [BraidedCategory C] [IsCommMon G] : IsMon_Hom ι[G] where
+  one_hom := by simp [one_eq_one, ← Hom.inv_def]
+  mul_hom := by simp [Grp_Class.mul_inv_rev]
+
+instance [BraidedCategory C] [IsCommMon G] {f : M ⟶ G} [IsMon_Hom f] : IsMon_Hom f⁻¹ where
+  one_hom := by simp [Hom.inv_def]
+  mul_hom := by simp [Hom.inv_def]
+
+instance Hom.instCommGroup [BraidedCategory C] [IsCommMon G] : CommGroup (X ⟶ G) where
+  inv_mul_cancel f := by simp
+
+namespace Grp_
+variable {G H : Grp_ C}
+
+lemma inv_eq_inv (G : Grp_ C) : G.inv = (𝟙 G.X)⁻¹ := Grp_Class.inv_eq_inv (G := G.X)
+
+namespace Hom
+
+instance instOne : One (G ⟶ H) := inferInstanceAs <| One (G.toMon_ ⟶ H.toMon_)
+
+@[simp] lemma hom_one : (1 : (G ⟶ H)).hom = 1 := rfl
+
+variable [BraidedCategory C] [IsCommMon H.X]
+
+instance instMul : Mul (G ⟶ H) := inferInstanceAs <| Mul (G.toMon_ ⟶ H.toMon_)
+
+instance instPow : Pow (G ⟶ H) ℕ := inferInstanceAs <| Pow (G.toMon_ ⟶ H.toMon_) ℕ
+
+instance instInv : Inv (G ⟶ H) where
+  inv f := {
+    hom := f.hom⁻¹
+    one_hom := by simp [Mon_.one_eq_one]
+    mul_hom := by simp [Mon_.mul_eq_mul, Mon_Class.comp_mul, Mon_Class.mul_comp]
+  }
+
+instance instDiv : Div (G ⟶ H) where
+  div f g := {
+    hom := f.hom / g.hom
+    one_hom := by simp [Mon_.one_eq_one, Grp_Class.comp_div, Mon_Class.one_comp]
+    mul_hom := by
+      simp [Mon_.mul_eq_mul, Grp_Class.comp_div, Mon_Class.comp_mul, Mon_Class.mul_comp,
+        mul_div_mul_comm]
+  }
+
+instance instPowInt : Pow (G ⟶ H) ℤ where
+  pow f i := {
+    hom := f.hom ^ i
+    one_hom := by simp [Mon_.one_eq_one, Mon_Class.one_comp, Grp_Class.comp_zpow]
+    mul_hom := by
+      simp [Mon_.mul_eq_mul, Mon_Class.comp_mul, Mon_Class.mul_comp, Grp_Class.comp_zpow, mul_zpow]
+  }
+
+@[simp] lemma hom_mul (f g : G ⟶ H) : (f * g).hom = f.hom * g.hom := rfl
+@[simp] lemma hom_pow (f : G ⟶ H) (n : ℕ) : (f ^ n).hom = f.hom ^ n := rfl
+@[simp] lemma hom_inv (f : G ⟶ H) : (f⁻¹).hom = f.hom⁻¹ := rfl
+@[simp] lemma hom_div (f g : G ⟶ H) : (f / g).hom = f.hom / g.hom := rfl
+@[simp] lemma hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom = f.hom ^ n := rfl
+
+instance instCommGroup : CommGroup (G ⟶ H) :=
+  Mon_.hom_injective.commGroup Mon_.Hom.hom hom_one hom_mul hom_inv hom_div hom_pow hom_zpow
+
+end Grp_.Hom

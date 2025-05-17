@@ -81,7 +81,7 @@ def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget
 alias Mon_ClassOfRepresentableBy := Mon_Class.ofRepresentableBy
 
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
-abbrev Hom.monoid : Monoid (X ⟶ M) where
+instance Hom.instMonoid : Monoid (X ⟶ M) where
   mul f₁ f₂ := lift f₁ f₂ ≫ μ
   mul_assoc f₁ f₂ f₃ := by
     show lift (lift f₁ f₂ ≫ μ) f₃ ≫ μ = lift f₁ (lift f₂ f₃ ≫ μ) ≫ μ
@@ -105,10 +105,16 @@ abbrev Hom.monoid : Monoid (X ⟶ M) where
       Category.comp_id, rightUnitor_hom]
     exact lift_fst _ _
 
-attribute [local instance] Hom.monoid
-
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
 lemma Hom.mul_def (f₁ f₂ : X ⟶ M) : f₁ * f₂ = lift f₁ f₂ ≫ μ := rfl
+
+section BraidedCategory
+variable [BraidedCategory C]
+
+instance Hom.instCommMonoid [IsCommMon M] : CommMonoid (X ⟶ M) where
+  mul_comm f g := by simpa [-IsCommMon.mul_comm] using lift g f ≫= IsCommMon.mul_comm M
+
+end BraidedCategory
 
 variable (M) in
 /-- If `M` is a monoid object, then `Hom(-, M)` is a presheaf of monoids. -/
@@ -216,7 +222,7 @@ lemma essImage_yonedaMon :
     letI := Mon_Class.ofRepresentableBy X F e
     exact ⟨.mk' X, ⟨yonedaMonObjIsoOfRepresentableBy X F e⟩⟩
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma Mon_Class.one_comp (f : M ⟶ N) [IsMon_Hom f] : (1 : X ⟶ M) ≫ f = 1 := by simp [Hom.one_def]
 
 @[reassoc]
@@ -224,12 +230,21 @@ lemma Mon_Class.mul_comp (f₁ f₂ : X ⟶ M) (g : M ⟶ N) [IsMon_Hom g] :
     (f₁ * f₂) ≫ g = f₁ ≫ g * f₂ ≫ g := by simp [Hom.mul_def]
 
 @[reassoc]
+lemma Mon_Class.pow_comp (f : X ⟶ M) (n : ℕ) (g : M ⟶ N) [IsMon_Hom g] :
+    (f ^ n) ≫ g = (f ≫ g) ^ n := by
+  induction' n with n hn <;> simp [pow_succ, Mon_Class.mul_comp, *]
+
+@[reassoc (attr := simp)]
 lemma Mon_Class.comp_one (f : X ⟶ Y) : f ≫ (1 : Y ⟶ M) = 1 :=
   ((yonedaMon.obj <| .mk' M).map f.op).hom.map_one
 
 @[reassoc]
 lemma Mon_Class.comp_mul (f : X ⟶ Y) (g₁ g₂ : Y ⟶ M) : f ≫ (g₁ * g₂) = f ≫ g₁ * f ≫ g₂ :=
   ((yonedaMon.obj <| .mk' M).map f.op).hom.map_mul _ _
+
+@[reassoc]
+lemma Mon_Class.comp_pow (f : X ⟶ M) (n : ℕ) (h : Y ⟶ X) : h ≫ f ^ n = (h ≫ f) ^ n := by
+  induction' n with n hn <;> simp [pow_succ, Mon_Class.comp_mul, *]
 
 variable (M) in
 lemma Mon_Class.one_eq_one : η = (1 : _ ⟶ M) :=
@@ -238,3 +253,44 @@ lemma Mon_Class.one_eq_one : η = (1 : _ ⟶ M) :=
 variable (M) in
 lemma Mon_Class.mul_eq_mul : μ = fst M M * snd _ _ :=
   show _ = _ ≫ _ by rw [lift_fst_snd, Category.id_comp]
+
+namespace Mon_
+variable {M N : Mon_ C}
+
+lemma one_eq_one (M : Mon_ C) : M.one = 1 := Mon_Class.one_eq_one (M := M.X)
+
+lemma mul_eq_mul (M : Mon_ C) : M.mul = (fst _ _ * snd _ _) := Mon_Class.mul_eq_mul (M := M.X)
+
+namespace Hom
+
+instance instOne : One (M ⟶ N) where
+  one.hom := 1
+  one.one_hom := by simp [one_eq_one]
+  one.mul_hom := by simp [mul_eq_mul, Mon_Class.comp_mul]
+
+@[simp] lemma hom_one : (1 : (M ⟶ N)).hom = 1 := rfl
+
+variable [BraidedCategory C] [IsCommMon N.X]
+
+instance instMul : Mul (M ⟶ N) where
+  mul f g := {
+    hom := f.hom * g.hom
+    one_hom := by simp [one_eq_one, Mon_Class.comp_mul, Mon_Class.one_comp]
+    mul_hom := by simp [mul_eq_mul, comp_mul, mul_comp, mul_mul_mul_comm]
+  }
+
+instance instPow : Pow (M ⟶ N) ℕ where
+  pow f n := {
+    hom := f.hom ^ n
+    one_hom := by simp [one_eq_one, Mon_Class.one_comp, Mon_Class.comp_pow]
+    mul_hom := by
+      simp [mul_eq_mul, Mon_Class.comp_mul, Mon_Class.mul_comp, Mon_Class.comp_pow, mul_pow]
+  }
+
+@[simp] lemma hom_mul (f g : M ⟶ N) : (f * g).hom = f.hom * g.hom := rfl
+@[simp] lemma hom_pow (f : M ⟶ N) (n : ℕ) : (f ^ n).hom = f.hom ^ n := rfl
+
+instance instCommMonoid : CommMonoid (M ⟶ N) :=
+  hom_injective.commMonoid hom hom_one hom_mul hom_pow
+
+end Mon_.Hom
