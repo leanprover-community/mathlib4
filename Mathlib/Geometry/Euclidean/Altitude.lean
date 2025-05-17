@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Projection
+import Mathlib.Analysis.InnerProductSpace.Affine
 
 /-!
 # Altitudes of a simplex
@@ -169,6 +170,23 @@ def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
 
 lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
   simp [height]
+open scoped RealInnerProductSpace
+
+/-- The inner product of an edge from `j` to `i` and the vector from the foot of `i` to `i`
+is the square of the height. -/
+lemma inner_vsub_vsub_altitudeFoot_eq_height_sq
+    {n : ℕ} [NeZero n] (s : Simplex ℝ P n) {i j : Fin (n + 1)} (h : i ≠ j)  :
+    ⟪s.points i -ᵥ s.points j, s.points i -ᵥ s.altitudeFoot i⟫ = s.height i ^ 2 := by
+  rw [height, inner_vsub_vsub_left_eq_dist_sq_right_iff, altitudeFoot]
+  refine Submodule.inner_right_of_mem_orthogonal
+        (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
+        (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+          (SetLike.coe_mem _)
+          (mem_affineSpan ℝ ?_)) ?_
+  · simp only [range_faceOpposite_points, ne_eq, Set.mem_image, Set.mem_setOf_eq]
+    refine ⟨j, h.symm, rfl⟩
+  · rw [← direction_affineSpan]
+    exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
 end Simplex
 
