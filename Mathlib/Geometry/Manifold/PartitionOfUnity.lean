@@ -570,6 +570,61 @@ theorem exists_isSubordinate_chartAt_source :
   apply exists_isSubordinate _ isClosed_univ _ (fun i ↦ (chartAt H _).open_source) (fun x _ ↦ ?_)
   exact mem_iUnion_of_mem x (mem_chart_source H x)
 
+/--
+Let `ρ` be a smooth partition of unity subordinate to an open cover `U`.
+Let `s_loc` be a family of local sections, where each `s_loc i` is $C^n$ smooth on `U i`
+(when viewed as a map to the total space of the bundle).
+Then the global section `x ↦ ∑ᶠ i, ρ i x • s_loc i x`, when viewed as a map to the total space,
+is $C^n$ smooth.
+-/
+theorem contMDiff_totalSpace_weighted_sum_of_local_sections
+    {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type uH} [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM}
+      [TopologicalSpace M] [ChartedSpace H M]
+    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
+    (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+    [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
+    {n : ℕ∞} {ι : Type*} (ρ : SmoothPartitionOfUnity ι I M univ) (s_loc : ι → ((x : M) → V x))
+    (U : ι → Set M) (hU_isOpen : ∀ i, IsOpen (U i)) (hρ_subord : ρ.IsSubordinate U)
+    (h_smooth_s_loc : ∀ i, ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x => (TotalSpace.mk x (s_loc i x) : TotalSpace F_fiber V)) (U i)) :
+    ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x => (TotalSpace.mk x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x)) : TotalSpace F_fiber V)) := by
+  let s_val (x : M) : V x := ∑ᶠ (j : ι), (ρ j x) • (s_loc j x)
+  intro x₀
+  apply (Bundle.contMDiffAt_section s_val x₀).mpr
+  let e₀ := trivializationAt F_fiber V x₀
+  apply ContMDiffAt.congr_of_eventuallyEq
+  · apply ρ.contMDiffAt_finsum
+    · intro j h_x₀_in_tsupport_ρj
+      have h_slocj_smooth_at_x₀ : ContMDiffAt I (I.prod 𝓘(ℝ, F_fiber)) n
+        (fun x => (TotalSpace.mk x (s_loc j x) : TotalSpace F_fiber V)) x₀ :=
+        (h_smooth_s_loc j).contMDiffAt ((hU_isOpen j).mem_nhds (hρ_subord j h_x₀_in_tsupport_ρj))
+      exact (contMDiffAt_section (s_loc j) x₀).mp h_slocj_smooth_at_x₀
+  · have : (fun x ↦ (e₀ ⟨x, s_val x⟩).2)
+            =ᶠ[𝓝 x₀]
+          fun x ↦ ∑ᶠ i, ρ i x • (e₀ ⟨x, s_loc i x⟩).2 := by
+      have h_base : {x : M | x ∈ e₀.baseSet} ∈ (𝓝 x₀) :=
+        e₀.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x₀)
+      filter_upwards [ρ.eventually_fintsupport_subset x₀, h_base] with x _ hx_base
+      have hlin : IsLinearMap ℝ (fun y ↦ (e₀ ⟨x, y⟩).2) := e₀.linear ℝ hx_base
+      have hfin : {i : ι | (ρ i x • s_loc i x) ≠ 0}.Finite := by
+        refine (ρ.locallyFinite.point_finite x).subset fun i hi_smul_ne_zero => ?_
+        contrapose! hi_smul_ne_zero
+        simp [hi_smul_ne_zero]
+        exact fun a ↦ False.elim (hi_smul_ne_zero a)
+      let Llin : V x →ₗ[ℝ] F_fiber :=
+        { toFun    := fun y ↦ (e₀ ⟨x, y⟩).2
+          map_add' := by intro u v; simpa using hlin.map_add u v
+          map_smul' := by intro c u; simpa using hlin.map_smul c u }
+      have h_map :
+          (fun y ↦ (e₀ ⟨x, y⟩).2) (∑ᶠ i, ρ i x • s_loc i x) =
+            ∑ᶠ i, ρ i x • (fun y ↦ (e₀ ⟨x, y⟩).2) (s_loc i x) := by
+        simpa only [LinearMap.toAddMonoidHom_coe, map_smul] using
+          Llin.toAddMonoidHom.map_finsum hfin
+      exact h_map
+    exact this
+
 end SmoothPartitionOfUnity
 
 variable [SigmaCompactSpace M] [T2Space M] {t : M → Set F} {n : ℕ∞}
@@ -636,7 +691,7 @@ theorem exists_contMDiff_section_forall_mem_convex_of_local
           (fun x => (⟨x, s_loc x⟩ : TotalSpace F_fiber V)) U_x₀) ∧
         (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
     ∃ s : Cₛ^n⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x := by
-  choose U_map h_nhds s_loc h_smooth_s_loc h_mem_t using Hloc
+  choose U_map h_nhds s_loc h_smooth_s_loc_on_U_map h_mem_t using Hloc
 
   -- Construct an open cover from the interiors of the given neighborhoods.
   let U_open_cover (x : M) : Set M := interior (U_map x)
@@ -658,56 +713,10 @@ theorem exists_contMDiff_section_forall_mem_convex_of_local
   -- Prove that `s_val`, when viewed as a map to the total space, is smooth.
   have hs_val_tot_space_smooth : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
       (fun x => (TotalSpace.mk x (s_val x) : TotalSpace F_fiber V)) := by
-    intro x₀
-    -- To show `s_val` is smooth at `x₀`, we show its representation in a trivialization is smooth.
-    apply (Bundle.contMDiffAt_section s_val x₀).mpr
-    let e₀ := trivializationAt F_fiber V x₀
-    apply ContMDiffAt.congr_of_eventuallyEq
-    -- First, show that the sum defining `s_val` (composed with the trivialization) is smooth.
-    -- This follows from the smoothness of each `ρ j • s_loc j` in its chart.
-    · apply ρ.contMDiffAt_finsum
-      intro j h_x₀_in_tsupport_ρj
-      have h_slocj_smooth_at_x₀ : ContMDiffAt I (I.prod 𝓘(ℝ, F_fiber)) n
-        (fun x => (TotalSpace.mk x (s_loc j x) : TotalSpace F_fiber V)) x₀ :=
-        (h_smooth_s_loc j).contMDiffAt
-          (mem_interior_iff_mem_nhds.mp (hρ_subord j h_x₀_in_tsupport_ρj))
-      -- The local section `s_loc j` is smooth on `U_map j`, which contains `x₀`.
-      exact (contMDiffAt_section (s_loc j) x₀).mp h_slocj_smooth_at_x₀
-    -- Second, show that `(e₀ ⟨x, s_val x⟩).2` is eventually equal to the sum of trivialized local
-    -- sections. This relies on the linearity of the trivialization map `e₀` on its base set.
-    · have : (fun x ↦ (e₀ ⟨x, s_val x⟩).2)
-              =ᶠ[𝓝 x₀]
-            fun x ↦ ∑ᶠ i, ρ i x • (e₀ ⟨x, s_loc i x⟩).2 := by
-        -- `x₀` is in `e₀.baseSet`, which is open.
-        have h_base : {x : M | x ∈ e₀.baseSet} ∈ (𝓝 x₀) :=
-          e₀.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x₀)
-        -- Shrink to a neighborhood where:
-        -- 1. Only finitely many `ρ i x` (those in `ρ.finsupport x₀`) are non-zero.
-        -- 2. `x` is in `e₀.baseSet` (for linearity of `e₀`).
-        filter_upwards [ρ.eventually_fintsupport_subset x₀, h_base] with x hx_subset hx_base
-        -- The map `y ↦ (e₀ ⟨x, y⟩).2` is linear on the fiber at `x`.
-        have hlin : IsLinearMap ℝ (fun y ↦ (e₀ ⟨x, y⟩).2) := e₀.linear ℝ hx_base
-        -- The set of indices `i` for which `ρ i x • s_loc i x` is non-zero is finite.
-        have hfin : {i | (ρ i x • s_loc i x) ≠ 0}.Finite := by
-          refine (ρ.locallyFinite.point_finite x).subset ?_
-          intro i hi
-          by_cases hρ_eq_zero : ρ i x = 0
-          · simp only [ne_eq, smul_eq_zero, not_or, mem_setOf_eq, hρ_eq_zero, not_true_eq_false,
-              false_and] at hi
-          · exact hρ_eq_zero
-        -- Construct the linear map explicitly to use `map_finsum`.
-        let Llin : V x →ₗ[ℝ] F_fiber :=
-          { toFun    := fun y ↦ (e₀ ⟨x, y⟩).2
-            map_add' := by intro u v; simpa using hlin.map_add u v
-            map_smul' := by intro c u; simpa using hlin.map_smul c u }
-        -- Push the sum through the linear map.
-        have h_map :
-            (fun y ↦ (e₀ ⟨x, y⟩).2) (∑ᶠ i, ρ i x • s_loc i x) =
-              ∑ᶠ i, ρ i x • (fun y ↦ (e₀ ⟨x, y⟩).2) (s_loc i x) := by
-          simpa only [LinearMap.toAddMonoidHom_coe, map_smul] using
-            Llin.toAddMonoidHom.map_finsum hfin
-        exact h_map
-      exact this
+    apply SmoothPartitionOfUnity.contMDiff_totalSpace_weighted_sum_of_local_sections I V ρ s_loc
+      U_open_cover hU_isOpen hρ_subord
+    intro j
+    exact (h_smooth_s_loc_on_U_map j).mono interior_subset
 
   -- Construct the smooth section and prove it lies in the convex sets `t x`.
   refine ⟨⟨s_val, hs_val_tot_space_smooth⟩, fun x => ?_⟩
