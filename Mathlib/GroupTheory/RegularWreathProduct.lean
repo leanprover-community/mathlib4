@@ -160,7 +160,7 @@ lemma rsmul {w : D ≀ᵣ Q} {p : Λ × Q} :
 
 instance instMulActionRWP : MulAction (D ≀ᵣ Q) (Λ × Q) where
   one_smul := by simp
-  mul_smul := by by simp [smul_smul, mul_assoc]
+  mul_smul := by simp [smul_smul, mul_assoc]
 
 variable [FaithfulSMul D Λ]
 instance instFaithfulSMulRWP : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
