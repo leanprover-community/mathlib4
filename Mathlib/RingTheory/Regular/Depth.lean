@@ -6,6 +6,7 @@ Authors: Nailin Guan, Yi Song
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Support
@@ -25,65 +26,6 @@ open IsLocalRing LinearMap
 
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
-lemma Ideal.subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
-    (hs : s.Finite) {f : ι → Ideal R} (a b : ι)
-    (hp : ∀ i ∈ s, i ≠ a → i ≠ b → (f i).IsPrime) {I : Ideal R} :
-    ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
-  rcases Set.Finite.exists_finset hs with ⟨t, ht⟩
-  have heq : ⋃ i ∈ s, f i = ⋃ i ∈ t, (f i : Set R) := by
-    ext r
-    simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
-    exact exists_congr (fun i ↦ (and_congr_left fun a ↦ ht i).symm)
-  have hmem_union : ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ((I : Set R) ⊆ ⋃ i ∈ (t : Set ι), f i) :=
-    (congrArg _ heq).to_iff
-  have hexists_le: (∃ i ∈ t, I ≤ f i) ↔ ∃ i ∈ s, I ≤ f i :=
-    exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
-  rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin)), hexists_le]
-
-lemma mem_associatePrimes_of_comap_mem_associatePrimes_localization (S : Submonoid R)
-    (p : Ideal (Localization S)) [p.IsPrime]
-    (ass : p.comap (algebraMap R (Localization S)) ∈ associatedPrimes R M) :
-    p ∈ associatedPrimes (Localization S) (LocalizedModule S M) := by
-  rcases ass with ⟨hp, x, hx⟩
-  constructor
-  · --may be able to remove `p.IsPrime`
-    trivial
-  · use LocalizedModule.mkLinearMap S M x
-    ext t
-    induction' t using Localization.induction_on with a
-    simp only [LocalizedModule.mkLinearMap_apply, LinearMap.mem_ker,
-      LinearMap.toSpanSingleton_apply, LocalizedModule.mk_smul_mk, mul_one]
-    rw [IsLocalizedModule.mk_eq_mk', IsLocalizedModule.mk'_eq_zero']
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · use 1
-      simp only [← LinearMap.toSpanSingleton_apply, one_smul, ← LinearMap.mem_ker, ← hx,
-        Ideal.mem_comap, ← Localization.mk_one_eq_algebraMap]
-      have : Localization.mk a.1 1 = Localization.mk a.1 a.2 * Localization.mk a.2.1 (1 : S) := by
-        simp only [Localization.mk_mul, mul_one, ← sub_eq_zero, Localization.sub_mk,
-          one_mul, sub_zero]
-        simp [mul_comm, Localization.mk_zero]
-      rw [this]
-      exact Ideal.IsTwoSided.mul_mem_of_left _ h
-    · rcases h with ⟨s, hs⟩
-      have : s • a.1 • x = (s.1 * a.1) • x := smul_smul s.1 a.1 x
-      rw [this, ← LinearMap.toSpanSingleton_apply, ← LinearMap.mem_ker, ← hx, Ideal.mem_comap,
-        ← Localization.mk_one_eq_algebraMap] at hs
-      have : Localization.mk a.1 a.2 =
-        Localization.mk (s.1 * a.1) 1 * Localization.mk 1 (s * a.2) := by
-        simp only [Localization.mk_mul, mul_one, one_mul, ← sub_eq_zero, Localization.sub_mk,
-          Submonoid.coe_mul, sub_zero]
-        simp [← mul_assoc, mul_comm s.1 a.2.1, Localization.mk_zero]
-      rw [this]
-      exact Ideal.IsTwoSided.mul_mem_of_left _ hs
-
-lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes {p : Ideal R} [p.IsPrime]
-    (ass : p ∈ associatedPrimes R M) :
-    maximalIdeal (Localization.AtPrime p) ∈
-    associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M):= by
-  apply mem_associatePrimes_of_comap_mem_associatePrimes_localization
-  simpa [Localization.AtPrime.comap_maximalIdeal] using ass
-
---lemma_212_a
 lemma hom_subsingleton_of_mem_ann_isSMulRegular {r : R} (reg : IsSMulRegular M r)
     (mem_ann : r ∈ Module.annihilator R N) : Subsingleton (N →ₗ[R] M) := by
   apply subsingleton_of_forall_eq 0 (fun f ↦ ext fun x ↦ ?_)
@@ -91,7 +33,6 @@ lemma hom_subsingleton_of_mem_ann_isSMulRegular {r : R} (reg : IsSMulRegular M r
     rw [smul_zero, ← map_smul, Module.mem_annihilator.mp mem_ann x, map_zero]
   simpa using reg this
 
---lemma_212_b_nontrivial
 lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRing R]
     [Module.Finite R M] [Module.Finite R N] [Nontrivial M] (hom0 : Subsingleton (N →ₗ[R] M)) :
     ∃ r ∈ Module.annihilator R N, IsSMulRegular M r := by
@@ -151,7 +92,6 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
   exact (Module.FinitePresentation.linearEquivMapExtendScalars
     p'.asIdeal.primeCompl).symm.map_eq_zero_iff.mp (Subsingleton.eq_zero _)
 
---lemma_212_b
 lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton [IsNoetherianRing R]
     [Module.Finite R M] [Module.Finite R N] (hom0 : Subsingleton (N →ₗ[R] M)) :
     ∃ r ∈ Module.annihilator R N, IsSMulRegular M r := by
