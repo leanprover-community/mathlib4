@@ -623,6 +623,7 @@ theorem ncard_le_ncard_insert (a : α) (s : Set α) : s.ncard ≤ (insert a s).n
 theorem ncard_pair {a b : α} (h : a ≠ b) : ({a, b} : Set α).ncard = 2 := by
   simp [h]
 
+-- removing `@[simp]` because the LHS is not in simp normal form
 theorem ncard_diff_singleton_add_one {a : α} (h : a ∈ s)
     (hs : s.Finite := by toFinite_tac) : (s \ {a}).ncard + 1 = s.ncard := by
   to_encard_tac
@@ -633,12 +634,6 @@ theorem ncard_diff_singleton_add_one {a : α} (h : a ∈ s)
   rcases s.infinite_or_finite with hs | hs
   · simp_all [ncard, Infinite.diff hs (finite_singleton a)]
   · exact eq_tsub_of_add_eq (ncard_diff_singleton_add_one h hs)
-
--- A variant of `ncard_diff_singleton_add_one` whose left hand side is in simp normal form.
-@[simp] theorem ncard_sub_add_one_of_mem {a : α} (h : a ∈ s)
-    (hs : s.Finite := by toFinite_tac) : s.ncard - 1 + 1 = s.ncard := by
-  rw [← Set.ncard_diff_singleton_of_mem h]
-  exact ncard_diff_singleton_add_one h hs
 
 theorem ncard_diff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := by toFinite_tac) :
     (s \ {a}).ncard < s.ncard := by
