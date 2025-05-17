@@ -20,7 +20,7 @@ There an hom into the regular wreath product `inl : D →* D ≀ᵣ Q`.
 
 ## Notation
 
-This file introduces the global notation `D ≀ᵣ Q` for `RegularWreathProduct D Q`
+This file introduces the global notation `D ≀ᵣ Q` for `RegularWreathProduct D Q`.
 
 ## Tags
 group, regular wreath product, sylow p-subgroup
