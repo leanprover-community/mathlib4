@@ -45,7 +45,7 @@ def num (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := g 0 0 * z + g 0 1
 /-- Denominator of the formula for a fractional linear transformation -/
 def denom (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := g 1 0 * z + g 1 1
 
-theorem linear_ne_zero {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd ≠ 0) :
+theorem linear_ne_zero_of_im {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd ≠ 0) :
     (cd 0 : ℂ) * z + cd 1 ≠ 0 := by
   contrapose! h
   have : cd 0 = 0 := by
@@ -57,8 +57,12 @@ theorem linear_ne_zero {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd 
   ext i
   fin_cases i <;> assumption
 
+theorem linear_ne_zero {cd : Fin 2 → ℝ} (τ : ℍ) (h : cd ≠ 0) :
+    (cd 0 : ℂ) * τ + cd 1 ≠ 0 :=
+  linear_ne_zero_of_im τ.im_ne_zero h
+
 theorem denom_ne_zero_of_im (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) : denom g z ≠ 0 := by
-  refine linear_ne_zero hz fun H ↦ g.det.ne_zero ?_
+  refine linear_ne_zero_of_im hz fun H ↦ g.det.ne_zero ?_
   simp [Matrix.det_fin_two, H]
 
 theorem denom_ne_zero (g : GL (Fin 2) ℝ) (z : ℍ) : denom g z ≠ 0 :=
