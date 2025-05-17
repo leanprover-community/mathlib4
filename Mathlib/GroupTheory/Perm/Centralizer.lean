@@ -556,7 +556,7 @@ theorem kerParam_range_eq :
   · rintro - ⟨p, hp, rfl⟩
     simp only [coe_subtype]
     set u : Perm (Function.fixedPoints g) :=
-      subtypePerm p (fun x ↦ mem_fixedPoints_iff_apply_mem_of_mem_centralizer p.2)
+      subtypePerm p (fun x ↦ apply_mem_fixedPoints_iff_mem_of_mem_centralizer p.2)
     simp only [SetLike.mem_coe, mem_ker_toPermHom_iff, IsCycle.forall_commute_iff] at hp
     set v : (c : g.cycleFactorsFinset) → (Subgroup.zpowers c.val) :=
       fun c => ⟨ofSubtype
