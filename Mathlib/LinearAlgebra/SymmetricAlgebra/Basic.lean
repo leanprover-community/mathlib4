@@ -14,8 +14,8 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
 ## Notation
 
 * `SymmetricAlgebra R M`: a concrete construction of the symmetric algebra defined as a
-   quotient of the tensor algebra. It is endowed with an R-algebra structure and a commutative
-   ring structure.
+  quotient of the tensor algebra. It is endowed with an R-algebra structure and a commutative
+  ring structure.
 * `SymmetricAlgebra.ι R`: the canonical R-linear map `M →ₗ[R] SymmetricAlgebra R M`.
 
 ## Note
