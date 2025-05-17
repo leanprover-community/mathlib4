@@ -5,7 +5,7 @@ Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
 /-!
 # The Grothendieck construction
@@ -23,31 +23,39 @@ The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
+## Future work / TODO
+
+1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
+pseudofunctor from `Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat` to `Cat`.
+2. One could probably deduce the results in `CategoryTheory.Grothendieck` as a specialization of the
+results in this file.
+
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
 Angelo Vistoli
+
 -/
 
-namespace CategoryTheory
+namespace CategoryTheory.Pseudofunctor
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
-open CategoryTheory Functor Category Opposite Discrete Bicategory
+open Functor Category Opposite Discrete Bicategory StrongTrans
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
 
 /-- The type of objects in the fibered category associated to a presheaf valued in types. -/
 @[ext]
-structure Pseudofunctor.Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
+structure Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
   /-- The underlying object in the base category. -/
   base : 𝒮
   /-- The object in the fiber of the base object. -/
   fiber : F.obj ⟨op base⟩
 
-namespace Pseudofunctor.Grothendieck
+namespace Grothendieck
 
 /-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
-scoped prefix:75 "∫ " => Pseudofunctor.Grothendieck
+scoped prefix:75 "∫ " => Grothendieck
 
 /-- A morphism in the Grothendieck category `F : C ⥤ Cat` consists of
 `base : X.base ⟶ Y.base` and `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`.
@@ -58,7 +66,7 @@ structure Hom (X Y : ∫ F) where
   /-- The morphism in the fiber over the domain. -/
   fiber : X.fiber ⟶ (F.map base.op.toLoc).obj Y.fiber
 
-@[simps!]
+@[simps! id_base id_fiber comp_base comp_fiber]
 instance categoryStruct : CategoryStruct (∫ F) where
   Hom X Y := Hom X Y
   id X := {
@@ -114,9 +122,106 @@ variable (F)
 /-- The projection `∫ F ⥤ 𝒮` given by projecting both objects and homs to the first
 factor. -/
 @[simps]
-def forget : ∫ F ⥤ 𝒮 where
+def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : ∫ F ⥤ 𝒮 where
   obj X := X.base
   map f := f.base
+
+section
+
+attribute [local simp]
+  Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso Strict.associator_eqToIso
+
+variable {F} {G : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+  {H : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+
+/-- The Grothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
+induces a functor `Grothendieck.map : ∫ F ⥤ ∫ G`.
+-/
+@[simps!]
+def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
+  obj a := {
+    base := a.base
+    fiber := (α.app ⟨op a.base⟩).obj a.fiber }
+  map {a b} f := {
+    base := f.1
+    fiber := (α.app ⟨op a.base⟩).map f.2 ≫ (α.naturality f.1.op.toLoc).hom.app b.fiber }
+  map_id a := by
+    ext1
+    · dsimp
+    · simp [StrongTrans.naturality_id_hom_app, ← Functor.map_comp_assoc]
+  map_comp {a b c} f g := by
+    ext
+    · dsimp
+    · dsimp
+      rw [StrongTrans.naturality_comp_hom_app]
+      simp only [map_comp, toOplax_toPrelaxFunctor, Cat.comp_obj, Strict.associator_eqToIso,
+        eqToIso_refl, Iso.refl_hom, Cat.id_app, Iso.refl_inv, id_comp, assoc, comp_id]
+      slice_lhs 2 4 => simp only [← Functor.map_comp, Iso.inv_hom_id_app, Cat.comp_obj, comp_id]
+      simp [← Functor.comp_map]
+
+@[simp]
+lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
+  ext <;> simp
+
+@[simp]
+theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
+
+section
+
+variable (F)
+
+/-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
+def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
+  hom := { app := fun _ ↦ eqToHom (by aesop_cat) }
+  inv := { app := fun _ ↦ eqToHom (by aesop_cat) }
+  hom_inv_id := by
+    ext
+    · simp
+    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
+  inv_hom_id := by
+    ext
+    · simp
+    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
+
+lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
+  Functor.ext_of_iso (mapIdIso F) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
+
+end
+
+/-- Auxillary definition for `Grothendieck.mapCompIso`. -/
+abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α ⋙ map β where
+  app a := eqToHom (by aesop_cat)
+  naturality := by
+    -- aesop should solve this...
+    intro x y f
+    simp only [comp_obj, eqToHom_refl, comp_id, Functor.comp_map, id_comp]
+    ext <;> simp
+
+/-- Auxillary definition for `Grothendieck.mapCompIso`. -/
+abbrev mapCompIso_inv (α : F ⟶ G) (β : G ⟶ H) : map α ⋙ map β ⟶ map (α ≫ β) where
+  app a := eqToHom (by aesop_cat)
+  naturality := by
+    intro x y f
+    simp only [comp_obj, Functor.comp_map, eqToHom_refl, comp_id, id_comp]
+    ext <;> simp
+
+/-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
+def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β where
+  hom := mapCompIso_hom α β
+  inv := mapCompIso_inv α β
+  hom_inv_id := by
+    ext
+    · simp
+    · simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
+  inv_hom_id := by
+    ext
+    · simp
+    · simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
+
+lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ map β :=
+  Functor.ext_of_iso (mapCompIso α β) (fun _ ↦ by simp [map]) (fun _ ↦ by simp [mapCompIso])
+
+end
 
 end Pseudofunctor.Grothendieck
 
