@@ -372,10 +372,6 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
     (e : M ≃L[R] M') (e' : N ≃L[R] N') : M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N' :=
   e.continuousAlternatingMapCongrLeftEquiv.trans e'.continuousAlternatingMapCongrRightEquiv
 
-@[deprecated (since := "2025-04-16")]
-alias _root_.ContinuousLinearEquiv.continuousAlternatingMapCongr :=
-  ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
-
 /-- `ContinuousAlternatingMap.pi` as an `Equiv`. -/
 @[simps]
 def piEquiv {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, TopologicalSpace (N i)]
