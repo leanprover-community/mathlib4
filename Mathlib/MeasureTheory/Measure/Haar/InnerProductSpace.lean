@@ -120,29 +120,45 @@ section PiLp
 variable (ι : Type*) [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
-theorem EuclideanSpace.volume_preserving_measurableEquiv :
-    MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
-  suffices volume = map (EuclideanSpace.measurableEquiv ι).symm volume by
-    convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
+theorem EuclideanSpace.measurePreserving_measurableOfLp :
+    MeasurePreserving (EuclideanSpace.measurableOfLp ι) := by
+  suffices volume = map (EuclideanSpace.measurableOfLp ι).symm volume by
+    convert ((EuclideanSpace.measurableOfLp ι).symm.measurable.measurePreserving _).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
-    coe_measurableEquiv_symm, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
+    coe_measurableOfLp_symm, ← PiLp.ofLpContinuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
 
-/-- A copy of `EuclideanSpace.volume_preserving_measurableEquiv` for the canonical spelling of the
+set_option linter.deprecated false in
+@[deprecated EuclideanSpace.measurePreserving_measurableOfLp (since := "2024-04-27")]
+theorem EuclideanSpace.volume_preserving_measurableEquiv :
+    MeasurePreserving (EuclideanSpace.measurableEquiv ι) :=
+  EuclideanSpace.measurePreserving_measurableOfLp ι
+
+/-- A copy of `EuclideanSpace.measurePreserving_measurableOfLp` for the canonical spelling of the
 equivalence. -/
+theorem PiLp.measurePreserving_ofLp : MeasurePreserving (@WithLp.ofLp 2 (ι → ℝ)) :=
+  EuclideanSpace.measurePreserving_measurableOfLp ι
+
+set_option linter.deprecated false in
+@[deprecated PiLp.measurePreserving_ofLp (since := "2024-04-27")]
 theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)) :=
   EuclideanSpace.volume_preserving_measurableEquiv ι
 
-/-- The reverse direction of `PiLp.volume_preserving_measurableEquiv`, since
+/-- The reverse direction of `PiLp.measurePreserving_measurableOfLp`, since
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
+theorem PiLp.volume_preserving_toLp : MeasurePreserving (@WithLp.toLp 2 (ι → ℝ)) :=
+  (EuclideanSpace.measurePreserving_measurableOfLp ι).symm
+
+set_option linter.deprecated false in
+@[deprecated PiLp.volume_preserving_toLp (since := "2024-04-27")]
 theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
   (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
 
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
-  rw [← ((EuclideanSpace.volume_preserving_measurableEquiv ι).symm).map_eq,
+  rw [← ((EuclideanSpace.measurePreserving_measurableOfLp ι).symm).map_eq,
     volume_pi_eq_dirac 0, map_dirac (MeasurableEquiv.measurable _),
-    EuclideanSpace.coe_measurableEquiv_symm, WithLp.equiv_symm_zero]
+    EuclideanSpace.coe_measurableOfLp_symm, WithLp.toLp_zero]
 
 end PiLp
 
