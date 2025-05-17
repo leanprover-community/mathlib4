@@ -542,7 +542,7 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
   colimitsOfShape_le
 
 variable (C J) in
-lemma IsStableUnderColimitsOfShape.isomorphisms :
+instance IsStableUnderColimitsOfShape.isomorphisms :
     (isomorphisms C).IsStableUnderColimitsOfShape J where
   condition F₁ F₂ c₁ c₂ h₁ h₂ f (_ : ∀ j, IsIso (f.app j)) φ hφ := by
     have := NatIso.isIso_of_isIso_app f
@@ -551,6 +551,16 @@ lemma IsStableUnderColimitsOfShape.isomorphisms :
       h₂.hom_ext (by simp [hφ])⟩
 
 end ColimitsOfShape
+
+/-- The condition that a property of morphisms is stable by filtered colimits. -/
+@[pp_with_univ]
+class IsStableUnderFilteredColimits (W : MorphismProperty C) : Prop where
+  isStableUnderColimitsOfShape (J : Type w') [Category.{w} J] [IsFiltered J] :
+    W.IsStableUnderColimitsOfShape J := by infer_instance
+
+attribute [instance] IsStableUnderFilteredColimits.isStableUnderColimitsOfShape
+
+instance : IsStableUnderFilteredColimits.{w, w'} (isomorphisms C) where
 
 section Coproducts
 
