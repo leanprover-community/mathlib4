@@ -102,9 +102,9 @@ def whiskerBaseChange : (F.map l).g ≫ (F.map t).f ≫ (F.map r).f ⟶ (F.map b
     (α_ _ _ _).hom ≫ (F.map b).f ◁ (F.map r).adj.counit ≫ (ρ_ _).hom
 
 -- is this true?
-instance [IsIso (F.baseChange sq)] : Mono (F.whiskerBaseChange sq) := by
-  dsimp [whiskerBaseChange]
-  sorry
+--instance [IsIso (F.baseChange sq)] : Mono (F.whiskerBaseChange sq) := by
+--  dsimp [whiskerBaseChange]
+--  sorry
 
 section Horizontal
 
