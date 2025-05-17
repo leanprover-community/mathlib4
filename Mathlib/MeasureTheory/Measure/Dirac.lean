@@ -42,7 +42,7 @@ theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1
 
 theorem dirac_apply'_eq_zero_or_one (a : α) (hs : MeasurableSet s) :
     dirac a s = 0 ∨ dirac a s = 1 := by
-  simp[Measure.dirac_apply' a hs, Set.indicator]
+  simp [Measure.dirac_apply' a hs, Set.indicator]
   tauto
 
 @[simp]
