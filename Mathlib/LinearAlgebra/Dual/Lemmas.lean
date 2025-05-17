@@ -105,7 +105,7 @@ variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
+variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable (b : Basis ι R M)
 
 section Finite
