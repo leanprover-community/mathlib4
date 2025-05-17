@@ -30,7 +30,7 @@ for `r` to ensure that `d ^ r` is monotone in `d`. It might be a good idea to us
 
 Hölder continuity, Lipschitz continuity
 
- -/
+-/
 
 
 variable {X Y Z : Type*}

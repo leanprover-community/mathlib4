@@ -67,7 +67,7 @@ variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-
- If `ι` is a finite type and each space `f i`, `i : ι`, is an inner product space,
+If `ι` is a finite type and each space `f i`, `i : ι`, is an inner product space,
 then `Π i, f i` is an inner product space as well. Since `Π i, f i` is endowed with the sup norm,
 we use instead `PiLp 2 f` for the product space, which is endowed with the `L^2` norm.
 -/
