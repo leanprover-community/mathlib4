@@ -69,11 +69,24 @@ theorem LTSeries.head_le : p.head ≤ p n := LTSeries.monotone p (Fin.zero_le n)
 
 end LTSeries
 
-section QuotSMulTop
+theorem IsLocalRing.le_maximalIdeal_of_isPrime {R : Type*} [CommSemiring R] [IsLocalRing R]
+    (p : Ideal R) [hp : p.IsPrime] : p ≤ maximalIdeal R :=
+  le_maximalIdeal hp.ne_top
 
 namespace Module
 
-variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
+section Semiring
+
+variable {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
+
+theorem subsingleton_of_top_le_bot (h : (⊤ : Submodule R M) ≤ ⊥) : Subsingleton M :=
+  subsingleton_of_forall_eq 0 fun _ ↦ h trivial
+
+end Semiring
+
+section QuotSMulTop
+
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] [hm : Module.Finite R M]
 
 open Pointwise PrimeSpectrum
 
@@ -84,12 +97,19 @@ theorem support_quotSMulTop (x : R) :
       (Module.support_quotient _).trans ?_
   rw [zeroLocus_span]
 
-#check Submodule.eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator
+theorem subsingleton_of_subsingleton_quotSMulTop {x : R} (hx : x ∈ (annihilator R M).jacobson)
+    [h : Subsingleton (QuotSMulTop x M)] : Subsingleton M := by
+  rw [← Submodule.annihilator_top] at hx
+  exact subsingleton_of_top_le_bot <| le_of_eq <|
+    Submodule.eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator hm.1
+      (Submodule.subsingleton_quotient_iff_eq_top.mp h).symm hx
 
-theorem nontrival_quotSMulTop_of_mem_annihilator_jacobson [Nontrivial M] {x : R}
-    (hx : x ∈ (annihilator R M).jacobson) : Nontrivial (QuotSMulTop x M) := sorry
-
-end Module
+theorem nontrival_quotSMulTop_of_mem_annihilator_jacobson [h : Nontrivial M] {x : R}
+    (hx : x ∈ (annihilator R M).jacobson) : Nontrivial (QuotSMulTop x M) := by
+  by_contra hq
+  have : Subsingleton (QuotSMulTop x M) := not_nontrivial_iff_subsingleton.mp hq
+  have : Subsingleton M := subsingleton_of_subsingleton_quotSMulTop hx
+  exact not_nontrivial M h
 
 end QuotSMulTop
 
@@ -108,13 +128,6 @@ variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
 
 open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum
 
-omit [IsNoetherianRing R] in
-theorem IsLocalRing.le_maximalIdeal_of_isPrime (p : Ideal R) [hp : p.IsPrime] :
-    p ≤ maximalIdeal R :=
-  le_maximalIdeal hp.ne_top
-
-namespace Module
-
 local notation "𝔪" => IsLocalRing.maximalIdeal R
 
 open scoped Classical in
@@ -128,7 +141,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   refine iSup_le_iff.mpr (fun q ↦ ?_)
   let p : LTSeries (support R M) :=
     if lt : (q.last).1.1 < 𝔪 then q.snoc ⟨⟨𝔪, IsMaximal.isPrime' 𝔪⟩, hm⟩ lt else q
-  obtain ⟨hx, le⟩ : x ∈ p.last.1.1 ∧ q.length ≤ p.length := by
+  obtain ⟨hxp, le⟩ : x ∈ p.last.1.1 ∧ q.length ≤ p.length := by
     by_cases lt : (q.last).1.1 < 𝔪
     · rw [show p = q.snoc ⟨⟨𝔪, IsMaximal.isPrime' 𝔪⟩, hm⟩ lt from dif_pos lt]
       simp only [q.last_snoc, hx, RelSeries.snoc_length, le_add_iff_nonneg_right, zero_le, and_self]
@@ -137,14 +150,13 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
         exact lt_of_le_of_ne (le_maximalIdeal_of_isPrime q.last.1.1) lt
       simp only [show p = q from dif_neg lt, hq, hx, le_refl, and_self]
   apply (Nat.cast_le.mpr le).trans ?_
-  rcases move_chain (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)) hx with ⟨q, hx, hq, h0, _⟩
+  rcases move_chain (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)) hxp with ⟨q, hxq, hq, h0, _⟩
   have : (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)).length = p.length :=
     p.map_length (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)
   by_cases h : p.length = 0
-  · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ := by
-      apply (supportDim_ne_bot_iff_nontrivial R _).mpr
-      rw [QuotSMulTop]
-      sorry
+  · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
+      (supportDim_ne_bot_iff_nontrivial R (QuotSMulTop x M)).mpr <|
+        nontrival_quotSMulTop_of_mem_annihilator_jacobson (maximalIdeal_le_jacobson _ hx)
     rw [h, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
     exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
   let q' : LTSeries (support R (QuotSMulTop x M)) := {
@@ -158,18 +170,14 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       · have hp : p.head.1 ∈ support R M := p.head.2
         simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hp ⊢
         exact hp.trans (h0.symm.trans_le (q.head_le (i + 1)))
-      · have : q 1 ≤ q (i + 1) := by
+      · have hq : q 1 ≤ q (i + 1) := by
           refine q.monotone ?_
-          have h : (i : Fin (q.length + 1)) + 1 = (i + 1 : ℕ) := by simp
-          have : 1 ≤ i + 1 := sorry
-          rw [h]
-          have h1 : 1 < q.length + 1 := sorry
-          have hi : i + 1 < q.length + 1 := sorry
+          rw [show (i : Fin (q.length + 1)) + 1 = (i + 1 : ℕ) by simp]
           refine (Fin.natCast_le_natCast ?_ ?_).mpr ?_
           · sorry
           · sorry
-          · sorry
-        sorry
+          · exact Nat.le_add_left 1 i
+        exact hq hxq
     step := sorry
   }
   calc
