@@ -134,7 +134,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
 /-- The natural transformation between two functors out of the
- walking pair, specified by its components. -/
+walking pair, specified by its components. -/
 def mapPair : F ⟶ G where
   app
     | ⟨left⟩ => f

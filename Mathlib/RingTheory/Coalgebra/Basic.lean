@@ -291,7 +291,7 @@ theorem comul_comp_lapply (i : ι) :
   ext j : 1
   conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j
-  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id,  TensorProduct.map_id, id_comp]
+  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id, TensorProduct.map_id, id_comp]
   · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
       zero_comp]
 
@@ -352,7 +352,7 @@ theorem comul_comp_lapply (i : ι) :
   ext j : 1
   conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j
-  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id,  TensorProduct.map_id, id_comp]
+  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id, TensorProduct.map_id, id_comp]
   · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
       zero_comp]
 
