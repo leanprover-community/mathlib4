@@ -8,10 +8,14 @@ import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # Bochner integrals of convolutions
+
 This file contains results about the Bochner integrals of convolutions of measures.
+
 These results are not placed in the main convolution file because we don't want to import Bochner
 integrals over there.
+
 ## Main statements
+
 * `integrable_conv_iff` A function is integrable with respect to the convolution `μ ∗ ν` iff
   the function `y ↦ f (x * y)` is integrable with respect to `ν` for `μ`-almost every `x` and
   the function `x ↦ ∫ y, ‖f (x * y)‖ ∂ν` is integrable with respect to `μ`.
