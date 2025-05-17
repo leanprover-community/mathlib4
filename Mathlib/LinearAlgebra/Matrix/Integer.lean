@@ -21,7 +21,7 @@ Here we collect some results about matrices over `ℚ` and `ℤ`.
 
 ## TODO
 
-Consider generalizing these results to matrices over arbitrary localizations of rings / semirings.
+Consider generalizing these constructions to matrices over localizations of rings (or semirings).
 -/
 
 namespace Matrix
