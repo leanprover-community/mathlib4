@@ -3,7 +3,6 @@ Copyright (c) 2025 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.RingTheory.Valuation.Basic
 
@@ -34,6 +33,7 @@ an element `γ : Γˣ` that is `< 1` and generates the range of `v`,
 namespace Valuation
 
 open Set LinearOrderedCommGroup MonoidWithZeroHom
+open Function Multiplicative Set WithZero
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
