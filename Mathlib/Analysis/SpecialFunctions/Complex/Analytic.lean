@@ -7,6 +7,7 @@ import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Various complex special functions are analytic
@@ -151,5 +152,21 @@ lemma AnalyticOnNhd.log (fs : AnalyticOnNhd ℝ f s) (m : ∀ x ∈ s, 0 < f x) 
 lemma AnalyticOn.log (fs : AnalyticOn ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
     AnalyticOn ℝ (fun z ↦ Real.log (f z)) s :=
   fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) m
+
+/-- The function `Real.sin` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_sin : AnalyticAt ℝ Real.sin x := by
+  have : Real.sin = fun x : ℝ ↦ (Complex.sin x).re := by
+    ext x
+    rfl
+  rw [this]
+  apply AnalyticAt.re_ofReal
+  apply Complex.analyticOnNhd_univ_iff_differentiable.mpr Complex.differentiable_sin
+  trivial
+
+/-- The function `Real.sin` is real analytic. -/
+theorem analyticOnNhd_sin : AnalyticOnNhd ℝ Real.sin Set.univ := by
+  intro x
+  simp [analyticAt_sin]
 
 end Real
