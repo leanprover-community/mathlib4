@@ -537,8 +537,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
           use hi
           simp
         let i_weight : Weight K H L := ⟨i, h0⟩
-        have ttt : i_weight ∈ H.root := by
-          simp
+        have ttt0 : i_weight.IsNonZero := by
           obtain ⟨l1, l2⟩ := hΦ
           contrapose l2
           simp
@@ -549,14 +548,15 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
           simp
           rw [l2]
           exact rfl
-
+        have ttt : i_weight ∈ H.root := by
+          simp
+          exact ttt0
         rcases Classical.em (⟨i_weight, ttt⟩ ∈ Φ) with h0 | h0
         · simp
           simp at h0
           use i_weight
           constructor
-          sorry
-          simp
+          · use ttt0
           exact hx'
 
         sorry
