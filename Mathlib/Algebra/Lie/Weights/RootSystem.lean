@@ -437,10 +437,12 @@ set_option maxHeartbeats 2000000
 --variable [DivisionRing K] [AddCommGroup V] [Module K V] {s : Submodule K V} {x : V}
 
 
-def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
+
+
+def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
     LieIdeal K L where
-  __ := LieSubalgebra.lieSpan K L <| ⋃ α ∈ {α | (α : Dual K H) ∈ q}, rootSpace H α
+  __ := LieSubalgebra.lieSpan K L <| ⋃ α ∈ {α ∈ q | α ≠ 0}, rootSpace H α
   lie_mem {x y} hy := by
     have _i := nontrivial_of_isIrreducible K L L
     let S := rootSystem H
@@ -457,6 +459,20 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         exact b i hi disj
     have hΦ₃ : ∀ i ∉ Φ, q ≤ LinearMap.ker (S.coroot' i) := by
       exact c
+    have hΦ₄ : ∀ i ∉ Φ, S.root i ∉ q := by
+      intro i
+      by_contra hc
+      simp at hc
+      have : (S.coroot' i) (S.root i) = 2 := by
+        apply root_apply_coroot
+        obtain ⟨val, hval⟩ := i
+        simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
+        exact hval
+      have key2 := hΦ₃ i hc.1
+      have h1 : (S.coroot' i) (S.root i) = 0 := key2 hc.2
+      rw [this] at h1
+      field_simp at h1
+
     have rrr : (∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i)) → q = ⊥ := by
       intro h
       have mmm : q ≤ ⨅ i, LinearMap.ker (S.coroot' i) := by
@@ -474,12 +490,12 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         intro i
         exact c i (by simp)
       have := rrr rrr2
-      simp [this]
+      contradiction
     let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
     let I := LieSubalgebra.lieSpan K L g
     simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Submodule.carrier_eq_coe,
       LieSubalgebra.mem_toSubmodule] at hy ⊢
-    have key0  : ⋃ i ∈ Φ, (rootSpace H i : Set L) = ⋃ α ∈ q, (rootSpace H α) := by
+    have key0  : ⋃ i ∈ Φ, (rootSpace H i : Set L) = ⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α) := by
       apply Set.Subset.antisymm
       · intro x hx
         rw [Set.mem_iUnion] at hx
@@ -492,18 +508,64 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         rw [Set.mem_iUnion]
         use S.root i
         rw [Set.mem_iUnion]
-        exact ⟨this, hx'⟩
+        simp
+        constructor
+        constructor
+        exact this
+        exact RootPairing.ne_zero S.toRootPairing i
+        exact hx'
       · intro x hx
         rw [Set.mem_iUnion] at hx
         obtain ⟨i, hi⟩ := hx
         rw [Set.mem_iUnion] at hi
         obtain ⟨hΦ, hx'⟩ := hi
+        rcases Classical.em (rootSpace H i = ⊥) with h0 | h0
+        · rw [h0] at hx'
+          simp at hx'
+          rw [hx']
+          refine Set.mem_iUnion₂.mpr ?_
+          have tt : Φ ≠ ∅ := by
+            by_contra hc
+            rw [hc] at c
+            have rrr2 : ∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i) := by
+              intro i
+              exact c i (by simp)
+            have := rrr rrr2
+            contradiction
+          obtain ⟨i, hi⟩ := Set.nonempty_iff_ne_empty.2 tt
+          use i
+          use hi
+          simp
+        let i_weight : Weight K H L := ⟨i, h0⟩
+        have ttt : i_weight ∈ H.root := by
+          simp
+          obtain ⟨l1, l2⟩ := hΦ
+          contrapose l2
+          simp
+          simp at l2
+          simp [i_weight] at l2
+          simp [IsZero] at l2
+          ext x
+          simp
+          rw [l2]
+          exact rfl
+
+        rcases Classical.em (⟨i_weight, ttt⟩ ∈ Φ) with h0 | h0
+        · simp
+          simp at h0
+          use i_weight
+          constructor
+          sorry
+          simp
+          exact hx'
+
         sorry
+
 
     -- Now: i ∈ Φ, x ∈ rootSpace H i
     -- Try to use this i to build ∈ other union
 
-    have key : LieSubalgebra.lieSpan K L (⋃ α ∈ q, (rootSpace H α)) = I := by
+    have key : LieSubalgebra.lieSpan K L (⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α)) = I := by
       rw[← key0]
     rw [key] at hy ⊢
     have hΦ₂' : ∀ i ∈ Φ, (S.root i) ∈ q := by
