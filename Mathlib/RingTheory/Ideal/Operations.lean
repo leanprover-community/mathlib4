@@ -1115,6 +1115,22 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
 
+/-- Another version of Prime avoidance using `Set.Finite` instead of `Finset`. -/
+lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
+    (hs : s.Finite) {f : ι → Ideal R} (a b : ι)
+    (hp : ∀ i ∈ s, i ≠ a → i ≠ b → (f i).IsPrime) {I : Ideal R} :
+    ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
+  rcases Set.Finite.exists_finset hs with ⟨t, ht⟩
+  have heq : ⋃ i ∈ s, f i = ⋃ i ∈ t, (f i : Set R) := by
+    ext r
+    simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
+    exact exists_congr (fun i ↦ (and_congr_left fun a ↦ ht i).symm)
+  have hmem_union : ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ((I : Set R) ⊆ ⋃ i ∈ (t : Set ι), f i) :=
+    (congrArg _ heq).to_iff
+  have hexists_le: (∃ i ∈ t, I ≤ f i) ↔ ∃ i ∈ s, I ≤ f i :=
+    exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
+  rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin)), hexists_le]
+
 section Dvd
 
 /-- If `I` divides `J`, then `I` contains `J`.
