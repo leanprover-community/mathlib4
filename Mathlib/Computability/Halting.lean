@@ -32,8 +32,8 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     Partrec.nat_iff.1
       (Partrec.rfindOpt <|
         Primrec.option_orElse.to_comp.comp
-          (Code.evaln_prim.to_comp.comp <| (snd.pair (const cf)).pair fst)
-          (Code.evaln_prim.to_comp.comp <| (snd.pair (const cg)).pair fst))
+          (Code.primrec_evaln.to_comp.comp <| (snd.pair (const cf)).pair fst)
+          (Code.primrec_evaln.to_comp.comp <| (snd.pair (const cg)).pair fst))
   refine ⟨_, this, fun n => ?_⟩
   have : ∀ x ∈ rfindOpt fun k ↦ HOrElse.hOrElse (Code.evaln k cf n) fun _x ↦ Code.evaln k cg n,
       x ∈ Code.eval cf n ∨ x ∈ Code.eval cg n := by
@@ -385,7 +385,7 @@ theorem of_part : ∀ {n f}, _root_.Partrec f → @Partrec' n f :=
       rfindOpt <|
         of_prim <|
           Primrec.encode_iff.2 <|
-            evaln_prim.comp <|
+            primrec_evaln.comp <|
               (Primrec.vector_head.pair (_root_.Primrec.const c)).pair <|
                 Primrec.vector_head.comp Primrec.vector_tail)
 

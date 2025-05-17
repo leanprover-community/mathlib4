@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Tactic.Positivity.Core

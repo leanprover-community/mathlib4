@@ -71,7 +71,7 @@ theorem inf_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) 
 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeInf α] [SemilatticeInf β] [OrderTop α] [OrderTop β]
- {s : Finset ι} {t : Finset κ}
+  {s : Finset ι} {t : Finset κ}
 
 @[simp] lemma inf_prodMap (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : κ → β) :
     inf (s ×ˢ t) (Prod.map f g) = (inf s f, inf t g) :=

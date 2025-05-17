@@ -19,7 +19,7 @@ the morphism `WithZeroMultInt.toNNReal`.
 ## Main Results
 
 * `WithZeroMultInt.toNNReal_strictMono` : The map `withZeroMultIntToNNReal` is strictly
-   monotone whenever `1 < e`.
+  monotone whenever `1 < e`.
 
 ## Tags
 
