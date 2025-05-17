@@ -18,9 +18,9 @@ isometry.
 ## Main definitions
 
 * `ContinuousLinearEquiv.toSpanNonzeroSingleton`: The continuous linear equivalence between `𝕜` and
-`𝕜 • x` for `x ≠ 0`.
+  `𝕜 • x` for `x ≠ 0`.
 * `LinearIsometryEquiv.toSpanUnitSingleton`: For `‖x‖ = 1` the continuous linear equivalence is a
-linear isometry equivalence.
+  linear isometry equivalence.
 
 -/
 

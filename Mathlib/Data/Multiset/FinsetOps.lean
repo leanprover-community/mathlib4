@@ -62,11 +62,9 @@ theorem mem_ndinsert_self (a : α) (s : Multiset α) : a ∈ ndinsert a s := by 
 theorem mem_ndinsert_of_mem {a b : α} {s : Multiset α} (h : a ∈ s) : a ∈ ndinsert b s :=
   mem_ndinsert.2 (Or.inr h)
 
-@[simp]
 theorem length_ndinsert_of_mem {a : α} {s : Multiset α} (h : a ∈ s) :
     card (ndinsert a s) = card s := by simp [h]
 
-@[simp]
 theorem length_ndinsert_of_not_mem {a : α} {s : Multiset α} (h : a ∉ s) :
     card (ndinsert a s) = card s + 1 := by simp [h]
 
