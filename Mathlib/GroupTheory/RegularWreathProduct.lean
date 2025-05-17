@@ -173,8 +173,7 @@ instance instFaithfulSMulRWP : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
     · have hh := fun a => (h a (m₁.right⁻¹ * q)).1
       rw [← (h a b).2] at hh
       group at hh
-      apply FaithfulSMul.eq_of_smul_eq_smul at hh
-      exact hh
+      exact FaithfulSMul.eq_of_smul_eq_smul hh
     · exact (h a b).2
 
 /-- The map sending the wreath product `D ≀ᵣ Q` to its representation as a permutation of `Λ × Q`
