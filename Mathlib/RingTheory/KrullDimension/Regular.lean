@@ -61,36 +61,61 @@ instance [Nontrivial M] : FiniteDimensionalOrder (Module.support R M) := by
 
 end FiniteDimensionalOrder
 
+section LTSeries
+
+variable {α : Type*} [Preorder α] (p : LTSeries α) (n : Fin (p.length + 1))
+
+theorem LTSeries.head_le : p.head ≤ p n := LTSeries.monotone p (Fin.zero_le n)
+
+end LTSeries
+
+section QuotSMulTop
+
+namespace Module
+
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
+
+open Pointwise PrimeSpectrum
+
+theorem support_quotSMulTop (x : R) :
+    Module.support R (QuotSMulTop x M) = Module.support R M ∩ zeroLocus {x} := by
+  refine (x • (⊤ : Submodule R M)).quotEquivOfEq (Ideal.span {x} • ⊤)
+    ((⊤ : Submodule R M).ideal_span_singleton_smul x).symm |>.support_eq.trans <|
+      (Module.support_quotient _).trans ?_
+  rw [zeroLocus_span]
+
+#check Submodule.eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator
+
+theorem nontrival_quotSMulTop_of_mem_annihilator_jacobson [Nontrivial M] {x : R}
+    (hx : x ∈ (annihilator R M).jacobson) : Nontrivial (QuotSMulTop x M) := sorry
+
+end Module
+
+end QuotSMulTop
+
 section move
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
 theorem move_chain (p : LTSeries (PrimeSpectrum R)) {x : R} (hx : x ∈ p.last.1) :
     ∃ q : LTSeries (PrimeSpectrum R),
-      x ∈ (q 1).1 ∧ q.length = p.length ∧ q 0 = p 0 ∧ q.last = p.last := sorry
+      x ∈ (q 1).1 ∧ q.length = p.length ∧ q.head = p.head ∧ q.last = p.last := sorry
 
 end move
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
 
-open RingTheory Sequence IsLocalRing Submodule Ideal Pointwise
+open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum
 
 omit [IsNoetherianRing R] in
 theorem IsLocalRing.le_maximalIdeal_of_isPrime (p : Ideal R) [hp : p.IsPrime] :
     p ≤ maximalIdeal R :=
   le_maximalIdeal hp.ne_top
 
-theorem sdqwfd (x : R) : Ideal.span {x} • ⊤ = x • (⊤ : Submodule R M) := by
-  apply Submodule.ideal_span_singleton_smul
-
-
 namespace Module
 
 local notation "𝔪" => IsLocalRing.maximalIdeal R
-
-example (a b : ℤ) (lt : ¬ a < b) (h : a ≤ b) : a = b := by
-  linarith
 
 open scoped Classical in
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
@@ -112,20 +137,39 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
         exact lt_of_le_of_ne (le_maximalIdeal_of_isPrime q.last.1.1) lt
       simp only [show p = q from dif_neg lt, hq, hx, le_refl, and_self]
   apply (Nat.cast_le.mpr le).trans ?_
-  rcases move_chain (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)) hx with ⟨q, hx, hq, _, _⟩
+  rcases move_chain (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)) hx with ⟨q, hx, hq, h0, _⟩
   have : (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)).length = p.length :=
     p.map_length (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)
+  by_cases h : p.length = 0
+  · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ := by
+      apply (supportDim_ne_bot_iff_nontrivial R _).mpr
+      rw [QuotSMulTop]
+      sorry
+    rw [h, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
+    exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
   let q' : LTSeries (support R (QuotSMulTop x M)) := {
     length := p.length - 1
     toFun := by
       intro ⟨i, hi⟩
       refine ⟨q (i + 1), ?_⟩
-      have : x • (⊤ : Submodule R M) = Ideal.span {x} • ⊤ := by
+      simp only [QuotSMulTop, support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus,
+        Set.singleton_subset_iff, SetLike.mem_coe]
+      constructor
+      · have hp : p.head.1 ∈ support R M := p.head.2
+        simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hp ⊢
+        exact hp.trans (h0.symm.trans_le (q.head_le (i + 1)))
+      · have : q 1 ≤ q (i + 1) := by
+          refine q.monotone ?_
+          have h : (i : Fin (q.length + 1)) + 1 = (i + 1 : ℕ) := by simp
+          have : 1 ≤ i + 1 := sorry
+          rw [h]
+          have h1 : 1 < q.length + 1 := sorry
+          have hi : i + 1 < q.length + 1 := sorry
+          refine (Fin.natCast_le_natCast ?_ ?_).mpr ?_
+          · sorry
+          · sorry
+          · sorry
         sorry
-      simp_rw [QuotSMulTop]
-      have := Submodule.ideal_span_singleton_smul x (⊤ : Submodule R M)
-      --simp_rw [← this, support_quotient]
-      sorry
     step := sorry
   }
   calc
@@ -144,7 +188,7 @@ theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
   generalize len : rs.length = n
   induction' n with n hn generalizing M rs
   · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
-    simpa using supportDim_eq_of_equiv R _ _ (Submodule.quotEquivOfEqBot ⊥ rfl)
+    simpa using supportDim_eq_of_equiv _ _ _ (Submodule.quotEquivOfEqBot ⊥ rfl)
   · match rs with
     | [] => simp at len
     | x :: rs' =>
@@ -156,7 +200,7 @@ theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
         by_contra isu
         absurd reg.2
         simp [Ideal.span_singleton_eq_top.mpr isu]
-      rw [supportDim_eq_of_equiv R _ _ (quotOfListConsSMulTopEquivQuotSMulTopInner M x rs'),
+      rw [supportDim_eq_of_equiv _ _ _ (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
         ← supportDim_quotSMulTop_succ_eq_supportDim x this mem,
         ← hn rs' ((isRegular_cons_iff M _ _).mp reg).2 len, add_assoc]
 
