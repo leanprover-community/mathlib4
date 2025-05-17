@@ -63,6 +63,9 @@ protected def num (A : Matrix m n ℚ) : Matrix m n ℤ := ((A.den : ℚ) • A)
 lemma den_ne_zero (A : Matrix m n ℚ) : A.den ≠ 0 := by
   simp [Matrix.den, Finset.lcm_eq_zero_iff]
 
+lemma num_eq_zero_iff (A : Matrix m n ℚ) : A.num = 0 ↔ A = 0 := by
+  simp [Matrix.num, ← ext_iff, A.den_ne_zero]
+
 lemma den_dvd_iff {A : Matrix m n ℚ} {r : ℕ} :
     A.den ∣ r ↔ ∀ i j, (A i j).den ∣ r := by
   simp [Matrix.den]
