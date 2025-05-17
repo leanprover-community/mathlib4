@@ -13,6 +13,8 @@ import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Tactic.ENatToNat
+import Mathlib.RingTheory.KrullDimension.Module
+import Mathlib.RingTheory.KrullDimension.Field
 /-!
 
 # Hom(N,M) is subsingleton iff exist smul regular element of M in ann(N)
