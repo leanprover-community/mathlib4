@@ -314,7 +314,7 @@ end
 variable (𝕜 E F G) in
 /-- `ContinuousAlternatingMap.prod` as a `LinearIsometryEquiv`. -/
 @[simps]
-def prodₗᵢ : (E [⋀^ι]→L[𝕜] F) × (E [⋀^ι]→L[𝕜] G) ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] (F × G)) where
+def prodLIE : (E [⋀^ι]→L[𝕜] F) × (E [⋀^ι]→L[𝕜] G) ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] (F × G)) where
   toFun f := f.1.prod f.2
   invFun f := ((ContinuousLinearMap.fst 𝕜 F G).compContinuousAlternatingMap f,
     (ContinuousLinearMap.snd 𝕜 F G).compContinuousAlternatingMap f)
@@ -327,7 +327,7 @@ def prodₗᵢ : (E [⋀^ι]→L[𝕜] F) × (E [⋀^ι]→L[𝕜] G) ≃ₗᵢ[
 variable (𝕜 E) in
 /-- `ContinuousAlternatingMap.pi` as a `LinearIsometryEquiv`. -/
 @[simps!]
-def piₗᵢ {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddCommGroup (F i')]
+def piLIE {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddCommGroup (F i')]
     [∀ i', NormedSpace 𝕜 (F i')] :
     (∀ i', E [⋀^ι]→L[𝕜] F i') ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] (∀ i, F i)) where
   toLinearEquiv := piLinearEquiv
@@ -401,7 +401,7 @@ theorem norm_compContinuousAlternatingMap_le (g : F →L[𝕜] G) (f : E [⋀^ι
 variable (𝕜 E F G) in
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous bilinear map. -/
 @[simps! apply_apply]
-def compContinuousAlternatingMapL : (F →L[𝕜] G) →L[𝕜] E [⋀^ι]→L[𝕜] F →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
+def compContinuousAlternatingMapCLM : (F →L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
   LinearMap.mkContinuous₂ (compContinuousAlternatingMapₗ 𝕜 E F G) 1 fun f g ↦ by
     simpa using f.norm_compContinuousAlternatingMap_le g
 
@@ -410,11 +410,11 @@ def compContinuousAlternatingMapL : (F →L[𝕜] G) →L[𝕜] E [⋀^ι]→L[�
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRight (g : F ≃L[𝕜] G) :
     (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G) where
   __ := g.continuousAlternatingMapCongrRightEquiv
-  __ := compContinuousAlternatingMapL 𝕜 E F G g.toContinuousLinearMap
+  __ := compContinuousAlternatingMapCLM 𝕜 E F G g.toContinuousLinearMap
   continuous_toFun :=
-    (compContinuousAlternatingMapL 𝕜 E F G g.toContinuousLinearMap).continuous
+    (compContinuousAlternatingMapCLM 𝕜 E F G g.toContinuousLinearMap).continuous
   continuous_invFun :=
-    (compContinuousAlternatingMapL 𝕜 E G F g.symm.toContinuousLinearMap).continuous
+    (compContinuousAlternatingMapCLM 𝕜 E G F g.symm.toContinuousLinearMap).continuous
 
 @[simp]
 theorem _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRight_symm (g : F ≃L[𝕜] G) :
@@ -588,7 +588,7 @@ namespace AlternatingMap
 /-- If an alternating map in finitely many variables on a normed space satisfies the inequality
 `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i` for some positive numbers `ε i`
 and elements `c i : 𝕜`, `1 < ‖c i‖`, then it satisfies this inequality for all `m`. -/
-theorem bound_of_shell (f : F [⋀^ι]→L[𝕜] E) {ε : ι → ℝ} {C : ℝ} {c : ι → 𝕜}
+theorem bound_of_shell (f : F [⋀^ι]→ₗ[𝕜] E) {ε : ι → ℝ} {C : ℝ} {c : ι → 𝕜}
     (hε : ∀ i, 0 < ε i) (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ι → F, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ι → F) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
