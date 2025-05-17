@@ -1708,6 +1708,7 @@ import Mathlib.Analysis.NormedSpace.Int
 import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.NormedSpace.Multilinear.Curry
+import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Asymptotics
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
@@ -6342,7 +6343,6 @@ import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.UniformSpace.HeineCantor
 import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 import Mathlib.Topology.UniformSpace.Matrix
-import Mathlib.Topology.UniformSpace.MultipliableUniformlyOn
 import Mathlib.Topology.UniformSpace.OfCompactT2
 import Mathlib.Topology.UniformSpace.OfFun
 import Mathlib.Topology.UniformSpace.Pi
