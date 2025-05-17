@@ -94,27 +94,31 @@ open scoped Computability
 If a function is partial recursive, then it is recursive in every partial function.
 -/
 lemma Nat.Partrec.turingReducible (pF : Nat.Partrec f) : f ≤ᵀ g := by
-  induction' pF with f' g' _ _ ih₁ ih₂ f' g' _ _ ih₁ ih₂ f' g' _ _ ih₁ ih₂ f' _ ih
-  repeat {constructor}
-  · case pair =>
-    apply RecursiveIn.pair ih₁ ih₂
-  · case comp =>
-    apply RecursiveIn.comp ih₁ ih₂
-  · case prec =>
-    apply RecursiveIn.prec ih₁ ih₂
-  · case rfind =>
-    apply RecursiveIn.rfind ih
+  induction pF with
+  | zero => constructor
+  | succ => constructor
+  | left => constructor
+  | right => constructor
+  | pair _ _ ih₁ ih₂ => apply RecursiveIn.pair ih₁ ih₂
+  | comp _ _ ih₁ ih₂ => apply RecursiveIn.comp ih₁ ih₂
+  | prec _ _ ih₁ ih₂ => apply RecursiveIn.prec ih₁ ih₂
+  | rfind _ ih => apply RecursiveIn.rfind ih
 
 /--
 If a function is recursive in the constant zero function,
 then it is partial recursive.
 -/
 lemma TuringReducible.partrec_of_zero (fRecInZero : f ≤ᵀ fun _ => Part.some 0) : Nat.Partrec f := by
-  induction' fRecInZero with g hg g h _ _ ih₁ ih₂ g h _ _ ih₁ ih₂ g h _ _ ih₁ ih₂ g _ ih
-  repeat {constructor}
-  · rw [Set.mem_singleton_iff] at hg; rw [hg];
-    exact Nat.Partrec.zero
-  repeat {constructor; assumption; try assumption}
+  induction fRecInZero with
+  | zero => constructor
+  | succ => constructor
+  | left => constructor
+  | right => constructor
+  | oracle g hg => rw [Set.mem_singleton_iff] at hg; rw [hg]; exact Nat.Partrec.zero
+  | pair hf hh hf_ih hh_ih => constructor <;> assumption
+  | comp hf hh hf_ih hh_ih => constructor <;> assumption
+  | prec hf hh hf_ih hh_ih => constructor <;> assumption
+  | rfind hf ih => constructor; assumption
 
 /--
 A partial function `f` is partial recursive if and only if it is recursive in
@@ -129,17 +133,16 @@ protected theorem TuringReducible.rfl : f ≤ᵀ f := .refl _
 instance : IsRefl (ℕ →. ℕ) TuringReducible where refl _ := .rfl
 
 theorem TuringReducible.trans (hg : f ≤ᵀ g) (hh : g ≤ᵀ h) : f ≤ᵀ h := by
-  induction' hg with g' hg g' h' _ _ ih₁ ih₂ g' h' _ _ ih₁ ih₂ g' h' _ _ ih₁ ih₂ g' _ ih
-  repeat {constructor}
-  · rw [Set.mem_singleton_iff] at hg; rw [hg]; exact hh
-  · case pair =>
-    apply RecursiveIn.pair ih₁ ih₂
-  · case comp =>
-    apply RecursiveIn.comp ih₁ ih₂
-  · case prec =>
-    apply RecursiveIn.prec ih₁ ih₂
-  · case rfind =>
-    apply RecursiveIn.rfind ih
+  induction hg with
+  | zero => constructor
+  | succ => constructor
+  | left => constructor
+  | right => constructor
+  | oracle g hg => rw [Set.mem_singleton_iff] at hg; rw [hg]; exact hh
+  | pair hf hh ih₁ ih₂ => apply RecursiveIn.pair ih₁ ih₂
+  | comp hf hh ih₁ ih₂ => apply RecursiveIn.comp ih₁ ih₂
+  | prec hf hh ih₁ ih₂ => apply RecursiveIn.prec ih₁ ih₂
+  | rfind hf ih => apply RecursiveIn.rfind ih
 
 instance : IsTrans (ℕ →. ℕ) TuringReducible :=
   ⟨@TuringReducible.trans⟩
@@ -185,18 +188,23 @@ instance TuringDegree.instPartialOrder : PartialOrder TuringDegree :=
 
 @[simp] lemma recursiveIn_empty_iff_partrec : RecursiveIn {} f ↔ Nat.Partrec f  where
   mp fRecInNone := by
-    induction' fRecInNone with g hg g h _ _ ih₁ ih₂ g h _ _ ih₁ ih₂ g h _ _ ih₁ ih₂ g _ ih
-    repeat {constructor}
-    · simp at hg
-    repeat {constructor; assumption; try assumption}
+    induction fRecInNone with
+    | zero => constructor
+    | succ => constructor
+    | left => constructor
+    | right => constructor
+    | oracle g hg => simp at hg
+    | pair hf hh hf_ih hh_ih => constructor <;> assumption
+    | comp hf hh hf_ih hh_ih => constructor <;> assumption
+    | prec hf hh hf_ih hh_ih => constructor <;> assumption
+    | rfind hf ih => constructor; assumption
   mpr pF := by
-    induction' pF with f' g' _ _ ih₁ ih₂ f' g' _ _ ih₁ ih₂ f' g' _ _ ih₁ ih₂ f' _ ih
-    repeat {constructor}
-    · case pair =>
-      apply RecursiveIn.pair ih₁ ih₂
-    · case comp =>
-      apply RecursiveIn.comp ih₁ ih₂
-    · case prec =>
-      apply RecursiveIn.prec ih₁ ih₂
-    · case rfind =>
-      apply RecursiveIn.rfind ih
+    induction pF with
+    | zero => constructor
+    | succ => constructor
+    | left => constructor
+    | right => constructor
+    | pair _ _ ih₁ ih₂ => apply RecursiveIn.pair ih₁ ih₂
+    | comp _ _ ih₁ ih₂ => apply RecursiveIn.comp ih₁ ih₂
+    | prec _ _ ih₁ ih₂ => apply RecursiveIn.prec ih₁ ih₂
+    | rfind _ ih => apply RecursiveIn.rfind ih
