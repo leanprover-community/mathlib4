@@ -586,7 +586,8 @@ lemma variance_continuousLinearMap_gaussianReal (L : ℝ →L[ℝ] ℝ) :
 end LinearMap
 
 -- `∗` notation not used because of ambiguous notation : `conv` vs `mconv`
-/-- The convolution of two real Gaussian distributions is Gaussian. -/
+/-- The convolution of two real Gaussian distributions with means `m₁, m₂` and variances `v₁, v₂`
+is a real Gaussian distribution with mean `m₁ + m₂` and variance `v₁ + v₂`. -/
 lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
     (gaussianReal m₁ v₁).conv (gaussianReal m₂ v₂) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
   refine Measure.ext_of_charFun ?_
