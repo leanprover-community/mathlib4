@@ -44,7 +44,7 @@ lemma IsDiscrete.surj (v : Valuation K ℤₘ₀) [hv : IsDiscrete v] :
   intro c
   obtain ⟨π, hπ⟩ := hv
   refine WithZero.cases_on c ⟨0, map_zero _⟩ fun a ↦ ⟨π ^ (-a.toAdd), ?_⟩
-  simp [hπ, ← WithZero.ofAdd_zpow]
+  simp [hπ, ← WithZeroMulInt.ofAdd_zpow]
 
 /-- A `ℤₘ₀`-valued valuation on a field `K` is discrete if and only if it is surjective. -/
 lemma isDiscrete_iff_surjective (v : Valuation K ℤₘ₀) :
