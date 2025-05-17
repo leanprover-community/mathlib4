@@ -160,9 +160,6 @@ end Vertical
 
 section
 
--- Never unfold the definition of `mateEquiv`, instead try to add general `mateEquiv` lemmas first.
-attribute [-simp] Bicategory.mateEquiv_apply Bicategory.mateEquiv_symm_apply
-
 lemma baseChange_self_self {S X Y : B} (f : S ⟶ X) (g : X ⟶ Y) :
     F.baseChange (l := f) (t := f) (b := g) (r := g) (by simp) =
       (F.map f).adj.counit ≫ (F.map g).adj.unit := by
@@ -254,20 +251,13 @@ lemma whiskerRight_whiskerBaseChange_self_self :
     ((F.comp Adj.forget₁).mapComp' r d (𝟙 X) hrd).inv ≫
     ((F.comp Adj.forget₁).mapComp' b d (𝟙 X) hbd).hom := by
   rw [F.whiskerRight_whiskerBaseChange sq _ _ _ hbd hrd, whiskerBaseChange_self_self]
-  simp only [comp_toPrelaxFunctor, PrelaxFunctor.comp_toPrelaxFunctorStruct,
-    PrelaxFunctorStruct.comp_toPrefunctor, Prefunctor.comp_obj, Adj.forget₁_obj,
-    Prefunctor.comp_map, Adj.forget₁_map, Bicategory.whiskerLeft_comp, Category.assoc,
-    comp_whiskerRight, leftUnitor_whiskerRight]
-  simp only [← Category.assoc]; congr 1; simp only [Category.assoc]
   let a := ((F.map f).g ≫ (F.map f).f) ◁ ((F.comp Adj.forget₁).mapComp' r d (𝟙 X) hrd).inv ≫
     (F.map f).adj.counit ▷ _
-  dsimp at a
-  trans 𝟙 _ ⊗≫ a ⊗≫ 𝟙 _
-  · dsimp [a]
-    simp
-    simp [bicategoricalComp] -- why does not `bicategory` work?!
-  · dsimp [a]
-    rw [whisker_exchange]
+  let b := ((F.comp Adj.forget₁).mapComp' b d (𝟙 X) hbd).hom
+  dsimp at a b ⊢
+  trans 𝟙 _ ⊗≫ a ⊗≫ b ⊗≫ 𝟙 _ <;> dsimp [a, b]
+  · simp [bicategoricalComp] -- why does not `bicategory` work?!
+  · rw [whisker_exchange]
     simp [bicategoricalComp]
 
 end Codiag
