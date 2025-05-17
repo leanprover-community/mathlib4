@@ -135,8 +135,7 @@ lemma rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_val (j : ZMod n) :
   rfl
 
 theorem surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar (n : ℕ) [NeZero n] :
-    Function.Surjective (rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) := by
-  intro ⟨w,hw⟩
+    Function.Surjective (rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) := fun ⟨w,hw⟩ => by
   obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity n w).mp hw
   exact ⟨j, by
     rw [comp_apply, MulEquiv.apply_eq_iff_symm_apply]
