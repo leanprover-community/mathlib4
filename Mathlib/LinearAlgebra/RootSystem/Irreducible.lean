@@ -13,11 +13,11 @@ import Mathlib.RepresentationTheory.Submodule
 This file contains basic definitions and results about irreducible root systems.
 
 ## Main definitions / results:
- * `RootPairing.isSimpleModule_weylGroupRootRep_iff`: a criterion for the representation of the Weyl
-   group on root space to be irreducible.
- * `RootPairing.IsIrreducible`: a typeclass encoding the fact that a root pairing is irreducible.
- * `RootPairing.IsIrreducible.mk'`: an alternative constructor for irreducibility when the
-   coefficients are a field.
+* `RootPairing.isSimpleModule_weylGroupRootRep_iff`: a criterion for the representation of the Weyl
+  group on root space to be irreducible.
+* `RootPairing.IsIrreducible`: a typeclass encoding the fact that a root pairing is irreducible.
+* `RootPairing.IsIrreducible.mk'`: an alternative constructor for irreducibility when the
+  coefficients are a field.
 
 -/
 
@@ -28,7 +28,7 @@ open MulAction (orbit mem_orbit_self mem_orbit_iff)
 open Module.End (invtSubmodule)
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-   (P : RootPairing ι R M N)
+  (P : RootPairing ι R M N)
 
 namespace RootPairing
 
@@ -153,9 +153,9 @@ namespace RootSystem
 
 /-
 Note that this actually holds for `RootPairing` provided we:
- * assume `RootPairing.IsBalanced`,
- * replace the assumption `q ≠ ⊥` with `¬ Disjoint P.rootSpan q`,
- * replace the conclusion `q = ⊤` with `P.rootSpan ≤ q`.
+* assume `RootPairing.IsBalanced`,
+* replace the assumption `q ≠ ⊥` with `¬ Disjoint P.rootSpan q`,
+* replace the conclusion `q = ⊤` with `P.rootSpan ≤ q`.
 -/
 lemma eq_top_of_mem_invtSubmodule_of_forall_eq_univ
     {K : Type*} [Field K] [NeZero (2 : K)] [Module K M] [Module K N]
