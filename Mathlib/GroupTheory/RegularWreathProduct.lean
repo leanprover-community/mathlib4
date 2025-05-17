@@ -29,7 +29,7 @@ group, regular wreath product, sylow p-subgroup
 variable (D Q : Type*) [Group D] [Group Q]
 
 /-- The regular wreath product of groups `Q` and `D`.
-    It the product of sets with the group operation
+    It the product `(Q → D) × Q` with the group operation
   `⟨d₁, q₁⟩ * ⟨d₂, q₂⟩ = ⟨d.1 * (fun x => q.1 (d.2⁻¹ * x)), d.2 * q.2⟩` -/
 @[ext]
 structure RegularWreathProduct where
