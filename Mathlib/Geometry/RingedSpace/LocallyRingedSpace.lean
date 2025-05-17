@@ -116,6 +116,12 @@ theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : 
     IsLocalHom (f.toShHom.stalkMap x).hom :=
   f.2 x
 
+@[instance]
+theorem isLocalHom_stalkMap_toHom {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    @IsLocalHom (no_index _) (no_index _) _ _
+      (@DFunLike.coe (no_index _) _ _ _ (f.toHom.stalkMap x).hom) :=
+  f.2 x
+
 /-- The identity morphism on a locally ringed space. -/
 @[simps! toShHom]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
