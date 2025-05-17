@@ -32,9 +32,6 @@ theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ -
 
 theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) := zero_add _
 
-theorem circleMap_origin_unit (θ : ℝ) : circleMap 0 1 θ =  exp (θ * I) := by
-  rw [circleMap_zero, ofReal_one, one_mul]
-
 @[simp]
 theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| := by simp [circleMap]
 
