@@ -12,7 +12,7 @@ import Mathlib.Algebra.Group.PUnit
 
 This file defines the regular wreath product of groups, and the canonical maps in and out of the
 product. The regular wreath product of `D` and `Q` is the product `(Q → D) × Q` with the group
-`⟨d₁, q₁⟩ * ⟨d₂, q₂⟩ = ⟨d.1 * (fun x => q.1 (d.2⁻¹ * x)), d.2 * q.2⟩`
+`⟨d₁, q₁⟩ * ⟨d₂, q₂⟩ = ⟨d₁ * (fun x => q₁ (d₂⁻¹ * x)), d₂ * q₂⟩`
 
 ## Key definitions
 
@@ -30,7 +30,7 @@ variable (D Q : Type*) [Group D] [Group Q]
 
 /-- The regular wreath product of groups `Q` and `D`.
     It the product `(Q → D) × Q` with the group operation
-  `⟨d₁, q₁⟩ * ⟨d₂, q₂⟩ = ⟨d.1 * (fun x => q.1 (d.2⁻¹ * x)), d.2 * q.2⟩` -/
+  `⟨d₁, q₁⟩ * ⟨d₂, q₂⟩ = ⟨d₁ * (fun x => q₁ (d₂⁻¹ * x)), d₂ * q₂⟩` -/
 @[ext]
 structure RegularWreathProduct where
   /-- The function of Q → D -/
