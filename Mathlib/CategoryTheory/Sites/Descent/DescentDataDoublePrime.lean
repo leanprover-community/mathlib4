@@ -95,6 +95,48 @@ lemma homEquiv_symm_pullHom'' ⦃X₁ X₂ : C⦄
   congr 1
   sorry
 
+section
+
+variable
+    ⦃X₁₂ X X S : C⦄ ⦃p₁ : X₁₂ ⟶ X⦄ ⦃p₂ : X₁₂ ⟶ X⦄ ⦃f : X ⟶ S⦄
+    (sq : CommSq p₁ p₂ f f) (obj : (F.obj (.mk (op X))).obj)
+
+/-@[reassoc]
+lemma map_baseChange_comp_counit' ⦃Y₁₂ : C⦄ (g : Y₁₂ ⟶ X₁₂) (gp : Y₁₂ ⟶ X)
+    (hgp₁ : g ≫ p₁ = gp) (hgp₂ : g ≫ p₂ = gp) :
+    (F.map g.op.toLoc).f.map
+      ((F.map p₁.op.toLoc).f.map ((F.baseChange sq.flip.op.toLoc).app obj)) ≫
+    (F.map g.op.toLoc).f.map
+       ((F.map p₁.op.toLoc).adj.counit.app _) =
+    (F.mapComp' p₁.op.toLoc g.op.toLoc (gp.op.toLoc) (by aesoptoloc)).inv.τf.app
+      ((F.map f.op.toLoc).f.obj ((F.map f.op.toLoc).g.obj obj)) ≫
+      (F.map gp.op.toLoc).f.map ((F.map f.op.toLoc).adj.counit.app _) ≫
+      (F.mapComp' p₂.op.toLoc g.op.toLoc (gp.op.toLoc) (by aesoptoloc)).hom.τf.app obj := by
+    dsimp
+    sorry-/
+
+@[reassoc]
+lemma map_baseChange_comp_counit (g : X ⟶ X₁₂) (hg₁ : g ≫ p₁ = 𝟙 X) (hg₂ : g ≫ p₂ = 𝟙 X) :
+    (F.map g.op.toLoc).f.map
+      ((F.map p₁.op.toLoc).f.map ((F.baseChange sq.flip.op.toLoc).app obj)) ≫
+    (F.map g.op.toLoc).f.map
+       ((F.map p₁.op.toLoc).adj.counit.app _) =
+    (F.mapComp' p₁.op.toLoc g.op.toLoc (𝟙 _) (by aesoptoloc)).inv.τf.app
+      ((F.map f.op.toLoc).f.obj ((F.map f.op.toLoc).g.obj obj)) ≫
+      (F.map (𝟙 _)).f.map ((F.map f.op.toLoc).adj.counit.app _) ≫
+      (F.mapComp' p₂.op.toLoc g.op.toLoc (𝟙 _) (by aesoptoloc)).hom.τf.app obj := by
+  have := NatTrans.congr_app
+    (F.whiskerRight_whiskerBaseChange_self_self _ _ _ sq.flip.op.toLoc g.op.toLoc (by aesoptoloc)
+      (by aesoptoloc)) obj
+  simp [Cat.associator_inv_app, Cat.associator_hom_app, Cat.leftUnitor_hom_app,
+    Adj.comp_forget₁_mapComp', whiskerBaseChange] at this
+  rw [this]
+  erw [← NatTrans.naturality_assoc]
+  rfl
+
+end
+
+
 end DescentData''
 
 open DescentData'' in
@@ -186,8 +228,11 @@ lemma hom_self_iff_dataEquivCoalgebra ⦃i : ι⦄ (δ : (sq i i).Diagonal):
     simp [Adjunction.homEquiv_counit]
     erw [← NatTrans.naturality_assoc]
     congr 1
-    -- the equality no longer involves `hom`
-    sorry
+    simp [Adj.comp_forget₁_mapComp']
+    rw [map_baseChange_comp_counit_assoc (sq i i).commSq (obj i) δ.f (by simp) (by simp)]
+    dsimp
+    rw [← Adj.fIso_hom, ← Adj.fIso_inv, Iso.hom_inv_id_app_assoc,
+      ← Adj.fIso_hom, ← Adj.fIso_inv, Iso.hom_inv_id_app, Category.comp_id]
 
 lemma hom_comp_iff_dataEquivCoalgebra (i₁ i₂ i₃ : ι) :
     homComp sq₃ hom i₁ i₂ i₃ = pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _ ↔
