@@ -193,7 +193,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
     fun p hp => (Hd (e p) hp).comp p e.hasFDerivAt
   simp_rw [← intervalIntegral.integral_smul, intervalIntegral.integral_symm w.im z.im, ←
     intervalIntegral.integral_neg, ← hF']
-  refine (integral2_divergence_prod_of_hasFDerivWithinAt_off_countable (fun p => -(I • F p)) F
+  refine (integral2_divergence_prod_of_hasFDerivAt_off_countable (fun p => -(I • F p)) F
     (fun p => -(I • F' p)) F' z.re w.im w.re z.im t (hs.preimage e.injective)
     (htc.const_smul _).neg htc (fun p hp => ((htd p hp).const_smul I).neg) htd ?_).symm
   rw [← (volume_preserving_equiv_real_prod.symm _).integrableOn_comp_preimage

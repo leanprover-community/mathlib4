@@ -12,9 +12,9 @@ import Mathlib.Order.Interval.Set.OrdConnected
 Given a linearly ordered type `α`, in this file we define
 
 * `Set.projIci (a : α)` to be the map `α → [a, ∞)` sending `(-∞, a]` to `a`, and each point
-   `x ∈ [a, ∞)` to itself;
+  `x ∈ [a, ∞)` to itself;
 * `Set.projIic (b : α)` to be the map `α → (-∞, b[` sending `[b, ∞)` to `b`, and each point
-   `x ∈ (-∞, b]` to itself;
+  `x ∈ (-∞, b]` to itself;
 * `Set.projIcc (a b : α) (h : a ≤ b)` to be the map `α → [a, b]` sending `(-∞, a]` to `a`, `[b, ∞)`
   to `b`, and each point `x ∈ [a, b]` to itself;
 * `Set.IccExtend {a b : α} (h : a ≤ b) (f : Icc a b → β)` to be the extension of `f` to `α` defined

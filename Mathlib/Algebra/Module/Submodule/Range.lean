@@ -140,7 +140,7 @@ def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ where
     obtain ⟨m, rfl⟩ := h
     rw [LinearMap.mem_range]
     use (f ^ c) m
-    rw [pow_add, LinearMap.mul_apply]
+    rw [pow_add, Module.End.mul_apply]
 
 /-- Restrict the codomain of a linear map `f` to `f.range`.
 
@@ -292,6 +292,14 @@ theorem comap_subtype_eq_top {p p' : Submodule R M} : comap p.subtype p' = ⊤ �
 @[simp]
 theorem comap_subtype_self : comap p.subtype p = ⊤ :=
   comap_subtype_eq_top.2 le_rfl
+
+theorem submoduleOf_self (N : Submodule R M) : N.submoduleOf N = ⊤ := comap_subtype_self _
+
+theorem submoduleOf_sup_of_le {N₁ N₂ N : Submodule R M} (h₁ : N₁ ≤ N) (h₂ : N₂ ≤ N) :
+    (N₁ ⊔ N₂).submoduleOf N = N₁.submoduleOf N ⊔ N₂.submoduleOf N := by
+  apply Submodule.map_injective_of_injective N.subtype_injective
+  simp only [submoduleOf, map_comap_eq]
+  aesop
 
 @[simp]
 lemma comap_subtype_le_iff {p q r : Submodule R M} :
