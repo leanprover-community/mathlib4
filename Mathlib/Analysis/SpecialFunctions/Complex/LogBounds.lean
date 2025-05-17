@@ -179,6 +179,26 @@ lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
+open scoped Topology in
+lemma log_sub_logTaylor_isBigO (n : ℕ) :
+    (fun z ↦ log (1 + z) - logTaylor (n + 1) z) =O[𝓝 0] fun z ↦ z ^ (n + 1) := by
+  rw [Asymptotics.isBigO_iff]
+  use 2 / (n + 1)
+  filter_upwards [
+    eventually_norm_sub_lt 0 one_pos,
+    eventually_norm_sub_lt 0 (show 0 < 1 / 2 by norm_num)] with z hz1 hz12
+  rw [sub_zero] at hz1 hz12
+  have : (1 - ‖z‖)⁻¹ ≤ 2 := by rw [inv_le_comm₀ (sub_pos_of_lt hz1) two_pos]; linarith
+  apply (norm_log_sub_logTaylor_le n hz1).trans
+  rw [mul_div_assoc, mul_comm, norm_pow]
+  gcongr
+
+open scoped Topology in
+lemma log_sub_self_isBigO :
+    (fun z ↦ log (1 + z) - z) =O[𝓝 0] fun z ↦ z ^ 2 := by
+  convert log_sub_logTaylor_isBigO 1
+  simp [logTaylor_succ, logTaylor_zero]
+
 lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
   rw [← sub_add_cancel (log (1 + z)) z]
@@ -272,51 +292,63 @@ section Limits
 
 /-! Limits of functions of the form `(1 + t/x + o(1/x)) ^ x` as `x → ∞`. -/
 
-open Filter Asymptotics
+open Filter Asymptotics Complex
 open scoped Topology
 
-private lemma g_le_div {g : ℝ → ℂ} {t : ℂ} (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
-    ∀ᶠ x in atTop, ‖g x‖ ≤ (‖t‖ + 1) / |x| := by
-  filter_upwards [eventually_ne_atTop 0, hg.norm.eventually_le_const (lt_add_one _)] with x h0 h
-  rw [norm_mul, ← le_div_iff₀' (by simpa using h0)] at h
-  simpa using h
+lemma tendsto_zero_of_isBoundedUnder_mul_of_tendsto_cobounded {α R} {f g : α → R}
+    [NormedRing R] [NormMulClass R] {l : Filter α}
+    (h₁ : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f x * g x‖)
+    (h₂ : Tendsto f l (Bornology.cobounded R)) : Tendsto g l (𝓝 0) := by
+  obtain ⟨c, hc⟩ := h₁.eventually_le
+  refine Metric.nhds_basis_closedBall.tendsto_right_iff.mpr fun ε hε0 ↦ ?_
+  filter_upwards [hc, hasBasis_cobounded_norm.tendsto_right_iff.mp h₂ (c / ε) trivial,
+    h₂.eventually_ne_cobounded 0] with x hfgc hεf hf0
+  rcases eq_or_gt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
+  · simpa [eq_zero_of_ne_zero_of_mul_left_eq_zero hf0 (norm_le_zero_iff.mp hfgc)] using hε0.le
+  calc
+    _ = ‖g x‖ := by simp
+    _ ≤ c / ‖f x‖ := by rwa [norm_mul, ← le_div_iff₀' (by positivity)] at hfgc
+    _ ≤ c / (c / ε) := by gcongr
+    _ = ε := div_div_cancel₀ hc0.ne'
+
+lemma RCLike.tendsto_ofReal_cobounded {K} [RCLike K] :
+    Tendsto RCLike.ofReal (Bornology.cobounded ℝ) (Bornology.cobounded K) :=
+  tendsto_norm_atTop_iff_cobounded.mp (mod_cast tendsto_norm_cobounded_atTop)
+
+lemma RCLike.tendsto_ofReal_atTop {K} [RCLike K] :
+    Tendsto RCLike.ofReal atTop (Bornology.cobounded K) :=
+  tendsto_norm_atTop_iff_cobounded.mp (mod_cast tendsto_abs_atTop_atTop)
+
+lemma RCLike.tendsto_ofReal_atBot {K} [RCLike K] :
+    Tendsto RCLike.ofReal atBot (Bornology.cobounded K) :=
+  tendsto_norm_atTop_iff_cobounded.mp (mod_cast tendsto_abs_atBot_atTop)
+
+lemma RCLike.tendsto_natCast_atTop {K} [RCLike K] :
+    Tendsto Nat.cast atTop (Bornology.cobounded K) :=
+  tendsto_norm_atTop_iff_cobounded.mp (mod_cast tendsto_natCast_atTop_atTop)
 
 private lemma g_lt {g : ℝ → ℂ} {t : ℂ} (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t))
     (y : ℝ) (hy : 0 < y := by norm_num) : ∀ᶠ x in atTop, ‖g x‖ < y := by
   apply Tendsto.eventually_lt_const (v := 0) hy
-  apply squeeze_zero' (.of_forall fun _ ↦ norm_nonneg _) (g_le_div hg)
-  apply Tendsto.const_div_atTop
-  exact tendsto_abs_atTop_atTop
+  rw [← tendsto_zero_iff_norm_tendsto_zero]
+  exact tendsto_zero_of_isBoundedUnder_mul_of_tendsto_cobounded
+    hg.norm.isBoundedUnder_le RCLike.tendsto_ofReal_atTop
 
-/-- Converts criterion for `g : ℕ → ℂ` to criterion for `g ∘ (⌊⬝⌋₊) : ℝ → ℂ` -/
-private lemma tendsto_g_comp_floor {g : ℕ → ℂ} {t : ℂ}
+-- TODO can everything be generalized to `RCLike`? i.e. define `RCLike.exp`, `RCLike.log` etc
+/-- Converts criterion for `g : ℕ → K` to criterion for `g ∘ (⌊⬝⌋₊) : ℝ → K` -/
+private lemma tendsto_g_comp_floor {K} [RCLike K] {g : ℕ → K} {t : K}
     (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
     Tendsto (fun x : ℝ ↦ x * g ⌊x⌋₊) atTop (𝓝 t) := by
-  -- for these two lemmas, we copy the proof over ℝ from `g_le_div` and `g_lt`
-  have hg_le_div : ∀ᶠ n in atTop, ‖g n‖ ≤ (‖t‖ + 1) / |(n : ℝ)| := by
-    filter_upwards [eventually_ne_atTop 0, hg.norm.eventually_le_const (lt_add_one _)] with x h0 h
-    rw [norm_mul, ← le_div_iff₀' (by simpa [Nat.ne_zero_iff_zero_lt] using h0)] at h
-    simpa using h
-  have hg0 : Tendsto (fun n ↦ ‖g n‖) atTop (𝓝 0) := by
-    apply squeeze_zero' (.of_forall fun _ ↦ norm_nonneg _) hg_le_div
-    apply Tendsto.const_div_atTop
-    exact tendsto_abs_atTop_atTop.comp tendsto_natCast_atTop_atTop
+  have hg0 : Tendsto (fun n ↦ g n) atTop (𝓝 0) :=
+    tendsto_zero_of_isBoundedUnder_mul_of_tendsto_cobounded
+    hg.norm.isBoundedUnder_le RCLike.tendsto_natCast_atTop
   apply (hg.comp tendsto_nat_floor_atTop).congr_dist
-  refine squeeze_zero' (.of_forall fun _ ↦ dist_nonneg) ?_ (hg0.comp tendsto_nat_floor_atTop)
   dsimp
-  filter_upwards [eventually_ge_atTop 0] with x hx0
-  rw [Complex.dist_eq, ← sub_mul, norm_mul]
-  apply mul_le_of_le_one_left (norm_nonneg _)
-  norm_cast
-  exact abs_le.mpr ⟨by linarith [Nat.lt_floor_add_one x], by linarith [Nat.floor_le hx0]⟩
-
-/-- Converts criterion for `g : ℕ → ℝ` to criterion for `g ∘ (⌊⬝⌋₊) : ℝ → ℝ` -/
-private lemma tendsto_g_comp_floor_real {g : ℕ → ℝ} {t : ℝ}
-    (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
-    Tendsto (fun x : ℝ ↦ x * g ⌊x⌋₊) atTop (𝓝 t) := by
-  rw [← tendsto_ofReal_iff] at hg ⊢
-  push_cast at hg ⊢
-  exact tendsto_g_comp_floor hg
+  simp_rw [dist_eq_norm, ← sub_mul, norm_mul]
+  have (x : ℝ) (hx0 : 0 ≤ x) : ‖⌊x⌋₊ - x‖ ≤ 1 :=  -- TODO extract lemma
+    mod_cast abs_le.mpr ⟨by linarith [Nat.lt_floor_add_one x], by linarith [Nat.floor_le hx0]⟩
+  exact isBoundedUnder_le_mul_tendsto_zero ⟨1, by simpa using ⟨0, mod_cast this⟩⟩ <|
+    (tendsto_zero_iff_norm_tendsto_zero.mp hg0).comp tendsto_nat_floor_atTop
 
 namespace Complex
 
@@ -324,27 +356,21 @@ namespace Complex
 lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℂ} {t : ℂ}
     (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
     Tendsto (fun x ↦ x * log (1 + g x)) atTop (𝓝 t) := by
-  have : Tendsto (fun x ↦ x * logTaylor 2 (g x)) atTop (𝓝 t) := by
-    simpa [logTaylor_succ, logTaylor_zero]
-  apply this.congr_dist
-  apply squeeze_zero' (g := fun x ↦ (‖t‖ + 1) ^ 2 / |x|) (.of_forall fun _ ↦ dist_nonneg)
-  · filter_upwards [eventually_ne_atTop 0, g_le_div hg, g_lt hg (1 / 2), g_lt hg 1] with
-      x h0 hg' hg2 hg1
-    rw [dist_comm, dist_eq, ← mul_sub, norm_mul, norm_real, Real.norm_eq_abs,
-      ← le_div_iff₀' (by positivity)]
-    calc
-      _ ≤ ‖g x‖ ^ 2 * (1 - ‖g x‖)⁻¹ / 2 := by
-        simpa [one_add_one_eq_two] using norm_log_sub_logTaylor_le 1 hg1
-      _ ≤ ((‖t‖ + 1) / |x|) ^ 2 * 1 := by
-        rw [mul_div_assoc]
-        gcongr
-        · suffices 0 ≤ 1 - ‖g x‖ by positivity
-          linarith
-        · rw [div_le_one₀ (by norm_num), inv_le_comm₀ (sub_pos_of_lt hg1) two_pos]
-          linarith
-      _ = _ := by ring
-  · apply Tendsto.const_div_atTop
-    exact tendsto_abs_atTop_atTop
+  apply hg.congr_dist
+  refine IsBigO.trans_tendsto ?_ tendsto_inv_atTop_zero.ofReal
+  simp_rw [dist_comm (_ * g _), dist_eq, ← mul_sub, isBigO_norm_left]
+  calc
+    _ =O[atTop] fun x ↦ x * g x ^ 2 := by
+      have hg0 := tendsto_zero_of_isBoundedUnder_mul_of_tendsto_cobounded hg.norm.isBoundedUnder_le
+        RCLike.tendsto_ofReal_atTop
+      exact (isBigO_refl _ _).mul (log_sub_self_isBigO.comp_tendsto hg0)
+    _ =ᶠ[atTop] fun x ↦ (x * g x) ^ 2 * x⁻¹ := by
+      filter_upwards [eventually_ne_atTop 0] with x hx0
+      rw [ofReal_inv, eq_mul_inv_iff_mul_eq₀ (mod_cast hx0)]
+      ring
+    _ =O[atTop] _ := by
+      simpa using isBigO_const_of_tendsto hg (one_ne_zero (α := ℂ))
+        |>.pow 2 |>.mul (isBigO_refl _ _)
 
 /-- The limit of `(1 + t/x + o(1/x)) ^ x` as `(x : ℝ) → ∞` is `exp t` for `t ∈ ℂ`. -/
 lemma tendsto_one_add_cpow_exp_of_tendsto {g : ℝ → ℂ} {t : ℂ}
@@ -426,14 +452,14 @@ lemma tendsto_one_add_div_rpow_exp (t : ℝ) :
 lemma tendsto_nat_mul_log_one_add_of_tendsto {g : ℕ → ℝ} {t : ℝ}
     (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
     Tendsto (fun n ↦ n * log (1 + g n)) atTop (𝓝 t) :=
-  tendsto_mul_log_one_add_of_tendsto (tendsto_g_comp_floor_real hg) |>.comp
+  tendsto_mul_log_one_add_of_tendsto (tendsto_g_comp_floor hg) |>.comp
     tendsto_natCast_atTop_atTop |>.congr (by simp)
 
 /-- The limit of `(1 + t/n + o(1/n)) ^ n` as `(n : ℕ) → ∞` is `exp t` for `t ∈ ℝ`. -/
 lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℝ} {t : ℝ}
     (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
     Tendsto (fun n ↦ (1 + g n) ^ n) atTop (𝓝 (exp t)) :=
-  tendsto_one_add_rpow_exp_of_tendsto (tendsto_g_comp_floor_real hg) |>.comp
+  tendsto_one_add_rpow_exp_of_tendsto (tendsto_g_comp_floor hg) |>.comp
     tendsto_natCast_atTop_atTop |>.congr (by simp)
 
 /-- The limit of `(1 + t/n) ^ n` as `n → ∞` is `exp t` for `t ∈ ℝ`. -/
