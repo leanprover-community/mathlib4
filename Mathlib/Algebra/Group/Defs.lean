@@ -182,11 +182,15 @@ class CommMagma (G : Type u) extends Mul G where
   /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
 
+attribute [instance high] CommMagma.toMul
+
 attribute [to_additive] CommMagma
 
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
 @[ext]
 class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
+
+attribute [instance high] CommSemigroup.toSemigroup
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
 @[ext]
@@ -655,6 +659,8 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+
+attribute [instance high] CommMonoid.toMonoid
 
 section LeftCancelMonoid
 
@@ -1140,14 +1146,12 @@ section CommGroup
 
 variable [CommGroup G]
 
--- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
+instance (priority := high) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
 
--- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
+instance (priority := high) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
 
 @[to_additive (attr := simp)] lemma inv_mul_cancel_comm (a b : G) : a⁻¹ * b * a = b := by

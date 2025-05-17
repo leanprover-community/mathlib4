@@ -541,7 +541,7 @@ def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂
 
 @[simp]
 protected theorem map_pow (f : Π i, s i →ₗ[R] s i) (n : ℕ) :
-    map (f ^ n) = map f ^ n := MonoidHom.map_pow mapMonoidHom _ _
+    map (f ^ n) = map f ^ n := MonoidHom.map_pow mapMonoidHom f _
 
 open Function in
 private theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : s i →ₗ[R] t i) :

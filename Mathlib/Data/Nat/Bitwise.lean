@@ -167,7 +167,7 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
   induction n using Nat.binaryRec with | z => rfl | f b n hn => ?_
   have : b = false := by simpa using h 0
-  rw [this, bit_false, hn fun i => by rw [← h (i + 1), testBit_bit_succ]]
+  simp [this, bit_false, hn fun i => by rw [← h (i + 1), testBit_bit_succ]]
 
 theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
   simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_of_lt h]

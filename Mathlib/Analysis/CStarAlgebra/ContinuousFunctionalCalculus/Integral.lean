@@ -47,7 +47,7 @@ lemma cfcL_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integr
 
 lemma cfcHom_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integrable f μ)
     (ha : p a := by cfc_tac) :
-    ∫ x, cfcHom (a := a) ha (f x) ∂μ = cfcHom (a := a) ha (∫ x, f x ∂μ) :=
+    ∫ x, cfcHom (R := 𝕜) (a := a) ha (f x) ∂μ = cfcHom (R := 𝕜) (a := a) ha (∫ x, f x ∂μ) :=
   cfcL_integral a f hf₁ ha
 
 open ContinuousMap in
