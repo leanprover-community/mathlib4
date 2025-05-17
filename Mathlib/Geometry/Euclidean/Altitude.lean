@@ -170,7 +170,23 @@ def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
 
 lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
   simp [height]
+
 open scoped RealInnerProductSpace
+
+-- TODO: move
+private theorem _root_.Fin.exists_ne_of_ne_of_two_lt
+    {n : ℕ} {i j : Fin n} (h : i ≠ j) (h : 2 < n) : ∃ k, k ≠ i ∧ k ≠ j := by
+  have : NeZero n := ⟨by linarith⟩
+  rcases i with ⟨i, hi⟩
+  rcases j with ⟨j, hj⟩
+  simp_rw [← Fin.val_ne_iff]
+  by_cases h0 : 0 ≠ i ∧ 0 ≠ j
+  · exact ⟨0, h0⟩
+  · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
+    · exact ⟨⟨1, by omega⟩, h1⟩
+    · refine ⟨⟨2, by omega⟩, ?_⟩
+      dsimp only
+      omega
 
 /-- The inner product of an edge from `j` to `i` and the vector from the foot of `i` to `i`
 is the square of the height. -/
@@ -211,17 +227,7 @@ lemma abs_inner_height_vsub_altitudeFoot_div_lt_one
     · refine SetLike.le_def.1 (affineSpan_mono _ ?_) (Subtype.property _)
       simp
     · rw [SetLike.mem_coe]
-      have hk : ∃ k, k ≠ i ∧ k ≠ j := by
-        rcases i with ⟨i, hi⟩
-        rcases j with ⟨j, hj⟩
-        simp_rw [← Fin.val_ne_iff]
-        by_cases h0 : 0 ≠ i ∧ 0 ≠ j
-        · exact ⟨0, h0⟩
-        · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
-          · exact ⟨⟨1, by omega⟩, h1⟩
-          · refine ⟨⟨2, by omega⟩, ?_⟩
-            dsimp only
-            omega
+      have hk : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_of_ne_of_two_lt hij (by linarith only [hn])
       have hs : vectorSpan ℝ (Set.range s.points) =
           vectorSpan ℝ (Set.range (s.faceOpposite i).points) ⊔
             vectorSpan ℝ (Set.range (s.faceOpposite j).points) := by
