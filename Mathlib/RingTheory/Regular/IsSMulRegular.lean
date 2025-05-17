@@ -5,7 +5,7 @@ Authors: Brendan Murphy
 -/
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.Ideal.AssociatedPrime
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 import Mathlib.RingTheory.QuotSMulTop
 
 /-!

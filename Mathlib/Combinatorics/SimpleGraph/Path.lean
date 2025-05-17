@@ -395,7 +395,7 @@ lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) 
   exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; omega)
     (by simp only [Set.mem_setOf_eq]; omega) (h.symm ▸ (Walk.getVert_length p).symm)
 
-lemma IsCycle.getVert_sub_one_neq_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
+lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
   have hl := hpc.three_le_length
   by_cases hi' : i ≥ p.length - 1
@@ -407,6 +407,9 @@ lemma IsCycle.getVert_sub_one_neq_getVert_add_one {i : ℕ} {p : G.Walk u u} (hp
   have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; omega)
     (by simp only [Set.mem_setOf_eq]; omega) h'
   omega
+
+@[deprecated (since := "2025-04-27")]
+alias IsCycle.getVert_sub_one_neq_getVert_add_one := IsCycle.getVert_sub_one_ne_getVert_add_one
 
 /-! ### Walk decompositions -/
 
@@ -934,6 +937,50 @@ theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃
   ⟨Preconnected.map e.toHom e.toEquiv.surjective,
     Preconnected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 
+lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
+    (h : G.Preconnected) : G.support = Set.univ := by
+  simp only [Set.eq_univ_iff_forall]
+  intro v
+  obtain ⟨w, hw⟩ := exists_ne v
+  obtain ⟨p⟩ := h v w
+  cases p with
+  | nil => contradiction
+  | @cons _ w => use w
+
+lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
+    (hx : x ∈ p.support) : ∃y ∈ p.support, G.Adj x y := by
+  induction p with
+  | nil =>
+    exact (hp Walk.Nil.nil).elim
+  | @cons u v w h p ih =>
+    cases List.mem_cons.mp hx with
+    | inl hxu =>
+      rw [hxu]
+      exact ⟨v, ⟨((Walk.cons h p).mem_support_iff).mpr (Or.inr p.start_mem_support), h⟩⟩
+    | inr hxp =>
+      cases Decidable.em p.Nil with
+      | inl hnil =>
+        rw [Walk.nil_iff_support_eq.mp hnil] at hxp
+        rw [show (x = v) by simp_all]
+        exact ⟨u, ⟨(Walk.cons h p).start_mem_support, G.adj_symm h⟩⟩
+      | inr hnotnil =>
+        obtain ⟨y, hy⟩ := ih hnotnil hxp
+        refine ⟨y, ⟨?_, hy.right⟩⟩
+        rw [Walk.mem_support_iff]
+        simp only [Walk.support_cons, List.tail_cons]
+        exact Or.inr hy.left
+
+lemma mem_support_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil)
+    {w : V} (hw : w ∈ p.support) : w ∈ G.support := by
+  obtain ⟨y, hy⟩ := adj_of_mem_walk_support p hp hw
+  exact (mem_support G).mpr ⟨y, hy.right⟩
+
+lemma mem_support_of_reachable {G : SimpleGraph V} {u v : V} (huv : u ≠ v) (h : G.Reachable u v) :
+    u ∈ G.support := by
+  let p : G.Walk u v := Classical.choice h
+  have hp : ¬p.Nil := Walk.not_nil_of_ne huv
+  exact mem_support_of_mem_walk_support p hp p.start_mem_support
+
 theorem Preconnected.exists_isPath {G : SimpleGraph V} (h : G.Preconnected) (u v : V) :
     ∃ p : G.Walk u v, p.IsPath :=
   (h u v).exists_isPath
@@ -1238,6 +1285,26 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
   simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
   apply SimpleGraph.ConnectedComponent.sound
   exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
+
+lemma reachable_induce_supp {v w} {c : ConnectedComponent G} (hv : v ∈ c.supp) (hw : w ∈ c.supp)
+    (p : G.Walk v w) : (G.induce c.supp).Reachable ⟨v, hv⟩ ⟨w, hw⟩ := by
+  induction p with
+  | nil => rfl
+  | @cons u v w h p ih =>
+    have : v ∈ c.supp := (c.mem_supp_congr_adj h).mp hv
+    obtain ⟨q⟩ := ih this hw
+    have hadj : (G.induce c.supp).Adj ⟨u, hv⟩ ⟨v, this⟩ := h
+    use q.cons hadj
+
+lemma connected_induce_supp (c : ConnectedComponent G) : (G.induce c.supp).Connected := by
+  rw [connected_iff_exists_forall_reachable]
+  use ⟨c.out, c.out_eq⟩
+  intro w
+  have hwc := (c.mem_supp_iff w).mp (Subtype.coe_prop w)
+  obtain ⟨p⟩ := ConnectedComponent.exact
+    (show G.connectedComponentMk c.out = G.connectedComponentMk w by
+      simp [← hwc, connectedComponentMk])
+  exact c.reachable_induce_supp c.out_eq hwc p
 
 end ConnectedComponent
 

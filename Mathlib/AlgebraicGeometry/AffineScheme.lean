@@ -8,7 +8,7 @@ import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
-import Mathlib.RingTheory.RingHom.Surjective
+import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.Topology.Sheaves.CommRingCat
 
 /-!
@@ -168,15 +168,15 @@ instance Spec_essSurj : Spec.EssSurj := Functor.EssSurj.toEssImage (F := _)
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
 @[simps!]
 def forgetToScheme : AffineScheme ⥤ Scheme :=
-  Scheme.Spec.essImageInclusion
+  Scheme.Spec.essImage.ι
 
 /-! We copy over instances from `Scheme.Spec.essImageInclusion`. -/
 
 instance forgetToScheme_full : forgetToScheme.Full :=
-  inferInstanceAs Scheme.Spec.essImageInclusion.Full
+  inferInstanceAs Scheme.Spec.essImage.ι.Full
 
 instance forgetToScheme_faithful : forgetToScheme.Faithful :=
-  inferInstanceAs Scheme.Spec.essImageInclusion.Faithful
+  inferInstanceAs Scheme.Spec.essImage.ι.Faithful
 
 /-- The global section functor of an affine scheme. -/
 def Γ : AffineSchemeᵒᵖ ⥤ CommRingCat :=
@@ -272,18 +272,12 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
 
 theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     Opens.IsBasis (Set.range (X.basicOpen : Γ(X, ⊤) → X.Opens)) := by
-  delta Opens.IsBasis
-  convert PrimeSpectrum.isBasis_basic_opens.isInducing
+  convert PrimeSpectrum.isBasis_basic_opens.of_isInducing
     (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).isInducing using 1
-  ext
-  simp only [Set.mem_image, exists_exists_eq_and]
-  constructor
-  · rintro ⟨_, ⟨x, rfl⟩, rfl⟩
-    refine ⟨_, ⟨_, ⟨x, rfl⟩, rfl⟩, ?_⟩
-    exact congr_arg Opens.carrier (Scheme.toSpecΓ_preimage_basicOpen _ _)
-  · rintro ⟨_, ⟨_, ⟨x, rfl⟩, rfl⟩, rfl⟩
-    refine ⟨_, ⟨x, rfl⟩, ?_⟩
-    exact congr_arg Opens.carrier (Scheme.toSpecΓ_preimage_basicOpen _ _).symm
+  ext V
+  simp only [Set.mem_range, exists_exists_eq_and, Set.mem_setOf,
+    ← Opens.coe_inj (V := V), ← Scheme.toSpecΓ_preimage_basicOpen]
+  rfl
 
 /-- The canonical map `U ⟶ Spec Γ(X, U)` for an open `U ⊆ X`. -/
 noncomputable
@@ -1151,49 +1145,6 @@ lemma specTargetImageFactorization_comp :
   f.liftQuotient_comp _ _
 
 open RingHom
-
-variable {Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y)
-
-/-- The scheme-theoretic image of a morphism `f : X ⟶ Y` with affine target.
-`f` factors as `affineTargetImageFactorization f ≫ affineTargetImageInclusion f`
-(see `affineTargetImageFactorization_comp`). -/
-def affineTargetImage (f : X ⟶ Y) : Scheme.{u} :=
-  Spec <| specTargetImage (f ≫ Y.isoSpec.hom)
-
-instance : IsAffine (affineTargetImage f) := inferInstanceAs <| IsAffine <| Spec _
-
-/-- The inclusion of the scheme-theoretic image of a morphism with affine target. -/
-def affineTargetImageInclusion (f : X ⟶ Y) : affineTargetImage f ⟶ Y :=
-  Spec.map (specTargetImageRingHom (f ≫ Y.isoSpec.hom)) ≫ Y.isoSpec.inv
-
-lemma affineTargetImageInclusion_app_surjective :
-    Function.Surjective <| (affineTargetImageInclusion f).appTop := by
-  simp only [Scheme.comp_coeBase, Opens.map_comp_obj, Opens.map_top, Scheme.comp_app,
-    CommRingCat.hom_comp, affineTargetImageInclusion, RingHom.coe_comp]
-  apply Function.Surjective.comp
-  · haveI : (toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
-      rw [← toMorphismProperty_respectsIso_iff]
-      exact surjective_respectsIso
-    exact (MorphismProperty.arrow_mk_iso_iff
-      (toMorphismProperty (fun f ↦ Function.Surjective f))
-      (arrowIsoΓSpecOfIsAffine (specTargetImageRingHom (f ≫ Y.isoSpec.hom))).symm).mpr <|
-        specTargetImageRingHom_surjective (f ≫ Y.isoSpec.hom)
-  · apply Function.Bijective.surjective
-    exact ConcreteCategory.bijective_of_isIso (Scheme.Hom.app Y.isoSpec.inv ⊤)
-
-/-- The induced morphism from `X` to the scheme-theoretic image
-of a morphism `f : X ⟶ Y` with affine target. -/
-def affineTargetImageFactorization (f : X ⟶ Y) : X ⟶ affineTargetImage f :=
-  specTargetImageFactorization (f ≫ Y.isoSpec.hom)
-
-lemma affineTargetImageFactorization_app_injective :
-    Function.Injective <| (affineTargetImageFactorization f).appTop :=
-  specTargetImageFactorization_app_injective (f ≫ Y.isoSpec.hom)
-
-@[reassoc (attr := simp)]
-lemma affineTargetImageFactorization_comp :
-    affineTargetImageFactorization f ≫ affineTargetImageInclusion f = f := by
-  simp [affineTargetImageFactorization, affineTargetImageInclusion]
 
 end Factorization
 
