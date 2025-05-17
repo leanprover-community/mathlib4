@@ -242,10 +242,9 @@ lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
     a ∈ Set.center R ↔
       AddMonoidHom.mulLeft a = .mulRight a ∧
       AddMonoidHom.compr₂ .mul (.mulLeft a) = .comp .mul (.mulLeft a) ∧
-      AddMonoidHom.comp .mul (.mulRight a) = .compl₂ .mul (.mulLeft a) ∧
       AddMonoidHom.compr₂ .mul (.mulRight a) = .compl₂ .mul (.mulRight a) := by
   rw [Set.mem_center_iff, isMulCentral_iff]
-  simp [DFunLike.ext_iff]
+  simp [DFunLike.ext_iff, commute_iff_eq]
 
 variable {R}
 
