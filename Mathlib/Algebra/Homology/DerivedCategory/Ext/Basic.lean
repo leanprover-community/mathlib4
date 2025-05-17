@@ -443,10 +443,9 @@ lemma Ext.mk₀_sum {X Y : C} {ι : Type*} [Fintype ι] (f : ι → (X ⟶ Y)) :
     mk₀ (∑ i, f i) = ∑ i, mk₀ (f i) :=
   map_sum addEquiv₀.symm _ _
 
-variable {J : Type*} [Fintype J] {X : J → C} {c : Bicone X} (hc : c.IsBilimit) (Y : C) (n : ℕ)
-
 /-- `Ext` commutes with biproducts in its first variable. -/
-noncomputable def Ext.biproductAddEquiv : Ext c.pt Y n ≃+ Π i, Ext (X i) Y n where
+noncomputable def Ext.biproductAddEquiv {J : Type*} [Fintype J] {X : J → C} {c : Bicone X}
+    (hc : c.IsBilimit) (Y : C) (n : ℕ): Ext c.pt Y n ≃+ Π i, Ext (X i) Y n where
   toFun e i := (Ext.mk₀ (c.ι i)).comp e (zero_add n)
   invFun e := ∑ (i : J), (Ext.mk₀ (c.π i)).comp (e i) (zero_add n)
   left_inv x := by
@@ -462,10 +461,9 @@ noncomputable def Ext.biproductAddEquiv : Ext c.pt Y n ≃+ Π i, Ext (X i) Y n 
     simp only [comp_add]
     rfl
 
-variable (X : C) {J : Type*} [Fintype J] {Y : J → C} {c : Bicone Y} (hc : c.IsBilimit) (n : ℕ)
-
 /-- `Ext` commutes with biproducts in its second variable. -/
-noncomputable def Ext.addEquivBiproduct : Ext X c.pt n ≃+ Π i, Ext X (Y i) n where
+noncomputable def Ext.addEquivBiproduct (X : C) {J : Type*} [Fintype J] {Y : J → C} {c : Bicone Y}
+    (hc : c.IsBilimit) (n : ℕ) : Ext X c.pt n ≃+ Π i, Ext X (Y i) n where
   toFun e i := e.comp (Ext.mk₀ (c.π i)) (add_zero n)
   invFun e := ∑ (i : J), (e i).comp (Ext.mk₀ (c.ι i)) (add_zero n)
   left_inv _ := by
