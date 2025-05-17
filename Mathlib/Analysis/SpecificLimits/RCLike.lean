@@ -55,7 +55,6 @@ theorem tendsto_add_mul_div_add_mul_atTop_nhds (a b c : 𝕜) {d : 𝕜} (hd : d
       apply mul_zero (_ : 𝕜) ▸ Filter.Tendsto.const_mul _ _
       exact tendsto_inverse_atTop_nhds_zero_nat 𝕜
 
-/-- Converts criterion for `g : ℕ → K` to criterion for `g ∘ (⌊⬝⌋₊) : ℝ → K` -/
 theorem tendsto_mul_comp_nat_floor_of_tendsto_mul {𝕜} [RCLike 𝕜] {g : ℕ → 𝕜} {t : 𝕜}
     (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
     Tendsto (fun x : ℝ ↦ x * g ⌊x⌋₊) atTop (𝓝 t) := by
