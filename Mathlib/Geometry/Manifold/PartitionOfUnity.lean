@@ -641,46 +641,6 @@ end SmoothPartitionOfUnity
 
 variable [SigmaCompactSpace M] [T2Space M] {t : M → Set F} {n : ℕ∞}
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
-be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
-`U ∈ 𝓝 x` and a function `g : M → F` such that `g` is $C^n$ smooth on `U` and `g y ∈ t y` for all
-`y ∈ U`. Then there exists a $C^n$ smooth function `g : C^n⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
-for all `x`. See also `exists_smooth_forall_mem_convex_of_local` and
-`exists_smooth_forall_mem_convex_of_local_const`. -/
-theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
-    (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
-    ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x := by
-  choose U hU g hgs hgt using Hloc
-  obtain ⟨f, hf⟩ :=
-    SmoothPartitionOfUnity.exists_isSubordinate I isClosed_univ (fun x => interior (U x))
-      (fun x => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
-  refine ⟨⟨fun x => ∑ᶠ i, f i x • g i x,
-      hf.contMDiff_finsum_smul (fun i => isOpen_interior) fun i => (hgs i).mono interior_subset⟩,
-    fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ ?_) (ht _)⟩
-  exact interior_subset (hf _ <| subset_closure hi)
-
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
-be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
-`U ∈ 𝓝 x` and a function `g : M → F` such that `g` is smooth on `U` and `g y ∈ t y` for all `y ∈ U`.
-Then there exists a smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.
-See also `exists_contMDiffOn_forall_mem_convex_of_local` and
-`exists_smooth_forall_mem_convex_of_local_const`. -/
-theorem exists_smooth_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
-    (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) ∞ g U ∧ ∀ y ∈ U, g y ∈ t y) :
-    ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
-  exists_contMDiffOn_forall_mem_convex_of_local I ht Hloc
-
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F` be
-a family of convex sets. Suppose that for each point `x : M` there exists a vector `c : F` such that
-for all `y` in a neighborhood of `x` we have `c ∈ t y`. Then there exists a smooth function
-`g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.  See also
-`exists_contMDiffOn_forall_mem_convex_of_local` and `exists_smooth_forall_mem_convex_of_local`. -/
-theorem exists_smooth_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
-    (Hloc : ∀ x : M, ∃ c : F, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
-  exists_smooth_forall_mem_convex_of_local I ht fun x =>
-    let ⟨c, hc⟩ := Hloc x
-    ⟨_, hc, fun _ => c, contMDiffOn_const, fun _ => id⟩
-
 /-- Let `V` be a vector bundle over a σ-compact Hausdorff finite dimensional topological manifold
 `M`. Let `t : M → Set (V x)` be a family of convex sets in the fibers of `V`.
 Suppose that for each point `x₀ : M` there exists a neighborhood `U_x₀` of `x₀` and a local
@@ -688,9 +648,6 @@ section `s_loc : M → V x` such that `s_loc` is $C^n$ smooth on `U_x₀` (when 
 the total space of the bundle) and `s_loc y ∈ t y` for all `y ∈ U_x₀`.
 Then there exists a global $C^n$ smooth section `s : Cₛ^n⟮I_M; F_fiber, V⟯` such that
 `s x ∈ t x` for all `x : M`.
-
-This theorem is a version of `exists_contMDiffOn_forall_mem_convex_of_local` for sections of a
-vector bundle. It uses a partition of unity to glue together local sections.
 -/
 theorem exists_contMDiff_section_forall_mem_convex_of_local
     {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
@@ -745,9 +702,6 @@ section `s_loc : M → V x` such that `s_loc` is $C^∞$ smooth on `U_x₀` (whe
 the total space of the bundle) and `s_loc y ∈ t y` for all `y ∈ U_x₀`.
 Then there exists a global smooth section `s : Cₛ^∞⟮I_M; F_fiber, V⟯` such that
 `s x ∈ t x` for all `x : M`.
-
-This theorem is a version of `exists_smooth_forall_mem_convex_of_local` for sections of a
-vector bundle. It uses a partition of unity to glue together local sections.
 -/
 theorem exists_smooth_section_forall_mem_convex_of_local
     {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
@@ -761,6 +715,61 @@ theorem exists_smooth_section_forall_mem_convex_of_local
         (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
     ∃ s : Cₛ^∞⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x :=
       exists_contMDiff_section_forall_mem_convex_of_local I V t ht_conv Hloc
+
+/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
+be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
+`U ∈ 𝓝 x` and a function `g : M → F` such that `g` is $C^n$ smooth on `U` and `g y ∈ t y` for all
+`y ∈ U`. Then there exists a $C^n$ smooth function `g : C^n⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
+for all `x`.
+
+This is a special case of `exists_contMDiff_section_forall_mem_convex_of_local` where `V` is the
+trivial bundle. See also `exists_smooth_forall_mem_convex_of_local` and
+`exists_smooth_forall_mem_convex_of_local_const`. -/
+theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
+    (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
+    ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x := by
+  let V : M → Type _ := fun _ ↦ F
+  have Hloc' :
+      ∀ x₀, ∃ U ∈ 𝓝 x₀, ∃ s : (x : M) → V x,
+        ContMDiffOn I (I.prod 𝓘(ℝ, F)) n (fun x ↦ (⟨x, s x⟩ : TotalSpace F V)) U ∧
+        ∀ y ∈ U, s y ∈ t y := by
+    intro x₀
+    rcases Hloc x₀ with ⟨U, hU, g, hgs, hgt⟩
+    have hgs' :
+        ContMDiffOn I (I.prod 𝓘(ℝ, F)) n (fun x ↦ (⟨x, g x⟩: TotalSpace F V)) U := by
+      intro x hx
+      simpa using ((Bundle.contMDiffWithinAt_section g U x).mpr (hgs x hx))
+    exact ⟨U, hU, g, hgs', hgt⟩
+  rcases exists_contMDiff_section_forall_mem_convex_of_local I V t ht Hloc' with ⟨s, hs⟩
+  refine ⟨⟨fun x ↦ (s x : F), by
+    intro x
+    simpa using
+      (Bundle.contMDiffAt_section (fun y ↦ (s y : F)) x).mp
+        (s.contMDiff x)⟩, fun x ↦ by simpa using hs x⟩
+
+/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
+be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
+`U ∈ 𝓝 x` and a function `g : M → F` such that `g` is smooth on `U` and `g y ∈ t y` for all `y ∈ U`.
+Then there exists a smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.
+
+This is a special case of `exists_contMDiff_section_forall_mem_convex_of_local` where `V` is the
+trivial bundle. See also `exists_contMDiffOn_forall_mem_convex_of_local` and
+`exists_smooth_forall_mem_convex_of_local_const`. -/
+theorem exists_smooth_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
+    (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) ∞ g U ∧ ∀ y ∈ U, g y ∈ t y) :
+    ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
+  exists_contMDiffOn_forall_mem_convex_of_local I ht Hloc
+
+/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F` be
+a family of convex sets. Suppose that for each point `x : M` there exists a vector `c : F` such that
+for all `y` in a neighborhood of `x` we have `c ∈ t y`. Then there exists a smooth function
+`g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`. See also
+`exists_contMDiffOn_forall_mem_convex_of_local` and `exists_smooth_forall_mem_convex_of_local`. -/
+theorem exists_smooth_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
+    (Hloc : ∀ x : M, ∃ c : F, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
+  exists_smooth_forall_mem_convex_of_local I ht fun x =>
+    let ⟨c, hc⟩ := Hloc x
+    ⟨_, hc, fun _ => c, contMDiffOn_const, fun _ => id⟩
 
 /-- Let `M` be a smooth σ-compact manifold with extended distance. Let `K : ι → Set M` be a locally
 finite family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for
