@@ -367,7 +367,7 @@ theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
 -/
 
 /-- A matrix `M : Matrix n n R` is positive definite if it is hermitian
-   and `xᴴMx` is greater than zero for all nonzero `x`. -/
+and `xᴴMx` is greater than zero for all nonzero `x`. -/
 def PosDef (M : Matrix n n R) :=
   M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < star x ⬝ᵥ (M *ᵥ x)
 

@@ -14,9 +14,9 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
 
 ## Main definitions
 
- * `Matrix.diagonal d`: matrix with the vector `d` along the diagonal
- * `Matrix.diag M`: the diagonal of a square matrix
- * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
+* `Matrix.diagonal d`: matrix with the vector `d` along the diagonal
+* `Matrix.diag M`: the diagonal of a square matrix
+* `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
 assert_not_exists Algebra Star

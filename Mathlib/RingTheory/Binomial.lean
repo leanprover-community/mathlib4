@@ -53,10 +53,10 @@ of cardinality `n`.
 Further results in Elliot's paper:
 * A CommRing is binomial if and only if it admits a λ-ring structure with trivial Adams operations.
 * The free commutative binomial ring on a set `X` is the ring of integer-valued polynomials in the
-variables `X`.  (also, noncommutative version?)
+  variables `X`.  (also, noncommutative version?)
 * Given a commutative binomial ring `A` and an `A`-algebra `B` that is complete with respect to an
-ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
-`1 + I`.
+  ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
+  `1 + I`.
 
 -/
 section Multichoose
@@ -422,7 +422,7 @@ theorem descPochhammer_succ_succ_smeval {R} [NonAssocRing R] [Pow R ℕ] [NatPow
   simp only [smeval_comp, smeval_sub, smeval_add, smeval_mul, smeval_X, smeval_one, npow_one,
     npow_zero, one_smul, add_sub_cancel_right, sub_mul, add_mul, add_smul, one_mul]
   rw [← C_eq_natCast, smeval_C, npow_zero, add_comm (k • smeval (descPochhammer ℤ k) r) _,
-    add_assoc, add_comm (k • smeval (descPochhammer ℤ k) r) _, ← add_assoc,  ← add_sub_assoc,
+    add_assoc, add_comm (k • smeval (descPochhammer ℤ k) r) _, ← add_assoc, ← add_sub_assoc,
     nsmul_eq_mul, zsmul_one, Int.cast_natCast, sub_add_cancel, add_comm]
 
 theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
