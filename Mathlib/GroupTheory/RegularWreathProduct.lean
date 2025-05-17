@@ -75,11 +75,10 @@ theorem inv_left (a : D ≀ᵣ Q) :
 theorem inv_right (a : D ≀ᵣ Q) : a⁻¹.right = a.right⁻¹ := rfl
 
 instance : Group (RegularWreathProduct D Q) where
-  mul_assoc a b c := RegularWreathProduct.ext (by simp [mul_assoc]; rfl) (by simp [mul_assoc])
-  one_mul a := RegularWreathProduct.ext (by simp) (one_mul a.2)
-  mul_one a := RegularWreathProduct.ext (by simp; rfl) (mul_one _)
-  inv_mul_cancel a :=
-    RegularWreathProduct.ext (by simp; exact mul_eq_one_iff_eq_inv.mpr rfl) (by simp)
+  mul_assoc a b c := by ext <;> simp [mul_assoc]
+  one_mul a := by ext <;> simp
+  mul_one a := by ext <;> simp
+  inv_mul_cancel a := by ext <;> simp
 
 instance : Inhabited (RegularWreathProduct D Q) := ⟨1⟩
 
