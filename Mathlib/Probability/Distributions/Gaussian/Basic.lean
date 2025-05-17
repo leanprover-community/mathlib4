@@ -173,32 +173,17 @@ alias ⟨_, isGaussian_of_charFunDual_eq⟩ := isGaussian_iff_charFunDual_eq
 
 end charFunDual
 
-lemma isGaussian_map_prod_add [SecondCountableTopology E]
-    {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
-    IsGaussian ((μ.prod ν).map (fun p ↦ p.1 + p.2)) where
-  map_eq_gaussianReal := by
-    intro L
-    have h1 : ((μ.prod ν).map (fun p ↦ p.1 + p.2)).map L
-        = ((μ.map L).prod (ν.map L)).map (fun p ↦ p.1 + p.2) := by
-      rw [Measure.map_map (by fun_prop) (by fun_prop)]
-      have : (L ∘ fun (p : E × E) ↦ p.1 + p.2)
-          = (fun p : ℝ × ℝ ↦ p.1 + p.2) ∘ (Prod.map L L) := by ext; simp
-      rw [this, ← Measure.map_map (by fun_prop) (by fun_prop),
-        ← Measure.map_prod_map]
-      · fun_prop
-      · fun_prop
-    have : ∫ x, L x ∂((μ.prod ν).map (fun p ↦ p.1 + p.2))
-          = ∫ x, x ∂(((μ.map L).prod (ν.map L)).map (fun p ↦ p.1 + p.2)) := by
-        rw [← h1, integral_map (φ := L) (by fun_prop) (by fun_prop)]
-    rw [h1, this, ← variance_id_map (by fun_prop), h1, IsGaussian.map_eq_gaussianReal L,
-      IsGaussian.map_eq_gaussianReal L, gaussianReal_map_prod_add]
-    congr
-    · simp
-    · simp [variance_nonneg]
-
 instance isGaussian_conv [SecondCountableTopology E]
     {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
-    IsGaussian (μ ∗ ν) := isGaussian_map_prod_add
+    IsGaussian (μ ∗ ν) where
+  map_eq_gaussianReal L := by
+    have : (μ ∗ ν)[L] = ∫ x, x ∂((μ.map L).conv (ν.map L)) := by
+      rw [← Measure.map_conv_continuousLinearMap L,
+        integral_map (φ := L) (by fun_prop) (by fun_prop)]
+    rw [Measure.map_conv_continuousLinearMap L, this, ← variance_id_map (by fun_prop),
+      Measure.map_conv_continuousLinearMap L, IsGaussian.map_eq_gaussianReal L,
+      IsGaussian.map_eq_gaussianReal L, gaussianReal_conv_gaussianReal]
+    congr <;> simp [variance_nonneg]
 
 section Map
 

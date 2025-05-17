@@ -6,7 +6,7 @@ Authors: Jakob Stiefel, Rémy Degenne, Thomas Zhu
 import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.MeasureTheory.Group.Convolution
+import Mathlib.MeasureTheory.Group.IntegralConvolution
 import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
 /-!
@@ -195,14 +195,6 @@ lemma charFun_map_smul [BorelSpace E] [SecondCountableTopology E] (r : ℝ) (t :
 lemma charFun_map_mul {μ : Measure ℝ} (r t : ℝ) :
     charFun (μ.map (r * ·)) t = charFun μ (r * t) := charFun_map_smul r t
 
-lemma integral_conv {E F : Type*} [AddMonoid E] [MeasurableSpace E] [MeasurableAdd₂ E]
-    {μ ν : Measure E} [SFinite μ] [SFinite ν]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F} (hf : Integrable f (μ ∗ ν)) :
-    ∫ x, f x ∂(μ ∗ ν) = ∫ x, ∫ y, f (x + y) ∂ν ∂μ := by
-  unfold Measure.conv
-  rw [integral_map (by fun_prop) hf.1, integral_prod]
-  exact (integrable_map_measure hf.1 (by fun_prop)).mp hf
-
 variable {E : Type*} [MeasurableSpace E] {μ ν : Measure E} {t : E}
   [NormedAddCommGroup E] [InnerProductSpace ℝ E] [BorelSpace E] [SecondCountableTopology E]
 
@@ -223,17 +215,8 @@ lemma charFun_conv [IsFiniteMeasure μ] [IsFiniteMeasure ν] (t : E) :
     charFun (μ ∗ ν) t = charFun μ t * charFun ν t := by
   simp_rw [charFun_apply]
   rw [integral_conv]
-  · simp_rw [inner_add_left]
-    push_cast
-    simp_rw [add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
-  · -- todo: extract lemma about integrability wrt conv?
-    unfold Measure.conv
-    rw [integrable_map_measure]
-    · apply (integrable_const (1 : ℝ)).mono
-      · exact Measurable.aestronglyMeasurable <| by fun_prop
-      · simp
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
-    · fun_prop
+  · simp [inner_add_left, add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
+  · exact (integrable_const (1 : ℝ)).mono (by fun_prop) (by simp)
 
 end InnerProductSpace
 
@@ -298,10 +281,11 @@ lemma charFunDual_prod [SFinite μ] [SFinite ν] (L : Dual ℝ (E × F)) :
     Complex.exp_add]
   rw [integral_prod_mul (f := fun x ↦ cexp ((L₁ x * I))) (g := fun x ↦ cexp ((L₂ x * I)))]
 
-variable [CompleteSpace E] [BorelSpace E] [SecondCountableTopology E]
+variable [BorelSpace E] [SecondCountableTopology E]
 
 /-- If two finite measures have the same characteristic function, then they are equal. -/
-theorem Measure.ext_of_charFunDual {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+theorem Measure.ext_of_charFunDual [CompleteSpace E]
+    {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : charFunDual μ = charFunDual ν) :
     μ = ν := by
   refine ext_of_integral_char_eq continuous_probChar probChar_ne_one
@@ -313,6 +297,15 @@ theorem Measure.ext_of_charFunDual {μ ν : Measure E} [IsFiniteMeasure μ] [IsF
     by_contra! h
     exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)
   · exact isBoundedBilinearMap_apply.symm.continuous
+
+/-- The characteristic function of a convolution of measures
+is the product of the respective characteristic functions. -/
+lemma charFunDual_conv {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν] (L : Dual ℝ E) :
+    charFunDual (μ ∗ ν) L = charFunDual μ L * charFunDual ν L := by
+  simp_rw [charFunDual_apply]
+  rw [integral_conv]
+  · simp [inner_add_left, add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
+  · exact (integrable_const (1 : ℝ)).mono (by fun_prop) (by simp)
 
 end NormedSpace
 

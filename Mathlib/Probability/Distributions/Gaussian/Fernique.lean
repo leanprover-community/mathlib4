@@ -111,20 +111,6 @@ lemma aux {c : ℝ} (hc : c < 0) :
     rw [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
     simp
 
--- todo: replace `Measurable f`
-@[to_additive]
-lemma integrable_mconv_iff {M F : Type*} [Monoid M] {mM : MeasurableSpace M} [MeasurableMul₂ M]
-    [NormedAddCommGroup F] [SecondCountableTopology F]
-    {_ : MeasurableSpace F} [OpensMeasurableSpace F]
-    {μ ν : Measure M} [SFinite ν] {f : M → F} (hf : Measurable f) :
-    Integrable f (μ ∗ ν)
-      ↔ (∀ᵐ x ∂μ, Integrable (fun y ↦ f (x * y)) ν)
-        ∧ Integrable (fun x ↦ ∫ y, ‖f (x * y)‖ ∂ν) μ := by
-  unfold Measure.mconv
-  rw [integrable_map_measure (by fun_prop) (by fun_prop), integrable_prod_iff]
-  · simp
-  · exact Measurable.aestronglyMeasurable <| by fun_prop
-
 lemma MeasureTheory.Measure.prod_smul_left {α β : Type*}
     {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {μ : Measure α} {ν : Measure β} [SFinite ν] (c : ℝ≥0∞) :
