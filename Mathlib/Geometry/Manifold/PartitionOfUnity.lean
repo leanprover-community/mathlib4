@@ -637,7 +637,7 @@ the total space of the bundle) and `s_loc y ∈ t y` for all `y ∈ U_x₀`.
 Then there exists a global $C^n$ smooth section `s : Cₛ^n⟮I_M; F_fiber, V⟯` such that
 `s x ∈ t x` for all `x : M`.
 -/
-theorem exists_contMDiff_section_forall_mem_convex_of_local
+theorem exists_contMDiffOn_section_forall_mem_convex_of_local
     {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
     (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
     [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
@@ -717,7 +717,7 @@ theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t
     (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x := by
   let V (_ : M) : Type _ := F
-  rcases exists_contMDiff_section_forall_mem_convex_of_local I V t ht
+  rcases exists_contMDiffOn_section_forall_mem_convex_of_local I V t ht
     (fun x₀ ↦ by
       rcases Hloc x₀ with ⟨U, hU, g, hgs, hgt⟩
       refine ⟨U, hU, g, ?_, hgt⟩
