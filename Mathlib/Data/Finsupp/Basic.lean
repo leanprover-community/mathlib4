@@ -1324,10 +1324,7 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
   ext a
   by_cases h : P a
   · exact dif_pos h
-  · #adaptation_note /-- nightly-2024-06-18
-    this `rw` was done by `dsimp`. -/
-    rw [extendDomain_toFun]
-    dsimp
+  · dsimp [extendDomain_toFun]
     rw [if_neg h, eq_comm, ← not_mem_support_iff]
     refine mt ?_ h
     exact @hf _
@@ -1336,9 +1333,7 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
 theorem extendDomain_single (a : Subtype P) (m : M) :
     (single a m).extendDomain = single a.val m := by
   ext a'
-  #adaptation_note /-- nightly-2024-06-18
-  this `rw` was instead `dsimp only`. -/
-  rw [extendDomain_toFun]
+  dsimp only [extendDomain_toFun]
   obtain rfl | ha := eq_or_ne a.val a'
   · simp_rw [single_eq_same, dif_pos a.prop]
   · simp_rw [single_eq_of_ne ha, dite_eq_right_iff]
