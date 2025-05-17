@@ -28,13 +28,13 @@ group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.le
 
 ## Main definitions
 
- * `WeierstrassCurve.Jacobian.PointClass`: the equivalence class of a point representative.
- * `WeierstrassCurve.Jacobian.Nonsingular`: the nonsingular condition on a point representative.
- * `WeierstrassCurve.Jacobian.NonsingularLift`: the nonsingular condition on a point class.
+* `WeierstrassCurve.Jacobian.PointClass`: the equivalence class of a point representative.
+* `WeierstrassCurve.Jacobian.Nonsingular`: the nonsingular condition on a point representative.
+* `WeierstrassCurve.Jacobian.NonsingularLift`: the nonsingular condition on a point class.
 
 ## Main statements
 
- * `WeierstrassCurve.Jacobian.polynomial_relation`: Euler's homogeneous function theorem.
+* `WeierstrassCurve.Jacobian.polynomial_relation`: Euler's homogeneous function theorem.
 
 ## Implementation notes
 

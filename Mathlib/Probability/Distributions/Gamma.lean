@@ -77,7 +77,7 @@ lemma measurable_gammaPDFReal (a r : ℝ) : Measurable (gammaPDFReal a r) :=
 
 /-- The gamma pdf is strongly measurable -/
 @[fun_prop, measurability]
- lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
+lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
      StronglyMeasurable (gammaPDFReal a r) :=
    (measurable_gammaPDFReal a r).stronglyMeasurable
 
