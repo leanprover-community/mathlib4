@@ -72,8 +72,8 @@ lemma num_div_den (A : Matrix m n ℚ) (i : m) (j : n) :
 
 lemma inv_denom_smul_num (A : Matrix m n ℚ) :
     (A.den⁻¹ : ℚ) • A.num.map (↑) = A := by
-  ext i j
-  simp only [← Matrix.num_div_den (A := A), smul_apply, map_apply, smul_eq_mul, div_eq_inv_mul]
+  ext
+  simp [← Matrix.num_div_den A, div_eq_inv_mul]
 
 lemma den_map_intCast (A : Matrix m n ℤ) : (A.map (↑)).den = 1 := by
   simp [← Nat.dvd_one, Matrix.den_dvd_iff]
