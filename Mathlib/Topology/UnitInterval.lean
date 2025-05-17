@@ -52,8 +52,6 @@ theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
   rw [mem_Icc, mem_Icc]
   constructor <;> intro <;> constructor <;> linarith
 
-instance : CompleteLattice I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
-
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
 @[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
