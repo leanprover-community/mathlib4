@@ -6,6 +6,7 @@ Authors: Nailin Guan, Yi Song
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Support
@@ -23,49 +24,6 @@ This is the case for `Depth[I](M) = 0`.
 open IsLocalRing LinearMap
 
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-
-lemma mem_associatePrimes_of_comap_mem_associatePrimes_localization (S : Submonoid R)
-    (p : Ideal (Localization S)) [p.IsPrime]
-    (ass : p.comap (algebraMap R (Localization S)) ∈ associatedPrimes R M) :
-    p ∈ associatedPrimes (Localization S) (LocalizedModule S M) := by
-  rcases ass with ⟨hp, x, hx⟩
-  constructor
-  · --may be able to remove `p.IsPrime`
-    trivial
-  · use LocalizedModule.mkLinearMap S M x
-    ext t
-    induction' t using Localization.induction_on with a
-    simp only [LocalizedModule.mkLinearMap_apply, LinearMap.mem_ker,
-      LinearMap.toSpanSingleton_apply, LocalizedModule.mk_smul_mk, mul_one]
-    rw [IsLocalizedModule.mk_eq_mk', IsLocalizedModule.mk'_eq_zero']
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · use 1
-      simp only [← LinearMap.toSpanSingleton_apply, one_smul, ← LinearMap.mem_ker, ← hx,
-        Ideal.mem_comap, ← Localization.mk_one_eq_algebraMap]
-      have : Localization.mk a.1 1 = Localization.mk a.1 a.2 * Localization.mk a.2.1 (1 : S) := by
-        simp only [Localization.mk_mul, mul_one, ← sub_eq_zero, Localization.sub_mk,
-          one_mul, sub_zero]
-        simp [mul_comm, Localization.mk_zero]
-      rw [this]
-      exact Ideal.IsTwoSided.mul_mem_of_left _ h
-    · rcases h with ⟨s, hs⟩
-      have : s • a.1 • x = (s.1 * a.1) • x := smul_smul s.1 a.1 x
-      rw [this, ← LinearMap.toSpanSingleton_apply, ← LinearMap.mem_ker, ← hx, Ideal.mem_comap,
-        ← Localization.mk_one_eq_algebraMap] at hs
-      have : Localization.mk a.1 a.2 =
-        Localization.mk (s.1 * a.1) 1 * Localization.mk 1 (s * a.2) := by
-        simp only [Localization.mk_mul, mul_one, one_mul, ← sub_eq_zero, Localization.sub_mk,
-          Submonoid.coe_mul, sub_zero]
-        simp [← mul_assoc, mul_comm s.1 a.2.1, Localization.mk_zero]
-      rw [this]
-      exact Ideal.IsTwoSided.mul_mem_of_left _ hs
-
-lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes {p : Ideal R} [p.IsPrime]
-    (ass : p ∈ associatedPrimes R M) :
-    maximalIdeal (Localization.AtPrime p) ∈
-    associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M) := by
-  apply mem_associatePrimes_of_comap_mem_associatePrimes_localization
-  simpa [Localization.AtPrime.comap_maximalIdeal] using ass
 
 lemma hom_subsingleton_of_mem_ann_isSMulRegular {r : R} (reg : IsSMulRegular M r)
     (mem_ann : r ∈ Module.annihilator R N) : Subsingleton (N →ₗ[R] M) := by
