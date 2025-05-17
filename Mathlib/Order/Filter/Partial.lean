@@ -56,7 +56,7 @@ that `Rel.core` generalizes `Set.preimage`. -/
 def rmap (r : Rel α β) (l : Filter α) : Filter β where
   sets := { s | r.core s ∈ l }
   univ_sets := by simp
-  sets_of_superset hs st := mem_of_superset hs (Rel.core_mono _ st)
+  sets_of_superset hs st := mem_of_superset hs (Rel.core_mono st)
   inter_sets hs ht := by
     simp only [Set.mem_setOf_eq]
     convert inter_mem hs ht
@@ -91,14 +91,14 @@ theorem rtendsto_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
 /-- One way of taking the inverse map of a filter under a relation. One generalization of
 `Filter.comap` to relations. Note that `Rel.core` generalizes `Set.preimage`. -/
 def rcomap (r : Rel α β) (f : Filter β) : Filter α where
-  sets := Rel.image (fun s t => r.core s ⊆ t) f.sets
+  sets := Rel.image {(s, t) : _ × _ | r.core s ⊆ t} f.sets
   univ_sets := ⟨Set.univ, univ_mem, Set.subset_univ _⟩
   sets_of_superset := fun ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
   inter_sets := fun ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
     ⟨a' ∩ b', inter_mem ha₁ hb₁, (r.core_inter a' b').subset.trans (Set.inter_subset_inter ha₂ hb₂)⟩
 
 theorem rcomap_sets (r : Rel α β) (f : Filter β) :
-    (rcomap r f).sets = Rel.image (fun s t => r.core s ⊆ t) f.sets :=
+    (rcomap r f).sets = Rel.image {(s, t) : _ × _ | r.core s ⊆ t} f.sets :=
   rfl
 
 theorem rcomap_rcomap (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
@@ -107,7 +107,7 @@ theorem rcomap_rcomap (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
     ext t; simp only [rcomap_sets, Rel.image, Filter.mem_sets, Set.mem_setOf_eq, Rel.core_comp]
     constructor
     · rintro ⟨u, ⟨v, vsets, hv⟩, h⟩
-      exact ⟨v, vsets, Set.Subset.trans (Rel.core_mono _ hv) h⟩
+      exact ⟨v, vsets, Set.Subset.trans (Rel.core_mono hv) h⟩
     rintro ⟨t, tsets, ht⟩
     exact ⟨Rel.core s t, ⟨t, tsets, Set.Subset.rfl⟩, ht⟩
 
@@ -129,12 +129,11 @@ theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter
 /-- One way of taking the inverse map of a filter under a relation. Generalization of `Filter.comap`
 to relations. -/
 def rcomap' (r : Rel α β) (f : Filter β) : Filter α where
-  sets := Rel.image (fun s t => r.preimage s ⊆ t) f.sets
+  sets := Rel.image {(s, t) : _ × _ | r.preimage s ⊆ t} f.sets
   univ_sets := ⟨Set.univ, univ_mem, Set.subset_univ _⟩
   sets_of_superset := fun ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
   inter_sets := fun ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
-    ⟨a' ∩ b', inter_mem ha₁ hb₁,
-      (@Rel.preimage_inter _ _ r _ _).trans (Set.inter_subset_inter ha₂ hb₂)⟩
+    ⟨a' ∩ b', inter_mem ha₁ hb₁, r.preimage_inter_subset.trans (Set.inter_subset_inter ha₂ hb₂)⟩
 
 @[simp]
 theorem mem_rcomap' (r : Rel α β) (l : Filter β) (s : Set α) :

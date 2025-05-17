@@ -21,11 +21,11 @@ By flipping the arguments to a relation, we construct an equivalence `opEquivale
 `RelCat` and its opposite.
 -/
 
+open Rel
+
 namespace CategoryTheory
 
 universe u
-
--- This file is about Lean 3 declaration "Rel".
 
 /-- A type synonym for `Type u`, which carries the category instance for which
     morphisms are binary relations. -/
@@ -36,15 +36,13 @@ instance RelCat.inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
 
 /-- The category of types with binary relations as morphisms. -/
 instance rel : LargeCategory RelCat where
-  Hom X Y := X → Y → Prop
-  id _ x y := x = y
-  comp f g x z := ∃ y, f x y ∧ g y z
-
-
+  Hom := Rel
+  id _ := .id
+  comp f g := f ○ g
 
 namespace RelCat
 
-@[ext] theorem hom_ext {X Y : RelCat} (f g : X ⟶ Y) (h : ∀ a b, f a b ↔ g a b) : f = g :=
+@[ext] theorem hom_ext {X Y : RelCat} (f g : X ⟶ Y) (h : ∀ a b, a ~[f] b ↔ a ~[g] b) : f = g :=
   funext₂ (fun a b => propext (h a b))
 
 namespace Hom
