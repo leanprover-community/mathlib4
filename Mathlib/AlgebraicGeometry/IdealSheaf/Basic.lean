@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Ideal sheaves on schemes
@@ -491,8 +492,8 @@ nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
         simp [hxU]
       · simp [hxU])
 
-lemma subset_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
-    (Z : Set X) ⊆ I.support ↔ I ≤ vanishingIdeal Z := by
+lemma le_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
+    Z ≤ I.support ↔ I ≤ vanishingIdeal Z := by
   simp only [le_def, vanishingIdeal_ideal, ← PrimeSpectrum.subset_zeroLocus_iff_le_vanishingIdeal]
   trans ∀ U : X.affineOpens, (Z : Set X) ∩ U ⊆ I.support ∩ U
   · refine ⟨fun H U x hx ↦ ⟨H hx.1, hx.2⟩, fun H x hx ↦ ?_⟩
@@ -507,7 +508,7 @@ lemma subset_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X
 /-- `support` and `vanishingIdeal` forms a galois connection.
 This is the global version of `PrimeSpectrum.gc`. -/
 lemma gc : @GaloisConnection X.IdealSheafData (Closeds X)ᵒᵈ _ _ (support ·) (vanishingIdeal ·) :=
-  fun _ _ ↦ subset_support_iff_le_vanishingIdeal
+  fun _ _ ↦ le_support_iff_le_vanishingIdeal
 
 lemma vanishingIdeal_antimono {S T : Closeds X} (h : S ≤ T) : vanishingIdeal T ≤ vanishingIdeal S :=
   gc.monotone_u h
@@ -522,9 +523,44 @@ lemma vanishingIdeal_support {I : IdealSheafData X} :
   rw [Set.image_preimage_eq_inter_range, IsAffineOpen.range_fromSpec,
     IsAffineOpen.fromSpec_image_zeroLocus, coe_support_inter]
 
+@[simp] lemma vanishingIdeal_bot : vanishingIdeal (X := X) ⊥ = ⊤ := gc.u_top
+
+@[simp] lemma vanishingIdeal_top : vanishingIdeal (X := X) ⊤ = X.nilradical := by
+  rw [← support_bot, vanishingIdeal_support, nilradical]
+
+@[simp] lemma vanishingIdeal_iSup {ι : Sort*} (Z : ι → Closeds X) :
+    vanishingIdeal (iSup Z) = ⨅ i, vanishingIdeal (Z i) := gc.u_iInf
+
+@[simp] lemma vanishingIdeal_sSup (Z : Set (Closeds X)) :
+    vanishingIdeal (sSup Z) = ⨅ z ∈ Z, vanishingIdeal z := gc.u_sInf
+
+@[simp] lemma vanishingIdeal_sup (Z Z' : TopologicalSpace.Closeds X) :
+    vanishingIdeal (Z ⊔ Z') = vanishingIdeal Z ⊓ vanishingIdeal Z' := gc.u_inf
+
+@[simp] lemma support_sup (I J : X.IdealSheafData) :
+    (I ⊔ J).support = I.support ⊓ J.support := gc.l_sup
+
+@[simp] lemma support_iSup {ι : Sort*} (I : ι → X.IdealSheafData) :
+    (iSup I).support = ⨅ i, (I i).support := gc.l_iSup
+
+@[simp] lemma support_sSup (I : Set X.IdealSheafData) :
+    (sSup I).support = ⨅ i ∈ I, i.support := gc.l_sSup
+
 end ofIsClosed
 
 end IdealSheafData
+
+section IsReduced
+
+lemma nilradical_eq_bot [IsReduced X] : X.nilradical = ⊥ := by
+  ext; simp [nilradical, Ideal.radical_eq_iff.mpr (Ideal.isRadical_bot)]
+
+lemma IdealSheafData.support_eq_top_iff [IsReduced X] {I : X.IdealSheafData} :
+    I.support = ⊤ ↔ I = ⊥ := by
+  rw [← top_le_iff, le_support_iff_le_vanishingIdeal,
+    vanishingIdeal_top, nilradical_eq_bot, le_bot_iff]
+
+end IsReduced
 
 section ker
 
@@ -579,6 +615,14 @@ lemma Hom.le_ker_comp (f : X ⟶ Y) (g : Y.Hom Z) : g.ker ≤ (f ≫ g).ker := b
 
 lemma ker_eq_top_of_isEmpty (f : X.Hom Y) [IsEmpty X] : f.ker = ⊤ :=
   top_le_iff.mp (le_ofIdeals_iff.mpr fun U x _ ↦ by simpa using Subsingleton.elim _ _)
+
+@[simp]
+lemma Hom.ker_eq_bot_of_isIso (f : X ⟶ Y) [IsIso f] : f.ker = ⊥ := by
+  ext U
+  simp [map_eq_zero_iff _ (ConcreteCategory.bijective_of_isIso (f.app U)).1]
+
+lemma Hom.ker_comp_of_isIso (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] : (f ≫ g).ker = g.ker :=
+  (f.le_ker_comp g).antisymm' (((inv f).le_ker_comp _).trans (by simp))
 
 lemma ker_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
     f.ker = ofIdealTop (RingHom.ker f.appTop.hom) := by
