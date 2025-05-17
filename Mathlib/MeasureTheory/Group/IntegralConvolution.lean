@@ -21,7 +21,6 @@ integrals over there.
   the function `x ↦ ∫ y, ‖f (x * y)‖ ∂ν` is integrable with respect to `μ`.
 * `integral_mconv`: if `f` is integrable with respect to the convolution `μ ∗ ν`, then
   `∫ x, f x ∂(μ ∗ ν) = ∫ x, ∫ y, f (x * y) ∂ν ∂μ`.
-
 -/
 
 namespace MeasureTheory
