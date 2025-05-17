@@ -62,7 +62,8 @@ structure GState where
   propToFVar : ExprMap Expr
 
 /-- Monad used to generalize proofs.
-Carries `Mathlib/Tactic/GeneralizeProofs/Config.lean` and `Mathlib/Tactic/GeneralizeProofs/State.lean`. -/
+Carries `Mathlib/Tactic/GeneralizeProofs/Config.lean` and
+`Mathlib/Tactic/GeneralizeProofs/State.lean`. -/
 abbrev MGen := ReaderT Config <| StateRefT GState MetaM
 
 /-- Inserts a prop/fvar pair into the `propToFVar` map. -/
