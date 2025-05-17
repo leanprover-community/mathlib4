@@ -188,20 +188,22 @@ end RegularWreathProduct
 
 section iterated
 
+universe u
+
 /-- The wreath product of group `G` iterated `n` times. -/
-def IteratedWreathProduct (G : Type) : (n : ℕ) → Type
+def IteratedWreathProduct (G : Type u) : (n : ℕ) → Type u
 | Nat.zero => PUnit
 | Nat.succ n => (IteratedWreathProduct G n) ≀ᵣ G
 
 @[simp]
-lemma IteratedWreathProduct_zero (G : Type) :
+lemma IteratedWreathProduct_zero (G : Type u) :
     IteratedWreathProduct G 0 = PUnit := rfl
 
 @[simp]
-lemma IteratedWreathProduct_succ (G : Type)(n : ℕ) :
+lemma IteratedWreathProduct_succ (G : Type u) (n : ℕ) :
     IteratedWreathProduct G (n+1) = (IteratedWreathProduct G n) ≀ᵣ G := rfl
 
-variable (G : Type) [inst : Group G]
+variable (G : Type u) [inst : Group G]
 variable (n : ℕ)
 
 instance : Group (IteratedWreathProduct G n) := by
@@ -218,7 +220,7 @@ lemma elem_P0 (p : ℕ) (P : Sylow p (Equiv.Perm (Fin (1)))) (x : P):
     x = 1 := Subsingleton.eq_one x
 
 theorem iter_wreath_card {p n : ℕ}
-    (G : Type) [Finite G] (h : Nat.card G = p) :
+    (G : Type u) [Finite G] (h : Nat.card G = p) :
     Nat.card (IteratedWreathProduct G n) = p ^ (∑ i ∈ Finset.range n, p ^ i) := by
   induction n with
   | zero => simp
@@ -237,7 +239,7 @@ lemma mu_eq {p n : ℕ} [hp : Fact (Nat.Prime p)] :
     rw [pow_succ', hp.out.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
 
 /-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. -/
-def Equiv.permCongrHom {α β : Type} (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
+def Equiv.permCongrHom {α β : Type u} (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
   toFun x := e.symm.trans (x.trans e)
   invFun y := e.trans (y.trans e.symm)
   left_inv _ := by ext; simp
