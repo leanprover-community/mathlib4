@@ -94,29 +94,6 @@ lemma multipliable_one_add_of_summable (hf : Summable f) : Multipliable (fun i �
 
 end Real
 
-lemma Complex.tendstoUniformlyOn_tsum_log_one_add {α : Type*} {f : ι → α → ℂ} (K : Set α)
-    {u : ι → ℝ} (hu : Summable u) (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n) :
-    TendstoUniformlyOn (fun s a ↦ ∑ i ∈ s, log (1 + f i a)) (fun a ↦ ∑' i, log (1 + f i a))
-    atTop K := by
-  apply tendstoUniformlyOn_tsum_of_cofinite_eventually <| hu.mul_left (3 / 2)
-  filter_upwards [h, hu.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi hn' x hx
-    using (norm_log_one_add_half_le_self <| (hi x hx).trans hn').trans (by simpa using hi x hx)
-
-lemma Complex.tendstoUniformlyOn_tsum_nat_log_one_add {α : Type*} {f : ℕ → α → ℂ} (K : Set α)
-    {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) :
-    TendstoUniformlyOn (fun n a => ∑ i ∈ Finset.range n,
-    (Complex.log (1 + f i a))) (fun a => ∑' i : ℕ, Complex.log (1 + f i a)) atTop K := by
-  apply tendstoUniformlyOn_tsum_nat_eventually (hu.mul_left (3/2))
-  obtain ⟨N, hN⟩ := Metric.tendsto_atTop.mp (Summable.tendsto_atTop_zero hu) (1/2) (one_half_pos)
-  simp only [eventually_atTop, ge_iff_le] at *
-  obtain ⟨N2, hN2⟩ := h
-  refine ⟨max N N2, fun n hn x hx => ?_⟩
-  apply le_trans (Complex.norm_log_one_add_half_le_self (z := (f n x)) ?_)
-  · simp only [Nat.ofNat_pos, div_pos_iff_of_pos_left, mul_le_mul_left]
-    exact hN2 n (le_of_max_le_right hn) x hx
-  · apply le_trans (le_trans (hN2 n (le_of_max_le_right hn) x hx)
-    (by simpa using Real.le_norm_self (u n))) (hN n (le_of_max_le_left hn)).le
-
 section NormedRing
 
 lemma Multipliable.eventually_bounded_finset_prod {v : ι → ℝ} (hv : Multipliable v) :
