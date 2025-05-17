@@ -236,8 +236,8 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     ((single₀ V).obj X ⟶ C) ≃ (X ⟶ C.X 0) where
   toFun f := f.f 0
   invFun f := HomologicalComplex.mkHomFromSingle f (fun i hi => by simp at hi)
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero
@@ -285,8 +285,8 @@ noncomputable def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
   invFun f := HomologicalComplex.mkHomFromSingle f.1 (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
     exact f.2)
-  left_inv φ := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero {C : CochainComplex V ℕ} {X : V}
@@ -302,8 +302,8 @@ noncomputable def toSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
     (C ⟶ (single₀ V).obj X) ≃ (C.X 0 ⟶ X) where
   toFun f := f.f 0
   invFun f := HomologicalComplex.mkHomToSingle f (fun i hi => by simp at hi)
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero
