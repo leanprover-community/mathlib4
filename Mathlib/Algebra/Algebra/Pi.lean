@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -156,5 +157,52 @@ theorem piCongrRight_symm (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) :
 theorem piCongrRight_trans (e₁ : ∀ i, A₁ i ≃ₐ[R] A₂ i) (e₂ : ∀ i, A₂ i ≃ₐ[R] A₃ i) :
     (piCongrRight e₁).trans (piCongrRight e₂) = piCongrRight fun i ↦ (e₁ i).trans (e₂ i) :=
   rfl
+
+variable (R A₁) in
+/--
+Transport dependent functions through an equivalence of the base space.
+
+This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
+-/
+@[simps! apply symm_apply]
+def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) :=
+  .ofRingEquiv (f := .piCongrLeft' A₁ e) (by intro; ext; simp)
+
+variable (R A₁) in
+/--
+Transport dependent functions through an equivalence of the base space, expressed as
+"simplification".
+
+This is `Equiv.piCongrLeft` as an `AlgEquiv`.
+-/
+@[simps! -isSimp]
+def piCongrLeft {ι' : Type*} (e : ι' ≃ ι) : (Π i, A₁ (e i)) ≃ₐ[R] Π i, A₁ i :=
+  (AlgEquiv.piCongrLeft' R A₁ e.symm).symm
+
+section
+
+variable (S : Type*) [Semiring S] [Algebra R S]
+
+variable (ι R) in
+/-- If `ι` as a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
+@[simps!]
+def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
+  .ofRingEquiv (f := .piUnique (fun i : ι ↦ S)) (by simp)
+
+variable (R) in
+/-- `Equiv.sumArrowEquivProdArrow` as an algebra equivalence. -/
+@[simps! apply_fst apply_snd]
+def sumArrowEquivProdArrow (α β : Type*) : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
+  .ofRingEquiv (f := .sumArrowEquivProdArrow S α β) (by intro; ext <;> simp)
+
+@[simp]
+lemma sumArrowEquivProdArrow_symm_apply_inl (α β) (x : (α → S) × (β → S)) (a : α) :
+    (sumArrowEquivProdArrow R S α β).symm x (Sum.inl a) = x.fst a := rfl
+
+@[simp]
+lemma sumArrowEquivProdArrow_symm_apply_inr (α β) (x : (α → S) × (β → S)) (b : β) :
+    (sumArrowEquivProdArrow R S α β).symm x (Sum.inr b) = x.snd b := rfl
+
+end
 
 end AlgEquiv
