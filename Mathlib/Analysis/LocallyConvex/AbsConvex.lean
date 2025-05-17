@@ -305,3 +305,7 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
   exact ⟨hs, totallyBounded_neg hs⟩
 
 end
+
+lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [AddCommGroup E] [Module ℝ E]
+    [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
+  balanced_absConvexHull.zero_mem (Nonempty.mono subset_absConvexHull Set.Nonempty.of_subtype)

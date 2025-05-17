@@ -20,7 +20,7 @@ namespace MeasureTheory
 open Set Filter Function Measure MeasurableSpace NNReal ENNReal
 
 variable {α β ι : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν : Measure α}
-  {s t : Set α}
+  {s t : Set α} {a : α}
 
 section SFinite
 
@@ -31,33 +31,20 @@ class SFinite (μ : Measure α) : Prop where
 /-- A sequence of finite measures such that `μ = sum (sfiniteSeq μ)` (see `sum_sfiniteSeq`). -/
 noncomputable def sfiniteSeq (μ : Measure α) [h : SFinite μ] : ℕ → Measure α := h.1.choose
 
-@[deprecated (since := "2024-10-11")] alias sFiniteSeq := sfiniteSeq
-
 instance isFiniteMeasure_sfiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sfiniteSeq μ n) :=
   h.1.choose_spec.1 n
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
-instance isFiniteMeasure_sFiniteSeq [SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
-  isFiniteMeasure_sfiniteSeq n
 
 lemma sum_sfiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sfiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
 
-@[deprecated (since := "2024-10-11")] alias sum_sFiniteSeq := sum_sfiniteSeq
-
 lemma sfiniteSeq_le (μ : Measure α) [SFinite μ] (n : ℕ) : sfiniteSeq μ n ≤ μ :=
   (le_sum _ n).trans (sum_sfiniteSeq μ).le
-
-@[deprecated (since := "2024-10-11")] alias sFiniteSeq_le := sfiniteSeq_le
 
 instance : SFinite (0 : Measure α) := ⟨fun _ ↦ 0, inferInstance, by rw [Measure.sum_zero]⟩
 
 @[simp]
 lemma sfiniteSeq_zero (n : ℕ) : sfiniteSeq (0 : Measure α) n = 0 :=
   bot_unique <| sfiniteSeq_le _ _
-
-@[deprecated (since := "2024-10-11")] alias sFiniteSeq_zero := sfiniteSeq_zero
 
 /-- A countable sum of finite measures is s-finite.
 This lemma is superseded by the instance below. -/
@@ -102,7 +89,7 @@ theorem exists_isFiniteMeasure_absolutelyContinuous [SFinite μ] :
 end SFinite
 
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
- `{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = s`. -/
+`{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = s`. -/
 class SigmaFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : Nonempty (μ.FiniteSpanningSetsIn univ)
 
@@ -138,8 +125,6 @@ lemma spanningSets_mono [SigmaFinite μ] {m n : ℕ} (hmn : m ≤ n) :
 theorem measurableSet_spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     MeasurableSet (spanningSets μ i) :=
   MeasurableSet.iUnion fun j => MeasurableSet.iUnion fun _ => μ.toFiniteSpanningSetsIn.set_mem j
-
-@[deprecated (since := "2024-10-16")] alias measurable_spanningSets := measurableSet_spanningSets
 
 theorem measure_spanningSets_lt_top (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     μ (spanningSets μ i) < ∞ :=
@@ -187,6 +172,10 @@ theorem mem_spanningSets_of_index_le (μ : Measure α) [SigmaFinite μ] (x : α)
 theorem eventually_mem_spanningSets (μ : Measure α) [SigmaFinite μ] (x : α) :
     ∀ᶠ n in atTop, x ∈ spanningSets μ n :=
   eventually_atTop.2 ⟨spanningSetsIndex μ x, fun _ => mem_spanningSets_of_index_le μ x⟩
+
+lemma measure_singleton_lt_top [SigmaFinite μ] : μ {a} < ∞ :=
+  measure_lt_top_mono (singleton_subset_iff.2 <| mem_spanningSetsIndex ..)
+    (measure_spanningSets_lt_top _ _)
 
 theorem sum_restrict_disjointed_spanningSets (μ ν : Measure α) [SigmaFinite ν] :
     sum (fun n ↦ μ.restrict (disjointed (spanningSets ν) n)) = μ := by
@@ -537,6 +526,19 @@ end Measure
 instance (priority := 100) IsFiniteMeasure.toSigmaFinite {_m0 : MeasurableSpace α} (μ : Measure α)
     [IsFiniteMeasure μ] : SigmaFinite μ :=
   ⟨⟨⟨fun _ => univ, fun _ => trivial, fun _ => measure_lt_top μ _, iUnion_const _⟩⟩⟩
+
+/-- A measure on a countable space is sigma-finite iff it gives finite mass to every singleton.
+
+See `measure_singleton_lt_top` for the forward direction without the countability assumption. -/
+lemma Measure.sigmaFinite_iff_measure_singleton_lt_top [Countable α] :
+    SigmaFinite μ ↔ ∀ a, μ {a} < ∞ where
+  mp _ a := measure_singleton_lt_top
+  mpr hμ := by
+    cases isEmpty_or_nonempty α
+    · rw [Subsingleton.elim μ 0]
+      infer_instance
+    · obtain ⟨f, hf⟩ := exists_surjective_nat α
+      exact ⟨⟨⟨fun n ↦ {f n}, by simp, by simpa [hf.forall] using hμ, by simp [hf.range_eq]⟩⟩⟩
 
 theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFiniteMeasure μ := by
   refine

@@ -14,12 +14,12 @@ import Mathlib.Tactic.FieldSimp
 # More operations on fractional ideals
 
 ## Main definitions
- * `map` is the pushforward of a fractional ideal along an algebra morphism
+* `map` is the pushforward of a fractional ideal along an algebra morphism
 
 Let `K` be the localization of `R` at `R⁰ = R \ {0}` (i.e. the field of fractions).
- * `FractionalIdeal R⁰ K` is the type of fractional ideals in the field of fractions
- * `Div (FractionalIdeal R⁰ K)` instance:
-   the ideal quotient `I / J` (typically written $I : J$, but a `:` operator cannot be defined)
+* `FractionalIdeal R⁰ K` is the type of fractional ideals in the field of fractions
+* `Div (FractionalIdeal R⁰ K)` instance:
+  the ideal quotient `I / J` (typically written $I : J$, but a `:` operator cannot be defined)
 
 ## Main statement
 
@@ -820,8 +820,6 @@ end PrincipalIdeal
 variable {R₁ : Type*} [CommRing R₁]
 variable {K : Type*} [Field K] [Algebra R₁ K]
 
-attribute [local instance] Classical.propDecidable
-
 theorem isNoetherian_zero : IsNoetherian R₁ (0 : FractionalIdeal R₁⁰ K) :=
   isNoetherian_submodule.mpr fun I (hI : I ≤ (0 : FractionalIdeal R₁⁰ K)) => by
     rw [coe_zero, le_bot_iff] at hI
@@ -844,6 +842,7 @@ variable [IsFractionRing R₁ K] [IsDomain R₁]
 theorem isNoetherian_spanSingleton_inv_to_map_mul (x : R₁) {I : FractionalIdeal R₁⁰ K}
     (hI : IsNoetherian R₁ I) :
     IsNoetherian R₁ (spanSingleton R₁⁰ (algebraMap R₁ K x)⁻¹ * I : FractionalIdeal R₁⁰ K) := by
+  classical
   by_cases hx : x = 0
   · rw [hx, RingHom.map_zero, inv_zero, spanSingleton_zero, zero_mul]
     exact isNoetherian_zero

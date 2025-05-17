@@ -14,10 +14,10 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 ## Main definitions
 
- * `IsLocalization.Away (x : R) S` expresses that `S` is a localization away from `x`, as an
-   abbreviation of `IsLocalization (Submonoid.powers x) S`.
- * `exists_reduced_fraction' (hb : b ≠ 0)` produces a reduced fraction of the form `b = a * x^n` for
-   some `n : ℤ` and some `a : R` that is not divisible by `x`.
+* `IsLocalization.Away (x : R) S` expresses that `S` is a localization away from `x`, as an
+  abbreviation of `IsLocalization (Submonoid.powers x) S`.
+* `exists_reduced_fraction' (hb : b ≠ 0)` produces a reduced fraction of the form `b = a * x^n` for
+  some `n : ℤ` and some `a : R` that is not divisible by `x`.
 
 ## Implementation notes
 
@@ -369,7 +369,7 @@ noncomputable abbrev awayLift (f : R →+* P) (r : R) (hr : IsUnit (f r)) :
     Localization.Away r →+* P :=
   IsLocalization.Away.lift r hr
 
-lemma awayLift_mk {A : Type*} [CommRing A] (f : R →+* A) (r : R)
+lemma awayLift_mk {A : Type*} [CommSemiring A] (f : R →+* A) (r : R)
     (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
     Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
       (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by

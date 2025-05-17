@@ -47,13 +47,13 @@ Finitary versions of the current lemmas.
 
 library_note "out-param inheritance"/--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
- * there are three classes `Top`, `Middle`, `Bottom`
- * all of these classes have a parameter `(α : outParam _)`
- * all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
- * the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
- * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
- * the instance `Middle.toTop` takes a `[Right α]` parameter
- * there is a `Leaf` class that inherits from both `Left` and `Right`.
+* there are three classes `Top`, `Middle`, `Bottom`
+* all of these classes have a parameter `(α : outParam _)`
+* all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
+* the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
+* the instance `Bottom.toMiddle` takes a `[Left α]` parameter
+* the instance `Middle.toTop` takes a `[Right α]` parameter
+* there is a `Leaf` class that inherits from both `Left` and `Right`.
 In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
 even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
 
@@ -118,22 +118,22 @@ attribute [simp] apply_nonneg
 variable [FunLike F α β]
 
 @[to_additive]
-theorem le_map_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
+theorem le_map_mul_map_div [Group α] [CommMagma β] [LE β] [SubmultiplicativeHomClass F α β]
     (f : F) (a b : α) : f a ≤ f b * f (a / b) := by
   simpa only [mul_comm, div_mul_cancel] using map_mul_le_mul f (a / b) b
 
 @[to_additive existing]
-theorem le_map_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β] (f : F)
+theorem le_map_add_map_div [Group α] [AddCommMagma β] [LE β] [MulLEAddHomClass F α β] (f : F)
     (a b : α) : f a ≤ f b + f (a / b) := by
   simpa only [add_comm, div_mul_cancel] using map_mul_le_add f (a / b) b
 
 @[to_additive]
-theorem le_map_div_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
+theorem le_map_div_mul_map_div [Group α] [Mul β] [LE β] [SubmultiplicativeHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) * f (b / c) := by
   simpa only [div_mul_div_cancel] using map_mul_le_mul f (a / b) (b / c)
 
 @[to_additive existing]
-theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β]
+theorem le_map_div_add_map_div [Group α] [Add β] [LE β] [MulLEAddHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel] using map_mul_le_add f (a / b) (b / c)
 
@@ -171,7 +171,7 @@ class AddGroupSeminormClass (F : Type*) (α β : outParam Type*)
 You should extend this class when you extend `GroupSeminorm`. -/
 @[to_additive]
 class GroupSeminormClass (F : Type*) (α β : outParam Type*)
-    [Group α] [AddCommMonoid β] [PartialOrder β]  [FunLike F α β] : Prop
+    [Group α] [AddCommMonoid β] [PartialOrder β] [FunLike F α β] : Prop
   extends MulLEAddHomClass F α β where
   /-- The image of one is zero. -/
   map_one_eq_zero (f : F) : f 1 = 0

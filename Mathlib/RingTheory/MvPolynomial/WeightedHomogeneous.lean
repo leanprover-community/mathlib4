@@ -25,22 +25,22 @@ occurring in `φ` have the same weighted degree `m`.
 ## Main definitions/lemmas
 
 * `weightedTotalDegree' w φ` : the weighted total degree of a multivariate polynomial with respect
-to the weights `w`, taking values in `WithBot M`.
+  to the weights `w`, taking values in `WithBot M`.
 
 * `weightedTotalDegree w φ` : When `M` has a `⊥` element, we can define the weighted total degree
-of a multivariate polynomial as a function taking values in `M`.
+  of a multivariate polynomial as a function taking values in `M`.
 
 * `IsWeightedHomogeneous w φ m`: a predicate that asserts that `φ` is weighted homogeneous
-of weighted degree `m` with respect to the weights `w`.
+  of weighted degree `m` with respect to the weights `w`.
 
 * `weightedHomogeneousSubmodule R w m`: the submodule of homogeneous polynomials
-of weighted degree `m`.
+  of weighted degree `m`.
 
 * `weightedHomogeneousComponent w m`: the additive morphism that projects polynomials
-onto their summand that is weighted homogeneous of degree `n` with respect to `w`.
+  onto their summand that is weighted homogeneous of degree `n` with respect to `w`.
 
 * `sum_weightedHomogeneousComponent`: every polynomial is the sum of its weighted homogeneous
-components.
+  components.
 -/
 
 
@@ -495,7 +495,8 @@ end AddCommMonoid
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
+variable [AddCommMonoid M] [PartialOrder M]
+  {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- If `M` is a canonically `OrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
   of weighted degree `0` of a polynomial is its constant coefficient. -/
@@ -519,6 +520,7 @@ theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [NoZeroSMulD
 def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
+omit [PartialOrder M] in
 theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w :=
   fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
@@ -545,7 +547,8 @@ end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [LinearOrderedAddCommMonoid M] [CanonicallyOrderedAdd M] {w : σ → M} (φ : MvPolynomial σ R)
+variable [AddCommMonoid M] [LinearOrder M] [OrderBot M] [CanonicallyOrderedAdd M]
+  {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- A multivatiate polynomial is weighted homogeneous of weighted degree zero if and only if
   its weighted total degree is equal to zero. -/

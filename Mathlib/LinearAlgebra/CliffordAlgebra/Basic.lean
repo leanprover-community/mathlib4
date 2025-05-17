@@ -197,16 +197,15 @@ theorem induction {C : CliffordAlgebra Q → Prop}
     ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
       fun m => Subtype.eq <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
-  have of_id : AlgHom.id R (CliffordAlgebra Q) = s.val.comp (lift Q of) := by
+  have of_id : s.val.comp (lift Q of) = AlgHom.id R (CliffordAlgebra Q) := by
     ext x
     simp [of]
     -- porting note: `simp` should fire with the following lemma automatically
     have := LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
     exact this
   -- finding a proof is finding an element of the subalgebra
-  -- Porting note: was `convert Subtype.prop (lift Q of a); exact AlgHom.congr_fun of_id a`
-  rw [← AlgHom.id_apply (R := R) a, of_id]
-  exact Subtype.prop (lift Q of a)
+  rw [← AlgHom.id_apply (R := R) a, ← of_id]
+  exact (lift Q of a).prop
 
 theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
     (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :
@@ -272,7 +271,7 @@ theorem ι_mul_ι_mul_ι (a b : M) :
 
 @[simp]
 theorem ι_range_map_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap _ _ (Q m)) :
-    (ι Q).range.map (lift Q ⟨f, cond⟩).toLinearMap = LinearMap.range f := by
+    (LinearMap.range (ι Q)).map (lift Q ⟨f, cond⟩).toLinearMap = LinearMap.range f := by
   rw [← LinearMap.range_comp, ι_comp_lift]
 
 section Map
@@ -313,7 +312,7 @@ theorem map_comp_map (f : Q₂ →qᵢ Q₃) (g : Q₁ →qᵢ Q₂) :
 
 @[simp]
 theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
-    (ι Q₁).range.map (map f).toLinearMap = f.range.map (ι Q₂) :=
+    (LinearMap.range (ι Q₁)).map (map f).toLinearMap = (LinearMap.range f).map (ι Q₂) :=
   (ι_range_map_lift _ _).trans (LinearMap.range_comp _ _)
 
 open Function in

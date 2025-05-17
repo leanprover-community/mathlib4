@@ -17,6 +17,10 @@ import Mathlib.Topology.Defs.Ultrafilter
 
 * `isCompact_univ_pi`: **Tychonov's theorem** - an arbitrary product of compact sets
   is compact.
+
+* `isCompact_generateFrom`: **Alexander's subbasis theorem** - suppose `X` is a topological space
+  with a subbasis `S` and `s` is a subset of `X`, then `s` is compact if for any open cover of `s`
+  with all elements taken from `S`, there is a finite subcover.
 -/
 
 open Set Filter Topology TopologicalSpace Function
@@ -35,6 +39,15 @@ lemma IsCompact.exists_clusterPt (hs : IsCompact s) {f : Filter X} [NeBot f] (hf
 lemma IsCompact.exists_mapClusterPt {ι : Type*} (hs : IsCompact s) {f : Filter ι} [NeBot f]
     {u : ι → X} (hf : Filter.map u f ≤ 𝓟 s) :
     ∃ x ∈ s, MapClusterPt x f u := hs hf
+
+lemma IsCompact.exists_clusterPt_of_frequently {l : Filter X} (hs : IsCompact s)
+    (hl : ∃ᶠ x in l, x ∈ s) : ∃ a ∈ s, ClusterPt a l :=
+  let ⟨a, has, ha⟩ := @hs _ (frequently_mem_iff_neBot.mp hl) inf_le_right
+  ⟨a, has, ha.mono inf_le_left⟩
+
+lemma IsCompact.exists_mapClusterPt_of_frequently {l : Filter ι} {f : ι → X} (hs : IsCompact s)
+    (hf : ∃ᶠ x in l, f x ∈ s) : ∃ a ∈ s, MapClusterPt a l f :=
+  hs.exists_clusterPt_of_frequently hf
 
 /-- The complement to a compact set belongs to a filter `f` if it belongs to each filter
 `𝓝 x ⊓ f`, `x ∈ s`. -/
@@ -492,6 +505,29 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
   have : ¬⋂ i : ι, V i ⊆ W := by simpa [← iInter_inter, inter_compl_nonempty_iff]
   contradiction
 
+omit [TopologicalSpace X] in
+/--
+**Alexander's subbasis theorem**. Suppose `X` is a topological space with a subbasis `S` and `s` is
+a subset of `X`. Then `s` is compact if for any open cover of `s` with all elements taken from `S`,
+there is a finite subcover.
+-/
+theorem isCompact_generateFrom [T : TopologicalSpace X]
+    {S : Set (Set X)} (hTS : T = generateFrom S) {s : Set X}
+    (h : ∀ P ⊆ S, s ⊆ ⋃₀ P → ∃ Q ⊆ P, Q.Finite ∧ s ⊆ ⋃₀ Q) :
+    IsCompact s := by
+  rw [isCompact_iff_ultrafilter_le_nhds', hTS]
+  intro F hsF
+  by_contra hF
+  have hSF : ∀ x ∈ s, ∃ t, x ∈ t ∧ t ∈ S ∧ t ∉ F := by simpa [nhds_generateFrom] using hF
+  choose! U hxU hSU hUF using hSF
+  obtain ⟨Q, hQU, hQ, hsQ⟩ := h (U '' s) (by simpa [Set.subset_def])
+    (fun x hx ↦ Set.mem_sUnion_of_mem (hxU _ hx) (by aesop))
+  have : ∀ s ∈ Q, s ∉ F := fun s hsQ ↦ (hQU hsQ).choose_spec.2 ▸ hUF _ (hQU hsQ).choose_spec.1
+  have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by simpa [Filter.biInter_mem hQ, F.compl_mem_iff_not_mem]
+  have : ⋃₀ Q ∉ F := by
+    simpa [-Set.sInter_image, ← Set.compl_sUnion, hsQ, F.compl_mem_iff_not_mem] using hQF
+  exact this (F.mem_of_superset hsF hsQ)
+
 namespace Filter
 
 theorem hasBasis_cocompact : (cocompact X).HasBasis IsCompact compl :=
@@ -684,6 +720,18 @@ theorem compactSpace_of_finite_subfamily_closed
     CompactSpace X where
   isCompact_univ := isCompact_of_finite_subfamily_closed fun t => by simpa using h t
 
+omit [TopologicalSpace X] in
+/--
+The `CompactSpace` version of **Alexander's subbasis theorem**. If `X` is a topological space with a
+subbasis `S`, then `X` is compact if for any open cover of `X` all of whose elements belong to `S`,
+there is a finite subcover.
+-/
+theorem compactSpace_generateFrom [T : TopologicalSpace X] {S : Set (Set X)}
+    (hTS : T = generateFrom S) (h : ∀ P ⊆ S, ⋃₀ P = univ → ∃ Q ⊆ P, Q.Finite ∧ ⋃₀ Q = univ) :
+    CompactSpace X := by
+  rw [← isCompact_univ_iff]
+  exact isCompact_generateFrom hTS <| by simpa
+
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)
 
@@ -741,7 +789,7 @@ lemma Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact
     {K : Set X} (hs : s.Infinite) (hK : IsCompact K) (hsub : s ⊆ K) :
     ∃ x ∈ K, AccPt x (cofinite ⊓ 𝓟 s) :=
   (@hK _ hs.cofinite_inf_principal_neBot (inf_le_right.trans <| principal_mono.2 hsub)).imp
-    fun x hx ↦ by rwa [acc_iff_cluster, inf_comm, inf_right_comm,
+    fun x hx ↦ by rwa [accPt_iff_clusterPt, inf_comm, inf_right_comm,
       (finite_singleton _).cofinite_inf_principal_compl]
 
 lemma Set.Infinite.exists_accPt_of_subset_isCompact {K : Set X} (hs : s.Infinite)
@@ -868,18 +916,12 @@ theorem Topology.IsClosedEmbedding.isCompact_preimage (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
   hf.isInducing.isCompact_preimage (hf.isClosed_range) hK
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.isCompact_preimage := IsClosedEmbedding.isCompact_preimage
-
 /-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
 Moreover, the preimage of a compact set is compact, see `IsClosedEmbedding.isCompact_preimage`. -/
 theorem Topology.IsClosedEmbedding.tendsto_cocompact (hf : IsClosedEmbedding f) :
     Tendsto f (Filter.cocompact X) (Filter.cocompact Y) :=
   Filter.hasBasis_cocompact.tendsto_right_iff.mpr fun _K hK =>
     (hf.isCompact_preimage hK).compl_mem_cocompact
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.tendsto_cocompact := IsClosedEmbedding.tendsto_cocompact
 
 /-- Sets of subtype are compact iff the image under a coercion is. -/
 theorem Subtype.isCompact_iff {p : X → Prop} {s : Set { x // p x }} :
@@ -903,15 +945,9 @@ protected theorem Topology.IsClosedEmbedding.noncompactSpace [NoncompactSpace X]
     (hf : IsClosedEmbedding f) : NoncompactSpace Y :=
   noncompactSpace_of_neBot hf.tendsto_cocompact.neBot
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.noncompactSpace := IsClosedEmbedding.noncompactSpace
-
 protected theorem Topology.IsClosedEmbedding.compactSpace [h : CompactSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : CompactSpace X :=
   ⟨by rw [hf.isInducing.isCompact_iff, image_univ]; exact hf.isClosed_range.isCompact⟩
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.compactSpace := IsClosedEmbedding.compactSpace
 
 theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
     IsCompact (s ×ˢ t) := by
