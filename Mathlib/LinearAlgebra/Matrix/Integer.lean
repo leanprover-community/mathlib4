@@ -75,10 +75,20 @@ lemma inv_denom_smul_num (A : Matrix m n ℚ) :
   ext
   simp [← Matrix.num_div_den A, div_eq_inv_mul]
 
+@[simp]
 lemma den_map_intCast (A : Matrix m n ℤ) : (A.map (↑)).den = 1 := by
   simp [← Nat.dvd_one, Matrix.den_dvd_iff]
 
+@[simp]
+lemma num_map_intCast (A : Matrix m n ℤ) : (A.map (↑)).num = A := by
+  simp [Matrix.num, Function.comp_def]
+
+@[simp]
 lemma den_map_natCast (A : Matrix m n ℕ) : (A.map (↑)).den = 1 := by
   simp [← Nat.dvd_one, Matrix.den_dvd_iff]
+
+@[simp]
+lemma num_map_natCast (A : Matrix m n ℕ) : (A.map (↑)).num = A.map (↑) := by
+  simp [Matrix.num, Function.comp_def]
 
 end Matrix
