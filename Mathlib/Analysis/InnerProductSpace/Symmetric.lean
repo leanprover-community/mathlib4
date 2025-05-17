@@ -116,6 +116,15 @@ theorem IsSymmetric.coe_reApplyInnerSelf_apply {T : E →L[𝕜] E} (hT : IsSymm
   rw [← conj_eq_iff_real]
   exact hT.conj_inner_sym x x
 
+/-- For a symmetric linear map `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
+@[simp]
+theorem IsSymmetric.reApplyInnerSelf_apply {T : E →ₗ[𝕜] E} (hT : IsSymmetric T)
+    (x : E) : (T.reApplyInnerSelf x : 𝕜) = ⟪T x, x⟫ := by
+  rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ⟪T x, x⟫ = r
+  · simp [hr, T.reApplyInnerSelf_apply]
+  rw [← conj_eq_iff_real]
+  exact hT.conj_inner_sym x x
+
 /-- If a symmetric operator preserves a submodule, its restriction to that submodule is
 symmetric. -/
 theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) {V : Submodule 𝕜 E}
