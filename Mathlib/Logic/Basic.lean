@@ -742,6 +742,10 @@ noncomputable def Exists.classicalRecOn {α : Sort*} {p : α → Prop} (h : ∃ 
     {C : Sort*} (H : ∀ a, p a → C) : C :=
   H (Classical.choose h) (Classical.choose_spec h)
 
+theorem Exists.classicalRecOn_eq {α : Sort*} {p : α → Prop} (h : ∃ a, p a)
+    {C : Sort*} (H : ∀ a, p a → C) : ∃ a pa, h.classicalRecOn H = H a pa :=
+  ⟨_, _, rfl⟩
+
 /-! ### Declarations about bounded quantifiers -/
 section BoundedQuantifiers
 
