@@ -171,63 +171,59 @@ lemma neg_one_lt_inner_height_vsub_altitudeFoot_div (i j : Fin (n + 1)) (hn : 1 
     positivity
   rw [neg_lt]
   apply lt_of_abs_lt
-  rw [abs_neg, abs_div, div_lt_one]
-  · apply LE.le.lt_of_ne
-    · convert abs_real_inner_le_norm _ _ using 1
-      simp only [dist_eq_norm_vsub, abs_eq_self, height]
-      positivity
-    · simp_rw [height, dist_eq_norm_vsub]
-      nth_rw 2 [abs_eq_self.2]
-      · rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff]
-        · intro h
-          rcases h with ⟨r, hr, h⟩
-          suffices s.points j -ᵥ s.altitudeFoot j = 0 by
-            simp at this
-          rw [← Submodule.mem_bot ℝ,
-            ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
-          refine ⟨vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-            (mem_affineSpan _ (Set.mem_range_self _)) ?_, ?_⟩
-          · refine SetLike.le_def.1 (affineSpan_mono _ ?_) (Subtype.property _)
-            simp
-          · rw [SetLike.mem_coe]
-            have hk : ∃ k, k ≠ i ∧ k ≠ j := by
-              rcases i with ⟨i, hi⟩
-              rcases j with ⟨j, hj⟩
-              simp_rw [← Fin.val_ne_iff]
-              by_cases h0 : 0 ≠ i ∧ 0 ≠ j
-              · exact ⟨0, h0⟩
-              · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
-                · exact ⟨⟨1, by omega⟩, h1⟩
-                · refine ⟨⟨2, by omega⟩, ?_⟩
-                  dsimp only
-                  omega
-            have hs : vectorSpan ℝ (Set.range s.points) =
-                vectorSpan ℝ (Set.range (s.faceOpposite i).points) ⊔
-                  vectorSpan ℝ (Set.range (s.faceOpposite j).points) := by
-              rcases hk with ⟨k, hki, hkj⟩
-              have hki' : s.points k ∈ Set.range (s.faceOpposite i).points := by
-                rw [range_faceOpposite_points]
-                exact Set.mem_image_of_mem _ hki
-              have hkj' : s.points k ∈ Set.range (s.faceOpposite j).points := by
-                rw [range_faceOpposite_points]
-                exact Set.mem_image_of_mem _ hkj
-              convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
-              simp only [range_faceOpposite_points, ← Set.image_union]
-              simp_rw [← Set.image_univ, ← Set.compl_setOf, ← Set.compl_inter,
-                Set.setOf_eq_eq_singleton]
-              rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
-              simpa using hij.symm
-            rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
-            refine ⟨?_, ?_⟩
-            · rw [h, ← direction_affineSpan]
-              exact Submodule.smul_mem _ _
-                (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
-            · rw [← direction_affineSpan]
-              exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
-        · simp
-        · simp
-      · positivity
-  · simp [height]
+  rw [abs_neg, abs_div, div_lt_one (by simp [height])]
+  apply LE.le.lt_of_ne
+  · convert abs_real_inner_le_norm _ _ using 1
+    simp only [dist_eq_norm_vsub, abs_eq_self, height]
+    positivity
+  · simp_rw [height, dist_eq_norm_vsub]
+    nth_rw 2 [abs_eq_self.2 (by positivity)]
+    rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff (by simp) (by simp)]
+    intro h
+    rcases h with ⟨r, hr, h⟩
+    suffices s.points j -ᵥ s.altitudeFoot j = 0 by
+      simp at this
+    rw [← Submodule.mem_bot ℝ,
+      ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
+    refine ⟨vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+      (mem_affineSpan _ (Set.mem_range_self _)) ?_, ?_⟩
+    · refine SetLike.le_def.1 (affineSpan_mono _ ?_) (Subtype.property _)
+      simp
+    · rw [SetLike.mem_coe]
+      have hk : ∃ k, k ≠ i ∧ k ≠ j := by
+        rcases i with ⟨i, hi⟩
+        rcases j with ⟨j, hj⟩
+        simp_rw [← Fin.val_ne_iff]
+        by_cases h0 : 0 ≠ i ∧ 0 ≠ j
+        · exact ⟨0, h0⟩
+        · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
+          · exact ⟨⟨1, by omega⟩, h1⟩
+          · refine ⟨⟨2, by omega⟩, ?_⟩
+            dsimp only
+            omega
+      have hs : vectorSpan ℝ (Set.range s.points) =
+          vectorSpan ℝ (Set.range (s.faceOpposite i).points) ⊔
+            vectorSpan ℝ (Set.range (s.faceOpposite j).points) := by
+        rcases hk with ⟨k, hki, hkj⟩
+        have hki' : s.points k ∈ Set.range (s.faceOpposite i).points := by
+          rw [range_faceOpposite_points]
+          exact Set.mem_image_of_mem _ hki
+        have hkj' : s.points k ∈ Set.range (s.faceOpposite j).points := by
+          rw [range_faceOpposite_points]
+          exact Set.mem_image_of_mem _ hkj
+        convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
+        simp only [range_faceOpposite_points, ← Set.image_union]
+        simp_rw [← Set.image_univ, ← Set.compl_setOf, ← Set.compl_inter,
+          Set.setOf_eq_eq_singleton]
+        rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
+        simpa using hij.symm
+      rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
+      refine ⟨?_, ?_⟩
+      · rw [h, ← direction_affineSpan]
+        exact Submodule.smul_mem _ _
+          (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
+      · rw [← direction_affineSpan]
+        exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
 quantity for the other vertices. This implies the existence of the excenter opposite that vertex;
