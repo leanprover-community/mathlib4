@@ -306,12 +306,11 @@ protected theorem StrictMono.ite (hf : StrictMono f) (hg : StrictMono g) {p : α
     StrictMono fun x ↦ if p x then f x else g x :=
   (hf.ite' hg hp) fun _ y _ _ h ↦ (hf h).trans_le (hfg y)
 
--- Porting note: `Strict*.dual_right` dot notation is not working here for some reason
 protected theorem StrictAnti.ite' (hf : StrictAnti f) (hg : StrictAnti g) {p : α → Prop}
     [DecidablePred p]
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → g y < f x) :
     StrictAnti fun x ↦ if p x then f x else g x :=
-  StrictMono.ite' (StrictAnti.dual_right hf) (StrictAnti.dual_right hg) hp hfg
+  StrictMono.ite' hf.dual_right hg.dual_right hp hfg
 
 protected theorem StrictAnti.ite (hf : StrictAnti f) (hg : StrictAnti g) {p : α → Prop}
     [DecidablePred p] (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ x, g x ≤ f x) :
@@ -418,6 +417,11 @@ theorem StrictMono.injective (hf : StrictMono f) : Injective f :=
 
 theorem StrictAnti.injective (hf : StrictAnti f) : Injective f :=
   fun x y h ↦ show Compares eq x y from hf.compares.1 h.symm
+
+lemma StrictMonoOn.injOn (hf : StrictMonoOn f s) : s.InjOn f := fun x hx y hy hxy ↦
+  show Ordering.eq.Compares x y from (hf.compares hx hy).1 hxy
+
+lemma StrictAntiOn.injOn (hf : StrictAntiOn f s) : s.InjOn f := hf.dual_left.injOn
 
 theorem StrictMono.maximal_of_maximal_image (hf : StrictMono f) {a} (hmax : ∀ p, p ≤ f a) (x : α) :
     x ≤ a :=
@@ -578,6 +582,13 @@ theorem exists_strictMono' [NoMaxOrder α] (a : α) : ∃ f : ℕ → α, Strict
 theorem exists_strictAnti' [NoMinOrder α] (a : α) : ∃ f : ℕ → α, StrictAnti f ∧ f 0 = a :=
   exists_strictMono' (OrderDual.toDual a)
 
+theorem exists_strictMono_subsequence {P : ℕ → Prop} (h : ∀ N, ∃ n > N, P n) :
+    ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
+  have : NoMaxOrder {n // P n} :=
+    ⟨fun n ↦ Exists.intro ⟨(h n.1).choose, (h n.1).choose_spec.2⟩ (h n.1).choose_spec.1⟩
+  obtain ⟨f, hf, _⟩ := Nat.exists_strictMono' (⟨(h 0).choose, (h 0).choose_spec.2⟩ : {n // P n})
+  exact Exists.intro (fun n ↦ (f n).1) ⟨hf, fun n ↦ (f n).2⟩
+
 variable (α)
 
 /-- If `α` is a nonempty preorder with no maximal elements, then there exists a strictly monotone
@@ -612,7 +623,7 @@ theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
   clear hab
   induction n with
   | zero => rw [Int.ofNat_one]; apply h
-  | succ n ihn => rw [Int.ofNat_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
+  | succ n ihn => rw [Int.natCast_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
 
 theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℤ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a ≤ b) : r (f a) (f b) :=
@@ -703,6 +714,19 @@ lemma Nat.stabilises_of_monotone {f : ℕ → ℕ} {b n : ℕ} (hfmono : Monoton
   replace key : ∀ k ≥ m, f k = f m := fun k hk =>
     (congr_arg f (Nat.add_sub_of_le hk)).symm.trans (key (k - m)).2
   exact (key n (hmb.trans hbn)).trans (key b hmb).symm
+
+/-- A bounded monotone function `ℕ → ℕ` converges. -/
+lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
+    {c : ℕ} (hc : ∀ n, f n ≤ c) : ∃ b N, ∀ n ≥ N, f n = b := by
+  induction c with
+  | zero => use 0, 0, fun n _ ↦ Nat.eq_zero_of_le_zero (hc n)
+  | succ c ih =>
+    by_cases h : ∀ n, f n ≤ c
+    · exact ih h
+    · push_neg at h; obtain ⟨N, hN⟩ := h
+      replace hN : f N = c + 1 := by specialize hc N; omega
+      use c + 1, N; intro n hn
+      specialize mono_f hn; specialize hc n; omega
 
 @[deprecated (since := "2024-11-27")]
 alias Group.card_pow_eq_card_pow_card_univ_aux := Nat.stabilises_of_monotone

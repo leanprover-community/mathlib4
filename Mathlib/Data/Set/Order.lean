@@ -21,11 +21,6 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {f : α → β}
 
--- Porting note:
--- If we decide we want `Elem` to semireducible rather than reducible, we will need:
---   instance : Preorder (↑s) := Subtype.instPreorderSubtype _
--- here, along with appropriate lemmas.
-
 theorem monotoneOn_iff_monotone : MonotoneOn f s ↔
     Monotone fun a : s => f a := by
   simp [Monotone, MonotoneOn]

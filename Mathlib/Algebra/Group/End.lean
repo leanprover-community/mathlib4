@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Prod
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -526,10 +527,10 @@ theorem swap_eq_one_iff {i j : α} : swap i j = (1 : Perm α) ↔ i = j :=
   swap_eq_refl_iff
 
 theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j := by
-  rw [mul_left_eq_self, swap_eq_one_iff]
+  rw [mul_eq_right, swap_eq_one_iff]
 
 theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j := by
-  rw [mul_right_eq_self, swap_eq_one_iff]
+  rw [mul_eq_left, swap_eq_one_iff]
 
 theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
     swap y z * swap x y * swap y z = swap z x := by
@@ -540,6 +541,8 @@ end Swap
 
 section AddGroup
 variable [AddGroup α] (a b : α)
+
+-- we can't use `to_additive`, because it tries to translate `1` into `0`
 
 @[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
 
@@ -574,41 +577,31 @@ end AddGroup
 section Group
 variable [Group α] (a b : α)
 
-@[to_additive existing (attr := simp)]
-lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
+@[simp] lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
 
-@[to_additive existing (attr := simp)]
-lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
+@[simp] lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 
-@[to_additive existing (attr := simp)]
-lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
+@[simp] lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
   ext <| mul_assoc _ _
 
-@[to_additive existing (attr := simp)]
-lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
+@[simp] lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
   ext fun _ ↦ (mul_assoc _ _ _).symm
 
-@[to_additive existing (attr := simp) inv_addLeft]
-lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
+@[simp] lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[to_additive existing (attr := simp) inv_addRight]
-lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
+@[simp] lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[to_additive existing (attr := simp) pow_addLeft]
-lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
+@[simp] lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[to_additive existing (attr := simp) pow_addRight]
-lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
+@[simp] lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[to_additive existing (attr := simp) zpow_addLeft]
-lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
+@[simp] lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
   (map_zpow ({ toFun := Equiv.mulLeft, map_one' := mulLeft_one, map_mul' := mulLeft_mul } :
               α →* Perm α) _ _).symm
 
-@[to_additive existing (attr := simp) zpow_addRight]
-lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
+@[simp] lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
   | Int.ofNat n => by simp
   | Int.negSucc n => by simp
 
@@ -651,6 +644,9 @@ theorem coe_mul (e₁ e₂ : MulAut M) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
 theorem coe_one : ⇑(1 : MulAut M) = id :=
   rfl
 
+@[simp]
+theorem coe_inv (e : MulAut M) : ⇑e⁻¹ = e.symm := rfl
+
 theorem mul_def (e₁ e₂ : MulAut M) : e₁ * e₂ = e₂.trans e₁ :=
   rfl
 
@@ -661,6 +657,16 @@ theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
   rfl
 
 @[simp]
+theorem inv_symm (e : MulAut M) : e⁻¹.symm = e := rfl
+
+@[simp]
+theorem symm_inv (e : MulAut M) : (e.symm)⁻¹ = e := rfl
+
+@[simp]
+theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
+  rw [inv_def]
+
+@[simp]
 theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ m) :=
   rfl
 
@@ -668,11 +674,9 @@ theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ 
 theorem one_apply (m : M) : (1 : MulAut M) m = m :=
   rfl
 
-@[simp]
 theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
   MulEquiv.apply_symm_apply _ _
 
-@[simp]
 theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 
@@ -707,7 +711,6 @@ theorem conj_apply [Group G] (g h : G) : conj g h = g * h * g⁻¹ :=
 theorem conj_symm_apply [Group G] (g h : G) : (conj g).symm h = g⁻¹ * h * g :=
   rfl
 
-@[simp]
 theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
   rfl
 
@@ -750,6 +753,9 @@ theorem coe_mul (e₁ e₂ : AddAut A) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
 theorem coe_one : ⇑(1 : AddAut A) = id :=
   rfl
 
+@[simp]
+theorem coe_inv (e : AddAut A) : ⇑e⁻¹ = e.symm := rfl
+
 theorem mul_def (e₁ e₂ : AddAut A) : e₁ * e₂ = e₂.trans e₁ :=
   rfl
 
@@ -768,10 +774,17 @@ theorem one_apply (a : A) : (1 : AddAut A) a = a :=
   rfl
 
 @[simp]
+theorem inv_symm (e : AddAut A) : e⁻¹.symm = e := rfl
+
+@[simp]
+theorem symm_inv (e : AddAut A) : e.symm⁻¹ = e := rfl
+
+@[simp]
+theorem inv_apply (e : AddAut A) (a : A) : e⁻¹ a = e.symm a := rfl
+
 theorem apply_inv_self (e : AddAut A) (a : A) : e⁻¹ (e a) = a :=
   AddEquiv.apply_symm_apply _ _
 
-@[simp]
 theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
   AddEquiv.apply_symm_apply _ _
 
@@ -805,18 +818,17 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
     rfl
 
 @[simp]
-theorem conj_apply [AddGroup G] (g h : G) : conj g h = g + h + -g :=
+theorem conj_apply [AddGroup G] (g h : G) : (conj g).toMul h = g + h + -g :=
   rfl
 
 @[simp]
-theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
+theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).toMul.symm h = -g + h + g :=
   rfl
 
-@[simp]
 theorem conj_inv_apply [AddGroup G] (g h : G) : (conj g).toMul⁻¹ h = -g + h + g :=
   rfl
 
-theorem neg_conj_apply [AddGroup G] (g h : G) : (-conj g) h = -g + h + g := by
+theorem neg_conj_apply [AddGroup G] (g h : G) : (-conj g).toMul h = -g + h + g := by
   simp
 
 /-- Isomorphic additive groups have isomorphic automorphism groups. -/

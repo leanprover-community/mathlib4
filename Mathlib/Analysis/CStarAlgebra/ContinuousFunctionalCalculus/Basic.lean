@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
 /-! # Continuous functional calculus
 
@@ -64,8 +64,10 @@ instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [S
   { SubringClass.toNormedRing (elemental R a) with
     mul_comm := mul_comm }
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
   mul_comm := mul_comm
+  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 variable (a : A) [IsStarNormal a]
 
@@ -153,7 +155,7 @@ local notation "σₙ" => quasispectrum
 section Normal
 
 instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [CStarAlgebra A] :
-    ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) where
+    ContinuousFunctionalCalculus ℂ A IsStarNormal where
   predicate_zero := .zero
   spectrum_nonempty a _ := spectrum.nonempty a
   exists_cfc_of_predicate a ha := by
@@ -178,7 +180,7 @@ lemma cfcHom_eq_of_isStarNormal {A : Type*} [CStarAlgebra A] (a : A) [ha : IsSta
   · simp [continuousFunctionalCalculus_map_id a]
 
 instance IsStarNormal.instNonUnitalContinuousFunctionalCalculus {A : Type*}
-    [NonUnitalCStarAlgebra A] : NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) :=
+    [NonUnitalCStarAlgebra A] : NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal :=
   RCLike.nonUnitalContinuousFunctionalCalculus Unitization.isStarNormal_inr
 
 open Unitization CStarAlgebra in
@@ -302,7 +304,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   exact fun x hx ↦ negPart_eq_zero.mp <| pow_eq_zero (h_eqOn hx).symm
 
 lemma IsSelfAdjoint.coe_mem_spectrum_complex {A : Type*} [TopologicalSpace A] [Ring A]
-    [StarRing A] [Algebra ℂ A] [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
+    [StarRing A] [Algebra ℂ A] [ContinuousFunctionalCalculus ℂ A IsStarNormal]
     {a : A} {x : ℝ} (ha : IsSelfAdjoint a := by cfc_tac) :
     (x : ℂ) ∈ spectrum ℂ a ↔ x ∈ spectrum ℝ a := by
   simp [← ha.spectrumRestricts.algebraMap_image]
@@ -357,7 +359,6 @@ def CStarAlgebra.spectralOrder : PartialOrder A where
     nontriviality A
     simp
   le_antisymm x y hxy hyx := by
-    simp only at hxy hyx
     rw [← Unitization.isSelfAdjoint_inr (R := ℂ),
       quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, Unitization.inr_sub ℂ] at hxy hyx
     rw [← sub_eq_zero]
@@ -434,8 +435,8 @@ versions for `ℝ≥0`, `ℝ`, and `ℂ`. -/
 lemma Unitization.cfcₙ_eq_cfc_inr {R : Type*} [Semifield R] [StarRing R] [MetricSpace R]
     [IsTopologicalSemiring R] [ContinuousStar R] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] [CompleteSpace R] [Algebra R ℂ] [IsScalarTower R ℂ A]
-    {p : A → Prop} {p' : A⁺¹ → Prop} [NonUnitalContinuousFunctionalCalculus R p]
-    [ContinuousFunctionalCalculus R p']
+    {p : A → Prop} {p' : A⁺¹ → Prop} [NonUnitalContinuousFunctionalCalculus R A p]
+    [ContinuousFunctionalCalculus R A⁺¹ p']
     [ContinuousMapZero.UniqueHom R (Unitization ℂ A)]
     (hp : ∀ {a : A}, p' (a : A⁺¹) ↔ p a) (a : A) (f : R → R) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f (a : A⁺¹) := by

@@ -24,10 +24,12 @@ universe w' w v u
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 
+attribute [local instance] Opposite.small
+
 namespace SheafedSpace
 
 variable {C : Type u} [Category.{v} C]
-variable {J : Type w} [Category.{w'} J] [UnivLE.{w, v}] (F : J ⥤ SheafedSpace.{_, _, v} C)
+variable {J : Type w} [Category.{w'} J] [Small.{v} J] (F : J ⥤ SheafedSpace.{_, _, v} C)
 
 theorem isColimit_exists_rep [HasLimitsOfShape Jᵒᵖ C] {c : Cocone F} (hc : IsColimit c) (x : c.pt) :
     ∃ (i : J) (y : F.obj i), (c.ι.app i).base y = x :=
@@ -51,7 +53,7 @@ namespace LocallyRingedSpace
 
 section HasCoproducts
 
-variable {ι : Type v} [UnivLE.{v, u}] (F : Discrete ι ⥤ LocallyRingedSpace.{u})
+variable {ι : Type v} [Small.{u} ι] (F : Discrete ι ⥤ LocallyRingedSpace.{u})
 
 /-- The explicit coproduct for `F : discrete ι ⥤ LocallyRingedSpace`. -/
 noncomputable def coproduct : LocallyRingedSpace where
@@ -102,11 +104,10 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
       (IsColimit.uniq _ (forgetToSheafedSpace.mapCocone s) f.toShHom fun j =>
         congr_arg LocallyRingedSpace.Hom.toShHom (h j))
 
-instance : HasCoproducts.{v} LocallyRingedSpace.{u} := fun _ =>
+instance : HasColimitsOfShape (Discrete ι) LocallyRingedSpace.{u} :=
   ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
 
-noncomputable instance (J : Type v) :
-    PreservesColimitsOfShape (Discrete.{v} J) forgetToSheafedSpace.{u} :=
+noncomputable instance : PreservesColimitsOfShape (Discrete.{v} ι) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>
     preservesColimit_of_preserves_colimit_cocone (coproductCofanIsColimit G)
       ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u}) _).ofIsoColimit
@@ -139,9 +140,6 @@ theorem coequalizer_π_app_isLocalHom
                     (Hom.toShHom g)).hom.base).obj
           (unop (op U))))
   infer_instance
-
-@[deprecated (since := "2024-10-10")]
-alias coequalizer_π_app_isLocalRingHom := coequalizer_π_app_isLocalHom
 
 /-!
 We roughly follow the construction given in [MR0302656]. Given a pair `f, g : X ⟶ Y` of morphisms
@@ -240,9 +238,6 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   erw [← CommRingCat.comp_apply, ← CommRingCat.comp_apply, ← Y.presheaf.map_comp]
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.toShHom g.toShHom).c.app (op U)) s)
-
-@[deprecated (since := "2024-10-10")]
-alias coequalizer_π_stalk_isLocalRingHom := coequalizer_π_stalk_isLocalHom
 
 end HasCoequalizer
 

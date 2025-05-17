@@ -18,7 +18,6 @@ universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
--- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
@@ -60,7 +59,6 @@ theorem comp_id (f : α → β) : f ∘ id = f := rfl
 
 theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl
-@[deprecated (since := "2024-09-24")] alias comp.assoc := comp_assoc
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
 def Injective (f : α → β) : Prop :=

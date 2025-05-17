@@ -20,7 +20,7 @@ images of different morphisms commute, we obtain a canonical morphism
 
 * `MonoidHom.noncommPiCoprod : (Π i, N i) →* M` is the main homomorphism
 * `Subgroup.noncommPiCoprod : (Π i, H i) →* G` is the specialization to `H i : Subgroup G`
-   and the subgroup embedding.
+  and the subgroup embedding.
 
 ## Main theorems
 
@@ -31,11 +31,11 @@ images of different morphisms commute, we obtain a canonical morphism
   `⨆ (i : ι), (ϕ i).range`
 * `Subgroup.noncommPiCoprod_range`: The range of `Subgroup.noncommPiCoprod` is `⨆ (i : ι), H i`.
 * `MonoidHom.injective_noncommPiCoprod_of_iSupIndep`: in the case of groups, `pi_hom.hom` is
-   injective if the `ϕ` are injective and the ranges of the `ϕ` are independent.
+  injective if the `ϕ` are injective and the ranges of the `ϕ` are independent.
 * `MonoidHom.independent_range_of_coprime_order`: If the `N i` have coprime orders, then the ranges
-   of the `ϕ` are independent.
+  of the `ϕ` are independent.
 * `Subgroup.independent_of_coprime_order`: If commuting normal subgroups `H i` have coprime orders,
-   they are independent.
+  they are independent.
 
 -/
 
@@ -106,7 +106,6 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M where
     simp
   map_mul' f g := by
     classical
-    simp only
     convert @Finset.noncommProd_mul_distrib _ _ _ _ (fun i => ϕ i (f i)) (fun i => ϕ i (g i)) _ _ _
     · exact map_mul _ _ _
     · rintro i - j - h
@@ -190,7 +189,7 @@ Given monoid morphisms `φᵢ : Nᵢ → M` and `f : M → P`, if we have suffic
 theorem comp_noncommPiCoprod {P : Type*} [Monoid P] {f : M →* P}
     (hcomm' : Pairwise fun i j => ∀ x y, Commute (f.comp (ϕ i) x) (f.comp (ϕ j) y) :=
       Pairwise.mono hcomm (fun i j ↦ forall_imp (fun x h y ↦ by
-        simp only [MonoidHom.coe_comp, Function.comp_apply, Commute.map  (h y) f]))) :
+        simp only [MonoidHom.coe_comp, Function.comp_apply, Commute.map (h y) f]))) :
     f.comp (MonoidHom.noncommPiCoprod ϕ hcomm) =
       MonoidHom.noncommPiCoprod (fun i ↦ f.comp (ϕ i)) hcomm' :=
   MonoidHom.ext fun _ ↦ by
