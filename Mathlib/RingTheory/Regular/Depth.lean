@@ -24,21 +24,6 @@ open IsLocalRing LinearMap
 
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
-lemma Ideal.subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
-    (hs : s.Finite) {f : ι → Ideal R} (a b : ι)
-    (hp : ∀ i ∈ s, i ≠ a → i ≠ b → (f i).IsPrime) {I : Ideal R} :
-    ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
-  rcases Set.Finite.exists_finset hs with ⟨t, ht⟩
-  have heq : ⋃ i ∈ s, f i = ⋃ i ∈ t, (f i : Set R) := by
-    ext r
-    simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
-    exact exists_congr (fun i ↦ (and_congr_left fun a ↦ ht i).symm)
-  have hmem_union : ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ((I : Set R) ⊆ ⋃ i ∈ (t : Set ι), f i) :=
-    (congrArg _ heq).to_iff
-  have hexists_le: (∃ i ∈ t, I ≤ f i) ↔ ∃ i ∈ s, I ≤ f i :=
-    exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
-  rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin)), hexists_le]
-
 lemma mem_associatePrimes_of_comap_mem_associatePrimes_localization (S : Submonoid R)
     (p : Ideal (Localization S)) [p.IsPrime]
     (ass : p.comap (algebraMap R (Localization S)) ∈ associatedPrimes R M) :
@@ -78,11 +63,10 @@ lemma mem_associatePrimes_of_comap_mem_associatePrimes_localization (S : Submono
 lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes {p : Ideal R} [p.IsPrime]
     (ass : p ∈ associatedPrimes R M) :
     maximalIdeal (Localization.AtPrime p) ∈
-    associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M):= by
+    associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M) := by
   apply mem_associatePrimes_of_comap_mem_associatePrimes_localization
   simpa [Localization.AtPrime.comap_maximalIdeal] using ass
 
---lemma_212_a
 lemma hom_subsingleton_of_mem_ann_isSMulRegular {r : R} (reg : IsSMulRegular M r)
     (mem_ann : r ∈ Module.annihilator R N) : Subsingleton (N →ₗ[R] M) := by
   apply subsingleton_of_forall_eq 0 (fun f ↦ ext fun x ↦ ?_)
@@ -90,7 +74,6 @@ lemma hom_subsingleton_of_mem_ann_isSMulRegular {r : R} (reg : IsSMulRegular M r
     rw [smul_zero, ← map_smul, Module.mem_annihilator.mp mem_ann x, map_zero]
   simpa using reg this
 
---lemma_212_b_nontrivial
 lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRing R]
     [Module.Finite R M] [Module.Finite R N] [Nontrivial M] (hom0 : Subsingleton (N →ₗ[R] M)) :
     ∃ r ∈ Module.annihilator R N, IsSMulRegular M r := by
@@ -150,7 +133,6 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
   exact (Module.FinitePresentation.linearEquivMapExtendScalars
     p'.asIdeal.primeCompl).symm.map_eq_zero_iff.mp (Subsingleton.eq_zero _)
 
---lemma_212_b
 lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton [IsNoetherianRing R]
     [Module.Finite R M] [Module.Finite R N] (hom0 : Subsingleton (N →ₗ[R] M)) :
     ∃ r ∈ Module.annihilator R N, IsSMulRegular M r := by
