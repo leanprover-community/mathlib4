@@ -130,7 +130,7 @@ variable (ha : a ≠ 0)
 
 include ha in
 private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
-  simp (config := { unfoldPartialApp := true }) only [asiegel, a']
+  simp +unfoldPartialApp only [asiegel, a']
   simp only [ne_eq]
   rw [funext_iff]; intros hs
   simp only [Prod.forall] at hs
@@ -290,7 +290,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
 
 include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
- non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
+non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by

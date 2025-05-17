@@ -17,14 +17,14 @@ spanned by the norms of elements in `I`.
 
 ## Main definitions
 
- * `Ideal.spanNorm R (I : Ideal S)`: the ideal spanned by the norms of elements in `I`.
-    This is used to define `Ideal.relNorm`.
- * `Ideal.relNorm R (I : Ideal S)`: the relative ideal norm as a bundled monoid-with-zero morphism,
-   defined as the ideal spanned by the norms of elements in `I`.
+* `Ideal.spanNorm R (I : Ideal S)`: the ideal spanned by the norms of elements in `I`.
+  This is used to define `Ideal.relNorm`.
+* `Ideal.relNorm R (I : Ideal S)`: the relative ideal norm as a bundled monoid-with-zero morphism,
+  defined as the ideal spanned by the norms of elements in `I`.
 
 ## Main results
 
- * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
+* `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
 -/
 
 open scoped nonZeroDivisors
@@ -46,7 +46,7 @@ over `I`.
 
 See also `Ideal.relNorm`.
 -/
-def spanNorm (I : Ideal S) : Ideal R :=
+noncomputable def spanNorm (I : Ideal S) : Ideal R :=
   Ideal.map (Algebra.intNorm R S) I
 
 @[simp]
@@ -233,7 +233,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
 
 /-- The relative norm `Ideal.relNorm R (I : Ideal S)`, where `R` and `S` are Dedekind domains,
 and `S` is an extension of `R` that is finite and free as a module. -/
-def relNorm : Ideal S →*₀ Ideal R where
+noncomputable def relNorm : Ideal S →*₀ Ideal R where
   toFun := spanNorm R
   map_zero' := spanNorm_bot R
   map_one' := by rw [one_eq_top, spanNorm_top R, one_eq_top]

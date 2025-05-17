@@ -30,17 +30,17 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 
 ## Main definitions
 
- * `IsDedekindDomain.selmerGroup`: the Selmer group.
- * TODO: maps in the sequence.
+* `IsDedekindDomain.selmerGroup`: the Selmer group.
+* TODO: maps in the sequence.
 
 ## Main statements
 
- * TODO: proofs of exactness of the sequence.
- * TODO: proofs of finiteness for global fields.
+* TODO: proofs of exactness of the sequence.
+* TODO: proofs of finiteness for global fields.
 
 ## Notations
 
- * `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
+* `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
 
 ## Implementation notes
 

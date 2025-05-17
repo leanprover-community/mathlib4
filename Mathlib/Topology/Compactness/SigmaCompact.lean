@@ -273,9 +273,6 @@ protected lemma Topology.IsClosedEmbedding.sigmaCompactSpace {e : Y → X}
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.sigmaCompactSpace := IsClosedEmbedding.sigmaCompactSpace
-
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   hs.isClosedEmbedding_subtypeVal.sigmaCompactSpace
 
