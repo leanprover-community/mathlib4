@@ -436,8 +436,27 @@ set_option maxHeartbeats 2000000
 
 --variable [DivisionRing K] [AddCommGroup V] [Module K V] {s : Submodule K V} {x : V}
 
-
-
+lemma needed (i : Dual K H) (ni : i ≠ 0) (h0 : rootSpace H i ≠ ⊥) : ∃ (j : H.root),
+    (rootSystem H).root j = i := by
+  let i_weight : Weight K H L := ⟨i, h0⟩
+  have ttt0 : i_weight.IsNonZero := by
+    contrapose ni
+    simp
+    simp at ni
+    simp [i_weight] at ni
+    simp [IsZero] at ni
+    ext x
+    simp
+    rw [ni]
+    exact rfl
+  have ttt : i_weight ∈ H.root := by
+    simp
+    exact ttt0
+  use ⟨i_weight, ttt⟩
+  simp
+  ext x
+  simp
+  exact rfl
 
 def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
@@ -551,6 +570,28 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
         have ttt : i_weight ∈ H.root := by
           simp
           exact ttt0
+        --have www :  = S.root '' H.root
+        have qqqq : ∃ (j : H.root), S.root j = i := by
+          apply needed
+          obtain ⟨l1, l2⟩ := hΦ
+          exact l2
+          exact h0
+        obtain ⟨j, hj⟩ := qqqq
+        have qqqq2 : j ∈ Φ := by
+          by_contra hc
+          have t := hΦ₄ j hc
+          obtain ⟨l1, l2⟩ := hΦ
+          rw [hj] at t
+          apply False.elim (t l1)
+        rw [Set.mem_iUnion]
+        use j
+        simp
+        constructor
+        exact qqqq2
+        rw [← hj] at hx'
+        exact hx'
+
+        /-
         rcases Classical.em (⟨i_weight, ttt⟩ ∈ Φ) with h0 | h0
         · simp
           simp at h0
@@ -563,13 +604,13 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
         obtain ⟨l1, l2⟩ := hΦ
         simp
         use i_weight
+        have ttttt := S.root⁻¹ i
+        -- ⋃ i ∈ Φ, (rootSpace H i : Set L) = ⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α)
         constructor
         · use ttt0
           sorry
         exact hx'
-
-
-        sorry
+        -/
 
 
     -- Now: i ∈ Φ, x ∈ rootSpace H i
