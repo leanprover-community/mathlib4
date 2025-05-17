@@ -149,7 +149,11 @@ theorem rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_Surjective (n : ℕ) [N
     rw [hj2]
     rfl⟩
 
-lemma inj3 : Function.Injective (ZMod.rootsOfUnityAddChar n) := by
+lemma sur2 : Surjective (ZMod.rootsOfUnityAddChar n) := by
+  apply Surjective.of_comp_left (rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_Surjective n)
+  exact MulEquiv.injective (rootsOfUnityCircleEquiv n)
+
+lemma inj3 : Injective (ZMod.rootsOfUnityAddChar n) := by
   rw [ZMod.rootsOfUnityAddChar]
   intro i j
   simp only [AddChar.coe_mk, Subtype.mk.injEq, EmbeddingLike.apply_eq_iff_eq]
