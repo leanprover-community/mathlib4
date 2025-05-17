@@ -714,7 +714,7 @@ theorem exists_smooth_section_forall_mem_convex_of_local
           (fun x => (⟨x, s_loc x⟩ : TotalSpace F_fiber V)) U_x₀) ∧
         (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
     ∃ s : Cₛ^∞⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x :=
-      exists_contMDiff_section_forall_mem_convex_of_local I V t ht_conv Hloc
+      exists_contMDiffOn_section_forall_mem_convex_of_local I V t ht_conv Hloc
 
 /-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
