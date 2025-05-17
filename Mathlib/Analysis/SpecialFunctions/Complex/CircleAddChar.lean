@@ -135,7 +135,7 @@ lemma rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_val (j : ZMod n) :
   rw [ZMod.natCast_val, ZMod.cast_id', id_eq]
   rfl
 
-theorem rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_Surjective (n : ℕ) [NeZero n] :
+theorem surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar (n : ℕ) [NeZero n] :
     Function.Surjective (rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) := by
   intro ⟨w,hw⟩
   obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity n w).mp hw
@@ -149,12 +149,10 @@ theorem rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_Surjective (n : ℕ) [N
     rw [hj2]
     rfl⟩
 
-lemma sur2 : Surjective (ZMod.rootsOfUnityAddChar n) := by
-  apply Surjective.of_comp_left (rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_Surjective n)
-  exact MulEquiv.injective (rootsOfUnityCircleEquiv n)
-
-lemma inj3 : Injective (ZMod.rootsOfUnityAddChar n) := by
-  rw [ZMod.rootsOfUnityAddChar]
-  intro i j
-  simp only [AddChar.coe_mk, Subtype.mk.injEq, EmbeddingLike.apply_eq_iff_eq]
-  apply ZMod.injective_toCircle
+lemma bijective_rootsOfUnityAddChar : Bijective (ZMod.rootsOfUnityAddChar n) := ⟨
+  fun i j => by
+  simp only [ZMod.rootsOfUnityAddChar, AddChar.coe_mk, Subtype.mk.injEq,
+    EmbeddingLike.apply_eq_iff_eq]
+  apply ZMod.injective_toCircle (N := n),
+  (surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar n).of_comp_left
+    (rootsOfUnityCircleEquiv n).injective⟩
