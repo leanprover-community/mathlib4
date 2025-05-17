@@ -3,6 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Iván Renison
 -/
+import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.ZMod.Defs
@@ -31,6 +32,12 @@ theorem even_succAbove_add_predAbove (i : Fin (n + 1)) (j : Fin n) :
       parity_simps]
   · simp [succAbove_of_le_castSucc _ _ hij, predAbove_of_le_castSucc _ _ hij,
       ← Nat.not_even_iff_odd, not_iff, not_iff_comm, parity_simps]
+
+lemma neg_one_pow_succAbove_add_predAbove {R : Type*} [Monoid R] [HasDistribNeg R]
+    (i : Fin (n + 1)) (j : Fin n) :
+    (-1) ^ (i.succAbove j + j.predAbove i : ℕ) = -(-1) ^ (i + j : ℕ) := by
+  rw [← neg_one_mul (_ ^ _), ← pow_succ', neg_one_pow_congr]
+  rw [even_succAbove_add_predAbove, Nat.even_add_one, Nat.not_even_iff_odd]
 
 lemma even_of_val (h : Even k.val) : Even k := by
   have : NeZero n := ⟨k.pos.ne'⟩

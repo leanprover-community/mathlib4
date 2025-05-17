@@ -775,6 +775,10 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
 theorem succAbove_cases_eq_insertNth : @succAboveCases = @insertNth :=
   rfl
 
+lemma removeNth_apply (p : Fin (n + 1)) (f : ∀ i, α i) (i : Fin n) :
+    p.removeNth f i = f (p.succAbove i) :=
+  rfl
+
 @[simp] lemma removeNth_insertNth (p : Fin (n + 1)) (a : α p) (f : ∀ i, α (succAbove p i)) :
     removeNth p (insertNth p a f) = f := by ext; unfold removeNth; simp
 
@@ -955,9 +959,11 @@ not a definitional equality. -/
 @[simp] lemma insertNthEquiv_last (n : ℕ) (α : Type*) :
     insertNthEquiv (fun _ ↦ α) (last n) = snocEquiv (fun _ ↦ α) := by ext; simp
 
+/-- A `HEq` version of `Fin.removeNth_removeNth_eq_swap`. -/
 theorem removeNth_removeNth_heq_swap {α : Fin (n + 2) → Sort*} (m : ∀ i, α i)
     (i : Fin (n + 1)) (j : Fin (n + 2)) :
-    HEq (i.removeNth (j.removeNth m)) ((i.predAbove j).removeNth ((j.succAbove i).removeNth m)) := by
+    HEq (i.removeNth (j.removeNth m))
+      ((i.predAbove j).removeNth ((j.succAbove i).removeNth m)) := by
   apply Function.hfunext rfl
   simp only [heq_iff_eq]
   rintro k _ rfl
@@ -965,6 +971,13 @@ theorem removeNth_removeNth_heq_swap {α : Fin (n + 2) → Sort*} (m : ∀ i, α
   apply congr_arg_heq
   rw [succAbove_succAbove_succAbove_predAbove]
 
+/-- Given an `(n + 2)`-tuple `m` and two indexes `i : Fin (n + 1)` and `j : Fin (n + 2)`,
+one can remove `j`th element from `m`, then remove `i`th element from the result,
+or one can remove `(j.succAbove i)`th element from `m`,
+then remove `(i.predAbove j)`th element from the result.
+
+These two operations correspond to removing the same two elements in a different order,
+so they result in the same `n`-tuple. -/
 theorem removeNth_removeNth_eq_swap {α : Sort*} (m : Fin (n + 2) → α)
     (i : Fin (n + 1)) (j : Fin (n + 2)) :
     i.removeNth (j.removeNth m) = (i.predAbove j).removeNth ((j.succAbove i).removeNth m) :=
