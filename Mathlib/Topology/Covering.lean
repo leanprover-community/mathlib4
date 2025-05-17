@@ -15,7 +15,7 @@ This file defines covering maps.
 
 * `IsEvenlyCovered f x I`: A point `x` is evenly covered by `f : E → X` with fiber `I` if `I` is
   discrete and there is a homeomorphism `f ⁻¹' U ≃ₜ U × I` for some open set `U` containing `x`
-  such that the induced map `f ⁻¹' U → U` coincides with `f`.
+  with `f ⁻¹' U` open, such that the induced map `f ⁻¹' U → U` coincides with `f`.
 * `IsCoveringMap f`: A function `f : E → X` is a covering map if every point `x` is evenly
   covered by `f` with fiber `f ⁻¹' {x}`. The fibers `f ⁻¹' {x}` must be discrete, but if `X` is
   not connected, then the fibers `f ⁻¹' {x}` are not necessarily isomorphic. Also, `f` is not
@@ -26,7 +26,12 @@ open Bundle Topology
 
 variable {E X : Type*} [TopologicalSpace E] [TopologicalSpace X] (f : E → X) (s : Set X)
 
-/-- A point `x : X` is evenly covered by `f : E → X` if `x` has an evenly covered neighborhood. -/
+/-- A point `x : X` is evenly covered by `f : E → X` if `x` has an evenly covered neighborhood.
+
+**Remark**: `DiscreteTopology I ∧ ∃ Trivialization I f, x ∈ t.baseSet` would be a simpler
+definition, but unfortunately it does not work if `E` is nonempty but nonetheless `f` has empty
+fibers over `s`. If `PartialHomeomorph` could be refactored to work with an empty space and a
+nonempty space while preserving the APIs, we could switch back to the definition. -/
 def IsEvenlyCovered (x : X) (I : Type*) [TopologicalSpace I] :=
   DiscreteTopology I ∧ ∃ U : Set X, x ∈ U ∧ IsOpen U ∧ IsOpen (f ⁻¹' U) ∧
     ∃ H : f ⁻¹' U ≃ₜ U × I, ∀ x, (H x).1.1 = f x
@@ -97,14 +102,14 @@ protected theorem continuousAt {x : E} (h : IsEvenlyCovered f (f x) I) : Continu
   let e := h.toTrivialization
   e.continuousAt_proj (e.mem_source.mpr (mem_toTrivialization_baseSet h))
 
-theorem transFiberHomeomorph {J} [TopologicalSpace J] (g : I ≃ₜ J) {x : X}
+theorem of_fiber_homeomorph {J} [TopologicalSpace J] (g : I ≃ₜ J) {x : X}
     (h : IsEvenlyCovered f x I) : IsEvenlyCovered f x J :=
   have ⟨inst, U, hxU, hU, hfU, H, hH⟩ := h
   ⟨g.discreteTopology, U, hxU, hU, hfU, H.trans (.prodCongr (.refl U) g), fun _ ↦ by simp [hH]⟩
 
 theorem to_isEvenlyCovered_preimage {x : X} (h : IsEvenlyCovered f x I) :
     IsEvenlyCovered f x (f ⁻¹' {x}) :=
-  h.transFiberHomeomorph h.fiberHomeomorph
+  h.of_fiber_homeomorph h.fiberHomeomorph
 
 theorem of_trivialization [DiscreteTopology I] {x : X} {t : Trivialization I f}
     (hx : x ∈ t.baseSet) : IsEvenlyCovered f x I :=
@@ -224,6 +229,7 @@ theorem of_discreteTopology [DiscreteTopology E] [DiscreteTopology X] : IsCoveri
       right_inv _ := Prod.ext (Subsingleton.elim ..) rfl },
     (·.2.symm)⟩
 
+/-- A constructor for `IsCoveringMap` when there are both empty and nonempty fibers. -/
 theorem mk' (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTopology (F x)]
     (t : ∀ x, x ∈ Set.range f → {t : Trivialization (F x) f // x ∈ t.baseSet})
     (h : IsClosed (Set.range f)) : IsCoveringMap f :=
