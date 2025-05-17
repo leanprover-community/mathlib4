@@ -18,6 +18,10 @@ Here we collect some results about matrices over `ℚ` and `ℤ`.
 
 * `Matrix.num`, `Matrix.den`: express a rational matrix `A` as the quotient of an integer matrix
   by a (non-zero) natural.
+
+## TODO
+
+Consider generalizing these results to matrices over arbitrary localizations of rings / semirings.
 -/
 
 namespace Matrix
