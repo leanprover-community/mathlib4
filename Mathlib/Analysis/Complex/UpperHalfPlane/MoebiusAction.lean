@@ -72,10 +72,10 @@ theorem normSq_denom_ne_zero (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     Complex.normSq (denom g z) ≠ 0 :=
   ne_of_gt (normSq_denom_pos g hz)
 
-lemma denom_cocycle (x y : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
-    denom (x * y) z = denom x (num y z / denom y z) * denom y z := by
+lemma denom_cocycle (g h : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
+    denom (g * h) z = denom g (num h z / denom h z) * denom h z := by
   change _ = (_ * (_ / _) + _) * _
-  field_simp [denom_ne_zero_of_im y hz]
+  field_simp [denom_ne_zero_of_im h hz]
   simp only [denom, Units.val_mul, mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
     Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one, Complex.ofReal_add,
     Complex.ofReal_mul, num]
@@ -95,21 +95,21 @@ lemma σ_ofReal (g : GL (Fin 2) ℝ) (y : ℝ) : σ g y = y := by
   simp only [σ]
   split_ifs <;> simp
 
-lemma σ_num (x y : GL (Fin 2) ℝ) (z : ℂ) : σ x (num y z) = num y (σ x z) := by
+lemma σ_num (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (num h z) = num h (σ g z) := by
   simp only [num, σ_ofReal, map_add, map_mul]
 
-lemma σ_denom (x y : GL (Fin 2) ℝ) (z : ℂ) : σ x (denom y z) = denom y (σ x z) := by
+lemma σ_denom (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (denom h z) = denom h (σ g z) := by
   simp only [denom, σ_ofReal, map_add, map_mul]
 
-lemma σ_sq (g : GL (Fin 2) ℝ) (x : ℂ) : σ g (σ g x) = x := by
+lemma σ_sq (g : GL (Fin 2) ℝ) (z : ℂ) : σ g (σ g z) = z := by
   simp only [σ]
   split_ifs <;> simp
 
-lemma σ_im_ne_zero {g x} : (σ g x).im ≠ 0 ↔ x.im ≠ 0 := by
+lemma σ_im_ne_zero {g z} : (σ g z).im ≠ 0 ↔ z.im ≠ 0 := by
   simp only [σ]
   split_ifs <;> simp
 
-lemma σ_mul (g g' : GL (Fin 2) ℝ) (x : ℂ) : σ (g * g') x = σ g (σ g' x) := by
+lemma σ_mul (g g' : GL (Fin 2) ℝ) (z : ℂ) : σ (g * g') z = σ g (σ g' z) := by
   simp only [σ, map_mul, Units.val_mul]
   rcases g.det_ne_zero.lt_or_lt with (h | h) <;>
   rcases g'.det_ne_zero.lt_or_lt with (h' | h')
@@ -118,7 +118,7 @@ lemma σ_mul (g g' : GL (Fin 2) ℝ) (x : ℂ) : σ (g * g') x = σ g (σ g' x) 
   · simp [(mul_neg_of_pos_of_neg h h').not_lt, h, h'.not_lt]
   · simp [mul_pos h h', h, h']
 
-lemma σ_mul_comm (g g' : GL (Fin 2) ℝ) (x : ℂ) : σ g (σ g' x) = σ g' (σ g x) := by
+lemma σ_mul_comm (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (σ h z) = σ h (σ g z) := by
   simp only [σ]
   split_ifs <;> simp
 
@@ -139,25 +139,25 @@ def smulAux (g : GL (Fin 2) ℝ) (z : ℍ) : ℍ :=
     rw [smulAux'_im]
     exact div_pos (mul_pos (abs_pos.mpr g.det.ne_zero) z.im_pos) (normSq_denom_pos _ z.im_ne_zero)
 
-lemma denom_cocycle' (x y : GL (Fin 2) ℝ) (z : ℍ) :
-    denom (x * y) z = σ y (denom x (smulAux y z)) * denom y z := by
+lemma denom_cocycle' (g h : GL (Fin 2) ℝ) (z : ℍ) :
+    denom (g * h) z = σ h (denom g (smulAux h z)) * denom h z := by
   simp only [smulAux, smulAux', coe_mk, map_div₀, σ_num, σ_denom, σ_sq]
   change _ = (_ * (_ / _) + _) * _
-  field_simp [denom_ne_zero y z]
+  field_simp [denom_ne_zero h z]
   simp only [denom, Units.val_mul, mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
     Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one, Complex.ofReal_add,
     Complex.ofReal_mul, num]
   ring
 
-theorem mul_smul' (x y : GL (Fin 2) ℝ) (z : ℍ) :
-    smulAux (x * y) z = smulAux x (smulAux y z) := by
+theorem mul_smul' (g h : GL (Fin 2) ℝ) (z : ℍ) :
+    smulAux (g * h) z = smulAux g (smulAux h z) := by
   ext : 1
   simp only [smulAux, coe_mk, smulAux', map_div₀, σ_num, σ_denom, σ_mul]
-  generalize h : σ x (σ y z) = u
-  have hu : u.im ≠ 0 := by simpa only [← h, σ_im_ne_zero] using z.im_ne_zero
-  have hu' : (num y u / denom y u).im ≠ 0 := by
+  generalize hu : σ g (σ h z) = u
+  have hu : u.im ≠ 0 := by simpa only [← hu, σ_im_ne_zero] using z.im_ne_zero
+  have hu' : (num h u / denom h u).im ≠ 0 := by
     rw [moebius_im]
-    exact div_ne_zero (mul_ne_zero y.det_ne_zero hu) (normSq_denom_ne_zero _ hu)
+    exact div_ne_zero (mul_ne_zero h.det_ne_zero hu) (normSq_denom_ne_zero _ hu)
   rw [div_eq_div_iff (denom_ne_zero_of_im _ hu) (denom_ne_zero_of_im _ hu'),
     denom, mul_div, div_add' _ _ _ (denom_ne_zero_of_im _ hu), mul_div]
   conv_rhs => rw [num]
@@ -185,9 +185,9 @@ lemma coe_smul_of_det_pos {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
   change smulAux' g z = _
   rw [smulAux', σ, if_pos hg, RingHom.id_apply, num, denom]
 
-lemma denom_cocycle_σ (x y : GL (Fin 2) ℝ) (z : ℍ) :
-    denom (x * y) z = σ y (denom x ↑(y • z)) * denom y z :=
-  denom_cocycle' x y z
+lemma denom_cocycle_σ (g h : GL (Fin 2) ℝ) (z : ℍ) :
+    denom (g * h) z = σ h (denom g ↑(h • z)) * denom h z :=
+  denom_cocycle' g h z
 
 lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     g • z = mk (num g z / denom g z) (coe_smul_of_det_pos hg z ▸ (g • z).property) := by
