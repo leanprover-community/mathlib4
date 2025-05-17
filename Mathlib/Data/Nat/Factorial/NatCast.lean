@@ -6,8 +6,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Invertibility of factorials
@@ -66,4 +67,46 @@ theorem natCast_factorial_iff_of_charP {n : ℕ} : IsUnit (n ! : A) ↔ n < p :=
 
 end CharP
 
+section Nilpotent
+
+variable {A : Type*} [CommRing A] {p : ℕ} [Fact (Nat.Prime p)]
+
+lemma natCast_of_lt_of_isNilpotent (hp : IsNilpotent (p : A)) {n : ℕ} (h₀ : n ≠ 0) (h : n < p) :
+    IsUnit (n : A) := by
+  obtain ⟨m, hm⟩ := hp
+  have : Coprime (p ^ m) n := by
+    apply Coprime.pow_left
+    rw [Nat.Prime.coprime_iff_not_dvd (Fact.elim (inferInstance))]
+    exact Nat.not_dvd_of_pos_of_lt (zero_lt_of_ne_zero h₀) h
+  suffices ∃ (a b : A), p ^ m * a + n * b = 1 by
+    obtain ⟨a, b, h⟩ := this
+    rw [hm, zero_mul, zero_add] at h
+    exact isUnit_iff_exists.mpr ⟨b, by rw [h, mul_comm, h, and_self]⟩
+  have hcoe : ((p ^ m).gcd n : A) = (((p ^ m).gcd n : ℤ) : A) := by rw [Int.cast_natCast]
+  rw [← Nat.cast_one, ← this]
+  exact ⟨(p ^ m).gcdA (n), (p ^ m).gcdB n, by norm_cast; rw [hcoe, Nat.gcd_eq_gcd_ab (p^m) n]⟩
+
+theorem natCast_factorial_of_isNilpotent (hp : IsNilpotent (p : A)) {n : ℕ} (h : n < p) :
+    IsUnit (n ! : A) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [factorial_succ, cast_mul, IsUnit.mul_iff]
+    exact ⟨IsUnit.natCast_of_lt_of_isNilpotent hp (succ_ne_zero n) h,
+      ih (lt_trans (lt_add_one n) h)⟩
+
+end Nilpotent
+
 end IsUnit
+
+open Nat Ring
+
+lemma Nat.castChoose_eq {A : Type*} [CommSemiring A] {m : ℕ} {k : ℕ × ℕ}
+    (hm : IsUnit (m ! : A)) (hk : k ∈ Finset.antidiagonal m) :
+    (choose m k.1 : A) = ↑m ! * inverse ↑k.1! * inverse ↑k.2! := by
+  rw [Finset.mem_antidiagonal] at hk
+  rw [eq_mul_inverse_iff_mul_eq, eq_mul_inverse_iff_mul_eq,
+    ← hk, ← Nat.cast_mul, ← Nat.cast_mul, add_comm, Nat.add_choose_mul_factorial_mul_factorial] <;>
+  apply hm.natCast_factorial_of_le <;>
+  rw [← hk];
+  exacts [Nat.le_add_right k.1 k.2, Nat.le_add_left k.2 k.1]
