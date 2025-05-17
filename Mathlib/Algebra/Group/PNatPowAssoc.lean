@@ -4,11 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Data.PNat.Basic
-import Mathlib.GroupTheory.GroupAction.Prod
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Typeclasses for power-associative structures
@@ -30,13 +27,16 @@ powers are considered.
 
 - PNatPowAssoc for products and Pi types
 
-## Todo
+## TODO
 
 * `NatPowAssoc` for `MulOneClass` - more or less the same flow
-* It seems unlikely that anyone will want `NatSMulAssoc` and `PNatSmulAssoc` as additive versions of
+* It seems unlikely that anyone will want `NatSMulAssoc` and `PNatSMulAssoc` as additive versions of
   power-associativity, but we have found that it is not hard to write.
 
 -/
+
+-- TODO:
+-- assert_not_exists MonoidWithZero
 
 variable {M : Type*}
 
@@ -66,9 +66,9 @@ theorem ppow_mul_comm (m n : ℕ+) (x : M) :
     x ^ m * x ^ n = x ^ n * x ^ m := by simp only [← ppow_add, add_comm]
 
 theorem ppow_mul (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ m) ^ n := by
-  refine PNat.recOn n ?_ fun k hk ↦ ?_
-  rw [ppow_one, mul_one]
-  rw [ppow_add, ppow_one, mul_add, ppow_add, mul_one, hk]
+  induction n with
+  | one => rw [ppow_one, mul_one]
+  | succ k hk => rw [ppow_add, ppow_one, mul_add, ppow_add, mul_one, hk]
 
 theorem ppow_mul' (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ n) ^ m := by
   rw [mul_comm]
@@ -78,8 +78,8 @@ end Mul
 
 instance Pi.instPNatPowAssoc {ι : Type*} {α : ι → Type*} [∀ i, Mul <| α i] [∀ i, Pow (α i) ℕ+]
     [∀ i, PNatPowAssoc <| α i] : PNatPowAssoc (∀ i, α i) where
-    ppow_add _ _ _ := by ext; simp [ppow_add]
-    ppow_one _ := by ext; simp
+  ppow_add _ _ _ := by ext; simp [ppow_add]
+  ppow_one _ := by ext; simp
 
 instance Prod.instPNatPowAssoc {N : Type*} [Mul M] [Pow M ℕ+] [PNatPowAssoc M] [Mul N] [Pow N ℕ+]
     [PNatPowAssoc N] : PNatPowAssoc (M × N) where
@@ -88,6 +88,6 @@ instance Prod.instPNatPowAssoc {N : Type*} [Mul M] [Pow M ℕ+] [PNatPowAssoc M]
 
 theorem ppow_eq_pow [Monoid M] [Pow M ℕ+] [PNatPowAssoc M] (x : M) (n : ℕ+) :
     x ^ n = x ^ (n : ℕ) := by
-  refine PNat.recOn n ?_ fun k hk ↦ ?_
-  rw [ppow_one, PNat.one_coe, pow_one]
-  rw [ppow_add, ppow_one, PNat.add_coe, pow_add, PNat.one_coe, pow_one, ← hk]
+  induction n with
+  | one => rw [ppow_one, PNat.one_coe, pow_one]
+  | succ k hk => rw [ppow_add, ppow_one, PNat.add_coe, pow_add, PNat.one_coe, pow_one, ← hk]

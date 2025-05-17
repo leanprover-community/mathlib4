@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2023 Apurva Nakade All rights reserved.
+Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Analysis.Convex.Cone.Dual
+import Mathlib.Analysis.Convex.Cone.InnerDual
 import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Algebra.Module.Submodule.Basic
 
@@ -15,19 +15,15 @@ nonnegative. This is equivalent to saying that as a set a pointed cone is convex
 contains `0`. This is a bundled version of `ConvexCone.Pointed`. We choose the submodule definition
 as it allows us to use the `Module` API to work with convex cones.
 
-## TODO
-
-- Rewrite proper cones using pointed cones.
-
 -/
 
 variable {𝕜 E F G : Type*}
 
--- TODO: remove `prettyPrint := false` once #6833 is merged
-local notation3 (prettyPrint := false) "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
+local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
-abbrev PointedCone (𝕜 E) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
+abbrev PointedCone (𝕜 E)
+    [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
   Submodule {c : 𝕜 // 0 ≤ c} E
 
 namespace PointedCone
@@ -36,7 +32,7 @@ open Function
 
 section Definitions
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
 
 /-- Every pointed cone is a convex cone. -/
@@ -70,13 +66,13 @@ def _root_.ConvexCone.toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) : P
   zero_mem' := hS
   smul_mem' := fun ⟨c, hc⟩ x hx => by
     simp_rw [SetLike.mem_coe]
-    cases' eq_or_lt_of_le hc with hzero hpos
+    rcases eq_or_lt_of_le hc with hzero | hpos
     · unfold ConvexCone.Pointed at hS
       convert hS
       simp [← hzero]
     · apply ConvexCone.smul_mem
-      convert hpos
-      exact hx
+      · convert hpos
+      · exact hx
 
 @[simp]
 lemma _root_.ConvexCone.mem_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) (x : E) :
@@ -95,7 +91,7 @@ end Definitions
 
 section Maps
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
 variable [AddCommMonoid F] [Module 𝕜 F]
 variable [AddCommMonoid G] [Module 𝕜 G]
@@ -162,8 +158,8 @@ end Maps
 section PositiveCone
 
 variable (𝕜 E)
-variable [OrderedSemiring 𝕜]
-variable [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
@@ -191,6 +187,7 @@ def dual (S : PointedCone ℝ E) : PointedCone ℝ E :=
 theorem toConvexCone_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDualCone :=
   rfl
 
+open scoped InnerProductSpace in
 @[simp]
 theorem mem_dual {S : PointedCone ℝ E} {y : E} : y ∈ dual S ↔ ∀ ⦃x⦄, x ∈ S → 0 ≤ ⟪x, y⟫_ℝ := by
   rfl

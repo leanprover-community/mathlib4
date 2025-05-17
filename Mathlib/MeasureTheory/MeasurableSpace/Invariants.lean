@@ -32,7 +32,7 @@ def invariants [m : MeasurableSpace α] (f : α → α) : MeasurableSpace α :=
 variable [MeasurableSpace α]
 
 /-- A set `s` is `(invariants f)`-measurable
-iff it is meaurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`.-/
+iff it is meaurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
 theorem measurableSet_invariants {f : α → α} {s : Set α} :
     MeasurableSet[invariants f] s ↔ MeasurableSet s ∧ f ⁻¹' s = s :=
   .rfl
