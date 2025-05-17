@@ -5,7 +5,6 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.Analysis.NormedSpace.FunctionSeries
 
 /-!
 # Summability of logarithms
