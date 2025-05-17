@@ -348,8 +348,10 @@ example {a : ℝ≥0∞} : 0 ≤ a := by positivity
 
 example {a : ℕ} : (0 : ℤ) ≤ a := by positivity
 example {a : ℕ} : (0 : ℚ) ≤ a := by positivity
+example {a : ℕ} : (0 : EReal) ≤ a := by positivity
 example {a : ℕ} (ha : 0 < a) : (0 : ℤ) < a := by positivity
 example {a : ℕ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
+example {a : ℕ} (ha : 0 < a) : (0 : EReal) < a := by positivity
 example {a : ℤ} (ha : a ≠ 0) : (a : ℚ) ≠ 0 := by positivity
 example {a : ℤ} (ha : 0 ≤ a) : (0 : ℚ) ≤ a := by positivity
 example {a : ℤ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
