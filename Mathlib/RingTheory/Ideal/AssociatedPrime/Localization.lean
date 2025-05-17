@@ -21,45 +21,55 @@ TODO: deduce from above that every minimal element in support is in `Ass(M)`
 
 -/
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable (R R' : Type*) [CommRing R] [CommRing R'] [Algebra R R'] (S : Submonoid R)
+  [IsLocalization S R']
+
+variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
+  (f : M →ₗ[R] M') [IsLocalizedModule S f] [Module R' M'] [IsScalarTower R R' M']
 
 open IsLocalRing LinearMap
 
-lemma mem_associatePrimes_of_comap_mem_associatePrimes_localization (S : Submonoid R)
-    (p : Ideal (Localization S)) [p.IsPrime]
-    (ass : p.comap (algebraMap R (Localization S)) ∈ associatedPrimes R M) :
-    p ∈ associatedPrimes (Localization S) (LocalizedModule S M) := by
+include S f in
+lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
+    (p : Ideal R') [p.IsPrime]
+    (ass : p.comap (algebraMap R R') ∈ associatedPrimes R M) :
+    p ∈ associatedPrimes R' M' := by
   rcases ass with ⟨hp, x, hx⟩
   constructor
   · --may be able to remove `p.IsPrime`
     trivial
-  · use LocalizedModule.mkLinearMap S M x
+  · use f x
     ext t
-    induction' t using Localization.induction_on with a
-    simp only [LocalizedModule.mkLinearMap_apply, LinearMap.mem_ker,
-      LinearMap.toSpanSingleton_apply, LocalizedModule.mk_smul_mk, mul_one]
-    rw [IsLocalizedModule.mk_eq_mk', IsLocalizedModule.mk'_eq_zero']
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    rcases IsLocalization.mk'_surjective S t with ⟨r, s, hrs⟩
+    rw [← IsLocalizedModule.mk'_one S, ← hrs, mem_ker, toSpanSingleton_apply,
+      IsLocalizedModule.mk'_smul_mk', mul_one, IsLocalizedModule.mk'_eq_zero']
+    refine ⟨fun h ↦ ?_, fun ⟨t, ht⟩ ↦ ?_⟩
     · use 1
-      simp only [← LinearMap.toSpanSingleton_apply, one_smul, ← LinearMap.mem_ker, ← hx,
-        Ideal.mem_comap, ← Localization.mk_one_eq_algebraMap]
-      have : Localization.mk a.1 1 = Localization.mk a.1 a.2 * Localization.mk a.2.1 (1 : S) := by
-        simp only [Localization.mk_mul, mul_one, ← sub_eq_zero, Localization.sub_mk,
-          one_mul, sub_zero]
-        simp [mul_comm, Localization.mk_zero]
+      simp only [← toSpanSingleton_apply, one_smul, ← mem_ker, ← hx, Ideal.mem_comap]
+      have : (algebraMap R R') r =
+        IsLocalization.mk' R' r s * IsLocalization.mk' R' s.1 (1 : S) := by
+        rw [← IsLocalization.mk'_one (M := S) R', ← sub_eq_zero, ← IsLocalization.mk'_mul,
+          ← IsLocalization.mk'_sub]
+        simp
       rw [this]
       exact Ideal.IsTwoSided.mul_mem_of_left _ h
-    · rcases h with ⟨s, hs⟩
-      have : s • a.1 • x = (s.1 * a.1) • x := smul_smul s.1 a.1 x
+    · have : t • r • x = (t.1 * r) • x := smul_smul t.1 r x
       rw [this, ← LinearMap.toSpanSingleton_apply, ← LinearMap.mem_ker, ← hx, Ideal.mem_comap,
-        ← Localization.mk_one_eq_algebraMap] at hs
-      have : Localization.mk a.1 a.2 =
-        Localization.mk (s.1 * a.1) 1 * Localization.mk 1 (s * a.2) := by
-        simp only [Localization.mk_mul, mul_one, one_mul, ← sub_eq_zero, Localization.sub_mk,
-          Submonoid.coe_mul, sub_zero]
-        simp [← mul_assoc, mul_comm s.1 a.2.1, Localization.mk_zero]
+        ← IsLocalization.mk'_one (M := S) R'] at ht
+      have : IsLocalization.mk' R' r s =
+        IsLocalization.mk' (M := S) R' (t.1 * r) 1 * IsLocalization.mk' R' 1 (t * s) := by
+        rw [← IsLocalization.mk'_mul, mul_one, one_mul, ← sub_eq_zero, ← IsLocalization.mk'_sub,
+          Submonoid.coe_mul]
+        simp [← mul_assoc, mul_comm r t.1, IsLocalization.mk'_zero]
       rw [this]
-      exact Ideal.IsTwoSided.mul_mem_of_left _ hs
+      exact Ideal.IsTwoSided.mul_mem_of_left _ ht
+
+lemma mem_associatePrimes_of_comap_mem_associatePrimes_localization
+    (p : Ideal (Localization S)) [p.IsPrime]
+    (ass : p.comap (algebraMap R (Localization S)) ∈ associatedPrimes R M) :
+    p ∈ associatedPrimes (Localization S) (LocalizedModule S M) :=
+  mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
+    R (Localization S) S (LocalizedModule.mkLinearMap S M) p ass
 
 lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes {p : Ideal R} [p.IsPrime]
     (ass : p ∈ associatedPrimes R M) :
