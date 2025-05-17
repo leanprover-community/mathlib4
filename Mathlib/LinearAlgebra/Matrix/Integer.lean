@@ -84,6 +84,12 @@ lemma num_neg (A : Matrix m n ℚ) : (-A).num = -A.num := by
   ext
   simp [Matrix.num, map_neg]
 
+@[simp] lemma den_transpose (A : Matrix m n ℚ) : (Aᵀ).den = A.den :=
+  eq_of_forall_dvd fun _ ↦ by simpa [den_dvd_iff] using forall_comm
+
+@[simp] lemma num_transpose (A : Matrix m n ℚ) : (Aᵀ).num = (A.num)ᵀ := by
+  ext; simp [Matrix.num]
+
 /-!
 ### Compatibility with `map`
 -/
@@ -118,12 +124,12 @@ lemma num_natCast [DecidableEq m] (a : ℕ) : (a : Matrix m m ℚ).num = a := by
 
 @[simp]
 lemma den_ofNat [DecidableEq m] (a : ℕ) [a.AtLeastTwo] :
-    (OfNat.ofNat a : Matrix m m ℚ).den = 1 :=
+    (ofNat(a) : Matrix m m ℚ).den = 1 :=
   den_natCast a
 
 @[simp]
 lemma num_ofNat [DecidableEq m] (a : ℕ) [a.AtLeastTwo] :
-    (OfNat.ofNat a : Matrix m m ℚ).num = a :=
+    (ofNat(a) : Matrix m m ℚ).num = a :=
   num_natCast a
 
 @[simp]
