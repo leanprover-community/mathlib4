@@ -153,14 +153,14 @@ end AdmissibleLists
 
 section NormalFormsP_σ
 
--- Impl note.: The definition is a bit akward with the extra parameter `k`, but this
+-- Impl note.: The definition is a bit awkward with the extra parameter `k`, but this
 -- is necessary in order to avoid some type theory hell when proving that `orderedInsert`
 -- behaves as expected...
 
 /-- Given a sequence `L = [ i 0, ..., i b ]`, `standardσ m L` i is the morphism
 `σ (i b) ≫ … ≫ σ (i 0)`. The construction is provided for any list of natural numbers,
 but it is intended to behave well only when the list is admissible. -/
-def standardσ (m : ℕ) (L : List ℕ) (k : ℕ) (hK : L.length = k): mk (m + k) ⟶ mk m :=
+def standardσ (m : ℕ) (L : List ℕ) (k : ℕ) (hK : L.length = k) : mk (m + k) ⟶ mk m :=
   match L with
   | .nil => eqToHom <| by rw [← hK]; rfl
   | .cons a t => eqToHom (by rw [← hK, List.length_cons, Nat.add_comm t.length 1, Nat.add_assoc]) ≫
@@ -377,7 +377,7 @@ lemma mem_isAdmissible_of_lt_and_eval_eq_eval_succ (hL : IsAdmissible m L)
             have ha₂ := simplicialEvalσ_of_lt_mem L (a + 1) <| fun x h ↦ hL.1.1 x h
             rw (occs := .pos [2]) [← this] at ha₂
             rw [ha₁, hj₂] at ha₂
-            by_cases h': simplicialEvalσ L (j + 1) = 0
+            by_cases h' : simplicialEvalσ L (j + 1) = 0
             · exact h'
             · rw [Nat.sub_one_add_one h'] at ha₂
               have ha₃ := simplicialEvalσ_monotone L h
