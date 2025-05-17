@@ -230,9 +230,6 @@ alias embedding := isEmbedding
 protected theorem discreteTopology [DiscreteTopology X] (h : X ≃ₜ Y) :
   DiscreteTopology Y := h.symm.isEmbedding.discreteTopology
 
-theorem discreteTopology_iff (h : X ≃ₜ Y) : DiscreteTopology X ↔ DiscreteTopology Y :=
-  ⟨fun _ ↦ h.discreteTopology, fun _ ↦ h.symm.discreteTopology⟩
-
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
   h.isQuotientMap.isOpen_preimage
