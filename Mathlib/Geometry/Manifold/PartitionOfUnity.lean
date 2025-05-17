@@ -747,7 +747,7 @@ be a family of convex sets. Suppose that for each point `x : M` there exists a n
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is smooth on `U` and `g y ∈ t y` for all `y ∈ U`.
 Then there exists a smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.
 
-This is a special case of `exists_contMDiff_section_forall_mem_convex_of_local` where `V` is the
+This is a special case of `exists_smooth_section_forall_mem_convex_of_local` where `V` is the
 trivial bundle. See also `exists_contMDiffOn_forall_mem_convex_of_local` and
 `exists_smooth_forall_mem_convex_of_local_const`. -/
 theorem exists_smooth_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
