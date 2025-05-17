@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.OrderClosed
 import Mathlib.Topology.Separation.Regular
@@ -182,5 +183,24 @@ scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]
     exact pure_le_nhds γ⁻¹⟩
+
+-- The converse is true if `Γ₀ˣ` has no minimum
+protected lemma continuous {β : Type*} (f : Γ₀ → β) [TopologicalSpace β]
+    (H : Filter.Tendsto (f ∘ Units.val) Filter.atBot (nhds (f 0))) : Continuous f := by
+  rw [continuous_iff_continuousAt]
+  intro x
+  by_cases hx : x = 0
+  · subst hx
+    refine .mono_right ?_ (sup_le H (pure_le_nhds _))
+    rw [(hasBasis_nhds_zero).tendsto_iff ((atBot_basis.map _).sup (hasBasis_pure _))]
+    simp only [and_self, ne_eq, Set.mem_Iio, Function.comp_apply, Set.union_singleton,
+      Set.mem_insert_iff, Set.mem_image, Set.mem_Iic, forall_const, Prod.forall]
+    intro x
+    refine ⟨x, by simp, fun y hy ↦ ?_⟩
+    by_cases hy' : y = 0
+    · exact .inl (congr_arg f hy')
+    · exact .inr ⟨(isUnit_iff_ne_zero.mpr hy').unit, hy.le, rfl⟩
+  · rw [ContinuousAt, nhds_of_ne_zero hx, (Filter.hasBasis_pure _).tendsto_left_iff]
+    simp +contextual [mem_of_mem_nhds]
 
 end WithZeroTopology
