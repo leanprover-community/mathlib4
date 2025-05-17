@@ -558,6 +558,16 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
           constructor
           · use ttt0
           exact hx'
+        have rrr := hΦ₄ ⟨i_weight, ttt⟩ h0
+        simp at hΦ
+        obtain ⟨l1, l2⟩ := hΦ
+        simp
+        use i_weight
+        constructor
+        · use ttt0
+          sorry
+        exact hx'
+
 
         sorry
 
