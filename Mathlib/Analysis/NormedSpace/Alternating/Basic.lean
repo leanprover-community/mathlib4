@@ -28,7 +28,7 @@ open Finset Metric
 We use the following type variables in this file:
 
 * `𝕜` : a nontrivially normed field;
-* `ι`: a finite index type with decidable equality;
+* `ι`: a finite index type;
 * `E`, `F`, `G`: (semi)normed vector spaces over `𝕜`.
 -/
 
