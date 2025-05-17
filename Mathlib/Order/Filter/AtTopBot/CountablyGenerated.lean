@@ -138,7 +138,7 @@ theorem tendsto_of_subseq_tendsto {ι : Type*} {x : ι → α} {f : Filter α} {
     Tendsto x l f := by
   contrapose! hxy
   obtain ⟨s, hs, hfreq⟩ : ∃ s ∈ f, ∃ᶠ n in l, x n ∉ s := by
-    rwa [not_tendsto_iff_exists_frequently_nmem] at hxy
+    rwa [not_tendsto_iff_exists_frequently_not_mem] at hxy
   obtain ⟨y, hy_tendsto, hy_freq⟩ := exists_seq_forall_of_frequently hfreq
   refine ⟨y, hy_tendsto, fun ms hms_tendsto ↦ ?_⟩
   rcases (hms_tendsto.eventually_mem hs).exists with ⟨n, hn⟩
