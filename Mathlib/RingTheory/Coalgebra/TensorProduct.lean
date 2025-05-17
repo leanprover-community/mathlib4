@@ -3,7 +3,7 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence
+import Mathlib.Algebra.Category.CoalgCat.ComonEquivalence
 
 /-!
 # Tensor products of coalgebras
@@ -22,11 +22,11 @@ as a coalgebra morphism.
 We keep the linear maps underlying `Δ, ε` and other definitions in this file syntactically equal
 to the corresponding definitions for tensor products of modules in the hope that this makes
 life easier. However, to fill in prop fields, we use the API in
-`Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence`. That file defines the monoidal category
+`Mathlib.Algebra.Category.CoalgCat.ComonEquivalence`. That file defines the monoidal category
 structure on coalgebras induced by an equivalence with comonoid objects in the category of modules,
-`CoalgebraCat.instMonoidalCategoryAux`, but we do not declare this as an instance - we just use it
+`CoalgCat.instMonoidalCategoryAux`, but we do not declare this as an instance - we just use it
 to prove things. Then, we use the definitions in this file to make a monoidal category instance on
-`CoalgebraCat R` in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal` that has simpler data.
+`CoalgCat R` in `Mathlib.Algebra.Category.CoalgCat.Monoidal` that has simpler data.
 
 However, this approach forces our coalgebras to be in the same universe as the base ring `R`,
 since it relies on the monoidal category structure on `ModuleCat R`, which is currently
@@ -49,13 +49,13 @@ variable {R M N P Q : Type u} [CommRing R]
 
 open MonoidalCategory in
 noncomputable instance TensorProduct.instCoalgebra : Coalgebra R (M ⊗[R] N) :=
-  let I := Monoidal.transport ((CoalgebraCat.comonEquivalence R).symm)
+  let I := Monoidal.transport ((CoalgCat.comonEquivalence R).symm)
   CoalgEquiv.toCoalgebra
-    (A := (CoalgebraCat.of R M ⊗ CoalgebraCat.of R N : CoalgebraCat R))
+    (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
     { LinearEquiv.refl R _ with
       counit_comp := rfl
       map_comp_comul := by
-        rw [CoalgebraCat.ofComonObjCoalgebraStruct_comul]
+        rw [CoalgCat.ofComonObjCoalgebraStruct_comul]
         simp [-Mon_.monMonoidalStruct_tensorObj_X,
           ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorHom,
           ModuleCat.hom_comp, ModuleCat.of, ModuleCat.ofHom, comul_def,
@@ -66,13 +66,13 @@ end
 namespace Coalgebra
 namespace TensorProduct
 
-open CoalgebraCat.MonoidalCategoryAux MonoidalCategory
+open CoalgCat.MonoidalCategoryAux MonoidalCategory
 
 variable {R M N P Q : Type u} [CommRing R]
   [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q] [Module R M] [Module R N]
   [Module R P] [Module R Q] [Coalgebra R M] [Coalgebra R N] [Coalgebra R P] [Coalgebra R Q]
 
-attribute [local instance] CoalgebraCat.instMonoidalCategoryAux in
+attribute [local instance] CoalgCat.instMonoidalCategoryAux in
 section
 
 /-- The tensor product of two coalgebra morphisms as a coalgebra morphism. -/
@@ -81,10 +81,10 @@ noncomputable def map (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
   toLinearMap := _root_.TensorProduct.map f.toLinearMap g.toLinearMap
   counit_comp := by
     simp_rw [← tensorHom_toLinearMap]
-    apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.counit_comp
+    apply (CoalgCat.ofHom f ⊗ CoalgCat.ofHom g).1.counit_comp
   map_comp_comul := by
     simp_rw [← tensorHom_toLinearMap, ← comul_tensorObj]
-    apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.map_comp_comul
+    apply (CoalgCat.ofHom f ⊗ CoalgCat.ofHom g).1.map_comp_comul
 
 @[simp]
 theorem map_tmul (f : M →ₗc[R] N) (g : P →ₗc[R] Q) (x : M) (y : P) :
@@ -104,13 +104,13 @@ protected noncomputable def assoc :
     counit_comp := by
       simp_rw [← associator_hom_toLinearMap, ← counit_tensorObj_tensorObj_right,
         ← counit_tensorObj_tensorObj_left]
-      apply CoalgHom.counit_comp (α_ (CoalgebraCat.of R M) (CoalgebraCat.of R N)
-        (CoalgebraCat.of R P)).hom.1
+      apply CoalgHom.counit_comp (α_ (CoalgCat.of R M) (CoalgCat.of R N)
+        (CoalgCat.of R P)).hom.1
     map_comp_comul := by
       simp_rw [← associator_hom_toLinearMap, ← comul_tensorObj_tensorObj_left,
         ← comul_tensorObj_tensorObj_right]
-      exact CoalgHom.map_comp_comul (α_ (CoalgebraCat.of R M)
-        (CoalgebraCat.of R N) (CoalgebraCat.of R P)).hom.1 }
+      exact CoalgHom.map_comp_comul (α_ (CoalgCat.of R M)
+        (CoalgCat.of R N) (CoalgCat.of R P)).hom.1 }
 
 variable {R M N P}
 
@@ -136,10 +136,10 @@ protected noncomputable def lid : R ⊗[R] M ≃ₗc[R] M :=
   { _root_.TensorProduct.lid R M with
     counit_comp := by
       simp only [← leftUnitor_hom_toLinearMap]
-      apply CoalgHom.counit_comp (λ_ (CoalgebraCat.of R M)).hom.1
+      apply CoalgHom.counit_comp (λ_ (CoalgCat.of R M)).hom.1
     map_comp_comul := by
       simp_rw [← leftUnitor_hom_toLinearMap, ← comul_tensorObj]
-      apply CoalgHom.map_comp_comul (λ_ (CoalgebraCat.of R M)).hom.1 }
+      apply CoalgHom.map_comp_comul (λ_ (CoalgCat.of R M)).hom.1 }
 
 variable {R M}
 
@@ -161,10 +161,10 @@ protected noncomputable def rid : M ⊗[R] R ≃ₗc[R] M :=
   { _root_.TensorProduct.rid R M with
     counit_comp := by
       simp only [← rightUnitor_hom_toLinearMap]
-      apply CoalgHom.counit_comp (ρ_ (CoalgebraCat.of R M)).hom.1
+      apply CoalgHom.counit_comp (ρ_ (CoalgCat.of R M)).hom.1
     map_comp_comul := by
       simp_rw [← rightUnitor_hom_toLinearMap, ← comul_tensorObj]
-      apply CoalgHom.map_comp_comul (ρ_ (CoalgebraCat.of R M)).hom.1 }
+      apply CoalgHom.map_comp_comul (ρ_ (CoalgCat.of R M)).hom.1 }
 
 variable {R M}
 

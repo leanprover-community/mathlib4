@@ -14,7 +14,7 @@ If `C` has limits (of a given shape), so does `Mon_ C`,
 and the forgetful functor preserves these limits.
 
 (This could potentially replace many individual constructions for concrete categories,
-in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgebraCat R`.)
+in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgCat R`.)
 -/
 
 
