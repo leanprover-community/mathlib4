@@ -1142,8 +1142,8 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
   calc
     edist x y ≤ edist x x' + edist x' y' + edist y' y := edist_triangle4 _ _ _ _
     _ = edist x' y' + (edist x x' + edist y y') := by simp only [edist_comm]; ac_rfl
-    _ ≤ edist x' y' + (edist (x, y) (x', y') + edist (x, y) (x', y')) :=
-      (add_le_add_left (add_le_add (le_max_left _ _) (le_max_right _ _)) _)
+    _ ≤ edist x' y' + (edist (x, y) (x', y') + edist (x, y) (x', y')) := by
+      gcongr <;> apply_rules [le_max_left, le_max_right]
     _ = edist x' y' + 2 * edist (x, y) (x', y') := by rw [← mul_two, mul_comm]
 
 @[continuity, fun_prop]
