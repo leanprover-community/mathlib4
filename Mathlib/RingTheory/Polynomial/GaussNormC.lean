@@ -73,7 +73,7 @@ private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i
 
 @[simp]
 theorem gaussNormC_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
-    {c : ℝ} (hc : 0 ≤ c) : (p.toPowerSeries).gaussNormC v c = p.gaussNormC v c:= by
+    {c : ℝ} (hc : 0 ≤ c) : (p.toPowerSeries).gaussNormC v c = p.gaussNormC v c := by
   by_cases hp : p = 0
   · simp [hp]
   · have h_supp : p.support.Nonempty := support_nonempty.mpr hp
