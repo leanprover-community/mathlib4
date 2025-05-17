@@ -66,7 +66,7 @@ lemma measurable_exponentialPDFReal (r : ℝ) : Measurable (exponentialPDFReal r
 
 -- The exponential pdf is strongly measurable -/
 @[fun_prop, measurability]
- lemma stronglyMeasurable_exponentialPDFReal (r : ℝ) :
+lemma stronglyMeasurable_exponentialPDFReal (r : ℝ) :
      StronglyMeasurable (exponentialPDFReal r) := stronglyMeasurable_gammaPDFReal 1 r
 
 /-- The exponential pdf is positive for all positive reals -/
