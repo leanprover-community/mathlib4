@@ -611,3 +611,16 @@ theorem bot_eq_false : ⊥ = false :=
   rfl
 
 end Bool
+
+namespace Nat
+
+instance instOrderBot : OrderBot ℕ where
+  bot := 0
+  bot_le := zero_le
+
+instance instNoMaxOrder : NoMaxOrder ℕ where
+  exists_gt n := ⟨n + 1, n.lt_succ_self⟩
+
+@[simp high] protected lemma bot_eq_zero : ⊥ = 0 := rfl
+
+end Nat
