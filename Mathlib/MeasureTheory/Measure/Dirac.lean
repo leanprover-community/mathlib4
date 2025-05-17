@@ -45,15 +45,13 @@ theorem dirac_apply'_eq_zero_or_one (a : α) (hs : MeasurableSet s) :
   simp [Measure.dirac_apply' a hs, Set.indicator]
   tauto
 
-@[simp]
 theorem dirac_apply'_ne_zero_iff_eq_one (a : α) (hs : MeasurableSet s) :
     dirac a s ≠ 0 ↔ dirac a s = 1 := by
-  simp[Measure.dirac_apply' a hs, Set.indicator]
+  simp [Measure.dirac_apply' a hs, Set.indicator]
 
-@[simp]
 theorem dirac_apply'_ne_one_iff_eq_zero {a : α} (hs : MeasurableSet s) :
     dirac a s ≠ 1 ↔ dirac a s = 0 := by
-  simp[Measure.dirac_apply' a hs, Set.indicator]
+  simp [Measure.dirac_apply' a hs, Set.indicator]
 
 @[simp]
 theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
