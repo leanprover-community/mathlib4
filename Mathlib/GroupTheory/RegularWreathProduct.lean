@@ -195,6 +195,9 @@ def IteratedWreathProduct (G : Type u) : (n : ℕ) → Type u
 | Nat.zero => PUnit
 | Nat.succ n => (IteratedWreathProduct G n) ≀ᵣ G
 
+variable (G : Type u) [inst : Group G]
+variable (n : ℕ)
+
 @[simp]
 lemma IteratedWreathProduct_zero (G : Type u) :
     IteratedWreathProduct G 0 = PUnit := rfl
@@ -202,9 +205,6 @@ lemma IteratedWreathProduct_zero (G : Type u) :
 @[simp]
 lemma IteratedWreathProduct_succ (G : Type u) (n : ℕ) :
     IteratedWreathProduct G (n+1) = (IteratedWreathProduct G n) ≀ᵣ G := rfl
-
-variable (G : Type u) [inst : Group G]
-variable (n : ℕ)
 
 instance : Group (IteratedWreathProduct G n) := by
  induction n with
