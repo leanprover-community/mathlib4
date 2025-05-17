@@ -25,7 +25,7 @@ namespace Matrix
 variable {m n : Type*} [Fintype m] [Fintype n]
 
 /-!
-### Casts
+## Casts
 
 These results are useful shortcuts because the canonical casting maps out of `ℕ`, `ℤ`, and `ℚ` to
 suitable types are bare functions, not ring homs, so we cannot apply `Matrix.map_mul` directly to
@@ -45,7 +45,7 @@ lemma map_mul_ratCast {α : Type*} [DivisionRing α] [CharZero α] (A B : Matrix
   Matrix.map_mul (f := Rat.castHom α)
 
 /-!
-### Denominator of a rational matrix
+## Denominator of a rational matrix
 -/
 
 /-- The denominator of a matrix of rationals (as a `Nat`, defined as the LCM of the denominators of
@@ -76,6 +76,19 @@ lemma inv_denom_smul_num (A : Matrix m n ℚ) :
   simp [← Matrix.num_div_den A, div_eq_inv_mul]
 
 @[simp]
+lemma den_neg (A : Matrix m n ℚ) : (-A).den = A.den :=
+  eq_of_forall_dvd <| by simp [den_dvd_iff]
+
+@[simp]
+lemma num_neg (A : Matrix m n ℚ) : (-A).num = -A.num := by
+  ext
+  simp [Matrix.num, map_neg]
+
+/-!
+### Compatibility with `map`
+-/
+
+@[simp]
 lemma den_map_intCast (A : Matrix m n ℤ) : (A.map (↑)).den = 1 := by
   simp [← Nat.dvd_one, Matrix.den_dvd_iff]
 
@@ -90,5 +103,51 @@ lemma den_map_natCast (A : Matrix m n ℕ) : (A.map (↑)).den = 1 := by
 @[simp]
 lemma num_map_natCast (A : Matrix m n ℕ) : (A.map (↑)).num = A.map (↑) := by
   simp [Matrix.num, Function.comp_def]
+
+/-!
+### Casts from scalar types
+-/
+
+@[simp]
+lemma den_natCast [DecidableEq m] (a : ℕ) : (a : Matrix m m ℚ).den = 1 := by
+  simpa [← diagonal_natCast] using den_map_natCast (a : Matrix m m ℕ)
+
+@[simp]
+lemma num_natCast [DecidableEq m] (a : ℕ) : (a : Matrix m m ℚ).num = a := by
+  simpa [← diagonal_natCast] using num_map_natCast (a : Matrix m m ℕ)
+
+@[simp]
+lemma den_ofNat [DecidableEq m] (a : ℕ) [a.AtLeastTwo] :
+    (OfNat.ofNat a : Matrix m m ℚ).den = 1 :=
+  den_natCast a
+
+@[simp]
+lemma num_ofNat [DecidableEq m] (a : ℕ) [a.AtLeastTwo] :
+    (OfNat.ofNat a : Matrix m m ℚ).num = a :=
+  num_natCast a
+
+@[simp]
+lemma den_intCast [DecidableEq m] (a : ℤ) : (a : Matrix m m ℚ).den = 1 := by
+  simpa [← diagonal_intCast] using den_map_intCast (a : Matrix m m ℤ)
+
+@[simp]
+lemma num_intCast [DecidableEq m] (a : ℤ) : (a : Matrix m m ℚ).num = a := by
+  simpa [← diagonal_intCast] using num_map_intCast (a : Matrix m m ℤ)
+
+@[simp]
+lemma den_zero : (0 : Matrix m n ℚ).den = 1 :=
+  den_map_natCast 0
+
+@[simp]
+lemma num_zero : (0 : Matrix m n ℚ).num = 0 :=
+  num_map_natCast 0
+
+@[simp]
+lemma den_one [DecidableEq m] : (1 : Matrix m m ℚ).den = 1 :=
+  den_natCast 1
+
+@[simp]
+lemma num_one [DecidableEq m] : (1 : Matrix m m ℚ).num = 1 :=
+  num_natCast 1
 
 end Matrix
