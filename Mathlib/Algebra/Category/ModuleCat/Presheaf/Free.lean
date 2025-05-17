@@ -38,7 +38,13 @@ of modules over `R` which sends `X : Cᵒᵖ` to the free `R.obj X`-module on `F
 noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R where
   obj X := (ModuleCat.free (R.obj X)).obj (F.obj X)
   map {X Y} f := ModuleCat.freeDesc (fun x ↦ ModuleCat.freeMk (F.map f x))
-  map_id := by aesop
+  map_id _ := by ext; rw [ModuleCat.freeDesc_apply, F.map_id]; rfl
+  map_comp _ _ := by
+    ext
+    simp only [ModuleCat.freeDesc_apply, F.map_comp, types_comp_apply,
+      ModuleCat.restrictScalarsComp'_inv_app, ModuleCat.hom_comp, LinearMap.coe_comp,
+      Function.comp_apply, ModuleCat.restrictScalars.map_apply,
+      ModuleCat.restrictScalarsComp'App_inv_apply]
 
 /-- The free presheaf of modules functor `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
 @[simps]
