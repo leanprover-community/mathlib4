@@ -78,7 +78,7 @@ def MonCat.coyonedaObjIsoForget :
 
 /-- The forgetful functor `CommMonCat.{u} ⥤ Type u` is corepresentable. -/
 def CommMonCat.coyonedaObjIsoForget :
-    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℕ)))) ≅ forget CommMonCat.{u} :=
+    CategoryTheory.coyoneda.obj (op (of (ULift.{u} (Multiplicative ℕ)))) ≅ forget CommMonCat.{u} :=
   NatIso.ofComponents fun M ↦
     (ConcreteCategory.homEquiv.trans (uliftPowersHom M.carrier).symm).toIso
 
@@ -90,7 +90,7 @@ def AddMonCat.coyonedaObjIsoForget :
 
 /-- The forgetful functor `AddCommMonCat.{u} ⥤ Type u` is corepresentable. -/
 def AddCommMonCat.coyonedaObjIsoForget :
-    coyoneda.obj (op (of (ULift.{u} ℕ))) ≅ forget AddCommMonCat.{u} :=
+    CategoryTheory.coyoneda.obj (op (of (ULift.{u} ℕ))) ≅ forget AddCommMonCat.{u} :=
   NatIso.ofComponents fun M ↦
     (ConcreteCategory.homEquiv.trans (uliftMultiplesHom M.carrier).symm).toIso
 

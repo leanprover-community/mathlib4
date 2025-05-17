@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.PUnit
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMmonoid`.
@@ -23,9 +24,10 @@ along with the relevant forgetful functors between them.
 
 assert_not_exists MonoidWithZero
 
+open CategoryTheory Opposite
+
 universe u v
 
-open CategoryTheory
 
 /-- The category of additive groups and group morphisms. -/
 structure AddMonCat : Type (u + 1) where
@@ -539,3 +541,29 @@ def AddCommMonCat.equivalence : AddCommMonCat ≌ CommMonCat where
   inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
+
+/-! ### Yoneda embeddings -/
+
+/-- The `CommMonCat`-valued coyoneda embedding. -/
+@[to_additive (attr := simps) "The `AddCommMonCat`-valued coyoneda embedding."]
+def CommMonCat.coyoneda : CommMonCatᵒᵖ ⥤ CommMonCat ⥤ CommMonCat where
+  obj M := { obj N := of (M.unop →* N), map f := ofHom (.compHom f.hom) }
+  map f := { app N := ofHom (.compHom' f.unop.hom) }
+
+/-- The `CommMonCat`-valued coyoneda embedding composed with the forgetful functor is the usual
+coyoneda embedding. -/
+@[to_additive (attr := simps!)
+"The `AddCommMonCat`-valued coyoneda embedding composed with the forgetful functor is the usual
+coyoneda embedding."]
+def CommMonCat.coyonedaForget :
+    coyoneda ⋙ (whiskeringRight _ _ _).obj (forget _) ≅ CategoryTheory.coyoneda :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ { hom f := ofHom f, inv f := f.hom })
+    (fun _ ↦ rfl)) (fun _ ↦ rfl)
+
+/-- The coyoneda embedding of `Type` into `CommMonCat`-valued presheaves of commutative monoids. -/
+@[to_additive (attr := simps)
+"The coyoneda embedding of `Type` into `AddCommMonCat`-valued presheaves of commutative monoids."]
+def CommMonCat.coyonedaRight : (Type u)ᵒᵖ ⥤ CommMonCat.{u} ⥤ CommMonCat.{u} where
+  obj X := { obj G := of <| X.unop → G
+             map f := ofHom <| Pi.monoidHom fun i ↦ f.hom.comp <| Pi.evalMonoidHom _ i }
+  map f := { app N := ofHom <| Pi.monoidHom fun i ↦ Pi.evalMonoidHom _ <| f.unop i }
