@@ -226,8 +226,8 @@ end shift_invariance
 
 /-- If `f` is analytic on `Bᵣ(x₀)` and its Taylor series converges on this ball, then it converges
 to `f`. -/
-theorem AnalyticOn.hasFPowerSeriesOnBall {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} {r : ENNReal}
-    (hr_pos : 0 < r) (h : AnalyticOn 𝕜 f (EMetric.ball x r)) :
+theorem AnalyticOn_subball_hasFPowerSeriesOnBall {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜}
+    {r : ENNReal} (hr_pos : 0 < r) (h : AnalyticOn 𝕜 f (EMetric.ball x r)) :
     let p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
     r ≤ p.radius → HasFPowerSeriesOnBall f p x r := by
   rw [EMetric.isOpen_ball.analyticOn_iff_analyticOnNhd] at h
@@ -251,3 +251,12 @@ theorem AnalyticOn.hasFPowerSeriesOnBall {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 
   rw [EMetric.mem_nhds_iff]
   obtain ⟨ε, hf⟩ := hf
   exact ⟨ε, hf.r_pos, hf.unique (hg.mono hf.r_pos hf.r_le)⟩
+
+/-- If `f` is analytic on the ball of convergence of its Taylor series, then the series converges
+to `f` on this ball. -/
+theorem AnalyticOn.hasFPowerSeriesOnBall {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} :
+    let p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
+    0 < p.radius → AnalyticOn 𝕜 f (EMetric.ball x p.radius) →
+    HasFPowerSeriesOnBall f p x p.radius := by
+  intro p hr hs
+  exact AnalyticOn_subball_hasFPowerSeriesOnBall hr hs (by rfl)
