@@ -12,11 +12,17 @@ import Mathlib.Algebra.Group.PUnit
 
 This file defines the regular wreath product of groups, and the canonical maps in and out of the
 product. The regular wreath product of `D` and `Q` is the product `(Q → D) × Q` with the group
-`⟨d₁, q₁⟩ * ⟨d₂, q₂⟩ = ⟨d₁ * (fun x => q₁ (d₂⁻¹ * x)), d₂ * q₂⟩`
+`⟨a₁, a₂⟩ * ⟨b₁, b₂⟩ = ⟨a₁ * (fun x => b₁ (a₂⁻¹ * x)), a₂ * b₂⟩`
 
-## Key definitions
+## Main definitions
 
-There an hom into the regular wreath product `inl : D →* D ≀ᵣ Q`.
+* `D ≀ᵣ Q` : The regular wreath product of groups `D` and `Q`.
+* `rightHom` : The canonical projection `D ≀ᵣ Q →* Q`.
+* `inl` : The canonical map `Q →* D ≀ᵣ Q`.
+* `toPerm` : The homomorphism from `D ≀ᵣ Q` to `Equiv.Perm (Λ × Q)`, where `Λ` is a `D`-set.
+* `IteratedWreathProduct G n` : The iterated wreath product of a group `G` `n` times.
+* `sylowIsIteratedWreathProduct` : The isomorphism between the Sylow `p`-subgroup of `Perm p^n` and
+  the iterated wreath product of the cyclic group of order `p` `n` times.
 
 ## Notation
 
@@ -30,7 +36,7 @@ variable (D Q : Type*) [Group D] [Group Q]
 
 /-- The regular wreath product of groups `Q` and `D`.
     It the product `(Q → D) × Q` with the group operation
-  `⟨d₁, q₁⟩ * ⟨d₂, q₂⟩ = ⟨d₁ * (fun x => q₁ (d₂⁻¹ * x)), d₂ * q₂⟩` -/
+  `⟨a₁, a₂⟩ * ⟨b₁, b₂⟩ = ⟨a₁ * (fun x => b₁ (a₂⁻¹ * x)), a₂ * b₂⟩` -/
 @[ext]
 structure RegularWreathProduct where
   /-- The function of Q → D -/
@@ -44,10 +50,10 @@ namespace RegularWreathProduct
 variable {D Q}
 
 instance : Mul (RegularWreathProduct D Q) where
-  mul d q := ⟨d.1 * (fun x => q.1 (d.2⁻¹ * x)), d.2 * q.2⟩
+  mul a b := ⟨a.1 * (fun x => b.1 (a.2⁻¹ * x)), a.2 * b.2⟩
 
-lemma mul_def (d q : RegularWreathProduct D Q) :
-    d * q = ⟨d.1 * (fun x => q.1 (d.2⁻¹ * x)), d.2 * q.2⟩ := rfl
+lemma mul_def (a b : RegularWreathProduct D Q) :
+    a * b = ⟨a.1 * (fun x => b.1 (a.2⁻¹ * x)), a.2 * b.2⟩ := rfl
 
 @[simp]
 theorem mul_left (a b : D ≀ᵣ Q) :
