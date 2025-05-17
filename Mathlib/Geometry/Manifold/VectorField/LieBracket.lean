@@ -300,35 +300,35 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
   exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
     le_rfl).comp_mdifferentiableWithinAt _ this
 
-lemma mlieBracketWithin_smul_left
+lemma mlieBracketWithin_const_smul_left
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin_apply]
-  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_smul_left]
+  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_const_smul_left]
   · exact hV.differentiableWithinAt_mpullbackWithin_vectorField
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
 
-lemma mlieBracket_smul_left
+lemma mlieBracket_const_smul_left
     (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
     mlieBracket I (c • V) W x = c • mlieBracket I V W x := by
   simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hV ⊢
-  exact mlieBracketWithin_smul_left hV (uniqueMDiffWithinAt_univ _)
+  exact mlieBracketWithin_const_smul_left hV (uniqueMDiffWithinAt_univ _)
 
-lemma mlieBracketWithin_smul_right
+lemma mlieBracketWithin_const_smul_right
     (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) s x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (c • W) s x = c • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin_apply]
-  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_smul_right]
+  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_const_smul_right]
   · exact hW.differentiableWithinAt_mpullbackWithin_vectorField
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
 
-lemma mlieBracket_smul_right
+lemma mlieBracket_const_smul_right
     (hW : MDifferentiableAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) x) :
     mlieBracket I V (c • W) x = c • mlieBracket I V W x := by
   simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hW ⊢
-  exact mlieBracketWithin_smul_right hW (uniqueMDiffWithinAt_univ _)
+  exact mlieBracketWithin_const_smul_right hW (uniqueMDiffWithinAt_univ _)
 
 lemma mlieBracketWithin_add_left
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
