@@ -594,7 +594,7 @@ theorem nilpotencyClass_quotient_center [hH : IsNilpotent G] :
     Group.nilpotencyClass (G ⧸ center G) = Group.nilpotencyClass G - 1 := by
   generalize hn : Group.nilpotencyClass G = n
   rcases n with (rfl | n)
-  · simp [nilpotencyClass_zero_iff_subsingleton] at *
+  · simp only [nilpotencyClass_zero_iff_subsingleton, zero_tsub] at *
     exact Quotient.instSubsingletonQuotient (leftRel (center G))
   · suffices Group.nilpotencyClass (G ⧸ center G) = n by simpa
     apply le_antisymm
