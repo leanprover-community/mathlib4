@@ -3,7 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Distributions.Gaussian
+import Mathlib.Probability.Distributions.Gaussian.Real
 
 /-!
 # Gaussian distributions in Banach spaces
@@ -11,7 +11,7 @@ import Mathlib.Probability.Distributions.Gaussian
 We introduce a predicate `IsGaussian` for measures on a Banach space `E` such that the map by
 any continuous linear form is a Gaussian measure on `ℝ`.
 
-For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distributions.Gaussian`.
+For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distributions.Gaussian.Real`.
 
 ## Main definitions
 
