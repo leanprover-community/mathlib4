@@ -130,14 +130,15 @@ instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : 
     IsProbabilityMeasure (μ ∗ ν) :=
   MeasureTheory.isProbabilityMeasure_map (by fun_prop)
 
-lemma map_conv_addMonoidHom {M M' : Type*} {mM : MeasurableSpace M} [AddMonoid M] [MeasurableAdd₂ M]
-    {mM' : MeasurableSpace M'} [AddMonoid M'] [MeasurableAdd₂ M']
+@[to_additive]
+lemma map_mconv_monoidHom {M M' : Type*} {mM : MeasurableSpace M} [Monoid M] [MeasurableMul₂ M]
+    {mM' : MeasurableSpace M'} [Monoid M'] [MeasurableMul₂ M']
     {μ ν : Measure M} [SFinite μ] [SFinite ν]
-    (L : M →+ M') (hL : Measurable L) :
-    (μ ∗ ν).map L = (μ.map L).conv (ν.map L) := by
-  unfold Measure.conv
+    (L : M →* M') (hL : Measurable L) :
+    (μ ∗ ν).map L = (μ.map L) ∗ (ν.map L) := by
+  unfold Measure.mconv
   rw [Measure.map_map (by fun_prop) (by fun_prop)]
-  have : (L ∘ fun p : M × M ↦ p.1 + p.2) = (fun p : M' × M' ↦ p.1 + p.2) ∘ (Prod.map L L) := by
+  have : (L ∘ fun p : M × M ↦ p.1 * p.2) = (fun p : M' × M' ↦ p.1 * p.2) ∘ (Prod.map L L) := by
     ext; simp
   rw [this, ← Measure.map_map (by fun_prop) (by fun_prop),
     ← Measure.map_prod_map _ _ (by fun_prop) (by fun_prop)]
