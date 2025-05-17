@@ -138,14 +138,7 @@ attribute [to_additive existing (reorder := 1 2)] instHPow
 
 variable {G : Type*}
 
-/-- Class of types that have an inversion operation. -/
-@[to_additive, notation_class]
-class Inv (α : Type u) where
-  /-- Invert an element of α, denoted by `a⁻¹`. -/
-  inv : α → α
-
-@[inherit_doc]
-postfix:max "⁻¹" => Inv.inv
+attribute [to_additive, notation_class] Inv
 
 section ite
 variable {α : Type*} (P : Prop) [Decidable P]

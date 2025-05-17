@@ -48,7 +48,7 @@ could arise from this part and also flag that the file should contain a module d
 the `import` statements.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -305,7 +305,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
   -- It is however active in the test file `MathlibTest.Header` for the linter itself.
   unless inMathlib? || mainModule == `MathlibTest.Header do return
-  unless Linter.getLinterValue linter.style.header (← getOptions) do
+  unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return

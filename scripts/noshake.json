@@ -547,4 +547,5 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Batteries.CodeAction.Basic":
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
-  "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"]}}
+  "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"],
+  "Mathlib.Data.Part": ["Mathlib.Algebra.Notation.Defs"]}}

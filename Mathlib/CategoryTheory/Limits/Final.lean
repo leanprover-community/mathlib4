@@ -1010,6 +1010,7 @@ variable (F : D ⥤ Cat) (G : C ⥤ D)
 
 open Functor
 
+set_option backward.dsimp.proofs true in
 /-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
 action on fibers being the identity. -/
 def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :

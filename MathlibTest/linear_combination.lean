@@ -316,7 +316,7 @@ example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination ha
 /--
 error: Application type mismatch: In the application
   Mathlib.Tactic.LinearCombination.mul_const_eq h2 0
-the final argument
+the argument
   0
 has type
   ℝ : Type
