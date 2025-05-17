@@ -126,3 +126,27 @@ noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUn
   right_inv _ := by aesop
 
 instance : HasEnoughRootsOfUnity Circle n := (rootsOfUnityCircleEquiv n).symm.hasEnoughRootsOfUnity
+
+open Real in
+lemma rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_val (j : ZMod n) :
+    ((rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) j).val
+      = Complex.exp (2 * π * I * j.val / n) := by
+  rw [comp_apply, ← ZMod.toCircle_natCast, ZMod.natCast_val, ZMod.cast_id', id_eq]
+  rfl
+
+theorem surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar (n : ℕ) [NeZero n] :
+    Function.Surjective (rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) := fun ⟨w,hw⟩ => by
+  obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity n w).mp hw
+  exact ⟨j, by
+    rw [comp_apply, MulEquiv.apply_eq_iff_symm_apply]
+    ext
+    rw [ZMod.rootsOfUnityAddChar_val, ZMod.toCircle_natCast, mul_div_assoc, hj2]
+    rfl⟩
+
+lemma bijective_rootsOfUnityAddChar : Bijective (ZMod.rootsOfUnityAddChar n) := ⟨
+  fun i j => by
+  simp only [ZMod.rootsOfUnityAddChar, AddChar.coe_mk, Subtype.mk.injEq,
+    EmbeddingLike.apply_eq_iff_eq]
+  apply ZMod.injective_toCircle (N := n),
+  (surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar n).of_comp_left
+    (rootsOfUnityCircleEquiv n).injective⟩
