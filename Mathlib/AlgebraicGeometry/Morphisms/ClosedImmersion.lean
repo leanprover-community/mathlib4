@@ -370,6 +370,12 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
     ← SetLike.coe_injective.eq_iff, Scheme.Hom.support_ker]
   simp
 
+lemma isClosed_singleton_iff_isClosedImmersion {X : Scheme} {x : X} :
+    IsClosed ({x} : Set X) ↔ IsClosedImmersion (X.fromSpecResidueField x) := by
+  rw [← Scheme.range_fromSpecResidueField]
+  exact ⟨fun H ↦ .of_isPreimmersion _ H,
+    fun _ ↦ (X.fromSpecResidueField x).isClosedEmbedding.isClosed_range⟩
+
 section Section
 
 nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton Y]

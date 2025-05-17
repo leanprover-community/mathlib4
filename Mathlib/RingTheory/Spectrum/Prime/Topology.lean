@@ -1296,6 +1296,11 @@ theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [IsLocalRing T]
   ext1
   exact Ideal.mk_ker
 
+variable (R) in
+lemma isClosed_singleton_closedPoint : IsClosed {closedPoint R} := by
+  rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal, closedPoint]
+  infer_instance
+
 end IsLocalRing
 
 @[deprecated (since := "2024-11-11")]
