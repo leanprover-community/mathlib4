@@ -620,6 +620,9 @@ instance : CanLift EReal ℝ≥0∞ (↑) (0 ≤ ·) := ⟨range_coe_ennreal.ge�
 theorem coe_ennreal_pos {x : ℝ≥0∞} : (0 : EReal) < x ↔ 0 < x := by
   rw [← coe_ennreal_zero, coe_ennreal_lt_coe_ennreal_iff]
 
+theorem coe_ennreal_pos_iff_ne_zero {x : ℝ≥0∞} : (0 : EReal) < x ↔ x ≠ 0 := by
+  rw [coe_ennreal_pos, pos_iff_ne_zero]
+
 @[simp]
 theorem bot_lt_coe_ennreal (x : ℝ≥0∞) : (⊥ : EReal) < x :=
   (bot_lt_coe 0).trans_le (coe_ennreal_nonneg _)
@@ -686,6 +689,10 @@ lemma toENNReal_eq_zero_iff {x : EReal} : x.toENNReal = 0 ↔ x ≤ 0 := by
 
 lemma toENNReal_ne_zero_iff {x : EReal} : x.toENNReal ≠ 0 ↔ 0 < x := by
   simp [toENNReal_eq_zero_iff.not]
+
+@[simp]
+lemma toENNReal_pos_iff {x : EReal} : 0 < x.toENNReal ↔ 0 < x := by
+  rw [pos_iff_ne_zero, toENNReal_ne_zero_iff]
 
 @[simp]
 lemma coe_toENNReal {x : EReal} (hx : 0 ≤ x) : (x.toENNReal : EReal) = x := by
@@ -807,7 +814,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: cast from `ℝ` to `EReal`. -/
 @[positivity Real.toEReal _]
-def evalRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
+def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q(Real.toEReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -821,15 +828,37 @@ def evalRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `EReal`. -/
 @[positivity ENNReal.toEReal _]
-def evalENNRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
+def evalENNRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q(ENNReal.toEReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
     match ra with
     | .positive pa => pure (.positive q(EReal.coe_ennreal_pos.2 $pa))
-    | .nonzero pa => pure (.nonzero q(EReal.coe_ennreal_ne_zero.2 $pa))
+    | .nonzero pa => pure (.positive q(EReal.coe_ennreal_pos_iff_ne_zero.2 $pa))
     | _ => pure (.nonnegative q(EReal.coe_ennreal_nonneg $a))
   | _, _, _ => throwError "not ENNReal.toEReal"
+
+/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ`. -/
+@[positivity EReal.toReal _]
+def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(Real), ~q(EReal.toReal $a) =>
+    assertInstancesCommute
+    match (← core q(inferInstance) q(inferInstance) a).toNonneg with
+    | .some pa => pure (.nonnegative q(EReal.toReal_nonneg $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "not EReal.toReal"
+
+/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ≥0∞`. -/
+@[positivity EReal.toENNReal _]
+def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ENNReal), ~q(EReal.toENNReal $a) =>
+    assertInstancesCommute
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa => pure (.positive q(EReal.toENNReal_pos_iff.2 $pa))
+    | _ => pure (.nonnegative q(zero_le $e))
+  | _, _, _ => throwError "not EReal.toENNReal"
 
 end Mathlib.Meta.Positivity

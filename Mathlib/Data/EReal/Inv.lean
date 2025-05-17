@@ -455,7 +455,7 @@ lemma div_nonneg (h : 0 ≤ a) (h' : 0 ≤ b) : 0 ≤ a / b :=
   mul_nonneg h (inv_nonneg_of_nonneg h')
 
 lemma div_pos (ha : 0 < a) (hb : 0 < b) (hb' : b ≠ ⊤) : 0 < a / b :=
-  mul_pos ha (inv_pos_of_pos_ne_top hb hb')
+  EReal.mul_pos ha (inv_pos_of_pos_ne_top hb hb')
 
 lemma div_nonpos_of_nonpos_of_nonneg (h : a ≤ 0) (h' : 0 ≤ b) : a / b ≤ 0 :=
   mul_nonpos_of_nonpos_of_nonneg h (inv_nonneg_of_nonneg h')
@@ -537,3 +537,34 @@ lemma add_div_of_nonneg_right (h : 0 ≤ c) :
   apply right_distrib_of_nonneg_of_ne_top (inv_nonneg_of_nonneg h) (inv_lt_top c).ne
 
 end EReal
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
+@[positivity (_⁻¹ : EReal)]
+def evalERealInv : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a⁻¹) =>
+    assertInstancesCommute
+    match (← core zα pα a).toNonneg with
+    | some pa => pure (.nonnegative q(EReal.inv_nonneg_of_nonneg <| $pa))
+    | none => pure .none
+  | _, _, _ => throwError "not an inverse of an `EReal`"
+
+/-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
+@[positivity (_ / _ : EReal)]
+def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a / $b) =>
+    assertInstancesCommute
+    match (← core zα pα a).toNonneg with
+    | some pa =>
+      match (← core zα pα b).toNonneg with
+      | some pb => pure (.nonnegative q(EReal.div_nonneg $pa $pb))
+      | none => pure .none
+    | _ => pure .none
+  | _, _, _ => throwError "not a ratio of 2 `EReal`s"
+
+end Mathlib.Meta.Positivity
