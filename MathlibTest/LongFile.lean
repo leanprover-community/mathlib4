@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Linter.Style
 
 /-
-# Testing the `longFile` linter
+# Testing the `longFile` and `longFileHard` linters
 
 Things to note:
 * `set_option linter.style.longFile 0` disables the linter, allowing us to set a value smaller than
@@ -131,3 +131,24 @@ note: this linter can be disabled with `set_option linter.style.longFile 0`
 #guard_msgs in
 set_option linter.style.longFile 5000 in
 #exit
+
+/--
+error: It is forbidden to set the `longFileHard` option.
+-/
+#guard_msgs in
+set_option linter.style.longFileHard 100
+
+/--
+warning: using 'exit' to interrupt Lean
+---
+warning: This file is 141 lines long, but the limit is 100.
+Please split this file.
+-/
+#guard_msgs in
+#exit
+
+/--
+error: It is forbidden to set the `longFileHard` option.
+-/
+#guard_msgs in
+set_option linter.style.longFileHard 1500
