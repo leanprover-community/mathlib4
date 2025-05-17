@@ -390,37 +390,23 @@ theorem eq_mul_weierstrassDiv_add_weierstrassMod
   simp_rw [weierstrassDiv, weierstrassMod, dif_pos hg]
   exact ((IsWeierstrassDivisor.of_map_ne_zero hg).isWeierstrassDivisionAt_div_mod f).2
 
-/-- The quotient `q` and remainder `r` in the Weierstrass division `0 / g` are equal to `0`. -/
-theorem eq_zero_of_weierstrass_division [IsHausdorff (IsLocalRing.maximalIdeal A) A]
-    {q : A⟦X⟧} {r : A[X]}
-    (hr : r.degree < (g.map (IsLocalRing.residue A)).order.toNat)
-    (heq : g * q = r) : q = 0 ∧ r = 0 :=
-  (IsWeierstrassDivisor.of_map_ne_zero hg).eq_zero_of_mul_eq hr heq
-
-/-- The quotient `q` and remainder `r` in the Weierstrass division are unique. -/
-theorem eq_of_weierstrass_division [IsHausdorff (IsLocalRing.maximalIdeal A) A]
-    {q q' : A⟦X⟧} {r r' : A[X]}
-    (hr : r.degree < (g.map (IsLocalRing.residue A)).order.toNat)
-    (hr' : r'.degree < (g.map (IsLocalRing.residue A)).order.toNat)
-    (heq : g * q + r = g * q' + r') : q = q' ∧ r = r' :=
-  (IsWeierstrassDivisor.of_map_ne_zero hg).eq_of_mul_add_eq_mul_add hr hr' heq
-
 variable {f} in
-/-- The quotient `q` and remainder `r` in the Weierstrass division are unique. -/
+/-- The quotient `q` and the remainder `r` in the Weierstrass division are unique. -/
 theorem IsWeierstrassDivision.elim [IsHausdorff (IsLocalRing.maximalIdeal A) A]
     {q q' : A⟦X⟧} {r r' : A[X]}
     (H : f.IsWeierstrassDivision g q r) (H2 : f.IsWeierstrassDivision g q' r') : q = q' ∧ r = r' :=
-  g.eq_of_weierstrass_division hg H.1 H2.1 (H.2.symm.trans H2.2)
+  (IsWeierstrassDivisor.of_map_ne_zero hg).eq_of_mul_add_eq_mul_add H.1 H2.1 (H.2.symm.trans H2.2)
 
-/-- The quotient `q` and remainder `r` in the Weierstrass division `0 / g` are equal to `0`. -/
+/-- If `q` and `r` are quotient and remainder in the Weierstrass division `0 / g`, then they are
+equal to `0`. -/
 theorem IsWeierstrassDivision.eq_zero [IsHausdorff (IsLocalRing.maximalIdeal A) A]
     {q : A⟦X⟧} {r : A[X]}
     (H : IsWeierstrassDivision 0 g q r) : q = 0 ∧ r = 0 :=
   H.elim hg (g.isWeierstrassDivisionAt_zero _)
 
 variable {f} in
-/-- The quotient `q` and remainder `r` in the Weierstrass division `f / g` are unique,
-in particular, equal to `f /ʷ g` and `f %ʷ g`. -/
+/-- If `q` and `r` are quotient and remainder in the Weierstrass division `f / g`, then they are
+equal to `f /ʷ g` and `f %ʷ g`. -/
 theorem IsWeierstrassDivision.eq_weierstrassDiv_weierstrassMod
     [IsAdicComplete (IsLocalRing.maximalIdeal A) A]
     {q : A⟦X⟧} {r : A[X]}
