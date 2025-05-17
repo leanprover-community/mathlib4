@@ -676,6 +676,14 @@ theorem prod_withDensity {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : M
     (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) :=
   prod_withDensity₀ hf.aemeasurable hg.aemeasurable
 
+-- `prod_smul_left` is in the `Prod` file. This lemma is here because this is the file in which
+-- we prove the instance that gives `SFinite (c • ν)`.
+lemma Measure.prod_smul_right (c : ℝ≥0∞) : μ.prod (c • ν) = c • (μ.prod ν) := by
+  ext s hs
+  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, smul_eq_mul]
+  rw [lintegral_const_mul]
+  exact measurable_measure_prodMk_left hs
+
 end Prod
 
 variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]

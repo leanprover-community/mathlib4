@@ -707,6 +707,13 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
   rw [map_apply (hf.prodMap hg) (hs.prod ht), map_apply hf hs, map_apply hg ht]
   exact prod_prod (f ⁻¹' s) (g ⁻¹' t)
 
+-- `prod_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
+-- hence it is placed in the `WithDensity` file, where the instance is defined.
+lemma prod_smul_left {μ : Measure α} (c : ℝ≥0∞) : (c • μ).prod ν = c • (μ.prod ν) := by
+  ext s hs
+  rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs]
+  simp
+
 end Measure
 
 open Measure
