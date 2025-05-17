@@ -202,16 +202,6 @@ def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
   | [] => j
   | a :: L => if a < simplicialEvalσ L j then simplicialEvalσ L j - 1 else simplicialEvalσ L j
 
-@[simp]
-private lemma eqToHom_toOrderHom_eq_cast {m n : ℕ}
-    (h : SimplexCategory.mk m = SimplexCategory.mk n) :
-    (eqToHom h).toOrderHom =
-      (Fin.castOrderIso <| congrArg (fun x ↦ x.len + 1) h).toOrderEmbedding.toOrderHom := by
-  ext
-  haveI := congrArg (fun x ↦ x.len + 1) h
-  simp only [SimplexCategory.len_mk, add_left_inj] at this
-  subst this
-  simp
 
 lemma standardσ_eval {m₁ m₂ m₁' : ℕ}
     (L : List ℕ) (h : m₂ + L.length = m₁) (h' : m₂ + L.length = m₁')
