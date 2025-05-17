@@ -728,24 +728,19 @@ trivial bundle. See also `exists_smooth_forall_mem_convex_of_local` and
 theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x := by
-  let V : M → Type _ := fun _ ↦ F
-  have Hloc' :
-      ∀ x₀, ∃ U ∈ 𝓝 x₀, ∃ s : (x : M) → V x,
-        ContMDiffOn I (I.prod 𝓘(ℝ, F)) n (fun x ↦ (⟨x, s x⟩ : TotalSpace F V)) U ∧
-        ∀ y ∈ U, s y ∈ t y := by
-    intro x₀
-    rcases Hloc x₀ with ⟨U, hU, g, hgs, hgt⟩
-    have hgs' :
-        ContMDiffOn I (I.prod 𝓘(ℝ, F)) n (fun x ↦ (⟨x, g x⟩: TotalSpace F V)) U := by
-      intro x hx
-      simpa using ((Bundle.contMDiffWithinAt_section g U x).mpr (hgs x hx))
-    exact ⟨U, hU, g, hgs', hgt⟩
-  rcases exists_contMDiff_section_forall_mem_convex_of_local I V t ht Hloc' with ⟨s, hs⟩
-  refine ⟨⟨fun x ↦ (s x : F), by
-    intro x
-    simpa using
-      (Bundle.contMDiffAt_section (fun y ↦ (s y : F)) x).mp
-        (s.contMDiff x)⟩, fun x ↦ by simpa using hs x⟩
+  let V (_ : M) : Type _ := F
+  rcases exists_contMDiff_section_forall_mem_convex_of_local I V t ht
+    (fun x₀ ↦ by
+      rcases Hloc x₀ with ⟨U, hU, g, hgs, hgt⟩
+      refine ⟨U, hU, g, ?_, hgt⟩
+      intro y hy
+      rw [@Bundle.contMDiffWithinAt_section]
+      apply hgs y hy)
+    with ⟨s, hs⟩
+  refine ⟨⟨fun x ↦ (s x : F), fun x₀ ↦ ?_⟩, hs⟩
+  have := s.contMDiff x₀
+  rw [Bundle.contMDiffAt_section] at this
+  exact this
 
 /-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
