@@ -150,11 +150,11 @@ lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
           (s.height i * s.height j)) *
         (s.height j)⁻¹ := by
   rw [← sub_eq_zero]
-  simp_rw [neg_mul, height]
+  simp_rw [neg_mul]
   rw [Finset.sum_neg_distrib, sub_neg_eq_add, Finset.filter_ne',
     Finset.sum_erase_eq_sub (Finset.mem_univ _), real_inner_self_eq_norm_mul_norm,
     ← dist_eq_norm_vsub]
-  simp only [ne_eq, mul_eq_zero, dist_eq_zero, ne_altitudeFoot, or_self,
+  simp only [height, ne_eq, mul_eq_zero, dist_eq_zero, ne_altitudeFoot, or_self,
     not_false_eq_true, div_self, one_mul, add_sub_cancel]
   have h := s.sum_inv_height_sq_smul_vsub_eq_zero
   apply_fun fun v ↦ (s.height i)⁻¹ * ⟪s.points i -ᵥ s.altitudeFoot i, v⟫ at h
@@ -347,8 +347,7 @@ lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
   refine ⟨?_, ?_⟩
   · rintro ⟨r, h⟩
     obtain ⟨w, h1, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp
-    have h' : ∀ i, w i * ‖s.points i -ᵥ s.altitudeFoot i‖ =
-        (if i ∈ signs then -1 else 1) * r := by
+    have h' : ∀ i, w i * ‖s.points i -ᵥ s.altitudeFoot i‖ = (if i ∈ signs then -1 else 1) * r := by
       intro i
       rw [altitudeFoot, ← s.signedInfDist_affineCombination i h1]
       exact h i

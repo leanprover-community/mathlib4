@@ -183,14 +183,13 @@ lemma inner_vsub_vsub_altitudeFoot_eq_height_sq {i j : Fin (n + 1)} (h : i ≠ j
   suffices ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 by
     rwa [height, inner_vsub_vsub_left_eq_dist_sq_right_iff, inner_vsub_left_eq_zero_symm]
   refine Submodule.inner_right_of_mem_orthogonal
-        (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
-        (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-          (mem_affineSpan ℝ ?_)
-          (SetLike.coe_mem _)) ?_
-  · simp only [range_faceOpposite_points, ne_eq, Set.mem_image, Set.mem_setOf_eq]
-    refine ⟨j, h.symm, rfl⟩
-  · rw [← direction_affineSpan]
-    exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+      (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
+      (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+        (s.mem_affineSpan_range_faceOpposite_points_iff.2 h.symm)
+        (SetLike.coe_mem _))
+      ?_
+  rw [← direction_affineSpan]
+  exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
 /--
 The inner product of two distinct altitudes has absolute value strictly less than the product of
@@ -226,17 +225,19 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn
         have hkj' : s.points k ∈ Set.range (s.faceOpposite j).points := by
           rw [range_faceOpposite_points]
           exact Set.mem_image_of_mem _ hkj
+        have hs :
+            Set.range s.points =
+              Set.range (s.faceOpposite i).points ∪ Set.range (s.faceOpposite j).points := by
+          simp only [range_faceOpposite_points, ← Set.image_union]
+          simp_rw [← Set.image_univ, ← Set.compl_setOf, ← Set.compl_inter,
+            Set.setOf_eq_eq_singleton]
+          rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
+          simpa using hij.symm
         convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
-        simp only [range_faceOpposite_points, ← Set.image_union]
-        simp_rw [← Set.image_univ, ← Set.compl_setOf, ← Set.compl_inter,
-          Set.setOf_eq_eq_singleton]
-        rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
-        simpa using hij.symm
       rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
       refine ⟨?_, ?_⟩
       · rw [h, ← direction_affineSpan]
-        exact Submodule.smul_mem _ _
-          (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
+        exact Submodule.smul_mem _ _ (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
       · rw [← direction_affineSpan]
         exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
