@@ -435,18 +435,18 @@ open LieModule Weight
 lemma lieSpan_rootSpace_q_eq_lieSpan_Phi
     (q : Submodule K (Dual K H))
     (Φ : Set H.root)
-    (hΦ₂ : ∀ i ∈ Φ, (rootSystem H).root i ∈ q)
-    (c : ∀ i ∉ Φ, q ≤ LinearMap.ker ((rootSystem H).coroot' i))
+    (hΦ₁ : ∀ i ∈ Φ, (rootSystem H).root i ∈ q)
+    (hΦ₂ : ∀ i ∉ Φ, q ≤ LinearMap.ker ((rootSystem H).coroot' i))
     (hn : q ≠ ⊥) :
     LieSubalgebra.lieSpan K L (⋃ α ∈ {α ∈ q | α ≠ 0}, rootSpace H α) =
     LieSubalgebra.lieSpan K L (⋃ i ∈ Φ, (rootSpace H i : Set L)) := by
   let S := rootSystem H
-  have hΦ₃ : ∀ i ∉ Φ, S.root i ∉ q := by
+  have hΦ₂' : ∀ i ∉ Φ, S.root i ∉ q := by
     intro i
     by_contra hc
     simp only [Classical.not_imp, not_not] at hc
     have h₁ : (S.coroot' i) (S.root i) = 2 := root_apply_coroot (Finset.mem_filter.mp i.prop).2
-    have h₂ : (S.coroot' i) (S.root i) = 0 := (c i hc.1) hc.2
+    have h₂ : (S.coroot' i) (S.root i) = 0 := (hΦ₂ i hc.1) hc.2
     rw [h₁] at h₂
     field_simp at h₂
   have hΦ₄ : ⋃ i ∈ Φ, (rootSpace H i : Set L) = ⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α) := by
@@ -457,7 +457,7 @@ lemma lieSpan_rootSpace_q_eq_lieSpan_Phi
       rw [Set.mem_iUnion] at hi
       obtain ⟨hΦ, hx'⟩ := hi
       simp only [Set.mem_iUnion, Set.mem_iUnion, exists_prop]
-      exact ⟨S.root i, ⟨⟨hΦ₂ i hΦ, RootPairing.ne_zero S.toRootPairing i⟩, hx'⟩⟩
+      exact ⟨S.root i, ⟨⟨hΦ₁ i hΦ, RootPairing.ne_zero S.toRootPairing i⟩, hx'⟩⟩
     · intro x hx
       rw [Set.mem_iUnion] at hx
       obtain ⟨i, hi⟩ := hx
@@ -469,8 +469,8 @@ lemma lieSpan_rootSpace_q_eq_lieSpan_Phi
         refine Set.mem_iUnion₂.mpr ?_
         have : Φ ≠ ∅ := by
           intro hΦ
-          rw [hΦ] at c
-          have hq : ∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i) := fun i => c i (by simp)
+          rw [hΦ] at hΦ₂
+          have hq : ∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i) := fun i => hΦ₂ i (by simp)
           have : q ≤ ⨅ i, LinearMap.ker (S.coroot' i) := le_iInf hq
           rw [S.iInf_ker_coroot'_eq, RootPairing.span_coroot'_eq_top S,
             Submodule.dualCoannihilator_top] at this
@@ -496,7 +496,7 @@ lemma lieSpan_rootSpace_q_eq_lieSpan_Phi
       obtain ⟨j, hj⟩ := h₂
       have h₃ : j ∈ Φ := by
         by_contra hc
-        have := hΦ₃ j hc
+        have := hΦ₂' j hc
         rw [hj] at this
         apply False.elim (this l₁)
       rw [Set.mem_iUnion]
@@ -535,7 +535,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       simp [this]
     let S := rootSystem H
     obtain ⟨Φ, b, c⟩ := S.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q hq
-    have hΦ₂ : ∀ i ∈ Φ, S.root i ∈ q := by
+    have hΦ₁ : ∀ i ∈ Φ, S.root i ∈ q := by
       intro i hi
       rcases Φ.eq_empty_or_nonempty with rfl | hΦ
       · exact False.elim (Set.not_mem_empty i hi)
@@ -545,9 +545,9 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     let I := LieSubalgebra.lieSpan K L g
     simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Submodule.carrier_eq_coe,
       LieSubalgebra.mem_toSubmodule] at hy ⊢
-    rw [lieSpan_rootSpace_q_eq_lieSpan_Phi (K := K) (L := L) (H := H) q Φ hΦ₂ c hn] at hy ⊢
+    rw [lieSpan_rootSpace_q_eq_lieSpan_Phi (K := K) (L := L) (H := H) q Φ hΦ₁ c hn] at hy ⊢
     have s₁ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root i (S.coroot j) = 0 :=
-      (c j h₂) (hΦ₂ i h₁)
+      (c j h₂) (hΦ₁ i h₁)
     have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
       (S.pairing_eq_zero_iff (i := i) (j := j)).1 (s₁ i j h₁ h₂)
     have s₂ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : i.1 (coroot j) = 0 := s₁ i j h₁ h₂
