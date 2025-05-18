@@ -86,7 +86,7 @@ abbrev TuringEquivalent (f g : ℕ →. ℕ) : Prop :=
   AntisymmRel TuringReducible f g
 
 @[inherit_doc] scoped[Computability] infix:50 " ≤ᵀ " => TuringReducible
-@[inherit_doc] scoped[Computability] infix:50 "≡ᵀ" => TuringEquivalent
+@[inherit_doc] scoped[Computability] infix:50 " ≡ᵀ " => TuringEquivalent
 
 open scoped Computability
 
