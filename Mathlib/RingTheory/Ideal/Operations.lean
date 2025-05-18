@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
@@ -784,6 +785,13 @@ theorem radical_inf : radical (I ⊓ J) = radical I ⊓ radical J :=
 variable {I J} in
 theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J) := by
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
+
+lemma isRadical_bot_iff :
+    (⊥ : Ideal R).IsRadical ↔ IsReduced R := by
+  simp only [IsRadical, SetLike.le_def, Ideal.mem_radical_iff, Ideal.mem_bot,
+    forall_exists_index, isReduced_iff, IsNilpotent]
+
+lemma isRadical_bot [IsReduced R] : (⊥ : Ideal R).IsRadical := by rwa [Ideal.isRadical_bot_iff]
 
 /-- `Ideal.radical` as an `InfTopHom`, bundling in that it distributes over `inf`. -/
 def radicalInfTopHom : InfTopHom (Ideal R) (Ideal R) where
