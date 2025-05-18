@@ -528,8 +528,8 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         obtain ⟨i, hi⟩ := hx
         rw [Set.mem_iUnion] at hi
         obtain ⟨hΦ, hx'⟩ := hi
-        rcases Classical.em (rootSpace H i = ⊥) with h0 | h0
-        · rw [h0] at hx'
+        rcases Classical.em (rootSpace H i = ⊥) with h₀ | h₀
+        · rw [h₀] at hx'
           rw [hx']
           refine Set.mem_iUnion₂.mpr ?_
           have : Φ ≠ ∅ := by
@@ -543,34 +543,28 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           obtain ⟨i, hi⟩ := Set.nonempty_iff_ne_empty.mpr this
           use i, hi
           simp only [SetLike.mem_coe, LieSubmodule.zero_mem]
-        let i_weight : Weight K H L := ⟨i, h0⟩
-        have ttt0 : i_weight.IsNonZero := by
-          obtain ⟨l1, l2⟩ := hΦ
-          contrapose l2
-          simp
-          simp at l2
-          simp [i_weight] at l2
-          simp [IsZero] at l2
+        let i_weight : Weight K H L := ⟨i, h₀⟩
+        obtain ⟨l₁, l₂⟩ := hΦ
+        have h₁ : i_weight.IsNonZero := by
+          contrapose l₂
+          simp only [not_not, i_weight, IsZero, coe_weight_mk, i_weight] at l₂
+          simp only [ne_eq, not_not]
           ext x
-          simp
-          rw [l2]
+          rw [l₂]
           exact rfl
         have ttt : i_weight ∈ H.root := by
           simp
-          exact ttt0
-        --have www :  = S.root '' H.root
+          exact h₁
         have qqqq : ∃ (j : H.root), S.root j = i := by
           apply needed
-          obtain ⟨l1, l2⟩ := hΦ
-          exact l2
-          exact h0
+          exact l₂
+          exact h₀
         obtain ⟨j, hj⟩ := qqqq
         have qqqq2 : j ∈ Φ := by
           by_contra hc
           have t := hΦ₃ j hc
-          obtain ⟨l1, l2⟩ := hΦ
           rw [hj] at t
-          apply False.elim (t l1)
+          apply False.elim (t l₁)
         rw [Set.mem_iUnion]
         use j
         simp
@@ -677,4 +671,5 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     | add x1 y1 _ _ hx hy =>
       simp only [add_lie]
       exact add_mem hx hy
+
 end LieAlgebra.IsKilling
