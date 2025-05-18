@@ -559,7 +559,6 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     rw [PadicSeq.norm, dif_pos h] at hge
     exact not_lt_of_ge hge hε
   unfold PadicSeq.norm at hge; split_ifs at hge
-  · exact hge.not_lt hε -- should be fixed in #20676
   apply not_le_of_gt _ hge
   cases _root_.le_total N (stationaryPoint hne) with
   | inl hgen =>
@@ -648,7 +647,7 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
   intro j hj
   suffices
     padicNormE (limSeq f j - f (max N N2) + (f (max N N2) - limSeq f (max N N2)) : ℚ_[p]) < ε by
-    ring_nf at this ⊢
+    ring_nf at this
     rw [← padicNormE.eq_padic_norm']
     exact mod_cast this
   apply lt_of_le_of_lt

@@ -157,7 +157,7 @@ in Lean 4 core.
 * `change t` changes the expression to `t` if the expression and `t` are definitionally equal.
 
 * `equals t => tacticSeq` changes the current expression, say `e`, to `t`, and asks you to prove
-   the equality `e = t`. (Batteries)
+  the equality `e = t`. (Batteries)
 
 * `rw [thms...]` rewrites the expression using the given theorems. The syntax is similar to `rw`.
 
@@ -195,7 +195,7 @@ in Lean 4 core.
 * `whnf` reduces the expression to weak-head normal form.
 
 * `zeta` applies zeta reduction to the expression (i.e., substitutes all `let` expressions
-and expands all local variables).
+  and expands all local variables).
 
 * `reduce` reduces the expression like the `#reduce` command.
   (Documentation says "for debugging purposes only.")

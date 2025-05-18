@@ -15,13 +15,13 @@ except the squares of units.
 Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
 
 ## Main Definitions
- - `Squarefree r` indicates that `r` is only divisible by `x * x` if `x` is a unit.
+- `Squarefree r` indicates that `r` is only divisible by `x * x` if `x` is a unit.
 
 ## Main Results
- - `multiplicity.squarefree_iff_emultiplicity_le_one`: `x` is `Squarefree` iff for every `y`, either
+- `multiplicity.squarefree_iff_emultiplicity_le_one`: `x` is `Squarefree` iff for every `y`, either
   `emultiplicity y x ≤ 1` or `IsUnit y`.
- - `UniqueFactorizationMonoid.squarefree_iff_nodup_factors`: A nonzero element `x` of a unique
- factorization monoid is squarefree iff `factors x` has no duplicate factors.
+- `UniqueFactorizationMonoid.squarefree_iff_nodup_factors`: A nonzero element `x` of a unique
+  factorization monoid is squarefree iff `factors x` has no duplicate factors.
 
 ## Tags
 squarefree, multiplicity
@@ -120,7 +120,7 @@ variable [CommMonoidWithZero R] [WfDvdMonoid R]
 
 theorem squarefree_iff_no_irreducibles {x : R} (hx₀ : x ≠ 0) :
     Squarefree x ↔ ∀ p, Irreducible p → ¬ (p * p ∣ x) := by
-  refine ⟨fun h p hp hp' ↦ hp.not_unit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ ?_⟩
+  refine ⟨fun h p hp hp' ↦ hp.not_isUnit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ ?_⟩
   have hd₀ : d ≠ 0 := ne_zero_of_dvd_ne_zero (ne_zero_of_dvd_ne_zero hx₀ hd) (dvd_mul_left d d)
   obtain ⟨p, irr, dvd⟩ := WfDvdMonoid.exists_irreducible_factor hdu hd₀
   exact h p irr ((mul_dvd_mul dvd dvd).trans hd)
@@ -134,7 +134,7 @@ theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r 
   · rintro (⟨rfl, h⟩ | h)
     · simpa using h
     intro x hx t
-    exact hx.not_unit (h x t)
+    exact hx.not_isUnit (h x t)
 
 theorem squarefree_iff_irreducible_sq_not_dvd_of_ne_zero {r : R} (hr : r ≠ 0) :
     Squarefree r ↔ ∀ x : R, Irreducible x → ¬x * x ∣ r := by
@@ -280,6 +280,6 @@ theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
 
 @[simp]
 theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
-  rw [← squarefree_natAbs, natAbs_ofNat]
+  rw [← squarefree_natAbs, natAbs_natCast]
 
 end Int

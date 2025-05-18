@@ -214,7 +214,7 @@ noncomputable def colimit : MonCat.{max v u} :=
 @[to_additive
       "The additive monoid homomorphism from a given additive monoid in the diagram to the
       colimit additive monoid."]
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
+noncomputable def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
   ofHom
   { toFun := (Types.TypeMax.colimitCocone.{v, max v u, v} (F ⋙ forget MonCat)).ι.app j
     map_one' := (colimit_one_eq F j).symm

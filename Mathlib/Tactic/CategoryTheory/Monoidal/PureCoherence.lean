@@ -249,12 +249,12 @@ instance : MkEqOfNaturality MonoidalM where
     have θ : Q($f ⟶ $g) := θ
     have η'_e : Q($f ≅ $g) := η'.e
     have θ'_e : Q($f ≅ $g) := θ'.e
-    have η_f : Q(tensorUnit ⊗ $f ≅ $f') := η_f.e
-    have η_g : Q(tensorUnit ⊗ $g ≅ $f') := η_g.e
+    have η_f : Q(𝟙_ _ ⊗ $f ≅ $f') := η_f.e
+    have η_g : Q(𝟙_ _ ⊗ $g ≅ $f') := η_g.e
     have η_hom : Q(Iso.hom $η'_e = $η) := ηIso.eq
     have Θ_hom : Q(Iso.hom $θ'_e = $θ) := θIso.eq
-    have Hη : Q(whiskerLeftIso tensorUnit $η'_e ≪≫ $η_g = $η_f) := Hη
-    have Hθ : Q(whiskerLeftIso tensorUnit $θ'_e ≪≫ $η_g = $η_f) := Hθ
+    have Hη : Q(whiskerLeftIso (𝟙_ _) $η'_e ≪≫ $η_g = $η_f) := Hη
+    have Hθ : Q(whiskerLeftIso (𝟙_ _) $θ'_e ≪≫ $η_g = $η_f) := Hθ
     return q(mk_eq_of_naturality $η_f $η_g $η_hom $Θ_hom $Hη $Hθ)
 
 open Elab.Tactic

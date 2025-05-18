@@ -3,9 +3,8 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
@@ -336,6 +335,15 @@ theorem snoc_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M (castSucc 
     (x : M (last n)) : f (snoc m (c • x)) = c • f (snoc m x) := by
   simp_rw [← update_snoc_last x m (c • x), f.map_update_smul, update_snoc_last]
 
+theorem map_insertNth_add (f : MultilinearMap R M M₂) (p : Fin (n + 1)) (m : ∀ i, M (p.succAbove i))
+    (x y : M p) : f (p.insertNth (x + y) m) = f (p.insertNth x m) + f (p.insertNth y m) := by
+  simpa using f.map_update_add (p.insertNth 0 m) p x y
+
+theorem map_insertNth_smul (f : MultilinearMap R M M₂) (p : Fin (n + 1))
+    (m : ∀ i, M (p.succAbove i)) (c : R) (x : M p) :
+    f (p.insertNth (c • x) m) = c • f (p.insertNth x m) := by
+  simpa using f.map_update_smul (p.insertNth 0 m) p c x
+
 section
 
 variable {M₁' : ι → Type*} [∀ i, AddCommMonoid (M₁' i)] [∀ i, Module R (M₁' i)]
@@ -604,7 +612,7 @@ theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g
   classical
     induction t using Finset.induction with
     | empty => simp
-    | insert has ih => simp [Finset.sum_insert has, ih]
+    | insert _ _ has ih => simp [Finset.sum_insert has, ih]
 
 end ApplySum
 
@@ -810,7 +818,7 @@ theorem add_compMultilinearMap (g₁ g₂ : M₂ →ₗ[R] M₃) (f : Multilinea
     (g₁ + g₂).compMultilinearMap f = g₁.compMultilinearMap f + g₂.compMultilinearMap f := rfl
 
 @[simp]
-theorem compMultilinearMap_smul [Monoid S] [DistribMulAction S M₂] [DistribMulAction S M₃]
+theorem compMultilinearMap_smul [DistribSMul S M₂] [DistribSMul S M₃]
     [SMulCommClass R S M₂] [SMulCommClass R S M₃] [CompatibleSMul M₂ M₃ S R]
     (g : M₂ →ₗ[R] M₃) (s : S) (f : MultilinearMap R M₁ M₂) :
     g.compMultilinearMap (s • f) = s • g.compMultilinearMap f :=
@@ -888,7 +896,7 @@ section OfSubsingleton
 
 /-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
 and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def ofSubsingletonₗ [Subsingleton ι] (i : ι) :
     (M₂ →ₗ[R] M₃) ≃ₗ[S] MultilinearMap R (fun _ : ι ↦ M₂) M₃ :=
   { ofSubsingleton R M₂ M₃ i with
@@ -1117,6 +1125,18 @@ theorem map_update_smul_left [DecidableEq ι] [Fintype ι]
     map_piecewise_smul f _ _ _
   simpa [← Function.update_smul c m] using this
 
+/-- If two `R`-multilinear maps from `R` are equal on 1, then they are equal.
+
+This is the multilinear version of `LinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring [Finite ι] ⦃f g : MultilinearMap R (fun _ : ι => R) M₂⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g := by
+  ext x
+  obtain ⟨_⟩ := nonempty_fintype ι
+  have hf := f.map_smul_univ x (fun _ ↦ 1)
+  have hg := g.map_smul_univ x (fun _ ↦ 1)
+  simp_all [h, hf, hg]
+
 section
 
 variable (R ι)
@@ -1199,12 +1219,8 @@ theorem mkPiRing_apply [Fintype ι] (z : M₂) (m : ι → R) :
 
 theorem mkPiRing_apply_one_eq_self [Fintype ι] (f : MultilinearMap R (fun _ : ι => R) M₂) :
     MultilinearMap.mkPiRing R ι (f fun _ => 1) = f := by
-  ext m
-  have : m = fun i => m i • (1 : R) := by
-    ext j
-    simp
-  conv_rhs => rw [this, f.map_smul_univ]
-  rfl
+  ext
+  simp
 
 theorem mkPiRing_eq_iff [Fintype ι] {z₁ z₂ : M₂} :
     MultilinearMap.mkPiRing R ι z₁ = MultilinearMap.mkPiRing R ι z₂ ↔ z₁ = z₂ := by
@@ -1357,15 +1373,16 @@ protected def piRingEquiv [Fintype ι] : M₂ ≃ₗ[R] MultilinearMap R (fun _ 
   toFun z := MultilinearMap.mkPiRing R ι z
   invFun f := f fun _ => 1
   map_add' z z' := by
-    ext m
-    simp [smul_add]
+    ext
+    simp
   map_smul' c z := by
-    ext m
-    simp [smul_smul, mul_comm]
+    ext
+    simp
   left_inv z := by simp
   right_inv f := f.mkPiRing_apply_one_eq_self
 
 end CommSemiring
+
 section Submodule
 
 variable [Ring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M'] [AddCommMonoid M₂]

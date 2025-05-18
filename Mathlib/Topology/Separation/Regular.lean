@@ -210,7 +210,7 @@ theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @
         If.1.Finite ∧ ∀ i : If.1, If.2 i ∈ @nhds X i a ∧ @IsClosed X i (If.2 i))
       fun If => ⋂ i : If.1, If.snd i := fun a ↦ by
     rw [nhds_sInf, ← iInf_subtype'']
-    exact hasBasis_iInf fun t : T => @closed_nhds_basis X t (h t t.2) a
+    exact .iInf fun t : T => @closed_nhds_basis X t (h t t.2) a
   refine .of_hasBasis this fun a If hIf => isClosed_iInter fun i => ?_
   exact (hIf.2 i).2.mono (sInf_le (i : T).2)
 
@@ -343,6 +343,9 @@ theorem Topology.IsEmbedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X �
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t25Space := IsEmbedding.t25Space
 
+protected theorem Homeomorph.t25Space [TopologicalSpace Y] [T25Space X] (h : X ≃ₜ Y) : T25Space Y :=
+  h.symm.isEmbedding.t25Space
+
 instance Subtype.instT25Space [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
   IsEmbedding.subtypeVal.t25Space
 
@@ -375,6 +378,9 @@ protected theorem Topology.IsEmbedding.t3Space [TopologicalSpace Y] [T3Space Y] 
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t3Space := IsEmbedding.t3Space
+
+protected theorem Homeomorph.t3Space [TopologicalSpace Y] [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
+  h.symm.isEmbedding.t3Space
 
 instance Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
   IsEmbedding.subtypeVal.t3Space
@@ -443,8 +449,9 @@ protected theorem Topology.IsClosedEmbedding.normalSpace [TopologicalSpace Y] [N
         (disjoint_image_of_injective hf.injective hst)
     exact (H.preimage hf.continuous).mono (subset_preimage_image _ _) (subset_preimage_image _ _)
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.normalSpace := IsClosedEmbedding.normalSpace
+protected theorem Homeomorph.normalSpace [TopologicalSpace Y] [NormalSpace X] (h : X ≃ₜ Y) :
+    NormalSpace Y :=
+  h.symm.isClosedEmbedding.normalSpace
 
 instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] [R1Space X] :
     NormalSpace X where
@@ -483,8 +490,8 @@ protected theorem Topology.IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Spa
   toT1Space := hf.isEmbedding.t1Space
   toNormalSpace := hf.normalSpace
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.t4Space := IsClosedEmbedding.t4Space
+protected theorem Homeomorph.t4Space [TopologicalSpace Y] [T4Space X] (h : X ≃ₜ Y) : T4Space Y :=
+  h.symm.isClosedEmbedding.t4Space
 
 instance ULift.instT4Space [T4Space X] : T4Space (ULift X) := IsClosedEmbedding.uliftDown.t4Space
 
@@ -556,6 +563,9 @@ theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X →
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.t5Space := IsEmbedding.t5Space
+
+protected theorem Homeomorph.t5Space [TopologicalSpace Y] [T5Space X] (h : X ≃ₜ Y) : T5Space Y :=
+  h.symm.isClosedEmbedding.t5Space
 
 -- see Note [lower instance priority]
 /-- A `T₅` space is a `T₄` space. -/

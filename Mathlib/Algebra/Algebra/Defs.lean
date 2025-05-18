@@ -16,7 +16,7 @@ In this file we define associative unital `Algebra`s over commutative (semi)ring
 
 * `Subalgebra`s are defined in `Mathlib.Algebra.Algebra.Subalgebra`;
 
-* The category `AlgebraCat R` of `R`-algebras is defined in the file
+* The category `AlgCat R` of `R`-algebras is defined in the file
   `Mathlib.Algebra.Category.Algebra.Basic`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
@@ -161,8 +161,9 @@ end CommRingRing
 
 end algebraMap
 
-/-- Creating an algebra from a morphism to the center of a semiring. -/
-def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
+/-- Creating an algebra from a morphism to the center of a semiring.
+See note [reducible non-instances]. -/
+abbrev RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) : Algebra R S where
   smul c x := i c * x
   commutes' := h
@@ -182,8 +183,9 @@ theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R
     @algebraMap R S _ _ (i.toAlgebra' h) = i :=
   rfl
 
-/-- Creating an algebra from a morphism to a commutative semiring. -/
-def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
+/-- Creating an algebra from a morphism to a commutative semiring.
+See note [reducible non-instances]. -/
+abbrev RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 
 theorem RingHom.smul_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S)
@@ -314,10 +316,6 @@ protected theorem smul_mul_assoc (r : R) (x y : A) : r • x * y = r • (x * y)
 theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α A]
     [SMulCommClass α R A] (a : α) (r : R) : a • algebraMap R A r = algebraMap R A r := by
   rw [algebraMap_eq_smul_one, smul_comm a r (1 : A), smul_one]
-
-section
-
-end
 
 section compHom
 

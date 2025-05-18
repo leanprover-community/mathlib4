@@ -28,8 +28,8 @@ We prove the adjugate behaves like `det A • A⁻¹`.
 
 ## Main definitions
 
- * `Matrix.cramer A b`: the vector output by Cramer's rule on `A` and `b`.
- * `Matrix.adjugate A`: the adjugate (or classical adjoint) of the matrix `A`.
+* `Matrix.cramer A b`: the vector output by Cramer's rule on `A` and `b`.
+* `Matrix.adjugate A`: the adjugate (or classical adjoint) of the matrix `A`.
 
 ## References
 
