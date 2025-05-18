@@ -499,7 +499,7 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p
   · rw [zero_tsub]
     refine HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (fun y hy ↦ ?_) h.r_pos fun n ↦ ?_
     · rw [Filter.EventuallyEq.fderiv_eq (f := fun _ ↦ 0)]
-      · rw [fderiv_const, Pi.zero_apply]
+      · simp
       · exact Filter.eventuallyEq_iff_exists_mem.mpr ⟨EMetric.ball x r,
           EMetric.isOpen_ball.mem_nhds hy, fun z hz ↦ by rw [h.eq_zero_of_bound_zero z hz]⟩
     · apply ContinuousMultilinearMap.ext; intro a

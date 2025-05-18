@@ -248,15 +248,21 @@ lemma Indep.encard_le_eRank (hI : M.Indep I) : I.encard ≤ M.eRank := by
   exact M.eRk_mono hI.subset_ground
 
 /-- A version of `erk_eq_zero_iff'` with no supportedness hypothesis. -/
-lemma erk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
+lemma eRk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
   obtain ⟨I, hI⟩ := M.exists_isBasis (X ∩ M.E)
   rw [← eRk_inter_ground, ← hI.encard_eq_eRk, encard_eq_zero]
-  refine ⟨fun h ↦ by simpa [h] using hI , fun h ↦ eq_empty_iff_forall_not_mem.2 fun e heI ↦ ?_⟩
+  refine ⟨fun h ↦ by simpa [h] using hI, fun h ↦ eq_empty_iff_forall_not_mem.2 fun e heI ↦ ?_⟩
   exact (hI.indep.isNonloop_of_mem heI).not_isLoop (h (hI.subset heI))
 
+@[deprecated (since := "2025-05-14")]
+alias erk_eq_zero_iff' := eRk_eq_zero_iff'
+
 @[simp]
-lemma erk_eq_zero_iff (hX : X ⊆ M.E := by aesop_mat) : M.eRk X = 0 ↔ X ⊆ M.loops := by
-  rw [erk_eq_zero_iff', inter_eq_self_of_subset_left hX]
+lemma eRk_eq_zero_iff (hX : X ⊆ M.E := by aesop_mat) : M.eRk X = 0 ↔ X ⊆ M.loops := by
+  rw [eRk_eq_zero_iff', inter_eq_self_of_subset_left hX]
+
+@[deprecated (since := "2025-05-14")]
+alias erk_eq_zero_iff := eRk_eq_zero_iff
 
 /-! ### Submodularity -/
 
