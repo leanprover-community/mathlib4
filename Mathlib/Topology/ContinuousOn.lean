@@ -1297,6 +1297,12 @@ lemma Topology.IsInducing.continuousOn_iff {f : α → β} {g : β → γ} (hg :
 
 @[deprecated (since := "2024-10-28")] alias Inducing.continuousOn_iff := IsInducing.continuousOn_iff
 
+theorem Topology.IsInducing.continuousOn_image_iff {g : β → γ} {s : Set α} (ind : IsInducing f) :
+    ContinuousOn g (f '' s) ↔ ContinuousOn (g ∘ f) s := by
+  simp_rw [continuousOn_iff_continuous_restrict]
+  exact (((ind.comp .subtypeVal).codRestrict (s := f '' s) fun x ↦ ⟨x, x.2, rfl⟩)
+    |>.continuous_iff_of_surjective <| by rintro ⟨_, x, hx, rfl⟩; exact ⟨⟨x, hx⟩, rfl⟩).symm
+
 lemma Topology.IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsEmbedding g)
     {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
   hg.isInducing.continuousOn_iff

@@ -68,9 +68,9 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
     (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g • e = e) :
     IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) := by
   letI : TopologicalSpace G := ⊥; have : DiscreteTopology G := ⟨rfl⟩
-  suffices ∀ x ∈ f '' {e | MulAction.stabilizer G e = ⊥}, ∃ t : Trivialization G f, x ∈ t.baseSet by
-    choose t ht using this; exact IsCoveringMapOn.mk _ _ (fun _ ↦ G) t ht
-  rintro x ⟨e, he, rfl⟩
+  suffices ∀ x : f '' {e | MulAction.stabilizer G e = ⊥}, ∃ t : Trivialization G f, x.1 ∈ t.baseSet
+    by choose t ht using this; exact IsCoveringMapOn.mk _ _ (fun _ ↦ G) t ht
+  rintro ⟨_, e, he, rfl⟩
   obtain ⟨U, heU, hU⟩ := disjoint e
   refine ⟨hf.trivializationOfSMulDisjoint hfG (interior U) isOpen_interior
     fun g hg ↦ ?_, e, mem_interior_iff_mem_nhds.mpr heU, rfl⟩

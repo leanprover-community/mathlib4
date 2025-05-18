@@ -65,6 +65,11 @@ theorem to_isEvenlyCovered_preimage {x : X} {I : Type*} [TopologicalSpace I]
           (Classical.choose_spec h2)).isEmbedding.discreteTopology,
     _, h.mem_toTrivialization_baseSet⟩
 
+theorem restrictPreimage {x : X} {I : Type*} [TopologicalSpace I] (s : Set X) (hxs : x ∈ s)
+    (h : IsEvenlyCovered f x I) : IsEvenlyCovered (s.restrictPreimage f) ⟨x, hxs⟩ I :=
+  have ⟨inst, t, hxt⟩ := h
+  ⟨inst, t.restrictPreimage ⟨x, hxs, hxt⟩, hxt⟩
+
 end IsEvenlyCovered
 
 /-- A covering map is a continuous function `f : E → X` with discrete fibers such that each point
@@ -74,10 +79,10 @@ def IsCoveringMapOn :=
 
 namespace IsCoveringMapOn
 
-theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [hF : ∀ x, DiscreteTopology (F x)]
-    (e : ∀ x ∈ s, Trivialization (F x) f) (h : ∀ (x : X) (hx : x ∈ s), x ∈ (e x hx).baseSet) :
-    IsCoveringMapOn f s := fun x hx =>
-  IsEvenlyCovered.to_isEvenlyCovered_preimage ⟨hF x, e x hx, h x hx⟩
+theorem mk (F : s → Type*) [∀ x, TopologicalSpace (F x)] [hF : ∀ x, DiscreteTopology (F x)]
+    (e : ∀ x, Trivialization (F x) f) (h : ∀ x, x.1 ∈ (e x).baseSet) :
+    IsCoveringMapOn f s := fun x hx ↦
+  IsEvenlyCovered.to_isEvenlyCovered_preimage ⟨hF ⟨x, hx⟩, e ⟨x, hx⟩, h ⟨x, hx⟩⟩
 
 variable {f} {s}
 
@@ -113,6 +118,24 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
         (hf (f x) hx).toTrivialization_apply⟩,
       fun p h => (e.proj_toFun p h.1).symm⟩
 
+theorem restrictPreimage (hf : IsCoveringMapOn f s) (t : Set X) :
+    IsCoveringMapOn (t.restrictPreimage f) (Subtype.val ⁻¹' s) := by
+  choose d triv mem using hf
+  have (x : (fun x : t ↦ x.1) ⁻¹' s) : DiscreteTopology (f ⁻¹' {x.1.1}) := d _ x.2
+  exact .mk _ _ _ (fun x ↦ (triv _ x.2).restrictPreimage ⟨x, x.1.2, mem ..⟩) fun _ ↦ mem ..
+
+theorem comp_homeomorph (hf : IsCoveringMapOn f s) {E'} [TopologicalSpace E'] (h : E' ≃ₜ E) :
+    IsCoveringMapOn (f ∘ h) s := by
+  choose d triv mem using hf
+  have (x : s) : DiscreteTopology (f ⁻¹' {x.1}) := d _ x.2
+  exact .mk _ _ _ (fun x ↦ (triv _ x.2).compHomeomorph _) fun _ ↦ mem ..
+
+theorem homeomorph_comp (hf : IsCoveringMapOn f s) {Y} [TopologicalSpace Y] (h : X ≃ₜ Y) :
+    IsCoveringMapOn (h ∘ f) (h.symm ⁻¹' s) := by
+  choose d triv mem using hf
+  have (x : h.symm ⁻¹' s) : DiscreteTopology (f ⁻¹' {h.symm x.1}) := d _ x.2
+  exact .mk _ _ _ (fun x ↦ (triv _ x.2).homeomorphComp _) fun _ ↦ mem ..
+
 end IsCoveringMapOn
 
 /-- A covering map is a continuous function `f : E → X` with discrete fibers such that each point
@@ -129,14 +152,24 @@ protected theorem IsCoveringMap.isCoveringMapOn (hf : IsCoveringMap f) :
     IsCoveringMapOn f Set.univ :=
   isCoveringMap_iff_isCoveringMapOn_univ.mp hf
 
+theorem IsCoveringMapOn.isCoveringMap_restrictPreimage (hf : IsCoveringMapOn f s) :
+    IsCoveringMap (s.restrictPreimage f) :=
+  isCoveringMap_iff_isCoveringMapOn_univ.mpr <| by simpa using hf.restrictPreimage s
+
+theorem IsCoveringMapOn.of_isCoveringMap_restrictPreimage (hs : IsOpen s)
+    (hf : IsCoveringMap (s.restrictPreimage f)) : IsCoveringMapOn f s := by
+  choose d triv mem using hf
+  let this (x : s) := (triv x).extend hs ⟨x, x.2⟩
+  have := IsCoveringMapOn.mk f s (fun x ↦ s.restrictPreimage f ⁻¹' {x}) triv
+  refine .mk _ _ _ triv ?_
+
 variable (f)
 
 namespace IsCoveringMap
 
 theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTopology (F x)]
     (e : ∀ x, Trivialization (F x) f) (h : ∀ x, x ∈ (e x).baseSet) : IsCoveringMap f :=
-  isCoveringMap_iff_isCoveringMapOn_univ.mpr
-    (IsCoveringMapOn.mk f Set.univ F (fun x _ => e x) fun x _ => h x)
+  isCoveringMap_iff_isCoveringMapOn_univ.mpr (IsCoveringMapOn.mk f Set.univ (F ·) (e ·) (h ·))
 
 variable {f}
 variable (hf : IsCoveringMap f)
@@ -187,6 +220,18 @@ theorem constOn_of_comp (hs : IsPreconnected s) (cont : ContinuousOn g s)
     (he : ∀ a ∈ s, ∀ a' ∈ s, f (g a) = f (g a'))
     {a a'} (ha : a ∈ s) (ha' : a' ∈ s) : g a = g a' :=
   hf.isSeparatedMap.constOn_of_comp hf.isLocalHomeomorph.isLocallyInjective hs cont he ha ha'
+
+theorem restrictPreimage (t : Set X) : IsCoveringMap (t.restrictPreimage f) := by
+  rw [isCoveringMap_iff_isCoveringMapOn_univ] at hf ⊢
+  exact hf.restrictPreimage t
+
+theorem comp_homeomorph {E'} [TopologicalSpace E'] (h : E' ≃ₜ E) : IsCoveringMap (f ∘ h) := by
+  rw [isCoveringMap_iff_isCoveringMapOn_univ] at hf ⊢
+  exact hf.comp_homeomorph h
+
+theorem homeomorph_comp {Y} [TopologicalSpace Y] (h : X ≃ₜ Y) : IsCoveringMap (h ∘ f) := by
+  rw [isCoveringMap_iff_isCoveringMapOn_univ] at hf ⊢
+  exact hf.homeomorph_comp h
 
 end IsCoveringMap
 
