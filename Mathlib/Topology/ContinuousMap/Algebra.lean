@@ -532,20 +532,8 @@ instance [SMul R M] [ContinuousConstSMul R M] : ContinuousConstSMul R C(α, M) w
 
 @[to_additive]
 instance [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
-    ContinuousSMul R C(α, M) := by
-  constructor
-  simp_rw [continuous_iff_continuousAt, ContinuousAt, ContinuousMap.tendsto_nhds_compactOpen]
-  rintro ⟨r, f⟩ K hK U hU H
-  have : Set.MapsTo (fun p : R × M ↦ p.1 • p.2) ({r} ×ˢ (f '' K)) U := by
-    simpa [Set.MapsTo, forall_comm (α := M), forall_comm (β := _ = _)]
-  have := continuous_smul.tendsto_nhdsSet this hU.mem_nhdsSet_self
-  rw [isCompact_singleton.nhdsSet_prod_eq (hK.image f.continuous), nhdsSet_singleton,
-    Filter.mem_map, ((nhds_basis_opens _).prod (hasBasis_nhdsSet _)).mem_iff] at this
-  obtain ⟨⟨V, W⟩, ⟨⟨hrV, hV⟩, hW, hKW⟩, hVW⟩ := this
-  refine Filter.eventually_of_mem (prod_mem_nhds (hV.mem_nhds hrV)
-    (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo'.mpr hKW))) ?_
-  rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
-  exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
+    ContinuousSMul R C(α, M) :=
+  ⟨(continuous_postcomp ⟨_, continuous_smul⟩).comp continuous_prodMk_const⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : ⇑(c • f) = c • ⇑f :=
