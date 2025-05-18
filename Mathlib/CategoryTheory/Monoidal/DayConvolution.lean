@@ -9,6 +9,29 @@ import Mathlib.CategoryTheory.Products.Associator
 /-!
 # Day convolution monoidal structure
 
+Given functors `F G : C ⥤ V` between two monoidal categories,
+this file defines a typeclass `DayConvolution` on functors `F` `G` that contains
+a functor `F ⊛ G`, as well as the required data to exhibit `F ⊛ G` as a pointwise
+left Kan extension of `F ⊠ G` (see `CategoryTheory/Monoidal/ExternalProduct` for the definition)
+along the tensor product of `C`. Such a functor is called a Day convolution of `F` and `G`, and
+although we do not show it yet, this operation defines a monoidal structure on `C ⥤ V`.
+
+We also define a typeclass `DayConvolutionUnit` on a functor `U : C ⥤ V` that bundle the data
+required to make it a unit for the Day convolution monoidal structure: said data is that of
+a map `𝟙_ V ⟶ U.obj (𝟙_ C)` that exhibits `U` as a pointwise left Kan extension of
+`fromPUnit (𝟙_ V)` along `fromPUnit (𝟙_ C)`.
+
+## References
+- [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
+
+## TODOs (@robin-carlier)
+- Define associators and unitors, prove the pentagon and triangle identities.
+- Braided/symmetric case.
+- Case where `V` is closed.
+- Define a typeclass `DayConvolutionMonoidalCategory` extending `MonoidalCategory`
+- Characterization of lax monoidal functors out of a day convolution monoidal category.
+- Case `V = Type u` and its universal property.
+
 -/
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
