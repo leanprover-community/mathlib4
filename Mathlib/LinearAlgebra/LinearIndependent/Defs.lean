@@ -494,7 +494,7 @@ It is simply one direction of `LinearIndependent.linearCombinationEquiv`. -/
 def LinearIndependent.repr (hv : LinearIndependent R v) : span R (range v) →ₗ[R] ι →₀ R :=
   hv.linearCombinationEquiv.symm
 
-variable (hv : LinearIndependent R v)
+variable (hv : LinearIndependent R v) {i : ι}
 
 @[simp]
 theorem LinearIndependent.linearCombination_repr (x) :
@@ -543,13 +543,34 @@ theorem LinearIndependent.span_repr_eq [Nontrivial R] (x) :
   ext ⟨_, ⟨i, rfl⟩⟩
   simp [← p]
 
-theorem LinearIndependent.not_smul_mem_span (hv : LinearIndependent R v) (i : ι) (a : R)
+theorem LinearIndependent.eq_zero_of_smul_mem_span (hv : LinearIndependent R v) (i : ι) (a : R)
     (ha : a • v i ∈ span R (v '' (univ \ {i}))) : a = 0 := by
   rw [Finsupp.span_image_eq_map_linearCombination, mem_map] at ha
   rcases ha with ⟨l, hl, e⟩
   rw [linearIndependent_iffₛ.1 hv l (Finsupp.single i a) (by simp [e])] at hl
   by_contra hn
   exact (not_mem_of_mem_diff (hl <| by simp [hn])) (mem_singleton _)
+
+@[deprecated (since := "2025-05-13")]
+alias LinearIndependent.not_smul_mem_span := LinearIndependent.eq_zero_of_smul_mem_span
+
+nonrec lemma LinearIndepOn.eq_zero_of_smul_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) (a : R)
+    (ha : a • v i ∈ span R (v '' (s \ {i}))) : a = 0 :=
+  hv.eq_zero_of_smul_mem_span ⟨i, hi⟩ _ <| by
+    simpa [← comp_def, image_comp, image_diff Subtype.val_injective]
+
+variable [Nontrivial R]
+
+lemma LinearIndependent.not_mem_span (hv : LinearIndependent R v) (i : ι) :
+    v i ∉ span R (v '' {i}ᶜ) := fun hi ↦
+  one_ne_zero <| hv.eq_zero_of_smul_mem_span i 1 <| by simpa [Set.compl_eq_univ_diff] using hi
+
+lemma LinearIndepOn.not_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) :
+    v i ∉ span R (v '' (s \ {i})) := fun hi' ↦
+  one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by  simpa [Set.compl_eq_univ_diff] using hi'
+
+lemma LinearIndepOn.not_mem_span_of_insert (hv : LinearIndepOn R v (insert i s)) (hi : i ∉ s) :
+    v i ∉ span R (v '' s) := by simpa [hi] using hv.not_mem_span <| mem_insert ..
 
 end repr
 
@@ -761,9 +782,9 @@ variable [Module R M] [Module R M']
 
 open LinearMap
 
-theorem linearIndependent_iff_not_smul_mem_span :
+theorem linearIndependent_iff_eq_zero_of_smul_mem_span :
     LinearIndependent R v ↔ ∀ (i : ι) (a : R), a • v i ∈ span R (v '' (univ \ {i})) → a = 0 :=
-  ⟨fun hv ↦ hv.not_smul_mem_span, fun H =>
+  ⟨fun hv ↦ hv.eq_zero_of_smul_mem_span, fun H =>
     linearIndependent_iff.2 fun l hl => by
       ext i; simp only [Finsupp.zero_apply]
       by_contra hn
@@ -795,7 +816,7 @@ open Submodule
 
 theorem linearIndependent_iff_not_mem_span :
     LinearIndependent K v ↔ ∀ i, v i ∉ span K (v '' (univ \ {i})) := by
-  apply linearIndependent_iff_not_smul_mem_span.trans
+  apply linearIndependent_iff_eq_zero_of_smul_mem_span.trans
   constructor
   · intro h i h_in_span
     apply one_ne_zero (h i 1 (by simp [h_in_span]))
