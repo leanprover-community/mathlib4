@@ -390,7 +390,12 @@ theorem eq_mul_weierstrassDiv_add_weierstrassMod
   exact ((IsWeierstrassDivisor.of_map_ne_zero hg).isWeierstrassDivisionAt_div_mod f).2
 
 variable {f} in
-/-- The quotient `q` and the remainder `r` in the Weierstrass division are unique. -/
+/-- The quotient `q` and the remainder `r` in the Weierstrass division are unique.
+
+This result is stated using two `PowerSeries.IsWeierstrassDivision` assertions, and only requires
+the ring being Hausdorff with respect to the maximal ideal. If you want `q` and `r` equal to
+`f /ʷ g` and `f %ʷ g`, use `PowerSeries.IsWeierstrassDivision.eq_weierstrassDiv_weierstrassMod`
+instead, which requires the ring being complete with respect to the maximal ideal. -/
 theorem IsWeierstrassDivision.elim [IsHausdorff (IsLocalRing.maximalIdeal A) A]
     {q q' : A⟦X⟧} {r r' : A[X]}
     (H : f.IsWeierstrassDivision g q r) (H2 : f.IsWeierstrassDivision g q' r') : q = q' ∧ r = r' :=
