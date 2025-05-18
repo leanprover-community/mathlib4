@@ -75,7 +75,7 @@ namespace Limits
 
 section Fintype
 
-variable {J : Type} [Fintype J]
+variable {J : Type*} [Fintype J]
 
 /-- In a preadditive category, we can construct a biproduct for `f : J → C` from
 any bicone `b` for `f` satisfying `total : ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.X`.
@@ -165,7 +165,7 @@ end Fintype
 
 section Finite
 
-variable {J : Type} [Finite J]
+variable {J : Type*} [Finite J]
 
 /-- In a preadditive category, if the product over `f : J → C` exists,
     then the biproduct over `f` exists. -/
@@ -851,7 +851,7 @@ namespace Limits
 
 section Finite
 
-variable {J : Type} [Finite J]
+variable {J : Type*} [Finite J]
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
     preserves finite products. -/
