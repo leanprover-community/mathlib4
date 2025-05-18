@@ -29,14 +29,14 @@ of the corresponding predicates for Fréchet derivatives:
 
 - `HasStrictDerivAt f f' x` states that the function `f` has the derivative `f'`
   at the point `x` in the sense of strict differentiability, i.e.,
- `f y - f z = (y - z) • f' + o (y - z)` as `y, z → x`.
+  `f y - f z = (y - z) • f' + o (y - z)` as `y, z → x`.
 
 For the last two notions we also define a functional version:
 
 - `derivWithin f s x` is a derivative of `f` at `x` within `s`. If the
   derivative does not exist, then `derivWithin f s x` equals zero.
 
- - `deriv f x` is a derivative of `f` at `x`. If the derivative does not
+- `deriv f x` is a derivative of `f` at `x`. If the derivative does not
   exist, then `deriv f x` equals zero.
 
 The theorems `fderivWithin_derivWithin` and `fderiv_deriv` show that the
@@ -743,8 +743,12 @@ theorem deriv_ofNat (n : ℕ) [OfNat F n] : deriv (ofNat(n) : 𝕜 → F) = 0 :=
   funext fun _ => deriv_const _ _
 
 @[simp]
-theorem derivWithin_const : derivWithin (fun _ => c) s = 0 := by
+theorem derivWithin_fun_const : derivWithin (fun _ => c) s = 0 := by
   ext; simp [derivWithin]
+
+@[simp]
+theorem derivWithin_const : derivWithin (Function.const 𝕜 c) s = 0 :=
+  derivWithin_fun_const _ _
 
 @[simp]
 theorem derivWithin_zero : derivWithin (0 : 𝕜 → F) s = 0 := derivWithin_const _ _
