@@ -323,6 +323,11 @@ def removeMonkeyTries (results : Std.HashMap SyntaxCoord MonkeyTryResult') (s : 
             tacticOfTacticSeq tacs
           else
             pure tac
+        | `(tactic| done) =>
+          if initGoals == 0 then
+            `(tactic| skip)
+          else
+            pure tac
         | _ =>
           pure tac
       | (.mixed, _, _, _, _) => `(tactic| try $tac:tactic)
@@ -425,11 +430,14 @@ def collectMonkeyActionsFor (stx : Syntax) : MonkeyCollectM Unit := do
       addMonkeyActionFor stx 1 do `(tactic| omega)
       addMonkeyActionFor stx 1 do `(tactic| trivial)
       addMonkeyActionFor stx 1 do `(tactic| contradiction)
+      addMonkeyActionFor stx 1 do `(tactic| decide)
+      addMonkeyActionFor stx 1 do `(tactic| (simp [*]; done)) -- successful `done`s are removed
 
       -- Replace with other tactics
       addMonkeyActionFor stx 1 do `(tactic| ring_nf)
       addMonkeyActionFor stx 1 do `(tactic| norm_num only)
       addMonkeyActionFor stx 1 do `(tactic| norm_cast)
+      addMonkeyActionFor stx 1 do `(tactic| subst_vars)
 
       if let `(tactic| rw $c:optConfig [$[$rules:rwRule],*] $[$l?:location]?) := stx then
         -- If it's `rw`, try knocking out lemmas, both by deletion and by splitting
@@ -542,18 +550,18 @@ def estimatedSyntaxComplexity (env : Environment) (s : Syntax) : Nat :=
       if tacticKinds.contains kind then
         match s with
         | `(tactic| rw $_:optConfig [$[$rules:rwRule],*] $[$_:location]?) =>
-          acc + rules.size
-        | _ => args.foldl (init := acc + 1) visit
+          acc + 1000 * rules.size
+        | _ => args.foldl (init := acc + 1000) visit
       else
-        args.foldl (init := acc) visit
-    | _ => acc
+        args.foldl (init := acc + 1) visit
+    | _ => acc + 1
   visit 0 s
 
 structure MonkeyHammerConfig where
   -- totalHeartbeats : Nat := 20000000000
   heartbeatCap : Nat := 200000000
-  poolSize : Nat := 5
-  numRuns : Nat := 20
+  poolSize : Nat := 3
+  numRuns : Nat := 10
   stepsPerRun : Nat := 10
 
 --declare_command_config_elab elabMonkeyHammerConfig MonkeyHammerConfig
@@ -580,10 +588,11 @@ def monkeyHammer (cmd : Command) (config : MonkeyHammerConfig) :
       if cpl ≤ pool[pool.size - 1]!.1 * 6/5 then
         pool := pool.set! (pool.size - 1) (cpl, cmd'')
   pool := pool.qsort (fun a b => a.1 < b.1)
+  logInfo m!"pool:{pool}"
   let bestCplx := pool[0]!.1
   let mut results := #[]
   for (cplx', cmd') in pool do
-    if cplx' ≤ cmdCplx && cplx' ≤ bestCplx * 6/5 && cmd' != cmd then
+    if cplx' ≤ cmdCplx * 6/5 && cplx' ≤ bestCplx * 6/5 && cmd' != cmd then
       unless results.contains cmd' do
         results := results.push cmd'
   return results
@@ -637,4 +646,7 @@ end Mathlib.Tactic.Monkeyhammer
 --   let a := 21
 --   skip <;> simp <;> skip
 
--- example (n m : Nat) : n * m + 1 = 1 + m * n := by ring_nf
+-- #monkeyhammer
+-- example (x y z : Int) (h1 : 2 = x) (h2 : y = 3) (h3 : z = 5) : x + y + z ≤ 20 := by
+--   rw [← h1, h2, h3]
+--   decide
