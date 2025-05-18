@@ -552,13 +552,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           ext x
           rw [l₂]
           exact rfl
-        have ttt : i_weight ∈ H.root := by
-          simp
-          exact h₁
-        have qqqq : ∃ (j : H.root), S.root j = i := by
-          apply needed
-          exact l₂
-          exact h₀
+        have qqqq : ∃ (j : H.root), S.root j = i := needed (K := K) (L := L) (H := H) i l₂ h₀
         obtain ⟨j, hj⟩ := qqqq
         have qqqq2 : j ∈ Φ := by
           by_contra hc
