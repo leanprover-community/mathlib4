@@ -43,7 +43,7 @@ instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) <| S
 @[simp] lemma kerι_apply (x) : kerι φ x = x.1 := rfl
 
 /-- `TopModuleCat.ker` is indeed the kernel in `TopModuleCat R`. -/
-def isLimit_ker : IsLimit (KernelFork.ofι (kerι φ) (kerι_comp φ)) :=
+def isLimitKer : IsLimit (KernelFork.ofι (kerι φ) (kerι_comp φ)) :=
   isLimitAux (KernelFork.ofι (kerι φ) (kerι_comp φ))
     (fun s ↦ ofHom <| (Fork.ι s).hom.codRestrict (LinearMap.ker φ.hom) fun m ↦ by
       rw [LinearMap.mem_ker, ← ConcreteCategory.comp_apply (Fork.ι s) φ,
@@ -74,7 +74,7 @@ instance : Epi (cokerπ φ) := ConcreteCategory.epi_of_surjective (cokerπ φ) (
   simp
 
 /-- `TopModuleCat.coker` is indeed the cokernel in `TopModuleCat R`. -/
-def isColimit_coker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ φ)) :=
+def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ φ)) :=
   isColimitAux (.ofπ (cokerπ φ) (comp_cokerπ φ))
   (fun s ↦ ofHom <|
     { toLinearMap := (LinearMap.range φ.hom).liftQ s.π.hom.toLinearMap
@@ -89,8 +89,8 @@ end cokernel
 instance : CategoryWithHomology (TopModuleCat R) := by
   constructor
   intro S
-  let D₁ : S.LeftHomologyData := ⟨_, _, _, _, _, isLimit_ker _, by simp, isColimit_coker _⟩
-  let D₂ : S.RightHomologyData := ⟨_, _, _, _, by simp, isColimit_coker _, _, isLimit_ker _⟩
+  let D₁ : S.LeftHomologyData := ⟨_, _, _, _, _, isLimitKer _, by simp, isColimitCoker _⟩
+  let D₂ : S.RightHomologyData := ⟨_, _, _, _, by simp, isColimitCoker _, _, isLimitKer _⟩
   let F := ShortComplex.leftRightHomologyComparison' D₁ D₂
   suffices IsIso F from ⟨⟨.ofIsIsoLeftRightHomologyComparison' D₁ D₂⟩⟩
   have hF : Function.Bijective F := by
