@@ -442,7 +442,7 @@ export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 
 section
 
-variable (Γ) {T} [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinuousSMul Γ T] (x : T)
+variable (Γ T : Type*) {T} [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinuousSMul Γ T] (x : T)
 
 @[to_additive] lemma ProperlyDiscontinuousSMul.finite_stabilizer' : {γ : Γ | γ • x = x}.Finite := by
   simp_rw [←mem_singleton_iff, ←singleton_inter_nonempty, ←image_singleton, nonempty_iff_ne_empty]
