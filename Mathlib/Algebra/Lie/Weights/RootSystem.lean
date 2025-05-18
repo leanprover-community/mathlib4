@@ -481,10 +481,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         simp only [Submodule.mem_bot, and_not_self, Set.setOf_false, Set.mem_empty_iff_false,
           Set.iUnion_of_empty, Set.iUnion_empty, LieSubalgebra.span_empty] at hy
         exact hy
-      simp only [this, Submodule.mem_bot, and_not_self, Set.setOf_false, Set.mem_empty_iff_false,
-        Set.iUnion_of_empty, Set.iUnion_empty, LieSubalgebra.span_empty,
-        LieSubalgebra.bot_toSubmodule, Submodule.bot_toAddSubmonoid, lie_zero,
-        AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, AddSubmonoid.mem_bot]
+      simp [this]
     let S := rootSystem H
     obtain ⟨Φ, b, c⟩ := S.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q hq
     have hΦ₂ : S.root '' Φ ⊆ q := by
@@ -510,16 +507,6 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       have h₂ : (S.coroot' i) (S.root i) = 0 := (c i hc.1) hc.2
       rw [h₁] at h₂
       field_simp at h₂
-
-    have rrr : (∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i)) → q = ⊥ := by
-      intro h
-      have h₁ : q ≤ ⨅ i, LinearMap.ker (S.coroot' i) := by
-        apply le_iInf
-        intro i
-        exact h i
-      rw [S.iInf_ker_coroot'_eq, RootPairing.span_coroot'_eq_top S,
-        Submodule.dualCoannihilator_top] at h₁
-      exact (Submodule.eq_bot_iff q).mpr h₁
     let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
     let I := LieSubalgebra.lieSpan K L g
     simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Submodule.carrier_eq_coe,
@@ -545,18 +532,17 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         · rw [h0] at hx'
           rw [hx']
           refine Set.mem_iUnion₂.mpr ?_
-          have tt : Φ ≠ ∅ := by
-            by_contra hc
-            rw [hc] at c
-            have rrr2 : ∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i) := by
-              intro i
-              exact c i (by simp)
-            have := rrr rrr2
-            contradiction
-          obtain ⟨i, hi⟩ := Set.nonempty_iff_ne_empty.2 tt
-          use i
-          use hi
-          simp
+          have : Φ ≠ ∅ := by
+            intro hΦ
+            rw [hΦ] at c
+            have hq : ∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i) := fun i => c i (by simp)
+            have : q ≤ ⨅ i, LinearMap.ker (S.coroot' i) := le_iInf hq
+            rw [S.iInf_ker_coroot'_eq, RootPairing.span_coroot'_eq_top S,
+              Submodule.dualCoannihilator_top] at this
+            apply False.elim (hn ((Submodule.eq_bot_iff q).mpr this))
+          obtain ⟨i, hi⟩ := Set.nonempty_iff_ne_empty.mpr this
+          use i, hi
+          simp only [SetLike.mem_coe, LieSubmodule.zero_mem]
         let i_weight : Weight K H L := ⟨i, h0⟩
         have ttt0 : i_weight.IsNonZero := by
           obtain ⟨l1, l2⟩ := hΦ
