@@ -3,9 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Ring.Defs
 

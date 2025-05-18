@@ -15,28 +15,28 @@ Weierstrass curves defined in `Mathlib.AlgebraicGeometry.EllipticCurve.DivisionP
 ## Mathematical background
 
 Let `W` be a Weierstrass curve over a commutative ring `R`. By strong induction,
- * `preΨₙ` has leading coefficient `n / 2` and degree `(n² - 4) / 2` if `n` is even,
- * `preΨₙ` has leading coefficient `n` and degree `(n² - 1) / 2` if `n` is odd,
- * `ΨSqₙ` has leading coefficient `n²` and degree `n² - 1`, and
- * `Φₙ` has leading coefficient `1` and degree `n²`.
+* `preΨₙ` has leading coefficient `n / 2` and degree `(n² - 4) / 2` if `n` is even,
+* `preΨₙ` has leading coefficient `n` and degree `(n² - 1) / 2` if `n` is odd,
+* `ΨSqₙ` has leading coefficient `n²` and degree `n² - 1`, and
+* `Φₙ` has leading coefficient `1` and degree `n²`.
 
 In particular, when `R` is an integral domain of characteristic different from `n`, the univariate
 polynomials `preΨₙ`, `ΨSqₙ`, and `Φₙ` all have their expected leading terms.
 
 ## Main statements
 
- * `WeierstrassCurve.natDegree_preΨ_le`: the degree bound `d` of `preΨₙ`.
- * `WeierstrassCurve.coeff_preΨ`: the `d`-th coefficient of `preΨₙ`.
- * `WeierstrassCurve.natDegree_preΨ`: the degree of `preΨₙ` when `n ≠ 0`.
- * `WeierstrassCurve.leadingCoeff_preΨ`: the leading coefficient of `preΨₙ` when `n ≠ 0`.
- * `WeierstrassCurve.natDegree_ΨSq_le`: the degree bound `d` of `ΨSqₙ`.
- * `WeierstrassCurve.coeff_ΨSq`: the `d`-th coefficient of `ΨSqₙ`.
- * `WeierstrassCurve.natDegree_ΨSq`: the degree of `ΨSqₙ` when `n ≠ 0`.
- * `WeierstrassCurve.leadingCoeff_ΨSq`: the leading coefficient of `ΨSqₙ` when `n ≠ 0`.
- * `WeierstrassCurve.natDegree_Φ_le`: the degree bound `d` of `Φₙ`.
- * `WeierstrassCurve.coeff_Φ`: the `d`-th coefficient of `Φₙ`.
- * `WeierstrassCurve.natDegree_Φ`: the degree of `Φₙ` when `n ≠ 0`.
- * `WeierstrassCurve.leadingCoeff_Φ`: the leading coefficient of `Φₙ` when `n ≠ 0`.
+* `WeierstrassCurve.natDegree_preΨ_le`: the degree bound `d` of `preΨₙ`.
+* `WeierstrassCurve.coeff_preΨ`: the `d`-th coefficient of `preΨₙ`.
+* `WeierstrassCurve.natDegree_preΨ`: the degree of `preΨₙ` when `n ≠ 0`.
+* `WeierstrassCurve.leadingCoeff_preΨ`: the leading coefficient of `preΨₙ` when `n ≠ 0`.
+* `WeierstrassCurve.natDegree_ΨSq_le`: the degree bound `d` of `ΨSqₙ`.
+* `WeierstrassCurve.coeff_ΨSq`: the `d`-th coefficient of `ΨSqₙ`.
+* `WeierstrassCurve.natDegree_ΨSq`: the degree of `ΨSqₙ` when `n ≠ 0`.
+* `WeierstrassCurve.leadingCoeff_ΨSq`: the leading coefficient of `ΨSqₙ` when `n ≠ 0`.
+* `WeierstrassCurve.natDegree_Φ_le`: the degree bound `d` of `Φₙ`.
+* `WeierstrassCurve.coeff_Φ`: the `d`-th coefficient of `Φₙ`.
+* `WeierstrassCurve.natDegree_Φ`: the degree of `Φₙ` when `n ≠ 0`.
+* `WeierstrassCurve.leadingCoeff_Φ`: the leading coefficient of `Φₙ` when `n ≠ 0`.
 
 ## References
 
@@ -199,7 +199,7 @@ private lemma natDegree_coeff_preΨ' (n : ℕ) :
   let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_of_natDegree_le
   let cp {m n p} : _ → (p ^ m : R[X]).coeff (m * n) = _ := coeff_pow_of_natDegree_le
   induction n using normEDSRec with
-  | zero => simpa only [preΨ'_zero] using ⟨by rfl, Int.cast_zero.symm⟩
+  | zero => simpa only [preΨ'_zero] using ⟨natDegree_zero.le, Int.cast_zero.symm⟩
   | one => simpa only [preΨ'_one] using ⟨natDegree_one.le, coeff_one_zero.trans Int.cast_one.symm⟩
   | two => simpa only [preΨ'_two] using ⟨natDegree_one.le, coeff_one_zero.trans Int.cast_one.symm⟩
   | three => simpa only [preΨ'_three] using ⟨W.natDegree_Ψ₃_le, W.coeff_Ψ₃ ▸ Int.cast_three.symm⟩
@@ -251,7 +251,7 @@ lemma natDegree_preΨ' {n : ℕ} (h : (n : R) ≠ 0) :
 lemma natDegree_preΨ'_pos {n : ℕ} (hn : 2 < n) (h : (n : R) ≠ 0) : 0 < (W.preΨ' n).natDegree := by
   simp only [W.natDegree_preΨ' h, Nat.div_pos_iff, zero_lt_two, true_and]
   split_ifs <;>
-    exact Nat.AtLeastTwo.prop.trans <| Nat.sub_le_sub_right (Nat.pow_le_pow_of_le_left hn 2) _
+    exact Nat.AtLeastTwo.prop.trans <| Nat.sub_le_sub_right (Nat.pow_le_pow_left hn 2) _
 
 @[simp]
 lemma leadingCoeff_preΨ' {n : ℕ} (h : (n : R) ≠ 0) :

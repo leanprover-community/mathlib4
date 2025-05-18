@@ -28,7 +28,7 @@ we first study the case where `F` is the identity functor.
 In this case where we have a morphism of presheaves of commutative
 rings `φ' : S' ⟶ R`, we construct a derivation
 `DifferentialsConstruction.derivation'` which is universal.
-Then, the general case (TODO) shall be obtained by observing that
+Then, the general case is obtained by observing that
 derivations for `S ⟶ F.op ⋙ R` identify to derivations
 for `S' ⟶ R` where `S'` is the pullback by `F` of the presheaf of
 commutative rings `S` (the data is the same: it suffices
@@ -145,8 +145,8 @@ lemma d_int_eq_zero (X : Dᵒᵖ) (n : ℤ) : d.d (X := X) n = 0 := by
 lemma d_ulift_int_eq_zero (X : Dᵒᵖ) (f : CommRingCat.of (ULift.{u} ℤ) ⟶ R.obj X)
     (n : ULift.{u} ℤ) :
     d.d (X := X) (f n) = 0 := by
-  obtain rfl := CommRingCat.isInitial.hom_ext f
-    ((Int.castRingHom _).comp ULift.ringEquiv.toRingHom)
+  obtain ⟨f, rfl⟩ := CommRingCat.isInitial.hom_ext f
+    (CommRingCat.ofHom ((Int.castRingHom (R.obj X)).comp ULift.ringEquiv.toRingHom))
   apply d_int_eq_zero
 
 /-- The postcomposition of a derivation by a morphism of presheaves of modules. -/
@@ -156,7 +156,8 @@ def postcomp (f : M ⟶ N) : N.Derivation φ where
   d_map {X Y} g x := by simpa using naturality_apply f g (d.d x)
   d_app {X} a := by
     dsimp
-    erw [d_app, map_zero]
+    erw [d_app]
+    rw [map_zero]
 
 variable (N) in
 @[simp]
@@ -242,20 +243,21 @@ noncomputable def universalUniversalDerivation : (universalDerivation φ).Univer
 
 end
 
-/--  Given a morphism of presheaf of commutative rings `φ : S ⟶ F.op ⋙ R`,
+/-- Given a morphism of presheaf of commutative rings `φ : S ⟶ F.op ⋙ R`,
 this is functor which sends a presheaf of modules `M` to the abelian group `M.Derivation φ`. -/
-@[simps obj]
+@[simps]
 def derivationFunctor :
     PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat) ⥤ Ab where
   obj M := AddCommGrp.of (M.Derivation φ)
-  map f := AddMonoidHom.mk' (fun d ↦ d.postcomp f) (by aesop_cat)
+  map f := AddCommGrp.ofHom (AddMonoidHom.mk' (fun d ↦ d.postcomp f) (by aesop_cat))
 
-@[simp]
-lemma derivationFunctor_map_apply
-    {M N : PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat)} (f : M ⟶ N)
-    (d : M.Derivation φ) :
-    DFunLike.coe (α := M.Derivation φ) (β := fun _ ↦ N.Derivation φ)
-      ((derivationFunctor φ).map f) d = d.postcomp f := rfl
+--@[simp]
+--lemma derivationFunctor_map_apply
+--    {M N : PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat)} (f : M ⟶ N)
+--    (d : M.Derivation φ) :
+--    0 = 1 := sorry
+    --DFunLike.coe (α := M.Derivation φ) (β := fun _ ↦ N.Derivation φ)
+    --  ((derivationFunctor φ).map f) d = d.postcomp f := rfl
 
 namespace Derivation
 
@@ -348,11 +350,12 @@ namespace DifferentialsConstruction
 
 /-- The presheaf of relative differentials of a morphism of presheaves of
 commutative rings. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 noncomputable def relativeDifferentials' :
     PresheafOfModules.{u} (R ⋙ forget₂ _ _) where
   obj X := CommRingCat.KaehlerDifferential (φ'.app X)
-  map f := CommRingCat.KaehlerDifferential.map (φ'.naturality f)
+  -- Have to hint `g' := R.map f` below, or it gets unfolded weirdly.
+  map f := CommRingCat.KaehlerDifferential.map (g' := R.map f) (φ'.naturality f)
   -- Without `dsimp`, `ext` doesn't pick up the right lemmas.
   map_id _ := by dsimp; ext; simp
   map_comp _ _ := by dsimp; ext; simp
@@ -363,7 +366,8 @@ attribute [simp] relativeDifferentials'_obj
 lemma relativeDifferentials'_map_d {X Y : Dᵒᵖ} (f : X ⟶ Y) (x : R.obj X) :
     DFunLike.coe (α := CommRingCat.KaehlerDifferential (φ'.app X))
       (β := fun _ ↦ CommRingCat.KaehlerDifferential (φ'.app Y))
-      ((relativeDifferentials' φ').map f).hom (CommRingCat.KaehlerDifferential.d x) =
+      (ModuleCat.Hom.hom (R := ↑(R.obj X)) ((relativeDifferentials' φ').map f))
+        (CommRingCat.KaehlerDifferential.d x) =
         CommRingCat.KaehlerDifferential.d (R.map f x) :=
   CommRingCat.KaehlerDifferential.map_d (φ'.naturality f) _
 
@@ -392,7 +396,7 @@ noncomputable def isUniversal' : (derivation' φ').Universal :=
       ext1 X
       exact CommRingCat.KaehlerDifferential.ext (Derivation.congr_d h))
 
-instance : HasDifferentials (F := 𝟭 D) φ' := (isUniversal' φ').hasDifferentials
+instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _, ⟨isUniversal' φ'⟩⟩
 
 end DifferentialsConstruction
 
@@ -429,7 +433,6 @@ protected noncomputable def pushforward : ((pushforwardψ).obj P).Derivation φ 
   d_mul {X} a b := by
     dsimp
     rw [map_mul, dφψ.d_mul]
-    rfl
   d_map {X Y} f a :=
     (congr_arg dφψ.d (congr_fun ((forget _).congr_map (ψ.naturality f)) a)).trans
       (dφψ.d_map _ _)
@@ -559,12 +562,13 @@ def absoluteDerivationEquiv
     { d := d.d
       d_mul := by simp
       d_map := by simp
-      d_app := by simp }
+      d_app _ := d.d_ulift_int_eq_zero _ _ _
+        }
   invFun d :=
     { d := d.d
       d_mul := by simp
       d_map := by simp
-      d_app := by simp }
+      d_app _ := d.d_ulift_int_eq_zero _ _ _ }
   left_inv _ := rfl
   right_inv _ := rfl
 

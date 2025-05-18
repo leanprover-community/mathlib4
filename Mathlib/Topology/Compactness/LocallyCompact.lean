@@ -7,10 +7,7 @@ import Mathlib.Topology.Compactness.Compact
 /-!
 # Locally compact spaces
 
-We define the following classes of topological spaces:
-* `WeaklyLocallyCompactSpace`: every point `x` has a compact neighborhood.
-* `LocallyCompactSpace`: for every point `x`, every open neighborhood of `x` contains a compact
-  neighborhood of `x`. The definition is formulated in terms of the neighborhood filter.
+This file contains basic results about locally compact spaces.
 -/
 
 open Set Filter Topology TopologicalSpace
@@ -40,9 +37,6 @@ protected theorem Topology.IsClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLo
   exists_compact_mem_nhds x :=
     let ⟨K, hK, hKx⟩ := exists_compact_mem_nhds (f x)
     ⟨f ⁻¹' K, hf.isCompact_preimage hK, hf.continuous.continuousAt hKx⟩
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.weaklyLocallyCompactSpace := IsClosedEmbedding.weaklyLocallyCompactSpace
 
 protected theorem IsClosed.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) : WeaklyLocallyCompactSpace s :=
@@ -90,7 +84,7 @@ instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     LocallyCompactSpace (X × Y) :=
   have := fun x : X × Y => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
- .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
+  .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
 
 section Pi
 
@@ -205,15 +199,9 @@ protected theorem Topology.IsClosedEmbedding.locallyCompactSpace [LocallyCompact
     (hf : IsClosedEmbedding f) : LocallyCompactSpace X :=
   hf.isInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.locallyCompactSpace := IsClosedEmbedding.locallyCompactSpace
-
 protected theorem Topology.IsOpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsOpenEmbedding f) : LocallyCompactSpace X :=
   hf.isInducing.locallyCompactSpace hf.isOpen_range.isLocallyClosed
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.locallyCompactSpace := IsOpenEmbedding.locallyCompactSpace
 
 protected theorem IsLocallyClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsLocallyClosed s) : LocallyCompactSpace s :=

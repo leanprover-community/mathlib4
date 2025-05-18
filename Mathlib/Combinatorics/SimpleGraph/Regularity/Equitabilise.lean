@@ -51,7 +51,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
   -- Prove the case `m > 0` by strong induction on `s`
-  induction' s using Finset.strongInduction with s ih generalizing a b
+  induction s using Finset.strongInduction generalizing a b with | H s ih => _
   -- If `a = b = 0`, then `s = ∅` and we can partition into zero parts
   by_cases hab : a = 0 ∧ b = 0
   · simp only [hab.1, hab.2, add_zero, zero_mul, eq_comm, card_eq_zero, Finset.bot_eq_empty] at hs
@@ -95,7 +95,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     · rw [hR₃, if_pos ha]
     rw [card_insert_of_not_mem, hR₃, if_neg ha, tsub_add_cancel_of_le]
     · exact hab.resolve_left ha
-    · intro H; exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
+    · intro H; exact ht.ne_empty (le_sdiff_right.1 <| R.le <| filter_subset _ _ H)
   push_neg at h
   obtain ⟨u, hu₁, hu₂⟩ := h
   obtain ⟨t, htu, htn⟩ := exists_subset_card_eq (hn₁.trans hu₂)
@@ -132,7 +132,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   split_ifs with h
   · rw [hR₃, if_pos h]
   · rw [card_insert_of_not_mem, hR₃, if_neg h, Nat.sub_add_cancel (hab.resolve_left h)]
-    intro H; exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
+    intro H; exact ht.ne_empty (le_sdiff_right.1 <| R.le <| filter_subset _ _ H)
 
 variable (h : a * m + b * (m + 1) = #s)
 

@@ -46,7 +46,7 @@ structure PreOneHypercover (S : C) where
   f (i : I₀) : X i ⟶ S
   /-- the index type of the coverings of the fibre products -/
   I₁ (i₁ i₂ : I₀) : Type w
-  /-- the objects in the coverings of the fibre products  -/
+  /-- the objects in the coverings of the fibre products -/
   Y ⦃i₁ i₂ : I₀⦄ (j : I₁ i₁ i₂) : C
   /-- the first projection `Y j ⟶ X i₁` -/
   p₁ ⦃i₁ i₂ : I₀⦄ (j : I₁ i₁ i₂) : Y j ⟶ X i₁
@@ -88,7 +88,7 @@ noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) [HasPullback (E.f i₁) (
 
 variable (i₁ i₂) in
 /-- The sieve of `pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
-def sieve₁' : Sieve (pullback (E.f i₁) (E.f i₂)) :=
+noncomputable def sieve₁' : Sieve (pullback (E.f i₁) (E.f i₂)) :=
   Sieve.ofArrows _ (fun (j : E.I₁ i₁ i₂) => E.toPullback j)
 
 lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
@@ -114,14 +114,18 @@ end
 /-- The sigma type of all `E.I₁ i₁ i₂` for `⟨i₁, i₂⟩ : E.I₀ × E.I₀`. -/
 abbrev I₁' : Type w := Sigma (fun (i : E.I₀ × E.I₀) => E.I₁ i.1 i.2)
 
+/-- The shape of the multiforks attached to `E : PreOneHypercover S`. -/
+@[simps]
+def multicospanShape : MulticospanShape where
+  L := E.I₀
+  R := E.I₁'
+  fst j := j.1.1
+  snd j := j.1.2
+
 /-- The diagram of the multifork attached to a presheaf
 `F : Cᵒᵖ ⥤ A`, `S : C` and `E : PreOneHypercover S`. -/
 @[simps]
-def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex A where
-  L := E.I₀
-  R := E.I₁'
-  fstTo j := j.1.1
-  sndTo j := j.1.2
+def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex E.multicospanShape A where
   left i := F.obj (Opposite.op (E.X i))
   right j := F.obj (Opposite.op (E.Y j.2))
   fst j := F.map ((E.p₁ j.2).op)
@@ -237,14 +241,14 @@ lemma preOneHypercover_sieve₀ : S.preOneHypercover.sieve₀ = S.1 := by
   · rintro ⟨_, _, _, ⟨g⟩, rfl⟩
     exact S.1.downward_closed g.hf _
   · intro hf
-    exact Sieve.ofArrows_mk _ _ ({ hf := hf } : S.Arrow)
+    exact Sieve.ofArrows_mk _ _ ({ hf := hf, .. } : S.Arrow)
 
 lemma preOneHypercover_sieve₁ (f₁ f₂ : S.Arrow) {W : C} (p₁ : W ⟶ f₁.Y) (p₂ : W ⟶ f₂.Y)
     (w : p₁ ≫ f₁.f = p₂ ≫ f₂.f) :
     S.preOneHypercover.sieve₁ p₁ p₂ = ⊤ := by
   ext Y f
   simp only [Sieve.top_apply, iff_true]
-  exact ⟨{ w := w}, f, rfl, rfl⟩
+  exact ⟨{ w := w, .. }, f, rfl, rfl⟩
 
 /-- The tautological 1-hypercover induced by `S : J.Cover X`. Its index type `I₀`
 is given by `S.Arrow` (i.e. all the morphisms in the sieve `S`), while `I₁` is given

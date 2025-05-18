@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.CategoryTheory.Comma.OverClass
+import Mathlib.CategoryTheory.Comma.Over.OverClass
 
 /-!
 # Typeclasses for `S`-schemes and `S`-morphisms

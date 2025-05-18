@@ -35,8 +35,8 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   have : (Set.univ : Set ℝ) = Set.Iio 0 ∪ Set.Ioi 0 ∪ {0} := by ext; simp [em]
   rw [this, nhdsWithin_union, nhdsWithin_union]
   simp only [nhdsWithin_singleton, sup_le_iff, Filter.nonpos_iff, Filter.tendsto_sup]
-  refine ⟨⟨tendsto_log_mul_self_nhds_zero_left, ?_⟩, ?_⟩
-  · simpa only [rpow_one] using tendsto_log_mul_rpow_nhds_zero zero_lt_one
+  refine ⟨⟨tendsto_log_mul_self_nhdsLT_zero, ?_⟩, ?_⟩
+  · simpa only [rpow_one] using tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one
   · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
     simp
 
@@ -48,14 +48,22 @@ lemma differentiableOn_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}�
   differentiable_id'.differentiableOn.mul differentiableOn_log
 
 lemma deriv_mul_log {x : ℝ} (hx : x ≠ 0) : deriv (fun x ↦ x * log x) x = log x + 1 := by
-  rw [deriv_mul differentiableAt_id' (differentiableAt_log hx)]
-  simp only [deriv_id'', one_mul, deriv_log', ne_eq, add_right_inj]
-  exact mul_inv_cancel₀ hx
+  simp [hx]
 
 lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * log x) (log x + 1) x := by
   rw [← deriv_mul_log hx, hasDerivAt_deriv_iff]
   refine DifferentiableOn.differentiableAt differentiableOn_mul_log ?_
   simp [hx]
+
+@[simp]
+lemma rightDeriv_mul_log {x : ℝ} (hx : x ≠ 0) :
+    derivWithin (fun x ↦ x * log x) (Set.Ioi x) x = log x + 1 :=
+  (hasDerivAt_mul_log hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Ioi x)
+
+@[simp]
+lemma leftDeriv_mul_log {x : ℝ} (hx : x ≠ 0) :
+    derivWithin (fun x ↦ x * log x) (Set.Iio x) x = log x + 1 :=
+  (hasDerivAt_mul_log hx).hasDerivWithinAt.derivWithin (uniqueDiffWithinAt_Iio x)
 
 open Filter in
 private lemma tendsto_deriv_mul_log_nhdsWithin_zero :
@@ -65,7 +73,21 @@ private lemma tendsto_deriv_mul_log_nhdsWithin_zero :
     intro x hx
     rw [Set.mem_Ioi] at hx
     exact deriv_mul_log hx.ne'
-  simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsWithin_zero_right]
+  simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsGT_zero]
+
+open Filter in
+lemma tendsto_deriv_mul_log_atTop :
+    Tendsto (fun x ↦ deriv (fun x ↦ x * log x) x) atTop atTop := by
+  refine (tendsto_congr' ?_).mpr (tendsto_log_atTop.atTop_add (tendsto_const_nhds (x := 1)))
+  rw [EventuallyEq, eventually_atTop]
+  exact ⟨1, fun _ hx ↦ deriv_mul_log (zero_lt_one.trans_le hx).ne'⟩
+
+open Filter in
+lemma tendsto_rightDeriv_mul_log_atTop :
+    Tendsto (fun x ↦ derivWithin (fun x ↦ x * log x) (Set.Ioi x) x) atTop atTop := by
+  refine (tendsto_congr' ?_).mpr (tendsto_log_atTop.atTop_add (tendsto_const_nhds (x := 1)))
+  rw [EventuallyEq, eventually_atTop]
+  exact ⟨1, fun _ hx ↦ rightDeriv_mul_log (zero_lt_one.trans_le hx).ne'⟩
 
 /-- At `x=0`, `(fun x ↦ x * log x)` is not differentiable
 (but note that it is continuous, see `continuous_mul_log`). -/

@@ -22,6 +22,7 @@ This file contains definitions and properties concerning orthogonality of rows a
 orthogonal
 -/
 
+assert_not_exists Field
 
 namespace Matrix
 
@@ -34,7 +35,7 @@ open Matrix
 /-- `A.HasOrthogonalRows` means matrix `A` has orthogonal rows (with respect to
 `dotProduct`). -/
 def HasOrthogonalRows [Fintype n] : Prop :=
-  ∀ ⦃i₁ i₂⦄, i₁ ≠ i₂ → dotProduct (A i₁) (A i₂) = 0
+  ∀ ⦃i₁ i₂⦄, i₁ ≠ i₂ → A i₁ ⬝ᵥ A i₂ = 0
 
 /-- `A.HasOrthogonalCols` means matrix `A` has orthogonal columns (with respect to
 `dotProduct`). -/

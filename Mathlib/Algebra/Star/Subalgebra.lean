@@ -3,13 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Center
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Star.Pointwise
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Star.Module
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Star.NonUnitalSubalgebra
 
 /-!
 # Star subalgebras
@@ -19,12 +16,11 @@ A *-subalgebra is a subalgebra of a *-algebra which is closed under *.
 The centralizer of a *-closed set is a *-subalgebra.
 -/
 
-
 universe u v
 
 /-- A *-subalgebra is a subalgebra of a *-algebra which is closed under *. -/
 structure StarSubalgebra (R : Type u) (A : Type v) [CommSemiring R] [StarRing R] [Semiring A]
-  [StarRing A] [Algebra R A] [StarModule R A] extends Subalgebra R A : Type v where
+    [StarRing A] [Algebra R A] [StarModule R A] : Type v extends Subalgebra R A where
   /-- The `carrier` is closed under the `star` operation. -/
   star_mem' {a} : a ∈ carrier → star a ∈ carrier
 
@@ -42,6 +38,33 @@ variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 instance setLike : SetLike (StarSubalgebra R A) A where
   coe S := S.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+
+/-- The actual `StarSubalgebra` obtained from an element of a type satisfying `SubsemiringClass`,
+`SMulMemClass` and `StarMemClass`. -/
+@[simps]
+def ofClass {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [StarRing R] [StarRing A]
+    [StarModule R A] [SetLike S A] [SubsemiringClass S A] [SMulMemClass S R A] [StarMemClass S A]
+    (s : S) : StarSubalgebra R A where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  one_mem' := one_mem _
+  algebraMap_mem' := algebraMap_mem s
+  star_mem' := star_mem
+
+instance (priority := 100) : CanLift (Set A) (StarSubalgebra R A) (↑)
+    (fun s ↦ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧
+      (∀ (r : R), algebraMap R A r ∈ s) ∧ ∀ {x}, x ∈ s → star x ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := by simpa using h.2.2.1 0
+        add_mem' := h.1
+        one_mem' := by simpa using h.2.2.1 1
+        mul_mem' := h.2.1
+        algebraMap_mem' := h.2.2.1
+        star_mem' := h.2.2.2 },
+      rfl ⟩
 
 instance starMemClass : StarMemClass (StarSubalgebra R A) A where
   star_mem {s} := s.star_mem'
@@ -126,7 +149,7 @@ theorem copy_eq (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s 
 
 variable (S : StarSubalgebra R A)
 
-theorem algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
+protected theorem algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
   S.algebraMap_mem' r
 
 theorem rangeS_le : (algebraMap R A).rangeS ≤ S.toSubalgebra.toSubsemiring := fun _x ⟨r, hr⟩ =>
@@ -248,7 +271,6 @@ theorem comap_id (S : StarSubalgebra R A) : S.comap (StarAlgHom.id R A) = S :=
 theorem comap_comap (S : StarSubalgebra R C) (g : B →⋆ₐ[R] C) (f : A →⋆ₐ[R] B) :
     (S.comap g).comap f = S.comap (g.comp f) :=
   SetLike.coe_injective <| by exact Set.preimage_preimage
-  -- Porting note: the `by exact` trick still works sometimes
 
 @[simp]
 theorem mem_comap (S : StarSubalgebra R B) (f : A →⋆ₐ[R] B) (x : A) : x ∈ S.comap f ↔ f x ∈ S :=
@@ -337,15 +359,12 @@ theorem coe_star (S : Subalgebra R A) : ((star S : Subalgebra R A) : Set A) = st
 
 theorem star_mono : Monotone (star : Subalgebra R A → Subalgebra R A) := fun _ _ h _ hx => h hx
 
-variable (R)
-
+variable (R) in
 /-- The star operation on `Subalgebra` commutes with `Algebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoin R (star s) :=
   have this : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun _ =>
     Algebra.adjoin_le fun _ hx => Algebra.subset_adjoin hx
   le_antisymm (by simpa only [star_star] using Subalgebra.star_mono (this (star s))) (this s)
-
-variable {R}
 
 /-- The `StarSubalgebra` obtained from `S : Subalgebra R A` by taking the smallest subalgebra
 containing both `S` and `star S`. -/
@@ -613,10 +632,10 @@ theorem toSubalgebra_eq_top {S : StarSubalgebra R A} : S.toSubalgebra = ⊤ ↔ 
   StarSubalgebra.toSubalgebra_injective.eq_iff' top_toSubalgebra
 
 theorem mem_sup_left {S T : StarSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T :=
-  have : S ≤ S ⊔ T := le_sup_left; (this ·) -- Porting note: need `have` instead of `show`
+  have : S ≤ S ⊔ T := le_sup_left; (this ·)
 
 theorem mem_sup_right {S T : StarSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T :=
-  have : T ≤ S ⊔ T := le_sup_right; (this ·) -- Porting note: need `have` instead of `show`
+  have : T ≤ S ⊔ T := le_sup_right; (this ·)
 
 theorem mul_mem_sup {S T : StarSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :
     x * y ∈ S ⊔ T :=

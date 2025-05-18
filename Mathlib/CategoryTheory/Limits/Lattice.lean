@@ -3,32 +3,27 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.Order.CompleteLattice
-import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Limits in lattice categories are given by infimums and supremums.
 -/
 
 
-universe w u
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+universe w w' u
 
 namespace CategoryTheory.Limits.CompleteLattice
 
 section Semilattice
 
-variable {α : Type u}
-variable {J : Type w} [SmallCategory J] [FinCategory J]
+variable {α : Type u} {J : Type w} [SmallCategory J] [FinCategory J]
 
 /-- The limit cone over any functor from a finite diagram into a `SemilatticeInf` with `OrderTop`.
 -/
+@[simps]
 def finiteLimitCone [SemilatticeInf α] [OrderTop α] (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := Finset.univ.inf F.obj
@@ -38,6 +33,7 @@ def finiteLimitCone [SemilatticeInf α] [OrderTop α] (F : J ⥤ α) : LimitCone
 /--
 The colimit cocone over any functor from a finite diagram into a `SemilatticeSup` with `OrderBot`.
 -/
+@[simps]
 def finiteColimitCocone [SemilatticeSup α] [OrderBot α] (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := Finset.univ.sup F.obj
@@ -162,11 +158,11 @@ theorem pushout_eq_sup [SemilatticeSup α] [OrderBot α] (x y z : α) (f : z ⟶
 
 end Semilattice
 
-variable {α : Type u} [CompleteLattice α]
-variable {J : Type u} [SmallCategory J]
+variable {α : Type u} [CompleteLattice α] {J : Type w} [Category.{w'} J]
 
 /-- The limit cone over any functor into a complete lattice.
 -/
+@[simps]
 def limitCone (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := iInf F.obj
@@ -177,6 +173,7 @@ def limitCone (F : J ⥤ α) : LimitCone F where
 
 /-- The colimit cocone over any functor into a complete lattice.
 -/
+@[simps]
 def colimitCocone (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := iSup F.obj
@@ -185,14 +182,12 @@ def colimitCocone (F : J ⥤ α) : ColimitCocone F where
     { desc := fun s =>
         homOfLE (CompleteLattice.sSup_le _ _ (by rintro _ ⟨j, rfl⟩; exact (s.ι.app j).le)) }
 
--- It would be nice to only use the `Inf` half of the complete lattice, but
--- this seems not to have been described separately.
 -- see Note [lower instance priority]
-instance (priority := 100) hasLimits_of_completeLattice : HasLimits α where
+instance (priority := 100) hasLimits_of_completeLattice : HasLimitsOfSize.{w, w'} α where
   has_limits_of_shape _ := { has_limit := fun F => HasLimit.mk (limitCone F) }
 
 -- see Note [lower instance priority]
-instance (priority := 100) hasColimits_of_completeLattice : HasColimits α where
+instance (priority := 100) hasColimits_of_completeLattice : HasColimitsOfSize.{w, w'} α where
   has_colimits_of_shape _ := { has_colimit := fun F => HasColimit.mk (colimitCocone F) }
 
 /-- The limit of a functor into a complete lattice is the infimum of the objects in the image.

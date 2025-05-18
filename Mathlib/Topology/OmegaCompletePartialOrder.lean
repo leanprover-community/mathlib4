@@ -3,8 +3,6 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Topology.Basic
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Order.ScottTopology
 
@@ -16,7 +14,7 @@ of continuity is equivalent to continuity in ωCPOs.
 
 ## Reference
 
- * https://ncatlab.org/nlab/show/Scott+topology
+* https://ncatlab.org/nlab/show/Scott+topology
 
 -/
 
@@ -66,7 +64,7 @@ end Scott
 
 /-- A Scott topological space is defined on preorders
 such that their open sets, seen as a function `α → Prop`,
-preserves the joins of ω-chains  -/
+preserves the joins of ω-chains. -/
 abbrev Scott (α : Type u) := α
 
 instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :

@@ -31,7 +31,7 @@ theorem eq_X_add_C_of_degree_le_one (h : degree p ≤ 1) : p = C (p.coeff 1) * X
         -- Porting note: `by decide` → `Iff.mpr ..`
         have : degree p < m.succ.succ := lt_of_le_of_lt h
           (Iff.mpr WithBot.coe_lt_coe <| Nat.succ_lt_succ <| Nat.zero_lt_succ m)
-        simp [coeff_eq_zero_of_degree_lt this, coeff_C, Nat.succ_ne_zero, coeff_X, Nat.succ_inj',
+        simp [coeff_eq_zero_of_degree_lt this, coeff_C, Nat.succ_ne_zero, coeff_X, Nat.succ_inj,
           @eq_comm ℕ 0]
 
 theorem eq_X_add_C_of_degree_eq_one (h : degree p = 1) :
@@ -62,7 +62,6 @@ theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=
   zero_le_degree_iff.mp <| (WithBot.coe_le_coe.mpr n.zero_le).trans hdeg
 
 theorem le_natDegree_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : n ≤ p.natDegree :=
-  -- Porting note: `.. ▸ ..` → `rwa [..] at ..`
   WithBot.coe_le_coe.mp <| by
     rwa [degree_eq_natDegree <| ne_zero_of_coe_le_degree hdeg] at hdeg
 

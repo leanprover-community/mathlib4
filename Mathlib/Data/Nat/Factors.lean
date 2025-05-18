@@ -17,8 +17,8 @@ This file deals with the factors of natural numbers.
 
 ## Important declarations
 
-- `Nat.factors n`: the prime factorization of `n`
-- `Nat.factors_unique`: uniqueness of the prime factorisation
+- `Nat.primeFactorsList n`: the prime factorization of `n`
+- `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
 
 -/
 
@@ -38,8 +38,6 @@ def primeFactorsList : ℕ → List ℕ
     let m := minFac (k + 2)
     m :: primeFactorsList ((k + 2) / m)
 decreasing_by exact factors_lemma
-
-@[deprecated (since := "2024-06-14")] alias factors := primeFactorsList
 
 @[simp]
 theorem primeFactorsList_zero : primeFactorsList 0 = [] := by rw [primeFactorsList]
@@ -158,7 +156,7 @@ theorem le_of_mem_primeFactorsList {n p : ℕ} (h : p ∈ n.primeFactorsList) : 
     cases h
   · exact le_of_dvd hn (dvd_of_mem_primeFactorsList h)
 
-/-- **Fundamental theorem of arithmetic**-/
+/-- **Fundamental theorem of arithmetic** -/
 theorem primeFactorsList_unique {n : ℕ} {l : List ℕ} (h₁ : prod l = n) (h₂ : ∀ p ∈ l, Prime p) :
     l ~ primeFactorsList n := by
   refine perm_of_prod_eq_prod ?_ ?_ ?_
@@ -193,7 +191,7 @@ theorem perm_primeFactorsList_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   · rw [List.prod_append, prod_primeFactorsList ha, prod_primeFactorsList hb]
   · intro p hp
     rw [List.mem_append] at hp
-    cases' hp with hp' hp' <;> exact prime_of_mem_primeFactorsList hp'
+    rcases hp with hp' | hp' <;> exact prime_of_mem_primeFactorsList hp'
 
 /-- For coprime `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
 theorem perm_primeFactorsList_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
@@ -206,7 +204,7 @@ theorem perm_primeFactorsList_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
 
 theorem primeFactorsList_sublist_right {n k : ℕ} (h : k ≠ 0) :
     n.primeFactorsList <+ (n * k).primeFactorsList := by
-  cases' n with hn
+  rcases n with - | hn
   · simp [zero_mul]
   apply sublist_of_subperm_of_sorted _ (primeFactorsList_sorted _) (primeFactorsList_sorted _)
   simp only [(perm_primeFactorsList_mul (Nat.succ_ne_zero _) h).subperm_left]
@@ -232,9 +230,7 @@ theorem dvd_of_primeFactorsList_subperm {a b : ℕ} (ha : a ≠ 0)
   rcases a with (_ | _ | a)
   · exact (ha rfl).elim
   · exact one_dvd _
-  -- Porting note: previous proof
-  --use (b.primeFactorsList.diff a.succ.succ.primeFactorsList).prod
-  use (@List.diff _ instBEqOfDecidableEq b.primeFactorsList a.succ.succ.primeFactorsList).prod
+  use (b.primeFactorsList.diff a.succ.succ.primeFactorsList).prod
   nth_rw 1 [← Nat.prod_primeFactorsList ha]
   rw [← List.prod_append,
     List.Perm.prod_eq <| List.subperm_append_diff_self_of_count_le <| List.subperm_ext_iff.mp h,

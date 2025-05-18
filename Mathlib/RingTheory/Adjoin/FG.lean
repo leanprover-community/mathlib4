@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.MvPolynomial.Eval
+import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
@@ -16,7 +17,7 @@ This file develops the basic theory of finitely-generated subalgebras.
 ## Definitions
 
 * `FG (S : Subalgebra R A)` : A predicate saying that the subalgebra is finitely-generated
-as an A-algebra
+  as an A-algebra
 
 ## Tags
 

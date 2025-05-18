@@ -24,7 +24,8 @@ defined in `Mathlib.CategoryTheory.Simple`
 
 ## TODO
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
-structure, `char_dual` and `char_linHom` should probably be stated in terms of `Vᘁ` and `ihom V W`.
+  structure, `char_dual` and `char_linHom` should probably be stated
+  in terms of `Vᘁ` and `ihom V W`.
 -/
 
 
@@ -96,7 +97,7 @@ end Group
 
 section Orthogonality
 
-variable {G : Grp.{u}} [IsAlgClosed k]
+variable {G : Type u} [Group G] [IsAlgClosed k]
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -115,7 +116,7 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
     rw [char_iso (FDRep.dualTensorIsoLinHom W.ρ V)]
   -- The average over the group of the character of a representation equals the dimension of the
   -- space of invariants.
-  rw [average_char_eq_finrank_invariants, ← FDRep.endMulEquiv_comp_ρ (of _),
+  rw [average_char_eq_finrank_invariants, ← FDRep.endRingEquiv_comp_ρ (of _),
       FDRep.of_ρ (linHom W.ρ V.ρ)]
   -- The space of invariants of `Hom(W, V)` is the subspace of `G`-equivariant linear maps,
   -- `Hom_G(W, V)`.
