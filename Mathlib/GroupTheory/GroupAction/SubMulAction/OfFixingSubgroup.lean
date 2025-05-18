@@ -9,7 +9,6 @@ import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
 
-
 /-!
 # SubMulActions on complements of invariant subsets
 
