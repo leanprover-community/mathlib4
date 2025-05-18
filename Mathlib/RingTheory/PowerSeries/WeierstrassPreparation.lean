@@ -191,7 +191,7 @@ theorem coeff_seq_mem (k : ℕ) {i : ℕ} (hi : i ≥ (g.map (Ideal.Quotient.mk 
 
 theorem coeff_seq_succ_sub_seq_mem (k i : ℕ) :
     coeff A i (H.seq f (k + 1) - H.seq f k) ∈ I ^ k := by
-  simp_rw [seq, add_sub_cancel_left]
+  rw [seq, add_sub_cancel_left]
   refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' (fun i ↦ ?_) i
   rw [coeff_mk]
   exact H.coeff_seq_mem k (by simp)
@@ -214,7 +214,7 @@ noncomputable def divCoeff [IsPrecomplete I A] (i : ℕ) :=
       | base => rw [SModEq.def]
       | succ n hn ih =>
         refine ih.trans (SModEq.symm ?_)
-        simp_rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top, ← map_sub]
+        rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top, ← map_sub]
         exact Ideal.pow_le_pow_right hn (H.coeff_seq_succ_sub_seq_mem n i)
 
 /-- The limit `q` of the
@@ -228,8 +228,7 @@ theorem coeff_div [IsPrecomplete I A] (i : ℕ) : coeff A i (H.div f) = (H.divCo
 
 theorem coeff_div_sub_seq_mem [IsPrecomplete I A] (k i : ℕ) :
     coeff A i (H.div f - (H.seq f k)) ∈ I ^ k := by
-  rw [map_sub, coeff_div]
-  simpa [SModEq.sub_mem] using ((H.divCoeff f i).2 k).symm
+  simpa [coeff_div, SModEq.sub_mem] using ((H.divCoeff f i).2 k).symm
 
 variable (f)
 
