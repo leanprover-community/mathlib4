@@ -432,10 +432,6 @@ variable (K L : Type*) [Field K] [CharZero K]
 open LieModule Module
 open LieModule Weight
 
-set_option maxHeartbeats 2000000
-
---variable [DivisionRing K] [AddCommGroup V] [Module K V] {s : Submodule K V} {x : V}
-
 lemma needed (i : Dual K H) (ni : i ≠ 0) (h0 : rootSpace H i ≠ ⊥) : ∃ (j : H.root),
     (rootSystem H).root j = i := by
   let i_weight : Weight K H L := ⟨i, h0⟩
