@@ -485,7 +485,7 @@ protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 
 lemma IsNClique.exists_not_adj_of_cliqueFree_succ (hc : G.IsNClique n s)
-    (h : G.CliqueFree (n + 1)) (x : α) :  ∃ y, y ∈ s ∧ ¬ G.Adj x y := by
+    (h : G.CliqueFree (n + 1)) (x : α) : ∃ y, y ∈ s ∧ ¬ G.Adj x y := by
   classical
   by_contra! hf
   exact (hc.insert hf).not_cliqueFree h
