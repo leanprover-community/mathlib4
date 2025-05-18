@@ -412,6 +412,20 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
   refine cfc_congr fun _ _ => ?_
   simp
 
+lemma isUnit_rpow (a : A) (y : ℝ) (ha_unit : IsUnit a) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
+    IsUnit (a ^ y) := by
+  rw [rpow_def]
+  rw [← spectrum.zero_not_mem_iff (R := ℝ≥0)] at ha_unit
+  refine isUnit_cfc _ _ (NNReal.continuousOn_rpow_const (.inl ha_unit)) ha ?_
+  intro x hx
+  have hx' : x ≠ 0 := by
+    intro H
+    rw [H] at hx
+    exact ha_unit hx
+  intro H
+  rw [NNReal.rpow_eq_zero hy] at H
+  exact hx' H
+
 section prod
 
 variable [IsTopologicalRing A] [T2Space A]
@@ -531,6 +545,16 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
   case neg =>
     have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe
     rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by norm_num) h₁, one_div_mul_eq_div]
+
+lemma isUnit_nnrpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
+    IsUnit (a ^ y) := by
+  rw [nnrpow_eq_rpow (pos_of_ne_zero hy)]
+  refine isUnit_rpow a y ha_unit ?_ ha
+  exact_mod_cast hy
+
+lemma isUnit_sqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) := by
+  rw [sqrt_eq_rpow]
+  exact isUnit_rpow a _ ha_unit (by norm_num) ha
 
 end unital_vs_nonunital
 
