@@ -196,7 +196,7 @@ theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
   generalize len : rs.length = n
   induction' n with n hn generalizing M rs
   · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
-    simpa using supportDim_eq_of_equiv _ _ _ (Submodule.quotEquivOfEqBot ⊥ rfl)
+    simpa using supportDim_eq_of_equiv (Submodule.quotEquivOfEqBot ⊥ rfl)
   · match rs with
     | [] => simp at len
     | x :: rs' =>
@@ -208,7 +208,7 @@ theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
         by_contra isu
         absurd reg.2
         simp [Ideal.span_singleton_eq_top.mpr isu]
-      rw [supportDim_eq_of_equiv _ _ _ (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
+      rw [supportDim_eq_of_equiv (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
         ← supportDim_quotSMulTop_succ_eq_supportDim x this mem,
         ← hn rs' ((isRegular_cons_iff M _ _).mp reg).2 len, add_assoc]
 
