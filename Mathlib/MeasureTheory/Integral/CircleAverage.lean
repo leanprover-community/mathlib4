@@ -83,8 +83,8 @@ lemma circleAverage_fun_add :
 -/
 
 /-- Circle averages do not change when shifting the angle. -/
-lemma circleAverage_eq_integral_add (η : ℝ) : circleAverage f c R =
-    (2 * π)⁻¹ • ∫ (θ : ℝ) in (0)..2 * π, f (circleMap c R (θ + η)) := by
+lemma circleAverage_eq_integral_add (η : ℝ) :
+    circleAverage f c R = (2 * π)⁻¹ • ∫ (θ : ℝ) in (0)..2 * π, f (circleMap c R (θ + η)) := by
   rw [intervalIntegral.integral_comp_add_right (fun θ ↦ f (circleMap c R θ))]
   have t₀ : (fun θ ↦ f (circleMap c R θ)).Periodic (2 * π) :=
     fun x ↦ by simp [periodic_circleMap c R x]

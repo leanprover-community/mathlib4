@@ -19,15 +19,15 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 
 ## Main definitions
 
- - `Matrix.det`: the determinant of a square matrix, as a sum over permutations
- - `Matrix.detRowAlternating`: the determinant, as an `AlternatingMap` in the rows of the matrix
+- `Matrix.det`: the determinant of a square matrix, as a sum over permutations
+- `Matrix.detRowAlternating`: the determinant, as an `AlternatingMap` in the rows of the matrix
 
 ## Main results
 
- - `det_mul`: the determinant of `A * B` is the product of determinants
- - `det_zero_of_row_eq`: the determinant is zero if there is a repeated row
- - `det_block_diagonal`: the determinant of a block diagonal matrix is a product
-   of the blocks' determinants
+- `det_mul`: the determinant of `A * B` is the product of determinants
+- `det_zero_of_row_eq`: the determinant is zero if there is a repeated row
+- `det_block_diagonal`: the determinant of a block diagonal matrix is a product
+  of the blocks' determinants
 
 ## Implementation notes
 
