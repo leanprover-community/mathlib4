@@ -490,28 +490,22 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     have hΦ₂ : S.root '' Φ ⊆ q := by
       rcases Φ.eq_empty_or_nonempty with rfl | hΦ
       · simp only [Set.image_empty, Set.empty_subset]
-      · simp
+      · simp only [Set.image_subset_iff]
         intro i hi
-        have rrr := Submodule.disjoint_span_singleton' (s := q) (S.ne_zero i)
-        simp
         by_contra h
-        have disj : Disjoint q (Submodule.span K {S.root i}) := rrr.mpr h
-        exact b i hi disj
-    have hΦ₃ : ∀ i ∉ Φ, q ≤ LinearMap.ker (S.coroot' i) := by
-      exact c
-    have hΦ₄ : ∀ i ∉ Φ, S.root i ∉ q := by
+        exact b i hi ((Submodule.disjoint_span_singleton' (s := q) (S.ne_zero i)).mpr h)
+    have hΦ₃ : ∀ i ∉ Φ, S.root i ∉ q := by
       intro i
       by_contra hc
-      simp at hc
-      have : (S.coroot' i) (S.root i) = 2 := by
+      simp only [Classical.not_imp, not_not] at hc
+      have h₁ : (S.coroot' i) (S.root i) = 2 := by
         apply root_apply_coroot
         obtain ⟨val, hval⟩ := i
         simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
         exact hval
-      have key2 := hΦ₃ i hc.1
-      have h1 : (S.coroot' i) (S.root i) = 0 := key2 hc.2
-      rw [this] at h1
-      field_simp at h1
+      have h₂ : (S.coroot' i) (S.root i) = 0 := (c i hc.1) hc.2
+      rw [h₁] at h₂
+      field_simp at h₂
 
     have rrr : (∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i)) → q = ⊥ := by
       intro h
@@ -593,7 +587,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         obtain ⟨j, hj⟩ := qqqq
         have qqqq2 : j ∈ Φ := by
           by_contra hc
-          have t := hΦ₄ j hc
+          have t := hΦ₃ j hc
           obtain ⟨l1, l2⟩ := hΦ
           rw [hj] at t
           apply False.elim (t l1)
@@ -604,32 +598,6 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         exact qqqq2
         rw [← hj] at hx'
         exact hx'
-
-        /-
-        rcases Classical.em (⟨i_weight, ttt⟩ ∈ Φ) with h0 | h0
-        · simp
-          simp at h0
-          use i_weight
-          constructor
-          · use ttt0
-          exact hx'
-        have rrr := hΦ₄ ⟨i_weight, ttt⟩ h0
-        simp at hΦ
-        obtain ⟨l1, l2⟩ := hΦ
-        simp
-        use i_weight
-        have ttttt := S.root⁻¹ i
-        -- ⋃ i ∈ Φ, (rootSpace H i : Set L) = ⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α)
-        constructor
-        · use ttt0
-          sorry
-        exact hx'
-        -/
-
-
-    -- Now: i ∈ Φ, x ∈ rootSpace H i
-    -- Try to use this i to build ∈ other union
-
     have key : LieSubalgebra.lieSpan K L (⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α)) = I := by
       rw[← key0]
     rw [key] at hy ⊢
@@ -638,7 +606,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       apply hΦ₂
       exact Set.mem_image_of_mem S.root hi
     have s₁ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root i (S.coroot j) = 0 :=
-      (hΦ₃ j h₂) (hΦ₂' i h₁)
+      (c j h₂) (hΦ₂' i h₁)
     have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
       (S.pairing_eq_zero_iff (i := i) (j := j)).1 (s₁ i j h₁ h₂)
     have s₂ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : i.1 (coroot j) = 0 := s₁ i j h₁ h₂
