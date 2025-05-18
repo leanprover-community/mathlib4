@@ -487,22 +487,16 @@ lemma lieSpan_rootSpace_q_eq_lieSpan_Phi
         ext x
         rw [l₂]
         exact rfl
-      have h₂ : ∃ (j : H.root), S.root j = i := by
-        have : i_weight ∈ H.root := by
-          simpa only [Finset.mem_filter, Finset.mem_univ, true_and]
-        use ⟨i_weight, this⟩
-        ext x
-        exact rfl
-      obtain ⟨j, hj⟩ := h₂
-      have h₃ : j ∈ Φ := by
+      have mem: i_weight ∈ H.root := by
+        simpa only [Finset.mem_filter, Finset.mem_univ, true_and]
+      have h₂ : ⟨i_weight, mem⟩ ∈ Φ := by
         by_contra hc
-        have := hΦ₂' j hc
-        rw [hj] at this
+        have := hΦ₂' ⟨i_weight, mem⟩ hc
         apply False.elim (this l₁)
       rw [Set.mem_iUnion]
-      use j
+      use ⟨i_weight, mem⟩
       rw [Set.mem_iUnion]
-      exact ⟨h₃, by rw [←hj] at hx'; exact hx'⟩
+      exact ⟨h₂, hx'⟩
   rw[← hΦ₄]
 
 def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
