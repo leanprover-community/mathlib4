@@ -876,9 +876,9 @@ theorem IsCycle.forall_commute_iff [DecidableEq α] [Fintype α] (g z : Perm α)
 /-- A permutation restricted to the support of a cycle factor is that cycle factor -/
 theorem subtypePerm_on_cycleFactorsFinset [DecidableEq α] [Fintype α]
     {g c : Perm α} (hc : c ∈ g.cycleFactorsFinset) :
-    g.subtypePerm (mem_cycleFactorsFinset_support hc) = c.subtypePermLTSupport := by
+    g.subtypePerm (mem_cycleFactorsFinset_support hc) = c.subtypePermOfSupport := by
   ext ⟨x, hx⟩
-  simp only [subtypePerm_apply, Subtype.coe_mk, subtypePermLTSupport]
+  simp only [subtypePerm_apply, Subtype.coe_mk, subtypePermOfSupport]
   exact ((mem_cycleFactorsFinset_iff.mp hc).2 x hx).symm
 
 theorem commute_iff_of_mem_cycleFactorsFinset [DecidableEq α] [Fintype α] {g k c : Equiv.Perm α}
