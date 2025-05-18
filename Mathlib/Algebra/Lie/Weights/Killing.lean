@@ -557,6 +557,12 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
   replace hn : -2 = (n : ℤ) := by norm_cast at hn
   omega
 
+/-- The embedded `sl₂` associated to a root. -/
+noncomputable def sl2SubalgebraOfRoot {α : Weight K H L} (hα : α.IsNonZero) :
+    LieSubalgebra K L := by
+  choose h e f t ht using exists_isSl2Triple_of_weight_isNonZero hα
+  exact t.toLieSubalgebra K
+
 /-- The collection of roots as a `Finset`. -/
 noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
 
