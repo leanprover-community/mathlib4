@@ -193,9 +193,7 @@ lemma PseudoRiemannianMetric.of_symm_posdef
     specialize h_all_zero_w v
     by_cases hv_zero : v = 0
     · exact hv_zero
-    · have h_pos : 0 < g x v v := hposdef x v hv_zero
-      have h_zero : g x v v = 0 := h_all_zero_w
-      exact (lt_irrefl 0 (h_zero ▸ h_pos)).elim
+    · exact (lt_irrefl 0 (h_all_zero_w ▸ (hposdef x v hv_zero))).elim
     }
 
 /-- The scaling of a pseudo-Riemannian metrics by a nonzero real number is a pseudo-Riemannian
@@ -317,9 +315,7 @@ def patch (x : M) : BicotangentSpace F I M x :=
   -- `G y_center` is a bilinear form on `TangentSpace I x`
   -- defined by pulling back `g₀` by `e y_center`.
   -- `(v, w) ↦ g₀ ((e y_center) v) ((e y_center) w)`.
-  let G (y_center : M) : BicotangentSpace F I M x :=
-    ContinuousLinearMap.comp (ContinuousLinearMap.flip (ContinuousLinearMap.comp g₀ (e y_center)))
-      (e y_center)
+  let G (y_center : M) : BicotangentSpace F I M x := (g₀.comp (e y_center)).flip.comp (e y_center)
   -- This is a finite sum because `s` is a partition of unity. For a given `x`,
   -- `(s y_idx x)` is non-zero for only finitely many `y_idx` in the support of the partition.
   ∑ᶠ (y_idx : M), ((s y_idx) x) • (G y_idx)
