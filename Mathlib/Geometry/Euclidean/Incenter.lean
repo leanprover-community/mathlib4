@@ -143,10 +143,12 @@ inner products, are equal to the cosines of angles between faces (informally, th
 distances are proportional to the volumes of the faces and this is equivalent to expressing
 the volume of a face as the sum of the signed volumes of projections of the other faces onto that
 face). -/
-lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) : (s.height i)⁻¹ =
-    ∑ j ∈ {k | k ≠ i}, -(⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫ /
-      (s.height i * s.height j)) *
-      (s.height j)⁻¹ := by
+lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
+    (s.height i)⁻¹ =
+      ∑ j ∈ {k | k ≠ i},
+        -(⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫ /
+          (s.height i * s.height j)) *
+        (s.height j)⁻¹ := by
   rw [← sub_eq_zero]
   simp_rw [neg_mul, height]
   rw [Finset.sum_neg_distrib, sub_neg_eq_add, Finset.filter_ne',
