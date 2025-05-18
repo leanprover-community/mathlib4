@@ -431,8 +431,8 @@ lemma isUnit_rpow (a : A) (y : ℝ) (ha_unit : IsUnit a) (hy : y ≠ 0) (ha : 0 
   rw [NNReal.rpow_eq_zero hy] at H
   exact hx' H
 
-lemma isUnit_rpow_iff [IsTopologicalRing A] [T2Space A] (a : A) (y : ℝ) (hy : y ≠ 0)
-    (ha : 0 ≤ a := by cfc_tac) : IsUnit (a ^ y) ↔ IsUnit a := by
+lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
+    IsUnit (a ^ y) ↔ IsUnit a := by
   refine ⟨fun h => ?_, fun h => isUnit_rpow a y h hy ha⟩
   by_cases htriv : ¬Nontrivial A
   · rw [not_nontrivial_iff_subsingleton] at htriv
