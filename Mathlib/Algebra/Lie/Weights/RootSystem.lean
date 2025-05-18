@@ -498,6 +498,7 @@ lemma lieSpan_rootSpace_q_eq_lieSpan_Phi
       exact ⟨h₂, hx'⟩
   rw[← key]
 
+/-- Any invariant submodule defines a Lie ideal via its nonzero root spaces. -/
 def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
     LieIdeal K L where
