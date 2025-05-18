@@ -532,8 +532,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           exact rfl
         have h₂ : ∃ (j : H.root), S.root j = i := by
           have : i_weight ∈ H.root := by
-            simp
-            exact h₁
+            simpa only [Finset.mem_filter, Finset.mem_univ, true_and]
           use ⟨i_weight, this⟩
           ext x
           exact rfl
@@ -545,11 +544,8 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           apply False.elim (t l₁)
         rw [Set.mem_iUnion]
         use j
-        simp
-        constructor
-        exact h₃
-        rw [← hj] at hx'
-        exact hx'
+        rw [Set.mem_iUnion]
+        exact ⟨h₃, by rw [←hj] at hx'; exact hx'⟩
     have hΦ₅ : LieSubalgebra.lieSpan K L (⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α)) = I := by
       rw[← hΦ₄]
     rw [hΦ₅] at hy ⊢
