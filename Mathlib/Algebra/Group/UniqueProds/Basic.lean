@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Unique products and related notions
@@ -604,7 +605,7 @@ open MulOpposite in
   multiplication is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
   "This instance asserts that if `G` has a left-cancellative addition, a linear order, and
-  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`." ]
+  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`."]
 instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     [LinearOrder G] [MulRightStrictMono G] :
     TwoUniqueProds G :=

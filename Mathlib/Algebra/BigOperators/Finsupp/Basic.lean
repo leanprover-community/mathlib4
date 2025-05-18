@@ -282,7 +282,7 @@ theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f
   rw [← Finset.sup_eq_biUnion]
   induction s using Finset.cons_induction_on with
   | empty => rfl
-  | cons _ ih =>
+  | cons _ _ _ ih =>
     rw [Finset.sum_cons, Finset.sup_cons]
     exact support_add.trans (Finset.union_subset_union (Finset.Subset.refl _) ih)
 
@@ -536,10 +536,15 @@ lemma prod_indicator_index_eq_prod_attach [Zero M] [CommMonoid N]
   rw [indicator_of_mem]
 
 @[to_additive (attr := simp)]
+lemma prod_attach_index [CommMonoid N] {s : Finset α} (f : α → M) {h : α → M → N} :
+    ∏ x ∈ s.attach, h x (f x) = ∏ x ∈ s, h x (f x) :=
+  prod_attach _ fun x ↦ h x (f x)
+
+@[to_additive]
 lemma prod_indicator_index [Zero M] [CommMonoid N]
     {s : Finset α} (f : α → M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
-    (indicator s (fun x _ ↦ f x)).prod h = ∏ x ∈ s, h x (f x) :=
-  (prod_indicator_index_eq_prod_attach _ h_zero).trans <| prod_attach _ fun x ↦ h x (f x)
+    (indicator s (fun x _ ↦ f x)).prod h = ∏ x ∈ s, h x (f x) := by
+  simp +contextual [h_zero]
 
 @[to_additive]
 lemma prod_mul_eq_prod_mul_of_exists [Zero M] [CommMonoid N]

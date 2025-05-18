@@ -524,7 +524,8 @@ theorem HasFDerivWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) : HasFDerivWithi
 /-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
 @[deprecated HasFDerivWithinAt.of_not_accPt (since := "2025-04-20")]
-theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) : HasFDerivWithinAt f f' s x :=
+theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s \ {x}] x = ⊥) :
+    HasFDerivWithinAt f f' s x :=
   .of_not_accPt <| by rwa [accPt_principal_iff_nhdsWithin, not_neBot]
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
@@ -1216,9 +1217,13 @@ theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ => c) s x = 
   apply hasFDerivWithinAt_const
 
 @[simp]
-theorem fderivWithin_const (c : F) : fderivWithin 𝕜 (fun _ ↦ c) s = 0 := by
+theorem fderivWithin_fun_const (c : F) : fderivWithin 𝕜 (fun _ ↦ c) s = 0 := by
   ext
   rw [fderivWithin_const_apply, Pi.zero_apply]
+
+@[simp]
+theorem fderivWithin_const (c : F) : fderivWithin 𝕜 (Function.const E c) s = 0 :=
+  fderivWithin_fun_const c
 
 @[simp]
 theorem fderivWithin_zero : fderivWithin 𝕜 (0 : E → F) s = 0 := fderivWithin_const _
@@ -1242,8 +1247,12 @@ theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 :=
   (hasFDerivAt_const c x).fderiv
 
 @[simp]
-theorem fderiv_const (c : F) : (fderiv 𝕜 fun _ : E => c) = 0 := by
-  rw [← fderivWithin_univ, fderivWithin_const]
+theorem fderiv_fun_const (c : F) : fderiv 𝕜 (fun _ : E => c) = 0 := by
+  rw [← fderivWithin_univ, fderivWithin_fun_const]
+
+@[simp]
+theorem fderiv_const (c : F) : fderiv 𝕜 (Function.const E c) = 0 :=
+  fderiv_fun_const c
 
 @[simp]
 theorem fderiv_zero : fderiv 𝕜 (0 : E → F) = 0 := fderiv_const _
