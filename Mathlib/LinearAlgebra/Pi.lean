@@ -71,6 +71,9 @@ theorem pi_comp (f : (i : ι) → M₂ →ₗ[R] φ i) (g : M₃ →ₗ[R] M₂)
     (pi f).comp g = pi fun i => (f i).comp g :=
   rfl
 
+/-- The constant linear map, taking `x` to `_ ↦ x`. -/
+@[simps!] def const : M₂ →ₗ[R] (ι → M₂) := pi fun _ ↦ .id
+
 /-- The projections from a family of modules are linear maps.
 
 Note:  known here as `LinearMap.proj`, this construction is in other categories called `eval`, for
