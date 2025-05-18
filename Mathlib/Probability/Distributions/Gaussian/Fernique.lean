@@ -184,7 +184,9 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self {μ : Measure E} [SFi
   _ ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 := by rw [Measure.prod_prod, pow_two]
 
 open Metric Filter in
-/-- Auxiliary lemma for `exists_integrable_exp_sq_of_map_rotation_eq_self`. -/
+/-- Auxiliary lemma for `exists_integrable_exp_sq_of_map_rotation_eq_self`.
+The assumption `h_meas_Ioo : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1` is not
+needed and will be removed in that more general lemma. -/
 lemma exists_integrable_exp_sq_of_map_rotation_eq_self' {μ : Measure E} [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     (h_meas_Ioo : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1) :
@@ -406,6 +408,8 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' {μ : Measure E} [IsProb
       rw [ENNReal.toReal_lt_toReal hc_one_sub_lt_top.ne hc_lt_top.ne]
       exact h_one_sub_lt_self
 
+/-- Auxiliary lemma for `exists_integrable_exp_sq_of_map_rotation_eq_self`, in which we will replace
+the assumption `IsProbabilityMeasure μ` by the weaker `IsFiniteMeasure μ`. -/
 lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
     {μ : Measure E} [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) :
@@ -449,6 +453,8 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
     simp only [one_mul]
     gcongr
 
+/-- Fernique's theorem for finite measures whose product is invariant by rotation: there exists
+`C > 0` such that the function `x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
 lemma exists_integrable_exp_sq_of_map_rotation_eq_self {μ : Measure E} [IsFiniteMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
@@ -515,7 +521,7 @@ theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
     · exact ae_of_all _ this
   intro x
   rw [← Real.exp_add]
-  gcongr
+  gcongr -- `⊢ C' * ‖x‖ ^ 2 ≤ C / ε * ‖y‖ ^ 2 + C * ‖x - y‖ ^ 2`
   have h_le : ‖x‖ ^ 2 ≤ (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 := by
     calc ‖x‖ ^ 2
     _ = ‖x - y + y‖ ^ 2 := by simp
@@ -559,32 +565,30 @@ lemma IsGaussian.memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp 
   · simp
   obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq μ
   have hC_neg : Integrable (fun x ↦ rexp (-C * ‖x‖ ^ 2)) μ := by -- `-C` could be any negative
-    refine integrable_of_le_of_le (g₁ := 0) (g₂ := 1) ?_ ?_ ?_
-      (integrable_const _) (integrable_const _)
-    · fun_prop
-    · exact ae_of_all _ fun _ ↦ by positivity
-    · refine ae_of_all _ fun x ↦ ?_
-      simp only [neg_mul, Pi.one_apply, Real.exp_le_one_iff, Left.neg_nonpos_iff]
-      positivity
+    refine integrable_of_le_of_le (g₁ := 0) (g₂ := 1) (by fun_prop)
+      (ae_of_all _ fun _ ↦ by positivity) ?_ (integrable_const _) (integrable_const _)
+    refine ae_of_all _ fun x ↦ ?_
+    simp only [neg_mul, Pi.one_apply, Real.exp_le_one_iff, Left.neg_nonpos_iff]
+    positivity
   have h_subset : Set.Ioo (-C) C ⊆ interior (integrableExpSet (fun x ↦ ‖x‖ ^ 2) μ) := by
     rw [IsOpen.subset_interior_iff isOpen_Ioo]
     exact fun x hx ↦ integrable_exp_mul_of_le_of_le hC_neg hC hx.1.le hx.2.le
   exact h_subset ⟨by simp [hC_pos], hC_pos⟩
 
-lemma IsGaussian.integral_continuousLinearMap (L : E →L[ℝ] ℝ) : μ[L] = L (∫ x, x ∂μ) :=
+lemma IsGaussian.integral_dual (L : Dual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
   L.integral_comp_comm ((IsGaussian.memLp_id μ 1 (by simp)).integrable le_rfl)
 
-lemma IsGaussian.eq_dirac_of_variance_eq_zero (h : ∀ L : E →L[ℝ] ℝ, Var[L; μ] = 0) :
+lemma IsGaussian.eq_dirac_of_variance_eq_zero (h : ∀ L : Dual ℝ E, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by
   refine Measure.ext_of_charFunDual ?_
   ext L
   rw [charFunDual_dirac, IsGaussian.charFunDual_eq L, h L, integral_complex_ofReal,
-    IsGaussian.integral_continuousLinearMap L]
+    IsGaussian.integral_dual L]
   simp
 
 lemma IsGaussian.noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
   measure_singleton x := by
-    obtain ⟨L, hL⟩ : ∃ L : E →L[ℝ] ℝ, Var[L; μ] ≠ 0 := by
+    obtain ⟨L, hL⟩ : ∃ L : Dual ℝ E, Var[L; μ] ≠ 0 := by
       contrapose! h
       exact ⟨_, eq_dirac_of_variance_eq_zero h⟩
     have hL_zero : μ.map L {L x} = 0 := by
@@ -597,31 +601,6 @@ lemma IsGaussian.noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
     rw [Measure.map_apply (by fun_prop) (measurableSet_singleton _)] at hL_zero
     refine measure_mono_null ?_ hL_zero
     exact fun ⦃a⦄ ↦ congrArg ⇑L
-
-instance (μ : Measure E) [IsGaussian μ] :
-    IsGaussian (μ.map (fun x ↦ x - μ[id])) where
-  map_eq_gaussianReal L := by
-    have : (L ∘ fun x ↦ x - μ[id]) = (fun x ↦ x - μ[L]) ∘ L := by
-      ext x
-      simp only [id_eq, Function.comp_apply, map_sub, sub_right_inj]
-      rw [← IsGaussian.integral_continuousLinearMap]
-    rw [Measure.map_map (by fun_prop) (by fun_prop), this,
-      ← Measure.map_map (by fun_prop) (by fun_prop), IsGaussian.map_eq_gaussianReal,
-      gaussianReal_map_sub_const]
-    congr 1
-    · simp only [sub_self, id_eq]
-      rw [integral_map]
-      rotate_left
-      · fun_prop
-      · fun_prop
-      simp only [map_sub]
-      rw [integral_sub, integral_const, ← IsGaussian.integral_continuousLinearMap]
-      · simp
-      · fun_prop
-      · fun_prop
-    · rw [variance_map (by fun_prop) (by fun_prop), this]
-      have : (fun x ↦ x - ∫ x, L x ∂μ) ∘ L = fun x ↦ L x - μ[L] := rfl
-      rw [this, variance_sub_const (by fun_prop)]
 
 end Mean
 
