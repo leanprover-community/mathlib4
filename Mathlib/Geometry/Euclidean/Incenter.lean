@@ -177,7 +177,7 @@ lemma inv_height_lt_sum_inv_height (hn : 1 < n) (i : Fin (n + 1)) :
     refine mul_lt_of_lt_one_left ?_ ?_
     · simp [height_pos]
     · rw [neg_lt]
-      exact neg_one_lt_inner_height_vsub_altitudeFoot_div _ _ _ hn
+      exact neg_one_lt_inner_vsub_altitudeFoot_div _ _ _ hn
 
 lemma sum_excenterWeightsUnnorm_singleton_pos (hn : 1 < n) (i : Fin (n + 1)) :
     0 < ∑ j, s.excenterWeightsUnnorm {i} j := by

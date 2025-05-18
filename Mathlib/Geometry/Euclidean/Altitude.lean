@@ -210,7 +210,7 @@ The inner product of two distinct altitudes has absolute value strictly less tha
 their lengths.
 
 Equivalently, neither vector is a multiple of the other; the angle between them is not 0 or π. -/
-lemma abs_inner_height_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
+lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
     |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫|
       < s.height i * s.height j := by
   apply LE.le.lt_of_ne
@@ -257,7 +257,7 @@ lemma abs_inner_height_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠
 The inner product of two altitudes has value strictly greated than the negated product of
 their lengths.
 -/
-lemma neg_mul_lt_inner_height_vsub_altitudeFoot (i j : Fin (n + 1)) (hn : 1 < n) :
+lemma neg_mul_lt_inner_vsub_altitudeFoot (i j : Fin (n + 1)) (hn : 1 < n) :
     -(s.height i * s.height j)
       < ⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫ := by
   obtain rfl | hij := eq_or_ne i j
@@ -270,23 +270,23 @@ lemma neg_mul_lt_inner_height_vsub_altitudeFoot (i j : Fin (n + 1)) (hn : 1 < n)
   rw [neg_lt]
   refine lt_of_abs_lt ?_
   rw [abs_neg]
-  exact abs_inner_height_vsub_altitudeFoot_lt_mul s hij hn
+  exact abs_inner_vsub_altitudeFoot_lt_mul s hij hn
 
-lemma abs_inner_height_vsub_altitudeFoot_div_lt_one {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
+lemma abs_inner_vsub_altitudeFoot_div_lt_one {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
     |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
             / (s.height i * s.height j)| < 1 := by
   rw [abs_div, div_lt_one (by simp [height])]
   nth_rw 2 [abs_eq_self.2]
-  · exact abs_inner_height_vsub_altitudeFoot_lt_mul _ hij hn
+  · exact abs_inner_vsub_altitudeFoot_lt_mul _ hij hn
   · simp only [height]
     positivity
 
-lemma neg_one_lt_inner_height_vsub_altitudeFoot_div
+lemma neg_one_lt_inner_vsub_altitudeFoot_div
     {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i j : Fin (n + 1)) (hn : 1 < n) :
     -1 < ⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
             / (s.height i * s.height j) := by
   rw [neg_lt, neg_div', div_lt_one (by simp [height]), neg_lt]
-  exact neg_mul_lt_inner_height_vsub_altitudeFoot _ _ _ hn
+  exact neg_mul_lt_inner_vsub_altitudeFoot _ _ _ hn
 
 end Simplex
 
