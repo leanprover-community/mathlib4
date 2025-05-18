@@ -770,8 +770,8 @@ theorem cos_two_mul_pi_div_three : cos (2 * π / 3) = - 1 / 2 := by
 lemma cos_four_mul_pi_div_three : cos (4 * π / 3) = - 1 / 2 := calc
   cos (4 * π / 3) = cos (4 * (π / 3)) := by rw [mul_div_assoc]
   _ = cos ((2 * 2) * (π / 3)) := by norm_num
-  _ = 2 * cos (2 * π / 3) ^ 2 - 1 := by rw [mul_assoc, cos_two_mul, mul_div_assoc]
-  _ = 2 * (- 1 / 2) ^ 2 - 1 := by rw [cos_two_mul_pi_div_three]
+  _ = 2 * (- 1 / 2) ^ 2 - 1 := by
+    rw [mul_assoc, cos_two_mul, ← mul_div_assoc, cos_two_mul_pi_div_three]
   _ = - 1 / 2 := by norm_num
 
 /-- The cosine of `π / 6` is `√3 / 2`. -/
@@ -817,8 +817,8 @@ lemma sin_two_mul_pi_div_three : sin (2 * π / 3) = √3 / 2 := by
 lemma sin_four_mul_pi_div_three : sin (4 * π / 3) = - √3 / 2 := calc
   sin (4 * π / 3) = sin (4 * (π / 3)) := by rw [mul_div_assoc]
   _ = sin ((2 * 2) * (π / 3)) := by norm_num
-  _ = 2 * sin (2 * π / 3) * cos (2 * π / 3) := by rw [mul_assoc, mul_div_assoc, sin_two_mul]
-  _ = 2 * (√3 / 2) * (- 1 / 2) := by rw [sin_two_mul_pi_div_three, cos_two_mul_pi_div_three]
+  _ = 2 * (√3 / 2) * (- 1 / 2) := by
+    rw [mul_assoc, ← mul_div_assoc, sin_two_mul, sin_two_mul_pi_div_three, cos_two_mul_pi_div_three]
   _ = - √3 / 2 := by ring
 
 theorem quadratic_root_cos_pi_div_five :
