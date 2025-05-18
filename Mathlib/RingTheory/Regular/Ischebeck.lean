@@ -146,7 +146,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           rw [Module.supportDim_eq_ringKrullDim_quotient_annihilator, ← this,
             Ideal.annihilator_quotient, ringKrullDim_eq_zero_of_field]
         absurd eqr _ dim_eq
-        simpa only [Module.supportDim_eq_of_equiv R L (R ⧸ p.asIdeal) e, this, WithBot.unbot_zero,
+        simpa only [Module.supportDim_eq_of_equiv e, this, WithBot.unbot_zero,
           ← ENat.coe_zero, ENat.coe_inj, eq_comm] using eq0
       let S := (ModuleCat.of R L).smulShortComplex x
       have reg : IsSMulRegular (ModuleCat.of R L) x := by
@@ -250,11 +250,11 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         have dimle1' : ((Module.supportDim R L1).unbot
           (Module.supportDim_ne_bot_of_nontrivial R L1)) ≤ r := by
           rw [← (eqr _ dim_eq), ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
-          exact Module.supportDim_le_of_injective R L1 L2 f inj
+          exact Module.supportDim_le_of_injective f inj
         have dimle3' : ((Module.supportDim R L3).unbot
           (Module.supportDim_ne_bot_of_nontrivial R L3)) ≤ r := by
           rw [← (eqr _ dim_eq), ← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot]
-          exact Module.supportDim_le_of_surjective R L2 L3 g surj
+          exact Module.supportDim_le_of_surjective g surj
         have ge1 : moduleDepth (of R L1) M ≥ IsLocalRing.depth M - ((Module.supportDim R L1).unbot
           (Module.supportDim_ne_bot_of_nontrivial R L1)) := by
           rcases lt_or_eq_of_le (ENat.toNat_le_of_le_coe dimle1') with lt|eq
@@ -291,7 +291,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             (Module.supportDim_ne_bot_of_nontrivial R L3))).toNat = r := by
             rw [← dim_eq]
             congr 2
-            exact (Module.supportDim_eq_of_equiv R L2 L3 eg).symm
+            exact (Module.supportDim_eq_of_equiv eg).symm
           rw [moduleDepth_eq_of_iso_fst M eg.toModuleIso, ← eqr _ dimeq3]
           exact ih3' L3ntr dimeq3
         · have : Function.Surjective f := by
@@ -302,7 +302,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             (Module.supportDim_ne_bot_of_nontrivial R L1))).toNat = r := by
             rw [← dim_eq]
             congr 2
-            exact Module.supportDim_eq_of_equiv R L1 L2 ef
+            exact Module.supportDim_eq_of_equiv ef
           rw [← moduleDepth_eq_of_iso_fst M ef.toModuleIso, ← eqr _ dimeq1]
           exact ih1' L1ntr dimeq1
 
@@ -332,7 +332,7 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
   simp only [dep0, ge_iff_le, nonpos_iff_eq_zero, tsub_eq_zero_iff_le] at this
   convert this
   rw [← Module.supportDim_quotient_eq_ringKrullDim,
-    Module.supportDim_eq_of_equiv R _ _ (Shrink.linearEquiv (R ⧸ P) R)]
+    Module.supportDim_eq_of_equiv (Shrink.linearEquiv (R ⧸ P) R)]
 
 /-
 theorem depth_le_ringKrullDim [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R)
