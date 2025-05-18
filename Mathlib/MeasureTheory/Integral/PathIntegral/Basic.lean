@@ -50,6 +50,8 @@ and one for `HasFDerivAt`.
 
 open Metric MeasureTheory unitInterval Topology Set Interval AffineMap Convex Filter
 
+section Defs
+
 variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b : E}
 
@@ -104,13 +106,17 @@ theorem pathIntegral_def' [NormedSpace ℝ E] [NormedSpace ℝ F] (ω : E → E 
     pathIntegral ω γ = ∫ t in (0)..1, ω (γ.extend t) (derivWithin γ.extend I t) := by
   simp only [pathIntegral_def, pathIntegralFun_def]
 
+end Defs
+
 /-!
 ### Operations on paths
 -/
 
 section PathOperations
 
-variable {c d : E} {ω : E → E →L[𝕜] F} {γ γab : Path a b} {γbc : Path b c} {t : ℝ}
+variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b c d : E} {ω : E → E →L[𝕜] F}
+  {γ γab : Path a b} {γbc : Path b c} {t : ℝ}
 
 @[simp]
 theorem pathIntegralFun_refl (ω : E → E →L[𝕜] F) (a : E) : pathIntegralFun ω (.refl a) = 0 := by
@@ -288,7 +294,9 @@ end PathOperations
 
 section Algebra
 
-variable {ω ω₁ ω₂ : E → E →L[𝕜] F} {γ : Path a b} {t : ℝ}
+variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b : E}
+  {ω ω₁ ω₂ : E → E →L[𝕜] F} {γ : Path a b} {t : ℝ}
 
 @[simp]
 theorem pathIntegralFun_add :
@@ -425,7 +433,11 @@ theorem pathIntegral_fun_smul : ∫ᵖ x in γ, c • ω x = c • ∫ᵖ x in �
 
 end Algebra
 
-variable [NormedSpace ℝ E] [CompleteSpace F] {s : Set E} {ω : E → E →L[𝕜] F}
+section FDeriv
+
+variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+  {a b : E} {s : Set E} {ω : E → E →L[𝕜] F}
 
 /-- The integral of `ω` along `[a -[ℝ] b]` has derivative `ω a` in `b` at `b = a`.
 This is a `HasFDerivWithinAt` version assuming that `ω` is continuous within `s`
@@ -473,3 +485,5 @@ This is a `HasFDerivAt` version assuming that `ω` is continuous on the whole sp
 theorem HasFDerivAt.pathIntegral_segment_source (hω : Continuous ω) :
     HasFDerivAt (∫ᵖ x in .segment a ·, ω x) (ω a) a :=
   .pathIntegral_segment_source' <| .of_forall fun _ ↦ hω.continuousAt
+
+end FDeriv
