@@ -17,6 +17,7 @@ section orderIso
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
+/-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
 noncomputable def primeSpectrum_quotient_orderIso_zeroLocus (I : Ideal R) :
     PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) :=
   let e : PrimeSpectrum (R ⧸ I) ≃ (PrimeSpectrum.zeroLocus (R := R) I) :=
@@ -42,7 +43,7 @@ instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Subsingleton M] (
 
 end QuotSMulTop
 
-section FiniteDimensionalOrder
+/- section FiniteDimensionalOrder
 
 open RingTheory Sequence IsLocalRing Submodule Module
 
@@ -59,7 +60,7 @@ instance [Nontrivial M] : FiniteDimensionalOrder (Module.support R M) := by
   have : FiniteDimensionalOrder (PrimeSpectrum (R ⧸ annihilator R M)) := inferInstance
   sorry
 
-end FiniteDimensionalOrder
+end FiniteDimensionalOrder -/
 
 section LTSeries
 
@@ -151,14 +152,13 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       simp only [show p = q from dif_neg lt, hq, hx, le_refl, and_self]
   apply (Nat.cast_le.mpr le).trans ?_
   rcases move_chain (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)) hxp with ⟨q, hxq, hq, h0, _⟩
-  have : (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)).length = p.length :=
-    p.map_length (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)
   by_cases h : p.length = 0
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
       (supportDim_ne_bot_iff_nontrivial R (QuotSMulTop x M)).mpr <|
         nontrival_quotSMulTop_of_mem_annihilator_jacobson (maximalIdeal_le_jacobson _ hx)
     rw [h, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
     exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
+  have h : 1 ≤ p.length := Nat.one_le_iff_ne_zero.mpr h
   let q' : LTSeries (support R (QuotSMulTop x M)) := {
     length := p.length - 1
     toFun := by
@@ -173,12 +173,17 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       · have hq : q 1 ≤ q (i + 1) := by
           refine q.monotone ?_
           rw [show (i : Fin (q.length + 1)) + 1 = (i + 1 : ℕ) by simp]
-          refine (Fin.natCast_le_natCast ?_ ?_).mpr ?_
-          · sorry
-          · sorry
-          · exact Nat.le_add_left 1 i
+          refine (Fin.natCast_le_natCast (h.trans_eq hq.symm) ?_).mpr (Nat.le_add_left 1 i)
+          exact hi.trans_eq ((Nat.sub_add_cancel h).trans hq.symm)
         exact hq hxq
-    step := sorry
+    step := by
+      intro ⟨i, hi⟩
+      simp only [Fin.castSucc_mk, Fin.succ_mk, Nat.cast_add, Nat.cast_one, Subtype.mk_lt_mk]
+      apply q.strictMono
+      have hi : i + 1 + 1 ≤ q.length := (Nat.add_le_of_le_sub h hi).trans_eq hq.symm
+      rw [show (i : Fin (q.length + 1)) + 1 + 1 = (i + 1 + 1 : ℕ) by simp]
+      rw [show (i : Fin (q.length + 1)) + 1 = (i + 1 : ℕ) by simp]
+      exact (Fin.natCast_lt_natCast ((i + 1).le_succ.trans hi) hi).mpr (lt_add_one (i + 1))
   }
   calc
     (p.length : WithBot ℕ∞) ≤ (p.length - 1 + 1 : ℕ) := Nat.cast_le.mpr le_tsub_add
