@@ -67,11 +67,7 @@ theorem hom_ext {X Y : Core C} {f g : X ⟶ Y} (h : f.iso.hom = g.iso.hom) :
 
 variable (C)
 
--- Porting note: This worked without proof before.
 instance : (inclusion C).Faithful where
-  map_injective := by
-    intro _ _
-    apply hom_ext
 
 variable {C} {G : Type u₂} [Groupoid.{v₂} G]
 
