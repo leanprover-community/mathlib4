@@ -236,6 +236,6 @@ instance : BoundedOrder (Open X) where
   bot_le _ := le_def.mpr bot_le
 
 instance : CompleteSemilatticeSup (Open X) where
-  sSup s := ⟨sSup s⟩-/
+  sSup s := ⟨sSup s⟩
 
-end Open
+end Open-/
