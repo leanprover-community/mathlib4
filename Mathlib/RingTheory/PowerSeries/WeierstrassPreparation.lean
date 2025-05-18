@@ -48,7 +48,8 @@ such ring has only on maximal ideal, and hence it is a complete local ring.
   Let `n` be the order of the image of `g` in the residue field. Then there exists a power series
   `q` and a polynomial `r` of degree `< n`, such that `f = g * q + r`.
 
-- `PowerSeries.IsWeierstrassDivision.elim`: `q` and `r` in the Weierstrass division are unique.
+- `PowerSeries.IsWeierstrassDivision.elim`,
+  `PowerSeries.IsWeierstrassDivision.unique`: `q` and `r` in the Weierstrass division are unique.
 
 ## References
 
@@ -331,8 +332,8 @@ theorem exists_isWeierstrassDivision [IsAdicComplete (IsLocalRing.maximalIdeal A
 
 -- Unfortunately there is no Unicode subscript `w`.
 
-/-- The `q` in Weierstrass division, denoted by `f /ʷ g`. Note that when the image of `g` in the
-residue field is zero, this is defined to be zero. -/
+/-- The quotient `q` in Weierstrass division, denoted by `f /ʷ g`. Note that when the image of
+`g` in the residue field is zero, this is defined to be zero. -/
 noncomputable def weierstrassDiv [IsPrecomplete (IsLocalRing.maximalIdeal A) A] : A⟦X⟧ :=
   open scoped Classical in
   if hg : g.map (IsLocalRing.residue A) ≠ 0 then
@@ -340,8 +341,8 @@ noncomputable def weierstrassDiv [IsPrecomplete (IsLocalRing.maximalIdeal A) A] 
   else
     0
 
-/-- The `r` in Weierstrass division, denoted by `f %ʷ g`. Note that when the image of `g` in the
-residue field is zero, this is defined to be zero. -/
+/-- The remainder `r` in Weierstrass division, denoted by `f %ʷ g`. Note that when the image of
+`g` in the residue field is zero, this is defined to be zero. -/
 noncomputable def weierstrassMod [IsPrecomplete (IsLocalRing.maximalIdeal A) A] : A[X] :=
   open scoped Classical in
   if hg : g.map (IsLocalRing.residue A) ≠ 0 then
@@ -394,7 +395,7 @@ variable {f} in
 
 This result is stated using two `PowerSeries.IsWeierstrassDivision` assertions, and only requires
 the ring being Hausdorff with respect to the maximal ideal. If you want `q` and `r` equal to
-`f /ʷ g` and `f %ʷ g`, use `PowerSeries.IsWeierstrassDivision.eq_weierstrassDiv_weierstrassMod`
+`f /ʷ g` and `f %ʷ g`, use `PowerSeries.IsWeierstrassDivision.unique`
 instead, which requires the ring being complete with respect to the maximal ideal. -/
 theorem IsWeierstrassDivision.elim [IsHausdorff (IsLocalRing.maximalIdeal A) A]
     {q q' : A⟦X⟧} {r r' : A[X]}
@@ -411,8 +412,7 @@ theorem IsWeierstrassDivision.eq_zero [IsHausdorff (IsLocalRing.maximalIdeal A) 
 variable {f} in
 /-- If `q` and `r` are quotient and remainder in the Weierstrass division `f / g`, then they are
 equal to `f /ʷ g` and `f %ʷ g`. -/
-theorem IsWeierstrassDivision.eq_weierstrassDiv_weierstrassMod
-    [IsAdicComplete (IsLocalRing.maximalIdeal A) A]
+theorem IsWeierstrassDivision.unique [IsAdicComplete (IsLocalRing.maximalIdeal A) A]
     {q : A⟦X⟧} {r : A[X]}
     (H : f.IsWeierstrassDivision g q r) : q = f /ʷ g ∧ r = f %ʷ g :=
   H.elim hg (f.isWeierstrassDivision_weierstrassDiv_weierstrassMod hg)
