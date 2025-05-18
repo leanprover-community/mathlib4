@@ -143,7 +143,7 @@ alongside the `s` argument.
 
 Note that without the coercion to `P`, the LHS and RHS would have different types. -/
 @[congr]
-theorem orthogonalProjection_congr (s₁ s₂ : AffineSubspace ℝ P) {p₁ p₂ : P}
+theorem orthogonalProjection_congr {s₁ s₂ : AffineSubspace ℝ P} {p₁ p₂ : P}
     [Nonempty s₁] [s₁.direction.HasOrthogonalProjection]
     (h : s₁ = s₂) (hp : p₁ = p₂) :
     letI : Nonempty s₂ := h ▸ ‹_›
