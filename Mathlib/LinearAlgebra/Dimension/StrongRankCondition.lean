@@ -510,7 +510,6 @@ for a version with different typeclass constraints. -/
 lemma Module.finrank_top_le_finrank_of_isScalarTower [Module.Finite R M] [Semiring S]
     [Module S M] [Module R S] [IsScalarTower R S S] [FaithfulSMul R S] [IsScalarTower R S M] :
     finrank S M ≤ finrank R M := by
-  have := Module.Finite.of_restrictScalars_finite R S M
   rw [finrank, finrank, Cardinal.toNat_le_iff_le_of_lt_aleph0]
   · exact rank_top_le_rank_of_isScalarTower R S M
   · exact lt_of_le_of_lt (rank_top_le_rank_of_isScalarTower R S M) (Module.rank_lt_aleph0 R M)

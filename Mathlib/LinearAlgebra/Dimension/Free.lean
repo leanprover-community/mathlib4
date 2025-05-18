@@ -210,7 +210,7 @@ variable (R) in
 /-- Also see `Module.finrank_bot_le_finrank_of_isScalarTower`
 for a version with different typeclass constraints. -/
 lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S] [Semiring T]
-    [Module R T] [Module S T] [Module R S] [IsScalarTower R S T] [IsScalarTower R T T]
+    [Module R T] [Module S T] [Module R S] [IsScalarTower R S T]
     [IsScalarTower S T T] [FaithfulSMul S T] [Module.Finite S T] [Module.Free R S] :
     finrank R S ≤ finrank R T := by
   by_cases H : Module.Finite R S
