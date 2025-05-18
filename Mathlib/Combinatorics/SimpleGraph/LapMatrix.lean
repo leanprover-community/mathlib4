@@ -17,7 +17,7 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
 * `isPosSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
-* `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
+* `card_connectedComponent_eq_finrank_ker_mulVecLin_lapMatrix`:
   The number of connected components in a graph
   is the dimension of the nullspace of its Laplacian matrix.
 
@@ -105,10 +105,15 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj
   simp (disch := intros; positivity)
     [lapMatrix_toLinearMap₂', sum_eq_zero_iff_of_nonneg, sub_eq_zero]
 
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
-    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
-  rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
+theorem lapMatrix_mulVec_eq_zero_iff_forall_adj {x : V → ℝ} :
+    G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
+  rw [← Matrix.toLin'_apply, ← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
+
+@[deprecated lapMatrix_mulVec_eq_zero_iff_forall_adj (since := "2025-05-18")]
+theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
+    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j :=
+  G.lapMatrix_mulVec_eq_zero_iff_forall_adj
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLinearMap₂' ℝ (G.lapMatrix ℝ) x x = 0 ↔
@@ -120,20 +125,25 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V →
   | nil => rfl
   | cons hA _ h' => exact (h _ _ hA).trans h'
 
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
-    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
-  rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
+theorem lapMatrix_mulVec_eq_zero_iff_forall_reachable {x : V → ℝ} :
+    G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
+  rw [← Matrix.toLin'_apply, ← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
+
+@[deprecated lapMatrix_mulVec_eq_zero_iff_forall_reachable (since := "2025-05-18")]
+theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
+    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j :=
+  G.lapMatrix_mulVec_eq_zero_iff_forall_reachable
 
 section
 
 variable [DecidableEq G.ConnectedComponent]
 
-lemma mem_ker_toLin'_lapMatrix_of_connectedComponent {G : SimpleGraph V} [DecidableRel G.Adj]
+lemma mem_ker_mulVecLin_lapMatrix_of_connectedComponent {G : SimpleGraph V} [DecidableRel G.Adj]
     [DecidableEq G.ConnectedComponent] (c : G.ConnectedComponent) :
     (fun i ↦ if connectedComponentMk G i = c then 1 else 0) ∈
-      LinearMap.ker (toLin' (lapMatrix ℝ G)) := by
-  rw [LinearMap.mem_ker, lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable]
+      LinearMap.ker (lapMatrix ℝ G).mulVecLin := by
+  rw [LinearMap.mem_ker, mulVecLin_apply, lapMatrix_mulVec_eq_zero_iff_forall_reachable]
   intro i j h
   split_ifs with h₁ h₂ h₃
   · rfl
@@ -143,14 +153,21 @@ lemma mem_ker_toLin'_lapMatrix_of_connectedComponent {G : SimpleGraph V} [Decida
     exact (h₁ (h₃ ▸ h)).elim
   · rfl
 
+@[deprecated  mem_ker_mulVecLin_lapMatrix_of_connectedComponent (since := "2025-05-18")]
+lemma mem_ker_toLin'_lapMatrix_of_connectedComponent {G : SimpleGraph V} [DecidableRel G.Adj]
+    [DecidableEq G.ConnectedComponent] (c : G.ConnectedComponent) :
+    (fun i ↦ if connectedComponentMk G i = c then 1 else 0) ∈
+      LinearMap.ker (toLin' (lapMatrix ℝ G)) :=
+  mem_ker_mulVecLin_lapMatrix_of_connectedComponent c
+
 /-- Given a connected component `c` of a graph `G`, `lapMatrix_ker_basis_aux c` is the map
 `V → ℝ` which is `1` on the vertices in `c` and `0` elsewhere.
 The family of these maps indexed by the connected components of `G` proves to be a basis
 of the kernel of `lapMatrix G R` -/
 def lapMatrix_ker_basis_aux (c : G.ConnectedComponent) :
-    LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ)) :=
+    LinearMap.ker (G.lapMatrix ℝ).mulVecLin :=
   ⟨fun i ↦ if G.connectedComponentMk i = c then (1 : ℝ)  else 0,
-    mem_ker_toLin'_lapMatrix_of_connectedComponent c⟩
+    mem_ker_mulVecLin_lapMatrix_of_connectedComponent c⟩
 
 lemma linearIndependent_lapMatrix_ker_basis_aux :
     LinearIndependent ℝ (lapMatrix_ker_basis_aux G) := by
@@ -172,8 +189,8 @@ lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
   rw [Submodule.mem_span_range_iff_exists_fun]
-  use Quot.lift x.val (by rw [← lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable G x,
-    LinearMap.map_coe_ker])
+  use Quot.lift x.val (by rw [← lapMatrix_mulVec_eq_zero_iff_forall_reachable,
+    ← mulVecLin_apply, LinearMap.map_coe_ker])
   ext j
   simp only [lapMatrix_ker_basis_aux]
   rw [AddSubmonoid.coe_finset_sum]
@@ -191,11 +208,18 @@ noncomputable def lapMatrix_ker_basis :=
 end
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
-theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
+theorem card_connectedComponent_eq_finrank_ker_mulVecLin_lapMatrix :
     Fintype.card G.ConnectedComponent =
-      Module.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
+      Module.finrank ℝ (LinearMap.ker (G.lapMatrix ℝ).mulVecLin) := by
   classical
   rw [Module.finrank_eq_card_basis (lapMatrix_ker_basis G)]
+
+/-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
+@[deprecated card_connectedComponent_eq_finrank_ker_mulVecLin_lapMatrix (since := "2025-05-18")]
+theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
+    Fintype.card G.ConnectedComponent =
+      Module.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) :=
+  card_connectedComponent_eq_finrank_ker_mulVecLin_lapMatrix G
 
 @[deprecated (since := "2025-04-29")]
 alias card_ConnectedComponent_eq_rank_ker_lapMatrix :=
