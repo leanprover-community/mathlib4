@@ -659,3 +659,5 @@ lemma restrict_killingForm_eq_sum :
 end CharZero
 
 end IsKilling
+
+end LieAlgebra
