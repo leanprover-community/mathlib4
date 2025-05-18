@@ -390,8 +390,7 @@ protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanning
   SimpleGraph.Embedding.map (Function.Embedding.subtype _) G
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ↪ β) :
-    (⊤ : SimpleGraph α) ↪g (⊤ : SimpleGraph β) :=
+protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α ↪g completeGraph β :=
   { f with map_rel_iff' := by simp }
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
@@ -405,6 +404,16 @@ abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
 @[simp]
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+/-- Graph embeddings from `G` to `H` are the same thing as graph embeddings from `Gᶜ` to `Hᶜ`. -/
+def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
+  toFun f := ⟨f.toEmbedding, by simp⟩
+  invFun f := ⟨f.toEmbedding, fun {v w} ↦ by
+    obtain rfl | hvw := eq_or_ne v w
+    · simp
+    · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
+  left_inv f := rfl
+  right_inv f := rfl
 
 end Embedding
 
@@ -433,7 +442,7 @@ def induceHom : G.induce s →g G'.induce t where
 
 lemma induceHom_injective (hi : Set.InjOn φ s) :
     Function.Injective (induceHom φ φst) := by
-  erw [Set.MapsTo.restrict_inj] <;> assumption
+  simpa [Set.MapsTo.restrict_inj]
 
 end induceHom
 
@@ -560,8 +569,7 @@ lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
     (SimpleGraph.Iso.map f G).symm w = f.symm w := rfl
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ≃ β) :
-    (⊤ : SimpleGraph α) ≃g (⊤ : SimpleGraph β) :=
+protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β :=
   { f with map_rel_iff' := by simp }
 
 theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :

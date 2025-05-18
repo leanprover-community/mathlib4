@@ -18,9 +18,9 @@ the group structure on `SpecialLinearGroup n R` and the embedding into the gener
 
 ## Main definitions
 
- * `Matrix.SpecialLinearGroup` is the type of matrices with determinant 1
- * `Matrix.SpecialLinearGroup.group` gives the group structure (under multiplication)
- * `Matrix.SpecialLinearGroup.toGL` is the embedding `SLₙ(R) → GLₙ(R)`
+* `Matrix.SpecialLinearGroup` is the type of matrices with determinant 1
+* `Matrix.SpecialLinearGroup.group` gives the group structure (under multiplication)
+* `Matrix.SpecialLinearGroup.toGL` is the embedding `SLₙ(R) → GLₙ(R)`
 
 ## Notation
 
@@ -41,7 +41,7 @@ of a regular `↑` coercion.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Special_linear_group
+* https://en.wikipedia.org/wiki/Special_linear_group
 
 ## Tags
 
@@ -83,8 +83,6 @@ verbose, or `A.val` which is not the simp-normal form for subtypes, we create a 
 notation. -/
 local notation:1024 "↑ₘ" A:1024 => ((A : SpecialLinearGroup n R) : Matrix n n R)
 
--- Porting note: moved this section upwards because it used to be not simp-normal.
--- Now it is, since coercion arrows are unfolded.
 section CoeFnInstance
 
 /-- This instance is here for convenience, but is literally the same as the coercion from
@@ -136,7 +134,6 @@ section CoeLemmas
 
 variable (A B : SpecialLinearGroup n R)
 
--- Porting note: shouldn't be `@[simp]` because cast+mk gets reduced anyway
 theorem coe_mk (A : Matrix n n R) (h : det A = 1) : ↑(⟨A, h⟩ : SpecialLinearGroup n R) = A :=
   rfl
 
@@ -258,7 +255,6 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
     simpa only [coe_mul, ← hr] using (scalar_commute (n := n) r (Commute.all r) B).symm
 
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
--- replaced `(Fintype.card n).mkPNat'` by `Fintype.card n` (note `n` is nonempty here)
 @[simps]
 def center_equiv_rootsOfUnity' (i : n) :
     center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n) R where
@@ -288,7 +284,6 @@ open scoped Classical in
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity.
 
 See also `center_equiv_rootsOfUnity'`. -/
--- replaced `(Fintype.card n).mkPNat'` by what it means, avoiding `PNat`s.
 noncomputable def center_equiv_rootsOfUnity :
     center (SpecialLinearGroup n R) ≃* rootsOfUnity (max (Fintype.card n) 1) R :=
   (isEmpty_or_nonempty n).by_cases
@@ -344,18 +339,14 @@ open scoped MatrixGroups
 
 theorem SL2_inv_expl_det (A : SL(2, R)) :
     det ![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]] = 1 := by
-  rw [Matrix.det_fin_two, mul_comm]
-  simp only [cons_val_zero, cons_val_one, head_cons, mul_neg, neg_mul, neg_neg]
-  have := A.2
-  rw [Matrix.det_fin_two] at this
-  convert this
+  simpa [-det_coe, Matrix.det_fin_two, mul_comm] using A.2
 
 theorem SL2_inv_expl (A : SL(2, R)) :
     A⁻¹ = ⟨![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]], SL2_inv_expl_det A⟩ := by
   ext
   have := Matrix.adjugate_fin_two A.1
   rw [coe_inv, this]
-  rfl
+  simp
 
 theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1), P ⟨!![a, b; c, d], by rwa [det_fin_two_of]⟩)

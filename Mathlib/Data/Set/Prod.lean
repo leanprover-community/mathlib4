@@ -238,8 +238,10 @@ theorem prod_range_range_eq {m₁ : α → γ} {m₂ : β → δ} :
   ext <| by simp [range]
 
 @[simp, mfld_simps]
-theorem range_prod_map {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
+theorem range_prodMap {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
   prod_range_range_eq.symm
+
+@[deprecated (since := "2025-04-10")] alias range_prod_map := range_prodMap
 
 theorem prod_range_univ_eq {m₁ : α → γ} :
     range m₁ ×ˢ (univ : Set β) = range fun p : α × β => (m₁ p.1, p.2) :=
@@ -252,7 +254,7 @@ theorem prod_univ_range_eq {m₂ : β → δ} :
 theorem range_pair_subset (f : α → β) (g : α → γ) :
     (range fun x => (f x, g x)) ⊆ range f ×ˢ range g := by
   have : (fun x => (f x, g x)) = Prod.map f g ∘ fun x => (x, x) := funext fun x => rfl
-  rw [this, ← range_prod_map]
+  rw [this, ← range_prodMap]
   apply range_comp_subset_range
 
 theorem Nonempty.prod : s.Nonempty → t.Nonempty → (s ×ˢ t).Nonempty := fun ⟨x, hx⟩ ⟨y, hy⟩ =>
@@ -319,6 +321,9 @@ theorem snd_image_prod {s : Set α} (hs : s.Nonempty) (t : Set β) : Prod.snd ''
   (snd_image_prod_subset _ _).antisymm fun y y_in =>
     let ⟨x, x_in⟩ := hs
     ⟨(x, y), ⟨x_in, y_in⟩, rfl⟩
+
+theorem subset_fst_image_prod_snd_image {s : Set (α × β)} :
+    s ⊆ (Prod.fst '' s) ×ˢ (Prod.snd '' s) := fun ⟨p₁, p₂⟩ _ => by aesop
 
 lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo Prod.snd (s ×ˢ t) t :=
   fun _ hx ↦ (mem_prod.1 hx).2
@@ -809,12 +814,19 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
     (fun f : ∀ i, α i => f i) '' pi univ t = t i :=
   eval_image_pi (mem_univ i) ht
 
+theorem piMap_mapsTo_pi {I : Set ι} {f : ∀ i, α i → β i} {s : ∀ i, Set (α i)} {t : ∀ i, Set (β i)}
+    (h : ∀ i ∈ I, MapsTo (f i) (s i) (t i)) :
+    MapsTo (Pi.map f) (I.pi s) (I.pi t) :=
+  fun _x hx i hi => h i hi (hx i hi)
+
+theorem piMap_image_pi_subset {f : ∀ i, α i → β i} (t : ∀ i, Set (α i)) :
+    Pi.map f '' s.pi t ⊆ s.pi fun i ↦ f i '' t i :=
+  image_subset_iff.2 <| piMap_mapsTo_pi fun _ _ => mapsTo_image _ _
+
 theorem piMap_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
     Pi.map f '' s.pi t = s.pi fun i ↦ f i '' t i := by
-  refine Subset.antisymm (image_subset_iff.2 fun a ha i hi ↦ mem_image_of_mem _ (ha _ hi)) ?_
-  intro b hb
-  have : ∀ i, ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
-    intro i
+  refine Subset.antisymm (piMap_image_pi_subset _) fun b hb => ?_
+  have (i : ι) : ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
     if hi : i ∈ s then
       exact (hb i hi).imp fun a ⟨hat, hab⟩ ↦ ⟨hab, fun _ ↦ hat⟩
     else
@@ -822,19 +834,13 @@ theorem piMap_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective 
   choose a hab hat using this
   exact ⟨a, hat, funext hab⟩
 
-@[deprecated (since := "2024-10-06")] alias dcomp_image_pi := piMap_image_pi
-
 theorem piMap_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
     Pi.map f '' univ.pi t = univ.pi fun i ↦ f i '' t i :=
   piMap_image_pi (by simp) t
 
-@[deprecated (since := "2024-10-06")] alias dcomp_image_univ_pi := piMap_image_univ_pi
-
 @[simp]
 theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun i ↦ range (f i) := by
   simp only [← image_univ, ← piMap_image_univ_pi, pi_univ]
-
-@[deprecated (since := "2024-10-06")] alias range_dcomp := range_piMap
 
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine

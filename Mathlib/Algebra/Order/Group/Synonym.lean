@@ -89,7 +89,7 @@ instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
 @[to_additive]
 instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ := h
 
-@[to_additive OrderDual.subtractionCommMonoid]
+@[to_additive]
 instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
 
 @[to_additive]
@@ -162,6 +162,18 @@ instance [h : Semigroup α] : Semigroup (Lex α) := h
 instance [h : CommSemigroup α] : CommSemigroup (Lex α) := h
 
 @[to_additive]
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Lex α) :=
+  inferInstanceAs <| IsLeftCancelMul α
+
+@[to_additive]
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Lex α) :=
+  inferInstanceAs <| IsRightCancelMul α
+
+@[to_additive]
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Lex α) :=
+  inferInstanceAs <| IsCancelMul α
+
+@[to_additive]
 instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Lex α) := h
 
 @[to_additive]
@@ -197,7 +209,7 @@ instance [h : DivInvMonoid α] : DivInvMonoid (Lex α) := h
 @[to_additive]
 instance [h : DivisionMonoid α] : DivisionMonoid (Lex α) := h
 
-@[to_additive existing OrderDual.subtractionCommMonoid]
+@[to_additive]
 instance [h : DivisionCommMonoid α] : DivisionCommMonoid (Lex α) := h
 
 @[to_additive]

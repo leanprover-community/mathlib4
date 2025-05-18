@@ -46,7 +46,7 @@ theorem house_sum_le_sum_house {ι : Type*} (s : Finset ι) (α : ι → K) :
 theorem house_nonneg (α : K) : 0 ≤ house α := norm_nonneg _
 
 theorem house_mul_le (α β : K) : house (α * β) ≤ house α * house β := by
-  simp only [house, _root_.map_mul]; apply norm_mul_le
+  simp only [house, map_mul]; apply norm_mul_le
 
 @[simp] theorem house_intCast (x : ℤ) : house (x : K) = |x| := by
   simp only [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_intCast, Int.cast_abs]
@@ -130,7 +130,7 @@ variable (ha : a ≠ 0)
 
 include ha in
 private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
-  simp (config := { unfoldPartialApp := true }) only [asiegel, a']
+  simp +unfoldPartialApp only [asiegel, a']
   simp only [ne_eq]
   rw [funext_iff]; intros hs
   simp only [Prod.forall] at hs
@@ -231,7 +231,7 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
         integralBasis_repr_apply, eq_intCast, Rat.cast_intCast,
           Complex.norm_intCast] at remark
       exact mod_cast remark ((a kr.1 lu.1 * ((newBasis K) lu.2))) kr.2
-    · simp only [house, _root_.map_mul, mul_assoc]
+    · simp only [house, map_mul, mul_assoc]
       exact mul_le_mul_of_nonneg_left (norm_mul_le _ _) (c_nonneg K)
     · rw [mul_assoc, mul_assoc]
       apply mul_le_mul_of_nonneg_left ?_ (c_nonneg K)
@@ -261,7 +261,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
        _ ≤ ∑ _r : K →+* ℂ, ((↑q * h * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p))) * supOfBasis K := ?_
        _ ≤ h * (c₂ K) * ((q * c₁ K * A) ^ ((p : ℝ) / (q - p))) := ?_
        _ ≤ c₁ K * ((c₁ K * ↑q * A) ^ ((p : ℝ) / (q - p))) := ?_
-  · simp_rw [← _root_.map_mul, map_sum]; apply house_sum_le_sum_house
+  · simp_rw [← map_mul, map_sum]; apply house_sum_le_sum_house
   · apply sum_le_sum; intros r _; convert house_mul_le ..
     simp only [map_intCast, house_intCast, Int.cast_abs, Int.norm_eq_abs]
   · apply sum_le_sum; intros r _; unfold supOfBasis
@@ -290,7 +290,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
 
 include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
- non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
+non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by

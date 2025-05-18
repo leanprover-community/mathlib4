@@ -77,6 +77,9 @@ theorem coe_inl : (inl R M₁ M₂ : M₁ →ₗ[R] M₁ × M₂) = LinearMap.in
 theorem coe_inr : (inr R M₁ M₂ : M₂ →ₗ[R] M₁ × M₂) = LinearMap.inr R M₁ M₂ :=
   rfl
 
+lemma comp_inl_add_comp_inr (L : M₁ × M₂ →L[R] M₃) (v : M₁ × M₂) :
+    L.comp (.inl R M₁ M₂) v.1 + L.comp (.inr R M₁ M₂) v.2 = L v := by simp [← map_add]
+
 @[simp]
 theorem ker_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
     ker (f.prod g) = ker f ⊓ ker g :=
@@ -186,6 +189,10 @@ theorem proj_apply (i : ι) (b : ∀ i, φ i) : (proj i : (∀ i, φ i) →L[R] 
 
 @[simp]
 theorem proj_pi (f : ∀ i, M₂ →L[R] φ i) (i : ι) : (proj i).comp (pi f) = f i := rfl
+
+@[simp]
+theorem coe_proj (i : ι) : (proj i).toLinearMap = (LinearMap.proj i : ((i : ι) → φ i) →ₗ[R] _) :=
+  rfl
 
 @[simp]
 theorem pi_proj : pi proj = .id R (∀ i, φ i) := rfl

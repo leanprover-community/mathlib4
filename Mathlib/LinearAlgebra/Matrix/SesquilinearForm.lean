@@ -19,10 +19,10 @@ This file defines the conversion between sesquilinear maps and matrices.
 
 ## Main definitions
 
- * `Matrix.toLinearMap₂` given a basis define a bilinear map
- * `Matrix.toLinearMap₂'` define the bilinear map on `n → R`
- * `LinearMap.toMatrix₂`: calculate the matrix coefficients of a bilinear map
- * `LinearMap.toMatrix₂'`: calculate the matrix coefficients of a bilinear map on `n → R`
+* `Matrix.toLinearMap₂` given a basis define a bilinear map
+* `Matrix.toLinearMap₂'` define the bilinear map on `n → R`
+* `LinearMap.toMatrix₂`: calculate the matrix coefficients of a bilinear map
+* `LinearMap.toMatrix₂'`: calculate the matrix coefficients of a bilinear map on `n → R`
 
 ## TODO
 
@@ -63,7 +63,7 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
         MulAction.mul_smul])
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, smul_add, sum_add_distrib])
     (fun _ v w => by
-      simp only [Pi.smul_apply, smul_eq_mul, _root_.map_mul, MulAction.mul_smul, smul_sum])
+      simp only [Pi.smul_apply, smul_eq_mul, map_mul, MulAction.mul_smul, smul_sum])
 
 variable [DecidableEq n] [DecidableEq m]
 
@@ -260,7 +260,7 @@ theorem LinearMap.toMatrix₂'_compl₁₂ (B : (n → R) →ₗ[R] (m → R) �
     toMatrix₂' R (B.compl₁₂ l r) = (toMatrix' l)ᵀ * toMatrix₂' R B * toMatrix' r := by
   ext i j
   simp only [LinearMap.toMatrix₂'_apply, LinearMap.compl₁₂_apply, transpose_apply, Matrix.mul_apply,
-    LinearMap.toMatrix', LinearEquiv.coe_mk, sum_mul]
+    LinearMap.toMatrix', LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, sum_mul]
   rw [sum_comm]
   conv_lhs => rw [← LinearMap.sum_repr_mul_repr_mul (Pi.basisFun R n) (Pi.basisFun R m) (l _) (r _)]
   rw [Finsupp.sum_fintype]
@@ -629,9 +629,9 @@ theorem _root_.Matrix.Nondegenerate.toLinearMap₂' {M : Matrix ι ι R₁} (h :
 
 @[simp]
 theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff {M : Matrix ι ι R₁} :
-    (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) ↔ M.Nondegenerate :=
-  ⟨fun h v hv => h v fun w => (M.toLinearMap₂'_apply' _ _).trans <| hv w,
-    Matrix.Nondegenerate.toLinearMap₂'⟩
+    (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) ↔ M.Nondegenerate := by
+  refine ⟨fun h ↦ Matrix.nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toLinearMap₂'⟩
+  exact fun v hv => h v fun w => (M.toLinearMap₂'_apply' _ _).trans <| hv w
 
 theorem _root_.Matrix.Nondegenerate.toLinearMap₂ {M : Matrix ι ι R₁} (h : M.Nondegenerate)
     (b : Basis ι R₁ M₁) : (toLinearMap₂ b b M).SeparatingLeft :=

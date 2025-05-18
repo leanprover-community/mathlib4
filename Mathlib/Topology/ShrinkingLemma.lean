@@ -138,18 +138,17 @@ def chainSup (c : Set (PartialRefinement u s p)) (hc : IsChain (· ≤ ·) c) (n
     · simp_rw [not_exists, not_and, not_imp_not, chainSupCarrier, mem_iUnion₂] at hx
       haveI : Nonempty (PartialRefinement u s p) := ⟨ne.some⟩
       choose! v hvc hiv using hx
-      rcases (hfin x hxs).exists_maximal_wrt v _ (mem_iUnion.1 (hU hxs)) with
-        ⟨i, hxi : x ∈ u i, hmax : ∀ j, x ∈ u j → v i ≤ v j → v i = v j⟩
+      rcases (hfin x hxs).exists_maximalFor v _ (mem_iUnion.1 (hU hxs)) with
+        ⟨i, hxi : x ∈ u i, hmax : ∀ j, x ∈ u j → v i ≤ v j → v j ≤ v i⟩
       rcases mem_iUnion.1 ((v i).subset_iUnion hxs) with ⟨j, hj⟩
       use j
       have hj' : x ∈ u j := (v i).subset _ hj
-      have : v j ≤ v i := (hc.total (hvc _ hxi) (hvc _ hj')).elim (fun h => (hmax j hj' h).ge) id
+      have : v j ≤ v i := (hc.total (hvc _ hxi) (hvc _ hj')).elim (hmax j hj') id
       simpa only [find_apply_of_mem hc ne (hvc _ hxi) (this.1 <| hiv _ hj')]
   closure_subset hi := (find c ne _).closure_subset ((mem_find_carrier_iff _).2 hi)
   pred_of_mem {i} hi := by
     obtain ⟨v, hv⟩ := Set.mem_iUnion.mp hi
     simp only [mem_iUnion, exists_prop] at hv
-    simp only
     rw [find_apply_of_mem hc ne hv.1 hv.2]
     exact v.pred_of_mem hv.2
   apply_eq hi := (find c ne _).apply_eq (mt (mem_find_carrier_iff _).1 hi)

@@ -231,47 +231,103 @@ end deprecated
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
 
-/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
+/-- The possibilities we distinguish to delaborate the finset indexing a big operator:
+* `finset s` corresponds to `∑ x ∈ s, f x`
+* `univ` corresponds to `∑ x, f x`
+* `filter s p` corresponds to `∑ x ∈ s with p x, f x`
+* `filterUniv p` corresponds to `∑ x with p x, f x`
+-/
+private inductive FinsetResult where
+  | finset (s : Term)
+  | univ
+  | filter (s : Term) (p : Term)
+  | filterUniv (p : Term)
+
+/-- Delaborates a finset indexing a big operator. In case it is a `Finset.filter`, `i` is used for
+the binder name. -/
+private def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
+  let s ← getExpr
+  if s.isAppOfArity ``Finset.univ 2 then
+    return .univ
+  else if s.isAppOfArity ``Finset.filter 4 then
+    let #[_, _, _, t] := s.getAppArgs | failure
+    let p ←
+      withNaryArg 1 do
+        if (← getExpr).isLambda then
+          withBindingBody i.getId delab
+        else
+          let p ← delab
+          return (← `($p $i))
+    if t.isAppOfArity ``Finset.univ 2 then
+      return .filterUniv p
+    else
+      let ss ← withNaryArg 3 delab
+      return .filter ss p
+  else
+    let ss ← delab
+    return .finset ss
+
+/-- Delaborator for `Finset.prod`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
 @[app_delab Finset.prod] def delabFinsetProd : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
-  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
-  guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
+  let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
+  guard f.isLambda
+  let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
-    return (i, ← delab)
-  if s.isAppOfArity ``Finset.univ 2 then
+    return (⟨i⟩, ← delab)
+  let res ← withNaryArg 3 <| delabFinsetArg i
+  match res with
+  | .finset ss => `(∏ $i:ident ∈ $ss, $body)
+  | .univ =>
     let binder ←
       if ppDomain then
         let ty ← withNaryArg 0 delab
-        `(bigOpBinder| $(.mk i):ident : $ty)
+        `(bigOpBinder| $i:ident : $ty)
       else
-        `(bigOpBinder| $(.mk i):ident)
+        `(bigOpBinder| $i:ident)
     `(∏ $binder:bigOpBinder, $body)
-  else
-    let ss ← withNaryArg 3 <| delab
-    `(∏ $(.mk i):ident ∈ $ss, $body)
+  | .filter ss p =>
+    `(∏ $i:ident ∈ $ss with $p, $body)
+  | .filterUniv p =>
+    let binder ←
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `(bigOpBinder| $i:ident : $ty)
+    else
+      `(bigOpBinder| $i:ident)
+    `(∏ $binder:bigOpBinder with $p, $body)
 
-/-- Delaborator for `Finset.sum`. The `pp.piBinderTypes` option controls whether
+/-- Delaborator for `Finset.sum`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
 @[app_delab Finset.sum] def delabFinsetSum : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
-  let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
-  guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
+  let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
+  guard f.isLambda
+  let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
-    return (i, ← delab)
-  if s.isAppOfArity ``Finset.univ 2 then
+    return ((⟨i⟩ : Ident), ← delab)
+  let res ← withNaryArg 3 <| delabFinsetArg i
+  match res with
+  | .finset ss => `(∑ $i:ident ∈ $ss, $body)
+  | .univ =>
     let binder ←
-      if ppDomain then
-        let ty ← withNaryArg 0 delab
-        `(bigOpBinder| $(.mk i):ident : $ty)
-      else
-        `(bigOpBinder| $(.mk i):ident)
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `(bigOpBinder| $i:ident : $ty)
+    else
+      `(bigOpBinder| $i:ident)
     `(∑ $binder:bigOpBinder, $body)
-  else
-    let ss ← withNaryArg 3 <| delab
-    `(∑ $(.mk i):ident ∈ $ss, $body)
+  | .filter ss p =>
+    `(∑ $i:ident ∈ $ss with $p, $body)
+  | .filterUniv p =>
+    let binder ←
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `(bigOpBinder| $i:ident : $ty)
+    else
+      `(bigOpBinder| $i:ident)
+    `(∑ $binder:bigOpBinder with $p, $body)
 
 end BigOperators
 
@@ -327,8 +383,16 @@ theorem prod_map (s : Finset α) (e : α ↪ γ) (f : γ → β) :
 section ToList
 
 @[to_additive (attr := simp)]
-theorem prod_to_list (s : Finset α) (f : α → β) : (s.toList.map f).prod = s.prod f := by
+theorem prod_map_toList (s : Finset α) (f : α → β) : (s.toList.map f).prod = s.prod f := by
   rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
+
+@[deprecated (since := "2025-04-09")] alias prod_to_list := prod_map_toList
+@[deprecated (since := "2025-04-09")] alias sum_to_list := sum_map_toList
+
+@[to_additive (attr := simp)]
+theorem prod_toList {α : Type*} [CommMonoid α] (s : Finset α) :
+    s.toList.prod = ∏ x ∈ s, x := by
+  simpa using s.prod_map_toList id
 
 end ToList
 

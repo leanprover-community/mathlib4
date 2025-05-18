@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Group.Submonoid.MulAction
 import Mathlib.Data.Set.BooleanAlgebra
@@ -238,6 +238,9 @@ instance instMulAction (H : Subgroup G) : MulAction H α :=
   inferInstanceAs (MulAction H.toSubmonoid α)
 
 @[to_additive]
+lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
+
+@[to_additive]
 lemma orbit_subgroup_subset (H : Subgroup G) (a : α) : orbit H a ⊆ orbit G a :=
   orbit_submonoid_subset H.toSubmonoid a
 
@@ -258,7 +261,7 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
     dsimp at h
-    erw [← orbit.coe_smul, ← Subtype.ext_iff] at h
+    rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
 
@@ -277,15 +280,6 @@ variable {G α}
 @[to_additive]
 theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
-
-@[to_additive]
-alias orbitRel_r_apply := orbitRel_apply
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated orbitRel_apply (since := "2024-10-18")] orbitRel_r_apply
-attribute [deprecated AddAction.orbitRel_apply (since := "2024-10-18")] AddAction.orbitRel_r_apply
-
 
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
@@ -307,7 +301,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image]
-    refine ⟨g⁻¹ • a, ?_, by simp only [f, Quotient.eq']; use g⁻¹⟩
+    refine ⟨g⁻¹ • a, ?_, by simp [f, orbitRel, Quotient.eq']⟩
     rw [← hu₂]
     convert hu₁
     simp only [inv_smul_smul]
@@ -422,7 +416,7 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Qu
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, h⟩
     dsimp at h
-    erw [← orbit.coe_smul, ← Subtype.ext_iff] at h
+    rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, rfl⟩

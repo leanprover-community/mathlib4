@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.Convex.Deriv
 import Mathlib.Analysis.Convex.Piecewise
 import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.Analysis.Convex.Jensen
 
 /-!
 # Pochhammer polynomials
