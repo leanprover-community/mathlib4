@@ -9,6 +9,29 @@ import Mathlib.CategoryTheory.Products.Associator
 /-!
 # Day convolution monoidal structure
 
+Given functors `F G : C ⥤ V` between two monoidal categories,
+this file defines a typeclass `DayConvolution` on functors `F` `G` that contains
+a functor `F ⊛ G`, as well as the required data to exhibit `F ⊛ G` as a pointwise
+left Kan extension of `F ⊠ G` (see `CategoryTheory/Monoidal/ExternalProduct` for the definition)
+along the tensor product of `C`. Such a functor is called a Day convolution of `F` and `G`, and
+although we do not show it yet, this operation defines a monoidal structure on `C ⥤ V`.
+
+We also define a typeclass `DayConvolutionUnit` on a functor `U : C ⥤ V` that bundle the data
+required to make it a unit for the Day convolution monoidal structure: said data is that of
+a map `𝟙_ V ⟶ U.obj (𝟙_ C)` that exhibits `U` as a pointwise left Kan extension of
+`fromPUnit (𝟙_ V)` along `fromPUnit (𝟙_ C)`.
+
+## References
+- [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
+
+## TODOs (@robin-carlier)
+- Define associators and unitors, prove the pentagon and triangle identities.
+- Braided/symmetric case.
+- Case where `V` is closed.
+- Define a typeclass `DayConvolutionMonoidalCategory` extending `MonoidalCategory`
+- Characterization of lax monoidal functors out of a day convolution monoidal category.
+- Case `V = Type u` and its universal property.
+
 -/
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
@@ -139,7 +162,7 @@ theorem convolution_hom_ext_at (c : C) {v : V} {f g : (F ⊛ G).obj c ⟶ v}
     (h : ∀ {x y : C} (u : x ⊗ y ⟶ c),
       (unit F G).app (x, y) ≫ (F ⊛ G).map u ≫ f = (unit F G).app (x, y) ≫ (F ⊛ G).map u ≫ g) :
     f = g :=
-  ((unitPointwiseKan F G) c).hom_ext (fun j ↦ by simpa using h j.hom)
+  (unitPointwiseKan F G c).hom_ext (by simpa using h ·.hom)
 
 
 section associator
@@ -157,11 +180,11 @@ open MonoidalCategory.ExternalProduct
 
 instance : (F ⊠ G ⊛ H).IsLeftKanExtension <|
     extensionUnitRight (G ⊛ H) (unit G H) F :=
-  (pointwiseLeftKanExtensionRight _ _ _ (unitPointwiseKan G H)).isLeftKanExtension
+  (pointwiseLeftKanExtensionRight _ _ _ <| unitPointwiseKan G H).isLeftKanExtension
 
 instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
     extensionUnitLeft (F ⊛ G) (unit F G) H :=
-  (pointwiseLeftKanExtensionLeft _ _ _ (unitPointwiseKan F G)).isLeftKanExtension
+  (pointwiseLeftKanExtensionLeft _ _ _ <| unitPointwiseKan F G).isLeftKanExtension
 
 /-- An auxiliary equivalence used to build the associators,
 characterizing morphism out of `F ⊛ G ⊛ H` via the universal property of Kan extensions.
@@ -232,21 +255,21 @@ def associatorCorepresentingIso :
         (NatIso.ofComponents fun _ ↦ Equiv.toIso <|
           (prod.associativity C C C).congrLeft.fullyFaithfulFunctor.homEquiv))
     _ ≅ (whiskeringLeft _ _ _).obj
-            ((prod.associativity C C C).inverse ⋙ (tensor C).prod (𝟭 C) ⋙ (tensor C)) ⋙
+            ((prod.associativity C C C).inverse ⋙ (tensor C).prod (𝟭 C) ⋙ tensor C) ⋙
           coyoneda.obj (.op <| (prod.associativity C C C).inverse ⋙ (F ⊠ G) ⊠ H) :=
       .refl _
-    _ ≅ (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C) ⋙ (tensor C)) ⋙
+    _ ≅ (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C) ⋙ tensor C) ⋙
           coyoneda.obj (.op <| (prod.associativity C C C).inverse ⋙ (F ⊠ G) ⊠ H) :=
       isoWhiskerRight ((whiskeringLeft _ _ _).mapIso <| NatIso.ofComponents (fun _ ↦ α_ _ _ _)) _
-    _ ≅ (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C) ⋙ (tensor C)) ⋙
+    _ ≅ (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C) ⋙ tensor C) ⋙
           coyoneda.obj (.op <| F ⊠ G ⊠ H) :=
       isoWhiskerLeft _ <|
         coyoneda.mapIso <| Iso.op <| NatIso.ofComponents (fun _ ↦ α_ _ _ _|>.symm)
 
 /-- The asociator morphism for Day convolution -/
 def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
-  corepresentable₂' F G H|>.ofIso (associatorCorepresentingIso F G H)|>.uniqueUpToIso
-    <| corepresentable₂ F G H
+  corepresentable₂' F G H|>.ofIso (associatorCorepresentingIso F G H)|>.uniqueUpToIso <|
+    corepresentable₂ F G H
 
 /-- Characterizing the forward direction of the associator isomorphism
 with respect to the unit transformations. -/
