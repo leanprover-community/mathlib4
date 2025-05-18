@@ -458,7 +458,7 @@ lemma needed (i : Dual K H) (ni : i ≠ 0) (h0 : rootSpace H i ≠ ⊥) : ∃ (j
   simp
   exact rfl
 
-def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
+def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
     LieIdeal K L where
   __ := LieSubalgebra.lieSpan K L <| ⋃ α ∈ {α ∈ q | α ≠ 0}, rootSpace H α
@@ -482,6 +482,15 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
       obtain ⟨x, hx⟩ := this
       use x, 0
       exact hx
+    rcases eq_or_ne q ⊥  with hn | hn
+    · rw [hn]
+      have : y = 0 := by
+        rw [hn] at hy
+        simp at hy
+        exact hy
+      simp
+      rw [this]
+      simp
     let S := rootSystem H
     obtain ⟨Φ, b, c⟩ := S.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q hq
     have hΦ₂ : S.root '' Φ ⊆ q := by
