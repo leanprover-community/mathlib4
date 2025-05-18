@@ -126,7 +126,9 @@ lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_range {p : P}
     (h : p ∈ affineSpan ℝ (Set.range s.points)) :
     |s.signedInfDist i p| =
       dist p ((s.faceOpposite i).orthogonalProjectionSpan p) := by
-  apply AffineSubspace.abs_signedInfDist_eq_dist_of_mem_affineSpan_insert
+  rw [signedInfDist, AffineSubspace.abs_signedInfDist_eq_dist_of_mem_affineSpan_insert,
+    orthogonalProjectionSpan]
+  · simp_rw [range_faceOpposite_points]
   rw [affineSpan_insert_affineSpan]
   convert h
   ext x
