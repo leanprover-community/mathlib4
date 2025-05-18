@@ -472,11 +472,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       intro i
       by_contra hc
       simp only [Classical.not_imp, not_not] at hc
-      have h₁ : (S.coroot' i) (S.root i) = 2 := by
-        apply root_apply_coroot
-        obtain ⟨val, hval⟩ := i
-        simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-        exact hval
+      have h₁ : (S.coroot' i) (S.root i) = 2 := root_apply_coroot (Finset.mem_filter.mp i.prop).2
       have h₂ : (S.coroot' i) (S.root i) = 0 := (c i hc.1) hc.2
       rw [h₁] at h₂
       field_simp at h₂
