@@ -509,15 +509,13 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
 
     have rrr : (∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i)) → q = ⊥ := by
       intro h
-      have mmm : q ≤ ⨅ i, LinearMap.ker (S.coroot' i) := by
+      have h₁ : q ≤ ⨅ i, LinearMap.ker (S.coroot' i) := by
         apply le_iInf
         intro i
         exact h i
-      rw [S.iInf_ker_coroot'_eq] at mmm
-      have mmm2 : Submodule.span K (Set.range S.coroot') = ⊤ := by
-        exact RootPairing.span_coroot'_eq_top S
-      rw [mmm2, Submodule.dualCoannihilator_top] at mmm
-      exact (Submodule.eq_bot_iff q).mpr mmm
+      rw [S.iInf_ker_coroot'_eq, RootPairing.span_coroot'_eq_top S,
+        Submodule.dualCoannihilator_top] at h₁
+      exact (Submodule.eq_bot_iff q).mpr h₁
     let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
     let I := LieSubalgebra.lieSpan K L g
     simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Submodule.carrier_eq_coe,
