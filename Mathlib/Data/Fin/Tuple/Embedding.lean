@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.Fin.VecNotation
 import Mathlib.Order.Fin.Basic
 
 /-! # Constructions of embeddings of `Fin n` into a type
