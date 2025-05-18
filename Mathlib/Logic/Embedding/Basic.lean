@@ -231,6 +231,15 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
     rintro ⟨⟩ ⟨⟩ _
     rfl⟩
 
+/-- The equivalence `one ↪ α` with `α`, for `Unique one`. -/
+def oneEmbeddingEquiv {one α : Type*} [Unique one] : (one ↪ α) ≃ α where
+  toFun f := f default
+  invFun a := {
+    toFun := fun _ ↦ a
+    inj' x y h := by simp [Unique.uniq inferInstance] }
+  left_inv f := by ext; simp [Unique.uniq]
+  right_inv a := rfl
+
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
 def sectL (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
