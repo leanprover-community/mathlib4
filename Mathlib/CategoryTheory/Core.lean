@@ -29,6 +29,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
 structure Core (C : Type u₁) where
+  /-- The object of the base category underlying an object in `Core C`. -/
   of : C
 
 variable {C : Type u₁} [Category.{v₁} C]
@@ -37,6 +38,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 It is defined as a one-field structure to prevent defeq abuses. -/
 @[ext]
 structure CoreHom (X Y : Core C) where
+  /-- The isomorphism of objects of `C` underlying a morphism in `Core C`. -/
   iso : X.of ≅ Y.of
 
 @[simps!]
