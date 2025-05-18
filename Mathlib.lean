@@ -734,9 +734,11 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Algebra.NoZeroSMulDivisors.Prod
 import Mathlib.Algebra.Notation
 import Mathlib.Algebra.Notation.Defs
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Algebra.Notation.Lemmas
 import Mathlib.Algebra.Notation.Pi
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Notation.Support
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
