@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.Fin.VecNotation
 import Mathlib.Order.Fin.Basic
 
 /-! # Constructions of embeddings of `Fin n` into a type
@@ -85,4 +86,45 @@ theorem coe_append {m n : ℕ} {x : Fin m ↪ α} {y : Fin n ↪ α} (h : Disjoi
     append h = Fin.append x y := rfl
 
 end Fin.Embedding
+
+namespace Function.Embedding
+
+variable {α : Type*}
+
+/-- The natural equivalence of `Fin 2 ↪ α` with pairs `(a, b)` of distinct elements of `α`. -/
+def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
+  toFun e := ⟨(e 0, e 1), by
+    simp only [ne_eq, Fin.isValue, mem_setOf_eq, EmbeddingLike.apply_eq_iff_eq, zero_eq_one_iff,
+      succ_ne_self, not_false_eq_true]⟩
+  invFun := fun ⟨⟨a, b⟩, h⟩ ↦ {
+    toFun i := if i = 0 then a else b
+    inj' i j hij := by
+      by_cases hi : i = 0
+      · by_cases hj : j = 0
+        · simp [hi, hj]
+        · simp only [if_pos hi, if_neg hj, eq_one_of_ne_zero j hj,
+          if_neg (Ne.symm Fin.zero_ne_one)] at hij
+          apply (h hij).elim
+      · rw [eq_one_of_ne_zero i hi] at hij ⊢
+        by_cases hj : j = 0
+        · simp [hj] at hij; exact False.elim (h hij.symm)
+        · rw [eq_one_of_ne_zero j hj] }
+  left_inv e := by
+    ext i; simp
+    by_cases hi : i = 0
+    · rw [if_pos hi, hi]
+    · rw [if_neg hi, Fin.eq_one_of_ne_zero i hi]
+  right_inv := fun ⟨⟨a, b⟩, h⟩ ↦ by simp
+
+/-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α`. -/
+def embFinTwo {a b: α} (h : a ≠ b) : Fin 2 ↪ α :=
+  twoEmbeddingEquiv.invFun ⟨(a, b), h⟩
+
+theorem embFinTwo_apply_zero {a b : α} (h : a ≠ b) :
+    embFinTwo h 0 = a := rfl
+
+theorem embFinTwo_apply_one {a b : α} (h : a ≠ b) :
+    embFinTwo h 1 = b := rfl
+
+end Function.Embedding
 

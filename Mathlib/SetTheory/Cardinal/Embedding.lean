@@ -8,7 +8,6 @@ import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Fin.Tuple.Embedding
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
-import Mathlib.Order.CompletePartialOrder
 
 /-! # Existence of embeddings from finite types
 
