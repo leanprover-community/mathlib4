@@ -81,7 +81,7 @@ def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget
 alias Mon_ClassOfRepresentableBy := Mon_Class.ofRepresentableBy
 
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
-instance Hom.instMonoid : Monoid (X ⟶ M) where
+abbrev Hom.monoid : Monoid (X ⟶ M) where
   mul f₁ f₂ := lift f₁ f₂ ≫ μ
   mul_assoc f₁ f₂ f₃ := by
     show lift (lift f₁ f₂ ≫ μ) f₃ ≫ μ = lift f₁ (lift f₂ f₃ ≫ μ) ≫ μ
@@ -105,14 +105,21 @@ instance Hom.instMonoid : Monoid (X ⟶ M) where
       Category.comp_id, rightUnitor_hom]
     exact lift_fst _ _
 
+scoped[Hom] attribute [instance] Hom.monoid
+
+open scoped Hom
+
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
 lemma Hom.mul_def (f₁ f₂ : X ⟶ M) : f₁ * f₂ = lift f₁ f₂ ≫ μ := rfl
 
 section BraidedCategory
 variable [BraidedCategory C]
 
-instance Hom.instCommMonoid [IsCommMon M] : CommMonoid (X ⟶ M) where
+/-- If `M` is a commutative monoid object, then `Hom(X, M)` has a commutative monoid structure. -/
+abbrev Hom.commMonoid [IsCommMon M] : CommMonoid (X ⟶ M) where
   mul_comm f g := by simpa [-IsCommMon.mul_comm] using lift g f ≫= IsCommMon.mul_comm M
+
+scoped[Hom] attribute [instance] Hom.commMonoid
 
 end BraidedCategory
 

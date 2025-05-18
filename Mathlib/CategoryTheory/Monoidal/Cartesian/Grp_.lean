@@ -51,12 +51,16 @@ def Grp_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _)
     simp [← Functor.comp_obj]
 
 /-- If `G` is a group object, then `Hom(X, G)` has a group structure. -/
-instance Hom.instGroup : Group (X ⟶ G) where
+abbrev Hom.group : Group (X ⟶ G) where
   inv f := f ≫ ι
   inv_mul_cancel f := calc
     lift (f ≫ ι) f ≫ μ
     _ = (f ≫ lift ι (𝟙 G)) ≫ μ := by simp
     _ = toUnit X ≫ η := by rw [Category.assoc]; simp
+
+scoped[Hom] attribute [instance] Hom.group
+
+open scoped Hom
 
 lemma Hom.inv_def (f : X ⟶ G) : f⁻¹ = f ≫ ι := rfl
 
@@ -163,8 +167,11 @@ instance [BraidedCategory C] [IsCommMon G] {f : M ⟶ G} [IsMon_Hom f] : IsMon_H
   one_hom := by simp [Hom.inv_def]
   mul_hom := by simp [Hom.inv_def]
 
-instance Hom.instCommGroup [BraidedCategory C] [IsCommMon G] : CommGroup (X ⟶ G) where
+/-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
+abbrev Hom.commGroup [BraidedCategory C] [IsCommMon G] : CommGroup (X ⟶ G) where
   inv_mul_cancel f := by simp
+
+scoped[Hom] attribute [instance] Hom.commGroup
 
 namespace Grp_
 variable {G H : Grp_ C}
