@@ -280,7 +280,6 @@ theorem rank_le_height [StrongRankCondition R] {m n : ℕ} (A : Matrix (Fin m) (
   A.rank_le_card_height.trans <| (Fintype.card_fin m).le
 
 /-- The rank of a matrix is the rank of the space spanned by its columns. -/
-
 theorem rank_eq_finrank_span_cols (A : Matrix m n R) :
     A.rank = finrank R (Submodule.span R (Set.range A.col)) := by rw [rank, Matrix.range_mulVecLin]
 
