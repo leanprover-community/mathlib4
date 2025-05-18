@@ -106,21 +106,16 @@ def toNucleus (S : Sublocale X) : Nucleus X where
   le_apply' _ := S.giEmbedding.gc.le_u_l _
 
 lemma toNucleus.range : range S.toNucleus = S.carrier := by
-  simp [Sublocale.toNucleus]
   ext x
-  apply Iff.intro
-  . simp
-    intro x h
-    rw [← h]
-    simp
-  . simp
-    intro hx
+  constructor
+  · rw [Sublocale.toNucleus]
+    aesop
+  · intro hx
     obtain ⟨x', hx'⟩ := S.giAux.l_surjective ⟨x, hx⟩
-    simp [@Subtype.ext_iff_val] at hx'
-    use x'
-    exact hx'
+    simp_all [hx', @Subtype.ext_iff_val]
+    exact Exists.intro x' hx'
 
-lemma mem_iff (x : X) : x ∈ S ↔ x ∈ S.carrier := by exact Eq.to_iff rfl
+lemma mem_iff (x : X) : x ∈ S ↔ x ∈ S.carrier := Eq.to_iff rfl
 
 lemma le_iff' (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s1.carrier ⊆ s2.carrier where
   mp h := h
@@ -132,14 +127,10 @@ def Nucleus.toSublocale (n : Nucleus X) : Sublocale X where
   carrier := range n
   sInfClosed' a h := by
     rw [@mem_range]
-    refine le_antisymm ?_ le_apply
-    simp only [le_sInf_iff]
-    intro b h1
-    rw [@subset_def] at h
-    simp_rw [mem_range] at h
+    refine le_antisymm (le_sInf_iff.mpr (fun b h1 ↦ ?_)) le_apply
+    simp_rw [@subset_def, mem_range] at h
     rw [← h b h1]
-    apply n.monotone
-    exact sInf_le h1
+    exact n.monotone (sInf_le h1)
   HImpClosed' a b h := by rw [mem_range, ← h, @map_himp_apply] at *
 
 def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
@@ -148,10 +139,11 @@ def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
   left_inv n := by
     rw [Nucleus.ext_iff]
     intro a
-    simp [Nucleus.toSublocale, Sublocale.toNucleus, Sublocale.embedding, Sublocale.coe_sInf]
+    simp only [Sublocale.toNucleus, Nucleus.toSublocale, Sublocale.embedding, FrameHom.coe_mk,
+      InfTopHom.coe_mk, InfHom.coe_mk, Sublocale.coe_sInf, Nucleus.coe_mk]
     apply le_antisymm
     . apply sInf_le
-      simp only [mem_image, mem_setOf_eq, Subtype.exists, exists_and_left, exists_prop,
+      simp [mem_image, mem_setOf_eq, Subtype.exists, exists_and_left, exists_prop,
         exists_eq_right_right]
       apply And.intro
       . exact Nucleus.le_apply
@@ -184,11 +176,12 @@ def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
       rw [Sublocale.le_iff']
       apply h
 
-#check orderiso.injective
+/-
+#check orderiso.injective.coframe
 instance : Order.Coframe (Nucleus X)ᵒᵈ := OrderDual.instCoframe
 
 instance : Order.Coframe (Sublocale X) where
-  __ := orderiso.injective
+  __ := Function.Injective.coframe orderiso.invFun sorry sorry sorry sorry sorry
 
 lemma Sublocale.le_iff (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s2.toNucleus ≤ s1.toNucleus := by
   apply Iff.intro
@@ -243,6 +236,6 @@ instance : BoundedOrder (Open X) where
   bot_le _ := le_def.mpr bot_le
 
 instance : CompleteSemilatticeSup (Open X) where
-  sSup s := ⟨sSup s⟩
+  sSup s := ⟨sSup s⟩-/
 
 end Open
