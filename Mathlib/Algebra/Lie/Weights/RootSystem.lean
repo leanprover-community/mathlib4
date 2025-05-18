@@ -422,4 +422,216 @@ instance : (rootSystem H).IsReduced where
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
+variable (K L : Type*) [Field K] [CharZero K]
+  [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
+  [LieAlgebra.IsKilling K L] -- Follows from simplicity; will be redundant after #10068 done
+  (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
+
+open LieModule Module
+open LieModule Weight
+
+lemma lieSpan_rootSpace_q_eq_lieSpan_Phi
+    (q : Submodule K (Dual K H))
+    (Φ : Set H.root)
+    (hΦ₁ : ∀ i ∈ Φ, (rootSystem H).root i ∈ q)
+    (hΦ₂ : ∀ i ∉ Φ, q ≤ LinearMap.ker ((rootSystem H).coroot' i))
+    (hn : q ≠ ⊥) :
+    LieSubalgebra.lieSpan K L (⋃ α ∈ {α ∈ q | α ≠ 0}, rootSpace H α) =
+    LieSubalgebra.lieSpan K L (⋃ i ∈ Φ, (rootSpace H i : Set L)) := by
+  let S := rootSystem H
+  have hΦ₂' : ∀ i ∉ Φ, S.root i ∉ q := by
+    intro i
+    by_contra hc
+    simp only [Classical.not_imp, not_not] at hc
+    have h₁ : (S.coroot' i) (S.root i) = 2 := root_apply_coroot (Finset.mem_filter.mp i.prop).2
+    have h₂ : (S.coroot' i) (S.root i) = 0 := (hΦ₂ i hc.1) hc.2
+    rw [h₁] at h₂
+    field_simp at h₂
+  have hΦ₄ : ⋃ i ∈ Φ, (rootSpace H i : Set L) = ⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α) := by
+    apply Set.Subset.antisymm
+    · intro x hx
+      rw [Set.mem_iUnion] at hx
+      obtain ⟨i, hi⟩ := hx
+      rw [Set.mem_iUnion] at hi
+      obtain ⟨hΦ, hx'⟩ := hi
+      simp only [Set.mem_iUnion, Set.mem_iUnion, exists_prop]
+      exact ⟨S.root i, ⟨⟨hΦ₁ i hΦ, RootPairing.ne_zero S.toRootPairing i⟩, hx'⟩⟩
+    · intro x hx
+      rw [Set.mem_iUnion] at hx
+      obtain ⟨i, hi⟩ := hx
+      rw [Set.mem_iUnion] at hi
+      obtain ⟨hΦ, hx'⟩ := hi
+      rcases Classical.em (rootSpace H i = ⊥) with h₀ | h₀
+      · rw [h₀] at hx'
+        rw [hx']
+        refine Set.mem_iUnion₂.mpr ?_
+        have : Φ ≠ ∅ := by
+          intro hΦ
+          rw [hΦ] at hΦ₂
+          have hq : ∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i) := fun i => hΦ₂ i (by simp)
+          have : q ≤ ⨅ i, LinearMap.ker (S.coroot' i) := le_iInf hq
+          rw [S.iInf_ker_coroot'_eq, RootPairing.span_coroot'_eq_top S,
+            Submodule.dualCoannihilator_top] at this
+          apply False.elim (hn ((Submodule.eq_bot_iff q).mpr this))
+        obtain ⟨i, hi⟩ := Set.nonempty_iff_ne_empty.mpr this
+        use i, hi
+        simp only [SetLike.mem_coe, LieSubmodule.zero_mem]
+      let i_weight : Weight K H L := ⟨i, h₀⟩
+      obtain ⟨l₁, l₂⟩ := hΦ
+      have h₁ : i_weight.IsNonZero := by
+        contrapose l₂
+        simp only [not_not, i_weight, IsZero, coe_weight_mk, i_weight] at l₂
+        simp only [ne_eq, not_not]
+        ext x
+        rw [l₂]
+        exact rfl
+      have mem: i_weight ∈ H.root := by
+        simpa only [Finset.mem_filter, Finset.mem_univ, true_and]
+      have h₂ : ⟨i_weight, mem⟩ ∈ Φ := by
+        by_contra hc
+        have := hΦ₂' ⟨i_weight, mem⟩ hc
+        apply False.elim (this l₁)
+      rw [Set.mem_iUnion]
+      use ⟨i_weight, mem⟩
+      rw [Set.mem_iUnion]
+      exact ⟨h₂, hx'⟩
+  rw[← hΦ₄]
+
+def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
+    LieIdeal K L where
+  __ := LieSubalgebra.lieSpan K L <| ⋃ α ∈ {α ∈ q | α ≠ 0}, rootSpace H α
+  lie_mem {x y} hy := by
+    rcases eq_or_ne (⊥ : LieSubmodule K L L) ⊤ with _j | _j
+    · have : x = 0 := by
+        have hx : x ∈ (⊥ : LieSubmodule K L L) := by
+          rw [_j]
+          exact LieSubmodule.mem_top x
+        exact hx
+      simp only [this, Submodule.carrier_eq_coe, zero_lie, SetLike.mem_coe, Submodule.zero_mem]
+    have _i : Nontrivial L := by
+      have : ∃ x : L, x ∉ (⊥ : LieSubmodule K L L) := by
+        contrapose! _j
+        ext x
+        simp only [_j x, LieSubmodule.mem_top]
+      obtain ⟨x, hx⟩ := this
+      use x, 0
+      exact hx
+    rcases eq_or_ne q ⊥  with hn | hn
+    · rw [hn]
+      have : y = 0 := by
+        rw [hn] at hy
+        simp only [Submodule.mem_bot, and_not_self, Set.setOf_false, Set.mem_empty_iff_false,
+          Set.iUnion_of_empty, Set.iUnion_empty, LieSubalgebra.span_empty] at hy
+        exact hy
+      simp [this]
+    let S := rootSystem H
+    obtain ⟨Φ, b, c⟩ := S.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q hq
+    have hΦ₁ : ∀ i ∈ Φ, S.root i ∈ q := by
+      intro i hi
+      rcases Φ.eq_empty_or_nonempty with rfl | hΦ
+      · exact False.elim (Set.not_mem_empty i hi)
+      · by_contra h
+        exact b i hi ((Submodule.disjoint_span_singleton' (s := q) (S.ne_zero i)).mpr h)
+    let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
+    let I := LieSubalgebra.lieSpan K L g
+    simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Submodule.carrier_eq_coe,
+      LieSubalgebra.mem_toSubmodule] at hy ⊢
+    rw [lieSpan_rootSpace_q_eq_lieSpan_Phi (K := K) (L := L) (H := H) q Φ hΦ₁ c hn] at hy ⊢
+    have s₁ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root i (S.coroot j) = 0 :=
+      (c j h₂) (hΦ₁ i h₁)
+    have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
+      (S.pairing_eq_zero_iff (i := i) (j := j)).1 (s₁ i j h₁ h₂)
+    have s₂ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : i.1 (coroot j) = 0 := s₁ i j h₁ h₂
+    have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (coroot i) = 0 := s₁' i j h₁ h₂
+    have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
+      by_contra h
+      have i_non_zero : i.1.IsNonZero := by
+        obtain ⟨val, hval⟩ := i
+        simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
+        exact hval
+      have j_non_zero : j.1.IsNonZero := by
+        obtain ⟨val, hval⟩ := j
+        simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
+        exact hval
+      let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
+      have r₁ : r ≠ 0 := by
+        intro a
+        have h_eq : i.1 = -j.1 := Weight.ext <| congrFun (eq_neg_of_add_eq_zero_left <| by
+          have := congr_arg Weight.toFun a
+          simp at this; exact this)
+        have := s₂ i j h₁ h₂
+        rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot j_non_zero] at this
+        field_simp at this
+      have r₂ : r ∈ H.root := by simp [isNonZero_iff_ne_zero, r₁]
+      cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
+      | inl hl =>
+        have e₁ : i.1.1 (coroot j) = 0 := s₂ i j h₁ h₂
+        have e₂ : j.1.1 (coroot j) = 2 := root_apply_coroot j_non_zero
+        have : (0 : K) = 2 := calc
+          0 = (i.1.1 + j.1.1) (coroot j) := (s₂ ⟨r, r₂⟩ j hl h₂).symm
+          _ = i.1.1 (coroot j) + j.1.1 (coroot j) := rfl
+          _ = 2 := by rw [e₁, e₂, zero_add]
+        simp at this
+      | inr hr =>
+        have e₁ : j.1.1 (coroot i) = 0 := s₂' i j h₁ h₂
+        have e₂ : i.1.1 (coroot i) = 2 := root_apply_coroot i_non_zero
+        have : (0 : K) = 2 := calc
+          0 = (i.1.1 + j.1.1) (coroot i) := (s₂' i ⟨r, r₂⟩ h₁ hr).symm
+          _ = i.1.1 (coroot i) + j.1.1 (coroot i) := rfl
+          _ = 2 := by rw [e₁, e₂, add_zero]
+        simp at this
+    have s₄ (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : rootSpace H i.1.1)
+        (lj : rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
+      have h₃ := lie_mem_genWeightSpace_of_mem_genWeightSpace li.2 lj.2
+      rw [s₃ i j h1 h2] at h₃
+      exact h₃
+    have gen : ⨆ χ : Weight K H L, (genWeightSpace L χ).toSubmodule = ⊤ := by
+      simp only [LieSubmodule.iSup_toSubmodule_eq_top]
+      exact iSup_genWeightSpace_eq_top' K H L
+    have hx : x ∈ ⨆ χ : Weight K H L, (genWeightSpace L χ).toSubmodule := by
+      simp only [gen, Submodule.mem_top]
+    induction hx using Submodule.iSup_induction' with
+    | mem j x hx =>
+      induction hy using LieSubalgebra.lieSpan_induction with
+      | mem x₁ hx₁ =>
+        obtain ⟨i, hi, x₁_mem⟩ := Set.mem_iUnion₂.mp hx₁
+        have r₁ (j : Weight K H L) : j = 0 ∨ j ∈ H.root := by
+          rcases (eq_or_ne j 0) with h | h
+          · left
+            exact h
+          · right
+            refine Finset.mem_filter.mpr ?_
+            exact ⟨Finset.mem_univ j, isNonZero_iff_ne_zero.mpr h⟩
+        rcases (r₁ j) with h | h
+        · have h₁ : ⁅x, x₁⁆ ∈ g := by
+            have h₂ := lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
+            rw [h, coe_zero, zero_add] at h₂
+            exact Set.mem_biUnion hi h₂
+          exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
+        rcases (Classical.em (⟨j, h⟩ ∈ Φ)) with h₁ | h₁
+        · exact I.lie_mem
+            (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h₁ hx))
+            (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
+        have : ⁅x, x₁⁆ = 0 := by
+          rw [← neg_eq_zero, lie_skew x₁ x, (s₄ i ⟨j, h⟩ hi h₁ ⟨x₁, x₁_mem⟩ ⟨x, hx⟩)]
+        rw [this]
+        exact I.zero_mem
+      | zero => simp only [lie_zero, zero_mem, I]
+      | add _ _ _ _ e f =>
+        simp only [lie_add]
+        exact add_mem e f
+      | smul a _ _ d =>
+        simp only [lie_smul]
+        exact I.smul_mem a d
+      | lie a b c d e f =>
+        have : ⁅x, ⁅a, b⁆⁆ = ⁅⁅x, a⁆, b⁆ + ⁅a, ⁅x, b⁆⁆ := by
+          simp only [lie_lie, sub_add_cancel]
+        rw [this]
+        exact add_mem (I.lie_mem e d) (I.lie_mem c f)
+    | zero => simp only [zero_lie, zero_mem]
+    | add x1 y1 _ _ hx hy =>
+      simp only [add_lie]
+      exact add_mem hx hy
+
 end LieAlgebra.IsKilling
