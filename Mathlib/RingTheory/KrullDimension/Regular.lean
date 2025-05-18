@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan
+Authors: Nailin Guan, Yonele Hu
 -/
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.Module
@@ -15,21 +15,19 @@ import Mathlib.RingTheory.Regular.RegularSequence
 
 section orderIso
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R : Type*} [CommRing R]
 
 /-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
 noncomputable def primeSpectrum_quotient_orderIso_zeroLocus (I : Ideal R) :
-    PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) :=
-  let e : PrimeSpectrum (R ⧸ I) ≃ (PrimeSpectrum.zeroLocus (R := R) I) :=
-    (Equiv.ofInjective _ (PrimeSpectrum.comap_injective_of_surjective _
-      Ideal.Quotient.mk_surjective)).trans (Equiv.setCongr
-      (by rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
-        Ideal.mk_ker]))
-  { __ := e, map_rel_iff' := fun {a b} ↦ by
-        show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
-        rw [← Ideal.map_le_iff_le_comap,
-          Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective,
-          PrimeSpectrum.asIdeal_le_asIdeal] }
+    PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
+  __ : PrimeSpectrum (R ⧸ I) ≃ (PrimeSpectrum.zeroLocus (R := R) I) := Equiv.ofInjective _
+    (PrimeSpectrum.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective) |>.trans <|
+      Equiv.setCongr <| by
+        rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
+  map_rel_iff' {a b} := by
+    show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
+    rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective,
+      PrimeSpectrum.asIdeal_le_asIdeal]
 
 end orderIso
 
@@ -74,12 +72,13 @@ section move
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
-/-- Let `p` be an `LTSeries` in `PrimeSpectrum R` , `x ∈ p.last.asIdeal`, then there exists
-  `q : LTSeries (PrimeSpectrum R)` such that `x ∈ (q 1).asIdeal`, `q.length = p.length`,
-  `q.head = p.head`, and `q.last = p.last`. -/
+/-- Let $R$ be a Noetherian ring, $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a
+  chain of primes in $R$, $x \in \mathfrak{p}_n$. Then we can find a chain of primes
+  $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that $x \in \mathfrak{q}_1$,
+  $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$. -/
 theorem PrimeSpectrum.exist_lTSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     {x : R} (hx : x ∈ p.last.1) : ∃ q : LTSeries (PrimeSpectrum R),
-      x ∈ (q 1).1 ∧ q.length = p.length ∧ q.head = p.head ∧ q.last = p.last := sorry
+      x ∈ (q 1).1 ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := sorry
 
 end move
 
@@ -138,14 +137,13 @@ open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum
 local notation "𝔪" => IsLocalRing.maximalIdeal R
 
 open scoped Classical in
-/-- If $M$ is a finite module ove a local ring $R$, then $\dim M \le \dim (M/xM) + 1$
+/-- If $M$ is a finite module ove a local Noetherian ring $R$, then $\dim M \le \dim (M/xM) + 1$
   for all $x$ in the maximal ideal of $R$. -/
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
-  by_cases h : Subsingleton M
+  rcases subsingleton_or_nontrivial M with h | h
   · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
     rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
-  have : Nontrivial M := not_subsingleton_iff_nontrivial.mp h
   have hm : ⟨𝔪, IsMaximal.isPrime' 𝔪⟩ ∈ support R M := maximalIdeal_mem_support R M
   refine iSup_le_iff.mpr (fun q ↦ ?_)
   let p : LTSeries (support R M) :=
@@ -167,20 +165,19 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
         nontrival_quotSMulTop_of_mem_annihilator_jacobson (maximalIdeal_le_jacobson _ hx)
     rw [h, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
     exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
-  have h : 1 ≤ p.length := Nat.one_le_iff_ne_zero.mpr h
   let q' : LTSeries (support R (QuotSMulTop x M)) := {
     length := p.length - 1
     toFun := by
       intro ⟨i, hi⟩
       have hi : i + 1 < q.length + 1 :=
-        Nat.succ_lt_succ (hi.trans_eq ((Nat.sub_add_cancel h).trans hq.symm))
+        Nat.succ_lt_succ (hi.trans_eq ((Nat.sub_add_cancel (Nat.pos_of_ne_zero h)).trans hq))
       refine ⟨q ⟨i + 1, hi⟩, ?_⟩
       simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff]
       refine ⟨?_, q.monotone
         ((Fin.mk_eq_natCast (Nat.lt_of_add_left_lt hi)).symm.trans_le (Nat.le_add_left 1 i)) hxq⟩
       have hp : p.head.1 ∈ support R M := p.head.2
       simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hp ⊢
-      exact hp.trans (h0.symm.trans_le (q.head_le _))
+      exact hp.trans (h0.trans_le (q.head_le _))
     step := fun ⟨i, _⟩ ↦ q.strictMono (i + 1).lt_add_one
   }
   calc
