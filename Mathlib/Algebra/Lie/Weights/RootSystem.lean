@@ -448,7 +448,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       have : ∃ x : L, x ∉ (⊥ : LieSubmodule K L L) := by
         contrapose! _j
         ext x
-        simp [_j x]
+        simp only [_j x, LieSubmodule.mem_top]
       obtain ⟨x, hx⟩ := this
       use x, 0
       exact hx
