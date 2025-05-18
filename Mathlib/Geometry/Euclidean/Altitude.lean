@@ -241,7 +241,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn
         exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
 /--
-The inner product of two altitudes has value strictly greated than the negated product of
+The inner product of two altitudes has value strictly greater than the negated product of
 their lengths.
 -/
 lemma neg_mul_lt_inner_vsub_altitudeFoot (i j : Fin (n + 1)) (hn : 1 < n) :
