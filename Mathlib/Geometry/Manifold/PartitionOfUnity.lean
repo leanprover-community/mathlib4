@@ -872,30 +872,6 @@ theorem exists_contMDiff_section_forall_mem_convex_of_local
   have h_x_in_Umap_j : x ∈ U_map j := interior_subset (hρ_subord j h_x_in_tsupport_ρj)
   exact h_mem_t j x h_x_in_Umap_j
 
-/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite dimensional topological manifold
-`M`. Let `t : M → Set (V x)` be a family of convex sets in the fibers of `V`.
-Suppose that for each point `x₀ : M` there exists a neighborhood `U_x₀` of `x₀` and a local
-section `s_loc : M → V x` such that `s_loc` is $C^∞$ smooth on `U_x₀` (when viewed as a map to
-the total space of the bundle) and `s_loc y ∈ t y` for all `y ∈ U_x₀`.
-Then there exists a global smooth section `s : Cₛ^∞⟮I_M; F_fiber, V⟯` such that
-`s x ∈ t x` for all `x : M`.
-
-This theorem is a version of `exists_smooth_forall_mem_convex_of_local` for sections of a
-vector bundle. It uses a partition of unity to glue together local sections.
--/
-theorem exists_smooth_section_forall_mem_convex_of_local
-    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
-    (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
-    [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
-    (t : ∀ x, Set (V x)) (ht_conv : ∀ x, Convex ℝ (t x))
-    (Hloc :
-      ∀ x₀ : M, ∃ U_x₀ ∈ 𝓝 x₀, ∃ (s_loc : (x : M) → V x),
-        (ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) ∞
-          (fun x => (⟨x, s_loc x⟩ : TotalSpace F_fiber V)) U_x₀) ∧
-        (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
-    ∃ s : Cₛ^∞⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x :=
-      exists_contMDiff_section_forall_mem_convex_of_local I V t ht_conv Hloc
-
 /-- Let `M` be a smooth σ-compact manifold with extended distance. Let `K : ι → Set M` be a locally
 finite family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for
 all `i`. Then there exists a positive smooth function `δ : M → ℝ≥0` such that for any `i` and
