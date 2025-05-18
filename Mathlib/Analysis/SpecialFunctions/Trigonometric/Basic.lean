@@ -774,6 +774,11 @@ lemma cos_four_mul_pi_div_three : cos (4 * π / 3) = - 1 / 2 := calc
     rw [mul_assoc, cos_two_mul, ← mul_div_assoc, cos_two_mul_pi_div_three]
   _ = - 1 / 2 := by norm_num
 
+lemma cos_five_mul_pi_div_three : cos (5 * π / 3) = 1 / 2 :=
+  calc
+    cos (5 * π / 3) = cos (2 * π - π / 3) := by ring
+    _ = 1 / 2 := by rw [cos_two_pi_sub, cos_pi_div_three]
+
 /-- The cosine of `π / 6` is `√3 / 2`. -/
 @[simp]
 theorem cos_pi_div_six : cos (π / 6) = √3 / 2 := by
@@ -820,6 +825,11 @@ lemma sin_four_mul_pi_div_three : sin (4 * π / 3) = - √3 / 2 := calc
   _ = 2 * (√3 / 2) * (- 1 / 2) := by
     rw [mul_assoc, ← mul_div_assoc, sin_two_mul, sin_two_mul_pi_div_three, cos_two_mul_pi_div_three]
   _ = - √3 / 2 := by ring
+
+lemma sin_five_mul_pi_div_three : sin (5 * π / 3) = - √3 / 2 :=
+  calc
+    sin (5 * π / 3) = sin (2 * π - π / 3) := by ring
+    _ = - √3 / 2 := by rw [sin_two_pi_sub, sin_pi_div_three, neg_div']
 
 theorem quadratic_root_cos_pi_div_five :
     letI c := cos (π / 5)
