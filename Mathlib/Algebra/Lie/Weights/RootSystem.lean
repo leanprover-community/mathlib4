@@ -487,8 +487,6 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       field_simp at h₂
     let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
     let I := LieSubalgebra.lieSpan K L g
-    simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Submodule.carrier_eq_coe,
-      LieSubalgebra.mem_toSubmodule] at hy ⊢
     have hΦ₄ : ⋃ i ∈ Φ, (rootSpace H i : Set L) = ⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α) := by
       apply Set.Subset.antisymm
       · intro x hx
@@ -548,8 +546,8 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         exact ⟨h₃, by rw [←hj] at hx'; exact hx'⟩
     have hΦ₅ : LieSubalgebra.lieSpan K L (⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α)) = I := by
       rw[← hΦ₄]
-    rw [hΦ₅] at hy ⊢
-
+    simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Submodule.carrier_eq_coe,
+      LieSubalgebra.mem_toSubmodule, hΦ₅] at hy ⊢
     have s₁ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root i (S.coroot j) = 0 :=
       (c j h₂) (hΦ₂' i h₁)
     have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
