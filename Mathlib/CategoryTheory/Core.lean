@@ -59,11 +59,6 @@ def inclusion : Core C ⥤ C where
   obj := of
   map f := f.iso.hom
 
-@[simps!]
-def invclusion : Core C ⥤ Cᵒᵖ where
-  obj X := .op (of X)
-  map f := f.iso.inv.op
-
 @[ext]
 theorem hom_ext {X Y : Core C} {f g : X ⟶ Y} (h : f.iso.hom = g.iso.hom) :
     f = g := by
