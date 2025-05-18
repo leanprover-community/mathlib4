@@ -33,5 +33,6 @@ lemma useless : HasSheafify (coherentTopology CompHaus.{u}) (Type (u + 1)) :=
 
 theorem isQuasicompact_iff_compHaus_cover (X : CondensedSet.{u}) :
     have := useless
-    Sheaf.Quasicompact X ↔ ∃ S : CompHaus.{u}, ∃ f : compHausToCondensed.obj S ⟶ X, Epi f :=
+    (Sheaf.canonicalTopology CondensedSet).Quasicompact X
+    ↔ ∃ S : CompHaus.{u}, ∃ f : compHausToCondensed.obj S ⟶ X, Epi f :=
   sorry
