@@ -417,6 +417,7 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
   refine cfc_congr fun _ _ => ?_
   simp
 
+@[aesop safe apply]
 lemma isUnit_rpow (a : A) (y : ℝ) (ha_unit : IsUnit a) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) := by
   rw [rpow_def]
@@ -575,6 +576,7 @@ lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by
   refine isUnit_rpow_iff a y ?_ ha
   exact_mod_cast hy
 
+@[aesop safe apply]
 lemma isUnit_nnrpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) := (isUnit_nnrpow_iff a y hy ha).mpr ha_unit
 
@@ -582,6 +584,7 @@ lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔
   rw [sqrt_eq_rpow]
   exact isUnit_rpow_iff a _ (by norm_num) ha
 
+@[aesop safe apply]
 lemma isUnit_sqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) :=
   (isUnit_sqrt_iff a ha).mpr ha_unit
 
