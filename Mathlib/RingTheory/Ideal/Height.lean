@@ -14,11 +14,11 @@ In this file, we define the height of a prime ideal and the height of an ideal.
 # Main definitions
 
 * `Ideal.primeHeight` : The height of a prime ideal $\mathfrak{p}$. We define it as the supremum of
- the lengths of strictly decreasing chains of prime ideals below it. This definition is implemented
- via `Order.height`.
+  the lengths of strictly decreasing chains of prime ideals below it. This definition is implemented
+  via `Order.height`.
 
 * `Ideal.height` : The height of an ideal. We defined it as the infimum of the `primeHeight` of the
-minimal prime ideals of I.
+  minimal prime ideals of I.
 
 -/
 
@@ -208,6 +208,27 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
     exact IsLocalRing.eq_maximalIdeal (Ideal.isMaximal_of_primeHeight_eq_ringKrullDim h)
   · rintro rfl
     exact IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim
+
+lemma Ideal.height_le_iff {p : Ideal R} {n : ℕ} [p.IsPrime] :
+    p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p → q.height < n := by
+  rw [height_eq_primeHeight, primeHeight, Order.height_le_coe_iff,
+    (PrimeSpectrum.equivSubtype R).forall_congr_left, Subtype.forall]
+  congr!
+  rw [height_eq_primeHeight, primeHeight]
+  rfl
+
+lemma Ideal.height_le_iff_covBy {p : Ideal R} {n : ℕ} [p.IsPrime] [IsNoetherianRing R] :
+    p.height ≤ n ↔ ∀ q : Ideal R, q.IsPrime → q < p →
+      (∀ q' : Ideal R, q'.IsPrime → q < q' → ¬ q' < p) → q.height < n := by
+  rw [Ideal.height_le_iff]
+  constructor
+  · intro H q hq e _
+    exact H q hq e
+  · intro H q hq e
+    obtain ⟨⟨x, hx⟩, hqx, hxp⟩ :=
+      @exists_le_covBy_of_lt { I : Ideal R // I.IsPrime } ⟨q, hq⟩ ⟨p, ‹_›⟩ _ _ e
+    exact (Ideal.height_mono hqx).trans_lt
+      (H _ hx hxp.1 (fun I hI e ↦ hxp.2 (show Subtype.mk x hx < ⟨I, hI⟩ from e)))
 
 theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) [J.IsPrime] :

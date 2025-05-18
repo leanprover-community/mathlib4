@@ -667,7 +667,7 @@ theorem ker_eq : (ker f : Set R) = Set.preimage f {0} :=
 theorem ker_eq_comap_bot (f : F) : ker f = Ideal.comap f ⊥ :=
   rfl
 
-theorem comap_ker (f : S →+* R) (g : T →+* S) : f.ker.comap g = ker (f.comp g) := by
+theorem comap_ker (f : S →+* R) (g : T →+* S) : (ker f).comap g = ker (f.comp g) := by
   rw [RingHom.ker_eq_comap_bot, Ideal.comap_comap, RingHom.ker_eq_comap_bot]
 
 /-- If the target is not the zero ring, then one is not in the kernel. -/
@@ -1125,3 +1125,12 @@ alias NoZeroSMulDivisors.of_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap
 
 @[deprecated (since := "2025-01-31")]
 alias NoZeroSMulDivisors.ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
+
+section PrincipalIdeal
+
+instance {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) (I : Ideal R) [I.IsPrincipal] :
+    (I.map f).IsPrincipal := by
+  obtain ⟨x, rfl⟩ := Submodule.IsPrincipal.principal I
+  exact ⟨f x, by rw [← Ideal.span, ← Set.image_singleton, Ideal.map_span]; rfl⟩
+
+end PrincipalIdeal
