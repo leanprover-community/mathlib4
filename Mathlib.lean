@@ -3701,6 +3701,7 @@ import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.IterateAct
 import Mathlib.GroupTheory.GroupAction.Iwasawa
+import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Primitive
@@ -4547,6 +4548,7 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
 import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Completion
+import Mathlib.NumberTheory.NumberField.DedekindZeta
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 import Mathlib.NumberTheory.NumberField.Embeddings
@@ -5492,6 +5494,7 @@ import Mathlib.SetTheory.Cardinal.CountableCover
 import Mathlib.SetTheory.Cardinal.Defs
 import Mathlib.SetTheory.Cardinal.Divisibility
 import Mathlib.SetTheory.Cardinal.ENat
+import Mathlib.SetTheory.Cardinal.Embedding
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.SetTheory.Cardinal.Finsupp
 import Mathlib.SetTheory.Cardinal.Free
