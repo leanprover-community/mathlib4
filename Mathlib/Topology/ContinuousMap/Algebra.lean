@@ -527,18 +527,25 @@ instance instSMul [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
   ⟨fun r f => ⟨r • ⇑f, f.continuous.const_smul r⟩⟩
 
 @[to_additive]
-instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
-    ContinuousConstSMul R C(α, M) :=
-  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval.const_smul γ)⟩
+instance [SMul R M] [ContinuousConstSMul R M] : ContinuousConstSMul R C(α, M) where
+  continuous_const_smul r := continuous_postcomp ⟨_, continuous_const_smul r⟩
 
 @[to_additive]
-instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
-    ContinuousSMul R C(α, M) :=
-  ⟨by
-    refine continuous_of_continuous_uncurry _ ?_
-    have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
-      continuous_eval.comp (continuous_snd.prodMap continuous_id)
-    exact (continuous_fst.comp continuous_fst).smul h⟩
+instance [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
+    ContinuousSMul R C(α, M) := by
+  constructor
+  simp_rw [continuous_iff_continuousAt, ContinuousAt, ContinuousMap.tendsto_nhds_compactOpen]
+  rintro ⟨r, f⟩ K hK U hU H
+  have : Set.MapsTo (fun p : R × M ↦ p.1 • p.2) ({r} ×ˢ (f '' K)) U := by
+    simpa [Set.MapsTo, forall_comm (α := M), forall_comm (β := _ = _)]
+  have := continuous_smul.tendsto_nhdsSet this hU.mem_nhdsSet_self
+  rw [isCompact_singleton.nhdsSet_prod_eq (hK.image f.continuous), nhdsSet_singleton,
+    Filter.mem_map, ((nhds_basis_opens _).prod (hasBasis_nhdsSet _)).mem_iff] at this
+  obtain ⟨⟨V, W⟩, ⟨⟨hrV, hV⟩, hW, hKW⟩, hVW⟩ := this
+  refine Filter.eventually_of_mem (prod_mem_nhds (hV.mem_nhds hrV)
+    (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo'.mpr hKW))) ?_
+  rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
+  exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : ⇑(c • f) = c • ⇑f :=
@@ -594,13 +601,22 @@ instance module : Module R C(α, M) :=
 
 variable (R)
 
-/-- Composition on the left by a continuous linear map, as a `LinearMap`.
+/-- Composition on the left by a continuous linear map, as a `ContinuousLinearMap`.
 Similar to `LinearMap.compLeft`. -/
 @[simps]
 protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type*) [TopologicalSpace α]
-    (g : M →L[R] M₂) : C(α, M) →ₗ[R] C(α, M₂) :=
-  { g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.continuous with
-    map_smul' := fun c _ => ext fun _ => g.map_smul' c _ }
+    (g : M →L[R] M₂) : C(α, M) →L[R] C(α, M₂) where
+  __ := g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.continuous
+  map_smul' := fun c _ => ext fun _ => g.map_smul' c _
+  cont := ContinuousMap.continuous_postcomp _
+
+/-- The constant map `x ↦ y ↦ x` as a `ContinuousLinearMap`. -/
+@[simps!]
+def _root_.ContinuousLinearMap.const (α : Type*) [TopologicalSpace α] : M →L[R] C(α, M) where
+  toFun m := .const α m
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := ContinuousMap.continuous_const'
 
 /-- Coercion to a function as a `LinearMap`. -/
 @[simps]
