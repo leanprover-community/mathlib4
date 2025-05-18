@@ -845,9 +845,9 @@ def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Si
     Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
   simp [faceOpposite]
 
-/-- Needed to make the affine span nonempty. -/
-instance {n : ℕ} [NeZero n] (i : Fin (n + 1)) : Nonempty ({i}ᶜ : Set _) :=
-  .intro ⟨i + 1, by simp [NeZero.ne]⟩
+/-- Needed to make `affineSpan (s.points '' {i}ᶜ)` nonempty. -/
+instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
+  (Set.nonempty_compl_of_nontrivial i).to_subtype
 
 @[simp] lemma mem_affineSpan_image_iff [Nontrivial k] {n : ℕ} (s : Simplex k P n)
     {fs : Set (Fin (n + 1))} {i : Fin (n + 1)} :
