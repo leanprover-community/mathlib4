@@ -389,7 +389,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
       refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
       convert this using 1
-      simp only [one_mul, Int.ofNat_add, Int.ofNat_mul]
+      simp only [one_mul, Int.natCast_add, Int.natCast_mul]
       ring
 
 open Int in
@@ -768,7 +768,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
             co2.dvd_of_dvd_mul_right <| by simp [this])
 
 theorem divides_sq_eq_zero_z {x y : ℤ} (h : x * x = d * y * y) : x = 0 ∧ y = 0 := by
-  rw [mul_assoc, ← Int.natAbs_mul_self, ← Int.natAbs_mul_self, ← Int.ofNat_mul, ← mul_assoc] at h
+  rw [mul_assoc, ← Int.natAbs_mul_self, ← Int.natAbs_mul_self, ← Int.natCast_mul, ← mul_assoc] at h
   exact
     let ⟨h1, h2⟩ := divides_sq_eq_zero (Int.ofNat.inj h)
     ⟨Int.natAbs_eq_zero.mp h1, Int.natAbs_eq_zero.mp h2⟩
@@ -802,7 +802,8 @@ instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
     le_antisymm := fun _ _ => Zsqrtd.le_antisymm
     le_total := Zsqrtd.le_total
-    decidableLE := Zsqrtd.decidableLE }
+    toDecidableLE := Zsqrtd.decidableLE
+    toDecidableEq := inferInstance }
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b = 0 → a = 0 ∨ b = 0
   | ⟨x, y⟩, ⟨z, w⟩, h => by
@@ -845,15 +846,14 @@ protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b 
       (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
     (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
 
-instance : LinearOrderedCommRing (ℤ√d) :=
-  { Zsqrtd.commRing, Zsqrtd.linearOrder, Zsqrtd.nontrivial with
-    add_le_add_left := Zsqrtd.add_le_add_left
-    mul_pos := Zsqrtd.mul_pos
-    zero_le_one := by trivial }
+instance : ZeroLEOneClass (ℤ√d) :=
+  { zero_le_one := by trivial }
 
-instance : LinearOrderedRing (ℤ√d) := by infer_instance
+instance : IsOrderedAddMonoid (ℤ√d) :=
+  { add_le_add_left := Zsqrtd.add_le_add_left }
 
-instance : OrderedRing (ℤ√d) := by infer_instance
+instance : IsStrictOrderedRing (ℤ√d) :=
+  .of_mul_pos Zsqrtd.mul_pos
 
 end
 

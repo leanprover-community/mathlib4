@@ -12,7 +12,7 @@ Define the interior and boundary of a manifold.
 
 ## Main definitions
 - **IsInteriorPoint x**: `p ∈ M` is an interior point if, for `φ` being the preferred chart at `x`,
- `φ x` is an interior point of `φ.target`.
+  `φ x` is an interior point of `φ.target`.
 - **IsBoundaryPoint x**: `p ∈ M` is a boundary point if, `(extChartAt I x) x ∈ frontier (range I)`.
 - **interior I M** is the **interior** of `M`, the set of its interior points.
 - **boundary I M** is the **boundary** of `M`, the set of its boundary points.
@@ -201,7 +201,7 @@ lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
   ext p
   have aux : (interior (range ↑I)) ×ˢ (interior (range J)) = interior (range (I.prod J)) := by
-    rw [← interior_prod_eq, ← Set.range_prod_map, modelWithCorners_prod_coe]
+    rw [← interior_prod_eq, ← range_prodMap, modelWithCorners_prod_coe]
   constructor <;> intro hp
   · replace hp : (I.prod J).IsInteriorPoint p := hp
     rw [IsInteriorPoint, ← aux] at hp

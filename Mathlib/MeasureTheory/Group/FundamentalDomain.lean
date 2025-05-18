@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Group.Pointwise
-import Mathlib.MeasureTheory.Integral.Lebesgue.MeasurePreserving
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Fundamental domain of a group action
@@ -28,12 +28,12 @@ two fundamental domains are equal to each other.
 We also generate additive versions of all theorems in this file using the `to_additive` attribute.
 
 * We define the `HasFundamentalDomain` typeclass, in particular to be able to define the `covolume`
-of a quotient of `α` by a group `G`, which under reasonable conditions does not depend on the choice
-of fundamental domain.
+  of a quotient of `α` by a group `G`, which under reasonable conditions does not depend on the
+  choice of fundamental domain.
 
 * We define the `QuotientMeasureEqMeasurePreimage` typeclass to describe a situation in which a
-measure `μ` on `α ⧸ G` can be computed by taking a measure `ν` on `α` of the intersection of the
-pullback with a fundamental domain.
+  measure `μ` on `α ⧸ G` can be computed by taking a measure `ν` on `α` of the intersection of the
+  pullback with a fundamental domain.
 
 ## Main declarations
 

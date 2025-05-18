@@ -45,6 +45,7 @@ class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] : Prop
 
 attribute [instance 50] CanonicallyOrderedMul.toExistsMulOfLE
 
+set_option linter.deprecated false in
 /-- A canonically ordered additive monoid is an ordered commutative additive monoid
   in which the ordering coincides with the subtractibility relation,
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
@@ -59,6 +60,7 @@ structure CanonicallyOrderedAddCommMonoid (α : Type*) extends
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 
+set_option linter.deprecated false in
 set_option linter.existingAttributeWarning false in
 /-- A canonically ordered monoid is an ordered commutative monoid
   in which the ordering coincides with the divisibility relation,
@@ -165,12 +167,7 @@ variable [LE α] [CanonicallyOrderedMul α] {a b : α}
 theorem one_le (a : α) : 1 ≤ a :=
   le_self_mul.trans_eq (one_mul _)
 
-@[to_additive]
-instance (priority := 10) CanonicallyOrderedMul.toOrderBot : OrderBot α where
-  bot := 1
-  bot_le := one_le
-
-@[to_additive] theorem bot_eq_one : (⊥ : α) = 1 := rfl
+@[to_additive] theorem isBot_one : IsBot (1 : α) := one_le
 
 end LE
 
@@ -179,7 +176,7 @@ variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive (attr := simp)]
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
-  h.bot_lt
+  (one_le _).trans_lt h
 
 alias LT.lt.pos := pos_of_gt
 @[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
@@ -189,11 +186,27 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 
-@[to_additive (attr := simp)] theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 := le_bot_iff
-@[to_additive] theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 := bot_lt_iff_ne_bot
-@[to_additive] theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a := h.bot_lt
-@[to_additive] theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := eq_bot_or_bot_lt a
-@[to_additive] lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x := bot_not_mem_iff
+@[to_additive]
+theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
+
+@[to_additive (attr := simp)]
+theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
+  (one_le a).le_iff_eq
+
+@[to_additive]
+theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
+  (one_le a).lt_iff_ne.trans ne_comm
+
+@[to_additive]
+theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a :=
+  one_lt_iff_ne_one.2 h
+
+@[to_additive]
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
+
+@[to_additive]
+lemma one_not_mem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
+  bot_eq_one (α := α) ▸ bot_not_mem_iff
 
 alias NE.ne.pos := pos_of_ne_zero
 @[to_additive existing] alias NE.ne.one_lt := one_lt_of_ne_one
@@ -343,7 +356,7 @@ theorem min_one (a : α) : min a 1 = 1 :=
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)
   "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
-theorem bot_eq_one' : (⊥ : α) = 1 :=
+theorem bot_eq_one' [OrderBot α] : (⊥ : α) = 1 :=
   bot_eq_one
 
 end CanonicallyLinearOrderedCommMonoid

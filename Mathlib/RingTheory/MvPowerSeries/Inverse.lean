@@ -56,9 +56,9 @@ The inverse of a multivariate formal power series is defined by
 well-founded recursion on the coefficients of the inverse.
 -/
 /-- Auxiliary definition that unifies
- the totalised inverse formal power series `(_)⁻¹` and
- the inverse formal power series that depends on
- an inverse of the constant coefficient `invOfUnit`. -/
+the totalised inverse formal power series `(_)⁻¹` and
+the inverse formal power series that depends on
+an inverse of the constant coefficient `invOfUnit`. -/
 protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerSeries σ R
   | n =>
     letI := Classical.decEq σ
@@ -172,7 +172,7 @@ variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 -- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
 /-- The map between multivariate formal power series over the same indexing set
- induced by a local ring hom `A → B` is local -/
+induced by a local ring hom `A → B` is local -/
 @[instance]
 theorem map.isLocalHom : IsLocalHom (map σ f) :=
   ⟨by
@@ -183,9 +183,6 @@ theorem map.isLocalHom : IsLocalHom (map σ f) :=
     rw [h] at this
     rcases isUnit_of_map_unit f _ this with ⟨c, hc⟩
     exact isUnit_of_mul_eq_one φ (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
-
-@[deprecated (since := "2024-10-10")]
-alias map.isLocalRingHom := map.isLocalHom
 
 end IsLocalRing
 

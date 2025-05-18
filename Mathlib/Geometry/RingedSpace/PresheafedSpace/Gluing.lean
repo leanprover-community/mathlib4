@@ -124,9 +124,6 @@ theorem ι_isOpenEmbedding [HasLimits C] (i : D.J) : IsOpenEmbedding (𝖣.ι i)
   exact (TopCat.homeoOfIso (𝖣.gluedIso (PresheafedSpace.forget _)).symm).isOpenEmbedding.comp
       (D.toTopGlueData.ι_isOpenEmbedding i)
 
-@[deprecated (since := "2024-10-18")]
-alias ι_openEmbedding := ι_isOpenEmbedding
-
 theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
     (π₂ i, j, k) '' ((π₁ i, j, k) ⁻¹' S) = D.f i k ⁻¹' (D.f i j '' S) := by
   have eq₁ : _ = (π₁ i, j, k).base := PreservesPullback.iso_hom_fst (forget C) _ _
@@ -330,9 +327,9 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 
+set_option maxHeartbeats 600000 in
 -- Porting note: time out started in `erw [... congr_app (pullbackSymmetry_hom_comp_snd _ _)]` and
 -- the last congr has a very difficult `rfl : eqToHom _ ≫ eqToHom _ ≫ ... = eqToHom ... `
-set_option maxHeartbeats 600000 in
 /-- (Implementation) The natural map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, 𝖣.ι i '' U)`.
 This forms the inverse of `(𝖣.ι i).c.app (op U)`. -/
 def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :

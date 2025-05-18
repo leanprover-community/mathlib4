@@ -53,11 +53,10 @@ defined by convention to be `0` if this supremum is infinite. See `Module.rank` 
 cardinal-valued version where infinite rank modules have rank an infinite cardinal.
 
 Note that if `R` is not a field then there can exist modules `M` with `¬(Module.Finite R M)` but
-`finrank R M ≠ 0`. For example `ℤ × ℚ/ℤ` has `finrank` equal to `1` over `ℤ`. -/
+`finrank R M ≠ 0`. For example `ℚ` has `finrank` equal to `1` over `ℤ`, because the nonempty
+`ℤ`-linearly independent subsets of `ℚ` are precisely the nonzero singletons. -/
 noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
-
-@[deprecated (since := "2024-10-01")] protected alias _root_.FiniteDimensional.finrank := finrank
 
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R M = n := by
   simp [finrank, h]

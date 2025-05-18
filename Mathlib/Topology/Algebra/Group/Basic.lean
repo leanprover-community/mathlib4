@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Topology.Algebra.Group.Defs
 import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological groups
@@ -944,7 +945,7 @@ section DivInvTopologicalGroup
 variable [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
-@[to_additive (attr := simps! (config := { simpRhs := true }))
+@[to_additive (attr := simps! +simpRhs)
   "A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`."]
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
   { Equiv.divLeft x with
@@ -960,7 +961,7 @@ theorem isClosedMap_div_left (a : G) : IsClosedMap (a / ·) :=
   (Homeomorph.divLeft _).isClosedMap
 
 /-- A version of `Homeomorph.mulRight a⁻¹ b` that is defeq to `b / a`. -/
-@[to_additive (attr := simps! (config := { simpRhs := true }))
+@[to_additive (attr := simps! +simpRhs)
   "A version of `Homeomorph.addRight (-a) b` that is defeq to `b - a`. "]
 def Homeomorph.divRight (x : G) : G ≃ₜ G :=
   { Equiv.divRight x with

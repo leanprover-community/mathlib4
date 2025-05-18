@@ -3,6 +3,7 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Int.Interval
 
@@ -30,7 +31,7 @@ lemma sum_le_sum_Ioc {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, x ≤ c) :
       have := mx.2 (hs _ mx.1); omega
     _ = ∑ x ∈ r ∩ s, x + #(r \ s) • (c - #s) := by
       rw [inter_comm, card_sdiff_comm]
-      rw [Int.card_Ioc, sub_sub_cancel, Int.toNat_ofNat]
+      rw [Int.card_Ioc, sub_sub_cancel, Int.toNat_natCast]
     _ ≤ _ := by
       rw [← sum_inter_add_sum_diff r s _]
       refine add_le_add_left (card_nsmul_le_sum _ _ _ fun x mx ↦ ?_) _
@@ -58,7 +59,7 @@ lemma sum_Ico_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :
       rw [mem_sdiff, mem_Ico] at mx; exact mx.1.2.le
     _ = ∑ x ∈ s ∩ r, x + #(s \ r) • (c + #s) := by
       rw [inter_comm, card_sdiff_comm]
-      rw [Int.card_Ico, add_sub_cancel_left, Int.toNat_ofNat]
+      rw [Int.card_Ico, add_sub_cancel_left, Int.toNat_natCast]
     _ ≤ _ := by
       rw [← sum_inter_add_sum_diff s r _]
       refine add_le_add_left (card_nsmul_le_sum _ _ _ fun x mx ↦ ?_) _

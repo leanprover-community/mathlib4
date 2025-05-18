@@ -45,6 +45,29 @@ lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
     · exact (zpow_right_strictMono ha).injective
   · exact fun h ↦ h.exists
 
+@[to_additive]
+lemma Subgroup.zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+    {x y : G} : Subgroup.zpowers x = Subgroup.zpowers y ↔ x = y ∨ x⁻¹ = y := by
+  rw [iff_comm]
+  constructor
+  · rintro (rfl | rfl) <;>
+    simp
+  intro h
+  have hx : x ∈ Subgroup.zpowers y := by
+    simp [← h]
+  have hy : y ∈ Subgroup.zpowers x := by
+    simp [h]
+  obtain ⟨⟨k, rfl⟩, ⟨l, hl⟩⟩ := hy, hx
+  wlog hx1 : 1 < x
+  · push_neg at hx1
+    rcases hx1.eq_or_lt with rfl | hx1
+    · simp
+    · simpa [or_comm] using this (x := x⁻¹) (-k) (by simp [h]) (-l) (by simp [hl]) (by simp [hx1])
+  replace hl : x ^ (k * l) = x ^ (1 : ℤ) := by simp [zpow_mul, hl]
+  rw [zpow_right_inj hx1, Int.mul_eq_one_iff_eq_one_or_neg_one] at hl
+  refine hl.imp ?_ ?_ <;>
+  simp +contextual
+
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
@@ -168,7 +191,6 @@ noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos
 
 /-- If an element of a linearly ordered mul-archimedean group is the least element greater than 1,
 then the whole group is isomorphic (and order-isomorphic) to the multiplicative integers. -/
-@[to_additive existing LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos]
 noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_isLeast_one_lt
     {x : G} (h : IsLeast {y : G | 1 < y} x) : G ≃*o Multiplicative ℤ := by
   have : IsLeast {y : Additive G | 0 < y} (.ofMul x) := h
@@ -212,7 +234,6 @@ lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered. -/
-@[to_additive existing]
 lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ∨ DenselyOrdered G := by
   refine (LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)).imp ?_ id
@@ -222,7 +243,6 @@ lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered, exclusively. -/
-@[to_additive existing]
 lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ↔ ¬ DenselyOrdered G := by
   let e : G ≃o Additive G := OrderIso.refl G
@@ -347,7 +367,6 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
   · intro
     simp [Function.onFun, neg_le]
 
-@[to_additive existing]
 lemma LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
     {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] {g : G} :
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
@@ -361,7 +380,6 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
     fun h ↦ (h.mapsTo e fun _ ↦ ?_).mono' ?_⟩ <;>
   simp [Function.onFun]
 
-@[to_additive existing]
 lemma LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
     {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] (g : G) :
     Set.WellFoundedOn {x : G | x ≤ g} (· > ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
@@ -433,7 +451,8 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
 end WellFounded
 
 @[to_additive]
-lemma OrderMonoidIso.mulArchimedean {α β} [OrderedCommMonoid α] [OrderedCommMonoid β]
+lemma OrderMonoidIso.mulArchimedean {α β}
+    [CommMonoid α] [PartialOrder α] [CommMonoid β] [PartialOrder β]
     (e : α ≃*o β) [MulArchimedean α] : MulArchimedean β := by
   constructor
   intro x y hxy
@@ -441,7 +460,7 @@ lemma OrderMonoidIso.mulArchimedean {α β} [OrderedCommMonoid α] [OrderedCommM
   refine (MulArchimedean.arch (e.symm x) hxy).imp ?_
   simp [← map_pow, ← map_le_map_iff e]
 
-lemma WithZero.mulArchimedean_iff {α} [OrderedCommGroup α] :
+lemma WithZero.mulArchimedean_iff {α} [CommGroup α] [PartialOrder α] :
     MulArchimedean (WithZero α) ↔ MulArchimedean α := by
   constructor <;> intro _
   · exact OrderMonoidIso.unitsWithZero.mulArchimedean

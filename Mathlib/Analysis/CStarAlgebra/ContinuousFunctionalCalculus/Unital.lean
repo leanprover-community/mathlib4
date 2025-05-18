@@ -3,7 +3,7 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Quasispectrum
+import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.Star.Real
@@ -239,9 +239,6 @@ noncomputable def cfcHom : C(spectrum R a, R) →⋆ₐ[R] A :=
 lemma cfcHom_isClosedEmbedding :
     IsClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
-
-@[deprecated (since := "2024-10-20")]
-alias cfcHom_closedEmbedding := cfcHom_isClosedEmbedding
 
 @[fun_prop]
 lemma cfcHom_continuous : Continuous (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
