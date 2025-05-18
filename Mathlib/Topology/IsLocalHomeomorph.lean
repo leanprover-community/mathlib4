@@ -79,8 +79,7 @@ theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s)
   · simpa using hs.isOpenMap_subtype_val _ (hX ⟨x, hx⟩)
   · ext; simp [Subtype.ext_iff]
 
-variable (f s)
-
+variable (f s) in
 /-- Proves that `f` satisfies `IsLocalHomeomorphOn f s`. The condition `h` is weaker than the
 definition of `IsLocalHomeomorphOn f s`, since it only requires `e : PartialHomeomorph X Y` to
 agree with `f` on its source `e.source`, as opposed to on the whole space `X`. -/
@@ -102,7 +101,7 @@ lemma PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
     IsLocalHomeomorphOn e e.source :=
   fun _ hx ↦ ⟨e, hx, rfl⟩
 
-variable {g f s t}
+variable {g t}
 
 theorem mono {t : Set X} (hf : IsLocalHomeomorphOn f t) (hst : s ⊆ t) : IsLocalHomeomorphOn f s :=
   fun x hx ↦ hf x (hst hx)
@@ -176,6 +175,7 @@ theorem Topology.IsOpenEmbedding.isLocalHomeomorph (hf : IsOpenEmbedding f) : Is
 
 namespace IsLocalHomeomorph
 
+/-- A space that admits a local homeomorphism to a discrete space is itself discrete. -/
 theorem comap_discreteTopology (h : IsLocalHomeomorph f)
     [DiscreteTopology Y] : DiscreteTopology X :=
   (Homeomorph.Set.univ X).discreteTopology_iff.mp h.isLocalHomeomorphOn.discreteTopology_of_image
@@ -185,6 +185,8 @@ theorem discreteTopology_range_iff (h : IsLocalHomeomorph f) :
   rw [← Set.image_univ, ← (Homeomorph.Set.univ X).discreteTopology_iff]
   exact h.isLocalHomeomorphOn.discreteTopology_image_iff isOpen_univ
 
+/-- If there is a surjective local homeomorphism between two spaces and one of them is discrete,
+then both spaces are discrete. -/
 theorem discreteTopology_iff_of_surjective (h : IsLocalHomeomorph f) (hs : Function.Surjective f) :
     DiscreteTopology X ↔ DiscreteTopology Y := by
   rw [← (Homeomorph.Set.univ Y).discreteTopology_iff, ← hs.range_eq, h.discreteTopology_range_iff]
