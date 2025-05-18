@@ -39,13 +39,13 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
 /-- An altitude of a simplex is the line that passes through a vertex
 and is orthogonal to the opposite face. -/
 def altitude {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) : AffineSubspace ℝ P :=
-  mk' (s.points i) (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ ⊓
+  mk' (s.points i) (affineSpan ℝ (s.points '' {i}ᶜ})).directionᗮ ⊓
     affineSpan ℝ (Set.range s.points)
 
 /-- The definition of an altitude. -/
 theorem altitude_def {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
     s.altitude i =
-      mk' (s.points i) (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ ⊓
+      mk' (s.points i) (affineSpan ℝ (s.points '' {i}ᶜ})).directionᗮ ⊓
         affineSpan ℝ (Set.range s.points) :=
   rfl
 
@@ -83,7 +83,7 @@ theorem finrank_direction_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i
     finrank ℝ (s.altitude i).direction = 1 := by
   rw [direction_altitude]
   have h := Submodule.finrank_add_inf_finrank_orthogonal
-    (vectorSpan_mono ℝ (Set.image_subset_range s.points ↑(univ.erase i)))
+    (vectorSpan_mono ℝ (Set.image_subset_range s.points {i}ᶜ}))
   have hn : (n - 1) + 1 = n := by
     have := NeZero.ne n
     cases n <;> omega
