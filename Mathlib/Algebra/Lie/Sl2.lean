@@ -94,9 +94,9 @@ lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e
 variable (R) in
 open Submodule in
 /-- The subalgebra associated to an `sl₂` triple. -/
-@[simps!] def toLieSubalgebra (t : IsSl2Triple h e f) :
+def toLieSubalgebra (t : IsSl2Triple h e f) :
     LieSubalgebra R L where
-  __ := span R {h, e, f}
+  __ := span R {e, f, h}
   lie_mem' {x y} hx hy := by
     simp only [carrier_eq_coe, SetLike.mem_coe] at hx hy ⊢
     induction hx using span_induction with
@@ -112,24 +112,29 @@ open Submodule in
         simp only [mem_insert_iff, mem_singleton_iff] at hu hv
         rcases hu with rfl | rfl | rfl <;>
         rcases hv with rfl | rfl | rfl <;> (try simp only [lie_self, zero_mem])
+        · rw [t.lie_e_f]
+          apply subset_span
+          simp
+        · rw [← lie_skew, t.lie_h_e_nsmul, neg_mem_iff]
+          apply nsmul_mem <| subset_span _
+          simp
+        · rw [← lie_skew, t.lie_e_f, neg_mem_iff]
+          apply subset_span
+          simp
+        · rw [← lie_skew, t.lie_h_f_nsmul, neg_neg]
+          apply nsmul_mem <| subset_span _
+          simp
         · rw [t.lie_h_e_nsmul]
           apply nsmul_mem <| subset_span _
           simp
         · rw [t.lie_h_f_nsmul, neg_mem_iff]
           apply nsmul_mem <| subset_span _
           simp
-        · rw [← lie_skew, t.lie_h_e_nsmul, neg_mem_iff]
-          apply nsmul_mem <| subset_span _
-          simp
-        · rw [t.lie_e_f]
-          apply subset_span
-          simp
-        · rw [← lie_skew, t.lie_h_f_nsmul, neg_neg]
-          apply nsmul_mem <| subset_span _
-          simp
-        · rw [← lie_skew, t.lie_e_f, neg_mem_iff]
-          apply subset_span
-          simp
+
+lemma mem_toLieSubalgebra_iff {x : L} {t : IsSl2Triple h e f} :
+    x ∈ t.toLieSubalgebra R ↔ ∃ c₁ c₂ c₃ : R, x = c₁ • e + c₂ • f + c₃ • ⁅e, f⁆ := by
+  simp_rw [t.lie_e_f, toLieSubalgebra, ← LieSubalgebra.mem_toSubmodule, Submodule.mem_span_triple,
+    eq_comm]
 
 namespace HasPrimitiveVectorWith
 
