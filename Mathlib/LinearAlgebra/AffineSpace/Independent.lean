@@ -850,7 +850,7 @@ instance {n : ℕ} [NeZero n] (i : Fin (n + 1)) : Nonempty ({i}ᶜ : Set _) :=
   .intro ⟨i + 1, by simp [NeZero.ne]⟩
 
 @[simp] lemma mem_affineSpan_image_iff [Nontrivial k] {n : ℕ} (s : Simplex k P n)
-    (fs : Set (Fin (n + 1))) {i : Fin (n + 1)} :
+    {fs : Set (Fin (n + 1))} {i : Fin (n + 1)} :
     s.points i ∈ affineSpan k (s.points '' fs) ↔ i ∈ fs :=
   s.independent.mem_affineSpan_iff _ _
 

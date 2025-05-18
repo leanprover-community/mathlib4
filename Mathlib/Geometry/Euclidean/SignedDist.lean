@@ -97,9 +97,10 @@ trilinear coordinates; in a tetrahedron, they are quadriplanar coordinates. -/
 noncomputable def signedInfDist : P →ᵃ[ℝ] ℝ :=
   AffineSubspace.signedInfDist (affineSpan ℝ (s.points '' {i}ᶜ)) (s.points i)
 
-lemma signedInfDist_apply_self : s.signedInfDist i (s.points i) = ‖s.points i -ᵥ
-    (s.faceOpposite i).orthogonalProjectionSpan (s.points i)‖ :=
-  AffineSubspace.signedInfDist_apply_self _ _
+lemma signedInfDist_apply_self :
+    s.signedInfDist i (s.points i) =
+      ‖s.points i -ᵥ (s.faceOpposite i).orthogonalProjectionSpan (s.points i)‖ :=
+  (AffineSubspace.signedInfDist_apply_self _ _).trans <| by simp [orthogonalProjectionSpan]
 
 variable {i} in
 lemma signedInfDist_apply_of_ne {j : Fin (n + 1)} (h : j ≠ i) :

@@ -132,6 +132,16 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
   __ := orthogonalProjectionAux s
   cont := AffineMap.continuous_linear_iff.1 s.direction.orthogonalProjection.cont
 
+@[congr]
+theorem orthogonalProjection_congr (s₁ s₂ : AffineSubspace ℝ P) {p₁ p₂ : P}
+    [Nonempty s₁] [s₁.direction.HasOrthogonalProjection]
+    (h : s₁ = s₂) (hp : p₁ = p₂) :
+    letI : Nonempty s₂ := h ▸ ‹_›
+    letI : s₂.direction.HasOrthogonalProjection := h ▸ ‹_›
+    (orthogonalProjection s₁ p₁ : P) = (orthogonalProjection s₂ p₂ : P) := by
+  subst h hp
+  rfl
+
 @[simp]
 theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
