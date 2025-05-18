@@ -499,6 +499,19 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R) [Sma
     apply rees N
     simp [Nntr, Nfin, hsupp]
 
+lemma IsLocalRing.depth_eq_sSup_length_regular [IsLocalRing R] [IsNoetherianRing R]
+    [Small.{v, u} (R ⧸ maximalIdeal R)] (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
+    IsLocalRing.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
+    (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ maximalIdeal R) } := by
+  let _ := Module.Finite.equiv (Shrink.linearEquiv (R ⧸ maximalIdeal R) R).symm
+  have smul_lt : (maximalIdeal R) • (⊤ : Submodule R M) < ⊤ :=
+    Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+      (IsLocalRing.maximalIdeal_le_jacobson _))
+  apply moduleDepth_eq_sSup_length_regular (maximalIdeal R)
+    (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M smul_lt
+  rw [(Shrink.linearEquiv (R ⧸ maximalIdeal R) R).support_eq, Module.support_eq_zeroLocus,
+    Ideal.annihilator_quotient]
+
 omit [Small.{v, u} R] in
 lemma Submodule.comap_lt_top_of_lt_range {M N : Type* } [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) (p : Submodule R N)
