@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Primitive
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.SetTheory.Cardinal.Embedding
 
 /-! # Multiple transitivity
