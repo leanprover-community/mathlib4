@@ -425,7 +425,7 @@ instance : (rootSystem H).IsReduced where
 
 
 variable (K L : Type*) [Field K] [CharZero K]
-  [LieRing L] [LieAlgebra K L] [LieAlgebra.IsSimple K L] [FiniteDimensional K L]
+  [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
   [LieAlgebra.IsKilling K L] -- Follows from simplicity; will be redundant after #10068 done
   (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
 
@@ -463,7 +463,25 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
     LieIdeal K L where
   __ := LieSubalgebra.lieSpan K L <| ⋃ α ∈ {α ∈ q | α ≠ 0}, rootSpace H α
   lie_mem {x y} hy := by
-    have _i := nontrivial_of_isIrreducible K L L
+    have rr : (⊥ : LieSubmodule K L L) = ⊤ ∨ (⊥ : LieSubmodule K L L) ≠ ⊤ := by
+      exact eq_or_ne ⊥ ⊤
+    rcases rr with _j | _j
+    · simp_all
+      have : x = 0 := by
+        have hx : x ∈ (⊥ : LieSubmodule K L L) := by
+          rw [_j]
+          exact LieSubmodule.mem_top x
+        exact hx
+      rw [this]
+      simp
+    have _i : Nontrivial L := by
+      have : ∃ x : L, x ∉ (⊥ : LieSubmodule K L L) := by
+        contrapose! _j
+        ext x
+        simp [_j x]  -- if everything is in ⊥, then ⊥ = ⊤
+      obtain ⟨x, hx⟩ := this
+      use x, 0
+      exact hx
     let S := rootSystem H
     obtain ⟨Φ, b, c⟩ := S.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q hq
     have hΦ₂ : S.root '' Φ ⊆ q := by
@@ -503,13 +521,6 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
         exact RootPairing.span_coroot'_eq_top S
       rw [mmm2, Submodule.dualCoannihilator_top] at mmm
       exact (Submodule.eq_bot_iff q).mpr mmm
-    rcases Classical.em (Φ = ∅) with h0 | h0
-    · rw [h0] at c
-      have rrr2 : ∀ i : H.root, q ≤ LinearMap.ker (S.coroot' i) := by
-        intro i
-        exact c i (by simp)
-      have := rrr rrr2
-      contradiction
     let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
     let I := LieSubalgebra.lieSpan K L g
     simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Submodule.carrier_eq_coe,
@@ -720,7 +731,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H)) (hn : q ≠ ⊥)
       exact add_mem hx hy
 
 
-
+variable [LieAlgebra.IsSimple K L]
 
 lemma invtSubmodule_reflection:
    ∀ (q : Submodule K (Dual K H)), (∀ (i : H.root), q ∈ End.invtSubmodule
