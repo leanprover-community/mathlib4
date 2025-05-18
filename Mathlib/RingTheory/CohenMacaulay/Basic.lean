@@ -144,15 +144,62 @@ variable [p.IsPrime] {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocali
   [IsLocalRing Rₚ]
   -- This can be deduced from `IsLocalization.AtPrime Rₚ p`, but cannot be an
   -- `instance`, so we need to manually add this condition.
-  [Small.{v'} Rₚ] [Small.{v'} (Rₚ ⧸ (maximalIdeal Rₚ))]
+  [Small.{v'} Rₚ] [Small.{v'} (Rₚ ⧸ (maximalIdeal Rₚ))] [IsNoetherianRing Rₚ]
 
 variable (M : ModuleCat.{v} R) (Mₚ : ModuleCat.{v'} Rₚ)
   [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f]
 
 include p f
 
-lemma isLocalize_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] :
-    p.depth M ≤ IsLocalRing.depth Mₚ := by
+open Pointwise in
+lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
+    (M : Type*) [AddCommGroup M] [Module R M] (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ]
+    [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f]
+    (reg : IsWeaklyRegular M rs) : IsWeaklyRegular Mₚ (rs.map (algebraMap R Rₚ)) := by
+  generalize len : rs.length = n
+  induction' n with n ih generalizing M Mₚ rs
+  · simp [List.length_eq_zero_iff.mp len]
+  · match rs with
+    | [] => simp at len
+    | x :: rs' =>
+      simp only [List.length_cons, Nat.add_right_cancel_iff] at len
+      simp only [isWeaklyRegular_cons_iff, List.map_cons] at reg ⊢
+      constructor
+      · rw [isSMulRegular_algebraMap_iff x, isSMulRegular_iff_ker_lsmul_eq_bot Mₚ x,
+          LinearMap.ker_eq_bot']
+        intro m hm
+        rcases IsLocalizedModule.mk'_surjective p.primeCompl f m with ⟨a, ha⟩
+        simp only [← ha, LinearMap.lsmul_apply] at hm ⊢
+        have : x • IsLocalizedModule.mk' f a.1 a.2 = 0 := hm
+        rw [← IsLocalizedModule.mk'_smul, IsLocalizedModule.mk'_eq_zero'] at this
+        simp only [Subtype.exists, Submonoid.mk_smul, exists_prop] at this
+        rcases this with ⟨s, mem, hs⟩
+        rw [smul_smul, mul_comm, ← smul_smul] at hs
+        apply (IsLocalizedModule.mk'_eq_zero' f a.2).mpr ⟨⟨s, mem⟩, ?_⟩
+        simp only [Submonoid.mk_smul, ← Submodule.mem_bot (R := R),
+          ← (isSMulRegular_iff_ker_lsmul_eq_bot M x).mp reg.1]
+        exact hs
+      · let f : QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R Rₚ) x) Mₚ :=
+          sorry
+        have : IsLocalizedModule.AtPrime p f := sorry
+        exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) f reg.2 len
+
+lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module.Finite R M]
+    [Nontrivial M] [Nontrivial Mₚ] : p.depth M ≤ IsLocalRing.depth Mₚ := by
+  let _ : Module.Finite Rₚ Mₚ := sorry
+  simp only [IsLocalRing.depth_eq_sSup_length_regular, Ideal.depth]
+  let _ : Module.Finite R (ModuleCat.of R (Shrink.{v, u} (R ⧸ p))) := sorry
+  have smul_lt : p • (⊤ : Submodule R M) < ⊤ :=
+    Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+      ((IsLocalRing.le_maximalIdeal (Ideal.IsPrime.ne_top')).trans
+      (IsLocalRing.maximalIdeal_le_jacobson _)))
+  have h_supp : Module.support R (of R (Shrink.{v, u} (R ⧸ p))) = PrimeSpectrum.zeroLocus p := by
+    rw [(Shrink.linearEquiv (R ⧸ p) R).support_eq, Module.support_eq_zeroLocus,
+      Ideal.annihilator_quotient]
+  rw [moduleDepth_eq_sSup_length_regular p _ _ smul_lt h_supp]
+  apply sSup_le (fun n hn ↦ le_sSup ?_)
+  rcases hn with ⟨rs, reg, mem, len⟩
+
   sorry
 
 lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay [Small.{v} (R ⧸ p)]
