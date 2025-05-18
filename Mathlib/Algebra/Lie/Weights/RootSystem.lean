@@ -494,6 +494,10 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         intro i hi
         by_contra h
         exact b i hi ((Submodule.disjoint_span_singleton' (s := q) (S.ne_zero i)).mpr h)
+    have hΦ₂' : ∀ i ∈ Φ, (S.root i) ∈ q := by
+      intro i hi
+      apply hΦ₂
+      exact Set.mem_image_of_mem S.root hi
     have hΦ₃ : ∀ i ∉ Φ, S.root i ∉ q := by
       intro i
       by_contra hc
@@ -529,16 +533,9 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         obtain ⟨hΦ, hx'⟩ := hi
         have : S.root i ∈ q := by
           apply hΦ₂
-          simpa
-        rw [Set.mem_iUnion]
-        use S.root i
-        rw [Set.mem_iUnion]
-        simp
-        constructor
-        constructor
-        exact this
-        exact RootPairing.ne_zero S.toRootPairing i
-        exact hx'
+          simp only [Set.mem_image, EmbeddingLike.apply_eq_iff_eq, exists_eq_right, hΦ]
+        simp only [Set.mem_iUnion, Set.mem_iUnion, exists_prop]
+        exact ⟨S.root i, ⟨⟨this, RootPairing.ne_zero S.toRootPairing i⟩, hx'⟩⟩
       · intro x hx
         rw [Set.mem_iUnion] at hx
         obtain ⟨i, hi⟩ := hx
@@ -599,10 +596,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     have hΦ₅ : LieSubalgebra.lieSpan K L (⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α)) = I := by
       rw[← hΦ₄]
     rw [hΦ₅] at hy ⊢
-    have hΦ₂' : ∀ i ∈ Φ, (S.root i) ∈ q := by
-      intro i hi
-      apply hΦ₂
-      exact Set.mem_image_of_mem S.root hi
+
     have s₁ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root i (S.coroot j) = 0 :=
       (c j h₂) (hΦ₂' i h₁)
     have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
