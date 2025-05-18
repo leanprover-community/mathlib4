@@ -423,7 +423,6 @@ instance : (rootSystem H).IsReduced where
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
-
 variable (K L : Type*) [Field K] [CharZero K]
   [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
   [LieAlgebra.IsKilling K L] -- Follows from simplicity; will be redundant after #10068 done
