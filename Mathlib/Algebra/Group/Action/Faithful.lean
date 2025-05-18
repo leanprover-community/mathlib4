@@ -63,7 +63,8 @@ instance LefttCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : F
 
 instance (R : Type*) [MulOneClass R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
 
-lemma faithfulSMul_iff_injective_smul_one (R A) [MulOneClass A] [SMul R A] [IsScalarTower R A A] :
+lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
+    [MulOneClass A] [SMul R A] [IsScalarTower R A A] :
     FaithfulSMul R A ↔ Injective (fun r : R ↦ r • (1 : A)) := by
   refine ⟨fun ⟨h⟩ {r₁ r₂} hr ↦ h fun a ↦ ?_, fun h ↦ ⟨fun {r₁ r₂} hr ↦ h ?_⟩⟩
   · simp only at hr

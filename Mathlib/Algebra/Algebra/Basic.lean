@@ -289,7 +289,7 @@ end Int
 
 section FaithfulSMul
 
-theorem _root_.NeZero.of_faithfulSMul (R A) [Semiring R] [Semiring A] [Module R A]
+theorem _root_.NeZero.of_faithfulSMul (R A : Type) [Semiring R] [Semiring A] [Module R A]
     [IsScalarTower R A A] [FaithfulSMul R A] (n : ℕ) [NeZero (n : R)] :
     NeZero (n : A) :=
   NeZero.nat_of_injective (f := ringHomEquivModuleIsScalarTower.symm ⟨_, ‹_›⟩) <|
