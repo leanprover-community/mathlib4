@@ -148,15 +148,78 @@ end BicotangentSpace
 
 variable {E M I}
 
-/-- A Riemannian metric on `M` is a smooth, symmetric, positive-definite section of the bundle of
-continuous bilinear maps from the tangent bundle of `M` to `ℝ`.
+/-- A pseudo-Riemannian metric on `M` is a smooth, symmetric, non-degenerate section of the
+bundle of continuous bilinear maps from the tangent bundle of `M` to `ℝ`.
 The bundle is `BicotangentBundle E I M`. A section `g` has `g x : BicotangentSpace E I M x`.
 So `g x v w` is `((g x) v) w`. -/
-structure RiemannianMetric
+structure PseudoRiemannianMetric
     (g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
       (BicotangentSpace.BicotangentBundle E I M)) : Prop where
   (symm : ∀ x : M, ∀ v w : TangentSpace I x, g x v w = g x w v)
+  (nondegenerate : ∀ x : M, ∀ v : TangentSpace I x, (∀ w : TangentSpace I x, g x v w = 0) → v = 0)
+
+/-- A Riemannian metric on `M` is a pseudo-Riemannian metric that is also positive-definite. -/
+structure RiemannianMetric
+    (g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
+      (BicotangentSpace.BicotangentBundle E I M)) : Prop where
+  (toPseudoRiemannianMetric : PseudoRiemannianMetric g)
   (posdef : ∀ x : M, ∀ v : TangentSpace I x, v ≠ 0 → 0 < g x v v)
+
+lemma RiemannianMetric.symm
+    {g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
+      (BicotangentSpace.BicotangentBundle E I M)}
+    (hg : RiemannianMetric g) (x : M) (v w : TangentSpace I x) : g x v w = g x w v :=
+  hg.toPseudoRiemannianMetric.symm x v w
+
+lemma RiemannianMetric.nondegenerate
+    {g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
+      (BicotangentSpace.BicotangentBundle E I M)}
+    (hg : RiemannianMetric g) (x : M) (v : TangentSpace I x)
+    (h_all_zero : ∀ w : TangentSpace I x, g x v w = 0) : v = 0 :=
+  hg.toPseudoRiemannianMetric.nondegenerate x v h_all_zero
+
+/-- A symmetric, positive-definite section `g` automatically satisfies the non-degeneracy condition
+and is therefore a pseudo-Riemannian metric. This lemma shows that for a symmetric bilinear form,
+positive-definiteness implies non-degeneracy. -/
+lemma PseudoRiemannianMetric.of_symm_posdef
+    {g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
+      (BicotangentSpace.BicotangentBundle E I M)}
+    (hsymm : ∀ x : M, ∀ v w : TangentSpace I x, g x v w = g x w v)
+    (hposdef : ∀ x : M, ∀ v : TangentSpace I x, v ≠ 0 → 0 < g x v v) :
+    PseudoRiemannianMetric g := {
+  symm := hsymm,
+  nondegenerate := by
+    intro x v h_all_zero_w
+    specialize h_all_zero_w v
+    by_cases hv_zero : v = 0
+    · exact hv_zero
+    · have h_pos : 0 < g x v v := hposdef x v hv_zero
+      have h_zero : g x v v = 0 := h_all_zero_w
+      exact (lt_irrefl 0 (h_zero ▸ h_pos)).elim
+    }
+
+/-- The scaling of a pseudo-Riemannian metrics by a nonzero real number is a pseudo-Riemannian
+metric. -/
+lemma PseudoRiemannianMetric.smul
+    {g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
+      (BicotangentSpace.BicotangentBundle E I M)}
+    (hg : PseudoRiemannianMetric g) {c : ℝ} (hc : c ≠ 0) :
+    PseudoRiemannianMetric (c • g) :=
+  let g_smul := c • g
+  have symm_smul : ∀ x v w, g_smul x v w = g_smul x w v := by
+    intro x v w
+    simp only [ContMDiffSection.coe_smul, Pi.smul_apply, ContinuousLinearMap.smul_apply,
+      hg.symm x v w, smul_eq_mul, g_smul]
+  have nondegenerate_smul : ∀ x v, (∀ w : TangentSpace I x, g_smul x v w = 0) → v = 0 := by
+      intro x v h_all_zero_w
+      have h_g_zero : ∀ w, g x v w = 0 := by
+        intro w
+        have h_smul_zero : g_smul x v w = 0 := h_all_zero_w w
+        simp only [g_smul] at h_smul_zero
+        exact (mul_eq_zero.mp h_smul_zero).resolve_left hc
+      exact hg.nondegenerate x v h_g_zero
+  { symm := symm_smul,
+    nondegenerate := nondegenerate_smul }
 
 /-- The sum of two Riemannian metrics is a Riemannian metric. -/
 lemma RiemannianMetric.add
@@ -164,14 +227,18 @@ lemma RiemannianMetric.add
       (BicotangentSpace.BicotangentBundle E I M)}
     (hg₁ : RiemannianMetric g₁) (hg₂ : RiemannianMetric g₂) :
     RiemannianMetric (g₁ + g₂) :=
-  { symm := fun x v w => by
-      simp only [ContMDiffSection.coe_add, Pi.add_apply, ContinuousLinearMap.add_apply,
-        hg₁.symm x v w, hg₂.symm x v w],
-    posdef := fun x v hv => by
-      have h₁ : 0 < g₁ x v v := hg₁.posdef x v hv
-      have h₂ : 0 < g₂ x v v := hg₂.posdef x v hv
-      simp only [ContMDiffSection.coe_add, ContinuousLinearMap.add_apply]
-      exact add_pos h₁ h₂ }
+  let g_sum := g₁ + g₂
+  have symm_sum : ∀ x v w, g_sum x v w = g_sum x w v := by
+    intro x v w
+    simp only [ContMDiffSection.coe_add, Pi.add_apply, ContinuousLinearMap.add_apply,
+      hg₁.toPseudoRiemannianMetric.symm x v w, hg₂.toPseudoRiemannianMetric.symm x v w, g_sum]
+  have posdef_sum : ∀ x v, v ≠ 0 → 0 < g_sum x v v := by
+    intro x v hv_ne_zero
+    simp only [ContMDiffSection.coe_add, Pi.add_apply, ContinuousLinearMap.add_apply]
+    exact add_pos (hg₁.posdef x v hv_ne_zero) (hg₂.posdef x v hv_ne_zero)
+  { toPseudoRiemannianMetric :=
+      PseudoRiemannianMetric.of_symm_posdef symm_sum posdef_sum,
+    posdef := posdef_sum }
 
 /-- The scaling of a Riemannian metric by a positive real number is a Riemannian metric. -/
 lemma RiemannianMetric.smul
@@ -179,13 +246,16 @@ lemma RiemannianMetric.smul
       (BicotangentSpace.BicotangentBundle E I M)}
     (hg : RiemannianMetric g) {c : ℝ} (hc : 0 < c) :
     RiemannianMetric (c • g) :=
-  { symm := fun x v w => by
-      simp only [ContMDiffSection.coe_smul, Pi.smul_apply, ContinuousLinearMap.smul_apply,
-        hg.symm x v w, smul_eq_mul],
-    posdef := fun x v hv => by
-      have h : 0 < g x v v := hg.posdef x v hv
-      simp only [ContMDiffSection.coe_smul, ContinuousLinearMap.smul_apply]
-      exact mul_pos hc h }
+  let g_smul := c • g
+  have symm_smul : ∀ x v w, g_smul x v w = g_smul x w v :=
+    (PseudoRiemannianMetric.smul hg.toPseudoRiemannianMetric (ne_of_gt hc)).symm
+  have posdef_smul : ∀ x v, v ≠ 0 → 0 < g_smul x v v := by
+    intro x v hv_ne_zero
+    simp only [ContMDiffSection.coe_smul, Pi.smul_apply, ContinuousLinearMap.smul_apply]
+    exact mul_pos hc (hg.posdef x v hv_ne_zero)
+  { toPseudoRiemannianMetric :=
+      PseudoRiemannianMetric.of_symm_posdef symm_smul posdef_smul,
+    posdef := posdef_smul }
 
 variable (E M I)
 
