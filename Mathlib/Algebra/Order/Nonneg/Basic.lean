@@ -177,9 +177,6 @@ section Pow
 
 variable [MonoidWithZero α] [Preorder α] [ZeroLEOneClass α] [PosMulMono α]
 
-theorem pow_nonneg {a : α} (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n := by
-  simp [H]
-
 instance pow : Pow { x : α // 0 ≤ x } ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 
