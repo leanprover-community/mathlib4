@@ -118,20 +118,6 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
   -- By Schur's Lemma, the dimension of `Hom_G(W, V)` is `1` is `V ≅ W` and `0` otherwise.
   rw_mod_cast [finrank_hom_simple_simple W V, Iso.nonempty_iso_symm]
 
-variable (V W : FDRep k G)
-
-/-!
-Doc string.
--/
-omit [IsAlgClosed k] in
-theorem char_orthonormal' (V W : FDRep k G) :
-    ⅟ (Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
-    Module.finrank k (W ⟶ V) := by
-  conv_lhs => congr; rfl; congr; rfl; intro g; rw [mul_comm, ← FDRep.char_linHom]
-  rw [FDRep.average_char_eq_finrank_invariants]
-  rw [← LinearEquiv.finrank_eq (Representation.linHom.invariantsEquivFDRepHom W V)]
-  simp only [FGModuleCat.of_carrier, of_ρ']
-
 end Orthogonality
 
 end FDRep
