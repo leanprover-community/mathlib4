@@ -306,13 +306,17 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           rw [← moduleDepth_eq_of_iso_fst M ef.toModuleIso, ← eqr _ dimeq1]
           exact ih1' L1ntr dimeq1
 
+lemma quotient_prime_ringKrullDim_ne_bot {P : Ideal R} (prime : P.IsPrime) :
+    ringKrullDim (R ⧸ P) ≠ ⊥ :=
+  ne_bot_of_le_ne_bot WithBot.zero_ne_bot (@ringKrullDim_nonneg_of_nontrivial _ _ (
+        Quotient.nontrivial prime.ne_top'))
+
 theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing R]
     [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)] [Small.{v, u} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M]
     (P : Ideal R) (ass : P ∈ associatedPrimes R M) [Small.{v, u} (R ⧸ P)] :
     IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot
-      (ne_bot_of_le_ne_bot WithBot.zero_ne_bot (@ringKrullDim_nonneg_of_nontrivial _ _ (
-        Quotient.nontrivial ass.1.ne_top'))) := by
+      (quotient_prime_ringKrullDim_ne_bot ass.1) := by
   let _ := Quotient.nontrivial ass.1.ne_top'
   let _ : Module.Finite R (Shrink.{v} (R ⧸ P)) :=
     Module.Finite.equiv (Shrink.linearEquiv (R ⧸ P) R).symm
