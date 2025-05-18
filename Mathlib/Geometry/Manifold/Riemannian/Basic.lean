@@ -196,13 +196,23 @@ lemma PseudoRiemannianMetric.of_symm_posdef
     · exact (lt_irrefl 0 (h_all_zero_w ▸ (hposdef x v hv_zero))).elim
     }
 
+/-- A symmetric, positive-definite section `g` is a Riemannian metric. -/
+lemma RiemannianMetric.of_symm_posdef
+    {g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
+      (BicotangentSpace.BicotangentBundle E I M)}
+    (hsymm : ∀ x : M, ∀ v w : TangentSpace I x, g x v w = g x w v)
+    (hposdef : ∀ x : M, ∀ v : TangentSpace I x, v ≠ 0 → 0 < g x v v) :
+    RiemannianMetric g := {
+  toPseudoRiemannianMetric := PseudoRiemannianMetric.of_symm_posdef hsymm hposdef,
+  posdef := hposdef
+    }
+
 /-- The scaling of a pseudo-Riemannian metrics by a nonzero real number is a pseudo-Riemannian
 metric. -/
 lemma PseudoRiemannianMetric.smul
     {g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
       (BicotangentSpace.BicotangentBundle E I M)}
-    (hg : PseudoRiemannianMetric g) {c : ℝ} (hc : c ≠ 0) :
-    PseudoRiemannianMetric (c • g) :=
+    (hg : PseudoRiemannianMetric g) {c : ℝ} (hc : c ≠ 0) : PseudoRiemannianMetric (c • g) :=
   let g_smul := c • g
   have symm_smul : ∀ x v w, g_smul x v w = g_smul x w v := by
     intro x v w
@@ -223,8 +233,7 @@ lemma PseudoRiemannianMetric.smul
 lemma RiemannianMetric.add
     {g₁ g₂ : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
       (BicotangentSpace.BicotangentBundle E I M)}
-    (hg₁ : RiemannianMetric g₁) (hg₂ : RiemannianMetric g₂) :
-    RiemannianMetric (g₁ + g₂) :=
+    (hg₁ : RiemannianMetric g₁) (hg₂ : RiemannianMetric g₂) : RiemannianMetric (g₁ + g₂) := by
   let g_sum := g₁ + g₂
   have symm_sum : ∀ x v w, g_sum x v w = g_sum x w v := by
     intro x v w
@@ -234,16 +243,13 @@ lemma RiemannianMetric.add
     intro x v hv_ne_zero
     simp only [ContMDiffSection.coe_add, Pi.add_apply, ContinuousLinearMap.add_apply]
     exact add_pos (hg₁.posdef x v hv_ne_zero) (hg₂.posdef x v hv_ne_zero)
-  { toPseudoRiemannianMetric :=
-      PseudoRiemannianMetric.of_symm_posdef symm_sum posdef_sum,
-    posdef := posdef_sum }
+  exact RiemannianMetric.of_symm_posdef symm_sum posdef_sum
 
 /-- The scaling of a Riemannian metric by a positive real number is a Riemannian metric. -/
 lemma RiemannianMetric.smul
     {g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber E) ∞
       (BicotangentSpace.BicotangentBundle E I M)}
-    (hg : RiemannianMetric g) {c : ℝ} (hc : 0 < c) :
-    RiemannianMetric (c • g) :=
+    (hg : RiemannianMetric g) {c : ℝ} (hc : 0 < c) : RiemannianMetric (c • g) := by
   let g_smul := c • g
   have symm_smul : ∀ x v w, g_smul x v w = g_smul x w v :=
     (PseudoRiemannianMetric.smul hg.toPseudoRiemannianMetric (ne_of_gt hc)).symm
@@ -251,9 +257,7 @@ lemma RiemannianMetric.smul
     intro x v hv_ne_zero
     simp only [ContMDiffSection.coe_smul, Pi.smul_apply, ContinuousLinearMap.smul_apply]
     exact mul_pos hc (hg.posdef x v hv_ne_zero)
-  { toPseudoRiemannianMetric :=
-      PseudoRiemannianMetric.of_symm_posdef symm_smul posdef_smul,
-    posdef := posdef_smul }
+  exact RiemannianMetric.of_symm_posdef symm_smul posdef_smul
 
 variable (E M I)
 
