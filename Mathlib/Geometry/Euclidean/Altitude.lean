@@ -168,25 +168,11 @@ from that vertex. -/
 def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
   dist (s.points i) (s.altitudeFoot i)
 
+@[simp]
 lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
   simp [height]
 
 open scoped RealInnerProductSpace
-
--- TODO: move
-private theorem _root_.Fin.exists_ne_and_ne_of_two_lt
-    {n : ℕ} (i j : Fin n) (h : 2 < n) : ∃ k, k ≠ i ∧ k ≠ j := by
-  have : NeZero n := ⟨by linarith⟩
-  rcases i with ⟨i, hi⟩
-  rcases j with ⟨j, hj⟩
-  simp_rw [← Fin.val_ne_iff]
-  by_cases h0 : 0 ≠ i ∧ 0 ≠ j
-  · exact ⟨0, h0⟩
-  · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
-    · exact ⟨⟨1, by omega⟩, h1⟩
-    · refine ⟨⟨2, by omega⟩, ?_⟩
-      dsimp only
-      omega
 
 variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
 
