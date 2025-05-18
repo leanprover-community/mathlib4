@@ -985,7 +985,7 @@ theorem subtypePerm_apply_zpow_of_mem {g : Perm α} {s : Finset α}
 variable [Fintype α] [DecidableEq α]
 
 /-- Restrict a permutation to its support -/
-def subtypePermOfSupport (c : Perm α) : Perm c.support :=
+def subtypePermLTSupport (c : Perm α) : Perm c.support :=
   subtypePerm c fun _ : α => apply_mem_support.symm
 
 /-- Restrict a permutation to a Finset containing its support -/
@@ -1003,7 +1003,7 @@ theorem IsCycle.nonempty_support {g : Perm α} (hg : g.IsCycle) :
 theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
     Commute g c ↔
       ∃ hc' : ∀ x : α, x ∈ c.support ↔ g x ∈ c.support,
-        subtypePerm g hc' ∈ Subgroup.zpowers c.subtypePermOfSupport := by
+        subtypePerm g hc' ∈ Subgroup.zpowers c.subtypePermLTSupport := by
   constructor
   · intro hgc
     have hgc' := mem_support_iff_of_commute hgc
@@ -1012,7 +1012,7 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
     obtain ⟨i, hi⟩ := hc.sameCycle (mem_support.mp ha) (mem_support.mp ((hgc' a).mp ha))
     use i
     ext ⟨x, hx⟩
-    simp only [subtypePermOfSupport, Subtype.coe_mk, subtypePerm_apply]
+    simp only [subtypePermLTSupport, Subtype.coe_mk, subtypePerm_apply]
     rw [subtypePerm_apply_zpow_of_mem]
     obtain ⟨j, rfl⟩ := hc.sameCycle (mem_support.mp ha) (mem_support.mp hx)
     simp only [← mul_apply, Commute.eq (Commute.zpow_right hgc j)]
@@ -1028,7 +1028,7 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
         simp only [← mul_apply, ← zpow_add_one, ← zpow_one_add, add_comm]
       intro x hx
       have hix := Perm.congr_fun hi ⟨x, hx⟩
-      simp only [← Subtype.coe_inj, subtypePermOfSupport, Subtype.coe_mk, subtypePerm_apply,
+      simp only [← Subtype.coe_inj, subtypePermLTSupport, Subtype.coe_mk, subtypePerm_apply,
         subtypePerm_apply_zpow_of_mem] at hix
       exact hix.symm
     · rw [not_mem_support.mp hx, eq_comm, ← not_mem_support]
@@ -1043,7 +1043,7 @@ theorem IsCycle.commute_iff {g c : Perm α} (hc : c.IsCycle) :
         ofSubtype (subtypePerm g hc') ∈ Subgroup.zpowers c := by
   simp_rw [hc.commute_iff', Subgroup.mem_zpowers_iff]
   refine exists_congr fun hc' => exists_congr fun k => ?_
-  rw [subtypePermOfSupport, subtypePerm_zpow c k]
+  rw [subtypePermLTSupport, subtypePerm_zpow c k]
   simp only [Perm.ext_iff, subtypePerm_apply, Subtype.mk.injEq, Subtype.forall]
   apply forall_congr'
   intro a

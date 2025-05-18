@@ -2866,9 +2866,9 @@ import Mathlib.Data.FinEnum.Option
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Perm
-import Mathlib.Data.Finite.PermOf.Defs
-import Mathlib.Data.Finite.PermOf.Group
-import Mathlib.Data.Finite.PermOf.MulAction
+import Mathlib.Data.Finite.PermLT.Defs
+import Mathlib.Data.Finite.PermLT.Group
+import Mathlib.Data.Finite.PermLT.MulAction
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finite.Sigma

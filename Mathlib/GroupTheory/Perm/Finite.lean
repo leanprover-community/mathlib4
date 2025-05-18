@@ -83,17 +83,17 @@ theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
   `Equiv.Perm.subtypePerm`. -/
-abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
+abbrev subtypePermLTFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
   f.subtypePerm fun x => ⟨h x, fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂⟩
 
 @[simp]
-theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
-    (h : ∀ x, p x → p (f x)) (x : { x // p x }) : subtypePermOfFintype f h x = ⟨f x, h x x.2⟩ :=
+theorem subtypePermLTFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
+    (h : ∀ x, p x → p (f x)) (x : { x // p x }) : subtypePermLTFintype f h x = ⟨f x, h x x.2⟩ :=
   rfl
 
-theorem subtypePermOfFintype_one (p : α → Prop) [Finite { x // p x }]
-    (h : ∀ x, p x → p ((1 : Perm α) x)) : @subtypePermOfFintype α 1 p _ h = 1 :=
+theorem subtypePermLTFintype_one (p : α → Prop) [Finite { x // p x }]
+    (h : ∀ x, p x → p ((1 : Perm α) x)) : @subtypePermLTFintype α 1 p _ h = 1 :=
   rfl
 
 theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ : Perm (m ⊕ n)) :
@@ -130,8 +130,8 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
       apply (perm_mapsTo_inl_iff_mapsTo_inr σ).mp h
       rw [← hb]
       exact ⟨b, rfl⟩
-    let σ₁' := subtypePermOfFintype σ h1
-    let σ₂' := subtypePermOfFintype σ h3
+    let σ₁' := subtypePermLTFintype σ h1
+    let σ₂' := subtypePermLTFintype σ h3
     let σ₁ := permCongr (Equiv.ofInjective _ Sum.inl_injective).symm σ₁'
     let σ₂ := permCongr (Equiv.ofInjective _ Sum.inr_injective).symm σ₂'
     rw [MonoidHom.mem_range, Prod.exists]

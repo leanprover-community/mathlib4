@@ -5,27 +5,24 @@ Authors: Wrenna Robson
 -/
 
 import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Data.Finite.PermOf.Group
+import Mathlib.Data.Finite.PermLT.Group
 
 /-!
-# Multiplicative action of `PermOf` on naturals.
+# Multiplicative action of `PermLT` on naturals.
 -/
-namespace PermOf
+namespace PermLT
 
-variable {n m i j : ℕ} {a b : PermOf n}
+variable {n m i j : ℕ} {a b : PermLT n}
 
-instance : FaithfulSMul (PermOf n) ℕ where
-  eq_of_smul_eq_smul := by
-    simp_rw [eq_iff_smul_eq_smul, imp_self, implies_true]
+instance : FaithfulSMul (PermLT n) ℕ where
+  eq_of_smul_eq_smul := by simp_rw [eq_iff_smul_eq_smul, imp_self, implies_true]
 
-instance : MulAction (PermOf n) ℕ where
+instance : MulAction (PermLT n) ℕ where
   one_smul k := by
-    rcases lt_or_le k n with hkn | hkn
-    · simp_rw [smul_of_lt hkn, getElem_one]
-    · simp_rw [smul_of_ge hkn]
+    simp_rw [smul_eq_iff, getElem_one, implies_true, and_self]
   mul_smul a b k := by
     rcases lt_or_le k n with hkn | hkn
-    · simp_rw [smul_of_lt hkn, smul_of_lt (getElem_lt _), getElem_mul]
+    · simp_rw [smul_of_lt hkn, smul_getElem, getElem_mul]
     · simp_rw [smul_of_ge hkn]
 
 section MulAction
@@ -38,4 +35,4 @@ theorem smul_eq_id_iff_eq_one : ((a • ·) : ℕ → ℕ) = id ↔ a = 1 := by
 
 end MulAction
 
-end PermOf
+end PermLT

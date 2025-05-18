@@ -5,17 +5,17 @@ Authors: Wrenna Robson
 -/
 
 import Mathlib.Algebra.Group.MinimalAxioms
-import Mathlib.Data.Finite.PermOf.Defs
+import Mathlib.Data.Finite.PermLT.Defs
 
 /-!
-# Group instance for `PermOf`
+# Group instance for `PermLT`
 -/
 
-namespace PermOf
+namespace PermLT
 
-variable {n m i j : ℕ} {a b : PermOf n}
+variable {n m i j : ℕ} {a b : PermLT n}
 
-instance : Group (PermOf n) := Group.ofLeftAxioms
+instance : Group (PermLT n) := Group.ofLeftAxioms
   (fun _ _ _ => ext <| fun i hi => by simp_rw [getElem_mul])
   (fun _ => ext <| fun i hi => by simp_rw [getElem_mul, getElem_one])
   (fun _ => ext <| fun i hi => by simp_rw [getElem_mul, getElem_one, getElem_inv_getElem])
@@ -51,4 +51,4 @@ theorem getElem_zpow_add {i : ℕ} {x y : ℤ} (hi : i < n) :
 
 end Group
 
-end PermOf
+end PermLT
