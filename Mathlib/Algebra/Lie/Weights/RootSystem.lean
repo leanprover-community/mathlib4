@@ -432,28 +432,6 @@ variable (K L : Type*) [Field K] [CharZero K]
 open LieModule Module
 open LieModule Weight
 
-lemma needed (i : Dual K H) (ni : i ≠ 0) (h0 : rootSpace H i ≠ ⊥) : ∃ (j : H.root),
-    (rootSystem H).root j = i := by
-  let i_weight : Weight K H L := ⟨i, h0⟩
-  have ttt0 : i_weight.IsNonZero := by
-    contrapose ni
-    simp
-    simp at ni
-    simp [i_weight] at ni
-    simp [IsZero] at ni
-    ext x
-    simp
-    rw [ni]
-    exact rfl
-  have ttt : i_weight ∈ H.root := by
-    simp
-    exact ttt0
-  use ⟨i_weight, ttt⟩
-  simp
-  ext x
-  simp
-  exact rfl
-
 def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
     LieIdeal K L where
@@ -552,9 +530,15 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
           ext x
           rw [l₂]
           exact rfl
-        have qqqq : ∃ (j : H.root), S.root j = i := needed (K := K) (L := L) (H := H) i l₂ h₀
-        obtain ⟨j, hj⟩ := qqqq
-        have qqqq2 : j ∈ Φ := by
+        have h₂ : ∃ (j : H.root), S.root j = i := by
+          have : i_weight ∈ H.root := by
+            simp
+            exact h₁
+          use ⟨i_weight, this⟩
+          ext x
+          exact rfl
+        obtain ⟨j, hj⟩ := h₂
+        have h₃ : j ∈ Φ := by
           by_contra hc
           have t := hΦ₃ j hc
           rw [hj] at t
@@ -563,7 +547,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         use j
         simp
         constructor
-        exact qqqq2
+        exact h₃
         rw [← hj] at hx'
         exact hx'
     have hΦ₅ : LieSubalgebra.lieSpan K L (⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α)) = I := by
