@@ -143,7 +143,7 @@ theorem card_pair (h : a ≠ b) : #{a, b} = 2 := by
 theorem card_erase_of_mem : a ∈ s → #(s.erase a) = #s - 1 :=
   Multiset.card_erase_of_mem
 
-@[simp]
+-- @[simp] -- removed because LHS is not in simp normal form
 theorem card_erase_add_one : a ∈ s → #(s.erase a) + 1 = #s :=
   Multiset.card_erase_add_one
 

@@ -675,6 +675,10 @@ instance [QuasiCompact f] : IsDominant f.toImage where
       IdealSheafData.range_subschemeι, Hom.support_ker, ← Set.range_comp,
       ← TopCat.coe_comp, ← Scheme.comp_base, f.toImage_imageι]
 
+instance : IsIso (IdealSheafData.subschemeι ⊥ : _ ⟶ X) :=
+  ⟨Scheme.Hom.toImage (𝟙 X) ≫ IdealSheafData.inclusion bot_le,
+    by simp [← cancel_mono (IdealSheafData.subschemeι _)], by simp⟩
+
 lemma Hom.toImage_app :
     f.toImage.app (f.imageι ⁻¹ᵁ U) =
       (f.ker.subschemeObjIso U).hom ≫ CommRingCat.ofHom
