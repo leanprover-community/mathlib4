@@ -766,6 +766,7 @@ theorem cos_two_mul_pi_div_three : cos (2 * π / 3) = - 1 / 2 := by
   norm_num
 
 /-- The cosine of `4 * π / 3` is `- 1 / 2`. -/
+@[simp]
 lemma cos_four_mul_pi_div_three : cos (4 * π / 3) = - 1 / 2 := calc
   cos (4 * π / 3) = cos (4 * (π / 3)) := by rw [mul_div_assoc]
   _ = cos ((2 * 2) * (π / 3)) := by norm_num
@@ -807,11 +808,13 @@ theorem sin_pi_div_three : sin (π / 3) = √3 / 2 := by
   ring
 
 /-- The sine of `2 * π / 3` is `√3 / 2`. -/
+@[simp]
 lemma sin_two_mul_pi_div_three : sin (2 * π / 3) = √3 / 2 := by
   rw [mul_div_assoc, sin_two_mul, sin_pi_div_three, cos_pi_div_three]
   ring
 
 /-- The sine of `4 * π / 3` is `-√3 / 2`. -/
+@[simp]
 lemma sin_four_mul_pi_div_three : sin (4 * π / 3) = - √3 / 2 := calc
   sin (4 * π / 3) = sin (4 * (π / 3)) := by rw [mul_div_assoc]
   _ = sin ((2 * 2) * (π / 3)) := by norm_num
