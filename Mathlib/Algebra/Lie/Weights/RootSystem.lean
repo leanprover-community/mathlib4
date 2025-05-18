@@ -422,9 +422,4 @@ instance : (rootSystem H).IsReduced where
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
-/-- The Lie subalgebra assocatied to a submodule of the dual of a Cartan subalgebra. -/
-@[simps!] def lieSubalgebraOfSubmoduleRootSystem (q : Submodule K (Dual K H)) :
-    LieSubalgebra K L where
-  __ := ⨆ (α : Weight K H L) (hα : α.IsNonZero) (_ : ↑α ∈ q), sl2SubalgebraOfRoot hα
-
 end LieAlgebra.IsKilling
