@@ -194,12 +194,13 @@ variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
 is the square of the height. -/
 lemma inner_vsub_vsub_altitudeFoot_eq_height_sq {i j : Fin (n + 1)} (h : i ≠ j) :
     ⟪s.points i -ᵥ s.points j, s.points i -ᵥ s.altitudeFoot i⟫ = s.height i ^ 2 := by
-  rw [height, inner_vsub_vsub_left_eq_dist_sq_right_iff, altitudeFoot]
+  suffices ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 by
+    rwa [height, inner_vsub_vsub_left_eq_dist_sq_right_iff, inner_vsub_left_eq_zero_symm]
   refine Submodule.inner_right_of_mem_orthogonal
         (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
         (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-          (SetLike.coe_mem _)
-          (mem_affineSpan ℝ ?_)) ?_
+          (mem_affineSpan ℝ ?_)
+          (SetLike.coe_mem _)) ?_
   · simp only [range_faceOpposite_points, ne_eq, Set.mem_image, Set.mem_setOf_eq]
     refine ⟨j, h.symm, rfl⟩
   · rw [← direction_affineSpan]
