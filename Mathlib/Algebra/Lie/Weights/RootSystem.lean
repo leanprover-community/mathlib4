@@ -462,17 +462,12 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       simp [this]
     let S := rootSystem H
     obtain ⟨Φ, b, c⟩ := S.exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule q hq
-    have hΦ₂ : S.root '' Φ ⊆ q := by
-      rcases Φ.eq_empty_or_nonempty with rfl | hΦ
-      · simp only [Set.image_empty, Set.empty_subset]
-      · simp only [Set.image_subset_iff]
-        intro i hi
-        by_contra h
-        exact b i hi ((Submodule.disjoint_span_singleton' (s := q) (S.ne_zero i)).mpr h)
-    have hΦ₂' : ∀ i ∈ Φ, (S.root i) ∈ q := by
+    have hΦ₂ : ∀ i ∈ Φ, S.root i ∈ q := by
       intro i hi
-      apply hΦ₂
-      exact Set.mem_image_of_mem S.root hi
+      rcases Φ.eq_empty_or_nonempty with rfl | hΦ
+      · exact False.elim (Set.not_mem_empty i hi)
+      · by_contra h
+        exact b i hi ((Submodule.disjoint_span_singleton' (s := q) (S.ne_zero i)).mpr h)
     have hΦ₃ : ∀ i ∉ Φ, S.root i ∉ q := by
       intro i
       by_contra hc
@@ -494,11 +489,8 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         obtain ⟨i, hi⟩ := hx
         rw [Set.mem_iUnion] at hi
         obtain ⟨hΦ, hx'⟩ := hi
-        have : S.root i ∈ q := by
-          apply hΦ₂
-          simp only [Set.mem_image, EmbeddingLike.apply_eq_iff_eq, exists_eq_right, hΦ]
         simp only [Set.mem_iUnion, Set.mem_iUnion, exists_prop]
-        exact ⟨S.root i, ⟨⟨this, RootPairing.ne_zero S.toRootPairing i⟩, hx'⟩⟩
+        exact ⟨S.root i, ⟨⟨hΦ₂ i hΦ, RootPairing.ne_zero S.toRootPairing i⟩, hx'⟩⟩
       · intro x hx
         rw [Set.mem_iUnion] at hx
         obtain ⟨i, hi⟩ := hx
@@ -549,7 +541,7 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Submodule.carrier_eq_coe,
       LieSubalgebra.mem_toSubmodule, hΦ₅] at hy ⊢
     have s₁ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root i (S.coroot j) = 0 :=
-      (c j h₂) (hΦ₂' i h₁)
+      (c j h₂) (hΦ₂ i h₁)
     have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
       (S.pairing_eq_zero_iff (i := i) (j := j)).1 (s₁ i j h₁ h₂)
     have s₂ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : i.1 (coroot j) = 0 := s₁ i j h₁ h₂
