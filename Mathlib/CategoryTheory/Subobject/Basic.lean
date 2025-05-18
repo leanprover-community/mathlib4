@@ -566,7 +566,8 @@ lemma isPullback_aux (f : X ⟶ Y) (y : Subobject Y) :
         (underlyingIso (pullback.snd (mk i).arrow f)).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
         (by simp) (by simp) (by simp) (by simp)
 
-/-- `Subobject.pullbackπ f y` is the first projection in the following pullback square:
+/-- For any morphism `f : X ⟶ Y` and subobject `y` of `Y`, `Subobject.pullbackπ f y` is the first
+    projection in the following pullback square:
 
     ```
     (Subobject.pullback f).obj y ----pullbackπ f y---> (y : C)
