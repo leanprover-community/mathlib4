@@ -174,8 +174,8 @@ lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
 open scoped RealInnerProductSpace
 
 -- TODO: move
-private theorem _root_.Fin.exists_ne_of_ne_of_two_lt
-    {n : ℕ} {i j : Fin n} (h : i ≠ j) (h : 2 < n) : ∃ k, k ≠ i ∧ k ≠ j := by
+private theorem _root_.Fin.exists_ne_and_ne_of_two_lt
+    {n : ℕ} (i j : Fin n) (h : 2 < n) : ∃ k, k ≠ i ∧ k ≠ j := by
   have : NeZero n := ⟨by linarith⟩
   rcases i with ⟨i, hi⟩
   rcases j with ⟨j, hj⟩
@@ -188,10 +188,11 @@ private theorem _root_.Fin.exists_ne_of_ne_of_two_lt
       dsimp only
       omega
 
+variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
+
 /-- The inner product of an edge from `j` to `i` and the vector from the foot of `i` to `i`
 is the square of the height. -/
-lemma inner_vsub_vsub_altitudeFoot_eq_height_sq
-    {n : ℕ} [NeZero n] (s : Simplex ℝ P n) {i j : Fin (n + 1)} (h : i ≠ j)  :
+lemma inner_vsub_vsub_altitudeFoot_eq_height_sq {i j : Fin (n + 1)} (h : i ≠ j) :
     ⟪s.points i -ᵥ s.points j, s.points i -ᵥ s.altitudeFoot i⟫ = s.height i ^ 2 := by
   rw [height, inner_vsub_vsub_left_eq_dist_sq_right_iff, altitudeFoot]
   refine Submodule.inner_right_of_mem_orthogonal
@@ -204,18 +205,18 @@ lemma inner_vsub_vsub_altitudeFoot_eq_height_sq
   · rw [← direction_affineSpan]
     exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
-/-- The angle between two distinct faces can never reach 0 or π. -/
-lemma abs_inner_height_vsub_altitudeFoot_div_lt_one
-    {n : ℕ} [NeZero n] (s : Simplex ℝ P n) {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
-    |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
-            / (s.height i * s.height j)| < 1 := by
-  rw [abs_div, div_lt_one (by simp [height])]
+/--
+The inner product of two distinct altitudes has absolute value strictly less than the product of
+their lengths.
+
+Equivalently, neither vector is a multiple of the other; the angle between them is not 0 or π. -/
+lemma abs_inner_height_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
+    |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫|
+      < s.height i * s.height j := by
   apply LE.le.lt_of_ne
   · convert abs_real_inner_le_norm _ _ using 1
     simp only [dist_eq_norm_vsub, abs_eq_self, height]
-    positivity
   · simp_rw [height, dist_eq_norm_vsub]
-    nth_rw 2 [abs_eq_self.2 (by positivity)]
     rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff (by simp) (by simp)]
     rintro ⟨r, hr, h⟩
     suffices s.points j -ᵥ s.altitudeFoot j = 0 by
@@ -227,7 +228,7 @@ lemma abs_inner_height_vsub_altitudeFoot_div_lt_one
     · refine SetLike.le_def.1 (affineSpan_mono _ ?_) (Subtype.property _)
       simp
     · rw [SetLike.mem_coe]
-      have hk : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_of_ne_of_two_lt hij (by linarith only [hn])
+      have hk : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by linarith only [hn])
       have hs : vectorSpan ℝ (Set.range s.points) =
           vectorSpan ℝ (Set.range (s.faceOpposite i).points) ⊔
             vectorSpan ℝ (Set.range (s.faceOpposite j).points) := by
@@ -252,19 +253,40 @@ lemma abs_inner_height_vsub_altitudeFoot_div_lt_one
       · rw [← direction_affineSpan]
         exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
-/-- The angle between two faces can never reach π. -/
+/--
+The inner product of two altitudes has value strictly greated than the negated product of
+their lengths.
+-/
+lemma neg_mul_lt_inner_height_vsub_altitudeFoot (i j : Fin (n + 1)) (hn : 1 < n) :
+    -(s.height i * s.height j)
+      < ⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫ := by
+  obtain rfl | hij := eq_or_ne i j
+  · rw [real_inner_self_eq_norm_sq]
+    refine lt_of_lt_of_le (b := 0) ?_ ?_
+    · rw [neg_lt_zero]
+      have := s.height_pos i
+      positivity
+    · positivity
+  rw [neg_lt]
+  refine lt_of_abs_lt ?_
+  rw [abs_neg]
+  exact abs_inner_height_vsub_altitudeFoot_lt_mul s hij hn
+
+lemma abs_inner_height_vsub_altitudeFoot_div_lt_one {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
+    |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
+            / (s.height i * s.height j)| < 1 := by
+  rw [abs_div, div_lt_one (by simp [height])]
+  nth_rw 2 [abs_eq_self.2]
+  · exact abs_inner_height_vsub_altitudeFoot_lt_mul _ hij hn
+  · simp only [height]
+    positivity
+
 lemma neg_one_lt_inner_height_vsub_altitudeFoot_div
     {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i j : Fin (n + 1)) (hn : 1 < n) :
     -1 < ⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
             / (s.height i * s.height j) := by
-  obtain rfl | hij := eq_or_ne i j
-  · rw [real_inner_self_eq_norm_sq, height]
-    refine neg_one_lt_zero.trans_le ?_
-    positivity
-  rw [neg_lt]
-  refine lt_of_abs_lt ?_
-  rw [abs_neg]
-  exact abs_inner_height_vsub_altitudeFoot_div_lt_one s hij hn
+  rw [neg_lt, neg_div', div_lt_one (by simp [height]), neg_lt]
+  exact neg_mul_lt_inner_height_vsub_altitudeFoot _ _ _ hn
 
 end Simplex
 
