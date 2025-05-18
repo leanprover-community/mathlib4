@@ -12,6 +12,10 @@ import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 
 # `TopModuleCat` is a `CategoryWithHomology`
 
+`TopModuleCat R`, the category of topological `R`-modules, is not an abelian category.
+But since the topology on subquotients are well-defined, we can still talk about homology in this
+category. See the `CategoryWithHomology (TopModuleCat R)` instance in this file.
+
 -/
 
 universe v u
@@ -95,6 +99,8 @@ instance : CategoryWithHomology (TopModuleCat R) := by
     infer_instance
   have hF' : Topology.IsEmbedding F := by
     refine .of_comp F.1.2 D₂.ι.1.2 ?_
+    -- `isEmbedding_of_isOpenQuotientMap_of_isInducing` is the key lemma that shows the two
+    -- definitions of homology give the same topology.
     refine isEmbedding_of_isOpenQuotientMap_of_isInducing
       D₁.i (F ≫ D₂.ι) D₁.π D₂.p ?_ .subtypeVal
       (Submodule.isOpenQuotientMap_mkQ _).isQuotientMap
