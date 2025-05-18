@@ -448,7 +448,7 @@ lemma lieSpan_rootSpace_q_eq_lieSpan_Phi
     have h₂ : (S.coroot' i) (S.root i) = 0 := (hΦ₂ i hc.1) hc.2
     rw [h₁] at h₂
     field_simp at h₂
-  have hΦ₄ : ⋃ i ∈ Φ, (rootSpace H i : Set L) = ⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α) := by
+  have key : ⋃ i ∈ Φ, (rootSpace H i : Set L) = ⋃ α ∈ {α ∈ q | α ≠ 0}, (rootSpace H α) := by
     apply Set.Subset.antisymm
     · intro x hx
       rw [Set.mem_iUnion] at hx
@@ -496,7 +496,7 @@ lemma lieSpan_rootSpace_q_eq_lieSpan_Phi
       use ⟨i_weight, mem⟩
       rw [Set.mem_iUnion]
       exact ⟨h₂, hx'⟩
-  rw[← hΦ₄]
+  rw[← key]
 
 def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
