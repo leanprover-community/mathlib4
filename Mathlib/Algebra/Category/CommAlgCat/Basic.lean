@@ -3,14 +3,14 @@ Copyright (c) 2025 Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yan
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yang
 -/
-import Mathlib.Algebra.Category.AlgebraCat.Basic
+import Mathlib.Algebra.Category.AlgCat.Basic
 import Mathlib.Algebra.Category.Ring.Under.Basic
 
 /-!
 # The category of commutative algebras over a commutative ring
 
 This file defines the bundled category `CommAlgCat` of commutative algebras over a fixed commutative
-ring `R` along with the forgetful functors to `RingCat` and `AlgebraCat`.
+ring `R` along with the forgetful functors to `RingCat` and `AlgCat`.
 -/
 
 namespace CategoryTheory
@@ -120,17 +120,17 @@ instance hasForgetToCommRingCat : HasForget₂ (CommAlgCat.{v} R) CommRingCat.{v
   forget₂.obj A := .of A
   forget₂.map f := CommRingCat.ofHom f.hom.toRingHom
 
-instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgebraCat.{v} R) where
+instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgCat.{v} R) where
   forget₂.obj A := .of R A
-  forget₂.map f := AlgebraCat.ofHom f.hom
+  forget₂.map f := AlgCat.ofHom f.hom
 
-@[simp] lemma forget₂_commAlgCat_obj (A : CommAlgCat.{v} R) :
-    (forget₂ (CommAlgCat.{v} R) (AlgebraCat.{v} R)).obj A = .of R A := rfl
+@[simp] lemma forget₂_algCat_obj (A : CommAlgCat.{v} R) :
+    (forget₂ (CommAlgCat.{v} R) (AlgCat.{v} R)).obj A = .of R A := rfl
 
-@[simp] lemma forget₂_commAlgCat_map (f : A ⟶ B) :
-    (forget₂ (CommAlgCat.{v} R) (AlgebraCat.{v} R)).map f = AlgebraCat.ofHom f.hom := rfl
+@[simp] lemma forget₂_algCat_map (f : A ⟶ B) :
+    (forget₂ (CommAlgCat.{v} R) (AlgCat.{v} R)).map f = AlgCat.ofHom f.hom := rfl
 
-/-- Build an isomorphism in the category `CommAlgCat R` from a `AlgEquiv` between `Algebra`s. -/
+/-- Build an isomorphism in the category `CommAlgCat R` from an `AlgEquiv` between `Algebra`s. -/
 @[simps]
 def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Algebra R X} {_ : Algebra R Y}
     (e : X ≃ₐ[R] Y) : of R X ≅ of R Y where
@@ -164,8 +164,8 @@ instance reflectsIsomorphisms_forget_commAlgCat :
 
 end CommAlgCat
 
-/-- The category of commutative algebras over a commutative ring `R` is the same as rings under `R`.
--/
+/-- The category of commutative algebras over a commutative ring `R` is the same as commutative
+rings under `R`. -/
 @[simps]
 def commAlgCatEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
   functor.obj A := R.mkUnder A
