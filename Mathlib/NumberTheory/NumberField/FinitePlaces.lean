@@ -121,8 +121,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
     constructor
     · simpa only [ne_eq, map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
     · apply ne_of_lt
-      rw [valuation_eq_intValuationDef, intValuation_lt_one_iff_dvd]
-      exact dvd_span_singleton.mpr hx1
+      rwa [valuation_of_algebraMap, intValuation_lt_one_iff_mem]
 
 /-- The `v`-adic completion of `K` is a normed field. -/
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
@@ -158,8 +157,8 @@ theorem FinitePlace.norm_def' (x : WithVal (v.valuation K)) :
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation for integers. -/
 theorem FinitePlace.norm_def_int (x : 𝓞 (WithVal (v.valuation K))) :
-    ‖embedding v x‖ = toNNReal (absNorm_ne_zero v) (v.intValuationDef x) := by
-  rw [norm_def, adicAbv_def, valuation_eq_intValuationDef]
+    ‖embedding v x‖ = toNNReal (absNorm_ne_zero v) (v.intValuation x) := by
+  rw [norm_def, adicAbv_def, valuation_of_algebraMap]
 
 /-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
 theorem RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max (x y : K) :
@@ -195,9 +194,8 @@ theorem FinitePlace.norm_le_one (x : 𝓞 (WithVal (v.valuation K))) : ‖embedd
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem FinitePlace.norm_eq_one_iff_not_mem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ = 1 ↔ x ∉ v.asIdeal := by
-  rw [norm_def_int, NNReal.coe_eq_one, toNNReal_eq_one_iff (v.intValuationDef x)
-    (absNorm_ne_zero v) (one_lt_absNorm_nnreal v).ne', ← dvd_span_singleton,
-    ← intValuation_lt_one_iff_dvd, not_lt]
+  rw [norm_def_int, NNReal.coe_eq_one, toNNReal_eq_one_iff (v.intValuation x)
+    (absNorm_ne_zero v) (one_lt_absNorm_nnreal v).ne', ← intValuation_lt_one_iff_mem, not_lt]
   exact (intValuation_le_one v x).ge_iff_eq.symm
 
 @[deprecated (since := "2025-02-28")]
@@ -207,8 +205,7 @@ theorem FinitePlace.norm_eq_one_iff_not_mem (x : 𝓞 (WithVal (v.valuation K)))
 theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by
   rw [norm_def_int, NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_absNorm_nnreal v),
-    intValuation_lt_one_iff_dvd]
-  exact dvd_span_singleton
+    intValuation_lt_one_iff_mem]
 
 @[deprecated (since := "2025-02-28")] alias norm_lt_one_iff_mem := FinitePlace.norm_lt_one_iff_mem
 
@@ -334,6 +331,6 @@ lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 (WithVal 
   rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_absNorm_nnreal v)).ne']
   norm_cast
   rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]
-  simp [valuation_eq_intValuationDef, intValuationDef_if_neg, h_x_nezero]
+  simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
 
 end IsDedekindDomain.HeightOneSpectrum
