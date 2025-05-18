@@ -3,9 +3,10 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.Regular.Depth
+import Mathlib.RingTheory.Regular.Ischebeck
 import Mathlib.RingTheory.KrullDimension.Regular
 import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 /-!
 # Definition of Cohen-Macaulay Ring
@@ -27,25 +28,85 @@ lemma ModuleCat.isCohenMacaulay_iff [IsLocalRing R] [Small.{v} R]
     M.IsCohenMacaulay ↔ Subsingleton M ∨ Module.supportDim R M = IsLocalRing.depth M :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
+lemma ModuleCat.depth_eq_supportDim_of_cohenMacaulay [IsLocalRing R] [Small.{v} R]
+    [Small.{v} (R ⧸ (maximalIdeal R))] (M : ModuleCat.{v} R) [cm : M.IsCohenMacaulay]
+    [ntr : Nontrivial M] : Module.supportDim R M = IsLocalRing.depth M := by
+  have : ¬ Subsingleton M := not_subsingleton_iff_nontrivial.mpr ntr
+  have := M.isCohenMacaulay_iff.mp cm
+  tauto
+
+lemma ModuleCat.depth_eq_supportDim_unbot_of_cohenMacaulay [IsLocalRing R] [Small.{v} R]
+    [Small.{v} (R ⧸ (maximalIdeal R))] (M : ModuleCat.{v} R) [cm : M.IsCohenMacaulay]
+    [ntr : Nontrivial M] : (Module.supportDim R M).unbot
+    (Module.supportDim_ne_bot_of_nontrivial R M) = IsLocalRing.depth M := by
+  simp [M.depth_eq_supportDim_of_cohenMacaulay]
+
 --isCohenMacaulay under iso
 
 --isCohenMacaulay universe invariant
 
 section IsLocalization
 
-variable [IsLocalRing R] [IsNoetherianRing R] (p : Ideal R) [p.IsPrime]
+variable [IsLocalRing R] [IsNoetherianRing R] (p : Ideal R)
   [Small.{v} R] [Small.{v} (R ⧸ (maximalIdeal R))]
 
 lemma depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay (M : ModuleCat.{v} R)
-    [M.IsCohenMacaulay] (mem : p ∈ associatedPrimes R M) :
-    IsLocalRing.depth M = ringKrullDim (R ⧸ p) := by
-  sorry
+    [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M] [Small.{v} (R ⧸ p)]
+    (mem : p ∈ associatedPrimes R M) :
+    IsLocalRing.depth M = (ringKrullDim (R ⧸ p)).unbot
+    (quotient_prime_ringKrullDim_ne_bot mem.1) := by
+  apply le_antisymm (depth_le_ringKrullDim_associatedPrime M p mem)
+  rw [← M.depth_eq_supportDim_unbot_of_cohenMacaulay]
+  rw [← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot,
+    Module.supportDim_eq_ringKrullDim_quotient_annihilator]
+  exact ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective
+    (le_of_eq_of_le Submodule.annihilator_top.symm (AssociatePrimes.mem_iff.mp mem).annihilator_le))
 
 --will update the two sets are equal when done with works about `Ass(M)`
 lemma associated_prime_minimal_of_isCohenMacaulay (M : ModuleCat.{v} R)
-    [M.IsCohenMacaulay] (mem : p ∈ associatedPrimes R M) :
-    p ∈ (Module.annihilator R M).minimalPrimes := by
-  sorry
+    [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M] [Small.{v} (R ⧸ p)]
+    (mem : p ∈ associatedPrimes R M) : p ∈ (Module.annihilator R M).minimalPrimes := by
+  have eq := Eq.trans M.depth_eq_supportDim_unbot_of_cohenMacaulay
+    (depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p M mem)
+  rw [← WithBot.coe_inj, WithBot.coe_unbot, WithBot.coe_unbot, ringKrullDim_quotient,
+    Module.supportDim_eq_ringKrullDim_quotient_annihilator, ringKrullDim_quotient] at eq
+  let _ : p.IsPrime := mem.1
+  have ann_le : Module.annihilator R M ≤ p := (le_of_eq_of_le Submodule.annihilator_top.symm
+    (AssociatePrimes.mem_iff.mp mem).annihilator_le)
+  rcases Ideal.exists_minimalPrimes_le ann_le with ⟨p', hp', le⟩
+  rcases lt_or_eq_of_le le with lt|eq
+  · classical
+    let f : WithBot (PrimeSpectrum.zeroLocus (p : Set R)) →
+        (PrimeSpectrum.zeroLocus ((Module.annihilator R M) : Set R)):= fun I ↦ by
+        by_cases eqbot : I = ⊥
+        · exact ⟨⟨p', Ideal.minimalPrimes_isPrime hp'⟩, hp'.1.2⟩
+        · exact ⟨(I.unbot eqbot).1, PrimeSpectrum.zeroLocus_anti_mono ann_le (I.unbot eqbot).2⟩
+    have f_mono : StrictMono f := by
+      intro a b alt
+      by_cases eqbot : a = ⊥
+      · simp only [eqbot, ↓reduceDIte, alt.ne_bot, Subtype.mk_lt_mk, f]
+        apply lt_of_lt_of_le lt (b.unbot alt.ne_bot).2
+      · simp only [eqbot, ↓reduceDIte, alt.ne_bot, Subtype.mk_lt_mk, Subtype.coe_lt_coe, f]
+        rw [← WithBot.coe_lt_coe, WithBot.coe_unbot, WithBot.coe_unbot]
+        exact alt
+    have dim_le := Order.krullDim_le_of_strictMono f f_mono
+    let _ : Nonempty (PrimeSpectrum.zeroLocus (p : Set R)) := Nonempty.intro ⟨⟨p, mem.1⟩, le_refl p⟩
+    rw [Order.krullDim_withBot, eq, ← ringKrullDim_quotient] at dim_le
+    have nebot : ringKrullDim (R ⧸ p) ≠ ⊥ := quotient_prime_ringKrullDim_ne_bot mem.1
+    have netop : (ringKrullDim (R ⧸ p)).unbot nebot ≠ ⊤ := by
+      have : FiniteRingKrullDim R := instFiniteRingKrullDimOfIsNoetherianRingOfIsLocalRing
+      have : ringKrullDim (R ⧸ p) ≠ ⊤ :=
+        ne_top_of_le_ne_top ringKrullDim_ne_top
+         (ringKrullDim_le_of_surjective (Ideal.Quotient.mk p) (Ideal.Quotient.mk_surjective))
+      simpa [← WithBot.coe_inj.not]
+    rcases ENat.ne_top_iff_exists.mp netop with ⟨m, hm⟩
+    have : (ringKrullDim (R ⧸ p)).unbot nebot + 1 ≤ (ringKrullDim (R ⧸ p)).unbot nebot := by
+      rw [← WithBot.coe_le_coe]
+      simpa using dim_le
+    absurd this
+    rw [← hm, not_le, ← ENat.coe_one, ← ENat.coe_add, ENat.coe_lt_coe]
+    exact lt_add_one m
+  · simpa [← eq] using hp'
 
 lemma ENat.add_right_cancel_iff (a b c : ℕ∞) (netop : c ≠ ⊤) : a + c = b + c ↔ a = b :=
   ⟨fun h ↦ ENat.add_left_injective_of_ne_top netop h, fun h ↦ by rw [h]⟩
@@ -79,7 +140,7 @@ lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
     ← depth_quotient_regular_sequence_add_length_eq_depth M rs reg, WithBot.coe_add]
   exact withBotENat_add_coe_cancel _ _ rs.length
 
-variable {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
+variable [p.IsPrime] {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
   [IsLocalRing Rₚ]
   -- This can be deduced from `IsLocalization.AtPrime Rₚ p`, but cannot be an
   -- `instance`, so we need to manually add this condition.
