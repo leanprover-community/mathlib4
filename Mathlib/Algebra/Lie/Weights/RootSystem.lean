@@ -543,7 +543,6 @@ def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         obtain ⟨hΦ, hx'⟩ := hi
         rcases Classical.em (rootSpace H i = ⊥) with h0 | h0
         · rw [h0] at hx'
-          simp at hx'
           rw [hx']
           refine Set.mem_iUnion₂.mpr ?_
           have tt : Φ ≠ ∅ := by
