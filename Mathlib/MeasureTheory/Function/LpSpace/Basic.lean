@@ -654,6 +654,12 @@ theorem MeasureTheory.MemLp.of_comp_antilipschitzWith {α E F} {K'} [MeasurableS
 @[deprecated (since := "2025-02-21")]
 alias MeasureTheory.Memℒp.of_comp_antilipschitzWith := MeasureTheory.MemLp.of_comp_antilipschitzWith
 
+lemma MeasureTheory.MemLp.continuousLinearMap_comp [NontriviallyNormedField 𝕜]
+    [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {f : α → E}
+    (h_Lp : MemLp f p μ) (L : E →L[𝕜] F) :
+    MemLp (fun x ↦ L (f x)) p μ :=
+  LipschitzWith.comp_memLp L.lipschitz (by simp) h_Lp
+
 namespace LipschitzWith
 
 theorem memLp_comp_iff_of_antilipschitz {α E F} {K K'} [MeasurableSpace α] {μ : Measure α}
@@ -752,7 +758,7 @@ theorem _root_.MeasureTheory.memLp_re_im_iff {f : α → K} :
       MemLp f p μ := by
   refine ⟨?_, fun hf => ⟨hf.re, hf.im⟩⟩
   rintro ⟨hre, him⟩
-  convert MeasureTheory.MemLp.add (E := K) hre.ofReal (him.ofReal.const_mul RCLike.I)
+  convert MeasureTheory.MemLp.add (ε := K) hre.ofReal (him.ofReal.const_mul RCLike.I)
   ext1 x
   rw [Pi.add_apply, mul_comm, RCLike.re_add_im]
 

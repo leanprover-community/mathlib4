@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
+Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, Antoine Chambert-Loir
 -/
 import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Nat.Find
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Operation on tuples
@@ -379,6 +380,23 @@ theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
   unfold append addCases
   simp
 
+theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
+    Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
+  ext (i | j) <;> simp
+
+theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
+    Function.Injective (Fin.append xs ys) ↔
+      Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
+  -- TODO: move things around so we can just import this.
+  -- We inline it because it's still shorter than proving from scratch.
+  let finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) :=
+  { toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
+    invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
+    left_inv x := by rcases x with y | y <;> dsimp <;> simp
+    right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp }
+  rw [← Sum.elim_injective, ← append_comp_sumElim, ← finSumFinEquiv.injective_comp,
+    Equiv.coe_fn_mk]
+
 end Append
 
 section Repeat
@@ -686,6 +704,35 @@ def snocInduction {α : Sort*}
   | 0, x => by convert h0
   | _ + 1, x => snocCases (fun _ _ ↦ h _ _ <| snocInduction h0 h _) x
 
+theorem snoc_injective_of_injective {α} {x₀ : α} {x : Fin n → α}
+    (hx : Function.Injective x) (hx₀ : x₀ ∉ Set.range x) :
+    Function.Injective (snoc x x₀ : Fin n.succ → α) := fun i j h ↦ by
+  induction i using lastCases with
+  | cast i =>
+    induction j using lastCases with
+    | cast j =>
+      simpa only [castSucc_inj, ← Injective.eq_iff hx, snoc_castSucc] using h
+    | last =>
+      simp only [snoc_castSucc, snoc_last] at h
+      rw [← h] at hx₀
+      apply hx₀.elim (Set.mem_range_self i)
+  | last =>
+    induction j using lastCases with
+    | cast j =>
+      simp only [snoc_castSucc, snoc_last] at h
+      rw [h] at hx₀
+      apply hx₀.elim (Set.mem_range_self j)
+    | last => simp
+
+theorem snoc_injective_iff {α} {x₀ : α} {x : Fin n → α} :
+    Function.Injective (snoc x x₀ : Fin n.succ → α) ↔ Function.Injective x ∧ x₀ ∉ Set.range x := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ snoc_injective_of_injective h.1 h.2⟩
+  · simpa [Function.comp] using h.comp (Fin.castSucc_injective _)
+  · rintro ⟨i, hi⟩
+    rw [← @snoc_last n (fun i ↦ α) x₀ x, ← @snoc_castSucc n (fun i ↦ α) x₀ x i,
+      h.eq_iff] at hi
+    exact ne_last_of_lt i.castSucc_lt_last hi
+
 end TupleRight
 
 section InsertNth
@@ -909,7 +956,14 @@ end Preorder
 open Set
 
 @[simp] lemma removeNth_update (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
-    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth, succAbove_ne]
+    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth]
+
+@[simp]
+lemma removeNth_update_succAbove (p : Fin (n + 1)) (i : Fin n) (x : α (p.succAbove i))
+    (f : ∀ j, α j) :
+    removeNth p (update f (p.succAbove i) x) = update (removeNth p f) i x := by
+  ext j
+  rcases eq_or_ne j i with rfl | hne <;> simp [removeNth, succAbove_right_inj, *]
 
 @[simp] lemma insertNth_removeNth (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
     insertNth p x (removeNth p f) = update f p x := by simp [Fin.insertNth_eq_iff]
@@ -920,8 +974,13 @@ lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
 @[simp]
 theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
     update (p.insertNth x f) p y = p.insertNth y f := by
-  ext i
-  cases i using p.succAboveCases <;> simp [succAbove_ne]
+  simp [eq_insertNth_iff]
+
+@[simp]
+theorem insertNth_update (p : Fin (n + 1)) (x : α p) (i : Fin n) (y : α (p.succAbove i))
+    (f : ∀ j, α (p.succAbove j)) :
+    p.insertNth x (update f i y) = update (p.insertNth x f) (p.succAbove i) y := by
+  simp [insertNth_eq_iff]
 
 /-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the `p`-th element of the tuple.
