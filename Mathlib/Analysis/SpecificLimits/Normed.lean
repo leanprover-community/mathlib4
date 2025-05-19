@@ -30,14 +30,6 @@ open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
 
 variable {α : Type*}
 
-theorem norm_intCast_eq_abs_mul_norm_one (α) [SeminormedRing α] [NormSMulClass ℤ α] (n : ℤ) :
-    ‖(n : α)‖ = |n| * ‖(1 : α)‖ := by
-  rw [← zsmul_one, norm_smul, Int.norm_eq_abs, Int.cast_abs]
-
-theorem norm_natCast_eq_abs_mul_norm_one (α) [SeminormedRing α] [NormSMulClass ℤ α] (n : ℕ) :
-    ‖(n : α)‖ = n * ‖(1 : α)‖ := by
-  simpa using norm_intCast_eq_abs_mul_norm_one α n
-
 theorem tendsto_natCast_atTop_cobounded
     [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
     Tendsto Nat.cast atTop (Bornology.cobounded α) := by
