@@ -35,7 +35,7 @@ variable {K : Type*} [Field K]
 
 namespace RingOfIntegers
 
-/-
+/--
 The smallest positive integer `d` such that `d • 𝓞 K ⊆ ℤ[θ]`, see `exponent_eq_sInf`. It is equal
 to `0` if `d` does not exists.
 -/
@@ -54,7 +54,7 @@ theorem not_dvd_exponent_iff {p : ℕ} [Fact (Nat.Prime p)] :
     span_singleton_dvd_span_singleton_iff_dvd, Int.natCast_dvd_natCast, exponent]
   exact isMaximal_def.mp <| Int.ideal_span_isMaximal_of_prime p
 
-theorem exponent_eq_sInf [NumberField K] :
+theorem exponent_eq_sInf :
     exponent θ = sInf {d : ℕ | 0 < d ∧ (d : 𝓞 K) ∈ conductor ℤ θ} := by
   rw [exponent, Int.absNorm_under_eq_sInf]
 
@@ -84,6 +84,9 @@ theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ
     quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp) θ.isIntegral Q
 
 variable (p θ) in
+/--
+The set of monic irreducible factors of `minpoly ℤ θ` modulo `p`.
+-/
 abbrev monicFactorsMod : Set ((ZMod p)[X]) :=
   {Q | Q ∈ normalizedFactors (map (Int.castRingHom (ZMod p)) (minpoly ℤ θ))}
 
