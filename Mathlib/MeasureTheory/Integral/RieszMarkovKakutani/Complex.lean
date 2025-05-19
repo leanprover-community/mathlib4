@@ -113,31 +113,31 @@ noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
       sorry
 
 -- obsolete
--- noncomputable def supOuterMeasure : OuterMeasure X where
---   measureOf (s : Set X) :=
---     ⨅ t ∈ {t' : Set X | MeasurableSet t' ∧ s ⊆ t'},
---       ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint E')
---         ∧ ⋃ n, E' n = t},
---       ∑' n, ENNReal.ofReal ‖μ (E n)‖
---   empty := by
---     simp only [Set.empty_subset, and_true, Set.mem_setOf_eq]
---     apply le_antisymm
---     · apply le_trans (biInf_le _ MeasurableSet.empty)
---       simp only [Set.iUnion_eq_empty, nonpos_iff_eq_zero, iSup_eq_zero, ENNReal.tsum_eq_zero,
---         and_imp]
---       intro _ _ _ hEempty n
---       simp [hEempty n]
---     · simp
---   mono {s₁ s₂} h := by
---     simp only [Set.mem_setOf_eq, le_iInf_iff, and_imp]
---     intro t ht hst
---     have ht' : t ∈ {t' : Set X | MeasurableSet t' ∧ s₁ ⊆ t'} := by
---       rw [Set.setOf_and]
---       exact ⟨ht, (Set.Subset.trans h hst)⟩
---     apply le_trans (biInf_le _ ht')
---     exact le_of_eq rfl
---   iUnion_nat := by
---     sorry
+noncomputable def supOuterMeasure : OuterMeasure X where
+  measureOf (s : Set X) :=
+    ⨅ t ∈ {t' : Set X | MeasurableSet t' ∧ s ⊆ t'},
+      ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint E')
+        ∧ ⋃ n, E' n = t},
+      ∑' n, ENNReal.ofReal ‖μ (E n)‖
+  empty := by
+    simp only [Set.empty_subset, and_true, Set.mem_setOf_eq]
+    apply le_antisymm
+    · apply le_trans (biInf_le _ MeasurableSet.empty)
+      simp only [Set.iUnion_eq_empty, nonpos_iff_eq_zero, iSup_eq_zero, ENNReal.tsum_eq_zero,
+        and_imp]
+      intro _ _ _ hEempty n
+      simp [hEempty n]
+    · simp
+  mono {s₁ s₂} h := by
+    simp only [Set.mem_setOf_eq, le_iInf_iff, and_imp]
+    intro t ht hst
+    have ht' : t ∈ {t' : Set X | MeasurableSet t' ∧ s₁ ⊆ t'} := by
+      rw [Set.setOf_and]
+      exact ⟨ht, (Set.Subset.trans h hst)⟩
+    apply le_trans (biInf_le _ ht')
+    exact le_of_eq rfl
+  iUnion_nat := by
+    sorry
 
 -- noncomputable def supTotalVariation : Measure X :=
 --   { (supOuterMeasure μ).trim with
@@ -166,8 +166,7 @@ lemma partitions_mono {s₁ s₂ : Set X} (hs : s₁ ⊆ s₂) : partitions s₁
 of that partition. If elements of the partition are non-measurable then the measure of that will be
 0 and hence not contribute to the sum. -/
 private noncomputable def sumOfNormOfMeasure (μ : VectorMeasure X V) (E : ℕ → Set X) : ℝ≥0∞ :=
-    ENNReal.ofReal (⟨∑' n,  ‖μ (E n)‖, tsum_nonneg (fun n ↦ norm_nonneg (μ (E n)))⟩ : ℝ≥0)
--- NOTE: something weird here, should define directly in `EReal`.
+    ∑' n, ENNReal.ofReal ‖μ (E n)‖
 
 /-- The value of variation defined as a supremum. -/
 noncomputable def variationAux (μ : VectorMeasure X V) (K : Set X) : ℝ≥0∞ :=
