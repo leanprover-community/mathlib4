@@ -153,20 +153,13 @@ lemma AnalyticOn.log (fs : AnalyticOn ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
     AnalyticOn ℝ (fun z ↦ Real.log (f z)) s :=
   fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) m
 
+
 /-- The function `Real.sin` is real analytic. -/
 @[fun_prop]
-lemma analyticAt_sin : AnalyticAt ℝ Real.sin x := by
-  have : Real.sin = fun x : ℝ ↦ (Complex.sin x).re := by
-    ext x
-    rfl
-  rw [this]
-  apply AnalyticAt.re_ofReal
-  apply Complex.analyticOnNhd_univ_iff_differentiable.mpr Complex.differentiable_sin
-  trivial
+lemma analyticAt_sin : AnalyticAt ℝ Real.sin x :=
+  Real.contDiff_sin.contDiffAt.analyticAt
 
 /-- The function `Real.sin` is real analytic. -/
-theorem analyticOnNhd_sin : AnalyticOnNhd ℝ Real.sin Set.univ := by
-  intro x
-  simp [analyticAt_sin]
-
+theorem analyticOnNhd_sin : AnalyticOnNhd ℝ Real.sin s :=
+  fun _ _ ↦ analyticAt_sin
 end Real
