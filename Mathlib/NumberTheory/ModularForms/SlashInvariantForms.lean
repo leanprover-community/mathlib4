@@ -116,15 +116,14 @@ instance instZero : Zero (SlashInvariantForm Γ k) :=
 theorem coe_zero : ⇑(0 : SlashInvariantForm Γ k) = (0 : ℍ → ℂ) :=
   rfl
 
-section
+section smul
 
 variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
-instance instSMul : SMul α (SlashInvariantForm Γ k) :=
-  ⟨fun c f =>
-    { toFun := c • ↑f
-      slash_action_eq' := fun γ hγ => by
-        rw [SlashAction.smul_slash_of_tower, slash_action_eqn f _ hγ]}⟩
+instance instSMul : SMul α (SlashInvariantForm Γ k) where
+  smul c f :=
+  { toFun := c • ↑f
+    slash_action_eq' γ hγ := by rw [ModularForm.SL_smul_slash, slash_action_eqn f _ hγ]}
 
 @[simp]
 theorem coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
@@ -134,7 +133,7 @@ theorem coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • �
 theorem smul_apply (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) : (n • f) z = n • f z :=
   rfl
 
-end
+end smul
 
 instance instNeg : Neg (SlashInvariantForm Γ k) :=
   ⟨fun f =>
@@ -216,28 +215,33 @@ instance (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
 @[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
 
-/-- Translating a `SlashInvariantForm` by `SL(2, ℤ)`, to obtain a new `SlashInvariantForm`. -/
-noncomputable def translateGLPos [SlashInvariantFormClass F Γ k] (f : F) (g : GL(2, ℝ)⁺) :
-    SlashInvariantForm (CongruenceSubgroup.conjGLPos Γ g) k where
+/-- Translating a `SlashInvariantForm` by `g : GL (Fin 2) ℝ`, to obtain a new
+`SlashInvariantForm` of level `SL(2, ℤ) ∩ g⁻¹ Γ g`. -/
+noncomputable def translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
+    SlashInvariantForm (CongruenceSubgroup.conjGL Γ g) k where
   toFun := f ∣[k] g
   slash_action_eq' j hj := by
-    obtain ⟨y, hy, hy'⟩ := CongruenceSubgroup.mem_conjGLPos'.mp hj
+    obtain ⟨y, hy, hy'⟩ := CongruenceSubgroup.mem_conjGL'.mp hj
     simp only [ModularForm.SL_slash, ← hy', ← SlashAction.slash_mul, mul_assoc,
       mul_inv_cancel_left]
     rw [SlashAction.slash_mul, ← ModularForm.SL_slash,
       SlashInvariantFormClass.slash_action_eq f _ hy]
 
 @[simp]
-lemma coe_translateGLPos [SlashInvariantFormClass F Γ k] (f : F) (g : GL(2, ℝ)⁺) :
-    translateGLPos f g = ⇑f ∣[k] g :=
+lemma coe_translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
+    translateGL f g = ⇑f ∣[k] g :=
   rfl
 
+@[deprecated (since := "2025-05-15")] alias translateGLPos := translateGL
+@[deprecated (since := "2025-05-15")] alias coe_translateGLPos := coe_translateGL
+
 open Pointwise ConjAct in
-/-- Translating a `SlashInvariantForm` by `SL(2, ℤ)`, to obtain a new `SlashInvariantForm`. -/
+/-- Translating a `SlashInvariantForm` by `g : SL(2, ℤ)`, to obtain a new `SlashInvariantForm`
+of level `g⁻¹ Γ g`. -/
 noncomputable def translate [SlashInvariantFormClass F Γ k]
     (f : F) (g : SL(2, ℤ)) : SlashInvariantForm ((toConjAct g⁻¹) • Γ) k where
   toFun := f ∣[k] g
-  slash_action_eq' j hj := (translateGLPos f g).slash_action_eq' j (by simpa using hj)
+  slash_action_eq' j hj := (translateGL f g).slash_action_eq' j (by simpa using hj)
 
 @[simp]
 lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : SL(2, ℤ)) :
