@@ -141,6 +141,11 @@ def altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
   rw [eq_comm, altitudeFoot, orthogonalProjectionSpan, orthogonalProjection_eq_self_iff] at h
   simp at h
 
+@[simp] lemma altitudeFoot_mem_affineSpan_image_compl {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
+    (i : Fin (n + 1)) : s.altitudeFoot i ∈ affineSpan ℝ (s.points '' {i}ᶜ) := by
+  rw [← range_faceOpposite_points]
+  exact orthogonalProjection_mem _
+
 lemma altitudeFoot_mem_affineSpan_faceOpposite {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) : s.altitudeFoot i ∈ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
   orthogonalProjection_mem _
@@ -184,12 +189,12 @@ lemma inner_vsub_vsub_altitudeFoot_eq_height_sq {i j : Fin (n + 1)} (h : i ≠ j
   suffices ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 by
     rwa [height, inner_vsub_vsub_left_eq_dist_sq_right_iff, inner_vsub_left_eq_zero_symm]
   refine Submodule.inner_right_of_mem_orthogonal
-      (K := vectorSpan ℝ (Set.range (s.faceOpposite i).points))
+      (K := vectorSpan ℝ (s.points '' {i}ᶜ))
       (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-        (s.mem_affineSpan_range_faceOpposite_points_iff.2 h.symm)
-        (SetLike.coe_mem _))
+        (s.mem_affineSpan_image_iff.2 h.symm)
+        (altitudeFoot_mem_affineSpan_image_compl _ _))
       ?_
-  rw [← direction_affineSpan]
+  rw [← direction_affineSpan, ← range_faceOpposite_points]
   exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
 /--
@@ -230,8 +235,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn
             Set.range s.points =
               Set.range (s.faceOpposite i).points ∪ Set.range (s.faceOpposite j).points := by
           simp only [range_faceOpposite_points, ← Set.image_union]
-          simp_rw [← Set.image_univ, ← Set.compl_setOf, ← Set.compl_inter,
-            Set.setOf_eq_eq_singleton]
+          simp_rw [← Set.image_univ, ← Set.compl_inter]
           rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
           simpa using hij.symm
         convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
