@@ -83,6 +83,12 @@ theorem one_apply [One β] (x : α) : (1 : C(α, β)) x = 1 :=
 theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem comp_one [One β] (g : C(β, γ)) : g.comp (1 : C(α, β)) = const α (g 1) := rfl
+
+@[to_additive (attr := simp)]
+theorem const_one [One β] : const α (1 : β) = 1 := rfl
+
 /-! ### `Nat.cast` -/
 
 instance [NatCast β] : NatCast C(α, β) :=
@@ -521,18 +527,13 @@ instance instSMul [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
   ⟨fun r f => ⟨r • ⇑f, f.continuous.const_smul r⟩⟩
 
 @[to_additive]
-instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
-    ContinuousConstSMul R C(α, M) :=
-  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval.const_smul γ)⟩
+instance [SMul R M] [ContinuousConstSMul R M] : ContinuousConstSMul R C(α, M) where
+  continuous_const_smul r := continuous_postcomp ⟨_, continuous_const_smul r⟩
 
 @[to_additive]
-instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
+instance [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
     ContinuousSMul R C(α, M) :=
-  ⟨by
-    refine continuous_of_continuous_uncurry _ ?_
-    have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
-      continuous_eval.comp (continuous_snd.prodMap continuous_id)
-    exact (continuous_fst.comp continuous_fst).smul h⟩
+  ⟨(continuous_postcomp ⟨_, continuous_smul⟩).comp continuous_prodMk_const⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : ⇑(c • f) = c • ⇑f :=
@@ -588,13 +589,22 @@ instance module : Module R C(α, M) :=
 
 variable (R)
 
-/-- Composition on the left by a continuous linear map, as a `LinearMap`.
+/-- Composition on the left by a continuous linear map, as a `ContinuousLinearMap`.
 Similar to `LinearMap.compLeft`. -/
 @[simps]
 protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type*) [TopologicalSpace α]
-    (g : M →L[R] M₂) : C(α, M) →ₗ[R] C(α, M₂) :=
-  { g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.continuous with
-    map_smul' := fun c _ => ext fun _ => g.map_smul' c _ }
+    (g : M →L[R] M₂) : C(α, M) →L[R] C(α, M₂) where
+  __ := g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.continuous
+  map_smul' := fun c _ => ext fun _ => g.map_smul' c _
+  cont := ContinuousMap.continuous_postcomp _
+
+/-- The constant map `x ↦ y ↦ x` as a `ContinuousLinearMap`. -/
+@[simps!]
+def _root_.ContinuousLinearMap.const (α : Type*) [TopologicalSpace α] : M →L[R] C(α, M) where
+  toFun m := .const α m
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := ContinuousMap.continuous_const'
 
 /-- Coercion to a function as a `LinearMap`. -/
 @[simps]
