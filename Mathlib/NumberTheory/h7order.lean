@@ -8,6 +8,7 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.Analysis.Analytic.IteratedFDeriv
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Analytic.Order
+import Mathlib.Analysis.Analytic.ChangeOrigin
 
 
 set_option autoImplicit true
@@ -82,7 +83,6 @@ lemma analytic_iter_deriv (k : ℕ) (f : ℂ → ℂ) z (hf : AnalyticAt ℂ f z
   exact AnalyticAt.iterated_deriv hf k
 
 -- iteratedDeriv_one
-
 lemma unfilter {A f} (p : A → Prop) :
   (∀ᶠ z in f, p z) ↔ ∃ U ∈ f, ∀ z ∈ U, p z := by
     constructor
@@ -97,11 +97,17 @@ lemma test1 (f g : ℂ → ℂ) (hf : AnalyticAt ℂ f z) (hg : AnalyticAt ℂ g
   · exact AnalyticAt.differentiableAt hf
   · exact AnalyticAt.differentiableAt hg
 
+lemma h_deriv_eq_of_eq_on_open :
+  ∀ {U : Set ℂ} {f g : ℂ → ℂ}, IsOpen U → (∀ z ∈ U, f z = g z) →
+  ∀ z ∈ U, deriv f z = deriv g z := by {
+  sorry
+}
+
+#check AnalyticAt.eventually_analyticAt
 -- lemma: if the order of f is n > 0, then the order of the *single* derivative of f is n - 1
 lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f z₀)
   (hfdev : AnalyticAt ℂ (deriv f) z₀) (n : ℕ) :
-  AnalyticAt.order hf = n → n > 0 →
-      AnalyticAt.order (AnalyticAt.deriv hf) = (n - 1 : ℕ) := by {
+  hf.order = n → n > 0 → (AnalyticAt.deriv hf).order = (n - 1 : ℕ) := by {
     intros horder hn
     rw [order_eq_nat_iff] at horder
     obtain ⟨g, hg, ⟨hgneq0, hexp⟩⟩ := horder
@@ -120,140 +126,138 @@ lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
         · exact AnalyticAt.deriv hg
     · constructor
       · aesop
-      ·
-
-        rw [unfilter] at *
-        rcases hexp with ⟨U, hU, hUf⟩
-        use U
+      · rw [unfilter] at *
+        rcases hexp with ⟨Ug, hU, hUf⟩
+        have := AnalyticAt.exists_mem_nhds_analyticOnNhd hg
+        obtain ⟨Ur, hgN⟩ := this
+        use Ug ∩ Ur
         constructor
-        · exact hU
+        · simp only [Filter.inter_mem_iff]
+          simp_all only [gt_iff_lt, ne_eq, smul_eq_mul, and_self]
         · intros z Hz
+          have Hderiv : deriv (fun z => (z - z₀)^n • g z) z =
+            (z - z₀) ^ (n - 1) * (↑n * g z) + (z - z₀) ^ (n - 1) * ((z - z₀) * deriv g z) := by {
+              rw [deriv_smul]
+              simp only [smul_eq_mul, differentiableAt_id', differentiableAt_const,
+                DifferentiableAt.sub, deriv_pow'', deriv_sub, deriv_id'', deriv_const', sub_zero,
+                mul_one]
+              · have : (z - z₀) ^ n * deriv g z + ↑n * (z - z₀) ^ (n - 1) * g z =
+                (z - z₀) ^ (n - 1) * ((z - z₀)) * deriv g z + ↑n * (z - z₀) ^ (n - 1) * g z := by {
+                  simp only [add_left_inj, mul_eq_mul_right_iff]
+                  left
+                  nth_rw 3 [← pow_one (z - z₀)]
+                  rw [← pow_add]
+                  rw [Nat.sub_add_cancel hn]
+                }
+                rw [this, add_comm]
+                have : ↑n * (z - z₀) ^ (n - 1) = (z - z₀) ^ (n - 1) * ↑n  := by {
+                   exact Nat.cast_comm n ((z - z₀) ^ (n - 1))}
+                rw [this, mul_assoc]
+                simp only [add_right_inj]
+                exact Mathlib.Tactic.Ring.mul_pf_left (z - z₀) (n - 1) rfl
+              · aesop
+              · apply AnalyticAt.differentiableAt
+                aesop
+            }
           simp only [nsmul_eq_mul, smul_eq_mul]
-          rw [mul_add]
-          --(z - z₀) ^ (n - 1) * (↑n * g z) + (z - z₀) ^ (n - 1) * ((z - z₀) * deriv g z)
-          -- have : deriv (fun z => (z - z₀)^n • g z) z₀ =
-          --   (z - z₀) ^ (n - 1) * (↑n * g z) + (z - z₀) ^ (n - 1) * ((z - z₀) * deriv g z) := by {
-          --     --rw [deriv_add]
-          --     rw [deriv_smul]
-          --     simp only [smul_eq_mul, differentiableAt_id', differentiableAt_const,
-          --       DifferentiableAt.sub, deriv_pow'', deriv_sub, deriv_id'', deriv_const', sub_zero,
-          --       mul_one]
-          --     sorry
-          --     · aesop
-          --     · exact AnalyticAt.differentiableAt hg
-          --   }
-
-
-          -- have hDeriv : HasDerivAtFilter f ((z - z₀) ^ (n - 1) • (n • g z + (z - z₀) • deriv g z)) z₀ (nhds z₀) := by {
-          --   unfold HasDerivAtFilter
-
-
-
-
-          -- }
-
-
-
-
-        --   intros z Hz
-        --   have := hUf z Hz
-          -- have : f = fun z => (z - z₀) ^ n • g z := by
-          --   ext z'
-          --   simp at hUf
-          --   sorry
-
-
-        --     sorry
-
-        -- sorry
-
+          rw [← mul_add] at Hderiv
+          rw [← Hderiv]
+          have hL : f =ᶠ[nhds z] (fun z => (fun z ↦ (z - z₀) ^ n • g z) z) := sorry
+          have := Filter.EventuallyEq.deriv_eq hL
+          simp only [mem_inter_iff] at Hz
+          rw [this]
   }
-#exit
-lemma order_geq_k_then_deriv_n_neg_1 (k : ℕ) (f : ℂ → ℂ) (hf : ∀ z, AnalyticAt ℂ f z)
-   (hfdev : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv k f) z) :
-   (∀ z : ℂ, k ≤ AnalyticAt.order (hf z)) → ∀ z, AnalyticAt.order (hfdev z) =
-      (n : ℕ∞).toNat - k := by {
 
-    intros hof z
-
-    have hz : ∀ z, iteratedDeriv 0 f z = f z := by {
-    intro z_1
-    simp_all only [iteratedDeriv_zero]}
-
+#check order_gt_zero_then_deriv_n_neg_1
+lemma order_geq_k_then_deriv_n_neg_1 (k : ℕ) (f : ℂ → ℂ)
+   (hf : AnalyticAt ℂ f z₀) (hfdev : AnalyticAt ℂ (deriv f) z₀) :
+   (∀ z : ℂ, k ≤ hf.order) → hfdev.order = (n - k : ℕ) := by {
+    intros hof
     induction' k with k hk
-    · simp only [iteratedDeriv_zero, CharP.cast_eq_zero, tsub_zero]
-      have  : (hf z).order = (n : ℕ∞).toNat ↔ ∃ g, AnalyticAt ℂ g z ∧ g z ≠ 0 ∧
-         ∀ᶠ (z' : ℂ) in nhds z, f z' = (z' - z) ^ n.toNat • g z' := by {
-        rw [order_eq_nat_iff]
-      }
-      rw [this]
-      use (iteratedDeriv (0 : ℕ∞).toNat f)
-      have H : AnalyticAt ℂ (iteratedDeriv (n : ℕ∞).toNat f) z := by {
-        rw [iteratedDeriv_eq_iterate]
-        exact AnalyticAt.iterated_deriv (hf z) (n : ℕ∞).toNat
-      }
-      constructor
-      · simp only [ENat.toNat_zero, iteratedDeriv_zero]
-        exact hf z
-      · constructor
-        · simp only [iteratedDeriv_zero] at hfdev
-          have := hof z
-          have Hiff : (hf z).order = 0 ↔
-           f z ≠ 0 := by {rw [order_eq_zero_iff]}
-          have Hifftop := order_eq_top_iff (hf z)
-          simp only [ENat.toNat_zero, iteratedDeriv_zero]
-          rw [le_iff_eq_or_lt] at this
-          cases' this with h1 h2
-          · rw [← Hiff]
-            simp only [CharP.cast_eq_zero] at h1
-            exact h1.symm
-          · have maybeH := apply_eq_zero_of_order_toNat_ne_zero (hf z)
-            have useH : (hf z).order ≠ 0 := by {
-              norm_cast
-              exact pos_iff_ne_zero.mp h2
-              }
-            sorry
-            --simp only [ENat.toNat_eq_zero, not_or, and_imp] at this
-            --intros Hd
-
-
-            --rw [← frequently_zero_iff_eventually_zero] at Hifftop
+    · sorry
+    · sorry
 
 
 
 
+    -- have hz : ∀ z, iteratedDeriv 0 f z = f z := by {
+    -- intro z_1
+    -- simp_all only [iteratedDeriv_zero]}
+
+    -- induction' k with k hk
+    -- · simp only [iteratedDeriv_zero, CharP.cast_eq_zero, tsub_zero]
+    --   have  : (hf z).order = (n : ℕ∞).toNat ↔ ∃ g, AnalyticAt ℂ g z ∧ g z ≠ 0 ∧
+    --      ∀ᶠ (z' : ℂ) in nhds z, f z' = (z' - z) ^ n.toNat • g z' := by {
+    --     rw [order_eq_nat_iff]
+    --   }
+    --   rw [this]
+    --   use (iteratedDeriv (0 : ℕ∞).toNat f)
+    --   have H : AnalyticAt ℂ (iteratedDeriv (n : ℕ∞).toNat f) z := by {
+    --     rw [iteratedDeriv_eq_iterate]
+    --     exact AnalyticAt.iterated_deriv (hf z) (n : ℕ∞).toNat
+    --   }
+    --   constructor
+    --   · simp only [ENat.toNat_zero, iteratedDeriv_zero]
+    --     exact hf z
+    --   · constructor
+    --     · simp only [iteratedDeriv_zero] at hfdev
+    --       have := hof z
+    --       have Hiff : (hf z).order = 0 ↔
+    --        f z ≠ 0 := by {rw [order_eq_zero_iff]}
+    --       have Hifftop := order_eq_top_iff (hf z)
+    --       simp only [ENat.toNat_zero, iteratedDeriv_zero]
+    --       rw [le_iff_eq_or_lt] at this
+    --       cases' this with h1 h2
+    --       · rw [← Hiff]
+    --         simp only [CharP.cast_eq_zero] at h1
+    --         exact h1.symm
+    --       · have maybeH := apply_eq_zero_of_order_toNat_ne_zero (hf z)
+    --         have useH : (hf z).order ≠ 0 := by {
+    --           norm_cast
+    --           exact pos_iff_ne_zero.mp h2
+    --           }
+    --         sorry
+    --         --simp only [ENat.toNat_eq_zero, not_or, and_imp] at this
+    --         --intros Hd
+
+
+    --         --rw [← frequently_zero_iff_eventually_zero] at Hifftop
 
 
 
 
-          --rw [Hiff]
-        · simp only [ENat.toNat_zero, iteratedDeriv_zero, smul_eq_mul]
-          refine (frequently_eq_iff_eventually_eq (hf z) ?_).mp ?_
-          · refine fun_mul ?_ (hf z)
-            refine Differentiable.analyticAt ?_ z
-            simp only [differentiable_id', differentiable_const, Differentiable.sub,
-              Differentiable.pow]
-          · refine frequently_nhdsWithin_iff.mpr ?_
-            simp only [mem_compl_iff, mem_singleton_iff]
-            refine Filter.Eventually.and_frequently ?_ ?_
-            · sorry
-            · sorry
-
-        --   rw [← Hiff]
-        --   unfold order
-        --   unfold order at this
-        --   rw [le_iff_eq_or_lt] at this
-        --   split
-        --   · rename_i ht
-        --     simp only [ENat.top_ne_zero]
-        --     sorry
-        --   · sorry
-        -- · simp only [iteratedDeriv_one, smul_eq_mul]
 
 
-    · have hfdev_plus_one : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv (k + 1) f) z := sorry
-      simp only at hk
-      sorry
+
+
+    --       --rw [Hiff]
+    --     · simp only [ENat.toNat_zero, iteratedDeriv_zero, smul_eq_mul]
+    --       refine (frequently_eq_iff_eventually_eq (hf z) ?_).mp ?_
+    --       · refine fun_mul ?_ (hf z)
+    --         refine Differentiable.analyticAt ?_ z
+    --         simp only [differentiable_id', differentiable_const, Differentiable.sub,
+    --           Differentiable.pow]
+    --       · refine frequently_nhdsWithin_iff.mpr ?_
+    --         simp only [mem_compl_iff, mem_singleton_iff]
+    --         refine Filter.Eventually.and_frequently ?_ ?_
+    --         · sorry
+    --         · sorry
+
+    --     --   rw [← Hiff]
+    --     --   unfold order
+    --     --   unfold order at this
+    --     --   rw [le_iff_eq_or_lt] at this
+    --     --   split
+    --     --   · rename_i ht
+    --     --     simp only [ENat.top_ne_zero]
+    --     --     sorry
+    --     --   · sorry
+    --     -- · simp only [iteratedDeriv_one, smul_eq_mul]
+
+
+    -- · have hfdev_plus_one : ∀ z : ℂ, AnalyticAt ℂ (iteratedDeriv (k + 1) f) z := sorry
+    --   simp only at hk
+    --   sorry
    }
 
 -- lemma: if the order of f is n > 0, then the order of the *single* derivative of f is n - 1
