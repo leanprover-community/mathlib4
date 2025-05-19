@@ -13,10 +13,10 @@ This file contains elementary definitions involving congruence relations and mor
 
 ## Main definitions
 
- * `Con.ker`: the kernel of a monoid homomorphism as a congruence relation
- * `Con.mk'`: the map from a monoid to its quotient by a congruence relation
- * `Con.lift`: the homomorphism on the quotient given that the congruence is in the kernel
- * `Con.map`: homomorphism from a smaller to a larger quotient
+* `Con.ker`: the kernel of a monoid homomorphism as a congruence relation
+* `Con.mk'`: the map from a monoid to its quotient by a congruence relation
+* `Con.lift`: the homomorphism on the quotient given that the congruence is in the kernel
+* `Con.map`: homomorphism from a smaller to a larger quotient
 
 ## Tags
 

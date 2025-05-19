@@ -13,10 +13,10 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 This file defines a number field and the ring of integers corresponding to it.
 
 ## Main definitions
- - `NumberField` defines a number field as a field which has characteristic zero and is finite
-    dimensional over ℚ.
- - `RingOfIntegers` defines the ring of integers (or number ring) corresponding to a number field
-    as the integral closure of ℤ in the number field.
+- `NumberField` defines a number field as a field which has characteristic zero and is finite
+  dimensional over ℚ.
+- `RingOfIntegers` defines the ring of integers (or number ring) corresponding to a number field
+  as the integral closure of ℤ in the number field.
 
 ## Implementation notes
 The definitions that involve a field of fractions choose a canonical field of fractions,
@@ -303,7 +303,6 @@ def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral
 
 /-- Given `f : M →* K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
 `M →* 𝓞 K`. -/
-@[to_additive existing] -- TODO: why doesn't it figure this out by itself?
 def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ (f x)) : M →* 𝓞 K where
   toFun := restrict f h
   map_one' := by simp only [restrict, map_one, mk_one]

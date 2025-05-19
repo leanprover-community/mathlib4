@@ -66,3 +66,18 @@ instance (X : FinTopCat) : Fintype ((forget₂ FinTopCat TopCat).obj X) :=
   X.fintype
 
 end FinTopCat
+
+namespace FintypeCatDiscrete
+
+/-- Scoped topological space instance on objects of the category of finite types, assigning
+the discrete topology. -/
+scoped instance (X : FintypeCat) : TopologicalSpace X := ⊥
+scoped instance (X : FintypeCat) : DiscreteTopology X := ⟨rfl⟩
+
+/-- The forgetful functor from finite types to topological spaces, forgetting discreteness.
+This is a scoped instance. -/
+scoped instance : HasForget₂ FintypeCat TopCat where
+  forget₂.obj X := TopCat.of X
+  forget₂.map f := TopCat.ofHom ⟨f, continuous_of_discreteTopology⟩
+
+end FintypeCatDiscrete
