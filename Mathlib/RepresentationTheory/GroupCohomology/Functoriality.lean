@@ -377,7 +377,7 @@ lemma H1InfRes_exact : (H1InfRes A S).Exact := by
       _ = x (s * g) - x s - A.ρ s (A.ρ g y) + (x s + y) := by
         simp [add_eq_of_eq_sub (h2 s s.2), sub_eq_of_eq_add (h1 s g)]
       _ = x (g * (g⁻¹ * s * g)) - A.ρ g (A.ρ (g⁻¹ * s * g) y - y) - A.ρ g y + y := by
-        simp only [mul_assoc, mul_inv_cancel_left, map_mul, LinearMap.mul_apply, map_sub,
+        simp only [mul_assoc, mul_inv_cancel_left, map_mul, Module.End.mul_apply, map_sub,
           Representation.self_inv_apply]
         abel
       _ = x g - A.ρ g y + y := by
