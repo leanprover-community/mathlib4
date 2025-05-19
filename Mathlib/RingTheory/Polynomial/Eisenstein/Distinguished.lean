@@ -52,7 +52,7 @@ include distinguish nmem eq
 lemma map_ne_zero_of_eq_mul : f.map (Ideal.Quotient.mk I) ≠ 0 := fun H ↦ by
   have mapf : f.map (Ideal.Quotient.mk I) = (Polynomial.X ^ g.natDegree : (R ⧸ I)[X]) *
       h.map (Ideal.Quotient.mk I) := by
-    simp only [← map_eq_X_pow distinguish, Polynomial.polynomial_map_coe, eq, _root_.map_mul]
+    simp [← map_eq_X_pow distinguish, eq]
   apply_fun PowerSeries.coeff _ g.natDegree at H
   simp [mapf, PowerSeries.coeff_X_pow_mul', eq_zero_iff_mem, nmem] at H
 
@@ -64,7 +64,7 @@ lemma degree_eq_coe_lift_order_map : g.degree = (f.map (Ideal.Quotient.mk I)).or
     ENat.coe_lift, Eq.comm, PowerSeries.order_eq_nat]
   have mapf : f.map (Ideal.Quotient.mk I) = (Polynomial.X ^ g.natDegree : (R ⧸ I)[X]) *
       h.map (Ideal.Quotient.mk I) := by
-    simp only [← map_eq_X_pow distinguish, Polynomial.polynomial_map_coe, eq, _root_.map_mul]
+    simp [← map_eq_X_pow distinguish, eq]
   constructor
   · simp [mapf, PowerSeries.coeff_X_pow_mul', eq_zero_iff_mem, nmem]
   · intro i hi

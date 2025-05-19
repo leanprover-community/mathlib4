@@ -498,7 +498,7 @@ theorem natDegree_eq_toNat_order_map_of_ne_top (hI : I ≠ ⊤) :
     f.natDegree = (g.map (Ideal.Quotient.mk I)).order.toNat := by
   rw [Polynomial.natDegree, H.degree_eq_coe_lift_order_map_of_ne_top hI,
     ENat.lift_eq_toNat_of_lt_top]
-  rfl
+  exact WithBot.unbotD_coe _ _
 
 end IsWeierstrassFactorizationAt
 
@@ -568,10 +568,9 @@ theorem IsWeierstrassFactorization.isWeierstrassDivision
     {g : A⟦X⟧} {f : A[X]} {h : A⟦X⟧} (H : g.IsWeierstrassFactorization f h) :
     (X ^ (g.map (IsLocalRing.residue A)).order.toNat).IsWeierstrassDivision g ↑H.isUnit.unit⁻¹
       (Polynomial.X ^ (g.map (IsLocalRing.residue A)).order.toNat - f) := by
-  set n := (g.map (IsLocalRing.residue A)).order.toNat
+  set n := (g.map (IsLocalRing.residue A)).order.toNat with hn
   constructor
-  · change (Polynomial.X ^ n - f).degree < ↑n
-    refine (Polynomial.degree_sub_lt ?_ (Polynomial.monic_X_pow n).ne_zero ?_).trans_eq (by simp)
+  · refine (Polynomial.degree_sub_lt ?_ (Polynomial.monic_X_pow n).ne_zero ?_).trans_eq (by simpa)
     · simp_rw [H.degree_eq_coe_lift_order_map, Polynomial.degree_X_pow, n,
         ENat.lift_eq_toNat_of_lt_top]
     · rw [(Polynomial.monic_X_pow n).leadingCoeff, H.isDistinguishedAt.monic.leadingCoeff]
@@ -619,7 +618,7 @@ theorem eq_weierstrassDistinguished_mul_weierstrassUnit :
 
 end IsAdicComplete
 
-/-- The `f` and `h` in Werierstrass preparation theorem is unique.
+/-- The `f` and `h` in Werierstrass preparation theorem are unique.
 
 This result is stated using two `PowerSeries.IsWeierstrassFactorization` assertions, and only
 requires the ring being Hausdorff with respect to the maximal ideal. If you want `f` and `h` equal
@@ -633,7 +632,7 @@ theorem IsWeierstrassFactorization.elim [IsHausdorff (IsLocalRing.maximalIdeal A
   rw [← Units.ext_iff, inv_inj, Units.ext_iff] at h1
   exact ⟨by simpa using h2, h1⟩
 
-/-- The `f` and `h` in Werierstrass preparation theorem is equal
+/-- The `f` and `h` in Werierstrass preparation theorem are equal
 to `PowerSeries.weierstrassDistinguished` and `PowerSeries.weierstrassUnit`. -/
 theorem IsWeierstrassFactorization.unique
     [IsAdicComplete (IsLocalRing.maximalIdeal A) A]
