@@ -487,15 +487,17 @@ theorem map_ne_zero_of_ne_top (hI : I ≠ ⊤) : g.map (Ideal.Quotient.mk I) ≠
     (H.isUnit.map _).mul_left_eq_zero]
   exact_mod_cast f.map_monic_ne_zero (f := Ideal.Quotient.mk I) H.isDistinguishedAt.monic
 
-theorem degree_eq_order_map_of_ne_top (hI : I ≠ ⊤) :
-    f.degree = (g.map (Ideal.Quotient.mk I)).order := by
-  refine H.isDistinguishedAt.degree_eq_order_map g h ?_ H.eq_mul
+theorem degree_eq_coe_lift_order_map_of_ne_top (hI : I ≠ ⊤) :
+    f.degree = (g.map (Ideal.Quotient.mk I)).order.lift
+      (order_finite_iff_ne_zero.2 (H.map_ne_zero_of_ne_top hI)) := by
+  refine H.isDistinguishedAt.degree_eq_coe_lift_order_map g h ?_ H.eq_mul
   contrapose! hI
   exact Ideal.eq_top_of_isUnit_mem _ hI (isUnit_iff_constantCoeff.1 H.isUnit)
 
 theorem natDegree_eq_toNat_order_map_of_ne_top (hI : I ≠ ⊤) :
     f.natDegree = (g.map (Ideal.Quotient.mk I)).order.toNat := by
-  rw [Polynomial.natDegree, H.degree_eq_order_map_of_ne_top hI]
+  rw [Polynomial.natDegree, H.degree_eq_coe_lift_order_map_of_ne_top hI,
+    ENat.lift_eq_toNat_of_lt_top]
   rfl
 
 end IsWeierstrassFactorizationAt
@@ -510,8 +512,9 @@ include H
 theorem map_ne_zero : g.map (IsLocalRing.residue A) ≠ 0 :=
   H.map_ne_zero_of_ne_top (Ideal.IsMaximal.ne_top inferInstance)
 
-theorem degree_eq_order_map : f.degree = (g.map (IsLocalRing.residue A)).order :=
-  H.degree_eq_order_map_of_ne_top (Ideal.IsMaximal.ne_top inferInstance)
+theorem degree_eq_coe_lift_order_map : f.degree = (g.map (IsLocalRing.residue A)).order.lift
+    (order_finite_iff_ne_zero.2 H.map_ne_zero) :=
+  H.degree_eq_coe_lift_order_map_of_ne_top (Ideal.IsMaximal.ne_top inferInstance)
 
 theorem natDegree_eq_toNat_order_map :
     f.natDegree = (g.map (IsLocalRing.residue A)).order.toNat :=
@@ -569,9 +572,8 @@ theorem IsWeierstrassFactorization.isWeierstrassDivision
   constructor
   · change (Polynomial.X ^ n - f).degree < ↑n
     refine (Polynomial.degree_sub_lt ?_ (Polynomial.monic_X_pow n).ne_zero ?_).trans_eq (by simp)
-    · simp_rw [H.degree_eq_order_map, Polynomial.degree_X_pow, n,
-        ← ENat.lift_eq_toNat_of_lt_top (order_finite_iff_ne_zero.2 H.map_ne_zero)]
-      exact ENat.coe_lift _ _
+    · simp_rw [H.degree_eq_coe_lift_order_map, Polynomial.degree_X_pow, n,
+        ENat.lift_eq_toNat_of_lt_top]
     · rw [(Polynomial.monic_X_pow n).leadingCoeff, H.isDistinguishedAt.monic.leadingCoeff]
   · simp_rw [H.eq_mul, mul_assoc, IsUnit.mul_val_inv, mul_one, Polynomial.coe_sub,
       Polynomial.coe_pow, Polynomial.coe_X, add_sub_cancel]
