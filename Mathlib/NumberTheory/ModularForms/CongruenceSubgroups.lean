@@ -3,7 +3,7 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 import Mathlib.LinearAlgebra.Matrix.Integer
 
 /-!
@@ -276,7 +276,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   have hz_coe : z.map Int.cast = A₁ * (y.map Int.cast) * A₂ := by
     simp only [Matrix.map_add _ Int.cast_add, Matrix.map_one _ Int.cast_zero Int.cast_one, hk,
       mul_add, mul_one, add_mul, hA₁₂, add_right_inj, z]
-    conv_rhs => rw [A₁.inv_denom_smul_num, A₂.inv_denom_smul_num, Matrix.map_smul _ _ (by simp)]
+    conv_rhs => rw [← A₁.inv_denom_smul_num, ← A₂.inv_denom_smul_num, Matrix.map_smul _ _ (by simp)]
     simp only [Matrix.smul_mul, Matrix.mul_smul, Matrix.map_smul (Int.cast : ℤ → ℚ) M (by simp),
       Matrix.map_mul_intCast]
     rw [← Nat.cast_smul_eq_nsmul ℚ (_ * M), ← MulAction.mul_smul, ← MulAction.mul_smul,
@@ -295,10 +295,12 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     add_apply, map_apply, coe_one, add_eq_left, Matrix.smul_apply, nsmul_eq_mul, Int.cast_mul,
     Int.cast_natCast, ZMod.natCast_self M, zero_mul]
 
-/-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g Γ(N) g⁻¹ ≤ Γ(M)`. -/
-theorem exists_Gamma_le_conj' (g : GL(2, ℚ)⁺) (M : ℕ) [NeZero M] :
-    ∃ N ≠ 0, (toConjAct <| GLPos.mapRat ℝ g) • ((Gamma N).map ModularGroup.coeHom)
-      ≤ (Gamma M).map ModularGroup.coeHom := by
+-- to do: rewrite this so maps don't go via `GLPos` once #24830 gets in
+/-- For any `g ∈ GL(2, ℚ)⁺` and `M ≠ 0`, there exists `N` such that `g Γ(N) g⁻¹ ≤ Γ(M)`. -/
+theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
+    ∃ N ≠ 0, (toConjAct <| g.map (Rat.castHom ℝ)) •
+      ((Gamma N).map <| (Subgroup.subtype _).comp ModularGroup.coeHom)
+      ≤ ((Gamma M).map <| (Subgroup.subtype _).comp ModularGroup.coeHom) := by
   obtain ⟨N, hN, h⟩ := exists_Gamma_le_conj g M
   refine ⟨N, hN, fun y hy ↦ ?_⟩
   simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, Subgroup.mem_map,

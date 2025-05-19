@@ -17,14 +17,14 @@ spanned by the norms of elements in `I`.
 
 ## Main definitions
 
- * `Ideal.spanNorm R (I : Ideal S)`: the ideal spanned by the norms of elements in `I`.
-    This is used to define `Ideal.relNorm`.
- * `Ideal.relNorm R (I : Ideal S)`: the relative ideal norm as a bundled monoid-with-zero morphism,
-   defined as the ideal spanned by the norms of elements in `I`.
+* `Ideal.spanNorm R (I : Ideal S)`: the ideal spanned by the norms of elements in `I`.
+  This is used to define `Ideal.relNorm`.
+* `Ideal.relNorm R (I : Ideal S)`: the relative ideal norm as a bundled monoid-with-zero morphism,
+  defined as the ideal spanned by the norms of elements in `I`.
 
 ## Main results
 
- * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
+* `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
 -/
 
 open scoped nonZeroDivisors

@@ -174,11 +174,11 @@ nonrec theorem MeasureTheory.AEStronglyMeasurable.prod_swap {γ : Type*} [Topolo
   rw [← prod_swap] at hf
   exact hf.comp_measurable measurable_swap
 
-theorem MeasureTheory.AEStronglyMeasurable.fst {γ} [TopologicalSpace γ] {f : α → γ}
+theorem MeasureTheory.AEStronglyMeasurable.comp_fst {γ} [TopologicalSpace γ] {f : α → γ}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
-theorem MeasureTheory.AEStronglyMeasurable.snd {γ} [TopologicalSpace γ] {f : β → γ}
+theorem MeasureTheory.AEStronglyMeasurable.comp_snd {γ} [TopologicalSpace γ] {f : β → γ}
     (hf : AEStronglyMeasurable f ν) : AEStronglyMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -290,7 +290,7 @@ theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCom
     {op : E → F → G} (hop : Continuous op.uncurry) (hop_norm : ∃ C, ∀ x y, ‖op x y‖ ≤ C * ‖x‖ * ‖y‖)
     {f : α → E} {g : β → F} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z ↦ op (f z.1) (g z.2)) (μ.prod ν) := by
-  use hop.comp_aestronglyMeasurable₂ hf.1.fst hg.1.snd
+  use hop.comp_aestronglyMeasurable₂ hf.1.comp_fst hg.1.comp_snd
   rcases hop_norm with ⟨C, hC⟩
   calc
     ∫⁻ z, ‖op (f z.1) (g z.2)‖ₑ ∂μ.prod ν ≤ ∫⁻ z, .ofReal C * ‖f z.1‖ₑ * ‖g z.2‖ₑ ∂μ.prod ν := by
@@ -487,6 +487,18 @@ theorem integral_integral_symm {f : α → β → E} (hf : Integrable (uncurry f
 theorem integral_integral_swap ⦃f : α → β → E⦄ (hf : Integrable (uncurry f) (μ.prod ν)) :
     ∫ x, ∫ y, f x y ∂ν ∂μ = ∫ y, ∫ x, f x y ∂μ ∂ν :=
   (integral_integral hf).trans (integral_prod_symm _ hf)
+
+/-- Change the order of integration, when one of the integrals is an interval integral. -/
+lemma intervalIntegral_integral_swap {a b : ℝ} {f : ℝ → α → E}
+    (h_int : Integrable (uncurry f) ((volume.restrict (Set.uIoc a b)).prod μ)) :
+    ∫ x in a..b, ∫ y, f x y ∂μ = ∫ y, (∫ x in a..b, f x y) ∂μ := by
+  rcases le_total a b with (hab | hab)
+  · simp_rw [intervalIntegral.integral_of_le hab]
+    simp only [hab, Set.uIoc_of_le] at h_int
+    exact integral_integral_swap h_int
+  · simp_rw [intervalIntegral.integral_of_ge hab]
+    simp only [hab, Set.uIoc_of_ge] at h_int
+    rw [integral_integral_swap h_int, integral_neg]
 
 /-- **Fubini's Theorem** for set integrals. -/
 theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
