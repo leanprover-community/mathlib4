@@ -186,12 +186,35 @@ lemma variation_mono (μ : VectorMeasure X V) (s₁ s₂ : Set X) (hs : s₁ ⊆
 lemma variation_iUnion_nat (μ : VectorMeasure X V) (s : ℕ → Set X)
     (hs : Pairwise (Function.onFun Disjoint s)) :
     variationAux μ (⋃ i, s i) ≤ ∑' (i : ℕ), variationAux μ (s i) := by
-  dsimp [variationAux]
   -- Sufficies to prove that for any `E ∈ partitions (⋃ i, s i)`,
   -- `sumOfNormOfMeasure μ E` is bounded above by
   -- `∑' (i : ℕ), ⨆ E ∈ partitions (s i), sumOfNormOfMeasure μ E`.
   -- In order to do this, for each `i` we define the partition `F i` by intersecting `E` with `s i`.
-  sorry
+  suffices h : ∀ E ∈ partitions (⋃ i, s i), sumOfNormOfMeasure μ E ≤
+      ∑' (i : ℕ), variationAux μ (s i) by
+    exact iSup₂_le_iff.mpr h
+  intro E hE
+  let F i j := s i ∩ E j
+  have F_partition : ∀ i, (fun j ↦ F i j) ∈ partitions (s i) := by
+    sorry
+  have sum_F_le : ∀ i, sumOfNormOfMeasure μ (fun j ↦ F i j) ≤ variationAux μ (s i) := by
+    sorry
+  calc
+    _ = ∑' n,  ‖μ (E n)‖ := by
+      -- By defintion of `sumOfNormOfMeasure μ E`
+      sorry
+    _ = ∑' i, ∑' j,  ‖μ (F i j)‖ := by
+      -- Since the sets `F i j` are all disjoint.
+      sorry
+    _ = ∑' i, sumOfNormOfMeasure μ (fun j ↦ F i j) := by
+      -- By defintion of `sumOfNormOfMeasure`.
+      sorry
+    _ ≤ ∑' i, variationAux μ (s i) := by
+      -- As proved above in `sum_F_le`.
+      sorry
+    _≤ _ := by
+      -- Properties of a `sup`.
+      sorry
 
 /-- The variation outer measure of a vector-valued measure. -/
 noncomputable def variation (μ : VectorMeasure X V) : OuterMeasure X where
