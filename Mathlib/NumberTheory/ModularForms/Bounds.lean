@@ -18,7 +18,7 @@ We prove bounds for the norm of a modular form `f τ` in terms of `im τ`. The m
 
 -/
 
-open UpperHalfPlane Filter Topology
+open UpperHalfPlane Filter Topology Asymptotics
 
 open scoped Modular MatrixGroups ComplexConjugate ModularForm
 
@@ -72,7 +72,7 @@ lemma exists_bound_fundamental_domain_of_isBigO {E : Type*} [inst : SeminormedAd
     ∃ F, ∀ τ ∈ 𝒟, ‖f τ‖ ≤ F * τ.im ^ t := by
   -- Extract a bound for large `im τ` using `hf_infty`.
   obtain ⟨D, hD, hf_infinity⟩ := hf_infinity.exists_pos
-  rw [Asymptotics.IsBigOWith, atImInfty, eventually_comap, eventually_atTop] at hf_infinity
+  rw [IsBigOWith, atImInfty, eventually_comap, eventually_atTop] at hf_infinity
   obtain ⟨y, hy⟩ := hf_infinity
   simp only [Real.norm_rpow_of_nonneg (_ : ℍ).im_pos.le,
       Real.norm_of_nonneg (_ : ℍ).im_pos.le] at hy
@@ -199,31 +199,26 @@ lemma ModularFormClass.exists_petersson_le
     {k : ℤ} (hk : 0 ≤ k) (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] {F F' : Type*} (f : F) (f' : F')
     [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [ModularFormClass F Γ k] [ModularFormClass F' Γ k] :
     ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C * max τ.im (1 / τ.im) ^ k := by
-  have := ModularGroup.exists_bound_of_subgroup_invariant_of_isBigO (Γ := Γ)
+  have := ModularGroup.exists_bound_of_subgroup_invariant_of_isBigO
       (ModularFormClass.petersson_continuous k Γ f f') (mod_cast hk : 0 ≤ (k : ℝ))
       (fun g ↦ ?_) (fun g hg τ ↦ SlashInvariantFormClass.petersson_smul hg)
   · simpa using this
-  · let Γ' : Subgroup SL(2, ℤ) := Subgroup.map (MulAut.conj g⁻¹) Γ
-    have : Γ'.FiniteIndex := by
-      constructor
-      rw [Γ.index_map_of_bijective (EquivLike.bijective _)]
-      apply Subgroup.FiniteIndex.index_ne_zero
-    simp_rw [← UpperHalfPlane.petersson_slash_SL, Real.rpow_intCast]
-    have hft := ModularFormClass.bdd_at_infty f g
-    have hf't := ModularFormClass.bdd_at_infty f' g
-    apply Asymptotics.IsBigO.of_norm_left
+  · simp_rw [← UpperHalfPlane.petersson_slash_SL, Real.rpow_intCast]
+    have hft := bdd_at_infty f g
+    have hf't := bdd_at_infty f' g
+    apply IsBigO.of_norm_left
     simpa [petersson, norm_mul, Complex.norm_conj, norm_zpow, Complex.norm_real,
       Real.norm_of_nonneg (_ : ℍ).im_pos.le] using (hft.norm_left.mul hf't.norm_left).mul
-      (Asymptotics.isBigO_refl (fun τ ↦ τ.im ^ k) atImInfty)
+      (isBigO_refl (fun τ ↦ τ.im ^ k) atImInfty)
 
 /-- If `f` is a cusp form and `f'` a modular form, then `petersson k f f'` is bounded. -/
 lemma CuspFormClass.petersson_bounded_left
     (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] {F F' : Type*} (f : F) (f' : F')
     [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [CuspFormClass F Γ k] [ModularFormClass F' Γ k] :
     ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C := by
-  refine ModularGroup.exists_bound_of_subgroup_invariant (Γ := Γ)
-      (ModularFormClass.petersson_continuous k Γ f f') (fun g ↦ ?_)
-      fun g hg τ ↦ SlashInvariantFormClass.petersson_smul hg
+  refine ModularGroup.exists_bound_of_subgroup_invariant
+    (ModularFormClass.petersson_continuous k Γ f f') (fun g ↦ ?_)
+    fun g hg τ ↦ SlashInvariantFormClass.petersson_smul hg
   apply IsZeroAtImInfty.isBoundedAtImInfty
   simp_rw [← UpperHalfPlane.petersson_slash_SL]
   let Γ' : Subgroup SL(2, ℤ) := Subgroup.map (MulAut.conj g⁻¹) Γ
