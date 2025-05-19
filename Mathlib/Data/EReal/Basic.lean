@@ -620,6 +620,9 @@ instance : CanLift EReal ℝ≥0∞ (↑) (0 ≤ ·) := ⟨range_coe_ennreal.ge�
 theorem coe_ennreal_pos {x : ℝ≥0∞} : (0 : EReal) < x ↔ 0 < x := by
   rw [← coe_ennreal_zero, coe_ennreal_lt_coe_ennreal_iff]
 
+theorem coe_ennreal_pos_iff_ne_zero {x : ℝ≥0∞} : (0 : EReal) < x ↔ x ≠ 0 := by
+  rw [coe_ennreal_pos, pos_iff_ne_zero]
+
 @[simp]
 theorem bot_lt_coe_ennreal (x : ℝ≥0∞) : (⊥ : EReal) < x :=
   (bot_lt_coe 0).trans_le (coe_ennreal_nonneg _)
@@ -686,6 +689,10 @@ lemma toENNReal_eq_zero_iff {x : EReal} : x.toENNReal = 0 ↔ x ≤ 0 := by
 
 lemma toENNReal_ne_zero_iff {x : EReal} : x.toENNReal ≠ 0 ↔ 0 < x := by
   simp [toENNReal_eq_zero_iff.not]
+
+@[simp]
+lemma toENNReal_pos_iff {x : EReal} : 0 < x.toENNReal ↔ 0 < x := by
+  rw [pos_iff_ne_zero, toENNReal_ne_zero_iff]
 
 @[simp]
 lemma coe_toENNReal {x : EReal} (hx : 0 ≤ x) : (x.toENNReal : EReal) = x := by
