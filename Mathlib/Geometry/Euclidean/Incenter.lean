@@ -110,7 +110,7 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
   refine ⟨Submodule.sum_smul_mem _ _ fun i hi ↦
             vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
               (mem_affineSpan _ (Set.mem_range_self _))
-              (SetLike.le_def.1 (affineSpan_mono _ (by simp)) (SetLike.coe_mem _)),
+              (altitudeFoot_mem_affineSpan  _ _),
           ?_⟩
   rw [vectorSpan_range_eq_span_range_vsub_right_ne _ _ 0, Submodule.span_range_eq_iSup,
     ← Submodule.iInf_orthogonal, Submodule.iInf_coe, Set.mem_iInter]
