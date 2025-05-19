@@ -549,7 +549,7 @@ lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y�
     some h₁ + some h₁ = 0 :=
   add_of_Y_eq rfl hy
 
-@[simp]
+-- @[simp] -- Not a good simp lemma, since `hy` is not in simp normal form.
 lemma add_of_Y_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hy : y₁ ≠ W.negY x₂ y₂) :
     some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun hxy => hy hxy.right) :=
@@ -560,7 +560,7 @@ lemma add_of_Y_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy => hy hxy.right) :=
   add_of_Y_ne hy
 
-@[simp]
+-- @[simp] -- Not a good simp lemma, since `hy` is not in simp normal form.
 lemma add_self_of_Y_ne {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ ≠ W.negY x₁ y₁) :
     some h₁ + some h₁ = some (nonsingular_add h₁ h₁ fun hxy => hy hxy.right) :=
   add_of_Y_ne hy
