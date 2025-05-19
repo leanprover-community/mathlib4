@@ -78,6 +78,20 @@ def pullHom'' ⦃Y₁₂ : C⦄ (p₁₂ : Y₁₂ ⟶ X₁₂) (q₁ : Y₁₂ 
 
 end
 
+@[reassoc]
+lemma mapComp'_τl_τr_compatibility
+    ⦃X Y Z : C⦄ (f : X ⟶ Y) (g : Y ⟶ Z) (fg : X ⟶ Z) (hfg : f ≫ g = fg)
+    (obj : (F.obj (.mk (op Y))).obj) :
+    (F.map fg.op.toLoc).l.map
+      ((F.map g.op.toLoc).r.map ((F.map f.op.toLoc).adj.unit.app obj)) ≫
+      (F.map fg.op.toLoc).l.map
+        ((F.mapComp' g.op.toLoc f.op.toLoc fg.op.toLoc (by aesoptoloc)).hom.τr.app
+          (((F.map f.op.toLoc).l.obj obj))) ≫
+      (F.map fg.op.toLoc).adj.counit.app ((F.map f.op.toLoc).l.obj obj) =
+    (F.mapComp' g.op.toLoc f.op.toLoc fg.op.toLoc (by aesoptoloc)).hom.τl.app _ ≫
+      (F.map f.op.toLoc).l.map ((F.map g.op.toLoc).adj.counit.app obj) := by
+  sorry
+
 lemma homEquiv_symm_pullHom'' ⦃X₁ X₂ : C⦄
     ⦃obj₁ : (F.obj (.mk (op X₁))).obj⦄ ⦃obj₂ : (F.obj (.mk (op X₂))).obj⦄
     ⦃X₁₂ : C⦄ ⦃p₁ : X₁₂ ⟶ X₁⦄ ⦃p₂ : X₁₂ ⟶ X₂⦄
@@ -97,9 +111,7 @@ lemma homEquiv_symm_pullHom'' ⦃X₁ X₂ : C⦄
   have := (F.map gp₁.op.toLoc).adj.toCategory.counit.naturality
     ((F.mapComp' p₂.op.toLoc g.op.toLoc gp₂.op.toLoc (by aesoptoloc)).inv.τl.app obj₂)
   dsimp at this
-  rw [this]; clear this
-  simp only [← Category.assoc]; congr 1; simp only [Category.assoc]
-  sorry
+  rw [this, mapComp'_τl_τr_compatibility_assoc _ _ _ hgp₁]
 
 section
 
