@@ -209,7 +209,7 @@ theorem isPretransitive_of_is_two_pretransitive
       exact ⟨g, h⟩
 
 /-- A `2`-transitive action is primitive. -/
-@[to_additive "A `2`-transitive additive action is primitive." ]
+@[to_additive "A `2`-transitive additive action is primitive."]
 theorem isPreprimitive_of_is_two_pretransitive
     (h2 : IsMultiplyPretransitive G α 2) : IsPreprimitive G α := by
   have : IsPretransitive G α := isPretransitive_of_is_two_pretransitive
