@@ -143,7 +143,7 @@ def congr {D₁ Q₁ D₂ Q₂ : Type*} [Group D₁] [Group Q₁] [Group D₂] [
 
 section perm
 
-variable (D Q Λ : Type*) [Group D] [Group Q] [MulAction D Λ]
+variable (D Q) (Λ : Type*) [MulAction D Λ]
 
 instance instSMulRWP : SMul (D ≀ᵣ Q) (Λ × Q) where
   smul w := fun p => ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩
