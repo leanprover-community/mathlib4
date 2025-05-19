@@ -145,6 +145,12 @@ lemma mateEquiv_apply' (α : g ≫ l₂ ⟶ l₁ ≫ h) :
   simp [mateEquiv_apply, Adjunction.homEquiv₁_apply,
     Adjunction.homEquiv₂_apply]
 
+lemma mateEquiv_symm_apply' (β : r₁ ≫ g ⟶ h ≫ r₂) :
+    (mateEquiv adj₁ adj₂).symm β =
+      adj₁.homEquiv₁.symm ((α_ _ _ _).inv ≫ adj₂.homEquiv₂.symm β) := by
+  simp [mateEquiv_symm_apply, Adjunction.homEquiv₁_symm_apply,
+    Adjunction.homEquiv₂_symm_apply]
+
 lemma mateEquiv_eq_iff (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h ≫ r₂) :
     mateEquiv adj₁ adj₂ α = β ↔
     adj₁.homEquiv₁.symm β = adj₂.homEquiv₂ α ≫ (α_ _ _ _).hom := by

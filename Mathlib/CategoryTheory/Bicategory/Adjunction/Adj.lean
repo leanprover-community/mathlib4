@@ -371,13 +371,30 @@ lemma inv_hom_τr {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂
     e.inv.τr ≫ e.hom.τr = 𝟙 _ :=
   (rIso e).hom_inv_id
 
-lemma comp_forget₁_mapComp' {B C : Type*} [Bicategory B] [Bicategory C]
-    (F : Pseudofunctor B (Adj C))
-    {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c) (hfg : f ≫ g = fg) :
+section
+
+variable {C : Type*} [Bicategory C] (F : Pseudofunctor B (Adj C))
+  {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c) (hfg : f ≫ g = fg)
+
+lemma comp_forget₁_mapComp' :
     (F.comp forget₁).mapComp' f g fg hfg = lIso (F.mapComp' f g fg hfg) := by
   subst hfg
   ext
   simp [Pseudofunctor.mapComp'_eq_mapComp, forget₁]
+
+@[reassoc]
+lemma unit_comp_mapComp'_hom_τr_comp_counit :
+    (F.map g).adj.unit ▷ (F.map f).r ▷ (F.map fg).l ≫
+      (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom ≫
+      (F.map g).l ◁ (F.mapComp' f g fg hfg).hom.τr ▷ (F.map fg).l ≫
+        (F.map g).l ◁ (F.map fg).adj.counit =
+    (α_ _ _ _).hom ≫ (λ_ _).hom ≫ (F.map f).r ◁ (F.mapComp' f g fg hfg).hom.τl ≫
+      (α_ _ _ _).inv ≫ (F.map f).adj.counit ▷ _ ≫ (λ_ _).hom ≫ (ρ_ _).inv := by
+  simp only [← Hom₂.conjugateEquiv_symm_τg, Bicategory.conjugateEquiv_symm_apply,
+    mateEquiv_symm_apply', Adjunction.homEquiv₁_symm_apply, Adjunction.homEquiv₂_symm_apply]
+  sorry
+
+end
 
 end Adj
 

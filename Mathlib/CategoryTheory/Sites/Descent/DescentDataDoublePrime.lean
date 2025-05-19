@@ -90,7 +90,12 @@ lemma mapComp'_τl_τr_compatibility
       (F.map fg.op.toLoc).adj.counit.app ((F.map f.op.toLoc).l.obj obj) =
     (F.mapComp' g.op.toLoc f.op.toLoc fg.op.toLoc (by aesoptoloc)).hom.τl.app _ ≫
       (F.map f.op.toLoc).l.map ((F.map g.op.toLoc).adj.counit.app obj) := by
-  rw [← Adj.Hom₂.conjugateEquiv_symm_τg,
+  simpa [Cat.associator_hom_app, Cat.associator_inv_app, Cat.rightUnitor_inv_app,
+    Cat.leftUnitor_hom_app] using
+    NatTrans.congr_app
+      (Adj.unit_comp_mapComp'_hom_τr_comp_counit F g.op.toLoc f.op.toLoc fg.op.toLoc
+        (by aesoptoloc)) obj
+  /-rw [← Adj.Hom₂.conjugateEquiv_symm_τg,
     Bicategory.conjugateEquiv_symm_apply, Bicategory.mateEquiv_symm_apply,
     Adjunction.homEquiv₂_symm_apply, Adjunction.homEquiv₁_symm_apply]
   dsimp [Cat.associator_hom_app, Cat.associator_inv_app,
@@ -111,7 +116,7 @@ lemma mapComp'_τl_τr_compatibility
   rw [← Functor.map_comp, ← h₂]
   have h₃ := (F.map g.op.toLoc).adj.toCategory.right_triangle_components obj
   dsimp at h₃
-  rw [Functor.map_comp, reassoc_of% h₃]
+  rw [Functor.map_comp, reassoc_of% h₃]-/
 
 lemma homEquiv_symm_pullHom'' ⦃X₁ X₂ : C⦄
     ⦃obj₁ : (F.obj (.mk (op X₁))).obj⦄ ⦃obj₂ : (F.obj (.mk (op X₂))).obj⦄
