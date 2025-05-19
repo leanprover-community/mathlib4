@@ -36,10 +36,7 @@ variable (C : Type*) [Category C] (D : Type*) [Category D]
 def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
   obj e := Opposite.op e.symm
   map {e f} α := (mkHom <| conjugateEquiv f.toAdjunction e.toAdjunction <| asNatTrans α).op
-  map_comp {e f g} α β := by
-    simp only [Equiv.toFun_as_coe, comp_asNatTrans, ← op_comp]
-    congr 1
-    aesop_cat
+  map_comp _ _ := Quiver.Hom.unop_inj (by aesop_cat)
 
 /-- The inverse functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps!]
@@ -48,10 +45,7 @@ def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=
     { obj e := Opposite.op e.symm
       map {e f} α := Quiver.Hom.op <| mkHom <|
         conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| asNatTrans α
-      map_comp {e f g} α β := by
-        simp only [Equiv.toFun_as_coe, ← op_comp]
-        congr 1
-        aesop_cat }
+      map_comp _ _ := Quiver.Hom.unop_inj (by aesop_cat) }
 
 /-- Taking the symmetric of an equivalence induces an equivalence of categories
 `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
@@ -60,13 +54,8 @@ def symmEquiv : (C ≌ D) ≌ (D ≌ C)ᵒᵖ where
   functor := symmEquivFunctor _ _
   inverse := symmEquivInverse _ _
   counitIso :=
-    NatIso.ofComponents (fun e ↦ Iso.op <| Iso.refl _) <| fun _ ↦ by
-      simp only [comp_obj, symmEquivFunctor_obj, id_obj, Functor.comp_map, symmEquivFunctor_map,
-        Equiv.toFun_as_coe, Iso.refl_symm, Iso.op_hom, Iso.refl_hom, ← op_comp,
-        Functor.id_map]
-      congr 1
-      ext c
-      simp [symm, symmEquivInverse]
+    NatIso.ofComponents (fun e ↦ Iso.op <| Iso.refl _) <| fun _ ↦
+      (by simp [symm, symmEquivInverse])
   unitIso :=
     NatIso.ofComponents (fun e ↦ Iso.refl _) <| fun _ ↦ by
       ext c
