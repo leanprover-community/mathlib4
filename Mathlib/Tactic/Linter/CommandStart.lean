@@ -81,7 +81,7 @@ structure FormatError where
   msg : String
   /-- The length of the mismatch, as number of characters. -/
   length : Nat
-  /-- The length of the mismatch, as a `String.pos`. -/
+  /-- The starting position of the mismatch, as a `String.pos`. -/
   srcStartPos : String.Pos
   deriving Inhabited
 
