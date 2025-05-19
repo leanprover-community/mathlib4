@@ -214,7 +214,7 @@ namespace RCLike
 
 variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
-/--Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
+/-- Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
 noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E]: (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
   letI to𝕜 (fr : (E →L[ℝ] ℝ)) : (E →L[𝕜] 𝕜) :=
     { toLinearMap := LinearMap.extendTo𝕜' fr

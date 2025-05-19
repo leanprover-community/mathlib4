@@ -189,7 +189,6 @@ variable [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃] (f g : E →SL[
 /-- The fundamental property of the operator norm: `‖f x‖ ≤ ‖f‖ * ‖x‖`. -/
 theorem le_opNorm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := (isLeast_opNorm f).1.2 x
 
-
 theorem dist_le_opNorm (x y : E) : dist (f x) (f y) ≤ ‖f‖ * dist x y := by
   simp_rw [dist_eq_norm, ← map_sub, f.le_opNorm]
 
@@ -316,7 +315,6 @@ instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .repla
 /-- Continuous linear maps themselves form a seminormed space with respect to
     the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
-  dist_eq _ _ := rfl
 
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
@@ -329,19 +327,13 @@ theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * 
       rw [mul_assoc]
       exact h.le_opNorm_of_le (f.le_opNorm x)⟩
 
-
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
-instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
-  { ContinuousLinearMap.toSeminormedAddCommGroup, ContinuousLinearMap.ring with
-    norm_mul := fun f g => opNorm_comp_le f g }
+instance toSeminormedRing : SeminormedRing (E →L[𝕜] E) :=
+  { toSeminormedAddCommGroup, ring with norm_mul_le := opNorm_comp_le }
 
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/
-instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
-  { algebra with
-    norm_smul_le := by
-      intro c f
-      apply opNorm_smul_le c f}
+instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) := { toNormedSpace, algebra with }
 
 end
 
@@ -354,6 +346,13 @@ theorem opNorm_subsingleton [Subsingleton E] : ‖f‖ = 0 := by
   intro x
   simp [Subsingleton.elim x 0]
 
+/-- The fundamental property of the operator norm, expressed with extended norms:
+`‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ`. -/
+lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
+  simp_rw [← ofReal_norm]
+  rw [← ENNReal.ofReal_mul (by positivity)]
+  gcongr
+  exact f.le_opNorm x
 
 end OpNorm
 

@@ -111,13 +111,13 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
   intro l
   induction l with
   | zero =>
-    simp only [add_zero, LieIdeal.lcs_succ, pow_zero, LinearMap.one_eq_id,
+    simp only [add_zero, LieIdeal.lcs_succ, pow_zero, Module.End.one_eq_id,
       Submodule.map_id]
     exact le_sup_of_le_left hIM
   | succ l ih =>
     simp only [LieIdeal.lcs_succ, i.add_succ l, lie_top_eq_of_span_sup_eq_top hxI, sup_le_iff]
     refine ⟨(Submodule.map_mono ih).trans ?_, le_sup_of_le_right ?_⟩
-    · rw [Submodule.map_sup, ← Submodule.map_comp, ← LinearMap.mul_eq_comp, ← pow_succ', ←
+    · rw [Submodule.map_sup, ← Submodule.map_comp, ← Module.End.mul_eq_comp, ← pow_succ', ←
         I.lcs_succ]
       exact sup_le_sup_left coe_map_toEnd_le _
     · refine le_trans (mono_lie_right I ?_) (mono_lie_right I hIM)
@@ -172,7 +172,7 @@ theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function
   have hnp : ∀ x, IsNilpotent (toEnd R L M x) := fun x => h' (f x)
   have surj_id : Function.Surjective (LinearMap.id : M →ₗ[R] M) := Function.surjective_id
   haveI : LieModule.IsNilpotent L M := h M hnp
-  apply hf.lieModuleIsNilpotent surj_id
+  apply hf.lieModuleIsNilpotent _ surj_id
   aesop
 
 theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :

@@ -48,7 +48,7 @@ def EventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : Measura
 /-- We say a set `s` is an `EventuallyMeasurableSet` with respect to a given
 σ-algebra `m` and σ-filter `l` if it differs from a set in `m` by a set in
 the dual ideal of `l`. -/
-def EventuallyMeasurableSet (l : Filter α) [CountableInterFilter l]  (s : Set α) : Prop :=
+def EventuallyMeasurableSet (l : Filter α) [CountableInterFilter l] (s : Set α) : Prop :=
   @MeasurableSet _ (EventuallyMeasurableSpace m l) s
 
 variable {l : Filter α} [CountableInterFilter l]
@@ -107,13 +107,13 @@ theorem Measurable.comp_eventuallyMeasurable (hh : Measurable h) (hf : Eventuall
   hh.comp hf
 
 /-- A function which is `EventuallyEq` to some `EventuallyMeasurable` function
-is `EventuallyMeasurable`.-/
+is `EventuallyMeasurable`. -/
 theorem EventuallyMeasurable.congr
     (hf : EventuallyMeasurable m l f) (hgf : g =ᶠ[l] f) : EventuallyMeasurable m l g :=
   fun _ hs => EventuallyMeasurableSet.congr (hf hs)
     (hgf.preimage _)
 
-/-- A function which is `EventuallyEq` to some `Measurable` function is `EventuallyMeasurable`.-/
+/-- A function which is `EventuallyEq` to some `Measurable` function is `EventuallyMeasurable`. -/
 theorem Measurable.eventuallyMeasurable_of_eventuallyEq
     (hf : Measurable f) (hgf : g =ᶠ[l] f) : EventuallyMeasurable m l g :=
   hf.eventuallyMeasurable.congr hgf

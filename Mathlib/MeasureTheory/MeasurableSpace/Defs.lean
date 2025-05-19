@@ -35,6 +35,8 @@ contains all of them.
 measurable space, σ-algebra, measurable function
 -/
 
+assert_not_exists Covariant MonoidWithZero
+
 open Set Encodable Function Equiv
 
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
@@ -58,13 +60,9 @@ instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
-namespace MeasureTheory
-set_option quotPrecheck false in
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
-scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
+scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-end MeasureTheory
 open MeasureTheory
 
 section
@@ -142,7 +140,7 @@ theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable
 
 theorem Set.Finite.measurableSet_biInter {f : β → Set α} {s : Set β} (hs : s.Finite)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
- .biInter hs.countable h
+  .biInter hs.countable h
 
 theorem Finset.measurableSet_biInter {f : β → Set α} (s : Finset β)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
@@ -423,9 +421,10 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 
 @[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 
-@[simp, nolint simpNF] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simpNF` claims that
--- this lemma doesn't simplify LHS
-theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
+@[simp]
+-- The `m₁` parameter gets filled in by typeclass instance synthesis (for some reason...)
+-- so we have to order it *after* `m₂`. Otherwise `simp` can't apply this lemma.
+theorem measurableSet_inf {m₂ m₁ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
   Iff.rfl
 
@@ -531,12 +530,6 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
   DiscreteMeasurableSpace.forall_measurableSet _
 
 @[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
-
-@[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
-lemma measurableSet_discrete (s : Set α) : MeasurableSet s := .of_discrete
-
-@[deprecated Measurable.of_discrete (since := "2024-08-25")]
-lemma measurable_discrete (f : α → β) : Measurable f := .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/

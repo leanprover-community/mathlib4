@@ -174,7 +174,7 @@ end Lan.CommuteWith
 
 /-- We say that there exists an absolute left Kan extension of `g` along `f` if any 1-morphism `h`
 commutes with the left Kan extension `f⁺ g`. -/
-class HasAbsLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) extends HasLeftKanExtension f g : Prop where
+class HasAbsLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) : Prop extends HasLeftKanExtension f g where
   commute {x : B} (h : c ⟶ x) : Lan.CommuteWith f g h
 
 instance [HasAbsLeftKanExtension f g] {x : B} (h : c ⟶ x) : Lan.CommuteWith f g h :=
@@ -320,7 +320,7 @@ end LanLift.CommuteWith
 
 /-- We say that there exists an absolute left Kan lift of `g` along `f` if any 1-morphism `h`
 commutes with the left Kan lift `f₊ g`. -/
-class HasAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) extends HasLeftKanLift f g : Prop where
+class HasAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop extends HasLeftKanLift f g where
   commute : ∀ {x : B} (h : x ⟶ c), LanLift.CommuteWith f g h
 
 instance [HasAbsLeftKanLift f g] {x : B} (h : x ⟶ c) : LanLift.CommuteWith f g h :=

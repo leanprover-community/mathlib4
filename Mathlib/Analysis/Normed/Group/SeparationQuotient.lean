@@ -20,11 +20,11 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 
 * `normedMk` : the normed group hom from `M` to `SeparationQuotient M`.
 
-* `liftNormedAddGroupHom` :
-Any bounded group hom `f : M → N` such that `∀ x, ‖x‖ = 0 → f x = 0` descends to a bounded group hom
-`SeparationQuotient M → N`. Here, `(f : NormedAddGroupHom M N)`, `(hf : ∀ x : M, ‖x‖ = 0 → f x = 0)`
-and `liftNormedAddGroupHom f hf : NormedAddGroupHom (SeparationQuotient M) N` such that
-`liftNormedAddGroupHom f hf (mk x) = f x`.
+* `liftNormedAddGroupHom` : any bounded group hom `f : M → N` such that `∀ x, ‖x‖ = 0 → f x = 0`
+  descends to a bounded group hom `SeparationQuotient M → N`.
+  Here, `(f : NormedAddGroupHom M N)`, `(hf : ∀ x : M, ‖x‖ = 0 → f x = 0)`
+  and `liftNormedAddGroupHom f hf : NormedAddGroupHom (SeparationQuotient M) N` such that
+  `liftNormedAddGroupHom f hf (mk x) = f x`.
 
 ## Main results
 
@@ -95,7 +95,7 @@ noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [SeminormedAddCommGroup
     rfl
 
 /-- For a norm-continuous group homomorphism `f`, its lift to the separation quotient
-is bounded by the norm of `f`-/
+is bounded by the norm of `f`. -/
 theorem norm_liftNormedAddGroupHom_le {N : Type*} [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) :
     ‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖ :=

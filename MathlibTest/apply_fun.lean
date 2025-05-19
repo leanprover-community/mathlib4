@@ -2,7 +2,6 @@ import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Logic.Function.Defs
-import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Matrix.ConjTranspose
 
 private axiom test_sorry : ∀ {α}, α

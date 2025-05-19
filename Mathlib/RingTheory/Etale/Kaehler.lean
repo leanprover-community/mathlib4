@@ -215,9 +215,7 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
       | add x y _ _ => simp only [map_add, *]
       | tmul a b =>
         simp only [LinearMap.liftBaseChange_tmul, map_smul]
-        erw [tensorCotangentInvFun_smul_mk]
-        simp
-        rfl }
+        simp [Hom.mapKer, tensorCotangentInvFun_smul_mk] }
 
 /-- If `J ≃ Q ⊗ₚ I`, `S → T` is flat and `P → Q` is formally etale, then `T ⊗ H¹(L_P) ≃ H¹(L_Q)`. -/
 noncomputable
@@ -244,7 +242,7 @@ def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.
       Module.Flat.lTensor_exact T (LinearMap.exact_subtype_ker_map _)
     obtain ⟨a, ha⟩ := (this ((Extension.tensorCotangent f halg H₂).symm x.1)).mp (by
       apply (Extension.tensorCotangentSpace f H₁).injective
-      rw [map_zero, ← x.2]
+      rw [LinearEquiv.map_zero, ← x.2]
       have : (CotangentSpace.map f).liftBaseChange T ∘ₗ P.cotangentComplex.baseChange T =
           Q.cotangentComplex ∘ₗ (Cotangent.map f).liftBaseChange T := by
         ext x; obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x; dsimp
@@ -256,7 +254,7 @@ def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.
     show (h1Cotangentι ∘ₗ (H1Cotangent.map f).liftBaseChange T) _ =
       ((Cotangent.map f).liftBaseChange T ∘ₗ h1Cotangentι.baseChange T) _
     congr 1
-    ext; simp
+    ext; dsimp
 
 end Extension
 
@@ -303,7 +301,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
       (FormallyEtale.of_isLocalization (M := M') (Rₘ := Localization M'))
   · let F : P.ker →ₗ[P.Ring] RingHom.ker fQ := f.mapKer rfl
     refine (isLocalizedModule_iff_isBaseChange M' (Localization M') F).mp ?_
-    have : (Algebra.linearMap P.Ring S).ker.localized' (Localization M') M'
+    have : (LinearMap.ker <| Algebra.linearMap P.Ring S).localized' (Localization M') M'
         (Algebra.linearMap P.Ring (Localization M')) = RingHom.ker fQ := by
       rw [LinearMap.localized'_ker_eq_ker_localizedMap (Localization M') M'
         (Algebra.linearMap P.Ring (Localization M'))
@@ -335,9 +333,9 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
     LinearEquiv.coe_coe, LinearMap.liftBaseChange_tmul, one_smul]
   simp only [tensorH1CotangentOfIsLocalization, Generators.toExtension_Ring,
     Generators.toExtension_commRing, Generators.self_vars, Generators.toExtension_algebra₂,
-    Generators.self_algebra, AlgHom.toRingHom_eq_coe, Extension.tensorH1Cotangent,
+    AlgHom.toRingHom_eq_coe, Extension.tensorH1Cotangent,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
-    Extension.equivH1CotangentOfFormallySmooth,  LinearEquiv.trans_apply]
+    Extension.equivH1CotangentOfFormallySmooth, LinearEquiv.trans_apply]
   letI P : Extension R S := (Generators.self R S).toExtension
   letI M' := M.comap (algebraMap P.Ring S)
   letI fQ : Localization M' →ₐ[R] T := IsLocalization.liftAlgHom (M := M')

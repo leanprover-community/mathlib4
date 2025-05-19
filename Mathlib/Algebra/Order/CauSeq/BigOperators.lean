@@ -16,7 +16,8 @@ This file proves some more lemmas about basic Cauchy sequences that involve fini
 open Finset IsAbsoluteValue
 
 namespace IsCauSeq
-variable {α β : Type*} [LinearOrderedField α] [Ring β] {abv : β → α} [IsAbsoluteValue abv]
+variable {α β : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
+  {abv : β → α} [IsAbsoluteValue abv]
   {f g : ℕ → β} {a : ℕ → α}
 
 lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
@@ -182,7 +183,7 @@ lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
   simp only [abv_pow abv, geom_sum_eq hx1']
   conv in _ / _ => rw [← neg_div_neg_eq, neg_sub, neg_sub]
   have : 0 < 1 - abv x := sub_pos.2 hx1
-  refine @of_mono_bounded _ _ _ _ ((1 : α) / (1 - abv x)) 0 ?_ ?_
+  refine of_mono_bounded _ (a := (1 : α) / (1 - abv x)) (m := 0) ?_ ?_
   · intro n _
     rw [abs_of_nonneg]
     · gcongr

@@ -6,7 +6,6 @@ Authors: Yakov Pechersky
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Fin.Rev
 
 /-!
@@ -51,7 +50,7 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
   __ := neg n
   neg_add_cancel := fun ⟨a, ha⟩ ↦
     Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
-      rw [Fin.val_zero', Nat.sub_add_cancel, Nat.mod_self]
+      rw [Fin.val_zero, Nat.sub_add_cancel, Nat.mod_self]
       exact le_of_lt ha
   sub := Fin.sub
   sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦
@@ -114,7 +113,7 @@ lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by
 
 @[simp]
 lemma lt_one_iff {n : ℕ} (x : Fin (n + 2)) : x < 1 ↔ x = 0 := by
-  simp [lt_iff_val_lt_val, Fin.ext_iff]
+  simp [lt_iff_val_lt_val]
 
 lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   simp

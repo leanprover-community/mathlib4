@@ -101,10 +101,9 @@ theorem binomial_spec [DecidableEq α] (hab : a ≠ b) :
     (f a)! * (f b)! * multinomial {a, b} f = (f a + f b)! := by
   simpa [Finset.sum_pair hab, Finset.prod_pair hab] using multinomial_spec {a, b} f
 
-@[simp]
 theorem binomial_one [DecidableEq α] (h : a ≠ b) (h₁ : f a = 1) :
     multinomial {a, b} f = (f b).succ := by
-  simp [multinomial_insert_one (Finset.not_mem_singleton.mpr h) h₁]
+  simp [h, h₁]
 
 theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} (Function.update (Function.update f a (f a).succ) b (f b).succ) =
@@ -128,8 +127,8 @@ theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
 
 theorem multinomial_univ_two (a b : ℕ) :
     multinomial Finset.univ ![a, b] = (a + b)! / (a ! * b !) := by
-  rw [multinomial, Fin.sum_univ_two, Fin.prod_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one,
-    Matrix.head_cons]
+  rw [multinomial, Fin.sum_univ_two, Fin.prod_univ_two]
+  dsimp only [Matrix.cons_val]
 
 theorem multinomial_univ_three (a b c : ℕ) :
     multinomial Finset.univ ![a, b, c] = (a + b + c)! / (a ! * b ! * c !) := by
@@ -260,18 +259,13 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
   induction' s using Finset.induction with a s ha ih
   · rw [sum_empty]
     rintro (_ | n)
-      -- Porting note: Lean cannot infer this instance by itself
-    · haveI : Subsingleton (Sym α 0) := Unique.instSubsingleton
-      rw [_root_.pow_zero, Fintype.sum_subsingleton]
+    · rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
-        -- Porting note: Lean cannot infer this instance by itself
-      · have : Zero (Sym α 0) := Sym.instZeroSym
-        exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
+      · exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       convert @Nat.cast_one R _
       simp
     · rw [_root_.pow_succ, mul_zero]
-      -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)
@@ -341,7 +335,7 @@ theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {
   · refine congrArg _ ?_
     rw [coe_fill, coe_replicate, Multiset.filter_add]
     rw [Multiset.filter_eq_self.mpr]
-    · rw [add_right_eq_self]
+    · rw [add_eq_left]
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj

@@ -5,7 +5,7 @@ Authors: Nailin Guan
 -/
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.Galois.GaloisClosure
-import Mathlib.Topology.Algebra.ClosedSubgroup
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 /-!
 
 # The Fundamental Theorem of Infinite Galois Theory
@@ -102,8 +102,8 @@ lemma fixedField_bot [IsGalois k K] :
   rw [← IntermediateField.fixingSubgroup_bot, fixedField_fixingSubgroup]
 
 open IntermediateField in
-/--For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to
-a normal intermediate field `E` is equal to the fixed field of `H` in `K` intersecting with `E`.-/
+/-- For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to
+a normal intermediate field `E` is equal to the fixed field of `H` in `K` intersecting with `E`. -/
 lemma restrict_fixedField (H : Subgroup (K ≃ₐ[k] K)) (L : IntermediateField k K) [Normal k L] :
     fixedField H ⊓ L = lift (fixedField (Subgroup.map (restrictNormalHom L) H)) := by
   apply SetLike.ext'
@@ -150,7 +150,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
     apply sub'
     simp only [← muleq, ← eq]
     apply Set.smul_mem_smul_set
-    exact (IntermediateField.fixingSubgroup.antimono (IntermediateField.le_normalClosure L) hτ)
+    exact (L.fixingSubgroup_le (IntermediateField.le_normalClosure L) hτ)
   have fix : ∀ x ∈ IntermediateField.fixedField H.toSubgroup ⊓ ↑L', σ x = x :=
     fun x hx ↦ ((mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mp hσ) x hx.1
   rw [restrict_fixedField H.1 L'.1] at fix
@@ -232,27 +232,24 @@ theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
 theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
     L.fixingSubgroup.Normal ↔ IsGalois k L := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · let f : L → IntermediateField k K := fun x => IntermediateField.lift <|
-      IntermediateField.fixedField <| Subgroup.map (restrictNormalHom (adjoin k {x.1}))
-      L.fixingSubgroup
-    have h' (x : K) : (Subgroup.map (restrictNormalHom (adjoin k {x})) L.fixingSubgroup).Normal :=
+  · let g (x : K) := L.fixingSubgroup.map (restrictNormalHom (adjoin k {x}))
+    let f (x : L) : IntermediateField k K := IntermediateField.lift <|
+      IntermediateField.fixedField <| g x.1
+    have (x : K) : (g x).Normal :=
       Subgroup.Normal.map h (restrictNormalHom (adjoin k {x})) (restrictNormalHom_surjective K)
-    have n' (l : L) : IsGalois k (IntermediateField.fixedField <| Subgroup.map
-      (restrictNormalHom (adjoin k {l.1})) L.fixingSubgroup) := by
-      let _ := IsGalois.of_fixedField_normal_subgroup (Subgroup.map (restrictNormalHom
-        (adjoin k {l.1})) L.fixingSubgroup)
-      let cH := (Subgroup.map (restrictNormalHom (adjoin k {l.1})) L.fixingSubgroup)
-      exact IsGalois.of_algEquiv <| IntermediateField.liftAlgEquiv (IntermediateField.fixedField cH)
-    have n : Normal k ↥(⨆ (l : L), f l) := IntermediateField.normal_iSup k K f
-    have : (⨆ (l : L), f l) = L := by
+    have (l : L) := IsGalois.of_fixedField_normal_subgroup (g l.1)
+    have (l : L) : Normal k (f l) :=
+      Normal.of_algEquiv <| IntermediateField.liftAlgEquiv <| IntermediateField.fixedField (g l.1)
+    have n : Normal k ↥(⨆ l : L, f l) := IntermediateField.normal_iSup k K f
+    have : (⨆ l : L, f l) = L := by
       apply le_antisymm
       · apply iSup_le
         intro l
-        simpa only [f, ← restrict_fixedField L.fixingSubgroup (adjoin k {l.1}),
+        simpa only [f, g, ← restrict_fixedField L.fixingSubgroup (adjoin k {l.1}),
           fixedField_fixingSubgroup L] using inf_le_left
       · intro l hl
-        apply le_iSup f ⟨l,hl⟩
-        simpa only [f, ← restrict_fixedField L.fixingSubgroup (adjoin k {l}),
+        apply le_iSup f ⟨l, hl⟩
+        simpa only [f, g, ← restrict_fixedField L.fixingSubgroup (adjoin k {l}),
           fixedField_fixingSubgroup L, IntermediateField.mem_inf, hl, true_and]
           using adjoin_simple_le_iff.mp le_rfl
     rw [this] at n

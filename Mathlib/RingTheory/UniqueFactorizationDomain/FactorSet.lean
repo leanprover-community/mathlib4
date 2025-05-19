@@ -97,7 +97,7 @@ section count
 
 variable [DecidableEq (Associates α)]
 
-/-- `bcount p s` is the multiplicity of `p` in the FactorSet `s` (with bundled `p`)-/
+/-- `bcount p s` is the multiplicity of `p` in the FactorSet `s` (with bundled `p`). -/
 def bcount (p : { a : Associates α // Irreducible a }) :
     FactorSet α → ℕ
   | ⊤ => 0

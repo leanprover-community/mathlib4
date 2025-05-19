@@ -53,7 +53,7 @@ attribute [local instance] hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallel
     pullbacks. -/
 theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [Category.{v} C]
     [HasBinaryProducts C] [HasEqualizers C] : HasPullbacks C :=
-  { has_limit := fun F => hasLimitOfIso (diagramIsoCospan F).symm }
+  { has_limit := fun F => hasLimit_of_iso (diagramIsoCospan F).symm }
 
 end
 

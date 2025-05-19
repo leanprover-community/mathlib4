@@ -3,9 +3,7 @@ Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
-import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Logic.Function.Basic
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -359,10 +357,9 @@ variable {M : Type*} {N : Type*}
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
 `Mˣ` is a bundled version of `IsUnit`. -/
-@[to_additive
-      "An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive inverse.
-      The actual definition says that `a` is equal to some `u : AddUnits M`,
-      where `AddUnits M` is a bundled version of `IsAddUnit`."]
+@[to_additive "An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive
+inverse. The actual definition says that `a` is equal to some `u : AddUnits M`,
+where `AddUnits M` is a bundled version of `IsAddUnit`."]
 def IsUnit [Monoid M] (a : M) : Prop :=
   ∃ u : Mˣ, (u : M) = a
 
@@ -417,7 +414,8 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 @[to_additive] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
   rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
 
-@[to_additive] lemma isUnit_iff_eq_one [Subsingleton Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
+@[to_additive (attr := simp)]
+lemma isUnit_iff_eq_one [Subsingleton Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
   ⟨fun ⟨u, hu⟩ ↦ by rw [← hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
 
 end Monoid

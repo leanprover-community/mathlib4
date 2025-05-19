@@ -11,6 +11,8 @@ import Mathlib.Data.Set.Basic
 See also `Set.indicator` and `Set.piecewise`.
 -/
 
+assert_not_exists RelIso
+
 open Bool
 
 namespace Set

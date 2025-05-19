@@ -6,6 +6,11 @@ Authors: Michael Rothgang
 
 import Batteries.Data.String.Matcher
 import Mathlib.Data.Nat.Notation
+import Lake.Util.Casing
+
+-- Don't warn about the lake import: the above file has almost no imports, and this PR has been
+-- benchmarked.
+set_option linter.style.header false
 
 /-!
 ## Text-based linters
@@ -13,24 +18,16 @@ import Mathlib.Data.Nat.Notation
 This file defines various mathlib linters which are based on reading the source code only.
 In practice, all such linters check for code style issues.
 
-For now, this only contains linters checking
-- that the copyright header and authors line are correctly formatted
-- existence of module docstrings (in the right place)
-- for certain disallowed imports
-- if the string "adaptation note" is used instead of the command #adaptation_note
-- files are at most 1500 lines long (unless specifically allowed).
+Currently, this file contains linters checking
+- if the string "adaptation note" is used instead of the command #adaptation_note,
+- for lines with windows line endings,
+- for lines containing trailing whitespace.
 
-For historic reasons, some of these checks are still written in a Python script `lint-style.py`:
+For historic reasons, some further such check checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
 
-This linter maintains a list of exceptions, for legacy reasons.
-Ideally, the length of the list of exceptions tends to 0.
-
-The `longFile` and the `longLine` *syntax* linter take care of flagging lines that exceed the
-100 character limit and files that exceed the 1500 line limit.
-The text-based versions of this file are still used for the files where the linter is not imported.
-This means that the exceptions for the text-based linters are shorter, as they do not need to
-include those handled with `set_option linter.style.longFile x`/`set_option linter.longLine false`.
+This linter has a file for style exceptions (to avoid false positives in the implementation),
+or for downstream projects to allow a gradual adoption of this linter.
 
 An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
@@ -95,7 +92,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
 structure ErrorContext where
-  /-- The underlying `StyleError`-/
+  /-- The underlying `StyleError` -/
   error : StyleError
   /-- The line number of the error (1-based) -/
   lineNumber : ℕ
@@ -216,13 +213,13 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
 /-- Lint a collection of input strings if one of them contains trailing whitespace. -/
 def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
-  let mut fixedLines := lines
+  let mut fixedLines : Vector String lines.size := lines.toVector
   for h : idx in [:lines.size] do
     let line := lines[idx]
     if line.back == ' ' then
       errors := errors.push (StyleError.trailingWhitespace, idx + 1)
-      fixedLines := fixedLines.set! idx line.trimRight
-  return (errors, if errors.size > 0 then some fixedLines else none)
+      fixedLines := fixedLines.set idx line.trimRight
+  return (errors, if errors.size > 0 then some fixedLines.toArray else none)
 
 
 /-- Lint a collection of input strings for a semicolon preceded by a space. -/
@@ -335,5 +332,27 @@ def lintModules (nolints : Array String) (moduleNames : Array Lean.Name) (style 
   if allUnexpectedErrors.size > 0 then
     IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)"
   return numberErrorFiles
+
+/-- Verifies that all modules in `modules` are named in `UpperCamelCase`
+(except for explicitly discussed exceptions, which are hard-coded here).
+Return the number of modules violating this. -/
+def modulesNotUpperCamelCase (modules : Array Lean.Name) : IO Nat := do
+  -- Exceptions to this list should be discussed on zulip!
+  let exceptions := [
+    `Mathlib.Analysis.CStarAlgebra.lpSpace,
+    `Mathlib.Analysis.InnerProductSpace.l2Space,
+    `Mathlib.Analysis.Normed.Lp.lpSpace
+  ]
+  -- We allow only names in UpperCamelCase, possibly with a trailing underscore.
+  let badNames := modules.filter fun name ↦
+    let upperCamelName := Lake.toUpperCamelCase name
+    !exceptions.contains name &&
+      upperCamelName != name && s!"{upperCamelName}_" != name.toString
+  for bad in badNames do
+    let upperCamelName := Lake.toUpperCamelCase bad
+    let good := if bad.toString.endsWith "_" then s!"{upperCamelName}_" else upperCamelName.toString
+    IO.eprintln
+      s!"error: module name '{bad}' is not in 'UpperCamelCase': it should be '{good}' instead"
+  return badNames.size
 
 end Mathlib.Linter.TextBased

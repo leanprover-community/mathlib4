@@ -3,8 +3,8 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov, David Loeffler
 -/
-import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Convex.Slope
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # Convexity of functions and derivatives
@@ -357,7 +357,8 @@ convexity / strict monotonicity).
 
 section slope
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜} {x : 𝕜}
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  {s : Set 𝕜} {f : 𝕜 → 𝕜} {x : 𝕜}
 
 /-- If `f : 𝕜 → 𝕜` is convex on `s`, then for any point `x ∈ s` the slope of the secant line of `f`
 through `x` is monotone on `s \ {x}`. -/
@@ -811,7 +812,7 @@ slope of any secant line with right endpoint at `y` is strictly less than the de
 within `S` at `y`.
 
 This is fractionally weaker than `StrictConvexOn.slope_lt_of_hasDerivWithinAt_Iio` but simpler to
-apply under a `DifferentiableOn S` hypothesis.-/
+apply under a `DifferentiableOn S` hypothesis. -/
 lemma slope_lt_of_hasDerivWithinAt (hfc : StrictConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' S y) :
     slope f x y < f' :=

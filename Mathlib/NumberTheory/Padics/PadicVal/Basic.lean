@@ -32,17 +32,17 @@ by taking `[Fact p.Prime]` as a type class argument.
 ## Calculations with `p`-adic valuations
 
 * `padicValNat_factorial`: Legendre's Theorem. The `p`-adic valuation of `n!` is the sum of the
-quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
-greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in the
-language of prime multiplicity.
+  quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
+  greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in
+  the language of prime multiplicity.
 
 * `sub_one_mul_padicValNat_factorial`: Legendre's Theorem.  Taking (`p - 1`) times
-the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
+  the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
 
 * `padicValNat_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
-of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
-`Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for the
-same result but stated in the language of prime multiplicity.
+  of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
+  `Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for
+  the same result but stated in the language of prime multiplicity.
 
 * `sub_one_mul_padicValNat_choose_eq_sub_sum_digits`: Kummer's Theorem. Taking (`p - 1`) times the
 `p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum of
@@ -62,9 +62,8 @@ p-adic, p adic, padic, norm, valuation
 
 universe u
 
-open Nat
-
-open Rat
+open Nat Rat
+open scoped Finset
 
 namespace padicValNat
 
@@ -597,8 +596,7 @@ The `p`-adic valuation of `n.choose k` is the number of carries when `k` and `n 
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
 `log p n`. -/
 theorem padicValNat_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
-    padicValNat p (choose n k) =
-    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card := by
+    padicValNat p (choose n k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
   exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_pos hkn) ▸
     Prime.emultiplicity_choose hp.out hkn hnb
 
@@ -608,8 +606,7 @@ The `p`-adic valuation of `(n + k).choose k` is the number of carries when `k` a
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
 `log p (n + k)`. -/
 theorem padicValNat_choose' {n k b : ℕ} [hp : Fact p.Prime] (hnb : log p (n + k) < b) :
-    padicValNat p (choose (n + k) k) =
-    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card := by
+    padicValNat p (choose (n + k) k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} := by
   exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_pos <|
     Nat.le_add_left k n)▸ Prime.emultiplicity_choose' hp.out hnb
 

@@ -225,9 +225,6 @@ theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := b
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
 
-@[deprecated Polynomial.Monic.normalize_eq_self (since := "2024-10-21")]
-alias normalize_monic := Monic.normalize_eq_self
-
 theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
@@ -446,12 +443,12 @@ theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
 
 theorem root_left_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : f.eval₂ ϕ α = 0 := by
-  cases' EuclideanDomain.gcd_dvd_left f g with p hp
+  obtain ⟨p, hp⟩ := EuclideanDomain.gcd_dvd_left f g
   rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 
 theorem root_right_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : g.eval₂ ϕ α = 0 := by
-  cases' EuclideanDomain.gcd_dvd_right f g with p hp
+  obtain ⟨p, hp⟩ := EuclideanDomain.gcd_dvd_right f g
   rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 
 theorem root_gcd_iff_root_left_right [CommSemiring k] [DecidableEq R]
@@ -539,6 +536,12 @@ theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   congr 3
   rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one, one_mul]
 
+lemma div_C : p / C a = p * C a⁻¹ := by
+  simpa [mul_comm] using div_C_mul (q := 1)
+
+lemma C_div : C (a / b) = C a / C b := by
+  rw [div_C, ← C_mul, div_eq_mul_inv]
+
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
   ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
@@ -584,20 +587,20 @@ theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
   by_cases H : x = 0
   · rw [H, C_0]
     exact not_irreducible_zero
-  · exact fun hx => Irreducible.not_unit hx <| isUnit_C.2 <| isUnit_iff_ne_zero.2 H
+  · exact fun hx => hx.not_isUnit <| isUnit_C.2 <| isUnit_iff_ne_zero.2 H
 
 theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
   lt_of_not_ge fun hp0 =>
     have := eq_C_of_degree_le_zero hp0
     not_irreducible_C (p.coeff 0) <| this ▸ hp
 
-theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Field K] (f : K[X]) (a : K) :
+theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Ring K] (f : K[X]) (a : K) :
     (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
   exact monic_X_sub_C a
 
 theorem divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative
-    {K : Type*} [Field K] (f : K[X]) (a : K) :
+    {K : Type*} [CommRing K] (f : K[X]) (a : K) :
     f /ₘ (X - C a) + (X - C a) * derivative (f /ₘ (X - C a)) = derivative f := by
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
   simpa only [derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero, one_mul,
@@ -671,7 +674,7 @@ end Field
 end Polynomial
 
 /-- An irreducible polynomial over a field must have positive degree. -/
-theorem Irreducible.natDegree_pos {F : Type*} [Field F] {f : F[X]} (h : Irreducible f) :
+theorem Irreducible.natDegree_pos {F : Type*} [DivisionSemiring F] {f : F[X]} (h : Irreducible f) :
     0 < f.natDegree := Nat.pos_of_ne_zero fun H ↦ by
   obtain ⟨x, hf⟩ := natDegree_eq_zero.1 H
   by_cases hx : x = 0

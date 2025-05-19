@@ -3,10 +3,12 @@ Copyright (c) 2020 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
+import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Data.Fintype.Order
+import Mathlib.Combinatorics.SimpleGraph.Operations
+import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Data.Set.Functor
 
 /-!
@@ -52,7 +54,7 @@ assert_not_exists Field TwoSidedIdeal
 open Function
 
 namespace SimpleGraph
-variable {V W : Type*} {G G': SimpleGraph V} {M M' : Subgraph G} {v w : V}
+variable {V W : Type*} {G G' : SimpleGraph V} {M M' : Subgraph G} {u v w : V}
 
 namespace Subgraph
 
@@ -88,6 +90,18 @@ lemma IsMatching.map_ofLE (h : M.IsMatching) (hGG' : G ≤ G') :
   obtain ⟨w, hw⟩ := h hv
   use w
   simpa using hv' ▸ hw
+
+lemma IsMatching.eq_of_adj_left (hM : M.IsMatching) (huv : M.Adj u v) (huw : M.Adj u w) : v = w :=
+  (hM <| M.edge_vert huv).unique huv huw
+
+lemma IsMatching.eq_of_adj_right (hM : M.IsMatching) (huw : M.Adj u w) (hvw : M.Adj v w) : u = v :=
+  hM.eq_of_adj_left huw.symm hvw.symm
+
+lemma IsMatching.not_adj_left_of_ne (hM : M.IsMatching) (hvw : v ≠ w) (huv : M.Adj u v) :
+    ¬M.Adj u w := fun huw ↦ hvw <| hM.eq_of_adj_left huv huw
+
+lemma IsMatching.not_adj_right_of_ne (hM : M.IsMatching) (huv : u ≠ v) (huw : M.Adj u w) :
+    ¬M.Adj v w := fun hvw ↦ huv <| hM.eq_of_adj_right huw hvw
 
 lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
@@ -133,12 +147,12 @@ lemma IsMatching.subgraphOfAdj (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching 
   | inr => use v; aesop
 
 lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsMatching) :
-    M.coeSubgraph.IsMatching := by
+    (Subgraph.coeSubgraph M).IsMatching := by
   intro _ hv
-  obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| M.verts_coeSubgraph.symm ▸ hv
+  obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
   use w
   refine ⟨?_, fun y hy => ?_⟩
-  · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| M.verts_coeSubgraph.symm ▸ hv
+  · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| (Subgraph.verts_coeSubgraph M).symm ▸ hv
     simp only [coeSubgraph_adj, Subtype.coe_eta, Subtype.coe_prop, exists_const]
     exact ⟨hv.2 ▸ v.2, hw.1⟩
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
@@ -249,6 +263,20 @@ lemma IsPerfectMatching.toSubgraph_iff (h : M.spanningCoe ≤ G') :
 
 end Subgraph
 
+lemma IsClique.even_iff_exists_isMatching {u : Set V} (hc : G.IsClique u)
+    (hu : u.Finite) : Even u.ncard ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
+  refine ⟨fun h ↦ ?_, by
+    rintro ⟨M, rfl, hMr⟩
+    simpa [Set.ncard_eq_toFinset_card _ hu, Set.toFinite_toFinset,
+      ← Set.toFinset_card] using @hMr.even_card _ _ _ hu.fintype⟩
+  obtain ⟨t, u, rfl, hd, hcard⟩ := Set.exists_union_disjoint_ncard_eq_of_even h
+  obtain ⟨f⟩ : Nonempty (t ≃ u) := by
+    rw [← Cardinal.eq, ← t.cast_ncard (Set.finite_union.mp hu).1,
+      ← u.cast_ncard (Set.finite_union.mp hu).2]
+    exact congrArg Nat.cast hcard
+  exact Subgraph.IsMatching.exists_of_disjoint_sets_of_equiv hd f
+    fun v ↦ hc (by simp) (by simp) <| hd.ne_of_mem (by simp) (by simp)
+
 namespace ConnectedComponent
 
 section Finite
@@ -265,11 +293,10 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
 lemma odd_matches_node_outside [Finite V] {u : Set V}
-    {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
-    (hM : M.IsPerfectMatching) (codd : Odd c.supp.ncard) :
-    ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.supp := by
+    (hM : M.IsPerfectMatching) (c : (Subgraph.deleteVerts ⊤ u).coe.oddComponents) :
+    ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.val.supp := by
   by_contra! h
-  have hMmatch : (M.induce c.supp).IsMatching := by
+  have hMmatch : (M.induce c.val.supp).IsMatching := by
     intro v hv
     obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
     obtain ⟨⟨v', hv'⟩, ⟨hv , rfl⟩⟩ := hv
@@ -281,10 +308,10 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
       Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,
       and_true] at hv' ⊢
     trivial
-  apply Nat.not_even_iff_odd.2 codd
-  haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
+  apply Nat.not_even_iff_odd.2 c.prop
+  haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
   classical
-  haveI : Fintype (c.supp) := Fintype.ofFinite _
+  haveI : Fintype (c.val.supp) := Fintype.ofFinite _
   simpa [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image, Nat.card_eq_fintype_card,
     Set.toFinset_image,Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card,
     ← Set.Nat.card_coe_set_eq] using hMmatch.even_card
@@ -353,6 +380,35 @@ lemma IsCycles.induce_supp (c : G.ConnectedComponent) (h : G.IsCycles) :
   congr
   ext w'
   simp only [mem_neighborSet, c.adj_spanningCoe_induce_supp, hw, true_and]
+
+lemma Walk.IsCycle.isCycles_spanningCoe_toSubgraph {u : V} {p : G.Walk u u} (hpc : p.IsCycle) :
+    p.toSubgraph.spanningCoe.IsCycles := by
+  intro v hv
+  apply hpc.ncard_neighborSet_toSubgraph_eq_two
+  obtain ⟨_, hw⟩ := hv
+  exact p.mem_verts_toSubgraph.mp <| p.toSubgraph.edge_vert hw
+
+lemma Walk.IsPath.isCycles_spanningCoe_toSubgraph_sup_edge {u v} {p : G.Walk u v} (hp : p.IsPath)
+    (h : u ≠ v) (hs : s(v, u) ∉ p.edges) : (p.toSubgraph.spanningCoe ⊔ edge v u).IsCycles := by
+  let c := (p.mapLe (OrderTop.le_top G)).cons (by simp [h.symm] : (completeGraph V).Adj v u)
+  have : p.toSubgraph.spanningCoe ⊔ edge v u = c.toSubgraph.spanningCoe := by
+    ext w x
+    simp only [sup_adj, Subgraph.spanningCoe_adj, completeGraph_eq_top, edge_adj, c,
+      Walk.toSubgraph, Subgraph.sup_adj, subgraphOfAdj_adj, adj_toSubgraph_mapLe]
+    aesop
+  exact this ▸ IsCycle.isCycles_spanningCoe_toSubgraph (by simp [Walk.cons_isCycle_iff, c, hp, hs])
+
+lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.Walk u u}
+    (hp : p.IsCycle) (hcyc : G.IsCycles) (hv : v ∈ p.toSubgraph.verts) :
+    ∀ w, p.toSubgraph.Adj v w ↔ G.Adj v w := by
+  refine fun w ↦ Subgraph.adj_iff_of_neighborSet_equiv (?_ : Inhabited _).default (Set.toFinite _)
+  apply Classical.inhabited_of_nonempty
+  rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _),
+      ← Set.cast_ncard (finite_neighborSet_toSubgraph p), hcyc
+        (Set.Nonempty.mono (p.toSubgraph.neighborSet_subset v) <|
+          Set.nonempty_of_ncard_ne_zero <| by simp [Set.Nonempty.mono,
+          hp.ncard_neighborSet_toSubgraph_eq_two (by aesop), Set.nonempty_of_ncard_ne_zero]),
+      hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]
 
 open scoped symmDiff
 
@@ -490,33 +546,62 @@ def IsAlternating (G G' : SimpleGraph V) :=
 lemma IsAlternating.mono {G'' : SimpleGraph V} (halt : G.IsAlternating G') (h : G'' ≤ G) :
     G''.IsAlternating G' := fun _ _ _ hww' hvw hvw' ↦ halt hww' (h hvw) (h hvw')
 
-lemma IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatching)
+lemma IsAlternating.spanningCoe (halt : G.IsAlternating G') (H : Subgraph G)  :
+    H.spanningCoe.IsAlternating G' := by
+  intro v w w' hww' hvw hvv'
+  simp only [Subgraph.spanningCoe_adj] at hvw hvv'
+  exact halt hww' hvw.adj_sub hvv'.adj_sub
+
+lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'.Adj u x)
+    (hu' : ∀ u', u' ≠ u → G.Adj x u' → G'.Adj x u')
+    (hx' : ∀ x', x' ≠ x → G.Adj x' u → G'.Adj x' u) : (G ⊔ edge u x).IsAlternating G' := by
+  by_cases hadj : G.Adj u x
+  · rwa [sup_edge_of_adj G hadj]
+  intro v w w' hww' hvw hvv'
+  simp only [sup_adj, edge_adj] at hvw hvv'
+  obtain hl | hr := hvw <;> obtain h1 | h2 := hvv'
+  · exact halt hww' hl h1
+  · rw [G'.adj_congr_of_sym2 (by aesop : s(v, w') = s(u, x))]
+    simp only [hnadj, not_false_eq_true, iff_true]
+    rcases h2.1 with ⟨h2l1, h2l2⟩ | ⟨h2r1,h2r2⟩
+    · subst h2l1 h2l2
+      exact (hx' _ hww' hl.symm).symm
+    · aesop
+  · rw [G'.adj_congr_of_sym2 (by aesop : s(v, w) = s(u, x))]
+    simp only [hnadj, false_iff, not_not]
+    rcases hr.1 with ⟨hrl1, hrl2⟩ | ⟨hrr1, hrr2⟩
+    · subst hrl1 hrl2
+      exact (hx' _ hww'.symm h1.symm).symm
+    · aesop
+  · aesop
+
+lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatching)
     (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles) :
     (⊤ : Subgraph (M.spanningCoe ∆ G')).IsPerfectMatching := by
   rw [Subgraph.isPerfectMatching_iff]
   intro v
-  simp only [toSubgraph_adj, symmDiff_def, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj]
+  simp only [toSubgraph_adj, symmDiff_def, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj]
   obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
   by_cases h : G'.Adj v w
   · obtain ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj h
     have hmadj :  M.Adj v w ↔ ¬M.Adj v w' := by simpa using hG' hw'.1 h hw'.2
     use w'
-    simp only [Subgraph.top_adj, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hmadj.mp hw.1, hw'.2,
-      not_true_eq_false, and_self, not_false_eq_true, or_true, true_and]
+    simp only [Subgraph.top_adj, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj,
+      hmadj.mp hw.1, hw'.2, not_true_eq_false, and_self, not_false_eq_true, or_true, true_and]
     rintro y (hl | hr)
     · aesop
     · obtain ⟨w'', hw''⟩ := hG'cyc.other_adj_of_adj hr.1
       by_contra! hc
       simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hc hr.1 hw'.2]
   · use w
-    simp only [Subgraph.top_adj, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hw.1, h,
+    simp only [Subgraph.top_adj, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hw.1, h,
       not_false_eq_true, and_self, not_true_eq_false, or_false, true_and]
     rintro y (hl | hr)
     · exact hw.2 _ hl.1
     · have ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj hr.1
       simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hw'.1 hr.1 hw'.2]
 
-lemma IsPerfectMatching.isAlternating_symmDiff_left {M' : Subgraph G'}
+lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_left {M' : Subgraph G'}
     (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :
     (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M.spanningCoe := by
   intro v w w' hww' hvw hvw'
@@ -525,7 +610,7 @@ lemma IsPerfectMatching.isAlternating_symmDiff_left {M' : Subgraph G'}
   simp only [symmDiff_def] at *
   aesop
 
-lemma IsPerfectMatching.isAlternating_symmDiff_right
+lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_right
     {M' : Subgraph G'} (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :
     (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M'.spanningCoe := by
   simpa [symmDiff_comm] using isAlternating_symmDiff_left hM' hM

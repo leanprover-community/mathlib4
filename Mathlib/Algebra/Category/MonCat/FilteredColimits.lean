@@ -3,10 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.Algebra.Category.MonCat.Basic
 
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.
@@ -36,7 +36,7 @@ section
 
 -- Porting note: mathlib 3 used `parameters` here, mainly so we can have the abbreviations `M` and
 -- `M.mk` below, without passing around `F` all the time.
-variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCatMax.{v, u})
+variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{max v u})
 
 /-- The colimit of `F ⋙ forget MonCat` in the category of types.
 In the following, we will construct a monoid structure on `M`.
@@ -213,7 +213,7 @@ noncomputable def colimit : MonCat.{max v u} :=
 @[to_additive
       "The additive monoid homomorphism from a given additive monoid in the diagram to the
       colimit additive monoid."]
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
+noncomputable def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
   ofHom
   { toFun := (Types.TypeMax.colimitCocone.{v, max v u, v} (F ⋙ forget MonCat)).ι.app j
     map_one' := (colimit_one_eq F j).symm
@@ -243,7 +243,7 @@ The only thing left to see is that it is a monoid homomorphism.
       to the cocone point. As a function, this is simply given by the induced map of the
       corresponding cocone in `Type`. The only thing left to see is that it is an additive monoid
       homomorphism."]
-def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
+noncomputable def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
   ofHom
   { toFun := (Types.TypeMax.colimitCoconeIsColimit.{v, max v u, v} (F ⋙ forget MonCat)).desc
       ((forget MonCat).mapCocone t)
@@ -259,15 +259,12 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
       rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
         (IsFiltered.rightToMax i j)]
       dsimp [Types.TypeMax.colimitCoconeIsColimit]
-      rw [MonoidHom.map_mul]
-      -- Porting note: `rw` can't see through coercion is actually forgetful functor,
-      -- so can't rewrite `t.w_apply`
-      congr 1 <;>
-      exact t.w_apply _ _ }
+      rw [MonoidHom.map_mul, t.w_apply, t.w_apply]
+      rfl }
 
 /-- The proposed colimit cocone is a colimit in `MonCat`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddMonCat`."]
-def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
+noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc := colimitDesc.{v, u} F
   fac t j := MonCat.ext fun x => congr_fun ((Types.TypeMax.colimitCoconeIsColimit.{v, u}
     (F ⋙ forget MonCat)).fac ((forget MonCat).mapCocone t) j) x
@@ -337,7 +334,7 @@ noncomputable def colimitCocone : Cocone F where
 
 /-- The proposed colimit cocone is a colimit in `CommMonCat`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddCommMonCat`."]
-def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
+noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc t := ofHom
     (MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})
       ((forget₂ CommMonCat MonCat.{max v u}).mapCocone t)).hom

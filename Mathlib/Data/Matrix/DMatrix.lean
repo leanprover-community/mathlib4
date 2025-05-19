@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
 # Dependent-typed matrices
