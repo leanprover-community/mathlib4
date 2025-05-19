@@ -304,7 +304,7 @@ lemma charFunDual_conv {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure
     charFunDual (μ ∗ ν) L = charFunDual μ L * charFunDual ν L := by
   simp_rw [charFunDual_apply]
   rw [integral_conv]
-  · simp [Complex.exp_add, integral_const_mul, integral_mul_const]
+  · simp [inner_add_left, add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
   · exact (integrable_const (1 : ℝ)).mono (by fun_prop) (by simp)
 
 end NormedSpace
