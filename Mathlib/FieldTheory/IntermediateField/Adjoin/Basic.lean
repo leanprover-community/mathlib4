@@ -32,10 +32,8 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {S : Set E}
 theorem mem_adjoin_range_iff {ι : Type*} (i : ι → E) (x : E) :
     x ∈ adjoin F (Set.range i) ↔ ∃ r s : MvPolynomial ι F,
       x = MvPolynomial.aeval i r / MvPolynomial.aeval i s := by
-  simp_rw [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
-    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
-    Algebra.adjoin_range_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
-  tauto
+  simp_rw [mem_adjoin_iff_div, Algebra.adjoin_range_eq_range_aeval,
+    AlgHom.mem_range, exists_exists_eq_and]
 
 theorem mem_adjoin_iff (x : E) :
     x ∈ adjoin F S ↔ ∃ r s : MvPolynomial S F,
@@ -44,10 +42,8 @@ theorem mem_adjoin_iff (x : E) :
 
 theorem mem_adjoin_simple_iff {α : E} (x : E) :
     x ∈ adjoin F {α} ↔ ∃ r s : F[X], x = aeval α r / aeval α s := by
-  simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
-    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
-    Algebra.adjoin_singleton_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
-  tauto
+  simp only [mem_adjoin_iff_div, Algebra.adjoin_singleton_eq_range_aeval,
+    AlgHom.mem_range, exists_exists_eq_and]
 
 variable {F}
 
@@ -284,6 +280,14 @@ protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := b
 
 @[simp] theorem finrank_top' : finrank F (⊤ : IntermediateField F E) = finrank F E :=
   finrank_top F E
+
+lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
+    Module.finrank K E = 1 ↔ K = ⊤ := by
+  refine ⟨?_, (· ▸ IntermediateField.finrank_top)⟩
+  rw [← Subalgebra.bot_eq_top_iff_finrank_eq_one, ← top_le_iff, ← top_le_iff]
+  intro H x _
+  obtain ⟨x, rfl⟩ := @H x trivial
+  exact x.2
 
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
@@ -777,5 +781,40 @@ theorem lift_cardinalMk_adjoin_le {E : Type v} [Field E] [Algebra F E] (s : Set 
 theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
     #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by
   simpa using lift_cardinalMk_adjoin_le F s
+
+section AdjoinPair
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] {x y : L}
+
+theorem isAlgebraic_adjoin_pair (hx : IsIntegral K x) (hy : IsIntegral K y) :
+    Algebra.IsAlgebraic K K⟮x, y⟯ := by
+  apply IntermediateField.isAlgebraic_adjoin
+  simp [hx, hy]
+
+theorem finiteDimensional_adjoin_pair (hx : IsIntegral K x) (hy : IsIntegral K y) :
+    FiniteDimensional K K⟮x, y⟯ := by
+  have := adjoin.finiteDimensional hx
+  have := adjoin.finiteDimensional hy
+  rw [← Set.singleton_union, adjoin_union]
+  exact finiteDimensional_sup K⟮x⟯ K⟮y⟯
+
+variable (K x y)
+
+theorem mem_adjoin_pair_left : x ∈ K⟮x, y⟯ := subset_adjoin K {x, y} (Set.mem_insert x {y})
+
+theorem mem_adjoin_pair_right : y ∈ K⟮x, y⟯ :=
+  subset_adjoin K {x, y} (Set.mem_insert_of_mem x (Set.mem_singleton y))
+
+/-- The first generator of an intermediate field of the form `K⟮x, y⟯`. -/
+def AdjoinPair.gen₁ : K⟮x, y⟯ := ⟨x, mem_adjoin_pair_left K x y⟩
+
+/-- The second generator of an intermediate field of the form `K⟮x, y⟯`. -/
+def AdjoinPair.gen₂ : K⟮x, y⟯ := ⟨y, mem_adjoin_pair_right K x y⟩
+
+theorem AdjoinPair.algebraMap_gen₁ : (algebraMap (↥K⟮x, y⟯) L) (gen₁ K x y) = x := rfl
+
+theorem AdjoinPair.algebraMap_gen₂ : (algebraMap (↥K⟮x, y⟯) L) (gen₂ K x y) = y := rfl
+
+end AdjoinPair
 
 end IntermediateField

@@ -26,6 +26,9 @@ variable {ι ι' α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι}
 
 namespace Finset
 
+lemma prod_neg [CommMonoid α] [HasDistribNeg α] : ∏ x ∈ s, -f x = (-1) ^ #s * ∏ x ∈ s, f x := by
+  simpa using (s.1.map f).prod_map_neg
+
 section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne α]
 
@@ -115,8 +118,7 @@ lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → �
   classical
   induction s using Finset.induction with
   | empty => simp
-  | insert ha ih =>
-    rename_i a s
+  | insert a s ha ih =>
     have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
       Disjoint (image (Pi.cons s a x) (pi s t)) (image (Pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
@@ -243,7 +245,7 @@ variable [CommRing α]
 `g` over a subset `t` times the product of `f` over the complement of `t` times `(-1) ^ #t`. -/
 lemma prod_sub [DecidableEq ι] (f g : ι → α) (s : Finset ι) :
     ∏ i ∈ s, (f i - g i) = ∑ t ∈ s.powerset, (-1) ^ #t * (∏ i ∈ s \ t, f i) * ∏ i ∈ t, g i := by
-  simp [sub_eq_neg_add, prod_add, ← prod_const, ← prod_mul_distrib, mul_right_comm]
+  simp [sub_eq_neg_add, prod_add, prod_neg, mul_right_comm]
 
 /-- `∏ i, (f i - g i) = (∏ i, f i) - ∑ i, g i * (∏ j < i, f j - g j) * (∏ j > i, f j)`. -/
 lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :

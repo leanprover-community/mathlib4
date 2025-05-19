@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Noncomputable Set Cardinality
@@ -584,6 +585,13 @@ theorem ncard_singleton_inter (a : α) (s : Set α) : ({a} ∩ s).ncard ≤ 1 :=
 theorem ncard_prod : (s ×ˢ t).ncard = s.ncard * t.ncard := by
   simp [ncard, ENat.toNat_mul]
 
+@[simp]
+theorem ncard_powerset (s : Set α) (hs : s.Finite := by toFinite_tac) :
+    (𝒫 s).ncard = 2 ^ s.ncard := by
+  have h := Cardinal.mk_powerset s
+  rw [← cast_ncard hs.powerset, ← cast_ncard hs] at h
+  norm_cast at h
+
 section InsertErase
 
 @[simp] theorem ncard_insert_of_not_mem {a : α} (h : a ∉ s) (hs : s.Finite := by toFinite_tac) :
@@ -612,17 +620,20 @@ theorem ncard_le_ncard_insert (a : α) (s : Set α) : s.ncard ≤ (insert a s).n
     s.finite_or_infinite.elim (fun h ↦ ?_) (fun h ↦ by (rw [h.ncard]; exact Nat.zero_le _))
   rw [ncard_insert_eq_ite h]; split_ifs <;> simp
 
-@[simp] theorem ncard_pair {a b : α} (h : a ≠ b) : ({a, b} : Set α).ncard = 2 := by
-  rw [ncard_insert_of_not_mem, ncard_singleton]; simpa
+theorem ncard_pair {a b : α} (h : a ≠ b) : ({a, b} : Set α).ncard = 2 := by
+  simp [h]
 
-@[simp] theorem ncard_diff_singleton_add_one {a : α} (h : a ∈ s)
+-- removing `@[simp]` because the LHS is not in simp normal form
+theorem ncard_diff_singleton_add_one {a : α} (h : a ∈ s)
     (hs : s.Finite := by toFinite_tac) : (s \ {a}).ncard + 1 = s.ncard := by
-  to_encard_tac; rw [hs.cast_ncard_eq, hs.diff.cast_ncard_eq,
-    encard_diff_singleton_add_one h]
+  to_encard_tac
+  rw [hs.cast_ncard_eq, hs.diff.cast_ncard_eq, encard_diff_singleton_add_one h]
 
-@[simp] theorem ncard_diff_singleton_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := by toFinite_tac) :
-    (s \ {a}).ncard = s.ncard - 1 :=
-  eq_tsub_of_add_eq (ncard_diff_singleton_add_one h hs)
+@[simp] theorem ncard_diff_singleton_of_mem {a : α} (h : a ∈ s) :
+    (s \ {a}).ncard = s.ncard - 1 := by
+  rcases s.infinite_or_finite with hs | hs
+  · simp_all [ncard, Infinite.diff hs (finite_singleton a)]
+  · exact eq_tsub_of_add_eq (ncard_diff_singleton_add_one h hs)
 
 theorem ncard_diff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := by toFinite_tac) :
     (s \ {a}).ncard < s.ncard := by
@@ -635,13 +646,10 @@ theorem ncard_diff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.nc
   exact (hs.diff (by simp : Set.Finite {a})).ncard
 
 theorem pred_ncard_le_ncard_diff_singleton (s : Set α) (a : α) : s.ncard - 1 ≤ (s \ {a}).ncard := by
-  rcases s.finite_or_infinite with hs | hs
-  · by_cases h : a ∈ s
-    · rw [ncard_diff_singleton_of_mem h hs]
-    rw [diff_singleton_eq_self h]
-    apply Nat.pred_le
-  convert Nat.zero_le _
-  rw [hs.ncard]
+  by_cases h : a ∈ s
+  · rw [ncard_diff_singleton_of_mem h]
+  rw [diff_singleton_eq_self h]
+  apply Nat.pred_le
 
 theorem ncard_exchange {a b : α} (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).ncard = s.ncard :=
   congr_arg ENat.toNat <| encard_exchange ha hb
@@ -927,6 +935,16 @@ theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
 theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
     s = univ ↔ ncard s = Nat.card α := by
   rw [← compl_empty_iff, ← ncard_eq_zero, ← ncard_add_ncard_compl s, left_eq_add]
+
+lemma even_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α) :
+    Even sᶜ.ncard ↔ Even s.ncard := by
+  simp [compl_eq_univ_diff, ncard_diff (subset_univ _ : s ⊆ Set.univ),
+    Nat.even_sub (ncard_le_ncard (subset_univ _ : s ⊆ Set.univ)),
+    (ncard_univ _).symm ▸ heven]
+
+lemma odd_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α) :
+    Odd sᶜ.ncard ↔ Odd s.ncard := by
+  rw [← Nat.not_even_iff_odd, even_ncard_compl_iff heven, Nat.not_even_iff_odd]
 
 end Lattice
 

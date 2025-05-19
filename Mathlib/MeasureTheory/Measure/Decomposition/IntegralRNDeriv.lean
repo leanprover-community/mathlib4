@@ -14,7 +14,7 @@ import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
 * `mul_le_integral_rnDeriv_of_ac`: for a convex continuous function `f` on `[0, ∞)`, if `μ`
   is absolutely continuous with respect to `ν`, then
-  `(ν univ).toReal * f ((μ univ).toReal / (ν univ).toReal) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
+  `ν.real univ * f (μ.real univ / ν.real univ) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
 
 -/
 
@@ -33,11 +33,11 @@ lemma Measure.integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
 
 /-- For a convex continuous function `f` on `[0, ∞)`, if `μ` is absolutely continuous
 with respect to a probability measure `ν`, then
-`f (μ univ).toReal ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`. -/
+`f μ.real univ ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`. -/
 lemma le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousWithinAt f (Ici 0) 0)
     (hf_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) (hμν : μ ≪ ν) :
-    f (μ univ).toReal ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
+    f (μ.real univ) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
   have hf_cont' : ContinuousOn f (Ici 0) := by
     intro x hx
     rcases eq_or_lt_of_le (α := ℝ) (hx : 0 ≤ x) with rfl | hx_pos
@@ -46,7 +46,7 @@ lemma le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
       simp only [nonempty_Iio, interior_Ici', mem_Ioi] at h
       rw [continuousWithinAt_iff_continuousAt (Ioi_mem_nhds hx_pos)] at h
       exact (h hx_pos).continuousWithinAt
-  calc f (μ univ).toReal
+  calc f (μ.real univ)
     = f (∫ x, (μ.rnDeriv ν x).toReal ∂ν) := by rw [Measure.integral_toReal_rnDeriv hμν]
   _ ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
     rw [← average_eq_integral, ← average_eq_integral]
@@ -55,11 +55,11 @@ lemma le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
 
 /-- For a convex continuous function `f` on `[0, ∞)`, if `μ` is absolutely continuous
 with respect to `ν`, then
-`(ν univ).toReal * f ((μ univ).toReal / (ν univ).toReal) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`. -/
+`ν.real univ * f (μ.real univ / ν.real univ) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`. -/
 lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousWithinAt f (Ici 0) 0)
     (hf_int : Integrable (fun x ↦ f (μ.rnDeriv ν x).toReal) ν) (hμν : μ ≪ ν) :
-    (ν univ).toReal * f ((μ univ).toReal / (ν univ).toReal)
+    ν.real univ * f (μ.real univ / ν.real univ)
       ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν := by
   by_cases hν : ν = 0
   · simp [hν]
@@ -83,13 +83,13 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     · simp [hν]
     · simp
   have h_eq : ∫ x, f (μ'.rnDeriv ν' x).toReal ∂ν'
-      = (ν univ).toReal⁻¹ * ∫ x, f ((μ.rnDeriv ν x).toReal) ∂ν := by
+      = (ν.real univ)⁻¹ * ∫ x, f ((μ.rnDeriv ν x).toReal) ∂ν := by
     rw [integral_smul_measure, smul_eq_mul, ENNReal.toReal_inv]
     congr 1
     refine integral_congr_ae ?_
     filter_upwards [h_rnDeriv_eq] with x hx
     rw [hx]
-  have h : f (μ' univ).toReal ≤ ∫ x, f (μ'.rnDeriv ν' x).toReal ∂ν' :=
+  have h : f (μ'.real univ) ≤ ∫ x, f (μ'.rnDeriv ν' x).toReal ∂ν' :=
     le_integral_rnDeriv_of_ac hf_cvx hf_cont ?_ hμν'
   swap
   · refine Integrable.smul_measure ?_ (by simp [hν])
@@ -99,7 +99,7 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
   rw [h_eq, mul_comm, ← div_le_iff₀, div_eq_inv_mul, inv_inv] at h
   · convert h
     · simp only [div_eq_inv_mul, Measure.smul_apply, smul_eq_mul, ENNReal.toReal_mul,
-      ENNReal.toReal_inv, μ']
-  · simp [ENNReal.toReal_pos_iff, hν]
+      ENNReal.toReal_inv, μ', measureReal_def]
+  · simp [ENNReal.toReal_pos_iff, hν, measureReal_def]
 
 end MeasureTheory

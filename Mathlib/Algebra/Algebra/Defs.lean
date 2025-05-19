@@ -16,7 +16,7 @@ In this file we define associative unital `Algebra`s over commutative (semi)ring
 
 * `Subalgebra`s are defined in `Mathlib.Algebra.Algebra.Subalgebra`;
 
-* The category `AlgebraCat R` of `R`-algebras is defined in the file
+* The category `AlgCat R` of `R`-algebras is defined in the file
   `Mathlib.Algebra.Category.Algebra.Basic`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
@@ -316,10 +316,6 @@ protected theorem smul_mul_assoc (r : R) (x y : A) : r • x * y = r • (x * y)
 theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α A]
     [SMulCommClass α R A] (a : α) (r : R) : a • algebraMap R A r = algebraMap R A r := by
   rw [algebraMap_eq_smul_one, smul_comm a r (1 : A), smul_one]
-
-section
-
-end
 
 section compHom
 
