@@ -42,15 +42,13 @@ def free : Type u ⥤ ModuleCat R where
 
 variable {R}
 
-@[simp]
 theorem carrier_obj_free {X : Type u} : ((free R).obj X).carrier = (X →₀ R) := rfl
 
-@[simp]
 theorem hom_map_free {X Y : Type u} (f : X → Y) :
     ((free R).map f).hom = Finsupp.lmapDomain _ _ f := rfl
 
 /-- Constructor for elements in the module `(free R).obj X`. -/
-noncomputable abbrev freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
+noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
 
 @[ext 1200]
 lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
@@ -64,17 +62,18 @@ noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
     (free R).obj X ⟶ M :=
   ofHom <| Finsupp.lift M R X f
 
-@[simp]
 lemma hom_freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
     ConcreteCategory.hom (freeDesc f) = Finsupp.lift M R X f :=
   rfl
 
+@[simp]
 lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
     freeDesc f (freeMk x) = f x := by
   erw [hom_freeDesc]
   erw [Finsupp.lift_apply, Finsupp.sum_single_index]
   all_goals simp
 
+@[simp]
 lemma free_map_apply {X Y : Type u} (f : X → Y) (x : X) :
     (free R).map f (freeMk x) = freeMk (f x) := by
   apply Finsupp.mapDomain_single
@@ -126,21 +125,27 @@ def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
     simp [free]
   inv_hom_id := by
     ext ⟨⟩
-    dsimp [freeMk]
+    dsimp [freeMk, carrier_obj_free]
     rw [Finsupp.single_eq_same]
 
-@[simp]
+--@[simp]
 lemma hom_hom_εIso : (εIso R).hom.hom = Finsupp.lsingle PUnit.unit := rfl
 
-@[simp]
+--@[simp]
 lemma inv_hom_εIso : (εIso R).inv.hom = Finsupp.lapply PUnit.unit := rfl
 
-lemma εIso_hom_one : (εIso R).hom 1 = freeMk PUnit.unit := rfl
-
-lemma εIso_inv_freeMk (x : PUnit) : (εIso R).inv (freeMk x) = 1 := by
-  dsimp [εIso, freeMk]
+@[simp]
+lemma εIso_hom_one :
+    DFunLike.coe (F := (R →ₗ[R] ((free R).obj (𝟙_ (Type u)))))
+      (ModuleCat.Hom.hom (εIso R).hom) 1 = freeMk PUnit.unit := rfl
+#lint
+@[simp]
+lemma εIso_inv_freeMk (x : PUnit) :
+    DFunLike.coe (F := ((free R).obj (𝟙_ (Type u)) →ₗ[R] R))
+      (ModuleCat.Hom.hom (εIso R).inv) (freeMk x) = 1 := by
+  dsimp [εIso, freeMk, carrier_obj_free]
   rw [Finsupp.single_eq_same]
-
+#lint
 /-- The canonical isomorphism `(free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y)`
 for two types `X` and `Y`.
 (This should not be used directly: it is is part of the implementation of the
@@ -150,20 +155,19 @@ def μIso (X Y : Type u) :
   (finsuppTensorFinsupp' R _ _).toModuleIso
 
 @[simp]
-lemma μIso_hom_single_tmul_single {X Y : Type u} (x : X) (y : Y) :
-    DFunLike.coe (F := TensorProduct R (X →₀ R) (Y →₀ R) →ₗ[R] X ⊗ Y →₀ R)
-      (μIso R X Y).hom.hom (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single y 1) =
-      Finsupp.single ⟨x, y⟩ 1 := by
-  dsimp [μIso]
+lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
+    DFunLike.coe (F := TensorProduct R ((free R).obj X) ((free R).obj Y) →ₗ[R] (free R).obj (X ⊗ Y))
+      (μIso R X Y).hom.hom (freeMk x ⊗ₜ[R] freeMk y) = freeMk ⟨x, y⟩ := by
+  dsimp [μIso, freeMk]
   erw [finsuppTensorFinsupp'_single_tmul_single]
   rw [mul_one]
 
 @[simp]
-lemma μIso_inv_single {X Y : Type u} (z : X ⊗ Y) :
-    DFunLike.coe (F := (X ⊗ Y →₀ R) →ₗ[R] TensorProduct R (X →₀ R) (Y →₀ R))
-      (μIso R X Y).inv.hom (Finsupp.single z 1) =
-      Finsupp.single z.1 1 ⊗ₜ Finsupp.single z.2 1 := by
-  dsimp [μIso]
+lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
+    DFunLike.coe (F := (free R).obj (X ⊗ Y) →ₗ[R] TensorProduct R ((free R).obj X) ((free R).obj Y))
+      (μIso R X Y).inv.hom (freeMk z) =
+      freeMk z.1 ⊗ₜ freeMk z.2 := by
+  dsimp [μIso, freeMk]
   erw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
 end FreeMonoidal
@@ -185,12 +189,10 @@ instance : (free R).Monoidal :=
         aesop
       left_unitality := fun X ↦ by
         rw [← cancel_epi (λ_ _).inv, Iso.inv_hom_id]
-        ext
-        simp [types_tensorUnit, leftUnitor_hom_apply]
+        aesop
       right_unitality := fun X ↦ by
         rw [← cancel_epi (ρ_ _).inv, Iso.inv_hom_id]
-        ext
-        simp [types_tensorUnit, rightUnitor_hom_apply] }
+        aesop }
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
@@ -204,18 +206,18 @@ lemma free_η_freeMk (x : PUnit) :
   apply FreeMonoidal.εIso_inv_freeMk
 
 @[simp]
-lemma free_μ_single_tmul_single {X Y : Type u} (x : X) (y : Y) :
-    DFunLike.coe (F := TensorProduct R (X →₀ R) (Y →₀ R) →ₗ[R] X ⊗ Y →₀ R)
-      (μ (free R) _ _).hom (Finsupp.single x 1 ⊗ₜ Finsupp.single y 1) =
-      Finsupp.single ⟨x, y⟩ 1 := by
-  apply FreeMonoidal.μIso_hom_single_tmul_single
+lemma free_μ_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
+    DFunLike.coe
+      (F := TensorProduct R ((free R).obj X) ((free R).obj Y) →ₗ[R] (free R).obj (X ⊗ Y))
+      (μ (free R) _ _).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩  := by
+  apply FreeMonoidal.μIso_hom_freeMk_tmul_freeMk
 
 @[simp]
-lemma free_δ_single {X Y : Type u} (z : X ⊗ Y) :
-    DFunLike.coe (F := (X ⊗ Y →₀ R) →ₗ[R] TensorProduct R (X →₀ R) (Y →₀ R))
-      (δ (free R) _ _).hom (Finsupp.single z 1) =
-      Finsupp.single z.1 1 ⊗ₜ Finsupp.single z.2 1 := by
-  apply FreeMonoidal.μIso_inv_single
+lemma free_δ_freeMk {X Y : Type u} (z : X ⊗ Y) :
+    DFunLike.coe
+      (F := (free R).obj (X ⊗ Y) →ₗ[R] TensorProduct R ((free R).obj X) ((free R).obj Y))
+      (δ (free R) _ _).hom (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
+  apply FreeMonoidal.μIso_inv_freeMk
 
 end Free
 
