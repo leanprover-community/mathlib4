@@ -128,7 +128,7 @@ instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotal
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
 
- end maximalRealSubfield
+end maximalRealSubfield
 
 end TotallyRealField
 
