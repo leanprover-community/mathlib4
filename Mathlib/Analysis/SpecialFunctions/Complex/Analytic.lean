@@ -239,3 +239,94 @@ lemma analyticOn_exp :  AnalyticOn ℝ Real.exp s :=
   Real.contDiff_exp.contDiffOn.analyticOn
 
 end Real
+
+namespace Complex
+
+variable {s : Set ℂ} {x : ℂ}
+
+/-- The function `Complex.cos` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_cos : AnalyticAt ℂ Complex.cos x :=
+  Complex.contDiff_cos.contDiffAt.analyticAt
+
+/-- The function `Complex.cos` is complex analytic. -/
+lemma analyticWithinAt_cos :  AnalyticWithinAt ℂ Complex.cos s x :=
+  Complex.contDiff_cos.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.cos` is complex analytic. -/
+theorem analyticOnNhd_cos : AnalyticOnNhd ℂ Complex.cos s :=
+  fun _ _ ↦ analyticAt_cos
+
+/-- The function `Complex.cos` is complex analytic. -/
+lemma analyticOn_cos :  AnalyticOn ℂ Complex.cos s :=
+  Complex.contDiff_cos.contDiffOn.analyticOn
+
+/-- The function `Complex.cosh` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_cosh : AnalyticAt ℂ Complex.cosh x :=
+  Complex.contDiff_cosh.contDiffAt.analyticAt
+
+/-- The function `Complex.cosh` is complex analytic. -/
+lemma analyticWithinAt_cosh :  AnalyticWithinAt ℂ Complex.cosh s x :=
+  Complex.contDiff_cosh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.cosh` is complex analytic. -/
+theorem analyticOnNhd_cosh : AnalyticOnNhd ℂ Complex.cosh s :=
+  fun _ _ ↦ analyticAt_cosh
+
+/-- The function `Complex.cosh` is complex analytic. -/
+lemma analyticOn_cosh :  AnalyticOn ℂ Complex.cosh s :=
+  Complex.contDiff_cosh.contDiffOn.analyticOn
+
+/-- The function `Complex.sin` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_sin : AnalyticAt ℂ Complex.sin x :=
+  Complex.contDiff_sin.contDiffAt.analyticAt
+
+/-- The function `Complex.sin` is complex analytic. -/
+lemma analyticWithinAt_sin :  AnalyticWithinAt ℂ Complex.sin s x :=
+  Complex.contDiff_sin.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.sin` is complex analytic. -/
+theorem analyticOnNhd_sin : AnalyticOnNhd ℂ Complex.sin s :=
+  fun _ _ ↦ analyticAt_sin
+
+/-- The function `Complex.sin` is complex analytic. -/
+lemma analyticOn_sin :  AnalyticOn ℂ Complex.sin s :=
+  Complex.contDiff_sin.contDiffOn.analyticOn
+
+/-- The function `Complex.sinh` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_sinh : AnalyticAt ℂ Complex.sinh x :=
+  Complex.contDiff_sinh.contDiffAt.analyticAt
+
+/-- The function `Complex.sinh` is complex analytic. -/
+lemma analyticWithinAt_sinh :  AnalyticWithinAt ℂ Complex.sinh s x :=
+  Complex.contDiff_sinh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.sinh` is complex analytic. -/
+theorem analyticOnNhd_sinh : AnalyticOnNhd ℂ Complex.sinh s :=
+  fun _ _ ↦ analyticAt_sinh
+
+/-- The function `Complex.sinh` is complex analytic. -/
+lemma analyticOn_sinh :  AnalyticOn ℂ Complex.sinh s :=
+  Complex.contDiff_sinh.contDiffOn.analyticOn
+
+/-- The function `Complex.exp` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_exp : AnalyticAt ℂ Complex.exp x :=
+  Complex.contDiff_exp.contDiffAt.analyticAt
+
+/-- The function `Complex.exp` is complex analytic. -/
+lemma analyticWithinAt_exp :  AnalyticWithinAt ℂ Complex.exp s x :=
+  Complex.contDiff_exp.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.exp` is complex analytic. -/
+theorem analyticOnNhd_exp : AnalyticOnNhd ℂ Complex.exp s :=
+  fun _ _ ↦ analyticAt_exp
+
+/-- The function `Complex.exp` is complex analytic. -/
+lemma analyticOn_exp :  AnalyticOn ℂ Complex.exp s :=
+  Complex.contDiff_exp.contDiffOn.analyticOn
+
+end Complex
