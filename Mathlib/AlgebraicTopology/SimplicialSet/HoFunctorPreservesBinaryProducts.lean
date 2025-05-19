@@ -6,6 +6,7 @@ Authors: Emily Riehl, Dominic Verity
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 import Mathlib.CategoryTheory.Category.Cat.Limit
+import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Presheaf
 /-!
@@ -15,12 +16,35 @@ import Mathlib.CategoryTheory.Limits.Presheaf
 
 namespace CategoryTheory
 
-universe u
+universe u v
 
 open Category Functor Limits Opposite SimplexCategory Simplicial SSet Nerve
 
--- TODO: Is this in mathlib?
+/-- The Yoneda embedding from the `SimplexCategory` into simplicial sets is naturally
+isomorphic to `SimplexCategory.toCat ⋙ nerveFunctor` with component isomorphisms
+`Δ[n] ≅ nerve (Fin (n + 1))`. -/
 def simplexIsNerve (n : ℕ) : Δ[n] ≅ nerve (Fin (n + 1)) := sorry
+
+instance nerveHoNerve.binaryProductIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
+    IsIso (prodComparison (nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor)
+      (Cat.of C) (Cat.of D)) := by
+  sorry
+
+instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
+    IsIso (prodComparison hoFunctor (nerve C) (nerve D)) := by
+  have : IsIso (nerveFunctor.map (prodComparison hoFunctor (nerve C) (nerve D))) := by
+    have : IsIso (prodComparison nerveFunctor
+      (hoFunctor.obj (nerve C)) (hoFunctor.obj (nerve D))) := inferInstance
+    have : IsIso (prodComparison (hoFunctor ⋙ nerveFunctor) (nerve C) (nerve D)) := by
+      have eq := prodComparison_comp
+        nerveFunctor (hoFunctor ⋙ nerveFunctor) (A := Cat.of C) (B := Cat.of D)
+      simp only [nerveFunctor_obj] at eq
+      have : IsIso
+        ((hoFunctor ⋙ nerveFunctor).map
+          (prodComparison nerveFunctor (Cat.of C) (Cat.of D))) := inferInstance
+      exact IsIso.of_isIso_fac_left eq.symm
+    exact IsIso.of_isIso_fac_right (prodComparison_comp hoFunctor nerveFunctor).symm
+  apply isIso_of_fully_faithful nerveFunctor
 
 -- TODO: Replace both representables with nerves of categories. Then apply the fully
 -- faithful nerve functor. The map in queestion is then isomorphic to
