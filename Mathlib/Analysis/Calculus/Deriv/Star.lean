@@ -13,7 +13,9 @@ This file contains the usual formulas (and existence assertions) for the derivat
 operation.
 
 Most of the results in this file only apply when the field that the derivative is respect to has a
-trivial star operation; which as should be expected rules out `𝕜 = ℂ`. We do prove some
+trivial star operation; which as should be expected rules out `𝕜 = ℂ`. The exceptions are
+`HasDerivAt.conj_conj` and `DifferentiableAt.conj_conj`, showing that `conj ∘ f ∘ conj` is
+differentiable when `f` is (and giving a formula for its derivative).
 -/
 
 universe u v w
