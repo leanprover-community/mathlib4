@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.LinearAlgebra.RootSystem.Finite.g2
+import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 import Mathlib.Order.Interval.Set.OrdConnectedLinear
 
 /-!
@@ -17,12 +17,12 @@ of the form: `β - q • α, ..., β - α, β, β + α, ..., β + p • α` for 
 length, `p + q` is at most 3.
 
 ## Main definitions / results:
- * `RootPairing.chainTopCoeff`: the natural number `p` in the chain
-   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
- * `RootPairing.chainTopCoeff`: the natural number `q` in the chain
-   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
- * `RootPairing.root_add_zsmul_mem_range_iff`: every chain is an interval (aka unbroken).
- * `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
+* `RootPairing.chainTopCoeff`: the natural number `p` in the chain
+  `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
+* `RootPairing.chainTopCoeff`: the natural number `q` in the chain
+  `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
+* `RootPairing.root_add_zsmul_mem_range_iff`: every chain is an interval (aka unbroken).
+* `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
 
 -/
 

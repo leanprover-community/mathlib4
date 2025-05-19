@@ -34,4 +34,4 @@ theorem isSimpleRing_iff_isTwoSided_imp {R : Type*} [Ring R] :
   let e := orderIsoIsTwoSided (R := R)
   simp_rw [isSimpleRing_iff, isSimpleOrder_iff, orderIsoRingCon.toEquiv.nontrivial_congr,
     RingCon.nontrivial_iff, e.forall_congr_left, Subtype.forall, ← e.injective.eq_iff]
-  simp [e,Subtype.ext_iff]
+  simp [e, Subtype.ext_iff]

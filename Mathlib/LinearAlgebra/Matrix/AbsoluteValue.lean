@@ -14,13 +14,13 @@ This file proves some bounds on matrices involving absolute values.
 
 ## Main results
 
- * `Matrix.det_le`: if the entries of an `n × n` matrix are bounded by `x`,
-   then the determinant is bounded by `n! x^n`
- * `Matrix.det_sum_le`: if we have `s` `n × n` matrices and the entries of each
-   matrix are bounded by `x`, then the determinant of their sum is bounded by `n! (s * x)^n`
- * `Matrix.det_sum_smul_le`: if we have `s` `n × n` matrices each multiplied by
-   a constant bounded by `y`, and the entries of each matrix are bounded by `x`,
-   then the determinant of the linear combination is bounded by `n! (s * y * x)^n`
+* `Matrix.det_le`: if the entries of an `n × n` matrix are bounded by `x`,
+  then the determinant is bounded by `n! x^n`
+* `Matrix.det_sum_le`: if we have `s` `n × n` matrices and the entries of each
+  matrix are bounded by `x`, then the determinant of their sum is bounded by `n! (s * x)^n`
+* `Matrix.det_sum_smul_le`: if we have `s` `n × n` matrices each multiplied by
+  a constant bounded by `y`, and the entries of each matrix are bounded by `x`,
+  then the determinant of the linear combination is bounded by `n! (s * y * x)^n`
 -/
 
 

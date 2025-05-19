@@ -98,7 +98,7 @@ General algebra:
 
   Algebras over a ring:
     associative algebra over a commutative ring: 'Algebra'
-    the category of algebras over a ring: 'AlgebraCat'
+    the category of algebras over a ring: 'AlgCat'
     free algebra of a commutative ring: 'FreeAlgebra'
     tensor product of algebras: 'Algebra.TensorProduct.instAlgebra'
     tensor algebra of a commutative ring: 'TensorAlgebra'
@@ -265,7 +265,7 @@ Analysis:
 
   Normed vector spaces/Banach spaces:
     normed vector space over a normed field: 'NormedSpace'
-    topology on a normed vector space: 'NormedSpace.isBoundedSMul'
+    topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
     finite dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
     Heine-Borel theorem (finite dimensional normed spaces are proper): 'FiniteDimensional.proper'
