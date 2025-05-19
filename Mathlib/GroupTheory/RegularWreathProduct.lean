@@ -16,7 +16,7 @@ product. The regular wreath product of `D` and `Q` is the product `(Q → D) × 
 
 ## Main definitions
 
-* `D ≀ᵣ Q` : The regular wreath product of groups `D` and `Q`.
+* `RegularWreathProduct D Q` : The regular wreath product of groups `D` and `Q`.
 * `rightHom` : The canonical projection `D ≀ᵣ Q →* Q`.
 * `inl` : The canonical map `Q →* D ≀ᵣ Q`.
 * `toPerm` : The homomorphism from `D ≀ᵣ Q` to `Equiv.Perm (Λ × Q)`, where `Λ` is a `D`-set.
