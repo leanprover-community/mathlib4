@@ -132,7 +132,7 @@ lemma exists_bound_of_invariant_of_isBigO {E : Type*} [SeminormedAddCommGroup E]
   · -- If `c ≠ 0`, then `1 ≤ c ^ 2`, so
     -- `(g • τ).im = τ.im / (c ^ 2 * τ.im ^ 2 +  ...) ≤ 1 / τ.im`.
     refine le_trans ?_ <| le_max_right _ _
-    rw [div_le_div_iff₀ (by exact τ.normSq_denom_pos g) τ.im_pos, one_mul,
+    rw [div_le_div_iff₀ (by exact normSq_denom_pos g τ.im_ne_zero) τ.im_pos, one_mul,
       Complex.normSq_apply]
     apply le_add_of_nonneg_of_le (mul_self_nonneg _)
     simp only [← sq, Complex.add_im, ← Complex.ofReal_intCast, Complex.ofReal_im,
