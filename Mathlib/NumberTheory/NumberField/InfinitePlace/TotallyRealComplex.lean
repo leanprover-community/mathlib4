@@ -53,16 +53,16 @@ theorem IsTotallyReal.ofRingEquiv [IsTotallyReal F] (f : F ≃+* K) : IsTotallyR
   isReal _ := (isReal_comap_iff f).mp <| IsTotallyReal.isReal _
 
 variable (F K) in
-theorem IsTotally.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal F where
+theorem IsTotallyReal.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal F where
   isReal w := by
     obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
     exact IsReal.comap _ (IsTotallyReal.isReal W)
 
 instance [IsTotallyReal K] (F : IntermediateField ℚ K) : IsTotallyReal F :=
-  IsTotally.of_algebra F K
+  IsTotallyReal.of_algebra F K
 
 instance [IsTotallyReal K] (F : Subfield K) : IsTotallyReal F :=
-  IsTotally.of_algebra F K
+  IsTotallyReal.of_algebra F K
 
 variable (K)
 
