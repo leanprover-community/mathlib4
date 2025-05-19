@@ -18,11 +18,12 @@ We also provide extra API for these maps in degrees 0, 1, 2.
 ## Main definitions
 
 * `groupCohomology.cochainsMap f φ` is the map `inhomogeneousCochains A ⟶ inhomogeneousCochains B`
-induced by a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`.
+  induced by a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`.
 * `groupCohomology.map f φ n` is the map `Hⁿ(H, A) ⟶ Hⁿ(G, B)` induced by a group
-homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`.
+  homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`.
 * `groupCohomology.H1InfRes A S` is the short complex `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)` for
-a normal subgroup `S ≤ G` and a `G`-representation `A`.
+  a normal subgroup `S ≤ G` and a `G`-representation `A`.
+
 -/
 
 universe v u
@@ -41,7 +42,7 @@ theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : (Action.res _ f₁)
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the chain map sending `x : Hⁿ → A` to `(g : Gⁿ) ↦ φ (x (f ∘ g))`. -/
-@[simps! (config := .lemmasOnly) f f_hom]
+@[simps! -isSimp f f_hom]
 noncomputable def cochainsMap :
     inhomogeneousCochains A ⟶ inhomogeneousCochains B where
   f i := ModuleCat.ofHom <|
@@ -128,17 +129,17 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H → A` to `(g : G) ↦ φ (x (f g))`. -/
-abbrev fOne : (H → A) →ₗ[k] (G → B) := φ.hom.hom.compLeft G ∘ₗ LinearMap.funLeft k A f
+noncomputable abbrev fOne : (H → A) →ₗ[k] (G → B) := φ.hom.hom.compLeft G ∘ₗ LinearMap.funLeft k A f
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H × H → A` to `(g₁, g₂ : G × G) ↦ φ (x (f g₁, f g₂))`. -/
-abbrev fTwo : (H × H → A) →ₗ[k] (G × G → B) :=
+noncomputable abbrev fTwo : (H × H → A) →ₗ[k] (G × G → B) :=
   φ.hom.hom.compLeft (G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f f)
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H × H × H → A` to
 `(g₁, g₂, g₃ : G × G × G) ↦ φ (x (f g₁, f g₂, f g₃))`. -/
-abbrev fThree : (H × H × H → A) →ₗ[k] (G × G × G → B) :=
+noncomputable abbrev fThree : (H × H × H → A) →ₗ[k] (G × G × G → B) :=
   φ.hom.hom.compLeft (G × G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f (Prod.map f f))
 
 @[reassoc]
@@ -179,7 +180,7 @@ open ShortComplex
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `Aᴴ ⟶ Bᴳ`. -/
-abbrev H0Map : H0 A ⟶ H0 B :=
+noncomputable abbrev H0Map : H0 A ⟶ H0 B :=
   ModuleCat.ofHom <| LinearMap.codRestrict _ (φ.hom.hom ∘ₗ A.ρ.invariants.subtype)
     fun ⟨c, hc⟩ g => by simpa [hc (f g)] using (hom_comm_apply φ g c).symm
 
@@ -224,7 +225,7 @@ theorem map_comp_isoH0_hom :
 this is the induced map from the short complex `A --dZero--> Fun(H, A) --dOne--> Fun(H × H, A)`
 to `B --dZero--> Fun(G, B) --dOne--> Fun(G × G, B)`. -/
 @[simps]
-def mapShortComplexH1 :
+noncomputable def mapShortComplexH1 :
     shortComplexH1 A ⟶ shortComplexH1 B where
   τ₁ := φ.hom
   τ₂ := ModuleCat.ofHom (fOne f φ)
@@ -407,7 +408,7 @@ this is the induced map from the short complex
 `Fun(H, A) --dOne--> Fun(H × H, A) --dTwo--> Fun(H × H × H, A)` to
 `Fun(G, B) --dOne--> Fun(G × G, B) --dTwo--> Fun(G × G × G, B)`. -/
 @[simps]
-def mapShortComplexH2 :
+noncomputable def mapShortComplexH2 :
     shortComplexH2 A ⟶ shortComplexH2 B where
   τ₁ := ModuleCat.ofHom (fOne f φ)
   τ₂ := ModuleCat.ofHom (fTwo f φ)

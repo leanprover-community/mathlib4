@@ -71,9 +71,12 @@ def UniformIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ�
 
 namespace UniformIntegrable
 
-protected theorem aeStronglyMeasurable {f : ι → α → β} {p : ℝ≥0∞} (hf : UniformIntegrable f p μ)
+protected theorem aestronglyMeasurable {f : ι → α → β} {p : ℝ≥0∞} (hf : UniformIntegrable f p μ)
     (i : ι) : AEStronglyMeasurable (f i) μ :=
   hf.1 i
+
+@[deprecated (since := "2025-04-09")]
+alias aeStronglyMeasurable := UniformIntegrable.aestronglyMeasurable
 
 protected theorem unifIntegrable {f : ι → α → β} {p : ℝ≥0∞} (hf : UniformIntegrable f p μ) :
     UnifIntegrable f p μ :=
@@ -258,7 +261,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
         · exact (ENNReal.add_lt_top.2 ⟨hbdd, ENNReal.one_lt_top⟩).ne
       rw [← nonpos_iff_eq_zero]
       refine (measure_mono this).trans ?_
-      have hle := coe_nnnorm_ae_le_eLpNormEssSup f μ
+      have hle := enorm_ae_le_eLpNormEssSup f μ
       simp_rw [ae_iff, not_le] at hle
       exact nonpos_iff_eq_zero.2 hle
     rw [this, eLpNormEssSup_measure_zero]
@@ -774,7 +777,7 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
     eLpNorm (f i) p μ ≤
         eLpNorm ({ x : α | ‖f i x‖₊ < C }.indicator (f i)) p μ +
           eLpNorm ({ x : α | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ := by
-      refine le_trans (eLpNorm_mono fun x => ?_) (eLpNorm_add_le
+      refine le_trans (eLpNorm_mono_enorm fun x => ?_) (eLpNorm_add_le
         (StronglyMeasurable.aestronglyMeasurable
           ((hf i).indicator ((hf i).nnnorm.measurableSet_lt stronglyMeasurable_const)))
         (StronglyMeasurable.aestronglyMeasurable

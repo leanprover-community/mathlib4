@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Cardinals that are suitable for the small object argument
@@ -159,8 +159,7 @@ lemma succStruct_prop_le_propArrow :
   constructor
   · nth_rw 1 [← I.ofHoms_homFamily]
     apply pushouts_mk _ (functorObj_isPushout I.homFamily (F.obj f).hom)
-    exact coproducts_of_small _ _
-      (colimitsOfShape_colimMap _ _ (by rintro ⟨j⟩; constructor))
+    exact coproducts_of_small _ _ (colimitsOfShape_colimMap _ (by rintro ⟨j⟩; constructor))
   · rw [MorphismProperty.isomorphisms.iff]
     dsimp [succStruct]
     infer_instance

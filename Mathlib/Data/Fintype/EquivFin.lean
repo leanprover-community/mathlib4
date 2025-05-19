@@ -157,14 +157,11 @@ end Fintype
 In this section we prove that `α : Type*` is `Finite` if and only if `Fintype α` is nonempty.
 -/
 
-
--- @[nolint fintype_finite] -- Porting note: do we need this
 protected theorem Fintype.finite {α : Type*} (_inst : Fintype α) : Finite α :=
   ⟨Fintype.equivFin α⟩
 
 /-- For efficiency reasons, we want `Finite` instances to have higher
 priority than ones coming from `Fintype` instances. -/
--- @[nolint fintype_finite] -- Porting note: do we need this
 instance (priority := 900) Finite.of_fintype (α : Type*) [Fintype α] : Finite α :=
   Fintype.finite ‹_›
 
@@ -185,7 +182,6 @@ instance (priority := 100) Finite.of_subsingleton {α : Sort*} [Subsingleton α]
   Finite.of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
 
 -- Higher priority for `Prop`s
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed @[nolint instance_priority], linter not ported yet
 instance prop (p : Prop) : Finite p :=
   Finite.of_subsingleton
 
@@ -401,7 +397,6 @@ theorem card_lt_of_surjective_not_injective [Fintype α] [Fintype β] (f : α �
 
 end Fintype
 
--- @[nolint fintype_finite] -- Porting note: do we need this?
 protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=
   not_finite α
 
@@ -424,17 +419,6 @@ noncomputable def fintypeOrInfinite (α : Type*) : Fintype α ⊕' Infinite α :
   if h : Infinite α then PSum.inr h else PSum.inl (fintypeOfNotInfinite h)
 
 end
-
-theorem Finset.exists_minimal {α : Type*} [Preorder α] (s : Finset α) (h : s.Nonempty) :
-    ∃ m ∈ s, ∀ x ∈ s, ¬x < m := by
-  obtain ⟨c, hcs : c ∈ s⟩ := h
-  have : WellFounded (@LT.lt { x // x ∈ s } _) := Finite.wellFounded_of_trans_of_irrefl _
-  obtain ⟨⟨m, hms : m ∈ s⟩, -, H⟩ := this.has_min Set.univ ⟨⟨c, hcs⟩, trivial⟩
-  exact ⟨m, hms, fun x hx hxm => H ⟨x, hx⟩ trivial hxm⟩
-
-theorem Finset.exists_maximal {α : Type*} [Preorder α] (s : Finset α) (h : s.Nonempty) :
-    ∃ m ∈ s, ∀ x ∈ s, ¬m < x :=
-  @Finset.exists_minimal αᵒᵈ _ s h
 
 namespace Infinite
 

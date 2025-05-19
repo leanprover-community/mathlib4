@@ -180,7 +180,7 @@ protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set 
   refine (((someContDiffBumpBase E).smooth.contDiffAt ?_).of_le
     (mod_cast le_top)).comp_contDiffWithinAt x ?_
   · exact prod_mem_nhds (Ioi_mem_nhds (f x).one_lt_rOut_div_rIn) univ_mem
-  · exact (hR.div hr (f x).rIn_pos.ne').prod ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
+  · exact (hR.div hr (f x).rIn_pos.ne').prodMk ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
 
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
 protected nonrec theorem _root_.ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}

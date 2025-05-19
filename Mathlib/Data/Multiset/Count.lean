@@ -47,11 +47,11 @@ variable {p}
 
 @[simp]
 theorem countP_cons_of_pos {a : α} (s) : p a → countP p (a ::ₘ s) = countP p s + 1 :=
-  Quot.inductionOn s <| by simpa using List.countP_cons_of_pos (p ·)
+  Quot.inductionOn s <| by simpa using fun _ => List.countP_cons_of_pos (p := (p ·))
 
 @[simp]
 theorem countP_cons_of_neg {a : α} (s) : ¬p a → countP p (a ::ₘ s) = countP p s :=
-  Quot.inductionOn s <| by simpa using List.countP_cons_of_neg (p ·)
+  Quot.inductionOn s <| by simpa using fun _ => List.countP_cons_of_neg (p := (p ·))
 
 variable (p)
 
@@ -59,14 +59,14 @@ theorem countP_cons (b : α) (s) : countP p (b ::ₘ s) = countP p s + if p b th
   Quot.inductionOn s <| by simp [List.countP_cons]
 
 theorem countP_le_card (s) : countP p s ≤ card s :=
-  Quot.inductionOn s fun _l => countP_le_length (p ·)
+  Quot.inductionOn s fun _l => countP_le_length (p := (p ·))
 
 theorem card_eq_countP_add_countP (s) : card s = countP p s + countP (fun x => ¬p x) s :=
   Quot.inductionOn s fun l => by simp [l.length_eq_countP_add_countP p]
 
 @[gcongr]
 theorem countP_le_of_le {s t} (h : s ≤ t) : countP p s ≤ countP p t :=
-  leInductionOn h (fun s => s.countP_le _)
+  leInductionOn h fun s => s.countP_le
 
 @[simp]
 theorem countP_True {s : Multiset α} : countP (fun _ => True) s = card s :=
@@ -76,16 +76,9 @@ theorem countP_True {s : Multiset α} : countP (fun _ => True) s = card s :=
 theorem countP_False {s : Multiset α} : countP (fun _ => False) s = 0 :=
   Quot.inductionOn s fun _l => congrFun List.countP_false _
 
--- Porting note: `Lean.Internal.coeM` forces us to type-ascript `{a // a ∈ s}`
 lemma countP_attach (s : Multiset α) : s.attach.countP (fun a : {a // a ∈ s} ↦ p a) = s.countP p :=
   Quotient.inductionOn s fun l => by
-    simp only [quot_mk_to_coe, coe_countP]
-    -- Porting note: was
-    -- rw [quot_mk_to_coe, coe_attach, coe_countP]
-    -- exact List.countP_attach _ _
-    rw [coe_attach]
-    refine (coe_countP _ _).trans ?_
-    convert List.countP_attach _ _
+    simp only [quot_mk_to_coe, coe_countP, coe_attach, coe_countP, ← List.countP_attach (l := l)]
     rfl
 
 variable {p}
@@ -208,9 +201,10 @@ variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
 theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
     [DecidablePred (r x)] (h : Rel r s t) : countP (r x) s = countP (r x) t := by
-  induction' s using Multiset.induction_on with y s ih generalizing t
-  · rw [rel_zero_left.mp h]
-  · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
+  induction s using Multiset.induction_on generalizing t with
+  | empty => rw [rel_zero_left.mp h]
+  | cons y s ih =>
+    obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
     simp only [decide_eq_true_eq, Nat.add_right_inj]
     exact (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)

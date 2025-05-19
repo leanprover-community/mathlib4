@@ -118,13 +118,13 @@ theorem image_swap_product [DecidableEq (α × β)] (s : Finset α) (t : Finset 
 theorem product_eq_biUnion [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ˢ t = s.biUnion fun a => t.image fun b => (a, b) :=
   ext fun ⟨x, y⟩ => by
-    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
+    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk_inj, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 
 theorem product_eq_biUnion_right [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ˢ t = t.biUnion fun b => s.image fun a => (a, b) :=
   ext fun ⟨x, y⟩ => by
-    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
+    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk_inj, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 
 /-- See also `Finset.sup_product_left`. -/
@@ -207,12 +207,12 @@ theorem product_eq_empty {s : Finset α} {t : Finset β} : s ×ˢ t = ∅ ↔ s 
 
 @[simp]
 theorem singleton_product {a : α} :
-    ({a} : Finset α) ×ˢ t = t.map ⟨Prod.mk a, Prod.mk.inj_left _⟩ := by
+    ({a} : Finset α) ×ˢ t = t.map ⟨Prod.mk a, Prod.mk_right_injective _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
 @[simp]
-theorem product_singleton {b : β} : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk.inj_right _⟩ := by
+lemma product_singleton : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk_left_injective _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
@@ -377,10 +377,8 @@ theorem offDiag_insert (has : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a
   rw [insert_eq, union_comm, offDiag_union (disjoint_singleton_right.2 has), offDiag_singleton,
     union_empty, union_right_comm]
 
-theorem offDiag_filter_lt_eq_filter_le {ι}
-    [PartialOrder ι] [DecidableEq ι]
-    [DecidableRel (LE.le (α := ι))] [DecidableRel (LT.lt (α := ι))]
-    (s : Finset ι) :
+theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι]
+    [DecidableEq ι] [DecidableLE ι] [DecidableLT ι] (s : Finset ι) :
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   rw [Finset.filter_inj']
   rintro ⟨i, j⟩

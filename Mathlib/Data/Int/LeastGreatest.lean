@@ -3,7 +3,8 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Find
 import Mathlib.Order.Bounds.Defs
 
@@ -64,12 +65,12 @@ then this set has the least element. This lemma uses classical logic to avoid as
 `[DecidablePred P]`. See `Int.leastOfBdd` for a constructive counterpart. -/
 theorem exists_least_of_bdd
     {P : ℤ → Prop}
-    (Hbdd : ∃ b : ℤ , ∀ z : ℤ , P z → b ≤ z)
-    (Hinh : ∃ z : ℤ , P z) : ∃ lb : ℤ , P lb ∧ ∀ z : ℤ , P z → lb ≤ z := by
+    (Hbdd : ∃ b : ℤ, ∀ z : ℤ, P z → b ≤ z)
+    (Hinh : ∃ z : ℤ, P z) : ∃ lb : ℤ, P lb ∧ ∀ z : ℤ, P z → lb ≤ z := by
   classical
-  let ⟨b , Hb⟩ := Hbdd
-  let ⟨lb , H⟩ := leastOfBdd b Hb Hinh
-  exact ⟨lb , H⟩
+  let ⟨b, Hb⟩ := Hbdd
+  let ⟨lb, H⟩ := leastOfBdd b Hb Hinh
+  exact ⟨lb, H⟩
 
 theorem coe_leastOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb : ∀ z : ℤ, P z → b ≤ z)
     (Hb' : ∀ z : ℤ, P z → b' ≤ z) (Hinh : ∃ z : ℤ, P z) :
@@ -103,8 +104,8 @@ then this set has the greatest element. This lemma uses classical logic to avoid
 `[DecidablePred P]`. See `Int.greatestOfBdd` for a constructive counterpart. -/
 theorem exists_greatest_of_bdd
     {P : ℤ → Prop}
-    (Hbdd : ∃ b : ℤ , ∀ z : ℤ , P z → z ≤ b)
-    (Hinh : ∃ z : ℤ , P z) : ∃ ub : ℤ , P ub ∧ ∀ z : ℤ , P z → z ≤ ub := by
+    (Hbdd : ∃ b : ℤ, ∀ z : ℤ, P z → z ≤ b)
+    (Hinh : ∃ z : ℤ, P z) : ∃ ub : ℤ, P ub ∧ ∀ z : ℤ, P z → z ≤ ub := by
   classical
   let ⟨b, Hb⟩ := Hbdd
   let ⟨lb, H⟩ := greatestOfBdd b Hb Hinh
