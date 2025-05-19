@@ -67,19 +67,8 @@ lemma absNorm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
 
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
 valuation -/
-noncomputable def adicAbv : AbsoluteValue K ℝ where
-  toFun x := toNNReal (absNorm_ne_zero v) (v.valuation K x)
-  map_mul' _ _ := by simp only [map_mul, NNReal.coe_mul]
-  nonneg' _ := NNReal.zero_le_coe
-  eq_zero' _ := by simp only [NNReal.coe_eq_zero, map_eq_zero]
-  add_le' x y := by
-    -- the triangle inequality is implied by the ultrametric one
-    apply le_trans _ <| max_le_add_of_nonneg
-      (zero_le ((toNNReal (absNorm_ne_zero v)) (v.valuation _ x)))
-      (zero_le ((toNNReal (absNorm_ne_zero v)) (v.valuation K y)))
-    have h_mono := (toNNReal_strictMono (one_lt_absNorm_nnreal v)).monotone
-    rw [← h_mono.map_max] --max goes inside withZeroMultIntToNNReal
-    exact h_mono ((v.valuation _).map_add x y)
+noncomputable def adicAbv : AbsoluteValue K ℝ := IsDedekindDomain.HeightOneSpectrum.adicAbv v
+    <| one_lt_absNorm_nnreal v
 
 @[deprecated (since := "2025-02-28")] alias vadicAbv := adicAbv
 

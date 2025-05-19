@@ -3,6 +3,8 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+import Mathlib.Data.Int.WithZero
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.Topology.Algebra.Valued.ValuedField
@@ -570,5 +572,37 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       ← Int.eq_natAbs_of_nonneg ha.le, smul_eq_mul]
     -- and now it's easy
     omega
+
+section AbsoluteValue
+
+open WithZeroMulInt
+
+variable {R K} in
+/-- The `v`-adic absolute value function on `K` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def adicAbvDef (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :=
+  fun x ↦ toNNReal (ne_zero_of_lt hb) (v.valuation K x)
+
+variable {R K} in
+lemma isNonanchimedean_adicAbvDef {b : NNReal} (hb : 1 < b) :
+    IsNonarchimedean (α := K) (fun x ↦ v.adicAbvDef hb x) := by
+  intro x y
+  simp only [adicAbvDef]
+  have h_mono := (toNNReal_strictMono hb).monotone
+  rw [← h_mono.map_max]
+  exact h_mono ((v.valuation _).map_add x y)
+
+variable {R K} in
+/-- The `v`-adic absolute value on `K` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) : AbsoluteValue K ℝ where
+  toFun x := v.adicAbvDef hb x
+  map_mul' _ _ := by simp [adicAbvDef]
+  nonneg' _ := NNReal.zero_le_coe
+  eq_zero' _ := by simp [adicAbvDef]
+  add_le' _ _ := (isNonanchimedean_adicAbvDef v hb).add_le
+    (fun x ↦ zero_le ((toNNReal (ne_zero_of_lt hb)) (v.valuation K x)))
+
+end AbsoluteValue
 
 end IsDedekindDomain.HeightOneSpectrum
