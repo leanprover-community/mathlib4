@@ -3,13 +3,9 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
-import Mathlib.Analysis.Meromorphic.FactorizedRational
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 # Integration of specific interval integrals
@@ -228,6 +224,49 @@ theorem intervalIntegrable_cos : IntervalIntegrable cos μ a b :=
 @[simp]
 theorem intervalIntegrable_exp : IntervalIntegrable exp μ a b :=
   continuous_exp.intervalIntegrable a b
+@[simp]
+theorem _root_.IntervalIntegrable.log (hf : ContinuousOn f [[a, b]])
+    (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0) :
+    IntervalIntegrable (fun x => log (f x)) μ a b :=
+  (ContinuousOn.log hf h).intervalIntegrable
+
+/--
+The real logarithm is interval integrable (with respect to every locally finite measure) over every
+interval that does not contain zero. See `intervalIntegrable_log'` for a version without any
+hypothesis on the interval, but assuming the measure is the volume.
+-/
+@[simp]
+theorem intervalIntegrable_log (h : (0 : ℝ) ∉ [[a, b]]) : IntervalIntegrable log μ a b :=
+  IntervalIntegrable.log continuousOn_id fun _ hx => ne_of_mem_of_not_mem hx h
+
+/--
+The real logarithm is interval integrable (with respect to the volume measure) on every interval.
+See `intervalIntegrable_log` for a version applying to any locally finite measure, but with an
+additional hypothesis on the interval.
+-/
+@[simp]
+theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
+  -- Log is even, so it suffices to consider the case 0 < a and b = 0
+  apply intervalIntegrable_of_even (log_neg_eq_log · |>.symm)
+  intro x hx
+  -- Split integral
+  apply IntervalIntegrable.trans (b := 1)
+  · -- Show integrability on [0…1] using non-negativity of the derivative
+    rw [← neg_neg log]
+    apply IntervalIntegrable.neg
+    apply intervalIntegrable_deriv_of_nonneg (g := fun x ↦ -(x * log x - x))
+    · exact (continuous_mul_log.continuousOn.sub continuous_id.continuousOn).neg
+    · intro s ⟨hs, _⟩
+      norm_num at *
+      simpa using (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
+    · intro s ⟨hs₁, hs₂⟩
+      norm_num at *
+      exact (log_nonpos_iff hs₁.le).mpr hs₂.le
+  · -- Show integrability on [1…t] by continuity
+    apply ContinuousOn.intervalIntegrable
+    apply Real.continuousOn_log.mono
+    apply Set.not_mem_uIcc_of_lt zero_lt_one at hx
+    simpa
 
 theorem intervalIntegrable_one_div_one_add_sq :
     IntervalIntegrable (fun x : ℝ => 1 / (↑1 + x ^ 2)) μ a b := by

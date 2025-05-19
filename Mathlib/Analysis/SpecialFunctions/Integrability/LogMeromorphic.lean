@@ -4,75 +4,39 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
 import Mathlib.Analysis.Meromorphic.FactorizedRational
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+import Mathlib.Analysis.NormedSpace.Connected
+import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.Analysis.SpecialFunctions.NonIntegrable
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.MeasureTheory.Integral.CircleIntegral
 
-open Real Set Finset
+/-!
+# Integrability for Logarithms of Meromorphic Functions
 
-open scoped Real Interval
+We establish integrability for functions of `log ‖meromorphic‖`. In the real setting, these
+functions are interval integrable over every interval of the real line. This implies in particular
+that logarithms of trigonometric functions are interval integrable. In the complex setting, the
+functions are circle integrable over every circle in the complex plane.
+-/
 
-variable {a b : ℝ} (n : ℕ)
+open Filter Interval MeasureTheory MeromorphicOn Metric Real
+
+/-!
+## Interval Integrability for Logarithms of Real Meromorphic Functions
+-/
 
 namespace intervalIntegral
 
-open MeasureTheory
-
-variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
-
-@[simp]
-theorem _root_.IntervalIntegrable.log (hf : ContinuousOn f [[a, b]])
-    (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0) :
-    IntervalIntegrable (fun x => log (f x)) μ a b :=
-  (ContinuousOn.log hf h).intervalIntegrable
-
-/--
-See `intervalIntegrable_log'` for a version without any hypothesis on the interval, but assuming the
-measure is the volume.
--/
-@[simp]
-theorem intervalIntegrable_log (h : (0 : ℝ) ∉ [[a, b]]) : IntervalIntegrable log μ a b :=
-  IntervalIntegrable.log continuousOn_id fun _ hx => ne_of_mem_of_not_mem hx h
-
-/--
-The real logarithm is interval integrable (with respect to the volume measure) on every interval.
-See `intervalIntegrable_log` for a version applying to any locally finite measure, but with an
-additional hypothesis on the interval.
--/
-@[simp]
-theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
-  -- Log is even, so it suffices to consider the case 0 < a and b = 0
-  apply intervalIntegrable_of_even (log_neg_eq_log · |>.symm)
-  intro x hx
-  -- Split integral
-  apply IntervalIntegrable.trans (b := 1)
-  · -- Show integrability on [0…1] using non-negativity of the derivative
-    rw [← neg_neg log]
-    apply IntervalIntegrable.neg
-    apply intervalIntegrable_deriv_of_nonneg (g := fun x ↦ -(x * log x - x))
-    · exact (continuous_mul_log.continuousOn.sub continuous_id.continuousOn).neg
-    · intro s ⟨hs, _⟩
-      norm_num at *
-      simpa using (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
-    · intro s ⟨hs₁, hs₂⟩
-      norm_num at *
-      exact (log_nonpos_iff hs₁.le).mpr hs₂.le
-  · -- Show integrability on [1…t] by continuity
-    apply ContinuousOn.intervalIntegrable
-    apply Real.continuousOn_log.mono
-    apply Set.not_mem_uIcc_of_lt zero_lt_one at hx
-    simpa
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {f : ℝ → E} {a b : ℝ}
 
 /--
 If `f` is real-meromorphic on a compact interval, then `log ‖f ·‖` is interval integrable on this
 interval.
 -/
 @[simp]
-theorem intervalIntegrable_log_norm_meromorphicOn {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] {f : ℝ → E} (hf : MeromorphicOn f [[a, b]]) :
+theorem intervalIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]) :
     IntervalIntegrable (log ‖f ·‖) volume a b := by
   by_cases t₀ : ∀ u : [[a, b]], (hf u u.2).order ≠ ⊤
   · obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.extract_zeros_poles t₀
@@ -109,8 +73,7 @@ If `f` is real-meromorphic on a compact interval, then `log ‖f⁺ ·‖` is in
 interval.
 -/
 @[simp]
-theorem intervalIntegrable_posLog_norm_meromorphicOn {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] {f : ℝ → E} (hf : MeromorphicOn f [[a, b]]) :
+theorem intervalIntegrable_posLog_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]) :
     IntervalIntegrable (log⁺ ‖f ·‖) volume a b := by
   simp_rw [← half_mul_log_add_log_abs, mul_add]
   apply IntervalIntegrable.add
@@ -128,41 +91,32 @@ theorem _root_.MeromorphicOn.intervalIntegrable_log {f : ℝ → ℝ}
   rw [(by aesop : log ∘ f = (log ‖f ·‖))]
   exact intervalIntegrable_log_norm_meromorphicOn hf
 
-@[simp]
-theorem intervalIntegrable_sin : IntervalIntegrable sin μ a b :=
-  continuous_sin.intervalIntegrable a b
-
-@[simp]
-theorem intervalIntegrable_cos : IntervalIntegrable cos μ a b :=
-  continuous_cos.intervalIntegrable a b
-
 /--
-The function `log ∘ sin` is interval integrable over every interval.
+Special case of `MeromorphicOn.intervalIntegrable_log`: The function `log ∘ sin` is interval
+integrable over every interval.
 -/
 @[simp]
-theorem intervalIntegrable_log_sin {a b : ℝ} :
-    IntervalIntegrable (log ∘ sin) volume a b := by
+theorem intervalIntegrable_log_sin : IntervalIntegrable (log ∘ sin) volume a b := by
   apply MeromorphicOn.intervalIntegrable_log
   apply AnalyticOnNhd.meromorphicOn
   apply analyticOnNhd_sin.mono
   tauto
 
-/-!
-# Circle Integrability Properties of Meromorphic Functions
+end intervalIntegral
 
-If `f` is meromorphic on the complex plane, we show that the function `log ‖f ·‖` and `log⁺ ‖f ·‖`
-are circle integrable.
+/-!
+## Circle Integrability for Logarithms of Complex Meromorphic Functions
 -/
+
+namespace circleIntegral
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
   {c : ℂ} {R : ℝ} {f : ℂ → E}
 
-open Filter MeromorphicOn Metric Real
-
 /--
-If `f` is meromorphic on a circle in the complex plane, then `log ‖f ·‖` is circle integrable over
-that circle.
+If `f` is complex meromorphic on a circle in the complex plane, then `log ‖f ·‖` is circle
+integrable over that circle.
 -/
 @[simp]
 theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c |R|)) :
@@ -202,8 +156,8 @@ theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c 
     apply CircleIntegrable.congr_codiscreteWithin this.symm (circleIntegrable_const 0 c R)
 
 /--
-If `f` is meromorphic on a circle in the complex plane, then `log⁺ ‖f ·‖` is circle integrable over
-that circle.
+If `f` is complex meromorphic on a circle in the complex plane, then `log⁺ ‖f ·‖` is circle
+integrable over that circle.
 -/
 @[simp]
 theorem circleIntegrable_posLog_norm_meromorphicOn (hf : MeromorphicOn f (sphere c |R|)) :
@@ -213,3 +167,5 @@ theorem circleIntegrable_posLog_norm_meromorphicOn (hf : MeromorphicOn f (sphere
   · apply (circleIntegrable_log_norm_meromorphicOn hf).const_mul
   · apply IntervalIntegrable.const_mul
     apply (circleIntegrable_log_norm_meromorphicOn hf).abs
+
+end circleIntegral
