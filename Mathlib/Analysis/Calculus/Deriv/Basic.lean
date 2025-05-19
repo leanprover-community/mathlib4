@@ -835,3 +835,44 @@ theorem norm_deriv_le_of_lipschitz {f : 𝕜 → F} {x₀ : 𝕜}
   simpa [norm_deriv_eq_norm_fderiv] using norm_fderiv_le_of_lipschitz 𝕜 hlip
 
 end MeanValue
+
+section Semilinear
+
+variable {σ σ' : RingHom 𝕜 𝕜} [RingHomIsometric σ] [RingHomInvPair σ σ']
+  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] (L : F →SL[σ] F')
+
+variable (σ')
+
+/-- If `L` is a `σ`-semilinear map, and `f` has Fréchet derivative `f'` at `x`, then `L ∘ f ∘ σ⁻¹`
+has Fréchet derivative `L ∘ f'` at `σ x`. -/
+lemma HasDerivAt.comp_semilinear (hf : HasDerivAt f f' x) :
+    HasDerivAt (L ∘ f ∘ σ') (L f') (σ x) := by
+  have : RingHomIsometric σ' := .inv σ
+  let R : 𝕜 →SL[σ'] 𝕜 := ⟨σ'.toSemilinearMap, σ'.isometry.continuous⟩
+  have hR (k : 𝕜) : R k = σ' k := rfl
+  rw [hasDerivAt_iff_hasFDerivAt]
+  convert HasFDerivAt.comp_semilinear L R (f' := (1 : 𝕜 →L[𝕜] 𝕜).smulRight f') ?_
+  · ext
+    simp [R]
+  · rwa [← hasDerivAt_iff_hasFDerivAt, hR, RingHomInvPair.comp_apply_eq]
+
+/-- If `f` is differentiable at `x`, and `L` is `σ`-semilinear, then `L ∘ f ∘ σ⁻¹` is
+differentiable at `σ x`. -/
+lemma DifferentiableAt.comp_semilinear₁ (hf : DifferentiableAt 𝕜 f x) :
+    DifferentiableAt 𝕜 (L ∘ f ∘ σ') (σ x) :=
+  (hf.hasDerivAt.comp_semilinear σ' L).differentiableAt
+
+variable (σ) {f : 𝕜 → 𝕜} {f' : 𝕜}
+
+/-- If `f` has derivative `f'` at `x`, and `σ, σ'` are mutually inverse normed-ring automorphisms,
+then `σ ∘ f ∘ σ'` has derivative `σ f'` at `σ x`. -/
+lemma HasDerivAt.comp_ringHom (hf : HasDerivAt f f' x) : HasDerivAt (σ ∘ f ∘ σ') (σ  f') (σ x) :=
+  hf.comp_semilinear σ' ⟨σ.toSemilinearMap, σ.isometry.continuous⟩
+
+/-- If `f` is differentiable at `x`, and `L` is `σ`-semilinear, then `L ∘ f ∘ σ⁻¹` is
+differentiable at `σ x`. -/
+lemma DifferentiableAt.comp_ringHom (hf : DifferentiableAt 𝕜 f x) :
+    DifferentiableAt 𝕜 (σ ∘ f ∘ σ') (σ x) :=
+  (hf.hasDerivAt.comp_ringHom σ σ').differentiableAt
+
+end Semilinear
