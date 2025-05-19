@@ -38,16 +38,6 @@ theorem norm_natCast_eq_abs_mul_norm_one (α) [SeminormedRing α] [NormSMulClass
     ‖(n : α)‖ = n * ‖(1 : α)‖ := by
   simpa using norm_intCast_eq_abs_mul_norm_one α n
 
-@[simp]
-theorem norm_intCast (α) [SeminormedRing α] [NormOneClass α] [NormSMulClass ℤ α] (n : ℤ) :
-    ‖(n : α)‖ = |n| := by
-  simp [norm_intCast_eq_abs_mul_norm_one]
-
-@[simp]
-theorem norm_natCast (α) [SeminormedRing α] [NormOneClass α] [NormSMulClass ℤ α] (n : ℕ) :
-    ‖(n : α)‖ = n := by
-  simp [norm_natCast_eq_abs_mul_norm_one]
-
 theorem tendsto_natCast_atTop_cobounded
     [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
     Tendsto Nat.cast atTop (Bornology.cobounded α) := by
