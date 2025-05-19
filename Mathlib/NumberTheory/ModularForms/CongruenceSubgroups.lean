@@ -3,7 +3,7 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.Matrix.Integer
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
@@ -313,7 +313,7 @@ theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   obtain ⟨z, hz, hz'⟩ := h x hx
   use z, hz
   simpa only [Subtype.ext_iff, Units.ext_iff, map_mul] using
-    congr_arg (GeneralLinearGroup.map (algebraMap ℚ ℝ)) hz'
+    congr_arg (GeneralLinearGroup.map (Rat.castHom ℝ)) hz'
 
 open Subgroup in
 /-- If `Γ` has finite index in `SL(2, ℤ)`, then so does `g⁻¹ Γ g ∩ SL(2, ℤ)` for any
