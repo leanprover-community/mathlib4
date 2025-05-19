@@ -10,14 +10,31 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # Elliptic divisibility sequences
 
-This file defines the type of an elliptic divisibility sequence (EDS) and a few examples.
+This file defines the types of elliptic nets and elliptic divisibility sequences, as well as the
+canonical example of a normalised elliptic divisibility sequence.
 
 ## Mathematical background
 
-Let `R` be a commutative ring. An elliptic sequence is a sequence `W : ℤ → R` satisfying
-`W(m + n)W(m - n)W(r)² = W(m + r)W(m - r)W(n)² - W(n + r)W(n - r)W(m)²` for any `m, n, r ∈ ℤ`.
-A divisibility sequence is a sequence `W : ℤ → R` satisfying `W(m) ∣ W(n)` for any `m, n ∈ ℤ` such
-that `m ∣ n`. An elliptic divisibility sequence is simply a divisibility sequence that is elliptic.
+Let `R` be a commutative ring, and let `W` be a sequence of elements in `R` indexed by `ℤ`. The
+*elliptic relator* `ER(m, n, r, s) ∈ R` associated to `W` is given for all `m, n, r, s ∈ ℤ` by
+`ER(m, n, r, s) := W(m+n+s)W(m-n)W(r+s)W(r) - W(m+r+s)W(m-r)W(n+s)W(n) + W(n+r+s)W(n-r)W(m+s)W(m)`.
+Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(m, n, r, s) = 0` for any
+`m, n, r, s ∈ ℤ`. By a cyclic permutation of variables, `ER(m, n, r, s) = 0` is essentially
+equivalent to the symmetric relation `ERₐ(m, n, r, s) = 0`, where `ERₐ(m, n, r, s) ∈ R` is given for
+all `m, n, r, s ∈ ℤ` by `ERₐ(m, n, r, s) := Wₐ(m, n)Wₐ(r, s) - Wₐ(m, r)Wₐ(n, s) + Wₐ(m, s)Wₐ(n, r)`
+defined in terms of *elliptic atoms* `Wₐ(m, n) := W((m + n) / 2)W((m - n) / 2)` for all `m, n ∈ ℤ`.
+
+As a special case, `W` is an *elliptic sequence* if it satisfies `ER(m, n, r, 0) = 0` for any
+`m, n, r ∈ ℤ`, a *divisibility sequence* if it satisfies `W(k) ∣ W(nk)` for any `k, n ∈ ℤ`, and an
+*elliptic divisibility sequence* (EDS) if it is a divisibility sequence that is elliptic. If `W` is
+an EDS, then `x • W` is also an EDS for any `x ∈ R`. It turns out that any EDS `W` can be normalised
+such that `W(1) = 1`, in which case it can be characterised completely by
+* the *even relations* `ER(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+  `W(2m) = W(m - 1)²W(m)W(m + 2) - W(m - 2)W(m)W(m + 1)²` for all `m ∈ ℤ`, and
+* the *odd relations* `ER(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+  `W(2m + 1) = W(m + 2)W(m)³ - W(m - 1)W(m + 1)³` for all `m ∈ ℤ`,
+with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = db` for some
+`b, c, d ∈ ℤ`. This will be called the *canonical example of a normalised EDS* in this file.
 
 Some examples of EDSs include
 * the identity sequence,
@@ -26,9 +43,13 @@ Some examples of EDSs include
 
 ## Main definitions
 
-* `IsEllSequence`: a sequence indexed by integers is an elliptic sequence.
-* `IsDivSequence`: a sequence indexed by integers is a divisibility sequence.
-* `IsEllDivSequence`: a sequence indexed by integers is an EDS.
+* `ellRel`: the elliptic relator `ER(m, n, r, s)` indexed by `ℤ`.
+* `ellAtom`: the elliptic atom `Wₐ(m, n)` indexed by `ℤ`.
+* `ellAtomRel`: the relator `ERₐ(m, n, r, s)` indexed by `ℤ`.
+* `IsEllNet`: a sequence indexed by `ℤ` is an elliptic net.
+* `IsEllSequence`: a sequence indexed by `ℤ` is an elliptic sequence.
+* `IsDivSequence`: a sequence indexed by `ℤ` is a divisibility sequence.
+* `IsEllDivSequence`: a sequence indexed by `ℤ` is an EDS.
 * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
 * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
 * `normEDS`: the canonical example of a normalised EDS indexed by `ℤ`.
@@ -36,9 +57,13 @@ Some examples of EDSs include
 ## Main statements
 
 * TODO: prove that `normEDS` satisfies `IsEllDivSequence`.
-* TODO: prove that a normalised sequence satisfying `IsEllDivSequence` can be given by `normEDS`.
+* TODO: prove that a sequence satisfying `IsEllDivSequence` can be normalised to give `normEDS`.
 
 ## Implementation notes
+
+The elliptic relator is identical to the elliptic net recurrence defined by Stange, except that the
+final term in the latter is negated. This unifies the definitions of Stange's elliptic nets and
+Ward's elliptic sequences without requiring the sequence to be an odd function.
 
 The normalised EDS `normEDS b c d n` is defined in terms of the auxiliary sequence
 `preNormEDS (b ^ 4) c d n`, which are equal when `n` is odd, and which differ by a factor of `b`
@@ -55,11 +80,12 @@ polynomials of elliptic curves, omitting a factor of the bivariate `2`-division 
 
 ## References
 
-M Ward, *Memoir on Elliptic Divisibility Sequences*
+* M Ward, *Memoir on Elliptic Divisibility Sequences*
+* K Stange, *Elliptic Nets and Elliptic Curves*
 
 ## Tags
 
-elliptic, divisibility, sequence
+elliptic net, elliptic divisibility sequence
 -/
 
 universe u v
@@ -70,21 +96,76 @@ section IsEllDivSequence
 
 variable (W : ℤ → R)
 
-/-- The proposition that a sequence indexed by integers is an elliptic sequence. -/
-def IsEllSequence : Prop :=
-  ∀ m n r : ℤ, W (m + n) * W (m - n) * W r ^ 2 =
-    W (m + r) * W (m - r) * W n ^ 2 - W (n + r) * W (n - r) * W m ^ 2
+/-- The elliptic relator `ER(m, n, r, s)` that defines an elliptic net. -/
+def ellRel (m n r s : ℤ) : R :=
+  W (m + n + s) * W (m - n) * W (r + s) * W r - W (m + r + s) * W (m - r) * W (n + s) * W n +
+    W (n + r + s) * W (n - r) * W (m + s) * W m
 
-/-- The proposition that a sequence indexed by integers is a divisibility sequence. -/
+/-- The elliptic atom `Wₐ(m, n)` that defines an elliptic net. Note that this is defined in terms of
+truncated integer division, and hence should only be used when `m` and `n` have the same parity. -/
+def ellAtom (m n : ℤ) : R :=
+  W ((m + n).tdiv 2) * W ((m - n).tdiv 2)
+
+/-- The relator `ERₐ(m, n, r, s)` obtained by a cyclic permutation of variables in `ER(m, n, r, s)`.
+Note that this is defined in terms of elliptic atoms, and hence should only be used when `m`, `n`,
+`r`, and `s` all have the same parity. -/
+def ellAtomRel (m n r s : ℤ) : R :=
+  ellAtom W m n * ellAtom W r s - ellAtom W m r * ellAtom W n s + ellAtom W m s * ellAtom W n r
+
+lemma ellRel_eq (m n r s : ℤ) :
+    ellRel W m n r s = ellAtomRel W (2 * m + s) (2 * n + s) (2 * r + s) s := by
+  simp_rw [ellRel, ellAtomRel, ellAtom, add_add_add_comm _ s, add_assoc _ s, ← two_mul, ← mul_add,
+    add_sub_add_comm, add_sub_assoc, sub_self, add_zero, ← mul_sub,
+    Int.mul_tdiv_cancel_left _ two_ne_zero, mul_comm <| _ * W m, mul_assoc]
+
+lemma ellAtomRel_eq (m n r s : ℤ) : ellAtomRel W (2 * m) (2 * n) (2 * r) (2 * s) =
+    ellRel W (m - s) (n - s) (r - s) (2 * s) := by
+  simp_rw [ellAtomRel, ellAtom, ellRel, ← mul_add, ← mul_sub,
+    Int.mul_tdiv_cancel_left _ two_ne_zero, two_mul]
+  ring_nf
+
+/-- The proposition that a sequence indexed by `ℤ` is an elliptic net. -/
+def IsEllNet : Prop :=
+  ∀ m n r s : ℤ, ellRel W m n r s = 0
+
+/-- The proposition that a sequence indexed by `ℤ` is an elliptic sequence. -/
+def IsEllSequence : Prop :=
+  ∀ m n r : ℤ, ellRel W m n r 0 = 0
+
+/-- The proposition that a sequence indexed by `ℤ` is a divisibility sequence. -/
 def IsDivSequence : Prop :=
   ∀ m n : ℕ, m ∣ n → W m ∣ W n
 
-/-- The proposition that a sequence indexed by integers is an EDS. -/
+/-- The proposition that a sequence indexed by `ℤ` is an EDS. -/
 def IsEllDivSequence : Prop :=
   IsEllSequence W ∧ IsDivSequence W
 
+variable {W} in
+lemma IsEllNet.isEllSequence (h : IsEllNet W) : IsEllSequence W :=
+  (h · · · 0)
+
+variable {W} in
+lemma IsEllNet.smul (h : IsEllNet W) (x : R) : IsEllNet (x • W) := fun m n r s => by
+  linear_combination (norm := (simp_rw [ellRel, Pi.smul_apply, smul_eq_mul]; ring1))
+    x ^ 4 * h m n r s
+
+variable {W} in
+lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence (x • W) := fun m n r => by
+  linear_combination (norm := (simp_rw [ellRel, Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
+
+variable {W} in
+lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W) :=
+  (mul_dvd_mul_left x <| h · · ·)
+
+variable {W} in
+lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
+  ⟨h.left.smul x, h.right.smul x⟩
+
+lemma isEllNet_id : IsEllNet id :=
+  fun _ _ _ _ => by simp_rw [ellRel, id_eq]; ring1
+
 lemma isEllSequence_id : IsEllSequence id :=
-  fun _ _ _ => by simp_rw [id_eq]; ring1
+  isEllNet_id.isEllSequence
 
 lemma isDivSequence_id : IsDivSequence id :=
   fun _ _ => Int.ofNat_dvd.mpr
@@ -92,18 +173,6 @@ lemma isDivSequence_id : IsDivSequence id :=
 /-- The identity sequence is an EDS. -/
 theorem isEllDivSequence_id : IsEllDivSequence id :=
   ⟨isEllSequence_id, isDivSequence_id⟩
-
-variable {W}
-
-lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence (x • W) :=
-  fun m n r => by
-    linear_combination (norm := (simp_rw [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
-
-lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W) :=
-  fun m n r => mul_dvd_mul_left x <| h m n r
-
-lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
-  ⟨h.left.smul x, h.right.smul x⟩
 
 end IsEllDivSequence
 
@@ -164,7 +233,7 @@ lemma preNormEDS'_odd (m : ℕ) : preNormEDS' b c d (2 * (m + 2) + 1) =
 /-- The auxiliary sequence for a normalised EDS `W : ℤ → R`, with initial values
 `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d` and extra parameter `b`.
 
-This extends `preNormEDS'` by defining its values at negative integers. -/
+This extends `preNormEDS'` by defining its values at negative `ℤ`. -/
 def preNormEDS (n : ℤ) : R :=
   n.sign * preNormEDS' b c d n.natAbs
 
@@ -240,7 +309,7 @@ end PreNormEDS
 section NormEDS
 
 /-- The canonical example of a normalised EDS `W : ℤ → R`, with initial values
-`W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b`.
+`W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = db`.
 
 This is defined in terms of `preNormEDS` whose even terms differ by a factor of `b`. -/
 def normEDS (n : ℤ) : R :=
