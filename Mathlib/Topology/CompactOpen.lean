@@ -140,6 +140,17 @@ protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
   continuous_toFun := continuous_postcomp _ |>.comp <| continuous_precomp _
   continuous_invFun := continuous_postcomp _ |>.comp <| continuous_precomp _
 
+/-- The map from `X × C(Y, Z)` to `C(Y, X × Z)` is continuous. -/
+lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (const Y p.1) p.2 := by
+  simp_rw [continuous_iff_continuousAt, ContinuousAt, ContinuousMap.tendsto_nhds_compactOpen]
+  rintro ⟨r, f⟩ K hK U hU H
+  obtain ⟨V, W, hV, hW, hrV, hKW, hVW⟩ := generalized_tube_lemma (isCompact_singleton (x := r))
+    (hK.image f.continuous) hU (by simpa [Set.subset_def, forall_comm (α := X)])
+  refine Filter.eventually_of_mem (prod_mem_nhds (hV.mem_nhds (by simpa using hrV))
+    (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo'.mpr hKW))) ?_
+  rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
+  exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
+
 variable [LocallyCompactPair Y Z]
 
 /-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,
@@ -334,13 +345,9 @@ variable {X Y}
 theorem image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp [singleton_prod]
 
 /-- The coevaluation map `Y → C(X, Y × X)` is continuous (always). -/
-theorem continuous_coev : Continuous (coev X Y) := by
-  have : ∀ {a K U}, MapsTo (coev X Y a) K U ↔ {a} ×ˢ K ⊆ U := by simp [singleton_prod, mapsTo']
-  simp only [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_compactOpen, this]
-  intro x K hK U hU hKU
-  rcases generalized_tube_lemma isCompact_singleton hK hU hKU with ⟨V, W, hV, -, hxV, hKW, hVWU⟩
-  filter_upwards [hV.mem_nhds (hxV rfl)] with a ha
-  exact (prod_mono (singleton_subset_iff.mpr ha) hKW).trans hVWU
+theorem continuous_coev : Continuous (coev X Y) :=
+  ((continuous_prodMk_const (X := Y) (Y := X) (Z := X)).comp
+    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))):)
 
 end Coev
 
