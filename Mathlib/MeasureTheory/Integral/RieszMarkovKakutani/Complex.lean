@@ -44,6 +44,9 @@ theorem lt_biSup_iff {s : Set ι} {f : ι → α} : a < ⨆ i ∈ s, f i ↔ ∃
 
 end CompleteLinearOrder
 
+
+-- ## Alternative 1: define variation as a VectorMeasure
+
 section TotalVariation
 
 open MeasureTheory BigOperators ENNReal
@@ -53,7 +56,8 @@ variable {X : Type*} [MeasurableSpace X]
   (μ : VectorMeasure X V)
 
 -- In mathlib, the notion `Measure` requires that it is defined on all sets and countable
--- subbadditivity holds. In contrast, `VectorMeasure` requires that countable additivity holds only
+-- subbadditivity holds.
+-- In contrast, `VectorMeasure` requires that countable additivity holds only
 -- for `MeasurableSet`s. This is closer to the textbook notion of measure (including Rudin).
 -- We should probably proceed as follows:
 -- 1. Define `ℝ≥0∞`-valued `VectorMeasure` using sup as in Rudin. This requires essentially only
@@ -142,7 +146,85 @@ noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
 --     -- use `OuterMeasure.trim_eq` for measurable sets
 --     trim_le := le_of_eq (OuterMeasure.trim_trim (supOuterMeasure μ)) }
 
--- ## An alternative attempt to define first a content and hence a measure
+
+
+-- ## Alternative 2: define variation as a measure
+namespace Variation
+open TopologicalSpace NNReal Function
+
+-- Implementation note: instead of working with partitions of `K`, work with sets of disjoints sets
+-- contained within `K` since the same value will be achieved in the supremum.
+private def partitions (K : Set X) : Set (ℕ → Set X) :=
+    {E : ℕ → Set X | (∀ n, (E n) ⊆ K) ∧ Pairwise (Disjoint on E)}
+
+omit [MeasurableSpace X] in
+/-- By construction partitions behave in a monotone way. -/
+lemma partitions_mono {s₁ s₂ : Set X} (hs : s₁ ⊆ s₂) : partitions s₁ ⊆ partitions s₂ :=
+  fun _ hE ↦ ⟨fun n ↦ subset_trans (hE.1 n) hs, hE.2⟩
+
+/-- Given a partition of a set `K`, this returns the sum of the norm of the measure of the elements
+of that partition. If elements of the partition are non-measurable then the measure of that will be
+0 and hence not contribute to the sum. -/
+private noncomputable def sumOfNormOfMeasure (μ : VectorMeasure X V) (E : ℕ → Set X) : ℝ≥0∞ :=
+    ENNReal.ofReal (⟨∑' n,  ‖μ (E n)‖, tsum_nonneg (fun n ↦ norm_nonneg (μ (E n)))⟩ : ℝ≥0)
+-- NOTE: something weird here, should define directly in `EReal`.
+
+/-- The value of variation defined as a supremum. -/
+noncomputable def variationAux (μ : VectorMeasure X V) (K : Set X) : ℝ≥0∞ :=
+    ⨆ E ∈ partitions K, sumOfNormOfMeasure μ E
+
+lemma variation_empty (μ : VectorMeasure X V) : variationAux μ ∅ = 0 := by
+  simp only [variationAux, partitions, Set.subset_empty_iff, Set.mem_setOf_eq, sumOfNormOfMeasure,
+    ENNReal.iSup_eq_zero, ofReal_eq_zero, and_imp]
+  intro _ _ _
+  simp_all
+
+lemma variation_mono (μ : VectorMeasure X V) (s₁ s₂ : Set X) (hs : s₁ ⊆ s₂) :
+    variationAux μ s₁ ≤ variationAux μ s₂ := by
+  exact iSup_le_iSup_of_subset (partitions_mono hs)
+
+lemma variation_iUnion_nat (μ : VectorMeasure X V) (s : ℕ → Set X)
+    (hs : Pairwise (Function.onFun Disjoint s)) :
+    variationAux μ (⋃ i, s i) ≤ ∑' (i : ℕ), variationAux μ (s i) := by
+  dsimp [variationAux]
+  -- Sufficies to prove that for any `E ∈ partitions (⋃ i, s i)`,
+  -- `sumOfNormOfMeasure μ E` is bounded above by
+  -- `∑' (i : ℕ), ⨆ E ∈ partitions (s i), sumOfNormOfMeasure μ E`.
+  -- In order to do this, for each `i` we define the partition `F i` by intersecting `E` with `s i`.
+  sorry
+
+/-- The variation outer measure of a vector-valued measure. -/
+noncomputable def variation (μ : VectorMeasure X V) : OuterMeasure X where
+  measureOf  := variationAux μ
+  empty      := variation_empty μ
+  mono       := variation_mono μ _ _
+  iUnion_nat := variation_iUnion_nat μ
+
+/-- Countable additivity of measurable sets. -/
+lemma variation_m_iUnion (μ : VectorMeasure X V) ⦃f : ℕ → Set X⦄ (hf : ∀ i, MeasurableSet (f i))
+    (hf' : Pairwise (Disjoint on f)) :
+    (variation μ).trim (⋃ i, f i) = ∑' i, (variation μ).trim (f i) := by
+  sorry
+
+/-- The variation measure of a vector-valued measure. -/
+noncomputable def variation' (μ : VectorMeasure X V) : Measure X :=
+  {
+    (variation μ).trim with
+      m_iUnion := sorry
+      trim_le  := le_of_eq (OuterMeasure.trim_trim (variation μ))
+  -- where
+  --   measureOf := variationAux μ
+  --   empty := variation_empty μ
+  --   mono := variation_mono μ _ _
+  --   iUnion_nat := variation_iUnion_nat μ
+  --   m_iUnion := sorry
+  --   trim_le := sorry
+  }
+
+
+end Variation
+
+-- ## Alternative 3: define variation by first defining a content and hence a measure
 
 variable [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [BorelSpace X]
 open TopologicalSpace NNReal
