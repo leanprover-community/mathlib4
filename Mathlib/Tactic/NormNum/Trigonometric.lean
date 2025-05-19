@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Complex.Trigonometric
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Draft
