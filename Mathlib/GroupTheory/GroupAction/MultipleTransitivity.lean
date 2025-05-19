@@ -6,9 +6,9 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Primitive
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.SetTheory.Cardinal.Embedding
--- import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 -- import Mathlib.Data.Finite.Card
 -- import Mathlib.Data.Set.Card
 -- import Mathlib.SetTheory.Cardinal.Finite
