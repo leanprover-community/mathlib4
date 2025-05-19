@@ -157,6 +157,12 @@ lemma mateEquiv_eq_iff (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h �
   conv_lhs => rw [eq_comm, ← adj₁.homEquiv₁.symm.injective.eq_iff']
   rw [mateEquiv_apply, Equiv.symm_apply_apply]
 
+lemma mateEquiv_eq_iff' (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h ≫ r₂) :
+    mateEquiv adj₁ adj₂ α = β ↔
+      adj₂.homEquiv₂.symm β = (α_ _ _ _).hom ≫ adj₁.homEquiv₁ α := by
+  rw [eq_comm, mateEquiv_apply', ← adj₂.homEquiv₂.symm.injective.eq_iff']
+  rw [Equiv.symm_apply_apply]
+
 end mateEquiv
 
 section mateEquivVComp

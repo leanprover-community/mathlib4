@@ -215,9 +215,31 @@ structure Hom₂ (α β : a ⟶ b) where
   τr : β.r ⟶ α.r
   conjugateEquiv_τl : conjugateEquiv β.adj α.adj τl = τr := by aesop_cat
 
-lemma Hom₂.conjugateEquiv_symm_τg {α β : a ⟶ b} (p : Hom₂ α β) :
+namespace Hom₂
+
+variable {α β : a ⟶ b} (p : Hom₂ α β)
+
+lemma conjugateEquiv_symm_τg :
     (conjugateEquiv β.adj α.adj).symm p.τr = p.τl := by
   rw [← Hom₂.conjugateEquiv_τl, Equiv.symm_apply_apply]
+
+lemma homEquiv₂_τl_eq :
+    α.adj.homEquiv₂ ((λ_ _).hom ≫ p.τl ≫ (ρ_ _).inv) =
+      β.adj.homEquiv₁.symm ((ρ_ _).hom ≫ p.τr ≫ (λ_ _).inv) ≫ (α_ _ _ _).inv := by
+  symm
+  rw [← cancel_mono (α_ _ _ _).hom, Category.assoc, Iso.inv_hom_id,
+    Category.comp_id, ← mateEquiv_eq_iff, ← p.conjugateEquiv_τl,
+    conjugateEquiv_apply, Category.assoc, Category.assoc, Iso.hom_inv_id_assoc,
+    Iso.hom_inv_id, Category.comp_id]
+
+lemma homEquiv₁_τl_eq :
+    β.adj.homEquiv₁ ((λ_ α.l).hom ≫ p.τl ≫ (ρ_ β.l).inv) =
+      (α_ _ _ _).inv ≫ α.adj.homEquiv₂.symm ((ρ_ _).hom ≫ p.τr ≫ (λ_ _).inv) := by
+  symm
+  rw [← cancel_epi (α_ _ _ _).hom, Iso.hom_inv_id_assoc, ← mateEquiv_eq_iff',
+    mateEquiv_eq_iff, homEquiv₂_τl_eq, Category.assoc, Iso.inv_hom_id, Category.comp_id]
+
+end Hom₂
 
 instance : CategoryStruct (a ⟶ b) where
   Hom α β := Hom₂ α β
@@ -390,9 +412,30 @@ lemma unit_comp_mapComp'_hom_τr_comp_counit :
         (F.map g).l ◁ (F.map fg).adj.counit =
     (α_ _ _ _).hom ≫ (λ_ _).hom ≫ (F.map f).r ◁ (F.mapComp' f g fg hfg).hom.τl ≫
       (α_ _ _ _).inv ≫ (F.map f).adj.counit ▷ _ ≫ (λ_ _).hom ≫ (ρ_ _).inv := by
-  simp only [← Hom₂.conjugateEquiv_symm_τg, Bicategory.conjugateEquiv_symm_apply,
-    mateEquiv_symm_apply', Adjunction.homEquiv₁_symm_apply, Adjunction.homEquiv₂_symm_apply]
-  sorry
+  -- this proof needs some improvements...
+  rw [← cancel_mono (ρ_ _).hom, ← cancel_epi (α_ _ _ _).inv, ← cancel_epi (λ_ _).inv]
+  apply (F.map f).adj.homEquiv₁.symm.injective
+  simp only [Adjunction.homEquiv₁_symm_apply]
+  trans (F.mapComp' f g fg hfg).hom.τl
+  · simp only [comp_r, Category.assoc, whiskerLeft_comp, whiskerLeft_rightUnitor,
+      ← Hom₂.conjugateEquiv_symm_τg, comp_l, comp_adj, conjugateEquiv_symm_apply',
+      Adjunction.comp_unit, Adjunction.compUnit, comp_whiskerRight, whisker_assoc,
+      leftUnitor_inv_whiskerRight, Iso.inv_hom_id_assoc, comp_whiskerLeft,
+      pentagon_inv_hom_hom_hom_hom_assoc]
+  · simp only [comp_l, Category.assoc, Iso.inv_hom_id, Category.comp_id, Iso.inv_hom_id_assoc,
+      whiskerLeft_comp]
+    trans (λ_ _).inv ≫ ((F.map f).adj.unit ▷ (F.map fg).l ≫
+      ((F.map f).l ≫ (F.map f).r) ◁ (F.mapComp' f g fg hfg).hom.τl) ≫
+        ((α_ _ _ _ ).hom ≫ _ ◁ (α_ _ _ _).inv) ≫
+        ((F.map f).l ◁ (F.map f).adj.counit ▷ (F.map g).l) ≫ _ ◁ (λ_ _).hom
+    · rw [← whisker_exchange, id_whiskerLeft, Category.assoc, Category.assoc,
+        Category.assoc, Category.assoc, Iso.inv_hom_id_assoc]
+      trans (F.mapComp' f g fg hfg).hom.τl ≫ (λ_ _).inv ▷ _ ≫
+        leftZigzag (F.map f).adj.unit (F.map f).adj.counit ▷ (F.map g).l ≫ (ρ_ _).hom ▷ _
+      · simp
+      · dsimp only [leftZigzag]
+        simp [-Adjunction.left_triangle, bicategoricalComp]
+    · simp
 
 end
 
