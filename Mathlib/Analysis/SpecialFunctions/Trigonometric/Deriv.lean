@@ -174,6 +174,23 @@ theorem deriv_ccos (hc : DifferentiableAt ℂ f x) :
     deriv (fun x => Complex.cos (f x)) x = -Complex.sin (f x) * deriv f x :=
   hc.hasDerivAt.ccos.deriv
 
+/-- The function `Complex.cos` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_ccos : AnalyticAt ℂ Complex.cos x :=
+  Complex.contDiff_cos.contDiffAt.analyticAt
+
+/-- The function `Complex.cos` is complex analytic. -/
+lemma analyticWithinAt_ccos : AnalyticWithinAt ℂ Complex.cos s x :=
+  Complex.contDiff_cos.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.cos` is complex analytic. -/
+theorem analyticOnNhd_ccos : AnalyticOnNhd ℂ Complex.cos s :=
+  fun _ _ ↦ analyticAt_ccos
+
+/-- The function `Complex.cos` is complex analytic. -/
+lemma analyticOn_ccos : AnalyticOn ℂ Complex.cos s :=
+  Complex.contDiff_cos.contDiffOn.analyticOn
+
 /-! #### `Complex.sin` -/
 
 
@@ -197,6 +214,23 @@ theorem derivWithin_csin (hf : DifferentiableWithinAt ℂ f s x) (hxs : UniqueDi
 theorem deriv_csin (hc : DifferentiableAt ℂ f x) :
     deriv (fun x => Complex.sin (f x)) x = Complex.cos (f x) * deriv f x :=
   hc.hasDerivAt.csin.deriv
+
+/-- The function `Complex.sin` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_csin : AnalyticAt ℂ Complex.sin x :=
+  Complex.contDiff_sin.contDiffAt.analyticAt
+
+/-- The function `Complex.sin` is complex analytic. -/
+lemma analyticWithinAt_csin : AnalyticWithinAt ℂ Complex.sin s x :=
+  Complex.contDiff_sin.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.sin` is complex analytic. -/
+theorem analyticOnNhd_csin : AnalyticOnNhd ℂ Complex.sin s :=
+  fun _ _ ↦ analyticAt_csin
+
+/-- The function `Complex.sin` is complex analytic. -/
+lemma analyticOn_csin : AnalyticOn ℂ Complex.sin s :=
+  Complex.contDiff_sin.contDiffOn.analyticOn
 
 /-! #### `Complex.cosh` -/
 
@@ -222,6 +256,23 @@ theorem deriv_ccosh (hc : DifferentiableAt ℂ f x) :
     deriv (fun x => Complex.cosh (f x)) x = Complex.sinh (f x) * deriv f x :=
   hc.hasDerivAt.ccosh.deriv
 
+/-- The function `Complex.cosh` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_ccosh : AnalyticAt ℂ Complex.cosh x :=
+  Complex.contDiff_cosh.contDiffAt.analyticAt
+
+/-- The function `Complex.cosh` is complex analytic. -/
+lemma analyticWithinAt_ccosh : AnalyticWithinAt ℂ Complex.cosh s x :=
+  Complex.contDiff_cosh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.cosh` is complex analytic. -/
+theorem analyticOnNhd_ccosh : AnalyticOnNhd ℂ Complex.cosh s :=
+  fun _ _ ↦ analyticAt_ccosh
+
+/-- The function `Complex.cosh` is complex analytic. -/
+lemma analyticOn_ccosh : AnalyticOn ℂ Complex.cosh s :=
+  Complex.contDiff_cosh.contDiffOn.analyticOn
+
 /-! #### `Complex.sinh` -/
 
 
@@ -245,6 +296,23 @@ theorem derivWithin_csinh (hf : DifferentiableWithinAt ℂ f s x) (hxs : UniqueD
 theorem deriv_csinh (hc : DifferentiableAt ℂ f x) :
     deriv (fun x => Complex.sinh (f x)) x = Complex.cosh (f x) * deriv f x :=
   hc.hasDerivAt.csinh.deriv
+
+/-- The function `Complex.sinh` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_csinh : AnalyticAt ℂ Complex.sinh x :=
+  Complex.contDiff_sinh.contDiffAt.analyticAt
+
+/-- The function `Complex.sinh` is complex analytic. -/
+lemma analyticWithinAt_csinh : AnalyticWithinAt ℂ Complex.sinh s x :=
+  Complex.contDiff_sinh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.sinh` is complex analytic. -/
+theorem analyticOnNhd_csinh : AnalyticOnNhd ℂ Complex.sinh s :=
+  fun _ _ ↦ analyticAt_csinh
+
+/-- The function `Complex.sinh` is complex analytic. -/
+lemma analyticOn_csinh : AnalyticOn ℂ Complex.sinh s :=
+  Complex.contDiff_sinh.contDiffOn.analyticOn
 
 end
 
@@ -685,6 +753,23 @@ theorem deriv_cos (hc : DifferentiableAt ℝ f x) :
     deriv (fun x => Real.cos (f x)) x = -Real.sin (f x) * deriv f x :=
   hc.hasDerivAt.cos.deriv
 
+/-- The function `Real.cos` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_cos : AnalyticAt ℝ Real.cos x :=
+  Real.contDiff_cos.contDiffAt.analyticAt
+
+/-- The function `Real.cos` is real analytic. -/
+lemma analyticWithinAt_cos : AnalyticWithinAt ℝ Real.cos s x :=
+  Real.contDiff_cos.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.cos` is real analytic. -/
+theorem analyticOnNhd_cos : AnalyticOnNhd ℝ Real.cos s :=
+  fun _ _ ↦ analyticAt_cos
+
+/-- The function `Real.cos` is real analytic. -/
+lemma analyticOn_cos : AnalyticOn ℝ Real.cos s :=
+  Real.contDiff_cos.contDiffOn.analyticOn
+
 /-! #### `Real.sin` -/
 
 
@@ -733,6 +818,23 @@ theorem deriv_cosh (hc : DifferentiableAt ℝ f x) :
     deriv (fun x => Real.cosh (f x)) x = Real.sinh (f x) * deriv f x :=
   hc.hasDerivAt.cosh.deriv
 
+/-- The function `Real.cosh` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_cosh : AnalyticAt ℝ Real.cosh x :=
+  Real.contDiff_cosh.contDiffAt.analyticAt
+
+/-- The function `Real.cosh` is real analytic. -/
+lemma analyticWithinAt_cosh : AnalyticWithinAt ℝ Real.cosh s x :=
+  Real.contDiff_cosh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.cosh` is real analytic. -/
+theorem analyticOnNhd_cosh : AnalyticOnNhd ℝ Real.cosh s :=
+  fun _ _ ↦ analyticAt_cosh
+
+/-- The function `Real.cosh` is real analytic. -/
+lemma analyticOn_cosh : AnalyticOn ℝ Real.cosh s :=
+  Real.contDiff_cosh.contDiffOn.analyticOn
+
 /-! #### `Real.sinh` -/
 
 
@@ -756,6 +858,23 @@ theorem derivWithin_sinh (hf : DifferentiableWithinAt ℝ f s x) (hxs : UniqueDi
 theorem deriv_sinh (hc : DifferentiableAt ℝ f x) :
     deriv (fun x => Real.sinh (f x)) x = Real.cosh (f x) * deriv f x :=
   hc.hasDerivAt.sinh.deriv
+
+/-- The function `Real.sin` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_sin : AnalyticAt ℝ Real.sin x :=
+  Real.contDiff_sin.contDiffAt.analyticAt
+
+/-- The function `Real.sin` is real analytic. -/
+lemma analyticWithinAt_sin : AnalyticWithinAt ℝ Real.sin s x :=
+  Real.contDiff_sin.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.sin` is real analytic. -/
+theorem analyticOnNhd_sin : AnalyticOnNhd ℝ Real.sin s :=
+  fun _ _ ↦ analyticAt_sin
+
+/-- The function `Real.sin` is real analytic. -/
+lemma analyticOn_sin : AnalyticOn ℝ Real.sin s :=
+  Real.contDiff_sin.contDiffOn.analyticOn
 
 end
 
@@ -982,6 +1101,23 @@ theorem ContDiffOn.sinh {n} (hf : ContDiffOn ℝ n f s) :
 theorem ContDiffWithinAt.sinh {n} (hf : ContDiffWithinAt ℝ n f s x) :
     ContDiffWithinAt ℝ n (fun x => Real.sinh (f x)) s x :=
   Real.contDiff_sinh.contDiffAt.comp_contDiffWithinAt x hf
+
+/-- The function `Real.sinh` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_sinh {x : ℝ} : AnalyticAt ℝ Real.sinh x :=
+  Real.contDiff_sinh.contDiffAt.analyticAt
+
+/-- The function `Real.sinh` is real analytic. -/
+lemma analyticWithinAt_sinh {x : ℝ} {s : Set ℝ} : AnalyticWithinAt ℝ Real.sinh s x :=
+  Real.contDiff_sinh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.sinh` is real analytic. -/
+theorem analyticOnNhd_sinh {s : Set ℝ} : AnalyticOnNhd ℝ Real.sinh s :=
+  fun _ _ ↦ analyticAt_sinh
+
+/-- The function `Real.sinh` is real analytic. -/
+lemma analyticOn_sinh {s : Set ℝ} : AnalyticOn ℝ Real.sinh s :=
+  Real.contDiff_sinh.contDiffOn.analyticOn
 
 section LogDeriv
 
