@@ -24,14 +24,14 @@ open LocallyDiscreteOpToCat
 variable {C : Type*} [Category C] (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) (Adj Cat))
 
 instance {X Y : C} (f : X ⟶ Y) [IsIso f] (F : Pseudofunctor (LocallyDiscrete C) (Adj Cat)) :
-    (F.map (.toLoc f)).f.IsEquivalence := by
+    (F.map (.toLoc f)).l.IsEquivalence := by
   change ((F.comp Adj.forget₁).map f.toLoc).IsEquivalence
   infer_instance
 
 instance (X : LocallyDiscrete C)  (F : Pseudofunctor (LocallyDiscrete C) (Adj Cat)) :
-    (F.map (𝟙 X)).f.IsEquivalence := by
+    (F.map (𝟙 X)).l.IsEquivalence := by
   obtain ⟨X⟩ := X
-  change (F.map (𝟙 X).toLoc).f.IsEquivalence
+  change (F.map (𝟙 X).toLoc).l.IsEquivalence
   infer_instance
 
 variable {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S}
@@ -44,19 +44,19 @@ variable {F sq}
 section
 
 variable {obj : ∀ (i : ι), (F.obj (.mk (op (X i)))).obj}
-  (hom : ∀ (i₁ i₂ : ι), obj i₁ ⟶ (F.map (sq i₁ i₂).p₁.op.toLoc).g.obj
-    ((F.map (sq i₁ i₂).p₂.op.toLoc).f.obj (obj i₂)))
+  (hom : ∀ (i₁ i₂ : ι), obj i₁ ⟶ (F.map (sq i₁ i₂).p₁.op.toLoc).r.obj
+    ((F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj i₂)))
 
-def homComp (i₁ i₂ i₃ : ι) : obj i₁ ⟶ (F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).g.obj
-      ((F.map (sq₃ i₁ i₂ i₃).p₃.op.toLoc).f.obj (obj i₃)) :=
-  hom i₁ i₂ ≫ (F.map (sq i₁ i₂).p₁.op.toLoc).g.map
-      ((F.map (sq i₁ i₂).p₂.op.toLoc).f.map (hom i₂ i₃)) ≫
-        (F.map (sq i₁ i₂).p₁.op.toLoc).g.map
+def homComp (i₁ i₂ i₃ : ι) : obj i₁ ⟶ (F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).r.obj
+      ((F.map (sq₃ i₁ i₂ i₃).p₃.op.toLoc).l.obj (obj i₃)) :=
+  hom i₁ i₂ ≫ (F.map (sq i₁ i₂).p₁.op.toLoc).r.map
+      ((F.map (sq i₁ i₂).p₂.op.toLoc).l.map (hom i₂ i₃)) ≫
+        (F.map (sq i₁ i₂).p₁.op.toLoc).r.map
           ((F.baseChange (sq₃ i₁ i₂ i₃).isPullback₂.toCommSq.flip.op.toLoc).app _) ≫
-    (Adj.gIso (F.mapComp' (sq i₁ i₂).p₁.op.toLoc (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc
+    (Adj.rIso (F.mapComp' (sq i₁ i₂).p₁.op.toLoc (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc
           (sq₃ i₁ i₂ i₃).p₁.op.toLoc (by aesoptoloc))).inv.app _ ≫
-    (F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).g.map
-      ((Adj.fIso (F.mapComp' (sq i₂ i₃).p₂.op.toLoc (sq₃ i₁ i₂ i₃).p₂₃.op.toLoc
+    (F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).r.map
+      ((Adj.lIso (F.mapComp' (sq i₂ i₃).p₂.op.toLoc (sq₃ i₁ i₂ i₃).p₂₃.op.toLoc
           (sq₃ i₁ i₂ i₃).p₃.op.toLoc (by aesoptoloc))).inv.app _)
 
 end
@@ -66,22 +66,22 @@ section
 variable {X₁₂ X₁ X₂ : C}
   {obj₁ : (F.obj (.mk (op X₁))).obj} {obj₂ : (F.obj (.mk (op X₂))).obj}
   {p₁ : X₁₂ ⟶ X₁} {p₂ : X₁₂ ⟶ X₂}
-  (hom : obj₁ ⟶ (F.map p₁.op.toLoc).g.obj ((F.map p₂.op.toLoc).f.obj obj₂))
+  (hom : obj₁ ⟶ (F.map p₁.op.toLoc).r.obj ((F.map p₂.op.toLoc).l.obj obj₂))
 
 def pullHom'' ⦃Y₁₂ : C⦄ (p₁₂ : Y₁₂ ⟶ X₁₂) (q₁ : Y₁₂ ⟶ X₁) (q₂ : Y₁₂ ⟶ X₂)
     (hq₁ : p₁₂ ≫ p₁ = q₁ := by aesop_cat) (hq₂ : p₁₂ ≫ p₂ = q₂ := by aesop_cat) :
-    obj₁ ⟶ (F.map q₁.op.toLoc).g.obj ((F.map q₂.op.toLoc).f.obj obj₂) :=
-  hom ≫ (F.map p₁.op.toLoc).g.map ((F.map p₁₂.op.toLoc).adj.unit.app _) ≫
-    (Adj.gIso (F.mapComp' p₁.op.toLoc p₁₂.op.toLoc q₁.op.toLoc (by aesoptoloc))).inv.app _ ≫
-      (F.map q₁.op.toLoc).g.map
-    ((Adj.fIso (F.mapComp' p₂.op.toLoc p₁₂.op.toLoc q₂.op.toLoc (by aesoptoloc))).inv.app _)
+    obj₁ ⟶ (F.map q₁.op.toLoc).r.obj ((F.map q₂.op.toLoc).l.obj obj₂) :=
+  hom ≫ (F.map p₁.op.toLoc).r.map ((F.map p₁₂.op.toLoc).adj.unit.app _) ≫
+    (Adj.rIso (F.mapComp' p₁.op.toLoc p₁₂.op.toLoc q₁.op.toLoc (by aesoptoloc))).inv.app _ ≫
+      (F.map q₁.op.toLoc).r.map
+    ((Adj.lIso (F.mapComp' p₂.op.toLoc p₁₂.op.toLoc q₂.op.toLoc (by aesoptoloc))).inv.app _)
 
 end
 
 lemma homEquiv_symm_pullHom'' ⦃X₁ X₂ : C⦄
     ⦃obj₁ : (F.obj (.mk (op X₁))).obj⦄ ⦃obj₂ : (F.obj (.mk (op X₂))).obj⦄
     ⦃X₁₂ : C⦄ ⦃p₁ : X₁₂ ⟶ X₁⦄ ⦃p₂ : X₁₂ ⟶ X₂⦄
-    (hom : obj₁ ⟶ (F.map p₁.op.toLoc).g.obj ((F.map p₂.op.toLoc).f.obj obj₂))
+    (hom : obj₁ ⟶ (F.map p₁.op.toLoc).r.obj ((F.map p₂.op.toLoc).l.obj obj₂))
     ⦃Y₁₂ : C⦄ (g : Y₁₂ ⟶ X₁₂) (gp₁ : Y₁₂ ⟶ X₁) (gp₂ : Y₁₂ ⟶ X₂)
     (hgp₁ : g ≫ p₁ = gp₁) (hgp₂ : g ≫ p₂ = gp₂) :
     ((F.map gp₁.op.toLoc).adj.toCategory.homEquiv _ _ ).symm (pullHom'' hom g gp₁ gp₂ hgp₁ hgp₂) =
@@ -89,8 +89,8 @@ lemma homEquiv_symm_pullHom'' ⦃X₁ X₂ : C⦄
         ((((F.map p₁.op.toLoc).adj.toCategory).homEquiv _ _ ).symm hom) g gp₁ gp₂ hgp₁ hgp₂ := by
   rw [Adjunction.homEquiv_counit, Adjunction.homEquiv_counit]
   dsimp [pullHom'', pullHom]
-  simp only [Functor.map_comp, Category.assoc, Adj.comp_forget₁_mapComp', Adj.fIso_hom,
-    Adj.fIso_inv]
+  simp only [Functor.map_comp, Category.assoc, Adj.comp_forget₁_mapComp', Adj.lIso_hom,
+    Adj.lIso_inv]
   erw [← NatTrans.naturality_assoc]
   congr 1
   sorry
@@ -109,7 +109,7 @@ lemma map_baseChange_comp_counit' ⦃Y₁₂ : C⦄ (g : Y₁₂ ⟶ X₁₂) (g
     (F.map g.op.toLoc).f.map
        ((F.map p₁.op.toLoc).adj.counit.app _) =
     (F.mapComp' p₁.op.toLoc g.op.toLoc (gp.op.toLoc) (by aesoptoloc)).inv.τf.app
-      ((F.map f.op.toLoc).f.obj ((F.map f.op.toLoc).g.obj obj)) ≫
+      ((F.map f.op.toLoc).f.obj ((F.map f.op.toLoc).r.obj obj)) ≫
       (F.map gp.op.toLoc).f.map ((F.map f.op.toLoc).adj.counit.app _) ≫
       (F.mapComp' p₂.op.toLoc g.op.toLoc (gp.op.toLoc) (by aesoptoloc)).hom.τf.app obj := by
     dsimp
@@ -117,14 +117,14 @@ lemma map_baseChange_comp_counit' ⦃Y₁₂ : C⦄ (g : Y₁₂ ⟶ X₁₂) (g
 
 @[reassoc]
 lemma map_baseChange_comp_counit (g : X ⟶ X₁₂) (hg₁ : g ≫ p₁ = 𝟙 X) (hg₂ : g ≫ p₂ = 𝟙 X) :
-    (F.map g.op.toLoc).f.map
-      ((F.map p₁.op.toLoc).f.map ((F.baseChange sq.flip.op.toLoc).app obj)) ≫
-    (F.map g.op.toLoc).f.map
+    (F.map g.op.toLoc).l.map
+      ((F.map p₁.op.toLoc).l.map ((F.baseChange sq.flip.op.toLoc).app obj)) ≫
+    (F.map g.op.toLoc).l.map
        ((F.map p₁.op.toLoc).adj.counit.app _) =
-    (F.mapComp' p₁.op.toLoc g.op.toLoc (𝟙 _) (by aesoptoloc)).inv.τf.app
-      ((F.map f.op.toLoc).f.obj ((F.map f.op.toLoc).g.obj obj)) ≫
-      (F.map (𝟙 _)).f.map ((F.map f.op.toLoc).adj.counit.app _) ≫
-      (F.mapComp' p₂.op.toLoc g.op.toLoc (𝟙 _) (by aesoptoloc)).hom.τf.app obj := by
+    (F.mapComp' p₁.op.toLoc g.op.toLoc (𝟙 _) (by aesoptoloc)).inv.τl.app
+      ((F.map f.op.toLoc).l.obj ((F.map f.op.toLoc).r.obj obj)) ≫
+      (F.map (𝟙 _)).l.map ((F.map f.op.toLoc).adj.counit.app _) ≫
+      (F.mapComp' p₂.op.toLoc g.op.toLoc (𝟙 _) (by aesoptoloc)).hom.τl.app obj := by
   have := NatTrans.congr_app
     (F.whiskerRight_whiskerBaseChange_self_self _ _ _ sq.flip.op.toLoc g.op.toLoc (by aesoptoloc)
       (by aesoptoloc)) obj
@@ -143,8 +143,8 @@ open DescentData'' in
 structure DescentData'' where
   obj (i : ι) : (F.obj (.mk (op (X i)))).obj
   hom (i₁ i₂ : ι) : obj i₁ ⟶
-    (F.map (sq i₁ i₂).p₁.op.toLoc).g.obj
-      ((F.map (sq i₁ i₂).p₂.op.toLoc).f.obj (obj i₂))
+    (F.map (sq i₁ i₂).p₁.op.toLoc).r.obj
+      ((F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj i₂))
   hom_self (i : ι) (δ : (sq i i).Diagonal) :
     pullHom'' (hom i i) δ.f (𝟙 _) (𝟙 _) = (F.map (𝟙 (.mk (op (X i))))).adj.unit.app _
   hom_comp (i₁ i₂ i₃ : ι) :
@@ -153,16 +153,16 @@ structure DescentData'' where
 namespace DescentData''
 
 variable {F} {sq} {obj : ∀ (i : ι), (F.obj (.mk (op (X i)))).obj}
-  (hom : ∀ i₁ i₂, obj i₁ ⟶ (F.map (sq i₁ i₂).p₁.op.toLoc).g.obj
-    ((F.map (sq i₁ i₂).p₂.op.toLoc).f.obj (obj i₂)))
+  (hom : ∀ i₁ i₂, obj i₁ ⟶ (F.map (sq i₁ i₂).p₁.op.toLoc).r.obj
+    ((F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj i₂)))
 
 section
 
 def dataEquivDescentData' :
-    (∀ i₁ i₂, obj i₁ ⟶ (F.map (sq i₁ i₂).p₁.op.toLoc).g.obj
-      ((F.map (sq i₁ i₂).p₂.op.toLoc).f.obj (obj i₂))) ≃
-    (∀ i₁ i₂, (F.map (sq i₁ i₂).p₁.op.toLoc).f.obj (obj i₁) ⟶
-      (F.map (sq i₁ i₂).p₂.op.toLoc).f.obj (obj i₂)) :=
+    (∀ i₁ i₂, obj i₁ ⟶ (F.map (sq i₁ i₂).p₁.op.toLoc).r.obj
+      ((F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj i₂))) ≃
+    (∀ i₁ i₂, (F.map (sq i₁ i₂).p₁.op.toLoc).l.obj (obj i₁) ⟶
+      (F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj i₂)) :=
   Equiv.piCongrRight (fun i₁ ↦ Equiv.piCongrRight (fun i₂ ↦
     (((F.map (sq i₁ i₂).p₁.op.toLoc).adj.toCategory).homEquiv _ _).symm))
 
@@ -200,9 +200,9 @@ variable [∀ i₁ i₂, IsIso (F.baseChange (sq i₁ i₂).isPullback.toCommSq.
 
 noncomputable def dataEquivCoalgebra
   [∀ i₁ i₂, IsIso (F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc)] :
-    (∀ i₁ i₂, obj i₁ ⟶ (F.map (sq i₁ i₂).p₁.op.toLoc).g.obj
-      ((F.map (sq i₁ i₂).p₂.op.toLoc).f.obj (obj i₂))) ≃
-    (∀ i₁ i₂, obj i₁ ⟶ (F.map (f i₁).op.toLoc).f.obj ((F.map (f i₂).op.toLoc).g.obj (obj i₂))) :=
+    (∀ i₁ i₂, obj i₁ ⟶ (F.map (sq i₁ i₂).p₁.op.toLoc).r.obj
+      ((F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj i₂))) ≃
+    (∀ i₁ i₂, obj i₁ ⟶ (F.map (f i₁).op.toLoc).l.obj ((F.map (f i₂).op.toLoc).r.obj (obj i₂))) :=
   Equiv.piCongrRight (fun i₁ ↦ Equiv.piCongrRight (fun i₂ ↦
     Iso.homCongr (Iso.refl _)
       ((asIso (F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc)).symm.app _)))
@@ -218,10 +218,10 @@ lemma hom_self_iff_dataEquivCoalgebra ⦃i : ι⦄ (δ : (sq i i).Diagonal):
     homEquiv_symm_pullHom'']
   dsimp
   rw [← Adjunction.toCategory_unit, ← Adjunction.homEquiv_id, Equiv.symm_apply_apply]
-  trans (F.map (𝟙 { as := op (X i) })).f.map
+  trans (F.map (𝟙 { as := op (X i) })).l.map
       (hom i i ≫ (F.map (f i).op.toLoc).adj.counit.app (obj i)) = 𝟙 _ ; swap
   · rw [← Functor.map_id]
-    have : Functor.Faithful (F.map (𝟙 { as := op (X i) })).f := inferInstance
+    have : Functor.Faithful (F.map (𝟙 { as := op (X i) })).l := inferInstance
     rw [Functor.map_injective_iff]
   · convert Iff.rfl using 2
     dsimp [pullHom]
@@ -231,15 +231,15 @@ lemma hom_self_iff_dataEquivCoalgebra ⦃i : ι⦄ (δ : (sq i i).Diagonal):
     simp [Adj.comp_forget₁_mapComp']
     rw [map_baseChange_comp_counit_assoc (sq i i).commSq (obj i) δ.f (by simp) (by simp)]
     dsimp
-    rw [← Adj.fIso_hom, ← Adj.fIso_inv, Iso.hom_inv_id_app_assoc,
-      ← Adj.fIso_hom, ← Adj.fIso_inv, Iso.hom_inv_id_app, Category.comp_id]
+    rw [← Adj.lIso_hom, ← Adj.lIso_inv, Iso.hom_inv_id_app_assoc,
+      ← Adj.lIso_hom, ← Adj.lIso_inv, Iso.hom_inv_id_app, Category.comp_id]
 
 lemma hom_comp_iff_dataEquivCoalgebra (i₁ i₂ i₃ : ι) :
     homComp sq₃ hom i₁ i₂ i₃ = pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _ ↔
-    dataEquivCoalgebra hom i₁ i₂ ≫ (F.map (f i₁).op.toLoc).f.map
-      ((F.map (f i₂).op.toLoc).g.map (dataEquivCoalgebra hom i₂ i₃)) =
+    dataEquivCoalgebra hom i₁ i₂ ≫ (F.map (f i₁).op.toLoc).l.map
+      ((F.map (f i₂).op.toLoc).r.map (dataEquivCoalgebra hom i₂ i₃)) =
     dataEquivCoalgebra hom i₁ i₃ ≫
-      (F.map (f i₁).op.toLoc).f.map ((F.map (f i₂).op.toLoc).adj.unit.app _) := by
+      (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).adj.unit.app _) := by
   sorry
 
 end

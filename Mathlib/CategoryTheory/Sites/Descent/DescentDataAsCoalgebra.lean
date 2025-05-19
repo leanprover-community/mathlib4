@@ -79,11 +79,11 @@ namespace LocallyDiscreteToAdjCat
 
 set_option quotPrecheck false in
 scoped notation g:80 " _* " M:81 => ((_ : Pseudofunctor _ (Adj Cat)).map
-  (Quiver.Hom.op g).toLoc).g.obj M
+  (Quiver.Hom.op g).toLoc).r.obj M
 
 set_option quotPrecheck false in
 scoped notation g:80 " ^* " M:81 => ((_ : Pseudofunctor _ (Adj Cat)).map
-  (Quiver.Hom.op g).toLoc).f.obj M
+  (Quiver.Hom.op g).toLoc).l.obj M
 
 end LocallyDiscreteToAdjCat
 
@@ -95,9 +95,9 @@ structure DescentDataAsCoalgebra {ι : Type*} {S : C} {X : ι → C} (f : ∀ i,
   hom (i₁ i₂ : ι) : obj i₁ ⟶ (f i₁) ^* (f i₂) _* (obj i₂)
   counit (i : ι) : hom i i ≫ (F.map (f i).op.toLoc).adj.counit.app _ = 𝟙 _ := by aesop_cat
   coassoc (i₁ i₂ i₃ : ι) :
-    hom i₁ i₂ ≫ (F.map (f i₁).op.toLoc).f.map ((F.map (f i₂).op.toLoc).g.map (hom i₂ i₃)) =
+    hom i₁ i₂ ≫ (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).r.map (hom i₂ i₃)) =
       hom i₁ i₃ ≫
-        (F.map (f i₁).op.toLoc).f.map ((F.map (f i₂).op.toLoc).adj.unit.app _) := by aesop_cat
+        (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).adj.unit.app _) := by aesop_cat
 
 namespace DescentDataAsCoalgebra
 
@@ -113,7 +113,7 @@ structure Hom (D₁ D₂ : F.DescentDataAsCoalgebra f) where
   hom (i : ι) : D₁.obj i ⟶ D₂.obj i
   comm (i₁ i₂ : ι) :
     D₁.hom i₁ i₂ ≫
-      (F.map (f i₁).op.toLoc).f.map ((F.map (f i₂).op.toLoc).g.map (hom i₂)) =
+      (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).r.map (hom i₂)) =
     hom i₁ ≫ D₂.hom i₁ i₂ := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.comm
@@ -148,7 +148,7 @@ lemma comp_hom {D₁ D₂ D₃ : F.DescentDataAsCoalgebra f} (φ : D₁ ⟶ D₂
 @[simps]
 def isoMk {D₁ D₂ : F.DescentDataAsCoalgebra f} (e : ∀ (i : ι), D₁.obj i ≅ D₂.obj i)
     (comm : ∀ (i₁ i₂ : ι), D₁.hom i₁ i₂ ≫
-      (F.map (f i₁).op.toLoc).f.map ((F.map (f i₂).op.toLoc).g.map (e i₂).hom) =
+      (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).r.map (e i₂).hom) =
       (e i₁).hom ≫ D₂.hom i₁ i₂ := by aesop_cat) :
     D₁ ≅ D₂ where
   hom.hom i := (e i).hom

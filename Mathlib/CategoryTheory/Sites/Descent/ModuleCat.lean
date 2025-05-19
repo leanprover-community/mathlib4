@@ -8,7 +8,7 @@ open CategoryTheory
 
 namespace CommRingCat.moduleCatExtendScalarsPseudofunctor
 
--- this is the key statement in faithfully flat descent
+-- this is the key statement of faithfully flat descent
 
 lemma hasEffectiveDescentRelativeTo_of_faithfullyFlat
     (A B : Type u) [CommRing A] [CommRing B] [Algebra A B] [Module.FaithfullyFlat A B]:

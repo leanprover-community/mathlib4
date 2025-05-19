@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -12,13 +12,14 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 # The bicategory of adjunctions in a bicategory
 
 Given a bicategory `B`, we construct a bicategory `Adj B` that has the same
-objects but whose `1`-morphisms are adjunctions, and `2`-morphisms are tuples
-of mate maps between the left and right adjoints (where the map between right
+objects but whose `1`-morphisms are adjunctions (in the same direction
+as the left adjoints), and `2`-morphisms are tuples of mate maps between
+the left and right adjoints (where the map between right
 adjoints is in the opposite direction).
 
 Certain pseudofunctors to the bicategory `Adj Cat` are analogous to bifibered categories:
 in various contexts, this may be used in order to formalize the properties of
-both pushforward and pullback functors.
+both pullback and pushforward functors.
 
 ## References
 
@@ -36,95 +37,27 @@ namespace Bicategory
 
 variable {B : Type u} [Bicategory.{w, v} B]
 
-namespace Adjunction
-
-/- TODO: refactor `mateEquiv` by using `homEquiv₁/₂`.  -/
-variable {a b c d : B} {l : b ⟶ c} {r : c ⟶ b} (adj : l ⊣ r)
-
-@[simps -isSimp]
-def homEquiv₁ {g : b ⟶ d} {h : c ⟶ d} : (g ⟶ l ≫ h) ≃ (r ≫ g ⟶ h) where
-  toFun γ := r ◁ γ ≫ (α_ _ _ _).inv ≫ adj.counit ▷ h ≫ (λ_ _).hom
-  invFun β := (λ_ _).inv ≫ adj.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l ◁ β
-  left_inv γ :=
-    calc
-      _ = 𝟙 _ ⊗≫ (adj.unit ▷ g ≫ (l ≫ r) ◁ γ) ⊗≫ l ◁ adj.counit ▷ h ⊗≫ 𝟙 _:= by
-        bicategory
-      _ = γ ⊗≫ leftZigzag adj.unit adj.counit ▷ h ⊗≫ 𝟙 _ := by
-        rw [← whisker_exchange]
-        bicategory
-      _ = γ := by
-        rw [adj.left_triangle]
-        bicategory
-  right_inv β := by
-    calc
-      _ = 𝟙 _ ⊗≫ r ◁ adj.unit ▷ g ⊗≫ ((r ≫ l) ◁ β ≫ adj.counit ▷ h) ⊗≫ 𝟙 _ := by
-        bicategory
-      _ = 𝟙 _ ⊗≫ rightZigzag adj.unit adj.counit ▷ g ⊗≫ β := by
-        rw [whisker_exchange]
-        bicategory
-      _ = β := by
-        rw [adj.right_triangle]
-        bicategory
-
-@[simps -isSimp]
-def homEquiv₂ {g : a ⟶ b} {h : a ⟶ c} : (g ≫ l ⟶ h) ≃ (g ⟶ h ≫ r) where
-  toFun α := (ρ_ _).inv ≫ g ◁ adj.unit ≫ (α_ _ _ _).inv ≫ α ▷ r
-  invFun γ := γ ▷ l ≫ (α_ _ _ _ ).hom ≫ h ◁ adj.counit ≫ (ρ_ _).hom
-  left_inv α :=
-    calc
-      _ = 𝟙 _ ⊗≫ g ◁ adj.unit ▷ l ⊗≫ (α ▷ (r ≫ l) ≫ h ◁ adj.counit) ⊗≫ 𝟙 _ := by
-        bicategory
-      _ = 𝟙 _ ⊗≫ g ◁ leftZigzag adj.unit adj.counit ⊗≫ α := by
-        rw [← whisker_exchange]
-        bicategory
-      _ = α := by
-        rw [adj.left_triangle]
-        bicategory
-  right_inv γ :=
-    calc
-      _ = 𝟙 _ ⊗≫ (g ◁ adj.unit ≫ γ ▷ (l ≫ r)) ⊗≫ h ◁ adj.counit ▷ r ⊗≫ 𝟙 _ := by
-        bicategory
-      _ = 𝟙 _ ⊗≫ γ ⊗≫ h ◁ rightZigzag adj.unit adj.counit ⊗≫ 𝟙 _ := by
-        rw [whisker_exchange]
-        bicategory
-      _ = γ := by
-        rw [adj.right_triangle]
-        bicategory
-
-end Adjunction
-
 section
 
 variable {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
   {l₂ : c ⟶ d} {r₂ : d ⟶ c} (adj₂ : l₂ ⊣ r₂)
-
-lemma mateEquiv_eq_trans {g : a ⟶ c} {h : b ⟶ d} :
-    mateEquiv adj₁ adj₂ (g := g) (h := h) =
-      adj₂.homEquiv₂.trans
-        ((Iso.homCongr (Iso.refl _) (α_ _ _ _)).trans adj₁.homEquiv₁) := by
-  ext γ
-  dsimp [mateEquiv, Adjunction.homEquiv₁, Adjunction.homEquiv₂]
-  bicategory
-
-lemma mateEquiv_eq_iff {g : a ⟶ c} {h : b ⟶ d}
-    (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h ≫ r₂) :
-  mateEquiv adj₁ adj₂ α = β ↔
-    adj₁.homEquiv₁.symm β = adj₂.homEquiv₂ α ≫ (α_ _ _ _).hom := by
-  conv_lhs => rw [eq_comm, ← adj₁.homEquiv₁.symm.injective.eq_iff']
-  simp [mateEquiv_eq_trans]
 
 variable {f : a ⟶ c} {g : b ⟶ d}
 
 lemma mateEquiv_id_comp_right (φ : f ≫ 𝟙 _ ≫ l₂ ⟶ l₁ ≫ g) :
     mateEquiv adj₁ ((Adjunction.id _).comp adj₂) φ =
       mateEquiv adj₁ adj₂ (f ◁ (λ_ l₂).inv ≫ φ) ≫ (ρ_ _).inv ≫ (α_ _ _ _).hom := by
-  dsimp [mateEquiv_apply, Adjunction.id]
+  simp only [mateEquiv_apply, Adjunction.homEquiv₁_apply, Adjunction.homEquiv₂_apply,
+    Adjunction.id]
+  dsimp
   bicategory
 
 lemma mateEquiv_comp_id_right (φ : f ≫ l₂ ≫ 𝟙 d ⟶ l₁ ≫ g) :
     mateEquiv adj₁ (adj₂.comp (Adjunction.id _)) φ =
       mateEquiv adj₁ adj₂ ((ρ_ _).inv ≫ (α_ _ _ _).hom ≫ φ) ≫ g ◁ (λ_ r₂).inv := by
-  dsimp [mateEquiv_apply, Adjunction.id]
+  simp only [mateEquiv_apply, Adjunction.homEquiv₁_apply, Adjunction.homEquiv₂_apply,
+    Adjunction.id]
+  dsimp
   bicategory
 
 end
@@ -225,13 +158,15 @@ end
 variable (B) in
 /--
 The bicategory that has the same objects as a bicategory `B`, in which `1`-morphisms
-are adjunctions, and `2`-morphisms are tuples of mate maps between the left and right
+are adjunctions (in the same direction as the left adjoints),
+and `2`-morphisms are tuples of mate maps between the left and right
 adjoints (where the map between right adjoints is in the opposite direction).
 -/
 def Adj : Type u := B
 
 namespace Adj
 
+/-- If `a : Adj B`, `a.obj : B` is the underlying object of `B`. -/
 abbrev obj (a : Adj B) : B := a
 
 variable (a b c d : B)
@@ -242,16 +177,18 @@ this is the type of adjunctions between `a` and `b`.
 -/
 structure Hom where
   /-- the left adjoint -/
-  f : a ⟶ b
+  l : a ⟶ b
   /-- the right adjoint -/
-  g : b ⟶ a
+  r : b ⟶ a
   /-- the adjunction -/
-  adj : f ⊣ g
+  adj : l ⊣ r
 
 variable {a b} in
-def Hom.mk' {f : a ⟶ b} {g : b ⟶ a} (adj : f ⊣ g) : Hom a b where
-  f := f
-  g := g
+/-- Constructor for `1`-morphisms in the bicategory `Adj B`. -/
+@[simps]
+def Hom.mk' {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) : Hom a b where
+  l := l
+  r := r
   adj := adj
 
 instance : CategoryStruct (Adj B) where
@@ -259,54 +196,53 @@ instance : CategoryStruct (Adj B) where
   id (a : B) := .mk' (Adjunction.id a)
   comp f g := .mk' (f.adj.comp g.adj)
 
-@[simp] lemma id_f (a : Adj B) : Hom.f (𝟙 a) = 𝟙 a.obj := rfl
-@[simp] lemma id_g (a : Adj B) : Hom.g (𝟙 a) = 𝟙 a.obj := rfl
+@[simp] lemma id_l (a : Adj B) : Hom.l (𝟙 a) = 𝟙 a.obj := rfl
+@[simp] lemma id_r (a : Adj B) : Hom.r (𝟙 a) = 𝟙 a.obj := rfl
 @[simp] lemma id_adj (a : Adj B) : Hom.adj (𝟙 a) = Adjunction.id a.obj := rfl
 
 variable {a b c d : Adj B}
 
-@[simp] lemma comp_f (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).f = α.f ≫ β.f := rfl
-@[simp] lemma comp_g (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).g = β.g ≫ α.g := rfl
+@[simp] lemma comp_l (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).l = α.l ≫ β.l := rfl
+@[simp] lemma comp_r (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).r = β.r ≫ α.r := rfl
 @[simp] lemma comp_adj (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).adj = α.adj.comp β.adj := rfl
 
 /-- A morphism between two adjunctions consists of a tuple of mate maps. -/
 @[ext]
 structure Hom₂ (α β : a ⟶ b) where
   /-- the morphism between left adjoints -/
-  τf : α.f ⟶ β.f
+  τl : α.l ⟶ β.l
   /-- the morphism in the opposite direction between right adjoints -/
-  τg : β.g ⟶ α.g
-  conjugateEquiv_τf : conjugateEquiv β.adj α.adj τf = τg := by aesop_cat
+  τr : β.r ⟶ α.r
+  conjugateEquiv_τl : conjugateEquiv β.adj α.adj τl = τr := by aesop_cat
 
 lemma Hom₂.conjugateEquiv_symm_τg {α β : a ⟶ b} (p : Hom₂ α β) :
-    (conjugateEquiv β.adj α.adj).symm p.τg = p.τf := by
-  rw [← Hom₂.conjugateEquiv_τf, Equiv.symm_apply_apply]
+    (conjugateEquiv β.adj α.adj).symm p.τr = p.τl := by
+  rw [← Hom₂.conjugateEquiv_τl, Equiv.symm_apply_apply]
 
 instance : CategoryStruct (a ⟶ b) where
   Hom α β := Hom₂ α β
   id α :=
-    { τf := 𝟙 _
-      τg := 𝟙 _ }
+    { τl := 𝟙 _
+      τr := 𝟙 _ }
   comp {a b c} x y :=
-    { τf := x.τf ≫ y.τf
-      τg := y.τg ≫ x.τg
-      conjugateEquiv_τf := by simp [← conjugateEquiv_comp c.adj b.adj a.adj y.τf x.τf,
-        Hom₂.conjugateEquiv_τf] }
+    { τl := x.τl ≫ y.τl
+      τr := y.τr ≫ x.τr
+      conjugateEquiv_τl := by simp [← conjugateEquiv_comp c.adj b.adj a.adj y.τl x.τl,
+        Hom₂.conjugateEquiv_τl] }
 
 @[ext]
-lemma hom₂_ext {α β : a ⟶ b} {x y : α ⟶ β} (hf : x.τf = y.τf) : x = y := by
-  apply Hom₂.ext hf
-  simp only [← Hom₂.conjugateEquiv_τf, hf]
+lemma hom₂_ext {α β : a ⟶ b} {x y : α ⟶ β} (hl : x.τl = y.τl) : x = y :=
+  Hom₂.ext hl (by simp only [← Hom₂.conjugateEquiv_τl, hl])
 
-@[simp] lemma id_τf (α : a ⟶ b) : Hom₂.τf (𝟙 α) = 𝟙 α.f := rfl
-@[simp] lemma id_τg (α : a ⟶ b) : Hom₂.τg (𝟙 α) = 𝟙 α.g := rfl
+@[simp] lemma id_τl (α : a ⟶ b) : Hom₂.τl (𝟙 α) = 𝟙 α.l := rfl
+@[simp] lemma id_τr (α : a ⟶ b) : Hom₂.τr (𝟙 α) = 𝟙 α.r := rfl
 
 section
 
 variable {α β γ : a ⟶ b}
 
-@[simp, reassoc] lemma comp_τf (x : α ⟶ β) (y : β ⟶ γ) : (x ≫ y).τf = x.τf ≫ y.τf := rfl
-@[simp, reassoc] lemma comp_τg (x : α ⟶ β) (y : β ⟶ γ) : (x ≫ y).τg = y.τg ≫ x.τg := rfl
+@[simp, reassoc] lemma comp_τl (x : α ⟶ β) (y : β ⟶ γ) : (x ≫ y).τl = x.τl ≫ y.τl := rfl
+@[simp, reassoc] lemma comp_τr (x : α ⟶ β) (y : β ⟶ γ) : (x ≫ y).τr = y.τr ≫ x.τr := rfl
 
 end
 
@@ -314,18 +250,18 @@ instance : Category (a ⟶ b) where
 
 /-- Constructor for isomorphisms between 1-morphisms in the bicategory `Adj B`. -/
 @[simps]
-def iso₂Mk {α β : a ⟶ b} (ef : α.f ≅ β.f) (eg : β.g ≅ α.g)
-    (h : conjugateEquiv β.adj α.adj ef.hom = eg.hom) :
+def iso₂Mk {α β : a ⟶ b} (el : α.l ≅ β.l) (er : β.r ≅ α.r)
+    (h : conjugateEquiv β.adj α.adj el.hom = er.hom) :
     α ≅ β where
   hom :=
-    { τf := ef.hom
-      τg := eg.hom
-      conjugateEquiv_τf := h }
+    { τl := el.hom
+      τr := er.hom
+      conjugateEquiv_τl := h }
   inv :=
-    { τf := ef.inv
-      τg := eg.inv
-      conjugateEquiv_τf := by
-        rw [← cancel_mono eg.hom, Iso.inv_hom_id, ← h,
+    { τl := el.inv
+      τr := er.inv
+      conjugateEquiv_τl := by
+        rw [← cancel_mono er.hom, Iso.inv_hom_id, ← h,
           conjugateEquiv_comp, Iso.hom_inv_id, conjugateEquiv_id] }
 
 /-- The associator in the bicategory `Adj B`. -/
@@ -348,20 +284,20 @@ def rightUnitor (α : a ⟶ b) : α ≫ 𝟙 b ≅ α :=
 /-- The left whiskering in the bicategory `Adj B`. -/
 @[simps]
 def whiskerLeft (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') : α ≫ β ⟶ α ≫ β' where
-  τf := _ ◁ y.τf
-  τg := y.τg ▷ _
-  conjugateEquiv_τf := by
+  τl := _ ◁ y.τl
+  τr := y.τr ▷ _
+  conjugateEquiv_τl := by
     dsimp
-    simp only [conjugateEquiv_whiskerLeft, Hom₂.conjugateEquiv_τf]
+    simp only [conjugateEquiv_whiskerLeft, Hom₂.conjugateEquiv_τl]
 
 /-- The right whiskering in the bicategory `Adj B`. -/
 @[simps]
 def whiskerRight {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) : α ≫ β ⟶ α' ≫ β where
-  τf := x.τf ▷ _
-  τg := _ ◁ x.τg
-  conjugateEquiv_τf := by
+  τl := x.τl ▷ _
+  τr := _ ◁ x.τr
+  conjugateEquiv_τl := by
     dsimp
-    simp only [conjugateEquiv_whiskerRight, Hom₂.conjugateEquiv_τf]
+    simp only [conjugateEquiv_whiskerRight, Hom₂.conjugateEquiv_τl]
 
 attribute [local simp] whisker_exchange
 
@@ -372,18 +308,18 @@ instance : Bicategory (Adj B) where
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
 
-@[simp] lemma whiskerRight_τg' {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) :
-    (x ▷ β).τg = β.g ◁ x.τg := rfl
+@[simp] lemma whiskerRight_τr' {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) :
+    (x ▷ β).τr = β.r ◁ x.τr := rfl
 
-@[simp] lemma whiskerRight_τf' {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) :
-    (x ▷ β).τf = x.τf ▷ β.f := rfl
+@[simp] lemma whiskerRight_τl' {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) :
+    (x ▷ β).τl = x.τl ▷ β.l := rfl
 
--- this forgets the right adjoints
-@[simps obj map, simps -isSimp map₂ mapId mapComp]
+/-- The forget pseudofunctor from `Adj B` to `B`. -/
+@[simps obj map map₂ mapId mapComp]
 def forget₁ : Pseudofunctor (Adj B) B where
   obj a := a.obj
-  map x := x.f
-  map₂ α := α.τf
+  map x := x.l
+  map₂ α := α.τl
   mapId _ := Iso.refl _
   mapComp _ _ := Iso.refl _
 
@@ -391,28 +327,52 @@ def forget₁ : Pseudofunctor (Adj B) B where
 @[simps obj map, simps -isSimp map₂ mapId mapComp]
 def forget₂ : Pseudofunctor (Adj B)ᵒᵖ B where
   obj a := a.unop.obj
-  map x := x.unop.g
-  map₂ α := α.unop.τg
+  map x := x.unop.r
+  map₂ α := α.unop.τr
   mapId _ := Iso.refl _
   mapComp _ _ := Iso.refl _
 
+/-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
+underlying isomorphisms between the left adjoints. -/
 @[simps]
-def fIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.f ≅ adj₂.f where
-  hom := e.hom.τf
-  inv := e.inv.τf
-  hom_inv_id := by rw [← comp_τf, e.hom_inv_id, id_τf]
-  inv_hom_id := by rw [← comp_τf, e.inv_hom_id, id_τf]
+def lIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.l ≅ adj₂.l where
+  hom := e.hom.τl
+  inv := e.inv.τl
+  hom_inv_id := by rw [← comp_τl, e.hom_inv_id, id_τl]
+  inv_hom_id := by rw [← comp_τl, e.inv_hom_id, id_τl]
 
+@[reassoc (attr := simp)]
+lemma hom_inv_τl {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) :
+    e.hom.τl ≫ e.inv.τl = 𝟙 _ :=
+  (lIso e).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma inv_hom_τl {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) :
+    e.inv.τl ≫ e.hom.τl = 𝟙 _ :=
+  (lIso e).inv_hom_id
+
+/-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
+underlying isomorphisms between the right adjoints. -/
 @[simps]
-def gIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.g ≅ adj₂.g where
-  hom := e.inv.τg
-  inv := e.hom.τg
-  hom_inv_id := by rw [← comp_τg, e.hom_inv_id, id_τg]
-  inv_hom_id := by rw [← comp_τg, e.inv_hom_id, id_τg]
+def rIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.r ≅ adj₂.r where
+  hom := e.inv.τr
+  inv := e.hom.τr
+  hom_inv_id := by rw [← comp_τr, e.hom_inv_id, id_τr]
+  inv_hom_id := by rw [← comp_τr, e.inv_hom_id, id_τr]
+
+@[reassoc (attr := simp)]
+lemma hom_inv_τr {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) :
+    e.hom.τr ≫ e.inv.τr = 𝟙 _ :=
+  (rIso e).inv_hom_id
+
+@[reassoc (attr := simp)]
+lemma inv_hom_τr {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) :
+    e.inv.τr ≫ e.hom.τr = 𝟙 _ :=
+  (rIso e).hom_inv_id
 
 lemma comp_forget₁_mapComp' {B : Type*} [Bicategory B] (F : Pseudofunctor B (Adj Cat))
     {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c) (hfg : f ≫ g = fg) :
-    (F.comp forget₁).mapComp' f g fg hfg = fIso (F.mapComp' f g fg hfg) := by
+    (F.comp forget₁).mapComp' f g fg hfg = lIso (F.mapComp' f g fg hfg) := by
   subst hfg
   ext
   simp [Pseudofunctor.mapComp'_eq_mapComp, forget₁]
