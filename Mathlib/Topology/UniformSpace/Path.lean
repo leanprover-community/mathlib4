@@ -13,7 +13,7 @@ import Mathlib.Topology.ContinuousMap.Interval
 # Paths in uniform spaces
 
 In this file we define a `UniformSpace` structure on `Path`s
-between two points in a uniformspace
+between two points in a uniform space
 and prove that various functions associated with `Path`s are uniformly continuous.
 -/
 
