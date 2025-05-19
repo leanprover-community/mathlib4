@@ -432,11 +432,6 @@ theorem map_sup_ker_eq_map' :
   simpa using map_sup_ker_eq_map (f := f)
 
 @[simp]
-theorem map_comap_eq' (h : f.IsIdealMorphism) : map f (comap f J) = f.idealRange ⊓ J := by
-  simp at h
-  simp [h]
-
-@[simp]
 theorem map_comap_eq (h : f.IsIdealMorphism) : map f (comap f J) = f.idealRange ⊓ J := by
   apply le_antisymm
   · rw [le_inf_iff]; exact ⟨f.map_le_idealRange _, map_comap_le⟩
