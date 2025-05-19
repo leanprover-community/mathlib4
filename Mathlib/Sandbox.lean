@@ -307,7 +307,7 @@ theorem Ideal.ne_bot_of_le_comap_algebra {A : Type*} [CommRing A] {p : Ideal A} 
     (hP : p ≤ comap (algebraMap A B) P) :
     P ≠ ⊥ := by
   contrapose! hp
-  simpa [hp] using hP
+  simpa? [hp] using hP
 
 theorem Ideal.ne_bot_of_liesOver_of_ne_bot' {A : Type*} [CommRing A] {B : Type*} [Ring B]
     [Nontrivial B] [Algebra A B] [NoZeroSMulDivisors A B] {p : Ideal A} (hp : p ≠ ⊥)

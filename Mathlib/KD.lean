@@ -36,6 +36,13 @@ theorem mem_conductor_iff_exponent_dvd [NumberField K] {d : ℕ} :
   rw [Ideal.mem_span_singleton]
   rfl
 
+open Classical in
+example [NumberField K] : 1 = 0 := by
+  let B := Algebra.adjoin.powerBasis' θ.isIntegral
+  sorry
+--    (exponent θ) ^ 2 * NumberField.discr K ∣
+--      Algebra.discr ℤ (Algebra.adjoin.powerBasis θ.isIntegral) := sorry
+
 variable (θ)
 
 theorem exponent_eq_sInf [NumberField K] :
