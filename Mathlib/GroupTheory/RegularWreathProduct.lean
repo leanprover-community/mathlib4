@@ -209,9 +209,6 @@ instance [Finite G] : Finite (IteratedWreathProduct G n) := by
   | zero => rw [IteratedWreathProduct_zero]; exact Finite.of_subsingleton
   | succ n h => rw [IteratedWreathProduct_succ]; exact RegularWreathProduct.instFinite
 
-lemma elem_P0 (p : ℕ) (P : Sylow p (Equiv.Perm (Fin (1)))) (x : P):
-    x = 1 := Subsingleton.eq_one x
-
 theorem iter_wreath_card {p n : ℕ}
     (G : Type u) [Finite G] (h : Nat.card G = p) :
     Nat.card (IteratedWreathProduct G n) = p ^ (∑ i ∈ Finset.range n, p ^ i) := by
@@ -267,7 +264,7 @@ noncomputable def sylowIsIteratedWreathProduct (p n : ℕ) [Fact (Nat.Prime p)]
   | zero => exact {
       toFun := 1
       invFun := 1
-      left_inv x := by rw [Pi.one_apply, elem_P0 p P x]
+      left_inv x := by simp only [Nat.pow_zero]; apply Subsingleton.elim
       right_inv x:= by rw [Pi.one_apply]; rfl
       map_mul' := by simp}
   | succ n h_n =>
