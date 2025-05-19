@@ -59,8 +59,8 @@ variable {K}
 
 theorem exists_isConj (φ : K →+* ℂ) :
     ∃ σ : K ≃ₐ[F] K, IsConj φ σ :=
-  exists_isConj_of_not_isUnramified <|
-    not_isUnramified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
+  exists_isConj_of_isRamified <|
+    isRamified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
 
 omit [IsTotallyReal F] in
 /--
