@@ -10,10 +10,6 @@ import Mathlib.GroupTheory.SpecificGroups.Alternating
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.SetTheory.Cardinal.Embedding
--- import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
--- import Mathlib.Data.Finite.Card
--- import Mathlib.Data.Set.Card
--- import Mathlib.SetTheory.Cardinal.Finite
 
 /-! # Multiple transitivity
 
@@ -523,15 +519,14 @@ namespace Equiv.Perm
 
 open Equiv MulAction
 
-variable {α : Type*} [Fintype α]
+variable {α : Type*} [Finite α]
 
 -- Move?
 /-- The permutation group of `α` acts transitively on `α`. -/
 instance : IsPretransitive (Perm α) α where
   exists_smul_eq x y := by
     classical
-    use Equiv.swap x y
-    simp only [Equiv.Perm.smul_def, Equiv.swap_apply_left x y]
+    exact ⟨Equiv.swap x y, by simp⟩
 
 /-- The permutation group of `α` acts 2-pretransitively on `α`. -/
 theorem is_two_pretransitive (α : Type*) :
@@ -575,7 +570,7 @@ theorem isMultiplyPretransitive (n : ℕ) : IsMultiplyPretransitive (Perm  α) �
           ext; simp
         constructor
         all_goals
-          simp only [Fintype.bijective_iff_injective_and_card, card_eq_fintype_card,
+          simp only [Nat.bijective_iff_injective_and_card, card_eq_fintype_card,
             Fintype.card_fin, and_true, EmbeddingLike.injective] }
   · suffices IsEmpty (Fin n ↪ α) by
       infer_instance
@@ -588,44 +583,39 @@ theorem isMultiplyPretransitive (n : ℕ) : IsMultiplyPretransitive (Perm  α) �
 /-- A subgroup of `Perm α` is `⊤` if(f) it is `(Nat.card α - 1)`-pretransitive. -/
 theorem eq_top_of_isMultiplyPretransitive {G : Subgroup (Equiv.Perm α)}
     (hmt : IsMultiplyPretransitive G α (Nat.card α - 1)) : G = ⊤ := by
+  have : Fintype α := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card] at hmt
   let j : Fin (Fintype.card α - 1) ↪ Fin (Fintype.card α) :=
     (Fin.castLEEmb ((Fintype.card α).sub_le 1))
-  rw [eq_top_iff]; intro k _
-  let x : Fin (Fintype.card α) ↪ α :=
-    (Fintype.equivFinOfCardEq rfl).symm.toEmbedding
+  rw [eq_top_iff]
+  intro k _
+  let x : Fin (Fintype.card α) ↪ α := (Fintype.equivFinOfCardEq rfl).symm.toEmbedding
   let x' := j.trans x
   obtain ⟨g, hg'⟩ := exists_smul_eq G x' (k • x')
   suffices k = g by rw [this]; exact SetLike.coe_mem g
-  have hx : ∀ x : Fin (Fintype.card α) ↪ α, Function.Surjective x.toFun := by
-    intro x
+  have hx (x : Fin (Fintype.card α) ↪ α) : Function.Surjective x.toFun := by
     apply Function.Bijective.surjective
     rw [Fintype.bijective_iff_injective_and_card]
     exact ⟨EmbeddingLike.injective x, Fintype.card_fin (Fintype.card α)⟩
-  have hgk' : ∀ (i : Fin (Fintype.card α)) (_ : i.val < Fintype.card α - 1),
-    (g • x) i = (k • x) i := by
-    intro i hi
-    exact Function.Embedding.ext_iff.mp hg' ⟨i.val, hi⟩
-  have hgk : ∀ i : Fin (Fintype.card α), (g • x) i = (k • x) i := by
-    intro i
+  have hgk' (i : Fin (Fintype.card α)) (hi : i.val < Fintype.card α - 1) :
+      (g • x) i = (k • x) i :=
+    Function.Embedding.ext_iff.mp hg' ⟨i.val, hi⟩
+  have hgk (i : Fin (Fintype.card α)) : (g • x) i = (k • x) i := by
     rcases lt_or_eq_of_le (le_sub_one_of_lt i.prop) with hi | hi
     · exact hgk' i hi
     · obtain ⟨j, hxj : (k • x) j = (g • x) i⟩ := hx (k • x) ((g • x) i)
       rcases lt_or_eq_of_le (le_sub_one_of_lt j.prop) with hj | hj
-      · exfalso
-        suffices i = j by rw [← this, ← hi] at hj; refine lt_irrefl _ hj
+      · suffices i = j by
+          rw [← this, ← hi] at hj
+          exact (lt_irrefl _ hj).elim
         apply EmbeddingLike.injective (g • x)
-        rw [hgk' j hj]; rw [hxj]
+        rw [hgk' j hj, hxj]
       · rw [← hxj]
         apply congr_arg
         rw [Fin.ext_iff, hi, hj]
-  apply Equiv.Perm.ext; intro a
+  ext a
   obtain ⟨i, rfl⟩ := (hx x) a
-  let zi := hgk i
-  simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at zi
-  simp only [Function.Embedding.toFun_eq_coe]
-  rw [← zi]
-  rfl
+  simp [← hgk, subgroup_smul_def, ← Equiv.Perm.smul_def, ← Function.Embedding.smul_apply]
 
 end Equiv.Perm
 
@@ -633,17 +623,15 @@ namespace AlternatingGroup
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
-/-- The `alternatingGroup` on α is (Fintype.card α - 2)-pretransitive -/
+/-- The `alternatingGroup` on α is (Fintype.card α - 2)-pretransitive. -/
 theorem isMultiplyPretransitive :
     IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α - 2) := by
-  rcases lt_or_ge (Nat.card α) 2 with h2 | h2
+  rcases lt_or_le (Nat.card α) 2 with h2 | h2
   · rw [Nat.sub_eq_zero_of_le (le_of_lt h2)]
     apply is_zero_pretransitive
   have : IsMultiplyPretransitive (Equiv.Perm α) α (Nat.card α) :=
         Equiv.Perm.isMultiplyPretransitive α _
   have h2le : Nat.card α - 2 ≤ Nat.card α:= sub_le (Nat.card α) 2
-  have h2eq : Nat.card α - 2 + 2 = Nat.card α := Nat.sub_add_cancel h2
-    -- add_le_of_le_sub h2 (Nat.le_refl _)
   exact {
     exists_smul_eq x y := by
       have : IsMultiplyPretransitive (Equiv.Perm α) α (Nat.card α) :=
@@ -680,7 +668,7 @@ theorem isMultiplyPretransitive :
               coe_castLE, Nat.ne_of_lt hiu, Nat.ne_of_lt hiv] }
 
 /-- A subgroup of `Equiv.Perm α` which is (Fintype.card α - 2)-pretransitive
-  contains `alternatingGroup α` -/
+  contains `alternatingGroup α`. -/
 theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
     (G : Subgroup (Equiv.Perm α))
     (hmt : IsMultiplyPretransitive G α (Nat.card α - 2)) :
@@ -688,13 +676,12 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
   rcases Nat.lt_or_ge (Nat.card α) 2 with hα1 | hα
   · -- Nat.card α  < 2
     rw [Nat.lt_succ_iff] at hα1
-    suffices alternatingGroup α = ⊥ by
-      rw [this]; exact bot_le
+    suffices alternatingGroup α = ⊥ by rw [this]; exact bot_le
     refine alternatingGroup.eq_bot_of_card_le_two ?_
     rw [← Nat.card_eq_fintype_card]
     exact le_succ_of_le hα1
+  -- 2 ≤ Nat.card α
   apply Equiv.Perm.alternatingGroup_le_of_index_le_two
-
   -- one picks up a set of cardinality (card α - 2)
   obtain ⟨s, _, hs⟩ :=
     Set.exists_subset_card_eq (s := (Set.univ : Set α)) (n := Nat.card α - 2)
@@ -713,7 +700,7 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
   rw [this, Nat.card_perm]
   refine Nat.le_mul_of_pos_right (Nat.card α)! card_pos
 
-/-- The alternating group on 3 letters or more acts transitively -/
+/-- The alternating group on 3 letters or more acts transitively. -/
 theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
     IsPretransitive (alternatingGroup α) α := by
   rw [← is_one_pretransitive_iff]
@@ -726,12 +713,10 @@ open scoped Pointwise
 
 /-- The action of the alternation group has trivial blocks.
 
-This holds for any α, even when `Nat.card α ≤ 2` and the action
+This holds for any `α`, even when `Nat.card α ≤ 2` and the action
 is not preprimitive, because it is not pretransitive. -/
-theorem isTrivialBlock_of_isBlock {B : Set α}
-    (hB : IsBlock (alternatingGroup α) B) :
+theorem isTrivialBlock_of_isBlock {B : Set α} (hB : IsBlock (alternatingGroup α) B) :
     IsTrivialBlock B := by
-  classical
   rcases le_or_lt (Nat.card α) 2 with h2 | h2
   · exact isTrivialBlock_of_card_le_two h2 B
   rcases le_or_lt (Nat.card α) 3 with h3 | h4
