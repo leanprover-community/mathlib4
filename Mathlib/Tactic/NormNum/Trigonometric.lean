@@ -66,3 +66,13 @@ end NormNum
 end Meta
 
 end Mathlib
+
+open Real in
+example : cos (2 * π / 3) = - 1 / 2 := by
+  simp only [Mathlib.Meta.NormNum.cos_mul_pi_div, one_mul, cos_pi_div_three, one_div]
+  norm_num
+
+open Real in
+example : cos (4 * π / 3) = - 1 / 2 := by
+  simp only [Mathlib.Meta.NormNum.cos_mul_pi_div, one_mul, cos_pi_div_three, one_div]
+  norm_num
