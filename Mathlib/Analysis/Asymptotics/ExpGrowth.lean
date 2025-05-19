@@ -355,7 +355,7 @@ lemma expGrowthSup_sum {α : Type*} (u : α → ℕ → ℝ≥0∞) (s : Finset 
   induction s using Finset.induction_on with
   | empty => rw [Finset.sum_empty, ← Finset.iSup_coe, Finset.coe_empty, iSup_emptyset,
     expGrowthSup_zero]
-  | @insert a t a_t ha => rw [Finset.sum_insert a_t, expGrowthSup_add, ← Finset.iSup_coe,
+  | insert a t a_t ha => rw [Finset.sum_insert a_t, expGrowthSup_add, ← Finset.iSup_coe,
     Finset.coe_insert a t, iSup_insert, Finset.iSup_coe, ha]
 
 end basic_properties

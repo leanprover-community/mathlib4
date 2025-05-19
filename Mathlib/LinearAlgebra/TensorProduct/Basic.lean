@@ -256,8 +256,8 @@ the tensor product (over `R`) carries an action of `R'`.
 
 This instance defines this `R'` action in the case that it is the left module which has the `R'`
 action. Two natural ways in which this situation arises are:
- * Extension of scalars
- * A tensor product of a group representation with a module not carrying an action
+* Extension of scalars
+* A tensor product of a group representation with a module not carrying an action
 
 Note that in the special case that `R = R'`, since `R` is commutative, we just get the usual scalar
 action on a tensor product of two modules. This special case is important enough that, for
@@ -432,14 +432,14 @@ theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
   classical
     induction s using Finset.induction with
     | empty => simp
-    | insert has ih => simp [Finset.sum_insert has, add_tmul, ih]
+    | insert _ _ has ih => simp [Finset.sum_insert has, add_tmul, ih]
 
 theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
     (m ⊗ₜ[R] ∑ a ∈ s, n a) = ∑ a ∈ s, m ⊗ₜ[R] n a := by
   classical
     induction s using Finset.induction with
     | empty => simp
-    | insert has ih => simp [Finset.sum_insert has, tmul_add, ih]
+    | insert _ _ has ih => simp [Finset.sum_insert has, tmul_add, ih]
 
 end
 

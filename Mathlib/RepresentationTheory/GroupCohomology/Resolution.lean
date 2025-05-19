@@ -39,12 +39,12 @@ standard projective resolution of `k` as a trivial `k`-linear `G`-representation
 
 ## Main definitions
 
- * `groupCohomology.resolution.actionDiagonalSucc`
- * `groupCohomology.resolution.diagonalSucc`
- * `groupCohomology.resolution.ofMulActionBasis`
- * `classifyingSpaceUniversalCover`
- * `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
- * `groupCohomology.projectiveResolution`
+* `groupCohomology.resolution.actionDiagonalSucc`
+* `groupCohomology.resolution.diagonalSucc`
+* `groupCohomology.resolution.ofMulActionBasis`
+* `classifyingSpaceUniversalCover`
+* `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
+* `groupCohomology.projectiveResolution`
 
 ## Implementation notes
 
@@ -569,7 +569,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   · rw [ModuleCat.hom_comp]
     congr
     · ext x
-      dsimp (config := { unfoldPartialApp := true }) [HomotopyEquiv.ofIso,
+      dsimp +unfoldPartialApp [HomotopyEquiv.ofIso,
         Finsupp.LinearEquiv.finsuppUnique]
       rw [@Unique.eq_default _ Types.terminalIso.toEquiv.unique x]
       simp
