@@ -128,24 +128,22 @@ def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
     dsimp [freeMk, carrier_obj_free]
     rw [Finsupp.single_eq_same]
 
---@[simp]
 lemma hom_hom_εIso : (εIso R).hom.hom = Finsupp.lsingle PUnit.unit := rfl
 
---@[simp]
 lemma inv_hom_εIso : (εIso R).inv.hom = Finsupp.lapply PUnit.unit := rfl
 
 @[simp]
 lemma εIso_hom_one :
     DFunLike.coe (F := (R →ₗ[R] ((free R).obj (𝟙_ (Type u)))))
       (ModuleCat.Hom.hom (εIso R).hom) 1 = freeMk PUnit.unit := rfl
-#lint
+
 @[simp]
 lemma εIso_inv_freeMk (x : PUnit) :
     DFunLike.coe (F := ((free R).obj (𝟙_ (Type u)) →ₗ[R] R))
       (ModuleCat.Hom.hom (εIso R).inv) (freeMk x) = 1 := by
   dsimp [εIso, freeMk, carrier_obj_free]
   rw [Finsupp.single_eq_same]
-#lint
+
 /-- The canonical isomorphism `(free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y)`
 for two types `X` and `Y`.
 (This should not be used directly: it is is part of the implementation of the
