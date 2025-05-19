@@ -102,9 +102,13 @@ theorem scalar_product_char_eq_finrank_equivariant (V W : FDRep k G) :
     ⅟ (Fintype.card G : k) • ∑ g : G, W.character g * V.character g⁻¹ =
     Module.finrank k (V ⟶ W) := by
   conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← FDRep.char_linHom]
+-- The scalar product is the character of `Hom(V, W).`
   rw [FDRep.average_char_eq_finrank_invariants, ← LinearEquiv.finrank_eq
     (Representation.linHom.invariantsEquivFDRepHom V W), of_ρ']
   rfl
+-- The average over the group of the character of a representation equals the dimension of the
+-- space of invariants, and the space of invariants of `Hom(W, V)` is the subspace of
+--`G`-equivariant linear maps, `Hom_G(W, V)`.
 
 end Group
 
