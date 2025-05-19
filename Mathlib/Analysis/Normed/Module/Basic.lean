@@ -67,7 +67,7 @@ theorem norm_intCast_eq_abs_mul_norm_one (α) [SeminormedRing α] [NormSMulClass
     ‖(n : α)‖ = |n| * ‖(1 : α)‖ := by
   rw [← zsmul_one, norm_smul, Int.norm_eq_abs, Int.cast_abs]
 
-theorem norm_natCast_eq_abs_mul_norm_one (α) [SeminormedRing α] [NormSMulClass ℤ α] (n : ℕ) :
+theorem norm_natCast_eq_mul_norm_one (α) [SeminormedRing α] [NormSMulClass ℤ α] (n : ℕ) :
     ‖(n : α)‖ = n * ‖(1 : α)‖ := by
   simpa using norm_intCast_eq_abs_mul_norm_one α n
 

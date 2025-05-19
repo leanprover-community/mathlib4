@@ -34,7 +34,7 @@ theorem tendsto_natCast_atTop_cobounded
     [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
     Tendsto Nat.cast atTop (Bornology.cobounded α) := by
   rw [← tendsto_norm_atTop_iff_cobounded]
-  simpa [norm_natCast_eq_abs_mul_norm_one] using tendsto_natCast_atTop_atTop
+  simpa [norm_natCast_eq_mul_norm_one] using tendsto_natCast_atTop_atTop
     |>.atTop_mul_const (norm_pos_iff.mpr one_ne_zero)
 
 theorem tendsto_intCast_atBot_sup_atTop_cobounded
