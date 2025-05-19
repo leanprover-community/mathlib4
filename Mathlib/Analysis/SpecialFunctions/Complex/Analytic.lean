@@ -153,6 +153,39 @@ lemma AnalyticOn.log (fs : AnalyticOn ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
     AnalyticOn ℝ (fun z ↦ Real.log (f z)) s :=
   fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) m
 
+/-- The function `Real.cos` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_cos : AnalyticAt ℝ Real.cos x :=
+  Real.contDiff_cos.contDiffAt.analyticAt
+
+/-- The function `Real.cos` is real analytic. -/
+lemma analyticWithinAt_cos :  AnalyticWithinAt ℝ Real.cos s x :=
+  Real.contDiff_cos.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.cos` is real analytic. -/
+theorem analyticOnNhd_cos : AnalyticOnNhd ℝ Real.cos s :=
+  fun _ _ ↦ analyticAt_cos
+
+/-- The function `Real.cos` is real analytic. -/
+lemma analyticOn_cos :  AnalyticOn ℝ Real.cos s :=
+  Real.contDiff_cos.contDiffOn.analyticOn
+
+/-- The function `Real.cosh` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_cosh : AnalyticAt ℝ Real.cosh x :=
+  Real.contDiff_cosh.contDiffAt.analyticAt
+
+/-- The function `Real.cosh` is real analytic. -/
+lemma analyticWithinAt_cosh :  AnalyticWithinAt ℝ Real.cosh s x :=
+  Real.contDiff_cosh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.cosh` is real analytic. -/
+theorem analyticOnNhd_cosh : AnalyticOnNhd ℝ Real.cosh s :=
+  fun _ _ ↦ analyticAt_cosh
+
+/-- The function `Real.cosh` is real analytic. -/
+lemma analyticOn_cosh :  AnalyticOn ℝ Real.cosh s :=
+  Real.contDiff_cosh.contDiffOn.analyticOn
 
 /-- The function `Real.sin` is real analytic. -/
 @[fun_prop]
@@ -160,6 +193,49 @@ lemma analyticAt_sin : AnalyticAt ℝ Real.sin x :=
   Real.contDiff_sin.contDiffAt.analyticAt
 
 /-- The function `Real.sin` is real analytic. -/
+lemma analyticWithinAt_sin :  AnalyticWithinAt ℝ Real.sin s x :=
+  Real.contDiff_sin.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.sin` is real analytic. -/
 theorem analyticOnNhd_sin : AnalyticOnNhd ℝ Real.sin s :=
   fun _ _ ↦ analyticAt_sin
+
+/-- The function `Real.sin` is real analytic. -/
+lemma analyticOn_sin :  AnalyticOn ℝ Real.sin s :=
+  Real.contDiff_sin.contDiffOn.analyticOn
+
+/-- The function `Real.sinh` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_sinh : AnalyticAt ℝ Real.sinh x :=
+  Real.contDiff_sinh.contDiffAt.analyticAt
+
+/-- The function `Real.sinh` is real analytic. -/
+lemma analyticWithinAt_sinh :  AnalyticWithinAt ℝ Real.sinh s x :=
+  Real.contDiff_sinh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.sinh` is real analytic. -/
+theorem analyticOnNhd_sinh : AnalyticOnNhd ℝ Real.sinh s :=
+  fun _ _ ↦ analyticAt_sinh
+
+/-- The function `Real.sinh` is real analytic. -/
+lemma analyticOn_sinh :  AnalyticOn ℝ Real.sinh s :=
+  Real.contDiff_sinh.contDiffOn.analyticOn
+
+/-- The function `Real.exp` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_exp : AnalyticAt ℝ Real.exp x :=
+  Real.contDiff_exp.contDiffAt.analyticAt
+
+/-- The function `Real.exp` is real analytic. -/
+lemma analyticWithinAt_exp :  AnalyticWithinAt ℝ Real.exp s x :=
+  Real.contDiff_exp.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.exp` is real analytic. -/
+theorem analyticOnNhd_exp : AnalyticOnNhd ℝ Real.exp s :=
+  fun _ _ ↦ analyticAt_exp
+
+/-- The function `Real.exp` is real analytic. -/
+lemma analyticOn_exp :  AnalyticOn ℝ Real.exp s :=
+  Real.contDiff_exp.contDiffOn.analyticOn
+
 end Real
