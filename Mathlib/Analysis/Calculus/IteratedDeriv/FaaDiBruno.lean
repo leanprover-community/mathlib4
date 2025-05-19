@@ -100,8 +100,8 @@ theorem iteratedDerivWithin_vcomp_three
   simp? [add_assoc, two_smul, iteratedFDerivWithin_one_apply (ht _ <| hst hx)] says
     simp only [OrderedFinpartition.extendLeft_partSize, OrderedFinpartition.extendLeft_length,
       OrderedFinpartition.atomic_length, Nat.reduceAdd, OrderedFinpartition.atomic_partSize,
-      Fin.isValue, OrderedFinpartition.extendMiddle_partSize, Fin.cons_zero, Fin.cons_one,
-      Fin.default_eq_zero, OrderedFinpartition.extendMiddle_length, Fin.cons_update,
+      Fin.isValue, OrderedFinpartition.extendMiddle_partSize, Fin.cons_zero, Fin.update_cons_zero,
+      Fin.cons_one, Fin.default_eq_zero, OrderedFinpartition.extendMiddle_length, Fin.cons_update,
       Fin.succ_zero_eq_one, update_self, update_idem,
       iteratedFDerivWithin_one_apply (ht _ <| hst hx), add_assoc, two_smul]
   have (j) : (Fin.cons 1 (Fin.cons 1 fun _ ↦ 1) : Fin 3 → ℕ) j = 1 := by

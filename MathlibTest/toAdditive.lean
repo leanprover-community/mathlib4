@@ -458,3 +458,24 @@ warning: declaration uses 'sorry'
 #guard_msgs in
 @[to_additive]
 instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
+
+-- Test the error message for a wrong `to_additive existing`.
+
+/--
+error: `to_additive` validation failed:
+  expected 1 universe levels, but 'Nat.le_trans' has 0 universe levels
+-/
+#guard_msgs in
+@[to_additive existing Nat.le_trans]
+lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+
+/--
+error: `to_additive` validation failed: expected
+  ∀ {α : Type u} [inst : Zero α], 0 = 0
+but 'Eq.trans' has type
+  ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
+-/
+#guard_msgs in
+@[to_additive existing Eq.trans]
+lemma one_eq_one''' {α : Type*} [One α] : (1 : α) = 1 := rfl

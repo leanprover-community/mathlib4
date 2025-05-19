@@ -16,14 +16,14 @@ root pairings.
 
 ## Main results:
 
- * `RootPairing.coxeterWeightIn_mem_set_of_isCrystallographic`: the Coxeter weights of a finite
-   crystallographic root pairing belong to the set `{0, 1, 2, 3, 4}`.
- * `RootPairing.root_sub_root_mem_of_pairingIn_pos`: if `α ≠ β` are both roots of a finite
-   crystallographic root pairing, and the pairing of `α` with `β` is positive, then `α - β` is also
-   a root.
- * `RootPairing.root_add_root_mem_of_pairingIn_neg`: if `α ≠ -β` are both roots of a finite
-   crystallographic root pairing, and the pairing of `α` with `β` is negative, then `α + β` is also
-   a root.
+* `RootPairing.coxeterWeightIn_mem_set_of_isCrystallographic`: the Coxeter weights of a finite
+  crystallographic root pairing belong to the set `{0, 1, 2, 3, 4}`.
+* `RootPairing.root_sub_root_mem_of_pairingIn_pos`: if `α ≠ β` are both roots of a finite
+  crystallographic root pairing, and the pairing of `α` with `β` is positive, then `α - β` is also
+  a root.
+* `RootPairing.root_add_root_mem_of_pairingIn_neg`: if `α ≠ -β` are both roots of a finite
+  crystallographic root pairing, and the pairing of `α` with `β` is negative, then `α + β` is also
+  a root.
 
 -/
 
@@ -105,13 +105,13 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed [P.IsReduced] :
         (-3, -1), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
   have := P.reflexive_left
   rcases eq_or_ne i j with rfl | h₁; · simp
-  rcases eq_or_ne (P.root i) (-P.root j) with h₂ | h₂; · aesop
+  rcases eq_or_ne (α i) (-α j) with h₂ | h₂; · aesop
   have aux₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   have aux₂ : P.pairingIn ℤ i j * P.pairingIn ℤ j i ≠ 4 := P.coxeterWeightIn_ne_four ℤ h₁ h₂
   aesop -- #24551 (this should be faster)
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' [P.IsReduced]
-    (hij : P.root i ≠ P.root j) (hij' : P.root i ≠ - P.root j) :
+    (hij : α i ≠ α j) (hij' : α i ≠ - α j) :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
         (-3, -1)} : Set (ℤ × ℤ)) := by
@@ -136,7 +136,7 @@ lemma RootPositiveForm.rootLength_le_of_pairingIn_eq (B : P.RootPositiveForm ℤ
 variable {P} in
 lemma RootPositiveForm.rootLength_lt_of_pairingIn_nmem
     (B : P.RootPositiveForm ℤ) {i j : ι}
-    (hne : P.root i ≠ P.root j) (hne' : P.root i ≠ - P.root j)
+    (hne : α i ≠ α j) (hne' : α i ≠ - α j)
     (hij : P.pairingIn ℤ i j ∉ ({-1, 0, 1} : Set ℤ)) :
     B.rootLength j < B.rootLength i := by
   have hij' : P.pairingIn ℤ i j = -3 ∨ P.pairingIn ℤ i j = -2 ∨ P.pairingIn ℤ i j = 2 ∨
@@ -154,7 +154,7 @@ lemma RootPositiveForm.rootLength_lt_of_pairingIn_nmem
 
 variable {i j} in
 lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
-    (len_eq : B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j)) :
+    (len_eq : B.form (α i) (α i) = B.form (α j) (α j)) :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
   replace len_eq : P.pairingIn ℤ i j = P.pairingIn ℤ j i := by
@@ -165,8 +165,8 @@ lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
 
 variable {i j} in
 lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne {B : P.InvariantForm}
-    (len_eq : B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j))
-    (ne : i ≠ j) (ne' : P.root i ≠ -P.root j) :
+    (len_eq : B.form (α i) (α i) = B.form (α j) (α j))
+    (ne : i ≠ j) (ne' : α i ≠ -α j) :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈ ({(0, 0), (1, 1), (-1, -1)} : Set (ℤ × ℤ)) := by
   have := P.reflexive_left
   have := P.pairingIn_pairingIn_mem_set_of_length_eq len_eq
@@ -221,6 +221,9 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     · rw [and_comm] at hij
       simp [(P.pairingIn_one_four_iff ℤ j i).mp hij, two_smul]
 
+/-- If two roots make an obtuse angle then their sum is a root (provided it is not zero).
+
+See `RootPairing.pairingIn_le_zero_of_root_add_mem` for a partial converse. -/
 lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α i ≠ - α j) :
     α i + α j ∈ Φ := by
   let _i := P.indexNeg
@@ -234,15 +237,15 @@ variable [P.IsReduced] (B : P.InvariantForm)
 variable {P}
 
 lemma apply_eq_or_aux (i j : ι) (h : P.pairingIn ℤ i j ≠ 0) :
-    B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j) ∨
-    B.form (P.root i) (P.root i) = 2 * B.form (P.root j) (P.root j) ∨
-    B.form (P.root i) (P.root i) = 3 * B.form (P.root j) (P.root j) ∨
-    B.form (P.root j) (P.root j) = 2 * B.form (P.root i) (P.root i) ∨
-    B.form (P.root j) (P.root j) = 3 * B.form (P.root i) (P.root i) := by
+    B.form (α i) (α i) = B.form (α j) (α j) ∨
+    B.form (α i) (α i) = 2 * B.form (α j) (α j) ∨
+    B.form (α i) (α i) = 3 * B.form (α j) (α j) ∨
+    B.form (α j) (α j) = 2 * B.form (α i) (α i) ∨
+    B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
   have := P.reflexive_left
   have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
-  have h₂ : algebraMap ℤ R (P.pairingIn ℤ j i) * B.form (P.root i) (P.root i) =
-            algebraMap ℤ R (P.pairingIn ℤ i j) * B.form (P.root j) (P.root j) := by
+  have h₂ : algebraMap ℤ R (P.pairingIn ℤ j i) * B.form (α i) (α i) =
+            algebraMap ℤ R (P.pairingIn ℤ i j) * B.form (α j) (α j) := by
     simpa only [algebraMap_pairingIn] using B.pairing_mul_eq_pairing_mul_swap i j
   aesop -- #24551 (this should be faster)
 
@@ -251,11 +254,11 @@ variable [P.IsIrreducible]
 /-- Relative of lengths of roots in a reduced irreducible finite crystallographic root pairing are
 very constrained. -/
 lemma apply_eq_or (i j : ι) :
-    B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j) ∨
-    B.form (P.root i) (P.root i) = 2 * B.form (P.root j) (P.root j) ∨
-    B.form (P.root i) (P.root i) = 3 * B.form (P.root j) (P.root j) ∨
-    B.form (P.root j) (P.root j) = 2 * B.form (P.root i) (P.root i) ∨
-    B.form (P.root j) (P.root j) = 3 * B.form (P.root i) (P.root i) := by
+    B.form (α i) (α i) = B.form (α j) (α j) ∨
+    B.form (α i) (α i) = 2 * B.form (α j) (α j) ∨
+    B.form (α i) (α i) = 3 * B.form (α j) (α j) ∨
+    B.form (α j) (α j) = 2 * B.form (α i) (α i) ∨
+    B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
   obtain ⟨j', h₁, h₂⟩ := P.exists_form_eq_form_and_form_ne_zero B i j
   suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁]; exact B.apply_eq_or_aux i j' this
   contrapose! h₂
@@ -285,10 +288,10 @@ theorem exists_apply_eq_or_aux {x y z : R}
 /-- A reduced irreducible finite crystallographic root system has roots of at most two different
 lengths. -/
 lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
-    B.form (P.root k) (P.root k) = B.form (P.root i) (P.root i) ∨
-    B.form (P.root k) (P.root k) = B.form (P.root j) (P.root j) := by
+    B.form (α k) (α k) = B.form (α i) (α i) ∨
+    B.form (α k) (α k) = B.form (α j) (α j) := by
   obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
-  by_cases h : (∀ j, B.form (P.root j) (P.root j) = B.form (P.root i) (P.root i))
+  by_cases h : (∀ j, B.form (α j) (α j) = B.form (α i) (α i))
   · refine ⟨i, i, fun j ↦ by simp [h j]⟩
   · push_neg at h
     obtain ⟨j, hji_ne⟩ := h
@@ -302,9 +305,9 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     aesop
 
 lemma apply_eq_or_of_apply_ne
-    (h : B.form (P.root i) (P.root i) ≠ B.form (P.root j) (P.root j)) (k : ι) :
-    B.form (P.root k) (P.root k) = B.form (P.root i) (P.root i) ∨
-    B.form (P.root k) (P.root k) = B.form (P.root j) (P.root j) := by
+    (h : B.form (α i) (α i) ≠ B.form (α j) (α j)) (k : ι) :
+    B.form (α k) (α k) = B.form (α i) (α i) ∨
+    B.form (α k) (α k) = B.form (α j) (α j) := by
   have : Nonempty ι := ⟨i⟩
   obtain ⟨i', j', h'⟩ := B.exists_apply_eq_or
   rcases h' i with hi | hi <;>
@@ -323,15 +326,15 @@ lemma forall_pairing_eq_swap_or [P.IsReduced] [P.IsIrreducible] :
             P.pairing j i = 3 * P.pairing i j) := by
   have : Fintype ι := Fintype.ofFinite ι
   have B := (P.posRootForm ℤ).toInvariantForm
-  by_cases h : ∀ i j, B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j)
+  by_cases h : ∀ i j, B.form (α i) (α i) = B.form (α j) (α j)
   · refine Or.inl fun i j ↦ Or.inl ?_
     have := B.pairing_mul_eq_pairing_mul_swap j i
     rwa [h i j, mul_left_inj' (B.ne_zero j)] at this
   push_neg at h
   obtain ⟨i, j, hij⟩ := h
   have key := B.apply_eq_or_of_apply_ne hij
-  set li := B.form (P.root i) (P.root i)
-  set lj := B.form (P.root j) (P.root j)
+  set li := B.form (α i) (α i)
+  set lj := B.form (α j) (α j)
   have : (li = 2 * lj ∨ lj = 2 * li) ∨ (li = 3 * lj ∨ lj = 3 * li) := by
     have := B.apply_eq_or i j; tauto
   rcases this with this | this
