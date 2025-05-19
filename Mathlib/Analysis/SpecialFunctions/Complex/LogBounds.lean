@@ -297,7 +297,8 @@ open scoped Topology
 
 namespace Complex
 
-/-- The limit of `x * log (1 + t/x + o(1/x))` as `(x : ℝ) → ∞` is `t` for `t ∈ ℂ`. -/
+/-- The limit of `x * log (1 + g x)` as `(x : ℝ) → ∞` is `t`,
+where `t : ℂ` is the limit of `x * g x`. -/
 lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℂ} {t : ℂ}
     (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
     Tendsto (fun x ↦ x * log (1 + g x)) atTop (𝓝 t) := by
@@ -306,7 +307,7 @@ lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℂ} {t : ℂ}
   simp_rw [dist_comm (_ * g _), dist_eq, ← mul_sub, isBigO_norm_left]
   calc
     _ =O[atTop] fun x ↦ x * g x ^ 2 := by
-      have hg0 := tendsto_zero_of_isBoundedUnder_mul_of_tendsto_cobounded hg.norm.isBoundedUnder_le
+      have hg0 := tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded hg.norm.isBoundedUnder_le
         (RCLike.tendsto_ofReal_atTop_cobounded ℂ)
       exact (isBigO_refl _ _).mul (log_sub_self_isBigO.comp_tendsto hg0)
     _ =ᶠ[atTop] fun x ↦ (x * g x) ^ 2 * x⁻¹ := by
@@ -317,12 +318,13 @@ lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℂ} {t : ℂ}
       simpa using isBigO_const_of_tendsto hg (one_ne_zero (α := ℂ))
         |>.pow 2 |>.mul (isBigO_refl _ _)
 
-/-- The limit of `(1 + t/x + o(1/x)) ^ x` as `(x : ℝ) → ∞` is `exp t` for `t ∈ ℂ`. -/
+/-- The limit of `(1 + g x) ^ x` as `(x : ℝ) → ∞` is `exp t`,
+where `t : ℂ` is the limit of `x * g x`. -/
 lemma tendsto_one_add_cpow_exp_of_tendsto {g : ℝ → ℂ} {t : ℂ}
     (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
     Tendsto (fun x ↦ (1 + g x) ^ (x : ℂ)) atTop (𝓝 (exp t)) := by
   apply ((continuous_exp.tendsto _).comp (tendsto_mul_log_one_add_of_tendsto hg)).congr'
-  have hg0 := tendsto_zero_of_isBoundedUnder_mul_of_tendsto_cobounded
+  have hg0 := tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded
     hg.norm.isBoundedUnder_le (RCLike.tendsto_ofReal_atTop_cobounded ℂ)
   filter_upwards [hg0.eventually_ne (show 0 ≠ -1 by norm_num)] with x hg1
   dsimp
@@ -331,7 +333,7 @@ lemma tendsto_one_add_cpow_exp_of_tendsto {g : ℝ → ℂ} {t : ℂ}
   rw [← add_eq_zero_iff_neg_eq.mp hg0] at hg1
   norm_num at hg1
 
-/-- The limit of `(1 + t/x) ^ x` as `x → ∞` is `exp t` for `t ∈ ℂ`. -/
+/-- The limit of `(1 + t/x) ^ x` as `x → ∞` is `exp t` for `t : ℂ`. -/
 lemma tendsto_one_add_div_cpow_exp (t : ℂ) :
     Tendsto (fun x : ℝ ↦ (1 + t / x) ^ (x : ℂ)) atTop (𝓝 (exp t)) := by
   apply tendsto_one_add_cpow_exp_of_tendsto
@@ -339,21 +341,23 @@ lemma tendsto_one_add_div_cpow_exp (t : ℂ) :
   filter_upwards [eventually_ne_atTop 0] with x hx0
   exact mul_div_cancel₀ t (mod_cast hx0)
 
-/-- The limit of `n * log (1 + t/n + o(1/n))` as `(n : ℕ) → ∞` is `t` for `t ∈ ℂ`. -/
+/-- The limit of `n * log (1 + g n)` as `(n : ℝ) → ∞` is `t`,
+where `t : ℂ` is the limit of `n * g n`. -/
 lemma tendsto_nat_mul_log_one_add_of_tendsto {g : ℕ → ℂ} {t : ℂ}
     (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
     Tendsto (fun n ↦ n * log (1 + g n)) atTop (𝓝 t) :=
-  tendsto_mul_log_one_add_of_tendsto (RCLike.tendsto_mul_comp_nat_floor_of_tendsto_mul hg)
+  tendsto_mul_log_one_add_of_tendsto (tendsto_smul_comp_nat_floor_of_tendsto_mul hg)
     |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
 
-/-- The limit of `(1 + t/n + o(1/n)) ^ n` as `(n : ℕ) → ∞` is `exp t` for `t ∈ ℂ`. -/
+/-- The limit of `(1 + g n) ^ n` as `(n : ℝ) → ∞` is `exp t`,
+where `t : ℂ` is the limit of `n * g n`. -/
 lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℂ} {t : ℂ}
     (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
     Tendsto (fun n ↦ (1 + g n) ^ n) atTop (𝓝 (exp t)) :=
-  tendsto_one_add_cpow_exp_of_tendsto (RCLike.tendsto_mul_comp_nat_floor_of_tendsto_mul hg)
+  tendsto_one_add_cpow_exp_of_tendsto (tendsto_smul_comp_nat_floor_of_tendsto_mul hg)
     |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
 
-/-- The limit of `(1 + t/n) ^ n` as `n → ∞` is `exp t` for `t ∈ ℂ`. -/
+/-- The limit of `(1 + t/n) ^ n` as `n → ∞` is `exp t` for `t : ℂ`. -/
 lemma tendsto_one_add_div_pow_exp (t : ℂ) :
     Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
   tendsto_one_add_div_cpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
@@ -362,11 +366,12 @@ end Complex
 
 namespace Real
 
-/-- The limit of `x * log (1 + t/x + o(1/x))` as `(x : ℝ) → ∞` is `t` for `t ∈ ℝ`. -/
+/-- The limit of `x * log (1 + g x)` as `(x : ℝ) → ∞` is `t`,
+where `t : ℝ` is the limit of `x * g x`. -/
 lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℝ} {t : ℝ}
     (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
     Tendsto (fun x ↦ x * log (1 + g x)) atTop (𝓝 t) := by
-  have hg0 := tendsto_zero_of_isBoundedUnder_mul_of_tendsto_cobounded
+  have hg0 := tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded
     hg.norm.isBoundedUnder_le (tendsto_id'.mpr (by simp))
   rw [← tendsto_ofReal_iff] at hg ⊢
   push_cast at hg ⊢
@@ -374,11 +379,12 @@ lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℝ} {t : ℝ}
   filter_upwards [hg0.eventually_const_le (show (-1 : ℝ) < 0 by norm_num)] with x hg1
   rw [Complex.ofReal_log (by linarith), Complex.ofReal_add, Complex.ofReal_one]
 
-/-- The limit of `(1 + t/x + o(1/x)) ^ x` as `(x : ℝ) → ∞` is `exp t` for `t ∈ ℝ`. -/
+/-- The limit of `(1 + g x) ^ x` as `(x : ℝ) → ∞` is `exp t`,
+where `t : ℝ` is the limit of `x * g x`. -/
 lemma tendsto_one_add_rpow_exp_of_tendsto {g : ℝ → ℝ} {t : ℝ}
     (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
     Tendsto (fun x ↦ (1 + g x) ^ x) atTop (𝓝 (exp t)) := by
-  have hg0 := tendsto_zero_of_isBoundedUnder_mul_of_tendsto_cobounded
+  have hg0 := tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded
     hg.norm.isBoundedUnder_le (tendsto_id'.mpr (by simp))
   rw [← tendsto_ofReal_iff] at hg ⊢
   push_cast at hg ⊢
@@ -386,7 +392,7 @@ lemma tendsto_one_add_rpow_exp_of_tendsto {g : ℝ → ℝ} {t : ℝ}
   filter_upwards [hg0.eventually_const_le (show (-1 : ℝ) < 0 by norm_num)] with x hg1
   rw [Complex.ofReal_cpow (by linarith), Complex.ofReal_add, Complex.ofReal_one]
 
-/-- The limit of `(1 + t/x) ^ x` as `x → ∞` is `exp t` for `t ∈ ℝ`. -/
+/-- The limit of `(1 + t/x) ^ x` as `x → ∞` is `exp t` for `t : ℝ`. -/
 lemma tendsto_one_add_div_rpow_exp (t : ℝ) :
     Tendsto (fun x : ℝ ↦ (1 + t / x) ^ x) atTop (𝓝 (exp t)) := by
   apply tendsto_one_add_rpow_exp_of_tendsto
@@ -394,21 +400,23 @@ lemma tendsto_one_add_div_rpow_exp (t : ℝ) :
   filter_upwards [eventually_ne_atTop 0] with x hx0
   exact mul_div_cancel₀ t (mod_cast hx0)
 
-/-- The limit of `n * log (1 + t/n + o(1/n))` as `(n : ℕ) → ∞` is `t` for `t ∈ ℝ`. -/
+/-- The limit of `n * log (1 + g n)` as `(n : ℝ) → ∞` is `t`,
+where `t : ℝ` is the limit of `n * g n`. -/
 lemma tendsto_nat_mul_log_one_add_of_tendsto {g : ℕ → ℝ} {t : ℝ}
     (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
     Tendsto (fun n ↦ n * log (1 + g n)) atTop (𝓝 t) :=
-  tendsto_mul_log_one_add_of_tendsto (RCLike.tendsto_mul_comp_nat_floor_of_tendsto_mul hg) |>.comp
+  tendsto_mul_log_one_add_of_tendsto (tendsto_smul_comp_nat_floor_of_tendsto_mul hg) |>.comp
     tendsto_natCast_atTop_atTop |>.congr (by simp)
 
-/-- The limit of `(1 + t/n + o(1/n)) ^ n` as `(n : ℕ) → ∞` is `exp t` for `t ∈ ℝ`. -/
+/-- The limit of `(1 + g n) ^ n` as `(n : ℝ) → ∞` is `exp t`,
+where `t : ℝ` is the limit of `n * g n`. -/
 lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℝ} {t : ℝ}
     (hg : Tendsto (fun n ↦ n * g n) atTop (𝓝 t)) :
     Tendsto (fun n ↦ (1 + g n) ^ n) atTop (𝓝 (exp t)) :=
-  tendsto_one_add_rpow_exp_of_tendsto (RCLike.tendsto_mul_comp_nat_floor_of_tendsto_mul hg) |>.comp
+  tendsto_one_add_rpow_exp_of_tendsto (tendsto_smul_comp_nat_floor_of_tendsto_mul hg) |>.comp
     tendsto_natCast_atTop_atTop |>.congr (by simp)
 
-/-- The limit of `(1 + t/n) ^ n` as `n → ∞` is `exp t` for `t ∈ ℝ`. -/
+/-- The limit of `(1 + t/n) ^ n` as `n → ∞` is `exp t` for `t : ℝ`. -/
 lemma tendsto_one_add_div_pow_exp (t : ℝ) :
     Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
   tendsto_one_add_div_rpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
