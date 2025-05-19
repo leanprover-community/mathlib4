@@ -149,8 +149,7 @@ instance instSMulRWP : SMul (D ≀ᵣ Q) (Λ × Q) where
   smul w := fun p => ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩
 
 @[simp]
-lemma rsmul {w : D ≀ᵣ Q} {p : Λ × Q} :
-    w • p = ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩ := rfl
+lemma rsmul {w : D ≀ᵣ Q} {p : Λ × Q} : w • p = ⟨(w.1 (w.2 * p.2)) • p.1, w.2 * p.2⟩ := rfl
 
 instance instMulActionRWP : MulAction (D ≀ᵣ Q) (Λ × Q) where
   one_smul := by simp
