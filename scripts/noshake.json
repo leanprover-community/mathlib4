@@ -240,6 +240,8 @@
    "Mathlib.Data.Nat.Factorial.Basic",
    "Mathlib.Data.PNat.Defs"],
   "Mathlib.Tactic.Order.CollectFacts": ["Mathlib.Order.Basic"],
+  "Mathlib.Tactic.NormNum.Trigonometric":
+  ["Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
@@ -357,7 +359,8 @@
   "Mathlib.Probability.Kernel.Proper":
   ["Mathlib.Probability.Kernel.Composition.CompNotation"],
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
-  "Mathlib.Order.Interval.Finset.Nat": ["Mathlib.Order.Interval.Finset.SuccPred"],
+  "Mathlib.Order.Interval.Finset.Nat":
+  ["Mathlib.Order.Interval.Finset.SuccPred"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.Order.Filter.Bases.Basic": ["Mathlib.Tactic.Subsingleton"],
@@ -423,7 +426,6 @@
   "Mathlib.Data.Matroid.Rank.ENat": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Data.Matroid.Minor.Contract": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Data.Matroid.Minor.Basic": ["Mathlib.Tactic.TautoSet"],
-  "Mathlib.Data.List.Flatten": ["Mathlib.Tactic.GCongr.Core"],
   "Mathlib.Data.List.Sigma": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.List.Rotate": ["Mathlib.Data.Quot"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
@@ -432,6 +434,7 @@
   "Mathlib.Data.List.Permutation":
   ["Mathlib.Data.List.Flatten", "Mathlib.Data.List.Lemmas"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertIdx"],
+  "Mathlib.Data.List.Flatten": ["Mathlib.Tactic.GCongr.Core"],
   "Mathlib.Data.List.Defs": ["Batteries.Data.RBMap.Basic"],
   "Mathlib.Data.List.Basic":
   ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
