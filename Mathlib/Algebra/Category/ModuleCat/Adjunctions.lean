@@ -206,13 +206,15 @@ lemma free_η_freeMk (x : PUnit) :
 @[simp]
 lemma free_μ_single_tmul_single {X Y : Type u} (x : X) (y : Y) :
     DFunLike.coe (F := TensorProduct R (X →₀ R) (Y →₀ R) →ₗ[R] X ⊗ Y →₀ R)
-      (μ (free R) _ _).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
+      (μ (free R) _ _).hom (Finsupp.single x 1 ⊗ₜ Finsupp.single y 1) =
+      Finsupp.single ⟨x, y⟩ 1 := by
   apply FreeMonoidal.μIso_hom_single_tmul_single
 
 @[simp]
-lemma free_δ_freeMk {X Y : Type u} (z : X ⊗ Y) :
+lemma free_δ_single {X Y : Type u} (z : X ⊗ Y) :
     DFunLike.coe (F := (X ⊗ Y →₀ R) →ₗ[R] TensorProduct R (X →₀ R) (Y →₀ R))
-      (δ (free R) _ _).hom (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
+      (δ (free R) _ _).hom (Finsupp.single z 1) =
+      Finsupp.single z.1 1 ⊗ₜ Finsupp.single z.2 1 := by
   apply FreeMonoidal.μIso_inv_single
 
 end Free
