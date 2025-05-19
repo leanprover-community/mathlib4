@@ -185,8 +185,8 @@ universe u
 
 /-- The wreath product of group `G` iterated `n` times. -/
 def IteratedWreathProduct (G : Type u) : (n : ℕ) → Type u
-| Nat.zero => PUnit
-| Nat.succ n => (IteratedWreathProduct G n) ≀ᵣ G
+| 0 => PUnit
+| n + 1 => (IteratedWreathProduct G n) ≀ᵣ G
 
 variable (G : Type u) [inst : Group G]
 variable (n : ℕ)
