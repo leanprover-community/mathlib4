@@ -293,9 +293,8 @@ jobs:
           lake -q exe lean4checker Lean4Checker
 
   style_lint:
-    if: github.repository == 'leanprover-community/mathlib4'
     name: Lint style
-    runs-on: bors
+    runs-on: ubuntu-latest
     steps:
       - name: cleanup
         run: |
@@ -322,7 +321,6 @@ jobs:
           fi
 
       - name: install Python
-        if: ${{ 'bors' == 'ubuntu-latest' }}
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: 3.8
@@ -339,7 +337,6 @@ jobs:
           lake exe lint-style
 
       - name: Install bibtool
-        if: ${{ 'bors' == 'ubuntu-latest' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y bibtool
