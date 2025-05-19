@@ -206,14 +206,13 @@ example (a b c : Rat) (h2 : b > 0) (h3 : b < 0) : Nat.prime 10 := by
   linarith
 
 example (a b c : Rat) (h2 : (2 : Rat) > 3) : a + b - c ≥ 3 := by
-  linarith (config := {exfalso := false})
+  linarith -exfalso
 
 -- Verify that we split conjunctions in hypotheses.
 example (x y : Rat)
     (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) :
     False := by
-  fail_if_success
-    linarith (config := {splitHypotheses := false})
+  fail_if_success linarith -splitHypotheses
   linarith
 
 example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) (l : (-7 : ℤ) < 5) : 3 < 7 := by
@@ -518,25 +517,25 @@ lemma works {a b : ℕ} (hab : a ≤ b) (h : b < a) : false := by
 end T
 
 example (a b c : ℚ) (h : a ≠ b) (h3 : b ≠ c) (h2 : a ≥ b) : b ≠ c := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 example (a b : ℕ) (h1 : b ≠ a) (h2 : b ≤ a) : b < a := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 example (a b : ℕ) (h1 : b ≠ a) (h2 : ¬a < b) : b < a := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 section
 -- Regression test for issue that splitNe didn't see `¬ a = b`
 
 example (a b : Nat) (h1 : a < b + 1) (h2 : a ≠ b) : a < b := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 example (a b : Nat) (h1 : a < b + 1) (h2 : ¬ a = b) : a < b := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 end
 
@@ -544,7 +543,7 @@ end
 -- before splitNe splitting
 example (r : ℚ) (h' : 1 = r * 2) : 1 = 0 ∨ r = 1 / 2 := by
   by_contra! h''
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 
