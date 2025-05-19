@@ -106,17 +106,22 @@ lemma excenterExists_empty : s.ExcenterExists ∅ :=
 
 lemma sum_inv_height_sq_smul_vsub_eq_zero :
     ∑ i, (s.height i)⁻¹ ^ 2 • (s.points i -ᵥ s.altitudeFoot i) = 0 := by
-  rw [← Submodule.mem_bot ℝ, ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
-  refine ⟨Submodule.sum_smul_mem _ _ fun i hi ↦
-            vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-              (mem_affineSpan _ (Set.mem_range_self _))
-              (altitudeFoot_mem_affineSpan  _ _),
-          ?_⟩
-  rw [vectorSpan_range_eq_span_range_vsub_right_ne _ _ 0, Submodule.span_range_eq_iSup,
-    ← Submodule.iInf_orthogonal, Submodule.iInf_coe, Set.mem_iInter]
-  intro i
-  rcases i with ⟨i, hi⟩
-  simp only [SetLike.mem_coe, Submodule.mem_orthogonal_singleton_iff_inner_right, inner_sum]
+  suffices ∀ i, i ≠ 0 →
+      ∑ j, ⟪s.points i -ᵥ s.points 0, (s.height j)⁻¹ ^ 2 • (s.points j -ᵥ s.altitudeFoot j)⟫ = 0 by
+    rw [← Submodule.mem_bot ℝ,
+      ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
+    refine ⟨Submodule.sum_smul_mem _ _ fun i hi ↦
+              vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+                (mem_affineSpan _ (Set.mem_range_self _))
+                (altitudeFoot_mem_affineSpan  _ _),
+            ?_⟩
+    rw [vectorSpan_range_eq_span_range_vsub_right_ne _ _ 0, Submodule.span_range_eq_iSup,
+      ← Submodule.iInf_orthogonal, Submodule.iInf_coe, Set.mem_iInter]
+    intro i
+    rcases i with ⟨i, hi⟩
+    simpa only [SetLike.mem_coe, Submodule.mem_orthogonal_singleton_iff_inner_right, inner_sum]
+      using this i hi
+  intro i hi
   rw [← Finset.add_sum_erase _ _ (Finset.mem_univ 0),
     ← Finset.add_sum_erase _ _ (Finset.mem_erase.2 ⟨hi, Finset.mem_univ _⟩), ← add_assoc]
   convert add_zero _
