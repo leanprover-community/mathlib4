@@ -135,11 +135,11 @@ given isomorphisms `D₁ ≀ᵣ Q₁` and `Q₁ ≃* Q₂`. -/
 def congr {D₁ Q₁ D₂ Q₂ : Type*} [Group D₁] [Group Q₁] [Group D₂] [Group Q₂]
     (f : D₁ ≃* D₂) (g : Q₁ ≃* Q₂) :
     D₁ ≀ᵣ Q₁ ≃* D₂ ≀ᵣ Q₂ where
-      toFun x := ⟨f ∘ (x.left ∘ g.symm), g x.right⟩
-      invFun x := ⟨(f.symm ∘ x.left) ∘ g, g.symm x.right⟩
-      left_inv x := by ext <;> simp
-      right_inv x := by ext <;> simp
-      map_mul' x y := by ext <;> simp
+  toFun x := ⟨f ∘ (x.left ∘ g.symm), g x.right⟩
+  invFun x := ⟨(f.symm ∘ x.left) ∘ g, g.symm x.right⟩
+  left_inv x := by ext <;> simp
+  right_inv x := by ext <;> simp
+  map_mul' x y := by ext <;> simp
 
 section perm
 
