@@ -776,7 +776,7 @@ lemma cos_four_mul_pi_div_three : cos (4 * π / 3) = - 1 / 2 := calc
 
 lemma cos_five_mul_pi_div_three : cos (5 * π / 3) = 1 / 2 :=
   calc
-    cos (5 * π / 3) = cos (2 * π - π / 3) := by ring
+    cos (5 * π / 3) = cos (2 * π - π / 3) := by congr; ring
     _ = 1 / 2 := by rw [cos_two_pi_sub, cos_pi_div_three]
 
 /-- The cosine of `π / 6` is `√3 / 2`. -/
@@ -828,7 +828,7 @@ lemma sin_four_mul_pi_div_three : sin (4 * π / 3) = - √3 / 2 := calc
 
 lemma sin_five_mul_pi_div_three : sin (5 * π / 3) = - √3 / 2 :=
   calc
-    sin (5 * π / 3) = sin (2 * π - π / 3) := by ring
+    sin (5 * π / 3) = sin (2 * π - π / 3) := by congr; ring
     _ = - √3 / 2 := by rw [sin_two_pi_sub, sin_pi_div_three, neg_div']
 
 theorem quadratic_root_cos_pi_div_five :
