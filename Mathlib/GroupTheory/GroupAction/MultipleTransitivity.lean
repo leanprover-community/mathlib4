@@ -639,15 +639,17 @@ theorem isMultiplyPretransitive :
   rcases lt_or_ge (Nat.card α) 2 with h2 | h2
   · rw [Nat.sub_eq_zero_of_le (le_of_lt h2)]
     apply is_zero_pretransitive
-  have h2le : Nat.card α - 2 ≤ Nat.card α := sub_le (Nat.card α) 2
+  have : IsMultiplyPretransitive (Equiv.Perm α) α (Nat.card α) :=
+        Equiv.Perm.isMultiplyPretransitive α _
+  have h2le : Nat.card α - 2 ≤ Nat.card α:= sub_le (Nat.card α) 2
+  have h2eq : Nat.card α - 2 + 2 = Nat.card α := Nat.sub_add_cancel h2
+    -- add_le_of_le_sub h2 (Nat.le_refl _)
   exact {
     exists_smul_eq x y := by
       have : IsMultiplyPretransitive (Equiv.Perm α) α (Nat.card α) :=
         Equiv.Perm.isMultiplyPretransitive α _
-      obtain ⟨x', hx'⟩ :=
-        Fin.Embedding.restrictSurjective_of_le_natCard h2le (le_refl _) x
-      obtain ⟨y' : Fin (Nat.card α) ↪ α, hy'⟩ :=
-        Fin.Embedding.restrictSurjective_of_le_natCard h2le (le_refl _) y
+      obtain ⟨x', hx'⟩ := Fin.Embedding.restrictSurjective_of_le_natCard h2le (le_refl _) x
+      obtain ⟨y', hy'⟩ := Fin.Embedding.restrictSurjective_of_le_natCard h2le (le_refl _) y
       obtain ⟨g , hg⟩ := exists_smul_eq (Equiv.Perm α) x' y'
       rcases Int.units_eq_one_or (Equiv.Perm.sign g) with h | h
       · use ⟨g, h⟩
@@ -655,20 +657,19 @@ theorem isMultiplyPretransitive :
         simp only [← hx', subgroup_smul_def, smul_apply,
           Function.Embedding.trans_apply, castLEEmb_apply, ← hy']
         simp only [← smul_apply, hg]
-      · let u : Fin (Nat.card α) :=
-          ⟨Nat.card α - 1, by exact sub_one_lt_of_lt h2⟩
-        let v : Fin (Nat.card α) :=
-          ⟨Nat.card α - 2, Nat.sub_lt (zero_lt_of_lt h2) (Nat.zero_lt_two)⟩
+      · let u : Fin (Nat.card α) := ⟨Nat.card α - 1, sub_one_lt_of_lt h2⟩
+        let v : Fin (Nat.card α) := ⟨Nat.card α - 2,
+            Nat.sub_lt_left_of_lt_add h2 (Nat.lt_add_of_pos_left Nat.zero_lt_two)⟩
         refine ⟨⟨g * (Equiv.swap (x' u) (x' v)), ?_⟩, ?_⟩
-        · suffices u ≠ v by
-            simp [h, this]
+        · suffices u ≠ v by simp [h, this]
           exact ne_of_val_ne (Nat.ne_of_gt (sub_succ_lt_self (Nat.card α) 1 h2))
         · ext i
           suffices (Equiv.swap (x' u) (x' v)) • (x' (castLE h2le i)) = x' (castLE h2le i) by
-            simp only [← hx', Subgroup.mk_smul, smul_apply,
-              Function.Embedding.trans_apply, castLEEmb_apply,
-              Equiv.Perm.coe_mul, Function.comp_apply, this, ← hy', mul_smul, this, hg]
-            simp only [← smul_apply, hg]
+            rw [← hy', ← hg, ← hx']
+            simp only [Subgroup.mk_smul, smul_apply, trans_apply, castLEEmb_apply,
+              Equiv.Perm.smul_def, Equiv.Perm.coe_mul, Function.comp_apply,
+              EmbeddingLike.apply_eq_iff_eq]
+            rw [← Equiv.Perm.smul_def, this]
           have hiv : (i : ℕ) < v := (lt_of_lt_of_le i.prop (le_of_eq rfl))
           have hiu : (i : ℕ) < u := by
             apply lt_trans hiv
