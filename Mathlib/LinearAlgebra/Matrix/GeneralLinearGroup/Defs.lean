@@ -7,7 +7,6 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # The General Linear group $GL(n, R)$
