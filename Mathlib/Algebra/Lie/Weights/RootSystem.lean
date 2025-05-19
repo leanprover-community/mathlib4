@@ -593,6 +593,9 @@ lemma eq_top_of_invtSubmodule_ne_bot
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
-  exact RootPairing.IsIrreducible.mk' (rootSystem H).toRootPairing (invtSubmodule_reflection K L H)
+  exact RootPairing.IsIrreducible.mk' (rootSystem H).toRootPairing <|
+    eq_top_of_invtSubmodule_ne_bot H
+
+end IsSimple
 
 end LieAlgebra.IsKilling
