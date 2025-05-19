@@ -36,12 +36,12 @@ noncomputable def expGrowthInf (u : ℕ → ℝ≥0∞) : EReal := liminf (fun n
 /-- Upper exponential growth of a sequence of extended nonnegative real numbers. -/
 noncomputable def expGrowthSup (u : ℕ → ℝ≥0∞) : EReal := limsup (fun n ↦ log (u n) / n) atTop
 
-lemma expGrowthInf_linearGrowthInf {u : ℕ → ℝ≥0∞} :
-    expGrowthInf u = linearGrowthInf (log ∘ u) := by
+lemma linearGrowthInf_log_comp_eq_expGrowthInf {u : ℕ → ℝ≥0∞} :
+    linearGrowthInf (log ∘ u) = expGrowthInf u := by
   rfl
 
-lemma expGrowthSup_linearGrowthSup {u : ℕ → ℝ≥0∞} :
-    expGrowthSup u = linearGrowthSup (log ∘ u) := by
+lemma linearGrowthSup_log_comp_eq_expGrowthSup {u : ℕ → ℝ≥0∞} :
+    linearGrowthSup (log ∘ u) = expGrowthSup u := by
   rfl
 
 /-! ### Basic properties -/
@@ -150,10 +150,10 @@ lemma _root_.Frequently.le_expGrowthSup (h : ∃ᶠ n : ℕ in atTop, exp (a * n
 /-! ### Special cases -/
 
 lemma expGrowthSup_zero : expGrowthSup 0 = ⊥ := by
-  rw [expGrowthSup_linearGrowthSup, ← linearGrowthSup_bot]
+  rw [← linearGrowthSup_bot, expGrowthSup]
   congr
   ext _
-  rw [comp_apply, Pi.zero_apply, log_zero, Pi.bot_apply]
+  rw [Pi.zero_apply, Pi.bot_apply, log_zero]
 
 lemma expGrowthInf_zero : expGrowthInf 0 = ⊥ := by
   apply le_bot_iff.1
@@ -161,7 +161,7 @@ lemma expGrowthInf_zero : expGrowthInf 0 = ⊥ := by
   exact expGrowthInf_le_expGrowthSup
 
 lemma expGrowthInf_top : expGrowthInf ⊤ = ⊤ := by
-  rw [expGrowthInf_linearGrowthInf, ← linearGrowthInf_top]
+  rw [← linearGrowthInf_top, expGrowthInf]
   congr
 
 lemma expGrowthSup_top : expGrowthSup ⊤ = ⊤ := by
@@ -343,7 +343,6 @@ lemma expGrowthSup_add : expGrowthSup (u + v) = expGrowthSup u ⊔ expGrowthSup 
     rw [Pi.sup_apply u v n, Pi.add_apply u v n, two_mul]
     exact add_le_add (le_max_left (u n) (v n)) (le_max_right (u n) (v n))
   · refine expGrowthSup_monotone fun n ↦ ?_
-    rw [Pi.sup_apply u v n, Pi.add_apply u v n]
     exact sup_le (self_le_add_right (u n) (v n)) (self_le_add_left (v n) (u n))
 
 -- By lemma `expGrowthSup_add`, `expGrowthSup` is an `AddMonoidHom` from `ℕ → ℝ≥0∞` to
@@ -368,16 +367,14 @@ variable {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ}
 
 lemma le_expGrowthInf_comp (hu : 1 ≤ᶠ[atTop] u) (hv : Tendsto v atTop atTop) :
     (linearGrowthInf fun n ↦ v n : EReal) * expGrowthInf u ≤ expGrowthInf (u ∘ v) := by
-  rw [expGrowthInf_linearGrowthInf, expGrowthInf_linearGrowthInf]
   apply le_linearGrowthInf_comp (hu.mono fun n h ↦ ?_) hv
   rw [Pi.one_apply] at h
-  rwa [Pi.zero_apply, comp_apply, zero_le_log_iff]
+  rwa [Pi.zero_apply, zero_le_log_iff]
 
 lemma expGrowthSup_comp_le (hu : ∃ᶠ n in atTop, 1 ≤ u n)
     (hv₀ : (linearGrowthSup fun n ↦ v n : EReal) ≠ 0)
     (hv₁ : (linearGrowthSup fun n ↦ v n : EReal) ≠ ⊤) (hv₂ : Tendsto v atTop atTop) :
     expGrowthSup (u ∘ v) ≤ (linearGrowthSup fun n ↦ v n : EReal) * expGrowthSup u := by
-  rw [expGrowthSup_linearGrowthSup, expGrowthSup_linearGrowthSup]
   apply linearGrowthSup_comp_le (u := log ∘ u) (hu.mono fun n h ↦ ?_) hv₀ hv₁ hv₂
   rwa [comp_apply, zero_le_log_iff]
 
@@ -385,7 +382,6 @@ lemma expGrowthSup_comp_le (hu : ∃ᶠ n in atTop, 1 ≤ u n)
 
 lemma _root_.Monotone.expGrowthInf_nonneg (h : Monotone u) (h' : u ≠ 0) :
     0 ≤ expGrowthInf u := by
-  rw [expGrowthInf_linearGrowthInf]
   apply (log_monotone.comp h).linearGrowthInf_nonneg
   simp only [ne_eq, funext_iff, comp_apply, Pi.bot_apply, log_eq_bot_iff, Pi.zero_apply] at h' ⊢
   exact h'
@@ -396,8 +392,7 @@ lemma _root_.Monotone.expGrowthSup_nonneg (h : Monotone u) (h' : u ≠ 0) :
 
 lemma expGrowthInf_comp_nonneg (h : Monotone u) (h' : u ≠ 0) (hv : Tendsto v atTop atTop) :
     0 ≤ expGrowthInf (u ∘ v) := by
-  rw [expGrowthInf_linearGrowthInf]
-  refine linearGrowthInf_comp_nonneg (u := log ∘ u) (log_monotone.comp h) ?_ hv
+  apply linearGrowthInf_comp_nonneg (u := log ∘ u) (log_monotone.comp h) _ hv
   simp only [ne_eq, funext_iff, comp_apply, Pi.bot_apply, log_eq_bot_iff, Pi.zero_apply] at h' ⊢
   exact h'
 
@@ -408,37 +403,31 @@ lemma expGrowthSup_comp_nonneg (h : Monotone u) (h' : u ≠ 0) (hv : Tendsto v a
 lemma _root_.Monotone.expGrowthInf_comp_le (h : Monotone u)
     (hv₀ : (linearGrowthSup fun n ↦ v n : EReal) ≠ 0)
     (hv₁ : (linearGrowthSup fun n ↦ v n : EReal) ≠ ⊤) :
-    expGrowthInf (u ∘ v) ≤ (linearGrowthSup fun n ↦ v n : EReal) * expGrowthInf u := by
-  rw [expGrowthInf_linearGrowthInf, expGrowthInf_linearGrowthInf]
-  exact (log_monotone.comp h).linearGrowthInf_comp_le hv₀ hv₁
+    expGrowthInf (u ∘ v) ≤ (linearGrowthSup fun n ↦ v n : EReal) * expGrowthInf u :=
+  (log_monotone.comp h).linearGrowthInf_comp_le hv₀ hv₁
 
 lemma _root_.Monotone.le_expGrowthSup_comp (h : Monotone u)
     (hv : (linearGrowthInf fun n ↦ v n : EReal) ≠ 0) :
-    (linearGrowthInf fun n ↦ v n : EReal) * expGrowthSup u ≤ expGrowthSup (u ∘ v) := by
-  rw [expGrowthSup_linearGrowthSup, expGrowthSup_linearGrowthSup]
-  exact (log_monotone.comp h).le_linearGrowthSup_comp hv
+    (linearGrowthInf fun n ↦ v n : EReal) * expGrowthSup u ≤ expGrowthSup (u ∘ v) :=
+  (log_monotone.comp h).le_linearGrowthSup_comp hv
 
 lemma _root_.Monotone.expGrowthInf_comp {a : EReal} (h : Monotone u)
     (hv : Tendsto (fun n ↦ (v n : EReal) / n) atTop (𝓝 a)) (ha : a ≠ 0) (ha' : a ≠ ⊤) :
-    expGrowthInf (u ∘ v) = a * expGrowthInf u := by
-  rw [expGrowthInf_linearGrowthInf, expGrowthInf_linearGrowthInf]
-  exact (log_monotone.comp h).linearGrowthInf_comp hv ha ha'
+    expGrowthInf (u ∘ v) = a * expGrowthInf u :=
+  (log_monotone.comp h).linearGrowthInf_comp hv ha ha'
 
 lemma _root_.Monotone.expGrowthSup_comp {a : EReal} (h : Monotone u)
     (hv : Tendsto (fun n ↦ (v n : EReal) / n) atTop (𝓝 a)) (ha : a ≠ 0) (ha' : a ≠ ⊤) :
-    expGrowthSup (u ∘ v) = a * expGrowthSup u := by
-  rw [expGrowthSup_linearGrowthSup, expGrowthSup_linearGrowthSup]
-  exact (log_monotone.comp h).linearGrowthSup_comp hv ha ha'
+    expGrowthSup (u ∘ v) = a * expGrowthSup u :=
+  (log_monotone.comp h).linearGrowthSup_comp hv ha ha'
 
 lemma _root_.Monotone.expGrowthInf_comp_mul {m : ℕ} (h : Monotone u) (hm : m ≠ 0) :
-    expGrowthInf (fun n ↦ u (m * n)) = m * expGrowthInf u := by
-  rw [expGrowthInf_linearGrowthInf, expGrowthInf_linearGrowthInf]
-  exact (log_monotone.comp h).linearGrowthInf_comp_mul hm
+    expGrowthInf (fun n ↦ u (m * n)) = m * expGrowthInf u :=
+  (log_monotone.comp h).linearGrowthInf_comp_mul hm
 
 lemma _root_.Monotone.expGrowthSup_comp_mul {m : ℕ} (h : Monotone u) (hm : m ≠ 0) :
-    expGrowthSup (fun n ↦ u (m * n)) = m * expGrowthSup u := by
-  rw [expGrowthSup_linearGrowthSup, expGrowthSup_linearGrowthSup]
-  exact (log_monotone.comp h).linearGrowthSup_comp_mul hm
+    expGrowthSup (fun n ↦ u (m * n)) = m * expGrowthSup u :=
+  (log_monotone.comp h).linearGrowthSup_comp_mul hm
 
 end composition
 
