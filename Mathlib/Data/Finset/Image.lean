@@ -557,7 +557,8 @@ theorem filterMap_mono (h : s ⊆ t) :
   exact Multiset.filterMap_le_filterMap f h
 
 @[simp]
-theorem _root_.List.toFinset_filterMap [DecidableEq α] [DecidableEq β] (s : List α) :
+theorem _root_.List.toFinset_filterMap [DecidableEq α] [DecidableEq β]
+    (f_inj : ∀ (a a' : α) (b : β), f a = some b → f a' = some b → a = a') (s : List α) :
     (s.filterMap f).toFinset = s.toFinset.filterMap f f_inj := by
   simp [← Finset.coe_inj]
 
