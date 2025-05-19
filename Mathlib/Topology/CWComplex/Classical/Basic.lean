@@ -49,6 +49,18 @@ together.
   Overall this means that being a CW complex is treated more like a property than data.
 * The natural number is explicit in `openCell`, `closedCell` and `cellFrontier` because `cell n` and
   `cell m` might be the same type in an explicit CW complex even when `n` and `m` are different.
+* `CWComplex` is a separate class from `RelCWComplex`. This not only gives absolute CW complexes a
+  better constructor but also aids typeclass inference: a construction on relative CW complexes may
+  yield a base that for the special case of CW complexes is provably equal to the empty set but not
+  definitionally so. In that case we define an instance specifically for absolute CW complexes and
+  want this to be inferred over the relative version. Since the base is an `outParam` this is
+  especially necessary since you cannot provide typeclass inference with a specified base.
+  But having the type `CWComplex` be separate from `RelCWComplex` makes this specification possible.
+* For a similar reason to the previous bullet point we make the instance
+  `CWComplex.instRelCWComplex` have high priority. For example, when talking about the type of
+  cells `cell C` of an absolute CW complex `C`, this actually refers to `RelCWComplex.cell C`
+  through this instance. Again, we want typeclass inference to first consider absolute CW
+  structures.
 * For statements, the auxiliary construction `skeletonLT` is preferred over `skeleton` as it makes
   the base case of inductions easier. The statement about `skeleton` should then be derived from the
   one about `skeletonLT`.
