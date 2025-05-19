@@ -93,7 +93,7 @@ theorem average_char_eq_finrank_invariants (V : FDRep k G) :
   rw [← (isProj_averageMap V.ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
-/-!
+/--
 If `V` are `W` are finite-dimensional representations of a finite group, then the
 scalar product of their characters is equal to the dimension of the space of
 equivariant maps from `V` to `W`.
