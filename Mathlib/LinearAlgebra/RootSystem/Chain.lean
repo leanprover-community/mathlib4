@@ -154,6 +154,14 @@ lemma root_sub_nsmul_mem_range_iff_le_chainBotCoeff {n : ℕ} :
   rw [aux, h₂, mem_Icc]
   omega
 
+lemma Iic_chainTopCoeff_eq :
+    Iic (P.chainTopCoeff i j) = {k | P.root j + k • P.root i ∈ range P.root} := by
+  ext; simp [← P.root_add_nsmul_mem_range_iff_le_chainTopCoeff h]
+
+lemma Iic_chainBotCoeff_eq :
+    Iic (P.chainBotCoeff i j) = {k | P.root j - k • P.root i ∈ range P.root} := by
+  ext; simp [← P.root_sub_nsmul_mem_range_iff_le_chainBotCoeff h]
+
 omit h in
 lemma one_le_chainTopCoeff_of_root_add_mem [P.IsReduced] (h : P.root i + P.root j ∈ range P.root) :
     1 ≤ P.chainTopCoeff i j := by
@@ -179,6 +187,34 @@ lemma root_sub_zsmul_mem_range_iff {z : ℤ} :
       z ∈ Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) := by
   rw [sub_eq_add_neg, ← neg_smul, P.root_add_zsmul_mem_range_iff h, mem_Icc, mem_Icc]
   omega
+
+lemma setOf_root_add_zsmul_mem_eq_Icc :
+    {k : ℤ | P.root j + k • P.root i ∈ range P.root} =
+        Icc (-P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
+  ext; simp [← P.root_add_zsmul_mem_range_iff h]
+
+lemma setOf_root_sub_zsmul_mem_eq_Icc :
+    {k : ℤ | P.root j - k • P.root i ∈ range P.root} =
+        Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) := by
+  ext; rw [← root_sub_zsmul_mem_range_iff h, mem_setOf_eq]
+
+lemma chainTopCoeff_eq_sSup :
+    P.chainTopCoeff i j = sSup {k | P.root j + k • P.root i ∈ range P.root} := by
+  rw [← Iic_chainTopCoeff_eq h, csSup_Iic]
+
+lemma chainBotCoeff_eq_sSup :
+    P.chainBotCoeff i j = sSup {k | P.root j - k • P.root i ∈ range P.root} := by
+  rw [← Iic_chainBotCoeff_eq h, csSup_Iic]
+
+lemma coe_chainTopCoeff_eq_sSup :
+    P.chainTopCoeff i j = sSup {k : ℤ | P.root j + k • P.root i ∈ range P.root} := by
+  rw [setOf_root_add_zsmul_mem_eq_Icc h]
+  simp
+
+lemma coe_chainBotCoeff_eq_sSup :
+    P.chainBotCoeff i j = sSup {k : ℤ | P.root j - k • P.root i ∈ range P.root} := by
+  rw [setOf_root_sub_zsmul_mem_eq_Icc h]
+  simp
 
 omit h
 
@@ -255,6 +291,51 @@ lemma chainBotCoeff_reflection_perm_right :
   refine le_antisymm ?_ ?_
   · simpa using this (-P.chainBotCoeff i (-j))
   · simpa using this (-P.chainTopCoeff i j)
+
+lemma chainBotCoeff_eq_zero_iff :
+    P.chainBotCoeff i j = 0 ↔
+      ¬ LinearIndependent R ![P.root i, P.root j] ∨ P.root j - P.root i ∉ range P.root := by
+  by_cases h : LinearIndependent R ![P.root i, P.root j]
+  swap; · simp [chainBotCoeff_of_not_linearIndependent h, h]
+  have : P.chainBotCoeff i j = 0 ↔ Iic (P.chainBotCoeff i j) = {0} := by
+    simpa [Set.ext_iff, mem_Iic, mem_singleton_iff] using ⟨fun h ↦ by simp [h], fun h ↦ by rw [← h]⟩
+  simp only [h, not_true_eq_false, false_or, this, Iic_chainBotCoeff_eq h, Set.ext_iff,
+    mem_setOf_eq, mem_singleton_iff]
+  refine ⟨fun h' ↦ by simpa using h' 1, fun h' n ↦ ⟨fun h'' ↦ ?_, fun h'' ↦ by simp [h'']⟩⟩
+  replace h' : 1 ∉ {k | P.root j - k • P.root i ∈ range P.root} := by simpa using h'
+  rw [← Iic_chainBotCoeff_eq h, mem_Iic, not_le, Nat.lt_one_iff] at h'
+  rw [root_sub_nsmul_mem_range_iff_le_chainBotCoeff h] at h''
+  omega
+
+lemma chainTopCoeff_eq_zero_iff :
+    P.chainTopCoeff i j = 0 ↔
+      ¬ LinearIndependent R ![P.root i, P.root j] ∨ P.root j + P.root i ∉ range P.root := by
+  rw [← chainBotCoeff_reflection_perm_left]
+  simp [-chainBotCoeff_reflection_perm_left, chainBotCoeff_eq_zero_iff]
+
+include h
+
+lemma chainBotCoeff_of_add {k : ι} (hk : P.root k = P.root j + P.root i) :
+    P.chainBotCoeff i k = P.chainBotCoeff i j + 1 := by
+  have h' : LinearIndependent R ![P.root i, P.root k] := by simpa [hk, add_comm]
+  apply Nat.cast_injective (R := ℤ)
+  rw [Nat.cast_add, Nat.cast_one, coe_chainBotCoeff_eq_sSup h', coe_chainBotCoeff_eq_sSup h]
+  have (z : ℤ) : P.root k - z • P.root i = P.root j - (z - 1) • P.root i := by rw [hk]; module
+  replace this : {z : ℤ | P.root k - z • P.root i ∈ range P.root} =
+      OrderIso.addRight 1 '' {n | P.root j - n • P.root i ∈ range P.root} := by
+    simp [this, sub_eq_add_neg]
+  have bdd : BddAbove {z : ℤ | P.root j - z • P.root i ∈ range P.root} := by
+    rw [setOf_root_sub_zsmul_mem_eq_Icc h]
+    exact bddAbove_Icc
+  rw [this, ← OrderIso.map_csSup' _ ⟨0, by simp⟩ bdd, OrderIso.addRight_apply]
+
+lemma chainTopCoeff_of_sub {k : ι} (hk : P.root k = P.root j - P.root i) :
+    P.chainTopCoeff i k = P.chainTopCoeff i j + 1 := by
+  letI := P.indexNeg
+  replace hk : P.root k = P.root j + P.root (-i) := by simpa [sub_eq_add_neg] using hk
+  simpa using chainBotCoeff_of_add (by simpa) hk
+
+omit h
 
 variable (i j)
 
