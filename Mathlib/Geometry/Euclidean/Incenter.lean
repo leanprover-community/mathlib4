@@ -324,6 +324,8 @@ lemma ExcenterExists.signedInfDist_excenter_eq_mul_sum_inv {signs : Finset (Fin 
   simp [mul_assoc, (s.height_pos i).ne']
 
 variable {s} in
+/-- The signed distance between the excenter and its projection in the plane of each face is the
+exradius. -/
 lemma ExcenterExists.signedInfDist_excenter {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
     s.signedInfDist i (s.excenter signs) = (if i ∈ signs then -1 else 1) *
@@ -332,11 +334,18 @@ lemma ExcenterExists.signedInfDist_excenter {signs : Finset (Fin (n + 1))}
   congr
   rw [← mul_eq_one_iff_inv_eq₀ h, ← mul_assoc, self_mul_sign, ← abs_mul, mul_inv_cancel₀ h, abs_one]
 
+/-- The signed distance between the incenter and its projection in the plane of each face is the
+inradius.
+
+In other words, the incenter is _internally_ tangent to the faces. -/
 lemma signedInfDist_incenter (i : Fin (n + 1)) : s.signedInfDist i s.incenter = s.inradius := by
   rw [incenter, exsphere_center, s.excenterExists_empty.signedInfDist_excenter]
   simp (discharger := positivity)
 
 variable {s} in
+/-- The distance between the excenter and its projection in the plane of each face is the exradius.
+
+In other words, the exsphere is tangent to the faces. -/
 lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs)
     (i : Fin (n + 1)) :
     dist (s.excenter signs) ((s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)) =
@@ -348,6 +357,13 @@ lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.Excente
   · simp [h']
   · simp [h h'.symm]
   · simp [h']
+
+/-- The distance between the incenter and its projection in the plane of each face is the inradius.
+
+In other words, the incenter is tangent to the faces. -/
+lemma dist_incenter (i : Fin (n + 1)) :
+    dist s.incenter ((s.faceOpposite i).orthogonalProjectionSpan s.incenter) = s.inradius :=
+  s.excenterExists_empty.dist_excenter _
 
 lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {signs : Finset (Fin (n + 1))} :
