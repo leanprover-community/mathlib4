@@ -48,7 +48,7 @@ structure RegularWreathProduct where
 namespace RegularWreathProduct
 variable {D Q}
 
-instance : Mul (RegularWreathProduct D Q) where
+instance : Mul (D ≀ᵣ Q) where
   mul a b := ⟨a.1 * (fun x => b.1 (a.2⁻¹ * x)), a.2 * b.2⟩
 
 lemma mul_def (a b : RegularWreathProduct D Q) :
