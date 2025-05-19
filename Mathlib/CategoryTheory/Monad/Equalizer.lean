@@ -91,7 +91,7 @@ def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
     · dsimp
       rw [Functor.map_comp, reassoc_of% h₂, Comonad.right_counit]
       dsimp
-      rw [Category.comp_id, Category.assoc, ← T.counit_naturality, 
+      rw [Category.comp_id, Category.assoc, ← T.counit_naturality,
         reassoc_of% h₁, Comonad.left_counit]
       simp
     · ext
