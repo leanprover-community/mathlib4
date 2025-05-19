@@ -79,6 +79,11 @@ theorem normalize_normalized_factor {a : α} :
   obtain ⟨y, _, rfl⟩ := Multiset.mem_map.1 hx
   apply normalize_idem
 
+theorem dvd_of_normalized_factor {a : α} :
+    ∀ x : α, x ∈ normalizedFactors a → x ∣ a := fun x h ↦ by
+  obtain ⟨y, hy, rfl⟩ := Multiset.mem_map.mp h
+  exact normalize_dvd_iff.mpr <| dvd_of_mem_factors hy
+
 theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
     normalizedFactors a = {normalize a} := by
   obtain ⟨p, a_assoc, hp⟩ :=
@@ -231,6 +236,14 @@ theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) 
     rw [associated_iff_eq] at hqeq
     exact hqeq ▸ hqmem
 
+theorem mem_normalizedFactors_iff' {p x : α} (h : x ≠ 0) :
+    p ∈ normalizedFactors x ↔ Irreducible p ∧ normalize p = p ∧ p ∣ x := by
+  refine ⟨fun h ↦ ⟨irreducible_of_normalized_factor p h, normalize_normalized_factor p h,
+    dvd_of_normalized_factor p h⟩, fun ⟨h₁, h₂, h₃⟩ ↦ ?_⟩
+  obtain ⟨y, hy₁, hy₂⟩ := exists_mem_factors_of_dvd h h₁ h₃
+  exact Multiset.mem_map.mpr ⟨y, hy₁, by
+    rwa [← h₂, normalize_eq_normalize_iff_associated, Associated.comm]⟩
+
 theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
     (h : ∀ {m}, m ∈ normalizedFactors r → m = p) (hr : r ≠ 0) : ∃ i : ℕ, Associated (p ^ i) r := by
   use (normalizedFactors r).card
@@ -296,6 +309,25 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     · exact fun h ↦ hs (h ▸ Multiset.mem_cons_self _ _)
     · apply Multiset.prod_ne_zero
       exact fun h ↦ hs (Multiset.mem_cons_of_mem h)
+
+variable {β : Type*} [CancelCommMonoidWithZero β] [NormalizationMonoid β]
+  [UniqueFactorizationMonoid β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] {f : F}
+
+/--
+If the monoid equiv `f : α ≃* β` commutes with `normalize` then, for `a : α`, it yields a
+bijection between the `normalizedFactors` of `a` and of `f a`.
+-/
+def normalizedFactorsEquiv [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
+    {x | x ∈ normalizedFactors a} ≃ {y | y ∈ normalizedFactors (f a)} :=
+  Equiv.subtypeEquiv f fun x ↦
+    if ha : a = 0 then by simp [ha] else by
+      simp [mem_normalizedFactors_iff' ha,
+        mem_normalizedFactors_iff' (EmbeddingLike.map_ne_zero_iff.mpr ha), map_dvd_iff_dvd_symm,
+        MulEquiv.irreducible_iff, he]
+
+theorem normalizedFactorsEquiv_apply [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x))
+    {a p : α} (hp : p ∈ normalizedFactors a) :
+    ↑(normalizedFactorsEquiv he a ⟨p, hp⟩) = f p := rfl
 
 end UniqueFactorizationMonoid
 
