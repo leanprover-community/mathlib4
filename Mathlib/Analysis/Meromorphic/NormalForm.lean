@@ -67,13 +67,13 @@ theorem meromorphicNFAt_iff_analyticAt_or :
         simp [this, WithTop.coe_lt_zero.2 (not_le.1 hn), h₃g.eq_of_nhds,
           zero_zpow n (ne_of_not_le hn).symm]
   · rintro (h | ⟨h₁, h₂, h₃⟩)
-    · by_cases h₂f : h.order = ⊤
-      · rw [AnalyticAt.order_eq_top_iff] at h₂f
+    · by_cases h₂f : analyticOrderAt f x = ⊤
+      · rw [analyticOrderAt_eq_top] at h₂f
         tauto
       · right
-        use h.order.toNat
-        have : h.order ≠ ⊤ := h₂f
-        rw [← ENat.coe_toNat_eq_self, eq_comm, AnalyticAt.order_eq_nat_iff] at this
+        use analyticOrderNatAt f x
+        have : analyticOrderAt f x ≠ ⊤ := h₂f
+        rw [← ENat.coe_toNat_eq_self, eq_comm, h.analyticOrderAt_eq_natCast] at this
         obtain ⟨g, h₁g, h₂g, h₃g⟩ := this
         use g, h₁g, h₂g
         simpa
@@ -143,8 +143,7 @@ theorem MeromorphicNFAt.order_eq_zero_iff (hf : MeromorphicNFAt f x) :
   constructor
   · intro h₁f
     have h₂f := hf.order_nonneg_iff_analyticAt.1 (le_of_eq h₁f.symm)
-    apply h₂f.order_eq_zero_iff.1
-    apply (ENat.map_natCast_eq_zero (α := ℤ)).1
+    rw [← h₂f.analyticOrderAt_eq_zero, ← ENat.map_natCast_eq_zero (α := ℤ)]
     rwa [h₂f.meromorphicAt_order] at h₁f
   · intro h
     rcases id hf with h₁ | ⟨n, g, h₁g, h₂g, h₃g⟩

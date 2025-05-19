@@ -512,7 +512,7 @@ noncomputable def conePoint : Coalgebra T where
       ← show _ = _ ≫ T.map (T.map _) from T.δ.naturality _, assoc, ← Functor.map_comp, commuting,
       Functor.map_comp, ← assoc, commuting]
     simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, assoc]
-    rw [(D.obj j).coassoc,  ← assoc, ← assoc, commuting]
+    rw [(D.obj j).coassoc, ← assoc, ← assoc, commuting]
 
 /-- (Impl) Construct the lifted cone in `Coalgebra T` which will be limiting. -/
 @[simps]
