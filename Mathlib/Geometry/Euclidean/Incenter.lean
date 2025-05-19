@@ -6,6 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Geometry.Euclidean.Altitude
 import Mathlib.Geometry.Euclidean.SignedDist
 import Mathlib.Geometry.Euclidean.Sphere.Basic
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Incenters and excenters of simplices.
@@ -57,6 +58,10 @@ and only if the sum of these weights is nonzero (so the normalized weights sum t
 def excenterWeightsUnnorm (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : ℝ :=
   (if i ∈ signs then -1 else 1) * (s.height i)⁻¹
 
+@[simp] lemma excenterWeightsUnnorm_empty_apply (i : Fin (n + 1)) :
+    s.excenterWeightsUnnorm ∅ i = (s.height i)⁻¹ :=
+  one_mul _
+
 /-- Whether an excenter exists with a given choice of signs. -/
 def ExcenterExists (signs : Finset (Fin (n + 1))) : Prop :=
   ∑ i, s.excenterWeightsUnnorm signs i ≠ 0
@@ -96,12 +101,11 @@ lemma sum_excenterWeights (signs : Finset (Fin (n + 1))) [Decidable (s.ExcenterE
 alias ⟨_, ExcenterExists.sum_excenterWeights_eq_one⟩ := sum_excenterWeights_eq_one_iff
 
 lemma sum_excenterWeightsUnnorm_empty_pos : 0 < ∑ i, s.excenterWeightsUnnorm ∅ i := by
-  refine Finset.sum_pos ?_ (by simp)
-  rintro i -
-  simp [excenterWeightsUnnorm, height_pos]
+  simp_rw [excenterWeightsUnnorm_empty_apply]
+  positivity
 
 /-- The existence of the incenter, expressed in terms of `ExcenterExists`. -/
-lemma excenterExists_empty : s.ExcenterExists ∅ :=
+@[simp] lemma excenterExists_empty : s.ExcenterExists ∅ :=
   s.sum_excenterWeightsUnnorm_empty_pos.ne'
 
 lemma sum_inv_height_sq_smul_vsub_eq_zero :
@@ -330,7 +334,7 @@ lemma ExcenterExists.signedInfDist_excenter {signs : Finset (Fin (n + 1))}
 
 lemma signedInfDist_incenter (i : Fin (n + 1)) : s.signedInfDist i s.incenter = s.inradius := by
   rw [incenter, exsphere_center, s.excenterExists_empty.signedInfDist_excenter]
-  simp [sum_excenterWeightsUnnorm_empty_pos]
+  simp (discharger := positivity)
 
 variable {s} in
 lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs)

@@ -178,6 +178,16 @@ def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
 lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
   simp [height]
 
+open Qq Mathlib.Meta.Positivity in
+/-- Extension for the `positivity` tactic: the height of a simplex is always positive. -/
+@[positivity height _ _]
+def evalHeight : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
+    assertInstancesCommute
+    return .positive q(height_pos $s $i)
+  | _, _, _ => throwError "not Simplex.height"
+
 open scoped RealInnerProductSpace
 
 variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
