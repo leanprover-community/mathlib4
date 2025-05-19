@@ -96,8 +96,23 @@ postpone descending to the level of objects as long as possible and hence
 state all necessary compatibility properties for `whiskerBaseChange` instead.
 -/
 def whiskerBaseChange : (F.map l).r ≫ (F.map t).l ≫ (F.map r).l ⟶ (F.map b).l :=
-  (α_ _ _ _).inv ≫ F.baseChange sq ▷ (F.map r).l ≫
-    (α_ _ _ _).hom ≫ (F.map b).l ◁ (F.map r).adj.counit ≫ (ρ_ _).hom
+  (F.map l).adj.homEquiv₁ (F.isoMapOfCommSq sq).hom.τl
+
+lemma whiskerBaseChange_eq : F.whiskerBaseChange sq =
+    (F.map l).adj.homEquiv₁ (F.isoMapOfCommSq sq).hom.τl := rfl
+
+lemma whiskerBaseChange_eq' : F.whiskerBaseChange sq =
+    (α_ _ _ _).inv ≫ (F.map r).adj.homEquiv₂.symm (F.baseChange sq) := by
+  dsimp only [baseChange]
+  rw [mateEquiv_apply', Equiv.symm_apply_apply, Iso.inv_hom_id_assoc,
+    whiskerBaseChange]
+
+/-lemma whiskerBaseChange_eq' :
+    F.whiskerBaseChange sq =
+    (α_ _ _ _).inv ≫ F.baseChange sq ▷ (F.map r).l ≫
+      (α_ _ _ _).hom ≫ (F.map b).l ◁ (F.map r).adj.counit ≫ (ρ_ _).hom := by
+  rw [whiskerBaseChange_eq, Adjunction.homEquiv₂_symm_apply]-/
+
 
 -- is this true?
 --instance [IsIso (F.baseChange sq)] : Mono (F.whiskerBaseChange sq) := by
@@ -166,7 +181,7 @@ lemma baseChange_self_self {S X Y : B} (f : S ⟶ X) (g : X ⟶ Y) :
 lemma whiskerBaseChange_self_self {S X Y : B} (f : S ⟶ X) (g : X ⟶ Y) :
     F.whiskerBaseChange (t := f) (l := f) (r := g) (b := g) ⟨by simp⟩ =
       (α_ _ _ _).inv ≫ (F.map f).adj.counit ▷ _ ≫ (λ_ _).hom := by
-  simp [whiskerBaseChange, baseChange_self_self]
+  simp [whiskerBaseChange_eq, Adjunction.homEquiv₁_apply, baseChange_self_self]
 
 variable {Z : B} (b' : X₂ ⟶ Z) (r' : Y₁ ⟶ Z) (d : Y₂ ⟶ Z)
   (hbd : b ≫ d = b') (hrd : r ≫ d = r')
@@ -230,10 +245,11 @@ lemma whiskerRight_whiskerBaseChange :
       ((F.comp Adj.forget₁).mapComp' _ _ _ hbd).hom := by
   dsimp
   simp only [Bicategory.whiskerLeft_comp, Category.assoc]
-  simp only [whiskerBaseChange, comp_whiskerRight, whisker_assoc, Category.assoc,
+  simp only [whiskerBaseChange_eq', Adjunction.homEquiv₂_symm_apply,
+    comp_whiskerRight, whisker_assoc, Category.assoc,
     triangle_assoc_comp_right]
   rw [F.baseChange_of_comp_eq sq b' r' d hbd hrd]
-  simp
+  simp [Adj.comp_forget₁_mapComp']
   sorry
 
 end
@@ -334,7 +350,8 @@ def coalgEquiv [IsIso (F.baseChange sq)]
   toFun a := (F.map r).l.map a ≫ (F.whiskerBaseChange sq).app N
   invFun a := (F.map r).adj.unit.app _ ≫ (F.map r).r.map a ≫ inv ((F.baseChange sq).app _)
   left_inv a := by
-    dsimp [whiskerBaseChange]
+    simp only [whiskerBaseChange_eq', Adjunction.homEquiv₂_symm_apply]
+    dsimp
     simp only [Functor.map_comp, Category.assoc]
     simp only [Cat.associator_inv_app, Cat.comp_obj, eqToHom_refl, Functor.map_id,
       Cat.associator_hom_app, Cat.rightUnitor_hom_app, Cat.id_obj, Category.id_comp]
@@ -352,7 +369,8 @@ def coalgEquiv [IsIso (F.baseChange sq)]
     rw [reassoc_of% this]
     simp
   right_inv a := by
-    dsimp [whiskerBaseChange]
+    simp only [whiskerBaseChange_eq', Adjunction.homEquiv₂_symm_apply]
+    dsimp
     simp only [Cat.associator_inv_app, Cat.comp_obj, eqToHom_refl, Functor.map_id,
       Cat.associator_hom_app, Cat.rightUnitor_hom_app, Cat.id_obj, Category.id_comp]
     simp only [Functor.map_comp, Functor.map_inv, Category.comp_id, Category.assoc,

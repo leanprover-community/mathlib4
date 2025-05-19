@@ -324,7 +324,8 @@ def forget₁ : Pseudofunctor (Adj B) B where
   mapComp _ _ := Iso.refl _
 
 -- this forgets the left adjoints
-@[simps obj map, simps -isSimp map₂ mapId mapComp]
+--@[simps obj map, simps -isSimp map₂ mapId mapComp]
+@[simps obj map map₂ mapId mapComp]
 def forget₂ : Pseudofunctor (Adj B)ᵒᵖ B where
   obj a := a.unop.obj
   map x := x.unop.r
@@ -370,7 +371,8 @@ lemma inv_hom_τr {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂
     e.inv.τr ≫ e.hom.τr = 𝟙 _ :=
   (rIso e).hom_inv_id
 
-lemma comp_forget₁_mapComp' {B : Type*} [Bicategory B] (F : Pseudofunctor B (Adj Cat))
+lemma comp_forget₁_mapComp' {B C : Type*} [Bicategory B] [Bicategory C]
+    (F : Pseudofunctor B (Adj C))
     {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c) (hfg : f ≫ g = fg) :
     (F.comp forget₁).mapComp' f g fg hfg = lIso (F.mapComp' f g fg hfg) := by
   subst hfg

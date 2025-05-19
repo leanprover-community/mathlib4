@@ -101,20 +101,6 @@ variable
     ⦃X₁₂ X X S : C⦄ ⦃p₁ : X₁₂ ⟶ X⦄ ⦃p₂ : X₁₂ ⟶ X⦄ ⦃f : X ⟶ S⦄
     (sq : CommSq p₁ p₂ f f) (obj : (F.obj (.mk (op X))).obj)
 
-/-@[reassoc]
-lemma map_baseChange_comp_counit' ⦃Y₁₂ : C⦄ (g : Y₁₂ ⟶ X₁₂) (gp : Y₁₂ ⟶ X)
-    (hgp₁ : g ≫ p₁ = gp) (hgp₂ : g ≫ p₂ = gp) :
-    (F.map g.op.toLoc).f.map
-      ((F.map p₁.op.toLoc).f.map ((F.baseChange sq.flip.op.toLoc).app obj)) ≫
-    (F.map g.op.toLoc).f.map
-       ((F.map p₁.op.toLoc).adj.counit.app _) =
-    (F.mapComp' p₁.op.toLoc g.op.toLoc (gp.op.toLoc) (by aesoptoloc)).inv.τf.app
-      ((F.map f.op.toLoc).f.obj ((F.map f.op.toLoc).r.obj obj)) ≫
-      (F.map gp.op.toLoc).f.map ((F.map f.op.toLoc).adj.counit.app _) ≫
-      (F.mapComp' p₂.op.toLoc g.op.toLoc (gp.op.toLoc) (by aesoptoloc)).hom.τf.app obj := by
-    dsimp
-    sorry-/
-
 @[reassoc]
 lemma map_baseChange_comp_counit (g : X ⟶ X₁₂) (hg₁ : g ≫ p₁ = 𝟙 X) (hg₂ : g ≫ p₂ = 𝟙 X) :
     (F.map g.op.toLoc).l.map
@@ -129,7 +115,8 @@ lemma map_baseChange_comp_counit (g : X ⟶ X₁₂) (hg₁ : g ≫ p₁ = 𝟙 
     (F.whiskerRight_whiskerBaseChange_self_self _ _ _ sq.flip.op.toLoc g.op.toLoc (by aesoptoloc)
       (by aesoptoloc)) obj
   simp [Cat.associator_inv_app, Cat.associator_hom_app, Cat.leftUnitor_hom_app,
-    Adj.comp_forget₁_mapComp', whiskerBaseChange] at this
+    Adj.comp_forget₁_mapComp', whiskerBaseChange_eq',
+    Adjunction.homEquiv₂_symm_apply] at this
   rw [this]
   erw [← NatTrans.naturality_assoc]
   rfl

@@ -139,6 +139,12 @@ Note that if one of the transformations is an iso, it does not imply the other i
 def mateEquiv : (g ≫ l₂ ⟶ l₁ ≫ h) ≃ (r₁ ≫ g ⟶ h ≫ r₂) :=
   adj₂.homEquiv₂.trans ((Iso.homCongr (Iso.refl _) (α_ _ _ _)).trans adj₁.homEquiv₁)
 
+lemma mateEquiv_apply' (α : g ≫ l₂ ⟶ l₁ ≫ h) :
+    mateEquiv adj₁ adj₂ α =
+      adj₂.homEquiv₂ ((α_ _ _ _).hom ≫ adj₁.homEquiv₁ α) := by
+  simp [mateEquiv_apply, Adjunction.homEquiv₁_apply,
+    Adjunction.homEquiv₂_apply]
+
 lemma mateEquiv_eq_iff (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h ≫ r₂) :
     mateEquiv adj₁ adj₂ α = β ↔
     adj₁.homEquiv₁.symm β = adj₂.homEquiv₂ α ≫ (α_ _ _ _).hom := by
