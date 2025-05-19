@@ -85,6 +85,11 @@ instance : Add (Language α) :=
 instance : Mul (Language α) :=
   ⟨image2 (· ++ ·)⟩
 
+/-- The intersection of two languages `l` and `m` is the language made of the
+strings `x` where `x ∈ l` and `x ∈ m`. -/
+instance : Inter (Language α) :=
+  ⟨((· ∩ ·) : Set (List α) → Set (List α) → Set (List α))⟩
+
 theorem zero_def : (0 : Language α) = (∅ : Set _) :=
   rfl
 
