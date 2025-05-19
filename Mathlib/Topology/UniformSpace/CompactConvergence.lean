@@ -394,7 +394,7 @@ end CompleteSpace
 and any set `s`, the set of functions `g : C(α, β)` that are equal to `f` on `s`
 is a complete set.
 
-Note that this set does not have to be a closed set.
+Note that this set does not have to be a closed set when `β` is not T0.
 This lemma is useful to prove that, e.g., the space of paths between two points
 and the space of homotopies between two continuous maps are complete spaces,
 without assuming that the codomain is a Hausdorff space. -/
