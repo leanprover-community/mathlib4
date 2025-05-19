@@ -423,22 +423,19 @@ instance : (rootSystem H).IsReduced where
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
+section IsSimple
 
-variable (K L : Type*) [Field K] [CharZero K]
-  [LieRing L] [LieAlgebra K L] [LieAlgebra.IsSimple K L] [FiniteDimensional K L]
-  [LieAlgebra.IsKilling K L] -- Follows from simplicity; will be redundant after #10068 done
-  (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
+-- Note that after #10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
+variable [IsSimple K L]
 
-open LieModule Module
-open LieModule Weight
-
-lemma invtSubmodule_reflection:
-   ∀ (q : Submodule K (Dual K H)), (∀ (i : H.root), q ∈ End.invtSubmodule
-      ((rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
+open Weight in
+lemma eq_top_of_invtSubmodule_ne_bot
+   (q : Submodule K (Dual K H))
+   (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
+   (h₁ : q ≠ ⊥) : q = ⊤ := by
   have _i := nontrivial_of_isIrreducible K L L
   let S := rootSystem H
-  by_contra!
-  obtain ⟨q, h₀, h₁, h₃⟩ := this
+  by_contra h₃
   suffices h₂ : ∀ Φ, Φ.Nonempty → S.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ LinearMap.ker (S.coroot' i)) →
       Φ = Set.univ by
     have := (S.eq_top_of_mem_invtSubmodule_of_forall_eq_univ q h₁ h₀) h₂
