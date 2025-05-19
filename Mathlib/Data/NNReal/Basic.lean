@@ -162,20 +162,3 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
 end Csupr
 
 end NNReal
-
-open Multiset in
-theorem multiset_prod_le_pow_card {F L : Type*} [AddCommGroup L] [FunLike F L ℝ]
-    [AddGroupSeminormClass F L ℝ] {f : F} {y : L} {t : Multiset L}
-    (hf : ∀ x : ℝ, x ∈ Multiset.map f t → x ≤ f y) :
-    (Multiset.map f t).prod ≤ f y ^ card (map f t) := by
-  set g : L → NNReal := fun x : L ↦ ⟨f x, apply_nonneg _ _⟩
-  have hg_le : (Multiset.map g t).prod ≤ g y ^ card (map g t) := by
-    apply prod_le_pow_card
-    intro x hx
-    obtain ⟨a, hat, hag⟩ := mem_map.mp hx
-    rw [Subtype.ext_iff, Subtype.coe_mk] at hag
-    exact hf (x : ℝ) (mem_map.mpr ⟨a, hat, hag⟩)
-  rw [← NNReal.coe_le_coe] at hg_le
-  convert hg_le
-  · simp [NNReal.coe_multiset_prod, Multiset.map_map, Function.comp_apply, NNReal.coe_mk, g]
-  · simp [card_map, g]

@@ -491,14 +491,6 @@ theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
 theorem monomial_mul_C : monomial n a * C b = monomial n (a * b) := by
   simp only [← monomial_zero_left, monomial_mul_monomial, add_zero]
 
-theorem C_finset_sum {α : Type*} (s : Finset α) (b : α → R) :
-    (s.sum fun x : α ↦ C (b x)) = C (s.sum b) := by
-  classical
-  refine s.induction_on ?_ ?_
-  · simp [Finset.sum_empty, _root_.map_zero]
-  · intro a s ha hs
-    rw [Finset.sum_insert ha, Finset.sum_insert ha, hs, C_add]
-
 /-- `X` is the polynomial variable (aka indeterminate). -/
 def X : R[X] :=
   monomial 1 1
@@ -1071,14 +1063,6 @@ variable [CommSemiring R]
 instance commSemiring : CommSemiring R[X] :=
   fast_instance% { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul with
     toSemiring := Polynomial.semiring }
-
-theorem C_finset_prod {α : Type*} (s : Finset α) (b : α → R) :
-    (s.prod fun x : α ↦ C (b x)) = C (s.prod b) := by
-  classical
-  refine s.induction_on ?_ ?_
-  · simp [Finset.prod_empty, map_one]
-  · intro a s ha hs
-    rw [Finset.prod_insert ha, Finset.prod_insert ha, hs, C_mul]
 
 end CommSemiring
 

@@ -366,15 +366,6 @@ theorem leadingCoeff_prod : (∏ i ∈ s, f i).leadingCoeff = ∏ i ∈ s, (f i)
 
 end CommSemiring
 
-section CommRing
-
-theorem prod_X_sub_C_natDegree [CommRing R] [Nontrivial R] [NoZeroDivisors R] {n : ℕ}
-    (b : Fin n → R) : (Finset.univ.prod fun i : Fin n ↦ X - C (b i)).natDegree = n := by
-  rw [natDegree_prod _ _ fun m _ ↦ X_sub_C_ne_zero (b m)]
-  simp [natDegree_X_sub_C, Finset.sum_const, Finset.card_fin, mul_one]
-
-end CommRing
-
 end NoZeroDivisors
 
 end Polynomial

@@ -6,9 +6,7 @@ Authors: Yaël Dillies, Eric Wieser
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
-import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Real.Archimedean
-import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Pointwise operations on sets of reals
@@ -24,7 +22,7 @@ This is true more generally for conditionally complete linear order whose defaul
 don't have those yet.
 -/
 
---assert_not_exists Finset
+assert_not_exists Finset
 
 open Set
 
@@ -130,42 +128,5 @@ theorem Real.iInf_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨅ i, f i) *
 
 theorem Real.iSup_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨆ i, f i) * r = ⨅ i, f i * r := by
   simp only [Real.mul_iSup_of_nonpos ha, mul_comm]
-
-/-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative and `∀ i j, f i * g j ≤ r`, then
- `iSup f * iSup g ≤ r`. -/
-theorem Real.iSup_mul_iSup_le_of_nonneg [Nonempty ι] {f g : ι → ℝ}
-    (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i) (H : ∀ i j, f i * g j ≤ r) :
-    iSup f * iSup g ≤ r := by
-  rw [Real.iSup_mul_of_nonneg (Real.iSup_nonneg hg_nn)]
-  apply ciSup_le
-  intro i
-  rw [Real.mul_iSup_of_nonneg (hf_nn i)]
-  exact ciSup_le fun j ↦ H i j
-
-/-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative, then `iSup (f * g) ≤ iSup f * iSup g`. -/
-theorem Real.iSup_mul_le_mul_iSup_of_nonneg {ι : Type*} [Nonempty ι] [Finite ι] {f g : ι → ℝ}
-    (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i) : (⨆ i : ι, f i * g i) ≤ iSup f * iSup g :=
-  ciSup_le fun x ↦ mul_le_mul (le_ciSup (Finite.bddAbove_range f) x)
-    (le_ciSup (Finite.bddAbove_range g) x) (hg_nn x) (Real.iSup_nonneg hf_nn)
-
-/-- Given a non-negative `f : ι → ℝ` and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
-theorem Real.iSup_pow {ι : Type*} [Nonempty ι] [Finite ι] {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i)
-    (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
-  cases nonempty_fintype ι
-  induction n with
-  | zero => simp only [pow_zero, ciSup_const]
-  | succ n hn =>
-    rw [pow_succ, hn]
-    apply le_antisymm _ (Real.iSup_mul_le_mul_iSup_of_nonneg (fun x ↦ pow_nonneg (hf x) n) hf)
-    · refine Real.iSup_mul_iSup_le_of_nonneg ((fun x ↦ pow_nonneg (hf x) n)) hf ?_
-      intro i j
-      by_cases hij : f i < f j
-      · have hj : f i ^n * f j ≤ f j ^ n.succ :=
-          mul_le_mul (pow_le_pow_left₀ (hf _) (le_of_lt hij) _) (le_refl _) (hf _)
-            (pow_nonneg (hf _) _)
-        exact le_trans hj (le_ciSup_of_le (Set.finite_range _).bddAbove j (le_refl _))
-      · have hi : f i ^ n * f j ≤ f i ^ n.succ :=
-          mul_le_mul_of_nonneg_left (le_of_not_lt hij) (pow_nonneg (hf _) _)
-        exact le_trans hi (le_ciSup_of_le (Set.finite_range _).bddAbove i (le_refl _))
 
 end Mul
