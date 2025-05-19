@@ -42,7 +42,7 @@ class RelCWComplex.FiniteDimensional.{u} {X : Type u} [TopologicalSpace X] (C : 
 /-- A CW complex is of finite type if `cell C n` is finite for every `n`. -/
 class RelCWComplex.FiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X) {D : Set X}
     [RelCWComplex C D] : Prop where
-  /-- `cell C n` is finite for every `n`.-/
+  /-- `cell C n` is finite for every `n`. -/
   finite_cell (n : ℕ) : Finite (cell C n)
 
 /-- A CW complex is finite if it is finite dimensional and of finite type. -/
