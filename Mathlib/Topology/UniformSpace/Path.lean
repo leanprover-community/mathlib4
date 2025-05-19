@@ -39,7 +39,6 @@ theorem uniformContinuous_extend (γ : Path x y) : UniformContinuous γ.extend :
 
 /-- Extension of a path to the real line is uniformly continuous in the path argument. -/
 theorem uniformContinuous_extend_left : UniformContinuous (Path.extend : Path x y → _) :=
-  have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩
   ContinuousMap.projIccCM.uniformContinuous_comp_left.comp isUniformEmbedding_coe.uniformContinuous
 
 theorem _root_.Filter.HasBasis.uniformityPath {ι : Sort*} {p : ι → Prop} {U : ι → Set (X × X)}
