@@ -255,8 +255,6 @@ theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g
   rw [MulAction.compHom_smul_def, coe_smul_of_det_pos (by simp)]
   rfl
 
--- Porting note: in the statement, we used to have coercions `↑· : ℝ`
--- rather than `algebraMap R ℝ ·`.
 theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     g • z = mk
       (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
