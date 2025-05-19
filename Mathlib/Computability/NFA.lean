@@ -204,13 +204,16 @@ end NFA
 
 namespace Language
 
-theorem IsRegular.reverse {L : Language α} (h : L.IsRegular) : L.reverse.IsRegular :=
+protected theorem IsRegular.reverse {L : Language α} (h : L.IsRegular) : L.reverse.IsRegular :=
   have ⟨σ, _, M, hM⟩ := h
   ⟨_, inferInstance, M.toNFA.reverse.toDFA, by ext; simp [hM]⟩
+
+protected theorem IsRegular.of_reverse {L : Language α} (h : L.reverse.IsRegular) : L.IsRegular :=
+  L.reverse_reverse ▸ h.reverse
 
 /-- Regular languages are closed under reversal. -/
 @[simp]
 theorem isRegular_reverse_iff {L : Language α} : L.reverse.IsRegular ↔ L.IsRegular :=
-  ⟨(L.reverse_reverse ▸ ·.reverse), .reverse⟩
+  ⟨.of_reverse, .reverse⟩
 
 end Language
