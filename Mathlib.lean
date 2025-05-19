@@ -4923,6 +4923,7 @@ import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
 import Mathlib.RepresentationTheory.GroupCohomology.LongExactSequence
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+import Mathlib.RepresentationTheory.GroupCohomology.ToMove
 import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RepresentationTheory.Rep

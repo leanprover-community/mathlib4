@@ -5,6 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
+import Mathlib.RepresentationTheory.GroupCohomology.ToMove
 
 /-!
 # Functoriality of group cohomology
@@ -256,6 +257,12 @@ theorem mapShortComplexH1_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C
     mapShortComplexH1 (MonoidHom.id G) (φ ≫ ψ) =
       mapShortComplexH1 (MonoidHom.id G) φ ≫ mapShortComplexH1 (MonoidHom.id G) ψ := rfl
 
+variable (k G) in
+@[simps]
+noncomputable def shortComplexH1Functor : Rep k G ⥤ ShortComplex (ModuleCat k) where
+  obj := shortComplexH1
+  map := mapShortComplexH1 (MonoidHom.id G)
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `Z¹(H, A) ⟶ Z¹(G, B)`. -/
 noncomputable abbrev mapOneCocycles :
@@ -351,6 +358,12 @@ theorem mapShortComplexH2_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C
     mapShortComplexH2 (MonoidHom.id G) (φ ≫ ψ) =
       mapShortComplexH2 (MonoidHom.id G) φ ≫ mapShortComplexH2 (MonoidHom.id G) ψ := rfl
 
+variable (k G) in
+@[simps]
+noncomputable def shortComplexH2Functor : Rep k G ⥤ ShortComplex (ModuleCat k) where
+  obj := shortComplexH2
+  map := mapShortComplexH2 (MonoidHom.id G)
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `Z²(H, A) ⟶ Z²(G, B)`. -/
 noncomputable abbrev mapTwoCocycles :
@@ -406,9 +419,10 @@ lemma map_comp_isoH2_hom :
     map f φ 2 ≫ (isoH2 B).hom = (isoH2 A).hom ≫ H2Map f φ := by
   simp [← cancel_epi (groupCohomologyπ _ _), H2Map, Category.assoc]
 
-variable (k G) in
+variable (k G)
+
 /-- The functor sending a representation to its complex of inhomogeneous cochains. -/
-@[simps]
+@[simps obj map]
 noncomputable def cochainsFunctor : Rep k G ⥤ CochainComplex (ModuleCat k) ℕ where
   obj A := inhomogeneousCochains A
   map f := cochainsMap (MonoidHom.id _) f
@@ -418,18 +432,185 @@ noncomputable def cochainsFunctor : Rep k G ⥤ CochainComplex (ModuleCat k) ℕ
 instance : (cochainsFunctor k G).PreservesZeroMorphisms where
 instance : (cochainsFunctor k G).Additive where
 
-variable (k G) in
+/-- The functor sending a `G`-representation `A` to `Zⁿ(G, A)`. -/
+noncomputable abbrev cocyclesFunctor (n : ℕ) : Rep k G ⥤ ModuleCat k :=
+  cochainsFunctor k G ⋙ HomologicalComplex.cyclesFunctor _ _ n
+
+instance (n : ℕ) : (cocyclesFunctor k G n).PreservesZeroMorphisms where
+instance (n : ℕ) : (cocyclesFunctor k G n).Additive := inferInstance
+
+/-- The functor sending a `G`-representation `A` to `Cⁿ(G, A)/Bⁿ(G, A)`. -/
+noncomputable abbrev opcocyclesFunctor (n : ℕ) : Rep k G ⥤ ModuleCat k :=
+  cochainsFunctor k G ⋙ HomologicalComplex.opcyclesFunctor _ _ n
+
+instance (n : ℕ) : (opcocyclesFunctor k G n).PreservesZeroMorphisms where
+instance (n : ℕ) : (opcocyclesFunctor k G n).Additive := inferInstance
+
 /-- The functor sending a `G`-representation `A` to `Hⁿ(G, A)`. -/
-@[simps]
-noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
-  obj A := groupCohomology A n
-  map φ := map (MonoidHom.id _) φ n
-  map_id _ := HomologicalComplex.homologyMap_id _ _
-  map_comp _ _ := by
-    simp only [← HomologicalComplex.homologyMap_comp]
-    rfl
+noncomputable abbrev functor (n : ℕ) : Rep k G ⥤ ModuleCat k :=
+  cochainsFunctor k G ⋙ HomologicalComplex.homologyFunctor _ _ n
 
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
-  map_zero _ _ := by simp [map]
+instance (n : ℕ) : (functor k G n).Additive := inferInstance
 
+section LowDegree
+
+/-- The functor sending a `G`-representation `A` to `Z¹(G, A)`, using a convenient expression
+for `Z¹`. -/
+noncomputable abbrev oneCocyclesFunctor : Rep k G ⥤ ModuleCat k :=
+  shortComplexH1Functor k G ⋙ ShortComplex.cyclesFunctor' (fun X => X.moduleCatLeftHomologyData)
+
+instance : (oneCocyclesFunctor k G).PreservesZeroMorphisms where
+instance : (oneCocyclesFunctor k G).Additive where
+
+/-- The functor sending a `G`-representation `A` to `C¹(G, A)/B¹(G, A)`, using a convenient
+expression for `C¹/B¹`. . -/
+noncomputable abbrev oneOpcocyclesFunctor : Rep k G ⥤ ModuleCat k :=
+  shortComplexH1Functor k G ⋙ ShortComplex.opcyclesFunctor'
+    (fun X => X.moduleCatRightHomologyData)
+
+instance : (oneOpcocyclesFunctor k G).PreservesZeroMorphisms where
+  map_zero _ _ := ModuleCat.hom_ext <| Submodule.linearMap_qext _ <| rfl
+
+instance : (oneOpcocyclesFunctor k G).Additive where
+  map_add := ModuleCat.hom_ext <| Submodule.linearMap_qext _ <| rfl
+
+/-- The functor sending a `G`-representation `A` to `H¹(G, A)`, using a convenient expression
+for `H¹`. . -/
+noncomputable abbrev H1Functor : Rep k G ⥤ ModuleCat k :=
+  shortComplexH1Functor k G ⋙ ShortComplex.leftHomologyFunctor'
+    (fun X => X.moduleCatLeftHomologyData)
+
+instance : (H1Functor k G).PreservesZeroMorphisms where
+  map_zero _ _ := (cancel_epi (H1π _)).1 rfl
+
+instance : (H1Functor k G).Additive where
+  map_add := (cancel_epi (H1π _)).1 rfl
+
+/-- The functor sending a `G`-representation `A` to `Z²(G, A)`, using a convenient expression
+for `Z²`. -/
+noncomputable abbrev twoCocyclesFunctor : Rep k G ⥤ ModuleCat k :=
+  shortComplexH2Functor k G ⋙ ShortComplex.cyclesFunctor'
+    (fun X => X.moduleCatLeftHomologyData)
+
+instance : (twoCocyclesFunctor k G).PreservesZeroMorphisms where
+instance : (twoCocyclesFunctor k G).Additive where
+
+/-- The functor sending a `G`-representation `A` to `C²(G, A)/B²(G, A)`, using a convenient
+expression for `C²/B²`. -/
+noncomputable abbrev twoOpcocyclesFunctor : Rep k G ⥤ ModuleCat k :=
+  shortComplexH2Functor k G ⋙ ShortComplex.opcyclesFunctor'
+    (fun X => X.moduleCatRightHomologyData)
+
+instance : (twoOpcocyclesFunctor k G).PreservesZeroMorphisms where
+  map_zero _ _ := ModuleCat.hom_ext <| Submodule.linearMap_qext _ <| rfl
+
+instance : (twoOpcocyclesFunctor k G).Additive where
+  map_add := ModuleCat.hom_ext <| Submodule.linearMap_qext _ <| rfl
+
+/-- The functor sending a `G`-representation `A` to `H²(G, A)`, using a convenient expression
+for `H²`. -/
+noncomputable abbrev H2Functor : Rep k G ⥤ ModuleCat k :=
+  shortComplexH2Functor k G ⋙ ShortComplex.leftHomologyFunctor'
+    (fun X => X.moduleCatLeftHomologyData)
+
+instance : (H2Functor k G).PreservesZeroMorphisms where
+  map_zero _ _ := (cancel_epi (H2π _)).1 rfl
+
+instance : (H2Functor k G).Additive where
+  map_add := (cancel_epi (H2π _)).1 rfl
+
+end LowDegree
+section NatIsos
+
+/-- The functor sending a `G`-representation `A` to `H⁰(G, A) := Aᴳ` is naturally isomorphic to the
+general group cohomology functor at 0. -/
+@[simps! hom_app inv_app]
+noncomputable def isoInvariantsFunctor :
+    functor k G 0 ≅ invariantsFunctor k G :=
+  NatIso.ofComponents isoH0 fun f => by simp
+
+/-- The functor sending a `G`-representation `A` to its 0th opcycles is naturally isomorphic to the
+forgetful functor `Rep k G ⥤ ModuleCat k`. -/
+@[simps! hom_app inv_app]
+noncomputable def zeroOpcocyclesFunctorIso :
+    opcocyclesFunctor k G 0 ≅ Action.forget (ModuleCat k) G :=
+  NatIso.ofComponents (fun A => zeroOpcocyclesIso A) fun {X Y} f => by
+    have := cochainsMap_f_0_comp_zeroCochainsLequiv (MonoidHom.id G) f
+    simp_all [← cancel_epi (HomologicalComplex.pOpcycles _ _)]
+
+@[reassoc, elementwise]
+theorem pOpcycles_comp_zeroOpcocyclesFunctorIso_hom_app :
+    (inhomogeneousCochains B).pOpcycles 0 ≫ (zeroOpcocyclesFunctorIso k G).hom.app B =
+      ModuleCat.ofHom (zeroCochainsLequiv B).toLinearMap := by
+  simp
+
+/-- The functor sending a `G`-representation `A` to `Z¹(G, A)` is naturally isomorphic to the
+general cocycles functor at 1. -/
+@[simps! hom_app inv_app]
+noncomputable def isoOneCocyclesFunctor :
+    cocyclesFunctor k G 1 ≅ oneCocyclesFunctor k G :=
+  NatIso.ofComponents isoOneCocycles fun f => by simp
+
+/-- The functor sending a `G`-representation `A` to `C¹(G, A)/B¹(G, A)` is naturally isomorphic to
+the general opcocycles functor at 1. -/
+@[simps! hom_app inv_app]
+noncomputable def isoOneOpcocyclesFunctor :
+    opcocyclesFunctor k G 1 ≅ oneOpcocyclesFunctor k G :=
+  NatIso.ofComponents
+    (fun A => (inhomogeneousCochains A).opcyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫ opcyclesMapIso
+      (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatOpcyclesIso) fun f => by
+        simpa [← cancel_epi (pOpcycles _), HomologicalComplex.opcyclesIsoSc',
+          HomologicalComplex.opcyclesMap]
+          using cochainsMap_f_1_comp_oneCochainsLequiv_assoc (MonoidHom.id G) f _
+
+@[reassoc, elementwise]
+theorem pOpcycles_comp_isoOneOpcocyclesFunctor_hom_app :
+    (inhomogeneousCochains B).pOpcycles 1 ≫ (isoOneOpcocyclesFunctor k G).hom.app B =
+      ModuleCat.ofHom (oneCochainsLequiv _).toLinearMap ≫
+      (shortComplexH1 B).moduleCatRightHomologyData.p := by
+  simp
+
+/-- The functor sending a `G`-representation `A` to `H¹(G, A)` is naturally isomorphic to the
+general group cohomology functor at 1. -/
+@[simps! hom_app inv_app]
+noncomputable def isoH1Functor :
+    functor k G 1 ≅ H1Functor k G :=
+  NatIso.ofComponents isoH1 fun f => by simp
+
+/-- The functor sending a `G`-representation `A` to `Z²(G, A)` is naturally isomorphic to the
+general cocycles functor at 2. -/
+@[simps! hom_app inv_app]
+noncomputable def isoTwoCocyclesFunctor :
+    cocyclesFunctor k G 2 ≅ twoCocyclesFunctor k G :=
+  NatIso.ofComponents isoTwoCocycles fun f => by simp
+
+/-- The functor sending a `G`-representation `A` to `C²(G, A)/B²(G, A)` is naturally isomorphic to
+the general opcocycles functor at 2. -/
+@[simps! hom_app inv_app]
+noncomputable def isoTwoOpcocyclesFunctor :
+    opcocyclesFunctor k G 2 ≅ twoOpcocyclesFunctor k G :=
+  NatIso.ofComponents
+    (fun A => (inhomogeneousCochains A).opcyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫ opcyclesMapIso
+      (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatOpcyclesIso) fun f => by
+        simpa [← cancel_epi (pOpcycles _), HomologicalComplex.opcyclesIsoSc',
+          HomologicalComplex.opcyclesMap]
+          using cochainsMap_f_2_comp_twoCochainsLequiv_assoc (MonoidHom.id G) f _
+
+@[reassoc, elementwise]
+theorem pOpcycles_comp_isoTwoOpcocyclesFunctor_hom_app :
+    (inhomogeneousCochains B).pOpcycles 2 ≫ (isoTwoOpcocyclesFunctor k G).hom.app B =
+      ModuleCat.ofHom (twoCochainsLequiv _).toLinearMap ≫
+      (shortComplexH2 B).moduleCatRightHomologyData.p := by
+  simp
+
+/-- The functor sending a `G`-representation `A` to `H²(G, A)` is naturally isomorphic to the
+general group cohomology functor at 2. -/
+@[simps! hom_app inv_app]
+noncomputable def isoH2Functor :
+    functor k G 2 ≅ H2Functor k G :=
+  NatIso.ofComponents isoH2 fun f => by simp
+
+end NatIsos
+end Functors
 end groupCohomology

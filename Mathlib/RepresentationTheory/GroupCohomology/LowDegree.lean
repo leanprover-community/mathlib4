@@ -819,6 +819,17 @@ lemma isoZeroCocycles_inv_comp_iCocycles :
       (shortComplexH0 A).f ≫ (zeroCochainsLequiv A).toModuleIso.inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoZeroCocycles_hom_comp_f]
 
+/-- The 0-opcocycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
+def zeroOpcocyclesIso : (inhomogeneousCochains A).opcycles 0 ≅ A.V :=
+  ((inhomogeneousCochains A).pOpcyclesIso 0 _ (by simp) (by simp)).symm ≪≫
+    (zeroCochainsLequiv A).toModuleIso
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma pOpcocycles_hom_comp_zeroOpcocyclesIso :
+    (inhomogeneousCochains A).pOpcycles 0 ≫ (zeroOpcocyclesIso A).hom =
+      (zeroCochainsLequiv A).toModuleIso.hom := by
+  simp [zeroOpcocyclesIso]
+
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
 def isoH0 : groupCohomology A 0 ≅ H0 A :=
