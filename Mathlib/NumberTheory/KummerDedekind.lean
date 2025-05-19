@@ -239,6 +239,10 @@ variable [NoZeroSMulDivisors R S]
 
 attribute [local instance] Ideal.Quotient.field
 
+/--
+The isomorphism of rings between `S / I` and `(R / I)[X] / minpoly x` when `I`
+and `(conductor R x) ∩ R` are coprime.
+-/
 noncomputable def quotMapEquivQuotQuotMap (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) :
     S ⧸ I.map (algebraMap R S) ≃+* (R ⧸ I)[X] ⧸ span {(minpoly R x).map (Ideal.Quotient.mk I)} :=
