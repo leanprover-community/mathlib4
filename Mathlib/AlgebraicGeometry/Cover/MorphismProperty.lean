@@ -76,7 +76,7 @@ theorem Cover.iUnion_range {X : Scheme.{u}} (𝒰 : X.Cover P) :
 lemma Cover.exists_eq (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.map i).base y = x :=
   ⟨_, 𝒰.covers x⟩
 
-instance Cover.nonempty_of_nonempty  [Nonempty X] (𝒰 : X.Cover P) : Nonempty 𝒰.J :=
+instance Cover.nonempty_of_nonempty [Nonempty X] (𝒰 : X.Cover P) : Nonempty 𝒰.J :=
   Nonempty.map 𝒰.f ‹_›
 
 /-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly
