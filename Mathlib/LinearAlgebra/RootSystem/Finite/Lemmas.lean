@@ -234,9 +234,11 @@ lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α 
 omit [Finite ι] in
 lemma root_mem_submodule_iff_of_add_mem_invtSubmodule
     {K : Type*} [Field K] [NeZero (2 : K)] [Module K M] [Module K N] {P : RootPairing ι K M N}
-    (q : Submodule K M) (hq : ∀ i, q ∈ Module.End.invtSubmodule (P.reflection i))
+    (q : P.invtRootSubmodule)
     (hij : P.root i + P.root j ∈ range P.root) :
-    P.root i ∈ q ↔ P.root j ∈ q := by
+    P.root i ∈ (q : Submodule K M) ↔ P.root j ∈ (q : Submodule K M) := by
+  obtain ⟨q, hq⟩ := q
+  rw [mem_invtRootSubmodule_iff] at hq
   suffices ∀ i j, P.root i + P.root j ∈ range P.root → P.root i ∈ q → P.root j ∈ q by
     have aux := this j i (by rwa [add_comm]); tauto
   rintro i j ⟨k, hk⟩ hi
