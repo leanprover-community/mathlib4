@@ -316,6 +316,56 @@ theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   simpa only [Subtype.ext_iff, Units.ext_iff, map_mul] using
     congr_arg (Matrix.GeneralLinearGroup.map (algebraMap ℚ ℝ)) hz'
 
+/-- If `Γ` has finite index in `SL(2, ℤ)`, then so does `g⁻¹ Γ g ∩ SL(2, ℤ)` for any
+`g ∈ GL(2, ℚ)⁺`. -/
+lemma finiteIndex_conjGLPos (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] (g : GL (Fin 2) ℚ) :
+    (conjGL Γ (g.map <| Rat.castHom ℝ)).FiniteIndex := by
+  constructor
+  let coeHom : SL(2, ℤ) →* GL (Fin 2) ℝ :=
+    SpecialLinearGroup.toGL.comp (SpecialLinearGroup.map <| Int.castRingHom ℝ)
+  simp only [conjGL, Subgroup.index_comap]
+  let t := (toConjAct <| g.map <| Rat.castHom ℝ)⁻¹
+  let G := Γ.map coeHom
+  let A := coeHom.range
+  let B := t • coeHom.range ⊓ coeHom.range
+  let C := t • G ⊓ coeHom.range
+  rw [← Subgroup.inf_relindex_right]
+  show C.relindex A ≠ 0
+  have hCB : C ≤ B := by
+    apply inf_le_inf_right
+    rw [Subgroup.pointwise_smul_le_pointwise_smul_iff]
+    apply Subgroup.map_le_range
+  have hBA : B ≤ A := inf_le_right
+  apply Subgroup.relindex_ne_zero_trans (K := B)
+  · -- Show that `[B : C] < ∞`.
+    apply Subgroup.relindex_inter_ne_zero
+    rw [Subgroup.relindex_pointwise_smul, ← Subgroup.index_comap,
+      Subgroup.comap_map_eq_self_of_injective fun a b ↦ by simp [coeHom]]
+    exact Subgroup.FiniteIndex.index_ne_zero
+  · -- Show that `[A : B] < ∞` (statement independent of `Γ`)
+    obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g 1
+    rw [Gamma_one_top, ← MonoidHom.range_eq_map] at hN'
+    suffices Γ(N) ≤ B.comap coeHom by
+      haveI _ : NeZero N := ⟨hN⟩
+      rw [← Subgroup.index_comap]
+      exact (Subgroup.finiteIndex_of_le this).index_ne_zero
+    intro k hk
+    obtain ⟨j, hj⟩ := hN' <| Subgroup.smul_mem_pointwise_smul (coeHom k)
+      (toConjAct <| g.map <| Rat.castHom ℝ) (Γ(N).map coeHom) ⟨k, hk, rfl⟩
+    simpa [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, B] using ⟨j, hj⟩
+
+/-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/
+lemma IsCongruenceSubgroup.conjGLPos {Γ : Subgroup SL(2, ℤ)} (hΓ : IsCongruenceSubgroup Γ)
+    (g : GL (Fin 2) ℚ) :
+    IsCongruenceSubgroup (conjGL Γ (g.map <| Rat.castHom ℝ)) := by
+  obtain ⟨M, hN, hΓM⟩ := hΓ
+  haveI _ : NeZero M := ⟨hN⟩
+  obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g M
+  rw [Subgroup.pointwise_smul_subset_iff] at hN'
+  refine ⟨N, ‹_›, fun x hx ↦ ?_⟩
+  obtain ⟨y, hy, hy'⟩ := Subgroup.mem_inv_pointwise_smul_iff.mp <| hN' ⟨x, hx, rfl⟩
+  exact mem_conjGL.mpr ⟨y, hΓM hy, hy'⟩
+
 end Conjugation
 
 end CongruenceSubgroup
