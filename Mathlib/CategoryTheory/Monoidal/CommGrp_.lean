@@ -12,9 +12,9 @@ import Mathlib.CategoryTheory.Monoidal.CommMon_
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
-open CategoryTheory Category Limits MonoidalCategory ChosenFiniteProducts Mon_ Grp_ CommMon_
+open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon_ Grp_ CommMon_
 
-variable (C : Type u₁) [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C] [BraidedCategory C]
+variable (C : Type u₁) [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C] [BraidedCategory C]
 
 /-- A commutative group object internal to a cartesian monoidal category. -/
 structure CommGrp_ extends Grp_ C, CommMon_ C where
@@ -151,8 +151,8 @@ end CommGrp_
 
 namespace CategoryTheory
 variable {C}
-  {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts D] [BraidedCategory D]
-  {E : Type u₃} [Category.{v₃} E] [ChosenFiniteProducts E] [BraidedCategory E]
+  {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D] [BraidedCategory D]
+  {E : Type u₃} [Category.{v₃} E] [CartesianMonoidalCategory E] [BraidedCategory E]
 
 namespace Functor
 variable {F F' : C ⥤ D} [F.Braided] [F'.Braided] {G : D ⥤ E} [G.Braided]
@@ -174,14 +174,14 @@ noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
 /-- The identity functor is also the identity on commutative group objects. -/
 @[simps!]
 noncomputable def mapCommGrpIdIso : mapCommGrp (𝟭 C) ≅ 𝟭 (CommGrp_ C) :=
-  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp [ε_of_chosenFiniteProducts])
-    (by simp [μ_of_chosenFiniteProducts]))
+  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
+    (by simp [μ_of_cartesianMonoidalCategory]))
 
 /-- The composition functor is also the composition on commutative group objects. -/
 @[simps!]
 noncomputable def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :=
-  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp [ε_of_chosenFiniteProducts])
-    (by simp [μ_of_chosenFiniteProducts]))
+  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
+    (by simp [μ_of_cartesianMonoidalCategory]))
 
 /-- Natural transformations between functors lift to commutative group objects. -/
 @[simps!]
