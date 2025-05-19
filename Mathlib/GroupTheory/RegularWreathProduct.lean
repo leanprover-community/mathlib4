@@ -174,8 +174,7 @@ given `D`-set `Λ`. -/
 def toPerm : D ≀ᵣ Q →* Equiv.Perm (Λ × Q) :=
   MulAction.toPermHom (D ≀ᵣ Q) (Λ × Q)
 
-theorem toPermInj [Nonempty Λ] :
-  Function.Injective (toPerm D Q Λ) := MulAction.toPerm_injective
+theorem toPermInj [Nonempty Λ] : Function.Injective (toPerm D Q Λ) := MulAction.toPerm_injective
 
 end perm
 
