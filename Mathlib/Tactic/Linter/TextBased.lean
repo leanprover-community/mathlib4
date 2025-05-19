@@ -204,7 +204,7 @@ section
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
 register_option linter.adaptationNote : Bool := { defValue := true }
 
-/-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
+@[inherit_doc linter.adaptationNote]
 def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   unless getLinterValue linter.adaptationNote opts do return (#[], none)
 
@@ -215,10 +215,10 @@ def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
       errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
 
-/-- Place a lint on trailing whitespace. -/
+/-- Lint a collection of input strings if one of them contains trailing whitespace. -/
 register_option linter.trailingWhitespace : Bool := { defValue := true }
 
-/-- Lint a collection of input strings if one of them contains trailing whitespace. -/
+@[inherit_doc linter.trailingWhitespace]
 def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   unless getLinterValue linter.trailingWhitespace opts do return (#[], none)
 
@@ -231,10 +231,10 @@ def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
       fixedLines := fixedLines.set idx line.trimRight
   return (errors, if errors.size > 0 then some fixedLines.toArray else none)
 
-/-- Place a lint on a semicolon preceded by a space. -/
+/-- Lint a collection of input strings for a semicolon preceded by a space. -/
 register_option linter.whitespaceBeforeSemicolon : Bool := { defValue := true }
 
-/-- Lint a collection of input strings for a semicolon preceded by a space. -/
+@[inherit_doc linter.whitespaceBeforeSemicolon]
 def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   unless getLinterValue linter.whitespaceBeforeSemicolon opts do return (#[], none)
 
