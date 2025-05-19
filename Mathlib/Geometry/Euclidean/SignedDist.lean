@@ -98,7 +98,7 @@ in the direction of the reference point `i`. This is expected to be used when th
 the distance is evaluated lies in the affine span of the simplex (any component of the distance
 orthogonal to that span is disregarded). In the case of a triangle, these distances are
 trilinear coordinates; in a tetrahedron, they are quadriplanar coordinates. -/
-noncomputable def signedInfDist : P →ᵃ[ℝ] ℝ :=
+noncomputable def signedInfDist : P →ᴬ[ℝ] ℝ :=
   AffineSubspace.signedInfDist (affineSpan ℝ (s.points '' {i}ᶜ)) (s.points i)
 
 lemma signedInfDist_apply_self :
@@ -114,8 +114,9 @@ lemma signedInfDist_apply_of_ne {j : Fin (n + 1)} (h : j ≠ i) :
 lemma signedInfDist_affineCombination {w : Fin (n + 1) → ℝ} (h : ∑ i, w i = 1) :
     s.signedInfDist i (Finset.univ.affineCombination ℝ s.points w) = w i * ‖s.points i -ᵥ
       (s.faceOpposite i).orthogonalProjectionSpan (s.points i)‖ := by
-  rw [Finset.map_affineCombination _ _ _ h,
-    Finset.univ.affineCombination_apply_eq_lineMap_sum w (s.signedInfDist i ∘ s.points) 0
+  rw [← ContinuousAffineMap.coe_toAffineMap, Finset.map_affineCombination _ _ _ h,
+    Finset.univ.affineCombination_apply_eq_lineMap_sum w
+      ((s.signedInfDist i).toAffineMap ∘ s.points) 0
       ‖s.points i -ᵥ (s.faceOpposite i).orthogonalProjectionSpan (s.points i)‖
       {i} h]
   · simp [AffineMap.lineMap_apply]
