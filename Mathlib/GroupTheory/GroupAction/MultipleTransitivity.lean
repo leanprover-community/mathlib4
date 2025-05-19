@@ -4,14 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.SetTheory.Cardinal.Embedding
--- import Mathlib.Data.Finite.Card
--- import Mathlib.Data.Set.Card
--- import Mathlib.SetTheory.Cardinal.Finite
 
 /-! # Multiple transitivity
 
