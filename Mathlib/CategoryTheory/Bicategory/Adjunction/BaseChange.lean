@@ -237,6 +237,8 @@ lemma baseChange_of_comp_eq :
   simp only [Bicategory.whiskerRight_id, Category.assoc]
   simp [← Bicategory.whiskerLeft_comp_assoc, ← Bicategory.whiskerLeft_comp]
 
+--set_option maxHeartbeats 400000 in
+-- this is slow
 lemma whiskerRight_whiskerBaseChange :
     F.whiskerBaseChange sq ▷ (F.map d).l =
       (α_ _ _ _).hom ≫
@@ -250,6 +252,42 @@ lemma whiskerRight_whiskerBaseChange :
     triangle_assoc_comp_right]
   rw [F.baseChange_of_comp_eq sq b' r' d hbd hrd]
   simp [Adj.comp_forget₁_mapComp']
+  rw [Bicategory.associator_inv_naturality_right_assoc,
+    whisker_exchange_assoc]
+  simp only [Bicategory.whiskerRight_comp, comp_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc,
+    pentagon_hom_inv_inv_inv_inv_assoc, Iso.hom_inv_id_assoc]
+  congr 2
+  dsimp
+  rw [← Bicategory.associator_inv_naturality_left_assoc,
+    Iso.inv_hom_id_assoc, ← whisker_exchange_assoc,
+    Bicategory.whiskerRight_id_assoc, Iso.inv_hom_id_assoc,
+    Adj.inv_hom_id_τl]
+  dsimp
+  rw [Category.comp_id, comp_whiskerLeft_assoc, Iso.inv_hom_id_assoc]
+  simp only [← Bicategory.whiskerLeft_comp_assoc,
+    Category.assoc]
+  rw [← Bicategory.associator_inv_naturality_left_assoc,
+    leftUnitor_comp_inv_assoc, whisker_exchange_assoc]
+  rw [Bicategory.comp_whiskerLeft_assoc, Iso.inv_hom_id_assoc]
+  rw [whisker_exchange_assoc]
+  rw [Bicategory.whiskerRight_comp_assoc]
+  rw [pentagon_inv_hom_hom_hom_inv_assoc]
+  rw [comp_whiskerLeft_assoc]
+  rw [Iso.inv_hom_id_assoc]
+  rw [← Bicategory.whiskerLeft_comp_assoc]
+  rw [← Bicategory.whiskerLeft_comp_assoc]
+  rw [← Bicategory.whiskerLeft_comp (F.map d).l]
+  rw [Category.assoc, Category.assoc]
+  rw [associator_inv_naturality_right_assoc]
+  have : ((F.map d).r ≫ (F.map r).r) ◁ (F.mapComp' r d r' hrd).inv.τl ≫
+    (F.mapComp' r d r' hrd).hom.τr ▷ (F.map r').l ≫ (F.map r').adj.counit =
+      (F.map r ≫ F.map d).adj.counit := by
+    dsimp
+    sorry
+  rw [this]
+  dsimp
+  rw [Iso.inv_hom_id_assoc]
+  rw [← Bicategory.whiskerLeft_comp_assoc]
   sorry
 
 end

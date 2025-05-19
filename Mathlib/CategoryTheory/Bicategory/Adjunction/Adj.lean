@@ -239,6 +239,17 @@ lemma homEquiv₁_τl_eq :
   rw [← cancel_epi (α_ _ _ _).hom, Iso.hom_inv_id_assoc, ← mateEquiv_eq_iff',
     mateEquiv_eq_iff, homEquiv₂_τl_eq, Category.assoc, Iso.inv_hom_id, Category.comp_id]
 
+@[reassoc]
+lemma τr_whiskerRight_comp_counit :
+    p.τr ▷ α.l ≫ α.adj.counit = β.r ◁ p.τl ≫ β.adj.counit := by
+  simpa [Adjunction.homEquiv₁_apply, Adjunction.homEquiv₂_symm_apply,
+    ← cancel_epi (β.r ◁ (λ_ _).inv)] using p.homEquiv₁_τl_eq.symm
+
+@[reassoc]
+lemma unit_comp_τl_whiskerRIght : α.adj.unit ≫ p.τl ▷ α.r = β.adj.unit ≫ β.l ◁ p.τr := by
+  simpa [Adjunction.homEquiv₁_symm_apply, Adjunction.homEquiv₂_apply,
+    ← cancel_mono ((ρ_ _).hom ▷ α.r)] using p.homEquiv₂_τl_eq
+
 end Hom₂
 
 instance : CategoryStruct (a ⟶ b) where
@@ -355,43 +366,53 @@ def forget₂ : Pseudofunctor (Adj B)ᵒᵖ B where
   mapId _ := Iso.refl _
   mapComp _ _ := Iso.refl _
 
+section
+
+variable {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂)
+
 /-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
 underlying isomorphisms between the left adjoints. -/
 @[simps]
-def lIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.l ≅ adj₂.l where
+def lIso : adj₁.l ≅ adj₂.l where
   hom := e.hom.τl
   inv := e.inv.τl
   hom_inv_id := by rw [← comp_τl, e.hom_inv_id, id_τl]
   inv_hom_id := by rw [← comp_τl, e.inv_hom_id, id_τl]
 
 @[reassoc (attr := simp)]
-lemma hom_inv_τl {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) :
+lemma hom_inv_id_τl :
     e.hom.τl ≫ e.inv.τl = 𝟙 _ :=
   (lIso e).hom_inv_id
 
 @[reassoc (attr := simp)]
-lemma inv_hom_τl {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) :
+lemma inv_hom_id_τl :
     e.inv.τl ≫ e.hom.τl = 𝟙 _ :=
   (lIso e).inv_hom_id
 
 /-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
 underlying isomorphisms between the right adjoints. -/
 @[simps]
-def rIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.r ≅ adj₂.r where
+def rIso : adj₁.r ≅ adj₂.r where
   hom := e.inv.τr
   inv := e.hom.τr
   hom_inv_id := by rw [← comp_τr, e.hom_inv_id, id_τr]
   inv_hom_id := by rw [← comp_τr, e.inv_hom_id, id_τr]
 
 @[reassoc (attr := simp)]
-lemma hom_inv_τr {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) :
+lemma hom_inv_id_τr :
     e.hom.τr ≫ e.inv.τr = 𝟙 _ :=
   (rIso e).inv_hom_id
 
 @[reassoc (attr := simp)]
-lemma inv_hom_τr {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) :
+lemma inv_hom_id_τr :
     e.inv.τr ≫ e.hom.τr = 𝟙 _ :=
   (rIso e).hom_inv_id
+
+
+instance (φ : adj₁ ⟶ adj₂) [IsIso φ] : IsIso φ.τl := (lIso (asIso φ)).isIso_hom
+instance (φ : adj₁ ⟶ adj₂) [IsIso φ] : IsIso φ.τr := (rIso (asIso φ)).isIso_inv
+
+end
 
 section
 
