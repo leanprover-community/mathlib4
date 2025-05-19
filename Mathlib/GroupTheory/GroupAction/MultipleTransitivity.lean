@@ -310,44 +310,40 @@ theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} 
 
 /-- Multiple transitivity of a pretransitive action
   is equivalent to one less transitivity of stabilizer of a point
-  (Wielandt, th. 9.1, 1st part) -/
+  [Wielandt, th. 9.1, 1st part][Wielandt-1964]. -/
 @[to_additive
   "Multiple transitivity of a pretransitive action
   is equivalent to one less transitivity of stabilizer of a point
-  (Wielandt, th. 9.1, 1st part)"]
+  [Wielandt, th. 9.1, 1st part][Wielandt-1964]." ]
 theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     IsMultiplyPretransitive G α n.succ ↔
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
   constructor
-  · exact fun hn ↦ {
-      exists_smul_eq x y := by
-        obtain ⟨g, hgxy⟩ := exists_smul_eq G (snoc x) (snoc y)
-        have hg : g ∈ stabilizer G a := by
-          rw [mem_stabilizer_iff]
-          rw [DFunLike.ext_iff] at hgxy
-          convert hgxy (last n) <;> simp [smul_apply, snoc_last]
-        use ⟨g, hg⟩
-        ext i
-        simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
-        rw [← snoc_castSucc x, ← smul_apply, hgxy, snoc_castSucc] }
-  · exact fun hn ↦ {
-      exists_smul_eq x y := by
-        -- gx • x = x1 :: a
-        obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
-        -- gy • y = y1 :: a
-        obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
-        -- g • x1 = y1,
-        obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
-        use gy⁻¹ * g * gx
-        ext i
-        simp only [mul_smul, smul_apply, inv_smul_eq_iff]
-        simp only [← smul_apply _ _ i, hgy, hgx]
-        simp only [smul_apply]
-        rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-        · -- rw [Function.Embedding.ext_iff] at hgx hgy hg
-          simp [snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
-        · simp only [snoc_last, ← hg, subgroup_smul_def]
-          exact g.prop }
+  · refine fun hn ↦ ⟨fun x y ↦ ?_⟩
+    obtain ⟨g, hgxy⟩ := exists_smul_eq G (snoc x) (snoc y)
+    have hg : g ∈ stabilizer G a := by
+      rw [mem_stabilizer_iff]
+      rw [DFunLike.ext_iff] at hgxy
+      convert hgxy (last n) <;> simp [snoc_last]
+    use ⟨g, hg⟩
+    ext i
+    simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
+    rw [← snoc_castSucc x, ← smul_apply, hgxy, snoc_castSucc]
+  · refine fun hn ↦ ⟨fun x y ↦ ?_⟩
+    -- gx • x = x1 :: a
+    obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
+    -- gy • y = y1 :: a
+    obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
+    -- g • x1 = y1,
+    obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
+    use gy⁻¹ * g * gx
+    ext i
+    simp only [mul_smul, smul_apply, inv_smul_eq_iff]
+    simp only [← smul_apply _ _ i, hgy, hgx]
+    simp [smul_apply]
+    rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
+    · simp [snoc_castSucc, ← hg, subgroup_smul_def]
+    · simpa only [snoc_last, ← hg, subgroup_smul_def] using g.prop
 
 end SubMulAction.ofStabilizer
 

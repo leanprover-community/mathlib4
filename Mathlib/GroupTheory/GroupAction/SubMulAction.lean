@@ -409,10 +409,7 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
 
 /-- SubMulAction on the complement of an invariant subset -/
 instance : HasCompl (SubMulAction R M) where
-  compl := fun s ↦ {
-    carrier := sᶜ
-    smul_mem' := fun g x ↦ by
-      simp only [SetLike.mem_coe, Set.mem_compl_iff, SubMulAction.smul_mem_iff', imp_self] }
+  compl s := ⟨sᶜ, by simp⟩
 
 theorem compl_def (s : SubMulAction R M) :
   sᶜ.carrier = (s : Set M)ᶜ := rfl
