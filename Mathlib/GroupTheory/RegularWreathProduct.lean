@@ -191,33 +191,30 @@ def IteratedWreathProduct (G : Type u) : (n : ℕ) → Type u
 variable (G : Type u) (n : ℕ)
 
 @[simp]
-lemma IteratedWreathProduct_zero (G : Type u) :
-    IteratedWreathProduct G 0 = PUnit := rfl
+lemma IteratedWreathProduct_zero : IteratedWreathProduct G 0 = PUnit := rfl
 
 @[simp]
-lemma IteratedWreathProduct_succ (G : Type u) (n : ℕ) :
+lemma IteratedWreathProduct_succ :
     IteratedWreathProduct G (n+1) = (IteratedWreathProduct G n) ≀ᵣ G := rfl
+
+instance [Finite G] : Finite (IteratedWreathProduct G n) := by
+  induction n with
+  | zero => rw [IteratedWreathProduct_zero]; infer_instance
+  | succ n h => rw [IteratedWreathProduct_succ]; infer_instance
+
+theorem iter_wreath_card [Finite G] : Nat.card (IteratedWreathProduct G n) =
+    Nat.card G ^ (∑ i ∈ Finset.range n, Nat.card G ^ i) := by
+  induction n with
+  | zero => simp
+  | succ n h => rw [IteratedWreathProduct_succ, RegularWreathProduct.card,
+      h, geom_sum_succ, pow_succ, pow_mul']
 
 variable [Group G]
 
 instance : Group (IteratedWreathProduct G n) := by
  induction n with
- | zero => rw [IteratedWreathProduct_zero]; exact CommGroup.toGroup
- | succ n ih => rw [IteratedWreathProduct_succ]; exact RegularWreathProduct.instGroup
-
-instance [Finite G] : Finite (IteratedWreathProduct G n) := by
-  induction n with
-  | zero => rw [IteratedWreathProduct_zero]; exact Finite.of_subsingleton
-  | succ n h => rw [IteratedWreathProduct_succ]; exact RegularWreathProduct.instFinite
-
-theorem iter_wreath_card {p n : ℕ}
-    (G : Type u) [Finite G] (h : Nat.card G = p) :
-    Nat.card (IteratedWreathProduct G n) = p ^ (∑ i ∈ Finset.range n, p ^ i) := by
-  induction n with
-  | zero => simp
-  | succ n h_n =>
-    rw [geom_sum_succ, IteratedWreathProduct_succ]
-    rw [RegularWreathProduct.card, h_n, h]; group
+ | zero => rw [IteratedWreathProduct_zero]; infer_instance
+ | succ n ih => rw [IteratedWreathProduct_succ]; infer_instance
 
 lemma mu_eq {p n : ℕ} [hp : Fact (Nat.Prime p)] :
     (p ^ n).factorial.factorization p = ∑ i ∈ Finset.range n, p ^ i := by
@@ -275,9 +272,9 @@ noncomputable def sylowIsIteratedWreathProduct (p n : ℕ) [Fact (Nat.Prime p)]
         (RegularWreathProduct.congr (h_n P').symm (MulEquiv.refl Z_p)).trans
         (MonoidHom.ofInjective (sylowWreathtoPermHomInj P' Z_p h))
       have sylow_card : Nat.card (MonoidHom.range (sylowWreathtoPermHom P' Z_p h)) =
-      p ^ (Nat.card (Equiv.Perm (Fin (p^(n+1))))).factorization p := by
-        rw [Nat.card_congr (g.symm).toEquiv, iter_wreath_card Z_p h, Nat.card_eq_fintype_card]
-        rw [Fintype.card_perm,Fintype.card_fin,mu_eq]
+          p ^ (Nat.card (Equiv.Perm (Fin (p^(n+1))))).factorization p := by
+        rw [Nat.card_congr (g.symm).toEquiv, iter_wreath_card Z_p, h]
+        rw [Nat.card_eq_fintype_card, Fintype.card_perm, Fintype.card_fin, mu_eq]
       exact (P.equiv (Sylow.ofCard (MonoidHom.range (sylowWreathtoPermHom P' Z_p h))
       sylow_card)).trans (id g.symm)
 
