@@ -19,7 +19,7 @@ open Meta
 namespace Meta.NormNum
 open Qq
 
--- hack, this should be constructed inline
+/- hack, this should be constructed inline -/
 def mkRatQ (q : ℚ) : MetaM Q(ℝ) := do
   have m'n : Q(ℕ) := Mathlib.Meta.NormNum.mkRawIntLit q.num
   have m'd : Q(ℕ) := mkRawNatLit q.den
@@ -28,6 +28,7 @@ def mkRatQ (q : ℚ) : MetaM Q(ℝ) := do
   return m'
 
 open Real in
+/- cos_mul_pi_div -/
 simproc cos_mul_pi_div (cos (_ * π / _)) := .ofQ fun u α e => do
   match u, α, e with
   | 1, ~q(ℝ), ~q(cos ($m * π / $n)) =>
