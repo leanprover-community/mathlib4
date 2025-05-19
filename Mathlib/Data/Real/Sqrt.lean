@@ -283,7 +283,7 @@ def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
-@[positivity √ _]
+@[positivity √_]
 def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
