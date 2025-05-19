@@ -511,7 +511,7 @@ def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β �
     (hf : ∀ h : Nonempty α, LeftInverse (f_inv h) f) :
     α ≃ range f where
   toFun a := ⟨f a, a, rfl⟩
-  invFun b := f_inv (nonempty_of_exists b.2) b
+  invFun b := f_inv b.2.nonempty b
   left_inv a := hf ⟨a⟩ a
   right_inv := fun ⟨b, a, ha⟩ =>
     Subtype.eq <| show f (f_inv ⟨a⟩ b) = b from Eq.trans (congr_arg f <| ha ▸ hf _ a) ha

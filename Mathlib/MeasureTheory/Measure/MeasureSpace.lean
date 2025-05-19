@@ -633,7 +633,7 @@ theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : 
       fun i j hij => measure_mono (biInter_subset_biInter_left fun k hki => le_trans hki hij)
   suffices Filter.Tendsto F Filter.atTop (𝓝 0) by
     rw [@ENNReal.tendsto_atTop_zero_iff_lt_of_antitone
-         _ (nonempty_of_exists hfin) _ _ hFAnti] at this
+         _ hfin.nonempty _ _ hFAnti] at this
     exact this ε hε
   have hzero : μ (⋂ n, f n) = 0 := by
     simp only [hfem, measure_empty]

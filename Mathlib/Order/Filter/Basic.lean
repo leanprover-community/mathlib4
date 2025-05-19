@@ -351,7 +351,7 @@ theorem NeBot.nonempty_of_mem {f : Filter α} (hf : NeBot f) {s : Set α} (hs : 
 theorem empty_not_mem (f : Filter α) [NeBot f] : ¬∅ ∈ f := fun h => (nonempty_of_mem h).ne_empty rfl
 
 theorem nonempty_of_neBot (f : Filter α) [NeBot f] : Nonempty α :=
-  nonempty_of_exists <| nonempty_of_mem (univ_mem : univ ∈ f)
+  Exists.nonempty <| nonempty_of_mem (univ_mem : univ ∈ f)
 
 theorem compl_not_mem {f : Filter α} {s : Set α} [NeBot f] (h : s ∈ f) : sᶜ ∉ f := fun hsc =>
   (nonempty_of_mem (inter_mem h hsc)).ne_empty <| inter_compl_self s
