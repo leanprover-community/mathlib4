@@ -520,6 +520,10 @@ theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) :=
   rw [Monic, leadingCoeff_normalize, normalize_eq_one]
   apply hp0
 
+theorem normalize_eq_self_iff_monic [DecidableEq R] {p : Polynomial R} (hp : p ≠ 0) :
+    normalize p = p ↔ p.Monic :=
+  ⟨fun h ↦ h ▸ monic_normalize hp, fun h ↦ Monic.normalize_eq_self h⟩
+
 theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
     (p / q).leadingCoeff = p.leadingCoeff / q.leadingCoeff := by
   by_cases hq : q = 0
@@ -668,6 +672,21 @@ theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
   rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
     mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
   simp_all
+
+open UniqueFactorizationMonoid in
+protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
+    p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
+  by_cases hp : p = 0
+  · simpa [hp] using zero_not_mem_normalizedFactors _
+  · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
+
+variable (p) in
+@[simp]
+theorem map_normalize [DecidableEq R] [Field S] [DecidableEq S] (f : R →+* S) :
+    map f (normalize p) = normalize (map f p) := by
+  by_cases hp : p = 0
+  · simp [hp]
+  · simp [normalize_apply, Polynomial.map_mul, normUnit, hp]
 
 end Field
 

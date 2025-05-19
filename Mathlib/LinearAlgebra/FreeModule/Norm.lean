@@ -73,4 +73,8 @@ theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F
   congr with i
   exact (AdjoinRoot.powerBasis <| smithCoeffs_ne_zero b _ h i).finrank
 
+theorem finrank_quotient_span_eq_natDegree {f : F[X]} (hf : f ≠ 0) :
+    Module.finrank F (F[X] ⧸ Ideal.span {f}) = f.natDegree := by
+  simpa using finrank_quotient_span_eq_natDegree_norm (Basis.singleton (Fin 1) F[X]) hf
+
 end Field

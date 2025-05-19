@@ -8,7 +8,7 @@ import Mathlib.Data.ENat.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
-# Basic results un unique factorization monoids
+# Basic results in unique factorization monoids
 
 ## Main results
 * `prime_factors_unique`: the prime factors of an element in a cancellative

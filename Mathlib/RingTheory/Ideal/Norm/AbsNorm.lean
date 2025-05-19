@@ -416,6 +416,35 @@ theorem Int.ideal_eq_span_absNorm_self (J : Ideal ℤ) :
   rw [submodule_span_eq, absNorm_span_singleton, Int.natCast_natAbs, Algebra.norm_self_apply]
   exact (span_singleton_abs g).symm
 
+variable {R : Type*} [Ring R] [Algebra ℤ R] {I : Ideal R}
+
+theorem Int.cast_mem_ideal_iff  {d : ℤ} :
+    (d : R) ∈ I ↔ (absNorm (under ℤ I) : ℤ) ∣ d := by
+  rw [← mem_span_singleton, ← Int.ideal_eq_span_absNorm_self, under_def, mem_comap, eq_intCast]
+
+theorem Int.absNorm_under_mem {R : Type*} [Ring R] [Algebra ℤ R] (I : Ideal R) :
+    (absNorm (under ℤ I) : R) ∈ I := by
+  rw [← Int.cast_natCast, Int.cast_mem_ideal_iff]
+
+theorem Int.absNorm_under_eq_sInf {R : Type*} [Ring R] [Algebra ℤ R] (I : Ideal R) :
+    absNorm (under ℤ I) = sInf {d : ℕ | 0 < d ∧ (d : R) ∈ I} := by
+  by_cases h : absNorm (under ℤ I) = 0
+  · have : {d : ℕ | 0 < d ∧ ↑d ∈ I} = ∅ := by
+      refine Set.eq_empty_of_forall_not_mem ?_
+      intro x ⟨hx₁, hx₂⟩
+      rw [← Int.cast_natCast, Int.cast_mem_ideal_iff, h, Int.natCast_dvd_natCast,
+        Nat.zero_dvd] at hx₂
+      rw [Nat.pos_iff_ne_zero] at hx₁
+      exact hx₁ hx₂
+    rw [h, this, Nat.sInf_empty]
+  · have h₁ : absNorm (under ℤ I) ∈ {d : ℕ | 0 < d ∧ ↑d ∈ I} :=
+      ⟨Nat.pos_of_ne_zero h, Int.absNorm_under_mem I⟩
+    refine le_antisymm ?_ (Nat.sInf_le h₁)
+    by_contra! h₀
+    have h₂ := (Nat.sInf_mem (Set.nonempty_of_mem h₁)).2
+    rw [← Int.cast_natCast, Int.cast_mem_ideal_iff, Int.natCast_dvd_natCast] at h₂
+    exact lt_iff_not_le.mp h₀ <| Nat.le_of_dvd (Nat.sInf_mem (Set.nonempty_of_mem h₁)).1 h₂
+
 end Int
 
 end abs_norm

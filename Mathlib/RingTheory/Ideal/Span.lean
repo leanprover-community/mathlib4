@@ -209,6 +209,9 @@ theorem span_singleton_mul_right_unit {a : α} (h2 : IsUnit a) (x : α) :
 theorem span_singleton_eq_top {x} : span ({x} : Set α) = ⊤ ↔ IsUnit x := by
   rw [isUnit_iff_dvd_one, ← span_singleton_le_span_singleton, span_singleton_one, eq_top_iff]
 
+theorem span_pair_eq_span_singleton_iff_dvd : span {a, b} = span {a} ↔ a ∣ b := by
+  rw [Ideal.span_insert, sup_eq_left, span_singleton_le_span_singleton]
+
 theorem factors_decreasing [IsDomain α] (b₁ b₂ : α) (h₁ : b₁ ≠ 0) (h₂ : ¬IsUnit b₂) :
     span ({b₁ * b₂} : Set α) < span {b₁} :=
   lt_of_le_not_le
