@@ -43,7 +43,7 @@ We prove that `pathIntegral` well behaves with respect to
 - algebraic operations on 1-forms, see `pathIntegral_add` etc.
 
 We also show that the derivative of `fun b ↦ ∫ᵖ x in Path.segment a b, ω x`
-has derivative `ω` at `b = a`.
+has derivative `ω a` at `b = a`.
 We provide 2 versions of this result: one for derivative (`HasFDerivWithinAt`) within a convex set
 and one for `HasFDerivAt`.
 -/
