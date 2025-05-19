@@ -68,26 +68,73 @@ theorem LTSeries.head_le : p.head ≤ p n := LTSeries.monotone p (Fin.zero_le n)
 
 end LTSeries
 
-section move
-
-variable {R : Type*} [CommRing R] [IsNoetherianRing R]
-
-/-- Let $R$ be a Noetherian ring, $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a
-  chain of primes in $R$, $x \in \mathfrak{p}_n$. Then we can find a chain of primes
-  $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that $x \in \mathfrak{q}_1$,
-  $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$. -/
-theorem PrimeSpectrum.exist_lTSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
-    {x : R} (hx : x ∈ p.last.1) : ∃ q : LTSeries (PrimeSpectrum R),
-      x ∈ (q 1).1 ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := sorry
-
-end move
-
 theorem IsLocalRing.le_maximalIdeal_of_isPrime {R : Type*} [CommSemiring R] [IsLocalRing R]
     (p : Ideal R) [hp : p.IsPrime] : p ≤ maximalIdeal R :=
   le_maximalIdeal hp.ne_top
 
-theorem Fin.mk_eq_natCast {m n : ℕ} [NeZero n] (h : m < n) : Fin.mk m h = (m : Fin n) :=
-  Fin.val_inj.mp (Nat.mod_eq_of_lt h).symm
+theorem Fin.natCast_eq_mk {m n : ℕ} (h : m < n) : have : NeZero n := NeZero.of_gt h ;
+    (m : Fin n) = Fin.mk m h :=
+  Fin.val_inj.mp (Nat.mod_eq_of_lt h)
+
+theorem Fin.one_eq_mk_of_lt {n : ℕ} (h : 1 < n) : have : NeZero n := NeZero.of_gt h ;
+    1 = Fin.mk 1 h :=
+  Fin.val_inj.mp (Nat.mod_eq_of_lt h)
+
+section move
+
+variable {R : Type*} [CommRing R] [IsNoetherianRing R]
+
+theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
+    (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.1) :
+      ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧ p₀ < q ∧ q < p₂ := by
+  by_cases h : x ∈ p₁.1
+  · exact ⟨p₁, h, h₀, h₁⟩
+  sorry
+
+/-- Let $R$ be a Noetherian ring, $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a
+  chain of primes, $x \in \mathfrak{p}_n$. Then we can find a chain of primes
+  $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that $x \in \mathfrak{q}_1$,
+  $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$. -/
+theorem PrimeSpectrum.exist_lTSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
+    {x : R} (hx : x ∈ p.last.1) : ∃ q : LTSeries (PrimeSpectrum R),
+      x ∈ (q 1).1 ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
+  generalize hp : p.length = n
+  induction' n with n hn generalizing p
+  · use RelSeries.singleton (· < ·) p.last
+    simp only [RelSeries.singleton_toFun, hx, RelSeries.singleton_length, RelSeries.head,
+      RelSeries.last_singleton, and_true, true_and]
+    rw [show 0 = Fin.last p.length from Fin.zero_eq_mk.mpr hp, RelSeries.last]
+  by_cases h0 : n = 0
+  · use p
+    have h1 : 1 = Fin.last p.length := by
+      rw [Fin.last, hp, h0, zero_add]
+      exact Fin.natCast_eq_mk (Nat.one_lt_succ_succ 0)
+    simp only [h1, hp, Nat.add_left_cancel_iff, and_self, and_true]
+    exact hx
+  obtain ⟨q, hxq, hq2, hq⟩ : ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧
+      p ⟨p.length - 2, p.length.sub_lt_succ 2⟩ < q ∧ q < p.last := by
+    refine (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two ?_ ?_ hx
+    · refine p.strictMono (Fin.mk_lt_mk.mpr (Nat.pred_lt ?_))
+      simp only [hp, Nat.sub_eq, add_tsub_cancel_right, ne_eq, h0, not_false_eq_true]
+    · refine p.strictMono (Fin.mk_lt_mk.mpr (Nat.pred_lt ?_))
+      simp only [Nat.sub_eq, tsub_zero, ne_eq, hp, n.add_one_ne_zero, not_false_eq_true]
+  obtain ⟨Q, hxQ, hQ, hh, hl⟩ :=
+    hn (p.eraseLast.eraseLast.snoc q hq2) (by simp only [RelSeries.last_snoc, hxq]) <| by
+      simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, hp]
+      exact Nat.succ_pred_eq_of_ne_zero h0
+  refine ⟨Q.snoc p.last ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [← hl, RelSeries.last_snoc, hq]
+  · have h1 : 1 = (1 : Fin (Q.length + 1)).castSucc := by
+      have h : 1 < Q.length + 1 := by
+        rw [← hQ]
+        exact Nat.sub_ne_zero_iff_lt.mp h0
+      simp only [Fin.one_eq_mk_of_lt h, Fin.castSucc_mk, Fin.mk_one]
+    simp only [h1, RelSeries.snoc_castSucc, hxQ]
+  · simp only [hQ, RelSeries.snoc_length, Nat.add_left_cancel_iff]
+  · simp only [RelSeries.head_snoc, ← hh, RelSeries.head_eraseLast]
+  · simp only [RelSeries.last_snoc]
+
+end move
 
 namespace Module
 
@@ -174,7 +221,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       refine ⟨q ⟨i + 1, hi⟩, ?_⟩
       simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff]
       refine ⟨?_, q.monotone
-        ((Fin.mk_eq_natCast (Nat.lt_of_add_left_lt hi)).symm.trans_le (Nat.le_add_left 1 i)) hxq⟩
+        ((Fin.natCast_eq_mk (Nat.lt_of_add_left_lt hi)).trans_le (Nat.le_add_left 1 i)) hxq⟩
       have hp : p.head.1 ∈ support R M := p.head.2
       simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hp ⊢
       exact hp.trans (h0.trans_le (q.head_le _))
