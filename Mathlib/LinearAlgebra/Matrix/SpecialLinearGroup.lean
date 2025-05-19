@@ -18,9 +18,9 @@ the group structure on `SpecialLinearGroup n R` and the embedding into the gener
 
 ## Main definitions
 
- * `Matrix.SpecialLinearGroup` is the type of matrices with determinant 1
- * `Matrix.SpecialLinearGroup.group` gives the group structure (under multiplication)
- * `Matrix.SpecialLinearGroup.toGL` is the embedding `SLₙ(R) → GLₙ(R)`
+* `Matrix.SpecialLinearGroup` is the type of matrices with determinant 1
+* `Matrix.SpecialLinearGroup.group` gives the group structure (under multiplication)
+* `Matrix.SpecialLinearGroup.toGL` is the embedding `SLₙ(R) → GLₙ(R)`
 
 ## Notation
 
@@ -41,7 +41,7 @@ of a regular `↑` coercion.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Special_linear_group
+* https://en.wikipedia.org/wiki/Special_linear_group
 
 ## Tags
 
@@ -307,6 +307,17 @@ instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
 theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :
     ↑(g : SpecialLinearGroup n R) = (↑g : Matrix n n ℤ).map (Int.castRingHom R) :=
   map_apply_coe (Int.castRingHom R) g
+
+lemma map_intCast_injective [CharZero R] :
+    Function.Injective ((↑) : SpecialLinearGroup n ℤ → SpecialLinearGroup n R) := fun g h ↦ by
+  simp_rw [ext_iff, map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
+    Matrix.map_apply, Int.cast_inj]
+  tauto
+
+@[simp]
+lemma map_intCast_inj [CharZero R] {x y : SpecialLinearGroup n ℤ} :
+    (x : SpecialLinearGroup n R) = y ↔ x = y :=
+  map_intCast_injective.eq_iff
 
 end cast
 
