@@ -43,7 +43,7 @@ structure RegularWreathProduct where
   /-- The element of Q -/
   right : Q
 
-@[inherit_doc] infix:65  " ≀ᵣ " => RegularWreathProduct
+@[inherit_doc] infix:65 " ≀ᵣ " => RegularWreathProduct
 
 namespace RegularWreathProduct
 variable {D Q}
