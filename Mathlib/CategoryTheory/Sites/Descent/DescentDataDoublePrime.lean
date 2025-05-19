@@ -92,7 +92,13 @@ lemma homEquiv_symm_pullHom'' ⦃X₁ X₂ : C⦄
   simp only [Functor.map_comp, Category.assoc, Adj.comp_forget₁_mapComp', Adj.lIso_hom,
     Adj.lIso_inv]
   erw [← NatTrans.naturality_assoc]
+  dsimp
   congr 1
+  have := (F.map gp₁.op.toLoc).adj.toCategory.counit.naturality
+    ((F.mapComp' p₂.op.toLoc g.op.toLoc gp₂.op.toLoc (by aesoptoloc)).inv.τl.app obj₂)
+  dsimp at this
+  rw [this]; clear this
+  simp only [← Category.assoc]; congr 1; simp only [Category.assoc]
   sorry
 
 section
