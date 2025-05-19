@@ -44,15 +44,13 @@ variable {R}
 
 @[simp]
 theorem carrier_obj_free {X : Type u} : ((free R).obj X).carrier = (X →₀ R) := rfl
+
 @[simp]
 theorem hom_map_free {X Y : Type u} (f : X → Y) :
     ((free R).map f).hom = Finsupp.lmapDomain _ _ f := rfl
 
 /-- Constructor for elements in the module `(free R).obj X`. -/
 noncomputable abbrev freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
-
-lemma freeMk_def {X : Type u} (x : X) :
-    (freeMk x : (free R).obj X) = Finsupp.single x 1 := rfl
 
 @[ext 1200]
 lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
@@ -152,18 +150,20 @@ def μIso (X Y : Type u) :
   (finsuppTensorFinsupp' R _ _).toModuleIso
 
 @[simp]
-lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
+lemma μIso_hom_single_tmul_single {X Y : Type u} (x : X) (y : Y) :
     DFunLike.coe (F := TensorProduct R (X →₀ R) (Y →₀ R) →ₗ[R] X ⊗ Y →₀ R)
-      (μIso R X Y).hom.hom (freeMk x ⊗ₜ[R] freeMk y) = freeMk ⟨x, y⟩ := by
-  dsimp [μIso, freeMk]
+      (μIso R X Y).hom.hom (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single y 1) =
+      Finsupp.single ⟨x, y⟩ 1 := by
+  dsimp [μIso]
   erw [finsuppTensorFinsupp'_single_tmul_single]
   rw [mul_one]
 
 @[simp]
-lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
+lemma μIso_inv_single {X Y : Type u} (z : X ⊗ Y) :
     DFunLike.coe (F := (X ⊗ Y →₀ R) →ₗ[R] TensorProduct R (X →₀ R) (Y →₀ R))
-      (μIso R X Y).inv.hom (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
-  dsimp [μIso, freeMk]
+      (μIso R X Y).inv.hom (Finsupp.single z 1) =
+      Finsupp.single z.1 1 ⊗ₜ Finsupp.single z.2 1 := by
+  dsimp [μIso]
   erw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
 end FreeMonoidal
@@ -176,26 +176,21 @@ instance : (free R).Monoidal :=
       μIso := μIso R
       μIso_hom_natural_left := fun {X Y} f X' ↦ by
         rw [← cancel_epi (μIso R X X').inv]
-        ext x
-        simp [μIso_inv_freeMk R, μIso_hom_freeMk_tmul_freeMk R]
+        aesop
       μIso_hom_natural_right := fun {X Y} X' f ↦ by
         rw [← cancel_epi (μIso R X' X).inv]
-        ext x
-        simp [μIso_inv_freeMk R, μIso_hom_freeMk_tmul_freeMk R]
+        aesop
       associativity := fun X Y Z ↦ by
         rw [← cancel_epi ((μIso R X Y).inv ▷ _), ← cancel_epi (μIso R _ _).inv]
-        ext ⟨⟨x, y⟩, z⟩
-        simp [μIso_inv_freeMk R, μIso_hom_freeMk_tmul_freeMk R]
+        aesop
       left_unitality := fun X ↦ by
         rw [← cancel_epi (λ_ _).inv, Iso.inv_hom_id]
         ext
-        simp [types_tensorUnit, ← freeMk_def, μIso_hom_freeMk_tmul_freeMk R,
-          leftUnitor_hom_apply]
+        simp [types_tensorUnit, leftUnitor_hom_apply]
       right_unitality := fun X ↦ by
         rw [← cancel_epi (ρ_ _).inv, Iso.inv_hom_id]
         ext
-        simp [types_tensorUnit, ← freeMk_def, μIso_hom_freeMk_tmul_freeMk R,
-          rightUnitor_hom_apply] }
+        simp [types_tensorUnit, rightUnitor_hom_apply] }
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
@@ -209,16 +204,16 @@ lemma free_η_freeMk (x : PUnit) :
   apply FreeMonoidal.εIso_inv_freeMk
 
 @[simp]
-lemma free_μ_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
+lemma free_μ_single_tmul_single {X Y : Type u} (x : X) (y : Y) :
     DFunLike.coe (F := TensorProduct R (X →₀ R) (Y →₀ R) →ₗ[R] X ⊗ Y →₀ R)
       (μ (free R) _ _).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
-  apply FreeMonoidal.μIso_hom_freeMk_tmul_freeMk
+  apply FreeMonoidal.μIso_hom_single_tmul_single
 
 @[simp]
 lemma free_δ_freeMk {X Y : Type u} (z : X ⊗ Y) :
     DFunLike.coe (F := (X ⊗ Y →₀ R) →ₗ[R] TensorProduct R (X →₀ R) (Y →₀ R))
       (δ (free R) _ _).hom (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
-  apply FreeMonoidal.μIso_inv_freeMk
+  apply FreeMonoidal.μIso_inv_single
 
 end Free
 
