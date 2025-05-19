@@ -76,7 +76,7 @@ def inverseFunctorObjIso (e : C ≌ D) :
     (inverseFunctor C D).obj e ≅ Opposite.op e.inverse := Iso.refl _
 
 /-- We can compare the way we obtain a natural isomorphism `e.inverse ≅ f.inverse` from
-an isomorphism `e ≌ f` via `inverseFunctor` with the way we get obtain one one through
+an isomorphism `e ≌ f` via `inverseFunctor` with the way we get one through
 `Iso.isoInverseOfIsoFunctor`. -/
 lemma inverseFunctorM_mapIso_symm_eq_isoInverseOfIsoFunctor {e f: C ≌ D} (α : e ≅ f) :
     Iso.unop ((inverseFunctor C D).mapIso α.symm) =
