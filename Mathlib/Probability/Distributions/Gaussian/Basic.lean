@@ -141,4 +141,16 @@ alias ⟨_, isGaussian_of_charFunDual_eq⟩ := isGaussian_iff_charFunDual_eq
 
 end charFunDual
 
+instance isGaussian_conv [SecondCountableTopology E]
+    {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
+    IsGaussian (μ ∗ ν) where
+  map_eq_gaussianReal L := by
+    have : (μ ∗ ν)[L] = ∫ x, x ∂((μ.map L).conv (ν.map L)) := by
+      rw [← Measure.map_conv_continuousLinearMap L,
+        integral_map (φ := L) (by fun_prop) (by fun_prop)]
+    rw [Measure.map_conv_continuousLinearMap L, this, ← variance_id_map (by fun_prop),
+      Measure.map_conv_continuousLinearMap L, IsGaussian.map_eq_gaussianReal L,
+      IsGaussian.map_eq_gaussianReal L, gaussianReal_conv_gaussianReal]
+    congr <;> simp [variance_nonneg]
+
 end ProbabilityTheory
