@@ -257,7 +257,7 @@ lemma toList_getElem_zero_eq_head (p : RelSeries r) : p.toList[0] = p.head :=
 @[simp]
 lemma toList_fromListChain' (l : List α) (l_ne_nil : l ≠ []) (hl : l.Chain' r) :
     (fromListChain' l l_ne_nil hl).toList = l :=
-  Subtype.ext_iff.mp <| RelSeries.Equiv.right_inv ⟨l, ⟨l_ne_nil, hl⟩⟩
+  Subtype.ext_iff.mp <| RelSeries.equiv.right_inv ⟨l, ⟨l_ne_nil, hl⟩⟩
 
 @[simp]
 lemma head_fromListChain' (l : List α) (l_ne_nil : l ≠ [])
