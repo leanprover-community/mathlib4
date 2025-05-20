@@ -20,7 +20,7 @@ variable {R A B : Type u} [CommRing R] [Ring A] [Ring B] [HopfAlgebra R A] [Hopf
 open HopfAlgebra
 
 noncomputable instance instHopfAlgebra : HopfAlgebra R (A ⊗[R] B) :=
-  { antipode := map antipode antipode
+  { antipode := map (antipode R) (antipode R)
     mul_antipode_rTensor_comul := by
       simp only [comul_def, counit_def, LinearMap.rTensor_def,
         ← map_id, ← LinearMap.comp_assoc (map _ _), ← tensorTensorTensorComm_comp_map,
@@ -36,6 +36,6 @@ noncomputable instance instHopfAlgebra : HopfAlgebra R (A ⊗[R] B) :=
 
 @[simp]
 theorem antipode_def :
-    HopfAlgebra.antipode (R := R) (A := A ⊗[R] B) = map antipode antipode := rfl
+    HopfAlgebra.antipode R (A := A ⊗[R] B) = map (antipode R) (antipode R) := rfl
 
 end TensorProduct
