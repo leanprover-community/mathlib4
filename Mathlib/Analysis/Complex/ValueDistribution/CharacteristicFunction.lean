@@ -35,7 +35,7 @@ namespace ValueDistribution
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
-  {f : ℂ → E} {a : WithTop E} {a₀ : E}
+  {f : ℂ → E} {a : WithTop E}
 
 variable (f a) in
 /--
@@ -57,7 +57,8 @@ The difference between the characteristic functions of `f` and `f - const` simpl
 difference between the proximity functions.
 -/
 @[simp]
-lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : MeromorphicOn f ⊤) :
+lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : MeromorphicOn f ⊤)
+    (a₀ : E) :
     characteristic f ⊤ - characteristic (f · - a₀) ⊤ = proximity f ⊤ - proximity (f · - a₀) ⊤ := by
   rw [(by rfl : (f · - a₀) = f - fun _ ↦ a₀)]
   simp [characteristic, logCounting_sub_const h]
