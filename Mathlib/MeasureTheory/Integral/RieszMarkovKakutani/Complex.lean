@@ -81,6 +81,18 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞): HasSum f
     simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage]
     sorry
 
+lemma ENNReal.exist_iSup_le_add_of_pos {ι : Type*} {ε : ℝ≥0∞} {f : ι → ℝ≥0∞} (hε : 0 < ε)
+    (h : iSup f < ⊤) : ∃ (i : ι), iSup f ≤ f i + ε := by
+  sorry
+
+lemma ENNReal.exist_biSup_le_add_of_pos {ι : Type*} {ε : ℝ≥0∞} {f : ι → ℝ≥0∞} {s : Set ι}
+    (hε : 0 < ε) (h : ⨆ j ∈ s, f j < ⊤) : ∃ (i : ι), ⨆ j ∈ s, f j ≤ f i + ε := by
+  obtain ⟨i, hi⟩ := ENNReal.exist_iSup_le_add_of_pos hε h
+  rw [← OrderedSub.tsub_le_iff_right, le_iSup_iff] at hi
+  have := hi (f i)
+  use i
+  simpa
+
 noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
   measureOf' (s : Set X) := by
     classical
@@ -103,10 +115,24 @@ noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
     -- countable additivity, follow Rudin
     constructor
     · intro m
+      apply ENNReal.le_of_forall_pos_le_add
+      intro ε hε hlttop
+      -- use `ε / m` instead of `ε`
+      set F : ℕ → Set X := Classical.choose
+        (ENNReal.exist_biSup_le_add_of_pos (ENNReal.coe_lt_coe.mpr hε) hlttop) with hF
+      set specF := Classical.choose_spec
+        (ENNReal.exist_biSup_le_add_of_pos (ENNReal.coe_lt_coe.mpr hε) hlttop)
+      simp only [iSup_le_iff] at specF
+
+
+
+
       sorry
     · intro b hb
       obtain ⟨F, hF⟩ := lt_biSup_iff.mp hb
-      rw [Set.mem_def] at hF
+      rw [Set.mem_def, ENNReal.tsum_eq_iSup_nat] at hF
+      obtain ⟨n, hn⟩ := lt_iSup_iff.mp hF.2
+      use n
       -- take intersection of `F` and `E i` to get a refined partition,
       -- have : ∀ i, ∃ (A : ℕ → Set X), (∀ n, MeasurableSet A n) ∧ Pairwise (Function.onFun Disjoint A)
       --     ∧ ⋃ n, A n = E i ∧ ∑' n, ENNReal.ofReal ‖μ (A n)‖
