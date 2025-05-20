@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Maja Kądziołka
 -/
 import Mathlib.Computability.DFA
+import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Nondeterministic Finite Automata
@@ -34,7 +35,7 @@ a `Fintype` instance must be supplied for true NFAs.
 ## Main theorems
 
 * `NFA.pumping_lemma`: every sufficiently long string accepted by the NFA has a substring that can
-  be repeated arbitrarily many times
+  be repeated arbitrarily many times (and have the overall string still be accepted)
 -/
 
 open Set
@@ -107,20 +108,20 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
   simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
 
 variable (M) in
-theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) (x : List α) :
-    M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x := by
-  induction x generalizing ι with
-  | nil => simp
-  | cons a x ih => simp [stepSet, ih]
+@[simp]
+theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
+    ∀ (x : List α), M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x
+  | [] => by simp
+  | a :: x => by simp [stepSet, evalFrom_biUnion _ _ x]
 
 variable (M) in
-theorem evalFrom_eq_biUnion (S : Set σ) (x : List α) :
+theorem evalFrom_eq_biUnion_singleton (S : Set σ) (x : List α) :
     M.evalFrom S x = ⋃ s ∈ S, M.evalFrom {s} x := by
   simp [← evalFrom_biUnion]
 
 theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
     s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
-  rw [evalFrom_eq_biUnion]
+  rw [evalFrom_eq_biUnion_singleton]
   simp
 
 variable (M) in
@@ -258,13 +259,11 @@ def Path.split_of_supp_le_length [DecidableEq σ] {x : List α} {s u : σ}
 noncomputable def Path.of_mem_kstar {x x' : List α} {s : σ} (p : M.Path s s x)
     (h : x' ∈ ({x}∗ : Language α)) : M.Path s s x' := by
   rw [Language.mem_kstar] at h
-  apply Classical.indefiniteDescription at h
-  rcases h with ⟨xs, rfl, hxs⟩
+  obtain ⟨xs, rfl, hxs⟩ := Classical.indefiniteDescription _ h; clear h
   induction xs with
   | nil => exact nil s
   | cons a xs ih =>
-    have := hxs a List.mem_cons_self |> Set.mem_singleton_iff.1
-    subst a
+    obtain rfl := hxs a List.mem_cons_self |> Set.mem_singleton_iff.1
     rw [List.flatten_cons]
     apply p.append
     apply ih
