@@ -13,16 +13,16 @@ This file contains basic results for root systems and root data.
 
 ## Main definitions / results:
 
- * `RootPairing.ext`: In characteristic zero if there is no torsion, the correspondence between
-   roots and coroots is unique.
- * `RootSystem.ext`: In characteristic zero if there is no torsion, a root system is determined
-   entirely by its roots.
- * `RootPairing.mk'`: In characteristic zero if there is no torsion, to check that two finite
-   families of roots and coroots form a root pairing, it is sufficient to check that they are
-   stable under reflections.
- * `RootSystem.mk'`: In characteristic zero if there is no torsion, to check that a finite family of
-   roots form a root system, we do not need to check that the coroots are stable under reflections
-   since this follows from the corresponding property for the roots.
+* `RootPairing.ext`: In characteristic zero if there is no torsion, the correspondence between
+  roots and coroots is unique.
+* `RootSystem.ext`: In characteristic zero if there is no torsion, a root system is determined
+  entirely by its roots.
+* `RootPairing.mk'`: In characteristic zero if there is no torsion, to check that two finite
+  families of roots and coroots form a root pairing, it is sufficient to check that they are
+  stable under reflections.
+* `RootSystem.mk'`: In characteristic zero if there is no torsion, to check that a finite family of
+  roots form a root system, we do not need to check that the coroots are stable under reflections
+  since this follows from the corresponding property for the roots.
 
 -/
 
