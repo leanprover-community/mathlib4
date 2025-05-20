@@ -97,7 +97,7 @@ def join {α} (a : Erased (Erased α)) : Erased α :=
 
 @[simp]
 theorem join_eq_out {α} (a) : @join α a = a.out :=
-  bind_eq_out _ _
+  rfl
 
 /-- `(<$>)` operation on `Erased`.
 

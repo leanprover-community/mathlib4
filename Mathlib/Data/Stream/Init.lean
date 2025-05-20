@@ -76,7 +76,7 @@ theorem get_succ_cons (n : ℕ) (s : Stream' α) (x : α) : get (x :: s) n.succ 
 @[simp] lemma get_cons_append_zero {a : α} {x : List α} {s : Stream' α} :
   (a :: x ++ₛ s).get 0 = a := rfl
 
-@[simp] lemma append_eq_cons {a : α} {as : Stream' α} : [a] ++ₛ as = a :: as := by rfl
+@[simp] lemma append_eq_cons {a : α} {as : Stream' α} : [a] ++ₛ as = a :: as := rfl
 
 @[simp] theorem drop_zero {s : Stream' α} : s.drop 0 = s := rfl
 
@@ -480,7 +480,7 @@ theorem map_append_stream (f : α → β) :
     rw [cons_append_stream, List.map_cons, map_cons, cons_append_stream, map_append_stream f l]
 
 theorem drop_append_stream : ∀ (l : List α) (s : Stream' α), drop l.length (l ++ₛ s) = s
-  | [], s => by rfl
+  | [], s => rfl
   | List.cons a l, s => by
     rw [List.length_cons, drop_succ, cons_append_stream, tail_cons, drop_append_stream l s]
 

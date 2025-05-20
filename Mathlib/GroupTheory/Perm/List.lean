@@ -57,7 +57,7 @@ theorem formPerm_singleton (x : α) : formPerm [x] = 1 :=
 @[simp]
 theorem formPerm_cons_cons (x y : α) (l : List α) :
     formPerm (x :: y :: l) = swap x y * formPerm (y :: l) :=
-  prod_cons
+  rfl
 
 theorem formPerm_pair (x y : α) : formPerm [x, y] = swap x y :=
   rfl

@@ -246,7 +246,7 @@ theorem Ioc_inl_inr : Ioc (inl a₁) (inr b₂) = ∅ :=
   rfl
 
 @[simp]
-theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ := by
+theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ :=
   rfl
 
 @[simp]
@@ -262,7 +262,7 @@ theorem Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
   rfl
 
 @[simp]
-theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
+theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ :=
   rfl
 
 theorem Icc_inr_inr : Icc (inr b₁ : α ⊕ β) (inr b₂) = (Icc b₁ b₂).map Embedding.inr :=

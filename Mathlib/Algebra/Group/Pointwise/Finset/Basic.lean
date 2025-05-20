@@ -206,7 +206,7 @@ theorem card_inv_le : #s⁻¹ ≤ #s :=
 
 @[to_additive (attr := simp)]
 theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
-  image_empty _
+  rfl
 
 @[to_additive (attr := simp)]
 theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty := image_nonempty
