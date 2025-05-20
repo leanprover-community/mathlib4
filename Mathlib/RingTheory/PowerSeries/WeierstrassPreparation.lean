@@ -42,9 +42,9 @@ such ring has only on maximal ideal, and hence it is a complete local ring.
 - `PowerSeries.IsWeierstrassDivisor`: version of `PowerSeries.IsWeierstrassDivisorAt` for
   local rings with respect to its maximal ideal.
 
-- `PowerSeries.IsWeierstrassFactorizationAt g f h I`: let `g` be power series over `A`, `I` be
-  an ideal of `A`, this is a `Prop` which asserts that `f` is a distingushed polynomial at `I`,
-  `h` is a formal power series over `A` which a unit, such that `g = f * h`.
+- `PowerSeries.IsWeierstrassFactorizationAt g f h I`: for a power series `g` over `A` and
+  an ideal `I` of `A`, this is a `Prop` which asserts that `f` is a distinguished polynomial at `I`,
+  `h` is a formal power series over `A` that is a unit and such that `g = f * h`.
 
 - `PowerSeries.IsWeierstrassFactorization`: version of `PowerSeries.IsWeierstrassFactorizationAt`
   for local rings with respect to its maximal ideal.
@@ -592,11 +592,11 @@ theorem exists_isWeierstrassFactorization : ∃ f h, g.IsWeierstrassFactorizatio
     (X ^ (g.map (IsLocalRing.residue A)).order.toNat).exists_isWeierstrassDivision hg
   exact ⟨_, _, H.isWeierstrassFactorization hg⟩
 
-/-- The `f` in Weierstrass preparation theorem. -/
+/-- The `f` in the Weierstrass preparation theorem. -/
 noncomputable def weierstrassDistinguished : A[X] :=
   (g.exists_isWeierstrassFactorization hg).choose
 
-/-- The `h` in Weierstrass preparation theorem. -/
+/-- The `h` in the Weierstrass preparation theorem. -/
 noncomputable def weierstrassUnit : A⟦X⟧ :=
   (g.exists_isWeierstrassFactorization hg).choose_spec.choose
 
@@ -618,7 +618,7 @@ theorem eq_weierstrassDistinguished_mul_weierstrassUnit :
 
 end IsAdicComplete
 
-/-- The `f` and `h` in Weierstrass preparation theorem are unique.
+/-- The `f` and `h` in the Weierstrass preparation theorem are unique.
 
 This result is stated using two `PowerSeries.IsWeierstrassFactorization` assertions, and only
 requires the ring being Hausdorff with respect to the maximal ideal. If you want `f` and `h` equal
