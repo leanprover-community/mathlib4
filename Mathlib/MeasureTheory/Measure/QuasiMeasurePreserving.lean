@@ -221,7 +221,7 @@ theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (hle : ν ≤ μ) : 
 
 lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
     NullMeasurableSet s (c • μ) :=
-  NullMeasurableSet.mono_ac h (Measure.AbsolutelyContinuous.rfl.smul_left c)
+  h.mono_ac (Measure.AbsolutelyContinuous.rfl.smul_left c)
 
 lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
     NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ :=
