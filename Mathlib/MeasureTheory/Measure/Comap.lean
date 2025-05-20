@@ -73,8 +73,7 @@ theorem comap_apply₀ (f : α → β) (μ : Measure β) (hfi : Injective f)
 
 lemma comap_undef {μ : Measure β}
     (h : ¬ (Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)) :
-    comap f μ = 0 := by
-  rw [comap, dif_neg h]
+    comap f μ = 0 := dif_neg h
 
 theorem le_comap_apply (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ) (s : Set α) :
