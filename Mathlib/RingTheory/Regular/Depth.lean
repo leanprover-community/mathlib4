@@ -59,7 +59,7 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
   let _ : Module p.ResidueField Nₚ' :=
     Module.instQuotientIdealSubmoduleHSMulTop Nₚ (maximalIdeal (Localization.AtPrime p))
   have := AssociatePrimes.mem_iff.mp
-    (mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes pass)
+    (associatedPrimes.mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes pass)
   rcases this.2 with ⟨x, hx⟩
   have : Nontrivial (Module.Dual p.ResidueField Nₚ') := by simpa using ntr
   rcases exists_ne (α := Module.Dual p.ResidueField Nₚ') 0 with ⟨g, hg⟩

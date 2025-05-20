@@ -11,8 +11,13 @@ import Mathlib.RingTheory.Localization.AtPrime
 
 # Assocaited primes of localized module
 
-We proved that for `R` module `M`, when `p` is a prime ideal of `S⁻¹R` and `p ∩ R ∈ Ass(M)`,
-`p ∈ Ass (S⁻¹M)`.
+This file mainly proof the relation between `Ass(S⁻¹M)` and `Ass(M)`
+
+# Main Results
+
+* `associatedPrimes.mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule` :
+  for an `R` module `M`, if `p` is a prime ideal of `S⁻¹R` and `p ∩ R ∈ Ass(M)` then
+  `p ∈ Ass (S⁻¹M)`.
 
 TODO: prove the reverse when `p` is finitely generated and
       get `Ass (S⁻¹M) = Ass(M) ∩ Spec(S⁻¹R)` when `R` noetherian.
@@ -28,6 +33,8 @@ variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module 
   (f : M →ₗ[R] M') [IsLocalizedModule S f] [Module R' M'] [IsScalarTower R R' M']
 
 open IsLocalRing LinearMap
+
+namespace associatedPrimes
 
 include S f in
 lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
@@ -64,10 +71,12 @@ lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
       rw [this]
       exact Ideal.IsTwoSided.mul_mem_of_left _ ht
 
-lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes {p : Ideal R} [p.IsPrime]
-    (ass : p ∈ associatedPrimes R M) :
+lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes
+    {p : Ideal R} [p.IsPrime] (ass : p ∈ associatedPrimes R M) :
     maximalIdeal (Localization.AtPrime p) ∈
     associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M) := by
   apply mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
     p.primeCompl (Localization.AtPrime p) (LocalizedModule.mkLinearMap p.primeCompl M)
   simpa [Localization.AtPrime.comap_maximalIdeal] using ass
+
+end associatedPrimes
