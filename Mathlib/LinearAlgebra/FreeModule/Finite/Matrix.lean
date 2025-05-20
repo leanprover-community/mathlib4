@@ -107,8 +107,8 @@ instance Module.Free.addMonoidHom [Module.Free ℤ N] : Module.Free ℤ (M →+ 
 
 end Integer
 
-theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [Fintype n] [DecidableEq n]
-    (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).mulVecLin.rank ≤ 1 := by
+theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [Fintype n] (w : m → K) (v : n → K) :
+    (Matrix.vecMulVec w v).mulVecLin.rank ≤ 1 := by
   nontriviality K
   rw [Matrix.vecMulVec_eq (Fin 1), Matrix.mulVecLin_mul]
   refine le_trans (LinearMap.rank_comp_le_left _ _) ?_
