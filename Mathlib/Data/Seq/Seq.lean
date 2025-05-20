@@ -714,7 +714,7 @@ def fold (s : Seq α) (init : β) (f : β → α → β) : Seq β :=
     | some (x, s) => .some (f acc x, f acc x, s)
   cons init <| corec f (init, s)
 
-/-- Apply `f` to the nth element of the list, if it exists, replacing that element
+/-- Applies `f` to the `n`th element of the sequence, if it exists, replacing that element
 with the result. -/
 def modify (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
   val := Function.update s.val n ((s.val n).map f)
@@ -724,7 +724,8 @@ def modify (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
     simp [IsSeq, this]
     exact @s.prop
 
-/-- `s.set n a` sets the value of sequence `s` at (zero-based) index `n` to `a`. -/
+/-- Sets the value of sequence `s` at index `n` to `a`. If the `n`th element does not exist
+(`s` terminates earlier), the sequence is left unchanged. -/
 def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
   modify s n (fun _ ↦ a)
 
