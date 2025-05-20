@@ -216,7 +216,7 @@ def Edits.add (ed : Edits) (src : Name) (tgt : Nat) : Edits :=
 
 /-- Parse a source file to extract the location of the import lines, for edits and error messages.
 
-Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Parser.Module.header`
+Returns `(path, inputCtx, imports, endPos)` where `imports` is the `Lean.Parser.Module.import` list
 and `endPos` is the position of the end of the header.
 -/
 def parseHeaderFromString (text path : String) :
@@ -234,7 +234,7 @@ def parseHeaderFromString (text path : String) :
 
 /-- Parse a source file to extract the location of the import lines, for edits and error messages.
 
-Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Parser.Module.header`
+Returns `(path, inputCtx, imports, endPos)` where `imports` is the `Lean.Parser.Module.import` list
 and `endPos` is the position of the end of the header.
 -/
 def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
