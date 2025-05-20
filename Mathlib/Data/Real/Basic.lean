@@ -201,9 +201,9 @@ def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
 
 /-! Extra instances to short-circuit type class resolution.
 
- These short-circuits have an additional property of ensuring that a computable path is found; if
- `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
- version of them. -/
+These short-circuits have an additional property of ensuring that a computable path is found; if
+`Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
+version of them. -/
 
 instance instRing : Ring ℝ := by infer_instance
 
@@ -338,6 +338,7 @@ theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
   convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 
+@[deprecated ZeroLEOneClass.factZeroLtOne (since := "2025-05-12")]
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
 

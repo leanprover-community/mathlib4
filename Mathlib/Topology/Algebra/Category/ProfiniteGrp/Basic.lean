@@ -234,7 +234,7 @@ instance : HasForget₂ ProfiniteGrp Grp where
 
 /-- A closed subgroup of a profinite group is profinite. -/
 @[to_additive "A closed additive subgroup of a profinite additive group is profinite."]
-def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :=
+def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G) : ProfiniteGrp :=
   letI : CompactSpace H := inferInstance
   of H.1
 
