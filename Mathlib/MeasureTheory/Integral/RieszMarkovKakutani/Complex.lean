@@ -72,8 +72,9 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
     (∀ (n : ℕ), ∑ i ∈ Finset.range n, f i ≤ a) ∧
     (∀ b < a, ∃ (n : ℕ), b < ∑ i ∈ Finset.range n, f i) := by
   obtain ha | ha | ha : a = 0 ∨ (0 < a ∧ a < ⊤) ∨ a = ∞ := by
-    -- There must be a more tidy way to prove this tricotomy
-    -- Maybe it already exists as a lemma for anything with top and bot.
+    -- There is a more tidy way to prove this tricotomy. Use:
+    have := a.trichotomy
+    -- And rearrange slightly.
     obtain h | h : a = 0 ∨ a ≠ 0 := by exact eq_or_ne a 0
     · left
       exact h
