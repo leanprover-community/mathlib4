@@ -29,9 +29,6 @@ namespace AlgebraicGeometry
 
 variable {X Y Z : Scheme.{u}}
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion g] : IsClosedImmersion (pullback.fst f g) :=
-  MorphismProperty.pullback_fst _ _ ‹_›
-
 namespace Scheme.IdealSheafData
 
 /-- The pullback of an ideal sheaf. -/
@@ -168,7 +165,8 @@ lemma ideal_map_of_isAffineHom
     (I.map f).ideal U = (I.ideal ⟨_, U.2.preimage f⟩).comap (f.app U).hom :=
   ideal_map I f U (U.2.preimage f)
 
-lemma ideal_comap (I : Y.IdealSheafData) (f : X ⟶ Y) [IsOpenImmersion f] (U : X.affineOpens) :
+lemma ideal_comap_of_isOpenImmersion
+    (I : Y.IdealSheafData) (f : X ⟶ Y) [IsOpenImmersion f] (U : X.affineOpens) :
     (I.comap f).ideal U = (I.ideal ⟨f ''ᵁ U, U.2.image_of_isOpenImmersion f⟩).comap
       (f.appIso U).inv.hom := by
   refine (ker_ideal_of_isPullback_of_isOpenImmersion _ _ _ _
