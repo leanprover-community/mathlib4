@@ -22,7 +22,7 @@ This file mainly proof the relation between `Ass(S⁻¹M)` and `Ass(M)`
 TODO: prove the reverse when `p` is finitely generated and
       get `Ass (S⁻¹M) = Ass(M) ∩ Spec(S⁻¹R)` when `R` noetherian.
 
-TODO: deduce from above that every minimal element in support is in `Ass(M)`
+TODO: deduce from the above that every minimal element in support is in `Ass(M)`.
 
 -/
 
@@ -68,8 +68,7 @@ lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
         rw [← IsLocalization.mk'_mul, mul_one, one_mul, ← sub_eq_zero, ← IsLocalization.mk'_sub,
           Submonoid.coe_mul]
         simp [← mul_assoc, mul_comm r t.1, IsLocalization.mk'_zero]
-      rw [this]
-      exact Ideal.IsTwoSided.mul_mem_of_left _ ht
+      simpa [this] using Ideal.IsTwoSided.mul_mem_of_left _ ht
 
 lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes
     {p : Ideal R} [p.IsPrime] (ass : p ∈ associatedPrimes R M) :
