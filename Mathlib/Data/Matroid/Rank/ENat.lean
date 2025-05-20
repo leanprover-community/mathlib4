@@ -575,7 +575,7 @@ lemma spanning_iff_eRk_le' [RankFinite M] : M.Spanning X ↔ M.eRank ≤ M.eRk X
 
 lemma spanning_iff_eRk_le [RankFinite M] (hX : X ⊆ M.E := by aesop_mat) :
     M.Spanning X ↔ M.eRank ≤ M.eRk X := by
-  rw [spanning_iff_eRk', and_iff_left hX]
+  rw [spanning_iff_eRk_le', and_iff_left hX]
 
 lemma Spanning.eRank_restrict (hX : M.Spanning X) : (M ↾ X).eRank = M.eRank := by
   rw [eRank_def, restrict_ground_eq, restrict_eRk_eq _ rfl.subset, hX.eRk_eq]
