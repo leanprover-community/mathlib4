@@ -1122,9 +1122,8 @@ lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
     ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
   rcases Set.Finite.exists_finset hs with ⟨t, ht⟩
   have heq : ⋃ i ∈ s, f i = ⋃ i ∈ t, (f i : Set R) := by
-    ext r
-    simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
-    exact exists_congr (fun i ↦ (and_congr_left fun a ↦ ht i).symm)
+    ext
+    simpa using exists_congr (fun i ↦ (and_congr_left fun a ↦ ht i).symm)
   have hmem_union : ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ((I : Set R) ⊆ ⋃ i ∈ (t : Set ι), f i) :=
     (congrArg _ heq).to_iff
   have hexists_le: (∃ i ∈ t, I ≤ f i) ↔ ∃ i ∈ s, I ≤ f i :=
