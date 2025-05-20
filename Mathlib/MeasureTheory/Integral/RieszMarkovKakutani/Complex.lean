@@ -195,7 +195,13 @@ lemma variation_iUnion_nat (μ : VectorMeasure X V) (s : ℕ → Set X)
   intro E hE
   let F i j := s i ∩ E j
   have F_partition : ∀ i, (fun j ↦ F i j) ∈ partitions (s i) := by
-    sorry
+    intro _
+    constructor
+    · simp [F]
+    · intro _ _ hij
+      simp only [Disjoint, Set.le_eq_subset, Set.subset_inter_iff, Set.bot_eq_empty,
+        Set.subset_empty_iff, and_imp, F]
+      exact fun _ _ hx _ hx' ↦ Set.subset_eq_empty (hE.2 hij hx hx') rfl
   have sum_F_le : ∀ i, sumOfNormOfMeasure μ (fun j ↦ F i j) ≤ variationAux μ (s i) := by
     sorry
   calc sumOfNormOfMeasure μ E
