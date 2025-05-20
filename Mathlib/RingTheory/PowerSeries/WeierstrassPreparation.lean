@@ -18,7 +18,7 @@ Weierstrass preparation theorem.
 
 We assume that a ring is adic complete with respect to some ideal.
 If such ideal is a maximal ideal, then by `isLocalRing_of_isAdicComplete_maximal`,
-such ring has only on maximal ideal, and hence it is a complete local ring.
+such ring has only one maximal ideal, and hence it is a complete local ring.
 
 ## Main definitions
 
@@ -531,16 +531,16 @@ theorem IsWeierstrassDivision.isUnit_of_map_ne_zero
   replace H2 := congr(coeff _ n (($H2).map (IsLocalRing.residue A)))
   simp_rw [map_pow, map_X, coeff_X_pow_self, map_add, map_mul, coeff_map,
     Polynomial.coeff_coe, Polynomial.coeff_eq_zero_of_degree_lt H1, map_zero, add_zero] at H2
-  rw [coeff_mul, ← Finset.sum_subset (s₁ := {(n, 0)}) (by simp) (fun p hp hnmem ↦ by
-    have hp1 : p.1 < n := (Finset.antidiagonal.fst_le hp).lt_of_ne <| by
+  rw [isUnit_iff_constantCoeff, ← isUnit_map_iff (IsLocalRing.residue A)]
+  rw [coeff_mul, ← Finset.sum_subset (s₁ := {(n, 0)}) (by simp) (fun p hp hnmem ↦ ?_),
+    Finset.sum_singleton, coeff_map, coeff_map, coeff_zero_eq_constantCoeff, mul_comm] at H2
+  · exact isUnit_of_mul_eq_one _ _ H2.symm
+  · rw [coeff_of_lt_order p.1 ?_]
+    · rw [zero_mul]
+    · rw [← ENat.lt_lift_iff (h := order_finite_iff_ne_zero.2 hg), ENat.lift_eq_toNat_of_lt_top]
+      refine (Finset.antidiagonal.fst_le hp).lt_of_ne ?_
       contrapose! hnmem
       rwa [Finset.mem_singleton, Finset.antidiagonal_congr hp (by simp)]
-    rw [coeff_of_lt_order p.1 (by
-      rwa [← ENat.lt_lift_iff (h := order_finite_iff_ne_zero.2 hg),
-        ENat.lift_eq_toNat_of_lt_top]), zero_mul]), Finset.sum_singleton,
-    coeff_map, coeff_map, coeff_zero_eq_constantCoeff, mul_comm, Eq.comm] at H2
-  rw [isUnit_iff_constantCoeff, ← isUnit_map_iff (IsLocalRing.residue A)]
-  exact isUnit_of_mul_eq_one _ _ H2
 
 theorem IsWeierstrassDivision.isWeierstrassFactorization
     {g q : A⟦X⟧} {r : A[X]} (hg : g.map (IsLocalRing.residue A) ≠ 0)
@@ -580,39 +580,39 @@ theorem IsWeierstrassFactorization.isWeierstrassDivision
 section IsAdicComplete
 
 variable [IsAdicComplete (IsLocalRing.maximalIdeal A) A] {g : A⟦X⟧}
-  (hg : g.map (IsLocalRing.residue A) ≠ 0)
-include hg
 
 /-- **Weierstrass preparation theorem** ([washington_cyclotomic], Theorem 7.3):
 let `g` be a power series over a complete local ring,
 such that the image of `g` in the residue field is not zero. Then there exists a distinguished
 polynomial `f` and a power series `h` which is a unit, such that `g = f * h`. -/
-theorem exists_isWeierstrassFactorization : ∃ f h, g.IsWeierstrassFactorization f h := by
+theorem exists_isWeierstrassFactorization (hg : g.map (IsLocalRing.residue A) ≠ 0) :
+    ∃ f h, g.IsWeierstrassFactorization f h := by
   obtain ⟨q, r, H⟩ :=
     (X ^ (g.map (IsLocalRing.residue A)).order.toNat).exists_isWeierstrassDivision hg
   exact ⟨_, _, H.isWeierstrassFactorization hg⟩
 
 /-- The `f` in the Weierstrass preparation theorem. -/
-noncomputable def weierstrassDistinguished : A[X] :=
+noncomputable def weierstrassDistinguished (hg : g.map (IsLocalRing.residue A) ≠ 0) : A[X] :=
   (g.exists_isWeierstrassFactorization hg).choose
 
 /-- The `h` in the Weierstrass preparation theorem. -/
-noncomputable def weierstrassUnit : A⟦X⟧ :=
+noncomputable def weierstrassUnit (hg : g.map (IsLocalRing.residue A) ≠ 0) : A⟦X⟧ :=
   (g.exists_isWeierstrassFactorization hg).choose_spec.choose
 
-theorem isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit :
+theorem isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
+    (hg : g.map (IsLocalRing.residue A) ≠ 0) :
     g.IsWeierstrassFactorization (g.weierstrassDistinguished hg) (g.weierstrassUnit hg) :=
   (g.exists_isWeierstrassFactorization hg).choose_spec.choose_spec
 
-theorem isDistinguishedAt_weierstrassDistinguished :
+theorem isDistinguishedAt_weierstrassDistinguished (hg : g.map (IsLocalRing.residue A) ≠ 0) :
     (g.weierstrassDistinguished hg).IsDistinguishedAt (IsLocalRing.maximalIdeal A) :=
   (g.exists_isWeierstrassFactorization hg).choose_spec.choose_spec.isDistinguishedAt
 
-theorem isUnit_weierstrassUnit :
+theorem isUnit_weierstrassUnit (hg : g.map (IsLocalRing.residue A) ≠ 0) :
     IsUnit (g.weierstrassUnit hg) :=
   (g.exists_isWeierstrassFactorization hg).choose_spec.choose_spec.isUnit
 
-theorem eq_weierstrassDistinguished_mul_weierstrassUnit :
+theorem eq_weierstrassDistinguished_mul_weierstrassUnit (hg : g.map (IsLocalRing.residue A) ≠ 0) :
     g = g.weierstrassDistinguished hg * g.weierstrassUnit hg :=
   (g.exists_isWeierstrassFactorization hg).choose_spec.choose_spec.eq_mul
 
