@@ -27,6 +27,7 @@ open MeasureTheory Filter Set ENNReal NNReal
 variable {α β γ : Type*} {m : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β]
   [TopologicalSpace γ] {f g : α → β}
 
+@[fun_prop]
 lemma aestronglyMeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
     AEStronglyMeasurable f (Measure.dirac a) :=
   ⟨fun _ ↦ f a, stronglyMeasurable_const, ae_eq_dirac f⟩

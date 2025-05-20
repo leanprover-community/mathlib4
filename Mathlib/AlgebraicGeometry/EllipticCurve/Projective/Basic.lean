@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
@@ -28,13 +28,13 @@ for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Form
 
 ## Main definitions
 
- * `WeierstrassCurve.Projective.PointClass`: the equivalence class of a point representative.
- * `WeierstrassCurve.Projective.Nonsingular`: the nonsingular condition on a point representative.
- * `WeierstrassCurve.Projective.NonsingularLift`: the nonsingular condition on a point class.
+* `WeierstrassCurve.Projective.PointClass`: the equivalence class of a point representative.
+* `WeierstrassCurve.Projective.Nonsingular`: the nonsingular condition on a point representative.
+* `WeierstrassCurve.Projective.NonsingularLift`: the nonsingular condition on a point class.
 
 ## Main statements
 
- * `WeierstrassCurve.Projective.polynomial_relation`: Euler's homogeneous function theorem.
+* `WeierstrassCurve.Projective.polynomial_relation`: Euler's homogeneous function theorem.
 
 ## Implementation notes
 
@@ -110,9 +110,8 @@ abbrev toProjective (W : WeierstrassCurve R) : Projective R :=
 
 namespace Projective
 
-variable (W') in
 /-- The conversion from a Weierstrass curve in projective coordinates to affine coordinates. -/
-abbrev toAffine : Affine R :=
+abbrev toAffine (W' : Projective R) : Affine R :=
   W'
 
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
