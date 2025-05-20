@@ -19,6 +19,14 @@ Let `M` and `N` be `R`-modules. In this section we prove that `Hom(N,M)` is subs
 there exist `r : R`, such that `IsSMulRegular M r` and `r ∈ ann(N)`.
 This is the case if `Depth[I](M) = 0`.
 
+# Main Results
+
+* `IsSMulRegular.hom_subsingleton_of_mem_ann_isSMulRegular` : for `R` module `N M`, `Hom(N, M) = 0`
+  if there is a `M`-regular in `Module.annihilator R N`.
+
+* `IsSMulRegular.exist_mem_ann_isSMulRegular_of_hom_subsingleton` : for `R` module `N M`,
+  there is a `M`-regular in `Module.annihilator R N` if `Hom(N, M) = 0`.
+
 -/
 
 open IsLocalRing LinearMap
