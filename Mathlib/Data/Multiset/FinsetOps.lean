@@ -62,11 +62,9 @@ theorem mem_ndinsert_self (a : α) (s : Multiset α) : a ∈ ndinsert a s := by 
 theorem mem_ndinsert_of_mem {a b : α} {s : Multiset α} (h : a ∈ s) : a ∈ ndinsert b s :=
   mem_ndinsert.2 (Or.inr h)
 
-@[simp]
 theorem length_ndinsert_of_mem {a : α} {s : Multiset α} (h : a ∈ s) :
     card (ndinsert a s) = card s := by simp [h]
 
-@[simp]
 theorem length_ndinsert_of_not_mem {a : α} {s : Multiset α} (h : a ∉ s) :
     card (ndinsert a s) = card s + 1 := by simp [h]
 
@@ -214,7 +212,7 @@ theorem ndinter_cons_of_not_mem {a : α} (s : Multiset α) {t : Multiset α} (h 
 theorem mem_ndinter {s t : Multiset α} {a : α} : a ∈ ndinter s t ↔ a ∈ s ∧ a ∈ t := by
   simp [ndinter, mem_filter]
 
-@[simp]
+-- simp can prove this once we have `ndinter_eq_inter` and `Nodup.inter` a few lines down.
 theorem Nodup.ndinter {s : Multiset α} (t : Multiset α) : Nodup s → Nodup (ndinter s t) :=
   Nodup.filter _
 
@@ -239,6 +237,11 @@ theorem inter_le_ndinter (s t : Multiset α) : s ∩ t ≤ ndinter s t :=
 @[simp]
 theorem ndinter_eq_inter {s t : Multiset α} (d : Nodup s) : ndinter s t = s ∩ t :=
   le_antisymm (le_inter (ndinter_le_left _ _) (ndinter_le_right _ d)) (inter_le_ndinter _ _)
+
+@[simp]
+theorem Nodup.inter {s : Multiset α} (t : Multiset α) (d : Nodup s) : Nodup (s ∩ t) := by
+  rw [← ndinter_eq_inter d]
+  exact d.filter _
 
 theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ Disjoint s t := by
   rw [← subset_zero]; simp [subset_iff, disjoint_left]

@@ -32,10 +32,10 @@ We use the following variables:
 Definitions in this file:
 
 * `finsum f : M` : the sum of `f x` as `x` ranges over the support of `f`, if it's finite.
-   Zero otherwise.
+  Zero otherwise.
 
 * `finprod f : M` : the product of `f x` as `x` ranges over the multiplicative support of `f`, if
-   it's finite. One otherwise.
+  it's finite. One otherwise.
 
 ## Notation
 
@@ -1034,9 +1034,17 @@ theorem mul_finsum {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r :
     (h : (support f).Finite) : (r * ∑ᶠ a : α, f a) = ∑ᶠ a : α, r * f a :=
   (AddMonoidHom.mulLeft r).map_finsum h
 
+theorem mul_finsum_mem {R : Type*} [NonUnitalNonAssocSemiring R] {s : Set α} (f : α → R) (r : R)
+    (hs : s.Finite) : (r * ∑ᶠ a ∈ s, f a) = ∑ᶠ a ∈ s, r * f a :=
+  (AddMonoidHom.mulLeft r).map_finsum_mem f hs
+
 theorem finsum_mul {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r : R)
     (h : (support f).Finite) : (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum h
+
+theorem finsum_mem_mul {R : Type*} [NonUnitalNonAssocSemiring R] {s : Set α} (f : α → R) (r : R)
+    (hs : s.Finite) : (∑ᶠ a ∈ s, f a) * r = ∑ᶠ a ∈ s, f a * r :=
+  (AddMonoidHom.mulRight r).map_finsum_mem f hs
 
 @[to_additive (attr := simp)]
 lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : (mulSupport f).Finite) (a : α) :
