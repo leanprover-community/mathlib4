@@ -24,6 +24,11 @@ This file proves results about bipartite simple graphs, including several double
   do not cover all the vertices, one recovers a covering of all the vertices by unioning the
   missing vertices `(s ∪ t)ᶜ` to either `s` or `t`.
 
+* `SimpleGraph.IsBipartite G` defines a simple graph `G` as bipartite if `G` admits a 2-coloring,
+  formalized as `G.Colorable 2`.
+
+* `twocol_iff_bipartition` is the proof that a twocoloring implies a bipartition and vice versa.
+
 * `SimpleGraph.isBipartiteWith_sum_degrees_eq` is the proof that if `G.IsBipartiteWith s t`, then
   the sum of the degrees of the vertices in `s` is equal to the sum of the degrees of the vertices
   in `t`.
@@ -250,9 +255,9 @@ def IsBipartite (G : SimpleGraph V) : Prop := G.Colorable 2
 
 /--
 From a 2-coloring of `G`, produce two color classes `s` and `t` witnessing bipartiteness:
-`Disjoint s t` and every edge goes between `s` and `t`.
+`Disjoint s t` where every edge goes between `s` and `t`.
 -/
-theorem Twocolor_Implies_Bipartite_With (h : G.Colorable 2) : ∃ s t, G.IsBipartiteWith s t := by
+lemma twocol_imp_bipartition (h : G.Colorable 2) : ∃ s t, G.IsBipartiteWith s t := by
   rcases h with ⟨c, hc_adj⟩
   let s := { v | c v = 0 }
   let t := { v | c v = 1 }
@@ -272,32 +277,34 @@ theorem Twocolor_Implies_Bipartite_With (h : G.Colorable 2) : ∃ s t, G.IsBipar
   exact ⟨s, t, ⟨h₁, h₂⟩⟩
 
 
-theorem Bipartite_With_Implies_Colorable {s t : Set V}
+/--
+Given a bipartition `s, t` of `G`, construct an explicit 2-coloring by sending vertices in `s` to 0
+and those in `t` to 1. Show adjacent vertices get different colors (through the pattern match).
+-/
+lemma bipartition_imp_twocol {s t : Set V}
   (h : G.IsBipartiteWith s t) : G.Colorable 2 := by
   have h_disj  : Disjoint s t := h.1
   have h_edges : ∀ v w, G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s := h.2
-
-  -- define the coloring: 0 on `s`, 1 otherwise
   use fun v => if v ∈ s then 0 else 1
   intro v w hw
-
-  -- split on which side each endpoint lives
   let h_case := h_edges v w hw
   match h_case with
   | Or.inl ⟨hv_s, hw_t⟩ =>
-    -- v ∈ s so f v = 0; w ∈ t and disjoint ⇒ w ∉ s so f w = 1
     have hw_not_s : w ∉ s := h_disj.subset_compl_left hw_t
     simp [hv_s, hw_not_s]
   | Or.inr ⟨hv_t, hw_s⟩ =>
-    -- v ∈ t ⇒ v ∉ s so f v = 1; w ∈ s so f w = 0
     have hv_not_s : v ∉ s := h_disj.subset_compl_left hv_t
     simp [hv_not_s, hw_s]
 
-theorem isBipartite_iff_exists_sets :
+/--
+Putting the two previous lemmas together to show a biimplication between having a twocoloring
+and having a bipartition.
+-/
+theorem twocol_iff_bipartition :
   G.Colorable 2 ↔ ∃ s t : Set V, G.IsBipartiteWith s t := by
   constructor
-  · exact Twocolor_Implies_Bipartite_With G
+  · exact twocol_imp_bipartition G
   · rintro ⟨s, t, h⟩
-    exact Bipartite_With_Implies_Colorable G h
+    exact bipartition_imp_twocol G h
 
 end SimpleGraph
