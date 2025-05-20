@@ -487,7 +487,13 @@ def equivDomain (f : Γ ≃o Γ') : HahnSeries Γ R ≃ HahnSeries Γ' R where
 
 @[simp]
 theorem equivDomain_coeff {f : Γ ≃o Γ'} {x : HahnSeries Γ R} {a : Γ'} :
-    (equivDomain f x).coeff a = x.coeff (f.symm a) := rfl
+    (equivDomain f x).coeff a = x.coeff (f.symm a) :=
+  rfl
+
+@[simp]
+theorem equivDomain_symm {f : Γ ≃o Γ'} :
+    (equivDomain (R := R) f).symm = equivDomain f.symm :=
+  rfl
 
 theorem equivDomain_eq_embDomain (f : Γ ≃o Γ') (x : HahnSeries Γ R) :
     equivDomain f x = embDomain f x := by
