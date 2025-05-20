@@ -126,8 +126,9 @@ theorem of_trivialization [DiscreteTopology I] {x : X} {t : Trivialization I f}
       t.continuousOn_invFun.comp_continuous (continuous_subtype_val.prodMap continuous_id)
       fun ⟨x, _⟩ ↦ t.target_eq ▸ ⟨x.2, ⟨⟩⟩ }, fun _ ↦ by simp⟩
 
-theorem of_preimage_eq_empty {x : X} {U : Set X} (hUx : U ∈ 𝓝 x) (hfU : f ⁻¹' U = ∅) :
-    IsEvenlyCovered f x Empty :=
+variable (I) in
+theorem of_preimage_eq_empty [IsEmpty I] {x : X} {U : Set X} (hUx : U ∈ 𝓝 x) (hfU : f ⁻¹' U = ∅) :
+    IsEvenlyCovered f x I :=
   have ⟨V, hVU, hV, hxV⟩ := mem_nhds_iff.mp hUx
   have hfV : f⁻¹' V = ∅ := Set.eq_empty_of_subset_empty ((Set.preimage_mono hVU).trans hfU.le)
   have := Set.isEmpty_coe_sort.mpr hfV
@@ -143,7 +144,7 @@ def IsCoveringMapOn :=
 namespace IsCoveringMapOn
 
 theorem of_isEmpty [IsEmpty E] : IsCoveringMapOn f s := fun _ _ ↦ .to_isEvenlyCovered_preimage
-  (.of_preimage_eq_empty Filter.univ_mem <| Set.eq_empty_of_isEmpty _)
+  (.of_preimage_eq_empty Empty Filter.univ_mem <| Set.eq_empty_of_isEmpty _)
 
 /-- A constructor for `IsCoveringMapOn` when there are both empty and nonempty fibers. -/
 theorem mk' (F : s → Type*) [∀ x : s, TopologicalSpace (F x)] [hF : ∀ x : s, DiscreteTopology (F x)]
@@ -154,7 +155,7 @@ theorem mk' (F : s → Type*) [∀ x : s, TopologicalSpace (F x)] [hF : ∀ x : 
   by_cases hxf : x.1 ∈ Set.range f
   · exact .to_isEvenlyCovered_preimage (.of_trivialization (t x hxf).2)
   · have ⟨U, hUx, hfU⟩ := h x hxf
-    exact .to_isEvenlyCovered_preimage (.of_preimage_eq_empty hUx hfU)
+    exact .to_isEvenlyCovered_preimage (.of_preimage_eq_empty Empty hUx hfU)
 
 theorem mk (F : s → Type*) [∀ x, TopologicalSpace (F x)] [hF : ∀ x, DiscreteTopology (F x)]
     (e : ∀ x, Trivialization (F x) f) (h : ∀ x, x.1 ∈ (e x).baseSet) :
