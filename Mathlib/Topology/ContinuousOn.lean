@@ -1299,10 +1299,7 @@ lemma Topology.IsInducing.continuousOn_iff {f : α → β} {g : β → γ} (hg :
 
 lemma Topology.IsInducing.map_nhdsWithin_eq {f : α → β} (hf : IsInducing f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
-  ext U
-  simp_rw [mem_map, mem_nhdsWithin_iff_eventually, hf.nhds_eq_comap, eventually_comap,
-    mem_image, forall_exists_index, and_comm, and_imp]
-  congr! with b a rfl
+  ext; simp +contextual [mem_nhdsWithin_iff_eventually, hf.nhds_eq_comap, forall_comm (α := _ ∈ _)]
 
 lemma Topology.IsInducing.continuousOn_image_iff {g : β → γ} {s : Set α} (hf : IsInducing f) :
     ContinuousOn g (f '' s) ↔ ContinuousOn (g ∘ f) s := by
