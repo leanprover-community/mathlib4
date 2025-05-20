@@ -377,6 +377,7 @@ lemma toList_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
       · simp_all only [length_toList]
         have : Fin.mk i h3' = Fin.natAdd _ ⟨i - p.length - 1, by omega⟩ := by simp_all; cutsat
         rw [this, Fin.append_right, toList_getElem_eq_apply_of_lt_length]
+        -- TODO simp [Nat.sub_add_eq]
         rfl
 
 /--
