@@ -16,16 +16,16 @@ canonical example of a normalised elliptic divisibility sequence.
 ## Mathematical background
 
 Let `R` be a commutative ring, and let `W` be a sequence of elements in `R` indexed by `ℤ`. The
-*elliptic relator* `ER(m, n, r, s) ∈ R` associated to `W` is given for all `m, n, r, s ∈ ℤ` by
-`ER(m, n, r, s) := W(m+n+s)W(m-n)W(r+s)W(r) - W(m+r+s)W(m-r)W(n+s)W(n) + W(n+r+s)W(n-r)W(m+s)W(m)`.
-Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(m, n, r, s) = 0` for any
-`m, n, r, s ∈ ℤ`. By a cyclic permutation of variables, `ER(m, n, r, s) = 0` is essentially
-equivalent to the symmetric relation `ERₐ(m, n, r, s) = 0`, where `ERₐ(m, n, r, s) ∈ R` is given for
-all `m, n, r, s ∈ ℤ` by `ERₐ(m, n, r, s) := Wₐ(m, n)Wₐ(r, s) - Wₐ(m, r)Wₐ(n, s) + Wₐ(m, s)Wₐ(n, r)`
-defined in terms of *elliptic atoms* `Wₐ(m, n) := W((m + n) / 2)W((m - n) / 2)` for all `m, n ∈ ℤ`.
+*elliptic relator* `ER(p, q, r, s) ∈ R` associated to `W` is given for all `p, q, r, s ∈ ℤ` by
+`ER(p, q, r, s) := W(p+q+s)W(p-q)W(r+s)W(r) - W(p+r+s)W(p-r)W(q+s)W(q) + W(q+r+s)W(q-r)W(p+s)W(p)`.
+Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(p, q, r, s) = 0` for any
+`p, q, r, s ∈ ℤ`. By a cyclic permutation of variables, `ER(p, q, r, s) = 0` is essentially
+equivalent to the symmetric relation `ERₐ(p, q, r, s) = 0`, where `ERₐ(p, q, r, s) ∈ R` is given for
+all `p, q, r, s ∈ ℤ` by `ERₐ(p, q, r, s) := Wₐ(p, q)Wₐ(r, s) - Wₐ(p, r)Wₐ(q, s) + Wₐ(p, s)Wₐ(q, r)`
+defined in terms of *elliptic atoms* `Wₐ(p, q) := W((p + q) / 2)W((p - q) / 2)` for all `p, q ∈ ℤ`.
 
-As a special case, `W` is an *elliptic sequence* if it satisfies `ER(m, n, r, 0) = 0` for any
-`m, n, r ∈ ℤ`, a *divisibility sequence* if it satisfies `W(k) ∣ W(nk)` for any `k, n ∈ ℤ`, and an
+As a special case, `W` is an *elliptic sequence* if it satisfies `ER(p, q, r, 0) = 0` for any
+`p, q, r ∈ ℤ`, a *divisibility sequence* if it satisfies `W(k) ∣ W(nk)` for any `k, n ∈ ℤ`, and an
 *elliptic divisibility sequence* (EDS) if it is a divisibility sequence that is elliptic. If `W` is
 an EDS, then `x • W` is also an EDS for any `x ∈ R`. It turns out that any EDS `W` can be normalised
 such that `W(1) = 1`, in which case it can be characterised completely by
@@ -43,9 +43,9 @@ Some examples of EDSs include
 
 ## Main definitions
 
-* `ellRel`: the elliptic relator `ER(m, n, r, s)` indexed by `ℤ`.
-* `ellAtom`: the elliptic atom `Wₐ(m, n)` indexed by `ℤ`.
-* `ellAtomRel`: the relator `ERₐ(m, n, r, s)` indexed by `ℤ`.
+* `ellAtom`: the elliptic atom `Wₐ(p, q)` indexed by `ℤ`.
+* `ellAtomRel`: the relator `ERₐ(p, q, r, s)` indexed by `ℤ`.
+* `ellRel`: the elliptic relator `ER(p, q, r, s)` indexed by `ℤ`.
 * `IsEllNet`: a sequence indexed by `ℤ` is an elliptic net.
 * `IsEllSequence`: a sequence indexed by `ℤ` is an elliptic sequence.
 * `IsDivSequence`: a sequence indexed by `ℤ` is a divisibility sequence.
@@ -80,8 +80,8 @@ polynomials of elliptic curves, omitting a factor of the bivariate `2`-division 
 
 ## References
 
-* M Ward, *Memoir on Elliptic Divisibility Sequences*
 * K Stange, *Elliptic Nets and Elliptic Curves*
+* M Ward, *Memoir on Elliptic Divisibility Sequences*
 
 ## Tags
 
@@ -92,45 +92,92 @@ universe u v
 
 variable {R : Type u} [CommRing R]
 
+section EllAtom
+
+variable (W : ℤ → R)
+
+/-- The elliptic atom `Wₐ(p, q)` that defines an elliptic net. Note that this is defined in terms of
+truncated integer division, and hence should only be used when `p` and `q` have the same parity. -/
+def ellAtom (p q : ℤ) : R :=
+  W ((p + q).tdiv 2) * W ((p - q).tdiv 2)
+
+@[simp]
+lemma ellAtom_self (p : ℤ) : ellAtom W p p = W p * W 0 := by
+  rw [ellAtom, ← two_mul, Int.mul_tdiv_cancel_left _ two_ne_zero, sub_self, Int.zero_tdiv]
+
+variable {W} in
+@[simp]
+lemma neg_ellAtom (odd : ∀ n : ℤ, W (-n) = -W n) (p q : ℤ) : -ellAtom W p q = ellAtom W q p := by
+  simp_rw [ellAtom, add_comm, ← neg_sub p, Int.neg_tdiv, odd, mul_neg]
+
+variable {W} in
+@[simp]
+lemma ellAtom_neg_left (odd : ∀ n : ℤ, W (-n) = -W n) (p q : ℤ) :
+    ellAtom W (-p) q = ellAtom W p q := by
+  simp_rw [ellAtom, neg_add_eq_sub, ← neg_sub p, ← neg_add', Int.neg_tdiv, odd, neg_mul_neg,
+    mul_comm]
+
+@[simp]
+lemma ellAtom_neg_right (p q : ℤ) : ellAtom W p (-q) = ellAtom W p q := by
+  simp_rw [ellAtom, ← sub_eq_add_neg, sub_neg_eq_add, mul_comm]
+
+variable {W} in
+@[simp]
+lemma ellAtom_abs_left (odd : ∀ n : ℤ, W (-n) = -W n) (p q : ℤ) :
+    ellAtom W |p| q = ellAtom W p q := by
+  rcases abs_choice p with h | h <;> simp only [h, ellAtom_neg_left odd]
+
+@[simp]
+lemma ellAtom_abs_right (p q : ℤ) : ellAtom W p |q| = ellAtom W p q := by
+  rcases abs_choice q with h | h <;> simp only [h, ellAtom_neg_right]
+
+lemma ellAtom_even (p q : ℤ) : ellAtom W (2 * p) (2 * q) = W (p + q) * W (p - q) := by
+  simp_rw [ellAtom, ← mul_add, ← mul_sub, Int.mul_tdiv_cancel_left _ two_ne_zero]
+
+lemma ellAtom_odd (p q : ℤ) : ellAtom W (2 * p + 1) (2 * q + 1) = W (p + q + 1) * W (p - q) := by
+  simp_rw [ellAtom, add_add_add_comm _ (1 : ℤ), ← two_mul, ← mul_add, add_sub_add_comm, sub_self,
+    add_zero, ← mul_sub, Int.mul_tdiv_cancel_left _ two_ne_zero]
+
+lemma ellAtom_mul_ellAtom (p q r s : ℤ) : ellAtom W p q * ellAtom W r s =
+    (W ((p + q).tdiv 2) * W ((r - s).tdiv 2)) * (W ((r + s).tdiv 2) * W ((p - q).tdiv 2)) := by
+  simp_rw [ellAtom, mul_mul_mul_comm, mul_comm]
+
+/-- The relator `ERₐ(p, q, r, s)` obtained by a cyclic permutation of variables in `ER(p, q, r, s)`.
+Note that this is defined in terms of elliptic atoms, and hence should only be used when `p`, `q`,
+`r`, and `s` all have the same parity. -/
+def ellAtomRel (p q r s : ℤ) : R :=
+  ellAtom W p q * ellAtom W r s - ellAtom W p r * ellAtom W q s + ellAtom W p s * ellAtom W q r
+
+end EllAtom
+
 section IsEllDivSequence
 
 variable (W : ℤ → R)
 
-/-- The elliptic relator `ER(m, n, r, s)` that defines an elliptic net. -/
-def ellRel (m n r s : ℤ) : R :=
-  W (m + n + s) * W (m - n) * W (r + s) * W r - W (m + r + s) * W (m - r) * W (n + s) * W n +
-    W (n + r + s) * W (n - r) * W (m + s) * W m
+/-- The elliptic relator `ER(p, q, r, s)` that defines an elliptic net. -/
+def ellRel (p q r s : ℤ) : R :=
+  W (p + q + s) * W (p - q) * W (r + s) * W r - W (p + r + s) * W (p - r) * W (q + s) * W q +
+    W (q + r + s) * W (q - r) * W (p + s) * W p
 
-/-- The elliptic atom `Wₐ(m, n)` that defines an elliptic net. Note that this is defined in terms of
-truncated integer division, and hence should only be used when `m` and `n` have the same parity. -/
-def ellAtom (m n : ℤ) : R :=
-  W ((m + n).tdiv 2) * W ((m - n).tdiv 2)
-
-/-- The relator `ERₐ(m, n, r, s)` obtained by a cyclic permutation of variables in `ER(m, n, r, s)`.
-Note that this is defined in terms of elliptic atoms, and hence should only be used when `m`, `n`,
-`r`, and `s` all have the same parity. -/
-def ellAtomRel (m n r s : ℤ) : R :=
-  ellAtom W m n * ellAtom W r s - ellAtom W m r * ellAtom W n s + ellAtom W m s * ellAtom W n r
-
-lemma ellRel_eq (m n r s : ℤ) :
-    ellRel W m n r s = ellAtomRel W (2 * m + s) (2 * n + s) (2 * r + s) s := by
+lemma ellRel_eq (p q r s : ℤ) :
+    ellRel W p q r s = ellAtomRel W (2 * p + s) (2 * q + s) (2 * r + s) s := by
   simp_rw [ellRel, ellAtomRel, ellAtom, add_add_add_comm _ s, add_assoc _ s, ← two_mul, ← mul_add,
     add_sub_add_comm, add_sub_assoc, sub_self, add_zero, ← mul_sub,
-    Int.mul_tdiv_cancel_left _ two_ne_zero, mul_comm <| _ * W m, mul_assoc]
+    Int.mul_tdiv_cancel_left _ two_ne_zero, mul_comm <| _ * W p, mul_assoc]
 
-lemma ellAtomRel_eq (m n r s : ℤ) : ellAtomRel W (2 * m) (2 * n) (2 * r) (2 * s) =
-    ellRel W (m - s) (n - s) (r - s) (2 * s) := by
-  simp_rw [ellAtomRel, ellAtom, ellRel, ← mul_add, ← mul_sub,
-    Int.mul_tdiv_cancel_left _ two_ne_zero, two_mul]
-  ring_nf
+lemma ellAtomRel_eq (p q r s : ℤ) : ellAtomRel W (2 * p) (2 * q) (2 * r) (2 * s) =
+    ellRel W (p - s) (q - s) (r - s) (2 * s) := by
+  simp_rw [ellAtomRel, ellAtom, ← mul_add, ← mul_sub, Int.mul_tdiv_cancel_left _ two_ne_zero,
+    mul_comm <| W (p + s) * _, ellRel, two_mul, sub_add_sub_comm, sub_add_cancel, sub_sub_sub_comm,
+    sub_self, sub_zero, sub_add_add_cancel, mul_assoc]
 
 /-- The proposition that a sequence indexed by `ℤ` is an elliptic net. -/
 def IsEllNet : Prop :=
-  ∀ m n r s : ℤ, ellRel W m n r s = 0
+  ∀ p q r s : ℤ, ellRel W p q r s = 0
 
 /-- The proposition that a sequence indexed by `ℤ` is an elliptic sequence. -/
 def IsEllSequence : Prop :=
-  ∀ m n r : ℤ, ellRel W m n r 0 = 0
+  ∀ p q r : ℤ, ellRel W p q r 0 = 0
 
 /-- The proposition that a sequence indexed by `ℤ` is a divisibility sequence. -/
 def IsDivSequence : Prop :=
