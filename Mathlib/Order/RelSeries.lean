@@ -370,6 +370,7 @@ lemma toList_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
   apply List.ext_getElem
   · simp; grind
   · simp [List.getElem_append, Fin.append, Fin.addCases]
+
 /--
 For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
 `r`-series can be pushed out to an `s`-series by
