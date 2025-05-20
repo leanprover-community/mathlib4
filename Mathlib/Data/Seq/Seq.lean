@@ -717,23 +717,12 @@ def fold (s : Seq α) (init : β) (f : β → α → β) : Seq β :=
 /-- Apply `f` to the nth element of the list, if it exists, replacing that element
 with the result. -/
 def modify (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
-  val := fun i =>
-    if i = n then
-      (s.val i).map f
-    else
-      s.val i
+  val := Function.update s.val n ((s.val n).map f)
   property := by
-    simp only [IsSeq]
-    intro i h
-    split_ifs with h_if
-    · split_ifs at h
-      · omega
-      · rw [s.property h]
-        rfl
-    · split_ifs at h with h_if'
-      · simp only [Option.map_eq_none_iff] at h
-        exact s.property h
-      · exact s.property h
+    have (i : ℕ) : (Function.update s.val n ((s.get? n).map f)) i = none ↔ s.get? i = none := by
+      by_cases hi : i = n <;> simp [Function.update, hi]
+    simp [IsSeq, this]
+    exact @s.prop
 
 /-- `s.set n a` sets the value of sequence `s` at (zero-based) index `n` to `a`. -/
 def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
@@ -1273,8 +1262,8 @@ section Modify
 @[simp]
 theorem modify_nil {f : α → α} {n} :
     modify nil n f = nil := by
-  simp [modify]
-  rfl
+  ext1 m
+  simp [modify, Function.update]
 
 @[simp]
 theorem set_nil {n : ℕ} {x : α} :
@@ -1286,6 +1275,7 @@ theorem modify_cons_zero {f : α → α} {hd : α} {tl : Seq α} :
     (cons hd tl).modify 0 f = cons (f hd) tl := by
   ext1 n
   cases n <;> simp [modify]
+  rfl
 
 @[simp]
 theorem set_cons_zero {hd hd' : α} {tl : Seq α} :
@@ -1296,7 +1286,7 @@ theorem set_cons_zero {hd hd' : α} {tl : Seq α} :
 theorem modify_cons_succ {hd : α} {f : α → α} {n : ℕ} {tl : Seq α} :
     (cons hd tl).modify (n + 1) f = cons hd (tl.modify n f) := by
   ext1 n
-  cases n <;> simp [modify]
+  cases n <;> simp [modify, Function.update] <;> rfl
 
 @[simp]
 theorem set_cons_succ {hd x : α} {n : ℕ} {tl : Seq α} :
@@ -1321,7 +1311,7 @@ theorem set_get_of_terminated {s : Seq α} {x : α} {n : ℕ}
 theorem set_get_stable {s : Seq α} {x : α} {n m : ℕ}
     (h : n ≠ m) :
     (s.set m x).get? n = s.get? n := by
-  simp [set, modify]
+  simp [set, modify, Function.update]
   intro h'
   exact (h h').elim
 
