@@ -3,7 +3,8 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Data.Real.Basic
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
 # Congruence subgroups
@@ -208,28 +209,33 @@ section Conjugation
 
 open Pointwise ConjAct
 
-/-- The subgroup `SL(2, ℤ) ∩ g⁻¹ Γ g`, for `Γ` a subgroup of `SL(2, ℤ)` and `g in GL(2, ℝ)⁺`. -/
-def conjGLPos (Γ : Subgroup SL(2, ℤ)) (g : GL(2, ℝ)⁺) : Subgroup SL(2, ℤ) :=
-  ((toConjAct g⁻¹) • (Γ.map ModularGroup.coeHom)).comap ModularGroup.coeHom
+/-- The subgroup `SL(2, ℤ) ∩ g⁻¹ Γ g`, for `Γ` a subgroup of `SL(2, ℤ)` and `g ∈ GL(2, ℝ)`. -/
+def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL (Fin 2) ℝ) : Subgroup SL(2, ℤ) :=
+  ((toConjAct g⁻¹) • (Γ.map (SpecialLinearGroup.toGL.comp
+    <| SpecialLinearGroup.map (Int.castRingHom ℝ)))).comap
+    (SpecialLinearGroup.toGL.comp  <| SpecialLinearGroup.map (Int.castRingHom ℝ))
 
-@[simp] lemma mem_conjGLPos {Γ : Subgroup SL(2, ℤ)} {g : GL(2, ℝ)⁺} {x : SL(2, ℤ)} :
-    x ∈ conjGLPos Γ g ↔ ∃ y ∈ Γ, y = g * x * g⁻¹ := by
-  simp_rw [conjGLPos, Subgroup.mem_comap, toConjAct_inv, Subgroup.mem_inv_pointwise_smul_iff,
-    Subgroup.mem_map, ModularGroup.coeHom_apply, toConjAct_smul]
+@[simp] lemma mem_conjGL {Γ : Subgroup SL(2, ℤ)} {g : GL (Fin 2) ℝ} {x : SL(2, ℤ)} :
+    x ∈ conjGL Γ g ↔ ∃ y ∈ Γ, y = g * x * g⁻¹ := by
+  simp [conjGL, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
 
-lemma mem_conjGLPos' {Γ : Subgroup SL(2, ℤ)} {g : GL(2, ℝ)⁺} {x : SL(2, ℤ)} :
-    x ∈ conjGLPos Γ g ↔ ∃ y ∈ Γ, g⁻¹ * y * g = x := by
-  rw [mem_conjGLPos]
+lemma mem_conjGL' {Γ : Subgroup SL(2, ℤ)} {g : GL (Fin 2) ℝ} {x : SL(2, ℤ)} :
+    x ∈ conjGL Γ g ↔ ∃ y ∈ Γ, g⁻¹ * y * g = x := by
+  rw [mem_conjGL]
   refine exists_congr fun y ↦ and_congr_right fun hy ↦ ?_
   rw [eq_mul_inv_iff_mul_eq, mul_assoc, inv_mul_eq_iff_eq_mul]
 
 @[simp]
-lemma conjGLPos_coe (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
-    conjGLPos Γ g = (toConjAct g⁻¹) • Γ := by
+lemma conjGL_coe (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
+    conjGL Γ g = (toConjAct g⁻¹) • Γ := by
   ext x
-  simp_rw [mem_conjGLPos, ← ModularGroup.coeHom_apply, ← map_inv, ← map_mul,
-    ModularGroup.coeHom_apply, ModularGroup.coe_inj, exists_eq_right,
-    toConjAct_inv, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
+  simp_rw [mem_conjGL, ← map_inv, ← map_mul, toGL_injective.eq_iff, map_intCast_injective.eq_iff,
+    exists_eq_right, toConjAct_inv, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
+
+@[deprecated (since := "2025-05-15")] alias conjGLPos := conjGL
+@[deprecated (since := "2025-05-15")] alias conjGLPos_coe := conjGL_coe
+@[deprecated (since := "2025-05-15")] alias mem_conjGLPos := mem_conjGL
+@[deprecated (since := "2025-05-15")] alias mem_conjGLPos' := mem_conjGL'
 
 theorem Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = Gamma N := by
   apply Subgroup.Normal.conjAct (Gamma_normal N)

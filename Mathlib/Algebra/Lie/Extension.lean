@@ -12,14 +12,14 @@ homomorphisms. They are implemented in two ways: `IsExtension` is a `Prop`-value
 homomorphisms as parameters, and `Extension` is a structure that includes the middle Lie algebra.
 
 ## Main definitions
- * `LieAlgebra.IsExtension`: A `Prop`-valued class characterizing an extension of Lie algebras.
- * `LieAlgebra.Extension`: A bundled structure giving an extension of Lie algebras.
- * `LieAlgebra.IsExtension.extension`: A function that builds the bundled structure from the class.
+* `LieAlgebra.IsExtension`: A `Prop`-valued class characterizing an extension of Lie algebras.
+* `LieAlgebra.Extension`: A bundled structure giving an extension of Lie algebras.
+* `LieAlgebra.IsExtension.extension`: A function that builds the bundled structure from the class.
 
 ## TODO
- * `IsCentral` - central extensions
- * `Equiv` - equivalence of extensions
- * `ofTwoCocycle` - construction of extensions from 2-cocycles
+* `IsCentral` - central extensions
+* `Equiv` - equivalence of extensions
+* `ofTwoCocycle` - construction of extensions from 2-cocycles
 
 ## References
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)

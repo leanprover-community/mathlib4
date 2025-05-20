@@ -16,17 +16,16 @@ commutative binomial ring `R`.
 --This formal exponentiation operation makes the group `1 + XR⟦X⟧` into an `R`-module.
 
 ## Main Definitions
- * `PowerSeries.binomialSeries`: A power series expansion of `(1 + X) ^ r`, where `r` is an element
+* `PowerSeries.binomialSeries`: A power series expansion of `(1 + X) ^ r`, where `r` is an element
   of a commutative binomial ring `R`.
 
-## Main results
-
+## Main Results
  * `PowerSeries.binomial_add`: Adding exponents yields multiplication of series.
  * `PowerSeries.binomialSeries_nat`: when `r` is a natural number, we get `(1 + X) ^ r`.
  * `PowerSeries.rescale_neg_one_invOneSubPow`: The image of `(1 - X) ^ (-d)` under the map
    `X ↦ (-X)` is `(1 + X) ^ (-d)`
 
-## To do
+## TODO
 
  * `PowerSeries.binomial_mul`: expand `(1 + (X 1)) ^ r * (1 + (X 2)) ^ r`
  * `PowerSeries.binomial_pow`: show `((1 + X) ^ r) ^ s = (1 + X) ^ (r * s)`

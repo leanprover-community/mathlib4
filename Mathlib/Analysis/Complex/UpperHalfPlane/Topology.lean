@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Complex.Convex
@@ -67,11 +67,16 @@ instance : NoncompactSpace ℍ := by
 instance : LocallyCompactSpace ℍ :=
   isOpenEmbedding_coe.locallyCompactSpace
 
-/-- Each element of `GL(2, ℝ)⁺` defines a continuous map `ℍ → ℍ`. -/
-instance instContinuousGLPosSMul : ContinuousConstSMul (Matrix.GLPos (Fin 2) ℝ) ℍ where
+/-- Each element of `GL(2, ℝ)` defines a continuous map `ℍ → ℍ`. -/
+instance instContinuousGLSMul : ContinuousConstSMul (GL (Fin 2) ℝ) ℍ where
   continuous_const_smul g := by
-    refine continuous_induced_rng.mpr <| .div ?_ ?_ (denom_ne_zero g) <;>
-    exact (continuous_const.mul continuous_coe).add continuous_const
+    simp_rw [continuous_induced_rng (f := UpperHalfPlane.coe), Function.comp_def,
+      UpperHalfPlane.coe_smul, UpperHalfPlane.σ]
+    refine .comp ?_ ?_
+    · split_ifs
+      exacts [continuous_id, continuous_conj]
+    · refine .div ?_ ?_ (fun x ↦ denom_ne_zero g x) <;>
+      exact (continuous_const.mul continuous_coe).add continuous_const
 
 section strips
 

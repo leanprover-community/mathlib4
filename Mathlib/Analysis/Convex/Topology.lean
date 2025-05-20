@@ -7,8 +7,8 @@ import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Topological properties of convex sets
@@ -420,75 +420,7 @@ theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Conve
     (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) : s ⊆ interior (homothety x t '' s) :=
   subset_closure.trans <| hs.closure_subset_interior_image_homothety_of_one_lt hx t ht
 
-theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
-    [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
-    {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
-  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by fun_prop
-  apply JoinedIn.ofLine A.continuousOn (by simp) (by simp)
-  convert h
-  rw [segment_eq_image ℝ x y]
-
-/-- A nonempty convex set is path connected. -/
-protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne : s.Nonempty) :
-    IsPathConnected s := by
-  refine isPathConnected_iff.mpr ⟨hne, ?_⟩
-  intro x x_in y y_in
-  exact JoinedIn.of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
-
-/-- A nonempty convex set is connected. -/
-protected theorem Convex.isConnected {s : Set E} (h : Convex ℝ s) (hne : s.Nonempty) :
-    IsConnected s :=
-  (h.isPathConnected hne).isConnected
-
-/-- A convex set is preconnected. -/
-protected theorem Convex.isPreconnected {s : Set E} (h : Convex ℝ s) : IsPreconnected s :=
-  s.eq_empty_or_nonempty.elim (fun h => h.symm ▸ isPreconnected_empty) fun hne =>
-    (h.isConnected hne).isPreconnected
-
-/-- Every topological vector space over ℝ is path connected.
-
-Not an instance, because it creates enormous TC subproblems (turn on `pp.all`).
--/
-protected theorem IsTopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E :=
-  pathConnectedSpace_iff_univ.mpr <| convex_univ.isPathConnected ⟨(0 : E), trivial⟩
-
 end ContinuousSMul
-
-section ComplementsConnected
-
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-
-local notation "π" => Submodule.linearProjOfIsCompl _ _
-
-attribute [local instance 100] IsTopologicalAddGroup.pathConnectedSpace
-
-/-- Given two complementary subspaces `p` and `q` in `E`, if the complement of `{0}`
-is path connected in `p` then the complement of `q` is path connected in `E`. -/
-theorem isPathConnected_compl_of_isPathConnected_compl_zero [ContinuousSMul ℝ E]
-    {p q : Submodule ℝ E} (hpq : IsCompl p q) (hpc : IsPathConnected ({0}ᶜ : Set p)) :
-    IsPathConnected (qᶜ : Set E) := by
-  rw [isPathConnected_iff] at hpc ⊢
-  constructor
-  · rcases hpc.1 with ⟨a, ha⟩
-    exact ⟨a, mt (Submodule.eq_zero_of_coe_mem_of_disjoint hpq.disjoint) ha⟩
-  · intro x hx y hy
-    have : π hpq x ≠ 0 ∧ π hpq y ≠ 0 := by
-      constructor <;> intro h <;> rw [Submodule.linearProjOfIsCompl_apply_eq_zero_iff hpq] at h <;>
-        [exact hx h; exact hy h]
-    rcases hpc.2 (π hpq x) this.1 (π hpq y) this.2 with ⟨γ₁, hγ₁⟩
-    let γ₂ := PathConnectedSpace.somePath (π hpq.symm x) (π hpq.symm y)
-    let γ₁' : Path (_ : E) _ := γ₁.map continuous_subtype_val
-    let γ₂' : Path (_ : E) _ := γ₂.map continuous_subtype_val
-    refine ⟨(γ₁'.add γ₂').cast (Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hpq x).symm
-      (Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hpq y).symm, fun t ↦ ?_⟩
-    rw [Path.cast_coe, Path.add_apply]
-    change γ₁ t + (γ₂ t : E) ∉ q
-    rw [← Submodule.linearProjOfIsCompl_apply_eq_zero_iff hpq, LinearMap.map_add,
-      Submodule.linearProjOfIsCompl_apply_right, add_zero,
-      Submodule.linearProjOfIsCompl_apply_eq_zero_iff]
-    exact mt (Submodule.eq_zero_of_coe_mem_of_disjoint hpq.disjoint) (hγ₁ t)
-
-end ComplementsConnected
 
 section LinearOrderedField
 

@@ -31,12 +31,10 @@ by a sequence of simple functions.
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 -/
 
+open Set Function Filter TopologicalSpace EMetric MeasureTheory
+open scoped Topology ENNReal
 
-open Set Function Filter TopologicalSpace ENNReal EMetric Finset
-
-open Topology ENNReal MeasureTheory
-
-variable {α β ι E F 𝕜 : Type*}
+variable {α β : Type*}
 
 noncomputable section
 
