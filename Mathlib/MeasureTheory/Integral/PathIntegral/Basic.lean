@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 /-!
 # Integral of a 1-form along a path
 
-In this file we define integral of a 1-form along a path
+In this file we define the integral of a 1-form along a path indexed by `[0, 1]`
 and prove basic properties of this operation.
 
 The integral `∫ᵖ x in γ, ω x` is defined as $\int_0^1 \omega(\gamma(t))(\gamma'(t))$.
