@@ -270,7 +270,6 @@ lemma neg_mul_lt_inner_vsub_altitudeFoot (i j : Fin (n + 1)) (hn : 1 < n) :
   · rw [real_inner_self_eq_norm_sq]
     refine lt_of_lt_of_le (b := 0) ?_ ?_
     · rw [neg_lt_zero]
-      have := s.height_pos i
       positivity
     · positivity
   rw [neg_lt]
