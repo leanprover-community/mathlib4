@@ -3,6 +3,7 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Order.Field.Pointwise
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
 import Mathlib.Analysis.Calculus.Deriv.Shift
@@ -46,9 +47,33 @@ We also show that the derivative of `fun b ↦ ∫ᵖ x in Path.segment a b, ω 
 has derivative `ω a` at `b = a`.
 We provide 2 versions of this result: one for derivative (`HasFDerivWithinAt`) within a convex set
 and one for `HasFDerivAt`.
+
+## Implementation notes
+
+### Usage of `ContinuousLinearMap`s for 1-forms
+
+Similarly to the way `fderiv` uses continuous linear maps
+while higher order derivatives use continuous multilinear maps,
+this file uses `E → E →L[𝕜] F` instead of continuous alternating maps for 1-forms.
+
+### Differentiability assumptions
+
+The definitions in this file make sense if the path is a piecewise $C^1$ curve.
+Poincaré lemma (formalization WIP, see #24019) implies that for a closed 1-form on an open set `U`,
+the integral depends on the homotopy class of the path only,
+thus we can define the integral along a continuous path
+or an element of the fundamental groupoid of `U`.
+
+### Usage of an extra field
+
+The definitions in this file deal with `𝕜`-linear 1-forms.
+This allows us to avoid using `ContinuousLinearMap.restrictScalars`
+in `HasFDerivWithinAt.pathIntegral_segment_source`
+and a future formalization of Poincaré lemma.
 -/
 
-open Metric MeasureTheory unitInterval Topology Set Interval AffineMap Convex Filter
+open Metric MeasureTheory Topology Set Interval AffineMap Convex Filter
+open scoped Pointwise unitInterval
 
 section Defs
 
@@ -171,38 +196,43 @@ theorem pathIntegral_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
   simp [pathIntegral, pathIntegralFun_symm]
 
 theorem pathIntegralFun_trans_of_lt_half (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c)
-    (ht₀ : 0 < t) (ht : t < 1 / 2) :
+    (ht : t < 1 / 2) :
     pathIntegralFun ω (γab.trans γbc) t = (2 : ℕ) • pathIntegralFun ω γab (2 * t) := by
   let instE := NormedSpace.restrictScalars ℝ 𝕜 E
-  have : (γab.trans γbc).extend =ᶠ[𝓝 t] (fun s ↦ γab.extend (2 * s)) :=
+  have H₁ : (γab.trans γbc).extend =ᶠ[𝓝 t] (fun s ↦ γab.extend (2 * s)) :=
     (eventually_le_nhds ht).mono fun _ ↦ Path.extend_trans_of_le_half _ _
-  rw [pathIntegralFun_def, this.self_of_nhds, derivWithin_of_mem_nhds, this.deriv_eq,
-    pathIntegralFun_def, derivWithin_of_mem_nhds, deriv_comp_mul_left, ofNat_smul_eq_nsmul,
-    map_nsmul] <;> apply Icc_mem_nhds <;> linarith
+  have H₂ : (2 : ℝ) • I =ᶠ[𝓝 (2 * t)] I := by
+    rw [LinearOrderedField.smul_Icc two_pos, mul_zero, mul_one, ← nhdsWithin_eq_iff_eventuallyEq]
+    rcases lt_trichotomy t 0 with ht₀ | rfl | ht₀
+    · rw [not_mem_closure_iff_nhdsWithin_eq_bot.mp, not_mem_closure_iff_nhdsWithin_eq_bot.mp] <;>
+        simp_intro h <;> linarith
+    · simp
+    · rw [nhdsWithin_eq_nhds.2, nhdsWithin_eq_nhds.2] <;> simp [*] <;> linarith
+  rw [pathIntegralFun_def, H₁.self_of_nhds, H₁.derivWithin_eq_of_nhds, pathIntegralFun_def,
+    derivWithin_comp_mul_left, ofNat_smul_eq_nsmul, map_nsmul, derivWithin_congr_set H₂]
 
 theorem pathIntegralFun_trans_aeeq_left (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c) :
     pathIntegralFun ω (γab.trans γbc) =ᵐ[volume.restrict (Ι (0 : ℝ) (1 / 2))]
       fun t ↦ (2 : ℕ) • pathIntegralFun ω γab (2 * t) := by
   rw [uIoc_of_le (by positivity), ← restrict_Ioo_eq_restrict_Ioc]
   filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ⟨ht₀, ht⟩
-  exact pathIntegralFun_trans_of_lt_half ω γab γbc ht₀ ht
+  exact pathIntegralFun_trans_of_lt_half ω γab γbc ht
 
 theorem pathIntegralFun_trans_of_half_lt (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c)
-    (ht₀ : 1 / 2 < t) (ht : t < 1) :
+    (ht₀ : 1 / 2 < t) :
     pathIntegralFun ω (γab.trans γbc) t = (2 : ℕ) • pathIntegralFun ω γbc (2 * t - 1) := by
-  let instE := NormedSpace.restrictScalars ℝ 𝕜 E
-  have : (γab.trans γbc).extend =ᶠ[𝓝 t] (fun s ↦ γbc.extend (2 * s - 1)) :=
-    (eventually_ge_nhds ht₀).mono fun _ ↦ Path.extend_trans_of_half_le _ _
-  rw [pathIntegralFun_def, this.self_of_nhds, derivWithin_of_mem_nhds, this.deriv_eq,
-    pathIntegralFun_def, derivWithin_of_mem_nhds, deriv_comp_mul_left _ (γbc.extend <| · - 1),
-    deriv_comp_sub_const, ofNat_smul_eq_nsmul, map_nsmul] <;> apply Icc_mem_nhds <;> linarith
+  rw [← (γab.trans γbc).symm_symm, pathIntegralFun_symm_apply, Path.trans_symm,
+    pathIntegralFun_trans_of_lt_half (ht := by linarith), pathIntegralFun_symm_apply, smul_neg,
+    neg_neg]
+  congr 2
+  ring
 
 theorem pathIntegralFun_trans_aeeq_right (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c) :
     pathIntegralFun ω (γab.trans γbc) =ᵐ[volume.restrict (Ι (1 / 2 : ℝ) 1)]
       fun t ↦ (2 : ℕ) • pathIntegralFun ω γbc (2 * t - 1) := by
   rw [uIoc_of_le (by linarith), ← restrict_Ioo_eq_restrict_Ioc]
   filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ⟨ht₁, ht₂⟩
-  exact pathIntegralFun_trans_of_half_lt ω γab γbc ht₁ ht₂
+  exact pathIntegralFun_trans_of_half_lt ω γab γbc ht₁
 
 theorem PathIntegrable.intervalIntegrable_pathIntegralFun_trans_left
     (h : PathIntegrable ω γab) (γbc : Path b c) :
