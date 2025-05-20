@@ -188,6 +188,9 @@ def evalHeight : PositivityExt where eval {u α} _ _ e := do
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"
 
+example {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
+  positivity
+
 open scoped RealInnerProductSpace
 
 variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
