@@ -5,6 +5,7 @@ Authors: Mitchell Horner
 -/
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.Coloring
 
 /-!
 # Bipartite graphs
@@ -49,7 +50,7 @@ relation `r : α → β → Prop`, see `Mathlib.Combinatorics.Enumerative.Double
 -/
 
 
-open BigOperators Finset Fintype
+open BigOperators Finset Fintype Classical
 
 namespace SimpleGraph
 
@@ -240,5 +241,63 @@ theorem isBipartiteWith_sum_degrees_eq_card_edges' (h : G.IsBipartiteWith s t) :
     ∑ v ∈ t, G.degree v = #G.edgeFinset := isBipartiteWith_sum_degrees_eq_card_edges h.symm
 
 end IsBipartiteWith
+
+
+variable {V : Type*} (G : SimpleGraph V)
+
+/-- A simple graph is bipartite if it admits a 2-coloring. -/
+def IsBipartite (G : SimpleGraph V) : Prop := G.Colorable 2
+
+/--
+From a 2-coloring of `G`, produce two color classes `s` and `t` witnessing bipartiteness:
+`Disjoint s t` and every edge goes between `s` and `t`.
+-/
+theorem Twocolor_Implies_Bipartite_With (h : G.Colorable 2) : ∃ s t, G.IsBipartiteWith s t := by
+  rcases h with ⟨c, hc_adj⟩
+  let s := { v | c v = 0 }
+  let t := { v | c v = 1 }
+  have h₁ : Disjoint s t := by
+    rw [Set.disjoint_iff]
+    intro v
+    intro hv
+    simp only [Set.mem_inter_iff, Set.mem_setOf_eq] at hv
+    have hv' : c v = 0 := hv.1
+    have hv'' : c v = 1 := hv.2
+    omega
+  have h₂ : ∀ ⦃v w : V⦄, G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s := by
+    intro v w h_adj
+    have h_color := hc_adj h_adj
+    simp [s, t, Set.mem_setOf_eq, Fin.forall_fin_two] at h_color ⊢
+    ; omega
+  exact ⟨s, t, ⟨h₁, h₂⟩⟩
+
+
+theorem Bipartite_With_Implies_Colorable {s t : Set V}
+  (h : G.IsBipartiteWith s t) : G.Colorable 2 := by
+  have h_disj  : Disjoint s t := h.1
+  have h_edges : ∀ v w, G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s := h.2
+
+  -- define the coloring: 0 on `s`, 1 otherwise
+  use fun v => if v ∈ s then 0 else 1
+  intro v w hw
+
+  -- split on which side each endpoint lives
+  let h_case := h_edges v w hw
+  match h_case with
+  | Or.inl ⟨hv_s, hw_t⟩ =>
+    -- v ∈ s so f v = 0; w ∈ t and disjoint ⇒ w ∉ s so f w = 1
+    have hw_not_s : w ∉ s := h_disj.subset_compl_left hw_t
+    simp [hv_s, hw_not_s]
+  | Or.inr ⟨hv_t, hw_s⟩ =>
+    -- v ∈ t ⇒ v ∉ s so f v = 1; w ∈ s so f w = 0
+    have hv_not_s : v ∉ s := h_disj.subset_compl_left hv_t
+    simp [hv_not_s, hw_s]
+
+theorem isBipartite_iff_exists_sets :
+  G.Colorable 2 ↔ ∃ s t : Set V, G.IsBipartiteWith s t := by
+  constructor
+  · exact Twocolor_Implies_Bipartite_With G
+  · rintro ⟨s, t, h⟩
+    exact Bipartite_With_Implies_Colorable G h
 
 end SimpleGraph
