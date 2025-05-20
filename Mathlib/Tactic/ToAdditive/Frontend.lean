@@ -857,6 +857,8 @@ partial def transformDeclAux
   addDeclarationRangesFromSyntax tgt (← getRef) cfg.ref
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
+  if rflAttr.hasTag (← getEnv) src then
+    rflAttr.setTag tgt
   if let some matcherInfo ← getMatcherInfo? src then
     /-
     Use `Match.addMatcherInfo tgt matcherInfo`

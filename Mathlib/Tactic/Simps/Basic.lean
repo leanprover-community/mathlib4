@@ -974,14 +974,13 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
   trace[simps.verbose] "adding projection {declName}:{indentExpr declType}"
-  try
+  prependError "Failed to add projection lemma {declName}:" do
     addDecl <| .thmDecl {
       name := declName
       levelParams := univs
       type := declType
       value := declValue }
-  catch ex =>
-    throwError "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData}"
+  inferRflAttr declName
   addDeclarationRangesFromSyntax declName (← getRef) ref
   _ ← MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
     ← mkConstWithLevelParams declName

@@ -62,7 +62,7 @@ def cotangentComplex : P.Cotangent →ₗ[S] P.CotangentSpace :=
 
 @[simp]
 lemma cotangentComplex_mk (x) : P.cotangentComplex (.mk x) = 1 ⊗ₜ .D _ _ x :=
-  kerCotangentToTensor_toCotangent _ _ _ _
+  rfl
 
 universe w' u' v'
 
