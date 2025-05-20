@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.Data.Int.Interval
-import Mathlib.LinearAlgebra.Trace
 import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
@@ -26,29 +24,29 @@ We provide basic definitions and results to support `α`-chain techniques in thi
 
 ## Main definitions / results
 
- * `LieModule.exists₂_genWeightSpace_smul_add_eq_bot`: given weights `χ₁`, `χ₂` if `χ₁ ≠ 0`, we can
-   find `p < 0` and `q > 0` such that the weight spaces `p • χ₁ + χ₂` and `q • χ₁ + χ₂` are both
-   trivial.
- * `LieModule.genWeightSpaceChain`: given weights `χ₁`, `χ₂` together with integers `p` and `q`,
-   this is the sum of the weight spaces `k • χ₁ + χ₂` for `p < k < q`.
- * `LieModule.trace_toEnd_genWeightSpaceChain_eq_zero`: given a root `α` relative to a Cartan
-   subalgebra `H`, there is a natural ideal `corootSpace α` in `H`. This lemma
-   states that this ideal acts by trace-zero endomorphisms on the sum of root spaces of any
-   `α`-chain, provided the weight spaces at the endpoints are both trivial.
- * `LieModule.exists_forall_mem_corootSpace_smul_add_eq_zero`: given a (potential) root
-   `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
-   `corootSpace α` of `H`, we may find an integral linear combination between
-   `α` and any weight `χ` of a representation.
+* `LieModule.exists₂_genWeightSpace_smul_add_eq_bot`: given weights `χ₁`, `χ₂` if `χ₁ ≠ 0`, we can
+  find `p < 0` and `q > 0` such that the weight spaces `p • χ₁ + χ₂` and `q • χ₁ + χ₂` are both
+  trivial.
+* `LieModule.genWeightSpaceChain`: given weights `χ₁`, `χ₂` together with integers `p` and `q`,
+  this is the sum of the weight spaces `k • χ₁ + χ₂` for `p < k < q`.
+* `LieModule.trace_toEnd_genWeightSpaceChain_eq_zero`: given a root `α` relative to a Cartan
+  subalgebra `H`, there is a natural ideal `corootSpace α` in `H`. This lemma
+  states that this ideal acts by trace-zero endomorphisms on the sum of root spaces of any
+  `α`-chain, provided the weight spaces at the endpoints are both trivial.
+* `LieModule.exists_forall_mem_corootSpace_smul_add_eq_zero`: given a (potential) root
+  `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
+  `corootSpace α` of `H`, we may find an integral linear combination between
+  `α` and any weight `χ` of a representation.
 
 ## TODO
 
 It should be possible to unify some of the definitions here such as `LieModule.chainBotCoeff`,
 `LieModule.chainTopCoeff` with corresponding definitions such as `RootPairing.chainBotCoeff`,
 `RootPairing.chainTopCoeff`. This is not quite trivial since:
- * The definitions here allow for chains in representations of Lie algebras.
- * The proof that the roots of a Lie algebra are a root system currently depends on these results.
-   (This can be resolved by proving the root reflection formula using the approach outlined in
-   Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
+* The definitions here allow for chains in representations of Lie algebras.
+* The proof that the roots of a Lie algebra are a root system currently depends on these results.
+  (This can be resolved by proving the root reflection formula using the approach outlined in
+  Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
 
 -/
 
@@ -389,7 +387,7 @@ variable {K : Type*} [Field K] [CharZero K] [LieAlgebra K L]
 lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (toEnd K L M x) := by
-  refine Module.Finite.Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
+  refine Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
   have hm : m ∈ ⨆ χ : LieModule.Weight K H M, genWeightSpace M χ := by
     simp [iSup_genWeightSpace_eq_top' K H M]
   induction hm using LieSubmodule.iSup_induction' with
@@ -403,8 +401,8 @@ lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
     obtain ⟨n₁, hn₁⟩ := hm₁'
     obtain ⟨n₂, hn₂⟩ := hm₂'
     refine ⟨max n₁ n₂, ?_⟩
-    rw [map_add, LinearMap.pow_map_zero_of_le le_sup_left hn₁,
-      LinearMap.pow_map_zero_of_le le_sup_right hn₂, add_zero]
+    rw [map_add, Module.End.pow_map_zero_of_le le_sup_left hn₁,
+      Module.End.pow_map_zero_of_le le_sup_right hn₂, add_zero]
 
 lemma LieAlgebra.isNilpotent_ad_of_mem_rootSpace
     [IsTriangularizable K H L] [FiniteDimensional K L]

@@ -31,12 +31,10 @@ by a sequence of simple functions.
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 -/
 
+open Set Function Filter TopologicalSpace EMetric MeasureTheory
+open scoped Topology ENNReal
 
-open Set Function Filter TopologicalSpace ENNReal EMetric Finset
-
-open Topology ENNReal MeasureTheory
-
-variable {α β ι E F 𝕜 : Type*}
+variable {α β : Type*}
 
 noncomputable section
 
@@ -152,9 +150,9 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
     Tendsto (fun n => approxOn f hf s y₀ h₀ n x) atTop (𝓝 <| f x) := by
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   rw [← @Subtype.range_coe _ s, ← image_univ, ← (denseRange_denseSeq s).closure_eq] at hx
-  simp (config := { iota := false }) only [approxOn, coe_comp]
+  simp -iota only [approxOn, coe_comp]
   refine tendsto_nearestPt (closure_minimal ?_ isClosed_closure hx)
-  simp (config := { iota := false }) only [Nat.range_casesOn, closure_union, range_comp]
+  simp -iota only [Nat.range_casesOn, closure_union, range_comp]
   exact
     Subset.trans (image_closure_subset_closure_image continuous_subtype_val)
       subset_union_right
