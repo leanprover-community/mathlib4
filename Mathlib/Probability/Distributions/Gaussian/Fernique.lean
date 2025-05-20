@@ -141,9 +141,8 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self {μ : Measure E} [SFi
     -- we can rotate the bands since `μ.prod μ` is invariant under rotation
     rw [h]
   _ = (μ.prod μ) {p | ‖p.1 - p.2‖ / √2 ≤ a ∧ b < ‖p.1 + p.2‖ / √2} := by
-    rw [Measure.map_apply]
-    rotate_left
-    · fun_prop
+    rw [Measure.map_apply (by fun_prop)]
+    swap
     · refine MeasurableSet.inter ?_ ?_
       · change MeasurableSet {p : E × E | ‖p.1‖ ≤ a}
         exact measurableSet_le (by fun_prop) (by fun_prop)
@@ -183,10 +182,66 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self {μ : Measure E} [SFi
   _ = (μ.prod μ) ({x | (b - a) / √2 < ‖x‖} ×ˢ {y | (b - a) / √2 < ‖y‖}) := rfl
   _ ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 := by rw [Measure.prod_prod, pow_two]
 
+section ArithmeticGeometricSequence
+
+variable {u : ℕ → ℝ} {a b : ℝ}
+
+lemma todo1 (hu : ∀ n, u (n + 1) = a * u n + b) (ha : a ≠ 1) (n : ℕ) :
+    u n = a ^ n * (u 0 - (b / (1 - a))) + b / (1 - a) := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [hu, hn, pow_succ]
+    have : 1 - a ≠ 0 := sub_ne_zero_of_ne ha.symm
+    field_simp
+    ring
+
+open Filter in
+lemma tendsto_todo_atTop (hu : ∀ n, u (n + 1) = a * u n + b) (ha : 1 < a) (h0 : b / (1 - a) < u 0) :
+    Tendsto u atTop atTop := by
+  have : u = fun n ↦ a ^ n * (u 0 - (b / (1 - a))) + b / (1 - a) := by ext; exact todo1 hu ha.ne' _
+  rw [this]
+  refine tendsto_atTop_add_const_right _ _ ?_
+  refine Tendsto.atTop_mul_const (sub_pos.mpr h0) ?_
+  exact tendsto_pow_atTop_atTop_of_one_lt ha
+
+lemma lt_todo (hu : ∀ n, u (n + 1) = a * u n + b) (ha_pos : 0 < a) (ha_ne : a ≠ 1)
+    (h0 : b / (1 - a) < u 0) (n : ℕ) :
+    b / (1 - a) < u n := by
+  induction n with
+  | zero => exact h0
+  | succ n hn =>
+    rw [hu]
+    calc b / (1 - a)
+    _ = a * (b / (1 - a)) + b := by
+      have : 1 - a ≠ 0 := sub_ne_zero_of_ne ha_ne.symm
+      field_simp
+      ring
+    _ < a * u n + b := by gcongr
+
+lemma todo_strictMono (hu : ∀ n, u (n + 1) = a * u n + b) (ha : 1 < a) (h0 : b / (1 - a) < u 0) :
+    StrictMono u := by
+  refine strictMono_nat_of_lt_succ fun n ↦ ?_
+  rw [hu]
+  have h_lt : b / (1 - a) < u n := lt_todo hu (by positivity) ha.ne' h0 n
+  rw [div_lt_iff_of_neg (sub_neg.mpr ha)] at h_lt
+  linarith
+
+lemma todo_nonneg (hu : ∀ n, u (n + 1) = a * u n + b) (ha : 1 < a) (h0 : b / (1 - a) < u 0)
+    (h0_nonneg : 0 ≤ u 0) (n : ℕ) :
+    0 ≤ u n := by
+  induction n with
+  | zero => exact h0_nonneg
+  | succ n =>
+    calc 0 ≤ u 0 := h0_nonneg
+    _ ≤ u (n + 1) := (todo_strictMono hu ha h0 (by positivity)).le
+
+end ArithmeticGeometricSequence
+
 open Metric Filter in
 /-- Auxiliary lemma for `exists_integrable_exp_sq_of_map_rotation_eq_self`.
 The assumption `h_meas_Ioo : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1` is not
-needed and will be removed in that more general lemma. -/
+needed and will be removed in that more general theorem. -/
 lemma exists_integrable_exp_sq_of_map_rotation_eq_self' {μ : Measure E} [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     (h_meas_Ioo : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1) :
@@ -222,55 +277,29 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' {μ : Measure E} [IsProb
   refine ⟨by fun_prop, ?_⟩
   simp only [HasFiniteIntegral, ← ofReal_norm_eq_enorm, Real.norm_eq_abs, Real.abs_exp]
   -- `⊢ ∫⁻ (a : E), ENNReal.ofReal (rexp (C * ‖a‖ ^ 2)) ∂μ < ⊤`
-  let t : ℕ → ℝ := Nat.rec a fun n tn ↦ a + √2 * tn -- t 0 = a; t (n + 1) = a + √2 * t n
-  have ht_succ_def n : t (n + 1) = a + √2 * t n := rfl
-  have ht_nonneg n : 0 ≤ t n := by
-    induction n with
-    | zero => simp [t, ha_pos.le]
-    | succ n hn =>
-      rw [ht_succ_def]
-      positivity
-  have ht_mono : StrictMono t := by
-    refine strictMono_nat_of_lt_succ fun n ↦ ?_
-    cases n with
-    | zero => simp [t, ha_pos]
-    | succ n =>
-      conv_rhs => rw [ht_succ_def (n + 1)]
-      calc t (n + 1)
-      _ ≤ √2 * t (n + 1) := by
-        conv_lhs => rw [← one_mul (t (n + 1))]
-        gcongr
-        · exact ht_nonneg (n + 1)
-        · simp
-      _ < a + √2 * t (n + 1) := lt_add_of_pos_left _ ha_pos
+  -- We introduce an increasing sequence `t n` and will cut the space into sets of the form
+  -- `closedBall 0 (t (n + 1)) \ closedBall 0 (t n)`.
+  let t : ℕ → ℝ := Nat.rec a fun n tn ↦ √2 * tn + a -- t 0 = a; t (n + 1) = √2 * t n + a
+  have ht_succ_def n : t (n + 1) = √2 * t n + a := rfl
+  have ht0 : a / (1 - √2) < t 0 := by
+    simp only [Nat.rec_zero, t]
+    calc a / (1 - √2)
+    _ ≤ 0 := div_nonpos_of_nonneg_of_nonpos ha_pos.le (by simp)
+    _ < a := ha_pos
+  have ht_nonneg n : 0 ≤ t n :=
+    todo_nonneg ht_succ_def one_lt_sqrt_two ht0 (by simp [t, ha_pos.le]) n
+  have ht_mono : StrictMono t := todo_strictMono ht_succ_def one_lt_sqrt_two ht0
+  have ht_tendsto : Tendsto t atTop atTop := tendsto_todo_atTop ht_succ_def one_lt_sqrt_two ht0
   -- first, compute bounds on `t (n + 1)`
   have ht_eq n : t n = a * (1 + √2) * (√2 ^ (n + 1) - 1) := by
-    induction n with
-    | zero =>
-      simp only [zero_add, pow_one]
-      ring_nf
-      rw [Real.sq_sqrt (by positivity)]
-      ring_nf
-      rfl
-    | succ n hn =>
-      rw [ht_succ_def, hn]
-      simp_rw [← mul_assoc, mul_comm _ a, mul_assoc]
-      nth_rw 1 [← mul_one a]
-      rw [← mul_add]
-      congr
-      ring_nf
-      congr 2
-      rw [add_sub, ← sub_eq_add_neg, Real.sq_sqrt (by positivity)]
-      ring
-  have ht_tendsto : Tendsto t atTop atTop := by
-    suffices Tendsto (fun n ↦ a * (1 + √2) * (√2 ^ (n + 1) - 1)) atTop atTop by
-      convert this with n
-      exact ht_eq n
-    refine Tendsto.const_mul_atTop (by positivity) ?_
-    refine Tendsto.atTop_of_add_const 1 ?_
-    simp only [sub_add_cancel]
-    refine (tendsto_add_atTop_iff_nat 1).mpr ?_
-    exact tendsto_pow_atTop_atTop_of_one_lt (r := √2) one_lt_sqrt_two
+    rw [todo1 ht_succ_def (by simp), pow_succ]
+    simp only [Nat.rec_zero, t]
+    have : 1 - √2 ≠ 0 := sub_ne_zero_of_ne (Ne.symm (by simp))
+    field_simp
+    ring_nf
+    have h3 : √2 ^ 3 = 2 * √2 := by rw [pow_succ, Real.sq_sqrt (by positivity)]
+    rw [Real.sq_sqrt (by positivity), h3]
+    ring
   have ht_succ_le n : t (n + 1) ^ 2 ≤ a ^ 2 * (1 + √2) ^ 2 * 2 ^ (n + 2) := by
     simp_rw [ht_eq, mul_pow, mul_assoc]
     gcongr
@@ -389,8 +418,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' {μ : Measure E} [IsProb
     congr
     rw [← add_mul]
     congr
-    unfold C
-    field_simp
+    field_simp [C]
     ring
   _ < ⊤ := by
     refine ENNReal.mul_lt_top hc_lt_top ?_
@@ -455,7 +483,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
 
 /-- Fernique's theorem for finite measures whose product is invariant by rotation: there exists
 `C > 0` such that the function `x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
-lemma exists_integrable_exp_sq_of_map_rotation_eq_self {μ : Measure E} [IsFiniteMeasure μ]
+theorem exists_integrable_exp_sq_of_map_rotation_eq_self {μ : Measure E} [IsFiniteMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
   by_cases hμ_zero : μ = 0
