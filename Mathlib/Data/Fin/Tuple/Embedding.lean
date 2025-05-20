@@ -29,7 +29,6 @@ open Function.Embedding Fin Set Nat
 namespace Fin.Embedding
 
 variable {α : Type*}
-
 /-- Remove the first element from an injective (n + 1)-tuple. -/
 def tail {n : ℕ} (x : Fin (n + 1) ↪ α) : Fin n ↪ α :=
   ⟨Fin.tail x, x.injective.comp <| Fin.succ_injective _⟩
