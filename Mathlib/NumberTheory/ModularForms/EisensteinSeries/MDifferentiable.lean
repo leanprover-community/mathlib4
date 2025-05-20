@@ -31,7 +31,7 @@ lemma div_linear_zpow_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
   · apply DifferentiableOn.zpow
     · fun_prop
     · left
-      exact fun z hz ↦ linear_ne_zero _ ⟨z, hz⟩
+      exact fun z hz ↦ linear_ne_zero ⟨z, hz⟩
         ((comp_ne_zero_iff _ Int.cast_injective Int.cast_zero).mpr ha)
   · simp only [Fin.isValue, Pi.zero_apply, Int.cast_zero, zero_mul, add_zero, one_div]
     apply differentiableOn_const

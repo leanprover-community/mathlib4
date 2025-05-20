@@ -71,7 +71,7 @@ Every split epimorphism is an epimorphism.
 structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   section_ : Y ⟶ X
-  /--  `section_` composed with `f` is the identity -/
+  /-- `section_` composed with `f` is the identity -/
   id : section_ ≫ f = 𝟙 Y := by aesop_cat
 
 attribute [reassoc (attr := simp)] SplitEpi.id
