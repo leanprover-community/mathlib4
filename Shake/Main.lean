@@ -3,11 +3,6 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lake.Util.Error
-import Lean.Environment
-import Lean.Parser.Module
-import Lean.Util.FoldConsts
-import Lean.Util.Paths
 import Lake.CLI.Main
 
 /-! # `lake exe shake` command
@@ -224,13 +219,9 @@ def Edits.add (ed : Edits) (src : Name) (tgt : Nat) : Edits :=
 Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Parser.Module.header`
 and `endPos` is the position of the end of the header.
 -/
-def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
+def parseHeaderFromString (text path : String) :
     IO (System.FilePath × Parser.InputContext × TSyntax ``Parser.Module.header × String.Pos) := do
-  -- Parse the input file
-  let some path ← srcSearchPath.findModuleWithExt "lean" mod
-    | throw <| .userError "error: failed to find source file for {mod}"
-  let text ← IO.FS.readFile path
-  let inputCtx := Parser.mkInputContext text path.toString
+  let inputCtx := Parser.mkInputContext text path
   let (header, parserState, msgs) ← Parser.parseHeader inputCtx
   if !msgs.toList.isEmpty then -- skip this file if there are parse errors
     msgs.forM fun msg => msg.toString >>= IO.println
@@ -239,6 +230,19 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
   let insertion := header.raw.getTailPos?.getD parserState.pos
   let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
   pure (path, inputCtx, header, insertion)
+
+/-- Parse a source file to extract the location of the import lines, for edits and error messages.
+
+Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Parser.Module.header`
+and `endPos` is the position of the end of the header.
+-/
+def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
+    IO (System.FilePath × Parser.InputContext × TSyntax ``Parser.Module.header × String.Pos) := do
+  -- Parse the input file
+  let some path ← srcSearchPath.findModuleWithExt "lean" mod
+    | throw <| .userError "error: failed to find source file for {mod}"
+  let text ← IO.FS.readFile path
+  parseHeaderFromString text path.toString
 
 /-- Analyze and report issues from module `i`. Arguments:
 
@@ -628,3 +632,11 @@ def main (args : List String) : IO UInt32 := do
   else
     println! "No edits required."
   return 0
+
+-- self-test so that future grammar changes cause a build failure
+/-- info: #[`Lake.CLI.Main] -/
+#guard_msgs (whitespace := lax) in
+#eval show MetaM _ from do
+  let (_, _, header, _) ← parseHeaderFromString (← getFileMap).source (← getFileName)
+  let imports := header.raw[2].getArgs
+  return imports.map fun i => i[3].getId
