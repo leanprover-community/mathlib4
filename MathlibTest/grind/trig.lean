@@ -8,16 +8,6 @@ grind_pattern cos_sq_add_sin_sq => cos x
 grind_pattern cos_sq_add_sin_sq => sin x
 
 -- Whenever `grind` sees `cos` or `sin`, it adds `(cos x)^2 + (sin x)^2 = 1` to the blackboard.
--- That's a polynomial,import Mathlib
-
-set_option grind.warning false
-
-open Real
-
-grind_pattern cos_sq_add_sin_sq => cos x
-grind_pattern cos_sq_add_sin_sq => sin x
-
--- Whenever `grind` sees `cos` or `sin`, it adds `(cos x)^2 + (sin x)^2 = 1` to the blackboard.
 -- That's a polynomial, so it is sent to the Grobner basis module.
 -- And we can prove equalities modulo that relation!
 example : (cos x + sin x)^2 = 2 * cos x * sin x + 1 := by
