@@ -39,7 +39,7 @@ lemma wt_eq_zero_of_eq_const {f : F} {c : ℂ} (hf : ⇑f = Function.const _ c) 
     k = 0 ∨ c = 0 := by
   have hI := slash_action_eqn'' f (mem_Gamma_one S) I
   have h2I2 := slash_action_eqn'' f (mem_Gamma_one S) ⟨2 * Complex.I, by norm_num⟩
-  simp only [sl_moeb, hf, Function.const, denom_S, coe_mk_subtype] at hI h2I2
+  simp_rw [sl_moeb, hf, Function.const, denom_S, coe_mk_subtype] at hI h2I2
   nth_rw 1 [h2I2] at hI
   simp only [mul_zpow, coe_I, mul_eq_mul_right_iff, mul_left_eq_self₀] at hI
   refine hI.imp_left (Or.casesOn · (fun H ↦ ?_) (False.elim ∘ zpow_ne_zero k I_ne_zero))
