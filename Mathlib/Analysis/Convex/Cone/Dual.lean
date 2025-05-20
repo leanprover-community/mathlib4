@@ -73,7 +73,7 @@ def dual (s : Set M) : ProperCone R N where
 @[simp] lemma dual_empty : dual p ∅ = ⊤ := by ext; simp
 @[simp] lemma dual_zero : dual p 0 = ⊤ := by ext; simp
 
-@[simp] lemma dual_univ [T1Space N] : dual p univ = 0 := by
+@[simp] lemma dual_univ [T1Space N] : dual p univ = ⊥ := by
   refine le_antisymm (fun y hy ↦ (map_eq_zero_iff p.flip p.flip.injective).1 ?_) (by simp)
   ext x
   exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
