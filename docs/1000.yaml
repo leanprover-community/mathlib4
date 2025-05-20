@@ -471,6 +471,8 @@ Q505798:
 
 Q510197:
   title: Tutte theorem
+  decl: SimpleGraph.tutte
+  authors: Pim Otte
 
 Q512897:
   title: Brooks's theorem
