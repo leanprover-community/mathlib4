@@ -260,8 +260,6 @@ protected def FullyFaithful.rightOp {F : Cᵒᵖ ⥤ D} (hF : F.FullyFaithful) :
     F.rightOp.FullyFaithful where
   preimage {X Y} f := .unop <| hF.preimage f.unop
 
-
-
 /-- The isomorphism between `F.leftOp.rightOp` and `F`. -/
 @[simps!]
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
