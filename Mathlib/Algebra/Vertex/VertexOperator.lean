@@ -107,10 +107,8 @@ theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
   ext v
   rw [ncoeff, coeff_apply, of_coeff_apply_coeff]
 
-noncomputable instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) :=
-  {
-    one := (HahnModule.lof R (Γ := ℤ) (V := V)) ∘ₗ HahnSeries.single.linearMap (0 : ℤ)
-  }
+instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) :=
+  ⟨(HahnModule.lof R (Γ := ℤ) (V := V)) ∘ₗ HahnSeries.single.linearMap (0 : ℤ)⟩
 
 @[simp]
 theorem one_apply (x : V) :
@@ -250,10 +248,10 @@ open HVertexOperator
 
 /-- Two vertex operators commute if composition in the opposite order yields switched
 coefficients. This should be replaced with locality at order zero. -/
-def Commute : Prop := commutor_equiv (comp A B).coeff = (comp B A).coeff
+def Commute : Prop := commutor_equiv (lexComp A B).coeff = (lexComp B A).coeff
 
 lemma commute_symm : Commute A B ↔ Commute B A := by
-  simp only [Commute, commutor_equiv, comp, LinearEquiv.coe_mk]
+  simp only [Commute, commutor_equiv, lexComp, LinearEquiv.coe_mk]
   constructor
   · intro h
     ext g u

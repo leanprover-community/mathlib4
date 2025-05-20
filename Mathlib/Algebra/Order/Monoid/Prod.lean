@@ -127,10 +127,15 @@ instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCance
     (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
     (fun hxy => le_iff.2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
 
-@[to_additive]
-theorem LexEquiv_mul [PartialOrder α] [Monoid α] [PartialOrder β] [Monoid β] (x y : α ×ₗ β) :
-    LexEquiv α β (x * y) = LexEquiv α β x * LexEquiv α β y := by
-  simp [LexEquiv, ← toRevLex_mul]
+@[to_additive (attr := simp)]
+theorem lexEquiv_mul [PartialOrder α] [Monoid α] [PartialOrder β] [Monoid β] (x y : α ×ₗ β) :
+    lexEquiv α β (x * y) = lexEquiv α β x * lexEquiv α β y := by
+  simp [lexEquiv, ← toRevLex_mul]
+
+@[to_additive (attr := simp)]
+theorem lexEquiv_symm_mul [PartialOrder α] [Monoid α] [PartialOrder β] [Monoid β] (x y : α ×ᵣ β) :
+    (lexEquiv β α).symm (x * y) = (lexEquiv β α).symm x * (lexEquiv β α).symm y := by
+  simp [lexEquiv, OrderIso.symm, ← toLex_mul]
 
 end RevLex
 

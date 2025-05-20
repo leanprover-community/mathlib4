@@ -125,86 +125,105 @@ variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Par
   [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] [CommRing R] [AddCommGroup V] [Module R V]
   [AddCommGroup W] [Module R W]
 
-/-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
-def HahnSMul (x : HahnSeries Γ R) (A : HVertexOperator Γ₁ R V W) :
-    HVertexOperator Γ₁ R V W where
-  toFun v := x • (A v)
-  map_add' u v := by simp only [map_add, smul_add]
-  map_smul' r v := by
-    simp only [map_smul, RingHom.id_apply]
-    exact (HahnModule.smul_comm r x (A v)).symm
-
-instance instHahnModule : Module (HahnSeries Γ R) (HVertexOperator Γ₁ R V W) where
-  smul x A := HahnSMul x A
-  one_smul _ := by
-    ext _ _
-    simp only [one_smul]
-  mul_smul _ _ _ := by
-    ext _ _
-    simp only [LinearMap.smul_apply, mul_smul]
-  smul_zero _ := by
-    ext _ _
-    simp only [smul_zero, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.coeff_zero]
-  smul_add _ _ _ := by
-    ext _ _
-    simp only [smul_add, LinearMap.add_apply, LinearMap.smul_apply, HahnModule.of_symm_add,
-      HahnSeries.coeff_add', Pi.add_apply]
-  add_smul _ _ _ := by
-    ext _ _
-    simp only [coeff_apply, LinearMap.smul_apply, LinearMap.add_apply, HahnSeries.coeff_add']
-    rw [HahnModule.add_smul Module.add_smul]
-  zero_smul _ := by
-    ext _ _
-    simp only [zero_smul, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.coeff_zero]
+--#synth Module (HahnSeries Γ R) (HVertexOperator Γ₁ R V W) -- LinearMap.module
 
 @[simp]
 theorem smul_eq {x : HahnSeries Γ R} {A : HVertexOperator Γ₁ R V W} {v : V} :
     (x • A) v = x • (A v) :=
   rfl
 
-local instance {Γ' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
-    [Semiring R] (f : Γ ≃o Γ') (hf : ∀ (x y : Γ), f (x + y) = f x + f y) :
-    RingHomInvPair (HahnSeries.equivDomainRingHom (R := R) f hf).toRingHom
-      (HahnSeries.equivDomainRingHom f hf).symm.toRingHom where
-  comp_eq := by simp
-  comp_eq₂ := by simp
+@[simp]
+theorem single_zero_smul_eq_smul {r : R} {A : HVertexOperator Γ₁ R V W} :
+    (HahnSeries.single (0 : Γ)) r • A = r • A := by
+  ext
+  simp
 
-local instance {Γ' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
-    [Semiring R] (f : Γ ≃o Γ') (hf : ∀ (x y : Γ), f (x + y) = f x + f y) :
-    RingHomInvPair (HahnSeries.equivDomainRingHom (R := R) f hf).symm.toRingHom
-      (HahnSeries.equivDomainRingHom f hf).toRingHom where
-  comp_eq := by simp
-  comp_eq₂ := by simp
+section equivDomain
+
+variable {Γ' Γ₁' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
+[PartialOrder Γ₁'] [AddAction Γ' Γ₁']
+[IsOrderedCancelVAdd Γ' Γ₁'] (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) (f₁ : Γ₁ ≃o Γ₁')
+(hf₁ : ∀ x y, f₁ (x +ᵥ y) = f x +ᵥ f₁ y)
+
+open scoped HahnModule
 
 /-- An isomorphism of heterogeneous vertex operator spaces induced by ordered isomorphisms. -/
-def equivDomain {Γ' Γ₁' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
-    [PartialOrder Γ₁'] [AddAction Γ' Γ₁'] [IsOrderedCancelVAdd Γ' Γ₁'] (f : Γ ≃o Γ')
-    (hf : ∀ x y, f (x + y) = f x + f y) (f₁ : Γ₁ ≃o Γ₁') (hf₁ : ∀ x y, f₁ (x +ᵥ y) = f x +ᵥ f₁ y) :
+def equivDomain :
     HVertexOperator Γ₁ R V W ≃ₛₗ[(HahnSeries.equivDomainRingHom (Γ := Γ) (R := R) f hf).toRingHom]
       HVertexOperator Γ₁' R V W :=
   ((LinearEquiv.congrSemilinear (R := R) (M := V) (R₂ := HahnSeries Γ R) (M₂ := HahnModule Γ₁ R W)
     (σ₂ := HahnSeries.C) (by simp)).trans
     (LinearEquiv.semiCongrRight (HahnSeries.C) (σ₃ := HahnSeries.C)
-      (HahnModule.equivDomainModuleHom (R := R) (V := W) Γ₁ Γ₁' f hf f₁ hf₁))).trans
+      (HahnModule.equivDomainModuleHom (R := R) (V := W) f hf f₁ hf₁))).trans
     (LinearEquiv.congrSemilinear (R := R) (M := V) (R₂ := HahnSeries Γ' R)
       (M₂ := HahnModule Γ₁' R W) (σ₂ := HahnSeries.C) (by simp)).symm
 
 @[simp]
-theorem equivDomain_apply_apply {Γ' Γ₁' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ']
-    [IsOrderedCancelAddMonoid Γ'] [PartialOrder Γ₁'] [AddAction Γ' Γ₁'] [IsOrderedCancelVAdd Γ' Γ₁']
-    (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) (f₁ : Γ₁ ≃o Γ₁')
-    (hf₁ : ∀ x y, f₁ (x +ᵥ y) = f x +ᵥ f₁ y) (A : HVertexOperator Γ₁ R V W) (v : V) :
-    equivDomain f hf f₁ hf₁ A v = HahnModule.equivDomainModuleHom Γ₁ Γ₁' f hf f₁ hf₁ (A v) := by
+theorem equivDomain_apply_apply (A : HVertexOperator Γ₁ R V W) (v : V) :
+    equivDomain f hf f₁ hf₁ A v = HahnModule.equivDomainModuleHom f hf f₁ hf₁ (A v) := by
   simp [equivDomain]
 
 @[simp]
-theorem equivDomain_symm_apply_apply {Γ' Γ₁' : Type*} [PartialOrder Γ'] [AddCommMonoid Γ']
-    [IsOrderedCancelAddMonoid Γ'] [PartialOrder Γ₁'] [AddAction Γ' Γ₁'] [IsOrderedCancelVAdd Γ' Γ₁']
-    (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) (f₁ : Γ₁ ≃o Γ₁')
-    (hf₁ : ∀ x y, f₁ (x +ᵥ y) = f x +ᵥ f₁ y) (A : HVertexOperator Γ₁' R V W) (v : V) :
+theorem equivDomain_symm_apply_apply (A : HVertexOperator Γ₁' R V W) (v : V) :
     (equivDomain f hf f₁ hf₁).symm A v =
-      (HahnModule.equivDomainModuleHom Γ₁ Γ₁' f hf f₁ hf₁).symm (A v) := by
+      (HahnModule.equivDomainModuleHom f hf f₁ hf₁).symm (A v) := by
   simp [equivDomain]
+
+@[simp]
+theorem equivDomain_smul (x : HahnSeries Γ R) (A : HVertexOperator Γ₁ R V W) :
+    equivDomain f hf f₁ hf₁ (x • A) =
+      (HahnSeries.equivDomainRingHom f hf x) • equivDomain f hf f₁ hf₁ A := by
+  ext
+  simp [equivDomain, LinearEquiv.map_smulₛₗ]
+-- add symm
+
+@[simp]
+theorem equivDomain_base_smul (r : R) (A : HVertexOperator Γ₁ R V W) :
+    equivDomain f hf f₁ hf₁ (r • A) = r • equivDomain f hf f₁ hf₁ A := by
+  have : r • A = (HahnSeries.C (R := R) (Γ := Γ) r) • A := by
+    rw [HahnSeries.C_apply, single_zero_smul_eq_smul]
+  rw [this, equivDomain_smul]
+  have hf0 : f 0 = f 0 + f 0 := by rw [← hf, zero_add]
+  simp [left_eq_add.mp hf0]
+
+/-- The Hahn-semilinear isomorphism between heterogeneous vertex operators on a Lex product and
+heterogeneous vertex operators on a RevLex product. -/
+def lexRevEquiv : HVertexOperator (Γ₁' ×ₗ Γ₁) R V W ≃ₛₗ[(HahnSeries.equivDomainRingHom (R := R)
+    (Prod.RevLex.lexEquiv Γ' Γ) Prod.RevLex.lexEquiv_add).toRingHom]
+    HVertexOperator (Γ₁ ×ᵣ Γ₁') R V W :=
+  equivDomain (R := R) (V := V) (W := W) (Prod.RevLex.lexEquiv Γ' Γ) Prod.RevLex.lexEquiv_add
+    (Prod.RevLex.lexEquiv Γ₁' Γ₁) Prod.RevLex.lexEquiv_vadd
+
+@[simp]
+theorem lexRevEquiv_apply_apply_coeff (A : HVertexOperator (Γ₁' ×ₗ Γ₁) R V W) (v : V)
+    (g : Γ₁' ×ₗ Γ₁) :
+    ((HahnModule.of R).symm (A.lexRevEquiv (Γ := Γ) (Γ' := Γ') v)).coeff
+      (Prod.RevLex.lexEquiv Γ₁' Γ₁ g) =
+        ((HahnModule.of R).symm (A v)).coeff g := by
+  rfl
+
+@[simp]
+theorem lexRevEquiv_symm_apply_apply_coeff (A : HVertexOperator (Γ₁ ×ᵣ Γ₁') R V W) (v : V)
+    (g : Γ₁ ×ᵣ Γ₁') :
+    ((HahnModule.of R).symm ((lexRevEquiv (Γ := Γ) (Γ' := Γ')).symm A v)).coeff
+      ((Prod.RevLex.lexEquiv Γ₁' Γ₁).symm g) =
+        ((HahnModule.of R).symm (A v)).coeff g := by
+  rfl
+
+@[simp]
+theorem lexRevEquiv_base_smul (A : HVertexOperator (Γ₁' ×ₗ Γ₁) R V W) (r : R) :
+    lexRevEquiv (Γ := Γ) (Γ' := Γ') (r • A) = r • lexRevEquiv (Γ := Γ) (Γ' := Γ') A := by
+  ext g v
+  simp only [RingEquiv.toRingHom_eq_coe, lexRevEquiv]
+  rw [equivDomain_base_smul]
+
+def lexRevEquiv_base :
+    HVertexOperator (Γ₁' ×ₗ Γ₁) R V W ≃ₗ[R] HVertexOperator (Γ₁ ×ᵣ Γ₁') R V W :=
+  (LinearEquiv.restrictScalarsSemi (HahnSeries.equivDomainRingHom (R := R)
+    (Prod.RevLex.lexEquiv Γ' Γ) Prod.RevLex.lexEquiv_add).toRingHom)
+    (fun r A ↦ lexRevEquiv_base_smul A r)
+
+end equivDomain
 
 end  Module
 
@@ -256,55 +275,50 @@ variable {Γ Γ' : Type*} [PartialOrder Γ] [PartialOrder Γ₁] {R : Type*}
 
 open HahnModule
 
-/-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
-  series. -/
-@[simps]
-def compHahnSeries (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (u : U) :
-    HahnSeries Γ₁ (HahnSeries Γ W) where
-  coeff g' := (HahnModule.of R).symm (A (coeff B g' u))
-  isPWO_support' := by
-    refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
-    simp_all only [coeff_apply, Function.support_subset_iff, ne_eq, Function.mem_support]
-    exact fun g' hg' hAB => hg' (by simp [hAB])
+theorem lexComp_support_isPWO (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V)
+    (u : U) :
+    (fun x ↦ (fun (g : Γ₁ ×ₗ Γ) ↦
+      A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1) x u).support.IsPWO := by
+  refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
+  · refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
+    simp only [Set.image_subset_iff, Function.support_subset_iff, Set.mem_preimage,
+      Function.mem_support, Lex.forall, ofLex_toLex, Prod.forall]
+    intro _ _ h
+    contrapose! h
+    simp [h]
+  · intro g₁
+    simp only [Function.mem_support, ofLex_toLex]
+    exact HahnSeries.isPWO_support _
 
-@[simp]
-theorem compHahnSeries.add (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (u v : U) :
-    compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
-  ext
-  simp only [compHahnSeries_coeff, HahnModule.of_symm_add, map_add, coeff_apply,
-    HahnSeries.coeff_add', Pi.add_apply]
-
-@[simp]
-theorem compHahnSeries.smul (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (r : R)
-    (u : U) : compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
-  ext
-  rw [HahnSeries.coeff_smul]
-  simp only [compHahnSeries_coeff, HahnModule.of_symm_smul, LinearMapClass.map_smul, coeff_apply]
-
-/-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
-@[simps]
-def comp (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) :
+/-- The bilinear composition of two heterogeneous vertex operators, yielding a heterogeneous vertex
+operator on the Lex product. -/
+def lexComp : HVertexOperator Γ R V W →ₗ[R] HVertexOperator Γ₁ R U V →ₗ[R]
     HVertexOperator (Γ₁ ×ₗ Γ) R U W where
-  toFun u := HahnModule.of R (HahnSeries.ofIterate (compHahnSeries A B u))
-  map_add' u v := by
-    ext g
-    simp only [HahnSeries.ofIterate, compHahnSeries.add, Equiv.symm_apply_apply,
-      HahnModule.of_symm_add, HahnSeries.coeff_add', Pi.add_apply]
-  map_smul' r x := by
-    ext g
-    simp only [HahnSeries.ofIterate, compHahnSeries.smul, Equiv.symm_apply_apply, RingHom.id_apply,
-      HahnSeries.coeff_smul, compHahnSeries_coeff, coeff_apply]
-    exact rfl
+  toFun A := {
+    toFun B :=
+      of_coeff (fun g ↦ (coeff A (ofLex g).2) ∘ₗ (coeff B (ofLex g).1))
+        (fun u ↦ lexComp_support_isPWO A B u)
+    map_add' _ _ := by ext; simp
+    map_smul' _ _ := by ext; simp}
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 @[simp]
-theorem comp_coeff (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (g : Γ₁ ×ₗ Γ) :
-    (comp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
+theorem lexComp_apply_apply_coeff (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V)
+    (g : Γ₁ ×ₗ Γ) :
+    (lexComp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
   rfl
 
-/-!
-def toRevLex (A : HVertexOperator (Γ₁ ×ₗ Γ) R V W) : HVertexOperator (Γ ×ᵣ Γ₁) R V W :=
-  LinearMap.comp (HahnModule.RevEquiv (Γ := Γ) (R := R)) A
--/
+/-- The bilinear composition of two heterogeneous vertex operators, yielding a heterogeneous vertex
+operator on the RevLex product. -/
+def revLexComp [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [AddCommMonoid Γ₁]
+    [IsOrderedCancelAddMonoid Γ₁] : HVertexOperator Γ R V W →ₗ[R] HVertexOperator Γ₁ R U V →ₗ[R]
+      HVertexOperator (Γ ×ᵣ Γ₁) R U W :=
+  LinearMap.compr₂ (lexComp (Γ := Γ) (Γ₁ := Γ₁) (U := U) (V := V) (W := W))
+    ((LinearEquiv.restrictScalarsSemi (HahnSeries.equivDomainRingHom (R := R)
+    (Prod.RevLex.lexEquiv Γ₁ Γ) Prod.RevLex.lexEquiv_add).toRingHom)
+    (fun r (A : HVertexOperator (Γ₁ ×ₗ Γ) R U W) ↦ lexRevEquiv_base_smul A r))
+
 -- TODO: comp_assoc
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the left
@@ -333,22 +347,24 @@ theorem coeff_left_lex_supp.isPWO (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the right
 factor. -/
-def ResRight (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) : HVertexOperator Γ R V W :=
+def LexResRight (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) : HVertexOperator Γ R V W :=
   HVertexOperator.of_coeff (fun g => coeff A (toLex (g, g')))
     (fun v => coeff_left_lex_supp.isPWO A g' v)
 
 theorem coeff_ResRight (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) (g : Γ) :
-    coeff (ResRight A g') g = coeff A (toLex (g, g')) := rfl
+    coeff (LexResRight A g') g = coeff A (toLex (g, g')) := rfl
 
 /-- The right residue as a linear map. -/
 @[simps]
 def ResRight.linearMap (g' : Γ₁) :
     HVertexOperator (Γ ×ₗ Γ₁) R V W →ₗ[R] HVertexOperator Γ R V W where
-  toFun A := ResRight A g'
+  toFun A := LexResRight A g'
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 end Products
+
+end HVertexOperator
 
 section PiLex -- Order.PiLex
 -- use Prod.swap?
@@ -441,17 +457,7 @@ theorem revLex_basis_lt : (toRevLex (1, 0) : ℤ ×ᵣ ℤ) < (toRevLex (0, 1) :
 
 end PiLex
 
-section RevLex
-
-open Prod.RevLex HahnSeries
-
-/-- An equivalence between Lex-valued Hahn series and RevLex-valued Hahn series. -/
-def RevLexEquiv (Γ Γ') [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
-    [PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ'] [Semiring R]:
-    HahnSeries (Γ' ×ₗ Γ) R ≃+* HahnSeries (Γ ×ᵣ Γ') R :=
-    equivDomainRingHom (R := R) (LexEquiv Γ' Γ) (LexEquiv_add)
-
-end RevLex
+namespace HVertexOperator
 
 section binomialPow
 
@@ -541,6 +547,8 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
 
 end binomialPow
 
+end HVertexOperator
+
 section HStateField
 
 variable (Γ R U₀ U₁ U₂ V W : Type*) [CommRing R] [AddCommGroup U₀] [Module R U₀] [AddCommGroup U₁]
@@ -553,6 +561,44 @@ heterogeneous fields (or vertex operators) from `V` to `W`.  Equivalently, it is
 vertex algebra has this form, but in other cases, we use this for module structures and intertwining
 operators. -/
 abbrev HStateFieldMap [PartialOrder Γ] := U₀ →ₗ[R] HVertexOperator Γ R V W
+
+namespace HStateField
+
+section
+
+variable {Γ' Γ₁ Γ₁' : Type*} [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+[PartialOrder Γ'] [AddCommMonoid Γ'] [IsOrderedCancelAddMonoid Γ']
+[PartialOrder Γ₁] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] [PartialOrder Γ₁'] [AddAction Γ' Γ₁']
+[IsOrderedCancelVAdd Γ' Γ₁'] (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) (f₁ : Γ₁ ≃o Γ₁')
+(hf₁ : ∀ x y, f₁ (x +ᵥ y) = f x +ᵥ f₁ y)
+
+open scoped HahnModule
+
+def equivDomain :
+    HStateFieldMap Γ₁ R U₀ V W ≃ₛₗ[(HahnSeries.equivDomainRingHom (Γ := Γ) (R := R) f hf).toRingHom]
+      HStateFieldMap Γ₁' R U₀ V W :=
+  ((LinearEquiv.congrSemilinear (R := R) (M := U₀) (R₂ := HahnSeries Γ R)
+    (M₂ := HVertexOperator Γ₁ R V W) (σ₂ := HahnSeries.C) (by simp)).trans
+    (LinearEquiv.semiCongrRight (HahnSeries.C) (σ₃ := HahnSeries.C)
+      (HVertexOperator.equivDomain (R := R) (V := V) f hf f₁ hf₁))).trans
+    (LinearEquiv.congrSemilinear (R := R) (M := U₀) (R₂ := HahnSeries Γ' R)
+      (M₂ := HVertexOperator Γ₁' R V W) (σ₂ := HahnSeries.C) (by simp)).symm
+
+@[simp]
+theorem equivDomain_apply_apply (Y : HStateFieldMap Γ₁ R U₀ V W) (u : U₀) (v : V) :
+    equivDomain Γ R U₀ V W f hf f₁ hf₁ Y u v =
+      HahnModule.equivDomainModuleHom f hf f₁ hf₁ (Y u v) := by
+  dsimp [equivDomain]
+  rw [HVertexOperator.equivDomain_apply_apply]
+
+@[simp]
+theorem equivDomain_symm_apply_apply (Y : HStateFieldMap Γ₁' R U₀ V W) (u : U₀) (v : V) :
+    (equivDomain Γ R U₀ V W f hf f₁ hf₁).symm Y u v =
+      (HahnModule.equivDomainModuleHom f hf f₁ hf₁).symm (Y u v) := by
+  dsimp [equivDomain]
+  rw [HVertexOperator.equivDomain_symm_apply_apply]
+
+end
 
 theorem compLeft_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R V U₂ W)
     (x : HahnModule Γ₁ R V) (u₂ : U₂) :
@@ -628,13 +674,17 @@ def compRight [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-theorem compRight_eq_comp [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
+theorem compRight_eq_lexComp [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStateFieldMap Γ R U₀ V W)
     (Y₂ : HStateFieldMap Γ₁ R U₁ U₂ V) (u₀ : U₀) (u₁ : U₁) (u₂ : U₂) :
-    compRight R U₀ U₁ U₂ V W Y₁ Y₂ u₀ u₁ u₂ = comp (Y₁ u₀) (Y₂ u₁) u₂ := by
+    compRight R U₀ U₁ U₂ V W Y₁ Y₂ u₀ u₁ u₂ = HVertexOperator.lexComp (Y₁ u₀) (Y₂ u₁) u₂ := by
   ext
-  simp [compRight, HahnSeries.ofIterate]
+  simp [compRight, HVertexOperator.lexComp]
 
 end HStateField
+
+end HStateField
+
+namespace HVertexOperator
 
 -- Can I just use `curry` to say this is a HVertexOperator Γ R (U ⊗[R] V) W?  So, the multiplication
 -- in a vertex algebra is just HVertexOperator ℤ R (V ⊗[R] V) V?

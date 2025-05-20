@@ -35,7 +35,7 @@ def IsCentral : Prop :=
 /-- `Extension`s are equivalent iff there is a homomorphism making a commuting diagram. -/
 structure Equiv {L' : Type*} [LieRing L'] [LieAlgebra R L'] (S' : Extension R N M) where
   /-- The homomorphism -/
-  toLieHom : S.L →ₗ⁅R⁆ S'.L
+  toLieHom : S.L ≃ₗ⁅R⁆ S'.L
   /-- The left-hand side of the diagram commutes. -/
   incl_comm : toLieHom.comp S.incl = S'.incl
   /-- The right-hand side of the diagram commutes. -/
@@ -63,7 +63,8 @@ section TwoCocycleTriv
 
 variable [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V)
 
-lemma isCentral_ofTwoCocycleTriv : IsCentral (Extension.ofTwoCocycleTriv c) := by
+lemma isCentral_ofTwoCocycleTriv :
+    IsCentral (Extension.ofTwoCocycleTriv c) := by
   dsimp only [IsCentral]
   rw [LieModule.trivial_iff_le_maximal_trivial]
   intro x hx
@@ -72,7 +73,7 @@ lemma isCentral_ofTwoCocycleTriv : IsCentral (Extension.ofTwoCocycleTriv c) := b
   simp_all only [IsExtension.extension_L, IsExtension.extension_instLieRing,
     IsExtension.extension_instLieAlgebra, IsExtension.extension_proj, bracket_ofTwoCocycleTriv]
   rw [show x = (x.1, x.2) by rfl, twoCocycleTrivProj] at hx
-  simp [show x.1 = 0 by exact hx]
+  simp [show x.1 = 0 by exact hx, Prod.mk_zero_zero]
 
 end TwoCocycleTriv
 

@@ -524,4 +524,25 @@ theorem coe_ofInvolutive {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomIn
 
 end AddCommMonoid
 
+variable [Semiring R] [CommSemiring R₂] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
+[Module R M₂] [Module R₂ M₂] [SMulCommClass R R₂ M₂]
+
+/-- Linear maps to a module for a larger ring are the same as semilinear maps along the ring
+homomorphism. -/
+@[simps!]
+def congrSemilinear {σ₂ : R →+* R₂} (h : ∀ (r : R) (x : M₂), (σ₂ r) • x = r • x) :
+    (M →ₗ[R] M₂) ≃ₗ[R₂] (M →ₛₗ[σ₂] M₂) where
+  toFun f := {
+    toFun x := f x
+    map_add' x y := by simp
+    map_smul' r x := by simp [h] }
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+  invFun f := {
+    toFun x := f x
+    map_add' _ _ := by simp
+    map_smul' _ _ := by simp [h] }
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
 end LinearEquiv

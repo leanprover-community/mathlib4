@@ -177,7 +177,7 @@ instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : Part
       · exact ofRevLex_inj.mp <| Prod.ext_iff.mpr ⟨le_antisymm h₂ h₄, h₁⟩
 
 /-- An order equivalence between a lex product and a reverse lex product with inputs switched. -/
-def LexEquiv (α β : Type*) [PartialOrder α] [PartialOrder β] : α ×ₗ β ≃o β ×ᵣ α where
+def lexEquiv (α β : Type*) [PartialOrder α] [PartialOrder β] : α ×ₗ β ≃o β ×ᵣ α where
   toFun a := toRevLex ⟨(ofLex a).2, (ofLex a).1⟩
   invFun a := toLex ⟨(ofRevLex a).2, (ofRevLex a).1⟩
   left_inv := congrFun rfl
@@ -187,19 +187,19 @@ def LexEquiv (α β : Type*) [PartialOrder α] [PartialOrder β] : α ×ₗ β �
     simp [le_iff, Lex.le_iff]
 
 theorem LexEquiv_le (α β : Type*) [PartialOrder α] [PartialOrder β] (a b : α ×ₗ β) :
-    LexEquiv α β a ≤ LexEquiv α β b ↔ a ≤ b :=
-  OrderIso.le_iff_le (LexEquiv α β)
+    lexEquiv α β a ≤ lexEquiv α β b ↔ a ≤ b :=
+  OrderIso.le_iff_le (lexEquiv α β)
 
 theorem LexEquiv_symm_le (α β : Type*) [PartialOrder α] [PartialOrder β] (a b : β ×ᵣ α) :
-    (LexEquiv α β).symm a ≤ (LexEquiv α β).symm b ↔ a ≤ b :=
-  (OrderIso.le_iff_le (LexEquiv α β)).symm
+    (lexEquiv α β).symm a ≤ (lexEquiv α β).symm b ↔ a ≤ b :=
+  (OrderIso.le_iff_le (lexEquiv α β)).symm
 
 instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ᵣ β) where
   le_total x y := by
     rw [← LexEquiv_symm_le, ← LexEquiv_symm_le]
-    exact LinearOrder.le_total ((LexEquiv β α).symm x) ((LexEquiv β α).symm y)
+    exact LinearOrder.le_total ((lexEquiv β α).symm x) ((lexEquiv β α).symm y)
   toDecidableLE x y := by
     rw [← LexEquiv_symm_le]
-    exact Lex.instDecidableRelOfDecidableEq ((LexEquiv β α).symm x) ((LexEquiv β α).symm y)
+    exact Lex.instDecidableRelOfDecidableEq ((lexEquiv β α).symm x) ((lexEquiv β α).symm y)
 
 end Prod.RevLex

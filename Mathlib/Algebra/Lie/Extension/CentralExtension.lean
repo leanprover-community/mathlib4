@@ -68,7 +68,7 @@ lemma central_of_central_extension (f : M →ₗ⁅R⁆ L) [IsCentralExtension f
 /-- A module-splitting is a surjective Lie algebra homomorphism equipped with a linear isomorphism
 from the source to the direct sum of the kernel and the target. This should be revised to the usual
 notion of splitting of a surjection. -/
-class ModuleSplitting (f : M →ₗ⁅R⁆ L) where
+structure ModuleSplitting (f : M →ₗ⁅R⁆ L) where
 /-- The map `f` is surjective. -/
   protected surjective : Prop := Function.Surjective f
 /-- The source splits as an `R`-module. -/

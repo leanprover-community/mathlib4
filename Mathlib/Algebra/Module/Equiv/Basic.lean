@@ -59,6 +59,36 @@ theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
 
 end RestrictScalars
 
+section RestrictScalarsSemi
+
+variable {S S₂ : Type*} [Semiring S] [Semiring S₂] [Module R M] [Module R M₂] [Module S M]
+[Module S₂ M₂] (e : S →+* S₂) {e' : S₂ →+* S} [RingHomInvPair e e'] [RingHomInvPair e' e]
+
+/-- If `M` and `M₂` are both `R`-modules and modules for `S` and `S₂`, respectively, then for any
+ring isomorphism `e` between `S` and `S₂` and any `e`-semilinear equivalence between `M` and `M₂`
+that respects the `R`-action, we obtain an `R`-linear equivalence between `M` and `M₂`. -/
+@[simps]
+def restrictScalarsSemi {f : M ≃ₛₗ[e] M₂} (hf : ∀ (r : R) (x : M), f (r • x) = r • f x) :
+    M ≃ₗ[R] M₂ where
+  toFun := f
+  map_add' := LinearEquiv.map_add f
+  map_smul' := hf
+  invFun := f.symm
+  left_inv := symm_apply_apply f
+  right_inv := apply_symm_apply f
+
+--  ext (LinearEquiv.congr_fun h :)
+
+@[simp]
+theorem restrictScalarsSemi_inj {f g : M ≃ₛₗ[e] M₂} (hf : ∀ (r : R) (x : M), f (r • x) = r • f x)
+(hg : ∀ (r : R) (x : M), g (r • x) = r • g x) :
+    restrictScalarsSemi e hf = restrictScalarsSemi e hg ↔ f = g := by
+  simp only [restrictScalarsSemi, mk.injEq, LinearMap.mk.injEq, AddHom.mk.injEq, DFunLike.coe_fn_eq,
+    and_iff_left_iff_imp]
+  exact fun a ↦ congrArg symm a
+
+end RestrictScalarsSemi
+
 theorem _root_.Module.End.isUnit_iff [Module R M] (f : Module.End R M) :
     IsUnit f ↔ Function.Bijective f :=
   ⟨fun h ↦
@@ -508,7 +538,8 @@ variable {σ₁₄ : R₁ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁
 
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives an
 additive isomorphism between the two function spaces. This is the semilinear version. -/
-@[simps] def arrowSemiCongrAddEquiv (e₁ : M₁ ≃ₛₗ[σ₁₃] M₃) (e₂ : M₂ ≃ₛₗ[σ₂₄] M₄) :
+@[simps]
+def arrowSemiCongrAddEquiv (e₁ : M₁ ≃ₛₗ[σ₁₃] M₃) (e₂ : M₂ ≃ₛₗ[σ₂₄] M₄) :
     (M₁ →ₛₗ[σ₁₂] M₂) ≃+ (M₃ →ₛₗ[σ₃₄] M₄) where
   toFun f := e₂.comp (f.comp e₁.symm.toLinearMap)
   invFun f := e₂.symm.comp (f.comp e₁.toLinearMap)
@@ -613,7 +644,7 @@ def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ
 
 omit [Module R M₂] [Module R M₃] in
 /-- A semilinear isomorphism between two modules `M₂` and `M₃` induces a semilinear
-isomorphism between linear map spaces from a common source, if the actions of the various rings
+isomorphism between semilinear map spaces from a common source, if the actions of the various rings
 on target spaces commute. -/
 def semiCongrRight {R₂ R₃} [CommSemiring R₂] [CommSemiring R₃] (σ₂ : R →+* R₂) {σ₃ : R →+* R₃}
     {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} {re₂₃ : RingHomInvPair σ₂₃ σ₃₂}
@@ -643,24 +674,39 @@ theorem semiCongrRight_symm_apply_apply {R₂ R₃} [CommSemiring R₂] [CommSem
     (semiCongrRight σ₂ e).symm f x = e.symm (f x) := by
   rfl
 
-/-- Linear maps to a module for a larger ring are the same as semilinear maps along the ring
-homomorphism. -/
-@[simps!]
-def congrSemilinear {R₂} [CommSemiring R₂] {σ₂ : R →+* R₂} [Module R₂ M₂]
-    [SMulCommClass R R₂ M₂] (h : ∀ (r : R) (x : M₂), (σ₂ r) • x = r • x) :
-    (M →ₗ[R] M₂) ≃ₗ[R₂] (M →ₛₗ[σ₂] M₂) where
-  toFun f := {
-    toFun x := f x
-    map_add' x y := by simp
-    map_smul' r x := by simp [h] }
-  map_add' _ _ := by ext; simp
-  map_smul' _ _ := by ext; simp
-  invFun f := {
-    toFun x := f x
-    map_add' _ _ := by simp
-    map_smul' _ _ := by simp [h] }
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
+/-- A semilinear isomorphism between two modules `M₂` and `M₃` induces a semilinear
+isomorphism between linear map spaces from a common source, if the actions of the various rings
+on target spaces commute. -/
+def congrSemiRight {R₂ R₃} [CommSemiring R₂] [CommSemiring R₃] (σ₂ : R →+* R₂) {σ₃ : R →+* R₃}
+    {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} {re₂₃ : RingHomInvPair σ₂₃ σ₃₂}
+    {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomCompTriple σ₃ σ₃₂ σ₂] [RingHomCompTriple σ₂ σ₂₃ σ₃]
+    [Module R₂ M₂] [Module R₃ M₃] [SMulCommClass R R₂ M₂] [SMulCommClass R R₃ M₃]
+    (h₂ : ∀ (r : R) (x : M₂), (σ₂ r) • x = r • x) (h₃ : ∀ (r : R) (x : M₃), (σ₃ r) • x = r • x)
+    (e : M₂ ≃ₛₗ[σ₂₃] M₃) :
+    (M →ₗ[R] M₂) ≃ₛₗ[σ₂₃] (M →ₗ[R] M₃) :=
+  ((congrSemilinear (R := R) (M := M) (R₂ := R₂) h₂).trans
+    (semiCongrRight σ₂ (σ₃ := σ₃) (σ₂₃ := σ₂₃) e)).trans
+    (congrSemilinear (R := R) (M := M) (R₂ := R₃) h₃).symm
+
+@[simp]
+theorem congrSemiRight_apply_apply {R₂ R₃} [CommSemiring R₂] [CommSemiring R₃] {σ₂ : R →+* R₂}
+    {σ₃ : R →+* R₃} {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} {re₂₃ : RingHomInvPair σ₂₃ σ₃₂}
+    {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomCompTriple σ₃ σ₃₂ σ₂] [RingHomCompTriple σ₂ σ₂₃ σ₃]
+    [Module R₂ M₂] [Module R₃ M₃] [SMulCommClass R R₂ M₂] [SMulCommClass R R₃ M₃]
+    (h₂ : ∀ (r : R) (x : M₂), (σ₂ r) • x = r • x) (h₃ : ∀ (r : R) (x : M₃), (σ₃ r) • x = r • x)
+    (e : M₂ ≃ₛₗ[σ₂₃] M₃) (f : M →ₗ[R] M₂) (x : M) :
+    congrSemiRight σ₂ h₂ h₃ e f x = e (f x) := by
+  rfl
+
+@[simp]
+theorem congrSemiRight_symm_apply_apply {R₂ R₃} [CommSemiring R₂] [CommSemiring R₃] {σ₂ : R →+* R₂}
+    {σ₃ : R →+* R₃} {σ₂₃ : R₂ →+* R₃} {σ₃₂ : R₃ →+* R₂} {re₂₃ : RingHomInvPair σ₂₃ σ₃₂}
+    {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomCompTriple σ₃ σ₃₂ σ₂] [RingHomCompTriple σ₂ σ₂₃ σ₃]
+    [Module R₂ M₂] [Module R₃ M₃] [SMulCommClass R R₂ M₂] [SMulCommClass R R₃ M₃]
+    (h₂ : ∀ (r : R) (x : M₂), (σ₂ r) • x = r • x) (h₃ : ∀ (r : R) (x : M₃), (σ₃ r) • x = r • x)
+    (e : M₂ ≃ₛₗ[σ₂₃] M₃) (f : M →ₗ[R] M₃) (x : M) :
+    (congrSemiRight σ₂ h₂ h₃ e).symm f x = e.symm (f x) := by
+  rfl
 
 /-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
 themselves are linearly isomorphic.
