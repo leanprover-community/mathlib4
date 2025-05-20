@@ -165,17 +165,24 @@ lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
           have hL : f =ᶠ[nhds z] (fun z => (fun z ↦ (z - z₀) ^ n • g z) z) := sorry
           have := Filter.EventuallyEq.deriv_eq hL
           simp only [mem_inter_iff] at Hz
-          rw [this]
-  }
+          rw [this]}
 
 #check order_gt_zero_then_deriv_n_neg_1
 lemma order_geq_k_then_deriv_n_neg_1 (k : ℕ) (f : ℂ → ℂ)
    (hf : AnalyticAt ℂ f z₀) (hfdev : AnalyticAt ℂ (deriv f) z₀) :
-   (∀ z : ℂ, k ≤ hf.order) → hfdev.order = (n - k : ℕ) := by {
-    intros hof
+   (k ≤ hf.order) → n > 0 → (AnalyticAt.deriv hf).order = (n - k : ℕ) := by {
+    intros horder hn
     induction' k with k hk
-    · sorry
-    · sorry
+    · simp only [tsub_zero]
+      sorry
+      --rw [le_iff_eq_or_lt] at horder
+      --cases' horder with horder1 horder2
+
+
+
+
+    · simp only [ENat.coe_sub, Nat.cast_add, Nat.cast_one]
+      sorry
 
 
 
