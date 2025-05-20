@@ -45,7 +45,7 @@ open scoped Matrix
 /-- A matrix `M : Matrix n n R` is positive semidefinite if it is Hermitian and `xᴴ * M * x` is
 nonnegative for all `x`. -/
 def PosSemidef (M : Matrix n n R) :=
-  M.IsHermitian ∧ ∀ x : n → R, 0 ≤ dotProduct (star x) (M *ᵥ x)
+  M.IsHermitian ∧ ∀ x : n → R, 0 ≤ star x ⬝ᵥ (M *ᵥ x)
 
 protected theorem PosSemidef.diagonal [StarOrderedRing R] [DecidableEq n] {d : n → R} (h : 0 ≤ d) :
     PosSemidef (diagonal d) :=
@@ -65,7 +65,7 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosSemidef) : M.IsHermitian :=
   hM.1
 
 theorem re_dotProduct_nonneg {M : Matrix n n 𝕜} (hM : M.PosSemidef) (x : n → 𝕜) :
-    0 ≤ RCLike.re (dotProduct (star x) (M *ᵥ x)) :=
+    0 ≤ RCLike.re (star x ⬝ᵥ (M *ᵥ x)) :=
   RCLike.nonneg_iff.mp (hM.2 _) |>.1
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
@@ -170,6 +170,11 @@ protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
   (hA.re_dotProduct_nonneg _).trans_eq (hA.1.eigenvalues_eq _).symm
+
+theorem det_nonneg [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
+    0 ≤ M.det := by
+  rw [hM.isHermitian.det_eq_prod_eigenvalues]
+  exact Finset.prod_nonneg fun i _ ↦ by simpa using hM.eigenvalues_nonneg i
 
 section sqrt
 
@@ -362,9 +367,9 @@ theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
 -/
 
 /-- A matrix `M : Matrix n n R` is positive definite if it is hermitian
-   and `xᴴMx` is greater than zero for all nonzero `x`. -/
+and `xᴴMx` is greater than zero for all nonzero `x`. -/
 def PosDef (M : Matrix n n R) :=
-  M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < dotProduct (star x) (M *ᵥ x)
+  M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < star x ⬝ᵥ (M *ᵥ x)
 
 namespace PosDef
 
@@ -372,7 +377,7 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
   hM.1
 
 theorem re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
-    0 < RCLike.re (dotProduct (star x) (M *ᵥ x)) :=
+    0 < RCLike.re (star x ⬝ᵥ (M *ᵥ x)) :=
   RCLike.pos_iff.mp (hM.2 _ hx) |>.1
 
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
@@ -410,7 +415,7 @@ theorem _root_.Matrix.posDef_diagonal_iff
   refine ⟨fun h i => ?_, .diagonal⟩
   have := h.2 (Pi.single i 1)
   simp_rw [mulVec_single_one, ← Pi.single_star, star_one, single_dotProduct, one_mul,
-    transpose_apply, diagonal_apply_eq, Function.ne_iff] at this
+    col_apply, diagonal_apply_eq, Function.ne_iff] at this
   exact this ⟨i, by simp⟩
 
 protected theorem one [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R] :
@@ -586,7 +591,7 @@ variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
-    { inner := fun x y => dotProduct (M *ᵥ y) (star x)
+    { inner := fun x y => (M *ᵥ y) ⬝ᵥ star x
       conj_inner_symm := fun x y => by
         rw [dotProduct_comm, star_dotProduct, starRingEnd_apply, star_star,
           star_mulVec, dotProduct_comm (M *ᵥ y), dotProduct_mulVec, hM.isHermitian.eq]
@@ -594,7 +599,7 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
         by_cases h : x = 0
         · simp [h]
         · exact (dotProduct_comm _ (M *ᵥ x) ▸ hM.re_dotProduct_pos h).le
-      definite := fun x (hx : dotProduct _ _ = 0) => by
+      definite := fun x (hx : _ ⬝ᵥ _ = 0) => by
         by_contra! h
         simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h
       add_left := by simp only [star_add, dotProduct_add, eq_self_iff_true, forall_const]

@@ -222,6 +222,11 @@ theorem extend_range {a b : X} (γ : Path a b) :
     range γ.extend = range γ :=
   IccExtend_range _ γ
 
+theorem image_extend_of_subset (γ : Path x y) {s : Set ℝ} (h : I ⊆ s) :
+    γ.extend '' s = range γ :=
+  (γ.extend_range ▸ image_subset_range _ _).antisymm <| range_subset_iff.mpr <| fun t ↦
+    ⟨t, h t.2, extend_extends' _ _⟩
+
 theorem extend_of_le_zero {a b : X} (γ : Path a b) {t : ℝ}
     (ht : t ≤ 0) : γ.extend t = a :=
   (IccExtend_of_le_left _ _ ht).trans γ.source
@@ -287,53 +292,38 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
   · refine congr_arg _ (Subtype.ext ?_)
     norm_num [sub_sub_eq_add_sub, mul_sub]
   · refine congr_arg _ (Subtype.ext ?_)
-    norm_num [mul_sub, h]
-    ring -- TODO norm_num should really do this
+    simp only [coe_symm_eq]
+    ring
   · exfalso
     linarith
+
+theorem extend_trans_of_le_half (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} (ht : t ≤ 1 / 2) :
+    (γ₁.trans γ₂).extend t = γ₁.extend (2 * t) := by
+  obtain _ | ht₀ := le_total t 0
+  · repeat rw [extend_of_le_zero _ (by linarith)]
+  · rwa [extend_extends _ ⟨ht₀, by linarith⟩, trans_apply, dif_pos, extend_extends]
+
+theorem extend_trans_of_half_le (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} (ht : 1 / 2 ≤ t) :
+    (γ₁.trans γ₂).extend t = γ₂.extend (2 * t - 1) := by
+  conv_lhs => rw [← sub_sub_cancel 1 t]
+  rw [← extend_symm_apply, trans_symm, extend_trans_of_le_half _ _ (by linarith), extend_symm_apply]
+  congr 1
+  linarith
 
 @[simp]
 theorem refl_trans_refl {a : X} :
     (Path.refl a).trans (Path.refl a) = Path.refl a := by
   ext
-  simp only [Path.trans, ite_self, one_div, Path.refl_extend, ContinuousMap.const_apply]
-  rfl
+  simp [Path.trans]
 
 theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
     range (γ₁.trans γ₂) = range γ₁ ∪ range γ₂ := by
-  rw [Path.trans]
-  apply eq_of_subset_of_subset
-  · rintro x ⟨⟨t, ht0, ht1⟩, hxt⟩
-    by_cases h : t ≤ 1 / 2
-    · left
-      use ⟨2 * t, ⟨by linarith, by linarith⟩⟩
-      rw [← γ₁.extend_extends]
-      rwa [coe_mk_mk, Function.comp_apply, if_pos h] at hxt
-    · right
-      use ⟨2 * t - 1, ⟨by linarith, by linarith⟩⟩
-      rw [← γ₂.extend_extends]
-      rwa [coe_mk_mk, Function.comp_apply, if_neg h] at hxt
-  · rintro x (⟨⟨t, ht0, ht1⟩, hxt⟩ | ⟨⟨t, ht0, ht1⟩, hxt⟩)
-    · use ⟨t / 2, ⟨by linarith, by linarith⟩⟩
-      have : t / 2 ≤ 1 / 2 := (div_le_div_iff_of_pos_right (zero_lt_two : (0 : ℝ) < 2)).mpr ht1
-      rw [coe_mk_mk, Function.comp_apply, if_pos this, Subtype.coe_mk]
-      ring_nf
-      rwa [γ₁.extend_extends]
-    · by_cases h : t = 0
-      · use ⟨1 / 2, ⟨by linarith, by linarith⟩⟩
-        rw [coe_mk_mk, Function.comp_apply, if_pos le_rfl, Subtype.coe_mk,
-          mul_one_div_cancel (two_ne_zero' ℝ)]
-        rw [γ₁.extend_one]
-        rwa [← γ₂.extend_extends, h, γ₂.extend_zero] at hxt
-      · use ⟨(t + 1) / 2, ⟨by linarith, by linarith⟩⟩
-        replace h : t ≠ 0 := h
-        have ht0 := lt_of_le_of_ne ht0 h.symm
-        have : ¬(t + 1) / 2 ≤ 1 / 2 := by
-          rw [not_le]
-          linarith
-        rw [coe_mk_mk, Function.comp_apply, Subtype.coe_mk, if_neg this]
-        ring_nf
-        rwa [γ₂.extend_extends]
+  rw [← extend_range, ← image_univ, ← Iic_union_Ici (a := 1 / 2), image_union,
+    EqOn.image_eq fun t ht ↦ extend_trans_of_le_half _ _ (mem_Iic.1 ht),
+    EqOn.image_eq fun t ht ↦ extend_trans_of_half_le _ _ (mem_Ici.1 ht),
+    ← image_image γ₁.extend, ← image_image (γ₂.extend <| · - 1), ← image_image γ₂.extend]
+  norm_num [image_mul_left_Ici, image_mul_left_Iic,
+    image_extend_of_subset, Icc_subset_Iic_self, Icc_subset_Ici_self]
 
 /-- Image of a path from `x` to `y` by a map which is continuous on the path. -/
 def map' (γ : Path x y) {f : X → Y} (h : ContinuousOn f (range γ)) : Path (f x) (f y) where
@@ -393,6 +383,10 @@ theorem trans_cast {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
     (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
     (γ.cast ha hb).trans (γ'.cast hb hc) = (γ.trans γ').cast ha hc :=
   rfl
+
+@[simp]
+theorem extend_cast {x' y'} (γ : Path x y) (hx : x' = x) (hy : y' = y) :
+    (γ.cast hx hy).extend = γ.extend := rfl
 
 @[simp]
 theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast hx hy : I → X) = γ :=
@@ -511,7 +505,7 @@ protected def mul [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : P
     Path (a₁ * a₂) (b₁ * b₂) :=
   (γ₁.prod γ₂).map continuous_mul
 
-@[to_additive]
+@[to_additive (attr := simp)]
 protected theorem mul_apply [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁)
     (γ₂ : Path a₂ b₂) (t : unitInterval) : (γ₁.mul γ₂) t = γ₁ t * γ₂ t :=
   rfl

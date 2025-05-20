@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Tactic.MinImports
 import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -41,6 +40,9 @@ class IsMulTorsionFree where
   protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
 
 attribute [to_additive existing] isMulTorsionFree_iff
+
+@[to_additive] instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
+  pow_left_injective _ _ := injective_of_subsingleton _
 
 variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
