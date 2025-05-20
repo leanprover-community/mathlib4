@@ -265,6 +265,18 @@ theorem real_inner_mul_inner_self_le (x y : F) : ⟪x, y⟫_ℝ * ⟪x, y⟫_ℝ
       exact le_abs_self _
     _ ≤ ⟪x, x⟫_ℝ * ⟪y, y⟫_ℝ := @inner_mul_inner_self_le ℝ _ _ _ _ x y
 
+theorem inner_eq_ofReal_norm_sq_left_iff {v w : E} : ⟪v, w⟫_𝕜 = ‖v‖ ^ 2 ↔ ⟪v, v - w⟫_𝕜 = 0 := by
+  rw [inner_sub_right, sub_eq_zero, inner_self_eq_norm_sq_to_K, eq_comm]
+
+theorem inner_eq_norm_sq_left_iff {v w : F} : ⟪v, w⟫_ℝ = ‖v‖ ^ 2 ↔ ⟪v, v - w⟫_ℝ = 0 :=
+  inner_eq_ofReal_norm_sq_left_iff
+
+theorem inner_eq_ofReal_norm_sq_right_iff {v w : E} : ⟪v, w⟫_𝕜 = ‖w‖ ^ 2 ↔ ⟪v - w, w⟫_𝕜 = 0 := by
+  rw [inner_sub_left, sub_eq_zero, inner_self_eq_norm_sq_to_K, eq_comm]
+
+theorem inner_eq_norm_sq_right_iff {v w : F} : ⟪v, w⟫_ℝ = ‖w‖ ^ 2 ↔ ⟪v - w, w⟫_ℝ = 0 :=
+  inner_eq_ofReal_norm_sq_right_iff
+
 end BasicProperties_Seminormed
 
 section BasicProperties
