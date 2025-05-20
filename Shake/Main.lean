@@ -293,7 +293,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     try
       let (path, inputCtx, header, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
       for stx in header.raw[2].getArgs do
-        if toRemove.any fun i => s.modNames[i]! == stx[2].getId then
+        if toRemove.any fun i => s.modNames[i]! == stx[3].getId then
           let pos := inputCtx.fileMap.toPosition stx.getPos?.get!
           println! "{path}:{pos.line}:{pos.column+1}: warning: unused import \
             (use `lake exe shake --fix` to fix this, or `lake exe shake --update` to ignore)"
@@ -605,7 +605,7 @@ def main (args : List String) : IO UInt32 := do
     let mut out : String := ""
     let mut seen : NameSet := {}
     for stx in header.raw[2].getArgs do
-      let mod := stx[2].getId
+      let mod := stx[3].getId
       if remove.contains mod || seen.contains mod then
         out := out ++ text.extract pos stx.getPos?.get!
         -- We use the end position of the syntax, but include whitespace up to the first newline
