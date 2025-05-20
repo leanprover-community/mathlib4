@@ -293,6 +293,7 @@ section IsSplittingField
 variable {a}
 variable {L : Type*} [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)]
 
+-- TODO rename adjoinRoot
 include hζ in
 lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
     haveI := Fact.mk H

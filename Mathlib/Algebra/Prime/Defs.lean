@@ -47,6 +47,7 @@ include hp
 theorem ne_zero : p ≠ 0 :=
   hp.1
 
+-- TODO rename not_isUnit
 theorem not_unit : ¬IsUnit p :=
   hp.2.1
 
