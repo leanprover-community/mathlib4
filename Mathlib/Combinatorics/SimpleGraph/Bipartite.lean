@@ -29,6 +29,9 @@ This file proves results about bipartite simple graphs, including several double
 
 * `twocol_iff_bipartition` is the proof that a twocoloring implies a bipartition and vice versa.
 
+* `bipartite_iff_bipartition` proves that `G.IsBipartite` iff there exist sets
+  `s t : Set V` such that `G.IsBipartiteWith s t`.
+
 * `SimpleGraph.isBipartiteWith_sum_degrees_eq` is the proof that if `G.IsBipartiteWith s t`, then
   the sum of the degrees of the vertices in `s` is equal to the sum of the degrees of the vertices
   in `t`.
@@ -46,9 +49,6 @@ For the formulation of double-counting arguments where a bipartite graph is cons
 relation `r : α → β → Prop`, see `Mathlib.Combinatorics.Enumerative.DoubleCounting`.
 
 ## TODO
-
-* Define `G.IsBipartite := G.Colorable 2` and prove `G.IsBipartite` iff there exist sets
-  `s t : Set V` such that `G.IsBipartiteWith s t`.
 
 * Prove that `G.IsBipartite` iff `G` does not contain an odd cycle.
   I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
@@ -306,5 +306,13 @@ theorem twocol_iff_bipartition :
   · exact twocol_imp_bipartition G
   · rintro ⟨s, t, h⟩
     exact bipartition_imp_twocol G h
+
+/--
+Using the previous statements to bride `IsBipartite` and `IsBipartiteWith`.
+-/
+theorem bipartite_iff_bipartition :
+  G.IsBipartite ↔ ∃ s t : Set V, G.IsBipartiteWith s t := by
+  dsimp [IsBipartite]
+  exact twocol_iff_bipartition G
 
 end SimpleGraph
