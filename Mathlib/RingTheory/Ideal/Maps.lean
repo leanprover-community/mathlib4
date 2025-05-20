@@ -1123,3 +1123,12 @@ alias NoZeroSMulDivisors.of_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap
 
 @[deprecated (since := "2025-01-31")]
 alias NoZeroSMulDivisors.ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
+
+section PrincipalIdeal
+
+instance {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) (I : Ideal R) [I.IsPrincipal] :
+    (I.map f).IsPrincipal := by
+  obtain ⟨x, rfl⟩ := Submodule.IsPrincipal.principal I
+  exact ⟨f x, by rw [← Ideal.span, ← Set.image_singleton, Ideal.map_span]; rfl⟩
+
+end PrincipalIdeal

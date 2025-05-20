@@ -12,9 +12,9 @@ import Mathlib.Order.Lattice
 # Characteristic of semirings
 
 ## Main definitions
- * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
- * `ringChar`: the characteristic of a ring
- * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
+* `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
+* `ringChar`: the characteristic of a ring
+* `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
     exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
     prime characteristic `p`)
 -/

@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
@@ -826,6 +827,13 @@ variable {I J} in
 theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J) := by
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
 
+lemma isRadical_bot_iff :
+    (⊥ : Ideal R).IsRadical ↔ IsReduced R := by
+  simp only [IsRadical, SetLike.le_def, Ideal.mem_radical_iff, Ideal.mem_bot,
+    forall_exists_index, isReduced_iff, IsNilpotent]
+
+lemma isRadical_bot [IsReduced R] : (⊥ : Ideal R).IsRadical := by rwa [Ideal.isRadical_bot_iff]
+
 /-- `Ideal.radical` as an `InfTopHom`, bundling in that it distributes over `inf`. -/
 def radicalInfTopHom : InfTopHom (Ideal R) (Ideal R) where
   toFun := radical
@@ -1300,3 +1308,15 @@ end Submodule
 instance {R} [Semiring R] : NonUnitalSubsemiringClass (Ideal R) R where
   mul_mem _ hb := Ideal.mul_mem_left _ _ hb
 instance {R} [Ring R] : NonUnitalSubringClass (Ideal R) R where
+
+lemma Ideal.exists_subset_radical_span_sup_of_subset_radical_sup {R : Type*} [CommSemiring R]
+    (s : Set R) (I J : Ideal R) (hs : s ⊆ (I ⊔ J).radical) :
+    ∃ (t : s → R), Set.range t ⊆ I ∧ s ⊆ (span (Set.range t) ⊔ J).radical := by
+  replace hs : ∀ z : s, ∃ (m : ℕ) (a b : R) (ha : a ∈ I) (hb : b ∈ J), a + b = z ^ m := by
+    rintro ⟨z, hzs⟩
+    simp only [Ideal.radical, Submodule.mem_sup, Ideal.mem_span_singleton'] at hs
+    obtain ⟨m, y, hyq, b, hb, hy⟩ := hs hzs
+    exact ⟨m, y, b, hyq, hb, hy⟩
+  choose m a b ha hb heq using hs
+  refine ⟨a, by rwa [Set.range_subset_iff], fun z hz ↦ ⟨m ⟨z, hz⟩, heq ⟨z, hz⟩ ▸ ?_⟩⟩
+  exact Ideal.add_mem _ (mem_sup_left (subset_span ⟨⟨z, hz⟩, rfl⟩)) (mem_sup_right <| hb _)
