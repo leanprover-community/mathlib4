@@ -47,7 +47,7 @@ practice. Thus, we provide the more traditional definition in `TendstoUniformlyO
 ## Tags
 
 Uniform limit, uniform convergence, tends uniformly to
- -/
+-/
 
 noncomputable section
 

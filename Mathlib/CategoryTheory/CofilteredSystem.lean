@@ -28,7 +28,7 @@ Given a functor `F : J ⥤ Type v`:
 * `nonempty_sections_of_finite_cofiltered_system` shows that if `J` is cofiltered and each
   `F.obj j` is nonempty and finite, `F.sections` is nonempty.
 * `nonempty_sections_of_finite_inverse_system` is a specialization of the above to `J` being a
-   directed set (and `F : Jᵒᵖ ⥤ Type v`).
+  directed set (and `F : Jᵒᵖ ⥤ Type v`).
 * `isMittagLeffler_of_exists_finite_range` shows that if `J` is cofiltered and for all `j`,
   there exists some `i` and `f : i ⟶ j` such that the range of `F.map f` is finite, then
   `F` is Mittag-Leffler.
