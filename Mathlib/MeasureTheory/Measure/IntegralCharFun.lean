@@ -17,15 +17,19 @@ relating the measure of some sets to integrals of characteristic functions.
 
 * `integral_charFun_Icc`: `∫ t in -r..r, charFun μ t = 2 * r * ∫ x, sinc (r * x) ∂μ`
 * `measureReal_abs_gt_le_integral_charFun`: bound on the measure of the set
-  `{x | r < |x|}` in terms of the integral of the characteristic function of `μ`:
+  `{x | r < |x|}` in terms of the integral of the characteristic function of `μ`, for `μ` a
+  probability measure on `ℝ`:
   `μ.real {x | r < |x|} ≤ 2⁻¹ * r * ‖∫ t in (-2 * r⁻¹)..(2 * r⁻¹), 1 - charFun μ t‖`
-* `measureReal_abs_inner_gt_le_integral_charFun`: an application of the previous lemma in an
-  inner product space, which gives for all `a`,
+* `measureReal_abs_dual_gt_le_integral_charFunDual`: an application of the previous lemma in a
+  normed space `E`, which gives for all `L : Dual ℝ E`,
+  `μ.real {x | r < |L x|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFunDual μ (t • L)‖`
+* `measureReal_abs_inner_gt_le_integral_charFun`: an application in an inner product space,
+  which gives for all `a`,
   `μ.real {x | r < |⟪a, x⟫|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖`
 
 -/
 
-open RealInnerProductSpace Real Complex
+open RealInnerProductSpace Real Complex NormedSpace
 
 namespace MeasureTheory
 
@@ -83,7 +87,7 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     rw [integral_complex_ofReal, ← integral_const_mul]
 
 /-- A bound on the measure of the set `{x | r < |x|}` in terms of the integral of
-the characteristic function. -/
+the characteristic function, for a probability measure on `ℝ`. -/
 lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 < r) :
     μ.real {x | r < |x|} ≤ 2⁻¹ * r * ‖∫ t in (-2 * r⁻¹)..(2 * r⁻¹), 1 - charFun μ t‖ := by
   have integrable_sinc_const_mul (r : ℝ) : Integrable (fun x ↦ sinc (r * x)) μ :=
@@ -141,8 +145,21 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
 
 end Real
 
+/-- For a probability measure on a normed space `E` and `L : Dual ℝ E`, a bound on the measure
+of the set `{x | r < |L x|}` in terms of the integral of the characteristic function. -/
+lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
+    {μ : Measure E} [IsProbabilityMeasure μ] (L : Dual ℝ E) {r : ℝ} (hr : 0 < r) :
+    μ.real {x | r < |L x|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFunDual μ (t • L)‖ := by
+  have : IsProbabilityMeasure (μ.map L) := isProbabilityMeasure_map (by fun_prop)
+  convert measureReal_abs_gt_le_integral_charFun (μ := μ.map L) hr with x
+  · rw [map_measureReal_apply (by fun_prop)]
+    · simp
+    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+  · rw [charFun_map_eq_charFunDual_smul]
+
 /-- A bound on the measure of the set `{x | r < |⟪a, x⟫|}` in terms of the integral of
-the characteristic function. -/
+the characteristic function, for a probability measure on an inner product space. -/
 lemma measureReal_abs_inner_gt_le_integral_charFun {E : Type*} [SeminormedAddCommGroup E]
     [InnerProductSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] {a : E} {r : ℝ} (hr : 0 < r) :
