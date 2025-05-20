@@ -14,15 +14,25 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Algebra.Category.Grp.Zero
 /-!
 
-# Hom(N,M) is subsingleton iff exist smul regular element of M in ann(N)
+# Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
 
-In this section, we proved that for `R` modules `M N`, `Hom(N,M)` is subsingleton iff
-there exist `r : R`, `IsSMulRegular M r` and `r ∈ ann(N)`.
-This is the case for `Depth[I](M) = 0`.
+Let `M` and `N` be `R`-modules. In this section we prove that `Hom(N,M)` is subsingleton iff
+there exist `r : R`, such that `IsSMulRegular M r` and `r ∈ ann(N)`.
+This is the case if `Depth[I](M) = 0`.
+
+# Main Results
+
+* `IsSMulRegular.hom_subsingleton_of_mem_ann_isSMulRegular` : for `R` module `N M`, `Hom(N, M) = 0`
+  if there is a `M`-regular in `Module.annihilator R N`.
+
+* `IsSMulRegular.exist_mem_ann_isSMulRegular_of_hom_subsingleton` : for `R` module `N M`,
+  there is a `M`-regular in `Module.annihilator R N` if `Hom(N, M) = 0`.
 
 -/
 
 open IsLocalRing LinearMap
+
+namespace IsSMulRegular
 
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
@@ -60,7 +70,7 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
   let _ : Module p.ResidueField Nₚ' :=
     Module.instQuotientIdealSubmoduleHSMulTop Nₚ (maximalIdeal (Localization.AtPrime p))
   have := AssociatePrimes.mem_iff.mp
-    (mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes pass)
+    (associatedPrimes.mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes pass)
   rcases this.2 with ⟨x, hx⟩
   have : Nontrivial (Module.Dual p.ResidueField Nₚ') := by simpa using ntr
   rcases exists_ne (α := Module.Dual p.ResidueField Nₚ') 0 with ⟨g, hg⟩
@@ -77,7 +87,7 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
     LinearMap.ker_eq_bot.mp (Submodule.ker_liftQ_eq_bot _ _ _ (le_of_eq hx.symm))
   let f := i.comp to_res
   have f_ne0 : f ≠ 0 := by
-    by_contra eq0
+    intro eq0
     absurd hg
     apply LinearMap.ext
     intro np'
@@ -102,6 +112,8 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton [IsNoetherianRing R]
     · exact IsSMulRegular.zero
   · let _ : Nontrivial M := not_subsingleton_iff_nontrivial.mp htrivial
     exact exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial hom0
+
+end IsSMulRegular
 
 /-!
 
