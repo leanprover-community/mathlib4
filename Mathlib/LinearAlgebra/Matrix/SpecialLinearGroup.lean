@@ -185,7 +185,7 @@ def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
     LinearEquiv.ofLinear (Matrix.mulVecLin ↑ₘA) (Matrix.mulVecLin ↑ₘA⁻¹)
       (by rw [← mulVecLin_mul, ← coe_mul, mul_inv_cancel, coe_one, mulVecLin_one])
       (by rw [← mulVecLin_mul, ← coe_mul, inv_mul_cancel, coe_one, mulVecLin_one])
-  map_one' := by simp
+  map_one' := by simp [LinearEquiv.one_eq_refl]
   map_mul' A B := LinearEquiv.toLinearMap_injective <| Matrix.mulVecLin_mul ↑ₘA ↑ₘB
 
 theorem toLin'_apply (A : SpecialLinearGroup n R) (v : n → R) :
