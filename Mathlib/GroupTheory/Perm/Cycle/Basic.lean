@@ -76,6 +76,7 @@ theorem SameCycle.equivalence : Equivalence (SameCycle f) :=
 
 /-- The setoid defined by the `SameCycle` relation. -/
 def SameCycle.setoid (f : Perm α) : Setoid α where
+  r := f.SameCycle
   iseqv := SameCycle.equivalence f
 
 @[simp]
@@ -314,7 +315,7 @@ noncomputable def IsCycle.zpowersEquivSupport {σ : Perm α} (hσ : IsCycle σ) 
     (fun (τ : ↥ ((Subgroup.zpowers σ) : Set (Perm α))) =>
       ⟨(τ : Perm α) (Classical.choose hσ), by
         obtain ⟨τ, n, rfl⟩ := τ
-        erw [Finset.mem_coe, Subtype.coe_mk, zpow_apply_mem_support, mem_support]
+        rw [Subtype.coe_mk, zpow_apply_mem_support, mem_support]
         exact (Classical.choose_spec hσ).1⟩)
     (by
       constructor
@@ -326,7 +327,7 @@ noncomputable def IsCycle.zpowersEquivSupport {σ : Perm α} (hσ : IsCycle σ) 
           rw [Subtype.coe_mk, Subtype.coe_mk, zpow_apply_comm σ m i, zpow_apply_comm σ n i]
           exact congr_arg _ (Subtype.ext_iff.mp h)
       · rintro ⟨y, hy⟩
-        erw [Finset.mem_coe, mem_support] at hy
+        rw [mem_support] at hy
         obtain ⟨n, rfl⟩ := (Classical.choose_spec hσ).2 hy
         exact ⟨⟨σ ^ n, n, rfl⟩, rfl⟩)
 
@@ -647,14 +648,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : #σ.support = 
   intro x hx
   simp only [Perm.mul_apply, Equiv.trans_apply, Equiv.sumCongr_apply]
   obtain ⟨n, rfl⟩ := hσ.exists_pow_eq (Classical.choose_spec hσ).1 (mem_support.1 hx)
-  erw [hσ.zpowersEquivSupport_symm_apply n]
-  simp only [← Perm.mul_apply, ← pow_succ']
-  erw [hσ.zpowersEquivSupport_symm_apply (n + 1)]
-  -- This used to be a `simp only` before https://github.com/leanprover/lean4/pull/2644
-  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply, zpowersEquivSupport_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  simp_rw [pow_succ', Perm.mul_apply]
-  rfl
+  simp [← Perm.mul_apply, ← pow_succ']
 
 theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
     IsConj σ τ ↔ #σ.support = #τ.support where
@@ -744,7 +738,7 @@ theorem IsCycleOn.apply_mem_iff (hf : f.IsCycleOn s) : f x ∈ s ↔ x ∈ s :=
 
 /-- Note that the identity satisfies `IsCycleOn` for any subsingleton set, but not `IsCycle`. -/
 theorem IsCycleOn.isCycle_subtypePerm (hf : f.IsCycleOn s) (hs : s.Nontrivial) :
-    (f.subtypePerm fun _ => hf.apply_mem_iff.symm : Perm s).IsCycle := by
+    (f.subtypePerm fun _ => hf.apply_mem_iff : Perm s).IsCycle := by
   obtain ⟨a, ha⟩ := hs.nonempty
   exact
     ⟨⟨a, ha⟩, ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs ha), fun b _ =>
@@ -752,7 +746,7 @@ theorem IsCycleOn.isCycle_subtypePerm (hf : f.IsCycleOn s) (hs : s.Nontrivial) :
 
 /-- Note that the identity is a cycle on any subsingleton set, but not a cycle. -/
 protected theorem IsCycleOn.subtypePerm (hf : f.IsCycleOn s) :
-    (f.subtypePerm fun _ => hf.apply_mem_iff.symm : Perm s).IsCycleOn _root_.Set.univ := by
+    (f.subtypePerm fun _ => hf.apply_mem_iff : Perm s).IsCycleOn _root_.Set.univ := by
   obtain hs | hs := s.subsingleton_or_nontrivial
   · haveI := hs.coe_sort
     exact isCycleOn_of_subsingleton _ _
@@ -769,15 +763,12 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
   classical
     have h (x : s) : ¬f x = x := hf.apply_ne hs x.2
     have := (hf.isCycle_subtypePerm hs).orderOf
-    simp only [coe_sort_coe, support_subtype_perm, ne_eq, h, not_false_eq_true, univ_eq_attach,
+    simp only [coe_sort_coe, support_subtypePerm, ne_eq, h, not_false_eq_true, univ_eq_attach,
       mem_attach, imp_self, implies_true, filter_true_of_mem, card_attach] at this
     rw [← this, orderOf_dvd_iff_pow_eq_one,
       (hf.isCycle_subtypePerm hs).pow_eq_one_iff'
         (ne_of_apply_ne ((↑) : s → α) <| hf.apply_ne hs (⟨a, ha⟩ : s).2)]
-    simp
-    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
-    erw [subtypePerm_apply]
-    simp
+    simp [-coe_sort_coe]
 
 theorem IsCycleOn.zpow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
     ∀ {n : ℤ}, (f ^ n) a = a ↔ (#s : ℤ) ∣ n
@@ -982,12 +973,12 @@ end Finset
 namespace Equiv.Perm
 
 theorem subtypePerm_apply_pow_of_mem {g : Perm α} {s : Finset α}
-    (hs : ∀ x : α, x ∈ s ↔ g x ∈ s) {n : ℕ} {x : α} (hx : x ∈ s) :
+    (hs : ∀ x : α, g x ∈ s ↔ x ∈ s) {n : ℕ} {x : α} (hx : x ∈ s) :
     ((g.subtypePerm hs ^ n) (⟨x, hx⟩ : s) : α) = (g ^ n) x := by
   simp only [subtypePerm_pow, subtypePerm_apply]
 
 theorem subtypePerm_apply_zpow_of_mem {g : Perm α} {s : Finset α}
-    (hs : ∀ x : α, x ∈ s ↔ g x ∈ s) {i : ℤ} {x : α} (hx : x ∈ s) :
+    (hs : ∀ x : α, g x ∈ s ↔ x ∈ s) {i : ℤ} {x : α} (hx : x ∈ s) :
     ((g.subtypePerm hs ^ i) (⟨x, hx⟩ : s) : α) = (g ^ i) x := by
   simp only [subtypePerm_zpow, subtypePerm_apply]
 
@@ -995,7 +986,7 @@ variable [Fintype α] [DecidableEq α]
 
 /-- Restrict a permutation to its support -/
 def subtypePermOfSupport (c : Perm α) : Perm c.support :=
-  subtypePerm c fun _ : α => apply_mem_support.symm
+  subtypePerm c fun _ : α => apply_mem_support
 
 /-- Restrict a permutation to a Finset containing its support -/
 def subtypePerm_of_support_le (c : Perm α) {s : Finset α}
@@ -1011,14 +1002,14 @@ theorem IsCycle.nonempty_support {g : Perm α} (hg : g.IsCycle) :
 /-- Centralizer of a cycle is a power of that cycle on the cycle -/
 theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
     Commute g c ↔
-      ∃ hc' : ∀ x : α, x ∈ c.support ↔ g x ∈ c.support,
+      ∃ hc' : ∀ x : α, g x ∈ c.support ↔ x ∈ c.support,
         subtypePerm g hc' ∈ Subgroup.zpowers c.subtypePermOfSupport := by
   constructor
   · intro hgc
     have hgc' := mem_support_iff_of_commute hgc
     use hgc'
     obtain ⟨a, ha⟩ := IsCycle.nonempty_support hc
-    obtain ⟨i, hi⟩ := hc.sameCycle (mem_support.mp ha) (mem_support.mp ((hgc' a).mp ha))
+    obtain ⟨i, hi⟩ := hc.sameCycle (mem_support.mp ha) (mem_support.mp ((hgc' a).mpr ha))
     use i
     ext ⟨x, hx⟩
     simp only [subtypePermOfSupport, Subtype.coe_mk, subtypePerm_apply]
@@ -1042,13 +1033,13 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
       exact hix.symm
     · rw [not_mem_support.mp hx, eq_comm, ← not_mem_support]
       contrapose! hx
-      exact (hc' x).mpr hx
+      exact (hc' x).mp hx
 
 /-- A permutation `g` commutes with a cycle `c` if and only if
   `c.support` is invariant under `g`, and `g` acts on it as a power of `c`. -/
 theorem IsCycle.commute_iff {g c : Perm α} (hc : c.IsCycle) :
     Commute g c ↔
-      ∃ hc' : ∀ x : α, x ∈ c.support ↔ g x ∈ c.support,
+      ∃ hc' : ∀ x : α, g x ∈ c.support ↔ x ∈ c.support,
         ofSubtype (subtypePerm g hc') ∈ Subgroup.zpowers c := by
   simp_rw [hc.commute_iff', Subgroup.mem_zpowers_iff]
   refine exists_congr fun hc' => exists_congr fun k => ?_
@@ -1064,7 +1055,7 @@ theorem IsCycle.commute_iff {g c : Perm α} (hc : c.IsCycle) :
 
 theorem zpow_eq_ofSubtype_subtypePerm_iff
     {g c : Equiv.Perm α} {s : Finset α}
-    (hg : ∀ x, x ∈ s ↔ g x ∈ s) (hc : c.support ⊆ s) (n : ℤ) :
+    (hg : ∀ x, g x ∈ s ↔ x ∈ s) (hc : c.support ⊆ s) (n : ℤ) :
     c ^ n = ofSubtype (g.subtypePerm hg) ↔
       c.subtypePerm (isInvariant_of_support_le hc) ^ n = g.subtypePerm hg := by
   constructor

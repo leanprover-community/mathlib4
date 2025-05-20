@@ -91,9 +91,9 @@ theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
 
 See note [partially-applied ext lemmas]. -/
 @[to_additive (attr := ext 1100) "Two `AddMonoidHom`s from an additive quotient group are equal if
- their compositions with `AddQuotientGroup.mk'` are equal.
+their compositions with `AddQuotientGroup.mk'` are equal.
 
- See note [partially-applied ext lemmas]. "]
+See note [partially-applied ext lemmas]. "]
 theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
   MonoidHom.ext fun x => QuotientGroup.induction_on x <| (DFunLike.congr_fun h :)
 
@@ -110,7 +110,7 @@ theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
   MonoidHom.range_eq_top.mpr (mk'_surjective N)
 
 @[to_additive]
-theorem ker_le_range_iff {I : Type w} [Group I] (f : G →* H) [f.range.Normal] (g : H →* I) :
+theorem ker_le_range_iff {I : Type w} [MulOneClass I] (f : G →* H) [f.range.Normal] (g : H →* I) :
     g.ker ≤ f.range ↔ (mk' f.range).comp g.ker.subtype = 1 :=
   ⟨fun h => MonoidHom.ext fun ⟨_, hx⟩ => (eq_one_iff _).mpr <| h hx,
     fun h x hx => (eq_one_iff _).mp <| by exact DFunLike.congr_fun h ⟨x, hx⟩⟩
@@ -225,7 +225,7 @@ lemma con_mono {N M : Subgroup G} [hN : N.Normal] [hM : M.Normal] (h : N ≤ M) 
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
- to a group homomorphism `G/N →* M`."]
+to a group homomorphism `G/N →* M`."]
 def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
   (QuotientGroup.con N).lift φ <| con_ker_eq_conKer φ ▸ con_mono HN
 
@@ -239,9 +239,25 @@ theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk 
 -- TODO: replace `mk` with `mk'`)
 
 @[to_additive (attr := simp)]
+theorem lift_comp_mk' (φ : G →* M) (HN : N ≤ φ.ker) :
+    (QuotientGroup.lift N φ HN).comp (QuotientGroup.mk' N) = φ :=
+  rfl
+
+@[to_additive (attr := simp)]
 theorem lift_quot_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) :
     lift N φ HN (Quot.mk _ g : Q) = φ g :=
   rfl
+
+@[to_additive]
+theorem lift_surjective_of_surjective (φ : G →* M) (hφ : Function.Surjective φ) (HN : N ≤ φ.ker) :
+    Function.Surjective (QuotientGroup.lift N φ HN) :=
+  Quotient.lift_surjective _ _ hφ
+
+@[to_additive]
+theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
+    (QuotientGroup.lift N φ HN).ker = Subgroup.map (QuotientGroup.mk' N) φ.ker := by
+  rw [← congrArg MonoidHom.ker (lift_comp_mk' N φ HN), ← MonoidHom.comap_ker,
+    Subgroup.map_comap_eq_self_of_surjective (mk'_surjective N)]
 
 /-- A group homomorphism `f : G →* H` induces a map `G/N →* H/M` if `N ⊆ f⁻¹(M)`. -/
 @[to_additive
@@ -262,6 +278,18 @@ theorem map_mk (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) 
 theorem map_mk' (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) (x : G) :
     map N M f h (mk' _ x) = ↑(f x) :=
   rfl
+
+@[to_additive]
+theorem map_surjective_of_surjective (M : Subgroup H) [M.Normal] (f : G →* H)
+    (hf : Function.Surjective (mk ∘ f : G → H ⧸ M)) (h : N ≤ M.comap f) :
+    Function.Surjective (map N M f h) :=
+  lift_surjective_of_surjective _ _ hf _
+
+@[to_additive]
+theorem ker_map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ Subgroup.comap f M) :
+    (map N M f h).ker = Subgroup.map (mk' N) (M.comap f) := by
+  simp_rw [← ker_mk' M, MonoidHom.comap_ker]
+  exact QuotientGroup.ker_lift _ _ _
 
 @[to_additive]
 theorem map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :
@@ -321,7 +349,7 @@ variable (G' : Subgroup G) (H' : Subgroup H) [Subgroup.Normal G'] [Subgroup.Norm
 /-- `QuotientGroup.congr` lifts the isomorphism `e : G ≃ H` to `G ⧸ G' ≃ H ⧸ H'`,
 given that `e` maps `G` to `H`. -/
 @[to_additive "`QuotientAddGroup.congr` lifts the isomorphism `e : G ≃ H` to `G ⧸ G' ≃ H ⧸ H'`,
- given that `e` maps `G` to `H`."]
+given that `e` maps `G` to `H`."]
 def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
   { map G' H' e (he ▸ G'.le_comap_map (e : G →* H)) with
     toFun := map G' H' e (he ▸ G'.le_comap_map (e : G →* H))

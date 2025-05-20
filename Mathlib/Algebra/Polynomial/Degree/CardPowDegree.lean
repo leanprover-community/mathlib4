@@ -15,13 +15,13 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
 
 ## Main definitions
 
- * `Polynomial.cardPowDegree` is an absolute value on `𝔽_q[t]`, the ring of
-   polynomials over a finite field of cardinality `q`, mapping a polynomial `p`
-   to `q ^ degree p` (where `q ^ degree 0 = 0`)
+* `Polynomial.cardPowDegree` is an absolute value on `𝔽_q[t]`, the ring of
+  polynomials over a finite field of cardinality `q`, mapping a polynomial `p`
+  to `q ^ degree p` (where `q ^ degree 0 = 0`)
 
 ## Main results
- * `Polynomial.cardPowDegree_isEuclidean`: `cardPowDegree` respects the
-   Euclidean domain structure on the ring of polynomials
+* `Polynomial.cardPowDegree_isEuclidean`: `cardPowDegree` respects the
+  Euclidean domain structure on the ring of polynomials
 
 -/
 
@@ -44,7 +44,6 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
   letI := Classical.decEq Fq
   { toFun := fun p => if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ p.natDegree
     nonneg' := fun p => by
-      dsimp
       split_ifs
       · rfl
       exact pow_nonneg (Int.ofNat_zero_le _) _

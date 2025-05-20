@@ -23,9 +23,9 @@ properties about separable polynomials here.
 
 * `Polynomial.Separable f`: a polynomial `f` is separable iff it is coprime with its derivative.
 * `IsSeparable K x`: an element `x` is separable over `K` iff the minimal polynomial of `x`
-over `K` is separable.
+  over `K` is separable.
 * `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable
-over `K`.
+  over `K`.
 
 -/
 
@@ -309,7 +309,7 @@ variable {F : Type u} [Field F] {K : Type v} [Field K]
 
 theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
     f.Separable ↔ derivative f ≠ 0 :=
-  ⟨fun h1 h2 => hf.not_unit <| isCoprime_zero_right.1 <| h2 ▸ h1, fun h =>
+  ⟨fun h1 h2 => hf.not_isUnit <| isCoprime_zero_right.1 <| h2 ▸ h1, fun h =>
     EuclideanDomain.isCoprime_of_dvd (mt And.right h) fun g hg1 _hg2 ⟨p, hg3⟩ hg4 =>
       let ⟨u, hu⟩ := (hf.isUnit_or_isUnit hg3).resolve_left hg1
       have : f ∣ derivative f := by
@@ -515,7 +515,7 @@ theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f
   rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
   · rintro ⟨⟩
   rw [pos_iff_ne_zero, Ne, natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff]
-  refine fun hf1 => hf.not_unit ?_
+  refine fun hf1 => hf.not_isUnit ?_
   rw [hf1, isUnit_C, isUnit_iff_ne_zero]
   intro hf2
   rw [hf2, C_0] at hf1
@@ -586,6 +586,11 @@ theorem Algebra.isSeparable_iff :
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
     fun h => ⟨fun x => (h x).2⟩⟩
 
+variable {L} in
+lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : Function.Injective f)
+    (H : IsSeparable F x) : IsSeparable F (f x) := by
+  rwa [IsSeparable, minpoly.algHom_eq _ hf]
+
 variable {E : Type*}
 
 section AlgEquiv
@@ -616,7 +621,7 @@ over `L`. -/
 @[stacks 09H2 "first part"]
 theorem IsSeparable.tower_top
     {x : E} (h : IsSeparable F x) : IsSeparable L x :=
-  h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
+  .of_dvd (.map h) (minpoly.dvd_map_of_isScalarTower ..)
 
 variable (F E) in
 /-- If `E / K / F` is an extension tower, `E` is separable over `F`, then it's also separable
@@ -726,6 +731,7 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
   letI := e₁.toRingHom.toAlgebra
   letI : Algebra A₂ B₁ :=
     { (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
+        algebraMap := (algebraMap A₁ B₁).comp e₁.symm.toRingHom
         smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
         commutes' := fun r x ↦ (Algebra.commutes) (e₁.symm.toRingHom r) x
         smul_def' := fun _ _ ↦ rfl }

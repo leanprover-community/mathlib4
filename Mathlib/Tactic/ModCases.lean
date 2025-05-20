@@ -140,13 +140,14 @@ and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [MOD n] → p`.
 partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
-    pure ((q(onModCases_stop $p $n $a) : Expr), [])
+    have : $b =Q $n := ⟨⟩
+    pure (q(onModCases_stop $p $n $a), [])
   else
     let ty := q($a ≡ $b [MOD $n] → $p)
     let g ← mkFreshExprMVarQ ty
     let ((pr : Q(OnModCases $n $a (Nat.add $b 1) $p)), acc) ←
       proveOnModCases n a (mkRawNatLit (b.natLit! + 1)) p
-    pure ((q(onModCases_succ $b $g $pr) : Expr), g.mvarId! :: acc)
+    pure (q(onModCases_succ $b $g $pr), g.mvarId! :: acc)
 
 /--
 Nat case of `mod_cases h : e % n`.

@@ -45,6 +45,8 @@ namespace Int
 
 variable {R : Type u} [AddGroupWithOne R]
 
+-- TODO: I don't like that `norm_cast` is used here, because it results in `norm_cast`
+-- introducing the "implementation detail" `Int.negSucc`.
 @[simp, norm_cast squash]
 theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
@@ -68,7 +70,7 @@ theorem cast_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by
-  rw [← natCast_one, cast_natCast, Nat.cast_one]
+  rw [← Int.natCast_one, cast_natCast, Nat.cast_one]
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
@@ -92,7 +94,7 @@ theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.
 
 @[simp, norm_cast]
 theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
-  | (m : ℕ), (n : ℕ) => by simp [-Int.natCast_add, ← Int.ofNat_add]
+  | (m : ℕ), (n : ℕ) => by simp [-Int.natCast_add, ← Int.natCast_add]
   | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
     erw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_iff_eq_add, add_assoc,

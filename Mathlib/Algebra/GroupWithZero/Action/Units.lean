@@ -24,6 +24,8 @@ admits a `MulDistribMulAction G Mˣ` structure, again with the obvious definitio
 * `Algebra.GroupWithZero.Action.Prod`
 -/
 
+assert_not_exists Ring
+
 variable {G₀ G M α β : Type*}
 
 namespace Units
@@ -69,9 +71,6 @@ end GroupWithZero
 namespace Units
 
 /-! ### Action of the units of `M` on a type `α` -/
-
-@[to_additive]
-instance [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
 
 instance instSMulZeroClass [Monoid M] [Zero α] [SMulZeroClass M α] : SMulZeroClass Mˣ α where
   smul := (· • ·)

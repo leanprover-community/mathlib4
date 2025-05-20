@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.Data.Countable.Small
@@ -28,8 +28,8 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 
 -- Various pieces of algebra that have previously been spuriously imported here:
 assert_not_exists map_ne_zero Field
- -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
- -- finiteness currently relies on more algebra than it needs.
+-- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
+-- finiteness currently relies on more algebra than it needs.
 
 universe w v₁ v₂ v u₁ u₂ u
 
@@ -154,8 +154,7 @@ open CategoryTheory.Prod
 
 variable [IsFiltered K]
 
-/-- This follows this proof from
-* Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
+/-- This follows this proof from `Borceux, Handbook of categorical algebra 1, Theorem 2.13.4`
 although with different names.
 -/
 theorem colimitLimitToLimitColimit_surjective :

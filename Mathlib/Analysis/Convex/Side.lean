@@ -34,7 +34,8 @@ namespace AffineSubspace
 
 section StrictOrderedCommRing
 
-variable [StrictOrderedCommRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points `x` and `y` are weakly on the same side of `s`. -/
@@ -344,7 +345,8 @@ end StrictOrderedCommRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P]
 
 @[simp]
 theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ x ∈ s := by

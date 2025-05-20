@@ -67,7 +67,7 @@ instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSp
   isCompact_Icc := by
     intro a b
     convert isCompact_Icc (α := α) (a := b) (b := a) using 1
-    exact dual_Icc (α := α)
+    exact Icc_toDual (α := α)
 
 /-- A closed interval in a conditionally complete linear order is compact. -/
 instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (α : Type*)

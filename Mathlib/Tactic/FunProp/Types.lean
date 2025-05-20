@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Tactic.FunProp.FunctionData
-import Batteries.Data.RBMap.Basic
 
 /-!
 ## `funProp`
@@ -15,6 +14,7 @@ this file defines environment extension for `funProp`
 
 namespace Mathlib
 open Lean Meta
+open Std (TreeSet)
 
 namespace Meta.FunProp
 
@@ -87,7 +87,7 @@ structure Context where
   /-- fun_prop config -/
   config : Config := {}
   /-- Name to unfold -/
-  constToUnfold : Batteries.RBSet Name Name.quickCmp :=
+  constToUnfold : TreeSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
@@ -113,6 +113,7 @@ def Context.increaseTransitionDepth (ctx : Context) : Context :=
 /-- Monad to run `fun_prop` tactic in. -/
 abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
 
+set_option linter.style.docString false in
 /-- Result of `funProp`, it is a proof of function property `P f` -/
 structure Result where
   /-- -/

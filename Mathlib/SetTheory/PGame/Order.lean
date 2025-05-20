@@ -546,8 +546,6 @@ theorem Equiv.of_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
   exacts [⟨_, hl i⟩, ⟨_, hr i⟩,
     ⟨_, by simpa using hl (L.symm i)⟩, ⟨_, by simpa using hr (R.symm i)⟩]
 
-@[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
-
 /-- The fuzzy, confused, or incomparable relation on pre-games.
 
 If `x ‖ 0`, then the first player can always win `x`. -/
@@ -695,8 +693,8 @@ lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
     use i
 
 /-- Adding a gift horse left option does not change the value of `x`. A gift horse left option is
- a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
- "gift" of a new option, but actually the value of the game did not change. -/
+a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
+"gift" of a new option, but actually the value of the game did not change. -/
 lemma insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈ x := by
   rw [equiv_def]
   constructor
@@ -719,8 +717,8 @@ lemma insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈
   · apply le_insertLeft
 
 /-- Adding a gift horse right option does not change the value of `x`. A gift horse right option is
- a game `x'` with `x ⧏ x'`. It is called "gift horse" because it seems like Right has gotten the
- "gift" of a new option, but actually the value of the game did not change. -/
+a game `x'` with `x ⧏ x'`. It is called "gift horse" because it seems like Right has gotten the
+"gift" of a new option, but actually the value of the game did not change. -/
 lemma insertRight_equiv_of_lf {x x' : PGame} (h : x ⧏ x') : insertRight x x' ≈ x := by
   rw [equiv_def]
   constructor

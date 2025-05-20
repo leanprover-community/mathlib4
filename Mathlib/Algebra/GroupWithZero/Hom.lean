@@ -31,7 +31,7 @@ can be inferred from the type it is faster to use this method than to use type c
 monoid homomorphism
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 open Function
 
@@ -150,6 +150,18 @@ protected lemma map_one (f : α →*₀ β) : f 1 = 1 := f.map_one'
 protected lemma map_zero (f : α →*₀ β) : f 0 = 0 := f.map_zero'
 
 protected lemma map_mul (f : α →*₀ β) (a b : α) : f (a * b) = f a * f b := f.map_mul' a b
+
+@[simp]
+theorem map_ite_zero_one {F : Type*} [FunLike F α β] [MonoidWithZeroHomClass F α β] (f : F)
+    (p : Prop) [Decidable p] :
+    f (ite p 0 1) = ite p 0 1 := by
+  split_ifs with h <;> simp [h]
+
+@[simp]
+theorem map_ite_one_zero {F : Type*} [FunLike F α β] [MonoidWithZeroHomClass F α β] (f : F)
+    (p : Prop) [Decidable p] :
+    f (ite p 1 0) = ite p 1 0 := by
+  split_ifs with h <;> simp [h]
 
 /-- The identity map from a `MonoidWithZero` to itself. -/
 @[simps]
