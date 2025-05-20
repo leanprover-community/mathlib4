@@ -68,42 +68,81 @@ variable {X : Type*} [MeasurableSpace X]
 -- This seems better because many other parts of the project depends on `Measure` (concerning the
 --  L^p spaces).
 
-lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞): HasSum f a ↔
+lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a ↔
     (∀ (n : ℕ), ∑ i ∈ Finset.range n, f i ≤ a) ∧
     (∀ b < a, ∃ (n : ℕ), b < ∑ i ∈ Finset.range n, f i) := by
-  rw [ENNReal.hasSum_iff_tendsto_nat]
-  constructor
-  · intro h
+  obtain ha | ha | ha : a = 0 ∨ (0 < a ∧ a < ⊤) ∨ a = ∞ := by
+    -- There must be a more tidy way to prove this tricotomy
+    -- But probably it already exists as a lemma for anything with top and bot.
+    obtain h | h : a = 0 ∨ a ≠ 0 := by exact eq_or_ne a 0
+    · left
+      exact h
+    · obtain h' | h' : a = ∞ ∨ a ≠ ∞ := by exact eq_or_ne a ∞
+      · right; right
+        exact h'
+      · right; left
+        exact ⟨pos_of_ne_zero h, Ne.lt_top' (Ne.symm h')⟩
+  · -- The case `a = 0`.
+    suffices h : (∀ x, f x = 0) ↔ ∀ n i, i < n → f i = 0 by
+      simpa [ha, hasSum_zero_iff]
+    exact ⟨fun h _ i _ ↦ h i, fun h i ↦  h (i + 1) i (by omega)⟩
+  · -- The case `0 < a ∧ a < ⊤`.
+    rw [ENNReal.hasSum_iff_tendsto_nat]
     constructor
-    · sorry
-    · sorry
-  · rw [and_imp]
-    intro hf hf' nhd hnhd
-    simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage]
-    -- Need to consider the case of `a = 0` and `a = ⊤` separately if using this approach.
-    -- So this might not be the best approach.
-    obtain ⟨ε, hε, hε'⟩ : ∃ ε > 0, Set.Ioc (a - ε) a ⊆ nhd := by
-      obtain ⟨t, ht⟩ := mem_nhds_iff.mp hnhd
-      sorry
-    suffices h : ∃ m, ∀ (n : ℕ), m ≤ n → ∑ i ∈ Finset.range n, f i ∈ Set.Ioc (a - ε) a by
-      obtain ⟨m, hm⟩ := h
+    · intro h
+      constructor
+      · intro n
+        rw [tendsto_atTop_nhds] at h
+        by_contra! hc
+        let ε := (∑ i ∈ Finset.range n, f i - a) / 2
+        have hε : 0 < ε := by
+          have := tsub_pos_of_lt hc
+          sorry
+        let s := Set.Ioo (a - ε) (a + ε)
+        have hs : a ∈ s := by
+          simp only [Set.mem_Ioo, s]
+          constructor
+          · exact (ENNReal.sub_lt_self_iff (ne_of_lt ha.2)).mpr ⟨ha.1, hε⟩
+          · exact lt_add_right (LT.lt.ne_top ha.2) (ne_of_lt hε).symm
+        have hs' : IsOpen s := by exact isOpen_Ioo
+        obtain ⟨N, hN⟩ := h s hs hs'
+
+        sorry
+      · sorry
+    · rw [and_imp]
+      intro hf hf' nhd hnhd
+      simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage]
+      obtain ⟨ε, hε, hε'⟩ : ∃ ε > 0, Set.Ioc (a - ε) a ⊆ nhd := by
+        obtain ⟨t, ht⟩ := mem_nhds_iff.mp hnhd
+
+        sorry
+      suffices h : ∃ m, ∀ (n : ℕ), m ≤ n → ∑ i ∈ Finset.range n, f i ∈ Set.Ioc (a - ε) a by
+        obtain ⟨m, hm⟩ := h
+        use m
+        intro n hn
+        exact hε' (hm n hn)
+      simp only [Set.mem_Ioc]
+      have : a - ε < a := by
+        refine (ENNReal.sub_lt_self_iff ?_).mpr ⟨?_, ?_⟩
+        · exact LT.lt.ne_top ha.2
+        · exact ha.1
+        · exact hε
+      obtain ⟨m, hm⟩ := hf' (a - ε) (this)
       use m
       intro n hn
-      exact hε' (hm n hn)
-    simp only [Set.mem_Ioc]
-    have : a - ε < a := by
-      refine (ENNReal.sub_lt_self_iff ?_).mpr ?_
-      · sorry
-      · sorry
-    obtain ⟨m, hm⟩ := hf' (a - ε) (this)
-    use m
-    intro n hn
-    constructor
-    · have : ∑ i ∈ Finset.range m, f i ≤ ∑ i ∈ Finset.range n, f i := by
-        refine Finset.sum_le_sum_of_subset ?_
-        simpa
-      exact gt_of_ge_of_gt this hm
-    · exact hf n
+      constructor
+      · have : ∑ i ∈ Finset.range m, f i ≤ ∑ i ∈ Finset.range n, f i := by
+          refine Finset.sum_le_sum_of_subset ?_
+          simpa
+        exact gt_of_ge_of_gt this hm
+      · exact hf n
+  · -- The case `a = ∞`.
+    rw [ha]
+    simp
+    rw [hasSum_iff_tendsto_nat]
+
+    sorry
+
 
 lemma ENNReal.exist_iSup_le_add_of_pos {ι : Type*} {ε : ℝ≥0∞} {f : ι → ℝ≥0∞} (hε : 0 < ε)
     (h : iSup f < ⊤) : ∃ (i : ι), iSup f ≤ f i + ε := by
