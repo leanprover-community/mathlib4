@@ -277,7 +277,6 @@ theorem idealRange_eq_map : f.idealRange = LieIdeal.map f ⊤ := by
 def IsIdealMorphism : Prop :=
   (f.idealRange : LieSubalgebra R L') = f.range
 
-@[simp]
 theorem isIdealMorphism_def : f.IsIdealMorphism ↔ (f.idealRange : LieSubalgebra R L') = f.range :=
   Iff.rfl
 

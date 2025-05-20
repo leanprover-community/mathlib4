@@ -92,7 +92,7 @@ def flipFunctorToInterchange : (functorToInterchange A K).flip ≅
   Iso.refl _
 
 /-- (Implementation) A natural isomorphism we will need to construct `iso`. -/
-@[simps! (config := { fullyApplied := false }) hom_app]
+@[simps! -fullyApplied hom_app]
 noncomputable def isoAux :
     (CostructuredArrow.proj yoneda A ⋙ yoneda ⋙ (evaluation Cᵒᵖ (Type u)).obj (limit K)) ≅
       ((coyoneda ⋙ (whiskeringLeft (CostructuredArrow yoneda A) C (Type u)).obj

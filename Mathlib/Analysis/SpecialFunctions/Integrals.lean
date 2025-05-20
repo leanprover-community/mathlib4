@@ -6,7 +6,7 @@ Authors: Benjamin Davidson
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
@@ -399,7 +399,7 @@ theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a,
 
 @[simp]
 theorem integral_pow : ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
-  simpa only [← Int.ofNat_succ, zpow_natCast] using integral_zpow (Or.inl n.cast_nonneg)
+  simpa only [← Int.natCast_succ, zpow_natCast] using integral_zpow (Or.inl n.cast_nonneg)
 
 /-- Integral of `|x - a| ^ n` over `Ι a b`. This integral appears in the proof of the
 Picard-Lindelöf/Cauchy-Lipschitz theorem. -/
@@ -478,6 +478,30 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
   rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv) fun x _ => (D x).differentiableAt]
   · ring
   · fun_prop
+
+lemma integral_exp_mul_I_eq_sin (r : ℝ) :
+    ∫ t in -r..r, Complex.exp (t * Complex.I) = 2 * Real.sin r :=
+  calc ∫ t in -r..r, Complex.exp (t * Complex.I)
+  _ = (Complex.exp (Complex.I * r) - Complex.exp (Complex.I * (-r))) / Complex.I := by
+    simp_rw [mul_comm _ Complex.I]
+    rw [integral_exp_mul_complex]
+    · simp
+    · simp
+  _ = 2 * Real.sin r := by
+    simp only [mul_comm Complex.I, Complex.exp_mul_I, Complex.cos_neg, Complex.sin_neg,
+      add_sub_add_left_eq_sub, Complex.div_I, Complex.ofReal_sin]
+    rw [sub_mul, mul_assoc, mul_assoc, two_mul]
+    simp
+
+lemma integral_exp_mul_I_eq_sinc (r : ℝ) :
+    ∫ t in -r..r, Complex.exp (t * Complex.I) = 2 * r * sinc r := by
+  rw [integral_exp_mul_I_eq_sin]
+  by_cases hr : r = 0
+  · simp [hr]
+  rw [sinc_of_ne_zero hr]
+  norm_cast
+  field_simp
+  ring
 
 /-- Helper lemma for `integral_log`: case where `a = 0` and `b` is positive. -/
 lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in (0)..b, log s = b * log b - b := by

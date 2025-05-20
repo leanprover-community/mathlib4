@@ -144,7 +144,7 @@ theorem LinearIndependent.iSupIndep_span_singleton (hv : LinearIndependent R v) 
   rw [← span_range_eq_iSup] at hm
   obtain ⟨⟨r, rfl⟩, hm⟩ := hm
   suffices r = 0 by simp [this]
-  apply hv.not_smul_mem_span i
+  apply hv.eq_zero_of_smul_mem_span i
   convert hm
   ext
   simp
@@ -375,7 +375,7 @@ theorem linearIndepOn_id_iUnion_finite {f : ι → Set M} (hl : ∀ i, LinearInd
   intro t
   induction t using Finset.induction_on with
   | empty => simp
-  | @insert i s his ih =>
+  | insert i s his ih =>
     rw [Finset.set_biUnion_insert]
     refine (hl _).id_union ih ?_
     rw [span_iUnion₂]
@@ -446,13 +446,6 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
 @[deprecated (since := "2025-02-15")] alias
   exists_maximal_independent := exists_maximal_linearIndepOn
 
-theorem LinearIndependent.restrict_scalars' (R : Type*) {S M ι : Type*}
-    [CommSemiring R] [Semiring S] [Algebra R S] [FaithfulSMul R S]
-    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
-    {v : ι → M} (li : LinearIndependent S v) :
-    LinearIndependent R v :=
-  restrict_scalars ((faithfulSMul_iff_injective_smul_one R S).mp inferInstance) li
-
 @[stacks 0CKM]
 lemma linearIndependent_algHom_toLinearMap
     (K M L) [CommSemiring K] [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] :
@@ -484,7 +477,7 @@ variable {v : ι → V} {s t : Set V} {x y : V}
 open Submodule
 
 /- TODO: some of the following proofs can generalized with a zero_ne_one predicate type class
-   (instead of a data containing type class) -/
+(instead of a data containing type class) -/
 theorem mem_span_insert_exchange :
     x ∈ span K (insert y s) → x ∉ span K s → y ∈ span K (insert x s) := by
   simp only [mem_span_insert, forall_exists_index, and_imp]
