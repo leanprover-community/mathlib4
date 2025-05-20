@@ -230,5 +230,3 @@ theorem Ideal.ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp
   rw [ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply]
 
 end NumberField
-
-#min_imports
