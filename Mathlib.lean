@@ -1285,6 +1285,7 @@ import Mathlib.Analysis.Asymptotics.Completion
 import Mathlib.Analysis.Asymptotics.Defs
 import Mathlib.Analysis.Asymptotics.ExpGrowth
 import Mathlib.Analysis.Asymptotics.Lemmas
+import Mathlib.Analysis.Asymptotics.LinearGrowth
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 import Mathlib.Analysis.Asymptotics.TVS
