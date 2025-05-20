@@ -198,11 +198,9 @@ lemma variation_iUnion_nat (μ : VectorMeasure X V) (s : ℕ → Set X)
     sorry
   have sum_F_le : ∀ i, sumOfNormOfMeasure μ (fun j ↦ F i j) ≤ variationAux μ (s i) := by
     sorry
-  calc
-    _ = ∑' n,  ‖μ (E n)‖ := by
-      -- By defintion of `sumOfNormOfMeasure μ E`
-      sorry
-    _ = ∑' i, ∑' j,  ‖μ (F i j)‖ := by
+  calc sumOfNormOfMeasure μ E
+    _ = ∑' n, ENNReal.ofReal ‖μ (E n)‖ := rfl
+    _ = ∑' i, ∑' j, ENNReal.ofReal ‖μ (F i j)‖ := by
       -- Since the sets `F i j` are all disjoint.
       sorry
     _ = ∑' i, sumOfNormOfMeasure μ (fun j ↦ F i j) := by
@@ -210,9 +208,6 @@ lemma variation_iUnion_nat (μ : VectorMeasure X V) (s : ℕ → Set X)
       sorry
     _ ≤ ∑' i, variationAux μ (s i) := by
       -- As proved above in `sum_F_le`.
-      sorry
-    _≤ _ := by
-      -- Properties of a `sup`.
       sorry
 
 /-- The variation outer measure of a vector-valued measure. -/
