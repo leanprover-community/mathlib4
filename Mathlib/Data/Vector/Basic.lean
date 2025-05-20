@@ -23,6 +23,17 @@ variable {α β γ σ φ : Type*} {m n : ℕ}
 
 namespace List.Vector
 
+/-- `toVector` and `ofVector` together form an equivalence. -/
+@[simps! apply symm_apply]
+def equivVector : Vector α n ≃ _root_.Vector α n where
+  toFun := toVector
+  invFun := ofVector
+  left_inv := ofVector_toVector
+  right_inv := toVector_ofVector
+
+@[deprecated toVector (since := "20/05/2025")]
+def toArray (v : Vector α n) := v.1.toArray
+
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
 
@@ -510,23 +521,6 @@ def casesOn₃ {motive : ∀ {n}, Vector α n → Vector β n → Vector γ n �
       → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
     motive v₁ v₂ v₃ :=
   inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
-
-/-- Convert a `List.Vector` to a `Vector`. -/
-def toVector (v : List.Vector α n) : _root_.Vector α n := ⟨v.1.toArray, v.2⟩
-
-/-- Convert a `Vector` to a `List.Vector`. -/
-def ofVector {α : Type*} {n : ℕ} (v : _root_.Vector α n) : List.Vector α n := ⟨v.toList, v.2⟩
-
-@[simp] theorem ofVector_toVector (v : List.Vector α n) : ofVector (toVector v) = v := rfl
-@[simp] theorem toVector_ofVector (v : _root_.Vector α n) : toVector (ofVector v) = v := rfl
-
-/-- The equivalence between `Vector` and `List.Vector`. -/
-@[simps!]
-def equivVector : Vector α n ≃ _root_.Vector α n where
-  toFun := toVector
-  invFun := ofVector
-  left_inv := ofVector_toVector
-  right_inv := toVector_ofVector
 
 section InsertIdx
 
