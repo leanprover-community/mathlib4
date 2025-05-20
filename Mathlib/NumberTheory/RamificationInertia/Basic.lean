@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Finiteness.Quotient
+import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ramification index and inertia degree
@@ -25,11 +26,11 @@ The main theorem `Ideal.sum_ramification_inertia` states that for all coprime `P
 ## Implementation notes
 
 Often the above theory is set up in the case where:
- * `R` is the ring of integers of a number field `K`,
- * `L` is a finite separable extension of `K`,
- * `S` is the integral closure of `R` in `L`,
- * `p` and `P` are maximal ideals,
- * `P` is an ideal lying over `p`
+* `R` is the ring of integers of a number field `K`,
+* `L` is a finite separable extension of `K`,
+* `S` is the integral closure of `R` in `L`,
+* `p` and `P` are maximal ideals,
+* `P` is an ideal lying over `p`
 We will try to relax the above hypotheses as much as possible.
 
 ## Notation
@@ -238,6 +239,23 @@ lemma inertiaDeg_map_eq [p.IsMaximal] (P : Ideal S)
 
 end DecEq
 
+
+section absNorm
+
+/-- The absolute norm of an ideal `P` above a rational prime `p` is
+`|p| ^ ((span {p}).inertiaDeg P)`. -/
+lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
+      (P : Ideal R) [P.LiesOver (span {p})] (hp: Prime p) :
+    absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
+  have : (span {p}).IsMaximal :=
+    (isPrime_of_prime (prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
+  have h : Module.Finite (ℤ ⧸ span {p}) (R ⧸ P) := module_finite_of_liesOver P (span {p})
+  let _ : Field (ℤ ⧸ span {p}) := Quotient.field (span {p})
+  rw [inertiaDeg_algebraMap, absNorm_apply, Submodule.cardQuot_apply,
+    Module.natCard_eq_pow_finrank (K := ℤ ⧸ span {p})]
+  simp [Nat.card_congr (Int.quotientSpanEquivZMod p).toEquiv]
+
+end absNorm
 section FinrankQuotientMap
 
 open scoped nonZeroDivisors
@@ -257,10 +275,10 @@ variable {K} in
 /-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
 Here,
- * `p` is an ideal of `R` such that `R / p` is nontrivial
- * `K` is a field that has an embedding of `R` (in particular we can take `K = Frac(R)`)
- * `L` is a field extension of `K`
- * `S` is the integral closure of `R` in `L`
+* `p` is an ideal of `R` such that `R / p` is nontrivial
+* `K` is a field that has an embedding of `R` (in particular we can take `K = Frac(R)`)
+* `L` is a field extension of `K`
+* `S` is the integral closure of `R` in `L`
 
 More precisely, we avoid quotients in this statement and instead require that `b ∪ pS` spans `S`.
 -/
@@ -360,8 +378,8 @@ and `V'` a module over `S`. If `b`, in the intersection `V''` of `V` and `V'`,
 is linear independent over `S` in `V'`, then it is linear independent over `R` in `V`.
 
 The statement we prove is actually slightly more general:
- * it suffices that the inclusion `algebraMap R S : R → S` is nontrivial
- * the function `f' : V'' → V'` doesn't need to be injective
+* it suffices that the inclusion `algebraMap R S : R → S` is nontrivial
+* the function `f' : V'' → V'` doesn't need to be injective
 -/
 theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
     (hRS : RingHom.ker (algebraMap R S) ≠ ⊤) (f : V'' →ₗ[R] V) (hf : Function.Injective f)
