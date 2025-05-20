@@ -149,15 +149,14 @@ noncomputable def supOuterMeasure : OuterMeasure X where
 
 
 -- ## Alternative 2: define variation as a measure
-namespace Variation
+namespace Variation2
 open TopologicalSpace NNReal Function
 
 -- Implementation note: instead of working with partitions of `K`, work with sets of disjoints sets
 -- contained within `K` since the same value will be achieved in the supremum.
 private def partitions (K : Set X) : Set (ℕ → Set X) :=
-    {E : ℕ → Set X | (∀ n, (E n) ⊆ K) ∧ Pairwise (Disjoint on E)}
+    {E : ℕ → Set X | (∀ n, (E n) ⊆ K) ∧ (∀ n, MeasurableSet (E n)) ∧ Pairwise (Disjoint on E)}
 
-omit [MeasurableSpace X] in
 /-- By construction partitions behave in a monotone way. -/
 lemma partitions_mono {s₁ s₂ : Set X} (hs : s₁ ⊆ s₂) : partitions s₁ ⊆ partitions s₂ :=
   fun _ hE ↦ ⟨fun n ↦ subset_trans (hE.1 n) hs, hE.2⟩
@@ -172,42 +171,72 @@ private noncomputable def sumOfNormOfMeasure (μ : VectorMeasure X V) (E : ℕ �
 noncomputable def variationAux (μ : VectorMeasure X V) (K : Set X) : ℝ≥0∞ :=
     ⨆ E ∈ partitions K, sumOfNormOfMeasure μ E
 
+/-- `variationAux` of the empty set is equal to zero. -/
 lemma variation_empty (μ : VectorMeasure X V) : variationAux μ ∅ = 0 := by
   simp only [variationAux, partitions, Set.subset_empty_iff, Set.mem_setOf_eq, sumOfNormOfMeasure,
     ENNReal.iSup_eq_zero, ofReal_eq_zero, and_imp]
   intro _ _ _
   simp_all
 
+/-- `s ↦ variationAux μ s` is monotone. -/
 lemma variation_mono (μ : VectorMeasure X V) (s₁ s₂ : Set X) (hs : s₁ ⊆ s₂) :
     variationAux μ s₁ ≤ variationAux μ s₂ := by
   exact iSup_le_iSup_of_subset (partitions_mono hs)
 
-lemma variation_iUnion_nat (μ : VectorMeasure X V) (s : ℕ → Set X)
+/-- `variationAux` is subadditive for countable disjoint unions. -/
+lemma variation_iUnion_nat [T2Space V] (μ : VectorMeasure X V) (s : ℕ → Set X)
     (hs : Pairwise (Function.onFun Disjoint s)) :
     variationAux μ (⋃ i, s i) ≤ ∑' (i : ℕ), variationAux μ (s i) := by
   -- Sufficies to prove that for any `E ∈ partitions (⋃ i, s i)`,
   -- `sumOfNormOfMeasure μ E` is bounded above by
   -- `∑' (i : ℕ), ⨆ E ∈ partitions (s i), sumOfNormOfMeasure μ E`.
-  -- In order to do this, for each `i` we define the partition `F i` by intersecting `E` with `s i`.
   suffices h : ∀ E ∈ partitions (⋃ i, s i), sumOfNormOfMeasure μ E ≤
       ∑' (i : ℕ), variationAux μ (s i) by
     exact iSup₂_le_iff.mpr h
   intro E hE
+  -- In order to proceed, for each `i` we define the partition `F i` by intersecting `E` with `s i`.
   let F i j := s i ∩ E j
+  -- The partitions created by intersection with the sets `s i` are still partitions.
   have F_partition : ∀ i, (fun j ↦ F i j) ∈ partitions (s i) := by
-    intro _
-    constructor
+    intro i
+    refine ⟨?_, ?_, ?_⟩
     · simp [F]
+    · intro j
+      simp only [F]
+      -- PROBLEM: need to show `MeasurableSet (s i ∩ E j)` but only know `MeasurableSet (E j)`.
+      sorry
     · intro _ _ hij
       simp only [Disjoint, Set.le_eq_subset, Set.subset_inter_iff, Set.bot_eq_empty,
         Set.subset_empty_iff, and_imp, F]
-      exact fun _ _ hx _ hx' ↦ Set.subset_eq_empty (hE.2 hij hx hx') rfl
-  have sum_F_le : ∀ i, sumOfNormOfMeasure μ (fun j ↦ F i j) ≤ variationAux μ (s i) := by
-    sorry
+      intro _ _ hx _ hx'
+      exact Set.subset_eq_empty (hE.2.2 hij hx hx') rfl
+  have sum_F_le (i : ℕ) : sumOfNormOfMeasure μ (fun j ↦ F i j) ≤ variationAux μ (s i) :=
+    le_biSup (sumOfNormOfMeasure μ) (F_partition i)
   calc sumOfNormOfMeasure μ E
     _ = ∑' n, ENNReal.ofReal ‖μ (E n)‖ := rfl
-    _ = ∑' i, ∑' j, ENNReal.ofReal ‖μ (F i j)‖ := by
+    _ = ∑' i, ENNReal.ofReal ‖μ (⋃ j, F j i)‖ := by
+      have (i : ℕ) : E i = ⋃ j, F j i := by
+        -- The proof of this `have` can be more efficient.
+        ext x
+        constructor
+        · simp only [F]
+          intro hx
+          simp only [Set.mem_iUnion, Set.mem_inter_iff, exists_and_right, F]
+          constructor
+          · apply Set.mem_iUnion.mp
+            exact (hE.1 i) hx
+          · exact hx
+        · simp [F]
+      simp_rw [this]
+    _ ≤ ∑' i, ∑' j, ENNReal.ofReal ‖μ (F i j)‖ := by
       -- Since the sets `F i j` are all disjoint.
+      have (i : ℕ) : μ (⋃ j, F i j) = ∑' j, μ (F i j) := by
+        apply VectorMeasure.of_disjoint_iUnion -- Requires `[T2Space V]`
+        · intro j
+          exact (F_partition i).2.1 j
+        · exact (F_partition i).2.2
+      gcongr with i
+
       sorry
     _ = ∑' i, sumOfNormOfMeasure μ (fun j ↦ F i j) := by
       -- By defintion of `sumOfNormOfMeasure`.
@@ -217,20 +246,21 @@ lemma variation_iUnion_nat (μ : VectorMeasure X V) (s : ℕ → Set X)
       sorry
 
 /-- The variation outer measure of a vector-valued measure. -/
-noncomputable def variation (μ : VectorMeasure X V) : OuterMeasure X where
+noncomputable def variation [T2Space V] (μ : VectorMeasure X V) : OuterMeasure X where
   measureOf  := variationAux μ
   empty      := variation_empty μ
   mono       := variation_mono μ _ _
   iUnion_nat := variation_iUnion_nat μ
 
 /-- Countable additivity of measurable sets. -/
-lemma variation_m_iUnion (μ : VectorMeasure X V) ⦃f : ℕ → Set X⦄ (hf : ∀ i, MeasurableSet (f i))
-    (hf' : Pairwise (Disjoint on f)) :
+lemma variation_m_iUnion [T2Space V] (μ : VectorMeasure X V) ⦃f : ℕ → Set X⦄
+    (hf : ∀ i, MeasurableSet (f i)) (hf' : Pairwise (Disjoint on f)) :
     (variation μ).trim (⋃ i, f i) = ∑' i, (variation μ).trim (f i) := by
   sorry
 
+-- NOTE: perhaps we can avoid using `trim` since `variationAux` already works for all sets.
 /-- The variation measure of a vector-valued measure. -/
-noncomputable def variation' (μ : VectorMeasure X V) : Measure X :=
+noncomputable def variation' [T2Space V] (μ : VectorMeasure X V) : Measure X :=
   {
     (variation μ).trim with
       m_iUnion := sorry
@@ -245,10 +275,12 @@ noncomputable def variation' (μ : VectorMeasure X V) : Measure X :=
   }
 
 
-end Variation
+end Variation2
 
 -- ## Alternative 3: define variation by first defining a content and hence a measure
 
+namespace Variation3
+open TopologicalSpace NNReal Function
 variable [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [BorelSpace X]
 open TopologicalSpace NNReal
 
@@ -315,6 +347,10 @@ theorem abs_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
   sorry
 
 -- TO DO : show that total variation is a norm on the space of vector-valued measures.
+
+end Variation3
+
+
 
 /-- **Theorem**
 Let `Φ` be a linear functional on `C_0(X, ℂ)`. Suppsoe that `μ`, `μ'` are complex Borel measures
