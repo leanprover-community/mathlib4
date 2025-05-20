@@ -328,6 +328,8 @@ theorem Matrix.toMatrix'_vecMulLinear (M : Matrix n m R) :
     M.vecMulLinear.toMatrix' = Mᵀ := by
   simpa using Mᵀ.toMatrix'_mulVecLin
 
+
+@[deprecated Matrix.toMatrix'_mulVecLin (since := "2025-05-20")]
 theorem LinearMap.toMatrix'_toLin' (M : Matrix m n R) : LinearMap.toMatrix' (Matrix.toLin' M) = M :=
   LinearMap.toMatrix'.apply_symm_apply M
 
@@ -336,6 +338,7 @@ theorem LinearMap.mulVecLin_toMatrix' (f : (n → R) →ₗ[R] m → R) :
     f.toMatrix'.mulVecLin = f :=
   Matrix.toLin'.apply_symm_apply f
 
+@[deprecated LinearMap.mulVecLin_toMatrix' (since := "2025-05-20")]
 theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
     Matrix.toLin' (LinearMap.toMatrix' f) = f :=
   Matrix.toLin'.apply_symm_apply f
@@ -401,10 +404,12 @@ theorem LinearMap.toMatrix'_algebraMap (x : R) :
     LinearMap.toMatrix' (algebraMap R (Module.End R (n → R)) x) = scalar n x := by
   simp [Module.algebraMap_end_eq_smul_id, smul_eq_diagonal_mul]
 
+@[deprecated Matrix.ker_mulVecLin_eq_bot_iff (since := "2025-05-20")]
 theorem Matrix.ker_toLin'_eq_bot_iff {M : Matrix n n R} :
     LinearMap.ker (Matrix.toLin' M) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 :=
   Matrix.ker_mulVecLin_eq_bot_iff
 
+@[deprecated Matrix.range_mulVecLin (since := "2025-05-20")]
 theorem Matrix.range_toLin' (M : Matrix m n R) :
     LinearMap.range (Matrix.toLin' M) = span R (range M.col) :=
   Matrix.range_mulVecLin _
@@ -575,7 +580,7 @@ theorem LinearMap.toMatrix_algebraMap (x : R) :
 theorem LinearMap.toMatrix_mulVec_repr (f : M₁ →ₗ[R] M₂) (x : M₁) :
     LinearMap.toMatrix v₁ v₂ f *ᵥ v₁.repr x = v₂.repr (f x) := by
   ext i
-  rw [← Matrix.toLin'_apply, LinearMap.toMatrix, LinearEquiv.trans_apply, Matrix.toLin'_toMatrix',
+  rw [← mulVecLin_apply, LinearMap.toMatrix, LinearEquiv.trans_apply, LinearMap.mulVecLin_toMatrix',
     LinearEquiv.arrowCongr_apply, v₂.equivFun_apply]
   congr
   exact v₁.equivFun.symm_apply_apply x
