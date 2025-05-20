@@ -603,6 +603,11 @@ def adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) : AbsoluteValue 
   add_le' _ _ := (isNonanchimedean_adicAbvDef v hb).add_le
     (fun x ↦ zero_le ((toNNReal (ne_zero_of_lt hb)) (v.valuation K x)))
 
+variable {R K} in
+/-- The `v`-adic absolute value is nonarchimedean -/
+theorem isNonarchimedean_adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :
+    IsNonarchimedean (α := K) (v.adicAbv hb) := isNonanchimedean_adicAbvDef v hb
+
 end AbsoluteValue
 
 end IsDedekindDomain.HeightOneSpectrum
