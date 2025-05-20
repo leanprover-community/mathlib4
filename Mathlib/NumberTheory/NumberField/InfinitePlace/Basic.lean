@@ -107,12 +107,6 @@ theorem conjugate_embedding_injective :
     (fun (v : InfinitePlace K) => ComplexEmbedding.conjugate v.embedding).Injective :=
   star_injective.comp <| embedding_injective K
 
-open ComplexEmbedding in
-@[simp]
-theorem conjugate_embedding_inj {v₁ v₂ : InfinitePlace K} :
-    conjugate v₁.embedding = conjugate v₂.embedding ↔ v₁ = v₂ :=
-  (conjugate_embedding_injective _).eq_iff
-
 variable (K) in
 theorem eq_of_embedding_eq_conjugate {v₁ v₂ : InfinitePlace K}
     (h : v₁.embedding = ComplexEmbedding.conjugate v₂.embedding) : v₁ = v₂ := by
