@@ -5037,7 +5037,6 @@ import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.CotangentLocalizationAway
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.DedekindDomain.Different
@@ -5067,7 +5066,11 @@ import Mathlib.RingTheory.Etale.Field
 import Mathlib.RingTheory.Etale.Kaehler
 import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.RingTheory.Extension
+import Mathlib.RingTheory.Extension.Basic
+import Mathlib.RingTheory.Extension.Cotangent.Basic
+import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
+import Mathlib.RingTheory.Extension.Generators
+import Mathlib.RingTheory.Extension.Presentation.Basic
 import Mathlib.RingTheory.FilteredAlgebra.Basic
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.FiniteLength
@@ -5105,7 +5108,6 @@ import Mathlib.RingTheory.FractionalIdeal.Operations
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Frobenius
-import Mathlib.RingTheory.Generators
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.FiniteType
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
@@ -5185,7 +5187,6 @@ import Mathlib.RingTheory.Jacobson.Radical
 import Mathlib.RingTheory.Jacobson.Ring
 import Mathlib.RingTheory.Jacobson.Semiprimary
 import Mathlib.RingTheory.Kaehler.Basic
-import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Kaehler.JacobiZariski
 import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.Kaehler.TensorProduct
@@ -5350,7 +5351,6 @@ import Mathlib.RingTheory.PowerSeries.Substitution
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
 import Mathlib.RingTheory.PowerSeries.WellKnown
-import Mathlib.RingTheory.Presentation
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
