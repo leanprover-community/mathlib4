@@ -73,10 +73,10 @@ variable [∀ i, Inv (G i)]
 instance instInv : Inv (∀ i, G i) where inv f i := (f i)⁻¹
 
 @[to_additive (attr := simp)]
-lemma inv_apply (f : ∀ i, G i) (i : ι) : x⁻¹ i = (f i)⁻¹ := rfl
+lemma inv_apply (f : ∀ i, G i) (i : ι) : f⁻¹ i = (f i)⁻¹ := rfl
 
 @[to_additive]
-lemma inv_def (f : ∀ i, G i) : x⁻¹ = fun i ↦ (f i)⁻¹ := rfl
+lemma inv_def (f : ∀ i, G i) : f⁻¹ = fun i ↦ (f i)⁻¹ := rfl
 
 variable {G : Type*} [Inv G]
 
@@ -84,7 +84,7 @@ variable {G : Type*} [Inv G]
 lemma _root_.Function.const_inv (a : G) : (const ι a)⁻¹ = const ι a⁻¹ := rfl
 
 @[to_additive]
-lemma inv_comp (f : β → G) (g : α → β) : x⁻¹ ∘ g = (f ∘ g)⁻¹ := rfl
+lemma inv_comp (f : β → G) (g : α → β) : f⁻¹ ∘ g = (f ∘ g)⁻¹ := rfl
 end Inv
 
 section Div
