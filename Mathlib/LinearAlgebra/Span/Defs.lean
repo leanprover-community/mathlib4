@@ -49,6 +49,8 @@ def span (s : Set M) : Submodule R M :=
 class IsPrincipal (S : Submodule R M) : Prop where
   principal (S) : ∃ a, S = span R {a}
 
+instance (x : R) : (span R {x}).IsPrincipal := ⟨x, rfl⟩
+
 end
 
 variable {s t : Set M}
@@ -369,6 +371,7 @@ theorem sup_eq_top_iff : p ⊔ p' = ⊤ ↔ ∀ m : M, ∃ u ∈ p, ∃ v ∈ p'
 
 end
 
+@[simp]
 theorem mem_span_singleton_self (x : M) : x ∈ R ∙ x :=
   subset_span rfl
 
@@ -446,6 +449,16 @@ theorem mem_span_insert {y} :
 theorem mem_span_pair {x y z : M} :
     z ∈ span R ({x, y} : Set M) ↔ ∃ a b : R, a • x + b • y = z := by
   simp_rw [mem_span_insert, mem_span_singleton, exists_exists_eq_and, eq_comm]
+
+theorem mem_span_triple {w x y z : M} :
+    w ∈ span R ({x, y, z} : Set M) ↔ ∃ a b c : R, a • x + b • y + c • z = w := by
+  rw [mem_span_insert]
+  simp_rw [mem_span_pair]
+  refine exists_congr fun a ↦ ⟨?_, ?_⟩
+  · rintro ⟨u, ⟨b, c, rfl⟩, rfl⟩
+    exact ⟨b, c, by rw [add_assoc]⟩
+  · rintro ⟨b, c, rfl⟩
+    exact ⟨b • y + c • z, ⟨b, c, rfl⟩, by rw [add_assoc]⟩
 
 @[simp]
 theorem span_eq_bot : span R (s : Set M) = ⊥ ↔ ∀ x ∈ s, (x : M) = 0 :=

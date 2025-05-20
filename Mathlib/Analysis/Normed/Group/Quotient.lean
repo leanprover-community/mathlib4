@@ -185,7 +185,7 @@ lemma norm_mk_eq_zero [hS : IsClosed (S : Set M)] : ‖(m : M ⧸ S)‖ = 0 ↔ 
 and `‖m‖ < ‖x‖ + ε`. -/
 @[to_additive "For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `mk' S m = x`
 and `‖m‖ < ‖x‖ + ε`."]
-lemma exists_norm_mk_lt (x : M ⧸ S) (hε : 0 < ε) : ∃ m : M,  m = x ∧ ‖m‖ < ‖x‖ + ε :=
+lemma exists_norm_mk_lt (x : M ⧸ S) (hε : 0 < ε) : ∃ m : M, m = x ∧ ‖m‖ < ‖x‖ + ε :=
   norm_lt_iff.1 <| lt_add_of_pos_right _ hε
 
 /-- For any `m : M` and any `0 < ε`, there is `s ∈ S` such that `‖m * s‖ < ‖mk' S m‖ + ε`. -/
