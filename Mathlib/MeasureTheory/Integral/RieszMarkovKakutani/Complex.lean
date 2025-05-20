@@ -77,9 +77,33 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞): HasSum f
     constructor
     · sorry
     · sorry
-  · intro h O hO
+  · rw [and_imp]
+    intro hf hf' nhd hnhd
     simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage]
-    sorry
+    -- Need to consider the case of `a = 0` and `a = ⊤` separately if using this approach.
+    -- So this might not be the best approach.
+    obtain ⟨ε, hε, hε'⟩ : ∃ ε > 0, Set.Ioc (a - ε) a ⊆ nhd := by
+      obtain ⟨t, ht⟩ := mem_nhds_iff.mp hnhd
+      sorry
+    suffices h : ∃ m, ∀ (n : ℕ), m ≤ n → ∑ i ∈ Finset.range n, f i ∈ Set.Ioc (a - ε) a by
+      obtain ⟨m, hm⟩ := h
+      use m
+      intro n hn
+      exact hε' (hm n hn)
+    simp only [Set.mem_Ioc]
+    have : a - ε < a := by
+      refine (ENNReal.sub_lt_self_iff ?_).mpr ?_
+      · sorry
+      · sorry
+    obtain ⟨m, hm⟩ := hf' (a - ε) (this)
+    use m
+    intro n hn
+    constructor
+    · have : ∑ i ∈ Finset.range m, f i ≤ ∑ i ∈ Finset.range n, f i := by
+        refine Finset.sum_le_sum_of_subset ?_
+        simpa
+      exact gt_of_ge_of_gt this hm
+    · exact hf n
 
 lemma ENNReal.exist_iSup_le_add_of_pos {ι : Type*} {ε : ℝ≥0∞} {f : ι → ℝ≥0∞} (hε : 0 < ε)
     (h : iSup f < ⊤) : ∃ (i : ι), iSup f ≤ f i + ε := by
