@@ -73,7 +73,7 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
     (∀ b < a, ∃ (n : ℕ), b < ∑ i ∈ Finset.range n, f i) := by
   obtain ha | ha | ha : a = 0 ∨ (0 < a ∧ a < ⊤) ∨ a = ∞ := by
     -- There must be a more tidy way to prove this tricotomy
-    -- But probably it already exists as a lemma for anything with top and bot.
+    -- Maybe it already exists as a lemma for anything with top and bot.
     obtain h | h : a = 0 ∨ a ≠ 0 := by exact eq_or_ne a 0
     · left
       exact h
@@ -137,12 +137,17 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
         exact gt_of_ge_of_gt this hm
       · exact hf n
   · -- The case `a = ∞`.
-    rw [ha]
-    simp
-    rw [hasSum_iff_tendsto_nat]
-
-    sorry
-
+    simp [ha, hasSum_iff_tendsto_nat, nhds_top]
+    constructor
+    · sorry
+    · intro h b hb
+      push_neg at hb
+      obtain ⟨n, hn⟩ := h b hb.symm.lt_top'
+      use n
+      intro m hm
+      have : ∑ i ∈ Finset.range n, f i ≤ ∑ i ∈ Finset.range m, f i :=
+        Finset.sum_le_sum_of_subset (by simpa)
+      exact gt_of_ge_of_gt this hn
 
 lemma ENNReal.exist_iSup_le_add_of_pos {ι : Type*} {ε : ℝ≥0∞} {f : ι → ℝ≥0∞} (hε : 0 < ε)
     (h : iSup f < ⊤) : ∃ (i : ι), iSup f ≤ f i + ε := by
