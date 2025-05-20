@@ -83,7 +83,7 @@ theorem Fin.one_eq_mk_of_lt {n : ℕ} (h : 1 < n) : have : NeZero n := NeZero.of
 section move
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
-
+#check Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
 theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.1) :
       ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧ p₀ < q ∧ q < p₂ := by
