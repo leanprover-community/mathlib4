@@ -34,13 +34,13 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category CartesianClosed MonoidalCategory ChosenFiniteProducts TwoSquare
+open Category CartesianClosed MonoidalCategory CartesianMonoidalCategory TwoSquare
 
 universe v u u'
 
 variable {C : Type u} [Category.{v} C]
 variable {D : Type u'} [Category.{v} D]
-variable [ChosenFiniteProducts C] [ChosenFiniteProducts D]
+variable [CartesianMonoidalCategory C] [CartesianMonoidalCategory D]
 variable (F : C ⥤ D) {L : D ⥤ C}
 
 /-- The Frobenius morphism for an adjunction `L ⊣ F` at `A` is given by the morphism
