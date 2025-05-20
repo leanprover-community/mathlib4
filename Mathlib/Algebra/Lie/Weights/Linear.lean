@@ -15,9 +15,9 @@ studies `M` via its weights. These are functions `χ : L → R` whose correspond
 `LieModule.genWeightSpace M χ`, is non-trivial. If `L` is Abelian or if `R` has characteristic zero
 (and `M` is finite-dimensional) then such `χ` are necessarily `R`-linear. However in general
 non-linear weights do exist. For example if we take:
- * `R`: the field with two elements (or indeed any perfect field of characteristic two),
- * `L`: `sl₂` (this is nilpotent in characteristic two),
- * `M`: the natural two-dimensional representation of `L`,
+* `R`: the field with two elements (or indeed any perfect field of characteristic two),
+* `L`: `sl₂` (this is nilpotent in characteristic two),
+* `M`: the natural two-dimensional representation of `L`,
 
 then there is a single weight and it is non-linear. (See remark following Proposition 9 of
 chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9](bourbaki1975b).)
@@ -27,15 +27,15 @@ have linear weights and provide typeclass instances in the two important cases t
 or `R` has characteristic zero.
 
 ## Main definitions
- * `LieModule.LinearWeights`: a typeclass encoding the fact that a given Lie module has linear
-   weights, and furthermore that the weights vanish on the derived ideal.
- * `LieModule.instLinearWeightsOfCharZero`: a typeclass instance encoding the fact that for an
-   Abelian Lie algebra, the weights of any Lie module are linear.
- * `LieModule.instLinearWeightsOfIsLieAbelian`: a typeclass instance encoding the fact that in
-   characteristic zero, the weights of any finite-dimensional Lie module are linear.
- * `LieModule.exists_forall_lie_eq_smul`: existence of simultaneous
-   eigenvectors from existence of simultaneous generalized eigenvectors for Noetherian Lie modules
-   with linear weights.
+* `LieModule.LinearWeights`: a typeclass encoding the fact that a given Lie module has linear
+  weights, and furthermore that the weights vanish on the derived ideal.
+* `LieModule.instLinearWeightsOfCharZero`: a typeclass instance encoding the fact that for an
+  Abelian Lie algebra, the weights of any Lie module are linear.
+* `LieModule.instLinearWeightsOfIsLieAbelian`: a typeclass instance encoding the fact that in
+  characteristic zero, the weights of any finite-dimensional Lie module are linear.
+* `LieModule.exists_forall_lie_eq_smul`: existence of simultaneous
+  eigenvectors from existence of simultaneous generalized eigenvectors for Noetherian Lie modules
+  with linear weights.
 
 -/
 
