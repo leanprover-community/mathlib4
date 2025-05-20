@@ -528,9 +528,6 @@ def equivVector : Vector α n ≃ _root_.Vector α n where
   left_inv := ofVector_toVector
   right_inv := toVector_ofVector
 
-/-- Convert a vector to an Array. -/
-def toArray : Vector α n → Array α := _root_.Vector.toArray ∘ toVector
-
 section InsertIdx
 
 variable {a : α}
