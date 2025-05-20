@@ -290,23 +290,23 @@ noncomputable def restrictPreimage (e : Pretrivialization F proj) {s : Set B}
 open scoped Classical in
 /-- Extend the total space of a pretrivialization from the preimage of a set to the whole space.
 The argument `c` ensures that `F` is nonempty when `Z` is nonempty, and supplies junk values. -/
-noncomputable def domExtend {s : Set B} (hs : IsOpen s)
-    (e : Pretrivialization F fun z : proj ⁻¹' s ↦ proj z) (c : Z → F) :
-    Pretrivialization F proj where
+noncomputable def domExtend {s : Set B} (e : Pretrivialization F fun z : proj ⁻¹' s ↦ proj z)
+    (c : Z → F) : Pretrivialization F proj where
   toFun z := if h : proj z ∈ s then e ⟨z, h⟩ else (proj z, c z)
   invFun x := e.invFun x
   source := Subtype.val '' e.source
-  target := e.target ∩ s ×ˢ univ
+  target := e.target
   map_source' _ := by
     rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩
     simpa [hzp, e.coe_fst hze] using e.map_source hze
-  map_target' x hx := by simpa using ⟨(e.invFun x).2, e.map_target hx.1⟩
+  map_target' x hx := by simpa using ⟨(e.invFun x).2, e.map_target hx⟩
   left_inv' _ := by rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩; simp [hzp, e.symm_apply_apply hze]
-  right_inv' x hx := (dif_pos (e.invFun x).2).trans (e.right_inv hx.1)
-  open_target := e.open_target.inter (hs.prod isOpen_univ)
-  baseSet := e.baseSet ∩ s
-  open_baseSet := e.open_baseSet.inter hs
-  source_eq := by ext; simp [e.source_eq]
+  right_inv' x hx := (dif_pos (e.invFun x).2).trans (e.right_inv hx)
+  open_target := e.open_target
+  baseSet := e.baseSet
+  open_baseSet := e.open_baseSet
+  source_eq := by
+    ext z; simpa [e.source_eq] using (e.proj_symm_apply' · ▸ (e.invFun (proj z, c z)).2)
   target_eq := by ext; simp [e.target_eq]
   proj_toFun _ := by rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩; simp [hzp, e.coe_fst hze]
 
@@ -769,16 +769,17 @@ noncomputable def restrictPreimage (e : Trivialization F proj) {s : Set B}
 
 /-- Extend the total space of a trivialization from the preimage of a set to the whole space.
 The argument `c` ensures that `F` is nonempty when `Z` is nonempty, and supplies junk values. -/
-noncomputable def domExtend {s : Set B} (hs : IsOpen s) (hps : IsOpen (proj ⁻¹' s))
+noncomputable def domExtend {s : Set B} (hps : IsOpen (proj ⁻¹' s))
     (e : Trivialization F fun z : proj ⁻¹' s ↦ proj z) (c : Z → F) :
     Trivialization F proj where
-  __ := e.toPretrivialization.domExtend hs c
+  __ := e.toPretrivialization.domExtend c
   open_source := hps.isOpenMap_subtype_val _ e.open_source
   continuousOn_toFun := Topology.IsInducing.subtypeVal.continuousOn_image_iff.mpr <| by
     convert e.continuousOn_toFun
     ext1 ⟨x, (hx : proj x ∈ s)⟩
     simpa [Pretrivialization.domExtend] using dif_pos hx
-  continuousOn_invFun := continuous_subtype_val.comp_continuousOn e.continuousOn_invFun
+  continuousOn_invFun := continuous_subtype_val.comp_continuousOn <| by
+    convert e.continuousOn_invFun
 
 /-- Extend the base of a trivialization from a set to the whole space. The argument `c` ensures
 that `Z` cannot be empty when `B` and `F` are both nonempty, and supplies junk values. -/
