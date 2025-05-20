@@ -101,23 +101,6 @@ lemma aux {c : ℝ} (hc : c < 0) :
     rw [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
     simp
 
-lemma MeasureTheory.Measure.prod_smul_left {α β : Type*}
-    {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {μ : Measure α} {ν : Measure β} [SFinite ν] (c : ℝ≥0∞) :
-    (c • μ).prod ν = c • (μ.prod ν) := by
-  ext s hs
-  rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs]
-  simp
-
-lemma MeasureTheory.Measure.prod_smul_right {α β : Type*}
-    {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {μ : Measure α} {ν : Measure β} [SFinite ν] (c : ℝ≥0∞) :
-    μ.prod (c • ν) = c • (μ.prod ν) := by
-  ext s hs
-  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, smul_eq_mul]
-  rw [lintegral_const_mul]
-  exact measurable_measure_prodMk_left hs
-
 end Aux
 
 namespace ProbabilityTheory
