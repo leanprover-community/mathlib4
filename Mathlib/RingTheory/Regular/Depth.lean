@@ -119,6 +119,20 @@ end IsSMulRegular
 
 # The Rees theorem
 
+In this section we proved the rees theorem for depth, which build the relation between
+the vanishing order of `Ext` and maximal regular sequence.
+
+# Main results
+
+* `lemma222` : for `n : ℕ`, noetherian ring `R`, `I : Ideal R`,
+  `M : ModuleCat R` finitely generated and nontrivial satisfying `IM < M`, we proved TFAE,
+  · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
+    zerolucus of `I`, `∀ i < n, Ext N M i = 0`
+  · `∀ i < n, Ext (A⧸I) M i = 0`
+  · there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
+    zerolucus of `I`, `∀ i < n, Ext N M i = 0`
+  · there exist a `M`-regular sequence of length `n` with every element in `I`
+
 -/
 
 universe w v u
@@ -132,7 +146,7 @@ local instance : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   --CategoryTheory.HasExt.standard (ModuleCat.{v} R)
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
-open Pointwise ModuleCat
+open Pointwise ModuleCat IsSMulRegular
 
 lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     ∀ M : ModuleCat.{v} R, Nontrivial M → Module.Finite R M →
