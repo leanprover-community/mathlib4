@@ -3,12 +3,10 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.RingTheory.Ideal.Int
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Kummer-Dedekind criterion for the splitting of prime numbers
@@ -232,3 +230,5 @@ theorem Ideal.ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp
   rw [ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply]
 
 end NumberField
+
+#min_imports
