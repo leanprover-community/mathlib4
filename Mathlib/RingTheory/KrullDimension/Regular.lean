@@ -80,10 +80,48 @@ theorem Fin.one_eq_mk_of_lt {n : ℕ} (h : 1 < n) : have : NeZero n := NeZero.of
     1 = Fin.mk 1 h :=
   Fin.val_inj.mp (Nat.mod_eq_of_lt h)
 
+variable {R : Type*} [CommRing R] [IsNoetherianRing R]
+
+local notation "𝔪" => IsLocalRing.maximalIdeal R
+
 section move
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 #check Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
+
+theorem Ideal.map_strict_mono {R S : Type*} {F : Type u_1} [Semiring R] [Semiring S] [FunLike F R S]
+    [FunLike F R S] {f : F} [RingHomClass F R S] (hf : Function.Surjective ⇑f) {I J : Ideal R}
+    (hi : RingHom.ker f ≤ I) (hj : RingHom.ker f ≤ J) (h : I < J) : map f I < map f J := by
+  sorry
+
+theorem Ideal.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : Ideal R}
+    [p₀.IsPrime] [p₁.IsPrime] (h₀ : p₀ < p₁) (h₁ : p₁ < 𝔪) {x : R} (hx : x ∈ 𝔪) :
+      ∃ q : Ideal R, q.IsPrime ∧ x ∈ q ∧ p₀ < q ∧ q < 𝔪 := by
+  by_cases hn : x ∈ p₀
+  · exact ⟨p₁, inferInstance, h₀.le hn, h₀, h₁⟩
+  let f := Quotient.mk p₀
+  have hf : Function.Surjective f := Quotient.mk_surjective
+  obtain ⟨q, hq⟩ := (p₀ + span {x}).nonempty_minimalPrimes <|
+    sup_le (IsLocalRing.le_maximalIdeal_of_isPrime p₀) ((span_singleton_le_iff_mem 𝔪).mpr hx)
+      |>.trans_lt (IsMaximal.isPrime' 𝔪).1.lt_top |>.ne
+  have := minimalPrimes_isPrime hq
+  have : (map f 𝔪).IsPrime := map_isPrime_of_surjective hf <|
+    (congrArg (fun a ↦ a ≤ 𝔪) mk_ker).mpr (IsLocalRing.le_maximalIdeal_of_isPrime p₀)
+  have hp1 : (p₁.map f).IsPrime :=
+    map_isPrime_of_surjective hf ((congrArg (fun a ↦ a ≤ p₁) mk_ker).mpr h₀.le)
+  have hs : span {x} ≤ p₀ + span {x} := le_sup_right
+  have h0 : p₀ ≤ p₀ + span {x} := le_sup_left
+  have hxq : x ∈ q := hq.1.2 (hs (mem_span_singleton_self x))
+  have h : (q.map f).height ≤ 1 := sorry
+  refine ⟨q, hq.1.1, hxq, lt_of_le_not_le (h0.trans hq.1.2) fun h ↦ hn (h hxq), ?_⟩
+  apply lt_of_le_of_ne (IsLocalRing.le_maximalIdeal_of_isPrime q)
+  intro hqm
+  rw [hqm] at h
+  have : (p₁.map f).height < 1 := by
+    refine height_le_iff.mp h (p₁.map f) hp1 ?_
+    apply (map_mono h₁.le).lt_of_not_le ?_
+    sorry
+  sorry
+
 theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.1) :
       ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧ p₀ < q ∧ q < p₂ := by
@@ -176,12 +214,9 @@ theorem nontrival_quotSMulTop_of_mem_annihilator_jacobson [h : Nontrivial M] {x 
 
 end QuotSMulTop
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
+variable [IsLocalRing R] {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
 
 open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum
-
-local notation "𝔪" => IsLocalRing.maximalIdeal R
 
 open scoped Classical in
 /-- If $M$ is a finite module ove a local Noetherian ring $R$, then $\dim M \le \dim (M/xM) + 1$
