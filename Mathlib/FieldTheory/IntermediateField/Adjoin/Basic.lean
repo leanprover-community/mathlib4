@@ -304,7 +304,7 @@ lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
   refine ⟨?_, (· ▸ IntermediateField.finrank_top)⟩
   rw [← Subalgebra.bot_eq_top_iff_finrank_eq_one, ← top_le_iff, ← top_le_iff]
   intro H x _
-  obtain ⟨x, rfl⟩ := @H x trivial
+  obtain ⟨x, rfl⟩ := @H x IntermediateField.mem_top
   exact x.2
 
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=

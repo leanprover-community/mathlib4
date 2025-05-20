@@ -411,8 +411,7 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
 instance : HasCompl (SubMulAction R M) where
   compl s := ⟨sᶜ, by simp⟩
 
-theorem compl_def (s : SubMulAction R M) :
-  sᶜ.carrier = (s : Set M)ᶜ := rfl
+theorem compl_def (s : SubMulAction R M) : sᶜ.carrier = (s : Set M)ᶜ := rfl
 
 end MulActionGroup
 
