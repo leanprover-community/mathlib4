@@ -42,7 +42,7 @@ def MellinConvergent (f : ℝ → E) (s : ℂ) : Prop :=
   IntegrableOn (fun t : ℝ => (t : ℂ) ^ (s - 1) • f t) (Ioi 0)
 
 theorem MellinConvergent.const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s) {𝕜 : Type*}
-    [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
+    [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     MellinConvergent (fun t => c • f t) s := by
   simpa only [MellinConvergent, smul_comm] using hf.smul c
 
@@ -99,9 +99,13 @@ theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
   refine setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
   simp_rw [← sub_add_eq_add_sub, cpow_add _ _ (ofReal_ne_zero.2 <| ne_of_gt ht), mul_smul]
 
-theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
-    mellin (fun t => c • f t) s = c • mellin f s := by simp only [mellin, smul_comm, integral_smul]
+/-- Compatibility with scalar multiplication by a normed field. For scalar multiplication by more
+general rings assuming *a priori* that the Mellin transform is defined, see
+`hasMellin_const_smul`. -/
+theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*}
+    [NormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
+    mellin (fun t => c • f t) s = c • mellin f s := by
+  simp only [mellin, smul_comm, integral_smul]
 
 theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / a) s = mellin f s / a := by
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
@@ -164,6 +168,11 @@ theorem hasMellin_sub {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
   ⟨by simpa only [MellinConvergent, smul_sub] using hf.sub hg, by
     simpa only [mellin, smul_sub] using integral_sub hf hg⟩
 
+theorem hasMellin_const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
+    {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℂ R E] (c : R) :
+    HasMellin (fun t => c • f t) s  (c • mellin f s) :=
+  ⟨hf.const_smul c, by simp [HasMellin, mellin, smul_comm, hf.integral_smul]⟩
+
 end Defs
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -216,7 +225,7 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
 `b < s`, its Mellin transform converges on some right neighbourhood of `0`. -/
 theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     (hfc : AEStronglyMeasurable f <| volume.restrict (Ioi 0))
-    (hf :  f =O[𝓝[>] 0] (· ^ (-b))) {s : ℝ} (hs : b < s) :
+    (hf : f =O[𝓝[>] 0] (· ^ (-b))) {s : ℝ} (hs : b < s) :
     ∃ c : ℝ, 0 < c ∧ IntegrableOn (fun t : ℝ => t ^ (s - 1) * f t) (Ioc 0 c) := by
   obtain ⟨d, _, hd'⟩ := hf.exists_pos
   simp_rw [IsBigOWith, eventually_nhdsWithin_iff, Metric.eventually_nhds_iff, gt_iff_lt] at hd'
