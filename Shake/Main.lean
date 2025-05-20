@@ -220,7 +220,8 @@ Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Par
 and `endPos` is the position of the end of the header.
 -/
 def parseHeaderFromString (text path : String) :
-    IO (System.FilePath × Parser.InputContext × TSyntax ``Parser.Module.header × String.Pos) := do
+    IO (System.FilePath × Parser.InputContext ×
+      TSyntaxArray ``Parser.Module.import × String.Pos) := do
   let inputCtx := Parser.mkInputContext text path
   let (header, parserState, msgs) ← Parser.parseHeader inputCtx
   if !msgs.toList.isEmpty then -- skip this file if there are parse errors
@@ -229,7 +230,7 @@ def parseHeaderFromString (text path : String) :
   -- the insertion point for `add` is the first newline after the imports
   let insertion := header.raw.getTailPos?.getD parserState.pos
   let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
-  pure (path, inputCtx, header, insertion)
+  pure (path, inputCtx, .mk header.raw[2].getArgs, insertion)
 
 /-- Parse a source file to extract the location of the import lines, for edits and error messages.
 
@@ -237,12 +238,16 @@ Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Par
 and `endPos` is the position of the end of the header.
 -/
 def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
-    IO (System.FilePath × Parser.InputContext × TSyntax ``Parser.Module.header × String.Pos) := do
+    IO (System.FilePath × Parser.InputContext ×
+      TSyntaxArray ``Parser.Module.import × String.Pos) := do
   -- Parse the input file
   let some path ← srcSearchPath.findModuleWithExt "lean" mod
     | throw <| .userError "error: failed to find source file for {mod}"
   let text ← IO.FS.readFile path
   parseHeaderFromString text path.toString
+
+/-- Gets the name `Foo` in `import Foo`. -/
+def importId (stx : TSyntax ``Parser.Module.import) : Name := stx.raw[3].getId
 
 /-- Analyze and report issues from module `i`. Arguments:
 
@@ -295,10 +300,10 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     edits.remove s.modNames[i]! s.modNames[n]!
   if githubStyle then
     try
-      let (path, inputCtx, header, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
-      for stx in header.raw[2].getArgs do
-        if toRemove.any fun i => s.modNames[i]! == stx[3].getId then
-          let pos := inputCtx.fileMap.toPosition stx.getPos?.get!
+      let (path, inputCtx, imports, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
+      for stx in imports do
+        if toRemove.any fun i => s.modNames[i]! == importId stx then
+          let pos := inputCtx.fileMap.toPosition stx.raw.getPos?.get!
           println! "{path}:{pos.line}:{pos.column+1}: warning: unused import \
             (use `lake exe shake --fix` to fix this, or `lake exe shake --update` to ignore)"
       if !toAdd.isEmpty then
@@ -599,7 +604,7 @@ def main (args : List String) : IO UInt32 := do
       out.qsort Name.lt
 
     -- Parse the input file
-    let (path, inputCtx, header, insertion) ←
+    let (path, inputCtx, imports, insertion) ←
       try parseHeader srcSearchPath mod
       catch e => println! e.toString; return count
     let text := inputCtx.input
@@ -608,12 +613,12 @@ def main (args : List String) : IO UInt32 := do
     let mut pos : String.Pos := 0
     let mut out : String := ""
     let mut seen : NameSet := {}
-    for stx in header.raw[2].getArgs do
-      let mod := stx[3].getId
+    for stx in imports do
+      let mod := importId stx
       if remove.contains mod || seen.contains mod then
-        out := out ++ text.extract pos stx.getPos?.get!
+        out := out ++ text.extract pos stx.raw.getPos?.get!
         -- We use the end position of the syntax, but include whitespace up to the first newline
-        pos := text.findAux (· == '\n') text.endPos stx.getTailPos?.get! + ⟨1⟩
+        pos := text.findAux (· == '\n') text.endPos stx.raw.getTailPos?.get! + ⟨1⟩
       seen := seen.insert mod
     out := out ++ text.extract pos insertion
     for mod in add do
@@ -637,6 +642,5 @@ def main (args : List String) : IO UInt32 := do
 /-- info: #[`Lake.CLI.Main] -/
 #guard_msgs (whitespace := lax) in
 #eval show MetaM _ from do
-  let (_, _, header, _) ← parseHeaderFromString (← getFileMap).source (← getFileName)
-  let imports := header.raw[2].getArgs
-  return imports.map fun i => i[3].getId
+  let (_, _, imports, _) ← parseHeaderFromString (← getFileMap).source (← getFileName)
+  return imports.map importId
