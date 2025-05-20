@@ -3,7 +3,6 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
-import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Data.Int.WithZero
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
