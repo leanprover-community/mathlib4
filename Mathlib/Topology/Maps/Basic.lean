@@ -168,12 +168,6 @@ theorem dense_iff (hf : IsInducing f) {s : Set X} :
 theorem of_subsingleton [Subsingleton X] (f : X → Y) : IsInducing f :=
   ⟨Subsingleton.elim _ _⟩
 
-theorem continuous_iff_of_surjective (ind : IsInducing f) (surj : Function.Surjective f) :
-    Continuous (g ∘ f) ↔ Continuous g := by
-  refine ⟨fun h ↦ ⟨fun U hU ↦ ?_⟩, (·.comp ind.continuous)⟩
-  have ⟨V, hV, (eq : _ = f ⁻¹' (g ⁻¹' U))⟩ := ind.isOpen_iff.mp (hU.preimage h)
-  rwa [← surj.preimage_injective eq]
-
 end IsInducing.IsInducing
 
 namespace IsEmbedding
@@ -301,6 +295,12 @@ theorem isQuotientMap_iff_isClosed :
 alias quotientMap_iff_closed := isQuotientMap_iff_isClosed
 @[deprecated (since := "2024-11-19")]
 alias isQuotientMap_iff_closed := isQuotientMap_iff_isClosed
+
+theorem IsInducing.isQuotientMap_of_surjective (ind : IsInducing f) (surj : Function.Surjective f) :
+    IsQuotientMap f := by
+  refine isQuotientMap_iff.mpr ⟨surj, fun s ↦ ⟨ind.continuous.isOpen_preimage s, fun h ↦ ?_⟩⟩
+  have ⟨U, hU, eq⟩ := ind.isOpen_iff.mp h
+  rwa [← surj.preimage_injective eq]
 
 namespace IsQuotientMap
 
