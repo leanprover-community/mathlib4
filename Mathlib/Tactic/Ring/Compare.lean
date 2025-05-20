@@ -18,9 +18,9 @@ respectively, `3 + (x + y)` and `4 + (x + y)`, which differ by an additive const
 
 ## Main declarations
 
-* `Mathlib/Tactic/Ring/proveLE.lean`: prove goals of the form `A ≤ B` (subject to the scope constraints
+* `Mathlib.Tactic.Ring.proveLE`: prove goals of the form `A ≤ B` (subject to the scope constraints
   described)
-* `Mathlib/Tactic/Ring/proveLT.lean`: prove goals of the form `A < B` (subject to the scope constraints
+* `Mathlib.Tactic.Ring.proveLT`: prove goals of the form `A < B` (subject to the scope constraints
   described)
 
 ## Implementation notes

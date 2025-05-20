@@ -26,10 +26,10 @@ of the derivative. This is why their names reflect their uses, and not how they 
 
 ## Implementation details
 
-Note that this file is imported by `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`. Hence, derivatives are
-not defined yet. The property of uniqueness of the derivative is therefore proved in
-`Mathlib/Analysis/Calculus/FDeriv/Basic.lean`, but based on the properties of the tangent cone we prove
-here.
+Note that this file is imported by `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`. Hence, derivatives
+are not defined yet. The property of uniqueness of the derivative is therefore proved in
+`Mathlib/Analysis/Calculus/FDeriv/Basic.lean`, but based on the properties of the tangent cone we
+prove here.
 -/
 
 

@@ -72,7 +72,7 @@ A term preceded by `←` gets moved to the left, while a term without `←` gets
   The resulting permutation therefore places `2 * 3` and `4 * 7` to the left (in this order) and
   `4 * (5 + 6)` to the right: `2 * 3 + 4 * 7 + 10 * 10 + 4 * (5 + 6)`.
 
-For the technical description, look at `Mathlib/MoveAdd/weight.lean` and `Mathlib/MoveAdd/reorderUsing.lean`.
+For the technical description, look at `Mathlib.MoveAdd.weight` and `Mathlib.MoveAdd.reorderUsing`.
 
 `move_add` is the specialization of a more general `move_oper` tactic that takes a binary,
 associative, commutative operation and a list of "operand atoms" and rearranges the operation.

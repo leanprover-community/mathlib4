@@ -30,9 +30,11 @@ For `i : I`, let `e C i : LocallyConstant C ℤ` denote the map `fun f ↦ (if f
 The basis will consist of products `e C iᵣ * ⋯ * e C i₁` with `iᵣ > ⋯ > i₁` which cannot be written
 as linear combinations of lexicographically smaller products. We call this set `GoodProducts C`.
 
-What is proved by ordinal induction (in `Mathlib/Topology/Category/Profinite/Nobeling/ZeroLimit.lean` and
-`Mathlib/Topology/Category/Profinite/Nobeling/Successor.lean`) is that this set is linearly independent.
-The fact that it spans is proved directly in `Mathlib/Topology/Category/Profinite/Nobeling/Span.lean`.
+What is proved by ordinal induction (in
+`Mathlib/Topology/Category/Profinite/Nobeling/ZeroLimit.lean` and
+`Mathlib/Topology/Category/Profinite/Nobeling/Successor.lean`) is that this set is linearly
+independent. The fact that it spans is proved directly in
+`Mathlib/Topology/Category/Profinite/Nobeling/Span.lean`.
 
 ## References
 
