@@ -50,7 +50,7 @@ structure HomologyData where
   /-- a right homology data -/
   right : S.RightHomologyData
   /-- the compatibility isomorphism relating the two dual notions of
-    `LeftHomologyData` and `RightHomologyData`  -/
+  `LeftHomologyData` and `RightHomologyData` -/
   iso : left.H ≅ right.H
   /-- the pentagon relation expressing the compatibility of the left
   and right homology data -/
@@ -290,7 +290,8 @@ def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ : S₁ ⟶ S₂}
 /-- When `S₁.f`, `S₁.g`, `S₂.f` and `S₂.g` are all zero, the action on homology of a
 morphism `φ : S₁ ⟶ S₂` is given by the action `φ.τ₂` on the middle objects. -/
 @[simps]
-def ofZeros (φ : S₁ ⟶ S₂) (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
+noncomputable def ofZeros (φ : S₁ ⟶ S₂)
+    (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
     HomologyMapData φ (HomologyData.ofZeros S₁ hf₁ hg₁) (HomologyData.ofZeros S₂ hf₂ hg₂) where
   left := LeftHomologyMapData.ofZeros φ hf₁ hg₁ hf₂ hg₂
   right := RightHomologyMapData.ofZeros φ hf₁ hg₁ hf₂ hg₂
@@ -326,7 +327,7 @@ def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
 /-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
 data (for the identity of `S`) which relates the homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
-def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
+noncomputable def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
     (c : CokernelCofork S.f) (hc : IsColimit c) :
     HomologyMapData (𝟙 S) (HomologyData.ofZeros S hf hg)
       (HomologyData.ofIsColimitCokernelCofork S hg c hc) where
@@ -337,7 +338,7 @@ def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
 data (for the identity of `S`) which relates the homology data
 `HomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]
-def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
+noncomputable def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
     (c : KernelFork S.g) (hc : IsLimit c) :
     HomologyMapData (𝟙 S)
       (HomologyData.ofIsLimitKernelFork S hf c hc)
