@@ -59,6 +59,34 @@ theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
 
 end RestrictScalars
 
+section RestrictScalarsSemi
+
+variable {S S₂ : Type*} [Semiring S] [Semiring S₂] [Module R M] [Module R M₂] [Module S M]
+[Module S₂ M₂] (e : S →+* S₂) {e' : S₂ →+* S} [RingHomInvPair e e'] [RingHomInvPair e' e]
+
+/-- If `M` and `M₂` are both `R`-modules and modules for `S` and `S₂`, respectively, then for any
+ring isomorphism `e` between `S` and `S₂` and any `e`-semilinear equivalence between `M` and `M₂`
+that respects the `R`-action, we obtain an `R`-linear equivalence between `M` and `M₂`. -/
+@[simps]
+def restrictScalarsSemi {f : M ≃ₛₗ[e] M₂} (hf : ∀ (r : R) (x : M), f (r • x) = r • f x) :
+    M ≃ₗ[R] M₂ where
+  toFun := f
+  map_add' := LinearEquiv.map_add f
+  map_smul' := hf
+  invFun := f.symm
+  left_inv := symm_apply_apply f
+  right_inv := apply_symm_apply f
+
+@[simp]
+theorem restrictScalarsSemi_inj {f g : M ≃ₛₗ[e] M₂} (hf : ∀ (r : R) (x : M), f (r • x) = r • f x)
+    (hg : ∀ (r : R) (x : M), g (r • x) = r • g x) :
+    restrictScalarsSemi e hf = restrictScalarsSemi e hg ↔ f = g := by
+  simp only [restrictScalarsSemi, mk.injEq, LinearMap.mk.injEq, AddHom.mk.injEq, DFunLike.coe_fn_eq,
+    and_iff_left_iff_imp]
+  exact fun a ↦ congrArg symm a
+
+end RestrictScalarsSemi
+
 theorem _root_.Module.End.isUnit_iff [Module R M] (f : Module.End R M) :
     IsUnit f ↔ Function.Bijective f :=
   ⟨fun h ↦
