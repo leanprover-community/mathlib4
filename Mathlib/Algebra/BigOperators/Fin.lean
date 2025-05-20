@@ -27,12 +27,12 @@ assert_not_exists Field
 
 open Finset
 
-variable {α : Type*} {β : Type*}
+variable {α M : Type*}
 
 namespace Finset
 
 @[to_additive]
-theorem prod_range [CommMonoid β] {n : ℕ} (f : ℕ → β) :
+theorem prod_range [CommMonoid M] {n : ℕ} (f : ℕ → M) :
     ∏ i ∈ Finset.range n, f i = ∏ i : Fin n, f i :=
   (Fin.prod_univ_eq_prod_range _ _).symm
 
@@ -40,136 +40,131 @@ end Finset
 
 namespace Fin
 
+section CommMonoid
+
+variable [CommMonoid M] {n : ℕ}
+
 @[to_additive]
-theorem prod_ofFn [CommMonoid β] {n : ℕ} (f : Fin n → β) : (List.ofFn f).prod = ∏ i, f i := by
+theorem prod_ofFn (f : Fin n → M) : (List.ofFn f).prod = ∏ i, f i := by
   simp [prod_eq_multiset_prod]
 
 @[to_additive]
-theorem prod_univ_def [CommMonoid β] {n : ℕ} (f : Fin n → β) :
-    ∏ i, f i = ((List.finRange n).map f).prod := by
+theorem prod_univ_def (f : Fin n → M) : ∏ i, f i = ((List.finRange n).map f).prod := by
   rw [← List.ofFn_eq_map, prod_ofFn]
 
-/-- A product of a function `f : Fin 0 → β` is `1` because `Fin 0` is empty -/
-@[to_additive "A sum of a function `f : Fin 0 → β` is `0` because `Fin 0` is empty"]
-theorem prod_univ_zero [CommMonoid β] (f : Fin 0 → β) : ∏ i, f i = 1 :=
+/-- A product of a function `f : Fin 0 → M` is `1` because `Fin 0` is empty -/
+@[to_additive "A sum of a function `f : Fin 0 → M` is `0` because `Fin 0` is empty"]
+theorem prod_univ_zero (f : Fin 0 → M) : ∏ i, f i = 1 :=
   rfl
 
-/-- A product of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)`
+/-- A product of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)`
 is the product of `f x`, for some `x : Fin (n + 1)` times the remaining product -/
-@[to_additive "A sum of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)` is the sum of
+@[to_additive "A sum of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)` is the sum of
 `f x`, for some `x : Fin (n + 1)` plus the remaining sum"]
-theorem prod_univ_succAbove [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) (x : Fin (n + 1)) :
+theorem prod_univ_succAbove (f : Fin (n + 1) → M) (x : Fin (n + 1)) :
     ∏ i, f i = f x * ∏ i : Fin n, f (x.succAbove i) := by
-  rw [univ_succAbove, prod_cons, Finset.prod_map _ x.succAboveEmb]
-  rfl
+  rw [univ_succAbove n x, prod_cons, Finset.prod_map, coe_succAboveEmb]
 
-/-- A product of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)`
+/-- A product of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)`
 is the product of `f 0` plus the remaining product -/
-@[to_additive "A sum of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)` is the sum of
+@[to_additive "A sum of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)` is the sum of
 `f 0` plus the remaining sum"]
-theorem prod_univ_succ [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
+theorem prod_univ_succ (f : Fin (n + 1) → M) :
     ∏ i, f i = f 0 * ∏ i : Fin n, f i.succ :=
   prod_univ_succAbove f 0
 
-/-- A product of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)`
+/-- A product of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)`
 is the product of `f (Fin.last n)` plus the remaining product -/
-@[to_additive "A sum of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)` is the sum of
+@[to_additive "A sum of a function `f : Fin (n + 1) → M` over all `Fin (n + 1)` is the sum of
 `f (Fin.last n)` plus the remaining sum"]
-theorem prod_univ_castSucc [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
+theorem prod_univ_castSucc (f : Fin (n + 1) → M) :
     ∏ i, f i = (∏ i : Fin n, f (Fin.castSucc i)) * f (last n) := by
   simpa [mul_comm] using prod_univ_succAbove f (last n)
 
 @[to_additive (attr := simp)]
-theorem prod_univ_get [CommMonoid α] (l : List α) : ∏ i : Fin l.length, l[i.1] = l.prod := by
+theorem prod_univ_getElem (l : List M) : ∏ i : Fin l.length, l[i.1] = l.prod := by
   simp [Finset.prod_eq_multiset_prod]
 
+@[deprecated (since := "2025-04-19")]
+alias sum_univ_get := sum_univ_getElem
+
+@[to_additive existing, deprecated (since := "2025-04-19")]
+alias prod_univ_get := prod_univ_getElem
+
 @[to_additive (attr := simp)]
-theorem prod_univ_get' [CommMonoid β] (l : List α) (f : α → β) :
+theorem prod_univ_fun_getElem (l : List α) (f : α → M) :
     ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
 
+@[deprecated (since := "2025-04-19")]
+alias sum_univ_get' := sum_univ_fun_getElem
+
+@[to_additive existing, deprecated (since := "2025-04-19")]
+alias prod_univ_get' := prod_univ_fun_getElem
+
 @[to_additive (attr := simp)]
-theorem prod_cons [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
-    (∏ i : Fin n.succ, (cons x f : Fin n.succ → β) i) = x * ∏ i : Fin n, f i := by
+theorem prod_cons (x : M) (f : Fin n → M) :
+    (∏ i : Fin n.succ, (cons x f : Fin n.succ → M) i) = x * ∏ i : Fin n, f i := by
   simp_rw [prod_univ_succ, cons_zero, cons_succ]
 
 @[to_additive (attr := simp)]
-theorem prod_snoc [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
-    (∏ i : Fin n.succ, (snoc f x : Fin n.succ → β) i) = (∏ i : Fin n, f i) * x := by
+theorem prod_snoc (x : M) (f : Fin n → M) :
+    (∏ i : Fin n.succ, (snoc f x : Fin n.succ → M) i) = (∏ i : Fin n, f i) * x := by
   simp [prod_univ_castSucc]
 
 @[to_additive sum_univ_one]
-theorem prod_univ_one [CommMonoid β] (f : Fin 1 → β) : ∏ i, f i = f 0 := by simp
+theorem prod_univ_one (f : Fin 1 → M) : ∏ i, f i = f 0 := by simp
 
 @[to_additive (attr := simp)]
-theorem prod_univ_two [CommMonoid β] (f : Fin 2 → β) : ∏ i, f i = f 0 * f 1 := by
+theorem prod_univ_two (f : Fin 2 → M) : ∏ i, f i = f 0 * f 1 := by
   simp [prod_univ_succ]
 
 @[to_additive]
-theorem prod_univ_two' [CommMonoid β] (f : α → β) (a b : α) :
-    ∏ i, f (![a, b] i) = f a * f b :=
+theorem prod_univ_two' (f : α → M) (a b : α) : ∏ i, f (![a, b] i) = f a * f b :=
   prod_univ_two _
 
 @[to_additive]
-theorem prod_univ_three [CommMonoid β] (f : Fin 3 → β) : ∏ i, f i = f 0 * f 1 * f 2 := by
+theorem prod_univ_three (f : Fin 3 → M) : ∏ i, f i = f 0 * f 1 * f 2 := by
   rw [prod_univ_castSucc, prod_univ_two]
   rfl
 
 @[to_additive]
-theorem prod_univ_four [CommMonoid β] (f : Fin 4 → β) : ∏ i, f i = f 0 * f 1 * f 2 * f 3 := by
+theorem prod_univ_four (f : Fin 4 → M) : ∏ i, f i = f 0 * f 1 * f 2 * f 3 := by
   rw [prod_univ_castSucc, prod_univ_three]
   rfl
 
 @[to_additive]
-theorem prod_univ_five [CommMonoid β] (f : Fin 5 → β) :
-    ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 := by
+theorem prod_univ_five (f : Fin 5 → M) : ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 := by
   rw [prod_univ_castSucc, prod_univ_four]
   rfl
 
 @[to_additive]
-theorem prod_univ_six [CommMonoid β] (f : Fin 6 → β) :
-    ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 := by
+theorem prod_univ_six (f : Fin 6 → M) : ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 := by
   rw [prod_univ_castSucc, prod_univ_five]
   rfl
 
 @[to_additive]
-theorem prod_univ_seven [CommMonoid β] (f : Fin 7 → β) :
-    ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 * f 6 := by
+theorem prod_univ_seven (f : Fin 7 → M) : ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 * f 6 := by
   rw [prod_univ_castSucc, prod_univ_six]
   rfl
 
 @[to_additive]
-theorem prod_univ_eight [CommMonoid β] (f : Fin 8 → β) :
+theorem prod_univ_eight (f : Fin 8 → M) :
     ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 * f 6 * f 7 := by
   rw [prod_univ_castSucc, prod_univ_seven]
   rfl
 
-theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) :
-    (∑ s : Finset (Fin n), a ^ s.card * b ^ (n - s.card)) = (a + b) ^ n := by
-  simpa using Fintype.sum_pow_mul_eq_add_pow (Fin n) a b
-
-theorem prod_const [CommMonoid α] (n : ℕ) (x : α) : ∏ _i : Fin n, x = x ^ n := by simp
-
-theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : ∑ _i : Fin n, x = n • x := by simp
+@[to_additive]
+theorem prod_const (n : ℕ) (x : M) : ∏ _i : Fin n, x = x ^ n := by simp
 
 @[to_additive]
-theorem prod_Ioi_zero {M : Type*} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
-    ∏ i ∈ Ioi 0, v i = ∏ j : Fin n, v j.succ := by
-  rw [Ioi_zero_eq_map, Finset.prod_map, coe_succEmb]
-
-@[to_additive (attr := simp)]
-theorem prod_Ioi_succ {M : Type*} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
-    ∏ j ∈ Ioi i.succ, v j = ∏ j ∈ Ioi i, v j.succ := by
-  rw [← map_succEmb_Ioi, Finset.prod_map, coe_succEmb]
-
-@[to_additive]
-theorem prod_congr' {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin b → M) (h : a = b) :
+theorem prod_congr' {a b : ℕ} (f : Fin b → M) (h : a = b) :
     (∏ i : Fin a, f (i.cast h)) = ∏ i : Fin b, f i := by
   subst h
   congr
 
 @[to_additive]
-theorem prod_univ_add {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M) :
+theorem prod_univ_add {a b : ℕ} (f : Fin (a + b) → M) :
     (∏ i : Fin (a + b), f i) = (∏ i : Fin a, f (castAdd b i)) * ∏ i : Fin b, f (natAdd a i) := by
   rw [Fintype.prod_equiv finSumFinEquiv.symm f fun i => f (finSumFinEquiv.toFun i)]
   · apply Fintype.prod_sum_type
@@ -177,10 +172,249 @@ theorem prod_univ_add {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) �
     simp only [Equiv.toFun_as_coe, Equiv.apply_symm_apply]
 
 @[to_additive]
-theorem prod_trunc {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M)
-    (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
+theorem prod_trunc {a b : ℕ} (f : Fin (a + b) → M) (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
     (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castAdd b i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
+
+/-!
+### Products over intervals: `Fin.cast`
+-/
+
+section cast
+
+variable {m : ℕ}
+
+@[to_additive]
+theorem prod_Icc_cast (h : n = m) (f : Fin m → M) (a b : Fin n) :
+    ∏ i ∈ Icc (a.cast h) (b.cast h), f i = ∏ i ∈ Icc a b, f (i.cast h) := by
+  simp [← map_finCongr_Icc]
+
+@[to_additive]
+theorem prod_Ico_cast (h : n = m) (f : Fin m → M) (a b : Fin n) :
+    ∏ i ∈ Ico (a.cast h) (b.cast h), f i = ∏ i ∈ Ico a b, f (i.cast h) := by
+  simp [← map_finCongr_Ico]
+
+@[to_additive]
+theorem prod_Ioc_cast (h : n = m) (f : Fin m → M) (a b : Fin n) :
+    ∏ i ∈ Ioc (a.cast h) (b.cast h), f i = ∏ i ∈ Ioc a b, f (i.cast h) := by
+  simp [← map_finCongr_Ioc]
+
+@[to_additive]
+theorem prod_Ioo_cast (h : n = m) (f : Fin m → M) (a b : Fin n) :
+    ∏ i ∈ Ioo (a.cast h) (b.cast h), f i = ∏ i ∈ Ioo a b, f (i.cast h) := by
+  simp [← map_finCongr_Ioo]
+
+@[to_additive]
+theorem prod_uIcc_cast (h : n = m) (f : Fin m → M) (a b : Fin n) :
+    ∏ i ∈ uIcc (a.cast h) (b.cast h), f i = ∏ i ∈ uIcc a b, f (i.cast h) := by
+  simp [← map_finCongr_uIcc]
+
+@[to_additive]
+theorem prod_Ici_cast (h : n = m) (f : Fin m → M) (a : Fin n) :
+    ∏ i ≥ a.cast h, f i = ∏ i ≥ a, f (i.cast h) := by
+  simp [← map_finCongr_Ici]
+
+@[to_additive]
+theorem prod_Ioi_cast (h : n = m) (f : Fin m → M) (a : Fin n) :
+    ∏ i > a.cast h, f i = ∏ i > a, f (i.cast h) := by
+  simp [← map_finCongr_Ioi]
+
+@[to_additive]
+theorem prod_Iic_cast (h : n = m) (f : Fin m → M) (a : Fin n) :
+    ∏ i ≤ a.cast h, f i = ∏ i ≤ a, f (i.cast h) := by
+  simp [← map_finCongr_Iic]
+
+@[to_additive]
+theorem prod_Iio_cast (h : n = m) (f : Fin m → M) (a : Fin n) :
+    ∏ i < a.cast h, f i = ∏ i < a, f (i.cast h) := by
+  simp [← map_finCongr_Iio]
+
+end cast
+
+/-!
+### Products over intervals: `Fin.castLE`
+-/
+
+section castLE
+
+variable {m : ℕ}
+
+@[to_additive]
+theorem prod_Icc_castLE (h : n ≤ m) (f : Fin m → M) (a b : Fin n) :
+    ∏ i ∈ Icc (a.castLE h) (b.castLE h), f i = ∏ i ∈ Icc a b, f (i.castLE h) := by
+  simp [← map_castLEEmb_Icc]
+
+@[to_additive]
+theorem prod_Ico_castLE (h : n ≤ m) (f : Fin m → M) (a b : Fin n) :
+    ∏ i ∈ Ico (a.castLE h) (b.castLE h), f i = ∏ i ∈ Ico a b, f (i.castLE h) := by
+  simp [← map_castLEEmb_Ico]
+
+@[to_additive]
+theorem prod_Ioc_castLE (h : n ≤ m) (f : Fin m → M) (a b : Fin n) :
+    ∏ i ∈ Ioc (a.castLE h) (b.castLE h), f i = ∏ i ∈ Ioc a b, f (i.castLE h) := by
+  simp [← map_castLEEmb_Ioc]
+
+@[to_additive]
+theorem prod_Ioo_castLE (h : n ≤ m) (f : Fin m → M) (a b : Fin n) :
+    ∏ i ∈ Ioo (a.castLE h) (b.castLE h), f i = ∏ i ∈ Ioo a b, f (i.castLE h) := by
+  simp [← map_castLEEmb_Ioo]
+
+@[to_additive]
+theorem prod_uIcc_castLE (h : n ≤ m) (f : Fin m → M) (a b : Fin n) :
+    ∏ i ∈ uIcc (a.castLE h) (b.castLE h), f i = ∏ i ∈ uIcc a b, f (i.castLE h) := by
+  simp [← map_castLEEmb_uIcc]
+
+@[to_additive]
+theorem prod_Iic_castLE (h : n ≤ m) (f : Fin m → M) (a : Fin n) :
+    ∏ i ≤ a.castLE h, f i = ∏ i ≤ a, f (i.castLE h) := by
+  simp [← map_castLEEmb_Iic]
+
+@[to_additive]
+theorem prod_Iio_castLE (h : n ≤ m) (f : Fin m → M) (a : Fin n) :
+    ∏ i < a.castLE h, f i = ∏ i < a, f (i.castLE h) := by
+  simp [← map_castLEEmb_Iio]
+
+end castLE
+
+/-!
+### Products over intervals: `Fin.castAdd`
+-/
+
+section castAdd
+
+@[to_additive]
+theorem prod_Icc_castAdd (m : ℕ) (f : Fin (n + m) → M) (a b : Fin n) :
+    ∏ i ∈ Icc (a.castAdd m) (b.castAdd m), f i = ∏ i ∈ Icc a b, f (i.castAdd m) := by
+  simp [← map_castAddEmb_Icc]
+
+@[to_additive]
+theorem prod_Ico_castAdd (m : ℕ) (f : Fin (n + m) → M) (a b : Fin n) :
+    ∏ i ∈ Ico (a.castAdd m) (b.castAdd m), f i = ∏ i ∈ Ico a b, f (i.castAdd m) := by
+  simp [← map_castAddEmb_Ico]
+
+@[to_additive]
+theorem prod_Ioc_castAdd (m : ℕ) (f : Fin (n + m) → M) (a b : Fin n) :
+    ∏ i ∈ Ioc (a.castAdd m) (b.castAdd m), f i = ∏ i ∈ Ioc a b, f (i.castAdd m) := by
+  simp [← map_castAddEmb_Ioc]
+
+@[to_additive]
+theorem prod_Ioo_castAdd (m : ℕ) (f : Fin (n + m) → M) (a b : Fin n) :
+    ∏ i ∈ Ioo (a.castAdd m) (b.castAdd m), f i = ∏ i ∈ Ioo a b, f (i.castAdd m) := by
+  simp [← map_castAddEmb_Ioo]
+
+@[to_additive]
+theorem prod_uIcc_castAdd (m : ℕ) (f : Fin (n + m) → M) (a b : Fin n) :
+    ∏ i ∈ uIcc (a.castAdd m) (b.castAdd m), f i = ∏ i ∈ uIcc a b, f (i.castAdd m) := by
+  simp [← map_castAddEmb_uIcc]
+
+@[to_additive]
+theorem prod_Iic_castAdd (m : ℕ) (f : Fin (n + m) → M) (a : Fin n) :
+    ∏ i ≤ a.castAdd m, f i = ∏ i ≤ a, f (i.castAdd m) := by
+  simp [← map_castAddEmb_Iic]
+
+@[to_additive]
+theorem prod_Iio_castAdd (m : ℕ) (f : Fin (n + m) → M) (a : Fin n) :
+    ∏ i < a.castAdd m, f i = ∏ i < a, f (i.castAdd m) := by
+  simp [← map_castAddEmb_Iio]
+
+end castAdd
+
+/-!
+### Products over intervals: `Fin.castSucc`
+-/
+
+section castSucc
+
+@[to_additive]
+theorem prod_Icc_castSucc (f : Fin (n + 1) → M) (a b : Fin n) :
+    ∏ i ∈ Icc a.castSucc b.castSucc, f i = ∏ i ∈ Icc a b, f i.castSucc := by
+  simp [← map_castSuccEmb_Icc]
+
+@[to_additive]
+theorem prod_Ico_castSucc (f : Fin (n + 1) → M) (a b : Fin n) :
+    ∏ i ∈ Ico a.castSucc b.castSucc, f i = ∏ i ∈ Ico a b, f i.castSucc := by
+  simp [← map_castSuccEmb_Ico]
+
+@[to_additive]
+theorem prod_Ioc_castSucc (f : Fin (n + 1) → M) (a b : Fin n) :
+    ∏ i ∈ Ioc a.castSucc b.castSucc, f i = ∏ i ∈ Ioc a b, f i.castSucc := by
+  simp [← map_castSuccEmb_Ioc]
+
+@[to_additive]
+theorem prod_Ioo_castSucc (f : Fin (n + 1) → M) (a b : Fin n) :
+    ∏ i ∈ Ioo a.castSucc b.castSucc, f i = ∏ i ∈ Ioo a b, f i.castSucc := by
+  simp [← map_castSuccEmb_Ioo]
+
+@[to_additive]
+theorem prod_uIcc_castSucc (f : Fin (n + 1) → M) (a b : Fin n) :
+    ∏ i ∈ uIcc a.castSucc b.castSucc, f i = ∏ i ∈ uIcc a b, f i.castSucc := by
+  simp [← map_castSuccEmb_uIcc]
+
+@[to_additive]
+theorem prod_Iic_castSucc (f : Fin (n + 1) → M) (a : Fin n) :
+    ∏ i ≤ a.castSucc, f i = ∏ i ≤ a, f i.castSucc := by
+  simp [← map_castSuccEmb_Iic]
+
+@[to_additive]
+theorem prod_Iio_castSucc (f : Fin (n + 1) → M) (a : Fin n) :
+    ∏ i < a.castSucc, f i = ∏ i < a, f i.castSucc := by
+  simp [← map_castSuccEmb_Iio]
+
+end castSucc
+
+/-!
+### Products over intervals: `Fin.succ`
+-/
+
+section succ
+
+@[to_additive]
+theorem prod_Icc_succ (f : Fin (n + 1) → M) (a b : Fin n) :
+    ∏ i ∈ Icc a.succ b.succ, f i = ∏ i ∈ Icc a b, f i.succ := by
+  simp [← map_succEmb_Icc]
+
+@[to_additive]
+theorem prod_Ico_succ (f : Fin (n + 1) → M) (a b : Fin n) :
+    ∏ i ∈ Ico a.succ b.succ, f i = ∏ i ∈ Ico a b, f i.succ := by
+  simp [← map_succEmb_Ico]
+
+@[to_additive]
+theorem prod_Ioc_succ (f : Fin (n + 1) → M) (a b : Fin n) :
+    ∏ i ∈ Ioc a.succ b.succ, f i = ∏ i ∈ Ioc a b, f i.succ := by
+  simp [← map_succEmb_Ioc]
+
+@[to_additive]
+theorem prod_Ioo_succ (f : Fin (n + 1) → M) (a b : Fin n) :
+    ∏ i ∈ Ioo a.succ b.succ, f i = ∏ i ∈ Ioo a b, f i.succ := by
+  simp [← map_succEmb_Ioo]
+
+@[to_additive]
+theorem prod_uIcc_succ (f : Fin (n + 1) → M) (a b : Fin n) :
+    ∏ i ∈ uIcc a.succ b.succ, f i = ∏ i ∈ uIcc a b, f i.succ := by
+  simp [← map_succEmb_uIcc]
+
+@[to_additive]
+theorem prod_Ici_succ (f : Fin (n + 1) → M) (a : Fin n) :
+    ∏ i ≥ a.succ, f i = ∏ i ≥ a, f i.succ := by
+  simp [← map_succEmb_Ici]
+
+@[to_additive (attr := simp)]
+theorem prod_Ioi_succ (f : Fin (n + 1) → M) (a : Fin n) :
+    ∏ i > a.succ, f i = ∏ i > a, f i.succ := by
+  simp [← map_succEmb_Ioi]
+
+@[to_additive]
+theorem prod_Ioi_zero (f : Fin (n + 1) → M) :
+    ∏ i > 0, f i = ∏ j : Fin n, f j.succ := by
+  simp [Ioi_zero_eq_map]
+
+end succ
+
+end CommMonoid
+
+theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) :
+    (∑ s : Finset (Fin n), a ^ s.card * b ^ (n - s.card)) = (a + b) ^ n := by
+  simpa using Fintype.sum_pow_mul_eq_add_pow (Fin n) a b
 
 lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
     (∑ n : Fin m, (-1) ^ n.1 : R) = if Even m then 0 else 1 := by
@@ -322,7 +556,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
             (∏ i : Fin m, n i) * nn by
         replace := this (Fin.init n) (n (Fin.last _)) (Fin.init f) (f (Fin.last _))
         rw [← Fin.snoc_init_self f]
-        simp (config := { singlePass := true }) only [← Fin.snoc_init_self n]
+        simp +singlePass only [← Fin.snoc_init_self n]
         simp_rw [Fin.snoc_castSucc, Fin.snoc_last, Fin.snoc_init_self n]
         exact this
       intro n nn f fn

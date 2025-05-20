@@ -17,8 +17,8 @@ import Mathlib.RingTheory.Polynomial.Tower
 This file is a place for results related to nilpotency in (single-variable) polynomial rings.
 
 ## Main results:
- * `Polynomial.isNilpotent_iff`
- * `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
+* `Polynomial.isNilpotent_iff`
+* `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
 
 -/
 

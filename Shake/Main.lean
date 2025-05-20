@@ -160,7 +160,7 @@ Returns a pair `(imps, transImps)` where:
 
 * `j ∈ imps` if `j` is one of the module indexes in `imports`
 * `j ∈ transImps` if module `j` is transitively reachable from `imports`
- -/
+-/
 partial def loadModules (imports : Array Import) : StateT State IO (Array USize × Bitset) := do
   let mut imps := #[]
   let mut transImps := 0
@@ -225,7 +225,7 @@ Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Par
 and `endPos` is the position of the end of the header.
 -/
 def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
-    IO (System.FilePath × Parser.InputContext × Syntax × String.Pos) := do
+    IO (System.FilePath × Parser.InputContext × TSyntax ``Parser.Module.header × String.Pos) := do
   -- Parse the input file
   let some path ← srcSearchPath.findModuleWithExt "lean" mod
     | throw <| .userError "error: failed to find source file for {mod}"
@@ -236,7 +236,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
     msgs.forM fun msg => msg.toString >>= IO.println
     throw <| .userError "parse errors in file"
   -- the insertion point for `add` is the first newline after the imports
-  let insertion := header.getTailPos?.getD parserState.pos
+  let insertion := header.raw.getTailPos?.getD parserState.pos
   let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
   pure (path, inputCtx, header, insertion)
 
@@ -250,7 +250,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
   be initialized if `downstream` mode is disabled so we pass it in here
 * `edits`: accumulates the list of edits to apply if `--fix` is true
 * `downstream`: if true, then we report downstream files that need to be fixed too
- -/
+-/
 def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     (i : Nat) (needs : Bitset) (edits : Edits)
     (downstream := true) (githubStyle := false) (explain := false) : IO Edits := do
@@ -292,7 +292,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
   if githubStyle then
     try
       let (path, inputCtx, header, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
-      for stx in header[1].getArgs do
+      for stx in header.raw[2].getArgs do
         if toRemove.any fun i => s.modNames[i]! == stx[2].getId then
           let pos := inputCtx.fileMap.toPosition stx.getPos?.get!
           println! "{path}:{pos.line}:{pos.column+1}: warning: unused import \
@@ -471,7 +471,7 @@ def main (args : List String) : IO UInt32 := do
     pure #[]
 
   -- Parse the `--cfg` argument
-  let srcSearchPath ← initSrcSearchPath
+  let srcSearchPath ← getSrcSearchPath
   let cfgFile ← if let some cfg := args.cfg then
     pure (some ⟨cfg⟩)
   else if let some mod := defaultTargetModules[0]? then
@@ -604,7 +604,7 @@ def main (args : List String) : IO UInt32 := do
     let mut pos : String.Pos := 0
     let mut out : String := ""
     let mut seen : NameSet := {}
-    for stx in header[1].getArgs do
+    for stx in header.raw[2].getArgs do
       let mod := stx[2].getId
       if remove.contains mod || seen.contains mod then
         out := out ++ text.extract pos stx.getPos?.get!

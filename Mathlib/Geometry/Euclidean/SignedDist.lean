@@ -3,7 +3,7 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Basic
+import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
@@ -95,24 +95,24 @@ the distance is evaluated lies in the affine span of the simplex (any component 
 orthogonal to that span is disregarded). In the case of a triangle, these distances are
 trilinear coordinates; in a tetrahedron, they are quadriplanar coordinates. -/
 noncomputable def signedInfDist : P →ᵃ[ℝ] ℝ :=
-  AffineSubspace.signedInfDist (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i)
+  AffineSubspace.signedInfDist (affineSpan ℝ (s.points '' {i}ᶜ)) (s.points i)
 
-lemma signedInfDist_apply_self : s.signedInfDist i (s.points i) = ‖s.points i -ᵥ
-    orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i)‖ :=
-  AffineSubspace.signedInfDist_apply_self _ _
+lemma signedInfDist_apply_self :
+    s.signedInfDist i (s.points i) =
+      ‖s.points i -ᵥ (s.faceOpposite i).orthogonalProjectionSpan (s.points i)‖ :=
+  (AffineSubspace.signedInfDist_apply_self _ _).trans <| by simp [orthogonalProjectionSpan]
 
 variable {i} in
 lemma signedInfDist_apply_of_ne {j : Fin (n + 1)} (h : j ≠ i) :
     s.signedInfDist i (s.points j) = 0 :=
-  AffineSubspace.signedInfDist_apply_of_mem _ (s.mem_affineSpan_range_faceOpposite_points_iff.2 h)
+  AffineSubspace.signedInfDist_apply_of_mem _ (s.mem_affineSpan_image_iff.2 h)
 
 lemma signedInfDist_affineCombination {w : Fin (n + 1) → ℝ} (h : ∑ i, w i = 1) :
     s.signedInfDist i (Finset.univ.affineCombination ℝ s.points w) = w i * ‖s.points i -ᵥ
-      orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i)‖ := by
+      (s.faceOpposite i).orthogonalProjectionSpan (s.points i)‖ := by
   rw [Finset.map_affineCombination _ _ _ h,
     Finset.univ.affineCombination_apply_eq_lineMap_sum w (s.signedInfDist i ∘ s.points) 0
-      ‖s.points i -ᵥ
-       orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i)‖
+      ‖s.points i -ᵥ (s.faceOpposite i).orthogonalProjectionSpan (s.points i)‖
       {i} h]
   · simp [AffineMap.lineMap_apply]
   · simp [signedInfDist_apply_self]
@@ -125,8 +125,10 @@ variable {s} in
 lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_range {p : P}
     (h : p ∈ affineSpan ℝ (Set.range s.points)) :
     |s.signedInfDist i p| =
-      dist p (orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) p) := by
-  apply AffineSubspace.abs_signedInfDist_eq_dist_of_mem_affineSpan_insert
+      dist p ((s.faceOpposite i).orthogonalProjectionSpan p) := by
+  rw [signedInfDist, AffineSubspace.abs_signedInfDist_eq_dist_of_mem_affineSpan_insert,
+    orthogonalProjectionSpan]
+  · simp_rw [range_faceOpposite_points]
   rw [affineSpan_insert_affineSpan]
   convert h
   ext x

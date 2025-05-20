@@ -80,6 +80,27 @@ theorem isTrivial_apply (ρ : Representation k G V) [IsTrivial ρ] (g : G) (x : 
 
 end trivial
 
+section Group
+
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+  (ρ : Representation k G V)
+
+@[simp]
+theorem inv_self_apply (g : G) (x : V) :
+    ρ g⁻¹ (ρ g x) = x := by
+  simp [← Module.End.mul_apply, ← map_mul]
+
+@[simp]
+theorem self_inv_apply (g : G) (x : V) :
+    ρ g (ρ g⁻¹ x) = x := by
+  simp [← Module.End.mul_apply, ← map_mul]
+
+lemma apply_bijective (g : G) :
+    Function.Bijective (ρ g) :=
+  Equiv.bijective ⟨ρ g, ρ g⁻¹, inv_self_apply ρ g, self_inv_apply ρ g⟩
+
+end Group
+
 section MonoidAlgebra
 
 variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
@@ -250,6 +271,69 @@ instance : IsScalarTower k (MonoidAlgebra k G) ρ.asModule where
 
 end MonoidAlgebra
 
+section Subrepresentation
+
+variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+  (ρ : Representation k G V)
+
+/-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
+restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
+@[simps]
+def subrepresentation (W : Submodule k V) (le_comap : ∀ g, W ≤ W.comap (ρ g)) :
+    Representation k G W where
+  toFun g := (ρ g).restrict <| le_comap g
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+
+end Subrepresentation
+
+section Quotient
+
+variable {k G V : Type*} [CommRing k] [Monoid G] [AddCommGroup V] [Module k V]
+  (ρ : Representation k G V)
+
+/-- Given a `k`-linear `G`-representation `(V, ρ)` and a `G`-invariant `k`-submodule `W ≤ V`, this
+is the representation induced on `V ⧸ W` by `ρ`. -/
+@[simps]
+def quotient (W : Submodule k V) (le_comap : ∀ g, W ≤ W.comap (ρ g)) :
+    Representation k G (V ⧸ W) where
+  toFun g := Submodule.mapQ _ _ (ρ g) <| le_comap g
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+
+end Quotient
+
+section OfQuotient
+
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable (ρ : Representation k G V) (S : Subgroup G)
+
+lemma apply_eq_of_coe_eq [IsTrivial (ρ.comp S.subtype)] (g h : G) (hgh : (g : G ⧸ S) = h) :
+    ρ g = ρ h := by
+  ext x
+  apply (ρ.apply_bijective g⁻¹).1
+  simpa [← Module.End.mul_apply, ← map_mul, -isTrivial_def] using
+    (congr($(isTrivial_def (ρ.comp S.subtype) ⟨g⁻¹ * h, QuotientGroup.eq.1 hgh⟩) x)).symm
+
+variable [S.Normal]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
+through `G ⧸ S`. -/
+def ofQuotient [IsTrivial (ρ.comp S.subtype)] :
+    Representation k (G ⧸ S) V :=
+  (QuotientGroup.con S).lift ρ <| by
+    rintro x y ⟨⟨z, hz⟩, rfl⟩
+    ext w
+    show ρ (_ * z.unop) _ = _
+    exact congr($(apply_eq_of_coe_eq ρ S _ _ (by simp_all)) w)
+
+@[simp]
+lemma ofQuotient_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :
+    ofQuotient ρ S (g : G ⧸ S) x = ρ g x :=
+  rfl
+
+end OfQuotient
+
 section AddCommGroup
 
 variable {k G V : Type*} [CommRing k] [Monoid G] [I : AddCommGroup V] [Module k V]
@@ -405,7 +489,7 @@ theorem smul_tprod_one_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
     r • z = (r • x') ⊗ₜ y := by
   show asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
-    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, LinearMap.one_apply]
+    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
   simp only [Finsupp.sum, TensorProduct.sum_tmul]
   rfl
 
@@ -416,7 +500,7 @@ theorem smul_one_tprod_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
     r • z = x ⊗ₜ (r • y') := by
   show asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
-    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, LinearMap.one_apply]
+    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
   simp only [Finsupp.sum, TensorProduct.tmul_sum, TensorProduct.tmul_smul]
 
 end TensorProduct
@@ -435,8 +519,8 @@ def linHom : Representation k G (V →ₗ[k] W) where
     { toFun := fun f => ρW g ∘ₗ f ∘ₗ ρV g⁻¹
       map_add' := fun f₁ f₂ => by simp_rw [add_comp, comp_add]
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
-  map_one' := ext fun x => by simp [one_eq_id]
-  map_mul' g h := ext fun x => by simp [mul_eq_comp, comp_assoc]
+  map_one' := ext fun x => by simp [Module.End.one_eq_id]
+  map_mul' g h := ext fun x => by simp [Module.End.mul_eq_comp, comp_assoc]
 
 @[simp]
 theorem linHom_apply (g : G) (f : V →ₗ[k] W) : (linHom ρV ρW) g f = ρW g ∘ₗ f ∘ₗ ρV g⁻¹ :=
