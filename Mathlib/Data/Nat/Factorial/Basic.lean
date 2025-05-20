@@ -12,6 +12,8 @@ import Mathlib.Tactic.Monotonicity.Attr
 # Factorial and variants
 
 This file defines the factorial, along with the ascending and descending variants.
+For the proof that the factorial of `n` counts the permutations of an `n`-element set,
+see `Fintype.card_perm`.
 
 ## Main declarations
 
@@ -56,8 +58,8 @@ theorem factorial_succ (n : ℕ) : (n + 1)! = (n + 1) * n ! :=
 @[simp] theorem factorial_two : 2! = 2 :=
   rfl
 
-theorem mul_factorial_pred (hn : 0 < n) : n * (n - 1)! = n ! :=
-  Nat.sub_add_cancel (Nat.succ_le_of_lt hn) ▸ rfl
+theorem mul_factorial_pred (hn : n ≠ 0) : n * (n - 1)! = n ! :=
+  Nat.sub_add_cancel (one_le_iff_ne_zero.mpr hn) ▸ rfl
 
 theorem factorial_pos : ∀ n, 0 < n !
   | 0 => Nat.zero_lt_one
@@ -234,6 +236,18 @@ theorem factorial_mul_ascFactorial' (n k : ℕ) (h : 0 < n) :
   rw [Nat.sub_add_comm h, Nat.sub_one]
   nth_rw 2 [Nat.eq_add_of_sub_eq h rfl]
   rw [Nat.sub_one, factorial_mul_ascFactorial]
+
+theorem ascFactorial_mul_ascFactorial (n l k : ℕ) :
+    n.ascFactorial l * (n + l).ascFactorial k = n.ascFactorial (l + k) := by
+  cases n with
+  | zero =>
+    cases l
+    · simp only [ascFactorial_zero, Nat.add_zero, Nat.one_mul, Nat.zero_add]
+    · simp only [Nat.add_right_comm, zero_ascFactorial, Nat.zero_add, Nat.zero_mul]
+  | succ n' =>
+    apply Nat.mul_left_cancel (factorial_pos n')
+    simp only [Nat.add_assoc, ← Nat.mul_assoc, factorial_mul_ascFactorial]
+    rw [Nat.add_comm 1 l, ← Nat.add_assoc, factorial_mul_ascFactorial, Nat.add_assoc]
 
 /-- Avoid in favor of `Nat.factorial_mul_ascFactorial` if you can. ℕ-division isn't worth it. -/
 theorem ascFactorial_eq_div (n k : ℕ) : (n + 1).ascFactorial k = (n + k)! / n ! :=
@@ -440,7 +454,7 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
   rw [Nat.mul_comm, Nat.two_mul]
   calc
     _ ≤ (n + 1)! * (n + 2) ^ (n + 1) :=
-      Nat.mul_le_mul_left _ (pow_le_pow_of_le_left (le_add_left _ _) _)
+      Nat.mul_le_mul_left _ (Nat.pow_le_pow_left (le_add_left _ _) _)
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
 end Nat

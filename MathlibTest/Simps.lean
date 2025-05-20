@@ -110,7 +110,7 @@ structure Equiv' (α : Sort _) (β : Sort _) where
 infix:25 (priority := default+1) " ≃ " => Equiv'
 
 /- Since `prod` and `PProd` are a special case for `@[simps]`, we define a new structure to test
-  the basic functionality.-/
+  the basic functionality. -/
 structure MyProd (α β : Type _) where (fst : α) (snd : β)
 
 def MyProd.map {α α' β β'} (f : α → α') (g : β → β') (x : MyProd α β) : MyProd α' β' :=
@@ -175,7 +175,7 @@ example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x := by
 
 /- test `fullyApplied` option -/
 
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def rfl3 {α} : α ≃ α := ⟨id, fun x ↦ x, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 end foo
@@ -193,7 +193,7 @@ namespace CountNested
 def nested1 : MyProd ℕ <| MyProd ℤ ℕ :=
   ⟨2, -1, 1⟩
 
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def nested2 : ℕ × MyProd ℕ ℕ :=
   ⟨2, MyProd.map Nat.succ Nat.pred ⟨1, 2⟩⟩
 
@@ -213,7 +213,7 @@ run_cmd liftTermElabM <| do
   -- todo: test that another attribute can be added (not working yet)
   guard <| hasSimpAttribute env `CountNested.nested1_fst -- simp attribute is global
   guard <| not <| hasSimpAttribute env `CountNested.nested2_fst
-    -- `lemmasOnly` doesn't add simp lemma
+    -- `- isSimp` doesn't add simp lemma
   -- todo: maybe test that there are no other lemmas generated
   -- guard <| 7 = env.fold 0
   --   (fun d n ↦ n + if d.to_name.components.init.ilast = `CountNested then 1 else 0)
@@ -439,7 +439,7 @@ class has_hom (obj : Type u) : Type (max u (v+1)) where
 
 infixr:10 " ⟶ " => has_hom.hom -- type as \h
 
-class CategoryStruct (obj : Type u) extends has_hom.{v} obj : Type (max u (v+1)) where
+class CategoryStruct (obj : Type u) : Type (max u (v+1)) extends has_hom.{v} obj where
   (id   : ∀ X : obj, hom X X)
   (comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z))
 
@@ -484,8 +484,8 @@ def IdentityPreunctor : Prefunctor (Type u) Nat where
 namespace coercing
 
 structure FooStr where
- (c : Type)
- (x : c)
+  (c : Type)
+  (x : c)
 
 instance : CoeSort FooStr Type := ⟨FooStr.c⟩
 
@@ -496,8 +496,8 @@ example {x : Type} (h : ℕ = x) : foo = x := by simp only [foo_c]; rw [h]
 example {x : ℕ} (h : (3 : ℕ) = x) : foo.x = x := by simp only [foo_x]; rw [h]
 
 structure VooStr (n : ℕ) where
- (c : Type)
- (x : c)
+  (c : Type)
+  (x : c)
 
 instance (n : ℕ) : CoeSort (VooStr n) Type := ⟨VooStr.c⟩
 
@@ -528,7 +528,7 @@ example {α} (x x' : α) (h : x = x') : coercing.rfl2.invFun x = x' := by simp; 
 @[simps] protected def Equiv2.symm2 {α β} (f : Equiv2 α β) : Equiv2 β α :=
   ⟨f.invFun, f.toFun, f.right_inv, f.left_inv⟩
 
-@[simps (config := .asFn)] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
+@[simps -fullyApplied] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
   ⟨f.invFun, f, f.right_inv, f.left_inv⟩
 
 example {α β} (f : Equiv2 α β) (y : β) {x} (h : f.invFun y = x) : f.symm y = x := by simp; rw [h]
@@ -1007,7 +1007,7 @@ instance {α β} : CoeFun (α ≃ β) (fun _ ↦ α → β) := ⟨Equiv'.toFun�
   ⟨f.invFun, f, f.right_inv, f.left_inv⟩
 
 structure DecoratedEquiv (α : Sort _) (β : Sort _) extends Equiv' α β where
-  (P_toFun  : Function.Injective toFun )
+  (P_toFun  : Function.Injective toFun)
   (P_invFun : Function.Injective invFun)
 
 instance {α β} : CoeFun (DecoratedEquiv α β) (fun _ ↦ α → β) := ⟨fun f ↦ f.toEquiv'⟩
@@ -1057,8 +1057,8 @@ example {α : Type} (x z : α) (h : x = z) : foo2 α x = z := by
   rw [h]
 
 structure FurtherDecoratedEquiv (α : Sort _) (β : Sort _) extends DecoratedEquiv α β where
-  (Q_toFun  : Function.Surjective toFun )
-  (Q_invFun : Function.Surjective invFun )
+  (Q_toFun  : Function.Surjective toFun)
+  (Q_invFun : Function.Surjective invFun)
 
 instance {α β} : CoeFun (FurtherDecoratedEquiv α β) (fun _ ↦ α → β) :=
   ⟨fun f ↦ f.toDecoratedEquiv⟩
@@ -1238,11 +1238,11 @@ def myFoo : Foo := ⟨1, ⟨1, 1⟩, 1⟩
 
 structure Prod (X Y : Type _) extends _root_.Prod X Y
 
-structure Prod2 (X Y : Type _) extends Prod X Y
+structure Prod2 (X Y : Type _) extends toProd_1 : Prod X Y
 
 initialize_simps_projections Prod2 (toProd → myName, toProd_1 → myOtherName)
 
-structure Prod3 (X Y : Type _) extends Prod X Y
+structure Prod3 (X Y : Type _) extends toProd_1 : Prod X Y
 
 @[simps] def foo : Prod3 Nat Nat := { fst := 1, snd := 3 }
 @[simps toProd_1] def foo' : Prod3 Nat Nat := { fst := 1, snd := 3 }

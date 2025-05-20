@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Logic.Equiv.Basic
 
@@ -118,12 +119,12 @@ theorem apply_eq_iff_eq {α β} (f : α ↪ β) (x y : α) : f x = f y ↔ x = y
   EmbeddingLike.apply_eq_iff_eq f
 
 /-- The identity map as a `Function.Embedding`. -/
-@[refl, simps (config := { simpRhs := true })]
+@[refl, simps +simpRhs]
 protected def refl (α : Sort*) : α ↪ α :=
   ⟨id, injective_id⟩
 
 /-- Composition of `f : α ↪ β` and `g : β ↪ γ`. -/
-@[trans, simps (config := { simpRhs := true })]
+@[trans, simps +simpRhs]
 protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
   ⟨g ∘ f, g.injective.comp f.injective⟩
 
@@ -147,7 +148,7 @@ theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort*} (e : α ≃ β)
   simp
 
 /-- Transfer an embedding along a pair of equivalences. -/
-@[simps! (config := { fullyApplied := false, simpRhs := true })]
+@[simps! -fullyApplied +simpRhs]
 protected def congr {α : Sort u} {β : Sort v} {γ : Sort w} {δ : Sort x} (e₁ : α ≃ β) (e₂ : γ ≃ δ)
     (f : α ↪ γ) : β ↪ δ :=
   (Equiv.toEmbedding e₁.symm).trans (f.trans e₂.toEmbedding)
@@ -192,18 +193,25 @@ lemma setValue_right_apply_eq {α β} (f : α ↪ β) (a c : α) [∀ a', Decida
   simp [setValue]
 
 /-- Embedding into `Option α` using `some`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
 
 /-- A version of `Option.map` for `Function.Embedding`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def optionMap {α β} (f : α ↪ β) : Option α ↪ Option β :=
   ⟨Option.map f, Option.map_injective f.injective⟩
 
 /-- Embedding of a `Subtype`. -/
 def subtype {α} (p : α → Prop) : Subtype p ↪ α :=
   ⟨Subtype.val, fun _ _ => Subtype.ext⟩
+
+@[simp]
+theorem subtype_apply {α} {p : α → Prop} (x : Subtype p) : subtype p x = x :=
+  rfl
+
+theorem subtype_injective {α} (p : α → Prop) : Function.Injective (subtype p) :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype {α} (p : α → Prop) : ↑(subtype p) = Subtype.val :=
@@ -222,6 +230,15 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
   ⟨fun _ => b, by
     rintro ⟨⟩ ⟨⟩ _
     rfl⟩
+
+/-- The equivalence `one ↪ α` with `α`, for `Unique one`. -/
+def oneEmbeddingEquiv {one α : Type*} [Unique one] : (one ↪ α) ≃ α where
+  toFun f := f default
+  invFun a := {
+    toFun := fun _ ↦ a
+    inj' x y h := by simp [Unique.uniq inferInstance] }
+  left_inv f := by ext; simp [Unique.uniq]
+  right_inv a := rfl
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
@@ -356,7 +373,6 @@ def subtypeInjectiveEquivEmbedding (α β : Sort*) :
   left_inv _ := rfl
   right_inv _ := rfl
 
--- Porting note: in Lean 3 this had `@[congr]`
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/
 @[simps apply]

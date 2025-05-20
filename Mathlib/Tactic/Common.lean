@@ -50,7 +50,6 @@ import Mathlib.Tactic.ErwQuestion
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
 -- `gcongr` currently imports `Algebra.Order.Field.Power` and thence `Algebra.CharZero.Lemmas`
@@ -74,7 +73,6 @@ import Mathlib.Tactic.Observe
 import Mathlib.Tactic.OfNat
 -- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
 -- import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.Push
 import Mathlib.Tactic.RSuffices
@@ -128,11 +126,13 @@ import hierarchy.
 -/
 
 /-!
-# Register tactics with `hint`.
+# Register tactics with `hint`. Tactics are tried in reverse registration order.
 -/
 
 section Hint
 
+register_hint trivial
+register_hint tauto
 register_hint split
 register_hint intro
 register_hint aesop

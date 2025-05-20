@@ -173,7 +173,7 @@ include hb
 
 private theorem b_pos : 0 < b := by linarith
 
--- Porting note: prime added to avoid clashing with `b_ne_one` further down the file
+-- Name has a prime added to avoid clashing with `b_ne_one` further down the file
 private theorem b_ne_one' : b ≠ 1 := by linarith
 
 @[simp]
@@ -418,20 +418,31 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
   simp_rw [logb, div_eq_zero_iff, log_eq_zero]
   tauto
 
-theorem tendsto_logb_nhdsWithin_zero (hb : 1 < b) :
-    Tendsto (logb b) (𝓝[≠] 0) atBot :=
-  tendsto_log_nhdsWithin_zero.atBot_div_const (log_pos hb)
+theorem tendsto_logb_nhdsNE_zero (hb : 1 < b) : Tendsto (logb b) (𝓝[≠] 0) atBot :=
+  tendsto_log_nhdsNE_zero.atBot_div_const (log_pos hb)
 
-theorem tendsto_logb_nhdsWithin_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero := tendsto_logb_nhdsNE_zero
+
+theorem tendsto_logb_nhdsNE_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[≠] 0) atTop :=
-  tendsto_log_nhdsWithin_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+  tendsto_log_nhdsNE_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
 
-lemma tendsto_logb_nhdsWithin_zero_right (hb : 1 < b) : Tendsto (logb b) (𝓝[>] 0) atBot :=
-  tendsto_log_nhdsWithin_zero_right.atBot_div_const (log_pos hb)
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero_of_base_lt_one := tendsto_logb_nhdsNE_zero_of_base_lt_one
 
-lemma tendsto_logb_nhdsWithin_zero_right_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
+lemma tendsto_logb_nhdsGT_zero (hb : 1 < b) : Tendsto (logb b) (𝓝[>] 0) atBot :=
+  tendsto_log_nhdsGT_zero.atBot_div_const (log_pos hb)
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero_right := tendsto_logb_nhdsGT_zero
+
+lemma tendsto_logb_nhdsGT_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[>] 0) atTop :=
-  tendsto_log_nhdsWithin_zero_right.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+  tendsto_log_nhdsGT_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero_right_of_base_lt_one := tendsto_logb_nhdsGT_zero_of_base_lt_one
 
 theorem continuousOn_logb : ContinuousOn (logb b) {0}ᶜ := continuousOn_log.div_const _
 
@@ -454,10 +465,10 @@ theorem continuousAt_logb_iff (hb₀ : 0 < b) (hb : b ≠ 1) : ContinuousAt (log
   rintro h rfl
   cases lt_or_gt_of_ne hb with
   | inl hb₁ =>
-      exact not_tendsto_nhds_of_tendsto_atTop (tendsto_logb_nhdsWithin_zero_of_base_lt_one hb₀ hb₁)
+      exact not_tendsto_nhds_of_tendsto_atTop (tendsto_logb_nhdsNE_zero_of_base_lt_one hb₀ hb₁)
         _ (h.tendsto.mono_left inf_le_left)
   | inr hb₁ =>
-      exact not_tendsto_nhds_of_tendsto_atBot (tendsto_logb_nhdsWithin_zero hb₁)
+      exact not_tendsto_nhds_of_tendsto_atBot (tendsto_logb_nhdsNE_zero hb₁)
         _ (h.tendsto.mono_left inf_le_left)
 
 theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :

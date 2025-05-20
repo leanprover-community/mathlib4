@@ -36,16 +36,16 @@ namespace TopologicalSpace
 
 /-- The type of open neighbourhoods of a point `x` in a (bundled) topological space. -/
 def OpenNhds (x : X) :=
-  FullSubcategory fun U : Opens X => x ∈ U
+  ObjectProperty.FullSubcategory fun U : Opens X => x ∈ U
 
 namespace OpenNhds
 variable {x : X} {U V W : OpenNhds x}
 
 instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
   le U V := U.1 ≤ V.1
-  le_refl _ := by dsimp [LE.le]; exact le_rfl
-  le_trans _ _ _ := by dsimp [LE.le]; exact le_trans
-  le_antisymm _ _ i j := FullSubcategory.ext <| le_antisymm i j
+  le_refl _ := le_rfl
+  le_trans _ _ _ := le_trans
+  le_antisymm _ _ i j := ObjectProperty.FullSubcategory.ext <| le_antisymm i j
 
 instance (x : X) : Lattice (OpenNhds x) :=
   { OpenNhds.partialOrder x with
@@ -92,7 +92,7 @@ def infLERight {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ V :=
 /-- The inclusion functor from open neighbourhoods of `x`
 to open sets in the ambient topological space. -/
 def inclusion (x : X) : OpenNhds x ⥤ Opens X :=
-  fullSubcategoryInclusion _
+  ObjectProperty.ι _
 
 @[simp]
 theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
@@ -101,15 +101,11 @@ theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
 theorem isOpenEmbedding {x : X} (U : OpenNhds x) : IsOpenEmbedding U.1.inclusion' :=
   U.1.isOpenEmbedding
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding := isOpenEmbedding
-
 /-- The preimage functor from neighborhoods of `f x` to neighborhoods of `x`. -/
 def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
   obj U := ⟨(Opens.map f).obj U.1, U.2⟩
   map i := (Opens.map f).map i
 
--- Porting note: Changed `⟨(Opens.map f).obj U, by tidy⟩` to `⟨(Opens.map f).obj U, q⟩`
 @[simp]
 theorem map_obj (x : X) (U) (q) : (map f x).obj ⟨U, q⟩ = ⟨(Opens.map f).obj U, q⟩ :=
   rfl

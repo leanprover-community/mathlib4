@@ -17,7 +17,7 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 ## Main definition
 
- * class `LawfulFix`
+* class `LawfulFix`
 -/
 
 universe u v
@@ -34,11 +34,6 @@ sense of `ω`-complete partial orders, which excludes the example because it is 
 (making the input argument less defined can make `f` more defined). -/
 class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α → α}, ωScottContinuous f → Fix.fix f = f (Fix.fix f)
-
-@[deprecated LawfulFix.fix_eq (since := "2024-08-26")]
-theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
-    (hf : ωScottContinuous f) : Fix.fix f = f (Fix.fix f) :=
-  LawfulFix.fix_eq hf
 
 namespace Part
 
@@ -179,8 +174,6 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
 
 variable {f}
 
-@[deprecated (since := "2024-08-26")] alias fix_eq := fix_eq_of_ωScottContinuous
-
 end Part
 
 namespace Part
@@ -195,11 +188,11 @@ theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottCont
     ωScottContinuous (toUnitMono ⟨f,hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
   ext ⟨⟩ : 1
   dsimp [OmegaCompletePartialOrder.ωSup]
-  erw [hc.map_ωSup, Chain.map_comp]; rfl
+  erw [hc.map_ωSup]
+  rw [Chain.map_comp]
+  rfl
 
-@[deprecated (since := "2024-08-26")] alias to_unit_cont := ωScottContinuous_toUnitMono
-
-instance lawfulFix : LawfulFix (Part α) :=
+noncomputable instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f,hc.monotone⟩) () = _ by
     rw [Part.fix_eq_of_ωScottContinuous (ωScottContinuous_toUnitMono f hc)]; rfl⟩
 
@@ -209,7 +202,7 @@ open Sigma
 
 namespace Pi
 
-instance lawfulFix {β} : LawfulFix (α → Part β) :=
+noncomputable instance lawfulFix {β} : LawfulFix (α → Part β) :=
   ⟨fun {_f} ↦ Part.fix_eq_of_ωScottContinuous⟩
 
 variable {γ : ∀ a : α, β a → Type*}
@@ -244,8 +237,6 @@ theorem ωScottContinuous_curry :
     rw [map_comp, map_comp]
     rfl
 
-@[deprecated (since := "2024-08-26")] alias continuous_curry := ωScottContinuous_curry
-
 theorem ωScottContinuous_uncurry :
     ωScottContinuous (monotoneUncurry α β γ) :=
     .of_map_ωSup_of_orderHom fun c ↦ by
@@ -253,8 +244,6 @@ theorem ωScottContinuous_uncurry :
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
   rfl
-
-@[deprecated (since := "2024-08-26")] alias continuous_uncurry := ωScottContinuous_uncurry
 
 end Monotone
 
@@ -274,9 +263,6 @@ theorem uncurry_curry_ωScottContinuous (hc : ωScottContinuous f) :
       (⟨f,hc.monotone⟩ : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y).comp <|
       monotoneCurry α β γ :=
   (ωScottContinuous_uncurry _ _ _).comp (hc.comp (ωScottContinuous_curry _ _ _))
-
-@[deprecated (since := "2024-08-26")]
-alias uncurry_curry_continuous := uncurry_curry_ωScottContinuous
 
 end Curry
 

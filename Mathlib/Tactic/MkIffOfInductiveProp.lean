@@ -122,7 +122,7 @@ structure Shape : Type where
        R a b → List.Chain R b l → List.Chain R a (b :: l)
   ```
   and the `a : α` gets eliminated, so `variablesKept = [false,true,true,true,true]`.
-   -/
+  -/
   variablesKept : List Bool
 
   /-- The number of equalities, or `none` in the case when we've reduced something
@@ -197,7 +197,7 @@ do
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
     match t with
     | none => do
-      let v := vars.get! (shape.length - 1)
+      let v := vars[shape.length - 1]!
       let mv ← mvar''.existsi (List.init si)
       mv.assign v
     | some n => do

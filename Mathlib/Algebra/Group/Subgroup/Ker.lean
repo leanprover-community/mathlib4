@@ -73,9 +73,13 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
 
 @[to_additive]
-instance range_isCommutative {G : Type*} [CommGroup G] {N : Type*} [Group N] (f : G →* N) :
-    f.range.IsCommutative :=
-  range_eq_map f ▸ Subgroup.map_isCommutative ⊤ f
+instance range_isMulCommutative {G : Type*} [CommGroup G] {N : Type*} [Group N] (f : G →* N) :
+    IsMulCommutative f.range :=
+  range_eq_map f ▸ Subgroup.map_isMulCommutative ⊤ f
+
+@[deprecated (since := "2025-04-09")] alias range_isCommutative := range_isMulCommutative
+@[deprecated (since := "2025-04-09")] alias _root_.AddMonoidHom.range_isCommutative :=
+  _root_.AddMonoidHom.range_isAddCommutative
 
 @[to_additive (attr := simp)]
 theorem restrict_range (f : G →* N) : (f.restrict K).range = K.map f := by
@@ -230,6 +234,9 @@ def ker (f : G →* M) : Subgroup G :=
         _ = 1 := by rw [← map_mul, mul_inv_cancel, map_one] }
 
 @[to_additive (attr := simp)]
+theorem ker_toSubmonoid (f : G →* M) : f.ker.toSubmonoid = MonoidHom.mker f := rfl
+
+@[to_additive (attr := simp)]
 theorem mem_ker {f : G →* M} {x : G} : x ∈ f.ker ↔ f x = 1 :=
   Iff.rfl
 
@@ -257,7 +264,8 @@ instance decidableMemKer [DecidableEq M] (f : G →* M) : DecidablePred (· ∈ 
   decidable_of_iff (f x = 1) f.mem_ker
 
 @[to_additive]
-theorem comap_ker (g : N →* P) (f : G →* N) : g.ker.comap f = (g.comp f).ker :=
+theorem comap_ker {P : Type*} [MulOneClass P] (g : N →* P) (f : G →* N) :
+    g.ker.comap f = (g.comp f).ker :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -298,10 +306,13 @@ theorem _root_.Subgroup.ker_subtype (H : Subgroup G) : H.subtype.ker = ⊥ :=
 theorem _root_.Subgroup.ker_inclusion {H K : Subgroup G} (h : H ≤ K) : (inclusion h).ker = ⊥ :=
   (inclusion h).ker_eq_bot_iff.mpr (Set.inclusion_injective h)
 
-@[to_additive]
+@[to_additive ker_prod]
 theorem ker_prod {M N : Type*} [MulOneClass M] [MulOneClass N] (f : G →* M) (g : G →* N) :
     (f.prod g).ker = f.ker ⊓ g.ker :=
   SetLike.ext fun _ => Prod.mk_eq_one
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoidHom.ker_sum := AddMonoidHom.ker_prod
 
 @[to_additive]
 theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
@@ -317,7 +328,7 @@ theorem coe_toAdditive_ker (f : G →* G') :
     (MonoidHom.toAdditive f).ker = Subgroup.toAddSubgroup f.ker := rfl
 
 @[simp]
-theorem coe_toMultiplicative_ker {A A' : Type*} [AddGroup A] [AddGroup A'] (f : A →+ A') :
+theorem coe_toMultiplicative_ker {A A' : Type*} [AddGroup A] [AddZeroClass A'] (f : A →+ A') :
     (AddMonoidHom.toMultiplicative f).ker = AddSubgroup.toSubgroup f.ker := rfl
 
 end Ker

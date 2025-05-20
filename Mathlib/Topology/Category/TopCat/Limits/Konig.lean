@@ -33,7 +33,6 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
--- Porting note: changed universe order as `v` is usually passed explicitly
 universe v u w
 
 noncomputable section
@@ -44,7 +43,6 @@ section TopologicalKonig
 
 variable {J : Type u} [SmallCategory J]
 
--- Porting note: generalized `F` to land in `v` not `u`
 variable (F : J ⥤ TopCat.{v})
 
 private abbrev FiniteDiagramArrow {J : Type u} [SmallCategory J] (G : Finset J) :=
@@ -56,7 +54,6 @@ private abbrev FiniteDiagram (J : Type u) [SmallCategory J] :=
 /-- Partial sections of a cofiltered limit are sections when restricted to
 a finite subset of objects and morphisms of `J`.
 -/
--- Porting note: generalized `F` to land in `v` not `u`
 def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{v}) {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : Set (∀ j, F.obj j) :=
   {u | ∀ {f : FiniteDiagramArrow G} (_ : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
@@ -111,7 +108,6 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
--- Porting note: generalized from `TopCat.{u}` to `TopCat.{max v u}`
 theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{max v u})
     [IsCofilteredOrEmpty J]
     [∀ j : J, Nonempty (F.obj j)] [∀ j : J, CompactSpace (F.obj j)] [∀ j : J, T2Space (F.obj j)] :

@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.RingTheory.NonUnitalSubring.Defs
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Subrings
@@ -500,7 +501,7 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (hx : x ∈ closure s)  : p x hx :=
+    {x} (hx : x ∈ closure s) : p x hx :=
   let K : Subring R :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
@@ -509,9 +510,6 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
       zero_mem' := ⟨_, zero⟩
       one_mem' := ⟨_, one⟩ }
   closure_le (t := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
-
-@[deprecated closure_induction (since := "2024-10-10")]
-alias closure_induction' := closure_induction
 
 /-- An induction principle for closure membership, for predicates with two arguments. -/
 @[elab_as_elim]
@@ -603,16 +601,13 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
         List.recOn L (by simp)
           (by simp +contextual [List.map_cons, add_comm])⟩
 
-variable (R)
-
+variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
   gc _s _t := closure_le
   le_l_u _s := subset_closure
   choice_eq _s _h := rfl
-
-variable {R}
 
 /-- Closure of a subring `S` equals `S`. -/
 @[simp]
@@ -635,6 +630,37 @@ theorem closure_iUnion {ι} (s : ι → Set R) : closure (⋃ i, s i) = ⨆ i, c
 
 theorem closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
   (Subring.gi R).gc.l_sSup
+
+@[simp]
+theorem closure_singleton_intCast (n : ℤ) : closure {(n : R)} = ⊥ :=
+  bot_unique <| closure_le.2 <| Set.singleton_subset_iff.mpr <| intCast_mem _ _
+
+@[simp]
+theorem closure_singleton_natCast (n : ℕ) : closure {(n : R)} = ⊥ :=
+  mod_cast closure_singleton_intCast n
+
+@[simp]
+theorem closure_singleton_zero : closure {(0 : R)} = ⊥ := mod_cast closure_singleton_natCast 0
+
+@[simp]
+theorem closure_singleton_one : closure {(1 : R)} = ⊥ := mod_cast closure_singleton_natCast 1
+
+@[simp]
+theorem closure_insert_intCast (n : ℤ) (s : Set R) : closure (insert (n : R) s) = closure s := by
+  rw [Set.insert_eq, closure_union]
+  simp
+
+@[simp]
+theorem closure_insert_natCast (n : ℕ) (s : Set R) : closure (insert (n : R) s) = closure s :=
+  mod_cast closure_insert_intCast n s
+
+@[simp]
+theorem closure_insert_zero (s : Set R) : closure (insert 0 s) = closure s :=
+  mod_cast closure_insert_natCast 0 s
+
+@[simp]
+theorem closure_insert_one (s : Set R) : closure (insert 1 s) = closure s :=
+  mod_cast closure_insert_natCast 1 s
 
 theorem map_sup (s t : Subring R) (f : R →+* S) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
   (gc_map_comap f).l_sup

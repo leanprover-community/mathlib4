@@ -3,7 +3,7 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.Ring.Defs
@@ -128,6 +128,7 @@ instance addMonoid : AddMonoid { x : α // 0 ≤ x } :=
   Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as an `AddMonoidHom`. -/
+@[simps]
 def coeAddMonoidHom : { x : α // 0 ≤ x } →+ α :=
   { toFun := ((↑) : { x : α // 0 ≤ x } → α)
     map_zero' := Nonneg.coe_zero
@@ -176,15 +177,6 @@ section Pow
 
 variable [MonoidWithZero α] [Preorder α] [ZeroLEOneClass α] [PosMulMono α]
 
-@[simp]
-theorem pow_nonneg {a : α} (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
-  | 0 => by
-    rw [pow_zero]
-    exact zero_le_one
-  | n + 1 => by
-    rw [pow_succ]
-    exact mul_nonneg (pow_nonneg H _) H
-
 instance pow : Pow { x : α // 0 ≤ x } ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 
@@ -197,6 +189,8 @@ protected theorem coe_pow (a : { x : α // 0 ≤ x }) (n : ℕ) :
 theorem mk_pow {x : α} (hx : 0 ≤ x) (n : ℕ) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, pow_nonneg hx n⟩ :=
   rfl
+
+@[deprecated (since := "2025-05-19")] alias pow_nonneg := _root_.pow_nonneg
 
 end Pow
 

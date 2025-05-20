@@ -52,7 +52,7 @@ point, then the skyscraper presheaf `𝓕` with value `A` is defined by `U ↦ A
 def skyscraperPresheaf : Presheaf C X where
   obj U := if p₀ ∈ unop U then A else terminal C
   map {U V} i :=
-    if h : p₀ ∈ unop V then eqToHom <| by dsimp; rw [if_pos h, if_pos (by simpa using i.unop.le h)]
+    if h : p₀ ∈ unop V then eqToHom <| by rw [if_pos h, if_pos (by simpa using i.unop.le h)]
     else ((if_neg h).symm.ndrec terminalIsTerminal).from _
   map_id U :=
     (em (p₀ ∈ U.unop)).elim (fun h => dif_pos h) fun h =>
@@ -131,7 +131,7 @@ def skyscraperPresheafCoconeOfSpecializes {y : X} (h : p₀ ⤳ y) :
     { app := fun U => eqToHom <| if_pos <| h.mem_open U.unop.1.2 U.unop.2
       naturality := fun U V inc => by
         change dite _ _ _ ≫ _ = _; rw [dif_pos]
-        swap -- Porting note: swap goal to prevent proving same thing twice
+        swap
         · exact h.mem_open V.unop.1.2 V.unop.2
         · simp only [Functor.comp_obj, Functor.op_obj, skyscraperPresheaf_obj, unop_op,
             Functor.const_obj_obj, eqToHom_trans, Functor.const_obj_map, Category.comp_id] }
@@ -257,8 +257,6 @@ def toSkyscraperPresheaf {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ 
     if h : p₀ ∈ U.unop then 𝓕.germ _ p₀ h ≫ f ≫ eqToHom (if_pos h).symm
     else ((if_neg h).symm.ndrec terminalIsTerminal).from _
   naturality U V inc := by
-    -- Porting note: don't know why original proof fell short of working, add `aesop_cat` finished
-    -- the proofs anyway
     dsimp
     by_cases hV : p₀ ∈ V.unop
     · have hU : p₀ ∈ U.unop := leOfHom inc.unop hV

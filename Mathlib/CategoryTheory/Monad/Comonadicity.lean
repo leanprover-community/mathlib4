@@ -270,6 +270,7 @@ equalizers, and `C` has them.
 def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair F]
     [PreservesLimitOfIsCosplitPair F] [ReflectsLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F where
+  R := G
   adj := adj
   eqv := by
     have : ∀ (X : Coalgebra adj.toComonad), IsIso ((comparisonAdjunction adj).counit.app X) := by
@@ -316,7 +317,7 @@ This is the converse of `createsFSplitEqualizersOfComonadic`.
 def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
   let I {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] : HasLimit (parallelPair f g ⋙ F) := by
-    apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoParallelPair.{v₁} _).symm
+    rw [hasLimit_iff_of_iso (diagramIsoParallelPair _)]
     exact inferInstanceAs <| HasEqualizer (F.map f) (F.map g)
   have : HasEqualizerOfIsCosplitPair F := ⟨fun _ _ => hasLimit_of_created (parallelPair _ _) F⟩
   have : PreservesLimitOfIsCosplitPair F := ⟨by intros; infer_instance⟩
@@ -351,7 +352,7 @@ instance {A B} (f g : A ⟶ B) [IsCoreflexivePair f g] [PreservesLimitOfIsCorefl
 instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad,
     PreservesLimit (parallelPair (G.map X.a)
       (NatTrans.app adj.unit (G.obj X.A))) F :=
- fun _ => PreservesLimitOfIsCoreflexivePair.out _ _
+  fun _ => PreservesLimitOfIsCoreflexivePair.out _ _
 
 variable [PreservesLimitOfIsCoreflexivePair F]
 
@@ -360,6 +361,7 @@ coreflexive equalizers and `F` reflects isomorphisms, then `F` is comonadic.
 -/
 def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
     ComonadicLeftAdjoint F where
+  R := G
   adj := adj
   eqv := by
     have : ∀ (X : adj.toComonad.Coalgebra), IsIso ((comparisonAdjunction adj).counit.app X) := by

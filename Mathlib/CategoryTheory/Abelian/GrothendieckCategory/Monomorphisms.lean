@@ -34,14 +34,14 @@ namespace mono
 
 instance map_bot_le (j : J) : Mono (h.F.map (homOfLE bot_le : ⊥ ⟶ j)) := by
   induction j using SuccOrder.limitRecOn with
-  | hm j hj =>
+  | isMin j hj =>
     obtain rfl := hj.eq_bot
     exact inferInstanceAs (Mono (h.F.map (𝟙 _)))
-  | hs j hj hj' =>
+  | succ j hj hj' =>
     have : Mono _ := h.map_mem j hj
     rw [← homOfLE_comp bot_le (Order.le_succ j), Functor.map_comp]
     infer_instance
-  | hl j hj hj' =>
+  | isSuccLimit j hj hj' =>
     have : OrderBot (Set.Iio j) :=
       { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj ⟩
         bot_le _ := bot_le }
@@ -74,6 +74,9 @@ lemma mono : Mono f := by
         rfl }
   have : Mono φ := NatTrans.mono_of_mono_app φ
   exact colim.map_mono' φ (isColimitConstCocone J X) (h.isColimit) f (by aesop_cat)
+
+instance mono_map (j j' : J) (f : j ⟶ j') : Mono (h.F.map f) :=
+  ((h.ici j).iic ⟨j', leOfHom f⟩).mono
 
 end MorphismProperty.TransfiniteCompositionOfShape
 

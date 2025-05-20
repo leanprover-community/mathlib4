@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Bicategory.Strict
 
@@ -141,6 +141,28 @@ theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙
 
 @[simp] theorem of_α (C) [Category C] : (of C).α = C := rfl
 
+@[simp] theorem coe_of (C : Cat.{v, u}) : Cat.of C = C := rfl
+
+end Cat
+
+namespace Functor
+
+/-- Functors between categories of the same size define arrows in `Cat`. -/
+def toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
+    Cat.of C ⟶ Cat.of D := F
+
+/-- Arrows in `Cat` define functors. -/
+def ofCatHom {C D : Type} [Category C] [Category D] (F : Cat.of C ⟶ Cat.of D) : C ⥤ D := F
+
+@[simp] theorem to_ofCatHom {C D : Type} [Category C] [Category D] (F : Cat.of C ⟶ Cat.of D) :
+    (ofCatHom F).toCatHom = F := rfl
+
+@[simp] theorem of_toCatHom {C D : Type} [Category C] [Category D] (F : C ⥤ D) :
+    ofCatHom (F.toCatHom) = F := rfl
+
+end Functor
+namespace Cat
+
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
 def objects : Cat.{v, u} ⥤ Type u where
@@ -172,9 +194,7 @@ This ought to be modelled as a 2-functor!
 @[simps]
 def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
-  map := fun {X} {Y} f => by
-    dsimp
-    exact Discrete.functor (Discrete.mk ∘ f)
+  map := fun f => Discrete.functor (Discrete.mk ∘ f)
   map_id X := by
     apply Functor.ext
     · intro X Y f

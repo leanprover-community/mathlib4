@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Set.Pointwise.Iterate
+import Mathlib.Dynamics.FixedPoints.Prufer
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.MeasureTheory.Covering.DensityTheorem
 import Mathlib.MeasureTheory.Group.AddCircle
@@ -17,14 +17,14 @@ This file contains proofs of ergodicity for maps of the additive circle.
 
 ## Main definitions:
 
- * `AddCircle.ergodic_zsmul`: given `n : ℤ` such that `1 < |n|`, the self map `y ↦ n • y` on
-   the additive circle is ergodic (wrt the Haar measure).
- * `AddCircle.ergodic_nsmul`: given `n : ℕ` such that `1 < n`, the self map `y ↦ n • y` on
-   the additive circle is ergodic (wrt the Haar measure).
- * `AddCircle.ergodic_zsmul_add`: given `n : ℤ` such that `1 < |n|` and `x : AddCircle T`, the
-   self map `y ↦ n • y + x` on the additive circle is ergodic (wrt the Haar measure).
- * `AddCircle.ergodic_nsmul_add`: given `n : ℕ` such that `1 < n` and `x : AddCircle T`, the
-   self map `y ↦ n • y + x` on the additive circle is ergodic (wrt the Haar measure).
+* `AddCircle.ergodic_zsmul`: given `n : ℤ` such that `1 < |n|`, the self map `y ↦ n • y` on
+  the additive circle is ergodic (wrt the Haar measure).
+* `AddCircle.ergodic_nsmul`: given `n : ℕ` such that `1 < n`, the self map `y ↦ n • y` on
+  the additive circle is ergodic (wrt the Haar measure).
+* `AddCircle.ergodic_zsmul_add`: given `n : ℤ` such that `1 < |n|` and `x : AddCircle T`, the
+  self map `y ↦ n • y + x` on the additive circle is ergodic (wrt the Haar measure).
+* `AddCircle.ergodic_nsmul_add`: given `n : ℕ` such that `1 < n` and `x : AddCircle T`, the
+  self map `y ↦ n • y + x` on the additive circle is ergodic (wrt the Haar measure).
 
 -/
 

@@ -10,7 +10,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 # Multiplication by a nonzero element in a `GroupWithZero` is a permutation.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 variable {G₀ : Type*}
 
@@ -28,7 +28,7 @@ elements. -/
 
 /-- Left multiplication by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 protected def mulLeft₀ (a : G₀) (ha : a ≠ 0) : Perm G₀ :=
   (Units.mk0 a ha).mulLeft
 
@@ -37,7 +37,7 @@ theorem _root_.mulLeft_bijective₀ (a : G₀) (ha : a ≠ 0) : Function.Bijecti
 
 /-- Right multiplication by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 protected def mulRight₀ (a : G₀) (ha : a ≠ 0) : Perm G₀ :=
   (Units.mk0 a ha).mulRight
 
@@ -46,7 +46,7 @@ theorem _root_.mulRight_bijective₀ (a : G₀) (ha : a ≠ 0) : Function.Biject
 
 /-- Right division by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/
-@[simps! (config := { simpRhs := true })]
+@[simps! +simpRhs]
 def divRight₀ (a : G₀) (ha : a ≠ 0) : Perm G₀ where
   toFun := (· / a)
   invFun := (· * a)
@@ -60,7 +60,7 @@ variable [CommGroupWithZero G₀]
 
 /-- Left division by a nonzero element in a `CommGroupWithZero` is a permutation of the underlying
 type. -/
-@[simps! (config := { simpRhs := true })]
+@[simps! +simpRhs]
 def divLeft₀ (a : G₀) (ha : a ≠ 0) : Perm G₀ where
   toFun := (a / ·)
   invFun := (a / ·)

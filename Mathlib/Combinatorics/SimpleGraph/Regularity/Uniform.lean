@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Order.Partition.Equipartition
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Graph uniformity and uniform partitions
@@ -42,7 +42,7 @@ is less than `ε`.
 
 open Finset
 
-variable {α 𝕜 : Type*} [LinearOrderedField 𝕜]
+variable {α 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 /-! ### Graph uniformity -/
 
@@ -67,12 +67,14 @@ theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) 
   fun s' hs' t' ht' hs ht => by
   refine (hε hs' ht' (le_trans ?_ hs) (le_trans ?_ ht)).trans_le h <;> gcongr
 
+omit [IsStrictOrderedRing 𝕜] in
 theorem IsUniform.symm : Symmetric (IsUniform G ε) := fun s t h t' ht' s' hs' ht hs => by
   rw [edgeDensity_comm _ t', edgeDensity_comm _ t]
   exact h hs' ht' hs ht
 
 variable (G)
 
+omit [IsStrictOrderedRing 𝕜] in
 theorem isUniform_comm : IsUniform G ε s t ↔ IsUniform G ε t s :=
   ⟨fun h => h.symm, fun h => h.symm⟩
 
@@ -192,11 +194,13 @@ dismiss the diagonal. We do not care whether `s` is `ε`-dense with itself. -/
 def sparsePairs (ε : 𝕜) : Finset (Finset α × Finset α) :=
   P.parts.offDiag.filter fun (u, v) ↦ G.edgeDensity u v < ε
 
+omit [IsStrictOrderedRing 𝕜] in
 @[simp]
 lemma mk_mem_sparsePairs (u v : Finset α) (ε : 𝕜) :
     (u, v) ∈ P.sparsePairs G ε ↔ u ∈ P.parts ∧ v ∈ P.parts ∧ u ≠ v ∧ G.edgeDensity u v < ε := by
   rw [sparsePairs, mem_filter, mem_offDiag, and_assoc, and_assoc]
 
+omit [IsStrictOrderedRing 𝕜] in
 lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.sparsePairs G ε ⊆ P.sparsePairs G ε' :=
   monotone_filter_right _ fun _ ↦ h.trans_lt'
 
@@ -205,6 +209,7 @@ dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
 def nonUniforms (ε : 𝕜) : Finset (Finset α × Finset α) :=
   P.parts.offDiag.filter fun (u, v) ↦ ¬G.IsUniform ε u v
 
+omit [IsStrictOrderedRing 𝕜] in
 @[simp] lemma mk_mem_nonUniforms :
     (u, v) ∈ P.nonUniforms G ε ↔ u ∈ P.parts ∧ v ∈ P.parts ∧ u ≠ v ∧ ¬G.IsUniform ε u v := by
   rw [nonUniforms, mem_filter, mem_offDiag, and_assoc, and_assoc]
@@ -241,9 +246,11 @@ variable {P G}
 theorem IsUniform.mono {ε ε' : 𝕜} (hP : P.IsUniform G ε) (h : ε ≤ ε') : P.IsUniform G ε' :=
   ((Nat.cast_le.2 <| card_le_card <| P.nonUniforms_mono G h).trans hP).trans <| by gcongr
 
+omit [IsStrictOrderedRing 𝕜] in
 theorem isUniformOfEmpty (hP : P.parts = ∅) : P.IsUniform G ε := by
   simp [IsUniform, hP, nonUniforms]
 
+omit [IsStrictOrderedRing 𝕜] in
 theorem nonempty_of_not_uniform (h : ¬P.IsUniform G ε) : P.parts.Nonempty :=
   nonempty_of_ne_empty fun h₁ => h <| isUniformOfEmpty h₁
 
@@ -282,7 +289,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     (_ : ℕ) ≤ _ := sum_le_card_nsmul P.parts.offDiag (fun i ↦ #i.1 * #i.2)
             ((#A / #P.parts + 1)^2 : ℕ) ?_
     _ ≤ (#P.parts * (#A / #P.parts) + #P.parts) ^ 2 := ?_
-    _ ≤ _ := Nat.pow_le_pow_of_le_left (add_le_add_right (Nat.mul_div_le _ _) _) _
+    _ ≤ _ := Nat.pow_le_pow_left (add_le_add_right (Nat.mul_div_le _ _) _) _
   · simp only [Prod.forall, Finpartition.mk_mem_nonUniforms, and_imp, mem_offDiag, sq]
     rintro U V hU hV -
     exact_mod_cast Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
@@ -302,7 +309,7 @@ private lemma aux {i j : ℕ} (hj : 0 < j) : j * (j - 1) * (i / j + 1) ^ 2 < (i 
     rw [sq]; exact Nat.mul_lt_mul_of_pos_left (Nat.sub_lt hj zero_lt_one) hj
   apply (Nat.mul_lt_mul_of_pos_right this <| pow_pos Nat.succ_pos' _).trans_le
   rw [← mul_pow]
-  exact Nat.pow_le_pow_of_le_left (add_le_add_right (Nat.mul_div_le i j) _) _
+  exact Nat.pow_le_pow_left (add_le_add_right (Nat.mul_div_le i j) _) _
 
 lemma IsEquipartition.card_biUnion_offDiag_le' (hP : P.IsEquipartition) :
     (#(P.parts.biUnion offDiag) : 𝕜) ≤ #A * (#A + #P.parts) / #P.parts := by
@@ -389,6 +396,7 @@ instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityRedu
 
 variable {G P}
 
+omit [IsStrictOrderedRing 𝕜] in
 lemma regularityReduced_le : G.regularityReduced P ε δ ≤ G := fun _ _ ↦ And.left
 
 lemma regularityReduced_mono {ε₁ ε₂ : 𝕜} (hε : ε₁ ≤ ε₂) :
@@ -396,11 +404,13 @@ lemma regularityReduced_mono {ε₁ ε₂ : 𝕜} (hε : ε₁ ≤ ε₂) :
   fun _a _b ⟨hab, U, hU, V, hV, ha, hb, hUV, hGε, hGδ⟩ ↦
     ⟨hab, U, hU, V, hV, ha, hb, hUV, hGε.mono hε, hGδ⟩
 
+omit [IsStrictOrderedRing 𝕜] in
 lemma regularityReduced_anti {δ₁ δ₂ : 𝕜} (hδ : δ₁ ≤ δ₂) :
     G.regularityReduced P ε δ₂ ≤ G.regularityReduced P ε δ₁ :=
   fun _a _b ⟨hab, U, hU, V, hV, ha, hb, hUV, hUVε, hUVδ⟩ ↦
     ⟨hab, U, hU, V, hV, ha, hb, hUV, hUVε, hδ.trans hUVδ⟩
 
+omit [IsStrictOrderedRing 𝕜] in
 lemma unreduced_edges_subset :
     (A ×ˢ A).filter (fun (x, y) ↦ G.Adj x y ∧ ¬ (G.regularityReduced P (ε/8) (ε/4)).Adj x y) ⊆
       (P.nonUniforms G (ε/8)).biUnion (fun (U, V) ↦ U ×ˢ V) ∪ P.parts.biUnion offDiag ∪

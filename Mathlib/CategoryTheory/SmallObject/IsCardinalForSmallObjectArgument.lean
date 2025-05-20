@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Cardinals that are suitable for the small object argument
@@ -74,7 +74,7 @@ class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
   locallySmall : LocallySmall.{w} C := by infer_instance
   hasPushouts : HasPushouts C := by infer_instance
   hasCoproducts : HasCoproducts.{w} C := by infer_instance
-  hasIterationOfShape : HasIterationOfShape κ.ord.toType C
+  hasIterationOfShape : HasIterationOfShape κ.ord.toType C := by infer_instance
   preservesColimit {A B X Y : C} (i : A ⟶ B) (_ : I i) (f : X ⟶ Y)
     (hf : RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily) f) :
     PreservesColimit hf.F (coyoneda.obj (Opposite.op A))
@@ -159,8 +159,7 @@ lemma succStruct_prop_le_propArrow :
   constructor
   · nth_rw 1 [← I.ofHoms_homFamily]
     apply pushouts_mk _ (functorObj_isPushout I.homFamily (F.obj f).hom)
-    exact coproducts_of_small _ _
-      (colimitsOfShape_colimMap _ _ (by rintro ⟨j⟩; constructor))
+    exact coproducts_of_small _ _ (colimitsOfShape_colimMap _ (by rintro ⟨j⟩; constructor))
   · rw [MorphismProperty.isomorphisms.iff]
     dsimp [succStruct]
     infer_instance
@@ -450,7 +449,7 @@ lemma hasFunctorialFactorization :
 /-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
 then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
 of transfinite compositions (of shape `κ.ord.toType`) of pushouts of coproducts
-of maps in `I`.  -/
+of maps in `I`. -/
 lemma llp_rlp_of_isCardinalForSmallObjectArgument' :
     I.rlp.llp = (transfiniteCompositionsOfShape
       (coproducts.{w} I).pushouts κ.ord.toType).retracts := by
@@ -466,7 +465,7 @@ lemma llp_rlp_of_isCardinalForSmallObjectArgument' :
 
 /-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
 then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
-of transfinite compositions of pushouts of coproducts of maps in `I`.  -/
+of transfinite compositions of pushouts of coproducts of maps in `I`. -/
 lemma llp_rlp_of_isCardinalForSmallObjectArgument :
     I.rlp.llp =
       (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts := by

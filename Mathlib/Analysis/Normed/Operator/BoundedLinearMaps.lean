@@ -5,7 +5,6 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 
 /-!
@@ -66,8 +65,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAd
 /-- A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
 inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`. -/
 structure IsBoundedLinearMap (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E → F) extends
-  IsLinearMap 𝕜 f : Prop where
+    [NormedSpace 𝕜 E] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E → F) : Prop
+    extends IsLinearMap 𝕜 f where
   bound : ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖
 
 lemma isBoundedLinearMap_iff {f : E → F} :
@@ -270,8 +269,7 @@ theorem map_smul₂ (f : E →L[𝕜] F →L[𝕜] G) (c : 𝕜) (x : E) (y : F)
 
 end ContinuousLinearMap
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- A map `f : E × F → G` satisfies `IsBoundedBilinearMap 𝕜 f` if it is bilinear and
 continuous. -/
 structure IsBoundedBilinearMap (f : E × F → G) : Prop where
@@ -281,8 +279,17 @@ structure IsBoundedBilinearMap (f : E × F → G) : Prop where
   smul_right : ∀ (c : 𝕜) (x : E) (y : F), f (x, c • y) = c • f (x, y)
   bound : ∃ C > 0, ∀ (x : E) (y : F), ‖f (x, y)‖ ≤ C * ‖x‖ * ‖y‖
 
-variable {𝕜}
 variable {f : E × F → G}
+
+lemma IsBoundedBilinearMap.symm (h : IsBoundedBilinearMap 𝕜 f) :
+    IsBoundedBilinearMap 𝕜 (fun p ↦ f (p.2, p.1)) where
+  add_left x₁ x₂ y := h.add_right _ _ _
+  smul_left c x y := h.smul_right _ _ _
+  add_right x y₁ y₂ := h.add_left _ _ _
+  smul_right c x y := h.smul_left _ _ _
+  bound := by
+    obtain ⟨C, hC_pos, hC⟩ := h.bound
+    exact ⟨C, hC_pos, fun x y ↦ (hC y x).trans_eq (by ring)⟩
 
 theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] G) :
     IsBoundedBilinearMap 𝕜 fun x : E × F => f x.1 x.2 :=
@@ -345,11 +352,11 @@ theorem IsBoundedBilinearMap.continuous (h : IsBoundedBilinearMap 𝕜 f) : Cont
 
 theorem IsBoundedBilinearMap.continuous_left (h : IsBoundedBilinearMap 𝕜 f) {e₂ : F} :
     Continuous fun e₁ => f (e₁, e₂) :=
-  h.continuous.comp (continuous_id.prod_mk continuous_const)
+  h.continuous.comp (continuous_id.prodMk continuous_const)
 
 theorem IsBoundedBilinearMap.continuous_right (h : IsBoundedBilinearMap 𝕜 f) {e₁ : E} :
     Continuous fun e₂ => f (e₁, e₂) :=
-  h.continuous.comp (continuous_const.prod_mk continuous_id)
+  h.continuous.comp (continuous_const.prodMk continuous_id)
 
 /-- Useful to use together with `Continuous.comp₂`. -/
 theorem ContinuousLinearMap.continuous₂ (f : E →L[𝕜] F →L[𝕜] G) :
@@ -423,16 +430,13 @@ theorem IsBoundedBilinearMap.deriv_apply (h : IsBoundedBilinearMap 𝕜 f) (p q 
     h.deriv p q = f (p.1, q.2) + f (q.1, p.2) :=
   rfl
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The function `ContinuousLinearMap.mulLeftRight : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
 bilinear map. -/
 theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [SeminormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × 𝕜' => ContinuousLinearMap.mulLeftRight 𝕜 𝕜' p.1 p.2 :=
   (ContinuousLinearMap.mulLeftRight 𝕜 𝕜').isBoundedBilinearMap
-
-variable {𝕜}
 
 /-- Given a bounded bilinear map `f`, the map associating to a point `p` the derivative of `f` at
 `p` is itself a bounded linear map. -/
@@ -450,7 +454,7 @@ theorem Continuous.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} 
 theorem ContinuousOn.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     {s : Set X} (hg : ContinuousOn g s) (hf : ContinuousOn f s) :
     ContinuousOn (fun x => (g x).comp (f x)) s :=
-  (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prod hf)
+  (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prodMk hf)
 
 @[continuity, fun_prop]
 theorem Continuous.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
@@ -460,7 +464,7 @@ theorem Continuous.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F
 theorem ContinuousOn.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
     {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x ↦ f x (g x)) s :=
-  isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prod hg)
+  isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prodMk hg)
 
 end
 

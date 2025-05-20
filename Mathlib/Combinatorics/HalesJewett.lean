@@ -3,11 +3,11 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Finite.Prod
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # The Hales-Jewett theorem
@@ -65,6 +65,7 @@ combinatorial line, Ramsey theory, arithmetic progression
 -/
 
 open Function
+open scoped Finset
 
 universe u v
 variable {η α ι κ : Type*}
@@ -277,7 +278,7 @@ instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C)
 `l.map f` is the identity at `i` if `l` is, and constantly `f y` if `l` is constantly `y` at `i`. -/
 def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι where
   idxFun i := (l.idxFun i).map f
-  proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none']⟩
+  proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none]⟩
 
 /-- A point in `ι → α` and a line in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
 def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (ι ⊕ ι') where
@@ -456,10 +457,9 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
-  refine
-    ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i ∈ sᶜ, ((l.idxFun i).map ?_).getD 0,
-      c, ?_⟩
+  set s : Finset ι := {i | l.idxFun i = none} with hs
+  refine ⟨#s, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i ∈ sᶜ, ((l.idxFun i).map ?_).getD 0,
+    c, ?_⟩
   · rw [hs, Finset.mem_filter]
     exact ⟨Finset.mem_univ _, l.proper.choose_spec⟩
   · exact fun m => m
@@ -477,7 +477,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
     intro i hi
     rw [hs, Finset.compl_filter, Finset.mem_filter] at hi
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
-    simp [← hy, Option.map_some', Option.getD]
+    simp [← hy, Option.map_some, Option.getD]
 
 namespace Subspace
 

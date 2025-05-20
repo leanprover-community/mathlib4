@@ -3,10 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
 /-!
 # Fibred products of schemes
@@ -87,7 +88,7 @@ abbrev fV (i j : 𝒰.J) : v 𝒰 f g i j ⟶ pullback (𝒰.map i ≫ f) g :=
   pullback.fst _ _
 
 /-- The map `((Xᵢ ×[Z] Y) ×[X] Xⱼ) ×[Xᵢ ×[Z] Y] ((Xᵢ ×[Z] Y) ×[X] Xₖ)` ⟶
-  `((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing   -/
+`((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing -/
 def t' (i j k : 𝒰.J) :
     pullback (fV 𝒰 f g i j) (fV 𝒰 f g i k) ⟶ pullback (fV 𝒰 f g j k) (fV 𝒰 f g j i) := by
   refine (pullbackRightPullbackFstIso ..).hom ≫ ?_
@@ -191,7 +192,7 @@ theorem cocycle (i j k : 𝒰.J) : t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t
     · simp_rw [Category.assoc, cocycle_snd_snd 𝒰 f g i j k]
 
 /-- Given `Uᵢ ×[Z] Y`, this is the glued fibered product `X ×[Z] Y`. -/
-@[simps U V f t t', simps (config := .lemmasOnly) J]
+@[simps U V f t t', simps -isSimp J]
 def gluing : Scheme.GlueData.{u} where
   J := 𝒰.J
   U i := pullback (𝒰.map i ≫ f) g
@@ -451,11 +452,17 @@ instance : HasPullbacks Scheme :=
 instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
     (f : X ⟶ Z) (g : Y ⟶ Z) [IsAffine X] [IsAffine Y] [IsAffine Z] :
     IsAffine (pullback f g) :=
-  isAffine_of_isIso
+  .of_isIso
     (pullback.map f g (Spec.map (Γ.map f.op)) (Spec.map (Γ.map g.op))
         X.toSpecΓ Y.toSpecΓ Z.toSpecΓ
         (Scheme.toSpecΓ_naturality f) (Scheme.toSpecΓ_naturality g) ≫
       (PreservesPullback.iso Scheme.Spec _ _).inv)
+
+-- The converse is also true. See `Scheme.isEmpty_pullback_iff`.
+theorem _root_.AlgebraicGeometry.Scheme.isEmpty_pullback
+    {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S)
+    (H : Disjoint (Set.range f.base) (Set.range g.base)) : IsEmpty ↑(Limits.pullback f g) :=
+  isEmpty_of_commSq (IsPullback.of_hasPullback f g).toCommSq H
 
 /-- Given an open cover `{ Xᵢ }` of `X`, then `X ×[Z] Y` is covered by `Xᵢ ×[Z] Y`. -/
 @[simps! J obj map]
@@ -547,7 +554,7 @@ def diagonalCover : (pullback.diagonalObj f).OpenCover :=
   (openCoverOfBase 𝒰 f f).bind
     fun i ↦ openCoverOfLeftRight (𝒱 i) (𝒱 i) (𝒰.pullbackHom _ _) (𝒰.pullbackHom _ _)
 
-/-- The image of `𝒱 i j₁ ×[𝒰 i] 𝒱 i j₂` in `diagonalCover` with `j₁ = j₂`  -/
+/-- The image of `𝒱 i j₁ ×[𝒰 i] 𝒱 i j₂` in `diagonalCover` with `j₁ = j₂` -/
 noncomputable
 def diagonalCoverDiagonalRange : (pullback.diagonalObj f).Opens :=
   ⨆ i : Σ i, (𝒱 i).J, ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange
@@ -688,5 +695,13 @@ lemma diagonal_Spec_map :
   · congr 1; ext x; show x = Algebra.TensorProduct.lmul' R (S := S) (1 ⊗ₜ[R] x); simp
 
 end Spec
+
+section CartesianMonoidalCategory
+variable {S : Scheme}
+
+instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
+instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
+
+end CartesianMonoidalCategory
 
 end AlgebraicGeometry

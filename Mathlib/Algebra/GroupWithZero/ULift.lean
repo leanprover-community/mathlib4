@@ -14,6 +14,7 @@ This file defines instances for group and monoid with zero and related structure
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 -/
 
+assert_not_exists Ring
 
 universe u
 

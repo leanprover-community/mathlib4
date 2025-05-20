@@ -75,7 +75,7 @@ end PrimePair
 /-- An ideal `I` is prime if its complement is a filter.
 -/
 @[mk_iff]
-class IsPrime [Preorder P] (I : Ideal P) extends IsProper I : Prop where
+class IsPrime [Preorder P] (I : Ideal P) : Prop extends IsProper I where
   compl_filter : IsPFilter (I : Set P)ᶜ
 
 section Preorder
