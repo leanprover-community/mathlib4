@@ -36,12 +36,12 @@ noncomputable def expGrowthInf (u : ℕ → ℝ≥0∞) : EReal := liminf (fun n
 /-- Upper exponential growth of a sequence of extended nonnegative real numbers. -/
 noncomputable def expGrowthSup (u : ℕ → ℝ≥0∞) : EReal := limsup (fun n ↦ log (u n) / n) atTop
 
-lemma linearGrowthInf_log_comp_eq_expGrowthInf {u : ℕ → ℝ≥0∞} :
-    linearGrowthInf (log ∘ u) = expGrowthInf u := by
+lemma expGrowthInf_def {u : ℕ → ℝ≥0∞} :
+    expGrowthInf u = linearGrowthInf (log ∘ u) := by
   rfl
 
-lemma linearGrowthSup_log_comp_eq_expGrowthSup {u : ℕ → ℝ≥0∞} :
-    linearGrowthSup (log ∘ u) = expGrowthSup u := by
+lemma expGrowthSup_def {u : ℕ → ℝ≥0∞} :
+    expGrowthSup u = linearGrowthSup (log ∘ u) := by
   rfl
 
 /-! ### Basic properties -/
@@ -150,10 +150,10 @@ lemma _root_.Frequently.le_expGrowthSup (h : ∃ᶠ n : ℕ in atTop, exp (a * n
 /-! ### Special cases -/
 
 lemma expGrowthSup_zero : expGrowthSup 0 = ⊥ := by
-  rw [← linearGrowthSup_bot, expGrowthSup]
+  rw [← linearGrowthSup_bot, expGrowthSup_def]
   congr
   ext _
-  rw [Pi.zero_apply, Pi.bot_apply, log_zero]
+  rw [comp_apply, Pi.zero_apply, Pi.bot_apply, log_zero]
 
 lemma expGrowthInf_zero : expGrowthInf 0 = ⊥ := by
   apply le_bot_iff.1
@@ -161,7 +161,7 @@ lemma expGrowthInf_zero : expGrowthInf 0 = ⊥ := by
   exact expGrowthInf_le_expGrowthSup
 
 lemma expGrowthInf_top : expGrowthInf ⊤ = ⊤ := by
-  rw [← linearGrowthInf_top, expGrowthInf]
+  rw [← linearGrowthInf_top, expGrowthInf_def]
   congr
 
 lemma expGrowthSup_top : expGrowthSup ⊤ = ⊤ := by
@@ -255,8 +255,8 @@ lemma expGrowthInf_le_of_eventually_le (hb : b ≠ ∞) (h : ∀ᶠ n in atTop, 
   · simp only [zero_mul, ← Pi.zero_def, expGrowthInf_zero, bot_le]
   · apply (expGrowthInf_mul_le _ _).trans_eq <;> rw [expGrowthSup_const b_pos.ne' hb]
     · exact zero_add (expGrowthInf v)
-    · exact Or.inl EReal.zero_ne_bot
-    · exact Or.inl EReal.zero_ne_top
+    · exact .inl zero_ne_bot
+    · exact .inl zero_ne_top
 
 -- Bound on `expGrowthSup` under a `IsBigO` hypothesis. However, `ℝ≥0∞` is not normed, so the
 -- `IsBigO` property is spelt out.
@@ -267,8 +267,8 @@ lemma expGrowthSup_le_of_eventually_le (hb : b ≠ ∞) (h : ∀ᶠ n in atTop, 
   · simp only [zero_mul, ← Pi.zero_def, expGrowthSup_zero, bot_le]
   · apply (expGrowthSup_mul_le _ _).trans_eq <;> rw [expGrowthSup_const b_pos.ne' hb]
     · exact zero_add (expGrowthSup v)
-    · exact Or.inl EReal.zero_ne_bot
-    · exact Or.inl EReal.zero_ne_top
+    · exact .inl zero_ne_bot
+    · exact .inl zero_ne_top
 
 lemma expGrowthInf_of_eventually_ge (hb : b ≠ 0) (h : ∀ᶠ n in atTop, b * u n ≤ v n) :
     expGrowthInf u ≤ expGrowthInf v := by
