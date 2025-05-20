@@ -144,9 +144,9 @@ abbrev comap (f : E →L[R] F) (C : ProperCone R F) : ProperCone R E :=
 
 variable [T1Space E]
 
-lemma mem_zero : x ∈ (0 : ProperCone R E) ↔ x = 0 := .rfl
+lemma mem_bot : x ∈ (⊥ : ProperCone R E) ↔ x = 0 := .rfl
 
-@[simp, norm_cast] lemma toPointedCone_zero : (0 : ProperCone R E).toPointedCone = 0 := rfl
+@[simp, norm_cast] lemma toPointedCone_bot : (⊥ : ProperCone R E).toPointedCone = ⊥ := rfl
 
 variable [ContinuousAdd F] [ContinuousConstSMul R F]
 
