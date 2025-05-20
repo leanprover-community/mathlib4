@@ -914,6 +914,23 @@ end
 
 section
 
+variable {C}
+variable {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+
+/-- The natural transformation `uliftYoneda.obj X ⟶ F.op ⋙ uliftYoneda.obj (F.obj X)`
+when `F : C ⥤ D` and `X : C`. -/
+def uliftYonedaMap (X : C) :
+    uliftYoneda.{max w v₂}.obj X ⟶ F.op ⋙ uliftYoneda.{max w v₁}.obj (F.obj X) where
+  app _  f := ULift.up (F.map (ULift.down f))
+
+@[simp]
+lemma uliftYonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
+    (uliftYonedaMap.{w} F Y).app X (ULift.up f) = ULift.up (F.map f) := rfl
+
+end
+
+section
+
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- A type-level equivalence between sections of a functor and morphisms from a terminal functor

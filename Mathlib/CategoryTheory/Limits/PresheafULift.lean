@@ -313,11 +313,9 @@ lemma isLeftAdjoint_of_preservesColimits (L : (C ⥤ Type max w v₁ v₂) ⥤ �
     (uliftYonedaAdjunction _ (𝟙 _))).ofNatIsoLeft
       ((opOpEquivalence C).congrLeft.invFunIdAssoc L)⟩⟩
 
-/-section
+section
 
 variable {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
-
-section
 
 instance (X : C) (Y : F.op.LeftExtension (yoneda.obj X)) :
     Unique (Functor.LeftExtension.mk _ (yonedaMap F X) ⟶ Y) where
@@ -341,24 +339,56 @@ instance (X : C) : (yoneda.obj (F.obj X)).IsLeftKanExtension (yonedaMap F X) :=
 end
 
 section
-variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
 
-/-- `F ⋙ yoneda` is naturally isomorphic to `yoneda ⋙ F.op.lan`. -/
-noncomputable def compYonedaIsoYonedaCompLan :
-    F ⋙ yoneda ≅ yoneda ⋙ F.op.lan :=
+variable {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+
+instance (X : C) (Y : F.op.LeftExtension (uliftYoneda.{max w v₂}.obj X)) :
+    Unique (Functor.LeftExtension.mk _ (uliftYonedaMap.{w} F X) ⟶ Y) where
+  default := StructuredArrow.homMk
+    (uliftYonedaEquiv.symm (uliftYonedaEquiv (F := F.op ⋙ Y.right) Y.hom)) (by
+      ext Z ⟨f⟩
+      dsimp
+      rw [uliftYonedaMap_app_apply]
+      simpa [uliftYonedaEquiv, uliftYoneda] using
+        congr_fun (Y.hom.naturality f.op).symm (ULift.up (𝟙 _)) )
+  uniq φ := by
+    ext : 1
+    apply uliftYonedaEquiv.injective
+    simp [← StructuredArrow.w φ, uliftYonedaEquiv, uliftYonedaMap]
+
+/-- Given `F : C ⥤ D` and `X : C`, `uliftYoneda.obj (F.obj X) : Dᵒᵖ ⥤ Type (max w v₁ v₂)` is the
+left Kan extension of `uliftYoneda.obj X : Cᵒᵖ ⥤ Type (max w v₁ v₂)` along `F.op`. -/
+instance (X : C) : (uliftYoneda.{max w v₁}.obj (F.obj X)).IsLeftKanExtension
+    (uliftYonedaMap.{w} F X) :=
+  ⟨⟨Limits.IsInitial.ofUnique _⟩⟩
+
+section
+variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
+
+/-- `F ⋙ uliftYoneda` is naturally isomorphic to `uliftYoneda ⋙ F.op.lan`. -/
+noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
+    F ⋙ uliftYoneda.{max w v₁} ≅ uliftYoneda.{max w v₂} ⋙ F.op.lan :=
   NatIso.ofComponents (fun X => Functor.leftKanExtensionUnique _
-    (yonedaMap F X) (F.op.lan.obj _) (F.op.lanUnit.app (yoneda.obj X))) (fun {X Y} f => by
-      apply yonedaEquiv.injective
-      have eq₁ := congr_fun ((yoneda.obj (F.obj Y)).descOfIsLeftKanExtension_fac_app
-        (yonedaMap F Y) (F.op.lan.obj (yoneda.obj Y)) (F.op.lanUnit.app (yoneda.obj Y)) _) f
-      have eq₂ := congr_fun (((yoneda.obj (F.obj X)).descOfIsLeftKanExtension_fac_app
-        (yonedaMap F X) (F.op.lan.obj (yoneda.obj X)) (F.op.lanUnit.app (yoneda.obj X))) _) (𝟙 _)
-      have eq₃ := congr_fun (congr_app (F.op.lanUnit.naturality (yoneda.map f)) _) (𝟙 _)
-      dsimp at eq₁ eq₂ eq₃
+    (uliftYonedaMap.{w} F X) (F.op.lan.obj _) (F.op.lanUnit.app (uliftYoneda.obj X)))
+    (fun {X Y} f => by
+      apply uliftYonedaEquiv.injective
+      have eq₁ := congr_fun
+        ((uliftYoneda.{max w v₁}.obj (F.obj Y)).descOfIsLeftKanExtension_fac_app
+        (uliftYonedaMap F Y) (F.op.lan.obj (uliftYoneda.obj Y))
+          (F.op.lanUnit.app (uliftYoneda.obj Y)) _) ⟨f⟩
+      have eq₂ := congr_fun
+        (((uliftYoneda.{max w v₁}.obj (F.obj X)).descOfIsLeftKanExtension_fac_app
+        (uliftYonedaMap F X) (F.op.lan.obj (uliftYoneda.obj X))
+          (F.op.lanUnit.app (uliftYoneda.obj X))) _) ⟨𝟙 _⟩
+      have eq₃ := congr_fun (congr_app (F.op.lanUnit.naturality
+        (uliftYoneda.{max w v₂}.map f)) _) ⟨𝟙 _⟩
+      dsimp [uliftYoneda, uliftYonedaMap, uliftYonedaEquiv,
+        Functor.leftKanExtensionUnique] at eq₁ eq₂ eq₃ ⊢
       simp only [Functor.map_id] at eq₂
       simp only [id_comp] at eq₃
-      simp [yonedaEquiv, eq₁, eq₂, eq₃])
+      simp [eq₁, eq₂, eq₃])
 
+#exit
 @[simp]
 lemma compYonedaIsoYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
     ((compYonedaIsoYonedaCompLan F).inv.app X).app (Opposite.op (F.obj X))
