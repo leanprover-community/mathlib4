@@ -270,11 +270,12 @@ noncomputable def Path.of_mem_kstar {x x' : List α} {s : σ} (p : M.Path s s x)
     tauto
 
 variable (M) in
-theorem pumping_lemma [Fintype σ] [DecidableEq σ] {x : List α} (hx : x ∈ M.accepts)
+theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card σ ≤ x.length) :
     ∃ a b c,
       x = a ++ b ++ c ∧
         a.length + b.length ≤ Fintype.card σ ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
+  classical -- Discharge the DecidableEq assumptions
   have ⟨s, u, p, hs, hu⟩ := M.path_of_accepts hx
   let k := Fintype.card σ
   -- To make sure that the repeated state occurs within the first `k` steps, split
