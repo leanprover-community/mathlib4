@@ -18,7 +18,7 @@ section orderIso
 variable {R : Type*} [CommRing R]
 
 /-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
-noncomputable def primeSpectrum_quotient_orderIso_zeroLocus (I : Ideal R) :
+noncomputable def Ideal.primeSpectrum_quotient_orderIso_zeroLocus (I : Ideal R) :
     PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
   __ : PrimeSpectrum (R ⧸ I) ≃ (PrimeSpectrum.zeroLocus (R := R) I) := Equiv.ofInjective _
     (PrimeSpectrum.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective) |>.trans <|
@@ -88,39 +88,31 @@ section move
 
 #check Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
 
-theorem Ideal.map_strict_mono {R S : Type*} {F : Type u_1} [Semiring R] [Semiring S] [FunLike F R S]
-    [FunLike F R S] {f : F} [RingHomClass F R S] (hf : Function.Surjective ⇑f) {I J : Ideal R}
-    (hi : RingHom.ker f ≤ I) (hj : RingHom.ker f ≤ J) (h : I < J) : map f I < map f J := by
-  sorry
+open Ideal
 
-theorem Ideal.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : Ideal R}
-    [p₀.IsPrime] [p₁.IsPrime] (h₀ : p₀ < p₁) (h₁ : p₁ < 𝔪) {x : R} (hx : x ∈ 𝔪) :
-      ∃ q : Ideal R, q.IsPrime ∧ x ∈ q ∧ p₀ < q ∧ q < 𝔪 := by
-  by_cases hn : x ∈ p₀
-  · exact ⟨p₁, inferInstance, h₀.le hn, h₀, h₁⟩
-  let f := Quotient.mk p₀
-  have hf : Function.Surjective f := Quotient.mk_surjective
-  obtain ⟨q, hq⟩ := (p₀ + span {x}).nonempty_minimalPrimes <|
-    sup_le (IsLocalRing.le_maximalIdeal_of_isPrime p₀) ((span_singleton_le_iff_mem 𝔪).mpr hx)
+theorem PrimeSpectrum.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : (PrimeSpectrum R)}
+    (h₀ : p₀ < p₁) (h₁ : p₁ < ⟨𝔪, inferInstance⟩) {x : R} (hx : x ∈ 𝔪) :
+      ∃ q : PrimeSpectrum R, x ∈ q.1 ∧ p₀ < q ∧ q.1 < 𝔪 := by
+  by_cases hn : x ∈ p₀.1
+  · exact ⟨p₁,  h₀.le hn, h₀, h₁⟩
+  let f := p₀.1.primeSpectrum_quotient_orderIso_zeroLocus.symm
+  obtain ⟨q, hq⟩ := (p₀.1 + span {x}).nonempty_minimalPrimes <|
+    sup_le (IsLocalRing.le_maximalIdeal_of_isPrime p₀.1) ((span_singleton_le_iff_mem 𝔪).mpr hx)
       |>.trans_lt (IsMaximal.isPrime' 𝔪).1.lt_top |>.ne
-  have := minimalPrimes_isPrime hq
-  have : (map f 𝔪).IsPrime := map_isPrime_of_surjective hf <|
-    (congrArg (fun a ↦ a ≤ 𝔪) mk_ker).mpr (IsLocalRing.le_maximalIdeal_of_isPrime p₀)
-  have hp1 : (p₁.map f).IsPrime :=
-    map_isPrime_of_surjective hf ((congrArg (fun a ↦ a ≤ p₁) mk_ker).mpr h₀.le)
-  have hs : span {x} ≤ p₀ + span {x} := le_sup_right
-  have h0 : p₀ ≤ p₀ + span {x} := le_sup_left
-  have hxq : x ∈ q := hq.1.2 (hs (mem_span_singleton_self x))
-  have h : (q.map f).height ≤ 1 := sorry
-  refine ⟨q, hq.1.1, hxq, lt_of_le_not_le (h0.trans hq.1.2) fun h ↦ hn (h hxq), ?_⟩
-  apply lt_of_le_of_ne (IsLocalRing.le_maximalIdeal_of_isPrime q)
-  intro hqm
-  rw [hqm] at h
-  have : (p₁.map f).height < 1 := by
-    refine height_le_iff.mp h (p₁.map f) hp1 ?_
-    apply (map_mono h₁.le).lt_of_not_le ?_
-    sorry
-  sorry
+  let q : PrimeSpectrum R := ⟨q, hq.1.1⟩
+  have : q.1.IsPrime := q.2
+  have hs : span {x} ≤ p₀.1 + span {x} := le_sup_right
+  have h0 : p₀.1 ≤ p₀.1 + span {x} := le_sup_left
+  have hxq : x ∈ q.1 := hq.1.2 (hs (mem_span_singleton_self x))
+  have h : (f ⟨q, h0.trans hq.1.2⟩).1.height ≤ 1 := sorry
+  refine ⟨q, hxq, lt_of_le_not_le (h0.trans hq.1.2) fun h ↦ hn (h hxq), ?_⟩
+  refine lt_of_le_of_ne (IsLocalRing.le_maximalIdeal_of_isPrime q.1) fun hqm ↦ ?_
+  simp_rw [show q = ⟨𝔪, inferInstance⟩ from PrimeSpectrum.ext_iff.mpr hqm] at h
+  have hph : (f ⟨p₁, h₀.le⟩).1.height ≤ 0 := by
+    refine Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance ?_)
+    simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₁]
+  apply ENat.not_lt_zero (f ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
+  simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₀]
 
 theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.1) :
