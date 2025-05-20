@@ -311,7 +311,7 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
   | empty =>
     simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
     exact aestronglyMeasurable_const
-  | @insert i s hi_notin_s h_rec =>
+  | insert i s hi_notin_s h_rec =>
     have : ∀ i : ι, i ∈ s → AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
       h_int i (mem_insert_of_mem hi)
     specialize h_rec this
@@ -334,7 +334,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
   | empty =>
     simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
     exact integrable_const _
-  | @insert i s hi_notin_s h_rec =>
+  | insert i s hi_notin_s h_rec =>
     have : ∀ i : ι, i ∈ s → Integrable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
       h_int i (mem_insert_of_mem hi)
     specialize h_rec this
@@ -351,7 +351,7 @@ theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert i s hi_notin_s h_rec =>
+  | insert i s hi_notin_s h_rec =>
     have h_int' : ∀ i : ι, AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i =>
       ((h_meas i).const_mul t).exp.aestronglyMeasurable
     rw [sum_insert hi_notin_s,
