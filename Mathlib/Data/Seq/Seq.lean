@@ -1260,15 +1260,12 @@ end Fold
 section Modify
 
 @[simp]
-theorem modify_nil {f : α → α} {n} :
-    modify nil n f = nil := by
+theorem modify_nil {f : α → α} {n} : modify nil n f = nil := by
   ext1 m
   simp [modify, Function.update]
 
 @[simp]
-theorem set_nil {n : ℕ} {x : α} :
-    set nil n x = nil :=
-  modify_nil
+theorem set_nil {n : ℕ} {x : α} : set nil n x = nil := modify_nil
 
 @[simp]
 theorem modify_cons_zero {f : α → α} {hd : α} {tl : Seq α} :
@@ -1279,8 +1276,7 @@ theorem modify_cons_zero {f : α → α} {hd : α} {tl : Seq α} :
 
 @[simp]
 theorem set_cons_zero {hd hd' : α} {tl : Seq α} :
-    (cons hd tl).set 0 hd' = cons hd' tl :=
-  modify_cons_zero
+    (cons hd tl).set 0 hd' = cons hd' tl := modify_cons_zero
 
 @[simp]
 theorem modify_cons_succ {hd : α} {f : α → α} {n : ℕ} {tl : Seq α} :
@@ -1290,38 +1286,28 @@ theorem modify_cons_succ {hd : α} {f : α → α} {n : ℕ} {tl : Seq α} :
 
 @[simp]
 theorem set_cons_succ {hd x : α} {n : ℕ} {tl : Seq α} :
-    (cons hd tl).set (n + 1) x = cons hd (tl.set n x) :=
-  modify_cons_succ
+    (cons hd tl).set (n + 1) x = cons hd (tl.set n x) := modify_cons_succ
 
 theorem set_get_of_not_terminated {s : Seq α} {x : α} {n : ℕ}
     (h_not_terminated : ¬ s.TerminatedAt n) :
     (s.set n x).get? n = x := by
-  simp [set, modify]
-  simp [TerminatedAt] at h_not_terminated
-  cases h : s.get? n with
-  | none => simp [h] at h_not_terminated
-  | some => simp
+  simpa [set, modify, ← Option.ne_none_iff_exists'] using h_not_terminated
 
 theorem set_get_of_terminated {s : Seq α} {x : α} {n : ℕ}
     (h_terminated : s.TerminatedAt n) :
     (s.set n x).get? n = .none := by
-  simp [set, modify]
-  simpa [TerminatedAt] using h_terminated
+  simpa [set, modify] using h_terminated
 
 theorem set_get_stable {s : Seq α} {x : α} {n m : ℕ}
     (h : n ≠ m) :
     (s.set m x).get? n = s.get? n := by
-  simp [set, modify, Function.update]
-  intro h'
-  exact (h h').elim
+  simp [set, modify, Function.update, h]
 
 theorem set_dropn_stable_of_lt {s : Seq α} {m n : ℕ} {x : α}
     (h : m < n) :
     (s.set m x).drop n = s.drop n := by
   ext1 i
-  simp
-  rw [set_get_stable]
-  omega
+  simp [set_get_stable (show n + i ≠ m by omega)]
 
 end Modify
 
