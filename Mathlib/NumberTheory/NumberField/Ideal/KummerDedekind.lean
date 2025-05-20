@@ -85,7 +85,7 @@ variable (p θ) in
 The set of monic irreducible factors of `minpoly ℤ θ` modulo `p`.
 -/
 abbrev monicFactorsMod : Set ((ZMod p)[X]) :=
-  {Q | Q ∈ normalizedFactors (map (Int.castRingHom (ZMod p)) (minpoly ℤ θ))}
+  (normalizedFactors (map (Int.castRingHom (ZMod p)) (minpoly ℤ θ))).toFinset
 
 /--
 If `p` does not divide `exponent θ` and `Q` is a lift of a monic irreducible factor of
@@ -101,6 +101,7 @@ def ZModXQuotSpanEquivQuotSpanPair (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
       span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)} ⊔
         span {map (Int.castRingHom (ZMod p)) Q} := by
     rw [← span_insert, span_pair_comm, span_pair_eq_span_singleton_iff_dvd.mpr]
+    simp only [Finset.mem_coe, Multiset.mem_toFinset] at hQ
     exact ((Polynomial.mem_normalizedFactors_iff h₀).mp hQ).2.2
   have h_eq₂ : span {↑p} ⊔ span {(aeval θ) Q} = span {↑p, (aeval θ) Q} := by
     rw [span_insert]
@@ -123,13 +124,18 @@ attribute [local instance] Int.ideal_span_isMaximal_of_prime Ideal.Quotient.fiel
 open scoped Classical in
 private def Ideal.primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :
     {Q | Q ∈ normalizedFactors (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)} ≃
-    {Q | Q ∈ normalizedFactors (map (Int.castRingHom (ZMod p)) A)} :=
+    (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset :=
   (normalizedFactorsEquiv (f := (mapEquiv (Int.quotientSpanNatEquivZMod p)).toMulEquiv)
     (by simp) (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)).trans
-      (Equiv.setCongr (by simp [Polynomial.map_map]))
+      (Equiv.setCongr (by
+        classical
+        ext
+        simp_rw [RingEquiv.toMulEquiv_eq_coe, RingEquiv.coe_toMulEquiv, mapEquiv_apply,
+          Set.mem_setOf_eq, Multiset.toFinset_val, Set.mem_def, Multiset.mem_dedup,
+          Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_Quotient_mk]))
 
 private theorem Ideal.primesOverSpanEquivMonicFactorsModAux_symm_apply (A : ℤ[X]) {Q : (ZMod p)[X]}
-    (hQ : Q ∈ {Q | Q ∈ normalizedFactors (map (Int.castRingHom (ZMod p)) A)}) :
+    (hQ : Q ∈ (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset) :
     ((Ideal.primesOverSpanEquivMonicFactorsModAux A).symm ⟨Q, hQ⟩ : (ℤ ⧸ span {(p : ℤ)})[X]) =
       Polynomial.map ((Int.quotientSpanNatEquivZMod p).symm) Q := rfl
 
@@ -184,6 +190,7 @@ theorem Ideal.inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ 
   have hQ' : Polynomial.map (Int.castRingHom (ZMod p)) Q ≠ 0 := by
     contrapose! hQ
     rw [hQ]
+    simp only [Finset.mem_coe, Multiset.mem_toFinset]
     exact zero_not_mem_normalizedFactors _
   rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span, inertiaDeg_algebraMap,
     ← finrank_quotient_span_eq_natDegree hQ']
