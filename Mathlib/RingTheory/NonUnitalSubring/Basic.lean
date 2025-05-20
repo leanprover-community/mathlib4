@@ -306,7 +306,7 @@ instance : CompleteLattice (NonUnitalSubring R) :=
     bot_le := fun s _x hx => (mem_bot.mp hx).symm ▸ zero_mem s
     top := ⊤
     le_top := fun _ _ _ => trivial
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     inf_le_left := fun _ _ _ => And.left
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }

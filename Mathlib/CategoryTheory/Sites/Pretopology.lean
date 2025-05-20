@@ -245,7 +245,7 @@ with good definitional equalities for `⊥`, `⊤` and `⊓`. -/
 instance : CompleteLattice (Pretopology C) where
   __ := orderBot C
   __ := orderTop C
-  inf t₁ t₂ := {
+  min t₁ t₂ := {
     coverings := fun X ↦ t₁.coverings X ∩ t₂.coverings X
     has_isos := fun _ _ f _ ↦
       ⟨t₁.has_isos f, t₂.has_isos f⟩
