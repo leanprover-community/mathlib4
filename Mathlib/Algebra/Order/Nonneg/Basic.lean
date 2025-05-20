@@ -177,9 +177,6 @@ section Pow
 
 variable [MonoidWithZero α] [Preorder α] [ZeroLEOneClass α] [PosMulMono α]
 
-theorem pow_nonneg {a : α} (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n := by
-  simp [H]
-
 instance pow : Pow { x : α // 0 ≤ x } ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 
@@ -192,6 +189,8 @@ protected theorem coe_pow (a : { x : α // 0 ≤ x }) (n : ℕ) :
 theorem mk_pow {x : α} (hx : 0 ≤ x) (n : ℕ) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, pow_nonneg hx n⟩ :=
   rfl
+
+@[deprecated (since := "2025-05-19")] alias pow_nonneg := _root_.pow_nonneg
 
 end Pow
 
