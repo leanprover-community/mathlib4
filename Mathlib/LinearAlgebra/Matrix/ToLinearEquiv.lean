@@ -112,10 +112,9 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
     intro h
     have : Function.Injective M.mulVecLin := by
       simpa only [← LinearMap.ker_eq_bot, ker_mulVecLin_eq_bot_iff, not_imp_not] using h
-    have : M * ((LinearEquiv.ofInjectiveEndo M.mulVecLin this).symm).toMatrix' = 1 := by
-      refine Matrix.toLin'.injective (LinearMap.ext fun v => ?_)
-      rw [Matrix.toLin'_mul, Matrix.toLin'_one, Matrix.toLin'_toMatrix', LinearMap.comp_apply]
-      exact (LinearEquiv.ofInjectiveEndo M.mulVecLin this).apply_symm_apply v
+    have : M * (LinearEquiv.ofInjectiveEndo M.mulVecLin this).symm.toMatrix' = 1 := by
+      rw [← toMatrix'_one, ← LinearEquiv.ofInjectiveEndo_right_inv, toMatrix'_mul,
+        toMatrix'_mulVecLin]
     exact Matrix.det_ne_zero_of_right_inverse this
 
 theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [CommRing A]
