@@ -13,15 +13,17 @@ import Mathlib.RingTheory.Support
 
 /-!
 
-# Hom(N,M) is subsingleton iff exist smul regular element of M in ann(N)
+# Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
 
-In this section, we proved that for `R` modules `M N`, `Hom(N,M)` is subsingleton iff
-there exist `r : R`, `IsSMulRegular M r` and `r ∈ ann(N)`.
-This is the case for `Depth[I](M) = 0`.
+Let `M` and `N` be `R`-modules. In this section we prove that `Hom(N,M)` is subsingleton iff
+there exist `r : R`, such that `IsSMulRegular M r` and `r ∈ ann(N)`.
+This is the case if `Depth[I](M) = 0`.
 
 -/
 
 open IsLocalRing LinearMap
+
+namespace IsSMulRegular
 
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
@@ -76,7 +78,7 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial [IsNoetherianRi
     LinearMap.ker_eq_bot.mp (Submodule.ker_liftQ_eq_bot _ _ _ (le_of_eq hx.symm))
   let f := i.comp to_res
   have f_ne0 : f ≠ 0 := by
-    by_contra eq0
+    intro eq0
     absurd hg
     apply LinearMap.ext
     intro np'
@@ -101,3 +103,5 @@ lemma exist_mem_ann_isSMulRegular_of_hom_subsingleton [IsNoetherianRing R]
     · exact IsSMulRegular.zero
   · let _ : Nontrivial M := not_subsingleton_iff_nontrivial.mp htrivial
     exact exist_mem_ann_isSMulRegular_of_hom_subsingleton_nontrivial hom0
+
+end IsSMulRegular
