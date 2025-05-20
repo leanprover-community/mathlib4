@@ -98,10 +98,20 @@ theorem embedding_injective : (embedding (K := K)).Injective := by
   intro v₁ v₂ h
   rw [← mk_embedding v₁, h, mk_embedding]
 
+@[simp]
+theorem embedding_inj {v₁ v₂ : InfinitePlace K} : v₁.embedding = v₂.embedding ↔ v₁ = v₂ :=
+  (embedding_injective _).eq_iff
+
 variable (K) in
 theorem conjugate_embedding_injective :
     (fun (v : InfinitePlace K) => ComplexEmbedding.conjugate v.embedding).Injective :=
   star_injective.comp <| embedding_injective K
+
+open ComplexEmbedding in
+@[simp]
+theorem conjugate_embedding_inj {v₁ v₂ : InfinitePlace K} :
+    conjugate v₁.embedding = conjugate v₂.embedding ↔ v₁ = v₂ :=
+  (conjugate_embedding_injective _).eq_iff
 
 variable (K) in
 theorem eq_of_embedding_eq_conjugate {v₁ v₂ : InfinitePlace K}
