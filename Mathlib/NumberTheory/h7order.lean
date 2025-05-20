@@ -207,13 +207,32 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
   simp_rw [AnalyticAt.order_eq_top_iff,Metric.eventually_nhds_iff_ball]
   constructor
   · intros H
-    have := IsOpen.eqOn_of_deriv_eq
-
-
-
-
-
-
+    have := AnalyticAt.exists_ball_analyticOnNhd hf
+    obtain ⟨r, hB⟩ := this
+    obtain ⟨ε, hε, hball⟩ := H
+    have hf : DifferentiableOn ℂ f (Metric.ball z₀ r) := by {
+      apply AnalyticOn.differentiableOn
+      have := hB.2
+      exact AnalyticOnNhd.analyticOn this
+    }
+    have hg : DifferentiableOn ℂ (fun _ ↦ (0 : ℂ)) (Metric.ball z₀ r) := differentiableOn_const 0
+    have hf' : EqOn (deriv f) (deriv (fun _ ↦ (0 : ℂ))) (Metric.ball z₀ r) := by {
+      simp only [deriv_const']
+      unfold EqOn
+      simp only [Metric.mem_ball]
+      intros x
+      have := hball x
+      simp only [Metric.mem_ball] at this
+      sorry
+    }
+    have hx : z₀ ∈ (Metric.ball z₀ r) := by {
+      simp only [Metric.mem_ball, dist_self]
+      simp_all only [gt_iff_lt, Metric.mem_ball, differentiableOn_const, deriv_const']
+      }
+    have  := IsOpen.eqOn_of_deriv_eq ?_ ?_ hf hg hf' hx
+    · sorry
+    · sorry
+    · sorry
   · sorry
 
 
