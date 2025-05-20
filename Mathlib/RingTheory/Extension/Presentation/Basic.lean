@@ -5,7 +5,7 @@ Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.Generators
+import Mathlib.RingTheory.Extension.Generators
 import Mathlib.RingTheory.MvPolynomial.Localization
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 

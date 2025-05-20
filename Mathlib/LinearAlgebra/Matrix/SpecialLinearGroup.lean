@@ -308,6 +308,17 @@ theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :
     ↑(g : SpecialLinearGroup n R) = (↑g : Matrix n n ℤ).map (Int.castRingHom R) :=
   map_apply_coe (Int.castRingHom R) g
 
+lemma map_intCast_injective [CharZero R] :
+    Function.Injective ((↑) : SpecialLinearGroup n ℤ → SpecialLinearGroup n R) := fun g h ↦ by
+  simp_rw [ext_iff, map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
+    Matrix.map_apply, Int.cast_inj]
+  tauto
+
+@[simp]
+lemma map_intCast_inj [CharZero R] {x y : SpecialLinearGroup n ℤ} :
+    (x : SpecialLinearGroup n R) = y ↔ x = y :=
+  map_intCast_injective.eq_iff
+
 end cast
 
 section Neg
