@@ -139,17 +139,17 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     apply IntervalIntegrable.symm
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc.le]
     rw [← Ioo_union_right hc, integrableOn_union, and_comm]; constructor
-    · refine integrableOn_singleton_iff.mpr (Or.inr ?_)
-      exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact
-        isCompact_singleton
+    · exact integrableOn_singleton (by simp) <|
+        isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact isCompact_singleton
     · have : ∀ x : ℝ, x ∈ Ioo c 0 → ‖Complex.exp (↑π * Complex.I * r)‖ = ‖(x : ℂ) ^ r‖ := by
         intro x hx
         rw [Complex.ofReal_cpow_of_nonpos hx.2.le, norm_mul, ← Complex.ofReal_neg,
           Complex.norm_cpow_eq_rpow_re_of_pos (neg_pos.mpr hx.2), ← h',
           rpow_zero, one_mul]
       refine IntegrableOn.congr_fun ?_ this measurableSet_Ioo
-      rw [integrableOn_const]
-      refine Or.inr ((measure_mono Set.Ioo_subset_Icc_self).trans_lt ?_)
+      rw [integrableOn_const_iff]
+      right
+      refine (measure_mono Set.Ioo_subset_Icc_self).trans_lt ?_
       exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact isCompact_Icc
 
 /-- See `intervalIntegrable_cpow` for a version applying to any locally finite measure, but with a
@@ -224,6 +224,7 @@ theorem intervalIntegrable_cos : IntervalIntegrable cos μ a b :=
 @[simp]
 theorem intervalIntegrable_exp : IntervalIntegrable exp μ a b :=
   continuous_exp.intervalIntegrable a b
+
 @[simp]
 theorem _root_.IntervalIntegrable.log (hf : ContinuousOn f [[a, b]])
     (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0) :
