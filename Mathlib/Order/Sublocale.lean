@@ -176,25 +176,23 @@ def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
       rw [Sublocale.le_iff']
       apply h
 
-/-
-#check orderiso.injective.coframe
-instance : Order.Coframe (Nucleus X)ᵒᵈ := OrderDual.instCoframe
-
-instance : Order.Coframe (Sublocale X) where
-  __ := Function.Injective.coframe orderiso.invFun sorry sorry sorry sorry sorry
+lemma orderiso.eq_toSublocale : Nucleus.toSublocale = (@orderiso X _) := rfl
+lemma orderiso.symm_eq_toNucleus : Sublocale.toNucleus = (@orderiso X _).symm := rfl
 
 lemma Sublocale.le_iff (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s2.toNucleus ≤ s1.toNucleus := by
-  apply Iff.intro
-  . intro h
-    rw [← @Nucleus.range_subset_iff]
-    rw [Sublocale.le_iff'] at h
-    repeat rw [Sublocale.toNucleus.range]
-    exact h
-  . intro h
-    rw [← @Nucleus.range_subset_iff] at h
-    rw [Sublocale.le_iff']
-    repeat rw [Sublocale.toNucleus.range] at h
-    exact h
+  rw [← orderiso.symm.le_iff_le]
+  rfl
+
+instance : CompleteLattice (Sublocale X) :=
+  (OrderIso.toGaloisInsertion orderiso).liftCompleteLattice
+
+instance instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
+  iInf_sup_le_sup_sInf a s := by
+    simp [Sublocale.le_iff, orderiso.symm_eq_toNucleus, orderiso.symm.map_sup,
+      orderiso.symm.map_sInf, orderiso.symm.map_iInf, sup_iInf_eq]
+
+instance instCoframe : Order.Coframe (Sublocale X) :=
+  Order.Coframe.ofMinimalAxioms instCoframeMinimalAxioms
 
 @[ext]
 structure Open (X : Type*) [Order.Frame X] where
@@ -238,4 +236,4 @@ instance : BoundedOrder (Open X) where
 instance : CompleteSemilatticeSup (Open X) where
   sSup s := ⟨sSup s⟩
 
-end Open-/
+end Open
