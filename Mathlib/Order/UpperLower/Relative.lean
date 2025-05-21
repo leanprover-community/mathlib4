@@ -63,19 +63,19 @@ protected lemma IsRelLowerSet.sUnion {S : Set (Set α)} (hS : ∀ s ∈ S, IsRel
 
 protected lemma IsRelUpperSet.iUnion {f : ι → Set α} (hf : ∀ i, IsRelUpperSet (f i) P) :
     IsRelUpperSet (⋃ i, f i) P :=
-  .sUnion <| forall_mem_range.2 hf
+  .sUnion (forall_mem_range.2 hf)
 
 protected lemma IsRelLowerSet.iUnion {f : ι → Set α} (hf : ∀ i, IsRelLowerSet (f i) P) :
     IsRelLowerSet (⋃ i, f i) P :=
-  .sUnion <| forall_mem_range.2 hf
+  .sUnion (forall_mem_range.2 hf)
 
 protected lemma IsRelUpperSet.iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsRelUpperSet (f i j) P) :
     IsRelUpperSet (⋃ (i) (j), f i j) P :=
-  .iUnion fun i ↦ .iUnion <| hf i
+  .iUnion fun i ↦ .iUnion (hf i)
 
 protected lemma IsRelLowerSet.iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsRelLowerSet (f i j) P) :
     IsRelLowerSet (⋃ (i) (j), f i j) P :=
-  .iUnion fun i ↦ .iUnion <| hf i
+  .iUnion fun i ↦ .iUnion (hf i)
 
 protected lemma IsRelUpperSet.sInter
     {S : Set (Set α)} (hS : S.Nonempty) (hf : ∀ s ∈ S, IsRelUpperSet s P) :
@@ -91,21 +91,21 @@ protected lemma IsRelLowerSet.sInter
 
 protected lemma IsRelUpperSet.iInter
     [Nonempty ι] {f : ι → Set α} (hf : ∀ i, IsRelUpperSet (f i) P) : IsRelUpperSet (⋂ i, f i) P :=
-  .sInter (range_nonempty f) <| forall_mem_range.2 hf
+  .sInter (range_nonempty f) (forall_mem_range.2 hf)
 
 protected lemma IsRelLowerSet.iInter
     [Nonempty ι] {f : ι → Set α} (hf : ∀ i, IsRelLowerSet (f i) P) : IsRelLowerSet (⋂ i, f i) P :=
-  .sInter (range_nonempty f) <| forall_mem_range.2 hf
+  .sInter (range_nonempty f) (forall_mem_range.2 hf)
 
 protected lemma IsRelUpperSet.iInter₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
     {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsRelUpperSet (f i j) P) :
     IsRelUpperSet (⋂ (i) (j), f i j) P :=
-  .iInter fun i ↦ .iInter <| hf i
+  .iInter fun i ↦ .iInter (hf i)
 
 protected lemma IsRelLowerSet.iInter₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
     {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsRelLowerSet (f i j) P) :
     IsRelLowerSet (⋂ (i) (j), f i j) P :=
-  .iInter fun i ↦ .iInter <| hf i
+  .iInter fun i ↦ .iInter (hf i)
 
 lemma isUpperSet_subtype_iff_isRelUpperSet {s : Set { x // P x }} :
     IsUpperSet s ↔ IsRelUpperSet (Subtype.val '' s) P := by
