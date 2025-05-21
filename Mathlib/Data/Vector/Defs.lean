@@ -47,6 +47,18 @@ alias _root_.Vector.toListVector := ofVector
 @[simp] theorem ofVector_toVector (v : List.Vector α n) : ofVector (v.toVector) = v := rfl
 @[simp] theorem toVector_ofVector (v : _root_.Vector α n) : toVector (ofVector v) = v := rfl
 
+theorem ofVector_leftInverse : Function.LeftInverse ofVector (toVector (α := α) (n := n)) :=
+  ofVector_toVector
+
+theorem toVector_leftInverse : Function.LeftInverse toVector (ofVector (α := α) (n := n)) :=
+  toVector_ofVector
+
+theorem ofVector_rightInverse : Function.RightInverse ofVector (toVector (α := α) (n := n)) :=
+  toVector_ofVector
+
+theorem toVector_rightInverse : Function.RightInverse toVector (ofVector (α := α) (n := n)) :=
+  ofVector_toVector
+
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
   inferInstanceAs (DecidableEq {l : List α // l.length = n})
 
@@ -75,10 +87,10 @@ open Nat
 def head : Vector α (Nat.succ n) → α
   | ⟨a :: _, _⟩ => a
 
-@[simp] theorem toVector_head : ∀ v : Vector α (n + 1), v.toVector.head = v.head :=
+@[simp] theorem head_toVector : ∀ v : Vector α (n + 1), v.toVector.head = v.head :=
   fun ⟨_ :: _, _⟩ => rfl
 
-@[simp] theorem ofVector_head : ∀ v : _root_.Vector α (n + 1), (ofVector v).head = v.head :=
+@[simp] theorem head_ofVector : ∀ v : _root_.Vector α (n + 1), (ofVector v).head = v.head :=
   fun ⟨⟨_ :: _⟩, _⟩ => rfl
 
 /-- The head of a vector obtained by prepending is the element prepended. -/
@@ -89,6 +101,22 @@ theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
 def tail : Vector α n → Vector α (n - 1)
   | ⟨[], h⟩ => ⟨[], congrArg pred h⟩
   | ⟨_ :: v, h⟩ => ⟨v, congrArg pred h⟩
+
+@[simp] theorem toVector_tail :
+    ∀ {n} (v : Vector α n), (v.tail).toVector = v.toVector.tail
+  | 0, ⟨[], h⟩ => _root_.Vector.toList_inj.mp rfl
+  | _ + 1, ⟨_ :: v, h⟩ => _root_.Vector.toList_inj.mp <| by
+    unfold tail _root_.Vector.tail
+    simp_rw [dif_pos (Nat.zero_lt_succ _), Vector.toArray_eraseIdx,
+      Array.toList_eraseIdx, toVector_toList, eraseIdx_zero, tail_cons]
+
+@[simp] theorem ofVector_tail :
+    ∀ {n} (v : _root_.Vector α n), ofVector v.tail = (ofVector v).tail
+  | 0, ⟨⟨[]⟩, _⟩ => Subtype.ext rfl
+  | _ + 1, ⟨⟨_ :: v⟩, h⟩ => Subtype.ext <| by
+    unfold tail _root_.Vector.tail ofVector
+    simp_rw [dif_pos (Nat.zero_lt_succ _)]
+    simp_rw [Vector.eraseIdx_mk, eraseIdx_toArray, eraseIdx_zero, tail_cons]
 
 /-- The tail of a vector obtained by prepending is the vector prepended. to -/
 theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
