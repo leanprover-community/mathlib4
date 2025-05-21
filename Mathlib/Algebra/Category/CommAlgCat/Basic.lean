@@ -10,7 +10,7 @@ import Mathlib.Algebra.Category.Ring.Under.Basic
 # The category of commutative algebras over a commutative ring
 
 This file defines the bundled category `CommAlgCat` of commutative algebras over a fixed commutative
-ring `R` along with the forgetful functors to `RingCat` and `AlgCat`.
+ring `R` along with the forgetful functors to `CommRingCat` and `AlgCat`.
 -/
 
 namespace CategoryTheory
@@ -124,20 +124,27 @@ instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgCat.{v} R) wher
   forget₂.obj A := .of R A
   forget₂.map f := AlgCat.ofHom f.hom
 
+@[simp] lemma forget₂_commRingCat_obj (A : CommAlgCat.{v} R) :
+    (forget₂ (CommAlgCat.{v} R) CommRingCat.{v}).obj A = .of A := rfl
+
+@[simp] lemma forget₂_commRingCat_map (f : A ⟶ B) :
+    (forget₂ (CommAlgCat.{v} R) CommRingCat.{v}).map f = CommRingCat.ofHom f.hom := rfl
+
 @[simp] lemma forget₂_algCat_obj (A : CommAlgCat.{v} R) :
     (forget₂ (CommAlgCat.{v} R) (AlgCat.{v} R)).obj A = .of R A := rfl
 
 @[simp] lemma forget₂_algCat_map (f : A ⟶ B) :
     (forget₂ (CommAlgCat.{v} R) (AlgCat.{v} R)).map f = AlgCat.ofHom f.hom := rfl
 
-/-- Build an isomorphism in the category `CommAlgCat R` from an `AlgEquiv` between `Algebra`s. -/
+/-- Build an isomorphism in the category `CommAlgCat R` from an `AlgEquiv` between commutative
+`Algebra`s. -/
 @[simps]
 def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Algebra R X} {_ : Algebra R Y}
     (e : X ≃ₐ[R] Y) : of R X ≅ of R Y where
   hom := ofHom (e : X →ₐ[R] Y)
   inv := ofHom (e.symm : Y →ₐ[R] X)
 
-/-- Build a `AlgEquiv` from an isomorphism in the category `CommAlgCat R`. -/
+/-- Build an `AlgEquiv` from an isomorphism in the category `CommAlgCat R`. -/
 @[simps]
 def ofIso (i : A ≅ B) : A ≃ₐ[R] B where
   __ := i.hom.hom
@@ -146,8 +153,7 @@ def ofIso (i : A ≅ B) : A ≃ₐ[R] B where
   left_inv x := by simp
   right_inv x := by simp
 
-/-- Algebra equivalences between `Algebra`s are the same as (isomorphic to) isomorphisms in
-`CommAlgCat`. -/
+/-- Algebra equivalences between `Algebra`s are the same as isomorphisms in `CommAlgCat`. -/
 @[simps]
 def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where
   toFun := ofIso
@@ -155,8 +161,7 @@ def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where
   left_inv _ := rfl
   right_inv _ := rfl
 
-instance reflectsIsomorphisms_forget_commAlgCat :
-    (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where
+instance reflectsIsomorphisms_forget : (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (CommAlgCat.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
