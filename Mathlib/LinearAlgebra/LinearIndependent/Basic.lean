@@ -76,6 +76,12 @@ theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Modu
     exact hinj congr($this i)
   simpa [Finsupp.linearCombination, f, Finsupp.sum_mapRange_index]
 
+variable (R) in
+theorem LinearIndependent.restrict_scalars' [Semiring K] [SMulWithZero R K] [Module K M]
+    [IsScalarTower R K M] [FaithfulSMul R K] [IsScalarTower R K K] {v : ι → M}
+    (li : LinearIndependent K v) : LinearIndependent R v :=
+  restrict_scalars ((faithfulSMul_iff_injective_smul_one R K).mp inferInstance) li
+
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
     spans a submodule disjoint from the kernel of `f`.
 TODO : `LinearIndepOn` version. -/
@@ -215,10 +221,6 @@ theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
   li.comp (fun _ ↦ ⟨_, _⟩) <| by intro; aesop
 
 section Indexed
-
-theorem LinearIndepOn.mono {t s : Set ι} (hs : LinearIndepOn R v s) (h : t ⊆ s) :
-    LinearIndepOn R v t :=
-  hs.comp _ <| Set.inclusion_injective h
 
 @[deprecated (since := "2025-02-15")] alias LinearIndependent.mono := LinearIndepOn.mono
 
@@ -611,12 +613,5 @@ theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M
   obtain ⟨_⟩ := (unique_iff_subsingleton_and_nonempty (α := ι)).2 ⟨by assumption, he⟩
   rw [linearIndependent_unique_iff]
   exact ⟨fun h i ↦ by rwa [Unique.eq_default i], fun h ↦ h _⟩
-
-@[simp]
-theorem linearIndependent_subsingleton_iff [Subsingleton M] (f : ι → M) :
-    LinearIndependent R f ↔ IsEmpty ι := by
-  obtain h | i := isEmpty_or_nonempty ι
-  · simpa
-  exact iff_of_false (fun hli ↦ hli.ne_zero i.some (Subsingleton.eq_zero (f i.some))) (by simp)
 
 end Nontrivial
