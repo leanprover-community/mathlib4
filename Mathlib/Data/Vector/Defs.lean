@@ -353,9 +353,9 @@ lemma toList_getElem (v : Vector α n) (i : ℕ) {hi : i < v.toList.length} :
     v.toList[i] = v[i]'(by simp_all) := rfl
 
 @[simp] theorem getElem_toVector (v : Vector α n) (i : ℕ) {hi : i < n} :
-  (v.toVector)[i] = v[i] := rfl
+    (v.toVector)[i] = v[i] := rfl
 
 @[simp] theorem getElem_ofVector (v : _root_.Vector α n) (i : ℕ) {hi : i < n} :
-  (ofVector v)[i] = v[i] := rfl
+    (ofVector v)[i] = v[i] := rfl
 
 end List.Vector

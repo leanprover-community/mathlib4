@@ -23,12 +23,6 @@ def arrayEquivList (α : Type*) : Array α ≃ List α :=
 def vectorEquivListVector (α : Type*) (n : ℕ) : Vector α n ≃ List.Vector α n :=
   ⟨List.Vector.ofVector, List.Vector.toVector, fun _ => rfl, fun _ => rfl⟩
 
-theorem toList_vectorEquivListVector_apply {α : Type*} {n : ℕ} (v : Vector α n) :
-  (vectorEquivListVector α n v).toList = arrayEquivList α v.toArray := rfl
-
-theorem toArray_vectorEquivListVector_symm_apply {α : Type*} {n : ℕ} (v : List.Vector α n) :
-  ((vectorEquivListVector α n).symm v).toArray = (arrayEquivList α).symm v.toList := rfl
-
 end Equiv
 
 /- Porting note: removed instances for what would be ported as `Traversable (Array α)` and
