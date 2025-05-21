@@ -229,13 +229,13 @@ instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
 the range to the original frame. -/
 def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
 
-lemma factorizes_iff_le : n ∘ m = m ↔ n ≤ m where
+lemma comp_eq_right_iff_le : n ∘ m = m ↔ n ≤ m where
   mpr h := funext_iff.mpr <| fun _ ↦ le_antisymm (le_trans (h (m _)) (m.idempotent' _)) le_apply
   mp h := by
     rw [← coe_le_coe, ← h]
     exact fun _ ↦ monotone le_apply
 
-lemma range_subset_iff : range m ⊆ range n ↔ n ≤ m  where
+@[simp] lemma range_subset_range : range m ⊆ range n ↔ n ≤ m where
   mp h x := by
     rw [← mem_range.mp (Set.range_subset_iff.mp h x)]
     exact n.monotone (m.le_apply)
