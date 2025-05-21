@@ -30,8 +30,8 @@ contradiction.
 Hence there are at most 5 problems $g$ solved that are hard for boys, and the number of girl-boy
 pairs who solved some problem in common that was hard for boys is at most $5 × 2 × 21 = 210$.
 By the same reasoning this bound holds when "girls" and "boys" are swapped throughout, but there
-are $21^2$ girl-boy pairs in all and $21^2 > 210 + 210$, so some girl-boy pairs solved problems in
-common that were not hard for boys or girls. By condition 2 the result follows.
+are $21^2$ girl-boy pairs in all and $21^2 > 210 + 210$, so some girl-boy pairs solved only problems
+in common that were not hard for girls or boys. By condition 2 the result follows.
 -/
 
 namespace Imo2001Q3
