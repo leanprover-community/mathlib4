@@ -485,7 +485,7 @@ theorem mapMatrix_trans (f : α ≃ₗ[R] β) (g : β ≃ₗ[R] γ) :
     (f.mapMatrix : _ ≃ₗ[R] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := by
   rfl
 
-@[simp] lemma entryLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
+lemma entryLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
     entryLinearMap R _ i j ∘ₗ f.mapMatrix.toLinearMap =
       f.toLinearMap ∘ₗ entryLinearMap R _ i j := by
   simp only [mapMatrix_toLinearMap, LinearMap.entryLinearMap_comp_mapMatrix]
