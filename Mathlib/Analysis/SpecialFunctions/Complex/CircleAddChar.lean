@@ -134,8 +134,7 @@ open Real in
 lemma rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_val (j : ZMod n) :
     (rootsOfUnityCircleEquiv n (ZMod.rootsOfUnityAddChar n j)).val
       = Complex.exp (2 * π * I * j.val / n) := by
-  rw [comp_apply, ← ZMod.toCircle_natCast, ZMod.natCast_val, ZMod.cast_id', id_eq]
-  rfl
+  simp [← ZMod.toCircle_natCast, -ZMod.natCast_val, ZMod.natCast_zmod_val]
 
 theorem surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar (n : ℕ) [NeZero n] :
     Surjective (rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) := fun ⟨w, hw⟩ ↦ by
