@@ -139,11 +139,7 @@ lemma rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_val (j : ZMod n) :
 theorem surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar (n : ℕ) [NeZero n] :
     Surjective (rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) := fun ⟨w, hw⟩ ↦ by
   obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity n w).mp hw
-  exact ⟨j, by
-    rw [comp_apply, MulEquiv.apply_eq_iff_symm_apply]
-    ext
-    rw [ZMod.rootsOfUnityAddChar_val, ZMod.toCircle_natCast, mul_div_assoc, hj2]
-    rfl⟩
+  exact ⟨j, by simp [Units.ext_iff, Subtype.ext_iff, ← hj2, ZMod.toCircle_natCast, mul_div_assoc]⟩
 
 lemma bijective_rootsOfUnityAddChar : Bijective (ZMod.rootsOfUnityAddChar n) := ⟨
   fun i j => by
