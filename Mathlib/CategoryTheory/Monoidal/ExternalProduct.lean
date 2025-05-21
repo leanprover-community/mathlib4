@@ -70,8 +70,8 @@ Note that `(externalProductSwap _ _ _).app (F₁, F₂) : Prod.swap _ _ ⋙ F₁
 type checks. -/
 @[simps!]
 def externalProductSwap [BraidedCategory C] :
-    externalProductBifunctor J₁ J₂ C ⋙ (whiskeringLeft _ _ _|>.obj <| Prod.swap _ _)
-    ≅ Prod.swap _ _ ⋙ externalProductBifunctor J₂ J₁ C :=
+    externalProductBifunctor J₁ J₂ C ⋙ (whiskeringLeft _ _ _|>.obj <| Prod.swap _ _) ≅
+    Prod.swap _ _ ⋙ externalProductBifunctor J₂ J₁ C :=
   NatIso.ofComponents
     (fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [tensorHom_def, whisker_exchange]))
     (fun _ ↦ by ext; simp [tensorHom_def, whisker_exchange])
@@ -79,8 +79,9 @@ def externalProductSwap [BraidedCategory C] :
 /-- A version of `externalProductSwap` phrased in terms of the uncurried functors. -/
 @[simps!]
 def externalProductFlip [BraidedCategory C] :
-    (Functor.postcompose₂.obj <| flipFunctor _ _ _).obj (externalProductBifunctorUncurried J₁ J₂ C)
-    ≅ (externalProductBifunctorUncurried J₂ J₁ C).flip :=
+    (Functor.postcompose₂.obj <| flipFunctor _ _ _).obj
+      (externalProductBifunctorUncurried J₁ J₂ C) ≅
+    (externalProductBifunctorUncurried J₂ J₁ C).flip :=
   NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents <|
     fun _ ↦ NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _)
 
