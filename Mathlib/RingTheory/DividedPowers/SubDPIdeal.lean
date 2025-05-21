@@ -74,11 +74,6 @@ lattice.
 
 open Subtype
 
--- TODO: move -- [Mathlib.RingTheory.Ideal.Span]
-theorem Ideal.iSup_eq_span {A : Type*} [CommSemiring A] {ι : Type*} (p : ι → Ideal A) :
-    (⨆ i, p i) = Ideal.span (⋃ i, ↑(p i)) :=
-  Submodule.iSup_eq_span p
-
 namespace DividedPowers
 
 /-- A sub-ideal `J` of a divided power ideal `(I, hI)` is a sub-dp-ideal if for all `n > 0` and
@@ -118,7 +113,7 @@ def dividedPowers {J : Ideal A} (hJ : IsSubDPIdeal hI J) [∀ x, Decidable (x �
 
 variable {J : Ideal A} (hJ : IsSubDPIdeal hI J) [∀ x, Decidable (x ∈ J)]
 
-lemma dpow_eq {n : ℕ} {a : A} :
+lemma dpow_eq (n : ℕ) (a : A) :
     (IsSubDPIdeal.dividedPowers hI hJ).dpow n a = if a ∈ J then hI.dpow n a else 0 := rfl
 
 lemma dpow_eq_of_mem {n : ℕ} {a : A} (ha : a ∈ J) :
@@ -126,14 +121,14 @@ lemma dpow_eq_of_mem {n : ℕ} {a : A} (ha : a ∈ J) :
 
 theorem isDPMorphism (hJ : IsSubDPIdeal hI J) :
     (IsSubDPIdeal.dividedPowers hI hJ).IsDPMorphism hI (RingHom.id A) := by
-  simp only [isDPMorphism_iff, Ideal.map_id, RingHom.id_apply]
-  exact ⟨hJ.1, fun _ _ _ ha ↦ by rw [dpow_eq_of_mem _ _ ha]⟩
+  simpa only [isDPMorphism_iff, Ideal.map_id, RingHom.id_apply]
+    using ⟨hJ.1, fun _ _ _ ha ↦ by rw [dpow_eq_of_mem _ _ ha]⟩
 
 end IsSubDPIdeal
 
 open Finset Ideal
 
-/-- The ideal `J ⊓ I` is a sub-dp-ideal of `I` if and only if (on `I`) the divided powers have
+/-- The ideal `J ⊓ I` is a sub-dp-ideal of `I` if and only if the divided powers have
   some compatiblity mod `J`. (The necessity was proved as a sanity check.) -/
 theorem isSubDPIdeal_inf_iff {A : Type*} [CommRing A] {I : Ideal A} (hI : DividedPowers I)
   {J : Ideal A} : IsSubDPIdeal hI (J ⊓ I) ↔
@@ -154,33 +149,26 @@ variable {A B : Type*} [CommSemiring A] {I : Ideal A} {hI : DividedPowers I} [Co
 /-- [P. Berthelot and A. Ogus, *Notes on crystalline cohomology* (Lemma 3.6)][BerthelotOgus-1978] -/
 theorem span_isSubDPIdeal_iff {S : Set A} (hS : S ⊆ I) :
     IsSubDPIdeal hI (span S) ↔ ∀ {n : ℕ} (_ : n ≠ 0), ∀ s ∈ S, hI.dpow n s ∈ span S := by
-  refine ⟨fun hhI n hn s hs ↦ hhI.dpow_mem n hn (subset_span hs), ?_⟩
+  refine ⟨fun hhI n hn s hs ↦ hhI.dpow_mem n hn (subset_span hs), fun hhI ↦ ?_⟩
   · -- interesting direction
-    intro hhI
     have hSI := span_le.mpr hS
     apply IsSubDPIdeal.mk hSI
     intro m hm z hz
-    have haux : ∀ (n : ℕ), n ≠ 0 → hI.dpow n z ∈ span S := by
-      refine Submodule.span_induction ?_ ?_ ?_ ?_ hz
-      ·-- elements of S
-        exact fun s hs n hn ↦ hhI hn s hs
-      ·-- 0
-        intro _ hn
-        rw [hI.dpow_eval_zero hn]
+    induction hz using Submodule.span_induction generalizing m hm with
+    | mem x h => exact hhI hm x h
+    | zero =>
+        rw [hI.dpow_eval_zero hm]
         exact (span S).zero_mem
-      · -- add
-        intro x y hxI hyI hx hy n hn
+    | add x y hxI hyI hx hy =>
         rw [hI.dpow_add' (hSI hxI) (hSI hyI)]
         apply Submodule.sum_mem (span S)
         intro m _
         by_cases hm0 : m = 0
-        · exact hm0 ▸ mul_mem_left (span S)  _ (hy _ hn)
+        · exact hm0 ▸ mul_mem_left (span S)  _ (hy _ hm)
         · exact mul_mem_right _ (span S) (hx _ hm0)
-      · -- smul
-        intro a x hxI hx n hn
+    | smul a x hxI hx =>
         rw [Algebra.id.smul_eq_mul, hI.dpow_mul (hSI hxI)]
-        exact mul_mem_left (span S) (a ^ n) (hx n hn)
-    exact haux m hm
+        exact mul_mem_left (span S) (a ^ m) (hx m hm)
 
 theorem isSubDPIdeal_sup {J K : Ideal A} (hJ : IsSubDPIdeal hI J) (hK : IsSubDPIdeal hI K) :
     IsSubDPIdeal hI (J ⊔ K) := by
@@ -269,24 +257,19 @@ See [P. Berthelot, *Cohomologie cristalline des schémas de caractéristique $p$
 def prod (J : Ideal A) : SubDPIdeal hI where
   carrier := I • J
   isSubideal := mul_le_right
-  dpow_mem _ hm x hx := by
-    have haux : ∀ (n : ℕ) (_ : n ≠ 0), hI.dpow n x ∈ I • J := by
-      apply Submodule.smul_induction_on'
-        (p := fun (x : A) (hxI : x ∈ I • J) ↦ ∀ (n : ℕ) (_ : n ≠ 0), hI.dpow n x ∈ I • J) hx
-      · -- smul
-        intro a ha b hb n hn
-        rw [Algebra.id.smul_eq_mul, smul_eq_mul, mul_comm a b, hI.dpow_mul ha, mul_comm]
-        exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb n (zero_lt_iff.mpr hn))
-          (hI.dpow_mem hn ha)
-      · -- add
-        intro x hx y hy hx' hy' n hn
-        rw [hI.dpow_add' (mul_le_right hx) (mul_le_right hy)]
-        apply Submodule.sum_mem (I • J)
-        intro k _
-        by_cases hk0 : k = 0
-        · exact hk0 ▸ mul_mem_left (I • J) _ (hy' _ hn)
-        · exact mul_mem_right _ (I • J) (hx' k hk0)
-    exact haux _ hm
+  dpow_mem m hm x hx := by
+    induction hx using Submodule.smul_induction_on' generalizing m with
+    | smul a ha b hb =>
+      rw [Algebra.id.smul_eq_mul, smul_eq_mul, mul_comm a b, hI.dpow_mul ha, mul_comm]
+      exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m (zero_lt_iff.mpr hm))
+        (hI.dpow_mem hm ha)
+    | add x hx y hy hx' hy' =>
+      rw [hI.dpow_add' (mul_le_right hx) (mul_le_right hy)]
+      apply Submodule.sum_mem (I • J)
+      intro k _
+      by_cases hk0 : k = 0
+      · exact hk0 ▸ mul_mem_left (I • J) _ (hy' _ hm)
+      · exact mul_mem_right _ (I • J) (hx' k hk0)
 
 end SubDPIdeal
 
@@ -320,12 +303,11 @@ end Ker
 
 section Equalizer
 
-variable {A : Type*} [CommSemiring A] {I : Ideal A} (hI : DividedPowers I)
+variable {A : Type*} [CommSemiring A] {I : Ideal A} (hI hI' : DividedPowers I)
 
-/-- The ideal of `A` in which the two divided power structures `hI` and `hI'` coincide.
-  TODO : prove that this is the largest ideal which is a sub-dp-ideal in both `hI` and `hI'`. -/
-def dpEqualizer {A : Type*} [CommSemiring A] {I : Ideal A} (hI hI' : DividedPowers I) : Ideal A
-    where
+/-- The ideal of `A` in which the two divided power structures `hI` and `hI'` coincide. -/
+--  TODO : prove that this is the largest ideal which is a sub-dp-ideal in both `hI` and `hI'`.
+def dpEqualizer : Ideal A where
   carrier := { a ∈ I | ∀ n : ℕ, hI.dpow n a = hI'.dpow n a }
   add_mem' {a b} ha hb := by
     apply And.intro (I.add_mem ha.1 hb.1) (fun n ↦ ?_)
@@ -340,27 +322,27 @@ def dpEqualizer {A : Type*} [CommSemiring A] {I : Ideal A} (hI hI' : DividedPowe
     rw [Algebra.id.smul_eq_mul]
     exact ⟨I.mul_mem_left a hx.1, (fun n ↦ by rw [hI.dpow_mul hx.1, hI'.dpow_mul hx.1, hx.2])⟩
 
-theorem mem_dpEqualizer_iff {A : Type*} [CommSemiring A] {I : Ideal A} (hI hI' : DividedPowers I)
-    {x : A} : x ∈ dpEqualizer hI hI' ↔ x ∈ I ∧ ∀ n : ℕ, hI.dpow n x = hI'.dpow n x := by
+theorem mem_dpEqualizer_iff {x : A} :
+    x ∈ dpEqualizer hI hI' ↔ x ∈ I ∧ ∀ n : ℕ, hI.dpow n x = hI'.dpow n x := by
   simp [dpEqualizer, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
     Set.mem_setOf_eq]
 
-theorem dpEqualizer_is_dp_ideal_left {A : Type*} [CommSemiring A] {I : Ideal A}
-    (hI hI' : DividedPowers I) : DividedPowers.IsSubDPIdeal hI (dpEqualizer hI hI') :=
+theorem dpEqualizer_is_dp_ideal_left :
+    DividedPowers.IsSubDPIdeal hI (dpEqualizer hI hI') :=
   IsSubDPIdeal.mk (fun _ hx ↦ hx.1) (fun _ hn x hx ↦ ⟨hI.dpow_mem hn hx.1,
     fun m ↦ by rw [hI.dpow_comp hn hx.1, hx.2, hx.2, hI'.dpow_comp hn hx.1]⟩)
 
-theorem dpEqualizer_is_dp_ideal_right {A : Type*} [CommSemiring A] {I : Ideal A}
-    (hI hI' : DividedPowers I) : DividedPowers.IsSubDPIdeal hI' (dpEqualizer hI hI') :=
+theorem dpEqualizer_is_dp_ideal_right :
+    DividedPowers.IsSubDPIdeal hI' (dpEqualizer hI hI') :=
   IsSubDPIdeal.mk (fun _ hx ↦ hx.1) (fun _ hn x hx ↦ ⟨hI'.dpow_mem hn hx.1, fun m ↦ by
     rw [← hx.2, hI.dpow_comp hn hx.1, hx.2, hx.2, hI'.dpow_comp hn hx.1]⟩)
 
 open Ideal
 
-theorem le_equalizer_of_isDPMorphism {A : Type*} [CommSemiring A] {I : Ideal A}
-    (hI : DividedPowers I) {B : Type*} [CommSemiring B] (f : A →+* B) {K : Ideal B}
-    (hI_le_K : Ideal.map f I ≤ K) (hK hK' : DividedPowers K) (hIK : IsDPMorphism hI hK f)
-    (hIK' : IsDPMorphism hI hK' f) : Ideal.map f I ≤ dpEqualizer hK hK' := by
+theorem le_equalizer_of_isDPMorphism {B : Type*} [CommSemiring B] (f : A →+* B)
+    {K : Ideal B} (hI_le_K : Ideal.map f I ≤ K)
+    (hK hK' : DividedPowers K) (hIK : IsDPMorphism hI hK f) (hIK' : IsDPMorphism hI hK' f) :
+    Ideal.map f I ≤ dpEqualizer hK hK' := by
   rw [Ideal.map, span_le]
   rintro b ⟨a, ha, rfl⟩
   exact ⟨hI_le_K (mem_map_of_mem f ha), fun n ↦ by rw [hIK.2 a ha, hIK'.2 a ha]⟩
