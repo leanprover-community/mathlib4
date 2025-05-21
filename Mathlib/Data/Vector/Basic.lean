@@ -31,6 +31,7 @@ def equivVector : Vector α n ≃ _root_.Vector α n where
   left_inv := ofVector_toVector
   right_inv := toVector_ofVector
 
+/-- Convert a `Vector` to an `Array`. -/
 @[deprecated toVector (since := "20/05/2025")]
 def toArray (v : Vector α n) := v.1.toArray
 
