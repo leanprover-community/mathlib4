@@ -120,10 +120,11 @@ variable {A : Type*} {e : A}
 lemma lt_of_le_of_ne' {a b : A} [PartialOrder A] :
     (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
-lemma pos_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A] [Nontrivial A]
+lemma pos_of_isNat {n : ℕ}
+    [AddMonoidWithOne A] [PartialOrder A] [AddLeftMono A] [ZeroLEOneClass A] [h'' : NeZero (1 : A)]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
-  apply Nat.cast_pos.2
+  apply Nat.cast_pos'.2
   simpa using w
 
 lemma nonneg_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A]
