@@ -240,7 +240,7 @@ lemma last_singleton {r : Rel α α} (x : α) : (singleton r x).last = x := by s
 
 @[simp]
 lemma head_toList (p : RelSeries r) : p.toList.head p.toList_ne_nil = p.head := by
-  simp [toList, apply_zero]
+  simp [toList, apply_zero, List.ofFn_succ]
 
 @[simp]
 lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
