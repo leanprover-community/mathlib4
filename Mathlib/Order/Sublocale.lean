@@ -26,8 +26,11 @@ A sublocale is a subset S of a locale X, which is closed under all meets and for
 s ∈ S and x ∈ X, we have x ⇨ s ∈ S.
 -/
 structure Sublocale (X : Type*) [Order.Frame X] where
+  /-- The set corresponding to the sublocale. -/
   carrier : Set X
+  /-- A sublocale is closed under all meets. -/
   sInfClosed' : ∀ a ⊆ carrier , sInf a ∈ carrier
+  /-- A sublocale is closed under heyting implication. -/
   HImpClosed' : ∀ a b, b ∈ carrier → a ⇨ b ∈ carrier
 
 namespace Sublocale
@@ -193,3 +196,47 @@ instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublo
 
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms instCoframeMinimalAxioms
+
+@[ext]
+structure Open (X : Type*) [Order.Frame X] where
+  element : X
+
+instance : Coe (Open X) X where
+  coe U := U.element
+
+namespace Open
+
+def toNucleus (U : Open X) : Nucleus X where
+  toFun x := U ⇨ x
+  map_inf' _ _ := himp_inf_distrib _ _ _
+  idempotent' _ := le_of_eq himp_idem
+  le_apply' _ := le_himp
+
+instance : Coe (Open X) (Nucleus X) where
+  coe U := U.toNucleus
+
+def toSublocale (U : Open X) : Sublocale X := U.toNucleus.toSublocale
+
+instance : Coe (Open X) (Sublocale X) where
+  coe U := U.toSublocale
+
+instance : PartialOrder (Open X) where
+  le x y := x.element ≤ y.element
+  le_refl _ := le_refl _
+  le_trans _ _ _ h1 h2 := le_trans h1 h2
+  le_antisymm _ _ h1 h2 := Open.ext_iff.mpr (le_antisymm h1 h2)
+
+variable {U V : Open X}
+
+lemma le_def : U ≤ V ↔ U.element ≤ V.element := ge_iff_le
+
+instance : BoundedOrder (Open X) where
+  top := ⟨⊤⟩
+  le_top _ := le_def.mpr le_top
+  bot := ⟨⊥⟩
+  bot_le _ := le_def.mpr bot_le
+
+instance : CompleteSemilatticeSup (Open X) where
+  sSup s := ⟨sSup s⟩
+
+end Open
