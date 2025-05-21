@@ -196,7 +196,7 @@ noncomputable def limitEquivSections : limit F ≃ F.sections :=
 @[simp]
 theorem limitEquivSections_apply (x : limit F) (j : J) :
     ((limitEquivSections F) x : ∀ j, F.obj j) j = limit.π F j x :=
-  isLimitEquivSections_apply _ _ _
+  rfl
 
 @[simp]
 theorem limitEquivSections_symm_apply (x : F.sections) (j : J) :

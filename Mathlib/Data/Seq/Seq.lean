@@ -47,7 +47,7 @@ def get? : Seq α → ℕ → Option α :=
   Subtype.val
 
 @[simp]
-theorem val_eq_get (s : Seq α) (n : ℕ) : s.val n = s.get? n := by
+theorem val_eq_get (s : Seq α) (n : ℕ) : s.val n = s.get? n :=
   rfl
 
 @[simp]

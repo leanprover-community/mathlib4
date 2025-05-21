@@ -314,14 +314,14 @@ theorem coe_toAddEquiv : e.toAddEquiv = e :=
   rfl
 
 @[simp]
-lemma coe_addEquiv_apply (x : M) : (e : M ≃+ M₂) x = e x := by
+lemma coe_addEquiv_apply (x : M) : (e : M ≃+ M₂) x = e x :=
   rfl
 
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidHom_commutes : e.toLinearMap.toAddMonoidHom = e.toAddEquiv.toAddMonoidHom :=
   rfl
 
-lemma coe_toAddEquiv_symm : (e₁₂.symm : M₂ ≃+ M₁) = (e₁₂ : M₁ ≃+ M₂).symm := by
+lemma coe_toAddEquiv_symm : (e₁₂.symm : M₂ ≃+ M₁) = (e₁₂ : M₁ ≃+ M₂).symm :=
   rfl
 
 @[simp]

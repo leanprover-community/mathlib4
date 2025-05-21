@@ -234,7 +234,7 @@ open Hom
 
 @[simp]
 lemma Hom.id_eq (X : WalkingReflexivePair) :
-    Hom.id X = 𝟙 X := by rfl
+    Hom.id X = 𝟙 X := rfl
 
 @[reassoc (attr := simp)]
 lemma reflexion_comp_left : reflexion ≫ left = 𝟙 zero := rfl

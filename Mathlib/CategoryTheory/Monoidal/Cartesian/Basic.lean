@@ -671,7 +671,7 @@ noncomputable def prodComparisonIso : F.obj (A ⊗ B) ≅ F.obj A ⊗ F.obj B :=
     (tensorProductIsBinaryProduct _ _)
 
 @[simp]
-lemma prodComparisonIso_hom : (prodComparisonIso F A B).hom = prodComparison F A B := by
+lemma prodComparisonIso_hom : (prodComparisonIso F A B).hom = prodComparison F A B :=
   rfl
 
 instance isIso_prodComparison_of_preservesLimit_pair : IsIso (prodComparison F A B) := by

@@ -321,7 +321,7 @@ def conjugateEquiv : (l₂ ⟶ l₁) ≃ (r₁ ⟶ r₂) :=
 
 theorem conjugateEquiv_apply (α : l₂ ⟶ l₁) :
     conjugateEquiv adj₁ adj₂ α =
-      (ρ_ r₁).inv ≫ mateEquiv adj₁ adj₂ ((λ_ l₂).hom ≫ α ≫ (ρ_ l₁).inv) ≫ (λ_ r₂).hom := by
+      (ρ_ r₁).inv ≫ mateEquiv adj₁ adj₂ ((λ_ l₂).hom ≫ α ≫ (ρ_ l₁).inv) ≫ (λ_ r₂).hom :=
   rfl
 
 theorem conjugateEquiv_apply' (α : l₂ ⟶ l₁) :
@@ -333,7 +333,7 @@ theorem conjugateEquiv_apply' (α : l₂ ⟶ l₁) :
 
 theorem conjugateEquiv_symm_apply (α : r₁ ⟶ r₂) :
     (conjugateEquiv adj₁ adj₂).symm α =
-      (λ_ l₂).inv ≫ (mateEquiv adj₁ adj₂).symm ((ρ_ r₁).hom ≫ α ≫ (λ_ r₂).inv) ≫ (ρ_ l₁).hom := by
+      (λ_ l₂).inv ≫ (mateEquiv adj₁ adj₂).symm ((ρ_ r₁).hom ≫ α ≫ (λ_ r₂).inv) ≫ (ρ_ l₁).hom :=
   rfl
 
 theorem conjugateEquiv_symm_apply' (α : r₁ ⟶ r₂) :
