@@ -117,7 +117,7 @@ open Valued
 /- A valuation `v` is continuous if it is considered valued
 into `v.rangeGroup₀` for the `WithZeroTopology` on the codomain. -/
 theorem Valued.continuous_valuation [Valued K Γ₀] :
-    @Continuous K v.rangeGroup₀ _ WithZeroTopology.topologicalSpace
+    @Continuous K v.rangeGroup₀ _ topologicalSpace
       (v.rangeGroup₀_restrict : K → v.rangeGroup₀) := by
   rw [@continuous_iff_continuousAt]
   intro x
@@ -215,7 +215,7 @@ theorem rangeGroup₀_extension_extends (x : K) :
   apply @Valued.continuous_valuation.continuousAt
 
 theorem continuous_rangeGroup₀_extension :
-    @Continuous _ _ _ topologicalSpace (hv.rangeGroup₀_extension) := by
+    @Continuous (hat K) v.rangeGroup₀ _ topologicalSpace (hv.rangeGroup₀_extension) := by
   have := WithZeroTopology.t5Space (Γ₀ := hv.v.rangeGroup₀)
   apply @Completion.isDenseInducing_coe.continuous_extend
   · infer_instance
@@ -313,29 +313,66 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by
-    apply Completion.induction_on₂ x y
-      (p := fun x y => extension (x * y) = extension x * extension y)
-    · have c1 : Continuous fun x : hat K × hat K => Valued.extension (x.1 * x.2) :=
-        Valued.continuous_extension.comp (continuous_fst.mul continuous_snd)
-      have c2 : Continuous fun x : hat K × hat K => Valued.extension x.1 * Valued.extension x.2 :=
-        (Valued.continuous_extension.comp continuous_fst).mul
-          (Valued.continuous_extension.comp continuous_snd)
-      exact isClosed_eq c1 c2
+    simp only [extension, Function.comp_apply, ← map_mul]
+    apply congr_arg
+    apply @Completion.induction_on₂ K _ K _ x y
+      (p := fun x y ↦ rangeGroup₀_extension (x * y) =
+        rangeGroup₀_extension x * rangeGroup₀_extension y)
+    · apply @isClosed_eq v.rangeGroup₀ (hat K × hat K) topologicalSpace
+      · exact @Continuous.comp _ _ _ _ _ topologicalSpace _ _
+          hv.continuous_rangeGroup₀_extension (continuous_fst.mul continuous_snd)
+      · exact @Continuous.mul _ topologicalSpace _ _
+          (hf := @continuous_rangeGroup₀_extension.comp (hf := continuous_fst))
+          (hg := @continuous_rangeGroup₀_extension.comp (hf := continuous_snd))
     · intro x y
       norm_cast
       exact Valuation.map_mul _ _ _
   map_add_le_max' x y := by
-    rw [le_max_iff]
-    apply Completion.induction_on₂ x y
-      (p := fun x y => extension (x + y) ≤ extension x ∨ extension (x + y) ≤ extension y)
-    · have cont : Continuous (Valued.extension : hat K → Γ₀) := Valued.continuous_extension
-      exact
-        (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_fst).union
-          (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_snd)
+    simp only [extension, Function.comp_apply, ← map_mul]
+    simp only [Submonoid.subtype_apply, le_sup_iff, Subtype.coe_le_coe]
+    apply @Completion.induction_on₂ K _ K _
+      (p := fun x y ↦ rangeGroup₀_extension (x + y) ≤ rangeGroup₀_extension x ∨
+        rangeGroup₀_extension (x + y) ≤ rangeGroup₀_extension y)
+    · have cont := hv.continuous_rangeGroup₀_extension
+      apply IsClosed.union <;>
+        simp only [Subtype.coe_le_coe]
+      · apply @isClosed_le v.rangeGroup₀ _ topologicalSpace
+        · exact @Continuous.comp _ _ _ _ _ topologicalSpace _ _ cont continuous_add
+        · exact @Continuous.comp _ _ _ _ _ topologicalSpace _ _ cont continuous_fst
+      · apply @isClosed_le v.rangeGroup₀ _ topologicalSpace
+        · exact @Continuous.comp _ _ _ _ _ topologicalSpace _ _ cont continuous_add
+        · exact @Continuous.comp _ _ _ _ _ topologicalSpace _ _ cont continuous_snd
     · intro x y
       norm_cast
       rw [← le_max_iff]
       exact v.map_add x y
+
+@[simp]
+theorem extensionValuation_extends (x : K) :
+    extensionValuation (x : hat K) = hv.v x := by
+  simp [extensionValuation, extension_extends]
+
+theorem rangeGroup₀_extensionValuation :
+    hv.extensionValuation.rangeGroup₀ = hv.v.rangeGroup₀ := by
+  rw [Submonoid.ext_iff]
+  intro γ
+  simp only [Valuation.mem_rangeGroup₀_iff]
+  constructor
+  · rintro ⟨a, b, ha, h⟩
+    suffices ∀ (x : hat K), ∃ y : K, extensionValuation x = v y by
+      obtain ⟨a', ha'⟩ := this a
+      obtain ⟨b', hb'⟩ := this b
+      simp only [ha', hb'] at ha h
+      use a', b'
+    intro x
+    have hx : extensionValuation x ∈ hv.v.rangeGroup₀ := SetLike.coe_mem _
+    rw [Valuation.mem_rangeGroup₀_iff] at hx
+    obtain ⟨a, b, ha, h⟩ := hx
+    use b / a
+    simp [← h, ha]
+  · rintro ⟨a, b, ha, h⟩
+    use a, b
+    simp [extensionValuation_extends, ha, h]
 
 /- [N. Bourbaki, *Algèbre Commutative*, Chapitre 6, § 5, n. 3, Proposition 5][bourbaki1964] -/
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
@@ -351,9 +388,20 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
       exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
     · exact this h
   intro h
-  have hγ₀ : extension ⁻¹' {γ₀} ∈ 𝓝 x :=
-    continuous_extension.continuousAt.preimage_mem_nhds
-      (WithZeroTopology.singleton_mem_nhds_of_ne_zero h)
+  have hγ₀ : extension ⁻¹' {γ₀} ∈ 𝓝 x := by
+    simp only [extension]
+    simp only [Submonoid.coe_subtype, preimage_comp]
+    let γ'₀ := rangeGroup₀_extension x
+    have hγ'₀ : γ'₀ ∈ Subtype.val ⁻¹' {γ₀} := by
+      simp [γ'₀, γ₀, extensionValuation, extension]
+    suffices rangeGroup₀_extension ⁻¹' {γ'₀} ∈ 𝓝 x by
+      apply Filter.sets_of_superset _ this
+      apply Set.preimage_mono
+      simp [γ'₀, γ₀, extensionValuation, extension]
+    apply @ContinuousAt.preimage_mem_nhds _ _ _ topologicalSpace
+    apply @continuous_rangeGroup₀_extension.continuousAt
+    apply WithZeroTopology.singleton_mem_nhds_of_ne_zero
+    exact Subtype.coe_ne_coe.mp h
   rw [mem_closure_iff_nhds']
   refine ⟨fun hx => ?_, fun hx s hs => ?_⟩
   · obtain ⟨⟨-, y, hy₁ : v y < (γ : Γ₀), rfl⟩, hy₂⟩ := hx _ hγ₀
@@ -364,15 +412,19 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     rw [← hy₁] at hx
     exact ⟨⟨y, ⟨y, hx, rfl⟩⟩, hy₂⟩
 
-noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
+noncomputable instance valuedCompletion :
+    Valued (hat K) Γ₀ where
   v := extensionValuation
   is_topological_valuation s := by
     suffices
-      HasBasis (𝓝 (0 : hat K)) (fun _ ↦ True) fun γ : v.rangeGroup (R := K) ↦
-        { x | extensionValuation x < (γ : Γ₀ˣ) } by
+      HasBasis (𝓝 (0 : hat K)) (fun _ ↦ True) fun γ : v.rangeGroup₀ˣ ↦
+        { x | extensionValuation x < (γ.map v.rangeGroup₀.subtype: Γ₀ˣ) } by
       rw [this.mem_iff]
-      sorry
-      -- exact exists_congr fun γ => by simp
+      simp only [true_and, ne_eq]
+      simp only [Units.coe_map, Submonoid.subtype_apply]
+      rw [Valuation.exists_iff_exists (R := K)
+        (motive := fun γ ↦ {x | extensionValuation x < γ} ⊆ s)]
+      rw [rangeGroup₀_extensionValuation]
     simp_rw [← closure_coe_completion_v_lt]
     exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
 
