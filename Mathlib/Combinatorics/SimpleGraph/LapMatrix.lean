@@ -105,10 +105,15 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj
   simp (disch := intros; positivity)
     [lapMatrix_toLinearMap₂', sum_eq_zero_iff_of_nonneg, sub_eq_zero]
 
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
-    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
+theorem lapMatrix_mulVec_eq_zero_iff_forall_adj {x : V → ℝ} :
+    G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
+
+@[deprecated lapMatrix_mulVec_eq_zero_iff_forall_adj (since := "2025-05-18")]
+theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
+    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j :=
+  G.lapMatrix_mulVec_eq_zero_iff_forall_adj
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLinearMap₂' ℝ (G.lapMatrix ℝ) x x = 0 ↔
@@ -120,10 +125,15 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V →
   | nil => rfl
   | cons hA _ h' => exact (h _ _ hA).trans h'
 
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
-    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
+theorem lapMatrix_mulVec_eq_zero_iff_forall_reachable {x : V → ℝ} :
+    G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
+
+@[deprecated lapMatrix_mulVec_eq_zero_iff_forall_reachable (since := "2025-05-18")]
+theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
+    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j :=
+  G.lapMatrix_mulVec_eq_zero_iff_forall_reachable
 
 section
 
