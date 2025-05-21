@@ -261,8 +261,7 @@ theorem map_top_of_surjective (f : G →* N) (h : Function.Surjective f) : Subgr
   exact ⟨y, trivial, hy⟩
 
 @[to_additive (attr := simp)]
-lemma map_top_of_mulEquivClass {G N F : Type*} [Group G] [Group N]
-    [EquivLike F G N] [MulEquivClass F G N] (f : F) :
+lemma map_equiv_top {F : Type*} [EquivLike F G N] [MulEquivClass F G N] (f : F) :
     map (f : G →* N) ⊤ = ⊤ :=
   map_top_of_surjective _ (EquivLike.surjective f)
 
