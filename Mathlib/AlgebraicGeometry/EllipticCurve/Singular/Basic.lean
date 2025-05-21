@@ -3,10 +3,7 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
-import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
-import Mathlib.FieldTheory.Perfect
-import Mathlib.Tactic.Polyrith
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 
 /-!
 
