@@ -126,6 +126,7 @@ noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUn
   right_inv _ := by aesop
 
 instance : HasEnoughRootsOfUnity Circle n := (rootsOfUnityCircleEquiv n).symm.hasEnoughRootsOfUnity
+
 @[simp] lemma rootsOfUnityCircleEquiv_apply (w : rootsOfUnity n Circle) :
     ((rootsOfUnityCircleEquiv n w).val : ℂ) = ((w.val : Circle) : ℂ) :=
   rfl
