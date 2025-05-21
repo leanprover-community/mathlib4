@@ -157,6 +157,10 @@ theorem normalize_eq_normalize_iff {x y : α} : normalize x = normalize y ↔ x 
   ⟨fun h => ⟨Units.dvd_mul_right.1 ⟨_, h.symm⟩, Units.dvd_mul_right.1 ⟨_, h⟩⟩, fun ⟨hxy, hyx⟩ =>
     normalize_eq_normalize hxy hyx⟩
 
+theorem normalize_eq_normalize_iff_associated {x y : α} :
+    normalize x = normalize y ↔ Associated x y := by
+  rw [normalize_eq_normalize_iff, dvd_dvd_iff_associated]
+
 theorem dvd_antisymm_of_normalize_eq {a b : α} (ha : normalize a = a) (hb : normalize b = b)
     (hab : a ∣ b) (hba : b ∣ a) : a = b :=
   ha ▸ hb ▸ normalize_eq_normalize hab hba
