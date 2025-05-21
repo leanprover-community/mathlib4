@@ -160,7 +160,7 @@ instance : MulPosReflectLT EReal := MulPosMono.toMulPosReflectLT
 lemma mul_le_mul_of_nonpos_right {a b c : EReal} (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * c := by
   rw [mul_comm a c, mul_comm b c, ← neg_le_neg_iff, ← neg_mul c b, ← neg_mul c a]
   rw [← neg_zero, EReal.le_neg] at hc
-  exact mul_le_mul_of_nonneg_left h hc
+  gcongr
 
 @[simp, norm_cast]
 theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
@@ -537,3 +537,34 @@ lemma add_div_of_nonneg_right (h : 0 ≤ c) :
   apply right_distrib_of_nonneg_of_ne_top (inv_nonneg_of_nonneg h) (inv_lt_top c).ne
 
 end EReal
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
+@[positivity (_⁻¹ : EReal)]
+def evalERealInv : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a⁻¹) =>
+    assertInstancesCommute
+    match (← core zα pα a).toNonneg with
+    | some pa => pure (.nonnegative q(EReal.inv_nonneg_of_nonneg <| $pa))
+    | none => pure .none
+  | _, _, _ => throwError "not an inverse of an `EReal`"
+
+/-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
+@[positivity (_ / _ : EReal)]
+def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a / $b) =>
+    assertInstancesCommute
+    match (← core zα pα a).toNonneg with
+    | some pa =>
+      match (← core zα pα b).toNonneg with
+      | some pb => pure (.nonnegative q(EReal.div_nonneg $pa $pb))
+      | none => pure .none
+    | _ => pure .none
+  | _, _, _ => throwError "not a ratio of 2 `EReal`s"
+
+end Mathlib.Meta.Positivity
