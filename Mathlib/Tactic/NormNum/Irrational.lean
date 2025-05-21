@@ -110,10 +110,6 @@ private theorem not_power_nat_pow_of_bounds {n k p q : ℕ}
   apply not_power_nat_pow h_coprime hq
   apply not_power_nat_of_bounds h_left h_right
 
-set_option trace.profiler true
-
--- lemma kek (a b x y : ℕ) (hab : a.Coprime b) (hxy : x.Coprime y) (h : a * x = b * y) : a =
-
 /-- Weaker version of `not_power_rat_of_num` with extra `q ≥ 0` assumption. -/
 private theorem not_power_rat_of_num_aux {a b d : ℕ}
     (h_coprime : a.Coprime b)
