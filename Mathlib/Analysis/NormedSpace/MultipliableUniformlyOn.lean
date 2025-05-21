@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
+import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 # Uniform convergence of products of functions
