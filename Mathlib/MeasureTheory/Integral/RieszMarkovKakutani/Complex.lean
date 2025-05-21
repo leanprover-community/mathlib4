@@ -97,10 +97,11 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
       · intro n
         rw [tendsto_atTop_nhds] at h
         by_contra! hc
-        let ε := (∑ i ∈ Finset.range n, f i - a) / 2
+        set ε := (∑ i ∈ Finset.range n, f i - a) / 2 with hε
         have hε : 0 < ε := by
           have := tsub_pos_of_lt hc
-          sorry
+          rw [hε]
+          exact ENNReal.half_pos (ne_of_gt this)
         let s := Set.Ioo (a - ε) (a + ε)
         have hs : a ∈ s := by
           simp only [Set.mem_Ioo, s]
