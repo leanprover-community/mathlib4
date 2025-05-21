@@ -268,10 +268,20 @@ theorem ContDiff.continuous_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : Co
     (hmn : m ≤ n) : Continuous (iteratedDeriv m f) :=
   (contDiff_iff_iteratedDeriv.1 (h.of_le hmn)).1 m le_rfl
 
+@[fun_prop]
+theorem ContDiff.continuous_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 m f) :
+    Continuous (iteratedDeriv m f) :=
+  ContDiff.continuous_iteratedDeriv m h (le_refl _)
+
 theorem ContDiff.differentiable_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : ContDiff 𝕜 n f)
     (hmn : m < n) : Differentiable 𝕜 (iteratedDeriv m f) :=
   (contDiff_iff_iteratedDeriv.1 (h.of_le (ENat.add_one_natCast_le_withTop_of_lt hmn))).2 m
     (mod_cast (lt_add_one m))
+
+@[fun_prop]
+theorem ContDiff.differentiable_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 (m + 1) f) :
+    Differentiable 𝕜 (iteratedDeriv m f) :=
+  h.differentiable_iteratedDeriv m (Nat.cast_lt.mpr m.lt_succ_self)
 
 /-- The `n+1`-th iterated derivative can be obtained by differentiating the `n`-th
 iterated derivative. -/
