@@ -201,7 +201,7 @@ theorem mul_injections (a₁ a₂ : A i) :
     ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   convert RingQuot.mkAlgHom_rel R <| rel.prod
-  simp
+  simp [List.ofFn_succ]
 
 /-- The `i`th canonical injection, from `A i` to the free product, as
 a linear map -/
@@ -233,7 +233,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
         fun x y r ↦ by
           cases r with
           | id => simp
-          | prod => simp⟩
+          | prod => simp [List.ofFn_succ]⟩
   invFun π i := π ∘ₐ ι R A i
   left_inv π := by
     ext i aᵢ
