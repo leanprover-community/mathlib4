@@ -547,7 +547,7 @@ end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid M] [LinearOrder M] [CanonicallyOrderedAdd M]
+variable [AddCommMonoid M] [LinearOrder M] [OrderBot M] [CanonicallyOrderedAdd M]
   {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- A multivatiate polynomial is weighted homogeneous of weighted degree zero if and only if

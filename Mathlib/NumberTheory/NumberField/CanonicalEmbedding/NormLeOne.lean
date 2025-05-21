@@ -498,10 +498,10 @@ theorem expMapBasis_apply' (x : realSpace K) :
 open scoped Classical in
 theorem expMapBasis_apply'' (x : realSpace K) :
     expMapBasis x = Real.exp (x w₀) • expMapBasis (fun i ↦ if i = w₀ then 0 else x i) := by
- rw [expMapBasis_apply', expMapBasis_apply', if_pos rfl, smul_smul, ← Real.exp_add, add_zero]
- conv_rhs =>
-   enter [2, w, 2, i]
-   rw [if_neg i.prop]
+  rw [expMapBasis_apply', expMapBasis_apply', if_pos rfl, smul_smul, ← Real.exp_add, add_zero]
+  conv_rhs =>
+    enter [2, w, 2, i]
+    rw [if_neg i.prop]
 
 theorem prod_expMapBasis_pow (x : realSpace K) :
     ∏ w, (expMapBasis x w) ^ w.mult = Real.exp (x w₀) ^ Module.finrank ℚ K := by

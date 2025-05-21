@@ -561,7 +561,7 @@ theorem iteratedFDerivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}�
   | succ n ihn =>
     refine (eventually_nhds_nhdsWithin.2 h).mono fun y hy => ?_
     simp only [iteratedFDerivWithin_succ_eq_comp_left, (· ∘ ·)]
-    rw [(ihn hy).fderivWithin_eq_nhds, fderivWithin_congr_set' _ hy]
+    rw [(ihn hy).fderivWithin_eq_of_nhds, fderivWithin_congr_set' _ hy]
 
 theorem iteratedFDerivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 n f t :=

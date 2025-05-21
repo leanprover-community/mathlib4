@@ -471,10 +471,10 @@ theorem natDegree_nodal [Nontrivial R] : (nodal s v).natDegree = #s := by
     natDegree_X_sub_C, sum_const, smul_eq_mul, mul_one]
 
 theorem nodal_ne_zero [Nontrivial R] : nodal s v ≠ 0 := by
-rcases s.eq_empty_or_nonempty with (rfl | h)
-· exact one_ne_zero
-· apply ne_zero_of_natDegree_gt (n := 0)
-  simp only [natDegree_nodal, h.card_pos]
+  rcases s.eq_empty_or_nonempty with (rfl | h)
+  · exact one_ne_zero
+  · apply ne_zero_of_natDegree_gt (n := 0)
+    simp only [natDegree_nodal, h.card_pos]
 
 @[simp]
 theorem degree_nodal [Nontrivial R] : (nodal s v).degree = #s := by
