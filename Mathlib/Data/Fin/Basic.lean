@@ -697,8 +697,6 @@ def natAddEmb (n) {m} : Fin m ↪ Fin (n + m) where
 
 theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
 
-theorem castSucc_natAdd (i : Fin m) : castSucc (natAdd n i) = natAdd n (castSucc i) := rfl
-
 theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
     if h : i.succ = last _ then natAdd n (0 : Fin (m + 1))
       else castAdd (m + 1) ⟨i.1 + 1, lt_of_le_of_ne i.2 (Fin.val_ne_iff.mpr h)⟩ := by

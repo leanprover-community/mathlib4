@@ -76,7 +76,7 @@ theorem mapIdx_eq_ofFn (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = ofFn fun i : Fin l.length ↦ f (i : ℕ) (l.get i) := by
   induction l generalizing f with
   | nil => simp
-  | cons _ _ IH => simp [IH]
+  | cons _ _ IH => simp [IH, List.ofFn_succ]
 
 end MapIdx
 
