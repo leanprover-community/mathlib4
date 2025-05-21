@@ -213,7 +213,9 @@ abbrev unlintedNodes := #[
   -- `omit [A] [B]` prints as `omit [A][B]`, see https://github.com/leanprover/lean4/pull/8169
   ``Parser.Command.omit,
 
-  -- https://github.com/leanprover-community/aesop/pull/203
+  -- https://github.com/leanprover-community/aesop/pull/203 and https://github.com/leanprover-community/aesop/pull/223
+  -- Since the latter PR is merged, we should be able to remove this exception, once Mathlib gets
+  -- updated to a current version of Aesop that contains it.
   `Aesop.Frontend.Parser.aesop,
   ]
 
