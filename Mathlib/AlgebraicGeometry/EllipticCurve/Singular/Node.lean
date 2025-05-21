@@ -69,7 +69,7 @@ lemma a₁_of_isSplitSingularNF_of_isNodal [IsReduced R] [E.IsNodal] [E.IsSplitS
   simpa [c₄_of_isSplitSingularNF] using E.c₄_of_isNodal
 
 lemma pointEquivOfIsNodalOfIsSplitSingularNF.aux [IsReduced R]
-    (E : WeierstrassCurve R) [E.IsNodal] [E.IsSplitSingularNF]
+    (E : WeierstrassCurve R) [E.IsSplitSingularNF]
     (x y : R) (h : E.toAffine.Nonsingular x y) :
     x ≠ 0 ∧ y ≠ -E.a₁ * x ∧ y ≠ 0 := by
   have H₁ : y ^ 2 + E.a₁ * x * y - x ^ 3 = 0 := by simpa [Affine.equation_iff'] using h.1
