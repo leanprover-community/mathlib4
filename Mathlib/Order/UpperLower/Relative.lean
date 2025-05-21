@@ -53,73 +53,75 @@ lemma IsRelLowerSet.inter (hs : IsRelLowerSet s P) (ht : IsRelLowerSet t P) :
   simp_all only [IsRelLowerSet, true_and]
   exact fun _ x y ↦ ⟨(hs bs).2 x y, (ht bt).2 x y⟩
 
-lemma isRelUpperSet_sUnion {S : Set (Set α)} (hS : ∀ s ∈ S, IsRelUpperSet s P) :
+protected lemma IsRelUpperSet.sUnion {S : Set (Set α)} (hS : ∀ s ∈ S, IsRelUpperSet s P) :
     IsRelUpperSet (⋃₀ S) P := fun _ ⟨s, ms, mb⟩ ↦
   ⟨(hS s ms mb).1, fun _ x y ↦ ⟨s, ms, (hS s ms mb).2 x y⟩⟩
 
-lemma isRelLowerSet_sUnion {S : Set (Set α)} (hS : ∀ s ∈ S, IsRelLowerSet s P) :
+protected lemma IsRelLowerSet.sUnion {S : Set (Set α)} (hS : ∀ s ∈ S, IsRelLowerSet s P) :
     IsRelLowerSet (⋃₀ S) P := fun _ ⟨s, ms, mb⟩ ↦
   ⟨(hS s ms mb).1, fun _ x y ↦ ⟨s, ms, (hS s ms mb).2 x y⟩⟩
 
-lemma isRelUpperSet_iUnion {f : ι → Set α} (hf : ∀ i, IsRelUpperSet (f i) P) :
+protected lemma IsRelUpperSet.iUnion {f : ι → Set α} (hf : ∀ i, IsRelUpperSet (f i) P) :
     IsRelUpperSet (⋃ i, f i) P :=
-  isRelUpperSet_sUnion <| forall_mem_range.2 hf
+  .sUnion <| forall_mem_range.2 hf
 
-lemma isRelLowerSet_iUnion {f : ι → Set α} (hf : ∀ i, IsRelLowerSet (f i) P) :
+protected lemma IsRelLowerSet.iUnion {f : ι → Set α} (hf : ∀ i, IsRelLowerSet (f i) P) :
     IsRelLowerSet (⋃ i, f i) P :=
-  isRelLowerSet_sUnion <| forall_mem_range.2 hf
+  .sUnion <| forall_mem_range.2 hf
 
-lemma isRelUpperSet_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsRelUpperSet (f i j) P) :
+protected lemma IsRelUpperSet.iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsRelUpperSet (f i j) P) :
     IsRelUpperSet (⋃ (i) (j), f i j) P :=
-  isRelUpperSet_iUnion fun i ↦ isRelUpperSet_iUnion <| hf i
+  .iUnion fun i ↦ .iUnion <| hf i
 
-lemma isRelLowerSet_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsRelLowerSet (f i j) P) :
+protected lemma IsRelLowerSet.iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsRelLowerSet (f i j) P) :
     IsRelLowerSet (⋃ (i) (j), f i j) P :=
-  isRelLowerSet_iUnion fun i ↦ isRelLowerSet_iUnion <| hf i
+  .iUnion fun i ↦ .iUnion <| hf i
 
-lemma isRelUpperSet_sInter {S : Set (Set α)} (hS : S.Nonempty) (hf : ∀ s ∈ S, IsRelUpperSet s P) :
+protected lemma IsRelUpperSet.sInter
+    {S : Set (Set α)} (hS : S.Nonempty) (hf : ∀ s ∈ S, IsRelUpperSet s P) :
     IsRelUpperSet (⋂₀ S) P := fun b mb ↦ by
   obtain ⟨s₀, ms₀⟩ := hS
   refine ⟨(hf s₀ ms₀ (mb s₀ ms₀)).1, fun _ x y s ms ↦ (hf s ms (mb s ms)).2 x y⟩
 
-lemma isRelLowerSet_sInter {S : Set (Set α)} (hS : S.Nonempty) (hf : ∀ s ∈ S, IsRelLowerSet s P) :
+protected lemma IsRelLowerSet.sInter
+    {S : Set (Set α)} (hS : S.Nonempty) (hf : ∀ s ∈ S, IsRelLowerSet s P) :
     IsRelLowerSet (⋂₀ S) P := fun b mb ↦ by
   obtain ⟨s₀, ms₀⟩ := hS
   refine ⟨(hf s₀ ms₀ (mb s₀ ms₀)).1, fun _ x y s ms ↦ (hf s ms (mb s ms)).2 x y⟩
 
-lemma isRelUpperSet_iInter [Nonempty ι] {f : ι → Set α} (hf : ∀ i, IsRelUpperSet (f i) P) :
-    IsRelUpperSet (⋂ i, f i) P :=
-  isRelUpperSet_sInter (range_nonempty f) <| forall_mem_range.2 hf
+protected lemma IsRelUpperSet.iInter
+    [Nonempty ι] {f : ι → Set α} (hf : ∀ i, IsRelUpperSet (f i) P) : IsRelUpperSet (⋂ i, f i) P :=
+  .sInter (range_nonempty f) <| forall_mem_range.2 hf
 
-lemma isRelLowerSet_iInter [Nonempty ι] {f : ι → Set α} (hf : ∀ i, IsRelLowerSet (f i) P) :
-    IsRelLowerSet (⋂ i, f i) P :=
-  isRelLowerSet_sInter (range_nonempty f) <| forall_mem_range.2 hf
+protected lemma IsRelLowerSet.iInter
+    [Nonempty ι] {f : ι → Set α} (hf : ∀ i, IsRelLowerSet (f i) P) : IsRelLowerSet (⋂ i, f i) P :=
+  .sInter (range_nonempty f) <| forall_mem_range.2 hf
 
-lemma isRelUpperSet_iInter₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
+protected lemma IsRelUpperSet.iInter₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
     {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsRelUpperSet (f i j) P) :
     IsRelUpperSet (⋂ (i) (j), f i j) P :=
-  isRelUpperSet_iInter fun i => isRelUpperSet_iInter <| hf i
+  .iInter fun i ↦ .iInter <| hf i
 
-lemma isRelLowerSet_iInter₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
+protected lemma IsRelLowerSet.iInter₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
     {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsRelLowerSet (f i j) P) :
     IsRelLowerSet (⋂ (i) (j), f i j) P :=
-  isRelLowerSet_iInter fun i => isRelLowerSet_iInter <| hf i
+  .iInter fun i ↦ .iInter <| hf i
 
-lemma isRelUpperSet_iff_isUpperSet_subtype {s : Set { x // P x }} :
-    IsRelUpperSet (Subtype.val '' s) P ↔ IsUpperSet s := by
-  refine ⟨fun h a b x y ↦ ?_, fun h a x ↦ ?_⟩
-  · have ma : a.1 ∈ Subtype.val '' s := by simp [a.2, y]
-    simpa only [mem_image, SetCoe.ext_iff, exists_eq_right] using (h ma).2 x b.2
+lemma isUpperSet_subtype_iff_isRelUpperSet {s : Set { x // P x }} :
+    IsUpperSet s ↔ IsRelUpperSet (Subtype.val '' s) P := by
+  refine ⟨fun h a x ↦ ?_, fun h a b x y ↦ ?_⟩
   · obtain ⟨a, ma, rfl⟩ := x
     exact ⟨a.2, fun b x y ↦ by simpa [h (show a ≤ ⟨b, y⟩ by exact x) ma]⟩
-
-lemma isRelLowerSet_iff_isLowerSet_subtype {s : Set { x // P x }} :
-    IsRelLowerSet (Subtype.val '' s) P ↔ IsLowerSet s := by
-  refine ⟨fun h a b x y ↦ ?_, fun h a x ↦ ?_⟩
   · have ma : a.1 ∈ Subtype.val '' s := by simp [a.2, y]
     simpa only [mem_image, SetCoe.ext_iff, exists_eq_right] using (h ma).2 x b.2
+
+lemma isLowerSet_subtype_iff_isRelLowerSet {s : Set { x // P x }} :
+    IsLowerSet s ↔ IsRelLowerSet (Subtype.val '' s) P := by
+  refine ⟨fun h a x ↦ ?_, fun h a b x y ↦ ?_⟩
   · obtain ⟨a, ma, rfl⟩ := x
     exact ⟨a.2, fun b x y ↦ by simpa [h (show ⟨b, y⟩ ≤ a by exact x) ma]⟩
+  · have ma : a.1 ∈ Subtype.val '' s := by simp [a.2, y]
+    simpa only [mem_image, SetCoe.ext_iff, exists_eq_right] using (h ma).2 x b.2
 
 instance : SetLike (RelUpperSet P) α where
   coe := RelUpperSet.carrier
