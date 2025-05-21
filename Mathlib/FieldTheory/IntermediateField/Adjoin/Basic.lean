@@ -25,6 +25,24 @@ open Module Polynomial
 
 namespace IntermediateField
 
+section
+
+lemma restrictScalars_le_iff (K : Type*) {L E : Type*} [Field K] [Field L]
+    [Field E] [Algebra K L] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
+    {E₁ E₂ : IntermediateField L E} : E₁.restrictScalars K ≤ E₂.restrictScalars K ↔ E₁ ≤ E₂ := .rfl
+
+lemma FG.of_restrictScalars {K L E : Type*} [Field K] [Field L] [Field E]
+    [Algebra K L] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
+    {E' : IntermediateField L E} (H : (E'.restrictScalars K).FG) : E'.FG := by
+  obtain ⟨s, hs⟩ := H
+  refine ⟨s, le_antisymm ?_ ?_⟩
+  · rw [adjoin_le_iff]
+    exact (subset_adjoin K _).trans_eq congr(($hs : Set E))
+  · rw [← restrictScalars_le_iff K, ← hs, adjoin_le_iff]
+    exact subset_adjoin L _
+
+end
+
 section AdjoinDef
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {S : Set E}
