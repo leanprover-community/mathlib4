@@ -53,11 +53,9 @@ private theorem not_power_nat_pow {n p q : ℕ}
     (h : ¬ ∃ m, n = m^q) :
     ¬ ∃ m, n^p = m^q := by
   by_cases hn : n = 0
-  · simp [hn] at h ⊢
+  · simp only [hn, not_exists] at h
     specialize h 0
-    cases q
-    · simp at hq
-    · simp at h
+    simp [zero_pow hq.ne.symm] at h
   contrapose! h
   obtain ⟨k, h⟩ := h
   apply_fun Nat.factorization at h
