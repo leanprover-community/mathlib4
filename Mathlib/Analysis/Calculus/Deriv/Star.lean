@@ -79,7 +79,7 @@ lemma HasDerivAt.star_conj {f : 𝕜 → F} {f' : F} (hf : HasDerivAt f f' x) :
 `conj z`. -/
 lemma HasDerivAt.conj_conj {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f' x) :
     HasDerivAt (conj ∘ f ∘ conj) (conj f') (conj x) :=
-  hf.comp_ringHom (starRingEnd 𝕜) (starRingEnd 𝕜)
+  hf.star_conj
 
 /-- If `f` is differentiable at `conj z`, then `conj ∘ f ∘ conj` is differentiable at `z`. -/
 lemma DifferentiableAt.conj_conj {f : 𝕜 → 𝕜} (hf : DifferentiableAt 𝕜 f x) :
