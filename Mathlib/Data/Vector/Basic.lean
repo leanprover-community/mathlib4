@@ -23,14 +23,6 @@ variable {α β γ σ φ : Type*} {m n : ℕ}
 
 namespace List.Vector
 
-/-- `toVector` and `ofVector` together form an equivalence. -/
-@[simps! apply symm_apply]
-def equivVector : Vector α n ≃ _root_.Vector α n where
-  toFun := toVector
-  invFun := ofVector
-  left_inv := ofVector_toVector
-  right_inv := toVector_ofVector
-
 /-- Convert a `Vector` to an `Array`. -/
 @[deprecated toVector (since := "20/05/2025")]
 def toArray (v : Vector α n) := v.1.toArray
