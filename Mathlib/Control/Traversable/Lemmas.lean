@@ -79,6 +79,7 @@ theorem pure_traverse (x : t α) : traverse pure x = (pure x : F (t α)) := by
 
 theorem id_sequence (x : t α) : sequence (f := Id) (pure <$> x) = pure x := by
   simp [sequence, traverse_map, id_traverse]
+  rfl
 
 theorem comp_sequence (x : t (F (G α))) :
     sequence (Comp.mk <$> x) = Comp.mk (sequence <$> sequence x) := by

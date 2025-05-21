@@ -66,8 +66,13 @@ variable [LawfulApplicative G]
 
 open Applicative Functor List
 
-protected theorem id_traverse {α} (xs : List α) : List.traverse (pure : α → Id α) xs = xs := by
-  induction xs <;> simp! [*, List.traverse, functor_norm]; rfl
+protected theorem idRun_traverse {α} (xs : List α) :
+    (List.traverse (pure : α → Id α) xs).run = xs := by
+  induction xs <;> simp! [*, List.traverse, functor_norm]
+
+@[deprecated List.idRun_traverse (since := "2025-05-21")]
+protected theorem id_traverse {α} (xs : List α) : List.traverse (pure : α → Id α) xs = xs :=
+  List.idRun_traverse xs
 
 protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : List α) :
     List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
@@ -76,7 +81,7 @@ protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) (x : List α) :
     List.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by
-  induction x <;> simp! [*, functor_norm]; rfl
+  induction x <;> simp! [*, functor_norm]
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 
@@ -88,7 +93,7 @@ protected theorem naturality {α β} (f : α → F β) (x : List α) :
 
 instance : LawfulTraversable.{u} List :=
   { show LawfulMonad List from inferInstance with
-    id_traverse := List.id_traverse
+    id_traverse := List.idRun_traverse
     comp_traverse := List.comp_traverse
     traverse_eq_map_id := List.traverse_eq_map_id
     naturality := List.naturality }
