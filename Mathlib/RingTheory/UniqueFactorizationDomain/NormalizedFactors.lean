@@ -79,9 +79,9 @@ theorem normalize_normalized_factor {a : α} :
   obtain ⟨y, _, rfl⟩ := Multiset.mem_map.1 hx
   apply normalize_idem
 
-theorem dvd_of_normalized_factor {a : α} :
-    ∀ x : α, x ∈ normalizedFactors a → x ∣ a := fun x h ↦ by
-  obtain ⟨y, hy, rfl⟩ := Multiset.mem_map.mp h
+theorem dvd_of_normalized_factor {a x : α} (hx : x ∈ normalizedFactors a ) :
+    x ∣ a := by
+  obtain ⟨y, hy, rfl⟩ := Multiset.mem_map.mp hx
   exact normalize_dvd_iff.mpr <| dvd_of_mem_factors hy
 
 theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
@@ -325,9 +325,16 @@ def normalizedFactorsEquiv [DecidableEq α] (he : ∀ x, normalize (f x) = f (no
         mem_normalizedFactors_iff' (EmbeddingLike.map_ne_zero_iff.mpr ha), map_dvd_iff_dvd_symm,
         MulEquiv.irreducible_iff, he]
 
+@[simp, nolint simpNF]
 theorem normalizedFactorsEquiv_apply [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x))
     {a p : α} (hp : p ∈ normalizedFactors a) :
     ↑(normalizedFactorsEquiv he a ⟨p, hp⟩) = f p := rfl
+
+@[simp, nolint simpNF]
+theorem normalizedFactorsEquiv_symm_apply [DecidableEq α]
+    (he : ∀ x, normalize (f x) = f (normalize x))
+    {a : α} {q : β} (hq : q ∈ normalizedFactors (f a)) :
+    ((normalizedFactorsEquiv he a).symm ⟨q, hq⟩) = (MulEquivClass.toMulEquiv f).symm q := rfl
 
 end UniqueFactorizationMonoid
 
