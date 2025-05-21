@@ -170,6 +170,7 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
       simpa [hx'] using this
     apply_fun Finset.toSet at h hab hxy
     simp only [Finset.coe_union, Finset.coe_inter, Finset.coe_empty, y] at h hab hxy
+    clear * - h hab hxy -- to speed up `tauto` below
     constructorm* _ ∧ _
     · apply_fun Finset.toSet using Finset.coe_injective
       tauto_set
