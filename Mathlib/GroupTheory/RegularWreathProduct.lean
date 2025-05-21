@@ -236,19 +236,19 @@ def Equiv.permCongrHom {α β : Type u} (e : α ≃ β) : Equiv.Perm α ≃* Equ
 
 /-- The homomorphism from the wreath product of the Sylow `p`-subgroup and `Z_p` to
   the subgroup of `Perm (Fin p^(n+1))`. -/
-noncomputable def sylowWreathtoPermHom {p n : ℕ} (D : Sylow p (Equiv.Perm (Fin (p^n))))
+noncomputable def sylowWreathtoPermHom {p n : ℕ} (D : Sylow p (Equiv.Perm (Fin (p ^ n))))
     (Z_p : Type) [Finite Z_p] [Group Z_p] (h : Nat.card Z_p = p) :
-    D ≀ᵣ Z_p →* Equiv.Perm (Fin (p^(n+1))) :=
+    D ≀ᵣ Z_p →* Equiv.Perm (Fin (p ^ (n+1))) :=
   (Equiv.permCongrHom ((Equiv.prodCongrRight fun _ =>
   (Finite.equivFinOfCardEq h)).trans finProdFinEquiv)).toMonoidHom.comp
-  (RegularWreathProduct.toPerm D Z_p (Fin (p^n)))
+  (RegularWreathProduct.toPerm D Z_p (Fin (p ^ n)))
 
 lemma sylowWreathtoPermHomInj {p n : ℕ} [Fact (Nat.Prime p)]
-    (D : Sylow p (Equiv.Perm (Fin (p^n))))
+    (D : Sylow p (Equiv.Perm (Fin (p ^ n))))
     (G : Type) [Finite G] [Group G] (h : Nat.card G = p) :
     Function.Injective (sylowWreathtoPermHom D G h) := by
-  have : Function.Injective (RegularWreathProduct.toPerm D G (Fin (p^n))) :=
-    RegularWreathProduct.toPermInj D G (Fin (p^n))
+  have : Function.Injective (RegularWreathProduct.toPerm D G (Fin (p ^ n))) :=
+    RegularWreathProduct.toPermInj D G (Fin (p ^ n))
   exact (fun a b => Function.Injective.comp a b)
     (Equiv.permCongrHom (((Equiv.prodCongrRight fun _ =>
     (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))).injective this
@@ -256,7 +256,7 @@ lemma sylowWreathtoPermHomInj {p n : ℕ} [Fact (Nat.Prime p)]
 /-- The Sylow `p`-subgroups of S_{p^n} are isomorphic to the iterated wreathproduct -/
 noncomputable def sylowIsIteratedWreathProduct (p n : ℕ) [Fact (Nat.Prime p)]
     (Z_p : Type) [Group Z_p] [Finite Z_p] (h : Nat.card Z_p = p)
-    (P : Sylow p (Equiv.Perm (Fin (p^n)))) :
+    (P : Sylow p (Equiv.Perm (Fin (p ^ n)))) :
     P ≃* (IteratedWreathProduct Z_p n) := by
   induction n with
   | zero => exact {
@@ -272,7 +272,7 @@ noncomputable def sylowIsIteratedWreathProduct (p n : ℕ) [Fact (Nat.Prime p)]
         (RegularWreathProduct.congr (h_n P').symm (MulEquiv.refl Z_p)).trans
         (MonoidHom.ofInjective (sylowWreathtoPermHomInj P' Z_p h))
       have sylow_card : Nat.card (MonoidHom.range (sylowWreathtoPermHom P' Z_p h)) =
-          p ^ (Nat.card (Equiv.Perm (Fin (p^(n+1))))).factorization p := by
+          p ^ (Nat.card (Equiv.Perm (Fin (p ^ (n+1))))).factorization p := by
         rw [Nat.card_congr (g.symm).toEquiv, iter_wreath_card Z_p, h]
         rw [Nat.card_eq_fintype_card, Fintype.card_perm, Fintype.card_fin, mu_eq]
       exact (P.equiv (Sylow.ofCard (MonoidHom.range (sylowWreathtoPermHom P' Z_p h))
