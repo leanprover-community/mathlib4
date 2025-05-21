@@ -44,7 +44,7 @@ structure Condition (G B : Fin 21 → Finset ℕ) where
   /-- Every girl solved at most six problems. -/
   G_le_6 (i) : #(G i) ≤ 6
   /-- Every boy solved at most six problems. -/
-  B_le_6 (i) : #(B i) ≤ 6
+  B_le_6 (j) : #(B j) ≤ 6
   /-- Every girl-boy pair solved at least one problem in common. -/
   G_inter_B (i j) : ¬Disjoint (G i) (B j)
 
