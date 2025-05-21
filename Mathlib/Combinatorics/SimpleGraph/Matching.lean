@@ -575,33 +575,33 @@ lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'
     · aesop
   · aesop
 
-lemma IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatching)
+lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatching)
     (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles) :
     (⊤ : Subgraph (M.spanningCoe ∆ G')).IsPerfectMatching := by
   rw [Subgraph.isPerfectMatching_iff]
   intro v
-  simp only [toSubgraph_adj, symmDiff_def, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj]
+  simp only [toSubgraph_adj, symmDiff_def, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj]
   obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
   by_cases h : G'.Adj v w
   · obtain ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj h
     have hmadj :  M.Adj v w ↔ ¬M.Adj v w' := by simpa using hG' hw'.1 h hw'.2
     use w'
-    simp only [Subgraph.top_adj, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hmadj.mp hw.1, hw'.2,
-      not_true_eq_false, and_self, not_false_eq_true, or_true, true_and]
+    simp only [Subgraph.top_adj, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj,
+      hmadj.mp hw.1, hw'.2, not_true_eq_false, and_self, not_false_eq_true, or_true, true_and]
     rintro y (hl | hr)
     · aesop
     · obtain ⟨w'', hw''⟩ := hG'cyc.other_adj_of_adj hr.1
       by_contra! hc
       simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hc hr.1 hw'.2]
   · use w
-    simp only [Subgraph.top_adj, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hw.1, h,
+    simp only [Subgraph.top_adj, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hw.1, h,
       not_false_eq_true, and_self, not_true_eq_false, or_false, true_and]
     rintro y (hl | hr)
     · exact hw.2 _ hl.1
     · have ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj hr.1
       simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hw'.1 hr.1 hw'.2]
 
-lemma IsPerfectMatching.isAlternating_symmDiff_left {M' : Subgraph G'}
+lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_left {M' : Subgraph G'}
     (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :
     (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M.spanningCoe := by
   intro v w w' hww' hvw hvw'
@@ -610,7 +610,7 @@ lemma IsPerfectMatching.isAlternating_symmDiff_left {M' : Subgraph G'}
   simp only [symmDiff_def] at *
   aesop
 
-lemma IsPerfectMatching.isAlternating_symmDiff_right
+lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_right
     {M' : Subgraph G'} (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :
     (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M'.spanningCoe := by
   simpa [symmDiff_comm] using isAlternating_symmDiff_left hM' hM

@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Computability.Primrec
+import Mathlib.Computability.PartrecCode
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
@@ -18,6 +18,7 @@ definition, we show that this isn't a primitive recursive function.
 - `exists_lt_ack_of_nat_primrec`: any primitive recursive function is pointwise bounded above by
   `ack m` for some `m`.
 - `not_primrec₂_ack`: the two-argument Ackermann function is not primitive recursive.
+- `computable₂_ack`: the two-argument Ackermann function is computable.
 
 ## Proof approach
 
@@ -349,3 +350,52 @@ theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by
 /-- The Ackermann function is not primitive recursive. -/
 theorem not_primrec₂_ack : ¬Primrec₂ ack := fun h =>
   not_primrec_ack_self <| h.comp Primrec.id Primrec.id
+
+namespace Nat.Partrec.Code
+
+/-- The code for the partially applied Ackermann function.
+This is used to prove that the Ackermann function is computable. -/
+def pappAck : ℕ → Code
+  | 0 => .succ
+  | n + 1 => step (pappAck n)
+where
+  /-- Yields single recursion step on `pappAck`. -/
+  step (c : Code) : Code :=
+    .curry (.prec (.comp c (.const 1)) (.comp c (.comp .right .right))) 0
+
+lemma primrec_pappAck_step : Primrec pappAck.step := by
+  apply_rules
+    [Code.primrec₂_curry.comp, Code.primrec₂_prec.comp, Code.primrec₂_comp.comp,
+      _root_.Primrec.id, Primrec.const]
+
+@[simp]
+lemma eval_pappAck_step_zero (c : Code) : (pappAck.step c).eval 0 = c.eval 1 := by
+  simp [pappAck.step, Code.eval]
+
+@[simp]
+lemma eval_pappAck_step_succ (c : Code) (n) :
+    (pappAck.step c).eval (n + 1) = ((pappAck.step c).eval n).bind c.eval := by
+  simp [pappAck.step, Code.eval]
+
+lemma primrec_pappAck : Primrec pappAck := by
+  suffices Primrec (Nat.rec Code.succ (fun _ c => pappAck.step c)) by
+    convert this using 2 with n; induction n <;> simp [pappAck, *]
+  apply_rules [Primrec.nat_rec₁, primrec_pappAck_step.comp, Primrec.snd]
+
+@[simp]
+lemma eval_pappAck (m n) : (pappAck m).eval n = Part.some (ack m n) := by
+  induction m, n using ack.induct with
+    | case1 n => simp [Code.eval, pappAck]
+    | case2 m hm => simp [pappAck, hm]
+    | case3 m n hmn₁ hmn₂ => dsimp only [pappAck] at *; simp [hmn₁, hmn₂]
+
+/-- The Ackermann function is computable. -/
+theorem _root_.computable₂_ack : Computable₂ ack := by
+  apply _root_.Partrec.of_eq_tot
+    (f := fun p : ℕ × ℕ => (pappAck p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
+  · change Partrec₂ (fun m n => (pappAck m).eval n)
+    apply_rules only
+      [Code.eval_part.comp₂, Computable.fst, Computable.snd, primrec_pappAck.to_comp.comp]
+  · simp
+
+end Nat.Partrec.Code

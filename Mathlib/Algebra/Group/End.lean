@@ -331,15 +331,15 @@ variable {p : α → Prop} {f : Perm α}
 
 /-- If the permutation `f` fixes the subtype `{x // p x}`, then this returns the permutation
   on `{x // p x}` induced by `f`. -/
-def subtypePerm (f : Perm α) (h : ∀ x, p x ↔ p (f x)) : Perm { x // p x } where
-  toFun := fun x => ⟨f x, (h _).1 x.2⟩
-  invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).2 <| by simpa using x.2⟩
+def subtypePerm (f : Perm α) (h : ∀ x, p (f x) ↔ p x) : Perm { x // p x } where
+  toFun := fun x => ⟨f x, (h _).2 x.2⟩
+  invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
   left_inv _ := by simp only [Perm.inv_apply_self, Subtype.coe_eta, Subtype.coe_mk]
   right_inv _ := by simp only [Perm.apply_inv_self, Subtype.coe_eta, Subtype.coe_mk]
 
 @[simp]
-theorem subtypePerm_apply (f : Perm α) (h : ∀ x, p x ↔ p (f x)) (x : { x // p x }) :
-    subtypePerm f h x = ⟨f x, (h _).1 x.2⟩ :=
+theorem subtypePerm_apply (f : Perm α) (h : ∀ x, p (f x) ↔ p x) (x : { x // p x }) :
+    subtypePerm f h x = ⟨f x, (h _).2 x.2⟩ :=
   rfl
 
 @[simp]
@@ -349,10 +349,10 @@ theorem subtypePerm_one (p : α → Prop) (h := fun _ => Iff.rfl) : @subtypePerm
 @[simp]
 theorem subtypePerm_mul (f g : Perm α) (hf hg) :
     (f.subtypePerm hf * g.subtypePerm hg : Perm { x // p x }) =
-      (f * g).subtypePerm fun _ => (hg _).trans <| hf _ :=
+      (f * g).subtypePerm fun _ => (hf _).trans <| hg _ :=
   rfl
 
-private theorem inv_aux : (∀ x, p x ↔ p (f x)) ↔ ∀ x, p x ↔ p (f⁻¹ x) :=
+private theorem inv_aux : (∀ x, p (f x) ↔ p x) ↔ ∀ x, p (f⁻¹ x) ↔ p x :=
   f⁻¹.surjective.forall.trans <| by simp_rw [f.apply_inv_self, Iff.comm]
 
 /-- See `Equiv.Perm.inv_subtypePerm`. -/
@@ -366,9 +366,9 @@ theorem inv_subtypePerm (f : Perm α) (hf) :
     (f.subtypePerm hf : Perm { x // p x })⁻¹ = f⁻¹.subtypePerm (inv_aux.1 hf) :=
   rfl
 
-private theorem pow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℕ} (x), p x ↔ p ((f ^ n) x)
+private theorem pow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℕ} (x), p ((f ^ n) x) ↔ p x
   | 0, _ => Iff.rfl
-  | _ + 1, _ => (hf _).trans (pow_aux hf _)
+  | _ + 1, _ => (pow_aux hf (f _)).trans (hf _)
 
 @[simp]
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
@@ -377,11 +377,11 @@ theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
   | zero => simp
   | succ n ih => simp_rw [pow_succ', ih, subtypePerm_mul]
 
-private theorem zpow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℤ} (x), p x ↔ p ((f ^ n) x)
+private theorem zpow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℤ} (x), p ((f ^ n) x) ↔ p x
   | Int.ofNat _ => pow_aux hf
   | Int.negSucc n => by
     rw [zpow_negSucc]
-    exact inv_aux.1 (pow_aux hf)
+    exact pow_aux (inv_aux.1 hf)
 
 @[simp]
 theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
@@ -399,7 +399,7 @@ def ofSubtype : Perm (Subtype p) →* Perm α where
   map_one' := Equiv.Perm.extendDomain_one _
   map_mul' f g := (Equiv.Perm.extendDomain_mul _ f g).symm
 
-theorem ofSubtype_subtypePerm {f : Perm α} (h₁ : ∀ x, p x ↔ p (f x)) (h₂ : ∀ x, f x ≠ x → p x) :
+theorem ofSubtype_subtypePerm {f : Perm α} (h₁ : ∀ x, p (f x) ↔ p x) (h₂ : ∀ x, f x ≠ x → p x) :
     ofSubtype (subtypePerm f h₁) = f :=
   Equiv.ext fun x => by
     by_cases hx : p x
@@ -418,10 +418,10 @@ theorem ofSubtype_apply_coe (f : Perm (Subtype p)) (x : Subtype p) : ofSubtype f
 theorem ofSubtype_apply_of_not_mem (f : Perm (Subtype p)) (ha : ¬p a) : ofSubtype f a = a :=
   extendDomain_apply_not_subtype _ _ ha
 
-theorem mem_iff_ofSubtype_apply_mem (f : Perm (Subtype p)) (x : α) :
-    p x ↔ p ((ofSubtype f : α → α) x) :=
+theorem ofSubtype_apply_mem_iff_mem (f : Perm (Subtype p)) (x : α) :
+    p ((ofSubtype f : α → α) x) ↔ p x :=
   if h : p x then by
-    simpa only [h, true_iff, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
+    simpa only [h, iff_true, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
   else by simp [h, ofSubtype_apply_of_not_mem f h]
 
 theorem ofSubtype_injective : Function.Injective (ofSubtype : Perm (Subtype p) → Perm α) := by
@@ -433,16 +433,16 @@ theorem ofSubtype_injective : Function.Injective (ofSubtype : Perm (Subtype p) �
 
 @[simp]
 theorem subtypePerm_ofSubtype (f : Perm (Subtype p)) :
-    subtypePerm (ofSubtype f) (mem_iff_ofSubtype_apply_mem f) = f :=
+    subtypePerm (ofSubtype f) (ofSubtype_apply_mem_iff_mem f) = f :=
   Equiv.ext fun x => Subtype.coe_injective (ofSubtype_apply_coe f x)
 
 theorem ofSubtype_subtypePerm_of_mem {p : α → Prop} [DecidablePred p]
-    {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
+    {g : Perm α} (hg : ∀ (x : α), p (g x) ↔ p x)
     {a : α} (ha : p a) : (ofSubtype (g.subtypePerm hg)) a = g a :=
   ofSubtype_apply_of_mem (g.subtypePerm hg) ha
 
 theorem ofSubtype_subtypePerm_of_not_mem {p : α → Prop} [DecidablePred p]
-    {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
+    {g : Perm α} (hg : ∀ (x : α), p (g x) ↔ p x)
     {a : α} (ha : ¬ p a) : (ofSubtype (g.subtypePerm hg)) a = a :=
   ofSubtype_apply_of_not_mem (g.subtypePerm hg) ha
 
@@ -453,9 +453,9 @@ protected def subtypeEquivSubtypePerm (p : α → Prop) [DecidablePred p] :
     Perm (Subtype p) ≃ { f : Perm α // ∀ a, ¬p a → f a = a } where
   toFun f := ⟨ofSubtype f, fun _ => f.ofSubtype_apply_of_not_mem⟩
   invFun f :=
-    (f : Perm α).subtypePerm fun a =>
-      ⟨Decidable.not_imp_not.1 fun hfa => f.val.injective (f.prop _ hfa) ▸ hfa,
-        Decidable.not_imp_not.1 fun ha hfa => ha <| f.prop a ha ▸ hfa⟩
+    (f : Perm α).subtypePerm fun _ =>
+      ⟨Decidable.not_imp_not.1 fun hfa => (f.prop _ hfa).symm ▸ hfa,
+        Decidable.not_imp_not.1 fun hfa ha => hfa <| f.val.injective (f.prop _ hfa).symm ▸ ha⟩
   left_inv := Equiv.Perm.subtypePerm_ofSubtype
   right_inv f :=
     Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a => Not.decidable_imp_symm <| f.prop a)
@@ -542,6 +542,8 @@ end Swap
 section AddGroup
 variable [AddGroup α] (a b : α)
 
+-- we can't use `to_additive`, because it tries to translate `1` into `0`
+
 @[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
 
 @[simp] lemma addRight_zero : Equiv.addRight (0 : α) = 1 := ext add_zero
@@ -575,41 +577,31 @@ end AddGroup
 section Group
 variable [Group α] (a b : α)
 
-@[to_additive existing (attr := simp)]
-lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
+@[simp] lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
 
-@[to_additive existing (attr := simp)]
-lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
+@[simp] lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 
-@[to_additive existing (attr := simp)]
-lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
+@[simp] lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
   ext <| mul_assoc _ _
 
-@[to_additive existing (attr := simp)]
-lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
+@[simp] lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
   ext fun _ ↦ (mul_assoc _ _ _).symm
 
-@[to_additive existing (attr := simp) inv_addLeft]
-lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
+@[simp] lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[to_additive existing (attr := simp) inv_addRight]
-lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
+@[simp] lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[to_additive existing (attr := simp) pow_addLeft]
-lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
+@[simp] lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[to_additive existing (attr := simp) pow_addRight]
-lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
+@[simp] lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[to_additive existing (attr := simp) zpow_addLeft]
-lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
+@[simp] lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
   (map_zpow ({ toFun := Equiv.mulLeft, map_one' := mulLeft_one, map_mul' := mulLeft_mul } :
               α →* Perm α) _ _).symm
 
-@[to_additive existing (attr := simp) zpow_addRight]
-lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
+@[simp] lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
   | Int.ofNat n => by simp
   | Int.negSucc n => by simp
 

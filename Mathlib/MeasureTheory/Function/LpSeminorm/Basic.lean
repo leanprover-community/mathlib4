@@ -498,6 +498,12 @@ theorem eLpNorm'_enorm_rpow (f : α → ε) (p q : ℝ) (hq_pos : 0 < q) :
   simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
     mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, enorm_eq_self, ← ENNReal.rpow_mul, mul_comm]
 
+/-- `f : α → ℝ` and `ENNReal.ofReal ∘ f : α → ℝ≥0∞` have the same `eLpNorm`.
+Usually, you should not use this lemma (but use enorms everywhere.) -/
+lemma eLpNorm_ofReal (f : α → ℝ) (hf : ∀ᵐ x ∂μ, 0 ≤ f x) :
+    eLpNorm (ENNReal.ofReal ∘ f) p μ = eLpNorm f p μ :=
+  eLpNorm_congr_enorm_ae <| hf.mono fun _x hx ↦ Real.enorm_ofReal_of_nonneg hx
+
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
   simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
@@ -528,28 +534,11 @@ theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
 
 theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
     eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
-  by_cases h0 : p = 0
-  · simp [h0, ENNReal.zero_rpow_of_pos hq_pos]
-  by_cases hp_top : p = ∞
-  · simp only [hp_top, eLpNorm_exponent_top, ENNReal.top_mul', hq_pos.not_le,
-      ENNReal.ofReal_eq_zero, if_false, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
-    have h_rpow : essSup (‖‖f ·‖ ^ q‖ₑ) μ = essSup (‖f ·‖ₑ ^ q) μ := by
-      congr
-      ext1 x
-      conv_rhs => rw [← enorm_norm]
-      rw [← Real.enorm_rpow_of_nonneg (norm_nonneg _) hq_pos.le]
-    rw [h_rpow]
-    have h_rpow_mono := ENNReal.strictMono_rpow_of_pos hq_pos
-    have h_rpow_surj := (ENNReal.rpow_left_bijective hq_pos.ne.symm).2
-    let iso := h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj
-    exact (iso.essSup_apply (fun x => ‖f x‖ₑ) μ).symm
-  rw [eLpNorm_eq_eLpNorm' h0 hp_top, eLpNorm_eq_eLpNorm' _ _]
-  swap
-  · refine mul_ne_zero h0 ?_
-    rwa [Ne, ENNReal.ofReal_eq_zero, not_le]
-  swap; · exact ENNReal.mul_ne_top hp_top ENNReal.ofReal_ne_top
-  rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hq_pos.le]
-  exact eLpNorm'_norm_rpow f p.toReal q hq_pos
+  rw [← eLpNorm_enorm_rpow f hq_pos]
+  symm
+  convert eLpNorm_ofReal (fun x ↦ ‖f x‖ ^ q) (by filter_upwards with x using by positivity)
+  rw [Function.comp_apply, ← ofReal_norm_eq_enorm]
+  exact ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity)
 
 theorem eLpNorm_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) : eLpNorm f p μ = eLpNorm g p μ :=
   eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx => hx ▸ rfl

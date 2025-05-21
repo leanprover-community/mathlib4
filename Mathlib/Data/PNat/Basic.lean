@@ -211,7 +211,7 @@ def coeMonoidHom : ℕ+ →* ℕ where
   map_mul' := mul_coe
 
 @[simp]
-theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = Coe.coe :=
+theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = (↑) :=
   rfl
 
 @[simp]

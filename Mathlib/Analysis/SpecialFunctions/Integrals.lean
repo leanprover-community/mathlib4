@@ -6,7 +6,7 @@ Authors: Benjamin Davidson
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
@@ -141,17 +141,17 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     apply IntervalIntegrable.symm
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc.le]
     rw [← Ioo_union_right hc, integrableOn_union, and_comm]; constructor
-    · refine integrableOn_singleton_iff.mpr (Or.inr ?_)
-      exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact
-        isCompact_singleton
+    · exact integrableOn_singleton (by simp) <|
+        isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact isCompact_singleton
     · have : ∀ x : ℝ, x ∈ Ioo c 0 → ‖Complex.exp (↑π * Complex.I * r)‖ = ‖(x : ℂ) ^ r‖ := by
         intro x hx
         rw [Complex.ofReal_cpow_of_nonpos hx.2.le, norm_mul, ← Complex.ofReal_neg,
           Complex.norm_cpow_eq_rpow_re_of_pos (neg_pos.mpr hx.2), ← h',
           rpow_zero, one_mul]
       refine IntegrableOn.congr_fun ?_ this measurableSet_Ioo
-      rw [integrableOn_const]
-      refine Or.inr ((measure_mono Set.Ioo_subset_Icc_self).trans_lt ?_)
+      rw [integrableOn_const_iff]
+      right
+      refine (measure_mono Set.Ioo_subset_Icc_self).trans_lt ?_
       exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact isCompact_Icc
 
 /-- See `intervalIntegrable_cpow` for a version applying to any locally finite measure, but with a
@@ -478,6 +478,30 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
   rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv) fun x _ => (D x).differentiableAt]
   · ring
   · fun_prop
+
+lemma integral_exp_mul_I_eq_sin (r : ℝ) :
+    ∫ t in -r..r, Complex.exp (t * Complex.I) = 2 * Real.sin r :=
+  calc ∫ t in -r..r, Complex.exp (t * Complex.I)
+  _ = (Complex.exp (Complex.I * r) - Complex.exp (Complex.I * (-r))) / Complex.I := by
+    simp_rw [mul_comm _ Complex.I]
+    rw [integral_exp_mul_complex]
+    · simp
+    · simp
+  _ = 2 * Real.sin r := by
+    simp only [mul_comm Complex.I, Complex.exp_mul_I, Complex.cos_neg, Complex.sin_neg,
+      add_sub_add_left_eq_sub, Complex.div_I, Complex.ofReal_sin]
+    rw [sub_mul, mul_assoc, mul_assoc, two_mul]
+    simp
+
+lemma integral_exp_mul_I_eq_sinc (r : ℝ) :
+    ∫ t in -r..r, Complex.exp (t * Complex.I) = 2 * r * sinc r := by
+  rw [integral_exp_mul_I_eq_sin]
+  by_cases hr : r = 0
+  · simp [hr]
+  rw [sinc_of_ne_zero hr]
+  norm_cast
+  field_simp
+  ring
 
 /-- Helper lemma for `integral_log`: case where `a = 0` and `b` is positive. -/
 lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in (0)..b, log s = b * log b - b := by

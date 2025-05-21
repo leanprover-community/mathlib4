@@ -29,14 +29,14 @@ of the corresponding predicates for Fréchet derivatives:
 
 - `HasStrictDerivAt f f' x` states that the function `f` has the derivative `f'`
   at the point `x` in the sense of strict differentiability, i.e.,
- `f y - f z = (y - z) • f' + o (y - z)` as `y, z → x`.
+  `f y - f z = (y - z) • f' + o (y - z)` as `y, z → x`.
 
 For the last two notions we also define a functional version:
 
 - `derivWithin f s x` is a derivative of `f` at `x` within `s`. If the
   derivative does not exist, then `derivWithin f s x` equals zero.
 
- - `deriv f x` is a derivative of `f` at `x`. If the derivative does not
+- `deriv f x` is a derivative of `f` at `x`. If the derivative does not
   exist, then `deriv f x` equals zero.
 
 The theorems `fderivWithin_derivWithin` and `fderiv_deriv` show that the
@@ -582,6 +582,14 @@ theorem Filter.EventuallyEq.derivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f
   unfold derivWithin
   rw [hs.fderivWithin_eq hx]
 
+theorem Filter.EventuallyEq.derivWithin_eq_of_mem (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
+    derivWithin f₁ s x = derivWithin f s x :=
+  hs.derivWithin_eq <| hs.self_of_nhdsWithin hx
+
+theorem Filter.EventuallyEq.derivWithin_eq_of_nhds (hs : f₁ =ᶠ[𝓝 x] f) :
+    derivWithin f₁ s x = derivWithin f s x :=
+  (hs.filter_mono nhdsWithin_le_nhds).derivWithin_eq hs.self_of_nhds
+
 theorem derivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
     derivWithin f₁ s x = derivWithin f s x := by
   unfold derivWithin
@@ -743,8 +751,12 @@ theorem deriv_ofNat (n : ℕ) [OfNat F n] : deriv (ofNat(n) : 𝕜 → F) = 0 :=
   funext fun _ => deriv_const _ _
 
 @[simp]
-theorem derivWithin_const : derivWithin (fun _ => c) s = 0 := by
+theorem derivWithin_fun_const : derivWithin (fun _ => c) s = 0 := by
   ext; simp [derivWithin]
+
+@[simp]
+theorem derivWithin_const : derivWithin (Function.const 𝕜 c) s = 0 :=
+  derivWithin_fun_const _ _
 
 @[simp]
 theorem derivWithin_zero : derivWithin (0 : 𝕜 → F) s = 0 := derivWithin_const _ _

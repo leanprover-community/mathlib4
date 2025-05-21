@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
+import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
 
 /-!
 # Additive characters valued in the unit circle
@@ -90,4 +91,38 @@ lemma isPrimitive_stdAddChar (N : ℕ) [NeZero N] :
   refine AddChar.zmod_char_primitive_of_eq_one_only_at_zero _ _ (fun t ht ↦ ?_)
   rwa [← (stdAddChar (N := N)).map_zero_eq_one, injective_stdAddChar.eq_iff] at ht
 
+/-- `ZMod.toCircle` as an `AddChar` into `rootsOfUnity n Circle`. -/
+noncomputable def rootsOfUnityAddChar (n : ℕ) [NeZero n] :
+    AddChar (ZMod n) (rootsOfUnity n Circle) where
+  toFun x := ⟨toUnits (ZMod.toCircle x), by ext; simp [← AddChar.map_nsmul_eq_pow]⟩
+  map_zero_eq_one' := by simp
+  map_add_eq_mul' _ _:= by ext; simp [AddChar.map_add_eq_mul]
+
+@[simp] lemma rootsOfUnityAddChar_val (n : ℕ) [NeZero n] (x : ZMod n) :
+    (rootsOfUnityAddChar n x).val = toCircle x := by
+  rfl
+
 end ZMod
+
+variable (n : ℕ) [NeZero n]
+
+/-- Interpret `n`-th roots of unity in `ℂ` as elements of the circle -/
+noncomputable def rootsOfUnitytoCircle : (rootsOfUnity n ℂ) →* Circle where
+  toFun := fun z => ⟨z.val.val,
+    mem_sphere_zero_iff_norm.2 (Complex.norm_eq_one_of_mem_rootsOfUnity z.prop)⟩
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+/-- Equivalence of the nth roots of unity of the Circle with nth roots of unity of the complex
+numbers -/
+noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
+  __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
+  invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
+    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← MonoidHom.map_pow,
+      ← (rootsOfUnitytoCircle n).map_one]
+    congr
+    aesop⟩
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
+instance : HasEnoughRootsOfUnity Circle n := (rootsOfUnityCircleEquiv n).symm.hasEnoughRootsOfUnity
