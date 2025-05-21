@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Seq.Seq
+import Mathlib.Util.CompileInductive
 
 /-!
 # Partially defined possibly infinite lists
