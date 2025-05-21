@@ -461,6 +461,9 @@ theorem ofLinear_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ
 @[simp]
 theorem ofLinear_symm_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = g := rfl
 
+@[simp]
+theorem ofLinear_id : ofLinear (.id : M →ₗ[R] M) .id rfl rfl = .refl R M := rfl
+
 end
 
 end AddCommMonoid

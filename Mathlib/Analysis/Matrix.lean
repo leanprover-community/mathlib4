@@ -438,8 +438,7 @@ variable [DecidableEq n]
 
 @[simp] lemma linfty_opNNNorm_toMatrix (f : (n → α) →L[α] (m → α)) :
     ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖₊ = ‖f‖₊ := by
-  rw [linfty_opNNNorm_eq_opNNNorm]
-  simp only [← toLin'_apply', toLin'_toMatrix']
+  simp [linfty_opNNNorm_eq_opNNNorm]
 
 @[simp] lemma linfty_opNorm_toMatrix (f : (n → α) →L[α] (m → α)) :
     ‖LinearMap.toMatrix' (↑f : (n → α) →ₗ[α] (m → α))‖ = ‖f‖ :=

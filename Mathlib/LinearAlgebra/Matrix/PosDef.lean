@@ -359,8 +359,8 @@ theorem PosSemidef.dotProduct_mulVec_zero_iff
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
 theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
     {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
-    Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ Matrix.toLin' A x = 0 := by
-  simpa only [toLinearMap₂'_apply', toLin'_apply] using hA.dotProduct_mulVec_zero_iff x
+    Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ A *ᵥ x = 0 := by
+  simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff x
 
 /-!
 ## Positive definite matrices
