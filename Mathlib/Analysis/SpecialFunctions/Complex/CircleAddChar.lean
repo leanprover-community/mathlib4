@@ -129,7 +129,7 @@ instance : HasEnoughRootsOfUnity Circle n := (rootsOfUnityCircleEquiv n).symm.ha
 
 open Real in
 lemma rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_val (j : ZMod n) :
-    ((rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) j).val
+    (rootsOfUnityCircleEquiv n (ZMod.rootsOfUnityAddChar n j)).val
       = Complex.exp (2 * π * I * j.val / n) := by
   rw [comp_apply, ← ZMod.toCircle_natCast, ZMod.natCast_val, ZMod.cast_id', id_eq]
   rfl
