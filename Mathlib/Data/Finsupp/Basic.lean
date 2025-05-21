@@ -752,6 +752,26 @@ theorem some_single_some [Zero M] (a : α) (m : M) :
     ext b
     simp [single_apply]
 
+@[simp]
+theorem embDomain_some_some [Zero M] (f : α →₀ M) (x) : f.embDomain .some (.some x) = f x := by
+  simp [← Function.Embedding.some_apply]
+
+@[simp]
+theorem some_update_none [Zero M] (f : Option α →₀ M) (a : M) :
+    (f.update .none a).some = f.some := by
+  ext
+  simp [Finsupp.update]
+
+/-- `Finsupp`s from `Option` are equivalent to
+pairs of an element and a `Finsupp` on the original type. -/
+@[simps]
+noncomputable
+def optionEquiv [Zero M] : (Option α →₀ M) ≃ M × (α →₀ M) where
+  toFun P := (P .none, P.some)
+  invFun P := (P.2.embDomain .some).update .none P.1
+  left_inv P := by ext (_|a) <;> simp [Finsupp.update]
+  right_inv P := by ext <;> simp [Finsupp.update]
+
 @[to_additive]
 theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)

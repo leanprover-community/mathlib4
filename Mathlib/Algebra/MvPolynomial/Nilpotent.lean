@@ -17,24 +17,11 @@ We prove that
   and its other coefficients are nilpotent.
 -/
 
-@[simps]
-noncomputable
-def Finsupp.optionEquiv {α M : Type*} [Zero M] : (Option α →₀ M) ≃ M × (α →₀ M) where
-  toFun P := (P .none, P.some)
-  invFun P := (P.2.embDomain .some).update .none P.1
-  left_inv P := by ext (_|a) <;> simp [Finsupp.update]; simp [← Function.Embedding.some_apply]
-  right_inv P := by ext <;> simp [Finsupp.update]; simp [← Function.Embedding.some_apply]
-
-@[simp]
-lemma Finsupp.some_update_none {α M : Type*} [Zero M] (P : Option α →₀ M) (a : M) :
-    (P.update .none a).some = P.some := by
-  ext; simp [Finsupp.update]
-
 namespace MvPolynomial
 
 variable {σ R : Type*} [CommRing R] {P : MvPolynomial σ R}
 
--- Subsumed by `isNilpotent_iff_of_fintype` below.
+-- Subsumed by `isNilpotent_iff` below.
 private theorem isNilpotent_iff_of_fintype [Fintype σ] :
     IsNilpotent P ↔ ∀ i, IsNilpotent (P.coeff i) := by
   classical
