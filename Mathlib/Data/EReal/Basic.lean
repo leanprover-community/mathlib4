@@ -846,7 +846,11 @@ def evalENNRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure (.nonnegative q(EReal.coe_ennreal_nonneg $a))
   | _, _, _ => throwError "not ENNReal.toEReal"
 
-/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ`. -/
+/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ`.
+
+We prove that `EReal.toReal x` is nonnegative whenever `x` is nonnegative.
+Since `EReal.toReal ⊤ = 0`, we cannot prove a stronger statement,
+at least without relying on a tactic like `finiteness`. -/
 @[positivity EReal.toReal _]
 def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
@@ -857,7 +861,12 @@ def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure .none
   | _, _, _ => throwError "not EReal.toReal"
 
-/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ≥0∞`. -/
+/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ≥0∞`.
+
+We show that `EReal.toENNReal x` is positive whenever `x` is positive,
+and it is nonnegative otherwise.
+We cannot deduce any corollaries from `x ≠ 0`, since `EReal.toENNReal x = 0` for `x < 0`.
+-/
 @[positivity EReal.toENNReal _]
 def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with

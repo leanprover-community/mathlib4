@@ -296,6 +296,11 @@ protected theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt
 theorem lt_neg_comm {a b : EReal} : a < -b ↔ b < -a := by
   rw [← neg_lt_neg_iff, neg_neg]
 
+@[simp] protected theorem neg_lt_zero {a : EReal} : -a < 0 ↔ 0 < a := by rw [neg_lt_comm, neg_zero]
+@[simp] protected theorem neg_le_zero {a : EReal} : -a ≤ 0 ↔ 0 ≤ a := by rw [EReal.neg_le, neg_zero]
+@[simp] protected theorem neg_pos {a : EReal} : 0 < -a ↔ a < 0 := by rw [lt_neg_comm, neg_zero]
+@[simp] protected theorem neg_nonneg {a : EReal} : 0 ≤ -a ↔ a ≤ 0 := by rw [EReal.le_neg, neg_zero]
+
 /-- If `a < -b` then `b < -a` on `EReal`. -/
 protected theorem lt_neg_of_lt_neg {a b : EReal} (h : a < -b) : b < -a := lt_neg_comm.mp h
 
@@ -322,9 +327,23 @@ def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : EReal) : motive x :=
   if hx : 0 ≤ x then coe_toENNReal hx ▸ coe _
   else
-    have H₁ : 0 < -x := by simpa [EReal.lt_neg_comm (a := 0)] using hx
-    have H₂ : x = -(-x).toENNReal := by rw [coe_toENNReal H₁.le, neg_neg]
+    haveI H₁ : 0 < -x := by simpa using hx
+    haveI H₂ : x = -(-x).toENNReal := by rw [coe_toENNReal H₁.le, neg_neg]
     H₂ ▸ neg_coe _ <| by positivity
+
+@[simp]
+theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+    (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : ℝ≥0∞) : recENNReal coe neg_coe x = coe x := by
+  suffices ∀ y : EReal, x = y → HEq (recENNReal coe neg_coe y : motive y) (coe x) from
+    heq_iff_eq.mp (this x rfl)
+  intro y hy
+  have H₁ : 0 ≤ y := hy ▸ coe_ennreal_nonneg x
+  obtain rfl : y.toENNReal = x := by simp [← hy]
+  simp [recENNReal, H₁]
+
+proof_wanted recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+    (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
+    recENNReal coe neg_coe (-x) = neg_coe x hx
 
 /-!
 ### Subtraction
