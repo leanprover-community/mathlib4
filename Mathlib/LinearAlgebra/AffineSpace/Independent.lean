@@ -712,10 +712,9 @@ end DivisionRing
 
 section Ordered
 
-variable {k : Type*} {V : Type*} {P : Type*} [LinearOrderedRing k] [AddCommGroup V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
+  [AddCommGroup V]
 variable [Module k V] [AffineSpace V P] {ι : Type*}
-
-attribute [local instance] LinearOrderedRing.decidableLT
 
 /-- Given an affinely independent family of points, suppose that an affine combination lies in
 the span of two points given as affine combinations, and suppose that, for two indices, the
@@ -840,21 +839,31 @@ theorem range_face_points {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1
 
 /-- The face of a simplex with all but one point. -/
 def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Simplex k P (n - 1) :=
-  s.face (fs := {j | j ≠ i}) (by simp [filter_ne', NeZero.one_le])
+  s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le])
 
 @[simp] lemma range_faceOpposite_points {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
-    Set.range (s.faceOpposite i).points = s.points '' {j | j ≠ i} := by
+    Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
   simp [faceOpposite]
 
+/-- Needed to make `affineSpan (s.points '' {i}ᶜ)` nonempty. -/
+instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
+  (Set.nonempty_compl_of_nontrivial i).to_subtype
+
+@[simp] lemma mem_affineSpan_image_iff [Nontrivial k] {n : ℕ} (s : Simplex k P n)
+    {fs : Set (Fin (n + 1))} {i : Fin (n + 1)} :
+    s.points i ∈ affineSpan k (s.points '' fs) ↔ i ∈ fs :=
+  s.independent.mem_affineSpan_iff _ _
+
+@[deprecated mem_affineSpan_image_iff (since := "2025-05-18")]
 lemma mem_affineSpan_range_face_points_iff [Nontrivial k] {n : ℕ} (s : Simplex k P n)
     {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {i : Fin (n + 1)} :
     s.points i ∈ affineSpan k (Set.range (s.face h).points) ↔ i ∈ fs := by
-  rw [range_face_points, s.independent.mem_affineSpan_iff, mem_coe]
+  simp
 
+@[deprecated mem_affineSpan_image_iff (since := "2025-05-18")]
 lemma mem_affineSpan_range_faceOpposite_points_iff [Nontrivial k] {n : ℕ} [NeZero n]
     (s : Simplex k P n) {i j : Fin (n + 1)} :
     s.points i ∈ affineSpan k (Set.range (s.faceOpposite j).points) ↔ i ≠ j := by
-  rw [faceOpposite, mem_affineSpan_range_face_points_iff]
   simp
 
 /-- Remap a simplex along an `Equiv` of index types. -/
@@ -964,7 +973,7 @@ namespace Affine
 
 namespace Simplex
 
-variable {k V P : Type*} [OrderedRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {k V P : Type*} [Ring k] [PartialOrder k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
 of the vertices with weights strictly between 0 and 1. This is equivalent to the intrinsic

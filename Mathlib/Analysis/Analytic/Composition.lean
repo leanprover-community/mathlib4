@@ -159,7 +159,7 @@ theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
 theorem compContinuousLinearMap_applyComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 F G)
     (f : E →L[𝕜] F) (c : Composition n) (v : Fin n → E) :
     (p.compContinuousLinearMap f).applyComposition c v = p.applyComposition c (f ∘ v) := by
-  simp (config := {unfoldPartialApp := true}) [applyComposition]; rfl
+  simp +unfoldPartialApp [applyComposition]; rfl
 
 end FormalMultilinearSeries
 
@@ -176,13 +176,10 @@ applying the right coefficient of `p` to each block of the composition, and then
 the resulting vector. It is called `f.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
     (f : F [×c.length]→L[𝕜] G) : E [×n]→L[𝕜] G where
-  toFun v := f (p.applyComposition c v)
-  map_update_add' v i x y := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_add]
-  map_update_smul' v i c x := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_smul]
+  toMultilinearMap :=
+    MultilinearMap.mk' (fun v ↦ f (p.applyComposition c v))
+      (fun v i x y ↦ by simp only [applyComposition_update, map_update_add])
+      (fun v i c x ↦ by simp only [applyComposition_update, map_update_smul])
   cont :=
     f.cont.comp <|
       continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
@@ -1191,7 +1188,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     r c.1.length fun i : Fin c.1.length =>
       q (c.2 i).length (applyComposition p (c.2 i) (v ∘ c.1.embedding i))
   suffices ∑ c, f c = ∑ c, g c by
-    simpa (config := { unfoldPartialApp := true }) only [FormalMultilinearSeries.comp,
+    simpa +unfoldPartialApp only [FormalMultilinearSeries.comp,
       ContinuousMultilinearMap.sum_apply, compAlongComposition_apply, Finset.sum_sigma',
       applyComposition, ContinuousMultilinearMap.map_sum]
   /- Now, we use `Composition.sigmaEquivSigmaPi n` to change

@@ -95,8 +95,8 @@ noncomputable def mapX : ∀ (i : Option ι), X K i ⟶ X L i
 lemma mapX_some {i : Option ι} {a : ι} (hi : i = some a) :
     mapX φ i = (XIso K hi).hom ≫ φ.f a ≫ (XIso L hi).inv := by
   subst hi
-  dsimp [XIso]
-  erw [id_comp, comp_id]
+  dsimp [XIso, X]
+  rw [id_comp, comp_id]
   rfl
 
 lemma mapX_none {i : Option ι} (hi : i = none) :

@@ -264,8 +264,7 @@ theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R
   have hnd : mk' K n d = k := choose_spec (choose_spec (mk'_surjective R⁰ k))
   have hn0 : n ≠ 0 := by
     by_contra h
-    rw [← hnd, h, IsFractionRing.mk'_eq_div, _root_.map_zero,
-      zero_div, spanSingleton_zero] at hk
+    rw [← hnd, h, IsFractionRing.mk'_eq_div, map_zero, zero_div, spanSingleton_zero] at hk
     exact hI hk
   rw [finprod_heightOneSpectrum_factorization_principal_fraction hn0 d, hk, hnd]
 
@@ -319,7 +318,7 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     exact Associates.irreducible_mk.mpr v.irreducible
   rw [h_a₁J₁, ← div_spanSingleton, ← div_spanSingleton, div_eq_div_iff h_a₁' h_a',
     ← coeIdeal_span_singleton, ← coeIdeal_span_singleton, ← coeIdeal_mul, ← coeIdeal_mul] at h_aJ
-  rw [count, dif_neg hI, sub_eq_sub_iff_add_eq_add, ← ofNat_add, ← ofNat_add, natCast_inj,
+  rw [count, dif_neg hI, sub_eq_sub_iff_add_eq_add, ← natCast_add, ← natCast_add, natCast_inj,
     ← Associates.count_mul _ _ hv, ← Associates.count_mul _ _ hv, Associates.mk_mul_mk,
     Associates.mk_mul_mk, coeIdeal_injective h_aJ]
   · rw [ne_eq, Associates.mk_eq_zero]; exact h_J_ne_zero
@@ -483,19 +482,21 @@ theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
   · intro w hw
     rw [count_zpow, count_maximal_coprime K v hw, MulZeroClass.mul_zero]
 
-theorem count_finsupp_prod (exps : HeightOneSpectrum R →₀ ℤ) :
+theorem count_finsuppProd (exps : HeightOneSpectrum R →₀ ℤ) :
     count K v (exps.prod (HeightOneSpectrum.asIdeal · ^ ·)) = exps v := by
   rw [Finsupp.prod, count_prod]
   · classical simp only [count_zpow, count_maximal, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
       exps.mem_support_iff, ne_eq, ite_not, ite_eq_right_iff, @eq_comm ℤ 0, imp_self]
   · exact fun v hv ↦ zpow_ne_zero _ (coeIdeal_ne_zero.mpr v.ne_bot)
 
+@[deprecated (since := "2025-04-06")] alias count_finsupp_prod := count_finsuppProd
+
 /-- If `exps` is finitely supported, then `val_v(∏_w w^{exps w}) = exps v`. -/
 theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     (h_exps : ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, exps v = 0) :
     count K v (∏ᶠ v : HeightOneSpectrum R,
       (v.asIdeal : FractionalIdeal R⁰ K) ^ exps v) = exps v := by
-  convert count_finsupp_prod K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
+  convert count_finsuppProd K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
   rw [finprod_eq_finset_prod_of_mulSupport_subset (s := h_exps.toFinset), Finsupp.prod]
   · rfl
   · rw [Finite.coe_toFinset]

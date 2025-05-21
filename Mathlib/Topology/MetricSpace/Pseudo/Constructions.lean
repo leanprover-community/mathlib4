@@ -51,9 +51,6 @@ def IsUniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : Pseu
     (f : α → β) (h : IsUniformInducing f) : PseudoMetricSpace α :=
   .replaceUniformity (.induced f m) h.comap_uniformity.symm
 
-@[deprecated (since := "2024-10-08")] alias UniformInducing.comapPseudoMetricSpace :=
-  IsUniformInducing.comapPseudoMetricSpace
-
 instance Subtype.pseudoMetricSpace {p : α → Prop} : PseudoMetricSpace (Subtype p) :=
   PseudoMetricSpace.induced Subtype.val ‹_›
 

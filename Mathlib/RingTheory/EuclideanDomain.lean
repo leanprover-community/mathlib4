@@ -29,12 +29,6 @@ section GCDMonoid
 
 variable {R : Type*} [EuclideanDomain R] [GCDMonoid R] {p q : R}
 
-theorem gcd_ne_zero_of_left (hp : p ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
-  hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_left p q)
-
-theorem gcd_ne_zero_of_right (hp : q ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
-  hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_right p q)
-
 theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_left p q
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hp)
