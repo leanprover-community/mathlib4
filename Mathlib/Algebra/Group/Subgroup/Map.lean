@@ -253,12 +253,17 @@ theorem map_inf_eq (H K : Subgroup G) (f : G →* N) (hf : Function.Injective f)
 theorem map_bot (f : G →* N) : (⊥ : Subgroup G).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem map_top_of_surjective (f : G →* N) (h : Function.Surjective f) : Subgroup.map f ⊤ = ⊤ := by
   rw [eq_top_iff]
   intro x _
   obtain ⟨y, hy⟩ := h x
   exact ⟨y, trivial, hy⟩
+
+@[to_additive (attr := simp)]
+lemma map_equiv_top {F : Type*} [EquivLike F G N] [MulEquivClass F G N] (f : F) :
+    map (f : G →* N) ⊤ = ⊤ :=
+  map_top_of_surjective _ (EquivLike.surjective f)
 
 @[to_additive (attr := simp)]
 theorem comap_top (f : G →* N) : (⊤ : Subgroup N).comap f = ⊤ :=
