@@ -1,5 +1,7 @@
 import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
-import Mathlib.Tactic
+import Mathlib.FieldTheory.Finite.GaloisField
+import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 set_option linter.style.header false
 

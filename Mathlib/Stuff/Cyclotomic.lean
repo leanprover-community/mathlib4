@@ -1,5 +1,6 @@
 import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
-import Mathlib.Tactic
+import Mathlib.Tactic.NormNum.Prime
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 
 set_option linter.style.header false
 

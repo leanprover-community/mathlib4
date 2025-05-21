@@ -1,6 +1,8 @@
 import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
-import Mathlib.NumberTheory.Cyclotomic.PID
-import Mathlib.Tactic
+import Mathlib.NumberTheory.Cyclotomic.Embeddings
+import Mathlib.NumberTheory.Cyclotomic.Rat
+import Mathlib.Tactic.NormNum.NatFactorial
+import Mathlib.Data.Real.Pi.Bounds
 
 set_option linter.style.header false
 
