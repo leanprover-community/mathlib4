@@ -62,14 +62,12 @@ def Matrix.lieConj (P : Matrix n n R) (h : Invertible P) : Matrix n n R ≃ₗ�
 @[simp]
 theorem Matrix.lieConj_apply (P A : Matrix n n R) (h : Invertible P) :
     P.lieConj h A = P * A * P⁻¹ := by
-  simp [LinearEquiv.conj_apply, Matrix.lieConj, LinearMap.toMatrix'_comp,
-    LinearMap.toMatrix'_toLin']
+  simp [LinearEquiv.conj_apply, Matrix.lieConj, LinearMap.toMatrix'_comp]
 
 @[simp]
 theorem Matrix.lieConj_symm_apply (P A : Matrix n n R) (h : Invertible P) :
     (P.lieConj h).symm A = P⁻¹ * A * P := by
-  simp [LinearEquiv.symm_conj_apply, Matrix.lieConj, LinearMap.toMatrix'_comp,
-    LinearMap.toMatrix'_toLin']
+  simp [LinearEquiv.symm_conj_apply, Matrix.lieConj, LinearMap.toMatrix'_comp]
 
 variable {m : Type w₁} [DecidableEq m] [Fintype m] (e : n ≃ m)
 
