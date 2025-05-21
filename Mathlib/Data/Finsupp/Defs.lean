@@ -215,7 +215,7 @@ section OnFinset
 
 variable [Zero M]
 
--- The support of `onFinset` extracted and made irreducible to avoid unfolding by the elaborator
+/-- The support of `onFinset` extracted and made irreducible to avoid unfolding by the elaborator -/
 @[irreducible]
 def onFinset_support (s : Finset α) (f : α → M) : Finset α :=
   haveI := Classical.decEq M
