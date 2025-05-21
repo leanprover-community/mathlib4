@@ -117,12 +117,12 @@ lemma toPointedCone_innerDual (s : Set E) : (innerDual s).toPointedCone = .inner
 
 @[simp] lemma innerDual_empty : innerDual (∅ : Set E) = ⊤ := by ext; simp
 
-/-- Dual cone of the convex cone {0} is the total space. -/
+/-- Dual cone of the convex cone `{0}` is the total space. -/
 @[simp] lemma innerDual_zero : innerDual (0 : Set E) = ⊤ := by ext; simp
 
-/-- Dual cone of the total space is the convex cone {0}. -/
+/-- Dual cone of the total space is the convex cone `{0}`. -/
 @[simp]
-lemma innerDual_univ : innerDual (univ : Set E) = 0 :=
+lemma innerDual_univ : innerDual (univ : Set E) = ⊥ :=
   le_antisymm (fun x hx ↦ by simpa [← real_inner_self_nonpos] using hx (mem_univ (-x))) (by simp)
 
 @[gcongr] lemma innerDual_le_innerDual (h : t ⊆ s) : innerDual s ≤ innerDual t :=
