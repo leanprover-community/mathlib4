@@ -285,9 +285,9 @@ theorem StrictConvexOn.ae_eq_const_or_map_average_lt [IsFiniteMeasure μ] (hg : 
     g ((a • ⨍ x in t, f x ∂μ) + b • ⨍ x in tᶜ, f x ∂μ) <
         a * g (⨍ x in t, f x ∂μ) + b * g (⨍ x in tᶜ, f x ∂μ) :=
       hg.2 (this h₀).1 (this h₀').1 hne ha hb hab
-    _ ≤ (a * ⨍ x in t, g (f x) ∂μ) + b * ⨍ x in tᶜ, g (f x) ∂μ :=
-      add_le_add (mul_le_mul_of_nonneg_left (this h₀).2 ha.le)
-        (mul_le_mul_of_nonneg_left (this h₀').2 hb.le)
+    _ ≤ (a * ⨍ x in t, g (f x) ∂μ) + b * ⨍ x in tᶜ, g (f x) ∂μ := by
+      gcongr
+      exacts [(this h₀).2, (this h₀').2]
 
 /-- **Jensen's inequality**, strict version: if an integrable function `f : α → E` takes values in a
 convex closed set `s`, and `g : E → ℝ` is continuous and strictly concave on `s`, then
