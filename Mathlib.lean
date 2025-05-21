@@ -5551,6 +5551,11 @@ import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.SetTheory.ZFC.PSet
 import Mathlib.SetTheory.ZFC.Rank
 import Mathlib.Std.Data.HashMap
+import Mathlib.Stuff.Cyclotomic
+import Mathlib.Stuff.Factorization
+import Mathlib.Stuff.Inertia
+import Mathlib.Stuff.Minkowski
+import Mathlib.Stuff.Seven
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
