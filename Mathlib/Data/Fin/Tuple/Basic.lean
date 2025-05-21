@@ -547,7 +547,7 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
 
 @[simp]
 lemma range_snoc {α : Type*} (f : Fin n → α) (x : α) :
-    Set.range (Fin.snoc f x) = insert x (Set.range f) := by
+    Set.range (snoc f x) = insert x (Set.range f) := by
   ext; simp [Fin.exists_fin_succ', or_comm, eq_comm]
 
 /-- As a binary function, `Fin.snoc` is injective. -/
