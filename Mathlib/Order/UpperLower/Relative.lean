@@ -28,8 +28,8 @@ lemma IsRelLowerSet.prop_of_mem (hs : IsRelLowerSet s P) (h : a ∈ s) : P a := 
 @[simp] lemma isRelUpperSet_empty : IsRelUpperSet (∅ : Set α) P := fun _ ↦ False.elim
 @[simp] lemma isRelLowerSet_empty : IsRelLowerSet (∅ : Set α) P := fun _ ↦ False.elim
 
-@[simp] lemma isRelUpperSet_self : IsRelUpperSet s s := fun _ b ↦ ⟨b, fun _ _ ↦ id⟩
-@[simp] lemma isRelLowerSet_self : IsRelLowerSet s s := fun _ b ↦ ⟨b, fun _ _ ↦ id⟩
+@[simp] lemma isRelUpperSet_self : IsRelUpperSet s (· ∈ s) := fun _ b ↦ ⟨b, fun _ _ ↦ id⟩
+@[simp] lemma isRelLowerSet_self : IsRelLowerSet s (· ∈ s) := fun _ b ↦ ⟨b, fun _ _ ↦ id⟩
 
 lemma IsRelUpperSet.union (hs : IsRelUpperSet s P) (ht : IsRelUpperSet t P) :
     IsRelUpperSet (s ∪ t) P := fun b mb ↦ by
@@ -140,13 +140,11 @@ section Preorder
 
 variable [Preorder α] {c : α}
 
-lemma isRelUpperSet_Icc_Iic : IsRelUpperSet (Icc a c) (Iic c) := fun _ b ↦ by
-  change _ ≤ c ∧ ∀ ⦃b : α⦄, _ → b ≤ c → _
+lemma isRelUpperSet_Icc_le : IsRelUpperSet (Icc a c) (· ≤ c) := fun _ b ↦ by
   simp_all only [mem_Icc, and_true, true_and]
   exact fun _ x _ ↦ b.1.trans x
 
-lemma isRelLowerSet_Icc_Ici : IsRelLowerSet (Icc c a) (Ici c) := fun _ b ↦ by
-  change c ≤ _ ∧ ∀ ⦃b : α⦄, _ → c ≤ b → _
+lemma isRelLowerSet_Icc_ge : IsRelLowerSet (Icc c a) (c ≤ ·) := fun _ b ↦ by
   simp_all only [mem_Icc, and_true, true_and]
   exact fun _ x _ ↦ x.trans b.2
 
