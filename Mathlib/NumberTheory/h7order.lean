@@ -176,8 +176,7 @@ lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
               simp_all only}
           have := Filter.EventuallyEq.deriv_eq hL
           rw [this]
-    · exact AnalyticAt.deriv hf
-          }
+    · exact AnalyticAt.deriv hf}
 
 lemma order_geq_k_then_deriv_n_neg_1 (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (k n : ℕ)  :
    n = analyticOrderAt f z₀ → n > 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by {
@@ -193,18 +192,15 @@ lemma order_geq_k_then_deriv_n_neg_1 (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z�
           · assumption
           · assumption
           · linarith
-        · aesop
-      }
+        · simp_all only [gt_iff_lt, ENat.coe_sub, tsub_pos_iff_lt]
+          exact Hk}
       have h1 : (n - (k + 1))= (n - k - 1) := by {
-        simp_all only [gt_iff_lt, ENat.coe_sub, Nat.cast_one]
-        rfl
-      }
+        simp_all only [gt_iff_lt, ENat.coe_sub, Nat.cast_one]; rfl}
       rw [h1]
       simp only at this
       rw [← this]
       congr
-      rw [Function.iterate_succ',Function.comp_apply]
-   }
+      rw [Function.iterate_succ', Function.comp_apply]}
 
 #check IsOpen.eqOn_of_deriv_eq
 lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀), f z₀ = 0 →
@@ -222,8 +218,7 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
       refine AnalyticOnNhd.analyticOn ?_
       unfold AnalyticOnNhd at *
       intros x hx
-      simp_all only [Metric.mem_ball, dist_self, gt_iff_lt, lt_inf_iff, r]
-    }
+      simp_all only [Metric.mem_ball, dist_self, gt_iff_lt, lt_inf_iff, r]}
     have hg : DifferentiableOn ℂ (fun _ ↦ (0 : ℂ)) (Metric.ball z₀ r) := differentiableOn_const 0
     have hf' : EqOn (deriv f) (deriv (fun _ ↦ (0 : ℂ))) (Metric.ball z₀ r) := by {
       simp only [deriv_const']
@@ -235,14 +230,12 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
       intros H
       apply this
       simp_all only [gt_iff_lt, Metric.mem_ball, differentiableOn_const,
-        implies_true, lt_inf_iff, r]
-    }
+        implies_true, lt_inf_iff, r]}
     have hx : z₀ ∈ (Metric.ball z₀ r) := by {
       simp only [Metric.mem_ball, dist_self]
       simp_all only [gt_iff_lt, Metric.mem_ball, differentiableOn_const, deriv_const']
-      simp_all only [lt_inf_iff, and_self, r]
-      }
-    have  := IsOpen.eqOn_of_deriv_eq ?_ ?_ hf hg hf' hx
+      simp_all only [lt_inf_iff, and_self, r]}
+    have := IsOpen.eqOn_of_deriv_eq ?_ ?_ hf hg hf' hx
     · constructor
       · simp_all only [gt_iff_lt, Metric.mem_ball,
         differentiableOn_const, deriv_const', dist_self, lt_inf_iff,
@@ -267,47 +260,59 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
     constructor
     · simp_all only [Metric.mem_ball, dist_self, gt_iff_lt, lt_inf_iff, and_self, r]
     · intros x hx
-      -- have hL : f x = (fun x => 0) x := by {
-      --   simp only
-      --   exact hball x hx
-      -- }
-      have := derivWithin_const (Metric.ball z₀ r) (0 : ℂ)
-      --rw [← this]
+      -- have hfderiv : EqOn (deriv (fun _ => (0: ℂ))) (deriv f) (Metric.ball z₀ r) := by {
+      --   unfold EqOn at *
+      --   intros x hx
+      --   congr
+      --   ext x
+      --   have := hf' hx
+      --   simp only [r] at this
+      --   rw [← this]
       have hf' : EqOn f ((fun _ ↦ (0 : ℂ))) (Metric.ball z₀ r) := by {
-        unfold EqOn
-        intros x1 hx1
-        simp only [r]
-        apply hball
-        simp only [Metric.mem_ball, r] at *
-        simp_all only [dist_self, gt_iff_lt, deriv_const', lt_inf_iff, r]
-      }
-      rw [funext_iff] at this
-      have := this x
-      simp only [Pi.zero_apply] at this
-      rw [← this]
-      --congr
+          unfold EqOn
+          intros x1 hx1
+          simp only [r]
+          apply hball
+          simp only [Metric.mem_ball, r] at *
+          simp_all only [dist_self, gt_iff_lt, deriv_const', lt_inf_iff, r]
+        }
       unfold EqOn at hf'
-      simp only [Metric.mem_ball, r] at hf'
-      sorry
 
+      -- }
+      have hf'' : derivWithin (fun _ => (0 : ℂ)) (Metric.ball z₀ r) x =
+        derivWithin f (Metric.ball z₀ r) x := by {
+        -- Since f = 0 on the ball, their derivatives within the ball are equal
+        --unfold EqOn at hf'
+        congr
+        sorry
 
+        --have := hf' x
+        }
+      rw [← derivWithin_of_mem_nhds]
+      · rw [← hf'']
+        simp only [derivWithin_fun_const, Pi.zero_apply, r]
+      · rw [IsOpen.mem_nhds_iff]
+        exact hx
+        simp_all only [Metric.mem_ball, dist_self, gt_iff_lt, lt_inf_iff,
+          deriv_const', and_imp, implies_true, and_self, r]
+        simp only [Metric.isOpen_ball, r]
 
+          }
 
-      -- have := Filter.EventuallyEq.deriv_eq hL
-      -- rw [this]
-      -- simp only [deriv_const', r]
-}
 #exit
 #check order_eq_zero_iff
+
+#check order_deriv_top
+#check order_eq_zero_iff
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
-  ∀ z₀ n (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt hf ≠ ⊤),
-    (∀ k < n, analyticOrderAt (AnalyticAt.iterated_deriv hf k)= 0) ∧ (deriv^[n] f z₀ ≠ 0)
-    ↔ analyticOrderAt f = n := by
+  ∀ z₀ n (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤),
+    (∀ k < n, analyticOrderAt (deriv^[k] f) z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0)
+    ↔ analyticOrderAt f z₀ = n := by
   intros z₀ n
   induction' n with n IH
   · simp only [ne_eq, not_lt_zero', IsEmpty.forall_iff, implies_true, Function.iterate_zero, id_eq,
     true_and, CharP.cast_eq_zero]
-    exact fun f hf ho ↦ Iff.symm (order_eq_zero_iff hf)
+    exact fun f hf ho ↦ Iff.symm (AnalyticAt.analyticOrderAt_eq_zero hf)
   · intros f hf hfin
     constructor
     · intros H
@@ -327,10 +332,10 @@ lemma iterated_deriv_eq_zero_iff_order_eq_n :
       · sorry
 
 
-lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀)
-  (ho : analyticOrderAt hf ≠ ⊤),
-  (∀ k < n, iteratedDeriv k f z₀ = 0) → n ≤ analyticOrderAt f := by {
-    intros z₀ f hf ho hkn
+lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (n : ℕ) z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀)
+  (ho : analyticOrderAt f z₀ ≠ ⊤),
+  (∀ k < n, analyticOrderAt (deriv^[k] f) z₀ = 0) → n ≤ analyticOrderAt f z₀ := by {
+    intros n z₀ f hf ho hkn
     sorry
   }
 -- intros f z hf ho hd
