@@ -176,23 +176,6 @@ theorem mulSingle_eq_one_iff {i : ι} {x : M i} : mulSingle i x = 1 ↔ x = 1 :=
 theorem mulSingle_ne_one_iff {i : ι} {x : M i} : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
   mulSingle_eq_one_iff.ne
 
--- Porting note:
--- 1) Why do ι have to specify the type of `mulSingle i x` explicitly?
--- 2) Why do ι have to specify the type of `(1 : ι → β)`?
--- 3) Removed `{β : Sort*}` as `[One β]` converts it to a type anyways.
-/-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
-@[to_additive "On non-dependent functions, `Pi.single` can be expressed as an `ite`"]
-theorem mulSingle_apply [One β] (i : ι) (x : β) (i' : ι) :
-    (mulSingle i x : ι → β) i' = if i' = i then x else 1 :=
-  Function.update_apply (1 : ι → β) i x i'
-
--- Porting note: Same as above.
-/-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
-@[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two indices."]
-theorem mulSingle_comm [One β] (i : ι) (x : β) (i' : ι) :
-    (mulSingle i x : ι → β) i' = (mulSingle i' x : ι → β) i := by
-  simp [mulSingle_apply, eq_comm]
-
 @[to_additive]
 theorem apply_mulSingle (f' : ∀ i, M i → N i) (hf' : ∀ i, f' i 1 = 1) (i : ι) (x : M i) (j : ι) :
     f' j (mulSingle i x j) = mulSingle i (f' i x) j := by
@@ -227,6 +210,22 @@ theorem mulSingle_injective (i : ι) : Function.Injective (mulSingle i : M i →
 @[to_additive (attr := simp)]
 theorem mulSingle_inj (i : ι) {x y : M i} : mulSingle i x = mulSingle i y ↔ x = y :=
   (Pi.mulSingle_injective _).eq_iff
+
+variable {M : Type*} [One M]
+
+-- Porting note: added `(_ : ι → M)`
+/-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
+@[to_additive "On non-dependent functions, `Pi.single` can be expressed as an `ite`"]
+lemma mulSingle_apply (i : ι) (x : M) (i' : ι) :
+    (mulSingle i x : ι → M) i' = if i' = i then x else 1 :=
+  Function.update_apply _ i x i'
+
+-- Porting note: added `(_ : ι → M)`
+/-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
+@[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two indices."]
+lemma mulSingle_comm (i : ι) (x : M) (i' : ι) :
+    (mulSingle i x : ι → M) i' = (mulSingle i' x : ι → M) i := by
+  simp [mulSingle_apply, eq_comm]
 
 end
 
