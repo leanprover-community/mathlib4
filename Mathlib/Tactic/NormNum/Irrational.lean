@@ -242,16 +242,11 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
     simp
     rfl
   rw [h1, h2]
-  apply irrational_rpow_rat_of_not_power
+  refine irrational_rpow_rat_of_not_power ?_ hy_den_pos ?_
   · simp only [div_pow, ← Nat.cast_npow]
     apply not_power_rat_of_num
     · apply Nat.Coprime.pow _ _ hx_coprime
     · apply not_power_nat_pow_of_bounds hy_den_pos hy_coprime hn1 hn2
-  · by_contra hy_den
-    replace hy_den : y_den = 0 := by omega
-    have : (y_den : ℝ) ≠ 0 := by apply hy_inv.ne_zero
-    simp at this
-    contradiction
   · positivity
 
 private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_den k_den : ℕ}
