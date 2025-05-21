@@ -523,9 +523,11 @@ section irrational
 
 example : Irrational √2 := by norm_num1
 example : Irrational √(5 - 2) := by norm_num1
-example : Irrational √(7/2) := by norm_num1
+example : Irrational √(7/4) := by norm_num1
+example : Irrational √(4/7) := by norm_num1
 example : Irrational √(1/2 + 1/2 + 1/3) := by norm_num1
 example : Irrational (100 ^ (1/3 : ℝ)) := by norm_num1
+example : Irrational ((27/38) ^ (1/3 : ℝ)) := by norm_num1
 example : Irrational ((87/6) ^ (54/321 : ℝ)) := by norm_num1
 
 -- Large prime number
