@@ -178,7 +178,7 @@ lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   succ_le_succ <| le_trans (sqrt_le_add n) <| Nat.add_le_add_right
     (by refine add_le_add (Nat.mul_le_mul_right _ ?_) ?_ <;> exact Nat.le_add_right _ 2) _
 
-lemma add_one_sqrt_le_of_pos {n : ℕ} (hn : 1 ≤ n) : (n + 1).sqrt ≤ n := by
+lemma add_one_sqrt_le_of_pos {n : ℕ} (hn : 0 < n) : (n + 1).sqrt ≤ n := by
   induction n, hn using le_induction
   case base => decide
   case succ n hn ih =>
