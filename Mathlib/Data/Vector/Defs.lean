@@ -38,9 +38,15 @@ variable {α β σ φ : Type*} {n : ℕ} {p : α → Prop}
 @[simps!]
 def toVector (v : List.Vector α n) : _root_.Vector α n := ⟨v.1.toArray, v.2⟩
 
+@[simp] theorem toVector_mk (a : List α) (h : a.length = n) :
+    toVector ⟨a, h⟩ = ⟨a.toArray, h⟩ := rfl
+
 /-- Convert a `Vector` to a `List.Vector`. -/
 @[simps!]
 def ofVector {α : Type*} {n : ℕ} (v : _root_.Vector α n) : List.Vector α n := ⟨v.toList, v.2⟩
+
+@[simp] theorem ofVector_mk (a : Array α) (h : a.size = n) :
+    ofVector ⟨a, h⟩ = ⟨a.toList, h⟩ := rfl
 
 alias _root_.Vector.toListVector := ofVector
 
@@ -107,16 +113,16 @@ def tail : Vector α n → Vector α (n - 1)
   | 0, ⟨[], h⟩ => _root_.Vector.toList_inj.mp rfl
   | _ + 1, ⟨_ :: v, h⟩ => _root_.Vector.toList_inj.mp <| by
     unfold tail _root_.Vector.tail
-    simp_rw [dif_pos (Nat.zero_lt_succ _), Vector.toArray_eraseIdx,
-      Array.toList_eraseIdx, toVector_toList, eraseIdx_zero, tail_cons]
+    simp_rw [toVector_mk, zero_lt_succ, dite_true, Vector.eraseIdx_mk,
+      eraseIdx_toArray, eraseIdx_zero, tail_cons]
 
 @[simp] theorem ofVector_tail :
     ∀ {n} (v : _root_.Vector α n), ofVector v.tail = (ofVector v).tail
   | 0, ⟨⟨[]⟩, _⟩ => Subtype.ext rfl
   | _ + 1, ⟨⟨_ :: v⟩, h⟩ => Subtype.ext <| by
-    unfold tail _root_.Vector.tail ofVector
-    simp_rw [dif_pos (Nat.zero_lt_succ _)]
-    simp_rw [Vector.eraseIdx_mk, eraseIdx_toArray, eraseIdx_zero, tail_cons]
+    unfold tail _root_.Vector.tail
+    simp_rw [Nat.add_one_sub_one, zero_lt_succ, dite_true, Vector.eraseIdx_mk,
+      eraseIdx_toArray, eraseIdx_zero, tail_cons, ofVector_mk]
 
 /-- The tail of a vector obtained by prepending is the vector prepended. to -/
 theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
