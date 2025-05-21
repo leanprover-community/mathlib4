@@ -204,9 +204,25 @@ lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
               algebra_compatible_smul Rₚ x (r' • f m)]
               using Submodule.smul_mem_pointwise_smul (r' • f m) ((algebraMap R Rₚ) x) ⊤ hm))
         have : IsLocalizedModule.AtPrime p g := {
-          map_units r := sorry
-          surj' := sorry
-          exists_of_eq := sorry }
+          map_units r := by
+            let alg := (Algebra.algHom R Rₚ (Module.End Rₚ (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ)))
+            rcases isUnit_iff_exists.mp (IsUnit.algebraMap_of_algebraMap (r := r.1) alg.toLinearMap
+              (map_one alg) (IsLocalization.map_units Rₚ r)) with ⟨s, hs1, hs2⟩
+            exact isUnit_iff_exists.mpr ⟨LinearMap.restrictScalars R s,
+              ⟨LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs1 (Eq.refl x)),
+               LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs2 (Eq.refl x))⟩⟩
+          surj' y := by
+            induction' y using Submodule.Quotient.induction_on with y
+            rcases IsLocalizedModule.surj' (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
+            use (Submodule.Quotient.mk z.1, z.2)
+            simp [LinearMapOfSemiLinearMapAlgebraMap, SemiLinearMapAlgebraMapOfLinearMap, g, ← hz]
+          exists_of_eq {y1 y2} h := by
+            induction' y1 using Submodule.Quotient.induction_on with y1
+            induction' y2 using Submodule.Quotient.induction_on with y2
+            simp only [LinearMapOfSemiLinearMapAlgebraMap, SemiLinearMapAlgebraMapOfLinearMap,
+              LinearMap.coe_mk, LinearMap.coe_toAddHom, Submodule.mapQ_apply, g] at h
+
+            sorry }
         exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) g reg.2 len
 
 lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module.Finite R M]
