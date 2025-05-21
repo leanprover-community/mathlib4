@@ -190,7 +190,7 @@ instance (priority := 100) IsStrictOrderedRing.toIsOrderedRing : IsOrderedRing R
   mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
   mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right
 
--- not an instance to avoid looping with `NeZero.charZero_one`
+/-- This is not an instance, as it would loop with `NeZero.charZero_one`. -/
 theorem AddMonoidWithOne.toCharZero {R}
     [AddMonoidWithOne R] [PartialOrder R] [ZeroLEOneClass R]
     [NeZero (1 : R)] [AddLeftStrictMono R] : CharZero R where
