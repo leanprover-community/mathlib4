@@ -82,9 +82,9 @@ theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ
 
 variable (p θ) in
 /--
-The set of monic irreducible factors of `minpoly ℤ θ` modulo `p`.
+The finite set of monic irreducible factors of `minpoly ℤ θ` modulo `p`.
 -/
-abbrev monicFactorsMod : Set ((ZMod p)[X]) :=
+abbrev monicFactorsMod : Finset ((ZMod p)[X]) :=
   (normalizedFactors (map (Int.castRingHom (ZMod p)) (minpoly ℤ θ))).toFinset
 
 /--
