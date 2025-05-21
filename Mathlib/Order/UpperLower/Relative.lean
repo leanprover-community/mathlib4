@@ -138,12 +138,14 @@ section Preorder
 
 variable [Preorder α] {c : α}
 
-lemma isRelUpperSet_Icc_Iic : IsRelUpperSet (Icc a c) (· ∈ Iic c) := fun _ b ↦ by
-  simp_all only [mem_Icc, mem_Iic, and_true, true_and]
+lemma isRelUpperSet_Icc_Iic : IsRelUpperSet (Icc a c) (Iic c) := fun _ b ↦ by
+  change _ ≤ c ∧ ∀ ⦃b : α⦄, _ → b ≤ c → _
+  simp_all only [mem_Icc, and_true, true_and]
   exact fun _ x _ ↦ b.1.trans x
 
-lemma isRelLowerSet_Icc_Ici : IsRelLowerSet (Icc c a) (· ∈ Ici c) := fun _ b ↦ by
-  simp_all only [mem_Icc, mem_Ici, and_true, true_and]
+lemma isRelLowerSet_Icc_Ici : IsRelLowerSet (Icc c a) (Ici c) := fun _ b ↦ by
+  change c ≤ _ ∧ ∀ ⦃b : α⦄, _ → c ≤ b → _
+  simp_all only [mem_Icc, and_true, true_and]
   exact fun _ x _ ↦ x.trans b.2
 
 end Preorder
