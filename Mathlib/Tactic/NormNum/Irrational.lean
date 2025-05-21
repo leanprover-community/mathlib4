@@ -110,6 +110,10 @@ private theorem not_power_nat_pow_of_bounds {n k p q : ℕ}
   apply not_power_nat_pow h_coprime hq
   apply not_power_nat_of_bounds h_left h_right
 
+set_option trace.profiler true
+
+-- lemma kek (a b x y : ℕ) (hab : a.Coprime b) (hxy : x.Coprime y) (h : a * x = b * y) : a =
+
 /-- Weaker version of `not_power_rat_of_num` with extra `q ≥ 0` assumption. -/
 private theorem not_power_rat_of_num_aux {a b d : ℕ}
     (h_coprime : a.Coprime b)
@@ -153,12 +157,11 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   · subst hx_zero
     simp only [zero_pow hd_zero, zero_mul, mul_eq_zero, pow_eq_zero_iff', ne_eq, y] at h ha
     simp [ha, y] at h
-  suffices a.factorization = (x ^ d).factorization by
-    have := Nat.factorization_inj ha_zero (pow_ne_zero d hx_zero) this
-    exact ha this
+  apply ha
+  clear ha
+  apply Nat.factorization_inj ha_zero (pow_ne_zero d hx_zero)
   apply_fun Nat.factorization at h
-  obtain ⟨hax, hby, hay⟩ : a.primeFactors = x.primeFactors ∧ b.primeFactors = y.primeFactors ∧
-      Disjoint a.primeFactors y.primeFactors := by
+  obtain ⟨hax, hay⟩ : a.primeFactors = x.primeFactors ∧ Disjoint a.primeFactors y.primeFactors := by
     apply_fun Finsupp.support at h
     simp only [Nat.support_factorization, Nat.primeFactors_mul ha_zero (pow_ne_zero d hy_zero),
       Nat.primeFactors_pow _ hd_zero, Nat.primeFactors_mul (pow_ne_zero d hx_zero) hb_zero, y] at h
@@ -171,9 +174,7 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
     apply_fun Finset.toSet at h hab hxy
     simp only [Finset.coe_union, Finset.coe_inter, Finset.coe_empty, y] at h hab hxy
     clear * - h hab hxy -- to speed up `tauto` below
-    constructorm* _ ∧ _
-    · apply_fun Finset.toSet using Finset.coe_injective
-      tauto_set
+    constructor
     · apply_fun Finset.toSet using Finset.coe_injective
       tauto_set
     · rw [← Finset.disjoint_coe]
