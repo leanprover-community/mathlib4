@@ -117,11 +117,9 @@ lemma dvd : poly ∣ cyclotomic 7 (ZMod 3) := by
   refine stupid _ ⟨0, X ^ 6 + X^5 + X ^ 4 + X ^ 3 + X ^ 2 + X + 1, 1, by simp, by simp, ?_⟩
   ring
 
-lemma monic : Monic poly := by
-  monicity!
+lemma monic : Monic poly := by monicity!
 
-lemma natDegree : natDegree poly = 6 := by
-  compute_degree!
+lemma natDegree : natDegree poly = 6 := by compute_degree!
 
 lemma irreducible : Irreducible poly := by
   refine baz (f := 1) (p := 3) (by simp) (by rw [pow_one]; decide) dvd ?_
@@ -132,13 +130,8 @@ lemma irreducible : Irreducible poly := by
   fin_cases this <;> decide
 
 lemma fact_mem : poly ∈ monicFactorsMod θ 3 := by
-  simp only [Finset.mem_coe, minpoly, map_cyclotomic, mem_toFinset]
-  obtain ⟨P, hPmem, hPass⟩ :=
-    exists_mem_normalizedFactors_of_dvd (cyclotomic_ne_zero 7 (ZMod 3)) irreducible dvd
-  convert hPmem
-  refine eq_of_monic_of_associated monic ?_ hPass
-  rw [← normalize_normalized_factor _ hPmem]
-  refine monic_normalize (prime_of_normalized_factor _ hPmem).ne_zero
+  simp [minpoly, (Polynomial.mem_normalizedFactors_iff (cyclotomic_ne_zero _ _)).mpr
+    ⟨irreducible, monic, dvd⟩]
 
 end three
 
