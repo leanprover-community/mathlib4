@@ -673,7 +673,8 @@ instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup 
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one,
         Finset.mul_sum]
       simp_rw [← NNReal.mul_rpow, smul_apply]
-      exact Finset.sum_le_sum fun i _ => NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le
+      gcongr
+      apply nnnorm_smul_le
 
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
 instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
