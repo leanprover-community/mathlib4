@@ -9,6 +9,7 @@ import Mathlib.Analysis.Analytic.IteratedFDeriv
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Analytic.Order
 import Mathlib.Analysis.Analytic.ChangeOrigin
+import Mathlib.Analysis.NormedSpace.Connected
 
 
 set_option autoImplicit true
@@ -208,36 +209,56 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
   constructor
   · intros H
     have := AnalyticAt.exists_ball_analyticOnNhd hf
-    obtain ⟨r, hB⟩ := this
-    obtain ⟨ε, hε, hball⟩ := H
+    obtain ⟨r₁, ⟨hr₁0, hB⟩⟩ := this
+    obtain ⟨r₂, hr₂, hball⟩ := H
+    let r := min r₁ r₂
+    use r
     have hf : DifferentiableOn ℂ f (Metric.ball z₀ r) := by {
       apply AnalyticOn.differentiableOn
-      have := hB.2
-      exact AnalyticOnNhd.analyticOn this
+      refine AnalyticOnNhd.analyticOn ?_
+      unfold AnalyticOnNhd at *
+      intros x hx
+      simp_all only [Metric.mem_ball, dist_self, gt_iff_lt, lt_inf_iff, r]
     }
     have hg : DifferentiableOn ℂ (fun _ ↦ (0 : ℂ)) (Metric.ball z₀ r) := differentiableOn_const 0
     have hf' : EqOn (deriv f) (deriv (fun _ ↦ (0 : ℂ))) (Metric.ball z₀ r) := by {
       simp only [deriv_const']
       unfold EqOn
-      simp only [Metric.mem_ball]
       intros x
       have := hball x
       simp only [Metric.mem_ball] at this
-      sorry
+      simp only [Metric.mem_ball]
+      intros H
+      apply this
+      simp_all only [gt_iff_lt, Metric.mem_ball, differentiableOn_const,
+        implies_true, lt_inf_iff, r]
     }
     have hx : z₀ ∈ (Metric.ball z₀ r) := by {
       simp only [Metric.mem_ball, dist_self]
       simp_all only [gt_iff_lt, Metric.mem_ball, differentiableOn_const, deriv_const']
+      simp_all only [lt_inf_iff, and_self, r]
       }
     have  := IsOpen.eqOn_of_deriv_eq ?_ ?_ hf hg hf' hx
-    · sorry
-    · sorry
-    · sorry
-  · sorry
-
+    · constructor
+      · aesop
+      · aesop--sorry
+    · simp only [Metric.isOpen_ball]
+    · apply IsConnected.isPreconnected
+      apply isConnected_ball
+  · intros H
+    have := AnalyticAt.exists_ball_analyticOnNhd hf
+    obtain ⟨r, hB⟩ := this
+    obtain ⟨ε, hε, hball⟩ := H
+    use ε
+    constructor
+    · exact hε
+    · intros x hx
+      --have := deriv_const
 
 }
 
+#check order_deriv_top
+#check order_eq_zero_iff
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
   ∀ z₀ n (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : AnalyticAt.order hf ≠ ⊤),
     (∀ k < n, (AnalyticAt.iterated_deriv hf k).order = 0) ∧ (deriv^[n] f z₀ ≠ 0)
@@ -251,15 +272,27 @@ lemma iterated_deriv_eq_zero_iff_order_eq_n :
     constructor
     · intros H
       obtain ⟨hz,hnz⟩:= H
-      have IH' := IH (deriv f) (AnalyticAt.deriv hf)
-      sorry
+      have IH' := IH (deriv f) (AnalyticAt.deriv hf) ?_
+      · sorry
+      · have := order_deriv_top z₀ f hf ?_
+        · by_contra H
+          apply hfin
+          rwa [← this]
+        · sorry
+    · intros ho
+      constructor
+      · intros k hk
+        sorry
+        --rw [order_eq_zero_iff]
+      · sorry
+
+
+lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀)
+  (ho : AnalyticAt.order hf ≠ ⊤),
+  (∀ k < n, iteratedDeriv k f z₀ = 0) → n ≤ AnalyticAt.order hf := by {
+    intros z₀ f hf ho hkn
     sorry
-
-
-lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (f : ℂ → ℂ) z₀ (hf : ∀ z, AnalyticAt ℂ f z)
-   (ho : ∀ z, AnalyticAt.order (hf z) ≠ ⊤),
- (∀ k < n, iteratedDeriv k f z₀ = 0) → n ≤ AnalyticAt.order (hf z₀) := by sorry
-
+  }
 -- intros f z hf ho hd
 -- rw [le_iff_eq_or_lt]
 -- left
