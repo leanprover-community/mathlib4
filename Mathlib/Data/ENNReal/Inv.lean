@@ -196,6 +196,9 @@ theorem inv_lt_top {x : ℝ≥0∞} : x⁻¹ < ∞ ↔ 0 < x := by
 theorem div_lt_top {x y : ℝ≥0∞} (h1 : x ≠ ∞) (h2 : y ≠ 0) : x / y < ∞ :=
   mul_lt_top h1.lt_top (inv_ne_top.mpr h2).lt_top
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+theorem div_ne_top {x y : ℝ≥0∞} (h1 : x ≠ ∞) (h2 : y ≠ 0) : x / y ≠ ∞ := (div_lt_top h1 h2).ne
+
 @[simp]
 protected theorem inv_eq_zero : a⁻¹ = 0 ↔ a = ∞ :=
   inv_top ▸ inv_inj
