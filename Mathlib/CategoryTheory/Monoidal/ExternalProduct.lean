@@ -88,7 +88,7 @@ section Composition
 
 variable {J₁ J₂ C} {I₁ : Type u₃} {I₂ : Type u₄} [Category.{v₃} I₁] [Category.{v₄} I₂]
 
-/-- Composing F₁ × F₂ with (G₁ ⊠ G₂) is isomorphic to (F₁ ⋙ G₁) ⊠ (F₂ ⋙ G₂) -/
+/-- Composing  `F₁ × F₂` with `G₁ ⊠ G₂` is isomorphic to `(F₁ ⋙ G₁) ⊠ (F₂ ⋙ G₂)`. -/
 @[simps!]
 def prodCompExternalProduct (F₁ : I₁ ⥤ J₁) (G₁ : J₁ ⥤ C) (F₂ : I₂ ⥤ J₂) (G₂ : J₂ ⥤ C) :
    F₁.prod F₂ ⋙ G₁ ⊠ G₂ ≅ (F₁ ⋙ G₁) ⊠ (F₂ ⋙ G₂) := NatIso.ofComponents (fun _ ↦ Iso.refl _)
