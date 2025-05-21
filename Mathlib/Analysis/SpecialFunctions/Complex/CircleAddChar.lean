@@ -141,10 +141,8 @@ theorem surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar (n : ℕ) [N
   obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity n w).mp hw
   exact ⟨j, by simp [Units.ext_iff, Subtype.ext_iff, ← hj2, ZMod.toCircle_natCast, mul_div_assoc]⟩
 
-lemma bijective_rootsOfUnityAddChar : Bijective (ZMod.rootsOfUnityAddChar n) := ⟨
-  fun i j => by
-  simp only [ZMod.rootsOfUnityAddChar, AddChar.coe_mk, Subtype.mk.injEq,
-    EmbeddingLike.apply_eq_iff_eq]
-  apply ZMod.injective_toCircle (N := n),
-  (surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar n).of_comp_left
-    (rootsOfUnityCircleEquiv n).injective⟩
+lemma bijective_rootsOfUnityAddChar : 
+    Bijective (ZMod.rootsOfUnityAddChar n) where
+  left _ _ := by simp [ZMod.rootsOfUnityAddChar, ZMod.injective_toCircle.eq_iff]
+  right := (surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar n).of_comp_left
+    (rootsOfUnityCircleEquiv n).injective
