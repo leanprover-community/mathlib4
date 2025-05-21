@@ -291,6 +291,12 @@ theorem append_left (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
     append u v (Fin.castAdd n i) = u i :=
   addCases_left _
 
+/-- Variant of `append_left` using `Fin.castLE` instead of `Fin.castAdd`. -/
+@[simp]
+theorem append_left' (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
+    append u v (Fin.castLE (by omega) i) = u i :=
+  addCases_left _
+
 @[simp]
 theorem append_right (u : Fin m → α) (v : Fin n → α) (i : Fin n) :
     append u v (natAdd m i) = v i :=
@@ -606,7 +612,7 @@ theorem cons_snoc_eq_snoc_cons {β : Sort*} (a : β) (q : Fin n → β) (b : β)
     | last => simp
     | cast j =>
       rw [cons_succ]
-      simp [succ_castSucc]
+      simp [← castSucc_succ]
 
 theorem comp_snoc {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n → α) (y : α) :
     g ∘ snoc q y = snoc (g ∘ q) (g y) := by

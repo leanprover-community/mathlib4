@@ -300,7 +300,7 @@ theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 := by
 @[simp]
 theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
     ιMulti R _ v = ι R (v 0) * ιMulti R _ (Matrix.vecTail v) := by
-  simp [ιMulti, Matrix.vecTail]
+  simp [ιMulti, Matrix.vecTail, List.ofFn_succ]
 
 theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
     (ιMulti R n.succ).curryLeft m = (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) :=

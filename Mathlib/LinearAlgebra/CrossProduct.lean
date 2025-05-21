@@ -153,8 +153,8 @@ lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fi
   · rw [LinearIndependent.pair_iff' hv, not_forall_not]
     rintro ⟨a, rfl⟩
     rw [LinearMap.map_smul, cross_self, smul_zero]
-  have hv' : v = ![v 0, v 1, v 2] := by simp [← List.ofFn_inj]
-  have hw' : w = ![w 0, w 1, w 2] := by simp [← List.ofFn_inj]
+  have hv' : v = ![v 0, v 1, v 2] := by simp [← List.ofFn_inj, List.ofFn_succ]
+  have hw' : w = ![w 0, w 1, w 2] := by simp [← List.ofFn_inj, List.ofFn_succ]
   intro h1 h2
   simp_rw [cross_apply, cons_eq_zero_iff, zero_empty, and_true, sub_eq_zero] at h1
   have h20 := LinearIndependent.pair_iff.mp h2 (- w 0) (v 0)

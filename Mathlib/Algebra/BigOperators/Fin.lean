@@ -448,7 +448,7 @@ theorem partialProd_succ (f : Fin n → α) (j : Fin n) :
 @[to_additive]
 theorem partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
     partialProd f j.succ = f 0 * partialProd (Fin.tail f) j := by
-  simp [partialProd]
+  simp [partialProd, List.ofFn_succ]
   rfl
 
 @[to_additive]
