@@ -255,24 +255,24 @@ lemma toNucleus.map_inf : (U ⊓ V).toNucleus = U.toNucleus ⊔ V.toNucleus := b
   ext x
   simp [Open.toNucleus]
   rw [← sSup_pair, ← sInf_upperBounds_eq_csSup]
-  rw [@Nucleus.sInf_apply]
-  simp
+  simp only [@Nucleus.sInf_apply, upperBounds_insert, upperBounds_singleton,
+     Ici_inter_Ici, mem_Ici, sup_le_iff]
   apply le_antisymm
-  . simp only [le_iInf_iff, and_imp]
+  · simp only [le_iInf_iff, and_imp]
     intro y h1 h2
-    rw [] at h1
     rw [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def] at h1 h2
-
-
-
-    rw [@himp_le_iff]
-    intro b h3
-    simp [orderiso.eq_element] at h3
-    let h1 := h1 (b ⊓ V)
-    simp at h1
+    simp_rw [orderiso.eq_element, InfHomClass.map_inf, ← orderiso.eq_element, ← himp_himp]
+    apply le_trans (h1 (V ⇨ x))
+    rw [← @y.idempotent _ _ x]
+    apply y.monotone (h2 x)
+  · simp only [le_himp_iff, iInf_inf, iInf_le_iff, le_inf_iff, le_iInf_iff, and_imp]
+    intro y h1
+    simp_rw [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def] at h1
     sorry
-  .
-    simp [iInf_inf, iInf_le_iff]
+
+
+
+
 
 
 
@@ -282,8 +282,10 @@ def toSublocaleFrameHom : FrameHom (Open X) (Sublocale X) where
   toFun x := x
   map_inf' a b := by
     simp [Open.toSublocale]
-    rw [@orderiso.eq_toSublocale]
-    rw [← @OrderIso.map_inf]
+    rw [@orderiso.eq_toSublocale,← @OrderIso.map_inf,toNucleus.map_inf]
+    rfl
+  map_top' := by sorry
+
 
 
 
