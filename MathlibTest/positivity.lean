@@ -208,6 +208,19 @@ example (a : ℤ) : 0 ≤ a⁺ := by positivity
 example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
 example (a : ℤ) : 0 ≤ a⁻ := by positivity
 
+section
+
+variable {a b : EReal}
+
+example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
+example (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
+example (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b := by positivity
+example (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
+example (ha : 0 ≤ a) : 0 ≤ 2 * a := by positivity
+example (ha : 0 < a) : 0 < a * 2 := by positivity
+
+end
+
 /-! ### Exponentiation -/
 
 example [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
