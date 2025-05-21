@@ -347,7 +347,8 @@ theorem norm_integral_le_of_norm_le {g : ℝⁿ → ℝ} (hle : ∀ x ∈ Box.Ic
     refine norm_sum_le_of_le _ fun J _ => ?_
     simp only [BoxAdditiveMap.toSMul_apply, norm_smul, smul_eq_mul, Real.norm_eq_abs,
       μ.toBoxAdditive_apply, abs_of_nonneg measureReal_nonneg]
-    exact mul_le_mul_of_nonneg_left (hle _ <| π.tag_mem_Icc _) ENNReal.toReal_nonneg
+    gcongr
+    exact hle _ <| π.tag_mem_Icc _
   · rw [integral, dif_neg hfi, norm_zero]
     exact integral_nonneg (fun x hx => (norm_nonneg _).trans (hle x hx)) μ
 
@@ -681,7 +682,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
       intro J hJ
       rw [mem_sdiff, B.mem_filter, not_and] at hJ
       rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg measureReal_nonneg]
-      refine mul_le_mul_of_nonneg_left ?_ toReal_nonneg
+      gcongr _ * ?_
       obtain ⟨x, xJ, xnU⟩ : ∃ x ∈ J, x ∉ U := Set.not_subset.1 (hJ.2 hJ.1)
       have hx : x ∈ Box.Icc I \ U := ⟨Box.coe_subset_Icc ((le_of_mem' _ J hJ.1) xJ), xnU⟩
       have ineq : edist (f (t₁ J)) (f (t₂ J)) ≤ EMetric.diam (f '' (ball x r ∩ (Box.Icc I))) := by
