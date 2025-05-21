@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Positivity
 import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -205,6 +206,20 @@ end
 example (a : ℤ) : 0 ≤ a⁺ := by positivity
 example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
 example (a : ℤ) : 0 ≤ a⁻ := by positivity
+
+section
+
+open scoped ENNReal
+variable {a b : ℝ≥0∞}
+
+example : 0 ≤ a := by positivity
+example : 0 ≤ a + b := by positivity
+example (ha : a ≠ 0) : 0 < a + b := by positivity
+example : 0 < a + 5 := by positivity
+example : 0 < 2 * a + 3 := by positivity
+example (ha : 0 < a) : 0 < a + b := by positivity
+
+end
 
 /-! ### Exponentiation -/
 
