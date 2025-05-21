@@ -73,6 +73,7 @@ variable (P : Generators R S ι)
 
 set_option linter.unusedVariables false in
 /-- The polynomial ring wrt a family of generators. -/
+@[nolint unusedArguments]
 protected
 abbrev Ring (P : Generators R S ι) : Type (max w u) := MvPolynomial ι R
 

@@ -99,6 +99,7 @@ Note: this definition is completely non-sensical for non-finite presentations an
 even then for this to make sense, you should assume that the presentation
 is a complete intersection.
 -/
+@[nolint unusedArguments]
 noncomputable def dimension (P : Presentation R S ι σ) : ℕ :=
   Nat.card ι - Nat.card σ
 
