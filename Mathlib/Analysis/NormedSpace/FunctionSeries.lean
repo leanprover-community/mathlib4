@@ -131,11 +131,9 @@ theorem continuous_tsum [TopologicalSpace β] {f : α → β → F} (hf : ∀ i,
   simp_rw [continuous_iff_continuousOn_univ] at hf ⊢
   exact continuousOn_tsum hf hu fun n x _ => hfu n x
 
-variable {𝕜 𝕜' ι: Type*} [NormedAddCommGroup 𝕜'] [CompleteSpace 𝕜'] [TopologicalSpace 𝕜]
-  [LocallyCompactSpace 𝕜]
-
-lemma SummableLocallyUniformlyOn.of_locally_bounded (f : ι → 𝕜 → 𝕜') {s : Set 𝕜} (hs : IsOpen s)
-    (hu : ∀ K ⊆ s, IsCompact K → ∃ u : ι → ℝ, Summable u ∧ ∀ n (k : K), ‖f n k‖ ≤ u n) :
+lemma SummableLocallyUniformlyOn.of_locally_bounded [TopologicalSpace β] [LocallyCompactSpace β]
+    (f : α → β → F) {s : Set β} (hs : IsOpen s)
+    (hu : ∀ K ⊆ s, IsCompact K → ∃ u : α → ℝ, Summable u ∧ ∀ n (k : K), ‖f n k‖ ≤ u n) :
     SummableLocallyUniformlyOn f s := by
   apply HasSumLocallyUniformlyOn.summableLocallyUniformlyOn (g := (fun x => ∑' i, f i x))
   rw [hasSumLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn,
@@ -144,8 +142,8 @@ lemma SummableLocallyUniformlyOn.of_locally_bounded (f : ι → 𝕜 → 𝕜') 
   obtain ⟨u, hu1, hu2⟩ := hu K hK hKc
   apply tendstoUniformlyOn_tsum hu1 fun n x hx ↦ hu2 n ⟨x, hx⟩
 
-theorem derivWithin_tsum {ι F E : Type*} [NontriviallyNormedField E] [IsRCLikeNormedField E]
-    [NormedField F] [NormedSpace E F] (f : ι → E → F) {s : Set E}
+theorem derivWithin_tsum {F E : Type*} [NontriviallyNormedField E] [IsRCLikeNormedField E]
+    [NormedField F] [NormedSpace E F] (f : α → E → F) {s : Set E}
     (hs : IsOpen s) {x : E} (hx : x ∈ s) (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
     (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (fun z ↦ f n z) s)) s)
     (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
@@ -153,7 +151,7 @@ theorem derivWithin_tsum {ι F E : Type*} [NontriviallyNormedField E] [IsRCLikeN
   apply HasDerivWithinAt.derivWithin ?_ (IsOpen.uniqueDiffWithinAt hs hx)
   apply HasDerivAt.hasDerivWithinAt
   apply hasDerivAt_of_tendstoLocallyUniformlyOn hs _ _ (fun y hy ↦ Summable.hasSum (hf y hy)) hx
-  · use fun n : Finset ι ↦ fun a ↦ ∑ i ∈ n, derivWithin (fun z ↦ f i z) s a
+  · use fun n : Finset α ↦ fun a ↦ ∑ i ∈ n, derivWithin (fun z ↦ f i z) s a
   · obtain ⟨g, hg⟩ := h
     apply (hasSumLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn.mp hg).congr_right
     exact fun ⦃b⦄ hb ↦ Eq.symm (HasSumLocallyUniformlyOn.tsum_eqOn hg hb)
