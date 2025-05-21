@@ -126,7 +126,7 @@ noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUn
   right_inv _ := by aesop
 
 instance : HasEnoughRootsOfUnity Circle n := (rootsOfUnityCircleEquiv n).symm.hasEnoughRootsOfUnity
-@[simp] lemma rootsOfUnityCircleEquiv_apply (w : rootsOfUnity n Circle) : 
+@[simp] lemma rootsOfUnityCircleEquiv_apply (w : rootsOfUnity n Circle) :
     ((rootsOfUnityCircleEquiv n w).val : ℂ) = ((w.val : Circle) : ℂ) :=
   rfl
 
@@ -141,7 +141,7 @@ theorem surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar (n : ℕ) [N
   obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity n w).mp hw
   exact ⟨j, by simp [Units.ext_iff, Subtype.ext_iff, ← hj2, ZMod.toCircle_natCast, mul_div_assoc]⟩
 
-lemma bijective_rootsOfUnityAddChar : 
+lemma bijective_rootsOfUnityAddChar :
     Bijective (ZMod.rootsOfUnityAddChar n) where
   left _ _ := by simp [ZMod.rootsOfUnityAddChar, ZMod.injective_toCircle.eq_iff]
   right := (surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar n).of_comp_left
