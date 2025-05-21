@@ -97,18 +97,13 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
       · intro n
         rw [tendsto_atTop_nhds] at h
         by_contra! hc
-        let ε := (∑ i ∈ Finset.range n, f i - a) / 2
-        have hε : 0 < ε := ENNReal.half_pos <| ne_of_gt <| tsub_pos_of_lt hc
-        let s := Set.Ioo (a - ε) (a + ε)
-        have hs : a ∈ s := by
-          simp only [Set.mem_Ioo, s]
-          constructor
-          · exact (ENNReal.sub_lt_self_iff (ne_of_lt ha')).mpr ⟨ha'', hε⟩
-          · exact lt_add_right (LT.lt.ne_top ha') (ne_of_lt hε).symm
-        have hs' : IsOpen s := by exact isOpen_Ioo
-        obtain ⟨N, hN⟩ := h s hs hs'
-
-        sorry
+        let b := ∑ i ∈ Finset.range n, f i
+        let s := Set.Ico 0 b
+        have hn : ∀ m, n ≤ m → b ≤  ∑ i ∈ Finset.range m, f i :=
+          fun _ _ ↦ Finset.sum_le_sum_of_subset (by simpa)
+        obtain ⟨ℓ, hℓ⟩ := h s ⟨by simp, hc⟩ isOpen_Ico_zero
+        let k := max n ℓ
+        exact (lt_self_iff_false _).mp <| lt_of_lt_of_le ((hℓ k (by omega)).2) (hn k (by omega))
       · sorry
     · rw [and_imp]
       intro hf hf' nhd hnhd
