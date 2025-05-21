@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.Polynomial.Nilpotent
+import Mathlib.RingTheory.LocalRing.Defs
 
 /-!
 # Nilpotents and units in multivariate polynomial rings
@@ -74,15 +75,15 @@ instance : IsLocalHom (C : _ →+* MvPolynomial σ R) where
 instance : IsLocalHom (algebraMap R (MvPolynomial σ R)) :=
   inferInstanceAs (IsLocalHom C)
 
-theorem isUnit_iff_totalDegree_of_isDomain :
+theorem isUnit_iff_totalDegree_of_isReduced [IsReduced R] :
     IsUnit P ↔ IsUnit (P.coeff 0) ∧ P.totalDegree = 0 := by
   convert isUnit_iff (P := P)
   rw [totalDegree_eq_zero_iff]
   simp [not_imp_comm (a := _ = (0 : R)), Finsupp.ext_iff]
 
-theorem isUnit_iff_eq_C_of_isDomain :
+theorem isUnit_iff_eq_C_of_isReduced [IsReduced R] :
     IsUnit P ↔ ∃ r, IsUnit r ∧ P = C r := by
-  rw [isUnit_iff_totalDegree_of_isDomain, totalDegree_eq_zero_iff_eq_C]
+  rw [isUnit_iff_totalDegree_of_isReduced, totalDegree_eq_zero_iff_eq_C]
   refine ⟨fun H ↦ ⟨_, H⟩, ?_⟩
   rintro ⟨r, hr, rfl⟩
   simpa
