@@ -102,13 +102,18 @@ def ellAtom (p q : ℤ) : R :=
   W ((p + q).tdiv 2) * W ((p - q).tdiv 2)
 
 @[simp]
-lemma ellAtom_self (p : ℤ) : ellAtom W p p = W p * W 0 := by
+lemma ellAtom_same (p : ℤ) : ellAtom W p p = W p * W 0 := by
   rw [ellAtom, ← two_mul, Int.mul_tdiv_cancel_left _ two_ne_zero, sub_self, Int.zero_tdiv]
 
 variable {W} in
 @[simp]
 lemma neg_ellAtom (odd : ∀ n : ℤ, W (-n) = -W n) (p q : ℤ) : -ellAtom W p q = ellAtom W q p := by
   simp_rw [ellAtom, add_comm, ← neg_sub p, Int.neg_tdiv, odd, mul_neg]
+
+variable {W} in
+lemma ellAtom_mul_ellAtom (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
+    ellAtom W p q * ellAtom W r s = ellAtom W q p * ellAtom W s r := by
+  rw [← neg_ellAtom odd p q, ← neg_ellAtom odd r s, neg_mul_neg]
 
 variable {W} in
 @[simp]
@@ -138,15 +143,88 @@ lemma ellAtom_odd (p q : ℤ) : ellAtom W (2 * p + 1) (2 * q + 1) = W (p + q + 1
   simp_rw [ellAtom, add_add_add_comm _ (1 : ℤ), ← two_mul, ← mul_add, add_sub_add_comm, sub_self,
     add_zero, ← mul_sub, Int.mul_tdiv_cancel_left _ two_ne_zero]
 
-lemma ellAtom_mul_ellAtom (p q r s : ℤ) : ellAtom W p q * ellAtom W r s =
-    (W ((p + q).tdiv 2) * W ((r - s).tdiv 2)) * (W ((r + s).tdiv 2) * W ((p - q).tdiv 2)) := by
-  simp_rw [ellAtom, mul_mul_mul_comm, mul_comm]
-
 /-- The relator `ERₐ(p, q, r, s)` obtained by a cyclic permutation of variables in `ER(p, q, r, s)`.
 Note that this is defined in terms of elliptic atoms, and hence should only be used when `p`, `q`,
 `r`, and `s` all have the same parity. -/
 def ellAtomRel (p q r s : ℤ) : R :=
   ellAtom W p q * ellAtom W r s - ellAtom W p r * ellAtom W q s + ellAtom W p s * ellAtom W q r
+
+@[simp]
+lemma ellAtomRel_same₁₂ (p q r : ℤ) : ellAtomRel W p p q r = W p * W 0 * ellAtom W q r := by
+  simp_rw [ellAtomRel, ellAtom_same, mul_comm <| ellAtom W p q, sub_add_cancel]
+
+variable {W} in
+@[simp]
+lemma ellAtomRel_same₁₃ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r : ℤ) :
+    ellAtomRel W p q p r = W p * W 0 * ellAtom W r q := by
+  linear_combination (norm := (simp_rw [ellAtomRel, ellAtom_same]; ring1))
+    W p * W 0 * neg_ellAtom odd r q - ellAtom W p r * neg_ellAtom odd p q
+
+variable {W} in
+@[simp]
+lemma ellAtomRel_same₁₄ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r : ℤ) :
+    ellAtomRel W p q r p = W p * W 0 * ellAtom W q r := by
+  simp_rw [ellAtomRel, ellAtom_mul_ellAtom odd p q, mul_comm <| ellAtom W q p, sub_self, zero_add,
+    ellAtom_same]
+
+@[simp]
+lemma ellAtomRel_same₂₃ (p q r : ℤ) : ellAtomRel W p q q r = W q * W 0 * ellAtom W p r := by
+  simp_rw [ellAtomRel, ellAtom_same, sub_self, zero_add, mul_comm]
+
+variable {W} in
+@[simp]
+lemma ellAtomRel_same₂₄ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r : ℤ) :
+    ellAtomRel W p q r q = W q * W 0 * ellAtom W r p := by
+  linear_combination (norm := (simp_rw [ellAtomRel, ellAtom_same]; ring1))
+    W q * W 0 * neg_ellAtom odd p r - ellAtom W p q * neg_ellAtom odd q r
+
+@[simp]
+lemma ellAtomRel_same₃₄ (p q r : ℤ) : ellAtomRel W p q r r = W r * W 0 * ellAtom W p q := by
+  simp_rw [ellAtomRel, ellAtom_same, mul_comm, sub_add_cancel]
+
+variable {W} in
+@[simp]
+lemma ellAtomRel_neg₁ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
+    ellAtomRel W (-p) q r s = ellAtomRel W p q r s := by
+  simp_rw [ellAtomRel, ellAtom_neg_left odd]
+
+variable {W} in
+@[simp]
+lemma ellAtomRel_neg₂ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
+    ellAtomRel W p (-q) r s = ellAtomRel W p q r s := by
+  simp_rw [ellAtomRel, ellAtom_neg_left odd, ellAtom_neg_right]
+
+variable {W} in
+@[simp]
+lemma ellAtomRel_neg₃ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
+    ellAtomRel W p q (-r) s = ellAtomRel W p q r s := by
+  simp_rw [ellAtomRel, ellAtom_neg_left odd, ellAtom_neg_right]
+
+@[simp]
+lemma ellAtomRel_neg₄ (p q r s : ℤ) : ellAtomRel W p q r (-s) = ellAtomRel W p q r s := by
+  simp_rw [ellAtomRel, ellAtom_neg_right]
+
+variable {W} in
+@[simp]
+lemma ellAtomRel_abs₁ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
+    ellAtomRel W |p| q r s = ellAtomRel W p q r s := by
+  simp_rw [ellAtomRel, ellAtom_abs_left odd]
+
+variable {W} in
+@[simp]
+lemma ellAtomRel_abs₂ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
+    ellAtomRel W p |q| r s = ellAtomRel W p q r s := by
+  simp_rw [ellAtomRel, ellAtom_abs_left odd, ellAtom_abs_right]
+
+variable {W} in
+@[simp]
+lemma ellAtomRel_abs₃ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
+    ellAtomRel W p q |r| s = ellAtomRel W p q r s := by
+  simp_rw [ellAtomRel, ellAtom_abs_left odd, ellAtom_abs_right]
+
+@[simp]
+lemma ellAtomRel_abs₄ (p q r s : ℤ) : ellAtomRel W p q r |s| = ellAtomRel W p q r s := by
+  simp_rw [ellAtomRel, ellAtom_abs_right]
 
 end EllAtom
 
