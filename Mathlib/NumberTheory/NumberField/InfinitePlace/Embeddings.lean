@@ -142,9 +142,8 @@ open Complex NumberField
 
 open scoped ComplexConjugate
 
-variable {K : Type*} [Field K] {k : Type*} [Field k]
+variable (K : Type*) [Field K] {k : Type*} [Field k]
 
-variable (K) in
 /--
 A (random) lift of the complex embedding `φ : k →+* ℂ` to an extension `K` of `k`.
 -/
@@ -162,7 +161,9 @@ theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →
 @[simp]
 theorem lift_algebraMap_apply [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) (x : k) :
     lift K φ (algebraMap k K x) = φ x :=
-  RingHom.congr_fun (lift_comp_algebraMap φ) x
+  RingHom.congr_fun (lift_comp_algebraMap K φ) x
+
+variable {K}
 
 /-- The conjugate of a complex embedding as a complex embedding. -/
 abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
