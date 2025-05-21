@@ -264,6 +264,10 @@ lemma eRk_eq_zero_iff (hX : X ⊆ M.E := by aesop_mat) : M.eRk X = 0 ↔ X ⊆ M
 @[deprecated (since := "2025-05-14")]
 alias erk_eq_zero_iff := eRk_eq_zero_iff
 
+@[simp]
+lemma eRk_loops : M.eRk M.loops = 0 := by
+  simp [eRk_eq_zero_iff']
+
 /-! ### Submodularity -/
 
 /-- The `ℕ∞`-valued rank function is submodular. -/
@@ -347,6 +351,10 @@ lemma eRank_eq_top_iff (M : Matroid α) : M.eRank = ⊤ ↔ M.RankInfinite := by
   rw [← not_rankFinite_iff, ← eRank_ne_top_iff, not_not]
 
 @[deprecated (since := "2025-04-13")] alias rankInfinite_iff_eRk_eq_top := eRank_eq_top_iff
+
+@[simp]
+lemma eRank_lt_top_iff : M.eRank < ⊤ ↔ M.RankFinite := by
+  simp [lt_top_iff_ne_top]
 
 @[simp]
 lemma eRank_eq_top [RankInfinite M] : M.eRank = ⊤ :=
@@ -552,6 +560,26 @@ lemma eRk_le_one_iff [M.Nonempty] (hX : X ⊆ M.E := by aesop_mat) :
   rw [eRk_closure_eq, ← encard_singleton e]
   exact M.eRk_le_encard {e}
 
+/-! ### Spanning Sets -/
+
+lemma Spanning.eRk_eq (hX : M.Spanning X) : M.eRk X = M.eRank := by
+  obtain ⟨B, hB⟩ := M.exists_isBasis X
+  exact (M.eRk_le_eRank X).antisymm <| by
+    rw [← hB.encard_eq_eRk, ← (hB.isBase_of_spanning hX).encard_eq_eRank]
+
+lemma spanning_iff_eRk_le' [RankFinite M] : M.Spanning X ↔ M.eRank ≤ M.eRk X ∧ X ⊆ M.E := by
+  refine ⟨fun h ↦ ⟨h.eRk_eq.symm.le, h.subset_ground⟩, fun ⟨h, hX⟩ ↦ ?_⟩
+  obtain ⟨I, hI⟩ := M.exists_isBasis X
+  exact (hI.indep.isBase_of_eRk_ge
+    hI.indep.finite (h.trans hI.eRk_eq_eRk.symm.le)).spanning_of_superset hI.subset
+
+lemma spanning_iff_eRk_le [RankFinite M] (hX : X ⊆ M.E := by aesop_mat) :
+    M.Spanning X ↔ M.eRank ≤ M.eRk X := by
+  rw [spanning_iff_eRk_le', and_iff_left hX]
+
+lemma Spanning.eRank_restrict (hX : M.Spanning X) : (M ↾ X).eRank = M.eRank := by
+  rw [eRank_def, restrict_ground_eq, restrict_eRk_eq _ rfl.subset, hX.eRk_eq]
+
 /-! ### Constructions -/
 
 @[simp]
@@ -591,13 +619,15 @@ lemma eRank_eq_zero_iff : M.eRank = 0 ↔ M = loopyOn M.E := by
 lemma exists_of_eRank_eq_zero (h : M.eRank = 0) : ∃ X, M = loopyOn X :=
   ⟨M.E, by simpa [eRank_eq_zero_iff] using h⟩
 
-@[simp] lemma eRank_emptyOn (α : Type*) : (emptyOn α).eRank = 0 := by
+@[simp]
+lemma eRank_emptyOn (α : Type*) : (emptyOn α).eRank = 0 := by
   rw [eRank_eq_zero_iff, emptyOn_ground, loopyOn_empty]
 
 lemma eq_loopyOn_iff_eRank : M = loopyOn X ↔ M.eRank = 0 ∧ M.E = X :=
   ⟨fun h ↦ by rw [h]; simp, fun ⟨h,h'⟩ ↦ by rw [← h', ← eRank_eq_zero_iff, h]⟩
 
-@[simp] lemma eRank_freeOn (X : Set α) : (freeOn X).eRank = X.encard := by
+@[simp]
+lemma eRank_freeOn (X : Set α) : (freeOn X).eRank = X.encard := by
   rw [eRank_def, freeOn_ground, (freeOn_indep_iff.2 rfl.subset).eRk_eq_encard]
 
 lemma eRk_freeOn (hXY : X ⊆ Y) : (freeOn Y).eRk X = X.encard := by
