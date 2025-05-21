@@ -160,7 +160,7 @@ instance : MulPosReflectLT EReal := MulPosMono.toMulPosReflectLT
 lemma mul_le_mul_of_nonpos_right {a b c : EReal} (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * c := by
   rw [mul_comm a c, mul_comm b c, ← neg_le_neg_iff, ← neg_mul c b, ← neg_mul c a]
   rw [← neg_zero, EReal.le_neg] at hc
-  exact mul_le_mul_of_nonneg_left h hc
+  gcongr
 
 @[simp, norm_cast]
 theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
