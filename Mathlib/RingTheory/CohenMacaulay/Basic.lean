@@ -221,8 +221,29 @@ lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
             induction' y2 using Submodule.Quotient.induction_on with y2
             simp only [LinearMapOfSemiLinearMapAlgebraMap, SemiLinearMapAlgebraMapOfLinearMap,
               LinearMap.coe_mk, LinearMap.coe_toAddHom, Submodule.mapQ_apply, g] at h
-
-            sorry }
+            have h : Submodule.Quotient.mk ((f y1) - (f y2)) =
+              (0 : (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ)) := sub_eq_zero_of_eq h
+            have h := (Submodule.Quotient.mk_eq_zero _).mp h
+            rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp h with ⟨m, _, hm⟩
+            rcases IsLocalizedModule.surj p.primeCompl f m with ⟨⟨z, s⟩, hz⟩
+            simp at hz
+            have eq : f (s • (y1 - y2)) = f (x • z) := by
+              simp only [LinearMap.map_smul_of_tower, map_sub, ← hm, algebraMap_smul, ← hz]
+              exact smul_comm s x m
+            rcases IsLocalizedModule.exists_of_eq (S := p.primeCompl) eq with ⟨c, hc⟩
+            use c * s
+            apply sub_eq_zero.mp
+            have eq : Submodule.Quotient.mk (c • s • (y1 - y2)) = (0 : QuotSMulTop x M) := by
+              rw [hc, Submodule.Quotient.mk_smul]
+              apply smul_eq_zero_of_right c
+              apply (Submodule.Quotient.mk_eq_zero _).mpr
+              exact Submodule.smul_mem_pointwise_smul z x ⊤ trivial
+            rw [← eq]
+            simp only [smul_sub, Submodule.Quotient.mk_sub, Submodule.Quotient.mk_smul]
+            congr 1
+            · exact mul_smul c s (Submodule.Quotient.mk y1)
+            · exact mul_smul c s (Submodule.Quotient.mk y2)
+             }
         exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) g reg.2 len
 
 lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module.Finite R M]
