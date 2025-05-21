@@ -81,6 +81,27 @@ lemma pointEquivOfIsNodalOfIsSplitSingularNF.aux [IsReduced R]
   · linear_combination -H₁
   · linear_combination -H₁
 
+lemma pointEquivOfIsNodalOfIsSplitSingularNF_nonsingular
+    (E : WeierstrassCurve K) [E.IsNodal] [E.IsSplitSingularNF] (k : K)
+    (hk1 : k ≠ 1) (hk0 : k ≠ 0) :
+    E.toAffine.Nonsingular (k * E.a₁ ^ 2 / (k - 1) ^ 2)
+    (k * E.a₁ ^ 3 / (k - 1) ^ 3) := by
+  convert_to E.toAffine.Nonsingular (k * E.a₁ ^ 2 * (k - 1) / (k - 1) ^ 3)
+    (k * E.a₁ ^ 3 / (k - 1) ^ 3)
+  · field_simp [sub_ne_zero.mpr hk1]; ring
+  rw [Affine.nonsingular_div_iff (by simpa [sub_eq_zero]),
+    Affine.equation_div_iff (by simpa [sub_eq_zero]), or_iff_not_imp_right]
+  simp only [toAffine, a₃_of_isSplitSingularNF, zero_mul, add_zero, a₂_of_isSplitSingularNF,
+    a₄_of_isSplitSingularNF, a₆_of_isSplitSingularNF, ne_eq, not_not, mul_zero]
+  constructor
+  · ring
+  · intro H H'
+    have : k * (k + 1) * E.a₁ ^ 3 = 0 := by linear_combination H
+    obtain rfl : k = -1 := by
+      simpa [add_eq_zero_iff_eq_neg, hk0, E.a₁_of_isSplitSingularNF_of_isNodal] using this
+    have : E.a₁ ^ 4 * (-1 - 1) ^ 2 = 0 := by linear_combination -H'
+    simp [sub_eq_zero, hk1, E.a₁_of_isSplitSingularNF_of_isNodal] at this
+
 open pointEquivOfIsNodalOfIsSplitSingularNF in
 /-- The group of rational points of `y² + a₁xy = x³` (`a₁ ≠ 0`) is isomorphic (as groups) to
 `Kˣ`. -/
@@ -94,26 +115,8 @@ def pointEquivOfIsNodalOfIsSplitSingularNF [DecidableEq K]
       (isUnit_iff_ne_zero (a := ((y + E.a₁ * x) / y)).mpr (by
       simpa [add_eq_zero_iff_eq_neg] using (aux E _ _ h).2)).unit
   invFun k := if H : k.toMul = 1 then 0 else .some (x := k.toMul * E.a₁ ^ 2 / (k.toMul - 1) ^ 2)
-      (y := k.toMul * E.a₁ ^ 3 / (k.toMul - 1) ^ 3) (by
-      generalize k.toMul = k at H ⊢
-      have hk0 : (k : K) ≠ 0 := by simp
-      have hk1 : (k : K) ≠ 1 := by simpa
-      generalize (k : K) = k at hk0 hk1 ⊢
-      convert_to E.toAffine.Nonsingular (k * E.a₁ ^ 2 * (k - 1) / (k - 1) ^ 3)
-        (k * E.a₁ ^ 3 / (k - 1) ^ 3)
-      · field_simp [sub_ne_zero.mpr hk1]; ring
-      rw [Affine.nonsingular_div_iff (by simpa [sub_eq_zero]),
-        Affine.equation_div_iff (by simpa [sub_eq_zero]), or_iff_not_imp_right]
-      simp only [toAffine, a₃_of_isSplitSingularNF, zero_mul, add_zero, a₂_of_isSplitSingularNF,
-        a₄_of_isSplitSingularNF, a₆_of_isSplitSingularNF, ne_eq, Decidable.not_not, mul_zero]
-      constructor
-      · ring
-      · intro H H'
-        have : k * (k + 1) * E.a₁ ^ 3 = 0 := by linear_combination H
-        obtain rfl : k = -1 := by
-          simpa [add_eq_zero_iff_eq_neg, hk0, E.a₁_of_isSplitSingularNF_of_isNodal] using this
-        have : E.a₁ ^ 4 * (-1 - 1) ^ 2 = 0 := by linear_combination -H'
-        simp [sub_eq_zero, hk1, E.a₁_of_isSplitSingularNF_of_isNodal] at this)
+      (y := k.toMul * E.a₁ ^ 3 / (k.toMul - 1) ^ 3)
+      (pointEquivOfIsNodalOfIsSplitSingularNF_nonsingular E k.toMul (by simpa) (by simp))
   left_inv
   | .zero => by simp; rfl
   | .some (x := x) (y := y) h => by
@@ -197,6 +200,28 @@ def pointEquivOfIsNodalOfIsSplitSingularNF [DecidableEq K]
       h₂.1 * E.a₁ * (E.a₁ ^ 2 * (x₁ - x₂) ^ 2 * x₁ - 2 * E.a₁ * (x₁ * y₂ + x₂ * y₁) * (x₁ - x₂) -
         (E.a₁ * x₂ - 2 * y₂) * x₂ * y₁ - (2 * x₂ - 3 * x₁) * x₁ ^ 3 + x₁ * y₂ * (y₂ - 4 * y₁)
         + 5 * (x₁ - x₂) * (y₁ ^ 2 + E.a₁ * x₁ * y₁ - x₁ ^ 3))
+
+open pointEquivOfIsNodalOfIsSplitSingularNF in
+lemma pointEquivOfIsNodalOfIsSplitSingularNF_some [DecidableEq K]
+    (E : WeierstrassCurve K) [E.IsNodal] [E.IsSplitSingularNF]
+    {x y : K} (h : E.toAffine.Nonsingular x y) :
+  E.pointEquivOfIsNodalOfIsSplitSingularNF (.some h) = Additive.ofMul
+      (isUnit_iff_ne_zero (a := ((y + E.a₁ * x) / y)).mpr (by
+      simpa [add_eq_zero_iff_eq_neg] using (aux E _ _ h).2)).unit := rfl
+
+@[simp]
+lemma pointEquivOfIsNodalOfIsSplitSingularNF_some_val [DecidableEq K]
+    (E : WeierstrassCurve K) [E.IsNodal] [E.IsSplitSingularNF]
+    {x y : K} (h : E.toAffine.Nonsingular x y) :
+    (E.pointEquivOfIsNodalOfIsSplitSingularNF (.some h)).toMul = (y + E.a₁ * x) / y := rfl
+
+@[simp]
+lemma pointEquivOfIsNodalOfIsSplitSingularNF_symm_of_ne [DecidableEq K]
+    (E : WeierstrassCurve K) [E.IsNodal] [E.IsSplitSingularNF] (k : Kˣ) (hk : k ≠ 1) :
+    E.pointEquivOfIsNodalOfIsSplitSingularNF.symm (.ofMul k) =
+    .some (x := k * E.a₁ ^ 2 / (k - 1) ^ 2) (y := k * E.a₁ ^ 3 / (k - 1) ^ 3)
+      (pointEquivOfIsNodalOfIsSplitSingularNF_nonsingular E k (by simpa) (by simp)) :=
+  dif_neg (by simpa)
 
 end IsNodal
 
