@@ -357,7 +357,8 @@
   "Mathlib.Probability.Kernel.Proper":
   ["Mathlib.Probability.Kernel.Composition.CompNotation"],
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
-  "Mathlib.Order.Interval.Finset.Nat": ["Mathlib.Order.Interval.Finset.SuccPred"],
+  "Mathlib.Order.Interval.Finset.Nat":
+  ["Mathlib.Order.Interval.Finset.SuccPred"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.Order.Filter.Bases.Basic": ["Mathlib.Tactic.Subsingleton"],
@@ -413,6 +414,7 @@
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
+  "Mathlib.Data.Part": ["Mathlib.Algebra.Notation.Defs"],
   "Mathlib.Data.PEquiv": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.Option.NAry":
@@ -423,7 +425,6 @@
   "Mathlib.Data.Matroid.Rank.ENat": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Data.Matroid.Minor.Contract": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Data.Matroid.Minor.Basic": ["Mathlib.Tactic.TautoSet"],
-  "Mathlib.Data.List.Flatten": ["Mathlib.Tactic.GCongr.Core"],
   "Mathlib.Data.List.Sigma": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.List.Rotate": ["Mathlib.Data.Quot"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
@@ -432,6 +433,7 @@
   "Mathlib.Data.List.Permutation":
   ["Mathlib.Data.List.Flatten", "Mathlib.Data.List.Lemmas"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertIdx"],
+  "Mathlib.Data.List.Flatten": ["Mathlib.Tactic.GCongr.Core"],
   "Mathlib.Data.List.Defs": ["Batteries.Data.RBMap.Basic"],
   "Mathlib.Data.List.Basic":
   ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
@@ -520,7 +522,8 @@
   ["Mathlib.Algebra.Group.Pointwise.Finset.Basic"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
-  "Mathlib.Algebra.Group.Defs": ["Mathlib.Tactic.OfNat"],
+  "Mathlib.Algebra.Group.Defs":
+  ["Mathlib.Algebra.Notation.Defs", "Mathlib.Tactic.OfNat"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
@@ -547,5 +550,4 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Batteries.CodeAction.Basic":
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
-  "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"],
-  "Mathlib.Data.Part": ["Mathlib.Algebra.Notation.Defs"]}}
+  "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"]}}

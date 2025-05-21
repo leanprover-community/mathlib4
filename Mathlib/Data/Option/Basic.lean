@@ -223,13 +223,13 @@ lemma casesOn'_eq_elim (b : β) (f : α → β) (a : Option α) :
     Option.casesOn' a b f = Option.elim a b f := by cases a <;> rfl
 
 theorem orElse_eq_some (o o' : Option α) (x : α) :
-    (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x :=
-  orElse_eq_some_iff _ _ _
+    (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x := by
+  simp
 
 @[deprecated (since := "2025-04-10")] alias orElse_eq_some' := orElse_eq_some_iff
 
-theorem orElse_eq_none (o o' : Option α) : (o <|> o') = none ↔ o = none ∧ o' = none :=
-  orElse_eq_none_iff _ _
+theorem orElse_eq_none (o o' : Option α) : (o <|> o') = none ↔ o = none ∧ o' = none := by
+  simp
 
 @[deprecated (since := "2025-04-10")] alias orElse_eq_none' := orElse_eq_none_iff
 
