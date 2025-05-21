@@ -80,4 +80,11 @@ theorem isUnit_iff_totalDegree_of_isDomain :
   rw [totalDegree_eq_zero_iff]
   simp [not_imp_comm (a := _ = (0 : R)), Finsupp.ext_iff]
 
+theorem isUnit_iff_eq_C_of_isDomain :
+    IsUnit P ↔ ∃ r, IsUnit r ∧ P = C r := by
+  rw [isUnit_iff_totalDegree_of_isDomain, totalDegree_eq_zero_iff_eq_C]
+  refine ⟨fun H ↦ ⟨_, H⟩, ?_⟩
+  rintro ⟨r, hr, rfl⟩
+  simpa
+
 end MvPolynomial
