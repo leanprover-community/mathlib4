@@ -17,7 +17,7 @@ open scoped Topology
 
 instance ContinuousMap.instLocallyConvexSpace {X 𝕜 E : Type*}
     [TopologicalSpace X]
-    [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+    [Semiring 𝕜] [PartialOrder 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [LocallyConvexSpace 𝕜 E]
     [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E] :
     LocallyConvexSpace 𝕜 C(X, E) :=
