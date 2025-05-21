@@ -545,6 +545,11 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   ext j
   cases j using lastCases <;> simp
 
+@[simp]
+lemma range_snoc {α : Type*} (f : Fin n → α) (x : α) :
+    Set.range (Fin.snoc f x) = insert x (Set.range f) := by
+  ext; simp [Fin.exists_fin_succ', or_comm, eq_comm]
+
 /-- As a binary function, `Fin.snoc` is injective. -/
 theorem snoc_injective2 : Function.Injective2 (@snoc n α) := fun x y xₙ yₙ h ↦
   ⟨funext fun i ↦ by simpa using congr_fun h (castSucc i), by simpa using congr_fun h (last n)⟩
