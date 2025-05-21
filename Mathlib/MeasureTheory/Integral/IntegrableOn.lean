@@ -179,7 +179,7 @@ theorem integrableOn_union [PseudoMetrizableSpace ε] :
 
 @[simp]
 theorem integrableOn_singleton_iff {f : α → ε'} {x : α}
-    [MeasurableSingletonClass α] (hfx : ‖f x‖ₑ ≠ ⊤) :
+    [MeasurableSingletonClass α] (hfx : ‖f x‖ₑ ≠ ⊤ := by finiteness) :
     IntegrableOn f {x} μ ↔ f x = 0 ∨ μ {x} < ∞ := by
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
@@ -208,7 +208,7 @@ theorem integrableOn_finite_iUnion [PseudoMetrizableSpace ε] [Finite β] {t : �
   simpa using integrableOn_finset_iUnion (f := f) (μ := μ) (s := Finset.univ) (t := t)
 
 -- TODO: generalise this lemma and the next to enorm classes; this entails assuming that
--- f is integrable on each singleton, i.e. finite almost everywhere...
+-- f is finite on almost every element of `s`
 lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
     {s : Finset α} {f : α → E} : IntegrableOn f s μ := by
   rw [← s.toSet.biUnion_of_singleton]
@@ -246,7 +246,7 @@ theorem _root_.MeasurableEmbedding.integrableOn_range_iff_comap [MeasurableSpace
     IntegrableOn f (range e) μ ↔ Integrable (f ∘ e) (μ.comap e) := by
   rw [he.integrableOn_iff_comap .rfl, preimage_range, integrableOn_univ]
 
-theorem integrableOn_iff_comap_subtypeVal {f : α → ε} (hs : MeasurableSet s) :
+theorem integrableOn_iff_comap_subtypeVal (hs : MeasurableSet s) :
     IntegrableOn f s μ ↔ Integrable (f ∘ (↑) : s → ε) (μ.comap (↑)) := by
   rw [← (MeasurableEmbedding.subtype_coe hs).integrableOn_range_iff_comap, Subtype.range_val]
 
