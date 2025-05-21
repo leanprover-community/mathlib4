@@ -398,8 +398,7 @@ theorem conjugateEquiv_symm_id : (conjugateEquiv adj₁ adj₁).symm (𝟙 _) = 
 
 theorem conjugateEquiv_adjunction_id {l r : c ⟶ c} (adj : l ⊣ r) (α : 𝟙 c ⟶ l) :
     (conjugateEquiv adj (Adjunction.id c) α) = (ρ_ _).inv ≫ r ◁ α ≫ adj.counit := by
-  dsimp [conjugateEquiv, mateEquiv, Adjunction.id, Adjunction.homEquiv₁_apply,
-    Adjunction.homEquiv₂_apply]
+  dsimp [conjugateEquiv, mateEquiv_apply', Adjunction.id]
   bicategory
 
 theorem conjugateEquiv_adjunction_id_symm {l r : c ⟶ c} (adj : l ⊣ r) (α : r ⟶ 𝟙 c) :
