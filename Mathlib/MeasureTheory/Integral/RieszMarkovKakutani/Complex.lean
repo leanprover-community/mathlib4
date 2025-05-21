@@ -71,23 +71,25 @@ variable {X : Type*} [MeasurableSpace X]
 lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a ↔
     (∀ (n : ℕ), ∑ i ∈ Finset.range n, f i ≤ a) ∧
     (∀ b < a, ∃ (n : ℕ), b < ∑ i ∈ Finset.range n, f i) := by
-  obtain ha | ha | ha : a = 0 ∨ (0 < a ∧ a < ⊤) ∨ a = ∞ := by
-    -- There is a more tidy way to prove this tricotomy. Use:
-    have := a.trichotomy
-    -- And rearrange slightly.
-    obtain h | h : a = 0 ∨ a ≠ 0 := by exact eq_or_ne a 0
-    · left
-      exact h
-    · obtain h' | h' : a = ∞ ∨ a ≠ ∞ := by exact eq_or_ne a ∞
-      · right; right
-        exact h'
-      · right; left
-        exact ⟨pos_of_ne_zero h, Ne.lt_top' (Ne.symm h')⟩
+  obtain ha | ha | ha :=  a.trichotomy
   · -- The case `a = 0`.
     suffices h : (∀ x, f x = 0) ↔ ∀ n i, i < n → f i = 0 by
       simpa [ha, hasSum_zero_iff]
     exact ⟨fun h _ i _ ↦ h i, fun h i ↦  h (i + 1) i (by omega)⟩
-  · -- The case `0 < a ∧ a < ⊤`.
+  · -- The case `a = ∞`.
+    simp [ha, hasSum_iff_tendsto_nat, nhds_top]
+    constructor
+    · sorry
+    · intro h b hb
+      push_neg at hb
+      obtain ⟨n, hn⟩ := h b hb.symm.lt_top'
+      use n
+      intro m hm
+      have : ∑ i ∈ Finset.range n, f i ≤ ∑ i ∈ Finset.range m, f i :=
+        Finset.sum_le_sum_of_subset (by simpa)
+      exact gt_of_ge_of_gt this hn
+  · -- The case `0 < a ∧ a < ∞`.
+    obtain ⟨ha'', ha'⟩ := (a.toReal_pos_iff).mp ha
     rw [ENNReal.hasSum_iff_tendsto_nat]
     constructor
     · intro h
@@ -103,8 +105,8 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
         have hs : a ∈ s := by
           simp only [Set.mem_Ioo, s]
           constructor
-          · exact (ENNReal.sub_lt_self_iff (ne_of_lt ha.2)).mpr ⟨ha.1, hε⟩
-          · exact lt_add_right (LT.lt.ne_top ha.2) (ne_of_lt hε).symm
+          · exact (ENNReal.sub_lt_self_iff (ne_of_lt ha')).mpr ⟨ha'', hε⟩
+          · exact lt_add_right (LT.lt.ne_top ha') (ne_of_lt hε).symm
         have hs' : IsOpen s := by exact isOpen_Ioo
         obtain ⟨N, hN⟩ := h s hs hs'
 
@@ -137,18 +139,6 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
           simpa
         exact gt_of_ge_of_gt this hm
       · exact hf n
-  · -- The case `a = ∞`.
-    simp [ha, hasSum_iff_tendsto_nat, nhds_top]
-    constructor
-    · sorry
-    · intro h b hb
-      push_neg at hb
-      obtain ⟨n, hn⟩ := h b hb.symm.lt_top'
-      use n
-      intro m hm
-      have : ∑ i ∈ Finset.range n, f i ≤ ∑ i ∈ Finset.range m, f i :=
-        Finset.sum_le_sum_of_subset (by simpa)
-      exact gt_of_ge_of_gt this hn
 
 lemma ENNReal.exist_iSup_le_add_of_pos {ι : Type*} {ε : ℝ≥0∞} {f : ι → ℝ≥0∞} (hε : 0 < ε)
     (h : iSup f < ⊤) : ∃ (i : ι), iSup f ≤ f i + ε := by
