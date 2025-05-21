@@ -145,6 +145,7 @@ General algebra:
   Algebraic Number Theory:
     Finiteness of the class number: 'NumberField.RingOfIntegers.instFintypeClassGroup'
     Dirichlet unit theorem: 'NumberField.Units.exist_unique_eq_mul_prod'
+    Dirichlet class number formula: 'NumberField.tendsto_sub_one_mul_dedekindZeta_nhdsGT'
 
   Representation theory:
     representation : 'Representation'
