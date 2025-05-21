@@ -41,9 +41,8 @@ abbrev externalProduct (F₁ : J₁ ⥤ C) (F₂ : J₂ ⥤ C) :=
 
 namespace ExternalProduct
 /-- Notation for `externalProduct`.
-```
-open scoped CategoryTheory.MonoidalCategory.ExternalProduct
-``` to bring this notation in scope. -/
+Do `open scoped CategoryTheory.MonoidalCategory.ExternalProduct`
+to bring this notation in scope. -/
 scoped infixr:80 " ⊠ " => externalProduct
 
 end ExternalProduct
