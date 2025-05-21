@@ -6,12 +6,8 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 import Mathlib.SetTheory.Cardinal.Embedding
--- import Mathlib.Data.Finite.Card
--- import Mathlib.Data.Set.Card
--- import Mathlib.SetTheory.Cardinal.Finite
 
 /-! # Multiple transitivity
 
@@ -214,7 +210,7 @@ theorem isPretransitive_of_is_two_pretransitive
       exact ⟨g, h⟩
 
 /-- A `2`-transitive action is primitive. -/
-@[to_additive "A `2`-transitive additive action is primitive." ]
+@[to_additive "A `2`-transitive additive action is primitive."]
 theorem isPreprimitive_of_is_two_pretransitive
     (h2 : IsMultiplyPretransitive G α 2) : IsPreprimitive G α := by
   have : IsPretransitive G α := isPretransitive_of_is_two_pretransitive
