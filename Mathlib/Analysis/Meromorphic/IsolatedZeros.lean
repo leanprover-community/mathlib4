@@ -10,7 +10,7 @@ import Mathlib.Analysis.Meromorphic.Basic
 
 In line with results in `Mathlib.Analysis.Analytic.IsolatedZeros` and
 `Mathlib.Analysis.Analytic.Uniqueness`, this file establishes principles of isolated zeros and
-identitiy principles for meromorphic functions.
+identity principles for meromorphic functions.
 
 Compared to the results for analytic function, the principles established here are a litte more
 complicated to state. This is because meromorphic functions can be modified at will along discrete
