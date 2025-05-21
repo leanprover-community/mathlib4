@@ -155,22 +155,17 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
   simp_rw [neg_pow (_ * z) n, mul_assoc, intervalIntegral.integral_const_mul, mul_pow,
     mul_comm _ (z ^ n), mul_assoc, intervalIntegral.integral_const_mul, norm_mul, norm_pow,
     norm_neg, norm_one, one_pow, one_mul, ← mul_assoc, ← pow_succ', mul_div_assoc]
-  refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (norm_nonneg z) (n + 1))
+  gcongr _ * ?_
   calc ‖∫ t in (0 : ℝ)..1, (t : ℂ) ^ n * (1 + t * z)⁻¹‖
-    _ ≤ ∫ t in (0 : ℝ)..1, ‖(t : ℂ) ^ n * (1 + t * z)⁻¹‖ :=
-        intervalIntegral.norm_integral_le_integral_norm zero_le_one
-    _ = ∫ t in (0 : ℝ)..1, t ^ n * ‖(1 + t * z)⁻¹‖ := by
-        refine intervalIntegral.integral_congr <| fun t ht ↦ ?_
-        rw [Set.uIcc_of_le zero_le_one, Set.mem_Icc] at ht
-        simp_rw [norm_mul, norm_pow, Complex.norm_of_nonneg ht.1]
-    _ ≤ ∫ t in (0 : ℝ)..1, t ^ n * (1 - ‖z‖)⁻¹ :=
-        intervalIntegral.integral_mono_on zero_le_one
-          (integrable_pow_mul_norm_one_add_mul_inv n hz) help <|
-          fun t ht ↦ mul_le_mul_of_nonneg_left (norm_one_add_mul_inv_le ht hz)
-                       (pow_nonneg ((Set.mem_Icc.mp ht).1) _)
+    _ ≤ ∫ t in (0 : ℝ)..1, t ^ n * (1 - ‖z‖)⁻¹ := by
+      refine intervalIntegral.norm_integral_le_of_norm_le zero_le_one ?_ help
+      filter_upwards with t ⟨ht₀, ht₁⟩
+      rw [norm_mul, norm_pow, Complex.norm_of_nonneg ht₀.le]
+      gcongr
+      exact norm_one_add_mul_inv_le ⟨ht₀.le, ht₁⟩ hz
     _ = (1 - ‖z‖)⁻¹ / (n + 1) := by
-        rw [intervalIntegral.integral_mul_const, mul_comm, integral_pow]
-        field_simp
+      rw [intervalIntegral.integral_mul_const, mul_comm, integral_pow]
+      field_simp
 
 /-- The difference `log (1+z) - z` is bounded by `‖z‖^2/(2*(1-‖z‖))` when `‖z‖ < 1`. -/
 lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
@@ -182,11 +177,10 @@ lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
 lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
   rw [← sub_add_cancel (log (1 + z)) z]
-  apply le_trans (norm_add_le _ _)
-  exact add_le_add_right (Complex.norm_log_one_add_sub_self_le hz) ‖z‖
+  exact norm_add_le_of_le (Complex.norm_log_one_add_sub_self_le hz) le_rfl
 
 /-- For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
-lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
+lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖log (1 + z)‖ ≤ (3/2) * ‖z‖ := by
   apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
     rw [inv_eq_one_div, div_le_iff₀]
@@ -197,8 +191,7 @@ lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (
     · rw [inv_nonneg]
       linarith
     · rw [sq, div_eq_mul_one_div]
-      apply mul_le_mul (by simp only [mul_one, le_refl])
-        (by simpa only [one_div] using hz) (norm_nonneg z) (by simp only [mul_one, norm_nonneg])
+      gcongr
   simp only [isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
     IsUnit.div_mul_cancel] at hz4
   linarith
