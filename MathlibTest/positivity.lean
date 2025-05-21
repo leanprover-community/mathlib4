@@ -27,6 +27,7 @@ example : 0 < 3 := by positivity
 
 example : (0 : ℝ≥0∞) < 1 := by positivity
 example : (0 : ℝ≥0∞) < 2 := by positivity
+example : (0 : EReal) < 2 := by positivity
 example : 0 < (2 : EReal) := by positivity
 example : (0 : EReal) < 2 := by positivity
 
@@ -211,6 +212,13 @@ example (a : ℤ) : 0 ≤ a⁻ := by positivity
 section
 
 variable {a b : EReal}
+
+example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b := by positivity
+example (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a + b := by positivity
+example (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a + b := by positivity
+example (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by positivity
+example (ha : 0 ≤ a) : 0 ≤ 2 + a := by positivity
+example (ha : 0 < a) : 0 < a + 2 := by positivity
 
 example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
 example (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
