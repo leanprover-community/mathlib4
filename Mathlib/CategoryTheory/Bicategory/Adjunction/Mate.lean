@@ -147,15 +147,15 @@ lemma mateEquiv_eq_iff (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : r₁ ≫ g ⟶ h �
 
 lemma mateEquiv_apply' (α : g ≫ l₂ ⟶ l₁ ≫ h) :
     mateEquiv adj₁ adj₂ α =
-    r₁ ◁ (𝟙 g ≫ ((ρ_ g).inv ≫ g ◁ adj₂.unit ≫ (α_ g l₂ r₂).inv ≫ α ▷ r₂) ≫ (α_ l₁ h r₂).hom) ≫
-    (α_ r₁ l₁ (h ≫ r₂)).inv ≫ adj₁.counit ▷ (h ≫ r₂) ≫ (λ_ (h ≫ r₂)).hom :=
-  rfl
+      𝟙 _ ⊗≫ r₁ ◁ g ◁ adj₂.unit ⊗≫ r₁ ◁ α ▷ r₂ ⊗≫ adj₁.counit ▷ h ▷ r₂ ⊗≫ 𝟙 _ := by
+  rw [mateEquiv_apply, Adjunction.homEquiv₂_apply, Adjunction.homEquiv₁_apply]
+  bicategory
 
 lemma mateEquiv_symm_apply' (β : r₁ ≫ g ⟶ h ≫ r₂) :
     (mateEquiv adj₁ adj₂).symm β =
-    (𝟙 g ≫ ((λ_ g).inv ≫ adj₁.unit ▷ g ≫ (α_ l₁ r₁ g).hom ≫ l₁ ◁ β) ≫ (α_ l₁ h r₂).inv) ▷ l₂ ≫
-    (α_ (l₁ ≫ h) r₂ l₂).hom ≫ (l₁ ≫ h) ◁ adj₂.counit ≫ (ρ_ (l₁ ≫ h)).hom :=
-    rfl
+      𝟙 _ ⊗≫ adj₁.unit ▷ g ▷ l₂ ⊗≫ l₁ ◁ β ▷ l₂ ⊗≫ l₁ ◁ h ◁ adj₂.counit ⊗≫ 𝟙 _ := by
+  rw [mateEquiv_symm_apply, Adjunction.homEquiv₂_symm_apply, Adjunction.homEquiv₁_symm_apply]
+  bicategory
 
 end mateEquiv
 
@@ -179,7 +179,7 @@ def rightAdjointSquare.vcomp (α : r₁ ≫ g₁ ⟶ h₁ ≫ r₂) (β : r₂ �
 theorem mateEquiv_vcomp (α : g₁ ≫ l₂ ⟶ l₁ ≫ h₁) (β : g₂ ≫ l₃ ⟶ l₂ ≫ h₂) :
     mateEquiv adj₁ adj₃ (leftAdjointSquare.vcomp α β) =
       rightAdjointSquare.vcomp (mateEquiv adj₁ adj₂ α) (mateEquiv adj₂ adj₃ β) := by
-  dsimp only [leftAdjointSquare.vcomp, mateEquiv_apply', rightAdjointSquare.vcomp]
+  simp only [leftAdjointSquare.vcomp, mateEquiv_apply', rightAdjointSquare.vcomp]
   symm
   calc
     _ = 𝟙 _ ⊗≫ r₁ ◁ g₁ ◁ adj₂.unit ▷ g₂ ⊗≫ r₁ ◁ α ▷ r₂ ▷ g₂ ⊗≫
@@ -236,7 +236,8 @@ def rightAdjointSquare.hcomp (α : r₁ ≫ g ⟶ h ≫ r₂) (β : r₃ ≫ h �
 theorem mateEquiv_hcomp (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : h ≫ l₄ ⟶ l₃ ≫ k) :
     (mateEquiv (adj₁.comp adj₃) (adj₂.comp adj₄)) (leftAdjointSquare.hcomp α β) =
       rightAdjointSquare.hcomp (mateEquiv adj₁ adj₂ α) (mateEquiv adj₃ adj₄ β) := by
-  dsimp [mateEquiv_apply', leftAdjointSquare.hcomp, rightAdjointSquare.hcomp]
+  simp only [mateEquiv_apply']
+  dsimp [leftAdjointSquare.hcomp, rightAdjointSquare.hcomp]
   calc
     _ = 𝟙 _ ⊗≫ r₃ ◁ r₁ ◁ g ◁ adj₂.unit ⊗≫
           r₃ ◁ r₁ ◁ ((g ≫ l₂) ◁ adj₄.unit ≫ α ▷ (l₄ ≫ r₄)) ▷ r₂ ⊗≫
@@ -398,12 +399,14 @@ theorem conjugateEquiv_symm_id : (conjugateEquiv adj₁ adj₁).symm (𝟙 _) = 
 
 theorem conjugateEquiv_adjunction_id {l r : c ⟶ c} (adj : l ⊣ r) (α : 𝟙 c ⟶ l) :
     (conjugateEquiv adj (Adjunction.id c) α) = (ρ_ _).inv ≫ r ◁ α ≫ adj.counit := by
-  dsimp [conjugateEquiv, mateEquiv_apply', Adjunction.id]
+  rw [conjugateEquiv_apply, mateEquiv_apply']
+  dsimp [Adjunction.id]
   bicategory
 
 theorem conjugateEquiv_adjunction_id_symm {l r : c ⟶ c} (adj : l ⊣ r) (α : r ⟶ 𝟙 c) :
     (conjugateEquiv adj (Adjunction.id c)).symm α = adj.unit ≫ l ◁ α ≫ (ρ_ _).hom := by
-  dsimp [conjugateEquiv, mateEquiv_symm_apply', Adjunction.id]
+  rw [conjugateEquiv_symm_apply, mateEquiv_symm_apply']
+  dsimp [Adjunction.id]
   bicategory
 
 end conjugateEquiv
@@ -427,7 +430,7 @@ theorem conjugateEquiv_comp (α : l₂ ⟶ l₁) (β : l₃ ⟶ l₂) :
       bicategory
     _ = _ := by
       rw [← mateEquiv_vcomp]
-      dsimp only [leftAdjointSquare.vcomp, mateEquiv_apply']
+      simp only [leftAdjointSquare.vcomp, mateEquiv_apply']
       bicategory
 
 @[simp]
@@ -533,7 +536,8 @@ isomorphism if and only if the original 2-morphism is. This explains why some Be
 theorem iterated_mateEquiv_conjugateEquiv (α : f₁ ≫ l₂ ⟶ l₁ ≫ f₂) :
     mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α) =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
-  dsimp [conjugateEquiv_apply, mateEquiv_symm_apply', mateEquiv_apply', Adjunction.comp]
+  simp only [conjugateEquiv_apply, mateEquiv_symm_apply', mateEquiv_apply']
+  dsimp [Adjunction.comp]
   bicategory
 
 theorem iterated_mateEquiv_conjugateEquiv_symm (α : u₂ ≫ r₁ ⟶ r₂ ≫ u₁) :
@@ -577,7 +581,7 @@ theorem mateEquiv_conjugateEquiv_vcomp
       bicategory
     _ = _ := by
       rw [← mateEquiv_vcomp]
-      dsimp only [leftAdjointSquare.vcomp, mateEquiv_apply', leftAdjointSquareConjugate.vcomp]
+      simp only [leftAdjointSquare.vcomp, mateEquiv_apply', leftAdjointSquareConjugate.vcomp]
       bicategory
 
 end mateEquiv_conjugateEquiv_vcomp
@@ -614,7 +618,7 @@ theorem conjugateEquiv_mateEquiv_vcomp
       bicategory
     _ = _ := by
       rw [← mateEquiv_vcomp]
-      dsimp only [leftAdjointSquare.vcomp, mateEquiv_apply', leftAdjointConjugateSquare.vcomp]
+      simp only [leftAdjointSquare.vcomp, mateEquiv_apply', leftAdjointConjugateSquare.vcomp]
       bicategory
 
 end conjugateEquiv_mateEquiv_vcomp
