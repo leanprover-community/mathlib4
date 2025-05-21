@@ -1135,11 +1135,9 @@ theorem UniformContinuousOn.comp_tendstoUniformly {s : Set β} {F : ι → α �
 
 theorem UniformContinuousOn.comp_tendstoUniformly_eventually {s : Set β} {F : ι → α → β} {f : α → β}
     (hF : ∀ᶠ i in p, ∀ x, F i x ∈ s) (hf : ∀ x, f x ∈ s) {g : β → γ} (hg : UniformContinuousOn g s)
-    (h : TendstoUniformly F f p) :
-    TendstoUniformly (fun i => fun x => g (F i x)) (fun x => g (f x)) p := by
+    (h : TendstoUniformly F f p) : TendstoUniformly (fun i x ↦ g (F i x)) (fun x => g (f x)) p := by
   classical
-  rw [eventually_iff_exists_mem] at hF
-  obtain ⟨s', hs', hs⟩ := hF
+  obtain ⟨s', hs', hs⟩ := eventually_iff_exists_mem.mp hF
   let F' : ι → α → β := fun i x => if i ∈ s' then F i x else f x
   have hF : F =ᶠ[p] F' :=  by
     rw [eventuallyEq_iff_exists_mem]
@@ -1154,7 +1152,7 @@ theorem UniformContinuousOn.comp_tendstoUniformly_eventually {s : Set β} {F : �
 theorem UniformContinuousOn.comp_tendstoUniformlyOn_eventually {s : Set β} {F : ι → α → β}
     {f : α → β} {t : Set α} (hF : ∀ᶠ i in p, ∀ x ∈ t, F i x ∈ s) (hf : ∀ x ∈ t, f x ∈ s)
     {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformlyOn F f p t) :
-    TendstoUniformlyOn (fun i => fun x => g (F i x)) (fun x => g (f x)) p t := by
+    TendstoUniformlyOn (fun i x ↦ g (F i x)) (fun x => g (f x)) p t := by
   rw [tendstouniformlyOn_iff_restrict]
   apply UniformContinuousOn.comp_tendstoUniformly_eventually (by simpa using hF )
     (by simpa using hf) hg (by rw [tendstouniformlyOn_iff_restrict] at h; exact h)
