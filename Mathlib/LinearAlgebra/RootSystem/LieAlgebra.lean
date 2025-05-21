@@ -62,8 +62,20 @@ def h (i : b.support) :
 
 TODO Add part (b) as well as Lemmas 3.4, 3.5. -/
 lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
-    ⁅h j, e i⁆ = b.cartanMatrix i j • e i :=
-  sorry
+    ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
+  -- suffices ∀ k, ⁅h j, e i⁆ k = b.cartanMatrix i j • e i k by
+  --   ext k l
+  --   rw [this]
+  --   rfl
+  ext (k|k) (l|l)
+  · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e]
+  · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e, e₁₂]
+    rw [Finset.sum_eq_single_of_mem (↑i) (Finset.mem_univ _)]
+    · simp [mul_comm, Pi.single_apply]
+      sorry
+    · simp +contextual [Pi.single_apply]
+  · sorry
+  · sorry
 
 variable (b)
 variable [Fintype b.support] [Fintype ι] [DecidableEq ι]
