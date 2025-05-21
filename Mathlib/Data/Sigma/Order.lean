@@ -99,7 +99,7 @@ protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σi, α i) :=
         rwa [mk_le_mk_iff, mk_le_mk_iff, ← lt_iff_le_not_ge]
       · rintro ⟨⟨i, a, b, hab⟩, h⟩
         rw [mk_le_mk_iff] at h
-        exact mk_lt_mk_iff.2 (hab.lt_of_not_ge h) }
+        exact mk_lt_mk_iff.2 (hab.gt_of_not_le h) }
 
 instance [∀ i, PartialOrder (α i)] : PartialOrder (Σi, α i) :=
   { Sigma.preorder with
@@ -150,7 +150,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α
         · exact hab.not_le hba
       · rintro ⟨⟨a, b, hij⟩ | ⟨a, b, hab⟩, hba⟩
         · exact Sigma.Lex.left _ _ hij
-        · exact Sigma.Lex.right _ _ (hab.lt_of_not_ge fun h => hba <| Sigma.Lex.right _ _ h) }
+        · exact Sigma.Lex.right _ _ (hab.gt_of_not_le fun h => hba <| Sigma.Lex.right _ _ h) }
 
 /-- The lexicographical partial order on a sigma type. -/
 instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :

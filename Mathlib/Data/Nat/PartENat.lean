@@ -242,7 +242,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       obtain ⟨hx', h⟩ := h
       exact (hx hx').elim
   · rintro ⟨hx, H⟩
-    exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_ge (h _) (H _)⟩
+    exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_gt_of_le (h _) (H _)⟩
 
 noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat :=
   { add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>

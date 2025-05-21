@@ -74,7 +74,7 @@ theorem exp_one_mul_le_exp {x : ℝ} : exp 1 * x ≤ exp x := by
   by_cases hx0 : x ≤ 0
   · apply le_trans (mul_nonpos_of_nonneg_of_nonpos (exp_pos 1).le hx0) (exp_nonneg x)
   · have h := add_one_le_exp (log x)
-    rwa [← exp_le_exp, exp_add, exp_log (lt_of_not_ge hx0), mul_comm] at h
+    rwa [← exp_le_exp, exp_add, exp_log (gt_of_not_le hx0), mul_comm] at h
 
 theorem two_mul_le_exp {x : ℝ} : 2 * x ≤ exp x := by
   by_cases hx0 : x < 0

@@ -248,7 +248,7 @@ theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (ha
   rw [he, hamonic.natDegree_mul hcm]
   -- TODO: port Nat.lt_add_of_zero_lt_left from lean3 core
   apply lt_add_of_pos_right
-  refine (lt_of_not_ge fun h => hu ?_)
+  refine (gt_of_not_le fun h => hu ?_)
   rw [eq_C_of_natDegree_le_zero h, ← Nat.eq_zero_of_le_zero h, ← leadingCoeff, hcm.leadingCoeff,
     C_1]
   exact isUnit_one

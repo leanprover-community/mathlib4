@@ -391,7 +391,7 @@ theorem lmarginalPartialTraj_const_right [∀ n, IsMarkovKernel (κ n)] {d : ℕ
     (mf : Measurable f) (hf : DependsOn f (Iic a)) (hac : a ≤ c) (had : a ≤ d) :
     lmarginalPartialTraj κ b c f = lmarginalPartialTraj κ b d f := by
   wlog hcd : c ≤ d generalizing c d
-  · rw [this had hac (le_of_not_ge hcd)]
+  · rw [this had hac (ge_of_not_le hcd)]
   obtain hbc | hcb := le_total b c
   · rw [← lmarginalPartialTraj_self hbc hcd mf, hf.lmarginalPartialTraj_of_le d mf hac]
   · rw [hf.lmarginalPartialTraj_of_le c mf (hac.trans hcb),

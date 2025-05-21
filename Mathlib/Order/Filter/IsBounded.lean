@@ -168,7 +168,7 @@ theorem not_isBoundedUnder_of_tendsto_atTop [Preorder β] [NoMaxOrder β] {f : �
   obtain ⟨b', h⟩ := exists_gt b
   have hb' := (tendsto_atTop.mp hf) b'
   have : { x : α | f x ≤ b } ∩ { x : α | b' ≤ f x } = ∅ :=
-    eq_empty_of_subset_empty fun x hx => (not_le_of_gt h) (le_trans hx.2 hx.1)
+    eq_empty_of_subset_empty fun x hx => (not_ge_of_lt h) (le_trans hx.2 hx.1)
   exact (nonempty_of_mem (hb.and hb')).ne_empty this
 
 theorem not_isBoundedUnder_of_tendsto_atBot [Preorder β] [NoMinOrder β] {f : α → β} {l : Filter α}
@@ -273,7 +273,7 @@ lemma IsCobounded.frequently_ge [LinearOrder α] [NeBot f] (cobdd : IsCobounded 
   · exact ⟨t, .of_forall fun r ↦ tbot r⟩
   refine ⟨t', fun ev ↦ ?_⟩
   specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
-  exact not_lt_of_ge ht ht'
+  exact not_gt_of_le ht ht'
 
 /-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
 from above. -/

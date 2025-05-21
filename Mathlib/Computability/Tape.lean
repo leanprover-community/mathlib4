@@ -59,7 +59,7 @@ longer of `l₁` and `l₂`). -/
 def BlankExtends.above {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} (h₁ : BlankExtends l l₁)
     (h₂ : BlankExtends l l₂) : { l' // BlankExtends l₁ l' ∧ BlankExtends l₂ l' } :=
   if h : l₁.length ≤ l₂.length then ⟨l₂, h₁.below_of_le h₂ h, BlankExtends.refl _⟩
-  else ⟨l₁, BlankExtends.refl _, h₂.below_of_le h₁ (le_of_not_ge h)⟩
+  else ⟨l₁, BlankExtends.refl _, h₂.below_of_le h₁ (ge_of_not_le h)⟩
 
 theorem BlankExtends.above_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
     BlankExtends l₁ l → BlankExtends l₂ l → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ := by
@@ -103,7 +103,7 @@ def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
     if hl : l₁.length ≤ l₂.length then ⟨l₂, Or.elim h id fun h' ↦ ?_, BlankExtends.refl _⟩
     else ⟨l₁, BlankExtends.refl _, Or.elim h (fun h' ↦ ?_) id⟩
   · exact (BlankExtends.refl _).above_of_le h' hl
-  · exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
+  · exact (BlankExtends.refl _).above_of_le h' (ge_of_not_le hl)
 
 /-- Given two `BlankRel` lists, there exists (constructively) a common meet. -/
 def BlankRel.below {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ l₂) :
@@ -112,7 +112,7 @@ def BlankRel.below {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
     if hl : l₁.length ≤ l₂.length then ⟨l₁, BlankExtends.refl _, Or.elim h id fun h' ↦ ?_⟩
     else ⟨l₂, Or.elim h (fun h' ↦ ?_) id, BlankExtends.refl _⟩
   · exact (BlankExtends.refl _).above_of_le h' hl
-  · exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
+  · exact (BlankExtends.refl _).above_of_le h' (ge_of_not_le hl)
 
 theorem BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) :=
   ⟨BlankRel.refl, @BlankRel.symm _ _, @BlankRel.trans _ _⟩

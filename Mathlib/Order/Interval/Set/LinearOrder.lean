@@ -174,7 +174,7 @@ theorem Iic_union_Ici_of_le (h : a ≤ b) : Iic b ∪ Ici a = univ :=
   eq_univ_of_forall fun x => (h.le_or_le x).symm
 
 theorem Iio_union_Ioi_of_lt (h : a < b) : Iio b ∪ Ioi a = univ :=
-  eq_univ_of_forall fun x => (h.lt_or_lt x).symm
+  eq_univ_of_forall fun x => (h.lt_or_gt x).symm
 
 @[simp]
 theorem Iic_union_Ici : Iic a ∪ Ici a = univ :=
@@ -227,7 +227,7 @@ theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := b
   simp_rw [mem_union, mem_Ico, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
   · tauto
-  · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
+  · have hxb : x < b := (gt_of_not_le hc).trans_le h₁
     tauto
 
 theorem Ico_union_Ici (h : c ≤ max a b) : Ico a b ∪ Ici c = Ici (min a c) := by
@@ -282,7 +282,7 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
   simp_rw [mem_union, mem_Icc, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
   · tauto
-  · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
+  · have hxb : x ≤ b := (ge_of_not_le hc).trans h₁
     tauto
 
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
@@ -316,7 +316,7 @@ theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := b
   simp_rw [mem_union, mem_Iio, mem_Ico, lt_max_iff]
   by_cases hc : c ≤ x
   · tauto
-  · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
+  · have hxb : x < b := (gt_of_not_le hc).trans_le h₁
     tauto
 
 theorem Iio_union_Ico (h : min c d ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
@@ -381,7 +381,7 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
   simp_rw [mem_union, mem_Iic, mem_Icc, le_max_iff]
   by_cases hc : c ≤ x
   · tauto
-  · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
+  · have hxb : x ≤ b := (ge_of_not_le hc).trans h₁
     tauto
 
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
@@ -427,7 +427,7 @@ theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d =
   · tauto
   · have hax : a ≤ x := h₂.trans (le_of_not_gt hd)
     tauto
-  · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
+  · have hxb : x < b := (gt_of_not_le hc).trans_le h₁
     tauto
   · tauto
 
@@ -498,7 +498,7 @@ theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d =
   simp_rw [mem_union, mem_Ioc, min_lt_iff, le_max_iff]
   by_cases hc : c < x <;> by_cases hd : x ≤ d
   · tauto
-  · have hax : a < x := h₂.trans_lt (lt_of_not_ge hd)
+  · have hax : a < x := h₂.trans_lt (gt_of_not_le hd)
     tauto
   · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁
     tauto
@@ -545,9 +545,9 @@ theorem Icc_union_Icc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Icc a b ∪ Icc c d =
   simp_rw [mem_union, mem_Icc, min_le_iff, le_max_iff]
   by_cases hc : c ≤ x <;> by_cases hd : x ≤ d
   · tauto
-  · have hax : a ≤ x := h₂.trans (le_of_not_ge hd)
+  · have hax : a ≤ x := h₂.trans (ge_of_not_le hd)
     tauto
-  · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
+  · have hxb : x ≤ b := (ge_of_not_le hc).trans h₁
     tauto
   · tauto
 

@@ -90,8 +90,8 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
         (Int.natCast_inj.1 ?_)
       push_cast
       simp only [hn.pow_abs, habc]
-    obtain ha | ha := ha.lt_or_lt <;> obtain hb | hb := hb.lt_or_lt <;>
-      obtain hc | hc := hc.lt_or_lt
+    obtain ha | ha := ha.lt_or_gt <;> obtain hb | hb := hb.lt_or_gt <;>
+      obtain hc | hc := hc.lt_or_gt
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast

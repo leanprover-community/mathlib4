@@ -50,7 +50,7 @@ theorem sign_apply_eq (r : ℝ) : sign r = -1 ∨ sign r = 0 ∨ sign r = 1 := b
 
 /-- This lemma is useful for working with `ℝˣ` -/
 theorem sign_apply_eq_of_ne_zero (r : ℝ) (h : r ≠ 0) : sign r = -1 ∨ sign r = 1 :=
-  h.lt_or_lt.imp sign_of_neg sign_of_pos
+  h.lt_or_gt.imp sign_of_neg sign_of_pos
 
 @[simp]
 theorem sign_eq_zero_iff {r : ℝ} : sign r = 0 ↔ r = 0 := by

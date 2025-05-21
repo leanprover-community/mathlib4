@@ -247,7 +247,7 @@ theorem le_radius_of_summable_norm (p : FormalMultilinearSeries 𝕜 E F)
 
 theorem not_summable_norm_of_radius_lt_nnnorm (p : FormalMultilinearSeries 𝕜 E F) {x : E}
     (h : p.radius < ‖x‖₊) : ¬Summable fun n => ‖p n‖ * ‖x‖ ^ n :=
-  fun hs => not_le_of_gt h (p.le_radius_of_summable_norm hs)
+  fun hs => not_ge_of_lt h (p.le_radius_of_summable_norm hs)
 
 theorem summable_norm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0} (h : ↑r < p.radius) :
     Summable fun n : ℕ => ‖p n‖ * (r : ℝ) ^ n := by

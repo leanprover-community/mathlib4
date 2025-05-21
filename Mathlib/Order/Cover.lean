@@ -240,7 +240,7 @@ protected theorem CovBy.wcovBy (h : a ⋖ b) : a ⩿ b :=
   ⟨h.le, h.2⟩
 
 theorem WCovBy.covBy_of_not_le (h : a ⩿ b) (h2 : ¬b ≤ a) : a ⋖ b :=
-  ⟨h.le.lt_of_not_ge h2, h.2⟩
+  ⟨h.le.gt_of_not_le h2, h.2⟩
 
 theorem WCovBy.covBy_of_lt (h : a ⩿ b) (h2 : a < b) : a ⋖ b :=
   ⟨h2, h.2⟩

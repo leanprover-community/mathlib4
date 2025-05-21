@@ -86,11 +86,11 @@ instance OrderDual.noMaxOrder [LT α] [NoMinOrder α] : NoMaxOrder αᵒᵈ :=
 
 -- See note [lower instance priority]
 instance (priority := 100) [Preorder α] [NoMinOrder α] : NoBotOrder α :=
-  ⟨fun a => (exists_lt a).imp fun _ => not_le_of_gt⟩
+  ⟨fun a => (exists_lt a).imp fun _ => not_ge_of_lt⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) [Preorder α] [NoMaxOrder α] : NoTopOrder α :=
-  ⟨fun a => (exists_gt a).imp fun _ => not_le_of_gt⟩
+  ⟨fun a => (exists_gt a).imp fun _ => not_ge_of_lt⟩
 
 instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
@@ -281,10 +281,10 @@ alias LT.lt.not_isMin := not_isMin_of_lt
 alias LT.lt.not_isMax := not_isMax_of_lt
 
 theorem isMin_iff_forall_not_lt : IsMin a ↔ ∀ b, ¬b < a :=
-  ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_ge hab⟩
+  ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.gt_of_not_le hab⟩
 
 theorem isMax_iff_forall_not_lt : IsMax a ↔ ∀ b, ¬a < b :=
-  ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_ge hab⟩
+  ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.gt_of_not_le hab⟩
 
 @[simp]
 theorem not_isMin_iff : ¬IsMin a ↔ ∃ b, b < a := by

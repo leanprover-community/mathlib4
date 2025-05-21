@@ -412,7 +412,7 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
     [MulPosStrictMono R] [PosMulStrictMono R]
     (hab : 0 ≤ a * b) : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine Decidable.or_iff_not_not_and_not.2 ?_
-  simp only [not_and, not_le]; intro ab nab; apply not_lt_of_ge hab _
+  simp only [not_and, not_le]; intro ab nab; apply not_gt_of_le hab _
   rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
   · exact ((ab le_rfl).asymm (nab le_rfl)).elim
@@ -475,7 +475,7 @@ theorem add_le_mul [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
     (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ a * b :=
   if hab : a ≤ b then add_le_mul_of_left_le_right a2 hab
-  else add_le_mul_of_right_le_left b2 (le_of_not_ge hab)
+  else add_le_mul_of_right_le_left b2 (ge_of_not_le hab)
 
 theorem add_le_mul' [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
@@ -649,7 +649,7 @@ theorem mul_self_pos [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
     rw [mul_zero] at h
     exact h.false
   · intro h
-    rcases h.lt_or_lt with h | h
+    rcases h.lt_or_gt with h | h
     exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 
 theorem nonneg_of_mul_nonpos_left [ExistsAddOfLE R] [MulPosStrictMono R]
@@ -665,12 +665,12 @@ theorem nonneg_of_mul_nonpos_right [ExistsAddOfLE R] [MulPosStrictMono R]
 theorem pos_of_mul_neg_left [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b < 0) (hb : b ≤ 0) : 0 < a :=
-  lt_of_not_ge fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
+  gt_of_not_le fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
 
 theorem pos_of_mul_neg_right [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b < 0) (ha : a ≤ 0) : 0 < b :=
-  lt_of_not_ge fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
+  gt_of_not_le fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
 
 theorem neg_iff_pos_of_mul_neg [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]

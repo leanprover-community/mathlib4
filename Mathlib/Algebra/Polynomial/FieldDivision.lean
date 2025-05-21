@@ -244,7 +244,7 @@ section DivisionRing
 variable [DivisionRing R] {p q : R[X]}
 
 theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 < degree p :=
-  lt_of_not_ge fun h => by
+  gt_of_not_le fun h => by
     rw [eq_C_of_degree_le_zero h] at hp0 hp
     exact hp (IsUnit.map C (IsUnit.mk0 (coeff p 0) (mt C_inj.2 (by simpa using hp0))))
 
@@ -347,13 +347,13 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
     r_wellFounded := degree_lt_wf
     quotient_mul_add_remainder_eq := quotient_mul_add_remainder_eq_aux
     remainder_lt := fun _ _ hq => remainder_lt_aux _ hq
-    mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
+    mul_left_not_lt := fun _ _ hq => not_gt_of_le (degree_le_mul_left _ hq) }
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
     classical
     have : ¬degree (q * C (leadingCoeff q)⁻¹) ≤ degree p :=
-      not_le_of_gt <| by rwa [degree_mul_leadingCoeff_inv q hq0]
+      not_ge_of_lt <| by rwa [degree_mul_leadingCoeff_inv q hq0]
     rw [mod_def, modByMonic, dif_pos (monic_mul_leadingCoeff_inv hq0)]
     unfold divModByMonicAux
     dsimp
@@ -374,7 +374,7 @@ theorem degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
   have : degree (p % q) < degree (q * (p / q)) :=
     calc
       degree (p % q) < degree q := EuclideanDomain.mod_lt _ hq0
-      _ ≤ _ := degree_le_mul_left _ (mt (div_eq_zero_iff hq0).1 (not_lt_of_ge hpq))
+      _ ≤ _ := degree_le_mul_left _ (mt (div_eq_zero_iff hq0).1 (not_gt_of_le hpq))
 
   conv_rhs =>
     rw [← EuclideanDomain.div_add_mod p q, degree_add_eq_left_of_degree_lt this, degree_mul]
@@ -590,7 +590,7 @@ theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
   · exact fun hx => hx.not_isUnit <| isUnit_C.2 <| isUnit_iff_ne_zero.2 H
 
 theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
-  lt_of_not_ge fun hp0 =>
+  gt_of_not_le fun hp0 =>
     have := eq_C_of_degree_le_zero hp0
     not_irreducible_C (p.coeff 0) <| this ▸ hp
 

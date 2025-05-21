@@ -366,7 +366,7 @@ theorem sqLe_cancel {c d x y z w : ℕ} (zw : SqLe y d x c) (h : SqLe (x + z) c 
     SqLe z c w d := by
   apply le_of_not_gt
   intro l
-  refine not_le_of_gt ?_ h
+  refine not_ge_of_lt ?_ h
   simp only [SqLe, mul_add, mul_comm, mul_left_comm, add_assoc, gt_iff_lt]
   have hm := sqLe_add_mixed zw (le_of_lt l)
   simp only [SqLe, mul_assoc, gt_iff_lt] at l zw
@@ -565,7 +565,7 @@ theorem nonneg_add_lem {x y z w : ℕ} (xy : Nonneg (⟨x, -y⟩ : ℤ√d)) (zw
           let t := Nat.le_trans zw (sqLe_of_le (Nat.le_add_right n (m + 1)) le_rfl xy)
           have : k + j + 1 ≤ k :=
             Nat.mul_self_le_mul_self_iff.1 (by simpa [one_mul] using t)
-          absurd this (not_le_of_gt <| Nat.succ_le_succ <| Nat.le_add_right _ _))
+          absurd this (not_ge_of_lt <| Nat.succ_le_succ <| Nat.le_add_right _ _))
       (nonnegg_pos_neg.1 xy) (nonnegg_neg_pos.1 zw)
   rw [add_def, neg_add_eq_sub]
   rwa [Int.subNatNat_eq_coe, Int.subNatNat_eq_coe] at this
@@ -728,7 +728,7 @@ protected theorem mul_nonneg (a b : ℤ√d) : 0 ≤ a → 0 ≤ b → 0 ≤ a *
   exact nonneg_mul
 
 theorem not_sqLe_succ (c d y) (h : 0 < c) : ¬SqLe (y + 1) c 0 d :=
-  not_le_of_gt <| mul_pos (mul_pos h <| Nat.succ_pos _) <| Nat.succ_pos _
+  not_ge_of_lt <| mul_pos (mul_pos h <| Nat.succ_pos _) <| Nat.succ_pos _
 
 -- Porting note: renamed field and added theorem to make `x` explicit
 /-- A nonsquare is a natural number that is not equal to the square of an

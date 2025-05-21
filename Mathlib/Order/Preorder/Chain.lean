@@ -150,15 +150,15 @@ lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x < y ↔ y ≤ x :=
   ⟨(hs.le_of_not_gt hx hy ·), fun h h' ↦ h'.not_le h⟩
 
-lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
+lemma IsChain.gt_of_not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
   (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_ge · h)
 
-@[deprecated (since := "2025-05-11")] alias IsChain.lt_of_not_le := IsChain.lt_of_not_ge
+@[deprecated (since := "2025-05-11")] alias IsChain.lt_of_not_le := IsChain.gt_of_not_le
 
 lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=
-  ⟨(hs.lt_of_not_ge hx hy ·), fun h h' ↦ h'.not_lt h⟩
+  ⟨(hs.gt_of_not_le hx hy ·), fun h h' ↦ h'.not_lt h⟩
 
 theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
   h.1

@@ -176,7 +176,7 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     dsimp
     split_ifs <;> try rfl
     · exact absurd (lt_trans ‹f a < f m› ‹_›) ‹_›
-    · cases (‹f a < f tl›.lt_or_lt _).elim ‹_› ‹_›
+    · cases (‹f a < f tl›.lt_or_gt _).elim ‹_› ‹_›
 
 theorem argmin_cons (f : α → β) (a : α) (l : List α) :
     argmin f (a :: l) =
@@ -197,7 +197,7 @@ theorem index_of_argmax :
     dsimp only at hm
     simp only [cond_eq_if, beq_iff_eq]
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
-    · cases not_le_of_gt ‹_› ‹_›
+    · cases not_ge_of_lt ‹_› ‹_›
     · rw [if_pos rfl]
     · rw [if_neg, if_neg]
       · exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)

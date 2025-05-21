@@ -440,7 +440,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           by_cases hi : i ≤ f.natDegree
           · exact ⟨i, hi.trans_lt (by simp), rfl⟩
           · exact ⟨f.natDegree + 1, by simp,
-              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hi)]⟩
+              by simp [f.coeff_eq_zero_of_natDegree_lt (gt_of_not_le hi)]⟩
         · ext; simp [eq_comm]
     · simp
   · intros R _ g i hi hi_min _ R₀ _ f

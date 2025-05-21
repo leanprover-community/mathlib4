@@ -530,7 +530,7 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q
     simp
   rcases e : Num.ofZNum' (Num.sub' r (Num.pos d)) with - | r₂
   · rw [Num.cast_bit0, two_mul]
-    refine ⟨h₁, lt_of_not_ge fun h => ?_⟩
+    refine ⟨h₁, gt_of_not_le fun h => ?_⟩
     obtain ⟨r₂, e'⟩ := Nat.le.dest h
     rw [← Num.to_of_nat r₂, add_comm] at e'
     cases e.symm.trans (this.2 e'.symm)
@@ -605,8 +605,8 @@ theorem mod_to_nat : ∀ n d, ((n % d : Num) : ℕ) = n % d
 theorem gcd_to_nat_aux :
     ∀ {n} {a b : Num}, a ≤ b → (a * b).natSize ≤ n → (gcdAux n a b : ℕ) = Nat.gcd a b
   | 0, 0, _, _ab, _h => (Nat.gcd_zero_left _).symm
-  | 0, pos _, 0, ab, _h => (not_lt_of_ge ab).elim rfl
-  | 0, pos _, pos _, _ab, h => (not_lt_of_ge h).elim <| PosNum.natSize_pos _
+  | 0, pos _, 0, ab, _h => (not_gt_of_le ab).elim rfl
+  | 0, pos _, pos _, _ab, h => (not_gt_of_le h).elim <| PosNum.natSize_pos _
   | Nat.succ _, 0, _, _ab, _h => (Nat.gcd_zero_left _).symm
   | Nat.succ n, pos a, b, ab, h => by
     simp only [gcdAux, cast_pos]
@@ -638,7 +638,7 @@ theorem gcd_to_nat : ∀ a b, (gcd a b : ℕ) = Nat.gcd a b := by
   split_ifs with h
   · exact gcd_to_nat_aux h (this _ _)
   · rw [Nat.gcd_comm]
-    exact gcd_to_nat_aux (le_of_not_ge h) (this _ _)
+    exact gcd_to_nat_aux (ge_of_not_le h) (this _ _)
 
 theorem dvd_iff_mod_eq_zero {m n : Num} : m ∣ n ↔ n % m = 0 := by
   rw [← dvd_to_nat, Nat.dvd_iff_mod_eq_zero, ← to_nat_inj, mod_to_nat]; rfl

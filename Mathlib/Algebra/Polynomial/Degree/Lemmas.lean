@@ -67,7 +67,7 @@ theorem natDegree_comp_eq_of_mul_ne_zero (h : p.leadingCoeff * q.leadingCoeff ^ 
   rwa [coeff_comp_degree_mul_degree hq]
 
 theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degree p :=
-  lt_of_not_ge fun hlt => by
+  gt_of_not_le fun hlt => by
     have := eq_C_of_degree_le_zero hlt
     rw [IsRoot, this, eval_C] at h
     simp only [h, RingHom.map_zero] at this
@@ -243,7 +243,7 @@ variable [Semiring S]
 
 theorem natDegree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
     (hz : eval₂ f z p = 0) (inj : ∀ x : R, f x = 0 → x = 0) : 0 < natDegree p :=
-  lt_of_not_ge fun hlt => by
+  gt_of_not_le fun hlt => by
     have A : p = C (p.coeff 0) := eq_C_of_natDegree_le_zero hlt
     rw [A, eval₂_C] at hz
     simp only [inj (p.coeff 0) hz, RingHom.map_zero] at A

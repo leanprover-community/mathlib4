@@ -57,7 +57,7 @@ theorem Compares.eq_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o
   | gt, a, b, h => ⟨fun h => by injection h, fun h' => (lt_asymm h h').elim⟩
 
 theorem Compares.ne_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o ≠ lt ↔ b ≤ a)
-  | lt, _, _, h => ⟨absurd rfl, fun h' => (not_le_of_gt h h').elim⟩
+  | lt, _, _, h => ⟨absurd rfl, fun h' => (not_ge_of_lt h h').elim⟩
   | eq, _, _, h => ⟨fun _ => ge_of_eq h, fun _ h => by injection h⟩
   | gt, _, _, h => ⟨fun _ => le_of_lt h, fun _ h => by injection h⟩
 
@@ -78,9 +78,9 @@ theorem Compares.le_total [Preorder α] {a b : α} : ∀ {o}, Compares o a b →
   | gt, h => Or.inr (le_of_lt h)
 
 theorem Compares.le_antisymm [Preorder α] {a b : α} : ∀ {o}, Compares o a b → a ≤ b → b ≤ a → a = b
-  | lt, h, _, hba => (not_le_of_gt h hba).elim
+  | lt, h, _, hba => (not_ge_of_lt h hba).elim
   | eq, h, _, _ => h
-  | gt, h, hab, _ => (not_le_of_gt h hab).elim
+  | gt, h, hab, _ => (not_ge_of_lt h hab).elim
 
 theorem Compares.inj [Preorder α] {o₁} :
     ∀ {o₂} {a b : α}, Compares o₁ a b → Compares o₂ a b → o₁ = o₂

@@ -167,8 +167,8 @@ instance instPreorderSum : Preorder (α ⊕ β) :=
         · exact hba.not_lt (inl_lt_inl_iff.1 hab)
         · exact hba.not_lt (inr_lt_inr_iff.1 hab)
       · rintro ⟨⟨hab⟩ | ⟨hab⟩, hba⟩
-        · exact LiftRel.inl (hab.lt_of_not_ge fun h => hba <| LiftRel.inl h)
-        · exact LiftRel.inr (hab.lt_of_not_ge fun h => hba <| LiftRel.inr h) }
+        · exact LiftRel.inl (hab.gt_of_not_le fun h => hba <| LiftRel.inl h)
+        · exact LiftRel.inr (hab.gt_of_not_le fun h => hba <| LiftRel.inr h) }
 
 theorem inl_mono : Monotone (inl : α → α ⊕ β) := fun _ _ => LiftRel.inl
 
@@ -348,8 +348,8 @@ instance preorder : Preorder (α ⊕ₗ β) :=
         · exact hba.not_lt (inr_lt_inr_iff.1 hab)
         · exact not_inr_lt_inl hab
       · rintro ⟨⟨hab⟩ | ⟨hab⟩ | ⟨a, b⟩, hba⟩
-        · exact Lex.inl (hab.lt_of_not_ge fun h => hba <| Lex.inl h)
-        · exact Lex.inr (hab.lt_of_not_ge fun h => hba <| Lex.inr h)
+        · exact Lex.inl (hab.gt_of_not_le fun h => hba <| Lex.inl h)
+        · exact Lex.inr (hab.gt_of_not_le fun h => hba <| Lex.inr h)
         · exact Lex.sep _ _ }
 
 theorem toLex_mono : Monotone (@toLex (α ⊕ β)) := fun _ _ h => h.lex

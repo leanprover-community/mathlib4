@@ -457,7 +457,7 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
   refine ⟨c', fun n => norm_c'_le n, fun i j inej => ?_⟩
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
-  · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_ge hij)
+  · rw [norm_sub_rev]; exact this j i inej.symm (ge_of_not_le hij)
   rcases le_or_gt ‖a.c j‖ 2 with (Hj | Hj)
   -- case `‖c j‖ ≤ 2` (and therefore also `‖c i‖ ≤ 2`)
   · simp_rw [c', Hj, hij.trans Hj, if_true]

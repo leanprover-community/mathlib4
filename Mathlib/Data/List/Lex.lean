@@ -129,7 +129,7 @@ theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     induction' l₁ with a l₁ IH generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
     · contradiction
     · apply nil
-    · exact (not_lt_of_ge H).elim (succ_pos _)
+    · exact (not_gt_of_le H).elim (succ_pos _)
     · by_cases ab : a = b
       · subst b
         exact .cons <| IH (le_of_succ_le_succ H) (mt (congr_arg _) h)

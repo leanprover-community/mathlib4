@@ -245,7 +245,7 @@ theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree :=
   rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
   intro n hn
   rw [Nat.cast_lt] at hn
-  rw [coeff_reverse, revAt, Function.Embedding.coeFn_mk, if_neg (not_le_of_gt hn),
+  rw [coeff_reverse, revAt, Function.Embedding.coeFn_mk, if_neg (not_ge_of_lt hn),
     coeff_eq_zero_of_natDegree_lt hn]
 
 theorem natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :

@@ -80,7 +80,7 @@ theorem IsLinearMap.with_bound {f : E → F} (hf : IsLinearMap 𝕜 f) (M : ℝ)
       (fun (this : M ≤ 0) =>
         ⟨1, zero_lt_one, fun x =>
           (h x).trans <| mul_le_mul_of_nonneg_right (this.trans zero_le_one) (norm_nonneg x)⟩)
-      fun (this : ¬M ≤ 0) => ⟨M, lt_of_not_ge this, h⟩⟩
+      fun (this : ¬M ≤ 0) => ⟨M, gt_of_not_le this, h⟩⟩
 
 /-- A continuous linear map satisfies `IsBoundedLinearMap` -/
 theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedLinearMap 𝕜 f :=

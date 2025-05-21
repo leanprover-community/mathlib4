@@ -471,7 +471,7 @@ theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (
   have h₁ := order_ineq p' t
   have h₂ := Nat.minFac_sq_le_self (mersenne_pos.2 (Nat.lt_of_succ_lt w)) a
   have h := lt_of_lt_of_le h₁ h₂
-  exact not_lt_of_ge (Nat.sub_le _ _) h
+  exact not_gt_of_le (Nat.sub_le _ _) h
 
 namespace LucasLehmer
 

@@ -1098,7 +1098,7 @@ lemma pred_succAbove (x : Fin n) (y : Fin (n + 1)) (h : y ≤ castSucc x)
     (y.succAbove x).pred h' = x := by simp only [succAbove_of_le_castSucc _ _ h, pred_succ]
 
 lemma exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove z = x := by
-  obtain hxy | hyx := Fin.lt_or_lt_of_ne h
+  obtain hxy | hyx := Fin.lt_or_gt_of_ne h
   exacts [⟨_, succAbove_castPred_of_lt _ _ hxy⟩, ⟨_, succAbove_pred_of_lt _ _ hyx⟩]
 
 @[simp] lemma exists_succAbove_eq_iff {x y : Fin (n + 1)} : (∃ z, x.succAbove z = y) ↔ y ≠ x :=
@@ -1281,7 +1281,7 @@ then back to `Fin (n+1)` with a gap around `p` is the identity away from `p`. -/
 @[simp]
 lemma succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
     p.castSucc.succAbove (p.predAbove i) = i := by
-  obtain h | h := Fin.lt_or_lt_of_ne h
+  obtain h | h := Fin.lt_or_gt_of_ne h
   · rw [predAbove_of_le_castSucc _ _ (Fin.le_of_lt h), succAbove_castPred_of_lt _ _ h]
   · rw [predAbove_of_castSucc_lt _ _ h, succAbove_pred_of_lt _ _ h]
 
@@ -1290,7 +1290,7 @@ then back to `Fin (n+1)` with a gap around `p.succ` is the identity away from `p
 @[simp]
 lemma succ_succAbove_predAbove {n : ℕ} {p : Fin n} {i : Fin (n + 1)} (h : i ≠ p.succ) :
     p.succ.succAbove (p.predAbove i) = i := by
-  obtain h | h := Fin.lt_or_lt_of_ne h
+  obtain h | h := Fin.lt_or_gt_of_ne h
   · rw [predAbove_of_le_castSucc _ _ (le_castSucc_iff.2 h),
       succAbove_castPred_of_lt _ _ h]
   · rw [predAbove_of_castSucc_lt _ _ (Fin.lt_of_le_of_lt (p.castSucc_le_succ) h),

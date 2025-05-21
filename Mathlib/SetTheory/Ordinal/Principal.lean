@@ -206,7 +206,7 @@ theorem principal_add_iff_zero_or_omega0_opow :
     rcases lt_omega0.1 ao with ⟨n, rfl⟩
     clear ao
     revert h'
-    apply not_lt_of_ge
+    apply not_gt_of_le
     suffices e : ω ^ log ω o * n + o = o by
       simpa only [e] using le_add_right (ω ^ log ω o * ↑n) o
     induction' n with n IH

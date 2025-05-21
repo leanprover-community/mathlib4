@@ -633,10 +633,10 @@ lemma neg_iff_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α β] (hab : 0 <
   ⟨neg_of_smul_pos_right hab ∘ le_of_lt, neg_of_smul_pos_left hab ∘ le_of_lt⟩
 
 lemma neg_of_smul_neg_left' [SMulPosMono α β] (h : a • b < 0) (ha : 0 ≤ a) : b < 0 :=
-  lt_of_not_ge fun hb ↦ (smul_nonneg' ha hb).not_lt h
+  gt_of_not_le fun hb ↦ (smul_nonneg' ha hb).not_lt h
 
 lemma neg_of_smul_neg_right' [PosSMulMono α β] (h : a • b < 0) (hb : 0 ≤ b) : a < 0 :=
-  lt_of_not_ge fun ha ↦ (smul_nonneg ha hb).not_lt h
+  gt_of_not_le fun ha ↦ (smul_nonneg ha hb).not_lt h
 
 end LinearOrder
 end SMulWithZero

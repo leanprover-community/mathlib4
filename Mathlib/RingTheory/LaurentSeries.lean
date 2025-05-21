@@ -287,7 +287,7 @@ instance of_powerSeries_localization [CommRing R] :
       rw [mul_comm _ z]
       refine congr rfl ?_
       rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
-      exact le_of_not_ge h
+      exact ge_of_not_le h
   exists_of_eq {x y} := by
     rw [coe_algebraMap, ofPowerSeries_injective.eq_iff]
     rintro rfl

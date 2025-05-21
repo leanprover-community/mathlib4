@@ -54,7 +54,7 @@ namespace IsUltrametricDist
 lemma dist_eq_max_of_dist_ne_dist (h : dist x y ≠ dist y z) :
     dist x z = max (dist x y) (dist y z) := by
   apply le_antisymm (dist_triangle_max x y z)
-  rcases h.lt_or_lt with h | h
+  rcases h.lt_or_gt with h | h
   · rw [max_eq_right h.le]
     apply (le_max_iff.mp <| dist_triangle_max y x z).resolve_left
     simpa only [not_le, dist_comm x y] using h
@@ -83,7 +83,7 @@ lemma ball_subset_trichotomy :
     ball x r ⊆ ball y s ∨ ball y s ⊆ ball x r ∨ Disjoint (ball x r) (ball y s) := by
   wlog hrs : r ≤ s generalizing x y r s
   · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ⊆ _), or_assoc]
-    exact this y x s r (lt_of_not_ge hrs).le
+    exact this y x s r (gt_of_not_le hrs).le
   · refine Set.disjoint_or_nonempty_inter (ball x r) (ball y s) |>.symm.imp (fun h ↦ ?_) (Or.inr ·)
     obtain ⟨hxz, hyz⟩ := (Set.mem_inter_iff _ _ _).mp h.some_mem
     have hx := ball_subset_ball hrs (x := x)
@@ -117,7 +117,7 @@ lemma closedBall_subset_trichotomy :
     Disjoint (closedBall x r) (closedBall y s) := by
   wlog hrs : r ≤ s generalizing x y r s
   · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ⊆ _), or_assoc]
-    exact this y x s r (lt_of_not_ge hrs).le
+    exact this y x s r (gt_of_not_le hrs).le
   · refine Set.disjoint_or_nonempty_inter (closedBall x r) (closedBall y s) |>.symm.imp
       (fun h ↦ ?_) (Or.inr ·)
     obtain ⟨hxz, hyz⟩ := (Set.mem_inter_iff _ _ _).mp h.some_mem

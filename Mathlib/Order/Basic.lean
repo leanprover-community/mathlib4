@@ -145,16 +145,17 @@ alias Eq.trans_le := le_of_eq_of_le
 alias Eq.trans_ge := le_of_eq_of_le'
 alias Eq.trans_lt := lt_of_eq_of_lt
 alias Eq.trans_gt := lt_of_eq_of_lt'
-alias LE.le.lt_of_not_ge := lt_of_le_not_ge
+alias LE.le.gt_of_not_le := lt_of_le_not_ge
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LT.lt.le := le_of_lt
 alias LT.lt.ne := ne_of_lt
 alias Eq.le := le_of_eq
 @[inherit_doc ge_of_eq] alias Eq.ge := ge_of_eq
 alias LT.lt.asymm := lt_asymm
-alias LT.lt.not_lt := lt_asymm
+alias LT.lt.not_gt := lt_asymm
 
-@[deprecated (since := "2025-05-11")] alias LE.le.lt_of_not_le := LE.le.lt_of_not_ge
+@[deprecated (since := "2025-05-11")] alias LE.le.lt_of_not_le := LE.le.gt_of_not_le
+@[deprecated (since := "2025-05-11")] alias LT.lt.not_lt := LT.lt.not_gt
 
 theorem ne_of_not_le (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 
@@ -267,7 +268,7 @@ alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 -- See Note [decidable namespace]
 protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] : a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
-    h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_ge h₃)⟩
+    h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.gt_of_not_le h₃)⟩
 
 theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b :=
   haveI := Classical.dec
@@ -290,7 +291,9 @@ alias LE.le.eq_of_not_gt := eq_of_ge_of_not_gt
 
 theorem Ne.le_iff_lt (h : a ≠ b) : a ≤ b ↔ a < b := ⟨fun h' ↦ lt_of_le_of_ne h' h, fun h ↦ h.le⟩
 
-theorem Ne.not_le_or_not_le (h : a ≠ b) : ¬a ≤ b ∨ ¬b ≤ a := not_and_or.1 <| le_antisymm_iff.not.1 h
+theorem Ne.not_le_or_not_ge (h : a ≠ b) : ¬a ≤ b ∨ ¬b ≤ a := not_and_or.1 <| le_antisymm_iff.not.1 h
+
+@[deprecated (since := "2025-05-11")] alias Ne.not_le_or_not_le := Ne.not_le_or_not_ge
 
 -- See Note [decidable namespace]
 protected theorem Decidable.ne_iff_lt_iff_le [DecidableEq α] : (a ≠ b ↔ a < b) ↔ a ≤ b :=
@@ -360,11 +363,13 @@ theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
   · rw [if_pos eq.le, if_pos eq.ge, eq]
   · rw [if_neg (not_le.mpr gt.gt), if_pos gt.le]
 
-@[deprecated (since := "2025-05-11")] alias lt_of_not_le := lt_of_not_ge
+@[deprecated (since := "2025-05-11")] alias lt_of_not_le := gt_of_not_le
 @[deprecated (since := "2025-05-11")] alias lt_iff_not_le := lt_iff_not_ge
 
-theorem Ne.lt_or_lt (h : a ≠ b) : a < b ∨ b < a :=
+theorem Ne.lt_or_gt (h : a ≠ b) : a < b ∨ b < a :=
   lt_or_gt_of_ne h
+
+@[deprecated (since := "2025-05-11")] alias Ne.lt_or_gt := Ne.lt_or_gt
 
 /-- A version of `ne_iff_lt_or_gt` with LHS and RHS reversed. -/
 @[simp]
@@ -428,7 +433,7 @@ lemma ltByCases_not_gt (h : ¬ y < x) {h₁ : x < y → P} {h₂ : x = y → P} 
   dite_congr rfl (fun _ => rfl) (fun _ => dif_neg h)
 
 lemma ltByCases_ne (h : x ≠ y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
-    (p : ¬ x < y → y < x := fun h' => h.lt_or_lt.resolve_left h') :
+    (p : ¬ x < y → y < x := fun h' => h.lt_or_gt.resolve_left h') :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₃ (p h') :=
   dite_congr rfl (fun _ => rfl) (fun _ => dif_pos _)
 
@@ -549,7 +554,7 @@ end LinearOrder
 
 lemma lt_imp_lt_of_le_imp_le {β} [LinearOrder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b → c ≤ d) (h : d < c) : b < a :=
-  lt_of_not_ge fun h' ↦ (H h').not_lt h
+  gt_of_not_le fun h' ↦ (H h').not_lt h
 
 lemma le_imp_le_iff_lt_imp_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β} :
     a ≤ b → c ≤ d ↔ d < c → b < a :=
@@ -1112,8 +1117,8 @@ theorem mk_lt_mk_iff_right : (a, b₁) < (a, b₂) ↔ b₁ < b₂ :=
 theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2 := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · by_cases h₁ : y.1 ≤ x.1
-    · exact Or.inr ⟨h.1.1, LE.le.lt_of_not_ge h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩
-    · exact Or.inl ⟨LE.le.lt_of_not_ge h.1.1 h₁, h.1.2⟩
+    · exact Or.inr ⟨h.1.1, LE.le.gt_of_not_le h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩
+    · exact Or.inl ⟨LE.le.gt_of_not_le h.1.1 h₁, h.1.2⟩
   · rintro (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
     · exact ⟨⟨h₁.le, h₂⟩, fun h ↦ h₁.not_le h.1⟩
     · exact ⟨⟨h₁, h₂.le⟩, fun h ↦ h₂.not_le h.2⟩
@@ -1241,9 +1246,9 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
     (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) (x y z : α) : x = y ∨ y = z ∨ x = z := by
   by_contra hne
   simp only [not_or, ← Ne.eq_def] at hne
-  rcases hne.1.lt_or_lt with h₁ | h₁ <;>
-  rcases hne.2.1.lt_or_lt with h₂ | h₂ <;>
-  rcases hne.2.2.lt_or_lt with h₃ | h₃
+  rcases hne.1.lt_or_gt with h₁ | h₁ <;>
+  rcases hne.2.1.lt_or_gt with h₂ | h₂ <;>
+  rcases hne.2.2.lt_or_gt with h₃ | h₃
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
 
 namespace PUnit

@@ -128,7 +128,7 @@ theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
   rw [← disjoint_withBotCoe, coe_splitLower, coe_splitUpper]
   refine (Disjoint.inf_left' _ ?_).inf_right' _
   rw [Set.disjoint_left]
-  exact fun y (hle : y i ≤ x) hlt => not_lt_of_ge hle hlt
+  exact fun y (hle : y i ≤ x) hlt => not_gt_of_le hle hlt
 
 theorem splitLower_ne_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
     I.splitLower i x ≠ I.splitUpper i x := by

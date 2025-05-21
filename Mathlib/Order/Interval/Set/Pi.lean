@@ -54,7 +54,7 @@ section Nonempty
 
 theorem pi_univ_Ioi_subset [Nonempty ι]: (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun _ hz ↦
   ⟨fun i ↦ le_of_lt <| hz i trivial, fun h ↦
-    (‹Nonempty ι›.elim) fun i ↦ not_lt_of_ge (h i) (hz i trivial)⟩
+    (‹Nonempty ι›.elim) fun i ↦ not_gt_of_le (h i) (hz i trivial)⟩
 
 theorem pi_univ_Iio_subset [Nonempty ι]: (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
   pi_univ_Ioi_subset (α := fun i ↦ (α i)ᵒᵈ) x

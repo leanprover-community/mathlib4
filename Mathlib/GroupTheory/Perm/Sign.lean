@@ -124,7 +124,7 @@ theorem mclosure_swap_castSucc_succ (n : ℕ) :
   rw [← mclosure_isSwap, Submonoid.closure_le]
   rintro _ ⟨i, j, ne, rfl⟩
   wlog lt : i < j generalizing i j
-  · rw [swap_comm]; exact this _ _ ne.symm (ne.lt_or_lt.resolve_left lt)
+  · rw [swap_comm]; exact this _ _ ne.symm (ne.lt_or_gt.resolve_left lt)
   induction' j using Fin.induction with j ih
   · cases lt
   have mem : swap j.castSucc j.succ ∈ Submonoid.closure
@@ -236,7 +236,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   rw [mem_finPairsLT] at hab
   by_cases h : g b < g a
   · rw [dif_pos h]
-    simp only [not_le_of_gt hab, mul_one, mul_ite, mul_neg, Perm.inv_apply_self, if_false]
+    simp only [not_ge_of_lt hab, mul_one, mul_ite, mul_neg, Perm.inv_apply_self, if_false]
   · rw [dif_neg h, inv_apply_self, inv_apply_self, if_pos hab.le]
     by_cases h₁ : f (g b) ≤ f (g a)
     · have : f (g b) ≠ f (g a) := by
@@ -244,7 +244,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
         exact ne_of_lt hab
       rw [if_pos h₁, if_neg (h₁.lt_of_ne this).not_le]
       rfl
-    · rw [if_neg h₁, if_pos (lt_of_not_ge h₁).le]
+    · rw [if_neg h₁, if_pos (gt_of_not_le h₁).le]
       rfl
 
 private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=

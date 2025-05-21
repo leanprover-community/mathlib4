@@ -88,7 +88,7 @@ lemma sin_le_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x
 /-- Half of **Jordan's inequality** for absolute values. -/
 lemma mul_abs_le_abs_sin (hx : |x| ≤ π / 2) : 2 / π * |x| ≤ |sin x| := by
   wlog hx₀ : 0 ≤ x
-  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
+  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| ge_of_not_le hx₀
   rw [abs_of_nonneg hx₀] at hx ⊢
   exact (mul_le_sin hx₀ hx).trans (le_abs_self _)
 
@@ -132,7 +132,7 @@ lemma one_add_mul_le_cos (hx₀ : -(π / 2) ≤ x) (hx : x ≤ 0) : 1 + 2 / π *
 
 lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
   wlog hx₀ : 0 ≤ x
-  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
+  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| ge_of_not_le hx₀
   rw [abs_of_nonneg hx₀] at hx
   have : x / π ≤ sin (x / 2) := by simpa using mul_le_sin (x := x / 2) (by positivity) (by linarith)
   have := (pow_le_pow_left₀ (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)

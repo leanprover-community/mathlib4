@@ -106,7 +106,7 @@ theorem log_surjective : Function.Surjective log := by
   rcases eq_top_or_lt_top y with y_top | y_ntop
   · exact y_top ▸ ⟨⊤, log_top⟩
   use ENNReal.ofReal (Real.exp y.toReal)
-  have exp_y_pos := not_le_of_gt (Real.exp_pos y.toReal)
+  have exp_y_pos := not_ge_of_lt (Real.exp_pos y.toReal)
   simp only [log, ofReal_eq_zero, exp_y_pos, ↓reduceIte, ofReal_ne_top,
     ENNReal.toReal_ofReal (Real.exp_pos y.toReal).le, Real.log_exp y.toReal]
   exact EReal.coe_toReal y_ntop.ne y_nbot.ne'

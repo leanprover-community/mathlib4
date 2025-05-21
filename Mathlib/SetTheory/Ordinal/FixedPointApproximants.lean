@@ -52,7 +52,7 @@ theorem not_injective_limitation_set : ¬ InjOn g (Iio (ord <| succ #α)) := by
       #(Iio (ord <| succ #α)) = lift.{u + 1} (succ #α) := by
     simpa only [coe_setOf, card_typein, card_ord] using mk_Iio_ordinal (ord <| succ #α)
   rw [mk_initialSeg_subtype, lift_lift, lift_le] at h
-  exact not_le_of_gt (Order.lt_succ #α) h
+  exact not_ge_of_lt (Order.lt_succ #α) h
 
 end Cardinal
 

@@ -127,7 +127,7 @@ theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y �
     edist (f x) (f y) ≤ eVariationOn f s := by
   wlog hxy : y ≤ x generalizing x y
   · rw [edist_comm]
-    exact this hy hx (le_of_not_ge hxy)
+    exact this hy hx (ge_of_not_le hxy)
   let u : ℕ → α := fun n => if n = 0 then y else x
   have hu : Monotone u := monotone_nat_of_le_succ fun
   | 0 => hxy
@@ -637,7 +637,7 @@ protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
     edist (f a) (f b) = 0 := by
   wlog h' : a ≤ b
   · rw [edist_comm]
-    apply this hf hb ha _ (le_of_not_ge h')
+    apply this hf hb ha _ (ge_of_not_le h')
     rw [variationOnFromTo.eq_neg_swap, h, neg_zero]
   · apply le_antisymm _ (zero_le _)
     rw [← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',

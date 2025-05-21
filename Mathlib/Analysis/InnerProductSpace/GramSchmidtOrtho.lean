@@ -76,7 +76,7 @@ theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [
 theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
     ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 := by
   suffices ∀ a b : ι, a < b → ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 by
-    rcases h₀.lt_or_lt with ha | hb
+    rcases h₀.lt_or_gt with ha | hb
     · exact this _ _ ha
     · rw [inner_eq_zero_symm]
       exact this _ _ hb
@@ -95,7 +95,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
   intro i hi hia
   simp only [mul_eq_zero, div_eq_zero_iff, inner_self_eq_zero]
   right
-  rcases hia.lt_or_lt with hia₁ | hia₂
+  rcases hia.lt_or_gt with hia₁ | hia₂
   · rw [inner_eq_zero_symm]
     exact ih a h₀ i hia₁
   · exact ih i (mem_Iio.1 hi) a hia₂

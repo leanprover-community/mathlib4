@@ -1040,10 +1040,10 @@ theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
 
 theorem uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a :=
-  uIcc_of_ge <| le_of_not_ge h
+  uIcc_of_ge <| ge_of_not_le h
 
 theorem uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b :=
-  uIcc_of_le <| le_of_not_ge h
+  uIcc_of_le <| ge_of_not_le h
 
 theorem uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a :=
   coe_injective <| by
@@ -1093,7 +1093,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
   already. In that case, since `z` is maximal in `Ico x y`, then `z ⩿ y` and we can use the
   induction hypothesis to show that `Relation.TransGen (· ⩿ ·) x z`. -/
   · obtain ⟨z, hxz, hz⟩ :=
-      (Set.finite_Ico x y).exists_le_maximal <| Set.left_mem_Ico.2 <| hxy.lt_of_not_ge hxy'
+      (Set.finite_Ico x y).exists_le_maximal <| Set.left_mem_Ico.2 <| hxy.gt_of_not_le hxy'
     have z_card := calc
       #(Icc x z) ≤ #(Ico x y) := card_le_card <| Icc_subset_Ico_right hz.1.2
       _          < #(Icc x y) := this

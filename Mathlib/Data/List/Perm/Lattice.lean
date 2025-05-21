@@ -91,7 +91,7 @@ theorem Perm.drop_inter {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup
   · have : xs.drop n = [] := by
       apply eq_nil_of_length_eq_zero
       rw [length_drop, Nat.sub_eq_zero_iff_le]
-      apply le_of_not_ge h''
+      apply ge_of_not_le h''
     simp [this, List.inter]
 
 theorem Perm.dropSlice_inter {xs ys : List α} (n m : ℕ) (h : xs ~ ys)

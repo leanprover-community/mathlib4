@@ -471,7 +471,7 @@ private lemma exists_lt_mul_left_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c 
   rcases eq_or_ne b ⊤ with rfl | b_top
   · rcases eq_or_lt_of_le ha with rfl | ha
     · rw [zero_mul] at h
-      exact (not_le_of_gt h hc).rec
+      exact (not_ge_of_lt h hc).rec
     · obtain ⟨a', a0', aa'⟩ := exists_between ha
       use a', mem_Ioo.2 ⟨a0', aa'⟩
       rw [mul_top_of_pos ha] at h

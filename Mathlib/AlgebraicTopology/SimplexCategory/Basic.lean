@@ -416,7 +416,7 @@ lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n+1⦌) (j : Fin (n+2))
     zero_succAbove, succ_pred]
   | succ j =>
     rw [predAbove_of_castSucc_lt 0 _ (castSucc_zero ▸ succ_pos _), pred_succ]
-    rcases hj.lt_or_lt with (hj | hj)
+    rcases hj.lt_or_gt with (hj | hj)
     · rw [predAbove_of_le_castSucc j _]
       swap
       · exact (le_castSucc_iff.mpr hj)
@@ -685,7 +685,7 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                 by_cases h' : y₁ < y₂
                 · by_contra h''
                   apply not_le.mpr h'
-                  convert f.toOrderHom.monotone (le_of_not_ge h'')
+                  convert f.toOrderHom.monotone (ge_of_not_le h'')
                   all_goals
                     exact (congr_hom (Iso.inv_hom_id
                       (asIso ((forget SimplexCategory).map f))) _).symm

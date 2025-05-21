@@ -205,7 +205,7 @@ lemma tendsto_ne_zero_iff_order_eq_zero (hf : MeromorphicAt f x) :
   · simp [ho, hf.tendsto_ne_zero_of_order_eq_zero ho]
   simp only [ne_eq, ho, iff_false, not_exists, not_and]
   intro c c_ne hc
-  rcases ho.lt_or_lt with ho | ho
+  rcases ho.lt_or_gt with ho | ho
   · apply not_tendsto_atTop_of_tendsto_nhds hc.norm
     rw [tendsto_norm_atTop_iff_cobounded]
     exact hf.tendsto_cobounded_of_order_neg ho

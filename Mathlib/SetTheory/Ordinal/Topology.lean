@@ -324,7 +324,7 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
       use x
       exact ⟨⟨hl.2 ⟨hx.1.1.1, lt_succ_iff.mp hx.1.1.2⟩, hx.1.2⟩, fun h ↦ hx.2 (SetCoe.ext h)⟩
     have hp : o = p + 1 := (le_succ_iff_eq_or_le.mp (le_of_not_gt ho)).resolve_right
-      (not_le_of_gt hpo)
+      (not_ge_of_lt hpo)
     have ppos : p ≠ 0 := by
       rintro rfl
       obtain ⟨x, hx⟩ := h Set.univ univ_mem

@@ -201,7 +201,7 @@ lemma not_exists_sq (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t *
   rintro ⟨t, rfl⟩
   have h1 : m < t := Nat.mul_self_lt_mul_self_iff.1 hl
   have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.1 hr
-  exact (not_lt_of_ge <| le_of_lt_succ h2) h1
+  exact (not_gt_of_le <| le_of_lt_succ h2) h1
 
 lemma not_exists_sq' : m ^ 2 < n → n < (m + 1) ^ 2 → ¬∃ t, t ^ 2 = n := by
   simpa only [Nat.pow_two] using not_exists_sq

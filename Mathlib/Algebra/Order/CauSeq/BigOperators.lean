@@ -155,7 +155,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
   let l := Nat.find h
   have hl : ∀ n : ℕ, n ≥ m → f n > a - l • ε := Nat.find_spec h
   have hl0 : l ≠ 0 := fun hl0 ↦
-    not_lt_of_ge (ham m le_rfl)
+    not_gt_of_le (ham m le_rfl)
       (lt_of_lt_of_le (by have := hl m (le_refl m); simpa [hl0] using this) (le_abs_self (f m)))
   obtain ⟨i, hi⟩ := not_forall.1 (Nat.find_min h (Nat.pred_lt hl0))
   rw [Classical.not_imp, not_lt] at hi

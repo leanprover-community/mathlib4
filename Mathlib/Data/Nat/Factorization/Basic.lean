@@ -24,7 +24,7 @@ variable {a b m n p : ℕ}
 
 
 theorem factorization_eq_zero_of_lt {n p : ℕ} (h : n < p) : n.factorization p = 0 :=
-  Finsupp.not_mem_support_iff.mp (mt le_of_mem_primeFactors (not_le_of_gt h))
+  Finsupp.not_mem_support_iff.mp (mt le_of_mem_primeFactors (not_ge_of_lt h))
 
 @[simp]
 theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=

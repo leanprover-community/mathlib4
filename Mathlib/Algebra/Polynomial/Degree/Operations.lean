@@ -75,7 +75,7 @@ lemma natDegree_eq_natDegree {q : S[X]} (hpq : p.degree = q.degree) :
     p.natDegree = q.natDegree := by simp [natDegree, hpq]
 
 theorem coeff_eq_zero_of_degree_lt (h : degree p < n) : coeff p n = 0 :=
-  Classical.not_not.1 (mt le_degree_of_ne_zero (not_le_of_gt h))
+  Classical.not_not.1 (mt le_degree_of_ne_zero (not_ge_of_lt h))
 
 theorem coeff_eq_zero_of_natDegree_lt {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
     p.coeff n = 0 := by
@@ -222,7 +222,7 @@ theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingC
 lemma natDegree_eq_of_natDegree_add_lt_left (p q : R[X])
     (H : natDegree (p + q) < natDegree p) : natDegree p = natDegree q := by
   by_contra h
-  cases Nat.lt_or_lt_of_ne h with
+  cases Nat.lt_or_gt_of_ne h with
   | inl h => exact lt_asymm h (by rwa [natDegree_add_eq_right_of_natDegree_lt h] at H)
   | inr h =>
     rw [natDegree_add_eq_left_of_natDegree_lt h] at H

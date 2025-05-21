@@ -218,7 +218,7 @@ theorem opow_dvd_opow (a : Ordinal) {b c : Ordinal} (h : b ≤ c) : a ^ b ∣ a 
 theorem opow_dvd_opow_iff {a b c : Ordinal} (a1 : 1 < a) : a ^ b ∣ a ^ c ↔ b ≤ c :=
   ⟨fun h =>
     le_of_not_gt fun hn =>
-      not_le_of_gt ((opow_lt_opow_iff_right a1).2 hn) <|
+      not_ge_of_lt ((opow_lt_opow_iff_right a1).2 hn) <|
         le_of_dvd (opow_ne_zero _ <| one_le_iff_ne_zero.1 <| a1.le) h,
     opow_dvd_opow _⟩
 

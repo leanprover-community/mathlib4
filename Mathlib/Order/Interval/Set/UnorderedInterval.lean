@@ -197,8 +197,8 @@ variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ 
 theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
 
-lemma uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a := uIcc_of_gt <| lt_of_not_ge h
-lemma uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b := uIcc_of_lt <| lt_of_not_ge h
+lemma uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a := uIcc_of_gt <| gt_of_not_le h
+lemma uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b := uIcc_of_lt <| gt_of_not_le h
 
 lemma uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a := by rw [Icc_union_Icc', max_comm] <;> rfl
 
@@ -290,7 +290,7 @@ lemma eq_of_not_mem_uIoc_of_not_mem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
   rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;>
       apply le_antisymm <;>
     first |assumption|exact le_of_lt ‹_›|
-    exact absurd hb (not_le_of_gt ‹c < b›)|exact absurd ha (not_le_of_gt ‹c < a›)
+    exact absurd hb (not_ge_of_lt ‹c < b›)|exact absurd ha (not_ge_of_lt ‹c < a›)
 
 lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h
@@ -311,7 +311,7 @@ lemma uIoc_injective_left (a : α) : Injective (Ι a) := by
 
 lemma uIoc_union_uIoc (h : b ∈ [[a, c]]) : Ι a b ∪ Ι b c = Ι a c := by
   wlog hac : a ≤ c generalizing a c
-  · rw [uIoc_comm, union_comm, uIoc_comm, this _ (le_of_not_ge hac), uIoc_comm]
+  · rw [uIoc_comm, union_comm, uIoc_comm, this _ (ge_of_not_le hac), uIoc_comm]
     rwa [uIcc_comm]
   rw [uIcc_of_le hac] at h
   rw [uIoc_of_le h.1, uIoc_of_le h.2, uIoc_of_le hac, Ioc_union_Ioc_eq_Ioc h.1 h.2]
@@ -363,9 +363,9 @@ variable {a b : α}
 
 theorem Ioo_min_max : Ioo (min a b) (max a b) = uIoo a b := rfl
 
-lemma uIoo_of_not_le (h : ¬a ≤ b) : uIoo a b = Ioo b a := uIoo_of_gt <| lt_of_not_ge h
+lemma uIoo_of_not_le (h : ¬a ≤ b) : uIoo a b = Ioo b a := uIoo_of_gt <| gt_of_not_le h
 
-lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| lt_of_not_ge h
+lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| gt_of_not_le h
 
 theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) : uIoo a b ⊆ uIcc a b := by
   simp [uIoo, uIcc, Ioo_subset_Icc_self]

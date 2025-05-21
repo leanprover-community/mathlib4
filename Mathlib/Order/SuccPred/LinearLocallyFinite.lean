@@ -319,7 +319,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
         refine Monotone.monotone_iterate_of_le_map succ_mono (le_succ i0) (add_le_add_left ?_ _)
         exact Nat.one_le_iff_ne_zero.mpr hm0
       rwa [Function.iterate_succ', Function.comp_apply, iterate_succ_toZ i hi] at h_succ_le
-    · exact le_of_not_ge h
+    · exact ge_of_not_le h
   · exact absurd h_le (not_le.mpr (hj.trans_le hi))
   · exact (toZ_neg hi).le.trans (toZ_nonneg hj)
   · let m := Nat.find (exists_pred_iterate_of_le (α := ι) h_le)
@@ -336,7 +336,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
       exact h (le_of_eq rfl)
     refine hj_min (min_of_le_pred ?_)
     refine (@le_of_toZ_le _ _ _ _ _ i0 j i ?_).trans ?_
-    · exact le_of_not_ge h
+    · exact ge_of_not_le h
     · have h_le_pred : i ≤ pred^[(-toZ i0 j).toNat + 1] i0 := by
         rw [hj_eq]
         refine Monotone.antitone_iterate_of_map_le pred_mono (pred_le i0) (add_le_add_left ?_ _)

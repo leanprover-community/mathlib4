@@ -189,7 +189,7 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
   toFun := toENatAux
   map_one' := toENatAux_nat 1
   map_mul' x y := by
-    wlog hle : x ≤ y; · rw [mul_comm, this y x (le_of_not_ge hle), mul_comm]
+    wlog hle : x ≤ y; · rw [mul_comm, this y x (ge_of_not_le hle), mul_comm]
     cases lt_or_ge y ℵ₀ with
     | inl hy =>
       lift x to ℕ using hle.trans_lt hy; lift y to ℕ using hy
@@ -202,7 +202,7 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
         · rwa [Ne, toENatAux_eq_zero]
         · exact le_mul_of_one_le_of_le (one_le_iff_ne_zero.2 hx) hy
   map_add' x y := by
-    wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_ge hle), add_comm]
+    wlog hle : x ≤ y; · rw [add_comm, this y x (ge_of_not_le hle), add_comm]
     cases lt_or_ge y ℵ₀ with
     | inl hy =>
       lift x to ℕ using hle.trans_lt hy; lift y to ℕ using hy

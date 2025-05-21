@@ -65,25 +65,29 @@ lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_no
 
 lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
 lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_ge.1 hab).1
-lemma not_le_of_gt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_ge.1 hab).2
-lemma not_lt_of_ge (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_gt hab
+lemma not_ge_of_lt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_ge.1 hab).2
+lemma not_gt_of_le (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_ge_of_lt hab
 
-@[deprecated (since := "2025-05-11")] alias not_le_of_lt := not_le_of_gt
-@[deprecated (since := "2025-05-11")] alias not_lt_of_le := not_lt_of_ge
+@[deprecated (since := "2025-05-11")] alias not_le_of_lt := not_ge_of_lt
+@[deprecated (since := "2025-05-11")] alias not_lt_of_le := not_gt_of_le
 
-alias LT.lt.not_le := not_le_of_gt
-alias LE.le.not_lt := not_lt_of_ge
+alias LT.lt.not_ge := not_ge_of_lt
+alias LE.le.not_gt := not_gt_of_le
+
+@[deprecated (since := "2025-05-11")] alias LT.lt.not_le := LT.lt.not_ge
+@[deprecated (since := "2025-05-11")] alias LE.le.not_lt := LE.le.not_gt
+
 
 lemma ge_trans : a ≥ b → b ≥ c → a ≥ c := fun h₁ h₂ => le_trans h₂ h₁
 
-lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
+lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_ge_of_lt h le_rfl
 lemma gt_irrefl (a : α) : ¬a > a := lt_irrefl _
 
 lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
-  lt_of_le_not_ge (le_trans (le_of_lt hab) hbc) fun hca ↦ not_le_of_gt hab (le_trans hbc hca)
+  lt_of_le_not_ge (le_trans (le_of_lt hab) hbc) fun hca ↦ not_ge_of_lt hab (le_trans hbc hca)
 
 lemma lt_of_le_of_lt (hab : a ≤ b) (hbc : b < c) : a < c :=
-  lt_of_le_not_ge (le_trans hab (le_of_lt hbc)) fun hca ↦ not_le_of_gt hbc (le_trans hca hab)
+  lt_of_le_not_ge (le_trans hab (le_of_lt hbc)) fun hca ↦ not_ge_of_lt hbc (le_trans hca hab)
 
 lemma gt_of_gt_of_ge (h₁ : a > b) (h₂ : b ≥ c) : a > c := lt_of_le_of_lt h₂ h₁
 lemma gt_of_ge_of_gt (h₁ : a ≥ b) (h₂ : b > c) : a > c := lt_of_lt_of_le h₂ h₁
@@ -115,7 +119,7 @@ instance (priority := 900) : @Trans α α α GE.ge GT.gt GT.gt := ⟨gt_of_ge_of
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
   | a, b =>
     if hab : a ≤ b then
-      if hba : b ≤ a then isFalse fun hab' => not_le_of_gt hab' hba
+      if hba : b ≤ a then isFalse fun hab' => not_ge_of_lt hab' hba
       else isTrue <| lt_of_le_not_ge hab hba
     else isFalse fun hab' => hab (le_of_lt hab')
 

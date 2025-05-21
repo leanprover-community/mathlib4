@@ -227,7 +227,7 @@ theorem eq_of_le_of_card_le {s t : Multiset α} (h : s ≤ t) : card t ≤ card 
   leInductionOn h fun s h₂ => congr_arg _ <| s.eq_of_length_le h₂
 
 theorem card_lt_card {s t : Multiset α} (h : s < t) : card s < card t :=
-  lt_of_not_ge fun h₂ => _root_.ne_of_lt h <| eq_of_le_of_card_le (le_of_lt h) h₂
+  gt_of_not_le fun h₂ => _root_.ne_of_lt h <| eq_of_le_of_card_le (le_of_lt h) h₂
 
 @[mono]
 theorem card_mono : Monotone (@card α) := fun _a _b => card_le_card

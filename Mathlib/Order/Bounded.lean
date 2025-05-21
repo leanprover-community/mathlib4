@@ -55,13 +55,13 @@ theorem unbounded_ge_of_forall_exists_gt [Preorder α] (h : ∀ a, ∃ b ∈ s, 
 theorem unbounded_ge_iff [LinearOrder α] : Unbounded (· ≥ ·) s ↔ ∀ a, ∃ b ∈ s, b < a :=
   ⟨fun h a =>
     let ⟨b, hb, hba⟩ := h a
-    ⟨b, hb, lt_of_not_ge hba⟩,
+    ⟨b, hb, gt_of_not_le hba⟩,
     unbounded_ge_of_forall_exists_gt⟩
 
 theorem unbounded_gt_of_forall_exists_ge [Preorder α] (h : ∀ a, ∃ b ∈ s, b ≤ a) :
     Unbounded (· > ·) s := fun a =>
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => not_le_of_gt hba hb'⟩
+  ⟨b, hb, fun hba => not_ge_of_lt hba hb'⟩
 
 theorem unbounded_gt_iff [LinearOrder α] : Unbounded (· > ·) s ↔ ∀ a, ∃ b ∈ s, b ≤ a :=
   ⟨fun h a =>

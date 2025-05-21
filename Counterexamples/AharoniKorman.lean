@@ -500,10 +500,10 @@ lemma apply_le_of_le (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : x ≤ y) 
   hC.le_of_not_gt hy (f.mem x) fun hxy ↦ f.not_lt_apply (hx.trans_lt hxy)
 
 lemma lt_apply_of_lt (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : y < x) : y < f x :=
-  hC.lt_of_not_ge (f.mem x) hy fun hxy ↦ f.not_apply_lt (hxy.trans_lt hx)
+  hC.gt_of_not_le (f.mem x) hy fun hxy ↦ f.not_apply_lt (hxy.trans_lt hx)
 
 lemma apply_lt_of_lt (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : x < y) : f x < y :=
-  hC.lt_of_not_ge hy (f.mem x) fun hxy ↦ f.not_lt_apply (hx.trans_le hxy)
+  hC.gt_of_not_le hy (f.mem x) fun hxy ↦ f.not_lt_apply (hx.trans_le hxy)
 
 lemma apply_mem_Icc_of_mem_Icc (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hz : z ∈ C)
     (hx : x ∈ Set.Icc y z) : f x ∈ Set.Icc y z :=
@@ -792,7 +792,7 @@ theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·
     (h₁l : lo ≤ x) (h₂l : lo ≤ y) (h₁h : x ≤ hi) (h₂h : y ≤ hi) :
     f x = f y := by
   wlog hxy : (ofHollom y).1 ≤ (ofHollom x).1 generalizing x y
-  · exact (this h.symm h₂l h₁l h₂h h₁h (le_of_not_ge hxy)).symm
+  · exact (this h.symm h₂l h₁l h₂h h₁h (ge_of_not_le hxy)).symm
   have hx : x ∈ level n := ordConnected_level.out hlo.2 hhi.2 ⟨h₁l, h₁h⟩
   have hy : y ∈ level n := ordConnected_level.out hlo.2 hhi.2 ⟨h₂l, h₂h⟩
   induction hx using induction_on_level with | h x₁ y₁ =>
