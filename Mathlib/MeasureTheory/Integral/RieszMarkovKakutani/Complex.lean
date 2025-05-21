@@ -79,7 +79,9 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
   · -- The case `a = ∞`.
     simp [ha, hasSum_iff_tendsto_nat, nhds_top]
     constructor
-    · sorry
+    · intro h b hb
+      obtain ⟨n, hn⟩ := h b (LT.lt.ne_top hb)
+      exact ⟨n, hn n n.le_refl⟩
     · intro h b hb
       push_neg at hb
       obtain ⟨n, hn⟩ := h b hb.symm.lt_top'
@@ -109,8 +111,7 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
       intro hf hf' nhd hnhd
       simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage]
       obtain ⟨ε, hε, hε'⟩ : ∃ ε > 0, Set.Ioc (a - ε) a ⊆ nhd := by
-        obtain ⟨t, ht⟩ := mem_nhds_iff.mp hnhd
-
+        obtain ⟨t, ht, ht', ht''⟩ := mem_nhds_iff.mp hnhd
         sorry
       suffices h : ∃ m, ∀ (n : ℕ), m ≤ n → ∑ i ∈ Finset.range n, f i ∈ Set.Ioc (a - ε) a by
         obtain ⟨m, hm⟩ := h
