@@ -457,7 +457,7 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
       apply Nat.le_sub_of_add_le
       rw [add_comm]; exact (mem_Icc.mp hi).1
     · exact this _ le_rfl
-  rw [Icc_eq_empty (Nat.lt_succ.mpr h).not_le, sum_empty]
+  rw [Icc_eq_empty (Nat.lt_succ.mpr h).not_ge, sum_empty]
   nontriviality R
   by_cases hp : p.natDegree = 0
   · rw [(divByMonic_eq_zero_iff <| monic_X_sub_C a).mpr, coeff_zero]

@@ -380,7 +380,7 @@ instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLE [PosSMulStrictMo
   elim _a ha _b₁ _b₂ := (strictMono_smul_left_of_pos ha).le_iff_le.1
 
 lemma PosSMulReflectLE.toPosSMulStrictMono [PosSMulReflectLE α β] : PosSMulStrictMono α β where
-  elim _a ha _b₁ _b₂ hb := not_le.1 fun h ↦ hb.not_le <| le_of_smul_le_smul_left h ha
+  elim _a ha _b₁ _b₂ hb := not_le.1 fun h ↦ hb.not_ge <| le_of_smul_le_smul_left h ha
 
 lemma posSMulStrictMono_iff_PosSMulReflectLE : PosSMulStrictMono α β ↔ PosSMulReflectLE α β :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ PosSMulReflectLE.toPosSMulStrictMono⟩
@@ -389,7 +389,7 @@ instance PosSMulMono.toPosSMulReflectLT [PosSMulMono α β] : PosSMulReflectLT �
   elim _a ha _b₁ _b₂ := (monotone_smul_left_of_nonneg ha).reflect_lt
 
 lemma PosSMulReflectLT.toPosSMulMono [PosSMulReflectLT α β] : PosSMulMono α β where
-  elim _a ha _b₁ _b₂ hb := not_lt.1 fun h ↦ hb.not_lt <| lt_of_smul_lt_smul_left h ha
+  elim _a ha _b₁ _b₂ hb := not_lt.1 fun h ↦ hb.not_gt <| lt_of_smul_lt_smul_left h ha
 
 lemma posSMulMono_iff_posSMulReflectLT : PosSMulMono α β ↔ PosSMulReflectLT α β :=
   ⟨fun _ ↦ PosSMulMono.toPosSMulReflectLT, fun _ ↦ PosSMulReflectLT.toPosSMulMono⟩
@@ -406,10 +406,10 @@ section Right
 variable [Zero β]
 
 lemma SMulPosReflectLE.toSMulPosStrictMono [SMulPosReflectLE α β] : SMulPosStrictMono α β where
-  elim _b hb _a₁ _a₂ ha := not_le.1 fun h ↦ ha.not_le <| le_of_smul_le_smul_of_pos_right h hb
+  elim _b hb _a₁ _a₂ ha := not_le.1 fun h ↦ ha.not_ge <| le_of_smul_le_smul_of_pos_right h hb
 
 lemma SMulPosReflectLT.toSMulPosMono [SMulPosReflectLT α β] : SMulPosMono α β where
-  elim _b hb _a₁ _a₂ ha := not_lt.1 fun h ↦ ha.not_lt <| lt_of_smul_lt_smul_right h hb
+  elim _b hb _a₁ _a₂ ha := not_lt.1 fun h ↦ ha.not_gt <| lt_of_smul_lt_smul_right h hb
 
 end Right
 end LinearOrder
@@ -423,10 +423,10 @@ variable [Zero β]
 -- See note [lower instance priority]
 instance (priority := 100) SMulPosStrictMono.toSMulPosReflectLE [SMulPosStrictMono α β] :
     SMulPosReflectLE α β where
-  elim _b hb _a₁ _a₂ h := not_lt.1 fun ha ↦ h.not_lt <| smul_lt_smul_of_pos_right ha hb
+  elim _b hb _a₁ _a₂ h := not_lt.1 fun ha ↦ h.not_gt <| smul_lt_smul_of_pos_right ha hb
 
 lemma SMulPosMono.toSMulPosReflectLT [SMulPosMono α β] : SMulPosReflectLT α β where
-  elim _b hb _a₁ _a₂ h := not_le.1 fun ha ↦ h.not_le <| smul_le_smul_of_nonneg_right ha hb
+  elim _b hb _a₁ _a₂ h := not_le.1 fun ha ↦ h.not_ge <| smul_le_smul_of_nonneg_right ha hb
 
 end Right
 end LinearOrder
@@ -623,20 +623,20 @@ lemma pos_and_pos_or_neg_and_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α
     exact smul_nonpos_of_nonneg_of_nonpos ha.le hb
 
 lemma neg_of_smul_pos_right [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : a ≤ 0) :
-    b < 0 := ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.1.not_le ha).2
+    b < 0 := ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.1.not_ge ha).2
 
 lemma neg_of_smul_pos_left [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : b ≤ 0) :
-    a < 0 := ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.2.not_le ha).1
+    a < 0 := ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.2.not_ge ha).1
 
 lemma neg_iff_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α β] (hab : 0 < a • b) :
     a < 0 ↔ b < 0 :=
   ⟨neg_of_smul_pos_right hab ∘ le_of_lt, neg_of_smul_pos_left hab ∘ le_of_lt⟩
 
 lemma neg_of_smul_neg_left' [SMulPosMono α β] (h : a • b < 0) (ha : 0 ≤ a) : b < 0 :=
-  gt_of_not_le fun hb ↦ (smul_nonneg' ha hb).not_lt h
+  gt_of_not_le fun hb ↦ (smul_nonneg' ha hb).not_gt h
 
 lemma neg_of_smul_neg_right' [PosSMulMono α β] (h : a • b < 0) (hb : 0 ≤ b) : a < 0 :=
-  gt_of_not_le fun ha ↦ (smul_nonneg ha hb).not_lt h
+  gt_of_not_le fun ha ↦ (smul_nonneg ha hb).not_gt h
 
 end LinearOrder
 end SMulWithZero
@@ -928,7 +928,7 @@ variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
 lemma nonneg_and_nonneg_or_nonpos_and_nonpos_of_smul_nonneg (hab : 0 ≤ a • b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   simp only [Decidable.or_iff_not_not_and_not, not_and, not_le]
-  refine fun ab nab ↦ hab.not_lt ?_
+  refine fun ab nab ↦ hab.not_gt ?_
   obtain ha | rfl | ha := lt_trichotomy 0 a
   exacts [smul_neg_of_pos_of_neg ha (ab ha.le), ((ab le_rfl).asymm (nab le_rfl)).elim,
     smul_neg_of_neg_of_pos ha (nab ha.le)]

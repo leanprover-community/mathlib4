@@ -323,7 +323,7 @@ theorem zpow_eq_one (h : IsPrimitiveRoot ζ k) : ζ ^ (k : ℤ) = 1 := by
 theorem zpow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℤ) : ζ ^ l = 1 ↔ (k : ℤ) ∣ l := by
   by_cases h0 : 0 ≤ l
   · lift l to ℕ using h0; exact_mod_cast h.pow_eq_one_iff_dvd l
-  · have : 0 ≤ -l := (Int.neg_pos_of_neg <| Int.gt_of_not_le h0).le
+  · have : 0 ≤ -l := (Int.neg_pos_of_neg <| Int.lt_of_not_ge h0).le
     lift -l to ℕ using this with l' hl'
     rw [← dvd_neg, ← hl']
     norm_cast
@@ -345,7 +345,7 @@ theorem zpow_of_gcd_eq_one (h : IsPrimitiveRoot ζ k) (i : ℤ) (hi : i.gcd k = 
   by_cases h0 : 0 ≤ i
   · lift i to ℕ using h0
     exact_mod_cast h.pow_of_coprime i hi
-  have : 0 ≤ -i := (Int.neg_pos_of_neg <| Int.gt_of_not_le h0).le
+  have : 0 ≤ -i := (Int.neg_pos_of_neg <| Int.lt_of_not_ge h0).le
   lift -i to ℕ using this with i' hi'
   rw [← inv_iff, ← zpow_neg, ← hi', zpow_natCast]
   apply h.pow_of_coprime

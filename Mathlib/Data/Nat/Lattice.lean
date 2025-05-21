@@ -42,7 +42,7 @@ theorem sSup_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
 theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sSup s = 0 :=
   dif_neg fun ⟨n, hn⟩ ↦
     let ⟨k, hks, hk⟩ := h.exists_gt n
-    (hn k hks).not_lt hk
+    (hn k hks).not_gt hk
 
 @[simp]
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by

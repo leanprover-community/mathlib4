@@ -51,7 +51,8 @@ theorem floor_eq_iff (ha : 0 ≤ a) : ⌊a⌋₊ = n ↔ ↑n ≤ a ∧ a < ↑n
 variable [IsStrictOrderedRing R]
 
 theorem lt_of_floor_lt (h : ⌊a⌋₊ < n) : a < n :=
-  gt_of_not_le fun h' => (le_floor h').not_lt h
+  -- TODO: add `protected` and remove `_root_`
+  _root_.gt_of_not_le fun h' => (le_floor h').not_gt h
 
 theorem lt_one_of_floor_lt_one (h : ⌊a⌋₊ < 1) : a < 1 := mod_cast lt_of_floor_lt h
 
@@ -94,7 +95,7 @@ theorem le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋₊ ↔ (n : R) ≤ a := by
   obtain ha | ha := le_total a 0
   · rw [floor_of_nonpos ha]
     exact
-      iff_of_false (Nat.pos_of_ne_zero hn).not_le
+      iff_of_false (Nat.pos_of_ne_zero hn).not_ge
         (not_ge_of_lt <| ha.trans_lt <| cast_pos.2 <| Nat.pos_of_ne_zero hn)
   · exact le_floor_iff ha
 

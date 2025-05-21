@@ -269,7 +269,7 @@ variable [Zero α] [LinearOrder α]
 @[simp]
 theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
   obtain ⟨a, ha⟩ := a
-  simp [toNonneg, ha.not_lt]
+  simp [toNonneg, ha.not_gt]
 
 end LinearOrder
 

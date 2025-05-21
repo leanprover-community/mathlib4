@@ -100,7 +100,7 @@ theorem toLex_covBy_toLex_iff {a₁ a₂ : α} {b₁ b₂ : β} :
   · rintro (⟨rfl, hb, h⟩ | ⟨⟨ha, h⟩, hb₁, hb₂⟩)
     · refine ⟨.inr ⟨rfl, hb⟩, fun a b ↦ ?_⟩
       rintro (hlt₁ | ⟨rfl, hlt₁⟩) (hlt₂ | ⟨heq, hlt₂⟩)
-      exacts [hlt₁.not_lt hlt₂, hlt₁.ne' heq, hlt₂.false, h hlt₁ hlt₂]
+      exacts [hlt₁.not_gt hlt₂, hlt₁.ne' heq, hlt₂.false, h hlt₁ hlt₂]
     · refine ⟨.inl ha, fun a b ↦ ?_⟩
       rintro (hlt₁ | ⟨rfl, hlt₁⟩) (hlt₂ | ⟨heq, hlt₂⟩)
       exacts [h hlt₁ hlt₂, hb₂ _ hlt₂, hb₁ _ hlt₁, hb₁ _ hlt₁]

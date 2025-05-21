@@ -113,6 +113,6 @@ theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2^a ≤ n := by
   exact List.single_le_sum (by simp) _ <| mem_map_of_mem ha
 
 theorem not_mem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
-  fun h ↦ (n.lt_two_pow_self).not_le <| two_pow_le_of_mem_bitIndices h
+  fun h ↦ (n.lt_two_pow_self).not_ge <| two_pow_le_of_mem_bitIndices h
 
 end Nat
