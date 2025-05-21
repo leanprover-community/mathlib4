@@ -52,10 +52,10 @@ section IsNodal
 
 /-- We say that a `WeierstrassCurve` is nodal if its `Δ = 0` but its `c₄ ≠ 0`. -/
 class IsNodal (E : WeierstrassCurve R) : Prop where
-  c₄_eq_zero (E) : E.c₄ ≠ 0
+  c₄_ne_zero (E) : E.c₄ ≠ 0
   Δ_eq_zero (E) : E.Δ = 0
 
-alias c₄_of_isNodal := IsNodal.c₄_eq_zero
+alias c₄_of_isNodal := IsNodal.c₄_ne_zero
 @[simp] alias Δ_of_isNodal := IsNodal.Δ_eq_zero
 
 lemma c₄_pow_three_of_isNodal [E.IsNodal] : E.c₄ ^ 3 = E.c₆ ^ 2 := by
@@ -170,9 +170,8 @@ def pointEquivOfIsNodalOfIsSplitSingularNF [DecidableEq K]
     simp only [toAffine, Affine.nonsingular_iff, Affine.equation_iff, a₃_of_isSplitSingularNF,
       zero_mul, add_zero, a₂_of_isSplitSingularNF, a₄_of_isSplitSingularNF, a₆_of_isSplitSingularNF,
       mul_zero, ne_eq, sub_zero] at h₁ h₂
-    by_cases hx₁x₂ : x₁ = x₂
-    · subst hx₁x₂
-      replace H : y₁ ≠ E.toAffine.negY x₁ y₂ := by simpa using H
+    obtain rfl | hx₁x₂ := eq_or_ne x₁ x₂
+    · replace H : y₁ ≠ E.toAffine.negY x₁ y₂ := by simpa using H
       have : (y₁ - y₂) * (y₁ - (-y₂ - E.a₁ * x₁)) = 0 := by
         linear_combination h₁.1 - h₂.1
       obtain rfl := sub_eq_zero.mp
