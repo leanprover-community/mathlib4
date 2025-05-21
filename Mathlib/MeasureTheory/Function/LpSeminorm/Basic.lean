@@ -493,6 +493,17 @@ theorem eLpNorm_norm (f : α → F) : eLpNorm (fun x => ‖f x‖) p μ = eLpNor
 theorem eLpNorm_enorm (f : α → ε) : eLpNorm (fun x ↦ ‖f x‖ₑ) p μ = eLpNorm f p μ :=
   eLpNorm_congr_enorm_ae <| Eventually.of_forall fun _ => enorm_enorm _
 
+theorem eLpNorm'_enorm_rpow (f : α → ε) (p q : ℝ) (hq_pos : 0 < q) :
+    eLpNorm' (‖f ·‖ₑ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
+  simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
+    mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, enorm_eq_self, ← ENNReal.rpow_mul, mul_comm]
+
+/-- `f : α → ℝ` and `ENNReal.ofReal ∘ f : α → ℝ≥0∞` have the same `eLpNorm`.
+Usually, you should not use this lemma (but use enorms everywhere.) -/
+lemma eLpNorm_ofReal (f : α → ℝ) (hf : ∀ᵐ x ∂μ, 0 ≤ f x) :
+    eLpNorm (ENNReal.ofReal ∘ f) p μ = eLpNorm f p μ :=
+  eLpNorm_congr_enorm_ae <| hf.mono fun _x hx ↦ Real.enorm_ofReal_of_nonneg hx
+
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
   simp_rw [eLpNorm', ← ENNReal.rpow_mul, ← one_div_mul_one_div, one_div,
@@ -500,18 +511,14 @@ theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg (norm_nonneg _) _), mul_comm p,
     ← ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hq_pos.le, ENNReal.rpow_mul]
 
-theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
-    eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
+theorem eLpNorm_enorm_rpow (f : α → ε) (hq_pos : 0 < q) :
+    eLpNorm (‖f ·‖ₑ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
   by_cases h0 : p = 0
   · simp [h0, ENNReal.zero_rpow_of_pos hq_pos]
   by_cases hp_top : p = ∞
   · simp only [hp_top, eLpNorm_exponent_top, ENNReal.top_mul', hq_pos.not_le,
       ENNReal.ofReal_eq_zero, if_false, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
-    have h_rpow : essSup (‖‖f ·‖ ^ q‖ₑ) μ = essSup (‖f ·‖ₑ ^ q) μ := by
-      congr
-      ext1 x
-      conv_rhs => rw [← enorm_norm]
-      rw [← Real.enorm_rpow_of_nonneg (norm_nonneg _) hq_pos.le]
+    have h_rpow : essSup (‖‖f ·‖ₑ ^ q‖ₑ) μ = essSup (‖f ·‖ₑ ^ q) μ := by congr
     rw [h_rpow]
     have h_rpow_mono := ENNReal.strictMono_rpow_of_pos hq_pos
     have h_rpow_surj := (ENNReal.rpow_left_bijective hq_pos.ne.symm).2
@@ -523,7 +530,15 @@ theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
     rwa [Ne, ENNReal.ofReal_eq_zero, not_le]
   swap; · exact ENNReal.mul_ne_top hp_top ENNReal.ofReal_ne_top
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hq_pos.le]
-  exact eLpNorm'_norm_rpow f p.toReal q hq_pos
+  exact eLpNorm'_enorm_rpow f p.toReal q hq_pos
+
+theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
+    eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
+  rw [← eLpNorm_enorm_rpow f hq_pos]
+  symm
+  convert eLpNorm_ofReal (fun x ↦ ‖f x‖ ^ q) (by filter_upwards with x using by positivity)
+  rw [Function.comp_apply, ← ofReal_norm_eq_enorm]
+  exact ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity)
 
 theorem eLpNorm_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) : eLpNorm f p μ = eLpNorm g p μ :=
   eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx => hx ▸ rfl
@@ -1245,14 +1260,6 @@ theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {
     simp [ENNReal.mul_rpow_eq_ite, enorm_eq_zero, hp']
   simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
 
-theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
-  calc
-    essSup (‖f ·‖ₑ) μ ≤ essSup (fun x => (↑(c * ‖g x‖₊) : ℝ≥0∞)) μ :=
-      essSup_mono_ae <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
-    _ = essSup (c * ‖g ·‖ₑ) μ := by simp_rw [ENNReal.coe_mul, enorm]
-    _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
-
 end ENormedAddMonoid
 
 -- TODO: eventually, deprecate and remove the nnnorm version
@@ -1262,15 +1269,13 @@ theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' {f : α → ε}
     essSup (‖f ·‖ₑ) μ ≤ essSup (c * ‖g ·‖ₑ) μ := essSup_mono_ae <| h
     _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
 
-theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) (p : ℝ≥0∞) : eLpNorm f p μ ≤ c • eLpNorm g p μ := by
-  by_cases h0 : p = 0
-  · simp [h0]
-  by_cases h_top : p = ∞
-  · rw [h_top]
-    exact eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul h
-  simp_rw [eLpNorm_eq_eLpNorm' h0 h_top]
-  exact eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul h (ENNReal.toReal_pos h0 h_top)
+theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
+    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
+  calc
+    essSup (‖f ·‖ₑ) μ ≤ essSup (fun x => (↑(c * ‖g x‖₊) : ℝ≥0∞)) μ :=
+      essSup_mono_ae <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
+    _ = essSup (c * ‖g ·‖ₑ) μ := by simp_rw [ENNReal.coe_mul, enorm]
+    _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
 
 -- TODO: eventually, deprecate and remove the nnnorm version
 theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
@@ -1282,6 +1287,16 @@ theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α →
     exact eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' h
   simp_rw [eLpNorm_eq_eLpNorm' h0 h_top]
   exact eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' h (ENNReal.toReal_pos h0 h_top)
+
+theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
+    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) (p : ℝ≥0∞) : eLpNorm f p μ ≤ c • eLpNorm g p μ := by
+  by_cases h0 : p = 0
+  · simp [h0]
+  by_cases h_top : p = ∞
+  · rw [h_top]
+    exact eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul h
+  simp_rw [eLpNorm_eq_eLpNorm' h0 h_top]
+  exact eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul h (ENNReal.toReal_pos h0 h_top)
 
 -- TODO: add the whole family of lemmas?
 private theorem le_mul_iff_eq_zero_of_nonneg_of_neg_of_nonneg {α}
@@ -1405,12 +1420,14 @@ end IsBoundedSMul
 /-!
 ### Bounded actions by normed division rings
 The inequalities in the previous section are now tight.
+
+TODO: do these results hold for any `NormedRing` assuming `NormSMulClass`?
 -/
 
 section NormedSpace
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 E] [Module 𝕜 F]
-variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜 F]
+variable [NormSMulClass 𝕜 E] [NormSMulClass 𝕜 F]
 
 theorem eLpNorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
     eLpNorm' (c • f) q μ = ‖c‖ₑ * eLpNorm' f q μ := by

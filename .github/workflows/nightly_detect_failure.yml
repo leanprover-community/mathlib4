@@ -126,11 +126,15 @@ jobs:
       with:
         script: |
           const branchName = `bump/nightly-${process.env.NIGHTLY}`;
-          const branches = await github.rest.repos.listBranches({
+          console.log(`Looking for branch: ${branchName}`);
+
+          // Use paginate to get all branches
+          const branches = await github.paginate(github.rest.repos.listBranches, {
             owner: context.repo.owner,
             repo: context.repo.repo
           });
-          const exists = branches.data.some(branch => branch.name === branchName);
+
+          const exists = branches.some(branch => branch.name === branchName);
           if (exists) {
             console.log(`Branch ${branchName} exists.`);
             return true;
