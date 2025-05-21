@@ -38,14 +38,14 @@ variable {α β σ φ : Type*} {n : ℕ} {p : α → Prop}
 @[simps!]
 def toVector (v : List.Vector α n) : _root_.Vector α n := ⟨v.1.toArray, v.2⟩
 
-@[simp] theorem toVector_mk (a : List α) (h : a.length = n) :
+theorem toVector_mk (a : List α) (h : a.length = n) :
     toVector ⟨a, h⟩ = ⟨a.toArray, h⟩ := rfl
 
 /-- Convert a `Vector` to a `List.Vector`. -/
 @[simps!]
 def ofVector {α : Type*} {n : ℕ} (v : _root_.Vector α n) : List.Vector α n := ⟨v.toList, v.2⟩
 
-@[simp] theorem ofVector_mk (a : Array α) (h : a.size = n) :
+theorem ofVector_mk (a : Array α) (h : a.size = n) :
     ofVector ⟨a, h⟩ = ⟨a.toList, h⟩ := rfl
 
 alias _root_.Vector.toListVector := ofVector
