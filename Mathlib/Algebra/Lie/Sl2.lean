@@ -16,12 +16,12 @@ distinguished position in the general theory. This file provides some basic defi
 about `sl₂`.
 
 ## Main definitions:
- * `IsSl2Triple`: a structure representing a triple of elements in a Lie algebra which satisfy the
-   standard relations for `sl₂`.
- * `IsSl2Triple.HasPrimitiveVectorWith`: a structure representing a primitive vector in a
-   representation of a Lie algebra relative to a distinguished `sl₂` triple.
- * `IsSl2Triple.HasPrimitiveVectorWith.exists_nat`: the eigenvalue of a primitive vector must be a
-   natural number if the representation is finite-dimensional.
+* `IsSl2Triple`: a structure representing a triple of elements in a Lie algebra which satisfy the
+  standard relations for `sl₂`.
+* `IsSl2Triple.HasPrimitiveVectorWith`: a structure representing a primitive vector in a
+  representation of a Lie algebra relative to a distinguished `sl₂` triple.
+* `IsSl2Triple.HasPrimitiveVectorWith.exists_nat`: the eigenvalue of a primitive vector must be a
+  natural number if the representation is finite-dimensional.
 
 -/
 
@@ -90,6 +90,51 @@ lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e
     suffices 2 • ⁅e, m⁆ = 0 by simpa using this
     rw [← nsmul_lie, ← t.lie_h_e_nsmul, lie_lie, hm', lie_smul, he, lie_smul, hm',
       smul_smul, smul_smul, mul_comm ρ μ, sub_self]
+
+variable (R) in
+open Submodule in
+/-- The subalgebra associated to an `sl₂` triple. -/
+def toLieSubalgebra (t : IsSl2Triple h e f) :
+    LieSubalgebra R L where
+  __ := span R {e, f, h}
+  lie_mem' {x y} hx hy := by
+    simp only [carrier_eq_coe, SetLike.mem_coe] at hx hy ⊢
+    induction hx using span_induction with
+    | zero => simp
+    | add u v hu hv hu' hv' => simpa only [add_lie] using add_mem hu' hv'
+    | smul t u hu hu' => simpa only [smul_lie] using smul_mem _ t hu'
+    | mem u hu =>
+      induction hy using span_induction with
+      | zero => simp
+      | add u v hu hv hu' hv' => simpa only [lie_add] using add_mem hu' hv'
+      | smul t u hv hv' => simpa only [lie_smul] using smul_mem _ t hv'
+      | mem v hv =>
+        simp only [mem_insert_iff, mem_singleton_iff] at hu hv
+        rcases hu with rfl | rfl | rfl <;>
+        rcases hv with rfl | rfl | rfl <;> (try simp only [lie_self, zero_mem])
+        · rw [t.lie_e_f]
+          apply subset_span
+          simp
+        · rw [← lie_skew, t.lie_h_e_nsmul, neg_mem_iff]
+          apply nsmul_mem <| subset_span _
+          simp
+        · rw [← lie_skew, t.lie_e_f, neg_mem_iff]
+          apply subset_span
+          simp
+        · rw [← lie_skew, t.lie_h_f_nsmul, neg_neg]
+          apply nsmul_mem <| subset_span _
+          simp
+        · rw [t.lie_h_e_nsmul]
+          apply nsmul_mem <| subset_span _
+          simp
+        · rw [t.lie_h_f_nsmul, neg_mem_iff]
+          apply nsmul_mem <| subset_span _
+          simp
+
+lemma mem_toLieSubalgebra_iff {x : L} {t : IsSl2Triple h e f} :
+    x ∈ t.toLieSubalgebra R ↔ ∃ c₁ c₂ c₃ : R, x = c₁ • e + c₂ • f + c₃ • ⁅e, f⁆ := by
+  simp_rw [t.lie_e_f, toLieSubalgebra, ← LieSubalgebra.mem_toSubmodule, Submodule.mem_span_triple,
+    eq_comm]
 
 namespace HasPrimitiveVectorWith
 

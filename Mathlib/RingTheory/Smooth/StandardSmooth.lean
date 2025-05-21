@@ -5,7 +5,7 @@ Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.LinearAlgebra.Determinant
-import Mathlib.RingTheory.Presentation
+import Mathlib.RingTheory.Extension.Presentation.Basic
 
 /-!
 # Standard smooth algebras
@@ -163,7 +163,7 @@ noncomputable def jacobiMatrix : Matrix P.rels P.rels P.Ring :=
   LinearMap.toMatrix P.basis P.basis P.differential
 
 lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMatrix.det := by
-   simp [jacobiMatrix, jacobian]
+  simp [jacobiMatrix, jacobian]
 
 lemma jacobiMatrix_apply (i j : P.rels) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by

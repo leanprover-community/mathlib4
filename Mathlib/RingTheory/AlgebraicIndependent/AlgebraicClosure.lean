@@ -13,11 +13,11 @@ import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 ## Main results
 
 * `AlgebraicIndependent.extendScalars`: if A/S/R is a tower of algebras with S/R algebraic,
-then a family of elements in A that are algebraically independent over R remains algebraically
-independent over S, provided that S has no zero divisors.
+  then a family of elements in A that are algebraically independent over R remains algebraically
+  independent over S, provided that S has no zero divisors.
 
 * `AlgebraicIndependent.algebraicClosure`: an algebraically independent family remains
-algebraically independent over the algebraic closure.
+  algebraically independent over the algebraic closure.
 -/
 
 open Function Algebra

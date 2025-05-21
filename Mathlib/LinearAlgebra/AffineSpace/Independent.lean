@@ -839,21 +839,31 @@ theorem range_face_points {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1
 
 /-- The face of a simplex with all but one point. -/
 def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Simplex k P (n - 1) :=
-  s.face (fs := {j | j ≠ i}) (by simp [filter_ne', NeZero.one_le])
+  s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le])
 
 @[simp] lemma range_faceOpposite_points {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
-    Set.range (s.faceOpposite i).points = s.points '' {j | j ≠ i} := by
+    Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
   simp [faceOpposite]
 
+/-- Needed to make `affineSpan (s.points '' {i}ᶜ)` nonempty. -/
+instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
+  (Set.nonempty_compl_of_nontrivial i).to_subtype
+
+@[simp] lemma mem_affineSpan_image_iff [Nontrivial k] {n : ℕ} (s : Simplex k P n)
+    {fs : Set (Fin (n + 1))} {i : Fin (n + 1)} :
+    s.points i ∈ affineSpan k (s.points '' fs) ↔ i ∈ fs :=
+  s.independent.mem_affineSpan_iff _ _
+
+@[deprecated mem_affineSpan_image_iff (since := "2025-05-18")]
 lemma mem_affineSpan_range_face_points_iff [Nontrivial k] {n : ℕ} (s : Simplex k P n)
     {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {i : Fin (n + 1)} :
     s.points i ∈ affineSpan k (Set.range (s.face h).points) ↔ i ∈ fs := by
-  rw [range_face_points, s.independent.mem_affineSpan_iff, mem_coe]
+  simp
 
+@[deprecated mem_affineSpan_image_iff (since := "2025-05-18")]
 lemma mem_affineSpan_range_faceOpposite_points_iff [Nontrivial k] {n : ℕ} [NeZero n]
     (s : Simplex k P n) {i j : Fin (n + 1)} :
     s.points i ∈ affineSpan k (Set.range (s.faceOpposite j).points) ↔ i ≠ j := by
-  rw [faceOpposite, mem_affineSpan_range_face_points_iff]
   simp
 
 /-- Remap a simplex along an `Equiv` of index types. -/
