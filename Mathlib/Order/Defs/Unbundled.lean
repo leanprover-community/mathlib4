@@ -311,7 +311,7 @@ structure RelUpperSet {α : Type*} [LE α] (P : α → Prop) where
   Do NOT use directly. Please use `RelUpperSet.isRelUpperSet` instead. -/
   isRelUpperSet' : IsRelUpperSet carrier P
 
-extend_docs RelUpperSet before "The type of upper sets of an order relative to `c`."
+extend_docs RelUpperSet before "The type of upper sets of an order relative to `P`."
 
 @[inherit_doc IsRelLowerSet]
 structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
@@ -322,7 +322,7 @@ structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
   Do NOT use directly. Please use `RelLowerSet.isRelLowerSet` instead. -/
   isRelLowerSet' : IsRelLowerSet carrier P
 
-extend_docs RelLowerSet before "The type of lower sets of an order relative to `c`."
+extend_docs RelLowerSet before "The type of lower sets of an order relative to `P`."
 
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 
