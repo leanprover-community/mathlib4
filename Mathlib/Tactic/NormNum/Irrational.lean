@@ -171,12 +171,10 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
     apply_fun Finset.toSet at h hab hxy
     simp only [Finset.coe_union, Finset.coe_inter, Finset.coe_empty, y] at h hab hxy
     constructorm* _ ∧ _
-    · apply_fun Finset.toSet
-      · tauto_set
-      · exact Finset.coe_injective
-    · apply_fun Finset.toSet
-      · tauto_set
-      · exact Finset.coe_injective
+    · apply_fun Finset.toSet using Finset.coe_injective
+      tauto_set
+    · apply_fun Finset.toSet using Finset.coe_injective
+      tauto_set
     · rw [← Finset.disjoint_coe]
       tauto_set
   rw [Finsupp.ext_iff']
