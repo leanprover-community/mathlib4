@@ -26,8 +26,11 @@ A sublocale is a subset S of a locale X, which is closed under all meets and for
 s ∈ S and x ∈ X, we have x ⇨ s ∈ S.
 -/
 structure Sublocale (X : Type*) [Order.Frame X] where
+  /-- The set corresponding to the sublocale. -/
   carrier : Set X
+  /-- A sublocale is closed under all meets. -/
   sInfClosed' : ∀ a ⊆ carrier , sInf a ∈ carrier
+  /-- A sublocale is closed under heyting implication. -/
   HImpClosed' : ∀ a b, b ∈ carrier → a ⇨ b ∈ carrier
 
 namespace Sublocale
