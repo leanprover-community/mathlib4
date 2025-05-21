@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.Polynomial.Nilpotent
-import Mathlib.RingTheory.LocalRing.Defs
 
 /-!
 # Nilpotents and units in multivariate polynomial rings
