@@ -819,6 +819,8 @@ theorem rpow_pos_of_nonneg {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hp_nonne
     rw [← zero_rpow_of_pos hp_pos]
     exact rpow_lt_rpow hx_pos hp_pos
 
+-- This is an unsafe rule since we want to try `rpow_ne_top_of_nonneg` if x = 0.
+@[aesop (rule_sets := [finiteness]) unsafe apply]
 theorem rpow_pos {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hx_ne_top : x ≠ ⊤) : 0 < x ^ p := by
   rcases lt_or_le 0 p with hp_pos | hp_nonpos
   · exact rpow_pos_of_nonneg hx_pos (le_of_lt hp_pos)
