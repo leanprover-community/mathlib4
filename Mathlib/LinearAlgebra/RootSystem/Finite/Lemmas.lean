@@ -16,14 +16,14 @@ root pairings.
 
 ## Main results:
 
- * `RootPairing.coxeterWeightIn_mem_set_of_isCrystallographic`: the Coxeter weights of a finite
-   crystallographic root pairing belong to the set `{0, 1, 2, 3, 4}`.
- * `RootPairing.root_sub_root_mem_of_pairingIn_pos`: if `α ≠ β` are both roots of a finite
-   crystallographic root pairing, and the pairing of `α` with `β` is positive, then `α - β` is also
-   a root.
- * `RootPairing.root_add_root_mem_of_pairingIn_neg`: if `α ≠ -β` are both roots of a finite
-   crystallographic root pairing, and the pairing of `α` with `β` is negative, then `α + β` is also
-   a root.
+* `RootPairing.coxeterWeightIn_mem_set_of_isCrystallographic`: the Coxeter weights of a finite
+  crystallographic root pairing belong to the set `{0, 1, 2, 3, 4}`.
+* `RootPairing.root_sub_root_mem_of_pairingIn_pos`: if `α ≠ β` are both roots of a finite
+  crystallographic root pairing, and the pairing of `α` with `β` is positive, then `α - β` is also
+  a root.
+* `RootPairing.root_add_root_mem_of_pairingIn_neg`: if `α ≠ -β` are both roots of a finite
+  crystallographic root pairing, and the pairing of `α` with `β` is negative, then `α + β` is also
+  a root.
 
 -/
 
@@ -230,6 +230,29 @@ lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α 
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
   replace h' : i ≠ -j := by contrapose! h'; simp [h']
   simpa using P.root_sub_root_mem_of_pairingIn_pos h h'
+
+omit [Finite ι] in
+lemma root_mem_submodule_iff_of_add_mem_invtSubmodule
+    {K : Type*} [Field K] [NeZero (2 : K)] [Module K M] [Module K N] {P : RootPairing ι K M N}
+    (q : P.invtRootSubmodule)
+    (hij : P.root i + P.root j ∈ range P.root) :
+    P.root i ∈ (q : Submodule K M) ↔ P.root j ∈ (q : Submodule K M) := by
+  obtain ⟨q, hq⟩ := q
+  rw [mem_invtRootSubmodule_iff] at hq
+  suffices ∀ i j, P.root i + P.root j ∈ range P.root → P.root i ∈ q → P.root j ∈ q by
+    have aux := this j i (by rwa [add_comm]); tauto
+  rintro i j ⟨k, hk⟩ hi
+  rcases eq_or_ne (P.pairing i j) 0 with hij₀ | hij₀
+  · have hik : P.pairing i k ≠ 0 := by
+      rw [ne_eq, P.pairing_eq_zero_iff, ← root_coroot_eq_pairing, hk]
+      simpa [P.pairing_eq_zero_iff.mp hij₀] using two_ne_zero
+    suffices P.root k ∈ q from (q.add_mem_iff_right hi).mp <| hk ▸ this
+    replace hq : P.root i - P.pairing i k • P.root k ∈ q := by
+      simpa [reflection_apply_root] using hq k hi
+    rwa [q.sub_mem_iff_right hi, q.smul_mem_iff hik] at hq
+  · replace hq : P.root i - P.pairing i j • P.root j ∈ q := by
+      simpa [reflection_apply_root] using hq j hi
+    rwa [q.sub_mem_iff_right hi, q.smul_mem_iff hij₀] at hq
 
 namespace InvariantForm
 

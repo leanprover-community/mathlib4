@@ -20,23 +20,23 @@ A divisibility sequence is a sequence `W : ℤ → R` satisfying `W(m) ∣ W(n)`
 that `m ∣ n`. An elliptic divisibility sequence is simply a divisibility sequence that is elliptic.
 
 Some examples of EDSs include
- * the identity sequence,
- * certain terms of Lucas sequences, and
- * division polynomials of elliptic curves.
+* the identity sequence,
+* certain terms of Lucas sequences, and
+* division polynomials of elliptic curves.
 
 ## Main definitions
 
- * `IsEllSequence`: a sequence indexed by integers is an elliptic sequence.
- * `IsDivSequence`: a sequence indexed by integers is a divisibility sequence.
- * `IsEllDivSequence`: a sequence indexed by integers is an EDS.
- * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
- * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
- * `normEDS`: the canonical example of a normalised EDS indexed by `ℤ`.
+* `IsEllSequence`: a sequence indexed by integers is an elliptic sequence.
+* `IsDivSequence`: a sequence indexed by integers is a divisibility sequence.
+* `IsEllDivSequence`: a sequence indexed by integers is an EDS.
+* `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
+* `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
+* `normEDS`: the canonical example of a normalised EDS indexed by `ℤ`.
 
 ## Main statements
 
- * TODO: prove that `normEDS` satisfies `IsEllDivSequence`.
- * TODO: prove that a normalised sequence satisfying `IsEllDivSequence` can be given by `normEDS`.
+* TODO: prove that `normEDS` satisfies `IsEllDivSequence`.
+* TODO: prove that a normalised sequence satisfying `IsEllDivSequence` can be given by `normEDS`.
 
 ## Implementation notes
 
@@ -84,7 +84,7 @@ def IsEllDivSequence : Prop :=
   IsEllSequence W ∧ IsDivSequence W
 
 lemma isEllSequence_id : IsEllSequence id :=
-  fun _ _ _ => by simp only [id_eq]; ring1
+  fun _ _ _ => by simp_rw [id_eq]; ring1
 
 lemma isDivSequence_id : IsDivSequence id :=
   fun _ _ => Int.ofNat_dvd.mpr
@@ -97,7 +97,7 @@ variable {W}
 
 lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence (x • W) :=
   fun m n r => by
-    linear_combination (norm := (simp only [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
+    linear_combination (norm := (simp_rw [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
 
 lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W) :=
   fun m n r => mul_dvd_mul_left x <| h m n r
@@ -107,61 +107,27 @@ lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence 
 
 end IsEllDivSequence
 
-/-- Strong recursion principle for a normalised EDS: if we have
- * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
- * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
- * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
-then we have `P n` for all `n : ℕ`. -/
-@[elab_as_elim]
-noncomputable def normEDSRec' {P : ℕ → Sort u}
-    (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
-    (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
-    (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) : P n :=
-  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [zero, two, four, even _ h])
-    (by rintro (_ | _ | _) h; exacts [one, three, odd _ h])
-
-/-- Recursion principle for a normalised EDS: if we have
- * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
- * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
-    `P (m + 4)`, and `P (m + 5)`, and
- * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
-    and `P (m + 4)`,
-then we have `P n` for all `n : ℕ`. -/
-@[elab_as_elim]
-noncomputable def normEDSRec {P : ℕ → Sort u}
-    (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
-    (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
-    (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
-    P n :=
-  normEDSRec' zero one two three four
-    (fun _ ih => by apply even <;> exact ih _ <| by linarith only)
-    (fun _ ih => by apply odd <;> exact ih _ <| by linarith only) n
-
 variable (b c d : R)
 
 section PreNormEDS
 
 /-- The auxiliary sequence for a normalised EDS `W : ℕ → R`, with initial values
 `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d` and extra parameter `b`. -/
-def preNormEDS' (b c d : R) : ℕ → R
+def preNormEDS' : ℕ → R
   | 0 => 0
   | 1 => 1
   | 2 => 1
   | 3 => c
   | 4 => d
   | (n + 5) => let m := n / 2
-    have h4 : m + 4 < n + 5 := Nat.lt_succ.mpr <| add_le_add_right (n.div_le_self 2) 4
-    have h3 : m + 3 < n + 5 := (lt_add_one _).trans h4
-    have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3
-    have _ : m + 1 < n + 5 := (lt_add_one _).trans h2
     if hn : Even n then
-      preNormEDS' b c d (m + 4) * preNormEDS' b c d (m + 2) ^ 3 * (if Even m then b else 1) -
-        preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) ^ 3 * (if Even m then 1 else b)
+      preNormEDS' (m + 4) * preNormEDS' (m + 2) ^ 3 * (if Even m then b else 1) -
+        preNormEDS' (m + 1) * preNormEDS' (m + 3) ^ 3 * (if Even m then 1 else b)
     else
-      have _ : m + 5 < n + 5 := add_lt_add_right
-        (Nat.div_lt_self (Nat.not_even_iff_odd.1 hn).pos <| Nat.lt_succ_self 1) 5
-      preNormEDS' b c d (m + 2) ^ 2 * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 5) -
-        preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 4) ^ 2
+      have : m + 5 < n + 5 :=
+        add_lt_add_right (Nat.div_lt_self (Nat.not_even_iff_odd.mp hn).pos one_lt_two) 5
+      preNormEDS' (m + 2) ^ 2 * preNormEDS' (m + 3) * preNormEDS' (m + 5) -
+        preNormEDS' (m + 1) * preNormEDS' (m + 3) * preNormEDS' (m + 4) ^ 2
 
 @[simp]
 lemma preNormEDS'_zero : preNormEDS' b c d 0 = 0 := by
@@ -183,18 +149,17 @@ lemma preNormEDS'_three : preNormEDS' b c d 3 = c := by
 lemma preNormEDS'_four : preNormEDS' b c d 4 = d := by
   rw [preNormEDS']
 
-lemma preNormEDS'_odd (m : ℕ) : preNormEDS' b c d (2 * (m + 2) + 1) =
-    preNormEDS' b c d (m + 4) * preNormEDS' b c d (m + 2) ^ 3 * (if Even m then b else 1) -
-      preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) ^ 3 * (if Even m then 1 else b) := by
-  rw [show 2 * (m + 2) + 1 = 2 * m + 5 by rfl, preNormEDS', dif_pos <| even_two_mul _]
-  simp only [m.mul_div_cancel_left two_pos]
-
 lemma preNormEDS'_even (m : ℕ) : preNormEDS' b c d (2 * (m + 3)) =
     preNormEDS' b c d (m + 2) ^ 2 * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 5) -
       preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 4) ^ 2 := by
   rw [show 2 * (m + 3) = 2 * m + 1 + 5 by rfl, preNormEDS', dif_neg m.not_even_two_mul_add_one]
-  simp only [Nat.mul_add_div two_pos]
-  rfl
+  simpa only [Nat.mul_add_div two_pos] using by rfl
+
+lemma preNormEDS'_odd (m : ℕ) : preNormEDS' b c d (2 * (m + 2) + 1) =
+    preNormEDS' b c d (m + 4) * preNormEDS' b c d (m + 2) ^ 3 * (if Even m then b else 1) -
+      preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) ^ 3 * (if Even m then 1 else b) := by
+  rw [show 2 * (m + 2) + 1 = 2 * m + 5 by rfl, preNormEDS', dif_pos <| even_two_mul m,
+    m.mul_div_cancel_left two_pos]
 
 /-- The auxiliary sequence for a normalised EDS `W : ℤ → R`, with initial values
 `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d` and extra parameter `b`.
@@ -206,46 +171,32 @@ def preNormEDS (n : ℤ) : R :=
 @[simp]
 lemma preNormEDS_ofNat (n : ℕ) : preNormEDS b c d n = preNormEDS' b c d n := by
   by_cases hn : n = 0
-  · rw [hn, preNormEDS, Nat.cast_zero, Int.sign_zero, Int.cast_zero, zero_mul, preNormEDS'_zero]
-  · rw [preNormEDS, Int.sign_natCast_of_ne_zero hn, Int.cast_one, one_mul, Int.natAbs_cast]
+  · simp [hn, preNormEDS]
+  · simp [preNormEDS, Int.sign_natCast_of_ne_zero hn]
 
 @[simp]
 lemma preNormEDS_zero : preNormEDS b c d 0 = 0 := by
-  rw [← Nat.cast_zero, preNormEDS_ofNat, preNormEDS'_zero]
+  simp [preNormEDS]
 
 @[simp]
 lemma preNormEDS_one : preNormEDS b c d 1 = 1 := by
-  rw [← Nat.cast_one, preNormEDS_ofNat, preNormEDS'_one]
+  simp [preNormEDS]
 
 @[simp]
 lemma preNormEDS_two : preNormEDS b c d 2 = 1 := by
-  rw [← Nat.cast_two, preNormEDS_ofNat, preNormEDS'_two]
+  simp [preNormEDS, Int.sign_eq_one_of_pos]
 
 @[simp]
 lemma preNormEDS_three : preNormEDS b c d 3 = c := by
-  rw [← Nat.cast_three, preNormEDS_ofNat, preNormEDS'_three]
+  simp [preNormEDS, Int.sign_eq_one_of_pos]
 
 @[simp]
 lemma preNormEDS_four : preNormEDS b c d 4 = d := by
-  rw [← Nat.cast_four, preNormEDS_ofNat, preNormEDS'_four]
-
-lemma preNormEDS_even_ofNat (m : ℕ) : preNormEDS b c d (2 * (m + 3)) =
-    preNormEDS b c d (m + 2) ^ 2 * preNormEDS b c d (m + 3) * preNormEDS b c d (m + 5) -
-      preNormEDS b c d (m + 1) * preNormEDS b c d (m + 3) * preNormEDS b c d (m + 4) ^ 2 := by
-  norm_cast
-  simp only [preNormEDS_ofNat]
-  exact preNormEDS'_even ..
-
-lemma preNormEDS_odd_ofNat (m : ℕ) : preNormEDS b c d (2 * (m + 2) + 1) =
-    preNormEDS b c d (m + 4) * preNormEDS b c d (m + 2) ^ 3 * (if Even m then b else 1) -
-      preNormEDS b c d (m + 1) * preNormEDS b c d (m + 3) ^ 3 * (if Even m then 1 else b) := by
-  norm_cast
-  simp only [preNormEDS_ofNat]
-  exact preNormEDS'_odd ..
+  simp [preNormEDS, Int.sign_eq_one_of_pos]
 
 @[simp]
 lemma preNormEDS_neg (n : ℤ) : preNormEDS b c d (-n) = -preNormEDS b c d n := by
-  rw [preNormEDS, Int.sign_neg, Int.cast_neg, neg_mul, Int.natAbs_neg, preNormEDS]
+  simp [preNormEDS]
 
 lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
     preNormEDS b c d (m - 1) ^ 2 * preNormEDS b c d m * preNormEDS b c d (m + 2) -
@@ -253,37 +204,36 @@ lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
   induction m using Int.negInduction with
   | nat m =>
     rcases m with _ | _ | _ | m
-    · simp
-    · simp
-    · simp
-    · simp only [Int.natCast_add, Nat.cast_one]
-      rw [Int.add_sub_cancel, show (m : ℤ) + 1 + 1 + 1 = m + 1 + 2 by rfl, Int.add_sub_cancel]
-      exact preNormEDS_even_ofNat ..
-  | neg h m =>
-    simp_rw [show 2 * -(m : ℤ) = -(2 * m) by omega, show -(m : ℤ) - 1 = -(m + 1) by omega,
-      show -(m : ℤ) + 2 = -(m - 2) by omega, show -(m : ℤ) - 2 = -(m + 2) by omega,
-      show -(m : ℤ) + 1 = -(m - 1) by omega, preNormEDS_neg, h m]
+    iterate 3 simp
+    simp_rw [Nat.cast_succ, Int.add_sub_cancel, show (m : ℤ) + 1 + 1 + 1 = m + 1 + 2 by rfl,
+      Int.add_sub_cancel]
+    norm_cast
+    simpa only [preNormEDS_ofNat] using preNormEDS'_even ..
+  | neg ih m =>
+    simp_rw [mul_neg, ← sub_neg_eq_add, ← neg_sub', ← neg_add', preNormEDS_neg, ih]
     ring1
+
+@[deprecated (since := "2025-05-15")] alias preNormEDS_even_ofNat := preNormEDS_even
 
 lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
     preNormEDS b c d (m + 2) * preNormEDS b c d m ^ 3 * (if Even m then b else 1) -
       preNormEDS b c d (m - 1) * preNormEDS b c d (m + 1) ^ 3 * (if Even m then 1 else b) := by
   induction m using Int.negInduction with
   | nat m =>
-    rcases m with _ | _ | m
-    · simp
-    · simp
-    · simp only [Int.natCast_add, Nat.cast_one, Int.even_add_one, not_not, Int.even_coe_nat]
-      rw [Int.add_sub_cancel]
-      exact preNormEDS_odd_ofNat ..
-  | neg h m =>
+    rcases m with _ | _ | _
+    iterate 2 simp
+    simp_rw [Nat.cast_succ, Int.add_sub_cancel, Int.even_add_one, not_not, Int.even_coe_nat]
+    norm_cast
+    simpa only [preNormEDS_ofNat] using preNormEDS'_odd ..
+  | neg ih m =>
     rcases m with _ | m
     · simp
-    · simp_rw [Int.natCast_add, Nat.cast_one, show 2 * -(m + 1 : ℤ) + 1 = -(2 * m + 1) by rfl,
-        show -(m + 1 : ℤ) + 2 = -(m - 1) by omega, show -(m + 1 : ℤ) - 1 = -(m + 2) by rfl,
-        show -(m + 1 : ℤ) + 1 = -m by omega, preNormEDS_neg, even_neg, Int.even_add_one, ite_not,
-        h m]
-      ring1
+    simp_rw [Nat.cast_succ, show 2 * -(m + 1 : ℤ) + 1 = -(2 * m + 1) by rfl,
+      show -(m + 1 : ℤ) + 2 = -(m - 1) by ring1, show -(m + 1 : ℤ) - 1 = -(m + 2) by rfl,
+      show -(m + 1 : ℤ) + 1 = -m by ring1, preNormEDS_neg, even_neg, Int.even_add_one, ite_not, ih]
+    ring1
+
+@[deprecated (since := "2025-05-15")] alias preNormEDS_odd_ofNat := preNormEDS_odd
 
 end PreNormEDS
 
@@ -299,66 +249,78 @@ def normEDS (n : ℤ) : R :=
 @[simp]
 lemma normEDS_ofNat (n : ℕ) :
     normEDS b c d n = preNormEDS' (b ^ 4) c d n * if Even n then b else 1 := by
-  simp only [normEDS, preNormEDS_ofNat, Int.even_coe_nat]
+  simp [normEDS]
 
 @[simp]
 lemma normEDS_zero : normEDS b c d 0 = 0 := by
-  rw [← Nat.cast_zero, normEDS_ofNat, preNormEDS'_zero, zero_mul]
+  simp [normEDS]
 
 @[simp]
 lemma normEDS_one : normEDS b c d 1 = 1 := by
-  rw [← Nat.cast_one, normEDS_ofNat, preNormEDS'_one, one_mul, if_neg Nat.not_even_one]
+  simp [normEDS]
 
 @[simp]
 lemma normEDS_two : normEDS b c d 2 = b := by
-  rw [← Nat.cast_two, normEDS_ofNat, preNormEDS'_two, one_mul, if_pos even_two]
+  simp [normEDS]
 
 @[simp]
 lemma normEDS_three : normEDS b c d 3 = c := by
-  rw [← Nat.cast_three, normEDS_ofNat, preNormEDS'_three, if_neg <| by decide, mul_one]
+  simp [normEDS, show ¬Even (3 : ℤ) by decide]
 
 @[simp]
 lemma normEDS_four : normEDS b c d 4 = d * b := by
-  rw [← Nat.cast_four, normEDS_ofNat, preNormEDS'_four, if_pos <| by decide]
-
-lemma normEDS_even_ofNat (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
-    normEDS b c d (m + 2) ^ 2 * normEDS b c d (m + 3) * normEDS b c d (m + 5) -
-      normEDS b c d (m + 1) * normEDS b c d (m + 3) * normEDS b c d (m + 4) ^ 2 := by
-  norm_cast
-  simp only [normEDS_ofNat]
-  simp only [preNormEDS'_even, if_pos <| even_two_mul _, Nat.even_add_one, ite_not]
-  split_ifs <;> ring1
-
-lemma normEDS_odd_ofNat (m : ℕ) : normEDS b c d (2 * (m + 2) + 1) =
-    normEDS b c d (m + 4) * normEDS b c d (m + 2) ^ 3 -
-      normEDS b c d (m + 1) * normEDS b c d (m + 3) ^ 3 := by
-  norm_cast
-  simp only [normEDS_ofNat]
-  simp_rw [preNormEDS'_odd, if_neg (m + 2).not_even_two_mul_add_one, Nat.even_add_one, ite_not]
-  split_ifs <;> ring1
+  simp [normEDS, show ¬Odd (4 : ℤ) by decide]
 
 @[simp]
 lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
-  simp only [normEDS, preNormEDS_neg, neg_mul, even_neg]
+  simp_rw [normEDS, preNormEDS_neg, even_neg, neg_mul]
 
 lemma normEDS_even (m : ℤ) : normEDS b c d (2 * m) * b =
     normEDS b c d (m - 1) ^ 2 * normEDS b c d m * normEDS b c d (m + 2) -
       normEDS b c d (m - 2) * normEDS b c d m * normEDS b c d (m + 1) ^ 2 := by
-  simp only [normEDS, preNormEDS_even, if_pos <| even_two_mul m, show m + 2 = m + 1 + 1 by ring1,
-    Int.even_add_one, show m - 2 = m - 1 - 1 by ring1, Int.even_sub_one, ite_not]
-  by_cases hm : Even m
-  · simp only [if_pos hm]
-    ring1
-  · simp only [if_neg hm]
-    ring1
+  simp_rw [normEDS, preNormEDS_even, if_pos <| even_two_mul m, Int.even_add, Int.even_sub, even_two,
+    iff_true, Int.not_even_one, iff_false]
+  split_ifs <;> ring1
+
+@[deprecated (since := "2025-05-15")] alias normEDS_even_ofNat := normEDS_even
 
 lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
     normEDS b c d (m + 2) * normEDS b c d m ^ 3 -
       normEDS b c d (m - 1) * normEDS b c d (m + 1) ^ 3 := by
-  simp only [normEDS, preNormEDS_odd, if_neg m.not_even_two_mul_add_one]
-  conv_lhs => rw [← @one_pow R _ 4, ← ite_pow, ← ite_pow]
-  simp only [show m + 2 = m + 1 + 1 by ring1, Int.even_add_one, Int.even_sub_one, ite_not]
-  ring1
+  simp_rw [normEDS, preNormEDS_odd, if_neg m.not_even_two_mul_add_one, Int.even_add, Int.even_sub,
+    even_two, iff_true, Int.not_even_one, iff_false]
+  split_ifs <;> ring1
+
+@[deprecated (since := "2025-05-15")] alias normEDS_odd_ofNat := normEDS_odd
+
+/-- Strong recursion principle for a normalised EDS: if we have
+* `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
+* for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
+* for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
+then we have `P n` for all `n : ℕ`. -/
+@[elab_as_elim]
+noncomputable def normEDSRec' {P : ℕ → Sort u}
+    (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
+    (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
+    (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) : P n :=
+  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [zero, two, four, even _ h])
+    (by rintro (_ | _ | _) h; exacts [one, three, odd _ h])
+
+/-- Recursion principle for a normalised EDS: if we have
+* `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
+* for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
+  `P (m + 4)`, and `P (m + 5)`, and
+* for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
+  and `P (m + 4)`,
+then we have `P n` for all `n : ℕ`. -/
+@[elab_as_elim]
+noncomputable def normEDSRec {P : ℕ → Sort u}
+    (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
+    (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
+    (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
+    P n :=
+  normEDSRec' zero one two three four (fun _ ih => by apply even <;> exact ih _ <| by linarith only)
+    (fun _ ih => by apply odd <;> exact ih _ <| by linarith only) n
 
 end NormEDS
 
@@ -366,21 +328,24 @@ section Map
 
 variable {S : Type v} [CommRing S] (f : R →+* S)
 
+@[simp]
 lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
   induction n using normEDSRec' with
-  | zero => rw [preNormEDS'_zero, map_zero, preNormEDS'_zero]
-  | one => rw [preNormEDS'_one, map_one, preNormEDS'_one]
-  | two => rw [preNormEDS'_two, map_one, preNormEDS'_two]
-  | three => rw [preNormEDS'_three, preNormEDS'_three]
-  | four => rw [preNormEDS'_four, preNormEDS'_four]
+  | zero => simp
+  | one => simp
+  | two => simp
+  | three => simp
+  | four => simp
   | _ _ ih =>
-    simp only [preNormEDS'_odd, preNormEDS'_even, map_one, map_sub, map_mul, map_pow, apply_ite f]
+    simp only [preNormEDS'_even, preNormEDS'_odd, apply_ite f, map_pow, map_mul, map_sub, map_one]
     repeat rw [ih _ <| by linarith only]
 
+@[simp]
 lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c) (f d) n := by
-  rw [preNormEDS, map_mul, map_intCast, map_preNormEDS', preNormEDS]
+  simp [preNormEDS]
 
+@[simp]
 lemma map_normEDS (n : ℤ) : f (normEDS b c d n) = normEDS (f b) (f c) (f d) n := by
-  rw [normEDS, map_mul, map_preNormEDS, map_pow, apply_ite f, map_one, normEDS]
+  simp [normEDS, apply_ite f]
 
 end Map

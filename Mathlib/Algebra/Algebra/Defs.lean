@@ -16,7 +16,7 @@ In this file we define associative unital `Algebra`s over commutative (semi)ring
 
 * `Subalgebra`s are defined in `Mathlib.Algebra.Algebra.Subalgebra`;
 
-* The category `AlgebraCat R` of `R`-algebras is defined in the file
+* The category `AlgCat R` of `R`-algebras is defined in the file
   `Mathlib.Algebra.Category.Algebra.Basic`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
