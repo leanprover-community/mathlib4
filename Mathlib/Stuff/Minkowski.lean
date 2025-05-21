@@ -1,4 +1,8 @@
-import Mathlib
+import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
+import Mathlib.NumberTheory.Cyclotomic.PID
+import Mathlib.Tactic
+
+set_option linter.style.header false
 
 open Ideal NumberField Module NumberField.InfinitePlace Nat Real
   IsCyclotomicExtension.Rat Polynomial.cyclotomic

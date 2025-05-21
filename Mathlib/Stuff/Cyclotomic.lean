@@ -1,4 +1,7 @@
-import Mathlib
+import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
+import Mathlib.Tactic
+
+set_option linter.style.header false
 
 open Nat Finset
 

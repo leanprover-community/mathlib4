@@ -1,5 +1,7 @@
-import Mathlib
+import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
+import Mathlib.Tactic
 
+set_option linter.style.header false
 
 variable {K : Type*} [Field K] [Fintype K] {p f n : ℕ}
   (hK : Fintype.card K = p ^ f) (hn : (p ^ f).Coprime n)

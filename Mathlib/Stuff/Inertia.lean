@@ -1,4 +1,7 @@
-import Mathlib
+import Mathlib.NumberTheory.NumberField.ClassNumber
+import Mathlib.NumberTheory.RamificationInertia.Galois
+
+set_option linter.style.header false
 
 open Ideal NumberField Module NumberField.InfinitePlace Nat Real
 

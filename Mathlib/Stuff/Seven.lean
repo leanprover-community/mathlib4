@@ -1,6 +1,9 @@
-import Mathlib
 import Mathlib.Stuff.Inertia
 import Mathlib.Stuff.Factorization
+import Mathlib.NumberTheory.Cyclotomic.PID
+import Mathlib.Tactic
+
+set_option linter.style.header false
 
 open NumberField Module NumberField.InfinitePlace Nat Real RingOfIntegers Finset Multiset
   IsCyclotomicExtension.Rat Polynomial cyclotomic UniqueFactorizationMonoid
