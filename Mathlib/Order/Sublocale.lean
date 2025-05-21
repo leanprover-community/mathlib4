@@ -38,14 +38,12 @@ instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
   coe_injective' s1 s2 h := by cases s1; congr
 
-lemma sInfClosed {s : Set X} (h : s ⊆ S) : sInf s ∈ S := S.sInfClosed' s h
-
 lemma inf_mem (a b : X) (h1 : a ∈ S) (h2 : b ∈ S) : a ⊓ b ∈ S := by
   rw [← sInf_pair]
-  exact S.sInfClosed (pair_subset h1 h2)
+  exact S.sInfClosed' _ (pair_subset h1 h2)
 
 instance : InfSet S where
-  sInf x := ⟨sInf (Subtype.val '' x), S.sInfClosed (by simp; simp [@subset_def])⟩
+  sInf x := ⟨sInf (Subtype.val '' x), S.sInfClosed' _ (by simp; simp [@subset_def])⟩
 
 instance carrier.instCompleteLattice : CompleteLattice S where
   inf x y := ⟨x.val ⊓ y.val, S.inf_mem ↑x ↑y (SetLike.coe_mem x) (SetLike.coe_mem y)⟩
