@@ -151,6 +151,18 @@ variable (M : ModuleCat.{v} R) (Mₚ : ModuleCat.{v'} Rₚ)
 
 include p f
 
+def SemiLinearMapAlgebraMapOfLinearMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
+    [IsScalarTower R A N] (f : M →ₗ[R] N) : M →ₛₗ[algebraMap R A] N where
+  __ := f
+  map_smul' m r := by simp
+
+def LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
+    [IsScalarTower R A N] (f : M →ₛₗ[algebraMap R A] N) : M →ₗ[R] N where
+  __ := f
+  map_smul' m r := by simp
+
 open Pointwise in
 lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
     (M : Type*) [AddCommGroup M] [Module R M] (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ]
@@ -179,10 +191,23 @@ lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
         simp only [Submonoid.mk_smul, ← Submodule.mem_bot (R := R),
           ← (isSMulRegular_iff_ker_lsmul_eq_bot M x).mp reg.1]
         exact hs
-      · let f : QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R Rₚ) x) Mₚ :=
-          sorry
-        have : IsLocalizedModule.AtPrime p f := sorry
-        exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) f reg.2 len
+      · let g : QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R Rₚ) x) Mₚ :=
+          LinearMapOfSemiLinearMapAlgebraMap (Submodule.mapQ _ _
+          (SemiLinearMapAlgebraMapOfLinearMap f)
+          (fun m hm ↦ by
+            rw [← Submodule.ideal_span_singleton_smul] at hm
+            simp [SemiLinearMapAlgebraMapOfLinearMap]
+            refine Submodule.smul_induction_on hm (fun r hr m hm ↦ ?_)
+              (fun m1 m2 hm1 hm2 ↦ by simpa using Submodule.add_mem _ hm1 hm2)
+            rcases Ideal.mem_span_singleton'.mp hr with ⟨r', hr'⟩
+            simpa only [← hr', map_smul, mul_comm r' x, ← smul_smul,
+              algebra_compatible_smul Rₚ x (r' • f m)]
+              using Submodule.smul_mem_pointwise_smul (r' • f m) ((algebraMap R Rₚ) x) ⊤ hm))
+        have : IsLocalizedModule.AtPrime p g := {
+          map_units r := sorry
+          surj' := sorry
+          exists_of_eq := sorry }
+        exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) g reg.2 len
 
 lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module.Finite R M]
     [Nontrivial M] [Nontrivial Mₚ] : p.depth M ≤ IsLocalRing.depth Mₚ := by
