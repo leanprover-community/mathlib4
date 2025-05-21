@@ -52,8 +52,7 @@ theorem isNilpotent_iff : IsNilpotent P ↔ ∀ i, IsNilpotent (P.coeff i) := by
 instance [IsReduced R] : IsReduced (MvPolynomial σ R) := by
   simp [isReduced_iff, isNilpotent_iff, MvPolynomial.ext_iff]
 
-theorem isUnit_iff {σ R : Type*} [CommRing R]
-    {P : MvPolynomial σ R} : IsUnit P ↔ IsUnit (P.coeff 0) ∧ ∀ i ≠ 0, IsNilpotent (P.coeff i) := by
+theorem isUnit_iff : IsUnit P ↔ IsUnit (P.coeff 0) ∧ ∀ i ≠ 0, IsNilpotent (P.coeff i) := by
   classical
   refine ⟨fun H ↦ ⟨H.map constantCoeff, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · intros n hn
@@ -75,8 +74,7 @@ instance : IsLocalHom (C : _ →+* MvPolynomial σ R) where
 instance : IsLocalHom (algebraMap R (MvPolynomial σ R)) :=
   inferInstanceAs (IsLocalHom C)
 
-theorem isUnit_iff_totalDegree_of_isDomain {σ R : Type*} [CommRing R] [IsDomain R]
-    {P : MvPolynomial σ R} :
+theorem isUnit_iff_totalDegree_of_isDomain :
     IsUnit P ↔ IsUnit (P.coeff 0) ∧ P.totalDegree = 0 := by
   convert isUnit_iff (P := P)
   rw [totalDegree_eq_zero_iff]
