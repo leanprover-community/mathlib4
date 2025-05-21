@@ -127,8 +127,8 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
       simp only [Set.mem_Ioc]
       have : a - ε < a := by
         refine (ENNReal.sub_lt_self_iff ?_).mpr ⟨?_, ?_⟩
-        · exact LT.lt.ne_top ha.2
-        · exact ha.1
+        · exact LT.lt.ne_top ha'
+        · exact ha''
         · exact hε
       obtain ⟨m, hm⟩ := hf' (a - ε) (this)
       use m
