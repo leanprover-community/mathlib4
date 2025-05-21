@@ -65,7 +65,7 @@ theorem dedekindZeta_residue_pos : 0 < dedekindZeta_residue K := by
 theorem dedekindZeta_residue_ne_zero : dedekindZeta_residue K ≠ 0 :=
   (dedekindZeta_residue_pos K).ne'
 
-/-
+/--
 **Dirichlet class number formula**
 -/
 theorem tendsto_sub_one_mul_dedekindZeta_nhdsGT :
