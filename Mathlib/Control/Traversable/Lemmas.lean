@@ -57,7 +57,6 @@ theorem pureTransformation_apply {α} (x : id α) : PureTransformation F x = pur
 
 variable {F G}
 
--- Porting note: need to specify `m/F/G := Id` because `id` no longer has a `Monad` instance
 theorem map_eq_traverse_id : map (f := t) f = Id.run ∘ traverse (pure ∘ f) :=
   funext fun y => (traverse_eq_map_id f y).symm
 
