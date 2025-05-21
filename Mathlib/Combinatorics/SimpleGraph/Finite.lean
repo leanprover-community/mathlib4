@@ -377,8 +377,8 @@ lemma maxDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.maxDegree = 0 :=
 
 @[simp]
 lemma maxDegree_bot_eq_zero : (⊥ : SimpleGraph V).maxDegree = 0 :=
-  Nat.le_zero.1 <| maxDegree_le_of_forall_degree_le _ _ (fun v ↦ (bot_degree v).le)
-  
+  Nat.le_zero.1 <| maxDegree_le_of_forall_degree_le _ _ fun v ↦ (bot_degree v).le
+
 @[simp]
 lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree := by
   by_cases he : IsEmpty V
