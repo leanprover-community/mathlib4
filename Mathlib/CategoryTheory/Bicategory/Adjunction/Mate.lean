@@ -427,7 +427,7 @@ theorem conjugateEquiv_comp (α : l₂ ⟶ l₁) (β : l₃ ⟶ l₂) :
       bicategory
     _ = _ := by
       rw [← mateEquiv_vcomp]
-      simp only [leftAdjointSquare.vcomp, mateEquiv_apply']
+      dsimp only [leftAdjointSquare.vcomp, mateEquiv_apply']
       bicategory
 
 @[simp]
@@ -533,8 +533,7 @@ isomorphism if and only if the original 2-morphism is. This explains why some Be
 theorem iterated_mateEquiv_conjugateEquiv (α : f₁ ≫ l₂ ⟶ l₁ ≫ f₂) :
     mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α) =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
-  simp only [conjugateEquiv_apply, mateEquiv_symm_apply', mateEquiv_apply', Adjunction.comp]
-  dsimp
+  dsimp [conjugateEquiv_apply, mateEquiv_symm_apply', mateEquiv_apply', Adjunction.comp]
   bicategory
 
 theorem iterated_mateEquiv_conjugateEquiv_symm (α : u₂ ≫ r₁ ⟶ r₂ ≫ u₁) :
@@ -578,7 +577,7 @@ theorem mateEquiv_conjugateEquiv_vcomp
       bicategory
     _ = _ := by
       rw [← mateEquiv_vcomp]
-      simp only [leftAdjointSquare.vcomp, mateEquiv_apply', leftAdjointSquareConjugate.vcomp]
+      dsimp only [leftAdjointSquare.vcomp, mateEquiv_apply', leftAdjointSquareConjugate.vcomp]
       bicategory
 
 end mateEquiv_conjugateEquiv_vcomp
@@ -615,7 +614,7 @@ theorem conjugateEquiv_mateEquiv_vcomp
       bicategory
     _ = _ := by
       rw [← mateEquiv_vcomp]
-      simp only [leftAdjointSquare.vcomp, mateEquiv_apply', leftAdjointConjugateSquare.vcomp]
+      dsimp only [leftAdjointSquare.vcomp, mateEquiv_apply', leftAdjointConjugateSquare.vcomp]
       bicategory
 
 end conjugateEquiv_mateEquiv_vcomp
