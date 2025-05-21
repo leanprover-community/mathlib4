@@ -20,7 +20,7 @@ This file defines admissible linear change of variables of Weierstrass curves.
 
 * An instance which states that change of variables preserves elliptic curves.
 * `WeierstrassCurve.variableChange_j`: the j-invariant of an elliptic curve is invariant under an
-  admissible linear change of variables.
+    admissible linear change of variables.
 
 ## References
 
