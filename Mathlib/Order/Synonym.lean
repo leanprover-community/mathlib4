@@ -70,6 +70,8 @@ theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b := by simp
 
 theorem ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b := by simp
 
+@[ext] lemma ext {a b : αᵒᵈ} (h : ofDual a = ofDual b) : a = b := h
+
 @[simp]
 theorem toDual_le_toDual [LE α] {a b : α} : toDual a ≤ toDual b ↔ b ≤ a :=
   Iff.rfl
