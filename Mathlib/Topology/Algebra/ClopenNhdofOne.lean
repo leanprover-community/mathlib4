@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yi Song, Xuchun Li
 -/
 import Mathlib.GroupTheory.Index
-import Mathlib.Topology.Algebra.ClosedSubgroup
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Separation.Profinite
+import Mathlib.Topology.Separation.Connected
 /-!
 # Existence of an open normal subgroup in any clopen neighborhood of the neutral element
 

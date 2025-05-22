@@ -186,7 +186,7 @@ theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a
 
 @[simp]
 theorem not_mem_zero (a : α) : a ∉ (0 : Multiset α) :=
-  List.not_mem_nil _
+  List.not_mem_nil
 
 theorem eq_zero_of_forall_not_mem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 :=
   Quot.inductionOn s fun l H => by rw [eq_nil_iff_forall_not_mem.mpr H]; rfl
@@ -284,7 +284,7 @@ section Subset
 variable {s : Multiset α} {a : α}
 
 @[simp]
-theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun a => (not_mem_nil a).elim
+theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun _ => not_mem_nil.elim
 
 theorem subset_cons (s : Multiset α) (a : α) : s ⊆ a ::ₘ s := fun _ => mem_cons_of_mem
 

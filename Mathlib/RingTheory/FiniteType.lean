@@ -456,7 +456,7 @@ variable (R M)
 type. -/
 instance finiteType_of_fg [CommRing R] [h : AddMonoid.FG M] :
     FiniteType R R[M] := by
-  obtain ⟨S, hS⟩ := h.out
+  obtain ⟨S, hS⟩ := h.fg_top
   exact (FiniteType.freeAlgebra R (S : Set M)).of_surjective
       (FreeAlgebra.lift R fun s : (S : Set M) => of' R M ↑s)
       (freeAlgebra_lift_of_surjective_of_closure hS)
@@ -482,7 +482,7 @@ theorem fg_of_finiteType [CommRing R] [Nontrivial R] [h : FiniteType R R[M]] :
 
 /-- An additive group `G` is finitely generated if and only if `R[G]` is of
 finite type. -/
-theorem finiteType_iff_group_fg {G : Type*} [AddCommGroup G] [CommRing R] [Nontrivial R] :
+theorem finiteType_iff_group_fg {G : Type*} [AddGroup G] [CommRing R] [Nontrivial R] :
     FiniteType R R[G] ↔ AddGroup.FG G := by
   simpa [AddGroup.fg_iff_addMonoid_fg] using finiteType_iff_fg
 

@@ -505,9 +505,8 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
 
 open PFunctor.Approx
 
-attribute [local instance] Classical.propDecidable
-
-theorem ext [Inhabited (M F)] (x y : M F) (H : ∀ ps : Path F, iselect ps x = iselect ps y) :
+theorem ext [Inhabited (M F)] [DecidableEq F.A] (x y : M F)
+    (H : ∀ ps : Path F, iselect ps x = iselect ps y) :
     x = y := by
   apply ext'; intro i
   induction' i with i i_ih
@@ -538,7 +537,8 @@ structure IsBisimulation : Prop where
   /-- The tails are equal -/
   tail : ∀ {a} {f f' : F.B a → M F}, M.mk ⟨a, f⟩ ~ M.mk ⟨a, f'⟩ → ∀ i : F.B a, f i ~ f' i
 
-theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (ps : Path F) :
+theorem nth_of_bisim [Inhabited (M F)] [DecidableEq F.A]
+    (bisim : IsBisimulation R) (s₁ s₂) (ps : Path F) :
     (R s₁ s₂) →
       IsPath ps s₁ ∨ IsPath ps s₂ →
         iselect ps s₁ = iselect ps s₂ ∧
@@ -567,6 +567,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
 
 theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂, R s₁ s₂ → s₁ = s₂ := by
   inhabit M F
+  classical
   introv Hr; apply ext
   introv
   by_cases h : IsPath ps s₁ ∨ IsPath ps s₂

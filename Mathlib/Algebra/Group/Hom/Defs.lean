@@ -569,10 +569,6 @@ def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G 
 
 end MonoidHom
 
-section Deprecated
-
-end Deprecated
-
 @[to_additive (attr := simp)]
 theorem OneHom.mk_coe [One M] [One N] (f : OneHom M N) (h1) : OneHom.mk f h1 = f :=
   OneHom.ext fun _ => rfl

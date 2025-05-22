@@ -140,7 +140,7 @@ theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable
 
 theorem Set.Finite.measurableSet_biInter {f : β → Set α} {s : Set β} (hs : s.Finite)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
- .biInter hs.countable h
+  .biInter hs.countable h
 
 theorem Finset.measurableSet_biInter {f : β → Set α} (s : Finset β)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
@@ -421,9 +421,10 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 
 @[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 
-@[simp, nolint simpNF] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simpNF` claims that
--- this lemma doesn't simplify LHS
-theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
+@[simp]
+-- The `m₁` parameter gets filled in by typeclass instance synthesis (for some reason...)
+-- so we have to order it *after* `m₂`. Otherwise `simp` can't apply this lemma.
+theorem measurableSet_inf {m₂ m₁ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
   Iff.rfl
 

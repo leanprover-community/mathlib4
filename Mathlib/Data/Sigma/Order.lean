@@ -24,7 +24,7 @@ type synonym.
 ## Notation
 
 * `_root_.Lex (Sigma α)`: Sigma type equipped with the lexicographic order.
-Type synonym of `Σ i, α i`.
+  Type synonym of `Σ i, α i`.
 
 ## See also
 
@@ -165,8 +165,9 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
     LinearOrder (Σₗ i, α i) :=
   { Lex.partialOrder with
     le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
-    decidableEq := Sigma.instDecidableEqSigma,
-    decidableLE := Lex.decidable _ _ }
+    toDecidableEq := Sigma.instDecidableEqSigma
+    toDecidableLE := Lex.decidable _ _
+    toDecidableLT := Lex.decidable _ _ }
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

@@ -55,7 +55,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
   apply Nat.coprime_of_dvd
   intro p pp hp hpn
   by_cases hpx : p ∣ x
-  · have h := Nat.dvd_sub' hp hpx
+  · have h := Nat.dvd_sub hp hpx
     rw [add_comm, Nat.add_sub_cancel] at h
     rcases pp.dvd_mul.mp h with h | h
     · have ⟨q, hq, hq'⟩ := (pp.prime.dvd_finset_prod_iff id).mp h
@@ -64,7 +64,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
       exact hq.2 hpx
     · exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, pp, hpx, h⟩ hx
   · have pps : p ∈ ps := Finset.mem_filter.mpr ⟨Nat.mem_primeFactors.mpr ⟨pp, hpn, hm.out⟩, hpx⟩
-    have h := Nat.dvd_sub' hp ((Finset.dvd_prod_of_mem id pps).mul_right n)
+    have h := Nat.dvd_sub hp ((Finset.dvd_prod_of_mem id pps).mul_right n)
     rw [Nat.add_sub_cancel] at h
     contradiction
 

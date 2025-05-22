@@ -526,6 +526,7 @@ theorem lineMap_symm (p₀ p₁ : P1) :
   rw [comp_lineMap]
   simp
 
+@[simp]
 theorem lineMap_apply_one_sub (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ (1 - c) = lineMap p₁ p₀ c := by
   rw [lineMap_symm p₀, comp_apply]
   congr
@@ -576,7 +577,8 @@ theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ =>
   rw [decomp]
   simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
 
-theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
+theorem image_uIcc {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
+    (f : k →ᵃ[k] k) (a b : k) :
     f '' Set.uIcc a b = Set.uIcc (f a) (f b) := by
   have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) := by
     ext x

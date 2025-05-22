@@ -16,6 +16,7 @@ We introduce the bundled categories:
 * `AddMagmaCat`
 * `Semigrp`
 * `AddSemigrp`
+
 along with the relevant forgetful functors between them.
 
 This closely follows `Mathlib.Algebra.Category.MonCat.Basic`.

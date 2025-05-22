@@ -43,7 +43,7 @@ theorem ker_modByMonicHom {q : R[X]} (hq : q.Monic) :
   Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
 
 open Algebra in
-lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
     (x : S) (I : Ideal R) {y : adjoin R ({x} : Set S)} :
     y ∈ I.map (algebraMap R (adjoin R ({x} : Set S))) ↔
       ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := by

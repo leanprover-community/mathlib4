@@ -4,16 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 
-/-! -/
--- fake module docstring just so that I can disable the long line linter without getting linted for
--- a missing module docstring!
-
-set_option linter.style.longLine false in
 /-!
 # Incidence algebras
 
@@ -66,7 +61,8 @@ Here are some additions to this file that could be made in the future:
 
 * [Aigner, *Combinatorial Theory, Chapter IV*][aigner1997]
 * [Jacobson, *Basic Algebra I, 8.6*][jacobson1974]
-* [Doubilet, Rota, Stanley, *On the foundations of Combinatorial Theory VI*][doubilet_rota_stanley_vi]
+* [Doubilet, Rota, Stanley, *On the foundations of Combinatorial Theory
+  VI*][doubilet_rota_stanley_vi]
 * [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnel1997]
 * [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]
 -/
@@ -314,8 +310,8 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
             MulZeroClass.mul_zero, smul_zero, Algebra.smul_mul_assoc, if_pos rfl, if_neg h]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
           exact if_neg fun hx ↦ h <| hx.2.trans hx.1
-    map_zero' := by dsimp; rw [map_zero, zero_smul]
-    map_add' c d := by dsimp; rw [map_add, add_smul] }
+    map_zero' := by rw [map_zero, zero_smul]
+    map_add' c d := by rw [map_add, add_smul] }
   commutes' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, mul_comm]
   smul_def' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, Algebra.smul_def]
 
@@ -385,7 +381,7 @@ private lemma muFun_apply (a b : α) :
 def mu : IncidenceAlgebra 𝕜 α :=
   ⟨muFun 𝕜, fun a b ↦ not_imp_comm.1 fun h ↦ by
     rw [muFun_apply] at h
-    split_ifs at h  with hab
+    split_ifs at h with hab
     · exact hab.le
     · rw [neg_eq_zero] at h
       obtain ⟨⟨x, hx⟩, -⟩ := exists_ne_zero_of_sum_ne_zero h
@@ -446,7 +442,7 @@ private def mu' : IncidenceAlgebra 𝕜 α :=
     not_imp_comm.1 fun h ↦ by
       dsimp only at h
       rw [muFun'_apply] at h
-      split_ifs at h  with hab
+      split_ifs at h with hab
       · exact hab.le
       · rw [neg_eq_zero] at h
         obtain ⟨⟨x, hx⟩, -⟩ := exists_ne_zero_of_sum_ne_zero h
@@ -522,7 +518,7 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
   let mud : IncidenceAlgebra 𝕜 αᵒᵈ :=
     { toFun := fun a b ↦ mu 𝕜 (ofDual b) (ofDual a)
       eq_zero_of_not_le' := fun a b hab ↦ apply_eq_zero_of_not_le (by exact hab) _ }
-  suffices mu 𝕜 = mud by rw [this]; rfl
+  suffices mu 𝕜 = mud by simp_rw [this, mud, coe_mk, ofDual_toDual]
   suffices mud * zeta 𝕜 = 1 by
     rw [← mu_mul_zeta] at this
     apply_fun (· * mu 𝕜) at this
@@ -571,10 +567,12 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
     _ = ∑ z ∈ Ici x, (mu 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) x z * f z := by
       simp_rw [mul_apply, sum_mul]
     _ = ∑ y ∈ Ici x, ∑ z ∈ Ici y, (1 : IncidenceAlgebra 𝕜 α) x z * f z := by
-      simp [mu_mul_zeta 𝕜, ← add_sum_Ioi_eq_sum_Ici]
+      simp only [mu_mul_zeta 𝕜, one_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_Ici, le_refl,
+        ↓reduceIte, ← add_sum_Ioi_eq_sum_Ici, left_eq_add]
       exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_le
     _ = f x := by
-      simp [one_apply, ← add_sum_Ioi_eq_sum_Ici]
+      simp only [one_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_Ici,
+        ← add_sum_Ioi_eq_sum_Ici, le_refl, ↓reduceIte, add_eq_left]
       exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_le
 
 end InversionTop

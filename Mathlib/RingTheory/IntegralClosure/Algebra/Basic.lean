@@ -56,6 +56,7 @@ instance Module.End.isIntegral {M : Type*} [AddCommGroup M] [Module R M] [Module
   ⟨LinearMap.exists_monic_and_aeval_eq_zero R⟩
 
 variable (R) in
+@[nontriviality]
 theorem IsIntegral.of_finite [Module.Finite R B] (x : B) : IsIntegral R x :=
   (isIntegral_algHom_iff (Algebra.lmul R B) Algebra.lmul_injective).mp
     (Algebra.IsIntegral.isIntegral _)
@@ -121,6 +122,7 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
 
 variable {f}
 
+@[stacks 00GK]
 theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
   letI := f.toAlgebra
   fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.1 _ trivial

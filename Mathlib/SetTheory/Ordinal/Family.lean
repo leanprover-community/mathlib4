@@ -460,7 +460,7 @@ set_option linter.deprecated false in
 @[simp]
 theorem bsup_eq_sup' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → Ordinal.{max u v}) :
     bsup.{_, v} _ (bfamilyOfFamily' r f) = sup.{_, v} f := by
-  simp (config := { unfoldPartialApp := true }) only [← sup_eq_bsup' r, enum_typein,
+  simp +unfoldPartialApp only [← sup_eq_bsup' r, enum_typein,
     familyOfBFamily', bfamilyOfFamily']
 
 theorem bsup_eq_bsup {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r] [IsWellOrder ι r']
@@ -708,7 +708,7 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.toType) (· < �
     (by
       by_contra! h
       -- Porting note: `nth_rw` → `conv_rhs` & `rw`
-      conv_rhs at h => rw [← type_lt o]
+      conv_rhs at h => rw [← type_toType o]
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
 set_option linter.deprecated false in
@@ -945,31 +945,13 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
     funext fun a => by
       induction a using limitRecOn with
-      | H₁ => solve_by_elim
-      | H₂ => solve_by_elim
-      | H₃ _ ho H =>
+      | zero => solve_by_elim
+      | succ => solve_by_elim
+      | isLimit _ ho H =>
         rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
         congr
         ext b hb
         exact H b hb⟩
-
-/-- A two-argument version of `Ordinal.blsub`.
-
-Deprecated. If you need this value explicitly, write it in terms of `iSup`. If you just want an
-upper bound for the image of `op`, use that `Iio a ×ˢ Iio b` is a small set. -/
-@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
-def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
-    Ordinal :=
-  lsub (fun x : o₁.toType × o₂.toType => op (typein_lt_self x.1) (typein_lt_self x.2))
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
-theorem lt_blsub₂ {o₁ o₂ : Ordinal}
-    (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
-    (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
-  convert lt_lsub _ (Prod.mk (enum (· < ·) ⟨a, by rwa [type_lt]⟩)
-    (enum (· < ·) ⟨b, by rwa [type_lt]⟩))
-  simp only [typein_enum]
 
 end blsub
 
@@ -1023,9 +1005,6 @@ theorem iSup_natCast : iSup Nat.cast = ω :=
 
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
-
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias IsNormal.apply_omega := IsNormal.apply_omega0
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=

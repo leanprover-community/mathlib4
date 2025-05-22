@@ -265,7 +265,7 @@ lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (ma
   induction' l using reverseRecOn <;> simp [*]
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
-  apply ext_getElem <;> (simp [take_take]; omega)
+  apply ext_getElem <;> (simp [take_take] <;> omega)
 
 end InitsTails
 

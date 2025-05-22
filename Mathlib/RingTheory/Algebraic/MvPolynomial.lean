@@ -53,8 +53,8 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
     simp only [u, v, g]
     ext1
     · ext1
-      simp [Set.subtypeInsertEquivOption, Subalgebra.algebraMap_eq]
-    · simp [Set.subtypeInsertEquivOption, h1]
+      simp [Set.subtypeInsertEquivOption, Subalgebra.algebraMap_eq, optionEquivLeft_symm_apply]
+    · simp [Set.subtypeInsertEquivOption, h1, optionEquivLeft_symm_apply]
   simpa only [h2, v, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EquivLike.injective_comp, AlgHom.coe_restrictScalars'] using hf
 

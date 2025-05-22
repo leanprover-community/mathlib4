@@ -21,8 +21,8 @@ This is an abbreviation for `M✶.Indep X`, but has its own name for the sake of
 
 ## Main Definitions
 
-* `M.Dual`, written `M✶`, is the matroid in which a set `B` is a base if and only if `B ⊆ M.E`
-  and `M.E \ B` is a base for `M`.
+* `M.Dual`, written `M✶`, is the matroid on `M.E` which a set `B ⊆ M.E` is a base if and only if
+  `M.E \ B` is a base for `M`.
 
 * `M.Coindep X` means `M✶.Indep X`, or equivalently that `X` is contained in `M.E \ B` for some
   base `B` of `M`.
@@ -244,7 +244,7 @@ theorem coindep_iff_exists (hX : X ⊆ M.E := by aesop_mat) :
 theorem coindep_iff_subset_compl_isBase : M.Coindep X ↔ ∃ B, M.IsBase B ∧ X ⊆ M.E \ B := by
   simp_rw [coindep_iff_exists', subset_diff]
   exact ⟨fun ⟨⟨B, hB, _, hBX⟩, hX⟩ ↦ ⟨B, hB, hX, hBX.symm⟩,
-    fun ⟨B, hB, hXE, hXB⟩ ↦ ⟨⟨B, hB, hB.subset_ground,  hXB.symm⟩, hXE⟩⟩
+    fun ⟨B, hB, hXE, hXB⟩ ↦ ⟨⟨B, hB, hB.subset_ground, hXB.symm⟩, hXE⟩⟩
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 theorem Coindep.subset_ground (hX : M.Coindep X) : X ⊆ M.E :=

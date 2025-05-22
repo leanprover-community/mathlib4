@@ -7,6 +7,7 @@ import Mathlib.Algebra.Module.Torsion
 import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.Noetherian.Nilpotent
 import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 ## The Hopkins–Levitzki theorem
@@ -158,3 +159,16 @@ theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [CommRing R]
 @[stacks 00KH] theorem isArtinianRing_iff_isNoetherianRing_krullDimLE_zero {R} [CommRing R] :
     IsArtinianRing R ↔ IsNoetherianRing R ∧ Ring.KrullDimLE 0 R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨h, _⟩ ↦ h.isArtinianRing_of_krullDimLE_zero⟩
+
+theorem isArtinianRing_iff_krullDimLE_zero {R : Type*} [CommRing R] [IsNoetherianRing R] :
+    IsArtinianRing R ↔ Ring.KrullDimLE 0 R := by
+  rwa [isArtinianRing_iff_isNoetherianRing_krullDimLE_zero, and_iff_right]
+
+lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [CommRing R] [IsNoetherianRing R]
+    [IsLocalRing R] : IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
+  rw [isArtinianRing_iff_krullDimLE_zero,
+    Ideal.FG.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _),
+    ← and_iff_left (a := Ring.KrullDimLE 0 R) ‹IsLocalRing R›,
+    (Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 3 rfl rfl,
+    IsLocalRing.isMaximal_iff, le_antisymm_iff, and_iff_right]
+  exact IsLocalRing.le_maximalIdeal (by simp [nilradical, Ideal.radical_eq_top])
