@@ -156,7 +156,7 @@ variable {F G} (adj₂ : F ⊣₂ G)
   {X₃ Y₃ : C₃} {f₃ : X₃ ⟶ Y₃}
   (sq₁₂ : F.PushoutObjObj f₁ f₂) (sq₁₃ : G.PullbackObjObj f₁ f₃)
 
-/-- Given an adjunction `F ⊣₂ G` of bifunctors, and structures
+/-- Given a parametrized adjunction `F ⊣₂ G` between bifunctors, and structures
 `sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`, there are
 as many commutative squares with left map `sq₁₂.ι` and right map `f₃`
 as commutative squares with left map `f₂` and right map `sq₁₃.π`. -/
@@ -206,7 +206,7 @@ noncomputable def arrowHomEquiv :
 attribute [local simp] arrowHomEquiv_apply_left arrowHomEquiv_apply_right
   arrowHomEquiv_symm_apply_left arrowHomEquiv_symm_apply_right
 
-/-- Given an adjunction `F ⊣₂ G` of bifunctors, structures
+/-- Given a parametrized adjunction `F ⊣₂ G` between bifunctors, structures
 `sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`,
 there are as many liftings for the commutative square given by a
 map `α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃` as there are liftings
