@@ -170,29 +170,30 @@ section
 
 variable {A : Type*} [AddCommSemigroup A] [IsRightCancelAdd A] [One A]
 
-/-- The embedding from `up A` to itself via (· + a). -/
+/-- The embedding from `up' a` to itself via (· + b). -/
 @[simps!]
-def embeddingUpAdd (a : A) : Embedding (up A) (up A) :=
-  Embedding.mk' _ _ (· + a)
+def embeddingUp'Add (a b : A) : Embedding (up' a) (up' a) :=
+  Embedding.mk' _ _ (· + b)
     (fun _ _ h => by simpa using h)
-    (by dsimp; simp_rw [add_right_comm _ a 1, add_right_cancel_iff, implies_true])
+    (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
 
-instance (a : A) : (embeddingUpAdd a).IsRelIff := by dsimp [embeddingUpAdd]; infer_instance
+instance (a b : A) : (embeddingUp'Add a b).IsRelIff := by dsimp [embeddingUp'Add]; infer_instance
 
-instance (a : A) : (embeddingUpAdd a).IsTruncGE where
-  mem_next {j _} h := ⟨j + 1, (add_right_comm _ _ _).trans h⟩
+instance (a b : A) : (embeddingUp'Add a b).IsTruncGE where
+  mem_next {j _} h := ⟨j + a, (add_right_comm _ _ _).trans h⟩
 
-/-- The embedding from `down A` to itself via (· + a). -/
+/-- The embedding from `down' a` to itself via (· + b). -/
 @[simps!]
-def embeddingDownAdd (a : A) : Embedding (down A) (down A) :=
-  Embedding.mk' _ _ (· + a)
+def embeddingDown'Add (a b : A) : Embedding (down' a) (down' a) :=
+  Embedding.mk' _ _ (· + b)
     (fun _ _ h => by simpa using h)
-    (by dsimp; simp_rw [add_right_comm _ a 1, add_right_cancel_iff, implies_true])
+    (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
 
-instance (a : A) : (embeddingDownAdd a).IsRelIff := by dsimp [embeddingDownAdd]; infer_instance
+instance (a b : A) : (embeddingDown'Add a b).IsRelIff := by
+  dsimp [embeddingDown'Add]; infer_instance
 
-instance (a : A) : (embeddingDownAdd a).IsTruncLE where
-  mem_prev {_ x} h := ⟨x + 1, (add_right_comm _ _ _).trans h⟩
+instance (a b : A) : (embeddingDown'Add a b).IsTruncLE where
+  mem_prev {_ x} h := ⟨x + a, (add_right_comm _ _ _).trans h⟩
 
 end
 

@@ -42,7 +42,7 @@ variable [TopologicalSpace G] [IsTopologicalGroup G]
 
 variable {R G} in
 /-- The `G` representation `C(G, rep)` given a representation `rep`.
-The `G` action is defined by `g • f := x ↦ f (g⁻¹ * x)`. -/
+The `G` action is defined by `g • f := x ↦ g • f (g⁻¹ * x)`. -/
 abbrev Iobj (rep : Action (TopModuleCat R) G) : Action (TopModuleCat R) G where
   V := .of R C(G, rep.V)
   ρ :=
@@ -148,7 +148,7 @@ instance : (invariants R G).Additive where
 an `R`-linear `G`-representation to the complex of homogeneous cochains. -/
 def homogeneousCochains : Action (TopModuleCat R) G ⥤ CochainComplex (TopModuleCat R) ℕ :=
   multiInd R G ⋙ (invariants R G).mapHomologicalComplex _ ⋙
-    (ComplexShape.embeddingUpAdd 1).restrictionFunctor _
+    (ComplexShape.embeddingUp'Add 1 1).restrictionFunctor _
 
 /-- `continuousCohomology R G n` is the functor taking
 an `R`-linear `G`-representation to its `n`-th continuous homology. -/
