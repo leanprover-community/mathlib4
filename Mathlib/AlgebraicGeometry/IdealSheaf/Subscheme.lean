@@ -545,6 +545,9 @@ lemma ker_subschemeι_app (U : X.affineOpens) :
 lemma ker_subschemeι : I.subschemeι.ker = I := by
   ext; simp [ker_subschemeι_app]
 
+instance : IsEmpty (⊤ : X.IdealSheafData).subscheme := by
+  rw [← (subschemeι _).ker_eq_top_iff_isEmpty, ker_subschemeι]
+
 /-- Given `I ≤ J`, this is the map `Spec(Γ(X, U)/J(U)) ⟶ Spec(Γ(X, U)/I(U))`. -/
 noncomputable
 def glueDataObjHom {I J : IdealSheafData X} (h : I ≤ J) (U) :

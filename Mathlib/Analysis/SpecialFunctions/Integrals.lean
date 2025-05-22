@@ -762,9 +762,8 @@ theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
       simp only [_root_.pow_zero, _root_.pow_succ, mul_assoc, pow_mul, one_mul]
       congr! 5
       rw [← sq, ← sq, cos_sq']
-    _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n := by
-      -- Note(kmill): Didn't need `by exact`, but elaboration order seems to matter here.
-      exact integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
+    _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n :=
+      integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
 
 /-- The integral of `sin x * cos x`, given in terms of sin².
   See `integral_sin_mul_cos₂` below for the integral given in terms of cos². -/
