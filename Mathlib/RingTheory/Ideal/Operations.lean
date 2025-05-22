@@ -1115,7 +1115,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
 
-/-- Another version of Prime avoidance using `Set.Finite` instead of `Finset`. -/
+/-- Another version of prime avoidance using `Set.Finite` instead of `Finset`. -/
 lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
     (hs : s.Finite) {f : ι → Ideal R} (a b : ι)
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → (f i).IsPrime) {I : Ideal R} :
