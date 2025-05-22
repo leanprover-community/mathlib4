@@ -77,7 +77,9 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
       simpa [ha, hasSum_zero_iff]
     exact ⟨fun h _ i _ ↦ h i, fun h i ↦  h (i + 1) i (by omega)⟩
   · -- The case `a = ∞`.
-    simp [ha, hasSum_iff_tendsto_nat, nhds_top]
+    simp only [ha, hasSum_iff_tendsto_nat, nhds_top, ne_eq, Filter.tendsto_iInf,
+      Filter.tendsto_principal, Set.mem_Ioi, Filter.eventually_atTop, ge_iff_le, le_top,
+      implies_true, true_and]
     constructor
     · intro h b hb
       obtain ⟨n, hn⟩ := h b (LT.lt.ne_top hb)
@@ -106,7 +108,12 @@ lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum 
         obtain ⟨ℓ, hℓ⟩ := h s ⟨by simp, hc⟩ isOpen_Ico_zero
         let k := max n ℓ
         exact (lt_self_iff_false _).mp <| lt_of_lt_of_le ((hℓ k (by omega)).2) (hn k (by omega))
-      · sorry
+      · intro b hb
+        rw [tendsto_atTop_nhds] at h
+        let s := Set.Ioo b (a + 1)
+        have hs : a ∈ s := by simpa [s, hb] using lt_add_right (LT.lt.ne_top ha') one_ne_zero
+        obtain ⟨n, hn⟩ := h s hs isOpen_Ioo
+        exact ⟨n, (hn n (Nat.le_refl _)).1⟩
     · rw [and_imp]
       intro hf hf' nhd hnhd
       simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage]
