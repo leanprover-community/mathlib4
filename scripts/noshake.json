@@ -237,7 +237,6 @@
    "Mathlib.Data.Nat.Factorial.Basic",
    "Mathlib.Data.PNat.Defs"],
   "Mathlib.Tactic.Order.CollectFacts": ["Mathlib.Order.Basic"],
-  "Mathlib.Tactic.NormNum.Irrational": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":

@@ -7,7 +7,6 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Real.Irrational
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.Rify
-import Mathlib.Tactic.TautoSet
 
 /-! # `norm_num` extension for `Irrational`
 
@@ -110,6 +109,15 @@ private theorem not_power_nat_pow_of_bounds {n k p q : ℕ}
   apply not_power_nat_pow h_coprime hq
   apply not_power_nat_of_bounds h_left h_right
 
+private lemma eq_of_mul_eq_mul_of_coprime_aux {a b x y : ℕ} (hab : a.Coprime b)
+    (h : a * x = b * y) : a ∣ y := Nat.Coprime.dvd_of_dvd_mul_left hab (Dvd.intro x h)
+
+private lemma eq_of_mul_eq_mul_of_coprime {a b x y : ℕ} (hab : a.Coprime b) (hxy : x.Coprime y)
+    (h : a * x = b * y) : a = y := by
+  apply Nat.dvd_antisymm
+  · exact eq_of_mul_eq_mul_of_coprime_aux hab h
+  · exact eq_of_mul_eq_mul_of_coprime_aux (x := b) hxy.symm (by rw [mul_comm, ← h, mul_comm])
+
 /-- Weaker version of `not_power_rat_of_num` with extra `q ≥ 0` assumption. -/
 private theorem not_power_rat_of_num_aux {a b d : ℕ}
     (h_coprime : a.Coprime b)
@@ -139,58 +147,13 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   replace h : a * y ^ d = x ^ d * b := by
     qify
     assumption
-  have hy_zero : y ≠ 0 := by simp [y]
-  by_cases ha_zero : a = 0
-  · subst ha_zero
-    simp only [zero_mul, zero_eq_mul, pow_eq_zero_iff', ne_eq, hb_zero, or_false, y] at h
-    simp [h.left, h.right] at ha
-  by_cases hd_zero : d = 0
-  · subst hd_zero
-    simp only [pow_zero, mul_one, one_mul, y] at h ha
-    simp [h] at h_coprime
-    omega
-  by_cases hx_zero : x = 0
-  · subst hx_zero
-    simp only [zero_pow hd_zero, zero_mul, mul_eq_zero, pow_eq_zero_iff', ne_eq, y] at h ha
-    simp [ha, y] at h
   apply ha
-  clear ha
-  apply Nat.factorization_inj ha_zero (pow_ne_zero d hx_zero)
-  apply_fun Nat.factorization at h
-  obtain ⟨hax, hay⟩ : a.primeFactors = x.primeFactors ∧ Disjoint a.primeFactors y.primeFactors := by
-    apply_fun Finsupp.support at h
-    simp only [Nat.support_factorization, Nat.primeFactors_mul ha_zero (pow_ne_zero d hy_zero),
-      Nat.primeFactors_pow _ hd_zero, Nat.primeFactors_mul (pow_ne_zero d hx_zero) hb_zero, y] at h
-    have hab : a.primeFactors ∩ b.primeFactors = ∅ := by
-      rwa [← Finset.disjoint_iff_inter_eq_empty, Nat.disjoint_primeFactors ha_zero hb_zero]
-    have hxy : x.primeFactors ∩ y.primeFactors = ∅ := by
-      rw [← Finset.disjoint_iff_inter_eq_empty, Nat.disjoint_primeFactors hx_zero hy_zero]
-      have : x'.natAbs.Coprime y := Rat.reduced q
-      simpa [hx'] using this
-    apply_fun Finset.toSet at h hab hxy
-    simp only [Finset.coe_union, Finset.coe_inter, Finset.coe_empty, y] at h hab hxy
-    clear * - h hab hxy -- to speed up `tauto` below
-    constructor
-    · apply_fun Finset.toSet using Finset.coe_injective
-      tauto_set
-    · rw [← Finset.disjoint_coe]
-      tauto_set
-  rw [Finsupp.ext_iff']
-  constructor
-  · simpa [Finsupp.support_smul_eq hd_zero]
-  intro p hp
-  replace h : (a * y ^ d).factorization p = (x ^ d * b).factorization p := by
-    rw [h]
-  simp only [Nat.factorization_pow, Finsupp.coe_add, Finsupp.coe_smul, nsmul_eq_mul, Pi.natCast_def,
-    Nat.cast_id, Pi.add_apply, Pi.mul_apply, Nat.factorization_mul ha_zero (pow_ne_zero d hy_zero),
-    Nat.factorization_mul (pow_ne_zero d hx_zero) hb_zero] at h
-  have hy0 : y.factorization p = 0 := by
-    rw [← Finsupp.not_mem_support_iff]
-    exact hay.not_mem_of_mem_left_finset hp
-  have hb0 : b.factorization p = 0 := by
-    rw [← Finsupp.not_mem_support_iff, Nat.support_factorization]
-    exact Disjoint.not_mem_of_mem_left_finset (Nat.Coprime.disjoint_primeFactors h_coprime) hp
-  simpa [hy0, hb0] using h
+  conv at h => rhs; rw [mul_comm]
+  apply eq_of_mul_eq_mul_of_coprime h_coprime _ h
+  apply Nat.Coprime.pow_left
+  apply Nat.Coprime.pow_right
+  apply Nat.Coprime.symm
+  simpa [hx'] using (show x'.natAbs.Coprime y from Rat.reduced q)
 
 private theorem not_power_rat_of_num {a b d : ℕ}
     (h_coprime : a.Coprime b)
