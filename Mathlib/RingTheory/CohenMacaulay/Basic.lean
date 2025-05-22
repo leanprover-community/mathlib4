@@ -151,13 +151,13 @@ variable (M : ModuleCat.{v} R) (Mₚ : ModuleCat.{v'} Rₚ)
 
 include p f
 
-def SemiLinearMapAlgebraMapOfLinearMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+abbrev SemiLinearMapAlgebraMapOfLinearMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
     [IsScalarTower R A N] (f : M →ₗ[R] N) : M →ₛₗ[algebraMap R A] N where
   __ := f
   map_smul' m r := by simp
 
-def LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
     [IsScalarTower R A N] (f : M →ₛₗ[algebraMap R A] N) : M →ₗ[R] N where
   __ := f
@@ -215,27 +215,22 @@ lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
             induction' y using Submodule.Quotient.induction_on with y
             rcases IsLocalizedModule.surj' (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
             use (Submodule.Quotient.mk z.1, z.2)
-            simp [LinearMapOfSemiLinearMapAlgebraMap, SemiLinearMapAlgebraMapOfLinearMap, g, ← hz]
+            simp [g, ← hz]
           exists_of_eq {y1 y2} h := by
             induction' y1 using Submodule.Quotient.induction_on with y1
             induction' y2 using Submodule.Quotient.induction_on with y2
-            simp only [LinearMapOfSemiLinearMapAlgebraMap, SemiLinearMapAlgebraMapOfLinearMap,
-              LinearMap.coe_mk, LinearMap.coe_toAddHom, Submodule.mapQ_apply, g] at h
+            simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, Submodule.mapQ_apply, g] at h
             have h := (Submodule.Quotient.mk_eq_zero _).mp (sub_eq_zero_of_eq h)
             rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp h with ⟨m, _, hm⟩
             rcases IsLocalizedModule.surj p.primeCompl f m with ⟨⟨z, s⟩, hz⟩
-            have eq : f (s • (y1 - y2)) = f (x • z) := by
-              simp only [LinearMap.map_smul_of_tower, map_sub, ← hm, algebraMap_smul, ← hz]
-              exact smul_comm s x m
+            have eq : f (s • (y1 - y2)) = f (x • z) := by simp [← hm, ← hz, smul_comm s x m]
             rcases IsLocalizedModule.exists_of_eq (S := p.primeCompl) eq with ⟨c, hc⟩
             use c * s
             apply sub_eq_zero.mp
             have h : (0 : QuotSMulTop x M) = Submodule.Quotient.mk (c • s • (y1 - y2)) := by
-              rw [hc, Submodule.Quotient.mk_smul]
-              exact Eq.symm <| smul_eq_zero_of_right c <| (Submodule.Quotient.mk_eq_zero _).mpr <|
-                Submodule.smul_mem_pointwise_smul z x ⊤ Submodule.mem_top
-            simp only [h, smul_sub, Submodule.Quotient.mk_sub, Submodule.Quotient.mk_smul, mul_smul]
-        }
+              simpa [hc] using (smul_eq_zero_of_right c <| (Submodule.Quotient.mk_eq_zero _).mpr <|
+                Submodule.smul_mem_pointwise_smul z x ⊤ Submodule.mem_top).symm
+            simp [h, smul_sub, mul_smul] }
         exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) g reg.2 len
 
 lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module.Finite R M]
