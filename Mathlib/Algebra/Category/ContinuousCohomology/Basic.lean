@@ -107,12 +107,6 @@ lemma d_succ (n : ℕ) :
     d R G (n + 1) = whiskerLeft (functor R G (n + 1)) (const R G) -
       (by exact whiskerRight (d R G n) (I R G)) := rfl
 
-@[simp]
-lemma whiskerRight_zero {C D E : Type*} [Category C] [Category D] [Category E]
-    {F G : C ⥤ D} (H : D ⥤ E) [Limits.HasZeroMorphisms D] [Limits.HasZeroMorphisms E]
-    [H.PreservesZeroMorphisms] :
-    whiskerRight (0 : F ⟶ G) H = 0 := by aesop_cat
-
 @[reassoc (attr := simp)]
 lemma d_comp_d (n : ℕ) :
     d R G n ≫ d R G (n + 1) = 0 := by
