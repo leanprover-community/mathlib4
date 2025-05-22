@@ -21,10 +21,10 @@ namespace CategoryTheory.MonoidalCategory
 variable (J₁ : Type u₁) (J₂ : Type u₂) (C : Type u₃)
     [Category.{v₁} J₁] [Category.{v₂} J₂] [Category.{v₃} C] [MonoidalCategory C]
 
-/-- The (uncurried version of the) external product bifunctor: Given diagrams
+/-- The (curried version of the) external product bifunctor: Given diagrams
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `j₁ ↦ j₂ ↦ K₁ j₁ ⊗ K₂ j₂`. -/
 @[simps!]
-def externalProductBifunctorUncurried : (J₁ ⥤ C) ⥤ (J₂ ⥤ C) ⥤ J₁ ⥤ J₂ ⥤ C :=
+def externalProductBifunctorCurried : (J₁ ⥤ C) ⥤ (J₂ ⥤ C) ⥤ J₁ ⥤ J₂ ⥤ C :=
   (Functor.postcompose₂.obj <| (evaluation _ _).obj <| curriedTensor C).obj <| whiskeringLeft₂ C
 
 /-- The external product bifunctor: Given diagrams
@@ -32,7 +32,7 @@ def externalProductBifunctorUncurried : (J₁ ⥤ C) ⥤ (J₂ ⥤ C) ⥤ J₁ �
 @[simps!]
 def externalProductBifunctor : ((J₁ ⥤ C) × (J₂ ⥤ C)) ⥤ J₁ × J₂ ⥤ C :=
   uncurry.obj <| (Functor.postcompose₂.obj <| uncurry).obj <|
-    externalProductBifunctorUncurried J₁ J₂ C
+    externalProductBifunctorCurried J₁ J₂ C
 
 variable {J₁ J₂ C}
 /-- An abbreviation for the action of `externalProductBifunctor J₁ J₂ C` on objects. -/
@@ -75,12 +75,12 @@ def externalProductSwap [BraidedCategory C] :
     (fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [tensorHom_def, whisker_exchange]))
     (fun _ ↦ by ext; simp [tensorHom_def, whisker_exchange])
 
-/-- A version of `externalProductSwap` phrased in terms of the uncurried functors. -/
+/-- A version of `externalProductSwap` phrased in terms of the curried functors. -/
 @[simps!]
 def externalProductFlip [BraidedCategory C] :
     (Functor.postcompose₂.obj <| flipFunctor _ _ _).obj
-      (externalProductBifunctorUncurried J₁ J₂ C) ≅
-    (externalProductBifunctorUncurried J₂ J₁ C).flip :=
+      (externalProductBifunctorCurried J₁ J₂ C) ≅
+    (externalProductBifunctorCurried J₂ J₁ C).flip :=
   NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents <|
     fun _ ↦ NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _)
 
