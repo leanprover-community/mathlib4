@@ -158,11 +158,16 @@ lemma cycle_walk_contains_all_edges {p : G.Walk v v} (c : G.IsCycle) (h : p.IsCy
   simp_all
 
 theorem IsEulerian (c : G.IsCycle) : ∃ (v : V) (p : G.Walk v v), p.IsEulerian := by
-  simp only [Walk.isEulerian_iff]
   obtain ⟨v, p, hpc⟩ := c.isCyclic
   use v
   use p
-  simp only [hpc.isCircuit.isTrail, true_and]
+  simp only [Walk.isEulerian_iff, hpc.isCircuit.isTrail, true_and]
+  exact c.cycle_walk_contains_all_edges G hpc
+
+theorem IsEulerian_forall (c : G.IsCycle) : ∃ (p : G.Walk v v), p.IsEulerian := by
+  obtain ⟨p, hpc⟩ := c.all_vertices_form_a_cycle
+  use p
+  simp only [Walk.isEulerian_iff, hpc.isCircuit.isTrail, true_and]
   exact c.cycle_walk_contains_all_edges G hpc
 
 lemma IsHamiltonian (c : G.IsCycle) : G.IsHamiltonian := by
