@@ -102,13 +102,13 @@ theorem scalar_product_char_eq_finrank_equivariant (V W : FDRep k G) :
     ⅟ (Fintype.card G : k) • ∑ g : G, W.character g * V.character g⁻¹ =
     Module.finrank k (V ⟶ W) := by
   conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← FDRep.char_linHom]
--- The scalar product is the character of `Hom(V, W).`
+  -- The scalar product is the character of `Hom(V, W).`
   rw [FDRep.average_char_eq_finrank_invariants, ← LinearEquiv.finrank_eq
     (Representation.linHom.invariantsEquivFDRepHom V W), of_ρ']
-  rfl
--- The average over the group of the character of a representation equals the dimension of the
--- space of invariants, and the space of invariants of `Hom(W, V)` is the subspace of
---`G`-equivariant linear maps, `Hom_G(W, V)`.
+  simp only [FGModuleCat.of_carrier]
+  -- The average over the group of the character of a representation equals the dimension of the
+  -- space of invariants, and the space of invariants of `Hom(W, V)` is the subspace of
+  --`G`-equivariant linear maps, `Hom_G(W, V)`.
 
 end Group
 
@@ -125,8 +125,8 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
     ⅟ (Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
       if Nonempty (V ≅ W) then ↑1 else ↑0 := by
   rw [scalar_product_char_eq_finrank_equivariant]
--- The scalar products of the characters is equal to the dimension of the space of
--- equivariant maps `W ⟶ V`.
+  -- The scalar products of the characters is equal to the dimension of the space of
+  -- equivariant maps `W ⟶ V`.
   rw_mod_cast [finrank_hom_simple_simple W V, Iso.nonempty_iso_symm]
   -- By Schur's Lemma, the dimension of `Hom_G(W, V)` is `1` is `V ≅ W` and `0` otherwise.
 

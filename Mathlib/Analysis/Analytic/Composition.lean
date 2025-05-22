@@ -159,7 +159,8 @@ theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
 theorem compContinuousLinearMap_applyComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 F G)
     (f : E →L[𝕜] F) (c : Composition n) (v : Fin n → E) :
     (p.compContinuousLinearMap f).applyComposition c v = p.applyComposition c (f ∘ v) := by
-  simp +unfoldPartialApp [applyComposition]; rfl
+  ext
+  simp [applyComposition, Function.comp_def]
 
 end FormalMultilinearSeries
 

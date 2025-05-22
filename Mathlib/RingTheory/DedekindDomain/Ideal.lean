@@ -587,7 +587,6 @@ noncomputable instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero
   { Function.Injective.cancelCommMonoidWithZero (coeIdealHom A⁰ (FractionRing A)) coeIdeal_injective
     (RingHom.map_zero _) (RingHom.map_one _) (RingHom.map_mul _) (RingHom.map_pow _) with }
 
--- Porting note: Lean can infer all it needs by itself
 instance Ideal.isDomain : IsDomain (Ideal A) := { }
 
 /-- For ideals in a Dedekind domain, to divide is to contain. -/
@@ -1017,7 +1016,7 @@ variable [IsDedekindDomain A] {I : Ideal R} {J : Ideal A}
 
 /-- The map from ideals of `R` dividing `I` to the ideals of `A` dividing `J` induced by
   a homomorphism `f : R/I →+* A/J` -/
-@[simps] -- Porting note: use `Subtype` instead of `Set` to make linter happy
+@[simps]
 def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjective f) :
     {p : Ideal R // p ∣ I} →o {p : Ideal A // p ∣ J} where
   toFun X := ⟨comap (Ideal.Quotient.mk J) (map f (map (Ideal.Quotient.mk I) X)), by

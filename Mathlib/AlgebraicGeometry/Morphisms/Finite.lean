@@ -16,8 +16,8 @@ of an arbitrary affine open subset of `Y` is affine and the induced ring map is 
 It is equivalent to ask only that `Y` is covered by affine opens whose preimage is affine
 and the induced ring map is finite.
 
-Also see `AlgebraicGeometry.IsFinite.finite_preimage_singleton` in `AlgebraicGeometry/Fiber.lean`
-for the fact that finite morphisms have finite fibers.
+Also see `AlgebraicGeometry.IsFinite.finite_preimage_singleton` in
+`Mathlib/AlgebraicGeometry/Fiber.lean` for the fact that finite morphisms have finite fibers.
 
 -/
 

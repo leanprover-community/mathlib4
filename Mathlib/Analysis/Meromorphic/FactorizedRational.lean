@@ -220,7 +220,7 @@ theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicO
       (hφ u hu).inv.order_smul (h₁f u hu), (hφ u hu).order_inv, order _ h₃f]
     simp only [Pi.neg_apply, h₁f, hu, divisor_apply, WithTop.LinearOrderedAddCommGroup.coe_neg]
     lift (h₁f u hu).order to ℤ using (h₂f ⟨u, hu⟩) with n hn
-    rw [WithTop.untop₀_coe, (by rfl : -↑(n : WithTop ℤ) = (↑(-n) : WithTop ℤ)), ← WithTop.coe_add]
+    rw [WithTop.untop₀_coe, ← WithTop.LinearOrderedAddCommGroup.coe_neg, ← WithTop.coe_add]
     simp
   · -- f =ᶠ[codiscreteWithin U] (∏ᶠ (u : 𝕜), fun z ↦ (z - u) ^ (divisor f U) u) * g
     filter_upwards [(divisor f U).eq_zero_codiscreteWithin,
@@ -257,27 +257,25 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
       · simp only [h, lt_self_iff_false] at hy
       · simp only [h, lt_neg_self_iff] at hy
         linarith
-    · simp_all only [ne_eq, Subtype.forall, Int.cast_zero, zero_mul]
-      rfl
+    · simp_all [Pi.zero_def]
   -- Trivial case: the support of D is infinite
-  by_cases h₃f : ¬D.support.Finite
-  · rw [finsum_of_infinite_support (by simpa [t₁] using h₃f)]
+  by_cases h₃f : D.support.Finite
+  case neg =>
+    rw [finsum_of_infinite_support (by simpa [t₁] using h₃f)]
     rw [finprod_of_infinite_mulSupport (by simpa [mulSupport] using h₃f)] at h
     filter_upwards [h] with x hx
     simp [hx]
-  rw [not_not] at h₃f
   -- General case
   filter_upwards [h, D.eq_zero_codiscreteWithin, self_mem_codiscreteWithin U] with z hz h₂z h₃z
+  rw [Pi.zero_apply] at h₂z
   rw [hz, finprod_eq_prod_of_mulSupport_subset (s := h₃f.toFinset) _
     (by simp_all [mulSupport]), finsum_eq_sum_of_support_subset (s := h₃f.toFinset) _ (by simp_all)]
   have : ∀ x ∈ h₃f.toFinset, ‖z - x‖ ^ D x ≠ 0 := by
     intro x hx
-    rw [Finite.mem_toFinset, Function.mem_support, ne_eq] at hx
-    rw [ne_eq, zpow_eq_zero_iff hx, norm_eq_zero]
-    by_contra hCon
-    rw [sub_eq_zero] at hCon
-    rw [hCon] at h₂z
-    tauto
+    rw [Finite.mem_toFinset, Function.mem_support] at hx
+    rw [ne_eq, zpow_eq_zero_iff hx, norm_eq_zero, sub_eq_zero, eq_comm]
+    apply ne_of_apply_ne D
+    rwa [h₂z]
   simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply, norm_smul, norm_prod, norm_zpow]
   rw [log_mul (Finset.prod_ne_zero_iff.2 this) (by simp [hg ⟨z, h₃z⟩]), log_prod _ _ this]
   simp [log_zpow]

@@ -10,7 +10,7 @@ import Mathlib.Data.List.Infix
 # Preparations for defining operations on `Finset`.
 
 The operations here ignore multiplicities,
-and preparatory for defining the corresponding operations on `Finset`.
+and prepare for defining the corresponding operations on `Finset`.
 -/
 
 
@@ -186,7 +186,7 @@ theorem Subset.ndunion_eq_right {s t : Multiset α} (h : s ⊆ t) : s.ndunion t 
 
 /-- `ndinter s t` is the lift of the list `∩` operation. This operation
   does not respect multiplicities, unlike `s ∩ t`, but it is suitable as
-  an intersection operation on `Finset`. (`s ∩ t` would also work as a union operation
+  an intersection operation on `Finset`. (`s ∩ t` would also work as an intersection operation
   on finset, but this is more efficient.) -/
 def ndinter (s t : Multiset α) : Multiset α :=
   filter (· ∈ t) s
