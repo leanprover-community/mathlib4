@@ -136,6 +136,12 @@ lemma hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
   tendstoLocallyUniformlyOn_of_forall_exists_nhds <| by
     simpa [hasProdUniformlyOn_iff_tendstoUniformlyOn] using h
 
+@[deprecated (since := "2025-05-22")] alias hasProdLocallyUniformlyOn_of_of_forall_exists_nhd :=
+  hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
+
+@[deprecated (since := "2025-05-22")] alias hasSumLocallyUniformlyOn_of_of_forall_exists_nhd :=
+  hasSumLocallyUniformlyOn_of_of_forall_exists_nhds
+
 @[to_additive]
 theorem HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn
     (h : HasProdLocallyUniformlyOn f g s) : MultipliableLocallyUniformlyOn f s :=
