@@ -118,6 +118,9 @@ theorem MeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt (hf : Meromorph
   · rw [h₂f.meromorphicOrderAt_eq]
     simp
 
+@[deprecated (since := "2025-05-22")] alias MeromorphicNFAt.order_nonneg_iff_analyticAt :=
+  MeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt
+
 /-- Analytic functions are meromorphic in normal form. -/
 theorem AnalyticAt.meromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
     MeromorphicNFAt f x := by
@@ -160,6 +163,10 @@ theorem MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (hf : MeromorphicNFAt f x
       use g, h₁g, h₂g
       simp only [zpow_zero, smul_eq_mul, one_mul]
       exact h₃g.filter_mono nhdsWithin_le_nhds
+
+@[deprecated (since := "2025-05-22")] alias MeromorphicNFAt.order_eq_zero_iff :=
+  MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff
+
 
 /-!
 ## Local nature of the definition and local identity theorem
@@ -570,7 +577,7 @@ theorem toMeromorphicNFOn_eqOn_codiscrete (hf : MeromorphicOn f U) :
 If `f` is meromorphic on `U` and `x ∈ U`, then `f` and its conversion to normal
 form on `U` agree in a punctured neighborhood of `x`.
 -/
-theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdsNE
+theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdNE
     (hf : MeromorphicOn f U) (hx : x ∈ U) :
     toMeromorphicNFOn f U =ᶠ[𝓝[≠] x] f := by
   filter_upwards [hf.eventually_analyticAt_or_mem_compl hx] with a ha
@@ -583,11 +590,11 @@ theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdsNE
 If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`
 and conversion to normal form on `U` agree in a neighborhood of `x`.
 -/
-theorem toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds (hf : MeromorphicOn f U)
+theorem toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhd (hf : MeromorphicOn f U)
     (hx : x ∈ U) :
     toMeromorphicNFOn f U =ᶠ[𝓝 x] toMeromorphicNFAt f x := by
   apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
-  · exact (hf.toMeromorphicNFOn_eq_self_on_nhdsNE hx).trans (hf x hx).eq_nhdNE_toMeromorphicNFAt
+  · exact (hf.toMeromorphicNFOn_eq_self_on_nhdNE hx).trans (hf x hx).eq_nhdNE_toMeromorphicNFAt
   · simp [toMeromorphicNFOn, hf, hx]
 
 /--
@@ -598,7 +605,7 @@ theorem toMeromorphicNFOn_eq_toMeromorphicNFAt (hf : MeromorphicOn f U)
     (hx : x ∈ U) :
     toMeromorphicNFOn f U x = toMeromorphicNFAt f x x := by
   apply Filter.EventuallyEq.eq_of_nhds (g := toMeromorphicNFAt f x)
-  simp [(toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds hf hx).trans]
+  simp [(toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhd hf hx).trans]
 
 variable (f U) in
 /--
@@ -608,7 +615,7 @@ theorem meromorphicNFOn_toMeromorphicNFOn :
     MeromorphicNFOn (toMeromorphicNFOn f U) U := by
   by_cases hf : MeromorphicOn f U
   · intro z hz
-    rw [meromorphicNFAt_congr (toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds hf hz)]
+    rw [meromorphicNFAt_congr (toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhd hf hz)]
     exact meromorphicNFAt_toMeromorphicNFAt
   · simp [hf]
     apply AnalyticOnNhd.meromorphicNFOn
@@ -634,7 +641,7 @@ Conversion of normal form does not affect orders.
 @[simp] theorem meromorphicOrderAt_toMeromorphicNFOn (hf : MeromorphicOn f U) (hx : x ∈ U) :
     meromorphicOrderAt (toMeromorphicNFOn f U) x = meromorphicOrderAt f x := by
   apply meromorphicOrderAt_congr
-  exact hf.toMeromorphicNFOn_eq_self_on_nhdsNE hx
+  exact hf.toMeromorphicNFOn_eq_self_on_nhdNE hx
 
 /--
 Conversion of normal form does not affect divisors.
