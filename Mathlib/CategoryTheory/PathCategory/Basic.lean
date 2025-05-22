@@ -171,9 +171,10 @@ theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.ob
   · intro X
     rw [h_obj]
   · intro X Y f
-    induction' f with Y' Z' g e ih
-    · erw [F.map_id, G.map_id, Category.id_comp, eqToHom_trans, eqToHom_refl]
-    · erw [F.map_comp g (Quiver.Hom.toPath e), G.map_comp g (Quiver.Hom.toPath e), ih, h]
+    induction f with
+    | nil => erw [F.map_id, G.map_id, Category.id_comp, eqToHom_trans, eqToHom_refl]
+    | cons g e ih =>
+      erw [F.map_comp g (Quiver.Hom.toPath e), G.map_comp g (Quiver.Hom.toPath e), ih, h]
       simp only [Category.id_comp, eqToHom_refl, eqToHom_trans_assoc, Category.assoc]
 
 end Paths
@@ -213,9 +214,9 @@ theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f :=
 @[simp]
 theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
     composePath (f.comp g) = composePath f ≫ composePath g := by
-  induction' g with Y' Z' g e ih
-  · simp
-  · simp [ih]
+  induction g with
+  | nil => simp
+  | cons g e ih => simp [ih]
 
 @[simp]
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO get rid of `(id X : C)` somehow?

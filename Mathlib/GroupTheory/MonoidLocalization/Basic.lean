@@ -3,11 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.OreLocalization.Basic
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Localizations of commutative monoids
@@ -328,6 +327,20 @@ theorem mk_self (a : S) : mk (a : M) a = 1 := by
   symm
   rw [← mk_one, mk_eq_mk_iff]
   exact one_rel a
+
+@[to_additive (attr := simp)]
+lemma mk_self_mk (a : M) (haS : a ∈ S) : mk a ⟨a, haS⟩ = 1 :=
+  mk_self ⟨a, haS⟩
+
+/-- `Localization.mk` as a monoid hom. -/
+@[to_additive (attr := simps) "`Localization.mk` as a monoid hom."]
+def mkHom : M × S →* Localization S where
+  toFun x := mk x.1 x.2
+  map_one' := mk_one
+  map_mul' _ _ := (mk_mul ..).symm
+
+@[to_additive]
+lemma mkHom_surjective : Surjective (mkHom (S := S)) := by rintro ⟨x, y⟩; exact ⟨⟨x, y⟩, rfl⟩
 
 section Scalar
 
@@ -1293,13 +1306,27 @@ theorem mulEquivOfQuotient_symm_monoidOf (x) :
     (mulEquivOfQuotient f).symm (f.toMap x) = (monoidOf S).toMap x :=
   f.lift_eq (monoidOf S).map_units _
 
+/-- The localization of a torsion-free monoid is torsion-free. -/
+@[to_additive "The localization of a torsion-free monoid is torsion-free."]
+instance instIsMulTorsionFree [IsMulTorsionFree M] : IsMulTorsionFree <| Localization S where
+  pow_left_injective n hn := by
+    rintro ⟨a⟩ ⟨b⟩ (hab : mk a.1 a.2 ^ n = mk b.1 b.2 ^ n)
+    change mk a.1 a.2 = mk b.1 b.2
+    simp only [mk_pow, mk_eq_mk_iff, r_iff_exists, SubmonoidClass.coe_pow, Subtype.exists,
+      exists_prop] at hab ⊢
+    obtain ⟨c, hc, hab⟩ := hab
+    refine ⟨c, hc, pow_left_injective hn ?_⟩
+    obtain _ | n := n
+    · simp
+    · simp [mul_pow, pow_succ c, mul_assoc, hab]
+
 end Localization
 
 end CommMonoid
 
 namespace Localization
 
-variable {α : Type*} [CancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
+variable {α : Type*} [CommMonoid α] [IsCancelMul α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
 theorem mk_left_injective (b : s) : Injective fun a => mk a b := fun c d h => by

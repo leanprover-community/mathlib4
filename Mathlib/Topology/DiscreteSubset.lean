@@ -5,6 +5,7 @@ Authors: Oliver Nash, Bhavik Mehta, Daniel Weber, Stefan Kebekus
 -/
 import Mathlib.Tactic.TautoSet
 import Mathlib.Topology.Constructions
+import Mathlib.Data.Set.Subset
 import Mathlib.Topology.Separation.Basic
 
 /-!
@@ -26,8 +27,8 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 
 ### Main statements
 
- * `tendsto_cofinite_cocompact_iff`:
- * `IsClosed.tendsto_coe_cofinite_iff`:
+* `tendsto_cofinite_cocompact_iff`:
+* `IsClosed.tendsto_coe_cofinite_iff`:
 
 ## Co-discrete open sets
 
@@ -112,16 +113,16 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
 
+/-- Any set is codiscrete within itself. -/
+@[simp]
+theorem Filter.self_mem_codiscreteWithin (U : Set X) :
+    U ∈ Filter.codiscreteWithin U := by simp [mem_codiscreteWithin]
+
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
    codiscreteWithin U₁ ≤ codiscreteWithin U := by
-  intro s hs
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right] at hs ⊢
-  intro x hx
-  specialize hs x (hU hx)
-  apply mem_of_superset hs
-  rw [Set.compl_subset_compl]
-  exact diff_subset_diff_left hU
+  refine (biSup_mono hU).trans <| iSup₂_mono fun _ _ ↦ ?_
+  gcongr
 
 /-- If `s` is codiscrete within `U`, then `sᶜ ∩ U` has discrete topology. -/
 theorem discreteTopology_of_codiscreteWithin {U s : Set X} (h : s ∈ Filter.codiscreteWithin U) :
@@ -171,7 +172,7 @@ theorem nhdNE_of_nhdNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space X]
   use t \ (s \ {x})
   constructor
   · rw [← isClosed_compl_iff, compl_diff]
-    exact hs.diff.isClosed.union (isClosed_compl_iff.2 ht)
+    exact s.toFinite.diff.isClosed.union (isClosed_compl_iff.2 ht)
   · tauto_set
 
 /-- In a T1Space, a set `s` is codiscreteWithin `U` iff it has locally finite complement within `U`.

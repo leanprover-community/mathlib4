@@ -147,7 +147,7 @@ theorem RemoveNone.fiber_some (a : α) :
       simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
       rcases x with - | x
       · simp
-      simp only [comp, optionCongr_apply, Option.map_some', swap_apply_self]
+      simp only [comp, optionCongr_apply, Option.map_some, swap_apply_self]
       by_cases x_vs_a : x = a
       · rw [x_vs_a, swap_apply_right]
         apply Option.some_ne_none

@@ -48,7 +48,7 @@ def EventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : Measura
 /-- We say a set `s` is an `EventuallyMeasurableSet` with respect to a given
 σ-algebra `m` and σ-filter `l` if it differs from a set in `m` by a set in
 the dual ideal of `l`. -/
-def EventuallyMeasurableSet (l : Filter α) [CountableInterFilter l]  (s : Set α) : Prop :=
+def EventuallyMeasurableSet (l : Filter α) [CountableInterFilter l] (s : Set α) : Prop :=
   @MeasurableSet _ (EventuallyMeasurableSpace m l) s
 
 variable {l : Filter α} [CountableInterFilter l]

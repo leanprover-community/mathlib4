@@ -7,6 +7,8 @@ import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Analysis.LocallyConvex.AbsConvex
+import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # The topological dual of a normed space
@@ -57,7 +59,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 abbrev Dual : Type _ := E →L[𝕜] 𝕜
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
-   as a bounded linear map. -/
+as a bounded linear map. -/
 def inclusionInDoubleDual : E →L[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
   ContinuousLinearMap.apply 𝕜 𝕜
 
@@ -145,7 +147,7 @@ def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedA
   (dualPairing 𝕜 E).flip.polar
 
 /-- Given a subset `s` in a normed space `E` (over a field `𝕜`) closed under scalar multiplication,
- the polar `polarSubmodule 𝕜 s` is the submodule of `Dual 𝕜 E` consisting of those functionals which
+the polar `polarSubmodule 𝕜 s` is the submodule of `Dual 𝕜 E` consisting of those functionals which
 evaluate to zero at all points `z ∈ s`. -/
 def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
     [NormedSpace 𝕜 E] {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
@@ -298,3 +300,25 @@ theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
 end PolarSets
 
 end NormedSpace
+
+namespace LinearMap
+
+section NormedField
+
+variable {𝕜 E F : Type*}
+variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
+
+variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
+
+theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
+  rw [polar_eq_biInter_preimage]
+  exact AbsConvex.iInter₂ fun i hi =>
+    ⟨balanced_closedBall_zero.mulActionHom_preimage (f := (B i : (F →ₑ[(RingHom.id 𝕜)] 𝕜))),
+      (convex_closedBall _ _).linear_preimage (B i)⟩
+
+end NormedField
+
+end LinearMap

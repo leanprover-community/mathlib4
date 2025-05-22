@@ -387,6 +387,15 @@ theorem coeff_zero_X (s : σ) : coeff R (0 : σ →₀ ℕ) (X s : MvPowerSeries
 theorem commute_X (φ : MvPowerSeries σ R) (s : σ) : Commute φ (X s) :=
   φ.commute_monomial.mpr fun _m => Commute.one_right _
 
+theorem X_mul {φ : MvPowerSeries σ R} {s : σ} : X s * φ = φ * X s :=
+  φ.commute_X s |>.symm.eq
+
+theorem commute_X_pow (φ : MvPowerSeries σ R) (s : σ) (n : ℕ) : Commute φ (X s ^ n) :=
+  φ.commute_X s |>.pow_right _
+
+theorem X_pow_mul {φ : MvPowerSeries σ R} {s : σ} {n : ℕ} : X s ^ n * φ = φ * X s ^ n :=
+  φ.commute_X_pow s n |>.symm.eq
+
 theorem X_def (s : σ) : X s = monomial R (single s 1) 1 :=
   rfl
 
@@ -460,7 +469,7 @@ theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S]
     constantCoeff σ S (a • φ) = a • constantCoeff σ S φ := rfl
 
 /-- If a multivariate formal power series is invertible,
- then so is its constant coefficient. -/
+then so is its constant coefficient. -/
 theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
     IsUnit (constantCoeff σ R φ) :=
   h.map _
@@ -641,7 +650,7 @@ theorem coeff_prod [DecidableEq σ]
     split_ifs
     · simp only [card_singleton, Nat.cast_one]
     · simp only [card_empty, Nat.cast_zero]
-  | @insert a s ha ih =>
+  | insert a s ha ih =>
     rw [finsuppAntidiag_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
       simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
@@ -741,7 +750,7 @@ theorem algebraMap_apply {r : R} :
 /-- Change of coefficients in mv power series, as an `AlgHom` -/
 def mapAlgHom (φ : A →ₐ[R] B) :
     MvPowerSeries σ A →ₐ[R] MvPowerSeries σ B where
-  toRingHom   := MvPowerSeries.map σ φ
+  toRingHom := MvPowerSeries.map σ φ
   commutes' r := by
     simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       MonoidHom.coe_coe, MvPowerSeries.algebraMap_apply, map_C, RingHom.coe_coe, AlgHom.commutes]
@@ -825,11 +834,10 @@ theorem coe_X (s : σ) : ((X s : MvPolynomial σ R) : MvPowerSeries σ R) = MvPo
 
 variable (σ R)
 
-theorem coe_injective : Function.Injective (Coe.coe : MvPolynomial σ R → MvPowerSeries σ R) :=
-    fun x y h => by
+theorem coe_injective : Function.Injective ((↑) : MvPolynomial σ R → MvPowerSeries σ R) := by
+  intro x y h
   ext
-  simp_rw [← coeff_coe]
-  congr
+  simp_rw [← coeff_coe, h]
 
 variable {σ R φ ψ}
 
@@ -869,7 +877,7 @@ theorem _root_.MvPowerSeries.monomial_one_eq
     MvPowerSeries.monomial R e (1 : R) =
       e.prod fun s n ↦ (MvPowerSeries.X s) ^ n := by
   simp only [← coe_X, ← coe_pow, ← coe_monomial, monomial_eq, map_one, one_mul]
-  simp only [← coeToMvPowerSeries.ringHom_apply, ← map_finsupp_prod]
+  simp only [← coeToMvPowerSeries.ringHom_apply, ← map_finsuppProd]
 
 section Algebra
 
@@ -897,7 +905,7 @@ theorem _root_.MvPowerSeries.prod_smul_X_eq_smul_monomial_one
       (MvPowerSeries.C σ R) ((algebraMap A R) a) * f := by
       rw [← MvPowerSeries.smul_eq_C_mul, IsScalarTower.algebraMap_smul]
     simp only [mul_pow, Finsupp.prod_mul, ← map_pow , ← MvPowerSeries.monomial_one_eq, this]
-    simp only [map_finsupp_prod, map_pow]
+    simp only [map_finsuppProd, map_pow]
   · intro x _
     rw [algebra_compatible_smul R, MvPowerSeries.smul_eq_C_mul]
 

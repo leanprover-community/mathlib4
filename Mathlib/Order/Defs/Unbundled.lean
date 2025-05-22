@@ -242,6 +242,26 @@ lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
 
 end LE
 
+section LE
+variable {ι : Sort*} {α : Type*} [LE α] {P : ι → Prop} {f : ι → α} {i j : ι}
+
+/-- `Minimal P i` means that `i` is an element with minimal image along `f` satisfying `P`. -/
+def MinimalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f j ≤ f i → f i ≤ f j
+
+/-- `Maximal P i` means that `i` is an element with maximal image along `f` satisfying `P`. -/
+def MaximalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f i ≤ f j → f j ≤ f i
+
+lemma MinimalFor.prop (h : MinimalFor P f i) : P i := h.1
+lemma MaximalFor.prop (h : MaximalFor P f i) : P i := h.1
+
+lemma MinimalFor.le_of_le (h : MinimalFor P f i) (hj : P j) (hji : f j ≤ f i) : f i ≤ f j :=
+  h.2 hj hji
+
+lemma MaximalFor.le_of_le (h : MaximalFor P f i) (hj : P j) (hij : f i ≤ f j) : f j ≤ f i :=
+  h.2 hj hij
+
+end LE
+
 /-! ### Upper and lower sets -/
 
 /-- An upper set in an order `α` is a set such that any element greater than one of its members is

@@ -204,7 +204,7 @@ lemma Prime.factoredNumbers_coprime {s : Finset ℕ} {p n : ℕ} (hp : p.Prime) 
 
 /-- If `f : ℕ → F` is multiplicative on coprime arguments, `p ∉ s` is a prime and `m`
 is `s`-factored, then `f (p^e * m) = f (p^e) * f m`. -/
-lemma factoredNumbers.map_prime_pow_mul {F : Type*} [CommSemiring F] {f : ℕ → F}
+lemma factoredNumbers.map_prime_pow_mul {F : Type*} [Mul F] {f : ℕ → F}
     (hmul : ∀ {m n}, Coprime m n → f (m * n) = f m * f n) {s : Finset ℕ} {p : ℕ}
     (hp : p.Prime) (hs : p ∉ s) (e : ℕ) {m : factoredNumbers s} :
     f (p ^ e * m) = f (p ^ e) * f m :=
@@ -386,7 +386,7 @@ lemma Prime.smoothNumbers_coprime {p n : ℕ} (hp : p.Prime) (hn : n ∈ smoothN
 
 /-- If `f : ℕ → F` is multiplicative on coprime arguments, `p` is a prime and `m` is `p`-smooth,
 then `f (p^e * m) = f (p^e) * f m`. -/
-lemma map_prime_pow_mul {F : Type*} [CommSemiring F] {f : ℕ → F}
+lemma map_prime_pow_mul {F : Type*} [Mul F] {f : ℕ → F}
     (hmul : ∀ {m n}, Nat.Coprime m n → f (m * n) = f m * f n) {p : ℕ} (hp : p.Prime) (e : ℕ)
     {m : p.smoothNumbers} :
     f (p ^ e * m) = f (p ^ e) * f m :=
@@ -449,7 +449,7 @@ lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNu
     ∃ s ∈ k.primesBelow.powerset, ∃ m, n = m ^ 2 * (s.prod id) := by
   obtain ⟨l, m, H₁, H₂⟩ := sq_mul_squarefree n
   have hl : l ∈ smoothNumbers k := mem_smoothNumbers_of_dvd h (Dvd.intro_left (m ^ 2) H₁)
-  refine ⟨l.primeFactorsList.toFinset, ?_,  m, ?_⟩
+  refine ⟨l.primeFactorsList.toFinset, ?_, m, ?_⟩
   · simp only [toFinset_factors, Finset.mem_powerset]
     refine fun p hp ↦ mem_primesBelow.mpr ⟨?_, (mem_primeFactors.mp hp).1⟩
     rw [mem_primeFactors] at hp

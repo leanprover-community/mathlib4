@@ -20,6 +20,7 @@ This file defines instances for `MulActionWithZero` and related structures on `P
 * `Algebra.GroupWithZero.Action.Units`
 -/
 
+assert_not_exists Ring
 
 universe u v
 

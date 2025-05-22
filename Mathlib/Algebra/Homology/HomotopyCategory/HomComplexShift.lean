@@ -200,31 +200,31 @@ variable (n)
 lemma rightShift_zero (a n' : ℤ) (hn' : n' + a = n) :
     (0 : Cochain K L n).rightShift a n' hn' = 0 := by
   change rightShiftAddEquiv K L n a n' hn' 0 = 0
-  apply _root_.map_zero
+  apply map_zero
 
 @[simp]
 lemma rightUnshift_zero (a n' : ℤ) (hn' : n' + a = n) :
     (0 : Cochain K (L⟦a⟧) n').rightUnshift n hn' = 0 := by
   change (rightShiftAddEquiv K L n a n' hn').symm 0 = 0
-  apply _root_.map_zero
+  apply map_zero
 
 @[simp]
 lemma leftShift_zero (a n' : ℤ) (hn' : n + a = n') :
     (0 : Cochain K L n).leftShift a n' hn' = 0 := by
   change leftShiftAddEquiv K L n a n' hn' 0 = 0
-  apply _root_.map_zero
+  apply map_zero
 
 @[simp]
 lemma leftUnshift_zero (a n' : ℤ) (hn' : n + a = n') :
     (0 : Cochain (K⟦a⟧) L n').leftUnshift n hn' = 0 := by
   change (leftShiftAddEquiv K L n a n' hn').symm 0 = 0
-  apply _root_.map_zero
+  apply map_zero
 
 @[simp]
 lemma shift_zero (a : ℤ) :
     (0 : Cochain K L n).shift a = 0 := by
   change shiftAddHom K L n a 0 = 0
-  apply _root_.map_zero
+  apply map_zero
 
 variable {K L n}
 
@@ -232,43 +232,43 @@ variable {K L n}
 lemma rightShift_neg (a n' : ℤ) (hn' : n' + a = n) :
     (-γ).rightShift a n' hn' = -γ.rightShift a n' hn' := by
   change rightShiftAddEquiv K L n a n' hn' (-γ) = _
-  apply _root_.map_neg
+  apply map_neg
 
 @[simp]
 lemma rightUnshift_neg {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
     (-γ).rightUnshift n hn = -γ.rightUnshift n hn := by
   change (rightShiftAddEquiv K L n a n' hn).symm (-γ) = _
-  apply _root_.map_neg
+  apply map_neg
 
 @[simp]
 lemma leftShift_neg (a n' : ℤ) (hn' : n + a = n') :
     (-γ).leftShift a n' hn' = -γ.leftShift a n' hn' := by
   change leftShiftAddEquiv K L n a n' hn' (-γ) = _
-  apply _root_.map_neg
+  apply map_neg
 
 @[simp]
 lemma leftUnshift_neg {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n') :
     (-γ).leftUnshift n hn = -γ.leftUnshift n hn := by
   change (leftShiftAddEquiv K L n a n' hn).symm (-γ) = _
-  apply _root_.map_neg
+  apply map_neg
 
 @[simp]
 lemma shift_neg (a : ℤ) :
     (-γ).shift a = -γ.shift a := by
   change shiftAddHom K L n a (-γ) = _
-  apply _root_.map_neg
+  apply map_neg
 
 @[simp]
 lemma rightUnshift_add {n' a : ℤ} (γ₁ γ₂ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
     (γ₁ + γ₂).rightUnshift n hn = γ₁.rightUnshift n hn + γ₂.rightUnshift n hn := by
   change (rightShiftAddEquiv K L n a n' hn).symm (γ₁ + γ₂) = _
-  apply _root_.map_add
+  apply map_add
 
 @[simp]
 lemma leftUnshift_add {n' a : ℤ} (γ₁ γ₂ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n') :
     (γ₁ + γ₂).leftUnshift n hn = γ₁.leftUnshift n hn + γ₂.leftUnshift n hn := by
   change (leftShiftAddEquiv K L n a n' hn).symm (γ₁ + γ₂) = _
-  apply _root_.map_add
+  apply map_add
 
 @[simp]
 lemma rightShift_smul (a n' : ℤ) (hn' : n' + a = n) (x : R) :

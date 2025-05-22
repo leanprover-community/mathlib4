@@ -76,6 +76,7 @@ noncomputable section
 variable {𝕜 E F G : Type*}
 
 open Topology NNReal Filter ENNReal Set Asymptotics
+open scoped Pointwise
 
 namespace FormalMultilinearSeries
 
@@ -138,7 +139,7 @@ theorem le_radius_of_eventually_le (C) (h : ∀ᶠ n in atTop, ‖p n‖ * (r : 
   p.le_radius_of_isBigO <| IsBigO.of_bound C <| h.mono fun n hn => by simpa
 
 theorem le_radius_of_summable_nnnorm (h : Summable fun n => ‖p n‖₊ * r ^ n) : ↑r ≤ p.radius :=
-  p.le_radius_of_bound_nnreal (∑' n, ‖p n‖₊ * r ^ n) fun _ => le_tsum' h _
+  p.le_radius_of_bound_nnreal (∑' n, ‖p n‖₊ * r ^ n) fun _ => h.le_tsum' _
 
 theorem le_radius_of_summable (h : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_summable_nnnorm <| by
@@ -493,16 +494,61 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
       convert hf.hasSum hz using 2
       abel }
 
+theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) (y : E) :
+    HasFPowerSeriesWithinOnBall (fun z ↦ f (z - y)) p (s + {y}) (x + y) r where
+  r_le := hf.r_le
+  r_pos := hf.r_pos
+  hasSum {z} hz1 hz2 := by
+    have : x + z ∈ insert x s := by
+      simp only [add_singleton, image_add_right, mem_insert_iff, add_eq_left, mem_preimage] at hz1 ⊢
+      abel_nf at hz1
+      assumption
+    convert hf.hasSum this hz2 using 2
+    abel
+
+theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y : E) :
+    HasFPowerSeriesAt (fun z ↦ f (z - y)) p (x + y) := by
+  obtain ⟨r, hf⟩ := hf
+  exact ⟨r, hf.comp_sub _⟩
+
+theorem HasFPowerSeriesWithinAt.comp_sub (hf : HasFPowerSeriesWithinAt f p s x) (y : E) :
+    HasFPowerSeriesWithinAt (fun z ↦ f (z - y)) p (s + {y}) (x + y) := by
+  obtain ⟨r, hf⟩ := hf
+  exact ⟨r, hf.comp_sub _⟩
+
+theorem AnalyticAt.comp_sub (hf : AnalyticAt 𝕜 f x) (y : E) :
+    AnalyticAt 𝕜 (fun z ↦ f (z - y)) (x + y) := by
+  obtain ⟨p, hf⟩ := hf
+  exact ⟨p, hf.comp_sub _⟩
+
+theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
+    AnalyticOnNhd 𝕜 (fun z ↦ f (z - y)) (s + {y}) := by
+  intro x hx
+  simp only [add_singleton, image_add_right, mem_preimage] at hx
+  rw [show x = (x - y) + y by abel]
+  apply (hf (x - y) (by convert hx using 1; abel)).comp_sub
+
+theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y : E) :
+    AnalyticWithinAt 𝕜 (fun z ↦ f (z - y)) (s + {y}) (x + y) := by
+  obtain ⟨p, hf⟩ := hf
+  exact ⟨p, hf.comp_sub _⟩
+
+theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y : E) :
+    AnalyticOn 𝕜 (fun z ↦ f (z - y)) (s + {y}) := by
+  intro x hx
+  simp only [add_singleton, image_add_right, mem_preimage] at hx
+  rw [show x = (x - y) + y by abel]
+  apply (hf (x - y) (by convert hx using 1; abel)).comp_sub
+
 theorem HasFPowerSeriesWithinOnBall.hasSum_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) {y : E}
     (hy : y ∈ (insert x s) ∩ EMetric.ball x r) :
     HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
-  have : y - x ∈ EMetric.ball (0 : E) r := by simpa [edist_eq_enorm_sub] using hy.2
-  have := hf.hasSum (by simpa only [add_sub_cancel] using hy.1) this
-  simpa only [add_sub_cancel]
+  have : y - x ∈ EMetric.ball 0 r := by simpa [edist_eq_enorm_sub] using hy.2
+  simpa only [add_sub_cancel] using hf.hasSum (by simpa only [add_sub_cancel] using hy.1) this
 
 theorem HasFPowerSeriesOnBall.hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball x r) : HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
-  have : y - x ∈ EMetric.ball (0 : E) r := by simpa [edist_eq_enorm_sub] using hy
+  have : y - x ∈ EMetric.ball 0 r := by simpa [edist_eq_enorm_sub] using hy
   simpa only [add_sub_cancel] using hf.hasSum this
 
 theorem HasFPowerSeriesOnBall.radius_pos (hf : HasFPowerSeriesOnBall f p x r) : 0 < p.radius :=
@@ -723,6 +769,10 @@ theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 
 ### Analytic functions
 -/
 
+@[simp] theorem analyticOn_empty : AnalyticOn 𝕜 f ∅ := by intro; simp
+
+@[simp] theorem analyticOnNhd_empty : AnalyticOnNhd 𝕜 f ∅ := by intro; simp
+
 @[simp] lemma analyticWithinAt_univ :
     AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by
   simp [AnalyticWithinAt, AnalyticAt]
@@ -916,7 +966,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
     _ ≤ ∑ i ∈ range (n - k), ‖p (i + k)‖ * ↑r' ^ (i + k) := by
         gcongr with i _hi; simpa [← coe_nnnorm] using hw.le
     _ ≤ ∑' i, ‖p (i + k)‖ * ↑r' ^ (i + k) := by
-        apply sum_le_tsum _ (fun i _hi ↦ by positivity)
+        apply Summable.sum_le_tsum _ (fun i _hi ↦ by positivity)
         apply ((_root_.summable_nat_add_iff k).2 S)
     _ ≤ ε / 4 := hk.le
   calc
@@ -990,8 +1040,8 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     (hf : HasFPowerSeriesOnBall f p x r) (h : (r' : ℝ≥0∞) < r) :
     ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
       ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n := by
-   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
-   simpa using hf.uniform_geometric_approx' h
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa using hf.uniform_geometric_approx' h
 
 /-- If a function admits a power series expansion within a set in a ball, then it is exponentially
 close to the partial sums of this power series on strict subdisks of the disk of convergence. -/
@@ -1317,6 +1367,14 @@ protected theorem AnalyticWithinAt.continuousWithinAt (hf : AnalyticWithinAt �
 protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : ContinuousAt f x :=
   let ⟨_, hp⟩ := hf
   hp.continuousAt
+
+protected theorem AnalyticAt.eventually_continuousAt (hf : AnalyticAt 𝕜 f x) :
+    ∀ᶠ y in 𝓝 x, ContinuousAt f y := by
+  rcases hf with ⟨g, r, hg⟩
+  have : EMetric.ball x r ∈ 𝓝 x := EMetric.ball_mem_nhds _ hg.r_pos
+  filter_upwards [this] with y hy
+  apply hg.continuousOn.continuousAt
+  exact EMetric.isOpen_ball.mem_nhds hy
 
 protected theorem AnalyticOnNhd.continuousOn {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) :
     ContinuousOn f s :=

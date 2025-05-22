@@ -5,7 +5,7 @@ Authors: Peter Nelson
 -/
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.List.Sort
 import Mathlib.Data.Nat.Bitwise
@@ -49,7 +49,7 @@ theorem bitIndices_bit_false (n : ℕ) :
 
 @[simp] theorem bitIndices_two_mul_add_one (n : ℕ) :
     bitIndices (2 * n + 1) = 0 :: (bitIndices n).map (· + 1) := by
-   rw [← bitIndices_bit_true, bit_true]
+  rw [← bitIndices_bit_true, bit_true]
 
 @[simp] theorem bitIndices_two_mul (n : ℕ) :
     bitIndices (2 * n) = (bitIndices n).map (· + 1) := by

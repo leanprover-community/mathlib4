@@ -5,9 +5,10 @@ Authors: Simon Hudon, Ira Fesefeldt
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Order.Chain
+import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.Part
+import Mathlib.Order.Preorder.Chain
 import Mathlib.Order.ScottContinuity
 
 /-!
@@ -24,33 +25,33 @@ supremum helps define the meaning of recursive procedures.
 
 ## Main definitions
 
- * class `OmegaCompletePartialOrder`
- * `ite`, `map`, `bind`, `seq` as continuous morphisms
+* class `OmegaCompletePartialOrder`
+* `ite`, `map`, `bind`, `seq` as continuous morphisms
 
 ## Instances of `OmegaCompletePartialOrder`
 
- * `Part`
- * every `CompleteLattice`
- * pi-types
- * product types
- * `OrderHom`
- * `ContinuousHom` (with notation →𝒄)
-   * an instance of `OmegaCompletePartialOrder (α →𝒄 β)`
- * `ContinuousHom.ofFun`
- * `ContinuousHom.ofMono`
- * continuous functions:
-   * `id`
-   * `ite`
-   * `const`
-   * `Part.bind`
-   * `Part.map`
-   * `Part.seq`
+* `Part`
+* every `CompleteLattice`
+* pi-types
+* product types
+* `OrderHom`
+* `ContinuousHom` (with notation →𝒄)
+  * an instance of `OmegaCompletePartialOrder (α →𝒄 β)`
+* `ContinuousHom.ofFun`
+* `ContinuousHom.ofMono`
+* continuous functions:
+  * `id`
+  * `ite`
+  * `const`
+  * `Part.bind`
+  * `Part.map`
+  * `Part.seq`
 
 ## References
 
- * [Chain-complete posets and directed sets with applications][markowsky1976]
- * [Recursive definitions of partial functions and their computations][cadiou1972]
- * [Semantics of Programming Languages: Structures and Techniques][gunter1992]
+* [Chain-complete posets and directed sets with applications][markowsky1976]
+* [Recursive definitions of partial functions and their computations][cadiou1972]
+* [Semantics of Programming Languages: Structures and Techniques][gunter1992]
 -/
 
 assert_not_exists OrderedCommMonoid

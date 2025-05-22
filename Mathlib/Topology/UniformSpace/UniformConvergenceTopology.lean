@@ -3,10 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.Coherent
 import Mathlib.Topology.UniformSpace.Equiv
-import Mathlib.Topology.RestrictGen
+import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.UniformSpace.UniformApproximation
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -372,9 +372,6 @@ lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
   ⟨((UniformFun.hasBasis_uniformity _ _).comap _).eq_of_same_basis <|
     UniformFun.hasBasis_uniformity_of_basis _ _ (hf.basis_uniformity (𝓤 β).basis_sets)⟩
 
-@[deprecated (since := "2024-10-05")]
-alias postcomp_uniformInducing := postcomp_isUniformInducing
-
 /-- Post-composition by a uniform embedding is
 a uniform embedding for the uniform structures of uniform convergence.
 
@@ -385,9 +382,6 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
   toIsUniformInducing := UniformFun.postcomp_isUniformInducing hf.isUniformInducing
   injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
-
-@[deprecated (since := "2024-10-01")]
-alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
 
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
@@ -543,7 +537,7 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} (φ : Π i, δ
   simp_rw [iInf_uniformity, uniformity_comap]
   refine le_antisymm (le_iInf fun i ↦ tendsto_iff_comap.mp UniformFun.precomp_uniformContinuous) ?_
   rcases h_cover with ⟨I, I_finite, I_cover⟩
-  refine Filter.hasBasis_iInf (fun i : ι ↦ UniformFun.hasBasis_uniformity (δ i) β |>.comap _)
+  refine HasBasis.iInf (fun i : ι ↦ UniformFun.hasBasis_uniformity (δ i) β |>.comap _)
       |>.le_basis_iff (UniformFun.hasBasis_uniformity α β) |>.mpr fun U hU ↦
     ⟨⟨I, fun _ ↦ U⟩, ⟨I_finite, fun _ ↦ hU⟩, fun ⟨f, g⟩ hfg x ↦ ?_⟩
   rcases mem_iUnion₂.mp <| I_cover.ge <| mem_univ x with ⟨i, hi, y, rfl⟩
@@ -878,9 +872,6 @@ lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
   rw [← UniformSpace.ext hf, UniformOnFun.comap_eq]
   rfl
 
-@[deprecated (since := "2024-10-05")]
-alias postcomp_uniformInducing := postcomp_isUniformInducing
-
 /-- Post-composition by a uniform embedding is a uniform embedding for the
 uniform structures of `𝔖`-convergence.
 
@@ -890,9 +881,6 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toIsUniformInducing := UniformOnFun.postcomp_isUniformInducing hf.isUniformInducing
   injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
-
-@[deprecated (since := "2024-10-01")]
-alias postcomp_uniformEmbedding := UniformOnFun.postcomp_isUniformEmbedding
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/
@@ -1059,7 +1047,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ 
 
 Then the set of continuous functions is closed
 in the topology of uniform convergence on the sets of `𝔖`. -/
-theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology 𝔖) :
+theorem isClosed_setOf_continuous [TopologicalSpace α] (h : IsCoherentWith 𝔖) :
     IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf

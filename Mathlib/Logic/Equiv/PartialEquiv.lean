@@ -39,26 +39,26 @@ As for equivs, we register a coercion to functions and use it in our simp normal
 There are at least three possible implementations of partial equivalences:
 * equivs on subtypes
 * pairs of functions taking values in `Option α` and `Option β`, equal to none where the partial
-equivalence is not defined
+  equivalence is not defined
 * pairs of functions defined everywhere, keeping the source and target as additional data
 
 Each of these implementations has pros and cons.
 * When dealing with subtypes, one still need to define additional API for composition and
-restriction of domains. Checking that one always belongs to the right subtype makes things very
-tedious, and leads quickly to DTT hell (as the subtype `u ∩ v` is not the "same" as `v ∩ u`, for
-instance).
+  restriction of domains. Checking that one always belongs to the right subtype makes things very
+  tedious, and leads quickly to DTT hell (as the subtype `u ∩ v` is not the "same" as `v ∩ u`, for
+  instance).
 * With option-valued functions, the composition is very neat (it is just the usual composition, and
-the domain is restricted automatically). These are implemented in `PEquiv.lean`. For manifolds,
-where one wants to discuss thoroughly the smoothness of the maps, this creates however a lot of
-overhead as one would need to extend all classes of smoothness to option-valued maps.
+  the domain is restricted automatically). These are implemented in `PEquiv.lean`. For manifolds,
+  where one wants to discuss thoroughly the smoothness of the maps, this creates however a lot of
+  overhead as one would need to extend all classes of smoothness to option-valued maps.
 * The `PartialEquiv` version as explained above is easier to use for manifolds. The drawback is that
-there is extra useless data (the values of `toFun` and `invFun` outside of `source` and `target`).
-In particular, the equality notion between partial equivs is not "the right one", i.e., coinciding
-source and target and equality there. Moreover, there are no partial equivs in this sense between
-an empty type and a nonempty type. Since empty types are not that useful, and since one almost never
-needs to talk about equal partial equivs, this is not an issue in practice.
-Still, we introduce an equivalence relation `EqOnSource` that captures this right notion of
-equality, and show that many properties are invariant under this equivalence relation.
+  there is extra useless data (the values of `toFun` and `invFun` outside of `source` and `target`).
+  In particular, the equality notion between partial equivs is not "the right one", i.e., coinciding
+  source and target and equality there. Moreover, there are no partial equivs in this sense between
+  an empty type and a nonempty type. Since empty types are not that useful, and since one almost
+  never needs to talk about equal partial equivs, this is not an issue in practice.
+  Still, we introduce an equivalence relation `EqOnSource` that captures this right notion of
+  equality, and show that many properties are invariant under this equivalence relation.
 
 ### Local coding conventions
 
