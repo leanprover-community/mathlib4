@@ -196,7 +196,7 @@ lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
           (SemiLinearMapAlgebraMapOfLinearMap f)
           (fun m hm ↦ by
             rw [← Submodule.ideal_span_singleton_smul] at hm
-            simp [SemiLinearMapAlgebraMapOfLinearMap]
+            simp only [Submodule.mem_comap, LinearMap.coe_mk, LinearMap.coe_toAddHom]
             refine Submodule.smul_induction_on hm (fun r hr m hm ↦ ?_)
               (fun m1 m2 hm1 hm2 ↦ by simpa using Submodule.add_mem _ hm1 hm2)
             rcases Ideal.mem_span_singleton'.mp hr with ⟨r', hr'⟩
