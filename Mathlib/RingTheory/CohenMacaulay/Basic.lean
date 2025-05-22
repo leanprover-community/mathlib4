@@ -274,14 +274,42 @@ lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module
   rw [List.length_map, len]
 
 lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay [Small.{v} (R ⧸ p)]
-    [Module.Finite R M] [M.IsCohenMacaulay] [Nontrivial Mₚ] :
+    [Module.Finite R M] [M.IsCohenMacaulay] [Nontrivial M] [Nontrivial Mₚ] :
     Module.supportDim Rₚ Mₚ = p.depth M := by
   let _ : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
   have : p.depth M ≠ ⊤ := sorry
   rcases ENat.ne_top_iff_exists.mp this with ⟨n, hn⟩
   induction' n with n ih generalizing M Mₚ
   · simp only [← hn, CharP.cast_eq_zero, WithBot.coe_zero]
-    have min : p ∈ (Module.annihilator R M).minimalPrimes := sorry
+    have min : p ∈ (Module.annihilator R M).minimalPrimes := by
+      simp only [CharP.cast_eq_zero, Ideal.depth] at hn
+      rw [Eq.comm, moduleDepth_eq_zero_of_hom_nontrivial,
+        ((Shrink.linearEquiv (R ⧸ p) R).congrLeft M R).nontrivial_congr] at hn
+      obtain ⟨g, hg⟩ : ∃ g : R ⧸ p →ₗ[R] M, g ≠ 0 := exists_ne 0
+      have : g 1 ≠ 0 := by
+        by_contra eq0
+        absurd hg
+        apply LinearMap.ext (fun r ↦ ?_)
+        induction' r using Submodule.Quotient.induction_on with r
+        nth_rw 1 [← mul_one r, ← smul_eq_mul, Submodule.Quotient.mk_smul, map_smul]
+        simp [eq0]
+      have le : p ≤ LinearMap.ker (LinearMap.toSpanSingleton R M (g 1)) := by
+        intro r hr
+        rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, ← map_smul,
+          ← map_one (Ideal.Quotient.mk p), ← Ideal.Quotient.mk_eq_mk, ← Submodule.Quotient.mk_smul]
+        simp [Ideal.Quotient.eq_zero_iff_mem.mpr hr]
+      rcases exists_le_isAssociatedPrime_of_isNoetherianRing R (g 1) this with ⟨p', ass, hp'⟩
+      let P : PrimeSpectrum R := ⟨p, by assumption⟩
+      have ntr : Nontrivial (LocalizedModule P.asIdeal.primeCompl M) :=
+        (IsLocalizedModule.linearEquiv p.primeCompl
+          (LocalizedModule.mkLinearMap p.primeCompl M) f).nontrivial
+      have mem_supp := Module.mem_support_iff.mpr ntr
+      simp only [Module.support_eq_zeroLocus, PrimeSpectrum.mem_zeroLocus,
+        SetLike.coe_subset_coe, P] at mem_supp
+      have min := associated_prime_minimal_of_isCohenMacaulay p' M ass
+      convert min
+      simp only [Ideal.minimalPrimes, Set.mem_setOf_eq] at min
+      exact min.eq_of_le ⟨by assumption, mem_supp⟩ (le.trans hp')
     have : Module.support Rₚ Mₚ = {⟨maximalIdeal Rₚ, Ideal.IsMaximal.isPrime' _⟩} := by
       apply le_antisymm
       · intro I hI
