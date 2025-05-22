@@ -18,7 +18,7 @@ equivalent to "every point has a neighborhood on which the convergence is unifor
 definition more commonly encountered in the literature. The reason is that in our definition the
 neighborhood `v` of `x` can depend on the entourage `u`; so our condition is *a priori* weaker than
 the usual one, although the two conditions are equivalent if the domain is locally compact. See
-`tendstoLocallyUniformlyOn_of_forall_exists_nhd` for the one-way implication; the equivalence
+`tendstoLocallyUniformlyOn_of_forall_exists_nhds` for the one-way implication; the equivalence
 assuming local compactness is part of `tendstoLocallyUniformlyOn_TFAE`.
 
 We adopt this weaker condition because it is more general but appears to be sufficient for
@@ -173,13 +173,13 @@ lemma tendstoLocallyUniformlyOn_of_forall_exists_nhd
   exact htr.mono_left <| prod_mono_right _ <| le_principal_iff.mpr ht
 
 /-- If every `x` has a neighbourhood on which `F i` tends uniformly to `f`, then `F i` tends
-locally uniformly to `f`. (Special case of `tendstoLocallyUniformlyOn_of_forall_exists_nhd`
+locally uniformly to `f`. (Special case of `tendstoLocallyUniformlyOn_of_forall_exists_nhds`
 where `s = univ`.) -/
 lemma tendstoLocallyUniformly_of_forall_exists_nhd
     (h : ∀ x, ∃ t ∈ 𝓝 x, TendstoUniformlyOn F f p t) :
     TendstoLocallyUniformly F f p :=
   tendstoLocallyUniformlyOn_univ.mp
-    <| tendstoLocallyUniformlyOn_of_forall_exists_nhd (by simpa using h)
+    <| tendstoLocallyUniformlyOn_of_forall_exists_nhds (by simpa using h)
 
 theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α → β) (g : α → β)
     (p : Filter ι) (hs : IsOpen s) :

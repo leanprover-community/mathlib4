@@ -133,7 +133,7 @@ uniformly to `g`, then the sum converges locally uniformly. Note that this is no
 and the converse is only true if the domain is locally compact."]
 lemma hasProdLocallyUniformlyOn_of_of_forall_exists_nhd
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, HasProdUniformlyOn f g {t}) : HasProdLocallyUniformlyOn f g s :=
-  tendstoLocallyUniformlyOn_of_forall_exists_nhd <| by
+  tendstoLocallyUniformlyOn_of_forall_exists_nhds <| by
     simpa [hasProdUniformlyOn_iff_tendstoUniformlyOn] using h
 
 @[to_additive]
@@ -147,10 +147,10 @@ converse is only true if the domain is locally compact. -/
 @[to_additive "If every `x ∈ s` has a neighbourhood within `s` on which `b ↦ ∑' i, f i b` converges
 uniformly, then the sum converges locally uniformly. Note that this is not a tautology, and the
 converse is only true if the domain is locally compact."]
-lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhd [T2Space α]
+lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhds [T2Space α]
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, MultipliableUniformlyOn f {t}) :
     MultipliableLocallyUniformlyOn f s :=
-  (hasProdLocallyUniformlyOn_of_of_forall_exists_nhd <| fun x hx ↦ match h x hx with
+  (hasProdLocallyUniformlyOn_of_of_forall_exists_nhds <| fun x hx ↦ match h x hx with
   | ⟨t, ht, htr⟩ => ⟨t, ht, htr.hasProdUniformlyOn⟩).multipliableLocallyUniformlyOn
 
 @[to_additive]

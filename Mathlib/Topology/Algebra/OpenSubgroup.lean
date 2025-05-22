@@ -467,7 +467,7 @@ end
 /-!
 # Existence of an open subgroup in any clopen neighborhood of the neutral element
 
-This section proves the lemma `IsTopologicalGroup.exist_openSubgroup_sub_clopen_nhd_of_one`, which
+This section proves the lemma `IsTopologicalGroup.exist_openSubgroup_sub_clopen_nhds_of_one`, which
 states that in a compact topological group, for any clopen neighborhood of 1,
 there exists an open subgroup contained within it.
 -/
@@ -477,7 +477,7 @@ open scoped Pointwise
 variable {G : Type*} [TopologicalSpace G]
 
 structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
-  nhd : T ∈ 𝓝 0
+  nhds : T ∈ 𝓝 0
   neg : -T = T
   isOpen : IsOpen T
   add : W + T ⊆ W
@@ -488,7 +488,7 @@ structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Pr
 "For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
 `T + W ⊆ W`. "]
 structure IsTopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
-  nhd : T ∈ 𝓝 1
+  nhds : T ∈ 𝓝 1
   inv : T⁻¹ = T
   isOpen : IsOpen T
   mul : W * T ⊆ W
@@ -500,7 +500,7 @@ variable [Group G] [IsTopologicalGroup G] [CompactSpace G]
 open Set Filter
 
 @[to_additive]
-lemma exist_mul_closure_nhd {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 (1 : G), W * T ⊆ W := by
+lemma exist_mul_closure_nhds {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 (1 : G), W * T ⊆ W := by
   apply WClopen.isClosed.isCompact.induction_on (p := fun S ↦ ∃ T ∈ 𝓝 (1 : G), S * T ⊆ W)
     ⟨Set.univ ,by simp only [univ_mem, empty_mul, empty_subset, and_self]⟩
     (fun _ _ huv ⟨T, hT, mem⟩ ↦ ⟨T, hT, (mul_subset_mul_right huv).trans mem⟩)
@@ -519,7 +519,7 @@ lemma exist_mul_closure_nhd {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 
 @[to_additive]
 lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
     ∃ T, mulInvClosureNhd T W := by
-  rcases exist_mul_closure_nhd WClopen with ⟨S, Smemnhds, mulclose⟩
+  rcases exist_mul_closure_nhds WClopen with ⟨S, Smemnhds, mulclose⟩
   rcases mem_nhds_iff.mp Smemnhds with ⟨U, UsubS, Uopen, onememU⟩
   use U ∩ U⁻¹
   constructor
@@ -529,7 +529,7 @@ lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
   · exact fun a ha ↦ mulclose (mul_subset_mul_left UsubS (mul_subset_mul_left inter_subset_left ha))
 
 @[to_additive]
-theorem exist_openSubgroup_sub_clopen_nhd_of_one {G : Type*} [Group G] [TopologicalSpace G]
+theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     ∃ H : OpenSubgroup G, (H : Set G) ⊆ W := by
   rcases exists_mulInvClosureNhd WClopen with ⟨V, hV⟩
@@ -545,7 +545,7 @@ theorem exist_openSubgroup_sub_clopen_nhd_of_one {G : Type*} [Group G] [Topologi
     one_mem' := by
       apply mem_iUnion.mpr
       use 0
-      simp [mem_of_mem_nhds hV.nhd]
+      simp [mem_of_mem_nhds hV.nhds]
     inv_mem' := fun ha ↦ by
       rcases mem_iUnion.mp ha with ⟨k, hk⟩
       apply mem_iUnion.mpr
