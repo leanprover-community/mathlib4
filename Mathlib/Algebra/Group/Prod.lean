@@ -580,6 +580,45 @@ namespace Units
 
 variable [Monoid M] [Monoid N]
 
+/-- The first element of the units of the product of two monoids. -/
+@[to_additive (attr := simps!) "The first element of the additive units of the
+  product of two additive monoids."]
+def fst : (M × N)ˣ →* Mˣ := Units.map (MonoidHom.fst M N)
+
+/-- The second element of the units of the product of two monoids. -/
+@[to_additive (attr := simps!) "The second element of the additive units of the
+  product of two additive monoids."]
+def snd : (M × N)ˣ →* Nˣ := Units.map (MonoidHom.snd M N)
+
+/-- The inclusion homomorphism from the units of a monoid to the
+  units of its product on the right with another. -/
+@[to_additive (attr := simps!) "The inclusion homomorphism from the additive units of an additive
+  monoid to the additive units of its product on the right with another."]
+def inl : Mˣ →* (M × N)ˣ := Units.map (MonoidHom.inl M N)
+
+/-- The inclusion homomorphism from the units of a monoid to the
+  units of its product on the left with another. -/
+@[to_additive (attr := simps!) "The inclusion homomorphism from the additive units of an additive
+  monoid to the additive units of its product on the left with another."]
+def inr : Nˣ →* (M × N)ˣ := Units.map (MonoidHom.inr M N)
+
+@[to_additive (attr := simp)]
+theorem fst_comp_inl  : fst.comp (inl (N := N)) = MonoidHom.id Mˣ := rfl
+@[to_additive (attr := simp)]
+theorem fst_inl (u : Mˣ) : fst (inl (N := N) u) = u := rfl
+@[to_additive (attr := simp)]
+theorem snd_comp_inl : snd.comp inl = (1 : Mˣ →* Nˣ) := rfl
+@[to_additive (attr := simp)]
+theorem snd_inl (u : Mˣ) : snd (inl (N := N) u) = 1 := rfl
+@[to_additive (attr := simp)]
+theorem fst_comp_inr : fst.comp inr = (1 : Nˣ →* Mˣ) := rfl
+@[to_additive (attr := simp)]
+theorem fst_inr (u : Nˣ) : fst (inr (M := M) u) = 1 := rfl
+@[to_additive (attr := simp)]
+theorem snd_comp_inr : snd.comp (inr (M := M)) = MonoidHom.id Nˣ := rfl
+@[to_additive (attr := simp)]
+theorem snd_inr (u : Nˣ) : snd (inr (M := M) u) = u := rfl
+
 /-- A map from the product of the units of two monoids to the units of their product. -/
 @[to_additive prod "A map from the product of the additive units of two
     additive monoids to the additive units of their product."]
@@ -592,16 +631,6 @@ theorem val_prod_apply (g : Mˣ × Nˣ) : (prod g).val = (g.1.val, g.2.val) := r
 @[to_additive (attr := simp) val_inv_prod_apply]
 theorem val_inv_prod_apply (g : Mˣ × Nˣ) : (prod g)⁻¹.val = (g.1⁻¹.val, g.2⁻¹.val) := rfl
 
-/-- The first element of the units of the product of two monoids. -/
-@[to_additive (attr := simps!) "The first element of the additive units of the
-  product of two additive monoids."]
-def fst : (M × N)ˣ →* Mˣ := Units.map (MonoidHom.fst M N)
-
-/-- The second element of the units of the product of two monoids. -/
-@[to_additive (attr := simps!) "The second element of the additive units of the
-  product of two additive monoids."]
-def snd : (M × N)ˣ →* Nˣ := Units.map (MonoidHom.snd M N)
-
 @[to_additive (attr := simp) fst_prod]
 theorem fst_prod (g : Mˣ × Nˣ) : (prod g).fst = g.1 := rfl
 
@@ -610,6 +639,11 @@ theorem snd_prod (g : Mˣ × Nˣ) : (prod g).snd = g.2 := rfl
 
 @[to_additive (attr := simp) prod_fst_snd]
 theorem prod_fst_snd (g : (M × N)ˣ) : prod (fst g, snd g) = g := rfl
+
+@[to_additive]
+lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
+  mp h := ⟨h.unit.fst.isUnit, h.unit.snd.isUnit⟩
+  mpr h := (prod (h.1.unit, h.2.unit)).isUnit
 
 /-- The monoid equivalence between units of a product of two monoids, and the product of the
     units of each monoid. -/
@@ -622,11 +656,6 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
   left_inv u := by simp only [MonoidHom.prod_apply, prod_fst_snd]
   right_inv u := by simp only [MonoidHom.prod_apply, fst_prod, snd_prod]
   map_mul' := MonoidHom.map_mul _
-
-@[to_additive]
-lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
-  mp h := ⟨(prodUnits h.unit).1.isUnit, (prodUnits h.unit).2.isUnit⟩
-  mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
 
 open MulOpposite
 
