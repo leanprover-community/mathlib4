@@ -87,11 +87,13 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
   isLimit :=
     { lift := fun s => ∑ j : J, s.π.app ⟨j⟩ ≫ b.ι j
       uniq := fun s m h => by
-        erw [← Category.comp_id m, ← total, comp_sum]
+        rw [← Category.comp_id m]
+        dsimp
+        rw [← total, comp_sum]
         apply Finset.sum_congr rfl
         intro j _
         have reassoced : m ≫ Bicone.π b j ≫ Bicone.ι b j = s.π.app ⟨j⟩ ≫ Bicone.ι b j := by
-          erw [← Category.assoc, eq_whisker (h ⟨j⟩)]
+          simpa using eq_whisker (h ⟨j⟩) _
         rw [reassoced]
       fac := fun s j => by
         classical
@@ -103,10 +105,12 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
   isColimit :=
     { desc := fun s => ∑ j : J, b.π j ≫ s.ι.app ⟨j⟩
       uniq := fun s m h => by
-        erw [← Category.id_comp m, ← total, sum_comp]
+        rw [← Category.id_comp m]
+        dsimp
+        rw [← total, sum_comp]
         apply Finset.sum_congr rfl
         intro j _
-        erw [Category.assoc, h ⟨j⟩]
+        simpa using b.π j ≫= h ⟨j⟩
       fac := fun s j => by
         classical
         cases j
@@ -301,18 +305,19 @@ def isBinaryBilimitOfTotal {X Y : C} (b : BinaryBicone X Y)
     { lift := fun s =>
       (BinaryFan.fst s ≫ b.inl : s.pt ⟶ b.pt) + (BinaryFan.snd s ≫ b.inr : s.pt ⟶ b.pt)
       uniq := fun s m h => by
-        have reassoced (j : WalkingPair) {W : C} (h' : _ ⟶ W) :
-          m ≫ b.toCone.π.app ⟨j⟩ ≫ h' = s.π.app ⟨j⟩ ≫ h' := by
-            rw [← Category.assoc, eq_whisker (h ⟨j⟩)]
-        erw [← Category.comp_id m, ← total, comp_add, reassoced WalkingPair.left,
-          reassoced WalkingPair.right]
+        have hₗ := h ⟨.left⟩
+        have hᵣ := h ⟨.right⟩
+        dsimp at hₗ hᵣ
+        simpa [← hₗ, ← hᵣ] using m ≫= total.symm
       fac := fun s j => by rcases j with ⟨⟨⟩⟩ <;> simp }
   isColimit :=
     { desc := fun s =>
         (b.fst ≫ BinaryCofan.inl s : b.pt ⟶ s.pt) + (b.snd ≫ BinaryCofan.inr s : b.pt ⟶ s.pt)
       uniq := fun s m h => by
-        erw [← Category.id_comp m, ← total, add_comp, Category.assoc, Category.assoc,
-          h ⟨WalkingPair.left⟩, h ⟨WalkingPair.right⟩]
+        have hₗ := h ⟨.left⟩
+        have hᵣ := h ⟨.right⟩
+        dsimp at hₗ hᵣ
+        simpa [← hₗ, ← hᵣ] using total.symm =≫ m
       fac := fun s j => by rcases j with ⟨⟨⟩⟩ <;> simp }
 
 theorem IsBilimit.binary_total {X Y : C} {b : BinaryBicone X Y} (i : b.IsBilimit) :
