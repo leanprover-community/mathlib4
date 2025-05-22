@@ -649,6 +649,10 @@ theorem ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE [T2Space Y] {x : 
     simp at ha
   · exact hfg.filter_mono nhdsWithin_le_nhds
 
+@[deprecated (since := "2025-05-22")]
+alias ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE :=
+  ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE
+
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
 protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X → Y}
     (h : Continuous f) : IsClosedMap f := fun _s hs => (hs.isCompact.image h).isClosed

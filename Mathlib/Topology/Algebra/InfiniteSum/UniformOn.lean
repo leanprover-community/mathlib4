@@ -153,6 +153,10 @@ lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhds [T2Space α]
   (hasProdLocallyUniformlyOn_of_of_forall_exists_nhds <| fun x hx ↦ match h x hx with
   | ⟨t, ht, htr⟩ => ⟨t, ht, htr.hasProdUniformlyOn⟩).multipliableLocallyUniformlyOn
 
+@[deprecated (since := "2025-05-22")]
+alias multipliableLocallyUniformlyOn_of_of_forall_exists_nhd :=
+  multipliableLocallyUniformlyOn_of_of_forall_exists_nhds
+
 @[to_additive]
 theorem HasProdLocallyUniformlyOn.hasProd (h : HasProdLocallyUniformlyOn f g s) (hx : x ∈ s) :
     HasProd (f · x) (g x) :=

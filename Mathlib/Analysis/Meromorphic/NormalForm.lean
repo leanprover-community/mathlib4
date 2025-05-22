@@ -190,6 +190,10 @@ theorem MeromorphicNFAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds {g : 𝕜 → 
       rw [h₁f, h₁g]
   · exact (Filter.EventuallyEq.filter_mono · nhdsWithin_le_nhds)
 
+@[deprecated (since := "2025-05-22")]
+alias MeromorphicNFAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd :=
+  MeromorphicNFAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds
+
 /-- Meromorphicity in normal form is a local property. -/
 theorem meromorphicNFAt_congr {g : 𝕜 → E} (hfg : f =ᶠ[𝓝 x] g) :
     MeromorphicNFAt f x ↔ MeromorphicNFAt g x := by
@@ -288,6 +292,9 @@ lemma MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] toMeromorphicNFAt f x :=
   eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toMermomorphicNFAt hz)
 
+@[deprecated (since := "2025-05-22")]
+alias MeromorphicAt.eq_nhdNE_toMeromorphicNFAt := MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt
+
 /-- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood. -/
 private lemma AnalyticAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds {g : 𝕜 → E} {z₀ : 𝕜}
     (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) (hfg : f =ᶠ[𝓝[≠] z₀] g) :
@@ -295,6 +302,10 @@ private lemma AnalyticAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds {g : 𝕜 →
   rcases ((hf.sub hg).eventually_eq_zero_or_eventually_ne_zero) with h | h
   · exact Filter.eventuallyEq_iff_sub.2 h
   · simpa using (Filter.eventually_and.2 ⟨Filter.eventuallyEq_iff_sub.mp hfg, h⟩).exists
+
+@[deprecated (since := "2025-05-22")]
+alias AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd :=
+  AnalyticAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds
 
 /-- After conversion to normal form at `x`, the function has normal form. -/
 theorem meromorphicNFAt_toMeromorphicNFAt :
@@ -585,6 +596,10 @@ theorem toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds (hf : MeromorphicOn f U)
   apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
   · exact (hf.toMeromorphicNFOn_eq_self_on_nhdsNE hx).trans (hf x hx).eq_nhdsNE_toMeromorphicNFAt
   · simp [toMeromorphicNFOn, hf, hx]
+
+@[deprecated (since := "2025-05-22")]
+alias toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhd :=
+  toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds
 
 /--
 If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`

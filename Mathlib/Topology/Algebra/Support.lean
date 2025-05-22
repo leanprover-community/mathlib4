@@ -413,6 +413,10 @@ theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [O
       simp only [Finite.coe_toFinset, mem_setOf_eq]
       exact ⟨z, ⟨hi, hzn⟩⟩
 
+@[deprecated (since := "2025-05-22")]
+alias LocallyFinite.exists_finset_nhd_mulSupport_subset :=
+  LocallyFinite.exists_finset_nhds_mulSupport_subset
+
 @[to_additive]
 theorem locallyFinite_mulSupport_iff [One M] {f : ι → X → M} :
     (LocallyFinite fun i ↦ mulSupport <| f i) ↔ LocallyFinite fun i ↦ mulTSupport <| f i :=

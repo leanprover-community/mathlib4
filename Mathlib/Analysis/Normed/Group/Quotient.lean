@@ -321,6 +321,8 @@ theorem norm_mk_eq_zero (S : AddSubgroup M) (hS : IsClosed (S : Set M)) (m : M)
 theorem quotient_nhds_basis (S : AddSubgroup M) :
     (𝓝 (0 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ { x | ‖x‖ < ε } := nhds_zero_hasBasis
 
+@[deprecated (since := "2025-05-22")] alias quotient_nhd_basis := quotient_nhds_basis
+
 /-- The seminormed group structure on the quotient by an additive subgroup. -/
 @[deprecated QuotientAddGroup.instSeminormedAddCommGroup (since := "2025-02-02")]
 noncomputable def AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgroup M) :
