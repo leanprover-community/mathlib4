@@ -71,7 +71,7 @@ variable {X : Type*} [MeasurableSpace X]
 lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a ↔
     (∀ (n : ℕ), ∑ i ∈ Finset.range n, f i ≤ a) ∧
     (∀ b < a, ∃ (n : ℕ), b < ∑ i ∈ Finset.range n, f i) := by
-  obtain ha | ha | ha :=  a.trichotomy
+  obtain ha | ha | ha := a.trichotomy
   · -- The case `a = 0`.
     suffices h : (∀ x, f x = 0) ↔ ∀ n i, i < n → f i = 0 by simpa [ha, hasSum_zero_iff]
     exact ⟨fun h _ i _ ↦ h i, fun h i ↦  h (i + 1) i (by omega)⟩
