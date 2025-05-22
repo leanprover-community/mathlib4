@@ -109,25 +109,7 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
     · rw [and_imp]
       intro hf hf' nhd hnhd
       simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage]
-
-      by_contra! hc
-      obtain ⟨n, hn⟩ := hc 0
-      simp at hn
-
-
-
-
-
-
-
       obtain ⟨ε, hε, hε'⟩ : ∃ ε > 0, Set.Ioc (a - ε) a ⊆ nhd := by
-        obtain ⟨t, ht, ht', ht''⟩ := mem_nhds_iff.mp hnhd
-        -- obtain ⟨t, ht₁, ht₂, ht₃⟩ := mem_nhds_iff.mp ‹nhd ∈ nhds a›
-        -- obtain ⟨ε, hε, hball⟩ := ENNReal.isOpen_iff.mp ht'
-
-
-
-
         sorry
       suffices h : ∃ m, ∀ (n : ℕ), m ≤ n → ∑ i ∈ Finset.range n, f i ∈ Set.Ioc (a - ε) a by
         obtain ⟨m, hm⟩ := h
