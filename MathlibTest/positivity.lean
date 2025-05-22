@@ -239,8 +239,6 @@ example (_ha : 0 ≤ a) : 0 < 2 * a + 3 := by
   exact test_sorry
 
 end
-
-
 /-! ### Exponentiation -/
 
 example [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
