@@ -151,7 +151,7 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
       let _ := h_ext 0 n.zero_lt_succ
       let _ : Subsingleton (N ⟶ M) := Ext.addEquiv₀.symm.subsingleton
       (ModuleCat.homAddEquiv (M := N) (N := M)).symm.subsingleton
-    rcases exist_mem_ann_isSMulRegular_of_hom_subsingleton this with ⟨x, mem_ann, hx⟩
+    rcases subsingleton_linearMap_iff.mp this with ⟨x, mem_ann, hx⟩
     have := Ideal.le_radical mem_ann
     rw [h_supp', Ideal.mem_radical_iff] at this
     rcases this with ⟨k, hk⟩
@@ -257,8 +257,8 @@ lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCa
         exact ⟨len, mem.2, reg.2⟩
       by_cases eq0 : i = 0
       · rw [eq0]
-        have : Subsingleton (N →ₗ[R] M) := hom_subsingleton_of_mem_ann_isSMulRegular
-          (IsSMulRegular.pow k reg.1) hk
+        have : Subsingleton (N →ₗ[R] M) := subsingleton_linearMap_iff.mpr
+          ⟨a ^ k, hk, (IsSMulRegular.pow k reg.1)⟩
         have : Subsingleton (N ⟶ M) := ModuleCat.homEquiv.subsingleton
         exact Ext.addEquiv₀.subsingleton
       · have lt : i - 1 < n := by omega
