@@ -54,7 +54,7 @@ structure ParametrizedAdjunction where
     (adj X₁).unit ≫ whiskerRight (F.map f) _ = (adj Y₁).unit ≫ whiskerLeft _ (G.map f.op) :=
       by aesop_cat
 
-/-- The notation `F ⊣₂ G` stands for `Adjunction₂ F G`
+/-- The notation `F ⊣₂ G` stands for `ParametrizedAdjunction F G`
 representing that the bifunctor `F` is the left adjoint to `G`
 in an adjunction with a parameter. -/
 infixl:15 " ⊣₂ " => ParametrizedAdjunction
