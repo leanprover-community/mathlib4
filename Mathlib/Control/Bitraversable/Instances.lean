@@ -88,19 +88,13 @@ open Bitraversable Functor
 instance (priority := 10) Bitraversable.traversable {α} : Traversable (t α) where
   traverse := @tsnd t _ _
 
-#adaptation_note
-/--
-Commented out after https://github.com/leanprover/lean4/pull/7352
-as it uses some `Id` defeq abuse. Please feel invited to restore it!
--/
-/-
 instance (priority := 10) Bitraversable.isLawfulTraversable [LawfulBitraversable t] {α} :
     LawfulTraversable (t α) := by
   constructor <;> intros <;>
     simp [traverse, comp_tsnd, functor_norm]
   · simp [tsnd_eq_snd_id, (· <$> ·), id.mk]
   · simp [tsnd, binaturality, Function.comp_def, functor_norm]
--/
+
 end
 
 open Bifunctor Traversable LawfulTraversable LawfulBitraversable
@@ -140,18 +134,11 @@ nonrec def Bicompr.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m 
 
 instance : Bitraversable (bicompr F t) where bitraverse := @Bicompr.bitraverse t _ F _
 
-#adaptation_note
-/--
-Commented out after https://github.com/leanprover/lean4/pull/7352
-as it uses some `Id` defeq abuse. Please feel invited to restore it!
--/
-/-
 instance [LawfulTraversable F] [LawfulBitraversable t] : LawfulBitraversable (bicompr F t) := by
   constructor <;> intros <;>
     simp [bitraverse, Bicompr.bitraverse, bitraverse_id_id, functor_norm]
   · simp only [bitraverse_eq_bimap_id', traverse_eq_map_id', Function.comp_apply, Id.pure_eq]; rfl
   · dsimp only [bicompr]
     simp [naturality, binaturality']
--/
 
 end Bicompr

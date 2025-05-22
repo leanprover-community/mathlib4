@@ -87,15 +87,10 @@ theorem map_comp_coe {α β} (h : α → β) :
     Functor.map h ∘ ofList = (ofList ∘ Functor.map h : List α → Multiset β) := by
   funext; simp only [Function.comp_apply, fmap_def, map_coe, List.map_eq_map]
 
-theorem idRun_traverse {α : Type*} (x : Multiset α) : (traverse (pure : α → Id α) x).run = x := by
+theorem id_traverse {α : Type*} (x : Multiset α) : traverse (pure : α → Id α) x = x := by
   refine Quotient.inductionOn x ?_
   intro
   simp [traverse]
-  simp [Id.run]
-
-@[deprecated idRun_traverse (since := "2025-05-21")]
-theorem id_traverse {α : Type*} (x : Multiset α) : traverse (pure : α → Id α) x = x :=
-  idRun_traverse x
 
 theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] [CommApplicative G]
     [CommApplicative H] {α β γ : Type _} (g : α → G β) (h : β → H γ) (x : Multiset α) :

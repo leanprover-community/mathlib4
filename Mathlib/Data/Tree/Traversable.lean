@@ -37,21 +37,15 @@ lemma comp_traverse
       Comp.seq_mk, seq_map_assoc, map_seq]
     rfl
 
-#adaptation_note
-/--
-Commented out after https://github.com/leanprover/lean4/pull/7352
-as it uses some `Id` defeq abuse. Please feel invited to restore it!
--/
-/-
 lemma traverse_eq_map_id (f : α → β) (t : Tree α) :
     t.traverse ((pure : β → Id β) ∘ f) = t.map f := by
-  rw [← Id.run_pure (t.map f)]
+  rw [← Id.pure_eq (t.map f)]
   induction t with
-  | nil => rw [traverse, map, Id.run]
+  | nil => rw [traverse, map]
   | node v l r hl hr =>
     rw [traverse, map, hl, hr, Function.comp_apply, map_pure, pure_seq, map_pure, pure_seq,
       map_pure]
--/
+
 lemma naturality {F G : Type u → Type*} [Applicative F] [Applicative G] [LawfulApplicative F]
     [LawfulApplicative G] (η : ApplicativeTransformation F G) {β : Type u} (f : α → F β)
     (t : Tree α) : η (t.traverse f) = t.traverse (η.app β ∘ f : α → G β) := by
@@ -61,12 +55,6 @@ lemma naturality {F G : Type u → Type*} [Applicative F] [Applicative G] [Lawfu
     rw [traverse, traverse, η.preserves_seq, η.preserves_seq, η.preserves_map, hl, hr,
       Function.comp_apply]
 
-#adaptation_note
-/--
-Commented out after https://github.com/leanprover/lean4/pull/7352
-as it uses some `Id` defeq abuse. Please feel invited to restore it!
--/
-/-
 instance : LawfulTraversable Tree where
   map_const := rfl
   id_map := id_map
@@ -75,7 +63,6 @@ instance : LawfulTraversable Tree where
   comp_traverse := comp_traverse
   traverse_eq_map_id := traverse_eq_map_id
   naturality η := naturality η
--/
 
 end Traverse
 

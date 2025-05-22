@@ -187,12 +187,9 @@ def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) 
   Multiset.toFinset <$> Multiset.traverse f s.1
 
 @[simp]
-theorem idRun_traverse [DecidableEq α] (s : Finset α) : (traverse (pure : α → Id α) s).run = s := by
-  simp [traverse, Multiset.idRun_traverse]
-
-@[deprecated idRun_traverse (since := "2025-05-21")]
-theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s :=
-  idRun_traverse s
+theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
+  rw [traverse, Multiset.id_traverse]
+  exact s.val_toFinset
 
 open scoped Classical in
 @[simp]

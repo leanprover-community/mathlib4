@@ -113,21 +113,9 @@ variable {α β γ : Type u}
 
 open LawfulTraversable Functor
 
-#adaptation_note
-/--
-`Id.map_eq` was deprecated in https://github.com/leanprover/lean4/pull/7352,
-but fixing this proof requires avoiding the `Id` defeq abuse, not just replacing the lemma.
--/
-set_option linter.deprecated false in
 protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
   rw [Equiv.traverse, id_traverse, Id.map_eq, apply_symm_apply]
 
-#adaptation_note
-/--
-`Id.map_eq` and `Id.pure_eq` were deprecated in https://github.com/leanprover/lean4/pull/7352,
-but fixing this proof requires avoiding the `Id` defeq abuse, not just replacing the lemma.
--/
-set_option linter.deprecated false in
 protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
     Equiv.traverse eqv ((pure : β → Id β) ∘ f) x = pure (Equiv.map eqv f x) := by
   simp only [Equiv.traverse, traverse_eq_map_id, Id.map_eq, Id.pure_eq]; rfl
