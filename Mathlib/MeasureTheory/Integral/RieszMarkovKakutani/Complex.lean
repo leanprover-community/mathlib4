@@ -93,9 +93,8 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
       · intro n
         rw [tendsto_atTop_nhds] at h
         by_contra! hc
-        let b := ∑ i ∈ Finset.range n, f i
-        let s := Set.Ico 0 b
-        have hn : ∀ m, n ≤ m → b ≤  ∑ i ∈ Finset.range m, f i :=
+        let s := Set.Ico 0 (∑ i ∈ Finset.range n, f i)
+        have hn : ∀ m, n ≤ m → ∑ i ∈ Finset.range n, f i ≤  ∑ i ∈ Finset.range m, f i :=
           fun _ _ ↦ Finset.sum_le_sum_of_subset (by simpa)
         obtain ⟨ℓ, hℓ⟩ := h s ⟨by simp, hc⟩ isOpen_Ico_zero
         let k := max n ℓ
@@ -107,30 +106,22 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
         obtain ⟨n, hn⟩ := h s hs isOpen_Ioo
         exact ⟨n, (hn n (Nat.le_refl _)).1⟩
     · rw [and_imp]
-      intro hf hf' nhd hnhd
-      simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage]
-      obtain ⟨ε, hε, hε'⟩ : ∃ ε > 0, Set.Ioc (a - ε) a ⊆ nhd := by
-        sorry
-      suffices h : ∃ m, ∀ (n : ℕ), m ≤ n → ∑ i ∈ Finset.range n, f i ∈ Set.Ioc (a - ε) a by
-        obtain ⟨m, hm⟩ := h
-        use m
-        intro n hn
-        exact hε' (hm n hn)
-      simp only [Set.mem_Ioc]
-      have : a - ε < a := by
-        refine (ENNReal.sub_lt_self_iff ?_).mpr ⟨?_, ?_⟩
-        · exact LT.lt.ne_top ha'
-        · exact ha''
-        · exact hε
-      obtain ⟨m, hm⟩ := hf' (a - ε) (this)
-      use m
-      intro n hn
+      intro hf hf'
+      rw [ENNReal.tendsto_nhds ha'.ne_top]
+      intro ε hε
+      simp only [Set.mem_Icc, tsub_le_iff_right, Filter.eventually_atTop, ge_iff_le]
+      have hε' : a - ε < a :=
+        (ENNReal.sub_lt_self_iff (LT.lt.ne_top ha')).mpr ⟨ha'', hε⟩
+      obtain ⟨n, hn⟩ := hf' (a - ε) hε'
+      refine ⟨n, fun m hm ↦ ?_⟩
       constructor
-      · have : ∑ i ∈ Finset.range m, f i ≤ ∑ i ∈ Finset.range n, f i := by
-          refine Finset.sum_le_sum_of_subset ?_
-          simpa
-        exact gt_of_ge_of_gt this hm
-      · exact hf n
+      · calc a
+        _ ≤ a - ε + ε := by exact le_tsub_add
+        _ ≤ ∑ i ∈ Finset.range n, f i + ε := by
+          have : ε ≤ ε := Preorder.le_refl _
+          sorry -- Use `hn : a - ε < ∑ i ∈ Finset.range n, f i`
+        _ ≤ ∑ i ∈ Finset.range m, f i + ε := by gcongr
+      · exact le_add_right (hf m)
 
 lemma ENNReal.exist_iSup_le_add_of_pos {ι : Type*} {ε : ℝ≥0∞} {f : ι → ℝ≥0∞} (hε : 0 < ε)
     (h : iSup f < ⊤) : ∃ (i : ι), iSup f ≤ f i + ε := by
