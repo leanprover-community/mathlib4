@@ -209,6 +209,7 @@ theorem iff_directed (hpi : IsPiSystem p) :
         exact Set.not_nonempty_iff_eq_empty.mp g
     apply h₀ h₁ h2
 
+
 theorem iff_directed' (hpi : IsPiSystem p) :
     IsCompactSystem p ↔
     ∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
@@ -220,7 +221,7 @@ theorem iff_directed' (hpi : IsPiSystem p) :
 
 section IsCompactIsClosed
 
-variable {α : Type*} [TopologicalSpace α]
+variable (α : Type*) [TopologicalSpace α]
 
 /-- The set of compact and closed sets is a compact system. -/
 theorem of_isCompact_isClosed :

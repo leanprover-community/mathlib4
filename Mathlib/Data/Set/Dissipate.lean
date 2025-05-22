@@ -134,13 +134,14 @@ lemma exists_dissipate_eq_empty_iff_of_directed (C : ℕ → Set α)
     · rw [hn', dissipate_zero]
       exact hn' ▸ hn
     · obtain ⟨k, hk⟩ := exists_eq_succ_of_ne_zero hn'
-      simp_rw [hk, succ_eq_add_one, dissipate_def, dissipate_succ,
+      simp_rw [hk, succ_eq_add_one, dissipate_succ,
         ← succ_eq_add_one, ← hk, hn, Set.inter_empty]
   · rw [← not_imp_not]
     push_neg
     intro h n
     obtain ⟨m, hm⟩ := exists_subset_dissipate_of_directed hd n
     exact Set.Nonempty.mono hm (h m)
+
 
 /-- For a ∩-stable set of sets `p` on `α` and a sequence of sets `s` with this attribute,
 `p (dissipate s n)` holds. -/
