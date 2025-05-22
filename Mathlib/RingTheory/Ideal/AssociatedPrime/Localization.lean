@@ -34,7 +34,7 @@ variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module 
 
 open IsLocalRing LinearMap
 
-namespace associatedPrimes
+namespace Module.associatedPrimes
 
 include S f in
 lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
@@ -43,8 +43,10 @@ lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
     p ∈ associatedPrimes R' M' := by
   rcases ass with ⟨hp, x, hx⟩
   constructor
-  · --may be able to remove `p.IsPrime`
-    trivial
+  · /- use the following to  remove `p.IsPrime`
+      exact (IsLocalization.isPrime_iff_isPrime_disjoint S _ _).mpr
+      ⟨hp, (IsLocalization.disjoint_comap_iff S R' p).mpr (p ≠ ⊤)⟩ -/
+    assumption
   · use f x
     ext t
     rcases IsLocalization.mk'_surjective S t with ⟨r, s, hrs⟩
@@ -78,4 +80,4 @@ lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes
     p.primeCompl (Localization.AtPrime p) (LocalizedModule.mkLinearMap p.primeCompl M)
   simpa [Localization.AtPrime.comap_maximalIdeal] using ass
 
-end associatedPrimes
+end Module.associatedPrimes
