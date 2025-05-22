@@ -574,9 +574,42 @@ def prodUnique [Unique N] : M × N ≃* M :=
 
 end
 
-section
+end MulEquiv
+
+namespace Units
 
 variable [Monoid M] [Monoid N]
+
+/-- A map from the product of the units of two monoids to the units of their product. -/
+@[to_additive prod "A map from the product of the additive units of two
+    additive monoids to the additive units of their product."]
+def prod : Mˣ × Nˣ →* (M × N)ˣ :=
+  MonoidHom.toHomUnits (MonoidHom.prodMap (Units.coeHom M) (Units.coeHom N))
+
+@[to_additive (attr := simp) val_prod_apply]
+theorem val_prod_apply (g : Mˣ × Nˣ) : (prod g).val = (g.1.val, g.2.val) := rfl
+
+@[to_additive (attr := simp) val_inv_prod_apply]
+theorem val_inv_prod_apply (g : Mˣ × Nˣ) : (prod g)⁻¹.val = (g.1⁻¹.val, g.2⁻¹.val) := rfl
+
+/-- The first element of the units of the product of two monoids. -/
+@[to_additive (attr := simps!) "The first element of the additive units of the
+  product of two additive monoids."]
+def fst : (M × N)ˣ →* Mˣ := Units.map (MonoidHom.fst M N)
+
+/-- The second element of the units of the product of two monoids. -/
+@[to_additive (attr := simps!) "The second element of the additive units of the
+  product of two additive monoids."]
+def snd : (M × N)ˣ →* Nˣ := Units.map (MonoidHom.snd M N)
+
+@[to_additive (attr := simp) fst_prod]
+theorem fst_prod (g : Mˣ × Nˣ) : (prod g).fst = g.1 := rfl
+
+@[to_additive (attr := simp) snd_prod]
+theorem snd_prod (g : Mˣ × Nˣ) : (prod g).snd = g.2 := rfl
+
+@[to_additive (attr := simp) prod_fst_snd]
+theorem prod_fst_snd (g : (M × N)ˣ) : prod (fst g, snd g) = g := rfl
 
 /-- The monoid equivalence between units of a product of two monoids, and the product of the
     units of each monoid. -/
@@ -584,27 +617,16 @@ variable [Monoid M] [Monoid N]
       "The additive monoid equivalence between additive units of a product
       of two additive monoids, and the product of the additive units of each additive monoid."]
 def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
-  toFun := (Units.map (MonoidHom.fst M N)).prod (Units.map (MonoidHom.snd M N))
-  invFun u := ⟨(u.1, u.2), (↑u.1⁻¹, ↑u.2⁻¹), by simp, by simp⟩
-  left_inv u := by
-    simp only [MonoidHom.prod_apply, Units.coe_map, MonoidHom.coe_fst, MonoidHom.coe_snd,
-      Prod.mk.eta, Units.coe_map_inv, Units.mk_val]
-  right_inv := fun ⟨u₁, u₂⟩ => by
-    simp only [Units.map, MonoidHom.coe_fst, Units.inv_eq_val_inv,
-      MonoidHom.coe_snd, MonoidHom.prod_apply, Prod.mk.injEq]
-    exact ⟨rfl, rfl⟩
+  toFun := fst.prod snd
+  invFun := prod
+  left_inv u := by simp only [MonoidHom.prod_apply, prod_fst_snd]
+  right_inv u := by simp only [MonoidHom.prod_apply, fst_prod, snd_prod]
   map_mul' := MonoidHom.map_mul _
 
 @[to_additive]
 lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
   mp h := ⟨(prodUnits h.unit).1.isUnit, (prodUnits h.unit).2.isUnit⟩
   mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
-
-end
-
-end MulEquiv
-
-namespace Units
 
 open MulOpposite
 
