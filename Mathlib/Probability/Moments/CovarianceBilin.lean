@@ -102,7 +102,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : Dual 𝕜 E) :
   suffices ∫⁻ x, ‖L x‖ₑ ^ p.toReal ∂μ ≤ ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ by
     rw [← ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity)]
     gcongr
-    rwa [ENNReal.ofReal_toReal]
+    rwa [ENNReal.ofReal_toReal _]
     refine ENNReal.mul_ne_top (by simp) ?_
     have h := h_Lp.eLpNorm_ne_top
     rw [eLpNorm_eq_lintegral_rpow_enorm (by simp [hp]) hp_top] at h

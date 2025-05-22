@@ -121,7 +121,7 @@ theorem smul_le_stoppedValue_hitting [IsFiniteMeasure μ] (hsub : Submartingale 
     (Finset.measurable_range_sup'' fun n _ => (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)))
       (measure_ne_top _ _) this (Integrable.integrableOn (hsub.integrable_stoppedValue
         (hitting_isStoppingTime hsub.adapted measurableSet_Ici) hitting_le))
-  rw [ENNReal.le_ofReal_iff_toReal_le, ENNReal.toReal_smul]
+  rw [ENNReal.le_ofReal_iff_toReal_le _ _, ENNReal.toReal_smul]
   · exact h
   · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
   · exact le_trans (mul_nonneg ε.coe_nonneg ENNReal.toReal_nonneg) h

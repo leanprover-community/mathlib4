@@ -142,8 +142,8 @@ theorem norm_sub_eq_lintegral (f g : α →₁[μ] β) : ‖f - g‖ = (∫⁻ x
   simp only [ha, Pi.sub_apply]
 
 theorem ofReal_norm_eq_lintegral (f : α →₁[μ] β) : ENNReal.ofReal ‖f‖ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
-  rw [norm_def, ENNReal.ofReal_toReal]
-  exact ne_of_lt (hasFiniteIntegral_coeFn f)
+  rw [norm_def, ENNReal.ofReal_toReal _]
+  exact (hasFiniteIntegral_coeFn f).ne
 
 /-- Computing the norm of a difference between two L¹-functions. Note that this is not a
   special case of `ofReal_norm_eq_lintegral` since `(f - g) x` and `f x - g x` are not equal

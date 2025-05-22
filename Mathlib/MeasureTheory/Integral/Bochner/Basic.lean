@@ -521,8 +521,8 @@ alias integral_norm_eq_lintegral_nnnorm := integral_norm_eq_lintegral_enorm
 
 theorem ofReal_integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : Integrable f μ) : ENNReal.ofReal (∫ x, ‖f x‖ ∂μ) = ∫⁻ x, ‖f x‖ₑ ∂μ := by
-  rw [integral_norm_eq_lintegral_enorm hf.aestronglyMeasurable, ENNReal.ofReal_toReal]
-  exact lt_top_iff_ne_top.mp (hasFiniteIntegral_iff_enorm.mpr hf.2)
+  rw [integral_norm_eq_lintegral_enorm hf.aestronglyMeasurable, ENNReal.ofReal_toReal _]
+  exact (hasFiniteIntegral_iff_enorm.mpr hf.2).ne
 
 @[deprecated (since := "2025-01-21")]
 alias ofReal_integral_norm_eq_lintegral_nnnorm := ofReal_integral_norm_eq_lintegral_enorm
@@ -685,7 +685,7 @@ theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x 
     ∫⁻ a, f a ∂μ = ENNReal.ofReal (∫ a, f a ∂μ) := by
   simp_rw [integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall fun x => (f x).coe_nonneg)
       hfi.aestronglyMeasurable, ← ENNReal.coe_nnreal_eq]
-  rw [ENNReal.ofReal_toReal]
+  rw [ENNReal.ofReal_toReal _]
   simpa [← lt_top_iff_ne_top, hasFiniteIntegral_iff_enorm, NNReal.enorm_eq] using
     hfi.hasFiniteIntegral
 
@@ -916,7 +916,7 @@ theorem MemLp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1
   rw [integral_eq_lintegral_of_nonneg_ae]; rotate_left
   · exact ae_of_all _ fun x => by positivity
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
-  rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
+  rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal _]
   exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf.2).ne
 
 @[deprecated (since := "2025-02-21")]
@@ -1415,7 +1415,7 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
     rw [← integral_const]
     refine integral_mono_ae hfint.real_toNNReal (integrable_const (r : ℝ)) ?_
     filter_upwards [hf] with ω hω using Real.toNNReal_le_iff_le_coe.2 hω
-  rw [MemLp.eLpNorm_eq_integral_rpow_norm one_ne_zero ENNReal.one_ne_top
+  rw [MemLp.eLpNorm_eq_integral_rpow_norm one_ne_zero (by finiteness)
       (memLp_one_iff_integrable.2 hfint),
     ENNReal.ofReal_le_iff_le_toReal (by finiteness)]
   simp_rw [ENNReal.toReal_one, _root_.inv_one, Real.rpow_one, Real.norm_eq_abs, ←

@@ -220,7 +220,7 @@ lemma mul_log_le_klDiv (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasur
   swap; · simp [hμν]
   by_cases h_int : Integrable (llr μ ν) μ
   swap; · simp [h_int]
-  rw [← ENNReal.ofReal_toReal (a := klDiv μ ν)]
+  rw [← ENNReal.ofReal_toReal (a := klDiv μ ν) _]
   · exact ENNReal.ofReal_le_ofReal (mul_log_le_toReal_klDiv hμν h_int)
   · rw [klDiv_ne_top_iff]
     exact ⟨hμν, h_int⟩

@@ -275,7 +275,7 @@ theorem condCDF_ae_eq (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (r : ℚ) 
 theorem ofReal_condCDF_ae_eq (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (r : ℚ) :
     (fun a ↦ ENNReal.ofReal (condCDF ρ a r)) =ᵐ[ρ.fst] preCDF ρ r := by
   filter_upwards [condCDF_ae_eq ρ r, preCDF_le_one ρ] with a ha ha_le_one
-  rw [ha, ENNReal.ofReal_toReal]
+  rw [ha, ENNReal.ofReal_toReal _]
   exact ((ha_le_one r).trans_lt ENNReal.one_lt_top).ne
 
 /-- The conditional cdf is a measurable function of `a : α` for all `x : ℝ`. -/

@@ -258,7 +258,6 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
         refine lt_of_lt_of_le ?_ hx
         rw [ENNReal.toReal_lt_toReal hbdd.ne]
         · exact ENNReal.lt_add_right hbdd.ne one_ne_zero
-        · finiteness
       rw [← nonpos_iff_eq_zero]
       refine (measure_mono this).trans ?_
       have hle := enorm_ae_le_eLpNormEssSup f μ
@@ -389,8 +388,7 @@ theorem MemLp.eLpNorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ �
   obtain ⟨δ, hδpos, hδ⟩ := hf.eLpNorm_indicator_le' hp_one hp_top hmeas (half_pos hε)
   refine ⟨δ, hδpos, fun s hs hμs => le_trans (hδ s hs hμs) ?_⟩
   rw [ENNReal.ofReal_div_of_pos zero_lt_two, (by norm_num : ENNReal.ofReal 2 = 2),
-      ENNReal.mul_div_cancel] <;>
-    norm_num
+      ENNReal.mul_div_cancel (by norm_num)]
 
 theorem MemLp.eLpNorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : MemLp f p μ) {ε : ℝ}
     (hε : 0 < ε) :

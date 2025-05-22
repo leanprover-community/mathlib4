@@ -540,11 +540,10 @@ theorem addHaar_singleton_add_smul_div_singleton_add_smul {r : ℝ} (hr : r ≠ 
       rw [ENNReal.mul_inv]
       · ring
       · simp only [pow_pos (abs_pos.mpr hr), ENNReal.ofReal_eq_zero, not_le, Ne, true_or]
-      · simp only [ENNReal.ofReal_ne_top, true_or, Ne, not_false_iff]
+      · left; finiteness
     _ = μ s / μ t := by
       rw [ENNReal.mul_inv_cancel, one_mul, div_eq_mul_inv]
       · simp only [pow_pos (abs_pos.mpr hr), ENNReal.ofReal_eq_zero, not_le, Ne]
-      · simp only [ENNReal.ofReal_ne_top, Ne, not_false_iff]
 
 instance (priority := 100) isUnifLocDoublingMeasureOfIsAddHaarMeasure :
     IsUnifLocDoublingMeasure μ := by
@@ -646,7 +645,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
   have C : Tendsto (fun r : ℝ =>
         μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u)))
       (𝓝[>] 0) (𝓝 (0 * (μ (closedBall x 1) / μ ({x} + u)))) := by
-    apply ENNReal.Tendsto.mul A _ B (Or.inr ENNReal.zero_ne_top)
+    apply ENNReal.Tendsto.mul A _ B (Or.inr (by finiteness))
     simp [ENNReal.div_eq_top, h'u, measure_closedBall_lt_top.ne]
   simp only [zero_mul] at C
   apply C.congr' _
@@ -772,7 +771,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
       apply tendsto_const_nhds.congr' _
       filter_upwards [self_mem_nhdsWithin]
       intro r hr
-      rw [div_eq_mul_inv, ENNReal.mul_inv_cancel]
+      rw [div_eq_mul_inv, ENNReal.mul_inv_cancel _ _]
       · exact (measure_closedBall_pos μ _ hr).ne'
       · exact measure_closedBall_lt_top.ne
     have B := ENNReal.Tendsto.sub A h (Or.inl ENNReal.one_ne_top)

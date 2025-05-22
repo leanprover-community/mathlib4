@@ -51,7 +51,7 @@ private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : �
   rw [EMetric.diam_closure]
   apply le_trans (EMetric.diam_mono inter_subset_left)
   convert EMetric.diam_ball (x := x)
-  rw [mul_comm, ENNReal.div_mul_cancel] <;> norm_num
+  rw [mul_comm, ENNReal.div_mul_cancel (by norm_num)]
 
 /-- A refinement of `Perfect.splitting` for metric spaces, where we also control
 the diameter of the new perfect sets. -/

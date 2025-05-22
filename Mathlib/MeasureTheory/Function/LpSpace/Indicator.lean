@@ -143,7 +143,6 @@ theorem norm_indicatorConstLp_le :
   refine (eLpNorm_indicator_const_le _ _).trans_eq ?_
   rw [ENNReal.ofReal_mul (norm_nonneg _), ofReal_norm, measureReal_def,
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
-  finiteness
 
 theorem nnnorm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖₊ ≤ ‖c‖₊ * (μ s).toNNReal ^ (1 / p.toReal) :=
@@ -182,7 +181,7 @@ theorem tendsto_indicatorConstLp_set [hp₁ : Fact (1 ≤ p)] {β : Type*} {l : 
   have hp₀ : p ≠ 0 := (one_pos.trans_le hp₁.out).ne'
   simp only [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp hp₀ hp]
   convert tendsto_const_nhds.mul
-    (((ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp h).rpow_const _)
+    (((ENNReal.tendsto_toReal (by finiteness)).comp h).rpow_const _)
   · simp [Real.rpow_eq_zero_iff_of_nonneg, ENNReal.toReal_eq_zero_iff, hp, hp₀]
   · simp
 
