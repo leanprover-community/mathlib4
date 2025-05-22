@@ -196,7 +196,7 @@ theorem negPart_divisor_add_of_analyticNhdOn_right {f₁ f₂ : 𝕜 → E} (hf�
       _ ≤ meromorphicOrderAt (f₁ + f₂) x :=
         meromorphicOrderAt_add (hf₁ x hx) (hf₂ x hx).meromorphicAt
     · suffices meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x by
-        rwa [meromorphicOrderAt_add_of_lt (hf₂.meromorphicOn x hx)]
+        rwa [meromorphicOrderAt_add_eq_left_of_lt (hf₂.meromorphicOn x hx)]
       calc meromorphicOrderAt f₁ x
       _ < 0 := by simpa using h
       _ ≤ meromorphicOrderAt f₂ x := (hf₂ x hx).meromorphicOrderAt_nonneg

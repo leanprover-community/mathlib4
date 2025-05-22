@@ -546,7 +546,16 @@ lemma meromorphicOrderAt_add_eq_left_of_lt (hf₂ : MeromorphicAt f₂ x)
     simp_all [smul_add, ← smul_assoc, ← zpow_add', sub_ne_zero]
 
 @[deprecated (since := "205-05-21")]
-alias MeromorphicAt.order_add_of_order_lt_order := meromorphicOrderAt_add_of_lt
+alias MeromorphicAt.order_add_of_order_lt_order := meromorphicOrderAt_add_eq_left_of_lt
+
+/--
+Helper lemma for meromorphicOrderAt_add_of_ne.
+-/
+lemma meromorphicOrderAt_add_eq_right_of_lt (hf₁ : MeromorphicAt f₁ x)
+    (h : meromorphicOrderAt f₂ x < meromorphicOrderAt f₁ x) :
+    meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₂ x := by
+  rw [add_comm]
+  exact meromorphicOrderAt_add_eq_left_of_lt hf₁ h
 
 /--
 If two meromorphic functions have unequal orders, then the order of their sum is
@@ -557,8 +566,8 @@ theorem meromorphicOrderAt_add_of_ne
     (h : meromorphicOrderAt f₁ x ≠ meromorphicOrderAt f₂ x) :
     meromorphicOrderAt (f₁ + f₂) x = min (meromorphicOrderAt f₁ x) (meromorphicOrderAt f₂ x) := by
   rcases lt_or_lt_iff_ne.mpr h with h | h
-  · simpa [h.le] using meromorphicOrderAt_add_of_lt hf₂ h
-  · simpa [h.le, add_comm] using meromorphicOrderAt_add_of_lt hf₁ h
+  · simpa [h.le] using meromorphicOrderAt_add_eq_left_of_lt hf₂ h
+  · simpa [h.le] using meromorphicOrderAt_add_eq_right_of_lt hf₁ h
 
 @[deprecated (since := "205-05-21")]
 alias MeromorphicAt.order_add_of_order_ne := meromorphicOrderAt_add_of_ne
