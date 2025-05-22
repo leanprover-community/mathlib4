@@ -101,7 +101,7 @@ theorem iff_singleton :
 theorem empty [h : IsCyclotomicExtension ∅ A B] : (⊥ : Subalgebra A B) = ⊤ := by
   simpa [Algebra.eq_top_iff, isCyclotomicExtension_iff] using h
 
-theorem diff_zero :
+theorem eq_sdiff_zero :
     IsCyclotomicExtension S A B = IsCyclotomicExtension (S \ {0}) A B := by
   simp [isCyclotomicExtension_iff, and_assoc]
 
@@ -164,7 +164,7 @@ private theorem subsingleton_iff_aux [Subsingleton B] (hS : 0 ∉ S) :
 @[nontriviality]
 theorem subsingleton_iff [Subsingleton B] :
     IsCyclotomicExtension S A B ↔ S ⊆ {0, 1} := by
-  rw [diff_zero, subsingleton_iff_aux _ _ _ (by simp), ← subset_singleton_iff_eq,
+  rw [eq_sdiff_zero, subsingleton_iff_aux _ _ _ (by simp), ← subset_singleton_iff_eq,
     diff_singleton_subset_iff]
 
 /-- If `B` is a cyclotomic extension of `A` given by roots of unity of order in `S ∪ T`, then `B`
@@ -262,7 +262,7 @@ theorem iff_union_singleton_one :
     classical
     exact Decidable.or_iff_not_imp_left.mpr (by aesop)
   have h₂ : (S \ {0} ∪ {1}) = (S \ {0} ∪ {1} \ {0}) := by simp
-  rw [diff_zero S, diff_zero (S ∪ {1}), iff_union_singleton_one_aux _ _ _ h₁,
+  rw [eq_sdiff_zero S, eq_sdiff_zero (S ∪ {1}), iff_union_singleton_one_aux _ _ _ h₁,
     Set.union_diff_distrib, h₂]
 
 variable {A B}
@@ -330,7 +330,7 @@ protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExte
   | @insert n S _ _ H =>
     by_cases hn : n = 0
     · have : insert n S \ {0} = S \ {0} := by aesop
-      rw [diff_zero, this, ← diff_zero] at h₂
+      rw [eq_sdiff_zero, this, ← eq_sdiff_zero] at h₂
       exact H A B
     haveI : IsCyclotomicExtension S A
       (adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ (n : ℕ) = 1}) :=
@@ -721,13 +721,13 @@ private theorem IsAlgClosed.isCyclotomicExtension_aux (h₀ : ∀ a ∈ S, a ≠
 `NeZero ((a : ℕ) : K))` for all `a ∈ S`. -/
 theorem IsAlgClosed.isCyclotomicExtension (h : ∀ a ∈ S, NeZero ((a : ℕ) : K)) :
     IsCyclotomicExtension S K K := by
-  rw [IsCyclotomicExtension.diff_zero]
+  rw [IsCyclotomicExtension.eq_sdiff_zero]
   refine IsAlgClosed.isCyclotomicExtension_aux _ K (by simp) ?_
   exact fun a ha ↦ h a <| mem_of_mem_diff ha
 
 instance IsAlgClosedOfCharZero.isCyclotomicExtension [CharZero K] :
     ∀ S, IsCyclotomicExtension S K K := fun S => by
-  rw [IsCyclotomicExtension.diff_zero]
+  rw [IsCyclotomicExtension.eq_sdiff_zero]
   exact IsAlgClosed.isCyclotomicExtension _ K fun _ h ↦
     ⟨Nat.cast_ne_zero.mpr (mem_diff_singleton.mp h).2⟩
 
