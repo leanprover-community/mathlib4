@@ -118,7 +118,7 @@ end Field
 
 section LinearOrderedField
 
-variable {K : Type*} [LinearOrderedField K] {a b c : K}
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {a b c : K}
 
 /-- If a polynomial of degree 2 is always nonnegative, then its discriminant is nonpositive -/
 theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim a b c ≤ 0 := by

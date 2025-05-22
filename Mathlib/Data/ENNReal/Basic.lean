@@ -112,8 +112,14 @@ instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
 instance : Min ℝ≥0∞ := SemilatticeInf.toMin
 instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 
-noncomputable instance : OrderedCommSemiring ℝ≥0∞ :=
-  inferInstanceAs (OrderedCommSemiring (WithTop ℝ≥0))
+noncomputable instance : CommSemiring ℝ≥0∞ :=
+  inferInstanceAs (CommSemiring (WithTop ℝ≥0))
+
+instance : PartialOrder ℝ≥0∞ :=
+  inferInstanceAs (PartialOrder (WithTop ℝ≥0))
+
+instance : IsOrderedRing ℝ≥0∞ :=
+  inferInstanceAs (IsOrderedRing (WithTop ℝ≥0))
 
 instance : CanonicallyOrderedAdd ℝ≥0∞ :=
   inferInstanceAs (CanonicallyOrderedAdd (WithTop ℝ≥0))
@@ -126,8 +132,14 @@ noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
 
 instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
 
-noncomputable instance : LinearOrderedAddCommMonoid ℝ≥0∞ :=
-  inferInstanceAs (LinearOrderedAddCommMonoid (WithTop ℝ≥0))
+instance : AddCommMonoid ℝ≥0∞ :=
+  inferInstanceAs (AddCommMonoid (WithTop ℝ≥0))
+
+noncomputable instance : LinearOrder ℝ≥0∞ :=
+  inferInstanceAs (LinearOrder (WithTop ℝ≥0))
+
+instance : IsOrderedAddMonoid ℝ≥0∞ :=
+  inferInstanceAs (IsOrderedAddMonoid (WithTop ℝ≥0))
 
 instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
 instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
@@ -140,12 +152,13 @@ noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }�
 
 noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0} {n : ℕ}
 
 -- TODO: add a `WithTop` instance and use it here
 noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
   { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
       inferInstanceAs (CommSemiring ℝ≥0∞) with
+    bot_le _ := bot_le
     mul_le_mul_left := fun _ _ => mul_le_mul_left'
     zero_le_one := zero_le 1 }
 
@@ -246,19 +259,31 @@ theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.o
 @[simp] theorem toNNReal_toReal_eq (z : ℝ≥0∞) : z.toReal.toNNReal = z.toNNReal := by
   ext; simp [coe_toNNReal_eq_toReal]
 
-@[simp] theorem top_toNNReal : ∞.toNNReal = 0 := rfl
+@[simp] theorem toNNReal_top : ∞.toNNReal = 0 := rfl
 
-@[simp] theorem top_toReal : ∞.toReal = 0 := rfl
+@[deprecated (since := "2025-03-20")] alias top_toNNReal := toNNReal_top
 
-@[simp] theorem one_toReal : (1 : ℝ≥0∞).toReal = 1 := rfl
+@[simp] theorem toReal_top : ∞.toReal = 0 := rfl
 
-@[simp] theorem one_toNNReal : (1 : ℝ≥0∞).toNNReal = 1 := rfl
+@[deprecated (since := "2025-03-20")] alias top_toReal := toReal_top
+
+@[simp] theorem toReal_one : (1 : ℝ≥0∞).toReal = 1 := rfl
+
+@[deprecated (since := "2025-03-20")] alias one_toReal := toReal_one
+
+@[simp] theorem toNNReal_one : (1 : ℝ≥0∞).toNNReal = 1 := rfl
+
+@[deprecated (since := "2025-03-20")] alias one_toNNReal := toNNReal_one
 
 @[simp] theorem coe_toReal (r : ℝ≥0) : (r : ℝ≥0∞).toReal = r := rfl
 
-@[simp] theorem zero_toNNReal : (0 : ℝ≥0∞).toNNReal = 0 := rfl
+@[simp] theorem toNNReal_zero : (0 : ℝ≥0∞).toNNReal = 0 := rfl
 
-@[simp] theorem zero_toReal : (0 : ℝ≥0∞).toReal = 0 := rfl
+@[deprecated (since := "2025-03-20")] alias zero_toNNReal := toNNReal_zero
+
+@[simp] theorem toReal_zero : (0 : ℝ≥0∞).toReal = 0 := rfl
+
+@[deprecated (since := "2025-03-20")] alias zero_toReal := toReal_zero
 
 @[simp] theorem ofReal_zero : ENNReal.ofReal (0 : ℝ) = 0 := by simp [ENNReal.ofReal]
 
@@ -271,7 +296,7 @@ theorem forall_ennreal {p : ℝ≥0∞ → Prop} : (∀ a, p a) ↔ (∀ r : ℝ
   Option.forall.trans and_comm
 
 theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ a, a ≠ ∞ → p a) ↔ ∀ r : ℝ≥0, p r :=
-  Option.ball_ne_none
+  Option.forall_ne_none
 
 theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r : ℝ≥0, p r :=
   Option.exists_ne_none
@@ -492,6 +517,15 @@ lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_t
 
 @[simp] theorem top_ne_ofNat {n : ℕ} [n.AtLeastTwo] : ∞ ≠ ofNat(n) :=
   ofNat_ne_top.symm
+
+@[simp, norm_cast] lemma natCast_le_ofNNReal : (n : ℝ≥0∞) ≤ r ↔ n ≤ r := by simp [← coe_le_coe]
+@[simp, norm_cast] lemma ofNNReal_le_natCast : r ≤ (n : ℝ≥0∞) ↔ r ≤ n := by simp [← coe_le_coe]
+
+@[simp, norm_cast] lemma ofNNReal_add_natCast (r : ℝ≥0) (n : ℕ) : ofNNReal (r + n) = r + n := rfl
+@[simp, norm_cast] lemma ofNNReal_natCast_add (n : ℕ) (r : ℝ≥0) : ofNNReal (n + r) = n + r := rfl
+
+@[simp, norm_cast] lemma ofNNReal_sub_natCast (r : ℝ≥0) (n : ℕ) : ofNNReal (r - n) = r - n := rfl
+@[simp, norm_cast] lemma ofNNReal_natCast_sub (n : ℕ) (r : ℝ≥0) : ofNNReal (n - r) = n - r := rfl
 
 @[deprecated ofNat_ne_top (since := "2025-01-21")] lemma two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
 @[deprecated ofNat_lt_top (since := "2025-01-21")] lemma two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top

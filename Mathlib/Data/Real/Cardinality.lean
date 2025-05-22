@@ -94,16 +94,15 @@ def cantorFunction (c : ℝ) (f : ℕ → Bool) : ℝ :=
 
 theorem cantorFunction_le (h1 : 0 ≤ c) (h2 : c < 1) (h3 : ∀ n, f n → g n) :
     cantorFunction c f ≤ cantorFunction c g := by
-  apply tsum_le_tsum _ (summable_cantor_function f h1 h2) (summable_cantor_function g h1 h2)
+  apply (summable_cantor_function f h1 h2).tsum_le_tsum _ (summable_cantor_function g h1 h2)
   intro n; cases h : f n
   · simp [h, cantorFunctionAux_nonneg h1]
   replace h3 : g n = true := h3 n h; simp [h, h3]
 
 theorem cantorFunction_succ (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
     cantorFunction c f = cond (f 0) 1 0 + c * cantorFunction c fun n => f (n + 1) := by
-  rw [cantorFunction, tsum_eq_zero_add (summable_cantor_function f h1 h2)]
-  rw [cantorFunctionAux_succ, tsum_mul_left, cantorFunctionAux, _root_.pow_zero]
-  rfl
+  rw [cantorFunction, (summable_cantor_function f h1 h2).tsum_eq_zero_add]
+  rw [cantorFunctionAux_succ, tsum_mul_left, cantorFunctionAux, pow_zero, cantorFunction]
 
 /-- `cantorFunction c` is strictly increasing with if `0 < c < 1/2`, if we endow `ℕ → Bool` with a
 lexicographic order. The lexicographic order doesn't exist for these infinitary products, so we
@@ -121,7 +120,7 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
       cases n
       · rw [fn] at hn
         contradiction
-      apply rfl
+      simp [f_max]
     let g_min : ℕ → Bool := fun n => Nat.rec true (fun _ _ => false) n
     have hg_min : ∀ n, g_min n → g n := by
       intro n hn
@@ -143,7 +142,7 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
       · intro n hn
         cases n
         · contradiction
-        rfl
+        simp [g_min]
       · exact cantorFunctionAux_zero _
   rw [cantorFunction_succ f (le_of_lt h1) h3, cantorFunction_succ g (le_of_lt h1) h3]
   rw [hn 0 <| zero_lt_succ n]
@@ -156,14 +155,8 @@ theorem cantorFunction_injective (h1 : 0 < c) (h2 : c < 1 / 2) :
     Function.Injective (cantorFunction c) := by
   intro f g hfg
   classical
-    by_contra h
-    revert hfg
-    have : ∃ n, f n ≠ g n := by
-      rw [← not_forall]
-      intro h'
-      apply h
-      ext
-      apply h'
+    contrapose hfg with h
+    have : ∃ n, f n ≠ g n := Function.ne_iff.mp h
     let n := Nat.find this
     have hn : ∀ k : ℕ, k < n → f k = g k := by
       intro k hk

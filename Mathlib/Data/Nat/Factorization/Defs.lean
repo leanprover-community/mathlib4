@@ -11,25 +11,25 @@ import Mathlib.NumberTheory.Padics.PadicVal.Defs
 /-!
 # Prime factorizations
 
- `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
- mapping each prime factor of `n` to its multiplicity in `n`.  For example, since 2000 = 2^4 * 5^3,
-  * `factorization 2000 2` is 4
-  * `factorization 2000 5` is 3
-  * `factorization 2000 k` is 0 for all other `k : ℕ`.
+`n.factorization` is the finitely supported function `ℕ →₀ ℕ`
+mapping each prime factor of `n` to its multiplicity in `n`.  For example, since 2000 = 2^4 * 5^3,
+* `factorization 2000 2` is 4
+* `factorization 2000 5` is 3
+* `factorization 2000 k` is 0 for all other `k : ℕ`.
 
 ## TODO
 
 * As discussed in this Zulip thread:
-https://leanprover.zulipchat.com/#narrow/stream/217875/topic/Multiplicity.20in.20the.20naturals
-We have lots of disparate ways of talking about the multiplicity of a prime
-in a natural number, including `factors.count`, `padicValNat`, `multiplicity`,
-and the material in `Data/PNat/Factors`.  Move some of this material to this file,
-prove results about the relationships between these definitions,
-and (where appropriate) choose a uniform canonical way of expressing these ideas.
+  https://leanprover.zulipchat.com/#narrow/stream/217875/topic/Multiplicity.20in.20the.20naturals
+  We have lots of disparate ways of talking about the multiplicity of a prime
+  in a natural number, including `factors.count`, `padicValNat`, `multiplicity`,
+  and the material in `Data/PNat/Factors`.  Move some of this material to this file,
+  prove results about the relationships between these definitions,
+  and (where appropriate) choose a uniform canonical way of expressing these ideas.
 
 * Moreover, the results here should be generalised to an arbitrary unique factorization monoid
-with a normalization function, and then deduplicated.  The basics of this have been started in
-`RingTheory/UniqueFactorizationDomain`.
+  with a normalization function, and then deduplicated.  The basics of this have been started in
+  `Mathlib/RingTheory/UniqueFactorizationDomain/`.
 
 * Extend the inductions to any `NormalizationMonoid` with unique factorization.
 
@@ -41,7 +41,7 @@ namespace Nat
 variable {a b m n p : ℕ}
 
 /-- `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
- mapping each prime factor of `n` to its multiplicity in `n`. -/
+mapping each prime factor of `n` to its multiplicity in `n`. -/
 def factorization (n : ℕ) : ℕ →₀ ℕ where
   support := n.primeFactors
   toFun p := if p.Prime then padicValNat p n else 0
@@ -79,7 +79,7 @@ theorem factorization_eq_primeFactorsList_multiset (n : ℕ) :
 
 theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ∣ n) :
     0 < n.factorization p := by
-    rwa [← primeFactorsList_count_eq, count_pos_iff, mem_primeFactorsList_iff_dvd hn hp]
+  rwa [← primeFactorsList_count_eq, count_pos_iff, mem_primeFactorsList_iff_dvd hn hp]
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     multiplicity p n = n.factorization p := by

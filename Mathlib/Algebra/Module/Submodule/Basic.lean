@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Submodules of a module
@@ -131,6 +132,9 @@ theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
 @[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
+
+@[gcongr]
+protected alias ⟨_, _root_.GCongr.Submodule.toAddSubgroup_le⟩ := Submodule.toAddSubgroup_le
 
 -- See `neg_coe_set`
 theorem neg_coe : -(p : Set M) = p :=

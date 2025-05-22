@@ -65,7 +65,7 @@ theorem isClosed_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsClos
   ⟨hf {y}ᶜ⟩
 
 theorem isClopen_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsClopen { x | f x = y } :=
-  ⟨isClosed_fiber hf _,  isOpen_fiber hf _⟩
+  ⟨isClosed_fiber hf _, isOpen_fiber hf _⟩
 
 theorem iff_exists_open (f : X → Y) :
     IsLocallyConstant f ↔ ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
@@ -276,6 +276,14 @@ def const (X : Type*) {Y : Type*} [TopologicalSpace X] (y : Y) : LocallyConstant
 @[simp]
 theorem coe_const (y : Y) : (const X y : X → Y) = Function.const X y :=
   rfl
+
+/-- Evaluation/projection as a locally constant function. -/
+@[simps]
+def eval {ι : Type*} {X : ι → Type*}
+    [∀ i, TopologicalSpace (X i)] (i : ι) [DiscreteTopology (X i)] :
+    LocallyConstant (Π i, X i) (X i) where
+  toFun := fun f ↦ f i
+  isLocallyConstant := (IsLocallyConstant.iff_continuous _).mpr <| continuous_apply i
 
 /-- The locally constant function to `Fin 2` associated to a clopen set. -/
 def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]

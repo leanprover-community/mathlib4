@@ -68,9 +68,6 @@ theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     exact isClosed_eq (continuous_eval_const (x * y)) <|
       .mul (continuous_eval_const x) (continuous_eval_const y)
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
-
 variable {A B C D E}
 
 @[to_additive]
@@ -136,7 +133,7 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup
 section LocallyCompact
 
 variable {X Y : Type*} [TopologicalSpace X] [Group X] [IsTopologicalGroup X]
-  [UniformSpace Y] [CommGroup Y] [UniformGroup Y] [T0Space Y] [CompactSpace Y]
+  [UniformSpace Y] [CommGroup Y] [IsUniformGroup Y] [T0Space Y] [CompactSpace Y]
 
 @[to_additive]
 theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)

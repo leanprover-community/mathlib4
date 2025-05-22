@@ -181,7 +181,7 @@ lemma commProb_nil : commProb (Product []) = 1 := by
 
 lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
-  simp [Product, commProb_pi, Fin.prod_univ_succ]
+  simp [commProb_pi, Fin.prod_univ_succ, Fin.val_zero]
 
 /-- Construction of a group with commuting probability `1 / n`. -/
 theorem commProb_reciprocal (n : ℕ) :

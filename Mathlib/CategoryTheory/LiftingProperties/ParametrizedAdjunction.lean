@@ -68,8 +68,8 @@ namespace PushoutObjObj
 @[simps]
 noncomputable def ofHasPushout
     [HasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)] :
-    F.PushoutObjObj f₁ f₂ where
-  isPushout := IsPushout.of_hasPushout _ _
+    F.PushoutObjObj f₁ f₂ :=
+  { isPushout := IsPushout.of_hasPushout _ _, .. }
 
 variable {F f₁ f₂} (sq : F.PushoutObjObj f₁ f₂)
 
@@ -127,8 +127,8 @@ namespace PullbackObjObj
 @[simps]
 noncomputable def ofHasPullback
     [HasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)] :
-    G.PullbackObjObj f₁ f₃ where
-  isPullback := IsPullback.of_hasPullback _ _
+    G.PullbackObjObj f₁ f₃ :=
+  { isPullback := IsPullback.of_hasPullback _ _, ..}
 
 variable {G f₁ f₃} (sq : G.PullbackObjObj f₁ f₃)
 
@@ -211,7 +211,7 @@ attribute [local simp] arrowHomEquiv_apply_left arrowHomEquiv_apply_right
 there are as many liftings for the commutative square given by a
 map `α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃` as there are liftings
 for the square given by the corresponding map `Arrow.mk f₂ ⟶ Arrow.mk sq₁₃.π`. -/
-def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) :
+noncomputable def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) :
     Arrow.LiftStruct α ≃ Arrow.LiftStruct (adj₂.arrowHomEquiv sq₁₂ sq₁₃ α) where
   toFun l :=
     { l := adj₂.homEquiv l.l

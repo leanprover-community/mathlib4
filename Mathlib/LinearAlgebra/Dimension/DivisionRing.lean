@@ -84,12 +84,9 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rw [← rank_prod', rank_eq_of_surjective hf]
   congr 1
   apply LinearEquiv.rank_eq
-  let L : V₁ →ₗ[K] ker (coprod db eb) := by -- Porting note: this is needed to avoid a timeout
-    refine LinearMap.codRestrict _ (prod cd (-ce)) ?_
-    · intro c
-      simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, Pi.prod, coprod_apply,
-        neg_neg, map_neg, neg_apply]
-      exact LinearMap.ext_iff.1 eq c
+  let L : V₁ →ₗ[K] ker (coprod db eb) :=
+    LinearMap.codRestrict _ (prod cd (-ce)) <| by
+      simpa [add_eq_zero_iff_eq_neg] using LinearMap.ext_iff.1 eq
   refine LinearEquiv.ofBijective L ⟨?_, ?_⟩
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
   · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap,

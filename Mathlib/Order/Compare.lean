@@ -99,14 +99,6 @@ theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} 
   · have hab : Compares Ordering.gt a b := hab
     rwa [ho.inj (h hab)]
 
-set_option linter.deprecated false in
-@[deprecated swap_then (since := "2024-09-13")]
-theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := swap_then ..
-
-set_option linter.deprecated false in
-@[deprecated then_eq_lt (since := "2024-09-13")]
-theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := then_eq_lt ..
-
 end Ordering
 
 open Ordering OrderDual
@@ -161,9 +153,9 @@ def linearOrderOfCompares [Preorder α] (cmp : α → α → Ordering)
     le_total := fun a b => (h a b).le_total,
     toMin := minOfLe,
     toMax := maxOfLe,
-    decidableLE := H,
-    decidableLT := fun a b => decidable_of_iff _ (h a b).eq_lt,
-    decidableEq := fun a b => decidable_of_iff _ (h a b).eq_eq }
+    toDecidableLE := H,
+    toDecidableLT := fun a b => decidable_of_iff _ (h a b).eq_lt,
+    toDecidableEq := fun a b => decidable_of_iff _ (h a b).eq_eq }
 
 variable [LinearOrder α] (x y : α)
 

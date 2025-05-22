@@ -41,6 +41,7 @@ variable (L M)
 /-- An elementary substructure is one in which every formula applied to a tuple in the substructure
   agrees with its value in the overall structure. -/
 structure ElementarySubstructure where
+  /-- The underlying substructure -/
   toSubstructure : L.Substructure M
   isElementary' : toSubstructure.IsElementary
 

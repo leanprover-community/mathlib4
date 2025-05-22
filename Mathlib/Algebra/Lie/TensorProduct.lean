@@ -56,7 +56,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   leibniz_lie x y t := by
     suffices (hasBracketAux x).comp (hasBracketAux y) =
         hasBracketAux ⁅x, y⁆ + (hasBracketAux y).comp (hasBracketAux x) by
-      simp only [← LinearMap.add_apply]; rw [← LinearMap.comp_apply, this]; rfl
+      rw [← LinearMap.comp_apply, this]; rfl
     ext m n
     simp only [hasBracketAux, AlgebraTensorModule.curry_apply, curry_apply, sub_tmul, tmul_sub,
       LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.coe_comp,

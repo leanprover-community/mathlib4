@@ -22,26 +22,26 @@ is well-founded. In this file we define three especially-useful characterisation
 proofs that they are indeed equivalent to well-foundedness.
 
 ## Main definitions
- * `CompleteLattice.IsSupClosedCompact`
- * `CompleteLattice.IsSupFiniteCompact`
- * `CompleteLattice.IsCompactElement`
- * `IsCompactlyGenerated`
+* `CompleteLattice.IsSupClosedCompact`
+* `CompleteLattice.IsSupFiniteCompact`
+* `CompleteLattice.IsCompactElement`
+* `IsCompactlyGenerated`
 
 ## Main results
 The main result is that the following four conditions are equivalent for a complete lattice:
- * `well_founded (>)`
- * `CompleteLattice.IsSupClosedCompact`
- * `CompleteLattice.IsSupFiniteCompact`
- * `∀ k, CompleteLattice.IsCompactElement k`
+* `well_founded (>)`
+* `CompleteLattice.IsSupClosedCompact`
+* `CompleteLattice.IsSupFiniteCompact`
+* `∀ k, CompleteLattice.IsCompactElement k`
 
 This is demonstrated by means of the following four lemmas:
- * `CompleteLattice.WellFounded.isSupFiniteCompact`
- * `CompleteLattice.IsSupFiniteCompact.isSupClosedCompact`
- * `CompleteLattice.IsSupClosedCompact.wellFounded`
- * `CompleteLattice.isSupFiniteCompact_iff_all_elements_compact`
+* `CompleteLattice.WellFounded.isSupFiniteCompact`
+* `CompleteLattice.IsSupFiniteCompact.isSupClosedCompact`
+* `CompleteLattice.IsSupClosedCompact.wellFounded`
+* `CompleteLattice.isSupFiniteCompact_iff_all_elements_compact`
 
- We also show well-founded lattices are compactly generated
- (`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
+We also show well-founded lattices are compactly generated
+(`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
 
 ## References
 - [G. Călugăreanu, *Lattice Concepts of Module Theory*][calugareanu]
@@ -510,29 +510,6 @@ theorem isCompactlyGenerated_of_wellFoundedGT [h : WellFoundedGT α] :
   rw [wellFoundedGT_iff_isSupFiniteCompact, isSupFiniteCompact_iff_all_elements_compact] at h
   -- x is the join of the set of compact elements {x}
   exact ⟨fun x => ⟨{x}, ⟨fun x _ => h x, sSup_singleton⟩⟩⟩
-
-@[deprecated (since := "2024-10-07")]
-alias WellFounded.isSupFiniteCompact := WellFoundedGT.isSupFiniteCompact
-@[deprecated (since := "2024-10-07")]
-alias IsSupClosedCompact.wellFounded := IsSupClosedCompact.wellFoundedGT
-@[deprecated (since := "2024-10-07")]
-alias wellFounded_characterisations := wellFoundedGT_characterisations
-@[deprecated (since := "2024-10-07")]
-alias wellFounded_iff_isSupFiniteCompact := wellFoundedGT_iff_isSupFiniteCompact
-@[deprecated (since := "2024-10-07")]
-alias isSupClosedCompact_iff_wellFounded := isSupClosedCompact_iff_wellFoundedGT
-@[deprecated (since := "2024-10-07")]
-alias IsSupFiniteCompact.wellFounded := IsSupFiniteCompact.wellFoundedGT
-@[deprecated (since := "2024-10-07")]
-alias _root_.WellFounded.isSupClosedCompact := WellFoundedGT.isSupClosedCompact
-@[deprecated (since := "2024-10-07")]
-alias WellFounded.finite_of_setIndependent := WellFoundedGT.finite_of_sSupIndep
-@[deprecated (since := "2024-10-07")]
-alias WellFounded.finite_ne_bot_of_independent := WellFoundedGT.finite_ne_bot_of_iSupIndep
-@[deprecated (since := "2024-10-07")]
-alias WellFounded.finite_of_independent := WellFoundedGT.finite_of_iSupIndep
-@[deprecated (since := "2024-10-07")]
-alias isCompactlyGenerated_of_wellFounded := isCompactlyGenerated_of_wellFoundedGT
 
 /-- A compact element `k` has the property that any `b < k` lies below a "maximal element below
 `k`", which is to say `[⊥, k]` is coatomic. -/

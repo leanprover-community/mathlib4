@@ -111,6 +111,31 @@ lemma heq_of_homOfEq_ext {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') {f : X ⟶ 
   rw [Quiver.homOfEq_rfl] at e
   rw [e]
 
+lemma homOfEq_eq_iff {X X' Y Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X = X') (hY : Y = Y') :
+    Quiver.homOfEq f hX hY = g ↔ f = Quiver.homOfEq g hX.symm hY.symm := by
+  subst hX hY; simp
+
+lemma eq_homOfEq_iff {X X' Y Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X' = X) (hY : Y' = Y) :
+    f = Quiver.homOfEq g hX hY ↔ Quiver.homOfEq f hX.symm hY.symm = g := by
+  subst hX hY; simp
+
+lemma homOfEq_heq {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') (f : X ⟶ Y) :
+    HEq (homOfEq f hX hY) f := by
+  cases hX; cases hY; rfl
+
+lemma homOfEq_heq_left_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X = X') (hY : Y = Y') :
+    HEq (homOfEq f hX hY) g ↔ HEq f g := by
+  cases hX; cases hY; rfl
+
+lemma homOfEq_heq_right_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X' = X) (hY : Y' = Y) :
+    HEq f (homOfEq g hX hY) ↔ HEq f g := by
+  cases hX; cases hY; rfl
+
+
 end
 
 end Quiver

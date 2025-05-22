@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Data.Nat.Log
 
 /-!
@@ -48,7 +48,7 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 
 assert_not_exists Finset
 
-variable {R : Type*} [LinearOrderedSemifield R] [FloorSemiring R]
+variable {R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
 
 namespace Int
 
@@ -56,6 +56,7 @@ namespace Int
 def log (b : ℕ) (r : R) : ℤ :=
   if 1 ≤ r then Nat.log b ⌊r⌋₊ else -Nat.clog b ⌈r⁻¹⌉₊
 
+omit [IsStrictOrderedRing R] in
 theorem log_of_one_le_right (b : ℕ) {r : R} (hr : 1 ≤ r) : log b r = Nat.log b ⌊r⌋₊ :=
   if_pos hr
 
@@ -121,10 +122,12 @@ theorem log_zero_right (b : ℕ) : log b (0 : R) = 0 :=
 theorem log_one_right (b : ℕ) : log b (1 : R) = 0 := by
   rw [log_of_one_le_right _ le_rfl, Nat.floor_one, Nat.log_one_right, Int.ofNat_zero]
 
+omit [IsStrictOrderedRing R] in
 @[simp]
 theorem log_zero_left (r : R) : log 0 r = 0 := by
   simp only [log, Nat.log_zero_left, Nat.cast_zero, Nat.clog_zero_left, neg_zero, ite_self]
 
+omit [IsStrictOrderedRing R] in
 @[simp]
 theorem log_one_left (r : R) : log 1 r = 0 := by
   by_cases hr : 1 ≤ r
@@ -176,6 +179,7 @@ theorem zpow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r)
 def clog (b : ℕ) (r : R) : ℤ :=
   if 1 ≤ r then Nat.clog b ⌈r⌉₊ else -Nat.log b ⌊r⁻¹⌋₊
 
+omit [IsStrictOrderedRing R] in
 theorem clog_of_one_le_right (b : ℕ) {r : R} (hr : 1 ≤ r) : clog b r = Nat.clog b ⌈r⌉₊ :=
   if_pos hr
 
@@ -246,12 +250,14 @@ theorem clog_zero_right (b : ℕ) : clog b (0 : R) = 0 :=
 theorem clog_one_right (b : ℕ) : clog b (1 : R) = 0 := by
   rw [clog_of_one_le_right _ le_rfl, Nat.ceil_one, Nat.clog_one_right, Int.ofNat_zero]
 
+omit [IsStrictOrderedRing R] in
 @[simp]
 theorem clog_zero_left (r : R) : clog 0 r = 0 := by
   by_cases hr : 1 ≤ r
   · simp only [clog, Nat.clog_zero_left, Nat.cast_zero, Nat.log_zero_left, neg_zero, ite_self]
   · simp only [clog, hr, ite_cond_eq_false, Nat.log_zero_left, Nat.cast_zero, neg_zero]
 
+omit [IsStrictOrderedRing R] in
 @[simp]
 theorem clog_one_left (r : R) : clog 1 r = 0 := by
   simp only [clog, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]

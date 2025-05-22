@@ -3,6 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
+import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Image
 
 /-!
@@ -134,16 +135,15 @@ theorem card_pair_eq_one_or_two : #{a, b} = 1 ∨ #{a, b} = 2 := by
   simp [card_insert_eq_ite]
   tauto
 
-@[simp]
 theorem card_pair (h : a ≠ b) : #{a, b} = 2 := by
-  rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
+  simp [h]
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
 theorem card_erase_of_mem : a ∈ s → #(s.erase a) = #s - 1 :=
   Multiset.card_erase_of_mem
 
-@[simp]
+-- @[simp] -- removed because LHS is not in simp normal form
 theorem card_erase_add_one : a ∈ s → #(s.erase a) + 1 = #s :=
   Multiset.card_erase_add_one
 
@@ -521,6 +521,14 @@ theorem card_sdiff_add_card (s t : Finset α) : #(s \ t) + #t = #(s ∪ t) := by
 lemma card_sdiff_comm (h : #s = #t) : #(s \ t) = #(t \ s) :=
   Nat.add_right_cancel (m := #t) <| by
     simp_rw [card_sdiff_add_card, ← h, card_sdiff_add_card, union_comm]
+
+theorem sdiff_nonempty_of_card_lt_card (h : #s < #t) : (t \ s).Nonempty := by
+  rw [nonempty_iff_ne_empty, Ne, sdiff_eq_empty_iff_subset]
+  exact fun h' ↦ h.not_le (card_le_card h')
+
+omit [DecidableEq α] in
+theorem exists_mem_not_mem_of_card_lt_card (h : #s < #t) : ∃ e, e ∈ t ∧ e ∉ s := by
+  classical simpa [Finset.Nonempty] using sdiff_nonempty_of_card_lt_card h
 
 @[simp]
 lemma card_sdiff_add_card_inter (s t : Finset α) :

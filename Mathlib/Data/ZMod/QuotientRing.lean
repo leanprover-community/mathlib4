@@ -14,9 +14,9 @@ This file relates `ZMod n` to the quotient ring `ℤ ⧸ Ideal.span {(n : ℤ)}`
 
 ## Main definitions
 
- - `ZMod.quotient_span_nat_equiv_zmod` and `ZMod.quotientSpanEquivZMod `:
-   `ZMod n` is the ring quotient of `ℤ` by `n ℤ : Ideal.span {n}`
-   (where `n : ℕ` and `n : ℤ` respectively)
+- `ZMod.quotient_span_nat_equiv_zmod` and `ZMod.quotientSpanEquivZMod `:
+  `ZMod n` is the ring quotient of `ℤ` by `n ℤ : Ideal.span {n}`
+  (where `n : ℕ` and `n : ℤ` respectively)
 
 ## Tags
 

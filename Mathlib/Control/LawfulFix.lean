@@ -17,7 +17,7 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 ## Main definition
 
- * class `LawfulFix`
+* class `LawfulFix`
 -/
 
 universe u v
@@ -188,9 +188,11 @@ theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottCont
     ωScottContinuous (toUnitMono ⟨f,hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
   ext ⟨⟩ : 1
   dsimp [OmegaCompletePartialOrder.ωSup]
-  erw [hc.map_ωSup, Chain.map_comp]; rfl
+  erw [hc.map_ωSup]
+  rw [Chain.map_comp]
+  rfl
 
-instance lawfulFix : LawfulFix (Part α) :=
+noncomputable instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f,hc.monotone⟩) () = _ by
     rw [Part.fix_eq_of_ωScottContinuous (ωScottContinuous_toUnitMono f hc)]; rfl⟩
 
@@ -200,7 +202,7 @@ open Sigma
 
 namespace Pi
 
-instance lawfulFix {β} : LawfulFix (α → Part β) :=
+noncomputable instance lawfulFix {β} : LawfulFix (α → Part β) :=
   ⟨fun {_f} ↦ Part.fix_eq_of_ωScottContinuous⟩
 
 variable {γ : ∀ a : α, β a → Type*}

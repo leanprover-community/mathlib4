@@ -319,15 +319,15 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     rw [← hn]
     clear hn
     induction n with
-    | zero => simp only [z', pow_zero, LinearMap.one_apply]
-    | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
+    | zero => simp only [z', pow_zero, Module.End.one_apply]
+    | succ n ih => rw [pow_succ', pow_succ', Module.End.mul_apply, ih]; rfl
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
   set n := Nat.find hz' with _hn
   have hn : (toEnd K U Q v ^ n) z' = 0 := Nat.find_spec hz'
   -- If `n = 0`, then we are done.
   obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
-  · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
+  · simpa only [hn₀, pow_zero, Module.End.one_apply] using hn
   -- If `n = k + 1`, then we can write `⁅v, _⁆ ^ n = ⁅v, _⁆ ∘ ⁅v, _⁆ ^ k`.
   -- Recall that `constantCoeff ψ` is non-zero on `α`, and `v = α • u + x`.
   specialize hsψ α hα
@@ -341,7 +341,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   refine ⟨?_, ?_⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
     apply Nat.find_min hz'; omega
-  · rw [← hn, hk, pow_succ', LinearMap.mul_apply]
+  · rw [← hn, hk, pow_succ', Module.End.mul_apply]
 
 variable (K L)
 

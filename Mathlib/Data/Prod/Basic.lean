@@ -43,8 +43,6 @@ theorem snd_comp_mk (x : α) : Prod.snd ∘ (Prod.mk x : β → α × β) = id :
 theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Function.const β x :=
   rfl
 
-@[deprecated (since := "2024-10-17")] alias map_mk := map_apply
-
 attribute [mfld_simps] map_apply
 
 -- This was previously a `simp` lemma, but no longer is on the basis that it destructures the pair.
@@ -200,6 +198,14 @@ instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
   { exact Or.inl (Lex.left _ _ hij) }
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
   { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
+
+instance [IsAsymm α r] [IsAsymm β s] :
+    IsAsymm (α × β) (Prod.Lex r s) where
+  asymm
+  | (_a₁, _a₂), (_b₁, _b₂), .left _ _ h₁, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₁
+  | (_a₁, _a₂), (_, _b₂), .left _ _ h₁, .right _ _ => IsAsymm.asymm _ _ h₁ h₁
+  | (_a₁, _a₂), (_, _b₂), .right _ _, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₂
+  | (_a₁, _a₂), (_, _b₂), .right _ h₁, .right _ h₂ => IsAsymm.asymm _ _ h₁ h₂
 
 end Prod
 

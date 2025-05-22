@@ -35,7 +35,7 @@ namespace Pi
 instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
   ⟨fun _ => 1⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp high)]
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
   rfl
 

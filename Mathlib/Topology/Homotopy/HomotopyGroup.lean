@@ -268,12 +268,19 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   · rintro y ⟨i, iH⟩
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
-  · continuity
-  iterate 2 intro; ext; erw [homotopyTo_apply, toLoop_apply]; swap
+  · fun_prop
+  iterate 2
+    intro
+    ext
+    dsimp
+    rw [homotopyTo_apply, toLoop_apply]
+    swap
   · apply H.apply_zero
   · apply H.apply_one
   intro t y yH
-  ext; erw [homotopyTo_apply]
+  ext
+  dsimp
+  rw [homotopyTo_apply]
   apply H.eq_fst; use i
   rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
 
@@ -282,7 +289,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
 @[simps!] def homotopyFrom (i : N) {p q : Ω^ N X x} (H : (toLoop i p).Homotopy (toLoop i q)) :
     C(I × I^N, X) :=
   (ContinuousMap.comp ⟨_, ContinuousMap.continuous_uncurry⟩
-          (ContinuousMap.comp ⟨Subtype.val, by continuity⟩ H.toContinuousMap).curry).uncurry.comp <|
+          (ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ H.toContinuousMap).curry).uncurry.comp <|
     (ContinuousMap.id I).prodMap (Cube.splitAt i)
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :

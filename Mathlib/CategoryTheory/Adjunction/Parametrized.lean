@@ -50,22 +50,35 @@ satisfy a naturality condition with respect to `X₁`. -/
 structure ParametrizedAdjunction where
   /-- a family of adjunctions -/
   adj (X₁ : C₁) : F.obj X₁ ⊣ G.obj (op X₁)
-  /-- the naturality of the bijections of the given adjunctions
-  in the first variable (it should not be used directly:
-  use `homEquiv_naturality_one` instead) -/
-  naturality' {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) {X₂ : C₂} {X₃ : C₃}
-    (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
-      (adj X₁).homEquiv X₂ X₃ ((F.map f).app X₂ ≫ g) =
-        (adj Y₁).homEquiv X₂ X₃ g ≫ (G.map f.op).app X₃ := by aesop_cat
+  unit_whiskerRight_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
+    (adj X₁).unit ≫ whiskerRight (F.map f) _ = (adj Y₁).unit ≫ whiskerLeft _ (G.map f.op) :=
+      by aesop_cat
 
-/-- The notation `F ⊣₂ G` stands for `Adjunction₂ F G`
+/-- The notation `F ⊣₂ G` stands for `ParametrizedAdjunction F G`
 representing that the bifunctor `F` is the left adjoint to `G`
 in an adjunction with a parameter. -/
 infixl:15 " ⊣₂ " => ParametrizedAdjunction
 
 namespace ParametrizedAdjunction
 
-variable {F G} (adj₂ : F ⊣₂ G)
+attribute [reassoc] unit_whiskerRight_map
+
+variable {F G}
+
+/-- Alternative constructor for parametrized adjunctions, for which
+the compatibility is stated in terms of `Adjunction.homEquiv`. -/
+@[simps]
+def mk' (adj : ∀ (X₁ : C₁), F.obj X₁ ⊣ G.obj (op X₁))
+    (h : ∀ {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) {X₂ : C₂} {X₃ : C₃} (g : (F.obj Y₁).obj X₂ ⟶ X₃),
+      (adj X₁).homEquiv X₂ X₃ ((F.map f).app X₂ ≫ g) =
+        (adj Y₁).homEquiv X₂ X₃ g ≫ (G.map f.op).app X₃ := by aesop_cat) :
+    F ⊣₂ G where
+  adj := adj
+  unit_whiskerRight_map {X₁ Y₁} f := by
+    ext X₂
+    simpa [Adjunction.homEquiv_unit] using h f (X₂ := X₂) (𝟙 _)
+
+variable (adj₂ : F ⊣₂ G)
   {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} {X₃ Y₃ : C₃}
 
 /-- The bijection `((F.obj X₁).obj X₂ ⟶ X₃) ≃ (X₂ ⟶ (G.obj (op X₁)).obj X₃)`
@@ -78,8 +91,11 @@ lemma homEquiv_eq : adj₂.homEquiv = (adj₂.adj X₁).homEquiv X₂ X₃ := rf
 @[reassoc]
 lemma homEquiv_naturality_one (f₁ : X₁ ⟶ Y₁) (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
     adj₂.homEquiv ((F.map f₁).app X₂ ≫ g) =
-      adj₂.homEquiv g ≫ (G.map f₁.op).app X₃ :=
-  adj₂.naturality' _ _
+      adj₂.homEquiv g ≫ (G.map f₁.op).app X₃ := by
+  have := NatTrans.congr_app (adj₂.unit_whiskerRight_map f₁) X₂
+  dsimp at this
+  simp only [homEquiv_eq, Adjunction.homEquiv_unit, Functor.comp_obj, Functor.map_comp,
+    Category.assoc, NatTrans.naturality, reassoc_of% this]
 
 @[reassoc]
 lemma homEquiv_naturality_two (f₂ : X₂ ⟶ Y₂) (g : (F.obj X₁).obj Y₂ ⟶ X₃) :
@@ -111,6 +127,16 @@ lemma homEquiv_symm_naturality_three
     adj₂.homEquiv.symm (g ≫ (G.obj (op X₁)).map f₃) =
       adj₂.homEquiv.symm g ≫ f₃ :=
   adj₂.homEquiv.injective (by simp [homEquiv_naturality_three])
+
+@[reassoc]
+lemma whiskerLeft_map_counit {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
+    whiskerLeft _ (F.map f) ≫ (adj₂.adj Y₁).counit =
+      whiskerRight (G.map f.op) _ ≫ (adj₂.adj X₁).counit := by
+  ext X₃
+  dsimp
+  apply adj₂.homEquiv.injective
+  rw [homEquiv_naturality_one, homEquiv_naturality_two]
+  simp [homEquiv_eq, Adjunction.homEquiv_unit]
 
 end ParametrizedAdjunction
 
