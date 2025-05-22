@@ -15,6 +15,9 @@ import Mathlib.Topology.ContinuousMap.Interval
 In this file we define a `UniformSpace` structure on `Path`s
 between two points in a uniform space
 and prove that various functions associated with `Path`s are uniformly continuous.
+
+The uniform space structure is induced from the space of continuous maps `C(I, X)`,
+and corresponds to uniform convergence of paths on `I`, see `Path.hasBasis_uniformity`.
 -/
 
 open scoped unitInterval Topology Uniformity
@@ -41,6 +44,9 @@ theorem uniformContinuous_extend (γ : Path x y) : UniformContinuous γ.extend :
 theorem uniformContinuous_extend_left : UniformContinuous (Path.extend : Path x y → _) :=
   ContinuousMap.projIccCM.uniformContinuous_comp_left.comp isUniformEmbedding_coe.uniformContinuous
 
+/-- If `U i` bounded by `p i` form a basis of entourages of `X`,
+then the sets `{(γ₁, γ₂) | ∀ t, (γ₁ t, γ₂ t) ∈ U i}` bounded by `p i`
+form a basis of entourages of paths between `x` and `y`. -/
 theorem _root_.Filter.HasBasis.uniformityPath {ι : Sort*} {p : ι → Prop} {U : ι → Set (X × X)}
     (hU : (𝓤 X).HasBasis p U) :
     (𝓤 (Path x y)).HasBasis p fun i ↦ {γ | ∀ t, (γ.1 t, γ.2 t) ∈ U i} :=
