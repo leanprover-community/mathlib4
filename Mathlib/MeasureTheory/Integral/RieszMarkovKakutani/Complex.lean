@@ -68,7 +68,7 @@ variable {X : Type*} [MeasurableSpace X]
 -- This seems better because many other parts of the project depends on `Measure` (concerning the
 --  L^p spaces).
 
-lemma ENNReal.hasSum_iff_XXX (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a ↔
+lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a ↔
     (∀ (n : ℕ), ∑ i ∈ Finset.range n, f i ≤ a) ∧
     (∀ b < a, ∃ (n : ℕ), b < ∑ i ∈ Finset.range n, f i) := by
   obtain ha | ha | ha :=  a.trichotomy
@@ -171,7 +171,7 @@ noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
   m_iUnion' E Emeasurable Edisjoint := by
     simp_rw [Emeasurable, MeasurableSet.iUnion Emeasurable]
     simp only [↓reduceIte, Set.mem_setOf_eq]
-    rw [ENNReal.hasSum_iff_XXX]
+    rw [ENNReal.hasSum_iff]
     -- countable additivity, follow Rudin
     constructor
     · intro m
