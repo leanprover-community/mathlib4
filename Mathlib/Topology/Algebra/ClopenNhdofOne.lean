@@ -15,8 +15,6 @@ This file proves the lemma `IsTopologicalGroup.exist_openNormalSubgroup_sub_clop
 which states that in a compact topological group, for any clopen neighborhood of 1,
 there exists an open normal subgroup contained within it.
 
- 
-
 This file is split out from the file `OpenSubgroup` because it needs more imports.
 -/
 
