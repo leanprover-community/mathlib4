@@ -117,9 +117,7 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
       constructor
       · calc a
         _ ≤ a - ε + ε := by exact le_tsub_add
-        _ ≤ ∑ i ∈ Finset.range n, f i + ε := by
-          have : ε ≤ ε := Preorder.le_refl _
-          sorry -- Use `hn : a - ε < ∑ i ∈ Finset.range n, f i`
+        _ ≤ ∑ i ∈ Finset.range n, f i + ε := by gcongr
         _ ≤ ∑ i ∈ Finset.range m, f i + ε := by gcongr
       · exact le_add_right (hf m)
 
