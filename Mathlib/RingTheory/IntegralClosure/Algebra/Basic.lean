@@ -68,7 +68,7 @@ variable (R B) in
 instance Algebra.IsIntegral.of_finite [Module.Finite R B] : Algebra.IsIntegral R B :=
   ⟨.of_finite R⟩
 
-lemma Algebra.IsIntegral.of_surjective_algebraMap (H : Function.Surjective (algebraMap R B)) :
+lemma Algebra.isIntegral_of_surjective (algebraMap R B)) :
     Algebra.IsIntegral R B :=
   .of_surjective (IsScalarTower.toAlgHom R R B) H
 
