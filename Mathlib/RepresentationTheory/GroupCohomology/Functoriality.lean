@@ -18,9 +18,9 @@ We also provide extra API for these maps in degrees 0, 1, 2.
 ## Main definitions
 
 * `groupCohomology.cochainsMap f φ` is the map `inhomogeneousCochains A ⟶ inhomogeneousCochains B`
-induced by a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`.
+  induced by a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`.
 * `groupCohomology.map f φ n` is the map `Hⁿ(H, A) ⟶ Hⁿ(G, B)` induced by a group
-homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`.
+  homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`.
 -/
 
 universe v u

@@ -115,8 +115,7 @@ variable (K : LieSubalgebra R L)
 theorem exists_lieIdeal_coe_eq_iff :
     (∃ I : LieIdeal R L, ↑I = K) ↔ ∀ x y : L, y ∈ K → ⁅x, y⁆ ∈ K := by
   simp only [← toSubmodule_inj, LieIdeal.toLieSubalgebra_toSubmodule,
-    Submodule.exists_lieSubmodule_coe_eq_iff L]
-  exact Iff.rfl
+    Submodule.exists_lieSubmodule_coe_eq_iff L, mem_toSubmodule]
 
 theorem exists_nested_lieIdeal_coe_eq_iff {K' : LieSubalgebra R L} (h : K ≤ K') :
     (∃ I : LieIdeal R K', ↑I = ofLe h) ↔ ∀ x y : L, x ∈ K' → y ∈ K → ⁅x, y⁆ ∈ K := by
@@ -277,7 +276,6 @@ theorem idealRange_eq_map : f.idealRange = LieIdeal.map f ⊤ := by
 def IsIdealMorphism : Prop :=
   (f.idealRange : LieSubalgebra R L') = f.range
 
-@[simp]
 theorem isIdealMorphism_def : f.IsIdealMorphism ↔ (f.idealRange : LieSubalgebra R L') = f.range :=
   Iff.rfl
 

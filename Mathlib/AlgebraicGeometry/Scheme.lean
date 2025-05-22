@@ -53,6 +53,27 @@ namespace Scheme
 instance : CoeSort Scheme Type* where
   coe X := X.carrier
 
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Pretty printer for coercing schemes to types. -/
+@[app_delab TopCat.carrier]
+partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+  guard <| (← getExpr).isAppOfArity ``TopCat.carrier 1
+  withNaryArg 0 do
+
+  guard <| (← getExpr).isAppOfArity ``PresheafedSpace.carrier 3
+  withNaryArg 2 do
+
+  guard <| (← getExpr).isAppOfArity ``SheafedSpace.toPresheafedSpace 3
+  withNaryArg 2 do
+
+  guard <| (← getExpr).isAppOfArity ``LocallyRingedSpace.toSheafedSpace 1
+  withNaryArg 0 do
+
+  guard <| (← getExpr).isAppOfArity ``Scheme.toLocallyRingedSpace 1
+  withNaryArg 0 do
+
+  `(↥$(← delab))
+
 /-- The type of open sets of a scheme. -/
 abbrev Opens (X : Scheme) : Type* := TopologicalSpace.Opens X
 
@@ -166,7 +187,6 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
 def stalkMap (x : X) : Y.presheaf.stalk (f.base x) ⟶ X.presheaf.stalk x :=
   f.toLRSHom.stalkMap x
 
-@[ext (iff := false)]
 protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g := by

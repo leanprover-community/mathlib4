@@ -35,8 +35,6 @@ namespace AddSubgroup
 theorem range_zmultiplesHom (a : A) : (zmultiplesHom A a).range = zmultiples a :=
   rfl
 
-attribute [to_additive existing (attr := simp)] Subgroup.range_zpowersHom
-
 section Ring
 
 variable {R : Type*} [Ring R] (r : R) (k : ℤ)

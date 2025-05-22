@@ -235,6 +235,12 @@ theorem span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
   simp only [mem_span_singleton']
   exact ⟨fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_comm y x⟩, fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_neg y x⟩⟩
 
+@[simp]
+theorem span_singleton_abs [LinearOrder α] (x : α) :
+    span {|x|} = span {x} := by
+  obtain h | h := abs_choice x <;>
+  simp [h]
+
 end Ideal
 
 end Ring
@@ -257,3 +263,10 @@ theorem ker_toSpanSingleton_one_sub_eq_span :
   rw [ker_toSpanSingleton_eq_span he.one_sub, sub_sub_cancel]
 
 end IsIdempotentElem
+
+section PrincipalIdeal
+
+instance {R : Type*} [Semiring R] {x : R} : (Ideal.span {x}).IsPrincipal :=
+  ⟨x, rfl⟩
+
+end PrincipalIdeal

@@ -19,7 +19,7 @@ We introduce the following definitions.
 * `BoxIntegral.Box.splitLower I i a` and `BoxIntegral.Box.splitUpper I i a` are these boxes (as
   `WithBot (BoxIntegral.Box ι)`);
 * `BoxIntegral.Prepartition.split I i a` is the partition of `I` made of these two boxes (or of one
-   box `I` if one of these boxes is empty);
+  box `I` if one of these boxes is empty);
 * `BoxIntegral.Prepartition.splitMany I s`, where `s : Finset (ι × ℝ)` is a finite set of
   hyperplanes `{x : ι → ℝ | x i = a}` encoded as pairs `(i, a)`, is the partition of `I` made by
   cutting it along all the hyperplanes in `s`.

@@ -469,7 +469,7 @@ theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S]
     constantCoeff σ S (a • φ) = a • constantCoeff σ S φ := rfl
 
 /-- If a multivariate formal power series is invertible,
- then so is its constant coefficient. -/
+then so is its constant coefficient. -/
 theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
     IsUnit (constantCoeff σ R φ) :=
   h.map _
@@ -834,11 +834,10 @@ theorem coe_X (s : σ) : ((X s : MvPolynomial σ R) : MvPowerSeries σ R) = MvPo
 
 variable (σ R)
 
-theorem coe_injective : Function.Injective (Coe.coe : MvPolynomial σ R → MvPowerSeries σ R) :=
-    fun x y h => by
+theorem coe_injective : Function.Injective ((↑) : MvPolynomial σ R → MvPowerSeries σ R) := by
+  intro x y h
   ext
-  simp_rw [← coeff_coe]
-  congr
+  simp_rw [← coeff_coe, h]
 
 variable {σ R φ ψ}
 

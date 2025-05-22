@@ -15,9 +15,9 @@ import Mathlib.Topology.Compactness.SigmaCompact
 We define the following properties for sets in a topological space:
 
 * `IsLindelof s`: Two definitions are possible here. The more standard definition is that
-every open cover that contains `s` contains a countable subcover. We choose for the equivalent
-definition where we require that every nontrivial filter on `s` with the countable intersection
-property has a clusterpoint. Equivalence is established in `isLindelof_iff_countable_subcover`.
+  every open cover that contains `s` contains a countable subcover. We choose for the equivalent
+  definition where we require that every nontrivial filter on `s` with the countable intersection
+  property has a clusterpoint. Equivalence is established in `isLindelof_iff_countable_subcover`.
 * `LindelofSpace X`: `X` is Lindelöf if it is Lindelöf as a set.
 * `NonLindelofSpace`: a space that is not a Lindëlof space, e.g. the Long Line.
 

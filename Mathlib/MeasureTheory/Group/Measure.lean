@@ -175,7 +175,7 @@ theorem isMulLeftInvariant_map_smul
 /-- The image of a right invariant measure under a left action is right invariant, assuming that
 the action preserves multiplication. -/
 @[to_additive "The image of a right invariant measure under a left additive action is right
- invariant, assuming that the action preserves addition."]
+invariant, assuming that the action preserves addition."]
 theorem isMulRightInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulRightInvariant μ] (a : α) :
