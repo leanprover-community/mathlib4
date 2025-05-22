@@ -373,10 +373,12 @@ theorem div_le_of_le_mul' (h : a ≤ b * c) : a / b ≤ c :=
 @[simp] protected lemma mul_inv_le_one (a : ℝ≥0∞) : a * a⁻¹ ≤ 1 := ENNReal.div_self_le_one
 @[simp] protected lemma inv_mul_le_one (a : ℝ≥0∞) : a⁻¹ * a ≤ 1 := by simp [mul_comm]
 
-@[simp] lemma mul_inv_ne_top (a : ℝ≥0∞) : a * a⁻¹ ≠ ⊤ :=
+@[aesop (rule_sets := [finiteness]) safe apply, simp]
+lemma mul_inv_ne_top (a : ℝ≥0∞) : a * a⁻¹ ≠ ⊤ :=
   ne_top_of_le_ne_top one_ne_top a.mul_inv_le_one
 
-@[simp] lemma inv_mul_ne_top (a : ℝ≥0∞) : a⁻¹ * a ≠ ⊤ := by simp [mul_comm]
+@[aesop (rule_sets := [finiteness]) safe apply, simp]
+lemma inv_mul_ne_top (a : ℝ≥0∞) : a⁻¹ * a ≠ ⊤ := by simp [mul_comm]
 
 theorem mul_le_of_le_div (h : a ≤ b / c) : a * c ≤ b := by
   rw [← inv_inv c]
@@ -636,6 +638,10 @@ theorem zpow_lt_top (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n < ∞ := 
   cases n
   · simpa using ENNReal.pow_lt_top h'a.lt_top
   · simp only [ENNReal.pow_pos ha.bot_lt, zpow_negSucc, inv_lt_top]
+
+@[aesop (rule_sets := [finiteness]) safe apply]
+lemma zpow_ne_top {a : ℝ≥0∞} (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n ≠ ∞ :=
+  (ENNReal.zpow_lt_top ha h'a n).ne
 
 theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (hy : 1 < y) (h'y : y ≠ ⊤) :
     ∃ n : ℤ, x ∈ Ico (y ^ n) (y ^ (n + 1)) := by
