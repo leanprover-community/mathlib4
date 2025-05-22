@@ -54,6 +54,9 @@ abbrev Iobj (rep : Action (TopModuleCat R) G) : Action (TopModuleCat R) G where
     map_one' := ConcreteCategory.ext (by ext; simp)
     map_mul' _ _ := ConcreteCategory.ext (by ext; simp [mul_assoc]) }
 
+lemma Iobj_ρ_apply (rep : Action (TopModuleCat R) G) (g f x) :
+    ((Iobj rep).ρ g).hom f x = (rep.ρ g).hom (f (g⁻¹ * x)) := rfl
+
 /-- The functor taking a representation `rep` to the representation `C(G, rep)`. -/
 @[simps]
 def I : Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G where
@@ -67,8 +70,8 @@ def I : Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G where
   map_id _ := rfl
   map_comp _ _ := rfl
 
-instance : (I R G).Additive := ⟨by tauto⟩
-instance : (I R G).Linear R := ⟨by tauto⟩
+instance : (I R G).Additive where
+instance : (I R G).Linear R where
 
 /-- The constant function `rep ⟶ C(G, rep)` as a natural transformation. -/
 @[simps]
