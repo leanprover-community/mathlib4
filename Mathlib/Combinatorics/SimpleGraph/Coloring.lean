@@ -454,6 +454,14 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   rw [← hne] at hc
   simpa using hc
 
+lemma Coloring.surjOn_of_card_le_isClique {γ : Type*} [Fintype γ] {s : Finset V}
+    (h : G.IsClique s) (hc : Fintype.card γ ≤ s.card) (C : G.Coloring γ) :
+    Set.SurjOn C s Set.univ := by
+  intro _ _
+  obtain ⟨_, hx⟩ := card_le_chromaticNumber_iff_forall_surjective.mp
+                    (by simp_all [isClique_iff_induce_eq]) (C.comp (Embedding.induce s).toHom) _
+  exact ⟨_, Subtype.coe_prop _, hx⟩
+  
 namespace completeMultipartiteGraph
 
 variable {ι : Type*} (V : ι → Type*)
