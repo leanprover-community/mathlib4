@@ -10,15 +10,15 @@ import Mathlib.Tactic.Rify
 
 /-! # `norm_num` extension for `Irrational`
 
-This module defines a `norm_num` extension for `Irrational x^y` for rational `x` and `y`. It also
+This module defines a `norm_num` extension for `Irrational x ^ y` for rational `x` and `y`. It also
 supports `Irrational √x` expressions.
 
 ## Implementation details
-To prove that `(a / b)^(p / q)` is irrational, we reduce the problem to showing that `(a / b)^p` is
-not a `q`-th power of any rational number. This, in turn, reduces to proving that either `a` or
+To prove that `(a / b) ^ (p / q)` is irrational, we reduce the problem to showing that `(a / b) ^ p`
+is not a `q`-th power of any rational number. This, in turn, reduces to proving that either `a` or
 `b` is not a `q`-th power of a natural number, assuming `p` and `q` are coprime.
 To show that a given `n : ℕ` is not a `q`-th power, we find a natural number `k`
-such that `k^q < n < (k + 1)^q`, using binary search.
+such that `k ^ q < n < (k + 1) ^ q`, using binary search.
 
 ## TODO
 Disprove `Irrational x` for rational `x`.
@@ -33,7 +33,7 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
-    (h : ∀ p : ℚ, q^a ≠ p^b) (hb : 0 < b) (hq : 0 ≤ q) :
+    (h : ∀ p : ℚ, q ^ a ≠ p ^ b) (hb : 0 < b) (hq : 0 ≤ q) :
     Irrational (Real.rpow q (a / b : ℚ)) := by
   simp only [Irrational, Rat.cast_div, Rat.cast_natCast, Real.rpow_eq_pow, Set.mem_range,
     not_exists]
@@ -47,8 +47,8 @@ private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
 private theorem not_power_nat_pow {n p q : ℕ}
     (h_coprime : p.Coprime q)
     (hq : 0 < q)
-    (h : ∀ m, n ≠ m^q) (m : ℕ) :
-    n^p ≠ m^q := by
+    (h : ∀ m, n ≠ m ^ q) (m : ℕ) :
+    n ^ p ≠ m ^ q := by
   by_cases hn : n = 0
   · specialize h 0
     simp [hn, zero_pow hq.ne.symm] at h
@@ -87,8 +87,8 @@ private theorem not_power_nat_pow {n p q : ℕ}
   rwa [Nat.coprime_comm]
 
 private theorem not_power_nat_of_bounds {n k d : ℕ}
-    (h_left : k^d < n) (h_right : n < (k + 1)^d) {m : ℕ} :
-    n ≠ m^d := by
+    (h_left : k ^ d < n) (h_right : n < (k + 1) ^ d) {m : ℕ} :
+    n ≠ m ^ d := by
   intro h
   rw [h] at h_left h_right
   have : k < m := lt_of_pow_lt_pow_left' d h_left
@@ -96,8 +96,9 @@ private theorem not_power_nat_of_bounds {n k d : ℕ}
   omega
 
 private theorem not_power_nat_pow_of_bounds {n k p q : ℕ}
-    (hq : 0 < q) (h_coprime : p.Coprime q) (h_left : k^q < n) (h_right : n < (k + 1)^q) (m : ℕ) :
-    n^p ≠ m^q := by
+    (hq : 0 < q) (h_coprime : p.Coprime q) (h_left : k ^ q < n) (h_right : n < (k + 1) ^ q)
+    (m : ℕ) :
+    n ^ p ≠ m ^ q := by
   apply not_power_nat_pow h_coprime hq
   intro m
   apply not_power_nat_of_bounds h_left h_right
@@ -113,8 +114,8 @@ private lemma eq_of_mul_eq_mul_of_coprime {a b x y : ℕ} (hab : a.Coprime b) (h
 
 /-- Weaker version of `not_power_rat_of_num` with extra `q ≥ 0` assumption. -/
 private theorem not_power_rat_of_num_aux {a b d : ℕ}
-    (h_coprime : a.Coprime b) (ha : ∀ x, a ≠ x^d) {q : ℚ} (hq : 0 ≤ q) :
-    (a / b : ℚ) ≠ q^d := by
+    (h_coprime : a.Coprime b) (ha : ∀ x, a ≠ x ^ d) {q : ℚ} (hq : 0 ≤ q) :
+    (a / b : ℚ) ≠ q ^ d := by
   by_cases hb_zero : b = 0
   · subst hb_zero
     contrapose! ha
@@ -147,8 +148,8 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   simpa [hx'] using (show x'.natAbs.Coprime y from Rat.reduced q)
 
 private theorem not_power_rat_of_num {a b d : ℕ}
-    (h_coprime : a.Coprime b) (ha : ∀ x, a ≠ x^d) (q : ℚ) :
-    (a / b : ℚ) ≠ q^d := by
+    (h_coprime : a.Coprime b) (ha : ∀ x, a ≠ x ^ d) (q : ℚ) :
+    (a / b : ℚ) ≠ q ^ d := by
   by_cases hq : 0 ≤ q
   · apply not_power_rat_of_num_aux h_coprime ha hq
   rcases d.even_or_odd with (h_even | h_odd)
@@ -163,9 +164,9 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
     (hy_isRat : IsRat y (Int.ofNat y_num) y_den)
     (hx_coprime : Nat.Coprime x_num x_den)
     (hy_coprime : Nat.Coprime y_num y_den)
-    (hn1 : k_num^y_den < x_num)
-    (hn2 : x_num < (k_num + 1)^y_den) :
-    Irrational (x^y) := by
+    (hn1 : k_num ^ y_den < x_num)
+    (hn2 : x_num < (k_num + 1) ^ y_den) :
+    Irrational (x ^ y) := by
   have hy_den_pos : 0 < y_den := by
     by_contra! h
     simp only [nonpos_iff_eq_zero] at h
@@ -193,9 +194,9 @@ private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_
     (hy_isRat : IsRat y (Int.ofNat y_num) y_den)
     (hx_coprime : Nat.Coprime x_num x_den)
     (hy_coprime : Nat.Coprime y_num y_den)
-    (hd1 : k_den^y_den < x_den)
-    (hd2 : x_den < (k_den + 1)^y_den) :
-    Irrational (x^y) := by
+    (hd1 : k_den ^ y_den < x_den)
+    (hd2 : x_den < (k_den + 1) ^ y_den) :
+    Irrational (x ^ y) := by
   rcases hx_isRat with ⟨hx_inv, hx_eq⟩
   apply Irrational.of_inv
   rw [← Real.inv_rpow (by simp [hx_eq]; positivity)]
@@ -208,16 +209,16 @@ private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     (hx_isNat : IsNat x x_num)
     (hy_isRat : IsRat y (Int.ofNat y_num) y_den)
     (hy_coprime : Nat.Coprime y_num y_den)
-    (hn1 : k^y_den < x_num)
-    (hn2 : x_num < (k + 1)^y_den) :
-    Irrational (x^y) :=
+    (hn1 : k ^ y_den < x_num)
+    (hn2 : x_num < (k + 1) ^ y_den) :
+    Irrational (x ^ y) :=
   irrational_rpow_rat_rat_of_num hx_isNat.to_isRat hy_isRat (by simp) hy_coprime hn1 hn2
 
 private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     (hx_isRat : IsRat x (Int.ofNat num) den)
     (hx_coprime : Nat.Coprime num den)
-    (hn1 : num_k^2 < num)
-    (hn2 : num < (num_k + 1)^2) :
+    (hn1 : num_k ^ 2 < num)
+    (hn2 : num < (num_k + 1) ^ 2) :
     Irrational (Real.sqrt x) := by
   rw [Real.sqrt_eq_rpow]
   apply irrational_rpow_rat_rat_of_num hx_isRat (y_num := 1) (y_den := 2) _ hx_coprime (by simp)
@@ -227,8 +228,8 @@ private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
 private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     (hx_isRat : IsRat x (Int.ofNat num) den)
     (hx_coprime : Nat.Coprime num den)
-    (hd1 : den_k^2 < den)
-    (hd2 : den < (den_k + 1)^2) :
+    (hd1 : den_k ^ 2 < den)
+    (hd2 : den < (den_k + 1) ^ 2) :
     Irrational (Real.sqrt x) := by
   rw [Real.sqrt_eq_rpow]
   apply irrational_rpow_rat_rat_of_den hx_isRat (y_num := 1) (y_den := 2) _ hx_coprime (by simp)
@@ -237,34 +238,34 @@ private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
 
 private theorem irrational_sqrt_nat {x : ℝ} {n k : ℕ}
     (hx_isNat : IsNat x n)
-    (hn1 : k^2 < n)
-    (hn2 : n < (k + 1)^2) :
+    (hn1 : k ^ 2 < n)
+    (hn2 : n < (k + 1) ^ 2) :
     Irrational (Real.sqrt x) :=
   irrational_sqrt_rat_of_num hx_isNat.to_isRat (by simp) hn1 hn2
 
 end lemmas
 
-/-- To prove that `m` is not `n`-power (and thus `m^(1/n)` is irrational), we find `k` such that
-`k^n < m < (k + 1)^n`. -/
+/-- To prove that `m` is not `n`-power (and thus `m ^ (1/n)` is irrational), we find `k` such that
+`k ^ n < m < (k + 1) ^ n`. -/
 structure NotPowerCertificate (m n : Q(ℕ)) where
-  /-- Natural `k` such that `k^n < m < (k + 1)^n`. -/
+  /-- Natural `k` such that `k ^ n < m < (k + 1) ^ n`. -/
   k : Q(ℕ)
-  /-- Proof of `k^n < m`. -/
-  pf_left : Q($k^$n < $m)
-  /-- Proof of `m < (k + 1)^n`. -/
-  pf_right : Q($m < ($k + 1)^$n)
+  /-- Proof of `k ^ n < m`. -/
+  pf_left : Q($k ^ $n < $m)
+  /-- Proof of `m < (k + 1) ^ n`. -/
+  pf_right : Q($m < ($k + 1) ^ $n)
 
-/-- Finds `k` such that `k^n < m < (k + 1)^n` using bisection method. It assumes `n > 0`. -/
+/-- Finds `k` such that `k ^ n < m < (k + 1) ^ n` using bisection method. It assumes `n > 0`. -/
 def findNotPowerCertificateCore (m n : ℕ) : Option ℕ := Id.run do
   let mut left := 0
   let mut right := m + 1
   while right - left > 1 do
     let middle := (left + right) / 2
-    if middle^n ≤ m then
+    if middle ^ n ≤ m then
       left := middle
     else
       right := middle
-  if left^n < m then
+  if left ^ n < m then
     return .some left
   return .none
 
@@ -275,11 +276,11 @@ def findNotPowerCertificate (m n : Q(ℕ)) : MetaM (NotPowerCertificate m n) := 
   let mVal := m.natLit!
   let nVal := n.natLit!
   let .some k := findNotPowerCertificateCore mVal nVal | failure
-  let .isBool true pf_left ← derive q($k^$n < $m) | failure
-  let .isBool true pf_right ← derive q($m < ($k + 1)^$n) | failure
+  let .isBool true pf_left ← derive q($k ^ $n < $m) | failure
+  let .isBool true pf_right ← derive q($m < ($k + 1) ^ $n) | failure
   return ⟨q($k), pf_left, pf_right⟩
 
-/-- `norm_num` extension that proves `Irrational x^y` for rational `y`. `x` may be
+/-- `norm_num` extension that proves `Irrational x ^ y` for rational `y`. `x` may be
 natural or rational. -/
 @[norm_num Irrational (_ ^ (_ : ℝ))]
 def evalIrrationalRpow : NormNumExt where eval {u α} e := do
