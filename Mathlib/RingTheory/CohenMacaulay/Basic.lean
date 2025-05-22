@@ -144,12 +144,6 @@ variable [p.IsPrime] {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocali
   [IsLocalRing Rₚ]
   -- This can be deduced from `IsLocalization.AtPrime Rₚ p`, but cannot be an
   -- `instance`, so we need to manually add this condition.
-  [Small.{v'} Rₚ] [Small.{v'} (Rₚ ⧸ (maximalIdeal Rₚ))] [IsNoetherianRing Rₚ]
-
-variable (M : ModuleCat.{v} R) (Mₚ : ModuleCat.{v'} Rₚ)
-  [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f]
-
-include p f
 
 abbrev SemiLinearMapAlgebraMapOfLinearMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
@@ -163,6 +157,8 @@ abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A
   __ := f
   map_smul' m r := by simp
 
+omit [IsLocalRing R] [IsNoetherianRing R] [Small.{v, u} R] [Small.{v, u} (R ⧸ maximalIdeal R)]
+  [IsLocalRing Rₚ] in
 open Pointwise in
 lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
     (M : Type*) [AddCommGroup M] [Module R M] (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ]
@@ -232,6 +228,13 @@ lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
                 Submodule.smul_mem_pointwise_smul z x ⊤ Submodule.mem_top).symm
             simp [h, smul_sub, mul_smul] }
         exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) g reg.2 len
+
+variable [Small.{v'} Rₚ] [Small.{v'} (Rₚ ⧸ (maximalIdeal Rₚ))] [IsNoetherianRing Rₚ]
+
+variable (M : ModuleCat.{v} R) (Mₚ : ModuleCat.{v'} Rₚ)
+  [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f]
+
+include p f
 
 lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module.Finite R M]
     [Nontrivial M] [Nontrivial Mₚ] : p.depth M ≤ IsLocalRing.depth Mₚ := by
