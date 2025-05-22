@@ -589,6 +589,15 @@ def prodEquiv : (M × N)ˣ ≃* Mˣ × Nˣ :=
   ((map (.fst _ _)).prod (map (.snd _ _))).toMulEquiv
   ((coeHom _).prodMap (coeHom _)).toHomUnits rfl rfl
 
+theorem prodEquiv_apply (g : (M × N)ˣ) :
+    prodEquiv g = (map (.fst _ _) g, map (.snd _ _) g) := rfl
+@[to_additive (attr := simp) val_prodEquiv_apply]
+theorem val_prodEquiv_symm_apply (g : Mˣ × Nˣ) :
+    (prodEquiv.symm g).val = (g.1.val, g.2.val) := rfl
+@[to_additive (attr := simp) val_inv_prodEquiv_apply]
+theorem val_inv_prodEquiv_apply (g : Mˣ × Nˣ) :
+    (prodEquiv.symm g)⁻¹.val = (g.1⁻¹.val, g.2⁻¹.val) := rfl
+
 @[deprecated (since := "2025-05-22")]
 alias _root_.MulEquiv.prodEquiv := Units.prodEquiv
 
@@ -596,7 +605,7 @@ alias _root_.MulEquiv.prodEquiv := Units.prodEquiv
 alias _root_.MulEquiv.prodAddUnits := AddUnits.prodAddEquiv
 
 /-- The first element of the units of the product of two monoids. -/
-@[to_additive (attr := simps!) "The first element of the additive units of the
+@[to_additive (attr := simps!?) "The first element of the additive units of the
   product of two additive monoids."]
 def fst : (M × N)ˣ →* Mˣ := (MonoidHom.fst _ _).comp prodEquiv.toMonoidHom
 
@@ -661,11 +670,11 @@ lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x
 
 @[to_additive (attr := simp) toMonoidHom_prodEquiv_eq_fst_prod_snd]
 theorem toMonoidHom_prodEquiv_eq_fst_prod_snd :
-    (prodEquiv (M := M) (N := N)).toMonoidHom = fst.prod snd := rfl
+    (prodEquiv (M := M) (N := N) : (M × N)ˣ →* Mˣ × Nˣ) = fst.prod snd := rfl
 
 @[to_additive (attr := simp) toMonoidHom_prodEquiv_symm_eq_prod]
 theorem toMonoidHom_prodEquiv_symm_eq_prod :
-    (prodEquiv (M := M) (N := N)).symm.toMonoidHom = prod := rfl
+    ((prodEquiv (M := M) (N := N)).symm : Mˣ × Nˣ →* (M × N)ˣ) = prod := rfl
 
 open MulOpposite
 
