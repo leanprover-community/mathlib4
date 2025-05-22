@@ -18,27 +18,30 @@ universe v' v u' u
 
 variable {R : Type u} [CommRing R]
 
+local instance (I : Ideal R) [Small.{v, u} R] : Small.{v, u} (R ⧸ I) :=
+  have : Function.Surjective ((Ideal.Quotient.mk I).comp (Shrink.ringEquiv R).toRingHom) := by
+    simpa using Ideal.Quotient.mk_surjective
+  Small.mk' (RingHom.quotientKerEquivOfSurjective this).symm.toEquiv
+
 open RingTheory.Sequence IsLocalRing ModuleCat
 
-class ModuleCat.IsCohenMacaulay [IsLocalRing R] [Small.{v} R]
-    [Small.{v} (R ⧸ (maximalIdeal R))] (M : ModuleCat.{v} R) : Prop where
+class ModuleCat.IsCohenMacaulay [IsLocalRing R] [Small.{v} R] (M : ModuleCat.{v} R) : Prop where
   depth_eq_dim : Subsingleton M ∨ Module.supportDim R M = IsLocalRing.depth M
 
-lemma ModuleCat.isCohenMacaulay_iff [IsLocalRing R] [Small.{v} R]
-    [Small.{v} (R ⧸ (maximalIdeal R))] (M : ModuleCat.{v} R) :
+lemma ModuleCat.isCohenMacaulay_iff [IsLocalRing R] [Small.{v} R] (M : ModuleCat.{v} R) :
     M.IsCohenMacaulay ↔ Subsingleton M ∨ Module.supportDim R M = IsLocalRing.depth M :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 lemma ModuleCat.depth_eq_supportDim_of_cohenMacaulay [IsLocalRing R] [Small.{v} R]
-    [Small.{v} (R ⧸ (maximalIdeal R))] (M : ModuleCat.{v} R) [cm : M.IsCohenMacaulay]
-    [ntr : Nontrivial M] : Module.supportDim R M = IsLocalRing.depth M := by
+    (M : ModuleCat.{v} R) [cm : M.IsCohenMacaulay] [ntr : Nontrivial M] :
+    Module.supportDim R M = IsLocalRing.depth M := by
   have : ¬ Subsingleton M := not_subsingleton_iff_nontrivial.mpr ntr
   have := M.isCohenMacaulay_iff.mp cm
   tauto
 
 lemma ModuleCat.depth_eq_supportDim_unbot_of_cohenMacaulay [IsLocalRing R] [Small.{v} R]
-    [Small.{v} (R ⧸ (maximalIdeal R))] (M : ModuleCat.{v} R) [cm : M.IsCohenMacaulay]
-    [ntr : Nontrivial M] : (Module.supportDim R M).unbot
+    (M : ModuleCat.{v} R) [cm : M.IsCohenMacaulay] [ntr : Nontrivial M] :
+    (Module.supportDim R M).unbot
     (Module.supportDim_ne_bot_of_nontrivial R M) = IsLocalRing.depth M := by
   simp [M.depth_eq_supportDim_of_cohenMacaulay]
 
@@ -48,8 +51,7 @@ lemma ModuleCat.depth_eq_supportDim_unbot_of_cohenMacaulay [IsLocalRing R] [Smal
 
 section IsLocalization
 
-variable [IsLocalRing R] [IsNoetherianRing R] (p : Ideal R)
-  [Small.{v} R] [Small.{v} (R ⧸ (maximalIdeal R))]
+variable [IsLocalRing R] [IsNoetherianRing R] (p : Ideal R) [Small.{v} R]
 
 lemma depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay (M : ModuleCat.{v} R)
     [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M] [Small.{v} (R ⧸ p)]
@@ -159,8 +161,7 @@ abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A
   map_smul' m r := by simp
 
 variable (Rₚ) in
-omit [IsLocalRing R] [IsNoetherianRing R] [Small.{v, u} R] [Small.{v, u} (R ⧸ maximalIdeal R)]
-  [IsLocalRing Rₚ] in
+omit [IsLocalRing R] [IsNoetherianRing R] [Small.{v, u} R] [IsLocalRing Rₚ] in
 open Pointwise in
 lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
     (M : Type*) [AddCommGroup M] [Module R M] (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ]
@@ -231,14 +232,13 @@ lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
             simp [h, smul_sub, mul_smul] }
         exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) g reg.2 len
 
-variable [Small.{v'} Rₚ] [Small.{v'} (Rₚ ⧸ (maximalIdeal Rₚ))] [IsNoetherianRing Rₚ]
+variable [Small.{v'} Rₚ] [IsNoetherianRing Rₚ]
 
 variable (M : ModuleCat.{v} R) (Mₚ : ModuleCat.{v'} Rₚ)
   [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] [IsScalarTower R Rₚ Mₚ]
 
 include p f
 
-omit [Small.{v, u} (R ⧸ maximalIdeal R)] in
 lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module.Finite R M]
     [Nontrivial M] [Nontrivial Mₚ] : p.depth M ≤ IsLocalRing.depth Mₚ := by
   let _ : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
