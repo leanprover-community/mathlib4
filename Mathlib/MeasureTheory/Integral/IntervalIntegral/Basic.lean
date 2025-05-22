@@ -991,7 +991,7 @@ theorem integral_eq_integral_of_support_subset {a b} (h : support f ⊆ Ioc a b)
     ∫ x in a..b, f x ∂μ = ∫ x, f x ∂μ := by
   rcases le_total a b with hab | hab
   · rw [integral_of_le hab, ← integral_indicator measurableSet_Ioc, indicator_eq_self.2 h]
-  · rw [Ioc_eq_empty hab.not_lt, subset_empty_iff, support_eq_empty_iff] at h
+  · rw [Ioc_eq_empty hab.not_gt, subset_empty_iff, support_eq_empty_iff] at h
     simp [h]
 
 theorem integral_congr_ae' (h : ∀ᵐ x ∂μ, x ∈ Ioc a b → f x = g x)
@@ -1043,7 +1043,7 @@ theorem integral_eq_zero_iff_of_nonneg_ae (hf : 0 ≤ᵐ[μ.restrict (Ioc a b �
     (hfi : IntervalIntegrable f μ a b) :
     ∫ x in a..b, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict (Ioc a b ∪ Ioc b a)] 0 := by
   rcases le_total a b with hab | hab <;>
-    simp only [Ioc_eq_empty hab.not_lt, empty_union, union_empty] at hf ⊢
+    simp only [Ioc_eq_empty hab.not_gt, empty_union, union_empty] at hf ⊢
   · exact integral_eq_zero_iff_of_le_of_nonneg_ae hab hf hfi
   · rw [integral_symm, neg_eq_zero, integral_eq_zero_iff_of_le_of_nonneg_ae hab hf hfi.symm]
 
@@ -1057,7 +1057,7 @@ theorem integral_pos_iff_support_of_nonneg_ae' (hf : 0 ≤ᵐ[μ.restrict (Ι a 
   · rw [uIoc_of_le hab.le] at hf
     simp only [hab, true_and, integral_of_le hab.le,
       setIntegral_pos_iff_support_of_nonneg_ae hf hfi.1]
-  · suffices (∫ x in a..b, f x ∂μ) ≤ 0 by simp only [this.not_lt, hba.not_lt, false_and]
+  · suffices (∫ x in a..b, f x ∂μ) ≤ 0 by simp only [this.not_gt, hba.not_gt, false_and]
     rw [integral_of_ge hba, neg_nonpos]
     rw [uIoc_comm, uIoc_of_le hba] at hf
     exact integral_nonneg_of_ae hf

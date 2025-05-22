@@ -57,7 +57,7 @@ lemma log_ofReal (x : ℝ) : log (ENNReal.ofReal x) = if x ≤ 0 then ⊥ else �
   · rw [ENNReal.toReal_ofReal (not_le.mp h_nonpos).le]
 
 lemma log_ofReal_of_pos {x : ℝ} (hx : 0 < x) : log (ENNReal.ofReal x) = Real.log x := by
-  rw [log_ofReal, if_neg hx.not_le]
+  rw [log_ofReal, if_neg hx.not_ge]
 
 theorem log_pos_real {x : ℝ≥0∞} (h : x ≠ 0) (h' : x ≠ ⊤) :
     log x = Real.log (ENNReal.toReal x) := by simp [log, h, h']

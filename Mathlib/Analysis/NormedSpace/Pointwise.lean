@@ -140,7 +140,7 @@ theorem smul_unitBall_of_pos {r : ℝ} (hr : 0 < r) : r • ball (0 : E) 1 = bal
 lemma Ioo_smul_sphere_zero {a b r : ℝ} (ha : 0 ≤ a) (hr : 0 < r) :
     Ioo a b • sphere (0 : E) r = ball 0 (b * r) \ closedBall 0 (a * r) := by
   have : EqOn (‖·‖) id (Ioo a b) := fun x hx ↦ abs_of_pos (ha.trans_lt hx.1)
-  rw [set_smul_sphere_zero (by simp [ha.not_lt]), ← image_image (· * r), this.image_eq, image_id,
+  rw [set_smul_sphere_zero (by simp [ha.not_gt]), ← image_image (· * r), this.image_eq, image_id,
     image_mul_right_Ioo _ _ hr]
   ext x; simp [and_comm]
 

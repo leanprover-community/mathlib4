@@ -58,7 +58,7 @@ private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
   obtain ⟨y, hy : IsRoot _ y⟩ := this (show (0 : ℝ) ∈ Set.Icc _ _ by simpa [h0] using hx)
   rw [@isRoot_cyclotomic_iff] at hy
   rw [hy.eq_orderOf] at hn
-  exact hn.not_le LinearOrderedRing.orderOf_le_two
+  exact hn.not_ge LinearOrderedRing.orderOf_le_two
 
 theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
     [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :

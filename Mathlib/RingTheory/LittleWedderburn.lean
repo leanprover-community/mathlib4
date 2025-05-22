@@ -85,7 +85,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   suffices Φₙ.eval ↑q ∣ ↑(∑ x ∈ (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card) by
     have contra : Φₙ.eval _ ∣ _ := eval_dvd (cyclotomic.dvd_X_pow_sub_one n ℤ) (x := (q : ℤ))
     rw [eval_sub, eval_pow, eval_X, eval_one, ← key, Int.dvd_add_left this] at contra
-    refine (Nat.le_of_dvd ?_ ?_).not_lt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
+    refine (Nat.le_of_dvd ?_ ?_).not_gt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
     · exact tsub_pos_of_lt hq
     · convert Int.natAbs_dvd_natAbs.mpr contra
       clear_value q

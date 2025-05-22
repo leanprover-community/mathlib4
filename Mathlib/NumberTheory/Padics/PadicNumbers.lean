@@ -618,7 +618,8 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
         · have := (stationaryPoint_spec hne' le_rfl hle).symm
           simp only [const_apply, sub_apply, padicNorm.zero, sub_self] at this
           simpa only [this]
-        · exact hN _ (gt_of_not_le hle).le _ le_rfl⟩
+        · -- TODO: add `protected` and remove `_root_.`
+          exact hN _ (_root_.gt_of_not_le hle).le _ le_rfl⟩
 
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
   div_pos zero_lt_one (mod_cast succ_pos _)
