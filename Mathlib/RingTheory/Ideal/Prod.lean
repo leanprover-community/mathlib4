@@ -45,6 +45,14 @@ theorem prod_mono {I₁ I₂ : Ideal R} {J₁ J₂ : Ideal S} (hI : I₁ ≤ I�
     prod I₁ J₁ ≤ prod I₂ J₂ :=
   Set.prod_mono hI hJ
 
+@[gcongr]
+theorem prod_mono_left {I₁ I₂ : Ideal R} {J : Ideal S} (hI : I₁ ≤ I₂) : prod I₁ J ≤ prod I₂ J :=
+  Set.prod_mono_left hI
+
+@[gcongr]
+theorem prod_mono_right {I : Ideal R} {J₁ J₂ : Ideal S} (hJ : J₁ ≤ J₂) : prod I J₁ ≤ prod I J₂ :=
+  Set.prod_mono_right hJ
+
 /-- Every ideal of the product ring is of the form `I × J`, where `I` and `J` can be explicitly
     given as the image under the projection maps. -/
 theorem ideal_prod_eq (I : Ideal (R × S)) :
@@ -125,6 +133,16 @@ theorem prod_inj {I I' : Ideal R} {J J' : Ideal S} :
 
 @[deprecated (since := "2025-05-22")] alias prod.ext_iff := prod_inj
 
+@[simp]
+theorem prod_eq_bot_iff {I : Ideal R} {J : Ideal S} :
+    prod I J = ⊥ ↔ I = ⊥ ∧ J = ⊥ := by
+  rw [← prod_inj, prod_bot_bot]
+
+@[simp]
+theorem prod_eq_top_iff {I : Ideal R} {J : Ideal S} :
+    prod I J = ⊤ ↔ I = ⊤ ∧ J = ⊤ := by
+  rw [← prod_inj, prod_top_top]
+
 theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Ideal S)).IsPrime) :
     I.IsPrime := by
   constructor
@@ -144,16 +162,9 @@ theorem isPrime_of_isPrime_prod_top' {I : Ideal S} (h : (Ideal.prod (⊤ : Ideal
   -- Note: couldn't synthesize the right instances without the `R` and `S` hints
   exact map_isPrime_of_equiv (RingEquiv.prodComm (R := R) (S := S))
 
-theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Ideal S)).IsPrime := by
-  constructor
-  · rcases h with ⟨h, -⟩
-    contrapose! h
-    rw [← prod_top_top, prod.ext_iff] at h
-    exact h.1
-  rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨h₁, _⟩
-  rcases h.mem_or_mem h₁ with h | h
-  · exact Or.inl ⟨h, trivial⟩
-  · exact Or.inr ⟨h, trivial⟩
+theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Ideal S)).IsPrime where
+  ne_top' := by simpa using h.ne_top
+  mem_or_mem' {x y} := by simpa using h.mem_or_mem
 
 theorem isPrime_ideal_prod_top' {I : Ideal S} [h : I.IsPrime] : (prod (⊤ : Ideal R) I).IsPrime := by
   letI : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
