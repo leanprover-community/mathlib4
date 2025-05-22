@@ -77,9 +77,9 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
       simpa [ha, hasSum_zero_iff]
     exact ⟨fun h _ i _ ↦ h i, fun h i ↦  h (i + 1) i (by omega)⟩
   · -- The case `a = ∞`.
-    simp only [ha, hasSum_iff_tendsto_nat, nhds_top, ne_eq, Filter.tendsto_iInf,
-      Filter.tendsto_principal, Set.mem_Ioi, Filter.eventually_atTop, ge_iff_le, le_top,
-      implies_true, true_and]
+    suffices h: (∀ i, ¬i = ⊤ → ∃ a, ∀ (b : ℕ), a ≤ b → i < ∑ i ∈ Finset.range b, f i) ↔
+        ∀ b < ⊤, ∃ n, b < ∑ i ∈ Finset.range n, f i by
+      simpa [ha, hasSum_iff_tendsto_nat, nhds_top]
     constructor
     · intro h b hb
       obtain ⟨n, hn⟩ := h b (LT.lt.ne_top hb)
@@ -88,9 +88,9 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
       push_neg at hb
       obtain ⟨n, hn⟩ := h b hb.symm.lt_top'
       use n
-      intro m hm
+      intro m _
       have : ∑ i ∈ Finset.range n, f i ≤ ∑ i ∈ Finset.range m, f i :=
-        Finset.sum_le_sum_of_subset (by simpa)
+          Finset.sum_le_sum_of_subset (by simpa)
       exact gt_of_ge_of_gt this hn
   · -- The case `0 < a ∧ a < ∞`.
     obtain ⟨ha'', ha'⟩ := (a.toReal_pos_iff).mp ha
@@ -274,7 +274,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ (i : ℕ), MeasurableSet
     HasSum (fun i ↦ variationAux μ (s i)) (variationAux μ (⋃ i, s i)) := by
 
   simp [variationAux, hs, MeasurableSet.iUnion hs]
-  rw [ENNReal.hasSum_iff_XXX]
+  rw [ENNReal.hasSum_iff]
   constructor
   · intro n
 
