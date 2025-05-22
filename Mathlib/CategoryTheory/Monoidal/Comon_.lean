@@ -312,18 +312,47 @@ Comonoid objects in a braided category form a monoidal category.
 
 This definition is via transporting back and forth to monoids in the opposite category.
 -/
-@[simps!]
-instance monoidal [BraidedCategory C] : MonoidalCategory (Comon_ C) :=
+
+def monoidal [BraidedCategory C] : MonoidalCategory (Comon_ C) :=
   Monoidal.transport (Comon_EquivMon_OpOp C).symm
+
+@[simps!?]
+instance [BraidedCategory C] : MonoidalCategory (Comon_ C) where
+  tensorObj A B := {
+    X := A.X ⊗ B.X
+    counit := (A.counit ⊗ B.counit) ≫ (λ_ _).hom
+    comul := (A.comul ⊗ B.comul) ≫ tensorμ A.X A.X B.X B.X
+    counit_comul := _
+    comul_counit := _
+    comul_assoc := _
+  }
+  tensorHom := (monoidal C).tensorHom
+  tensorHom_def := (monoidal C).tensorHom_def
+  tensorUnit := (monoidal C).tensorUnit
+  associator := (monoidal C).associator
+  leftUnitor := (monoidal C).leftUnitor
+  rightUnitor := (monoidal C).rightUnitor
+  whiskerLeft := (monoidal C).whiskerLeft
+  whiskerRight := (monoidal C).whiskerRight
+  pentagon := (monoidal C).pentagon
+  triangle := (monoidal C).triangle
+
+example [BraidedCategory C] : True := by
+  let M := monoidal C
+  have := M.whiskerLeft_id
 
 variable [BraidedCategory C]
 
 theorem tensorObj_X (A B : Comon_ C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
 
-instance (A B : C) [Comon_Class A] [Comon_Class B] : Comon_Class (A ⊗ B) :=
-  inferInstanceAs <| Comon_Class (Comon_.mk' A ⊗ Comon_.mk' B).X
+-- instance (A B : C) [Comon_Class A] [Comon_Class B] : Comon_Class (A ⊗ B) :=
+--   inferInstanceAs <| Comon_Class (Comon_.mk' A ⊗ Comon_.mk' B).X
 
-theorem tensorObj_counit (A B : Comon_ C) : (A ⊗ B).counit = (A.counit ⊗ B.counit) ≫ (λ_ _).hom :=
+theorem tensorObj_counit (A B : Comon_ C) : (A ⊗ B).counit = (A.counit ⊗ B.counit) ≫ (λ_ _).hom := by
+  -- dsimp only [monoidal_tensorObj_X]
+  -- dsimp only [monoidal_tensorObj_counit]
+  dsimp only [instMonoidalCategoryOfBraidedCategory_tensorObj_X,
+    instMonoidalCategoryOfBraidedCategory_tensorObj_counit]
   rfl
 
 /--
@@ -355,6 +384,15 @@ instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
+
+instance (A B : C) [Comon_Class A] [Comon_Class B] : Comon_Class (A ⊗ B) where
+  counit := (ε[A] ⊗ ε[B]) ≫ (λ_ _).hom
+  comul := (Δ[A] ⊗ Δ[B]) ≫ tensorμ A A B B
+  counit_comul' := by
+    erw [← tensorObj_comul]
+    sorry
+  comul_counit' := by sorry
+  comul_assoc' := by sorry
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 

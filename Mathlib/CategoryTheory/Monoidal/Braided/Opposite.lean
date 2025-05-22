@@ -14,10 +14,10 @@ Todo: we should also do `Cᵐᵒᵖ`.
 
 open CategoryTheory MonoidalCategory BraidedCategory Opposite
 
-variable {C : Type*} [Category C] [MonoidalCategory C] [BraidedCategory C]
+-- variable {C : Type*} [Category C] [MonoidalCategory C] [BraidedCategory C]
 
-instance : BraidedCategory Cᵒᵖ where
-  braiding X Y := (β_ (unop Y) (unop X)).op
+-- instance : BraidedCategory Cᵒᵖ where
+--   braiding X Y := (β_ (unop Y) (unop X)).op
 
 namespace CategoryTheory.BraidedCategory
 
