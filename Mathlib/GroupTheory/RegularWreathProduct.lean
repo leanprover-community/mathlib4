@@ -254,7 +254,6 @@ lemma sylowWreathtoPermHomInj {p n : ℕ} [Fact (Nat.Prime p)]
     (Equiv.permCongrHom (((Equiv.prodCongrRight fun _ =>
     (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))).injective this
 
-/-- The Sylow `p`-subgroups of S_{p^n} are isomorphic to the iterated wreathproduct -/
 def Fin.succFunEquiv (α : Type*) (n : ℕ) : (Fin (n + 1) → α) ≃ (Fin n → α) × α :=
   (Fin.appendEquiv n 1).symm.trans (Equiv.prodCongrRight fun _ ↦ Equiv.funUnique (Fin 1) α)
 
@@ -281,6 +280,7 @@ lemma iteratedWreathToPermHomInj (G : Type*) [Group G] :
       exact ((Fin.succFunEquiv G n).symm.permCongrHom.toEquiv.comp_injective _).mpr
         (RegularWreathProduct.toPermInj (IteratedWreathProduct G n) G (Fin n → G))
 
+/-- The Sylow `p`-subgroups of S_{p^n} are isomorphic to the iterated wreathproduct -/
 noncomputable def sylowIsIteratedWreathProduct (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ)
     (α : Type*) [Finite α] (hα : Nat.card α = p ^ n)
     (G : Type*) [Group G] [Finite G] (hG : Nat.card G = p)
