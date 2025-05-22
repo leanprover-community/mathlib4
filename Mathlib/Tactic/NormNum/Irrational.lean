@@ -32,11 +32,9 @@ namespace NormNum
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
-
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
-    (h : ¬ ∃ p : ℚ, q^a = p^b) (hb : 0 < b) (hq : 0 ≤ q) :
+    (h : ∀ p : ℚ, q^a ≠ p^b) (hb : 0 < b) (hq : 0 ≤ q) :
     Irrational (Real.rpow q (a / b : ℚ)) := by
-  simp only [not_exists] at h
   simp only [Irrational, Rat.cast_div, Rat.cast_natCast, Real.rpow_eq_pow, Set.mem_range,
     not_exists]
   intro x hx
@@ -49,14 +47,12 @@ private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
 private theorem not_power_nat_pow {n p q : ℕ}
     (h_coprime : p.Coprime q)
     (hq : 0 < q)
-    (h : ¬ ∃ m, n = m^q) :
-    ¬ ∃ m, n^p = m^q := by
+    (h : ∀ m, n ≠ m^q) (m : ℕ) :
+    n^p ≠ m^q := by
   by_cases hn : n = 0
-  · simp only [hn, not_exists] at h
-    specialize h 0
-    simp [zero_pow hq.ne.symm] at h
+  · specialize h 0
+    simp [hn, zero_pow hq.ne.symm] at h
   contrapose! h
-  obtain ⟨k, h⟩ := h
   apply_fun Nat.factorization at h
   simp only [Nat.factorization_pow] at h
   suffices ∃ f : ℕ →₀ ℕ, n.factorization = q • f by
@@ -91,22 +87,19 @@ private theorem not_power_nat_pow {n p q : ℕ}
   rwa [Nat.coprime_comm]
 
 private theorem not_power_nat_of_bounds {n k d : ℕ}
-    (h_left : k^d < n)
-    (h_right : n < (k + 1)^d) :
-    ¬ ∃ m, n = m^d := by
-  intro ⟨m, h⟩
+    (h_left : k^d < n) (h_right : n < (k + 1)^d) {m : ℕ} :
+    n ≠ m^d := by
+  intro h
   rw [h] at h_left h_right
   have : k < m := lt_of_pow_lt_pow_left' d h_left
   have : m < k + 1 := lt_of_pow_lt_pow_left' d h_right
   omega
 
 private theorem not_power_nat_pow_of_bounds {n k p q : ℕ}
-    (hq : 0 < q)
-    (h_coprime : p.Coprime q)
-    (h_left : k^q < n)
-    (h_right : n < (k + 1)^q) :
-    ¬ ∃ m, n^p = m^q := by
+    (hq : 0 < q) (h_coprime : p.Coprime q) (h_left : k^q < n) (h_right : n < (k + 1)^q) (m : ℕ) :
+    n^p ≠ m^q := by
   apply not_power_nat_pow h_coprime hq
+  intro m
   apply not_power_nat_of_bounds h_left h_right
 
 private lemma eq_of_mul_eq_mul_of_coprime_aux {a b x y : ℕ} (hab : a.Coprime b)
@@ -120,23 +113,21 @@ private lemma eq_of_mul_eq_mul_of_coprime {a b x y : ℕ} (hab : a.Coprime b) (h
 
 /-- Weaker version of `not_power_rat_of_num` with extra `q ≥ 0` assumption. -/
 private theorem not_power_rat_of_num_aux {a b d : ℕ}
-    (h_coprime : a.Coprime b)
-    (ha : ¬ ∃ x, a = x^d) :
-    ¬ ∃ q ≥ 0, (a / b : ℚ) = q^d := by
+    (h_coprime : a.Coprime b) (ha : ∀ x, a ≠ x^d) {q : ℚ} (hq : 0 ≤ q) :
+    (a / b : ℚ) ≠ q^d := by
   by_cases hb_zero : b = 0
   · subst hb_zero
+    contrapose! ha
     simp only [Nat.coprime_zero_right] at h_coprime
     subst h_coprime
-    absurd ha
     use 1
     simp
-  intro ⟨q, hq, h⟩
+  by_contra! h
   rw [← Rat.num_div_den q] at h
   set x' := q.num
   set y := q.den
   obtain ⟨x, hx'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ x' by rwa [Rat.num_nonneg])
   rw [hx'] at h
-  simp only [not_exists] at ha
   specialize ha x
   simp only [Int.cast_natCast, div_pow] at h
   rw [div_eq_div_iff] at h
@@ -156,26 +147,16 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   simpa [hx'] using (show x'.natAbs.Coprime y from Rat.reduced q)
 
 private theorem not_power_rat_of_num {a b d : ℕ}
-    (h_coprime : a.Coprime b)
-    (ha : ¬ ∃ x, a = x^d) :
-    ¬ ∃ q : ℚ, (a / b : ℚ) = q^d := by
-  intro ⟨q, h_eq⟩
+    (h_coprime : a.Coprime b) (ha : ∀ x, a ≠ x^d) (q : ℚ) :
+    (a / b : ℚ) ≠ q^d := by
   by_cases hq : 0 ≤ q
-  · have := not_power_rat_of_num_aux h_coprime ha
-    push_neg at this
-    specialize this q hq
-    contradiction
+  · apply not_power_rat_of_num_aux h_coprime ha hq
   rcases d.even_or_odd with (h_even | h_odd)
-  · have := not_power_rat_of_num_aux h_coprime ha
-    push_neg at this
-    specialize this (-q) (by linarith)
-    rw [h_even.neg_pow] at this
-    contradiction
-  · have : 0 ≤ q ^ d := by
-      rw [← h_eq]
-      positivity
-    rw [h_odd.pow_nonneg_iff] at this
-    contradiction
+  · have := not_power_rat_of_num_aux h_coprime (q := -q) ha (by linarith)
+    rwa [h_even.neg_pow] at this
+  · contrapose! hq
+    rw [← h_odd.pow_nonneg_iff, ← hq]
+    positivity
 
 private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_den k_num : ℕ}
     (hx_isRat : IsRat x (Int.ofNat x_num) x_den)
