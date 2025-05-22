@@ -471,7 +471,7 @@ private lemma exists_lt_mul_left_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c 
   rcases eq_or_ne b ⊤ with rfl | b_top
   · rcases eq_or_lt_of_le ha with rfl | ha
     · rw [zero_mul] at h
-      exact (not_le_of_lt h hc).rec
+      exact (not_ge_of_lt h hc).rec
     · obtain ⟨a', a0', aa'⟩ := exists_between ha
       use a', mem_Ioo.2 ⟨a0', aa'⟩
       rw [mul_top_of_pos ha] at h
@@ -490,7 +490,7 @@ private lemma exists_mul_left_lt (h₁ : a ≠ 0 ∨ b ≠ ⊤) (h₂ : a ≠ �
     ∃ a' ∈ Ioo a ⊤, a' * b < c := by
   rcases eq_top_or_lt_top a with rfl | a_top
   · rw [ne_self_iff_false, false_or] at h₂; rw [top_mul_of_pos h₂] at hc; exact (not_top_lt hc).rec
-  rcases le_or_lt b 0 with b0 | b0
+  rcases le_or_gt b 0 with b0 | b0
   · obtain ⟨a', aa', a_top'⟩ := exists_between a_top
     exact ⟨a', mem_Ioo.2 ⟨aa', a_top'⟩, lt_of_le_of_lt (mul_le_mul_of_nonpos_right aa'.le b0) hc⟩
   rcases eq_top_or_lt_top b with rfl | b_top
@@ -520,7 +520,7 @@ lemma le_mul_of_forall_lt (h₁ : 0 < a ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 <
 lemma mul_le_of_forall_lt_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c)
     (h : ∀ a' ∈ Ioo 0 a, ∀ b' ∈ Ioo 0 b, a' * b' ≤ c) : a * b ≤ c := by
   refine le_of_forall_lt_imp_le_of_dense fun d dab ↦ ?_
-  rcases lt_or_le d 0 with d0 | d0
+  rcases lt_or_ge d 0 with d0 | d0
   · exact d0.le.trans hc
   obtain ⟨a', aa', dab⟩ := exists_lt_mul_left_of_nonneg ha d0 dab
   obtain ⟨b', bb', dab⟩ := exists_lt_mul_right_of_nonneg aa'.1.le d0 dab

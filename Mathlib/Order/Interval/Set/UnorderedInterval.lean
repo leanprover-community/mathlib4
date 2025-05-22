@@ -197,8 +197,8 @@ variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ 
 theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
 
-lemma uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a := uIcc_of_gt <| lt_of_not_ge h
-lemma uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b := uIcc_of_lt <| lt_of_not_ge h
+lemma uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a := uIcc_of_gt <| gt_of_not_le h
+lemma uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b := uIcc_of_lt <| gt_of_not_le h
 
 lemma uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a := by rw [Icc_union_Icc', max_comm] <;> rfl
 
@@ -227,8 +227,8 @@ lemma monotone_or_antitone_iff_uIcc :
   contrapose!
   rw [not_monotone_not_antitone_iff_exists_le_le]
   rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
-  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.2.not_lt <| max_lt hfab hfcb⟩
-  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.1.not_lt <| lt_min hfba hfbc⟩
+  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.2.not_gt <| max_lt hfab hfcb⟩
+  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.1.not_gt <| lt_min hfba hfbc⟩
 
 lemma monotoneOn_or_antitoneOn_iff_uIcc :
     MonotoneOn f s ∨ AntitoneOn f s ↔
@@ -290,12 +290,12 @@ lemma eq_of_not_mem_uIoc_of_not_mem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
   rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;>
       apply le_antisymm <;>
     first |assumption|exact le_of_lt ‹_›|
-    exact absurd hb (not_le_of_lt ‹c < b›)|exact absurd ha (not_le_of_lt ‹c < a›)
+    exact absurd hb (not_ge_of_lt ‹c < b›)|exact absurd ha (not_ge_of_lt ‹c < a›)
 
 lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h
   rw [Set.ext_iff] at h
-  obtain ha | ha := le_or_lt b a
+  obtain ha | ha := le_or_gt b a
   · have hb := (h b).not
     simp only [ha, left_mem_uIoc, not_lt, true_iff, not_mem_uIoc, ← not_le,
       and_true, not_true, false_and, not_false_iff, or_false] at hb
@@ -304,14 +304,14 @@ lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   · refine
       eq_of_mem_uIoc_of_mem_uIoc ((h _).1 <| left_mem_uIoc.2 ha)
         ((h _).2 <| left_mem_uIoc.2 <| ha.trans_le ?_)
-    simpa [ha, ha.not_le, mem_uIoc] using h b
+    simpa [ha, ha.not_ge, mem_uIoc] using h b
 
 lemma uIoc_injective_left (a : α) : Injective (Ι a) := by
   simpa only [uIoc_comm] using uIoc_injective_right a
 
 lemma uIoc_union_uIoc (h : b ∈ [[a, c]]) : Ι a b ∪ Ι b c = Ι a c := by
   wlog hac : a ≤ c generalizing a c
-  · rw [uIoc_comm, union_comm, uIoc_comm, this _ (le_of_not_le hac), uIoc_comm]
+  · rw [uIoc_comm, union_comm, uIoc_comm, this _ (ge_of_not_le hac), uIoc_comm]
     rwa [uIcc_comm]
   rw [uIcc_of_le hac] at h
   rw [uIoc_of_le h.1, uIoc_of_le h.2, uIoc_of_le hac, Ioc_union_Ioc_eq_Ioc h.1 h.2]
@@ -363,9 +363,9 @@ variable {a b : α}
 
 theorem Ioo_min_max : Ioo (min a b) (max a b) = uIoo a b := rfl
 
-lemma uIoo_of_not_le (h : ¬a ≤ b) : uIoo a b = Ioo b a := uIoo_of_gt <| lt_of_not_ge h
+lemma uIoo_of_not_le (h : ¬a ≤ b) : uIoo a b = Ioo b a := uIoo_of_gt <| gt_of_not_le h
 
-lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| lt_of_not_ge h
+lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| gt_of_not_le h
 
 theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) : uIoo a b ⊆ uIcc a b := by
   simp [uIoo, uIcc, Ioo_subset_Icc_self]

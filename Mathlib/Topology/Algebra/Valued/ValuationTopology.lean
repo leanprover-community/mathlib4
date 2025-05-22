@@ -191,9 +191,9 @@ theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := b
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   rw [mem_nhds]
-  have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| lt_of_not_ge hx
+  have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| gt_of_not_le hx
   exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| map_sub_swap v x y ▸
-      (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' (lt_of_not_ge hx))⟩
+      (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' (gt_of_not_le hx))⟩
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x ≤ r} :=

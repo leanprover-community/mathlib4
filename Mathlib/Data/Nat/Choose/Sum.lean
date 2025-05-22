@@ -124,7 +124,7 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by
-  rcases lt_or_le n k with h | h
+  rcases lt_or_ge n k with h | h
   · rw [choose_eq_zero_of_lt (by omega), Icc_eq_empty_of_lt h, sum_empty]
   · induction n, h using le_induction with
     | base => simp

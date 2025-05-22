@@ -59,7 +59,7 @@ longer of `l₁` and `l₂`). -/
 def BlankExtends.above {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} (h₁ : BlankExtends l l₁)
     (h₂ : BlankExtends l l₂) : { l' // BlankExtends l₁ l' ∧ BlankExtends l₂ l' } :=
   if h : l₁.length ≤ l₂.length then ⟨l₂, h₁.below_of_le h₂ h, BlankExtends.refl _⟩
-  else ⟨l₁, BlankExtends.refl _, h₂.below_of_le h₁ (le_of_not_ge h)⟩
+  else ⟨l₁, BlankExtends.refl _, h₂.below_of_le h₁ (ge_of_not_le h)⟩
 
 theorem BlankExtends.above_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
     BlankExtends l₁ l → BlankExtends l₂ l → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ := by
@@ -103,7 +103,7 @@ def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
     if hl : l₁.length ≤ l₂.length then ⟨l₂, Or.elim h id fun h' ↦ ?_, BlankExtends.refl _⟩
     else ⟨l₁, BlankExtends.refl _, Or.elim h (fun h' ↦ ?_) id⟩
   · exact (BlankExtends.refl _).above_of_le h' hl
-  · exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
+  · exact (BlankExtends.refl _).above_of_le h' (ge_of_not_le hl)
 
 /-- Given two `BlankRel` lists, there exists (constructively) a common meet. -/
 def BlankRel.below {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ l₂) :
@@ -112,7 +112,7 @@ def BlankRel.below {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
     if hl : l₁.length ≤ l₂.length then ⟨l₁, BlankExtends.refl _, Or.elim h id fun h' ↦ ?_⟩
     else ⟨l₂, Or.elim h (fun h' ↦ ?_) id, BlankExtends.refl _⟩
   · exact (BlankExtends.refl _).above_of_le h' hl
-  · exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
+  · exact (BlankExtends.refl _).above_of_le h' (ge_of_not_le hl)
 
 theorem BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) :=
   ⟨BlankRel.refl, @BlankRel.symm _ _, @BlankRel.trans _ _⟩
@@ -214,10 +214,10 @@ theorem ListBlank.exists_cons {Γ} [Inhabited Γ] (l : ListBlank Γ) :
 def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   apply l.liftOn (fun l ↦ List.getI l n)
   rintro l _ ⟨i, rfl⟩
-  rcases lt_or_le n _ with h | h
+  rcases lt_or_ge n _ with h | h
   · rw [List.getI_append _ _ _ h]
   rw [List.getI_eq_default _ h]
-  rcases le_or_lt _ n with h₂ | h₂
+  rcases le_or_gt _ n with h₂ | h₂
   · rw [List.getI_eq_default _ h₂]
   rw [List.getI_eq_getElem _ h₂, List.getElem_append_right h, List.getElem_replicate]
 
@@ -249,7 +249,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
   refine List.ext_getElem ?_ fun i h h₂ ↦ Eq.symm ?_
   · simp only [Nat.add_sub_cancel' h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
-  rcases lt_or_le i l₁.length with h' | h'
+  rcases lt_or_ge i l₁.length with h' | h'
   · simp [h', List.getElem_append h₂, ← List.getI_eq_getElem _ h, ← List.getI_eq_getElem _ h', H]
   · rw [List.getElem_append_right h', List.getElem_replicate,
       ← List.getI_eq_default _ h', H, List.getI_eq_getElem _ h]

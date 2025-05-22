@@ -826,7 +826,7 @@ theorem closedBall_smul_ball (p : Seminorm 𝕜 E) {r₁ : ℝ} (hr₁ : r₁ �
     Metric.closedBall (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
   simp only [smul_subset_iff, mem_ball_zero, mem_closedBall_zero_iff, map_smul_eq_mul]
   refine fun a ha b hb ↦ mul_lt_mul' ha hb (apply_nonneg _ _) ?_
-  exact hr₁.lt_or_lt.resolve_left <| ((norm_nonneg a).trans ha).not_lt
+  exact hr₁.lt_or_gt.resolve_left <| ((norm_nonneg a).trans ha).not_gt
 
 theorem ball_smul_closedBall (p : Seminorm 𝕜 E) (r₁ : ℝ) {r₂ : ℝ} (hr₂ : r₂ ≠ 0) :
     Metric.ball (0 : 𝕜) r₁ • p.closedBall 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
@@ -834,8 +834,8 @@ theorem ball_smul_closedBall (p : Seminorm 𝕜 E) (r₁ : ℝ) {r₂ : ℝ} (hr
     map_smul_eq_mul]
   intro a ha b hb
   rw [mul_comm, mul_comm r₁]
-  refine mul_lt_mul' hb ha (norm_nonneg _) (hr₂.lt_or_lt.resolve_left ?_)
-  exact ((apply_nonneg p b).trans hb).not_lt
+  refine mul_lt_mul' hb ha (norm_nonneg _) (hr₂.lt_or_gt.resolve_left ?_)
+  exact ((apply_nonneg p b).trans hb).not_gt
 
 theorem ball_smul_ball (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
     Metric.ball (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
@@ -1057,7 +1057,7 @@ theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p 
     {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 := by
   refine continuousAt_zero_of_forall' fun ε hε ↦ ?_
   obtain ⟨k, hk₀, hk⟩ : ∃ k : 𝕜, 0 < ‖k‖ ∧ ‖k‖ * r < ε := by
-    rcases le_or_lt r 0 with hr | hr
+    rcases le_or_gt r 0 with hr | hr
     · use 1; simpa using hr.trans_lt hε
     · simpa [lt_div_iff₀ hr] using exists_norm_lt 𝕜 (div_pos hε hr)
   rw [← set_smul_mem_nhds_zero_iff (norm_pos_iff.1 hk₀), smul_closedBall_zero hk₀] at hp

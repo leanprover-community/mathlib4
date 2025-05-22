@@ -209,7 +209,7 @@ theorem le_trailingDegree_C_mul_X_pow (n : ℕ) (a : R) :
   exact le_trailingDegree_monomial
 
 theorem coeff_eq_zero_of_lt_trailingDegree (h : (n : ℕ∞) < trailingDegree p) : coeff p n = 0 :=
-  Classical.not_not.1 (mt trailingDegree_le_of_ne_zero (not_le_of_gt h))
+  Classical.not_not.1 (mt trailingDegree_le_of_ne_zero (not_ge_of_lt h))
 
 theorem coeff_eq_zero_of_lt_natTrailingDegree {p : R[X]} {n : ℕ} (h : n < p.natTrailingDegree) :
     p.coeff n = 0 := by
@@ -419,7 +419,7 @@ theorem coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
   coeff_eq_zero_of_lt_trailingDegree <| natTrailingDegree_le_trailingDegree.trans_lt h
 
 theorem ne_zero_of_trailingDegree_lt {n : ℕ∞} (h : trailingDegree p < n) : p ≠ 0 := fun h₀ =>
-  h.not_le (by simp [h₀])
+  h.not_ge (by simp [h₀])
 
 lemma natTrailingDegree_eq_zero_of_constantCoeff_ne_zero (h : constantCoeff p ≠ 0) :
     p.natTrailingDegree = 0 :=

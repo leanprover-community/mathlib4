@@ -505,12 +505,12 @@ theorem Nat.finiteMultiplicity_iff {a b : ℕ} : FiniteMultiplicity a b ↔ a �
         have ha : a ≠ 0 := fun ha => hb <| zero_dvd_iff.mp <| by rw [ha] at h; exact h 1
         Classical.by_contradiction fun ha1 : a ≠ 1 =>
           have ha_gt_one : 1 < a :=
-            lt_of_not_ge fun _ =>
+            gt_of_not_le fun _ =>
               match a with
               | 0 => ha rfl
               | 1 => ha1 rfl
               | b+2 => by omega
-          not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (b.lt_pow_self ha_gt_one),
+          not_gt_of_le (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (b.lt_pow_self ha_gt_one),
       fun h => by cases h <;> simp [*]⟩
 
 @[deprecated (since := "2024-11-30")]

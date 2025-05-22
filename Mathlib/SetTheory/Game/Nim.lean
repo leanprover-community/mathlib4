@@ -201,7 +201,7 @@ theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 
   constructor
   · refine not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 ?_
     wlog h : o₁ < o₂
-    · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_lt.resolve_left h))
+    · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_gt.resolve_left h))
     rw [Impartial.fuzzy_zero_iff_gf, zero_lf_le]
     use toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, h⟩)
     · simpa using (Impartial.add_self (nim o₁)).2
@@ -250,7 +250,7 @@ theorem exists_grundyValue_moveLeft_of_lt {G : PGame} {o : Nimber} (h : o < grun
     ∃ i, grundyValue (G.moveLeft i) = o := by
   rw [grundyValue_eq_sInf_moveLeft] at h
   by_contra ha
-  exact h.not_le (csInf_le' ha)
+  exact h.not_ge (csInf_le' ha)
 
 theorem grundyValue_le_of_forall_moveLeft {G : PGame} {o : Nimber}
     (h : ∀ i, grundyValue (G.moveLeft i) ≠ o) : G.grundyValue ≤ o := by

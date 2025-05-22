@@ -586,7 +586,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 
     (A_succ : ∀ (i : Fin n) (j), A i.succ j = B i.succ j + c i * A (Fin.castSucc i) j) :
     det A = det B :=
   det_eq_of_forall_row_eq_smul_add_pred_aux (Fin.last _) c
-    (fun _ hi => absurd hi (not_lt_of_ge (Fin.le_last _))) A_zero A_succ
+    (fun _ hi => absurd hi (not_gt_of_le (Fin.le_last _))) A_zero A_succ
 
 /-- If you add multiples of previous columns to the next columns, the determinant doesn't change. -/
 theorem det_eq_of_forall_col_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 1)) (Fin (n + 1)) R}

@@ -408,7 +408,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
   intro b hlt
   rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
   obtain ⟨f⟩ := le_of_lt hlt
-  have : ¬Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
+  have : ¬Surjective f := fun hn => (not_ge_of_lt hlt) (mk_le_of_surjective hn)
   simp only [Surjective, not_forall] at this
   rcases this with ⟨b, hb⟩
   calc
@@ -421,7 +421,7 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
     (le_of_not_gt fun h => by
       rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
-      exact h.not_lt (lt_succ _))
+      exact h.not_gt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
 
 /-! ### Limit cardinals -/
@@ -506,7 +506,7 @@ theorem nonempty_embedding_to_cardinal : Nonempty (α ↪ Cardinal.{u}) :=
     let g : α → Cardinal.{u} := invFun f
     let ⟨x, (hx : g x = 2 ^ sum g)⟩ := invFun_surjective hf (2 ^ sum g)
     have : g x ≤ sum g := le_sum.{u, u} g x
-    not_le_of_gt (by rw [hx]; exact cantor _) this
+    not_ge_of_lt (by rw [hx]; exact cantor _) this
 
 /-- An embedding of any type to the set of cardinals in its universe. -/
 def embeddingToCardinal : α ↪ Cardinal.{u} :=
@@ -558,7 +558,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
 
 /-- **König's theorem** -/
 theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f < prod g :=
-  lt_of_not_ge fun ⟨F⟩ => by
+  gt_of_not_le fun ⟨F⟩ => by
     have : Inhabited (∀ i : ι, (g i).out) := by
       refine ⟨fun i => Classical.choice <| mk_ne_zero_iff.1 ?_⟩
       rw [mk_out]
@@ -569,7 +569,7 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i
         simp only [not_exists.symm, not_forall.symm]
-        refine fun h => (H i).not_le ?_
+        refine fun h => (H i).not_ge ?_
         rw [← mk_out (f i), ← mk_out (g i)]
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C

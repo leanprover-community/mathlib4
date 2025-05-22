@@ -80,7 +80,7 @@ theorem card_roots_sub_C {p : R[X]} {a : R} (hp0 : 0 < degree p) :
     (Multiset.card (p - C a).roots : WithBot ℕ) ≤ degree p :=
   calc
     (Multiset.card (p - C a).roots : WithBot ℕ) ≤ degree (p - C a) :=
-      card_roots <| mt sub_eq_zero.1 fun h => not_le_of_gt hp0 <| h.symm ▸ degree_C_le
+      card_roots <| mt sub_eq_zero.1 fun h => not_ge_of_lt hp0 <| h.symm ▸ degree_C_le
     _ = degree p := by rw [sub_eq_add_neg, ← C_neg]; exact degree_add_C hp0
 
 theorem card_roots_sub_C' {p : R[X]} {a : R} (hp0 : 0 < degree p) :
@@ -157,7 +157,7 @@ theorem mem_roots_sub_C' {p : R[X]} {a x : R} : x ∈ (p - C a).roots ↔ p ≠ 
 
 theorem mem_roots_sub_C {p : R[X]} {a x : R} (hp0 : 0 < degree p) :
     x ∈ (p - C a).roots ↔ p.eval x = a :=
-  mem_roots_sub_C'.trans <| and_iff_right fun hp => hp0.not_le <| hp.symm ▸ degree_C_le
+  mem_roots_sub_C'.trans <| and_iff_right fun hp => hp0.not_ge <| hp.symm ▸ degree_C_le
 
 @[simp]
 theorem roots_X_sub_C (r : R) : roots (X - C r) = {r} := by

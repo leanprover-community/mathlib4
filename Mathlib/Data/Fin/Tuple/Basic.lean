@@ -757,7 +757,7 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
   else
     if hlt : j < i then @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_castPred_of_lt _ _ hlt) (p _)
     else @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred_of_lt _ _ <|
-    (Fin.lt_or_lt_of_ne hj).resolve_left hlt) (p _)
+    (Fin.lt_or_gt_of_ne hj).resolve_left hlt) (p _)
 
 -- This is a duplicate of `Fin.exists_fin_succ` in Core. We should upstream the name change.
 alias forall_iff_succ := forall_fin_succ

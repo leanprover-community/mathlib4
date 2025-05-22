@@ -185,7 +185,7 @@ section Classical
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s := by
   by_contra h
   have (a : ℕ) (ha : a ∈ s) : a < x + 1 :=
-    lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [Nat.add_right_comm, Nat.add_sub_cancel' hax]⟩
+    gt_of_not_le fun hax => h ⟨a - (x + 1), by rwa [Nat.add_right_comm, Nat.add_sub_cancel' hax]⟩
   classical
   exact Fintype.false
     ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
@@ -211,7 +211,7 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
-      (h ⟨_, Nat.find_spec hx⟩ hxy).not_lt <|
+      (h ⟨_, Nat.find_spec hx⟩ hxy).not_gt <|
         (by omega : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
 
 theorem lt_succ_self (x : s) : x < succ x :=
@@ -220,7 +220,7 @@ theorem lt_succ_self (x : s) : x < succ x :=
     _       < (succ x) := Nat.lt_succ_self (x + _)
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
-  ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
+  ⟨fun h => le_of_not_gt fun h' => not_ge_of_lt h (succ_le_of_lt h'), fun h =>
     lt_of_le_of_lt h (lt_succ_self _)⟩
 
 /-- Returns the `n`-th element of a set, according to the usual ordering of `ℕ`. -/
@@ -270,7 +270,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]
     rintro n hn
     rw [mem_filter, ofNat, mem_range] at hn
-    exact bot_le.not_lt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
+    exact bot_le.not_gt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
   | n + 1 => by
     have ih : toFunAux (ofNat s n) = n := right_inverse_aux n
     have h₁ : (ofNat s n : ℕ) ∉ {x ∈ range (ofNat s n) | x ∈ s} := by simp

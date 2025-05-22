@@ -390,7 +390,7 @@ theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜)
   rintro ⟨k, hk⟩
   rw [mul_div, eq_div_iff h.ne', nsmul_eq_mul, mul_right_comm, ← Nat.cast_mul,
     (mul_left_injective₀ hp.out.ne').eq_iff, Nat.cast_inj, mul_comm] at hk
-  exact (Nat.le_of_dvd h0 ⟨_, hk.symm⟩).not_lt hn
+  exact (Nat.le_of_dvd h0 ⟨_, hk.symm⟩).not_gt hn
 
 variable (p) in
 theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :

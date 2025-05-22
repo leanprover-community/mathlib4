@@ -136,7 +136,7 @@ theorem prod_Ico_eq_prod_range (f : ℕ → M) (m n : ℕ) :
     ∏ k ∈ Ico m n, f k = ∏ k ∈ range (n - m), f (m + k) := by
   by_cases h : m ≤ n
   · rw [← Nat.Ico_zero_eq_range, prod_Ico_add, zero_add, tsub_add_cancel_of_le h]
-  · replace h : n ≤ m := le_of_not_ge h
+  · replace h : n ≤ m := ge_of_not_le h
     rw [Ico_eq_empty_of_le h, tsub_eq_zero_iff_le.mpr h, range_zero, prod_empty, prod_empty]
 
 theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1) :
@@ -144,7 +144,7 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
   have : ∀ i < m, i ≤ n := by
     intro i hi
     exact (add_le_add_iff_right 1).1 (le_trans (Nat.lt_iff_add_one_le.1 hi) h)
-  rcases lt_or_le k m with hkm | hkm
+  rcases lt_or_ge k m with hkm | hkm
   · rw [← Nat.Ico_image_const_sub_eq_Ico (this _ hkm)]
     refine (prod_image ?_).symm
     simp only [mem_Ico]

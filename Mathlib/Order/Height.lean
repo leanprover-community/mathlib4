@@ -91,7 +91,7 @@ theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
   · obtain ⟨_, ⟨⟨l, h₁, h₂⟩, rfl⟩, h₃⟩ :=
       not_bddAbove_iff'.mp (WithTop.iSup_coe_eq_top.1 ha) n
     exact ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
-      (l.length_take).trans <| min_eq_left <| le_of_not_ge h₃⟩
+      (l.length_take).trans <| min_eq_left <| ge_of_not_le h₃⟩
   · rw [ENat.iSup_coe_lt_top] at ha
     obtain ⟨⟨l, h₁, h₂⟩, e : l.length = _⟩ := Nat.sSup_mem (Set.range_nonempty _) ha
     refine
@@ -266,7 +266,7 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
       rintro rfl
       obtain - | hy := chain'_iff_pairwise.mp h.1
       rcases h'.1 with h' | h'
-      exacts [(hy _ hi).ne h', not_le_of_gt (hy _ hi) (hx _ h').le]
+      exacts [(hy _ hi).ne h', not_ge_of_lt (hy _ hi) (hx _ h').le]
   · intro l hl
     refine ⟨a::l, ⟨?_, ?_⟩, by simp⟩
     · rw [chain'_cons']
@@ -319,7 +319,7 @@ theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠
   haveI : IsTrans { x // x ∈ s } (↑· < ↑·) := inferInstance
   obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 hs
   refine ⟨RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun f ↦ ?_⟩⟩
-  refine n.lt_succ_self.not_le (WithTop.coe_le_coe.1 <| hn.symm ▸ ?_)
+  refine n.lt_succ_self.not_ge (WithTop.coe_le_coe.1 <| hn.symm ▸ ?_)
   refine le_iSup₂_of_le ((ofFn (n := n.succ) fun i ↦ f i).map Subtype.val)
     ⟨chain'_map_of_chain' ((↑) : {x // x ∈ s} → α) (fun _ _ ↦ id)
       (chain'_iff_pairwise.2 <| pairwise_ofFn.2 fun i j ↦ f.map_rel_iff.2), fun i h ↦ ?_⟩ ?_

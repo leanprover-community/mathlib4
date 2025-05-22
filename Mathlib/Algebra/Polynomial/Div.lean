@@ -40,7 +40,7 @@ theorem X_dvd_iff {f : R[X]} : X ∣ f ↔ f.coeff 0 = 0 :=
 
 theorem X_pow_dvd_iff {f : R[X]} {n : ℕ} : X ^ n ∣ f ↔ ∀ d < n, f.coeff d = 0 :=
   ⟨fun ⟨g, hgf⟩ d hd => by
-    simp only [hgf, coeff_X_pow_mul', ite_eq_right_iff, not_le_of_lt hd, IsEmpty.forall_iff],
+    simp only [hgf, coeff_X_pow_mul', ite_eq_right_iff, not_ge_of_lt hd, IsEmpty.forall_iff],
     fun hd => by
     induction n with
     | zero => simp [pow_zero, one_dvd]
@@ -147,7 +147,7 @@ theorem degree_modByMonic_lt [Nontrivial R] :
           unfold modByMonic divModByMonicAux
           dsimp
           rw [dif_pos hq, if_neg h]
-          exact lt_of_not_ge)
+          exact gt_of_not_le)
         (by
           intro hp
           unfold modByMonic divModByMonicAux
@@ -208,7 +208,7 @@ theorem modByMonic_eq_of_not_monic (p : R[X]) (hq : ¬Monic q) : p %ₘ q = p :=
 theorem modByMonic_eq_self_iff [Nontrivial R] (hq : Monic q) : p %ₘ q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ degree_modByMonic_lt _ hq, fun h => by
     classical
-    have : ¬degree q ≤ degree p := not_le_of_gt h
+    have : ¬degree q ≤ degree p := not_ge_of_lt h
     unfold modByMonic divModByMonicAux; dsimp; rw [dif_pos hq, if_neg (mt And.left this)]⟩
 
 theorem degree_modByMonic_le (p : R[X]) {q : R[X]} (hq : Monic q) : degree (p %ₘ q) ≤ degree q := by
@@ -263,7 +263,7 @@ theorem divByMonic_eq_zero_iff [Nontrivial R] (hq : Monic q) : p /ₘ q = 0 ↔ 
     rwa [h, mul_zero, add_zero, modByMonic_eq_self_iff hq] at this,
   fun h => by
     classical
-    have : ¬degree q ≤ degree p := not_le_of_gt h
+    have : ¬degree q ≤ degree p := not_ge_of_lt h
     unfold divByMonic divModByMonicAux; dsimp; rw [dif_pos hq, if_neg (mt And.left this)]⟩
 
 theorem degree_add_divByMonic (hq : Monic q) (h : degree q ≤ degree p) :
@@ -348,7 +348,7 @@ theorem div_modByMonic_unique {f g} (q r : R[X]) (hg : Monic g)
       _ < degree g := max_lt_iff.2 ⟨h.2, degree_modByMonic_lt _ hg⟩
   have h₅ : q - f /ₘ g = 0 :=
     _root_.by_contradiction fun hqf =>
-      not_le_of_gt h₄ <|
+      not_ge_of_lt h₄ <|
         calc
           degree g ≤ degree g + degree (q - f /ₘ g) := by
             rw [degree_eq_natDegree hg.ne_zero, degree_eq_natDegree hqf]
@@ -395,7 +395,7 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
     have hlc : leadingCoeff q * leadingCoeff (r - p /ₘ q) ≠ 0 := by rwa [Monic.def.1 hq, one_mul]
     rw [degree_mul' hlc, degree_eq_natDegree hq.ne_zero,
       degree_eq_natDegree (mt leadingCoeff_eq_zero.2 hrpq0)] at this
-    exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
+    exact not_gt_of_le (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
 
 
 /-- See `Polynomial.mul_self_modByMonic` for the other multiplication order. That version, unlike
@@ -448,7 +448,7 @@ lemma coeff_divByMonic_X_sub_C_rec (p : R[X]) (a : R) (n : ℕ) :
 theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
     (p /ₘ (X - C a)).coeff n = ∑ i ∈ Icc (n + 1) p.natDegree, a ^ (i - (n + 1)) * p.coeff i := by
   wlog h : p.natDegree ≤ n generalizing n
-  · refine Nat.decreasingInduction' (fun n hn _ ih ↦ ?_) (le_of_not_le h) ?_
+  · refine Nat.decreasingInduction' (fun n hn _ ih ↦ ?_) (ge_of_not_le h) ?_
     · rw [coeff_divByMonic_X_sub_C_rec, ih, eq_comm, Icc_eq_cons_Ioc (Nat.succ_le.mpr hn),
           sum_cons, Nat.sub_self, pow_zero, one_mul, mul_sum]
       congr 1; refine sum_congr ?_ fun i hi ↦ ?_
@@ -457,7 +457,7 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
       apply Nat.le_sub_of_add_le
       rw [add_comm]; exact (mem_Icc.mp hi).1
     · exact this _ le_rfl
-  rw [Icc_eq_empty (Nat.lt_succ.mpr h).not_le, sum_empty]
+  rw [Icc_eq_empty (Nat.lt_succ.mpr h).not_ge, sum_empty]
   nontriviality R
   by_cases hp : p.natDegree = 0
   · rw [(divByMonic_eq_zero_iff <| monic_X_sub_C a).mpr, coeff_zero]
@@ -775,7 +775,7 @@ lemma degree_eq_one_of_irreducible_of_root (hi : Irreducible p) {x : R} (hx : Is
 lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality
-  rcases hp.lt_or_lt with hd | hd
+  rcases hp.lt_or_gt with hd | hd
   · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
   refine leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) ?_
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]

@@ -35,7 +35,7 @@ theorem Unbounded.mono (hst : s ⊆ t) (hs : Unbounded r s) : Unbounded r t := f
 theorem unbounded_le_of_forall_exists_lt [Preorder α] (h : ∀ a, ∃ b ∈ s, a < b) :
     Unbounded (· ≤ ·) s := fun a =>
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => hba.not_lt hb'⟩
+  ⟨b, hb, fun hba => hba.not_gt hb'⟩
 
 theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, ∃ b ∈ s, a < b := by
   simp only [Unbounded, not_le]
@@ -43,7 +43,7 @@ theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, �
 theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, a ≤ b) :
     Unbounded (· < ·) s := fun a =>
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => hba.not_le hb'⟩
+  ⟨b, hb, fun hba => hba.not_ge hb'⟩
 
 theorem unbounded_lt_iff [LinearOrder α] : Unbounded (· < ·) s ↔ ∀ a, ∃ b ∈ s, a ≤ b := by
   simp only [Unbounded, not_lt]
@@ -55,13 +55,13 @@ theorem unbounded_ge_of_forall_exists_gt [Preorder α] (h : ∀ a, ∃ b ∈ s, 
 theorem unbounded_ge_iff [LinearOrder α] : Unbounded (· ≥ ·) s ↔ ∀ a, ∃ b ∈ s, b < a :=
   ⟨fun h a =>
     let ⟨b, hb, hba⟩ := h a
-    ⟨b, hb, lt_of_not_ge hba⟩,
+    ⟨b, hb, gt_of_not_le hba⟩,
     unbounded_ge_of_forall_exists_gt⟩
 
 theorem unbounded_gt_of_forall_exists_ge [Preorder α] (h : ∀ a, ∃ b ∈ s, b ≤ a) :
     Unbounded (· > ·) s := fun a =>
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => not_le_of_gt hba hb'⟩
+  ⟨b, hb, fun hba => not_ge_of_lt hba hb'⟩
 
 theorem unbounded_gt_iff [LinearOrder α] : Unbounded (· > ·) s ↔ ∀ a, ∃ b ∈ s, b ≤ a :=
   ⟨fun h a =>
@@ -228,7 +228,7 @@ theorem bounded_ge_Icc [Preorder α] (a b : α) : Bounded (· ≥ ·) (Icc a b) 
 theorem unbounded_le_Ioi [SemilatticeSup α] [NoMaxOrder α] (a : α) :
     Unbounded (· ≤ ·) (Ioi a) := fun b =>
   let ⟨c, hc⟩ := exists_gt (a ⊔ b)
-  ⟨c, le_sup_left.trans_lt hc, (le_sup_right.trans_lt hc).not_le⟩
+  ⟨c, le_sup_left.trans_lt hc, (le_sup_right.trans_lt hc).not_ge⟩
 
 theorem unbounded_le_Ici [SemilatticeSup α] [NoMaxOrder α] (a : α) :
     Unbounded (· ≤ ·) (Ici a) :=
@@ -239,7 +239,7 @@ theorem unbounded_lt_Ioi [SemilatticeSup α] [NoMaxOrder α] (a : α) :
   unbounded_lt_of_unbounded_le (unbounded_le_Ioi a)
 
 theorem unbounded_lt_Ici [SemilatticeSup α] (a : α) : Unbounded (· < ·) (Ici a) := fun b =>
-  ⟨a ⊔ b, le_sup_left, le_sup_right.not_lt⟩
+  ⟨a ⊔ b, le_sup_left, le_sup_right.not_gt⟩
 
 /-! ### Bounded initial segments -/
 
@@ -274,7 +274,7 @@ theorem bounded_le_inter_lt [LinearOrder α] (a : α) :
 theorem unbounded_le_inter_lt [LinearOrder α] (a : α) :
     Unbounded (· ≤ ·) (s ∩ { b | a < b }) ↔ Unbounded (· ≤ ·) s := by
   convert @unbounded_le_inter_not_le _ s _ a
-  exact lt_iff_not_le
+  exact lt_iff_not_ge
 
 theorem bounded_le_inter_le [LinearOrder α] (a : α) :
     Bounded (· ≤ ·) (s ∩ { b | a ≤ b }) ↔ Bounded (· ≤ ·) s := by

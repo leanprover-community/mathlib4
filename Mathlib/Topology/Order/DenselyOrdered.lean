@@ -48,7 +48,7 @@ theorem closure_Iio (a : α) [NoMinOrder α] : closure (Iio a) = Iic a :=
 theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := by
   apply Subset.antisymm
   · exact closure_minimal Ioo_subset_Icc_self isClosed_Icc
-  · rcases hab.lt_or_lt with hab | hab
+  · rcases hab.lt_or_gt with hab | hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
       simp only [insert_subset_iff, singleton_subset_iff]
@@ -387,7 +387,7 @@ theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
 /-- `Set.Ico a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ico hab.ne, Icc_eq_Ico_same_iff] at this
   exact this hab.le
@@ -395,7 +395,7 @@ theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
 /-- `Set.Ioc a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ioc hab.ne, Icc_eq_Ioc_same_iff] at this
   exact this hab.le
@@ -403,7 +403,7 @@ theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
 /-- `Set.Ioo a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ioo_iff {a b : α} : IsClosed (Set.Ioo a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ioo hab.ne, Icc_eq_Ioo_same_iff] at this
   exact this hab.le

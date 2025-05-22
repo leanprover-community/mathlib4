@@ -69,7 +69,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
   obtain ⟨y, rfl⟩ := Submodule.mem_span_singleton.1 hx
   rw [LinearPMap.mkSpanSingleton'_apply]
   simp only [mul_one, Algebra.id.smul_eq_mul, Submodule.coe_mk]
-  obtain h | h := le_or_lt y 0
+  obtain h | h := le_or_gt y 0
   · exact h.trans (gauge_nonneg _)
   · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, le_mul_iff_one_le_right h]
     exact
@@ -137,13 +137,13 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
     refine f.isOpenMap_of_ne_zero ?_
     rintro rfl
     simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
-    exact (hf₁ _ ha₀).not_le (hf₂ _ hb₀)
+    exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
   refine ⟨f, s, hf₁, image_subset_iff.1 (?_ : f '' t ⊆ Ioi s)⟩
   rw [← interior_Ici]
   refine interior_maximal (image_subset_iff.2 hf₂) (f.isOpenMap_of_ne_zero ?_ _ ht₃)
   rintro rfl
   simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
-  exact (hf₁ _ ha₀).not_le (hf₂ _ hb₀)
+  exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
 
 variable [LocallyConvexSpace ℝ E]
 
@@ -205,7 +205,7 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   by_contra h
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
-  exact ((hxy.trans_lt (hlA y hy)).trans hl).not_le le_rfl
+  exact ((hxy.trans_lt (hlA y hy)).trans hl).not_ge le_rfl
 @[deprecated (since := "2024-11-12")] alias iInter_halfspaces_eq := iInter_halfSpaces_eq
 
 end

@@ -48,7 +48,7 @@ theorem half_mul_log_add_log_abs {r : ℝ} : 2⁻¹ * (log r + |log r|) = log⁺
   by_cases hr : 0 ≤ log r
   · simp [posLog, hr, abs_of_nonneg]
     ring
-  · simp [posLog, le_of_not_ge hr, abs_of_nonpos]
+  · simp [posLog, ge_of_not_le hr, abs_of_nonpos]
 
 /-- The positive part of `log` is never negative. -/
 theorem posLog_nonneg {x : ℝ} : 0 ≤ log⁺ x := by simp [posLog]

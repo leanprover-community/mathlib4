@@ -540,7 +540,7 @@ theorem exists_of_lt {s₁ s₂ : AffineSubspace k P} (h : s₁ < s₂) : ∃ p 
 and there is a point only in the second. -/
 theorem lt_iff_le_and_exists (s₁ s₂ : AffineSubspace k P) :
     s₁ < s₂ ↔ s₁ ≤ s₂ ∧ ∃ p ∈ s₂, p ∉ s₁ := by
-  rw [lt_iff_le_not_le, not_le_iff_exists]
+  rw [lt_iff_le_not_ge, not_le_iff_exists]
 
 /-- If an affine subspace is nonempty and contained in another with the same direction, they are
 equal. -/

@@ -59,7 +59,7 @@ theorem principal_iff_of_monotone
     Principal op o ↔ ∀ a < o, op a a < o := by
   use fun h a ha => h ha ha
   intro H a b ha hb
-  obtain hab | hba := le_or_lt a b
+  obtain hab | hba := le_or_gt a b
   · exact (h₂ b hab).trans_lt <| H b hb
   · exact (h₁ a hba.le).trans_lt <| H a ha
 
@@ -122,7 +122,7 @@ private theorem principal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : O
 theorem not_bddAbove_principal (op : Ordinal → Ordinal → Ordinal) :
     ¬ BddAbove { o | Principal op o } := by
   rintro ⟨a, ha⟩
-  exact ((le_nfp _ _).trans (ha (principal_nfp_iSup op (succ a)))).not_lt (lt_succ a)
+  exact ((le_nfp _ _).trans (ha (principal_nfp_iSup op (succ a)))).not_gt (lt_succ a)
 
 /-! #### Additive principal ordinals -/
 
@@ -140,7 +140,7 @@ theorem isLimit_of_principal_add (ho₁ : 1 < o) (ho : Principal (· + ·) o) : 
 
 theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o, a + o = o := by
   refine ⟨fun ho a hao => ?_, fun h a b hao hbo => ?_⟩
-  · rcases lt_or_le 1 o with ho₁ | ho₁
+  · rcases lt_or_ge 1 o with ho₁ | ho₁
     · exact op_eq_self_of_principal hao (isNormal_add_right a) ho (isLimit_of_principal_add ho₁ ho)
     · rcases le_one_iff.1 ho₁ with (rfl | rfl)
       · exact (Ordinal.not_lt_zero a hao).elim
@@ -156,7 +156,7 @@ theorem exists_lt_add_of_not_principal_add (ha : ¬ Principal (· + ·) a) :
   refine
     ⟨b, hb, _, lt_of_le_of_ne (sub_le_self a b) fun hab => ?_, Ordinal.add_sub_cancel_of_le hb.le⟩
   rw [← sub_le, hab] at H
-  exact H.not_lt hc
+  exact H.not_gt hc
 
 theorem principal_add_iff_add_lt_ne_self : Principal (· + ·) a ↔ ∀ b < a, ∀ c < a, b + c ≠ a :=
   ⟨fun ha _ hb _ hc => (ha hb hc).ne, fun H => by
@@ -206,7 +206,7 @@ theorem principal_add_iff_zero_or_omega0_opow :
     rcases lt_omega0.1 ao with ⟨n, rfl⟩
     clear ao
     revert h'
-    apply not_lt_of_le
+    apply not_gt_of_le
     suffices e : ω ^ log ω o * n + o = o by
       simpa only [e] using le_add_right (ω ^ log ω o * ↑n) o
     induction' n with n IH
@@ -346,7 +346,7 @@ theorem principal_add_of_principal_mul_opow (hb : 1 < b) (ho : Principal (· * �
 theorem principal_mul_iff_le_two_or_omega0_opow_opow :
     Principal (· * ·) o ↔ o ≤ 2 ∨ o ∈ Set.range (ω ^ ω ^ · : Ordinal → Ordinal) := by
   refine ⟨fun ho => ?_, ?_⟩
-  · rcases le_or_lt o 2 with ho₂ | ho₂
+  · rcases le_or_gt o 2 with ho₂ | ho₂
     · exact Or.inl ho₂
     · rcases principal_add_iff_zero_or_omega0_opow.1 (principal_add_of_principal_mul ho ho₂.ne')
         with (rfl | ⟨a, rfl⟩)

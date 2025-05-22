@@ -283,7 +283,7 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
     rw [← N.card_mul_index]
     exact mul_ne_zero hN1 hN2
   haveI := (Cardinal.lt_aleph0_iff_fintype.mp
-    (lt_of_not_ge (mt Cardinal.toNat_apply_of_aleph0_le hN3))).some
+    (gt_of_not_le (mt Cardinal.toNat_apply_of_aleph0_le hN3))).some
   exact exists_right_complement'_of_coprime_aux' rfl hN
 
 /-- **Schur-Zassenhaus** for normal subgroups:

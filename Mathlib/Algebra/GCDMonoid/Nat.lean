@@ -56,11 +56,11 @@ instance normalizationMonoid : NormalizationMonoid ℤ where
   normUnit a := if 0 ≤ a then 1 else -1
   normUnit_zero := if_pos le_rfl
   normUnit_mul {a b} hna hnb := by
-    rcases hna.lt_or_lt with ha | ha <;> rcases hnb.lt_or_lt with hb | hb <;>
-      simp [Int.mul_nonneg_iff, ha.le, ha.not_le, hb.le, hb.not_le]
+    rcases hna.lt_or_gt with ha | ha <;> rcases hnb.lt_or_gt with hb | hb <;>
+      simp [Int.mul_nonneg_iff, ha.le, ha.not_ge, hb.le, hb.not_ge]
   normUnit_coe_units u :=
     (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos Int.one_nonneg) fun eq =>
-      eq.symm ▸ if_neg (not_le_of_gt <| show (-1 : ℤ) < 0 by decide)
+      eq.symm ▸ if_neg (not_ge_of_lt <| show (-1 : ℤ) < 0 by decide)
 
 theorem normUnit_eq (z : ℤ) : normUnit z = if 0 ≤ z then 1 else -1 := rfl
 
@@ -70,7 +70,7 @@ theorem normalize_of_nonneg {z : ℤ} (h : 0 ≤ z) : normalize z = z := by
 theorem normalize_of_nonpos {z : ℤ} (h : z ≤ 0) : normalize z = -z := by
   obtain rfl | h := h.eq_or_lt
   · simp
-  · rw [normalize_apply, normUnit_eq, if_neg (not_le_of_gt h), Units.val_neg, Units.val_one,
+  · rw [normalize_apply, normUnit_eq, if_neg (not_ge_of_lt h), Units.val_neg, Units.val_one,
       mul_neg_one]
 
 theorem normalize_coe_nat (n : ℕ) : normalize (n : ℤ) = n :=
@@ -83,7 +83,7 @@ theorem abs_eq_normalize (z : ℤ) : |z| = normalize z := by
 theorem nonneg_of_normalize_eq_self {z : ℤ} (hz : normalize z = z) : 0 ≤ z := by
   by_cases h : 0 ≤ z
   · exact h
-  · rw [normalize_of_nonpos (le_of_not_le h)] at hz
+  · rw [normalize_of_nonpos (ge_of_not_le h)] at hz
     omega
 
 theorem nonneg_iff_normalize_eq_self (z : ℤ) : normalize z = z ↔ 0 ≤ z :=

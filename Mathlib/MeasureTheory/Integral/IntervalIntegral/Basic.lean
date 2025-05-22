@@ -315,7 +315,7 @@ theorem comp_mul_right (hf : IntervalIntegrable f volume a b) (c : ℝ) :
 theorem comp_add_right (hf : IntervalIntegrable f volume a b) (c : ℝ) :
     IntervalIntegrable (fun x => f (x + c)) volume (a - c) (b - c) := by
   wlog h : a ≤ b generalizing a b
-  · exact IntervalIntegrable.symm (this hf.symm (le_of_not_le h))
+  · exact IntervalIntegrable.symm (this hf.symm (ge_of_not_le h))
   rw [intervalIntegrable_iff'] at hf ⊢
   have A : MeasurableEmbedding fun x => x + c :=
     (Homeomorph.addRight c).isClosedEmbedding.measurableEmbedding
@@ -742,7 +742,7 @@ theorem integral_comp_mul_right (hc : c ≠ 0) :
   conv_rhs => rw [← Real.smul_map_volume_mul_right hc]
   simp_rw [integral_smul_measure, intervalIntegral, A.setIntegral_map,
     ENNReal.toReal_ofReal (abs_nonneg c)]
-  rcases hc.lt_or_lt with h | h
+  rcases hc.lt_or_gt with h | h
   · simp [h, mul_div_cancel_right₀, hc, abs_of_neg,
       Measure.restrict_congr_set (α := ℝ) (μ := volume) Ico_ae_eq_Ioc]
   · simp [h, mul_div_cancel_right₀, hc, abs_of_pos]
@@ -969,7 +969,7 @@ theorem integral_interval_sub_interval_comm' (hab : IntervalIntegrable f μ a b)
 theorem integral_Iic_sub_Iic (ha : IntegrableOn f (Iic a) μ) (hb : IntegrableOn f (Iic b) μ) :
     ((∫ x in Iic b, f x ∂μ) - ∫ x in Iic a, f x ∂μ) = ∫ x in a..b, f x ∂μ := by
   wlog hab : a ≤ b generalizing a b
-  · rw [integral_symm, ← this hb ha (le_of_not_le hab), neg_sub]
+  · rw [integral_symm, ← this hb ha (ge_of_not_le hab), neg_sub]
   rw [sub_eq_iff_eq_add', integral_of_le hab, ← setIntegral_union (Iic_disjoint_Ioc le_rfl),
     Iic_union_Ioc_eq_Iic hab]
   exacts [measurableSet_Ioc, ha, hb.mono_set fun _ => And.right]
@@ -996,7 +996,7 @@ theorem integral_eq_integral_of_support_subset {a b} (h : support f ⊆ Ioc a b)
     ∫ x in a..b, f x ∂μ = ∫ x, f x ∂μ := by
   rcases le_total a b with hab | hab
   · rw [integral_of_le hab, ← integral_indicator measurableSet_Ioc, indicator_eq_self.2 h]
-  · rw [Ioc_eq_empty hab.not_lt, subset_empty_iff, support_eq_empty_iff] at h
+  · rw [Ioc_eq_empty hab.not_gt, subset_empty_iff, support_eq_empty_iff] at h
     simp [h]
 
 theorem integral_congr_ae' (h : ∀ᵐ x ∂μ, x ∈ Ioc a b → f x = g x)
@@ -1048,7 +1048,7 @@ theorem integral_eq_zero_iff_of_nonneg_ae (hf : 0 ≤ᵐ[μ.restrict (Ioc a b �
     (hfi : IntervalIntegrable f μ a b) :
     ∫ x in a..b, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict (Ioc a b ∪ Ioc b a)] 0 := by
   rcases le_total a b with hab | hab <;>
-    simp only [Ioc_eq_empty hab.not_lt, empty_union, union_empty] at hf ⊢
+    simp only [Ioc_eq_empty hab.not_gt, empty_union, union_empty] at hf ⊢
   · exact integral_eq_zero_iff_of_le_of_nonneg_ae hab hf hfi
   · rw [integral_symm, neg_eq_zero, integral_eq_zero_iff_of_le_of_nonneg_ae hab hf hfi.symm]
 
@@ -1058,11 +1058,11 @@ integral over `a..b` is positive if and only if `a < b` and the measure of
 theorem integral_pos_iff_support_of_nonneg_ae' (hf : 0 ≤ᵐ[μ.restrict (Ι a b)] f)
     (hfi : IntervalIntegrable f μ a b) :
     (0 < ∫ x in a..b, f x ∂μ) ↔ a < b ∧ 0 < μ (support f ∩ Ioc a b) := by
-  rcases lt_or_le a b with hab | hba
+  rcases lt_or_ge a b with hab | hba
   · rw [uIoc_of_le hab.le] at hf
     simp only [hab, true_and, integral_of_le hab.le,
       setIntegral_pos_iff_support_of_nonneg_ae hf hfi.1]
-  · suffices (∫ x in a..b, f x ∂μ) ≤ 0 by simp only [this.not_lt, hba.not_lt, false_and]
+  · suffices (∫ x in a..b, f x ∂μ) ≤ 0 by simp only [this.not_gt, hba.not_gt, false_and]
     rw [integral_of_ge hba, neg_nonpos]
     rw [uIoc_comm, uIoc_of_le hba] at hf
     exact integral_nonneg_of_ae hf

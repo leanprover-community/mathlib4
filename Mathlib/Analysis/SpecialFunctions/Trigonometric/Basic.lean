@@ -396,7 +396,7 @@ theorem sin_pos_of_pos_of_lt_pi {x : ℝ} (h0x : 0 < x) (hxp : x < π) : 0 < sin
   else
     have : (2 : ℝ) + 2 = 4 := by norm_num
     have : π - x ≤ 2 :=
-      sub_le_iff_le_add.2 (le_trans pi_le_four (this ▸ add_le_add_left (le_of_not_ge hx2) _))
+      sub_le_iff_le_add.2 (le_trans pi_le_four (this ▸ add_le_add_left (ge_of_not_le hx2) _))
     sin_pi_sub x ▸ sin_pos_of_pos_of_le_two (sub_pos.2 hxp) this
 
 theorem sin_pos_of_mem_Ioo {x : ℝ} (hx : x ∈ Ioo 0 π) : 0 < sin x :=
@@ -484,7 +484,7 @@ lemma sin_half_eq_neg_sqrt {x : ℝ} (hl : -(2 * π) ≤ x) (hr : x ≤ 0) :
 theorem sin_eq_zero_iff_of_lt_of_lt {x : ℝ} (hx₁ : -π < x) (hx₂ : x < π) : sin x = 0 ↔ x = 0 :=
   ⟨fun h => by
     contrapose! h
-    cases h.lt_or_lt with
+    cases h.lt_or_gt with
     | inl h0 => exact (sin_neg_of_neg_of_neg_pi_lt h0 hx₁).ne
     | inr h0 => exact (sin_pos_of_pos_of_lt_pi h0 hx₂).ne',
   fun h => by simp [h]⟩

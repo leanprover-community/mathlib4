@@ -205,7 +205,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   rw [← hm.finset_iUnion_of_pairwise_separated]
   · exact μ.mono (iUnion_subset fun i => iUnion_subset fun _ x hx => mem_iUnion.2 ⟨_, hx.1⟩)
   suffices ∀ i j, i < j → Metric.AreSeparated (S (2 * i + 1 + r)) (s \ S (2 * j + r)) from
-    fun i _ j _ hij => hij.lt_or_lt.elim
+    fun i _ j _ hij => hij.lt_or_gt.elim
       (fun h => (this i j h).mono inter_subset_left fun x hx => by exact ⟨hx.1.1, hx.2⟩)
       fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) inter_subset_left
   intro i j hj
@@ -311,7 +311,7 @@ theorem mkMetric'_isMetric (m : Set X → ℝ≥0∞) : (mkMetric' m).IsMetric :
   refine boundedBy_union_of_top_of_nonempty_inter ?_
   rintro u ⟨x, hxs, hxu⟩ ⟨y, hyt, hyu⟩
   have : ε < diam u := εr.trans_le ((hr x hxs y hyt).trans <| edist_le_diam_of_mem hxu hyu)
-  exact iInf_eq_top.2 fun h => (this.not_le h).elim
+  exact iInf_eq_top.2 fun h => (this.not_ge h).elim
 
 /-- If `c ∉ {0, ∞}` and `m₁ d ≤ c * m₂ d` for `d < ε` for some `ε > 0`
 (we use `≤ᶠ[𝓝[≥] 0]` to state this), then `mkMetric m₁ hm₁ ≤ c • mkMetric m₂ hm₂`. -/
@@ -482,7 +482,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     push_neg at htr; rcases htr with ⟨n, hn⟩
     refine ENNReal.tsum_eq_top_of_eq_top ⟨n, ?_⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
-    · exact hn.not_le
+    · exact hn.not_ge
     rcases diam_pos_iff.1 ((zero_le r).trans_lt hn) with ⟨x, hx, -⟩
     exact ⟨x, hx⟩
 
@@ -571,7 +571,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
   by_contra! H
   suffices ∀ c : ℝ≥0, c ≠ 0 → μH[d₂] s ≤ c * μH[d₁] s by
     rcases ENNReal.exists_nnreal_pos_mul_lt H.2 H.1 with ⟨c, hc0, hc⟩
-    exact hc.not_le (this c (pos_iff_ne_zero.1 hc0))
+    exact hc.not_ge (this c (pos_iff_ne_zero.1 hc0))
   intro c hc
   refine le_iff'.1 (mkMetric_mono_smul ENNReal.coe_ne_top (mod_cast hc) ?_) s
   have : 0 < ((c : ℝ≥0∞) ^ (d₂ - d₁)⁻¹) := by
@@ -584,7 +584,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
   rw [Pi.smul_apply, smul_eq_mul,
     ← ENNReal.div_le_iff_le_mul (Or.inr ENNReal.coe_ne_top) (Or.inr <| mt ENNReal.coe_eq_zero.1 hc)]
   rcases eq_or_ne r 0 with (rfl | hr₀)
-  · rcases lt_or_le 0 d₂ with (h₂ | h₂)
+  · rcases lt_or_ge 0 d₂ with (h₂ | h₂)
     · simp only [h₂, ENNReal.zero_rpow_of_pos, zero_le, ENNReal.zero_div, ENNReal.coe_zero]
     · simp only [h.trans_le h₂, ENNReal.div_top, zero_le, ENNReal.zero_rpow_of_neg,
         ENNReal.coe_zero]

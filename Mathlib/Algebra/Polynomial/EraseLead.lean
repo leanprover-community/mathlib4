@@ -204,7 +204,7 @@ theorem eraseLead_natDegree_lt_or_eraseLead_eq_zero (f : R[X]) :
     rw [← C_mul_X_pow_eq_self h]
     simp
   · left
-    apply eraseLead_natDegree_lt (lt_of_not_ge h)
+    apply eraseLead_natDegree_lt (gt_of_not_le h)
 
 theorem eraseLead_natDegree_le (f : R[X]) : (eraseLead f).natDegree ≤ f.natDegree - 1 := by
   rcases f.eraseLead_natDegree_lt_or_eraseLead_eq_zero with (h | h)

@@ -113,7 +113,7 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         Finset.sum_insert (Finset.not_mem_erase _ _), coeff_zero_eq_constantCoeff_apply, h,
         coeff_invOfUnit, if_neg H, neg_mul, mul_neg, Units.mul_inv_cancel_left, ←
         Finset.insert_erase this, Finset.sum_insert (Finset.not_mem_erase _ _),
-        Finset.insert_erase this, if_neg (not_lt_of_ge <| le_rfl), zero_add, add_comm, ←
+        Finset.insert_erase this, if_neg (not_gt_of_le <| le_rfl), zero_add, add_comm, ←
         sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
       rintro ⟨i, j⟩ hij
       rw [Finset.mem_erase, mem_antidiagonal] at hij

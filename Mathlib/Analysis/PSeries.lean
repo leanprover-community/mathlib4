@@ -259,7 +259,7 @@ if and only if `1 < p`. -/
 @[simp]
 theorem summable_nat_rpow_inv {p : ℝ} :
     Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) ↔ 1 < p := by
-  rcases le_or_lt 0 p with hp | hp
+  rcases le_or_gt 0 p with hp | hp
   /- Cauchy condensation test applies only to antitone sequences, so we consider the
     cases `0 ≤ p` and `p < 0` separately. -/
   · rw [← summable_condensed_iff_of_nonneg]
@@ -276,7 +276,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
       gcongr
   -- If `p < 0`, then `1 / n ^ p` tends to infinity, thus the series diverges.
   · suffices ¬Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) by
-      have : ¬1 < p := fun hp₁ => hp.not_le (zero_le_one.trans hp₁.le)
+      have : ¬1 < p := fun hp₁ => hp.not_ge (zero_le_one.trans hp₁.le)
       simpa only [this, iff_false]
     intro h
     obtain ⟨k : ℕ, hk₁ : ((k : ℝ) ^ p)⁻¹ < 1, hk₀ : k ≠ 0⟩ :=
@@ -285,7 +285,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
     apply hk₀
     rw [← pos_iff_ne_zero, ← @Nat.cast_pos ℝ] at hk₀
     simpa [inv_lt_one₀ (rpow_pos_of_pos hk₀ _), one_lt_rpow_iff_of_pos hk₀, hp,
-      hp.not_lt, hk₀] using hk₁
+      hp.not_gt, hk₀] using hk₁
 
 @[simp]
 theorem summable_nat_rpow {p : ℝ} : Summable (fun n => (n : ℝ) ^ p : ℕ → ℝ) ↔ p < -1 := by

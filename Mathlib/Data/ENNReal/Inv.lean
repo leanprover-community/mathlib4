@@ -677,7 +677,7 @@ theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) 
   obtain a | a := a <;> obtain b | b := b
   · simp only [Int.ofNat_eq_coe, zpow_natCast]
     exact pow_right_mono₀ hx (Int.le_of_ofNat_le_ofNat h)
-  · apply absurd h (not_le_of_gt _)
+  · apply absurd h (not_ge_of_lt _)
     exact lt_of_lt_of_le (Int.negSucc_lt_zero _) (Int.ofNat_nonneg _)
   · simp only [zpow_negSucc, Int.ofNat_eq_coe, zpow_natCast]
     refine (ENNReal.inv_le_one.2 ?_).trans ?_ <;> exact one_le_pow_of_one_le' hx _

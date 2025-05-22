@@ -91,7 +91,7 @@ protected lemma isNilpotent_iff :
 @[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N) :
     IsNilpotent (reflect N P) ↔ IsNilpotent P := by
   simp only [Polynomial.isNilpotent_iff, coeff_reverse]
-  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_lt i N with hi | hi
+  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_gt i N with hi | hi
   · simpa [tsub_tsub_cancel_of_le hi] using h (N - i)
   · simp [coeff_eq_zero_of_natDegree_lt <| lt_of_le_of_lt hN hi]
   · simpa [hi, revAt_le] using h (N - i)
@@ -123,7 +123,7 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
   · simp_rw [P₁, eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
   · by_cases H : i ≤ P₁.natDegree
     · simp_rw [P₁, eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
-    · simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
+    · simp_rw [coeff_eq_zero_of_natDegree_lt (gt_of_not_le H), IsNilpotent.zero]
 
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
 except its constant term which is a unit.

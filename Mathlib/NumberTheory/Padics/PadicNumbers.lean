@@ -318,7 +318,7 @@ private theorem norm_eq_of_equiv_aux {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : �
 private theorem norm_eq_of_equiv {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0) (hfg : f ≈ g) :
     padicNorm p (f (stationaryPoint hf)) = padicNorm p (g (stationaryPoint hg)) := by
   by_contra h
-  cases lt_or_le (padicNorm p (g (stationaryPoint hg))) (padicNorm p (f (stationaryPoint hf))) with
+  cases lt_or_ge (padicNorm p (g (stationaryPoint hg))) (padicNorm p (f (stationaryPoint hf))) with
   | inl hlt =>
     exact norm_eq_of_equiv_aux hf hg hfg h hlt
   | inr hle =>
@@ -557,9 +557,9 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
   rcases h N with ⟨i, hi, hge⟩
   have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by
     rw [PadicSeq.norm, dif_pos h] at hge
-    exact not_lt_of_ge hge hε
+    exact not_gt_of_le hge hε
   unfold PadicSeq.norm at hge; split_ifs at hge
-  apply not_le_of_gt _ hge
+  apply not_ge_of_lt _ hge
   cases _root_.le_total N (stationaryPoint hne) with
   | inl hgen =>
     exact hN _ hgen _ hi
@@ -618,7 +618,8 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
         · have := (stationaryPoint_spec hne' le_rfl hle).symm
           simp only [const_apply, sub_apply, padicNorm.zero, sub_self] at this
           simpa only [this]
-        · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
+        · -- TODO: add `protected` and remove `_root_.`
+          exact hN _ (_root_.gt_of_not_le hle).le _ le_rfl⟩
 
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
   div_pos zero_lt_one (mod_cast succ_pos _)
@@ -867,11 +868,11 @@ theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
 
 theorem eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
   _root_.by_contradiction fun hne ↦
-    not_lt_of_ge (by rw [padicNormE.add_eq_max_of_ne hne]; apply le_max_right) h
+    not_gt_of_le (by rw [padicNormE.add_eq_max_of_ne hne]; apply le_max_right) h
 
 theorem eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
   _root_.by_contradiction fun hne ↦
-    not_lt_of_ge (by rw [padicNormE.add_eq_max_of_ne hne]; apply le_max_left) h
+    not_gt_of_le (by rw [padicNormE.add_eq_max_of_ne hne]; apply le_max_left) h
 
 end NormedSpace
 

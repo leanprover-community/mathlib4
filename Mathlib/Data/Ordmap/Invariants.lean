@@ -53,10 +53,10 @@ namespace Ordnode
 
 
 theorem not_le_delta {s} (H : 1 ≤ s) : ¬s ≤ delta * 0 :=
-  not_le_of_gt H
+  not_ge_of_lt H
 
 theorem delta_lt_false {a b : ℕ} (h₁ : delta * a < b) (h₂ : delta * b < a) : False :=
-  not_le_of_lt (lt_trans ((mul_lt_mul_left (by decide)).2 h₁) h₂) <| by
+  not_ge_of_lt (lt_trans ((mul_lt_mul_left (by decide)).2 h₁) h₂) <| by
     simpa [mul_assoc] using Nat.mul_le_mul_right a (by decide : 1 ≤ delta * delta)
 
 /-! ### `singleton` -/
@@ -578,7 +578,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
           · simp [node3L, node']; abel
           · simp [node4L, node', sr.2.1.1]; abel
         · apply Nat.zero_lt_succ
-        · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sr.2.1.pos sr.2.2.pos))
+        · exact not_ge_of_lt (Nat.succ_lt_succ (add_pos sr.2.1.pos sr.2.2.pos))
   · obtain - | ⟨rs, rl, rx, rr⟩ := r
     · rw [sl.eq_node'] at hl ⊢
       obtain - | ⟨lls, lll, llx, llr⟩ := ll <;> obtain - | ⟨lrs, lrl, lrx, lrr⟩ := lr <;>
@@ -605,7 +605,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
           · simp [node3R, node']; abel
           · simp [node4R, node', sl.2.2.1]; abel
         · apply Nat.zero_lt_succ
-        · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sl.2.1.pos sl.2.2.pos))
+        · exact not_ge_of_lt (Nat.succ_lt_succ (add_pos sl.2.1.pos sl.2.2.pos))
     · simp [balance, balance']
       symm; rw [if_neg]
       · split_ifs with h h_1
@@ -632,7 +632,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
           · simp [node3R, node', sl.1]; abel
           · simp [node4R, node', sl.1, sl.2.2.1]; abel
         · simp [node']
-      · exact not_le_of_gt (add_le_add (Nat.succ_le_of_lt sl.pos) (Nat.succ_le_of_lt sr.pos))
+      · exact not_ge_of_lt (add_le_add (Nat.succ_le_of_lt sl.pos) (Nat.succ_le_of_lt sr.pos))
 
 theorem balanceL_eq_balance {l x r} (sl : Sized l) (sr : Sized r) (H1 : size l = 0 → size r ≤ 1)
     (H2 : 1 ≤ size l → 1 ≤ size r → size r ≤ delta * size l) :
@@ -646,7 +646,7 @@ theorem balanceL_eq_balance {l x r} (sl : Sized l) (sr : Sized r) (H1 : size l =
       cases sr.2.1.size_eq_zero.1 this.1
       cases sr.2.2.size_eq_zero.1 this.2
       rw [sr.eq_node']; rfl
-    · replace H2 : ¬rs > delta * ls := not_lt_of_le (H2 sl.pos sr.pos)
+    · replace H2 : ¬rs > delta * ls := not_gt_of_le (H2 sl.pos sr.pos)
       simp [balanceL, balance, H2]; split_ifs <;> simp [add_comm]
 
 /-- `Raised n m` means `m` is either equal or one up from `n`. -/

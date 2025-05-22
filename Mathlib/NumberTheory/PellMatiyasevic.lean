@@ -378,7 +378,7 @@ theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
             exact _root_.ne_of_lt (strictMono_y a1 hp) (eq_zero_of_zero_dvd h).symm
         rw [← Nat.mod_add_div n m, yn_add] at h
         exact
-          not_le_of_gt (strictMono_y _ <| Nat.mod_lt n m0)
+          not_ge_of_lt (strictMono_y _ <| Nat.mod_lt n m0)
             (Nat.le_of_dvd (strictMono_y _ hp) <|
               co.dvd_of_dvd_mul_right <|
                 (Nat.dvd_add_iff_right <| (y_mul_dvd _ _ _).mul_left _).2 h),
@@ -802,7 +802,7 @@ theorem matiyasevic {a k x y} :
             clear o rem xy uv st
             have iln : i ≤ n :=
               le_of_not_gt fun hin =>
-                not_lt_of_ge (Nat.le_of_dvd vp (dvd_of_mul_left_dvd yv)) (strictMono_y a1 hin)
+                not_gt_of_le (Nat.le_of_dvd vp (dvd_of_mul_left_dvd yv)) (strictMono_y a1 hin)
             have yd : 4 * yn a1 i ∣ 4 * n := mul_dvd_mul_left _ <| dvd_of_ysq_dvd a1 yv
             have jk : j ≡ k [MOD 4 * yn a1 i] :=
               have : 4 * yn a1 i ∣ b - 1 :=
@@ -817,7 +817,7 @@ theorem matiyasevic {a k x y} :
                 (xy_modEq_of_modEq b1 a1 ba j).left.symm.trans sx
               (modEq_of_xn_modEq a1 ipos iln this).resolve_right
                 fun ji : j + i ≡ 0 [MOD 4 * n] =>
-                not_le_of_gt ki <|
+                not_ge_of_lt ki <|
                   Nat.le_of_dvd (lt_of_lt_of_le ipos <| Nat.le_add_left _ _) <|
                     modEq_zero_iff_dvd.1 <| (jk.symm.add_right i).trans <| ji.of_dvd yd
             have : i % (4 * yn a1 i) = k % (4 * yn a1 i) := (ji.of_dvd yd).symm.trans jk

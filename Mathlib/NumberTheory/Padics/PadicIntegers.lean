@@ -197,11 +197,11 @@ theorem norm_add_eq_max_of_ne {q r : ℤ_[p]} : ‖q‖ ≠ ‖r‖ → ‖q + r
 
 theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
   by_contra fun hne =>
-    not_lt_of_ge (by rw [norm_add_eq_max_of_ne hne]; apply le_max_right) h
+    not_gt_of_le (by rw [norm_add_eq_max_of_ne hne]; apply le_max_right) h
 
 theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
   by_contra fun hne =>
-    not_lt_of_ge (by rw [norm_add_eq_max_of_ne hne]; apply le_max_left) h
+    not_gt_of_le (by rw [norm_add_eq_max_of_ne hne]; apply le_max_left) h
 
 @[simp]
 theorem padic_norm_e_of_padicInt (z : ℤ_[p]) : ‖(z : ℚ_[p])‖ = ‖z‖ := by simp [norm_def]

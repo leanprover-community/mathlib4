@@ -70,7 +70,7 @@ For example, if `prf : ¬ a < b`, ``flipNegatedComparison prf q(a < b)`` returns
 -/
 def flipNegatedComparison (prf : Expr) (e : Expr) : MetaM (Option Expr) :=
   match e.getAppFnArgs with
-  | (``LE.le, #[_, _, _, _]) => try? <| mkAppM ``lt_of_not_ge #[prf]
+  | (``LE.le, #[_, _, _, _]) => try? <| mkAppM ``gt_of_not_le #[prf]
   | (``LT.lt, #[_, _, _, _]) => try? <| mkAppM ``le_of_not_gt #[prf]
   | _ => throwError "Not a comparison (flipNegatedComparison): {e}"
 
@@ -185,7 +185,7 @@ def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
   | (false, Ineq.le, .const ``Int [], a, b) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
-      (← mkAppM ``lt_of_not_ge #[pf])
+      (← mkAppM ``gt_of_not_le #[pf])
   | _ => return none
 
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`

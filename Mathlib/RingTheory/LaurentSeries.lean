@@ -287,7 +287,7 @@ instance of_powerSeries_localization [CommRing R] :
       rw [mul_comm _ z]
       refine congr rfl ?_
       rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
-      exact le_of_not_ge h
+      exact ge_of_not_le h
   exists_of_eq {x y} := by
     rw [coe_algebraMap, ofPowerSeries_injective.eq_iff]
     rintro rfl
@@ -334,7 +334,7 @@ theorem coeff_coe (i : ℤ) :
     ((f : R⟦X⟧) : R⸨X⸩).coeff i =
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
-  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_lt,
+  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
       Int.natAbs_natCast]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
@@ -831,7 +831,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
     intro i hi x hx
     simp only [Set.mem_inter_iff, Set.mem_iInter, and_imp] at hx
     by_cases H : i < ℓ
-    exacts [hx.1 _ H, hx.2 _ (le_of_not_lt H) <| le_of_lt <| lt_max_of_lt_right hi]
+    exacts [hx.1 _ H, hx.2 _ (le_of_not_gt H) <| le_of_lt <| lt_max_of_lt_right hi]
   suffices (⋂ n ∈ Set.Iio ℓ, φ n) ∩ (⋂ n ∈ Set.Icc ℓ N, φ n) ∈ ℱ by
     exact ℱ.sets_of_superset this <| intersec₂.trans intersec₁
   /- To show that the intersection we have in sight is in `ℱ`, we use that it contains a double

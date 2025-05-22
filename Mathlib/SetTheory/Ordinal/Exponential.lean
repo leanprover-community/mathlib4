@@ -217,8 +217,8 @@ theorem opow_dvd_opow (a : Ordinal) {b c : Ordinal} (h : b ≤ c) : a ^ b ∣ a 
 
 theorem opow_dvd_opow_iff {a b c : Ordinal} (a1 : 1 < a) : a ^ b ∣ a ^ c ↔ b ≤ c :=
   ⟨fun h =>
-    le_of_not_lt fun hn =>
-      not_le_of_lt ((opow_lt_opow_iff_right a1).2 hn) <|
+    le_of_not_gt fun hn =>
+      not_ge_of_lt ((opow_lt_opow_iff_right a1).2 hn) <|
         le_of_dvd (opow_ne_zero _ <| one_le_iff_ne_zero.1 <| a1.le) h,
     opow_dvd_opow _⟩
 
@@ -278,7 +278,7 @@ theorem log_def {b : Ordinal} (h : 1 < b) (x : Ordinal) : log b x = pred (sInf {
   if_pos h
 
 theorem log_of_left_le_one {b : Ordinal} (h : b ≤ 1) (x : Ordinal) : log b x = 0 :=
-  if_neg h.not_lt
+  if_neg h.not_gt
 
 @[simp]
 theorem log_zero_left : ∀ b, log 0 b = 0 :=
@@ -286,7 +286,7 @@ theorem log_zero_left : ∀ b, log 0 b = 0 :=
 
 @[simp]
 theorem log_zero_right (b : Ordinal) : log b 0 = 0 := by
-  obtain hb | hb := lt_or_le 1 b
+  obtain hb | hb := lt_or_ge 1 b
   · rw [log_def hb, ← Ordinal.le_zero, pred_le, succ_zero]
     apply csInf_le'
     rw [mem_setOf, opow_one]
@@ -302,11 +302,11 @@ theorem succ_log_def {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
   let t := sInf { o : Ordinal | x < b ^ o }
   have : x < b ^ t := csInf_mem (log_nonempty hb)
   rcases zero_or_succ_or_limit t with (h | h | h)
-  · refine ((one_le_iff_ne_zero.2 hx).not_lt ?_).elim
+  · refine ((one_le_iff_ne_zero.2 hx).not_gt ?_).elim
     simpa only [h, opow_zero] using this
   · rw [show log b x = pred t from log_def hb x, succ_pred_iff_is_succ.2 h]
   · rcases (lt_opow_of_limit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
-    exact h₁.not_le.elim ((le_csInf_iff'' (log_nonempty hb)).1 le_rfl a h₂)
+    exact h₁.not_ge.elim ((le_csInf_iff'' (log_nonempty hb)).1 le_rfl a h₂)
 
 theorem lt_opow_succ_log_self {b : Ordinal} (hb : 1 < b) (x : Ordinal) :
     x < b ^ succ (log b x) := by
@@ -319,7 +319,7 @@ theorem opow_log_le_self (b : Ordinal) {x : Ordinal} (hx : x ≠ 0) : b ^ log b 
   rcases eq_or_ne b 0 with (rfl | b0)
   · exact (zero_opow_le _).trans (one_le_iff_ne_zero.2 hx)
   rcases lt_or_eq_of_le (one_le_iff_ne_zero.2 b0) with (hb | rfl)
-  · refine le_of_not_lt fun h => (lt_succ (log b x)).not_le ?_
+  · refine le_of_not_gt fun h => (lt_succ (log b x)).not_ge ?_
     have := @csInf_le' _ _ { o | x < b ^ o } _ h
     rwa [← succ_log_def hb hx] at this
   · rwa [one_opow, one_le_iff_ne_zero]
@@ -333,9 +333,9 @@ theorem opow_le_iff_le_log {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
     b ^ c ≤ x ↔ c ≤ log b x := by
   constructor <;>
   intro h
-  · apply le_of_not_lt
+  · apply le_of_not_gt
     intro hn
-    apply (lt_opow_succ_log_self hb x).not_le <|
+    apply (lt_opow_succ_log_self hb x).not_ge <|
       ((opow_le_opow_iff_right hb).2 <| succ_le_of_lt hn).trans h
   · exact ((opow_le_opow_iff_right hb).2 h).trans <| opow_log_le_self b hx
 
@@ -358,9 +358,9 @@ theorem le_log_of_opow_le {b x c : Ordinal} (hb : 1 < b) (h : b ^ c ≤ x) : c �
   · exact (opow_le_iff_le_log hb hx).1 h
 
 theorem opow_le_of_le_log {b x c : Ordinal} (hc : c ≠ 0) (h : c ≤ log b x) : b ^ c ≤ x := by
-  obtain hb | hb := le_or_lt b 1
+  obtain hb | hb := le_or_gt b 1
   · rw [log_of_left_le_one hb] at h
-    exact (h.not_lt (Ordinal.pos_iff_ne_zero.2 hc)).elim
+    exact (h.not_gt (Ordinal.pos_iff_ne_zero.2 hc)).elim
   · rwa [opow_le_iff_le_log' hb hc]
 
 /-- `opow b` and `log b` (almost) form a Galois connection.
@@ -391,7 +391,7 @@ theorem log_pos {b o : Ordinal} (hb : 1 < b) (ho : o ≠ 0) (hbo : b ≤ o) : 0 
 theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
   rcases eq_or_ne o 0 with (rfl | ho)
   · exact log_zero_right b
-  rcases le_or_lt b 1 with hb | hb
+  rcases le_or_gt b 1 with hb | hb
   · rcases le_one_iff.1 hb with (rfl | rfl)
     · exact log_zero_left o
     · exact log_one_left o
@@ -401,7 +401,7 @@ theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
 theorem log_mono_right (b : Ordinal) {x y : Ordinal} (xy : x ≤ y) : log b x ≤ log b y := by
   obtain rfl | hx := eq_or_ne x 0
   · simp_rw [log_zero_right, Ordinal.zero_le]
-  · obtain hb | hb := lt_or_le 1 b
+  · obtain hb | hb := lt_or_ge 1 b
     · exact (opow_le_iff_le_log hb (hx.bot_lt.trans_le xy).ne').1 <|
         (opow_log_le_self _ hx).trans xy
     · rw [log_of_left_le_one hb, log_of_left_le_one hb]
@@ -409,13 +409,13 @@ theorem log_mono_right (b : Ordinal) {x y : Ordinal} (xy : x ≤ y) : log b x �
 theorem log_le_self (b x : Ordinal) : log b x ≤ x := by
   obtain rfl | hx := eq_or_ne x 0
   · rw [log_zero_right]
-  · obtain hb | hb := lt_or_le 1 b
+  · obtain hb | hb := lt_or_ge 1 b
     · exact (right_le_opow _ hb).trans (opow_log_le_self b hx)
     · simp_rw [log_of_left_le_one hb, Ordinal.zero_le]
 
 @[simp]
 theorem log_one_right (b : Ordinal) : log b 1 = 0 := by
-  obtain hb | hb := lt_or_le 1 b
+  obtain hb | hb := lt_or_ge 1 b
   · exact log_eq_zero hb
   · exact log_of_left_le_one hb 1
 
@@ -480,7 +480,7 @@ theorem div_opow_log_lt {b : Ordinal} (o : Ordinal) (hb : 1 < b) : o / (b ^ log 
 
 theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y ≠ 0) :
     log b x + log b y ≤ log b (x * y) := by
-  obtain hb | hb := lt_or_le 1 b
+  obtain hb | hb := lt_or_ge 1 b
   · rw [← opow_le_iff_le_log hb (mul_ne_zero hx hy), opow_add]
     exact mul_le_mul' (opow_log_le_self b hx) (opow_log_le_self b hy)
   · simpa only [log_of_left_le_one hb, zero_add] using le_rfl

@@ -32,7 +32,7 @@ private lemma iter_fp_bound (n k : ℕ) :
   if h : (k + n / k) / 2 < k then
     simpa [if_pos h] using iter_fp_bound _ _
   else
-    simpa [if_neg h] using Nat.le_of_not_lt h
+    simpa [if_neg h] using Nat.le_of_not_gt h
 
 private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
   | 0, _ => by rw [Nat.mul_zero, Nat.zero_mul]; exact zero_le _
@@ -54,7 +54,7 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
     apply Nat.mul_le_of_le_div
     apply Nat.le_of_add_le_add_left (a := guess)
     rw [← Nat.mul_two, ← le_div_iff_mul_le]
-    · exact Nat.le_of_not_lt h
+    · exact Nat.le_of_not_gt h
     · exact Nat.zero_lt_two
 
 lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) :
@@ -201,7 +201,7 @@ lemma not_exists_sq (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t *
   rintro ⟨t, rfl⟩
   have h1 : m < t := Nat.mul_self_lt_mul_self_iff.1 hl
   have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.1 hr
-  exact (not_lt_of_ge <| le_of_lt_succ h2) h1
+  exact (not_gt_of_le <| le_of_lt_succ h2) h1
 
 lemma not_exists_sq' : m ^ 2 < n → n < (m + 1) ^ 2 → ¬∃ t, t ^ 2 = n := by
   simpa only [Nat.pow_two] using not_exists_sq

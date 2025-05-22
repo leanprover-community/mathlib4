@@ -116,7 +116,7 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
   prime_def_lt.trans <|
     and_congr_right fun p2 =>
       forall_congr' fun m =>
-        ⟨fun h m2 l d => not_lt_of_ge m2 ((h l d).symm ▸ by decide), fun h l d => by
+        ⟨fun h m2 l d => not_gt_of_le m2 ((h l d).symm ▸ by decide), fun h l d => by
           rcases m with (_ | _ | m)
           · rw [eq_zero_of_zero_dvd d] at p2
             revert p2
@@ -236,7 +236,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     by_cases h : n < k * k
     · have pp : Prime n :=
         prime_def_le_sqrt.2
-          ⟨n2, fun m m2 l d => not_lt_of_ge l <| lt_of_lt_of_le (sqrt_lt.2 h) (a m m2 d)⟩
+          ⟨n2, fun m m2 l d => not_gt_of_le l <| lt_of_lt_of_le (sqrt_lt.2 h) (a m m2 d)⟩
       simpa only [k, h] using
         ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
     have k2 : 2 ≤ k := by
@@ -279,7 +279,7 @@ theorem minFac_dvd (n : ℕ) : minFac n ∣ n :=
 
 theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
   let ⟨f2, fd, a⟩ := minFac_has_prop n1
-  prime_def_lt'.2 ⟨f2, fun m m2 l d => not_le_of_gt l (a m m2 (d.trans fd))⟩
+  prime_def_lt'.2 ⟨f2, fun m m2 l d => not_ge_of_lt l (a m m2 (d.trans fd))⟩
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
   by_cases n1 : n = 1
@@ -302,7 +302,7 @@ theorem le_minFac {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, Prime p → 
 
 theorem le_minFac' {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, 2 ≤ p → p ∣ n → m ≤ p :=
   ⟨fun h p (pp : 1 < p) d =>
-    h.elim (by rintro rfl; cases not_le_of_lt pp (le_of_dvd (by decide) d)) fun h =>
+    h.elim (by rintro rfl; cases not_ge_of_lt pp (le_of_dvd (by decide) d)) fun h =>
       le_trans h <| minFac_le_of_dvd pp d,
     fun H => le_minFac.2 fun p pp d => H p pp.two_le d⟩
 
@@ -380,7 +380,7 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
     rw [eq_comm, Nat.minFac_eq_one_iff] at this
     subst this
-    exact not_lt_of_le (le_of_dvd lb h) h'
+    exact not_gt_of_le (le_of_dvd lb h) h'
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by

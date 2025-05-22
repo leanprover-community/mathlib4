@@ -153,10 +153,10 @@ def LocallyFiniteOrder.ofIcc' (α : Type*) [Preorder α] [DecidableLE α]
   finsetIoc a b := {x ∈ finsetIcc a b | ¬x ≤ a}
   finsetIoo a b := {x ∈ finsetIcc a b | ¬x ≤ a ∧ ¬b ≤ x}
   finset_mem_Icc := mem_Icc
-  finset_mem_Ico a b x := by rw [Finset.mem_filter, mem_Icc, and_assoc, lt_iff_le_not_le]
-  finset_mem_Ioc a b x := by rw [Finset.mem_filter, mem_Icc, and_right_comm, lt_iff_le_not_le]
+  finset_mem_Ico a b x := by rw [Finset.mem_filter, mem_Icc, and_assoc, lt_iff_le_not_ge]
+  finset_mem_Ioc a b x := by rw [Finset.mem_filter, mem_Icc, and_right_comm, lt_iff_le_not_ge]
   finset_mem_Ioo a b x := by
-    rw [Finset.mem_filter, mem_Icc, and_and_and_comm, lt_iff_le_not_le, lt_iff_le_not_le]
+    rw [Finset.mem_filter, mem_Icc, and_and_and_comm, lt_iff_le_not_ge, lt_iff_le_not_ge]
 
 /-- A constructor from a definition of `Finset.Icc` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrder.ofIcc'`, this one requires `PartialOrder` but only
@@ -183,7 +183,7 @@ def LocallyFiniteOrderTop.ofIci' (α : Type*) [Preorder α] [DecidableLE α]
   finsetIci := finsetIci
   finsetIoi a := {x ∈ finsetIci a | ¬x ≤ a}
   finset_mem_Ici := mem_Ici
-  finset_mem_Ioi a x := by rw [mem_filter, mem_Ici, lt_iff_le_not_le]
+  finset_mem_Ioi a x := by rw [mem_filter, mem_Ici, lt_iff_le_not_ge]
 
 /-- A constructor from a definition of `Finset.Ici` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrderTop.ofIci'`, this one requires `PartialOrder` but
@@ -205,7 +205,7 @@ def LocallyFiniteOrderBot.ofIic' (α : Type*) [Preorder α] [DecidableLE α]
   finsetIic := finsetIic
   finsetIio a := {x ∈ finsetIic a | ¬a ≤ x}
   finset_mem_Iic := mem_Iic
-  finset_mem_Iio a x := by rw [mem_filter, mem_Iic, lt_iff_le_not_le]
+  finset_mem_Iio a x := by rw [mem_filter, mem_Iic, lt_iff_le_not_ge]
 
 /-- A constructor from a definition of `Finset.Iic` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrderBot.ofIic'`, this one requires `PartialOrder` but

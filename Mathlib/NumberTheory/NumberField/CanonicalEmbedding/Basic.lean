@@ -73,11 +73,11 @@ theorem nnnorm_eq [NumberField K] (x : K) :
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
-  obtain hr | hr := lt_or_le r 0
+  obtain hr | hr := lt_or_ge r 0
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
-    · exact (hr.trans_le (norm_nonneg _)).not_le
-    · exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
+    · exact (hr.trans_le (norm_nonneg _)).not_ge
+    · exact fun h => hr.not_ge (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
@@ -90,7 +90,7 @@ def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
 
 theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
-  obtain hr | _ := lt_or_le r 0
+  obtain hr | _ := lt_or_ge r 0
   · simp [Metric.closedBall_eq_empty.2 hr]
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
@@ -989,7 +989,7 @@ theorem negAt_signSet_apply_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     (negAt (signSet x) x).1 w = ‖x.1 w‖ := by
   by_cases hw : x.1 w ≤ 0
   · rw [negAt_apply_isReal_and_mem _ hw, Real.norm_of_nonpos hw]
-  · rw [negAt_apply_isReal_and_not_mem _ hw, Real.norm_of_nonneg (lt_of_not_ge hw).le]
+  · rw [negAt_apply_isReal_and_not_mem _ hw, Real.norm_of_nonneg (gt_of_not_le hw).le]
 
 @[simp]
 theorem negAt_signSet_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
@@ -1069,7 +1069,7 @@ theorem iUnion_negAt_plusPart_union :
     · refine Or.inl ⟨signSet x,
         (mem_negAt_plusPart_of_mem A hA h hx).mpr ⟨fun w hw ↦ ?_, fun w hw ↦ ?_⟩⟩
       · exact lt_of_le_of_ne hw (hx w)
-      · exact lt_of_le_of_ne (lt_of_not_ge hw).le (Ne.symm (hx w))
+      · exact lt_of_le_of_ne (gt_of_not_le hw).le (Ne.symm (hx w))
 
 open MeasureTheory
 
