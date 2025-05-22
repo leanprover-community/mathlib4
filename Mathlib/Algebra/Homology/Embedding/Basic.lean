@@ -166,6 +166,36 @@ lemma f_eq_of_r_eq_some {i : ι} {i' : ι'} (hi : e.r i' = some i) :
 
 end Embedding
 
+section
+
+variable {A : Type*} [AddCommSemigroup A] [IsRightCancelAdd A] [One A]
+
+/-- The embedding from `up A` to itself via (· + a). -/
+@[simps!]
+def embeddingUpAdd (a : A) : Embedding (up A) (up A) :=
+  Embedding.mk' _ _ (· + a)
+    (fun _ _ h => by simpa using h)
+    (by dsimp; simp_rw [add_right_comm _ a 1, add_right_cancel_iff, implies_true])
+
+instance (a : A) : (embeddingUpAdd a).IsRelIff := by dsimp [embeddingUpAdd]; infer_instance
+
+instance (a : A) : (embeddingUpAdd a).IsTruncGE where
+  mem_next {j _} h := ⟨j + 1, (add_right_comm _ _ _).trans h⟩
+
+/-- The embedding from `down A` to itself via (· + a). -/
+@[simps!]
+def embeddingDownAdd (a : A) : Embedding (down A) (down A) :=
+  Embedding.mk' _ _ (· + a)
+    (fun _ _ h => by simpa using h)
+    (by dsimp; simp_rw [add_right_comm _ a 1, add_right_cancel_iff, implies_true])
+
+instance (a : A) : (embeddingDownAdd a).IsRelIff := by dsimp [embeddingDownAdd]; infer_instance
+
+instance (a : A) : (embeddingDownAdd a).IsTruncLE where
+  mem_prev {_ x} h := ⟨x + 1, (add_right_comm _ _ _).trans h⟩
+
+end
+
 /-- The obvious embedding from `up ℕ` to `up ℤ`. -/
 @[simps!]
 def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=

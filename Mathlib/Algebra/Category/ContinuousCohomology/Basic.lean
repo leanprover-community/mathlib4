@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard Hill, Andrew Yang
 -/
 import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
+import Mathlib.Algebra.Homology.Embedding.Restriction
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.CategoryTheory.Action.Limits
 import Mathlib.Topology.ContinuousMap.Algebra
@@ -146,7 +147,8 @@ instance : (invariants R G).Additive where
 /-- `homogeneousCochains R G` is the functor taking
 an `R`-linear `G`-representation to the complex of homogeneous cochains. -/
 def homogeneousCochains : Action (TopModuleCat R) G ⥤ CochainComplex (TopModuleCat R) ℕ :=
-  multiInd R G ⋙ (invariants R G).mapHomologicalComplex _
+  multiInd R G ⋙ (invariants R G).mapHomologicalComplex _ ⋙
+    (ComplexShape.embeddingUpAdd 1).restrictionFunctor _
 
 /-- `continuousCohomology R G n` is the functor taking
 an `R`-linear `G`-representation to its `n`-th continuous homology. -/
