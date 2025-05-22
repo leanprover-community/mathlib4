@@ -19,7 +19,7 @@ variable {R : Type*} [CommRing R]
 
 #check ringKrullDim_quotient
 /-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
-noncomputable def Ideal.primeSpectrum_quotient_orderIso_zeroLocus (I : Ideal R) :
+noncomputable def Ideal.primeSpectrumQuotientOrderIsoZeroLocus (I : Ideal R) :
     PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
   toFun p := ⟨(Ideal.Quotient.mk I).specComap p,
     I.mk_ker.symm.trans_le (Ideal.ker_le_comap (Ideal.Quotient.mk I))⟩
@@ -38,6 +38,19 @@ noncomputable def Ideal.primeSpectrum_quotient_orderIso_zeroLocus (I : Ideal R) 
     show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
     rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective,
       PrimeSpectrum.asIdeal_le_asIdeal]
+
+variable {R : Type*} [CommSemiring R]
+
+noncomputable def Ideal.primeSpectrumLocalizationAtPrime (I : Ideal R) [I.IsPrime] :
+    PrimeSpectrum (Localization.AtPrime I) ≃o ({ p : PrimeSpectrum R // p.1 ≤ I }) :=
+  let e := IsLocalization.AtPrime.orderIsoOfPrime (Localization.AtPrime I) I
+  {
+  toFun p := ⟨⟨(e ⟨p.1, p.2⟩).1, (e ⟨p.1, p.2⟩).2.1⟩, (e ⟨p.1, p.2⟩).2.2⟩
+  invFun p := ⟨(e.symm ⟨p.1.1, p.1.2, p.2⟩).1, (e.symm ⟨p.1.1, p.1.2, p.2⟩).2⟩
+  left_inv p := by simp only [Subtype.coe_eta, OrderIso.symm_apply_apply]
+  right_inv p := by simp only [Subtype.coe_eta, OrderIso.apply_symm_apply]
+  map_rel_iff' := e.le_iff_le
+}
 
 end orderIso
 
@@ -60,7 +73,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
 
 instance [Nontrivial M] : FiniteDimensionalOrder (Module.support R M) := by
   rw [support_eq_zeroLocus]
-  have := primeSpectrum_quotient_orderIso_zeroLocus (annihilator R M)
+  have := primeSpectrumQuotientOrderIsoZeroLocus (annihilator R M)
   have : IsLocalRing (R ⧸ annihilator R M) := by
     have : annihilator R M ≤ maximalIdeal R := by
       sorry
@@ -117,7 +130,7 @@ theorem PrimeSpectrum.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p
       ∃ q : PrimeSpectrum R, x ∈ q.1 ∧ p₀ < q ∧ q.1 < 𝔪 := by
   by_cases hn : x ∈ p₀.1
   · exact ⟨p₁, h₀.le hn, h₀, h₁⟩
-  let f := p₀.1.primeSpectrum_quotient_orderIso_zeroLocus.symm
+  let e := p₀.1.primeSpectrumQuotientOrderIsoZeroLocus.symm
   obtain ⟨q, hq⟩ := (p₀.1 + span {x}).nonempty_minimalPrimes <|
     sup_le (IsLocalRing.le_maximalIdeal_of_isPrime p₀.1) ((span_singleton_le_iff_mem 𝔪).mpr hx)
       |>.trans_lt (IsMaximal.isPrime' 𝔪).1.lt_top |>.ne
@@ -126,21 +139,20 @@ theorem PrimeSpectrum.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p
   have hxq : x ∈ q.1 := le_sup_right.trans hq.1.2 (mem_span_singleton_self x)
   refine ⟨q, hxq, lt_of_le_not_le (le_sup_left.trans hq.1.2) fun h ↦ hn (h hxq), ?_⟩
   refine lt_of_le_of_ne (IsLocalRing.le_maximalIdeal_of_isPrime q.1) fun hqm ↦ ?_
-  have h : (f ⟨q, le_sup_left.trans hq.1.2⟩).1.height ≤ 1 :=
+  have h : (e ⟨q, le_sup_left.trans hq.1.2⟩).1.height ≤ 1 :=
     map_height_le_one_of_mem_minimalPrimes hq
   simp_rw [show q = ⟨𝔪, inferInstance⟩ from PrimeSpectrum.ext_iff.mpr hqm] at h
-  have hph : (f ⟨p₁, h₀.le⟩).1.height ≤ 0 := by
+  have hph : (e ⟨p₁, h₀.le⟩).1.height ≤ 0 := by
     refine Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance ?_)
     simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₁]
-  refine ENat.not_lt_zero (f ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
+  refine ENat.not_lt_zero (e ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
   simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₀]
 
 theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.1) :
       ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧ p₀ < q ∧ q < p₂ := by
-  by_cases h : x ∈ p₁.1
-  · exact ⟨p₁, h, h₀, h₁⟩
-  sorry
+  let e := p₂.1.primeSpectrumLocalizationAtPrime.symm
+  sorry--have := exist_mem_one_of_mem_maximal_ideal
 
 /-- Let $R$ be a Noetherian ring, $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a
   chain of primes, $x \in \mathfrak{p}_n$. Then we can find a chain of primes
