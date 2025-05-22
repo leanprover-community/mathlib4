@@ -589,6 +589,13 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ :=
   ((map (.fst _ _)).prod (map (.snd _ _))).toMulEquiv
   ((coeHom _).prodMap (coeHom _)).toHomUnits rfl rfl
 
+@[deprecated Units.prodUnits (since := "2025-05-22")]
+def _root_.MulEquiv.prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ := Units.prodUnits
+
+@[deprecated AddUnits.prodAddUnits (since := "2025-05-22")]
+def _root_.MulEquiv.prodAddUnits {M N : Type*} [AddMonoid M] [AddMonoid N] :
+    AddUnits (M × N) ≃+ AddUnits M × AddUnits N := AddUnits.prodAddUnits
+
 /-- The first element of the units of the product of two monoids. -/
 @[to_additive (attr := simps!) "The first element of the additive units of the
   product of two additive monoids."]
@@ -653,20 +660,13 @@ lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x
   mp h := ⟨h.unit.fst.isUnit, h.unit.snd.isUnit⟩
   mpr h := (prod (h.1.unit, h.2.unit)).isUnit
 
-@[deprecated Units.prodUnits (since := "2025-05-22")]
-def _root_.MulEquiv.prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ := Units.prodUnits
-
-@[deprecated AddUnits.prodAddUnits (since := "2025-05-22")]
-def _root_.MulEquiv.prodAddUnits {M N : Type*} [AddMonoid M] [AddMonoid N] :
-    AddUnits (M × N) ≃+ AddUnits M × AddUnits N := AddUnits.prodAddUnits
-
 @[to_additive (attr := simp) toMonoidHom_prodUnits_eq_fst_prod_snd]
 theorem toMonoidHom_prodUnits_eq_fst_prod_snd :
     (prodUnits (M := M) (N := N)).toMonoidHom = fst.prod snd := rfl
 
 @[to_additive (attr := simp) toMonoidHom_prodUnits_symm_eq_prod]
 theorem toMonoidHom_prodUnits_symm_eq_prod :
-    (prodUnits (M := M) (N := N)).symm.toMonoidHom = Units.prod := rfl
+    (prodUnits (M := M) (N := N)).symm.toMonoidHom = prod := rfl
 
 open MulOpposite
 
