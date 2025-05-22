@@ -296,7 +296,7 @@ lemma MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt (hf : MeromorphicAt f x) :
 alias MeromorphicAt.eq_nhdNE_toMeromorphicNFAt := MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt
 
 /-- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood. -/
-lemma AnalyticAt.eventuallyEq_nhds_of_nhdsNE {g : 𝕜 → E} {z₀ : 𝕜}
+private lemma AnalyticAt.eventuallyEq_nhds_of_nhdsNE {g : 𝕜 → E} {z₀ : 𝕜}
     (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) (hfg : f =ᶠ[𝓝[≠] z₀] g) :
     f =ᶠ[𝓝 z₀] g := by
   rcases ((hf.sub hg).eventually_eq_zero_or_eventually_ne_zero) with h | h
