@@ -318,23 +318,23 @@ If the monoid equiv `f : α ≃* β` commutes with `normalize` then, for `a : α
 bijection between the `normalizedFactors` of `a` and of `f a`.
 -/
 def normalizedFactorsEquiv [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
-    {x | x ∈ normalizedFactors a} ≃ {y | y ∈ normalizedFactors (f a)} :=
+    {x // x ∈ normalizedFactors a} ≃ {y // y ∈ normalizedFactors (f a)} :=
   Equiv.subtypeEquiv f fun x ↦
     if ha : a = 0 then by simp [ha] else by
       simp [mem_normalizedFactors_iff' ha,
         mem_normalizedFactors_iff' (EmbeddingLike.map_ne_zero_iff.mpr ha), map_dvd_iff_dvd_symm,
         MulEquiv.irreducible_iff, he]
 
-@[simp, nolint simpNF]
+@[simp]
 theorem normalizedFactorsEquiv_apply [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x))
     {a p : α} (hp : p ∈ normalizedFactors a) :
-    ↑(normalizedFactorsEquiv he a ⟨p, hp⟩) = f p := rfl
+    normalizedFactorsEquiv he a ⟨p, hp⟩ = f p := rfl
 
-@[simp, nolint simpNF]
+@[simp]
 theorem normalizedFactorsEquiv_symm_apply [DecidableEq α]
     (he : ∀ x, normalize (f x) = f (normalize x))
     {a : α} {q : β} (hq : q ∈ normalizedFactors (f a)) :
-    ((normalizedFactorsEquiv he a).symm ⟨q, hq⟩) = (MulEquivClass.toMulEquiv f).symm q := rfl
+    (normalizedFactorsEquiv he a).symm ⟨q, hq⟩ = (MulEquivClass.toMulEquiv f).symm q := rfl
 
 end UniqueFactorizationMonoid
 
