@@ -120,7 +120,7 @@ lemma variance_of_not_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ
 
 theorem ofReal_variance [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
     .ofReal (variance X μ) = evariance X μ := by
-  rw [variance, ENNReal.ofReal_toReal]
+  rw [variance, ENNReal.ofReal_toReal _]
   exact evariance_ne_top hX
 
 protected alias _root_.MeasureTheory.MemLp.evariance_lt_top := evariance_lt_top

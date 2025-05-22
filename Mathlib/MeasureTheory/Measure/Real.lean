@@ -57,7 +57,7 @@ theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
 
 @[simp]
 theorem measureReal_univ_pos [IsFiniteMeasure μ] [NeZero μ] : 0 < μ.real Set.univ :=
-  ENNReal.toReal_pos (NeZero.ne (μ Set.univ)) (measure_ne_top μ univ)
+  ENNReal.toReal_pos (NeZero.ne (μ Set.univ))
 
 theorem measureReal_univ_ne_zero [IsFiniteMeasure μ] [NeZero μ] : μ.real Set.univ ≠ 0 :=
   measureReal_univ_pos.ne'
@@ -180,7 +180,7 @@ theorem measureReal_inter_add_diff₀ (ht : NullMeasurableSet t μ)
     (h : μ s ≠ ∞ := by finiteness) :
     μ.real (s ∩ t) + μ.real (s \ t) = μ.real s := by
   simp only [measureReal_def]
-  rw [← ENNReal.toReal_add, measure_inter_add_diff₀ s ht]
+  rw [← ENNReal.toReal_add _ _, measure_inter_add_diff₀ s ht]
   · exact measure_ne_top_of_subset inter_subset_left h
   · exact measure_ne_top_of_subset diff_subset h
 
@@ -188,7 +188,7 @@ theorem measureReal_union_add_inter₀ (ht : NullMeasurableSet t μ)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
     μ.real (s ∪ t) + μ.real (s ∩ t) = μ.real s + μ.real t := by
   have : μ (s ∪ t) ≠ ∞ :=
-    ((measure_union_le _ _).trans_lt (ENNReal.add_lt_top.2 ⟨h₁.lt_top, h₂.lt_top⟩ )).ne
+    ((measure_union_le _ _).trans_lt (ENNReal.add_lt_top.2 ⟨h₁.lt_top, h₂.lt_top⟩)).ne
   rw [← measureReal_inter_add_diff₀ ht this, Set.union_inter_cancel_right, union_diff_right,
     ← measureReal_inter_add_diff₀ ht h₁]
   ac_rfl
@@ -231,7 +231,7 @@ theorem measureReal_inter_add_diff (ht : MeasurableSet t)
     (h : μ s ≠ ∞ := by finiteness) :
     μ.real (s ∩ t) + μ.real (s \ t) = μ.real s := by
   simp only [Measure.real]
-  rw [← ENNReal.toReal_add, measure_inter_add_diff _ ht]
+  rw [← ENNReal.toReal_add _ _, measure_inter_add_diff _ ht]
   · exact measure_ne_top_of_subset inter_subset_left h
   · exact measure_ne_top_of_subset diff_subset h
 
@@ -254,7 +254,7 @@ lemma measureReal_symmDiff_eq (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
     μ.real (s ∆ t) = μ.real (s \ t) + μ.real (t \ s) := by
   simp only [Measure.real]
-  rw [← ENNReal.toReal_add, measure_symmDiff_eq hs.nullMeasurableSet ht.nullMeasurableSet]
+  rw [← ENNReal.toReal_add _ _, measure_symmDiff_eq hs.nullMeasurableSet ht.nullMeasurableSet]
   · exact measure_ne_top_of_subset diff_subset h₁
   · exact measure_ne_top_of_subset diff_subset h₂
 
@@ -383,7 +383,7 @@ theorem sum_measureReal_le_measureReal_univ [IsFiniteMeasure μ] {s : Finset ι}
     (∑ i ∈ s, μ.real (t i)) ≤ μ.real univ := by
   simp only [measureReal_def]
   rw [← ENNReal.toReal_sum (fun i hi ↦ measure_ne_top _ _)]
-  apply ENNReal.toReal_mono (measure_ne_top _ _)
+  apply ENNReal.toReal_mono (by finiteness)
   exact sum_measure_le_measure_univ (fun i mi ↦ (h i mi).nullMeasurableSet) H.aedisjoint
 
 theorem measureReal_add_apply {μ₁ μ₂ : Measure α} (h₁ : μ₁ s ≠ ∞ := by finiteness)
@@ -400,7 +400,7 @@ theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMe
   apply exists_nonempty_inter_of_measure_univ_lt_sum_measure μ
     (fun i mi ↦ (h i mi).nullMeasurableSet)
   simp only [Measure.real] at H
-  apply (ENNReal.toReal_lt_toReal (measure_ne_top _ _) _).1
+  apply (ENNReal.toReal_lt_toReal (by finiteness) _).1
   · convert H
     rw [ENNReal.toReal_sum (fun i hi ↦ measure_ne_top _ _)]
   · exact (ENNReal.sum_lt_top.mpr (fun i hi ↦ measure_lt_top ..)).ne
