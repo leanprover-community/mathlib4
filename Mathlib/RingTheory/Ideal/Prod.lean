@@ -25,7 +25,7 @@ namespace Ideal
 def prod : Ideal (R × S) := I.comap (RingHom.fst R S) ⊓ J.comap (RingHom.snd R S)
 
 @[simp]
-theorem coe_prod (I : Ideal R) (J : Ideal S) : (I.prod J : Set (R × S)) = (I : Set _) ×ˢ J :=
+theorem coe_prod (I : Ideal R) (J : Ideal S) : ↑(prod I J) = (I ×ˢ J : Set (R × S)) :=
   rfl
 
 @[simp]
