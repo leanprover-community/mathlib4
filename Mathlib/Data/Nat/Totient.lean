@@ -128,7 +128,7 @@ theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
     haveI : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
     simp only [← ZMod.card_units_eq_totient]
     rw [Fintype.card_congr (Units.mapEquiv (ZMod.chineseRemainder h).toMulEquiv).toEquiv,
-      Fintype.card_congr (@Units.prodUnits (ZMod m) (ZMod n) _ _).toEquiv, Fintype.card_prod]
+      Fintype.card_congr (@Units.prodEquiv (ZMod m) (ZMod n) _ _).toEquiv, Fintype.card_prod]
 
 /-- For `d ∣ n`, the totient of `n/d` equals the number of values `k < n` such that `gcd n k = d` -/
 theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
