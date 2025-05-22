@@ -40,17 +40,20 @@ private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiab
   exact hf.comp (UpperHalfPlane.mdifferentiable_smul hg)
 
 private abbrev J : GL (Fin 2) ℝ :=
-  ⟨!![1, 0; 0, -1], !![1, 0; 0, -1],
-    by simp [Matrix.one_fin_two], by simp [Matrix.one_fin_two]⟩
+  ⟨!![1, 0; 0, -1], !![1, 0; 0, -1], by simp [Matrix.one_fin_two], by simp [Matrix.one_fin_two]⟩
+
+private lemma J_sq : J ^2 = 1 := by
+  ext : 1
+  simp [sq, Matrix.mul_fin_two, Matrix.one_fin_two]
 
 private lemma J_smul (τ : ℍ) :
     J • τ = ofComplex (-(conj ↑τ)) := by
   ext
-  simp [J, UpperHalfPlane.coe_smul, σ, if_neg (show ¬(1 : ℝ) < 0 by norm_num), num, denom,
+  simp [UpperHalfPlane.coe_smul, σ, if_neg (show ¬(1 : ℝ) < 0 by norm_num), num, denom,
     div_neg, ofComplex_apply_of_im_pos (by simpa using τ.im_pos : 0 < (-(starRingEnd ℂ) ↑τ).im)]
 
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
-    (f ∣[k] J) = fun τ : ℍ ↦ -conj (f <| ofComplex <| -(conj ↑τ)) := by
+    f ∣[k] J = fun τ : ℍ ↦ -conj (f <| ofComplex <| -(conj ↑τ)) := by
   ext τ
   simp only [slash_def]
   have detj : J.det = -1 := by ext; simp [J]
@@ -77,10 +80,7 @@ lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) �
     (k : ℤ) (g : GL (Fin 2) ℝ) : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
   rcases g.det_ne_zero.lt_or_lt with hg | hg
   · have : g = J * (J * g) := by
-      rw [← mul_assoc]
-      conv_lhs => rw [← one_mul g]
-      congr 1
-      ext; simp [Matrix.one_fin_two]
+      rw [← mul_assoc, ← sq, J_sq, one_mul]
     rw [this, SlashAction.slash_mul]
     apply (hf.slashJ k).slash_of_pos
     rw [map_mul, Units.val_mul, g.val_det_apply]
