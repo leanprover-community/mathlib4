@@ -183,10 +183,11 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isBool .. => failure
   | .isNat _ lit p =>
     if 0 < lit.natLit! then
-      let _a ← synthInstanceQ q(Semiring $α)
+      let _a ← synthInstanceQ q(AddMonoidWithOne $α)
       let _a ← synthInstanceQ q(PartialOrder $α)
-      let _a ← synthInstanceQ q(IsOrderedRing $α)
-      let _a ← synthInstanceQ q(Nontrivial $α)
+      let _a ← synthInstanceQ q(AddLeftMono $α)
+      let _a ← synthInstanceQ q(ZeroLEOneClass $α)
+      let _a ← synthInstanceQ q(NeZero (1 : $α))
       assumeInstancesCommute
       have p : Q(NormNum.IsNat $e $lit) := p
       haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
