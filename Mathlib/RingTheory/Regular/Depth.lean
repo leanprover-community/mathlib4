@@ -321,9 +321,8 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
 variable {M N : ModuleCat.{max u v} R} [UnivLE.{max u v, w}]
 
 --lemma_213
-noncomputable def addEquivHomQuotientRegularExt [IsNoetherianRing R]
-    [Module.Finite R M] [Module.Finite R N]
-    {rs : List R} (hr : IsWeaklyRegular M rs) (h : ∀ r : R, r ∈ rs → r ∈ Module.annihilator R N) :
+noncomputable def addEquivHomQuotientRegularExt {rs : List R} (hr : IsWeaklyRegular M rs)
+    (h : ∀ r : R, r ∈ rs → r ∈ Module.annihilator R N) :
     (N →ₗ[R] M ⧸ (ofList rs • ⊤ : Submodule R M)) ≃+ Ext.{w} N M rs.length := by
   generalize h' : rs.length = n
   induction' n with n hn generalizing M rs
@@ -343,8 +342,9 @@ noncomputable def addEquivHomQuotientRegularExt [IsNoetherianRing R]
           exact h _ (List.mem_of_mem_take h'')
         · apply List.length_take_of_le
           simp [h']
-      exact equiv.symm.subsingleton_congr.mpr (subsingleton_linearMap_iff.mpr
-        ⟨rs[n], h _ (List.getElem_mem _), (RingTheory.Sequence.isWeaklyRegular_iff M rs).mp hr _ _⟩)
+      rw [equiv.symm.subsingleton_congr]
+      apply linearMap_subsingleton_of_mem_annihilator _ (h rs[n] (List.getElem_mem _))
+      exact (RingTheory.Sequence.isWeaklyRegular_iff M rs).mp hr _ _
     match rs with
     | [] => absurd h'; simp
     | r :: rs =>
