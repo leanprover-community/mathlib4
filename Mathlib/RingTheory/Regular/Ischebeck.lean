@@ -88,6 +88,11 @@ universe u v
 
 variable {R : Type u} [CommRing R]
 
+local instance (I : Ideal R) [Small.{v, u} R] : Small.{v, u} (R ⧸ I) :=
+  have : Function.Surjective ((Ideal.Quotient.mk I).comp (Shrink.ringEquiv R).toRingHom) := by
+    simpa using Ideal.Quotient.mk_surjective
+  Small.mk' (RingHom.quotientKerEquivOfSurjective this).symm.toEquiv
+
 local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
   --CategoryTheory.HasExt.standard (ModuleCat.{v} R)
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
@@ -104,8 +109,7 @@ lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R
 
 theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
-    [Small.{v, u} R] [Small.{v, u} (R ⧸ maximalIdeal R)] :
-    moduleDepth N M ≥ IsLocalRing.depth M -
+    [Small.{v} R] : moduleDepth N M ≥ IsLocalRing.depth M -
     (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) := by
   generalize dim :
     ((Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N)).toNat = r
@@ -312,10 +316,8 @@ lemma quotient_prime_ringKrullDim_ne_bot {P : Ideal R} (prime : P.IsPrime) :
         Quotient.nontrivial prime.ne_top'))
 
 theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing R]
-    [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)] [Small.{v, u} R]
-    (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M]
-    (P : Ideal R) (ass : P ∈ associatedPrimes R M) [Small.{v, u} (R ⧸ P)] :
-    IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot
+    [Small.{v} R] (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] (P : Ideal R)
+    (ass : P ∈ associatedPrimes R M) : IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot
       (quotient_prime_ringKrullDim_ne_bot ass.1) := by
   let _ := Quotient.nontrivial ass.1.ne_top'
   let _ : Module.Finite R (Shrink.{v} (R ⧸ P)) :=
