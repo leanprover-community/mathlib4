@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Regular.Ischebeck
 import Mathlib.RingTheory.KrullDimension.Regular
 import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.Spectrum.Prime.Module
 
 /-!
 # Definition of Cohen-Macaulay Ring
@@ -273,11 +274,23 @@ lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module
   rw [List.length_map, len]
 
 lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay [Small.{v} (R ⧸ p)]
-    [M.IsCohenMacaulay] : Module.supportDim Rₚ Mₚ = p.depth M := by
+    [Module.Finite R M] [M.IsCohenMacaulay] [Nontrivial Mₚ] :
+    Module.supportDim Rₚ Mₚ = p.depth M := by
+  let _ : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
   have : p.depth M ≠ ⊤ := sorry
   rcases ENat.ne_top_iff_exists.mp this with ⟨n, hn⟩
   induction' n with n ih generalizing M Mₚ
-  · sorry
+  · simp only [← hn, CharP.cast_eq_zero, WithBot.coe_zero]
+    have : p ∈ associatedPrimes R M := sorry
+    have : Module.support Rₚ Mₚ = {⟨maximalIdeal Rₚ, Ideal.IsMaximal.isPrime' _⟩} := by
+      apply le_antisymm
+      · intro I hI
+        --use the minimality of `p`
+        sorry
+      · simpa using IsLocalRing.maximalIdeal_mem_support Rₚ Mₚ
+    have : Unique (Module.support Rₚ Mₚ) := by
+      simpa [this] using Set.uniqueSingleton _
+    exact Order.krullDim_eq_zero_of_unique
   · sorry
 
 lemma isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay [M.IsCohenMacaulay] :
