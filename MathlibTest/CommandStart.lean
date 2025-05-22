@@ -251,8 +251,18 @@ example {a : α} (_ : a ≼ a) : 0 = 0 := rfl
 
 end List
 
--- Test that the space between `aesop` and `(rule_sets ...)` is not linted.
-@[aesop (rule_sets := [builtin]) safe apply] example : True := trivial
+/--
+warning: extra space in the source
+
+This part of the code
+  '@[aesop  (rule_sets'
+should be written as
+  '@[aesop (rule_sets'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+@[aesop  (rule_sets := [builtin]) safe apply] example : True := trivial
 
 -- Test that `Prop` and `Type` that are not escaped with `«...»` do not cause problems.
 def Prop.Hello := 0
