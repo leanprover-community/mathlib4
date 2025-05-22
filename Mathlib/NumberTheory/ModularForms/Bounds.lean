@@ -18,10 +18,11 @@ We prove bounds for the norm of a modular form `f τ` in terms of `im τ`. The m
 
 -/
 
-open UpperHalfPlane Filter Topology Asymptotics
+open Filter Topology Asymptotics
+
+open UpperHalfPlane hiding I
 
 open scoped Modular MatrixGroups ComplexConjugate ModularForm
-
 
 namespace ModularGroup
 
@@ -279,3 +280,56 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup SL(2
     sqrt_eq_rpow, ← rpow_intCast, ← rpow_mul (by positivity), mul_one_div, aux]
   exact MonotoneOn.map_max (fun _ ha _ _ h ↦ rpow_le_rpow ha h (by positivity)) τ.im_pos.le
     (show 0 ≤ 1 / τ.im by positivity)
+
+local notation "𝕢" => Function.Periodic.qParam
+
+open Complex in
+def ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex]
+    {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F)
+    {h : ℕ} [NeZero h] (hΓ : Γ.width ∣ h) :
+    ∃ C, ∀ᶠ n in atTop, ‖(ModularFormClass.qExpansion h f).coeff ℂ n‖ ≤ C * n ^ k := by
+  obtain ⟨C, hC⟩ := exists_bound hk f
+  use (1 / Real.exp (-2 * Real.pi / ↑h)) * C
+  filter_upwards [eventually_gt_atTop 0] with n hn
+  rw [qExpansion_coeff_eq_intervalIntegral (t := 1 / n) f hΓ _ (by positivity),
+    ← intervalIntegral.integral_const_mul]
+  simp only [ofReal_div, ofReal_one, ofReal_natCast]
+  refine intervalIntegral.norm_integral_le_integral_norm (by positivity) |>.trans ?_
+  let F (x : ℝ) : ℝ := ‖1 / ↑h * (1 / 𝕢 h ((x : ℂ) + 1 / n * I) ^ n
+      * f ⟨(x : ℂ) + 1 / n * Complex.I, by simp [hn]⟩)‖
+  show ∫ x in (0)..(h), F x ≤ _
+  have (x : ℝ) : F x ≤ 1 / h * ((1 / Real.exp (-2 * Real.pi / ↑h))) * (C * n ^ k) := by
+    simp only [F]
+    rw [norm_mul, norm_mul, norm_div, norm_natCast, norm_one, norm_div, norm_one, norm_pow,
+      mul_assoc]
+    apply mul_le_mul_of_nonneg_left _ (by positivity)
+    apply mul_le_mul
+    · rw [Function.Periodic.norm_qParam, add_im, ofReal_im, zero_add,
+        mul_I_im, ← ofReal_one, ← ofReal_natCast, ← ofReal_div, ofReal_re, mul_one_div,
+        div_right_comm, ← Real.exp_nat_mul, mul_div_cancel₀]
+      exact_mod_cast hn.ne'
+    · refine (hC _).trans (le_of_eq ?_)
+      congr 1
+      rw [← UpperHalfPlane.coe_im, UpperHalfPlane.coe_mk_subtype, add_im, ofReal_im, zero_add,
+        mul_I_im, ← ofReal_one, ← ofReal_natCast, ← ofReal_div, ofReal_re, div_zpow, one_zpow,
+        one_div_one_div]
+      exact max_eq_right <| one_le_zpow₀ (mod_cast hn) hk
+    · exact norm_nonneg _
+    · positivity
+  refine (intervalIntegral.integral_mono (by positivity) ?_ ?_ this).trans (le_of_eq ?_)
+  · apply Continuous.intervalIntegrable
+    unfold F
+    apply Continuous.norm
+    apply continuous_const.mul
+    apply Continuous.mul
+    · unfold Function.Periodic.qParam
+      simp_rw [← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
+      fun_prop
+    · have : Continuous f := (ModularFormClass.holo f).continuous
+      apply this.comp
+      rw [continuous_induced_rng]
+      simp [Function.comp_def]
+      fun_prop -- integrability
+  · apply continuous_const.intervalIntegrable
+  · rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul]
+    simp only [← mul_assoc, mul_one_div_cancel (NeZero.ne (h : ℝ)), one_mul]
