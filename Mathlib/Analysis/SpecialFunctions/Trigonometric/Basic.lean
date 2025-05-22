@@ -817,6 +817,30 @@ theorem cos_ofNat_mul_pi_div_ofNat_of_eq_add_one {m n} [NeZero (ofNat(n) : ℝ)]
   rw [← cos_add_pi, div_add' _ _ _ (NeZero.ne _), h]
   ring_nf
 
+/-- `sin ((n - 1) * π / n) = sin π / n`. -/
+@[simp]
+theorem sin_ofNat_mul_pi_div_ofNat_of_eq_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = (ofNat(n) : ℝ) - 1 := by norm_num) :
+    sin (ofNat(m) * π / ofNat(n)) = sin (π / ofNat(n)) := by
+  rw [← sin_pi_sub, sub_div' (NeZero.ne _), h]
+  ring_nf
+
+/-- `sin ((2 * n - 1) * π / n) = sin π / n` -/
+@[simp]
+theorem sin_ofNat_mul_pi_div_ofNat_of_eq_two_mul_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = 2 * (ofNat(n) : ℝ) - 1 := by norm_num) :
+    sin (ofNat(m) * π / ofNat(n)) = - sin (π / ofNat(n)) := by
+  rw [← sin_two_pi_sub, sub_div' (NeZero.ne _), h]
+  ring_nf
+
+/-- `sin ((n + 1) * π / n) = - sin π / n` -/
+@[simp]
+theorem sin_ofNat_mul_pi_div_ofNat_of_eq_add_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = (ofNat(n) : ℝ) + 1 := by norm_num) :
+    sin (ofNat(m) * π / ofNat(n)) = - sin (π / ofNat(n)) := by
+  rw [← sin_add_pi, div_add' _ _ _ (NeZero.ne _), h]
+  ring_nf
+
 theorem quadratic_root_cos_pi_div_five :
     letI c := cos (π / 5)
     4 * c ^ 2 - 2 * c - 1 = 0 := by
