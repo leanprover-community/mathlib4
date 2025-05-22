@@ -650,12 +650,22 @@ lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x
 @[to_additive prodAddUnits
       "The additive monoid equivalence between additive units of a product
       of two additive monoids, and the product of the additive units of each additive monoid."]
-def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
-  toFun := fst.prod snd
-  invFun := prod
-  left_inv u := by simp only [MonoidHom.prod_apply, prod_fst_snd]
-  right_inv u := by simp only [MonoidHom.prod_apply, fst_prod, snd_prod]
-  map_mul' := MonoidHom.map_mul _
+def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ := (fst.prod snd).toMulEquiv prod rfl rfl
+
+@[deprecated Units.prodUnits (since := "2025-05-22")]
+def _root_.MulEquiv.prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ := Units.prodUnits
+
+@[deprecated AddUnits.prodAddUnits (since := "2025-05-22")]
+def _root_.MulEquiv.prodAddUnits {M N : Type*} [AddMonoid M] [AddMonoid N] :
+    AddUnits (M × N) ≃+ AddUnits M × AddUnits N := AddUnits.prodAddUnits
+
+@[to_additive (attr := simp) toMonoidHom_prodUnits_eq_fst_prod_snd]
+theorem toMonoidHom_prodUnits_eq_fst_prod_snd :
+    (prodUnits (M := M) (N := N)).toMonoidHom = fst.prod snd := rfl
+
+@[to_additive (attr := simp) toMonoidHom_prodUnits_symm_eq_prod]
+theorem toMonoidHom_prodUnits_symm_eq_prod :
+    (prodUnits (M := M) (N := N)).symm.toMonoidHom = Units.prod := rfl
 
 open MulOpposite
 

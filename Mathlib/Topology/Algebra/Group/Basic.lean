@@ -1235,7 +1235,7 @@ def _root_.Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
     Units.continuous_iff.2
       ⟨continuous_val.fst'.prodMk continuous_val.snd',
         continuous_coe_inv.fst'.prodMk continuous_coe_inv.snd'⟩
-  toEquiv := MulEquiv.prodUnits.toEquiv
+  toEquiv := Units.prodUnits.toEquiv
 
 @[deprecated (since := "2025-02-21")]
 alias Homeomorph.sumAddUnits := Homeomorph.prodAddUnits
