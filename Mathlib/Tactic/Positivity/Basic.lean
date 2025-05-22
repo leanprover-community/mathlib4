@@ -181,13 +181,13 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let _a ← synthInstanceQ q(Mul $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HMul.hMul)
   let ra ← core zα pα a; let rb ← core zα pα b
-  let tryProveNz (pa? : Option Q($a ≠ 0)) (pb? : Option Q($b ≠ 0)) :
+  let tryProveNonzero (pa? : Option Q($a ≠ 0)) (pb? : Option Q($b ≠ 0)) :
       MetaM (Strictness zα pα e) := do
     let pa ← liftOption pa?
     let pb ← liftOption pb?
     let _a ← synthInstanceQ q(NoZeroDivisors $α)
     pure (.nonzero q(mul_ne_zero $pa $pb))
-  let tryProveNn (pa? : Option Q(0 ≤ $a)) (pb? : Option Q(0 ≤ $b)) :
+  let tryProveNonneg (pa? : Option Q(0 ≤ $a)) (pb? : Option Q(0 ≤ $b)) :
       MetaM (Strictness zα pα e) := do
     let pa ← liftOption pa?
     let pb ← liftOption pb?
@@ -195,7 +195,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     let _a ← synthInstanceQ q(PosMulMono $α)
     assumeInstancesCommute
     pure (.nonnegative q(mul_nonneg $pa $pb))
-  let tryProvePos (pa? : Option Q(0 < $a)) (pb? : Option Q(0 < $b)) :
+  let tryProvePositive (pa? : Option Q(0 < $a)) (pb? : Option Q(0 < $b)) :
       MetaM (Strictness zα pα e) := do
     let pa ← liftOption pa?
     let pb ← liftOption pb?
@@ -203,10 +203,11 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     let _a ← synthInstanceQ q(PosMulStrictMono $α)
     assumeInstancesCommute
     pure (.positive q(mul_pos $pa $pb))
-  tryProvePos ra.toPositive rb.toPositive <|>
-  tryProveNn ra.toNonneg rb.toNonneg <|>
-  tryProveNz ra.toNonzero rb.toNonzero <|> pure .none
-
+  let mut result := .none
+  result ← orElse result (tryProvePositive ra.toPositive rb.toPositive)
+  result ← orElse result (tryProveNonneg ra.toNonneg rb.toNonneg)
+  result ← orElse result (tryProveNonzero ra.toNonzero rb.toNonzero)
+  return result
 
 private lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
   rw [Int.ediv_self ha.ne']; exact zero_lt_one
