@@ -89,18 +89,16 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
     rw [ENNReal.hasSum_iff_tendsto_nat]
     constructor
     · intro h
-      constructor
-      · intro n
-        rw [tendsto_atTop_nhds] at h
+      refine ⟨fun n ↦ ?_, fun b hb ↦ ?_⟩
+      · rw [tendsto_atTop_nhds] at h
         by_contra! hc
-        let s := Set.Ico 0 (∑ i ∈ Finset.range n, f i)
         have hn : ∀ m, n ≤ m → ∑ i ∈ Finset.range n, f i ≤  ∑ i ∈ Finset.range m, f i :=
           fun _ _ ↦ Finset.sum_le_sum_of_subset (by simpa)
+        let s := Set.Ico 0 (∑ i ∈ Finset.range n, f i)
         obtain ⟨ℓ, hℓ⟩ := h s ⟨by simp, hc⟩ isOpen_Ico_zero
-        let k := max n ℓ
-        exact (lt_self_iff_false _).mp <| lt_of_lt_of_le ((hℓ k (by omega)).2) (hn k (by omega))
-      · intro b hb
-        rw [tendsto_atTop_nhds] at h
+        exact (lt_self_iff_false _).mp <|
+          lt_of_lt_of_le ((hℓ (max n ℓ) (by omega)).2) (hn (max n ℓ) (by omega))
+      · rw [tendsto_atTop_nhds] at h
         let s := Set.Ioo b (a + 1)
         have hs : a ∈ s := by simpa [s, hb] using lt_add_right (LT.lt.ne_top ha') one_ne_zero
         obtain ⟨n, hn⟩ := h s hs isOpen_Ioo
@@ -110,8 +108,7 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
       rw [ENNReal.tendsto_nhds ha'.ne_top]
       intro ε hε
       simp only [Set.mem_Icc, tsub_le_iff_right, Filter.eventually_atTop, ge_iff_le]
-      have hε' : a - ε < a :=
-        (ENNReal.sub_lt_self_iff (LT.lt.ne_top ha')).mpr ⟨ha'', hε⟩
+      have hε' := (ENNReal.sub_lt_self_iff (LT.lt.ne_top ha')).mpr ⟨ha'', hε⟩
       obtain ⟨n, hn⟩ := hf' (a - ε) hε'
       refine ⟨n, fun m hm ↦ ?_⟩
       constructor
