@@ -6,6 +6,7 @@ Authors: Kenny Lau, Anne Baanen
 
 import Mathlib.LinearAlgebra.Eigenspace.Zero
 import Mathlib.RingTheory.Polynomial.DegreeLT
+import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # Resultant of polynomials
@@ -591,6 +592,8 @@ end RingHom
 section translate
 
 variable {R : Type*} [CommRing R] {x : R} {f g : R[X]} {m n : ℕ}
+  (hf : f.degree ≤ m := by exact f.degree_le_natDegree)
+  (hg : g.degree ≤ n := by exact g.degree_le_natDegree)
 
 /-- The square involving `sylvesterMap` and `translate x` commutes. -/
 lemma translate_sylvesterMap :
@@ -604,6 +607,30 @@ lemma translate_sylvesterMap :
   · have h₁ : ¬((f.translate x).degree ≤ m ∧ (g.translate x).degree ≤ n) := by
       rwa [degree_translate, degree_translate]
     rw [sylvesterMap, dif_neg h, sylvesterMap, dif_neg h₁, LinearMap.comp_zero, LinearMap.zero_comp]
+
+include hf hg in
+lemma resultantAux_translate :
+    resultantAux (f.translate x) (g.translate x) m n = resultantAux f g m n :=
+  have hft : (f.translate x).degree ≤ m := degree_translate.trans_le hf
+  have hgt : (g.translate x).degree ≤ n := degree_translate.trans_le hg
+  calc
+  _ = (sylvester (f.translate x) (g.translate x) m n).det := rfl
+  _ = Matrix.det (LinearMap.toMatrix
+        (degreeLT.basis_prod R n m) (degreeLT.basis R (n + m))
+        (sylvesterMap (f.translate x) (g.translate x) ∘ₗ (translateProd x n m).toLinearMap)) := by
+    rw [LinearMap.toMatrix_comp _ (degreeLT.basis_prod R n m), Matrix.det_mul,
+      sylvesterMap_toMatrix hft hgt, LinearMap.det_toMatrix, translateProd_det', mul_one]
+  _ = Matrix.det (LinearMap.toMatrix
+        (degreeLT.basis_prod R n m) (degreeLT.basis R (n + m))
+        ((translateLinear x _).toLinearMap ∘ₗ sylvesterMap f g (m := m) (n := n))) := by
+    rw [translate_sylvesterMap]
+  _ = (sylvester f g m n).det := by
+    rw [LinearMap.toMatrix_comp _ (degreeLT.basis R (n + m)), Matrix.det_mul,
+      sylvesterMap_toMatrix hf hg, LinearMap.det_toMatrix, translate_det', one_mul]
+
+lemma resultant_translate :
+    resultant (f.translate x) (g.translate x) = resultant f g := by
+  rw [resultant, resultant, natDegree_translate, natDegree_translate, resultantAux_translate]
 
 end translate
 
@@ -638,7 +665,42 @@ lemma resultant_eq_zero_iff :
   · rw [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply]
     exact Subtype.ext h₂
 
-#check eval₂
+lemma resultant_eq_zero_iff_not_coprime (hPQ : P ≠ 0 ∨ Q ≠ 0) :
+    P.resultant Q = 0 ↔ ¬IsCoprime P Q := by
+  rw [resultant_eq_zero_iff]
+  classical
+  refine ⟨fun ⟨a, b, ha, hb, h₁, h₂⟩ hc ↦ ?_, fun h ↦
+      ⟨Q / EuclideanDomain.gcd P Q, -(P / EuclideanDomain.gcd P Q), ?_⟩⟩
+  · have hpq : P * a = Q * (-b) := by rw [mul_neg, eq_neg_iff_add_eq_zero, h₂]
+    have hpb : P ∣ b := dvd_neg.1 <| hc.dvd_of_dvd_mul_left <| hpq ▸ dvd_mul_right _ _
+    have hqa : Q ∣ a := hc.symm.dvd_of_dvd_mul_left <| hpq ▸ dvd_mul_right _ _
+    cases h₁ with
+    | inl ha0 => exact ha0 <| eq_zero_of_dvd_of_natDegree_lt hqa <| WithBot.coe_lt_coe.1 <|
+        (a.degree_eq_natDegree ha0).symm.trans_lt ha
+    | inr hb0 => exact hb0 <| eq_zero_of_dvd_of_natDegree_lt hpb <| WithBot.coe_lt_coe.1 <|
+        (b.degree_eq_natDegree hb0).symm.trans_lt hb
+  · have hg : EuclideanDomain.gcd P Q ≠ 0 :=
+      EuclideanDomain.gcd_eq_zero_iff.not.2 (not_and_of_not_or_not hPQ)
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · by_cases hq : Q = 0
+      · simp [hq]
+      · rw [← degree_eq_natDegree hq]
+        exact degree_div_lt hq <| degree_pos_of_ne_zero_of_nonunit hg <|
+          EuclideanDomain.gcd_isUnit_iff.not.2 h
+    · by_cases hp : P = 0
+      · simp [hp]
+      · rw [← degree_eq_natDegree hp, degree_neg]
+        exact degree_div_lt hp <| degree_pos_of_ne_zero_of_nonunit hg <|
+          EuclideanDomain.gcd_isUnit_iff.not.2 h
+    · simp [div_eq_zero_iff hg]
+      exact hPQ.symm.imp (fun hq0 ↦ degree_le_of_dvd (EuclideanDomain.gcd_dvd_right _ _) hq0)
+        (fun hp0 ↦ degree_le_of_dvd (EuclideanDomain.gcd_dvd_left _ _) hp0)
+    · refine eq_zero_of_ne_zero_of_mul_right_eq_zero hg ?_
+      rw [add_mul, mul_assoc, mul_comm (_/_),
+        EuclideanDomain.mul_div_cancel' hg (EuclideanDomain.gcd_dvd_right _ _),
+        mul_assoc, neg_mul, mul_comm (_/_),
+        EuclideanDomain.mul_div_cancel' hg (EuclideanDomain.gcd_dvd_left _ _),
+        mul_neg, mul_comm, add_neg_cancel]
 
 end field
 
