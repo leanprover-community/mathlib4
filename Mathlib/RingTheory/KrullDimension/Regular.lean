@@ -17,13 +17,23 @@ section orderIso
 
 variable {R : Type*} [CommRing R]
 
+#check ringKrullDim_quotient
 /-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
 noncomputable def Ideal.primeSpectrum_quotient_orderIso_zeroLocus (I : Ideal R) :
     PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
-  __ : PrimeSpectrum (R ⧸ I) ≃ (PrimeSpectrum.zeroLocus (R := R) I) := Equiv.ofInjective _
-    (PrimeSpectrum.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective) |>.trans <|
-      Equiv.setCongr <| by
-        rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
+  toFun p := ⟨(Ideal.Quotient.mk I).specComap p,
+    I.mk_ker.symm.trans_le (Ideal.ker_le_comap (Ideal.Quotient.mk I))⟩
+  invFun := fun ⟨⟨p, _⟩, hp⟩ ↦ ⟨p.map (Ideal.Quotient.mk I),
+    p.map_isPrime_of_surjective Ideal.Quotient.mk_surjective (I.mk_ker.trans_le hp)⟩
+  left_inv := by
+    intro ⟨p, _⟩
+    simp only [PrimeSpectrum.mk.injEq]
+    exact p.map_comap_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+  right_inv := by
+    intro ⟨⟨p, _⟩, hp⟩
+    simp only [Subtype.mk.injEq, PrimeSpectrum.mk.injEq]
+    exact (p.comap_map_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective).trans <|
+      sup_eq_left.mpr <| I.mk_ker.trans_le hp
   map_rel_iff' {a b} := by
     show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
     rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective,
@@ -86,32 +96,43 @@ local notation "𝔪" => IsLocalRing.maximalIdeal R
 
 section move
 
-#check Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
-
 open Ideal
+
+#check Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert
+theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
+    (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk I)).height ≤ 1 :=
+  let f := Ideal.Quotient.mk I
+  have : p.IsPrime := hp.1.1
+  height_le_one_of_isPrincipal_of_mem_minimalPrimes ((span {x}).map f) (p.map f) ⟨
+    ⟨map_isPrime_of_surjective Quotient.mk_surjective <|
+      I.mk_ker.trans_le (le_sup_left.trans hp.1.2), map_mono (le_sup_right.trans hp.1.2)⟩,
+    fun _ ⟨hr, hxr⟩ hrp ↦ map_le_iff_le_comap.mpr <| hp.2 ⟨hr.comap f, sup_le_iff.mpr
+      ⟨I.mk_ker.symm.trans_le <| ker_le_comap (Ideal.Quotient.mk I), le_comap_of_map_le hxr⟩⟩ <|
+        (comap_mono hrp).trans <| Eq.le <|
+          (p.comap_map_of_surjective _ Quotient.mk_surjective).trans <|
+            sup_eq_left.mpr (I.mk_ker.trans_le (le_sup_left.trans hp.1.2))⟩
 
 theorem PrimeSpectrum.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : (PrimeSpectrum R)}
     (h₀ : p₀ < p₁) (h₁ : p₁ < ⟨𝔪, inferInstance⟩) {x : R} (hx : x ∈ 𝔪) :
       ∃ q : PrimeSpectrum R, x ∈ q.1 ∧ p₀ < q ∧ q.1 < 𝔪 := by
   by_cases hn : x ∈ p₀.1
-  · exact ⟨p₁,  h₀.le hn, h₀, h₁⟩
+  · exact ⟨p₁, h₀.le hn, h₀, h₁⟩
   let f := p₀.1.primeSpectrum_quotient_orderIso_zeroLocus.symm
   obtain ⟨q, hq⟩ := (p₀.1 + span {x}).nonempty_minimalPrimes <|
     sup_le (IsLocalRing.le_maximalIdeal_of_isPrime p₀.1) ((span_singleton_le_iff_mem 𝔪).mpr hx)
       |>.trans_lt (IsMaximal.isPrime' 𝔪).1.lt_top |>.ne
   let q : PrimeSpectrum R := ⟨q, hq.1.1⟩
   have : q.1.IsPrime := q.2
-  have hs : span {x} ≤ p₀.1 + span {x} := le_sup_right
-  have h0 : p₀.1 ≤ p₀.1 + span {x} := le_sup_left
-  have hxq : x ∈ q.1 := hq.1.2 (hs (mem_span_singleton_self x))
-  have h : (f ⟨q, h0.trans hq.1.2⟩).1.height ≤ 1 := sorry
-  refine ⟨q, hxq, lt_of_le_not_le (h0.trans hq.1.2) fun h ↦ hn (h hxq), ?_⟩
+  have hxq : x ∈ q.1 := le_sup_right.trans hq.1.2 (mem_span_singleton_self x)
+  refine ⟨q, hxq, lt_of_le_not_le (le_sup_left.trans hq.1.2) fun h ↦ hn (h hxq), ?_⟩
   refine lt_of_le_of_ne (IsLocalRing.le_maximalIdeal_of_isPrime q.1) fun hqm ↦ ?_
+  have h : (f ⟨q, le_sup_left.trans hq.1.2⟩).1.height ≤ 1 :=
+    map_height_le_one_of_mem_minimalPrimes hq
   simp_rw [show q = ⟨𝔪, inferInstance⟩ from PrimeSpectrum.ext_iff.mpr hqm] at h
   have hph : (f ⟨p₁, h₀.le⟩).1.height ≤ 0 := by
     refine Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance ?_)
     simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₁]
-  apply ENat.not_lt_zero (f ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
+  refine ENat.not_lt_zero (f ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
   simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₀]
 
 theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
@@ -173,7 +194,7 @@ section Semiring
 variable {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
 theorem subsingleton_of_top_le_bot (h : (⊤ : Submodule R M) ≤ ⊥) : Subsingleton M :=
-  subsingleton_of_forall_eq 0 fun _ ↦ h trivial
+  subsingleton_of_forall_eq 0 fun _ ↦ h Submodule.mem_top
 
 end Semiring
 
@@ -197,7 +218,7 @@ theorem subsingleton_of_subsingleton_quotSMulTop {x : R} (hx : x ∈ (annihilato
     Submodule.eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator hm.1
       (Submodule.subsingleton_quotient_iff_eq_top.mp h).symm hx
 
-theorem nontrival_quotSMulTop_of_mem_annihilator_jacobson [h : Nontrivial M] {x : R}
+theorem nontrivial_quotSMulTop_of_mem_annihilator_jacobson [h : Nontrivial M] {x : R}
     (hx : x ∈ (annihilator R M).jacobson) : Nontrivial (QuotSMulTop x M) := by
   by_contra hq
   have : Subsingleton (QuotSMulTop x M) := not_nontrivial_iff_subsingleton.mp hq
@@ -236,7 +257,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   by_cases h : p.length = 0
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
       (supportDim_ne_bot_iff_nontrivial R (QuotSMulTop x M)).mpr <|
-        nontrival_quotSMulTop_of_mem_annihilator_jacobson (maximalIdeal_le_jacobson _ hx)
+        nontrivial_quotSMulTop_of_mem_annihilator_jacobson (maximalIdeal_le_jacobson _ hx)
     rw [h, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
     exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
   let q' : LTSeries (support R (QuotSMulTop x M)) := {
