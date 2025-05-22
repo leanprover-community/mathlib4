@@ -254,28 +254,45 @@ lemma sylowWreathtoPermHomInj {p n : ℕ} [Fact (Nat.Prime p)]
     (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))).injective this
 
 /-- The Sylow `p`-subgroups of S_{p^n} are isomorphic to the iterated wreathproduct -/
-noncomputable def sylowIsIteratedWreathProduct (p n : ℕ) [Fact (Nat.Prime p)]
-    (Z_p : Type) [Group Z_p] [Finite Z_p] (h : Nat.card Z_p = p)
-    (P : Sylow p (Equiv.Perm (Fin (p ^ n)))) :
-    P ≃* (IteratedWreathProduct Z_p n) := by
-  induction n with
-  | zero => exact {
-      toFun := 1
-      invFun := 1
-      left_inv x := by simp only [Nat.pow_zero]; apply Subsingleton.elim
-      right_inv x:= by rw [Pi.one_apply]; rfl
-      map_mul' := by simp}
-  | succ n h_n =>
-      let P' : Sylow p (Equiv.Perm (Fin (p ^ n))) := Inhabited.default
-      have g : (IteratedWreathProduct Z_p (n + 1)) ≃*
-          MonoidHom.range (sylowWreathtoPermHom P' Z_p h) :=
-        (RegularWreathProduct.congr (h_n P').symm (MulEquiv.refl Z_p)).trans
-        (MonoidHom.ofInjective (sylowWreathtoPermHomInj P' Z_p h))
-      have sylow_card : Nat.card (MonoidHom.range (sylowWreathtoPermHom P' Z_p h)) =
-          p ^ (Nat.card (Equiv.Perm (Fin (p ^ (n + 1))))).factorization p := by
-        rw [Nat.card_congr (g.symm).toEquiv, iter_wreath_card Z_p, h]
-        rw [Nat.card_eq_fintype_card, Fintype.card_perm, Fintype.card_fin, mu_eq]
-      exact (P.equiv (Sylow.ofCard (MonoidHom.range (sylowWreathtoPermHom P' Z_p h))
-      sylow_card)).trans (id g.symm)
+def Fin.succFunEquiv (α : Type*) (n : ℕ) : (Fin (n + 1) → α) ≃ (Fin n → α) × α :=
+  (Fin.appendEquiv n 1).symm.trans (Equiv.prodCongrRight fun _ ↦ Equiv.funUnique (Fin 1) α)
+
+lemma Nat.card_fin (n : ℕ) : Nat.card (Fin n) = n := by
+  rw [Nat.card_eq_fintype_card, Fintype.card_fin]
+
+def iteratedWreathToPermHom (G : Type*) [Group G] :
+    (n : ℕ) → (IteratedWreathProduct G n →* Equiv.Perm (Fin n → G))
+  | 0 => 1
+  | n + 1 => by
+      let _ := MulAction.compHom (Fin n → G) (iteratedWreathToPermHom G n)
+      exact (Fin.succFunEquiv G n).symm.permCongrHom.toMonoidHom.comp
+        (RegularWreathProduct.toPerm (IteratedWreathProduct G n) G (Fin n → G))
+
+lemma iteratedWreathToPermHomInj (G : Type*) [Group G] :
+    (n : ℕ) → Function.Injective (iteratedWreathToPermHom G n)
+  | 0 => by
+      simp only [IteratedWreathProduct_zero]
+      apply Function.injective_of_subsingleton
+  | n + 1 => by
+      let _ := MulAction.compHom (Fin n → G) (iteratedWreathToPermHom G n)
+      have : FaithfulSMul (IteratedWreathProduct G n) (Fin n → G) :=
+        ⟨fun h ↦ iteratedWreathToPermHomInj G n (Equiv.ext h)⟩
+      exact ((Fin.succFunEquiv G n).symm.permCongrHom.toEquiv.comp_injective _).mpr
+        (RegularWreathProduct.toPermInj (IteratedWreathProduct G n) G (Fin n → G))
+
+noncomputable def sylowIsIteratedWreathProduct (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ)
+    (α : Type*) [Finite α] (hα : Nat.card α = p ^ n)
+    (G : Type*) [Group G] [Finite G] (hG : Nat.card G = p)
+    (P : Sylow p (Equiv.Perm α)) :
+    P ≃* IteratedWreathProduct G n := by
+  let e1 : α ≃ (Fin n → G) := (Finite.equivFinOfCardEq hα).trans
+    (Finite.equivFinOfCardEq (by rw [Nat.card_fun, Nat.card_fin, hG])).symm
+  let f := (Equiv.permCongrHom e1.symm).toMonoidHom.comp (iteratedWreathToPermHom G n)
+  have hf : Function.Injective f :=
+    ((Equiv.permCongrHom e1.symm).comp_injective _).mpr (iteratedWreathToPermHomInj G n)
+  let g := (MonoidHom.ofInjective hf).symm
+  let P' : Sylow p (Equiv.Perm α) := Sylow.ofCard (MonoidHom.range f) (by
+    rw [Nat.card_congr g.toEquiv, iter_wreath_card, hG, Nat.card_perm, hα, mu_eq])
+  exact (P.equiv P').trans g
 
 end iterated
