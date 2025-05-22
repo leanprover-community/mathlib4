@@ -32,11 +32,13 @@ example {a : ℝ≥0∞} (ha : 0 < a) : a⁻¹ ≠ ∞ := by finiteness
 -- example {t a : ℝ≥0∞} (ht : t ∈ Ioo 0 1) (this : a ≠ 0) : a * t ≠ ∞ := by finiteness
 
 example {a : ℝ≥0∞} (ha : a ≠ ∞) : a ^ 10 ≠ ∞ := by finiteness
--- no extension for integer powers
--- example {a : ℝ≥0∞} (ha : a ≠ ∞) (ha' : a ≠ 0): a ^ (10 : ℤ) ≠ ∞ := by finiteness
+example {a : ℝ≥0∞} (ha : a ≠ ∞) : a ^ (10 : ℤ) ≠ ∞ := by finiteness
 example {a : ℝ≥0∞} (ha : a ≠ ∞) : a ^ (10 : ℝ) ≠ ∞ := by finiteness
 example {a : ℝ} : (10 : ℝ≥0∞) ^ a ≠ ∞ := by finiteness
 example {a : ℝ≥0∞} {t : ℝ} (ha : a ≠ 0) (ha : a ≠ ∞) : a ^ t ≠ ∞ := by finiteness
+
+example {a : ℝ≥0∞} : a * a⁻¹ ≠ ∞ := by finiteness
+example {a : ℝ≥0∞} : 2 * a⁻¹ * a ≠ ∞ := by finiteness
 
 example {a : ℝ≥0∞} (ha : a ≠ ∞) : max a 37 ≠ ∞ := by finiteness
 example {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : max a b < ∞ := by finiteness
