@@ -7,6 +7,7 @@ import Mathlib.Analysis.MeanInequalities
 import Mathlib.Data.Fintype.Order
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.Analysis.Normed.Lp.ProdLp
+import Mathlib.Tactic.Finiteness
 
 /-!
 # `L^p` distance on finite products of metric spaces
@@ -343,7 +344,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
       · exact iSup_edist_ne_top_aux f g
       · rw [edist_eq_sum (zero_lt_one.trans_le h)]
         exact ENNReal.rpow_ne_top_of_nonneg (by positivity) <| ENNReal.sum_ne_top.2 fun _ _ ↦
-          ENNReal.rpow_ne_top_of_nonneg (by positivity) (edist_ne_top _ _))
+          by finiteness)
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [edist_eq_iSup, dist_eq_iSup]
@@ -362,8 +363,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
             -- Porting note: `le_ciSup` needed some help
             exact ENNReal.ofReal_le_ofReal
               (le_ciSup (Finite.bddAbove_range (fun k => dist (f k) (g k))) i)
-    · have A : ∀ i, edist (f i) (g i) ^ p.toReal ≠ ⊤ := fun i =>
-        ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
+    · have A (i) : edist (f i) (g i) ^ p.toReal ≠ ⊤ := by finiteness
       simp only [edist_eq_sum (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
         dist_eq_sum (zero_lt_one.trans_le h), ← ENNReal.toReal_sum fun i _ => A i]
 
