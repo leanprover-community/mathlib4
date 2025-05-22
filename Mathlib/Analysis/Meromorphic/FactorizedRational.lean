@@ -216,7 +216,7 @@ theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicO
   · -- ∀ (u : ↑U), g ↑u ≠ 0
     intro ⟨u, hu⟩
     rw [← (hg hu).order_eq_zero_iff, ← ((hφ.inv.smul h₁f) u hu).order_congr
-      (toMeromorphicNFOn_eq_self_on_nhdNE (hφ.inv.smul h₁f) hu).symm,
+      (toMeromorphicNFOn_eq_self_on_nhdsNE (hφ.inv.smul h₁f) hu).symm,
       (hφ u hu).inv.order_smul (h₁f u hu), (hφ u hu).order_inv, order _ h₃f]
     simp only [Pi.neg_apply, h₁f, hu, divisor_apply, WithTop.LinearOrderedAddCommGroup.coe_neg]
     lift (h₁f u hu).order to ℤ using (h₂f ⟨u, hu⟩) with n hn
