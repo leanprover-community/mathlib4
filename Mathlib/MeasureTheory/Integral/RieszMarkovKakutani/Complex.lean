@@ -73,25 +73,17 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
     (∀ b < a, ∃ (n : ℕ), b < ∑ i ∈ Finset.range n, f i) := by
   obtain ha | ha | ha :=  a.trichotomy
   · -- The case `a = 0`.
-    suffices h : (∀ x, f x = 0) ↔ ∀ n i, i < n → f i = 0 by
-      simpa [ha, hasSum_zero_iff]
+    suffices h : (∀ x, f x = 0) ↔ ∀ n i, i < n → f i = 0 by simpa [ha, hasSum_zero_iff]
     exact ⟨fun h _ i _ ↦ h i, fun h i ↦  h (i + 1) i (by omega)⟩
   · -- The case `a = ∞`.
-    suffices h: (∀ i, ¬i = ⊤ → ∃ a, ∀ (b : ℕ), a ≤ b → i < ∑ i ∈ Finset.range b, f i) ↔
+    suffices h: (∀ i, ¬i = ∞ → ∃ a, ∀ (b : ℕ), a ≤ b → i < ∑ i ∈ Finset.range b, f i) ↔
         ∀ b < ⊤, ∃ n, b < ∑ i ∈ Finset.range n, f i by
       simpa [ha, hasSum_iff_tendsto_nat, nhds_top]
-    constructor
-    · intro h b hb
-      obtain ⟨n, hn⟩ := h b (LT.lt.ne_top hb)
+    refine ⟨fun h b hb ↦ ?_, fun h b hb ↦ ?_⟩
+    · obtain ⟨n, hn⟩ := h b (LT.lt.ne_top hb)
       exact ⟨n, hn n n.le_refl⟩
-    · intro h b hb
-      push_neg at hb
-      obtain ⟨n, hn⟩ := h b hb.symm.lt_top'
-      use n
-      intro m _
-      have : ∑ i ∈ Finset.range n, f i ≤ ∑ i ∈ Finset.range m, f i :=
-          Finset.sum_le_sum_of_subset (by simpa)
-      exact gt_of_ge_of_gt this hn
+    · obtain ⟨n, hn⟩ := h b (Ne.lt_top' <| Ne.symm hb)
+      exact ⟨n, fun m _ ↦ gt_of_ge_of_gt (Finset.sum_le_sum_of_subset (by simpa)) hn⟩
   · -- The case `0 < a ∧ a < ∞`.
     obtain ⟨ha'', ha'⟩ := (a.toReal_pos_iff).mp ha
     rw [ENNReal.hasSum_iff_tendsto_nat]
@@ -117,8 +109,25 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
     · rw [and_imp]
       intro hf hf' nhd hnhd
       simp only [Filter.mem_map, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage]
+
+      by_contra! hc
+      obtain ⟨n, hn⟩ := hc 0
+      simp at hn
+
+
+
+
+
+
+
       obtain ⟨ε, hε, hε'⟩ : ∃ ε > 0, Set.Ioc (a - ε) a ⊆ nhd := by
         obtain ⟨t, ht, ht', ht''⟩ := mem_nhds_iff.mp hnhd
+        -- obtain ⟨t, ht₁, ht₂, ht₃⟩ := mem_nhds_iff.mp ‹nhd ∈ nhds a›
+        -- obtain ⟨ε, hε, hball⟩ := ENNReal.isOpen_iff.mp ht'
+
+
+
+
         sorry
       suffices h : ∃ m, ∀ (n : ℕ), m ≤ n → ∑ i ∈ Finset.range n, f i ∈ Set.Ioc (a - ε) a by
         obtain ⟨m, hm⟩ := h
