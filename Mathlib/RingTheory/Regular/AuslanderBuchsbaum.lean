@@ -76,6 +76,11 @@ open IsLocalRing RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
+local instance (I : Ideal R) [Small.{v, u} R] : Small.{v, u} (R ⧸ I) :=
+  have : Function.Surjective ((Ideal.Quotient.mk I).comp (Shrink.ringEquiv R).toRingHom) := by
+    simpa using Ideal.Quotient.mk_surjective
+  Small.mk' (RingHom.quotientKerEquivOfSurjective this).symm.toEquiv
+
 lemma ModuleCat.free_of_projective_of_isLocalRing [IsLocalRing R] (M : ModuleCat.{v} R)
     [Module.Finite R M] [Projective M] : Module.Free R M :=
   Module.free_of_flat_of_isLocalRing
@@ -236,7 +241,6 @@ lemma CategoryTheory.Abelian.extFunctorObj_zero_preserve_momoMorphism (L M N : M
 
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
-    [Small.{v} (R ⧸ (maximalIdeal R))]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
     1 + IsLocalRing.depth M = IsLocalRing.depth.{v} (ModuleCat.of.{v} R (Shrink.{v} R)) := by
   rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
@@ -385,7 +389,6 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
 open scoped Classical in
 theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
-    [Small.{v} (R ⧸ (IsLocalRing.maximalIdeal R))]
     (hfinprojdim : ∃ i : ℕ, CategoryTheory.HasProjectiveDimensionLE M i) :
     Nat.find hfinprojdim + IsLocalRing.depth M =
     IsLocalRing.depth.{v} (ModuleCat.of R (Shrink.{v} R)) := by
