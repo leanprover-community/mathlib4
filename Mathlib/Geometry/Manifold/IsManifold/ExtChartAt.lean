@@ -451,7 +451,8 @@ theorem map_extChartAt_nhds_of_boundaryless [I.Boundaryless] (x : M) :
   rw [extChartAt]
   exact map_extend_nhds_of_boundaryless (chartAt H x) (mem_chart_source H x)
 
-theorem extChartAt_image_nhds_mem_nhds_of_mem_interior_range {x y} (hx : y ∈ (extChartAt I x).source)
+theorem extChartAt_image_nhds_mem_nhds_of_mem_interior_range {x y}
+    (hx : y ∈ (extChartAt I x).source)
     (h'x : extChartAt I x y ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 y) :
     (extChartAt I x) '' s ∈ 𝓝 (extChartAt I x y) := by
   rw [extChartAt]
