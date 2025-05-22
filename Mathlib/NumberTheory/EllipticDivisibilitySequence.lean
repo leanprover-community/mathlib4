@@ -3,6 +3,7 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
+import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
@@ -226,6 +227,16 @@ lemma ellAtomRel_abs₃ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
 lemma ellAtomRel_abs₄ (p q r s : ℤ) : ellAtomRel W p q r |s| = ellAtomRel W p q r s := by
   simp_rw [ellAtomRel, ellAtom_abs_right]
 
+@[simp]
+lemma ellAtomRel_avg_sub {p q r s : ℤ} (parity : s % 2 = p % 2 ∧ s % 2 = q % 2 ∧ s % 2 = r % 2) :
+    ellAtomRel W ((p + q + r + s) / 2 - s) ((p + q + r + s) / 2 - r)
+      ((p + q + r + s) / 2 - q) ((p + q + r + s) / 2 - p) = ellAtomRel W p q r s := by
+  have h {m n : ℤ} (h : n % 2 = m % 2) : 2 ∣ m + n := by
+    rw [← sub_neg_eq_add, ← Int.modEq_iff_dvd, Int.ModEq, ← h, Int.neg_emod_two]
+  simp_rw [add_assoc <| p + q, ellAtomRel, ellAtom, sub_add_sub_comm, ← two_mul,
+    Int.mul_ediv_cancel' <| Int.dvd_add (h <| parity.2.1 ▸ parity.1) <| h parity.2.2]
+  ring_nf
+
 end EllAtom
 
 section IsEllDivSequence
@@ -243,11 +254,31 @@ lemma ellRel_eq (p q r s : ℤ) :
     add_sub_add_comm, add_sub_assoc, sub_self, add_zero, ← mul_sub,
     Int.mul_tdiv_cancel_left _ two_ne_zero, mul_comm <| _ * W p, mul_assoc]
 
-lemma ellAtomRel_eq (p q r s : ℤ) : ellAtomRel W (2 * p) (2 * q) (2 * r) (2 * s) =
-    ellRel W (p - s) (q - s) (r - s) (2 * s) := by
-  simp_rw [ellAtomRel, ellAtom, ← mul_add, ← mul_sub, Int.mul_tdiv_cancel_left _ two_ne_zero,
-    mul_comm <| W (p + s) * _, ellRel, two_mul, sub_add_sub_comm, sub_add_cancel, sub_sub_sub_comm,
-    sub_self, sub_zero, sub_add_add_cancel, mul_assoc]
+lemma ellAtomRel_two_mul (p q r s : ℤ) :
+    ellAtomRel W (2 * p) (2 * q) (2 * r) (2 * s) = ellRel W (p - s) (q - s) (r - s) (2 * s) := by
+  simp_rw [ellRel_eq, mul_sub, sub_add_cancel]
+
+lemma ellAtomRel_eq {p q r s : ℤ} (parity : s % 2 = p % 2 ∧ s % 2 = q % 2 ∧ s % 2 = r % 2) :
+    ellAtomRel W p q r s = ellRel W ((p - s) / 2) ((q - s) / 2) ((r - s) / 2) s := by
+  simp only [ellRel_eq, Int.mul_ediv_cancel', Int.ModEq.dvd parity.1, Int.ModEq.dvd parity.2.1,
+    Int.ModEq.dvd parity.2.2, sub_add_cancel]
+
+variable {W} in
+@[simp]
+lemma ellRel_neg (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
+    ellRel W (-p) (-q) (-r) (-s) = ellRel W p q r s := by
+  simp_rw [ellRel_eq, mul_neg, ← neg_add, ellAtomRel_neg₁ odd, ellAtomRel_neg₂ odd,
+    ellAtomRel_neg₃ odd, ellAtomRel_neg₄]
+
+lemma ellRel_even (m : ℤ) : ellRel W (m + 1) (m - 1) 1 0 = W (2 * m) * W 2 * W 1 ^ 2 -
+    W (m - 1) ^ 2 * W m * W (m + 2) + W (m - 2) * W m * W (m + 1) ^ 2 := by
+  rw [ellRel]
+  ring_nf
+
+lemma ellRel_odd (m : ℤ) : ellRel W (m + 1) m 1 0 =
+    W (2 * m + 1) * W 1 ^ 3 - W (m + 2) * W m ^ 3 + W (m - 1) * W (m + 1) ^ 3 := by
+  rw [ellRel]
+  ring_nf
 
 /-- The proposition that a sequence indexed by `ℤ` is an elliptic net. -/
 def IsEllNet : Prop :=
@@ -358,7 +389,7 @@ lemma preNormEDS'_odd (m : ℕ) : preNormEDS' b c d (2 * (m + 2) + 1) =
 /-- The auxiliary sequence for a normalised EDS `W : ℤ → R`, with initial values
 `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d` and extra parameter `b`.
 
-This extends `preNormEDS'` by defining its values at negative `ℤ`. -/
+This extends `preNormEDS'` by defining its values at negative integers. -/
 def preNormEDS (n : ℤ) : R :=
   n.sign * preNormEDS' b c d n.natAbs
 
@@ -521,6 +552,20 @@ end NormEDS
 section Map
 
 variable {S : Type v} [CommRing S] (f : R →+* S)
+
+@[simp]
+lemma map_ellAtom (W : ℤ → R) (p q : ℤ) : f (ellAtom W p q) = ellAtom (f ∘ W) p q := by
+  simp_rw [ellAtom, map_mul, Function.comp]
+
+@[simp]
+lemma map_ellAtomRel (W : ℤ → R) (p q r s : ℤ) :
+    f (ellAtomRel W p q r s) = ellAtomRel (f ∘ W) p q r s := by
+  simp_rw [ellAtomRel, map_add, map_sub, map_mul, map_ellAtom]
+
+@[simp]
+lemma map_ellRel (W : ℤ → R) (p q r s : ℤ) :
+    f (ellRel W p q r s) = ellRel (f ∘ W) p q r s := by
+  simp_rw [ellRel, map_add, map_sub, map_mul, Function.comp]
 
 @[simp]
 lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
