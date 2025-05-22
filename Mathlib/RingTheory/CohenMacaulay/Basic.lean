@@ -157,6 +157,7 @@ abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A
   __ := f
   map_smul' m r := by simp
 
+variable (Rₚ) in
 omit [IsLocalRing R] [IsNoetherianRing R] [Small.{v, u} R] [Small.{v, u} (R ⧸ maximalIdeal R)]
   [IsLocalRing Rₚ] in
 open Pointwise in
@@ -232,15 +233,17 @@ lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
 variable [Small.{v'} Rₚ] [Small.{v'} (Rₚ ⧸ (maximalIdeal Rₚ))] [IsNoetherianRing Rₚ]
 
 variable (M : ModuleCat.{v} R) (Mₚ : ModuleCat.{v'} Rₚ)
-  [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f]
+  [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] [IsScalarTower R Rₚ Mₚ]
 
 include p f
 
+omit [Small.{v, u} (R ⧸ maximalIdeal R)] in
 lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module.Finite R M]
     [Nontrivial M] [Nontrivial Mₚ] : p.depth M ≤ IsLocalRing.depth Mₚ := by
-  let _ : Module.Finite Rₚ Mₚ := sorry
+  let _ : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
   simp only [IsLocalRing.depth_eq_sSup_length_regular, Ideal.depth]
-  let _ : Module.Finite R (ModuleCat.of R (Shrink.{v, u} (R ⧸ p))) := sorry
+  let _ : Module.Finite R (Shrink.{v, u} (R ⧸ p)) :=
+    Module.Finite.equiv (Shrink.linearEquiv (R ⧸ p) R).symm
   have smul_lt : p • (⊤ : Submodule R M) < ⊤ :=
     Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
       ((IsLocalRing.le_maximalIdeal (Ideal.IsPrime.ne_top')).trans
@@ -251,8 +254,23 @@ lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module
   rw [moduleDepth_eq_sSup_length_regular p _ _ smul_lt h_supp]
   apply sSup_le (fun n hn ↦ le_sSup ?_)
   rcases hn with ⟨rs, reg, mem, len⟩
-
-  sorry
+  have mem' : ∀ r ∈ List.map (⇑(algebraMap R Rₚ)) rs, r ∈ maximalIdeal Rₚ := by
+    intro r hr
+    rcases List.mem_map.mp hr with ⟨r', hr', eq⟩
+    rw [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p]
+    exact mem r' hr'
+  have reg' : RingTheory.Sequence.IsRegular (↑Mₚ) (List.map (⇑(algebraMap R Rₚ)) rs) := by
+    refine ⟨isLocaliation_map_is_weakly_regular_of_is_weakly_regular
+      p Rₚ rs M Mₚ f reg.toIsWeaklyRegular, ?_⟩
+    have : Ideal.ofList (List.map (⇑(algebraMap R Rₚ)) rs) • (⊤ : Submodule Rₚ Mₚ) ≤
+      maximalIdeal Rₚ • (⊤ : Submodule Rₚ Mₚ) := by
+      apply Submodule.smul_mono _ fun _ a ↦ a
+      simpa only [Ideal.ofList, Ideal.span_le] using mem'
+    apply (ne_top_of_lt (b := ⊤) (lt_of_le_of_lt this (Ne.lt_top (Ne.symm _)))).symm
+    exact Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+      (IsLocalRing.maximalIdeal_le_jacobson _)
+  use (rs.map (algebraMap R Rₚ)), reg', mem'
+  rw [List.length_map, len]
 
 lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay [Small.{v} (R ⧸ p)]
     [M.IsCohenMacaulay] : Module.supportDim Rₚ Mₚ = p.depth M := by
