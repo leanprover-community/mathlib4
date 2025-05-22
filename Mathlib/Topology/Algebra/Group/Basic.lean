@@ -1224,7 +1224,7 @@ instance [ContinuousMul α] : IsTopologicalGroup αˣ where
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/
-@[to_additive prodAddUnits
+@[to_additive prodHomeomorph
   "The topological group isomorphism between the additive units of a product of two
   additive monoids, and the product of the additive units of each additive monoid."]
 def prodHomeomorph : (α × β)ˣ ≃ₜ αˣ × βˣ where
@@ -1238,13 +1238,10 @@ def prodHomeomorph : (α × β)ˣ ≃ₜ αˣ × βˣ where
   toEquiv := Units.prodEquiv.toEquiv
 
 @[deprecated (since := "2025-02-21")]
-alias Homeomorph.sumAddUnits := Homeomorph.prodAddUnits
+alias Homeomorph.sumAddUnits := AddUnits.prodHomeomorph
 
 @[deprecated (since := "2025-05-22")]
 alias Homeomorph.prodUnits := Units.prodHomeomorph
-
-@[deprecated (since := "2025-02-21")]
-protected alias Homeomorph.prodUnits := Units.prodHomeomorph
 
 end Units
 
