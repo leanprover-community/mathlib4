@@ -118,10 +118,8 @@ lemma d_comp_d (n : ℕ) :
     rfl
 
 /-- The complex of functors taking `M` to `C(G, C(G,...,C(G, M)))`. -/
-def complex : CochainComplex (Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G) ℕ where
-  X := functor R G
-  d i j := if h : j = i + 1 then d R G i ≫ eqToHom (by subst h; rfl) else 0
-  d_comp_d' _ _ _ h₁ h₂ := by subst h₁ h₂; simp
+def complex : CochainComplex (Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G) ℕ :=
+  CochainComplex.of (functor R G) (d R G) (d_comp_d R G)
 
 end MultiInd
 
