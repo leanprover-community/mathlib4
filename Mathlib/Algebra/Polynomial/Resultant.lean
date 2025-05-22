@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
 
-import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Eigenspace.Zero
 import Mathlib.RingTheory.Polynomial.DegreeLT
 
 /-!
@@ -19,6 +19,10 @@ ID (?) : ∃ a b : R[X], Res f g = a * f + b * q (??)
 CommRing: Res f g = (Sylvester f g).Det
 
 TODO: Discriminant (Quadratic Formula)
+
+Question: is it better for m and n to have a specified "default argument"? i.e.
+`def resultant (f g : R[X]) (m n : ℕ := f.natDegree, g.natDegree) : R`? That way we don't
+need to make all those `aux` definitions?
 -/
 
 
@@ -82,7 +86,7 @@ theorem finAddFlip_eq_finRotate_pow' {m n : ℕ} :
     (finCongr (add_comm _ _)).trans finAddFlip = (finRotate (m + n)) ^ m := by
   ext; simp [add_comm n m]
 
-theorem sign_finAddFlip {m n : ℕ} :
+@[simp] theorem sign_finAddFlip {m n : ℕ} :
     Equiv.Perm.sign (finAddFlip.trans (finCongr (add_comm n m))) = (-1) ^ (m * n) := by
   rw [finAddFlip_eq_finRotate_pow]
   cases m with
@@ -92,7 +96,7 @@ theorem sign_finAddFlip {m n : ℕ} :
     | succ n => simp [sign_finRotate_ite, pow_succ]
   | succ m => simp [sign_finRotate_ite, Nat.succ_mul, pow_add, pow_mul, mul_pow]
 
-theorem sign_finAddFlip' {m n : ℕ} :
+@[simp] theorem sign_finAddFlip' {m n : ℕ} :
     Equiv.Perm.sign ((finCongr (add_comm n m)).trans finAddFlip) = (-1) ^ (m * n) := by
   rw [finAddFlip_eq_finRotate_pow']
   cases m with
@@ -130,34 +134,33 @@ end TO_MOVE
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] (f g : R[X])
-
 section sylvester
+
+variable {R : Type*} [CommRing R] (f g : R[X]) (m n : ℕ)
+
 /-- The Sylvester matrix of two polynomials `f` and `g` of degrees `m` and `n` respectively
     is a `(n+m) × (n+m)` matrix with the coefficients of `f` and `g` arranged in a specific way.
     Here, `m` and `n` are free variables, not yet fixed to the actual degrees of the polynomials
     `f` and `g`. -/
-def sylvester (m n : ℕ) : Matrix (Fin (n+m)) (Fin (n+m)) R :=
-fun i j ↦ j.addCases
-  (fun j₁ ↦ if (i:ℕ) ∈ Set.Icc (j₁:ℕ) (j₁+m) then f.coeff (i - j₁) else 0)
-  (fun j₁ ↦ if (i:ℕ) ∈ Set.Icc (j₁:ℕ) (j₁+n) then g.coeff (i - j₁) else 0)
+def sylvester : Matrix (Fin (n+m)) (Fin (n+m)) R :=
+  fun i j ↦ j.addCases
+    (fun j₁ ↦ if (i:ℕ) ∈ Set.Icc (j₁:ℕ) (j₁+m) then f.coeff (i - j₁) else 0)
+    (fun j₁ ↦ if (i:ℕ) ∈ Set.Icc (j₁:ℕ) (j₁+n) then g.coeff (i - j₁) else 0)
 
-variable {f g}
+variable {f g m n}
 
 section def_lemmas
 
-variable {m n : ℕ}
+lemma sylvester_fst_coeff {j : Fin n} {k : Fin (m+1)} :
+    sylvester f g m n ⟨j+k, by linarith [j.is_lt, k.is_lt]⟩ (j.castAdd m) = f.coeff k := by
+  rw [sylvester, Fin.addCases_left,
+    if_pos ⟨Nat.le_add_right _ _, Nat.add_le_add_left (Nat.le_of_lt_succ k.is_lt) _⟩,
+    Fin.val_mk, Nat.add_sub_cancel_left]
 
-lemma sylvester_fst_coeff {k : Fin (m+1)} {j : Fin n} :
-    sylvester f g m n ⟨k+j, by linarith [k.is_lt, j.is_lt]⟩ (j.castAdd m) = f.coeff k := by
-  rw [sylvester, Fin.addCases_left, add_comm (j:ℕ) m,
-    if_pos ⟨Nat.le_add_left _ _, Nat.add_le_add_right (Nat.le_of_lt_succ k.is_lt) _⟩,
-    Fin.val_mk, Nat.add_sub_cancel]
-
-lemma sylvester_fst_coeff' (k : Fin (m+1)) {j : Fin n} {i : Fin (n+m)}
-    (H : (k + j : ℕ) = i) :
+lemma sylvester_fst_coeff' {j : Fin n} {i : Fin (n+m)} (k : Fin (m+1))
+    (H : (j + k : ℕ) = i) :
     sylvester f g m n i (j.castAdd m) = f.coeff k := by
-  convert sylvester_fst_coeff; exact H.symm
+  convert sylvester_fst_coeff using 3; exact H.symm
 
 lemma sylvester_fst_zero (i : Fin (n+m)) {j : Fin n}
     (H : (i:ℕ) < j) : sylvester f g m n i (j.castAdd m) = 0 := by
@@ -167,16 +170,16 @@ lemma sylvester_fst_zero' (i : Fin (n+m)) {j : Fin n}
     (H : (j + m : ℕ) < i) : sylvester f g m n i (j.castAdd m) = 0 := by
   rw [sylvester, Fin.addCases_left, if_neg (by simp [H])]
 
-lemma sylvester_snd_coeff {k : Fin (n+1)} {j : Fin m} :
-    sylvester f g m n ⟨k+j, by linarith [k.is_lt, j.is_lt]⟩ (j.natAdd n) = g.coeff k := by
-  rw [sylvester, Fin.addCases_right, add_comm (j:ℕ) n,
-    if_pos ⟨Nat.le_add_left _ _, Nat.add_le_add_right (Nat.le_of_lt_succ k.is_lt) _⟩,
-    Fin.val_mk, Nat.add_sub_cancel]
+lemma sylvester_snd_coeff {j : Fin m} {k : Fin (n+1)} :
+    sylvester f g m n ⟨j+k, by linarith [k.is_lt, j.is_lt]⟩ (j.natAdd n) = g.coeff k := by
+  rw [sylvester, Fin.addCases_right,
+    if_pos ⟨Nat.le_add_right _ _, Nat.add_le_add_left (Nat.le_of_lt_succ k.is_lt) _⟩,
+    Fin.val_mk, Nat.add_sub_cancel_left]
 
-lemma sylvester_snd_coeff' (k : Fin (n+1)) {j : Fin m} {i : Fin (n+m)}
-    (H : (k + j : ℕ) = i) :
+lemma sylvester_snd_coeff' {j : Fin m} {i : Fin (n+m)} (k : Fin (n+1))
+    (H : (j + k : ℕ) = i) :
     sylvester f g m n i (j.natAdd n) = g.coeff k := by
-  convert sylvester_snd_coeff; exact H.symm
+  convert sylvester_snd_coeff using 3; exact H.symm
 
 lemma sylvester_snd_zero (i : Fin (n+m)) {j : Fin m}
     (H : (i:ℕ) < j) : sylvester f g m n i (j.natAdd n) = 0 := by
@@ -186,60 +189,84 @@ lemma sylvester_snd_zero' (i : Fin (n+m)) {j : Fin m}
     (H : (j + n : ℕ) < i) : sylvester f g m n i (j.natAdd n) = 0 := by
   rw [sylvester, Fin.addCases_right, if_neg (by simp [H])]
 
-lemma sylvester_induction {motive : Π (x : R) (i j : Fin (n+m)), Prop}
-      (fst_coeff : ∀ (k : Fin (m+1)) (j : Fin n),
-        motive (f.coeff k) ⟨k+j, by linarith [k.is_lt, j.is_lt]⟩ (j.castAdd m))
-      (snd_coeff : ∀ (k : Fin (n+1)) (j : Fin m),
-        motive (g.coeff k) ⟨k+j, by linarith [k.is_lt, j.is_lt]⟩ (j.natAdd n))
+lemma sylvester_induction {motive : R → Fin (n+m) → Fin (n+m) → Prop}
+      (fst_coeff : ∀ (j : Fin n) (k : Fin (m+1)),
+        motive (f.coeff k) ⟨j+k, add_lt_add_of_lt_of_le j.2 k.is_le⟩ (j.castAdd m))
+      (snd_coeff : ∀ (j : Fin m) (k : Fin (n+1)),
+        motive (g.coeff k) ⟨j+k, add_comm m n ▸ add_lt_add_of_lt_of_le j.2 k.is_le⟩ (j.natAdd n))
       (fst_zero₁ : ∀ (i : ℕ) (j : Fin n) (H : i < j),
-        motive 0 ⟨i, by linarith [j.is_lt]⟩ (j.castAdd m))
-      (fst_zero₂ : ∀ (i : Fin (n+m)) (j : Fin n) (H : j + m < i),
-        motive 0 i (j.castAdd m))
+        motive 0 ⟨i, H.trans <| j.2.trans_le <| Nat.le_add_right _ _⟩ (j.castAdd m))
+      (fst_zero₂ : ∀ (i : Fin (n+m)) (j : Fin n),
+        j + m < i → motive 0 i (j.castAdd m))
       (snd_zero₁ : ∀ (i : ℕ) (j : Fin m) (H : i < j),
-        motive 0 ⟨i, by linarith [j.is_lt]⟩ (j.natAdd n))
-      (snd_zero₂ : ∀ (i : Fin (n+m)) (j : Fin m) (H : j + n < i),
-        motive 0 i (j.natAdd n)) :
+        motive 0 ⟨i, H.trans <| j.2.trans_le <| Nat.le_add_left _ _⟩ (j.natAdd n))
+      (snd_zero₂ : ∀ (i : Fin (n+m)) (j : Fin m),
+        j + n < i → motive 0 i (j.natAdd n)) :
     ∀ {i j}, motive (sylvester f g m n i j) i j := by
-  intro i j
-  cases j using Fin.addCases with
-  | left j =>
-    rw [sylvester, Fin.addCases_left]
-    split_ifs with h
-    · rcases h with ⟨h1, h2⟩
-      rcases Nat.exists_eq_add_of_le h1 with ⟨k, h3⟩
-      have : k < m + 1 := Nat.lt_succ_of_le <| Nat.le_of_add_le_add_left <| by rwa [← h3]
-      convert fst_coeff ⟨k, this⟩ j using 1
-      · rw [h3, Fin.val_mk, Nat.add_sub_cancel_left]
-      · exact Fin.ext <| h3.trans <| add_comm _ _
-    · rw [Set.mem_Icc, Decidable.not_and_iff_not_or_not] at h
-      cases h with
-      | inl h => exact fst_zero₁ i j (by linarith)
-      | inr h => exact fst_zero₂ i j (by linarith)
-  | right j =>
-    rw [sylvester, Fin.addCases_right]
-    split_ifs with h
-    · rcases h with ⟨h1, h2⟩
-      rcases Nat.exists_eq_add_of_le h1 with ⟨k, h3⟩
-      have : k < n + 1 := Nat.lt_succ_of_le <| Nat.le_of_add_le_add_left <| by rwa [← h3]
-      convert snd_coeff ⟨k, this⟩ j using 1
-      · rw [h3, Fin.val_mk, Nat.add_sub_cancel_left]
-      · exact Fin.ext (by rw [h3, add_comm])
-    · rw [Set.mem_Icc, Decidable.not_and_iff_not_or_not] at h
-      cases h with
-      | inl h => exact snd_zero₁ i j (by linarith)
-      | inr h => exact snd_zero₂ i j (by linarith)
+  refine fun {i j} ↦ Fin.addCases
+    (fun j₁ ↦ (le_or_lt (j₁ : ℕ) (i : ℕ)).elim
+      (fun h₁ ↦
+        have ⟨k, hk⟩ := Nat.exists_eq_add_of_le h₁
+        (le_or_lt (k : ℕ) (m : ℕ)).elim (fun h₂ ↦ ?_) (fun h₂ ↦ ?_))
+      (fun h₁ ↦ ?_))
+    (fun j₁ ↦ (le_or_lt (j₁ : ℕ) (i : ℕ)).elim
+      (fun h₁ ↦
+        have ⟨k, hk⟩ := Nat.exists_eq_add_of_le h₁
+        (le_or_lt (k : ℕ) (n : ℕ)).elim (fun h₂ ↦ ?_) (fun h₂ ↦ ?_))
+      (fun h₁ ↦ ?_))
+    j
+  · rw [sylvester_fst_coeff' ⟨k, Nat.lt_succ_of_le h₂⟩ hk.symm]
+    convert fst_coeff _ _ using 1
+    exact Fin.ext hk
+  · have : (j₁ + m : ℕ) < i := by simpa only [hk, add_lt_add_iff_left]
+    rw [sylvester_fst_zero' _ this]
+    exact fst_zero₂ _ _ this
+  · rw [sylvester_fst_zero _ h₁]
+    exact fst_zero₁ _ _ h₁
+  · rw [sylvester_snd_coeff' ⟨k, Nat.lt_succ_of_le h₂⟩ hk.symm]
+    convert snd_coeff _ _ using 1
+    exact Fin.ext hk
+  · have : (j₁ + n : ℕ) < i := by simpa only [hk, add_lt_add_iff_left]
+    rw [sylvester_snd_zero' _ this]
+    exact snd_zero₂ _ _ this
+  · rw [sylvester_snd_zero _ h₁]
+    exact snd_zero₁ _ _ h₁
 
 end def_lemmas
 
-theorem sylvester_comm {f g : R[X]} {m n : ℕ} :
-  sylvester g f n m = (sylvester f g m n).submatrix
-    (finCongr (add_comm m n))
-    (finAddFlip) := by
+theorem sylvester_comm : sylvester g f n m =
+    (sylvester f g m n).submatrix (finCongr (add_comm m n)) (finAddFlip) := by
   ext i j
   refine j.addCases (fun j₁ ↦ ?_) (fun j₁ ↦ ?_) <;> simp [sylvester]
 
-lemma sylvester_one_zero : sylvester f g 1 0 = !![g.coeff 0] := by
-  ext i j; fin_cases i; fin_cases j; simp [sylvester, Fin.addCases]
+theorem sylvester_C_snd {a : R} :
+    sylvester f (C a) m 0 = Matrix.diagonal (fun _ ↦ a) := by
+  ext i₀ j₀
+  refine sylvester_induction (motive := fun x i j ↦ x = Matrix.diagonal _ i j)
+    (fun i j ↦ ?_) (fun i j ↦ ?_)
+    (fun i j H ↦ ?_) (fun i j H ↦ ?_) (fun i j H ↦ ?_) (fun i j H ↦ ?_)
+  · fin_cases i
+  · fin_cases j
+    simp only [coeff_C_zero, add_zero, Fin.natAdd_zero, Matrix.diagonal_apply, Fin.ext_iff,
+      Fin.coe_cast, if_true]
+  · fin_cases j
+  · fin_cases j
+  · simp only [Fin.natAdd_zero, Matrix.diagonal_apply, Fin.ext_iff, Fin.coe_cast,
+    if_neg (ne_of_lt H)]
+  · rw [add_zero] at H
+    simp only [Fin.natAdd_zero, Matrix.diagonal_apply, Fin.ext_iff, Fin.coe_cast,
+      if_neg (ne_of_gt H)]
+
+theorem sylvester_C_fst {a : R} :
+    sylvester (C a) f 0 m = Matrix.diagonal (fun _ ↦ a) := by
+  ext i j
+  have hjj : ((finAddFlip j).val : ℕ) = j := by
+    cases j using Fin.addCases with
+    | left j₁  => simp only [finAddFlip_apply_castAdd, Fin.coe_natAdd, zero_add, Fin.coe_castAdd]
+    | right j₁ => fin_cases j₁
+  rw [sylvester_comm, sylvester_C_snd]
+  refine ite_congr ?_ (fun _ ↦ rfl) (fun _ ↦ rfl)
+  simp only [Nat.add_zero, finCongr_apply, Fin.ext_iff, Fin.coe_cast, eq_iff_iff, ← hjj]
 
 /- Ideally, there will be good reduction algorithms. -/
 
@@ -273,41 +300,60 @@ end sylvester
 
 section resultant
 
+variable {R : Type*} [CommRing R] (f g : R[X]) (m n : ℕ)
+
 /-- A version of `resultant` where the degrees of the polynomials `f` and `g` are free variables. -/
-def resultant_aux (f g : R[X]) (m n : ℕ) : R :=
+def resultantAux : R :=
 (sylvester f g m n : Matrix _ _ R).det
 
 /-- The resultant of two polynomials `f` and `g` is the determinant of the Sylvester matrix
     of `f` and `g`. -/
 def resultant : R :=
-resultant_aux f g f.natDegree g.natDegree
+resultantAux f g f.natDegree g.natDegree
 
-variable {f g}
+variable {f g m n}
+
+lemma resultant_def : resultant f g = (sylvester f g f.natDegree g.natDegree).det := rfl
 
 theorem resultant_comm : g.resultant f =
     (-1) ^ (f.natDegree * g.natDegree) * f.resultant g := by
-  rw [resultant, resultant_aux, sylvester_comm, Matrix.det_submatrix', finCongr_symm,
-    sign_finAddFlip']
-  simp [resultant, resultant_aux]
+  rw [resultant_def, sylvester_comm, Matrix.det_submatrix']
+  simp [resultant_def]
 
-lemma resultant_C_C {x y : R} : resultant (C x) (C y) = 1 :=
-have : IsEmpty (Fin ((C y).natDegree + (C x).natDegree)) := by
-  convert Fin.isEmpty; simp only [natDegree_C, add_zero]
-Matrix.det_isEmpty
+variable {a b c x y z : R}
 
-lemma resultant_linear_C {a b c : R} (H : a ≠ 0) :
-    resultant (C a * X + C b) (C c) = c := by
-  rw [resultant, resultant_aux, natDegree_linear H, natDegree_C, sylvester_one_zero,
-    coeff_C_zero, Matrix.det_fin_one_of]
+/-- For polynomial `f` and constant `a`, `Res(a,f) = a^m`. -/
+theorem resultantAux_C : resultantAux (C a) f 0 m = a ^ m := by
+  rw [resultantAux, sylvester_C_fst, Matrix.det_diagonal, Fin.prod_const, add_zero]
+
+/-- For polynomial `f` and constant `a`, `Res(f,a) = a^m`. -/
+theorem resultantAux_C' : resultantAux f (C a) m 0 = a ^ m := by
+  rw [resultantAux, sylvester_C_snd, Matrix.det_diagonal, Fin.prod_const, zero_add]
+
+/-- For polynomial `f` and constant `a`, `Res(f,a) = a^n`. -/
+theorem resultant_C : resultant (C a) f = a ^ f.natDegree := by
+  rw [resultant, natDegree_C, resultantAux_C]
+
+/-- For polynomial `f` and constant `a`, `Res(a,f) = a^n`. -/
+theorem resultant_C' : resultant f (C a) = a ^ f.natDegree := by
+  rw [resultant, natDegree_C, resultantAux_C']
+
+lemma resultant_C_C : resultant (C a) (C b) = 1 := by
+  rw [resultant_C, natDegree_C, pow_zero]
+
+lemma resultant_linear_C (H : a ≠ 0) : resultant (C a * X + C b) (C x) = x := by
+  rw [resultant_C', natDegree_linear H, pow_one]
+
+lemma resultant_C_linear (H : a ≠ 0) : resultant (C x) (C a * X + C b) = x := by
+  rw [resultant_C, natDegree_linear H, pow_one]
 
 lemma resultant_X_add_C_C {x y : R} : resultant (X + C x) (C y) = y := by
   nontriviality R
-  convert resultant_linear_C (one_ne_zero (α:=R)); rw [C_1, one_mul]
+  rw [resultant_C', natDegree_X_add_C, pow_one]
 
 lemma resultant_C_X_add_C {x y : R} : resultant (C x) (X + C y) = x := by
   nontriviality R
-  rw [resultant_comm, resultant_X_add_C_C, natDegree_X_add_C, natDegree_C]
-  simp
+  rw [resultant_C, natDegree_X_add_C, pow_one]
 
 lemma resultant_X_C {x : R} : resultant (X) (C x) = x := by
   convert resultant_X_add_C_C; rw [C_0, add_zero]
@@ -320,120 +366,282 @@ end resultant
 
 section sylvester_map
 
-/-- If `P.degree ≤ m` and `Q.degree ≤ n`, and `(a, b) ∈ R[X]_n × R[X]_m`, then `P * a + Q * b`
-is in `R[X]_(n + m)`.  -/
-lemma sylvester_map_mem_aux {m n : ℕ} {P Q : Polynomial R}
-    (hP : P.degree ≤ m) (hQ : Q.degree ≤ n) {a : R[x]_n} {b : R[x]_m} :
-    P * a.val + Q * b.val ∈ R[x]_(n + m) :=
+variable {R : Type*} [CommRing R] {P Q : Polynomial R} {m n : ℕ}
+  (hP : P.degree ≤ m := by exact P.degree_le_natDegree)
+  (hQ : Q.degree ≤ n := by exact Q.degree_le_natDegree)
+  {a : R[x]_n} {b : R[x]_m} {AB : (R[x]_n) × (R[x]_m)}
+
+include hP hQ in
+/-- If `P.degree ≤ m` and `Q.degree ≤ n`, and `(a, b) ∈ R[x]_n × R[x]_m`, then `P * a + Q * b`
+is in `R[x]_(n + m)`. -/
+lemma sylvesterMap_mem_aux : P * a.val + Q * b.val ∈ R[x]_(n + m) :=
   add_mem (mul_left_mem_degreeLT' _ _ hP a.prop) (mul_left_mem_degreeLT _ _ hQ b.prop)
 
-/-- We define the linear map `R[X]_n × R[X]_m → R[X]_{n + m}` with `(a, b) ↦ P * a + Q * b`. -/
-noncomputable def sylvesterMap {m n : ℕ} (P Q : Polynomial R) :
-    ((R[x]_n) × (R[x]_m)) →ₗ[R] (R[x]_(n + m)) :=
+variable (P Q) in
+/-- We define the linear map `R[x]_n × R[x]_m → R[x]_{n + m}` with `(a, b) ↦ P * a + Q * b`. -/
+noncomputable def sylvesterMap : ((R[x]_n) × (R[x]_m)) →ₗ[R] (R[x]_(n + m)) :=
   if h : P.degree ≤ m ∧ Q.degree ≤ n then
-    { toFun         := fun ab ↦ ⟨P * ab.1 + Q * ab.2, sylvester_map_mem_aux h.1 h.2⟩
+    { toFun         := fun ab ↦ ⟨P * ab.1 + Q * ab.2, sylvesterMap_mem_aux h.1 h.2⟩
       map_add' x y  := by simp; ring_nf
       map_smul' r a := by simp }
   else 0
 
-@[simp] lemma sylvesterMap_apply {m n : ℕ} {P Q : Polynomial R}
-    (hP : P.degree ≤ m) (hQ : Q.degree ≤ n) {AB : (R[x]_n) × (R[x]_m)} :
-    sylvesterMap P Q AB = ⟨P * AB.1 + Q * AB.2, sylvester_map_mem_aux hP hQ⟩ := by
+variable (P Q) in
+/-- We define the linear map `R[x]_n × R[x]_m → R[x]_{n + m}` with `(a, b) ↦ P * a + Q * b`.
+Here `m` and `n` are fixed to be `P.natDegree` and `Q.natDegree` respectively. -/
+@[simps] noncomputable def sylvesterMap' :
+    ((R[x]_Q.natDegree) × (R[x]_P.natDegree)) →ₗ[R] (R[x]_(Q.natDegree + P.natDegree)) where
+  toFun         := fun ab ↦ ⟨P * ab.1 + Q * ab.2, sylvesterMap_mem_aux⟩
+  map_add' x y  := by simp; ring_nf
+  map_smul' r a := by simp
+
+@[simp] lemma sylvesterMap_apply :
+    sylvesterMap P Q AB = ⟨P * AB.1 + Q * AB.2, sylvesterMap_mem_aux hP hQ⟩ := by
   simp [sylvesterMap, dif_pos (And.intro hP hQ)]
 
-@[simp] lemma sylvesterMap_X_pow_zero {n m : ℕ} (P Q : Polynomial R)
-    (hP : P.degree ≤ n) (hQ : Q.degree ≤ m) (i : Fin m) :
-    sylvesterMap P Q (⟨X ^ (i : ℕ), degreeLT_X_pow_mem R i⟩, 0) =
-      ⟨P * X ^ (i : ℕ), mul_left_mem_degreeLT' _ _ hP (degreeLT_X_pow_mem R i)⟩ := by
+lemma sylvesterMap_eq_sylvesterMap' :
+    sylvesterMap P Q = sylvesterMap' P Q :=
+  dif_pos ⟨P.degree_le_natDegree, Q.degree_le_natDegree⟩
+
+include hP hQ
+
+@[simp] lemma sylvesterMap_X_pow_zero (i : Fin n) :
+    sylvesterMap P Q (⟨X ^ (i : ℕ), degreeLT_X_pow_mem i⟩, 0) =
+      ⟨P * X ^ (i : ℕ), mul_left_mem_degreeLT' _ _ hP (degreeLT_X_pow_mem i)⟩ := by
   simp [hP, hQ]
 
-@[simp] lemma sylvesterMap_zero_X_pow {n m : ℕ} (P Q : Polynomial R)
-    (hP : P.degree ≤ n) (hQ : Q.degree ≤ m) (i : Fin n) :
-    sylvesterMap P Q (0, ⟨X ^ (i : ℕ), degreeLT_X_pow_mem R i⟩) =
-      ⟨Q * X ^ (i : ℕ), mul_left_mem_degreeLT _ _ hQ (degreeLT_X_pow_mem R i)⟩ := by
+@[simp] lemma sylvesterMap_zero_X_pow (i : Fin m) :
+    sylvesterMap P Q (0, ⟨X ^ (i : ℕ), degreeLT_X_pow_mem i⟩) =
+      ⟨Q * X ^ (i : ℕ), mul_left_mem_degreeLT _ _ hQ (degreeLT_X_pow_mem i)⟩ := by
   simp [hP, hQ]
 
 /-- The Sylvester matrix is equal to the Sylvester map as a matrix in basis
 (1, .., X^(m-1); 1, ..., X^(n-1)) and (1, ..., X^(m+n-1)).
 -/
-lemma sylvesterMap_toMatrix {P Q : Polynomial R} {m n : ℕ} (hP : P.degree ≤ m) (hQ : Q.degree ≤ n) :
+lemma sylvesterMap_toMatrix :
     LinearMap.toMatrix (degreeLT.basis_prod R n m) (degreeLT.basis R (n + m)) (sylvesterMap P Q) =
     sylvester P Q m n := by
   ext i j
   refine sylvester_induction (motive := fun x i j ↦ LinearMap.toMatrix _ _ _ i j = x)
-    (fun k j₁ ↦ ?_) (fun k j₁ ↦ ?_)
+    (fun j₁ k ↦ ?_) (fun j₁ k ↦ ?_)
     (fun i j₁ h ↦ ?_) (fun i j₁ h ↦ ?_) (fun i j₁ h ↦ ?_) (fun i j₁ h ↦ ?_)
-  · simp [hP, hQ, LinearMap.toMatrix_apply]
-  · simp [hP, hQ, LinearMap.toMatrix_apply]
+  · simp [hP, hQ, add_comm (j₁ : ℕ), LinearMap.toMatrix_apply]
+  · simp [hP, hQ, add_comm (j₁ : ℕ), LinearMap.toMatrix_apply]
   · simp [hP, hQ, LinearMap.toMatrix_apply, coeff_mul_X_pow', if_neg (not_le_of_lt h)]
-  · have H : (j₁ : ℕ) ≤ i := by linarith
+  · have H : (j₁ : ℕ) ≤ i := le_trans (Nat.le_add_right _ _) h.le
     rcases Nat.exists_eq_add_of_le H with ⟨k, hk⟩
     rw [hk, add_lt_add_iff_left, ← WithBot.coe_lt_coe] at h
     simp [hP, hQ, LinearMap.toMatrix_apply, coeff_mul_X_pow', if_pos H,
       hk, coeff_eq_zero_of_degree_lt (lt_of_le_of_lt hP h)]
   · simp [hP, hQ, LinearMap.toMatrix_apply, coeff_mul_X_pow', if_neg (not_le_of_lt h)]
-  · have H : (j₁ : ℕ) ≤ i := by linarith
+  · have H : (j₁ : ℕ) ≤ i := le_trans (Nat.le_add_right _ _) h.le
     rcases Nat.exists_eq_add_of_le H with ⟨k, hk⟩
     rw [hk, add_lt_add_iff_left, ← WithBot.coe_lt_coe] at h
     simp [hP, hQ, LinearMap.toMatrix_apply, coeff_mul_X_pow', if_pos H,
       hk, Nat.add_sub_cancel_left, coeff_eq_zero_of_degree_lt (lt_of_le_of_lt hQ h)]
 
-lemma sylvester_toLin {P Q : Polynomial R} {m n : ℕ} (hP : P.degree ≤ m) (hQ : Q.degree ≤ n) :
+omit hP hQ in
+/-- The Sylvester matrix is equal to the Sylvester map as a matrix in basis
+(1, .., X^(m-1); 1, ..., X^(n-1)) and (1, ..., X^(m+n-1)).
+-/
+lemma sylvesterMap_toMatrix' :
+    LinearMap.toMatrix (degreeLT.basis_prod R _ _) (degreeLT.basis R _) (sylvesterMap' P Q) =
+    sylvester P Q _ _ := by
+  rw [← sylvesterMap_eq_sylvesterMap', sylvesterMap_toMatrix]
+
+lemma sylvester_toLin :
     (sylvester P Q m n).toLin (degreeLT.basis_prod R n m) (degreeLT.basis R (n + m)) =
     sylvesterMap P Q :=
   sylvesterMap_toMatrix hP hQ ▸ Matrix.toLin_toMatrix _ _ _
+
+omit hP hQ in
+lemma sylvester_toLin' :
+    (sylvester P Q _ _).toLin (degreeLT.basis_prod R _ _) (degreeLT.basis R _) =
+    sylvesterMap' P Q :=
+  sylvesterMap_toMatrix' (P:=P) ▸ Matrix.toLin_toMatrix _ _ _
+
+/-- `Res(P,Q)` is the determinant of the linear map `A, B ↦ PA+QB`, viewed as a linear map
+on the space `R[x]_(n+m)` after identification of `R[x]_(n+m)` with `R[x]_n × R[x]_m`.
+Here `m` and `n` are free variables. -/
+theorem det_sylvesterMap_aux : (sylvesterMap P Q (m:=m) (n:=n) ∘ₗ
+      degreeLT.addLinearEquiv.toLinearMap).det =
+    resultantAux P Q m n := by
+  rw [← LinearMap.det_toMatrix (degreeLT.basis R (n + m)),
+    LinearMap.toMatrix_comp _ (degreeLT.basis_prod R n m),
+    degreeLT.addLinearEquiv, LinearMap.toMatrix_basis_equiv, mul_one, resultantAux,
+    sylvesterMap_toMatrix hP hQ]
+
+omit hP hQ in
+/-- `Res(P,Q)` is the determinant of the linear map `A, B ↦ PA+QB`, viewed as a linear map
+on the space `R[x]_(n+m)` after identification of `R[x]_(n+m)` with `R[x]_n × R[x]_m`.
+Here `m` and `n` are fixed to be `P.natDegree` and `Q.natDegree` repectively. -/
+theorem det_sylvesterMap : (sylvesterMap' P Q ∘ₗ degreeLT.addLinearEquiv.toLinearMap).det =
+    resultant P Q :=
+  sylvesterMap_eq_sylvesterMap' (P:=P) ▸ det_sylvesterMap_aux
 
 end sylvester_map
 
 
 section bezout
 
+variable {R : Type*} [CommRing R] {m n : ℕ} {P Q : Polynomial R} (H : n + m ≠ 0)
+  (hP : P.degree ≤ m := by exact P.degree_le_natDegree)
+  (hQ : Q.degree ≤ n := by exact Q.degree_le_natDegree)
+
+variable (m n P Q) in
 /-- A pair `(A, B)` witnessing `P * A + Q * B = C (resultant P Q)`, as long as `P` and `Q` are not
 both constant polynomials. -/
-def bezout (m n : ℕ) (P Q : Polynomial R) : (R[x]_n) × (R[x]_m) :=
+def bezout : (R[x]_n) × (R[x]_m) :=
   if H : n + m = 0 then 0 else
   Matrix.toLin (degreeLT.basis R (n + m)) (degreeLT.basis_prod R n m)
     (sylvester P Q m n).adjugate
     ⟨1, mem_degreeLT.2 <| degree_one_le.trans_lt <| WithBot.coe_pos.2 <| Nat.pos_of_ne_zero H⟩
 
-@[simp] lemma bezout_apply (m n : ℕ) (P Q : Polynomial R) (H : n + m ≠ 0) :
-  bezout m n P Q =
+@[simp] lemma bezout_apply : bezout m n P Q =
   Matrix.toLin (degreeLT.basis R (n + m)) (degreeLT.basis_prod R n m)
     (sylvester P Q m n).adjugate
     ⟨1, mem_degreeLT.2 <| degree_one_le.trans_lt <| WithBot.coe_pos.2 <| Nat.pos_of_ne_zero H⟩ :=
 dif_neg H
 
-theorem mul_add_mul_resultant_aux (m n : ℕ) (P Q : Polynomial R)
-    (H : n + m ≠ 0)
-    (hP : P.degree ≤ m) (hQ : Q.degree ≤ n) :
+include H hP hQ in
+theorem bezout_comb_eq_resultantAux :
     P * (bezout m n P Q).1 + Q * (bezout m n P Q).2 =
-      C (resultant_aux P Q m n) := by
+      C (resultantAux P Q m n) := by
   have h := Matrix.mul_adjugate (sylvester P Q m n)
   replace h := congr_arg (Matrix.toLin (degreeLT.basis R (n + m)) (degreeLT.basis R (n + m))) h
   replace h := Subtype.ext_iff.1 <| LinearMap.ext_iff.1 h
     ⟨1, mem_degreeLT.2 <| degree_one_le.trans_lt <| WithBot.coe_pos.2 <| Nat.pos_of_ne_zero H⟩
   rw [Matrix.toLin_mul _ (degreeLT.basis_prod R n m), LinearMap.coe_comp, Function.comp_apply,
     map_smul, Matrix.toLin_one, LinearMap.smul_apply, LinearMap.id_coe, id_eq, SetLike.mk_smul_mk,
-    sylvester_toLin hP hQ, ← bezout_apply m n P Q H, sylvesterMap_apply hP hQ] at h
+    sylvester_toLin hP hQ, ← bezout_apply H, sylvesterMap_apply hP hQ] at h
   simp only [smul_eq_C_mul, mul_one] at h
   exact h
 
-theorem mul_add_mul_resultant (P Q : Polynomial R) (H : P.natDegree ≠ 0 ∨ Q.natDegree ≠ 0) :
+theorem bezout_comb_eq_resultant (H : P.natDegree ≠ 0 ∨ Q.natDegree ≠ 0) :
     P * (bezout P.natDegree Q.natDegree P Q).1 + Q * (bezout P.natDegree Q.natDegree P Q).2 =
       C (resultant P Q) :=
-  mul_add_mul_resultant_aux _ _ _ _ (by aesop) P.degree_le_natDegree Q.degree_le_natDegree
+  bezout_comb_eq_resultantAux (by aesop)
 
-theorem mul_add_mul_resultant_left (P Q : Polynomial R) (H : P.natDegree ≠ 0) :
+theorem bezout_comb_eq_resultant_left (H : P.natDegree ≠ 0) :
     P * (bezout P.natDegree Q.natDegree P Q).1 + Q * (bezout P.natDegree Q.natDegree P Q).2 =
       C (resultant P Q) :=
-  mul_add_mul_resultant _ _ (by aesop)
+  bezout_comb_eq_resultant (by aesop)
 
-theorem mul_add_mul_resultant_right (P Q : Polynomial R) (H : Q.natDegree ≠ 0) :
+theorem bezout_comb_eq_resultant_right (H : Q.natDegree ≠ 0) :
     P * (bezout P.natDegree Q.natDegree P Q).1 + Q * (bezout P.natDegree Q.natDegree P Q).2 =
       C (resultant P Q) :=
-  mul_add_mul_resultant _ _ (by aesop)
+  bezout_comb_eq_resultant (by aesop)
+
+theorem resultant_eq_zero_of_root {x : R} (h0 : P ≠ 0 ∨ Q ≠ 0)
+    (hP : IsRoot P x) (hQ : IsRoot Q x) : resultant P Q = 0 := by
+  have hPD (h : P ≠ 0) : P.natDegree ≠ 0 :=
+    ne_of_gt <| natDegree_pos_iff_degree_pos.2 <| degree_pos_of_root h hP
+  have hQD (h : Q ≠ 0) : Q.natDegree ≠ 0 :=
+    ne_of_gt <| natDegree_pos_iff_degree_pos.2 <| degree_pos_of_root h hQ
+  by_cases hP0 : P = 0
+  · rw [hP0, ← C_0, resultant_C, zero_pow (hQD <| h0.neg_resolve_left hP0)]
+  · rw [← eval_C (x:=x) (a:=resultant P Q), ← bezout_comb_eq_resultant_left (hPD hP0)]
+    simp only [eval_add, eval_mul, hP.eq_zero, hQ.eq_zero, zero_mul, add_zero]
+
+theorem resultant_eq_zero_of_root_left {x : R} (h0 : P ≠ 0)
+    (hP : IsRoot P x) (hQ : IsRoot Q x) : resultant P Q = 0 :=
+  resultant_eq_zero_of_root (Or.inl h0) hP hQ
+
+theorem resultant_eq_zero_of_root_right {x : R} (h0 : Q ≠ 0)
+    (hP : IsRoot P x) (hQ : IsRoot Q x) : resultant P Q = 0 :=
+  resultant_eq_zero_of_root (Or.inr h0) hP hQ
 
 end bezout
+
+
+section RingHom
+
+variable {R S : Type*} [CommRing R] [CommRing S] {φ : R →+* S} {f g : R[X]} {m n : ℕ}
+
+/-- The sylvester matrix of two polynomials `f` and `g` is conserved under a ring homomorphism. -/
+theorem sylvester_map :
+    sylvester (f.map φ) (g.map φ) m n = φ.mapMatrix (sylvester f g m n) := by
+  ext i j
+  rw [sylvester, RingHom.mapMatrix_apply, Matrix.map_apply, sylvester]
+  cases j using Fin.addCases <;> simp only [Fin.addCases_left, Fin.addCases_right] <;> split_ifs <;>
+    simp only [φ.map_zero, coeff_map]
+
+/-- The resultant of two polynomials `f` and `g` is conserved under a ring homomorphism. -/
+theorem resultantAux_map :
+    resultantAux (f.map φ) (g.map φ) m n = φ (resultantAux f g m n) := by
+  rw [resultantAux, resultantAux, sylvester_map, RingHom.map_det]
+
+/-- The resultant of two polynomials `f` and `g` is conserved under a ring homomorphism
+that maps the leading coefficients of `f` and `g` to non-zero values. -/
+theorem resultant_map (hf : φ f.leadingCoeff ≠ 0) (hg : φ g.leadingCoeff ≠ 0) :
+    resultant (f.map φ) (g.map φ) = φ (resultant f g) := by
+  rw [resultant, resultant, resultantAux_map, natDegree_map_of_leadingCoeff_ne_zero _ hf,
+    natDegree_map_of_leadingCoeff_ne_zero _ hg]
+
+/-- The resultant of two polynomials `f` and `g` is conserved under an
+injective ring homomorphism. -/
+theorem resultant_map_of_injective (hφ : (⇑φ).Injective) :
+    resultant (f.map φ) (g.map φ) = φ (resultant f g) := by
+  rw [resultant, resultant, resultantAux_map, natDegree_map_eq_of_injective hφ,
+    natDegree_map_eq_of_injective hφ]
+
+end RingHom
+
+
+section translate
+
+variable {R : Type*} [CommRing R] {x : R} {f g : R[X]} {m n : ℕ}
+
+/-- The square involving `sylvesterMap` and `translate x` commutes. -/
+lemma translate_sylvesterMap :
+    (translateLinear x _).toLinearMap ∘ₗ sylvesterMap f g (m := m) (n := n) =
+      sylvesterMap (f.translate x) (g.translate x) ∘ₗ (translateProd x n m).toLinearMap := by
+  by_cases h : f.degree ≤ m ∧ g.degree ≤ n
+  · rcases h with ⟨hf₁, hg₁⟩
+    have hf₂ : (f.translate x).degree ≤ m := degree_translate.trans_le hf₁
+    have hg₂ : (g.translate x).degree ≤ n := degree_translate.trans_le hg₁
+    ext P : 3 <;> simp [hf₁, hf₂, hg₁, hg₂, sylvesterMap_apply]
+  · have h₁ : ¬((f.translate x).degree ≤ m ∧ (g.translate x).degree ≤ n) := by
+      rwa [degree_translate, degree_translate]
+    rw [sylvesterMap, dif_neg h, sylvesterMap, dif_neg h₁, LinearMap.comp_zero, LinearMap.zero_comp]
+
+end translate
+
+
+section field
+
+variable {K : Type*} [Field K] {P Q : K[X]}
+
+lemma resultant_eq_zero_iff :
+    P.resultant Q = 0 ↔
+      ∃ a b : K[X], a.degree < Q.natDegree ∧ b.degree < P.natDegree ∧ (a ≠ 0 ∨ b ≠ 0) ∧
+        P * a + Q * b = 0 := by
+  rw [← det_sylvesterMap (P:=P) (Q:=Q)]
+  have := (LinearMap.hasEigenvalue_zero_tfae
+    (P.sylvesterMap' Q ∘ₗ degreeLT.addLinearEquiv.toLinearMap)).out 3 5
+  rw [this]
+  refine ⟨fun ⟨m, hm, h⟩ ↦
+      ⟨ (degreeLT.addLinearEquiv m).1,
+        (degreeLT.addLinearEquiv m).2,
+        ?_, ?_, ?_, ?_⟩,
+    fun ⟨a, b, ha, hb, h₁, h₂⟩ ↦
+      ⟨ degreeLT.addLinearEquiv.symm (⟨a, mem_degreeLT.2 ha⟩, ⟨b, mem_degreeLT.2 hb⟩),
+        ?_, ?_⟩⟩
+  · exact mem_degreeLT.1 (degreeLT.addLinearEquiv m).1.2
+  · exact mem_degreeLT.1 (degreeLT.addLinearEquiv m).2.2
+  · exact not_and_or.1 <| fun ⟨hm₁, hm₂⟩ ↦
+      (LinearEquiv.map_ne_zero_iff _).2 hm <|
+      Prod.ext (Subtype.ext hm₁) (Subtype.ext hm₂)
+  · exact Subtype.ext_iff.1 h
+  · exact (LinearEquiv.map_ne_zero_iff _).2 fun hab ↦ not_and_or.2 h₁ <|
+      by rwa [Prod.mk_eq_zero, Submodule.mk_eq_zero, Submodule.mk_eq_zero] at hab
+  · rw [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply]
+    exact Subtype.ext h₂
+
+#check eval₂
+
+end field
+
 
 end Polynomial
 
