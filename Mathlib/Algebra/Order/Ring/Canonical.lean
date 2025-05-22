@@ -48,7 +48,8 @@ namespace CanonicallyOrderedAdd
 -- see Note [lower instance priority]
 instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring R]
     [LE R] [CanonicallyOrderedAdd R] : MulLeftMono R := by
-  refine ⟨fun a b c h => ?_⟩; dsimp
+  refine ⟨fun a b c h => ?_⟩
+  dsimp
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
@@ -56,7 +57,8 @@ instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring R]
 -- see Note [lower instance priority]
 instance (priority := 100) toMulRightMono [NonUnitalNonAssocSemiring R]
     [LE R] [CanonicallyOrderedAdd R] : MulRightMono R := by
-  refine ⟨fun a b c h => ?_⟩; dsimp [swap]
+  refine ⟨fun a b c h => ?_⟩
+  dsimp [swap]
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [add_mul]
   apply self_le_add_right
