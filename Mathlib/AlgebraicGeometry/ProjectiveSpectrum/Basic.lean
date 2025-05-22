@@ -407,7 +407,7 @@ lemma homOfLE_toBasicOpenOfGlobalSections_ι
 variable (f : A →+* Γ(X, ⊤)) (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal.map f = ⊤)
 
 /-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)` such that the image of the
-irrelavent ideal under `f` generates the whole ring, the set of `D(f(r))` for homogeneous `r`
+irrelevant ideal under `f` generates the whole ring, the set of `D(f(r))` for homogeneous `r`
 of positive degree forms an open cover on `X`. -/
 def openCoverOfMapIrreleventEqTop : X.OpenCover :=
   X.openCoverOfISupEqTop (fun ir : Σ' i r, 0 < i ∧ r ∈ 𝒜 i ↦
