@@ -62,10 +62,6 @@ open Polynomial Algebra Module Set
 
 universe u v w z
 
--- variable (n : ℕ) [NeZero n] (S T : Set ℕ) (A : Type u) (B : Type v) (K : Type w) (L : Type z)
--- variable [CommRing A] [CommRing B] [Algebra A B]
--- variable [Field K] [Field L] [Algebra K L]
-
 noncomputable section
 
 /-- Given an `A`-algebra `B` and `S : Set ℕ`, we define `IsCyclotomicExtension S A B` requiring
