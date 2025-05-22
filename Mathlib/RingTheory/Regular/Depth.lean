@@ -26,7 +26,7 @@ This is the case if `Depth[I](M) = 0`.
 
 -/
 
-open IsLocalRing LinearMap
+open IsLocalRing LinearMap Module
 
 namespace IsSMulRegular
 
