@@ -74,7 +74,7 @@ theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
     calc
       x ^ n - 1 < y ^ n := h n hn
       _ ≤ y' ^ n := by gcongr
-  exact h_y'_lt_x.not_le (le_of_all_pow_lt_succ hx h1_lt_y' hh)
+  exact h_y'_lt_x.not_ge (le_of_all_pow_lt_succ hx h1_lt_y' hh)
 
 theorem f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n) :
