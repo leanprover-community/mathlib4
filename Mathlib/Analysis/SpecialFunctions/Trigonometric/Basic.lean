@@ -791,6 +791,32 @@ theorem sin_pi_div_three : sin (π / 3) = √3 / 2 := by
   congr
   ring
 
+/- TODO: Make a `simproc` to automatically normalise `cos (m * π /  n)` for integers `m` and `n` -/
+
+/-- `cos ((n - 1) * π / n) = - cos π / n`. -/
+@[simp]
+theorem cos_ofNat_mul_pi_div_ofNat_of_eq_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = (ofNat(n) : ℝ) - 1 := by norm_num) :
+    cos (ofNat(m) * π / ofNat(n)) = - cos (π / ofNat(n)) := by
+  rw [← cos_pi_sub, sub_div' (NeZero.ne _), h]
+  ring_nf
+
+/-- `cos ((2 * n - 1) * π / n) = cos π / n` -/
+@[simp]
+theorem cos_ofNat_mul_pi_div_ofNat_of_eq_two_mul_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = 2 * (ofNat(n) : ℝ) - 1 := by norm_num) :
+    cos (ofNat(m) * π / ofNat(n)) = cos (π / ofNat(n)) := by
+  rw [← cos_two_pi_sub, sub_div' (NeZero.ne _), h]
+  ring_nf
+
+/-- `cos ((n + 1) * π / n) = - cos π / n` -/
+@[simp]
+theorem cos_ofNat_mul_pi_div_ofNat_of_eq_add_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = (ofNat(n) : ℝ) + 1 := by norm_num) :
+    cos (ofNat(m) * π / ofNat(n)) = - cos (π / ofNat(n)) := by
+  rw [← cos_add_pi, div_add' _ _ _ (NeZero.ne _), h]
+  ring_nf
+
 theorem quadratic_root_cos_pi_div_five :
     letI c := cos (π / 5)
     4 * c ^ 2 - 2 * c - 1 = 0 := by
