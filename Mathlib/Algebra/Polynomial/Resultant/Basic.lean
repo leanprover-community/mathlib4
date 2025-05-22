@@ -701,6 +701,7 @@ lemma resultant_eq_zero_iff_not_coprime (hPQ : P ≠ 0 ∨ Q ≠ 0) :
         mul_assoc, neg_mul, mul_comm (_/_),
         EuclideanDomain.mul_div_cancel' hg (EuclideanDomain.gcd_dvd_left _ _),
         mul_neg, mul_comm, add_neg_cancel]
+-- could shorten this proof using Bezout?
 
 end field
 
