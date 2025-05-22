@@ -234,7 +234,6 @@ or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 elab "order" : tactic => focus do
   let g ← getMainGoal
   let .some g ← g.falseOrByContra | return
-  setGoals [g]
   g.withContext do
     let TypeToAtoms ← collectFacts
     for (type, (idxToAtom, facts)) in TypeToAtoms do
