@@ -314,7 +314,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   have lim := lim2.comp lim1
   rw [tendsto_prod_self_iff] at lim
   simp_rw [forall_mem_comm]
-  exact lim W' W'_nhd
+  exact lim W' W'_nhds
 
 variable [IsUniformAddGroup G]
 
@@ -348,14 +348,14 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
     intro x x_in x' x'_in y y_in y' y'_in
     exact H _ _ (HU₁ (mk_mem_prod x_in x'_in)) (HV₁ (mk_mem_prod y_in y'_in))
   rcases this with ⟨U₁, U₁_nhds, V₁, V₁_nhds, H⟩
-  obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhd
-  obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhd
+  obtain ⟨x₁, x₁_in⟩ : U₁.Nonempty := (de.comap_nhds_neBot _).nonempty_of_mem U₁_nhds
+  obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhds
   have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 := by
     show Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
     exact hφ.comp continuous_swap
   rcases extend_Z_bilin_aux de hφ W_nhds x₀ y₁ with ⟨U₂, U₂_nhds, HU⟩
   rcases extend_Z_bilin_aux df cont_flip W_nhds y₀ x₁ with ⟨V₂, V₂_nhds, HV⟩
-  exists U₁ ∩ U₂, inter_mem U₁_nhds U₂_nhds, V₁ ∩ V₂, inter_mem V₁_nhds V₂_nhd
+  exists U₁ ∩ U₂, inter_mem U₁_nhds U₂_nhds, V₁ ∩ V₂, inter_mem V₁_nhds V₂_nhds
   rintro x ⟨xU₁, xU₂⟩ x' ⟨x'U₁, x'U₂⟩ y ⟨yV₁, yV₂⟩ y' ⟨y'V₁, y'V₂⟩
   have key_formula : φ x' y' - φ x y
     = φ (x' - x) y₁ + φ (x' - x) (y' - y₁) + φ x₁ (y' - y) + φ (x - x₁) (y' - y) := by simp; abel
@@ -389,19 +389,19 @@ theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ =>
         (𝓝 (x₀, y₀) ×ˢ 𝓝 (x₀, y₀))) ≤ 𝓝 0 by
       rwa [uniformity_eq_comap_nhds_zero G, prod_map_map_eq, ← map_le_iff_le_comap, Filter.map_map,
         prod_comap_comap_eq]
-    intro W' W'_nhd
+    intro W' W'_nhds
     have key := extend_Z_bilin_key de df hφ W'_nhds x₀ y₀
     rcases key with ⟨U, U_nhds, V, V_nhds, h⟩
-    rw [mem_comap] at U_nhd
+    rw [mem_comap] at U_nhds
     rcases U_nhds with ⟨U', U'_nhds, U'_sub⟩
-    rw [mem_comap] at V_nhd
+    rw [mem_comap] at V_nhds
     rcases V_nhds with ⟨V', V'_nhds, V'_sub⟩
     rw [mem_map, mem_comap, nhds_prod_eq]
     exists (U' ×ˢ V') ×ˢ U' ×ˢ V'
     rw [mem_prod_same_iff]
     simp only [exists_prop]
     constructor
-    · have := prod_mem_prod U'_nhds V'_nhd
+    · have := prod_mem_prod U'_nhds V'_nhds
       tauto
     · intro p h'
       simp only [Set.mem_preimage, Set.prodMk_mem_set_prod_eq] at h'

@@ -76,9 +76,9 @@ lemma tendsto_indicator_const_apply_iff_eventually' (b : β)
   · convert heart
     by_cases hxA : x ∈ A <;> simp [hxA]
   · simp only [principal_singleton, le_def, mem_pure]
-    exact fun s s_nhds ↦ mem_of_mem_nhds s_nhd
+    exact fun s s_nhds ↦ mem_of_mem_nhds s_nhds
   · simp only [principal_singleton, le_def, mem_pure]
-    exact fun s s_nhds ↦ mem_of_mem_nhds s_nhd
+    exact fun s s_nhds ↦ mem_of_mem_nhds s_nhds
 
 lemma tendsto_indicator_const_iff_forall_eventually'
     (b : β) (nhds_b : {0}ᶜ ∈ 𝓝 b) (nhds_o : {b}ᶜ ∈ 𝓝 0) :

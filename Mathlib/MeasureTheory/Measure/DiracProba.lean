@@ -89,9 +89,9 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
   obtain ⟨U, U_nhds, hU⟩ : ∃ U, U ∈ 𝓝 x ∧ ∃ᶠ x in L, x ∉ U := by
     by_contra! con
     apply h
-    intro U U_nhd
-    simpa only [not_frequently, not_not] using con U U_nhd
-  have Uint_nhds : interior U ∈ 𝓝 x := by simpa only [interior_mem_nhds] using U_nhd
+    intro U U_nhds
+    simpa only [not_frequently, not_not] using con U U_nhds
+  have Uint_nhds : interior U ∈ 𝓝 x := by simpa only [interior_mem_nhds] using U_nhds
   obtain ⟨f, fx_eq_one, f_vanishes_outside⟩ :=
     CompletelyRegularSpace.exists_BCNN isOpen_interior.isClosed_compl
       (by simpa only [mem_compl_iff, not_not] using mem_of_mem_nhds Uint_nhds)
@@ -169,7 +169,7 @@ lemma continuous_diracProbaEquivSymm [T0Space X] [CompletelyRegularSpace X] :
   apply continuous_iff_continuousAt.mpr
   intro μ
   apply continuousAt_of_tendsto_nhds (y := diracProbaInverse μ)
-  exact (tendsto_diracProbaEquivSymm_iff_tendsto _).mpr fun _ mem_nhds ↦ mem_nhd
+  exact (tendsto_diracProbaEquivSymm_iff_tendsto _).mpr fun _ mem_nhds ↦ mem_nhds
 
 /-- In a completely regular T0 topological space `X`, `diracProbaEquiv` is a homeomorphism to
 its image in `ProbabilityMeasure X`. -/

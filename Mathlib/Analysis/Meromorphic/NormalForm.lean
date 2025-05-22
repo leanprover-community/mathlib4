@@ -586,6 +586,9 @@ theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdsNE
   · simp only [Set.mem_compl_iff] at ha
     simp [toMeromorphicNFOn, ha, hf]
 
+@[deprecated (since := "2025-05-22")] alias MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdNE :=
+  MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdsNE
+
 /--
 If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`
 and conversion to normal form on `U` agree in a neighborhood of `x`.
