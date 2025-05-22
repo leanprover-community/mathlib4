@@ -669,7 +669,7 @@ instance : LawfulTraversable FreeSemigroup.{u} :=
           (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])
     traverse_eq_map_id := fun f x ↦
       FreeSemigroup.recOnMul x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
-        rw [traverse_mul, ih1, ih2, map_mul', map_pure]; rfl }
+        rw [traverse_mul, ih1, ih2, map_mul', map_pure, seq_pure, map_pure] }
 
 end Category
 
