@@ -238,9 +238,9 @@ lemma comp_eq_right_iff_le : n ∘ m = m ↔ n ≤ m where
 @[simp] lemma range_subset_range : range m ⊆ range n ↔ n ≤ m where
   mp h x := by
     rw [← mem_range.mp (Set.range_subset_iff.mp h x)]
-    exact n.monotone (m.le_apply)
+    exact n.monotone m.le_apply
   mpr h :=
-    range_subset_range_iff_exists_comp.mpr (Exists.intro ↑m ((comp_eq_right_iff_le.mpr) h).symm)
+    range_subset_range_iff_exists_comp.mpr ⟨m, (comp_eq_right_iff_le.mpr h).symm⟩
 
 end Frame
 end Nucleus
