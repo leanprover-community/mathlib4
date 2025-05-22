@@ -39,8 +39,8 @@ noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
     simp [h₂z] at hz
   supportLocallyFiniteWithinDomain' := by
     simp_all only [Function.support_subset_iff, ne_eq, ite_eq_right_iff, WithTop.untop₀_eq_zero,
-      and_imp, Classical.not_imp, not_or, implies_true, ←
-      supportDiscreteWithin_iff_locallyFiniteWithin]
+      and_imp, Classical.not_imp, not_or, implies_true,
+      ← supportDiscreteWithin_iff_locallyFiniteWithin]
     by_cases hf : MeromorphicOn f U
     · filter_upwards [mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
         hf.codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top]
