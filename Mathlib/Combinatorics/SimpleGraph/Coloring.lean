@@ -461,7 +461,7 @@ lemma Coloring.surjOn_of_card_le_isClique {γ : Type*} [Fintype γ] {s : Finset 
   obtain ⟨_, hx⟩ := card_le_chromaticNumber_iff_forall_surjective.mp
                     (by simp_all [isClique_iff_induce_eq]) (C.comp (Embedding.induce s).toHom) _
   exact ⟨_, Subtype.coe_prop _, hx⟩
-  
+
 namespace completeMultipartiteGraph
 
 variable {ι : Type*} (V : ι → Type*)
