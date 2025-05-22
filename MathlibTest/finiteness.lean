@@ -32,13 +32,15 @@ example {a : ℝ≥0∞} (ha : 0 < a) : a⁻¹ ≠ ∞ := by finiteness
 -- example {t a : ℝ≥0∞} (ht : t ∈ Ioo 0 1) (this : a ≠ 0) : a * t ≠ ∞ := by finiteness
 
 example {a : ℝ≥0∞} (ha : a ≠ ∞) : a ^ 10 ≠ ∞ := by finiteness
-example {a : ℝ≥0∞} (ha : a ≠ ∞) : a ^ (10 : ℤ) ≠ ∞ := by finiteness
+example {a : ℝ≥0∞} (ha : a ≠ ∞) (ha' : a ≠ 0) : a ^ (10 : ℤ) ≠ ∞ := by finiteness
 example {a : ℝ≥0∞} (ha : a ≠ ∞) : a ^ (10 : ℝ) ≠ ∞ := by finiteness
 example {a : ℝ} : (10 : ℝ≥0∞) ^ a ≠ ∞ := by finiteness
 example {a : ℝ≥0∞} {t : ℝ} (ha : a ≠ 0) (ha : a ≠ ∞) : a ^ t ≠ ∞ := by finiteness
 
 example {a : ℝ≥0∞} : a * a⁻¹ ≠ ∞ := by finiteness
-example {a : ℝ≥0∞} : 2 * a⁻¹ * a ≠ ∞ := by finiteness
+example {a : ℝ≥0∞} : a⁻¹ * a ≠ ∞ := by finiteness
+example {a : ℝ≥0∞} : 2 * (a⁻¹ * a) ≠ ∞ := by finiteness
+-- fails: example {a : ℝ≥0∞} : 2 * a⁻¹ * a ≠ ∞ := by finiteness
 
 example {a : ℝ≥0∞} (ha : a ≠ ∞) : max a 37 ≠ ∞ := by finiteness
 example {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : max a b < ∞ := by finiteness
@@ -53,5 +55,5 @@ example (a : ℝ) : (ENNReal.ofReal (1 + a ^ 2))⁻¹ < ∞ := by finiteness
 
 example {α : Type*} (f : α → ℕ) : ∀ i, (f i : ℝ≥0∞) ≠ ∞ := by finiteness
 
-example {_ : MeasurableSpace α} (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ s ≠ ∞ := by
+example {α} {_ : MeasurableSpace α} (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ s ≠ ∞ := by
   finiteness
