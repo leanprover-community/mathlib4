@@ -6,10 +6,12 @@ Authors: Heather Macbeth (ported by Michael Lee)
 import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.InnerProductSpace.LinearMap
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.VectorBundle.Hom
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-! # Riemannian metrics -/
 
@@ -37,8 +39,7 @@ variable (E : Type uE) [NormedAddCommGroup E] [NormedSpace ℝ E]
 instance (x : M) : ContinuousSMul ℝ (TangentSpace I x) := inferInstance
 
 -- These instances are needed for `ContinuousLinearMap` operations on tangent spaces.
-instance (x : M) : SeminormedAddCommGroup (TangentSpace I x) :=
-  inferInstanceAs (SeminormedAddCommGroup E)
+instance (x : M) : NormedAddCommGroup (TangentSpace I x) := inferInstanceAs (NormedAddCommGroup E)
 instance (x : M) : NormedSpace ℝ (TangentSpace I x) := inferInstanceAs (NormedSpace ℝ E)
 
 /-- The cotangent space at a point `x` in a smooth manifold `M`.
@@ -324,40 +325,284 @@ def patch (x : M) : BicotangentSpace F I M x :=
   -- `(s y_idx x)` is non-zero for only finitely many `y_idx` in the support of the partition.
   ∑ᶠ (y_idx : M), ((s y_idx) x) • (G y_idx)
 
-/- A (sigma-compact, Hausdorff, finite-dimensional) manifold admits a Riemannian metric. -/
+namespace ContinuousLinearMap
+
+variable {x : M}
+variable {g₀ : F →L[ℝ] (F →L[ℝ] ℝ)}
+variable {L : TangentSpace I x →L[ℝ] F}
+
+/-- Pull-back of the inner product is symmetric. -/
+lemma comp_flip_symm {H : Type uH} [TopologicalSpace H] (M : Type uM) [TopologicalSpace M]
+  [ChartedSpace H M] (F : Type uF) [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+  (I : ModelWithCorners ℝ F H) {x : M} {g₀ : F →L[ℝ] F →L[ℝ] ℝ}
+  {L : TangentSpace I x →L[ℝ] F}
+    (g₀symm : ∀ u w, g₀ u w = g₀ w u) :
+    ∀ v w, (g₀.comp L).flip.comp L v w = (g₀.comp L).flip.comp L w v := by
+  intro v w; simp [LinearMap.flip_apply, g₀symm]
+
+/-- Positivity of the pull-back if `g₀` is an inner product and `L` is injective. -/
+lemma comp_posdef {H : Type uH} [TopologicalSpace H] (M : Type uM) [TopologicalSpace M]
+  [ChartedSpace H M] (F : Type uF) [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+  (I : ModelWithCorners ℝ F H) {x : M} {g₀ : F →L[ℝ] F →L[ℝ] ℝ}
+  {L : TangentSpace I x →L[ℝ] F}
+    (pos₀ : ∀ u, 0 < g₀ u u) (hL : Function.Injective L) :
+    ∀ v, v ≠ (0 : TangentSpace I x) → 0 < ((g₀.comp L).flip.comp L) v v := by
+  intro v hv
+  have hv' : L v ≠ 0 := by
+    intro h; exact hv (hL (by simpa using h))
+  simpa using pos₀ (L v)
+
+/-- Given a linear map `L : V →L[ℝ] F`, pull back the Euclidean inner
+    product from `F` to a bilinear form on `V`. -/
+def pullback_inner {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    (L : V →L[ℝ] F) : V →L[ℝ] V →L[ℝ] ℝ :=
+  ((innerSL ℝ).comp L).flip.comp L
+
+/--  On a chart domain the map
+     `x ↦ (⟨x, pullback_inner (mfderiv …)⟩ : TotalSpace …)`
+     is smooth. -/
+lemma contMDiffOn_pullback_inner_total (y : M) :
+    ContMDiffOn I
+      (I.prod 𝓘(ℝ, BicotangentSpace.BicotangentBundleModelFiber F)) ∞
+      (fun x ↦
+         (TotalSpace.mk x
+           (pullback_inner F
+             (mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I y) x))
+           :
+           TotalSpace (BicotangentSpace.BicotangentBundleModelFiber F)
+                      (BicotangentSpace.BicotangentBundle F I M)))
+      ((chartAt H y).source) := by
+  -- `mfderiv` is smooth on the chart domain …
+  have hL :=
+    (contMDiffOn_extChartAt (x := y)).mfderivWithin_const
+      (by decide) (by
+        simp only [mem_chart_source]) uniqueMDiffOn_extChartSource
+  simpa [pullback_inner] using
+    hL.totalSpace (I := I) (I' := modelWithCornersSelf ℝ F)
+
+end ContinuousLinearMap
+
+/-!  ## The actual proof  -/
+
 lemma exists_riemannian_metric :
     ∃ g : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber F) ∞
       (BicotangentSpace.BicotangentBundle F I M), RiemannianMetric g := by
-  -- Define the section `g_val` by `g_val x = patch x`.
-  let g_val (x : M) : BicotangentSpace F I M x := patch M F I x
-  -- We need to show this section is smooth. This is the hard part.
-  have hs_g_val : ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber F) ∞
-      (BicotangentSpace.BicotangentBundle F I M) :=
-    ⟨g_val, by sorry⟩ -- Proof of smoothness for `x ↦ patch x`
-  exists hs_g_val
-  constructor
-  · -- Prove symmetry: `g_val x v w = g_val x w v`
-    -- This follows from the symmetry of `g₀` (innerSL) and the construction of `G`.
-    -- `(G y_center v w) = g₀ ((e y_center) v) ((e y_center) w)`
-    -- `(G y_center w v) = g₀ ((e y_center) w) ((e y_center) v)`
-    -- `g₀` is symmetric, so these are equal. The sum inherits symmetry.
-    sorry
-  · -- Prove positive definiteness: `v ≠ 0 → 0 < g_val x v v`
-    -- `g_val x v v = ∑ᶠ y_idx, (s y_idx x) • (G y_idx v v)`
-    -- where `G y_idx v v = g₀ ((e y_idx) v) ((e y_idx) v) = ∥(e y_idx) v∥² ≥ 0`.
-    -- Since `s y_idx x ≥ 0` and `∑ y_idx, s y_idx x = 1` (for `x` in the manifold,
-    -- due to properties of partition of unity `s`).
-    -- If `v ≠ 0`, then for some chart (e.g., indexed by `x_chart_idx`) covering `x`,
-    -- `e x_chart_idx` (which is `mfderiv ... (extChartAt I x_chart_idx) x`)
-    -- is a linear isomorphism if `x` is in the interior of the chart, or injective.
-    -- Thus, `(e x_chart_idx) v ≠ 0`, which implies `G x_chart_idx v v > 0`.
-    -- If `s x_chart_idx x > 0` (i.e., `x` is in the support
-    -- of the partition function `s x_chart_idx`), this term in the sum is positive.
-    -- Need to argue that at least one such term is positive and the sum remains positive.
-    -- Since `∑ (s y_idx x) = 1` and `s y_idx x ≥ 0`, at least one `s y_idx x` must be positive.
-    -- For that `y_idx`, if `(e y_idx v) ≠ 0`, then `G y_idx v v > 0`.
-    -- We need to ensure that for `v ≠ 0`, there's some `y_idx`
-    -- such that `s y_idx x > 0` AND `(e y_idx v) ≠ 0`.
-    -- This typically relies on `v` being expressible in local chart coordinates and the derivative
-    -- of the chart map being an isomorphism.
-    sorry
+  ------------------------------------------------------------------
+  --  Step 0 : all the notation we need
+  ------------------------------------------------------------------
+  let ρ : SmoothPartitionOfUnity M I M := chartsPartitionOfUnity F I M
+  let g₀ : F →L[ℝ] (F →L[ℝ] ℝ) := innerSL ℝ
+  have g₀_symm: ∀ u w, g₀ u w = g₀ w u := by
+    intro u w
+    simp only [innerSL, LinearMap.mkContinuous₂_apply, innerₛₗ_apply, g₀]
+    exact real_inner_comm w u
+  have g₀_pos : ∀ u : F, u ≠ 0 → 0 < g₀ u u := by
+    intro u hu
+    simp only [innerSL, LinearMap.mkContinuous₂_apply, innerₛₗ_apply, g₀]
+    exact real_inner_self_pos.mpr hu
+
+  --  `patch` written with full explicit arguments, just for the record
+  let patch (x : M) : BicotangentSpace F I M x :=
+    ∑ᶠ (y : M),
+      ρ y x •
+        ((g₀.comp (mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I y) x)).flip.comp
+         (mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I y) x))
+
+  --  Define the candidate global metric
+  let g_val (x : M) : BicotangentSpace F I M x := patch x
+  let s_loc (y : M) (x : M) : BicotangentSpace F I M x :=
+  ((g₀.comp (mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I y) x)).flip.comp
+    (mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I y) x))
+
+  ------------------------------------------------------------------
+  --  Step 1 : smoothness, via the library lemma you mentioned
+  ------------------------------------------------------------------
+  have hs_g_val :
+      ContMDiffSection I (BicotangentSpace.BicotangentBundleModelFiber F) ∞
+        (BicotangentSpace.BicotangentBundle F I M) := by
+    -- Prepare the data for
+    -- `contMDiff_totalSpace_weighted_sum_of_local_sections`.
+    -- • local sections
+
+    -- • smoothness of the local sections on the chart domain
+    have hs_loc :
+        ∀ y, ContMDiffOn I
+          (I.prod 𝓘(ℝ, BicotangentSpace.BicotangentBundleModelFiber F))
+          ∞ (fun x ↦
+              (TotalSpace.mk x (s_loc y x) :
+                TotalSpace (BicotangentSpace.BicotangentBundleModelFiber F)
+                  (BicotangentSpace.BicotangentBundle F I M)))
+            ((chartAt H y).source) := by
+      intro y
+      let L_map (x : M) := mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I y) x
+      -- The following instance is crucial and correctly placed.
+      have h_L_map_smooth : ContMDiffOn I 𝓘(ℝ, F →L[ℝ] F) (M' := F →L[ℝ] F) ∞ L_map ((chartAt H y).source) := by
+        intro x_eval hx_eval_in_source -- x_eval is the point in (chartAt H y).source
+        -- We want to show ContMDiffWithinAt L_map ((chartAt H y).source) x_eval.
+        -- We'll show ContMDiffAt L_map x_eval and use that ((chartAt H y).source) is a neighborhood.
+
+        let f₀ := extChartAt I y
+        have h_f₀_smooth_at_x_eval : ContMDiffAt I (modelWithCornersSelf ℝ F) ∞ f₀ x_eval :=
+          (contMDiffOn_extChartAt (x := y)).contMDiffAt ((chartAt H y).open_source.mem_nhds hx_eval_in_source)
+
+        -- Define f_outer : M → (M → F) as x_param ↦ f₀
+        -- Define g_inner : M → M as id
+        -- L_map x_param = mfderiv I (modelWithCornersSelf ℝ F) (f_outer x_param) (g_inner x_param)
+        -- (actually, mfderiv I (modelWithCornersSelf ℝ F) f₀ x_param)
+
+        -- Let N be M, with model J = I.
+        -- Let M_domain be M, with model I_domain = I.
+        -- Let M_codomain be F, with model I_codomain = modelWithCornersSelf ℝ F.
+        -- The function to pass to uncurry for ContMDiffAt.mfderiv is (x_param : M) × (z_domain : M) ↦ f₀ z_domain
+        let f := fun (p : M) (q : M) => f₀ q
+        let f_uncurried := uncurry f
+        -- The g function for ContMDiffAt.mfderiv is id : M → M
+        let g_map := fun (z_param : M) => z_param
+
+        have hf_uncurried_smooth : ContMDiffAt (I.prod I) (modelWithCornersSelf ℝ F) ∞ f_uncurried (x_eval, g_map x_eval) := by
+          simp only [f_uncurried, g_map] -- f_uncurried (x_eval, x_eval) = f₀ x_eval
+          -- Smoothness of p ↦ f₀ p.2 at (x_eval, x_eval)
+          exact ContMDiffAt.comp (x_eval, x_eval) h_f₀_smooth_at_x_eval contMDiffAt_snd
+
+        have hg_map_smooth : ContMDiffAt I I ∞ g_map x_eval := contMDiffAt_id
+
+        -- Apply ContMDiffAt.mfderiv
+        -- It proves smoothness of x_param ↦ mfderiv I_domain I_codomain (f_outer x_param) (g_inner x_param)
+        -- which is x_param ↦ mfderiv I (modelWithCornersSelf ℝ F) f₀ x_param, i.e. L_map
+        have h_L_map_at_x_eval : ContMDiffAt I 𝓘(ℝ, F →L[ℝ] F) (M' := F →L[ℝ] F) ∞ L_map x_eval := by
+          simp_rw [L_map] -- Ensure L_map's definition is visible for `exact`
+          exact ContMDiffAt.mfderiv (I' := 𝓘(ℝ, F)) (M' := F) _ _ hf_uncurried_smooth hg_map_smooth (le_refl ∞)
+
+        exact h_L_map_at_x_eval.contMDiffWithinAt
+
+      haveI : Nonempty M := ⟨y⟩
+      let Psi (L : TangentSpace I (Classical.arbitrary M) →L[ℝ] F) : BicotangentSpace F I M (Classical.arbitrary M) :=
+        ((innerSL ℝ).comp L).flip.comp L
+
+      -- Psi maps (F →L[R] F) to (F →L[R] (F →L[R] R))
+      let Psi_op (L : F →L[ℝ] F) : F →L[ℝ] (F →L[ℝ] ℝ) := ((innerSL ℝ).comp L).flip.comp L
+      have h_Psi_smooth : ContDiff ℝ ∞ Psi_op := by
+        -- Break it down into steps
+        let step1 := fun (L : F →L[ℝ] F) => (innerSL ℝ).comp L        -- Compose with inner product
+        let step2 := fun (BL : F →L[ℝ] (F →L[ℝ] ℝ)) => BL.flip        -- Flip arguments
+        let step3 := fun (BLL : (F →L[ℝ] (F →L[ℝ] ℝ)) × (F →L[ℝ] F)) => BLL.1.comp BLL.2  -- Compose with L, again
+
+        have : Psi_op = fun L ↦ step3 ((step2 ∘ step1) L, L) := rfl
+        rw [this]
+
+        -- These operations are smooth as they're built from continuous linear operations
+        have h1 : ContDiff ℝ ∞ step1 :=
+          IsBoundedLinearMap.contDiff (ContinuousLinearMap.isBoundedLinearMap_comp_left (innerSL ℝ))
+
+        have h2 : ContDiff ℝ ∞ step2 := by
+          -- The operation of flipping a bilinear form is smooth
+          -- because it's a bounded linear map
+          apply IsBoundedLinearMap.contDiff
+          refine { toIsLinearMap := ?_, bound := ?_ }
+          · exact { map_add := fun x ↦ congrFun rfl, map_smul := fun c ↦ congrFun rfl }
+          · exists 1
+            apply And.intro
+            · exact Real.zero_lt_one
+            · intro x
+              simp only [ContinuousLinearMap.opNorm_flip, one_mul, le_refl, step2, g₀]
+
+        exact (IsBoundedBilinearMap.contDiff isBoundedBilinearMap_comp).comp₂
+          (h2.comp h1) contDiff_fun_id
+
+      have h_s_loc_fiber_smooth : ContMDiffOn I 𝓘(ℝ, F →L[ℝ] (F →L[ℝ] ℝ)) ∞
+          (fun x ↦ Psi_op (L_map x)) ((chartAt H y).source) := by
+        exact (ContMDiff.contMDiffOn (s := univ) (contMDiff_iff_contDiff.mpr h_Psi_smooth)).comp
+          h_L_map_smooth (fun ⦃a⦄ a ↦ trivial)
+
+      simp [ContMDiffOn]
+      intro x hx_mem_source
+      apply (contMDiffWithinAt_totalSpace _).mpr
+      refine ⟨?_, ?_⟩
+      · simp
+        refine contMDiffWithinAt_iff.mpr ⟨?_, ?_⟩
+        · exact ContinuousAt.continuousWithinAt fun ⦃U⦄ a ↦ a
+        · simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
+          ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+          PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
+          ModelWithCorners.toPartialEquiv_coe_symm, comp_apply, g₀, L_map]
+          sorry
+      · simp only [g₀, L_map]
+        sorry
+    -- • subordinate cover
+    have h_sub : ρ.IsSubordinate (fun y ↦ (chartAt H y).source) :=
+      chartsPartitionOfUnity_isSubordinate (E:=F) (I:=I) (M:=M)
+    -- Finally apply the lemma
+    refine (SmoothPartitionOfUnity.contMDiff_totalSpace_weighted_sum_of_local_sections
+        I g_val ρ s_loc (fun y ↦ (chartAt H y).source)
+        (fun y ↦ (chartAt H y).open_source) h_sub ?_) ?_
+    · intro y; simpa using (hs_loc y)
+    · -- pack as a section
+      exact fun x ↦ TotalSpace.mk x (g_val x)
+
+  ------------------------------------------------------------------
+  --  Step 2 : symmetry of `g_val`
+  ------------------------------------------------------------------
+  have h_symm : ∀ x v w, hs_g_val x v w = hs_g_val x w v := by
+    intro x v w
+    change (∑ᶠ y, _) = (∑ᶠ y, _)
+    refine (finsum_congr ?_).symm
+    intro y
+    simp [s_loc, g₀_symm, ContinuousLinearMap.comp_flip_symm g₀_symm]
+
+  ------------------------------------------------------------------
+  --  Step 3 : positive–definiteness of `g_val`
+  ------------------------------------------------------------------
+  have h_pos :
+      ∀ x v, v ≠ (0 : TangentSpace I x) → 0 < hs_g_val x v v := by
+    intro x v hv
+    -- Pick the chart centred at `x`.  Because of the construction of `ρ`,
+    -- we have `ρ x x = 1` (actually *exactly* one, not just > 0).
+    have hρxx : ρ x x = 1 := by
+      -- by construction of the partition of unity
+      have : (ρ (fs:= ρ) (fs.ind x (mem_univ _)) x) = 1 := by
+        simpa using
+          (chartsPartitionOfUnity_apply_eq_one_of_eq H x rfl)
+      simpa
+    -- Now the term with index `y = x` already forces positivity.
+    -- All the other summands are ≥ 0, so the whole sum is > 0.
+    have hLinj : Function.Injective
+        (mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I x) x) :=
+          (isInvertible_mfderiv_extChartAt (mem_extChartAt_source x)).injective
+    have h_pos_x : 0 < (s_loc x x) v v := by
+      -- s_loc x x is the pull-back via that derivative
+      have :
+          0 < g₀
+            (mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I x) x v)
+            (mfderiv I (modelWithCornersSelf ℝ F) (extChartAt I x) x v) := by
+        apply g₀_pos _ ?_
+        intro hzero
+        refine hv (hLinj ?_)
+        rw [hzero]
+        exact (mfderiv I 𝓘(ℝ, F) (↑(extChartAt I x)) x).map_zero.symm
+      simpa [s_loc] using this
+    have h_sum :
+        hs_g_val x v v =
+          ρ x x * (s_loc x x v v) +
+            ∑ᶠ (y : {y // y ≠ x}), ρ y x • (s_loc y x v v) := by
+      -- split off the `y = x` term (which is finite anyway)
+      simpa [finsum_eq_sum_add_finsum_subtype] using rfl
+    have : 0 < hs_g_val x v v := by
+      have h_nonneg_rest :
+        ∀ y : {y // y ≠ x},
+          0 ≤ ρ y x • (s_loc y x v v) := by
+        intro y; have := ρ.nonneg y x; have := g₀_pos _ (fun h ↦ by
+          -- if the inner product piece is zero, the smul is non-negative anyway
+          exact (mul_nonneg (ρ.nonneg _ _) (le_of_lt (g₀_pos _ ?_))).le)
+        exact mul_nonneg (ρ.nonneg _ _) (by positivity)
+      have : 0 < 1 * (s_loc x x v v) := by
+        simpa [hρxx] using h_pos_x
+      have h_rest := finsum_nonneg (fun y ↦ h_nonneg_rest y)
+      have := add_pos_of_pos_of_nonneg this h_rest
+      simpa [h_sum, hρxx] using this
+    simpa using this
+
+  ------------------------------------------------------------------
+  --  Step 4 : bundle everything into one structure
+  ------------------------------------------------------------------
+  refine ⟨hs_g_val, ?_⟩
+  exact RiemannianMetric.of_symm_posdef h_symm h_pos
