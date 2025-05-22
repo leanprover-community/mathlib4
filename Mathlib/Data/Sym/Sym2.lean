@@ -175,6 +175,12 @@ theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = 
   cases q
   simp only [eq_iff, Prod.mk_inj, Prod.swap_prod_mk]
 
+theorem split (x : Sym2 α) : ∃ (a b : α), x = s(a, b) := by
+  let f := fun y ↦ x = y
+  have : ∃ (x : Sym2 α), f x := by simp [f]
+  rw [Sym2.exists] at this
+  exact this
+
 /-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
 functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
 `Sym2.fromRel` instead. -/
