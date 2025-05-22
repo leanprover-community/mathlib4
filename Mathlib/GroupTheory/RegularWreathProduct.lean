@@ -6,6 +6,7 @@ Authors: Francisco Silva
 
 import Mathlib.GroupTheory.Sylow
 import Mathlib.Algebra.Group.PUnit
+import Mathlib.Data.Finite.Perm
 
 /-!
 # Regular wreath product
