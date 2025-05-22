@@ -27,13 +27,13 @@ variable {L L₁ L₂ : List (α × Bool)}
 elements of the word cancel. -/
 @[to_additive "Predicate asserting the word `L` admits no reduction steps, i.e., no two neighboring
 elements of the word cancel."]
-def IsReduced (L : List (α × Bool)) : Prop := List.Chain' (fun a b => ¬(a.1 = b.1 ∧ (!a.2) = b.2)) L
+def IsReduced (L : List (α × Bool)) : Prop := List.Chain' (fun a b ↦ ¬(a.1 = b.1 ∧ (!a.2) = b.2)) L
 
 @[to_additive (attr := simp)]
 theorem isReduced_nil : IsReduced ([] : List (α × Bool)) := List.chain'_nil
 
 @[to_additive (attr := simp)]
-theorem isReduced_singleton {a : (α × Bool)} : IsReduced [a] := List.chain'_singleton a
+theorem isReduced_singleton {a : α × Bool} : IsReduced [a] := List.chain'_singleton a
 
 @[to_additive (attr := simp)]
 theorem isReduced_cons {a b : (α × Bool)} :
@@ -63,8 +63,6 @@ theorem isReduced_iff_not_step : IsReduced L₁ ↔ ∀ L₂, ¬ Red.Step L₁ L
         apply hL l'
         rw [eq₁, ← eq₂]
         apply Red.Step.cons_not
-
-
 @[to_additive]
 theorem IsReduced.infix (h : IsReduced L₂) (h' : L₁ <:+: L₂) : IsReduced L₁ := Chain'.infix h h'
 
@@ -93,13 +91,9 @@ theorem isReduced_iff_reduce_eq : IsReduced L ↔ reduce L = L where
     rw [← h.min]
     exact reduce.red
   mpr h := by
-    unfold IsReduced
-    rw [List.chain'_iff_forall_rel_of_append_cons_cons]
-    intro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ l₁ l₂ hl hx
-    simp only at hl hx
-    rw [hx.1, ← hx.2] at hl
-    nth_rw 2 [hl] at h
-    exact reduce.not h
+    rw [IsReduced, List.chain'_iff_forall_rel_of_append_cons_cons]
+    rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ l₁ l₂ hl ⟨rfl, rfl⟩
+    exact reduce.not (h.trans hl)
 
 @[to_additive]
 theorem isReduced_toWord {x : FreeGroup α} : IsReduced (x.toWord) := by
