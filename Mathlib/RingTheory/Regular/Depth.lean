@@ -606,7 +606,7 @@ lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R
     intro i hi
     by_cases eq0 : i = 0
     · rw [eq0, Ext.addEquiv₀.subsingleton_congr, ModuleCat.homAddEquiv.subsingleton_congr]
-      exact hom_subsingleton_of_mem_ann_isSMulRegular reg mem
+      exact linearMap_subsingleton_of_mem_annihilator reg mem
     · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
       have : i - 1 < n := by
         enat_to_nat
