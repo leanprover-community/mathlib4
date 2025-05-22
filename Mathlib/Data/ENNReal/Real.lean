@@ -34,7 +34,8 @@ section Real
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
-theorem toReal_add (ha : a ≠ ∞) (hb : b ≠ ∞) : (a + b).toReal = a.toReal + b.toReal := by
+theorem toReal_add (ha : a ≠ ∞ := by finiteness) (hb : b ≠ ∞ := by finiteness) :
+    (a + b).toReal = a.toReal + b.toReal := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
   rfl
@@ -60,7 +61,7 @@ theorem toReal_le_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal ≤ b.toRe
   norm_cast
 
 @[gcongr]
-theorem toReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toReal ≤ b.toReal :=
+theorem toReal_mono (hb : b ≠ ∞ := by finiteness) (h : a ≤ b) : a.toReal ≤ b.toReal :=
   (toReal_le_toReal (ne_top_of_le_ne_top hb h) hb).2 h
 
 theorem toReal_mono' (h : a ≤ b) (ht : b = ∞ → a = ∞) : a.toReal ≤ b.toReal := by
@@ -69,64 +70,68 @@ theorem toReal_mono' (h : a ≤ b) (ht : b = ∞ → a = ∞) : a.toReal ≤ b.t
   · exact toReal_mono (mt ht ha) h
 
 @[simp]
-theorem toReal_lt_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal < b.toReal ↔ a < b := by
+theorem toReal_lt_toReal (ha : a ≠ ∞ := by finiteness) (hb : b ≠ ∞ := by finiteness) :
+    a.toReal < b.toReal ↔ a < b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
   norm_cast
 
 @[gcongr]
-theorem toReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toReal < b.toReal :=
+theorem toReal_strict_mono (hb : b ≠ ∞ := by finiteness) (h : a < b) : a.toReal < b.toReal :=
   (toReal_lt_toReal h.ne_top hb).2 h
 
 @[gcongr]
-theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal :=
+theorem toNNReal_mono (hb : b ≠ ∞ := by finiteness) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal :=
   toReal_mono hb h
 
-theorem le_toNNReal_of_coe_le (h : p ≤ a) (ha : a ≠ ∞) : p ≤ a.toNNReal :=
+theorem le_toNNReal_of_coe_le (h : p ≤ a) (ha : a ≠ ∞ := by finiteness) : p ≤ a.toNNReal :=
   @toNNReal_coe p ▸ toNNReal_mono ha h
 
 @[simp]
-theorem toNNReal_le_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal ≤ b.toNNReal ↔ a ≤ b :=
+theorem toNNReal_le_toNNReal (ha : a ≠ ∞ := by finiteness) (hb : b ≠ ∞ := by finiteness) :
+    a.toNNReal ≤ b.toNNReal ↔ a ≤ b :=
   ⟨fun h => by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_le_coe], toNNReal_mono hb⟩
 
 @[gcongr]
-theorem toNNReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toNNReal < b.toNNReal := by
+theorem toNNReal_strict_mono (hb : b ≠ ∞ := by finiteness) (h : a < b) :
+    a.toNNReal < b.toNNReal := by
   simpa [← ENNReal.coe_lt_coe, hb, h.ne_top]
 
 @[simp]
-theorem toNNReal_lt_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal < b.toNNReal ↔ a < b :=
+theorem toNNReal_lt_toNNReal (ha : a ≠ ∞ := by finiteness) (hb : b ≠ ∞ := by finiteness) :
+    a.toNNReal < b.toNNReal ↔ a < b :=
   ⟨fun h => by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_lt_coe], toNNReal_strict_mono hb⟩
 
 theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
   @toNNReal_coe p ▸ toNNReal_strict_mono coe_ne_top h
 
-theorem toReal_max (hr : a ≠ ∞) (hp : b ≠ ∞) :
+theorem toReal_max (hr : a ≠ ∞ := by finiteness) (hp : b ≠ ∞ := by finiteness) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim
     (fun h => by simp only [h, ENNReal.toReal_mono hp h, max_eq_right]) fun h => by
     simp only [h, ENNReal.toReal_mono hr h, max_eq_left]
 
-theorem toReal_min {a b : ℝ≥0∞} (hr : a ≠ ∞) (hp : b ≠ ∞) :
+theorem toReal_min {a b : ℝ≥0∞} (hr : a ≠ ∞ := by finiteness) (hp : b ≠ ∞ := by finiteness) :
     ENNReal.toReal (min a b) = min (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim (fun h => by simp only [h, ENNReal.toReal_mono hp h, min_eq_left])
     fun h => by simp only [h, ENNReal.toReal_mono hr h, min_eq_right]
 
 theorem toReal_sup {a b : ℝ≥0∞} : a ≠ ∞ → b ≠ ∞ → (a ⊔ b).toReal = a.toReal ⊔ b.toReal :=
-  toReal_max
+  fun h h' ↦ toReal_max h h'
 
 theorem toReal_inf {a b : ℝ≥0∞} : a ≠ ∞ → b ≠ ∞ → (a ⊓ b).toReal = a.toReal ⊓ b.toReal :=
-  toReal_min
+  fun h h' ↦ toReal_min h h'
 
 theorem toNNReal_pos_iff : 0 < a.toNNReal ↔ 0 < a ∧ a < ∞ := by
   induction a <;> simp
 
-theorem toNNReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞) : 0 < a.toNNReal :=
+theorem toNNReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞ := by finiteness) : 0 < a.toNNReal :=
   toNNReal_pos_iff.mpr ⟨bot_lt_iff_ne_bot.mpr ha₀, lt_top_iff_ne_top.mpr ha_top⟩
 
 theorem toReal_pos_iff : 0 < a.toReal ↔ 0 < a ∧ a < ∞ :=
   NNReal.coe_pos.trans toNNReal_pos_iff
 
-theorem toReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞) : 0 < a.toReal :=
+theorem toReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞ := by finiteness) : 0 < a.toReal :=
   toReal_pos_iff.mpr ⟨bot_lt_iff_ne_bot.mpr ha₀, lt_top_iff_ne_top.mpr ha_top⟩
 
 @[gcongr, bound]
@@ -243,12 +248,12 @@ lemma ofReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     ENNReal.ofReal r = ofNat(n) ↔ r = OfNat.ofNat n :=
   ofReal_eq_natCast (NeZero.ne n)
 
-theorem ofReal_le_iff_le_toReal {a : ℝ} {b : ℝ≥0∞} (hb : b ≠ ∞) :
+theorem ofReal_le_iff_le_toReal {a : ℝ} {b : ℝ≥0∞} (hb : b ≠ ∞ := by finiteness) :
     ENNReal.ofReal a ≤ b ↔ a ≤ ENNReal.toReal b := by
   lift b to ℝ≥0 using hb
   simpa [ENNReal.ofReal, ENNReal.toReal] using Real.toNNReal_le_iff_le_coe
 
-theorem ofReal_lt_iff_lt_toReal {a : ℝ} {b : ℝ≥0∞} (ha : 0 ≤ a) (hb : b ≠ ∞) :
+theorem ofReal_lt_iff_lt_toReal {a : ℝ} {b : ℝ≥0∞} (ha : 0 ≤ a) (hb : b ≠ ∞ := by finiteness) :
     ENNReal.ofReal a < b ↔ a < ENNReal.toReal b := by
   lift b to ℝ≥0 using hb
   simpa [ENNReal.ofReal, ENNReal.toReal] using Real.toNNReal_lt_iff_lt_coe ha
@@ -256,7 +261,7 @@ theorem ofReal_lt_iff_lt_toReal {a : ℝ} {b : ℝ≥0∞} (ha : 0 ≤ a) (hb : 
 theorem ofReal_lt_coe_iff {a : ℝ} {b : ℝ≥0} (ha : 0 ≤ a) : ENNReal.ofReal a < b ↔ a < b :=
   (ofReal_lt_iff_lt_toReal ha coe_ne_top).trans <| by rw [coe_toReal]
 
-theorem le_ofReal_iff_toReal_le {a : ℝ≥0∞} {b : ℝ} (ha : a ≠ ∞) (hb : 0 ≤ b) :
+theorem le_ofReal_iff_toReal_le {a : ℝ≥0∞} {b : ℝ} (ha : a ≠ ∞ := by finiteness) (hb : 0 ≤ b) :
     a ≤ ENNReal.ofReal b ↔ ENNReal.toReal a ≤ b := by
   lift a to ℝ≥0 using ha
   simpa [ENNReal.ofReal, ENNReal.toReal] using Real.le_toNNReal_iff_coe_le hb
@@ -266,7 +271,7 @@ theorem toReal_le_of_le_ofReal {a : ℝ≥0∞} {b : ℝ} (hb : 0 ≤ b) (h : a 
   have ha : a ≠ ∞ := ne_top_of_le_ne_top ofReal_ne_top h
   (le_ofReal_iff_toReal_le ha hb).1 h
 
-theorem lt_ofReal_iff_toReal_lt {a : ℝ≥0∞} {b : ℝ} (ha : a ≠ ∞) :
+theorem lt_ofReal_iff_toReal_lt {a : ℝ≥0∞} {b : ℝ} (ha : a ≠ ∞ := by finiteness) :
     a < ENNReal.ofReal b ↔ ENNReal.toReal a < b := by
   lift a to ℝ≥0 using ha
   simpa [ENNReal.ofReal, ENNReal.toReal] using Real.lt_toNNReal_iff_coe_lt
@@ -339,7 +344,8 @@ theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal
   simp only [coe_inj, NNReal.coe_inj, coe_toReal]
 
 protected theorem trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal := by
-  simpa only [or_iff_not_imp_left] using toReal_pos
+  simp only [or_iff_not_imp_left]-- using toReal_pos
+  apply toReal_pos
 
 protected theorem trichotomy₂ {p q : ℝ≥0∞} (hpq : p ≤ q) :
     p = 0 ∧ q = 0 ∨
