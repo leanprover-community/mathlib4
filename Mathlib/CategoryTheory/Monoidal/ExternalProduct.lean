@@ -21,13 +21,13 @@ namespace CategoryTheory.MonoidalCategory
 variable (J₁ : Type u₁) (J₂ : Type u₂) (C : Type u₃)
     [Category.{v₁} J₁] [Category.{v₂} J₂] [Category.{v₃} C] [MonoidalCategory C]
 
-/-- The (curried version of the) external product bifunctor: Given diagrams
+/-- The (curried version of the) external product bifunctor: given diagrams
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `j₁ ↦ j₂ ↦ K₁ j₁ ⊗ K₂ j₂`. -/
 @[simps!]
 def externalProductBifunctorCurried : (J₁ ⥤ C) ⥤ (J₂ ⥤ C) ⥤ J₁ ⥤ J₂ ⥤ C :=
   (Functor.postcompose₂.obj <| (evaluation _ _).obj <| curriedTensor C).obj <| whiskeringLeft₂ C
 
-/-- The external product bifunctor: Given diagrams
+/-- The external product bifunctor: given diagrams
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `(j₁, j₂) ↦ K₁ j₁ ⊗ K₂ j₂`. -/
 @[simps!]
 def externalProductBifunctor : ((J₁ ⥤ C) × (J₂ ⥤ C)) ⥤ J₁ × J₂ ⥤ C :=
@@ -88,7 +88,7 @@ section Composition
 
 variable {J₁ J₂ C} {I₁ : Type u₃} {I₂ : Type u₄} [Category.{v₃} I₁] [Category.{v₄} I₂]
 
-/-- Composing  `F₁ × F₂` with `G₁ ⊠ G₂` is isomorphic to `(F₁ ⋙ G₁) ⊠ (F₂ ⋙ G₂)`. -/
+/-- Composing `F₁ × F₂` with `G₁ ⊠ G₂` is isomorphic to `(F₁ ⋙ G₁) ⊠ (F₂ ⋙ G₂)`. -/
 @[simps!]
 def prodCompExternalProduct (F₁ : I₁ ⥤ J₁) (G₁ : J₁ ⥤ C) (F₂ : I₂ ⥤ J₂) (G₂ : J₂ ⥤ C) :
    F₁.prod F₂ ⋙ G₁ ⊠ G₂ ≅ (F₁ ⋙ G₁) ⊠ (F₂ ⋙ G₂) := NatIso.ofComponents (fun _ ↦ Iso.refl _)
