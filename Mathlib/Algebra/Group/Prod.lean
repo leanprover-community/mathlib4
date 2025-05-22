@@ -580,15 +580,24 @@ namespace Units
 
 variable [Monoid M] [Monoid N]
 
+/-- The monoid equivalence between units of a product of two monoids, and the product of the
+    units of each monoid. -/
+@[to_additive prodAddUnits
+      "The additive monoid equivalence between additive units of a product
+      of two additive monoids, and the product of the additive units of each additive monoid."]
+def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ :=
+  ((map (.fst _ _)).prod (map (.snd _ _))).toMulEquiv
+  ((coeHom _).prodMap (coeHom _)).toHomUnits rfl rfl
+
 /-- The first element of the units of the product of two monoids. -/
 @[to_additive (attr := simps!) "The first element of the additive units of the
   product of two additive monoids."]
-def fst : (M × N)ˣ →* Mˣ := Units.map (MonoidHom.fst M N)
+def fst : (M × N)ˣ →* Mˣ := (MonoidHom.fst _ _).comp prodUnits.toMonoidHom
 
 /-- The second element of the units of the product of two monoids. -/
 @[to_additive (attr := simps!) "The second element of the additive units of the
   product of two additive monoids."]
-def snd : (M × N)ˣ →* Nˣ := Units.map (MonoidHom.snd M N)
+def snd : (M × N)ˣ →* Nˣ := (MonoidHom.snd _ _).comp prodUnits.toMonoidHom
 
 /-- The inclusion homomorphism from the units of a monoid to the
   units of its product on the right with another. -/
@@ -622,8 +631,7 @@ theorem snd_inr (u : Nˣ) : snd (inr (M := M) u) = u := rfl
 /-- A map from the product of the units of two monoids to the units of their product. -/
 @[to_additive prod "A map from the product of the additive units of two
     additive monoids to the additive units of their product."]
-def prod : Mˣ × Nˣ →* (M × N)ˣ :=
-  MonoidHom.toHomUnits (MonoidHom.prodMap (Units.coeHom M) (Units.coeHom N))
+def prod : Mˣ × Nˣ →* (M × N)ˣ := prodUnits.symm.toMonoidHom
 
 @[to_additive (attr := simp) val_prod_apply]
 theorem val_prod_apply (g : Mˣ × Nˣ) : (prod g).val = (g.1.val, g.2.val) := rfl
@@ -644,13 +652,6 @@ theorem prod_fst_snd (g : (M × N)ˣ) : prod (fst g, snd g) = g := rfl
 lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
   mp h := ⟨h.unit.fst.isUnit, h.unit.snd.isUnit⟩
   mpr h := (prod (h.1.unit, h.2.unit)).isUnit
-
-/-- The monoid equivalence between units of a product of two monoids, and the product of the
-    units of each monoid. -/
-@[to_additive prodAddUnits
-      "The additive monoid equivalence between additive units of a product
-      of two additive monoids, and the product of the additive units of each additive monoid."]
-def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ := (fst.prod snd).toMulEquiv prod rfl rfl
 
 @[deprecated Units.prodUnits (since := "2025-05-22")]
 def _root_.MulEquiv.prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ := Units.prodUnits
