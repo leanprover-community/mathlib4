@@ -518,7 +518,7 @@ alias MeromorphicAt.order_add := meromorphicOrderAt_add
 /--
 Helper lemma for meromorphicOrderAt_add_of_ne.
 -/
-lemma meromorphicOrderAt_add_of_lt (hf₂ : MeromorphicAt f₂ x)
+lemma meromorphicOrderAt_add_eq_left_of_lt (hf₂ : MeromorphicAt f₂ x)
     (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
     meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₁ x := by
   by_cases hf₁ : MeromorphicAt f₁ x; swap

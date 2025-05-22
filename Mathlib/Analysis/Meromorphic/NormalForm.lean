@@ -166,8 +166,6 @@ theorem MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (hf : MeromorphicNFAt f x
 
 @[deprecated (since := "2025-05-22")] alias MeromorphicNFAt.order_eq_zero_iff :=
   MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff
-
-
 /-!
 ## Local nature of the definition and local identity theorem
 -/
