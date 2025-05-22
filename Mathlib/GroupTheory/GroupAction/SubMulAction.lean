@@ -407,6 +407,13 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
   rw [← Subgroup.toSubmonoid_inj]
   exact stabilizer_of_subMul.submonoid m
 
+/-- SubMulAction on the complement of an invariant subset -/
+instance : HasCompl (SubMulAction R M) where
+  compl s := ⟨sᶜ, by simp⟩
+
+theorem compl_def (s : SubMulAction R M) :
+  sᶜ.carrier = (s : Set M)ᶜ := rfl
+
 end MulActionGroup
 
 section Module
@@ -472,7 +479,7 @@ variable {M α : Type*} [Monoid M] [MulAction M α]
 
 
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
-@[to_additive  "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
+@[to_additive "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
 def inclusion (s : SubMulAction M α) : s →[M] α where
 -- The inclusion map of the inclusion of a SubMulAction
   toFun := Subtype.val

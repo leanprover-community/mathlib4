@@ -387,7 +387,7 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 
 See also `Basis.algebraMapCoeffs` for the case where `f` is equal to `algebraMap`.
 -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
   letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
   haveI : IsScalarTower R' R M :=

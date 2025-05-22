@@ -133,7 +133,7 @@ theorem vars_prod {ι : Type*} [DecidableEq σ] {s : Finset ι} (f : ι → MvPo
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | insert hs hsub =>
+  | insert _ _ hs hsub =>
     simp only [hs, Finset.biUnion_insert, Finset.prod_insert, not_false_iff]
     apply Finset.Subset.trans (vars_mul _ _)
     exact Finset.union_subset_union (Finset.Subset.refl _) hsub
@@ -164,7 +164,7 @@ theorem vars_sum_subset [DecidableEq σ] :
   classical
   induction t using Finset.induction_on with
   | empty => simp
-  | insert has hsum =>
+  | insert _ _ has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has]
     refine Finset.Subset.trans
       (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) ?_)
@@ -175,7 +175,7 @@ theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun 
   classical
   induction t using Finset.induction_on with
   | empty => simp
-  | insert has hsum =>
+  | insert _ _ has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]
     unfold Pairwise onFun at h
     rw [hsum]

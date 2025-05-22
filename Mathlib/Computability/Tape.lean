@@ -541,7 +541,7 @@ theorem Tape.move_right_n_head {Γ} [Inhabited Γ] (T : Tape Γ) (i : ℕ) :
     ((Tape.move Dir.right)^[i] T).head = T.nth i := by
   induction i generalizing T
   · rfl
-  · simp only [*, Tape.move_right_nth, Int.ofNat_succ, iterate_succ, Function.comp_apply]
+  · simp only [*, Tape.move_right_nth, Int.natCast_succ, iterate_succ, Function.comp_apply]
 
 /-- Replace the current value of the head on the tape. -/
 def Tape.write {Γ} [Inhabited Γ] (b : Γ) (T : Tape Γ) : Tape Γ :=

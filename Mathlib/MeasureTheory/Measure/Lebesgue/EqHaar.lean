@@ -76,7 +76,7 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     · exact zero_le_one
 
 /-- A parallelepiped can be expressed on the standard basis. -/
-theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+theorem Basis.parallelepiped_eq_map {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (b : Basis ι ℝ E) :
     b.parallelepiped = (PositiveCompacts.piIcc01 ι).map b.equivFun.symm
       b.equivFunL.symm.continuous b.equivFunL.symm.isOpenMap := by

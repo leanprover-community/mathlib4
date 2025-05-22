@@ -14,13 +14,13 @@ This file contains basic results relevant to the triangularizability of linear e
 
 ## Main definitions / results
 
- * `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
-   linear endomorphism has an eigenvalue.
- * `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
-   closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
- * `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
-   generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
-   its restriction to any invariant submodule.
+* `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
+  linear endomorphism has an eigenvalue.
+* `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
+  closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
+* `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
+  generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
+  its restriction to any invariant submodule.
 
 ## References
 
@@ -176,11 +176,11 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
       simpa only [Nat.cast_le] using Finset.le_sup hμ'
     have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
       (fun μ ↦ (f - algebraMap K (End K V) μ) ^ l₀) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
-    rw [← this, LinearMap.mul_apply, hl₀, _root_.map_zero]
+    rw [← this, Module.End.mul_apply, hl₀, _root_.map_zero]
   have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K V ↦ MapsTo g' p p)
       (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' _ ↦ by
     suffices MapsTo (f - algebraMap K (End K V) μ') p p by
-      simp only [LinearMap.coe_pow]; exact this.iterate l₀
+      simp only [Module.End.coe_pow]; exact this.iterate l₀
     intro x hx
     rw [LinearMap.sub_apply, algebraMap_end_apply]
     exact p.sub_mem (h _ hx) (smul_mem p μ' hx)

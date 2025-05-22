@@ -177,8 +177,8 @@ theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective 
   rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded_of_decreasing_seq
   intro n
-  simp_rw [pow_succ, LinearMap.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
-  refine Submodule.map_strictMono_of_injective (LinearMap.iterate_injective s n) (Ne.lt_top ?_)
+  simp_rw [pow_succ, Module.End.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
+  refine Submodule.map_strictMono_of_injective (Module.End.iterate_injective s n) (Ne.lt_top ?_)
   rwa [Ne, LinearMap.range_eq_top]
 
 /-- Any injective endomorphism of an Artinian module is bijective. -/
@@ -303,7 +303,7 @@ variable [IsArtinian R M]
 
 /-- For any endomorphism of an Artinian module, any sufficiently high iterate has codisjoint kernel
 and range. -/
-theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
+theorem eventually_codisjoint_ker_pow_range_pow (f : Module.End R M) :
     ∀ᶠ n in atTop, Codisjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
   obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
     IsArtinian.monotone_stabilizes f.iterateRange
@@ -320,7 +320,7 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
 /-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
 
 See also `LinearMap.isCompl_iSup_ker_pow_iInf_range_pow` for an alternative spelling. -/
-theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
+theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : Module.End R M) :
     ∀ᶠ n in atTop, IsCompl (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
   filter_upwards [f.eventually_disjoint_ker_pow_range_pow.and
     f.eventually_codisjoint_ker_pow_range_pow] with n hn

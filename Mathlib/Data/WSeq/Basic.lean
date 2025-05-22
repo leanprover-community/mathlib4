@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Seq.Seq
+import Mathlib.Util.CompileInductive
 
 /-!
 # Partially defined possibly infinite lists
@@ -633,7 +634,7 @@ theorem head_ofSeq (s : Seq α) : head (ofSeq s) = Computation.pure s.head := by
 theorem tail_ofSeq (s : Seq α) : tail (ofSeq s) = ofSeq s.tail := by
   simp only [tail, destruct_ofSeq, map_pure', flatten_pure]
   induction' s using Seq.recOn with x s <;> simp only [ofSeq, Seq.tail_nil, Seq.head_nil,
-    Option.map_none', Seq.tail_cons, Seq.head_cons, Option.map_some']
+    Option.map_none, Seq.tail_cons, Seq.head_cons, Option.map_some]
   · rfl
 
 @[simp]

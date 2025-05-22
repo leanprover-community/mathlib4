@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Int.GCD
+import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Congruences modulo a natural number
@@ -120,7 +121,7 @@ protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a + c ≡ b + d [MOD n] := by
-  rw [modEq_iff_dvd, Int.ofNat_add, Int.ofNat_add, add_sub_add_comm]
+  rw [modEq_iff_dvd, Int.natCast_add, Int.natCast_add, add_sub_add_comm]
   exact Int.dvd_add h₁.dvd h₂.dvd
 
 @[gcongr]
@@ -133,7 +134,7 @@ protected theorem add_right (c : ℕ) (h : a ≡ b [MOD n]) : a + c ≡ b + c [M
 
 protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b + d [MOD n]) :
     c ≡ d [MOD n] := by
-  simp only [modEq_iff_dvd, Int.ofNat_add] at *
+  simp only [modEq_iff_dvd, Int.natCast_add] at *
   rw [add_sub_add_comm] at h₂
   convert Int.dvd_sub h₂ h₁ using 1
   rw [add_sub_cancel_left]

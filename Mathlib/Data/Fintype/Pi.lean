@@ -27,7 +27,7 @@ analogue of `Finset.pi` where the base finset is `univ` (but formally they are n
 there is an additional condition `i ∈ Finset.univ` in the `Finset.pi` definition). -/
 def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
   (Finset.univ.pi t).map ⟨fun f a => f a (mem_univ a), fun _ _ =>
-    by simp (config := {contextual := true}) [funext_iff]⟩
+    by simp +contextual [funext_iff]⟩
 
 @[simp]
 theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset t ↔ ∀ a, f a ∈ t a := by

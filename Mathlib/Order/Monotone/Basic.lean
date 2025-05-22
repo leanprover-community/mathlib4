@@ -418,6 +418,11 @@ theorem StrictMono.injective (hf : StrictMono f) : Injective f :=
 theorem StrictAnti.injective (hf : StrictAnti f) : Injective f :=
   fun x y h ↦ show Compares eq x y from hf.compares.1 h.symm
 
+lemma StrictMonoOn.injOn (hf : StrictMonoOn f s) : s.InjOn f := fun x hx y hy hxy ↦
+  show Ordering.eq.Compares x y from (hf.compares hx hy).1 hxy
+
+lemma StrictAntiOn.injOn (hf : StrictAntiOn f s) : s.InjOn f := hf.dual_left.injOn
+
 theorem StrictMono.maximal_of_maximal_image (hf : StrictMono f) {a} (hmax : ∀ p, p ≤ f a) (x : α) :
     x ≤ a :=
   hf.le_iff_le.mp (hmax (f x))
@@ -618,7 +623,7 @@ theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
   clear hab
   induction n with
   | zero => rw [Int.ofNat_one]; apply h
-  | succ n ihn => rw [Int.ofNat_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
+  | succ n ihn => rw [Int.natCast_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
 
 theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℤ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a ≤ b) : r (f a) (f b) :=

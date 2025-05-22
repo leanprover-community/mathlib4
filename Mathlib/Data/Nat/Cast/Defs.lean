@@ -175,7 +175,7 @@ theorem cast_three [NatCast R] : ((3 : ℕ) : R) = (3 : R) := rfl
 
 theorem cast_four [NatCast R] : ((4 : ℕ) : R) = (4 : R) := rfl
 
-attribute [simp, norm_cast] Int.natAbs_ofNat
+attribute [simp, norm_cast] Int.natAbs_natCast
 
 end Nat
 

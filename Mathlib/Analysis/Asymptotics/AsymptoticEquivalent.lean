@@ -122,7 +122,7 @@ theorem isEquivalent_zero_iff_isBigO_zero : u ~[l] 0 ↔ u =O[l] (0 : α → β)
 
 theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) :
     u ~[l] const _ c ↔ Tendsto u l (𝓝 c) := by
-  simp (config := { unfoldPartialApp := true }) only [IsEquivalent, const, isLittleO_const_iff h]
+  simp +unfoldPartialApp only [IsEquivalent, const, isLittleO_const_iff h]
   constructor <;> intro h
   · have := h.sub (tendsto_const_nhds (x := -c))
     simp only [Pi.sub_apply, sub_neg_eq_add, sub_add_cancel, zero_add] at this

@@ -133,7 +133,7 @@ theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
   induction' ts with a ts ih; · rfl
   simp only [permutations'Aux, ih, cons_append, permutationsAux2_snd_cons, append_nil, id_eq,
     cons.injEq, true_and]
-  simp (config := { singlePass := true }) only [← permutationsAux2_append]
+  simp +singlePass only [← permutationsAux2_append]
   simp [map_permutationsAux2]
 
 theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List α} :
@@ -238,7 +238,7 @@ theorem permutationsAux_append (is is' ts : List α) :
   congr 2
   funext _
   rw [map_permutationsAux2]
-  simp (config := { singlePass := true }) only [← permutationsAux2_comp_append]
+  simp +singlePass only [← permutationsAux2_comp_append]
   simp only [id, append_assoc]
 
 theorem permutations_append (is ts : List α) :

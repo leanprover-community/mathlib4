@@ -138,6 +138,20 @@ theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s]
     orthogonalProjectionFn s p = orthogonalProjection s p :=
   rfl
 
+/-- Since both instance arguments are propositions, allow `simp` to rewrite them
+alongside the `s` argument.
+
+Note that without the coercion to `P`, the LHS and RHS would have different types. -/
+@[congr]
+theorem orthogonalProjection_congr {s₁ s₂ : AffineSubspace ℝ P} {p₁ p₂ : P}
+    [Nonempty s₁] [s₁.direction.HasOrthogonalProjection]
+    (h : s₁ = s₂) (hp : p₁ = p₂) :
+    letI : Nonempty s₂ := h ▸ ‹_›
+    letI : s₂.direction.HasOrthogonalProjection := h ▸ ‹_›
+    (orthogonalProjection s₁ p₁ : P) = (orthogonalProjection s₂ p₂ : P) := by
+  subst h hp
+  rfl
+
 /-- The linear map corresponding to `orthogonalProjection`. -/
 @[simp]
 theorem orthogonalProjection_linear {s : AffineSubspace ℝ P} [Nonempty s]
@@ -563,21 +577,6 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
   exact
     Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
       (orthogonalProjection_vsub_mem_direction_orthogonal _ p₂)
-
-variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
-
-@[simp] lemma ne_orthogonalProjection_faceOpposite (i : Fin (n + 1)) :
-    s.points i ≠
-      orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i) := by
-  intro h
-  rw [eq_comm, EuclideanGeometry.orthogonalProjection_eq_self_iff,
-    mem_affineSpan_range_faceOpposite_points_iff] at h
-  simp at h
-
-lemma dist_orthogonalProjection_faceOpposite_pos (i : Fin (n + 1)) :
-    0 < dist (s.points i)
-      (orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i)) := by
-  simp
 
 end Simplex
 

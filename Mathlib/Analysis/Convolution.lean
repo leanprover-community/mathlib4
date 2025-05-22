@@ -179,7 +179,7 @@ theorem AEStronglyMeasurable.convolution_integrand' [MeasurableAdd₂ G]
     [MeasurableNeg G] (hf : AEStronglyMeasurable f ν)
     (hg : AEStronglyMeasurable g <| map (fun p : G × G => p.1 - p.2) (μ.prod ν)) :
     AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
-  L.aestronglyMeasurable_comp₂ hf.snd <| hg.comp_measurable measurable_sub
+  L.aestronglyMeasurable_comp₂ hf.comp_snd <| hg.comp_measurable measurable_sub
 
 section
 
@@ -905,8 +905,8 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
   have h_meas :
     AEStronglyMeasurable (uncurry fun x y => L₃ (f y) (L₄ (g x) (k (x₀ - y - x))))
       (μ.prod ν) := by
-    refine L₃.aestronglyMeasurable_comp₂ hf.snd ?_
-    refine L₄.aestronglyMeasurable_comp₂ hg.fst ?_
+    refine L₃.aestronglyMeasurable_comp₂ hf.comp_snd ?_
+    refine L₄.aestronglyMeasurable_comp₂ hg.comp_fst ?_
     refine (hk.mono_ac ?_).comp_measurable
       ((measurable_const.sub measurable_snd).sub measurable_fst)
     refine QuasiMeasurePreserving.absolutelyContinuous ?_
@@ -923,7 +923,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     rw [← h3] at this
     convert this.comp_measurable (measurable_sub.prodMk measurable_snd)
     ext ⟨x, y⟩
-    simp (config := { unfoldPartialApp := true }) only [uncurry, Function.comp_apply,
+    simp +unfoldPartialApp only [uncurry, Function.comp_apply,
       sub_sub_sub_cancel_right]
   simp_rw [integrable_prod_iff' h_meas]
   refine ⟨((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht =>
@@ -986,7 +986,7 @@ theorem _root_.HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompact
 theorem _root_.HasCompactSupport.hasFDerivAt_convolution_left [IsNegInvariant μ]
     (hcf : HasCompactSupport f) (hf : ContDiff 𝕜 1 f) (hg : LocallyIntegrable g μ) (x₀ : G) :
     HasFDerivAt (f ⋆[L, μ] g) ((fderiv 𝕜 f ⋆[L.precompL G, μ] g) x₀) x₀ := by
-  simp (config := { singlePass := true }) only [← convolution_flip]
+  simp +singlePass only [← convolution_flip]
   exact hcf.hasFDerivAt_convolution_right L.flip hg hf x₀
 
 end RCLike
@@ -1015,7 +1015,7 @@ theorem _root_.HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyInteg
 theorem _root_.HasCompactSupport.hasDerivAt_convolution_left [IsNegInvariant μ]
     (hcf : HasCompactSupport f₀) (hf : ContDiff 𝕜 1 f₀) (hg : LocallyIntegrable g₀ μ) (x₀ : 𝕜) :
     HasDerivAt (f₀ ⋆[L, μ] g₀) ((deriv f₀ ⋆[L, μ] g₀) x₀) x₀ := by
-  simp (config := { singlePass := true }) only [← convolution_flip]
+  simp +singlePass only [← convolution_flip]
   exact hcf.hasDerivAt_convolution_right L.flip hg hf x₀
 
 end Real

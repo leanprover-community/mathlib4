@@ -14,22 +14,23 @@ import Mathlib.RingTheory.Polynomial.Content
 Gauss's Lemma is one of a few results pertaining to irreducibility of primitive polynomials.
 
 ## Main Results
- - `IsIntegrallyClosed.eq_map_mul_C_of_dvd`: if `R` is integrally closed, `K = Frac(R)` and
+
+- `IsIntegrallyClosed.eq_map_mul_C_of_dvd`: if `R` is integrally closed, `K = Frac(R)` and
   `g : K[X]` divides a monic polynomial with coefficients in `R`, then `g * (C g.leadingCoeff⁻¹)`
   has coefficients in `R`
- - `Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map`:
+- `Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map`:
   A monic polynomial over an integrally closed domain is irreducible iff it is irreducible in a
-    fraction field
- - `isIntegrallyClosed_iff'`:
-   Integrally closed domains are precisely the domains for in which Gauss's lemma holds
-    for monic polynomials
- - `Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map`:
+  fraction field
+- `isIntegrallyClosed_iff'`:
+  Integrally closed domains are precisely the domains for in which Gauss's lemma holds
+  for monic polynomials
+- `Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map`:
   A primitive polynomial over a GCD domain is irreducible iff it is irreducible in a fraction field
- - `Polynomial.IsPrimitive.Int.irreducible_iff_irreducible_map_cast`:
+- `Polynomial.IsPrimitive.Int.irreducible_iff_irreducible_map_cast`:
   A primitive polynomial over `ℤ` is irreducible iff it is irreducible over `ℚ`.
- - `Polynomial.IsPrimitive.dvd_iff_fraction_map_dvd_fraction_map`:
+- `Polynomial.IsPrimitive.dvd_iff_fraction_map_dvd_fraction_map`:
   Two primitive polynomials over a GCD domain divide each other iff they do in a fraction field.
- - `Polynomial.IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast`:
+- `Polynomial.IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast`:
   Two primitive polynomials over `ℤ` divide each other if they do in `ℚ`.
 
 -/

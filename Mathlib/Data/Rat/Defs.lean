@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
-import Mathlib.Data.Int.Init
 import Mathlib.Data.Nat.Basic
 
 /-!

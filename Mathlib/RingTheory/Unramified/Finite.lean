@@ -118,7 +118,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
   · exact Finset.subset_biUnion_of_mem (fun i ↦ (a i).support) hi
   · simp only [a, Finset.mem_sdiff, Finset.mem_biUnion, Finsupp.mem_support_iff, ne_eq, not_not,
       and_imp, forall_exists_index]
-    simp (config := {contextual := true})
+    simp +contextual
   · exact fun _ _ ↦ rfl
 
 variable [FormallyUnramified R S] [EssFiniteType R S]
@@ -196,13 +196,12 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
     apply Finsupp.finsuppProdEquiv.symm.injective
     apply (Finsupp.equivCongrLeft (Equiv.prodComm I I)).injective
     apply (b.tensorProduct b).repr.symm.injective
-    simp only [Basis.repr_symm_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight,
-      LinearMap.id_coe, id_eq, Basis.tensorProduct_apply, Finsupp.finsuppProdEquiv,
-      Equiv.coe_fn_symm_mk, Finsupp.uncurry, map_finsuppSum,
-      Finsupp.linearCombination_single, Basis.tensorProduct_apply, Finsupp.equivCongrLeft_apply,
-      Finsupp.linearCombination_equivMapDomain, Equiv.coe_prodComm]
+    simp? [Finsupp.linearCombination_apply, Finsupp.sum_uncurry_index] says
+      simp only [Finsupp.finsuppProdEquiv_symm_apply, Finsupp.equivCongrLeft_apply,
+        Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum_equivMapDomain,
+        Equiv.prodComm_apply, Finsupp.sum_uncurry_index, Prod.swap_prod_mk,
+        Basis.tensorProduct_apply]
     rw [Finsupp.onFinset_sum, Finsupp.onFinset_sum]
-    simp only [Function.comp_apply, Prod.swap_prod_mk, Basis.tensorProduct_apply]
     have : ∀ i, ((b.repr (x * f i)).sum fun j k ↦ k • b j ⊗ₜ[R] b i) = (x * f i) ⊗ₜ[R] b i := by
       intro i
       simp_rw [Finsupp.sum, TensorProduct.smul_tmul', ← TensorProduct.sum_tmul]

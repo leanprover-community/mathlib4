@@ -163,15 +163,16 @@ lemma collapse_modular [ExistsAddOfLE β]
       refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
         (insert_union _ _ _), insert_inter_of_not_mem ‹_›, ← mul_add]
-      exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) <|
-        add_nonneg (h₄ _) <| h₄ _
+      gcongr
+      exacts [add_nonneg (h₄ _) <| h₄ _, le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›]
     · rw [zero_add, add_mul]
       refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (inter_mem_infs ‹_› ‹_›) (inter_mem_infs ‹_› ‹_›)
         (inter_insert_of_not_mem ‹_›) (insert_inter_distrib _ _ _).symm, union_insert,
         insert_union_distrib, ← add_mul]
-      exact mul_le_mul_of_nonneg_left (le_collapse_of_insert_mem ‹_› h₄
-        (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›) <| add_nonneg (h₃ _) <| h₃ _
+      gcongr
+      exacts [add_nonneg (h₃ _) <| h₃ _,
+        le_collapse_of_insert_mem ‹_› h₄ (insert_union_distrib _ _ _).symm (union_mem_sups ‹_› ‹_›)]
     · rw [add_zero, mul_zero]
       exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
   · rw [add_zero, collapse_eq hat, mul_add]
@@ -251,8 +252,7 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
   | empty =>
     simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
     obtain rfl | rfl := h𝒜 <;> obtain rfl | rfl := hℬ <;> simp; exact h (subset_refl ∅) subset_rfl
-  | insert hu ih =>
-    rename_i a u
+  | insert a u hu ih =>
     specialize ih (collapse_nonneg h₁) (collapse_nonneg h₂) (collapse_nonneg h₃)
       (collapse_nonneg h₄) (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
     have : 𝒜 ⊼ ℬ ⊆ powerset (insert a u) := by simpa using infs_subset h𝒜 hℬ

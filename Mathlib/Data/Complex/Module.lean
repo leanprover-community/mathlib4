@@ -259,7 +259,7 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
   exacts [h, conj_I.symm ▸ h]
 
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
   { equivRealProdAddHom with
     map_smul' := fun r c => by simp }
@@ -301,7 +301,7 @@ of `A` which squares to `-1`.
 This can be used to embed the complex numbers in the `Quaternion`s.
 
 This isomorphism is named to match the very similar `Zsqrtd.lift`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
   toFun I' := liftAux I' I'.prop
   invFun F := ⟨F I, by rw [← map_mul, I_mul_I, map_neg, map_one]⟩

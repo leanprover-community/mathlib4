@@ -179,7 +179,7 @@ theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b 
   div_le_div_iff_of_pos_left (zero_lt_iff.2 ha) (zero_lt_iff.2 hb) (zero_lt_iff.2 hc)
 
 /-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`. -/
-@[simps! (config := { simpRhs := true }) apply toEquiv,
+@[simps! +simpRhs apply toEquiv,
 deprecated OrderIso.mulLeft₀ (since := "2024-11-18")]
 def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α := .mulLeft₀ a (zero_lt_iff.2 ha)
 
@@ -191,7 +191,7 @@ theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
   rfl
 
 /-- `Equiv.mulRight₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`. -/
-@[simps! (config := { simpRhs := true }) apply toEquiv,
+@[simps! +simpRhs apply toEquiv,
 deprecated OrderIso.mulRight₀ (since := "2024-11-18")]
 def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α := .mulRight₀ a (zero_lt_iff.2 ha)
 

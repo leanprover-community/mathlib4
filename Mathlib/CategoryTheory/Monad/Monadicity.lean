@@ -383,7 +383,7 @@ instance {A B} (f g : A ⟶ B) [IsReflexivePair f g] [PreservesColimitOfIsReflex
 instance [PreservesColimitOfIsReflexivePair G] : ∀ X : Algebra adj.toMonad,
     PreservesColimit (parallelPair (F.map X.a)
       (NatTrans.app adj.counit (F.obj X.A))) G :=
- fun _ => PreservesColimitOfIsReflexivePair.out _ _
+  fun _ => PreservesColimitOfIsReflexivePair.out _ _
 
 variable [PreservesColimitOfIsReflexivePair G]
 

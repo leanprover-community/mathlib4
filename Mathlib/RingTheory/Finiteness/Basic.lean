@@ -109,7 +109,7 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     | empty =>
       rw [Finset.coe_empty, Submodule.span_empty, ← Submodule.span_zero_singleton]
       exact h₁ _
-    | insert _ ih =>
+    | insert _ _ _ ih =>
       rw [Finset.coe_insert, Submodule.span_insert]
       exact h₂ _ _ (h₁ _) ih
 

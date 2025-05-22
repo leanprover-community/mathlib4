@@ -91,8 +91,7 @@ def factors (x : π C (· ∈ s)) : List (LocallyConstant (π C (· ∈ s)) ℤ)
 
 theorem list_prod_apply {I} (C : Set (I → Bool)) (x : C) (l : List (LocallyConstant C ℤ)) :
     l.prod x = (l.map (LocallyConstant.evalMonoidHom x)).prod := by
-  rw [← map_list_prod (LocallyConstant.evalMonoidHom x) l]
-  rfl
+  rw [← map_list_prod (LocallyConstant.evalMonoidHom x) l, LocallyConstant.evalMonoidHom_apply]
 
 theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x) :
     (factors C s x).prod y = 1 := by

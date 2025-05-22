@@ -216,9 +216,9 @@ theorem mapQ_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
     (h' : p ≤ p.comap (f ^ k) := p.le_comap_pow_of_le_comap h k) :
     p.mapQ p (f ^ k) h' = p.mapQ p f h ^ k := by
   induction k with
-  | zero => simp [LinearMap.one_eq_id]
+  | zero => simp [Module.End.one_eq_id]
   | succ k ih =>
-    simp only [LinearMap.iterate_succ]
+    simp only [Module.End.iterate_succ]
     rw [mapQ_comp, ih]
 
 theorem comap_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftQ f h) = (q.comap f).map (mkQ p) :=

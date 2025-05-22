@@ -143,7 +143,7 @@ theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {
   classical
   induction I using Finset.induction_on with
   | empty => simp
-  | @insert i I hiI ihI =>
+  | insert i I hiI ihI =>
     simp only [Finset.mem_insert] at hI
     rw [Finset.set_biUnion_insert, hm, ihI, Finset.sum_insert hiI]
     exacts [fun i hi j hj hij => hI i (Or.inr hi) j (Or.inr hj) hij,
@@ -737,8 +737,9 @@ end LipschitzWith
 open scoped Pointwise
 
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
-    [NormedField 𝕜] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E] {d : ℝ} (hd : 0 ≤ d)
-    {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
+    [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    {d : ℝ} (hd : 0 ≤ d) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
+    μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
   have {r : 𝕜} (s : Set E) : μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s := by
     simpa [ENNReal.coe_rpow_of_nonneg, hd]
       using (lipschitzWith_smul r).hausdorffMeasure_image_le hd s
