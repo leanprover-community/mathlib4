@@ -286,7 +286,7 @@ variable [DiscreteTopology X]
 
 /-- The continuous functions from `X` to `Y` are the same as the plain functions when `X` is
 discrete. -/
-@[simps!]
+@[simps toEquiv]
 def homeoFnOfDiscrete : C(X, Y) ≃ₜ (X → Y) where
   __ := equivFnOfDiscrete
   continuous_invFun :=
