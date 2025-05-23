@@ -22,8 +22,6 @@ jobs:
       packages: write
       attestations: write
       id-token: write
-    outputs:
-      tagname: ${{ steps.output-tag-name.outputs.tagname }}
     steps:
       # documentation at
       # https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-docker-images
