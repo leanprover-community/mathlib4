@@ -41,8 +41,8 @@ variable [NumberField K]
 
 open scoped Classical in
 /--
-A equiv between `Fin (rank K)`, use to index the family of units, and `{w // w ≠ w₀}` the index of
-the `logSpace`.
+An `equiv` between `Fin (rank K)`, used to index the family of units, and `{w // w ≠ w₀}`
+the index of the `logSpace`.
 -/
 def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
   Fintype.equivOfCardEq <| by
@@ -55,34 +55,34 @@ open Matrix
 variable {K}
 
 /--
-A family of units is of maximal rank if it generates a subgroup of `(𝓞 K)ˣ` of finite index.
+A family of units is of maximal rank if its image by `logEmbedding` is linearly independent
+over `ℝ`.
 -/
 abbrev IsMaxRank (u : Fin (rank K) → (𝓞 K)ˣ) : Prop :=
   LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))
 
+open scoped Classical in
 /--
 The images by `logEmbedding` of a family of units of maximal rank form a basis of `logSpace K`.
 -/
 def basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
-    Basis (Fin (rank K)) ℝ (logSpace K) := by
-  classical
-  exact (basisOfPiSpaceOfLinearIndependent
+    Basis (Fin (rank K)) ℝ (logSpace K) :=
+  (basisOfPiSpaceOfLinearIndependent
     ((linearIndependent_equiv (equivFinRank K).symm).mpr hu)).reindex (equivFinRank K).symm
 
 theorem basisOfIsMaxRank_apply {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) (i : Fin (rank K)) :
     (basisOfIsMaxRank hu) i = logEmbedding K (Additive.ofMul (u i)) := by
-  classical
   simp [basisOfIsMaxRank, Basis.coe_reindex,  Equiv.symm_symm, Function.comp_apply,
     coe_basisOfPiSpaceOfLinearIndependent]
 
+open scoped Classical in
 /--
 The regulator of a family of units of `K`.
 -/
-def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ := by
-  classical
-  by_cases hu : IsMaxRank u
-  · exact ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank  hu)))
-  · exact 0
+def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ :=
+  if hu : IsMaxRank u then
+    ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank  hu)))
+  else 0
 
 theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ IsMaxRank u) :
     regOfFamily u = 0 := by
@@ -165,8 +165,7 @@ theorem regOfFamily_eq_det (u : Fin (rank K) → (𝓞 K)ˣ) (w' : InfinitePlace
     (e : {w // w ≠ w'} ≃ Fin (rank K)) :
     regOfFamily u =
       |(of fun i w : {w // w ≠ w'} ↦ (mult w.val : ℝ) * Real.log (w.val (u (e i) : K))).det| := by
-  rw [regOfFamily_eq_det', abs_det_eq_abs_det u e (equivFinRank K).symm]
-  simp [logEmbedding]
+  simp [regOfFamily_eq_det', abs_det_eq_abs_det u e (equivFinRank K).symm, logEmbedding]
 
 open scoped Classical in
 /--
