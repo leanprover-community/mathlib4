@@ -54,10 +54,14 @@ open Lean Elab Parser Command
 open Meta hiding Config
 open Elab.Term hiding mkConst
 
+/-- An internal representation of a name to be used for a generated lemma. -/
 private structure NameStruct where
+  /-- The namespace that the final name will reside in. -/
   parent : Name
+  /-- A list of pieces to be joined by `toName`. -/
   components : List String
 
+/-- Join the components with `_`, or append `_def` if there is only one component. -/
 private def NameStruct.toName (n : NameStruct) : Name :=
   Name.mkStr n.parent <|
     match n.components with
@@ -67,12 +71,12 @@ private def NameStruct.toName (n : NameStruct) : Name :=
 
 instance : Coe NameStruct Name where coe := NameStruct.toName
 
-/-- `updateName nm s isPrefix` adds `s` to the last component of `nm`,
-either as prefix or as suffix (specified by `isPrefix`), separated by `_`.
+/-- `update nm s isPrefix` adds `s` to the last component of `nm`,
+either as prefix or as suffix (specified by `isPrefix`).
 Used by `simps_add_projections`. -/
 private def NameStruct.update (nm : NameStruct) (s : String) (isPrefix : Bool := false) :
     NameStruct :=
-  {nm with components := if isPrefix then s :: nm.components else nm.components ++ [s] }
+  { nm with components := if isPrefix then s :: nm.components else nm.components ++ [s] }
 
 -- move
 namespace Lean.Meta
@@ -989,7 +993,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
   if (env.find? declName).isSome then -- diverging behavior from Lean 3
-    throwError "simps tried to add lemma{indentD m!"{.ofConstName declName} : {declType}"}\n \
+    throwError "simps tried to add lemma{indentD m!"{.ofConstName declName} : {declType}"}\n\
       to the environment, but it already exists."
   trace[simps.verbose] "adding projection {declName}:{indentExpr declType}"
   try
