@@ -224,7 +224,7 @@ instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) :=
 @[simps] noncomputable
 instance (x : X) : (Spec (X.residueField x)).Over X := ⟨X.fromSpecResidueField x⟩
 
-@[simps! over] noncomputable
+noncomputable
 instance (x : X) : (Spec (X.residueField x)).CanonicallyOver X where
 
 @[reassoc (attr := simp)]

@@ -945,7 +945,7 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `Prod.mul_def |>.isSome
   guard <| env.find? `Prod.add_def |>.isSome
   -- hasAttribute `to_additive `Prod.instMul
-  -- hasAttribute `to_additive `Prod.instMul_mul
+  -- hasAttribute `to_additive `Prod.mul_def
   guard <| hasSimpAttribute env `Prod.mul_def
   guard <| hasSimpAttribute env `Prod.add_def
 
