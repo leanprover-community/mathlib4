@@ -38,25 +38,14 @@ namespace L2
 
 local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
 
-/-- In an `L2` space, the inner product of indicator functions equals the measure of the
-intersection. -/
-lemma innerProduct_eq_interMatrix {v w : (Set α)} (hv₁ : MeasurableSet v)
-  (hw₁ : MeasurableSet w) (hv₂ : μ v ≠ ⊤ := by finiteness) (hw₂ : μ w ≠ ⊤ := by finiteness) :
-  ⟪((indicatorConstLp 2 hv₁ hv₂ (1 : ℝ))), (indicatorConstLp 2 hw₁ hw₂ (1 : ℝ))⟫ =
-    (μ.real (v ∩ w)) := by
-  rw [inner_indicatorConstLp_one]
-  have h : ((indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) : α → ℝ) =ᶠ[ae μ] w.indicator fun x ↦ (1 : ℝ) :=
-    indicatorConstLp_coeFn (hs := hw₁) (hμs := hw₂)
-  have g : ∀ᵐ (x : α) ∂μ, x ∈ v → ((indicatorConstLp 2 hw₁ hw₂ (1 : ℝ)) : α → ℝ) x =
-      w.indicator (fun x ↦ (1 : ℝ)) x := Filter.Eventually.mono h fun x a a_1 ↦ a
-  rw [setIntegral_congr_ae hv₁ g, setIntegral_indicator hw₁]
-  simp
-
 /-- In an `L2` space, the matrix of intersections of pairs of sets is positive semi-definite. -/
 theorem posSemidef_interMatrix [Fintype n] (μ : Measure α) (v : n → (Set α))
     (hv₁ : ∀ j, MeasurableSet (v j)) (hv₂ : ∀ j, μ (v j) ≠ ⊤) :
-      PosSemidef (fun (i j : n) ↦ (μ.real (v i ∩ v j))) := by
-  conv => right; intro i j; rw [← innerProduct_eq_interMatrix (hv₁ i) (hv₁ j) (hv₂ i) (hv₂ j)]
+      PosSemidef (of fun i j : n ↦ μ.real (v i ∩ v j)) := by
+  conv =>
+    right; right; intro i j;
+    rw [← inner_indicatorConstLp_one_indicatorConstLp_one (hv₁ i) (hv₁ j) (hv₂ i) (hv₂ j)]
+  rw [← gram]
   exact Gram.posSemidef
 
 end L2
