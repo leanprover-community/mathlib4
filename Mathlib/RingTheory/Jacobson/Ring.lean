@@ -246,6 +246,8 @@ namespace Polynomial
 section CommRing
 
 -- Porting note: move to better place
+-- [Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs, Mathlib.LinearAlgebra.Matrix.Polynomial,
+--  Mathlib.Algebra.Polynomial.AlgebraMap, Mathlib.Algebra.Polynomial.Eval.Subring]
 lemma mem_closure_X_union_C {R : Type*} [Ring R] (p : R[X]) :
     p ∈ Subring.closure (insert X {f | f.degree ≤ 0} : Set R[X]) := by
   refine Polynomial.induction_on p ?_ ?_ ?_
