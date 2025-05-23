@@ -151,8 +151,19 @@ theorem PrimeSpectrum.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p
 theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.1) :
       ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧ p₀ < q ∧ q < p₂ := by
-  let e := p₂.1.primeSpectrumLocalizationAtPrime.symm
-  sorry--have := exist_mem_one_of_mem_maximal_ideal
+  let e := p₂.1.primeSpectrumLocalizationAtPrime
+  obtain ⟨q', hxq, h₀, h₁⟩ := by
+    refine @exist_mem_one_of_mem_maximal_ideal (Localization.AtPrime p₂.1) _ _ _
+      (e.symm ⟨p₁, h₁.le⟩) (e.symm ⟨p₀, (h₀.trans h₁).le⟩) (e.symm.lt_iff_lt.mpr h₀) ?_
+        (algebraMap R (Localization.AtPrime p₂.1) x) ?_
+    · sorry
+    · sorry
+  let q : PrimeSpectrum R := (e q').1
+  have hq : q' = e.symm ⟨q, (e q').2⟩ := (e.symm_apply_apply q').symm
+  rw [hq] at h₀ h₁ hxq
+  refine ⟨q, ?_, e.symm.lt_iff_lt.mp h₀, ?_⟩
+  · sorry
+  · sorry
 
 /-- Let $R$ be a Noetherian ring, $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a
   chain of primes, $x \in \mathfrak{p}_n$. Then we can find a chain of primes
