@@ -2,6 +2,8 @@ import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Measure.Complex
 
+-- set_option linter.flexible true
+
 /-!
 # Riesz–Markov–Kakutani representation theorem for complex linear functionals
 
@@ -163,7 +165,6 @@ noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
 
 
 
-
       sorry
     · intro b hb
       obtain ⟨F, hF⟩ := lt_biSup_iff.mp hb
@@ -174,41 +175,6 @@ noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
       -- have : ∀ i, ∃ (A : ℕ → Set X), (∀ n, MeasurableSet A n) ∧ Pairwise (Function.onFun Disjoint A)
       --     ∧ ⋃ n, A n = E i ∧ ∑' n, ENNReal.ofReal ‖μ (A n)‖
       sorry
-
--- obsolete
--- noncomputable def supOuterMeasure : OuterMeasure X where
---   measureOf (s : Set X) :=
---     ⨅ t ∈ {t' : Set X | MeasurableSet t' ∧ s ⊆ t'},
---       ⨆ E ∈ {E' : ℕ → Set X | (∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint E')
---         ∧ ⋃ n, E' n = t},
---       ∑' n, ENNReal.ofReal ‖μ (E n)‖
---   empty := by
---     simp only [Set.empty_subset, and_true, Set.mem_setOf_eq]
---     apply le_antisymm
---     · apply le_trans (biInf_le _ MeasurableSet.empty)
---       simp only [Set.iUnion_eq_empty, nonpos_iff_eq_zero, iSup_eq_zero, ENNReal.tsum_eq_zero,
---         and_imp]
---       intro _ _ _ hEempty n
---       simp [hEempty n]
---     · simp
---   mono {s₁ s₂} h := by
---     simp only [Set.mem_setOf_eq, le_iInf_iff, and_imp]
---     intro t ht hst
---     have ht' : t ∈ {t' : Set X | MeasurableSet t' ∧ s₁ ⊆ t'} := by
---       rw [Set.setOf_and]
---       exact ⟨ht, (Set.Subset.trans h hst)⟩
---     apply le_trans (biInf_le _ ht')
---     exact le_of_eq rfl
---   iUnion_nat := by
---     sorry
-
--- noncomputable def supTotalVariation : Measure X :=
---   { (supOuterMeasure μ).trim with
---     m_iUnion := sorry
---     -- countable additivity for measurable sets, follow Rudin
---     -- use `OuterMeasure.trim_eq` for measurable sets
---     trim_le := le_of_eq (OuterMeasure.trim_trim (supOuterMeasure μ)) }
-
 
 -- ## Alternative 1: define variation as a VectorMeasure
 
@@ -245,21 +211,41 @@ lemma variation_empty' : variationAux μ ∅ = 0 := by
   intro E _ _ _
   simp [show ∀ n, μ (E n) = 0 by simp_all]
 
+lemma variationAux_le (s : Set X) {ε : ℝ≥0∞} (hε: 0 < ε) : ∃ E ∈ partitions s,
+    variationAux μ s ≤ sumOfNormOfMeasure μ E + ε := by
+  sorry
+
+lemma le_variationAux (s : Set X) : ∃ E ∈ partitions s,
+    sumOfNormOfMeasure μ E ≤ variationAux μ s := by
+  sorry
+
+lemma ENNReal.small_sum {ε' : ℝ≥0∞} (hε' : 0 < ε') : ∃ (ε : ℕ → ℝ≥0∞),
+    ∑' i, ε i = ε' ∧ (∀ i, 0 < ε i) := by
+  sorry
+
 /-- Aditivity of `variationAux` for disjoint measurable sets. -/
 lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ (i : ℕ), MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ variationAux μ (s i)) (variationAux μ (⋃ i, s i)) := by
 
-  simp [variationAux, hs, MeasurableSet.iUnion hs]
+  -- simp [variationAux, hs, MeasurableSet.iUnion hs]
   rw [ENNReal.hasSum_iff]
   constructor
   · intro n
-
-
-
+    apply ENNReal.le_of_forall_pos_le_add
+    intro ε' hε' hlttop
+    -- Using `small_sum` We fix a positive sequence `ε : ℕ → ℝ≥0∞` such that `∑' i, ε i = ε'`
+    obtain ⟨ε, hε_sum, hε_pos⟩ := ENNReal.small_sum (ofReal_pos.mpr hε')
+    -- Using `variationAux_le`, for each set `s i` we choose a partition `E i` such that, for each
+    -- `i`, `variationAux μ (s i) ≤ sumOfNormOfMeasure μ (E i) + ε`.
+    let E (i : ℕ) := Classical.choose (variationAux_le μ (s i) (hε_pos i))
+    let hE (i : ℕ) := Classical.choose_spec (variationAux_le μ (s i) (hε_pos i))
+    -- Additionally the combination of the partitions `E i` is a partition of `⋃ i, s i`.
+    -- TO DO
+    -- This means, using also `le_variationAux` that `∑' i, sumOfNormOfMeasure μ (E i)` is bounded
+    -- above by `variationAux (⋃ i, s i)`.
     sorry
   · --
-
 
     sorry
 
