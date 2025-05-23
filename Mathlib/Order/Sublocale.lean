@@ -178,7 +178,8 @@ def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
     obtain ⟨x', hx'⟩ := S.giAux.l_surjective ⟨x, h⟩
     rw [@Subtype.ext_iff_val] at hx'
     exact Exists.intro x' hx'
-  map_rel_iff' := by simpa [Sublocale.le_iff', ← Nucleus.range_subset_iff] using fun _ _ ↦ (by rfl)
+  map_rel_iff' := by
+    simpa [Sublocale.le_iff', ← Nucleus.range_subset_range] using fun _ _ ↦ (by rfl)
 
 lemma orderiso.eq_toSublocale : Nucleus.toSublocale = (@orderiso X _) := rfl
 lemma orderiso.symm_eq_toNucleus : Sublocale.toNucleus = (@orderiso X _).symm := rfl
