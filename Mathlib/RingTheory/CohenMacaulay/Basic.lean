@@ -56,7 +56,7 @@ section IsLocalization
 variable [IsLocalRing R] [IsNoetherianRing R] (p : Ideal R) [Small.{v} R]
 
 lemma depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay (M : ModuleCat.{v} R)
-    [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M] [Small.{v} (R ⧸ p)]
+    [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M]
     (mem : p ∈ associatedPrimes R M) :
     IsLocalRing.depth M = (ringKrullDim (R ⧸ p)).unbot
     (quotient_prime_ringKrullDim_ne_bot mem.1) := by
@@ -69,7 +69,7 @@ lemma depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay (M : ModuleCat.{
 
 --will update the two sets are equal when done with works about `Ass(M)`
 lemma associated_prime_minimal_of_isCohenMacaulay (M : ModuleCat.{v} R)
-    [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M] [Small.{v} (R ⧸ p)]
+    [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M]
     (mem : p ∈ associatedPrimes R M) : p ∈ (Module.annihilator R M).minimalPrimes := by
   have eq := Eq.trans M.depth_eq_supportDim_unbot_of_cohenMacaulay
     (depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p M mem)
@@ -278,7 +278,7 @@ variable (M : ModuleCat.{v} R) (Mₚ : ModuleCat.{v'} Rₚ)
 
 include p f
 
-lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module.Finite R M]
+lemma isLocalization_at_prime_prime_depth_le_depth [Module.Finite R M]
     [ntr : Nontrivial Mₚ] : p.depth M ≤ IsLocalRing.depth Mₚ := by
   let _ : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
   let _ : Nontrivial M := by
@@ -319,7 +319,7 @@ lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module
   rw [List.length_map, len]
 
 omit [Small.{v', u'} Rₚ] in
-lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay [Small.{v} (R ⧸ p)]
+lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
     [Module.Finite R M] [M.IsCohenMacaulay] [ntr : Nontrivial Mₚ] :
     Module.supportDim Rₚ Mₚ = p.depth M := by
   let _ : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
@@ -430,7 +430,7 @@ lemma isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay [Module.Finite R M]
     rw [isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay p M Mₚ f]
     exact WithBot.coe_le_coe.mpr (isLocalization_at_prime_prime_depth_le_depth p M Mₚ f)
 
-lemma isLocalize_at_prime_depth_eq_of_isCohenMacaulay [Small.{v} (R ⧸ p)] [Module.Finite R M]
+lemma isLocalize_at_prime_depth_eq_of_isCohenMacaulay [Module.Finite R M]
     [Nontrivial Mₚ] [M.IsCohenMacaulay] :
     p.depth M = IsLocalRing.depth Mₚ := by
   let _ : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
