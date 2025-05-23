@@ -115,13 +115,13 @@ lemma coe_toEuclideanCLM_eq_toEuclideanLin (A : Matrix n n 𝕜) :
 @[simp]
 lemma toEuclideanCLM_piLp_equiv_symm (A : Matrix n n 𝕜) (x : n → 𝕜) :
     toEuclideanCLM (n := n) (𝕜 := 𝕜) A ((WithLp.equiv _ _).symm x) =
-      (WithLp.equiv _ _).symm (toLin' A x) :=
+      (WithLp.equiv _ _).symm (A *ᵥ x) :=
   rfl
 
 @[simp]
 lemma piLp_equiv_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
     WithLp.equiv _ _ (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) =
-      toLin' A (WithLp.equiv _ _ x) :=
+      A *ᵥ (WithLp.equiv _ _ x) :=
   rfl
 
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
