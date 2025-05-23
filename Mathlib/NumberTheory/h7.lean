@@ -464,7 +464,8 @@ lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
             intros H
             norm_cast at H
           }
-        apply this
+        apply this#exit
+
         sorry
         --apply Real.rpow_le_rpow_of_exponent_le
 
@@ -2652,4 +2653,3 @@ theorem hilbert7 (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ
 --       rw [← mul_pow]
 --       simp only [c₁₅]}
 --   linarith
-

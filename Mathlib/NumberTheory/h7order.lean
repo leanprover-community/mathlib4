@@ -260,14 +260,6 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
     constructor
     · simp_all only [Metric.mem_ball, dist_self, gt_iff_lt, lt_inf_iff, and_self, r]
     · intros x hx
-      -- have hfderiv : EqOn (deriv (fun _ => (0: ℂ))) (deriv f) (Metric.ball z₀ r) := by {
-      --   unfold EqOn at *
-      --   intros x hx
-      --   congr
-      --   ext x
-      --   have := hf' hx
-      --   simp only [r] at this
-      --   rw [← this]
       have hf' : EqOn f ((fun _ ↦ (0 : ℂ))) (Metric.ball z₀ r) := by {
           unfold EqOn
           intros x1 hx1
@@ -283,10 +275,15 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
         derivWithin f (Metric.ball z₀ r) x := by {
         -- Since f = 0 on the ball, their derivatives within the ball are equal
         --unfold EqOn at hf'
-        congr
-        sorry
-
-        --have := hf' x
+        --simp
+        apply Filter.EventuallyEq.derivWithin_eq_of_nhds
+        unfold Filter.EventuallyEq
+        rw [unfilter]
+        use Metric.ball z₀ r
+        constructor
+        · refine IsOpen.mem_nhds ?_ hx
+          · exact Metric.isOpen_ball
+        · exact fun z a ↦ Eq.symm (Complex.ext (congrArg re (hf' a)) (congrArg im (hf' a)))
         }
       rw [← derivWithin_of_mem_nhds]
       · rw [← hf'']
@@ -299,14 +296,14 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
 
           }
 
-#exit
 #check order_eq_zero_iff
 
 #check order_deriv_top
 #check order_eq_zero_iff
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
   ∀ z₀ n (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤),
-    (∀ k < n, analyticOrderAt (deriv^[k] f) z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0)
+    (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0)
+    --(∀ k < n, analyticOrderAt (deriv^[k] f) z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0)
     ↔ analyticOrderAt f z₀ = n := by
   intros z₀ n
   induction' n with n IH
@@ -316,28 +313,75 @@ lemma iterated_deriv_eq_zero_iff_order_eq_n :
   · intros f hf hfin
     constructor
     · intros H
-      obtain ⟨hz,hnz⟩:= H
+      obtain ⟨hz, hnz⟩:= H
       have IH' := IH (deriv f) (AnalyticAt.deriv hf) ?_
-      · sorry
-      · have := order_deriv_top z₀ f hf ?_
-        · by_contra H
-          apply hfin
-          rwa [← this]
-        · sorry
+      · --obtain ⟨IH1, IH2⟩ := IH'
+        --[order_gt_zero_then_deriv_n_neg_1] at IH'
+        suffices analyticOrderAt (deriv f) z₀ = (n : ℕ) by
+          sorry
+
+        rw[← IH']
+        constructor
+        · have (k : ℕ) : deriv^[k] (deriv f) = deriv^[k+1] f := rfl
+          intro k hk
+          rw[this k]
+          specialize hz (k+1)
+          have : k+1 < n+1 := by omega
+          specialize hz this
+          exact hz
+        · exact hnz
+      · have := order_gt_zero_then_deriv_n_neg_1 f  z₀ hf
+        specialize hz 0 (by omega)
+        obtain ⟨r, hr⟩ := (WithTop.ne_top_iff_exists).mp hfin
+        specialize this r hr.symm
+        simp at hz
+        have r0 : r > 0 := by
+          suffices analyticOrderAt f z₀ > 0 by
+            suffices @WithTop.some ℕ r > 0 by exact ENat.coe_lt_coe.mp this
+            rw[hr]
+            exact this
+          have := analyticOrderAt_ne_zero.mpr ⟨hf, hz⟩
+          exact pos_of_ne_zero this
+        specialize this r0
+        rw[this]
+        exact ENat.coe_ne_top (r - 1)
+
+
+        -- have := order_deriv_top z₀ f hf ?_
+        -- · by_contra H
+        --   apply hfin
+        --   rwa [← this]
+        -- · sorry
     · intros ho
       constructor
       · intros k hk
-        sorry
-        --rw [order_eq_zero_iff]
-      · sorry
+        have thing := order_geq_k_then_deriv_n_neg_1 f hf k (n+1) ho.symm
+        have : n+1 > 0 := by omega
+        specialize thing this hk.le
+        have : n + 1 - k > 0 := by omega
+        have : analyticOrderAt (deriv^[k] f) z₀ ≠ 0 := by
+          rw[thing]
+          rw [@Nat.cast_ne_zero]
+          omega
+        rw[analyticOrderAt_ne_zero] at this
+        exact this.2
+      · have := order_geq_k_then_deriv_n_neg_1 f hf (n+1) (n+1) ho.symm (by omega) (by omega)
+        simp at this
+        rw[AnalyticAt.analyticOrderAt_eq_zero] at this
+        assumption
+        have (k : ℕ) : deriv^[k] (deriv f) = deriv^[k+1] f := rfl
+        rw[this]
+        exact iterated_deriv hf (n + 1)
+
 
 
 lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (n : ℕ) z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀)
   (ho : analyticOrderAt f z₀ ≠ ⊤),
-  (∀ k < n, analyticOrderAt (deriv^[k] f) z₀ = 0) → n ≤ analyticOrderAt f z₀ := by {
+  (∀ k < n, (deriv^[k] f) z₀ = 0) → n ≤ analyticOrderAt f z₀ := by
     intros n z₀ f hf ho hkn
+    have := iterated_deriv_eq_zero_iff_order_eq_n z₀ n f hf ho
     sorry
-  }
+
 -- intros f z hf ho hd
 -- rw [le_iff_eq_or_lt]
 -- left
