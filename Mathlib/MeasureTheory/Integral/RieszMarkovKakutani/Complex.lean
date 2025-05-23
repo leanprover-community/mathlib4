@@ -211,13 +211,14 @@ lemma variation_empty' : variationAux μ ∅ = 0 := by
   intro E _ _ _
   simp [show ∀ n, μ (E n) = 0 by simp_all]
 
-lemma variationAux_le (s : Set X) {ε : ℝ≥0∞} (hε: 0 < ε) : ∃ E ∈ partitions s,
+lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε: 0 < ε) : ∃ E ∈ partitions s,
     variationAux μ s ≤ sumOfNormOfMeasure μ E + ε := by
   sorry
 
-lemma le_variationAux (s : Set X) : ∃ E ∈ partitions s,
+lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {E : ℕ → Set X} (hE : E ∈ partitions s) :
     sumOfNormOfMeasure μ E ≤ variationAux μ s := by
-  sorry
+  simp only [variationAux, hs, reduceIte]
+  exact le_biSup (sumOfNormOfMeasure μ) hE
 
 lemma ENNReal.small_sum {ε' : ℝ≥0∞} (hε' : 0 < ε') : ∃ (ε : ℕ → ℝ≥0∞),
     ∑' i, ε i = ε' ∧ (∀ i, 0 < ε i) := by
@@ -238,8 +239,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ (i : ℕ), MeasurableSet
     obtain ⟨ε, hε_sum, hε_pos⟩ := ENNReal.small_sum (ofReal_pos.mpr hε')
     -- Using `variationAux_le`, for each set `s i` we choose a partition `E i` such that, for each
     -- `i`, `variationAux μ (s i) ≤ sumOfNormOfMeasure μ (E i) + ε`.
-    let E (i : ℕ) := Classical.choose (variationAux_le μ (s i) (hε_pos i))
-    let hE (i : ℕ) := Classical.choose_spec (variationAux_le μ (s i) (hε_pos i))
+    choose E hE using fun i ↦ variationAux_le μ (hs i) (hε_pos i)
     -- Additionally the combination of the partitions `E i` is a partition of `⋃ i, s i`.
     -- TO DO
     -- This means, using also `le_variationAux` that `∑' i, sumOfNormOfMeasure μ (E i)` is bounded
