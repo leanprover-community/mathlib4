@@ -257,7 +257,7 @@ noncomputable def sylowIsIteratedWreathProduct (p : ℕ) [Fact (Nat.Prime p)] (n
     (P : Sylow p (Equiv.Perm α)) :
     P ≃* IteratedWreathProduct G n := by
   let e1 : α ≃ (Fin n → G) := (Finite.equivFinOfCardEq hα).trans
-    (Finite.equivFinOfCardEq (by rw [Nat.card_fun, Nat.fin_card, hG])).symm
+    (Finite.equivFinOfCardEq (by rw [Nat.card_fun, Nat.card_fin, hG])).symm
   let f := (Equiv.Perm.permCongrHom e1.symm).toMonoidHom.comp (iteratedWreathToPermHom G n)
   have hf : Function.Injective f :=
     ((Equiv.Perm.permCongrHom e1.symm).comp_injective _).mpr (iteratedWreathToPermHomInj G n)
