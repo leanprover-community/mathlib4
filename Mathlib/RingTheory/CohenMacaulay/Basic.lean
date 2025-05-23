@@ -461,11 +461,32 @@ variable (R)
 class IsCohenMacaulayLocalRing : Prop extends IsLocalRing R where
   depth_eq_dim : ringKrullDim R = IsLocalRing.depth (ModuleCat.of R R)
 
+lemma isCohenMacaulayLocalRing_def [IsLocalRing R] : IsCohenMacaulayLocalRing R ↔
+    ringKrullDim R = IsLocalRing.depth (ModuleCat.of R R) :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+lemma isCohenMacaulayLocalRing_iff [IsLocalRing R] : IsCohenMacaulayLocalRing R ↔
+    (ModuleCat.of R R).IsCohenMacaulay := by
+  have ntr : Nontrivial R := inferInstance
+  simp [isCohenMacaulayLocalRing_def, isCohenMacaulay_iff,
+    not_subsingleton_iff_nontrivial.mpr ntr, Module.supportDim_self_eq_ringKrullDim]
+
 class IsCohenMacaulayRing : Prop where
   CM_localize : ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsCohenMacaulayLocalRing (Localization.AtPrime p)
 
+lemma isCohenMacaulayRing_def : IsCohenMacaulayRing R ↔
+    ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsCohenMacaulayLocalRing (Localization.AtPrime p) :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+lemma isCohenMacaulayRing_def' : IsCohenMacaulayRing R ↔
+  ∀ p : PrimeSpectrum R, IsCohenMacaulayLocalRing (Localization.AtPrime p.1) :=
+  ⟨fun ⟨h⟩ ↦ fun p ↦ h p.1 p.2, fun h ↦ ⟨fun p hp ↦ h ⟨p, hp⟩⟩⟩
+
 lemma isCohenMacaulayRing_iff : IsCohenMacaulayRing R ↔
     ∀ m : Ideal R, ∀ (_ : m.IsMaximal), IsCohenMacaulayLocalRing (Localization.AtPrime m) := by
+  refine ⟨fun ⟨h⟩ ↦ fun m hm ↦ h m (Ideal.IsMaximal.isPrime hm), fun h ↦ ⟨fun p hp ↦  ?_⟩⟩
+  rcases Ideal.exists_le_maximal p (Ideal.IsPrime.ne_top hp) with ⟨m, hm, le⟩
+
   sorry
 
 --unmixedness theorem
