@@ -212,6 +212,51 @@ noncomputable def myHaar := MeasureTheory.Measure.haarMeasure (G := G) {
 noncomputable instance fakeSub: Sub G where
   sub x y := y⁻¹ * x
 
+structure Lipschitz [Generates (G := G) (S := S)] where
+  toFun: G → ℝ
+  lipschitz: ∃ C, LipschitzWith C toFun
+
+instance: FunLike (Lipschitz (G := G)) G ℝ where
+  coe := Lipschitz.toFun
+  -- TODO - why does this work? I blindly copied it from `OneHom.funLike`
+  coe_injective' f g h := by cases f; cases g; congr
+
+@[ext]
+theorem Lipschitz.ext [Generates (G := G) (S := S)] {f g: Lipschitz (G := G)} (h: ∀ x, f.toFun x = g.toFun x): f = g := DFunLike.ext _ _ h
+
+instance Lipschitz.add [Generates (S := S)] : Add (Lipschitz (G := G)) := {
+  add := fun f g => {
+    toFun := fun x => f.toFun x + g.toFun x
+    lipschitz := by
+      obtain ⟨C1, hC1⟩ := f.lipschitz
+      obtain ⟨C2, hC2⟩ := g.lipschitz
+      use C1 + C2
+      exact LipschitzWith.add hC1 hC2
+  }
+}
+instance Lipschitz.zero [Generates (S := S)] : Zero (Lipschitz (G := G)) := {
+  zero := {
+    toFun := fun x => 0
+    lipschitz := by
+      use 0
+      exact LipschitzWith.const 0
+  }
+}
+instance Lipschitz.addMonoid [Generates (S := S)] : AddMonoid (Lipschitz (G := G)) := {
+  Lipschitz.zero,
+  Lipschitz.add with
+  add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
+  zero_add := fun _ => ext fun _ => zero_add _
+  add_zero := fun _ => ext fun _ => add_zero _
+  nsmul := nsmulRec
+}
+
+instance Lipschitz.instAddCommMonoid: AddCommMonoid (Lipschitz (G := G)) := {
+  Lipschitz.addMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _
+}
+
+def V := Module ℝ (Lipschitz (G := G))
+
 -- TODO - I don't think we can use this, as `MeasureTheory.convolution' would require our group to be commutative
 -- (via `NormedAddCommGroup`)
 --open scoped Convolution
