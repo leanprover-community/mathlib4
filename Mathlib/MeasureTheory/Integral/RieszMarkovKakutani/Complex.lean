@@ -213,6 +213,7 @@ lemma variation_empty' : variationAux μ ∅ = 0 := by
 
 lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε: 0 < ε) : ∃ E ∈ partitions s,
     variationAux μ s ≤ sumOfNormOfMeasure μ E + ε := by
+  -- Since `variationAux` is defined as the supremum.
   sorry
 
 lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {E : ℕ → Set X} (hE : E ∈ partitions s) :
@@ -222,14 +223,17 @@ lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {E : ℕ → Set X} (hE
 
 lemma ENNReal.small_sum {ε' : ℝ≥0∞} (hε' : 0 < ε') : ∃ (ε : ℕ → ℝ≥0∞),
     ∑' i, ε i = ε' ∧ (∀ i, 0 < ε i) := by
+  -- Basic construction of summable sequence.
   sorry
 
+-- lemma required:
+-- If, for each `i`, `E i ∈ partitions (s i)` and the sets `s i` are pairwise disjoin, then the
+-- union of the partitions is a partition of `⋃ i, s i`.
+
 /-- Aditivity of `variationAux` for disjoint measurable sets. -/
-lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ (i : ℕ), MeasurableSet (s i))
+lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ variationAux μ (s i)) (variationAux μ (⋃ i, s i)) := by
-
-  -- simp [variationAux, hs, MeasurableSet.iUnion hs]
   rw [ENNReal.hasSum_iff]
   constructor
   · intro n
