@@ -13,10 +13,10 @@ import Mathlib.Topology.ContinuousMap.Algebra
 /-!
 
 # Continuous cohomology
-f
+
 We define continuous cohomology as the homology of homogeneous cochains.
 
-## Impleemntation details
+## Implementation details
 
 We define homogenous cochains as `g`-invariant continuous function in `C(G, C(G,...,C(G, M)))`
 instead of the usual `C(Gⁿ, M)` to allow more general topological groups other than locally compact
