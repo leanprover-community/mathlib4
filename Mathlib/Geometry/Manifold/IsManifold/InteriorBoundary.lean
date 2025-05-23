@@ -292,7 +292,7 @@ lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint 
   set x := Sum.getLeft p hleft
   rw [isInteriorPoint_iff_not_isBoundaryPoint x, not_not] at h
   rw [isInteriorPoint_iff_not_isBoundaryPoint p] at hp
-  have := boundaryPoint_inl (M' := M') x (by tauto)
+  have := boundaryPoint_inl (M' := M') x h
   rw [← Sum.eq_left_getLeft_of_isLeft hleft] at this
   exact hp this
 
