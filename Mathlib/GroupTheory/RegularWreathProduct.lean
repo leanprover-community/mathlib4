@@ -236,25 +236,6 @@ def Equiv.permCongrHom {α β : Type*} (e : α ≃ β) : Equiv.Perm α ≃* Equi
   right_inv _ := by ext; simp
   map_mul' _ _ := by ext; simp
 
-/-- The homomorphism from the wreath product of the Sylow `p`-subgroup and `Z_p` to
-  the subgroup of `Perm (Fin p^(n+1))`. -/
-noncomputable def sylowWreathtoPermHom {p n : ℕ} (D : Sylow p (Equiv.Perm (Fin (p ^ n))))
-    (Z_p : Type*) [Finite Z_p] [Group Z_p] (h : Nat.card Z_p = p) :
-    D ≀ᵣ Z_p →* Equiv.Perm (Fin (p ^ (n + 1))) :=
-  (Equiv.permCongrHom ((Equiv.prodCongrRight fun _ =>
-  (Finite.equivFinOfCardEq h)).trans finProdFinEquiv)).toMonoidHom.comp
-  (RegularWreathProduct.toPerm D Z_p (Fin (p ^ n)))
-
-lemma sylowWreathtoPermHomInj {p n : ℕ} [Fact (Nat.Prime p)]
-    (D : Sylow p (Equiv.Perm (Fin (p ^ n))))
-    (G : Type) [Finite G] [Group G] (h : Nat.card G = p) :
-    Function.Injective (sylowWreathtoPermHom D G h) := by
-  have : Function.Injective (RegularWreathProduct.toPerm D G (Fin (p ^ n))) :=
-    RegularWreathProduct.toPermInj D G (Fin (p ^ n))
-  exact (fun a b => Function.Injective.comp a b)
-    (Equiv.permCongrHom (((Equiv.prodCongrRight fun _ =>
-    (Finite.equivFinOfCardEq h)).trans finProdFinEquiv))).injective this
-
 /-- `Fin (n + 1) → α` and `(Fin n → α) × α` are equivalent. -/
 def Fin.succFunEquiv (α : Type*) (n : ℕ) : (Fin (n + 1) → α) ≃ (Fin n → α) × α :=
   (Fin.appendEquiv n 1).symm.trans (Equiv.prodCongrRight fun _ ↦ Equiv.funUnique (Fin 1) α)
