@@ -700,7 +700,7 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
     (f + g).nnrealPart + h = f.nnrealPart + g.nnrealPart ∧
     (-f + -g).nnrealPart + h = (-f).nnrealPart + (-g).nnrealPart := by
   obtain ⟨h, hh⟩ := CompactlySupportedContinuousMap.exists_add_of_le
-    (add_nnrealPart_le_nnrealPart_add f g)
+    (nnrealPart_add_le_add_nnrealPart f g)
   use h
   refine ⟨hh, ?_⟩
   ext x
