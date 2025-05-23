@@ -46,7 +46,7 @@ theorem posSemidef_interMatrix [Fintype n] (μ : Measure α) (v : n → (Set α)
     right; right; intro i j;
     rw [← inner_indicatorConstLp_one_indicatorConstLp_one (hv₁ i) (hv₁ j) (hv₂ i) (hv₂ j)]
   rw [← gram]
-  exact Gram.posSemidef
+  exact gram_posSemidef
 
 end L2
 

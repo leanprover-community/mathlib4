@@ -51,7 +51,7 @@ lemma gram_isHermitian {v : n → E} : (gram 𝕜 v).IsHermitian := by
   simp only [RCLike.star_def, inner_conj_symm]
 
 /-- A Gram matrix is positive semidefinite. -/
-theorem posSemidef [Fintype n] {v : n → E} :
+theorem gram_posSemidef [Fintype n] {v : n → E} :
     PosSemidef (gram 𝕜 v) := by
   refine ⟨gram_isHermitian, fun x ↦ ?_⟩
   let y := ∑ (i : n), x i • v i
