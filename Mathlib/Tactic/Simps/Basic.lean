@@ -54,11 +54,25 @@ open Lean Elab Parser Command
 open Meta hiding Config
 open Elab.Term hiding mkConst
 
+private structure NameStruct where
+  parent : Name
+  components : List String
+
+private def NameStruct.toName (n : NameStruct) : Name :=
+  Name.mkStr n.parent <|
+    match n.components with
+    | [] => ""
+    | [x] => s!"{x}_def"
+    | e => "_".intercalate e
+
+instance : Coe NameStruct Name where coe := NameStruct.toName
+
 /-- `updateName nm s isPrefix` adds `s` to the last component of `nm`,
 either as prefix or as suffix (specified by `isPrefix`), separated by `_`.
 Used by `simps_add_projections`. -/
-def updateName (nm : Name) (s : String) (isPrefix : Bool) : Name :=
-  nm.updateLast fun s' ↦ if isPrefix then s ++ "_" ++ s' else s' ++ "_" ++ s
+private def NameStruct.update (nm : NameStruct) (s : String) (isPrefix : Bool := false) :
+    NameStruct :=
+  {nm with components := if isPrefix then s :: nm.components else nm.components ++ [s] }
 
 -- move
 namespace Lean.Meta
@@ -871,6 +885,9 @@ structure Config where
   notRecursive := [`Prod, `PProd, `Opposite, `PreOpposite]
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
+  /-- The stem to use for the projection names. If `none`, the default, use the suffix of the
+  current declaration name, or the empty string for instances. -/
+  nameStem : Option String := none
   deriving Inhabited
 
 /-- Function elaborating `Config` -/
@@ -951,8 +968,6 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
     (cfg : Config) : MetaM Unit := do
   trace[simps.debug] "Planning to add the equality{indentD m!"{lhs} = ({rhs} : {type})"}"
   let env ← getEnv
-  if (env.find? declName).isSome then -- diverging behavior from Lean 3
-    throwError "simps tried to add lemma {declName} to the environment, but it already exists."
   -- simplify `rhs` if `cfg.simpRhs` is true
   let lvl ← getLevel type
   let mut (rhs, prf) := (rhs, mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs])
@@ -973,6 +988,9 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
+  if (env.find? declName).isSome then -- diverging behavior from Lean 3
+    throwError "simps tried to add lemma{indentD m!"{.ofConstName declName} : {declType}"}\n \
+      to the environment, but it already exists."
   trace[simps.verbose] "adding projection {declName}:{indentExpr declType}"
   try
     addDecl <| .thmDecl {
@@ -1030,7 +1048,7 @@ If `todo` is non-empty, it will generate exactly the names in `todo`.
 was just used. In that case we need to apply these projections before we continue changing `lhs`.
 `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
 -/
-partial def addProjections (nm : Name) (type lhs rhs : Expr)
+partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
   (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
   (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments
@@ -1061,14 +1079,14 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
       throwError "Invalid `simps` attribute. Target {str} is not a structure"
     if !todoNext.isEmpty && str ∉ cfg.notRecursive then
       let firstTodo := todoNext.head!.1
-      throwError "Invalid simp lemma {nm.appendAfter firstTodo}.\nProjection \
+      throwError "Invalid simp lemma {nm.update firstTodo false |>.toName}.\nProjection \
         {(splitOnNotNumber firstTodo "_")[1]!} doesn't exist, \
         because target {str} is not a structure."
     if cfg.fullyApplied then
-      addProjection stxProj univs nm tgt lhsAp rhsAp newArgs cfg
+      addProjection stxProj univs nm.toName tgt lhsAp rhsAp newArgs cfg
     else
-      addProjection stxProj univs nm type lhs rhs args cfg
-    return #[nm]
+      addProjection stxProj univs nm.toName type lhs rhs args cfg
+    return #[nm.toName]
   -- if the type is a structure
   let some (.inductInfo { isRec := false, ctors := [ctor], .. }) := env.find? str | unreachable!
   trace[simps.debug] "{str} is a structure with constructor {ctor}."
@@ -1078,9 +1096,9 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   if addThisProjection then
     -- we pass the precise argument of simps as syntax argument to `addProjection`
     if cfg.fullyApplied then
-      addProjection stxProj univs nm tgt lhsAp rhsEta newArgs cfg
+      addProjection stxProj univs nm.toName tgt lhsAp rhsEta newArgs cfg
     else
-      addProjection stxProj univs nm type lhs rhs args cfg
+      addProjection stxProj univs nm.toName type lhs rhs args cfg
   let rhsWhnf ← withTransparency cfg.rhsMd <| whnf rhsEta
   trace[simps.debug] "The right-hand-side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
   if !rhsWhnf.getAppFn.isConstOf ctor then
@@ -1088,7 +1106,8 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
       trace[simps.debug] "Using relaxed reducibility."
       Linter.logLintIf linter.simpsNoConstructor ref m!"\
-        The definition {nm} is not a constructor application. Please use `@[simps!]` instead.\n\
+        The definition {nm.toName} is not a constructor application. \
+        Please use `@[simps!]` instead.\n\
         \n\
         Explanation: `@[simps]` uses the definition to find what the simp lemmas should \
         be. If the definition is a constructor, then this is easy, since the values of the \
@@ -1109,22 +1128,22 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
         unfold the corresponding `Equiv` to get to the `toFun` field."
       let nms ← addProjections nm type lhs rhs args mustBeStr
         { cfg with rhsMd := .default, simpRhs := true } todo toApply
-      return if addThisProjection then nms.push nm else nms
+      return if addThisProjection then nms.push nm.toName else nms
     if !toApply.isEmpty then
-      throwError "Invalid simp lemma {nm}.\nThe given definition is not a constructor \
+      throwError "Invalid simp lemma {nm.toName}.\nThe given definition is not a constructor \
         application:{indentExpr rhsWhnf}"
     if mustBeStr then
       throwError "Invalid `simps` attribute. The body is not a constructor application:\
         {indentExpr rhsWhnf}"
     if !todoNext.isEmpty then
-      throwError "Invalid simp lemma {nm.appendAfter todoNext.head!.1}.\n\
+      throwError "Invalid simp lemma {nm.update todoNext.head!.1 false |>.toName}.\n\
         The given definition is not a constructor application:{indentExpr rhsWhnf}"
     if !addThisProjection then
       if cfg.fullyApplied then
-        addProjection stxProj univs nm tgt lhsAp rhsEta newArgs cfg
+        addProjection stxProj univs nm.toName tgt lhsAp rhsEta newArgs cfg
       else
-        addProjection stxProj univs nm type lhs rhs args cfg
-    return #[nm]
+        addProjection stxProj univs nm.toName type lhs rhs args cfg
+    return #[nm.toName]
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
   let projInfo ← getProjectionExprs ref tgt rhsWhnf cfg
@@ -1140,14 +1159,14 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   trace[simps.debug] "Not in the middle of applying a custom composite projection"
   /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
   automatically choose projections -/
-  if todo.length == 1 && todo.head!.1 == "" then return #[nm]
+  if todo.length == 1 && todo.head!.1 == "" then return #[nm.toName]
   let projs : Array Name := projInfo.map fun x ↦ x.2.name
   let todo := todoNext
   trace[simps.debug] "Next todo: {todoNext}"
   -- check whether all elements in `todo` have a projection as prefix
   if let some (x, _) := todo.find? fun (x, _) ↦ projs.all
     fun proj ↦ !isPrefixOfAndNotNumber (proj.lastComponentAsString ++ "_") x then
-    let simpLemma := nm.appendAfter x
+    let simpLemma := nm.update x |>.toName
     let neededProj := (splitOnNotNumber x "_")[0]!
     throwError "Invalid simp lemma {simpLemma}. \
       Structure {str} does not have projection {neededProj}.\n\
@@ -1165,10 +1184,10 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     -- we only continue with this field if it is default or mentioned in todo
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
-    let newName := updateName nm proj.lastComponentAsString isPrefix
+    let newName := nm.update proj.lastComponentAsString isPrefix
     trace[simps.debug] "Recursively add projections for:{indentExpr newLhs}"
     addProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs
-  return if addThisProjection then nms.push nm else nms
+  return if addThisProjection then nms.push nm.toName else nms
 
 end Simps
 open Simps
@@ -1185,6 +1204,15 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
   let todo := todo.eraseDups |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
   let mut cfg := cfg
+  let nm : NameStruct :=
+    { parent := nm.getPrefix
+      components :=
+        if let .some n := cfg.nameStem then
+          if n == "" then [] else [n]
+        else
+          let s := nm.lastComponentAsString
+          -- TODO: how can we tell if this is an instance? The `instance` attribute hasn't run yet.
+          if s.startsWith "inst" then [] else [s]}
   MetaM.run' <| addProjections ref d.levelParams
     nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
 
