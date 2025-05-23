@@ -21,11 +21,11 @@ over `K` if they have the same minimal polynomial over `K`.
 ## Main results
 
 * `isConjRoot_iff_exists_algEquiv`: Let `L / K` be a normal field extension. For any two elements
-`x` and `y` in `L`, `IsConjRoot K x y` is equivalent to the existence of an algebra equivalence
-`σ : L ≃ₐ[K] L` such that `y = σ x`.
+  `x` and `y` in `L`, `IsConjRoot K x y` is equivalent to the existence of an algebra equivalence
+  `σ : L ≃ₐ[K] L` such that `y = σ x`.
 * `not_mem_iff_exists_ne_and_isConjRoot`: Let `L / K` be a field extension. If `x` is a separable
-element over `K` and the minimal polynomial of `x` splits in `L`, then `x` is not in the `K` iff
-there exists a different conjugate root of `x` in `L` over `K`.
+  element over `K` and the minimal polynomial of `x` splits in `L`, then `x` is not in the `K` iff
+  there exists a different conjugate root of `x` in `L` over `K`.
 
 ## TODO
 * Move `IsConjRoot` to earlier files and refactor the theorems in field theory using `IsConjRoot`.
@@ -71,7 +71,7 @@ If `y` is a conjugate root of `x`, then `x` is also a conjugate root of `y`.
 If `y` is a conjugate root of `x` and `z` is a conjugate root of `y`, then `z` is a conjugate
 root of `x`.
 -/
-@[trans] theorem trans {x y z: A} (h₁ : IsConjRoot R x y) (h₂ : IsConjRoot R y z) :
+@[trans] theorem trans {x y z : A} (h₁ : IsConjRoot R x y) (h₂ : IsConjRoot R y z) :
     IsConjRoot R x z := Eq.trans h₁ h₂
 
 variable (R A) in
@@ -176,7 +176,7 @@ Let `L / K` be a normal field extension. For any two elements `x` and `y` in `L`
 conjugate root of `x`, then there exists a `K`-automorphism `σ : L ≃ₐ[K] L` such
 that `σ y = x`.
 -/
-theorem IsConjRoot.exists_algEquiv [Normal K L] {x y: L} (h : IsConjRoot K x y) :
+theorem IsConjRoot.exists_algEquiv [Normal K L] {x y : L} (h : IsConjRoot K x y) :
     ∃ σ : L ≃ₐ[K] L, σ y = x := by
   obtain ⟨σ, hσ⟩ :=
     exists_algHom_of_splits_of_aeval (normal_iff.mp inferInstance) (h ▸ minpoly.aeval K x)

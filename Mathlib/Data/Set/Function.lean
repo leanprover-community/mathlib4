@@ -106,8 +106,11 @@ section MapsTo
 theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=
   image_subset_iff.symm
 
-theorem mapsTo_prod_map_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
+theorem mapsTo_prodMap_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
   diagonal_subset_iff.2 fun _ => rfl
+
+@[deprecated (since := "2025-04-18")]
+alias mapsTo_prod_map_diagonal := mapsTo_prodMap_diagonal
 
 theorem MapsTo.subset_preimage (hf : MapsTo f s t) : s ⊆ f ⁻¹' t := hf
 
@@ -884,11 +887,10 @@ namespace Function
 
 variable {s : Set α} {f : α → β} {a : α} {b : β}
 
-attribute [local instance] Classical.propDecidable
-
 /-- Construct the inverse for a function `f` on domain `s`. This function is a right inverse of `f`
 on `f '' s`. For a computable version, see `Function.Embedding.invOfMemRange`. -/
 noncomputable def invFunOn [Nonempty α] (f : α → β) (s : Set α) (b : β) : α :=
+  open scoped Classical in
   if h : ∃ a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice ‹Nonempty α›
 
 variable [Nonempty α]

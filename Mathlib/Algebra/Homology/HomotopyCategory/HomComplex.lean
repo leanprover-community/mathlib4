@@ -792,18 +792,18 @@ def map : Cochain ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComple
 lemma map_v (p q : ℤ) (hpq : p + n = q) : (z.map Φ).v p q hpq = Φ.map (z.v p q hpq) := rfl
 
 @[simp]
-lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by aesop_cat
+protected lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by aesop_cat
 
 @[simp]
-lemma map_neg : (-z).map Φ = -z.map Φ := by aesop_cat
+protected lemma map_neg : (-z).map Φ = -z.map Φ := by aesop_cat
 
 @[simp]
-lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by aesop_cat
+protected lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by aesop_cat
 
 variable (K L n)
 
 @[simp]
-lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by aesop_cat
+protected lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by aesop_cat
 
 @[simp]
 lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)

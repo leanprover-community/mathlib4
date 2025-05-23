@@ -90,7 +90,7 @@ theorem tsupport_smul_subset_right {M α} [TopologicalSpace X] [Zero α] [SMulZe
   closure_mono <| support_smul_subset_right f g
 
 @[to_additive]
-theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
+theorem mulTSupport_mul [TopologicalSpace X] [MulOneClass α] {f g : X → α} :
     (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
   closure_minimal
     ((mulSupport_mul f g).trans (union_subset_union (subset_mulTSupport _) (subset_mulTSupport _)))
@@ -112,6 +112,12 @@ theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
     (hf : ∀ x ∈ mulTSupport f, ContinuousAt f x) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (em _).elim (hf x) fun hx =>
     (@continuousAt_const _ _ _ _ _ 1).congr (not_mem_mulTSupport_iff_eventuallyEq.mp hx).symm
+
+@[to_additive]
+lemma ContinuousOn.continuous_of_mulTSupport_subset [TopologicalSpace β] {f : α → β}
+    {s : Set α} (hs : ContinuousOn f s) (h's : IsOpen s) (h''s : mulTSupport f ⊆ s) :
+    Continuous f :=
+  continuous_of_mulTSupport fun _ hx ↦ h's.continuousOn_iff.mp hs <| h''s hx
 
 end
 
@@ -207,9 +213,6 @@ theorem comp_isClosedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
   refine IsCompact.of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure ?_
   rw [hg.isEmbedding.closure_eq_preimage_closure_image]
   exact preimage_mono (closure_mono <| image_preimage_subset _ _)
-
-@[deprecated (since := "2024-10-20")]
-alias comp_closedEmbedding := comp_isClosedEmbedding
 
 @[to_additive]
 theorem comp₂_left (hf : HasCompactMulSupport f)
@@ -380,15 +383,15 @@ of open sets, then for any point we can find a neighbourhood on which only finit
 @[to_additive "If a family of functions `f` has locally-finite support, subordinate to a family of
 open sets, then for any point we can find a neighbourhood on which only finitely-many members of `f`
 are non-zero."]
-theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [One R] {f : ι → X → R}
+theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [One R] {f : ι → X → R}
     (hlf : LocallyFinite fun i => mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ (is : Finset ι), ∃ n, n ∈ 𝓝 x ∧ (n ⊆ ⋂ i ∈ is, U i) ∧
       ∀ z ∈ n, (mulSupport fun i => f i z) ⊆ is := by
   obtain ⟨n, hn, hnf⟩ := hlf x
   classical
-    let is := hnf.toFinset.filter fun i => x ∈ U i
-    let js := hnf.toFinset.filter fun j => x ∉ U j
+    let is := {i ∈ hnf.toFinset | x ∈ U i}
+    let js := {j ∈ hnf.toFinset | x ∉ U j}
     refine
       ⟨is, (n ∩ ⋂ j ∈ js, (mulTSupport (f j))ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn ?_) ?_,
         inter_subset_right, fun z hz => ?_⟩
@@ -410,8 +413,16 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
       simp only [Finite.coe_toFinset, mem_setOf_eq]
       exact ⟨z, ⟨hi, hzn⟩⟩
 
+@[deprecated (since := "2025-05-22")]
+alias LocallyFinite.exists_finset_nhd_mulSupport_subset :=
+  LocallyFinite.exists_finset_nhds_mulSupport_subset
+
+@[deprecated (since := "2025-05-22")]
+alias LocallyFinite.exists_finset_nhd_support_subset :=
+  LocallyFinite.exists_finset_nhds_support_subset
+
 @[to_additive]
-theorem locallyFinite_mulSupport_iff [CommMonoid M] {f : ι → X → M} :
+theorem locallyFinite_mulSupport_iff [One M] {f : ι → X → M} :
     (LocallyFinite fun i ↦ mulSupport <| f i) ↔ LocallyFinite fun i ↦ mulTSupport <| f i :=
   ⟨LocallyFinite.closure, fun H ↦ H.subset fun _ ↦ subset_closure⟩
 

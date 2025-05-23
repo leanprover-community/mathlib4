@@ -49,8 +49,7 @@ theorem neg_def {xl xr xL xR} : -mk xl xr xL xR = mk xr xl (-xR ·) (-xL ·) :=
 instance : InvolutiveNeg PGame :=
   { inferInstanceAs (Neg PGame) with
     neg_neg := fun x => by
-      induction' x with xl xr xL xR ihL ihR
-      simp_rw [neg_def, ihL, ihR] }
+      induction x with | mk xl xr xL xR ihL ihR => simp_rw [neg_def, ihL, ihR] }
 
 instance : NegZeroClass PGame :=
   { inferInstanceAs (Zero PGame), inferInstanceAs (Neg PGame) with
@@ -76,7 +75,7 @@ theorem neg_ofLists (L R : List PGame) :
         rfl
       simp only [heq_eq_eq]
       congr 5
-      exact this (List.length_map _ _).symm h
+      exact this (List.length_map _).symm h
 
 theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
   rw [isOption_iff, isOption_iff, or_comm]

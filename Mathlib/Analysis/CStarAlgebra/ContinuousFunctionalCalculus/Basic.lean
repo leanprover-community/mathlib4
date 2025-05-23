@@ -64,8 +64,10 @@ instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [S
   { SubringClass.toNormedRing (elemental R a) with
     mul_comm := mul_comm }
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
   mul_comm := mul_comm
+  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 variable (a : A) [IsStarNormal a]
 
@@ -357,7 +359,6 @@ def CStarAlgebra.spectralOrder : PartialOrder A where
     nontriviality A
     simp
   le_antisymm x y hxy hyx := by
-    simp only at hxy hyx
     rw [← Unitization.isSelfAdjoint_inr (R := ℂ),
       quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, Unitization.inr_sub ℂ] at hxy hyx
     rw [← sub_eq_zero]

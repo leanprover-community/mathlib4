@@ -3,7 +3,6 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Set.Disjoint
 
 /-!
@@ -167,7 +166,7 @@ instance : LawfulSingleton α (Set α) :=
     exact Iff.rfl⟩
 
 theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
-  (insert_emptyc_eq a).symm
+  (insert_empty_eq a).symm
 
 @[simp]
 theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=

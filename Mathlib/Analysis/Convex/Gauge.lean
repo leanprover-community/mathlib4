@@ -189,6 +189,10 @@ theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
       exact add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hy)
     _ < gauge s (a • x) + gauge s (b • y) + ε := by linarith
 
+theorem gauge_sum_le {ι : Type*} (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (t : Finset ι)
+    (f : ι → E) : gauge s (∑ i ∈ t, f i) ≤ ∑ i ∈ t, gauge s (f i) :=
+  Finset.le_sum_of_subadditive _ gauge_zero (gauge_add_le hs absorbs) _ _
+
 theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
 
 theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s) (a : ℝ) :
@@ -196,7 +200,7 @@ theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Ab
   by_cases ha : 0 ≤ a
   · rw [gauge_le_eq hs h₀ absorbs ha]
     exact convex_iInter fun i => convex_iInter fun _ => hs.smul _
-  · convert convex_empty
+  · convert convex_empty (𝕜 := ℝ)
     exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
 theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
@@ -223,7 +227,8 @@ theorem one_le_gauge_of_not_mem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs �
 
 section LinearOrderedField
 
-variable {α : Type*} [LinearOrderedField α] [MulActionWithZero α ℝ] [OrderedSMul α ℝ]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+  [MulActionWithZero α ℝ] [OrderedSMul α ℝ]
 
 theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set E)] {s : Set E} {a : α}
     (ha : 0 ≤ a) (x : E) : gauge s (a • x) = a • gauge s x := by
@@ -439,7 +444,7 @@ theorem continuousAt_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuo
 /-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
 is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
 `Convex.lipschitz_gauge`. -/
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) :=
   continuous_iff_continuousAt.2 fun _ ↦ continuousAt_gauge hc hs₀
 

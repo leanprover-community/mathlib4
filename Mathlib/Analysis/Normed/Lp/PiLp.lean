@@ -369,21 +369,25 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
 
 attribute [local instance] PiLp.pseudoMetricAux
 
-theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) := by
-  intro x y
-  simp_rw [ENNReal.coe_one, one_mul, edist_pi_def, Finset.sup_le_iff, Finset.mem_univ,
-    forall_true_left, WithLp.equiv_pi_apply]
+variable {p β} in
+private theorem edist_apply_le_edist_aux (x y : PiLp p β) (i : ι) :
+    edist (x i) (y i) ≤ edist x y := by
   rcases p.dichotomy with (rfl | h)
-  · simpa only [edist_eq_iSup] using le_iSup fun i => edist (x i) (y i)
+  · simpa only [edist_eq_iSup] using le_iSup (fun i => edist (x i) (y i)) i
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
     rw [edist_eq_sum (zero_lt_one.trans_le h)]
-    intro i
     calc
       edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
         simp [← ENNReal.rpow_mul, cancel, -one_div]
       _ ≤ (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
         gcongr
         exact Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)
+
+theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) :=
+  .of_edist_le fun x y => by
+    simp_rw [edist_pi_def, Finset.sup_le_iff, Finset.mem_univ,
+      forall_true_left, WithLp.equiv_pi_apply]
+    exact edist_apply_le_edist_aux _ _
 
 theorem antilipschitzWith_equiv_aux :
     AntilipschitzWith ((Fintype.card ι : ℝ≥0) ^ (1 / p).toReal) (WithLp.equiv p (∀ i, β i)) := by
@@ -494,6 +498,23 @@ theorem nndist_eq_iSup {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)] (x 
     push_cast
     exact dist_eq_iSup _ _
 
+section
+variable {β p}
+
+theorem edist_apply_le [∀ i, PseudoEMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
+    edist (x i) (y i) ≤ edist x y :=
+  edist_apply_le_edist_aux x y i
+
+theorem nndist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
+    nndist (x i) (y i) ≤ nndist x y := by
+  simpa [← coe_nnreal_ennreal_nndist] using edist_apply_le x y i
+
+theorem dist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
+    dist (x i) (y i) ≤ dist x y :=
+  nndist_apply_le x y i
+
+end
+
 theorem lipschitzWith_equiv [∀ i, PseudoEMetricSpace (β i)] :
     LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) :=
   lipschitzWith_equiv_aux p β
@@ -524,6 +545,23 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
           linarith
         simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
           dist_eq_norm, sub_apply] }
+
+section
+variable {β p}
+
+theorem enorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
+    ‖x i‖ₑ ≤ ‖x‖ₑ := by
+  simpa using edist_apply_le x 0 i
+
+theorem nnnorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
+    ‖x i‖₊ ≤ ‖x‖₊ := by
+  simpa using nndist_apply_le x 0 i
+
+theorem norm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
+    ‖x i‖ ≤ ‖x‖ := by
+  simpa using dist_apply_le x 0 i
+
+end
 
 /-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
 instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) :=
@@ -635,7 +673,21 @@ instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup 
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one,
         Finset.mul_sum]
       simp_rw [← NNReal.mul_rpow, smul_apply]
-      exact Finset.sum_le_sum fun i _ => NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le
+      gcongr
+      apply nnnorm_smul_le
+
+instance instNormSMulClass [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+    [∀ i, Module 𝕜 (β i)] [∀ i, NormSMulClass 𝕜 (β i)] :
+    NormSMulClass 𝕜 (PiLp p β) :=
+  .of_nnnorm_smul fun c f => by
+    rcases p.dichotomy with (rfl | hp)
+    · rw [← nnnorm_equiv, ← nnnorm_equiv, WithLp.equiv_smul, nnnorm_smul]
+    · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
+      have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
+      rw [nnnorm_eq_sum hpt, nnnorm_eq_sum hpt, one_div, NNReal.rpow_inv_eq_iff hp0.ne',
+        NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one,
+        Finset.mul_sum]
+      simp_rw [← NNReal.mul_rpow, smul_apply, nnnorm_smul]
 
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
 instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
@@ -802,7 +854,7 @@ def sumPiLpEquivProdLpPiLp :
   toLinearEquiv :=
     WithLp.linearEquiv p _ _
       ≪≫ₗ LinearEquiv.sumPiEquivProdPi _ _ _ α
-      ≪≫ₗ LinearEquiv.prod (WithLp.linearEquiv p _ _).symm (WithLp.linearEquiv p _ _).symm
+      ≪≫ₗ LinearEquiv.prodCongr (WithLp.linearEquiv p _ _).symm (WithLp.linearEquiv p _ _).symm
       ≪≫ₗ (WithLp.linearEquiv p _ _).symm
   norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
     obtain rfl | hp := p.dichotomy

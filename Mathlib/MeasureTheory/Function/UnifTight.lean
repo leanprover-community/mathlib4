@@ -214,7 +214,8 @@ and `tendstoInMeasure_of_tendsto_eLpNorm`. -/
 
 /-- Intermediate lemma for `unifTight_of_tendsto_Lp`. -/
 private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f n) p μ)
-    (hf_tendsto : Tendsto (fun n ↦ eLpNorm (f n) p μ) atTop (𝓝 0)) : UnifTight f p μ := fun ε hε ↦by
+    (hf_tendsto : Tendsto (fun n ↦ eLpNorm (f n) p μ) atTop (𝓝 0)) : UnifTight f p μ := by
+  intro ε hε
   rw [ENNReal.tendsto_atTop_zero] at hf_tendsto
   obtain ⟨N, hNε⟩ := hf_tendsto ε (by simpa only [gt_iff_lt, ENNReal.coe_pos])
   let F : Fin N → α → β := fun n => f n
@@ -252,9 +253,9 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   · rw [not_ne_iff.mp hfinε]; exact ⟨0, fun n _ => le_top⟩
   by_cases hμ : μ = 0
   · rw [hμ]; use 0; intro n _; rw [eLpNorm_measure_zero]; exact zero_le ε
-  have hε' : 0 < ε / 3 := ENNReal.div_pos hε.ne' (coe_ne_top)
+  have hε' : 0 < ε / 3 := ENNReal.div_pos hε.ne' (ofNat_ne_top)
   -- use tightness to divide the domain into interior and exterior
-  obtain ⟨Eg, hmEg, hμEg, hgε⟩ := MemLp.exists_eLpNorm_indicator_compl_lt hp' hg' hε'.ne' --hrε'
+  obtain ⟨Eg, hmEg, hμEg, hgε⟩ := MemLp.exists_eLpNorm_indicator_compl_lt hp' hg' hε'.ne'
   obtain ⟨Ef, hmEf, hμEf, hfε⟩ := hut.exists_measurableSet_indicator hε'.ne'
   have hmE := hmEf.union hmEg
   have hfmE := (measure_union_le Ef Eg).trans_lt (add_lt_top.mpr ⟨hμEf, hμEg⟩)
@@ -268,7 +269,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   -- synthesize an argument `[IsFiniteMeasure (μ.restrict E)]`.
   -- It is enough to have in the context a term of `Fact (μ E < ∞)`, which is our `ffmE` below,
   -- which is automatically fed into `Restrict.isFiniteInstance`.
-  have ffmE : Fact _ := { out := hfmE }
+  have ffmE := Fact.mk hfmE
   have hInner := tendsto_Lp_finite_of_tendsto_ae_of_meas hp hp' hf hg hgE' huiE hfgE
   rw [ENNReal.tendsto_atTop_zero] at hInner
   -- get a sufficiently large N for given ε, and consider any n ≥ N
@@ -312,7 +313,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
     _ ≤ eLpNorm (indicator Eᶜ (f n - g)) p μ + eLpNorm (indicator E (f n - g)) p μ := by
         apply eLpNorm_add_le (by assumption) (by assumption) hp
     _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
-    _ = ε := by simp only [ENNReal.add_thirds] --ENNReal.add_thirds ε
+    _ = ε := by simp only [ENNReal.add_thirds]
 
 /-- Lemma used in `tendsto_Lp_of_tendsto_ae`. -/
 private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β}

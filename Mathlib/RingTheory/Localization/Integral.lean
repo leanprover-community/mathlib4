@@ -167,8 +167,8 @@ variable {M}
 
 open Polynomial
 
-theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (x : S) (p : R[X]) (hf : p.eval₂ f x = 0) (M : Submonoid R)
+theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommSemiring R]
+    [CommSemiring S] (f : R →+* S) (x : S) (p : R[X]) (hf : p.eval₂ f x = 0) (M : Submonoid R)
     (hM : p.leadingCoeff ∈ M) {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ]
     [IsLocalization M Rₘ] [Algebra S Sₘ] [IsLocalization (M.map f : Submonoid S) Sₘ] :
     (map Sₘ f M.le_comap_map : Rₘ →+* _).IsIntegralElem (algebraMap S Sₘ x) := by
@@ -346,12 +346,13 @@ namespace IsFractionRing
 variable (R S K)
 
 /-- `S` is algebraic over `R` iff a fraction ring of `S` is algebraic over `R` -/
-theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Algebra S K]
+theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
     [NoZeroSMulDivisors R K] [IsFractionRing S K] [IsScalarTower R S K] :
     Algebra.IsAlgebraic R S ↔ Algebra.IsAlgebraic R K := by
   simp only [Algebra.isAlgebraic_def]
   constructor
   · intro h x
+    letI := MulActionWithZero.nontrivial S K
     letI := FractionRing.liftAlgebra R K
     have := FractionRing.isScalarTower_liftAlgebra R K
     rw [IsFractionRing.isAlgebraic_iff R (FractionRing R) K, isAlgebraic_iff_isIntegral]

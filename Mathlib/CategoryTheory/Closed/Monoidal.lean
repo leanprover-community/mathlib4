@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
+import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
 # Closed monoidal categories
@@ -49,6 +50,7 @@ This isn't an instance because it's not usually how we want to construct interna
 we'll usually prove all objects are closed uniformly.
 -/
 def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) where
+  rightAdj := Closed.rightAdj X ⋙ Closed.rightAdj Y
   adj := (hY.adj.comp hX.adj).ofNatIsoLeft (MonoidalCategory.tensorLeftTensor X Y).symm
 
 /-- The unit object is always closed.
@@ -266,6 +268,13 @@ end Pre
 def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
+
+/-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
+and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
+@[simps!]
+def internalHomAdjunction₂ [MonoidalClosed C] :
+    curriedTensor C ⊣₂ internalHom where
+  adj _ := ihom.adjunction _
 
 section OfEquiv
 

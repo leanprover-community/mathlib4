@@ -268,9 +268,6 @@ theorem isOpenMap_coe : IsOpenMap ((↑) : X → OnePoint X) := fun _ => isOpen_
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : X → OnePoint X) :=
   .of_continuous_injective_isOpenMap continuous_coe coe_injective isOpenMap_coe
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_coe := isOpenEmbedding_coe
-
 theorem isOpen_range_coe : IsOpen (range ((↑) : X → OnePoint X)) :=
   isOpenEmbedding_coe.isOpen_range
 
@@ -463,9 +460,6 @@ theorem denseRange_coe [NoncompactSpace X] : DenseRange ((↑) : X → OnePoint 
 
 theorem isDenseEmbedding_coe [NoncompactSpace X] : IsDenseEmbedding ((↑) : X → OnePoint X) :=
   { isOpenEmbedding_coe with dense := denseRange_coe }
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_coe := isDenseEmbedding_coe
 
 @[simp, norm_cast]
 theorem specializes_coe {x y : X} : (x : OnePoint X) ⤳ y ↔ x ⤳ y :=

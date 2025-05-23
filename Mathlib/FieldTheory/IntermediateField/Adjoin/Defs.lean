@@ -14,7 +14,7 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
 
 ## Notation
 
- - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
+- `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
 
 open Module Polynomial
@@ -34,6 +34,12 @@ def adjoin : IntermediateField F E :=
 @[simp]
 theorem adjoin_toSubfield :
     (adjoin F S).toSubfield = Subfield.closure (Set.range (algebraMap F E) ∪ S) := rfl
+
+variable {F S} in
+theorem mem_adjoin_iff_div {x : E} : x ∈ adjoin F S ↔
+    ∃ r ∈ Algebra.adjoin F S, ∃ s ∈ Algebra.adjoin F S, x = r / s := by
+  simp_rw [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
+    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring, eq_comm]
 
 end AdjoinDef
 
@@ -182,25 +188,6 @@ theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField
     (iSup S).toSubfield = ⨆ i, (S i).toSubfield := by
   simp only [iSup, Set.range_nonempty, sSup_toSubfield, ← Set.range_comp, Function.comp_def]
 
-/-- Construct an algebra isomorphism from an equality of intermediate fields -/
-@[simps! apply]
-def equivOfEq {S T : IntermediateField F E} (h : S = T) : S ≃ₐ[F] T :=
-  Subalgebra.equivOfEq _ _ (congr_arg toSubalgebra h)
-
-@[simp]
-theorem equivOfEq_symm {S T : IntermediateField F E} (h : S = T) :
-    (equivOfEq h).symm = equivOfEq h.symm :=
-  rfl
-
-@[simp]
-theorem equivOfEq_rfl (S : IntermediateField F E) : equivOfEq (rfl : S = S) = AlgEquiv.refl := by
-  ext; rfl
-
-@[simp]
-theorem equivOfEq_trans {S T U : IntermediateField F E} (hST : S = T) (hTU : T = U) :
-    (equivOfEq hST).trans (equivOfEq hTU) = equivOfEq (hST.trans hTU) :=
-  rfl
-
 variable (F E)
 
 /-- The bottom intermediate_field is isomorphic to the field. -/
@@ -304,24 +291,6 @@ theorem _root_.AlgEquiv.fieldRange_eq_top (f : E ≃ₐ[F] K) :
   AlgHom.fieldRange_eq_top.mpr f.surjective
 
 end Lattice
-
-section equivMap
-
-variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
-  {K : Type*} [Field K] [Algebra F K] (L : IntermediateField F E) (f : E →ₐ[F] K)
-
-theorem fieldRange_comp_val : (f.comp L.val).fieldRange = L.map f := toSubalgebra_injective <| by
-  rw [toSubalgebra_map, AlgHom.fieldRange_toSubalgebra, AlgHom.range_comp, range_val]
-
-/-- An intermediate field is isomorphic to its image under an `AlgHom`
-(which is automatically injective) -/
-noncomputable def equivMap : L ≃ₐ[F] L.map f :=
-  (AlgEquiv.ofInjective _ (f.comp L.val).injective).trans (equivOfEq (fieldRange_comp_val L f))
-
-@[simp]
-theorem coe_equivMap_apply (x : L) : ↑(equivMap L f x) = f x := rfl
-
-end equivMap
 
 section AdjoinDef
 
@@ -658,7 +627,7 @@ theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E →
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by
   classical
-  refine Finset.induction_on' S ?_ (fun ha _ _ h => ?_)
+  refine Finset.induction_on' S ?_ (fun _ _ ha _ _ h => ?_)
   · simp [base]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
     exact ih (adjoin F _) _ ha h

@@ -128,6 +128,16 @@ theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({
 theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Set α) = 1 :=
   count_singleton' (measurableSet_singleton a)
 
+@[simp]
+theorem _root_.MeasureTheory.count_real_singleton'
+    {a : α} (ha : MeasurableSet ({a} : Set α)) :
+    count.real ({a} : Set α) = 1 := by
+  rw [measureReal_def, count_singleton' ha, ENNReal.toReal_one]
+
+theorem _root_.MeasureTheory.count_real_singleton [MeasurableSingletonClass α] (a : α) :
+    count.real ({a} : Set α) = 1 :=
+  count_real_singleton' (measurableSet_singleton a)
+
 theorem count_injective_image' {f : β → α} (hf : Function.Injective f) {s : Set β}
     (s_mble : MeasurableSet s) (fs_mble : MeasurableSet (f '' s)) : count (f '' s) = count s := by
   classical
@@ -147,6 +157,9 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
   rw [count_apply_infinite hs]
   rw [← finite_image_iff hf.injOn] at hs
   rw [count_apply_infinite hs]
+
+instance count.instSigmaFinite [MeasurableSingletonClass α] [Countable α] :
+    SigmaFinite (count : Measure α) := by simp [sigmaFinite_iff_measure_singleton_lt_top]
 
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=

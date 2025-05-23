@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -52,11 +52,10 @@ continuous function interpolating between these two sets.
 ## Related results
 
 Are you looking for a result on "directional" approximation (above or below with respect to an
-order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous functions?  See the
-Vitali-Carathéodory theorem, in the file `Mathlib/MeasureTheory/Integral/VitaliCaratheodory.lean`.
-
+order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous functions?
+See the Vitali-Carathéodory theorem,
+in the file `Mathlib/MeasureTheory/Integral/Bochner/VitaliCaratheodory.lean`.
 -/
-
 
 open scoped ENNReal NNReal Topology BoundedContinuousFunction
 
@@ -354,14 +353,14 @@ end Lp
 end MeasureTheory
 
 variable [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)]
-variable (𝕜 : Type*) [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [NormedSpace ℝ E]
+
 variable (E) (μ)
 
 namespace BoundedContinuousFunction
 
 theorem toLp_denseRange [μ.WeaklyRegular] [IsFiniteMeasure μ] (hp : p ≠ ∞) :
     DenseRange (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ) := by
-  haveI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
   simpa only [← range_toLp p μ (𝕜 := 𝕜)]
     using MeasureTheory.Lp.boundedContinuousFunction_dense E μ hp
 

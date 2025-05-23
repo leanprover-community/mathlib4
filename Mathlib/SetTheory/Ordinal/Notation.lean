@@ -139,9 +139,6 @@ theorem omega0_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
   refine le_trans ?_ (le_add_right _ _)
   simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e) omega0_pos).2 (Nat.cast_le.2 n.2)
 
-@[deprecated (since := "2024-09-30")]
-alias omega_le_oadd := omega0_le_oadd
-
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
   @lt_of_lt_of_le _ _ _ (ω ^ repr e) _ (opow_pos (repr e) omega0_pos) (omega0_le_oadd e n a)
 
@@ -332,15 +329,9 @@ theorem NF.of_dvd_omega0_opow {b e n a} (h : NF (ONote.oadd e n a))
   simp only [repr] at d
   exact ⟨L, (dvd_add_iff <| (opow_dvd_opow _ L).mul_right _).1 d⟩
 
-@[deprecated (since := "2024-09-30")]
-alias NF.of_dvd_omega_opow := NF.of_dvd_omega0_opow
-
 theorem NF.of_dvd_omega0 {e n a} (h : NF (ONote.oadd e n a)) :
     ω ∣ repr (ONote.oadd e n a) → repr e ≠ 0 ∧ ω ∣ repr a := by
   (rw [← opow_one ω, ← one_le_iff_ne_zero]; exact h.of_dvd_omega0_opow)
-
-@[deprecated (since := "2024-09-30")]
-alias NF.of_dvd_omega := NF.of_dvd_omega0
 
 /-- `TopBelow b o` asserts that the largest exponent in `o`, if it exists, is less than `b`. This is
 an auxiliary definition for decidability of `NF`. -/
@@ -998,7 +989,9 @@ theorem fundamentalSequenceProp_inr (o f) :
   Iff.rfl
 
 theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamentalSequence o) := by
-  induction' o with a m b iha ihb; · exact rfl
+  induction o with
+  | zero => exact rfl
+  | oadd a m b iha ihb
   rw [fundamentalSequence]
   rcases e : b.fundamentalSequence with (⟨_ | b'⟩ | f) <;>
     simp only [FundamentalSequenceProp] <;>
@@ -1225,9 +1218,9 @@ actually be defined this way due to conflicting dependencies. -/
 @[elab_as_elim]
 def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
     (H1 : ∀ e n a h, C e → C a → C (oadd e n a h)) : C o := by
-  obtain ⟨o, h⟩ := o; induction' o with e n a IHe IHa
-  · exact H0
-  · exact H1 ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd' (IHe _) (IHa _)
+  obtain ⟨o, h⟩ := o; induction o with
+  | zero => exact H0
+  | oadd e n a IHe IHa => exact H1 ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd' (IHe _) (IHa _)
 
 /-- Addition of ordinal notations -/
 instance : Add NONote :=

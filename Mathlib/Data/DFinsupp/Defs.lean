@@ -504,6 +504,9 @@ theorem single_eq_zero {i : ι} {xi : β i} : single i xi = 0 ↔ xi = 0 := by
   rw [← single_zero i, single_eq_single_iff]
   simp
 
+theorem single_ne_zero {i : ι} {xi : β i} : single i xi ≠ 0 ↔ xi ≠ 0 :=
+  single_eq_zero.not
+
 theorem filter_single (p : ι → Prop) [DecidablePred p] (i : ι) (x : β i) :
     (single i x).filter p = if p i then single i x else 0 := by
   ext j
@@ -926,13 +929,16 @@ theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0}
       simp
     · simp [h, hf]
 
+omit [DecidableEq ι] in
 theorem mapRange_injective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
-    Function.Injective (mapRange f hf) ↔ ∀ i, Function.Injective (f i) :=
-  ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
+    Function.Injective (mapRange f hf) ↔ ∀ i, Function.Injective (f i) := by
+  classical exact ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
     simpa using congr_arg _ eq), fun h _ _ eq ↦ DFinsupp.ext fun i ↦ h i congr($eq i)⟩
 
+omit [DecidableEq ι] in
 theorem mapRange_surjective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
     Function.Surjective (mapRange f hf) ↔ ∀ i, Function.Surjective (f i) := by
+  classical
   refine ⟨fun h i u ↦ ?_, fun h x ↦ ?_⟩
   · obtain ⟨x, hx⟩ := h (single i u)
     exact ⟨x i, by simpa using congr($hx i)⟩

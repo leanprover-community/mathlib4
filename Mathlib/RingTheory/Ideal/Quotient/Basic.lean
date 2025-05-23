@@ -20,7 +20,7 @@ See `Algebra.RingQuot` for quotients of semirings.
 
 ## Main definitions
 
- - `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
+- `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
 
 -/
 
@@ -128,7 +128,9 @@ See note [reducible non-instances]. -/
 protected noncomputable abbrev divisionRing [I.IsMaximal] : DivisionRing (R ⧸ I) := fast_instance%
   { __ := ring _
     __ := Quotient.groupWithZero _
+    nnqsmul := _
     nnqsmul_def _ _ := rfl
+    qsmul := _
     qsmul_def _ _ := rfl }
 
 /-- The quotient of a commutative ring by a maximal ideal is a field.

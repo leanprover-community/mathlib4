@@ -23,7 +23,7 @@ This is then used in the implementation of `rewrite_search`
 to avoid needing the entire edit distance calculation in unlikely search paths.
 -/
 
-variable {α : Type*} {β δ : Type} [LinearOrderedAddCommMonoid δ] [CanonicallyOrderedAdd δ]
+variable {α : Type*} {β δ : Type} [AddCommMonoid δ] [LinearOrder δ] [CanonicallyOrderedAdd δ]
   (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β)
 
 /--
@@ -137,7 +137,9 @@ instance (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β) :
     Bot (LevenshteinEstimator C xs ys) where
   bot :=
   { inner :=
-    { pre_rev := ys.reverse
+    { distances := suffixLevenshtein C xs []
+      bound := _
+      pre_rev := ys.reverse
       suff := []
       split := by simp
       distances_eq := rfl

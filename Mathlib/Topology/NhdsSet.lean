@@ -3,7 +3,7 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
-import Mathlib.Topology.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Neighborhoods of a set

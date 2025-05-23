@@ -12,13 +12,14 @@ This file defines the ideal class group `ClassGroup R` of fractional ideals of `
 inside its field of fractions.
 
 ## Main definitions
- - `toPrincipalIdeal` sends an invertible `x : K` to an invertible fractional ideal
- - `ClassGroup` is the quotient of invertible fractional ideals modulo `toPrincipalIdeal.range`
- - `ClassGroup.mk0` sends a nonzero integral ideal in a Dedekind domain to its class
+
+- `toPrincipalIdeal` sends an invertible `x : K` to an invertible fractional ideal
+- `ClassGroup` is the quotient of invertible fractional ideals modulo `toPrincipalIdeal.range`
+- `ClassGroup.mk0` sends a nonzero integral ideal in a Dedekind domain to its class
 
 ## Main results
- - `ClassGroup.mk0_eq_mk0_iff` shows the equivalence with the "classical" definition,
-   where `I ~ J` iff `x I = y J` for `x y ≠ (0 : R)`
+- `ClassGroup.mk0_eq_mk0_iff` shows the equivalence with the "classical" definition,
+  where `I ~ J` iff `x I = y J` for `x y ≠ (0 : R)`
 
 ## Implementation details
 
@@ -278,7 +279,7 @@ theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
     obtain ⟨x, ⟨y, hy⟩, rfl⟩ := IsLocalization.mk'_surjective R⁰ z
     refine ⟨x, y, ?_, mem_nonZeroDivisors_iff_ne_zero.mp hy, ?_⟩
     · rintro hx; apply hz
-      rw [hx, IsFractionRing.mk'_eq_div, _root_.map_zero, zero_div]
+      rw [hx, IsFractionRing.mk'_eq_div, map_zero, zero_div]
     · exact (FractionalIdeal.mk'_mul_coeIdeal_eq_coeIdeal _ hy).mp h
   · rintro ⟨x, y, hx, hy, h⟩
     have hy' : y ∈ R⁰ := mem_nonZeroDivisors_iff_ne_zero.mpr hy
