@@ -212,19 +212,28 @@ noncomputable def myHaar := MeasureTheory.Measure.haarMeasure (G := G) {
 noncomputable instance fakeSub: Sub G where
   sub x y := y⁻¹ * x
 
-structure Lipschitz [Generates (G := G) (S := S)] where
-  toFun: G → ℂ
-  lipschitz: ∃ C, LipschitzWith C toFun
+-- Definition 3.5 in Vikman - a harmonic function on G
+def Harmonic (f: G → ℂ): Prop := ∀ x: G, f x = ((1 : ℂ) / #(S)) * ∑ s ∈ S, f (x * s)
 
-instance: FunLike (Lipschitz (G := G)) G ℂ where
-  coe := Lipschitz.toFun
+-- A Lipschitz harmonic function from section 3.2 of Vikman
+structure LipschitzH [Generates (G := G) (S := S)] where
+  -- The underlying function
+  toFun: G → ℂ
+  -- The function is Lipschitz for some constant C
+  lipschitz: ∃ C, LipschitzWith C toFun
+  -- The function is harmonic
+  harmonic: Harmonic (S := S) toFun
+
+
+instance: FunLike (LipschitzH (G := G)) G ℂ where
+  coe := LipschitzH.toFun
   -- TODO - why does this work? I blindly copied it from `OneHom.funLike`
   coe_injective' f g h := by cases f; cases g; congr
 
 @[ext]
-theorem Lipschitz.ext [Generates (G := G) (S := S)] {f g: Lipschitz (G := G)} (h: ∀ x, f.toFun x = g.toFun x): f = g := DFunLike.ext _ _ h
+theorem LipschitzH.ext [Generates (G := G) (S := S)] {f g: LipschitzH (G := G)} (h: ∀ x, f.toFun x = g.toFun x): f = g := DFunLike.ext _ _ h
 
-instance Lipschitz.add [Generates (S := S)] : Add (Lipschitz (G := G)) := {
+instance LipschitzH.add [Generates (S := S)] : Add (LipschitzH (G := G)) := {
   add := fun f g => {
     toFun := fun x => f.toFun x + g.toFun x
     lipschitz := by
@@ -232,9 +241,18 @@ instance Lipschitz.add [Generates (S := S)] : Add (Lipschitz (G := G)) := {
       obtain ⟨C2, hC2⟩ := g.lipschitz
       use C1 + C2
       exact LipschitzWith.add hC1 hC2
+    harmonic := by
+      unfold Harmonic
+      intro x
+      have ha := f.harmonic
+      have hb := g.harmonic
+      unfold Harmonic at ha hb
+      simp_rw [ha x, hb x]
+      field_simp
+      rw [← Finset.sum_add_distrib]
   }
 }
-instance Lipschitz.zero [Generates (S := S)] : Zero (Lipschitz (G := G)) := {
+instance LipschitzH.zero [Generates (S := S)] : Zero (LipschitzH (G := G)) := {
   zero := {
     toFun := fun x => 0
     lipschitz := by
@@ -242,21 +260,21 @@ instance Lipschitz.zero [Generates (S := S)] : Zero (Lipschitz (G := G)) := {
       exact LipschitzWith.const 0
   }
 }
-instance Lipschitz.addMonoid [Generates (S := S)] : AddMonoid (Lipschitz (G := G)) := {
-  Lipschitz.zero,
-  Lipschitz.add with
+instance LipschitzH.addMonoid [Generates (S := S)] : AddMonoid (LipschitzH (G := G)) := {
+  LipschitzH.zero,
+  LipschitzH.add with
   add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
   zero_add := fun _ => ext fun _ => zero_add _
   add_zero := fun _ => ext fun _ => add_zero _
   nsmul := nsmulRec
 }
 
-instance Lipschitz.instAddCommMonoid: AddCommMonoid (Lipschitz (G := G)) := {
-  Lipschitz.addMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _
+instance LipschitzH.instAddCommMonoid: AddCommMonoid (LipschitzH (G := G)) := {
+  LipschitzH.addMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _
 }
 
 -- V is the vector space
-def V := Module ℂ (Lipschitz (G := G))
+def V := Module ℂ (LipschitzH (G := G))
 
 -- TODO - I don't think we can use this, as `MeasureTheory.convolution' would require our group to be commutative
 -- (via `NormedAddCommGroup`)
