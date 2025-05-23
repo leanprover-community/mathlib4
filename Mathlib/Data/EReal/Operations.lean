@@ -544,7 +544,7 @@ lemma le_add_of_forall_gt {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂
 @[deprecated (since := "2024-11-19")] alias add_le_of_forall_add_le := add_le_of_forall_lt
 @[deprecated (since := "2024-11-19")] alias le_add_of_forall_le_add := le_add_of_forall_gt
 
-lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le : y ≤ x) :
+lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞ := by finiteness) (h_le : y ≤ x) :
     (x - y).toEReal = x.toEReal - y.toEReal := by
   lift y to ℝ≥0 using hy_top
   cases x with

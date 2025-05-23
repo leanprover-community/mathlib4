@@ -55,7 +55,8 @@ theorem ofReal_add_le {p q : ℝ} : ENNReal.ofReal (p + q) ≤ ENNReal.ofReal p 
   coe_le_coe.2 Real.toNNReal_add_le
 
 @[simp]
-theorem toReal_le_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal ≤ b.toReal ↔ a ≤ b := by
+theorem toReal_le_toReal (ha : a ≠ ∞ := by finiteness) (hb : b ≠ ∞ := by finiteness) :
+    a.toReal ≤ b.toReal ↔ a ≤ b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
   norm_cast
@@ -338,7 +339,8 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
   rw [mul_comm]
   exact toReal_mul_top _
 
-theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
+theorem toReal_eq_toReal (ha : a ≠ ∞ := by finiteness) (hb : b ≠ ∞ := by finiteness) :
+    a.toReal = b.toReal ↔ a = b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
   simp only [coe_inj, NNReal.coe_inj, coe_toReal]
