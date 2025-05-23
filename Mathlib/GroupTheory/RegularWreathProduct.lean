@@ -180,6 +180,7 @@ theorem toPermInj [Nonempty Λ] : Function.Injective (toPerm D Q Λ) := MulActio
 end perm
 
 end RegularWreathProduct
+
 section iterated
 
 universe u
