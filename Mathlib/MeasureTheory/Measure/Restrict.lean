@@ -340,10 +340,11 @@ theorem restrict_union_congr :
 theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
     μ.restrict (⋃ i ∈ s, t i) = ν.restrict (⋃ i ∈ s, t i) ↔
       ∀ i ∈ s, μ.restrict (t i) = ν.restrict (t i) := by
-  classical
-  induction' s using Finset.induction_on with i s _ hs; · simp
-  simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
-  rw [restrict_union_congr, ← hs]
+  classical induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s _ hs =>
+    simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
+    rw [restrict_union_congr, ← hs]
 
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
