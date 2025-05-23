@@ -146,18 +146,18 @@ section perm
 
 variable (D Q) (Λ : Type*) [MulAction D Λ]
 
-instance instSMulRWP : SMul (D ≀ᵣ Q) (Λ × Q) where
+instance : SMul (D ≀ᵣ Q) (Λ × Q) where
   smul w := fun p => ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩
 
 @[simp]
 lemma rsmul {w : D ≀ᵣ Q} {p : Λ × Q} : w • p = ⟨(w.1 (w.2 * p.2)) • p.1, w.2 * p.2⟩ := rfl
 
-instance instMulActionRWP : MulAction (D ≀ᵣ Q) (Λ × Q) where
+instance : MulAction (D ≀ᵣ Q) (Λ × Q) where
   one_smul := by simp
   mul_smul := by simp [smul_smul, mul_assoc]
 
 variable [FaithfulSMul D Λ]
-instance instFaithfulSMulRWP [Nonempty Q] [Nonempty Λ] : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
+instance [Nonempty Q] [Nonempty Λ] : FaithfulSMul (D ≀ᵣ Q) (Λ × Q) where
   eq_of_smul_eq_smul := by
     simp only [rsmul, Prod.mk.injEq, mul_left_inj, Prod.forall]
     intro m₁ m₂ h
