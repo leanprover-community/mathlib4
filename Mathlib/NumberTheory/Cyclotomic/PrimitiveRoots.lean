@@ -447,7 +447,6 @@ theorem norm_pow_sub_one_of_prime_ne_two {k : ℕ} (hζ : IsPrimitiveRoot ζ ↑
     (hirr : Irreducible (cyclotomic (↑(p ^ (k + 1)) : ℕ) K)) {s : ℕ} (hs : s ≤ k) (hodd : p ≠ 2) :
     norm K (ζ ^ (p : ℕ) ^ s - 1) = (p : K) ^ (p : ℕ) ^ s := by
   refine hζ.norm_pow_sub_one_of_prime_pow_ne_two hirr hs fun h => ?_
-  have coe_two : ((2 : ℕ+) : ℕ) = 2 := by norm_cast
   rw [← pow_one 2] at h
   replace h :=
     eq_of_prime_pow_eq (prime_iff.1 hpri.out) (prime_iff.1 Nat.prime_two) (k - s).succ_pos h
