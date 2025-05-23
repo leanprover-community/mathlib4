@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
@@ -785,6 +786,13 @@ variable {I J} in
 theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J) := by
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
 
+lemma isRadical_bot_iff :
+    (⊥ : Ideal R).IsRadical ↔ IsReduced R := by
+  simp only [IsRadical, SetLike.le_def, Ideal.mem_radical_iff, Ideal.mem_bot,
+    forall_exists_index, isReduced_iff, IsNilpotent]
+
+lemma isRadical_bot [IsReduced R] : (⊥ : Ideal R).IsRadical := by rwa [Ideal.isRadical_bot_iff]
+
 /-- `Ideal.radical` as an `InfTopHom`, bundling in that it distributes over `inf`. -/
 def radicalInfTopHom : InfTopHom (Ideal R) (Ideal R) where
   toFun := radical
@@ -1106,6 +1114,20 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f i : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
+
+/-- Another version of prime avoidance using `Set.Finite` instead of `Finset`. -/
+lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
+    (hs : s.Finite) {f : ι → Ideal R} (a b : ι)
+    (hp : ∀ i ∈ s, i ≠ a → i ≠ b → (f i).IsPrime) {I : Ideal R} :
+    ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
+  rcases Set.Finite.exists_finset hs with ⟨t, ht⟩
+  have heq : ⋃ i ∈ s, f i = ⋃ i ∈ t, (f i : Set R) := by
+    ext
+    simpa using exists_congr (fun i ↦ (and_congr_left fun a ↦ ht i).symm)
+  have hmem_union : ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ((I : Set R) ⊆ ⋃ i ∈ (t : Set ι), f i) :=
+    (congrArg _ heq).to_iff
+  rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin))]
+  exact exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
 
 section Dvd
 
