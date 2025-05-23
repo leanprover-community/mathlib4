@@ -100,8 +100,9 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
     (univ : Set (Σ n, cell n)).PairwiseDisjoint (fun ni ↦ map ni.1 ni.2 '' ball 0 1)
   /-- All open cells are disjoint with the base. Use `RelCWComplex.disjointBase` instead. -/
   disjointBase' (n : ℕ) (i : cell n) : Disjoint (map n i '' ball 0 1) D
-  /-- The boundary of a cell is contained in a finite union of closed cells of a lower dimension.
-  Use `RelCWComplex.cellFrontier_subset_finite_closedCell` instead. -/
+  /-- The boundary of a cell is contained in the union of the base with a finite union of closed
+  cells of a lower dimension. Use `RelCWComplex.cellFrontier_subset_base_union_finite_closedCell`
+  instead. -/
   mapsTo (n : ℕ) (i : cell n) : ∃ I : Π m, Finset (cell m),
     MapsTo (map n i) (sphere 0 1) (D ∪ ⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1)
   /-- A CW complex has weak topology, i.e. a set `A` in `X` is closed iff its intersection with
