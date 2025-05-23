@@ -196,30 +196,29 @@ lemma partitions_mono {s₁ s₂ : Set X} (hs : s₁ ⊆ s₂) : partitions s₁
 
 /-- Given a partition `E` of a set `s`, this returns the sum of the norm of the measure of the
 elements of that partition. -/
-private noncomputable def sumOfNormOfMeasure (E : ℕ → Set X) : ℝ≥0∞ :=
-    ∑' n, ENNReal.ofReal ‖μ (E n)‖
+private noncomputable def varOfPart (E : ℕ → Set X) : ℝ≥0∞ := ∑' n, ENNReal.ofReal ‖μ (E n)‖
 
 open Classical in
 /-- The value of variation defined as a supremum over partitions. -/
 noncomputable def variationAux (s : Set X) : ℝ≥0∞ :=
-    if (MeasurableSet s) then ⨆ E ∈ partitions s, sumOfNormOfMeasure μ E else 0
+    if (MeasurableSet s) then ⨆ E ∈ partitions s, varOfPart μ E else 0
 
 /-- `variationAux` of the empty set is equal to zero. -/
 lemma variation_empty' : variationAux μ ∅ = 0 := by
-  simp only [variationAux, sumOfNormOfMeasure, MeasurableSet.empty, reduceIte, partitions, and_imp,
+  simp only [variationAux, varOfPart, MeasurableSet.empty, reduceIte, partitions, and_imp,
     Set.mem_setOf_eq, iSup_eq_zero]
   intro E _ _ _
   simp [show ∀ n, μ (E n) = 0 by simp_all]
 
-lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε: 0 < ε) : ∃ E ∈ partitions s,
-    variationAux μ s ≤ sumOfNormOfMeasure μ E + ε := by
+lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε: 0 < ε) :
+    ∃ E ∈ partitions s, variationAux μ s ≤ varOfPart μ E + ε := by
   -- Since `variationAux` is defined as the supremum.
   sorry
 
 lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {E : ℕ → Set X} (hE : E ∈ partitions s) :
-    sumOfNormOfMeasure μ E ≤ variationAux μ s := by
+    varOfPart μ E ≤ variationAux μ s := by
   simp only [variationAux, hs, reduceIte]
-  exact le_biSup (sumOfNormOfMeasure μ) hE
+  exact le_biSup (varOfPart μ) hE
 
 lemma ENNReal.small_sum {ε' : ℝ≥0∞} (hε' : 0 < ε') : ∃ (ε : ℕ → ℝ≥0∞),
     ∑' i, ε i = ε' ∧ (∀ i, 0 < ε i) := by
@@ -242,11 +241,11 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     -- Using `small_sum` We fix a positive sequence `ε : ℕ → ℝ≥0∞` such that `∑' i, ε i = ε'`
     obtain ⟨ε, hε_sum, hε_pos⟩ := ENNReal.small_sum (ofReal_pos.mpr hε')
     -- Using `variationAux_le`, for each set `s i` we choose a partition `E i` such that, for each
-    -- `i`, `variationAux μ (s i) ≤ sumOfNormOfMeasure μ (E i) + ε`.
+    -- `i`, `variationAux μ (s i) ≤ varOfPart μ (E i) + ε`.
     choose E hE using fun i ↦ variationAux_le μ (hs i) (hε_pos i)
     -- Additionally the combination of the partitions `E i` is a partition of `⋃ i, s i`.
     -- TO DO
-    -- This means, using also `le_variationAux` that `∑' i, sumOfNormOfMeasure μ (E i)` is bounded
+    -- This means, using also `le_variationAux` that `∑' i, varOfPart μ (E i)` is bounded
     -- above by `variationAux (⋃ i, s i)`.
     sorry
   · --
@@ -279,16 +278,16 @@ lemma partitions_mono {s₁ s₂ : Set X} (hs : s₁ ⊆ s₂) : partitions s₁
 /-- Given a partition of a set `K`, this returns the sum of the norm of the measure of the elements
 of that partition. If elements of the partition are non-measurable then the measure of that will be
 0 and hence not contribute to the sum. -/
-private noncomputable def sumOfNormOfMeasure (μ : VectorMeasure X V) (E : ℕ → Set X) : ℝ≥0∞ :=
+private noncomputable def varOfPart (μ : VectorMeasure X V) (E : ℕ → Set X) : ℝ≥0∞ :=
     ∑' n, ENNReal.ofReal ‖μ (E n)‖
 
 /-- The value of variation defined as a supremum. -/
 noncomputable def variationAux (μ : VectorMeasure X V) (K : Set X) : ℝ≥0∞ :=
-    ⨆ E ∈ partitions K, sumOfNormOfMeasure μ E
+    ⨆ E ∈ partitions K, varOfPart μ E
 
 /-- `variationAux` of the empty set is equal to zero. -/
 lemma variation_empty (μ : VectorMeasure X V) : variationAux μ ∅ = 0 := by
-  simp only [variationAux, partitions, Set.subset_empty_iff, Set.mem_setOf_eq, sumOfNormOfMeasure,
+  simp only [variationAux, partitions, Set.subset_empty_iff, Set.mem_setOf_eq, varOfPart,
     ENNReal.iSup_eq_zero, ofReal_eq_zero, and_imp]
   intro _ _ _
   simp_all
@@ -303,9 +302,9 @@ lemma variation_iUnion_nat [T2Space V] (μ : VectorMeasure X V) (s : ℕ → Set
     (hs : Pairwise (Function.onFun Disjoint s)) :
     variationAux μ (⋃ i, s i) ≤ ∑' (i : ℕ), variationAux μ (s i) := by
   -- Sufficies to prove that for any `E ∈ partitions (⋃ i, s i)`,
-  -- `sumOfNormOfMeasure μ E` is bounded above by
-  -- `∑' (i : ℕ), ⨆ E ∈ partitions (s i), sumOfNormOfMeasure μ E`.
-  suffices h : ∀ E ∈ partitions (⋃ i, s i), sumOfNormOfMeasure μ E ≤
+  -- `varOfPart μ E` is bounded above by
+  -- `∑' (i : ℕ), ⨆ E ∈ partitions (s i), varOfPart μ E`.
+  suffices h : ∀ E ∈ partitions (⋃ i, s i), varOfPart μ E ≤
       ∑' (i : ℕ), variationAux μ (s i) by
     exact iSup₂_le_iff.mpr h
   intro E hE
@@ -325,9 +324,9 @@ lemma variation_iUnion_nat [T2Space V] (μ : VectorMeasure X V) (s : ℕ → Set
         Set.subset_empty_iff, and_imp, F]
       intro _ _ hx _ hx'
       exact Set.subset_eq_empty (hE.2.2 hij hx hx') rfl
-  have sum_F_le (i : ℕ) : sumOfNormOfMeasure μ (fun j ↦ F i j) ≤ variationAux μ (s i) :=
-    le_biSup (sumOfNormOfMeasure μ) (F_partition i)
-  calc sumOfNormOfMeasure μ E
+  have sum_F_le (i : ℕ) : varOfPart μ (fun j ↦ F i j) ≤ variationAux μ (s i) :=
+    le_biSup (varOfPart μ) (F_partition i)
+  calc varOfPart μ E
     _ = ∑' n, ENNReal.ofReal ‖μ (E n)‖ := rfl
     _ = ∑' i, ENNReal.ofReal ‖μ (⋃ j, F j i)‖ := by
       have (i : ℕ) : E i = ⋃ j, F j i := by
@@ -353,8 +352,8 @@ lemma variation_iUnion_nat [T2Space V] (μ : VectorMeasure X V) (s : ℕ → Set
       gcongr with i
 
       sorry
-    _ = ∑' i, sumOfNormOfMeasure μ (fun j ↦ F i j) := by
-      -- By defintion of `sumOfNormOfMeasure`.
+    _ = ∑' i, varOfPart μ (fun j ↦ F i j) := by
+      -- By defintion of `varOfPart`.
       sorry
     _ ≤ ∑' i, variationAux μ (s i) := by
       -- As proved above in `sum_F_le`.
@@ -407,11 +406,11 @@ private def partitions (K : Set X) : Set (ℕ → Set X) :=
 /-- Given a partition of a set `K`, this returns the sum of the norm of the measure of the elements
 of that partition. If elements of the partition are non-measurable then the measure of that will be
 0 and hence not contribute to the sum. -/
-private noncomputable def sumOfNormOfMeasure (μ : VectorMeasure X V) (E : ℕ → Set X) : ℝ≥0 :=
+private noncomputable def varOfPart (μ : VectorMeasure X V) (E : ℕ → Set X) : ℝ≥0 :=
     ⟨∑' n,  ‖μ (E n)‖, tsum_nonneg (fun n ↦ norm_nonneg (μ (E n)))⟩
 
 noncomputable def variationContentAux (μ : VectorMeasure X V) (K : Compacts X) : ℝ≥0 :=
-    ⨆ E ∈ partitions K, sumOfNormOfMeasure μ E
+    ⨆ E ∈ partitions K, varOfPart μ E
 
 lemma partitionsMono {E₁ E₂ : Set X} (h : E₁ ⊆ E₂) : partitions E₁ ⊆ partitions E₂ := by
   intro E hE
