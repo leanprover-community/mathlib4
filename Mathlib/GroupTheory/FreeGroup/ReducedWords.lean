@@ -63,6 +63,7 @@ theorem isReduced_iff_not_step : IsReduced L₁ ↔ ∀ L₂, ¬ Red.Step L₁ L
         apply hL l'
         rw [eq₁, ← eq₂]
         apply Red.Step.cons_not
+
 @[to_additive]
 theorem IsReduced.infix (h : IsReduced L₂) (h' : L₁ <:+: L₂) : IsReduced L₁ := Chain'.infix h h'
 
