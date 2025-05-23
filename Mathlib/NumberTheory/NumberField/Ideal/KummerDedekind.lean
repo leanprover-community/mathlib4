@@ -157,6 +157,12 @@ theorem Ideal.primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ expon
           rw [← Ideal.primesOverSpanEquivMonicFactorsModAux_symm_apply]
           exact ((Ideal.primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).coe_prop⟩ := rfl
 
+theorem Ideal.exists_mem_monicFactorsMod (hp : ¬ p ∣ exponent θ) {P : Ideal (𝓞 K)}
+    (hP : P ∈ primesOver (span {(p : ℤ)}) (𝓞 K)) :
+    ∃ (Q : (ZMod p)[X]), ∃ (hQ : Q ∈ monicFactorsMod θ p),
+    P = (primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ :=
+  ⟨primesOverSpanEquivMonicFactorsMod hp ⟨P, hP⟩, Subtype.coe_prop _, by simp⟩
+
 theorem Ideal.primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span
     (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
     (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
