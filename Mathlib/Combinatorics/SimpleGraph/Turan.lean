@@ -420,4 +420,16 @@ theorem card_edgeFinset_turanGraph_le :
     rw [inv_mul_le_one₀ (mod_cast hr), Nat.cast_le]
     exact (Nat.mod_lt _ hr).le
 
+theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
+    let n := Fintype.card V;
+    #G.edgeFinset ≤ (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by
+  rcases r.eq_zero_or_pos with rfl | hr
+  · rw [cliqueFree_one, ← Fintype.card_eq_zero_iff] at cf
+    simp_rw [zero_tsub, mul_zero, Nat.mod_zero, Nat.div_zero, zero_add]
+    exact card_edgeFinset_le_card_choose_two
+  · obtain ⟨H, _, maxH⟩ := exists_isTuranMaximal (V := V) hr
+    convert maxH.2 _ cf
+    rw [((isTuranMaximal_iff_nonempty_iso_turanGraph hr).mp maxH).some.card_edgeFinset_eq,
+      card_edgeFinset_turanGraph]
+
 end SimpleGraph
