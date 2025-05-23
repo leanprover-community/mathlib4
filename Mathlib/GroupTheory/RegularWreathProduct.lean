@@ -7,6 +7,7 @@ Authors: Francisco Silva
 import Mathlib.GroupTheory.Sylow
 import Mathlib.Algebra.Group.PUnit
 import Mathlib.Data.Finite.Perm
+/- import SetTheory.Cardinal.Finite-/
 
 /-!
 # Regular wreath product
@@ -235,9 +236,6 @@ def Equiv.permCongrHom {α β : Type*} (e : α ≃ β) : Equiv.Perm α ≃* Equi
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
   map_mul' _ _ := by ext; simp
-
-lemma Nat.card_fin (n : ℕ) : Nat.card (Fin n) = n := by
-  rw [Nat.card_eq_fintype_card, Fintype.card_fin]
 
 /-- The homomorphism from `IteratedWreathProduct G n` to `Perm (Fin n → G)`. -/
 def iteratedWreathToPermHom (G : Type*) [Group G] :
