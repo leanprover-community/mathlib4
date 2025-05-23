@@ -23,32 +23,32 @@ variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
   {b : P.Base}
 
 def e₁₂ (i : b.support) : Matrix b.support ι R :=
-  Matrix.of fun j ↦ open scoped Classical in
-    Pi.single i ↑|b.cartanMatrix i j|
+  Matrix.of fun i' j ↦ open scoped Classical in
+    if i' = i ∧ P.root j = - P.root i then 1 else 0
 
 def e₂₁ (i : b.support) : Matrix ι b.support R :=
-  Matrix.of fun j ↦ open scoped Classical in
-    if P.root j = - P.root i then Pi.single i 1 else 0
+  Matrix.of fun i' j ↦ open scoped Classical in
+    if i' = i then ↑|b.cartanMatrix i j| else 0
 
 def e₂₂ (i : b.support) : Matrix ι ι R :=
-  Matrix.of fun j k ↦ open scoped Classical in
-    if P.root j + P.root i = P.root k then P.chainBotCoeff i j else 0
+  Matrix.of fun i' j ↦ open scoped Classical in
+    if P.root i' = P.root i + P.root j then P.chainBotCoeff i j else 0
 
 def e (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
-  (Matrix.fromBlocks 0 (e₁₂ i) (e₂₁ i) (e₂₂ i)).transpose
+  Matrix.fromBlocks 0 (e₁₂ i) (e₂₁ i) (e₂₂ i)
 
 def f₁₂ (i : b.support) : Matrix b.support ι R :=
-  Matrix.of fun j ↦ open scoped Classical in
-    Pi.single (P.reflection_perm i i) ↑|b.cartanMatrix i j|
+  Matrix.of fun i' j ↦ open scoped Classical in
+    if i' = i ∧ P.root j = P.root i then 1 else 0
 
 def f₂₁ (i : b.support) : Matrix ι b.support R :=
-  Matrix.of fun j k ↦ open scoped Classical in
-    if P.root j - P.root i = P.root k then P.chainTopCoeff i j else 0
+  Matrix.of fun i' j ↦ open scoped Classical in
+    if P.root i' = - P.root i then ↑|b.cartanMatrix i j| else 0
 
 def f₂₂ (i : b.support) : Matrix ι ι R :=
-  Matrix.of fun j ↦ open scoped Classical in
-    if P.root j = P.root i then Pi.single i 1 else 0
+  Matrix.of fun i' j ↦ open scoped Classical in
+    if P.root i' = P.root i - P.root j then P.chainTopCoeff i j else 0
 
 def f (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
@@ -56,7 +56,7 @@ def f (i : b.support) :
 
 def h (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
-  Matrix.fromBlocks 0 0 0 <| Matrix.of fun j _ ↦ P.pairingIn ℤ j i
+  Matrix.fromBlocks 0 0 0 <| open scoped Classical in Matrix.diagonal (P.pairingIn ℤ · i)
 
 /-- Lemma 3.3 (a) from [Geck](Geck2017).
 
@@ -65,14 +65,53 @@ lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
     ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
   ext (k|k) (l|l)
   · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e]
+  · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e, e₁₂]
+    rw [Finset.sum_eq_single_of_mem l (Finset.mem_univ _)]
+    · rw [apply_ite (- · : R → R)]
+      convert ite_congr rfl _ (fun _ ↦ neg_zero)
+      simp +contextual
+    · simp +contextual
   · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e, e₂₁]
-    rw [Finset.sum_eq_single_of_mem (↑i) (Finset.mem_univ _)]
-    · simp [mul_comm, Pi.single_apply]
-      sorry
-    · simp +contextual [Pi.single_apply]
-      sorry
-  · sorry
-  · sorry
+    rw [Finset.sum_eq_single_of_mem k (Finset.mem_univ _)]
+    · convert ite_congr rfl _ (fun _ ↦ rfl)
+      simp +contextual
+    · classical
+      simp +contextual [Matrix.diagonal_apply]
+      aesop
+  · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e, e₂₂]
+    classical
+    rw [← Finset.sum_sub_distrib]
+    rw [← Finset.sum_compl_add_sum {k, l}]
+    rw [Finset.sum_eq_zero, zero_add]
+    · rcases eq_or_ne k l with (rfl | hkl)
+      · simp [P.ne_zero]
+      · simp [hkl]
+        rw [ite_sub_ite]
+        convert ite_congr rfl _ _
+        · intro hkil
+          suffices P.pairingIn ℤ k j = P.pairingIn ℤ i j + P.pairingIn ℤ l j by
+            rw [this]
+            norm_cast
+            ring
+          suffices P.pairing k j = P.pairing i j + P.pairing l j by
+            apply Int.cast_injective (α := R)
+            simpa [← P.algebraMap_pairingIn ℤ] using this
+          simp only [← root_coroot_eq_pairing, hkil, map_add, LinearMap.add_apply]
+        · simp
+    · simp +contextual [Matrix.diagonal_apply]
+      aesop
+
+lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
+    ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
+  sorry
+
+lemma lie_e_f_same [Fintype b.support] [Fintype ι] (i : b.support) :
+    ⁅e i, f i⁆ = h i := by
+  sorry
+
+lemma lie_e_f_ne [Fintype b.support] [Fintype ι] (i j : b.support) (hij : i ≠ j) :
+    ⁅e i, f j⁆ = 0 := by
+  sorry
 
 variable (b)
 variable [Fintype b.support] [Fintype ι] [DecidableEq ι]
@@ -82,12 +121,19 @@ def lieAlgebra :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range e ∪ range f)
 
-instance : LieRingModule b.lieAlgebra (b.support ⊕ ι → R) := sorry
+instance : LieRingModule (Matrix ι ι R) (ι → R) := sorry
 
-instance : LieModule R b.lieAlgebra (b.support ⊕ ι → R) := sorry
+instance : LieModule R (Matrix ι ι R) (ι → R) := sorry
 
-instance : LieModule.IsFaithful R b.lieAlgebra (b.support ⊕ ι → R) := sorry
+instance : LieModule.IsFaithful R (Matrix ι ι R) (ι → R) := sorry
 
-instance : Module.Finite R b.lieAlgebra := sorry
+example : LieRingModule b.lieAlgebra (b.support ⊕ ι → R) := inferInstance
+
+example : LieModule R b.lieAlgebra (b.support ⊕ ι → R) := inferInstance
+
+-- should follow from general instance about sub-Lie-algebras
+example : LieModule.IsFaithful R b.lieAlgebra (b.support ⊕ ι → R) := sorry
+
+example [IsNoetherianRing R] : Module.Finite R b.lieAlgebra := inferInstance
 
 end RootPairing.Base
