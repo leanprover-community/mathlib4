@@ -180,6 +180,9 @@ def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
     exact Exists.intro x' hx'
   map_rel_iff' := by simpa [Sublocale.le_iff', ← Nucleus.range_subset_iff] using fun _ _ ↦ (by rfl)
 
+instance  : EquivLike Nucleus.toSublocale (Nucleus X)ᵒᵈ (Sublocale X) where
+  coe toSublocale n := toSublocale s
+
 lemma orderiso.eq_toSublocale : Nucleus.toSublocale = (@orderiso X _) := rfl
 lemma orderiso.symm_eq_toNucleus : Sublocale.toNucleus = (@orderiso X _).symm := rfl
 
@@ -259,8 +262,7 @@ instance : Coe (Open X) (Nucleus X) where
 
 def toSublocale (U : Open X) : Sublocale X := U.toNucleus.toSublocale
 
-instance : Coe (Open X) (Sublocale X) where
-  coe U := U.toSublocale
+
 
 instance : CompleteLattice (Open X) := get_element.symm.toGaloisInsertion.liftCompleteLattice
 
@@ -326,7 +328,7 @@ lemma toNucleus.top : (⊤ : Open X).toNucleus = ⊥ := by
   simp [Open.toNucleus]
 
 def toSublocaleFrameHom : FrameHom (Open X) (Sublocale X) where
-  toFun x := x
+  toFun x := x.toSublocale
   map_inf' a b := by
     simp [Open.toSublocale]
     rw [@orderiso.eq_toSublocale,← @OrderIso.map_inf,toNucleus.map_inf]
@@ -335,5 +337,7 @@ def toSublocaleFrameHom : FrameHom (Open X) (Sublocale X) where
   map_sSup' s := by
     simp_rw [Open.toSublocale, toNucleus.map_sSup, Nucleus.toSublocale_sInf, sSup_image, iSup_image]
 
+instance : Coe (Open X) (Sublocale X) where
+  coe U := U.toSublocaleFrameHom
 
 end Open
