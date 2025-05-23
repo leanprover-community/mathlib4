@@ -582,6 +582,14 @@ theorem Filter.EventuallyEq.derivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f
   unfold derivWithin
   rw [hs.fderivWithin_eq hx]
 
+theorem Filter.EventuallyEq.derivWithin_eq_of_mem (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
+    derivWithin f₁ s x = derivWithin f s x :=
+  hs.derivWithin_eq <| hs.self_of_nhdsWithin hx
+
+theorem Filter.EventuallyEq.derivWithin_eq_of_nhds (hs : f₁ =ᶠ[𝓝 x] f) :
+    derivWithin f₁ s x = derivWithin f s x :=
+  (hs.filter_mono nhdsWithin_le_nhds).derivWithin_eq hs.self_of_nhds
+
 theorem derivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
     derivWithin f₁ s x = derivWithin f s x := by
   unfold derivWithin

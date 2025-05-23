@@ -351,7 +351,7 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
   · refine (ae_eq_condExp_of_forall_setIntegral_eq (generateFrom_singleton_le hs) hf.restrict ?_ ?_
       stronglyMeasurable_const.aestronglyMeasurable).symm
     · rintro t - -
-      rw [integrableOn_const]
+      rw [integrableOn_const_iff]
       exact Or.inr <| measure_lt_top (μ.restrict s) t
     · rintro t ht -
       obtain (h | h | h | h) := measurableSet_generateFrom_singleton_iff.1 ht

@@ -268,7 +268,7 @@ protected theorem analyticAt {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x)
     it also vanishes at `x`.-/
     have : AnalyticAt 𝕜 (fun _ ↦ (0 : E)) x := analyticAt_const
     apply this.congr
-    rw [← ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE continuousAt_const h']
+    rw [← ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE continuousAt_const h']
     filter_upwards [h.order_eq_top_iff.1 ho] with y hy using by simp [hy]
   | coe n =>
     /- If the order is finite, then the order has to be nonnegative, as otherwise the norm of `f`
@@ -281,7 +281,7 @@ protected theorem analyticAt {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x)
       exact ⟨f x, h'.continuousWithinAt.tendsto⟩
     lift n to ℕ using by simpa [ho] using this
     have A : ∀ᶠ (z : 𝕜) in 𝓝 x, (z - x) ^ n • g z = f z := by
-      apply (ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE (by fun_prop) h').1
+      apply (ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE (by fun_prop) h').1
       filter_upwards [hg] with z hz using by simpa using hz.symm
     exact AnalyticAt.congr (by fun_prop) A
 
