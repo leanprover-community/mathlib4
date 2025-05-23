@@ -454,9 +454,12 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   rw [← hne] at hc
   simpa using hc
 
-lemma Coloring.surjOn_of_card_le_isClique {γ : Type*} [Fintype γ] {s : Finset V}
-    (h : G.IsClique s) (hc : Fintype.card γ ≤ s.card) (C : G.Coloring γ) :
-    Set.SurjOn C s Set.univ := by
+/--
+Given a colouring `α` of `G`, and a clique of size at least the number of colours, the clique
+contains a vertex of each colour.
+-/
+lemma Coloring.surjOn_of_card_le_isClique [Fintype α] {s : Finset V} (h : G.IsClique s)
+    (hc : Fintype.card α ≤ s.card) (C : G.Coloring α) : Set.SurjOn C s Set.univ := by
   intro _ _
   obtain ⟨_, hx⟩ := card_le_chromaticNumber_iff_forall_surjective.mp
                     (by simp_all [isClique_iff_induce_eq]) (C.comp (Embedding.induce s).toHom) _
