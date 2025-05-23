@@ -27,16 +27,16 @@ def e₁₂ (i : b.support) : Matrix b.support ι R :=
     Pi.single i ↑|b.cartanMatrix i j|
 
 def e₂₁ (i : b.support) : Matrix ι b.support R :=
-  Matrix.of fun j k ↦ open scoped Classical in
-    if P.root j + P.root i = P.root k then P.chainBotCoeff i j else 0
-
-def e₂₂ (i : b.support) : Matrix ι ι R :=
   Matrix.of fun j ↦ open scoped Classical in
     if P.root j = - P.root i then Pi.single i 1 else 0
 
+def e₂₂ (i : b.support) : Matrix ι ι R :=
+  Matrix.of fun j k ↦ open scoped Classical in
+    if P.root j + P.root i = P.root k then P.chainBotCoeff i j else 0
+
 def e (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
-  Matrix.fromBlocks 0 (e₁₂ i) (e₂₁ i) (e₂₂ i)
+  (Matrix.fromBlocks 0 (e₁₂ i) (e₂₁ i) (e₂₂ i)).transpose
 
 def f₁₂ (i : b.support) : Matrix b.support ι R :=
   Matrix.of fun j ↦ open scoped Classical in
@@ -56,24 +56,21 @@ def f (i : b.support) :
 
 def h (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
-  Matrix.fromBlocks 0 0 0 <| Matrix.of fun j _ ↦ P.pairingIn R i j
+  Matrix.fromBlocks 0 0 0 <| Matrix.of fun j _ ↦ P.pairingIn ℤ j i
 
 /-- Lemma 3.3 (a) from [Geck](Geck2017).
 
 TODO Add part (b) as well as Lemmas 3.4, 3.5. -/
 lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
     ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
-  -- suffices ∀ k, ⁅h j, e i⁆ k = b.cartanMatrix i j • e i k by
-  --   ext k l
-  --   rw [this]
-  --   rfl
   ext (k|k) (l|l)
   · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e]
-  · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e, e₁₂]
+  · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e, e₂₁]
     rw [Finset.sum_eq_single_of_mem (↑i) (Finset.mem_univ _)]
     · simp [mul_comm, Pi.single_apply]
       sorry
     · simp +contextual [Pi.single_apply]
+      sorry
   · sorry
   · sorry
 
