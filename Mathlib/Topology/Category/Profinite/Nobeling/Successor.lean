@@ -133,7 +133,7 @@ def SwapTrue : (I → Bool) → I → Bool :=
   fun f i ↦ if ord I i = o then true else f i
 
 theorem continuous_swapTrue : Continuous (SwapTrue o : (I → Bool) → I → Bool) := by
-  dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
+  dsimp +unfoldPartialApp [SwapTrue]
   apply continuous_pi
   intro i
   apply Continuous.comp'
@@ -147,7 +147,7 @@ theorem swapTrue_mem_C1 (f : π (C1 C ho) (ord I · < o)) :
     SwapTrue o f.val ∈ C1 C ho := by
   obtain ⟨f, g, hg, rfl⟩ := f
   convert hg
-  dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
+  dsimp +unfoldPartialApp [SwapTrue]
   ext i
   split_ifs with h
   · rw [ord_term ho] at h
@@ -204,8 +204,7 @@ theorem C0_projOrd {x : I → Bool} (hx : x ∈ C0 C ho) : Proj (ord I · < o) x
   ext i
   simp only [Proj, Set.mem_setOf, ite_eq_left_iff, not_lt]
   intro hi
-  rw [le_iff_lt_or_eq] at hi
-  rcases hi with hi | hi
+  rcases hi.lt_or_eq with hi | hi
   · specialize hsC x hx.1 i
     rw [← not_imp_not] at hsC
     simp only [not_lt, Bool.not_eq_true, Order.succ_le_iff] at hsC
@@ -393,7 +392,7 @@ theorem square_commutes : SumEval C ho ∘ Sum.inl =
   ext l
   dsimp [SumEval]
   rw [← Products.eval_πs C (Products.prop_of_isGood  _ _ l.prop)]
-  rfl
+  simp [eval]
 
 end GoodProducts
 
@@ -411,13 +410,12 @@ def Products.Tail (l : Products I) : Products I :=
 theorem Products.max_eq_o_cons_tail [Inhabited I] (l : Products I) (hl : l.val ≠ [])
     (hlh : l.val.head! = term I ho) : l.val = term I ho :: l.Tail.val := by
   rw [← List.cons_head!_tail hl, hlh]
-  rfl
+  simp [Tail]
 
 theorem Products.max_eq_o_cons_tail' [Inhabited I] (l : Products I) (hl : l.val ≠ [])
     (hlh : l.val.head! = term I ho) (hlc : List.Chain' (· > ·) (term I ho :: l.Tail.val)) :
     l = ⟨term I ho :: l.Tail.val, hlc⟩ := by
-  simp_rw [← max_eq_o_cons_tail ho l hl hlh]
-  rfl
+  simp_rw [← max_eq_o_cons_tail ho l hl hlh, Subtype.coe_eta]
 
 include hsC in
 theorem GoodProducts.head!_eq_o_of_maxProducts [Inhabited I] (l : ↑(MaxProducts C ho)) :
@@ -551,8 +549,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     obtain ⟨p, hp⟩ := this
     rw [hp.2.2, ← Products.max_eq_eval C hsC ho p hp.1 hp.2.1]
     dsimp [Products.eval]
-    rw [Products.max_eq_o_cons_tail ho p hp.1 hp.2.1]
-    rfl
+    rw [Products.max_eq_o_cons_tail ho p hp.1 hp.2.1, List.map_cons, List.prod_cons]
   have hse := succ_exact C hC hsC ho
   rw [ShortComplex.moduleCat_exact_iff_range_eq_ker] at hse
   dsimp [ModuleCat.ofHom] at hse

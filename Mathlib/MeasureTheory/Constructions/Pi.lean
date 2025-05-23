@@ -879,7 +879,7 @@ theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype
 
 /-- The measurable equiv `(α₁ → β₁) ≃ᵐ (α₂ → β₂)` induced by `α₁ ≃ α₂` and `β₁ ≃ᵐ β₂` is
 volume preserving. -/
- theorem volume_preserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype α₁] [Fintype α₂]
+theorem volume_preserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype α₁] [Fintype α₂]
     [MeasureSpace β₁] [MeasureSpace β₂] [SigmaFinite (volume : Measure β₂)]
     (hα : α₁ ≃ α₂) (hβ : β₁ ≃ᵐ β₂) (hm : MeasurePreserving hβ) :
     MeasurePreserving (MeasurableEquiv.arrowCongr' hα hβ) :=

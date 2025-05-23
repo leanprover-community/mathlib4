@@ -214,9 +214,6 @@ theorem comp_isClosedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
   rw [hg.isEmbedding.closure_eq_preimage_closure_image]
   exact preimage_mono (closure_mono <| image_preimage_subset _ _)
 
-@[deprecated (since := "2024-10-20")]
-alias comp_closedEmbedding := comp_isClosedEmbedding
-
 @[to_additive]
 theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
@@ -386,7 +383,7 @@ of open sets, then for any point we can find a neighbourhood on which only finit
 @[to_additive "If a family of functions `f` has locally-finite support, subordinate to a family of
 open sets, then for any point we can find a neighbourhood on which only finitely-many members of `f`
 are non-zero."]
-theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [One R] {f : ι → X → R}
+theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [One R] {f : ι → X → R}
     (hlf : LocallyFinite fun i => mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ (is : Finset ι), ∃ n, n ∈ 𝓝 x ∧ (n ⊆ ⋂ i ∈ is, U i) ∧
@@ -415,6 +412,14 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
       intro i hi
       simp only [Finite.coe_toFinset, mem_setOf_eq]
       exact ⟨z, ⟨hi, hzn⟩⟩
+
+@[deprecated (since := "2025-05-22")]
+alias LocallyFinite.exists_finset_nhd_mulSupport_subset :=
+  LocallyFinite.exists_finset_nhds_mulSupport_subset
+
+@[deprecated (since := "2025-05-22")]
+alias LocallyFinite.exists_finset_nhd_support_subset :=
+  LocallyFinite.exists_finset_nhds_support_subset
 
 @[to_additive]
 theorem locallyFinite_mulSupport_iff [One M] {f : ι → X → M} :

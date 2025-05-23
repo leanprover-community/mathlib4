@@ -135,7 +135,7 @@ theorem MeasureTheory.IntegrableOn.intervalIntegrable (hf : IntegrableOn f [[a, 
 
 theorem intervalIntegrable_const_iff {c : E} :
     IntervalIntegrable (fun _ => c) μ a b ↔ c = 0 ∨ μ (Ι a b) < ∞ := by
-  simp only [intervalIntegrable_iff, integrableOn_const]
+  simp only [intervalIntegrable_iff, integrableOn_const_iff (C := c)]
 
 @[simp]
 theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
@@ -246,8 +246,9 @@ end
 
 variable [NormedRing A] {f g : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
 
-theorem smul [NormedField 𝕜] [NormedSpace 𝕜 E] {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
-    (h : IntervalIntegrable f μ a b) (r : 𝕜) : IntervalIntegrable (r • f) μ a b :=
+theorem smul {R : Type*} [NormedAddCommGroup R] [SMulZeroClass R E] [IsBoundedSMul R E]
+    {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ} (h : IntervalIntegrable f μ a b) (r : R) :
+    IntervalIntegrable (r • f) μ a b :=
   ⟨h.1.smul r, h.2.smul r⟩
 
 @[simp]
@@ -285,7 +286,7 @@ theorem mul_const {f : ℝ → A} (hf : IntervalIntegrable f μ a b) (c : A) :
   hf.mul_continuousOn continuousOn_const
 
 @[simp]
-theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedField 𝕜] (h : IntervalIntegrable f μ a b)
+theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedDivisionRing 𝕜] (h : IntervalIntegrable f μ a b)
     (c : 𝕜) : IntervalIntegrable (fun x => f x / c) μ a b := by
   simpa only [div_eq_mul_inv] using mul_const h c⁻¹
 
@@ -575,39 +576,50 @@ theorem norm_integral_min_max (f : ℝ → E) :
     ‖∫ x in min a b..max a b, f x ∂μ‖ = ‖∫ x in a..b, f x ∂μ‖ := by
   cases le_total a b <;> simp [*, integral_symm a b]
 
-theorem norm_integral_eq_norm_integral_Ioc (f : ℝ → E) :
+theorem norm_integral_eq_norm_integral_uIoc (f : ℝ → E) :
     ‖∫ x in a..b, f x ∂μ‖ = ‖∫ x in Ι a b, f x ∂μ‖ := by
   rw [← norm_integral_min_max, integral_of_le min_le_max, uIoc]
 
+@[deprecated (since := "2025-04-19")]
+alias norm_integral_eq_norm_integral_Ioc := norm_integral_eq_norm_integral_uIoc
+
 theorem abs_integral_eq_abs_integral_uIoc (f : ℝ → ℝ) :
     |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| :=
-  norm_integral_eq_norm_integral_Ioc f
+  norm_integral_eq_norm_integral_uIoc f
 
-theorem norm_integral_le_integral_norm_Ioc : ‖∫ x in a..b, f x ∂μ‖ ≤ ∫ x in Ι a b, ‖f x‖ ∂μ :=
+theorem norm_integral_le_integral_norm_uIoc : ‖∫ x in a..b, f x ∂μ‖ ≤ ∫ x in Ι a b, ‖f x‖ ∂μ :=
   calc
-    ‖∫ x in a..b, f x ∂μ‖ = ‖∫ x in Ι a b, f x ∂μ‖ := norm_integral_eq_norm_integral_Ioc f
+    ‖∫ x in a..b, f x ∂μ‖ = ‖∫ x in Ι a b, f x ∂μ‖ := norm_integral_eq_norm_integral_uIoc f
     _ ≤ ∫ x in Ι a b, ‖f x‖ ∂μ := norm_integral_le_integral_norm f
 
+@[deprecated (since := "2025-04-19")]
+alias norm_integral_le_integral_norm_Ioc := norm_integral_le_integral_norm_uIoc
+
 theorem norm_integral_le_abs_integral_norm : ‖∫ x in a..b, f x ∂μ‖ ≤ |∫ x in a..b, ‖f x‖ ∂μ| := by
-  simp only [← Real.norm_eq_abs, norm_integral_eq_norm_integral_Ioc]
+  simp only [← Real.norm_eq_abs, norm_integral_eq_norm_integral_uIoc]
   exact le_trans (norm_integral_le_integral_norm _) (le_abs_self _)
 
 theorem norm_integral_le_integral_norm (h : a ≤ b) :
     ‖∫ x in a..b, f x ∂μ‖ ≤ ∫ x in a..b, ‖f x‖ ∂μ :=
-  norm_integral_le_integral_norm_Ioc.trans_eq <| by rw [uIoc_of_le h, integral_of_le h]
+  norm_integral_le_integral_norm_uIoc.trans_eq <| by rw [uIoc_of_le h, integral_of_le h]
 
-nonrec theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ.restrict <| Ι a b, ‖f t‖ ≤ g t)
+theorem norm_integral_le_abs_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ.restrict <| Ι a b, ‖f t‖ ≤ g t)
     (hbound : IntervalIntegrable g μ a b) : ‖∫ t in a..b, f t ∂μ‖ ≤ |∫ t in a..b, g t ∂μ| := by
-  simp_rw [norm_intervalIntegral_eq, abs_intervalIntegral_eq,
-    abs_eq_self.mpr (integral_nonneg_of_ae <| h.mono fun _t ht => (norm_nonneg _).trans ht),
-    norm_integral_le_of_norm_le hbound.def' h]
+  rw [norm_intervalIntegral_eq, abs_intervalIntegral_eq]
+  exact (norm_integral_le_of_norm_le hbound.def' h).trans (le_abs_self _)
+
+theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (hab : a ≤ b)
+    (h : ∀ᵐ t ∂μ, t ∈ Set.Ioc a b → ‖f t‖ ≤ g t) (hbound : IntervalIntegrable g μ a b) :
+    ‖∫ t in a..b, f t ∂μ‖ ≤ ∫ t in a..b, g t ∂μ := by
+  simp only [integral_of_le hab, uIoc_of_le hab, ← ae_restrict_iff' measurableSet_Ioc] at *
+  exact MeasureTheory.norm_integral_le_of_norm_le hbound.1 h
 
 theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}
     (h : ∀ᵐ x, x ∈ Ι a b → ‖f x‖ ≤ C) : ‖∫ x in a..b, f x‖ ≤ C * |b - a| := by
-  rw [norm_integral_eq_norm_integral_Ioc]
-  convert norm_setIntegral_le_of_norm_le_const_ae'' _ measurableSet_Ioc h using 1
-  · rw [Real.volume_Ioc, max_sub_min_eq_abs, ENNReal.toReal_ofReal (abs_nonneg _)]
-  · simp only [Real.volume_Ioc, ENNReal.ofReal_lt_top]
+  rw [norm_integral_eq_norm_integral_uIoc]
+  convert norm_setIntegral_le_of_norm_le_const_ae' _ h using 1
+  · rw [uIoc, Real.volume_real_Ioc_of_le inf_le_sup, max_sub_min_eq_abs]
+  · simp [uIoc, Real.volume_Ioc]
 
 theorem norm_integral_le_of_norm_le_const {a b C : ℝ} {f : ℝ → E} (h : ∀ x ∈ Ι a b, ‖f x‖ ≤ C) :
     ‖∫ x in a..b, f x‖ ≤ C * |b - a| :=
@@ -633,11 +645,20 @@ theorem integral_sub (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable
     ∫ x in a..b, f x - g x ∂μ = (∫ x in a..b, f x ∂μ) - ∫ x in a..b, g x ∂μ := by
   simpa only [sub_eq_add_neg] using (integral_add hf hg.neg).trans (congr_arg _ integral_neg)
 
+/-- Compatibility with scalar multiplication. Note this assumes `𝕜` is a division ring in order to
+ensure that for `c ≠ 0`, `c • f` is integrable iff `f` is. For scalar multiplication by more
+general rings assuming integrability, see `IntervalIntegrable.integral_smul`. -/
 @[simp]
-nonrec theorem integral_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+nonrec theorem integral_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (r : 𝕜) (f : ℝ → E) :
     ∫ x in a..b, r • f x ∂μ = r • ∫ x in a..b, f x ∂μ := by
   simp only [intervalIntegral, integral_smul, smul_sub]
+
+theorem _root_.IntervalIntegrable.integral_smul
+    {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℝ R E]
+    {f : ℝ → E} (r : R) (hf : IntervalIntegrable f μ a b) :
+    ∫ x in a..b, r • f x ∂μ = r • ∫ x in a..b, f x ∂μ := by
+  simp only [intervalIntegral, smul_sub, hf.1.integral_smul, hf.2.integral_smul]
 
 @[simp]
 nonrec theorem integral_smul_const [CompleteSpace E]
@@ -646,7 +667,7 @@ nonrec theorem integral_smul_const [CompleteSpace E]
   simp only [intervalIntegral_eq_integral_uIoc, integral_smul_const, smul_assoc]
 
 @[simp]
-theorem integral_const_mul {𝕜 : Type*} [RCLike 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_const_mul [NormedDivisionRing 𝕜] [NormedAlgebra ℝ 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, r * f x ∂μ = r * ∫ x in a..b, f x ∂μ :=
   integral_smul r f
 
@@ -661,13 +682,13 @@ theorem integral_div {𝕜 : Type*} [RCLike 𝕜] (r : 𝕜) (f : ℝ → 𝕜) 
   simpa only [div_eq_mul_inv] using integral_mul_const r⁻¹ f
 
 theorem integral_const' [CompleteSpace E] (c : E) :
-    ∫ _ in a..b, c ∂μ = ((μ <| Ioc a b).toReal - (μ <| Ioc b a).toReal) • c := by
-  simp only [intervalIntegral, setIntegral_const, sub_smul]
+    ∫ _ in a..b, c ∂μ = (μ.real (Ioc a b) - μ.real (Ioc b a)) • c := by
+  simp only [measureReal_def, intervalIntegral, setIntegral_const, sub_smul]
 
 @[simp]
 theorem integral_const [CompleteSpace E] (c : E) : ∫ _ in a..b, c = (b - a) • c := by
   simp only [integral_const', Real.volume_Ioc, ENNReal.toReal_ofReal', ← neg_sub b,
-    max_zero_sub_eq_self]
+    max_zero_sub_eq_self, measureReal_def]
 
 nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
     ∫ x in a..b, f x ∂c • μ = c.toReal • ∫ x in a..b, f x ∂μ := by
@@ -967,10 +988,9 @@ theorem integral_Iio_add_Ici (h_left : IntegrableOn f (Iio b) μ)
 
 /-- If `μ` is a finite measure then `∫ x in a..b, c ∂μ = (μ (Iic b) - μ (Iic a)) • c`. -/
 theorem integral_const_of_cdf [CompleteSpace E] [IsFiniteMeasure μ] (c : E) :
-    ∫ _ in a..b, c ∂μ = ((μ (Iic b)).toReal - (μ (Iic a)).toReal) • c := by
+    ∫ _ in a..b, c ∂μ = (μ.real (Iic b) - μ.real (Iic a)) • c := by
   simp only [sub_smul, ← setIntegral_const]
-  refine (integral_Iic_sub_Iic ?_ ?_).symm <;>
-    simp only [integrableOn_const, measure_lt_top, or_true]
+  refine (integral_Iic_sub_Iic ?_ ?_).symm <;> simp
 
 theorem integral_eq_integral_of_support_subset {a b} (h : support f ⊆ Ioc a b) :
     ∫ x in a..b, f x ∂μ = ∫ x, f x ∂μ := by

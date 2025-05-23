@@ -101,10 +101,9 @@ theorem binomial_spec [DecidableEq α] (hab : a ≠ b) :
     (f a)! * (f b)! * multinomial {a, b} f = (f a + f b)! := by
   simpa [Finset.sum_pair hab, Finset.prod_pair hab] using multinomial_spec {a, b} f
 
-@[simp]
 theorem binomial_one [DecidableEq α] (h : a ≠ b) (h₁ : f a = 1) :
     multinomial {a, b} f = (f b).succ := by
-  simp [multinomial_insert_one (Finset.not_mem_singleton.mpr h) h₁]
+  simp [h, h₁]
 
 theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} (Function.update (Function.update f a (f a).succ) b (f b).succ) =

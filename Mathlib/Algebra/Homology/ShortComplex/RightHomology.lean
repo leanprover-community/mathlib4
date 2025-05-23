@@ -1144,7 +1144,7 @@ namespace RightHomologyMapData
 /-- This right homology map data expresses compatibilities of the right homology data
 constructed by `RightHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
-def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁)
+noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     RightHomologyMapData φ h (RightHomologyData.ofEpiOfIsIsoOfMono φ h) where
   φQ := 𝟙 _

@@ -46,7 +46,7 @@ variable {𝕜 E ι : Type*}
 
 section OrderedSemiring
 
-variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 /-- An indexed family is said to be convex independent if every point only belongs to convex hulls
 of sets containing it. -/

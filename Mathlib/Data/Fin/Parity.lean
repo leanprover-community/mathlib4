@@ -12,6 +12,9 @@ import Mathlib.Data.ZMod.Defs
 
 In this file we prove that an element `k : Fin n` is even in `Fin n`
 iff `n` is odd or `Fin.val k` is even.
+
+We also prove a lemma about parity of `Fin.succAbove i j + Fin.predAbove j i`
+which can be used to prove `d ∘ d = 0` for de Rham cohomologies.
 -/
 
 open Fin
@@ -19,6 +22,15 @@ open Fin
 namespace Fin
 
 variable {n : ℕ} {k : Fin n}
+
+theorem even_succAbove_add_predAbove (i : Fin (n + 1)) (j : Fin n) :
+    Even (i.succAbove j + j.predAbove i : ℕ) ↔ Odd (i + j : ℕ) := by
+  rcases lt_or_le j.castSucc i with hji | hij
+  · have : 1 ≤ (i : ℕ) := (Nat.zero_le j).trans_lt hji
+    simp [succAbove_of_castSucc_lt _ _ hji, predAbove_of_castSucc_lt _ _ hji, this, iff_comm,
+      parity_simps]
+  · simp [succAbove_of_le_castSucc _ _ hij, predAbove_of_le_castSucc _ _ hij,
+      ← Nat.not_even_iff_odd, not_iff, not_iff_comm, parity_simps]
 
 lemma even_of_val (h : Even k.val) : Even k := by
   have : NeZero n := ⟨k.pos.ne'⟩

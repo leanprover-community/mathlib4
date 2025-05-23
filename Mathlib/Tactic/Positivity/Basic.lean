@@ -260,9 +260,9 @@ private theorem pow_zero_pos [Semiring α] [PartialOrder α] [IsOrderedRing α] 
     (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
 
-/-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℕ)`.
+/-- The `positivity` extension which identifies expressions of the form `a ^ (0 : ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
-@[positivity _ ^ (0:ℕ)]
+@[positivity _ ^ (0 : ℕ)]
 def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   let _a ← synthInstanceQ q(Semiring $α)
@@ -378,15 +378,16 @@ def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@Nat.cast _ (_) ($a : ℕ)) := e | throwError "not Nat.cast"
   let zα' : Q(Zero Nat) := q(inferInstance)
   let pα' : Q(PartialOrder Nat) := q(inferInstance)
-  let (_rα : Q(Semiring $α)) ← synthInstanceQ q(Semiring $α)
-  let (_oα : Q(IsOrderedRing $α)) ← synthInstanceQ q(IsOrderedRing $α)
+  let (_i1 : Q(AddMonoidWithOne $α)) ← synthInstanceQ q(AddMonoidWithOne $α)
+  let (_i2 : Q(AddLeftMono $α)) ← synthInstanceQ q(AddLeftMono $α)
+  let (_i3 : Q(ZeroLEOneClass $α)) ← synthInstanceQ q(ZeroLEOneClass $α)
   assumeInstancesCommute
   match ← core zα' pα' a with
   | .positive pa =>
-    let _nt ← synthInstanceQ q(Nontrivial $α)
-    pure (.positive q(Nat.cast_pos.mpr $pa))
+    let _nz ← synthInstanceQ q(NeZero (1 : $α))
+    pure (.positive q(Nat.cast_pos'.2 $pa))
   | _ =>
-    pure (.nonnegative q(Nat.cast_nonneg _))
+    pure (.nonnegative q(Nat.cast_nonneg' _))
 
 /-- Extension for the `positivity` tactic: `Int.cast` is positive (resp. non-negative)
 if its input is. -/

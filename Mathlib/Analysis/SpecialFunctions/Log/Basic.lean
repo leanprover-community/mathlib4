@@ -341,7 +341,7 @@ lemma tendsto_log_nhdsLT_zero : Tendsto log (𝓝[<] 0) atBot :=
 alias tendsto_log_nhdsWithin_zero_left := tendsto_log_nhdsLT_zero
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
-  simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
+  simp +unfoldPartialApp only [continuousOn_iff_continuous_restrict,
     restrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)

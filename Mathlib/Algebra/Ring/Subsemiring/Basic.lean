@@ -469,7 +469,7 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
     (zero : p 0 (zero_mem _)) (one : p 1 (one_mem _))
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (hx : x ∈ closure s)  : p x hx :=
+    {x} (hx : x ∈ closure s) : p x hx :=
   let K : Subsemiring R :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩

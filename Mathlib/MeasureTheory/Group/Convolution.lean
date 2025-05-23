@@ -32,10 +32,10 @@ noncomputable def mconv (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (μ.prod ν)
 
 /-- Scoped notation for the multiplicative convolution of measures. -/
-scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.mconv
+scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.mconv
 
 /-- Scoped notation for the additive convolution of measures. -/
-scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.conv
+scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.conv
 
 @[to_additive]
 theorem lintegral_mconv [MeasurableMul₂ M] {μ ν : Measure M} [SFinite ν]
@@ -117,14 +117,11 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
 theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
     [SFinite ν] [SFinite ρ] :
     (μ ∗ ν) ∗ ρ = μ ∗ (ν ∗ ρ) := by
-  apply ext_of_lintegral
-  intro f hf
-  repeat
-    rw [lintegral_mconv (by first | fun_prop | apply Measurable.lintegral_prod_right; fun_prop)]
+  refine ext_of_lintegral _ fun f hf ↦ ?_
+  repeat rw [lintegral_mconv (by fun_prop)]
   refine lintegral_congr fun x ↦ ?_
   rw [lintegral_mconv (by fun_prop)]
   repeat refine lintegral_congr fun x ↦ ?_
-  apply congr_arg
   simp [mul_assoc]
 
 @[to_additive]
@@ -132,6 +129,31 @@ instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : 
     [MeasurableMul₂ M] [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (μ ∗ ν) :=
   MeasureTheory.isProbabilityMeasure_map (by fun_prop)
+
+@[to_additive]
+lemma map_mconv_monoidHom {M M' : Type*} {mM : MeasurableSpace M} [Monoid M] [MeasurableMul₂ M]
+    {mM' : MeasurableSpace M'} [Monoid M'] [MeasurableMul₂ M']
+    {μ ν : Measure M} [SFinite μ] [SFinite ν]
+    (L : M →* M') (hL : Measurable L) :
+    (μ ∗ ν).map L = (μ.map L) ∗ (ν.map L) := by
+  unfold Measure.mconv
+  rw [Measure.map_map (by fun_prop) (by fun_prop)]
+  have : (L ∘ fun p : M × M ↦ p.1 * p.2) = (fun p : M' × M' ↦ p.1 * p.2) ∘ (Prod.map L L) := by
+    ext; simp
+  rw [this, ← Measure.map_map (by fun_prop) (by fun_prop),
+    ← Measure.map_prod_map _ _ (by fun_prop) (by fun_prop)]
+
+lemma map_conv_continuousLinearMap {E F : Type*} [AddCommMonoid E] [AddCommMonoid F]
+    [Module ℝ E] [Module ℝ F] [TopologicalSpace E] [TopologicalSpace F]
+    {mE : MeasurableSpace E} [MeasurableAdd₂ E] {mF : MeasurableSpace F} [MeasurableAdd₂ F]
+    [OpensMeasurableSpace E] [BorelSpace F]
+    {μ ν : Measure E} [SFinite μ] [SFinite ν]
+    (L : E →L[ℝ] F) :
+    (μ ∗ ν).map L = (μ.map L).conv (ν.map L) := by
+  suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)).conv (ν.map (L : E →+ F)) by simpa
+  rw [map_conv_addMonoidHom]
+  rw [AddMonoidHom.coe_coe]
+  fun_prop
 
 end Measure
 

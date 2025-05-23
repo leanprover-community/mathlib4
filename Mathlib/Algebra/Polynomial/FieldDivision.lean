@@ -225,9 +225,6 @@ theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := b
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
 
-@[deprecated Polynomial.Monic.normalize_eq_self (since := "2024-10-21")]
-alias normalize_monic := Monic.normalize_eq_self
-
 theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
@@ -538,6 +535,12 @@ theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   simp only [div_def, leadingCoeff_mul, mul_inv, leadingCoeff_C, C.map_mul, mul_assoc]
   congr 3
   rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one, one_mul]
+
+lemma div_C : p / C a = p * C a⁻¹ := by
+  simpa [mul_comm] using div_C_mul (q := 1)
+
+lemma C_div : C (a / b) = C a / C b := by
+  rw [div_C, ← C_mul, div_eq_mul_inv]
 
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
   ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>

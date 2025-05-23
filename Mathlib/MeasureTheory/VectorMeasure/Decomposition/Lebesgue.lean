@@ -243,15 +243,14 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
   simp_rw [JordanDecomposition.toSignedMeasure, hadd]
   ext i hi
   rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
-      toSignedMeasure_apply_measurable hi, add_apply, add_apply, ENNReal.toReal_add,
-      ENNReal.toReal_add, add_sub_add_comm, ← toSignedMeasure_apply_measurable hi,
+      toSignedMeasure_apply_measurable hi, measureReal_add_apply, measureReal_add_apply,
+      add_sub_add_comm, ← toSignedMeasure_apply_measurable hi,
       ← toSignedMeasure_apply_measurable hi, ← VectorMeasure.sub_apply,
       ← JordanDecomposition.toSignedMeasure, toSignedMeasure_toJordanDecomposition,
       VectorMeasure.add_apply, ← toSignedMeasure_apply_measurable hi,
       ← toSignedMeasure_apply_measurable hi,
       withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part hfi,
-      VectorMeasure.sub_apply] <;>
-    exact (measure_lt_top _ _).ne
+      VectorMeasure.sub_apply]
 
 private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :

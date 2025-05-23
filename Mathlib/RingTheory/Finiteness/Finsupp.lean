@@ -100,7 +100,7 @@ theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
 the first morphism is surjective. -/
 theorem fg_ker_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (hf1 : (LinearMap.ker f).FG) (hf2 : (LinearMap.ker g).FG)
-    (hsur : Function.Surjective f) : (g.comp f).ker.FG := by
+    (hsur : Function.Surjective f) : (LinearMap.ker (g.comp f)).FG := by
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
   · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]

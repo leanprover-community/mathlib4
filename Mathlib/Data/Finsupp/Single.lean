@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Finitely supported functions on exactly one point
@@ -155,6 +156,9 @@ theorem single_left_injective (h : b ≠ 0) : Function.Injective fun a : α => s
 
 theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
   (single_left_injective h).eq_iff
+
+lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
+  RightInverse.surjective fun _ ↦ single_eq_same
 
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
   simpa only [support_single_ne_zero _ h] using singleton_ne_empty _

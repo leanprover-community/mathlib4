@@ -219,9 +219,3 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
   apply (tendsto_sub_mul_tsum_nat_cpow.comp this).congr fun s ↦ ?_
   simp only [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
     ofReal_inv, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast]
-
-/- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
-aliases for the old names -/
-section aliases
-
-end aliases

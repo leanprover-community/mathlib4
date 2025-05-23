@@ -139,7 +139,7 @@ theorem sInter [IsOrderedRing 𝕜] [ContinuousAdd 𝕜] {F : Finset (Set E)} (h
   classical
   induction F using Finset.induction with
   | empty => exfalso; exact Finset.not_nonempty_empty hF
-  | @insert C F _ hF' =>
+  | insert C F _ hF' =>
     rw [Finset.coe_insert, sInter_insert]
     obtain rfl | hFnemp := F.eq_empty_or_nonempty
     · rw [Finset.coe_empty, sInter_empty, inter_univ]

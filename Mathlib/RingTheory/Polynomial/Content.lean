@@ -16,14 +16,16 @@ and primitive polynomials.
 
 ## Main Definitions
 Let `p : R[X]`.
- - `p.content` is the `gcd` of the coefficients of `p`.
- - `p.IsPrimitive` indicates that `p.content = 1`.
+- `p.content` is the `gcd` of the coefficients of `p`.
+- `p.IsPrimitive` indicates that `p.content = 1`.
 
 ## Main Results
- - `Polynomial.content_mul`:
-  If `p q : R[X]`, then `(p * q).content = p.content * q.content`.
- - `Polynomial.NormalizedGcdMonoid`:
-  The polynomial ring of a GCD domain is itself a GCD domain.
+- `Polynomial.content_mul`: if `p q : R[X]`, then `(p * q).content = p.content * q.content`.
+- `Polynomial.NormalizedGcdMonoid`: the polynomial ring of a GCD domain is itself a GCD domain.
+
+## Note
+
+This has nothing to do with minimal polynomials of primitive elements in finite fields.
 
 -/
 
@@ -34,7 +36,8 @@ section Primitive
 
 variable {R : Type*} [CommSemiring R]
 
-/-- A polynomial is primitive when the only constant polynomials dividing it are units -/
+/-- A polynomial is primitive when the only constant polynomials dividing it are units.
+Note: This has nothing to do with minimal polynomials of primitive elements in finite fields. -/
 def IsPrimitive (p : R[X]) : Prop :=
   ∀ r : R, C r ∣ p → IsUnit r
 
@@ -55,6 +58,16 @@ theorem IsPrimitive.ne_zero [Nontrivial R] {p : R[X]} (hp : p.IsPrimitive) : p �
 
 theorem isPrimitive_of_dvd {p q : R[X]} (hp : IsPrimitive p) (hq : q ∣ p) : IsPrimitive q :=
   fun a ha => isPrimitive_iff_isUnit_of_C_dvd.mp hp a (dvd_trans ha hq)
+
+/-- An irreducible nonconstant polynomial over a domain is primitive. -/
+theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
+    {p : Polynomial R} (hp : Irreducible p) (hp' : p.natDegree ≠ 0) : p.IsPrimitive := by
+  rintro r ⟨q, hq⟩
+  suffices ¬IsUnit q by simpa using ((hp.2 hq).resolve_right this).map Polynomial.constantCoeff
+  intro H
+  have hr : r ≠ 0 := by rintro rfl; simp_all
+  obtain ⟨s, hs, rfl⟩ := Polynomial.isUnit_iff.mp H
+  simp [hq, Polynomial.natDegree_C_mul hr] at hp'
 
 end Primitive
 

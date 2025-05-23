@@ -151,7 +151,7 @@ such that the integral of `f` over `sᶜ` is less than a given positive number.
 
 Also used to prove an `Lᵖ`-norm version in
 `MeasureTheory.MemLp.exists_eLpNorm_indicator_compl_le`. -/
-theorem exists_setLintegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞)
+theorem exists_setLIntegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, f a ∂μ < ε := by
   by_cases hf₀ : ∫⁻ a, f a ∂μ = 0
@@ -174,19 +174,26 @@ theorem exists_setLintegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a
     _ < ε := ENNReal.sub_lt_of_lt_add (lintegral_mono hgf) <|
       ENNReal.lt_add_of_sub_lt_left (.inl hf) hgε
 
+@[deprecated (since := "2025-04-22")]
+alias exists_setLintegral_compl_lt := exists_setLIntegral_compl_lt
+
 /-- For any function `f : α → ℝ≥0∞`, there exists a measurable function `g ≤ f` with the same
 integral over any measurable set. -/
-theorem exists_measurable_le_setLintegral_eq_of_integrable {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
+theorem exists_measurable_le_setLIntegral_eq_of_integrable {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
     ∃ (g : α → ℝ≥0∞), Measurable g ∧ g ≤ f ∧ ∀ s : Set α, MeasurableSet s →
       ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
   obtain ⟨g, hmg, hgf, hifg⟩ := exists_measurable_le_lintegral_eq (μ := μ) f
   use g, hmg, hgf
   refine fun s hms ↦ le_antisymm ?_ (lintegral_mono hgf)
-  rw [← compl_compl s, setLintegral_compl hms.compl, setLintegral_compl hms.compl, hifg]
+  rw [← compl_compl s, setLIntegral_compl hms.compl, setLIntegral_compl hms.compl, hifg]
   · gcongr; apply hgf
   · rw [hifg] at hf
     exact ne_top_of_le_ne_top hf (setLIntegral_le_lintegral _ _)
   · exact ne_top_of_le_ne_top hf (setLIntegral_le_lintegral _ _)
+
+@[deprecated (since := "2025-04-22")]
+alias exists_measurable_le_setLintegral_eq_of_integrable :=
+  exists_measurable_le_setLIntegral_eq_of_integrable
 
 end UnifTight
 

@@ -262,7 +262,7 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → Di
 variable (L ι)
 
 /-- The canonical map from a component to the direct limit. -/
-def of (i : ι) : G i ↪[L] DirectLimit G f where
+noncomputable def of (i : ι) : G i ↪[L] DirectLimit G f where
   toFun := fun a => ⟦.mk f i a⟧
   inj' x y h := by
     rw [Quotient.eq] at h
@@ -325,7 +325,7 @@ variable (L ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit. -/
-def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+noncomputable def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f ↪[L] P where
   toFun :=
     Quotient.lift (fun x : Σˣ f => (g x.1) x.2) fun x y xy => by
@@ -438,7 +438,7 @@ instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion 
 namespace DirectLimit
 
 /-- The map from a direct limit of a system of substructures of `M` into `M`. -/
-def liftInclusion :
+noncomputable def liftInclusion :
     DirectLimit (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) ↪[L] M :=
   DirectLimit.lift L ι (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h))
     (fun _ ↦ Substructure.subtype _) (fun _ _ _ _ ↦ rfl)

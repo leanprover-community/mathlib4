@@ -169,7 +169,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
   calc
   ∫ x, f x ∂μ = ∫ x, f x * (D x)⁻¹ * D x ∂μ := by
     congr with x; rw [mul_assoc, inv_mul_cancel₀ (D_pos x).ne', mul_one]
-  _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [D, integral_mul_left]
+  _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [D, integral_const_mul]
   _ = ∫ y, (∫ x, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂μ) ∂ν := by
       apply integral_integral_swap_of_hasCompactSupport
       · apply Continuous.mul
@@ -231,10 +231,10 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
         apply HasCompactSupport.intro' (L_comp.prod M'_comp) ?_ this
         exact (isClosed_tsupport g).prod isClosed_closure
   _ = ∫ x, (∫ y, f y * (D y)⁻¹ ∂ν) * g x ∂μ := by
-      simp_rw [integral_mul_right]
+      simp_rw [integral_mul_const]
       congr with x
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
-  _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
+  _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_const_mul _ _
 
 /-- Given two left-invariant measures which are finite on
 compacts, they coincide in the following sense: they give the same value to the integral of
@@ -491,8 +491,8 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
   have J1 : ∫ (x : G), indicator {1} (fun _ ↦ (1 : ℝ)) (f x) ∂μ'
       = ∫ (x : G), indicator {1} (fun _ ↦ 1) (f x) ∂(haarScalarFactor μ' μ • μ) :=
     tendsto_nhds_unique I1 (I (haarScalarFactor μ' μ • μ) (by infer_instance))
-  have J2 : ENNReal.toReal (μ' (f ⁻¹' {1}))
-      = ENNReal.toReal ((haarScalarFactor μ' μ • μ) (f ⁻¹' {1})) := by
+  have J2 : μ'.real (f ⁻¹' {1})
+      = (haarScalarFactor μ' μ • μ).real (f ⁻¹' {1}) := by
     have : (fun x ↦ indicator {1} (fun _ ↦ (1 : ℝ)) (f x)) =
         (fun x ↦ indicator (f ⁻¹' {1}) (fun _ ↦ (1 : ℝ)) x) := by
       ext x
@@ -501,7 +501,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     simpa only [this, mf, integral_indicator_const, smul_eq_mul, mul_one, Pi.smul_apply,
       nnreal_smul_coe_apply, ENNReal.toReal_mul, ENNReal.coe_toReal] using J1
   have C : IsCompact (f ⁻¹' {1}) := h'f.isCompact_preimage hf isClosed_singleton (by simp)
-  rw [ENNReal.toReal_eq_toReal C.measure_lt_top.ne C.measure_lt_top.ne] at J2
+  rw [measureReal_eq_measureReal_iff C.measure_lt_top.ne C.measure_lt_top.ne] at J2
   simpa using J2
 
 /-- If an invariant measure is inner regular, then it gives less mass to sets with compact closure
@@ -996,11 +996,8 @@ end CommGroup
 
 section DistribMulAction
 variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
-  -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
-  -- assume `MeasurableSpace G` + `MeasurableSMul G A`
-  [MeasurableSpace G] [MeasurableSMul G A] [TopologicalSpace A] [BorelSpace A]
-  [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {μ ν : Measure A}
-  [μ.IsAddHaarMeasure] [ν.IsAddHaarMeasure] {g : G}
+  [TopologicalSpace A] [BorelSpace A] [IsTopologicalAddGroup A] [LocallyCompactSpace A]
+  [ContinuousConstSMul G A] {μ ν : Measure A} [μ.IsAddHaarMeasure] [ν.IsAddHaarMeasure] {g : G}
 
 variable (μ ν) in
 lemma addHaarScalarFactor_domSMul (g : Gᵈᵐᵃ) :

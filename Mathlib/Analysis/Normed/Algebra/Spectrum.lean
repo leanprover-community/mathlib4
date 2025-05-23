@@ -242,7 +242,7 @@ local notation "↑ₐ" => algebraMap 𝕜 A
 
 theorem hasDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ ρ a) :
     HasDerivAt (resolvent a) (-resolvent a k ^ 2) k := by
-  have H₁ : HasFDerivAt Ring.inverse _ (↑ₐ k - a) := hasFDerivAt_ring_inverse (𝕜 := 𝕜) hk.unit
+  have H₁ : HasFDerivAt Ring.inverse _ (↑ₐ k - a) := hasFDerivAt_ringInverse (𝕜 := 𝕜) hk.unit
   have H₂ : HasDerivAt (fun k => ↑ₐ k - a) 1 k := by
     simpa using (Algebra.linearMap 𝕜 A).hasDerivAt.sub_const a
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂

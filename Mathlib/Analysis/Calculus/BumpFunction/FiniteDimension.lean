@@ -345,7 +345,7 @@ theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
   have Bx : φ x = 1 := B _ (mem_ball_self Dpos)
   have B' : ∀ y, y ∈ ball x D → φ y = φ x := by rw [Bx]; exact B
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
-  simp only [lsmul_apply, Algebra.id.smul_eq_mul, integral_mul_right, w_integral E Dpos, Bx,
+  simp only [lsmul_apply, Algebra.id.smul_eq_mul, integral_mul_const, w_integral E Dpos, Bx,
     one_mul]
 
 theorem y_eq_zero_of_not_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ball (0 : E) (1 + D)) :
@@ -378,7 +378,7 @@ theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
     exact continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
   have B : (w D ⋆[lsmul ℝ ℝ, μ] fun _ => (1 : ℝ)) x = 1 := by
     simp only [convolution, ContinuousLinearMap.map_smul, mul_inv_rev, coe_smul', mul_one,
-      lsmul_apply, Algebra.id.smul_eq_mul, integral_mul_left, w_integral E Dpos, Pi.smul_apply]
+      lsmul_apply, Algebra.id.smul_eq_mul, integral_const_mul, w_integral E Dpos, Pi.smul_apply]
   exact A.trans (le_of_eq B)
 
 theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)

@@ -1005,10 +1005,6 @@ lemma smul_inv_lt_iff_of_neg (h : a < 0) : b₁ < a⁻¹ • b₂ ↔ b₂ < a �
 
 end Field
 
-namespace Prod
-
-end Prod
-
 namespace Pi
 variable {ι : Type*} {β : ι → Type*} [Zero α] [∀ i, Zero (β i)]
 

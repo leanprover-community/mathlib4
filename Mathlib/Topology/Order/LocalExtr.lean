@@ -128,6 +128,15 @@ theorem IsLocalMaxOn.isLocalMax (hf : IsLocalMaxOn f s a) (hs : s ∈ 𝓝 a) : 
 theorem IsLocalExtrOn.isLocalExtr (hf : IsLocalExtrOn f s a) (hs : s ∈ 𝓝 a) : IsLocalExtr f a :=
   hf.elim (fun hf => (hf.isLocalMin hs).isExtr) fun hf => (hf.isLocalMax hs).isExtr
 
+lemma isLocalMinOn_univ_iff : IsLocalMinOn f univ a ↔ IsLocalMin f a := by
+  simp only [IsLocalMinOn, IsLocalMin, nhdsWithin_univ]
+
+lemma isLocalMaxOn_univ_iff : IsLocalMaxOn f univ a ↔ IsLocalMax f a := by
+  simp only [IsLocalMaxOn, IsLocalMax, nhdsWithin_univ]
+
+lemma isLocalExtrOn_univ_iff : IsLocalExtrOn f univ a ↔ IsLocalExtr f a :=
+  isLocalMinOn_univ_iff.or isLocalMaxOn_univ_iff
+
 theorem IsMinOn.isLocalMin (hf : IsMinOn f s a) (hs : s ∈ 𝓝 a) : IsLocalMin f a :=
   hf.localize.isLocalMin hs
 

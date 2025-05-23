@@ -330,7 +330,7 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
     simp only [Fin.val_mk, Prod.mk_inj, Fin.ext_iff]
     obtain ⟨h1, h2⟩ := Int.natCast_nonneg r, Int.ofNat_lt.2 hrn
     rw [Int.add_comm, add_mul_ediv_right _ _ (natCast_eq_zero.not.2 (NeZero.ne n)),
-      ediv_eq_zero_of_lt h1 h2, natMod, add_mul_emod_self, emod_eq_of_lt h1 h2, toNat_natCast]
+      ediv_eq_zero_of_lt h1 h2, natMod, add_mul_emod_self_right, emod_eq_of_lt h1 h2, toNat_natCast]
     exact ⟨q.zero_add, Fin.val_cast_of_lt hrn⟩
 
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying

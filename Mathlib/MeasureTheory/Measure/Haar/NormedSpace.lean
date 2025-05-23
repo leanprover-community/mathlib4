@@ -96,8 +96,7 @@ theorem integral_comp_smul (f : E → F) (R : ℝ) :
       conv_rhs => rw [this]
       simp only [hE, pow_zero, inv_one, abs_one, one_smul, integral_const]
     · have : Nontrivial E := finrank_pos_iff.1 hE
-      simp only [zero_pow hE.ne', measure_univ_of_isAddLeftInvariant, ENNReal.toReal_top, zero_smul,
-        inv_zero, abs_zero]
+      simp [zero_pow hE.ne', measure_univ_of_isAddLeftInvariant, measureReal_def]
   · calc
       (∫ x, f (R • x) ∂μ) = ∫ y, f y ∂Measure.map (fun x => R • x) μ :=
         (integral_map_equiv (Homeomorph.smul (isUnit_iff_ne_zero.2 hR).unit).toMeasurableEquiv

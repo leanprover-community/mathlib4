@@ -42,7 +42,7 @@ instance Closeds.emetricSpace : EMetricSpace (Closeds α) where
   edist_comm _ _ := hausdorffEdist_comm
   edist_triangle _ _ _ := hausdorffEdist_triangle
   eq_of_edist_eq_zero {s t} h :=
-    Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.closed t.closed).1 h
+    Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.isClosed t.isClosed).1 h
 
 /-- The edistance to a closed set depends continuously on the point and the set -/
 theorem continuous_infEdist_hausdorffEdist :
@@ -253,7 +253,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     rw [edist_comm] at Dst
     -- since `t` is nonempty, so is `s`
     exact nonempty_of_hausdorffEdist_ne_top ht.1 (ne_of_lt Dst)
-  · refine isCompact_iff_totallyBounded_isComplete.2 ⟨?_, s.closed.isComplete⟩
+  · refine isCompact_iff_totallyBounded_isComplete.2 ⟨?_, s.isClosed.isComplete⟩
     refine totallyBounded_iff.2 fun ε (εpos : 0 < ε) => ?_
     -- we have to show that s is covered by finitely many eballs of radius ε
     -- pick a nonempty compact set t at distance at most ε/2 of s
