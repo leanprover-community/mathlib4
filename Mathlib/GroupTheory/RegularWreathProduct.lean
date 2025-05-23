@@ -236,10 +236,6 @@ def Equiv.permCongrHom {α β : Type*} (e : α ≃ β) : Equiv.Perm α ≃* Equi
   right_inv _ := by ext; simp
   map_mul' _ _ := by ext; simp
 
-/-- `Fin (n + 1) → α` and `(Fin n → α) × α` are equivalent. -/
-def Fin.succFunEquiv (α : Type*) (n : ℕ) : (Fin (n + 1) → α) ≃ (Fin n → α) × α :=
-  (Fin.appendEquiv n 1).symm.trans (Equiv.prodCongrRight fun _ ↦ Equiv.funUnique (Fin 1) α)
-
 lemma Nat.card_fin (n : ℕ) : Nat.card (Fin n) = n := by
   rw [Nat.card_eq_fintype_card, Fintype.card_fin]
 
