@@ -20,7 +20,7 @@ images of different morphisms commute, we obtain a canonical morphism
 
 * `MonoidHom.noncommPiCoprod : (Π i, N i) →* M` is the main homomorphism
 * `Subgroup.noncommPiCoprod : (Π i, H i) →* G` is the specialization to `H i : Subgroup G`
-   and the subgroup embedding.
+  and the subgroup embedding.
 
 ## Main theorems
 
@@ -31,11 +31,11 @@ images of different morphisms commute, we obtain a canonical morphism
   `⨆ (i : ι), (ϕ i).range`
 * `Subgroup.noncommPiCoprod_range`: The range of `Subgroup.noncommPiCoprod` is `⨆ (i : ι), H i`.
 * `MonoidHom.injective_noncommPiCoprod_of_iSupIndep`: in the case of groups, `pi_hom.hom` is
-   injective if the `ϕ` are injective and the ranges of the `ϕ` are independent.
+  injective if the `ϕ` are injective and the ranges of the `ϕ` are independent.
 * `MonoidHom.independent_range_of_coprime_order`: If the `N i` have coprime orders, then the ranges
-   of the `ϕ` are independent.
+  of the `ϕ` are independent.
 * `Subgroup.independent_of_coprime_order`: If commuting normal subgroups `H i` have coprime orders,
-   they are independent.
+  they are independent.
 
 -/
 

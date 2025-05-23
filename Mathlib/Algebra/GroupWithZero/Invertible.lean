@@ -12,7 +12,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 We intentionally keep imports minimal here as this file is used by `Mathlib.Tactic.NormNum`.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 universe u
 

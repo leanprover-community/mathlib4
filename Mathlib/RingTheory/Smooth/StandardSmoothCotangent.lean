@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.LinearAlgebra.Basis.Exact
-import Mathlib.RingTheory.Kaehler.CotangentComplex
+import Mathlib.RingTheory.Extension.Cotangent.Basic
 import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Etale.Basic

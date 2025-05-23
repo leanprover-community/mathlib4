@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # Cyclotomic extensions of `ℚ` are totally complex number fields.
@@ -14,7 +14,7 @@ We prove that cyclotomic extensions of `ℚ` are totally complex, meaning that
 
 ## Main results
 * `nrRealPlaces_eq_zero`: If `K` is a `n`-th cyclotomic extension of `ℚ`, where `2 < n`,
-then there are no real places of `K`.
+  then there are no real places of `K`.
 -/
 
 universe u

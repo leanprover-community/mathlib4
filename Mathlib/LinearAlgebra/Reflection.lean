@@ -28,17 +28,17 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
 
 ## Main definitions / results:
 
- * `Module.preReflection`: the definition of the map `y ↦ y - (f y) • x`. Its main utility lies in
-   the fact that it does not require the assumption `f x = 2`, giving the user freedom to defer
-   discharging this proof obligation.
- * `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
-   that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
-   linear map.
- * `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
-   $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
-   commutative ring. This is used to define reflection representations of Coxeter groups.
- * `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
-   finite spanning sets that is useful in the theory of root data / systems.
+* `Module.preReflection`: the definition of the map `y ↦ y - (f y) • x`. Its main utility lies in
+  the fact that it does not require the assumption `f x = 2`, giving the user freedom to defer
+  discharging this proof obligation.
+* `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
+  that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
+  linear map.
+* `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
+  $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
+  commutative ring. This is used to define reflection representations of Coxeter groups.
+* `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
+  finite spanning sets that is useful in the theory of root data / systems.
 
 ## TODO
 

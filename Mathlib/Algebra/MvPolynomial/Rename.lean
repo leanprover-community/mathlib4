@@ -120,7 +120,7 @@ theorem rename_leftInverse {f : σ → τ} {g : τ → σ} (hf : Function.LeftIn
 
 theorem rename_rightInverse {f : σ → τ} {g : τ → σ} (hf : Function.RightInverse f g) :
     Function.RightInverse (rename f : MvPolynomial σ R → MvPolynomial τ R) (rename g) :=
- rename_leftInverse hf
+  rename_leftInverse hf
 
 theorem rename_surjective (f : σ → τ) (hf : Function.Surjective f) :
     Function.Surjective (rename f : MvPolynomial σ R → MvPolynomial τ R) :=

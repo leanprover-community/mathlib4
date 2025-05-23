@@ -9,6 +9,7 @@ import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.Nat.Choose.Bounds
@@ -28,6 +29,31 @@ noncomputable section
 open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
 
 variable {α : Type*}
+
+theorem tendsto_natCast_atTop_cobounded
+    [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
+    Tendsto Nat.cast atTop (Bornology.cobounded α) := by
+  rw [← tendsto_norm_atTop_iff_cobounded]
+  simpa [norm_natCast_eq_mul_norm_one] using tendsto_natCast_atTop_atTop
+    |>.atTop_mul_const (norm_pos_iff.mpr one_ne_zero)
+
+theorem tendsto_intCast_atBot_sup_atTop_cobounded
+    [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
+    Tendsto Int.cast (atBot ⊔ atTop) (Bornology.cobounded α) := by
+  rw [← tendsto_norm_atTop_iff_cobounded]
+  simpa [norm_intCast_eq_abs_mul_norm_one] using tendsto_intCast_atTop_atTop
+    |>.comp (tendsto_abs_atBot_atTop.sup tendsto_abs_atTop_atTop)
+    |>.atTop_mul_const (norm_pos_iff.mpr one_ne_zero)
+
+theorem tendsto_intCast_atBot_cobounded
+    [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
+    Tendsto Int.cast atBot (Bornology.cobounded α) :=
+  tendsto_intCast_atBot_sup_atTop_cobounded.mono_left le_sup_left
+
+theorem tendsto_intCast_atTop_cobounded
+    [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
+    Tendsto Int.cast atTop (Bornology.cobounded α) :=
+  tendsto_intCast_atBot_sup_atTop_cobounded.mono_left le_sup_right
 
 /-! ### Powers -/
 
@@ -825,3 +851,73 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / 
       rw [_root_.pow_succ', Nat.factorial_succ, Nat.cast_mul, ← _root_.div_mul_div_comm, norm_mul,
         norm_div, Real.norm_natCast, Nat.cast_succ]
     _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ := by gcongr
+
+section
+
+/-! Limits when `f x * g x` is bounded or convergent and `f` tends to the `cobounded` filter. -/
+
+open Bornology
+
+variable {R K : Type*}
+
+lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K]
+    [NormedAddGroup R] [SMulWithZero K R] [NoZeroSMulDivisors K R] [NormSMulClass K R]
+    {f : α → K} {g : α → R} {l : Filter α}
+    (hmul : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f x • g x‖)
+    (hf : Tendsto f l (cobounded K)) :
+    Tendsto g l (𝓝 0) := by
+  obtain ⟨c, hc⟩ := hmul.eventually_le
+  refine Metric.nhds_basis_closedBall.tendsto_right_iff.mpr fun ε hε0 ↦ ?_
+  filter_upwards [hc, hasBasis_cobounded_norm.tendsto_right_iff.mp hf (c / ε) trivial,
+    hf.eventually_ne_cobounded 0] with x hfgc hεf hf0
+  rcases eq_or_gt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
+  · simpa [(smul_eq_zero_iff_right hf0).mp (norm_le_zero_iff.mp hfgc)] using hε0.le
+  calc
+    _ = ‖g x‖ := by simp
+    _ ≤ c / ‖f x‖ := by rwa [norm_smul, ← le_div_iff₀' (by positivity)] at hfgc
+    _ ≤ c / (c / ε) := by gcongr
+    _ = ε := div_div_cancel₀ hc0.ne'
+
+section
+
+variable [NormedRing K] [NormedAddCommGroup R]
+variable [Module K R] [NoZeroSMulDivisors K R] [NormSMulClass K R]
+
+lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
+    {f₁ f₂ : α → K} {g : α → R} {t : R} {l : Filter α}
+    (hmul : Tendsto (fun x ↦ f₁ x • g x) l (𝓝 t))
+    (hf₁ : Tendsto f₁ l (cobounded K))
+    (hbdd : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f₁ x - f₂ x‖) :
+    Tendsto (fun x ↦ f₂ x • g x) l (𝓝 t) := by
+  apply hmul.congr_dist
+  dsimp
+  simp_rw [dist_eq_norm, ← sub_smul, norm_smul]
+  apply isBoundedUnder_le_mul_tendsto_zero
+  · show IsBoundedUnder _ _ fun _ ↦ _
+    simpa using hbdd
+  · rw [← tendsto_zero_iff_norm_tendsto_zero]
+    exact tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded hmul.norm.isBoundedUnder_le hf₁
+
+-- The use case in mind for this is when `K = ℝ`, and `R = ℝ` or `ℂ`
+lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormSMulClass ℤ K] [LinearOrder K]
+    [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}
+    (hg : Tendsto (fun n : ℕ ↦ n • g n) atTop (𝓝 t)) :
+    Tendsto (fun x : K ↦ x • g ⌊x⌋₊) atTop (𝓝 t) := by
+  replace hg : Tendsto (fun n : ℕ ↦ (n : K) • g n) atTop (𝓝 t) := mod_cast hg
+  apply tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
+    (hg.comp tendsto_nat_floor_atTop)
+  · exact tendsto_natCast_atTop_cobounded.comp tendsto_nat_floor_atTop
+  · apply isBoundedUnder_of_eventually_le (a := ‖(1 : K)‖)
+    apply Eventually.mono _ (fun x h ↦ norm_le_norm_of_abs_le_abs h)
+    simpa using ⟨0, fun _ h ↦ mod_cast Nat.abs_floor_sub_le h⟩
+
+end
+
+lemma tendsto_smul_comp_nat_floor_of_tendsto_mul [NormedRing K] [NormedRing R]
+    [Module K R] [NoZeroSMulDivisors K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
+    [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}
+    (hg : Tendsto (fun n : ℕ ↦ (n : R) * g n) atTop (𝓝 t)) :
+    Tendsto (fun x : K ↦ x • g ⌊x⌋₊) atTop (𝓝 t) :=
+  tendsto_smul_comp_nat_floor_of_tendsto_nsmul (by simpa only [nsmul_eq_mul] using hg)
+
+end

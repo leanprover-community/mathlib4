@@ -20,7 +20,7 @@ members.
 * `CommGroupWithZero`
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 universe u
 
@@ -154,8 +154,8 @@ lemma IsRightCancelMulZero.to_isCancelMulZero [IsRightCancelMulZero M₀] :
 end CommSemigroup
 
 /-- A type `M` is a `CancelCommMonoidWithZero` if it is a commutative monoid with zero element,
- `0` is left and right absorbing,
-  and left/right multiplication by a non-zero element is injective. -/
+`0` is left and right absorbing,
+and left/right multiplication by a non-zero element is injective. -/
 class CancelCommMonoidWithZero (M₀ : Type*) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
 
 -- See note [lower cancel priority]
@@ -205,7 +205,8 @@ variable [GroupWithZero G₀] {a : G₀}
 
 @[simp] lemma inv_zero : (0 : G₀)⁻¹ = 0 := GroupWithZero.inv_zero
 
-@[simp] lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
+@[simp]
+lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
 
 -- See note [lower instance priority]
 instance (priority := 100) GroupWithZero.toMulDivCancelClass : MulDivCancelClass G₀ where

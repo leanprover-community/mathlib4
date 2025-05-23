@@ -5,6 +5,7 @@ Authors: Junyan Xu
 -/
 import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
@@ -480,12 +481,6 @@ theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
 /-! Immediate consequences of the adjunction. -/
 
 
-/-- Spec preserves limits. -/
-instance : Limits.PreservesLimits Spec.toLocallyRingedSpace :=
-  ΓSpec.locallyRingedSpaceAdjunction.rightAdjoint_preservesLimits
-
-instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
-  ΓSpec.adjunction.rightAdjoint_preservesLimits
 
 /-- The functor `Spec.toLocallyRingedSpace : CommRingCatᵒᵖ ⥤ LocallyRingedSpace`
 is fully faithful. -/
@@ -562,12 +557,6 @@ lemma Spec.preimage_comp {R S T : CommRingCat} (f : Spec R ⟶ Spec S) (g : Spec
 
 end
 
-instance : Spec.toLocallyRingedSpace.IsRightAdjoint :=
-  (ΓSpec.locallyRingedSpaceAdjunction).isRightAdjoint
-
-instance : Scheme.Spec.IsRightAdjoint :=
-  (ΓSpec.adjunction).isRightAdjoint
-
 instance : Reflective Spec.toLocallyRingedSpace where
   L := Γ.rightOp
   adj := ΓSpec.locallyRingedSpaceAdjunction
@@ -575,5 +564,10 @@ instance : Reflective Spec.toLocallyRingedSpace where
 instance Spec.reflective : Reflective Scheme.Spec where
   L := Scheme.Γ.rightOp
   adj := ΓSpec.adjunction
+
+instance : LocallyRingedSpace.Γ.IsRightAdjoint :=
+  ΓSpec.locallyRingedSpaceAdjunction.rightOp.isRightAdjoint
+
+instance : Scheme.Γ.IsRightAdjoint := ΓSpec.adjunction.rightOp.isRightAdjoint
 
 end AlgebraicGeometry

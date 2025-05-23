@@ -131,11 +131,11 @@ lemma coheight_eq (a : α) :
 
 lemma height_le_iff {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last ≤ a → p.length ≤ n := by
- rw [height, iSup₂_le_iff]
+  rw [height, iSup₂_le_iff]
 
 lemma coheight_le_iff {a : α} {n : ℕ∞} :
     coheight a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, a ≤ p.head → p.length ≤ n := by
- rw [coheight_eq, iSup₂_le_iff]
+  rw [coheight_eq, iSup₂_le_iff]
 
 lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a → p.length ≤ n) :
     height a ≤ n := by
@@ -154,10 +154,10 @@ Variant of `height_le_iff` ranging only over those series that end exactly on `a
 -/
 lemma height_le_iff' {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last = a → p.length ≤ n := by
- constructor
- · rw [height_le_iff]
-   exact fun h p hlast => h (le_of_eq hlast)
- · exact height_le
+  constructor
+  · rw [height_le_iff]
+    exact fun h p hlast => h (le_of_eq hlast)
+  · exact height_le
 
 /--
 Alternative definition of height, with the supremum ranging only over those series that end at `a`.

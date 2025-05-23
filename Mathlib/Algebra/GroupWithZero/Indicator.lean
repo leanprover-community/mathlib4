@@ -10,6 +10,8 @@ import Mathlib.Algebra.GroupWithZero.Basic
 # Indicator functions and support of a function in groups with zero
 -/
 
+assert_not_exists Ring
+
 open Set
 
 variable {ι κ G₀ M₀ R : Type*}

@@ -579,6 +579,8 @@ protected theorem hasSum : HasSum f (⨆ s : Finset α, ∑ a ∈ s, f a) :=
 protected theorem summable : Summable f :=
   ⟨_, ENNReal.hasSum⟩
 
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| apply ENNReal.summable)
+
 theorem tsum_coe_ne_top_iff_summable {f : β → ℝ≥0} : (∑' b, (f b : ℝ≥0∞)) ≠ ∞ ↔ Summable f := by
   refine ⟨fun h => ?_, fun h => ENNReal.coe_tsum h ▸ ENNReal.coe_ne_top⟩
   lift ∑' b, (f b : ℝ≥0∞) to ℝ≥0 using h with a ha
@@ -618,10 +620,6 @@ protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
 
 protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
   ENNReal.summable.tsum_le_tsum h ENNReal.summable
-
-@[gcongr]
-protected theorem _root_.GCongr.ennreal_tsum_le_tsum (h : ∀ a, f a ≤ g a) : tsum f ≤ tsum g :=
-  ENNReal.tsum_le_tsum h
 
 protected theorem sum_le_tsum {f : α → ℝ≥0∞} (s : Finset α) : ∑ x ∈ s, f x ≤ ∑' x, f x :=
   ENNReal.summable.sum_le_tsum s (fun _ _ => zero_le _)

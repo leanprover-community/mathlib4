@@ -260,7 +260,7 @@ private theorem weightedOrder_add_of_weightedOrder_lt.aux
     exact hb
 
 /-- The weighted_order of the sum of two formal power series
- is the minimum of their orders if their orders differ. -/
+is the minimum of their orders if their orders differ. -/
 theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weightedOrder w) :
     weightedOrder w (f + g) = weightedOrder w f ⊓ weightedOrder w g := by
   refine le_antisymm ?_ (min_weightedOrder_le_add w)
@@ -271,7 +271,7 @@ theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weigh
   exact ⟨le_rfl, le_of_lt H₁⟩
 
 /-- The weighted_order of the product of two formal power series
- is at least the sum of their orders. -/
+is at least the sum of their orders. -/
 theorem le_weightedOrder_mul :
     f.weightedOrder w + g.weightedOrder w ≤ weightedOrder w (f * g) := by
   classical
@@ -408,18 +408,18 @@ theorem order_monomial_of_ne_zero {d : σ →₀ ℕ} {a : R} (h : a ≠ 0) :
   exact weightedOrder_monomial_of_ne_zero _ h
 
 /-- The order of the sum of two formal power series
- is at least the minimum of their orders. -/
+is at least the minimum of their orders. -/
 theorem min_order_le_add : min f.order g.order ≤ (f + g).order :=
   min_weightedOrder_le_add _
 
 /-- The order of the sum of two formal power series
- is the minimum of their orders if their orders differ. -/
+is the minimum of their orders if their orders differ. -/
 theorem order_add_of_order_ne (h : f.order ≠ g.order) :
     order (f + g) = order f ⊓ order g :=
   weightedOrder_add_of_weightedOrder_ne _ h
 
 /-- The order of the product of two formal power series
- is at least the sum of their orders. -/
+is at least the sum of their orders. -/
 theorem le_order_mul : f.order + g.order ≤ order (f * g) :=
   le_weightedOrder_mul _
 
@@ -453,6 +453,44 @@ section HomogeneousComponent
 
 variable (w : σ → ℕ)
 
+/-- Weighted homogeneous power series -/
+def IsWeightedHomogeneous (f : MvPowerSeries σ R) (p : ℕ) : Prop :=
+  ∀ {d : σ →₀ ℕ}, f.coeff R d ≠ 0 → weight w d = p
+
+variable {w} in
+theorem IsWeightedHomogeneous.coeff_eq_zero {f : MvPowerSeries σ R} {p : ℕ}
+    (hf : f.IsWeightedHomogeneous w p) {d : σ →₀ ℕ} (hd : weight w d ≠ p) :
+    f.coeff R d = 0 := by
+  simpa [Classical.not_not] using mt (@hf d) hd
+
+variable {w} in
+protected theorem IsWeightedHomogeneous.add {f g : MvPowerSeries σ R} {p : ℕ}
+    (hf : f.IsWeightedHomogeneous w p) (hg : g.IsWeightedHomogeneous w p) :
+    (f + g).IsWeightedHomogeneous w p := fun {d} ↦ by
+  rw [not_imp_comm]
+  intro hd
+  rw [map_add, hf.coeff_eq_zero hd, hg.coeff_eq_zero hd, add_zero]
+
+variable {w} in
+protected theorem IsWeightedHomogeneous.mul {f g : MvPowerSeries σ R} {p q : ℕ}
+    (hf : f.IsWeightedHomogeneous w p) (hg : g.IsWeightedHomogeneous w q) :
+    (f * g).IsWeightedHomogeneous w (p + q) := fun {d} ↦ by
+  classical
+  rw [not_imp_comm]
+  intro hd
+  rw [coeff_mul]
+  apply Finset.sum_eq_zero
+  intro x hx
+  rw [Finset.mem_antidiagonal] at hx
+  suffices weight w x.1 ≠ p ∨ weight w x.2 ≠ q by
+    rcases this with hp | hq
+    · rw [hf.coeff_eq_zero hp, zero_mul]
+    · rw [hg.coeff_eq_zero hq, mul_zero]
+  rw [← not_and_or]
+  rintro ⟨hp, hq⟩
+  apply hd
+  rw [← hx, map_add, hp, hq]
+
 /-- The weighted homogeneous components of an `MvPowerSeries f`. -/
 def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R where
   toFun f d := if weight w d = p then coeff R d f else 0
@@ -472,6 +510,101 @@ theorem coeff_weightedHomogeneousComponent (p : ℕ) (d : σ →₀ ℕ) (f : Mv
       if weight w d = p then coeff R d f else 0 :=
   rfl
 
+variable {w} in
+theorem weightedHomogeneousComponent_of_lt_weightedOrder_eq_zero
+    {f : MvPowerSeries σ R} {p : ℕ} (hf : p < f.weightedOrder w) :
+    f.weightedHomogeneousComponent w p = 0 := by
+  ext d
+  rw [coeff_weightedHomogeneousComponent]
+  split_ifs with hd
+  · rw [coeff_zero]
+    apply coeff_eq_zero_of_lt_weightedOrder w
+    rw [hd]
+    exact hf
+  · rw [map_zero]
+
+variable {w} in
+theorem weightedHomogeneousComponent_of_weightedOrder
+    {f : MvPowerSeries σ R} {p : ℕ} (hf : p = f.weightedOrder w) :
+    f.weightedHomogeneousComponent w p ≠ 0 := by
+  intro hf'
+  obtain ⟨d, hd⟩ := f.exists_coeff_ne_zero_and_weightedOrder w (by rw [← hf, toNat_coe])
+  simp only [ne_eq, ← hf, Nat.cast_inj] at hd
+  apply hd.1
+  rw [MvPowerSeries.ext_iff] at hf'
+  specialize hf' d
+  simp only [coeff_weightedHomogeneousComponent, coeff_zero, ite_eq_right_iff] at hf'
+  exact hf' hd.2
+
+theorem isWeightedHomogeneous_weightedHomogeneousComponent (f : MvPowerSeries σ R) (p : ℕ) :
+    IsWeightedHomogeneous w (f.weightedHomogeneousComponent w p) p := fun {d} ↦ by
+  rw [not_imp_comm]
+  intro hd
+  rw [coeff_weightedHomogeneousComponent, if_neg hd]
+
+variable {w} in
+theorem isWeightedHomogeneous_iff_eq_weightedHomogeneousComponent
+    {f : MvPowerSeries σ R} {p : ℕ} :
+    IsWeightedHomogeneous w f p ↔ f = f.weightedHomogeneousComponent w p := by
+  constructor
+  · intro hf
+    ext d
+    rw [coeff_weightedHomogeneousComponent]
+    split_ifs with hd
+    · rfl
+    · exact hf.coeff_eq_zero hd
+  · intro hf
+    rw [hf]
+    exact isWeightedHomogeneous_weightedHomogeneousComponent w f p
+
+variable {w} in
+theorem weightedHomogeneousComponent_mul_of_le_weightedOrder {f g : MvPowerSeries σ R} {p q : ℕ}
+    (hf : p ≤ f.weightedOrder w) (hg : q ≤ g.weightedOrder w) :
+    weightedHomogeneousComponent w (p + q) (f * g) =
+      weightedHomogeneousComponent w p f * weightedHomogeneousComponent w q g := by
+  classical
+  ext d
+  rw [coeff_weightedHomogeneousComponent]
+  split_ifs with hd
+  · apply Finset.sum_congr rfl
+    intro x hx
+    rw [Finset.mem_antidiagonal] at hx
+    rw [← hx, map_add] at hd
+    simp only [coeff_weightedHomogeneousComponent, coeff_mul]
+    rcases trichotomy_of_add_eq_add hd with h | h | h
+    · rw [if_pos h.1, if_pos h.2]
+    · rw [if_neg (ne_of_lt h), zero_mul]
+      rw [← ENat.coe_lt_coe] at h
+      rw [coeff_eq_zero_of_lt_weightedOrder w (lt_of_lt_of_le h hf), zero_mul]
+    · rw [if_neg (ne_of_lt h), mul_zero]
+      rw [← ENat.coe_lt_coe] at h
+      rw [coeff_eq_zero_of_lt_weightedOrder w (lt_of_lt_of_le h hg), mul_zero]
+  · symm
+    apply IsWeightedHomogeneous.coeff_eq_zero _ hd
+    exact IsWeightedHomogeneous.mul
+      (isWeightedHomogeneous_weightedHomogeneousComponent w f p)
+      (isWeightedHomogeneous_weightedHomogeneousComponent w g q)
+
+/-- Homogeneous power series -/
+def IsHomogeneous (f : MvPowerSeries σ R) (p : ℕ) : Prop :=
+  IsWeightedHomogeneous 1 f p
+
+theorem IsHomogeneous.coeff_eq_zero {f : MvPowerSeries σ R} {p : ℕ}
+    (hf : f.IsHomogeneous p) {d : σ →₀ ℕ} (hd : degree d ≠ p) :
+    f.coeff R d = 0 := by
+  apply IsWeightedHomogeneous.coeff_eq_zero hf
+  rwa [degree_eq_weight_one] at hd
+
+protected theorem IsHomogeneous.add {f g : MvPowerSeries σ R} {p : ℕ}
+    (hf : f.IsHomogeneous p) (hg : g.IsHomogeneous p) :
+    (f + g).IsHomogeneous p :=
+  IsWeightedHomogeneous.add hf hg
+
+protected theorem IsHomogeneous.mul {f g : MvPowerSeries σ R} {p q : ℕ}
+    (hf : f.IsHomogeneous p) (hg : g.IsHomogeneous q) :
+    (f * g).IsHomogeneous (p + q) :=
+  IsWeightedHomogeneous.mul hf hg
+
 /-- The homogeneous components of an `MvPowerSeries` -/
 def homogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R :=
   weightedHomogeneousComponent 1 p
@@ -481,6 +614,31 @@ theorem coeff_homogeneousComponent (p : ℕ) (d : σ →₀ ℕ) (f : MvPowerSer
       if degree d = p then coeff R d f else 0 := by
   rw [degree_eq_weight_one]
   exact coeff_weightedHomogeneousComponent 1 p d f
+
+theorem homogeneousComponent_of_lt_order_eq_zero
+    {f : MvPowerSeries σ R} {p : ℕ} (hf : p < f.order) :
+    f.homogeneousComponent p = 0 :=
+  weightedHomogeneousComponent_of_lt_weightedOrder_eq_zero hf
+
+theorem homogeneousComponent_of_order
+    {f : MvPowerSeries σ R} {p : ℕ} (hf : p = f.order) :
+    f.homogeneousComponent p ≠ 0 :=
+  weightedHomogeneousComponent_of_weightedOrder hf
+
+theorem isHomogeneous_homogeneousComponent (f : MvPowerSeries σ R) (p : ℕ) :
+    IsHomogeneous (f.homogeneousComponent p) p :=
+  isWeightedHomogeneous_weightedHomogeneousComponent 1 f p
+
+theorem isHomogeneous_iff_eq_homogeneousComponent
+    {f : MvPowerSeries σ R} {p : ℕ} :
+    IsHomogeneous f p ↔ f = f.homogeneousComponent p :=
+  isWeightedHomogeneous_iff_eq_weightedHomogeneousComponent
+
+theorem homogeneousComponent_mul_of_le_order {f g : MvPowerSeries σ R} {p q : ℕ}
+    (hf : p ≤ f.order) (hg : q ≤ g.order) :
+    homogeneousComponent (p + q) (f * g) =
+      homogeneousComponent p f * homogeneousComponent q g :=
+  weightedHomogeneousComponent_mul_of_le_weightedOrder hf hg
 
 end HomogeneousComponent
 

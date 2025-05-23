@@ -19,9 +19,10 @@ universe v u
 
 namespace CategoryTheory.Preadditive
 
-open CategoryTheory Limits MonoidalCategory ChosenFiniteProducts
+open CategoryTheory Limits MonoidalCategory CartesianMonoidalCategory
 
-variable {C : Type u} [Category.{v} C] [Preadditive C] [ChosenFiniteProducts C]
+variable {C : Type u} [Category.{v} C] [Preadditive C]
+  [CartesianMonoidalCategory C] [BraidedCategory C]
 
 variable (C) in
 /-- The canonical functor from an additive category into its commutative group objects. This is
@@ -34,16 +35,19 @@ def toCommGrp : C ⥤ CommGrp_ C where
       mul := fst _ _ + snd _ _
       inv := -𝟙 X
       mul_assoc := by simp [add_assoc]
-      mul_comm := by simp [add_comm] }
+      mul_comm := by simp [add_comm]
+      one_mul := by simp [leftUnitor_hom]
+      mul_one := by simp [rightUnitor_hom] }
   map {X Y} f := { hom := f }
 
 -- PROJECT: develop `ChosenFiniteCoproducts`, and construct `ChosenFiniteCoproducts` from
--- `ChosenFiniteProducts` in preadditive categories, to give this lemma a proper home.
+-- `CartesianMonoidalCategory` in preadditive categories, to give this lemma a proper home.
+omit [BraidedCategory C] in
 private theorem monoidal_hom_ext {X Y Z : C} {f g : X ⊗ Y ⟶ Z}
     (h₁ : lift (𝟙 X) 0 ≫ f = lift (𝟙 X) 0 ≫ g) (h₂ : lift 0 (𝟙 Y) ≫ f = lift 0 (𝟙 Y) ≫ g) :
     f = g :=
   BinaryCofan.IsColimit.hom_ext
-    (binaryBiconeIsBilimitOfLimitConeOfIsLimit (product X Y).isLimit).isColimit h₁ h₂
+    (binaryBiconeIsBilimitOfLimitConeOfIsLimit (tensorProductIsBinaryProduct X Y)).isColimit h₁ h₂
 
 /-- Auxiliary definition for `commGrpEquivalence`. -/
 @[simps!]

@@ -44,15 +44,15 @@ traversable iterator functor applicative
 
 ## References
 
- * "Applicative Programming with Effects", by Conor McBride and Ross Paterson,
-   Journal of Functional Programming 18:1 (2008) 1-13, online at
-   <http://www.soi.city.ac.uk/~ross/papers/Applicative.html>
- * "The Essence of the Iterator Pattern", by Jeremy Gibbons and Bruno Oliveira,
-   in Mathematically-Structured Functional Programming, 2006, online at
-   <http://web.comlab.ox.ac.uk/oucl/work/jeremy.gibbons/publications/#iterator>
- * "An Investigation of the Laws of Traversals", by Mauro Jaskelioff and Ondrej Rypacek,
-   in Mathematically-Structured Functional Programming, 2012,
-   online at <http://arxiv.org/pdf/1202.2919>
+* "Applicative Programming with Effects", by Conor McBride and Ross Paterson,
+  Journal of Functional Programming 18:1 (2008) 1-13, online at
+  <http://www.soi.city.ac.uk/~ross/papers/Applicative.html>
+* "The Essence of the Iterator Pattern", by Jeremy Gibbons and Bruno Oliveira,
+  in Mathematically-Structured Functional Programming, 2006, online at
+  <http://web.comlab.ox.ac.uk/oucl/work/jeremy.gibbons/publications/#iterator>
+* "An Investigation of the Laws of Traversals", by Mauro Jaskelioff and Ondrej Rypacek,
+  in Mathematically-Structured Functional Programming, 2012,
+  online at <http://arxiv.org/pdf/1202.2919>
 -/
 
 open Function hiding comp
@@ -221,7 +221,7 @@ satisfy a naturality condition with respect to applicative
 transformations. -/
 class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends LawfulFunctor t where
   /-- `traverse` plays well with `pure` of the identity monad -/
-  id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
+  id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = pure x
   /-- `traverse` plays well with composition of applicative functors. -/
   comp_traverse :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G] {α β γ}
@@ -229,7 +229,7 @@ class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends L
       traverse (Functor.Comp.mk ∘ map f ∘ g) x = Comp.mk (map (traverse f) (traverse g x))
   /-- An axiom for `traverse` involving `pure : β → Id β`. -/
   traverse_eq_map_id : ∀ {α β} (f : α → β) (x : t α),
-    traverse ((pure : β → Id β) ∘ f) x = id.mk (f <$> x)
+    traverse ((pure : β → Id β) ∘ f) x = pure (f <$> x)
   /-- The naturality axiom explaining how lawful traversable functors should play with
   lawful applicative functors. -/
   naturality :

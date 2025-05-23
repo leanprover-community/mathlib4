@@ -289,7 +289,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     (_ : ℕ) ≤ _ := sum_le_card_nsmul P.parts.offDiag (fun i ↦ #i.1 * #i.2)
             ((#A / #P.parts + 1)^2 : ℕ) ?_
     _ ≤ (#P.parts * (#A / #P.parts) + #P.parts) ^ 2 := ?_
-    _ ≤ _ := Nat.pow_le_pow_left (add_le_add_right (Nat.mul_div_le _ _) _) _
+    _ ≤ _ := by gcongr; apply Nat.mul_div_le
   · simp only [Prod.forall, Finpartition.mk_mem_nonUniforms, and_imp, mem_offDiag, sq]
     rintro U V hU hV -
     exact_mod_cast Nat.mul_le_mul (hP.card_part_le_average_add_one hU)

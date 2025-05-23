@@ -120,11 +120,11 @@ example (a b c d : α) [Mul α] [AddCommMonoid α] :
 -/
 @[simp]
 theorem dotProductᵣ_eq [Mul α] [AddCommMonoid α] {m} (a b : Fin m → α) :
-    dotProductᵣ a b = dotProduct a b := by
+    dotProductᵣ a b = a ⬝ᵥ b := by
   simp_rw [dotProductᵣ, dotProduct, FinVec.sum_eq, FinVec.seq_eq, FinVec.map_eq,
       Function.comp_apply]
 
-example (a b c d : α) [Mul α] [AddCommMonoid α] : dotProduct ![a, b] ![c, d] = a * c + b * d :=
+example (a b c d : α) [Mul α] [AddCommMonoid α] : ![a, b] ⬝ᵥ ![c, d] = a * c + b * d :=
   (dotProductᵣ_eq _ _).symm
 
 /-- `Matrix.mul` with better defeq for `Fin` -/

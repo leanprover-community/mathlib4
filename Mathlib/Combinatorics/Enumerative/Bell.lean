@@ -156,7 +156,7 @@ theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   · simp only [toFinset_replicate]
     split_ifs with hm
     · rw [hm, factorial_zero, eq_comm]
-      rw [show (∅ : Finset ℕ).erase 0 = ∅ from rfl,  Finset.prod_empty]
+      rw [show (∅ : Finset ℕ).erase 0 = ∅ from rfl, Finset.prod_empty]
     · rw [show ({n} : Finset ℕ).erase 0 = {n} by simp [Ne.symm hn]]
       simp only [Finset.prod_singleton, count_replicate_self]
   · simp

@@ -177,7 +177,7 @@ The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGene
 is a homeomorphism.
 -/
 noncomputable def compactlyGeneratedAdjunctionCounitHomeo
-    (X : TopCat.{u+1}) [UCompactlyGeneratedSpace.{u} X] :
+    (X : TopCat.{u + 1}) [UCompactlyGeneratedSpace.{u} X] :
     X.toCondensedSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
   continuous_toFun := (topCatAdjunctionCounit X).hom.continuous

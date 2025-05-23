@@ -229,7 +229,7 @@ theorem differentiable_add_const_iff (c : F) :
   forall_congr' fun _ ↦ differentiableAt_add_const_iff c
 
 @[fun_prop]
-alias ⟨_,  Differentiable.add_const⟩ := differentiable_add_const_iff
+alias ⟨_, Differentiable.add_const⟩ := differentiable_add_const_iff
 
 @[simp]
 theorem fderivWithin_add_const (c : F) :

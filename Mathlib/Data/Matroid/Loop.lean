@@ -231,7 +231,7 @@ lemma mapEmbedding_isLoop_iff {f : α ↪ β} : (M.mapEmbedding f).IsLoop (f e) 
 
 @[simp]
 lemma comap_loops {M : Matroid β} {f : α → β} : (M.comap f).loops = f ⁻¹' M.loops := by
-   rw [loops, comap_closure_eq, image_empty, loops]
+  rw [loops, comap_closure_eq, image_empty, loops]
 
 @[simp]
 lemma comap_isLoop_iff {M : Matroid β} {f : α → β} : (M.comap f).IsLoop e ↔ M.IsLoop (f e) := by

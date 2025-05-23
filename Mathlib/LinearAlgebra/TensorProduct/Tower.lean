@@ -20,21 +20,21 @@ In this file, we use the convention that `M`, `N`, `P`, `Q` are all `R`-modules,
 
 ## Main definitions
 
- * `TensorProduct.AlgebraTensorModule.curry`
- * `TensorProduct.AlgebraTensorModule.uncurry`
- * `TensorProduct.AlgebraTensorModule.lcurry`
- * `TensorProduct.AlgebraTensorModule.lift`
- * `TensorProduct.AlgebraTensorModule.lift.equiv`
- * `TensorProduct.AlgebraTensorModule.mk`
- * `TensorProduct.AlgebraTensorModule.map`
- * `TensorProduct.AlgebraTensorModule.mapBilinear`
- * `TensorProduct.AlgebraTensorModule.congr`
- * `TensorProduct.AlgebraTensorModule.rid`
- * `TensorProduct.AlgebraTensorModule.homTensorHomMap`
- * `TensorProduct.AlgebraTensorModule.assoc`
- * `TensorProduct.AlgebraTensorModule.leftComm`
- * `TensorProduct.AlgebraTensorModule.rightComm`
- * `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`
+* `TensorProduct.AlgebraTensorModule.curry`
+* `TensorProduct.AlgebraTensorModule.uncurry`
+* `TensorProduct.AlgebraTensorModule.lcurry`
+* `TensorProduct.AlgebraTensorModule.lift`
+* `TensorProduct.AlgebraTensorModule.lift.equiv`
+* `TensorProduct.AlgebraTensorModule.mk`
+* `TensorProduct.AlgebraTensorModule.map`
+* `TensorProduct.AlgebraTensorModule.mapBilinear`
+* `TensorProduct.AlgebraTensorModule.congr`
+* `TensorProduct.AlgebraTensorModule.rid`
+* `TensorProduct.AlgebraTensorModule.homTensorHomMap`
+* `TensorProduct.AlgebraTensorModule.assoc`
+* `TensorProduct.AlgebraTensorModule.leftComm`
+* `TensorProduct.AlgebraTensorModule.rightComm`
+* `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`
 
 ## Implementation notes
 

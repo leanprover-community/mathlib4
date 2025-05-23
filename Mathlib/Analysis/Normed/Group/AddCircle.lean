@@ -15,11 +15,11 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 
 ## Main definitions:
 
- * `AddCircle.norm_eq`: a characterisation of the norm on `AddCircle p`
+* `AddCircle.norm_eq`: a characterisation of the norm on `AddCircle p`
 
 ## TODO
 
- * The fact `InnerProductGeometry.angle (Real.cos θ) (Real.sin θ) = ‖(θ : Real.Angle)‖`
+* The fact `InnerProductGeometry.angle (Real.cos θ) (Real.sin θ) = ‖(θ : Real.Angle)‖`
 
 -/
 

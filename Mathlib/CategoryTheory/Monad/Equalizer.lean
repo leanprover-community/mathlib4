@@ -91,8 +91,8 @@ def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
     · dsimp
       rw [Functor.map_comp, reassoc_of% h₂, Comonad.right_counit]
       dsimp
-      rw [Category.comp_id, Category.assoc]
-      erw [← T.ε.naturality, reassoc_of% h₁, Comonad.left_counit] -- TODO: missing simp lemmas
+      rw [Category.comp_id, Category.assoc, ← T.counit_naturality,
+        reassoc_of% h₁, Comonad.left_counit]
       simp
     · ext
       simpa [← T.ε.naturality_assoc, T.left_counit_assoc] using h₁ =≫ T.ε.app ((T : C ⥤ C).obj X.A)

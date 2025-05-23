@@ -17,19 +17,19 @@ members of the approximating sequence are nonnegative bounded continuous functio
 
 ## Main definitions
 
- * `thickenedIndicatorAux δ E`: The `δ`-thickened indicator of a set `E` as an
-   unbundled `ℝ≥0∞`-valued function.
- * `thickenedIndicator δ E`: The `δ`-thickened indicator of a set `E` as a bundled
-   bounded continuous `ℝ≥0`-valued function.
+* `thickenedIndicatorAux δ E`: The `δ`-thickened indicator of a set `E` as an
+  unbundled `ℝ≥0∞`-valued function.
+* `thickenedIndicator δ E`: The `δ`-thickened indicator of a set `E` as a bundled
+  bounded continuous `ℝ≥0`-valued function.
 
 ## Main results
 
- * For a sequence of thickening radii tending to 0, the `δ`-thickened indicators of a set `E` tend
-   pointwise to the indicator of `closure E`.
-   - `thickenedIndicatorAux_tendsto_indicator_closure`: The version is for the
-     unbundled `ℝ≥0∞`-valued functions.
-   - `thickenedIndicator_tendsto_indicator_closure`: The version is for the bundled `ℝ≥0`-valued
-     bounded continuous functions.
+* For a sequence of thickening radii tending to 0, the `δ`-thickened indicators of a set `E` tend
+  pointwise to the indicator of `closure E`.
+  - `thickenedIndicatorAux_tendsto_indicator_closure`: The version is for the
+    unbundled `ℝ≥0∞`-valued functions.
+  - `thickenedIndicator_tendsto_indicator_closure`: The version is for the bundled `ℝ≥0`-valued
+    bounded continuous functions.
 
 -/
 

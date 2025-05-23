@@ -6,8 +6,9 @@ Authors: Xavier Roblot
 import Mathlib.Algebra.Module.ZLattice.Covolume
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
-import Mathlib.Tactic.Rify
 import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+import Mathlib.Tactic.Rify
 
 /-!
 # Number field discriminant
@@ -16,10 +17,10 @@ This file defines the discriminant of a number field.
 ## Main result
 
 * `NumberField.abs_discr_gt_two`: **Hermite-Minkowski Theorem**. A nontrivial number field has
-discriminant greater than `2`.
+  discriminant greater than `2`.
 
 * `NumberField.finite_of_discr_bdd`: **Hermite Theorem**. Let `N` be an integer. There are only
-finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
+  finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
 
 ## Tags
 number field, discriminant

@@ -16,14 +16,14 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 ## Main definitions
 
- * `IsLocalization.AtPrime (P : Ideal R) [IsPrime P] (S : Type*)` expresses that `S` is a
-   localization at (the complement of) a prime ideal `P`, as an abbreviation of
-   `IsLocalization P.prime_compl S`
+* `IsLocalization.AtPrime (P : Ideal R) [IsPrime P] (S : Type*)` expresses that `S` is a
+  localization at (the complement of) a prime ideal `P`, as an abbreviation of
+  `IsLocalization P.prime_compl S`
 
 ## Main results
 
- * `IsLocalization.AtPrime.isLocalRing`: a theorem (not an instance) stating a localization at the
-   complement of a prime ideal is a local ring
+* `IsLocalization.AtPrime.isLocalRing`: a theorem (not an instance) stating a localization at the
+  complement of a prime ideal is a local ring
 
 ## Implementation notes
 

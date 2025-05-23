@@ -19,7 +19,7 @@ defines the limit value of an eventually-constant sequence.
 ## Main declarations
 
 * `natLT`/`natGT`: Make an order embedding `Nat ↪ α` from
-   an increasing/decreasing function `Nat → α`.
+  an increasing/decreasing function `Nat → α`.
 * `monotonicSequenceLimit`: The limit of an eventually-constant monotone sequence `Nat →o α`.
 * `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.

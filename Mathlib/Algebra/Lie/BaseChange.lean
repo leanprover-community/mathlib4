@@ -16,9 +16,9 @@ scalars.
 
 ## Main definitions
 
- * `LieAlgebra.ExtendScalars.instLieAlgebra`
- * `LieAlgebra.ExtendScalars.instLieModule`
- * `LieAlgebra.RestrictScalars.lieAlgebra`
+* `LieAlgebra.ExtendScalars.instLieAlgebra`
+* `LieAlgebra.ExtendScalars.instLieModule`
+* `LieAlgebra.RestrictScalars.lieAlgebra`
 
 ## Tags
 

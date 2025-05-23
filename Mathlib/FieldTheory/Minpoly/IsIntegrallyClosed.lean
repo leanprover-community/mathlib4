@@ -14,13 +14,13 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 
 ## Main results
 
- * `minpoly.isIntegrallyClosed_eq_field_fractions`: For integrally closed domains, the minimal
+* `minpoly.isIntegrallyClosed_eq_field_fractions`: For integrally closed domains, the minimal
     polynomial over the ring is the same as the minimal polynomial over the fraction field.
 
- * `minpoly.isIntegrallyClosed_dvd` : For integrally closed domains, the minimal polynomial divides
+* `minpoly.isIntegrallyClosed_dvd` : For integrally closed domains, the minimal polynomial divides
     any primitive polynomial that has the integral element as root.
 
- * `IsIntegrallyClosed.Minpoly.unique` : The minimal polynomial of an element `x` is
+* `IsIntegrallyClosed.Minpoly.unique` : The minimal polynomial of an element `x` is
     uniquely characterized by its defining property: if there is another monic polynomial of minimal
     degree that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
 

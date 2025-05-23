@@ -22,26 +22,26 @@ is well-founded. In this file we define three especially-useful characterisation
 proofs that they are indeed equivalent to well-foundedness.
 
 ## Main definitions
- * `CompleteLattice.IsSupClosedCompact`
- * `CompleteLattice.IsSupFiniteCompact`
- * `CompleteLattice.IsCompactElement`
- * `IsCompactlyGenerated`
+* `CompleteLattice.IsSupClosedCompact`
+* `CompleteLattice.IsSupFiniteCompact`
+* `CompleteLattice.IsCompactElement`
+* `IsCompactlyGenerated`
 
 ## Main results
 The main result is that the following four conditions are equivalent for a complete lattice:
- * `well_founded (>)`
- * `CompleteLattice.IsSupClosedCompact`
- * `CompleteLattice.IsSupFiniteCompact`
- * `∀ k, CompleteLattice.IsCompactElement k`
+* `well_founded (>)`
+* `CompleteLattice.IsSupClosedCompact`
+* `CompleteLattice.IsSupFiniteCompact`
+* `∀ k, CompleteLattice.IsCompactElement k`
 
 This is demonstrated by means of the following four lemmas:
- * `CompleteLattice.WellFounded.isSupFiniteCompact`
- * `CompleteLattice.IsSupFiniteCompact.isSupClosedCompact`
- * `CompleteLattice.IsSupClosedCompact.wellFounded`
- * `CompleteLattice.isSupFiniteCompact_iff_all_elements_compact`
+* `CompleteLattice.WellFounded.isSupFiniteCompact`
+* `CompleteLattice.IsSupFiniteCompact.isSupClosedCompact`
+* `CompleteLattice.IsSupClosedCompact.wellFounded`
+* `CompleteLattice.isSupFiniteCompact_iff_all_elements_compact`
 
- We also show well-founded lattices are compactly generated
- (`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
+We also show well-founded lattices are compactly generated
+(`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
 
 ## References
 - [G. Călugăreanu, *Lattice Concepts of Module Theory*][calugareanu]

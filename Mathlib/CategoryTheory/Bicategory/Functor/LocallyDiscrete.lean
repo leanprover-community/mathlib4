@@ -15,7 +15,7 @@ bicategories.
 Firstly, we define the constructors `pseudofunctorOfIsLocallyDiscrete` and
 `oplaxFunctorOfIsLocallyDiscrete` for defining pseudofunctors and oplax functors
 from a locally discrete bicategories. In this situation, we do not need to care about
-the field `map₂`,  because all the `2`-morphisms in `B` are identities.
+the field `map₂`, because all the `2`-morphisms in `B` are identities.
 
 We also define a specialized constructor `LocallyDiscrete.mkPseudofunctor` when
 the source bicategory is of the form `B := LocallyDiscrete B₀` for a category `B₀`.

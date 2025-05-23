@@ -95,7 +95,7 @@ noncomputable def primeSpectrumProd :
     Equiv.ofBijective (primeSpectrumProdOfSum R S) (by
         constructor
         · rintro (⟨I, hI⟩ | ⟨J, hJ⟩) (⟨I', hI'⟩ | ⟨J', hJ'⟩) h <;>
-          simp only [mk.injEq, Ideal.prod.ext_iff, primeSpectrumProdOfSum] at h
+          simp only [mk.injEq, Ideal.prod_inj, primeSpectrumProdOfSum] at h
           · simp only [h]
           · exact False.elim (hI.ne_top h.left)
           · exact False.elim (hJ.ne_top h.right)

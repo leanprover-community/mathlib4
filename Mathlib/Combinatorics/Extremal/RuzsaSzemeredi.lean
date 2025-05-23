@@ -22,7 +22,7 @@ original set.
 * `ruzsaSzemerediNumberNat n`: Maximum number of edges a graph on `n` vertices can have such that
   each edge belongs to exactly one triangle.
 * `ruzsaSzemerediNumberNat_asymptotic_lower_bound`: There exists a graph with `n` vertices and
-  `Ω((n ^ 2 * exp (-4 * sqrt (log n))))` edges such that each edge belongs to exactly one triangle.
+  `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that each edge belongs to exactly one triangle.
 -/
 
 open Finset Nat Real SimpleGraph Sum3 SimpleGraph.TripartiteFromTriangles
@@ -219,10 +219,10 @@ theorem rothNumberNat_le_ruzsaSzemerediNumberNat' :
 /-- Explicit lower bound on the **Ruzsa-Szemerédi problem**.
 
 There exists a graph with `n` vertices and
-`(n / 3 - 2) * (n - 3) / 6 * exp (-4 * sqrt (log ((n - 3) / 6)))` edges such that each edge belongs
+`(n / 3 - 2) * (n - 3) / 6 * exp (-4 * √(log ((n - 3) / 6)))` edges such that each edge belongs
 to exactly one triangle. -/
 theorem ruzsaSzemerediNumberNat_lower_bound (n : ℕ) :
-    (n / 3 - 2 : ℝ) * ↑((n - 3) / 6) * exp (-4 * sqrt (log ↑((n - 3) / 6))) ≤
+    (n / 3 - 2 : ℝ) * ↑((n - 3) / 6) * exp (-4 * √(log ↑((n - 3) / 6))) ≤
       ruzsaSzemerediNumberNat n := by
   rw [mul_assoc]
   obtain hn | hn := le_total (n / 3 - 2 : ℝ) 0
@@ -235,12 +235,12 @@ open Asymptotics Filter
 
 /-- Asymptotic lower bound on the **Ruzsa-Szemerédi problem**.
 
-There exists a graph with `n` vertices and `Ω((n ^ 2 * exp (-4 * sqrt (log n))))` edges such that
+There exists a graph with `n` vertices and `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that
 each edge belongs to exactly one triangle. -/
 theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
-   (fun n ↦ n ^ 2 * exp (-4 * sqrt (log n)) : ℕ → ℝ) =O[atTop]
+   (fun n ↦ n ^ 2 * exp (-4 * √(log n)) : ℕ → ℝ) =O[atTop]
      fun n ↦ (ruzsaSzemerediNumberNat n : ℝ) := by
-  trans fun n ↦ (n / 3 - 2) * ↑((n - 3) / 6) * exp (-4 * sqrt (log ↑((n - 3) / 6)))
+  trans fun n ↦ (n / 3 - 2) * ↑((n - 3) / 6) * exp (-4 * √(log ↑((n - 3) / 6)))
   · simp_rw [sq]
     refine (IsBigO.mul ?_ ?_).mul ?_
     · trans fun n ↦ n / 3

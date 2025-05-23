@@ -32,7 +32,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 ## Future work
 
- * Redefine `Localization` for monoids and rings to coincide with `LocalizedModule`.
+* Redefine `Localization` for monoids and rings to coincide with `LocalizedModule`.
 -/
 
 

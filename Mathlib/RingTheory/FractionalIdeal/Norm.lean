@@ -18,13 +18,13 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 
 ## Main definitions and results
 
- * `FractionalIdeal.absNorm`: the norm as a zero preserving morphism with values in `ℚ`.
- * `FractionalIdeal.absNorm_eq'`: the value of the norm does not depend on the choice of
-   `I.num` and `I.den`.
- * `FractionalIdeal.abs_det_basis_change`: the norm is given by the determinant
-    of the basis change matrix.
- * `FractionalIdeal.absNorm_span_singleton`: the norm of a principal fractional ideal is the
-   norm of its generator
+* `FractionalIdeal.absNorm`: the norm as a zero preserving morphism with values in `ℚ`.
+* `FractionalIdeal.absNorm_eq'`: the value of the norm does not depend on the choice of
+  `I.num` and `I.den`.
+* `FractionalIdeal.abs_det_basis_change`: the norm is given by the determinant
+  of the basis change matrix.
+* `FractionalIdeal.absNorm_span_singleton`: the norm of a principal fractional ideal is the
+  norm of its generator
 -/
 
 namespace FractionalIdeal

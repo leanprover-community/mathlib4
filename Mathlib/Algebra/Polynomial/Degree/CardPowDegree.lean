@@ -15,13 +15,13 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
 
 ## Main definitions
 
- * `Polynomial.cardPowDegree` is an absolute value on `𝔽_q[t]`, the ring of
-   polynomials over a finite field of cardinality `q`, mapping a polynomial `p`
-   to `q ^ degree p` (where `q ^ degree 0 = 0`)
+* `Polynomial.cardPowDegree` is an absolute value on `𝔽_q[t]`, the ring of
+  polynomials over a finite field of cardinality `q`, mapping a polynomial `p`
+  to `q ^ degree p` (where `q ^ degree 0 = 0`)
 
 ## Main results
- * `Polynomial.cardPowDegree_isEuclidean`: `cardPowDegree` respects the
-   Euclidean domain structure on the ring of polynomials
+* `Polynomial.cardPowDegree_isEuclidean`: `cardPowDegree` respects the
+  Euclidean domain structure on the ring of polynomials
 
 -/
 

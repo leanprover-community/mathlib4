@@ -156,9 +156,9 @@ instance : Preorder PGame :=
           (x ≤ y → y ≤ z → x ≤ z) ∧ (y ≤ z → z ≤ x → y ≤ x) ∧ (z ≤ x → x ≤ y → z ≤ y) from
         fun x y z => this.1
       intro x y z
-      induction' x with xl xr xL xR IHxl IHxr generalizing y z
-      induction' y with yl yr yL yR IHyl IHyr generalizing z
-      induction' z with zl zr zL zR IHzl IHzr
+      induction x generalizing y z with | _ xl xr xL xR IHxl IHxr
+      induction y generalizing   z with | _ yl yr yL yR IHyl IHyr
+      induction z                  with | _ zl zr zL zR IHzl IHzr
       exact
         ⟨le_trans_aux (fun {i} => (IHxl i).2.1) fun {j} => (IHzr j).2.2,
           le_trans_aux (fun {i} => (IHyl i).2.2) fun {j} => (IHxr j).1,
@@ -693,8 +693,8 @@ lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
     use i
 
 /-- Adding a gift horse left option does not change the value of `x`. A gift horse left option is
- a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
- "gift" of a new option, but actually the value of the game did not change. -/
+a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
+"gift" of a new option, but actually the value of the game did not change. -/
 lemma insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈ x := by
   rw [equiv_def]
   constructor
@@ -717,8 +717,8 @@ lemma insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈
   · apply le_insertLeft
 
 /-- Adding a gift horse right option does not change the value of `x`. A gift horse right option is
- a game `x'` with `x ⧏ x'`. It is called "gift horse" because it seems like Right has gotten the
- "gift" of a new option, but actually the value of the game did not change. -/
+a game `x'` with `x ⧏ x'`. It is called "gift horse" because it seems like Right has gotten the
+"gift" of a new option, but actually the value of the game did not change. -/
 lemma insertRight_equiv_of_lf {x x' : PGame} (h : x ⧏ x') : insertRight x x' ≈ x := by
   rw [equiv_def]
   constructor

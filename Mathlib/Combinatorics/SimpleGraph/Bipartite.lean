@@ -213,9 +213,7 @@ theorem isBipartiteWith_sum_degrees_eq (h : G.IsBipartiteWith s t) :
     sum_attach t fun v ↦ #(bipartiteBelow G.Adj s v)]
   exact sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow G.Adj
 
-variable [DecidableEq V]
-
-lemma isBipartiteWith_sum_degrees_eq_twice_card_edges (h : G.IsBipartiteWith s t) :
+lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V] (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s ∪ t, G.degree v = 2 * #G.edgeFinset := by
   have hsub : G.support ⊆ ↑s ∪ ↑t := isBipartiteWith_support_subset h
   rw [← coe_union, ← Set.toFinset_subset] at hsub
@@ -229,6 +227,7 @@ See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
 `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right". -/
 theorem isBipartiteWith_sum_degrees_eq_card_edges (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s, G.degree v = #G.edgeFinset := by
+  classical
   rw [← Nat.mul_left_cancel_iff zero_lt_two, ← isBipartiteWith_sum_degrees_eq_twice_card_edges h,
     sum_union (disjoint_coe.mp h.disjoint), two_mul, add_right_inj]
   exact isBipartiteWith_sum_degrees_eq h

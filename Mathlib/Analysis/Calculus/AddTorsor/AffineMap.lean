@@ -13,7 +13,7 @@ This file contains results about smoothness of affine maps.
 
 ## Main definitions:
 
- * `ContinuousAffineMap.contDiff`: a continuous affine map is smooth
+* `ContinuousAffineMap.contDiff`: a continuous affine map is smooth
 
 -/
 

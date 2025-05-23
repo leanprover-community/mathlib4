@@ -36,7 +36,7 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 
 * `presheaf_ext`: given `S`, `Y` and `f : LocallyConstant S Y(*)` like above, another presheaf
   `X`, and two elements `x y : X(S)`, to prove that `x = y` it suffices to prove that for every
-  inclusion map `ιᵢ : Sᵢ ⟶ S`,  `X(ιᵢ)(x) = X(ιᵢ)(y)`.
+  inclusion map `ιᵢ : Sᵢ ⟶ S`, `X(ιᵢ)(x) = X(ιᵢ)(y)`.
   Here it is important that we set everything up in such a way that the `Sᵢ` are literally subtypes
   of `S`.
 

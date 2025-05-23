@@ -18,8 +18,8 @@ An instance is defined for `Part`.
 
 ## Main definition
 
- * class `Fix`
- * `Part.fix`
+* class `Fix`
+* `Part.fix`
 -/
 
 

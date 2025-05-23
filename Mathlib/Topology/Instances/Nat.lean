@@ -46,7 +46,7 @@ theorem preimage_closedBall (x : ℕ) (r : ℝ) : (↑) ⁻¹' closedBall (x : �
 theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊ := by
   rcases le_or_lt 0 r with (hr | hr)
   · rw [← preimage_closedBall, Real.closedBall_eq_Icc, preimage_Icc]
-    exact add_nonneg (cast_nonneg x) hr
+    positivity
   · rw [closedBall_eq_empty.2 hr, Icc_eq_empty_of_lt]
     calc ⌊(x : ℝ) + r⌋₊ ≤ ⌊(x : ℝ)⌋₊ := floor_mono <| by linarith
     _ < ⌈↑x - r⌉₊ := by

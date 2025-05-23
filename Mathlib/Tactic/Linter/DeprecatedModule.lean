@@ -81,7 +81,7 @@ This means that any file that directly imports `A` will get a notification on th
 suggesting to instead import the *direct imports* of `A`.
 -/
 elab (name := deprecated_modules)
-    "deprecated_module " msg?:(str)? "(" &"since " ":= " date:str ")" : command => do
+    "deprecated_module " msg?:(str ppSpace)? "(" &"since " ":= " date:str ")" : command => do
   if let .error _parsedDate := Std.Time.PlainDate.fromLeanDateString date.getString then
     throwError "Invalid date: the expected format is \"{← Std.Time.PlainDate.now}\""
   addModuleDeprecation <| msg?.map (·.getString)

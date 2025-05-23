@@ -18,12 +18,12 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
 `v.adicCompletion`, and its ring of integers, denoted `v.adicCompletionIntegers`.
 
 ## Main definitions
- - `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
- - `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
- - `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
-    to its `v`-adic valuation.
- - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
-    `v.adicCompletion`.
+- `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
+- `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
+- `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
+  to its `v`-adic valuation.
+- `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
+  `v.adicCompletion`.
 
 ## Main results
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
@@ -91,55 +91,6 @@ theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   if_neg hr
 
-/-- Nonzero elements have nonzero adic valuation. -/
-theorem intValuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuationDef x ≠ 0 := by
-  rw [intValuationDef, if_neg hx]
-  exact WithZero.coe_ne_zero
-
-/-- Nonzero divisors have nonzero valuation. -/
-theorem intValuation_ne_zero' (x : nonZeroDivisors R) : v.intValuationDef x ≠ 0 :=
-  v.intValuation_ne_zero x (nonZeroDivisors.coe_ne_zero x)
-
-/-- Nonzero divisors have valuation greater than zero. -/
-theorem intValuation_zero_le (x : nonZeroDivisors R) : 0 < v.intValuationDef x := by
-  rw [v.intValuationDef_if_neg (nonZeroDivisors.coe_ne_zero x)]
-  exact WithZero.zero_lt_coe _
-
-/-- The `v`-adic valuation on `R` is bounded above by 1. -/
-theorem intValuation_le_one (x : R) : v.intValuationDef x ≤ 1 := by
-  rw [intValuationDef]
-  by_cases hx : x = 0
-  · rw [if_pos hx]; exact WithZero.zero_le 1
-  · rw [if_neg hx, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ofAdd_le,
-      Right.neg_nonpos_iff]
-    exact Int.natCast_nonneg _
-
-/-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
-theorem intValuation_lt_one_iff_dvd (r : R) :
-    v.intValuationDef r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
-  classical
-  rw [intValuationDef]
-  split_ifs with hr
-  · simp [hr]
-  · rw [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_lt_coe, ofAdd_lt, neg_lt_zero, ←
-      Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
-    have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
-      rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
-      exact hr
-    apply Associates.count_ne_zero_iff_dvd h (by apply v.irreducible)
-
-/-- The `v`-adic valuation of `r ∈ R` is less than `Multiplicative.ofAdd (-n)` if and only if
-`vⁿ` divides the ideal `(r)`. -/
-theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
-    v.intValuationDef r ≤ Multiplicative.ofAdd (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
-  classical
-  rw [intValuationDef]
-  split_ifs with hr
-  · simp_rw [hr, Ideal.dvd_span_singleton, zero_le', Submodule.zero_mem]
-  · rw [WithZero.coe_le_coe, ofAdd_le, neg_le_neg_iff, Int.ofNat_le, Ideal.dvd_span_singleton, ←
-      Associates.le_singleton_iff,
-      Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr)
-        (by apply v.associates_irreducible)]
 
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
 theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
@@ -212,7 +163,6 @@ theorem intValuation.map_add_le_max' (x y : R) :
         apply v.associates_irreducible
 
 /-- The `v`-adic valuation on `R`. -/
-@[simps]
 def intValuation : Valuation R ℤₘ₀ where
   toFun := v.intValuationDef
   map_zero' := intValuation.map_zero' v
@@ -223,9 +173,88 @@ def intValuation : Valuation R ℤₘ₀ where
 theorem intValuation_apply {r : R} (v : IsDedekindDomain.HeightOneSpectrum R) :
     intValuation v r = intValuationDef v r := rfl
 
+open scoped Classical in
+theorem intValuation_def {r : R} :
+    v.intValuation r = if r = 0 then 0 else
+    ↑(Multiplicative.ofAdd
+      (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)) :=
+  rfl
+
+@[deprecated intValuation_apply (since := "2025-04-26")]
+theorem intValuation_toFun (r : R) :
+    v.intValuation r = v.intValuationDef r := rfl
+
+open scoped Classical in
+theorem intValuation_if_neg {r : R} (hr : r ≠ 0) :
+    v.intValuation r =
+      Multiplicative.ofAdd
+        (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
+  intValuationDef_if_neg _ hr
+
+/-- Nonzero elements have nonzero adic valuation. -/
+theorem intValuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuation x ≠ 0 := by
+  rw [v.intValuation_if_neg hx]
+  exact WithZero.coe_ne_zero
+
+/-- Nonzero divisors have nonzero valuation. -/
+theorem intValuation_ne_zero' (x : nonZeroDivisors R) : v.intValuation x ≠ 0 :=
+  v.intValuation_ne_zero x (nonZeroDivisors.coe_ne_zero x)
+
+/-- Nonzero divisors have valuation greater than zero. -/
+theorem intValuation_zero_lt (x : nonZeroDivisors R) : 0 < v.intValuation x := by
+  rw [v.intValuation_if_neg (nonZeroDivisors.coe_ne_zero x)]
+  exact WithZero.zero_lt_coe _
+
+@[deprecated (since := "2025-05-11")]
+alias intValuation_zero_le := intValuation_zero_lt
+
+/-- The `v`-adic valuation on `R` is bounded above by 1. -/
+theorem intValuation_le_one (x : R) : v.intValuation x ≤ 1 := by
+  by_cases hx : x = 0
+  · rw [hx, Valuation.map_zero]; exact WithZero.zero_le 1
+  · rw [v.intValuation_if_neg hx, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ofAdd_le,
+      Right.neg_nonpos_iff]
+    exact Int.natCast_nonneg _
+
+/-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
+theorem intValuation_lt_one_iff_dvd (r : R) :
+    v.intValuation r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
+  classical
+  by_cases hr : r = 0
+  · simp [hr]
+  · rw [v.intValuation_if_neg hr, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_lt_coe, ofAdd_lt,
+      neg_lt_zero, ← Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
+    have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
+      rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+      exact hr
+    apply Associates.count_ne_zero_iff_dvd h (by apply v.irreducible)
+
+/-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `r ∈ v`. -/
+theorem intValuation_lt_one_iff_mem (r : R) :
+    v.intValuation r < 1 ↔ r ∈ v.asIdeal := by
+  rw [intValuation_lt_one_iff_dvd, Ideal.dvd_span_singleton]
+
+/-- The `v`-adic valuation of `r ∈ R` is less than `Multiplicative.ofAdd (-n)` if and only if
+`vⁿ` divides the ideal `(r)`. -/
+theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
+    v.intValuation r ≤ Multiplicative.ofAdd (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
+  classical
+  by_cases hr : r = 0
+  · simp_rw [hr, Valuation.map_zero, Ideal.dvd_span_singleton, zero_le', Submodule.zero_mem]
+  · rw [v.intValuation_if_neg hr, WithZero.coe_le_coe, ofAdd_le, neg_le_neg_iff, Int.ofNat_le,
+      Ideal.dvd_span_singleton, ← Associates.le_singleton_iff,
+      Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr)
+        (by apply v.associates_irreducible)]
+
+/-- The `v`-adic valuation of `r ∈ R` is less than `Multiplicative.ofAdd (-n)` if and only if
+`r ∈ vⁿ`. -/
+theorem intValuation_le_pow_iff_mem (r : R) (n : ℕ) :
+    v.intValuation r ≤ Multiplicative.ofAdd (-(n : ℤ)) ↔ r ∈ v.asIdeal ^ n := by
+  rw [intValuation_le_pow_iff_dvd, Ideal.dvd_span_singleton]
+
 /-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem intValuation_exists_uniformizer :
-    ∃ π : R, v.intValuationDef π = Multiplicative.ofAdd (-1 : ℤ) := by
+    ∃ π : R, v.intValuation π = Multiplicative.ofAdd (-1 : ℤ) := by
   classical
   have hv : _root_.Irreducible (Associates.mk v.asIdeal) := v.associates_irreducible
   have hlt : v.asIdeal ^ 2 < v.asIdeal := by
@@ -240,7 +269,7 @@ theorem intValuation_exists_uniformizer :
     rw [h] at nmem
     exact nmem (Submodule.zero_mem (v.asIdeal ^ 2))
   use π
-  rw [intValuationDef, if_neg (Associates.mk_ne_zero'.mp hπ), WithZero.coe_inj]
+  rw [intValuation_if_neg _ (Associates.mk_ne_zero'.mp hπ), WithZero.coe_inj]
   apply congr_arg
   rw [neg_inj, ← Int.ofNat_one, Int.natCast_inj]
   rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem nmem
@@ -252,7 +281,7 @@ theorem intValuation_exists_uniformizer :
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
     v.intValuation r = Multiplicative.ofAdd (-1 : ℤ) := by
   classical
-  rw [intValuation_apply, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one,
+  rw [v.intValuation_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one,
     ofAdd_neg, WithZero.coe_inv]
   apply v.associates_irreducible
 
@@ -282,6 +311,7 @@ theorem valuation_of_algebraMap (r : R) : v.valuation K r = v.intValuation r := 
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
 
 open scoped algebraMap in
+@[deprecated valuation_of_algebraMap (since := "2025-05-11")]
 lemma valuation_eq_intValuationDef (r : R) : v.valuation K r = v.intValuationDef r :=
   Valuation.extendToLocalization_apply_map_apply ..
 
@@ -295,6 +325,12 @@ open scoped algebraMap in
 theorem valuation_lt_one_iff_dvd (r : R) :
     v.valuation K r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
   rw [valuation_of_algebraMap]; exact v.intValuation_lt_one_iff_dvd r
+
+open scoped algebraMap in
+/-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `r ∈ v`. -/
+theorem valuation_lt_one_iff_mem (r : R) :
+    v.valuation K r < 1 ↔ r ∈ v.asIdeal := by
+  rw [valuation_of_algebraMap]; exact v.intValuation_lt_one_iff_mem r
 
 variable (K)
 
@@ -332,9 +368,8 @@ theorem mem_integers_of_valuation_le_one (x : K)
   have hv' := hv
   rw [Associates.irreducible_mk, irreducible_iff_prime] at hv
   specialize h ⟨v, Ideal.isPrime_of_prime hv, hv.ne_zero⟩
-  simp_rw [valuation_of_mk', intValuation, ← Valuation.toFun_eq_coe,
-    intValuationDef_if_neg _ hn0, intValuationDef_if_neg _ hd0, ← WithZero.coe_div,
-    ← WithZero.coe_one, WithZero.coe_le_coe, Associates.factors_mk _ (ine hn0),
+  simp_rw [valuation_of_mk', intValuation_if_neg _ hn0, intValuation_if_neg _ hd0,
+    ← WithZero.coe_div, ← WithZero.coe_one, WithZero.coe_le_coe, Associates.factors_mk _ (ine hn0),
     Associates.factors_mk _ (ine hd0), Associates.count_some hv'] at h
   simpa using h
 
@@ -486,8 +521,8 @@ open scoped algebraMap in -- to make the coercion from `R` fire
 /-- A global integer is in the local integers. -/
 lemma coe_mem_adicCompletionIntegers (r : R) :
     (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
-  rw [mem_adicCompletionIntegers, valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
-  exact intValuation_le_one v r
+  rw [mem_adicCompletionIntegers, valuedAdicCompletion_eq_valuation]
+  exact valuation_le_one v r
 
 @[simp]
 theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K) :
@@ -527,7 +562,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
     -- now manually translate the goal (an inequality in ℤₘ₀) to an inequality in ℤ
     rw [mem_adicCompletionIntegers, algebraMap.coe_pow, map_mul, hd, map_pow,
-      valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef, hϖ, ← WithZero.coe_pow,
+      valuedAdicCompletion_eq_valuation, valuation_of_algebraMap, hϖ, ← WithZero.coe_pow,
       ← WithZero.coe_mul, WithZero.coe_le_one, ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow,
       toAdd_ofAdd, toAdd_one,
       show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,

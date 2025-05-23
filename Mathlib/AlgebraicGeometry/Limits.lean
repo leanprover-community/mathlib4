@@ -646,4 +646,7 @@ instance [IsAffine X] [IsAffine Y] : IsAffine (X ⨿ Y) :=
 
 end Coproduct
 
+instance : CartesianMonoidalCategory Scheme := .ofHasFiniteProducts
+instance : BraidedCategory Scheme := .ofCartesianMonoidalCategory
+
 end AlgebraicGeometry

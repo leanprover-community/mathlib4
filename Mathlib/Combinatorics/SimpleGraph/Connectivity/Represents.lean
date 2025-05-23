@@ -77,7 +77,7 @@ end ConnectedComponent.Represents
 
 lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedComponent)
     (hrep : ConnectedComponent.Represents s G.oddComponents) :
-  Even (K.supp \ s).ncard := by
+    Even (K.supp \ s).ncard := by
   by_cases h : Even K.supp.ncard
   · simpa [hrep.ncard_sdiff_of_not_mem
       (by simpa [Set.ncard_image_of_injective, ← Nat.not_odd_iff_even] using h)] using h

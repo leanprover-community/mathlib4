@@ -519,10 +519,9 @@ theorem lintegral_indicator_one₀ {s : Set α} (hs : NullMeasurableSet s μ) :
     ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
   (lintegral_indicator_const₀ hs _).trans <| one_mul _
 
-@[simp]
 theorem lintegral_indicator_one {s : Set α} (hs : MeasurableSet s) :
-    ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
-  (lintegral_indicator_const hs _).trans <| one_mul _
+    ∫⁻ a, s.indicator 1 a ∂μ = μ s := by
+  simp [hs]
 
 theorem Measure.ext_iff_lintegral (ν : Measure α) :
     μ = ν ↔ ∀ f : α → ℝ≥0∞, Measurable f → ∫⁻ a, f a ∂μ = ∫⁻ a, f a ∂ν := by

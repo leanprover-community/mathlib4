@@ -265,6 +265,26 @@ protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖�
       { f : α →ᵤ[𝔖] G | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   UniformOnFun.hasBasis_nhds_one_of_basis 𝔖 h𝔖₁ h𝔖₂ (basis_sets _)
 
+@[to_additive (attr := simp)]
+lemma UniformOnFun.ofFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    ofFun 𝔖 (∏ i ∈ I, f i) = ∏ i ∈ I, ofFun 𝔖 (f i) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.toFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    toFun 𝔖 (∏ i ∈ I, f i) = ∏ i ∈ I, toFun 𝔖 (f i) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformFun.ofFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    ofFun (∏ i ∈ I, f i) = ∏ i ∈ I, ofFun (f i) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformFun.toFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    toFun (∏ i ∈ I, f i) = ∏ i ∈ I, toFun (f i) :=
+  rfl
+
 end Group
 
 section ConstSMul

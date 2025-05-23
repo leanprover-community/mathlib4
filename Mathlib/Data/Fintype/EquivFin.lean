@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Order.WellFounded
 
 /-!
 # Equivalences between `Fintype`, `Fin` and `Finite`
@@ -420,17 +419,6 @@ noncomputable def fintypeOrInfinite (α : Type*) : Fintype α ⊕' Infinite α :
   if h : Infinite α then PSum.inr h else PSum.inl (fintypeOfNotInfinite h)
 
 end
-
-theorem Finset.exists_minimal {α : Type*} [Preorder α] (s : Finset α) (h : s.Nonempty) :
-    ∃ m ∈ s, ∀ x ∈ s, ¬x < m := by
-  obtain ⟨c, hcs : c ∈ s⟩ := h
-  have : WellFounded (@LT.lt { x // x ∈ s } _) := Finite.wellFounded_of_trans_of_irrefl _
-  obtain ⟨⟨m, hms : m ∈ s⟩, -, H⟩ := this.has_min Set.univ ⟨⟨c, hcs⟩, trivial⟩
-  exact ⟨m, hms, fun x hx hxm => H ⟨x, hx⟩ trivial hxm⟩
-
-theorem Finset.exists_maximal {α : Type*} [Preorder α] (s : Finset α) (h : s.Nonempty) :
-    ∃ m ∈ s, ∀ x ∈ s, ¬m < x :=
-  @Finset.exists_minimal αᵒᵈ _ s h
 
 namespace Infinite
 

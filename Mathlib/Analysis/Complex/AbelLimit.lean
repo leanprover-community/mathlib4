@@ -70,26 +70,26 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
 -- An ugly technical lemma
 private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ ∀ x y, 0 < x → x < ε → |y| < s * x →
-      sqrt (x ^ 2 + y ^ 2) < M * (1 - sqrt ((1 - x) ^ 2 + y ^ 2)) := by
-  refine ⟨2 * sqrt (1 + s ^ 2) + 1, 1 / (1 + s ^ 2), by positivity, by positivity,
+      √(x ^ 2 + y ^ 2) < M * (1 - √((1 - x) ^ 2 + y ^ 2)) := by
+  refine ⟨2 * √(1 + s ^ 2) + 1, 1 / (1 + s ^ 2), by positivity, by positivity,
     fun x y hx₀ hx₁ hy ↦ ?_⟩
-  have H : sqrt ((1 - x) ^ 2 + y ^ 2) ≤ 1 - x / 2 := by
-    calc sqrt ((1 - x) ^ 2 + y ^ 2)
-      _ ≤ sqrt ((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
-      _ = sqrt (1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring
-      _ ≤ sqrt (1 - 2 * x + (1 + s ^ 2) * (1 / (1 + s ^ 2)) * x) := sqrt_le_sqrt <| by gcongr
-      _ = sqrt (1 - x) := by congr 1; field_simp; ring
+  have H : √((1 - x) ^ 2 + y ^ 2) ≤ 1 - x / 2 := by
+    calc √((1 - x) ^ 2 + y ^ 2)
+      _ ≤ √((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
+      _ = √(1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring
+      _ ≤ √(1 - 2 * x + (1 + s ^ 2) * (1 / (1 + s ^ 2)) * x) := by gcongr
+      _ = √(1 - x) := by congr 1; field_simp; ring
       _ ≤ 1 - x / 2 := by
         simp_rw [sub_eq_add_neg, ← neg_div]
         refine sqrt_one_add_le <| neg_le_neg_iff.mpr (hx₁.trans_le ?_).le
         rw [div_le_one (by positivity)]
         exact le_add_of_nonneg_right <| sq_nonneg s
-  calc sqrt (x ^ 2 + y ^ 2)
-    _ ≤ sqrt (x ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
-    _ = sqrt ((1 + s ^ 2) * x ^ 2) := by congr; ring
-    _ = sqrt (1 + s ^ 2) * x := by rw [sqrt_mul' _ (sq_nonneg x), sqrt_sq hx₀.le]
-    _ = 2 * sqrt (1 + s ^ 2) * (x / 2) := by ring
-    _ < (2 * sqrt (1 + s ^ 2) + 1) * (x / 2) := by gcongr; exact lt_add_one _
+  calc √(x ^ 2 + y ^ 2)
+    _ ≤ √(x ^ 2 + (s * x) ^ 2) := by rw [← sq_abs y]; gcongr
+    _ = √((1 + s ^ 2) * x ^ 2) := by congr; ring
+    _ = √(1 + s ^ 2) * x := by rw [sqrt_mul' _ (sq_nonneg x), sqrt_sq hx₀.le]
+    _ = 2 * √(1 + s ^ 2) * (x / 2) := by ring
+    _ < (2 * √(1 + s ^ 2) + 1) * (x / 2) := by gcongr; exact lt_add_one _
     _ ≤ _ := by gcongr; exact le_sub_comm.mpr H
 
 lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :

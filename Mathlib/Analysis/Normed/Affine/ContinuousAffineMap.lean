@@ -31,10 +31,10 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 
 ## Main definitions:
 
- * `ContinuousAffineMap.contLinear`
- * `ContinuousAffineMap.hasNorm`
- * `ContinuousAffineMap.norm_comp_le`
- * `ContinuousAffineMap.toConstProdContinuousLinearMap`
+* `ContinuousAffineMap.contLinear`
+* `ContinuousAffineMap.hasNorm`
+* `ContinuousAffineMap.norm_comp_le`
+* `ContinuousAffineMap.toConstProdContinuousLinearMap`
 
 -/
 

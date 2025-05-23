@@ -17,7 +17,7 @@ about the roots of the minimal polynomial of `s` over `R`.
 
 ## References
 
- * [silvester2000] Silvester, *Determinants of Block Matrices*, The Mathematical Gazette (2000).
+* [silvester2000] Silvester, *Determinants of Block Matrices*, The Mathematical Gazette (2000).
 
 -/
 
@@ -170,9 +170,9 @@ variable [Algebra R S] [Module.Free R S]
 theorem LinearMap.det_restrictScalars [AddCommGroup A] [Module R A] [Module S A]
     [IsScalarTower R S A] [Module.Free S A] {f : A →ₗ[S] A} :
     (f.restrictScalars R).det = Algebra.norm R f.det := by
+  classical
   nontriviality R
-  cases subsingleton_or_nontrivial A
-  · simp_rw [det_eq_one_of_subsingleton, map_one]
+  nontriviality A
   have := Module.nontrivial S A
   let ⟨ιS, bS⟩ := Module.Free.exists_basis (R := R) (M := S)
   let ⟨ιA, bA⟩ := Module.Free.exists_basis (R := S) (M := A)
@@ -184,10 +184,8 @@ theorem LinearMap.det_restrictScalars [AddCommGroup A] [Module R A] [Module S A]
   cases fintypeOrInfinite ιA; swap
   · rw [det_eq_one_of_not_module_finite (Module.not_finite_of_infinite_basis bA), map_one,
       det_eq_one_of_not_module_finite (Module.not_finite_of_infinite_basis (bS.smulTower bA))]
-  classical
   rw [Algebra.norm_eq_matrix_det bS, ← AlgHom.coe_toRingHom, ← det_toMatrix bA, det_det,
-    ← det_toMatrix (bS.smulTower' bA), restrictScalars_toMatrix]
-  rfl
+    ← det_toMatrix (bS.smulTower' bA), restrictScalars_toMatrix, RingHom.coe_coe]
 
 /-- Let A/S/R be a tower of finite free tower of rings (with R and S commutative).
 Then $\text{Norm}_{A/R} = \text{Norm}_{A/S} \circ \text{Norm}_{S/R}$. -/

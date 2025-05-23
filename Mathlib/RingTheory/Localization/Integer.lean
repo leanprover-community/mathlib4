@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Localization.Defs
 
 ## Main definitions
 
- * `IsLocalization.IsInteger` is a predicate stating that `x : S` is in the image of `R`
+* `IsLocalization.IsInteger` is a predicate stating that `x : S` is in the image of `R`
 
 ## Implementation notes
 

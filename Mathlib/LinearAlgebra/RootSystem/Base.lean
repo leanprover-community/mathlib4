@@ -29,12 +29,12 @@ For infinite root systems, `RootSystem.Base` is usually not the right notion: li
 is too strong.
 
 ## Main definitions / results:
- * `RootSystem.Base`: a base of a root pairing.
+* `RootSystem.Base`: a base of a root pairing.
 
 ## TODO
 
- * Develop a theory of base / separation / positive roots for infinite systems which specialises to
-   the concept here for finite systems.
+* Develop a theory of base / separation / positive roots for infinite systems which specialises to
+  the concept here for finite systems.
 
 -/
 
@@ -225,17 +225,25 @@ section RootSystem
 variable {P : RootSystem ι R M N} (b : P.Base)
 
 /-- A base of a root system yields a basis of the root space. -/
-@[simps!] def toWeightBasis :
+def toWeightBasis :
     Basis b.support R M :=
   Basis.mk b.linearIndepOn_root <| by
     change ⊤ ≤ span R (range <| P.root ∘ ((↑) : b.support → ι))
     rw [top_le_iff, range_comp, Subtype.range_coe_subtype, setOf_mem_eq, b.span_root_support]
     exact P.span_root_eq_top
 
+@[simp] lemma toWeightBasis_apply (i : b.support) :
+    b.toWeightBasis i = P.root i := by
+  simp [toWeightBasis]
+
 /-- A base of a root system yields a basis of the coroot space. -/
 def toCoweightBasis :
     Basis b.support R N :=
   Base.toWeightBasis (P := P.flip) b.flip
+
+@[simp] lemma toCoweightBasis_apply (i : b.support) :
+    b.toCoweightBasis i = P.coroot i :=
+  b.flip.toWeightBasis_apply (P := P.flip) i
 
 include b
 variable [Fintype ι]

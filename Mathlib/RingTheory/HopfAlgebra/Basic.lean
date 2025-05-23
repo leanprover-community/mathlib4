@@ -20,7 +20,7 @@ In this file we define `HopfAlgebra`, and provide instances for:
 ## TODO
 
 * Uniqueness of Hopf algebra structure on a bialgebra (i.e. if the algebra and coalgebra structures
-agree then the antipodes must also agree).
+  agree then the antipodes must also agree).
 
 * `antipode 1 = 1` and `antipode (a * b) = antipode b * antipode a`, so in particular if `A` is
   commutative then `antipode` is an algebra homomorphism.
@@ -29,7 +29,7 @@ agree then the antipodes must also agree).
   the identity.
 
 (Note that all three facts have been proved for Hopf bimonoids in an arbitrary braided category,
-so we could deduce the facts here from an equivalence `HopfAlgebraCat R ≌ Hopf_ (ModuleCat R)`.)
+so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf_ (ModuleCat R)`.)
 
 ## References
 

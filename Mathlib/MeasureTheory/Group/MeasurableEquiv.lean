@@ -197,12 +197,22 @@ def divRight [MeasurableMul G] (g : G) : G ≃ᵐ G where
   measurable_toFun := measurable_div_const' g
   measurable_invFun := measurable_mul_const g
 
+@[to_additive]
+lemma _root_.measurableEmbedding_divRight [MeasurableMul G] (g : G) :
+    MeasurableEmbedding fun x ↦ x / g :=
+  (divRight g).measurableEmbedding
+
 /-- `equiv.divLeft` as a `MeasurableEquiv` -/
 @[to_additive "`equiv.subLeft` as a `MeasurableEquiv`"]
 def divLeft [MeasurableMul G] [MeasurableInv G] (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.divLeft g
   measurable_toFun := measurable_id.const_div g
   measurable_invFun := measurable_inv.mul_const g
+
+@[to_additive]
+lemma _root_.measurableEmbedding_divLeft [MeasurableMul G] [MeasurableInv G] (g : G) :
+    MeasurableEmbedding fun x ↦ g / x :=
+  (divLeft g).measurableEmbedding
 
 end MeasurableEquiv
 

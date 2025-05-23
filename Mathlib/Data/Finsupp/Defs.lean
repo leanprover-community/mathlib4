@@ -3,11 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Support
 import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Tactic.FastInstance
-import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Type of functions with finite support
@@ -334,9 +331,9 @@ lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
   · intro h
     classical
     choose f h using h
-    use onFinset g.support (Set.indicator g.support f) (by aesop)
+    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by aesop)
     ext i
-    simp only [mapRange_apply, onFinset_apply, Set.indicator_apply]
+    simp only [mapRange_apply, onFinset_apply]
     split_ifs <;> simp_all
 
 /-- `Finsupp.mapRange` of a injective function is injective. -/
@@ -457,185 +454,5 @@ theorem support_zipWith [D : DecidableEq α] {f : M → N → P} {hf : f 0 0 = 0
   convert support_onFinset_subset
 
 end ZipWith
-
-/-! ### Additive monoid structure on `α →₀ M` -/
-
-
-section AddZeroClass
-
-variable [AddZeroClass M]
-
-instance instAdd : Add (α →₀ M) :=
-  ⟨zipWith (· + ·) (add_zero 0)⟩
-
-@[simp, norm_cast] lemma coe_add (f g : α →₀ M) : ⇑(f + g) = f + g := rfl
-
-theorem add_apply (g₁ g₂ : α →₀ M) (a : α) : (g₁ + g₂) a = g₁ a + g₂ a :=
-  rfl
-
-theorem support_add [DecidableEq α] {g₁ g₂ : α →₀ M} :
-    (g₁ + g₂).support ⊆ g₁.support ∪ g₂.support :=
-  support_zipWith
-
-theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint g₁.support g₂.support) :
-    (g₁ + g₂).support = g₁.support ∪ g₂.support :=
-  le_antisymm support_zipWith fun a ha =>
-    (Finset.mem_union.1 ha).elim
-      (fun ha => by
-        have : a ∉ g₂.support := disjoint_left.1 h ha
-        simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, add_zero] )
-      fun ha => by
-      have : a ∉ g₁.support := disjoint_right.1 h ha
-      simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, zero_add]
-
-instance instAddZeroClass : AddZeroClass (α →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
-
-instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
-
-/-- When ι is finite and M is an AddMonoid,
-  then Finsupp.equivFunOnFinite gives an AddEquiv -/
-noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
-    (ι →₀ M) ≃+ (ι → M) where
-  __ := Finsupp.equivFunOnFinite
-  map_add' _ _ := rfl
-
-/-- AddEquiv between (ι →₀ M) and M, when ι has a unique element -/
-noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
-    (ι →₀ M) ≃+ M where
-  __ := Equiv.finsuppUnique
-  map_add' _ _ := rfl
-
-instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
-
-instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
-
-/-- Evaluation of a function `f : α →₀ M` at a point as an additive monoid homomorphism.
-
-See `Finsupp.lapply` in `Mathlib/LinearAlgebra/Finsupp/Defs.lean` for the stronger version as a
-linear map. -/
-@[simps apply]
-def applyAddHom (a : α) : (α →₀ M) →+ M where
-  toFun g := g a
-  map_zero' := zero_apply
-  map_add' _ _ := add_apply _ _ _
-
-/-- Coercion from a `Finsupp` to a function type is an `AddMonoidHom`. -/
-@[simps]
-noncomputable def coeFnAddHom : (α →₀ M) →+ α → M where
-  toFun := (⇑)
-  map_zero' := coe_zero
-  map_add' := coe_add
-
-theorem mapRange_add [AddZeroClass N] {f : M → N} {hf : f 0 = 0}
-    (hf' : ∀ x y, f (x + y) = f x + f y) (v₁ v₂ : α →₀ M) :
-    mapRange f hf (v₁ + v₂) = mapRange f hf v₁ + mapRange f hf v₂ :=
-  ext fun _ => by simp only [hf', add_apply, mapRange_apply]
-
-theorem mapRange_add' [AddZeroClass N] [FunLike β M N] [AddMonoidHomClass β M N]
-    {f : β} (v₁ v₂ : α →₀ M) :
-    mapRange f (map_zero f) (v₁ + v₂) = mapRange f (map_zero f) v₁ + mapRange f (map_zero f) v₂ :=
-  mapRange_add (map_add f) v₁ v₂
-
-/-- Bundle `Finsupp.embDomain f` as an additive map from `α →₀ M` to `β →₀ M`. -/
-@[simps]
-def embDomain.addMonoidHom (f : α ↪ β) : (α →₀ M) →+ β →₀ M where
-  toFun v := embDomain f v
-  map_zero' := by simp
-  map_add' v w := by
-    ext b
-    by_cases h : b ∈ Set.range f
-    · rcases h with ⟨a, rfl⟩
-      simp
-    · simp only [Set.mem_range, not_exists, coe_add, Pi.add_apply,
-        embDomain_notin_range _ _ _ h, add_zero]
-
-@[simp]
-theorem embDomain_add (f : α ↪ β) (v w : α →₀ M) :
-    embDomain f (v + w) = embDomain f v + embDomain f w :=
-  (embDomain.addMonoidHom f).map_add v w
-
-end AddZeroClass
-
-section AddMonoid
-
-variable [AddMonoid M]
-
-/-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℕ` is not distributive
-unless `β i`'s addition is commutative. -/
-instance instNatSMul : SMul ℕ (α →₀ M) :=
-  ⟨fun n v => v.mapRange (n • ·) (nsmul_zero _)⟩
-
-instance instAddMonoid : AddMonoid (α →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
-
-end AddMonoid
-
-instance instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addCommMonoid
-    DFunLike.coe coe_zero coe_add (fun _ _ => rfl)
-
-instance instNeg [NegZeroClass G] : Neg (α →₀ G) :=
-  ⟨mapRange Neg.neg neg_zero⟩
-
-@[simp, norm_cast] lemma coe_neg [NegZeroClass G] (g : α →₀ G) : ⇑(-g) = -g := rfl
-
-theorem neg_apply [NegZeroClass G] (g : α →₀ G) (a : α) : (-g) a = -g a :=
-  rfl
-
-theorem mapRange_neg [NegZeroClass G] [NegZeroClass H] {f : G → H} {hf : f 0 = 0}
-    (hf' : ∀ x, f (-x) = -f x) (v : α →₀ G) : mapRange f hf (-v) = -mapRange f hf v :=
-  ext fun _ => by simp only [hf', neg_apply, mapRange_apply]
-
-theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [FunLike β G H] [AddMonoidHomClass β G H]
-    {f : β} (v : α →₀ G) :
-    mapRange f (map_zero f) (-v) = -mapRange f (map_zero f) v :=
-  mapRange_neg (map_neg f) v
-
-instance instSub [SubNegZeroMonoid G] : Sub (α →₀ G) :=
-  ⟨zipWith Sub.sub (sub_zero _)⟩
-
-@[simp, norm_cast] lemma coe_sub [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ := rfl
-
-theorem sub_apply [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) (a : α) : (g₁ - g₂) a = g₁ a - g₂ a :=
-  rfl
-
-theorem mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf : f 0 = 0}
-    (hf' : ∀ x y, f (x - y) = f x - f y) (v₁ v₂ : α →₀ G) :
-    mapRange f hf (v₁ - v₂) = mapRange f hf v₁ - mapRange f hf v₂ :=
-  ext fun _ => by simp only [hf', sub_apply, mapRange_apply]
-
-theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [FunLike β G H] [AddMonoidHomClass β G H]
-    {f : β} (v₁ v₂ : α →₀ G) :
-    mapRange f (map_zero f) (v₁ - v₂) = mapRange f (map_zero f) v₁ - mapRange f (map_zero f) v₂ :=
-  mapRange_sub (map_sub f) v₁ v₂
-
-/-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℤ` is not distributive
-unless `β i`'s addition is commutative. -/
-instance instIntSMul [AddGroup G] : SMul ℤ (α →₀ G) :=
-  ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
-
-instance instAddGroup [AddGroup G] : AddGroup (α →₀ G) :=
-  fast_instance% DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
-
-instance instAddCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
-  fast_instance%  DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
-
-@[simp]
-theorem support_neg [AddGroup G] (f : α →₀ G) : support (-f) = support f :=
-  Finset.Subset.antisymm support_mapRange
-    (calc
-      support f = support (- -f) := congr_arg support (neg_neg _).symm
-      _ ⊆ support (-f) := support_mapRange
-      )
-
-theorem support_sub [DecidableEq α] [AddGroup G] {f g : α →₀ G} :
-    support (f - g) ⊆ support f ∪ support g := by
-  rw [sub_eq_add_neg, ← support_neg g]
-  exact support_add
 
 end Finsupp

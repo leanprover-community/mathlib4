@@ -41,7 +41,7 @@ theorem finite_respectsIso : RespectsIso @Finite := by
 lemma finite_containsIdentities : ContainsIdentities @Finite := Finite.id
 
 theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
-  refine IsStableUnderBaseChange.mk _ finite_respectsIso ?_
+  refine IsStableUnderBaseChange.mk finite_respectsIso ?_
   classical
   introv h
   replace h : Module.Finite R T := by

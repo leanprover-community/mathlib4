@@ -373,8 +373,7 @@ instance partialOrder : PartialOrder Num where
 
 instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid Num where
   add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
-  le_of_add_le_add_left a b c :=
-    show a + b ≤ a + c → b ≤ c by transfer_rw; apply le_of_add_le_add_left
+  le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
 
 instance linearOrder : LinearOrder Num :=
   { le_total := by
@@ -844,7 +843,7 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
   · trans
     · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (m + m) (n + 1)
-    rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
+    rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n
     simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
 

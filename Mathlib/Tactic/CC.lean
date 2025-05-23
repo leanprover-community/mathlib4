@@ -41,12 +41,12 @@ The `cc` implementation in Lean does a few more tricks: for example it
 derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
 
 * The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
-closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
-Journal of the ACM (1980)
+  closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
+  Journal of the ACM (1980)
 
 * The congruence lemmas for dependent type theory as used in Lean are described in
-[Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
-(de Moura, Selsam IJCAR 2016).
+  [Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
+  (de Moura, Selsam IJCAR 2016).
 -/
 
 universe u
@@ -197,8 +197,8 @@ congruence lemmas.
 The `cc` implementation in Lean does a few more tricks: for example it
 derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
 * The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
-closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
-Journal of the ACM (1980)
+  closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
+  Journal of the ACM (1980)
 * The congruence lemmas for dependent type theory as used in Lean are described in
 [Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
 (de Moura, Selsam IJCAR 2016).

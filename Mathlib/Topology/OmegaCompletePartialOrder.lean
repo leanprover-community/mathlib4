@@ -14,7 +14,7 @@ of continuity is equivalent to continuity in ωCPOs.
 
 ## Reference
 
- * https://ncatlab.org/nlab/show/Scott+topology
+* https://ncatlab.org/nlab/show/Scott+topology
 
 -/
 

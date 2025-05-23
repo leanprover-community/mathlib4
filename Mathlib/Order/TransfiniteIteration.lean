@@ -25,9 +25,9 @@ when we know `Cardinal.mk I < Cardinal.mk J`).
 
 ## TODO (@joelriou)
 * deduce that in a Grothendieck abelian category, there is a *set* `I` of monomorphisms
-such that any monomorphism is a transfinite composition of pushouts of morphisms in `I`,
-and then an object `X` is injective iff `X ⟶ 0` has the right lifting
-property with respect to `I`.
+  such that any monomorphism is a transfinite composition of pushouts of morphisms in `I`,
+  and then an object `X` is injective iff `X ⟶ 0` has the right lifting
+  property with respect to `I`.
 
 -/
 
