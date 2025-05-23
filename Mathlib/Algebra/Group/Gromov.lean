@@ -213,10 +213,10 @@ noncomputable instance fakeSub: Sub G where
   sub x y := y⁻¹ * x
 
 structure Lipschitz [Generates (G := G) (S := S)] where
-  toFun: G → ℝ
+  toFun: G → ℂ
   lipschitz: ∃ C, LipschitzWith C toFun
 
-instance: FunLike (Lipschitz (G := G)) G ℝ where
+instance: FunLike (Lipschitz (G := G)) G ℂ where
   coe := Lipschitz.toFun
   -- TODO - why does this work? I blindly copied it from `OneHom.funLike`
   coe_injective' f g h := by cases f; cases g; congr
@@ -255,7 +255,8 @@ instance Lipschitz.instAddCommMonoid: AddCommMonoid (Lipschitz (G := G)) := {
   Lipschitz.addMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _
 }
 
-def V := Module ℝ (Lipschitz (G := G))
+-- V is the vector space
+def V := Module ℂ (Lipschitz (G := G))
 
 -- TODO - I don't think we can use this, as `MeasureTheory.convolution' would require our group to be commutative
 -- (via `NormedAddCommGroup`)
