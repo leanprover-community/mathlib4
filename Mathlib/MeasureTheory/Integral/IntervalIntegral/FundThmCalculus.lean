@@ -998,7 +998,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
         _ ≤ ∫ w in t..u, (G' w).toReal := by
           rw [intervalIntegral.integral_of_le hu.1.le, ← integral_Icc_eq_integral_Ioc]
           apply setIntegral_mono_ae_restrict
-          · simp only [integrableOn_const, Real.volume_Icc, ENNReal.ofReal_lt_top, or_true]
+          · simp
           · exact IntegrableOn.mono_set G'int I
           · have C1 : ∀ᵐ x : ℝ ∂volume.restrict (Icc t u), G' x < ∞ :=
               ae_mono (Measure.restrict_mono I le_rfl) G'lt_top
