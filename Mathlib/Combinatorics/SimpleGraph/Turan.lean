@@ -3,11 +3,12 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Order.Partition.Equipartition
-import Mathlib.Tactic.Ring
 
 /-!
 # Turán's theorem
@@ -390,7 +391,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
 /-- A looser (but simpler than `card_edgeFinset_turanGraph`) bound on the number of edges in
 `turanGraph n r`. -/
 theorem card_edgeFinset_turanGraph_le :
-    (#(turanGraph n r).edgeFinset : ℚ) ≤ (1 - 1 / r) * n ^ 2 / 2 := by
+    (#(turanGraph n r).edgeFinset : ℚ) ≤ (1 - 1 / r) * (n ^ 2 / 2) := by
   have rd : ∀ {m}, 2 ∣ m * (m - 1) := fun {m} ↦ by
     rw [← even_iff_two_dvd]; exact Nat.even_mul_pred_self m
   rw [card_edgeFinset_turanGraph, Nat.cast_add, Nat.cast_div_charZero]; swap
@@ -403,8 +404,20 @@ theorem card_edgeFinset_turanGraph_le :
   rcases r.eq_zero_or_pos with rfl | hr
   · norm_num
     rw [Nat.choose_two_right, Nat.cast_div_charZero rd, Nat.cast_mul, Nat.cast_ofNat, sq]
-    gcongr; omega
-  rw [Nat.cast_pred hr]
-  sorry
+    gcongr; exact Nat.sub_le ..
+  have lm : (n % r) ^ 2 ≤ n ^ 2 := Nat.pow_le_pow_left (Nat.mod_le ..) 2
+  rw [Nat.cast_pred hr, mul_div_mul_comm, Nat.cast_sub lm, ← one_sub_div (by positivity), sub_div,
+    Nat.cast_pow, sub_mul, mul_comm, ← le_sub_iff_add_le]
+  apply sub_le_sub_left
+  rw [Nat.choose_two_right, Nat.cast_div_charZero rd]
+  push_cast
+  rw [sq, mul_comm (n % r : ℚ), mul_div_assoc, mul_div_assoc, ← mul_rotate]
+  gcongr
+  rcases (n % r).eq_zero_or_pos with hm | hm
+  · rw [hm]; norm_num
+  · rw [Nat.cast_pred hm, one_sub_mul, one_div]
+    apply sub_le_sub_left
+    rw [inv_mul_le_one₀ (mod_cast hr), Nat.cast_le]
+    exact (Nat.mod_lt _ hr).le
 
 end SimpleGraph
