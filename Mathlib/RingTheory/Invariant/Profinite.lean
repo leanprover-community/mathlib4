@@ -43,7 +43,7 @@ lemma Algebra.IsInvariant.isIntegral_of_profinite
     [Algebra.IsInvariant A B G] : Algebra.IsIntegral A B := by
   constructor
   intro x
-  obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhd_of_one
+  obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
     (stabilizer_isOpen G x) (one_mem _)
   have := (Algebra.IsInvariant.isIntegral A (FixedPoints.subalgebra A B N.1.1) (G ⧸ N.1.1)).1
     ⟨x, fun g ↦ hN g.2⟩
@@ -79,7 +79,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
     simp
   refine ⟨a, ?_⟩
   ext x
-  obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhd_of_one
+  obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
     (stabilizer_isOpen G x) (one_mem _)
   lift x to B' N.1.1 using fun g ↦ hN g.2
   show x ∈ Q.under (B' N.1.1) ↔ x ∈ Ideal.under (B' N.1.1) ((_ : G) • P)
@@ -179,7 +179,7 @@ theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
       G).isoLimittoFiniteQuotientFunctor.inv_hom_id (Subtype.mk (fun N ↦ (s N).1.1) _))) N
   refine ⟨⟨a, ?_⟩, ?_⟩
   · ext x
-    obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhd_of_one
+    obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
       (stabilizer_isOpen G x) (one_mem _)
     lift x to B' N.1.1 using fun g ↦ hN g.2
     show x ∈ (a • Q).under (B' N.1.1) ↔ x ∈ Q.under (B' N.1.1)
@@ -192,7 +192,7 @@ theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     rfl
   · ext x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhd_of_one
+    obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
       (stabilizer_isOpen G x) (one_mem _)
     lift x to B' N.1.1 using fun g ↦ hN g.2
     show Ideal.Quotient.mk Q (QuotientGroup.mk (s := N) a • x).1 = _

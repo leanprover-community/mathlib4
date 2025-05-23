@@ -98,8 +98,7 @@ instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subring B H) where
   smul := Quotient.lift (fun g x ↦ ⟨g • x, fun h ↦ by
     simpa [mul_smul] using congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
-    rintro _ a ⟨⟨b, hb⟩, rfl⟩
-    induction' b with b
+    rintro _ a ⟨⟨⟨b⟩, hb⟩, rfl⟩
     ext c
     simpa [mul_smul] using congr(a • $(c.2 ⟨b, hb⟩)))
   one_smul b := Subtype.ext (one_smul G b.1)
