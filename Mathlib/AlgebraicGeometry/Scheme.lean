@@ -53,6 +53,27 @@ namespace Scheme
 instance : CoeSort Scheme Type* where
   coe X := X.carrier
 
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Pretty printer for coercing schemes to types. -/
+@[app_delab TopCat.carrier]
+partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+  guard <| (← getExpr).isAppOfArity ``TopCat.carrier 1
+  withNaryArg 0 do
+
+  guard <| (← getExpr).isAppOfArity ``PresheafedSpace.carrier 3
+  withNaryArg 2 do
+
+  guard <| (← getExpr).isAppOfArity ``SheafedSpace.toPresheafedSpace 3
+  withNaryArg 2 do
+
+  guard <| (← getExpr).isAppOfArity ``LocallyRingedSpace.toSheafedSpace 1
+  withNaryArg 0 do
+
+  guard <| (← getExpr).isAppOfArity ``Scheme.toLocallyRingedSpace 1
+  withNaryArg 0 do
+
+  `(↥$(← delab))
+
 /-- The type of open sets of a scheme. -/
 abbrev Opens (X : Scheme) : Type* := TopologicalSpace.Opens X
 
@@ -166,7 +187,6 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
 def stalkMap (x : X) : Y.presheaf.stalk (f.base x) ⟶ X.presheaf.stalk x :=
   f.toLRSHom.stalkMap x
 
-@[ext (iff := false)]
 protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g := by
@@ -222,10 +242,17 @@ noncomputable def homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) : X ≃ₜ Y :=
   TopCat.homeoOfIso (forgetToTop.mapIso e)
 
 @[simp]
+lemma coe_homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) :
+    ⇑(homeoOfIso e) = e.hom.base := rfl
+
+@[simp]
+lemma coe_homeoOfIso_symm {X Y : Scheme.{u}} (e : X ≅ Y) :
+    ⇑(homeoOfIso e.symm) = e.inv.base := rfl
+
+@[simp]
 lemma homeoOfIso_symm {X Y : Scheme} (e : X ≅ Y) :
     (homeoOfIso e).symm = homeoOfIso e.symm := rfl
 
-@[simp]
 lemma homeoOfIso_apply {X Y : Scheme} (e : X ≅ Y) (x : X) :
     homeoOfIso e x = e.hom.base x := rfl
 
@@ -352,6 +379,23 @@ theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).appTop = inv (f.appTop) := by simp
 
 @[deprecated (since := "2024-11-23")] alias inv_app_top := inv_appTop
+
+/-- Copies a morphism with a different underlying map -/
+def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
+  base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
+  c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
+  prop x := by
+    subst h
+    convert f.prop x using 4
+    aesop_cat
+
+lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
+    f.copyBase g h = f := by
+  subst h
+  obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
+  simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
+  congr
+  aesop_cat
 
 end Scheme
 

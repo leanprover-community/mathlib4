@@ -49,8 +49,7 @@ theorem neg_def {xl xr xL xR} : -mk xl xr xL xR = mk xr xl (-xR ·) (-xL ·) :=
 instance : InvolutiveNeg PGame :=
   { inferInstanceAs (Neg PGame) with
     neg_neg := fun x => by
-      induction' x with xl xr xL xR ihL ihR
-      simp_rw [neg_def, ihL, ihR] }
+      induction x with | mk xl xr xL xR ihL ihR => simp_rw [neg_def, ihL, ihR] }
 
 instance : NegZeroClass PGame :=
   { inferInstanceAs (Zero PGame), inferInstanceAs (Neg PGame) with

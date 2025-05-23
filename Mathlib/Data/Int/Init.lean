@@ -82,7 +82,7 @@ It is used as the default induction principle for the `induction` tactic.
     suffices ∀ n : ℕ, p (-n) from this (i + 1)
     intro n; induction n with
     | zero => simp [hz]
-    | succ n ih => simpa [Int.natCast_succ, Int.neg_add, Int.sub_eq_add_neg] using hn _ ih
+    | succ n ih => simpa [natCast_succ, Int.neg_add, Int.sub_eq_add_neg] using hn _ ih
 
 section inductionOn'
 
@@ -272,8 +272,8 @@ lemma mul_dvd_of_dvd_div (hcb : c ∣ b) (h : a ∣ b / c) : c * a ∣ b :=
 lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
   dvd_ediv_of_mul_dvd h
 
-@[simp] lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
-  dvd_ediv_iff_mul_dvd hbc
+lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b := by
+  simp [hbc]
 
 /-- If `n > 0` then `m` is not divisible by `n` iff it is between `n * k` and `n * (k + 1)`
   for some `k`. -/

@@ -129,7 +129,7 @@ theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s 
     _ ≤ edist x i + diam s := add_le_add le_rfl (edist_le_diam_of_mem hi hy)
 
 /-- The edist to a set depends continuously on the point -/
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_infEdist : Continuous fun x => infEdist x s :=
   continuous_of_le_add_edist 1 (by simp) <| by
     simp only [one_mul, infEdist_le_infEdist_add_edist, forall₂_true_iff]
@@ -522,7 +522,7 @@ theorem uniformContinuous_infDist_pt : UniformContinuous (infDist · s) :=
   (lipschitz_infDist_pt s).uniformContinuous
 
 /-- The minimal distance to a set is continuous in point -/
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_infDist_pt : Continuous (infDist · s) :=
   (uniformContinuous_infDist_pt s).continuous
 
@@ -615,6 +615,7 @@ theorem uniformContinuous_infNndist_pt (s : Set α) : UniformContinuous fun x =>
   (lipschitz_infNndist_pt s).uniformContinuous
 
 /-- The minimal distance to a set (as `ℝ≥0`) is continuous in point -/
+@[continuity, fun_prop]
 theorem continuous_infNndist_pt (s : Set α) : Continuous fun x => infNndist x s :=
   (uniformContinuous_infNndist_pt s).continuous
 

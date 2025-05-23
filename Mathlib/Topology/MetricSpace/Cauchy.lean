@@ -12,7 +12,7 @@ import Mathlib.Topology.EMetricSpace.Basic
 Various results on Cauchy sequences in (pseudo-)metric spaces, including
 
 * `Metric.complete_of_cauchySeq_tendsto` A pseudo-metric space is complete iff each Cauchy sequences
-converges to some limit point.
+  converges to some limit point.
 * `cauchySeq_bdd`: a Cauchy sequence on the natural numbers is bounded
 * various characterisation of Cauchy and uniformly Cauchy sequences
 

@@ -40,7 +40,7 @@ noncomputable def MvPolynomial.rTensor' :
 noncomputable def MvPolynomial.rTensor :
     MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N :=
   TensorProduct.finsuppScalarLeft
- ```
+```
 
 However, to be actually usable, these definitions need lemmas to be given in companion PR.
 

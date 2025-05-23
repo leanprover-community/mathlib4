@@ -21,7 +21,7 @@ one consequence being that the number of Dyck words with length `2 * n` is `cata
 ## Main definitions
 
 * `DyckWord`: a list of `U`s and `D`s with as many `U`s as `D`s and with every prefix having
-at least as many `U`s as `D`s.
+  at least as many `U`s as `D`s.
 * `DyckWord.semilength`: semilength (half the length) of a Dyck word.
 * `DyckWord.firstReturn`: for a nonempty word, the index of the `D` matching the initial `U`.
 

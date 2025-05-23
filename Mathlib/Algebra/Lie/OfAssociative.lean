@@ -20,12 +20,12 @@ make such a definition in this file.
 
 ## Main definitions
 
- * `LieAlgebra.ofAssociativeAlgebra`
- * `LieAlgebra.ofAssociativeAlgebraHom`
- * `LieModule.toEnd`
- * `LieAlgebra.ad`
- * `LinearEquiv.lieConj`
- * `AlgEquiv.toLieEquiv`
+* `LieAlgebra.ofAssociativeAlgebra`
+* `LieAlgebra.ofAssociativeAlgebraHom`
+* `LieModule.toEnd`
+* `LieAlgebra.ad`
+* `LinearEquiv.lieConj`
+* `AlgEquiv.toLieEquiv`
 
 ## Tags
 
