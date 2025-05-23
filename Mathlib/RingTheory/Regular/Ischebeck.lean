@@ -5,6 +5,7 @@ Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.RingTheory.Regular.Depth
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 /-!
 
@@ -336,8 +337,18 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
   rw [← Module.supportDim_quotient_eq_ringKrullDim,
     Module.supportDim_eq_of_equiv (Shrink.linearEquiv (R ⧸ P) R)]
 
-/-
-theorem depth_le_ringKrullDim [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R)
-    [Module.Finite R M] [Nontrivial M] [Small.{v} (R ⧸ IsLocalRing.maximalIdeal R)] :
-    IsLocalRing.depth M ≤ ringKrullDim R := sorry
--/
+theorem depth_le_ringKrullDim [IsNoetherianRing R] [IsLocalRing R] [Small.{v, u} R]
+    (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
+    IsLocalRing.depth M ≤ ringKrullDim R := by
+  rcases associatedPrimes.nonempty R M with ⟨p, hp⟩
+  have := depth_le_ringKrullDim_associatedPrime M p hp
+  rw [← WithBot.coe_le_coe, WithBot.coe_unbot] at this
+  exact this.trans
+    (ringKrullDim_le_of_surjective (Ideal.Quotient.mk p) Ideal.Quotient.mk_surjective)
+
+theorem depth_ne_top [IsNoetherianRing R] [IsLocalRing R] [Small.{v, u} R]
+    (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
+    IsLocalRing.depth M ≠ ⊤ := by
+  have := lt_of_le_of_lt (depth_le_ringKrullDim M) ringKrullDim_lt_top
+  simp only [← WithBot.coe_top, WithBot.coe_lt_coe] at this
+  exact this.ne_top
