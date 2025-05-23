@@ -126,7 +126,9 @@ theorem isWeierstrassDivisionAt_zero : IsWeierstrassDivisionAt 0 g 0 0 I := by
 
 variable {f g q r I}
 
-theorem IsWeierstrassDivisionAt.coeff_f_sub_r_mem (H : f.IsWeierstrassDivisionAt g q r I)
+namespace IsWeierstrassDivisionAt
+
+theorem coeff_f_sub_r_mem (H : f.IsWeierstrassDivisionAt g q r I)
     {i : ℕ} (hi : i < (g.map (Ideal.Quotient.mk I)).order.toNat) : coeff A i (f - r) ∈ I := by
   replace H := H.2
   rw [← sub_eq_iff_eq_add] at H
@@ -134,6 +136,19 @@ theorem IsWeierstrassDivisionAt.coeff_f_sub_r_mem (H : f.IsWeierstrassDivisionAt
   refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal i (fun j hj ↦ ?_) i le_rfl
   have := coeff_of_lt_order_toNat _ (lt_of_le_of_lt hj hi)
   rwa [coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at this
+
+theorem add {f' q' r'} (H : f.IsWeierstrassDivisionAt g q r I)
+    (H' : f'.IsWeierstrassDivisionAt g q' r' I) :
+    (f + f').IsWeierstrassDivisionAt g (q + q') (r + r') I :=
+  ⟨(Polynomial.degree_add_le _ _).trans_lt (sup_lt_iff.2 ⟨H.degree_lt, H'.degree_lt⟩), by
+    rw [H.eq_mul_add, H'.eq_mul_add, Polynomial.coe_add]; ring⟩
+
+theorem smul (H : f.IsWeierstrassDivisionAt g q r I) (a : A) :
+    (a • f).IsWeierstrassDivisionAt g (a • q) (a • r) I :=
+  ⟨(Polynomial.degree_smul_le a _).trans_lt H.degree_lt, by
+    simp [H.eq_mul_add, Algebra.smul_def, mul_add, mul_left_comm]⟩
+
+end IsWeierstrassDivisionAt
 
 end IsWeierstrassDivisionAt
 
@@ -357,21 +372,17 @@ theorem eq_of_mul_add_eq_mul_add [IsHausdorff I A] {q q' : A⟦X⟧} {r r' : A[X
 
 @[simp]
 theorem div_add [IsAdicComplete I A] {f f' : A⟦X⟧} : H.div (f + f') = H.div f + H.div f' := by
-  obtain ⟨hf1, hf2⟩ := H.isWeierstrassDivisionAt_div_mod f
-  obtain ⟨hf'1, hf'2⟩ := H.isWeierstrassDivisionAt_div_mod f'
-  obtain ⟨hf''1, hf''2⟩ := H.isWeierstrassDivisionAt_div_mod (f + f')
-  nth_rw 1 [hf2, hf'2] at hf''2
-  rw [← add_assoc, add_right_comm _ _ (g * _), ← mul_add, add_assoc, ← Polynomial.coe_add] at hf''2
-  exact (H.eq_of_mul_add_eq_mul_add (lt_of_le_of_lt (Polynomial.degree_add_le _ _)
-    (sup_lt_iff.2 ⟨hf1, hf'1⟩)) hf''1 hf''2).1.symm
+  have H1 := (H.isWeierstrassDivisionAt_div_mod f).add (H.isWeierstrassDivisionAt_div_mod f')
+  have H2 := H.isWeierstrassDivisionAt_div_mod (f + f')
+  exact (H.eq_of_mul_add_eq_mul_add H2.degree_lt H1.degree_lt
+    (H2.eq_mul_add.symm.trans H1.eq_mul_add)).1
 
 @[simp]
 theorem div_smul [IsAdicComplete I A] {a : A} {f : A⟦X⟧} : H.div (a • f) = a • H.div f := by
-  obtain ⟨hf1, hf2⟩ := H.isWeierstrassDivisionAt_div_mod f
-  obtain ⟨hf'1, hf'2⟩ := H.isWeierstrassDivisionAt_div_mod (a • f)
-  nth_rw 1 [hf2] at hf'2
-  rw [smul_add, ← mul_smul_comm] at hf'2
-  exact (H.eq_of_mul_add_eq_mul_add ((Polynomial.degree_smul_le _ _).trans_lt hf1) hf'1 hf'2).1.symm
+  have H1 := (H.isWeierstrassDivisionAt_div_mod f).smul a
+  have H2 := H.isWeierstrassDivisionAt_div_mod (a • f)
+  exact (H.eq_of_mul_add_eq_mul_add H2.degree_lt H1.degree_lt
+    (H2.eq_mul_add.symm.trans H1.eq_mul_add)).1
 
 @[simp]
 theorem div_zero [IsAdicComplete I A] : H.div 0 = 0 := by
@@ -379,21 +390,17 @@ theorem div_zero [IsAdicComplete I A] : H.div 0 = 0 := by
 
 @[simp]
 theorem mod_add [IsAdicComplete I A] {f f' : A⟦X⟧} : H.mod (f + f') = H.mod f + H.mod f' := by
-  obtain ⟨hf1, hf2⟩ := H.isWeierstrassDivisionAt_div_mod f
-  obtain ⟨hf'1, hf'2⟩ := H.isWeierstrassDivisionAt_div_mod f'
-  obtain ⟨hf''1, hf''2⟩ := H.isWeierstrassDivisionAt_div_mod (f + f')
-  nth_rw 1 [hf2, hf'2] at hf''2
-  rw [← add_assoc, add_right_comm _ _ (g * _), ← mul_add, add_assoc, ← Polynomial.coe_add] at hf''2
-  exact (H.eq_of_mul_add_eq_mul_add (lt_of_le_of_lt (Polynomial.degree_add_le _ _)
-    (sup_lt_iff.2 ⟨hf1, hf'1⟩)) hf''1 hf''2).2.symm
+  have H1 := (H.isWeierstrassDivisionAt_div_mod f).add (H.isWeierstrassDivisionAt_div_mod f')
+  have H2 := H.isWeierstrassDivisionAt_div_mod (f + f')
+  exact (H.eq_of_mul_add_eq_mul_add H2.degree_lt H1.degree_lt
+    (H2.eq_mul_add.symm.trans H1.eq_mul_add)).2
 
 @[simp]
 theorem mod_smul [IsAdicComplete I A] {a : A} {f : A⟦X⟧} : H.mod (a • f) = a • H.mod f := by
-  obtain ⟨hf1, hf2⟩ := H.isWeierstrassDivisionAt_div_mod f
-  obtain ⟨hf'1, hf'2⟩ := H.isWeierstrassDivisionAt_div_mod (a • f)
-  nth_rw 1 [hf2] at hf'2
-  rw [smul_add, ← mul_smul_comm] at hf'2
-  exact (H.eq_of_mul_add_eq_mul_add ((Polynomial.degree_smul_le _ _).trans_lt hf1) hf'1 hf'2).2.symm
+  have H1 := (H.isWeierstrassDivisionAt_div_mod f).smul a
+  have H2 := H.isWeierstrassDivisionAt_div_mod (a • f)
+  exact (H.eq_of_mul_add_eq_mul_add H2.degree_lt H1.degree_lt
+    (H2.eq_mul_add.symm.trans H1.eq_mul_add)).2
 
 @[simp]
 theorem mod_zero [IsAdicComplete I A] : H.mod 0 = 0 := by
@@ -829,10 +836,12 @@ theorem exists_isWeierstrassFactorization (hg : g.map (IsLocalRing.residue A) �
     (X ^ (g.map (IsLocalRing.residue A)).order.toNat).exists_isWeierstrassDivision hg
   exact ⟨_, _, H.isWeierstrassFactorization hg⟩
 
+variable (g) in
 /-- The `f` in the Weierstrass preparation theorem. -/
 noncomputable def weierstrassDistinguished (hg : g.map (IsLocalRing.residue A) ≠ 0) : A[X] :=
   (g.exists_isWeierstrassFactorization hg).choose
 
+variable (g) in
 /-- The `h` in the Weierstrass preparation theorem. -/
 noncomputable def weierstrassUnit (hg : g.map (IsLocalRing.residue A) ≠ 0) : A⟦X⟧ :=
   (g.exists_isWeierstrassFactorization hg).choose_spec.choose
@@ -869,49 +878,47 @@ theorem IsWeierstrassFactorization.unique
   H.elim (g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg)
 
 @[simp]
-theorem weierstrassDistinguished_mul (hg : g.map (IsLocalRing.residue A) ≠ 0)
-    (hg' : g'.map (IsLocalRing.residue A) ≠ 0) :
-    (g * g').weierstrassDistinguished (by rw [map_mul]; exact mul_ne_zero hg hg') =
-      (g.weierstrassDistinguished hg) * (g'.weierstrassDistinguished hg') := by
-  have H := g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg
-  have H' := g'.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg'
-  have H'' := (g * g').isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
-    (by rw [map_mul]; exact mul_ne_zero hg hg')
+theorem weierstrassDistinguished_mul (hg : (g * g').map (IsLocalRing.residue A) ≠ 0) :
+    (g * g').weierstrassDistinguished hg =
+      g.weierstrassDistinguished (fun h ↦ hg (by simp [h])) *
+        g'.weierstrassDistinguished (fun h ↦ hg (by simp [h])) := by
+  have H := g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
+    (fun h ↦ hg (by simp [h]))
+  have H' := g'.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
+    (fun h ↦ hg (by simp [h]))
+  have H'' := (g * g').isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg
   exact (H''.elim (H.mul H')).1
 
 @[simp]
-theorem weierstrassUnit_mul (hg : g.map (IsLocalRing.residue A) ≠ 0)
-    (hg' : g'.map (IsLocalRing.residue A) ≠ 0) :
-    (g * g').weierstrassUnit (by rw [map_mul]; exact mul_ne_zero hg hg') =
-      (g.weierstrassUnit hg) * (g'.weierstrassUnit hg') := by
-  have H := g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg
-  have H' := g'.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg'
-  have H'' := (g * g').isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
-    (by rw [map_mul]; exact mul_ne_zero hg hg')
+theorem weierstrassUnit_mul (hg : (g * g').map (IsLocalRing.residue A) ≠ 0) :
+    (g * g').weierstrassUnit hg =
+      g.weierstrassUnit (fun h ↦ hg (by simp [h])) *
+        g'.weierstrassUnit (fun h ↦ hg (by simp [h])) := by
+  have H := g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
+    (fun h ↦ hg (by simp [h]))
+  have H' := g'.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
+    (fun h ↦ hg (by simp [h]))
+  have H'' := (g * g').isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg
   exact (H''.elim (H.mul H')).2
 
 @[simp]
-theorem weierstrassDistinguished_smul (hg : g.map (IsLocalRing.residue A) ≠ 0)
-    (hg' : (a • g).map (IsLocalRing.residue A) ≠ 0) :
-    (a • g).weierstrassDistinguished hg' = g.weierstrassDistinguished hg := by
-  have H := g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg
-  have H' := (a • g).isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg'
-  have ha : IsLocalRing.residue A a ≠ 0 := by
-    have := id hg'
-    contrapose! this
-    simp [Algebra.smul_def, this]
+theorem weierstrassDistinguished_smul (hg : (a • g).map (IsLocalRing.residue A) ≠ 0) :
+    (a • g).weierstrassDistinguished hg =
+      g.weierstrassDistinguished (fun h ↦ hg (by simp [Algebra.smul_def, h])) := by
+  have H := g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
+    (fun h ↦ hg (by simp [Algebra.smul_def, h]))
+  have H' := (a • g).isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg
+  have ha : IsLocalRing.residue A a ≠ 0 := fun h ↦ hg (by simp [Algebra.smul_def, h])
   exact (H'.elim (H.smul (by simpa using ha))).1
 
 @[simp]
-theorem weierstrassUnit_smul (hg : g.map (IsLocalRing.residue A) ≠ 0)
-    (hg' : (a • g).map (IsLocalRing.residue A) ≠ 0) :
-    (a • g).weierstrassUnit hg' = a • g.weierstrassUnit hg := by
-  have H := g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg
-  have H' := (a • g).isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg'
-  have ha : IsLocalRing.residue A a ≠ 0 := by
-    have := id hg'
-    contrapose! this
-    simp [Algebra.smul_def, this]
+theorem weierstrassUnit_smul (hg : (a • g).map (IsLocalRing.residue A) ≠ 0) :
+    (a • g).weierstrassUnit hg =
+      a • g.weierstrassUnit (fun h ↦ hg (by simp [Algebra.smul_def, h])) := by
+  have H := g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
+    (fun h ↦ hg (by simp [Algebra.smul_def, h]))
+  have H' := (a • g).isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg
+  have ha : IsLocalRing.residue A a ≠ 0 := fun h ↦ hg (by simp [Algebra.smul_def, h])
   exact (H'.elim (H.smul (by simpa using ha))).2
 
 end IsAdicComplete
