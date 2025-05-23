@@ -69,7 +69,7 @@ theorem one_left : (1 : D ≀ᵣ Q).left = 1 := rfl
 theorem one_right : (1 : D ≀ᵣ Q).right = 1 := rfl
 
 instance : Inv (RegularWreathProduct D Q) where
-  inv x := ⟨((fun k => x.1⁻¹ (x.2 * k))), x.2⁻¹⟩
+  inv x := ⟨fun k => x.1⁻¹ (x.2 * k), x.2⁻¹⟩
 
 @[simp]
 theorem inv_left (a : D ≀ᵣ Q) :
