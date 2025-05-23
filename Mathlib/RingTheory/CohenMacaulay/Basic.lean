@@ -314,9 +314,15 @@ lemma isLocalization_at_prime_prime_depth_le_depth [Small.{v} (R ⧸ p)] [Module
 
 omit [Small.{v', u'} Rₚ] in
 lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay [Small.{v} (R ⧸ p)]
-    [Module.Finite R M] [M.IsCohenMacaulay] [Nontrivial M] [Nontrivial Mₚ] :
+    [Module.Finite R M] [M.IsCohenMacaulay] [ntr : Nontrivial Mₚ] :
     Module.supportDim Rₚ Mₚ = p.depth M := by
   let _ : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
+  let _ : Nontrivial M := by
+    by_contra h
+    absurd not_subsingleton_iff_nontrivial.mpr ntr
+    rw [IsLocalizedModule.subsingleton_iff_ker_eq_top p.primeCompl f]
+    have := (Submodule.subsingleton_iff R).mpr (not_nontrivial_iff_subsingleton.mp h)
+    apply Subsingleton.elim
   have : p.depth M ≠ ⊤ :=
     ne_top_of_le_ne_top (depth_ne_top M) (ideal_depth_le_depth p Ideal.IsPrime.ne_top' M)
   rcases ENat.ne_top_iff_exists.mp this with ⟨n, hn⟩
@@ -400,9 +406,23 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay [Small.{v} (R �
     have := ih M' M'ₚ (quotSMulTop_isLocalizedModule_map p Rₚ a M Mₚ f) netop' depth_eq.symm
     simp [← eq_succ, ← hn, this, depth_eq]
 
-lemma isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay [M.IsCohenMacaulay] :
-    Mₚ.IsCohenMacaulay := by
-  sorry
+lemma isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay [Module.Finite R M]
+    [M.IsCohenMacaulay] : Mₚ.IsCohenMacaulay := by
+  let _ : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
+  simp only [ModuleCat.isCohenMacaulay_iff]
+  by_cases ntr : Subsingleton Mₚ
+  · simp [ntr]
+  · simp only [ntr, false_or]
+    have ntr2 : Nontrivial Mₚ := not_subsingleton_iff_nontrivial.mp ntr
+    have ntr1 : Nontrivial M := by
+      by_contra h
+      absurd ntr
+      rw [IsLocalizedModule.subsingleton_iff_ker_eq_top p.primeCompl f]
+      have := (Submodule.subsingleton_iff R).mpr (not_nontrivial_iff_subsingleton.mp h)
+      apply Subsingleton.elim
+    apply le_antisymm _ (depth_le_supportDim Mₚ)
+    rw [isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay p M Mₚ f]
+    exact WithBot.coe_le_coe.mpr (isLocalization_at_prime_prime_depth_le_depth p M Mₚ f)
 
 lemma isLocalize_at_prime_depth_eq_of_isCohenMacaulay [Small.{v} (R ⧸ p)] [M.IsCohenMacaulay] :
     p.depth M = IsLocalRing.depth Mₚ := sorry
@@ -411,8 +431,8 @@ end IsLocalization
 
 --have some universe problem may have better statement using `IsLocalizedModule`
 lemma localize_at_prime_isCohenMacaulay_of_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
-    (p : Ideal R) [p.IsPrime] [Small.{v} R] [Small.{v} (R ⧸ (maximalIdeal R))]
-    (M : ModuleCat.{v} R) [M.IsCohenMacaulay] :
+    (p : Ideal R) [p.IsPrime] [Small.{v} R]
+    (M : ModuleCat.{v} R) [Module.Finite R M] [M.IsCohenMacaulay] :
     (ModuleCat.of (Localization.AtPrime p) (LocalizedModule.AtPrime p M)).IsCohenMacaulay :=
   isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay p M _
     (LocalizedModule.mkLinearMap p.primeCompl M)
