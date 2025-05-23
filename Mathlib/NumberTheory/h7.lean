@@ -464,7 +464,7 @@ lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
             intros H
             norm_cast at H
           }
-        apply this#exit
+        apply this
 
         sorry
         --apply Real.rpow_le_rpow_of_exponent_le

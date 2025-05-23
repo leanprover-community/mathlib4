@@ -380,7 +380,9 @@ lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (n : ℕ) z₀ (f : ℂ → �
   (∀ k < n, (deriv^[k] f) z₀ = 0) → n ≤ analyticOrderAt f z₀ := by
     intros n z₀ f hf ho hkn
     have := iterated_deriv_eq_zero_iff_order_eq_n z₀ n f hf ho
+
     sorry
+
 
 -- intros f z hf ho hd
 -- rw [le_iff_eq_or_lt]
