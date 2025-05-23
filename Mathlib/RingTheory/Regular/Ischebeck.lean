@@ -89,11 +89,6 @@ universe u v
 
 variable {R : Type u} [CommRing R]
 
-local instance (I : Ideal R) [Small.{v, u} R] : Small.{v, u} (R ⧸ I) :=
-  have : Function.Surjective ((Ideal.Quotient.mk I).comp (Shrink.ringEquiv R).toRingHom) := by
-    simpa using Ideal.Quotient.mk_surjective
-  Small.mk' (RingHom.quotientKerEquivOfSurjective this).symm.toEquiv
-
 local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
   --CategoryTheory.HasExt.standard (ModuleCat.{v} R)
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
