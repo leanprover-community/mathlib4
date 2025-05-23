@@ -486,7 +486,7 @@ protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a 
 -- TODO: reformulate using `𝓝ˢ`
 /-- If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `X` is
-not assumed to be Hausdorff. See `exists_subset_nhd_of_compact` for version assuming this. -/
+not assumed to be Hausdorff. See `exists_subset_nhds_of_compact` for version assuming this. -/
 theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) (hV_closed : ∀ i, IsClosed (V i))
     {U : Set X} (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U := by
