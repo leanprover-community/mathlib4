@@ -5313,6 +5313,7 @@ import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+import Mathlib.RingTheory.Polynomial.DegreeLT
 import Mathlib.RingTheory.Polynomial.Dickson
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
