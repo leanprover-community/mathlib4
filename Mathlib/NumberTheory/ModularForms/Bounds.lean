@@ -285,15 +285,18 @@ local notation "𝕢" => Function.Periodic.qParam
 
 open Complex in
 def ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex]
-    {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F)
-    {h : ℕ} [NeZero h] (hΓ : Γ.width ∣ h) :
-    ∃ C, ∀ᶠ n in atTop, ‖(ModularFormClass.qExpansion h f).coeff ℂ n‖ ≤ C * n ^ k := by
+    {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
+    (fun n ↦ (ModularFormClass.qExpansion Γ.width f).coeff ℂ n) =O[atTop] fun n ↦ (n : ℝ) ^ k := by
+  let h := Γ.width
+  haveI : NeZero h := ⟨Γ.width_ne_zero⟩
+  have hΓ : Γ.width ∣ h := dvd_refl _
   obtain ⟨C, hC⟩ := exists_bound hk f
+  rw [isBigO_iff]
   use (1 / Real.exp (-2 * Real.pi / ↑h)) * C
   filter_upwards [eventually_gt_atTop 0] with n hn
   rw [qExpansion_coeff_eq_intervalIntegral (t := 1 / n) f hΓ _ (by positivity),
     ← intervalIntegral.integral_const_mul]
-  simp only [ofReal_div, ofReal_one, ofReal_natCast]
+  simp only [ofReal_div, ofReal_one, ofReal_natCast, norm_norm]
   refine intervalIntegral.norm_integral_le_integral_norm (by positivity) |>.trans ?_
   let F (x : ℝ) : ℝ := ‖1 / ↑h * (1 / 𝕢 h ((x : ℂ) + 1 / n * I) ^ n
       * f ⟨(x : ℂ) + 1 / n * Complex.I, by simp [hn]⟩)‖
