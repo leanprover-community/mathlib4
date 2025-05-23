@@ -685,12 +685,10 @@ theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0
 
 end deprecated
 
-@[simp]
 theorem getElem_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.set i a).length) :
     (l.set i a)[j] = l[j]'(by simpa using hj) := by
-  rw [← Option.some_inj, ← List.getElem?_eq_getElem, List.getElem?_set_ne h,
-    List.getElem?_eq_getElem]
+  simp [h]
 
 /-! ### map -/
 
@@ -1131,7 +1129,8 @@ section Erase
 
 variable [DecidableEq α]
 
-@[simp] theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) :
+-- @[simp] -- removed because LHS is not in simp normal form
+theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) :
     (l.erase a).length + 1 = l.length := by
   rw [erase_eq_eraseP, length_eraseP_add_one h (decide_eq_true rfl)]
 

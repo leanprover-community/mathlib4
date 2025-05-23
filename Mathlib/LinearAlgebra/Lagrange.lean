@@ -13,16 +13,16 @@ import Mathlib.RingTheory.Polynomial.Basic
 
 ## Main definitions
 * In everything that follows, `s : Finset ι` is a finite set of indexes, with `v : ι → F` an
-indexing of the field over some type. We call the image of v on s the interpolation nodes,
-though strictly unique nodes are only defined when v is injective on s.
+  indexing of the field over some type. We call the image of v on s the interpolation nodes,
+  though strictly unique nodes are only defined when v is injective on s.
 * `Lagrange.basisDivisor x y`, with `x y : F`. These are the normalised irreducible factors of
-the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
-are distinct.
+  the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
+  are distinct.
 * `Lagrange.basis v i` with `i : ι`: the Lagrange basis polynomial that evaluates to `1` at `v i`
-and `0` at `v j` for `i ≠ j`.
+  and `0` at `v j` for `i ≠ j`.
 * `Lagrange.interpolate v r` where `r : ι → F` is a function from the fintype to the field: the
-Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
-associated with the _nodes_`x i`.
+  Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
+  associated with the _nodes_`x i`.
 -/
 
 
@@ -471,10 +471,10 @@ theorem natDegree_nodal [Nontrivial R] : (nodal s v).natDegree = #s := by
     natDegree_X_sub_C, sum_const, smul_eq_mul, mul_one]
 
 theorem nodal_ne_zero [Nontrivial R] : nodal s v ≠ 0 := by
-rcases s.eq_empty_or_nonempty with (rfl | h)
-· exact one_ne_zero
-· apply ne_zero_of_natDegree_gt (n := 0)
-  simp only [natDegree_nodal, h.card_pos]
+  rcases s.eq_empty_or_nonempty with (rfl | h)
+  · exact one_ne_zero
+  · apply ne_zero_of_natDegree_gt (n := 0)
+    simp only [natDegree_nodal, h.card_pos]
 
 @[simp]
 theorem degree_nodal [Nontrivial R] : (nodal s v).degree = #s := by

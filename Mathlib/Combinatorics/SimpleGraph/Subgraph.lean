@@ -590,7 +590,7 @@ def topEquiv : (⊤ : Subgraph G).coe ≃g G where
 
 /-- The bottom of the `Subgraph G` lattice is equivalent to the empty graph on the empty
 vertex type. -/
-def botEquiv : (⊥ : Subgraph G).coe ≃g (⊥ : SimpleGraph Empty) where
+def botEquiv : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
   toFun v := v.property.elim
   invFun v := v.elim
   left_inv := fun ⟨_, h⟩ ↦ h.elim

@@ -37,10 +37,10 @@ variable {V : Type u} [Fintype V]
 variable (G : SimpleGraph V) [DecidableRel G.Adj]
 
 /-- A graph is strongly regular with parameters `n k ℓ μ` if
- * its vertex set has cardinality `n`
- * it is regular with degree `k`
- * every pair of adjacent vertices has `ℓ` common neighbors
- * every pair of nonadjacent vertices has `μ` common neighbors
+* its vertex set has cardinality `n`
+* it is regular with degree `k`
+* every pair of adjacent vertices has `ℓ` common neighbors
+* every pair of nonadjacent vertices has `μ` common neighbors
 -/
 structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
   card : Fintype.card V = n

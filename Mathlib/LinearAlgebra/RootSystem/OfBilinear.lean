@@ -13,12 +13,12 @@ this construction, replacing the ring of integers with an arbitrary commutative 
 integral lattice with an arbitrary reflexive module equipped with a bilinear form.
 
 ## Main definitions:
- * `LinearMap.IsReflective`: Length is a regular value of `R`, and reflection is definable.
- * `LinearMap.IsReflective.coroot`: The coroot corresponding to a reflective vector.
- * `RootPairing.of_Bilinear`: The root pairing whose roots are reflective vectors.
+* `LinearMap.IsReflective`: Length is a regular value of `R`, and reflection is definable.
+* `LinearMap.IsReflective.coroot`: The coroot corresponding to a reflective vector.
+* `RootPairing.of_Bilinear`: The root pairing whose roots are reflective vectors.
 
 ## TODO
- * properties
+* properties
 -/
 
 open Set Function Module

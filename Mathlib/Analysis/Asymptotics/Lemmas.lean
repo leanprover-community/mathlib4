@@ -227,7 +227,7 @@ theorem IsBigO.const_smul_left (h : f' =O[l] g) (c : R) : (c • f') =O[l] g :=
 theorem IsLittleO.const_smul_left (h : f' =o[l] g) (c : R) : (c • f') =o[l] g :=
   (IsBigO.const_smul_self _).trans_isLittleO h
 
-variable [Module 𝕜 E'] [IsBoundedSMul 𝕜 E']
+variable [Module 𝕜 E'] [NormSMulClass 𝕜 E']
 
 theorem isBigO_const_smul_left {c : 𝕜} (hc : c ≠ 0) : (fun x => c • f' x) =O[l] g ↔ f' =O[l] g := by
   have cne0 : ‖c‖ ≠ 0 := norm_ne_zero_iff.mpr hc
@@ -260,7 +260,7 @@ end SMulConst
 
 section SMul
 
-variable [Module R E'] [IsBoundedSMul R E'] [Module 𝕜' F'] [IsBoundedSMul 𝕜' F']
+variable [Module R E'] [IsBoundedSMul R E'] [Module 𝕜' F'] [NormSMulClass 𝕜' F']
 variable {k₁ : α → R} {k₂ : α → 𝕜'}
 
 theorem IsBigOWith.smul (h₁ : IsBigOWith c l k₁ k₂) (h₂ : IsBigOWith c' l f' g') :
@@ -356,7 +356,7 @@ theorem IsLittleO.tendsto_div_nhds_zero {f g : α → 𝕜} (h : f =o[l] g) :
         simpa only [div_eq_mul_inv] using h.mul_isBigO (isBigO_refl _ _)
       _ =O[l] fun _x => (1 : 𝕜) := isBigO_of_le _ fun x => by simp [div_self_le_one]
 
-theorem IsLittleO.tendsto_inv_smul_nhds_zero [Module 𝕜 E'] [IsBoundedSMul 𝕜 E']
+theorem IsLittleO.tendsto_inv_smul_nhds_zero [Module 𝕜 E'] [NormSMulClass 𝕜 E']
     {f : α → E'} {g : α → 𝕜}
     {l : Filter α} (h : f =o[l] g) : Tendsto (fun x => (g x)⁻¹ • f x) l (𝓝 0) := by
   simpa only [div_eq_inv_mul, ← norm_inv, ← norm_smul, ← tendsto_zero_iff_norm_tendsto_zero] using
