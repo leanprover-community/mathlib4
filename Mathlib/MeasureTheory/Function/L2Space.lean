@@ -215,7 +215,8 @@ variable (𝕜) {s : Set α}
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the integral of the inner product over `s`: `∫ x in s, ⟪c, f x⟫ ∂μ`. -/
 theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : MeasurableSet s) (c : E)
-    (hμs : μ s ≠ ∞) : (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
+    (hμs : μ s ≠ ∞ := by finiteness) :
+    (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
   rw [inner_def, ← integral_add_compl hs (L2.integrable_inner _ f)]
   have h_left : (∫ x in s, ⟪(indicatorConstLp 2 hs hμs c) x, f x⟫ ∂μ) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
     suffices h_ae_eq : ∀ᵐ x ∂μ, x ∈ s → ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = ⟪c, f x⟫ from
@@ -243,16 +244,17 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the inner product of the constant `c` and the integral of `f` over `s`. -/
 theorem inner_indicatorConstLp_eq_inner_setIntegral [CompleteSpace E] [NormedSpace ℝ E]
-    (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) (f : Lp E 2 μ) :
+    (hs : MeasurableSet s) (hμs : μ s ≠ ∞ := by finiteness) (c : E) (f : Lp E 2 μ) :
     (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ⟪c, ∫ x in s, f x ∂μ⟫ := by
   rw [← integral_inner (integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs),
-    L2.inner_indicatorConstLp_eq_setIntegral_inner]
+    L2.inner_indicatorConstLp_eq_setIntegral_inner _]
 
 variable {𝕜}
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs (1 : 𝕜)` and
 a real or complex function `f` is equal to the integral of `f` over `s`. -/
-theorem inner_indicatorConstLp_one (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (f : Lp 𝕜 2 μ) :
+theorem inner_indicatorConstLp_one
+    (hs : MeasurableSet s) (hμs : μ s ≠ ∞ := by finiteness) (f : Lp 𝕜 2 μ) :
     ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), f⟫ = ∫ x in s, f x ∂μ := by
   rw [L2.inner_indicatorConstLp_eq_inner_setIntegral 𝕜 hs hμs (1 : 𝕜) f]; simp
 
