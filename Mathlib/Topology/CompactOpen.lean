@@ -292,6 +292,8 @@ def homeoFnOfDiscrete : C(X, Y) ≃ₜ (X → Y) where
   continuous_invFun :=
     continuous_compactOpen.2 fun K hK U hU ↦ isOpen_set_pi hK.finite_of_discrete fun _ _ ↦ hU
 
+attribute [simps! -isSimp] homeoFnOfDiscrete
+
 @[simp] lemma coe_homeoFnOfDiscrete : ⇑homeoFnOfDiscrete = (DFunLike.coe : C(X, Y) → X → Y) := rfl
 
 @[simp] lemma homeoFnOfDiscrete_symm_apply (f : X → Y) : homeoFnOfDiscrete.symm f = f := rfl
