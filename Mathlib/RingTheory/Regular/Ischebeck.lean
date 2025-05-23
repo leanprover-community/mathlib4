@@ -97,8 +97,8 @@ local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R)
   --CategoryTheory.HasExt.standard (ModuleCat.{v} R)
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
 
-instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R) (i : ℕ) :
-    Module.Finite R (Ext.{max u v} N M i) := sorry
+instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
+    [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{max u v} N M i) := sorry
 
 lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
