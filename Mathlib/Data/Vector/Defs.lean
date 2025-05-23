@@ -138,7 +138,7 @@ theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
 def toList (v : Vector α n) : List α :=
   v.1
 
-@[simp] theorem ofVector_toList (v : _root_.Vector α n) : (ofVector v).toList = v.toArray.toList :=
+theorem ofVector_toList (v : _root_.Vector α n) : (ofVector v).toList = v.toArray.toList :=
   ofVector_coe _
 
 @[simp] theorem mem_toVector (a : α) : ∀ (v : Vector α n), a ∈ v.toVector ↔ a ∈ v.toList :=
