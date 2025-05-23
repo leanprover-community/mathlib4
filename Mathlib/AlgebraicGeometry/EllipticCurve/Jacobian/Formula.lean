@@ -3,7 +3,7 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 
 /-!
@@ -11,7 +11,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular Jacobian points on `W` can be given
 negation and addition operations defined by an analogue of the secant-and-tangent process in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, but the polynomials involved are
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`, but the polynomials involved are
 `(2, 3, 1)`-homogeneous, so any instances of division become multiplication in the `Z`-coordinate.
 Most computational proofs are immediate from their analogous proofs for affine coordinates.
 
@@ -21,22 +21,22 @@ be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
 
 ## Main definitions
 
- * `WeierstrassCurve.Jacobian.negY`: the `Y`-coordinate of `-P`.
- * `WeierstrassCurve.Jacobian.dblZ`: the `Z`-coordinate of `2 • P`.
- * `WeierstrassCurve.Jacobian.dblX`: the `X`-coordinate of `2 • P`.
- * `WeierstrassCurve.Jacobian.negDblY`: the `Y`-coordinate of `-(2 • P)`.
- * `WeierstrassCurve.Jacobian.dblY`: the `Y`-coordinate of `2 • P`.
- * `WeierstrassCurve.Jacobian.addZ`: the `Z`-coordinate of `P + Q`.
- * `WeierstrassCurve.Jacobian.addX`: the `X`-coordinate of `P + Q`.
- * `WeierstrassCurve.Jacobian.negAddY`: the `Y`-coordinate of `-(P + Q)`.
- * `WeierstrassCurve.Jacobian.addY`: the `Y`-coordinate of `P + Q`.
+* `WeierstrassCurve.Jacobian.negY`: the `Y`-coordinate of `-P`.
+* `WeierstrassCurve.Jacobian.dblZ`: the `Z`-coordinate of `2 • P`.
+* `WeierstrassCurve.Jacobian.dblX`: the `X`-coordinate of `2 • P`.
+* `WeierstrassCurve.Jacobian.negDblY`: the `Y`-coordinate of `-(2 • P)`.
+* `WeierstrassCurve.Jacobian.dblY`: the `Y`-coordinate of `2 • P`.
+* `WeierstrassCurve.Jacobian.addZ`: the `Z`-coordinate of `P + Q`.
+* `WeierstrassCurve.Jacobian.addX`: the `X`-coordinate of `P + Q`.
+* `WeierstrassCurve.Jacobian.negAddY`: the `Y`-coordinate of `-(P + Q)`.
+* `WeierstrassCurve.Jacobian.addY`: the `Y`-coordinate of `P + Q`.
 
 ## Implementation notes
 
 The definitions of `WeierstrassCurve.Jacobian.addX` and `WeierstrassCurve.Jacobian.negAddY` are
 given explicitly by large polynomials that are homogeneous of degrees `8` and `12` respectively.
 Clearing the denominators of their corresponding affine rational functions in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean` would give polynomials that are
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean` would give polynomials that are
 homogeneous of degrees `12` and `18` respectively, so their actual definitions are off by powers of
 a certain polynomial factor that is homogeneous of degree `2`. This factor divides their
 corresponding affine polynomials only modulo the `(2, 3, 1)`-homogeneous Weierstrass equation, so
@@ -598,8 +598,7 @@ private lemma toAffine_negAddY_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz 
   ring1
 
 lemma negAddY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) :
-    W.negAddY P Q / addZ P Q ^ 3 =
+    (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) : W.negAddY P Q / addZ P Q ^ 3 =
       W.toAffine.negAddY (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
         (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
   rw [negAddY_eq hPz hQz, addX_eq' hP hQ, toAffine_slope_of_ne hPz hQz hx,

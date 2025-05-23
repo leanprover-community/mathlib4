@@ -435,12 +435,44 @@ lemma CompleteOrthogonalIdempotents.bijective_pi' (he : CompleteOrthogonalIdempo
       Ideal.Quotient.mk (Ideal.span {e' i})) := ⟨_, funext (by simp), he.bijective_pi⟩
   exact h
 
-lemma bijective_pi_of_isIdempotentElem (e : I → R)
+lemma RingHom.pi_bijective_of_isIdempotentElem (e : I → R)
     (he : ∀ i, IsIdempotentElem (e i))
     (he₁ : ∀ i j, i ≠ j → (1 - e i) * (1 - e j) = 0) (he₂ : ∏ i, e i = 0) :
     Function.Bijective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {e i})) :=
   (CompleteOrthogonalIdempotents.of_prod_one_sub
       ⟨fun i ↦ (he i).one_sub, he₁⟩ (by simpa using he₂)).bijective_pi'
+
+@[deprecated (since := "2025-01-05")]
+alias bijective_pi_of_isIdempotentElem := RingHom.pi_bijective_of_isIdempotentElem
+
+lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentElem e)
+    (hf : IsIdempotentElem f) (hef₁ : e + f = 1) (hef₂ : e * f = 0) :
+    Function.Bijective ((Ideal.Quotient.mk <| Ideal.span {e}).prod
+      (Ideal.Quotient.mk <| Ideal.span {f})) := by
+  let o (i : Fin 2) : R := match i with
+    | 0 => e
+    | 1 => f
+  show Function.Bijective
+    (piFinTwoEquiv _ ∘ Pi.ringHom (fun i : Fin 2 ↦ Ideal.Quotient.mk (Ideal.span {o i})))
+  rw [(Equiv.bijective _).of_comp_iff']
+  apply pi_bijective_of_isIdempotentElem
+  · intro i
+    fin_cases i <;> simpa [o]
+  · intro i j hij
+    fin_cases i <;> fin_cases j <;> simp at hij ⊢ <;>
+      simp [o, mul_comm, sub_mul, mul_sub, hef₂, ← hef₁]
+  · simpa
+
+variable (R) in
+/-- If `e` and `f` are idempotent elements such that `e + f = 1` and `e * f = 0`,
+`S` is isomorphic as an `R`-algebra to `S ⧸ (e) × S ⧸ (f)`. -/
+@[simps! -isSimp apply, simps! apply_fst apply_snd]
+noncomputable def AlgEquiv.prodQuotientOfIsIdempotentElem
+    {S : Type*} [CommRing S] [Algebra R S] {e f : S} (he : IsIdempotentElem e)
+    (hf : IsIdempotentElem f) (hef₁ : e + f = 1) (hef₂ : e * f = 0) :
+    S ≃ₐ[R] (S ⧸ Ideal.span {e}) × S ⧸ Ideal.span {f} :=
+  AlgEquiv.ofBijective ((Ideal.Quotient.mkₐ _ _).prod (Ideal.Quotient.mkₐ _ _)) <|
+    RingHom.prod_bijective_of_isIdempotentElem he hf hef₁ hef₂
 
 end CommRing
 

@@ -19,7 +19,7 @@ doesn't rely on the definition of the adjoint, which allows it to be stated in n
 ## Main definitions
 
 * `LinearMap.IsSymmetric`: a (not necessarily bounded) operator on an inner product space is
-symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
+  symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
 
 ## Main statements
 
@@ -41,7 +41,7 @@ section Seminormed
 variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearMap
 
@@ -183,7 +183,7 @@ section Normed
 variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearMap
 

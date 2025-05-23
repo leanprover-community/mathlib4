@@ -11,8 +11,8 @@ import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 ## Main results
 
 * `exists_isIntegralCurve_of_isIntegralCurveOn`: If there exists `ε > 0` such that the local
-integral curve at each point `x : M` is defined at least on an open interval `Ioo (-ε) ε`, then
-every point on `M` has a global integral curve passing through it.
+  integral curve at each point `x : M` is defined at least on an open interval `Ioo (-ε) ε`, then
+  every point on `M` has a global integral curve passing through it.
 
 ## Reference
 

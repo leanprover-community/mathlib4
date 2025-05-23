@@ -13,15 +13,15 @@ This file contains basic definitions for root systems and root data.
 
 ## Main definitions:
 
- * `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N` (over some commutative ring
-   `R`) a root pairing with indexing set `ι` is the data of an `ι`-indexed subset of `M`
-   ("the roots") an `ι`-indexed subset of `N` ("the coroots"), and an `ι`-indexed set of
-   permutations of `ι` such that each root-coroot pair evaluates to `2`, and the permutation
-   attached to each element of `ι` is compatible with the reflections on the corresponding roots and
-   coroots.
- * `RootDatum`: A root datum is a root pairing for which the roots and coroots take values in
-   finitely-generated free Abelian groups.
- * `RootSystem`: A root system is a root pairing for which the roots span their ambient module.
+* `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N` (over some commutative ring
+  `R`) a root pairing with indexing set `ι` is the data of an `ι`-indexed subset of `M`
+  ("the roots") an `ι`-indexed subset of `N` ("the coroots"), and an `ι`-indexed set of
+  permutations of `ι` such that each root-coroot pair evaluates to `2`, and the permutation
+  attached to each element of `ι` is compatible with the reflections on the corresponding roots and
+  coroots.
+* `RootDatum`: A root datum is a root pairing for which the roots and coroots take values in
+  finitely-generated free Abelian groups.
+* `RootSystem`: A root system is a root pairing for which the roots span their ambient module.
 
 ## Implementation details
 
@@ -169,6 +169,12 @@ lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
 
 lemma ne_zero' [NeZero (2 : R)] : (P.coroot i : N) ≠ 0 :=
   P.flip.ne_zero i
+
+lemma zero_nmem_range_root [NeZero (2 : R)] : 0 ∉ range P.root := by
+  simpa only [mem_range, not_exists] using fun i ↦ P.ne_zero i
+
+lemma zero_nmem_range_coroot [NeZero (2 : R)] : 0 ∉ range P.coroot :=
+  P.flip.zero_nmem_range_root
 
 lemma exists_ne_zero [Nonempty ι] [NeZero (2 : R)] : ∃ i, P.root i ≠ 0 := by
   obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
@@ -615,30 +621,30 @@ lemma reflection_perm_eq_iff_smul_coroot :
     P.reflection_perm i j = j ↔ P.pairing i j • P.coroot i = 0 :=
   P.flip.reflection_perm_eq_iff_smul_root
 
-lemma pairing_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+lemma pairing_eq_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
     P.pairing i j = 0 ↔ P.pairing j i = 0 := by
   suffices ∀ {i j : ι}, P.pairing i j = 0 → P.pairing j i = 0 from ⟨this, this⟩
   intro i j h
   simpa [P.ne_zero i, reflection_perm_eq_iff_smul_root] using
     P.reflection_perm_eq_of_pairing_eq_zero' h
 
-lemma pairing_zero_iff' [NeZero (2 : R)] [IsDomain R] :
+lemma pairing_eq_zero_iff' [NeZero (2 : R)] [IsDomain R] :
     P.pairing i j = 0 ↔ P.pairing j i = 0 := by
   have := P.reflexive_left
-  exact pairing_zero_iff
+  exact pairing_eq_zero_iff
 
 lemma coxeterWeight_zero_iff_isOrthogonal [NeZero (2 : R)] [IsDomain R] :
     P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
   have := P.reflexive_left
-  simp [coxeterWeight, IsOrthogonal, P.pairing_zero_iff (i := i) (j := j)]
+  simp [coxeterWeight, IsOrthogonal, P.pairing_eq_zero_iff (i := i) (j := j)]
 
 lemma isOrthogonal_iff_pairing_eq_zero [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
     P.IsOrthogonal i j ↔ P.pairing i j = 0 :=
-  ⟨fun h ↦ h.1, fun h ↦ ⟨h, pairing_zero_iff.mp h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h, pairing_eq_zero_iff.mp h⟩⟩
 
 lemma isFixedPt_reflection_perm_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
     IsFixedPt (P.reflection_perm i) j ↔ P.pairing i j = 0 := by
   refine ⟨fun h ↦ ?_, P.reflection_perm_eq_of_pairing_eq_zero'⟩
-  simpa [P.ne_zero i, pairing_zero_iff, IsFixedPt, reflection_perm_eq_iff_smul_root] using h
+  simpa [P.ne_zero i, pairing_eq_zero_iff, IsFixedPt, reflection_perm_eq_iff_smul_root] using h
 
 end RootPairing

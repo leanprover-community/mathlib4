@@ -239,7 +239,7 @@ See the `algebraize` tag for instructions on what properties can be added.
 The tactic also comes with a configuration option `properties`. If set to `true` (default), the
 tactic searches through the local context for `RingHom` properties that can be converted to
 `Algebra` properties. The macro `algebraize_only` calls
-`algebraize (config := {properties := false})`,
+`algebraize -properties`,
 so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
 syntax "algebraize " optConfig (algebraizeTermSeq)? : tactic
 
