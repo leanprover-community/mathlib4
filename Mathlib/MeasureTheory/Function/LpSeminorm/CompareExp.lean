@@ -264,7 +264,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm {p q r : ℝ≥0∞}
     hpqr' ▸ lt_add_of_pos_right _ (by positivity)
   rw [eLpNorm_eq_eLpNorm', eLpNorm_eq_eLpNorm', eLpNorm_eq_eLpNorm']
   · exact eLpNorm'_le_eLpNorm'_mul_eLpNorm' hf hg b c h hr hrp hpqr'
-  all_goals first | positivity | finiteness
+  all_goals first | positivity
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
