@@ -561,23 +561,34 @@ theorem rpow_eq_top_of_nonneg (x : ℝ≥0∞) {y : ℝ} (hy0 : 0 ≤ y) : x ^ y
     exact h.right hy0
   · exact h.left
 
--- This is an unsafe rule since we want to try `rpow_pos` if x = 0.
+-- This is an unsafe rule since we want to try `rpow_ne_top_of_nonneg'` if `y < 0`.
 @[aesop (rule_sets := [finiteness]) unsafe apply]
 theorem rpow_ne_top_of_nonneg {x : ℝ≥0∞} {y : ℝ} (hy0 : 0 ≤ y) (h : x ≠ ⊤) : x ^ y ≠ ⊤ :=
   mt (ENNReal.rpow_eq_top_of_nonneg x hy0) h
 
+-- This is an unsafe rule since we want to try `rpow_ne_top_of_nonneg'` if `x = 0`.
+@[aesop (rule_sets := [finiteness]) unsafe apply]
+theorem rpow_ne_top_of_nonneg' {y : ℝ} {x : ℝ≥0∞} (hx : 0 < x) (hx' : x ≠ ⊤) : x ^ y ≠ ⊤ :=
+  fun h ↦ by simp [rpow_eq_top_iff, hx.ne', hx'] at h
+
 theorem rpow_lt_top_of_nonneg {x : ℝ≥0∞} {y : ℝ} (hy0 : 0 ≤ y) (h : x ≠ ⊤) : x ^ y < ⊤ :=
   lt_top_iff_ne_top.mpr (ENNReal.rpow_ne_top_of_nonneg hy0 h)
 
-lemma rpow_ne_top {x : ℝ≥0∞} {y : ℝ} : ¬(x = 0 ∧ y < 0 ∨ x = ⊤ ∧ 0 < y) → x ^ y ≠ ⊤ := by
-  contrapose
-  rw [← rpow_eq_top_iff (x := x) (y := y)]
-  simp
+lemma rpow_ne_top {x : ℝ≥0∞} {y : ℝ} (h : x ≠ 0 ∨ 0 ≤ y) (h' : x ≠ ∞ ∨ y ≤ 0) : x ^ y ≠ ⊤ := by
+  by_contra h
+  rw [rpow_eq_top_iff (x := x) (y := y)] at h
+  obtain (h1 | h1) := h
+  · obtain (h | h) := h
+    · exact h h1.1
+    · linarith
+  · obtain (h' | h') := h'
+    · exact h' h1.1
+    · linarith
 
 @[aesop (rule_sets := [finiteness]) unsafe apply]
-lemma rpow_ne_top_of_pos {x : ℝ≥0∞} {y : ℝ} (hx : x ≠ 0) (hx' : x ≠ ⊤) : x ^ y ≠ ⊤ := by
-  apply ENNReal.rpow_ne_top
-  simp [hx, hx']
+lemma rpow_ne_top_of_ne_zero {x : ℝ≥0∞} {y : ℝ} (hx : x ≠ 0) (hx' : x ≠ ⊤) : x ^ y ≠ ⊤ := by
+  apply rpow_ne_top
+  all_goals simp [hx, hx']
 
 theorem rpow_add {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) : x ^ (y + z) = x ^ y * x ^ z := by
   cases x with
@@ -824,8 +835,6 @@ theorem rpow_pos_of_nonneg {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hp_nonne
     rw [← zero_rpow_of_pos hp_pos]
     exact rpow_lt_rpow hx_pos hp_pos
 
--- This is an unsafe rule since we want to try `rpow_ne_top_of_nonneg` if x = 0.
-@[aesop (rule_sets := [finiteness]) unsafe apply]
 theorem rpow_pos {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hx_ne_top : x ≠ ⊤) : 0 < x ^ p := by
   rcases lt_or_le 0 p with hp_pos | hp_nonpos
   · exact rpow_pos_of_nonneg hx_pos (le_of_lt hp_pos)
