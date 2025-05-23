@@ -152,8 +152,8 @@ variable {f g m n}
 
 section def_lemmas
 
-lemma sylvester_fst_coeff {j : Fin n} {k : Fin (m+1)} :
-    sylvester f g m n ⟨j+k, by linarith [j.is_lt, k.is_lt]⟩ (j.castAdd m) = f.coeff k := by
+@[simp] lemma sylvester_fst_coeff {j : Fin n} {k : Fin (m+1)} :
+    sylvester f g m n ⟨j+k, add_lt_add_of_lt_of_le j.2 k.is_le⟩ (j.castAdd m) = f.coeff k := by
   rw [sylvester, Fin.addCases_left,
     if_pos ⟨Nat.le_add_right _ _, Nat.add_le_add_left (Nat.le_of_lt_succ k.is_lt) _⟩,
     Fin.val_mk, Nat.add_sub_cancel_left]
@@ -163,16 +163,17 @@ lemma sylvester_fst_coeff' {j : Fin n} {i : Fin (n+m)} (k : Fin (m+1))
     sylvester f g m n i (j.castAdd m) = f.coeff k := by
   convert sylvester_fst_coeff using 3; exact H.symm
 
-lemma sylvester_fst_zero (i : Fin (n+m)) {j : Fin n}
-    (H : (i:ℕ) < j) : sylvester f g m n i (j.castAdd m) = 0 := by
-  rw [sylvester, Fin.addCases_left, if_neg (by simp [H])]
+@[simp] lemma sylvester_fst_zero₁ {j : Fin n} {i : { i : Fin (n+m) // (i : ℕ) < j }} :
+    sylvester f g m n i (j.castAdd m) = 0 := by
+  rw [sylvester, Fin.addCases_left, if_neg (by simp [i.2])]
 
-lemma sylvester_fst_zero' (i : Fin (n+m)) {j : Fin n}
-    (H : (j + m : ℕ) < i) : sylvester f g m n i (j.castAdd m) = 0 := by
-  rw [sylvester, Fin.addCases_left, if_neg (by simp [H])]
+@[simp] lemma sylvester_fst_zero₂ {j : Fin n} {i : { i : Fin (n+m) // (j + m : ℕ) < i }} :
+    sylvester f g m n i (j.castAdd m) = 0 := by
+  rw [sylvester, Fin.addCases_left, if_neg (by simp [i.2])]
 
-lemma sylvester_snd_coeff {j : Fin m} {k : Fin (n+1)} :
-    sylvester f g m n ⟨j+k, by linarith [k.is_lt, j.is_lt]⟩ (j.natAdd n) = g.coeff k := by
+@[simp] lemma sylvester_snd_coeff {j : Fin m} {k : Fin (n+1)} :
+    sylvester f g m n ⟨j+k, add_comm m n ▸ add_lt_add_of_lt_of_le j.2 k.is_le⟩ (j.natAdd n) =
+      g.coeff k := by
   rw [sylvester, Fin.addCases_right,
     if_pos ⟨Nat.le_add_right _ _, Nat.add_le_add_left (Nat.le_of_lt_succ k.is_lt) _⟩,
     Fin.val_mk, Nat.add_sub_cancel_left]
@@ -182,56 +183,57 @@ lemma sylvester_snd_coeff' {j : Fin m} {i : Fin (n+m)} (k : Fin (n+1))
     sylvester f g m n i (j.natAdd n) = g.coeff k := by
   convert sylvester_snd_coeff using 3; exact H.symm
 
-lemma sylvester_snd_zero (i : Fin (n+m)) {j : Fin m}
-    (H : (i:ℕ) < j) : sylvester f g m n i (j.natAdd n) = 0 := by
-  rw [sylvester, Fin.addCases_right, if_neg (by simp [H])]
+@[simp] lemma sylvester_snd_zero₁ {j : Fin m} {i : { i : Fin (n+m) // (i : ℕ) < j }} :
+    sylvester f g m n i (j.natAdd n) = 0 := by
+  rw [sylvester, Fin.addCases_right, if_neg (by simp [i.2])]
 
-lemma sylvester_snd_zero' (i : Fin (n+m)) {j : Fin m}
-    (H : (j + n : ℕ) < i) : sylvester f g m n i (j.natAdd n) = 0 := by
-  rw [sylvester, Fin.addCases_right, if_neg (by simp [H])]
+@[simp] lemma sylvester_snd_zero₂ {j : Fin m} {i : { i : Fin (n+m) // (j + n : ℕ) < i }} :
+    sylvester f g m n i (j.natAdd n) = 0 := by
+  rw [sylvester, Fin.addCases_right, if_neg (by simp [i.2])]
 
-lemma sylvester_induction {motive : R → Fin (n+m) → Fin (n+m) → Prop}
-      (fst_coeff : ∀ (j : Fin n) (k : Fin (m+1)),
-        motive (f.coeff k) ⟨j+k, add_lt_add_of_lt_of_le j.2 k.is_le⟩ (j.castAdd m))
-      (snd_coeff : ∀ (j : Fin m) (k : Fin (n+1)),
-        motive (g.coeff k) ⟨j+k, add_comm m n ▸ add_lt_add_of_lt_of_le j.2 k.is_le⟩ (j.natAdd n))
-      (fst_zero₁ : ∀ (i : ℕ) (j : Fin n) (H : i < j),
-        motive 0 ⟨i, H.trans <| j.2.trans_le <| Nat.le_add_right _ _⟩ (j.castAdd m))
-      (fst_zero₂ : ∀ (i : Fin (n+m)) (j : Fin n),
-        j + m < i → motive 0 i (j.castAdd m))
-      (snd_zero₁ : ∀ (i : ℕ) (j : Fin m) (H : i < j),
-        motive 0 ⟨i, H.trans <| j.2.trans_le <| Nat.le_add_left _ _⟩ (j.natAdd n))
-      (snd_zero₂ : ∀ (i : Fin (n+m)) (j : Fin m),
-        j + n < i → motive 0 i (j.natAdd n)) :
-    ∀ {i j}, motive (sylvester f g m n i j) i j := by
-  refine fun {i j} ↦ Fin.addCases
-    (fun j₁ ↦ (le_or_lt (j₁ : ℕ) (i : ℕ)).elim
-      (fun h₁ ↦
-        have ⟨k, hk⟩ := Nat.exists_eq_add_of_le h₁
-        (le_or_lt (k : ℕ) (m : ℕ)).elim (fun h₂ ↦ ?_) (fun h₂ ↦ ?_))
-      (fun h₁ ↦ ?_))
-    (fun j₁ ↦ (le_or_lt (j₁ : ℕ) (i : ℕ)).elim
-      (fun h₁ ↦
-        have ⟨k, hk⟩ := Nat.exists_eq_add_of_le h₁
-        (le_or_lt (k : ℕ) (n : ℕ)).elim (fun h₂ ↦ ?_) (fun h₂ ↦ ?_))
-      (fun h₁ ↦ ?_))
-    j
-  · rw [sylvester_fst_coeff' ⟨k, Nat.lt_succ_of_le h₂⟩ hk.symm]
-    convert fst_coeff _ _ using 1
-    exact Fin.ext hk
-  · have : (j₁ + m : ℕ) < i := by simpa only [hk, add_lt_add_iff_left]
-    rw [sylvester_fst_zero' _ this]
-    exact fst_zero₂ _ _ this
-  · rw [sylvester_fst_zero _ h₁]
-    exact fst_zero₁ _ _ h₁
-  · rw [sylvester_snd_coeff' ⟨k, Nat.lt_succ_of_le h₂⟩ hk.symm]
-    convert snd_coeff _ _ using 1
-    exact Fin.ext hk
-  · have : (j₁ + n : ℕ) < i := by simpa only [hk, add_lt_add_iff_left]
-    rw [sylvester_snd_zero' _ this]
-    exact snd_zero₂ _ _ this
-  · rw [sylvester_snd_zero _ h₁]
-    exact snd_zero₁ _ _ h₁
+/-- A special form of "induction" (i.e. splitting into cases) used for reasoning about the
+Sylvester matrix, that splits `Fin (n+m) × Fin (n+m)` into 6 "regions". Use `Fin.addCases`
+to case on the second argument first, and then use `sylvester_induction_left` and
+`sylvester_induction_right`. Used in conjunction with the definitional lemmas like
+`sylvester_fst_coeff`, where the `fst_coeff` part of the name has been specifically chosen to
+match the case names generated here. See `sylvesterMap_toMatrix` for an example. -/
+lemma sylvester_induction_left {i : Fin (n+m)} (j : Fin n) {motive : Fin (n+m) → Prop}
+      (fst_coeff : ∀ (k : Fin (m+1)),
+        motive ⟨j+k, add_lt_add_of_lt_of_le j.2 k.is_le⟩)
+      (fst_zero₁ : ∀ (i : { i : Fin (n+m) // (i : ℕ) < j }),
+        motive i)
+      (fst_zero₂ : ∀ (i : { i : Fin (n+m) // (j + m : ℕ) < i }),
+        motive i) :
+    motive i := by
+  cases le_or_lt (j : ℕ) (i : ℕ) with
+  | inl h₁ => cases le_or_lt (i : ℕ) (j + m : ℕ) with
+    | inl h₂ =>
+        convert fst_coeff ⟨i-j, Nat.lt_succ_of_le <| Nat.sub_le_iff_le_add'.2 h₂⟩
+        exact (Nat.add_sub_cancel' h₁).symm
+    | inr h₂ => exact fst_zero₂ ⟨i, h₂⟩
+  | inr h₁ => exact fst_zero₁ ⟨i, h₁⟩
+
+/-- A special form of "induction" (i.e. splitting into cases) used for reasoning about the
+Sylvester matrix, that splits `Fin (n+m) × Fin (n+m)` into 6 "regions". Use `Fin.addCases`
+to case on the second argument first, and then use `sylvester_induction_left` and
+`sylvester_induction_right`. Used in conjunction with the definitional lemmas like
+`sylvester_snd_coeff`, where the `snd_coeff` part of the name has been specifically chosen to
+match the case names generated here. See `sylvesterMap_toMatrix` for an example. -/
+lemma sylvester_induction_right {i : Fin (n+m)} (j : Fin m) {motive : Fin (n+m) → Prop}
+      (snd_coeff : ∀ (k : Fin (n+1)),
+        motive ⟨j+k, add_comm m n ▸ add_lt_add_of_lt_of_le j.2 k.is_le⟩)
+      (snd_zero₁ : ∀ (i : { i : Fin (n+m) // (i : ℕ) < j }),
+        motive i)
+      (snd_zero₂ : ∀ (i : { i : Fin (n+m) // (j + n : ℕ) < i }),
+        motive i) :
+    motive i := by
+  cases le_or_lt (j : ℕ) (i : ℕ) with
+  | inl h₁ => cases le_or_lt (i : ℕ) (j + n : ℕ) with
+    | inl h₂ =>
+        convert snd_coeff ⟨i-j, Nat.lt_succ_of_le <| Nat.sub_le_iff_le_add'.2 h₂⟩
+        exact (Nat.add_sub_cancel' h₁).symm
+    | inr h₂ => exact snd_zero₂ ⟨i, h₂⟩
+  | inr h₁ => exact snd_zero₁ ⟨i, h₁⟩
 
 end def_lemmas
 
@@ -242,21 +244,18 @@ theorem sylvester_comm : sylvester g f n m =
 
 theorem sylvester_C_snd {a : R} :
     sylvester f (C a) m 0 = Matrix.diagonal (fun _ ↦ a) := by
-  ext i₀ j₀
-  refine sylvester_induction (motive := fun x i j ↦ x = Matrix.diagonal _ i j)
-    (fun i j ↦ ?_) (fun i j ↦ ?_)
-    (fun i j H ↦ ?_) (fun i j H ↦ ?_) (fun i j H ↦ ?_) (fun i j H ↦ ?_)
-  · fin_cases i
-  · fin_cases j
-    simp only [coeff_C_zero, add_zero, Fin.natAdd_zero, Matrix.diagonal_apply, Fin.ext_iff,
-      Fin.coe_cast, if_true]
-  · fin_cases j
-  · fin_cases j
-  · simp only [Fin.natAdd_zero, Matrix.diagonal_apply, Fin.ext_iff, Fin.coe_cast,
-    if_neg (ne_of_lt H)]
-  · rw [add_zero] at H
-    simp only [Fin.natAdd_zero, Matrix.diagonal_apply, Fin.ext_iff, Fin.coe_cast,
-      if_neg (ne_of_gt H)]
+  ext i j
+  cases j using Fin.addCases with
+  | left j => fin_cases j
+  | right j => cases i using sylvester_induction_right j with
+    | snd_coeff k =>
+        fin_cases k
+        rw [sylvester_snd_coeff, coeff_C_zero, Fin.natAdd_zero]
+        exact Eq.symm (Matrix.diagonal_apply_eq _ _)
+    | snd_zero₁ i => rw [sylvester_snd_zero₁, Fin.natAdd_zero, Matrix.diagonal_apply,
+        if_neg (Fin.ext_iff.not.2 <| ne_of_lt i.2)]
+    | snd_zero₂ i => rw [sylvester_snd_zero₂, Fin.natAdd_zero, Matrix.diagonal_apply,
+        if_neg (Fin.ext_iff.not.2 <| ne_of_gt i.2)]
 
 theorem sylvester_C_fst {a : R} :
     sylvester (C a) f 0 m = Matrix.diagonal (fun _ ↦ a) := by
@@ -423,23 +422,37 @@ lemma sylvesterMap_toMatrix :
     LinearMap.toMatrix (degreeLT.basis_prod R n m) (degreeLT.basis R (n + m)) (sylvesterMap P Q) =
     sylvester P Q m n := by
   ext i j
-  refine sylvester_induction (motive := fun x i j ↦ LinearMap.toMatrix _ _ _ i j = x)
-    (fun j₁ k ↦ ?_) (fun j₁ k ↦ ?_)
-    (fun i j₁ h ↦ ?_) (fun i j₁ h ↦ ?_) (fun i j₁ h ↦ ?_) (fun i j₁ h ↦ ?_)
-  · simp [hP, hQ, add_comm (j₁ : ℕ), LinearMap.toMatrix_apply]
-  · simp [hP, hQ, add_comm (j₁ : ℕ), LinearMap.toMatrix_apply]
-  · simp [hP, hQ, LinearMap.toMatrix_apply, coeff_mul_X_pow', if_neg (not_le_of_lt h)]
-  · have H : (j₁ : ℕ) ≤ i := le_trans (Nat.le_add_right _ _) h.le
-    rcases Nat.exists_eq_add_of_le H with ⟨k, hk⟩
-    rw [hk, add_lt_add_iff_left, ← WithBot.coe_lt_coe] at h
-    simp [hP, hQ, LinearMap.toMatrix_apply, coeff_mul_X_pow', if_pos H,
-      hk, coeff_eq_zero_of_degree_lt (lt_of_le_of_lt hP h)]
-  · simp [hP, hQ, LinearMap.toMatrix_apply, coeff_mul_X_pow', if_neg (not_le_of_lt h)]
-  · have H : (j₁ : ℕ) ≤ i := le_trans (Nat.le_add_right _ _) h.le
-    rcases Nat.exists_eq_add_of_le H with ⟨k, hk⟩
-    rw [hk, add_lt_add_iff_left, ← WithBot.coe_lt_coe] at h
-    simp [hP, hQ, LinearMap.toMatrix_apply, coeff_mul_X_pow', if_pos H,
-      hk, Nat.add_sub_cancel_left, coeff_eq_zero_of_degree_lt (lt_of_le_of_lt hQ h)]
+  cases j using Fin.addCases with
+  | left j => cases i using sylvester_induction_left j with
+    | fst_coeff k =>
+        rw [sylvester_fst_coeff]
+        simp [hP, hQ, add_comm (j : ℕ), LinearMap.toMatrix_apply]
+    | fst_zero₁ i =>
+        rw [sylvester_fst_zero₁]
+        simp [hP, hQ, LinearMap.toMatrix_apply, coeff_mul_X_pow', if_neg (not_le_of_lt i.2)]
+    | fst_zero₂ i =>
+        have h₁ : (j : ℕ) ≤ i := le_trans (Nat.le_add_right _ _) i.2.le
+        have h₂ : (m : ℕ) < i -j := Nat.lt_sub_of_add_lt <| (add_comm _ _).trans_lt i.2
+        rw [sylvester_fst_zero₂, LinearMap.toMatrix_apply, degreeLT.basis_prod_castAdd,
+          sylvesterMap_apply hP hQ, degreeLT.basis_repr]
+        show (P * X ^ (j:ℕ) + Q * 0).coeff i = (0:R)
+        rw [mul_zero, add_zero, coeff_mul_X_pow', if_pos h₁,
+          coeff_eq_zero_of_degree_lt (hP.trans_lt (WithBot.coe_lt_coe.2 h₂) : P.degree < (i-j:ℕ))]
+  | right j => cases i using sylvester_induction_right j with
+    | snd_coeff k =>
+        rw [sylvester_snd_coeff]
+        simp [hP, hQ, add_comm (j : ℕ), LinearMap.toMatrix_apply]
+    | snd_zero₁ i =>
+        rw [sylvester_snd_zero₁]
+        simp [hP, hQ, LinearMap.toMatrix_apply, coeff_mul_X_pow', if_neg (not_le_of_lt i.2)]
+    | snd_zero₂ i =>
+        have h₁ : (j : ℕ) ≤ i := le_trans (Nat.le_add_right _ _) i.2.le
+        have h₂ : (n : ℕ) < i -j := Nat.lt_sub_of_add_lt <| (add_comm _ _).trans_lt i.2
+        rw [sylvester_snd_zero₂, LinearMap.toMatrix_apply, degreeLT.basis_prod_natAdd,
+          sylvesterMap_apply hP hQ, degreeLT.basis_repr]
+        show (P * 0 + Q * X ^ (j:ℕ)).coeff i = (0:R)
+        rw [mul_zero, zero_add, coeff_mul_X_pow', if_pos h₁,
+          coeff_eq_zero_of_degree_lt (hQ.trans_lt (WithBot.coe_lt_coe.2 h₂) : Q.degree < (i-j:ℕ))]
 
 omit hP hQ in
 /-- The Sylvester matrix is equal to the Sylvester map as a matrix in basis
@@ -561,16 +574,16 @@ variable {R S : Type*} [CommRing R] [CommRing S] {φ : R →+* S} {f g : R[X]} {
 
 /-- The sylvester matrix of two polynomials `f` and `g` is conserved under a ring homomorphism. -/
 theorem sylvester_map :
-    sylvester (f.map φ) (g.map φ) m n = φ.mapMatrix (sylvester f g m n) := by
+    sylvester (f.map φ) (g.map φ) m n = (sylvester f g m n).map φ := by
   ext i j
-  rw [sylvester, RingHom.mapMatrix_apply, Matrix.map_apply, sylvester]
+  rw [sylvester, Matrix.map_apply, sylvester]
   cases j using Fin.addCases <;> simp only [Fin.addCases_left, Fin.addCases_right] <;> split_ifs <;>
     simp only [φ.map_zero, coeff_map]
 
 /-- The resultant of two polynomials `f` and `g` is conserved under a ring homomorphism. -/
 theorem resultantAux_map :
     resultantAux (f.map φ) (g.map φ) m n = φ (resultantAux f g m n) := by
-  rw [resultantAux, resultantAux, sylvester_map, RingHom.map_det]
+  rw [resultantAux, resultantAux, sylvester_map, RingHom.map_det, RingHom.mapMatrix_apply]
 
 /-- The resultant of two polynomials `f` and `g` is conserved under a ring homomorphism
 that maps the leading coefficients of `f` and `g` to non-zero values. -/
