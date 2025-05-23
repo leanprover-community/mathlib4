@@ -245,7 +245,7 @@ namespace Polynomial
 
 section CommRing
 
--- Porting note: move to better place
+-- Porting note: move to better place [Mathlib.Algebra.Ring.Subring.Basic]
 lemma Subring.mem_closure_image_of {S T : Type*} [Ring S] [Ring T] (g : S →+* T)
     (u : Set S) (x : S) (hx : x ∈ Subring.closure u) : g x ∈ Subring.closure (g '' u) := by
   rw [Subring.mem_closure] at hx ⊢
@@ -256,6 +256,8 @@ lemma Subring.mem_closure_image_of {S T : Type*} [Ring S] [Ring T] (g : S →+* 
   exact h₁
 
 -- Porting note: move to better place
+-- [Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs, Mathlib.LinearAlgebra.Matrix.Polynomial,
+--  Mathlib.Algebra.Polynomial.AlgebraMap, Mathlib.Algebra.Polynomial.Eval.Subring]
 lemma mem_closure_X_union_C {R : Type*} [Ring R] (p : R[X]) :
     p ∈ Subring.closure (insert X {f | f.degree ≤ 0} : Set R[X]) := by
   refine Polynomial.induction_on p ?_ ?_ ?_
