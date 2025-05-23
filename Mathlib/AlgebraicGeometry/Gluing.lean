@@ -52,7 +52,7 @@ presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 noncomputable section
 
-universe u
+universe w v u
 
 open TopologicalSpace CategoryTheory Opposite Topology
 
@@ -416,30 +416,33 @@ together into a morphism `X ⟶ Y`.
 Note:
 If `X` is exactly (defeq to) the gluing of `U i`, then using `Multicoequalizer.desc` suffices.
 -/
-def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
+def glueMorphisms (𝒰 : OpenCover.{v} X) [Small.{u} 𝒰.J] {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.map x) (𝒰.map y) ≫ f x = pullback.snd _ _ ≫ f y) :
     X ⟶ Y := by
-  refine inv 𝒰.fromGlued ≫ ?_
+  refine inv 𝒰.ulift.fromGlued ≫ ?_
   fapply Multicoequalizer.desc
-  · exact f
+  · exact fun i ↦ f _
   rintro ⟨i, j⟩
-  change pullback.fst _ _ ≫ f i = (_ ≫ _) ≫ f j
+  dsimp
+  change pullback.fst _ _ ≫ f _ = (_ ≫ _) ≫ f _
   simp [pullbackSymmetry_hom_comp_fst]
-  exact hf i j
+  exact hf _ _
 
 @[simp, reassoc]
-theorem ι_glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
+theorem ι_glueMorphisms (𝒰 : OpenCover.{v} X) [Small.{u} 𝒰.J] {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.map x) (𝒰.map y) ≫ f x = pullback.snd _ _ ≫ f y)
     (x : 𝒰.J) : 𝒰.map x ≫ 𝒰.glueMorphisms f hf = f x := by
-  rw [← ι_fromGlued, Category.assoc, glueMorphisms, IsIso.hom_inv_id_assoc]
+  obtain ⟨x, rfl⟩ := (Small.equiv_small.{u} (α := 𝒰.J) |>.choose_spec.some).symm.surjective x
+  rw [← 𝒰.ulift_map, ← ι_fromGlued, Category.assoc, glueMorphisms, IsIso.hom_inv_id_assoc]
   erw [Multicoequalizer.π_desc]
 
-theorem hom_ext {Y : Scheme} (f₁ f₂ : X ⟶ Y) (h : ∀ x, 𝒰.map x ≫ f₁ = 𝒰.map x ≫ f₂) : f₁ = f₂ := by
-  rw [← cancel_epi 𝒰.fromGlued]
+theorem hom_ext (𝒰 : OpenCover.{v} X) [Small.{u} 𝒰.J] {Y : Scheme} (f₁ f₂ : X ⟶ Y)
+    (h : ∀ x, 𝒰.map x ≫ f₁ = 𝒰.map x ≫ f₂) : f₁ = f₂ := by
+  rw [← cancel_epi 𝒰.ulift.fromGlued]
   apply Multicoequalizer.hom_ext
   intro x
   rw [fromGlued, Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
-  exact h x
+  exact h _
 
 end Cover
 
@@ -469,7 +472,7 @@ section IsLocallyDirected
 
 open TopologicalSpace.Opens
 
-variable {J : Type u} [Category.{u} J] (F : J ⥤ Scheme.{u})
+variable {J : Type u} [Category.{v} J] (F : J ⥤ Scheme.{u})
 variable [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)]
 
 namespace IsLocallyDirected
@@ -519,6 +522,11 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
 
 variable [Quiver.IsThin J]
 
+instance {i j : J} : Small.{u}
+    (Opens.iSupOpenCover fun k : (Σ k : J, (k ⟶ i) × (k ⟶ j)) ↦ (F.map k.2.1).opensRange).J := by
+  dsimp [Opens.iSupOpenCover]
+  infer_instance
+
 lemma fst_inv_eq_snd_inv
     {i j : J} (k₁ k₂ : (k : J) × (k ⟶ i) × (k ⟶ j)) {U : (F.obj i).Opens}
     (h₁ : (F.map k₁.2.1).opensRange ≤ U) (h₂ : (F.map k₂.2.1).opensRange ≤ U) :
@@ -559,7 +567,8 @@ lemma fst_inv_eq_snd_inv
 /-- (Implemetation detail)
 The inclusion map `V i j ⟶ F j` in the glue data associated to a locally directed diagram. -/
 def tAux (i j : J) : (V F i j).toScheme ⟶ F.obj j :=
-  (Scheme.Opens.iSupOpenCover _).glueMorphisms
+  Cover.glueMorphisms.{_, u}
+  (Scheme.Opens.iSupOpenCover (J := Σ k, (k ⟶ i) × (k ⟶ j)) _)
     (fun k ↦ (F.map k.2.1).isoOpensRange.inv ≫ F.map k.2.2) fun k₁ k₂ ↦ by
       dsimp [Scheme.Opens.iSupOpenCover]
       apply fst_inv_eq_snd_inv F
@@ -695,19 +704,19 @@ def isColimitForgetToLocallyRingedSpace :
     IsColimit (Scheme.forgetToLocallyRingedSpace.mapCocone (cocone F)) where
   desc s := (glueData F).isoLocallyRingedSpace.hom ≫
     Multicoequalizer.desc _ _ (fun i ↦ s.ι.app i) (by
+      have {a b : J} (f : a ⟶ b) : Hom.toLRSHom (F.map f) ≫ s.ι.app b = _ := s.w f
       rintro ⟨i, j⟩
       dsimp [glueData, GlueData.diagram]
       simp only [t, IsOpenImmersion.lift_fac, ← Category.assoc, ← Scheme.comp_toLRSHom]
-      rw [← cancel_epi (Scheme.Opens.iSupOpenCover _).fromGlued.toLRSHom,
-        ← cancel_epi (Scheme.Opens.iSupOpenCover _).gluedCover.isoLocallyRingedSpace.inv]
+      rw [← cancel_epi
+        (Scheme.Opens.iSupOpenCover (J := Σ (k : J), (k ⟶ i) × (k ⟶ j)) _).ulift.fromGlued.toLRSHom]
+      rw [← cancel_epi (Scheme.Opens.iSupOpenCover _).ulift.gluedCover.isoLocallyRingedSpace.inv]
       refine Multicoequalizer.hom_ext _ _ _ fun k ↦ ?_
       rw [← CategoryTheory.GlueData.ι, reassoc_of% GlueData.ι_isoLocallyRingedSpace_inv,
         reassoc_of% GlueData.ι_isoLocallyRingedSpace_inv,
-        ← cancel_epi (Hom.isoOpensRange (F.map k.2.1)).hom.toLRSHom]
-      simp only [← Scheme.comp_toLRSHom_assoc, Scheme.Cover.ι_fromGlued_assoc,
-        Opens.iSupOpenCover, V, Scheme.homOfLE_ι, homOfLE_tAux F i j k.2.1 k.2.2,
-        Iso.hom_inv_id_assoc, Hom.isoOpensRange_hom_ι]
-      exact (s.w k.2.1).trans (s.w k.2.2).symm)
+        ← cancel_epi (Hom.isoOpensRange (F.map _)).hom.toLRSHom]
+      simp [Opens.iSupOpenCover, V, ← comp_toLRSHom_assoc, Cover.ι_fromGlued_assoc,
+        homOfLE_tAux F i j, this])
   fac s j := by
     simp only [cocone, Functor.mapCocone_ι_app,
       forgetToLocallyRingedSpace_map, ← GlueData.ι_isoLocallyRingedSpace_inv]
@@ -724,20 +733,63 @@ def isColimitForgetToLocallyRingedSpace :
       Category.assoc]
     rfl
 
-instance : HasColimit F := ⟨_, isColimit F⟩
+section
 
-instance : PreservesColimit F Scheme.forgetToLocallyRingedSpace :=
-  preservesColimit_of_preserves_colimit_cocone (isColimit F) (isColimitForgetToLocallyRingedSpace F)
+variable {J : Type*} [Category J] [Small.{u} J] (F : J ⥤ Scheme.{u})
+  [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)]
+  [(F ⋙ forget).IsLocallyDirected] [Quiver.IsThin J]
+
+instance : HasColimit F := by
+  obtain ⟨J', ⟨eq⟩⟩ := Small.equiv_small.{u} (α := J)
+  let e : (InducedCategory J eq.symm) ≌ J := Equivalence.induced eq.symm
+  let F' := e.functor ⋙ F
+  have : (F' ⋙ forget).IsLocallyDirected :=
+    inferInstanceAs (e.functor ⋙ F ⋙ forget).IsLocallyDirected
+  have {i j} (f : i ⟶ j) : IsOpenImmersion (F'.map f) := by dsimp [F']; infer_instance
+  have : HasColimit F' := ⟨_, isColimit F'⟩
+  exact hasColimit_of_equivalence_comp e
+
+instance : PreservesColimit F Scheme.forgetToLocallyRingedSpace := by
+  obtain ⟨J', ⟨eq⟩⟩ := Small.equiv_small.{u} (α := J)
+  let e : (InducedCategory J eq.symm) ≌ J := Equivalence.induced eq.symm
+  let F' := e.functor ⋙ F
+  have : (F' ⋙ forget).IsLocallyDirected :=
+    inferInstanceAs (e.functor ⋙ F ⋙ forget).IsLocallyDirected
+  have {i j} (f : i ⟶ j) : IsOpenImmersion (F'.map f) := by dsimp [F']; infer_instance
+  have : PreservesColimit F' Scheme.forgetToLocallyRingedSpace :=
+    preservesColimit_of_preserves_colimit_cocone (isColimit F')
+      (isColimitForgetToLocallyRingedSpace F')
+  exact Functor.Final.preservesColimit_of_comp e.functor
 
 instance : CreatesColimit F Scheme.forgetToLocallyRingedSpace :=
   CategoryTheory.createsColimitOfReflectsIsomorphismsOfPreserves
 
 /-- The open cover of the colimit of a locally directed diagram by the components. -/
 def openCover : (colimit F).OpenCover :=
-  ((coverOfIsIso ((isColimit F).coconePointUniqueUpToIso (colimit.isColimit F)).hom).bind
-    fun i ↦ (glueData F).openCover).copy J F.obj (colimit.ι F)
-    (Equiv.uniqueSigma fun (_ : Unit) ↦ J).symm (fun _ ↦ .refl _) fun i ↦
-    show colimit.ι F i = 𝟙 _ ≫ (glueData F).ι i ≫ _ by simp [← Iso.comp_inv_eq, cocone]
+  let eq := Small.equiv_small.{u} (α := J) |>.choose_spec.some
+  let e : (InducedCategory J eq.symm) ≌ J := .induced eq.symm
+  let F' := e.functor ⋙ F
+  have : (F' ⋙ forget).IsLocallyDirected :=
+    inferInstanceAs (e.functor ⋙ F ⋙ forget).IsLocallyDirected
+  have {i j} (f : i ⟶ j) : IsOpenImmersion (F'.map f) := by dsimp [F']; infer_instance
+  let iso : (glueData F').glued ≅ colimit F :=
+    (isColimit F').coconePointUniqueUpToIso (colimit.isColimit F') ≪≫
+      Functor.Final.colimitIso e.functor F
+  have heq (i) : i = e.functor.obj
+    ((eq.trans (Equiv.uniqueSigma fun _ : Unit ↦ (InducedCategory J eq.symm)).symm) i).snd :=
+      (Equiv.uniqueSigma_symm_apply (β := fun (_ : Unit) ↦ (InducedCategory J eq.symm))
+        (eq i) ▸ by simp [e])
+  ((coverOfIsIso iso.hom).bind
+    fun i ↦ (glueData F').openCover).copy J F.obj (colimit.ι F)
+    (eq.trans (Equiv.uniqueSigma fun (_ : Unit) ↦ (InducedCategory J eq.symm)).symm)
+      (fun i ↦ F.mapIso <| eqToIso (heq i))
+      fun i ↦ by
+        dsimp only [coverOfIsIso_J, Cover.bind_J, coverOfIsIso_obj, Equiv.trans_apply,
+          Cover.bind_obj, Functor.mapIso_hom, eqToIso.hom, Cover.bind_map, coverOfIsIso_map]
+        show _ = F.map _ ≫ (glueData F').ι _ ≫ _
+        simp only [← Category.assoc, ← Iso.comp_inv_eq, colimit.cocone_x, Iso.trans_inv, iso,
+          ← colimit.eqToHom_comp_ι _ (heq i).symm]
+        simp [cocone, eqToHom_map, F', InducedCategory, glueData, GlueData.openCover, F']
 
 @[simp] lemma openCover_J : (openCover F).J = J := rfl
 @[simp] lemma openCover_obj : (openCover F).obj = F.obj := rfl
@@ -751,26 +803,40 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
       ∃ k fi fj, ∃ (x : F.obj k), (F.map fi).base x = xi ∧ (F.map fj).base x = xj := by
   constructor; swap
   · rintro ⟨k, fi, fj, x, rfl, rfl⟩; simp only [← Scheme.comp_base_apply, colimit.w]
-  rw [← ((isColimit F).coconePointUniqueUpToIso
-    (colimit.isColimit F)).inv.isOpenEmbedding.injective.eq_iff]
-  simp only [Limits.colimit, ← Scheme.comp_base_apply,
-    colimit.comp_coconePointUniqueUpToIso_inv, cocone]
-  refine ?_ ∘ ((glueData F).ι_eq_iff _ _ _ _).mp
+  let eq := Small.equiv_small.{u} (α := J) |>.choose_spec.some
+  let e : (InducedCategory J eq.symm) ≌ J := .induced eq.symm
+  obtain ⟨i, (rfl : e.functor.obj _ = _)⟩ := eq.symm.surjective i
+  obtain ⟨j, (rfl : e.functor.obj _ = _)⟩ := eq.symm.surjective j
+  let F' := e.functor ⋙ F
+  have : (F' ⋙ forget).IsLocallyDirected :=
+    inferInstanceAs (e.functor ⋙ F ⋙ forget).IsLocallyDirected
+  have {i j} (f : i ⟶ j) : IsOpenImmersion (F'.map f) := by dsimp [F']; infer_instance
+  let iso : (glueData F').glued ≅ colimit F :=
+    (isColimit F').coconePointUniqueUpToIso (colimit.isColimit F') ≪≫
+      Functor.Final.colimitIso e.functor F
+  rw [← iso.inv.isOpenEmbedding.injective.eq_iff]
+  dsimp only [iso, colimit.cocone_x, Iso.trans_inv, comp_coeBase, TopCat.hom_comp,
+    ContinuousMap.comp_apply, iso]
+  simp only [Limits.colimit, cocone, ← comp_base_apply, Functor.Final.ι_colimitIso_inv,
+    colimit.comp_coconePointUniqueUpToIso_inv, F']
+  refine ?_ ∘ ((glueData F').ι_eq_iff _ _ _ _).mp
   dsimp only [GlueData.Rel]
   rintro ⟨x, rfl, rfl⟩
-  obtain ⟨k, y, hy : (F.map k.2.1).base y = ((glueData F).f i j).base x⟩ := mem_iSup.mp x.2
-  refine ⟨k.1, k.2.1, k.2.2, y, hy, ?_⟩
-  apply ((glueData F).ι _).isOpenEmbedding.injective
+  obtain ⟨k, y, hy : (F'.map k.2.1).base y = ((glueData F').f i j).base x⟩ := mem_iSup.mp x.2
+  refine ⟨eq.symm k.1, k.2.1, k.2.2, y, hy, ?_⟩
+  apply ((glueData F').ι _).isOpenEmbedding.injective
   simp only [← Scheme.comp_base_apply, Category.assoc, GlueData.glue_condition]
-  trans ((glueData F).ι k.1).base y
-  · simp [← glueDataι_naturality F k.2.2]; rfl
-  · simp [← glueDataι_naturality F k.2.1, ← hy]; rfl
+  trans ((glueData F').ι k.1).base y
+  · simp [← glueDataι_naturality F' k.2.2]; rfl
+  · simp [← glueDataι_naturality F' k.2.1, ← hy]; rfl
 
 instance (F : WidePushoutShape J ⥤ Scheme.{u}) [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)] :
     (F ⋙ forget).IsLocallyDirected :=
   have (i) : Mono ((F ⋙ forget).map (.init i)) :=
     (mono_iff_injective _).mpr (F.map _).isOpenEmbedding.injective
   inferInstance
+
+end
 
 end IsLocallyDirected
 

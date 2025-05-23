@@ -263,6 +263,9 @@ theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
 
 instance (priority := 100) [Quiver.IsThin C] : F.Faithful where
 
+lemma _root_.Quiver.IsThin.of_faithful [Quiver.IsThin D] [F.Faithful] : Quiver.IsThin C :=
+  fun _ _ ↦ F.map_injective.subsingleton
+
 section
 
 variable {F F'}

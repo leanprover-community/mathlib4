@@ -46,6 +46,17 @@ class Functor.IsLocallyDirected (F : J ⥤ Type*) : Prop where
 
 alias Functor.exists_map_eq_of_isLocallyDirected := Functor.IsLocallyDirected.cond
 
+instance Functor.IsLocallyDirected.of_essSurj_of_full
+    {C D : Type*} [Category C] [Category D] (G : D ⥤ C) [G.EssSurj] [G.Full]
+    (F : C ⥤ Type*) [F.IsLocallyDirected] : (G ⋙ F).IsLocallyDirected := by
+  constructor
+  intro i j k fi fj xi xj h
+  simp_all
+  obtain ⟨l, fli, fjl, xl, hl⟩ := F.exists_map_eq_of_isLocallyDirected (G.map fi) (G.map fj) xi xj h
+  use G.objPreimage l, G.preimage ((G.objObjPreimageIso l).hom ≫ fli),
+    G.preimage ((G.objObjPreimageIso l).hom ≫ fjl), F.map ((G.objObjPreimageIso l).inv) xl
+  simpa
+
 instance (F : Discrete J ⥤ Type*) : F.IsLocallyDirected := by
   constructor
   rintro ⟨i⟩ ⟨j⟩ ⟨k⟩ ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟩⟩⟩

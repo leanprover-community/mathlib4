@@ -308,6 +308,25 @@ def AffineCover.cover {X : Scheme.{u}} (𝒰 : X.AffineCover P) : X.Cover P wher
   covers := 𝒰.covers
   map_prop := 𝒰.map_prop
 
+/-- Replace the index type of a cover by an equivalent one. -/
+@[simps]
+def Cover.reindex (𝒰 : Cover.{v} P X) {ι : Type*} (e : ι ≃ 𝒰.J) : Cover P X where
+  J := ι
+  obj := 𝒰.obj ∘ e
+  map i := 𝒰.map (e i)
+  f := e.symm ∘ 𝒰.f
+  covers x := by
+    convert 𝒰.covers _
+    dsimp only [Function.comp_apply]
+    rw [Equiv.apply_symm_apply]
+  map_prop i := 𝒰.map_prop _
+
+/-- If the indexing type of `𝒰` is `u`-small, this is the `u`-cover with index
+type replaced by a small representative. -/
+@[simps!]
+def Cover.ulift (𝒰 : Cover.{v} P X) [Small.{u} 𝒰.J] : Cover.{u} P X :=
+  𝒰.reindex (Small.equiv_small.{u} (α := 𝒰.J) |>.choose_spec.some).symm
+
 section category
 
 /--

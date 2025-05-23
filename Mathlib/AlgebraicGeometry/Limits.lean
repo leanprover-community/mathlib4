@@ -155,14 +155,7 @@ variable {σ : Type v} (g : σ → Scheme.{u})
 
 noncomputable
 instance [Small.{u} σ] :
-    CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} := by
-  choose σ' eq using Small.equiv_small.{u} (α := σ)
-  let e : Discrete σ ≌ Discrete σ' := Discrete.equivalence eq.some
-  let _ : CreatesColimitsOfShape (Discrete σ') Scheme.forgetToLocallyRingedSpace := by
-    constructor
-    intro K
-    exact createsColimitOfIsoDiagram _ (Discrete.natIsoFunctor (F := K)).symm
-  apply CategoryTheory.createsColimitsOfShapeOfEquiv e.symm
+    CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} where
 
 instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetToTop.{u} :=
   inferInstanceAs (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
@@ -173,12 +166,6 @@ instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
 
 instance [UnivLE.{v, u}] : HasCoproducts.{v} Scheme.{u} :=
   fun _ ↦ ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
-
-instance [Small.{u} σ] (i) : IsOpenImmersion (Sigma.ι g i) := by
-  obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small (α := σ)
-  obtain ⟨i, rfl⟩ := e.symm.surjective i
-  rw [← Sigma.ι_reindex_hom e.symm g i]
-  infer_instance
 
 lemma sigmaι_eq_iff (i j : ι) (x y) :
     (Sigma.ι f i).base x = (Sigma.ι f j).base y ↔
@@ -202,15 +189,12 @@ lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
 /-- The open cover of the coproduct. -/
 @[simps! obj map]
 noncomputable
-def sigmaOpenCover [Small.{u} σ] : (∐ g).OpenCover :=
-  ((Scheme.coverOfIsIso (Sigma.reindex (equivShrink σ).symm g).hom).bind
-    fun i ↦ Scheme.IsLocallyDirected.openCover _).copy σ g (Sigma.ι g)
-    ((Equiv.uniqueSigma fun (_ : Unit) ↦ _).trans
-      (discreteEquiv.trans (equivShrink σ).symm)).symm
-    (fun i ↦ ((Discrete.functor g).mapIso (eqToIso (by simp)))) fun i ↦ by
-  dsimp
-  rw [Sigma.ι_reindex_hom]
-  simp
+def sigmaOpenCover [Small.{u} σ] : (∐ g).OpenCover where
+  J := σ
+  obj := g
+  map := Sigma.ι g
+  f x := ((Scheme.IsLocallyDirected.openCover _).f x).1
+  covers x := (Scheme.IsLocallyDirected.openCover _).covers x
 
 /-- The underlying topological space of the coproduct is homeomorphic to the disjoint union. -/
 noncomputable
