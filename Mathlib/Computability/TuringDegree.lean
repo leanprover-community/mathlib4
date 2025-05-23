@@ -107,8 +107,7 @@ then it is partial recursive.
 lemma TuringReducible.partrec_of_zero (fRecInZero : f ≤ᵀ fun _ => Part.some 0) : Nat.Partrec f := by
   induction fRecInZero with repeat {constructor}
   | oracle _ hg => rw [Set.mem_singleton_iff] at hg; rw [hg]; exact Nat.Partrec.zero
-  | pair | comp | prec | rfind
-  repeat {constructor; assumption; try assumption}
+  | pair | comp | prec | rfind => repeat {constructor; assumption; try assumption}
 
 /--
 A partial function `f` is partial recursive if and only if it is recursive in
