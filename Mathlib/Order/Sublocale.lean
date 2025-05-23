@@ -197,6 +197,19 @@ instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublo
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms instCoframeMinimalAxioms
 
+lemma Nucleus.toSublocale.bot : (⊥ : Nucleus X).toSublocale = ⊤ := by
+  rw [orderiso.eq_toSublocale]
+  exact (map_eq_top_iff orderiso).mpr rfl
+
+lemma Nucleus.toSublocale.top : (⊤ : Nucleus X).toSublocale = ⊥ := by
+  rw [orderiso.eq_toSublocale]
+  exact (map_eq_bot_iff orderiso).mpr rfl
+set_option maxHeartbeats 100000000 in
+lemma Nucleus.toSublocale.sInf {s : Set (Nucleus X)} : (sInf s).toSublocale = ⨆ a ∈ s, a.toSublocale := by
+  rw [orderiso.eq_toSublocale]
+  apply?
+  rw [orderiso.map_sSup]
+
 @[ext]
 structure Open (X : Type*) [Order.Frame X] where
   element : X
@@ -251,6 +264,27 @@ lemma toNucleus.map_sup : (U ⊔ V).toNucleus = U.toNucleus ⊓ V.toNucleus := b
   rw [← @sup_himp_distrib]
   rfl
 
+lemma toNucleus.map_sSup {s : Set (Open X)} : (sSup s).toNucleus = sInf (Open.toNucleus '' s) := by
+  ext x
+  simp
+  apply le_antisymm
+  . simp [Open.toNucleus]
+    simp [orderiso.eq_element]
+    intro a h
+    rw [← le_himp_iff]
+    apply himp_le_himp
+    . apply le_sSup h
+    . rfl
+  . simp [iInf_le_iff]
+    intro b h
+    simp [Open.toNucleus, orderiso.eq_element]
+    rw [inf_sSup_eq]
+    simp only [mem_image, iSup_exists, iSup_le_iff, and_imp, forall_apply_eq_imp_iff₂]
+    intro a h1
+    let h2 := h a h1
+    simp [Open.toNucleus] at h2
+    exact h2
+
 lemma toNucleus.map_inf : (U ⊓ V).toNucleus = U.toNucleus ⊔ V.toNucleus := by
   ext x
   simp [Open.toNucleus]
@@ -270,6 +304,11 @@ lemma toNucleus.map_inf : (U ⊓ V).toNucleus = U.toNucleus ⊔ V.toNucleus := b
     simp_rw [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def] at h1
     sorry
 
+lemma toNucleus.top : (⊤ : Open X).toNucleus = ⊥ := by
+  ext x
+  simp [Open.toNucleus]
+  exact Codisjoint.himp_eq_left fun _ a _ ↦ a
+
 
 
 
@@ -284,8 +323,25 @@ def toSublocaleFrameHom : FrameHom (Open X) (Sublocale X) where
     simp [Open.toSublocale]
     rw [@orderiso.eq_toSublocale,← @OrderIso.map_inf,toNucleus.map_inf]
     rfl
-  map_top' := by sorry
+  map_top' := by rw [Open.toSublocale, toNucleus.top, @Nucleus.toSublocale.bot]
+  map_sSup' s := by
+    simp_rw [Open.toSublocale]
+    rw [@orderiso.eq_toSublocale]
+    rw [sSup_image]
+    rw [toNucleus.map_sSup]
 
+    have h : (sInf (toNucleus '' s)) = (sSup (OrderDual.toDual '' (toNucleus '' s))) := by
+
+
+    rw [h]
+    rw [OrderIso.map_sSup]
+    apply le_antisymm
+    · simp only [mem_image, iSup_exists, le_iSup_iff, iSup_le_iff, and_imp,
+      forall_apply_eq_imp_iff₂]
+      aesop
+    · simp only [mem_image_equiv, OrderDual.toDual_symm_eq, mem_image, iSup_exists, le_iSup_iff,
+      iSup_le_iff, and_imp, OrderDual.forall, OrderDual.ofDual_toDual, forall_apply_eq_imp_iff₂]
+      aesop
 
 
 
