@@ -21,7 +21,7 @@ For now, we simplify by insisting both universe levels are the same.
 
 ## Implementation notes
 
-This file essentially mirrors `Mathlib/Algebra/Category/AlgebraCat/Monoidal.lean`.
+This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Monoidal.lean`.
 -/
 
 suppress_compilation

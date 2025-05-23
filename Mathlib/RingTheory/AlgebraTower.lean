@@ -92,6 +92,7 @@ variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 theorem linearIndependent_smul {ι : Type*} {b : ι → S} {ι' : Type*} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
     LinearIndependent R fun p : ι × ι' ↦ b p.1 • c p.2 := by
+  classical
   rw [← linearIndependent_equiv' (.prodComm ..) (g := fun p : ι' × ι ↦ b p.2 • c p.1) rfl,
     LinearIndependent, linearCombination_smul]
   simpa using Function.Injective.comp hc
@@ -107,7 +108,7 @@ theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : 
 theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
   b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
 
-variable {R} {ι ι' : Type*} (b : Basis ι R S) (c : Basis ι' S A)
+variable {R} {ι ι' : Type*} [DecidableEq ι'] (b : Basis ι R S) (c : Basis ι' S A)
 
 /-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/

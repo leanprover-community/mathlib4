@@ -43,11 +43,11 @@ which are lattices with only two elements, and related ideas.
 
 ## Main results
   * `isAtom_dual_iff_isCoatom` and `isCoatom_dual_iff_isAtom` express the (definitional) duality
-   of `IsAtom` and `IsCoatom`.
+    of `IsAtom` and `IsCoatom`.
   * `isSimpleOrder_iff_isAtom_top` and `isSimpleOrder_iff_isCoatom_bot` express the
-  connection between atoms, coatoms, and simple lattices
+    connection between atoms, coatoms, and simple lattices
   * `IsCompl.isAtom_iff_isCoatom` and `IsCompl.isCoatom_if_isAtom`: In a modular
-  bounded lattice, a complement of an atom is a coatom and vice versa.
+    bounded lattice, a complement of an atom is a coatom and vice versa.
   * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
 
 -/

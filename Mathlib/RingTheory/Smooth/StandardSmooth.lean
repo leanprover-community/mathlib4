@@ -163,7 +163,7 @@ noncomputable def jacobiMatrix : Matrix P.rels P.rels P.Ring :=
   LinearMap.toMatrix P.basis P.basis P.differential
 
 lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMatrix.det := by
-   simp [jacobiMatrix, jacobian]
+  simp [jacobiMatrix, jacobian]
 
 lemma jacobiMatrix_apply (i j : P.rels) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
@@ -349,11 +349,13 @@ private lemma jacobiMatrix_comp_₂₂_det :
   rw [jacobiMatrix_comp_inr_inr, ← IsScalarTower.algebraMap_eq]
   simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
   generalize P.jacobiMatrix i j = p
-  induction' p using MvPolynomial.induction_on with a p q hp hq p i hp
-  · simp only [algHom_C, algebraMap_eq, eval₂_C, ← Generators.comp_vars,
+  induction p using MvPolynomial.induction_on with
+  | C a =>
+    simp only [algHom_C, algebraMap_eq, eval₂_C, ← Generators.comp_vars,
       ← Presentation.toGenerators_comp, ← toPresentation_comp]
-  · simp [hp, hq]
-  · simp only [map_mul, eval₂_mul, hp]
+  | add p q hp hq => simp [hp, hq]
+  | mul_X p i hp =>
+    simp only [map_mul, eval₂_mul, hp]
     simp [Presentation.toGenerators_comp, toPresentation_comp]
 
 end P

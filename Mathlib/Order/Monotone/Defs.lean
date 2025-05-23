@@ -3,6 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Data.Set.Operations
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Coe
@@ -330,7 +331,7 @@ theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
 
 section Composition
 
-variable [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β} {s : Set α}
+variable [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β} {s : Set α} {t : Set β}
 
 protected theorem Monotone.comp (hg : Monotone g) (hf : Monotone f) : Monotone (g ∘ f) :=
   fun _ _ h ↦ hg (hf h)
@@ -391,6 +392,20 @@ protected theorem StrictAnti.comp_strictAntiOn (hg : StrictAnti g) (hf : StrictA
 theorem StrictAnti.comp_strictMonoOn (hg : StrictAnti g) (hf : StrictMonoOn f s) :
     StrictAntiOn (g ∘ f) s :=
   fun _ ha _ hb h ↦ hg (hf ha hb h)
+
+lemma StrictMonoOn.comp (hg : StrictMonoOn g t) (hf : StrictMonoOn f s) (hs : Set.MapsTo f s t) :
+    StrictMonoOn (g ∘ f) s := fun _x hx _y hy hxy ↦ hg (hs hx) (hs hy) <| hf hx hy hxy
+
+lemma StrictMonoOn.comp_strictAntiOn (hg : StrictMonoOn g t) (hf : StrictAntiOn f s)
+    (hs : Set.MapsTo f s t) : StrictAntiOn (g ∘ f) s := fun _x hx _y hy hxy ↦
+  hg (hs hy) (hs hx) <| hf hx hy hxy
+
+lemma StrictAntiOn.comp (hg : StrictAntiOn g t) (hf : StrictAntiOn f s) (hs : Set.MapsTo f s t) :
+    StrictMonoOn (g ∘ f) s := fun _x hx _y hy hxy ↦ hg (hs hy) (hs hx) <| hf hx hy hxy
+
+lemma StrictAntiOn.comp_strictMonoOn (hg : StrictAntiOn g t) (hf : StrictMonoOn f s)
+    (hs : Set.MapsTo f s t) : StrictAntiOn (g ∘ f) s := fun _x hx _y hy hxy ↦
+  hg (hs hx) (hs hy) <| hf hx hy hxy
 
 end Composition
 

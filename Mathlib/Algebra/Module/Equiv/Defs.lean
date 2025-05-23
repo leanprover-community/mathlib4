@@ -181,6 +181,11 @@ theorem coe_mk {f invFun left_inv right_inv} :
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
   DFunLike.coe_injective
 
+@[simp]
+lemma _root_.SemilinearEquivClass.semilinearEquiv_apply {F : Type*} [EquivLike F M M₂]
+    [SemilinearEquivClass F σ M M₂] (f : F) (x : M) :
+    SemilinearEquivClass.semilinearEquiv (M₂ := M₂) f x = f x := rfl
+
 end
 
 section
