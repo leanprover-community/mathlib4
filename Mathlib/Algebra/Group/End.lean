@@ -181,6 +181,14 @@ theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
   Equiv.self_trans_symm e
 
+/-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. -/
+def permCongrHom {α β : Type*} (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
+  toFun x := e.symm.trans (x.trans e)
+  invFun y := e.trans (y.trans e.symm)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+  map_mul' _ _ := by ext; simp
+
 /-! Lemmas about `Equiv.Perm.sumCongr` re-expressed via the group structure. -/
 
 
