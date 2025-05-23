@@ -73,7 +73,7 @@ instance : Inv (RegularWreathProduct D Q) where
 
 @[simp]
 theorem inv_left (a : D ≀ᵣ Q) :
-    a⁻¹.left = ((fun x => a.left⁻¹ (a.right * x))) := rfl
+    a⁻¹.left = fun x => a.left⁻¹ (a.right * x) := rfl
 
 @[simp]
 theorem inv_right (a : D ≀ᵣ Q) : a⁻¹.right = a.right⁻¹ := rfl
