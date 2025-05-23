@@ -370,7 +370,7 @@ theorem jacobson_bot_of_integral_localization
 
 /-- Used to bootstrap the proof of `isJacobsonRing_polynomial_iff_isJacobsonRing`.
   That theorem is more general and should be used instead of this one. -/
-private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [IsDomain R]
+private theorem isJacobsonRing_polynomial_of_isDomain (R : Type*) [CommRing R] [IsDomain R]
     [hR : IsJacobsonRing R] (P : Ideal R[X]) [IsPrime P] (hP : ∀ x : R, C x ∈ P → x = 0) :
     P.jacobson = P := by
   by_cases Pb : P = ⊥
@@ -415,7 +415,7 @@ theorem isJacobsonRing_polynomial_of_isJacobsonRing (hR : IsJacobsonRing R) :
       comap_map_of_surjective _ h_surj] at h
     refine le_antisymm ?_ le_jacobson
     exact le_trans (le_sup_of_le_left le_rfl) (le_trans (le_of_eq h) (sup_le le_rfl hi'))
-  apply isJacobsonRing_polynomial_of_domain R' J
+  apply isJacobsonRing_polynomial_of_isDomain R' J
   exact eq_zero_of_polynomial_mem_map_range I
 
 theorem isJacobsonRing_polynomial_iff_isJacobsonRing : IsJacobsonRing R[X] ↔ IsJacobsonRing R := by
