@@ -372,20 +372,23 @@ private lemma comp_relation_aux_map (r : Q.rels) :
   simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
 
 private lemma aux_surjective : Function.Surjective (Q.aux P) := fun p ↦ by
-  induction' p using MvPolynomial.induction_on with a p q hp hq p i h
-  · use rename Sum.inr <| P.σ a
+  induction p using MvPolynomial.induction_on with
+  | C a =>
+    use rename Sum.inr <| P.σ a
     simp only [aux, aeval_rename, Sum.elim_comp_inr]
     have (p : MvPolynomial P.vars R) :
         aeval (C ∘ P.val) p = (C (aeval P.val p) : MvPolynomial Q.vars S) := by
-      induction' p using MvPolynomial.induction_on with a p q hp hq p i h
-      · simp
-      · simp [hp, hq]
-      · simp [h]
+      induction p using MvPolynomial.induction_on with
+      | C a => simp
+      | add p q hp hq => simp [hp, hq]
+      | mul_X p i h => simp [h]
     simp [this]
-  · obtain ⟨a, rfl⟩ := hp
+  | add p q hp hq =>
+    obtain ⟨a, rfl⟩ := hp
     obtain ⟨b, rfl⟩ := hq
     exact ⟨a + b, map_add _ _ _⟩
-  · obtain ⟨a, rfl⟩ := h
+  | mul_X p i h =>
+    obtain ⟨a, rfl⟩ := h
     exact ⟨(a * X (Sum.inl i)), by simp⟩
 
 private lemma aux_image_relation :
