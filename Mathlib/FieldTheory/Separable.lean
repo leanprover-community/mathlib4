@@ -586,6 +586,11 @@ theorem Algebra.isSeparable_iff :
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
     fun h => ⟨fun x => (h x).2⟩⟩
 
+variable {L} in
+lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : Function.Injective f)
+    (H : IsSeparable F x) : IsSeparable F (f x) := by
+  rwa [IsSeparable, minpoly.algHom_eq _ hf]
+
 variable {E : Type*}
 
 section AlgEquiv
@@ -616,7 +621,7 @@ over `L`. -/
 @[stacks 09H2 "first part"]
 theorem IsSeparable.tower_top
     {x : E} (h : IsSeparable F x) : IsSeparable L x :=
-  h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
+  .of_dvd (.map h) (minpoly.dvd_map_of_isScalarTower ..)
 
 variable (F E) in
 /-- If `E / K / F` is an extension tower, `E` is separable over `F`, then it's also separable

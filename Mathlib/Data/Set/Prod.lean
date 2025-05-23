@@ -807,7 +807,7 @@ lemma eval_image_pi_of_not_mem [Decidable (s.pi t).Nonempty] (hi : i ∉ s) :
     exact ⟨x, hx⟩
   · rintro ⟨x, hx⟩
     refine ⟨Function.update x i xᵢ, ?_⟩
-    simpa (config := { contextual := true }) [(ne_of_mem_of_not_mem · hi)]
+    simpa +contextual [(ne_of_mem_of_not_mem · hi)]
 
 @[simp]
 theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
