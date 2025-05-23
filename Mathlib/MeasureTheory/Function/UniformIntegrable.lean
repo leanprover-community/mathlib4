@@ -258,7 +258,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
         refine lt_of_lt_of_le ?_ hx
         rw [ENNReal.toReal_lt_toReal hbdd.ne]
         · exact ENNReal.lt_add_right hbdd.ne one_ne_zero
-        · exact (ENNReal.add_lt_top.2 ⟨hbdd, ENNReal.one_lt_top⟩).ne
+        · finiteness
       rw [← nonpos_iff_eq_zero]
       refine (measure_mono this).trans ?_
       have hle := enorm_ae_le_eLpNormEssSup f μ

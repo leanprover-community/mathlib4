@@ -240,7 +240,7 @@ theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) 
 
 /-- Any two nonzero left-invariant measures are absolutely continuous w.r.t. each other. -/
 @[to_additive
-" Any two nonzero left-invariant measures are absolutely continuous w.r.t. each other. "]
+"Any two nonzero left-invariant measures are absolutely continuous w.r.t. each other. "]
 theorem absolutelyContinuous_of_isMulLeftInvariant [IsMulLeftInvariant ν] (hν : ν ≠ 0) : μ ≪ ν := by
   refine AbsolutelyContinuous.mk fun s sm hνs => ?_
   have h1 := measure_mul_lintegral_eq μ ν sm 1 measurable_one
@@ -269,7 +269,7 @@ theorem ae_measure_preimage_mul_right_lt_top (hμs : μ' s ≠ ∞) :
     image_inv_eq_inv, ← indicator_mul_right _ fun x => ν' ((· * x) ⁻¹' s), Function.comp,
     Pi.one_apply, mul_one] at h1
   rw [← lintegral_indicator hA, ← h1]
-  exact ENNReal.mul_ne_top hμs h3A.ne
+  finiteness
 
 @[to_additive]
 theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
