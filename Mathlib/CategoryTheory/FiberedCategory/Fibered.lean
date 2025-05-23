@@ -5,6 +5,8 @@ Authors: Paul Lezeau, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.FiberedCategory.Cartesian
+import Mathlib.CategoryTheory.Comma.Over.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 
@@ -180,6 +182,89 @@ noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
       pullbackObj ha (g ≫ f) ≅ pullbackObj (pullbackObj_proj ha f) g :=
   domainUniqueUpToIso p (g ≫ f) (pullbackMap (pullbackObj_proj ha f) g ≫ pullbackMap ha f)
     (pullbackMap ha (g ≫ f))
+
+lemma rightFunc_isHomLift_homMk : Arrow.rightFunc.IsHomLift g (Arrow.homMk l g ⋯) := by
+  sorry
+
+/-- Diagrams:
+```
+          a
+          | rightFunc
+          v
+R --f--> a.2
+
+Pb.pt --pb.snd--> a.1
+  |                |
+Pb.fst             | a
+  |                |
+  v                v
+  R ------f-----> a.2
+
+To find:
+
+b ---φ--> a
+|         | rightFunc
+v         v
+R --f--> a.2
+where φ maps Pb.pt to a.1 and R to a.2 (which is the second morphisma of the pullback, along with f)
+b is the first morphism of the pullback.
+
+Universal property to show
+a' --φ'------------|
+| \                |
+|  \--χ-\          v
+right    b ---φ--> a
+|Func    |         | rightFunc
+|        v         v
+a'.2-g-> R --f--> a.2
+
+```
+-/
+lemma arrow_rightFunc [Limits.HasPullbacks 𝒮]: (Arrow.rightFunc.{v₁} (C := 𝒮)).IsFibered := by
+  apply of_exists_isStronglyCartesian (p := Arrow.rightFunc.{v₁})
+  intro a R f
+  have := (Limits.pullback.condition (f := f) (g := a.hom))
+  let φ : Arrow.mk (Limits.pullback.cone f a.hom).fst ⟶ a :=
+    Arrow.homMk (Limits.pullback.cone f a.hom).snd f
+  use (Limits.pullback.cone f a.hom).fst, φ
+  have : Arrow.rightFunc.IsHomLift f φ := ⟨.map φ⟩
+  -- apply CategoryTheory.Functor.IsStronglyCartesian.of_comp
+
+  refine { toIsHomLift := ⟨.map φ⟩, universal_property' := ?_ }
+  intro a' g φ' hφ'
+  -- obtain ⟨h⟩ := hφ'.cond
+  have := (Limits.pullback.isLimit (f := f) (g := a.hom)).uniq
+
+  -- Use IsLimit API instead?
+  -- have := Limits.pullback.lift (f := f) (g := a.hom) (a'.hom ≫ g) φ'.left
+    -- (by aesop_cat (add simp [(eq_of_isHomLift Arrow.rightFunc (g ≫ f) φ')]))
+  obtain ⟨l, hl⟩ := (Limits.pullback.lift' (f := f) (g := a.hom) (a'.hom ≫ g) φ'.left
+    (by aesop_cat (add simp [(eq_of_isHomLift Arrow.rightFunc (g ≫ f) φ')])))
+
+  let χ : a' ⟶ Arrow.mk (Limits.pullback.cone f a.hom).fst := Arrow.homMk l g
+  use χ
+
+  simp
+  constructor
+  · constructor
+    · have : Arrow.rightFunc.map χ = g := by
+        simp [χ]
+      rw [← this]
+      exact ⟨.map χ⟩
+    ·
+      simp [χ, φ]
+      apply Arrow.hom_ext
+      · simp [hl.2]
+      · simp
+        
+        sorry
+  · sorry
+
+lemma arrow_leftFunc : (Arrow.leftFunc.{v₁} (C := 𝒮)).IsFibered := by
+  sorry
+
+lemma over_forget : (Over.forget (X := 𝒮)).IsFibered := by
+  sorry
 
 end Functor.IsFibered
 
