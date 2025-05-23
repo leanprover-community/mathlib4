@@ -80,7 +80,7 @@ An `IsFiveWheelLike r k v w₁ w₂ s₁ s₂` structure in `G` consists of vert
 -/
 structure IsFiveWheelLike (G : SimpleGraph α) (r k : ℕ) (v w₁ w₂ : α) (s₁ s₂ : Finset α) :
     Prop where
-  /-- `{v, w₁, w₂}` induces the single edge `w₁w₂`-/
+  /-- `{v, w₁, w₂}` induces the single edge `w₁w₂` -/
   isPathGraph3Compl : G.IsPathGraph3Compl v w₁ w₂
   not_mem_fst : v ∉ s₁
   not_mem_snd : v ∉ s₂
