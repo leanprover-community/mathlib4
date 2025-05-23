@@ -154,7 +154,7 @@ theorem coeFn_mFourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : d → ℤ) :
 
 /-- For each `1 ≤ p < ∞`, the linear span of the monomials `mFourier n` is dense in the `Lᵖ` space
 of functions on `UnitAddTorus d`. -/
-theorem span_mFourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p ≠ ∞) :
+theorem span_mFourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p ≠ ∞ := by finiteness) :
     (span ℂ (range (@mFourierLp d _ p _))).topologicalClosure = ⊤ := by
   simpa only [map_span, ContinuousLinearMap.coe_coe, ← range_comp, Function.comp_def] using
     (ContinuousMap.toLp_denseRange ℂ volume ℂ hp).topologicalClosure_map_submodule

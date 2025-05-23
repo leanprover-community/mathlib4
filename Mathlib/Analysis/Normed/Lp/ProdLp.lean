@@ -537,7 +537,7 @@ instance instProdMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (Wi
 variable {p α β}
 
 theorem prod_nndist_eq_add [PseudoMetricSpace α] [PseudoMetricSpace β]
-    (hp : p ≠ ∞) (x y : WithLp p (α × β)) :
+    (hp : p ≠ ∞ := by finiteness) (x y : WithLp p (α × β)) :
     nndist x y = (nndist x.fst y.fst ^ p.toReal + nndist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) :=
   NNReal.eq <| by
     push_cast
@@ -663,7 +663,7 @@ theorem prod_norm_eq_of_nat [Norm α] [Norm β] (n : ℕ) (h : p = n) (f : WithL
 
 variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
-theorem prod_nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
+theorem prod_nnnorm_eq_add (hp : p ≠ ∞ := by finiteness) (f : WithLp p (α × β)) :
     ‖f‖₊ = (‖f.fst‖₊ ^ p.toReal + ‖f.snd‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
   ext
   simp [prod_norm_eq_add (p.toReal_pos_iff_ne_top.mpr hp)]

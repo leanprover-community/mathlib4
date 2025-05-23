@@ -165,11 +165,11 @@ lemma expGrowthSup_top : expGrowthSup ⊤ = ⊤ := by
   rw [← expGrowthInf_top]
   exact expGrowthInf_le_expGrowthSup
 
-lemma expGrowthInf_const (h : b ≠ 0) (h' : b ≠ ∞) : expGrowthInf (fun _ ↦ b) = 0 :=
+lemma expGrowthInf_const (h : b ≠ 0) (h' : b ≠ ∞ := by finiteness) : expGrowthInf (fun _ ↦ b) = 0 :=
   (tendsto_const_div_atTop_nhds_zero_nat (fun k ↦ h (log_eq_bot_iff.1 k))
     (fun k ↦ h' (log_eq_top_iff.1 k))).liminf_eq
 
-lemma expGrowthSup_const (h : b ≠ 0) (h' : b ≠ ∞) : expGrowthSup (fun _ ↦ b) = 0 :=
+lemma expGrowthSup_const (h : b ≠ 0) (h' : b ≠ ∞ := by finiteness) : expGrowthSup (fun _ ↦ b) = 0 :=
   (tendsto_const_div_atTop_nhds_zero_nat (fun k ↦ h (log_eq_bot_iff.1 k))
     (fun k ↦ h' (log_eq_top_iff.1 k))).limsup_eq
 
@@ -244,7 +244,8 @@ lemma expGrowthSup_inv : expGrowthSup u⁻¹ = - expGrowthInf u := by
 
 -- Bound on `expGrowthInf` under a `IsBigO` hypothesis. However, `ℝ≥0∞` is not normed, so the
 -- `IsBigO` property is spelt out.
-lemma expGrowthInf_le_of_eventually_le (hb : b ≠ ∞) (h : ∀ᶠ n in atTop, u n ≤ b * v n) :
+lemma expGrowthInf_le_of_eventually_le
+    (hb : b ≠ ∞ := by finiteness) (h : ∀ᶠ n in atTop, u n ≤ b * v n) :
     expGrowthInf u ≤ expGrowthInf v := by
   apply (expGrowthInf_eventually_monotone h).trans
   rcases eq_zero_or_pos b with rfl | b_pos
@@ -256,7 +257,8 @@ lemma expGrowthInf_le_of_eventually_le (hb : b ≠ ∞) (h : ∀ᶠ n in atTop, 
 
 -- Bound on `expGrowthSup` under a `IsBigO` hypothesis. However, `ℝ≥0∞` is not normed, so the
 -- `IsBigO` property is spelt out.
-lemma expGrowthSup_le_of_eventually_le (hb : b ≠ ∞) (h : ∀ᶠ n in atTop, u n ≤ b * v n) :
+lemma expGrowthSup_le_of_eventually_le
+    (hb : b ≠ ∞ := by finiteness) (h : ∀ᶠ n in atTop, u n ≤ b * v n) :
     expGrowthSup u ≤ expGrowthSup v := by
   apply (expGrowthSup_eventually_monotone h).trans
   rcases eq_zero_or_pos b with rfl | b_pos
