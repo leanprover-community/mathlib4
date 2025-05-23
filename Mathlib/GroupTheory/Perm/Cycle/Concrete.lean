@@ -154,10 +154,13 @@ theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontriv
   rintro _ rfl
   simpa [Nat.succ_le_succ_iff] using length_nontrivial hn
 
-theorem formPerm_eq_self_of_not_mem (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∉ s) :
+theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∉ s) :
     formPerm s h x = x := by
   induction s using Quot.inductionOn
   simpa using List.formPerm_eq_self_of_not_mem _ _ hx
+
+@[deprecated (since := "2025-05-23")]
+alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
 
 theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∈ s) :
     formPerm s h x = next s h x hx := by

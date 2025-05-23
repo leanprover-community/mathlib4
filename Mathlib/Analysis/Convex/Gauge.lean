@@ -207,7 +207,7 @@ theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
   starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ =>
     hs _ (by rwa [Real.norm_of_nonneg ha₀]) (smul_mem_smul_set hx)
 
-theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :
+theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :
     a ≤ gauge s x := by
   rw [starConvex_zero_iff] at hs₀
   obtain ⟨r, hr, h⟩ := hs₂.exists_pos
@@ -221,9 +221,13 @@ theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s 
   · dsimp only
     rw [← mul_smul, mul_inv_cancel_left₀ ha.ne']
 
-theorem one_le_gauge_of_not_mem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ s) :
+@[deprecated (since := "2025-05-23")] alias le_gauge_of_not_mem := le_gauge_of_notMem
+
+theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ s) :
     1 ≤ gauge s x :=
   le_gauge_of_not_mem hs₁ hs₂ <| by rwa [one_smul]
+
+@[deprecated (since := "2025-05-23")] alias one_le_gauge_of_not_mem := one_le_gauge_of_notMem
 
 section LinearOrderedField
 

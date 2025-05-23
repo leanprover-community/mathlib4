@@ -147,10 +147,12 @@ section IsDomain
 variable [Ring R] [IsDomain R]
 variable [AddCommGroup M] [Module R M] {b : ι → M}
 
-theorem not_mem_of_ortho {x : M} {N : Submodule R M}
+theorem notMem_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ∉ N := by
   intro hx
   simpa using ortho (-1) x hx
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_ortho := notMem_of_ortho
 
 theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ≠ 0 :=

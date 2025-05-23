@@ -89,10 +89,12 @@ lemma pool_subset_Icc : ∀ {t}, pool a t ⊆ Icc 0 2014
     · exact h ▸ ha.1 t
     · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; omega
 
-lemma not_mem_pool_self : a t ∉ pool a t := by
+lemma notMem_pool_self : a t ∉ pool a t := by
   by_contra h
   obtain ⟨u, lu, hu⟩ := exists_add_eq_of_mem_pool h
   exact lu.ne (ha.2 hu)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_pool_self := notMem_pool_self
 
 /-- The number of balls stays unchanged if there is a ball with height 0 and increases by 1
 otherwise. -/

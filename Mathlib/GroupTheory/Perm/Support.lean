@@ -277,7 +277,9 @@ def support (f : Perm α) : Finset α := {x | f x ≠ x}
 theorem mem_support {x : α} : x ∈ f.support ↔ f x ≠ x := by
   rw [support, mem_filter, and_iff_right (mem_univ x)]
 
-theorem not_mem_support {x : α} : x ∉ f.support ↔ f x = x := by simp
+theorem notMem_support {x : α} : x ∉ f.support ↔ f x = x := by simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_support := notMem_support
 
 theorem coe_support_eq_set_support (f : Perm α) : (f.support : Set α) = { x | f x ≠ x } := by
   ext

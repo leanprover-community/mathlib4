@@ -97,8 +97,10 @@ instance : Inhabited (AList β) :=
   ⟨∅⟩
 
 @[simp]
-theorem not_mem_empty (a : α) : a ∉ (∅ : AList β) :=
+theorem notMem_empty (a : α) : a ∉ (∅ : AList β) :=
   not_mem_nil
+
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem empty_entries : (∅ : AList β).entries = [] :=
@@ -243,12 +245,16 @@ theorem entries_insert {a} {b : β a} {s : AList β} :
 
 @[deprecated (since := "2024-12-17")] alias insert_entries := entries_insert
 
-theorem entries_insert_of_not_mem {a} {b : β a} {s : AList β} (h : a ∉ s) :
+theorem entries_insert_of_notMem {a} {b : β a} {s : AList β} (h : a ∉ s) :
     (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [entries_insert, kerase_of_not_mem_keys h]
 
-theorem insert_of_not_mem {a} {b : β a} {s : AList β} (h : a ∉ s) :
+@[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
+
+theorem insert_of_notMem {a} {b : β a} {s : AList β} (h : a ∉ s) :
     insert a b s = ⟨⟨a, b⟩ :: s.entries, nodupKeys_cons.2 ⟨h, s.2⟩⟩ :=
   ext <| entries_insert_of_not_mem h
+
+@[deprecated (since := "2025-05-23")] alias insert_of_not_mem := insert_of_notMem
 
 @[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
 @[deprecated (since := "2024-12-14")] alias insert_of_neg := insert_of_not_mem

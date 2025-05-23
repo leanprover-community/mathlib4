@@ -319,8 +319,10 @@ theorem eq_of_subset_of_subset {a b : Set α} : a ⊆ b → b ⊆ a → a = b :=
 theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) : a ∈ s₁ → a ∈ s₂ :=
   @h _
 
-theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
+theorem notMem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_subset := notMem_subset
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
@@ -355,11 +357,15 @@ protected theorem ssubset_of_subset_of_ssubset {s₁ s₂ s₃ : Set α} (hs₁s
     (hs₂s₃ : s₂ ⊂ s₃) : s₁ ⊂ s₃ :=
   ⟨Subset.trans hs₁s₂ hs₂s₃.1, fun hs₃s₁ => hs₂s₃.2 (Subset.trans hs₃s₁ hs₁s₂)⟩
 
-theorem not_mem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
+theorem notMem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
   id
 
-theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
+
+theorem not_notMem : ¬a ∉ s ↔ a ∈ s :=
   not_not
+
+@[deprecated (since := "2025-05-23")] alias not_not_mem := not_notMem
 
 /-! ### Non-empty sets -/
 
@@ -473,11 +479,16 @@ theorem empty_subset (s : Set α) : ∅ ⊆ s :=
 theorem subset_empty_iff {s : Set α} : s ⊆ ∅ ↔ s = ∅ :=
   (Subset.antisymm_iff.trans <| and_iff_left (empty_subset _)).symm
 
-theorem eq_empty_iff_forall_not_mem {s : Set α} : s = ∅ ↔ ∀ x, x ∉ s :=
+theorem eq_empty_iff_forall_notMem {s : Set α} : s = ∅ ↔ ∀ x, x ∉ s :=
   subset_empty_iff.symm
 
-theorem eq_empty_of_forall_not_mem (h : ∀ x, x ∉ s) : s = ∅ :=
+@[deprecated (since := "2025-05-23")]
+alias eq_empty_iff_forall_not_mem := eq_empty_iff_forall_notMem
+
+theorem eq_empty_of_forall_notMem (h : ∀ x, x ∉ s) : s = ∅ :=
   subset_empty_iff.1 h
+
+@[deprecated (since := "2025-05-23")] alias eq_empty_of_forall_not_mem := eq_empty_of_forall_notMem
 
 theorem eq_empty_of_subset_empty {s : Set α} : s ⊆ ∅ → s = ∅ :=
   subset_empty_iff.1
@@ -582,11 +593,16 @@ theorem eq_univ_of_subset {s t : Set α} (h : s ⊆ t) (hs : s = univ) : t = uni
 theorem exists_mem_of_nonempty (α) : ∀ [Nonempty α], ∃ x : α, x ∈ (univ : Set α)
   | ⟨x⟩ => ⟨x, trivial⟩
 
-theorem ne_univ_iff_exists_not_mem {α : Type*} (s : Set α) : s ≠ univ ↔ ∃ a, a ∉ s := by
+theorem ne_univ_iff_exists_notMem {α : Type*} (s : Set α) : s ≠ univ ↔ ∃ a, a ∉ s := by
   rw [← not_forall, ← eq_univ_iff_forall]
 
-theorem not_subset_iff_exists_mem_not_mem {α : Type*} {s t : Set α} :
+@[deprecated (since := "2025-05-23")] alias ne_univ_iff_exists_not_mem := ne_univ_iff_exists_notMem
+
+theorem not_subset_iff_exists_mem_notMem {α : Type*} {s t : Set α} :
     ¬s ⊆ t ↔ ∃ x, x ∈ s ∧ x ∉ t := by simp [subset_def]
+
+@[deprecated (since := "2025-05-23")]
+alias not_subset_iff_exists_mem_not_mem := not_subset_iff_exists_mem_notMem
 
 theorem univ_unique [Unique α] : @Set.univ α = {default} :=
   Set.ext fun x => iff_of_true trivial <| Subsingleton.elim x default
@@ -987,11 +1003,15 @@ theorem mem_compl {s : Set α} {x : α} (h : x ∉ s) : x ∈ sᶜ :=
 theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
   rfl
 
-theorem not_mem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
+theorem notMem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h
 
-theorem not_mem_compl_iff {x : α} : x ∉ sᶜ ↔ x ∈ s :=
+@[deprecated (since := "2025-05-23")] alias not_mem_of_mem_compl := notMem_of_mem_compl
+
+theorem notMem_compl_iff {x : α} : x ∉ sᶜ ↔ x ∈ s :=
   not_not
+
+@[deprecated (since := "2025-05-23")] alias not_mem_compl_iff := notMem_compl_iff
 
 @[simp]
 theorem inter_compl_self (s : Set α) : s ∩ sᶜ = ∅ :=
@@ -1074,13 +1094,17 @@ theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s 
 
 /-! ### Lemmas about set difference -/
 
-theorem not_mem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
+theorem notMem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
+
+@[deprecated (since := "2025-05-23")] alias not_mem_diff_of_mem := notMem_diff_of_mem
 
 theorem mem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∈ s :=
   h.left
 
-theorem not_mem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∉ t :=
+theorem notMem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∉ t :=
   h.right
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_mem_diff := notMem_of_mem_diff
 
 theorem diff_eq_compl_inter {s t : Set α} : s \ t = tᶜ ∩ s := by rw [diff_eq, inter_comm]
 

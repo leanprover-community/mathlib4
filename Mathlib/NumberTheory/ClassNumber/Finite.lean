@@ -157,8 +157,10 @@ noncomputable def finsetApprox : Finset R :=
   (Finset.univ.image fun xy : _ × _ => distinctElems bS adm xy.1 - distinctElems bS adm xy.2).erase
     0
 
-theorem finsetApprox.zero_not_mem : (0 : R) ∉ finsetApprox bS adm :=
+theorem finsetApprox.zero_notMem : (0 : R) ∉ finsetApprox bS adm :=
   Finset.not_mem_erase _ _
+
+@[deprecated (since := "2025-05-23")] alias finsetApprox.zero_not_mem := finsetApprox.zero_notMem
 
 @[simp]
 theorem mem_finsetApprox {x : R} :

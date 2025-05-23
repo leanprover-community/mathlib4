@@ -579,12 +579,16 @@ section GradedAlgebra
   ring of multivariate polynomials `MvPolynomial σ R` with the structure of a graded algebra -/
 variable (w : σ → M) [AddCommMonoid M]
 
-theorem weightedHomogeneousComponent_eq_zero_of_not_mem [DecidableEq M]
+theorem weightedHomogeneousComponent_eq_zero_of_notMem [DecidableEq M]
     (φ : MvPolynomial σ R) (i : M) (hi : i ∉ Finset.image (weight w) φ.support) :
     weightedHomogeneousComponent w i φ = 0 := by
   apply weightedHomogeneousComponent_eq_zero'
   simp only [Finset.mem_image, mem_support_iff, ne_eq, exists_prop, not_exists, not_and] at hi
   exact fun m hm ↦ hi m (mem_support_iff.mp hm)
+
+@[deprecated (since := "2025-05-23")]
+alias weightedHomogeneousComponent_eq_zero_of_not_mem :=
+  weightedHomogeneousComponent_eq_zero_of_notMem
 
 variable (R)
 

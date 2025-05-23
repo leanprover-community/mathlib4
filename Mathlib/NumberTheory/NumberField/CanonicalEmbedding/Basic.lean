@@ -917,10 +917,13 @@ theorem negAt_apply_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw 
     ContinuousLinearEquiv.neg_apply]
 
 @[simp]
-theorem negAt_apply_isReal_and_not_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
+theorem negAt_apply_isReal_and_notMem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
     (negAt s x).1 w = x.1 w := by
   simp_rw [negAt, ContinuousLinearEquiv.prod_apply, piCongrRight_apply, if_neg hw,
     ContinuousLinearEquiv.refl_apply]
+
+@[deprecated (since := "2025-05-23")]
+alias negAt_apply_isReal_and_not_mem := negAt_apply_isReal_and_notMem
 
 @[simp]
 theorem negAt_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
@@ -1018,11 +1021,14 @@ theorem neg_of_mem_negA_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w //
   rw [negAt_apply_isReal_and_mem _ hw, neg_lt_zero]
   exact hy.2 w
 
-theorem pos_of_not_mem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
+theorem pos_of_notMem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
     (hw : w ∉ s) : 0 < x.1 w := by
   obtain ⟨y, hy, rfl⟩ := hx
   rw [negAt_apply_isReal_and_not_mem _ hw]
   exact hy.2 w
+
+@[deprecated (since := "2025-05-23")]
+alias pos_of_not_mem_negAt_plusPart := pos_of_notMem_negAt_plusPart
 
 open scoped Function in -- required for scoped `on` notation
 /-- The images of `plusPart` by `negAt` are pairwise disjoint. -/

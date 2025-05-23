@@ -154,8 +154,11 @@ theorem IsPrime.mem_or_compl_mem (hI : IsPrime I) : x ∈ I ∨ xᶜ ∈ I := by
   rw [inf_compl_eq_bot]
   exact I.bot_mem
 
-theorem IsPrime.mem_compl_of_not_mem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ ∈ I :=
+theorem IsPrime.mem_compl_of_notMem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ ∈ I :=
   hI.mem_or_compl_mem.resolve_left hxnI
+
+@[deprecated (since := "2025-05-23")]
+alias IsPrime.mem_compl_of_not_mem := IsPrime.mem_compl_of_notMem
 
 theorem isPrime_of_mem_or_compl_mem [IsProper I] (h : ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I) : IsPrime I := by
   simp only [isPrime_iff_mem_or_mem, or_iff_not_imp_left]

@@ -107,8 +107,10 @@ protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
   rw [Set.disjoint_iff]
   exact fun v ⟨vK, vC⟩ => vC.choose vK
 
-theorem not_mem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
+theorem notMem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
   Set.disjoint_iff.mp C.disjoint_right ⟨cK, cC⟩
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_mem := notMem_of_mem
 
 protected theorem pairwise_disjoint :
     Pairwise fun C D : G.ComponentCompl K => Disjoint (C : Set V) (D : Set V) := by

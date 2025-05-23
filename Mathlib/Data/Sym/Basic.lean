@@ -170,8 +170,10 @@ lemma «exists» {p : Sym α n → Prop} :
   simp [Sym]
 
 @[simp]
-theorem not_mem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
+theorem notMem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
   Multiset.not_mem_zero a
+
+@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 @[simp]
 theorem mem_cons : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s :=
@@ -546,10 +548,13 @@ theorem filter_ne_fill
         exact hb.2 hb.1.2.symm
       · exact fun a ha ha' => h <| ha'.symm ▸ ha)
 
-theorem count_coe_fill_self_of_not_mem [DecidableEq α] {a : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
+theorem count_coe_fill_self_of_notMem [DecidableEq α] {a : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
     (hx : a ∉ s) :
     count a (fill a i s : Multiset α) = i := by
   simp [coe_fill, coe_replicate, hx]
+
+@[deprecated (since := "2025-05-23")]
+alias count_coe_fill_self_of_not_mem := count_coe_fill_self_of_notMem
 
 theorem count_coe_fill_of_ne [DecidableEq α] {a x : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
     (hx : x ≠ a) :

@@ -53,8 +53,10 @@ lemma primesBelow_succ (n : ℕ) :
     primesBelow (n + 1) = if n.Prime then insert n (primesBelow n) else primesBelow n := by
   rw [primesBelow, primesBelow, Finset.range_succ, Finset.filter_insert]
 
-lemma not_mem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
+lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
   fun hn ↦ (lt_of_mem_primesBelow hn).false
+
+@[deprecated (since := "2025-05-23")] alias not_mem_primesBelow := notMem_primesBelow
 
 
 /-!

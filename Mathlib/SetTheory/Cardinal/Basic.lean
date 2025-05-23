@@ -927,7 +927,7 @@ theorem mk_eq_two_iff' (x : α) : #α = 2 ↔ ∃! y, y ≠ x := by
   · rintro ⟨y, hne, hy⟩
     exact ⟨x, y, hne.symm, eq_univ_of_forall fun z => or_iff_not_imp_left.2 (hy z)⟩
 
-theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length < #α) :
+theorem exists_notMem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length < #α) :
     ∃ z : α, z ∉ l := by
   classical
   contrapose! h
@@ -936,6 +936,9 @@ theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length 
     _ ≤ #l.toFinset := mk_le_mk_of_subset fun x _ => List.mem_toFinset.mpr (h x)
     _ = l.toFinset.card := Cardinal.mk_coe_finset
     _ ≤ l.length := Nat.cast_le.mpr (List.toFinset_card_le l)
+
+@[deprecated (since := "2025-05-23")]
+alias exists_not_mem_of_length_lt := exists_notMem_of_length_lt
 
 theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α := by simpa using h

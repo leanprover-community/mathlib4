@@ -286,18 +286,24 @@ theorem noncommProd_cons' (s : Finset α) (a : α) (f : α → β)
   simp_rw [noncommProd, Finset.cons_val, Multiset.map_cons, Multiset.noncommProd_cons']
 
 @[to_additive (attr := simp)]
-theorem noncommProd_insert_of_not_mem [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
+theorem noncommProd_insert_of_notMem [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
     (ha : a ∉ s) :
     noncommProd (insert a s) f comm =
       f a * noncommProd s f (comm.mono fun _ => mem_insert_of_mem) := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons]
 
+@[deprecated (since := "2025-05-23")]
+alias noncommProd_insert_of_not_mem := noncommProd_insert_of_notMem
+
 @[to_additive]
-theorem noncommProd_insert_of_not_mem' [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
+theorem noncommProd_insert_of_notMem' [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
     (ha : a ∉ s) :
     noncommProd (insert a s) f comm =
       noncommProd s f (comm.mono fun _ => mem_insert_of_mem) * f a := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons']
+
+@[deprecated (since := "2025-05-23")]
+alias noncommProd_insert_of_not_mem' := noncommProd_insert_of_notMem'
 
 @[to_additive (attr := simp)]
 theorem noncommProd_singleton (a : α) (f : α → β) :

@@ -694,9 +694,11 @@ theorem lsub_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
       max (lsub.{u, max v w} fun a => f (Sum.inl a)) (lsub.{v, max u w} fun b => f (Sum.inr b)) :=
   sup_sum _
 
-theorem lsub_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) :
+theorem lsub_notMem_range {ι : Type u} (f : ι → Ordinal.{max u v}) :
     lsub.{_, v} f ∉ Set.range f := fun ⟨i, h⟩ =>
   h.not_lt (lt_lsub f i)
+
+@[deprecated (since := "2025-05-23")] alias lsub_not_mem_range := lsub_notMem_range
 
 theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set.range f)ᶜ.Nonempty :=
   ⟨_, lsub_not_mem_range.{_, v} f⟩

@@ -154,9 +154,12 @@ theorem mem_factorSet_some {p : Associates α} {hp : Irreducible p}
     p ∈ (l : FactorSet α) ↔ Subtype.mk p hp ∈ l := by
   dsimp only [Membership.mem]; dsimp only [FactorSetMem]; split_ifs; rfl
 
-theorem reducible_not_mem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s : FactorSet α) :
+theorem reducible_notMem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s : FactorSet α) :
     ¬p ∈ s := fun h ↦ by
   rwa [← factorSetMem_eq_mem, FactorSetMem, dif_neg hp] at h
+
+@[deprecated (since := "2025-05-23")]
+alias reducible_not_mem_factorSet := reducible_notMem_factorSet
 
 theorem irreducible_of_mem_factorSet {p : Associates α} {s : FactorSet α} (h : p ∈ s) :
     Irreducible p :=

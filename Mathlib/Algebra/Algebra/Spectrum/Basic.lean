@@ -99,9 +99,11 @@ local notation "↑ₐ" => algebraMap R A
 theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
   Iff.rfl
 
-theorem not_mem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
+theorem notMem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
   apply not_iff_not.mp
   simp [Set.not_not_mem, mem_iff]
+
+@[deprecated (since := "2025-05-23")] alias not_mem_iff := notMem_iff
 
 variable (R)
 
@@ -110,14 +112,19 @@ theorem zero_mem_iff {a : A} : (0 : R) ∈ σ a ↔ ¬IsUnit a := by
 
 alias ⟨not_isUnit_of_zero_mem, zero_mem⟩ := spectrum.zero_mem_iff
 
-theorem zero_not_mem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
+theorem zero_notMem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
   rw [zero_mem_iff, Classical.not_not]
+
+@[deprecated (since := "2025-05-23")] alias zero_not_mem_iff := zero_notMem_iff
 
 alias ⟨isUnit_of_zero_not_mem, zero_not_mem⟩ := spectrum.zero_not_mem_iff
 
 @[simp]
-lemma _root_.Units.zero_not_mem_spectrum (a : Aˣ) : 0 ∉ spectrum R (a : A) :=
+lemma _root_.Units.zero_notMem_spectrum (a : Aˣ) : 0 ∉ spectrum R (a : A) :=
   spectrum.zero_not_mem R a.isUnit
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Units.zero_not_mem_spectrum := _root_.Units.zero_notMem_spectrum
 
 lemma subset_singleton_zero_compl {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
   Set.subset_compl_singleton_iff.mpr <| spectrum.zero_not_mem R ha

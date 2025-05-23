@@ -225,11 +225,14 @@ lemma fundCircuit_eq_of_mem (heX : e ∈ X) : M.fundCircuit e X = {e} := by
     simpa [subset_antisymm_iff, fundCircuit]
   exact fun b hbX h ↦ h _ (singleton_subset_iff.2 heX) Subset.rfl
 
-lemma fundCircuit_eq_of_not_mem_ground (heX : e ∉ M.E) : M.fundCircuit e X = {e} := by
+lemma fundCircuit_eq_of_notMem_ground (heX : e ∉ M.E) : M.fundCircuit e X = {e} := by
   suffices h : ∀ a ∈ X, (∀ t ⊆ X, M.closure {e} ⊆ M.closure t → a ∈ t) → a = e by
     simpa [subset_antisymm_iff, fundCircuit]
   simp_rw [← M.closure_inter_ground {e}, singleton_inter_eq_empty.2 heX]
   exact fun a haX h ↦ by simpa using h ∅ (empty_subset X) rfl.subset
+
+@[deprecated (since := "2025-05-23")]
+alias fundCircuit_eq_of_not_mem_ground := fundCircuit_eq_of_notMem_ground
 
 lemma Indep.fundCircuit_isCircuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :
     M.IsCircuit (M.fundCircuit e I) := by
@@ -676,16 +679,22 @@ lemma fundCocircuit_inter_eq (M : Matroid α) {B : Set α} (he : e ∈ B) :
   simp +contextual
 
 /-- The fundamental cocircuit of `X` and `e` has the junk value `{e}` if `e ∉ M.E` -/
-lemma fundCocircuit_eq_of_not_mem_ground (X : Set α) (he : e ∉ M.E) :
+lemma fundCocircuit_eq_of_notMem_ground (X : Set α) (he : e ∉ M.E) :
     M.fundCocircuit e X = {e} := by
   rwa [fundCocircuit, fundCircuit_eq_of_not_mem_ground]
 
+@[deprecated (since := "2025-05-23")]
+alias fundCocircuit_eq_of_not_mem_ground := fundCocircuit_eq_of_notMem_ground
+
 /-- The fundamental cocircuit of `X` and `e` has the junk value `{e}` if `e ∉ X` -/
-lemma fundCocircuit_eq_of_not_mem (M : Matroid α) (heX : e ∉ X) : M.fundCocircuit e X = {e} := by
+lemma fundCocircuit_eq_of_notMem (M : Matroid α) (heX : e ∉ X) : M.fundCocircuit e X = {e} := by
   by_cases he : e ∈ M.E
   · rw [fundCocircuit, fundCircuit_eq_of_mem]
     exact ⟨he, heX⟩
   rw [fundCocircuit_eq_of_not_mem_ground _ he]
+
+@[deprecated (since := "2025-05-23")]
+alias fundCocircuit_eq_of_not_mem := fundCocircuit_eq_of_notMem
 
 /-- For every element `e` of an independent set `I`,
 there is a cocircuit whose intersection with `I` is `{e}`. -/

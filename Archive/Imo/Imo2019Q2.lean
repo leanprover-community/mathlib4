@@ -216,7 +216,7 @@ theorem A₁_ne_C : cfg.A₁ ≠ cfg.C := by
 theorem B₁_ne_C : cfg.B₁ ≠ cfg.C :=
   cfg.symm.A₁_ne_C
 
-theorem Q_not_mem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
+theorem Q_notMem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
   intro hQ
   have hQA₁ : line[ℝ, cfg.Q, cfg.A₁] ≤ line[ℝ, cfg.C, cfg.B] :=
     affineSpan_pair_le_of_mem_of_mem hQ cfg.wbtw_B_A₁_C.symm.mem_affineSpan
@@ -232,6 +232,8 @@ theorem Q_not_mem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
   rw [collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi, cfg.angle_CQ₁Q_eq_angle_CBA,
     or_iff_right cfg.C_ne_Q₁, or_iff_right cfg.sbtw_Q_A₁_Q₁.left_ne_right, angle_comm] at hc
   exact cfg.not_collinear_ABC (hc.elim collinear_of_angle_eq_zero collinear_of_angle_eq_pi)
+
+@[deprecated (since := "2025-05-23")] alias Q_not_mem_CB := Q_notMem_CB
 
 theorem Q_ne_B : cfg.Q ≠ cfg.B := by
   intro h

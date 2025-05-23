@@ -40,7 +40,7 @@ def IsTransitive (x : ZFSet) : Prop :=
   ∀ y ∈ x, y ⊆ x
 
 @[simp]
-theorem isTransitive_empty : IsTransitive ∅ := fun y hy => (not_mem_empty y hy).elim
+theorem isTransitive_empty : IsTransitive ∅ := fun y hy => (notMem_empty y hy).elim
 
 theorem IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x := h y
 
@@ -175,13 +175,15 @@ theorem mem_of_subset_of_mem (h : x.IsOrdinal) (hz : z.IsOrdinal) (hx : x ⊆ y)
   · exact hy
   · exact hz.mem_trans hx hy
 
-theorem not_mem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y ⊆ x := by
+theorem notMem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y ⊆ x := by
   refine ⟨?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
   revert hx hy
   apply Sym2.GameAdd.induction mem_wf _ x y
   intros x y IH hx hy hyx z hzy
   by_contra hzx
   exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_iff_subset := notMem_iff_subset
 
 theorem not_subset_iff_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : ¬ x ⊆ y ↔ y ∈ x := by
   rw [not_iff_comm, not_mem_iff_subset hy hx]

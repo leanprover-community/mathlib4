@@ -50,12 +50,18 @@ lemma nondegenerate_zero : X.nonDegenerate 0 = ⊤ := by
 
 variable {n : ℕ}
 
-lemma mem_nonDegenerate_iff_not_mem_degenerate (x : X _⦋n⦌) :
+lemma mem_nonDegenerate_iff_notMem_degenerate (x : X _⦋n⦌) :
     x ∈ X.nonDegenerate n ↔ x ∉ X.degenerate n := Iff.rfl
 
-lemma mem_degenerate_iff_not_mem_nonDegenerate (x : X _⦋n⦌) :
+@[deprecated (since := "2025-05-23")]
+alias mem_nonDegenerate_iff_not_mem_degenerate := mem_nonDegenerate_iff_notMem_degenerate
+
+lemma mem_degenerate_iff_notMem_nonDegenerate (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ x ∉ X.nonDegenerate n := by
   simp [nonDegenerate]
+
+@[deprecated (since := "2025-05-23")]
+alias mem_degenerate_iff_not_mem_nonDegenerate := mem_degenerate_iff_notMem_nonDegenerate
 
 lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=

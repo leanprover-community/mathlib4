@@ -131,8 +131,10 @@ variable [BooleanAlgebra α]
 theorem Intersecting.not_compl_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a ∈ s) :
     aᶜ ∉ s := fun h => hs ha h disjoint_compl_right
 
-theorem Intersecting.not_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : aᶜ ∈ s) : a ∉ s :=
+theorem Intersecting.notMem {s : Set α} (hs : s.Intersecting) {a : α} (ha : aᶜ ∈ s) : a ∉ s :=
   fun h => hs ha h disjoint_compl_left
+
+@[deprecated (since := "2025-05-23")] alias Intersecting.not_mem := Intersecting.notMem
 
 theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Intersecting) :
     Disjoint s (s.map ⟨compl, compl_injective⟩) := by

@@ -42,11 +42,17 @@ theorem prod_insert [DecidableEq ι] : a ∉ s → ∏ x ∈ insert a s, f x = f
 the product over `s`, as long as `a` is in `s` or `f a = 1`. -/
 @[to_additive (attr := simp) "The sum of `f` over `insert a s` is the same as
 the sum over `s`, as long as `a` is in `s` or `f a = 0`."]
-theorem prod_insert_of_eq_one_if_not_mem [DecidableEq ι] (h : a ∉ s → f a = 1) :
+theorem prod_insert_of_eq_one_if_notMem [DecidableEq ι] (h : a ∉ s → f a = 1) :
     ∏ x ∈ insert a s, f x = ∏ x ∈ s, f x := by
   by_cases hm : a ∈ s
   · simp_rw [insert_eq_of_mem hm]
   · rw [prod_insert hm, h hm, one_mul]
+
+@[deprecated (since := "2025-05-23")]
+alias sum_insert_of_eq_zero_if_not_mem := sum_insert_of_eq_zero_if_notMem
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias prod_insert_of_eq_one_if_not_mem := prod_insert_of_eq_one_if_notMem
 
 /-- The product of `f` over `insert a s` is the same as
 the product over `s`, as long as `f a = 1`. -/

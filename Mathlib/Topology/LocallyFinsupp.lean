@@ -97,9 +97,11 @@ lemma coe_injective [Zero Y] :
 Simplifier lemma: Functions with locally finite support within `U` evaluate to zero outside of `U`.
 -/
 @[simp]
-lemma apply_eq_zero_of_not_mem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
+lemma apply_eq_zero_of_notMem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     (hz : z ∉ U) :
     D z = 0 := nmem_support.mp fun a ↦ hz (D.supportWithinDomain a)
+
+@[deprecated (since := "2025-05-23")] alias apply_eq_zero_of_not_mem := apply_eq_zero_of_notMem
 
 /--
 On a T1 space, the support of a function with locally finite support within `U` is discrete within

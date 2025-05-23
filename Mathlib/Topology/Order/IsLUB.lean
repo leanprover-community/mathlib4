@@ -167,7 +167,7 @@ theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
 -/
 
-theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
+theorem IsLUB.exists_seq_strictMono_tendsto_of_notMem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsLUB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
   obtain ⟨v, hvx, hvt⟩ := exists_seq_forall_of_frequently (htx.frequently_mem ht)
@@ -179,6 +179,10 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
     hvx.comp (strictMono_nat_of_lt_succ fun _ => ?_).tendsto_atTop, fun _ => hvt _⟩
   · rw [iterate_succ_apply']; exact hvN _
   · rw [iterate_succ_apply']; exact hN _
+
+@[deprecated (since := "2025-05-23")]
+alias IsLUB.exists_seq_strictMono_tendsto_of_not_mem :=
+  IsLUB.exists_seq_strictMono_tendsto_of_notMem
 
 theorem IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsLUB t x) (ht : t.Nonempty) :
@@ -253,10 +257,14 @@ theorem DenseRange.exists_seq_strictMono_tendsto {β : Type*} [LinearOrder β] [
   obtain rfl : f ∘ v = u := funext hv
   exact ⟨v, fun a b hlt ↦ hmono.reflect_lt <| hu hlt, hux, hlim⟩
 
-theorem IsGLB.exists_seq_strictAnti_tendsto_of_not_mem {t : Set α} {x : α}
+theorem IsGLB.exists_seq_strictAnti_tendsto_of_notMem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsGLB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t :=
   IsLUB.exists_seq_strictMono_tendsto_of_not_mem (α := αᵒᵈ) htx not_mem ht
+
+@[deprecated (since := "2025-05-23")]
+alias IsGLB.exists_seq_strictAnti_tendsto_of_not_mem :=
+  IsGLB.exists_seq_strictAnti_tendsto_of_notMem
 
 theorem IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsGLB t x) (ht : t.Nonempty) :

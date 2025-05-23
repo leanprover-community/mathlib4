@@ -51,12 +51,14 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
   rw [this, mem_ideal_span_monomial_image]
   simp
 
-theorem X0_X1_X2_not_mem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 2)) ∉ kIdeal := by
+theorem X0_X1_X2_notMem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 2)) ∉ kIdeal := by
   intro h
   simp_rw [mem_kIdeal_iff, support_mul_X, support_X, Finset.map_singleton, addRightEmbedding_apply,
     Finset.mem_singleton, forall_eq, ← Fin.sum_univ_three fun i => Finsupp.single i 1,
     ← Finsupp.equivFunOnFinite_symm_eq_sum] at h
   contradiction
+
+@[deprecated (since := "2025-05-23")] alias X0_X1_X2_not_mem_kIdeal := X0_X1_X2_notMem_kIdeal
 
 theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     (h : X 0 * X 1 * X 2 * x ∈ kIdeal) : x * x ∈ kIdeal := by

@@ -74,9 +74,13 @@ theorem Equiv.Perm.viaFintypeEmbedding_apply_mem_range {b : β} (h : b ∈ Set.r
   rw [Equiv.Perm.extendDomain_apply_subtype]
   congr
 
-theorem Equiv.Perm.viaFintypeEmbedding_apply_not_mem_range {b : β} (h : b ∉ Set.range f) :
+theorem Equiv.Perm.viaFintypeEmbedding_apply_notMem_range {b : β} (h : b ∉ Set.range f) :
     e.viaFintypeEmbedding f b = b := by
   rwa [Equiv.Perm.viaFintypeEmbedding, Equiv.Perm.extendDomain_apply_not_subtype]
+
+@[deprecated (since := "2025-05-23")]
+alias Equiv.Perm.viaFintypeEmbedding_apply_not_mem_range :=
+  Equiv.Perm.viaFintypeEmbedding_apply_notMem_range
 
 end Fintype
 
@@ -116,15 +120,20 @@ theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
   convert (e ⟨x, hx⟩).2
   rw [e.extendSubtype_apply_of_mem _ hx]
 
-theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
+theorem extendSubtype_apply_of_notMem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
   dsimp only [extendSubtype]
   simp only [subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
   rw [sumCompl_apply_symm_of_neg _ _ hx, Sum.map_inr, sumCompl_apply_inr]
 
-theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
+@[deprecated (since := "2025-05-23")]
+alias extendSubtype_apply_of_not_mem := extendSubtype_apply_of_notMem
+
+theorem extendSubtype_notMem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) := by
   convert (e.toCompl ⟨x, hx⟩).2
   rw [e.extendSubtype_apply_of_not_mem _ hx]
+
+@[deprecated (since := "2025-05-23")] alias extendSubtype_not_mem := extendSubtype_notMem
 
 end Equiv

@@ -219,7 +219,7 @@ theorem IsLUB.biUnion_Iio_eq (h : IsLUB s a) : ⋃ x ∈ s, Iio x = Iio a :=
 theorem IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :=
   h.dual.iUnion_Ioi_eq
 
-theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
+theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by
   refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
   · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_not_mem) hx)
@@ -233,7 +233,7 @@ theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
   · exact mem_iUnion₂.mpr ⟨a, a_mem, hx⟩
 
-theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_not_mem : a ∉ s) :
+theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Iic x = Iio a :=
   a_lub.dual.biUnion_Ici_eq_Ioi a_not_mem
 

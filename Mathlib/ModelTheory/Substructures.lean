@@ -236,8 +236,10 @@ theorem mem_closure {x : M} : x ∈ closure L s ↔ ∀ S : L.Substructure M, s 
 theorem subset_closure : s ⊆ closure L s :=
   (closure L).le_closure s
 
-theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 @[simp]
 theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=

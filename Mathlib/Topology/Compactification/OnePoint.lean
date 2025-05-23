@@ -150,14 +150,20 @@ theorem ne_infty_iff_exists {x : OnePoint X} : x ≠ ∞ ↔ ∃ y : X, (y : One
 instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
   WithTop.canLift
 
-theorem not_mem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
+theorem notMem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
   rw [← mem_compl_iff, compl_range_coe, mem_singleton_iff]
 
-theorem infty_not_mem_range_coe : ∞ ∉ range ((↑) : X → OnePoint X) :=
+@[deprecated (since := "2025-05-23")] alias not_mem_range_coe_iff := notMem_range_coe_iff
+
+theorem infty_notMem_range_coe : ∞ ∉ range ((↑) : X → OnePoint X) :=
   not_mem_range_coe_iff.2 rfl
 
-theorem infty_not_mem_image_coe {s : Set X} : ∞ ∉ ((↑) : X → OnePoint X) '' s :=
+@[deprecated (since := "2025-05-23")] alias infty_not_mem_range_coe := infty_notMem_range_coe
+
+theorem infty_notMem_image_coe {s : Set X} : ∞ ∉ ((↑) : X → OnePoint X) '' s :=
   not_mem_subset (image_subset_range _ _) infty_not_mem_range_coe
+
+@[deprecated (since := "2025-05-23")] alias infty_not_mem_image_coe := infty_notMem_image_coe
 
 @[simp]
 theorem coe_preimage_infty : ((↑) : X → OnePoint X) ⁻¹' {∞} = ∅ := by
@@ -225,16 +231,20 @@ theorem isOpen_iff_of_mem (h : ∞ ∈ s) :
     IsOpen s ↔ IsClosed ((↑) ⁻¹' s : Set X)ᶜ ∧ IsCompact ((↑) ⁻¹' s : Set X)ᶜ := by
   simp only [isOpen_iff_of_mem' h, isClosed_compl_iff, and_comm]
 
-theorem isOpen_iff_of_not_mem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹' s : Set X) := by
+theorem isOpen_iff_of_notMem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹' s : Set X) := by
   simp [isOpen_def, h]
+
+@[deprecated (since := "2025-05-23")] alias isOpen_iff_of_not_mem := isOpen_iff_of_notMem
 
 theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) := by
   have : ∞ ∉ sᶜ := fun H => H h
   rw [← isOpen_compl_iff, isOpen_iff_of_not_mem this, ← isOpen_compl_iff, preimage_compl]
 
-theorem isClosed_iff_of_not_mem (h : ∞ ∉ s) :
+theorem isClosed_iff_of_notMem (h : ∞ ∉ s) :
     IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) ∧ IsCompact ((↑) ⁻¹' s : Set X) := by
   rw [← isOpen_compl_iff, isOpen_iff_of_mem (mem_compl h), ← preimage_compl, compl_compl]
+
+@[deprecated (since := "2025-05-23")] alias isClosed_iff_of_not_mem := isClosed_iff_of_notMem
 
 @[simp]
 theorem isOpen_image_coe {s : Set X} : IsOpen ((↑) '' s : Set (OnePoint X)) ↔ IsOpen s := by

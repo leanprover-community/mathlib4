@@ -137,7 +137,10 @@ lemma IsUnit.mem_nonZeroDivisors (hx : IsUnit x) : x ∈ M₀⁰ := fun _ ↦ hx
 section Nontrivial
 variable [Nontrivial M₀]
 
-theorem zero_not_mem_nonZeroDivisors : 0 ∉ M₀⁰ := fun h ↦ one_ne_zero <| h 1 <| mul_zero _
+theorem zero_notMem_nonZeroDivisors : 0 ∉ M₀⁰ := fun h ↦ one_ne_zero <| h 1 <| mul_zero _
+
+@[deprecated (since := "2025-05-23")]
+alias zero_not_mem_nonZeroDivisors := zero_notMem_nonZeroDivisors
 
 theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
   ne_of_mem_of_not_mem hx zero_not_mem_nonZeroDivisors

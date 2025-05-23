@@ -435,7 +435,7 @@ theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous
 def carrier.asHomogeneousIdeal : HomogeneousIdeal 𝒜 :=
   ⟨carrier.asIdeal f_deg hm q, carrier.asIdeal.homogeneous f_deg hm q⟩
 
-theorem carrier.denom_not_mem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
+theorem carrier.denom_notMem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
   q.isPrime.ne_top <|
     (Ideal.eq_top_iff_one _).mpr
       (by
@@ -445,6 +445,8 @@ theorem carrier.denom_not_mem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
         dsimp
         simp_rw [decompose_of_mem_same _ f_deg]
         simp only [mk_eq_monoidOf_mk', Submonoid.LocalizationMap.mk'_self])
+
+@[deprecated (since := "2025-05-23")] alias carrier.denom_not_mem := carrier.denom_notMem
 
 theorem carrier.relevant : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ carrier.asHomogeneousIdeal f_deg hm q :=
   fun rid => carrier.denom_not_mem f_deg hm q <| rid <| DirectSum.decompose_of_mem_ne 𝒜 f_deg hm.ne'

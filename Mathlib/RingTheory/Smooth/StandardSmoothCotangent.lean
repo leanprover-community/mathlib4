@@ -176,7 +176,7 @@ lemma sectionCotangent_comp :
   intro i
   rfl
 
-lemma sectionCotangent_zero_of_not_mem_range (i : P.vars) (hi : i ∉ Set.range P.map) :
+lemma sectionCotangent_zero_of_notMem_range (i : P.vars) (hi : i ∉ Set.range P.map) :
     (sectionCotangent P) (P.cotangentSpaceBasis i) = 0 := by
   classical
   contrapose hi
@@ -187,6 +187,9 @@ lemma sectionCotangent_zero_of_not_mem_range (i : P.vars) (hi : i ∉ Set.range 
   simp only [Set.mem_range, not_exists, not_forall, not_not]
   use j
   exact hij.symm
+
+@[deprecated (since := "2025-05-23")]
+alias sectionCotangent_zero_of_not_mem_range := sectionCotangent_zero_of_notMem_range
 
 /--
 Given a submersive presentation of `S` as `R`-algebra, any indexing type `κ` complementary to

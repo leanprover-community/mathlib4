@@ -354,8 +354,11 @@ theorem Minimal.not_ssubset (h : Minimal P s) (ht : P t) : ¬ t ⊂ s :=
 theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
   h.eq_of_subset hx (subset_insert _ _) ▸ mem_insert ..
 
-theorem Minimal.not_mem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
+theorem Minimal.notMem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
   fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
+
+@[deprecated (since := "2025-05-23")]
+alias Minimal.not_mem_of_prop_diff_singleton := Minimal.notMem_of_prop_diff_singleton
 
 theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=

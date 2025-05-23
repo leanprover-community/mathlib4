@@ -88,8 +88,10 @@ theorem classes_inj {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.classes = r�
   ⟨fun h => h ▸ rfl, fun h => ext fun a b => by simp only [rel_iff_exists_classes, exists_prop, h]⟩
 
 /-- The empty set is not an equivalence class. -/
-theorem empty_not_mem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
+theorem empty_notMem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
   Set.not_mem_empty y <| hy.symm ▸ r.refl' y
+
+@[deprecated (since := "2025-05-23")] alias empty_not_mem_classes := empty_notMem_classes
 
 /-- Equivalence classes partition the type. -/
 theorem classes_eqv_classes {r : Setoid α} (a) : ∃! b ∈ r.classes, a ∈ b :=

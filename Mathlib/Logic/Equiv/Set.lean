@@ -294,9 +294,12 @@ theorem sumCompl_symm_apply_of_mem {α : Type u} {s : Set α} [DecidablePred (·
     (hx : x ∈ s) : (Equiv.Set.sumCompl s).symm x = Sum.inl ⟨x, hx⟩ := by
   simp [Equiv.Set.sumCompl, Equiv.Set.univ, union_apply_left, hx]
 
-theorem sumCompl_symm_apply_of_not_mem {α : Type u} {s : Set α} [DecidablePred (· ∈ s)] {x : α}
+theorem sumCompl_symm_apply_of_notMem {α : Type u} {s : Set α} [DecidablePred (· ∈ s)] {x : α}
     (hx : x ∉ s) : (Equiv.Set.sumCompl s).symm x = Sum.inr ⟨x, hx⟩ := by
   simp [Equiv.Set.sumCompl, Equiv.Set.univ, union_apply_right, hx]
+
+@[deprecated (since := "2025-05-23")]
+alias sumCompl_symm_apply_of_not_mem := sumCompl_symm_apply_of_notMem
 
 @[simp]
 theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] {x : s} :
@@ -332,10 +335,13 @@ theorem sumDiffSubset_symm_apply_of_mem {α} {s t : Set α} (h : s ⊆ t) [Decid
   apply (Equiv.Set.sumDiffSubset h).injective
   simp only [apply_symm_apply, sumDiffSubset_apply_inl, Set.inclusion_mk]
 
-theorem sumDiffSubset_symm_apply_of_not_mem {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
+theorem sumDiffSubset_symm_apply_of_notMem {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
     {x : t} (hx : x.1 ∉ s) : (Equiv.Set.sumDiffSubset h).symm x = Sum.inr ⟨x, ⟨x.2, hx⟩⟩ := by
   apply (Equiv.Set.sumDiffSubset h).injective
   simp only [apply_symm_apply, sumDiffSubset_apply_inr, Set.inclusion_mk]
+
+@[deprecated (since := "2025-05-23")]
+alias sumDiffSubset_symm_apply_of_not_mem := sumDiffSubset_symm_apply_of_notMem
 
 /-- If `s` is a set with decidable membership, then the sum of `s ∪ t` and `s ∩ t` is equivalent
 to `s ⊕ t`. -/

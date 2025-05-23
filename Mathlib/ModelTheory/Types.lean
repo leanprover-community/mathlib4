@@ -76,8 +76,10 @@ theorem isMaximal (p : T.CompleteType α) : IsMaximal (p : L[[α]].Theory) :=
 theorem subset (p : T.CompleteType α) : (L.lhomWithConstants α).onTheory T ⊆ (p : L[[α]].Theory) :=
   p.subset'
 
-theorem mem_or_not_mem (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ ∈ p ∨ φ.not ∈ p :=
+theorem mem_or_notMem (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ ∈ p ∨ φ.not ∈ p :=
   p.isMaximal.mem_or_not_mem φ
+
+@[deprecated (since := "2025-05-23")] alias mem_or_not_mem := mem_or_notMem
 
 theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
     (h : (L.lhomWithConstants α).onTheory T ⊨ᵇ φ) : φ ∈ p :=
@@ -85,7 +87,7 @@ theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
     ((models_iff_not_satisfiable _).1 h)
       (p.isMaximal.1.mono (union_subset p.subset (singleton_subset_iff.2 con)))
 
-theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ ¬φ ∈ p :=
+theorem notMem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ ¬φ ∈ p :=
   ⟨fun hf ht => by
     have h : ¬IsSatisfiable ({φ, φ.not} : L[[α]].Theory) := by
       rintro ⟨@⟨_, _, h, _⟩⟩
@@ -94,6 +96,8 @@ theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈
     refine h (p.isMaximal.1.mono ?_)
     rw [insert_subset_iff, singleton_subset_iff]
     exact ⟨ht, hf⟩, (p.mem_or_not_mem φ).resolve_left⟩
+
+@[deprecated (since := "2025-05-23")] alias not_mem_iff := notMem_iff
 
 @[simp]
 theorem compl_setOf_mem {φ : L[[α]].Sentence} :

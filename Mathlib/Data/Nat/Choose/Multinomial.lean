@@ -326,7 +326,7 @@ namespace Sym
 
 variable {n : ℕ} {α : Type*} [DecidableEq α]
 
-theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
+theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
     (fill x m s : Multiset α).multinomial = n.choose m * (s : Multiset α).multinomial := by
   rw [Multiset.multinomial_filter_ne x]
   rw [← mem_coe] at hx
@@ -339,5 +339,8 @@ theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
+
+@[deprecated (since := "2025-05-23")]
+alias multinomial_coe_fill_of_not_mem := multinomial_coe_fill_of_notMem
 
 end Sym

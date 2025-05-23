@@ -150,7 +150,7 @@ theorem IsPreprimitive.of_isTrivialBlock_base [IsPretransitive G X] (a : X)
 @[to_additive
   "If the action is not trivial, then the trivial blocks condition implies preprimitivity
   (pretransitivity is automatic) (based condition)"]
-theorem IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a ∉ fixedPoints G X)
+theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a ∉ fixedPoints G X)
     (H : ∀ ⦃B : Set X⦄, a ∈ B → IsBlock G B → IsTrivialBlock B) :
     IsPreprimitive G X :=
   have : IsPretransitive G X := by
@@ -169,6 +169,10 @@ theorem IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a 
       · obtain ⟨g, hg⟩ := exists_smul_eq G b a
         rw [← IsTrivialBlock.smul_iff g]
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
+
+@[deprecated (since := "2025-05-23")]
+alias IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
+  IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
@@ -360,7 +364,7 @@ which contains a given point and avoids another one. -/
 
 For a preprimitive additive action, a subset which is neither empty nor full has a translate
 which contains a given point and avoids another one."]
-theorem exists_mem_smul_and_not_mem_smul [IsPreprimitive G X]
+theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
     {A : Set X} (hfA : A.Finite) (hA : A.Nonempty) (hA' : A ≠ .univ) {a b : X} (h : a ≠ b) :
     ∃ g : G, a ∈ g • A ∧ b ∉ g • A := by
   let B := ⋂ (g : G) (_ : a ∈ g • A), g • A
@@ -385,6 +389,9 @@ theorem exists_mem_smul_and_not_mem_smul [IsPreprimitive G X]
     obtain ⟨x, hx⟩ := hA
     obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G x a
     use g, x
+
+@[deprecated (since := "2025-05-23")]
+alias exists_mem_smul_and_not_mem_smul := exists_mem_smul_and_notMem_smul
 
 end IsPreprimitive
 

@@ -33,9 +33,11 @@ theorem dedup_nil : dedup [] = ([] : List α) :=
 theorem dedup_cons_of_mem' {a : α} {l : List α} (h : a ∈ dedup l) : dedup (a :: l) = dedup l :=
   pwFilter_cons_of_neg <| by simpa only [forall_mem_ne, not_not] using h
 
-theorem dedup_cons_of_not_mem' {a : α} {l : List α} (h : a ∉ dedup l) :
+theorem dedup_cons_of_notMem' {a : α} {l : List α} (h : a ∉ dedup l) :
     dedup (a :: l) = a :: dedup l :=
   pwFilter_cons_of_pos <| by simpa only [forall_mem_ne] using h
+
+@[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem' := dedup_cons_of_notMem'
 
 @[simp]
 theorem mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
@@ -49,8 +51,10 @@ theorem dedup_cons_of_mem {a : α} {l : List α} (h : a ∈ l) : dedup (a :: l) 
   dedup_cons_of_mem' <| mem_dedup.2 h
 
 @[simp]
-theorem dedup_cons_of_not_mem {a : α} {l : List α} (h : a ∉ l) : dedup (a :: l) = a :: dedup l :=
+theorem dedup_cons_of_notMem {a : α} {l : List α} (h : a ∉ l) : dedup (a :: l) = a :: dedup l :=
   dedup_cons_of_not_mem' <| mt mem_dedup.1 h
+
+@[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem := dedup_cons_of_notMem
 
 theorem dedup_sublist : ∀ l : List α, dedup l <+ l :=
   pwFilter_sublist

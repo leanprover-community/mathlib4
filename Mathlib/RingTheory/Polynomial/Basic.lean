@@ -732,8 +732,10 @@ theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coe
   simp only [monomial_mul_C, one_mul, smul_eq_mul]
   rw [← C_mul_X_pow_eq_monomial]
 
-theorem exists_C_coeff_not_mem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
+theorem exists_C_coeff_notMem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
   Not.imp_symm fun cf => span_le_of_C_coeff_mem (not_exists_not.mp cf) mem_span_C_coeff
+
+@[deprecated (since := "2025-05-23")] alias exists_C_coeff_not_mem := exists_C_coeff_notMem
 
 end Ideal
 

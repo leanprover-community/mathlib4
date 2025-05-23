@@ -61,10 +61,13 @@ def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
   X.evaluation ⟨x, show x ∈ ⊤ from trivial⟩
 
 @[simp]
-lemma evaluation_eq_zero_iff_not_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
+lemma evaluation_eq_zero_iff_notMem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f = 0 ↔ x.val ∉ X.toRingedSpace.basicOpen f := by
   rw [X.toRingedSpace.mem_basicOpen f x.1 x.2, ← not_iff_not, not_not]
   exact (IsLocalRing.residue_ne_zero_iff_isUnit _)
+
+@[deprecated (since := "2025-05-23")]
+alias evaluation_eq_zero_iff_not_mem_basicOpen := evaluation_eq_zero_iff_notMem_basicOpen
 
 lemma evaluation_ne_zero_iff_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f ≠ 0 ↔ x.val ∈ X.toRingedSpace.basicOpen f := by
@@ -77,7 +80,7 @@ lemma basicOpen_eq_bot_iff_forall_evaluation_eq_zero (f : X.presheaf.obj (op U))
     fun h ↦ eq_bot_iff.mpr <| fun a ha ↦ h a (X.toRingedSpace.basicOpen_le f ha) ha⟩
 
 @[simp]
-lemma Γevaluation_eq_zero_iff_not_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
+lemma Γevaluation_eq_zero_iff_notMem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
     X.Γevaluation x f = 0 ↔ x ∉ X.toRingedSpace.basicOpen f :=
   evaluation_eq_zero_iff_not_mem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
 

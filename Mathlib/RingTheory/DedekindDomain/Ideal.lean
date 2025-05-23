@@ -431,9 +431,12 @@ lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A}
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
-theorem exists_not_mem_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A} (hI0 : I ≠ ⊥)
+theorem exists_notMem_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A} (hI0 : I ≠ ⊥)
     (hI1 : I ≠ ⊤) : ∃ x ∈ (I⁻¹ : FractionalIdeal A⁰ K), x ∉ (1 : FractionalIdeal A⁰ K) :=
   Set.not_subset.1 <| not_inv_le_one_of_ne_bot hI0 hI1
+
+@[deprecated (since := "2025-05-23")]
+alias exists_not_mem_one_of_ne_bot := exists_notMem_one_of_ne_bot
 
 theorem mul_inv_cancel_of_le_one [h : IsDedekindDomain A] {I : Ideal A} (hI0 : I ≠ ⊥)
     (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
@@ -704,9 +707,12 @@ theorem Ideal.pow_lt_self (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e :
   dsimp only
   rw [pow_one]
 
-theorem Ideal.exists_mem_pow_not_mem_pow_succ (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) :
+theorem Ideal.exists_mem_pow_notMem_pow_succ (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) :
     ∃ x ∈ I ^ e, x ∉ I ^ (e + 1) :=
   SetLike.exists_of_lt (I.pow_right_strictAnti hI0 hI1 e.lt_succ_self)
+
+@[deprecated (since := "2025-05-23")]
+alias Ideal.exists_mem_pow_not_mem_pow_succ := Ideal.exists_mem_pow_notMem_pow_succ
 
 open UniqueFactorizationMonoid
 
@@ -751,7 +757,7 @@ open FractionalIdeal
 Let `J ≠ ⊤` be an ideal in a Dedekind domain `A`, and `f ≠ 0` a finite collection
 of elements of `K = Frac(A)`, then we can multiply the elements of `f` by some `a : K`
 to find a collection of elements of `A` that is not completely contained in `J`. -/
-theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι : Type*} (s : Finset ι)
+theorem Ideal.exist_integer_multiples_notMem {J : Ideal A} (hJ : J ≠ ⊤) {ι : Type*} (s : Finset ι)
     (f : ι → K) {j} (hjs : j ∈ s) (hjf : f j ≠ 0) :
     ∃ a : K,
       (∀ i ∈ s, IsLocalization.IsInteger A (a * f i)) ∧
@@ -785,6 +791,9 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
   exact
     strictMono_of_le_iff_le (fun _ _ => (coeIdeal_le_coeIdeal K).symm)
       (lt_top_iff_ne_top.mpr hJ)
+
+@[deprecated (since := "2025-05-23")]
+alias Ideal.exist_integer_multiples_not_mem := Ideal.exist_integer_multiples_notMem
 
 section Gcd
 

@@ -98,11 +98,13 @@ theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑
   rw [← inf_neBot_iff, neBot_iff, Ne, not_not, disjoint_iff]
 
 @[simp]
-theorem compl_not_mem_iff : sᶜ ∉ f ↔ s ∈ f :=
+theorem compl_notMem_iff : sᶜ ∉ f ↔ s ∈ f :=
   ⟨fun hsc =>
     le_principal_iff.1 <|
       f.le_of_inf_neBot ⟨fun h => hsc <| mem_of_eq_bot <| by rwa [compl_compl]⟩,
     compl_not_mem⟩
+
+@[deprecated (since := "2025-05-23")] alias compl_not_mem_iff := compl_notMem_iff
 
 @[simp]
 theorem frequently_iff_eventually : (∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, p x :=
@@ -110,7 +112,9 @@ theorem frequently_iff_eventually : (∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, p x 
 
 alias ⟨_root_.Filter.Frequently.eventually, _⟩ := frequently_iff_eventually
 
-theorem compl_mem_iff_not_mem : sᶜ ∈ f ↔ s ∉ f := by rw [← compl_not_mem_iff, compl_compl]
+theorem compl_mem_iff_notMem : sᶜ ∈ f ↔ s ∉ f := by rw [← compl_notMem_iff, compl_compl]
+
+@[deprecated (since := "2025-05-23")] alias compl_mem_iff_not_mem := compl_mem_iff_notMem
 
 theorem diff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f :=
   inter_mem_iff.trans <| and_congr Iff.rfl compl_mem_iff_not_mem
@@ -135,8 +139,10 @@ theorem ne_empty_of_mem (hs : s ∈ f) : s ≠ ∅ :=
   (nonempty_of_mem hs).ne_empty
 
 @[simp]
-theorem empty_not_mem : ∅ ∉ f :=
+theorem empty_notMem : ∅ ∉ f :=
   Filter.empty_not_mem (f : Filter α)
+
+@[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
 
 @[simp]
 theorem le_sup_iff {u : Ultrafilter α} {f g : Filter α} : ↑u ≤ f ⊔ g ↔ ↑u ≤ f ∨ ↑u ≤ g :=

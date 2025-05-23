@@ -204,11 +204,15 @@ lemma uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a := by rw [Icc_union_Icc', m
 
 lemma mem_uIcc : a ∈ [[b, c]] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b := by simp [uIcc_eq_union]
 
-lemma not_mem_uIcc_of_lt (ha : c < a) (hb : c < b) : c ∉ [[a, b]] :=
+lemma notMem_uIcc_of_lt (ha : c < a) (hb : c < b) : c ∉ [[a, b]] :=
   not_mem_Icc_of_lt <| lt_min_iff.mpr ⟨ha, hb⟩
 
-lemma not_mem_uIcc_of_gt (ha : a < c) (hb : b < c) : c ∉ [[a, b]] :=
+@[deprecated (since := "2025-05-23")] alias not_mem_uIcc_of_lt := notMem_uIcc_of_lt
+
+lemma notMem_uIcc_of_gt (ha : a < c) (hb : b < c) : c ∉ [[a, b]] :=
   not_mem_Icc_of_gt <| max_lt_iff.mpr ⟨ha, hb⟩
+
+@[deprecated (since := "2025-05-23")] alias not_mem_uIcc_of_gt := notMem_uIcc_of_gt
 
 lemma uIcc_subset_uIcc_iff_le :
     [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ min a₂ b₂ ≤ min a₁ b₁ ∧ max a₁ b₁ ≤ max a₂ b₂ :=
@@ -255,9 +259,11 @@ lemma uIoc_eq_union : Ι a b = Ioc a b ∪ Ioc b a := by
 lemma mem_uIoc : a ∈ Ι b c ↔ b < a ∧ a ≤ c ∨ c < a ∧ a ≤ b := by
   rw [uIoc_eq_union, mem_union, mem_Ioc, mem_Ioc]
 
-lemma not_mem_uIoc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
+lemma notMem_uIoc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
   simp only [uIoc_eq_union, mem_union, mem_Ioc, not_lt, ← not_le]
   tauto
+
+@[deprecated (since := "2025-05-23")] alias not_mem_uIoc := notMem_uIoc
 
 @[simp] lemma left_mem_uIoc : a ∈ Ι a b ↔ b < a := by simp [mem_uIoc]
 @[simp] lemma right_mem_uIoc : b ∈ Ι a b ↔ a < b := by simp [mem_uIoc]
@@ -284,13 +290,16 @@ lemma eq_of_mem_uIoc_of_mem_uIoc : a ∈ Ι b c → b ∈ Ι a c → a = b := by
 lemma eq_of_mem_uIoc_of_mem_uIoc' : b ∈ Ι a c → c ∈ Ι a b → b = c := by
   simpa only [uIoc_comm a] using eq_of_mem_uIoc_of_mem_uIoc
 
-lemma eq_of_not_mem_uIoc_of_not_mem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
+lemma eq_of_notMem_uIoc_of_notMem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
     a ∉ Ι b c → b ∉ Ι a c → a = b := by
   simp_rw [not_mem_uIoc]
   rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;>
       apply le_antisymm <;>
     first |assumption|exact le_of_lt ‹_›|
     exact absurd hb (not_le_of_lt ‹c < b›)|exact absurd ha (not_le_of_lt ‹c < a›)
+
+@[deprecated (since := "2025-05-23")]
+alias eq_of_not_mem_uIoc_of_not_mem_uIoc := eq_of_notMem_uIoc_of_notMem_uIoc
 
 lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h

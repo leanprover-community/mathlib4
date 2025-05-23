@@ -322,8 +322,10 @@ theorem mem_top : x ∈ (⊤ : L.DefinableSet A α) :=
   mem_univ x
 
 @[simp]
-theorem not_mem_bot {x : α → M} : ¬x ∈ (⊥ : L.DefinableSet A α) :=
+theorem notMem_bot {x : α → M} : ¬x ∈ (⊥ : L.DefinableSet A α) :=
   not_mem_empty x
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem mem_sup : x ∈ s ⊔ t ↔ x ∈ s ∨ x ∈ t :=

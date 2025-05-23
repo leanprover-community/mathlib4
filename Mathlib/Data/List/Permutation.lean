@@ -427,7 +427,7 @@ theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'A
     ← get_permutations'Aux t x s.length (by simp [hl])]
   simp only [get_eq_getElem, h, hl]
 
-theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) :
+theorem nodup_permutations'Aux_of_notMem (s : List α) (x : α) (hx : x ∉ s) :
     Nodup (permutations'Aux x s) := by
   induction' s with y s IH
   · simp
@@ -437,6 +437,9 @@ theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) 
     rw [nodup_map_iff]
     · exact IH hx.right
     · simp
+
+@[deprecated (since := "2025-05-23")]
+alias nodup_permutations'Aux_of_not_mem := nodup_permutations'Aux_of_notMem
 
 theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'Aux x s) ↔ x ∉ s := by
   refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_not_mem _ _⟩

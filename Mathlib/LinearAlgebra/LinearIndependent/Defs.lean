@@ -162,8 +162,11 @@ theorem LinearIndepOn.ne_zero [Nontrivial R] {i : ι} (hv : LinearIndepOn R v s)
     v i ≠ 0 :=
   LinearIndependent.ne_zero ⟨i, hi⟩ hv
 
-theorem LinearIndepOn.zero_not_mem_image [Nontrivial R] (hs : LinearIndepOn R v s) : 0 ∉ v '' s :=
+theorem LinearIndepOn.zero_notMem_image [Nontrivial R] (hs : LinearIndepOn R v s) : 0 ∉ v '' s :=
   fun ⟨_, hi, h0⟩ ↦ hs.ne_zero hi h0
+
+@[deprecated (since := "2025-05-23")]
+alias LinearIndepOn.zero_not_mem_image := LinearIndepOn.zero_notMem_image
 
 theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
   injective_of_subsingleton _
@@ -561,16 +564,24 @@ nonrec lemma LinearIndepOn.eq_zero_of_smul_mem_span (hv : LinearIndepOn R v s) (
 
 variable [Nontrivial R]
 
-lemma LinearIndependent.not_mem_span (hv : LinearIndependent R v) (i : ι) :
+lemma LinearIndependent.notMem_span (hv : LinearIndependent R v) (i : ι) :
     v i ∉ span R (v '' {i}ᶜ) := fun hi ↦
   one_ne_zero <| hv.eq_zero_of_smul_mem_span i 1 <| by simpa [Set.compl_eq_univ_diff] using hi
 
-lemma LinearIndepOn.not_mem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) :
+@[deprecated (since := "2025-05-23")]
+alias LinearIndependent.not_mem_span := LinearIndependent.notMem_span
+
+lemma LinearIndepOn.notMem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) :
     v i ∉ span R (v '' (s \ {i})) := fun hi' ↦
   one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by  simpa [Set.compl_eq_univ_diff] using hi'
 
-lemma LinearIndepOn.not_mem_span_of_insert (hv : LinearIndepOn R v (insert i s)) (hi : i ∉ s) :
+@[deprecated (since := "2025-05-23")] alias LinearIndepOn.not_mem_span := LinearIndepOn.notMem_span
+
+lemma LinearIndepOn.notMem_span_of_insert (hv : LinearIndepOn R v (insert i s)) (hi : i ∉ s) :
     v i ∉ span R (v '' s) := by simpa [hi] using hv.not_mem_span <| mem_insert ..
+
+@[deprecated (since := "2025-05-23")]
+alias LinearIndepOn.not_mem_span_of_insert := LinearIndepOn.notMem_span_of_insert
 
 end repr
 
@@ -814,7 +825,7 @@ variable {v : ι → V} {s t : Set ι} {x y : V}
 
 open Submodule
 
-theorem linearIndependent_iff_not_mem_span :
+theorem linearIndependent_iff_notMem_span :
     LinearIndependent K v ↔ ∀ i, v i ∉ span K (v '' (univ \ {i})) := by
   apply linearIndependent_iff_eq_zero_of_smul_mem_span.trans
   constructor
@@ -824,10 +835,16 @@ theorem linearIndependent_iff_not_mem_span :
     by_contra ha'
     exact False.elim (h _ ((smul_mem_iff _ ha').1 ha))
 
-lemma linearIndepOn_iff_not_mem_span :
+@[deprecated (since := "2025-05-23")]
+alias linearIndependent_iff_not_mem_span := linearIndependent_iff_notMem_span
+
+lemma linearIndepOn_iff_notMem_span :
     LinearIndepOn K v s ↔ ∀ i ∈ s, v i ∉ span K (v '' (s \ {i})) := by
   rw [LinearIndepOn, linearIndependent_iff_not_mem_span, ← Function.comp_def]
   simp_rw [Set.image_comp]
   simp [Set.image_diff Subtype.val_injective]
+
+@[deprecated (since := "2025-05-23")]
+alias linearIndepOn_iff_not_mem_span := linearIndepOn_iff_notMem_span
 
 end Module

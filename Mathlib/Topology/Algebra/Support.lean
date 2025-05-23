@@ -103,9 +103,12 @@ variable [One β]
 variable {f : α → β} {x : α}
 
 @[to_additive]
-theorem not_mem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[𝓝 x] 1 := by
+theorem notMem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[𝓝 x] 1 := by
   simp_rw [mulTSupport, mem_closure_iff_nhds, not_forall, not_nonempty_iff_eq_empty, exists_prop,
     ← disjoint_iff_inter_eq_empty, disjoint_mulSupport_iff, eventuallyEq_iff_exists_mem]
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_mulTSupport_iff_eventuallyEq := notMem_mulTSupport_iff_eventuallyEq
 
 @[to_additive]
 theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}

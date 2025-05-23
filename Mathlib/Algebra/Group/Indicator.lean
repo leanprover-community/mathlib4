@@ -63,8 +63,10 @@ theorem mulIndicator_of_mem (h : a ∈ s) (f : α → M) : mulIndicator s f a = 
   if_pos h
 
 @[to_additive (attr := simp)]
-theorem mulIndicator_of_not_mem (h : a ∉ s) (f : α → M) : mulIndicator s f a = 1 :=
+theorem mulIndicator_of_notMem (h : a ∉ s) (f : α → M) : mulIndicator s f a = 1 :=
   if_neg h
+
+@[deprecated (since := "2025-05-23")] alias mulIndicator_of_not_mem := mulIndicator_of_notMem
 
 @[to_additive]
 theorem mulIndicator_eq_one_or_self (s : Set α) (f : α → M) (a : α) :
@@ -260,9 +262,12 @@ theorem indicator_one_preimage [Zero M] (U : Set α) (s : Set M) :
   indicator_const_preimage _ _ 1
 
 @[to_additive]
-theorem mulIndicator_preimage_of_not_mem (s : Set α) (f : α → M) {t : Set M} (ht : (1 : M) ∉ t) :
+theorem mulIndicator_preimage_of_notMem (s : Set α) (f : α → M) {t : Set M} (ht : (1 : M) ∉ t) :
     mulIndicator s f ⁻¹' t = f ⁻¹' t ∩ s := by
   simp [mulIndicator_preimage, Pi.one_def, Set.preimage_const_of_not_mem ht]
+
+@[deprecated (since := "2025-05-23")]
+alias mulIndicator_preimage_of_not_mem := mulIndicator_preimage_of_notMem
 
 @[to_additive]
 theorem mem_range_mulIndicator {r : M} {s : Set α} {f : α → M} :
@@ -295,9 +300,15 @@ theorem mulIndicator_union_mul_inter (f : α → M) (s t : Set α) :
   funext <| mulIndicator_union_mul_inter_apply f s t
 
 @[to_additive]
-theorem mulIndicator_union_of_not_mem_inter (h : a ∉ s ∩ t) (f : α → M) :
+theorem mulIndicator_union_of_notMem_inter (h : a ∉ s ∩ t) (f : α → M) :
     mulIndicator (s ∪ t) f a = mulIndicator s f a * mulIndicator t f a := by
   rw [← mulIndicator_union_mul_inter_apply f s t, mulIndicator_of_not_mem h, mul_one]
+
+@[deprecated (since := "2025-05-23")]
+alias indicator_union_of_not_mem_inter := indicator_union_of_notMem_inter
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias mulIndicator_union_of_not_mem_inter := mulIndicator_union_of_notMem_inter
 
 @[to_additive]
 theorem mulIndicator_union_of_disjoint (h : Disjoint s t) (f : α → M) :

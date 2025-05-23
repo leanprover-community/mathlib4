@@ -194,11 +194,14 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
 
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are open sets `U`,
 `V` that separate `t` and `x`. -/
-lemma IsCompact.separation_of_not_mem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+lemma IsCompact.separation_of_notMem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
     {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
     ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ t ⊆ U ∧ x ∈ V ∧ Disjoint U V := by
   simpa [SeparatedNhds] using SeparatedNhds.of_isCompact_isCompact_isClosed H1 isCompact_singleton
     isClosed_singleton <| disjoint_singleton_right.mpr H2
+
+@[deprecated (since := "2025-05-23")]
+alias IsCompact.separation_of_not_mem := IsCompact.separation_of_notMem
 
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, `𝓝ˢ t` and `𝓝 x` are
 disjoint. -/

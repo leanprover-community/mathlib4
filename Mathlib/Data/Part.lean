@@ -114,7 +114,9 @@ instance : Inhabited (Part α) :=
   ⟨none⟩
 
 @[simp]
-theorem not_mem_none (a : α) : a ∉ @none α := fun h => h.fst
+theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
+
+@[deprecated (since := "2025-05-23")] alias not_mem_none := notMem_none
 
 /-- The `some a` value in `Part` has a `True` domain and the
   function returns `a`. -/

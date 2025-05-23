@@ -136,7 +136,7 @@ theorem exists_gt_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeasu
 
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`, the set
 of points `x ∈ s` such that `x` does not return to `s` after `≥ n` iterations has measure zero. -/
-theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ)
+theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
     (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ ({ x ∈ s | ∀ m ≥ n, f^[m] x ∉ s }) = 0 := by
   by_contra H
@@ -147,6 +147,9 @@ theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ)
   rcases (hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
   exact hxn m hmn.lt.le hxm
+
+@[deprecated (since := "2025-05-23")]
+alias measure_mem_forall_ge_image_not_mem_eq_zero := measure_mem_forall_ge_image_notMem_eq_zero
 
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`,
 almost every point `x ∈ s` returns back to `s` infinitely many times. -/

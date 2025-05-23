@@ -37,7 +37,7 @@ theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
 
 /-- If a point of `Spec R[x]` is not contained in the vanishing set of `f`, then its image in
 `Spec R` is contained in the open set where at least one of the coefficients of `f` is non-zero.
-This lemma is a reformulation of `exists_C_coeff_not_mem`. -/
+This lemma is a reformulation of `exists_C_coeff_notMem`. -/
 theorem comap_C_mem_imageOfDf {I : PrimeSpectrum R[X]}
     (H : I ∈ (zeroLocus {f} : Set (PrimeSpectrum R[X]))ᶜ) :
     PrimeSpectrum.comap (Polynomial.C : R →+* R[X]) I ∈ imageOfDf f :=

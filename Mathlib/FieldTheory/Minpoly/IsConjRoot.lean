@@ -356,7 +356,7 @@ Let `L / K` be a field extension. If `x` is a separable element over `K` and the
 of `x` splits in `L`, then `x` is not in `K` if and only if there exists a conjugate
 root of `x` over `K` in `L` which is not equal to `x` itself.
 -/
-theorem not_mem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
+theorem notMem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
     (sp : (minpoly K x).Splits (algebraMap K L)) :
     x ∉ (⊥ : Subalgebra K L) ↔ ∃ y : L, x ≠ y ∧ IsConjRoot K x y := by
   calc
@@ -373,3 +373,6 @@ theorem not_mem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
           (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mpr hy⟩⟩,
           fun ⟨y, hne, hy⟩ => ⟨⟨y,
           (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mp hy⟩, hne.symm⟩⟩
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_iff_exists_ne_and_isConjRoot := notMem_iff_exists_ne_and_isConjRoot

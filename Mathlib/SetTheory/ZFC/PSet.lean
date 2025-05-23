@@ -249,8 +249,10 @@ theorem mem_irrefl (x : PSet) : x ∉ x :=
 theorem not_subset_of_mem {x y : PSet} (h : x ∈ y) : ¬ y ⊆ x :=
   fun h' ↦ mem_irrefl _ <| mem_of_subset h' h
 
-theorem not_mem_of_subset {x y : PSet} (h : x ⊆ y) : y ∉ x :=
+theorem notMem_of_subset {x y : PSet} (h : x ⊆ y) : y ∉ x :=
   imp_not_comm.2 not_subset_of_mem h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_subset := notMem_of_subset
 
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
@@ -304,8 +306,10 @@ theorem empty_def : (∅ : PSet) = ⟨_, PEmpty.elim⟩ := by
   simp [EmptyCollection.emptyCollection, PSet.empty]
 
 @[simp]
-theorem not_mem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
+theorem notMem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
   IsEmpty.exists_iff.1
+
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]

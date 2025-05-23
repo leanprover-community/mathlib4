@@ -97,8 +97,10 @@ protected def Mem (s : WSeq α) (a : α) :=
 instance membership : Membership α (WSeq α) :=
   ⟨WSeq.Mem⟩
 
-theorem not_mem_nil (a : α) : a ∉ @nil α :=
+theorem notMem_nil (a : α) : a ∉ @nil α :=
   Seq.not_mem_nil (some a)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 /-- Get the head of a weak sequence. This involves a possibly
   infinite computation. -/

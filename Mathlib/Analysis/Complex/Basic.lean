@@ -572,7 +572,9 @@ lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
 @[simp] lemma one_mem_slitPlane : 1 ∈ slitPlane := ofReal_mem_slitPlane.2 one_pos
 
 @[simp]
-lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
+lemma zero_notMem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
+
+@[deprecated (since := "2025-05-23")] alias zero_not_mem_slitPlane := zero_notMem_slitPlane
 
 @[simp]
 lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by

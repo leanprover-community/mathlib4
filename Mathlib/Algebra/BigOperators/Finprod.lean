@@ -756,11 +756,17 @@ theorem finprod_mem_insert (f : α → M) (h : a ∉ s) (hs : s.Finite) :
 @[to_additive
       "If `f a = 0` when `a ∉ s`, then the sum of `f i` over `i ∈ insert a s` equals the sum
       of `f i` over `i ∈ s`."]
-theorem finprod_mem_insert_of_eq_one_if_not_mem (h : a ∉ s → f a = 1) :
+theorem finprod_mem_insert_of_eq_one_if_notMem (h : a ∉ s → f a = 1) :
     ∏ᶠ i ∈ insert a s, f i = ∏ᶠ i ∈ s, f i := by
   refine finprod_mem_inter_mulSupport_eq' _ _ _ fun x hx => ⟨?_, Or.inr⟩
   rintro (rfl | hxs)
   exacts [not_imp_comm.1 h hx, hxs]
+
+@[deprecated (since := "2025-05-23")]
+alias finsum_mem_insert_of_eq_zero_if_not_mem := finsum_mem_insert_of_eq_zero_if_notMem
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias finprod_mem_insert_of_eq_one_if_not_mem := finprod_mem_insert_of_eq_one_if_notMem
 
 /-- If `f a = 1`, then the product of `f i` over `i ∈ insert a s` equals the product of `f i` over
 `i ∈ s`. -/

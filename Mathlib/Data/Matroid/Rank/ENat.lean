@@ -133,8 +133,11 @@ lemma eRk_union_ground (M : Matroid α) (X : Set α) : M.eRk (X ∪ M.E) = M.eRa
 lemma eRk_ground_union (M : Matroid α) (X : Set α) : M.eRk (M.E ∪ X) = M.eRank := by
   rw [union_comm, eRk_union_ground]
 
-lemma eRk_insert_of_not_mem_ground (X : Set α) (he : e ∉ M.E) : M.eRk (insert e X) = M.eRk X := by
+lemma eRk_insert_of_notMem_ground (X : Set α) (he : e ∉ M.E) : M.eRk (insert e X) = M.eRk X := by
   rw [← eRk_inter_ground, insert_inter_of_not_mem he, eRk_inter_ground]
+
+@[deprecated (since := "2025-05-23")]
+alias eRk_insert_of_not_mem_ground := eRk_insert_of_notMem_ground
 
 lemma eRk_eq_eRank (hX : M.E ⊆ X) : M.eRk X = M.eRank := by
   rw [← eRk_inter_ground, inter_eq_self_of_subset_right hX, eRank_def]

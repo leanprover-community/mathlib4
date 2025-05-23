@@ -155,8 +155,10 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 
 @[simp]
-theorem not_mem_bot (x : ℕ × ℕ) : x ∉ (⊥ : YoungDiagram) :=
+theorem notMem_bot (x : ℕ × ℕ) : x ∉ (⊥ : YoungDiagram) :=
   Finset.not_mem_empty x
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram) = (∅ : Set (ℕ × ℕ)) := by
@@ -254,7 +256,7 @@ theorem mem_row_iff {μ : YoungDiagram} {i : ℕ} {c : ℕ × ℕ} : c ∈ μ.ro
 
 theorem mk_mem_row_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.row i ↔ (i, j) ∈ μ := by simp [row]
 
-protected theorem exists_not_mem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
+protected theorem exists_notMem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
   obtain ⟨j, hj⟩ :=
     Infinite.exists_not_mem_finset
       (μ.cells.preimage (Prod.mk i) fun _ _ _ _ h => by
@@ -262,6 +264,8 @@ protected theorem exists_not_mem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, 
         rfl)
   rw [Finset.mem_preimage] at hj
   exact ⟨j, hj⟩
+
+@[deprecated (since := "2025-05-23")] alias exists_not_mem_row := exists_notMem_row
 
 /-- Length of a row of a Young diagram -/
 def rowLen (μ : YoungDiagram) (i : ℕ) : ℕ :=
@@ -307,9 +311,11 @@ theorem mem_col_iff {μ : YoungDiagram} {j : ℕ} {c : ℕ × ℕ} : c ∈ μ.co
 
 theorem mk_mem_col_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.col j ↔ (i, j) ∈ μ := by simp [col]
 
-protected theorem exists_not_mem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
+protected theorem exists_notMem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
   convert μ.transpose.exists_not_mem_row j using 1
   simp
+
+@[deprecated (since := "2025-05-23")] alias exists_not_mem_col := exists_notMem_col
 
 /-- Length of a column of a Young diagram -/
 def colLen (μ : YoungDiagram) (j : ℕ) : ℕ :=

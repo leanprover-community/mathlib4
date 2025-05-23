@@ -82,7 +82,7 @@ theorem hitting_le {m : ι} (ω : Ω) : hitting u s n m ω ≤ m := by
     exact (csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter hj₁ hj₂)).trans hj₁.2
   · exact le_rfl
 
-theorem not_mem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂ : n ≤ k) :
+theorem notMem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   classical
   intro h
@@ -90,6 +90,8 @@ theorem not_mem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂
   refine not_le.2 hk₁ ?_
   simp_rw [hitting, if_pos hexists]
   exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_hitting := notMem_of_lt_hitting
 
 theorem hitting_eq_end_iff {m : ι} : hitting u s n m ω = m ↔
     (∃ j ∈ Set.Icc n m, u j ω ∈ s) → sInf (Set.Icc n m ∩ {i : ι | u i ω ∈ s}) = m := by

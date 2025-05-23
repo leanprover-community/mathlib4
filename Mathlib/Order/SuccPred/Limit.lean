@@ -285,24 +285,30 @@ theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c
 theorem IsSuccLimit.lt_iff_exists_lt (h : IsSuccLimit b) : a < b ↔ ∃ c < b, a < c :=
   h.isSuccPrelimit.lt_iff_exists_lt
 
-lemma _root_.IsLUB.isSuccPrelimit_of_not_mem {s : Set α} (hs : IsLUB s a) (ha : a ∉ s) :
+lemma _root_.IsLUB.isSuccPrelimit_of_notMem {s : Set α} (hs : IsLUB s a) (ha : a ∉ s) :
     IsSuccPrelimit a := by
   intro b hb
   obtain ⟨c, hc, hbc, hca⟩ := hs.exists_between hb.lt
   obtain rfl := (hb.ge_of_gt hbc).antisymm hca
   contradiction
 
+@[deprecated (since := "2025-05-23")]
+alias _root_.IsLUB.isSuccPrelimit_of_not_mem := _root_.IsLUB.isSuccPrelimit_of_notMem
+
 lemma _root_.IsLUB.mem_of_not_isSuccPrelimit {s : Set α} (hs : IsLUB s a) (ha : ¬IsSuccPrelimit a) :
     a ∈ s :=
   ha.imp_symm hs.isSuccPrelimit_of_not_mem
 
-lemma _root_.IsLUB.isSuccLimit_of_not_mem {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty)
+lemma _root_.IsLUB.isSuccLimit_of_notMem {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty)
     (ha : a ∉ s) : IsSuccLimit a := by
   refine ⟨?_, hs.isSuccPrelimit_of_not_mem ha⟩
   obtain ⟨b, hb⟩ := hs'
   obtain rfl | hb := (hs.1 hb).eq_or_lt
   · contradiction
   · exact hb.not_isMin
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.IsLUB.isSuccLimit_of_not_mem := _root_.IsLUB.isSuccLimit_of_notMem
 
 lemma _root_.IsLUB.mem_of_not_isSuccLimit {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty)
     (ha : ¬IsSuccLimit a) : a ∈ s :=
@@ -578,17 +584,23 @@ theorem IsPredPrelimit.lt_iff_exists_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c
 theorem IsPredLimit.lt_iff_exists_lt (h : IsPredLimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
   h.dual.lt_iff_exists_lt
 
-lemma _root_.IsGLB.isPredPrelimit_of_not_mem {s : Set α} (hs : IsGLB s a) (ha : a ∉ s) :
+lemma _root_.IsGLB.isPredPrelimit_of_notMem {s : Set α} (hs : IsGLB s a) (ha : a ∉ s) :
     IsPredPrelimit a := by
   simpa using (IsGLB.dual hs).isSuccPrelimit_of_not_mem ha
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.IsGLB.isPredPrelimit_of_not_mem := _root_.IsGLB.isPredPrelimit_of_notMem
 
 lemma _root_.IsGLB.mem_of_not_isPredPrelimit {s : Set α} (hs : IsGLB s a) (ha : ¬IsPredPrelimit a) :
     a ∈ s :=
   ha.imp_symm hs.isPredPrelimit_of_not_mem
 
-lemma _root_.IsGLB.isPredLimit_of_not_mem {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
+lemma _root_.IsGLB.isPredLimit_of_notMem {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
     (ha : a ∉ s) : IsPredLimit a := by
   simpa using (IsGLB.dual hs).isSuccLimit_of_not_mem hs' ha
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.IsGLB.isPredLimit_of_not_mem := _root_.IsGLB.isPredLimit_of_notMem
 
 lemma _root_.IsGLB.mem_of_not_isPredLimit {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
     (ha : ¬IsPredLimit a) : a ∈ s :=

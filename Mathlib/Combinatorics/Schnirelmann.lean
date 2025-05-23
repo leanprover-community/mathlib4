@@ -88,7 +88,7 @@ lemma schnirelmannDensity_le_one : schnirelmannDensity A ≤ 1 :=
 /--
 If `k` is omitted from the set, its Schnirelmann density is upper bounded by `1 - k⁻¹`.
 -/
-lemma schnirelmannDensity_le_of_not_mem {k : ℕ} (hk : k ∉ A) :
+lemma schnirelmannDensity_le_of_notMem {k : ℕ} (hk : k ∉ A) :
     schnirelmannDensity A ≤ 1 - (k⁻¹ : ℝ) := by
   rcases k.eq_zero_or_pos with rfl | hk'
   · simpa using schnirelmannDensity_le_one
@@ -100,9 +100,15 @@ lemma schnirelmannDensity_le_of_not_mem {k : ℕ} (hk : k ∉ A) :
   rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
   exact filter_subset _ _
 
+@[deprecated (since := "2025-05-23")]
+alias schnirelmannDensity_le_of_not_mem := schnirelmannDensity_le_of_notMem
+
 /-- The Schnirelmann density of a set not containing `1` is `0`. -/
-lemma schnirelmannDensity_eq_zero_of_one_not_mem (h : 1 ∉ A) : schnirelmannDensity A = 0 :=
+lemma schnirelmannDensity_eq_zero_of_one_notMem (h : 1 ∉ A) : schnirelmannDensity A = 0 :=
   ((schnirelmannDensity_le_of_not_mem h).trans (by simp)).antisymm schnirelmannDensity_nonneg
+
+@[deprecated (since := "2025-05-23")]
+alias schnirelmannDensity_eq_zero_of_one_not_mem := schnirelmannDensity_eq_zero_of_one_notMem
 
 /-- The Schnirelmann density is increasing with the set. -/
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :

@@ -679,7 +679,9 @@ instance decidableMemIncidenceSet [DecidableEq V] [DecidableRel G.Adj] (v : V) :
 theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
   Iff.rfl
 
-lemma not_mem_neighborSet_self : a ∉ G.neighborSet a := by simp
+lemma notMem_neighborSet_self : a ∉ G.neighborSet a := by simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_neighborSet_self := notMem_neighborSet_self
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
@@ -738,11 +740,17 @@ theorem mem_commonNeighbors {u v w : V} : u ∈ G.commonNeighbors v w ↔ G.Adj 
 theorem commonNeighbors_symm (v w : V) : G.commonNeighbors v w = G.commonNeighbors w v :=
   Set.inter_comm _ _
 
-theorem not_mem_commonNeighbors_left (v w : V) : v ∉ G.commonNeighbors v w := fun h =>
+theorem notMem_commonNeighbors_left (v w : V) : v ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.1 rfl
 
-theorem not_mem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w := fun h =>
+@[deprecated (since := "2025-05-23")]
+alias not_mem_commonNeighbors_left := notMem_commonNeighbors_left
+
+theorem notMem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.2 rfl
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_commonNeighbors_right := notMem_commonNeighbors_right
 
 theorem commonNeighbors_subset_neighborSet_left (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet v :=

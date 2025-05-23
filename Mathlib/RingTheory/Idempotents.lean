@@ -69,10 +69,13 @@ lemma OrthogonalIdempotents.mul_sum_of_mem (he : OrthogonalIdempotents e)
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
 
-lemma OrthogonalIdempotents.mul_sum_of_not_mem (he : OrthogonalIdempotents e)
+lemma OrthogonalIdempotents.mul_sum_of_notMem (he : OrthogonalIdempotents e)
     {i : I} {s : Finset I} (h : i ∉ s) : e i * ∑ j ∈ s, e j = 0 := by
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
+
+@[deprecated (since := "2025-05-23")]
+alias OrthogonalIdempotents.mul_sum_of_not_mem := OrthogonalIdempotents.mul_sum_of_notMem
 
 lemma OrthogonalIdempotents.map (he : OrthogonalIdempotents e) :
     OrthogonalIdempotents (f ∘ e) := by

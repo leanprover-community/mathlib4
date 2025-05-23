@@ -74,10 +74,13 @@ theorem powerset_eq_singleton_empty : s.powerset = {∅} ↔ s = ∅ := by
 theorem card_powerset (s : Finset α) : card (powerset s) = 2 ^ card s :=
   (card_pmap _ _ _).trans (Multiset.card_powerset s.1)
 
-theorem not_mem_of_mem_powerset_of_not_mem {s t : Finset α} {a : α} (ht : t ∈ s.powerset)
+theorem notMem_of_mem_powerset_of_notMem {s t : Finset α} {a : α} (ht : t ∈ s.powerset)
     (h : a ∉ s) : a ∉ t := by
   apply mt _ h
   apply mem_powerset.1 ht
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_of_mem_powerset_of_not_mem := notMem_of_mem_powerset_of_notMem
 
 theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
     powerset (insert a s) = s.powerset ∪ s.powerset.image (insert a) := by

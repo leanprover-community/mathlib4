@@ -415,8 +415,10 @@ theorem ofSubtype_apply_of_mem (f : Perm (Subtype p)) (ha : p a) : ofSubtype f a
 theorem ofSubtype_apply_coe (f : Perm (Subtype p)) (x : Subtype p) : ofSubtype f x = f x :=
   Subtype.casesOn x fun _ => ofSubtype_apply_of_mem f
 
-theorem ofSubtype_apply_of_not_mem (f : Perm (Subtype p)) (ha : ¬p a) : ofSubtype f a = a :=
+theorem ofSubtype_apply_of_notMem (f : Perm (Subtype p)) (ha : ¬p a) : ofSubtype f a = a :=
   extendDomain_apply_not_subtype _ _ ha
+
+@[deprecated (since := "2025-05-23")] alias ofSubtype_apply_of_not_mem := ofSubtype_apply_of_notMem
 
 theorem ofSubtype_apply_mem_iff_mem (f : Perm (Subtype p)) (x : α) :
     p ((ofSubtype f : α → α) x) ↔ p x :=
@@ -441,10 +443,13 @@ theorem ofSubtype_subtypePerm_of_mem {p : α → Prop} [DecidablePred p]
     {a : α} (ha : p a) : (ofSubtype (g.subtypePerm hg)) a = g a :=
   ofSubtype_apply_of_mem (g.subtypePerm hg) ha
 
-theorem ofSubtype_subtypePerm_of_not_mem {p : α → Prop} [DecidablePred p]
+theorem ofSubtype_subtypePerm_of_notMem {p : α → Prop} [DecidablePred p]
     {g : Perm α} (hg : ∀ (x : α), p (g x) ↔ p x)
     {a : α} (ha : ¬ p a) : (ofSubtype (g.subtypePerm hg)) a = a :=
   ofSubtype_apply_of_not_mem (g.subtypePerm hg) ha
+
+@[deprecated (since := "2025-05-23")]
+alias ofSubtype_subtypePerm_of_not_mem := ofSubtype_subtypePerm_of_notMem
 
 /-- Permutations on a subtype are equivalent to permutations on the original type that fix pointwise
 the rest. -/
@@ -464,9 +469,12 @@ theorem subtypeEquivSubtypePerm_apply_of_mem (f : Perm (Subtype p)) (h : p a) :
     (Perm.subtypeEquivSubtypePerm p f).1 a = f ⟨a, h⟩ :=
   f.ofSubtype_apply_of_mem h
 
-theorem subtypeEquivSubtypePerm_apply_of_not_mem (f : Perm (Subtype p)) (h : ¬p a) :
+theorem subtypeEquivSubtypePerm_apply_of_notMem (f : Perm (Subtype p)) (h : ¬p a) :
     ((Perm.subtypeEquivSubtypePerm p) f).1 a = a :=
   f.ofSubtype_apply_of_not_mem h
+
+@[deprecated (since := "2025-05-23")]
+alias subtypeEquivSubtypePerm_apply_of_not_mem := subtypeEquivSubtypePerm_apply_of_notMem
 
 end Subtype
 

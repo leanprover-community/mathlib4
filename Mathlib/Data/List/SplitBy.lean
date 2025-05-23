@@ -51,7 +51,7 @@ theorem flatten_splitBy (r : α → α → Bool) (l : List α) : (l.splitBy r).f
   | nil => rfl
   | cons _ _ => flatten_splitByLoop
 
-private theorem nil_not_mem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
+private theorem nil_notMem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
     [] ∉ splitBy.loop r l a g [] := by
   induction l generalizing a g with
   | nil =>
@@ -63,10 +63,14 @@ private theorem nil_not_mem_splitByLoop {r : α → α → Bool} {l : List α} {
     · rw [splitByLoop_eq_append, mem_append]
       simpa using IH
 
-theorem nil_not_mem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.splitBy r :=
+@[deprecated (since := "2025-05-23")] alias nil_not_mem_splitByLoop := nil_notMem_splitByLoop
+
+theorem nil_notMem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.splitBy r :=
   match l with
   | nil => not_mem_nil
   | cons _ _ => nil_not_mem_splitByLoop
+
+@[deprecated (since := "2025-05-23")] alias nil_not_mem_splitBy := nil_notMem_splitBy
 
 theorem ne_nil_of_mem_splitBy (r : α → α → Bool) {l : List α} (h : m ∈ l.splitBy r) : m ≠ [] := by
   rintro rfl

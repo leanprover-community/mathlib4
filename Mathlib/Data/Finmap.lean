@@ -201,8 +201,10 @@ theorem empty_toFinmap : (⟦∅⟧ : Finmap β) = ∅ :=
 theorem toFinmap_nil [DecidableEq α] : ([].toFinmap : Finmap β) = ∅ :=
   rfl
 
-theorem not_mem_empty {a : α} : a ∉ (∅ : Finmap β) :=
+theorem notMem_empty {a : α} : a ∉ (∅ : Finmap β) :=
   Multiset.not_mem_zero a
+
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem keys_empty : (∅ : Finmap β).keys = ∅ :=
@@ -385,10 +387,12 @@ theorem keys_erase (a : α) (s : Finmap β) : (erase a s).keys = s.keys.erase a 
 theorem mem_erase {a a' : α} {s : Finmap β} : a' ∈ erase a s ↔ a' ≠ a ∧ a' ∈ s :=
   induction_on s fun s => by simp
 
-theorem not_mem_erase_self {a : α} {s : Finmap β} : ¬a ∈ erase a s := by
+theorem notMem_erase_self {a : α} {s : Finmap β} : ¬a ∈ erase a s := by
   rw [mem_erase, not_and_or, not_not]
   left
   rfl
+
+@[deprecated (since := "2025-05-23")] alias not_mem_erase_self := notMem_erase_self
 
 @[simp]
 theorem lookup_erase (a) (s : Finmap β) : lookup a (erase a s) = none :=
@@ -424,10 +428,12 @@ theorem insert_toFinmap (a : α) (b : β a) (s : AList β) :
     insert a b (AList.toFinmap s) = AList.toFinmap (s.insert a b) := by
   simp [insert]
 
-theorem entries_insert_of_not_mem {a : α} {b : β a} {s : Finmap β} :
+theorem entries_insert_of_notMem {a : α} {b : β a} {s : Finmap β} :
     a ∉ s → (insert a b s).entries = ⟨a, b⟩ ::ₘ s.entries :=
   induction_on s fun s h => by
     simp [AList.entries_insert_of_not_mem (mt mem_toFinmap.1 h), -entries_insert]
+
+@[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
 
 @[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
 

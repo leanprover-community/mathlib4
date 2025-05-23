@@ -122,9 +122,11 @@ def truncatedSup (s : Finset α) (a : α) : α :=
 lemma truncatedSup_of_mem (h : a ∈ lowerClosure s) :
     truncatedSup s a = {b ∈ s | a ≤ b}.sup' (sup_aux h) id := dif_pos h
 
-lemma truncatedSup_of_not_mem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dif_neg h
+lemma truncatedSup_of_notMem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dif_neg h
 
-@[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_not_mem (by simp)
+@[deprecated (since := "2025-05-23")] alias truncatedSup_of_not_mem := truncatedSup_of_notMem
+
+@[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_notMem (by simp)
 
 @[simp] lemma truncatedSup_singleton (b a : α) : truncatedSup {b} a = if a ≤ b then b else ⊤ := by
   simp [truncatedSup]; split_ifs <;> simp [Finset.filter_true_of_mem, *]
@@ -167,8 +169,11 @@ lemma truncatedSup_union_left (hs : a ∈ lowerClosure s) (ht : a ∉ lowerClosu
 lemma truncatedSup_union_right (hs : a ∉ lowerClosure s) (ht : a ∈ lowerClosure t) :
     truncatedSup (s ∪ t) a = truncatedSup t a := by rw [union_comm, truncatedSup_union_left ht hs]
 
-lemma truncatedSup_union_of_not_mem (hs : a ∉ lowerClosure s) (ht : a ∉ lowerClosure t) :
+lemma truncatedSup_union_of_notMem (hs : a ∉ lowerClosure s) (ht : a ∉ lowerClosure t) :
     truncatedSup (s ∪ t) a = ⊤ := truncatedSup_of_not_mem fun h ↦ (lower_aux.1 h).elim hs ht
+
+@[deprecated (since := "2025-05-23")]
+alias truncatedSup_union_of_not_mem := truncatedSup_union_of_notMem
 
 end SemilatticeSup
 
@@ -192,7 +197,9 @@ def truncatedInf (s : Finset α) (a : α) : α :=
 lemma truncatedInf_of_mem (h : a ∈ upperClosure s) :
     truncatedInf s a = {b ∈ s | b ≤ a}.inf' (inf_aux h) id := dif_pos h
 
-lemma truncatedInf_of_not_mem (h : a ∉ upperClosure s) : truncatedInf s a = ⊥ := dif_neg h
+lemma truncatedInf_of_notMem (h : a ∉ upperClosure s) : truncatedInf s a = ⊥ := dif_neg h
+
+@[deprecated (since := "2025-05-23")] alias truncatedInf_of_not_mem := truncatedInf_of_notMem
 
 lemma truncatedInf_le : truncatedInf s a ≤ a := by
   unfold truncatedInf
@@ -201,7 +208,7 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
     exact hba.trans' <| inf'_le id <| mem_filter.2 ⟨hb, ‹_›⟩
   · exact bot_le
 
-@[simp] lemma truncatedInf_empty (a : α) : truncatedInf ∅ a = ⊥ := truncatedInf_of_not_mem (by simp)
+@[simp] lemma truncatedInf_empty (a : α) : truncatedInf ∅ a = ⊥ := truncatedInf_of_notMem (by simp)
 
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
   simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
@@ -240,9 +247,12 @@ lemma truncatedInf_union_right (hs : a ∉ upperClosure s) (ht : a ∈ upperClos
     truncatedInf (s ∪ t) a = truncatedInf t a := by
   rw [union_comm, truncatedInf_union_left ht hs]
 
-lemma truncatedInf_union_of_not_mem (hs : a ∉ upperClosure s) (ht : a ∉ upperClosure t) :
+lemma truncatedInf_union_of_notMem (hs : a ∉ upperClosure s) (ht : a ∉ upperClosure t) :
     truncatedInf (s ∪ t) a = ⊥ :=
   truncatedInf_of_not_mem <| by rw [coe_union, upperClosure_union]; exact fun h ↦ h.elim hs ht
+
+@[deprecated (since := "2025-05-23")]
+alias truncatedInf_union_of_not_mem := truncatedInf_union_of_notMem
 
 end SemilatticeInf
 
@@ -271,13 +281,19 @@ lemma truncatedInf_sups (hs : a ∈ upperClosure s) (ht : a ∈ upperClosure t) 
   rw [inf'_image]
   simp [Function.uncurry_def]
 
-lemma truncatedSup_infs_of_not_mem (ha : a ∉ lowerClosure s ⊓ lowerClosure t) :
+lemma truncatedSup_infs_of_notMem (ha : a ∉ lowerClosure s ⊓ lowerClosure t) :
     truncatedSup (s ⊼ t) a = ⊤ :=
   truncatedSup_of_not_mem <| by rwa [coe_infs, lowerClosure_infs]
 
-lemma truncatedInf_sups_of_not_mem (ha : a ∉ upperClosure s ⊔ upperClosure t) :
+@[deprecated (since := "2025-05-23")]
+alias truncatedSup_infs_of_not_mem := truncatedSup_infs_of_notMem
+
+lemma truncatedInf_sups_of_notMem (ha : a ∉ upperClosure s ⊔ upperClosure t) :
     truncatedInf (s ⊻ t) a = ⊥ :=
   truncatedInf_of_not_mem <| by rwa [coe_sups, upperClosure_sups]
+
+@[deprecated (since := "2025-05-23")]
+alias truncatedInf_sups_of_not_mem := truncatedInf_sups_of_notMem
 
 end DistribLattice
 

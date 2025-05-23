@@ -40,8 +40,10 @@ theorem mem_neLocus {f g : α →₀ N} {a : α} : a ∈ f.neLocus g ↔ f a ≠
   simpa only [neLocus, Finset.mem_filter, Finset.mem_union, mem_support_iff,
     and_iff_right_iff_imp] using Ne.ne_or_ne _
 
-theorem not_mem_neLocus {f g : α →₀ N} {a : α} : a ∉ f.neLocus g ↔ f a = g a :=
+theorem notMem_neLocus {f g : α →₀ N} {a : α} : a ∉ f.neLocus g ↔ f a = g a :=
   mem_neLocus.not.trans not_ne_iff
+
+@[deprecated (since := "2025-05-23")] alias not_mem_neLocus := notMem_neLocus
 
 @[simp]
 theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } := by

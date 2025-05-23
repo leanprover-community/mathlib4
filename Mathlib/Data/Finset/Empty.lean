@@ -93,11 +93,13 @@ theorem empty_val : (∅ : Finset α).1 = 0 :=
   rfl
 
 @[simp]
-theorem not_mem_empty (a : α) : a ∉ (∅ : Finset α) := by
+theorem notMem_empty (a : α) : a ∉ (∅ : Finset α) := by
   simp only [mem_def, empty_val, not_mem_zero, not_false_iff]
 
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
+
 @[simp]
-theorem not_nonempty_empty : ¬(∅ : Finset α).Nonempty := fun ⟨x, hx⟩ => not_mem_empty x hx
+theorem not_nonempty_empty : ¬(∅ : Finset α).Nonempty := fun ⟨x, hx⟩ => notMem_empty x hx
 
 @[simp]
 theorem mk_zero : (⟨0, nodup_zero⟩ : Finset α) = ∅ :=
@@ -113,11 +115,16 @@ theorem Nonempty.ne_empty {s : Finset α} (h : s.Nonempty) : s ≠ ∅ :=
 theorem empty_subset (s : Finset α) : ∅ ⊆ s :=
   zero_subset _
 
-theorem eq_empty_of_forall_not_mem {s : Finset α} (H : ∀ x, x ∉ s) : s = ∅ :=
+theorem eq_empty_of_forall_notMem {s : Finset α} (H : ∀ x, x ∉ s) : s = ∅ :=
   eq_of_veq (eq_zero_of_forall_not_mem H)
 
-theorem eq_empty_iff_forall_not_mem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s :=
+@[deprecated (since := "2025-05-23")] alias eq_empty_of_forall_not_mem := eq_empty_of_forall_notMem
+
+theorem eq_empty_iff_forall_notMem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s :=
   ⟨by rintro rfl x; apply not_mem_empty, fun h => eq_empty_of_forall_not_mem h⟩
+
+@[deprecated (since := "2025-05-23")]
+alias eq_empty_iff_forall_not_mem := eq_empty_iff_forall_notMem
 
 @[simp]
 theorem val_eq_zero {s : Finset α} : s.1 = 0 ↔ s = ∅ :=

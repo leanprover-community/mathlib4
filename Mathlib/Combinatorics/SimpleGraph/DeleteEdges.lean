@@ -122,11 +122,14 @@ theorem support_deleteIncidenceSet_subset (G : SimpleGraph V) (x : V) :
 
 /-- If the vertex `x` is not in the set `s`, then the induced subgraph in `G.deleteIncidenceSet x`
 by `s` is equal to the induced subgraph in `G` by `s`. -/
-theorem induce_deleteIncidenceSet_of_not_mem (G : SimpleGraph V) {s : Set V} {x : V} (h : x ∉ s) :
+theorem induce_deleteIncidenceSet_of_notMem (G : SimpleGraph V) {s : Set V} {x : V} (h : x ∉ s) :
     (G.deleteIncidenceSet x).induce s = G.induce s := by
   ext v₁ v₂
   simp_rw [comap_adj, Function.Embedding.coe_subtype, deleteIncidenceSet_adj, and_iff_left_iff_imp]
   exact fun _ ↦ ⟨v₁.prop.ne_of_not_mem h, v₂.prop.ne_of_not_mem h⟩
+
+@[deprecated (since := "2025-05-23")]
+alias induce_deleteIncidenceSet_of_not_mem := induce_deleteIncidenceSet_of_notMem
 
 variable [Fintype V] [DecidableEq V]
 

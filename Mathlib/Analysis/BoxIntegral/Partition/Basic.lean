@@ -149,8 +149,10 @@ theorem mem_top : J ∈ (⊤ : Prepartition I) ↔ J = I :=
 theorem top_boxes : (⊤ : Prepartition I).boxes = {I} := rfl
 
 @[simp]
-theorem not_mem_bot : J ∉ (⊥ : Prepartition I) :=
+theorem notMem_bot : J ∉ (⊥ : Prepartition I) :=
   Finset.not_mem_empty _
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ := rfl

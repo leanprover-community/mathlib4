@@ -417,10 +417,13 @@ theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∈ v.adicCompletionIntegers K ↔ Valued.v x ≤ 1 :=
   Iff.rfl
 
-theorem not_mem_adicCompletionIntegers {x : v.adicCompletion K} :
+theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
   rw [not_congr <| mem_adicCompletionIntegers R K v]
   exact not_le
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_adicCompletionIntegers := notMem_adicCompletionIntegers
 
 section AlgebraInstances
 

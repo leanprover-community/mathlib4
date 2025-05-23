@@ -91,8 +91,10 @@ lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty 
   nonempty_iff_ne_empty.2 fun hP ↦ by simp [← P.sSup_eq, hP, sSup_empty] at hs
 
 @[simp]
-lemma bot_not_mem (P : Partition s) : ⊥ ∉ P :=
+lemma bot_notMem (P : Partition s) : ⊥ ∉ P :=
   P.bot_not_mem'
+
+@[deprecated (since := "2025-05-23")] alias bot_not_mem := bot_notMem
 
 lemma ne_bot_of_mem (hx : x ∈ P) : x ≠ ⊥ :=
   fun h ↦ P.bot_not_mem <| h ▸ hx

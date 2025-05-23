@@ -673,8 +673,10 @@ instance : Nonempty (⊤ : AffineSubspace k P) := inferInstanceAs (Nonempty (⊤
 variable {P}
 
 /-- No points are in `⊥`. -/
-theorem not_mem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
+theorem notMem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
   Set.not_mem_empty p
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 instance isEmpty_bot : IsEmpty (⊥ : AffineSubspace k P) :=
   Subtype.isEmpty_of_false fun _ ↦ not_mem_bot _ _ _
