@@ -1,1 +1,1 @@
-def someTrailingWhitespace := 1         
+def someTrailingWhitespace := 1
