@@ -132,7 +132,7 @@ lemma Finset.norm_prod_one_add_sub_one_le (t : Finset ι) (f : ι → R) :
   classical
   induction t using Finset.induction_on with
   | empty => simp
-  | @insert x t hx IH =>
+  | insert x t hx IH =>
     rw [Finset.prod_insert hx, Finset.sum_insert hx, Real.exp_add,
       show (1 + f x) * ∏ i ∈ t, (1 + f i) - 1 =
         (∏ i ∈ t, (1 + f i) - 1) + f x * ∏ x ∈ t, (1 + f x) by ring]

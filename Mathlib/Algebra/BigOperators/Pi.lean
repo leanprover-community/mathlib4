@@ -198,7 +198,7 @@ lemma Pi.single_induction [AddCommMonoid M] (p : (ι → M) → Prop) (f : ι �
   rw [← Finset.univ_sum_single f]
   exact Finset.sum_induction _ _ add zero (by simp [single])
 
-@[to_additive (attr := elab_as_elim) existing]
+@[to_additive existing (attr := elab_as_elim)]
 lemma Pi.mulSingle_induction [CommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
     (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
     (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by

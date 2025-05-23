@@ -27,9 +27,9 @@ coefficients.
 * `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
   that of `n!`.
 * `Nat.Prime.multiplicity_choose`: Kummer's Theorem. The multiplicity of `p` in `n.choose k` is the
-   number of carries when `k` and `n - k` are added in base `p`. See `padicValNat_choose` for the
-   same result but stated in the language of `p`-adic valuations and
-   `sub_one_mul_padicValNat_choose_eq_sub_sum_digits` for a related result.
+  number of carries when `k` and `n - k` are added in base `p`. See `padicValNat_choose` for the
+  same result but stated in the language of `p`-adic valuations and
+  `sub_one_mul_padicValNat_choose_eq_sub_sum_digits` for a related result.
 
 ## Other declarations
 
@@ -118,9 +118,9 @@ theorem emultiplicity_factorial {p : ℕ} (hp : p.Prime) :
 
 /-- For a prime number `p`, taking `(p - 1)` times the multiplicity of `p` in `n!` equals `n` minus
 the sum of base `p` digits of `n`. -/
- theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
-     (p - 1) * multiplicity p n ! =
-     n - (p.digits n).sum := by
+theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
+    (p - 1) * multiplicity p n ! =
+    n - (p.digits n).sum := by
   simp only [multiplicity_eq_of_emultiplicity_eq_some <|
       emultiplicity_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range, ←
@@ -141,7 +141,7 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   revert hm
   have h4 : ∀ m ∈ Ico (p * n + 1) (p * (n + 1)), emultiplicity p m = 0 := by
     intro m hm
-    rw [emultiplicity_eq_zero, ← not_dvd_iff_between_consec_multiples _ hp.pos]
+    rw [emultiplicity_eq_zero, not_dvd_iff_between_consec_multiples _ hp.pos]
     rw [mem_Ico] at hm
     exact ⟨n, lt_of_succ_le hm.1, hm.2⟩
   simp_rw [← prod_Ico_id_eq_factorial, Finset.emultiplicity_prod hp', ← sum_Ico_consecutive _ h1 h3,

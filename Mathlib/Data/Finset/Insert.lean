@@ -487,14 +487,14 @@ theorem cons_induction {α : Type*} {motive : Finset α → Prop} (empty : motiv
 
 @[elab_as_elim]
 theorem cons_induction_on {α : Type*} {motive : Finset α → Prop} (s : Finset α) (empty : motive ∅)
-    (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), motive s → motive (cons a s h)) : motive s :=
+    (cons : ∀ (a : α) (s : Finset α) (h : a ∉ s), motive s → motive (cons a s h)) : motive s :=
   cons_induction empty cons s
 
 @[elab_as_elim]
 protected theorem induction {α : Type*} {motive : Finset α → Prop} [DecidableEq α]
     (empty : motive ∅)
-    (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → motive s → motive (insert a s)) : ∀ s, motive s :=
-  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert ha
+    (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : ∀ s, motive s :=
+  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert a s ha
 
 /-- To prove a proposition about an arbitrary `Finset α`,
 it suffices to prove it for the empty `Finset`,
@@ -504,7 +504,7 @@ then it holds for the `Finset` obtained by inserting a new element.
 @[elab_as_elim]
 protected theorem induction_on {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (s : Finset α)
     (empty : motive ∅)
-    (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → motive s → motive (insert a s)) : motive s :=
+    (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : motive s :=
   Finset.induction empty insert s
 
 /-- To prove a proposition about `S : Finset α`,
@@ -515,11 +515,11 @@ then it holds for the `Finset` obtained by inserting a new element of `S`.
 @[elab_as_elim]
 theorem induction_on' {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (S : Finset α)
     (empty : motive ∅)
-    (insert : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → motive s → motive (insert a s)) : motive S :=
+    (insert : ∀ (a s), a ∈ S → s ⊆ S → a ∉ s → motive s → motive (insert a s)) : motive S :=
   @Finset.induction_on α (fun T => T ⊆ S → motive T) _ S (fun _ => empty)
-    (fun _ _ has hqs hs =>
+    (fun a s has hqs hs =>
       let ⟨hS, sS⟩ := Finset.insert_subset_iff.1 hs
-      insert hS sS has (hqs sS))
+      insert a s hS sS has (hqs sS))
     (Finset.Subset.refl S)
 
 /-- To prove a proposition about a nonempty `s : Finset α`, it suffices to show it holds for all

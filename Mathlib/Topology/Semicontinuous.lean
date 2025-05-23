@@ -538,7 +538,7 @@ theorem lowerSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
   classical
     induction a using Finset.induction_on with
     | empty => exact lowerSemicontinuousWithinAt_const
-    | insert ia IH =>
+    | insert _ _ ia IH =>
       simp only [ia, Finset.sum_insert, not_false_iff]
       exact
         LowerSemicontinuousWithinAt.add (ha _ (Finset.mem_insert_self ..))

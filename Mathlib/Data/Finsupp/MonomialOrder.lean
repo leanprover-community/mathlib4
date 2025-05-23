@@ -98,11 +98,11 @@ lemma toSyn_strictMono : StrictMono (m.toSyn) := by
 
 /-- Given a monomial order, notation for the corresponding strict order relation on `σ →₀ ℕ` -/
 scoped
-notation:25 c " ≺[" m:25 "] " d:25 => (MonomialOrder.toSyn m c < MonomialOrder.toSyn m d)
+notation:50 c " ≺[" m:25 "] " d:50 => (MonomialOrder.toSyn m c < MonomialOrder.toSyn m d)
 
 /-- Given a monomial order, notation for the corresponding order relation on `σ →₀ ℕ` -/
 scoped
-notation:25 c " ≼[" m:25 "] " d:25 => (MonomialOrder.toSyn m c ≤ MonomialOrder.toSyn m d)
+notation:50 c " ≼[" m:25 "] " d:50 => (MonomialOrder.toSyn m c ≤ MonomialOrder.toSyn m d)
 
 end MonomialOrder
 

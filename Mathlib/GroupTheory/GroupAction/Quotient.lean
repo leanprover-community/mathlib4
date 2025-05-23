@@ -301,11 +301,8 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
     let f : Quotient (rightRel H) → orbitRel.Quotient H β :=
       fun a ↦ Quotient.liftOn' a (fun g ↦ ⟦g • b⟧) fun g₁ g₂ r ↦ by
         replace r := Setoid.symm' _ r
-        change (rightRel H).r _ _ at r
         rw [rightRel_eq] at r
-        simp only [Quotient.eq]
-        change g₁ • b ∈ orbit H (g₂ • b)
-        rw [mem_orbit_iff]
+        simp only [Quotient.eq, orbitRel_apply, mem_orbit_iff]
         exact ⟨⟨g₁ * g₂⁻¹, r⟩, by simp [mul_smul]⟩
     exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
       (Quotient.mk''_surjective.comp (MulAction.surjective_smul _ _)))
@@ -322,8 +319,7 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
     rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
-      simp only [← Quotient.eq,
-                 orbitRel.Quotient.subgroup_quotient_eq_iff] at h
+      simp only [← Quotient.eq, orbitRel.Quotient.subgroup_quotient_eq_iff] at h
       simp only [Quotient.eq] at h ⊢
       exact h
   invFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by

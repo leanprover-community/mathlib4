@@ -148,7 +148,7 @@ instance (priority := 100) strongRankCondition_of_orzechProperty
     apply OrzechProperty.injective_of_surjective_of_injective i f hi
       (Fin.castSucc_injective _).surjective_comp_right
     ext m
-    simp [f, update_apply, (Fin.castSucc_lt_last m).ne]
+    simp [f, update_apply]
   simpa using congr_fun h (Fin.last n)
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
@@ -192,6 +192,11 @@ theorem card_le_of_surjective' [RankCondition R] {α β : Type*} [Fintype α] [F
   exact
     card_le_of_surjective R ((P.toLinearMap.comp f).comp Q.toLinearMap)
       ((P.surjective.comp i).comp Q.surjective)
+
+theorem Module.Finite.exists_nat_not_surjective [RankCondition R] (M) [AddCommMonoid M] [Module R M]
+    [Module.Finite R M] : ∃ n : ℕ, ∀ f : M →ₗ[R] (Fin n → R), ¬Surjective f :=
+  have ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
+  ⟨n + 1, fun g hg ↦ by simpa using le_of_fin_surjective R (g ∘ₗ f) (hg.comp hf)⟩
 
 /-- By the universal property for free modules, any surjective map `(Fin n → R) →ₗ[R] (Fin m → R)`
 has an injective splitting `(Fin m → R) →ₗ[R] (Fin n → R)`

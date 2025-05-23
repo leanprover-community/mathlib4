@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!

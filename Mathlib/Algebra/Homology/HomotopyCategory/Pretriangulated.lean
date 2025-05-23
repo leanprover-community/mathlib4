@@ -544,7 +544,7 @@ end Pretriangulated
 
 variable [HasZeroObject C]
 
-instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
+noncomputable instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
   distinguishedTriangles := Pretriangulated.distinguishedTriangles C
   isomorphic_distinguished := Pretriangulated.isomorphic_distinguished
   contractible_distinguished := Pretriangulated.contractible_distinguished

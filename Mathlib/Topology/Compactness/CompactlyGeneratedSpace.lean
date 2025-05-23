@@ -267,9 +267,9 @@ theorem CompactlyGeneratedSpace.isClosed' [CompactlyGeneratedSpace X] {s : Set X
 closed for every compact set `K`. -/
 theorem CompactlyGeneratedSpace.isClosed [CompactlyGeneratedSpace X] {s : Set X}
     (hs : ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) : IsClosed s := by
-   refine isClosed' fun K _ _ _ f hf ↦ ?_
-   rw [← Set.preimage_inter_range]
-   exact (hs (isCompact_range hf)).preimage hf
+  refine isClosed' fun K _ _ _ f hf ↦ ?_
+  rw [← Set.preimage_inter_range]
+  exact (hs (isCompact_range hf)).preimage hf
 
 /-- A topological space `X` is compactly generated if a set `s` is open when `f ⁻¹' s` is
 open for every continuous map `f : K → X`, where `K` is compact Hausdorff. -/
@@ -290,9 +290,9 @@ theorem CompactlyGeneratedSpace.isOpen' [CompactlyGeneratedSpace X] {s : Set X}
 closed for every open set `K`. -/
 theorem CompactlyGeneratedSpace.isOpen [CompactlyGeneratedSpace X] {s : Set X}
     (hs : ∀ ⦃K⦄, IsCompact K → IsOpen (s ∩ K)) : IsOpen s := by
-   refine isOpen' fun K _ _ _ f hf ↦ ?_
-   rw [← Set.preimage_inter_range]
-   exact (hs (isCompact_range hf)).preimage hf
+  refine isOpen' fun K _ _ _ f hf ↦ ?_
+  rw [← Set.preimage_inter_range]
+  exact (hs (isCompact_range hf)).preimage hf
 
 /-- If the topology of `X` is coinduced by a continuous function whose domain is
 compactly generated, then so is `X`. -/
