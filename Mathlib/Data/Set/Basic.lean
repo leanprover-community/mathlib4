@@ -321,7 +321,7 @@ theorem subset_iff : s₁ ⊆ s₂ ↔ ∀ ⦃a⦄, a ∈ s₁ → a ∈ s₂ :=
 theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
 
-theorem subset_iff_not_mem_subset : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
+theorem subset_iff_not_mem : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
   simp only [subset_iff, not_imp_not]
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
