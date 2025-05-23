@@ -77,9 +77,7 @@ section Monotonicity
 theorem log_strictMono : StrictMono log := by
   intro x y h
   unfold log
-  split_ifs <;> simp_all
-  guard_target =ₛ Real.log x.toReal < Real.log y.toReal
-  gcongr <;> simp_all [toReal_pos_iff, pos_iff_ne_zero, lt_top_iff_ne_top]
+  split_ifs <;> simp_all [Real.log_lt_log, toReal_pos_iff, pos_iff_ne_zero, lt_top_iff_ne_top]
 
 theorem log_monotone : Monotone log := log_strictMono.monotone
 
