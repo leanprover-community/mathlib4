@@ -460,7 +460,7 @@ section frobenius
 
 open scoped Matrix
 
-/-- Seminormed group instance (using frobenius norm) for matrices over a seminormed group. Not
+/-- Seminormed group instance (using the Frobenius norm) for matrices over a seminormed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -468,14 +468,14 @@ def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
   inferInstanceAs (SeminormedAddCommGroup (PiLp 2 fun _i : m => PiLp 2 fun _j : n => α))
 
-/-- Normed group instance (using frobenius norm) for matrices over a normed group.  Not
+/-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
 def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
   (by infer_instance : NormedAddCommGroup (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
 
-/-- This applies to the frobenius norm. -/
+/-- This applies to the Frobenius norm. -/
 @[local instance]
 theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
     [IsBoundedSMul R α] :
@@ -484,7 +484,7 @@ theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [M
 
 @[deprecated (since := "2025-03-10")] alias frobeniusBoundedSMul := frobeniusIsBoundedSMul
 
-/-- Normed space instance (using frobenius norm) for matrices over a normed space.  Not
+/-- Normed space instance (using the Frobenius norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -619,7 +619,7 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
 theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   frobenius_nnnorm_mul A B
 
-/-- Normed ring instance (using frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
+/-- Normed ring instance (using the Frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -629,7 +629,7 @@ def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
     norm_mul_le := frobenius_norm_mul
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-/-- Normed algebra instance (using frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
+/-- Normed algebra instance (using the Frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
