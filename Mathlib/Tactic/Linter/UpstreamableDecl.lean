@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Anne Baanen
 -/
 import ImportGraph.Imports
-import Mathlib.Tactic.MinImports
+import Mathlib.Init
 
 /-! # The `upstreamableDecl` linter
 
@@ -42,7 +42,7 @@ def Lean.Environment.localDefinitionDependencies (env : Environment) (stx id : S
   -- warning on the inductive itself but nothing on its downstream uses.
   -- (There does not seem to be an easy way to determine, given `Syntax` and `ConstInfo`,
   -- whether the `ConstInfo` is a constructor declared in this piece of `Syntax`.)
-  let defs := constInfos.filter (fun constInfo => !(constInfo.isTheorem || constInfo.isCtor))
+  let defs := constInfos.filter (fun constInfo => !(constInfo matches .thmInfo _ | .ctorInfo _))
 
   return defs.any fun constInfo => declName != constInfo.name && constInfo.name.isLocal env
 
@@ -99,7 +99,7 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
       -- Skip defs and private decls by default.
       let name ← getDeclName stx
       if (skipDef && if let some constInfo := env.find? name
-         then !(constInfo.isTheorem || constInfo.isCtor)
+         then !(constInfo matches .thmInfo _ | .ctorInfo _)
          else true) ||
        (skipPrivate && isPrivateName name) then
         return

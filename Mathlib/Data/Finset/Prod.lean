@@ -377,10 +377,8 @@ theorem offDiag_insert (has : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a
   rw [insert_eq, union_comm, offDiag_union (disjoint_singleton_right.2 has), offDiag_singleton,
     union_empty, union_right_comm]
 
-theorem offDiag_filter_lt_eq_filter_le {ι}
-    [PartialOrder ι] [DecidableEq ι]
-    [DecidableRel (LE.le (α := ι))] [DecidableRel (LT.lt (α := ι))]
-    (s : Finset ι) :
+theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι]
+    [DecidableEq ι] [DecidableLE ι] [DecidableLT ι] (s : Finset ι) :
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   rw [Finset.filter_inj']
   rintro ⟨i, j⟩

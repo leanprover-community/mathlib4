@@ -182,8 +182,6 @@ lemma IsProperMap.prodMap {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g
     rw [nhds_prod_eq, le_prod]
     exact ⟨hx, hz⟩
 
-@[deprecated (since := "2024-10-06")] alias IsProperMap.prod_map := IsProperMap.prodMap
-
 /-- Any product of proper maps is proper. -/
 lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsProperMap (f i)) :
@@ -276,22 +274,13 @@ protected lemma IsHomeomorph.isProperMap (hf : IsHomeomorph f) : IsProperMap f :
 lemma Topology.IsClosedEmbedding.isProperMap (hf : IsClosedEmbedding f) : IsProperMap f :=
   isProperMap_of_isClosedMap_of_inj hf.continuous hf.injective hf.isClosedMap
 
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_of_closedEmbedding := IsClosedEmbedding.isProperMap
-
 /-- The coercion from a closed subset is proper. -/
 lemma IsClosed.isProperMap_subtypeVal {C : Set X} (hC : IsClosed C) : IsProperMap ((↑) : C → X) :=
   hC.isClosedEmbedding_subtypeVal.isProperMap
 
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_subtype_val_of_closed := IsClosed.isProperMap_subtypeVal
-
 /-- The restriction of a proper map to a closed subset is proper. -/
 lemma IsProperMap.restrict {C : Set X} (hf : IsProperMap f) (hC : IsClosed C) :
     IsProperMap fun x : C ↦ f x := hC.isProperMap_subtypeVal.comp  hf
-
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_restr_of_proper_of_closed := IsProperMap.restrict
 
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
@@ -347,7 +336,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   -- `𝒰`, we get that the function `(f, pure) : X → (Y, Filter X)` tends to `(y, 𝒰)` along
   -- `𝒰`. Furthermore, each `(f, pure)(x) = (f × id)(x, pure x)` is clearly an element of
   -- the closed set `(f × id) '' F`, thus the limit `(y, 𝒰)` also belongs to that set.
-      this.mem_of_tendsto (hy.prod_mk_nhds (Filter.tendsto_pure_self (𝒰 : Filter X)))
+      this.mem_of_tendsto (hy.prodMk_nhds (Filter.tendsto_pure_self (𝒰 : Filter X)))
         (Eventually.of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
   -- The above shows that `(y, 𝒰) = (f x, 𝒰)`, for some `x : X` such that `(x, 𝒰) ∈ F`.
     rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩

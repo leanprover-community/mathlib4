@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
 import Mathlib.Data.Set.Order
-import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Interval.Set.Image
+import Mathlib.Order.Interval.Set.LinearOrder
 import Mathlib.Tactic.Common
 
 /-!
@@ -57,9 +58,17 @@ scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 
 open Interval
 
-@[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
+@[simp]
+lemma uIcc_toDual (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
   -- Note: needed to hint `(α := α)` after https://github.com/leanprover-community/mathlib4/pull/8386 (elaboration order?)
-  dual_Icc (α := α)
+  Icc_toDual (α := α)
+
+@[deprecated (since := "2025-03-20")]
+alias dual_uIcc := uIcc_toDual
+
+@[simp]
+theorem uIcc_ofDual (a b : αᵒᵈ) : [[ofDual a, ofDual b]] = toDual ⁻¹' [[a, b]] :=
+  Icc_ofDual
 
 @[simp]
 lemma uIcc_of_le (h : a ≤ b) : [[a, b]] = Icc a b := by rw [uIcc, inf_eq_left.2 h, sup_eq_right.2 h]
@@ -230,11 +239,12 @@ lemma monotoneOn_or_antitoneOn_iff_uIcc :
 /-- The open-closed uIcc with unordered bounds. -/
 def uIoc : α → α → Set α := fun a b => Ioc (min a b) (max a b)
 
--- Porting note: removed `scoped[uIcc]` temporarily before a workaround is found
 -- Below is a capital iota
 /-- `Ι a b` denotes the open-closed interval with unordered bounds. Here, `Ι` is a capital iota,
 distinguished from a capital `i`. -/
-notation "Ι" => Set.uIoc
+scoped[Interval] notation "Ι" => Set.uIoc
+
+open scoped Interval
 
 @[simp] lemma uIoc_of_le (h : a ≤ b) : Ι a b = Ioc a b := by simp [uIoc, h]
 @[simp] lemma uIoc_of_ge (h : b ≤ a) : Ι a b = Ioc b a := by simp [uIoc, h]
@@ -299,6 +309,13 @@ lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
 lemma uIoc_injective_left (a : α) : Injective (Ι a) := by
   simpa only [uIoc_comm] using uIoc_injective_right a
 
+lemma uIoc_union_uIoc (h : b ∈ [[a, c]]) : Ι a b ∪ Ι b c = Ι a c := by
+  wlog hac : a ≤ c generalizing a c
+  · rw [uIoc_comm, union_comm, uIoc_comm, this _ (le_of_not_le hac), uIoc_comm]
+    rwa [uIcc_comm]
+  rw [uIcc_of_le hac] at h
+  rw [uIoc_of_le h.1, uIoc_of_le h.2, uIoc_of_le hac, Ioc_union_Ioc_eq_Ioc h.1 h.2]
+
 section uIoo
 
 /-- `uIoo a b` is the set of elements lying between `a` and `b`, with `a` and `b` not included.
@@ -306,8 +323,16 @@ Note that we define it more generally in a lattice as `Set.Ioo (a ⊓ b) (a ⊔ 
 `uIoo` corresponds to the bounding box of the two elements. -/
 def uIoo (a b : α) : Set α := Ioo (a ⊓ b) (a ⊔ b)
 
-@[simp] lemma dual_uIoo (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
-  dual_Ioo (α := α)
+@[simp]
+lemma uIoo_toDual (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
+  Ioo_toDual (α := α)
+
+@[deprecated (since := "2025-03-20")]
+alias dual_uIoo := uIoo_toDual
+
+@[simp]
+theorem uIoo_ofDual (a b : αᵒᵈ) : uIoo (ofDual a) (ofDual b) = toDual ⁻¹' uIoo a b :=
+  Ioo_ofDual
 
 @[simp] lemma uIoo_of_le (h : a ≤ b) : uIoo a b = Ioo a b := by
   rw [uIoo, inf_eq_left.2 h, sup_eq_right.2 h]

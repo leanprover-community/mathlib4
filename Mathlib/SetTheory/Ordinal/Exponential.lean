@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Family
 
 /-! # Ordinal exponential
 
@@ -78,10 +78,10 @@ theorem opow_one (a : Ordinal) : a ^ (1 : Ordinal) = a := by
 @[simp]
 theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
   induction a using limitRecOn with
-  | H₁ => simp only [opow_zero]
-  | H₂ _ ih =>
+  | zero => simp only [opow_zero]
+  | succ _ ih =>
     simp only [opow_succ, ih, mul_one]
-  | H₃ b l IH =>
+  | isLimit b l IH =>
     refine eq_of_forall_ge_iff fun c => ?_
     rw [opow_le_of_limit Ordinal.one_ne_zero l]
     exact ⟨fun H => by simpa only [opow_zero] using H 0 l.pos, fun H b' h => by rwa [IH _ h]⟩
@@ -89,11 +89,11 @@ theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
 theorem opow_pos {a : Ordinal} (b : Ordinal) (a0 : 0 < a) : 0 < a ^ b := by
   have h0 : 0 < a ^ (0 : Ordinal) := by simp only [opow_zero, zero_lt_one]
   induction b using limitRecOn with
-  | H₁ => exact h0
-  | H₂ b IH =>
+  | zero => exact h0
+  | succ b IH =>
     rw [opow_succ]
     exact mul_pos IH a0
-  | H₃ b l _ =>
+  | isLimit b l _ =>
     exact (lt_opow_of_limit (Ordinal.pos_iff_ne_zero.1 a0) l).2 ⟨0, l.pos, h0⟩
 
 theorem opow_ne_zero {a : Ordinal} (b : Ordinal) (a0 : a ≠ 0) : a ^ b ≠ 0 :=
@@ -118,9 +118,6 @@ theorem isNormal_opow {a : Ordinal} (h : 1 < a) : IsNormal (a ^ ·) :=
   ⟨fun b => by simpa only [mul_one, opow_succ] using (mul_lt_mul_iff_left (opow_pos b a0)).2 h,
     fun _ l _ => opow_le_of_limit (ne_of_gt a0) l⟩
 
-@[deprecated isNormal_opow (since := "2024-10-11")]
-alias opow_isNormal := isNormal_opow
-
 theorem opow_lt_opow_iff_right {a b c : Ordinal} (a1 : 1 < a) : a ^ b < a ^ c ↔ b < c :=
   (isNormal_opow a1).lt_iff
 
@@ -133,18 +130,12 @@ theorem opow_right_inj {a b c : Ordinal} (a1 : 1 < a) : a ^ b = a ^ c ↔ b = c 
 theorem isLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsLimit b → IsLimit (a ^ b) :=
   (isNormal_opow a1).isLimit
 
-@[deprecated isLimit_opow (since := "2024-10-11")]
-alias opow_isLimit := isLimit_opow
-
 theorem isLimit_opow_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLimit (a ^ b) := by
   rcases zero_or_succ_or_limit b with (e | ⟨b, rfl⟩ | l')
   · exact absurd e hb
   · rw [opow_succ]
     exact isLimit_mul (opow_pos _ l.pos) l
   · exact isLimit_opow l.one_lt l'
-
-@[deprecated isLimit_opow_left (since := "2024-10-11")]
-alias opow_isLimit_left := isLimit_opow_left
 
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
   rcases lt_or_eq_of_le (one_le_iff_pos.2 h₁) with h₁ | h₁
@@ -162,10 +153,10 @@ theorem opow_le_opow_left {a b : Ordinal} (c : Ordinal) (ab : a ≤ b) : a ^ c �
       simp only [opow_zero, le_refl]
     · simp only [zero_opow c0, Ordinal.zero_le]
   · induction c using limitRecOn with
-    | H₁ => simp only [opow_zero, le_refl]
-    | H₂ c IH =>
+    | zero => simp only [opow_zero, le_refl]
+    | succ c IH =>
       simpa only [opow_succ] using mul_le_mul' IH ab
-    | H₃ c l IH =>
+    | isLimit c l IH =>
       exact
         (opow_le_of_limit a0 l).2 fun b' h =>
           (IH _ h).trans (opow_le_opow_right ((Ordinal.pos_iff_ne_zero.2 a0).trans_le ab) h.le)
@@ -205,10 +196,10 @@ theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
   rcases eq_or_lt_of_le (one_le_iff_ne_zero.2 a0) with (rfl | a1)
   · simp only [one_opow, mul_one]
   induction c using limitRecOn with
-  | H₁ => simp
-  | H₂ c IH =>
+  | zero => simp
+  | succ c IH =>
     rw [add_succ, opow_succ, IH, opow_succ, mul_assoc]
-  | H₃ c l IH =>
+  | isLimit c l IH =>
     refine
       eq_of_forall_ge_iff fun d =>
         (((isNormal_opow a1).trans (isNormal_add_right b)).limit_le l).trans ?_
@@ -242,10 +233,10 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
   · subst a1
     simp only [one_opow]
   induction c using limitRecOn with
-  | H₁ => simp only [mul_zero, opow_zero]
-  | H₂ c IH =>
+  | zero => simp only [mul_zero, opow_zero]
+  | succ c IH =>
     rw [mul_succ, opow_add, IH, opow_succ]
-  | H₃ c l IH =>
+  | isLimit c l IH =>
     refine
       eq_of_forall_ge_iff fun d =>
         (((isNormal_opow a1).trans (isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 b0))).limit_le
@@ -288,10 +279,6 @@ theorem log_def {b : Ordinal} (h : 1 < b) (x : Ordinal) : log b x = pred (sInf {
 
 theorem log_of_left_le_one {b : Ordinal} (h : b ≤ 1) (x : Ordinal) : log b x = 0 :=
   if_neg h.not_lt
-
-@[deprecated log_of_left_le_one (since := "2024-10-10")]
-theorem log_of_not_one_lt_left {b : Ordinal} (h : ¬1 < b) (x : Ordinal) : log b x = 0 := by
-  simp only [log, if_neg h]
 
 @[simp]
 theorem log_zero_left : ∀ b, log 0 b = 0 :=

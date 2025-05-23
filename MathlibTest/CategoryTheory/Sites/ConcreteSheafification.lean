@@ -21,11 +21,11 @@ end Small
 
 section Large
 
-variable {C : Type (u+1)} [LargeCategory C] (J : GrothendieckTopology C)
+variable {C : Type (u + 1)} [LargeCategory C] (J : GrothendieckTopology C)
 
 example : HasSheafify J (Type (u+1)) := inferInstance
 
-example (R : Type (u+1)) [Ring R] : HasSheafify J (ModuleCat.{u+1} R) := inferInstance
+example (R : Type (u + 1)) [Ring R] : HasSheafify J (ModuleCat.{u+1} R) := inferInstance
 
 variable [EssentiallySmall.{u} C]
 

@@ -19,38 +19,38 @@ file they could go to. This is unfortunate and should be fixed by reorganising f
 
 open scoped Int
 
-variable {α : Type*}
+variable {R : Type*}
 
-instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring α] :
-    DistribSMul α α where smul_add := mul_add
+instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :
+    DistribSMul R R where smul_add := mul_add
 
-/-- Note that `AddMonoid.nat_smulCommClass` requires stronger assumptions on `α`. -/
-instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring α] :
-    SMulCommClass ℕ α α where
+/-- Note that `AddMonoid.nat_smulCommClass` requires stronger assumptions on `R`. -/
+instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring R] :
+    SMulCommClass ℕ R R where
   smul_comm n x y := by
     induction n with
     | zero => simp [zero_nsmul]
     | succ n ih => simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]
 
-/-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `α`. -/
-instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring α] :
-    IsScalarTower ℕ α α where
+/-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `R`. -/
+instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring R] :
+    IsScalarTower ℕ R R where
   smul_assoc n x y := by
     induction n with
     | zero => simp [zero_nsmul]
     | succ n ih => simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
 
-/-- Note that `AddMonoid.int_smulCommClass` requires stronger assumptions on `α`. -/
-instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing α] :
-    SMulCommClass ℤ α α where
+/-- Note that `AddMonoid.int_smulCommClass` requires stronger assumptions on `R`. -/
+instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing R] :
+    SMulCommClass ℤ R R where
   smul_comm n x y :=
     match n with
     | (n : ℕ) => by simp_rw [natCast_zsmul, smul_comm]
     | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, mul_neg, mul_smul_comm]
 
-/-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `α`. -/
-instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing α] :
-    IsScalarTower ℤ α α where
+/-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `R`. -/
+instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] :
+    IsScalarTower ℤ R R where
   smul_assoc n x y :=
     match n with
     | (n : ℕ) => by simp_rw [natCast_zsmul, smul_assoc]

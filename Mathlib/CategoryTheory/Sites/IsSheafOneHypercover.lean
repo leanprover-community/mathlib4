@@ -89,8 +89,11 @@ noncomputable def lift : F.pt ⟶ P.obj (Opposite.op X) :=
   Multifork.IsLimit.lift (hP E hE).some
     (fun i => F.ι ⟨_, E.f i, le _ (Sieve.ofArrows_mk _ _ _)⟩)
     (fun ⟨⟨i₁, i₂⟩, j⟩ =>
-      F.condition (Cover.Relation.mk { hf := le _ (Sieve.ofArrows_mk _ _ i₁) }
-        { hf := le _ (Sieve.ofArrows_mk _ _ i₂) } { w := E.w j} ))
+      F.condition {
+        fst := { hf := le _ (Sieve.ofArrows_mk _ _ i₁), .. }
+        snd := { hf := le _ (Sieve.ofArrows_mk _ _ i₂), .. }
+        r := { w := E.w j, ..}
+      })
 
 @[reassoc]
 lemma fac' (i : E.I₀) :
@@ -105,8 +108,11 @@ lemma fac [H.IsGenerating] {Y : C} (f : Y ⟶ X) (hf : S f) :
   rintro ⟨T, a, b, ⟨i⟩, fac⟩
   rw [assoc, ← P.map_comp, ← op_comp, ← fac,
     op_comp, P.map_comp, fac'_assoc]
-  exact F.condition (Cover.Relation.mk { hf := le _ (Sieve.ofArrows_mk _ _ _) }
-    { hf := hf } { w := fac })
+  exact F.condition {
+    fst := { hf := le _ (Sieve.ofArrows_mk _ _ _), .. }
+    snd := { hf := hf, .. }
+    r := { w := fac, ..}
+  }
 
 end
 

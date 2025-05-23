@@ -67,7 +67,7 @@ instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSp
   isCompact_Icc := by
     intro a b
     convert isCompact_Icc (α := α) (a := b) (b := a) using 1
-    exact dual_Icc (α := α)
+    exact Icc_toDual (α := α)
 
 /-- A closed interval in a conditionally complete linear order is compact. -/
 instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (α : Type*)
@@ -524,14 +524,14 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
   intro x
   obtain ⟨y, hyK, h2y, hy⟩ :=
     hK.exists_sSup_image_eq_and_ge h0K
-      (show Continuous fun y => f x y from hf.comp <| Continuous.Prod.mk x).continuousOn
+      (show Continuous (f x) from hf.comp <| .prodMk_right x).continuousOn
   rw [ContinuousAt, h2y, tendsto_order]
   have := tendsto_order.mp ((show Continuous fun x => f x y
-    from hf.comp <| continuous_id.prod_mk continuous_const).tendsto x)
+    from hf.comp <| .prodMk_left _).tendsto x)
   refine ⟨fun z hz => ?_, fun z hz => ?_⟩
   · refine (this.1 z hz).mono fun x' hx' =>
       hx'.trans_le <| le_csSup ?_ <| mem_image_of_mem (f x') hyK
-    exact hK.bddAbove_image (hf.comp <| Continuous.Prod.mk x').continuousOn
+    exact hK.bddAbove_image (hf.comp <| .prodMk_right x').continuousOn
   · have h : ({x} : Set γ) ×ˢ K ⊆ ↿f ⁻¹' Iio z := by
       rintro ⟨x', y'⟩ ⟨(rfl : x' = x), hy'⟩
       exact (hy y' hy').trans_lt hz
@@ -539,7 +539,7 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
       generalized_tube_lemma isCompact_singleton hK (isOpen_Iio.preimage hf) h
     refine eventually_of_mem (hu.mem_nhds (singleton_subset_iff.mp hxu)) fun x' hx' => ?_
     rw [hK.sSup_lt_iff_of_continuous h0K
-        (show Continuous (f x') from hf.comp <| Continuous.Prod.mk x').continuousOn]
+        (show Continuous (f x') from hf.comp <| .prodMk_right x').continuousOn]
     exact fun y' hy' => huv (mk_mem_prod hx' (hKv hy'))
 
 theorem IsCompact.continuous_sInf {f : γ → β → α} {K : Set β} (hK : IsCompact K)

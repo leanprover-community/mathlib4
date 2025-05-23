@@ -185,6 +185,15 @@ theorem ae_eq_set_union {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t'
     (s ∪ s' : Set α) =ᵐ[μ] (t ∪ t' : Set α) :=
   h.union h'
 
+theorem ae_eq_set_diff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
+    s \ s' =ᵐ[μ] t \ t' :=
+  h.diff h'
+
+open scoped symmDiff in
+theorem ae_eq_set_symmDiff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
+    s ∆ s' =ᵐ[μ] t ∆ t' :=
+  h.symmDiff h'
+
 theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ :=
   (ae_eq_set_union h (ae_eq_refl t)).trans <| by rw [univ_union]
 

@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Perm.Lattice
 import Mathlib.Data.Multiset.Filter
 import Mathlib.Order.MinMax
+import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets
@@ -64,7 +65,7 @@ lemma mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
 lemma map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f) {s t : Multiset α} :
     map f (s ∪ t) = map f s ∪ map f t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ =>
-    congr_arg ofList (by rw [List.map_append f, List.map_diff finj])
+    congr_arg ofList (by rw [List.map_append, List.map_diff finj])
 
 @[simp] lemma zero_union : 0 ∪ s = s := by simp [union_def, Multiset.zero_sub]
 @[simp] lemma union_zero : s ∪ 0 = s := by simp [union_def]
@@ -104,11 +105,12 @@ lemma inter_le_left : s ∩ t ≤ s :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => (bagInter_sublist_left _ _).subperm
 
 lemma inter_le_right : s ∩ t ≤ t := by
-  induction' s using Multiset.induction_on with a s IH generalizing t
-  · exact (zero_inter t).symm ▸ zero_le _
-  by_cases h : a ∈ t
-  · simpa [h] using cons_le_cons a (IH (t := t.erase a))
-  · simp [h, IH]
+  induction s using Multiset.induction_on generalizing t with
+  | empty => exact (zero_inter t).symm ▸ zero_le _
+  | cons a s IH =>
+    by_cases h : a ∈ t
+    · simpa [h] using cons_le_cons a (IH (t := t.erase a))
+    · simp [h, IH]
 
 lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
   revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂

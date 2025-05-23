@@ -113,7 +113,8 @@ namespace OrderedFinpartition
 /-! ### Basic API for ordered finpartitions -/
 
 /-- The ordered finpartition of `Fin n` into singletons. -/
-@[simps] def atomic (n : ℕ) : OrderedFinpartition n where
+@[simps -fullyApplied]
+def atomic (n : ℕ) : OrderedFinpartition n where
   length := n
   partSize _ :=  1
   partSize_pos _ := _root_.zero_lt_one
@@ -126,6 +127,9 @@ namespace OrderedFinpartition
 variable {n : ℕ} (c : OrderedFinpartition n)
 
 instance : Inhabited (OrderedFinpartition n) := ⟨atomic n⟩
+
+@[simp]
+theorem default_eq : (default : OrderedFinpartition n) = atomic n := rfl
 
 lemma length_le : c.length ≤ n := by
   simpa only [Fintype.card_fin] using Fintype.card_le_of_injective _ c.parts_strictMono.injective
@@ -155,7 +159,7 @@ for a direct argument, embedding `OrderedPartition n` in a type which is obvious
 noncomputable instance : Fintype (OrderedFinpartition n) :=
   Fintype.ofInjective _ (injective_embSigma n)
 
-instance : Unique (OrderedFinpartition 0) := by
+instance instUniqueZero : Unique (OrderedFinpartition 0) := by
   have : Subsingleton (OrderedFinpartition 0) :=
     Fintype.card_le_one_iff_subsingleton.mp (Fintype.card_le_of_injective _ (injective_embSigma 0))
   exact Unique.mk' (OrderedFinpartition 0)
@@ -215,6 +219,16 @@ lemma neZero_partSize (c : OrderedFinpartition n) (i : Fin c.length) : NeZero (c
 
 attribute [local instance] neZero_length neZero_partSize
 
+instance instUniqueOne : Unique (OrderedFinpartition 1) where
+  uniq c := by
+    have h₁ : c.length = 1 := le_antisymm c.length_le (c.length_pos Nat.zero_lt_one)
+    have h₂ (i) : c.partSize i = 1 := le_antisymm (c.partSize_le _) (c.partSize_pos _)
+    have h₃ (i j) : c.emb i j = 0 := Subsingleton.elim _ _
+    rcases c with ⟨length, partSize, _, emb, _, _, _, _⟩
+    subst h₁
+    obtain rfl : partSize = fun _ ↦ 1 := funext h₂
+    simpa [OrderedFinpartition.ext_iff, funext_iff, Fin.forall_fin_one] using h₃ _ _
+
 lemma emb_zero [NeZero n] : c.emb (c.index 0) 0 = 0 := by
   apply le_antisymm _ (Fin.zero_le' _)
   conv_rhs => rw [← c.emb_invEmbedding 0]
@@ -269,6 +283,7 @@ called `OrderedFinPartition.extendEquiv`.
 -/
 
 /-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
+@[simps -fullyApplied length partSize]
 def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
   length := c.length + 1
   partSize := Fin.cons 1 c.partSize
@@ -321,6 +336,7 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
 
 /-- Extend an ordered partition of `n` entries, by adding to the `i`-th part a new point to the
 left. -/
+@[simps -fullyApplied length partSize]
 def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpartition (n + 1) where
   length := c.length
   partSize := update c.partSize k (c.partSize k + 1)
@@ -384,7 +400,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
         apply this
       intro a' b'
       induction b' using Fin.induction with
-      | zero => simpa using succ_ne_zero (c.emb i a')
+      | zero => simp
       | succ b' =>
         simp only [Nat.succ_eq_add_one, cases_succ, comp_apply, ne_eq, succ_inj]
         apply c.emb_ne_emb_of_ne hij
@@ -438,6 +454,12 @@ def extend (c : OrderedFinpartition n) (i : Option (Fin c.length)) : OrderedFinp
   match i with
   | none => c.extendLeft
   | some i => c.extendMiddle i
+
+@[simp] lemma extend_none (c : OrderedFinpartition n) : c.extend none = c.extendLeft := rfl
+
+@[simp]
+lemma extend_some (c : OrderedFinpartition n) (i : Fin c.length) : c.extend i = c.extendMiddle i :=
+  rfl
 
 /-- Given an ordered finpartition of `n+1`, with a leftmost atom equal to `{0}`, remove this
 atom to form an ordered finpartition of `n`. -/
@@ -598,6 +620,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
 open Classical in
 /-- Extending the ordered partitions of `Fin n` bijects with the ordered partitions
 of `Fin (n+1)`. -/
+@[simps apply]
 def extendEquiv (n : ℕ) :
     ((c : OrderedFinpartition n) × Option (Fin c.length)) ≃ OrderedFinpartition (n + 1) where
   toFun c := c.1.extend c.2
@@ -709,7 +732,7 @@ theorem norm_applyOrderedFinpartition_le (p : ∀ (i : Fin c.length), E [×c.par
 will be the key point to show that functions constructed from `applyOrderedFinpartition` retain
 multilinearity. -/
 theorem applyOrderedFinpartition_update_right
-    (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F)
+    (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F)
     (j : Fin n) (v : Fin n → E) (z : E) :
     c.applyOrderedFinpartition p (update v j z) =
       update (c.applyOrderedFinpartition p v) (c.index j)
@@ -749,13 +772,14 @@ variables by applying `p m` to each part of the partition, and then
 applying `f` to the resulting vector. It is called `c.compAlongOrderedFinpartition f p`. -/
 def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E [×c.partSize i]→L[𝕜] F) :
     E[×n]→L[𝕜] G where
-  toFun v := f (c.applyOrderedFinpartition p v)
-  map_update_add' v i x y := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_update_add]
-  map_update_smul' v i c x := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyOrderedFinpartition_update_right, ContinuousMultilinearMap.map_update_smul]
+  toMultilinearMap :=
+    MultilinearMap.mk' (fun v ↦ f (c.applyOrderedFinpartition p v))
+      (fun v i x y ↦ by
+        simp only [applyOrderedFinpartition_update_right,
+          ContinuousMultilinearMap.map_update_add])
+      (fun v i c x ↦ by
+        simp only [applyOrderedFinpartition_update_right,
+          ContinuousMultilinearMap.map_update_smul])
   cont := by
     apply f.cont.comp
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))
@@ -775,22 +799,18 @@ theorem norm_compAlongOrderedFinpartition_le (f : F [×c.length]→L[𝕜] G)
 
 /-- Bundled version of `compAlongOrderedFinpartition`, depending linearly on `f`
 and multilinearly on `p`. -/
-@[simps apply_apply]
+@[simps! apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
       MultilinearMap 𝕜 (fun i : Fin c.length ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) where
   toFun f :=
-    { toFun := fun p ↦ c.compAlongOrderedFinpartition f p
-      map_update_add' := by
-        intro inst p m q q'
-        cases Subsingleton.elim ‹_› (instDecidableEqFin _)
+    MultilinearMap.mk' (fun p ↦ c.compAlongOrderedFinpartition f p)
+      (fun p m q q' ↦ by
         ext v
-        simp [applyOrderedFinpartition_update_left]
-      map_update_smul' := by
-        intro inst p m a q
-        cases Subsingleton.elim ‹_› (instDecidableEqFin _)
+        simp [applyOrderedFinpartition_update_left])
+      (fun p m a q ↦ by
         ext v
-        simp [applyOrderedFinpartition_update_left] }
+        simp [applyOrderedFinpartition_update_left])
   map_add' _ _ := rfl
   map_smul' _ _ :=  rfl
 
@@ -860,7 +880,7 @@ theorem analyticOn_taylorComp
     (hp : ∀ n, AnalyticOn 𝕜 (fun x ↦ p x n) s) {f : E → F}
     (hf : AnalyticOn 𝕜 f s) (h : MapsTo f s t) (n : ℕ) :
     AnalyticOn 𝕜 (fun x ↦ (q (f x)).taylorComp (p x) n) s := by
-  apply Finset.analyticOn_sum _ (fun c _ ↦ ?_)
+  apply Finset.analyticOn_fun_sum _ (fun c _ ↦ ?_)
   let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
   change AnalyticOn 𝕜
     ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s
@@ -984,7 +1004,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
     let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
     change ContinuousOn
       ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun i ↦ p x (c.partSize i)))) s
-    apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prod ?_ ?_)
+    apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prodMk ?_ ?_)
     · have : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
       exact (hg.cont c.length (this.trans hm)).comp hf.continuousOn h
     · apply continuousOn_pi.2 (fun i ↦ ?_)

@@ -72,7 +72,7 @@ theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPer
   · norm_num at hn
   · use x
     constructor
-    · rwa [formPerm_apply_mem_ne_self_iff _ hl _ (mem_cons_self _ _)]
+    · rwa [formPerm_apply_mem_ne_self_iff _ hl _ mem_cons_self]
     · intro w hw
       have : w ∈ x::y::l := mem_of_formPerm_ne_self _ _ hw
       obtain ⟨k, hk, rfl⟩ := getElem_of_mem this

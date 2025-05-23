@@ -70,7 +70,7 @@ namespace UV
 section GeneralizedBooleanAlgebra
 
 variable [GeneralizedBooleanAlgebra α] [DecidableRel (@Disjoint α _ _)]
-  [DecidableRel ((· ≤ ·) : α → α → Prop)] {s : Finset α} {u v a : α}
+  [DecidableLE α] {s : Finset α} {u v a : α}
 
 /-- UV-compressing `a` means removing `v` from it and adding `u` if `a` and `u` are disjoint and
 `v ≤ a` (it replaces the `v` part of `a` by the `u` part). Else, UV-compressing `a` doesn't do

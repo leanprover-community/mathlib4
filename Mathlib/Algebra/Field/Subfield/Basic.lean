@@ -439,6 +439,9 @@ def rangeRestrictField (f : K →+* L) : K →+* f.fieldRange :=
 theorem coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x : L) = f x :=
   rfl
 
+theorem rangeRestrictField_bijective (f : K →+* L) : Function.Bijective (rangeRestrictField f) :=
+  (Equiv.ofInjective f f.injective).bijective
+
 section eqLocus
 
 variable {L : Type v} [Semiring L]

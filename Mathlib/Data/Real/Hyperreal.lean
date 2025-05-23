@@ -15,17 +15,29 @@ open Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
 def Hyperreal : Type :=
-  Germ (hyperfilter ℕ : Filter ℕ) ℝ deriving Inhabited
+  Germ (hyperfilter ℕ : Filter ℕ) ℝ
 
+#adaptation_note
+/-- After nightly-2025-05-07 we had to remove `deriving Inhabited` on `Hyperreal` above,
+as there is a new error about this instance having to be noncomputable, and `deriving` doesn't allow
+for adding this! -/
 namespace Hyperreal
+
+
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
-noncomputable instance : LinearOrderedField ℝ* :=
-  inferInstanceAs (LinearOrderedField (Germ _ _))
+noncomputable instance : Field ℝ* :=
+  inferInstanceAs (Field (Germ _ _))
+
+noncomputable instance : LinearOrder ℝ* :=
+  inferInstanceAs (LinearOrder (Germ _ _))
+
+instance : IsStrictOrderedRing ℝ* :=
+  inferInstanceAs (IsStrictOrderedRing (Germ _ _))
 
 /-- Natural embedding `ℝ → ℝ*`. -/
-@[coe] def ofReal : ℝ → ℝ* := const
+@[coe] noncomputable def ofReal : ℝ → ℝ* := const
 
 noncomputable instance : CoeTC ℝ ℝ* := ⟨ofReal⟩
 
@@ -118,7 +130,7 @@ theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
   Germ.const_min _ _
 
 /-- Construct a hyperreal number from a sequence of real numbers. -/
-def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
+noncomputable def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
 
 theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
@@ -326,7 +338,7 @@ theorem IsSt.map₂ {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) {
   rcases ofSeq_surjective x with ⟨x, rfl⟩
   rcases ofSeq_surjective y with ⟨y, rfl⟩
   rw [isSt_ofSeq_iff_tendsto] at hxr hys
-  exact isSt_ofSeq_iff_tendsto.2 <| hf.tendsto.comp (hxr.prod_mk_nhds hys)
+  exact isSt_ofSeq_iff_tendsto.2 <| hf.tendsto.comp (hxr.prodMk_nhds hys)
 
 theorem IsSt.add {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) :
     IsSt (x + y) (r + s) := hxr.map₂ hys continuous_add.continuousAt
