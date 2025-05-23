@@ -137,16 +137,7 @@ lemma closure_range_union_range_eq_top_of_isPushout
   simp only [AlgHom.toRingHom_eq_coe, ← Set.range_comp, ← RingHom.coe_comp]
   rw [← hom_comp, ← hom_comp, IsPushout.inl_isoIsPushout_inv, IsPushout.inr_isoIsPushout_inv,
     hom_ofHom, hom_ofHom]
-  rintro x -
-  induction x with
-  | zero => exact zero_mem _
-  | tmul x y =>
-    convert_to (Algebra.TensorProduct.includeLeftRingHom (R := R) x) *
-      (Algebra.TensorProduct.includeRight y) ∈ _
-    · simp
-    · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))
-        (Subring.subset_closure (.inr ⟨_, rfl⟩))
-  | add x y _ _ => exact add_mem ‹_› ‹_›
+  exact le_top.trans (Algebra.TensorProduct.closure_range_union_range_eq_top R A B).ge
 
 end Pushout
 
