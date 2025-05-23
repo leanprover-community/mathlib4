@@ -530,6 +530,18 @@ theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
   · rintro a x - ⟨T, hT, h2⟩
     exact ⟨T, hT, smul_mem _ _ h2⟩
 
+theorem subset_span_finite_of_subset_span {s : Set M} {t : Finset M} (ht : (t : Set M) ⊆ span R s) :
+    ∃ T : Finset M, ↑T ⊆ s ∧ (t : Set M) ⊆ span R (T : Set M) := by
+  classical
+  induction t using Finset.induction_on with
+  | empty => exact ⟨∅, by simp⟩
+  | insert a t hat IH =>
+    obtain ⟨T, hTs, htT⟩ := IH (by simp_all [Set.insert_subset_iff])
+    obtain ⟨T', hT's, haT'⟩ := mem_span_finite_of_mem_span (ht (Finset.mem_insert_self _ _))
+    refine ⟨T ∪ T', by aesop, ?_⟩
+    simp only [Finset.coe_insert, Finset.coe_union, span_union, insert_subset_iff, SetLike.mem_coe]
+    exact ⟨mem_sup_right haT', htT.trans (le_sup_left (a := span R _))⟩
+
 end
 
 end AddCommMonoid
