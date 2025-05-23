@@ -210,11 +210,11 @@ lemma Nucleus.toSublocale_sInf {s : Set (Nucleus X)} : (sInf s).toSublocale = �
   rw [orderiso.eq_toSublocale]
   have h : sInf s = sSup (OrderDual.toDual '' s) := by
     apply le_antisymm
-    . simp only [sInf_le_iff, lowerBounds, mem_setOf_eq]
+    · simp only [sInf_le_iff, lowerBounds, mem_setOf_eq]
       simp only [OrderDual.supSet, le_sInf_iff, mem_image, forall_exists_index, and_imp,
         forall_apply_eq_imp_iff₂]
       exact fun b a a_1 a_2 ↦ a a_2
-    . simp [OrderDual.supSet, sInf_le_iff, lowerBounds]
+    · simp [OrderDual.supSet, sInf_le_iff, lowerBounds]
       exact fun b a b_2 a_1 ↦ a_1 b a
   rw [h]
   rw [orderiso.map_sSup]
@@ -226,9 +226,8 @@ lemma Nucleus.toSublocale_sInf {s : Set (Nucleus X)} : (sInf s).toSublocale = �
 structure Open (X : Type*) [Order.Frame X] where
   element : X
 
-
-
 namespace Open
+
 instance : PartialOrder (Open X) where
   le x y := x.element ≤ y.element
   le_refl _ := le_refl _
@@ -237,18 +236,17 @@ instance : PartialOrder (Open X) where
 
 variable {U V : Open X}
 
-lemma le_def : U ≤ V ↔ U.element ≤ V.element := ge_iff_le
-
 def get_element : Open X ≃o X where
   toFun x := x.element
   invFun x := ⟨x⟩
   left_inv x := rfl
   right_inv x := rfl
-  map_rel_iff' := by simp [le_def]
-
+  map_rel_iff' := by aesop
 
 instance : Coe (Open X) X where
   coe U := U.get_element
+
+lemma le_def : U ≤ V ↔ U.get_element ≤ V.get_element := ge_iff_le
 
 def toNucleus (U : Open X) : Nucleus X where
   toFun x := U ⇨ x
@@ -266,32 +264,27 @@ instance : Coe (Open X) (Sublocale X) where
 
 instance : CompleteLattice (Open X) := get_element.symm.toGaloisInsertion.liftCompleteLattice
 
-lemma orderiso.eq_element : U.element = get_element U := rfl
-
 instance : Order.Frame (Open X) := .ofMinimalAxioms ⟨fun a s ↦ by
-  simp_rw [Open.le_def, orderiso.eq_element]
+  simp_rw [Open.le_def]
   simp [inf_sSup_eq, le_iSup_iff]⟩
 
 lemma toNucleus.map_sup : (U ⊔ V).toNucleus = U.toNucleus ⊓ V.toNucleus := by
   ext x
-  simp [Open.toNucleus]
-  rw [← @sup_himp_distrib]
-  rfl
+  simp [Open.toNucleus, ← @sup_himp_distrib]
 
 lemma toNucleus.map_sSup {s : Set (Open X)} : (sSup s).toNucleus = sInf (Open.toNucleus '' s) := by
   ext x
   simp
   apply le_antisymm
-  . simp [Open.toNucleus]
-    simp [orderiso.eq_element]
+  · simp [Open.toNucleus]
     intro a h
     rw [← le_himp_iff]
     apply himp_le_himp
-    . apply le_sSup h
-    . rfl
-  . simp [iInf_le_iff]
+    ·  apply le_sSup h
+    ·  rfl
+  · simp [iInf_le_iff]
     intro b h
-    simp [Open.toNucleus, orderiso.eq_element]
+    simp [Open.toNucleus]
     rw [inf_sSup_eq]
     simp only [mem_image, iSup_exists, iSup_le_iff, and_imp, forall_apply_eq_imp_iff₂]
     intro a h1
@@ -309,7 +302,7 @@ lemma toNucleus.map_inf : (U ⊓ V).toNucleus = U.toNucleus ⊔ V.toNucleus := b
   · simp only [le_iInf_iff, and_imp]
     intro y h1 h2
     rw [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def] at h1 h2
-    simp_rw [orderiso.eq_element, InfHomClass.map_inf, ← orderiso.eq_element, ← himp_himp]
+    rw [← himp_himp]
     apply le_trans (h1 (V ⇨ x))
     rw [← @y.idempotent _ _ x]
     apply y.monotone (h2 x)
@@ -317,22 +310,20 @@ lemma toNucleus.map_inf : (U ⊓ V).toNucleus = U.toNucleus ⊔ V.toNucleus := b
     intro y h1
     simp_rw [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def] at h1
     let h2 := h1 (U ⊓ V).toNucleus
-    simp [Open.toNucleus, orderiso.eq_element] at h2
+    simp [Open.toNucleus] at h2
     rcases h2 with ⟨h2, h3⟩
     refine le_trans' (h2 ?_ ?_) (le_inf (by rfl) (le_inf_iff.mpr h3))
-    . intro i
+    · intro i
       rw [← inf_assoc]
-      refine inf_le_of_left_le himp_inf_le
-    . rw [inf_comm]
+      exact inf_le_of_left_le himp_inf_le
+    · rw [inf_comm]
       intro i
       rw [← inf_assoc]
-      refine inf_le_of_left_le himp_inf_le
+      exact inf_le_of_left_le himp_inf_le
 
 lemma toNucleus.top : (⊤ : Open X).toNucleus = ⊥ := by
   ext x
   simp [Open.toNucleus]
-  exact Codisjoint.himp_eq_left fun _ a _ ↦ a
-
 
 def toSublocaleFrameHom : FrameHom (Open X) (Sublocale X) where
   toFun x := x
