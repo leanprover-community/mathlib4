@@ -93,7 +93,6 @@ lemma exists_isFiveWheelLike_of_max_cliqueFree_not_isCompleteMultipartite
   exact  ⟨_, _, _, _, _, p3, h1, h5, h2, h6, h3, h4, h7, h8, rfl⟩
 
 /-- `G.FiveWheelLikeFree r k` means there is no `IsFiveWheelLike r k` structure in `G`. -/
-@[simp]
 def FiveWheelLikeFree (G : SimpleGraph α) (r k : ℕ) : Prop :=
     ∀ {v w₁ w₂ s₁ s₂}, ¬ G.IsFiveWheelLike r k v w₁ w₂ s₁ s₂
 
