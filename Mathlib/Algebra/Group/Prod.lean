@@ -605,7 +605,7 @@ alias _root_.MulEquiv.prodEquiv := Units.prodEquiv
 alias _root_.MulEquiv.prodAddUnits := AddUnits.prodAddEquiv
 
 /-- The first element of the units of the product of two monoids. -/
-@[to_additive (attr := simps!?) "The first element of the additive units of the
+@[to_additive (attr := simps!) "The first element of the additive units of the
   product of two additive monoids."]
 def fst : (M × N)ˣ →* Mˣ := (MonoidHom.fst _ _).comp prodEquiv.toMonoidHom
 
