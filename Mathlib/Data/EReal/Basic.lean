@@ -540,7 +540,7 @@ theorem toReal_coe_ennreal : ∀ {x : ℝ≥0∞}, toReal (x : EReal) = ENNReal.
 theorem coe_ennreal_ofReal {x : ℝ} : (ENNReal.ofReal x : EReal) = max x 0 :=
   rfl
 
-lemma coe_ennreal_toReal {x : ℝ≥0∞} (hx : x ≠ ∞) : (x.toReal : EReal) = x := by
+lemma coe_ennreal_toReal {x : ℝ≥0∞} (hx : x ≠ ∞ := by finiteness) : (x.toReal : EReal) = x := by
   lift x to ℝ≥0 using hx
   rfl
 
