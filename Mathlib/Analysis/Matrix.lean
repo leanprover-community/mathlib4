@@ -497,7 +497,7 @@ theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [M
     IsBoundedSMul R (Matrix m n α) :=
   (by infer_instance : IsBoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
 
-/-- This applies to the frobenius norm. -/
+/-- This applies to the Frobenius norm. -/
 @[local instance]
 theorem frobeniusNormSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
     [NormSMulClass R α] :
