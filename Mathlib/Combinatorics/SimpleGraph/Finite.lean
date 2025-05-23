@@ -369,7 +369,7 @@ theorem maxDegree_le_of_forall_degree_le [DecidableRel G.Adj] (k : ℕ) (h : ∀
     G.maxDegree ≤ k := by
   by_cases hV : IsEmpty V
   · simp
-  · haveI := not_isEmpty_iff.1 hV
+  · have := not_isEmpty_iff.1 hV
     obtain ⟨_, hv⟩ := G.exists_maximal_degree_vertex
     exact hv ▸ h _
 
