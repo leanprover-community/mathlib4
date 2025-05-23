@@ -18,11 +18,6 @@ universe v' v u' u
 
 variable {R : Type u} [CommRing R]
 
-local instance (I : Ideal R) [Small.{v, u} R] : Small.{v, u} (R ⧸ I) :=
-  have : Function.Surjective ((Ideal.Quotient.mk I).comp (Shrink.ringEquiv R).toRingHom) := by
-    simpa using Ideal.Quotient.mk_surjective
-  Small.mk' (RingHom.quotientKerEquivOfSurjective this).symm.toEquiv
-
 open RingTheory.Sequence IsLocalRing ModuleCat
 
 class ModuleCat.IsCohenMacaulay [IsLocalRing R] [Small.{v} R] (M : ModuleCat.{v} R) : Prop where
