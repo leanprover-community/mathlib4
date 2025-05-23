@@ -814,7 +814,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: cast from `ℝ` to `EReal`. -/
 @[positivity Real.toEReal _]
-def evalRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
+def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q(Real.toEReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -828,15 +828,46 @@ def evalRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `EReal`. -/
 @[positivity ENNReal.toEReal _]
-def evalENNRealtoEReal : PositivityExt where eval {u α} _zα _pα e := do
+def evalENNRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q(ENNReal.toEReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
     match ra with
     | .positive pa => pure (.positive q(EReal.coe_ennreal_pos.2 $pa))
-    | .nonzero pa => pure (.nonzero q(EReal.coe_ennreal_ne_zero.2 $pa))
+    | .nonzero pa => pure (.positive q(EReal.coe_ennreal_pos_iff_ne_zero.2 $pa))
     | _ => pure (.nonnegative q(EReal.coe_ennreal_nonneg $a))
   | _, _, _ => throwError "not ENNReal.toEReal"
+
+/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ`.
+
+We prove that `EReal.toReal x` is nonnegative whenever `x` is nonnegative.
+Since `EReal.toReal ⊤ = 0`, we cannot prove a stronger statement,
+at least without relying on a tactic like `finiteness`. -/
+@[positivity EReal.toReal _]
+def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(Real), ~q(EReal.toReal $a) =>
+    assertInstancesCommute
+    match (← core q(inferInstance) q(inferInstance) a).toNonneg with
+    | .some pa => pure (.nonnegative q(EReal.toReal_nonneg $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "not EReal.toReal"
+
+/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ≥0∞`.
+
+We show that `EReal.toENNReal x` is positive whenever `x` is positive,
+and it is nonnegative otherwise.
+We cannot deduce any corollaries from `x ≠ 0`, since `EReal.toENNReal x = 0` for `x < 0`.
+-/
+@[positivity EReal.toENNReal _]
+def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ENNReal), ~q(EReal.toENNReal $a) =>
+    assertInstancesCommute
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa => pure (.positive q(EReal.toENNReal_pos_iff.2 $pa))
+    | _ => pure (.nonnegative q(zero_le $e))
+  | _, _, _ => throwError "not EReal.toENNReal"
 
 end Mathlib.Meta.Positivity
