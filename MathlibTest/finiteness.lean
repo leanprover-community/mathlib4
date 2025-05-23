@@ -21,8 +21,8 @@ example {a : ℝ≥0∞} {b : ℝ≥0} (ha : a ≠ ∞) (hb : b ≠ 0) : a / b �
 example {a b : ℝ≥0∞} (ha : a ≠ ∞) : a / (b + 5) ≠ ∞ := by
   -- finiteness cannot infer this on its own (yet?)
   have : b + 5 ≠ 0 :=
-    -- XXX: after #25092, this can become `by positivity`
-    (Right.add_pos_of_nonneg_of_pos (by positivity) (by norm_num)).ne'
+    by positivity-- XXX: after #25092, this can become `by positivity`
+    -- (Right.add_pos_of_nonneg_of_pos (by positivity) (by norm_num)).ne'
   finiteness
 
 example {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : a * b ≠ ∞ := by finiteness
