@@ -46,8 +46,8 @@ theorem LocallyIntegrableOn.mono_set (hf : LocallyIntegrableOn f s μ) {t : Set 
 
 theorem LocallyIntegrableOn.norm (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (fun x => ‖f x‖) s μ := fun t ht =>
-  let ⟨U, hU_nhd, hU_int⟩ := hf t ht
-  ⟨U, hU_nhd, hU_int.norm⟩
+  let ⟨U, hU_nhds, hU_int⟩ := hf t ht
+  ⟨U, hU_nhds, hU_int.norm⟩
 
 theorem LocallyIntegrableOn.mono (hf : LocallyIntegrableOn f s μ) {g : X → F}
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ ≤ ‖f x‖) :
