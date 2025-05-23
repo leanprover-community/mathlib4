@@ -283,9 +283,8 @@ jobs:
           lake -q exe lean4checker Lean4Checker
 
   style_lint:
-    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: Lint styleJOB_NAME
-    runs-on: STYLE_LINT_RUNNER
+    runs-on: ubuntu-latest
     steps:
       - uses: leanprover-community/lint-style-action@f2e7272aad56233a642b08fe974cf09dd664b0c8 # 2025-05-22
         with:
