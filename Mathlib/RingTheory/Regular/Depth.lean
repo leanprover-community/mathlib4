@@ -324,10 +324,8 @@ section depth
 
 omit [UnivLE.{v, w}]
 
-local instance (I : Ideal R) [Small.{v, u} R] : Small.{v, u} (R ⧸ I) :=
-  have : Function.Surjective ((Ideal.Quotient.mk I).comp (Shrink.ringEquiv R).toRingHom) := by
-    simpa using Ideal.Quotient.mk_surjective
-  Small.mk' (RingHom.quotientKerEquivOfSurjective this).symm.toEquiv
+instance (I : Ideal R) [Small.{v, u} R] : Small.{v, u} (R ⧸ I) :=
+  small_of_surjective Ideal.Quotient.mk_surjective
 
 noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
   sSup {n : ℕ∞ | ∀ i : ℕ, i < n → Subsingleton (Ext.{max u v} N M i)}
