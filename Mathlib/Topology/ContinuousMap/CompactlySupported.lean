@@ -691,7 +691,7 @@ lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
     · ring
     exact mul_nonneg_of_nonpos_of_nonpos ha (le_of_lt hfx)
 
-lemma add_nnrealPart_le_nnrealPart_add (f g : C_c(α, ℝ)) :
+lemma nnrealPart_add_le_add_nnrealPart (f g : C_c(α, ℝ)) :
     (f + g).nnrealPart ≤ f.nnrealPart + g.nnrealPart := by
   intro x
   simpa using Real.toNNReal_add_le
