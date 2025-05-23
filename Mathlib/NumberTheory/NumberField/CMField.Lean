@@ -44,7 +44,7 @@ variable (F K : Type*) [Field F] [NumberField F] [IsTotallyReal F] [Field K] [Nu
   [IsTotallyComplex K] [Algebra F K] [IsQuadraticExtension F K]
 
 theorem card_infinitePlace_eq_card_infinitePlace :
-    Fintype.card (InfinitePlace K) = Fintype.card (InfinitePlace F) := by
+    Fintype.card (InfinitePlace F) = Fintype.card (InfinitePlace K) := by
   rw [card_eq_nrRealPlaces_add_nrComplexPlaces, card_eq_nrRealPlaces_add_nrComplexPlaces,
     IsTotallyComplex.nrRealPlaces_eq_zero K, IsTotallyReal.nrComplexPlaces_eq_zero F, zero_add,
     add_zero, ← IsTotallyReal.finrank, ← Nat.mul_left_cancel_iff zero_lt_two,
@@ -52,7 +52,7 @@ theorem card_infinitePlace_eq_card_infinitePlace :
     IsQuadraticExtension.finrank_eq_two F K]
 
 theorem units_rank_eq_units_rank :
-    Units.rank K = Units.rank F := by
+    Units.rank F = Units.rank K := by
   rw [Units.rank, Units.rank, card_infinitePlace_eq_card_infinitePlace F K]
 
 variable {K}
@@ -142,6 +142,14 @@ variable (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] [IsCMField K
 
 instance isQuadraticExtension : IsQuadraticExtension (maximalRealSubfield K) K :=
   IsCMField.is_quadratic
+
+theorem card_infinitePlace_eq_card_infinitePlace :
+    Fintype.card (InfinitePlace (maximalRealSubfield K)) = Fintype.card (InfinitePlace K) :=
+  CMExtension.card_infinitePlace_eq_card_infinitePlace _ _
+
+theorem units_rank_eq_units_rank :
+    Units.rank (maximalRealSubfield K) = Units.rank K :=
+  CMExtension.units_rank_eq_units_rank _ _
 
 end IsCMField
 
