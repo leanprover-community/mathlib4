@@ -162,7 +162,7 @@ theorem contDiffWithinAt_nat {n : ℕ} :
 /-- When `n` is either a natural number or `ω`, one can characterize the property of being `C^n`
 as the existence of a neighborhood on which there is a Taylor series up to order `n`,
 requiring in addition that its terms are analytic in the `ω` case. -/
-lemma contDiffWithinAt_iff_of_ne_infty (hn : n ≠ ∞) :
+lemma contDiffWithinAt_iff_of_ne_infty (hn : n ≠ ∞ := by finiteness) :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn n f p u ∧
         (n = ω → ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) u) := by
@@ -356,7 +356,7 @@ theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s
 
 /-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`
 (and moreover the function is analytic when `n = ω`). -/
-theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
+theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞ := by finiteness) :
     ContDiffWithinAt 𝕜 (n + 1) f s x ↔ ∃ u ∈ 𝓝[insert x s] x, (n = ω → AnalyticOn 𝕜 f u) ∧
       ∃ f' : E → E →L[𝕜] F,
       (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffWithinAt 𝕜 n f' u x := by
@@ -425,7 +425,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
 
 /-- A version of `contDiffWithinAt_succ_iff_hasFDerivWithinAt` where all derivatives
   are taken within the same set. -/
-theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' (hn : n ≠ ∞) :
+theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' (hn : n ≠ ∞ := by finiteness) :
     ContDiffWithinAt 𝕜 (n + 1) f s x ↔
       ∃ u ∈ 𝓝[insert x s] x, u ⊆ insert x s ∧ (n = ω → AnalyticOn 𝕜 f u) ∧
       ∃ f' : E → E →L[𝕜] F,
@@ -508,7 +508,7 @@ theorem ContDiffOn.analyticOn (h : ContDiffOn 𝕜 ω f s) : AnalyticOn 𝕜 f s
 
 /-- A function is `C^n` within a set at a point, for `n : ℕ`, if and only if it is `C^n` on
 a neighborhood of this point. -/
-theorem contDiffWithinAt_iff_contDiffOn_nhds (hn : n ≠ ∞) :
+theorem contDiffWithinAt_iff_contDiffOn_nhds (hn : n ≠ ∞ := by finiteness) :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x, ContDiffOn 𝕜 n f u := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h.contDiffOn le_rfl (by simp [hn]) with ⟨u, hu, h'u⟩
@@ -517,7 +517,8 @@ theorem contDiffWithinAt_iff_contDiffOn_nhds (hn : n ≠ ∞) :
     have : x ∈ u := mem_of_mem_nhdsWithin (mem_insert x s) u_mem
     exact (hu x this).mono_of_mem_nhdsWithin (nhdsWithin_mono _ (subset_insert x s) u_mem)
 
-protected theorem ContDiffWithinAt.eventually (h : ContDiffWithinAt 𝕜 n f s x) (hn : n ≠ ∞) :
+protected theorem ContDiffWithinAt.eventually (h : ContDiffWithinAt 𝕜 n f s x)
+    (hn : n ≠ ∞ := by finiteness) :
     ∀ᶠ y in 𝓝[insert x s] x, ContDiffWithinAt 𝕜 n f s y := by
   rcases h.contDiffOn le_rfl (by simp [hn]) with ⟨u, hu, _, hd⟩
   have : ∀ᶠ y : E in 𝓝[insert x s] x, u ∈ 𝓝[insert x s] y ∧ y ∈ u :=
@@ -585,7 +586,7 @@ theorem contDiffOn_of_locally_contDiffOn
   exact IsOpen.mem_nhds u_open xu
 
 /-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`. -/
-theorem contDiffOn_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
+theorem contDiffOn_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞ := by finiteness) :
     ContDiffOn 𝕜 (n + 1) f s ↔
       ∀ x ∈ s, ∃ u ∈ 𝓝[insert x s] x, (n = ω → AnalyticOn 𝕜 f u) ∧ ∃ f' : E → E →L[𝕜] F,
         (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffOn 𝕜 n f' u := by
@@ -1022,7 +1023,7 @@ theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :
     refine ⟨u, H, by simp, f', fun x hxu ↦ ?_, h_cont_diff.contDiffWithinAt⟩
     exact (h_fderiv x hxu).hasFDerivWithinAt
 
-protected theorem ContDiffAt.eventually (h : ContDiffAt 𝕜 n f x) (h' : n ≠ ∞) :
+protected theorem ContDiffAt.eventually (h : ContDiffAt 𝕜 n f x) (h' : n ≠ ∞ := by finiteness) :
     ∀ᶠ y in 𝓝 x, ContDiffAt 𝕜 n f y := by
   simpa [nhdsWithin_univ] using ContDiffWithinAt.eventually h h'
 
