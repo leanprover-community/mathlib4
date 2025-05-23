@@ -99,7 +99,7 @@ variable {R}
 
 /-- The monoidal category structure on the category of `R`-coalgebras induced by the
 equivalence with `Comon(R-Mod)`. This is just an auxiliary definition; the `MonoidalCategory`
-instance we make in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal` has better
+instance we make in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` has better
 definitional equalities. -/
 noncomputable def instMonoidalCategoryAux : MonoidalCategory (CoalgCat R) :=
   Monoidal.transport (comonEquivalence R).symm

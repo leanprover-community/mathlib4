@@ -226,9 +226,9 @@ appear in two different `Module.qNF` objects (i.e. with the same `ℕ`-index `k`
 the expressions `x₁` and `x₂` are the same.  It is also expected that the items in a `Module.qNF`
 list are in strictly increasing order by natural-number index.
 
-By forgetting the natural number indices, an expression representing a `Mathlib/Tactic/Module/NF.lean`
+By forgetting the natural number indices, an expression representing a `Mathlib.Tactic.Module.NF`
 object can be built from a `Module.qNF` object; this construction is provided as
-`Mathlib/Tactic/Module/qNF/toNF.lean`. -/
+`Mathlib.Tactic.Module.qNF.toNF`. -/
 abbrev qNF (R : Q(Type u)) (M : Q(Type v)) := List ((Q($R) × Q($M)) × ℕ)
 
 namespace qNF
