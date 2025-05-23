@@ -1129,7 +1129,8 @@ section Erase
 
 variable [DecidableEq α]
 
-@[simp] theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) :
+-- @[simp] -- removed because LHS is not in simp normal form
+theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) :
     (l.erase a).length + 1 = l.length := by
   rw [erase_eq_eraseP, length_eraseP_add_one h (decide_eq_true rfl)]
 

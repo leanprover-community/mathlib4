@@ -45,6 +45,9 @@ abbrev IsClique (s : Set α) : Prop :=
 theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
   Iff.rfl
 
+lemma not_isClique_iff : ¬ G.IsClique s ↔ ∃ (v w : s), v ≠ w ∧ ¬ G.Adj v w := by
+  aesop (add simp [isClique_iff, Set.Pairwise])
+
 /-- A clique is a set of vertices whose induced graph is complete. -/
 theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   rw [isClique_iff]
@@ -480,6 +483,23 @@ protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
    (G ⊔ edge v w).CliqueFree (n + 1) :=
   fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
+
+lemma IsNClique.exists_not_adj_of_cliqueFree_succ (hc : G.IsNClique n s)
+    (h : G.CliqueFree (n + 1)) (x : α) : ∃ y, y ∈ s ∧ ¬ G.Adj x y := by
+  classical
+  by_contra! hf
+  exact (hc.insert hf).not_cliqueFree h
+
+lemma exists_of_maximal_cliqueFree_not_adj [DecidableEq α]
+    (h : Maximal (fun H ↦ H.CliqueFree (n + 1)) G) {x y : α} (hne : x ≠ y) (hn : ¬ G.Adj x y) :
+    ∃ s, x ∉ s ∧ y ∉ s ∧ G.IsNClique n (insert x s) ∧ G.IsNClique n (insert y s) := by
+  obtain ⟨t, hc⟩ := not_forall_not.1 <| h.not_prop_of_gt <| G.lt_sup_edge _ _ hne hn
+  use (t.erase x).erase y, erase_right_comm (a := x) ▸ (not_mem_erase _ _), not_mem_erase _ _
+  have h1 := h.1.mem_of_sup_edge_isNClique hc
+  have h2 := h.1.mem_of_sup_edge_isNClique (edge_comm .. ▸ hc)
+  rw [insert_erase <| mem_erase_of_ne_of_mem hne.symm h2, erase_right_comm,
+      insert_erase <| mem_erase_of_ne_of_mem hne h1]
+  exact ⟨(edge_comm .. ▸ hc).erase_of_sup_edge_of_mem h2, hc.erase_of_sup_edge_of_mem h1⟩
 
 end CliqueFree
 
