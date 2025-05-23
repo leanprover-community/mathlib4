@@ -47,7 +47,7 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     · #adaptation_note /-- nightly-2024-03-07
       previously was `rw [if_neg h]; simp`, but that fails with "motive not type correct"
       This is because dsimp does not simplify numerals;
-      see https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/dsimp.20doesn't.20visit.20numerals/near/515494114 -/
+      this note should be removable once https://github.com/leanprover/lean4/pull/8433 lands. -/
       convert (id_zero (C := V)).symm
       all_goals simp [if_neg h]
   map_comp f g := by
