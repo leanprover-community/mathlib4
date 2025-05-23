@@ -14,7 +14,20 @@ import Mathlib.RingTheory.Polynomial.Basic
 This file contains the properties of the submodule of polynomials of degree less than `n` in a
 commutative ring `R`, denoted `R[X]_n`.
 
-The main result is a basis for this submodule, given by the monomials `X^i` for `i < n`.
+## Main definitions/lemmas
+
+* `degreeLT.basis R n`: a basis for `R[X]_n` the submodule of polynomials with degree `< n`,
+given by the monomials `X^i` for `i < n`.
+
+* `degreeLT.basis_prod R m n`: a basis for `(R[X]_m) × (R[X]_n)` as above, which is the sum
+of the two bases.
+
+* `degreeLT.addLinearEquiv R m n`: an isomorphism between `(R[x]_(n+m))` and `(R[x]_n) × (R[x]_m)`
+given by the fact that the bases are both indexed by `Fin (n+m)`.
+
+* `translate a`: (To move?) An automorphism of `R[X]` given by a substitution of the form `X ↦ X - a`.
+
+* `translateLinear a n`: The linear automorphism induced by `translate` on `R[x]_n`.
 
 -/
 
@@ -58,7 +71,7 @@ instance : Module.Finite R R[x]_n :=
   Module.Finite.of_basis (degreeLT.basis _ _)
 
 variable (R) in
-/-- Basis for R[X]_m × R[X]_n. -/
+/-- Basis for `(R[X]_m) × (R[X]_n)`. -/
 noncomputable def degreeLT.basis_prod (m n : ℕ) : Basis (Fin (m + n)) R ((R[x]_m) × (R[x]_n)) :=
   ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
 
@@ -76,6 +89,8 @@ noncomputable def degreeLT.basis_prod (m n : ℕ) : Basis (Fin (m + n)) R ((R[x]
   · rw [Basis.prod_apply_inr_fst]
   · rw [Basis.prod_apply_inr_snd, basis_apply]
 
+/-- An isomorphism between `(R[x]_(n+m))` and `(R[x]_n) × (R[x]_m)` given by the fact that
+the bases are both indexed by `Fin (n+m)`. -/
 noncomputable def degreeLT.addLinearEquiv {n m : ℕ} :
     (R[x]_(n + m)) ≃ₗ[R] (R[x]_n) × (R[x]_m) :=
   Basis.equiv (degreeLT.basis _ _) (degreeLT.basis_prod _ _ _) (Equiv.refl _)
@@ -133,7 +148,7 @@ section translate
 variable {R : Type*} [CommRing R] {x : R} {m n : ℕ} {a : R} {f g : R[X]}
 
 variable (x) in
-/-- TO MOVE? -/
+/-- TO MOVE? An automorphism of `R[X]` given by a substitution of the form `X ↦ X - a`. -/
 noncomputable def translate : R[X] ≃+* R[X] where
   invFun    := (.X - .C (-x) : R[X]).compRingHom
   left_inv  := fun P ↦ by simp [comp_assoc]
@@ -167,6 +182,8 @@ lemma degree_translate : (f.translate x).degree = f.degree := by
       natDegree_translate]
 
 variable (x n) in
+/-- The `translate` map induces an automorphism of the module `R[x]_n` of polynomials of
+degree `< n`. -/
 noncomputable def translateLinear : (R[x]_n) ≃ₗ[R] (R[x]_n) where
   toFun := fun P ↦ ⟨P.1.translate x, mem_degreeLT.2 <| degree_translate.trans_lt <|
     mem_degreeLT.1 P.2⟩
@@ -200,6 +217,7 @@ noncomputable def translateLinear : (R[x]_n) ≃ₗ[R] (R[x]_n) where
   Units.ext <| by rw [LinearEquiv.coe_det, translate_det', Units.val_one]
 
 variable (x m n) in
+/-- Gluing of the `translateLinear` automorphisms. -/
 noncomputable def translateProd : ((R[x]_m) × (R[x]_n)) ≃ₗ[R] ((R[x]_m) × (R[x]_n)) :=
   (translateLinear x m).prodCongr (translateLinear x n)
 
