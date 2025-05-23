@@ -256,6 +256,36 @@ theorem inner_indicatorConstLp_one (hs : MeasurableSet s) (hμs : μ s ≠ ∞) 
     ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), f⟫ = ∫ x in s, f x ∂μ := by
   rw [L2.inner_indicatorConstLp_eq_inner_setIntegral 𝕜 hs hμs (1 : 𝕜) f]; simp
 
+local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
+
+/- The inner product in `L2` of multiples `a` and `b` of indicators of two sets with finite measure
+is `a * b` times the measure of the intersection. -/
+lemma inner_indicatorConstLp_indicatorConstLp
+ {v w : (Set α)} (hv : MeasurableSet v)
+  (hw : MeasurableSet w) (hμv : μ v ≠ ∞) (hμw : μ w ≠ ∞) (a b : ℝ):
+  ⟪((indicatorConstLp 2 hv hμv (a : ℝ))), (indicatorConstLp 2 hw hμw (b : ℝ))⟫ =
+    a * b * (μ.real (v ∩ w)) := by
+  rw [inner_indicatorConstLp_eq_inner_setIntegral]
+  have h : ((indicatorConstLp 2 hw hμw (b : ℝ)) : α → ℝ) =ᶠ[ae μ] w.indicator fun x ↦ (b : ℝ) :=
+    indicatorConstLp_coeFn (hs := hw) (hμs := hμw)
+  have g : ∀ᵐ (x : α) ∂μ, x ∈ v → ((indicatorConstLp 2 hw hμw (b : ℝ)) : α → ℝ) x =
+      w.indicator (fun x ↦ (b : ℝ)) x := Filter.Eventually.mono h fun x a a_1 ↦ a
+  rw [setIntegral_congr_ae hv g, setIntegral_indicator hw]
+  rw [integral_const, measureReal_restrict_apply,
+    Set.univ_inter, smul_eq_mul, RCLike.inner_apply, conj_trivial]
+  · ring
+  · simp
+
+/- The inner product in `L2` of indicators of two sets with finite measure
+is the measure of the intersection. -/
+lemma inner_indicatorConstLp_one_indicatorConstLp_one
+ {v w : (Set α)} (hv : MeasurableSet v)
+  (hw : MeasurableSet w) (hμv : μ v ≠ ∞) (hμw : μ w ≠ ∞) :
+  ⟪((indicatorConstLp 2 hv hμv (1 : ℝ))), (indicatorConstLp 2 hw hμw (1 : ℝ))⟫ =
+    (μ.real (v ∩ w)) := by
+  rw [inner_indicatorConstLp_indicatorConstLp]
+  simp
+
 end IndicatorConstLp
 
 end L2
