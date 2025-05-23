@@ -55,7 +55,7 @@ instance : Mul (D ≀ᵣ Q) where
 lemma mul_def (a b : D ≀ᵣ Q) : a * b = ⟨a.1 * fun x ↦ b.1 (a.2⁻¹ * x), a.2 * b.2⟩ := rfl
 
 @[simp]
-theorem mul_left (a b : D ≀ᵣ Q) : (a * b).1 = a.1 * (((fun x => b.1 (a.2⁻¹ * x)))) := rfl
+theorem mul_left (a b : D ≀ᵣ Q) : (a * b).1 = a.1 * fun x => b.1 (a.2⁻¹ * x) := rfl
 
 @[simp]
 theorem mul_right (a b : D ≀ᵣ Q) : (a * b).right = a.right * b.right := rfl
