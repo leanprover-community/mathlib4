@@ -210,7 +210,7 @@ theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @
         If.1.Finite ∧ ∀ i : If.1, If.2 i ∈ @nhds X i a ∧ @IsClosed X i (If.2 i))
       fun If => ⋂ i : If.1, If.snd i := fun a ↦ by
     rw [nhds_sInf, ← iInf_subtype'']
-    exact hasBasis_iInf fun t : T => @closed_nhds_basis X t (h t t.2) a
+    exact .iInf fun t : T => @closed_nhds_basis X t (h t t.2) a
   refine .of_hasBasis this fun a If hIf => isClosed_iInter fun i => ?_
   exact (hIf.2 i).2.mono (sInf_le (i : T).2)
 
@@ -264,9 +264,9 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X] [RegularSpace 
          nsubkc <| (IsClosed.closure_subset_iff ncl).mpr interior_subset ain,
        fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
   -- By Lindelöf, we may obtain a countable subcover witnessing `HasSeparatingCover`
-  choose u u_open u_dis u_nhd using this
+  choose u u_open u_dis u_nhds using this
   obtain ⟨f, f_cov⟩ := s_cl.isLindelof.indexed_countable_subcover
-    u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhd a ainh⟩)
+    u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhds a ainh⟩)
   exact ⟨u ∘ f, f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
 
 

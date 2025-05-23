@@ -16,7 +16,7 @@ then we can turn an `R`-submodule into an `S`-submodule by forgetting the action
 this restriction of scalars for submodules.
 
 ## Main definitions:
- * `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
+* `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
 
 -/
 

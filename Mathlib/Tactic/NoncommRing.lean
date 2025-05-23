@@ -16,7 +16,7 @@ maximum recursion depth.
 
 `noncomm_ring` is just a `simp only [some lemmas]` followed by `abel`. It automatically uses `abel1`
 to close the goal, and if that doesn't succeed, defaults to `abel_nf`.
- -/
+-/
 
 namespace Mathlib.Tactic.NoncommRing
 
@@ -71,3 +71,9 @@ macro_rules
     if rules.isSome then `(tactic| repeat1 ($tac;)) else `(tactic| $tac)
 
 end Mathlib.Tactic.NoncommRing
+
+/-!
+We register `noncomm_ring` with the `hint` tactic.
+-/
+
+register_hint noncomm_ring

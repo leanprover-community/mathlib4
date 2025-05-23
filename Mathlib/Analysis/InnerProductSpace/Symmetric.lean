@@ -19,7 +19,7 @@ doesn't rely on the definition of the adjoint, which allows it to be stated in n
 ## Main definitions
 
 * `LinearMap.IsSymmetric`: a (not necessarily bounded) operator on an inner product space is
-symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
+  symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
 
 ## Main statements
 

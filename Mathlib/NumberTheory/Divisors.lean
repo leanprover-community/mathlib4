@@ -21,10 +21,10 @@ for defining Dirichlet convolution.
 
 ## Main Definitions
 Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
- * `divisors n` is the `Finset` of natural numbers that divide `n`.
- * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
- * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
- * `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
+* `divisors n` is the `Finset` of natural numbers that divide `n`.
+* `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
+* `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
+* `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
 
 ## Conventions
 

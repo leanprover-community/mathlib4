@@ -19,22 +19,22 @@ Another application is to the faithfulness of the Weyl group action on roots, an
 Weyl group.
 
 ## Main definitions:
- * `RootPairing.Polarization`: A distinguished linear map from the weight space to the coweight
-   space.
- * `RootPairing.RootForm` : The bilinear form on weight space corresponding to `Polarization`.
+* `RootPairing.Polarization`: A distinguished linear map from the weight space to the coweight
+  space.
+* `RootPairing.RootForm` : The bilinear form on weight space corresponding to `Polarization`.
 
 ## Main results:
- * `RootPairing.rootForm_self_sum_of_squares` : The inner product of any
-   weight vector is a sum of squares.
- * `RootPairing.rootForm_reflection_reflection_apply` : `RootForm` is invariant with respect
-   to reflections.
- * `RootPairing.rootForm_self_smul_coroot`: The inner product of a root with itself
-   times the corresponding coroot is equal to two times Polarization applied to the root.
- * `RootPairing.exists_ge_zero_eq_rootForm`: `RootForm` is positive semidefinite.
+* `RootPairing.rootForm_self_sum_of_squares` : The inner product of any
+  weight vector is a sum of squares.
+* `RootPairing.rootForm_reflection_reflection_apply` : `RootForm` is invariant with respect
+  to reflections.
+* `RootPairing.rootForm_self_smul_coroot`: The inner product of a root with itself
+  times the corresponding coroot is equal to two times Polarization applied to the root.
+* `RootPairing.exists_ge_zero_eq_rootForm`: `RootForm` is positive semidefinite.
 
 ## References:
- * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
- * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
+* [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
+* [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 -/
 
@@ -346,7 +346,7 @@ def posRootForm : P.RootPositiveForm S where
 lemma algebraMap_posRootForm_posForm (x y : span S (range P.root)) :
     (algebraMap S R) ((P.posRootForm S).posForm x y) = P.RootForm x y := by
   rw [RootPositiveForm.algebraMap_posForm]
-  exact rfl
+  simp [posRootForm]
 
 @[simp]
 lemma posRootForm_eq :

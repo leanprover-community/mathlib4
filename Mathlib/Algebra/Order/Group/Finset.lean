@@ -98,6 +98,8 @@ lemma sup'_add' (s : Finset ι) (f : ι → M) (a : M) (hs : s.Nonempty) :
 lemma add_sup'' (hs : s.Nonempty) (f : ι → M) (a : M) :
     a + s.sup' hs f = s.sup' hs fun i ↦ a + f i := by simp_rw [add_comm a, Finset.sup'_add']
 
+variable [OrderBot M]
+
 protected lemma sup_add (hs : s.Nonempty) (f : ι → M) (a : M) :
     s.sup f + a = s.sup fun i ↦ f i + a := by
   rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs, sup'_add']

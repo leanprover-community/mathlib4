@@ -25,11 +25,11 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 * `Function.HasMaxCutProperty`: Can given binary function express the Max-Cut problem?
 * `FractionalOperation`: Multiset of operations on given domain of the same arity.
 * `FractionalOperation.IsSymmetricFractionalPolymorphismFor`: Is given fractional operation a
-   symmetric fractional polymorphism for given VCSP template?
+  symmetric fractional polymorphism for given VCSP template?
 
 ## References
 * [D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,
-   *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
+  *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
 
 -/
 
