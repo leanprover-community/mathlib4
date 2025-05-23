@@ -79,7 +79,7 @@ theorem normalize_normalized_factor {a : α} :
   obtain ⟨y, _, rfl⟩ := Multiset.mem_map.1 hx
   apply normalize_idem
 
-theorem dvd_of_normalized_factor {a x : α} (hx : x ∈ normalizedFactors a ) :
+theorem dvd_of_normalized_factor {a x : α} (hx : x ∈ normalizedFactors a) :
     x ∣ a := by
   obtain ⟨y, hy, rfl⟩ := Multiset.mem_map.mp hx
   exact normalize_dvd_iff.mpr <| dvd_of_mem_factors hy
