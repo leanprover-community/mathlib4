@@ -45,7 +45,7 @@ Main definitions :
 
 -/
 local notation "‖" x "‖" => Fintype.card x
-
+-- Start PR #25131
 open Finset SimpleGraph
 
 variable {α : Type*} {a b c : α} {s : Finset α} {G : SimpleGraph α} {r k : ℕ}
@@ -182,6 +182,7 @@ theorem colorable_iff_isCompleteMultipartite_of_max_cliqueFree
     exact hw.not_colorable_succ
 
 end withDecEq
+-- End PR #25131
 variable {i j n : ℕ} {d x : α}
 
 section Counting
