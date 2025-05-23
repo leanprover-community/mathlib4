@@ -161,6 +161,29 @@ abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A
   map_smul' m r := by simp
 
 variable (Rₚ) in
+omit [IsLocalRing R] [IsNoetherianRing R] [Small.{v, u} R] [IsLocalRing Rₚ]
+  [IsLocalization.AtPrime Rₚ p] in
+open Pointwise in
+lemma isLocaliation_map_isSMulRegular_of_isSMulRegular (r : R)
+    (M : Type*) [AddCommGroup M] [Module R M] (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ]
+    [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f]
+    (reg : IsSMulRegular M r) : IsSMulRegular Mₚ (algebraMap R Rₚ r) := by
+  rw [isSMulRegular_algebraMap_iff r, isSMulRegular_iff_ker_lsmul_eq_bot Mₚ r,
+    LinearMap.ker_eq_bot']
+  intro m hm
+  rcases IsLocalizedModule.mk'_surjective p.primeCompl f m with ⟨a, ha⟩
+  simp only [← ha, LinearMap.lsmul_apply] at hm ⊢
+  have : r • IsLocalizedModule.mk' f a.1 a.2 = 0 := hm
+  rw [← IsLocalizedModule.mk'_smul, IsLocalizedModule.mk'_eq_zero'] at this
+  simp only [Subtype.exists, Submonoid.mk_smul, exists_prop] at this
+  rcases this with ⟨s, mem, hs⟩
+  rw [smul_smul, mul_comm, ← smul_smul] at hs
+  apply (IsLocalizedModule.mk'_eq_zero' f a.2).mpr ⟨⟨s, mem⟩, ?_⟩
+  simp only [Submonoid.mk_smul, ← Submodule.mem_bot (R := R),
+    ← (isSMulRegular_iff_ker_lsmul_eq_bot M r).mp reg]
+  exact hs
+
+variable (Rₚ) in
 omit [IsLocalRing R] [IsNoetherianRing R] [Small.{v, u} R] [IsLocalRing Rₚ] in
 open Pointwise in
 lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
@@ -175,62 +198,48 @@ lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
     | x :: rs' =>
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
       simp only [isWeaklyRegular_cons_iff, List.map_cons] at reg ⊢
-      constructor
-      · rw [isSMulRegular_algebraMap_iff x, isSMulRegular_iff_ker_lsmul_eq_bot Mₚ x,
-          LinearMap.ker_eq_bot']
-        intro m hm
-        rcases IsLocalizedModule.mk'_surjective p.primeCompl f m with ⟨a, ha⟩
-        simp only [← ha, LinearMap.lsmul_apply] at hm ⊢
-        have : x • IsLocalizedModule.mk' f a.1 a.2 = 0 := hm
-        rw [← IsLocalizedModule.mk'_smul, IsLocalizedModule.mk'_eq_zero'] at this
-        simp only [Subtype.exists, Submonoid.mk_smul, exists_prop] at this
-        rcases this with ⟨s, mem, hs⟩
-        rw [smul_smul, mul_comm, ← smul_smul] at hs
-        apply (IsLocalizedModule.mk'_eq_zero' f a.2).mpr ⟨⟨s, mem⟩, ?_⟩
-        simp only [Submonoid.mk_smul, ← Submodule.mem_bot (R := R),
-          ← (isSMulRegular_iff_ker_lsmul_eq_bot M x).mp reg.1]
-        exact hs
-      · let g : QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R Rₚ) x) Mₚ :=
-          LinearMapOfSemiLinearMapAlgebraMap (Submodule.mapQ _ _
-          (SemiLinearMapAlgebraMapOfLinearMap f)
-          (fun m hm ↦ by
-            rw [← Submodule.ideal_span_singleton_smul] at hm
-            simp only [Submodule.mem_comap, LinearMap.coe_mk, LinearMap.coe_toAddHom]
-            refine Submodule.smul_induction_on hm (fun r hr m hm ↦ ?_)
-              (fun m1 m2 hm1 hm2 ↦ by simpa using Submodule.add_mem _ hm1 hm2)
-            rcases Ideal.mem_span_singleton'.mp hr with ⟨r', hr'⟩
-            simpa only [← hr', map_smul, mul_comm r' x, ← smul_smul,
-              algebra_compatible_smul Rₚ x (r' • f m)]
-              using Submodule.smul_mem_pointwise_smul (r' • f m) ((algebraMap R Rₚ) x) ⊤ hm))
-        have : IsLocalizedModule.AtPrime p g := {
-          map_units r := by
-            let alg := (Algebra.algHom R Rₚ (Module.End Rₚ (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ)))
-            rcases isUnit_iff_exists.mp (IsUnit.algebraMap_of_algebraMap (r := r.1) alg.toLinearMap
-              (map_one alg) (IsLocalization.map_units Rₚ r)) with ⟨s, hs1, hs2⟩
-            exact isUnit_iff_exists.mpr ⟨LinearMap.restrictScalars R s,
-              ⟨LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs1 (Eq.refl x)),
-               LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs2 (Eq.refl x))⟩⟩
-          surj' y := by
-            induction' y using Submodule.Quotient.induction_on with y
-            rcases IsLocalizedModule.surj' (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
-            use (Submodule.Quotient.mk z.1, z.2)
-            simp [g, ← hz]
-          exists_of_eq {y1 y2} h := by
-            induction' y1 using Submodule.Quotient.induction_on with y1
-            induction' y2 using Submodule.Quotient.induction_on with y2
-            simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, Submodule.mapQ_apply, g] at h
-            have h := (Submodule.Quotient.mk_eq_zero _).mp (sub_eq_zero_of_eq h)
-            rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp h with ⟨m, _, hm⟩
-            rcases IsLocalizedModule.surj p.primeCompl f m with ⟨⟨z, s⟩, hz⟩
-            have eq : f (s • (y1 - y2)) = f (x • z) := by simp [← hm, ← hz, smul_comm s x m]
-            rcases IsLocalizedModule.exists_of_eq (S := p.primeCompl) eq with ⟨c, hc⟩
-            use c * s
-            apply sub_eq_zero.mp
-            have h : (0 : QuotSMulTop x M) = Submodule.Quotient.mk (c • s • (y1 - y2)) := by
-              simpa [hc] using (smul_eq_zero_of_right c <| (Submodule.Quotient.mk_eq_zero _).mpr <|
-                Submodule.smul_mem_pointwise_smul z x ⊤ Submodule.mem_top).symm
-            simp [h, smul_sub, mul_smul] }
-        exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) g reg.2 len
+      refine ⟨isLocaliation_map_isSMulRegular_of_isSMulRegular p Rₚ x M Mₚ f reg.1, ?_⟩
+      let g : QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R Rₚ) x) Mₚ :=
+        LinearMapOfSemiLinearMapAlgebraMap (Submodule.mapQ _ _
+        (SemiLinearMapAlgebraMapOfLinearMap f)
+        (fun m hm ↦ by
+          rw [← Submodule.ideal_span_singleton_smul] at hm
+          simp only [Submodule.mem_comap, LinearMap.coe_mk, LinearMap.coe_toAddHom]
+          refine Submodule.smul_induction_on hm (fun r hr m hm ↦ ?_)
+            (fun m1 m2 hm1 hm2 ↦ by simpa using Submodule.add_mem _ hm1 hm2)
+          rcases Ideal.mem_span_singleton'.mp hr with ⟨r', hr'⟩
+          simpa only [← hr', map_smul, mul_comm r' x, ← smul_smul,
+            algebra_compatible_smul Rₚ x (r' • f m)]
+            using Submodule.smul_mem_pointwise_smul (r' • f m) ((algebraMap R Rₚ) x) ⊤ hm))
+      have : IsLocalizedModule.AtPrime p g := {
+        map_units r := by
+          let alg := (Algebra.algHom R Rₚ (Module.End Rₚ (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ)))
+          rcases isUnit_iff_exists.mp (IsUnit.algebraMap_of_algebraMap (r := r.1) alg.toLinearMap
+            (map_one alg) (IsLocalization.map_units Rₚ r)) with ⟨s, hs1, hs2⟩
+          exact isUnit_iff_exists.mpr ⟨LinearMap.restrictScalars R s,
+            ⟨LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs1 (Eq.refl x)),
+              LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs2 (Eq.refl x))⟩⟩
+        surj' y := by
+          induction' y using Submodule.Quotient.induction_on with y
+          rcases IsLocalizedModule.surj' (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
+          use (Submodule.Quotient.mk z.1, z.2)
+          simp [g, ← hz]
+        exists_of_eq {y1 y2} h := by
+          induction' y1 using Submodule.Quotient.induction_on with y1
+          induction' y2 using Submodule.Quotient.induction_on with y2
+          simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, Submodule.mapQ_apply, g] at h
+          have h := (Submodule.Quotient.mk_eq_zero _).mp (sub_eq_zero_of_eq h)
+          rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp h with ⟨m, _, hm⟩
+          rcases IsLocalizedModule.surj p.primeCompl f m with ⟨⟨z, s⟩, hz⟩
+          have eq : f (s • (y1 - y2)) = f (x • z) := by simp [← hm, ← hz, smul_comm s x m]
+          rcases IsLocalizedModule.exists_of_eq (S := p.primeCompl) eq with ⟨c, hc⟩
+          use c * s
+          apply sub_eq_zero.mp
+          have h : (0 : QuotSMulTop x M) = Submodule.Quotient.mk (c • s • (y1 - y2)) := by
+            simpa [hc] using (smul_eq_zero_of_right c <| (Submodule.Quotient.mk_eq_zero _).mpr <|
+              Submodule.smul_mem_pointwise_smul z x ⊤ Submodule.mem_top).symm
+          simp [h, smul_sub, mul_smul] }
+      exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) g reg.2 len
 
 variable [Small.{v'} Rₚ] [IsNoetherianRing Rₚ]
 
@@ -277,7 +286,8 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay [Small.{v} (R �
     [Module.Finite R M] [M.IsCohenMacaulay] [Nontrivial M] [Nontrivial Mₚ] :
     Module.supportDim Rₚ Mₚ = p.depth M := by
   let _ : Module.Finite Rₚ Mₚ := Module.Finite.of_isLocalizedModule p.primeCompl f
-  have : p.depth M ≠ ⊤ := sorry
+  have : p.depth M ≠ ⊤ :=
+    ne_top_of_le_ne_top (depth_ne_top M) (ideal_depth_le_depth p Ideal.IsPrime.ne_top' M)
   rcases ENat.ne_top_iff_exists.mp this with ⟨n, hn⟩
   induction' n with n ih generalizing M Mₚ
   · simp only [← hn, CharP.cast_eq_zero, WithBot.coe_zero]
@@ -332,7 +342,16 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay [Small.{v} (R �
     have : Unique (Module.support Rₚ Mₚ) := by
       simpa [this] using Set.uniqueSingleton _
     exact Order.krullDim_eq_zero_of_unique
-  · sorry
+  · have : Subsingleton ((ModuleCat.of R (Shrink.{v} (R ⧸ p))) →ₗ[R] M) := by
+      by_contra ntr
+      rw [not_subsingleton_iff_nontrivial, ← moduleDepth_eq_zero_of_hom_nontrivial] at ntr
+      simp [Ideal.depth, ntr] at hn
+    rcases IsSMulRegular.subsingleton_linearMap_iff.mp
+      (((Shrink.linearEquiv (R ⧸ p) R).congrLeft M R).symm.subsingleton) with ⟨a, mem, reg⟩
+    rw [Ideal.annihilator_quotient] at mem
+    let M' := ModuleCat.of R (QuotSMulTop a M)
+    #check isLocaliation_map_isSMulRegular_of_isSMulRegular p Rₚ a M Mₚ f reg
+    sorry
 
 lemma isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay [M.IsCohenMacaulay] :
     Mₚ.IsCohenMacaulay := by
