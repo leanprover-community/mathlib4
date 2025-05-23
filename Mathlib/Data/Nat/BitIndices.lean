@@ -49,7 +49,7 @@ theorem bitIndices_bit_false (n : ℕ) :
 
 @[simp] theorem bitIndices_two_mul_add_one (n : ℕ) :
     bitIndices (2 * n + 1) = 0 :: (bitIndices n).map (· + 1) := by
-   rw [← bitIndices_bit_true, bit_true]
+  rw [← bitIndices_bit_true, bit_true]
 
 @[simp] theorem bitIndices_two_mul (n : ℕ) :
     bitIndices (2 * n) = (bitIndices n).map (· + 1) := by

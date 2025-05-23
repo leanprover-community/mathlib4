@@ -318,8 +318,8 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
 /-- If `e₁ : R lhs₁ rhs₁`, `e₂ : R lhs₂ rhs₂` and `lhs₁ = rhs₂`, where `R` is a symmetric relation,
 prove `R lhs₁ rhs₁` is equivalent to `R lhs₂ rhs₂`.
 
- * if `lhs₁` is known to equal `lhs₂`, return `none`
- * if `lhs₁` is not known to equal `rhs₂`, fail. -/
+* if `lhs₁` is known to equal `lhs₂`, return `none`
+* if `lhs₁` is not known to equal `rhs₂`, fail. -/
 partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option Expr) := do
   let some (R₁, lhs₁, rhs₁) ← e₁.relSidesIfSymm? | return none
   let some (R₂, lhs₂, rhs₂) ← e₂.relSidesIfSymm? | return none
@@ -379,10 +379,10 @@ partial def mkDelayedProof (H : DelayedExpr) : CCM Expr := do
   | .heqSymm h => mkHEqSymm (← mkDelayedProof h)
 
 /-- Use the format of `H` to try and construct a proof or `lhs = rhs`:
- * If `H = .congr`, then use congruence.
- * If `H = .eqTrue`, try to prove `lhs = True` or `rhs = True`,
-   if they have the format `R a b`, by proving `a = b`.
- * Otherwise, return the (delayed) proof encoded by `H` itself. -/
+* If `H = .congr`, then use congruence.
+* If `H = .eqTrue`, try to prove `lhs = True` or `rhs = True`,
+  if they have the format `R a b`, by proving `a = b`.
+* Otherwise, return the (delayed) proof encoded by `H` itself. -/
 partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Expr := do
   match H with
   | .congr => mkCongrProof lhs rhs heqProofs

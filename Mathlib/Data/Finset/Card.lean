@@ -135,16 +135,15 @@ theorem card_pair_eq_one_or_two : #{a, b} = 1 ∨ #{a, b} = 2 := by
   simp [card_insert_eq_ite]
   tauto
 
-@[simp]
 theorem card_pair (h : a ≠ b) : #{a, b} = 2 := by
-  rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
+  simp [h]
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
 theorem card_erase_of_mem : a ∈ s → #(s.erase a) = #s - 1 :=
   Multiset.card_erase_of_mem
 
-@[simp]
+-- @[simp] -- removed because LHS is not in simp normal form
 theorem card_erase_add_one : a ∈ s → #(s.erase a) + 1 = #s :=
   Multiset.card_erase_add_one
 
