@@ -87,7 +87,8 @@ lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 @[simp, norm_cast] lemma coe_lt_enorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [enorm]
 @[simp, norm_cast] lemma enorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [enorm]
 
-@[simp] lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
+@[aesop (rule_sets := [finiteness]) safe apply, simp]
+lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
 @[simp] lemma enorm_lt_top : ‖x‖ₑ < ∞ := by simp [enorm]
 
 end ENorm
