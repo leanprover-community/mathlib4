@@ -94,7 +94,7 @@ elliptic net, elliptic divisibility sequence
 
 universe u v
 
-variable {R : Type u} [CommRing R] (W : ℤ → R)
+variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : ℤ → R) (f : R →+* S)
 
 namespace IsEllipticNet
 
@@ -142,6 +142,10 @@ lemma atom_odd (p q : ℤ) : atom W (2 * p + 1) (2 * q + 1) = W (p + q + 1) * W 
   simp_rw [atom, add_add_add_comm _ (1 : ℤ), ← two_mul, ← mul_add, add_sub_add_comm, sub_self,
     add_zero, ← mul_sub, Int.mul_tdiv_cancel_left _ two_ne_zero]
 
+@[simp]
+lemma map_atom (W : ℤ → R) (p q : ℤ) : f (atom W p q) = atom (f ∘ W) p q := by
+  simp_rw [atom, map_mul, Function.comp]
+
 /-- The elliptic relator `ERₐ(p, q, r, s)` obtained by a cyclic permutation of variables in
 `ER(p, q, r, s)`. Note that this is defined in terms of elliptic atoms, and hence should only be
 used when `p`, `q`, `r`, and `s` all have the same parity. -/
@@ -163,8 +167,7 @@ variable {W} in
 @[simp]
 lemma atomRel_same₁₄ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r : ℤ) :
     atomRel W p q r p = W p * W 0 * atom W q r := by
-  simp_rw [atomRel, atom_mul_atom odd p q, mul_comm <| atom W q p, sub_self, zero_add,
-    atom_same]
+  simp_rw [atomRel, atom_mul_atom odd p q, mul_comm <| atom W q p, sub_self, zero_add, atom_same]
 
 @[simp]
 lemma atomRel_same₂₃ (p q r : ℤ) : atomRel W p q q r = W q * W 0 * atom W p r := by
@@ -235,6 +238,10 @@ lemma atomRel_avg_sub {p q r s : ℤ} (parity : s % 2 = p % 2 ∧ s % 2 = q % 2 
     Int.mul_ediv_cancel' <| Int.dvd_add (h <| parity.2.1 ▸ parity.1) <| h parity.2.2]
   ring_nf
 
+@[simp]
+lemma map_atomRel (W : ℤ → R) (p q r s : ℤ) : f (atomRel W p q r s) = atomRel (f ∘ W) p q r s := by
+  simp_rw [atomRel, map_add, map_sub, map_mul, map_atom]
+
 /-- The elliptic relator `ER(p, q, r, s)` that defines an elliptic net. -/
 def rel (p q r s : ℤ) : R :=
   W (p + q + s) * W (p - q) * W (r + s) * W r - W (p + r + s) * W (p - r) * W (q + s) * W q +
@@ -258,8 +265,8 @@ variable {W} in
 @[simp]
 lemma rel_neg (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
     rel W (-p) (-q) (-r) (-s) = rel W p q r s := by
-  simp_rw [rel_eq, mul_neg, ← neg_add, atomRel_neg₁ odd, atomRel_neg₂ odd,
-    atomRel_neg₃ odd, atomRel_neg₄]
+  simp_rw [rel_eq, mul_neg, ← neg_add, atomRel_neg₁ odd, atomRel_neg₂ odd, atomRel_neg₃ odd,
+    atomRel_neg₄]
 
 lemma rel_even (m : ℤ) : rel W (m + 1) (m - 1) 1 0 = W (2 * m) * W 2 * W 1 ^ 2 -
     W (m - 1) ^ 2 * W m * W (m + 2) + W (m - 2) * W m * W (m + 1) ^ 2 := by
@@ -270,6 +277,10 @@ lemma rel_odd (m : ℤ) : rel W (m + 1) m 1 0 =
     W (2 * m + 1) * W 1 ^ 3 - W (m + 2) * W m ^ 3 + W (m - 1) * W (m + 1) ^ 3 := by
   rw [rel]
   ring_nf
+
+@[simp]
+lemma map_rel (W : ℤ → R) (p q r s : ℤ) : f (rel W p q r s) = rel (f ∘ W) p q r s := by
+  simp_rw [rel, map_add, map_sub, map_mul, Function.comp]
 
 end IsEllipticNet
 
@@ -717,22 +728,6 @@ noncomputable def complEDSRec {P : ℕ → Sort u} (zero : P 0) (one : P 1)
 end ComplEDS
 
 section Map
-
-variable {S : Type v} [CommRing S] (f : R →+* S)
-
-@[simp]
-lemma map_atom (p q : ℤ) : f (IsEllipticNet.atom W p q) = IsEllipticNet.atom (f ∘ W) p q := by
-  simp_rw [IsEllipticNet.atom, map_mul, Function.comp]
-
-@[simp]
-lemma map_atomRel (W : ℤ → R) (p q r s : ℤ) :
-    f (IsEllipticNet.atomRel W p q r s) = IsEllipticNet.atomRel (f ∘ W) p q r s := by
-  simp_rw [IsEllipticNet.atomRel, map_add, map_sub, map_mul, map_atom]
-
-@[simp]
-lemma map_rel (W : ℤ → R) (p q r s : ℤ) :
-    f (IsEllipticNet.rel W p q r s) = IsEllipticNet.rel (f ∘ W) p q r s := by
-  simp_rw [IsEllipticNet.rel, map_add, map_sub, map_mul, Function.comp]
 
 @[simp]
 lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
