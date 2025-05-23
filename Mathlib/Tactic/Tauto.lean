@@ -7,6 +7,7 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Core
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Logic.Basic
+import Mathlib.Tactic.ITauto
 import Qq
 
 /-!
@@ -214,10 +215,15 @@ The Lean 3 version of this tactic by default attempted to avoid classical reason
 where possible. This Lean 4 version makes no such attempt. The `itauto` tactic
 is designed for that purpose.
 -/
-syntax (name := tauto) "tauto" optConfig : tactic
+syntax (name := tauto_old) "tauto_old" optConfig : tactic
 
-elab_rules : tactic | `(tactic| tauto $cfg:optConfig) => do
+elab_rules : tactic | `(tactic| tauto_old $cfg:optConfig) => do
   let _cfg ← elabConfig cfg
   tautology
+
+syntax (name := tauto) "tauto" optConfig : tactic
+
+macro_rules
+  | `(tactic| tauto $cfg:optConfig) => `(tactic | first | itauto! | tauto_old $cfg)
 
 end Mathlib.Tactic.Tauto
