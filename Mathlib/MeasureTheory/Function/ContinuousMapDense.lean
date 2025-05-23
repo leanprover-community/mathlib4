@@ -74,9 +74,9 @@ consider two sets `s ⊆ u` which are respectively closed and open with `μ s < 
 Then one may find a continuous function `f` equal to `c` on `s` and to `0` outside of `u`,
 bounded by `‖c‖` everywhere, and such that the `ℒ^p` norm of `f - s.indicator (fun y ↦ c)` is
 arbitrarily small. Additionally, this function `f` belongs to `ℒ^p`. -/
-theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ ∞) {s u : Set α}
-    (s_closed : IsClosed s) (u_open : IsOpen u) (hsu : s ⊆ u) (hs : μ s ≠ ∞) (c : E) {ε : ℝ≥0∞}
-    (hε : ε ≠ 0) :
+theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ ∞ := by finiteness)
+    {s u : Set α} (s_closed : IsClosed s) (u_open : IsOpen u) (hsu : s ⊆ u)
+    (hs : μ s ≠ ∞ := by finiteness) (c : E) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ f : α → E,
       Continuous f ∧
         eLpNorm (fun x => f x - s.indicator (fun _y => c) x) p μ ≤ ε ∧
@@ -133,7 +133,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
 theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
     [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular]
-    (hp : p ≠ ∞) {f : α → E} (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    (hp : p ≠ ∞ := by finiteness) {f : α → E} (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E, HasCompactSupport g ∧ eLpNorm (f - g) p μ ≤ ε ∧ Continuous g ∧ MemLp g p μ := by
   suffices H :
       ∃ g : α → E, eLpNorm (f - g) p μ ≤ ε ∧ Continuous g ∧ MemLp g p μ ∧ HasCompactSupport g by
@@ -236,8 +236,8 @@ theorem Integrable.exists_hasCompactSupport_integral_sub_le
 
 /-- Any function in `ℒp` can be approximated by bounded continuous functions when `p < ∞`,
 version in terms of `eLpNorm`. -/
-theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p ≠ ∞) {f : α → E}
-    (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] {f : α → E}
+    (hp : p ≠ ∞ := by finiteness) (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α →ᵇ E, eLpNorm (f - (g : α → E)) p μ ≤ ε ∧ MemLp g p μ := by
   suffices H :
       ∃ g : α → E, eLpNorm (f - g) p μ ≤ ε ∧ Continuous g ∧ MemLp g p μ ∧ IsBounded (range g) by
@@ -332,7 +332,7 @@ variable (E μ)
 
 /-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
 theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fact (1 ≤ p)]
-    (hp : p ≠ ∞) [μ.WeaklyRegular] :
+    (hp : p ≠ ∞ := by finiteness) [μ.WeaklyRegular] :
     Dense (boundedContinuousFunction E p μ : Set (Lp E p μ)) := by
   intro f
   refine (mem_closure_iff_nhds_basis EMetric.nhds_basis_closed_eball).2 fun ε hε ↦ ?_
@@ -344,7 +344,7 @@ theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fa
 
 /-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
 theorem boundedContinuousFunction_topologicalClosure [SecondCountableTopologyEither α E]
-    [Fact (1 ≤ p)] (hp : p ≠ ∞) [μ.WeaklyRegular] :
+    [Fact (1 ≤ p)] (hp : p ≠ ∞ := by finiteness) [μ.WeaklyRegular] :
     (boundedContinuousFunction E p μ).topologicalClosure = ⊤ :=
   SetLike.ext' <| (boundedContinuousFunction_dense E μ hp).closure_eq
 
@@ -359,7 +359,7 @@ variable (E) (μ)
 
 namespace BoundedContinuousFunction
 
-theorem toLp_denseRange [μ.WeaklyRegular] [IsFiniteMeasure μ] (hp : p ≠ ∞) :
+theorem toLp_denseRange [μ.WeaklyRegular] [IsFiniteMeasure μ] (hp : p ≠ ∞ := by finiteness) :
     DenseRange (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ) := by
   simpa only [← range_toLp p μ (𝕜 := 𝕜)]
     using MeasureTheory.Lp.boundedContinuousFunction_dense E μ hp
@@ -371,7 +371,8 @@ namespace ContinuousMap
 /-- Continuous functions are dense in `MeasureTheory.Lp`, `1 ≤ p < ∞`. This theorem assumes that
 the domain is a compact space because otherwise `ContinuousMap.toLp` is undefined. Use
 `BoundedContinuousFunction.toLp_denseRange` if the domain is not a compact space. -/
-theorem toLp_denseRange [CompactSpace α] [μ.WeaklyRegular] [IsFiniteMeasure μ] (hp : p ≠ ∞) :
+theorem toLp_denseRange [CompactSpace α] [μ.WeaklyRegular] [IsFiniteMeasure μ]
+    (hp : p ≠ ∞ := by finiteness) :
     DenseRange (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ) := by
   refine (BoundedContinuousFunction.toLp_denseRange _ _ 𝕜 hp).mono ?_
   refine range_subset_iff.2 fun f ↦ ?_

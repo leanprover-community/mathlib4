@@ -859,7 +859,8 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
     _ = (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ) + 2 * ε * μ s := by
       simp only [lintegral_add_right' _ aemeasurable_const, setLIntegral_const]
 
-theorem addHaar_image_le_lintegral_abs_det_fderiv_aux2 (hs : MeasurableSet s) (h's : μ s ≠ ∞)
+theorem addHaar_image_le_lintegral_abs_det_fderiv_aux2
+    (hs : MeasurableSet s) (h's : μ s ≠ ∞ := by finiteness)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) :
     μ (f '' s) ≤ ∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ := by
   -- We just need to let the error tend to `0` in the previous lemma.
@@ -1012,7 +1013,8 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
       ext1 i
       rw [mul_assoc, two_mul, add_assoc]
 
-theorem lintegral_abs_det_fderiv_le_addHaar_image_aux2 (hs : MeasurableSet s) (h's : μ s ≠ ∞)
+theorem lintegral_abs_det_fderiv_le_addHaar_image_aux2 (hs : MeasurableSet s)
+    (h's : μ s ≠ ∞ := by finiteness)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
     (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ) ≤ μ (f '' s) := by
   -- We just need to let the error tend to `0` in the previous lemma.

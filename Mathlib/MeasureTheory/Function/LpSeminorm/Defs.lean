@@ -91,15 +91,15 @@ def eLpNorm {_ : MeasurableSpace α}
 
 variable {μ ν : Measure α}
 
-theorem eLpNorm_eq_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} :
+theorem eLpNorm_eq_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞ := by finiteness) {f : α → ε} :
     eLpNorm f p μ = eLpNorm' f (ENNReal.toReal p) μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top]
 
 lemma eLpNorm_nnreal_eq_eLpNorm' {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ = eLpNorm' f p μ :=
   eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top
 
-theorem eLpNorm_eq_lintegral_rpow_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} :
-    eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
+theorem eLpNorm_eq_lintegral_rpow_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞ := by finiteness)
+    {f : α → ε} : eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
   rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top, eLpNorm'_eq_lintegral_enorm]
 
 @[deprecated (since := "2025-01-17")]
