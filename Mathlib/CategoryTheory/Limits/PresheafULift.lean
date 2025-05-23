@@ -64,7 +64,7 @@ In the case where `ℰ = Cᵒᵖ ⥤ Type u` and `A = yoneda`, this functor is i
 
 Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 -/
-@[simps!]
+@[simps! obj_map map_app]
 def restrictedULiftYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₂) :=
     uliftYoneda.{w} ⋙ (whiskeringLeft _ _ _).obj A.op
 
@@ -75,7 +75,16 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
       (P ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E) where
   toFun f :=
     { app _ x := ULift.up (f.app (CostructuredArrow.mk (uliftYonedaEquiv.symm x)))
-      naturality := sorry }
+      naturality _ _ g := by
+        ext x
+        let φ : CostructuredArrow.mk (uliftYonedaEquiv.{max w v₂}.symm (P.map g x)) ⟶
+          CostructuredArrow.mk (uliftYonedaEquiv.symm x) :=
+            CostructuredArrow.homMk g.unop (by
+              dsimp
+              rw [uliftYonedaEquiv_symm_map])
+        dsimp
+        congr 1
+        simpa using (f.naturality φ).symm }
   invFun g :=
     { app y := (uliftYonedaEquiv.{max w v₂} (y.hom ≫ g)).down
       naturality := sorry }
@@ -93,7 +102,7 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
   right_inv := sorry
 
 section
-
+#exit
 variable (P : ℰᵒᵖ ⥤ Type (max w v₁ v₂))
 
 example [HasColimitsOfSize.{v₁, max u₁ v₁ v₂ w} ℰ] :
