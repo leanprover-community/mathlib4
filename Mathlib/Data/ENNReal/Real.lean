@@ -104,7 +104,7 @@ theorem toNNReal_lt_toNNReal (ha : a ≠ ∞ := by finiteness) (hb : b ≠ ∞ :
   ⟨fun h => by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_lt_coe], toNNReal_strict_mono hb⟩
 
 theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
-  @toNNReal_coe p ▸ toNNReal_strict_mono coe_ne_top h
+  @toNNReal_coe p ▸ toNNReal_strict_mono (by finiteness) h
 
 theorem toReal_max (hr : a ≠ ∞ := by finiteness) (hp : b ≠ ∞ := by finiteness) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=
@@ -260,7 +260,7 @@ theorem ofReal_lt_iff_lt_toReal {a : ℝ} {b : ℝ≥0∞} (ha : 0 ≤ a) (hb : 
   simpa [ENNReal.ofReal, ENNReal.toReal] using Real.toNNReal_lt_iff_lt_coe ha
 
 theorem ofReal_lt_coe_iff {a : ℝ} {b : ℝ≥0} (ha : 0 ≤ a) : ENNReal.ofReal a < b ↔ a < b :=
-  (ofReal_lt_iff_lt_toReal ha coe_ne_top).trans <| by rw [coe_toReal]
+  (ofReal_lt_iff_lt_toReal ha).trans <| by rw [coe_toReal]
 
 theorem le_ofReal_iff_toReal_le {a : ℝ≥0∞} {b : ℝ} (ha : a ≠ ∞ := by finiteness) (hb : 0 ≤ b) :
     a ≤ ENNReal.ofReal b ↔ ENNReal.toReal a ≤ b := by
