@@ -127,12 +127,7 @@ instance : LieModule R (Matrix ι ι R) (ι → R) := sorry
 
 instance : LieModule.IsFaithful R (Matrix ι ι R) (ι → R) := sorry
 
-example : LieRingModule b.lieAlgebra (b.support ⊕ ι → R) := inferInstance
-
 example : LieModule R b.lieAlgebra (b.support ⊕ ι → R) := inferInstance
-
--- should follow from general instance about sub-Lie-algebras
-example : LieModule.IsFaithful R b.lieAlgebra (b.support ⊕ ι → R) := sorry
 
 example [IsNoetherianRing R] : Module.Finite R b.lieAlgebra := inferInstance
 
