@@ -221,6 +221,7 @@ elab_rules : tactic | `(tactic| tauto_old $cfg:optConfig) => do
   let _cfg ← elabConfig cfg
   tautology
 
+/-- TODO -/
 syntax (name := tauto) "tauto" optConfig : tactic
 
 macro_rules
