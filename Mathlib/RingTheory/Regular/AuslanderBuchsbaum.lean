@@ -76,11 +76,6 @@ open IsLocalRing RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
-local instance (I : Ideal R) [Small.{v, u} R] : Small.{v, u} (R ⧸ I) :=
-  have : Function.Surjective ((Ideal.Quotient.mk I).comp (Shrink.ringEquiv R).toRingHom) := by
-    simpa using Ideal.Quotient.mk_surjective
-  Small.mk' (RingHom.quotientKerEquivOfSurjective this).symm.toEquiv
-
 lemma ModuleCat.free_of_projective_of_isLocalRing [IsLocalRing R] (M : ModuleCat.{v} R)
     [Module.Finite R M] [Projective M] : Module.Free R M :=
   Module.free_of_flat_of_isLocalRing
