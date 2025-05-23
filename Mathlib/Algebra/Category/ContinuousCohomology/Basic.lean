@@ -13,7 +13,7 @@ import Mathlib.Topology.ContinuousMap.Algebra
 /-!
 
 # Continuous cohomology
-
+f
 We define continuous cohomology as the homology of homogeneous cochains.
 
 ## Impleemntation details
@@ -117,7 +117,8 @@ lemma d_comp_d (n : ℕ) :
   | succ n ih =>
     rw [d_succ R G (n + 1), Preadditive.comp_sub]
     nth_rw 2 [d_succ]
-    rw [Preadditive.sub_comp, ← whiskerRight_comp, ih, whiskerRight_zero, sub_zero, sub_eq_zero]
+    rw [Preadditive.sub_comp, ← whiskerRight_comp, ih,
+      Functor.whiskerRight_zero, sub_zero, sub_eq_zero]
     rfl
 
 /-- The complex of functors whose behaviour pointwise takes an `R`-linear `G`-representation `M`
