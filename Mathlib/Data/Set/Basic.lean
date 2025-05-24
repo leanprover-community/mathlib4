@@ -218,6 +218,8 @@ theorem _root_.Membership.mem.out {p : α → Prop} {a : α} (h : a ∈ { x | p 
 theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
   Iff.rfl
 
+@[deprecated (since := "2025-05-24")] alias nmem_setOf_iff := notMem_setOf_iff
+
 @[simp]
 theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s :=
   rfl

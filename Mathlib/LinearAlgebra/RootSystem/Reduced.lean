@@ -83,6 +83,8 @@ lemma two_smul_notMem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.
       (smul_left_injective ℤ <| P.ne_zero i).eq_iff] at hj
     norm_num at hj
 
+@[deprecated (since := "2025-05-24")] alias two_smul_nmem_range_root := two_smul_notMem_range_root
+
 lemma linearIndependent_of_add_mem_range_root
     [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :

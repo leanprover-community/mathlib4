@@ -550,6 +550,9 @@ theorem fderivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : fderivWithin
 theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 :=
   fderivWithin_zero_of_not_accPt (h ·.clusterPt.mem_closure)
 
+@[deprecated (since := "2025-05-24")]
+alias fderivWithin_zero_of_nmem_closure := fderivWithin_zero_of_notMem_closure
+
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
   simp only [fderivWithin, dif_pos h]
@@ -1442,9 +1445,15 @@ theorem HasStrictFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
   rw [notMem_tsupport_iff_eventuallyEq] at h
   exact (hasStrictFDerivAt_const (0 : F) x).congr_of_eventuallyEq h.symm
 
+@[deprecated (since := "2025-05-24")]
+alias HasStrictFDerivAt.of_nmem_tsupport := HasStrictFDerivAt.of_notMem_tsupport
+
 theorem HasFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
   (HasStrictFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivAt
+
+@[deprecated (since := "2025-05-24")]
+alias HasFDerivAt.of_nmem_tsupport := HasFDerivAt.of_notMem_tsupport
 
 theorem HasFDerivWithinAt.of_notMem_tsupport {s : Set E} {x : E} (h : x ∉ tsupport f) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=

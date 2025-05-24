@@ -260,6 +260,9 @@ theorem hyperplane_separation_of_notMem (K : ProperCone ℝ E) {f : E →L[ℝ] 
     (disj : b ∉ K.map f) : ∃ y : F, adjoint f y ∈ K.dual ∧ ⟪y, b⟫_ℝ < 0 := by
   contrapose! disj; rwa [K.hyperplane_separation]
 
+@[deprecated (since := "2025-05-24")]
+alias hyperplane_separation_of_nmem := hyperplane_separation_of_notMem
+
 end CompleteSpace
 
 end ProperCone

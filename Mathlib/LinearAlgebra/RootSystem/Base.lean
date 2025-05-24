@@ -213,10 +213,14 @@ lemma sub_notMem_range_root [CharZero R] [Finite ι]
   · simpa [hij, f] using pos j
   · simpa [hij, f] using neg i
 
+@[deprecated (since := "2025-05-24")] alias sub_nmem_range_root := sub_notMem_range_root
+
 lemma sub_notMem_range_coroot [CharZero R] [Finite ι]
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.coroot i - P.coroot j ∉ range P.coroot :=
   b.flip.sub_notMem_range_root hi hj
+
+@[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
 
 end RootPairing
 

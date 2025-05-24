@@ -179,6 +179,10 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem (K : 
       _ = ⟪b - z, b - z + z⟫_ℝ := (inner_add_right _ _ _).symm
       _ = ⟪b - z, b⟫_ℝ := by rw [sub_add_cancel]
 
+@[deprecated (since := "2025-05-24")]
+alias ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem :=
+  ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem
+
 /-- The inner dual of inner dual of a non-empty, closed convex cone is itself. -/
 theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) :

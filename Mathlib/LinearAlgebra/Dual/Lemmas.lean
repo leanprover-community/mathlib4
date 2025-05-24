@@ -302,6 +302,9 @@ theorem exists_dual_map_eq_bot_of_notMem {x : M} (hx : x ∉ p) (hp' : Free R (M
   rwa [← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
     ← forall_dual_apply_eq_zero_iff (K := R), not_forall] at hx
 
+@[deprecated (since := "2025-05-24")]
+alias exists_dual_map_eq_bot_of_nmem := exists_dual_map_eq_bot_of_notMem
+
 theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p)) :
     ∃ f : Dual R M, f ≠ 0 ∧ p.map f = ⊥ := by
   obtain ⟨x, hx⟩ : ∃ x : M, x ∉ p := by rw [lt_top_iff_ne_top] at hp; contrapose! hp; ext; simp [hp]

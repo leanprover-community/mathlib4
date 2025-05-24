@@ -267,6 +267,8 @@ theorem inter_singleton_eq_empty : s ∩ {a} = ∅ ↔ a ∉ s := by
 theorem notMem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s.Nonempty :=
   nonempty_iff_ne_empty.symm
 
+@[deprecated (since := "2025-05-24")] alias nmem_singleton_empty := notMem_singleton_empty
+
 instance uniqueSingleton (a : α) : Unique (↥({a} : Set α)) :=
   ⟨⟨⟨a, mem_singleton a⟩⟩, fun ⟨_, h⟩ => Subtype.eq h⟩
 
