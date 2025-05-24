@@ -14,9 +14,9 @@ This file describes multilinear maps on direct sums.
 ## Main results
 
 * `MultilinearMap.fromDirectSumEquiv` : If 'ι` is a `Fintype`, `κ i` is a family of types
-indexed by `ι` and we are given a `R`-module `M i j` for every `i : ι` and `j : κ i`, this is
-the linear equivalence between `Π p : (i : ι) → κ i, MultilinearMap R (fun i ↦ M i (p i)) M'` and
-`MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M'`.
+  indexed by `ι` and we are given a `R`-module `M i j` for every `i : ι` and `j : κ i`, this is
+  the linear equivalence between `Π p : (i : ι) → κ i, MultilinearMap R (fun i ↦ M i (p i)) M'` and
+  `MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M'`.
 -/
 
 namespace MultilinearMap
@@ -30,6 +30,7 @@ variable {M : (i : ι) → κ i → Type*} {M' : Type*}
 variable [Π i (j : κ i), AddCommMonoid (M i j)] [AddCommMonoid M']
 variable [Π i (j : κ i), Module R (M i j)] [Module R M']
 
+omit [DecidableEq ι] in
 /-- Two multilinear maps from direct sums are equal if they agree on the generators. -/
 @[ext]
 theorem directSum_ext ⦃f g : MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M'⦄
@@ -39,7 +40,7 @@ theorem directSum_ext ⦃f g : MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) 
   dfinsupp_ext h
 
 /-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
-on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ ⨁ j : κ i, M i j`.-/
+on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ ⨁ j : κ i, M i j`. -/
 def fromDirectSumEquiv :
     ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) M') ≃ₗ[R]
     MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M' :=
@@ -72,7 +73,7 @@ theorem fromDirectSumEquiv_apply
     (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
     (x : Π i, ⨁ (j : κ i), M i j) :
     fromDirectSumEquiv R κ f x =
-      ∑ p in Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) := by
+      ∑ p ∈ Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) := by
   classical
   refine (DFinsupp.sumAddHom_apply _ _).trans ?_
   refine Finset.sum_subset (MultilinearMap.support_dfinsuppFamily_subset _ _) ?_

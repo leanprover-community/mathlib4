@@ -67,7 +67,9 @@ This belongs to a companion PR.
 
 noncomputable section
 
-open DirectSum TensorProduct Set LinearMap Submodule
+open DirectSum TensorProduct
+
+open Set LinearMap Submodule
 
 section TensorProduct
 
@@ -371,15 +373,12 @@ theorem finsuppTensorFinsuppRid_self :
   rw [finsuppTensorFinsupp', finsuppTensorFinsuppLid, finsuppTensorFinsuppRid,
     TensorProduct.lid_eq_rid]
 
-end
-
-/-!
-The case of `PiTensorProduct`.
--/
+/-! ### The case of `PiTensorProduct` -/
 
 section PiTensorProduct
 
 open PiTensorProduct BigOperators
+open TensorProduct
 
 attribute [local ext] TensorProduct.ext
 
@@ -394,8 +393,8 @@ equivalent to `∏ i, κ i →₀ ⨂[R] i, M i`.
 -/
 def finsuppPiTensorProduct : (⨂[R] i, κ i →₀ M i) ≃ₗ[R] ((i : ι) → κ i) →₀ ⨂[R] i, M i :=
   PiTensorProduct.congr (fun i ↦ finsuppLEquivDirectSum R (M i) (κ i)) ≪≫ₗ
-  (PiTensorProduct.directSum R (fun (i : ι) (_ : κ i) ↦ M i)) ≪≫ₗ
-  (finsuppLEquivDirectSum R (⨂[R] i, M i) ((i : ι) → κ i)).symm
+    (PiTensorProduct.directSum R (fun (i : ι) (_ : κ i) ↦ M i)) ≪≫ₗ
+    (finsuppLEquivDirectSum R (⨂[R] i, M i) ((i : ι) → κ i)).symm
 
 @[simp]
 theorem finsuppPiTensorProduct_tprod_single (p : (i : ι) → κ i) (m : (i : ι) → M i) :
@@ -416,8 +415,7 @@ theorem finsuppPiTensorProduct_symm_single_tprod (p : (i : ι) → κ i) (m : (i
     ⨂ₜ[R] i, Finsupp.single (p i) (m i) :=
   (LinearEquiv.symm_apply_eq _).2 (finsuppPiTensorProduct_tprod_single _ _ _ _ _).symm
 
-/-- A variant of `finsuppPiTensorProduct` where all modules `M i` are the ground ring.
--/
+/-- A variant of `finsuppPiTensorProduct` where all modules `M i` are the ground ring. -/
 def finsuppPiTensorProduct' : (⨂[R] i, (κ i →₀ R)) ≃ₗ[R] ((i : ι) → κ i) →₀ R :=
   finsuppPiTensorProduct R κ (fun _ ↦ R) ≪≫ₗ
   Finsupp.lcongr (Equiv.refl ((i : ι) → κ i)) (constantBaseRingEquiv ι R).toLinearEquiv
@@ -436,3 +434,5 @@ theorem finsuppPiTensorProduct'_tprod_single (p : (i : ι) → κ i) (r : ι →
   simp [finsuppPiTensorProduct']
 
 end PiTensorProduct
+
+end

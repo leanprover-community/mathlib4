@@ -57,9 +57,8 @@ theorem directSum_symm_lof_tprod (p : Π i, κ i) (x : Π i, M i (p i)) :
   simp [PiTensorProduct.directSum]
 
 @[simp]
-theorem directSum_tprod_apply (x : Π i, ⨁ j, M i j) (p : Π i, κ i):
-    PiTensorProduct.directSum R M (tprod R x) p =
-      ⨂ₜ[R] i, x i (p i) := by
+theorem directSum_tprod_apply (x : Π i, ⨁ j, M i j) (p : Π i, κ i) :
+    PiTensorProduct.directSum R M (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
   -- restate with bundled morphisms, to let `ext` fire
   let appLHS := DFinsupp.lapply (R := R) (M := fun p : Π i, κ i => ⨂[R] i, M i (p i)) p
   let appRHS (i : ι) : (⨁ j, M i j) →ₗ[R] M i (p i) := DFinsupp.lapply (R := R) (p i)
@@ -79,6 +78,5 @@ theorem directSum_tprod_apply (x : Π i, ⨁ j, M i j) (p : Π i, κ i):
     erw [DFinsupp.single_eq_of_ne hp]
     refine (MultilinearMap.map_coord_zero _ i ?_).symm
     erw [DFinsupp.single_eq_of_ne hi]
-
 
 end PiTensorProduct
