@@ -208,7 +208,7 @@ def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
 instance : Membership α (FreeMonoid α) := ⟨mem⟩
 
 @[to_additive]
-theorem notMem_one : ¬ m ∈ (1 : FreeMonoid α) := List.not_mem_nil
+theorem notMem_one : m ∉ (1 : FreeMonoid α) := List.not_mem_nil
 
 @[deprecated (since := "2025-05-23")]
 alias _root_.FreeAddMonoid.not_mem_zero := FreeAddMonoid.notMem_zero
