@@ -843,5 +843,16 @@ lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S
         equals S⁻¹ =>
           exact S_eq_Sinv
       simp
-    . sorry
-  . sorry
+    .
+      intro s hs
+      apply summable_of_finite_support
+      simp only [one_div, Function.support_mul, Function.support_inv]
+      apply Set.Finite.inter_of_right
+      simp [Pi.single, Function.update]
+      apply Set.Finite.subset (s := {(opAdd (g * s⁻¹))})
+      . simp
+      . intro a ha
+        simp at ha
+        simp [opAdd]
+        simp [← ha]
+  . exact hf
