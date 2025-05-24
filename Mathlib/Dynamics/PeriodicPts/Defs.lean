@@ -284,7 +284,8 @@ theorem minimalPeriod_pos_iff_mem_periodicPts : 0 < minimalPeriod f x ↔ x ∈ 
   ⟨not_imp_not.1 fun h => by simp only [minimalPeriod, dif_neg h, lt_irrefl 0, not_false_iff],
     minimalPeriod_pos_of_mem_periodicPts⟩
 
-theorem minimalPeriod_eq_zero_iff_notMem_periodicPts : minimalPeriod f x = 0 ↔ x ∉ periodicPts f := by
+theorem minimalPeriod_eq_zero_iff_notMem_periodicPts :
+    minimalPeriod f x = 0 ↔ x ∉ periodicPts f := by
   rw [← minimalPeriod_pos_iff_mem_periodicPts, not_lt, nonpos_iff_eq_zero]
 
 @[deprecated (since := "2025-05-24")]

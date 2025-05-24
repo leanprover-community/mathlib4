@@ -82,7 +82,8 @@ lemma coe_natDegree_eq_order_map (distinguish : g.IsDistinguishedAt I)
     (notMem : PowerSeries.constantCoeff R h ∉ I) (eq : f = g * h) :
     g.natDegree = (f.map (Ideal.Quotient.mk I)).order := by
   rw [natDegree, distinguish.degree_eq_coe_lift_order_map f h notMem eq]
-  exact ENat.coe_lift _ (order_finite_iff_ne_zero.2 (distinguish.map_ne_zero_of_eq_mul f h notMem eq))
+  exact ENat.coe_lift _ <| order_finite_iff_ne_zero.2 <|
+    distinguish.map_ne_zero_of_eq_mul f h notMem eq
 
 end degree_eq_order_map
 

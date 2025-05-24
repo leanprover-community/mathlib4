@@ -92,7 +92,7 @@ alias eventually_cocardinal_nmem_of_card_lt := eventually_cocardinal_notMem_of_c
 
 theorem _root_.Finset.eventually_cocardinal_notMem (s : Finset α) :
     ∀ᶠ x in cocardinal α hreg, x ∉ s :=
-  eventually_cocardinal_notMem_of_card_lt <| lt_of_lt_of_le (finset_card_lt_aleph0 s) (hreg.aleph0_le)
+  eventually_cocardinal_notMem_of_card_lt <| (finset_card_lt_aleph0 s).trans_le (hreg.aleph0_le)
 
 @[deprecated (since := "2025-05-24")]
 alias _root_.Finset.eventually_cocardinal_nmem := _root_.Finset.eventually_cocardinal_notMem
