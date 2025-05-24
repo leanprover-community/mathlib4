@@ -3,8 +3,8 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Data.Finset.Pairwise
 
 /-!
@@ -34,7 +34,7 @@ it is a member of the support of a member of the collection:
 
 variable {ι M : Type*} [DecidableEq ι]
 
-theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
+theorem List.support_sum_subset [AddZeroClass M] (l : List (ι →₀ M)) :
     l.sum.support ⊆ l.foldr (Finsupp.support · ⊔ ·) ∅ := by
   induction' l with hd tl IH
   · simp
@@ -70,7 +70,9 @@ theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} 
     x ∈ s.sup Finsupp.support ↔ ∃ f ∈ s, x ∈ f.support :=
   Multiset.mem_sup_map_support_iff
 
-theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
+open scoped Function -- required for scoped `on` notation
+
+theorem List.support_sum_eq [AddZeroClass M] (l : List (ι →₀ M))
     (hl : l.Pairwise (_root_.Disjoint on Finsupp.support)) :
     l.sum.support = l.foldr (Finsupp.support · ⊔ ·) ∅ := by
   induction' l with hd tl IH

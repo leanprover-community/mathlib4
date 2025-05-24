@@ -3,16 +3,17 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.Pi
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Results on bases of tensor products
 
 In the file we construct a basis for the base change of a module to an algebra,
-and deducde that `Module.Free` is stable under base change.
+and deduce that `Module.Free` is stable under base change.
 
 ## Main declarations
 
@@ -22,6 +23,8 @@ and deducde that `Module.Free` is stable under base change.
 
 -/
 
+assert_not_exists Cardinal
+
 suppress_compilation
 
 open scoped TensorProduct
@@ -30,7 +33,7 @@ namespace Algebra
 
 namespace TensorProduct
 
-variable {R S A : Type*}
+variable {R A : Type*}
 
 section Basis
 

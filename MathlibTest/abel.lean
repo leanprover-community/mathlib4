@@ -141,3 +141,49 @@ example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False :
   abel_nf at *
   guard_hyp w : 0 = y + z
   assumption
+
+section
+abbrev myId (a : ℤ) : ℤ := a
+
+/-
+Test that when `abel_nf` normalizes multiple expressions which contain a particular atom, it uses a
+form for that atom which is consistent between expressions.
+
+We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId x`, it also complains
+about differing instance paths.
+-/
+/--
+info: α : Type _
+a b : α
+x : ℤ
+R : ℤ → ℤ → Prop
+hR : Reflexive R
+h : R (2 • myId x) (2 • myId x)
+⊢ True
+-/
+#guard_msgs (info) in
+set_option pp.mvars false in
+example (x : ℤ) (R : ℤ → ℤ → Prop) (hR : Reflexive R) : True := by
+  have h : R (myId x + x) (x + myId x) := hR ..
+  abel_nf at h
+  trace_state
+  trivial
+
+end
+
+-- Test that `abel_nf` doesn't unfold local let expressions, and `abel_nf!` does
+example [AddCommGroup α] (x : α) (f : α → α) : True := by
+  let y := x
+  have : x = y := by
+    fail_if_success abel_nf
+    abel_nf!
+  have : x - y = 0 := by
+    abel_nf
+    abel_nf!
+  have : f x = f y := by
+    fail_if_success abel_nf
+    abel_nf!
+  have : f x - f y = 0 := by
+    abel_nf
+    abel_nf!
+  trivial

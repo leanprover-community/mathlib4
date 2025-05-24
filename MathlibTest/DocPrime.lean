@@ -78,3 +78,11 @@ note: this linter can be disabled with `set_option linter.docPrime false`
 -/
 #guard_msgs in
 def def_no_doc' : True := .intro
+
+-- Anonymous declarations in a primed namespace should not get flagged by the linter.
+namespace Foo'
+
+example : True := .intro
+instance : True := .intro
+
+end Foo'

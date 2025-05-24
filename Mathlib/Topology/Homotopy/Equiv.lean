@@ -42,7 +42,7 @@ structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [Topologi
   left_inv : (invFun.comp toFun).Homotopic (ContinuousMap.id X)
   right_inv : (toFun.comp invFun).Homotopic (ContinuousMap.id Y)
 
-scoped infixl:25 " ≃ₕ " => ContinuousMap.HomotopyEquiv
+@[inherit_doc] scoped infixl:25 " ≃ₕ " => ContinuousMap.HomotopyEquiv
 
 namespace HomotopyEquiv
 

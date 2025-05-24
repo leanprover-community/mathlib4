@@ -12,7 +12,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 We intentionally keep imports minimal here as this file is used by `Mathlib.Tactic.NormNum`.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 universe u
 
@@ -24,8 +24,6 @@ theorem Invertible.ne_zero [MulZeroOneClass α] (a : α) [Nontrivial α] [Invert
     calc
       0 = ⅟ a * a := by simp [ha]
       _ = 1 := invOf_mul_self
-
-@[deprecated (since := "2024-08-15")] alias nonzero_of_invertible := Invertible.ne_zero
 
 instance (priority := 100) Invertible.toNeZero [MulZeroOneClass α] [Nontrivial α] (a : α)
     [Invertible a] : NeZero a :=

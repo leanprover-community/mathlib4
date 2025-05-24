@@ -3,7 +3,7 @@ Copyright (c) 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Topological space structure on the opposite monoid and on the units group
@@ -146,7 +146,7 @@ theorem continuous_val : Continuous ((↑) : Mˣ → M) :=
 protected theorem continuous_iff {f : X → Mˣ} :
     Continuous f ↔ Continuous (val ∘ f) ∧ Continuous (fun x => ↑(f x)⁻¹ : X → M) := by
   simp only [isInducing_embedProduct.continuous_iff, embedProduct_apply, Function.comp_def,
-    continuous_prod_mk, opHomeomorph.symm.isInducing.continuous_iff, opHomeomorph_symm_apply,
+    continuous_prodMk, opHomeomorph.symm.isInducing.continuous_iff, opHomeomorph_symm_apply,
     unop_op]
 
 @[to_additive]

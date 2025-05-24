@@ -82,7 +82,7 @@ mutual
     assumeInstancesCommute
     return .isNat sα c q(CharP.isNat_pow (f := $f) $instCharP (.refl $f) $pa $pb $pn $r)
 
-  /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentation, otherwise
+  /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentiation, otherwise
       reduce it using `norm_num`. -/
   partial def normIntNumeral' {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
       (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) :=
@@ -192,9 +192,9 @@ match Expr.getAppFnArgs t with
     let .some instRing ← trySynthInstanceQ q(Ring $t) | return .failure
 
     let n ← mkFreshExprMVarQ q(ℕ)
-    let .some instCharP ← findLocalDeclWithType? q(CharP $t $n) | return .failure
+    let .some instCharP ← findLocalDeclWithTypeQ? q(CharP $t $n) | return .failure
 
-    return .intLike (← instantiateMVarsQ n) instRing (.fvar instCharP)
+    return .intLike (← instantiateMVarsQ n) instRing instCharP
 
 /-- Given an expression `e`, determine whether it is a numeric expression in characteristic `n`,
 and if so, reduce `e` modulo `n`.
@@ -251,11 +251,8 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   let ext ← match ext? with
   | some ext => pure ext
   | none => throwError "internal error: reduce_mod_char not registered as simp extension"
-  let ctx : Simp.Context := {
-    config := config,
-    congrTheorems := congrTheorems,
-    simpTheorems := #[← ext.getTheorems]
-  }
+  let ctx ← Simp.mkContext config (congrTheorems := congrTheorems)
+    (simpTheorems := #[← ext.getTheorems])
   let discharge := Mathlib.Meta.NormNum.discharge ctx
   let r : Simp.Result := {expr := e}
   let pre := Simp.preDefault #[] >> fun e =>

@@ -7,18 +7,30 @@ import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Common
 
 /-!
-The type `Vector` represents lists with fixed length.
+The type `List.Vector` represents lists with fixed length.
+
+TODO: The API of `List.Vector` is quite incomplete relative to `Vector`,
+and in particular does not use `x[i]` (that is `GetElem` notation) as the preferred accessor.
+Any combination of reducing the use of `List.Vector` in Mathlib, or modernising its API,
+would be welcome.
 -/
 
 assert_not_exists Monoid
-namespace Mathlib
 
 universe u v w
-/-- `Vector α n` is the type of lists of length `n` with elements of type `α`. -/
-def Vector (α : Type u) (n : ℕ) :=
+/--
+`List.Vector α n` is the type of lists of length `n` with elements of type `α`.
+
+Note that there is also `Vector α n` in the root namespace,
+which is the type of *arrays* of length `n` with elements of type `α`.
+
+Typically, if you are doing programming or verification, you will primarily use `Vector α n`,
+and if you are doing mathematics, you may want to use `List.Vector α n` instead.
+-/
+def List.Vector (α : Type u) (n : ℕ) :=
   { l : List α // l.length = n }
 
-namespace Vector
+namespace List.Vector
 
 variable {α β σ φ : Type*} {n : ℕ} {p : α → Prop}
 
@@ -116,7 +128,7 @@ def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
 
 /-- Vector obtained by repeating an element. -/
 def replicate (n : ℕ) (a : α) : Vector α n :=
-  ⟨List.replicate n a, List.length_replicate n a⟩
+  ⟨List.replicate n a, List.length_replicate⟩
 
 /-- Drop `i` elements from a vector of length `n`; we can have `i > n`. -/
 def drop (i : ℕ) : Vector α n → Vector α (n - i)
@@ -129,8 +141,6 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
   | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx_of_lt] <;> rw [p]; exact i.2⟩
-
-@[deprecated (since := "2024-05-04")] alias removeNth := eraseIdx
 
 /-- Vector of length `n` from a function on `Fin n`. -/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n
@@ -240,6 +250,4 @@ lemma getElem_def (v : Vector α n) (i : ℕ) {hi : i < n} :
 lemma toList_getElem (v : Vector α n) (i : ℕ) {hi : i < v.toList.length} :
     v.toList[i] = v[i]'(by simp_all) := rfl
 
-end Vector
-
-end Mathlib
+end List.Vector

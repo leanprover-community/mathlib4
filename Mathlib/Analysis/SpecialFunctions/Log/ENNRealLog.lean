@@ -3,8 +3,8 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Data.Real.EReal
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Data.EReal.Basic
 
 /-!
 # Extended Nonnegative Real Logarithm
@@ -101,9 +101,9 @@ theorem log_injective : Function.Injective log := log_strictMono.injective
 
 theorem log_surjective : Function.Surjective log := by
   intro y
-  cases' eq_bot_or_bot_lt y with y_bot y_nbot
+  rcases eq_bot_or_bot_lt y with y_bot | y_nbot
   · exact y_bot ▸ ⟨⊥, log_zero⟩
-  cases' eq_top_or_lt_top y with y_top y_ntop
+  rcases eq_top_or_lt_top y with y_top | y_ntop
   · exact y_top ▸ ⟨⊤, log_top⟩
   use ENNReal.ofReal (Real.exp y.toReal)
   have exp_y_pos := not_le_of_lt (Real.exp_pos y.toReal)
@@ -165,11 +165,11 @@ theorem log_mul_add {x y : ℝ≥0∞} : log (x * y) = log x + log y := by
       positivity
 
 theorem log_pow {x : ℝ≥0∞} {n : ℕ} : log (x ^ n) = n * log x := by
-  cases' Nat.eq_zero_or_pos n with n_zero n_pos
+  rcases Nat.eq_zero_or_pos n with n_zero | n_pos
   · simp [n_zero, pow_zero x]
   rcases ENNReal.trichotomy x with (rfl | rfl | x_real)
   · rw [zero_pow n_pos.ne', log_zero, EReal.mul_bot_of_pos (Nat.cast_pos'.2 n_pos)]
-  · rw [ENNReal.top_pow n_pos, log_top, EReal.mul_top_of_pos (Nat.cast_pos'.2 n_pos)]
+  · rw [ENNReal.top_pow n_pos.ne', log_top, EReal.mul_top_of_pos (Nat.cast_pos'.2 n_pos)]
   · replace x_real := ENNReal.toReal_pos_iff.1 x_real
     simp only [log, pow_eq_zero_iff', x_real.1.ne', false_and, ↓reduceIte, pow_eq_top_iff,
       x_real.2.ne, toReal_pow, Real.log_pow, EReal.coe_mul, EReal.coe_coe_eq_natCast]

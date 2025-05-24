@@ -122,11 +122,11 @@ protected lemma codisjoint_iff [SemilatticeSup α] {x y : Iic a} :
     Codisjoint x y ↔ (x : α) ⊔ (y : α) = a := by
   simpa only [_root_.codisjoint_iff] using Iic.eq_top_iff
 
-protected lemma isCompl_iff [Lattice α] [BoundedOrder α] {x y : Iic a} :
+protected lemma isCompl_iff [Lattice α] [OrderBot α] {x y : Iic a} :
     IsCompl x y ↔ Disjoint (x : α) (y : α) ∧ (x : α) ⊔ (y : α) = a := by
   rw [_root_.isCompl_iff, Iic.disjoint_iff, Iic.codisjoint_iff]
 
-protected lemma complementedLattice_iff [Lattice α] [BoundedOrder α] :
+protected lemma complementedLattice_iff [Lattice α] [OrderBot α] :
     ComplementedLattice (Iic a) ↔ ∀ b, b ≤ a → ∃ c ≤ a, b ⊓ c = ⊥ ∧ b ⊔ c = a := by
   refine ⟨fun h b hb ↦ ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ↦ ?_⟩⟩
   · obtain ⟨⟨c, hc₁⟩, hc⟩ := exists_isCompl (⟨b, hb⟩ : Iic a)
@@ -194,9 +194,15 @@ variable [Preorder α] [Fact (a ≤ b)]
 instance : OrderBot (Icc a b) :=
   (isLeast_Icc Fact.out).orderBot
 
+@[simp, norm_cast]
+theorem coe_bot : ↑(⊥ : Icc a b) = a := rfl
+
 /-- `Icc a b` has a top element whenever `a ≤ b`. -/
 instance : OrderTop (Icc a b) :=
   (isGreatest_Icc Fact.out).orderTop
+
+@[simp, norm_cast]
+theorem coe_top : ↑(⊤ : Icc a b) = b := rfl
 
 /-- `Icc a b` is a `BoundedOrder` whenever `a ≤ b`. -/
 instance : BoundedOrder (Icc a b) where

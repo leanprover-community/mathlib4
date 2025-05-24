@@ -70,7 +70,7 @@ theorem leftInv_leftInv_le : S.leftInv.leftInv ≤ S := by
   rw [← mul_one x, ← h₁, ← mul_assoc, h₂, one_mul]
 
 @[to_additive]
-theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ : _) : M) ∈ S.leftInv :=
+theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ :) : M) ∈ S.leftInv :=
   ⟨⟨x, hx⟩, x.inv_val⟩
 
 @[to_additive]

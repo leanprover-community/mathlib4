@@ -36,9 +36,7 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 `AddSubgroup.centralizer` in other files.
 -/
 
-assert_not_exists Finset
-assert_not_exists MonoidWithZero
-assert_not_exists Subsemigroup
+assert_not_exists RelIso Finset MonoidWithZero Subsemigroup
 
 variable {M : Type*} {S T : Set M}
 
@@ -102,7 +100,6 @@ variable (S) in
 @[to_additive addCentralizer " The centralizer of a subset of an additive magma. "]
 def centralizer : Set M := {c | ∀ m ∈ S, m * c = c * m}
 
--- Porting note: The `to_additive` version used to be `mem_addCenter` without the iff
 @[to_additive mem_addCenter_iff]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ IsMulCentral z :=
   Iff.rfl
@@ -138,6 +135,10 @@ theorem mul_mem_center {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : 
 lemma center_subset_centralizer (S : Set M) : Set.center M ⊆ S.centralizer :=
   fun _ hx m _ ↦ (hx.comm m).symm
 
+@[to_additive addCentralizer_union]
+lemma centralizer_union : centralizer (S ∪ T) = centralizer S ∩ centralizer T := by
+  simp [centralizer, or_imp, forall_and, setOf_and]
+
 @[to_additive (attr := gcongr) addCentralizer_subset]
 lemma centralizer_subset (h : S ⊆ T) : centralizer T ⊆ centralizer S := fun _ ht s hs ↦ ht s (h hs)
 
@@ -160,6 +161,11 @@ lemma centralizer_centralizer_centralizer (S : Set M) :
 @[to_additive decidableMemAddCentralizer]
 instance decidableMemCentralizer [∀ a : M, Decidable <| ∀ b ∈ S, b * a = a * b] :
     DecidablePred (· ∈ centralizer S) := fun _ ↦ decidable_of_iff' _ mem_centralizer_iff
+
+@[to_additive addCentralizer_addCentralizer_comm_of_comm]
+lemma centralizer_centralizer_comm_of_comm (h_comm : ∀ x ∈ S, ∀ y ∈ S, x * y = y * x) :
+    ∀ x ∈ S.centralizer.centralizer, ∀ y ∈ S.centralizer.centralizer, x * y = y * x :=
+  fun _ h₁ _ h₂ ↦ h₂ _ fun _ h₃ ↦ h₁ _ fun _ h₄ ↦ h_comm _ h₄ _ h₃
 
 end Mul
 

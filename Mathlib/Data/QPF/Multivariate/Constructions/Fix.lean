@@ -16,13 +16,13 @@ and take a fixed point again.
 
 ## Main definitions
 
- * `Fix.mk`     - constructor
- * `Fix.dest`    - destructor
- * `Fix.rec`    - recursor: basis for defining functions by structural recursion on `Fix F α`
- * `Fix.drec`   - dependent recursor: generalization of `Fix.rec` where
+* `Fix.mk`     - constructor
+* `Fix.dest`    - destructor
+* `Fix.rec`    - recursor: basis for defining functions by structural recursion on `Fix F α`
+* `Fix.drec`   - dependent recursor: generalization of `Fix.rec` where
                   the result type of the function is allowed to depend on the `Fix F α` value
- * `Fix.rec_eq` - defining equation for `recursor`
- * `Fix.ind`    - induction principle for `Fix F α`
+* `Fix.rec_eq` - defining equation for `recursor`
+* `Fix.ind`    - induction principle for `Fix F α`
 
 ## Implementation notes
 
@@ -33,7 +33,7 @@ See [avigad-carneiro-hudon2019] for more details.
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
    [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
@@ -174,7 +174,7 @@ variable {α : TypeVec.{u} n}
 def Fix.rec {β : Type u} (g : F (α ::: β) → β) : Fix F α → β :=
   Quot.lift (recF g) (recF_eq_of_wEquiv α g)
 
-/-- Access W-type underlying `Fix F`  -/
+/-- Access W-type underlying `Fix F` -/
 def fixToW : Fix F α → q.P.W α :=
   Quotient.lift wrepr (recF_eq_of_wEquiv α fun x => q.P.wMk' (repr x))
 
@@ -198,7 +198,7 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
     lhs
     rw [Fix.rec, Fix.mk]
     dsimp
-  cases' h : repr x with a f
+  rcases h : repr x with ⟨a, f⟩
   rw [MvPFunctor.map_eq, recF_eq', ← MvPFunctor.map_eq, MvPFunctor.wDest'_wMk']
   rw [← MvPFunctor.comp_map, abs_map, ← h, abs_repr, ← appendFun_comp, id_comp, this]
 
@@ -309,7 +309,7 @@ def Fix.drec {β : Fix F α → Type u}
     rw [Fix.rec_eq]
     dsimp
     simp? [appendFun_id_id] at ih says
-      simp only [appendFun_id_id, MvFunctor.id_map] at ih
+      simp only [appendFun_id_id, MvFunctor.id_map, y] at ih
     congr
     conv =>
       rhs

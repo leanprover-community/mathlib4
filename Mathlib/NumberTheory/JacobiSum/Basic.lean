@@ -21,7 +21,7 @@ commutative ring `R` with values in another commutative ring `R'`:
 
 We essentially follow
 * [K. Ireland, M. Rosen, *A classical introduction to modern number theory*
-   (Section 8.3)][IrelandRosen1990]
+  (Section 8.3)][IrelandRosen1990]
 
 but generalize where appropriate.
 
@@ -68,7 +68,7 @@ variable {F R : Type*} [CommRing F] [Nontrivial F] [Fintype F] [DecidableEq F] [
 can be written as a sum over `F \ {0,1}`. -/
 lemma jacobiSum_eq_sum_sdiff (χ ψ : MulChar F R) :
     jacobiSum χ ψ = ∑ x ∈ univ \ {0,1}, χ x * ψ (1 - x) := by
-  simp only [jacobiSum, subset_univ, sum_sdiff_eq_sub, sub_eq_add_neg, self_eq_add_right,
+  simp only [jacobiSum, subset_univ, sum_sdiff_eq_sub, sub_eq_add_neg, left_eq_add,
     neg_eq_zero]
   apply sum_eq_zero
   simp only [mem_insert, mem_singleton, forall_eq_or_imp, χ.map_zero, neg_zero, add_zero, map_one,
@@ -142,10 +142,10 @@ theorem jacobiSum_nontrivial_inv {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
       (fun y hy ↦ ?_) (fun x hx ↦ ?_) (fun y hy ↦ ?_) (fun _ _ ↦ rfl)
     · simp only [mem_sdiff, mem_univ, mem_singleton, true_and] at hx ⊢
       rw [div_eq_iff <| sub_ne_zero.mpr ((ne_eq ..).symm ▸ hx).symm, mul_sub, mul_one,
-        neg_one_mul, sub_neg_eq_add, self_eq_add_left, neg_eq_zero]
+        neg_one_mul, sub_neg_eq_add, right_eq_add, neg_eq_zero]
       exact one_ne_zero
     · simp only [mem_sdiff, mem_univ, mem_singleton, true_and] at hy ⊢
-      rw [div_eq_iff fun h ↦ hy <| eq_neg_of_add_eq_zero_right h, one_mul, self_eq_add_left]
+      rw [div_eq_iff fun h ↦ hy <| eq_neg_of_add_eq_zero_right h, one_mul, right_eq_add]
       exact one_ne_zero
     · simp only [mem_sdiff, mem_univ, mem_singleton, true_and] at hx
       rw [eq_comm, ← sub_eq_zero] at hx

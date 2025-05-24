@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Continuous affine maps.
@@ -19,7 +19,7 @@ topological affine spaces (since we have not defined these yet).
 
 ## Main definitions:
 
- * `ContinuousAffineMap`
+* `ContinuousAffineMap`
 
 ## Notation:
 
@@ -46,7 +46,9 @@ variable [AddCommGroup W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
 instance : Coe (P →ᴬ[R] Q) (P →ᵃ[R] Q) :=
   ⟨toAffineMap⟩
 
-theorem to_affineMap_injective {f g : P →ᴬ[R] Q} (h : (f : P →ᵃ[R] Q) = (g : P →ᵃ[R] Q)) :
+attribute [coe] ContinuousAffineMap.toAffineMap
+
+theorem toAffineMap_injective {f g : P →ᴬ[R] Q} (h : (f : P →ᵃ[R] Q) = (g : P →ᵃ[R] Q)) :
     f = g := by
   cases f
   cases g
@@ -54,7 +56,7 @@ theorem to_affineMap_injective {f g : P →ᴬ[R] Q} (h : (f : P →ᵃ[R] Q) = 
 
 instance : FunLike (P →ᴬ[R] Q) P Q where
   coe f := f.toAffineMap
-  coe_injective' _ _ h := to_affineMap_injective <| DFunLike.coe_injective h
+  coe_injective' _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
 
 instance : ContinuousMapClass (P →ᴬ[R] Q) P Q where
   map_continuous := cont
@@ -75,17 +77,16 @@ theorem congr_fun {f g : P →ᴬ[R] Q} (h : f = g) (x : P) : f x = g x :=
 def toContinuousMap (f : P →ᴬ[R] Q) : C(P, Q) :=
   ⟨f, f.cont⟩
 
--- Porting note: changed to CoeHead due to difficulty with synthesization order
 instance : CoeHead (P →ᴬ[R] Q) C(P, Q) :=
   ⟨toContinuousMap⟩
 
 @[simp]
 theorem toContinuousMap_coe (f : P →ᴬ[R] Q) : f.toContinuousMap = ↑f := rfl
 
-@[simp] -- Porting note: removed `norm_cast`
-theorem coe_to_affineMap (f : P →ᴬ[R] Q) : ((f : P →ᵃ[R] Q) : P → Q) = f := rfl
+@[simp, norm_cast]
+theorem coe_toAffineMap (f : P →ᴬ[R] Q) : ((f : P →ᵃ[R] Q) : P → Q) = f := rfl
 
--- Porting note: removed `norm_cast` and `simp` since proof is `simp only [ContinuousMap.coe_mk]`
+@[simp, norm_cast]
 theorem coe_to_continuousMap (f : P →ᴬ[R] Q) : ((f : C(P, Q)) : P → Q) = f := rfl
 
 theorem to_continuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
@@ -93,8 +94,8 @@ theorem to_continuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g
   ext a
   exact ContinuousMap.congr_fun h a
 
--- Porting note: removed `norm_cast`
-theorem coe_affineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : P →ᵃ[R] Q) = f := rfl
+@[norm_cast]
+theorem coe_toAffineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : P →ᵃ[R] Q) = f := rfl
 
 @[norm_cast]
 theorem coe_continuousMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : C(P, Q)) = ⟨f, h⟩ := rfl
@@ -171,7 +172,7 @@ instance : MulAction S (P →ᴬ[R] W) :=
 
 end MulAction
 
-variable [TopologicalAddGroup W]
+variable [IsTopologicalAddGroup W]
 
 instance : Add (P →ᴬ[R] W) where
   add f g := { (f : P →ᵃ[R] W) + (g : P →ᵃ[R] W) with cont := f.continuous.add g.continuous }

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.Nat.Bitwise
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Nimbers
@@ -44,16 +44,16 @@ noncomputable section
 
 /-! ### Basic casts between `Ordinal` and `Nimber` -/
 
-/-- A type synonym for ordinals with natural addition and multiplication. -/
+/-- A type synonym for ordinals with nimber addition and multiplication. -/
 def Nimber : Type _ :=
   Ordinal deriving Zero, Inhabited, One, Nontrivial, WellFoundedRelation
 
-instance Nimber.linearOrder : LinearOrder Nimber := {Ordinal.linearOrder with}
-instance Nimber.succOrder : SuccOrder Nimber := {Ordinal.instSuccOrder with}
-instance Nimber.orderBot : OrderBot Nimber := {Ordinal.orderBot with}
-instance Nimber.noMaxOrder : NoMaxOrder Nimber := {Ordinal.noMaxOrder with}
-instance Nimber.zeroLEOneClass : ZeroLEOneClass Nimber := {Ordinal.zeroLEOneClass with}
-instance Nimber.instNeZeroOne : NeZero (1 : Nimber) := Ordinal.NeZero.one
+instance Nimber.instLinearOrder : LinearOrder Nimber := Ordinal.instLinearOrder
+instance Nimber.instSuccOrder : SuccOrder Nimber := Ordinal.instSuccOrder
+instance Nimber.instOrderBot : OrderBot Nimber := Ordinal.instOrderBot
+instance Nimber.instNoMaxOrder : NoMaxOrder Nimber := Ordinal.instNoMaxOrder
+instance Nimber.instZeroLEOneClass : ZeroLEOneClass Nimber := Ordinal.instZeroLEOneClass
+instance Nimber.instNeZeroOne : NeZero (1 : Nimber) := Ordinal.instNeZeroOne
 
 /-- The identity function between `Ordinal` and `Nimber`. -/
 @[match_pattern]
@@ -141,6 +141,9 @@ protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
 theorem lt_one_iff_zero {a : Nimber} : a < 1 ↔ a = 0 :=
   Ordinal.lt_one_iff_zero
 
+theorem one_le_iff_ne_zero {a : Nimber} : 1 ≤ a ↔ a ≠ 0 :=
+  Ordinal.one_le_iff_ne_zero
+
 theorem eq_nat_of_le_nat {a : Nimber} {b : ℕ} (h : a ≤ ∗b) : ∃ c : ℕ, a = ∗c :=
   Ordinal.lt_omega0.1 (h.trans_lt (nat_lt_omega0 b))
 
@@ -158,6 +161,9 @@ end Nimber
 
 theorem not_small_nimber : ¬ Small.{u} Nimber.{max u v} :=
   not_small_ordinal
+
+instance Nimber.uncountable : Uncountable Nimber :=
+  Ordinal.uncountable
 
 open Nimber
 

@@ -98,7 +98,7 @@ theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
   intro x hx
   simp only [vars_def, Finset.mem_union, Multiset.mem_toFinset] at hx ⊢
-  simpa using Multiset.mem_of_le (degrees_add _ _) hx
+  simpa using Multiset.mem_of_le degrees_add_le hx
 
 theorem vars_add_of_disjoint [DecidableEq σ] (h : Disjoint p.vars q.vars) :
     (p + q).vars = p.vars ∪ q.vars := by
@@ -110,7 +110,7 @@ section Mul
 
 theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars ⊆ φ.vars ∪ ψ.vars := by
   simp_rw [vars_def, ← Multiset.toFinset_add, Multiset.toFinset_subset]
-  exact Multiset.subset_of_le (degrees_mul φ ψ)
+  exact Multiset.subset_of_le degrees_mul_le
 
 @[simp]
 theorem vars_one : (1 : MvPolynomial σ R).vars = ∅ :=
@@ -133,7 +133,7 @@ theorem vars_prod {ι : Type*} [DecidableEq σ] {s : Finset ι} (f : ι → MvPo
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | insert hs hsub =>
+  | insert _ _ hs hsub =>
     simp only [hs, Finset.biUnion_insert, Finset.prod_insert, not_false_iff]
     apply Finset.Subset.trans (vars_mul _ _)
     exact Finset.union_subset_union (Finset.Subset.refl _) hsub
@@ -164,7 +164,7 @@ theorem vars_sum_subset [DecidableEq σ] :
   classical
   induction t using Finset.induction_on with
   | empty => simp
-  | insert has hsum =>
+  | insert _ _ has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has]
     refine Finset.Subset.trans
       (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) ?_)
@@ -175,7 +175,7 @@ theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun 
   classical
   induction t using Finset.induction_on with
   | empty => simp
-  | insert has hsum =>
+  | insert _ _ has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]
     unfold Pairwise onFun at h
     rw [hsum]
@@ -194,7 +194,8 @@ section Map
 variable [CommSemiring S] (f : R →+* S)
 variable (p)
 
-theorem vars_map : (map f p).vars ⊆ p.vars := by classical simp [vars_def, degrees_map]
+theorem vars_map : (map f p).vars ⊆ p.vars := by
+  classical simp [vars_def, Multiset.subset_of_le degrees_map_le]
 
 variable {f}
 

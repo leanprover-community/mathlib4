@@ -31,8 +31,7 @@ used to golf the basic `Group` lemmas.
 Add a `@[to_additive]` version of `IsLocalHom`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -78,6 +77,11 @@ theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
 
 @[to_additive (attr := simp)]
 theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+lemma map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
+    map f (mk val inv val_inv inv_val) = mk (f val) (f inv)
+      (by rw [← f.map_mul, val_inv, f.map_one]) (by rw [← f.map_mul, inv_val, f.map_one]) := rfl
 
 @[to_additive (attr := simp)]
 theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (map f) := rfl
@@ -222,9 +226,6 @@ class IsLocalHom (f : F) : Prop where
   /-- A local homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
 
-@[deprecated (since := "2024-10-10")]
-alias IsLocalRingHom := IsLocalHom
-
 @[simp]
 theorem IsUnit.of_map (f : F) [IsLocalHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
   IsLocalHom.map_nonunit a h
@@ -242,16 +243,10 @@ theorem isLocalHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
     {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalHom f where
   map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_leftInverse := isLocalHom_of_leftInverse
-
 @[instance]
 theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
-
-@[deprecated (since := "2024-10-10")]
-alias MonoidHom.isLocalRingHom_comp := MonoidHom.isLocalHom_comp
 
 -- see note [lower instance priority]
 @[instance 100]
@@ -259,14 +254,8 @@ theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
     IsLocalHom (f : R →* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_toMonoidHom := isLocalHom_toMonoidHom
-
 theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
-
-@[deprecated (since := "2024-10-10")]
-alias MonoidHom.isLocalRingHom_of_comp := MonoidHom.isLocalHom_of_comp
 
 end IsLocalHom

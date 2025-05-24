@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Etale.Basic
+import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.Unramified.Field
 
 /-!
@@ -14,9 +14,14 @@ import Mathlib.RingTheory.Unramified.Field
 Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 - `Algebra.FormallyEtale.of_isSeparable`:
-    If `L` is separable over `K`, then `L` is formally etale over `K`.
+    If `L` is separable over `K`, then `L` is formally étale over `K`.
 - `Algebra.FormallyEtale.iff_isSeparable`:
-    If `L` is (essentially) of finite type over `K`, then `L/K` is etale iff `L/K` is separable.
+    If `L` is (essentially) of finite type over `K`, then `L/K` is étale iff `L/K` is separable.
+- `Algebra.FormallyEtale.iff_exists_algEquiv_prod`:
+    If `A` is (essentially) of finite type over `K`,
+    then `A/K` is étale iff `A` is a finite product of separable field extensions.
+- `Algebra.Etale.iff_exists_algEquiv_prod`:
+    `A/K` is étale iff `A` is a finite product of finite separable field extensions.
 
 ## References
 
@@ -27,7 +32,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 universe u
 
-variable (K L : Type u) [Field K] [Field L] [Algebra K L]
+variable (K L A : Type u) [Field K] [Field L] [CommRing A] [Algebra K L] [Algebra K A]
 
 open Algebra Polynomial
 
@@ -148,4 +153,51 @@ theorem iff_isSeparable [EssFiniteType K L] :
     FormallyEtale K L ↔ Algebra.IsSeparable K L :=
   ⟨fun _ ↦ FormallyUnramified.isSeparable K L, fun _ ↦ of_isSeparable K L⟩
 
+attribute [local instance] IsArtinianRing.fieldOfSubtypeIsMaximal in
+/--
+If `A` is an essentially of finite type algebra over a field `K`, then `A` is formally étale
+over `K` if and only if `A` is a finite product of separable field extensions.
+-/
+theorem iff_exists_algEquiv_prod [EssFiniteType K A] :
+    FormallyEtale K A ↔
+      ∃ (I : Type u) (_ : Finite I) (Ai : I → Type u) (_ : ∀ i, Field (Ai i))
+        (_ : ∀ i, Algebra K (Ai i)) (_ : A ≃ₐ[K] Π i, Ai i),
+        ∀ i, Algebra.IsSeparable K (Ai i) := by
+  classical
+  constructor
+  · intro H
+    have := FormallyUnramified.finite_of_free K A
+    have := FormallyUnramified.isReduced_of_field K A
+    have : IsArtinianRing A := isArtinian_of_tower K inferInstance
+    letI : Fintype (MaximalSpectrum A) := (nonempty_fintype _).some
+    let v (i : MaximalSpectrum A) : A := (IsArtinianRing.equivPi A).symm (Pi.single i 1)
+    let e : A ≃ₐ[K] _ := { __ := IsArtinianRing.equivPi A, commutes' := fun r ↦ rfl }
+    have := (FormallyEtale.iff_of_equiv e).mp inferInstance
+    rw [FormallyEtale.pi_iff] at this
+    exact ⟨_, inferInstance, _, _, _, e, fun I ↦ (iff_isSeparable _ _).mp inferInstance⟩
+  · intro ⟨I, _, Ai, _, _, e, _⟩
+    rw [FormallyEtale.iff_of_equiv e, FormallyEtale.pi_iff]
+    exact fun I ↦ of_isSeparable K (Ai I)
+
 end Algebra.FormallyEtale
+
+/--
+`A` is étale over a field `K` if and only if
+`A` is a finite product of finite separable field extensions.
+-/
+theorem Algebra.Etale.iff_exists_algEquiv_prod :
+    Etale K A ↔
+      ∃ (I : Type u) (_ : Finite I) (Ai : I → Type u) (_ : ∀ i, Field (Ai i))
+        (_ : ∀ i, Algebra K (Ai i)) (_ : A ≃ₐ[K] Π i, Ai i),
+        ∀ i, Module.Finite K (Ai i) ∧ Algebra.IsSeparable K (Ai i) := by
+  constructor
+  · intro H
+    obtain ⟨I, _, Ai, _, _, e, _⟩ := (FormallyEtale.iff_exists_algEquiv_prod K A).mp inferInstance
+    have := FormallyUnramified.finite_of_free K A
+    exact ⟨_, ‹_›, _, _, _, e, fun i ↦ ⟨.of_surjective ((LinearMap.proj i).comp e.toLinearMap)
+      ((Function.surjective_eval i).comp e.surjective), inferInstance⟩⟩
+  · intro ⟨I, _, Ai, _, _, e, H⟩
+    choose h₁ h₂ using H
+    have := Module.Finite.of_surjective e.symm.toLinearMap e.symm.surjective
+    refine ⟨?_, FinitePresentation.of_finiteType.mp inferInstance⟩
+    exact (FormallyEtale.iff_exists_algEquiv_prod K A).mpr ⟨_, inferInstance, _, _, _, e, h₂⟩

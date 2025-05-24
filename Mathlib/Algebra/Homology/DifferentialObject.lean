@@ -61,15 +61,11 @@ namespace HomologicalComplex
 variable {β : Type*} [AddCommGroup β] (b : β)
 variable (V : Type*) [Category V] [HasZeroMorphisms V]
 
--- Porting note: this should be moved to an earlier file.
--- Porting note: simpNF linter silenced, both `d_eqToHom` and its `_assoc` version
--- do not simplify under themselves
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 
 open Classical in
-set_option maxHeartbeats 400000 in
 /-- The functor from differential graded objects to homological complexes.
 -/
 @[simps]

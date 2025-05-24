@@ -6,6 +6,7 @@ Authors: Tomáš Skřivan
 import Mathlib.Tactic.FunProp
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.FunLike.Basic
+import Mathlib.Tactic.SuccessIfFailWithMsg
 import Aesop
 
 /-! # Tests for the `fun_prop` tactic
@@ -392,7 +393,7 @@ example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by f
 end MultipleLambdaTheorems
 
 
-/-- warning: `?m` is not a `fun_prop` goal! -/
+/-- info: `?m` is not a `fun_prop` goal! -/
 #guard_msgs in
 #check_failure ((by fun_prop) : ?m)
 
@@ -536,14 +537,15 @@ example [Add α] (a : α) :
 -- Test that local theorem is being used
 /--
 info: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
-  [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
-  [Meta.Tactic.fun_prop] removing argument to later use this : Con f
-  [Meta.Tactic.fun_prop] [✅️] applying: Con_comp
-    [Meta.Tactic.fun_prop] [✅️] Con fun f => f y
-      [Meta.Tactic.fun_prop] [✅️] applying: Con_apply
-    [Meta.Tactic.fun_prop] [✅️] Con fun x => f x
-      [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
-      [Meta.Tactic.fun_prop] [✅️] applying: this : Con f
+  [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
+    [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
+    [Meta.Tactic.fun_prop] removing argument to later use this : Con f
+    [Meta.Tactic.fun_prop] [✅️] applying: Con_comp
+      [Meta.Tactic.fun_prop] [✅️] Con fun f => f y
+        [Meta.Tactic.fun_prop] [✅️] applying: Con_apply
+      [Meta.Tactic.fun_prop] [✅️] Con fun x => f x
+        [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
+        [Meta.Tactic.fun_prop] [✅️] applying: this : Con f
 -/
 #guard_msgs in
 example [Add α] (y : α):
@@ -553,3 +555,68 @@ example [Add α] (y : α):
   have : Con f := by fun_prop
   set_option trace.Meta.Tactic.fun_prop true in
   fun_prop
+
+
+
+--- pefromance tests - mainly testing fast failure ---
+------------------------------------------------------
+
+
+section PerformanceTests
+-- set_option trace.Meta.Tactic.fun_prop true
+-- set_option profiler true
+
+variable {R : Type*} [Add R] [∀ n, OfNat R n]
+example (f : R → R) (hf : Con f) :
+    Con (fun x ↦ f (x + 3)) := by fun_prop -- succeeds in 5ms
+example (f : R → R) (hf : Con f) :
+    Con (fun x ↦ (f (x + 3)) + 2) := by fun_prop -- succeeds in 6ms
+example (f : R → R) (hf : Con f) :
+    Con (fun x ↦ (f (x + 3)) + (2 + f (x + 1))) := by fun_prop -- succeeds in 8ms
+example (f : R → R) (hf : Con f) :
+    Con (fun x ↦ (f (x + 3)) + (2 + f (x + 1)) + x) := by fun_prop -- succeeds in 10ms
+example (f : R → R) (hf : Con f) :
+    Con (fun x ↦ (f (x + 3)) + 2 + f (x + 1) + x + 1) := by fun_prop -- succeeds in 11ms
+
+-- This used to fail in exponentially increasing time, up to 6s for the last example
+-- We set maxHearthbeats to 1000 such that the last three examples should fail if the exponential
+-- blow happen again.
+set_option maxHeartbeats 1000 in
+example (f : R → R) :
+    Con (fun x ↦ f (x + 3)) := by
+  fail_if_success fun_prop
+  apply silentSorry
+
+example (f : R → R) :
+    Con (fun x ↦ (f (x + 3)) + 2) := by
+  fail_if_success fun_prop
+  apply silentSorry
+
+set_option maxHeartbeats 1000 in
+example (f : R → R) :
+    Con (fun x ↦ ((f (x + 3)) + 2) + f (x + 1)) := by
+  fail_if_success fun_prop
+  apply silentSorry
+
+set_option maxHeartbeats 1000 in
+example (f : R → R) :
+    Con (fun x ↦ ((f (x + 3)) + 2) + f (x + 1) + x) := by
+  fail_if_success fun_prop
+  apply silentSorry
+
+set_option maxHeartbeats 1000 in
+example (f : R → R) :
+    Con (fun x ↦ ((f (x + 3)) + 2) + f (x + 1) + x + 1) := by
+  fail_if_success fun_prop
+  apply silentSorry
+
+end PerformanceTests
+
+
+/--
+info: Con
+  add_Con, args: [4, 5], form: simple
+  add_Con', args: [4, 5], form: compositional
+-/
+#guard_msgs in
+#print_fun_prop_theorems HAdd.hAdd Con

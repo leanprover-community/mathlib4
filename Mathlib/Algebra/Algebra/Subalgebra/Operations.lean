@@ -40,8 +40,6 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
     {ι : Type*} (ι' : Finset ι) (s : ι → S) (l : ι → S)
     (e : ∑ i ∈ ι', l i * s i = 1) (hs : ∀ i, s i ∈ S') (hl : ∀ i, l i ∈ S') (x : S)
     (H : ∀ i, ∃ n : ℕ, (s i ^ n : S) • x ∈ S') : x ∈ S' := by
-  -- Porting note: needed to add this instance
-  let _i : Algebra { x // x ∈ S' } { x // x ∈ S' } := Algebra.id _
   suffices x ∈ Subalgebra.toSubmodule (Algebra.ofId S' S).range by
     obtain ⟨x, rfl⟩ := this
     exact x.2

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Coalgebras
@@ -59,6 +60,8 @@ structure Coalgebra.Repr (R : Type u) {A : Type v}
 def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
     [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) :
     Coalgebra.Repr R a where
+  left := Prod.fst
+  right := Prod.snd
   index := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose
   eq := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose_spec.symm
 
@@ -121,9 +124,9 @@ lemma sum_tmul_counit_eq {a : A} (repr : Coalgebra.Repr R a) :
 @[simp]
 lemma sum_tmul_tmul_eq {a : A} (repr : Repr R a)
     (a₁ : (i : repr.ι) → Repr R (repr.left i)) (a₂ : (i : repr.ι) → Repr R (repr.right i)) :
-    ∑ i in repr.index, ∑ j in (a₁ i).index,
+    ∑ i ∈ repr.index, ∑ j ∈ (a₁ i).index,
       (a₁ i).left j ⊗ₜ[R] (a₁ i).right j ⊗ₜ[R] repr.right i
-      = ∑ i in repr.index, ∑ j in (a₂ i).index,
+      = ∑ i ∈ repr.index, ∑ j ∈ (a₂ i).index,
       repr.left i ⊗ₜ[R] (a₂ i).left j ⊗ₜ[R] (a₂ i).right j := by
   simpa [(a₂ _).eq, ← (a₁ _).eq, ← TensorProduct.tmul_sum,
     TensorProduct.sum_tmul, ← repr.eq] using congr($(coassoc (R := R)) a)
@@ -131,7 +134,7 @@ lemma sum_tmul_tmul_eq {a : A} (repr : Repr R a)
 @[simp]
 theorem sum_counit_tmul_map_eq {B : Type*} [AddCommMonoid B] [Module R B]
     {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f : F) (a : A) {repr : Repr R a} :
-    ∑ i in repr.index, counit (R := R) (repr.left i) ⊗ₜ f (repr.right i) = 1 ⊗ₜ[R] f a := by
+    ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ f (repr.right i) = 1 ⊗ₜ[R] f a := by
   have := sum_counit_tmul_eq repr
   apply_fun LinearMap.lTensor R (f : A →ₗ[R] B) at this
   simp_all only [map_sum, LinearMap.lTensor_tmul, LinearMap.coe_coe]
@@ -139,7 +142,7 @@ theorem sum_counit_tmul_map_eq {B : Type*} [AddCommMonoid B] [Module R B]
 @[simp]
 theorem sum_map_tmul_counit_eq {B : Type*} [AddCommMonoid B] [Module R B]
     {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f : F) (a : A) {repr : Repr R a} :
-    ∑ i in repr.index, f (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = f a ⊗ₜ[R] 1 := by
+    ∑ i ∈ repr.index, f (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = f a ⊗ₜ[R] 1 := by
   have := sum_tmul_counit_eq repr
   apply_fun LinearMap.rTensor R (f : A →ₗ[R] B) at this
   simp_all only [map_sum, LinearMap.rTensor_tmul, LinearMap.coe_coe]
@@ -148,9 +151,9 @@ theorem sum_map_tmul_counit_eq {B : Type*} [AddCommMonoid B] [Module R B]
 theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
     {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f g h : F) (a : A) {repr : Repr R a}
     {a₁ : (i : repr.ι) → Repr R (repr.left i)} {a₂ : (i : repr.ι) → Repr R (repr.right i)} :
-    ∑ i in repr.index, ∑ j in (a₂ i).index,
+    ∑ i ∈ repr.index, ∑ j ∈ (a₂ i).index,
       f (repr.left i) ⊗ₜ (g ((a₂ i).left j) ⊗ₜ h ((a₂ i).right j)) =
-    ∑ i in repr.index, ∑ j in (a₁ i).index,
+    ∑ i ∈ repr.index, ∑ j ∈ (a₁ i).index,
       f ((a₁ i).left j) ⊗ₜ[R] (g ((a₁ i).right j) ⊗ₜ[R] h (repr.right i)) := by
   have := sum_tmul_tmul_eq repr a₁ a₂
   apply_fun TensorProduct.map (f : A →ₗ[R] B)
@@ -158,8 +161,6 @@ theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
   simp_all only [map_sum, TensorProduct.map_tmul, LinearMap.coe_coe]
 
 end Coalgebra
-
-section CommSemiring
 
 open Coalgebra
 
@@ -290,7 +291,7 @@ theorem comul_comp_lapply (i : ι) :
   ext j : 1
   conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j
-  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id,  TensorProduct.map_id, id_comp]
+  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id, TensorProduct.map_id, id_comp]
   · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
       zero_comp]
 
@@ -351,7 +352,7 @@ theorem comul_comp_lapply (i : ι) :
   ext j : 1
   conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j
-  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id,  TensorProduct.map_id, id_comp]
+  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id, TensorProduct.map_id, id_comp]
   · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
       zero_comp]
 
@@ -380,7 +381,6 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
 
 end Finsupp
 
-end CommSemiring
 namespace TensorProduct
 open Coalgebra
 
@@ -388,9 +388,28 @@ variable {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
   [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
 
 /-- See `Mathlib.RingTheory.Coalgebra.TensorProduct` for the `Coalgebra` instance. -/
-@[simps] instance instCoalgebraStruct :
-    CoalgebraStruct R (A ⊗[R] B) where
+instance instCoalgebraStruct : CoalgebraStruct R (A ⊗[R] B) where
   comul := TensorProduct.tensorTensorTensorComm R A A B B ∘ₗ TensorProduct.map comul comul
   counit := LinearMap.mul' R R ∘ₗ TensorProduct.map counit counit
+
+lemma comul_def :
+    Coalgebra.comul (R := R) (A := A ⊗[R] B) =
+    tensorTensorTensorComm R A A B B ∘ₗ map comul comul :=
+  rfl
+
+@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
+
+@[simp] lemma comul_tmul (a : A) (b : B) :
+    comul (R := R) (a ⊗ₜ[R] b) =
+      tensorTensorTensorComm _ _ _ _ _ (comul (R := R) a ⊗ₜ[R] comul (R := R) b) := rfl
+
+lemma counit_def :
+    Coalgebra.counit (R := R) (A := A ⊗[R] B) = LinearMap.mul' R R ∘ₗ map counit counit :=
+  rfl
+
+@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
+
+@[simp] lemma counit_tmul (a : A) (b : B) :
+    counit (R := R) (a ⊗ₜ[R] b) = counit a * counit b := rfl
 
 end TensorProduct

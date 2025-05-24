@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Algebra.Polynomial.HasseDeriv
 
 /-!
@@ -24,8 +25,6 @@ import Mathlib.Algebra.Polynomial.HasseDeriv
 noncomputable section
 
 namespace Polynomial
-
-open Polynomial
 
 variable {R : Type*} [Semiring R] (r : R) (f : R[X])
 
@@ -47,7 +46,7 @@ theorem taylor_C (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C
 @[simp]
 theorem taylor_zero' : taylor (0 : R) = LinearMap.id := by
   ext
-  simp only [taylor_apply, add_zero, comp_X, _root_.map_zero, LinearMap.id_comp,
+  simp only [taylor_apply, add_zero, comp_X, map_zero, LinearMap.id_comp,
     Function.comp_apply, LinearMap.coe_comp]
 
 theorem taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_zero', LinearMap.id_apply]
@@ -84,7 +83,7 @@ theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree
   refine map_natDegree_eq_natDegree _ ?_
   nontriviality R
   intro n c c0
-  simp [taylor_monomial, natDegree_C_mul_eq_of_mul_ne_zero, natDegree_pow_X_add_C, c0]
+  simp [taylor_monomial, natDegree_C_mul_of_mul_ne_zero, natDegree_pow_X_add_C, c0]
 
 @[simp]
 theorem taylor_mul {R} [CommSemiring R] (r : R) (p q : R[X]) :

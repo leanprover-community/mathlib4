@@ -100,8 +100,8 @@ private lemma wellFoundedOn_devosMulRel :
     Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber ?_ fun n ↦
       wellFounded_lt.onFun.wellFoundedOn
   exact wellFounded_lt.onFun.wellFoundedOn.mono' fun x hx y _ ↦ tsub_lt_tsub_left_of_le <|
-    add_le_add ((card_le_card_mul_right _ hx.1.2).trans_eq hx.2) <|
-      (card_le_card_mul_left _ hx.1.1).trans_eq hx.2
+    add_le_add ((card_le_card_mul_right hx.1.2).trans_eq hx.2) <|
+      (card_le_card_mul_left hx.1.1).trans_eq hx.2
 
 /-- A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The size of `s * t` is
 lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the smallest
@@ -151,7 +151,7 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     refine Or.inl ((minOrder_le_natCard (zpowers_ne_bot.2 hg) <|
       s.finite_toSet.smul_set.subset hS).trans <| WithTop.coe_le_coe.2 <|
         ((Nat.card_mono s.finite_toSet.smul_set hS).trans_eq <| ?_).trans <|
-          card_le_card_mul_right _ ht)
+          card_le_card_mul_right ht)
     rw [← coe_smul_finset]
     simp [-coe_smul_finset]
   -- Else, we can transform `s`, `t` to `s'`, `t'` and `s''`, `t''`, such that one of `(s', t')` and
@@ -165,7 +165,7 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   · rw [← card_smul_finset g⁻¹ t]
     refine Or.inr ((add_le_add_right hst _).trans ?_)
     rw [← card_union_of_disjoint hgt]
-    exact (card_le_card_mul_left _ hgs).trans (le_add_of_le_left aux1)
+    exact (card_le_card_mul_left hgs).trans (le_add_of_le_left aux1)
   -- Else, we're done by induction on either `(s', t')` or `(s'', t'')` depending on whether
   -- `|s| + |t| ≤ |s'| + |t'|` or `|s| + |t| < |s''| + |t''|`. One of those two inequalities must
   -- hold since `2 * (|s| + |t|) = |s'| + |t'| + |s''| + |t''|`.
@@ -204,11 +204,11 @@ lemma ZMod.cauchy_davenport {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs
 @[to_additive
 "The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The size of
 `s + t` is lower-bounded by `|s| + |t| - 1`."]
-lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Semigroup α] [IsCancelMul α]
+lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Mul α] [IsCancelMul α]
     [MulLeftMono α] [MulRightMono α]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
   suffices s * {t.min' ht} ∩ ({s.max' hs} * t) = {s.max' hs * t.min' ht} by
-    rw [← card_singleton_mul t (s.max' hs), ← card_mul_singleton s (t.min' ht),
+    rw [← card_singleton_mul (s.max' hs) t, ← card_mul_singleton s (t.min' ht),
       ← card_union_add_card_inter, ← card_singleton _, ← this, Nat.add_sub_cancel]
     exact card_mono (union_subset (mul_subset_mul_left <| singleton_subset_iff.2 <| min'_mem _ _) <|
       mul_subset_mul_right <| singleton_subset_iff.2 <| max'_mem _ _)

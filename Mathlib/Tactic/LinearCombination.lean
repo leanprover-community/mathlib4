@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Tactic.LinearCombination.Lemmas
+import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Compare
 
@@ -35,7 +36,7 @@ Lastly, calls a normalization tactic on this target.
 -/
 
 namespace Mathlib.Tactic.LinearCombination
-open Lean hiding Rat
+open Lean
 open Elab Meta Term Mathlib Ineq
 
 /-- Result of `expandLinearCombo`, either an equality/inequality proof or a value. -/
@@ -45,9 +46,9 @@ inductive Expanded
   /-- A value, equivalently a proof of `c = c`. -/
   | const (c : Syntax.Term)
 
-/-- The handling in `linear_combination` of left- and right-multiplication and of division all three
-proceed according to the same logic, specified here: given a proof `p` of an (in)equality and a
-constant `c`,
+/-- The handling in `linear_combination` of left- and right-multiplication and scalar-multiplication
+and of division all five proceed according to the same logic, specified here: given a proof `p` of
+an (in)equality and a constant `c`,
 * if `p` is a proof of an equation, multiply/divide through by `c`;
 * if `p` is a proof of a non-strict inequality, run `positivity` to find a proof that `c` is
   nonnegative, then multiply/divide through by `c`, invoking the nonnegativity of `c` where needed;
@@ -57,7 +58,7 @@ constant `c`,
 
 This generic logic takes as a parameter the object `lems`: the four lemmas corresponding to the four
 cases. -/
-def rescale (lems : Ineq.WithStrictness → Name) (ty : Expr) (p c : Term) :
+def rescale (lems : Ineq.WithStrictness → Name) (ty : Option Expr) (p c : Term) :
     Ineq → TermElabM Expanded
   | eq => do
     let i := mkIdent <| lems .eq
@@ -85,7 +86,8 @@ using `+`/`-`/`*`/`/` on equations and values.
   inequality.
 * `.const c` means that the input expression is not an equation but a value.
 -/
-partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expanded := withRef stx do
+partial def expandLinearCombo (ty : Option Expr) (stx : Syntax.Term) :
+    TermElabM Expanded := withRef stx do
   match stx with
   | `(($e)) => expandLinearCombo ty e
   | `($e₁ + $e₂) => do
@@ -105,14 +107,14 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
       pure (.proof rel p)
-    | .const c, .proof rel p =>
+    | .const c, .proof eq p =>
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
-      .proof rel <$> ``(Eq.symm $p)
+      .proof eq <$> ``(Eq.symm $p)
     | .proof rel₁ p₁, .proof eq p₂ =>
       let i := mkIdent <| Ineq.addRelRelData rel₁ eq
       .proof rel₁ <$> ``($i $p₁ (Eq.symm $p₂))
-    | .proof _ _, .proof _ _ =>
+    | _, .proof _ _ =>
       throwError "coefficients of inequalities in 'linear_combination' must be nonnegative"
   | `(-$e) => do
       match ← expandLinearCombo ty e with
@@ -125,6 +127,13 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
     | .proof rel₁ p₁, .const c₂ => rescale mulRelConstData ty p₁ c₂ rel₁
     | .const c₁, .proof rel₂ p₂ => rescale mulConstRelData ty p₂ c₁ rel₂
+    | .proof _ _, .proof _ _ =>
+      throwErrorAt tk "'linear_combination' supports only linear operations"
+  | `($e₁ •%$tk $e₂) => do
+    match ← expandLinearCombo none e₁, ← expandLinearCombo ty e₂ with
+    | .const c₁, .const c₂ => .const <$> ``($c₁ • $c₂)
+    | .proof rel₁ p₁, .const c₂ => rescale smulRelConstData ty p₁ c₂ rel₁
+    | .const c₁, .proof rel₂ p₂ => rescale smulConstRelData none p₂ c₁ rel₂
     | .proof _ _, .proof _ _ =>
       throwErrorAt tk "'linear_combination' supports only linear operations"
   | `($e₁ /%$tk $e₂) => do

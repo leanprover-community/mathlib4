@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Sigma.Basic
+import Mathlib.Data.Prod.Basic
 
 /-!
 # Lists in product and sigma types
@@ -74,13 +74,14 @@ theorem mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ 
   simp [List.sigma, mem_flatMap, mem_map, exists_prop, exists_and_left, and_left_comm,
     exists_eq_left, heq_iff_eq, exists_eq_right]
 
-set_option linter.deprecated false in
-/-- See `List.length_sigma` for the corresponding statement using `List.sum`. -/
-@[deprecated "Use `List.length_sigma`." (since := "2024-10-17")]
-theorem length_sigma' (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
-    length (l₁.sigma l₂) = Nat.sum (l₁.map fun a ↦ length (l₂ a)) := by
-  induction' l₁ with x l₁ IH
-  · rfl
-  · simp only [map, sigma_cons, length_append, length_map, IH, Nat.sum_cons]
+/-! ### Miscellaneous lemmas -/
+
+@[simp 1100]
+theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
+    (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
+  induction' xs with x xs xs_ih
+  · simp only [not_mem_nil, map_nil]
+  · obtain ⟨a, b⟩ := x
+    simp only [mem_cons, Prod.mk_inj, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
 
 end List
