@@ -71,7 +71,7 @@ def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
     use k
     simp only [List.mem_cons, forall_eq_or_imp, k.prop.1, true_and]
     intro j hj
-    exact ((modEq_list_prod_iff' co.of_cons).mp k.prop.2 j hj).trans (ih.prop j hj)
+    exact ((modEq_list_map_prod_iff co.of_cons).mp k.prop.2 j hj).trans (ih.prop j hj)
 
 @[simp] theorem chineseRemainderOfList_nil :
     (chineseRemainderOfList a s [] List.Pairwise.nil : ℕ) = 0 := rfl

@@ -597,7 +597,7 @@ instance (s : Finset α) : Bot (Finpartition s) :=
       supIndep := Set.PairwiseDisjoint.supIndep <| by
         rw [Finset.coe_map]
         exact Finset.pairwiseDisjoint_range_singleton.subset (Set.image_subset_range _ _)
-      sup_parts := by rw [sup_map, id_comp, Embedding.coeFn_mk, Finset.sup_singleton']
+      sup_parts := by rw [sup_map, id_comp, Embedding.coeFn_mk, Finset.sup_singleton_eq_self]
       not_bot_mem := by simp }⟩
 
 @[simp]
