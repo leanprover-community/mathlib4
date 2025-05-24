@@ -205,7 +205,7 @@ theorem sumElim_of_tower {ι'} {y : ι' → A} (hxS : range x ⊆ range (algebra
   set Rx := adjoin R (range x)
   let _ : Algebra Rx S :=
     (e.symm.toAlgHom.comp <| Subalgebra.inclusion <| adjoin_le hxS).toAlgebra
-  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).1 by simp; rfl
+  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).1 by simp
   refine hx.sumElim (hy.restrictScalars (e.symm.injective.comp ?_))
   simpa only [AlgHom.coe_toRingHom] using Subalgebra.inclusion_injective _
 
