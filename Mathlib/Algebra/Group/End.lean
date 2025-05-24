@@ -182,7 +182,7 @@ theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
   Equiv.self_trans_symm e
 
 /-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. -/
-def permCongrHom {α β : Type*} (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
+def permCongrHom (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
   toFun x := e.symm.trans (x.trans e)
   invFun y := e.trans (y.trans e.symm)
   left_inv _ := by ext; simp
