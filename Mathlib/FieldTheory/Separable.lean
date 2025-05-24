@@ -393,7 +393,7 @@ theorem isUnit_or_eq_zero_of_separable_expand {f : F[X]} (n : ℕ) (hp : 0 < p)
   rintro hn : n ≠ 0
   have hf2 : derivative (expand F (p ^ n) f) = 0 := by
     rw [derivative_expand, Nat.cast_pow, CharP.cast_eq_zero, zero_pow hn, zero_mul, mul_zero]
-  rw [separable_def, hf2, isCoprime_zero_right, isUnit_iff] at hf
+  rw [separable_def, hf2, isCoprime_zero_right, Polynomial.isUnit_iff] at hf
   rcases hf with ⟨r, hr, hrf⟩
   rw [eq_comm, expand_eq_C (pow_pos hp _)] at hrf
   rwa [hrf, isUnit_C]
@@ -413,7 +413,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   subst hgf₂
   subst hgf₁
   rcases isUnit_or_eq_zero_of_separable_expand p k hp hg₁ with (h | rfl)
-  · rw [isUnit_iff] at h
+  · rw [Polynomial.isUnit_iff] at h
     rcases h with ⟨r, hr, rfl⟩
     simp_rw [expand_C] at hf
     exact absurd (isUnit_C.2 hr) hf.1
