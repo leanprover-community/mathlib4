@@ -51,7 +51,50 @@ theorem MvPolynomial.IsWeightedHomogeneous.eval₂ {α β M R : Type*}
   rw [eval₂Hom_monomial, ← this]
   exact .C_mul _ (.prod _ _ _ (fun _ _ ↦ .pow (hb _) _))
 
+-- instance foo (σ : Type*) [LinearOrder σ] : LinearOrder (σ →₀ ℕ) := by apply?
+#check Finsupp.Lex
+#check exists_wellOrder
+
+/-- Under a linear order on the indeterminates, the monomials are linearly ordered using the
+lexicographical order. Then, if `i` and `j` are the lowest monomials in `p` and `q` respectively,
+then the lowest term in `(p * q)` is `pᵢ qⱼ Xⁱ⁺ᴶ`. -/
+theorem MvPolynomial.min_prod {σ R : Type*} [CommRing R] [IsDomain R] [LinearOrder σ]
+      (p q : MvPolynomial σ R) (hp0 : p ≠ 0) (hq0 : q ≠ 0) :
+    ((p * q).support.map toLex.toEmbedding).min =
+      (p.support.map toLex.toEmbedding).min + (q.support.map toLex.toEmbedding).min := by
+  _
+
+theorem MvPolynomial.IsWeightedHomogeneous.of_mul_right {σ R : Type*} [CommRing R] [IsDomain R]
+    {p q : MvPolynomial σ R} {w : σ → ℕ} {m n : ℕ} (hp : p.IsWeightedHomogeneous w m)
+    (hpq : (p * q).IsWeightedHomogeneous w (m + n)) (hp0 : p ≠ 0) :
+    q.IsWeightedHomogeneous w n := by
+  rw [MvPolynomial.isWeightedHomogeneous_iff_comp_smul_eq_pow_smul] at *
+  rw [_root_.map_mul, _root_.map_mul, pow_add, mul_assoc, mul_left_comm _ (rename _ p) (rename _ q),
+      ← mul_assoc, hp] at hpq
+  exact mul_left_cancel₀ (mul_ne_zero
+    (pow_ne_zero _ (X_ne_zero _))
+    ((map_ne_zero_iff _ (rename_injective _ (Option.some_injective _))).mpr
+      hp0)) hpq
+
+/-- Two multivariate polynomials that are homogeneous of the same degree and divide each other,
+are equal up to constants. -/
+lemma MvPolynomial.IsWeightedHomogeneous.exists_C_mul_eq_of_dvd [IsDomain R] {σ : Type*}
+    {w : σ → ℕ} (hw : NonTorsionWeight w)
+    {P Q : MvPolynomial σ R} (hP : P.IsWeightedHomogeneous w n) (hQ : Q.IsWeightedHomogeneous w n)
+    (hdvd : P ∣ Q) :
+    ∃ c, C c * P = Q := by
+  obtain ⟨R, rfl⟩ := hdvd
+  by_cases hP0 : P = 0
+  · simp [hP0]
+  by_cases hR0 : R = 0
+  · use 0
+    simp [hR0]
+  obtain ⟨x, rfl⟩ : ∃ x, R = C x :=
+    ((IsWeightedHomogeneous.of_mul_right hP (by simpa) hP0).zero_iff_exists_C hw hR0).mp rfl
+  exact ⟨x, mul_comm _ _⟩
+
 end TO_MOVE
+/-
 
 namespace Polynomial
 
@@ -232,7 +275,7 @@ lemma uEval₂_universalResultant : (uEval₂ f.natDegree g.natDegree f g) (univ
   rw [universalResultant_eq, RingHom.map_det, RingHom.mapMatrix_apply,
     uEval₂_universalSylvester, resultant_def]
 
-lemma universalSplitResultant_eq : universalSplitResultant m n =
+lemma universalSplitResultant_eq' : universalSplitResultant m n =
     (universalResultant m n).eval₂ MvPolynomial.C (Sum.elim
       (fun i ↦ ((-1)^(m-i) : ℤ) * .rename Sum.inl (.esymm _ _ (m-i)) :
         Fin (m+1) → MvPolynomial (Fin m ⊕ Fin n) ℤ)
@@ -384,7 +427,7 @@ theorem universalResultant_isHomogeneous : (universalResultant m n).IsHomogeneou
 /-- The split resultant `Res(∏(X-aᵢ),∏(X-bⱼ))` is homogeneous of degree `mn`. -/
 theorem universalSplitResultant_isHomogeneous :
     (universalSplitResultant m n).IsHomogeneous (m * n) := by
-  rw [universalSplitResultant_eq]
+  rw [universalSplitResultant_eq']
   refine (universalResultant_isWeightedHomogeneous m n).eval₂ _ _ _ _
     (Sum.rec (fun i ↦ ?_) (fun j ↦ ?_))
   · simp only [Sum.elim_inl, MvPolynomial.esymm_eq_sum_subtype, ← zsmul_eq_mul, map_sum, map_prod,
@@ -399,6 +442,21 @@ theorem universalSplitResultant_isHomogeneous :
     exact .prod s.1 _ 1 (fun j _ ↦ MvPolynomial.isWeightedHomogeneous_X _ _ _)
 
 end IsHomogeneous
+
+
+section formula
+
+variable (m n : ℕ)
+
+/-- The fundamental theorem of resultants: `Res(∏(X-aᵢ),∏(X-bⱼ)) = (-1)ᵐⁿ∏∏(aᵢ-bⱼ)`. -/
+theorem universalSplitResultant_eq : universalSplitResultant m n =
+  ((-1)^(m*n) : ℤˣ) • ∏ i : Fin m, ∏ j : Fin n, (.X (Sum.inl i) - .X (Sum.inr j)) :=
+_
+
+#check exists_C_mul_eq_of_dvd
+
+end formula
+
 
 end Polynomial
 

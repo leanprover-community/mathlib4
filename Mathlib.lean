@@ -975,7 +975,8 @@ import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Polynomial.Monomial
 import Mathlib.Algebra.Polynomial.OfFn
 import Mathlib.Algebra.Polynomial.PartialFractions
-import Mathlib.Algebra.Polynomial.Resultant
+import Mathlib.Algebra.Polynomial.Resultant.Basic
+import Mathlib.Algebra.Polynomial.Resultant.MvPolynomial
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.Roots
