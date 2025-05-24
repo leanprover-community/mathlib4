@@ -69,7 +69,7 @@ theorem lower_raise : ∀ l n, lower (raise l n) n = l
 theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
   | [], _, _ => rfl
   | m :: l, n, h => by
-    have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
+    have : n ≤ m := List.rel_of_sorted_cons h _ List.mem_cons_self
     simp [raise, lower, Nat.sub_add_cancel this, raise_lower h.of_cons]
 
 theorem raise_chain : ∀ l n, List.Chain (· ≤ ·) n (raise l n)

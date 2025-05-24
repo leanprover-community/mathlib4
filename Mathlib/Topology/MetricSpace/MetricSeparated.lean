@@ -14,7 +14,7 @@ This file defines a few notions of separations of sets in a metric space.
 The first notion (`Metric.IsSeparated`) is quantitative and about a single set: A set `s` is
 `ε`-separated if its elements are pairwise at distance at least `ε` from each other.
 
-The second notion ( `Metric.AreSeparated`) is qualitative and about two sets: Two sets `s` and `t`
+The second notion (`Metric.AreSeparated`) is qualitative and about two sets: Two sets `s` and `t`
 are separated if the distance between `x ∈ s` and `y ∈ t` is bounded from below by a positive
 constant.
 -/
@@ -137,8 +137,9 @@ theorem union_right_iff {t'} :
 
 theorem finite_iUnion_left_iff {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set X}
     {t : Set X} : AreSeparated (⋃ i ∈ I, s i) t ↔ ∀ i ∈ I, AreSeparated (s i) t := by
-  refine Finite.induction_on _ hI (by simp) @fun i I _ _ hI => ?_
-  rw [biUnion_insert, forall_mem_insert, union_left_iff, hI]
+  induction I, hI using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ hI => rw [biUnion_insert, forall_mem_insert, union_left_iff, hI]
 
 alias ⟨_, finite_iUnion_left⟩ := finite_iUnion_left_iff
 

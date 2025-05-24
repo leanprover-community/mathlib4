@@ -310,10 +310,10 @@ theorem nat_nadd (n : ℕ) : ↑n ♯ a = a + n := by rw [nadd_comm, nadd_nat]
 
 theorem add_le_nadd : a + b ≤ a ♯ b := by
   induction b using limitRecOn with
-  | H₁ => simp
-  | H₂ c h =>
+  | zero => simp
+  | succ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
-  | H₃ c hc H =>
+  | isLimit c hc H =>
     rw [(isNormal_add_right a).apply_of_isLimit hc, Ordinal.iSup_le_iff]
     rintro ⟨i, hi⟩
     exact (H i hi).trans (nadd_le_nadd_left hi.le a)
@@ -346,17 +346,18 @@ instance : AddLeftReflectLE NatOrdinal.{u} :=
     by_contra! h'
     exact h.not_lt (add_lt_add_left h' a)⟩
 
-instance : OrderedCancelAddCommMonoid NatOrdinal :=
-  { NatOrdinal.instLinearOrder with
-    add := (· + ·)
+instance : AddCommMonoid NatOrdinal :=
+  { add := (· + ·)
     add_assoc := nadd_assoc
-    add_le_add_left := fun _ _ => add_le_add_left
-    le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left
     zero := 0
     zero_add := zero_nadd
     add_zero := nadd_zero
     add_comm := nadd_comm
     nsmul := nsmulRec }
+
+instance : IsOrderedCancelAddMonoid NatOrdinal :=
+  { add_le_add_left := fun _ _ => add_le_add_left
+    le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left }
 
 instance : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
@@ -684,11 +685,8 @@ theorem nmul_nadd_le {a b a' b' : NatOrdinal} (ha : a' ≤ a) (hb : b' ≤ b) :
     a' * b + a * b' ≤ a * b + a' * b' :=
   Ordinal.nmul_nadd_le ha hb
 
--- Porting note: had to add universe annotations to ensure that the
--- two sources lived in the same universe.
-instance : OrderedCommSemiring NatOrdinal.{u} :=
-  { NatOrdinal.instOrderedCancelAddCommMonoid.{u},
-    NatOrdinal.instLinearOrder.{u} with
+instance : CommSemiring NatOrdinal :=
+  { NatOrdinal.instAddCommMonoid with
     mul := (· * ·)
     left_distrib := nmul_nadd
     right_distrib := nadd_nmul
@@ -698,9 +696,10 @@ instance : OrderedCommSemiring NatOrdinal.{u} :=
     one := 1
     one_mul := one_nmul
     mul_one := nmul_one
-    mul_comm := nmul_comm
-    zero_le_one := @zero_le_one Ordinal _ _ _ _
-    mul_le_mul_of_nonneg_left := fun _ _ c h _ => nmul_le_nmul_left h c
+    mul_comm := nmul_comm }
+
+instance : IsOrderedRing NatOrdinal :=
+  { mul_le_mul_of_nonneg_left := fun _ _ c h _ => nmul_le_nmul_left h c
     mul_le_mul_of_nonneg_right := fun _ _ c h _ => nmul_le_nmul_right h c }
 
 end NatOrdinal

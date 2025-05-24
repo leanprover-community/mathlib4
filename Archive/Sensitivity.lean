@@ -200,15 +200,12 @@ variable {n : ℕ}
 open Classical in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   induction' n with n IH
-  · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
-    dsimp [ε, e]
-    simp
+  · simp [Subsingleton.elim (α := Q 0) p q, ε, e]
   · dsimp [ε, e]
     cases hp : p 0 <;> cases hq : q 0
     all_goals
-      repeat rw [Bool.cond_true]
-      repeat rw [Bool.cond_false]
-      simp only [LinearMap.fst_apply, LinearMap.snd_apply, LinearMap.comp_apply, IH, V]
+      simp only [Bool.cond_true, Bool.cond_false, LinearMap.fst_apply, LinearMap.snd_apply,
+        LinearMap.comp_apply, IH, V]
       congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
@@ -234,7 +231,8 @@ and `ε` computes coefficients of decompositions of vectors on that basis. -/
 theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
   eval_same := by simp [duality]
   eval_of_ne _ _ h := by simp [duality, h]
-  total := @epsilon_total _
+  total h := sub_eq_zero.mp <| epsilon_total fun i ↦ by
+    simpa only [map_sub, sub_eq_zero] using h i
 
 /-! We will now derive the dimension of `V`, first as a cardinal in `dim_V` and,
 since this cardinal is finite, as a natural number in `finrank_V` -/

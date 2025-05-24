@@ -94,6 +94,7 @@ initialize_simps_projections Comma.Hom (toCommaMorphism → hom)
 @[simps]
 def id [Q.ContainsIdentities] [W.ContainsIdentities] (X : P.Comma L R Q W) : Comma.Hom X X where
   left := 𝟙 X.left
+  right := 𝟙 X.right
   prop_hom_left := Q.id_mem X.toComma.left
   prop_hom_right := W.id_mem X.toComma.right
 

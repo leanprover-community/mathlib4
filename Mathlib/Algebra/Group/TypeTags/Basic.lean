@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Equiv.Defs
@@ -307,6 +308,12 @@ instance Additive.addCommMonoid [CommMonoid α] : AddCommMonoid (Additive α) :=
 instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicative α) :=
   { Multiplicative.monoid, Multiplicative.commSemigroup with }
 
+instance Additive.instAddCancelCommMonoid [CancelCommMonoid α] :
+    AddCancelCommMonoid (Additive α) where
+
+instance Multiplicative.instCancelCommMonoid [AddCancelCommMonoid α] :
+    CancelCommMonoid (Multiplicative α) where
+
 instance Additive.neg [Inv α] : Neg (Additive α) :=
   ⟨fun x => ofAdd x.toMul⁻¹⟩
 
@@ -418,6 +425,12 @@ instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
 
 instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) :=
   { Multiplicative.group, Multiplicative.commMonoid with }
+
+instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) where
+  nsmul_right_injective _ := pow_left_injective (M := α)
+
+instance [AddMonoid α] [IsAddTorsionFree α] : IsMulTorsionFree (Multiplicative α) where
+  pow_left_injective _ := nsmul_right_injective (M := α)
 
 /-- If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.

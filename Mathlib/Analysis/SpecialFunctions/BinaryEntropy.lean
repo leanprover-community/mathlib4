@@ -136,7 +136,7 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
     simp at h
   wlog hp : p < 2⁻¹
   · have hp : 1 - p < 2⁻¹ := by
-      rw [sub_lt_comm]; norm_num at *; linarith (config := { splitNe := true })
+      rw [sub_lt_comm]; norm_num at *; linarith +splitNe
     rw [← binEntropy_one_sub]
     exact this hp.ne hp
   obtain hp₀ | hp₀ := le_or_lt p 0
@@ -345,7 +345,7 @@ lemma deriv2_qaryEntropy :
     filter_upwards [eventually_ne_nhds xne0, eventually_ne_nhds xne1]
       with y xne0 h2 using deriv_qaryEntropy xne0 h2
   -- Pathological case where we use junk value (because function not differentiable)
-  · have : p = 0 ∨ p = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
+  · have : p = 0 ∨ p = 1 := Decidable.or_iff_not_not_and_not.mpr is_x_where_nondiff
     rw [deriv_zero_of_not_differentiableAt]
     · simp_all only [ne_eq, not_and, Decidable.not_not]
       cases this <;> simp_all only [

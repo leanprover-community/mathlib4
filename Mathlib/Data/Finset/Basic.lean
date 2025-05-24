@@ -281,10 +281,6 @@ theorem erase_union_of_mem (ha : a ∈ t) (s : Finset α) : s.erase a ∪ t = s 
 theorem union_erase_of_mem (ha : a ∈ s) (t : Finset α) : s ∪ t.erase a = s ∪ t := by
   rw [← insert_erase (mem_union_left t ha), erase_union_distrib, ← insert_union, insert_erase ha]
 
-@[simp, deprecated erase_eq_of_not_mem (since := "2024-10-01")]
-theorem sdiff_singleton_eq_self (ha : a ∉ s) : s \ {a} = s := by
-  rw [← erase_eq, erase_eq_of_not_mem ha]
-
 theorem sdiff_union_erase_cancel (hts : t ⊆ s) (ha : a ∈ t) : s \ t ∪ t.erase a = s.erase a := by
   simp_rw [erase_eq, sdiff_union_sdiff_cancel hts (singleton_subset_iff.2 ha)]
 
@@ -301,7 +297,7 @@ theorem sdiff_erase (h : a ∈ s) : s \ t.erase a = insert a (s \ t) := by
     union_comm]
 
 theorem sdiff_erase_self (ha : a ∈ s) : s \ s.erase a = {a} := by
-  rw [sdiff_erase ha, Finset.sdiff_self, insert_emptyc_eq]
+  rw [sdiff_erase ha, Finset.sdiff_self, insert_empty_eq]
 
 theorem erase_eq_empty_iff (s : Finset α) (a : α) : s.erase a = ∅ ↔ s = ∅ ∨ s = {a} := by
   rw [← sdiff_singleton_eq_erase, sdiff_eq_empty_iff_subset, subset_singleton_iff]
@@ -370,8 +366,6 @@ theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
     [DecidablePred p] [∀ x, Decidable (¬p x)] :
     Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
   disjoint_filter_filter' s t disjoint_compl_right
-
-@[deprecated (since := "2024-10-01")] alias filter_inter_filter_neg_eq := disjoint_filter_filter_neg
 
 theorem filter_disj_union (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     filter p (disjUnion s t h) = (filter p s).disjUnion (filter p t) (disjoint_filter_filter h) :=

@@ -149,10 +149,13 @@ theorem AntisymmRel.compRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
 end Preorder
 
 /-- A partial order where any two elements are comparable is a linear order. -/
-def linearOrderOfComprel [PartialOrder α] [dec : DecidableLE α]
+def linearOrderOfComprel [PartialOrder α]
+    [decLE : DecidableLE α] [decLT : DecidableLT α] [decEq : DecidableEq α]
     (h : ∀ a b : α, CompRel (· ≤ ·) a b) : LinearOrder α where
   le_total := h
-  decidableLE := dec
+  toDecidableLE := decLE
+  toDecidableEq := decEq
+  toDecidableLT := decLT
 
 /-! ### Incomparability relation -/
 

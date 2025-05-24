@@ -5,8 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -124,7 +122,5 @@ theorem ediv_emod_unique'' {a b r q : Int} (h : b ≠ 0) :
     · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]
       simp [Int.zero_add]
     · rw [add_mul_emod_self_left, ← emod_abs, emod_eq_of_lt hz hb]
-
-@[deprecated (since := "2025-03-10")] alias ediv_emod_unique' := ediv_emod_unique''
 
 end Int

@@ -49,7 +49,7 @@ instance : HasTerminal Scheme :=
   hasTerminal_of_hasTerminal_of_preservesLimit Scheme.Spec
 
 instance : IsAffine (⊤_ Scheme.{u}) :=
-  isAffine_of_isIso (PreservesTerminal.iso Scheme.Spec).inv
+  .of_isIso (PreservesTerminal.iso Scheme.Spec).inv
 
 instance : HasFiniteLimits Scheme :=
   hasFiniteLimits_of_hasTerminal_and_pullbacks
@@ -116,7 +116,7 @@ noncomputable def specPunitIsInitial : IsInitial (Spec (.of PUnit.{u+1})) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
-  isAffine_of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec (.of PUnit)))
+  .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec (.of PUnit)))
 
 instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
@@ -132,6 +132,18 @@ instance : HasStrictInitialObjects Scheme :=
 
 instance {X : Scheme} [IsEmpty X] (U : X.Opens) : Subsingleton Γ(X, U) := by
   obtain rfl : U = ⊥ := Subsingleton.elim _ _; infer_instance
+
+-- This is also true for schemes with two points.
+-- But there are non-affine schemes with three points.
+instance (priority := low) {X : Scheme.{u}} [Subsingleton X] : IsAffine X := by
+  cases isEmpty_or_nonempty X with
+  | inl h => infer_instance
+  | inr h =>
+  obtain ⟨x⟩ := h
+  obtain ⟨_, ⟨U, hU : IsAffine _, rfl⟩, hxU, -⟩ :=
+    (isBasis_affine_open X).exists_subset_of_mem_open (a := x) (by trivial) isOpen_univ
+  obtain rfl : U = ⊤ := by ext y; simpa [Subsingleton.elim y x]
+  exact .of_isIso (Scheme.topIso X).inv
 
 end Initial
 
@@ -152,7 +164,7 @@ def disjointGlueData' : GlueData' Scheme where
   t_fac _ _ _ _ _ _ := emptyIsInitial.strict_hom_ext _ _
   t_inv _ _ _ := Category.comp_id _
   cocycle _ _ _ _ _ _ := (emptyIsInitial.ofStrict (pullback.fst _ _)).hom_ext _ _
-  f_mono _ _ := by dsimp only; infer_instance
+  f_mono _ _ := inferInstance
 
 /-- (Implementation Detail) The glue data associated to a disjoint union. -/
 @[simps! J V U f t]
@@ -627,11 +639,14 @@ instance [Finite ι] (R : ι → CommRingCat.{u}) : IsIso (sigmaSpec R) := by
   infer_instance
 
 instance [Finite ι] [∀ i, IsAffine (f i)] : IsAffine (∐ f) :=
-  isAffine_of_isIso ((Sigma.mapIso (fun i ↦ (f i).isoSpec)).hom ≫ sigmaSpec _)
+  .of_isIso ((Sigma.mapIso (fun i ↦ (f i).isoSpec)).hom ≫ sigmaSpec _)
 
 instance [IsAffine X] [IsAffine Y] : IsAffine (X ⨿ Y) :=
-  isAffine_of_isIso ((coprod.mapIso X.isoSpec Y.isoSpec).hom ≫ coprodSpec _ _)
+  .of_isIso ((coprod.mapIso X.isoSpec Y.isoSpec).hom ≫ coprodSpec _ _)
 
 end Coproduct
+
+instance : CartesianMonoidalCategory Scheme := .ofHasFiniteProducts
+instance : BraidedCategory Scheme := .ofCartesianMonoidalCategory
 
 end AlgebraicGeometry

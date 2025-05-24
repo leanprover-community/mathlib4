@@ -186,6 +186,7 @@ def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
 
 /-- The category of profinite sets is reflective in the category of compact Hausdorff spaces -/
 instance toCompHaus.reflective : Reflective profiniteToCompHaus where
+  L := CompHaus.toProfinite
   adj := Profinite.toProfiniteAdjToCompHaus
 
 noncomputable instance toCompHaus.createsLimits : CreatesLimits profiniteToCompHaus :=

@@ -67,10 +67,10 @@ open LinearMap hiding id
 open Finsupp
 
 /- The actual implementation we choose: `P` is projective if the natural surjection
-   from the free `R`-module on `P` to `P` splits. -/
+from the free `R`-module on `P` to `P` splits. -/
 /-- An R-module is projective if it is a direct summand of a free module, or equivalently
-  if maps from the module lift along surjections. There are several other equivalent
-  definitions. -/
+if maps from the module lift along surjections. There are several other equivalent
+definitions. -/
 class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddCommMonoid P] [Module R P] :
     Prop where
   out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.linearCombination R id) s
@@ -109,7 +109,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   use φ.comp s
   ext p
   conv_rhs => rw [← hs p]
-  simp [φ, Finsupp.linearCombination_apply, Function.surjInv_eq hf, map_finsupp_sum]
+  simp [φ, Finsupp.linearCombination_apply, Function.surjInv_eq hf, map_finsuppSum]
 
 theorem _root_.LinearMap.exists_rightInverse_of_surjective [Projective R P]
     (f : M →ₗ[R] P) (hf_surj : range f = ⊤) : ∃ g : P →ₗ[R] M, f ∘ₗ g = LinearMap.id :=
@@ -158,7 +158,7 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
   intro m
   simp only [b.constr_apply, mul_one, id, Finsupp.smul_single', Finsupp.linearCombination_single,
-    map_finsupp_sum]
+    map_finsuppSum]
   exact b.linearCombination_repr m
 
 instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=
@@ -195,7 +195,7 @@ theorem Projective.of_ringEquiv {R S} [Semiring R] [Semiring S] {M N}
     map_smul' := fun r v ↦ by ext i; simp [e₂.symm.map_smulₛₗ] }
   refine ⟨⟨g, fun x ↦ ?_⟩⟩
   replace hf := congr(e₂ $(hf (e₂.symm x)))
-  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsupp_sum, e₂.map_smulₛₗ] using hf
+  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsuppSum, e₂.map_smulₛₗ] using hf
 
 end Semiring
 

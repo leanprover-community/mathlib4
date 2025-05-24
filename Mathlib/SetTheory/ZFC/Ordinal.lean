@@ -234,13 +234,4 @@ end IsOrdinal
 theorem isOrdinal_empty : IsOrdinal ∅ :=
   ⟨isTransitive_empty, fun _ _ H ↦ (not_mem_empty _ H).elim⟩
 
-/-- The **Burali-Forti paradox**: ordinals form a proper class. -/
-theorem isOrdinal_not_mem_univ : IsOrdinal ∉ Class.univ.{u} := by
-  rintro ⟨x, hx, -⟩
-  suffices IsOrdinal x by
-    apply Class.mem_irrefl x
-    rwa [Class.coe_mem, hx]
-  refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;> rw [← Class.coe_apply, hx] at *
-  exacts [hy.mem hz, hwx.mem_trans hyz hzw]
-
 end ZFSet

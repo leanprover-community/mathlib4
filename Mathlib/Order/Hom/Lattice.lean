@@ -102,9 +102,6 @@ section Hom
 
 variable [FunLike F α β]
 
--- Porting note: changes to the typeclass inference system mean that we need to
--- make a lot of changes here, adding `outParams`, changing `[]`s into `{}` and
--- so on.
 -- See note [lower instance priority]
 instance (priority := 100) SupHomClass.toOrderHomClass [SemilatticeSup α] [SemilatticeSup β]
     [SupHomClass F α β] : OrderHomClass F α β :=
@@ -604,7 +601,7 @@ theorem comp_apply (f : LatticeHom β γ) (g : LatticeHom α β) (a : α) : (f.c
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_sup_hom`
+-- `simp`-normal form of `coe_comp_sup_hom`
 theorem coe_comp_sup_hom' (f : LatticeHom β γ) (g : LatticeHom α β) :
     ⟨f ∘ g, map_sup (f.comp g)⟩ = (f : SupHom β γ).comp g :=
   rfl
@@ -614,7 +611,7 @@ theorem coe_comp_sup_hom (f : LatticeHom β γ) (g : LatticeHom α β) :
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_inf_hom`
+-- `simp`-normal form of `coe_comp_inf_hom`
 theorem coe_comp_inf_hom' (f : LatticeHom β γ) (g : LatticeHom α β) :
     ⟨f ∘ g, map_inf (f.comp g)⟩ = (f : InfHom β γ).comp g :=
   rfl

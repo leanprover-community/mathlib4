@@ -163,7 +163,7 @@ lemma rTensorAlgHom_toLinearMap :
     LinearMap.coe_restrictScalars, AlgHom.toLinearMap_apply]
   rw [coeff_rTensorAlgHom_tmul]
   simp only [coeff]
-  erw [finsuppLeft_apply_tmul_apply]
+  exact (finsuppLeft_apply_tmul_apply _ _ _).symm
 
 lemma rTensorAlgHom_apply_eq (p : MvPolynomial σ S ⊗[R] N) :
     rTensorAlgHom (S := S) p = rTensor p := by
@@ -181,7 +181,7 @@ noncomputable def rTensorAlgEquiv :
     exact finsuppLeft_symm_apply_single (R := R) (0 : σ →₀ ℕ) (1 : S) (1 : N)
   · intro x y
     erw [← rTensorAlgHom_apply_eq (S := S)]
-    simp only [_root_.map_mul, rTensorAlgHom_apply_eq]
+    simp only [map_mul, rTensorAlgHom_apply_eq]
     rfl
 
 @[simp]
@@ -232,19 +232,20 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
   · simp [algebraTensorAlgEquiv]
   · intro i n f _ _ hfa
     simp only [algebraTensorAlgEquiv, AlgEquiv.ofAlgHom_symm_apply] at hfa ⊢
-    simp only [add_comm, monomial_add_single, _root_.map_mul, map_pow, aeval_X,
+    simp only [add_comm, monomial_add_single, map_mul, map_pow, aeval_X,
       Algebra.TensorProduct.tmul_pow, one_pow, hfa]
     nth_rw 2 [← mul_one a]
     rw [Algebra.TensorProduct.tmul_mul_tmul]
 
 lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
     (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by
-  induction' p using MvPolynomial.induction_on with a p q hp hq p i h
-  · simp only [map_C, algHom_C, Algebra.TensorProduct.algebraMap_apply,
+  induction p using MvPolynomial.induction_on with
+  | C a =>
+    simp only [map_C, algHom_C, Algebra.TensorProduct.algebraMap_apply,
       RingHomCompTriple.comp_apply]
     rw [← mul_one ((algebraMap R N) a), ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
-  · simp [hp, hq, tmul_add]
-  · simp [h]
+  | add p q hp hq => simp [hp, hq, tmul_add]
+  | mul_X p i h => simp [h]
 
 section Pushout
 

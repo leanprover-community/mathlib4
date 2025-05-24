@@ -76,16 +76,16 @@ end
 
 end
 
-/-- The condition that a cochain complex `K` is strictly `≤ n`. -/
+/-- The condition that a cochain complex `K` is strictly `≥ n`. -/
 abbrev IsStrictlyGE (n : ℤ) := K.IsStrictlySupported (embeddingUpIntGE n)
 
-/-- The condition that a cochain complex `K` is strictly `≥ n`. -/
+/-- The condition that a cochain complex `K` is strictly `≤ n`. -/
 abbrev IsStrictlyLE (n : ℤ) := K.IsStrictlySupported (embeddingUpIntLE n)
 
-/-- The condition that a cochain complex `K` is (cohomologically) `≤ n`. -/
+/-- The condition that a cochain complex `K` is (cohomologically) `≥ n`. -/
 abbrev IsGE (n : ℤ) := K.IsSupported (embeddingUpIntGE n)
 
-/-- The condition that a cochain complex `K` is (cohomologically) `≥ n`. -/
+/-- The condition that a cochain complex `K` is (cohomologically) `≤ n`. -/
 abbrev IsLE (n : ℤ) := K.IsSupported (embeddingUpIntLE n)
 
 lemma isZero_of_isStrictlyGE (n i : ℤ) (hi : i < n) [K.IsStrictlyGE n] :
