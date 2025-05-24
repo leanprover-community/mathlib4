@@ -459,14 +459,19 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
   have : Cancels 1 ((g : G) • w) ↔ Cancels 1 w := by
     simp [Cancels, Subgroup.mul_mem_cancel_left]
   by_cases hcan : Cancels 1 w
-  · simp [unitsSMulWithCancel, dif_pos (this.2 hcan), dif_pos hcan]
+  · simp only [unitsSMulWithCancel, toSubgroup_one, id_eq, toSubgroup_neg_one, toSubgroupEquiv_one,
+      group_smul_head, mul_inv_rev, dif_pos (this.2 hcan), dif_pos hcan]
     cases w using consRecOn
     · simp [Cancels] at hcan
     · simp only [smul_cons, consRecOn_cons, mul_smul]
       rw [← mul_smul, ← Subgroup.coe_mul, ← map_mul φ]
       rfl
   · rw [dif_neg (mt this.1 hcan), dif_neg hcan]
-    simp [← mul_smul, mul_assoc, unitsSMulGroup]
+    -- Before https://github.com/leanprover/lean4/pull/2644, all this was just
+    -- `simp [← mul_smul, mul_assoc, unitsSMulGroup]`
+    simp only [toSubgroup_neg_one, unitsSMulGroup, toSubgroup_one, toSubgroupEquiv_one,
+      SetLike.coe_sort_coe, group_smul_head, mul_inv_rev, ← mul_smul, mul_assoc, inv_mul_cancel,
+      mul_one, smul_cons]
     -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
     dsimp
     congr 1
@@ -515,21 +520,27 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
   · cases w using consRecOn
     · simp [Cancels] at hcan
     · cases hcan.2
-      simp [unitsSMulWithCancel]
+      simp only [unitsSMulWithCancel, id_eq, consRecOn_cons, prod_group_smul, prod_cons, zpow_neg]
       rcases Int.units_eq_one_or u with (rfl | rfl)
       · simp [equiv_eq_conj, mul_assoc]
-      · simp [equiv_symm_eq_conj, mul_assoc]
-        -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
+      · -- Before https://github.com/leanprover/lean4/pull/2644, this proof was just
+        -- simp [equiv_symm_eq_conj, mul_assoc].
+        simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, Units.val_neg, Units.val_one,
+          Int.reduceNeg, zpow_neg, zpow_one, inv_inv]
         erw [equiv_symm_eq_conj]
         simp [equiv_symm_eq_conj, mul_assoc]
-  · simp [unitsSMulGroup]
+  · simp only [unitsSMulGroup, SetLike.coe_sort_coe, prod_cons, prod_group_smul, map_mul, map_inv]
     rcases Int.units_eq_one_or u with (rfl | rfl)
-    · simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
-      -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
+    · -- Before https://github.com/leanprover/lean4/pull/2644, this proof was just
+      -- simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul].
+      simp only [toSubgroup_neg_one, toSubgroup_one, toSubgroupEquiv_one, equiv_eq_conj, mul_assoc,
+        Units.val_one, zpow_one, inv_mul_cancel_left, mul_right_inj]
       erw [(d.compl 1).equiv_snd_eq_inv_mul]
       simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
-    · simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
-      -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
+    · -- Before https://github.com/leanprover/lean4/pull/2644, this proof was just
+      -- simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
+      simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, Units.val_neg, Units.val_one,
+        Int.reduceNeg, zpow_neg, zpow_one, mul_assoc]
       erw [equiv_symm_eq_conj, (d.compl (-1)).equiv_snd_eq_inv_mul]
       simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
 
@@ -557,10 +568,13 @@ theorem prod_smul_empty (w : NormalWord d) :
     rw [prod_cons, ← mul_assoc, mul_smul, ih, mul_smul, t_pow_smul_eq_unitsSMul,
       of_smul_eq_smul, unitsSMul]
     rw [dif_neg (not_cancels_of_cons_hyp u w h2)]
-    simp [unitsSMulGroup, (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1,
-      -SetLike.coe_sort_coe]
+    -- Before https://github.com/leanprover/lean4/pull/2644, this was just
+    -- simp [unitsSMulGroup, (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1,
+    --   -SetLike.coe_sort_coe]
+    -- ext <;> simp [-SetLike.coe_sort_coe]
+    simp only [unitsSMulGroup, (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1,
+      smul_cons]
     ext <;> simp [-SetLike.coe_sort_coe]
-    -- The next 3 lines were not needed before https://github.com/leanprover/lean4/pull/2644
     rw [(d.compl _).equiv_snd_eq_inv_mul,
       (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
     simp
