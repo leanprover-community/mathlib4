@@ -217,7 +217,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
       refine measure_mono_null (fun x ↦ ?_) h0'
       simp only [mem_prod, mem_setOf_eq, and_imp]
       exact fun h _ ↦ h
-    · exact ENNReal.div_lt_top (measure_ne_top _ _) h0
+    · finiteness
   congr
   have : ∫⁻ x in u, κ a (countablePartitionSet n x ×ˢ s) / ν a (countablePartitionSet n x) ∂(ν a)
       = ∫⁻ _ in u, κ a (u ×ˢ s) / ν a u ∂(ν a) := by

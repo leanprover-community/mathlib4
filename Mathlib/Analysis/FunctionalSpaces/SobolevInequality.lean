@@ -534,8 +534,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     exact hu.continuous.memLp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
   have h5u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
-  have h6u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=
-    ENNReal.rpow_ne_top_of_nonneg (div_nonneg zero_le_one hq.symm.nonneg) h4u
+  have h6u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ := by finiteness
   have h7u := hu.continuous -- for fun_prop
   let v : E → ℝ := fun x ↦ ‖u x‖ ^ (γ : ℝ)
   have hv : ContDiff ℝ 1 v := hu.norm_rpow h1γ

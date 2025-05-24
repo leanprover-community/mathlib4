@@ -164,7 +164,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         · simp_rw [lintegral_add_right _ measurable_const, lintegral_const]
           exact add_le_add (hbdd _) le_rfl
       refine ne_of_lt (iSup_lt_iff.2 ⟨R + ‖a‖₊ * μ Set.univ, ENNReal.add_lt_top.2
-        ⟨ENNReal.coe_lt_top, ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top _ _)⟩,
+        ⟨ENNReal.coe_lt_top, by finiteness⟩,
         fun n => le_trans ?_ (hR' n)⟩)
       refine lintegral_mono fun ω => ?_
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
@@ -172,10 +172,10 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
         · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
           exact norm_nonneg _
-      · simp only [Ne, ENNReal.coe_ne_top, not_false_iff]
+      · finiteness
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or]
-  · simp only [Ne, ENNReal.ofReal_ne_top, not_false_iff, true_or]
+  · left;simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or]
+  · left; finiteness
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) : ∀ᵐ ω ∂μ, ∀ a b : ℚ, a < b → upcrossings a b f ω < ∞ := by
