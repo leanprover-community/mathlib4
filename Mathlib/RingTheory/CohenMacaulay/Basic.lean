@@ -482,12 +482,34 @@ lemma isCohenMacaulayRing_def' : IsCohenMacaulayRing R ↔
   ∀ p : PrimeSpectrum R, IsCohenMacaulayLocalRing (Localization.AtPrime p.1) :=
   ⟨fun ⟨h⟩ ↦ fun p ↦ h p.1 p.2, fun h ↦ ⟨fun p hp ↦ h ⟨p, hp⟩⟩⟩
 
-lemma isCohenMacaulayRing_iff : IsCohenMacaulayRing R ↔
+lemma isCohenMacaulayRing_iff [IsNoetherianRing R] : IsCohenMacaulayRing R ↔
     ∀ m : Ideal R, ∀ (_ : m.IsMaximal), IsCohenMacaulayLocalRing (Localization.AtPrime m) := by
   refine ⟨fun ⟨h⟩ ↦ fun m hm ↦ h m (Ideal.IsMaximal.isPrime hm), fun h ↦ ⟨fun p hp ↦  ?_⟩⟩
   rcases Ideal.exists_le_maximal p (Ideal.IsPrime.ne_top hp) with ⟨m, hm, le⟩
-
-  sorry
+  let _ := (isCohenMacaulayLocalRing_iff _).mp (h m hm)
+  let Rₘ := Localization.AtPrime m
+  let Rₚ := Localization.AtPrime p
+  have disj := (Set.disjoint_compl_left_iff_subset.mpr le)
+  have : (p.map (algebraMap R Rₘ)).IsPrime := by
+    simpa [IsLocalization.isPrime_iff_isPrime_disjoint m.primeCompl Rₘ, hp,
+      IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ p hp disj] using disj
+  have le' : m.primeCompl ≤ p.primeCompl := by simpa [Ideal.primeCompl] using le
+  let _ : Algebra Rₘ Rₚ := IsLocalization.localizationAlgebraOfSubmonoidLe Rₘ Rₚ _ _ le'
+  let _ := IsLocalization.localization_isScalarTower_of_submonoid_le Rₘ Rₚ _ _ le'
+  have : IsLocalization.AtPrime (Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p)) p := by
+    convert IsLocalization.isLocalization_atPrime_localization_atPrime m.primeCompl
+      (p.map (algebraMap R Rₘ))
+    rw [IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ p hp disj]
+  let e' := (IsLocalization.algEquiv p.primeCompl Rₚ
+      (Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p)))
+  let e : Rₚ ≃ₐ[Rₘ] Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p) :=
+    AlgEquiv.ofLinearEquiv (LinearEquiv.extendScalarsOfIsLocalization m.primeCompl Rₘ e')
+      (map_one e') (map_mul e')
+  let _ : IsLocalization.AtPrime Rₚ (Ideal.map (algebraMap R Rₘ) p) :=
+    IsLocalization.isLocalization_of_algEquiv (Ideal.map (algebraMap R Rₘ) p).primeCompl e.symm
+  exact (isCohenMacaulayLocalRing_iff _).mpr
+    (isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay (p.map (algebraMap R Rₘ))
+    (ModuleCat.of Rₘ Rₘ) (ModuleCat.of Rₚ Rₚ) (Algebra.linearMap Rₘ Rₚ))
 
 --unmixedness theorem
 
