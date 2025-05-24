@@ -1,5 +1,7 @@
 import Mathlib
 
+set_option linter.style.longLine false
+
 open Subgroup
 open scoped Finset
 open scoped Pointwise
@@ -162,10 +164,33 @@ noncomputable instance WordDist.instMetricSpace: MetricSpace G where
         refine ⟨rfl, hl⟩
       simp only [Set.mem_empty_iff_false] at len_in_set
 
+-- TODO - is there an easier way to transfer all of the theorems/instances from `G` to `Additive (Opposite G)`?
+
+noncomputable instance WordDist.instPseudoMetricSpaceAddOpp: PseudoMetricSpace (Additive (Opposite G)) where
+  dist x y := dist x.toMul.unop y.toMul.unop
+  dist_self x := by
+    apply PseudoMetricSpace.dist_self
+  dist_comm x y := by
+    apply PseudoMetricSpace.dist_comm
+  dist_triangle x y z := by
+    apply PseudoMetricSpace.dist_triangle
+
+noncomputable instance WordDist.instMetricSpaceAddOpp: MetricSpace (Additive (Opposite G)) where
+  eq_of_dist_eq_zero := by
+    intro x y hxy
+    have := MetricSpace.eq_of_dist_eq_zero (x := x.toMul.unop) (y := y.toMul.unop) hxy
+    simp only [Opposite.unop_inj_iff, EmbeddingLike.apply_eq_iff_eq] at this
+    exact this
+
 --def WordMetricSpace := MetricSpace.ofDistTopology ()
 noncomputable instance WordDist.instMeasurableSpace: MeasurableSpace G := borel G
 
+noncomputable instance WordDist.instMeasureableSpaceOpp: MeasurableSpace (Additive (Opposite G)) := borel (Additive (Opposite G))
+
 noncomputable instance WordDist.instBorelSpace: BorelSpace G where
+  measurable_eq := rfl
+
+noncomputable instance WordDist.instBorelSpaceAddOpp: BorelSpace (Additive (Opposite G)) where
   measurable_eq := rfl
 
 -- TODO - are we really supposed to be using a metric topology if it turns out to be the discrete topology?
@@ -180,9 +205,24 @@ lemma singleton_open (x: G): IsOpen {x} := by
   rw [dist_zero] at hy
   exact hy
 
+lemma singleton_open_add_opp (x: Additive (Opposite G)): IsOpen {x} := by
+  rw [Metric.isOpen_singleton_iff]
+  use 1
+  simp only [gt_iff_lt, zero_lt_one, true_and]
+  intro y hy
+  simp [dist] at hy
+  have dist_zero := dist_eq_zero (x := y) (y := x)
+  simp [dist] at dist_zero
+  rw [dist_zero] at hy
+  exact hy
+
 instance discreteTopology: DiscreteTopology G := by
   rw [← singletons_open_iff_discrete]
   exact singleton_open
+
+instance discreteTopologyAddOpp: DiscreteTopology (Additive (Opposite G)) := by
+  rw [← singletons_open_iff_discrete]
+  exact singleton_open_add_opp
 
 instance : ContinuousMul G where
   continuous_mul := continuous_of_discreteTopology
@@ -191,6 +231,11 @@ instance : ContinuousInv G where
   continuous_inv := continuous_of_discreteTopology
 
 instance: IsTopologicalGroup G where
+  continuous_mul := continuous_of_discreteTopology
+  continuous_inv := continuous_of_discreteTopology
+
+
+instance IsTopologicalGroupAddOpp: IsTopologicalAddGroup (Additive (Opposite G)) where
   continuous_mul := continuous_of_discreteTopology
   continuous_inv := continuous_of_discreteTopology
 
@@ -209,8 +254,9 @@ noncomputable def myHaar := MeasureTheory.Measure.haarMeasure (G := G) {
     exact ⟨1, one_mem⟩
 }
 
-noncomputable instance fakeSub: Sub G where
-  sub x y := y⁻¹ * x
+set_option maxHeartbeats 300000
+noncomputable def myHaarAddOpp := MeasureTheory.Measure.haarMeasure (G := Additive (Opposite G)) {
+}
 
 -- Definition 3.5 in Vikman - a harmonic function on G
 def Harmonic (f: G → ℂ): Prop := ∀ x: G, f x = ((1 : ℂ) / #(S)) * ∑ s ∈ S, f (x * s)
@@ -344,5 +390,5 @@ instance lipschitzHVectorSpace : V (G := G) := {
 
 -- TODO - I don't think we can use this, as `MeasureTheory.convolution' would require our group to be commutative
 -- (via `NormedAddCommGroup`)
---open scoped Convolution
---def Conv (f g: G → ℝ) := f ⋆[ContinuousLinearMap.mul (𝕜 := ℝ) G, μ] g
+open scoped Convolution
+noncomputable def Conv (f g: G → ℝ) := MeasureTheory.convolution (G := Additive (Opposite G)) f g (ContinuousLinearMap.mul ℝ ℝ) myHaar
