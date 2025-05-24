@@ -67,9 +67,9 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
     listDecode (l.flatMap listEncode) = l := by
   suffices h : ∀ (t : L.Term α) (l : List (α ⊕ (Σ i, L.Functions i))),
       listDecode (t.listEncode ++ l) = t::listDecode l by
-    induction' l with t l lih
-    · rfl
-    · rw [flatMap_cons, h t (l.flatMap listEncode), lih]
+    induction l with
+    | nil => rfl
+    | cons t l lih => rw [flatMap_cons, h t (l.flatMap listEncode), lih]
   intro t l
   induction t generalizing l with
   | var => rw [listEncode, singleton_append, listDecode]
@@ -77,9 +77,9 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
     rw [listEncode, cons_append, listDecode]
     have h : listDecode (((finRange n).flatMap fun i : Fin n => (ts i).listEncode) ++ l) =
         (finRange n).map ts ++ listDecode l := by
-      induction' finRange n with i l' l'ih
-      · rfl
-      · rw [flatMap_cons, List.append_assoc, ih, map_cons, l'ih, cons_append]
+      induction finRange n with
+      | nil => rfl
+      | cons i l' l'ih => rw [flatMap_cons, List.append_assoc, ih, map_cons, l'ih, cons_append]
     simp only [h, length_append, length_map, length_finRange, le_add_iff_nonneg_right,
       _root_.zero_le, ↓reduceDIte, getElem_fin, cons.injEq, func.injEq, heq_eq_eq, true_and]
     refine ⟨funext (fun i => ?_), ?_⟩
@@ -215,10 +215,11 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
   suffices h : ∀ (φ : Σ n, L.BoundedFormula α n)
       (l' : List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ))),
       (listDecode (listEncode φ.2 ++ l')) = φ::(listDecode l') by
-    induction' l with φ l ih
-    · rw [List.flatMap_nil]
+    induction l with
+    | nil =>
+      rw [List.flatMap_nil]
       simp [listDecode]
-    · rw [flatMap_cons, h φ _, ih]
+    | cons φ l ih => rw [flatMap_cons, h φ _, ih]
   rintro ⟨n, φ⟩
   induction φ with
   | falsum => intro l; rw [listEncode, singleton_append, listDecode]

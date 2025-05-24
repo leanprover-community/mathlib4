@@ -969,23 +969,24 @@ theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
 
 theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[n - 1] i)) :
     pred^[n] (succ^[n] i) = i := by
-  induction' n with n hn
-  · simp only [Nat.zero_eq, Function.iterate_zero, id]
-  rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
-  have h_not_max : ¬IsMax (succ^[n - 1] i) := by
-    rcases n with - | n
-    · simpa using hin
-    rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hn ⊢
-    have h_sub_le : succ^[n] i ≤ succ^[n.succ] i := by
-      rw [Function.iterate_succ']
-      exact le_succ _
-    refine fun h_max => hin fun j hj => ?_
-    have hj_le : j ≤ succ^[n] i := h_max (h_sub_le.trans hj)
-    exact hj_le.trans h_sub_le
-  rw [Function.iterate_succ, Function.iterate_succ']
-  simp only [Function.comp_apply]
-  rw [pred_succ_of_not_isMax hin]
-  exact hn h_not_max
+  induction n with
+  | zero => simp only [Nat.zero_eq, Function.iterate_zero, id]
+  | succ n hn =>
+    rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
+    have h_not_max : ¬IsMax (succ^[n - 1] i) := by
+      rcases n with - | n
+      · simpa using hin
+      rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hn ⊢
+      have h_sub_le : succ^[n] i ≤ succ^[n.succ] i := by
+        rw [Function.iterate_succ']
+        exact le_succ _
+      refine fun h_max => hin fun j hj => ?_
+      have hj_le : j ≤ succ^[n] i := h_max (h_sub_le.trans hj)
+      exact hj_le.trans h_sub_le
+    rw [Function.iterate_succ, Function.iterate_succ']
+    simp only [Function.comp_apply]
+    rw [pred_succ_of_not_isMax hin]
+    exact hn h_not_max
 
 theorem succ_pred_iterate_of_not_isMin (i : α) (n : ℕ) (hin : ¬IsMin (pred^[n - 1] i)) :
     succ^[n] (pred^[n] i) = i :=

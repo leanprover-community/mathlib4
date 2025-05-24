@@ -196,26 +196,28 @@ theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
 
 set_option linter.deprecated false in
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
-  induction' n with n ih
-  · simp only [zero_add, Ico_zero_eq_range]
+  induction n with
+  | zero =>
+    simp only [zero_add, Ico_zero_eq_range]
     rintro k hk l hl (hkl : k % a = l % a)
     simp only [Finset.mem_range, Finset.mem_coe] at hk hl
     rwa [mod_eq_of_lt hk, mod_eq_of_lt hl] at hkl
-  rw [Ico_succ_left_eq_erase_Ico, succ_add, succ_eq_add_one,
-    Ico_succ_right_eq_insert_Ico (by omega)]
-  rintro k hk l hl (hkl : k % a = l % a)
-  have ha : 0 < a := Nat.pos_iff_ne_zero.2 <| by rintro rfl; simp at hk
-  simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_erase] at hk hl
-  rcases hk with ⟨hkn, rfl | hk⟩ <;> rcases hl with ⟨hln, rfl | hl⟩
-  · rfl
-  · rw [add_mod_right] at hkl
-    refine (hln <| ih hl ?_ hkl.symm).elim
-    simpa using Nat.lt_add_of_pos_right (n := n) ha
-  · rw [add_mod_right] at hkl
-    suffices k = n by contradiction
-    refine ih hk ?_ hkl
-    simpa using Nat.lt_add_of_pos_right (n := n) ha
-  · refine ih ?_ ?_ hkl <;> simp only [Finset.mem_coe, hk, hl]
+  | succ n ih =>
+    rw [Ico_succ_left_eq_erase_Ico, succ_add, succ_eq_add_one,
+      Ico_succ_right_eq_insert_Ico (by omega)]
+    rintro k hk l hl (hkl : k % a = l % a)
+    have ha : 0 < a := Nat.pos_iff_ne_zero.2 <| by rintro rfl; simp at hk
+    simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_erase] at hk hl
+    rcases hk with ⟨hkn, rfl | hk⟩ <;> rcases hl with ⟨hln, rfl | hl⟩
+    · rfl
+    · rw [add_mod_right] at hkl
+      refine (hln <| ih hl ?_ hkl.symm).elim
+      simpa using Nat.lt_add_of_pos_right (n := n) ha
+    · rw [add_mod_right] at hkl
+      suffices k = n by contradiction
+      refine ih hk ?_ hkl
+      simpa using Nat.lt_add_of_pos_right (n := n) ha
+    · refine ih ?_ ?_ hkl <;> simp only [Finset.mem_coe, hk, hl]
 
 /-- Note that while this lemma cannot be easily generalized to a type class, it holds for ℤ as
 well. See `Int.image_Ico_emod` for the ℤ version. -/
