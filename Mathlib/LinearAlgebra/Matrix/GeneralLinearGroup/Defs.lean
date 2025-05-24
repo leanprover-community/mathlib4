@@ -226,19 +226,20 @@ def mapGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n S :=
   toGL.comp (map (algebraMap R S))
 
 @[simp]
-lemma mapGL_intCast_inj [CharZero R] (g g' : SpecialLinearGroup n ℤ) :
-    mapGL R g = mapGL R g' ↔ g = g' := by
-  simp [mapGL]
+lemma mapGL_inj [FaithfulSMul R S] (g g' : SpecialLinearGroup n R) :
+    mapGL S g = mapGL S g' ↔ g = g' := by
+  refine ⟨fun h ↦ ?_, by tauto⟩
+  apply SpecialLinearGroup.ext
+  simpa [mapGL, toGL_inj, ext_iff, (FaithfulSMul.algebraMap_injective R S).eq_iff] using h
 
-lemma mapGL_intCast_injective [CharZero R] :
-    Function.Injective (mapGL (R := ℤ) (n := n) R) :=
+lemma mapGL_injective [FaithfulSMul R S]  :
+    Function.Injective (mapGL (R := R) (n := n) S) :=
   fun a b ↦ by simp
 
 @[simp]
 lemma mapGL_coe_matrix (g : SpecialLinearGroup n R) :
     ((mapGL S g) : Matrix n n S) = g.map (algebraMap R S) :=
   rfl
-
 
 end SpecialLinearGroup
 
