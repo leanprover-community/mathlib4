@@ -754,3 +754,20 @@ def toAlgAut : G →* A ≃ₐ[R] A where
 end
 
 end MulSemiringAction
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+
+instance [Subsingleton S] [Subsingleton T] : Unique (S ≃ₐ[R] T) where
+  default := AlgEquiv.ofAlgHom default default
+    (AlgHom.ext fun _ ↦ Subsingleton.elim _ _)
+    (AlgHom.ext fun _ ↦ Subsingleton.elim _ _)
+  uniq _ := AlgEquiv.ext fun _ ↦ Subsingleton.elim _ _
+
+@[simp]
+lemma AlgEquiv.default_apply [Subsingleton S] [Subsingleton T] (x : S) :
+    (default : S ≃ₐ[R] T) x = 0 :=
+  rfl
+
+end
