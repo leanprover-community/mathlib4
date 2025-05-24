@@ -505,11 +505,11 @@ lemma mem_corner_iff_mul_right (hc : IsMulCentral e) {r : R} : r ∈ corner e �
 
 lemma mem_corner_iff_mem_range_mul_left (hc : IsMulCentral e) {r : R} :
     r ∈ corner e ↔ r ∈ Set.range (e * ·) := by
-  simp_rw [corner, mem_mk, Set.mem_range, ← hc.comm, ← mul_assoc, idem.eq]
+  simp_rw [corner, mem_mk, Set.mem_range, ← (hc.comm _).eq, ← mul_assoc, idem.eq]
 
 lemma mem_corner_iff_mem_range_mul_right (hc : IsMulCentral e) {r : R} :
     r ∈ corner e ↔ r ∈ Set.range (· * e) := by
-  simp_rw [mem_corner_iff_mem_range_mul_left idem hc, hc.comm]
+  simp_rw [mem_corner_iff_mem_range_mul_left idem hc, (hc.comm _).eq]
 
 /-- The corner associated to an idempotent `e` in a semiring without 1
 is the semiring with `e` as 1 consisting of all element of the form `e * r * e`. -/
@@ -559,7 +559,7 @@ def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
   toFun r i := ⟨_, r, rfl⟩
   invFun r := ∑ i, (r i).1
   left_inv r := by
-    simp_rw [(hc _).comm, mul_assoc, (he.idem _).eq, ← Finset.mul_sum, he.complete, mul_one]
+    simp_rw [((hc _).comm _).eq, mul_assoc, (he.idem _).eq, ← Finset.mul_sum, he.complete, mul_one]
   right_inv r := funext fun i ↦ Subtype.ext <| by
     simp_rw [Finset.mul_sum, Finset.sum_mul]
     rw [Finset.sum_eq_single i _ (by simp at ·)]
@@ -569,7 +569,8 @@ def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
       rw [← eq]; simp_rw [← mul_assoc, he.ortho ne.symm, zero_mul]
   map_mul' r₁ r₂ := funext fun i ↦ Subtype.ext <|
     calc e i * (r₁ * r₂) * e i
-     _ = e i * (r₁ * e i * r₂) * e i := by simp_rw [← (hc i).comm r₁, ← mul_assoc, (he.idem i).eq]
+     _ = e i * (r₁ * e i * r₂) * e i := by
+       simp_rw [← ((hc i).comm r₁).eq, ← mul_assoc, (he.idem i).eq]
      _ = e i * r₁ * e i * (e i * r₂ * e i) := by
       conv in (r₁ * _ * r₂) => rw [← (he.idem i).eq]
       simp_rw [mul_assoc]
