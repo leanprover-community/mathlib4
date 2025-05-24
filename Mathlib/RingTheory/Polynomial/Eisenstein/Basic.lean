@@ -184,7 +184,7 @@ section CommSemiring
 variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
 
 theorem _root_.Polynomial.Monic.leadingCoeff_notMem (hf : f.Monic) (h : 𝓟 ≠ ⊤) :
-    ¬f.leadingCoeff ∈ 𝓟 := hf.leadingCoeff.symm ▸ (Ideal.ne_top_iff_one _).1 h
+    f.leadingCoeff ∉ 𝓟 := hf.leadingCoeff.symm ▸ (Ideal.ne_top_iff_one _).1 h
 
 @[deprecated (since := "2025-05-23")]
 alias _root_.Polynomial.Monic.leadingCoeff_not_mem := _root_.Polynomial.Monic.leadingCoeff_notMem
