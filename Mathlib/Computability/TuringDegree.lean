@@ -174,7 +174,8 @@ instance TuringDegree.instPartialOrder : PartialOrder TuringDegree :=
 @[simp] lemma recursiveIn_empty_iff_partrec : RecursiveIn {} f ↔ Nat.Partrec f where
   mp fRecInNone := by
     induction fRecInNone with repeat {constructor}
-    | oracle _ hg => simp at hg | pair | comp | prec | rfind
+    | oracle _ hg => simp at hg
+    | pair | comp | prec | rfind =>
     repeat {constructor; assumption; try assumption}
   mpr pF := by
     induction pF with repeat {constructor}
