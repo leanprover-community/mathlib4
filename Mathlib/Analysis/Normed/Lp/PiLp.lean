@@ -80,6 +80,14 @@ instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : CoeFun (PiLp p α) 
 instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
 
+instance PiLp.unique (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Unique (α i)] :
+    Unique (PiLp p α) :=
+  Pi.unique
+
+instance PiLp.uniqueOfIsEmpty (p : ℝ≥0∞) {ι : Type*} [Fintype ι] [IsEmpty ι] (α : ι → Type*) :
+    Unique (PiLp p α) :=
+  Pi.uniqueOfIsEmpty _
+
 @[ext]
 protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type*} {α : ι → Type*} {x y : PiLp p α}
     (h : ∀ i, x i = y i) : x = y := funext h
