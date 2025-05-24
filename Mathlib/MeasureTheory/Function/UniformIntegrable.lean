@@ -427,25 +427,25 @@ all sequences indexed by a finite type. -/
 theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
     (hf : ∀ i, MemLp (f i) p μ) : UnifIntegrable f p μ := by
   revert f
-  induction' n with n h
-  · intro f hf
-    exact unifIntegrable_subsingleton hp_one hp_top hf
-  intro f hfLp ε hε
-  let g : Fin n → α → β := fun k => f k
-  have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i
-  obtain ⟨δ₁, hδ₁pos, hδ₁⟩ := h hgLp hε
-  obtain ⟨δ₂, hδ₂pos, hδ₂⟩ := (hfLp n).eLpNorm_indicator_le hp_one hp_top hε
-  refine ⟨min δ₁ δ₂, lt_min hδ₁pos hδ₂pos, fun i s hs hμs => ?_⟩
-  by_cases hi : i.val < n
-  · rw [(_ : f i = g ⟨i.val, hi⟩)]
-    · exact hδ₁ _ s hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_left _ _)
-    · simp [g]
-  · rw [(_ : i = n)]
-    · exact hδ₂ _ hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_right _ _)
-    · have hi' := Fin.is_lt i
-      rw [Nat.lt_succ_iff] at hi'
-      rw [not_lt] at hi
-      simp [← le_antisymm hi' hi]
+  induction n with
+  | zero => exact fun {f} hf ↦ unifIntegrable_subsingleton hp_one hp_top hf
+  | succ n h =>
+    intro f hfLp ε hε
+    let g : Fin n → α → β := fun k => f k
+    have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i
+    obtain ⟨δ₁, hδ₁pos, hδ₁⟩ := h hgLp hε
+    obtain ⟨δ₂, hδ₂pos, hδ₂⟩ := (hfLp n).eLpNorm_indicator_le hp_one hp_top hε
+    refine ⟨min δ₁ δ₂, lt_min hδ₁pos hδ₂pos, fun i s hs hμs => ?_⟩
+    by_cases hi : i.val < n
+    · rw [(_ : f i = g ⟨i.val, hi⟩)]
+      · exact hδ₁ _ s hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_left _ _)
+      · simp [g]
+    · rw [(_ : i = n)]
+      · exact hδ₂ _ hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_right _ _)
+      · have hi' := Fin.is_lt i
+        rw [Nat.lt_succ_iff] at hi'
+        rw [not_lt] at hi
+        simp [← le_antisymm hi' hi]
 
 /-- A finite sequence of Lp functions is uniformly integrable. -/
 theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {f : ι → α → β}
