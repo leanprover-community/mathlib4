@@ -176,7 +176,7 @@ instance TuringDegree.instPartialOrder : PartialOrder TuringDegree :=
     induction fRecInNone with repeat {constructor}
     | oracle _ hg => simp at hg
     | pair | comp | prec | rfind =>
-    repeat {constructor; assumption; try assumption}
+      repeat {constructor; assumption; try assumption}
   mpr pF := by
     induction pF with repeat {constructor}
     | pair _ _ ih₁ ih₂ => exact RecursiveIn.pair ih₁ ih₂
