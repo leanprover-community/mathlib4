@@ -560,7 +560,7 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
 @[to_additive]
 theorem finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
     H.FiniteIndex ↔ H.index ≠ 0 :=
-  ⟨fun h ↦ h.finiteIndex, fun h ↦ ⟨h⟩⟩
+  ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive "A finite index subgroup has finite quotient"]

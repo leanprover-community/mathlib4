@@ -511,12 +511,6 @@ theorem det_eq_zero_of_not_linearIndependent_cols [IsDomain R] {A : Matrix m m R
   contrapose! hA
   exact linearIndependent_cols_of_det_ne_zero hA
 
-theorem det_eq_zero_of_not_linearIndependent_cols [IsDomain R] {A : Matrix m m R}
-    (hA : ¬ LinearIndependent R (fun i ↦ Aᵀ i)) :
-    det A = 0 := by
-  contrapose! hA
-  exact linearIndependent_cols_of_det_ne_zero hA
-
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
     ∀ (c : n → R) (_ : ∀ i, i ∉ s → c i = 0) (k : n) (_ : k ∉ s)
       (_ : ∀ i j, A i j = B i j + c i * B k j), det A = det B := by
