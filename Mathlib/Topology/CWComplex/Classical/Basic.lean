@@ -39,7 +39,7 @@ together.
   On the other hand, it requires the union of all cells to be closed.
   If that is not the case, you need to consider that union as a subspace of itself.
 * For a categorical approach that defines CW complexes via colimits and transfinite compositions,
-  see `Mathlib.Topology.CWComplex.Abstract.Basic`.
+  see `Mathlib/Topology/CWComplex/Abstract/Basic.lean`.
   The two approaches are equivalent but serve different purposes:
   * This approach is more convenient for concrete geometric arguments
   * The categorical approach is more suitable for abstract arguments and generalizations
@@ -359,9 +359,10 @@ private lemma RelCWComplex.iUnion_openCell_eq_iUnion_closedCell [RelCWComplex C 
     refine iUnion₂_subset fun m hm ↦ iUnion_subset fun j ↦ ?_
     rw [← cellFrontier_union_openCell_eq_closedCell]
     apply union_subset
-    · induction' m using Nat.case_strong_induction_on with m hm'
-      · simp [cellFrontier_zero_eq_empty]
-      · obtain ⟨I, hI⟩ := cellFrontier_subset_base_union_finite_closedCell (m + 1) j
+    · induction m using Nat.case_strong_induction_on with
+      | hz => simp [cellFrontier_zero_eq_empty]
+      | hi m hm' =>
+        obtain ⟨I, hI⟩ := cellFrontier_subset_base_union_finite_closedCell (m + 1) j
         apply hI.trans
         apply union_subset subset_union_left
         apply iUnion₂_subset fun l hl ↦ iUnion₂_subset fun i _ ↦ ?_
@@ -431,14 +432,16 @@ lemma RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedC
   rw [closed C A hAC]
   refine ⟨?_, hDA⟩
   intro n j
-  induction' n using Nat.case_strong_induction_on with n hn
-  · rw [closedCell_zero_eq_singleton]
+  induction n using Nat.case_strong_induction_on with
+  | hz =>
+    rw [closedCell_zero_eq_singleton]
     exact isClosed_inter_singleton
-  specialize h n.succ n.zero_lt_succ j
-  rcases h with h1 | h2
-  · rw [← cellFrontier_union_openCell_eq_closedCell, inter_union_distrib_left]
-    exact (isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell hn j hDA).union h1
-  · exact h2
+  | hi n hn =>
+    specialize h n.succ n.zero_lt_succ j
+    rcases h with h1 | h2
+    · rw [← cellFrontier_union_openCell_eq_closedCell, inter_union_distrib_left]
+      exact (isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell hn j hDA).union h1
+    · exact h2
 
 /-- If for every cell either `A ∩ openCell n j` or `A ∩ closedCell n j` is closed then
 `A` is closed. -/
@@ -452,9 +455,10 @@ The boundary of a cell is contained in a finite union of open cells of a lower d
 lemma RelCWComplex.cellFrontier_subset_finite_openCell [RelCWComplex C D] (n : ℕ) (i : cell C n) :
     ∃ I : Π m, Finset (cell C m),
     cellFrontier n i ⊆ D ∪ (⋃ (m < n) (j ∈ I m), openCell m j) := by
-  induction' n using Nat.case_strong_induction_on with n hn
-  · simp [cellFrontier_zero_eq_empty]
-  · -- We apply `cellFrontier_subset_base_union_finite_closedCell` once and then apply
+  induction n using Nat.case_strong_induction_on with
+  | hz => simp [cellFrontier_zero_eq_empty]
+  | hi n hn =>
+    -- We apply `cellFrontier_subset_base_union_finite_closedCell` once and then apply
     -- the induction hypothesis to the finitely many cells that
     -- `cellFrontier_subset_base_union_finite_closedCell` gives us.
     classical
