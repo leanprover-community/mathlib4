@@ -64,9 +64,6 @@ def ω [Fintype ι] [DecidableEq ι] :
   letI := P.indexNeg
   Matrix.fromBlocks 1 0 0 <| Matrix.of fun i j ↦ if i = -j then 1 else 0
 
--- Should `Matrix.fromBlocks` have an extensionality lemma that captures the pattern
--- `ext (k | k) (l | l)` used repeatedly below?
-
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsReduced] [P.IsCrystallographic] [P.IsIrreducible] in
 lemma ω_ω [DecidableEq ι] [Fintype ι] [Fintype b.support] :
     b.ω * b.ω = 1 := by
