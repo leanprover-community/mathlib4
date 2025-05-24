@@ -361,7 +361,9 @@ protected theorem mul_one (x : R[S⁻¹]) : x * 1 = x := by
 @[to_additive]
 protected theorem mul_smul (x y : R[S⁻¹]) (z : X[S⁻¹]) : (x * y) • z = x • y • z := by
   -- Porting note: `assoc_rw` was not ported yet
-  cases x; cases y; cases z; rename_i r₁ s₁ r₂ s₂ r₃ s₃
+  induction x with | _ r₁ s₁
+  induction y with | _ r₂ s₂
+  induction z with | _ r₃ s₃
   rcases oreDivMulChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'
   rcases oreDivSMulChar' r₂ r₃ s₂ s₃ with ⟨rb, sb, hb, hb'⟩; rw [hb']; clear hb'
   rcases oreCondition ra sb with ⟨rc, sc, hc⟩
@@ -479,7 +481,8 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
   map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
     beta_reduce
-    cases x; cases y; rename_i r₁ s₁ r₂ s₂
+    induction x with | _ r₁ s₁
+    induction y with | _ r₂ s₂
     rcases oreDivMulChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'
     rw [liftExpand_of, liftExpand_of, liftExpand_of, Units.inv_mul_eq_iff_eq_mul, map_mul, map_mul,
       Units.val_mul, mul_assoc, ← mul_assoc (fS s₁ : T), ← mul_assoc (fS s₁ : T), Units.mul_inv,
@@ -573,7 +576,8 @@ instance : IsScalarTower R M[S⁻¹] X[S⁻¹] where
 @[to_additive]
 instance [SMulCommClass R M M] : SMulCommClass R M[S⁻¹] X[S⁻¹] where
   smul_comm r x y := by
-    cases x; cases y; rename_i r₁ s₁ r₂ s₂
+    induction x with | _ r₁ s₁
+    induction y with | _ r₂ s₂
     rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, smul_smul, smul_smul,
       mul_div_one, oreDiv_mul_char _ _ _ _ (r • 1) s₁ (by simp), mul_one]
     simp
@@ -609,7 +613,8 @@ theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :
 @[to_additive]
 instance : CommMonoid R[S⁻¹] where
   mul_comm := fun x y => by
-    cases x; cases y; rename_i r₁ s₁ r₂ s₂
+    induction x with | _ r₁ s₁
+    induction y with | _ r₂ s₂
     rw [oreDiv_mul_oreDiv_comm, oreDiv_mul_oreDiv_comm, mul_comm r₁, mul_comm s₁]
 
 end CommMonoid

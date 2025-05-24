@@ -36,7 +36,9 @@ protected theorem zero_smul (x : X[S⁻¹]) : (0 : R[S⁻¹]) • x = 0 := by
 
 protected theorem add_smul (y z : R[S⁻¹]) (x : X[S⁻¹]) :
     (y + z) • x = y • x + z • x := by
-  cases x; cases y; cases z; rename_i r₁ s₁ r₂ s₂ r₃ s₃
+  induction x with | _ r₁ s₁
+  induction y with | _ r₂ s₂
+  induction z with | _ r₃ s₃
   rcases oreDivAddChar' r₂ r₃ s₂ s₃ with ⟨ra, sa, ha, q⟩
   rw [q]
   clear q
@@ -141,7 +143,8 @@ def universalHom : R[S⁻¹] →+* T :=
       simp
     map_add' := fun x y => by
       simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
-      cases x; cases y; rename_i r₁ s₁ r₂ s₂
+      induction x with | _ r₁ s₁
+      induction y with | _ r₂ s₂
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
       rw [h₃']
       clear h₃'

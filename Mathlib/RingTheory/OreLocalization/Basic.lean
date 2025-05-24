@@ -164,7 +164,9 @@ theorem add_oreDiv {r r' : X} {s : S} : r /ₒ s + r' /ₒ s = (r + r') /ₒ s :
   simp [oreDiv_add_char s s 1 1 (by simp)]
 
 protected theorem add_assoc (x y z : X[S⁻¹]) : x + y + z = x + (y + z) := by
-  cases x; cases y; cases z; rename_i r₁ s₁ r₂ s₂ r₃ s₃
+  induction x with | _ r₁ s₁
+  induction y with | _ r₂ s₂
+  induction z with | _ r₃ s₃
   rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'
   rcases oreDivAddChar' (sa • r₁ + ra • r₂) r₃ (sa * s₁) s₃ with ⟨rc, sc, hc, q⟩; rw [q]; clear q
   simp only [smul_add, mul_assoc, add_assoc]
@@ -203,7 +205,9 @@ protected theorem smul_zero (x : R[S⁻¹]) : x • (0 : X[S⁻¹]) = 0 := by
 
 protected theorem smul_add (z : R[S⁻¹]) (x y : X[S⁻¹]) :
     z • (x + y) = z • x + z • y := by
-  cases x; cases y; cases z; rename_i r₁ s₁ r₂ s₂ r₃ s₃
+  induction x with | _ r₁ s₁
+  induction y with | _ r₂ s₂
+  induction z with | _ r₃ s₃
   rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'; norm_cast at ha
   rw [OreLocalization.expand' r₁ s₁ sa]
   rw [OreLocalization.expand r₂ s₂ ra (by rw [← ha]; apply SetLike.coe_mem)]
@@ -229,7 +233,8 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommMonoid X] [DistribMulAction R X]
 
 protected theorem add_comm (x y : X[S⁻¹]) : x + y = y + x := by
-  cases x; cases y; rename_i r s r' s'
+  induction x with | _ r s
+  induction y with | _ r' s'
   rcases oreDivAddChar' r r' s s' with ⟨ra, sa, ha, ha'⟩
   rw [ha', oreDiv_add_char' s' s _ _ ha.symm (ha ▸ (sa * s).2), add_comm]
   congr; ext; exact ha
