@@ -319,8 +319,14 @@ theorem eq_of_subset_of_subset {a b : Set α} : a ⊆ b → b ⊆ a → a = b :=
 theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) : a ∈ s₁ → a ∈ s₂ :=
   @h _
 
+theorem subset_iff : s₁ ⊆ s₂ ↔ ∀ ⦃a⦄, a ∈ s₁ → a ∈ s₂ :=
+  Iff.rfl
+
 theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
+
+theorem subset_iff_not_mem : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
+  simp only [subset_iff, not_imp_not]
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
