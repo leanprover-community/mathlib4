@@ -41,9 +41,7 @@ namespace WithZeroMulInt
 def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ≥0 where
   toFun := fun x ↦ if hx : x = 0 then 0 else e ^ (WithZero.unzero hx).toAdd
   map_zero' := rfl
-  map_one' := by
-    simp only [dif_neg one_ne_zero]
-    erw [toAdd_one, zpow_zero]
+  map_one' := by simp [dif_neg one_ne_zero]
   map_mul' x y := by
     by_cases hxy : x * y = 0
     · rcases zero_eq_mul.mp (Eq.symm hxy) with hx | hy
