@@ -105,7 +105,7 @@ jobs:
         with:
           linters: lean
           run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --quiet --wfail -KCI"
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: print the sizes of the oleans
         run: |
