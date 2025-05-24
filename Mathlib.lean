@@ -1914,6 +1914,7 @@ import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
+import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
