@@ -143,7 +143,7 @@ section perm
 variable (D Q) (Λ : Type*) [MulAction D Λ]
 
 instance : SMul (D ≀ᵣ Q) (Λ × Q) where
-  smul w := fun p => ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩
+  smul w p := ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩
 
 @[simp]
 lemma smul_def {w : D ≀ᵣ Q} {p : Λ × Q} : w • p = ⟨(w.1 (w.2 * p.2)) • p.1, w.2 * p.2⟩ := rfl
