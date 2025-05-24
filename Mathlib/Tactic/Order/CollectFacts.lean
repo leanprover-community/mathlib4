@@ -199,6 +199,8 @@ where
     | ~q($p ∧ $q) =>
       processExpr q(And.left $expr)
       processExpr q(And.right $expr)
+    | ~q(Exists $P) =>
+      processExpr q(Exists.choose_spec $expr)
     | _ => return
 
 /-- Collects facts from the local context. For each occurring type `α`, the returned map contains

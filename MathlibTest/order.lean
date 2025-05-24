@@ -86,7 +86,7 @@ example {α : Type u} (a b : α) [Lattice α] : a ⊔ b = b ⊔ a := by
 example {α : Type u} (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≥ (a ⊓ b) ⊔ (a ⊓ c) := by
   order
 
-example {α : Type u} (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
+example {α : Type u} (a b c : Set α) : (a ∩ b) ∪ (a ∩ c) ⊆ a ∩ (b ∪ c) := by
   order
 
 example {α : Type u} (a b : α) [LinearOrder α] (h1 : ¬ (a = b)) : a ≠ b := by
@@ -96,6 +96,9 @@ example {α : Type u} (a b : α) [LinearOrder α] (h1 : a < b ∧ b < a) : False
   order
 
 example {α : Type u} (a b : α) [LinearOrder α] : a ≤ b ∨ b ≤ a := by
+  order
+
+example {α : Type u} (a b : α) [Preorder α] (h : ∃ c, a < c ∧ c < b) : a ≠ b := by
   order
 
 example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
