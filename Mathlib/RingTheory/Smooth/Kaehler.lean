@@ -335,7 +335,8 @@ def retractionKerCotangentToTensorEquivSection :
   let P' := P ⧸ (RingHom.ker (algebraMap P S) ^ 2)
   have h₁ : Surjective (algebraMap P' S) := Function.Surjective.of_comp (g := algebraMap P P') hf
   have h₂ : RingHom.ker (algebraMap P' S) ^ 2 = ⊥ := by
-    rw [RingHom.algebraMap_toAlgebra, AlgHom.ker_kerSquareLift, Ideal.cotangentIdeal_square]
+    rw [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, RingHom.ker_coe_toRingHom,
+      AlgHom.ker_kerSquareLift, Ideal.cotangentIdeal_square]
   let e₁ : (RingHom.ker (algebraMap P S)).Cotangent ≃ₗ[P] (RingHom.ker (algebraMap P' S)) :=
     (Ideal.cotangentEquivIdeal _).trans ((LinearEquiv.ofEq _ _
       (IsScalarTower.toAlgHom R P S).ker_kerSquareLift.symm).restrictScalars P)

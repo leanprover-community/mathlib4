@@ -199,8 +199,7 @@ lemma _root_.Algebra.Generators.ker_localizationAway :
       AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Ideal.Quotient.mkₐ_eq_mk,
       Function.comp_apply]
     rw [IsLocalization.Away.mvPolynomialQuotientEquiv_apply, aeval_X]
-  rw [Generators.ker_eq_ker_aeval_val, this, AlgEquiv.toAlgHom_eq_coe, ← RingHom.ker_coe_toRingHom,
-    AlgHom.comp_toRingHom, ← RingHom.comap_ker]
+  rw [Generators.ker_eq_ker_aeval_val, this, AlgEquiv.toAlgHom_eq_coe, ← AlgHom.comap_ker]
   simp only [Generators.localizationAway_vars, AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
     AlgEquiv.toAlgHom_toRingHom]
   show Ideal.comap _ (RingHom.ker (mvPolynomialQuotientEquiv S r)) = Ideal.span {C r * X () - 1}

@@ -177,8 +177,8 @@ theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 /-- The lift of `f : A →ₐ[R] B` to `A ⧸ J ^ 2 →ₐ[R] B` with `J` being the kernel of `f`. -/
-def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B := by
-  refine { Ideal.Quotient.lift (RingHom.ker f.toRingHom ^ 2) f.toRingHom ?_ with commutes' := ?_ }
+def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f ^ 2 →ₐ[R] B := by
+  refine { Ideal.Quotient.lift (RingHom.ker f ^ 2) f ?_ with commutes' := ?_ }
   · intro a ha; exact Ideal.pow_le_self two_ne_zero ha
   · intro r
     rw [IsScalarTower.algebraMap_apply R A, RingHom.toFun_eq_coe, Ideal.Quotient.algebraMap_eq,
@@ -186,7 +186,7 @@ def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRing
     exact f.map_algebraMap r
 
 theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
-    RingHom.ker f.kerSquareLift.toRingHom = (RingHom.ker f.toRingHom).cotangentIdeal := by
+    RingHom.ker f.kerSquareLift = (RingHom.ker f).cotangentIdeal := by
   apply le_antisymm
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩
   · rintro _ ⟨x, hx, rfl⟩; exact hx

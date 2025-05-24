@@ -87,8 +87,7 @@ theorem iff_comp_injective :
     obtain ⟨f₁, f₂, e⟩ := (KaehlerDifferential.endEquiv R A).injective.nontrivial
     apply e
     ext1
-    refine H
-      (RingHom.ker (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom) ?_ ?_
+    refine H (RingHom.ker (TensorProduct.lmul' R (S := A)).kerSquareLift) ?_ ?_
     · rw [AlgHom.ker_kerSquareLift]
       exact Ideal.cotangentIdeal_square _
     · ext x
