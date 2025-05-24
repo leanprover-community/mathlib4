@@ -27,7 +27,7 @@ we then use our bounds for Eisenstein series in these vertical strips to get the
 
 noncomputable section
 
-open ModularForm UpperHalfPlane  Matrix SlashInvariantForm CongruenceSubgroup
+open ModularForm UpperHalfPlane Matrix SlashInvariantFormClass CongruenceSubgroup
 open scoped MatrixGroups
 
 namespace EisensteinSeries
@@ -58,8 +58,9 @@ theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ+} (a : Fin 2 → ZMod N
   refine ⟨∑'(x : Fin 2 → ℤ), r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ (-k) * ‖x‖ ^ (-k), 2, ?_⟩
   intro z hz
   obtain ⟨n, hn⟩ := (ModularGroup_T_zpow_mem_verticalStrip z N.2)
+  have : ↑Γ(N).width ∣ N * n := by simp
   rw [eisensteinSeries_slash_apply, ← eisensteinSeries_SIF_apply,
-    ← T_zpow_width_invariant N k n (eisensteinSeries_SIF (a ᵥ* A) k) z]
+    ← T_zpow_width_invariant (eisensteinSeries_SIF (a ᵥ* A) k) k this z]
   apply le_trans (norm_le_tsum_norm N (a ᵥ* A) k hk _)
   have hk' : (2 : ℝ) < k := by norm_cast
   apply (summable_norm_eisSummand hk _).tsum_le_tsum _
