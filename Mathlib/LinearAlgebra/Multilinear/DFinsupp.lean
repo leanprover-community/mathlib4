@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Sophie Morel
 -/
 import Mathlib.Data.Fintype.Quotient
+import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Multilinear.Basic
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Interactions between finitely-supported functions and multilinear maps
@@ -192,8 +194,79 @@ def dfinsuppFamilyₗ :
   map_add' := dfinsuppFamily_add
   map_smul' := dfinsuppFamily_smul
 
+section
+variable {N : Type*} [AddCommMonoid N] [Module R N] [(i : ι) → DecidableEq (κ i)]
+
+variable (R κ) in
+/-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
+on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π₀ j : κ i, M i j`. -/
+def fromDFinsuppEquiv :
+    ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) N) ≃ₗ[R]
+      MultilinearMap R (fun i ↦ Π₀ j : κ i, M i j) N :=
+  LinearEquiv.ofLinear
+    ((DFinsupp.lsum ℕ fun _ ↦ .id).compMultilinearMapₗ R ∘ₗ MultilinearMap.dfinsuppFamilyₗ)
+    (LinearMap.pi fun p ↦ MultilinearMap.compLinearMapₗ fun i ↦ DFinsupp.lsingle (p i))
+    (by ext f x; simp)
+    (by ext f p a; simp)
+
+@[simp]
+theorem fromDFinsuppEquiv_single
+    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) N)
+    (p : Π i, κ i) (x : Π i, M i (p i)) :
+    fromDFinsuppEquiv κ R f (fun i => DFinsupp.single (p i) (x i)) = f p x := by
+  simp [fromDFinsuppEquiv]
+
+/-- Prefer using `fromDFinsuppEquiv_of` where possible. -/
+theorem fromDFinsuppEquiv_apply
+    [Π i (j : κ i) (x : M i j), Decidable (x ≠ 0)]
+    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) N)
+    (x : Π i, Π₀ (j : κ i), M i j) :
+    fromDFinsuppEquiv κ R f x =
+      ∑ p ∈ Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) := by
+  classical
+  refine (DFinsupp.sumAddHom_apply _ _).trans ?_
+  refine Finset.sum_subset (MultilinearMap.support_dfinsuppFamily_subset _ _) ?_
+  simp
+
+@[simp]
+theorem fromDFinsuppEquiv_symm_apply (f : MultilinearMap R (fun i ↦ Π₀ j : κ i, M i j) N)
+    (p : Π i, κ i) :
+    (fromDFinsuppEquiv κ R).symm f p = f.compLinearMap (fun i ↦ DFinsupp.lsingle (p i)) :=
+  rfl
+
+end
+
 end CommSemiring
 
 end dfinsuppFamily
 
+
+section Basis
+variable {ι'} {M : ι → Type uM} {N : Type uN}
+
+variable [Fintype ι] [CommSemiring R]
+variable [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
+variable [∀ i, Module R (M i)] [Module R N]
+
+/-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
+on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π₀ j : κ i, M i j`. -/
+noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
+    Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) where
+  repr := by
+    classical
+    -- switch to dfinsupp
+    refine ?_ ≪≫ₗ (finsuppLequivDFinsupp R).symm
+    let b := fun i => (b i).repr ≪≫ₗ (finsuppLequivDFinsupp R)
+    let b' := b'.repr ≪≫ₗ (finsuppLequivDFinsupp R)
+    suffices
+        MultilinearMap R (fun i => Π₀ j : κ i, R) (Π₀ i : ι', R) ≃ₗ[R]
+          Π₀ (x : ((i : ι) → κ i) × ι'), R from
+      b'.congrRightMultilinear R ≪≫ₗ LinearEquiv.congrLeftMultilinear (b · |>.symm) ≪≫ₗ this
+
+    refine (fromDFinsuppEquiv _ _).symm ≪≫ₗ
+      LinearEquiv.piCongrRight (fun i => MultilinearMap.piRingEquiv.symm) ≪≫ₗ ?_
+    -- some annoying swap between Π and Π₀
+    sorry
+
+end Basis
 end MultilinearMap
