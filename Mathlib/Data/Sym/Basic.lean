@@ -170,7 +170,7 @@ lemma «exists» {p : Sym α n → Prop} :
   simp [Sym]
 
 @[simp]
-theorem notMem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
+theorem notMem_nil (a : α) : a ∉ (nil : Sym α 0) :=
   Multiset.notMem_zero a
 
 @[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
