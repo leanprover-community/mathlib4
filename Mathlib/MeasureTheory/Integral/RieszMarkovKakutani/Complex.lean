@@ -188,9 +188,8 @@ variable {X : Type*} [MeasurableSpace X]
 -- NOTE: instead of working with partitions of `s`, work with sets of disjoints sets
 -- contained within `s` since the same value will be achieved in the supremum.
 -- NOTE: forbid the empty set so that partitions of disjoint sets are disjoint sets of sets.
--- TO DO: rephrase disjoint condition `(P.toSet.PairwiseDisjoint id)`?
 private def partitions (s : Set X) : Set (Finset (Set X)) :=
-    {P | (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ (∀ t ∈ P, ∀ t' ∈ P, Disjoint t t') ∧
+    {P | (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ (P.toSet.PairwiseDisjoint id) ∧
     (∀ p ∈ P, p ≠ ∅)}
 
 /- By construction partitions behave in a monotone way. -/
@@ -229,6 +228,7 @@ lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
   exact le_biSup (varOfPart μ) hP
 
 open Classical in
+/-- If each `P i` is a partition of `s i` then the union is a partition of `⋃ i, s i`. -/
 lemma partition_union {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
     {P : ℕ → Finset (Set X)} (hP : ∀ i, P i ∈ partitions (s i)) (n : ℕ):
     Finset.biUnion (Finset.range n) P ∈ partitions (⋃ i, s i) := by
@@ -239,14 +239,19 @@ lemma partition_union {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
     exact Set.subset_iUnion_of_subset i ((hP i).1 p hp)
   · intro p i _ hp
     exact (hP i).2.1 p hp
-  · intro p i hi hp q j hj hq
+  · intro p hp q hq hpq r hrp hrq
+    simp only [Set.bot_eq_empty, Set.le_eq_subset, Set.subset_empty_iff]
+    simp only [id_eq, Set.le_eq_subset] at hrp hrq
+    simp only [Finset.coe_biUnion, Finset.coe_range, Set.mem_Iio, Set.mem_iUnion, Finset.mem_coe,
+      exists_prop] at hp hq
+    obtain ⟨i, hi, hp⟩ := hp
+    obtain ⟨j, hj, hq⟩ := hq
     obtain hc | hc : i = j ∨ i ≠ j := by omega
     · rw [hc] at hp
-      exact (hP j).2.2.1 p hp q hq
+      exact Set.subset_eq_empty ((hP j).2.2.1 hp hq hpq hrp hrq) rfl
     · have hp' := (hP i).1 p hp
       have hq' := (hP j).1 q hq
-      intro t htp htq
-      exact hs hc (subset_trans htp hp') (subset_trans htq hq')
+      exact Set.subset_eq_empty (hs hc (subset_trans hrp hp') (subset_trans hrq hq')) rfl
   · intro i _ h
     exact (hP i).2.2.2 ∅ h rfl
 
@@ -276,7 +281,6 @@ lemma partition_inter {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitions 
   · intro r hr t' ht'
     obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp hr
     rw [← hp']
-
 
     sorry
   ·
