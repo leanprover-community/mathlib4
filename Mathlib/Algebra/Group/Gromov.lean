@@ -164,9 +164,9 @@ noncomputable instance WordDist.instMetricSpace: MetricSpace G where
         refine ⟨rfl, hl⟩
       simp only [Set.mem_empty_iff_false] at len_in_set
 
--- TODO - is there an easier way to transfer all of the theorems/instances from `G` to `Additive (Opposite G)`?
+-- TODO - is there an easier way to transfer all of the theorems/instances from `G` to `Additive (MulOpposite G)`?
 
-noncomputable instance WordDist.instPseudoMetricSpaceAddOpp: PseudoMetricSpace (Additive (Opposite G)) where
+noncomputable instance WordDist.instPseudoMetricSpaceAddOpp: PseudoMetricSpace (Additive (MulOpposite G)) where
   dist x y := dist x.toMul.unop y.toMul.unop
   dist_self x := by
     apply PseudoMetricSpace.dist_self
@@ -175,22 +175,22 @@ noncomputable instance WordDist.instPseudoMetricSpaceAddOpp: PseudoMetricSpace (
   dist_triangle x y z := by
     apply PseudoMetricSpace.dist_triangle
 
-noncomputable instance WordDist.instMetricSpaceAddOpp: MetricSpace (Additive (Opposite G)) where
+noncomputable instance WordDist.instMetricSpaceAddOpp: MetricSpace (Additive (MulOpposite G)) where
   eq_of_dist_eq_zero := by
     intro x y hxy
     have := MetricSpace.eq_of_dist_eq_zero (x := x.toMul.unop) (y := y.toMul.unop) hxy
-    simp only [Opposite.unop_inj_iff, EmbeddingLike.apply_eq_iff_eq] at this
+    simp only [MulOpposite.unop_inj, EmbeddingLike.apply_eq_iff_eq] at this
     exact this
 
 --def WordMetricSpace := MetricSpace.ofDistTopology ()
 noncomputable instance WordDist.instMeasurableSpace: MeasurableSpace G := borel G
 
-noncomputable instance WordDist.instMeasureableSpaceOpp: MeasurableSpace (Additive (Opposite G)) := borel (Additive (Opposite G))
+noncomputable instance WordDist.instMeasureableSpaceOpp: MeasurableSpace (Additive (MulOpposite G)) := borel (Additive (MulOpposite G))
 
 noncomputable instance WordDist.instBorelSpace: BorelSpace G where
   measurable_eq := rfl
 
-noncomputable instance WordDist.instBorelSpaceAddOpp: BorelSpace (Additive (Opposite G)) where
+noncomputable instance WordDist.instBorelSpaceAddOpp: BorelSpace (Additive (MulOpposite G)) where
   measurable_eq := rfl
 
 -- TODO - are we really supposed to be using a metric topology if it turns out to be the discrete topology?
@@ -205,22 +205,14 @@ lemma singleton_open (x: G): IsOpen {x} := by
   rw [dist_zero] at hy
   exact hy
 
-lemma singleton_open_add_opp (x: Additive (Opposite G)): IsOpen {x} := by
-  rw [Metric.isOpen_singleton_iff]
-  use 1
-  simp only [gt_iff_lt, zero_lt_one, true_and]
-  intro y hy
-  simp [dist] at hy
-  have dist_zero := dist_eq_zero (x := y) (y := x)
-  simp [dist] at dist_zero
-  rw [dist_zero] at hy
-  exact hy
+lemma singleton_open_add_opp (x: Additive (MulOpposite G)): IsOpen {x} := by
+  sorry
 
 instance discreteTopology: DiscreteTopology G := by
   rw [← singletons_open_iff_discrete]
   exact singleton_open
 
-instance discreteTopologyAddOpp: DiscreteTopology (Additive (Opposite G)) := by
+instance discreteTopologyAddOpp: DiscreteTopology (Additive (MulOpposite G)) := by
   rw [← singletons_open_iff_discrete]
   exact singleton_open_add_opp
 
@@ -235,9 +227,9 @@ instance: IsTopologicalGroup G where
   continuous_inv := continuous_of_discreteTopology
 
 
-instance IsTopologicalGroupAddOpp: IsTopologicalAddGroup (Additive (Opposite G)) where
-  continuous_mul := continuous_of_discreteTopology
-  continuous_inv := continuous_of_discreteTopology
+instance IsTopologicalGroupAddOpp: IsTopologicalAddGroup (Additive (MulOpposite G)) where
+  continuous_add := continuous_of_discreteTopology
+  continuous_neg := continuous_of_discreteTopology
 
 -- Define Haar measure so that singleton sets have measure 1 -
 -- I think this is what we want in order to be able to nicely convert integrals to sums
@@ -254,8 +246,17 @@ noncomputable def myHaar := MeasureTheory.Measure.haarMeasure (G := G) {
     exact ⟨1, one_mem⟩
 }
 
-set_option maxHeartbeats 300000
-noncomputable def myHaarAddOpp := MeasureTheory.Measure.haarMeasure (G := Additive (Opposite G)) {
+noncomputable def myHaarAddOpp := MeasureTheory.Measure.addHaarMeasure (G := Additive (MulOpposite G)) {
+  carrier := {0}
+  isCompact' := by
+    simp
+  interior_nonempty' := by
+    have zero_mem: (0 : Additive (MulOpposite G)) ∈ interior {0} := by
+      rw [mem_interior]
+      use {0}
+      simp
+    apply Set.nonempty_def.mpr
+    exact ⟨0, zero_mem⟩
 }
 
 -- Definition 3.5 in Vikman - a harmonic function on G
@@ -391,4 +392,4 @@ instance lipschitzHVectorSpace : V (G := G) := {
 -- TODO - I don't think we can use this, as `MeasureTheory.convolution' would require our group to be commutative
 -- (via `NormedAddCommGroup`)
 open scoped Convolution
-noncomputable def Conv (f g: G → ℝ) := MeasureTheory.convolution (G := Additive (Opposite G)) f g (ContinuousLinearMap.mul ℝ ℝ) myHaar
+noncomputable def Conv (f g: G → ℝ) := MeasureTheory.convolution (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp
