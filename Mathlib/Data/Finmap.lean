@@ -387,7 +387,7 @@ theorem keys_erase (a : α) (s : Finmap β) : (erase a s).keys = s.keys.erase a 
 theorem mem_erase {a a' : α} {s : Finmap β} : a' ∈ erase a s ↔ a' ≠ a ∧ a' ∈ s :=
   induction_on s fun s => by simp
 
-theorem notMem_erase_self {a : α} {s : Finmap β} : ¬a ∈ erase a s := by
+theorem notMem_erase_self {a : α} {s : Finmap β} : a ∉ erase a s := by
   rw [mem_erase, not_and_or, not_not]
   left
   rfl
