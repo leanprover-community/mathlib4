@@ -855,9 +855,15 @@ theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
 @[to_additive]
 lemma not_one_mem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
 
-alias ⟨_, _root_.Disjoint.one_not_mem_div_set⟩ := not_one_mem_div_iff
+alias ⟨_, _root_.Disjoint.one_notMem_div_set⟩ := not_one_mem_div_iff
 
-attribute [to_additive] Disjoint.one_not_mem_div_set
+attribute [to_additive] Disjoint.one_notMem_div_set
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.zero_not_mem_sub_set := Disjoint.zero_notMem_sub_set
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.one_not_mem_div_set := Disjoint.one_notMem_div_set
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
