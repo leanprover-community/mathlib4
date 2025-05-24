@@ -890,6 +890,19 @@ def _root_.LinearMap.compMultilinearMapₗ [Semiring S] [Module S M₂] [Module 
   map_add' := g.compMultilinearMap_add
   map_smul' := g.compMultilinearMap_smul
 
+variable (S) in
+/-- `LinearMap.compMultilinearMap` as an `S`-linear equivalence. -/
+@[simps! apply symm_apply]
+def _root_.LinearEquiv.congrRightMultilinear [Semiring S] [Module S M₂] [Module S M₃]
+    [SMulCommClass R S M₂] [SMulCommClass R S M₃]
+    [LinearMap.CompatibleSMul M₂ M₃ S R] [LinearMap.CompatibleSMul M₃ M₂ S R]
+    (g : M₂ ≃ₗ[R] M₃) :
+    MultilinearMap R M₁ M₂ ≃ₗ[S] MultilinearMap R M₁ M₃ where
+  __ := LinearMap.compMultilinearMapₗ S g.toLinearMap
+  invFun := LinearMap.compMultilinearMapₗ S g.symm.toLinearMap
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
 variable (R S M₁ M₂ M₃)
 
 section OfSubsingleton
@@ -1047,6 +1060,17 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
   toFun := fun g ↦ g.compLinearMap f
   map_add' := fun _ _ ↦ rfl
   map_smul' := fun _ _ ↦ rfl
+
+/-- An isomorphism of multilinear maps given an isomorphism between their domains.
+
+This is `MultilinearMap.compLinearMap` as a linear equivalence. -/
+@[simps! apply symm_apply]
+def _root_.LinearEquiv.congrLeftMultilinear (e : Π (i : ι), M₁ i ≃ₗ[R] M₁' i) :
+    (MultilinearMap R M₁' M₂) ≃ₗ[R] MultilinearMap R M₁ M₂ where
+  __ := compLinearMapₗ (e · |>.toLinearMap)
+  invFun := compLinearMapₗ (e · |>.symm.toLinearMap)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
 
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
