@@ -59,6 +59,7 @@ def h (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   Matrix.fromBlocks 0 0 0 <| open scoped Classical in Matrix.diagonal (P.pairingIn ℤ · i)
 
+omit [Finite ι] [IsDomain R] [CharZero R] [P.IsReduced] [P.IsIrreducible] in
 lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
     ⁅h i, h j⁆ = 0 := by
   classical
@@ -70,6 +71,7 @@ lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
       h]
     aesop
 
+omit [P.IsReduced] [P.IsIrreducible] in
 /-- Lemma 3.3 (a) from [Geck](Geck2017).
 
 TODO Add part (b) as well as Lemmas 3.4, 3.5. -/
