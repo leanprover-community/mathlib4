@@ -455,7 +455,7 @@ def ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F) :
 generate a continuous linear isomorphism between the spaces of continuous alternating maps.
 
 This is `ContinuousAlternatingMap.compContinuousLinearMap` as an equivalence,
-and is the continuous version of `LinearEquiv.congrLeftAlternating`. -/
+and is the continuous version of `AlternatingMap.domLCongr`. -/
 @[simps apply]
 def ContinuousLinearEquiv.continuousAlternatingMapCongrLeft (f : E ≃L[𝕜] F) :
     E [⋀^ι]→L[𝕜] G ≃L[𝕜] (F [⋀^ι]→L[𝕜] G) where
