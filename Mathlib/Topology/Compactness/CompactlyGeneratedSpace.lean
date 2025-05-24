@@ -91,7 +91,7 @@ lemma eq_compactlyGenerated [t : TopologicalSpace X] [UCompactlyGeneratedSpace.{
 instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     UCompactlyGeneratedSpace.{u} X where
   le_compactlyGenerated := by
-    rw [DiscreteTopology.eq_bot (t := t)]
+    rw [DiscreteTopology.eq_bot X]
     exact bot_le
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
