@@ -12,14 +12,14 @@ import Mathlib.RingTheory.Polynomial.Basic
 # Polynomials with degree less than `n`
 
 This file contains the properties of the submodule of polynomials of degree less than `n` in a
-commutative ring `R`, denoted `R[X]_n`.
+commutative ring `R`, denoted `R[x]_n`.
 
 ## Main definitions/lemmas
 
-* `degreeLT.basis R n`: a basis for `R[X]_n` the submodule of polynomials with degree `< n`,
+* `degreeLT.basis R n`: a basis for `R[x]_n` the submodule of polynomials with degree `< n`,
 given by the monomials `X^i` for `i < n`.
 
-* `degreeLT.basis_prod R m n`: a basis for `(R[X]_m) × (R[X]_n)` as above, which is the sum
+* `degreeLT.basis_prod R m n`: a basis for `(R[x]_m) × (R[x]_n)` as above, which is the sum
 of the two bases.
 
 * `degreeLT.addLinearEquiv R m n`: an isomorphism between `(R[x]_(n+m))` and `(R[x]_n) × (R[x]_m)`
@@ -34,7 +34,7 @@ given by the fact that the bases are both indexed by `Fin (n+m)`.
 
 namespace Polynomial
 
-/-- R[X]_n is notation for the submodule of polynomials of degree strictly less than n. -/
+/-- R[x]_n is notation for the submodule of polynomials of degree strictly less than n. -/
 scoped notation:9000 R "[x]_" n => Polynomial.degreeLT R n
 
 section degreeLT
@@ -42,7 +42,7 @@ section degreeLT
 variable {R : Type*} [Semiring R] {m n : ℕ} (i : Fin n) (P : R[x]_n)
 
 variable (R) in
-/-- Basis for R[X]_n given by the `X^i` with `i < n`. -/
+/-- Basis for R[x]_n given by the `X^i` with `i < n`. -/
 noncomputable def degreeLT.basis (n : ℕ) : Basis (Fin n) R R[x]_n :=
   Basis.ofEquivFun (Polynomial.degreeLTEquiv R n)
 
@@ -71,7 +71,7 @@ instance : Module.Finite R R[x]_n :=
   Module.Finite.of_basis (degreeLT.basis _ _)
 
 variable (R) in
-/-- Basis for `(R[X]_m) × (R[X]_n)`. -/
+/-- Basis for `(R[x]_m) × (R[x]_n)`. -/
 noncomputable def degreeLT.basis_prod (m n : ℕ) : Basis (Fin (m + n)) R ((R[x]_m) × (R[x]_n)) :=
   ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
 
