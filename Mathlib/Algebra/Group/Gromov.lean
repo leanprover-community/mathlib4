@@ -404,14 +404,50 @@ noncomputable def muConv (n: ℕ) := Nat.iterate (Conv (S := S) (mu (S := S))) n
 instance countableG: Countable (Additive (MulOpposite G)) := by
   sorry
 
+abbrev opAdd (g : G) := Additive.ofMul (MulOpposite.op g)
+
 lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g = f (g * s⁻¹) := by
   unfold Conv
   unfold MeasureTheory.convolution
   rw [MeasureTheory.integral_countable']
-  simp_rw [MeasureTheory.measureReal_def]
-  unfold myHaarAddOpp
-  simp_rw [MeasureTheory.Measure.addHaar_singleton]
-  simp [MeasureTheory.Measure.addHaarMeasure_self]
-  simp_rw [← singleton_carrier]
-  simp_rw [TopologicalSpace.PositiveCompacts.carrier_eq_coe]
-  simp [MeasureTheory.Measure.addHaarMeasure_self]
+  .
+    simp_rw [MeasureTheory.measureReal_def]
+    unfold myHaarAddOpp
+    simp_rw [MeasureTheory.Measure.addHaar_singleton]
+    simp [MeasureTheory.Measure.addHaarMeasure_self]
+    simp_rw [← singleton_carrier]
+    simp_rw [TopologicalSpace.PositiveCompacts.carrier_eq_coe]
+    simp [MeasureTheory.Measure.addHaarMeasure_self]
+    rw [tsum_eq_sum (s := {opAdd ((g * s⁻¹))}) ?_]
+    .
+      simp
+      -- TODO - why does this need 'conv'?
+      conv =>
+        lhs
+        arg 2
+        arg 3
+        simp only [mul_inv_rev, inv_inv, inv_mul_cancel_right]
+      simp
+    .
+      intro b hb
+      simp only [Finset.mem_singleton] at hb
+      simp only [mul_eq_zero]
+      right
+      apply Pi.single_eq_of_ne
+      apply_fun (fun x => x * s⁻¹)
+      simp only [mul_inv_cancel, ne_eq]
+      apply_fun (fun x => (MulOpposite.unop (Additive.toMul b)) * x)
+      conv =>
+        lhs
+        simp
+        rw [← mul_assoc, ← mul_assoc]
+        simp only [mul_inv_cancel, one_mul]
+      simp only [mul_one, ne_eq]
+      rw [eq_comm]
+      unfold opAdd at hb
+      apply_fun MulOpposite.op
+      simp only [MulOpposite.op_unop, MulOpposite.op_mul, MulOpposite.op_inv, ne_eq]
+      apply_fun Additive.ofMul
+      simp only [ofMul_toMul]
+      exact hb
+  . sorry
