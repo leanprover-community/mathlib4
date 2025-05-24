@@ -10,7 +10,7 @@ import Mathlib.Data.List.Infix
 # Preparations for defining operations on `Finset`.
 
 The operations here ignore multiplicities,
-and preparatory for defining the corresponding operations on `Finset`.
+and prepare for defining the corresponding operations on `Finset`.
 -/
 
 
@@ -186,7 +186,7 @@ theorem Subset.ndunion_eq_right {s t : Multiset α} (h : s ⊆ t) : s.ndunion t 
 
 /-- `ndinter s t` is the lift of the list `∩` operation. This operation
   does not respect multiplicities, unlike `s ∩ t`, but it is suitable as
-  an intersection operation on `Finset`. (`s ∩ t` would also work as a union operation
+  an intersection operation on `Finset`. (`s ∩ t` would also work as an intersection operation
   on finset, but this is more efficient.) -/
 def ndinter (s t : Multiset α) : Multiset α :=
   filter (· ∈ t) s
@@ -212,7 +212,7 @@ theorem ndinter_cons_of_not_mem {a : α} (s : Multiset α) {t : Multiset α} (h 
 theorem mem_ndinter {s t : Multiset α} {a : α} : a ∈ ndinter s t ↔ a ∈ s ∧ a ∈ t := by
   simp [ndinter, mem_filter]
 
-@[simp]
+-- simp can prove this once we have `ndinter_eq_inter` and `Nodup.inter` a few lines down.
 theorem Nodup.ndinter {s : Multiset α} (t : Multiset α) : Nodup s → Nodup (ndinter s t) :=
   Nodup.filter _
 
@@ -237,6 +237,11 @@ theorem inter_le_ndinter (s t : Multiset α) : s ∩ t ≤ ndinter s t :=
 @[simp]
 theorem ndinter_eq_inter {s t : Multiset α} (d : Nodup s) : ndinter s t = s ∩ t :=
   le_antisymm (le_inter (ndinter_le_left _ _) (ndinter_le_right _ d)) (inter_le_ndinter _ _)
+
+@[simp]
+theorem Nodup.inter {s : Multiset α} (t : Multiset α) (d : Nodup s) : Nodup (s ∩ t) := by
+  rw [← ndinter_eq_inter d]
+  exact d.filter _
 
 theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ Disjoint s t := by
   rw [← subset_zero]; simp [subset_iff, disjoint_left]

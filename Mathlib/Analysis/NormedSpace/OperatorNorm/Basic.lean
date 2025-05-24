@@ -189,7 +189,6 @@ variable [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃] (f g : E →SL[
 /-- The fundamental property of the operator norm: `‖f x‖ ≤ ‖f‖ * ‖x‖`. -/
 theorem le_opNorm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := (isLeast_opNorm f).1.2 x
 
-
 theorem dist_le_opNorm (x y : E) : dist (f x) (f y) ≤ ‖f‖ * dist x y := by
   simp_rw [dist_eq_norm, ← map_sub, f.le_opNorm]
 
@@ -347,6 +346,13 @@ theorem opNorm_subsingleton [Subsingleton E] : ‖f‖ = 0 := by
   intro x
   simp [Subsingleton.elim x 0]
 
+/-- The fundamental property of the operator norm, expressed with extended norms:
+`‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ`. -/
+lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
+  simp_rw [← ofReal_norm]
+  rw [← ENNReal.ofReal_mul (by positivity)]
+  gcongr
+  exact f.le_opNorm x
 
 end OpNorm
 

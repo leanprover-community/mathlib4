@@ -228,7 +228,7 @@ variable {R}
 
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 module. -/
-@[simps]
+@[deprecated Iso.refl (since := "2025-05-15")]
 def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
   hom := 𝟙 M
   inv := 𝟙 M

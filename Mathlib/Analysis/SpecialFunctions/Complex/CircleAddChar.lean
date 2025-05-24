@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
+import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
 
 /-!
 # Additive characters valued in the unit circle
@@ -102,3 +103,26 @@ noncomputable def rootsOfUnityAddChar (n : ℕ) [NeZero n] :
   rfl
 
 end ZMod
+
+variable (n : ℕ) [NeZero n]
+
+/-- Interpret `n`-th roots of unity in `ℂ` as elements of the circle -/
+noncomputable def rootsOfUnitytoCircle : (rootsOfUnity n ℂ) →* Circle where
+  toFun := fun z => ⟨z.val.val,
+    mem_sphere_zero_iff_norm.2 (Complex.norm_eq_one_of_mem_rootsOfUnity z.prop)⟩
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+/-- Equivalence of the nth roots of unity of the Circle with nth roots of unity of the complex
+numbers -/
+noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
+  __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
+  invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
+    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← MonoidHom.map_pow,
+      ← (rootsOfUnitytoCircle n).map_one]
+    congr
+    aesop⟩
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
+instance : HasEnoughRootsOfUnity Circle n := (rootsOfUnityCircleEquiv n).symm.hasEnoughRootsOfUnity
