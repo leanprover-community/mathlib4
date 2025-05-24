@@ -359,7 +359,7 @@ protected theorem ssubset_of_subset_of_ssubset {s₁ s₂ s₃ : Set α} (hs₁s
     (hs₂s₃ : s₂ ⊂ s₃) : s₁ ⊂ s₃ :=
   ⟨Subset.trans hs₁s₂ hs₂s₃.1, fun hs₃s₁ => hs₂s₃.2 (Subset.trans hs₃s₁ hs₁s₂)⟩
 
-theorem notMem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
+theorem notMem_empty (x : α) : x ∉ (∅ : Set α) :=
   id
 
 @[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
