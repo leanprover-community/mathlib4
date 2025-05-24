@@ -247,7 +247,7 @@ noncomputable instance instLieAlgebraAddGroupLieAlgebra
     [LieAddGroup I (minSmoothness 𝕜 3) G] : LieAlgebra 𝕜 (AddGroupLieAlgebra I G) where
   lie_smul c v w := by
     simp only [AddGroupLieAlgebra.bracket_def, addInvariantVectorField_smul]
-    rw [mlieBracket_smul_right]
+    rw [mlieBracket_const_smul_right]
     exact mdifferentiableAt_addInvariantVectorField _
 
 /-- The tangent space at the identity of a Lie group is a Lie algebra, for the bracket
@@ -255,7 +255,7 @@ given by the Lie bracket of invariant vector fields. -/
 noncomputable instance instLieAlgebraGroupLieAlgebra : LieAlgebra 𝕜 (GroupLieAlgebra I G) where
   lie_smul c v w := by
     simp only [GroupLieAlgebra.bracket_def, mulInvariantVectorField_smul]
-    rw [mlieBracket_smul_right]
+    rw [mlieBracket_const_smul_right]
     exact mdifferentiableAt_mulInvariantVectorField _
 
 end LieGroup
