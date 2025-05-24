@@ -347,14 +347,16 @@ end Gcd
 def SqLe (a c b d : ℕ) : Prop :=
   c * a * a ≤ d * b * b
 
-theorem sqLe_of_le {c d x y z w : ℕ} (xz : z ≤ x) (yw : y ≤ w) (xy : SqLe x c y d) : SqLe z c w d :=
-  le_trans (mul_le_mul (Nat.mul_le_mul_left _ xz) xz (Nat.zero_le _) (Nat.zero_le _)) <|
-    le_trans xy (mul_le_mul (Nat.mul_le_mul_left _ yw) yw (Nat.zero_le _) (Nat.zero_le _))
+theorem sqLe_of_le {c d x y z w : ℕ} (xz : z ≤ x) (yw : y ≤ w) (xy : SqLe x c y d) :
+    SqLe z c w d := calc
+  c * z * z ≤ c * x * x := by gcongr
+  _ ≤ d * y * y := xy
+  _ ≤ d * w * w := by gcongr
 
 theorem sqLe_add_mixed {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w d) :
     c * (x * z) ≤ d * (y * w) :=
   Nat.mul_self_le_mul_self_iff.1 <| by
-    simpa [mul_comm, mul_left_comm] using mul_le_mul xy zw (Nat.zero_le _) (Nat.zero_le _)
+    simpa [mul_comm, mul_left_comm] using Nat.mul_le_mul xy zw
 
 theorem sqLe_add {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w d) :
     SqLe (x + z) c (y + w) d := by

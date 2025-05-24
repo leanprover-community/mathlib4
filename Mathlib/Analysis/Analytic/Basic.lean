@@ -318,7 +318,8 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
   have := ((p.isLittleO_one_of_lt_radius hr.1).add (q.isLittleO_one_of_lt_radius hr.2)).isBigO
   refine (p + q).le_radius_of_isBigO ((isBigO_of_le _ fun n => ?_).trans this)
   rw [← add_mul, norm_mul, norm_mul, norm_norm]
-  exact mul_le_mul_of_nonneg_right ((norm_add_le _ _).trans (le_abs_self _)) (norm_nonneg _)
+  gcongr
+  exact (norm_add_le _ _).trans (le_abs_self _)
 
 @[simp]
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
@@ -355,7 +356,7 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
     · simp
     right
     rw [pow_succ, ← mul_assoc]
-    apply mul_le_mul_of_nonneg_right (h m) zero_le_coe
+    gcongr; apply h
   · apply iSup_mono'
     intro C
     use ‖p 1‖ ⊔ C / r

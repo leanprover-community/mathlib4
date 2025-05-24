@@ -84,7 +84,8 @@ private lemma image_T_subset_S [DecidableEq α] [DecidableEq β] (v) (hv : v ∈
     simp only [mul_neg, neg_neg]
     exact mul_le_mul_of_nonpos_right (hv.2 j) hsign
   · rw [posPart_eq_self.2 hsign]
-    exact mul_le_mul_of_nonneg_right (hv.2 j) hsign
+    gcongr
+    apply hv.2
   · rw [posPart_eq_zero.2 hsign]
     exact mul_nonpos_of_nonneg_of_nonpos (hv.1 j) hsign
 
@@ -102,11 +103,11 @@ private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
     apply Finset.sum_nonpos
     intro j _
     simp only [mul_neg, Left.neg_nonpos_iff]
-    exact mul_nonneg (Nat.cast_nonneg B) (negPart_nonneg (A i j))
+    positivity
   _ ≤ P i + 1 := by
     apply le_trans (Finset.sum_nonneg _) (Int.le_add_one (le_refl P i))
     intro j _
-    exact mul_nonneg (Nat.cast_nonneg B) (posPart_nonneg (A i j))
+    positivity
 
 private lemma card_S_eq [DecidableEq α] : #(Finset.Icc N P) = ∏ i : α, (P i - N i + 1) := by
   rw [Pi.card_Icc N P, Nat.cast_prod]
