@@ -14,7 +14,7 @@ import Mathlib.Algebra.Group.End
 
 This file defines the regular wreath product of groups, and the canonical maps in and out of the
 product. The regular wreath product of `D` and `Q` is the product `(Q → D) × Q` with the group
-operation `⟨a₁, a₂⟩ * ⟨b₁, b₂⟩ = ⟨a₁ * (fun x => b₁ (a₂⁻¹ * x)), a₂ * b₂⟩`.
+operation `⟨a₁, a₂⟩ * ⟨b₁, b₂⟩ = ⟨a₁ * (fun x ↦ b₁ (a₂⁻¹ * x)), a₂ * b₂⟩`.
 
 ## Main definitions
 
@@ -37,7 +37,7 @@ group, regular wreath product, sylow p-subgroup
 variable (D Q : Type*) [Group D] [Group Q]
 
 /-- The regular wreath product of groups `Q` and `D`. It the product `(Q → D) × Q` with the group
-operation `⟨a₁, a₂⟩ * ⟨b₁, b₂⟩ = ⟨a₁ * (fun x => b₁ (a₂⁻¹ * x)), a₂ * b₂⟩`. -/
+operation `⟨a₁, a₂⟩ * ⟨b₁, b₂⟩ = ⟨a₁ * (fun x ↦ b₁ (a₂⁻¹ * x)), a₂ * b₂⟩`. -/
 @[ext]
 structure RegularWreathProduct where
   /-- The function of Q → D -/
@@ -51,7 +51,7 @@ namespace RegularWreathProduct
 variable {D Q}
 
 instance : Mul (D ≀ᵣ Q) where
-  mul a b := ⟨a.1 * (fun x => b.1 (a.2⁻¹ * x)), a.2 * b.2⟩
+  mul a b := ⟨a.1 * (fun x ↦ b.1 (a.2⁻¹ * x)), a.2 * b.2⟩
 
 lemma mul_def (a b : D ≀ᵣ Q) : a * b = ⟨a.1 * fun x ↦ b.1 (a.2⁻¹ * x), a.2 * b.2⟩ := rfl
 
