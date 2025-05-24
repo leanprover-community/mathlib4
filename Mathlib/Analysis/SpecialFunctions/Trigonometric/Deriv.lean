@@ -53,6 +53,23 @@ theorem differentiable_sin : Differentiable ℂ sin := fun x => (hasDerivAt_sin 
 theorem differentiableAt_sin {x : ℂ} : DifferentiableAt ℂ sin x :=
   differentiable_sin x
 
+/-- The function `Complex.sin` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_sin {x : ℂ} : AnalyticAt ℂ Complex.sin x :=
+  Complex.contDiff_sin.contDiffAt.analyticAt
+
+/-- The function `Complex.sin` is complex analytic. -/
+lemma analyticWithinAt_sin {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ Complex.sin s x :=
+  Complex.contDiff_sin.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.sin` is complex analytic. -/
+theorem analyticOnNhd_sin {s : Set ℂ} : AnalyticOnNhd ℂ Complex.sin s :=
+  fun _ _ ↦ analyticAt_sin
+
+/-- The function `Complex.sin` is complex analytic. -/
+lemma analyticOn_sin {s : Set ℂ} : AnalyticOn ℂ Complex.sin s :=
+  Complex.contDiff_sin.contDiffOn.analyticOn
+
 @[simp]
 theorem deriv_sin : deriv sin = cos :=
   funext fun x => (hasDerivAt_sin x).deriv
@@ -79,6 +96,23 @@ theorem differentiable_cos : Differentiable ℂ cos := fun x => (hasDerivAt_cos 
 @[simp]
 theorem differentiableAt_cos {x : ℂ} : DifferentiableAt ℂ cos x :=
   differentiable_cos x
+
+/-- The function `Complex.cos` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_cos {x : ℂ} : AnalyticAt ℂ Complex.cos x :=
+  Complex.contDiff_cos.contDiffAt.analyticAt
+
+/-- The function `Complex.cos` is complex analytic. -/
+lemma analyticWithinAt_cos {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ Complex.cos s x :=
+  Complex.contDiff_cos.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.cos` is complex analytic. -/
+theorem analyticOnNhd_cos {s : Set ℂ} : AnalyticOnNhd ℂ Complex.cos s :=
+  fun _ _ ↦ analyticAt_cos
+
+/-- The function `Complex.cos` is complex analytic. -/
+lemma analyticOn_cos {s : Set ℂ} : AnalyticOn ℂ Complex.cos s :=
+  Complex.contDiff_cos.contDiffOn.analyticOn
 
 theorem deriv_cos {x : ℂ} : deriv cos x = -sin x :=
   (hasDerivAt_cos x).deriv
@@ -110,6 +144,23 @@ theorem differentiable_sinh : Differentiable ℂ sinh := fun x => (hasDerivAt_si
 theorem differentiableAt_sinh {x : ℂ} : DifferentiableAt ℂ sinh x :=
   differentiable_sinh x
 
+/-- The function `Complex.sinh` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_sinh {x : ℂ} : AnalyticAt ℂ Complex.sinh x :=
+  Complex.contDiff_sinh.contDiffAt.analyticAt
+
+/-- The function `Complex.sinh` is complex analytic. -/
+lemma analyticWithinAt_sinh {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ Complex.sinh s x :=
+  Complex.contDiff_sinh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.sinh` is complex analytic. -/
+theorem analyticOnNhd_sinh {s : Set ℂ} : AnalyticOnNhd ℂ Complex.sinh s :=
+  fun _ _ ↦ analyticAt_sinh
+
+/-- The function `Complex.sinh` is complex analytic. -/
+lemma analyticOn_sinh {s : Set ℂ} : AnalyticOn ℂ Complex.sinh s :=
+  Complex.contDiff_sinh.contDiffOn.analyticOn
+
 @[simp]
 theorem deriv_sinh : deriv sinh = cosh :=
   funext fun x => (hasDerivAt_sinh x).deriv
@@ -136,6 +187,23 @@ theorem differentiable_cosh : Differentiable ℂ cosh := fun x => (hasDerivAt_co
 @[simp]
 theorem differentiableAt_cosh {x : ℂ} : DifferentiableAt ℂ cosh x :=
   differentiable_cosh x
+
+/-- The function `Complex.cosh` is complex analytic. -/
+@[fun_prop]
+lemma analyticAt_cosh {x : ℂ} : AnalyticAt ℂ Complex.cosh x :=
+  Complex.contDiff_cosh.contDiffAt.analyticAt
+
+/-- The function `Complex.cosh` is complex analytic. -/
+lemma analyticWithinAt_cosh {x : ℂ} {s : Set ℂ} : AnalyticWithinAt ℂ Complex.cosh s x :=
+  Complex.contDiff_cosh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Complex.cosh` is complex analytic. -/
+theorem analyticOnNhd_cosh {s : Set ℂ} : AnalyticOnNhd ℂ Complex.cosh s :=
+  fun _ _ ↦ analyticAt_cosh
+
+/-- The function `Complex.cosh` is complex analytic. -/
+lemma analyticOn_cosh {s : Set ℂ} : AnalyticOn ℂ Complex.cosh s :=
+  Complex.contDiff_cosh.contDiffOn.analyticOn
 
 @[simp]
 theorem deriv_cosh : deriv cosh = sinh :=
@@ -498,6 +566,23 @@ theorem differentiable_sin : Differentiable ℝ sin := fun x => (hasDerivAt_sin 
 theorem differentiableAt_sin : DifferentiableAt ℝ sin x :=
   differentiable_sin x
 
+/-- The function `Real.sin` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_sin : AnalyticAt ℝ Real.sin x :=
+  Real.contDiff_sin.contDiffAt.analyticAt
+
+/-- The function `Real.sin` is real analytic. -/
+lemma analyticWithinAt_sin {s : Set ℝ} : AnalyticWithinAt ℝ Real.sin s x :=
+  Real.contDiff_sin.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.sin` is real analytic. -/
+theorem analyticOnNhd_sin {s : Set ℝ} : AnalyticOnNhd ℝ Real.sin s :=
+  fun _ _ ↦ analyticAt_sin
+
+/-- The function `Real.sin` is real analytic. -/
+lemma analyticOn_sin {s : Set ℝ} : AnalyticOn ℝ Real.sin s :=
+  Real.contDiff_sin.contDiffOn.analyticOn
+
 @[simp]
 theorem deriv_sin : deriv sin = cos :=
   funext fun x => (hasDerivAt_sin x).deriv
@@ -517,6 +602,23 @@ theorem differentiable_cos : Differentiable ℝ cos := fun x => (hasDerivAt_cos 
 @[simp]
 theorem differentiableAt_cos : DifferentiableAt ℝ cos x :=
   differentiable_cos x
+
+/-- The function `Real.cos` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_cos : AnalyticAt ℝ Real.cos x :=
+  Real.contDiff_cos.contDiffAt.analyticAt
+
+/-- The function `Real.cos` is real analytic. -/
+lemma analyticWithinAt_cos {s : Set ℝ} : AnalyticWithinAt ℝ Real.cos s x :=
+  Real.contDiff_cos.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.cos` is real analytic. -/
+theorem analyticOnNhd_cos {s : Set ℝ} : AnalyticOnNhd ℝ Real.cos s :=
+  fun _ _ ↦ analyticAt_cos
+
+/-- The function `Real.cos` is real analytic. -/
+lemma analyticOn_cos {s : Set ℝ} : AnalyticOn ℝ Real.cos s :=
+  Real.contDiff_cos.contDiffOn.analyticOn
 
 theorem deriv_cos : deriv cos x = -sin x :=
   (hasDerivAt_cos x).deriv
@@ -541,6 +643,23 @@ theorem differentiable_sinh : Differentiable ℝ sinh := fun x => (hasDerivAt_si
 theorem differentiableAt_sinh : DifferentiableAt ℝ sinh x :=
   differentiable_sinh x
 
+/-- The function `Real.sinh` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_sinh : AnalyticAt ℝ Real.sinh x :=
+  Real.contDiff_sinh.contDiffAt.analyticAt
+
+/-- The function `Real.sinh` is real analytic. -/
+lemma analyticWithinAt_sinh {s : Set ℝ} : AnalyticWithinAt ℝ Real.sinh s x :=
+  Real.contDiff_sinh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.sinh` is real analytic. -/
+theorem analyticOnNhd_sinh {s : Set ℝ} : AnalyticOnNhd ℝ Real.sinh s :=
+  fun _ _ ↦ analyticAt_sinh
+
+/-- The function `Real.sinh` is real analytic. -/
+lemma analyticOn_sinh {s : Set ℝ} : AnalyticOn ℝ Real.sinh s :=
+  Real.contDiff_sinh.contDiffOn.analyticOn
+
 @[simp]
 theorem deriv_sinh : deriv sinh = cosh :=
   funext fun x => (hasDerivAt_sinh x).deriv
@@ -560,6 +679,23 @@ theorem differentiable_cosh : Differentiable ℝ cosh := fun x => (hasDerivAt_co
 @[simp]
 theorem differentiableAt_cosh : DifferentiableAt ℝ cosh x :=
   differentiable_cosh x
+
+/-- The function `Real.cosh` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_cosh : AnalyticAt ℝ Real.cosh x :=
+  Real.contDiff_cosh.contDiffAt.analyticAt
+
+/-- The function `Real.cosh` is real analytic. -/
+lemma analyticWithinAt_cosh {s : Set ℝ} : AnalyticWithinAt ℝ Real.cosh s x :=
+  Real.contDiff_cosh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.cosh` is real analytic. -/
+theorem analyticOnNhd_cosh {s : Set ℝ} : AnalyticOnNhd ℝ Real.cosh s :=
+  fun _ _ ↦ analyticAt_cosh
+
+/-- The function `Real.cosh` is real analytic. -/
+lemma analyticOn_cosh {s : Set ℝ} : AnalyticOn ℝ Real.cosh s :=
+  Real.contDiff_cosh.contDiffOn.analyticOn
 
 @[simp]
 theorem deriv_cosh : deriv cosh = sinh :=
