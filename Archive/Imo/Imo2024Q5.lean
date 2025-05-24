@@ -136,7 +136,7 @@ lemma MonsterData.notMem_monsterCells_of_fst_eq_zero (m : MonsterData N)
   simp [monsterCells, Prod.ext_iff, hc]
 
 @[deprecated (since := "2025-05-23")]
-alias MonsterData.notMem_monsterCells_of_fst_eq_zero :=
+alias MonsterData.not_mem_monsterCells_of_fst_eq_zero :=
   MonsterData.notMem_monsterCells_of_fst_eq_zero
 
 lemma MonsterData.le_N_of_mem_monsterCells {m : MonsterData N} {c : Cell N}
