@@ -23,9 +23,16 @@ Let `G` be a finite group acting on a commutative ring `B` satisfying `Algebra.I
 * `Algebra.IsInvariant.isIntegral`: `B/A` is an integral extension.
 * `Algebra.IsInvariant.exists_smul_of_under_eq`: `G` acts transitivity on the prime ideals of `B`
   lying above a given prime ideal of `A`.
-* `IsFractionRing.stabilizerHom_surjective`: if `Q` is a prime ideal of `B` lying over a prime
-  ideal `P` of `A`, then the stabilizer subgroup of `Q` surjects onto `Aut(Frac(B/Q)/Frac(A/P))`.
 
+If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
+
+* `IsFractionRing.stabilizerHom_surjective`:
+  The stabilizer subgroup of `Q` surjects onto `Aut(Frac(B/Q)/Frac(A/P))`.
+* `Ideal.Quotient.stabilizerHom_surjective`:
+  The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`.
+* `Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under`:
+  If `k` is a domain containing `B/Q`, then any `A/P`-algebra automorphism of `k` restricts to
+  an automorphism of `B/Q`.
 -/
 
 open scoped Pointwise
@@ -81,6 +88,42 @@ theorem Algebra.isInvariant_of_isGalois' [FiniteDimensional K L] [IsGalois K L] 
   ⟨fun b h ↦ (isInvariant_of_isGalois A K L B).1 b (fun g ↦ h (galRestrict A K L B g))⟩
 
 end Galois
+
+section Quotient
+
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+
+instance (H : Subgroup G) [H.Normal] :
+    MulSemiringAction (G ⧸ H) (FixedPoints.subring B H) where
+  smul := Quotient.lift (fun g x ↦ ⟨g • x, fun h ↦ by
+    simpa [mul_smul] using congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
+    rintro _ a ⟨⟨⟨b⟩, hb⟩, rfl⟩
+    ext c
+    simpa [mul_smul] using congr(a • $(c.2 ⟨b, hb⟩)))
+  one_smul b := Subtype.ext (one_smul G b.1)
+  mul_smul := Quotient.ind₂ fun _ _ _ ↦ Subtype.ext (mul_smul _ _ _)
+  smul_zero := Quotient.ind fun _ ↦ Subtype.ext (smul_zero _)
+  smul_add := Quotient.ind fun _ _ _ ↦ Subtype.ext (smul_add _ _ _)
+  smul_one := Quotient.ind fun _ ↦ Subtype.ext (smul_one _)
+  smul_mul := Quotient.ind fun _ _ _ ↦ Subtype.ext (MulSemiringAction.smul_mul _ _ _)
+
+instance (H : Subgroup G) [H.Normal] :
+    MulSemiringAction (G ⧸ H) (FixedPoints.subalgebra A B H) :=
+  inferInstanceAs (MulSemiringAction (G ⧸ H) (FixedPoints.subring B H))
+
+instance (H : Subgroup G) [H.Normal] :
+    SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H)  where
+  smul_comm := Quotient.ind fun g r h ↦ Subtype.ext (smul_comm g r h.1)
+
+instance (H : Subgroup G) [H.Normal] [Algebra.IsInvariant A B G] :
+    Algebra.IsInvariant A (FixedPoints.subalgebra A B H) (G ⧸ H) where
+  isInvariant x hx := by
+    obtain ⟨y, hy⟩ := Algebra.IsInvariant.isInvariant (A := A) (G := G) x.1
+      (fun g ↦ congr_arg Subtype.val (hx g))
+    exact ⟨y, Subtype.ext hy⟩
+
+end Quotient
 
 section transitivity
 
@@ -344,3 +387,82 @@ theorem Ideal.Quotient.stabilizerHom_surjective :
     (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q)))
 
 end surjectivity
+
+section normal
+
+variable {A B k : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  (G : Type*) [Finite G] [Group G] [MulSemiringAction G B] [Algebra.IsInvariant A B G]
+  (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
+  [CommRing k] [Algebra (A ⧸ P) k] [Algebra (B ⧸ Q) k] [IsScalarTower (A ⧸ P) (B ⧸ Q) k]
+  [IsDomain k] [FaithfulSMul (B ⧸ Q) k]
+
+include G in
+/--
+For any domain `k` containing `B ⧸ Q`,
+any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`.
+
+This is basically the fact that `L/K` normal implies `κ(Q)/κ(P)` normal in the galois setting.
+-/
+lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
+    (σ : k →ₐ[A ⧸ P] k) :
+    ∃ τ : (B ⧸ Q) →ₐ[A ⧸ P] B ⧸ Q, ∀ x : B ⧸ Q,
+      algebraMap _ _ (τ x) = σ (algebraMap (B ⧸ Q) k x) := by
+  let f : (B ⧸ Q) →ₐ[A ⧸ P] k := IsScalarTower.toAlgHom _ _ _
+  have hf : Function.Injective f := FaithfulSMul.algebraMap_injective _ _
+  suffices (σ.comp f).range ≤ f.range by
+    let e := (AlgEquiv.ofInjective f hf)
+    exact ⟨(e.symm.toAlgHom.comp (Subalgebra.inclusion this)).comp (σ.comp f).rangeRestrict,
+      fun x ↦ congr_arg Subtype.val (e.apply_symm_apply ⟨_, _⟩)⟩
+  rintro _ ⟨x, rfl⟩
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+  cases nonempty_fintype G
+  algebraize [(algebraMap (A ⧸ P) k).comp (algebraMap A (A ⧸ P)),
+    (algebraMap (B ⧸ Q) k).comp (algebraMap B (B ⧸ Q))]
+  haveI : IsScalarTower A (B ⧸ Q) k := .of_algebraMap_eq fun x ↦
+    (IsScalarTower.algebraMap_apply (A ⧸ P) (B ⧸ Q) k (mk P x))
+  haveI : IsScalarTower A B k := .of_algebraMap_eq fun x ↦
+    (IsScalarTower.algebraMap_apply (A ⧸ P) (B ⧸ Q) k (mk P x))
+  obtain ⟨P, hp⟩ := Algebra.IsInvariant.charpoly_mem_lifts A B G x
+  have : Polynomial.aeval x P = 0 := by
+    rw [Polynomial.aeval_def, ← Polynomial.eval_map,
+      ← Polynomial.coe_mapRingHom (R := A), hp, MulSemiringAction.eval_charpoly]
+  have : Polynomial.aeval (σ (algebraMap (B ⧸ Q) k (mk _ x))) P = 0 := by
+    refine (DFunLike.congr_fun (Polynomial.aeval_algHom ((σ.restrictScalars A).comp
+      (IsScalarTower.toAlgHom A (B ⧸ Q) k)) _) P).trans ?_
+    rw [AlgHom.comp_apply, ← algebraMap_eq, Polynomial.aeval_algebraMap_apply, this,
+      map_zero, map_zero]
+  rw [← Polynomial.aeval_map_algebraMap B, ← Polynomial.coe_mapRingHom, hp] at this
+  obtain ⟨τ, hτ⟩ : ∃ τ : G, σ (algebraMap _ _ x) = algebraMap _ _ (τ • x) := by
+    simpa [MulSemiringAction.charpoly, sub_eq_zero, Finset.prod_eq_zero_iff] using this
+  exact ⟨Ideal.Quotient.mk _ (τ • x), hτ.symm⟩
+
+include G in
+/--
+For any domain `k` containing `B ⧸ Q`,
+any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`.
+-/
+lemma Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under
+    (σ : k ≃ₐ[A ⧸ P] k) :
+    ∃ τ : (B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q, ∀ x : B ⧸ Q,
+      algebraMap _ _ (τ x) = σ (algebraMap (B ⧸ Q) k x) := by
+  let f : (B ⧸ Q) →ₐ[A ⧸ P] k := IsScalarTower.toAlgHom _ _ _
+  have hf : Function.Injective f := FaithfulSMul.algebraMap_injective _ _
+  obtain ⟨τ₁, h₁⟩ := Ideal.Quotient.exists_algHom_fixedPoint_quotient_under G P Q σ.toAlgHom
+  obtain ⟨τ₂, h₂⟩ := Ideal.Quotient.exists_algHom_fixedPoint_quotient_under G P Q σ.symm.toAlgHom
+  refine ⟨{ __ := τ₁, invFun := τ₂, left_inv := ?_, right_inv := ?_ }, h₁⟩
+  · intro x
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+    obtain ⟨y, e⟩ := Ideal.Quotient.mk_surjective (τ₁ (Ideal.Quotient.mk Q x))
+    apply hf
+    dsimp [f] at h₁ h₂ ⊢
+    refine .trans ?_ (σ.symm_apply_apply _)
+    rw [← h₁, ← e, h₂]
+  · intro x
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+    obtain ⟨y, e⟩ := Ideal.Quotient.mk_surjective (τ₂ (Ideal.Quotient.mk Q x))
+    apply hf
+    dsimp [f] at h₁ h₂ ⊢
+    refine .trans ?_ (σ.apply_symm_apply _)
+    rw [← h₂, ← e, h₁]
+
+end normal
