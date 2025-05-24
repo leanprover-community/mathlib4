@@ -325,6 +325,15 @@ abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
 def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
   { SMulZeroClass.toZeroHom A x with toFun := (x • ·), map_add' := smul_add x }
 
+instance AddMonoid.nat_smulCommClass {M A : Type*} [AddMonoid A] [DistribSMul M A] :
+    SMulCommClass ℕ M A where
+  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_nsmul y n).symm
+
+-- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
+instance AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A] :
+    SMulCommClass M ℕ A :=
+  SMulCommClass.symm _ _ _
+
 end DistribSMul
 
 /-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
@@ -383,22 +392,14 @@ def DistribMulAction.toAddMonoidEnd :
   map_one' := AddMonoidHom.ext <| one_smul M
   map_mul' x y := AddMonoidHom.ext <| mul_smul x y
 
-instance AddMonoid.nat_smulCommClass :
-    SMulCommClass ℕ M
-      A where smul_comm n x y := ((DistribMulAction.toAddMonoidHom A x).map_nsmul y n).symm
-
--- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddMonoid.nat_smulCommClass' : SMulCommClass M ℕ A :=
-  SMulCommClass.symm _ _ _
-
 end
 
 section
 
-variable [Monoid M] [AddGroup A] [DistribMulAction M A]
+variable [AddGroup A] [DistribSMul M A]
 
 instance AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
-  smul_comm n x y := ((DistribMulAction.toAddMonoidHom A x).map_zsmul y n).symm
+  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_zsmul y n).symm
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
 instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=
