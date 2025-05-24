@@ -1501,3 +1501,5 @@ theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=
   Nat.one_le_iff_ne_zero.mpr (primesOver_ncard_ne_zero p B)
 
 end primesOverFinset
+
+set_option linter.style.longFile 1700
