@@ -508,7 +508,7 @@ theorem mem_of_mem_sInter {x y z : ZFSet} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) :
 theorem mem_sUnion_of_mem {x y z : ZFSet} (hy : y ∈ z) (hz : z ∈ x) : y ∈ ⋃₀ x :=
   mem_sUnion.2 ⟨z, hz, hy⟩
 
-theorem notMem_sInter_of_notMem {x y z : ZFSet} (hy : ¬y ∈ z) (hz : z ∈ x) : ¬y ∈ ⋂₀ x :=
+theorem notMem_sInter_of_notMem {x y z : ZFSet} (hy : ¬y ∈ z) (hz : z ∈ x) : y ∉ ⋂₀ x :=
   fun hx => hy <| mem_of_mem_sInter hx hz
 
 @[deprecated (since := "2025-05-23")] alias not_mem_sInter_of_not_mem := notMem_sInter_of_notMem
