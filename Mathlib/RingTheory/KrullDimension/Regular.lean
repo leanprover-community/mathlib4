@@ -152,15 +152,19 @@ theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum 
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.1) :
       ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧ p₀ < q ∧ q < p₂ := by
   let e := p₂.1.primeSpectrumLocalizationAtPrime
-  obtain ⟨q', hxq, h₀, h₁⟩ := by
-    refine @exist_mem_one_of_mem_maximal_ideal (Localization.AtPrime p₂.1) _ _ _
-      (e.symm ⟨p₁, h₁.le⟩) (e.symm ⟨p₀, (h₀.trans h₁).le⟩) (e.symm.lt_iff_lt.mpr h₀) ?_
-        (algebraMap R (Localization.AtPrime p₂.1) x) ?_
-    · sorry
-    · sorry
+  have h : ⟨IsLocalRing.maximalIdeal (Localization.AtPrime p₂.asIdeal), inferInstance⟩ =
+      e.symm ⟨p₂, le_refl p₂⟩ :=
+    (PrimeSpectrum.ext Localization.AtPrime.map_eq_maximalIdeal).symm
+  obtain ⟨q', hxq, h₀, h₁⟩ :=
+    @exist_mem_one_of_mem_maximal_ideal (Localization.AtPrime p₂.1) _ _ _
+      (e.symm ⟨p₁, h₁.le⟩) (e.symm ⟨p₀, (h₀.trans h₁).le⟩) (e.symm.lt_iff_lt.mpr h₀)
+        (by simp [h, h₁]) (algebraMap R (Localization.AtPrime p₂.1) x) <| by
+          rw [← Localization.AtPrime.map_eq_maximalIdeal]
+          exact mem_map_of_mem (algebraMap R (Localization.AtPrime p₂.1)) hx
   let q : PrimeSpectrum R := (e q').1
   have hq : q' = e.symm ⟨q, (e q').2⟩ := (e.symm_apply_apply q').symm
-  rw [hq] at h₀ h₁ hxq
+  rw [← e.symm_apply_apply q'] at h₀ h₁ hxq
+  have hq : q'.1 = q.1.map (algebraMap R _) := congrArg asIdeal (e.symm_apply_apply q').symm
   refine ⟨q, ?_, e.symm.lt_iff_lt.mp h₀, ?_⟩
   · sorry
   · sorry
