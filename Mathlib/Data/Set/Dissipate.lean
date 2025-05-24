@@ -54,7 +54,7 @@ theorem dissipate_subset_dissipate [Preorder α] {x y} (h : y ≤ x) :
 
 @[simp]
 theorem biInter_dissipate [Preorder α] {s : α → Set β} {x : α} :
-    ⋂ y ≤ x, Dissipate s y = Dissipate s x := by
+    ⋂ y, ⋂ (_ : y ≤ x), ⋂ y_1, ⋂ (_ : y_1 ≤ y), s y_1 = ⋂ y, ⋂ (_ : y ≤ x), s y := by
   apply Subset.antisymm
   · apply iInter_mono fun z y hy ↦ ?_
     simp only [dissipate_def, mem_iInter] at *
@@ -63,12 +63,11 @@ theorem biInter_dissipate [Preorder α] {s : α → Set β} {x : α} :
     exact fun i hi z hz ↦ biInter_subset_of_mem <| le_trans hz hi
 
 @[simp]
-theorem iInter_dissipate [Preorder α] : ⋂ x, Dissipate s x = ⋂ x, s x := by
-  apply Subset.antisymm <;> simp_rw [subset_def, mem_iInter, mem_dissipate]
+theorem iInter_dissipate [Preorder α] : ⋂ x, ⋂ y, ⋂ (_ : y ≤ x), s y = ⋂ x, s x := by
+  apply Subset.antisymm <;> simp_rw [subset_def, mem_iInter]
   · exact fun z h x' ↦ h x' x' (le_refl x')
   · exact fun z h x' y hy ↦ h y
 
-@[simp]
 lemma dissipate_bot [PartialOrder α] [OrderBot α] (s : α → Set β) : Dissipate s ⊥ = s ⊥ := by
   simp only [dissipate_def, le_bot_iff, iInter_iInter_eq_left]
 
@@ -76,7 +75,8 @@ open Nat
 
 @[simp]
 theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
-    Dissipate s (n + 1) = Dissipate s n ∩ s (n + 1) := by
+    ⋂ y, ⋂ (_ : y ≤ n + 1), s y = (⋂ y, ⋂ (_ : y ≤ n), s y) ∩ s (n + 1)
+    := by
   ext x
   refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
   · simp only [mem_inter_iff, mem_iInter, Dissipate] at *
@@ -89,7 +89,6 @@ theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
     · simp only [not_le] at h
       exact le_antisymm hi h ▸ hx.2
 
-@[simp]
 lemma dissipate_zero (s : ℕ → Set β) : Dissipate s 0 = s 0 := by
   simp [dissipate_def]
 
@@ -99,7 +98,7 @@ lemma exists_subset_dissipate_of_directed {s : ℕ → Set α}
   | zero => use 0; simp
   | succ n hn =>
     obtain ⟨m, hm⟩ := hn
-    simp_rw [dissipate_succ]
+    simp_rw [dissipate_def, dissipate_succ]
     obtain ⟨k, hk⟩ := hd m (n+1)
     simp at hk
     use k
@@ -119,7 +118,7 @@ lemma exists_dissipate_eq_empty_iff {s : ℕ → Set α}
     · rw [hn']
       exact Eq.trans (dissipate_zero s) (hn' ▸ hn)
     · obtain ⟨k, hk⟩ := exists_eq_add_one_of_ne_zero hn'
-      rw [hk, dissipate_succ, ← hk, hn, Set.inter_empty]
+      rw [hk, dissipate_def, dissipate_succ, ← hk, hn, Set.inter_empty]
 
 lemma directed_dissipate {s : ℕ → Set α} :
     Directed (fun (x1 x2 : Set α) => x2 ⊆ x1) (Dissipate s) :=
@@ -133,7 +132,7 @@ lemma exists_dissipate_eq_empty_iff_of_directed (C : ℕ → Set α)
     · rw [hn', dissipate_zero]
       exact hn' ▸ hn
     · obtain ⟨k, hk⟩ := exists_eq_succ_of_ne_zero hn'
-      simp_rw [hk, succ_eq_add_one, dissipate_succ,
+      simp_rw [hk, succ_eq_add_one, dissipate_def, dissipate_succ,
         ← succ_eq_add_one, ← hk, hn, Set.inter_empty]
   · rw [← not_imp_not]
     push_neg
@@ -151,7 +150,7 @@ lemma dissipate_of_piSystem {s : ℕ → Set α} {p : Set α → Prop}
     simp only [dissipate_def, le_zero_eq, iInter_iInter_eq_left]
     exact h 0
   | succ n hn =>
-    rw [dissipate_succ] at *
+    rw [dissipate_def, dissipate_succ] at *
     apply hp (Dissipate s n) (hn (Nonempty.left h')) (s (n+1)) (h (n+1)) h'
 
 end Set
