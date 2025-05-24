@@ -392,6 +392,31 @@ instance lipschitzHVectorSpace : V (G := G) := {
 instance countableG: Countable (Additive (MulOpposite G)) := by
   sorry
 
+-- Use the fact that we have the discrete topology
+lemma my_add_haar_eq_count: (myHaarAddOpp (G := G)) = MeasureTheory.Measure.count := by sorry
+
+lemma count_ae_everywhere (p: G → Prop): (∀ᵐ g ∂(MeasureTheory.Measure.count), p g) = ∀ a: G, p a := by
+  rw [MeasureTheory.ae_iff]
+  simp [MeasureTheory.Measure.count_eq_zero_iff]
+  -- TODO - there has to be a much simpler way of proving this
+  refine ⟨?_, ?_⟩
+  . intro h
+    intro a
+    by_contra this
+    have a_in: a ∈ {a | ¬ p a} := by
+      simp [this]
+    have foo := Set.nonempty_of_mem a_in
+    rw [← Set.not_nonempty_iff_eq_empty] at h
+    contradiction
+  . intro h
+    by_contra this
+    simp at this
+    rw [← ne_eq] at this
+    rw [← Set.nonempty_iff_ne_empty'] at this
+    obtain ⟨a, ha⟩ := this
+    specialize h a
+    simp at ha
+    contradiction
 
 -- Use the fact that our measure is the counting measure (since we have the discrete topology),
 -- and negating a finite set of points in an additive group leaves the cardinality unchanged
@@ -403,16 +428,36 @@ open scoped Convolution
 noncomputable def Conv (f g: G → ℝ) (x: G) : ℝ :=
   (MeasureTheory.convolution (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp (Additive.ofMul (MulOpposite.op x)))
 
-lemma conv_exists (c: ℝ) (p q : ENNReal) (hpq: p.HolderConjugate q) (f g: G → ℝ)
+lemma conv_exists (c: ℝ) (hc: 0 ≤ c) (p q : ENNReal) (hpq: p.HolderConjugate q) (f g: G → ℝ)
   (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) p myHaarAddOpp)
-  (hf: MeasureTheory.MemLp ((fun x => g x.toMul.unop)) q myHaarAddOpp)
+  (hg: MeasureTheory.MemLp ((fun x => g x.toMul.unop)) q myHaarAddOpp)
   : MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp := by
   unfold MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
   intro x
   have h_young := ENNReal.eLpNorm_top_convolution_le' (p := p) (q := q) (L := (ContinuousLinearMap.mul ℝ ℝ)) (𝕜 := ℝ) (F := ℝ) (E := ℝ) (E' := ℝ) (G := Additive (MulOpposite G)) (f := (fun x => f x.toMul.unop)) (g := (fun x => g x.toMul.unop)) (μ := myHaarAddOpp)
     hpq MeasureTheory.AEStronglyMeasurable.of_discrete MeasureTheory.AEStronglyMeasurable.of_discrete (c := c) ?_
 
-  . sorry
+  .
+    unfold MeasureTheory.Integrable
+    refine ⟨MeasureTheory.AEStronglyMeasurable.of_discrete, ?_⟩
+    unfold MeasureTheory.HasFiniteIntegral
+    simp only [MeasureTheory.eLpNorm_exponent_top] at h_young
+
+    have f_finite := hf.2
+    have g_finite := hg.2
+    rw [lt_top_iff_ne_top] at f_finite g_finite
+    rw [← ENNReal.ofReal_toReal f_finite] at h_young
+    rw [← ENNReal.ofReal_toReal g_finite] at h_young
+    rw [← ENNReal.ofReal_mul hc] at h_young
+    rw [← ENNReal.ofReal_mul ?_] at h_young
+    . have other_lt_top := ENNReal.ofReal_lt_top (r := (c * (MeasureTheory.eLpNorm (fun x ↦ f (MulOpposite.unop (Additive.toMul x))) p myHaarAddOpp).toReal *
+        (MeasureTheory.eLpNorm (fun x ↦ g (MulOpposite.unop (Additive.toMul x))) q myHaarAddOpp).toReal))
+
+      have ess_sup_lt_top := lt_of_le_of_lt h_young other_lt_top
+      unfold MeasureTheory.convolution at ess_sup_lt_top
+
+
+      sorry
   . sorry
 
 -- Defintion 3.11 in Vikman: The function 'μ',  not to be confused with a measure on a measure space
