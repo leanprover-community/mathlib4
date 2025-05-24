@@ -3122,6 +3122,10 @@ Q5638112:
 
 Q5638886:
   title: Hahn embedding theorem
+  decls:
+   - hahn_embedding
+   - hahn_embedding_injective
+  authors: Weiyi Wang
 
 Q5643485:
   title: Halpern–Läuchli theorem
