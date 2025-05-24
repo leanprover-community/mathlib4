@@ -401,7 +401,39 @@ instance countableG: Countable (Additive (MulOpposite G)) := by
 
 
 -- Use the fact that we have the discrete topology
-lemma my_add_haar_eq_count: (myHaarAddOpp (G := G)) = MeasureTheory.Measure.count := by sorry
+lemma my_add_haar_eq_count: (myHaarAddOpp (G := G)) = MeasureTheory.Measure.count := by
+  ext s hs
+  by_cases s_finite: Set.Finite s
+  .
+    have eq_singletons := Set.biUnion_of_singleton (s := s)
+    nth_rw 1 [← eq_singletons]
+    rw [MeasureTheory.Measure.count_apply_finite s s_finite]
+    rw [MeasureTheory.measure_biUnion]
+    .
+      simp_rw [MeasureTheory.Measure.addHaar_singleton]
+      unfold myHaarAddOpp
+      simp_rw [← singleton_carrier]
+      simp_rw [TopologicalSpace.PositiveCompacts.carrier_eq_coe]
+      rw [MeasureTheory.Measure.addHaarMeasure_self]
+      rw [ENNReal.tsum_set_const]
+      simp
+      norm_cast
+      rw [Set.Finite.encard_eq_coe_toFinset_card s_finite]
+    . exact Set.Finite.countable s_finite
+    .
+      simp [singleton]
+      refine Set.pairwiseDisjoint_iff.mpr ?_
+      intro a ha b hb hab
+      unfold Set.singleton at hab
+      simp at hab
+      exact hab.symm
+    .
+      intro a ha
+      apply IsOpen.measurableSet
+      simp
+  . sorry
+
+
 
 -- With the counting measure, A.E is the same as everywgere
 lemma count_ae_everywhere (p: G → Prop): (∀ᵐ g ∂(MeasureTheory.Measure.count), p g) = ∀ a: G, p a := by
@@ -612,4 +644,4 @@ lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g 
       apply_fun Additive.ofMul
       simp only [ofMul_toMul]
       exact hb
-  .
+  . sorry
