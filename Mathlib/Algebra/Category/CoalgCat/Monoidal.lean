@@ -9,12 +9,12 @@ import Mathlib.RingTheory.Coalgebra.TensorProduct
 /-!
 # The monoidal category structure on `R`-coalgebras
 
-In `Mathlib.RingTheory.Coalgebra.TensorProduct`, given two `R`-coalgebras `M, N`, we define a
+In `Mathlib/RingTheory/Coalgebra/TensorProduct.lean`, given two `R`-coalgebras `M, N`, we define a
 coalgebra instance on `M ⊗[R] N`, as well as the tensor product of two `CoalgHom`s as a
 `CoalgHom`, and the associator and left/right unitors for coalgebras as `CoalgEquiv`s.
 
 In this file, we declare a `MonoidalCategory` instance on the category of coalgebras, with data
-fields given by the definitions in `Mathlib.RingTheory.Coalgebra.TensorProduct`, and Prop
+fields given by the definitions in `Mathlib/RingTheory/Coalgebra/TensorProduct.lean`, and Prop
 fields proved by pulling back the `MonoidalCategory` instance on the category of modules,
 using `Monoidal.induced`.
 

@@ -31,7 +31,7 @@ on conditions strictly stronger than T₂.
   necessarily Hausdorff or regular, even if it is T₀.
 * `T5Space`: A T₅ space is a completely normal T₁ space. T₅ implies T₄.
 
-See `Mathlib.Topology.Separation.GDelta` for the definitions of `PerfectlyNormalSpace` and
+See `Mathlib/Topology/Separation/GDelta.lean` for the definitions of `PerfectlyNormalSpace` and
 `T6Space`.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
@@ -264,9 +264,9 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X] [RegularSpace 
          nsubkc <| (IsClosed.closure_subset_iff ncl).mpr interior_subset ain,
        fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
   -- By Lindelöf, we may obtain a countable subcover witnessing `HasSeparatingCover`
-  choose u u_open u_dis u_nhd using this
+  choose u u_open u_dis u_nhds using this
   obtain ⟨f, f_cov⟩ := s_cl.isLindelof.indexed_countable_subcover
-    u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhd a ainh⟩)
+    u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhds a ainh⟩)
   exact ⟨u ∘ f, f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
 
 

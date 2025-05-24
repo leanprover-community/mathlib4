@@ -9,7 +9,7 @@ import Mathlib.Algebra.NeZero
 /-!
 # `NeZero 1` in a nontrivial `MulZeroOneClass`.
 
-This file exists to minimize the dependencies of `Mathlib.Algebra.GroupWithZero.Defs`,
+This file exists to minimize the dependencies of `Mathlib/Algebra/GroupWithZero/Defs.lean`,
 which is a part of the algebraic hierarchy used by basic tactics.
 -/
 
