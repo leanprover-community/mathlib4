@@ -170,6 +170,6 @@ theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup 
     if h : a ∈ l₁ then by
       simp [h, nodup_dedup, p.subset h]
     else by
-      simp [h, count_eq_zero_of_notMem, mt p.mem_iff.2]
+      simp [h, count_eq_zero_of_not_mem, mt p.mem_iff.2]
 
 end List

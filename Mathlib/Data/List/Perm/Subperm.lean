@@ -33,7 +33,7 @@ end Subperm
 /-- See also `List.subperm_ext_iff`. -/
 lemma subperm_iff_count [DecidableEq α] : l₁ <+~ l₂ ↔ ∀ a, count a l₁ ≤ count a l₂ :=
   subperm_ext_iff.trans <| forall_congr' fun a ↦ by
-    by_cases ha : a ∈ l₁ <;> simp [ha, count_eq_zero_of_notMem]
+    by_cases ha : a ∈ l₁ <;> simp [ha, count_eq_zero_of_not_mem]
 
 lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
   refine ⟨?_, fun ⟨l, h₁, h₂⟩ ↦ h₂.subperm.trans h₁.subperm⟩
@@ -56,7 +56,7 @@ protected alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 @[deprecated List.cons_subperm_of_not_mem_of_mem (since := "2024-12-11"), nolint unusedArguments]
 theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (_ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
     (s : l₁ <+~ l₂) : a :: l₁ <+~ l₂ :=
-  cons_subperm_of_notMem_of_mem h₁ h₂ s
+  cons_subperm_of_not_mem_of_mem h₁ h₂ s
 
 protected theorem Nodup.subperm (d : Nodup l₁) (H : l₁ ⊆ l₂) : l₁ <+~ l₂ :=
   subperm_of_subset d H

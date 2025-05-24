@@ -551,7 +551,7 @@ theorem prod_list_map_count [DecidableEq ι] (l : List ι) (f : ι → M) :
     congr 1
     refine prod_congr rfl fun x hx => ?_
     rw [count_cons_of_ne (ne_of_mem_erase hx).symm]
-  rw [prod_insert has, count_cons_self, count_eq_zero_of_notMem (mt mem_toFinset.2 has), pow_one]
+  rw [prod_insert has, count_cons_self, count_eq_zero_of_not_mem (mt mem_toFinset.2 has), pow_one]
   congr 1
   refine prod_congr rfl fun x hx => ?_
   rw [count_cons_of_ne]
@@ -568,7 +568,7 @@ theorem prod_list_count_of_subset [DecidableEq M] (m : List M) (s : Finset M)
   rw [prod_list_count]
   refine prod_subset hs fun x _ hx => ?_
   rw [mem_toFinset] at hx
-  rw [count_eq_zero_of_notMem hx, pow_zero]
+  rw [count_eq_zero_of_not_mem hx, pow_zero]
 
 open Multiset
 

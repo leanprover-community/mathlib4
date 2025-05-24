@@ -42,7 +42,7 @@ theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n :=
   List.mem_range
 
 theorem notMem_range_self {n : ℕ} : n ∉ range n :=
-  List.notMem_range_self
+  List.not_mem_range_self
 
 @[deprecated (since := "2025-05-23")] alias not_mem_range_self := notMem_range_self
 

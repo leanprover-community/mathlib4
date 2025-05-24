@@ -422,7 +422,7 @@ theorem exists_of_kerase {a : α} {l : List (Sigma β)} (h : a ∈ l.keys) :
       rcases h with h | h
       · exact absurd h e
       rcases ih h with ⟨b, tl₁, tl₂, h₁, h₂, h₃⟩
-      exact ⟨b, hd :: tl₁, tl₂, notMem_cons_of_ne_of_notMem e h₁, by (rw [h₂]; rfl), by
+      exact ⟨b, hd :: tl₁, tl₂, not_mem_cons_of_ne_of_not_mem e h₁, by (rw [h₂]; rfl), by
             simp [e, h₃]⟩
 
 @[simp]
@@ -612,7 +612,7 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
     simp only [foldr_cons, kinsert_def, nodupKeys_cons, ne_eq, not_true]
     constructor
     · simp only [keys_kerase]
-      apply l_ih.notMem_erase
+      apply l_ih.not_mem_erase
     · exact l_ih.kerase _
 
 theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys l) = dlookup a l := by

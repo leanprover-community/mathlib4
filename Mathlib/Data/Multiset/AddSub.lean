@@ -163,7 +163,7 @@ theorem erase_singleton (a : α) : ({a} : Multiset α).erase a = 0 :=
 
 @[simp]
 theorem erase_of_notMem {a : α} {s : Multiset α} : a ∉ s → s.erase a = s :=
-  Quot.inductionOn s fun _l h => congr_arg _ <| List.erase_of_notMem h
+  Quot.inductionOn s fun _l h => congr_arg _ <| List.erase_of_not_mem h
 
 @[deprecated (since := "2025-05-23")] alias erase_of_not_mem := erase_of_notMem
 

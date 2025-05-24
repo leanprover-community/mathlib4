@@ -47,7 +47,7 @@ theorem ndinsert_of_mem {a : α} {s : Multiset α} : a ∈ s → ndinsert a s = 
 
 @[simp]
 theorem ndinsert_of_notMem {a : α} {s : Multiset α} : a ∉ s → ndinsert a s = a ::ₘ s :=
-  Quot.inductionOn s fun _ h => congr_arg ((↑) : List α → Multiset α) <| insert_of_notMem h
+  Quot.inductionOn s fun _ h => congr_arg ((↑) : List α → Multiset α) <| insert_of_not_mem h
 
 @[deprecated (since := "2025-05-23")] alias ndinsert_of_not_mem := ndinsert_of_notMem
 

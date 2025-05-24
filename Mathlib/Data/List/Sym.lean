@@ -143,7 +143,7 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
     rw [List.sym2, map_cons, map_cons, disjoint_cons_left, disjoint_append_right,
       disjoint_cons_right]
     refine ⟨?_, ⟨?_, ?_⟩, ?_⟩
-    · refine notMem_cons_of_ne_of_notMem ?_ (notMem_append ?_ ?_)
+    · refine not_mem_cons_of_ne_of_not_mem ?_ (not_mem_append ?_ ?_)
       · simp [h.1]
       · simp_rw [mem_map, not_exists, not_and]
         intro x'' hx
