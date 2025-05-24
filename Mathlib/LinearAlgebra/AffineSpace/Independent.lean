@@ -882,15 +882,9 @@ theorem map_id {n : ℕ} (s : Affine.Simplex k P n) :
 
 theorem map_comp {n : ℕ} (s : Affine.Simplex k P n)
     (f : P →ᵃ[k] P₂) (hf : Function.Injective f)
-    (g : P₂ →ᵃ[k] P₃) (hg : Function.Injective g)
-    (hfg : Function.Injective (g ∘ f) := hg.comp hf) :
-    s.map (g.comp f) hfg = (s.map f hf).map g hg :=
+    (g : P₂ →ᵃ[k] P₃) (hg : Function.Injective g) :
+    s.map (g.comp f) (hg.comp hf) = (s.map f hf).map g hg :=
   ext fun _ => rfl
-
-/-- Mapping a simplex takes the image of the points. -/
-theorem range_points_map {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
-    Set.range (s.map f hf).points = f '' Set.range s.points := by
-  rw [map, Set.range_comp]
 
 @[simp]
 theorem face_map {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f)
