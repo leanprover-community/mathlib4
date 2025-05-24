@@ -3,7 +3,7 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Presentation
+import Mathlib.RingTheory.Extension.Presentation.Basic
 
 /-!
 # Cotangent and localization away
@@ -29,7 +29,7 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (g : S) [IsLocalization.Away g T] (P : Generators R S)
 
 -- Allow seeing through the `vars` field of `Generators`. For details, see
--- the TODO in `Mathlib.RingTheory.Generators`.
+-- the TODO in `Mathlib/RingTheory/Generators.lean`.
 set_option allowUnsafeReducibility true in
 attribute [local reducible] Generators.localizationAway in
 lemma comp_localizationAway_ker (P : Generators R S) (f : P.Ring) (h : algebraMap P.Ring S f = g) :

@@ -22,7 +22,7 @@ Assorted theorems about integral domains.
 ## Notes
 
 Wedderburn's little theorem, which shows that all finite division rings are actually fields,
-is in `Mathlib.RingTheory.LittleWedderburn`.
+is in `Mathlib/RingTheory/LittleWedderburn.lean`.
 
 ## Tags
 
@@ -88,7 +88,7 @@ section Ring
 variable [Ring R] [IsDomain R] [Fintype R]
 
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
-`Mathlib.RingTheory.LittleWedderburn`. -/
+`Mathlib/RingTheory/LittleWedderburn.lean`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
   __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
@@ -99,7 +99,7 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
   qsmul_def := fun _ _ => rfl
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
-can be found in `Mathlib.RingTheory.LittleWedderburn`. -/
+can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 

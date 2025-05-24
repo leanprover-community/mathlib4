@@ -39,7 +39,7 @@ together.
   On the other hand, it requires the union of all cells to be closed.
   If that is not the case, you need to consider that union as a subspace of itself.
 * For a categorical approach that defines CW complexes via colimits and transfinite compositions,
-  see `Mathlib.Topology.CWComplex.Abstract.Basic`.
+  see `Mathlib/Topology/CWComplex/Abstract/Basic.lean`.
   The two approaches are equivalent but serve different purposes:
   * This approach is more convenient for concrete geometric arguments
   * The categorical approach is more suitable for abstract arguments and generalizations
@@ -49,6 +49,18 @@ together.
   Overall this means that being a CW complex is treated more like a property than data.
 * The natural number is explicit in `openCell`, `closedCell` and `cellFrontier` because `cell n` and
   `cell m` might be the same type in an explicit CW complex even when `n` and `m` are different.
+* `CWComplex` is a separate class from `RelCWComplex`. This not only gives absolute CW complexes a
+  better constructor but also aids typeclass inference: a construction on relative CW complexes may
+  yield a base that for the special case of CW complexes is provably equal to the empty set but not
+  definitionally so. In that case we define an instance specifically for absolute CW complexes and
+  want this to be inferred over the relative version. Since the base is an `outParam` this is
+  especially necessary since you cannot provide typeclass inference with a specified base.
+  But having the type `CWComplex` be separate from `RelCWComplex` makes this specification possible.
+* For a similar reason to the previous bullet point we make the instance
+  `CWComplex.instRelCWComplex` have high priority. For example, when talking about the type of
+  cells `cell C` of an absolute CW complex `C`, this actually refers to `RelCWComplex.cell C`
+  through this instance. Again, we want typeclass inference to first consider absolute CW
+  structures.
 * For statements, the auxiliary construction `skeletonLT` is preferred over `skeleton` as it makes
   the base case of inductions easier. The statement about `skeleton` should then be derived from the
   one about `skeletonLT`.
@@ -88,13 +100,14 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
     (univ : Set (Σ n, cell n)).PairwiseDisjoint (fun ni ↦ map ni.1 ni.2 '' ball 0 1)
   /-- All open cells are disjoint with the base. Use `RelCWComplex.disjointBase` instead. -/
   disjointBase' (n : ℕ) (i : cell n) : Disjoint (map n i '' ball 0 1) D
-  /-- The boundary of a cell is contained in a finite union of closed cells of a lower dimension.
-  Use `RelCWComplex.cellFrontier_subset_finite_closedCell` instead. -/
+  /-- The boundary of a cell is contained in the union of the base with a finite union of closed
+  cells of a lower dimension. Use `RelCWComplex.cellFrontier_subset_base_union_finite_closedCell`
+  instead. -/
   mapsTo (n : ℕ) (i : cell n) : ∃ I : Π m, Finset (cell m),
     MapsTo (map n i) (sphere 0 1) (D ∪ ⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1)
   /-- A CW complex has weak topology, i.e. a set `A` in `X` is closed iff its intersection with
   every closed cell and `D` is closed. Use `RelCWComplex.closed` instead. -/
-  closed' (A : Set X) (asubc : A ⊆ C) :
+  closed' (A : Set X) (hAC : A ⊆ C) :
     ((∀ n j, IsClosed (A ∩ map n j '' closedBall 0 1)) ∧ IsClosed (A ∩ D)) → IsClosed A
   /-- The base `D` is closed. -/
   isClosedBase : IsClosed D
@@ -106,32 +119,67 @@ RelCWComplex.mapsto := Topology.RelCWComplex.mapsTo
 
 /-- Characterizing when a subspace `C` of a topological space `X` is a CW complex. Note that this
 requires `C` to be closed. If `C` is not closed choose `X` to be `C`. -/
-abbrev CWComplex {X : Type*} [TopologicalSpace X] (C : Set X) := RelCWComplex C ∅
+class CWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) where
+  /-- The indexing type of the cells of dimension `n`. -/
+  protected cell (n : ℕ) : Type u
+  /-- The characteristic map of the `n`-cell given by the index `i`.
+  This map is a bijection when restricting to `ball 0 1`, where we consider `(Fin n → ℝ)`
+  endowed with the maximum metric. -/
+  protected map (n : ℕ) (i : cell n) : PartialEquiv (Fin n → ℝ) X
+  /-- The source of every characteristic map of dimension `n` is
+  `(ball 0 1 : Set (Fin n → ℝ))`. -/
+  protected source_eq (n : ℕ) (i : cell n) : (map n i).source = ball 0 1
+  /-- The characteristic maps are continuous when restricting to `closedBall 0 1`. -/
+  protected continuousOn (n : ℕ) (i : cell n) : ContinuousOn (map n i) (closedBall 0 1)
+  /-- The inverse of the restriction to `ball 0 1` is continuous on the image. -/
+  protected continuousOn_symm (n : ℕ) (i : cell n) : ContinuousOn (map n i).symm (map n i).target
+  /-- The open cells are pairwise disjoint. Use `CWComplex.pairwiseDisjoint` or
+  `CWComplex.disjoint_openCell_of_ne` instead. -/
+  protected pairwiseDisjoint' :
+    (univ : Set (Σ n, cell n)).PairwiseDisjoint (fun ni ↦ map ni.1 ni.2 '' ball 0 1)
+  /-- The boundary of a cell is contained in a finite union of closed cells of a lower dimension.
+  Use `CWComplex.mapsTo` or `CWComplex.cellFrontier_subset_finite_closedCell` instead. -/
+  protected mapsTo' (n : ℕ) (i : cell n) : ∃ I : Π m, Finset (cell m),
+    MapsTo (map n i) (sphere 0 1) (⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1)
+  /-- A CW complex has weak topology, i.e. a set `A` in `X` is closed iff its intersection with
+  every closed cell is closed. Use `CWComplex.closed` instead. -/
+  protected closed' (A : Set X) (hAC : A ⊆ C) :
+    (∀ n j, IsClosed (A ∩ map n j '' closedBall 0 1)) → IsClosed A
+  /-- The union of all closed cells equals `C`. Use `CWComplex.union` instead. -/
+  protected union' : ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C
 
-/-- A constructor for `CWComplex`. -/
-def CWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
-    (cell : ℕ → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
-    (source_eq : ∀ (n : ℕ) (i : cell n), (map n i).source = ball 0 1)
-    (continuousOn : ∀ (n : ℕ) (i : cell n), ContinuousOn (map n i) (closedBall 0 1))
-    (continuousOn_symm : ∀ (n : ℕ) (i : cell n), ContinuousOn (map n i).symm (map n i).target)
-    (pairwiseDisjoint' :
-      (univ : Set (Σ n, cell n)).PairwiseDisjoint (fun ni ↦ map ni.1 ni.2 '' ball 0 1))
-    (mapsTo : ∀ n i, ∃ I : Π m, Finset (cell m),
-      MapsTo (map n i) (sphere 0 1) (⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1))
-    (closed' : ∀ (A : Set X), (asubc : A ⊆ C) →
-      (∀ n j, IsClosed (A ∩ map n j '' closedBall 0 1)) → IsClosed A)
-    (union' : ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C) : CWComplex C where
-  cell := cell
+@[simps -isSimp]
+instance (priority := high) CWComplex.instRelCWComplex {X : Type*} [TopologicalSpace X] (C : Set X)
+    [CWComplex C] : RelCWComplex C ∅ where
+  cell := CWComplex.cell C
+  map := CWComplex.map
+  source_eq := CWComplex.source_eq
+  continuousOn := CWComplex.continuousOn
+  continuousOn_symm := CWComplex.continuousOn_symm
+  pairwiseDisjoint' := CWComplex.pairwiseDisjoint'
+  disjointBase' := by simp [disjoint_empty]
+  mapsTo := by simpa only [empty_union] using CWComplex.mapsTo'
+  closed' := by simpa only [inter_empty, isClosed_empty, and_true] using CWComplex.closed'
+  isClosedBase := isClosed_empty
+  union' := by simpa only [empty_union] using CWComplex.union'
+
+/-- A relative CW complex with an empty base is an absolute CW complex. -/
+@[simps -isSimp]
+def RelCWComplex.toCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) [RelCWComplex C ∅] :
+    CWComplex C where
+  cell := cell C
   map := map
   source_eq := source_eq
   continuousOn := continuousOn
   continuousOn_symm := continuousOn_symm
   pairwiseDisjoint' := pairwiseDisjoint'
-  disjointBase' := by simp only [disjoint_empty, implies_true]
-  mapsTo := by simpa only [empty_union]
-  closed' := by simpa only [inter_empty, isClosed_empty, and_true]
-  isClosedBase := isClosed_empty
-  union' := by simpa only [empty_union]
+  mapsTo' := by simpa using mapsTo (C := C)
+  closed' := by simpa using closed' (C := C)
+  union' := by simpa using union' (C := C)
+
+lemma RelCWComplex.toCWComplex_eq {X : Type*} [TopologicalSpace X] (C : Set X)
+    [h : RelCWComplex C ∅] : (toCWComplex C).instRelCWComplex = h :=
+  rfl
 
 variable {X : Type*} [t : TopologicalSpace X] {C D : Set X}
 
@@ -311,9 +359,10 @@ private lemma RelCWComplex.iUnion_openCell_eq_iUnion_closedCell [RelCWComplex C 
     refine iUnion₂_subset fun m hm ↦ iUnion_subset fun j ↦ ?_
     rw [← cellFrontier_union_openCell_eq_closedCell]
     apply union_subset
-    · induction' m using Nat.case_strong_induction_on with m hm'
-      · simp [cellFrontier_zero_eq_empty]
-      · obtain ⟨I, hI⟩ := cellFrontier_subset_base_union_finite_closedCell (m + 1) j
+    · induction m using Nat.case_strong_induction_on with
+      | hz => simp [cellFrontier_zero_eq_empty]
+      | hi m hm' =>
+        obtain ⟨I, hI⟩ := cellFrontier_subset_base_union_finite_closedCell (m + 1) j
         apply hI.trans
         apply union_subset subset_union_left
         apply iUnion₂_subset fun l hl ↦ iUnion₂_subset fun i _ ↦ ?_
@@ -383,14 +432,16 @@ lemma RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedC
   rw [closed C A hAC]
   refine ⟨?_, hDA⟩
   intro n j
-  induction' n using Nat.case_strong_induction_on with n hn
-  · rw [closedCell_zero_eq_singleton]
+  induction n using Nat.case_strong_induction_on with
+  | hz =>
+    rw [closedCell_zero_eq_singleton]
     exact isClosed_inter_singleton
-  specialize h n.succ n.zero_lt_succ j
-  rcases h with h1 | h2
-  · rw [← cellFrontier_union_openCell_eq_closedCell, inter_union_distrib_left]
-    exact (isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell hn j hDA).union h1
-  · exact h2
+  | hi n hn =>
+    specialize h n.succ n.zero_lt_succ j
+    rcases h with h1 | h2
+    · rw [← cellFrontier_union_openCell_eq_closedCell, inter_union_distrib_left]
+      exact (isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell hn j hDA).union h1
+    · exact h2
 
 /-- If for every cell either `A ∩ openCell n j` or `A ∩ closedCell n j` is closed then
 `A` is closed. -/
@@ -404,9 +455,10 @@ The boundary of a cell is contained in a finite union of open cells of a lower d
 lemma RelCWComplex.cellFrontier_subset_finite_openCell [RelCWComplex C D] (n : ℕ) (i : cell C n) :
     ∃ I : Π m, Finset (cell C m),
     cellFrontier n i ⊆ D ∪ (⋃ (m < n) (j ∈ I m), openCell m j) := by
-  induction' n using Nat.case_strong_induction_on with n hn
-  · simp [cellFrontier_zero_eq_empty]
-  · -- We apply `cellFrontier_subset_base_union_finite_closedCell` once and then apply
+  induction n using Nat.case_strong_induction_on with
+  | hz => simp [cellFrontier_zero_eq_empty]
+  | hi n hn =>
+    -- We apply `cellFrontier_subset_base_union_finite_closedCell` once and then apply
     -- the induction hypothesis to the finitely many cells that
     -- `cellFrontier_subset_base_union_finite_closedCell` gives us.
     classical
