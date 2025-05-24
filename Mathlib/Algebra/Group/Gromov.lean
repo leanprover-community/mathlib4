@@ -278,7 +278,7 @@ instance LipschitzH.instAddCommMonoid: AddCommMonoid (LipschitzH (G := G)) := {
 def V := Module ℂ (LipschitzH (G := G))
 
 @[simp]
-theorem LipschitzH.add_apply (f g: LipschitzH (G := G)) (x: G): (f + g) x = f x + g x := by
+theorem LipschitzH.add_apply (f g: LipschitzH (G := G)) (x: G): (f + g).toFun x = f x + g x := by
   unfold LipschitzH.add
   rfl
 
@@ -322,8 +322,18 @@ instance lipschitzHVectorSpace : V (G := G) := {
     dsimp [OfNat.ofNat]
     dsimp [Zero.zero]
     simp
-  smul_add := by sorry
-  add_smul := by sorry
+  smul_add := by
+    intro a f g
+    dsimp [HSMul.hSMul]
+    simp [mul_add]
+    ext p
+    simp [DFunLike.coe]
+  add_smul := by
+    intro a f g
+    dsimp [HSMul.hSMul]
+    simp [add_mul]
+    ext p
+    simp [DFunLike.coe]
   zero_smul := by
     intro a
     dsimp [HSMul.hSMul]
