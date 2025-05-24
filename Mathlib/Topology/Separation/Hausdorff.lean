@@ -21,8 +21,9 @@ separation axioms, and the related T₂.₅ condition.
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
   T₂.₅ implies T₂.
 
-See `Mathlib.Topology.Separation.Regular` for regular, T₃, etc spaces; and
-`Mathlib.Topology.Separation.GDelta` for the definitions of `PerfectlyNormalSpace` and `T6Space`.
+See `Mathlib/Topology/Separation/Regular.lean` for regular, T₃, etc spaces; and
+`Mathlib/Topology/Separation/GDelta.lean` for the definitions of `PerfectlyNormalSpace` and
+`T6Space`.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
@@ -635,7 +636,7 @@ theorem ContinuousAt.ne_iff_eventually_ne [T2Space Y] {x : X} {f g : X → Y}
 
 /-- **Local identity principle** for continuous maps: Two continuous maps into a Hausdorff space
 agree in a punctured neighborhood of a non-isolated point iff they agree in a neighborhood. -/
-theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X} {f g : X → Y}
+theorem ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE [T2Space Y] {x : X} {f g : X → Y}
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) [(𝓝[≠] x).NeBot] :
     f =ᶠ[𝓝[≠] x] g ↔ f =ᶠ[𝓝 x] g := by
   constructor <;> intro hfg
@@ -648,6 +649,10 @@ theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X}
       simp_all
     simp at ha
   · exact hfg.filter_mono nhdsWithin_le_nhds
+
+@[deprecated (since := "2025-05-22")]
+alias ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE :=
+  ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
 protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X → Y}

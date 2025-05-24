@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.RingTheory.Invariant
+import Mathlib.RingTheory.Invariant.Basic
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.RingTheory.Unramified.Locus
 

@@ -803,7 +803,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
         _ < ∞ + ∞ :=
           haveI I : Integrable ((A.set n).indicator fun _ : α => c) μ := by
             simp only [integrable_indicator_iff (IsOpen.measurableSet (A.set_mem n)),
-              integrableOn_const, A.finite n, or_true]
+              integrableOn_const_iff (C := c), A.finite n, or_true]
           ENNReal.add_lt_add hf.2 I.2
   filter_upwards [main, v.ae_eventually_measure_pos] with x hx h'x
   have M c (hc : c ∈ t) :
@@ -894,7 +894,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
   simp only [Function.comp_apply, ENNReal.toReal_div, setAverage_eq, div_eq_inv_mul]
   have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
     simp_rw [coe_nnnorm]
-    exact (h''a.sub (integrableOn_const.2 (Or.inr h'a))).norm
+    exact (h''a.sub (integrableOn_const h'a.ne)).norm
   dsimp [enorm]
   rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]
   simp only [coe_nnnorm, smul_eq_mul, measureReal_def]
@@ -914,7 +914,7 @@ theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E}
   rw [← integral_sub]
   · exact norm_integral_le_integral_norm _
   · exact (integrable_inv_smul_measure ha.ne' h'a.ne).2 h''a
-  · exact (integrable_inv_smul_measure ha.ne' h'a.ne).2 (integrableOn_const.2 (Or.inr h'a))
+  · exact (integrable_inv_smul_measure ha.ne' h'a.ne).2 (integrableOn_const h'a.ne)
 
 end
 
