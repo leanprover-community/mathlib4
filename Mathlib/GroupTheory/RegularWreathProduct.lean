@@ -23,8 +23,8 @@ operation `⟨a₁, a₂⟩ * ⟨b₁, b₂⟩ = ⟨a₁ * (fun x ↦ b₁ (a₂
 * `inl` : The canonical map `Q →* D ≀ᵣ Q`.
 * `toPerm` : The homomorphism from `D ≀ᵣ Q` to `Equiv.Perm (Λ × Q)`, where `Λ` is a `D`-set.
 * `IteratedWreathProduct G n` : The iterated wreath product of a group `G` `n` times.
-* `sylowIsIteratedWreathProduct` : The isomorphism between the Sylow `p`-subgroup of `Perm p^n` and
-  the iterated wreath product of the cyclic group of order `p` `n` times.
+* `Sylow.mulEquivIteratedWreathProduct` : The isomorphism between the Sylow `p`-subgroup of `Perm
+  p^n` and the iterated wreath product of the cyclic group of order `p` `n` times.
 
 ## Notation
 
@@ -251,7 +251,7 @@ lemma iteratedWreathToPermHomInj (G : Type*) [Group G] :
         (RegularWreathProduct.toPermInj (IteratedWreathProduct G n) G (Fin n → G))
 
 /-- The encoding of the Sylow `p`-subgroups of `Perm α` as an iterated wreath product. -/
-noncomputable def sylowIsIteratedWreathProduct (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ)
+noncomputable def Sylow.mulEquivIteratedWreathProduct  (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ)
     (α : Type*) [Finite α] (hα : Nat.card α = p ^ n)
     (G : Type*) [Group G] [Finite G] (hG : Nat.card G = p)
     (P : Sylow p (Equiv.Perm α)) :
