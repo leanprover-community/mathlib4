@@ -429,18 +429,26 @@ open scoped Convolution
 noncomputable def Conv (f g: G → ℝ) (x: G) : ℝ :=
   (MeasureTheory.convolution (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp (Additive.ofMul (MulOpposite.op x)))
 
-lemma conv_exists (c: ℝ) (hc: 0 ≤ c) (p q : ENNReal) (hpq: p.HolderConjugate q) (f g: G → ℝ)
+lemma conv_exists (c: ℝ) (hc: 0 ≤ c) (p q : ℝ) (hpq: p.HolderConjugate q) (f g: G → ℝ)
   (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) p myHaarAddOpp)
   (hg: MeasureTheory.MemLp ((fun x => g x.toMul.unop)) q myHaarAddOpp)
   : MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp := by
-  unfold MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
+  unfold MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt MeasureTheory.Integrable
   intro x
-  -- We can use young's hypothesis to bound the norm of the convolution function, giving us something like `∫ ∫ q < ⊤ ` (or stronger)
-  -- However, we also need the convolution to exist at all (e.g. the inner integral converges: `∫ q < ⊤ )
-  have h_young := ENNReal.eLpNorm_top_convolution_le' (p := p) (q := q) (L := (ContinuousLinearMap.mul ℝ ℝ)) (𝕜 := ℝ) (F := ℝ) (E := ℝ) (E' := ℝ) (G := Additive (MulOpposite G)) (f := (fun x => f x.toMul.unop)) (g := (fun x => g x.toMul.unop)) (μ := myHaarAddOpp)
-    hpq MeasureTheory.AEStronglyMeasurable.of_discrete MeasureTheory.AEStronglyMeasurable.of_discrete (c := c) ?_
+  simp only [toMul_sub, MulOpposite.unop_div, ContinuousLinearMap.mul_apply']
+  refine ⟨MeasureTheory.AEStronglyMeasurable.of_discrete, ?_⟩
+  unfold MeasureTheory.HasFiniteIntegral
+  simp
+  have holder_bound := ENNReal.lintegral_mul_le_Lp_mul_Lq (MeasureTheory.Measure.count) (hpq)
+    (AEMeasurable.of_discrete) (AEMeasurable.of_discrete)
+    (f := fun a => ‖f (MulOpposite.unop (Additive.toMul a))‖ₑ)
+    (g := fun a => ‖g ((MulOpposite.unop (Additive.toMul a))⁻¹ * MulOpposite.unop (Additive.toMul x))‖ₑ)
+  simp at holder_bound
+  rw [my_add_haar_eq_count]
+
+  have integral_lt_top := ne_top_of_le_ne_top (?_) holder_bound
+  . exact Ne.lt_top' (id (Ne.symm integral_lt_top))
   .
-    simp only [MeasureTheory.eLpNorm_exponent_top, MeasureTheory.eLpNormEssSup] at h_young
 
 -- For now, we should add additional hypothesis that 'f' and 'g' are non-negative
 -- This is enoguh for the Vikman proof
