@@ -5,17 +5,14 @@ Authors: Stefan Kebekus
 -/
 import Mathlib.Algebra.Order.WithTop.Untop0
 import Mathlib.Analysis.Meromorphic.Order
-import Mathlib.Data.LocallyFinsupp
+import Mathlib.Topology.LocallyFinsupp
 
 /-!
 # The Divisor of a meromorphic function
 
 This file defines the divisor of a meromorphic function and proves the most basic lemmas about those
-divisors.
-
-## TODO
-
-- Compatibility with restriction of divisors/functions
+divisors. The lemma `MeromorphicOn.divisor_restrict` guarantees compatibility between restrictions
+of divisors and of meromorphic functions to subsets of their domain of definition.
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}

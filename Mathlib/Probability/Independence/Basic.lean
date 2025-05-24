@@ -62,7 +62,7 @@ when defining `μ` in the example above, the measurable space used is the last o
 ## References
 
 * Williams, David. Probability with martingales. Cambridge university press, 1991.
-Part A, Chapter 4.
+  Part A, Chapter 4.
 -/
 
 assert_not_exists MeasureTheory.Integrable

@@ -352,7 +352,7 @@ instance {A B} (f g : A ⟶ B) [IsCoreflexivePair f g] [PreservesLimitOfIsCorefl
 instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad,
     PreservesLimit (parallelPair (G.map X.a)
       (NatTrans.app adj.unit (G.obj X.A))) F :=
- fun _ => PreservesLimitOfIsCoreflexivePair.out _ _
+  fun _ => PreservesLimitOfIsCoreflexivePair.out _ _
 
 variable [PreservesLimitOfIsCoreflexivePair F]
 

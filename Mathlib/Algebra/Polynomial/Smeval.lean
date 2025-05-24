@@ -18,7 +18,7 @@ is a generalization of `Algebra.Polynomial.Eval`.
 ## Main definitions
 
 * `Polynomial.smeval`: function for evaluating a polynomial with coefficients in a `Semiring`
-`R` at an element `x` of an `AddCommMonoid` `S` that has natural number powers and an `R`-action.
+  `R` at an element `x` of an `AddCommMonoid` `S` that has natural number powers and an `R`-action.
 * `smeval.linearMap`: the `smeval` function as an `R`-linear map, when `S` is an `R`-module.
 * `smeval.algebraMap`: the `smeval` function as an `R`-algebra map, when `S` is an `R`-algebra.
 

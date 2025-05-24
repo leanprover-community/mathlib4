@@ -429,7 +429,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader
           { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
-        return impMods
+        return impMods.raw
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap

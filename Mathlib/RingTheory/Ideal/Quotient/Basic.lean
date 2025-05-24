@@ -20,7 +20,7 @@ See `Algebra.RingQuot` for quotients of semirings.
 
 ## Main definitions
 
- - `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
+- `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
 
 -/
 

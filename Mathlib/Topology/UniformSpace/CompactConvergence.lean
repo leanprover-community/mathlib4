@@ -298,11 +298,18 @@ section CompactDomain
 variable [CompactSpace α]
 
 theorem hasBasis_compactConvergenceUniformity_of_compact :
-    HasBasis (𝓤 C(α, β)) (fun V : Set (β × β) => V ∈ 𝓤 β) fun V =>
-      { fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ V } :=
+    HasBasis (𝓤 C(α, β)) (fun V : Set (β × β) => V ∈ 𝓤 β) fun V ↦
+      {fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ V} :=
   hasBasis_compactConvergenceUniformity.to_hasBasis
-    (fun p hp => ⟨p.2, hp.2, fun _fg hfg x _hx => hfg x⟩) fun V hV =>
+    (fun p hp => ⟨p.2, hp.2, fun _fg hfg x _hx => hfg x⟩) fun V hV ↦
     ⟨⟨univ, V⟩, ⟨isCompact_univ, hV⟩, fun _fg hfg x => hfg x (mem_univ x)⟩
+
+theorem _root_.Filter.HasBasis.compactConvergenceUniformity_of_compact
+    {ι : Sort*} {p : ι → Prop} {V : ι → Set (β × β)} (h : (𝓤 β).HasBasis p V) :
+    HasBasis (𝓤 C(α, β)) p fun i ↦ {fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ V i} :=
+  hasBasis_compactConvergenceUniformity_of_compact.to_hasBasis
+    (fun _U hU ↦ (h.mem_iff.mp hU).imp fun _i ⟨hpi, hi⟩ ↦ ⟨hpi, fun _ h a ↦ hi <| h a⟩)
+    fun i hi ↦ ⟨V i, h.mem_of_mem hi, .rfl⟩
 
 /-- Convergence in the compact-open topology is the same as uniform convergence for sequences of
 continuous functions on a compact space. -/
