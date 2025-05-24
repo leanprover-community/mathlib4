@@ -347,7 +347,7 @@ theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
     have : ∀ w ∈ K', ⟪u - v, w⟫_ℝ = 0 := by
       intro w hw
       rw [real_inner_eq_re_inner, H w hw]
-      exact zero_re'
+      exact zero_re
     exact (K'.norm_eq_iInf_iff_real_inner_eq_zero hv).2 this
 
 /-- A subspace `K : Submodule 𝕜 E` has an orthogonal projection if every vector `v : E` admits an
