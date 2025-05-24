@@ -406,6 +406,7 @@ instance countableG: Countable (Additive (MulOpposite G)) := by
 
 abbrev opAdd (g : G) := Additive.ofMul (MulOpposite.op g)
 
+-- Proposition 3.12, item 1, in Vikman
 lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g = f (g * s⁻¹) := by
   unfold Conv
   unfold MeasureTheory.convolution
