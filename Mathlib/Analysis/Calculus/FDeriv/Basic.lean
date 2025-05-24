@@ -1466,3 +1466,29 @@ protected theorem HasCompactSupport.fderiv_apply (hf : HasCompactSupport f) (v :
   hf.fderiv 𝕜 |>.comp_left (g := fun L : E →L[𝕜] F ↦ L v) rfl
 
 end Support
+
+section Semilinear
+/-!
+## Results involving semilinear maps
+-/
+variable {𝕜 V V' W W' : Type*} [NontriviallyNormedField 𝕜] {σ σ' : RingHom 𝕜 𝕜}
+  [NormedAddCommGroup V] [NormedSpace 𝕜 V] [NormedAddCommGroup V'] [NormedSpace 𝕜 V']
+  [NormedAddCommGroup W] [NormedSpace 𝕜 W] [NormedAddCommGroup W'] [NormedSpace 𝕜 W']
+  [RingHomIsometric σ] [RingHomInvPair σ σ'] (L : W →SL[σ] W') (R : V' →SL[σ'] V)
+
+/-- If `L` and `R` are semilinear maps whose composite is linear, and `f` has Fréchet derivative
+`f'` at `R z`, then `L ∘ f ∘ R` has Fréchet derivative `L ∘ f' ∘ R` at `z`. -/
+lemma HasFDerivAt.comp_semilinear {f : V → W} {z : V'} {f' : V →L[𝕜] W}
+    (hf : HasFDerivAt f f' (R z)) : HasFDerivAt (L ∘ f ∘ R) (L.comp (f'.comp R)) z := by
+  have : RingHomIsometric σ' := .inv σ
+  rw [hasFDerivAt_iff_isLittleO_nhds_zero] at ⊢ hf
+  have := hf.comp_tendsto (R.map_zero ▸ R.continuous.continuousAt.tendsto)
+  simpa using ((L.isBigO_comp _ _).trans_isLittleO this).trans_isBigO (R.isBigO_id _)
+
+/-- If `L` and `R` are semilinear maps whose composite is linear, and `f` is differentiable at
+`R z`, then `L ∘ f ∘ R` is differentiable at `z`. -/
+lemma DifferentiableAt.comp_semilinear₂ {f : V → W} {z : V'} (hf : DifferentiableAt 𝕜 f (R z)) :
+    DifferentiableAt 𝕜 (L ∘ f ∘ R) z := by
+  simpa using (hf.hasFDerivAt.comp_semilinear L R).differentiableAt
+
+end Semilinear
