@@ -891,7 +891,9 @@ def _root_.LinearMap.compMultilinearMapₗ [Semiring S] [Module S M₂] [Module 
   map_smul' := g.compMultilinearMap_smul
 
 variable (S) in
-/-- `LinearMap.compMultilinearMap` as an `S`-linear equivalence. -/
+/-- An isomorphism of multilinear maps given an isomorphism between their codomains.
+
+This is `LinearMap.compMultilinearMap` as an `S`-linear equivalence. -/
 @[simps! apply symm_apply]
 def _root_.LinearEquiv.congrRightMultilinear [Semiring S] [Module S M₂] [Module S M₃]
     [SMulCommClass R S M₂] [SMulCommClass R S M₃]
