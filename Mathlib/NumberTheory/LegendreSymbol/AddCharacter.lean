@@ -296,7 +296,9 @@ private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
 /-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
 noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
   refine MonoidHom.compAddChar ?_ (primitiveChar F ℂ <| ringChar_ne F).char
-  exact (IsCyclotomicExtension.algEquiv ?n ℂ (CyclotomicField ?n ℂ) ℂ : CyclotomicField ?n ℂ →* ℂ)
+  exact (IsCyclotomicExtension.algEquiv ↑(primitiveChar F ℂ (ringChar_ne F)).n
+    ℂ (CyclotomicField (↑(primitiveChar F ℂ (ringChar_ne F)).n) ℂ) ℂ :
+    CyclotomicField ↑(primitiveChar F ℂ _).n ℂ →* ℂ)
 
 lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
     (primitiveChar_to_Complex F).IsPrimitive := by
