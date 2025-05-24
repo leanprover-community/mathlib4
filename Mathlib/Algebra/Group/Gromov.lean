@@ -1,6 +1,7 @@
 import Mathlib
 
 set_option linter.style.longLine false
+set_option linter.style.cdot false
 
 open Subgroup
 open scoped Finset
@@ -548,67 +549,67 @@ lemma conv_exists (p q : ℝ) (hp: 0 < p) (hq: 0 < q) (hpq: p.HolderConjugate q)
       .
         exact LT.lt.ne_top foo
 
--- For now, we should add additional hypothesis that 'f' and 'g' are non-negative
--- This is enoguh for the Vikman proof
-lemma conv_exists_bad (c: ℝ) (hc: 0 ≤ c) (p q : ENNReal) (hpq: p.HolderConjugate q) (f g: G → ℝ)
-  (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) p myHaarAddOpp)
-  (hg: MeasureTheory.MemLp ((fun x => g x.toMul.unop)) q myHaarAddOpp)
-  : MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp := by
-  unfold MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
-  intro x
-  -- We can use young's hypothesis to bound the norm of the convolution function, giving us something like `∫ ∫ q < ⊤ ` (or stronger)
-  -- However, we also need the convolution to exist at all (e.g. the inner integral converges: `∫ q < ⊤ )
-  have h_young := ENNReal.eLpNorm_top_convolution_le' (p := p) (q := q) (L := (ContinuousLinearMap.mul ℝ ℝ)) (𝕜 := ℝ) (F := ℝ) (E := ℝ) (E' := ℝ) (G := Additive (MulOpposite G)) (f := (fun x => f x.toMul.unop)) (g := (fun x => g x.toMul.unop)) (μ := myHaarAddOpp)
-    hpq MeasureTheory.AEStronglyMeasurable.of_discrete MeasureTheory.AEStronglyMeasurable.of_discrete (c := c) ?_
+-- -- For now, we should add additional hypothesis that 'f' and 'g' are non-negative
+-- -- This is enoguh for the Vikman proof
+-- lemma conv_exists_bad (c: ℝ) (hc: 0 ≤ c) (p q : ENNReal) (hpq: p.HolderConjugate q) (f g: G → ℝ)
+--   (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) p myHaarAddOpp)
+--   (hg: MeasureTheory.MemLp ((fun x => g x.toMul.unop)) q myHaarAddOpp)
+--   : MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp := by
+--   unfold MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
+--   intro x
+--   -- We can use young's hypothesis to bound the norm of the convolution function, giving us something like `∫ ∫ q < ⊤ ` (or stronger)
+--   -- However, we also need the convolution to exist at all (e.g. the inner integral converges: `∫ q < ⊤ )
+--   have h_young := ENNReal.eLpNorm_top_convolution_le' (p := p) (q := q) (L := (ContinuousLinearMap.mul ℝ ℝ)) (𝕜 := ℝ) (F := ℝ) (E := ℝ) (E' := ℝ) (G := Additive (MulOpposite G)) (f := (fun x => f x.toMul.unop)) (g := (fun x => g x.toMul.unop)) (μ := myHaarAddOpp)
+--     hpq MeasureTheory.AEStronglyMeasurable.of_discrete MeasureTheory.AEStronglyMeasurable.of_discrete (c := c) ?_
 
-  .
-    unfold MeasureTheory.Integrable
-    refine ⟨MeasureTheory.AEStronglyMeasurable.of_discrete, ?_⟩
-    unfold MeasureTheory.HasFiniteIntegral
-    simp only [MeasureTheory.eLpNorm_exponent_top] at h_young
+--   .
+--     unfold MeasureTheory.Integrable
+--     refine ⟨MeasureTheory.AEStronglyMeasurable.of_discrete, ?_⟩
+--     unfold MeasureTheory.HasFiniteIntegral
+--     simp only [MeasureTheory.eLpNorm_exponent_top] at h_young
 
-    have f_finite := hf.2
-    have g_finite := hg.2
-    rw [lt_top_iff_ne_top] at f_finite g_finite
-    rw [← ENNReal.ofReal_toReal f_finite] at h_young
-    rw [← ENNReal.ofReal_toReal g_finite] at h_young
-    rw [← ENNReal.ofReal_mul hc] at h_young
-    rw [← ENNReal.ofReal_mul ?_] at h_young
-    . have other_lt_top := ENNReal.ofReal_lt_top (r := (c * (MeasureTheory.eLpNorm (fun x ↦ f (MulOpposite.unop (Additive.toMul x))) p myHaarAddOpp).toReal *
-        (MeasureTheory.eLpNorm (fun x ↦ g (MulOpposite.unop (Additive.toMul x))) q myHaarAddOpp).toReal))
+--     have f_finite := hf.2
+--     have g_finite := hg.2
+--     rw [lt_top_iff_ne_top] at f_finite g_finite
+--     rw [← ENNReal.ofReal_toReal f_finite] at h_young
+--     rw [← ENNReal.ofReal_toReal g_finite] at h_young
+--     rw [← ENNReal.ofReal_mul hc] at h_young
+--     rw [← ENNReal.ofReal_mul ?_] at h_young
+--     . have other_lt_top := ENNReal.ofReal_lt_top (r := (c * (MeasureTheory.eLpNorm (fun x ↦ f (MulOpposite.unop (Additive.toMul x))) p myHaarAddOpp).toReal *
+--         (MeasureTheory.eLpNorm (fun x ↦ g (MulOpposite.unop (Additive.toMul x))) q myHaarAddOpp).toReal))
 
-      have ess_sup_lt_top := lt_of_le_of_lt h_young other_lt_top
-      unfold MeasureTheory.convolution at ess_sup_lt_top
-      rw [my_add_haar_eq_count] at ess_sup_lt_top
-      rw [MeasureTheory.eLpNormEssSup_eq_essSup_enorm] at ess_sup_lt_top
-      simp at ess_sup_lt_top
-      rw [lt_top_iff_ne_top] at ess_sup_lt_top
-      rw [ne_eq] at ess_sup_lt_top
-      rw [not_iff_not.mpr (iSup_eq_top _)] at ess_sup_lt_top
-      simp at ess_sup_lt_top
-      obtain ⟨C, hC, bound_integral⟩ := ess_sup_lt_top
-      specialize bound_integral x.toMul.unop
-      simp only [toMul_sub, MulOpposite.unop_div, ContinuousLinearMap.mul_apply',
-        gt_iff_lt]
-      norm_cast at bound_integral
-      rw [MeasureTheory.integral_eq_lintegral_of_nonneg_ae] at bound_integral
-      conv at bound_integral =>
-        lhs
-        arg 1
-        arg 1
-        arg 2
-        intro a
-        rw [← Real.enorm_of_nonneg]
-        tactic =>
-          sorry
-        tactic =>
+--       have ess_sup_lt_top := lt_of_le_of_lt h_young other_lt_top
+--       unfold MeasureTheory.convolution at ess_sup_lt_top
+--       rw [my_add_haar_eq_count] at ess_sup_lt_top
+--       rw [MeasureTheory.eLpNormEssSup_eq_essSup_enorm] at ess_sup_lt_top
+--       simp at ess_sup_lt_top
+--       rw [lt_top_iff_ne_top] at ess_sup_lt_top
+--       rw [ne_eq] at ess_sup_lt_top
+--       rw [not_iff_not.mpr (iSup_eq_top _)] at ess_sup_lt_top
+--       simp at ess_sup_lt_top
+--       obtain ⟨C, hC, bound_integral⟩ := ess_sup_lt_top
+--       specialize bound_integral x.toMul.unop
+--       simp only [toMul_sub, MulOpposite.unop_div, ContinuousLinearMap.mul_apply',
+--         gt_iff_lt]
+--       norm_cast at bound_integral
+--       rw [MeasureTheory.integral_eq_lintegral_of_nonneg_ae] at bound_integral
+--       conv at bound_integral =>
+--         lhs
+--         arg 1
+--         arg 1
+--         arg 2
+--         intro a
+--         rw [← Real.enorm_of_nonneg]
+--         tactic =>
+--           sorry
+--         tactic =>
 
-          sorry
-      simp_rw [← Real.enorm_of_nonneg ?_] at bound_integral
-      have ae_lt := ae_lt_of_essSup_lt other_lt_top
+--           sorry
+--       simp_rw [← Real.enorm_of_nonneg ?_] at bound_integral
+--       have ae_lt := ae_lt_of_essSup_lt other_lt_top
 
-      sorry
-  . sorry
+--       sorry
+--   . sorry
 
 -- Defintion 3.11 in Vikman: The function 'μ',  not to be confused with a measure on a measure space
 noncomputable def mu: G → ℝ := ((1 : ℝ) / (#(S) : ℝ)) • ∑ s ∈ S, Pi.single s (1 : ℝ)
@@ -620,9 +621,12 @@ noncomputable def muConv (n: ℕ) := Nat.iterate (Conv (S := S) (mu (S := S))) n
 
 abbrev opAdd (g : G) := Additive.ofMul (MulOpposite.op g)
 
+abbrev delta (s: G): G → ℝ := Pi.single s 1
 
 -- Proposition 3.12, item 1, in Vikman
-lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g = f (g * s⁻¹) := by
+lemma f_conv_delta (f: G → ℝ) (g s: G)
+-- TODO - requiring 'LP_2' seems too strong - can we relax this?
+(hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) (ENNReal.ofReal 2) myHaarAddOpp): (Conv (S := S) f (Pi.single s 1)) g = f (g * s⁻¹) := by
   unfold Conv
   unfold MeasureTheory.convolution
   rw [MeasureTheory.integral_countable']
@@ -666,4 +670,24 @@ lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g 
       apply_fun Additive.ofMul
       simp only [ofMul_toMul]
       exact hb
-  . sorry
+  .
+    have my_exists := conv_exists (S := S) (p := 2) (q := 2) (by simp) (by simp) (by exact Real.HolderConjugate.two_two) f (delta s) hf ?_
+    . apply MeasureTheory.ConvolutionExistsAt.integrable (my_exists (opAdd g))
+    .
+      intro x
+      unfold delta
+      apply Continuous.memLp_of_hasCompactSupport
+      . exact continuous_of_discreteTopology
+      .
+        unfold HasCompactSupport
+        rw [isCompact_iff_finite]
+        dsimp [tsupport]
+        rw [closure_discrete]
+
+        apply Set.Finite.subset (s := {opAdd (x * s⁻¹)}) (by simp)
+        intro a ha
+        dsimp [Pi.single, Function.update] at ha
+        simp at ha
+        simp [opAdd]
+        rw [← ha]
+        simp
