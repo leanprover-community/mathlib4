@@ -154,7 +154,7 @@ theorem IsPrime.mem_or_compl_mem (hI : IsPrime I) : x ∈ I ∨ xᶜ ∈ I := by
   rw [inf_compl_eq_bot]
   exact I.bot_mem
 
-theorem IsPrime.mem_compl_of_notMem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ ∈ I :=
+theorem IsPrime.compl_mem_of_notMem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ ∈ I :=
   hI.mem_or_compl_mem.resolve_left hxnI
 
 @[deprecated (since := "2025-05-23")]
