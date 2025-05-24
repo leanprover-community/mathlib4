@@ -266,6 +266,7 @@ lemma partitions_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set 
   have := hP.2.2.2 r (hRP hr)
   simp_all
 
+-- TO DO: definition of partition intersection must be modifided to filter out empty sets.
 open Classical in
 /-- If P is a partition then the intersection of P with a set s is a partition of s. -/
 lemma partition_inter {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitions s)
@@ -278,12 +279,22 @@ lemma partition_inter {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitions 
     obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp hr
     rw [← hp']
     exact MeasurableSet.inter (hs.2.1 p hp) ht
-  · intro r hr t' ht'
+  · intro _ hr _ hr'
     obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp hr
-    rw [← hp']
-
-    sorry
-  ·
+    obtain ⟨q, hq, hq'⟩ := Finset.mem_image.mp hr'
+    rw [← hp', ← hq']
+    intro hpqt
+    have hpq : p ≠ q := fun h ↦ hpqt (congrFun (congrArg Inter.inter h) t)
+    intro a ha ha'
+    have hap : a ≤ p := by
+      simp only [id_eq, Set.le_eq_subset, Set.subset_inter_iff] at ha
+      exact ha.1
+    have haq : a ≤ q := by
+      simp only [id_eq, Set.le_eq_subset, Set.subset_inter_iff] at ha'
+      exact ha'.1
+    exact hs.2.2.1 hp hq hpq hap haq
+  · intro p hp
+    -- Complete after the improved definition which filters out empty sets.
     sorry
 
 /-- Aditivity of `variationAux` for disjoint measurable sets. -/
