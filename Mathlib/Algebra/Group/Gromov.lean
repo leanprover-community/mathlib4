@@ -277,6 +277,11 @@ instance LipschitzH.instAddCommMonoid: AddCommMonoid (LipschitzH (G := G)) := {
 -- V is the vector space
 def V := Module ℂ (LipschitzH (G := G))
 
+@[simp]
+theorem LipschitzH.add_apply (f g: LipschitzH (G := G)) (x: G): (f + g) x = f x + g x := by
+  unfold LipschitzH.add
+  rfl
+
 instance lipschitzHVectorSpace : V (G := G) := {
   smul := fun c f => {
     toFun := fun x => c * f.toFun x
@@ -305,6 +310,26 @@ instance lipschitzHVectorSpace : V (G := G) := {
       field_simp at hf
       exact hf
   }
+  one_smul := by simp [HSMul.hSMul]
+  mul_smul := by
+    intro x y f
+    simp [HSMul.hSMul]
+    ext g
+    rw [mul_assoc]
+  smul_zero := by
+    intro a
+    dsimp [HSMul.hSMul]
+    dsimp [OfNat.ofNat]
+    dsimp [Zero.zero]
+    simp
+  smul_add := by sorry
+  add_smul := by sorry
+  zero_smul := by
+    intro a
+    dsimp [HSMul.hSMul]
+    dsimp [OfNat.ofNat]
+    dsimp [Zero.zero]
+    simp
 }
 
 -- TODO - I don't think we can use this, as `MeasureTheory.convolution' would require our group to be commutative
