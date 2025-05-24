@@ -40,6 +40,7 @@ abbrev IsLocallyGroupoid (B : Type*) [Bicategory B] := ∀ (b c : B), IsGroupoid
 to discard the non-invertible morphisms. -/
 @[kerodon 00AL]
 structure Pith (B : Type*) where
+  /-- The underlying object of the bicategory. -/
   as : B
 
 namespace Pith
