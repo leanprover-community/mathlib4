@@ -429,9 +429,9 @@ open scoped Convolution
 noncomputable def Conv (f g: G → ℝ) (x: G) : ℝ :=
   (MeasureTheory.convolution (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp (Additive.ofMul (MulOpposite.op x)))
 
-lemma conv_exists (c: ℝ) (hc: 0 ≤ c) (p q : ℝ) (hpq: p.HolderConjugate q) (f g: G → ℝ)
-  (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) p myHaarAddOpp)
-  (hg: MeasureTheory.MemLp ((fun x => g x.toMul.unop)) q myHaarAddOpp)
+lemma conv_exists (c: ℝ) (hc: 0 ≤ c) (p q : ℝ) (hp: 0 < p) (hq: 0 < q) (hpq: p.HolderConjugate q) (f g: G → ℝ)
+  (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) (ENNReal.ofReal p) myHaarAddOpp)
+  (hg: ∀ y: G, MeasureTheory.MemLp ((fun x => g (x.toMul.unop⁻¹ * y))) (ENNReal.ofReal q) myHaarAddOpp)
   : MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp := by
   unfold MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt MeasureTheory.Integrable
   intro x
@@ -446,9 +446,42 @@ lemma conv_exists (c: ℝ) (hc: 0 ≤ c) (p q : ℝ) (hpq: p.HolderConjugate q) 
   simp at holder_bound
   rw [my_add_haar_eq_count]
 
+  have p_ne_zero: ENNReal.ofReal p ≠ 0 := by
+    simp [hp]
+
+  have p_ne_top: ENNReal.ofReal p ≠ ⊤ := by
+    simp
+
+  have q_ne_zero: ENNReal.ofReal q ≠ 0 := by
+    simp [hq]
+
+  have p_ge_zero: 0 ≤ p := by
+    linarith
+
+  have q_ge_zero: 0 ≤ q := by
+    linarith
+
   have integral_lt_top := ne_top_of_le_ne_top (?_) holder_bound
   . exact Ne.lt_top' (id (Ne.symm integral_lt_top))
-  .
+  . apply WithTop.mul_ne_top
+    .
+      have foo := MeasureTheory.lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top p_ne_zero (by simp) (MeasureTheory.MemLp.eLpNorm_lt_top hf)
+      rw [my_add_haar_eq_count] at foo
+      rw [ENNReal.toReal_ofReal p_ge_zero] at foo
+      apply ENNReal.rpow_ne_top_of_nonneg (?_) ?_
+      . simp only [inv_nonneg]
+        linarith
+      . exact LT.lt.ne_top foo
+    .
+      have foo := MeasureTheory.lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top q_ne_zero (by simp) (MeasureTheory.MemLp.eLpNorm_lt_top (hg x.toMul.unop))
+      rw [my_add_haar_eq_count] at foo
+      rw [ENNReal.toReal_ofReal q_ge_zero] at foo
+      apply ENNReal.rpow_ne_top_of_nonneg (?_) ?_
+      . simp only [inv_nonneg]
+        linarith
+      .
+        exact LT.lt.ne_top foo
+
 
 -- For now, we should add additional hypothesis that 'f' and 'g' are non-negative
 -- This is enoguh for the Vikman proof
