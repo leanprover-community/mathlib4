@@ -515,7 +515,7 @@ RHS of the goal as linear combinations of `M`-atoms over some semiring `R`, and 
 the respective equalities of the `R`-coefficients of each atom.
 
 This is an auxiliary function which produces slightly awkward goals in `R`; they are later cleaned
-up by the function `Mathlib/Tactic/Module/postprocess.lean`. -/
+up by the function `Mathlib.Tactic.Module.postprocess`. -/
 def matchScalarsAux (g : MVarId) : AtomM (List MVarId) := do
   /- Parse the goal as an equality in a type `M` of two expressions `lhs` and `rhs`, with `M`
   carrying an `AddCommMonoid` instance. -/

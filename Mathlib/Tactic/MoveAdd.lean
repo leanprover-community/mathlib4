@@ -90,7 +90,7 @@ See `MathlibTest/MoveAdd.lean` for sample usage of `move_oper`.
 
 ## Implementation notes
 
-The main driver behind the tactic is `Mathlib/MoveAdd/reorderAndSimp.lean`.
+The main driver behind the tactic is `Mathlib.MoveAdd.reorderAndSimp`.
 
 The tactic takes the target, replaces the maximal subexpressions whose head symbol is the given
 operation and replaces them by their reordered versions.
