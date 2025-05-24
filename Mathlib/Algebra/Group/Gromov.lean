@@ -27,6 +27,20 @@ lemma s_union_sinv : (S: Set G) ∪ (S: Set G)⁻¹ = S := by
   simp only [Set.mem_union, Finset.mem_coe, Set.mem_inv, or_iff_left_iff_imp]
   exact foo
 
+lemma S_eq_Sinv: S = S⁻¹ := by
+  ext a
+  refine ⟨?_, ?_⟩
+  . intro ha
+    have a_inv := hGS.has_inv a ha
+    exact Finset.mem_inv'.mpr a_inv
+  . intro ha
+    simp at ha
+    have a_inv := hGS.has_inv a⁻¹ ha
+    simp only [inv_inv] at a_inv
+    exact a_inv
+
+
+
 lemma mem_closure (x: G): x ∈ closure (S : Set G) := by
   have hg := hGS.generates
   simp only [Set.top_eq_univ, coe_eq_univ] at hg
@@ -823,6 +837,11 @@ lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S
       rw [mul_comm]
       simp
       left
-      sorry
+      conv =>
+        lhs
+        arg 1
+        equals S⁻¹ =>
+          exact S_eq_Sinv
+      simp
     . sorry
   . sorry
