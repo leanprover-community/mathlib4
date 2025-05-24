@@ -690,7 +690,7 @@ lemma conv_exists (p q : ℝ) (hp: 0 < p) (hq: 0 < q) (hpq: p.HolderConjugate q)
 noncomputable def mu: G → ℝ := ((1 : ℝ) / (#(S) : ℝ)) • ∑ s ∈ S, Pi.single s (1 : ℝ)
 
 -- Definition 3.11 in Vikman - the m-fold convolution of μ with itself
-noncomputable def muConv (n: ℕ) := Nat.iterate (Conv (S := S) (mu (S := S))) n
+noncomputable def muConv (n: ℕ): G → ℝ := (Nat.iterate (Conv (S := S) (mu (S := S))) n) (mu (S := S))
 
 
 
@@ -794,6 +794,7 @@ lemma f_mul_mu_summable (f: G → ℝ) (g: G) (s: G):
     simp [opAdd]
     simp [← ha]
 
+-- Proposition 3.12, item 2, in Vikman
 lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S := S) f (mu (S := S))) g = ((1 : ℝ) / (#(S) : ℝ)) * ∑ s ∈ S, f (g * s) := by
   rw [conv_eq_sum]
   .
@@ -872,3 +873,56 @@ lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S
         . apply f_mul_mu_summable
         . field_simp
   . exact hf
+
+-- The expression 'Σ s_1, ..., s_n ∈ S, f(s_1 * ... * s_n)'
+-- This is a sum over all n-tuples of elements in S, where each term in is f (s_1 * ... * s_n)
+-- TODO - is there aless horrible way to write in in mathlib?
+def NTupleSum (n: ℕ) (f: G → ℝ): ℝ := ∑ s : (Fin n → S), f ((List.ofFn s).unattach.prod)
+--∑ s ∈ (Finset.pi (Finset.range (n + 1))) (fun _ => S), f (List.ofFn (n := n + 1) (fun m => s m.val (by simp))).prod
+
+theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ)) ^ (m + 1)) * (NTupleSum (S := S) (m + 1) (delta g))  := by
+  induction m with
+  | zero =>
+    simp [muConv, NTupleSum, mu, delta, Pi.single, Function.update]
+    by_cases g_in_s: g ∈ S
+    .
+      simp [g_in_s]
+      conv =>
+        rhs
+        rhs
+        rhs
+        rhs
+        equals {fun (a : Fin 1) => ⟨g, g_in_s⟩} =>
+          ext a
+          simp
+          refine ⟨?_, ?_⟩
+          . intro a_zero_eq
+            ext x
+            simp
+            have x_eq_zero: x = 0 := by
+              exact Fin.fin_one_eq_zero x
+            rw [x_eq_zero]
+            exact a_zero_eq
+          . intro a_eq
+            simp [a_eq]
+      simp
+    .
+      simp [g_in_s]
+      right
+      by_contra this
+      .
+        simp at this
+        apply Finset.nonempty_of_ne_empty at this
+        obtain ⟨x, hx⟩ := Finset.Nonempty.exists_mem this
+        simp at hx
+        rw [← hx] at g_in_s
+        simp at g_in_s
+  | succ n ih =>
+    unfold muConv
+    rw [Nat.iterate_succ']
+    rw [ih]
+    rw [f_conv_mu (S := S)]
+    simp_rw [Finset.mul_sum]
+    simp_rw [Finset.sum_mul]
+    simp_rw [Finset.sum_comm]
+    simp_rw [Finset.sum_pow_succ]
