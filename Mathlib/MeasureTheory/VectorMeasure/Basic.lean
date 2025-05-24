@@ -621,6 +621,20 @@ theorem restrict_add (v w : VectorMeasure α M) (i : Set α) :
     simp [restrict_apply _ hi hj]
   · simp [restrict_not_measurable _ hi]
 
+
+theorem restrict_neg {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+  (v : VectorMeasure α M) (i : Set α) :
+    (-v).restrict i = -(v.restrict i) := by
+  by_cases hi : MeasurableSet i
+  · ext j hj; simp [restrict_apply _ hi hj]
+  · simp [restrict_not_measurable _ hi]
+
+theorem restrict_sub {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+  (v w : VectorMeasure α M) (i : Set α) :
+    (v - w).restrict i = v.restrict i - w.restrict i := by
+  simp [sub_eq_add_neg, restrict_add, restrict_neg]
+
+
 /-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
 @[simps]
 def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
@@ -824,6 +838,26 @@ theorem restrict_le_restrict_union (hi₁ : MeasurableSet i) (hi₂ : v ≤[i] w
   refine restrict_le_restrict_countable_iUnion v w ?_ ?_
   · measurability
   · rintro (_ | _) <;> simpa
+
+end
+
+section
+
+variable {M : Type*} [TopologicalSpace M]
+  [AddCommMonoid M] [PartialOrder M] [OrderClosedTopology M] [ContinuousAdd M]
+variable (v : VectorMeasure α M) {i : Set α}
+
+@[simp]
+theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
+    v.restrict i + v.restrict iᶜ = v := by
+  ext A hA
+  rw [add_apply, restrict_apply _ hi hA, restrict_apply _ hi.compl hA,
+    ← of_union _ (hA.inter hi) (hA.inter hi.compl)]
+
+  · simp [Set.inter_union_compl]
+  · refine Disjoint.inter_left' A ?_
+    refine Disjoint.inter_right' A ?_
+    apply disjoint_compl_right
 
 end
 
@@ -1209,6 +1243,8 @@ namespace Measure
 open VectorMeasure
 
 variable (μ : Measure α) [IsFiniteMeasure μ]
+variable (ν : Measure α) [IsFiniteMeasure ν]
+variable (s : Set α)
 
 theorem zero_le_toSignedMeasure : 0 ≤ μ.toSignedMeasure := by
   rw [← le_restrict_univ_iff_le]
@@ -1224,6 +1260,26 @@ theorem toSignedMeasure_toMeasureOfZeroLE :
   rw [SignedMeasure.toMeasureOfZeroLE_apply _ _ _ hi, ENNReal.coe_inj]
   congr
   simp [hi, ← hm, measureReal_def]
+
+theorem toSignedMeasure_restrict_eq_restrict_toSigned (hs : MeasurableSet s) :
+    μ.toSignedMeasure.restrict s = (μ.restrict s).toSignedMeasure := by
+  ext A hA
+  rw [VectorMeasure.restrict_apply _ hs hA]
+  simp [toSignedMeasure_apply, hA, hs, MeasurableSet.inter, ↓reduceIte, restrict_apply]
+
+theorem toSignedMeasure_le_iff : μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ μ ≤ ν   := by
+  constructor
+  · intro h
+    rw [Measure.le_iff]
+    intro A hA
+    specialize h A hA
+    simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top,
+      not_false_eq_true, ENNReal.toReal_le_toReal, Measure.real] at h
+    exact h
+  · intro h A hA
+    simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top, not_false_eq_true,
+      ENNReal.toReal_le_toReal, Measure.real]
+    exact h A
 
 end Measure
 
