@@ -606,6 +606,15 @@ protected theorem tsum_sigma' {β : α → Type*} (f : (Σ a, β a) → ℝ≥0�
     ∑' p : Σ a, β a, f p = ∑' (a) (b), f ⟨a, b⟩ :=
   ENNReal.summable.tsum_sigma' fun _ => ENNReal.summable
 
+protected theorem tsum_biUnion' {ι : Type*} {S : Set ι} {f : α → ENNReal} {t : ι → Set α}
+    (h : S.PairwiseDisjoint t) : ∑' x : ⋃ i ∈ S, t i, f x = ∑' (i : S), ∑' (x : t i), f x := by
+  simp [← ENNReal.tsum_sigma, ← (Set.biUnionEqSigmaOfDisjoint h).tsum_eq]
+
+protected theorem tsum_biUnion {ι : Type*} {f : α → ENNReal} {t : ι → Set α}
+    (h : Set.univ.PairwiseDisjoint t) : ∑' x : ⋃ i, t i, f x = ∑' (i) (x : t i), f x := by
+  nth_rw 2 [← tsum_univ]
+  rw [← ENNReal.tsum_biUnion' h, Set.biUnion_univ]
+
 protected theorem tsum_prod {f : α → β → ℝ≥0∞} : ∑' p : α × β, f p.1 p.2 = ∑' (a) (b), f a b :=
   ENNReal.summable.tsum_prod' fun _ => ENNReal.summable
 
