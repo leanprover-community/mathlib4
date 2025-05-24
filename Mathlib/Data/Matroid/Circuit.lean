@@ -265,7 +265,7 @@ lemma IsCircuit.eq_fundCircuit_of_subset (hC : M.IsCircuit C) (hI : M.Indep I)
     refine hC.eq_of_superset_isCircuit (hI.fundCircuit_isCircuit ?_ fun heI ↦ ?_) hss
     · rw [hI.mem_closure_iff]
       exact .inl (hC.dep.superset hCs (insert_subset (hC.subset_ground heC) hI.subset_ground))
-    exact hC.not_indep (hI.subset (hCs.trans (by simp [heI])))
+    exact hC.not_indep (hI.subset (hCs.trans (by simp [insert_eq_of_mem heI])))
   have heCcl := (hC.diff_singleton_isBasis heC).subset_closure heC
   have heI : e ∈ M.closure I := M.closure_subset_closure hCeI heCcl
   rw [fundCircuit_eq_sInter heI]
@@ -733,7 +733,7 @@ lemma IsBase.mem_fundCocircuit_iff_mem_fundCircuit {e f : α} (hB : M.IsBase B) 
   simp only [dual_ground, diff_singleton_subset_iff]
   rw [diff_diff_right, inter_eq_self_of_subset_right (by simpa), union_singleton, insert_comm,
     ← union_singleton (s := M.E \ B), ← diff_diff, diff_diff_cancel_left hB.subset_ground]
-  simp [hfB]
+  simp [insert_eq_of_mem hfB]
 
 end IsCocircuit
 
