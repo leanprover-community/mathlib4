@@ -122,17 +122,19 @@ variable {S T A B : Type*} [Semiring A] [Semiring B]
   [Semiring S] [Semiring T] [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
 
 /-- Product of algebra isomorphisms. -/
-@[simps! apply_fst apply_snd]
 def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B :=
   .ofRingEquiv (f := RingEquiv.prodCongr l r) <| by simp
 
 variable (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B)
 
-@[simp]
-lemma prodCongr_symm_apply_fst (x : A × B) : ((prodCongr l r).symm x).fst = l.symm x.fst := rfl
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma prodCongr_apply (x : S × T) : prodCongr l r x = Equiv.prodCongr l r x := rfl
 
-@[simp]
-lemma prodCongr_symm_apply_snd (x : A × B) : ((prodCongr l r).symm x).snd = r.symm x.snd := rfl
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma prodCongr_symm_apply (x : A × B) :
+    (prodCongr l r).symm x = (Equiv.prodCongr l r).symm x := rfl
 
 end
 

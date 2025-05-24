@@ -894,19 +894,20 @@ theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :
 
 variable (α β R) in
 /-- `Equiv.sumArrowEquivProdArrow` as a ring isomorphism. -/
-@[simps! apply_fst apply_snd]
 def sumArrowEquivProdArrow : (α ⊕ β → R) ≃+* (α → R) × (β → R) where
   __ := Equiv.sumArrowEquivProdArrow α β R
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
-@[simp]
-lemma sumArrowEquivProdArrow_symm_apply_inl (x : (α → R) × (β → R)) (a : α) :
-    (sumArrowEquivProdArrow α β R).symm x (Sum.inl a) = x.fst a := rfl
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma sumArrowEquivProdArrow_apply (x) :
+    sumArrowEquivProdArrow α β R x = Equiv.sumArrowEquivProdArrow α β R x := rfl
 
-@[simp]
-lemma sumArrowEquivProdArrow_symm_apply_inr (x : (α → R) × (β → R)) (b : β) :
-    (sumArrowEquivProdArrow α β R).symm x (Sum.inr b) = x.snd b := rfl
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma sumArrowEquivProdArrow_symm_apply (x : (α → R) × (β → R)) :
+    (sumArrowEquivProdArrow α β R).symm x = (Equiv.sumArrowEquivProdArrow α β R).symm x := rfl
 
 end RingEquiv
 
