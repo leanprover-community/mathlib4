@@ -8,7 +8,7 @@ import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.IsLocalHomeomorph
+import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.Instances.ZMultiples
 
 /-!
@@ -276,12 +276,6 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
     exact continuousOn_of_forall_continuousAt
       (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
 
-lemma isLocalHomeomorph_coe [DiscreteTopology (zmultiples p)] [DenselyOrdered 𝕜] :
-    IsLocalHomeomorph ((↑) : 𝕜 → AddCircle p) := by
-  intro a
-  obtain ⟨b, hb1, hb2⟩ := exists_between (sub_lt_self a hp.out)
-  exact ⟨partialHomeomorphCoe p b, ⟨hb2, lt_add_of_sub_right_lt hb1⟩, rfl⟩
-
 end Continuity
 
 /-- The image of the closed-open interval `[a, a + p)` under the quotient map `𝕜 → AddCircle p` is
@@ -502,17 +496,33 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
       n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
 
-theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
-    {u : AddCircle p | addOrderOf u = n}.Finite :=
-  finite_coe_iff.mp <| Nat.finite_of_card_ne_zero <| by simp [hn.ne']
-
-@[deprecated (since := "2025-03-26")]
-alias finite_setOf_add_order_eq := finite_setOf_addOrderOf_eq
+omit [Fact (0 < p)]
 
 theorem finite_torsion {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | n • u = 0 }.Finite := by
-  convert Set.finite_range (fun m : Fin n ↦ (↑(↑m / ↑n * p) : AddCircle p))
-  simp_rw [nsmul_eq_zero_iff hn, range, Fin.exists_iff, exists_prop]
+  wlog hp : 0 < p generalizing p
+  on_goal 2 =>
+    have := Fact.mk hp
+    convert Set.finite_range (fun m : Fin n ↦ (↑(↑m / ↑n * p) : AddCircle p))
+    simp_rw [nsmul_eq_zero_iff hn, range, Fin.exists_iff, exists_prop]
+  obtain rfl | hp := eq_or_lt_of_not_lt hp
+  · refine (Set.finite_singleton 0).subset fun u hu ↦ ?_
+    obtain ⟨u, rfl⟩ := QuotientAddGroup.mk_surjective u
+    rw [Set.mem_setOf, ← coe_nsmul] at hu
+    rw [Set.mem_singleton_iff]
+    rw [QuotientAddGroup.eq_zero_iff, zmultiples_zero_eq_bot] at hu ⊢
+    exact (_root_.nsmul_eq_zero_iff hn.ne').mp hu
+  dsimp only [AddCircle] at this ⊢
+  convert ← this (-p) (neg_pos.mpr hp) using 1
+  · rw [zmultiples_neg]
+  exact congr_arg_heq (fun H ↦ {u : 𝕜 ⧸ H | n • u = 0}) zmultiples_neg
+
+theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
+    {u : AddCircle p | addOrderOf u = n}.Finite :=
+  (finite_torsion p hn).subset fun _ h ↦ ((addOrderOf_eq_iff hn).mp h).1
+
+@[deprecated (since := "2025-03-26")]
+alias finite_setOf_add_order_eq := finite_setOf_addOrderOf_eq
 
 end FiniteOrderPoints
 
