@@ -32,14 +32,14 @@ section degRevLex
 def DegRevLex (α : Type*) := α
 
 variable {α : Type*}
-/-- `toDegRevLex` is the identity function to the `DegRevLex` of a type.  -/
+/-- `toDegRevLex` is the identity function to the `DegRevLex` of a type. -/
 @[match_pattern] def toDegRevLex : α ≃ DegRevLex α := Equiv.refl _
 
 theorem toDegRevLex_injective : Function.Injective (toDegRevLex (α := α)) := fun _ _ ↦ _root_.id
 
 theorem toDegRevLex_inj {a b : α} : toDegRevLex a = toDegRevLex b ↔ a = b := Iff.rfl
 
-/-- `ofDegRevLex` is the identity function from the `DegRevLex` of a type.  -/
+/-- `ofDegRevLex` is the identity function from the `DegRevLex` of a type. -/
 @[match_pattern] def ofDegRevLex : DegRevLex α ≃ α := Equiv.refl _
 
 theorem ofDegRevLex_injective : Function.Injective (ofDegRevLex (α := α)) := fun _ _ ↦ _root_.id
@@ -188,7 +188,7 @@ theorem DegRevLex.le_iff {x y : DegRevLex (α →₀ ℕ)} :
         toLex (equivCongrLeft toDual (ofDegRevLex y)) ≤
           toLex (equivCongrLeft toDual (ofDegRevLex x)) := by
   conv_lhs => rw [LE.le, Preorder.toLE, PartialOrder.toPreorder, partialOrder]
-  simp only [equivCongrLeft_apply, Prod.Lex.le_iff, toDual_le_toDual]
+  simp [Prod.Lex.le_iff]
 
  theorem DegRevLex.lt_iff {x y : DegRevLex (α →₀ ℕ)} :
     x < y ↔ (ofDegRevLex x).degree < (ofDegRevLex y).degree ∨
@@ -196,7 +196,7 @@ theorem DegRevLex.le_iff {x y : DegRevLex (α →₀ ℕ)} :
         toLex (equivCongrLeft toDual (ofDegRevLex y)) <
           toLex (equivCongrLeft toDual (ofDegRevLex x)) := by
   conv_lhs => rw [LT.lt, Preorder.toLT, PartialOrder.toPreorder, partialOrder]
-  simp only [equivCongrLeft_apply, Prod.Lex.lt_iff, toDual_lt_toDual]
+  simp [Prod.Lex.lt_iff]
 
 /-- Explicit expansion -/
 theorem DegRevLex.lt_iff' {x y : DegRevLex (α →₀ ℕ)} :
@@ -234,19 +234,17 @@ theorem DegRevLex.single_antitone : Antitone (fun (a : α) ↦ toDegRevLex (sing
     toDegRevLex (single a 1) ≤ toDegRevLex (single b 1) ↔ b ≤ a :=
   DegRevLex.single_strictAnti.le_iff_le
 
-noncomputable instance : OrderedCancelAddCommMonoid (DegRevLex (α →₀ ℕ)) where
-  toAddCommMonoid := ofDegRevLex.addCommMonoid
-  toPartialOrder := DegRevLex.partialOrder
+noncomputable instance : IsOrderedCancelAddMonoid (DegRevLex (α →₀ ℕ)) where
   le_of_add_le_add_left a b c h := by
     rw [DegRevLex.le_iff] at h ⊢
     simpa [ofDegRevLex_add, degree_add, add_lt_add_iff_left, add_right_inj,
-      equivCongrLeft_apply, equivMapDomain_add] using h
+      equivCongrLeft_apply, equivMapDomain_eq_mapDomain, mapDomain_add] using h
   add_le_add_left a b h c := by
     rw [DegRevLex.le_iff] at h ⊢
-    simpa [ofDegRevLex_add, equivMapDomain_add, degree_add] using h
+    simpa [ofDegRevLex_add, equivMapDomain_eq_mapDomain, mapDomain_add, degree_add] using h
 
 /-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
-instance DegRevLex.linearOrder : LinearOrder (DegRevLex (α →₀ ℕ)) :=
+instance : LinearOrder (DegRevLex (α →₀ ℕ)) :=
   LinearOrder.lift' (fun (f : DegRevLex (α →₀ ℕ)) ↦
     toLex ((ofDegRevLex f).degree, toDual (toLex (equivCongrLeft toDual (ofDegRevLex f)))))
     (fun f g ↦ by
@@ -257,16 +255,6 @@ instance DegRevLex.linearOrder : LinearOrder (DegRevLex (α →₀ ℕ)) :=
       ext a
       simpa only [equivMapDomain_apply, toDual_symm_eq, ofDual_toDual] using h (toDual a))
 
-/-- The linear order on `Finsupp`s obtained by the homogeneous reverse lexicographic ordering. -/
-noncomputable instance :
-    LinearOrderedCancelAddCommMonoid (DegRevLex (α →₀ ℕ)) where
-  toOrderedCancelAddCommMonoid := inferInstance
-  le_total := DegRevLex.linearOrder.le_total
-  decidableLE := DegRevLex.linearOrder.decidableLE
-  min_def := DegRevLex.linearOrder.min_def
-  max_def := DegRevLex.linearOrder.max_def
-  compare_eq_compareOfLessAndEq := DegRevLex.linearOrder.compare_eq_compareOfLessAndEq
-
 theorem DegRevLex.monotone_degree :
     Monotone (fun (x : DegRevLex (α →₀ ℕ)) ↦ (ofDegRevLex x).degree) := by
   intro x y
@@ -275,7 +263,8 @@ theorem DegRevLex.monotone_degree :
   · apply le_of_lt h
   · apply le_of_eq h.1
 
-instance DegRevLex.orderBot : OrderBot (DegRevLex (α →₀ ℕ)) where
+/-- The `0` function is the minimal element of `DegRevLex`. -/
+instance : OrderBot (DegRevLex (α →₀ ℕ)) where
   bot := toDegRevLex (0 : α →₀ ℕ)
   bot_le x := by
     simp only [DegRevLex.le_iff, ofDegRevLex_toDegRevLex, toLex_zero, degree_zero]
@@ -285,12 +274,14 @@ instance DegRevLex.orderBot : OrderBot (DegRevLex (α →₀ ℕ)) where
         toLex_zero, le_refl, and_self, or_true]
     · simp only [h, equivCongrLeft_apply, equivMapDomain_zero, toLex_zero, true_or]
 
+/-- `Finsupp.DegRevLex` is well founded. -/
 theorem DegRevLex.wellFounded
     {r : α → α → Prop} [IsTrichotomous α r] [Finite α]
     {s : ℕ → ℕ → Prop} (hs : WellFounded s) (hs0 : ∀ ⦃n⦄, ¬ s n 0) :
     WellFounded (Finsupp.DegRevLex r s) := by
   sorry
 
+/-- `Finsupp.DegRevLex` is well founded. -/
 instance DegRevLex.wellFoundedLT [Finite α] :
     WellFoundedLT (DegRevLex (α →₀ ℕ)) := by
   apply IsWellFounded.mk
@@ -343,13 +334,14 @@ noncomputable def MonomialOrder.degRevLex [WellFoundedGT σ] :
   syn := DegRevLex (σ →₀ ℕ)
   toSyn := { toEquiv := toDegRevLex, map_add' := toDegRevLex_add }
   toSyn_monotone a b h := by
-    change toDegRevLex a ≤ toDegRevLex b
-    simp only [DegRevLex.le_iff, ofDegRevLex_toDegRevLex]
-    by_cases ha : a.degree < b.degree
+    simp only [AddEquiv.coe_mk, DegRevLex.le_iff, ofDegRevLex_toDegRevLex, equivCongrLeft_apply]
+    rcases Nat.lt_or_ge a.degree b.degree with ha | ha
     · exact Or.inl ha
-    · refine Or.inr ⟨le_antisymm ?_ (not_lt.mp ha), toLex_monotone h⟩
-      rw [← add_tsub_cancel_of_le h, degree_add]
-      exact Nat.le_add_right a.degree (b - a).degree
+    · suffices b = a by simp [this]
+      obtain ⟨c, rfl⟩ := exists_add_of_le h
+      convert add_zero a
+      simpa [degree_eq_zero_iff] using ha
+  wf := sorry
 
 theorem MonomialOrder.degRevLex_le_iff [WellFoundedGT σ] {a b : σ →₀ ℕ} :
     a ≼[degRevLex] b ↔ toDegRevLex a ≤ toDegRevLex b :=
@@ -358,3 +350,5 @@ theorem MonomialOrder.degRevLex_le_iff [WellFoundedGT σ] {a b : σ →₀ ℕ} 
 theorem MonomialOrder.degRevLex_lt_iff [WellFoundedGT σ] {a b : σ →₀ ℕ} :
     a ≺[degRevLex] b ↔ toDegRevLex a < toDegRevLex b :=
   Iff.rfl
+
+  end degRevLex
