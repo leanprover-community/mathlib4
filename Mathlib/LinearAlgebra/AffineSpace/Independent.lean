@@ -905,6 +905,11 @@ theorem faceOpposite_map {n : ℕ} [NeZero n] (s : Simplex k P n) (f : P →ᵃ[
     (s.map f hf).faceOpposite i = (s.faceOpposite i).map f hf :=
   rfl
 
+@[simp]
+theorem map_mkOfPoint (f : P →ᵃ[k] P₂) (hf : Function.Injective f) (p : P) :
+    (mkOfPoint k p).map f hf = mkOfPoint k (f p) :=
+  rfl
+
 /-- Remap a simplex along an `Equiv` of index types. -/
 @[simps]
 def reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1)) : Simplex k P n :=
