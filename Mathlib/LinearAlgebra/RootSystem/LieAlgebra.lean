@@ -91,6 +91,13 @@ lemma ω_e [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
     · simp [← indexNeg_neg, ← neg_eq_iff_eq_neg (a := k)]
       aesop
 
+omit [P.IsReduced] [P.IsIrreducible] in
+lemma ω_f [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
+    b.ω * b.f i = b.e i * b.ω := by
+  have := congr_arg (· * ω) (congr_arg (ω * ·) (b.ω_e i))
+  simp only [← mul_assoc, ω_ω] at this
+  simpa [mul_assoc, ω_ω] using this.symm
+
 omit [Finite ι] [IsDomain R] [P.IsReduced] [P.IsIrreducible] in
 lemma ω_h [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
     b.ω * b.h i = - b.h i * b.ω := by
@@ -158,9 +165,24 @@ lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
     · simp +contextual [Matrix.diagonal_apply]
       aesop
 
+omit [P.IsReduced] [P.IsIrreducible] in
 lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
     ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
-  sorry
+  classical
+  suffices ω * ⁅h j, f i⁆ = ω * (-b.cartanMatrix i j • f i) by
+    replace this := congr_arg (ω * ·) this
+    simpa [← mul_assoc, ω_ω] using this
+  calc ω * ⁅h j, f i⁆ = ω * (h j * f i - f i * h j) := by rw [Ring.lie_def]
+                    _ = - (h j * e i - e i * h j) * ω := ?_
+                    _ = - ⁅h j, e i⁆ * ω := by rw [Ring.lie_def]
+                    _ = - (b.cartanMatrix i j • e i) * ω := by rw [lie_h_e]
+                    _ = ω * (-b.cartanMatrix i j • f i) := ?_
+  · simp only [mul_sub, ← mul_assoc, ω_h, ω_f]
+    simp only [mul_assoc, ω_f, ω_h]
+    simp only [neg_mul, mul_neg, sub_neg_eq_add, neg_sub, sub_mul, mul_assoc]
+    abel
+  · rw [Matrix.mul_smul, ω_f]
+    simp [mul_assoc]
 
 lemma lie_e_f_same [Fintype b.support] [Fintype ι] (i : b.support) :
     ⁅e i, f i⁆ = h i := by
