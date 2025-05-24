@@ -452,7 +452,10 @@ def ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F) :
       (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
 
 /-- Given a continuous linear isomorphism between the domains,
-generate a continuous linear isomorphism between the spaces of continuous alternating maps. -/
+generate a continuous linear isomorphism between the spaces of continuous alternating maps.
+
+This is `ContinuousAlternatingMap.compContinuousLinearMap` as an equivalence,
+and is the continuous version of `LinearEquiv.congrLeftAlternating`. -/
 @[simps apply]
 def ContinuousLinearEquiv.continuousAlternatingMapCongrLeft (f : E ≃L[𝕜] F) :
     E [⋀^ι]→L[𝕜] G ≃L[𝕜] (F [⋀^ι]→L[𝕜] G) where
