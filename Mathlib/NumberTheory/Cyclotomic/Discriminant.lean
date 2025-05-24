@@ -59,12 +59,12 @@ if `Irreducible (cyclotomic (p ^ (k + 1)) K))`, and `p ^ (k + 1) ≠ 2`. -/
 theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : Fact p.Prime]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (hirr : Irreducible (cyclotomic (p ^ (k + 1)) K))
     (hk : p ^ (k + 1) ≠ 2) : discr K (hζ.powerBasis K).basis =
-      (-1) ^ ((p ^ (k + 1) : ℕ).totient / 2) * p ^ ((p : ℕ) ^ k * ((p - 1) * (k + 1) - 1)) := by
+      (-1) ^ ((p ^ (k + 1)).totient / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
   haveI hne := IsCyclotomicExtension.neZero' (p ^ (k + 1)) K L
   haveI mf : Module.Finite K L := finiteDimensional {p ^ (k + 1)} K L
   haveI se : Algebra.IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable
-  rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _, ←
-    hζ.minpoly_eq_cyclotomic_of_irreducible hirr, totient_prime_pow hp.out (succ_pos k),
+  rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _,
+    ← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, totient_prime_pow hp.out (succ_pos k),
     Nat.add_one_sub_one]
   have hp2 : p = 2 → k ≠ 0 := by
     rintro rfl rfl
@@ -104,7 +104,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     rw [← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_pow, hζ.norm_eq_one hk hirr, one_pow,
       mul_one, cast_pow, ← pow_mul, ← mul_assoc, mul_comm (k + 1), mul_assoc] at H
     have := mul_pos (succ_pos k) (tsub_pos_of_lt hp.out.one_lt)
-    rw [← succ_pred_eq_of_pos this, mul_succ, pow_add _ _ ((p : ℕ) ^ k)] at H
+    rw [← succ_pred_eq_of_pos this, mul_succ, pow_add _ _ (p ^ k)] at H
     replace H := (mul_left_inj' fun h => ?_).1 H
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · have := hne.1
@@ -128,7 +128,7 @@ See also `IsCyclotomicExtension.discr_prime_pow_eq_unit_mul_pow`. -/
 theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p.Prime]
     (hζ : IsPrimitiveRoot ζ (p ^ k)) (hirr : Irreducible (cyclotomic (p ^ k) K)) :
     discr K (hζ.powerBasis K).basis =
-      (-1) ^ ((p ^ k).totient / 2) * p ^ ((p : ℕ) ^ (k - 1) * ((p - 1) * k - 1)) := by
+      (-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by
   rcases k with - | k
   · simp only [coe_basis, _root_.pow_zero, powerBasis_gen _ hζ, totient_one, mul_zero, mul_one,
       show 1 / 2 = 0 by rfl, discr, traceMatrix]
@@ -176,7 +176,7 @@ theorem discr_prime_pow_eq_unit_mul_pow [IsCyclotomicExtension {p ^ k} K L]
     (hirr : Irreducible (cyclotomic (p ^ k) K)) :
     ∃ (u : ℤˣ) (n : ℕ), discr K (hζ.powerBasis K).basis = u * p ^ n := by
   rw [discr_prime_pow hζ hirr]
-  by_cases heven : Even ((p ^ k : ℕ).totient / 2)
+  by_cases heven : Even ((p ^ k).totient / 2)
   · exact ⟨1, p ^ (k - 1) * ((p - 1) * k - 1), by rw [heven.neg_one_pow]; norm_num⟩
   · exact ⟨-1, p ^ (k - 1) * ((p - 1) * k - 1), by
       rw [(not_even_iff_odd.1 heven).neg_one_pow]; norm_num⟩
