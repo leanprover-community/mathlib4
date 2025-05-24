@@ -39,7 +39,7 @@ lemma modEq_list_prod_iff {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
       cases i using Fin.cases <;> simp_all
     · intro h; exact ⟨h 0, fun i => h i.succ⟩
 
-lemma modEq_list_prod_iff' {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise (Coprime on s)) :
+lemma modEq_list_map_prod_iff {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise (Coprime on s)) :
     a ≡ b [MOD (l.map s).prod] ↔ ∀ i ∈ l, a ≡ b [MOD s i] := by
   induction' l with i l ih
   · simp [modEq_one]
@@ -49,6 +49,9 @@ lemma modEq_list_prod_iff' {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise
       intro j hj
       exact (List.pairwise_cons.mp co).1 j hj
     simp [← modEq_and_modEq_iff_modEq_mul this, ih (List.Pairwise.of_cons co)]
+
+@[deprecated (since := "2025-05-24")]
+alias modEq_list_prod_iff' := modEq_list_map_prod_iff
 
 variable (a s : ι → ℕ)
 
