@@ -249,6 +249,17 @@ lemma partition_union {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
   · intro i _ h
     exact (hP i).2.2.2 ∅ h rfl
 
+/-- If P, Q are partitions of two disjoint sets then P and Q are disjoint. -/
+lemma partitions_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set X)}
+    (hP : P ∈ partitions s) (hQ : Q ∈ partitions t) : Disjoint P Q := by
+  intro R hRP hRQ
+  simp only [Finset.bot_eq_empty, Finset.le_eq_subset, Finset.subset_empty]
+  by_contra! hc
+  obtain ⟨r, hr⟩ := Finset.Nonempty.exists_mem <| Finset.nonempty_iff_ne_empty.mpr hc
+  have := hst (hP.1 r <| hRP hr) (hQ.1 r <| hRQ hr)
+  have := hP.2.2.2 r (hRP hr)
+  simp_all
+
 /-- Aditivity of `variationAux` for disjoint measurable sets. -/
 lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
@@ -271,14 +282,13 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
       classical
       let Q := Finset.biUnion (Finset.range n) P
       have hQ : Q ∈ partitions (⋃ i, s i) := partition_union hs' (fun i ↦ (hP i).1) n
-      -- have : (Finset.range n : Set ℕ).PairwiseDisjoint P
       calc
         _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, ENNReal.ofReal ‖μ p‖ := by rfl
         _ = ∑ q ∈ Q, ENNReal.ofReal ‖μ q‖ := by
           refine Eq.symm (Finset.sum_biUnion ?_)
           intro l hl m hm hlm R hRl hRm
-          -- Extract the following into a lemma:
           -- if P, Q are partitions of two disjoint sets then P and Q are disjoint.
+          -- Use newly added `partitions_disjoint` for the following.
           have : P l ∩ P m = ∅ := by
             ext p
             constructor
@@ -314,6 +324,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     obtain ⟨Q, hQ, hbQ⟩ := lt_biSup_iff.mp hb
     -- Choose `n` large so that considering a finite set of `s i` suffices.
     -- Take the partitions defined as intersection of `Q` and `s i`.
+
     sorry
 
 /-- The variation of a vector-valued measure as a `VectorMeasure`. -/
