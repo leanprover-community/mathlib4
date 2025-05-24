@@ -46,7 +46,7 @@ open Ideal
 
 open scoped Function in -- required for scoped `on` notation
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
-`Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
+`Mathlib/Data/ZMod/Basic.lean` for versions involving only two numbers. -/
 def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
     (coprime : Pairwise (Nat.Coprime on a)) : ZMod (∏ i, a i) ≃+* Π i, ZMod (a i) :=
   have : Pairwise fun i j => IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=

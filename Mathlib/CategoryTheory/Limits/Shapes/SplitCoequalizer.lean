@@ -22,7 +22,7 @@ A pair `f g : X ⟶ Y` has a `G`-split coequalizer if `G f, G g` has a split coe
 
 These definitions and constructions are useful in particular for the monadicity theorems.
 
-This file has been adapted to `Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer`. Please try
+This file has been adapted to `Mathlib/CategoryTheory/Limits/Shapes/SplitEqualizer.lean`. Please try
 to keep them in sync.
 
 -/

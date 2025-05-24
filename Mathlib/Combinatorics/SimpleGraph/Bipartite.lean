@@ -37,7 +37,7 @@ This file proves results about bipartite simple graphs, including several double
 ## Implementation notes
 
 For the formulation of double-counting arguments where a bipartite graph is considered as a
-relation `r : α → β → Prop`, see `Mathlib.Combinatorics.Enumerative.DoubleCounting`.
+relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/DoubleCounting.lean`.
 
 ## TODO
 

@@ -6,7 +6,7 @@ Authors: Eric Wieser, Sophie Morel
 import Mathlib.Data.Fintype.Quotient
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Multilinear.Basic
+import Mathlib.LinearAlgebra.Multilinear.Basis
 import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
@@ -248,27 +248,52 @@ variable [Fintype ι] [∀ i, Fintype (κ i)] [CommSemiring R]
 variable [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
 variable [∀ i, Module R (M i)] [Module R N]
 
-/-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
-on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π₀ j : κ i, M i j`. -/
+/-- A basis for multilinear maps given a finite basis on each domain and a basis on the codomain. -/
 noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
     Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) where
   repr := by
     classical
-    -- switch to DFinsupp, for a future where `Basis` uses this instead...
-    refine ?_ ≪≫ₗ (finsuppLequivDFinsupp R).symm
-    let b := fun i => (b i).repr ≪≫ₗ (finsuppLequivDFinsupp R)
-    let b' := b'.repr ≪≫ₗ (finsuppLequivDFinsupp R)
     suffices
         MultilinearMap R (fun i => Π₀ j : κ i, R) (Π₀ i : ι', R) ≃ₗ[R]
-          Π₀ (x : ((i : ι) → κ i) × ι'), R from
-      b'.congrRightMultilinear R ≪≫ₗ LinearEquiv.congrLeftMultilinear (b · |>.symm) ≪≫ₗ this
-
+          Π₀ (x : (Π i, κ i) × ι'), R by
+      -- switch to DFinsupp, for a future where `Basis` uses this instead...
+      refine ?_ ≪≫ₗ (finsuppLequivDFinsupp R).symm
+      let b := fun i => (b i).repr ≪≫ₗ (finsuppLequivDFinsupp R)
+      let b' := b'.repr ≪≫ₗ (finsuppLequivDFinsupp R)
+      exact b'.congrRightMultilinear R ≪≫ₗ LinearEquiv.congrLeftMultilinear (b · |>.symm) ≪≫ₗ this
     refine (fromDFinsuppEquiv _ _).symm ≪≫ₗ
       LinearEquiv.piCongrRight (fun i => MultilinearMap.piRingEquiv.symm) ≪≫ₗ ?_
     -- some annoying swap between Π and Π₀
-    refine ?_ ≪≫ₗ (DFinsupp.domLCongr R (Equiv.sigmaEquivProd _ _).symm).symm
-    refine ?_ ≪≫ₗ (DFinsupp.sigmaCurryLEquiv R (M := fun _ _ => R)).symm
-    exact DFinsupp.linearEquivFunOnFintype R |>.symm
+    refine ?_ ≪≫ₗ (DFinsupp.domLCongr (Equiv.sigmaEquivProd _ _).symm).symm
+    exact DFinsupp.linearEquivFunOnFintype.symm ≪≫ₗ
+      (DFinsupp.sigmaCurryLEquiv (M := fun _ _ => R)).symm
+
+-- theorem _root_.Basis.multilinearMap_apply (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N)
+--     (i : (Π i, κ i) × ι') :
+--     Basis.multilinearMap b b' i = sorry := by
+--   obtain ⟨i, j⟩ := i
+--   classical
+--   simp [Basis.multilinearMap, Equiv.sigmaEquivProd]
+--   set bd' := (finsuppLequivDFinsupp R).symm.trans b'.repr.symm
+--   set bd := fun i => ((b i).repr ≪≫ₗ (finsuppLequivDFinsupp R)).toLinearMap
+--   conv_lhs =>
+--     enter [2, 1, 2, 2, 2]
+--     tactic =>
+--       trans DFinsupp.single (β := fun _ => Π₀ _, R) i (DFinsupp.single j (1 : R))
+--       sorry
+--   simp [DFinsupp.linearEquivFunOnFintype, LinearEquiv.piCongrRight, MultilinearMap.piRingEquiv,
+--     MultilinearMap.smulRight,
+--       LinearMap.smulRight]
+--   conv_lhs =>
+--     enter [2]
+--     simp [LinearMap.compMultilinearMap, Function.comp_def]
+
+
+--   refine Basis.ext_multilinear b fun v => ?_
+
+--   simp [Basis.multilinearMap, Finsupp.linearCombination, MultilinearMap.piRingEquiv]
+--   trans (b' j)
+--   · sorry
 
 end Basis
 end MultilinearMap
