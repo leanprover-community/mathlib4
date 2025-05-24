@@ -237,7 +237,7 @@ def orderAddMonoidHom_real_of_pos {one : M} (hpos: 0 < one) : M →+o ℝ where
 theorem orderAddMonoidHom_real_apply {one : M} (hpos: 0 < one) (a : M):
     (orderAddMonoidHom_real_of_pos hpos) a = embed_real hpos a := by rfl
 
-theorem orderAddMonoidHom_real_of_pos_injective {one : M} (hpos: 0 < one) :
+theorem orderAddMonoidHom_real_injective_of_pos {one : M} (hpos: 0 < one) :
     Function.Injective (orderAddMonoidHom_real_of_pos hpos) :=
   (embed_real_strictMono hpos).injective
 
@@ -282,6 +282,6 @@ theorem exists_orderAddMonoidHom_real_injective :
   · have : Nontrivial M := not_subsingleton_iff_nontrivial.mp h
     obtain ⟨a, ha⟩ := exists_ne (0 : M)
     have ha : 0 < |a| := by simpa using ha
-    exact ⟨orderAddMonoidHom_real_of_pos ha, orderAddMonoidHom_real_of_pos_injective ha⟩
+    exact ⟨orderAddMonoidHom_real_of_pos ha, orderAddMonoidHom_real_injective_of_pos ha⟩
 
 end Archimedean
