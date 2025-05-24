@@ -58,6 +58,17 @@ def h (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   Matrix.fromBlocks 0 0 0 <| open scoped Classical in Matrix.diagonal (P.pairingIn ℤ · i)
 
+lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
+    ⁅h i, h j⁆ = 0 := by
+  classical
+  ext (k | k) (l | l)
+  · simp [Ring.lie_def, Matrix.mul_apply, h]
+  · simp [Ring.lie_def, Matrix.mul_apply, h]
+  · simp [Ring.lie_def, Matrix.mul_apply, h]
+  · simp [Ring.lie_def, Matrix.mul_apply, Matrix.diagonal_apply, mul_comm (P.pairingIn ℤ k i : R),
+      h]
+    aesop
+
 /-- Lemma 3.3 (a) from [Geck](Geck2017).
 
 TODO Add part (b) as well as Lemmas 3.4, 3.5. -/
