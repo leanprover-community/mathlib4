@@ -191,7 +191,7 @@ lemma trace_toEnd_eq_zero_of_mem_lcs
     rw [lowerCentralSeries_succ, ← LieSubmodule.mem_toSubmodule,
       LieSubmodule.lieIdeal_oper_eq_linear_span'] at hx
     simpa using hx
-  refine Submodule.span_induction (p := fun x _ ↦ trace R _ (toEnd R L M x) = 0)
+  refine Submodule.span_induction (motive := fun x _ ↦ trace R _ (toEnd R L M x) = 0)
     ?_ ?_ (fun u v _ _ hu hv ↦ ?_) (fun t u _ hu ↦ ?_) hx
   · intro y ⟨u, v, huv⟩
     simp [← huv]

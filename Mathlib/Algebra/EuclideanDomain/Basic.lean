@@ -187,8 +187,8 @@ private def P (a b : R) : R × R × R → Prop
 theorem xgcdAux_P (a b : R) {r r' : R} {s t s' t'} (p : P a b (r, s, t))
     (p' : P a b (r', s', t')) : P a b (xgcdAux r s t r' s' t') := by
   induction r, r' using GCD.induction generalizing s t s' t' with
-  | H0 n => simpa only [xgcd_zero_left]
-  | H1 _ _ h IH =>
+  | zero n => simpa only [xgcd_zero_left]
+  | step _ _ h IH =>
     rw [xgcdAux_rec h]
     refine IH ?_ p
     unfold P at p p' ⊢
