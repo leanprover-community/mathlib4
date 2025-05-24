@@ -33,7 +33,7 @@ def e₂₁ (i : b.support) : Matrix ι b.support R :=
 
 def e₂₂ (i : b.support) : Matrix ι ι R :=
   Matrix.of fun i' j ↦ open scoped Classical in
-    if P.root i' = P.root i + P.root j then P.chainBotCoeff i j else 0
+    if P.root i' = P.root i + P.root j then P.chainBotCoeff i j + 1 else 0
 
 def e (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
@@ -49,7 +49,7 @@ def f₂₁ (i : b.support) : Matrix ι b.support R :=
 
 def f₂₂ (i : b.support) : Matrix ι ι R :=
   Matrix.of fun i' j ↦ open scoped Classical in
-    if P.root i' = P.root j - P.root i then P.chainTopCoeff i j else 0
+    if P.root i' = P.root j - P.root i then P.chainTopCoeff i j + 1 else 0
 
 def f (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
@@ -150,7 +150,7 @@ lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
         · intro hkil
           suffices P.pairingIn ℤ k j = P.pairingIn ℤ i j + P.pairingIn ℤ l j by
             rw [this]
-            norm_cast
+            push_cast
             ring
           suffices P.pairing k j = P.pairing i j + P.pairing l j by
             apply Int.cast_injective (α := R)
