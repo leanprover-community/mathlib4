@@ -390,7 +390,15 @@ instance lipschitzHVectorSpace : V (G := G) := {
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
-  sorry
+  apply Function.Surjective.countable (f := fun (x: List S) => (Additive.ofMul (MulOpposite.op (x.unattach.prod))))
+  intro g
+  obtain ⟨l, hl⟩ := mem_S_prod_list (S := S) g.toMul.unop
+  use l
+  simp only
+  unfold ProdS at hl
+  rw [hl]
+  simp
+
 
 -- Use the fact that we have the discrete topology
 lemma my_add_haar_eq_count: (myHaarAddOpp (G := G)) = MeasureTheory.Measure.count := by sorry
@@ -421,7 +429,11 @@ lemma count_ae_everywhere (p: G → Prop): (∀ᵐ g ∂(MeasureTheory.Measure.c
 
 -- Use the fact that our measure is the counting measure (since we have the discrete topology),
 -- and negating a finite set of points in an additive group leaves the cardinality unchanged
-instance myNegInvariant: MeasureTheory.Measure.IsNegInvariant (myHaarAddOpp (G := G)) := sorry
+instance myNegInvariant: MeasureTheory.Measure.IsNegInvariant (myHaarAddOpp (G := G)) := {
+  neg_eq_self := by
+    rw [my_add_haar_eq_count]
+    simp only [MeasureTheory.Measure.neg_eq_self]
+}
 
 -- TODO - I don't think we can use this, as `MeasureTheory.convolution' would require our group to be commutative
 -- (via `NormedAddCommGroup`)
@@ -429,7 +441,7 @@ open scoped Convolution
 noncomputable def Conv (f g: G → ℝ) (x: G) : ℝ :=
   (MeasureTheory.convolution (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp (Additive.ofMul (MulOpposite.op x)))
 
-lemma conv_exists (c: ℝ) (hc: 0 ≤ c) (p q : ℝ) (hp: 0 < p) (hq: 0 < q) (hpq: p.HolderConjugate q) (f g: G → ℝ)
+lemma conv_exists (p q : ℝ) (hp: 0 < p) (hq: 0 < q) (hpq: p.HolderConjugate q) (f g: G → ℝ)
   (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) (ENNReal.ofReal p) myHaarAddOpp)
   (hg: ∀ y: G, MeasureTheory.MemLp ((fun x => g (x.toMul.unop⁻¹ * y))) (ENNReal.ofReal q) myHaarAddOpp)
   : MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp := by
@@ -481,7 +493,6 @@ lemma conv_exists (c: ℝ) (hc: 0 ≤ c) (p q : ℝ) (hp: 0 < p) (hq: 0 < q) (hp
         linarith
       .
         exact LT.lt.ne_top foo
-
 
 -- For now, we should add additional hypothesis that 'f' and 'g' are non-negative
 -- This is enoguh for the Vikman proof
