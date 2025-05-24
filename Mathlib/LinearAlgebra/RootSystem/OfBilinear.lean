@@ -13,12 +13,12 @@ this construction, replacing the ring of integers with an arbitrary commutative 
 integral lattice with an arbitrary reflexive module equipped with a bilinear form.
 
 ## Main definitions:
- * `LinearMap.IsReflective`: Length is a regular value of `R`, and reflection is definable.
- * `LinearMap.IsReflective.coroot`: The coroot corresponding to a reflective vector.
- * `RootPairing.of_Bilinear`: The root pairing whose roots are reflective vectors.
+* `LinearMap.IsReflective`: Length is a regular value of `R`, and reflection is definable.
+* `LinearMap.IsReflective.coroot`: The coroot corresponding to a reflective vector.
+* `RootPairing.of_Bilinear`: The root pairing whose roots are reflective vectors.
 
 ## TODO
- * properties
+* properties
 -/
 
 open Set Function Module
@@ -41,7 +41,7 @@ variable (B : M →ₗ[R] M →ₗ[R] R) {x : M}
 
 namespace IsReflective
 
-lemma of_dvd_two [IsDomain R] [NeZero (2 : R)] (hx : B x x ∣ 2) :
+lemma of_dvd_two [IsCancelMulZero R] [NeZero (2 : R)] (hx : B x x ∣ 2) :
     IsReflective B x where
   regular := isRegular_of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
   dvd_two_mul y := hx.mul_right (B x y)
@@ -90,13 +90,13 @@ lemma reflective_reflection (hSB : LinearMap.IsSymm B) {y : M}
     (hx : IsReflective B x) (hy : IsReflective B y) :
     IsReflective B (Module.reflection (coroot_apply_self B hx) y) := by
   constructor
-  · rw [← LinearEquiv.coe_coe, isOrthogonal_reflection B hx hSB]
+  · rw [isOrthogonal_reflection B hx hSB]
     exact hy.1
   · intro z
     have hz : Module.reflection (coroot_apply_self B hx)
         (Module.reflection (coroot_apply_self B hx) z) = z := by
       exact (LinearEquiv.eq_symm_apply (Module.reflection (coroot_apply_self B hx))).mp rfl
-    rw [← hz, ← LinearEquiv.coe_coe, isOrthogonal_reflection B hx hSB,
+    rw [← hz, isOrthogonal_reflection B hx hSB,
       isOrthogonal_reflection B hx hSB]
     exact hy.2 _
 
@@ -144,8 +144,8 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
         dsimp only
         rw [h2x z, ← h2y z, hxy, h2xy] }
   root_coroot_two x := by
-    dsimp only [coe_setOf, Embedding.coe_subtype, PerfectPairing.toLin_apply, mem_setOf_eq, id_eq,
-      eq_mp_eq_cast, RingHom.id_apply, eq_mpr_eq_cast, cast_eq, LinearMap.sub_apply,
+    dsimp only [coe_setOf, Embedding.coe_subtype, PerfectPairing.toLinearMap_apply, mem_setOf_eq,
+      id_eq, eq_mp_eq_cast, RingHom.id_apply, eq_mpr_eq_cast, cast_eq, LinearMap.sub_apply,
       Embedding.coeFn_mk, PerfectPairing.flip_apply_apply]
     exact coroot_apply_self B x.2
   reflection_perm x :=
@@ -170,7 +170,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
     simp only [mem_setOf_eq, PerfectPairing.flip_apply_apply, mul_sub,
       apply_self_mul_coroot_apply B y.2, ← mul_assoc]
     rw [← isOrthogonal_reflection B x.2 hSB y y, apply_self_mul_coroot_apply, ← hSB z, ← hSB z,
-      RingHom.id_apply, RingHom.id_apply, LinearEquiv.coe_coe, Module.reflection_apply, map_sub,
+      RingHom.id_apply, RingHom.id_apply, Module.reflection_apply, map_sub,
       mul_sub, sub_eq_sub_iff_comm, sub_left_inj]
     refine x.2.1.1 ?_
     simp only [mem_setOf_eq, map_smul, smul_eq_mul]

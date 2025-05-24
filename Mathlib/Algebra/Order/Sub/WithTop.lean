@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
@@ -57,6 +56,7 @@ theorem sub_top {a : WithTop α} : a - ⊤ = (⊥ : α) := by cases a <;> rfl
 
 lemma sub_ne_top_iff {a b : WithTop α} : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := by simp [or_iff_not_imp_left]
 
+protected
 theorem map_sub [Sub β] [Bot β] {f : α → β} (h : ∀ x y, f (x - y) = f x - f y) (h₀ : f ⊥ = ⊥) :
     ∀ x y : WithTop α, (x - y).map f = x.map f - y.map f
   | _, ⊤ => by simp only [sub_top, map_coe, h₀, map_top]
@@ -65,7 +65,7 @@ theorem map_sub [Sub β] [Bot β] {f : α → β} (h : ∀ x y, f (x - y) = f x 
 
 end
 
-variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
+variable [Add α] [LE α] [OrderBot α] [Sub α] [OrderedSub α]
 
 instance : OrderedSub (WithTop α) := by
   constructor
@@ -76,6 +76,7 @@ instance : OrderedSub (WithTop α) := by
   · simp
   cases z
   · simp
-  norm_cast; exact tsub_le_iff_right
+  norm_cast
+  exact tsub_le_iff_right
 
 end WithTop

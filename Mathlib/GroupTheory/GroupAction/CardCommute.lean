@@ -14,6 +14,12 @@ This lemma is separate because it requires `Nat.card`
 and hence transitively the development of cardinals.
 -/
 
+variable {α : Type*}
+
+instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
+    Infinite { p : α × α // Commute p.1 p.2 } :=
+  Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
+
 open Fintype
 
 theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :

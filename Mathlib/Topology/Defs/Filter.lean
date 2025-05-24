@@ -134,20 +134,20 @@ def nhdsWithin (x : X) (s : Set X) : Filter X :=
 scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 
 /-- Notation for the filter of punctured neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≠] " x:100 =>
+scoped[Topology] notation3 (name := nhdsNE) "𝓝[≠] " x:100 =>
   nhdsWithin x (@singleton _ (Set _) Set.instSingletonSet x)ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
+scoped[Topology] notation3 (name := nhdsGE) "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
 
 /-- Notation for the filter of left neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
+scoped[Topology] notation3 (name := nhdsLE) "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
 
 /-- Notation for the filter of punctured right neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
+scoped[Topology] notation3 (name := nhdsGT) "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
 
 /-- Notation for the filter of punctured left neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
+scoped[Topology] notation3 (name := nhdsLT) "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 /-- The filter of neighborhoods of a set in a topological space. -/
 def nhdsSet (s : Set X) : Filter X :=

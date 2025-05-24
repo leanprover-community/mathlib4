@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.InnerProductSpace.Positive
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
@@ -16,7 +16,7 @@ prove that, with respect to this partial order, a map is positive if every eleme
 real spectrum is nonnegative. Consequently, when `H` is a Hilbert space, then `H →L[ℂ] H` is
 equipped with all the usual instances of the continuous functional calculus.
 
- -/
+-/
 
 namespace ContinuousLinearMap
 
@@ -49,10 +49,10 @@ instance : NonnegSpectrumClass ℝ (H →L[𝕜] H) where
   quasispectrum_nonneg_of_nonneg f hf :=
     QuasispectrumRestricts.nnreal_iff.mp <| sub_zero f ▸ hf.spectrumRestricts
 
-/-- Because this takes `ContinuousFunctionalCalculus ℝ IsSelfAdjoint` as an argument, and for
-the moment we only have this for `𝕜 := ℂ`, this is not registered as an instance. -/
+/-- Because this takes `ContinuousFunctionalCalculus ℝ (H →L[𝕜] H) IsSelfAdjoint` as an argument,
+and for the moment we only have this for `𝕜 := ℂ`, this is not registered as an instance. -/
 lemma instStarOrderedRingRCLike
-    [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : (H →L[𝕜] H) → Prop)] :
+    [ContinuousFunctionalCalculus ℝ (H →L[𝕜] H) IsSelfAdjoint] :
     StarOrderedRing (H →L[𝕜] H) where
   le_iff f g := by
     constructor

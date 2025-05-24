@@ -76,7 +76,7 @@ lemma isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm
   -- that avoids explicitly mentioning `m`-th roots.
   -- First note it suffices to show that `‖x + 1‖ ≤ a` for all `a : ℝ` with `max ‖x‖ 1 < a`.
   rw [max_comm]
-  refine le_of_forall_le_of_dense fun a ha ↦ ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun a ha ↦ ?_
   have ha' : 1 < a := (max_lt_iff.mp ha).left
   -- `max 1 ‖x‖ < a`, so there must be some `m : ℕ` such that `m + 1 < (a / max 1 ‖x‖) ^ m`
   -- by the virtue of exponential growth being faster than linear growth

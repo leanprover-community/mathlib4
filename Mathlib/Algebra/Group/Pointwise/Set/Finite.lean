@@ -1,14 +1,15 @@
 /-
-Copyright (c) 2019 Johan Commelin. All rights reserved.
+Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Floris van Doorn
+Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Data.Finite.Prod
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
+assert_not_exists MulAction MonoidWithZero
 
 open Pointwise
 
@@ -112,7 +113,7 @@ section InvolutiveInv
 variable [InvolutiveInv α] {s : Set α}
 
 @[to_additive (attr := simp)] lemma finite_inv : s⁻¹.Finite ↔ s.Finite := by
-  rw [← image_inv, finite_image_iff inv_injective.injOn]
+  rw [← image_inv_eq_inv, finite_image_iff inv_injective.injOn]
 
 @[to_additive (attr := simp)] lemma infinite_inv : s⁻¹.Infinite ↔ s.Infinite := finite_inv.not
 
@@ -144,19 +145,6 @@ lemma finite_div : (s / t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = 
 lemma infinite_div : (s / t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
   infinite_image2 (fun _ _ ↦ div_left_injective.injOn) fun _ _ ↦ div_right_injective.injOn
 
-variable [MulAction α β] {a : α} {s : Set β}
-
-@[to_additive (attr := simp)]
-theorem finite_smul_set : (a • s).Finite ↔ s.Finite :=
-  finite_image_iff (MulAction.injective _).injOn
-
-@[to_additive (attr := simp)]
-theorem infinite_smul_set : (a • s).Infinite ↔ s.Infinite :=
-  infinite_image_iff (MulAction.injective _).injOn
-
-@[to_additive] alias ⟨Finite.of_smul_set, _⟩ := finite_smul_set
-@[to_additive] alias ⟨_, Infinite.smul_set⟩ := infinite_smul_set
-
 end Group
 
 end Set
@@ -181,7 +169,7 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
     exact Subtype.ext (mul_right_cancel (Subtype.ext_iff.mp hbc))
   have mono : Monotone (fun n ↦ Fintype.card (↥(S ^ n)) : ℕ → ℕ) :=
     monotone_nat_of_le_succ fun n ↦ key a _ _ fun b hb ↦ Set.mul_mem_mul hb ha
-  refine card_pow_eq_card_pow_card_univ_aux mono (fun n ↦ set_fintype_card_le_univ (S ^ n))
+  refine fun _ ↦ Nat.stabilises_of_monotone mono (fun n ↦ set_fintype_card_le_univ (S ^ n))
     fun n h ↦ le_antisymm (mono (n + 1).le_succ) (key a⁻¹ (S ^ (n + 2)) (S ^ (n + 1)) ?_)
   replace h₂ : S ^ n * {a} = S ^ (n + 1) := by
     have : Fintype (S ^ n * Set.singleton a) := by

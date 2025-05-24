@@ -3,6 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Defs
 
@@ -10,8 +11,7 @@ import Mathlib.Algebra.Group.Units.Defs
 # Units in multiplicative and additive opposites
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {α : Type*}
 

@@ -26,7 +26,7 @@ variable {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
 section Colimits
 
 variable [∀ {X Y : Cᵒᵖ} (f : X ⟶ Y), PreservesColimit (F ⋙ evaluation R Y)
-  (ModuleCat.restrictScalars (R.map f))]
+  (ModuleCat.restrictScalars (R.map f).hom)]
 
 /-- A cocone in the category `PresheafOfModules R` is colimit if it is so after the application
 of the functors `evaluation R X` for all `X`. -/
@@ -54,8 +54,8 @@ def evaluationJointlyReflectsColimits (c : Cocone F)
 variable [∀ X, HasColimit (F ⋙ evaluation R X)]
 
 instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    HasColimit (F ⋙ evaluation R Y ⋙ (ModuleCat.restrictScalars (R.map f))) :=
-  ⟨_, isColimitOfPreserves (ModuleCat.restrictScalars (R.map f))
+    HasColimit (F ⋙ evaluation R Y ⋙ (ModuleCat.restrictScalars (R.map f).hom)) :=
+  ⟨_, isColimitOfPreserves (ModuleCat.restrictScalars (R.map f).hom)
     (colimit.isColimit (F ⋙ evaluation R Y))⟩
 
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the presheaf of modules obtained by
@@ -64,21 +64,22 @@ taking a colimit in the category of modules over `R.obj X` for all `X`. -/
 noncomputable def colimitPresheafOfModules : PresheafOfModules R where
   obj X := colimit (F ⋙ evaluation R X)
   map {_ Y} f := colimMap (whiskerLeft F (restriction R f)) ≫
-    (preservesColimitIso (ModuleCat.restrictScalars (R.map f)) (F ⋙ evaluation R Y)).inv
+    (preservesColimitIso (ModuleCat.restrictScalars (R.map f).hom) (F ⋙ evaluation R Y)).inv
   map_id X := colimit.hom_ext (fun j => by
     dsimp
     rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app]
-    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X))),
-      ModuleCat.restrictScalarsId'App_inv_naturality]
-    rw [map_id]
+    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X)).hom)]
+    rw [ModuleCat.restrictScalarsId'App_inv_naturality, map_id]
     dsimp)
   map_comp {X Y Z} f g := colimit.hom_ext (fun j => by
     dsimp
     rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app, assoc, ι_colimMap_assoc]
-    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (f ≫ g))),
-      ι_preservesColimitIso_inv_assoc (G := ModuleCat.restrictScalars (R.map f))]
+    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (f ≫ g)).hom),
+      ι_preservesColimitIso_inv_assoc (G := ModuleCat.restrictScalars (R.map f).hom)]
     rw [← Functor.map_comp_assoc, ι_colimMap_assoc]
-    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map g))]
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map g).hom)]
     rw [map_comp, ModuleCat.restrictScalarsComp'_inv_app, assoc, assoc,
       whiskerLeft_app, whiskerLeft_app, restriction_app, restriction_app]
     simp only [Functor.map_comp, assoc]

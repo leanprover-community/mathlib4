@@ -41,10 +41,9 @@ incidence matrix for each `SimpleGraph α` has the same type.
   arbitrary orientation of a simple graph.
 -/
 
+assert_not_exists Field
 
 open Finset Matrix SimpleGraph Sym2
-
-open Matrix
 
 namespace SimpleGraph
 
@@ -64,8 +63,7 @@ theorem incMatrix_apply [Zero R] [One R] {a : α} {e : Sym2 α} :
 /-- Entries of the incidence matrix can be computed given additional decidable instances. -/
 theorem incMatrix_apply' [Zero R] [One R] [DecidableEq α] [DecidableRel G.Adj] {a : α}
     {e : Sym2 α} : G.incMatrix R a e = if e ∈ G.incidenceSet a then 1 else 0 := by
-  unfold incMatrix Set.indicator
-  convert rfl
+  simp only [incMatrix, Set.indicator, Pi.one_apply]
 
 section MulZeroOneClass
 
@@ -94,12 +92,8 @@ theorem incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenc
   simp only [incMatrix_apply, Set.indicator_apply_eq_zero, Pi.one_apply, one_ne_zero]
 
 theorem incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a := by
-  -- Porting note: was `convert one_ne_zero.ite_eq_left_iff; infer_instance`
-  unfold incMatrix Set.indicator
-  simp only [Pi.one_apply]
-  apply Iff.intro <;> intro h
-  · split at h <;> simp_all only [zero_ne_one]
-  · simp_all only [ite_true]
+  convert one_ne_zero.ite_eq_left_iff
+  infer_instance
 
 end MulZeroOneClass
 

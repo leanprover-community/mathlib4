@@ -30,6 +30,8 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated
 
 variable {C D : Type*} [Category C] [Category D]
@@ -77,13 +79,10 @@ a morphism `φ : K ⟶ L` in the category `CochainComplex C ℤ`. -/
 noncomputable abbrev triangleh : Triangle (HomotopyCategory C (ComplexShape.up ℤ)) :=
   (HomotopyCategory.quotient _ _).mapTriangle.obj (triangle φ)
 
-variable (K)
-
+variable (K) in
 /-- The mapping cone of the identity is contractible. -/
 noncomputable def homotopyToZeroOfId : Homotopy (𝟙 (mappingCone (𝟙 K))) 0 :=
   descHomotopy (𝟙 K) _ _ 0 (inl _) (by simp) (by simp)
-
-variable {K}
 
 section mapOfHomotopy
 
@@ -136,8 +135,7 @@ noncomputable def trianglehMapOfHomotopy :
   comm₃ := by
     dsimp
     rw [← Functor.map_comp_assoc, triangleMapOfHomotopy_comm₃, Functor.map_comp, assoc, assoc]
-    erw [← NatTrans.naturality]
-    rfl
+    simp
 
 end mapOfHomotopy
 
@@ -546,7 +544,7 @@ end Pretriangulated
 
 variable [HasZeroObject C]
 
-instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
+noncomputable instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
   distinguishedTriangles := Pretriangulated.distinguishedTriangles C
   isomorphic_distinguished := Pretriangulated.isomorphic_distinguished
   contractible_distinguished := Pretriangulated.contractible_distinguished

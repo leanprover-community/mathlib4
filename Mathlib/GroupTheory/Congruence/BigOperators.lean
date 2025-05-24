@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.BigOperators.Group.Multiset
-import Mathlib.Algebra.BigOperators.Group.List
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 import Mathlib.GroupTheory.Congruence.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`
@@ -18,7 +18,7 @@ namespace Con
 
 /-- Multiplicative congruence relations preserve product indexed by a list. -/
 @[to_additive "Additive congruence relations preserve sum indexed by a list."]
-protected theorem list_prod {ι M : Type*} [Monoid M] (c : Con M) {l : List ι} {f g : ι → M}
+protected theorem list_prod {ι M : Type*} [MulOneClass M] (c : Con M) {l : List ι} {f g : ι → M}
     (h : ∀ x ∈ l, c (f x) (g x)) :
     c (l.map f).prod (l.map g).prod := by
   induction l with

@@ -72,11 +72,12 @@ theorem supported_eq_span_single (s : Set α) :
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
     refine sum_mem fun i il => ?_
-  -- Porting note: Needed to help this convert quite a bit replacing underscores
-    convert smul_mem (M := α →₀ R) (x := single i 1) (span R ((fun i => single i 1) '' s)) (l i) ?_
-    · simp [span]
-    · apply subset_span
-      apply Set.mem_image_of_mem _ (hl il)
+    rw [show single i (l i) = l i • single i 1 by simp [span]]
+    exact smul_mem _ (l i) (subset_span (mem_image_of_mem _ (hl il)))
+
+theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
+    span R s ≤ supported M R (⋃ x ∈ s, x.support) :=
+  span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (·.support.toSet))
 
 variable (M)
 
@@ -131,14 +132,14 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     rwa [LinearMap.range_comp, range_restrictDom, Submodule.map_top, range_subtype] at this
   rw [range_le_iff_comap, eq_top_iff]
   rintro l ⟨⟩
-  -- Porting note: Was ported as `induction l using Finsupp.induction`
-  refine Finsupp.induction l ?_ ?_
-  · exact zero_mem _
-  · refine fun x a l _ _ => add_mem ?_
+  induction l using Finsupp.induction with
+  | zero => exact zero_mem _
+  | single_add x a l _ _ ih =>
+    refine add_mem ?_ ih
     by_cases h : ∃ i, x ∈ s i
     · simp only [mem_comap, coe_comp, coe_subtype, Function.comp_apply, restrictDom_apply,
         mem_iUnion, h, filter_single_of_pos]
-      cases' h with i hi
+      obtain ⟨i, hi⟩ := h
       exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
     · simp [h]
 
@@ -168,7 +169,7 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
-def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
+@[simps!] def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
   let F : supported M R s ≃ (s →₀ M) := restrictSupportEquiv s M
   refine F.toLinearEquiv ?_
   have :
@@ -177,6 +178,10 @@ def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M :=
     rfl
   rw [this]
   exact LinearMap.isLinear _
+
+@[simp] theorem supportedEquivFinsupp_symm_apply_coe (s : Set α) [DecidablePred (· ∈ s)]
+    (f : s →₀ M) : (supportedEquivFinsupp (R := R) s).symm f = f.extendDomain := by
+  convert restrictSupportEquiv_symm_apply_coe ..
 
 section LMapDomain
 

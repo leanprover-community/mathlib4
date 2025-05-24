@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.Equiv.Opposite
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
@@ -18,9 +16,8 @@ including the action of `Module.End` on the module we are considering endomorphi
 
 ## Main results
 
-* `Module.End.semiring` and `Module.End.ring`: the (semi)ring of endomorphisms formed by taking the
-  additive structure above with composition as multiplication.
-
+* `Module.End.instSemiring` and `Module.End.instRing`: the (semi)ring of endomorphisms formed by
+  taking the additive structure above with composition as multiplication.
 -/
 
 universe u v
@@ -32,15 +29,13 @@ abbrev Module.End (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Modu
 
 variable {R R₂ S M M₁ M₂ M₃ N₁ : Type*}
 
-namespace LinearMap
-
-open Function
+open Function LinearMap
 
 /-!
 ## Monoid structure of endomorphisms
 -/
 
-section Endomorphisms
+namespace Module.End
 
 variable [Semiring R] [AddCommMonoid M] [AddCommGroup N₁] [Module R M] [Module R N₁]
 
@@ -48,7 +43,7 @@ instance : One (Module.End R M) := ⟨LinearMap.id⟩
 
 instance : Mul (Module.End R M) := ⟨fun f g => LinearMap.comp f g⟩
 
-theorem one_eq_id : (1 : Module.End R M) = id := rfl
+theorem one_eq_id : (1 : Module.End R M) = .id := rfl
 
 theorem mul_eq_comp (f g : Module.End R M) : f * g = f.comp g := rfl
 
@@ -62,77 +57,80 @@ theorem coe_one : ⇑(1 : Module.End R M) = _root_.id := rfl
 
 theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 
-instance _root_.Module.End.instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
+instance instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
   obtain ⟨m, ne⟩ := exists_ne (0 : M)
   exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
 
-instance _root_.Module.End.monoid : Monoid (Module.End R M) where
-  mul := (· * ·)
-  one := (1 : M →ₗ[R] M)
+instance instMonoid : Monoid (Module.End R M) where
   mul_assoc _ _ _ := LinearMap.ext fun _ ↦ rfl
   mul_one := comp_id
   one_mul := id_comp
 
-instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
-  { AddMonoidWithOne.unary, Module.End.monoid, LinearMap.addCommMonoid with
-    mul_zero := comp_zero
-    zero_mul := zero_comp
-    left_distrib := fun _ _ _ ↦ comp_add _ _ _
-    right_distrib := fun _ _ _ ↦ add_comp _ _ _
-    natCast := fun n ↦ n • (1 : M →ₗ[R] M)
-    natCast_zero := zero_smul ℕ (1 : M →ₗ[R] M)
-    natCast_succ := fun n ↦ AddMonoid.nsmul_succ n (1 : M →ₗ[R] M) }
+instance instSemiring : Semiring (Module.End R M) where
+  __ := AddMonoidWithOne.unary
+  __ := instMonoid
+  __ := addCommMonoid
+  mul_zero := comp_zero
+  zero_mul := zero_comp
+  left_distrib := fun _ _ _ ↦ comp_add _ _ _
+  right_distrib := fun _ _ _ ↦ add_comp _ _ _
+  natCast := fun n ↦ n • (1 : M →ₗ[R] M)
+  natCast_zero := zero_smul ℕ (1 : M →ₗ[R] M)
+  natCast_succ := fun n ↦ AddMonoid.nsmul_succ n (1 : M →ₗ[R] M)
 
 /-- See also `Module.End.natCast_def`. -/
 @[simp]
-theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R M) m = n • m := rfl
+theorem natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R M) m = n • m := rfl
 
 @[simp]
-theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
-    (no_index (OfNat.ofNat n) : Module.End R M) m = OfNat.ofNat n • m := rfl
+theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (ofNat(n) : Module.End R M) m = ofNat(n) • m := rfl
 
-instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
-  { Module.End.semiring, LinearMap.addCommGroup with
-    intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
-    intCast_ofNat := natCast_zsmul _
-    intCast_negSucc := negSucc_zsmul _ }
+instance instRing : Ring (Module.End R N₁) where
+  intCast z := z • (1 : N₁ →ₗ[R] N₁)
+  intCast_ofNat := natCast_zsmul _
+  intCast_negSucc := negSucc_zsmul _
 
 /-- See also `Module.End.intCast_def`. -/
 @[simp]
-theorem _root_.Module.End.intCast_apply (z : ℤ) (m : N₁) : (z : Module.End R N₁) m = z • m :=
+theorem intCast_apply (z : ℤ) (m : N₁) : (z : Module.End R N₁) m = z • m :=
   rfl
 
 section
 
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M]
 
-instance _root_.Module.End.isScalarTower :
+instance instIsScalarTower :
     IsScalarTower S (Module.End R M) (Module.End R M) :=
   ⟨smul_comp⟩
 
-instance _root_.Module.End.smulCommClass [SMul S R] [IsScalarTower S R M] :
+instance instSMulCommClass [SMul S R] [IsScalarTower S R M] :
     SMulCommClass S (Module.End R M) (Module.End R M) :=
   ⟨fun s _ _ ↦ (comp_smul _ s _).symm⟩
 
-instance _root_.Module.End.smulCommClass' [SMul S R] [IsScalarTower S R M] :
+instance instSMulCommClass' [SMul S R] [IsScalarTower S R M] :
     SMulCommClass (Module.End R M) S (Module.End R M) :=
   SMulCommClass.symm _ _ _
 
-theorem _root_.Module.End_isUnit_apply_inv_apply_of_isUnit
-    {f : Module.End R M} (h : IsUnit f) (x : M) :
+theorem isUnit_apply_inv_apply_of_isUnit {f : End R M} (h : IsUnit f) (x : M) :
     f (h.unit.inv x) = x :=
   show (f * h.unit.inv) x = x by simp
 
-theorem _root_.Module.End_isUnit_inv_apply_apply_of_isUnit
-    {f : Module.End R M} (h : IsUnit f) (x : M) :
+@[deprecated (since := "2025-04-28")]
+alias _root_.Module.End_isUnit_apply_inv_apply_of_isUnit := isUnit_apply_inv_apply_of_isUnit
+
+theorem isUnit_inv_apply_apply_of_isUnit {f : End R M} (h : IsUnit f) (x : M) :
     h.unit.inv (f x) = x :=
   (by simp : (h.unit.inv * f) x = x)
 
-theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+@[deprecated (since := "2025-04-28")]
+alias _root_.Module.End_isUnit_inv_apply_apply_of_isUnit := isUnit_inv_apply_apply_of_isUnit
 
-theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr_fun (coe_pow f n) m
+theorem coe_pow (f : End R M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
-theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
+theorem pow_apply (f : End R M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr_fun (coe_pow f n) m
+
+theorem pow_map_zero_of_le {f : End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
     (hm : (f ^ k) m = 0) : (f ^ l) m = 0 := by
   rw [← Nat.sub_add_cancel hk, pow_add, mul_apply, hm, map_zero]
 
@@ -141,17 +139,17 @@ theorem commute_pow_left_of_commute
     {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
   induction k with
-  | zero => simp only [pow_zero, one_eq_id, id_comp, comp_id]
-  | succ k ih => rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih,
-    ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
+  | zero => simp [one_eq_id]
+  | succ k ih => rw [pow_succ', pow_succ', mul_eq_comp, LinearMap.comp_assoc, ih,
+    ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, mul_eq_comp]
 
 @[simp]
-theorem id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
+theorem id_pow (n : ℕ) : (id : End R M) ^ n = .id :=
   one_pow n
 
-variable {f' : M →ₗ[R] M}
+variable {f' : End R M}
 
-theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ, mul_eq_comp]
+theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = .comp (f' ^ n) f' := by rw [pow_succ, mul_eq_comp]
 
 theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
   | 0 => surjective_id
@@ -218,9 +216,7 @@ instance apply_isScalarTower [Monoid S] [DistribMulAction S M] [SMulCommClass R 
     IsScalarTower S (Module.End R M) M :=
   ⟨fun _ _ _ ↦ rfl⟩
 
-end Endomorphisms
-
-end LinearMap
+end Module.End
 
 /-! ## Actions as module endomorphisms -/
 
@@ -250,7 +246,7 @@ def toModuleEnd : S →* Module.End R M where
 
 end DistribMulAction
 
-namespace Module
+section Module
 
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
 variable [Semiring S] [Module S M] [SMulCommClass S R M]
@@ -259,7 +255,7 @@ variable [Semiring S] [Module S M] [SMulCommClass S R M]
 
 This is a stronger version of `DistribMulAction.toModuleEnd`. -/
 @[simps]
-def toModuleEnd : S →+* Module.End R M :=
+def Module.toModuleEnd : S →+* Module.End R M :=
   { DistribMulAction.toModuleEnd R M with
     toFun := DistribMulAction.toLinearMap R M
     map_zero' := LinearMap.ext <| zero_smul S
@@ -268,7 +264,7 @@ def toModuleEnd : S →+* Module.End R M :=
 /-- The canonical (semi)ring isomorphism from `Rᵐᵒᵖ` to `Module.End R R` induced by the right
 multiplication. -/
 @[simps]
-def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
+def RingEquiv.moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
   { Module.toModuleEnd R R with
     toFun := DistribMulAction.toLinearMap R R
     invFun := fun f ↦ MulOpposite.op (f 1)
@@ -278,18 +274,21 @@ def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
 /-- The canonical (semi)ring isomorphism from `R` to `Module.End Rᵐᵒᵖ R` induced by the left
 multiplication. -/
 @[simps]
-def moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
+def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
   { Module.toModuleEnd _ _ with
     toFun := DistribMulAction.toLinearMap _ _
     invFun := fun f ↦ f 1
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 
-theorem End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
+@[deprecated (since := "2025-04-13")] alias Module.moduleEndSelf := RingEquiv.moduleEndSelf
+@[deprecated (since := "2025-04-13")] alias Module.moduleEndSelfOp := RingEquiv.moduleEndSelfOp
+
+theorem Module.End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=
   rfl
 
-theorem End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
+theorem Module.End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
     (z : Module.End R N₁) = Module.toModuleEnd R N₁ z :=
   rfl
 
@@ -308,8 +307,8 @@ variable [Semiring S] [Module R S] [Module S M] [IsScalarTower R S M]
 map. -/
 def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M where
   toFun b := f b • x
-  map_add' x y := by dsimp only; rw [f.map_add, add_smul]
-  map_smul' b y := by dsimp; rw [map_smul, smul_assoc]
+  map_add' x y := by rw [f.map_add, add_smul]
+  map_smul' b y := by rw [RingHom.id_apply, map_smul, smul_assoc]
 
 @[simp]
 theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ → M) = fun c => f c • x :=
@@ -347,7 +346,7 @@ variable (S)
 
 /-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.
 
- See `LinearMap.applyₗ` for a version where `S = R`. -/
+See `LinearMap.applyₗ` for a version where `S = R`. -/
 @[simps]
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=
@@ -413,3 +412,13 @@ theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
 end CommSemiring
 
 end LinearMap
+
+namespace Module.End
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : Module.End R M)
+
+lemma commute_id_left : Commute LinearMap.id f := by ext; simp
+
+lemma commute_id_right : Commute f LinearMap.id := by ext; simp
+
+end Module.End

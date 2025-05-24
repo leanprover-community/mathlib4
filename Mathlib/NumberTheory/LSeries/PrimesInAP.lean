@@ -27,14 +27,14 @@ The main steps of the proof are as follows.
    agrees (on `re s > 1`) with the corresponding linear combination of negative logarithmic
    derivatives of Dirichlet L-functions.
    See `ArithmeticFunction.vonMangoldt.LSeries_residueClass_eq`.
-4. Define an auxiliary function `ArithmeticFunction.vonMangoldt.LfunctionResidueClassAux a` that is
+4. Define an auxiliary function `ArithmeticFunction.vonMangoldt.LFunctionResidueClassAux a` that is
    this linear combination of negative logarithmic derivatives of L-functions minus
    `(q.totient)⁻¹/(s-1)`, which cancels the pole at `s = 1`.
-   See `ArithmeticFunction.vonMangoldt.eqOn_LfunctionResidueClassAux` for the statement
+   See `ArithmeticFunction.vonMangoldt.eqOn_LFunctionResidueClassAux` for the statement
    that the auxiliary function agrees with the L-series of
    `ArithmeticFunction.vonMangoldt.residueClass` up to the term `(q.totient)⁻¹/(s-1)`.
 5. Show that the auxiliary function is continuous on `re s ≥ 1`;
-   see `ArithmeticFunction.vonMangoldt.continuousOn_LfunctionResidueClassAux`.
+   see `ArithmeticFunction.vonMangoldt.continuousOn_LFunctionResidueClassAux`.
    This relies heavily on the non-vanishing of Dirichlet L-functions on the *closed*
    half-plane `re s ≥ 1` (`DirichletCharacter.LFunction_ne_zero_of_one_le_re`), which
    in turn can only be stated since we know that the L-series of a Dirichlet character
@@ -51,13 +51,13 @@ The main steps of the proof are as follows.
 ## Definitions
 
 * `ArithmeticFunction.vonMangoldt.residueClass a` (see above).
-* `ArithmeticFunction.vonMangoldt.continuousOn_LfunctionResidueClassAux` (see above).
+* `ArithmeticFunction.vonMangoldt.continuousOn_LFunctionResidueClassAux` (see above).
 
 ## Main Result
 
 We give two versions of **Dirichlet's Theorem**:
 * `Nat.setOf_prime_and_eq_mod_infinite` states that the set of primes `p`
-   such that `(p : ZMod q) = a` is infinite (when `a` is invertible in `ZMod q`).
+  such that `(p : ZMod q) = a` is infinite (when `a` is invertible in `ZMod q`).
 * `Nat.forall_exists_prime_gt_and_eq_mod` states that for any natural number `n`
   there is a prime `p > n` such that `(p : ZMod q) = a`.
 
@@ -75,7 +75,7 @@ as an iterated product or sum over primes and natural numbers.
 
 section auxiliary
 
-variable {α β γ : Type*} [CommGroup α] [UniformSpace α] [UniformGroup α] [CompleteSpace α]
+variable {α β γ : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α] [CompleteSpace α]
   [T0Space α]
 
 open Nat.Primes in
@@ -88,7 +88,7 @@ lemma tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
       simpa only [← coe_prodNatEquiv_apply, Prod.eta, Function.comp_def, Equiv.apply_symm_apply]
         using hfm.subtype _
   simp only [← tprod_subtype_eq_of_mulSupport_subset hf, Set.coe_setOf, ← prodNatEquiv.tprod_eq,
-    ← tprod_prod hfm']
+    ← hfm'.tprod_prod]
   refine tprod_congr fun (p, k) ↦ congrArg f <| coe_prodNatEquiv_apply ..
 
 @[to_additive tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
@@ -100,9 +100,9 @@ lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers {
     hfm.comp_injective <| (strictMono_nat_of_lt_succ
       fun k ↦ pow_lt_pow_right₀ p.prop.one_lt <| lt_add_one (k + 1)).injective
   conv_lhs =>
-    enter [1, p]; rw [tprod_eq_zero_mul (hfs' p), zero_add, pow_one]
+    enter [1, p]; rw [(hfs' p).tprod_eq_zero_mul , zero_add, pow_one]
     enter [2, 1, k]; rw [add_assoc, one_add_one_eq_two]
-  exact tprod_mul (Multipliable.subtype hfm _) <|
+  exact (Multipliable.subtype hfm _).tprod_mul <|
     Multipliable.prod (f := fun (pk : Nat.Primes × ℕ) ↦ f (pk.1 ^ (pk.2 + 2))) <|
     hfm.comp_injective <| Subtype.val_injective |>.comp
     Nat.Primes.prodNatEquiv.injective |>.comp <|
@@ -217,7 +217,7 @@ private lemma summable_F'' : Summable F'' := by
         show (1 : ℝ) - 2⁻¹ = 2⁻¹ by norm_num, inv_le_inv₀ (mod_cast p.prop.pos) zero_lt_two]
       exact Nat.ofNat_le_cast.mpr p.prop.two_le
 
-/-- The function `n ↦ Λ n / n`, restriced to non-primes in a residue class, is summable.
+/-- The function `n ↦ Λ n / n`, restricted to non-primes in a residue class, is summable.
 This is used to convert results on `ArithmeticFunction.vonMangoldt.residueClass` to results
 on primes in an arithmetic progression. -/
 lemma summable_residueClass_non_primes_div :
@@ -250,14 +250,14 @@ lemma summable_residueClass_non_primes_div :
     simp only [Function.comp_apply, Prod.map_fst, id_eq, Prod.map_snd, F'', F']
   refine (Function.Injective.summable_iff ?_ fun u hu ↦ ?_).mp <| hF'₁ ▸ summable_F''
   · exact Function.Injective.prodMap (fun ⦃a₁ a₂⦄ a ↦ a) <| add_left_injective 1
-  · simp only [Set.range_prod_map, Set.range_id, Set.mem_prod, Set.mem_univ, Set.mem_range,
+  · simp only [Set.range_prodMap, Set.range_id, Set.mem_prod, Set.mem_univ, Set.mem_range,
       Nat.exists_add_one_eq, true_and, not_lt, nonpos_iff_eq_zero] at hu
     rw [← hF'₀ u.1, ← hu]
 
 variable [NeZero q] {a}
 
 /-- We can express `ArithmeticFunction.vonMangoldt.residueClass` as a linear combination
-of twists of the von Mangoldt function by Dirichlet charaters. -/
+of twists of the von Mangoldt function by Dirichlet characters. -/
 lemma residueClass_apply (ha : IsUnit a) (n : ℕ) :
     residueClass a n =
       (q.totient : ℂ)⁻¹ * ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ * χ n * vonMangoldt n := by
@@ -267,7 +267,7 @@ lemma residueClass_apply (ha : IsUnit a) (n : ℕ) :
     ite_mul, zero_mul, ↓reduceIte, ite_self]
 
 /-- We can express `ArithmeticFunction.vonMangoldt.residueClass` as a linear combination
-of twists of the von Mangoldt function by Dirichlet charaters. -/
+of twists of the von Mangoldt function by Dirichlet characters. -/
 lemma residueClass_eq (ha : IsUnit a) :
     ↗(residueClass a) = (q.totient : ℂ)⁻¹ •
       ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ • (fun n : ℕ ↦ χ n * vonMangoldt n) := by
@@ -298,19 +298,19 @@ open Classical in
 Dirichlet's Theorem. On `re s > 1`, it agrees with the L-series of the von Mangoldt
 function restricted to the residue class `a : ZMod q` minus the principal part
 `(q.totient)⁻¹/(s-1)` of the pole at `s = 1`;
-see `ArithmeticFunction.vonMangoldt.eqOn_LfunctionResidueClassAux`. -/
+see `ArithmeticFunction.vonMangoldt.eqOn_LFunctionResidueClassAux`. -/
 noncomputable
-abbrev LfunctionResidueClassAux (s : ℂ) : ℂ :=
+abbrev LFunctionResidueClassAux (s : ℂ) : ℂ :=
   (q.totient : ℂ)⁻¹ * (-deriv (LFunctionTrivChar₁ q) s / LFunctionTrivChar₁ q s -
     ∑ χ ∈ ({1}ᶜ : Finset (DirichletCharacter ℂ q)), χ a⁻¹ * deriv (LFunction χ) s / LFunction χ s)
 
 /-- The auxiliary function is continuous away from the zeros of the L-functions of the Dirichlet
 characters mod `q` (including at `s = 1`). -/
-lemma continuousOn_LfunctionResidueClassAux' :
-    ContinuousOn (LfunctionResidueClassAux a)
+lemma continuousOn_LFunctionResidueClassAux' :
+    ContinuousOn (LFunctionResidueClassAux a)
       {s | s = 1 ∨ ∀ χ : DirichletCharacter ℂ q, LFunction χ s ≠ 0} := by
-  rw [show LfunctionResidueClassAux a = fun s ↦ _ from rfl]
-  simp only [LfunctionResidueClassAux, sub_eq_add_neg]
+  rw [show LFunctionResidueClassAux a = fun s ↦ _ from rfl]
+  simp only [LFunctionResidueClassAux, sub_eq_add_neg]
   refine continuousOn_const.mul <| ContinuousOn.add ?_ ?_
   · refine (continuousOn_neg_logDeriv_LFunctionTrivChar₁ q).mono fun s hs ↦ ?_
     have := LFunction_ne_zero_of_one_le_re (1 : DirichletCharacter ℂ q) (s := s)
@@ -328,11 +328,11 @@ lemma continuousOn_LfunctionResidueClassAux' :
 
 /-- The L-series of the von Mangoldt function restricted to the prime residue class `a` mod `q`
 is continuous on `re s ≥ 1` except for a simple pole at `s = 1` with residue `(q.totient)⁻¹`.
-The statement as given here in terms of `ArithmeticFunction.vonMangoldt.LfunctionResidueClassAux`
+The statement as given here in terms of `ArithmeticFunction.vonMangoldt.LFunctionResidueClassAux`
 is equivalent. -/
-lemma continuousOn_LfunctionResidueClassAux :
-    ContinuousOn (LfunctionResidueClassAux a) {s | 1 ≤ s.re} := by
-  refine (continuousOn_LfunctionResidueClassAux' a).mono fun s hs ↦ ?_
+lemma continuousOn_LFunctionResidueClassAux :
+    ContinuousOn (LFunctionResidueClassAux a) {s | 1 ≤ s.re} := by
+  refine (continuousOn_LFunctionResidueClassAux' a).mono fun s hs ↦ ?_
   rcases eq_or_ne s 1 with rfl | hs₁
   · simp only [ne_eq, Set.mem_setOf_eq, true_or]
   · simp only [ne_eq, Set.mem_setOf_eq, hs₁, false_or]
@@ -345,13 +345,13 @@ open scoped LSeries.notation
 /-- The auxiliary function agrees on `re s > 1` with the L-series of the von Mangoldt function
 restricted to the residue class `a : ZMod q` minus the principal part `(q.totient)⁻¹/(s-1)`
 of its pole at `s = 1`. -/
-lemma eqOn_LfunctionResidueClassAux (ha : IsUnit a) :
-    Set.EqOn (LfunctionResidueClassAux a)
+lemma eqOn_LFunctionResidueClassAux (ha : IsUnit a) :
+    Set.EqOn (LFunctionResidueClassAux a)
       (fun s ↦ L ↗(residueClass a) s - (q.totient : ℂ)⁻¹ / (s - 1))
       {s | 1 < s.re} := by
   intro s hs
   replace hs := Set.mem_setOf.mp hs
-  simp only [LSeries_residueClass_eq ha hs, LfunctionResidueClassAux]
+  simp only [LSeries_residueClass_eq ha hs, LFunctionResidueClassAux]
   rw [neg_div, ← neg_add', mul_neg, ← neg_mul, div_eq_mul_one_div (q.totient : ℂ)⁻¹,
     sub_eq_add_neg, ← neg_mul, ← mul_add]
   congrm (_ * ?_)
@@ -363,15 +363,15 @@ lemma eqOn_LfunctionResidueClassAux (ha : IsUnit a) :
   congrm (?_ + _)
   have hs₁ : s ≠ 1 := fun h ↦ ((h ▸ hs).trans_eq one_re).false
   rw [deriv_LFunctionTrivChar₁_apply_of_ne_one _ hs₁, LFunctionTrivChar₁,
-    Function.update_noteq hs₁, LFunctionTrivChar, add_div,
+    Function.update_of_ne hs₁, LFunctionTrivChar, add_div,
     mul_div_mul_left _ _ (sub_ne_zero_of_ne hs₁)]
   conv_lhs => enter [2, 1]; rw [← mul_one (LFunction ..)]
   rw [mul_comm _ 1, mul_div_mul_right _ _ <| LFunction_ne_zero_of_one_le_re 1 (.inr hs₁) hs.le]
 
 /-- The auxiliary function takes real values for real arguments `x > 1`. -/
-lemma LfunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
-    LfunctionResidueClassAux a x = (LfunctionResidueClassAux a x).re := by
-  rw [eqOn_LfunctionResidueClassAux ha hx]
+lemma LFunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
+    LFunctionResidueClassAux a x = (LFunctionResidueClassAux a x).re := by
+  rw [eqOn_LFunctionResidueClassAux ha hx]
   simp only [sub_re, ofReal_sub]
   congr 1
   · rw [LSeries, re_tsum <| LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
@@ -382,7 +382,7 @@ lemma LfunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
     · simp only [term_zero, zero_re, ofReal_zero]
     · simp only [term_of_ne_zero hn, ← ofReal_natCast n, ← ofReal_cpow n.cast_nonneg, ← ofReal_div,
         ofReal_re]
-  · rw [show (q.totient : ℂ) = (q.totient : ℝ) from rfl, ← ofReal_one, ← ofReal_sub, ← ofReal_inv,
+  · rw [← ofReal_natCast, ← ofReal_one, ← ofReal_sub, ← ofReal_inv,
       ← ofReal_div, ofReal_re]
 
 variable {q : ℕ} [NeZero q] {a : ZMod q}
@@ -394,25 +394,25 @@ lemma LSeries_residueClass_lower_bound (ha : IsUnit a) :
       (q.totient : ℝ)⁻¹ / (x - 1) - C ≤ ∑' n, residueClass a n / (n : ℝ) ^ x := by
   have H {x : ℝ} (hx : 1 < x) :
       ∑' n, residueClass a n / (n : ℝ) ^ x =
-        (LfunctionResidueClassAux a x).re + (q.totient : ℝ)⁻¹ / (x - 1) := by
+        (LFunctionResidueClassAux a x).re + (q.totient : ℝ)⁻¹ / (x - 1) := by
     refine ofReal_injective ?_
     simp only [ofReal_tsum, ofReal_div, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast,
       ofReal_add, ofReal_inv, ofReal_sub, ofReal_one]
-    simp_rw [← LfunctionResidueClassAux_real ha hx,
-      eqOn_LfunctionResidueClassAux ha <| Set.mem_setOf.mpr (ofReal_re x ▸ hx), sub_add_cancel,
+    simp_rw [← LFunctionResidueClassAux_real ha hx,
+      eqOn_LFunctionResidueClassAux ha <| Set.mem_setOf.mpr (ofReal_re x ▸ hx), sub_add_cancel,
       LSeries, term]
     refine tsum_congr fun n ↦ ?_
     split_ifs with hn
     · simp only [hn, residueClass_apply_zero, ofReal_zero, zero_div]
     · rfl
-  have : ContinuousOn (fun x : ℝ ↦ (LfunctionResidueClassAux a x).re) (Set.Icc 1 2) :=
-    continuous_re.continuousOn.comp (t := Set.univ) (continuousOn_LfunctionResidueClassAux a)
+  have : ContinuousOn (fun x : ℝ ↦ (LFunctionResidueClassAux a x).re) (Set.Icc 1 2) :=
+    continuous_re.continuousOn.comp (t := Set.univ) (continuousOn_LFunctionResidueClassAux a)
       (fun ⦃x⦄ a ↦ trivial) |>.comp continuous_ofReal.continuousOn fun x hx ↦ by
         simpa only [Set.mem_setOf_eq, ofReal_re] using hx.1
   obtain ⟨C, hC⟩ := bddBelow_def.mp <| IsCompact.bddBelow_image isCompact_Icc this
-  replace hC {x : ℝ} (hx : x ∈ Set.Icc 1 2) : C ≤ (LfunctionResidueClassAux a x).re :=
-    hC (LfunctionResidueClassAux a x).re <|
-      Set.mem_image_of_mem (fun x : ℝ ↦ (LfunctionResidueClassAux a x).re) hx
+  replace hC {x : ℝ} (hx : x ∈ Set.Icc 1 2) : C ≤ (LFunctionResidueClassAux a x).re :=
+    hC (LFunctionResidueClassAux a x).re <|
+      Set.mem_image_of_mem (fun x : ℝ ↦ (LFunctionResidueClassAux a x).re) hx
   refine ⟨-C, fun {x} hx ↦ ?_⟩
   rw [H hx.1, add_comm, sub_neg_eq_add, add_le_add_iff_left]
   exact hC <| Set.mem_Icc_of_Ioc hx
@@ -428,7 +428,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
     simp only [← add_div, ite_add_ite, zero_add, add_zero, ite_self]
   let C := ∑' n, residueClass a n / n
   have H₁ {x : ℝ} (hx : 1 < x) : ∑' n, residueClass a n / (n : ℝ) ^ x ≤ C := by
-    refine tsum_le_tsum (fun n ↦ ?_) ?_ key
+    refine Summable.tsum_le_tsum (fun n ↦ ?_) ?_ key
     · rcases n.eq_zero_or_pos with rfl | hn
       · simp only [Nat.cast_zero, Real.zero_rpow (zero_lt_one.trans hx).ne', div_zero, le_refl]
       · refine div_le_div_of_nonneg_left (residueClass_nonneg a _) (mod_cast hn) ?_
@@ -470,7 +470,7 @@ open ArithmeticFunction vonMangoldt
 variable {q : ℕ} [NeZero q] {a : ZMod q}
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
-integer and `a : ZMod q` is a unit, then there are infintely many prime numbers `p`
+integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
 theorem setOf_prime_and_eq_mod_infinite (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
@@ -480,7 +480,7 @@ theorem setOf_prime_and_eq_mod_infinite (ha : IsUnit a) :
     summable_of_finite_support <| support_residueClass_prime_div a ▸ H
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
-integer and `a : ZMod q` is a unit, then there are infintely many prime numbers `p`
+integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
 theorem forall_exists_prime_gt_and_eq_mod (ha : IsUnit a) (n : ℕ) :
     ∃ p > n, p.Prime ∧ (p : ZMod q) = a := by

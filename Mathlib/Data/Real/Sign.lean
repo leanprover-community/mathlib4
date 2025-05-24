@@ -14,9 +14,9 @@ real numbers to -1, positive real numbers to 1, and 0 to 0.
 
 ## Main definitions
 
- * `Real.sign r` is $\begin{cases} -1 & \text{if } r < 0, \\
-                               ~~\, 0 & \text{if } r = 0, \\
-                               ~~\, 1 & \text{if } r > 0. \end{cases}$
+* `Real.sign r` is $\begin{cases} -1 & \text{if } r < 0, \\
+                              ~~\, 0 & \text{if } r = 0, \\
+                              ~~\, 1 & \text{if } r > 0. \end{cases}$
 
 ## Tags
 
@@ -68,9 +68,6 @@ theorem sign_intCast (z : ℤ) : sign (z : ℝ) = ↑(Int.sign z) := by
       Int.cast_one]
   · rw [Int.cast_zero, sign_zero, Int.sign_zero, Int.cast_zero]
   · rw [sign_of_pos (Int.cast_pos.mpr hp), Int.sign_eq_one_of_pos hp, Int.cast_one]
-
-@[deprecated (since := "2024-04-17")]
-alias sign_int_cast := sign_intCast
 
 theorem sign_neg {r : ℝ} : sign (-r) = -sign r := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)

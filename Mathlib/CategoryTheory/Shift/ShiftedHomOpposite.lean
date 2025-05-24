@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.CategoryTheory.Triangulated.Opposite
+import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 import Mathlib.CategoryTheory.Shift.ShiftedHom
 
 /-! Shifted morphisms in the opposite category

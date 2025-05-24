@@ -6,7 +6,6 @@ Authors: Michael Lee
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
@@ -241,8 +240,8 @@ theorem sum_antidiagonal_card_esymm_psum_eq_zero :
   suffices (-1 : MvPolynomial σ R) ^ (k + 1) *
       ∑ a ∈ antidiagonal k, (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0 by
     simpa using this
-  simp [← sum_filter_add_sum_filter_not (antidiagonal k) (fun a ↦ a.fst < k), ← mul_esymm_eq_sum,
-    mul_add, ← mul_assoc, ← pow_add, mul_comm ↑k (esymm σ R k)]
+  simp [k, ← sum_filter_add_sum_filter_not (antidiagonal k) (fun a ↦ a.fst < k),
+    ← mul_esymm_eq_sum, mul_add, ← mul_assoc, ← pow_add, mul_comm ↑k (esymm σ R k)]
 
 /-- A version of Newton's identities which may be more useful in the case that we know the values of
 the elementary symmetric polynomials and would like to calculate the values of the power sums. -/

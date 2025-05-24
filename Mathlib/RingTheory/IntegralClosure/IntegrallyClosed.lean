@@ -165,7 +165,7 @@ variable (R)
 @[simp]
 theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [NoZeroSMulDivisors R A] [Nontrivial A] :
     integralClosure R A = ⊥ :=
-  (integralClosure_eq_bot_iff A (NoZeroSMulDivisors.algebraMap_injective _ _)).mpr ‹_›
+  (integralClosure_eq_bot_iff A (FaithfulSMul.algebraMap_injective _ _)).mpr ‹_›
 
 variable {A} {B : Type*} [CommRing B]
 
@@ -215,6 +215,15 @@ theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Alg
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_pow_mem_subalgebra hn hx
+
+theorem of_equiv (f : R ≃+* S) [h : IsIntegrallyClosed R] : IsIntegrallyClosed S := by
+  let _ : Algebra S R := f.symm.toRingHom.toAlgebra
+  let f : S ≃ₐ[S] R := AlgEquiv.ofRingEquiv fun _ ↦ rfl
+  let g : FractionRing S ≃ₐ[S] FractionRing R := IsFractionRing.algEquivOfAlgEquiv f
+  refine (isIntegrallyClosed_iff (FractionRing S)).mpr (fun hx ↦ ?_)
+  rcases (isIntegrallyClosed_iff _).mp h ((isIntegral_algEquiv g).mpr hx).tower_top with ⟨z, hz⟩
+  exact ⟨f.symm z, (IsFractionRing.algEquivOfAlgEquiv_algebraMap f.symm z).symm.trans <|
+    (AlgEquiv.symm_apply_eq g).mpr hz⟩
 
 variable (R S K)
 
@@ -297,6 +306,7 @@ lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (
   rw [RingHom.comp_id, hz, ← Algebra.smul_def, Submonoid.mk_smul]
 
 end localization
+
 /-- Any field is integral closed. -/
 /- Although `infer_instance` can find this if you import Mathlib, in this file they have not been
   proven yet. However, it is used to prove a fundamental property of `IsIntegrallyClosed`,

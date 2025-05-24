@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl
 -/
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Topological properties of fixed points

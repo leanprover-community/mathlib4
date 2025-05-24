@@ -43,8 +43,8 @@ lemma epiWithInjectiveKernel_iff {X Y : C} (g : X ⟶ Y) :
     exact ⟨_, inferInstance, _, S.zero,
       ⟨ShortComplex.Splitting.ofExactOfRetraction S
         (S.exact_of_f_is_kernel (kernelIsKernel g)) (Injective.factorThru (𝟙 _) (kernel.ι g))
-        (by simp) inferInstance⟩⟩
-  · rintro ⟨I, _,  f, w, ⟨σ⟩⟩
+        (by simp [S]) inferInstance⟩⟩
+  · rintro ⟨I, _, f, w, ⟨σ⟩⟩
     have : IsSplitEpi g := ⟨σ.s, σ.s_g⟩
     let e : I ≅ kernel g :=
       IsLimit.conePointUniqueUpToIso σ.shortExact.fIsKernel (limit.isLimit _)
