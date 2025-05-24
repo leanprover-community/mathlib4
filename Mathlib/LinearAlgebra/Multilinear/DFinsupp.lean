@@ -250,7 +250,7 @@ variable [∀ i, Module R (M i)] [Module R N]
 
 /-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
 on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π₀ j : κ i, M i j`. -/
-noncomputable def Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
+noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
     Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) where
   repr := by
     classical
