@@ -1502,6 +1502,7 @@ import Mathlib.Analysis.Convex.Intrinsic
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Join
 import Mathlib.Analysis.Convex.KreinMilman
+import Mathlib.Analysis.Convex.LinearIsometry
 import Mathlib.Analysis.Convex.Measure
 import Mathlib.Analysis.Convex.Mul
 import Mathlib.Analysis.Convex.PartitionOfUnity
