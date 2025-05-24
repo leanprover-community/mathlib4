@@ -535,7 +535,7 @@ theorem loop_eq {v : V} (p : G.Path v v) : p = Path.nil := by
   · simp at h
 
 theorem notMem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} :
-    ¬e ∈ (p : G.Walk v v).edges := by simp [p.loop_eq]
+    e ∉ (p : G.Walk v v).edges := by simp [p.loop_eq]
 
 @[deprecated (since := "2025-05-23")] alias not_mem_edges_of_loop := notMem_edges_of_loop
 
