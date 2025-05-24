@@ -16,7 +16,7 @@ of objects `x, y`, the Hom-category `x ⟶ y` is a groupoid (which is expressed 
 Given a bicategory `B`, we construct a bicategory `Pith B` which is obtained from `B`
 by discarding non-invertible 2-morphisms. This is realized in practice by applying
 `Core` to each hom-category of `C`. By construction, `Pith B` is a (2,1)-category,
-and for every (2,1)-category B', every pseudofunctor `B' ⥤ B` factors uniquely
+and for every (2,1)-category B', every pseudofunctor `B' ⥤ B` factors (essentially) uniquely
 through the inclusion from `Pith B` to `B` (see
 `CategoryTheory.Bicategory.Pith.pseudofunctorToPith`).
 
