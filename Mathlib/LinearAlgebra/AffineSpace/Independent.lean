@@ -760,8 +760,10 @@ end Ordered
 
 namespace Affine
 
-variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k V]
-variable [AffineSpace V P]
+variable (k : Type*) {V V₂ V₃ : Type*} (P P₂ P₃ : Type*)
+variable [Ring k] [AddCommGroup V] [AddCommGroup V₂] [AddCommGroup V₃]
+variable [Module k V] [Module k V₂] [Module k V₃]
+variable [AffineSpace V P] [AffineSpace V₂ P₂] [AffineSpace V₃ P₃]
 
 /-- A `Simplex k P n` is a collection of `n + 1` affinely
 independent points. -/
@@ -775,7 +777,7 @@ abbrev Triangle :=
 
 namespace Simplex
 
-variable {P}
+variable {P P₂ P₃}
 
 /-- Construct a 0-simplex from a point. -/
 def mkOfPoint (p : P) : Simplex k P 0 :=
@@ -866,6 +868,43 @@ lemma mem_affineSpan_range_faceOpposite_points_iff [Nontrivial k] {n : ℕ} [NeZ
     s.points i ∈ affineSpan k (Set.range (s.faceOpposite j).points) ↔ i ≠ j := by
   simp
 
+/-- Push forward an affine simplex under an injective affine map. -/
+@[simps (config := { fullyApplied := false })]
+def map {n : ℕ} (s : Affine.Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
+    Affine.Simplex k P₂ n where
+  points := f ∘ s.points
+  independent := s.independent.map' f hf
+
+@[simp]
+theorem map_id {n : ℕ} (s : Affine.Simplex k P n) :
+    s.map (AffineMap.id _ _) Function.injective_id = s :=
+  ext fun _ => rfl
+
+theorem map_comp {n : ℕ} (s : Affine.Simplex k P n)
+    (f : P →ᵃ[k] P₂) (hf : Function.Injective f)
+    (g : P₂ →ᵃ[k] P₃) (hg : Function.Injective g)
+    (hfg : Function.Injective (g ∘ f) := hg.comp hf) :
+    s.map (g.comp f) hfg = (s.map f hf).map g hg :=
+  ext fun _ => rfl
+
+/-- Mapping a simplex takes the image of the points. -/
+@[simp]
+theorem range_points_map {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
+    Set.range (s.map f hf).points = f '' Set.range s.points := by
+  rw [map, Set.range_comp]
+
+@[simp]
+theorem face_map {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f)
+    {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) :
+    (s.map f hf).face h = (s.face h).map f hf :=
+  rfl
+
+@[simp]
+theorem faceOpposite_map {n : ℕ} [NeZero n] (s : Simplex k P n) (f : P →ᵃ[k] P₂)
+    (hf : Function.Injective f) (i : Fin (n + 1)) :
+    (s.map f hf).faceOpposite i = (s.faceOpposite i).map f hf :=
+  rfl
+
 /-- Remap a simplex along an `Equiv` of index types. -/
 @[simps]
 def reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1)) : Simplex k P n :=
@@ -898,6 +937,11 @@ theorem reindex_symm_reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (n + 1) �
 theorem reindex_range_points {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     Set.range (s.reindex e).points = Set.range s.points := by
   rw [reindex, Set.range_comp, Equiv.range_eq_univ, Set.image_univ]
+
+theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1))
+    (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
+    (s.map f hf).reindex e = (s.reindex e).map f hf :=
+  rfl
 
 end Simplex
 
