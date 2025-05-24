@@ -882,9 +882,7 @@ variable [AddCommMonoid M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S
 variable (S) in
 /-- `LinearMap.compMultilinearMap` as an `S`-linear map. -/
 @[simps]
-def _root_.LinearMap.compMultilinearMapₗ [Semiring S] [Module S M₂] [Module S M₃]
-    [SMulCommClass R S M₂] [SMulCommClass R S M₃] [LinearMap.CompatibleSMul M₂ M₃ S R]
-    (g : M₂ →ₗ[R] M₃) :
+def _root_.LinearMap.compMultilinearMapₗ [LinearMap.CompatibleSMul M₂ M₃ S R] (g : M₂ →ₗ[R] M₃) :
     MultilinearMap R M₁ M₂ →ₗ[S] MultilinearMap R M₁ M₃ where
   toFun := g.compMultilinearMap
   map_add' := g.compMultilinearMap_add
@@ -895,13 +893,11 @@ variable (S) in
 
 This is `LinearMap.compMultilinearMap` as an `S`-linear equivalence. -/
 @[simps! apply symm_apply]
-def _root_.LinearEquiv.congrRightMultilinear [Semiring S] [Module S M₂] [Module S M₃]
-    [SMulCommClass R S M₂] [SMulCommClass R S M₃]
-    [LinearMap.CompatibleSMul M₂ M₃ S R] [LinearMap.CompatibleSMul M₃ M₂ S R]
-    (g : M₂ ≃ₗ[R] M₃) :
+def _root_.LinearEquiv.congrRightMultilinear
+    [LinearMap.CompatibleSMul M₂ M₃ S R] [LinearMap.CompatibleSMul M₃ M₂ S R] (g : M₂ ≃ₗ[R] M₃) :
     MultilinearMap R M₁ M₂ ≃ₗ[S] MultilinearMap R M₁ M₃ where
-  __ := LinearMap.compMultilinearMapₗ S g.toLinearMap
-  invFun := LinearMap.compMultilinearMapₗ S g.symm.toLinearMap
+  __ := g.toLinearMap.compMultilinearMapₗ S
+  invFun := g.symm.toLinearMap.compMultilinearMapₗ S
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
 
