@@ -78,6 +78,11 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
   mem_map_of_injective f.2
 
+@[simp]
+theorem mem_map_mk (f : α → β) {a : α} {s : Finset α} (hf : Function.Injective f) :
+    f a ∈ s.map ⟨f, hf⟩ ↔ a ∈ s :=
+  Finset.mem_map' _
+
 theorem mem_map_of_mem (f : α ↪ β) {a} {s : Finset α} : a ∈ s → f a ∈ s.map f :=
   (mem_map' _).2
 
