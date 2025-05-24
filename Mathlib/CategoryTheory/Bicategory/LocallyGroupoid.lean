@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
 import Mathlib.CategoryTheory.Core
-import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
 /-!
 # (2,1)-categories
@@ -18,14 +17,15 @@ Given a bicategory `B`, we construct a bicategory `Pith B` which is obtained fro
 by discarding non-invertible 2-morphisms. This is realized in practice by applying
 `Core` to each hom-category of `C`. By construction, `Pith B` is a (2,1)-category,
 and for every (2,1)-category B', every pseudofunctor `B' ⥤ B` factors uniquely
-through the inclusion from `Pith B` to `B`.
+through the inclusion from `Pith B` to `B` (see
+`CategoryTheory.Bicategory.Pith.pseudofunctorToPith`).
 
 ## References
 - [Kerodon, section 1.2.2](https://kerodon.net/tag/02GD).
 
 -/
 
-namespace CategoryTheory
+namespace CategoryTheory.Bicategory
 
 open Bicategory
 
@@ -109,6 +109,7 @@ instance : Bicategory.{w₁, v₁} (Pith B) where
 example : IsLocallyGroupoid (Pith B) := by infer_instance
 
 /-- The canonical inclusion from the pith of `B` to `B`, as a Pseudofunctor. -/
+@[simps]
 def inclusion : Pseudofunctor (Pith B) B where
   obj x := x.as
   map f := f.of
@@ -132,6 +133,26 @@ noncomputable def pseudofunctorToPith {B' : Type*} [Bicategory B']
   mapComp f g :=
     { hom := .mk <| F.mapComp f g
       inv := .mk <| (F.mapComp f g).symm }
+
+section
+
+variable {B} {B' : Type*} [Bicategory B'] [IsLocallyGroupoid B'] (F : Pseudofunctor B' B)
+
+/-- The hom direction of the (strong) natural isomorphism of pseudofunctors
+between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
+noncomputable def pseudofunctorToPithCompInclusionStrongIsoHom :
+    Pseudofunctor.StrongTrans ((pseudofunctorToPith F).comp (inclusion B)) F where
+  app b' := 𝟙 _
+  naturality f := (ρ_ _) ≪≫ (λ_ _).symm
+
+/-- The inv direction of the (strong) natural isomorphism of pseudofunctors
+between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
+noncomputable def pseudofunctorToPithCompInclusionStrongIsoInv :
+    Pseudofunctor.StrongTrans F ((pseudofunctorToPith F).comp (inclusion B)) where
+  app b' := 𝟙 _
+  naturality f := (ρ_ _) ≪≫ (λ_ _).symm
+
+end
 
 end Pith
 
@@ -165,4 +186,4 @@ noncomputable def Pseudofunctor.ofOplaxFunctorToLocallyGroupoid
     { hom := F.mapComp f g
       inv := inv <| F.mapComp f g}
 
-end CategoryTheory
+end CategoryTheory.Bicategory
