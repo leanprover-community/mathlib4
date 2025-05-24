@@ -102,7 +102,7 @@ theorem ordinaryHypergeometric_eq_tsum : ₂F₁ a b c =
   funext (ordinaryHypergeometric_sum_eq a b c)
 
 theorem ordinaryHypergeometricSeries_apply_zero (n : ℕ) :
-    (ordinaryHypergeometricSeries 𝔸 a b c n fun _ => 0) = Pi.single (f := fun _ => 𝔸) 0 1 n := by
+    (ordinaryHypergeometricSeries 𝔸 a b c n fun _ => 0) = Pi.single (M := fun _ => 𝔸) 0 1 n := by
   rw [ordinaryHypergeometricSeries, ofScalars_apply_eq, ordinaryHypergeometricCoefficient]
   cases n <;> simp
 

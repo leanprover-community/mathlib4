@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Torsion
+import Mathlib.Algebra.Notation.Pi
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Equiv.Defs
@@ -454,7 +454,7 @@ instance Multiplicative.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β]
 
 lemma Pi.mulSingle_multiplicativeOfAdd_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
     [(i : ι) → AddMonoid (M i)] (i : ι) (a : M i) (j : ι) :
-    Pi.mulSingle (f := fun i ↦ Multiplicative (M i)) i (Multiplicative.ofAdd a) j =
+    Pi.mulSingle (M := fun i ↦ Multiplicative (M i)) i (.ofAdd a) j =
       Multiplicative.ofAdd ((Pi.single i a) j) := by
   rcases eq_or_ne j i with rfl | h
   · simp only [mulSingle_eq_same, single_eq_same]
@@ -463,8 +463,7 @@ lemma Pi.mulSingle_multiplicativeOfAdd_eq {ι : Type*} [DecidableEq ι] {M : ι 
 
 lemma Pi.single_additiveOfMul_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
     [(i : ι) → Monoid (M i)] (i : ι) (a : M i) (j : ι) :
-    Pi.single (f := fun i ↦ Additive (M i)) i (Additive.ofMul a) j =
-      Additive.ofMul ((Pi.mulSingle i a) j) := by
+    Pi.single (M := fun i ↦ Additive (M i)) i (.ofMul a) j = .ofMul (Pi.mulSingle i a j) := by
   rcases eq_or_ne j i with rfl | h
   · simp only [mulSingle_eq_same, single_eq_same]
   · simp only [single, ne_eq, h, not_false_eq_true, Function.update_of_ne, zero_apply, mulSingle,

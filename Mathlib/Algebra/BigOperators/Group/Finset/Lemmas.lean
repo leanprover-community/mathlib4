@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Notation.Support
 
 /-!
 # Miscellaneous lemmas on big operators

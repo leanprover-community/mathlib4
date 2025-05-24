@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Notation.Support
 import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -74,7 +74,7 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-assert_not_exists CompleteLattice Submonoid
+assert_not_exists CompleteLattice Monoid
 
 noncomputable section
 

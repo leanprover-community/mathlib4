@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Notation.Support
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Order.WellFoundedSet
 
@@ -176,13 +176,13 @@ variable {a b : Γ} {r : R}
 
 @[simp]
 theorem coeff_single_same (a : Γ) (r : R) : (single a r).coeff a = r := by
-  classical exact Pi.single_eq_same (f := fun _ => R) a r
+  classical exact Pi.single_eq_same (M := fun _ => R) a r
 
 @[deprecated (since := "2025-01-31")] alias single_coeff_same := coeff_single_same
 
 @[simp]
 theorem coeff_single_of_ne (h : b ≠ a) : (single a r).coeff b = 0 := by
-  classical exact Pi.single_eq_of_ne (f := fun _ => R) h r
+  classical exact Pi.single_eq_of_ne (M := fun _ => R) h r
 
 @[deprecated (since := "2025-01-31")] alias single_coeff_of_ne := coeff_single_of_ne
 
