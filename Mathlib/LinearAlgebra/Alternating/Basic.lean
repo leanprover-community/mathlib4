@@ -565,7 +565,10 @@ section DomLcongr
 variable (ι R N)
 variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 
-/-- Construct a linear equivalence between maps from a linear equivalence between domains. -/
+/-- Construct a linear equivalence between maps from a linear equivalence between domains.
+
+This is `AlternatingMap.compLinearMap` as an isomorphism,
+and the alternating version of `LinearEquiv.congrLeftMultilinear`. -/
 @[simps apply]
 def domLCongr (e : M ≃ₗ[R] M₂) : M [⋀^ι]→ₗ[R] N ≃ₗ[S] (M₂ [⋀^ι]→ₗ[R] N) where
   toFun f := f.compLinearMap e.symm
@@ -894,6 +897,20 @@ variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddComm
   [AddCommMonoid M₂''] [AddCommMonoid N''] [AddCommMonoid N₂''] [Module R' M''] [Module R' M₂'']
   [Module R' N''] [Module R' N₂'']
 
+/-- An isomorphism of multilinear maps given an isomorphism between their codomains.
+
+This is `Linear.compAlternatingMap` as an isomorphism,
+and the alternating version of `LinearEquiv.congrRightMultilinear`. -/
+@[simps!]
+def LinearEquiv.congrRightAlternating (e : N'' ≃ₗ[R'] N₂'') :
+    M''[⋀^ι]→ₗ[R'] N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[R'] N₂'') where
+  toFun f := e.compAlternatingMap f
+  invFun f := e.symm.compAlternatingMap f
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
 /-- The space of constant maps is equivalent to the space of maps that are alternating with respect
 to an empty family. -/
 @[simps]
@@ -904,4 +921,3 @@ def AlternatingMap.constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] (M'' 
   invFun f := f 0
   left_inv _ := rfl
   right_inv f := ext fun _ => AlternatingMap.congr_arg f <| Subsingleton.elim _ _
-
