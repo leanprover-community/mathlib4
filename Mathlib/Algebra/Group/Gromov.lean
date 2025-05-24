@@ -452,4 +452,4 @@ lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g 
       simp only [ofMul_toMul]
       exact hb
   .
-    have foo := ENNReal.eLpNorm_top_convolution_le
+    have foo := ENNReal.eLpNorm_top_convolution_le (G := Additive (MulOpposite G)) (f := (fun x => f x.toMul.unop))
