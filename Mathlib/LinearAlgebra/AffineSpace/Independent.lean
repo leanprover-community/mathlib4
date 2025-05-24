@@ -869,7 +869,7 @@ lemma mem_affineSpan_range_faceOpposite_points_iff [Nontrivial k] {n : ℕ} [NeZ
   simp
 
 /-- Push forward an affine simplex under an injective affine map. -/
-@[simps (config := { fullyApplied := false })]
+@[simps -fullyApplied]
 def map {n : ℕ} (s : Affine.Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     Affine.Simplex k P₂ n where
   points := f ∘ s.points
