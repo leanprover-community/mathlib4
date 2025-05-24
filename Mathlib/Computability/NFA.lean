@@ -1,20 +1,41 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson
+Authors: Fox Thomson, Maja Kądziołka
 -/
 import Mathlib.Computability.DFA
 import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Nondeterministic Finite Automata
-This file contains the definition of a Nondeterministic Finite Automaton (NFA), a state machine
-which determines whether a string (implemented as a list over an arbitrary alphabet) is in a regular
-set by evaluating the string over every possible path.
-We show that DFA's are equivalent to NFA's however the construction from NFA to DFA uses an
-exponential number of states.
-Note that this definition allows for Automaton with infinite states; a `Fintype` instance must be
-supplied for true NFA's.
+
+A Nondeterministic Finite Automaton (NFA) is a state machine which
+decides membership in a particular `Language`, by following every
+possible path that describes an input string.
+
+We show that DFAs and NFAs can decide the same languages, by constructing
+an equivalent DFA for every NFA, and vice versa.
+
+As constructing a DFA from an NFA uses an exponential number of states,
+we re-prove the pumping lemma instead of lifting `DFA.pumping_lemma`,
+in order to obtain the optimal bound on the minimal length of the string.
+
+Like `DFA`, this definition allows for automata with infinite states;
+a `Fintype` instance must be supplied for true NFAs.
+
+## Main definitions
+
+* `NFA α σ`: automaton over alphabet `α` and set of states `σ`
+* `M.evalFrom S x`: set of possible ending states for an input word `x`
+  and set of initial states `S`
+* `M.accepts`: the language accepted by the NFA `M`
+* `M.Path s t x`: a specific path from `s` to `t` for an input word `x`
+* `p.supp`: set of states visited by the path `p`
+
+## Main theorems
+
+* `NFA.pumping_lemma`: every sufficiently long string accepted by the NFA has a substring that can
+  be repeated arbitrarily many times (and have the overall string still be accepted)
 -/
 
 open Set
@@ -55,6 +76,11 @@ variable (M) in
 theorem stepSet_empty (a : α) : M.stepSet ∅ a = ∅ := by simp [stepSet]
 
 variable (M) in
+@[simp]
+theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
+  simp [stepSet]
+
+variable (M) in
 /-- `M.evalFrom S x` computes all possible paths through `M` with input `x` starting at an element
   of `S`. -/
 def evalFrom (S : Set σ) : List α → Set σ :=
@@ -72,9 +98,31 @@ theorem evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet 
 
 variable (M) in
 @[simp]
+theorem evalFrom_cons (S : Set σ) (a : α) (x : List α) :
+    M.evalFrom S (a :: x) = M.evalFrom (M.stepSet S a) x :=
+  rfl
+
+@[simp]
 theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
     M.evalFrom S (x ++ [a]) = M.stepSet (M.evalFrom S x) a := by
   simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
+
+variable (M) in
+@[simp]
+theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
+    ∀ (x : List α), M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x
+  | [] => by simp
+  | a :: x => by simp [stepSet, evalFrom_biUnion _ _ x]
+
+variable (M) in
+theorem evalFrom_eq_biUnion_singleton (S : Set σ) (x : List α) :
+    M.evalFrom S x = ⋃ s ∈ S, M.evalFrom {s} x := by
+  simp [← evalFrom_biUnion]
+
+theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
+    s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
+  rw [evalFrom_eq_biUnion_singleton]
+  simp
 
 variable (M) in
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
@@ -105,6 +153,159 @@ theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S �
   rfl
 
 variable (M) in
+/-- `M.Path` represents a concrete path through the NFA from a start state to an end state
+for a particular word.
+
+Note that due to the non-deterministic nature of the automata, the can be more than one `Path`
+for a given word.
+
+Also note that this is `Type` and not a `Prop`, so that we can speak about the properties
+of a particular `Path`, such as the set of states visited along the way (defined as `Path.supp`). -/
+inductive Path : σ → σ → List α → Type (max u v)
+  | nil (s : σ) : Path s s []
+  | cons (t s u : σ) (a : α) (x : List α) :
+      t ∈ M.step s a → Path t u x → Path s u (a :: x)
+
+/-- Knowing that a path must exist, construct one particular example. -/
+noncomputable def path_of_evalFrom {s t : σ} {x : List α} (h : t ∈ M.evalFrom {s} x) :
+    M.Path s t x :=
+  match x with
+  | [] =>
+    have h : s = t := by simp at h; tauto
+    h ▸ Path.nil s
+  | a :: x =>
+    have h : ∃ s' ∈ M.step s a, t ∈ M.evalFrom {s'} x :=
+      by rw [evalFrom_cons, mem_evalFrom_iff_exists, stepSet_singleton] at h; exact h
+    have ⟨s', h₁, h₂⟩ := Classical.indefiniteDescription _ h
+    Path.cons s' _ _ _ _ h₁ (path_of_evalFrom h₂)
+
+theorem evalFrom_of_path {s t : σ} {x : List α} (h : M.Path s t x) : t ∈ M.evalFrom {s} x := by
+  induction h with
+  | nil => simp
+  | cons s' s t a x h₁ h₂ ih =>
+    simp [M.mem_evalFrom_iff_exists (S := M.step _ _)]
+    tauto
+
+/-- Knowing that the NFA accepts a word, choose a concrete start state, path, and accept state. -/
+noncomputable def path_of_accepts {x : List α} (h : x ∈ M.accepts) :
+    (s t : σ) × M.Path s t x ×' s ∈ M.start ∧ t ∈ M.accept :=
+  have ⟨t, ht, h⟩ := Classical.indefiniteDescription _ (M.mem_accepts.1 h)
+  have ⟨s, hs, h⟩ := Classical.indefiniteDescription _ (M.mem_evalFrom_iff_exists.1 h)
+  ⟨s, t, M.path_of_evalFrom h, hs, ht⟩
+
+protected theorem Path.accepts {s t : σ} {x : List α} (p : M.Path s t x)
+    (hs : s ∈ M.start) (ht : t ∈ M.accept) : x ∈ M.accepts := by
+  apply M.evalFrom_of_path at p
+  simp [mem_accepts, M.mem_evalFrom_iff_exists (S := M.start)]
+  tauto
+
+/-- Append two paths. -/
+def Path.append {s t u : σ} {x y : List α} (p : M.Path s t x) (q : M.Path t u y) :
+    M.Path s u (x ++ y) :=
+  match p with
+  | nil _ => q
+  | cons s' _ _ _ _ h p' =>
+    cons s' _ _ _ _ h (p'.append q)
+
+/-- Split `p` at the point just after it has matched `x`. -/
+def Path.splitAfter {s u : σ} {y : List α} (x : List α) (p : M.Path s u (x ++ y)) :
+    (t : σ) × M.Path s t x × M.Path t u y :=
+  match x, p with
+  | [], p => ⟨s, nil s, p⟩
+  | _ :: x, cons s' _ _ _ _ h p =>
+    let ⟨t, p', q⟩ := p.splitAfter x
+    ⟨t, cons s' _ _ _ _ h p', q⟩
+
+/-- Set of states visited by a path. -/
+@[simp]
+def Path.supp [DecidableEq σ] {s t : σ} {x : List α} (p : M.Path s t x) : Finset σ :=
+  match p with
+  | nil s => {s}
+  | cons _ _ _ _ _ _ p => {s} ∪ p.supp
+
+/-- Split `p` at the point where `t` occurs in `p.supp`. -/
+def Path.split_of_mem_supp [DecidableEq σ] {x : List α} {s t u : σ}
+    (p : M.Path s u x) (h : t ∈ p.supp) :
+    (x₁ x₂ : List α) × M.Path s t x₁ × M.Path t u x₂ ×' x₁ ++ x₂ = x :=
+  if e : s = t then
+    ⟨[], x, e ▸ nil s, e ▸ p, rfl⟩
+  else
+    match p with
+    | nil _ => by simp at h; tauto
+    | cons s' _ _ a x h' p =>
+      have : t ∈ p.supp := by simp at h; tauto
+      have ⟨x₁, x₂, p', q, e'⟩ := p.split_of_mem_supp this
+      ⟨a :: x₁, x₂, cons s' _ _ _ _ h' p', q, e' ▸ rfl⟩
+
+/-- Knowing that the length of the word guarantees that a state will repeat
+somewhere along the path, find one such state and split the path around it. -/
+def Path.split_of_supp_le_length [DecidableEq σ] {x : List α} {s u : σ}
+    (p : M.Path s u x) (h : p.supp.card ≤ x.length) :
+    (t : σ) × (x₁ x₂ x₃ : List α) × M.Path s t x₁ × M.Path t t x₂ × M.Path t u x₃ ×'
+    x = x₁ ++ x₂ ++ x₃ ∧ x₂ ≠ [] :=
+  match p with
+  | nil _ => by simp at h
+  | cons s₁ _ _ a x h₁ p =>
+    if h' : s ∈ p.supp then
+      have ⟨x₂, x₃, p₂, p₃, e⟩ := p.split_of_mem_supp h'
+      have p₂ : M.Path s s (a :: x₂) := cons s₁ _ _ _ _ h₁ p₂
+      ⟨s, [], a :: x₂, x₃, nil s, p₂, p₃, e ▸ rfl, by simp⟩
+    else
+      have hle : p.supp.card ≤ x.length := by simpa [h', add_comm 1] using h
+      have ⟨t, x₁, x₂, x₃, p₁, p₂, p₃, e, hne⟩ := p.split_of_supp_le_length hle
+      ⟨t, a :: x₁, x₂, x₃, cons s₁ _ _ _ _ h₁ p₁, p₂, p₃, e ▸ rfl, hne⟩
+
+/-- Repeat a looping path to construct a path for `x∗`. -/
+noncomputable def Path.of_mem_kstar {x x' : List α} {s : σ} (p : M.Path s s x)
+    (h : x' ∈ ({x}∗ : Language α)) : M.Path s s x' := by
+  rw [Language.mem_kstar] at h
+  obtain ⟨xs, rfl, hxs⟩ := Classical.indefiniteDescription _ h; clear h
+  induction xs with
+  | nil => exact nil s
+  | cons a xs ih =>
+    obtain rfl := hxs a List.mem_cons_self |> Set.mem_singleton_iff.1
+    rw [List.flatten_cons]
+    apply p.append
+    apply ih
+    tauto
+
+variable (M) in
+theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
+    (hlen : Fintype.card σ ≤ x.length) :
+    ∃ a b c,
+      x = a ++ b ++ c ∧
+        a.length + b.length ≤ Fintype.card σ ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
+  classical -- Discharge the DecidableEq assumptions
+  have ⟨s, u, p, hs, hu⟩ := M.path_of_accepts hx
+  let k := Fintype.card σ
+  -- To make sure that the repeated state occurs within the first `k` steps, split
+  -- the path and carry out the rest of the argument on the first `k` characters of the word.
+  have e₁ : x.take k ++ x.drop k = x := x.take_append_drop k
+  have ⟨u', p, p₄⟩ := (e₁ ▸ p).splitAfter (x.take k)
+  have hle : p.supp.card ≤ (x.take k).length := calc
+    p.supp.card ≤ Fintype.card σ := p.supp.card_le_univ
+    _           = (x.take k).length := by simp [hlen, k]
+  -- Find the repeating state `t`.
+  have ⟨t, a, b, c, p₁, p₂, p₃, e₂, hne⟩ := p.split_of_supp_le_length hle
+  refine ⟨a, b, c ++ x.drop k, ?eq, ?le, hne, ?mem⟩
+  case eq =>
+    nth_rw 1 [← e₁, e₂]
+    simp
+  case le => calc
+    a.length + b.length ≤ (a ++ b ++ c).length := by simp
+    _                   = (x.take k).length := by rw [e₂]
+    _                   = Fintype.card σ := by simp [hlen, k]
+  case mem =>
+    intro y hy
+    obtain ⟨ab, hab, c', hc', rfl⟩ := Language.mem_mul.1 hy; clear hy
+    obtain ⟨a', ha', b', hb', rfl⟩ := Language.mem_mul.1 hab; clear hab
+    rw [Set.mem_singleton_iff] at ha' hc'
+    substs a' c'
+    have p₂' := p₂.of_mem_kstar hb'
+    have p' := p₁.append p₂' |>.append p₃ |>.append p₄
+    simpa using p'.accepts hs hu
+
+variable (M) in
 /-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
   states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
 def toDFA : DFA α (Set σ) where
@@ -117,14 +318,6 @@ theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
   ext x
   rw [mem_accepts, DFA.mem_accepts]
   constructor <;> · exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
-
-theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
-    (hlen : Fintype.card (Set σ) ≤ List.length x) :
-    ∃ a b c,
-      x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
-  rw [← toDFA_correct] at hx ⊢
-  exact M.toDFA.pumping_lemma hx hlen
 
 end NFA
 
