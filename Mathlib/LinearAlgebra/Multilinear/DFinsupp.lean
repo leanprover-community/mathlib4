@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Sophie Morel
 -/
 import Mathlib.Data.Fintype.Quotient
+import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Multilinear.Basic
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Interactions between finitely-supported functions and multilinear maps
@@ -238,4 +240,28 @@ end CommSemiring
 
 end dfinsuppFamily
 
+
+section Basis
+variable {ι'} {M : ι → Type uM} {N : Type uN}
+
+variable [Fintype ι] [CommSemiring R]
+variable [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
+variable [∀ i, Module R (M i)] [Module R N]
+
+/-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
+on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π₀ j : κ i, M i j`. -/
+noncomputable def Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
+    Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) where
+  repr := by
+    classical
+    refine ?_ ≪≫ₗ (finsuppLequivDFinsupp R).symm
+    suffices MultilinearMap R (fun i => Π₀ j : κ i, R) (Π₀ i : ι', R) ≃ₗ[R] Π₀ (x : ((i : ι) → κ i) × ι'), R from
+      -- some standard congruence result
+      sorry
+    refine (fromDFinsuppEquiv _ _).symm ≪≫ₗ
+      LinearEquiv.piCongrRight (fun i => MultilinearMap.piRingEquiv.symm) ≪≫ₗ ?_
+    -- some annoying swap between Π and Π₀
+    sorry
+
+end Basis
 end MultilinearMap
