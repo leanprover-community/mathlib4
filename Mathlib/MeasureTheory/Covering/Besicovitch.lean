@@ -331,7 +331,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     (there is such a ball, otherwise one would have used the color `k` and not `N`).
     Then this family of `N+1` balls forms a satellite configuration, which is forbidden by
     the assumption `hN`. -/
-  induction' i using Ordinal.induction with i IH
+  induction i using Ordinal.induction with | _ i IH
   let A : Set ℕ :=
     ⋃ (j : { j // j < i })
       (_ : (closedBall (p.c (p.index j)) (p.r (p.index j)) ∩
@@ -744,11 +744,13 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
     simp only [u, Function.comp_apply, Function.iterate_succ']
   have Pu : ∀ n, P (u n) := by
     intro n
-    induction' n with n IH
-    · simp only [P, u, Prod.forall, id, Function.iterate_zero]
+    induction n with
+    | zero =>
+      simp only [P, u, Prod.forall, id, Function.iterate_zero]
       simp only [Finset.notMem_empty, IsEmpty.forall_iff, Finset.coe_empty, forall₂_true_iff,
         and_self_iff, pairwiseDisjoint_empty]
-    · rw [u_succ]
+    | succ n IH =>
+      rw [u_succ]
       exact (hF (u n) IH).2.1
   refine ⟨⋃ n, u n, countable_iUnion fun n => (u n).countable_toSet, ?_, ?_, ?_, ?_⟩
   · intro p hp
@@ -766,17 +768,16 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       exact biUnion_subset_biUnion_left (subset_iUnion (fun i => (u i : Set (α × ℝ))) n)
     have B :
         ∀ n, μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n), closedBall p.fst p.snd) ≤
-          (N / (N + 1) : ℝ≥0∞) ^ n * μ s := by
-      intro n
-      induction' n with n IH
-      · simp only [u, le_refl, diff_empty, one_mul, iUnion_false, iUnion_empty, pow_zero,
+          (N / (N + 1) : ℝ≥0∞) ^ n * μ s := fun n ↦ by
+      induction n with
+      | zero =>
+        simp only [u, le_refl, diff_empty, one_mul, iUnion_false, iUnion_empty, pow_zero,
           Function.iterate_zero, id, Finset.notMem_empty]
-      calc
-        μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n.succ), closedBall p.fst p.snd) ≤
-            N / (N + 1) * μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n), closedBall p.fst p.snd) := by
-          rw [u_succ]; exact (hF (u n) (Pu n)).2.2
-        _ ≤ (N / (N + 1) : ℝ≥0∞) ^ n.succ * μ s := by
-          rw [pow_succ', mul_assoc]; exact mul_le_mul_left' IH _
+      | succ n IH =>
+        calc
+          _ ≤ N / (N + 1) * μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n), closedBall p.fst p.snd) := by
+            rw [u_succ]; exact (hF (u n) (Pu n)).2.2
+          _ ≤ _ := by rw [pow_succ', mul_assoc]; exact mul_le_mul_left' IH _
     have C : Tendsto (fun n : ℕ => ((N : ℝ≥0∞) / (N + 1)) ^ n * μ s) atTop (𝓝 (0 * μ s)) := by
       apply ENNReal.Tendsto.mul_const _ (Or.inr (measure_lt_top μ s).ne)
       apply ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one

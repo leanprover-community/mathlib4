@@ -46,7 +46,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 
 * Tutte's Theorem
 
-* Hall's Marriage Theorem (see `Mathlib.Combinatorics.Hall.Basic`)
+* Hall's Marriage Theorem (see `Mathlib/Combinatorics/Hall/Basic.lean`)
 -/
 
 assert_not_exists Field TwoSidedIdeal

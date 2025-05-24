@@ -370,10 +370,12 @@ variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.aestronglyMeasurable_prod' (l : List (α → M))
     (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) : AEStronglyMeasurable l.prod μ := by
-  induction' l with f l ihl; · exact aestronglyMeasurable_one
-  rw [List.forall_mem_cons] at hl
-  rw [List.prod_cons]
-  exact hl.1.mul (ihl hl.2)
+  induction l with
+  | nil => exact aestronglyMeasurable_one
+  | cons f l ihl =>
+    rw [List.forall_mem_cons] at hl
+    rw [List.prod_cons]
+    exact hl.1.mul (ihl hl.2)
 
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.aestronglyMeasurable_prod

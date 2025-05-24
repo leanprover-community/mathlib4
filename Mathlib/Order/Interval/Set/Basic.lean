@@ -18,11 +18,11 @@ using the following naming conventions:
 
 Each interval has the name `I` + letter for left side + letter for right side.
 For instance, `Ioc a b` denotes the interval `(a, b]`.
-The definitions can be found in `Mathlib.Order.Interval.Set.Defs`.
+The definitions can be found in `Mathlib/Order/Interval/Set/Defs.lean`.
 
 This file contains basic facts on inclusion of and set operations on intervals
 (where the precise statements depend on the order's properties;
-statements requiring `LinearOrder` are in `Mathlib.Order.Interval.Set.LinearOrder`).
+statements requiring `LinearOrder` are in `Mathlib/Order/Interval/Set/LinearOrder.lean`).
 
 TODO: This is just the beginning; a lot of rules are missing
 -/

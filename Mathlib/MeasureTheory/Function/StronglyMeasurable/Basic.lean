@@ -555,10 +555,12 @@ variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M] {m : Meas
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.stronglyMeasurable_prod' (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) : StronglyMeasurable l.prod := by
-  induction' l with f l ihl; · exact stronglyMeasurable_one
-  rw [List.forall_mem_cons] at hl
-  rw [List.prod_cons]
-  exact hl.1.mul (ihl hl.2)
+  induction l with
+  | nil => exact stronglyMeasurable_one
+  | cons f l ihl =>
+    rw [List.forall_mem_cons] at hl
+    rw [List.prod_cons]
+    exact hl.1.mul (ihl hl.2)
 
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
