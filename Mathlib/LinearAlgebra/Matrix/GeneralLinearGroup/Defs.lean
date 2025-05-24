@@ -189,6 +189,7 @@ end GeneralLinearGroup
 namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
+  {S : Type*} [CommRing S] [Algebra R S]
 
 /-- `toGL` is the map from the special linear group to the general linear group. -/
 def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R where
@@ -217,6 +218,28 @@ theorem coeToGL_det (g : SpecialLinearGroup n R) :
 
 @[simp]
 lemma coe_GL_coe_matrix (g : SpecialLinearGroup n R) : ((toGL g) : Matrix n n R) = g := rfl
+
+variable (S) in
+/-- `mapGL` is the map from the special linear group over `R` to the general linear group over
+`S`, where `S` is an `R`-algebra. -/
+def mapGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n S :=
+  toGL.comp (map (algebraMap R S))
+
+@[simp]
+lemma mapGL_inj [FaithfulSMul R S] (g g' : SpecialLinearGroup n R) :
+    mapGL S g = mapGL S g' ↔ g = g' := by
+  refine ⟨fun h ↦ ?_, by tauto⟩
+  apply SpecialLinearGroup.ext
+  simpa [mapGL, toGL_inj, ext_iff, (FaithfulSMul.algebraMap_injective R S).eq_iff] using h
+
+lemma mapGL_injective [FaithfulSMul R S]  :
+    Function.Injective (mapGL (R := R) (n := n) S) :=
+  fun a b ↦ by simp
+
+@[simp]
+lemma mapGL_coe_matrix (g : SpecialLinearGroup n R) :
+    ((mapGL S g) : Matrix n n S) = g.map (algebraMap R S) :=
+  rfl
 
 end SpecialLinearGroup
 
