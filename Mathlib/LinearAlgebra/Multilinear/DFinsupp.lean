@@ -254,10 +254,15 @@ noncomputable def Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : B
     Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) where
   repr := by
     classical
+    -- switch to dfinsupp
     refine ?_ ≪≫ₗ (finsuppLequivDFinsupp R).symm
-    suffices MultilinearMap R (fun i => Π₀ j : κ i, R) (Π₀ i : ι', R) ≃ₗ[R] Π₀ (x : ((i : ι) → κ i) × ι'), R from
-      -- some standard congruence result
-      sorry
+    let b := fun i => (b i).repr ≪≫ₗ (finsuppLequivDFinsupp R)
+    let b' := b'.repr ≪≫ₗ (finsuppLequivDFinsupp R)
+    suffices
+        MultilinearMap R (fun i => Π₀ j : κ i, R) (Π₀ i : ι', R) ≃ₗ[R]
+          Π₀ (x : ((i : ι) → κ i) × ι'), R from
+      b'.congrRightMultilinear R ≪≫ₗ LinearEquiv.congrLeftMultilinear (b · |>.symm) ≪≫ₗ this
+
     refine (fromDFinsuppEquiv _ _).symm ≪≫ₗ
       LinearEquiv.piCongrRight (fun i => MultilinearMap.piRingEquiv.symm) ≪≫ₗ ?_
     -- some annoying swap between Π and Π₀
