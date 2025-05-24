@@ -124,7 +124,7 @@ instance isStrictOrder : IsStrictOrder (DegLex (α →₀ ℕ)) (· < ·) where
 
 /-- The partial order on `Finsupp`s obtained by the homogeneous lexicographic ordering.
 See `Finsupp.DegLex.linearOrder` for a proof that this partial order is in fact linear. -/
-instance DegLex.partialOrder : PartialOrder (DegLex (α →₀ ℕ)) :=
+instance partialOrder : PartialOrder (DegLex (α →₀ ℕ)) :=
   PartialOrder.lift
     (fun (f : DegLex (α →₀ ℕ)) ↦ toLex ((ofDegLex f).degree, toLex (ofDegLex f)))
     (fun f g ↦ by simp)
@@ -135,6 +135,7 @@ instance : LinearOrder (DegLex (α →₀ ℕ)) :=
     (fun (f : DegLex (α →₀ ℕ)) ↦ toLex ((ofDegLex f).degree, toLex (ofDegLex f)))
     (fun f g ↦ by simp)
 
+theorem le_iff {x y : DegLex (α →₀ ℕ)} :
     x ≤ y ↔ (ofDegLex x).degree < (ofDegLex y).degree ∨
       (ofDegLex x).degree = (ofDegLex y).degree ∧ toLex (ofDegLex x) ≤ toLex (ofDegLex y) := by
   simp only [le_iff_eq_or_lt, lt_iff, EmbeddingLike.apply_eq_iff_eq]
