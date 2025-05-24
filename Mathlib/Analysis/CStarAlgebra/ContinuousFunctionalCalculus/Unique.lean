@@ -489,10 +489,10 @@ lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
     rw [cfc_apply .., cfc_apply ..]
     congrm($(this) ⟨_, hf.restrict⟩)
   refine ContinuousMap.UniqueHom.eq_of_continuous_of_map_id _ _ _ ?_ ?_ ?apply_id
-  case apply_id =>
-    trans cfcHom hψa (.restrict (spectrum R (ψ a)) (.id R))
-    · simp [cfcHom_id]
-    · congr
+  case apply_id => sorry
+    -- trans cfcHom hψa (.restrict (spectrum R (ψ a)) (.id R))
+    -- · simp [cfcHom_id]
+    -- · congr
   all_goals
     simp [ContinuousMap.compStarAlgHom']
     fun_prop

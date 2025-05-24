@@ -52,11 +52,11 @@ variable [RCLike 𝕜] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
 variable [IsometricContinuousFunctionalCalculus 𝕜 A p]
 
 lemma norm_cfcHom (a : A) (f : C(σ 𝕜 a, 𝕜)) (ha : p a := by cfc_tac) :
-    ‖cfcHom (show p a from ha) f‖ = ‖f‖ := by
+    ‖cfcHom (R := 𝕜) (show p a from ha) f‖ = ‖f‖ := by
   refine isometry_cfcHom a |>.norm_map_of_map_zero (map_zero _) f
 
 lemma nnnorm_cfcHom (a : A) (f : C(σ 𝕜 a, 𝕜)) (ha : p a := by cfc_tac) :
-    ‖cfcHom (show p a from ha) f‖₊ = ‖f‖₊ :=
+    ‖cfcHom (R := 𝕜) (show p a from ha) f‖₊ = ‖f‖₊ :=
   Subtype.ext <| norm_cfcHom a f ha
 
 lemma IsGreatest.norm_cfc [Nontrivial A] (f : 𝕜 → 𝕜) (a : A)
