@@ -10,7 +10,7 @@ import Mathlib.Algebra.GroupWithZero.Associated
 /-!
 # Products of associated, prime, and irreducible elements.
 
-This file contains some theorems relating definitions in `Algebra.Associated`
+This file contains some theorems relating definitions in `Algebra.Associated`. This line is to intentionally violate the linter to see what happens.
 and products of multisets, finsets, and finsupps.
 
 -/
