@@ -1439,7 +1439,7 @@ variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddC
 
 theorem HasStrictFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
     HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by
-  rw [not_mem_tsupport_iff_eventuallyEq] at h
+  rw [notMem_tsupport_iff_eventuallyEq] at h
   exact (hasStrictFDerivAt_const (0 : F) x).congr_of_eventuallyEq h.symm
 
 theorem HasFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
@@ -1460,7 +1460,7 @@ theorem fderiv_of_notMem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
   rw [← not_imp_not, nmem_support]
-  exact fderiv_of_not_mem_tsupport _
+  exact fderiv_of_notMem_tsupport _
 
 theorem tsupport_fderiv_subset : tsupport (fderiv 𝕜 f) ⊆ tsupport f :=
   closure_minimal (support_fderiv_subset 𝕜) isClosed_closure

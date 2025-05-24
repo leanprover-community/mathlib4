@@ -246,9 +246,9 @@ theorem linearIndependent_iff'ₛ :
         classical
         refine _root_.by_contradiction fun hni ↦ hni <| hv (f.support ∪ g.support) f g ?_ _ ?_
         · rwa [← sum_subset subset_union_left, ← sum_subset subset_union_right] <;>
-            rintro i - hi <;> rw [Finsupp.not_mem_support_iff.mp hi, zero_smul]
+            rintro i - hi <;> rw [Finsupp.notMem_support_iff.mp hi, zero_smul]
         · contrapose! hni
-          simp_rw [not_mem_union, Finsupp.not_mem_support_iff] at hni
+          simp_rw [notMem_union, Finsupp.notMem_support_iff] at hni
           rw [hni.1, hni.2]⟩
 
 theorem linearIndependent_iff''ₛ :
@@ -552,7 +552,7 @@ theorem LinearIndependent.eq_zero_of_smul_mem_span (hv : LinearIndependent R v) 
   rcases ha with ⟨l, hl, e⟩
   rw [linearIndependent_iffₛ.1 hv l (Finsupp.single i a) (by simp [e])] at hl
   by_contra hn
-  exact (not_mem_of_mem_diff (hl <| by simp [hn])) (mem_singleton _)
+  exact (notMem_of_mem_diff (hl <| by simp [hn])) (mem_singleton _)
 
 @[deprecated (since := "2025-05-13")]
 alias LinearIndependent.not_smul_mem_span := LinearIndependent.eq_zero_of_smul_mem_span
@@ -578,7 +578,7 @@ lemma LinearIndepOn.notMem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) :
 @[deprecated (since := "2025-05-23")] alias LinearIndepOn.not_mem_span := LinearIndepOn.notMem_span
 
 lemma LinearIndepOn.notMem_span_of_insert (hv : LinearIndepOn R v (insert i s)) (hi : i ∉ s) :
-    v i ∉ span R (v '' s) := by simpa [hi] using hv.not_mem_span <| mem_insert ..
+    v i ∉ span R (v '' s) := by simpa [hi] using hv.notMem_span <| mem_insert ..
 
 @[deprecated (since := "2025-05-23")]
 alias LinearIndepOn.not_mem_span_of_insert := LinearIndepOn.notMem_span_of_insert
@@ -840,7 +840,7 @@ alias linearIndependent_iff_not_mem_span := linearIndependent_iff_notMem_span
 
 lemma linearIndepOn_iff_notMem_span :
     LinearIndepOn K v s ↔ ∀ i ∈ s, v i ∉ span K (v '' (s \ {i})) := by
-  rw [LinearIndepOn, linearIndependent_iff_not_mem_span, ← Function.comp_def]
+  rw [LinearIndepOn, linearIndependent_iff_notMem_span, ← Function.comp_def]
   simp_rw [Set.image_comp]
   simp [Set.image_diff Subtype.val_injective]
 

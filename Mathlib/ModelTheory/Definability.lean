@@ -323,7 +323,7 @@ theorem mem_top : x ∈ (⊤ : L.DefinableSet A α) :=
 
 @[simp]
 theorem notMem_bot {x : α → M} : ¬x ∈ (⊥ : L.DefinableSet A α) :=
-  not_mem_empty x
+  notMem_empty x
 
 @[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 

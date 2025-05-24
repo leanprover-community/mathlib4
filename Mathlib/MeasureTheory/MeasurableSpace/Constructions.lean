@@ -866,12 +866,12 @@ lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
-  measurableSet_setOf.2 <| measurable_set_not_mem _
+  measurableSet_setOf.2 <| measurable_set_notMem _
 
 @[deprecated (since := "2025-05-23")] alias measurableSet_not_mem := measurableSet_notMem
 
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
-  measurable_set_iff.2 fun _ ↦ measurable_set_not_mem _
+  measurable_set_iff.2 fun _ ↦ measurable_set_notMem _
 
 lemma MeasurableSet.setOf_finite [Countable α] : MeasurableSet {s : Set α | s.Finite} :=
   Countable.setOf_finite.measurableSet

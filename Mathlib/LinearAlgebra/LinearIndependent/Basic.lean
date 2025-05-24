@@ -276,7 +276,7 @@ theorem LinearIndependent.linearCombination_ne_of_notMem_support [Nontrivial R]
   intro w
   have p : ∀ x ∈ Finsupp.supported R R f.support,
     Finsupp.linearCombination R v x ≠ f.linearCombination R v := by
-    simpa [← w, Finsupp.span_image_eq_map_linearCombination] using hv.not_mem_span_image h
+    simpa [← w, Finsupp.span_image_eq_map_linearCombination] using hv.notMem_span_image h
   exact p f (f.mem_supported_support R) rfl
 
 @[deprecated (since := "2025-05-23")]
@@ -477,7 +477,7 @@ theorem LinearIndepOn.union {t : Set ι} (hs : LinearIndepOn R v s) (ht : Linear
   nontriviality R
   classical
   have hli := LinearIndependent.sum_type hs ht (by rwa [← image_eq_range, ← image_eq_range])
-  have hdj := (hdj.of_span₀ hs.zero_not_mem_image).of_image
+  have hdj := (hdj.of_span₀ hs.zero_notMem_image).of_image
   rw [LinearIndepOn]
   convert (hli.comp _ (Equiv.Set.union hdj).injective) with ⟨x, hx | hx⟩
   · rw [comp_apply, Equiv.Set.union_apply_left _ hx, Sum.elim_inl]

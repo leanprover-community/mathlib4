@@ -212,7 +212,7 @@ lemma variance_add_const [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
     rw [variance_eq_integral (hX.add_const _).aemeasurable,
       integral_add hX_int (by fun_prop), integral_const, variance_eq_integral hX.aemeasurable]
     simp
-  · rw [variance_of_not_memLp (hX.add_const _), variance_of_not_memLp hX hX_Lp]
+  · rw [variance_of_notMemLp (hX.add_const _), variance_of_notMemLp hX hX_Lp]
     refine fun h_memLp ↦ hX_Lp ?_
     have : X = fun ω ↦ X ω + c - c := by ext; ring
     rw [this]

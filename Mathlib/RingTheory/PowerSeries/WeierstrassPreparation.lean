@@ -150,7 +150,7 @@ variable {g} in
 its image in the residue field is not zero, then `g` can be used as a Weierstrass divisor. -/
 theorem IsWeierstrassDivisor.of_map_ne_zero [IsLocalRing A]
     (hg : g.map (IsLocalRing.residue A) ≠ 0) : g.IsWeierstrassDivisor := by
-  rw [IsWeierstrassDivisor, IsWeierstrassDivisorAt, ← IsLocalRing.not_mem_maximalIdeal]
+  rw [IsWeierstrassDivisor, IsWeierstrassDivisorAt, ← IsLocalRing.notMem_maximalIdeal]
   have h := coeff_order hg
   contrapose! h
   rwa [coeff_map, IsLocalRing.residue_eq_zero_iff]

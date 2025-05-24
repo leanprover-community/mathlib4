@@ -362,7 +362,7 @@ alias Minimal.not_mem_of_prop_diff_singleton := Minimal.notMem_of_prop_diff_sing
 
 theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
-  ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.not_mem_of_prop_diff_singleton hP hx⟩,
+  ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.notMem_of_prop_diff_singleton hP hx⟩,
     fun h ↦ ⟨h.1, fun _ ht hts x hxs ↦ by_contra fun hxt ↦
       h.2 x hxs (hP ht <| subset_diff_singleton hts hxt)⟩⟩
 

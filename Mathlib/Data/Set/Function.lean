@@ -1151,10 +1151,10 @@ theorem update_comp_eq_of_notMem_range' {α : Sort*} {β : Type*} {γ : β → S
 @[deprecated (since := "2025-05-23")]
 alias update_comp_eq_of_not_mem_range' := update_comp_eq_of_notMem_range'
 
-/-- Non-dependent version of `Function.update_comp_eq_of_not_mem_range'` -/
+/-- Non-dependent version of `Function.update_comp_eq_of_notMem_range'` -/
 theorem update_comp_eq_of_notMem_range {α : Sort*} {β : Type*} {γ : Sort*} [DecidableEq β]
     (g : β → γ) {f : α → β} {i : β} (a : γ) (h : i ∉ Set.range f) : update g i a ∘ f = g ∘ f :=
-  update_comp_eq_of_not_mem_range' g a h
+  update_comp_eq_of_notMem_range' g a h
 
 @[deprecated (since := "2025-05-23")]
 alias update_comp_eq_of_not_mem_range := update_comp_eq_of_notMem_range

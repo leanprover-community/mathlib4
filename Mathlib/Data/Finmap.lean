@@ -202,7 +202,7 @@ theorem toFinmap_nil [DecidableEq α] : ([].toFinmap : Finmap β) = ∅ :=
   rfl
 
 theorem notMem_empty {a : α} : a ∉ (∅ : Finmap β) :=
-  Multiset.not_mem_zero a
+  Multiset.notMem_zero a
 
 @[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
@@ -431,7 +431,7 @@ theorem insert_toFinmap (a : α) (b : β a) (s : AList β) :
 theorem entries_insert_of_notMem {a : α} {b : β a} {s : Finmap β} :
     a ∉ s → (insert a b s).entries = ⟨a, b⟩ ::ₘ s.entries :=
   induction_on s fun s h => by
-    simp [AList.entries_insert_of_not_mem (mt mem_toFinmap.1 h), -entries_insert]
+    simp [AList.entries_insert_of_notMem (mt mem_toFinmap.1 h), -entries_insert]
 
 @[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
 
@@ -467,7 +467,7 @@ theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
     a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
   induction' xs with x xs
-  · simp only [toFinmap_nil, not_mem_empty, find?, not_mem_nil, exists_false]
+  · simp only [toFinmap_nil, notMem_empty, find?, not_mem_nil, exists_false]
   obtain ⟨fst_i, snd_i⟩ := x
   simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
   refine (or_congr_left <| and_iff_left_of_imp ?_).symm
@@ -563,7 +563,7 @@ theorem erase_union_singleton (a : α) (b : β a) (s : Finmap β) (h : s.lookup 
   ext_lookup fun x => by
     by_cases h' : x = a
     · subst a
-      rw [lookup_union_right not_mem_erase_self, lookup_singleton_eq, h]
+      rw [lookup_union_right notMem_erase_self, lookup_singleton_eq, h]
     · have : x ∉ singleton a b := by rwa [mem_singleton]
       rw [lookup_union_left_of_not_in this, lookup_erase_ne h']
 

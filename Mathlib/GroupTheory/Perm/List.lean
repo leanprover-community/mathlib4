@@ -114,11 +114,11 @@ theorem formPerm_apply_mem_of_mem (h : x ∈ l) : formPerm l x ∈ l := by
       · simp
       · simp [*]
     · replace h : x = y := Or.resolve_right (mem_cons.1 h) hx
-      simp [formPerm_apply_of_not_mem hx, ← h]
+      simp [formPerm_apply_of_notMem hx, ← h]
 
 theorem mem_of_formPerm_apply_mem (h : l.formPerm x ∈ l) : x ∈ l := by
   contrapose h
-  rwa [formPerm_apply_of_not_mem h]
+  rwa [formPerm_apply_of_notMem h]
 
 @[simp]
 theorem formPerm_mem_iff_mem : l.formPerm x ∈ l ↔ x ∈ l :=
@@ -142,7 +142,7 @@ theorem formPerm_apply_getElem_length (x : α) (xs : List α) :
   rw [getElem_cons_length rfl, formPerm_apply_getLast]
 
 theorem formPerm_apply_head (x y : α) (xs : List α) (h : Nodup (x :: y :: xs)) :
-    formPerm (x :: y :: xs) x = y := by simp [formPerm_apply_of_not_mem h.not_mem]
+    formPerm (x :: y :: xs) x = y := by simp [formPerm_apply_of_notMem h.notMem]
 
 theorem formPerm_apply_getElem_zero (l : List α) (h : Nodup l) (hl : 1 < l.length) :
     formPerm l l[0] = l[1] := by
@@ -217,7 +217,7 @@ theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) 
   · obtain ⟨k, hk, rfl⟩ := getElem_of_mem hx
     rw [formPerm_apply_getElem _ h', getElem_rotate l, getElem_rotate l, formPerm_apply_getElem _ h]
     simp
-  · rw [formPerm_apply_of_not_mem hx, formPerm_apply_of_not_mem]
+  · rw [formPerm_apply_of_notMem hx, formPerm_apply_of_notMem]
     simpa using hx
 
 theorem formPerm_rotate (l : List α) (h : Nodup l) (n : ℕ) :

@@ -196,7 +196,7 @@ theorem eq_zero_of_forall_notMem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 
 @[deprecated (since := "2025-05-23")] alias eq_zero_of_forall_not_mem := eq_zero_of_forall_notMem
 
 theorem eq_zero_iff_forall_notMem {s : Multiset α} : s = 0 ↔ ∀ a, a ∉ s :=
-  ⟨fun h => h.symm ▸ fun _ => not_mem_zero _, eq_zero_of_forall_not_mem⟩
+  ⟨fun h => h.symm ▸ fun _ => notMem_zero _, eq_zero_of_forall_notMem⟩
 
 @[deprecated (since := "2025-05-23")] alias eq_zero_iff_forall_not_mem := eq_zero_iff_forall_notMem
 
@@ -212,7 +212,7 @@ theorem empty_or_exists_mem (s : Multiset α) : s = 0 ∨ ∃ a, a ∈ s :=
 @[simp]
 theorem zero_ne_cons {a : α} {m : Multiset α} : 0 ≠ a ::ₘ m := fun h =>
   have : a ∈ (0 : Multiset α) := h.symm ▸ mem_cons_self _ _
-  not_mem_zero _ this
+  notMem_zero _ this
 
 @[simp]
 theorem cons_ne_zero {a : α} {m : Multiset α} : a ::ₘ m ≠ 0 :=
@@ -260,7 +260,7 @@ theorem coe_singleton (a : α) : ([a] : Multiset α) = {a} :=
 
 @[simp]
 theorem mem_singleton {a b : α} : b ∈ ({a} : Multiset α) ↔ b = a := by
-  simp only [← cons_zero, mem_cons, iff_self, or_false, not_mem_zero]
+  simp only [← cons_zero, mem_cons, iff_self, or_false, notMem_zero]
 
 theorem mem_singleton_self (a : α) : a ∈ ({a} : Multiset α) := by
   rw [← cons_zero]
@@ -290,7 +290,7 @@ section Subset
 variable {s : Multiset α} {a : α}
 
 @[simp]
-theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun _ => notMem_nil.elim
+theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun _ => not_mem_nil.elim
 
 theorem subset_cons (s : Multiset α) (a : α) : s ⊆ a ::ₘ s := fun _ => mem_cons_of_mem
 
@@ -305,7 +305,7 @@ theorem cons_subset_cons {a : α} {s t : Multiset α} : s ⊆ t → a ::ₘ s �
   Quotient.inductionOn₂ s t fun _ _ => List.cons_subset_cons _
 
 theorem eq_zero_of_subset_zero {s : Multiset α} (h : s ⊆ 0) : s = 0 :=
-  eq_zero_of_forall_not_mem fun _ hx ↦ not_mem_zero _ (h hx)
+  eq_zero_of_forall_notMem fun _ hx ↦ notMem_zero _ (h hx)
 
 @[simp] lemma subset_zero : s ⊆ 0 ↔ s = 0 :=
   ⟨eq_zero_of_subset_zero, fun xeq => xeq.symm ▸ Subset.refl 0⟩
@@ -383,7 +383,7 @@ theorem le_cons_of_notMem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
 theorem cons_le_of_notMem (hs : a ∉ s) : a ::ₘ s ≤ t ↔ a ∈ t ∧ s ≤ t := by
   apply Iff.intro (fun h ↦ ⟨subset_of_le h (mem_cons_self a s), le_trans (le_cons_self s a) h⟩)
   rintro ⟨h₁, h₂⟩; rcases exists_cons_of_mem h₁ with ⟨_, rfl⟩
-  exact cons_le_cons _ ((le_cons_of_not_mem hs).mp h₂)
+  exact cons_le_cons _ ((le_cons_of_notMem hs).mp h₂)
 
 @[deprecated (since := "2025-05-23")] alias cons_le_of_not_mem := cons_le_of_notMem
 

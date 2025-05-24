@@ -409,7 +409,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
       simpa [takeWhile, Nat.succ_inj, DecEq_eq] using IH _
     · rw [takeWhile]
       simp only [mem_map, cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
-        not_false_iff, count_eq_zero_of_not_mem, Nat.zero_add, hx, decide_false, length_nil]
+        not_false_iff, count_eq_zero_of_notMem, Nat.zero_add, hx, decide_false, length_nil]
 
 @[simp]
 theorem length_permutations'Aux (s : List α) (x : α) :
@@ -442,7 +442,7 @@ theorem nodup_permutations'Aux_of_notMem (s : List α) (x : α) (hx : x ∉ s) :
 alias nodup_permutations'Aux_of_not_mem := nodup_permutations'Aux_of_notMem
 
 theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'Aux x s) ↔ x ∉ s := by
-  refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_not_mem _ _⟩
+  refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_notMem _ _⟩
   obtain ⟨⟨k, hk⟩, hk'⟩ := get_of_mem H
   rw [nodup_iff_injective_get] at h
   apply k.succ_ne_self.symm

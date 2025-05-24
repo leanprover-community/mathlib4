@@ -784,7 +784,7 @@ theorem pure_injective : Injective (pure : α → Filter α) := fun a _ hab =>
   (Filter.ext_iff.1 hab { x | a = x }).1 rfl
 
 instance pure_neBot {α : Type u} {a : α} : NeBot (pure a) :=
-  ⟨mt empty_mem_iff_bot.2 <| not_mem_empty a⟩
+  ⟨mt empty_mem_iff_bot.2 <| notMem_empty a⟩
 
 @[simp]
 theorem le_pure_iff {f : Filter α} {a : α} : f ≤ pure a ↔ {a} ∈ f := by

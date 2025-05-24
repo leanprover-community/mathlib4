@@ -626,7 +626,7 @@ theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ :
   constructor
   · intro h
     rw [mk_eq_zero_iff] at h
-    exact eq_empty_iff_forall_not_mem.2 fun x hx => h.elim' ⟨x, hx⟩
+    exact eq_empty_iff_forall_notMem.2 fun x hx => h.elim' ⟨x, hx⟩
   · rintro rfl
     exact mk_emptyCollection _
 
@@ -943,7 +943,7 @@ alias exists_not_mem_of_length_lt := exists_notMem_of_length_lt
 theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α := by simpa using h
   have : ↑(2 : ℕ) < #α := by rwa [← succ_le_iff, ← Cardinal.nat_succ]
-  have := exists_not_mem_of_length_lt [x, y] this
+  have := exists_notMem_of_length_lt [x, y] this
   simpa [not_or] using this
 
 /-! ### `powerlt` operation -/

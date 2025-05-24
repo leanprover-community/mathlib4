@@ -163,7 +163,7 @@ alias reducible_not_mem_factorSet := reducible_notMem_factorSet
 
 theorem irreducible_of_mem_factorSet {p : Associates α} {s : FactorSet α} (h : p ∈ s) :
     Irreducible p :=
-  by_contra fun hp ↦ reducible_not_mem_factorSet hp s h
+  by_contra fun hp ↦ reducible_notMem_factorSet hp s h
 
 end Mem
 

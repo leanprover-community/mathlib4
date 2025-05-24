@@ -148,7 +148,7 @@ instance : OrderBot YoungDiagram where
         simp only [Finset.coe_empty, Set.mem_empty_iff_false] at h }
   bot_le _ _ := by
     intro y
-    simp only [mem_mk, Finset.not_mem_empty] at y
+    simp only [mem_mk, Finset.notMem_empty] at y
 
 @[simp]
 theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
@@ -156,7 +156,7 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
 
 @[simp]
 theorem notMem_bot (x : ℕ × ℕ) : x ∉ (⊥ : YoungDiagram) :=
-  Finset.not_mem_empty x
+  Finset.notMem_empty x
 
 @[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
@@ -258,7 +258,7 @@ theorem mk_mem_row_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.row i ↔
 
 protected theorem exists_notMem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
   obtain ⟨j, hj⟩ :=
-    Infinite.exists_not_mem_finset
+    Infinite.exists_notMem_finset
       (μ.cells.preimage (Prod.mk i) fun _ _ _ _ h => by
         cases h
         rfl)
@@ -269,7 +269,7 @@ protected theorem exists_notMem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j
 
 /-- Length of a row of a Young diagram -/
 def rowLen (μ : YoungDiagram) (i : ℕ) : ℕ :=
-  Nat.find <| μ.exists_not_mem_row i
+  Nat.find <| μ.exists_notMem_row i
 
 theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j < μ.rowLen i := by
   rw [rowLen, Nat.lt_find_iff]
@@ -312,14 +312,14 @@ theorem mem_col_iff {μ : YoungDiagram} {j : ℕ} {c : ℕ × ℕ} : c ∈ μ.co
 theorem mk_mem_col_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.col j ↔ (i, j) ∈ μ := by simp [col]
 
 protected theorem exists_notMem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
-  convert μ.transpose.exists_not_mem_row j using 1
+  convert μ.transpose.exists_notMem_row j using 1
   simp
 
 @[deprecated (since := "2025-05-23")] alias exists_not_mem_col := exists_notMem_col
 
 /-- Length of a column of a Young diagram -/
 def colLen (μ : YoungDiagram) (j : ℕ) : ℕ :=
-  Nat.find <| μ.exists_not_mem_col j
+  Nat.find <| μ.exists_notMem_col j
 
 @[simp]
 theorem colLen_transpose (μ : YoungDiagram) (j : ℕ) : μ.transpose.colLen j = μ.rowLen j := by

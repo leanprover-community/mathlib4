@@ -546,7 +546,7 @@ theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length 
 
 @[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
 
-@[deprecated (since := "2025-01-30")] alias indexOf_of_not_mem := idxOf_of_not_mem
+@[deprecated (since := "2025-01-30")] alias indexOf_of_not_mem := idxOf_of_notMem
 
 theorem idxOf_le_length {a : α} {l : List α} : idxOf a l ≤ length l := by
   induction l with | nil => rfl | cons b l ih => ?_
@@ -586,7 +586,7 @@ theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
 
 @[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
 
-@[deprecated (since := "2025-01-30")] alias indexOf_append_of_not_mem := idxOf_append_of_not_mem
+@[deprecated (since := "2025-01-30")] alias indexOf_append_of_not_mem := idxOf_append_of_notMem
 
 end IndexOf
 

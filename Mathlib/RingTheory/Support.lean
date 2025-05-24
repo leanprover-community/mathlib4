@@ -54,7 +54,7 @@ lemma Module.notMem_support_iff :
 
 lemma Module.notMem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
-  simp only [not_mem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
+  simp only [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
     Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff, SetLike.mem_coe]
 
 @[deprecated (since := "2025-05-23")]
@@ -62,7 +62,7 @@ alias Module.not_mem_support_iff' := Module.notMem_support_iff'
 
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
-  rw [← @not_not (_ ∈ _), not_mem_support_iff']
+  rw [← @not_not (_ ∈ _), notMem_support_iff']
   push_neg
   rfl
 
@@ -75,7 +75,7 @@ lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s
     p ∈ Module.support R M ↔ ∃ m ∈ s, (R ∙ m).annihilator ≤ p.asIdeal := by
   constructor
   · contrapose
-    rw [not_mem_support_iff, LocalizedModule.subsingleton_iff_ker_eq_top, ← top_le_iff,
+    rw [notMem_support_iff, LocalizedModule.subsingleton_iff_ker_eq_top, ← top_le_iff,
       ← hs, Submodule.span_le, Set.subset_def]
     simp_rw [SetLike.le_def, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
       LocalizedModule.mem_ker_mkLinearMap_iff]
@@ -163,7 +163,7 @@ lemma Module.support_of_exact (h : Function.Exact f g)
     (Module.support_subset_of_surjective g hg))
   intro x
   contrapose
-  simp only [Set.mem_union, not_or, and_imp, not_mem_support_iff']
+  simp only [Set.mem_union, not_or, and_imp, notMem_support_iff']
   intro H₁ H₂ m
   obtain ⟨r, hr, e₁⟩ := H₂ (g m)
   rw [← map_smul, h] at e₁
@@ -209,7 +209,7 @@ lemma LocalizedModule.exists_subsingleton_away (p : Ideal R) [p.IsPrime]
     [Subsingleton (LocalizedModule p.primeCompl M)] :
     ∃ f ∉ p, Subsingleton (LocalizedModule (.powers f) M) := by
   have : ⟨p, inferInstance⟩ ∈ (Module.support R M)ᶜ := by
-    simpa [Module.not_mem_support_iff]
+    simpa [Module.notMem_support_iff]
   rw [Module.support_eq_zeroLocus, ← Set.biUnion_of_singleton (Module.annihilator R M : Set R),
     PrimeSpectrum.zeroLocus_iUnion₂, Set.compl_iInter₂, Set.mem_iUnion₂] at this
   obtain ⟨f, hf, hf'⟩ := this

@@ -260,7 +260,7 @@ theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (PrimeSpectrum R)) = �
   simpa using (gc R).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set R} (h : (1 : R) ∈ s) : zeroLocus s = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   intro x hx
   rw [mem_zeroLocus] at hx
   have x_prime : x.asIdeal.IsPrime := by infer_instance

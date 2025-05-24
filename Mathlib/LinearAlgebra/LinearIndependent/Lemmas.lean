@@ -437,7 +437,7 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
       exact hIlinind (Finsupp.mem_support_iff.mp hx)
     use f i, hfi
     have hfi' : i ∈ f.support := Finsupp.mem_support_iff.mpr hfi
-    rw [← Finset.insert_erase hfi', Finset.sum_insert (Finset.not_mem_erase _ _),
+    rw [← Finset.insert_erase hfi', Finset.sum_insert (Finset.notMem_erase _ _),
       add_eq_zero_iff_eq_neg] at sum_f
     rw [sum_f]
     refine neg_mem (sum_mem fun c hc => smul_mem _ _ (subset_span ⟨c, ?_, rfl⟩))

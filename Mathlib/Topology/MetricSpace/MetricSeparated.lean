@@ -55,7 +55,7 @@ lemma isSeparated_insert :
 
 lemma isSeparated_insert_of_notMem (hx : x ∉ s) :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, ε < edist x y :=
-  pairwise_insert_of_symmetric_of_not_mem (fun _ _ ↦ by simp [edist_comm]) hx
+  pairwise_insert_of_symmetric_of_notMem (fun _ _ ↦ by simp [edist_comm]) hx
 
 @[deprecated (since := "2025-05-23")]
 alias isSeparated_insert_of_not_mem := isSeparated_insert_of_notMem

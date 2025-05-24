@@ -173,14 +173,14 @@ alias infEdist_pos_iff_not_mem_closure := infEdist_pos_iff_notMem_closure
 
 theorem infEdist_closure_pos_iff_notMem_closure {x : α} {E : Set α} :
     0 < infEdist x (closure E) ↔ x ∉ closure E := by
-  rw [infEdist_closure, infEdist_pos_iff_not_mem_closure]
+  rw [infEdist_closure, infEdist_pos_iff_notMem_closure]
 
 @[deprecated (since := "2025-05-23")]
 alias infEdist_closure_pos_iff_not_mem_closure := infEdist_closure_pos_iff_notMem_closure
 
 theorem exists_real_pos_lt_infEdist_of_notMem_closure {x : α} {E : Set α} (h : x ∉ closure E) :
     ∃ ε : ℝ, 0 < ε ∧ ENNReal.ofReal ε < infEdist x E := by
-  rw [← infEdist_pos_iff_not_mem_closure, ENNReal.lt_iff_exists_real_btwn] at h
+  rw [← infEdist_pos_iff_notMem_closure, ENNReal.lt_iff_exists_real_btwn] at h
   rcases h with ⟨ε, ⟨_, ⟨ε_pos, ε_lt⟩⟩⟩
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
 
@@ -506,7 +506,7 @@ theorem notMem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_dist_lt_infDist := notMem_of_dist_lt_infDist
 
 theorem disjoint_ball_infDist : Disjoint (ball x (infDist x s)) s :=
-  disjoint_left.2 fun _y hy => not_mem_of_dist_lt_infDist <| mem_ball'.1 hy
+  disjoint_left.2 fun _y hy => notMem_of_dist_lt_infDist <| mem_ball'.1 hy
 
 theorem ball_infDist_subset_compl : ball x (infDist x s) ⊆ sᶜ :=
   (disjoint_ball_infDist (s := s)).subset_compl_right

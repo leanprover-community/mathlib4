@@ -449,8 +449,8 @@ theorem exists_notMem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
 
 -- see Note [lower instance priority]
 instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
-  ⟨let ⟨x, _hx⟩ := exists_not_mem_finset (∅ : Finset α)
-    let ⟨y, hy⟩ := exists_not_mem_finset ({x} : Finset α)
+  ⟨let ⟨x, _hx⟩ := exists_notMem_finset (∅ : Finset α)
+    let ⟨y, hy⟩ := exists_notMem_finset ({x} : Finset α)
     ⟨y, x, by simpa only [mem_singleton] using hy⟩⟩
 
 protected theorem nonempty (α : Type*) [Infinite α] : Nonempty α := by infer_instance
@@ -521,7 +521,7 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
   | n =>
     letI := Classical.decEq α
     Classical.choose
-      (exists_not_mem_finset
+      (exists_notMem_finset
         ((Multiset.range n).pmap (fun m (_ : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
@@ -533,7 +533,7 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   · exact (this h.symm <| le_of_not_le hmlen).symm
   by_contra hmn
   have hmn : m < n := lt_of_le_of_ne hmlen hmn
-  refine (Classical.choose_spec (exists_not_mem_finset
+  refine (Classical.choose_spec (exists_notMem_finset
     ((Multiset.range n).pmap (fun m (_ : m < n) ↦ natEmbeddingAux α m)
       (fun _ ↦ Multiset.mem_range.1)).toFinset)) ?_
   refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
@@ -557,7 +557,7 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s
   · rcases hn.eq_or_lt with hn' | hn'
     · exact ⟨s, subset_refl _, hn'⟩
     obtain ⟨t, hs, ht⟩ := IH _ (Nat.le_of_lt_succ hn')
-    obtain ⟨x, hx⟩ := exists_not_mem_finset t
+    obtain ⟨x, hx⟩ := exists_notMem_finset t
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
     simp [hx, ht]
 

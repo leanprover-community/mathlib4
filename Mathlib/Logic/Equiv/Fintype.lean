@@ -132,7 +132,7 @@ alias extendSubtype_apply_of_not_mem := extendSubtype_apply_of_notMem
 theorem extendSubtype_notMem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) := by
   convert (e.toCompl ⟨x, hx⟩).2
-  rw [e.extendSubtype_apply_of_not_mem _ hx]
+  rw [e.extendSubtype_apply_of_notMem _ hx]
 
 @[deprecated (since := "2025-05-23")] alias extendSubtype_not_mem := extendSubtype_notMem
 

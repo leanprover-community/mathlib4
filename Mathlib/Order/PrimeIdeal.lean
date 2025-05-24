@@ -58,7 +58,7 @@ theorem compl_F_eq_I : (IF.F : Set P)ᶜ = IF.I :=
 
 theorem I_isProper : IsProper IF.I := by
   obtain ⟨w, h⟩ := IF.F.nonempty
-  apply isProper_of_not_mem (_ : w ∉ IF.I)
+  apply isProper_of_notMem (_ : w ∉ IF.I)
   rwa [← IF.compl_I_eq_F] at h
 
 protected theorem disjoint : Disjoint (IF.I : Set P) IF.F :=
@@ -134,7 +134,7 @@ instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I := by
   apply hynI
   let J := I ⊔ principal x
   have hJuniv : (J : Set P) = Set.univ :=
-    IsMaximal.maximal_proper (lt_sup_principal_of_not_mem ‹_›)
+    IsMaximal.maximal_proper (lt_sup_principal_of_notMem ‹_›)
   have hyJ : y ∈ (J : Set P) := Set.eq_univ_iff_forall.mp hJuniv y
   rw [coe_sup_eq] at hyJ
   rcases hyJ with ⟨a, ha, b, hb, hy⟩
@@ -177,7 +177,7 @@ instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
   suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J by rwa [sup_inf_inf_compl] at ass
   exact
     sup_mem (J.lower inf_le_right hyJ)
-      (hIJ.le <| I.lower inf_le_right <| IsPrime.mem_compl_of_not_mem ‹_› hyI)
+      (hIJ.le <| I.lower inf_le_right <| IsPrime.mem_compl_of_notMem ‹_› hyI)
 
 end BooleanAlgebra
 

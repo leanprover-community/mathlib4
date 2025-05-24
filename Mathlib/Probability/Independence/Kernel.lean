@@ -747,7 +747,7 @@ theorem iIndepSets.iIndep (m : ι → MeasurableSpace Ω)
   apply iIndep.congr (Filter.EventuallyEq.symm η_eq)
   intro s f
   refine Finset.induction ?_ ?_ s
-  · simp only [Finset.not_mem_empty, Set.mem_setOf_eq, IsEmpty.forall_iff, implies_true,
+  · simp only [Finset.notMem_empty, Set.mem_setOf_eq, IsEmpty.forall_iff, implies_true,
       Set.iInter_of_empty, Set.iInter_univ, measure_univ, Finset.prod_empty,
       Filter.eventually_true, forall_true_left]
   · intro a S ha_notin_S h_rec hf_m
@@ -759,7 +759,7 @@ theorem iIndepSets.iIndep (m : ι → MeasurableSpace Ω)
       have h_le' : ∀ i, generateFrom (π i) ≤ _mΩ := fun i ↦ (h_generate i).symm.trans_le (h_le i)
       have hm_p : m_p ≤ _mΩ := generateFrom_piiUnionInter_le π h_le' S
       exact IndepSets.indep hm_p (h_le a) hp (h_pi a) hS_eq_generate (h_generate a)
-        (iIndepSets.piiUnionInter_of_not_mem (h_ind.congr η_eq) ha_notin_S)
+        (iIndepSets.piiUnionInter_of_notMem (h_ind.congr η_eq) ha_notin_S)
     have h := h_indep.symm (f a) (⋂ n ∈ S, f n) (hf_m a (Finset.mem_insert_self a S)) ?_
     · filter_upwards [h_rec hf_m_S, h] with a' ha' h'
       rwa [Finset.set_biInter_insert, Finset.prod_insert ha_notin_S, ← ha']
@@ -1358,7 +1358,7 @@ theorem iIndepFun.indepFun_finset_prod_of_notMem₀ (hf_Indep : iIndepFun f κ �
     (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) κ μ := by
   have h : IndepFun (∏ j ∈ s, (hf_meas j).mk (f j)) ((hf_meas i).mk (f i)) κ μ := by
-    refine iIndepFun.indepFun_finset_prod_of_not_mem ?_ (fun i ↦ (hf_meas i).measurable_mk) hi
+    refine iIndepFun.indepFun_finset_prod_of_notMem ?_ (fun i ↦ (hf_meas i).measurable_mk) hi
     exact iIndepFun.congr' hf_Indep fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
   refine IndepFun.congr' h ?_ ?_
   · have : ∀ᵐ a ∂μ, ∀ (i : s), f i =ᵐ[κ a] (hf_meas i).mk := by
@@ -1377,13 +1377,13 @@ alias iIndepFun.indepFun_finset_prod_of_not_mem₀ := iIndepFun.indepFun_finset_
 theorem iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β}
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) :
     IndepFun (∏ j ∈ Finset.range n, f j) (f n) κ μ :=
-  hf_Indep.indepFun_finset_prod_of_not_mem hf_meas Finset.not_mem_range_self
+  hf_Indep.indepFun_finset_prod_of_notMem hf_meas Finset.notMem_range_self
 
 @[to_additive]
 theorem iIndepFun.indepFun_prod_range_succ₀ {f : ℕ → Ω → β}
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) (n : ℕ) :
     IndepFun (∏ j ∈ Finset.range n, f j) (f n) κ μ :=
-  hf_Indep.indepFun_finset_prod_of_not_mem₀ hf_meas Finset.not_mem_range_self
+  hf_Indep.indepFun_finset_prod_of_notMem₀ hf_meas Finset.notMem_range_self
 
 end CommMonoid
 

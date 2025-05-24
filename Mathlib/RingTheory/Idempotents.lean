@@ -394,7 +394,7 @@ lemma OrthogonalIdempotents.prod_one_sub {I : Type*} {e : I → R}
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s has ih =>
-    simp [ih, sub_mul, mul_sub, he.mul_sum_of_not_mem has, sub_sub]
+    simp [ih, sub_mul, mul_sub, he.mul_sum_of_notMem has, sub_sub]
 
 variable {I : Type*} [Fintype I] {e : I → R}
 

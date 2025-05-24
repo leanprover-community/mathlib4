@@ -143,7 +143,7 @@ theorem zero_notMem_nonZeroDivisors : 0 ∉ M₀⁰ := fun h ↦ one_ne_zero <| 
 alias zero_not_mem_nonZeroDivisors := zero_notMem_nonZeroDivisors
 
 theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
-  ne_of_mem_of_not_mem hx zero_not_mem_nonZeroDivisors
+  ne_of_mem_of_not_mem hx zero_notMem_nonZeroDivisors
 
 @[simp]
 theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
@@ -212,7 +212,7 @@ theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M₀'] [MonoidWithZe
   · simp [Subsingleton.elim S ⊥]
   · refine le_nonZeroDivisors_of_noZeroDivisors ?_
     rintro ⟨x, hx, hx0⟩
-    exact zero_not_mem_nonZeroDivisors <| hS <| map_eq_zero_iff f hf |>.mp hx0 ▸ hx
+    exact zero_notMem_nonZeroDivisors <| hS <| map_eq_zero_iff f hf |>.mp hx0 ▸ hx
 
 theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M₀']
     [MonoidWithZeroHomClass F M₀ M₀'] (f : F) (hf : Injective f) : M₀⁰ ≤ M₀'⁰.comap f :=

@@ -156,7 +156,7 @@ noncomputable def approx : ℕ → CU P → X → ℝ
 
 theorem approx_of_mem_C (c : CU P) (n : ℕ) {x : X} (hx : x ∈ c.C) : c.approx n x = 0 := by
   induction n generalizing c with
-  | zero => exact indicator_of_not_mem (fun (hU : x ∈ c.Uᶜ) => hU <| c.subset hx) _
+  | zero => exact indicator_of_notMem (fun (hU : x ∈ c.Uᶜ) => hU <| c.subset hx) _
   | succ n ihn =>
     simp only [approx]
     rw [ihn, ihn, midpoint_self]
@@ -516,7 +516,7 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
       (Disjoint.symm (Urysohns.CU.disjoint_C_support_lim c)))
   · intro x hx
     apply Urysohns.CU.lim_of_nmem_U
-    exact not_mem_compl_iff.mpr hx
+    exact notMem_compl_iff.mpr hx
 
 theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
     ∃ f : C(X, ℝ), HasCompactSupport f ∧ 0 ≤ (f : X → ℝ) ∧ f x ≠ 0 := by

@@ -355,7 +355,7 @@ def IsSetRing.addContent_of_union (m : Set α → ℝ≥0∞) (hC : IsSetRing C)
     | insert s I hsI h =>
       rw [Finset.coe_insert] at *
       rw [Set.insert_subset_iff] at h_ss
-      rw [Set.pairwiseDisjoint_insert_of_not_mem] at h_dis
+      rw [Set.pairwiseDisjoint_insert_of_notMem] at h_dis
       swap; · exact hsI
       have h_sUnion_mem : ⋃₀ ↑I ∈ C := by
         rw [Set.sUnion_eq_biUnion]

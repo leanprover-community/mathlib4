@@ -457,7 +457,7 @@ variable [BooleanAlgebra P] {x : P} {I : Ideal P}
 
 theorem IsProper.notMem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x ∉ I := by
   intro hx
-  apply hI.top_not_mem
+  apply hI.top_notMem
   have ht : x ⊔ xᶜ ∈ I := sup_mem ‹_› ‹_›
   rwa [sup_compl_eq_top] at ht
 
@@ -465,7 +465,7 @@ theorem IsProper.notMem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x �
 alias IsProper.not_mem_of_compl_mem := IsProper.notMem_of_compl_mem
 
 theorem IsProper.notMem_or_compl_notMem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
-  have h : xᶜ ∈ I → x ∉ I := hI.not_mem_of_compl_mem
+  have h : xᶜ ∈ I → x ∉ I := hI.notMem_of_compl_mem
   tauto
 
 @[deprecated (since := "2025-05-23")]

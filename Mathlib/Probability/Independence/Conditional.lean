@@ -584,7 +584,7 @@ theorem condIndep_iSup_of_antitone [SemilatticeInf ι] {m : ι → MeasurableSpa
 theorem iCondIndepSets.piiUnionInter_of_notMem {π : ι → Set (Set Ω)} {a : ι} {S : Finset ι}
     (hp_ind : iCondIndepSets m' hm' π μ) (haS : a ∉ S) :
     CondIndepSets m' hm' (piiUnionInter π S) (π a) μ :=
-  Kernel.iIndepSets.piiUnionInter_of_not_mem hp_ind haS
+  Kernel.iIndepSets.piiUnionInter_of_notMem hp_ind haS
 
 @[deprecated (since := "2025-05-23")]
 alias iCondIndepSets.piiUnionInter_of_not_mem := iCondIndepSets.piiUnionInter_of_notMem
@@ -803,7 +803,7 @@ theorem iCondIndepFun.condIndepFun_finset_prod_of_notMem
     (hf_Indep : iCondIndepFun m' hm' f μ) (hf_meas : ∀ i, Measurable (f i))
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
     CondIndepFun m' hm' (∏ j ∈ s, f j) (f i) μ :=
-  Kernel.iIndepFun.indepFun_finset_prod_of_not_mem hf_Indep hf_meas hi
+  Kernel.iIndepFun.indepFun_finset_prod_of_notMem hf_Indep hf_meas hi
 
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_prod_range_succ {f : ℕ → Ω → β}

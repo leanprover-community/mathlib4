@@ -366,7 +366,7 @@ alias IntegrableOn.integrable_of_ae_not_mem_eq_zero := IntegrableOn.integrable_o
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_forall_notMem_eq_zero [PseudoMetrizableSpace ε']
     {f : α → ε'} (hf : IntegrableOn f s μ) (h't : ∀ x, x ∉ s → f x = 0) : Integrable f μ :=
-  hf.integrable_of_ae_not_mem_eq_zero (Eventually.of_forall fun x hx => h't x hx)
+  hf.integrable_of_ae_notMem_eq_zero (Eventually.of_forall fun x hx => h't x hx)
 
 @[deprecated (since := "2025-05-23")]
 alias IntegrableOn.integrable_of_forall_not_mem_eq_zero :=
@@ -375,7 +375,7 @@ alias IntegrableOn.integrable_of_forall_not_mem_eq_zero :=
 theorem integrableOn_iff_integrable_of_support_subset [PseudoMetrizableSpace ε']
     {f : α → ε'} (h1s : support f ⊆ s) : IntegrableOn f s μ ↔ Integrable f μ := by
   refine ⟨fun h => ?_, fun h => h.integrableOn⟩
-  refine h.integrable_of_forall_not_mem_eq_zero fun x hx => ?_
+  refine h.integrable_of_forall_notMem_eq_zero fun x hx => ?_
   contrapose! hx
   exact h1s (mem_support.2 hx)
 

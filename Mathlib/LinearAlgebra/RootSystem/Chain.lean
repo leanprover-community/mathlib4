@@ -58,7 +58,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
   by_contra! contra
   have hki_nmem : P.root k + P.root i ∉ range P.root := by
     replace hk : P.root k + P.root i = P.root j + (r + 1) • P.root i := by rw [hk]; module
-    replace contra : r + 1 ∉ S := hrs.not_mem_of_mem_left <| by simp [contra]
+    replace contra : r + 1 ∉ S := hrs.notMem_of_mem_left <| by simp [contra]
     simpa only [hk, S_def, mem_setOf_eq, S] using contra
   have hki_ne : P.root k ≠ -P.root i := by
     rw [hk]
@@ -67,7 +67,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
     exact ⟨r + 1, 1, by simp [add_smul, h], by omega⟩
   have hli_nmem : P.root l - P.root i ∉ range P.root := by
     replace hl : P.root l - P.root i = P.root j + (s - 1) • P.root i := by rw [hl]; module
-    replace contra : s - 1 ∉ S := hrs.not_mem_of_mem_left <| by simp [lt_sub_right_of_add_lt contra]
+    replace contra : s - 1 ∉ S := hrs.notMem_of_mem_left <| by simp [lt_sub_right_of_add_lt contra]
     simpa only [hl, S_def, mem_setOf_eq, S] using contra
   have hli_ne : P.root l ≠ P.root i := by
     rw [hl]

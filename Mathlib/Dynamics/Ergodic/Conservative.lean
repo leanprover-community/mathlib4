@@ -20,7 +20,7 @@ from it:
   `MeasureTheory.Conservative.exists_gt_measure_inter_ne_zero`: if `μ s ≠ 0`, then for infinitely
   many `n`, the measure of `s ∩ f^[n] ⁻¹' s` is positive.
 
-* `MeasureTheory.Conservative.measure_mem_forall_ge_image_not_mem_eq_zero`,
+* `MeasureTheory.Conservative.measure_mem_forall_ge_image_notMem_eq_zero`,
   `MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem`: a.e. every point of `s` visits `s`
   infinitely many times (Poincaré recurrence theorem).
 
@@ -157,7 +157,7 @@ theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasu
     ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
   simp only [frequently_atTop, @forall_swap (_ ∈ s), ae_all_iff]
   intro n
-  filter_upwards [measure_zero_iff_ae_nmem.1 (hf.measure_mem_forall_ge_image_not_mem_eq_zero hs n)]
+  filter_upwards [measure_zero_iff_ae_nmem.1 (hf.measure_mem_forall_ge_image_notMem_eq_zero hs n)]
   simp
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :

@@ -89,7 +89,7 @@ theorem classes_inj {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.classes = r�
 
 /-- The empty set is not an equivalence class. -/
 theorem empty_notMem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
-  Set.not_mem_empty y <| hy.symm ▸ r.refl' y
+  Set.notMem_empty y <| hy.symm ▸ r.refl' y
 
 @[deprecated (since := "2025-05-23")] alias empty_not_mem_classes := empty_notMem_classes
 
@@ -195,7 +195,7 @@ theorem nonempty_of_mem_partition {c : Set (Set α)} (hc : IsPartition c) {s} (h
   Set.nonempty_iff_ne_empty.2 fun hs0 => hc.1 <| hs0 ▸ h
 
 theorem isPartition_classes (r : Setoid α) : IsPartition r.classes :=
-  ⟨empty_not_mem_classes, classes_eqv_classes⟩
+  ⟨empty_notMem_classes, classes_eqv_classes⟩
 
 theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
     c.PairwiseDisjoint id :=
@@ -255,7 +255,7 @@ variable (α) in
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
   partitions of `α` into subsets. -/
 protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C } where
-  toFun r := ⟨r.classes, empty_not_mem_classes, classes_eqv_classes⟩
+  toFun r := ⟨r.classes, empty_notMem_classes, classes_eqv_classes⟩
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
   right_inv C := by rw [Subtype.ext_iff_val, ← classes_mkClasses C.1 C.2]

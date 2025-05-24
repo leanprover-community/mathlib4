@@ -304,7 +304,7 @@ protected theorem Multipliable.mulIndicator (hf : Multipliable f) (s : Set β) :
 theorem Multipliable.comp_injective {i : γ → β} (hf : Multipliable f) (hi : Injective i) :
     Multipliable (f ∘ i) := by
   simpa only [Set.mulIndicator_range_comp] using
-    (hi.multipliable_iff (fun x hx ↦ Set.mulIndicator_of_not_mem hx _)).2
+    (hi.multipliable_iff (fun x hx ↦ Set.mulIndicator_of_notMem hx _)).2
     (hf.mulIndicator (Set.range i))
 
 @[to_additive]

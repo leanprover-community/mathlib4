@@ -62,7 +62,7 @@ theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := b
   intro i hi
   rw [mem_coe, mem_support_iff] at hi
   by_contra h
-  exact hi (indicator_of_not_mem h _)
+  exact hi (indicator_of_notMem h _)
 
 lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) := by
   classical

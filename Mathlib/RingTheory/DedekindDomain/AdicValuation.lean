@@ -553,7 +553,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
     simp [ha, Submonoid.one_mem]
-  · rw [not_mem_adicCompletionIntegers] at ha
+  · rw [notMem_adicCompletionIntegers] at ha
     -- Let the additive valuation of a be -d with d>0
     obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
       Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'

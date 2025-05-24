@@ -69,7 +69,7 @@ noncomputable def integerNormalization (p : S[X]) : R[X] :=
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
   simp +contextual [integerNormalization, coeff_monomial,
-    coeffIntegerNormalization_of_not_mem_support]
+    coeffIntegerNormalization_of_notMem_support]
 
 theorem integerNormalization_spec (p : S[X]) :
     ∃ b : M, ∀ i, algebraMap R S ((integerNormalization M p).coeff i) = (b : R) • p.coeff i := by
@@ -82,7 +82,7 @@ theorem integerNormalization_spec (p : S[X]) :
       Classical.choose_spec
         (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
           (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
-  · rw [RingHom.map_zero, not_mem_support_iff.mp hi, smul_zero]
+  · rw [RingHom.map_zero, notMem_support_iff.mp hi, smul_zero]
     -- Porting note: was `convert (smul_zero _).symm, ...`
 
 theorem integerNormalization_map_to_map (p : S[X]) :
@@ -256,7 +256,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
     · exact RingHom.mem_range_self _ _
     · rw [← Algebra.smul_def]
       exact ⟨_, IsLocalization.map_integerMultiple M p.support p.coeff ⟨n, h₁⟩⟩
-  · rw [Polynomial.not_mem_support_iff] at h₁
+  · rw [Polynomial.notMem_support_iff] at h₁
     rw [h₁, zero_mul]
     exact zero_mem (algebraMap R Rₘ).range
 

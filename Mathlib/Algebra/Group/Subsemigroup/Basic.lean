@@ -85,7 +85,7 @@ instance : CompleteLattice (Subsemigroup M) :=
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥
-    bot_le := fun _ _ hx => (not_mem_bot hx).elim
+    bot_le := fun _ _ hx => (notMem_bot hx).elim
     top := ⊤
     le_top := fun _ x _ => mem_top x
     inf := (· ⊓ ·)

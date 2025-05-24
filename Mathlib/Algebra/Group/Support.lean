@@ -102,7 +102,7 @@ theorem mulSupport_extend_one {f : α → M'} {g : α → N} (hf : f.Injective) 
 @[to_additive]
 theorem mulSupport_disjoint_iff {f : α → M} {s : Set α} :
     Disjoint (mulSupport f) s ↔ EqOn f 1 s := by
-  simp_rw [← subset_compl_iff_disjoint_right, mulSupport_subset_iff', not_mem_compl_iff, EqOn,
+  simp_rw [← subset_compl_iff_disjoint_right, mulSupport_subset_iff', notMem_compl_iff, EqOn,
     Pi.one_apply]
 
 @[to_additive]

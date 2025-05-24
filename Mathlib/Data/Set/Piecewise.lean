@@ -66,7 +66,7 @@ theorem piecewise_eqOn (f g : α → β) : EqOn (s.piecewise f g) f s := fun _ =
   piecewise_eq_of_mem _ _ _
 
 theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ := fun _ =>
-  piecewise_eq_of_not_mem _ _ _
+  piecewise_eq_of_notMem _ _ _
 
 theorem piecewise_le {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ i ∉ s, f₂ i ≤ g i) :
@@ -162,7 +162,7 @@ theorem injective_piecewise_iff {f g : α → β} :
   rw [injective_iff_injOn_univ, ← union_compl_self s, injOn_union (@disjoint_compl_right _ _ s),
     (piecewise_eqOn s f g).injOn_iff, (piecewise_eqOn_compl s f g).injOn_iff]
   refine and_congr Iff.rfl (and_congr Iff.rfl <| forall₄_congr fun x hx y hy => ?_)
-  rw [piecewise_eq_of_mem s f g hx, piecewise_eq_of_not_mem s f g hy]
+  rw [piecewise_eq_of_mem s f g hx, piecewise_eq_of_notMem s f g hy]
 
 theorem piecewise_mem_pi {δ : α → Type*} {t : Set α} {t' : ∀ i, Set (δ i)} {f g} (hf : f ∈ pi t t')
     (hg : g ∈ pi t t') : s.piecewise f g ∈ pi t t' := by

@@ -37,7 +37,7 @@ theorem preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
   ext fun x ↦ (s.mem_iff_boolIndicator x).symm
 
 theorem preimage_boolIndicator_false : s.boolIndicator ⁻¹' {false} = sᶜ :=
-  ext fun x ↦ (s.not_mem_iff_boolIndicator x).symm
+  ext fun x ↦ (s.notMem_iff_boolIndicator x).symm
 
 open scoped Classical in
 theorem preimage_boolIndicator_eq_union (t : Set Bool) :

@@ -75,7 +75,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : Dual 𝕜 E) :
     ‖L.toLpₗ μ p‖ ≤ ‖L‖ * (eLpNorm id p μ).toReal := by
   by_cases h_Lp : MemLp id p μ
   swap
-  · simp only [h_Lp, not_false_eq_true, toLpₗ_of_not_memLp, Lp.norm_zero]
+  · simp only [h_Lp, not_false_eq_true, toLpₗ_of_notMemLp, Lp.norm_zero]
     positivity
   by_cases hp : p = 0
   · simp only [h_Lp, toLpₗ_apply, Lp.norm_toLp]
@@ -181,7 +181,7 @@ lemma uncenteredCovarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ 
 
 lemma uncenteredCovarianceBilin_of_notMemLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     uncenteredCovarianceBilin μ L₁ L₂ = 0 := by
-  simp [uncenteredCovarianceBilin, Dual.toLp_of_not_memLp h]
+  simp [uncenteredCovarianceBilin, Dual.toLp_of_notMemLp h]
 
 @[deprecated (since := "2025-05-23")]
 alias uncenteredCovarianceBilin_of_not_memLp := uncenteredCovarianceBilin_of_notMemLp
@@ -189,7 +189,7 @@ alias uncenteredCovarianceBilin_of_not_memLp := uncenteredCovarianceBilin_of_not
 lemma norm_uncenteredCovarianceBilin_le (L₁ L₂ : Dual ℝ E) :
     ‖uncenteredCovarianceBilin μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
   by_cases h : MemLp id 2 μ
-  swap; · simp only [uncenteredCovarianceBilin_of_not_memLp h, norm_zero]; positivity
+  swap; · simp only [uncenteredCovarianceBilin_of_notMemLp h, norm_zero]; positivity
   calc ‖uncenteredCovarianceBilin μ L₁ L₂‖
   _ = ‖∫ x, L₁ x * L₂ x ∂μ‖ := by rw [uncenteredCovarianceBilin_apply h]
   _ ≤ ∫ x, ‖L₁ x‖ * ‖L₂ x‖ ∂μ := (norm_integral_le_integral_norm _).trans (by simp)
@@ -229,7 +229,7 @@ def covarianceBilin (μ : Measure E) : Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ]
 @[simp]
 lemma covarianceBilin_of_notMemLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     covarianceBilin μ L₁ L₂ = 0 := by
-  rw [covarianceBilin, uncenteredCovarianceBilin_of_not_memLp]
+  rw [covarianceBilin, uncenteredCovarianceBilin_of_notMemLp]
   rw [(measurableEmbedding_subRight _).memLp_map_measure_iff]
   refine fun h_Lp ↦ h ?_
   have : (id : E → E) = fun x ↦ x - ∫ x, x ∂μ + ∫ x, x ∂μ := by ext; simp

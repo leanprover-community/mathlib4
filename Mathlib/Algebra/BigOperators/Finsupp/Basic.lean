@@ -50,7 +50,7 @@ variable [Zero M] [Zero M'] [CommMonoid N]
 theorem prod_of_support_subset (f : α →₀ M) {s : Finset α} (hs : f.support ⊆ s) (g : α → M → N)
     (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x ∈ s, g x (f x) := by
   refine Finset.prod_subset hs fun x hxs hx => h x hxs ▸ (congr_arg (g x) ?_)
-  exact not_mem_support_iff.1 hx
+  exact notMem_support_iff.1 hx
 
 @[to_additive]
 theorem prod_fintype [Fintype α] (f : α →₀ M) (g : α → M → N) (h : ∀ i, g i 0 = 1) :
@@ -69,7 +69,7 @@ theorem prod_single_index {a : α} {b : M} {h : α → M → N} (h_zero : h a 0 
 @[to_additive]
 theorem prod_mapRange_index {f : M → M'} {hf : f 0 = 0} {g : α →₀ M} {h : α → M' → N}
     (h0 : ∀ a, h a 0 = 1) : (mapRange f hf g).prod h = g.prod fun a b => h a (f b) :=
-  Finset.prod_subset support_mapRange fun _ _ H => by rw [not_mem_support_iff.1 H, h0]
+  Finset.prod_subset support_mapRange fun _ _ H => by rw [notMem_support_iff.1 H, h0]
 
 @[to_additive (attr := simp)]
 theorem prod_zero_index {h : α → M → N} : (0 : α →₀ M).prod h = 1 :=
@@ -160,7 +160,7 @@ theorem mul_prod_erase' (f : α →₀ M) (y : α) (g : α → M → N) (hg : �
   classical
     by_cases hyf : y ∈ f.support
     · exact Finsupp.mul_prod_erase f y g hyf
-    · rw [not_mem_support_iff.mp hyf, hg y, erase_of_not_mem_support hyf, one_mul]
+    · rw [notMem_support_iff.mp hyf, hg y, erase_of_notMem_support hyf, one_mul]
 
 @[to_additive]
 theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [SubmonoidClass S N]
@@ -181,7 +181,7 @@ theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
     f.prod g = g a (f a) := by
   refine Finset.prod_eq_single a (fun b hb₁ hb₂ => ?_) (fun h => ?_)
   · exact h₀ b (mem_support_iff.mp hb₁) hb₂
-  · simp only [not_mem_support_iff] at h
+  · simp only [notMem_support_iff] at h
     rw [h]
     exact h₁ h
 
@@ -501,7 +501,7 @@ theorem prod_add_index_of_disjoint [AddCommMonoid M] {f1 f2 : α →₀ M}
       Disjoint f1.support f2.support → (∏ x ∈ f1.support, g x (f1 x + f2 x)) = f1.prod g :=
     fun hd =>
     Finset.prod_congr rfl fun x hx => by
-      simp only [not_mem_support_iff.mp (disjoint_left.mp hd hx), add_zero]
+      simp only [notMem_support_iff.mp (disjoint_left.mp hd hx), add_zero]
   classical simp_rw [← this hd, ← this hd.symm, add_comm (f2 _), Finsupp.prod, support_add_eq hd,
       prod_union hd, add_apply]
 
@@ -521,7 +521,7 @@ lemma indicator_eq_sum_attach_single [AddCommMonoid M] {s : Finset α} (f : ∀ 
   · refine Finset.sum_congr rfl (fun _ _ => ?_)
     rw [indicator_of_mem]
   · intro i _ hi
-    rw [not_mem_support_iff.mp hi, single_zero]
+    rw [notMem_support_iff.mp hi, single_zero]
 
 lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : α → M) :
     indicator s (fun x _ ↦ f x) = ∑ x ∈ s, single x (f x) :=

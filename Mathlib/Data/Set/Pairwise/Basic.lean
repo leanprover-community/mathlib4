@@ -152,7 +152,7 @@ protected theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b 
 
 theorem Pairwise.insert_of_notMem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
     (insert a s).Pairwise r :=
-  (pairwise_insert_of_not_mem ha).2 ⟨hs, h⟩
+  (pairwise_insert_of_notMem ha).2 ⟨hs, h⟩
 
 @[deprecated (since := "2025-05-23")] alias Pairwise.insert_of_not_mem := Pairwise.insert_of_notMem
 
@@ -162,7 +162,7 @@ theorem pairwise_insert_of_symmetric (hr : Symmetric r) :
 
 theorem pairwise_insert_of_symmetric_of_notMem (hr : Symmetric r) (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b := by
-  simp only [pairwise_insert_of_not_mem ha, hr.iff a, and_self_iff]
+  simp only [pairwise_insert_of_notMem ha, hr.iff a, and_self_iff]
 
 @[deprecated (since := "2025-05-23")]
 alias pairwise_insert_of_symmetric_of_not_mem := pairwise_insert_of_symmetric_of_notMem
@@ -174,7 +174,7 @@ theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
 @[deprecated Pairwise.insert_of_symmetric (since := "2025-03-19")]
 theorem Pairwise.insert_of_symmetric_of_notMem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
     (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
-  (pairwise_insert_of_symmetric_of_not_mem hr ha).2 ⟨hs, h⟩
+  (pairwise_insert_of_symmetric_of_notMem hr ha).2 ⟨hs, h⟩
 
 @[deprecated (since := "2025-05-23")]
 alias Pairwise.insert_of_symmetric_of_not_mem := Pairwise.insert_of_symmetric_of_notMem
@@ -259,7 +259,7 @@ theorem pairwiseDisjoint_insert {i : ι} :
 
 theorem pairwiseDisjoint_insert_of_notMem {i : ι} (hi : i ∉ s) :
     (insert i s).PairwiseDisjoint f ↔ s.PairwiseDisjoint f ∧ ∀ j ∈ s, Disjoint (f i) (f j) :=
-  pairwise_insert_of_symmetric_of_not_mem (symmetric_disjoint.comap f) hi
+  pairwise_insert_of_symmetric_of_notMem (symmetric_disjoint.comap f) hi
 
 @[deprecated (since := "2025-05-23")]
 alias pairwiseDisjoint_insert_of_not_mem := pairwiseDisjoint_insert_of_notMem
@@ -270,7 +270,7 @@ protected theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
 
 theorem PairwiseDisjoint.insert_of_notMem (hs : s.PairwiseDisjoint f) {i : ι} (hi : i ∉ s)
     (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
-  (pairwiseDisjoint_insert_of_not_mem hi).2 ⟨hs, h⟩
+  (pairwiseDisjoint_insert_of_notMem hi).2 ⟨hs, h⟩
 
 @[deprecated (since := "2025-05-23")]
 alias PairwiseDisjoint.insert_of_not_mem := PairwiseDisjoint.insert_of_notMem

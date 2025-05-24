@@ -55,7 +55,7 @@ theorem mem_sdiff : a ∈ s \ t ↔ a ∈ s ∧ a ∉ t :=
 
 @[simp]
 theorem inter_sdiff_self (s₁ s₂ : Finset α) : s₁ ∩ (s₂ \ s₁) = ∅ :=
-  eq_empty_of_forall_not_mem <| by
+  eq_empty_of_forall_notMem <| by
     simp only [mem_inter, mem_sdiff]; rintro x ⟨h, _, hn⟩; exact hn h
 
 instance : GeneralizedBooleanAlgebra (Finset α) :=
@@ -64,7 +64,7 @@ instance : GeneralizedBooleanAlgebra (Finset α) :=
         ← and_or_left, em, and_true, implies_true]
     inf_inf_sdiff := fun x y => by
       simp only [Finset.ext_iff, inter_sdiff_self, inter_empty, inter_assoc, false_iff,
-        inf_eq_inter, not_mem_empty, bot_eq_empty, not_false_iff, implies_true] }
+        inf_eq_inter, notMem_empty, bot_eq_empty, not_false_iff, implies_true] }
 
 theorem notMem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by
   simp only [mem_sdiff, h, not_true, not_false_iff, and_false]
@@ -169,7 +169,7 @@ theorem empty_sdiff (s : Finset α) : ∅ \ s = ∅ :=
 theorem insert_sdiff_of_notMem (s : Finset α) {t : Finset α} {x : α} (h : x ∉ t) :
     insert x s \ t = insert x (s \ t) := by
   rw [← coe_inj, coe_insert, coe_sdiff, coe_sdiff, coe_insert]
-  exact Set.insert_diff_of_not_mem _ h
+  exact Set.insert_diff_of_notMem _ h
 
 @[deprecated (since := "2025-05-23")] alias insert_sdiff_of_not_mem := insert_sdiff_of_notMem
 
@@ -178,7 +178,7 @@ theorem insert_sdiff_of_mem (s : Finset α) {x : α} (h : x ∈ t) : insert x s 
   exact Set.insert_diff_of_mem _ h
 
 @[simp] lemma insert_sdiff_cancel (ha : a ∉ s) : insert a s \ s = {a} := by
-  rw [insert_sdiff_of_not_mem _ ha, Finset.sdiff_self, insert_empty_eq]
+  rw [insert_sdiff_of_notMem _ ha, Finset.sdiff_self, insert_empty_eq]
 
 @[simp]
 theorem insert_sdiff_insert (s t : Finset α) (x : α) : insert x s \ insert x t = s \ insert x t :=

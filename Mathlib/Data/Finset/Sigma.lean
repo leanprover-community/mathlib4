@@ -158,7 +158,7 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
       rw [sigmaLift, dif_pos rfl, mem_map]
       exact ⟨_, hx, by simp [Sigma.ext_iff]⟩
   · rw [sigmaLift, dif_neg h]
-    refine iff_of_false (not_mem_empty _) ?_
+    refine iff_of_false (notMem_empty _) ?_
     rintro ⟨⟨⟩, ⟨⟩, _⟩
     exact h rfl
 

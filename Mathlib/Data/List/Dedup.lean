@@ -52,7 +52,7 @@ theorem dedup_cons_of_mem {a : α} {l : List α} (h : a ∈ l) : dedup (a :: l) 
 
 @[simp]
 theorem dedup_cons_of_notMem {a : α} {l : List α} (h : a ∉ l) : dedup (a :: l) = a :: dedup l :=
-  dedup_cons_of_not_mem' <| mt mem_dedup.1 h
+  dedup_cons_of_notMem' <| mt mem_dedup.1 h
 
 @[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem := dedup_cons_of_notMem
 
@@ -102,7 +102,7 @@ theorem dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
   | cons a l hl =>
     by_cases h : a ∈ l
     · simp only [List.dedup_cons_of_mem h, hl, List.ne_nil_of_mem h, reduceCtorEq]
-    · simp only [List.dedup_cons_of_not_mem h, List.cons_ne_nil]
+    · simp only [List.dedup_cons_of_notMem h, List.cons_ne_nil]
 
 protected theorem Nodup.dedup {l : List α} (h : l.Nodup) : l.dedup = l :=
   List.dedup_eq_self.2 h
@@ -117,7 +117,7 @@ theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ ded
   rw [← IH, cons_append]
   by_cases h : a ∈ dedup (l₁ ++ l₂)
   · rw [dedup_cons_of_mem' h, insert_of_mem h]
-  · rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]
+  · rw [dedup_cons_of_notMem' h, insert_of_not_mem h]
 
 theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.Injective f)
     (xs : List α) :
@@ -128,7 +128,7 @@ theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.I
     rw [map_cons]
     by_cases h : x ∈ xs
     · rw [dedup_cons_of_mem h, dedup_cons_of_mem (mem_map_of_mem h), ih]
-    · rw [dedup_cons_of_not_mem h, dedup_cons_of_not_mem <| (mem_map_of_injective hf).not.mpr h, ih,
+    · rw [dedup_cons_of_notMem h, dedup_cons_of_notMem <| (mem_map_of_injective hf).not.mpr h, ih,
         map_cons]
 
 /-- Note that the weaker `List.Subset.dedup_append_left` is proved later. -/
@@ -145,7 +145,7 @@ theorem Disjoint.union_eq {xs ys : List α} (h : Disjoint xs ys) :
     rw [disjoint_cons_left] at h
     by_cases hx : x ∈ xs
     · rw [dedup_cons_of_mem hx, insert_of_mem (mem_union_left hx _), ih h.2]
-    · rw [dedup_cons_of_not_mem hx, insert_of_not_mem, ih h.2, cons_append]
+    · rw [dedup_cons_of_notMem hx, insert_of_not_mem, ih h.2, cons_append]
       rw [mem_union_iff, not_or]
       exact ⟨hx, h.1⟩
 
@@ -170,6 +170,6 @@ theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup 
     if h : a ∈ l₁ then by
       simp [h, nodup_dedup, p.subset h]
     else by
-      simp [h, count_eq_zero_of_not_mem, mt p.mem_iff.2]
+      simp [h, count_eq_zero_of_notMem, mt p.mem_iff.2]
 
 end List

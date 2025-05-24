@@ -95,8 +95,8 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
       · rcases H with ⟨u, hu⟩
         rw [← hu.2]
         exact Subset.trans (erase_insert_subset a u) hu.1
-  · have : ¬∃ u : Finset α, u ⊆ s ∧ insert a u = t := by simp [Ne.symm (ne_insert_of_not_mem _ _ h)]
-    simp [Finset.erase_eq_of_not_mem h, this]
+  · have : ¬∃ u : Finset α, u ⊆ s ∧ insert a u = t := by simp [Ne.symm (ne_insert_of_notMem _ _ h)]
+    simp [Finset.erase_eq_of_notMem h, this]
 
 lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
     (s.powerset : Set (Finset α)).PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Finset α)) := by
@@ -104,9 +104,9 @@ lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
   rintro i hi j hj
   simp only [Set.Nonempty, Set.mem_inter_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     exists_eq_or_imp, exists_eq_left, or_imp, imp_self, true_and]
-  refine ⟨?_, ?_, insert_erase_invOn.2.injOn (not_mem_mono hi ha) (not_mem_mono hj ha)⟩ <;>
+  refine ⟨?_, ?_, insert_erase_invOn.2.injOn (notMem_mono hi ha) (notMem_mono hj ha)⟩ <;>
     rintro rfl <;>
-    cases Finset.not_mem_mono ‹_› ha (Finset.mem_insert_self _ _)
+    cases Finset.notMem_mono ‹_› ha (Finset.mem_insert_self _ _)
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
 instance decidableExistsOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Prop}
@@ -243,7 +243,7 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
   simp only [mem_powerset, mem_filter, Function.comp_apply, and_congr_right_iff]
   intro ht
   have : x ∉ t := fun H => h (ht H)
-  simp [card_insert_of_not_mem this, Nat.succ_inj]
+  simp [card_insert_of_notMem this, Nat.succ_inj]
 
 @[simp]
 lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
@@ -294,7 +294,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty.2
       (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
     refine ⟨insert x t, ?_, mem_insert_self _ _⟩
-    rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
+    rw [← insert_erase hx, powersetCard_succ_insert (notMem_erase _ _)]
     exact mem_union_right _ (mem_image_of_mem _ ht)
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :

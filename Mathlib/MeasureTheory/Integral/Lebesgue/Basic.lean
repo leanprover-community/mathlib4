@@ -214,11 +214,11 @@ theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤
   · intro a
     by_cases h : a ∈ t <;>
       simp only [restrict_apply s ht.compl, mem_compl_iff, h, not_true, not_false_eq_true,
-        indicator_of_not_mem, zero_le, not_false_eq_true, indicator_of_mem]
+        indicator_of_notMem, zero_le, not_false_eq_true, indicator_of_mem]
     exact le_trans (hfs a) (by_contradiction fun hnfg => h (hts hnfg))
   · refine le_of_eq (SimpleFunc.lintegral_congr <| this.mono fun a hnt => ?_)
     by_cases hat : a ∈ t <;> simp only [restrict_apply s ht.compl, mem_compl_iff, hat, not_true,
-      not_false_eq_true, indicator_of_not_mem, not_false_eq_true, indicator_of_mem]
+      not_false_eq_true, indicator_of_notMem, not_false_eq_true, indicator_of_mem]
     exact (hnt hat).elim
 
 /-- Lebesgue integral over a set is monotone in function.
@@ -597,7 +597,7 @@ lemma lintegral_piecewise (hs : MeasurableSet s) (f g : α → ℝ≥0∞) [∀ 
   rw [← lintegral_add_compl _ hs]
   congr 1
   · exact setLIntegral_congr_fun hs <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_mem _ _ _
-  · exact setLIntegral_congr_fun hs.compl <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_not_mem _ _ _
+  · exact setLIntegral_congr_fun hs.compl <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_notMem _ _ _
 
 theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
     (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :

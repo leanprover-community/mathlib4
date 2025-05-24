@@ -176,7 +176,7 @@ theorem unifIntegrable_congr_ae {p : ℝ≥0∞} {f g : ι → α → β} (hfg :
 theorem tendsto_indicator_ge (f : α → β) (x : α) :
     Tendsto (fun M : ℕ => { x | (M : ℝ) ≤ ‖f x‖₊ }.indicator f x) atTop (𝓝 0) := by
   refine tendsto_atTop_of_eventually_const (i₀ := Nat.ceil (‖f x‖₊ : ℝ) + 1) fun n hn => ?_
-  rw [Set.indicator_of_not_mem]
+  rw [Set.indicator_of_notMem]
   simp only [not_le, Set.mem_setOf_eq]
   refine lt_of_le_of_lt (Nat.le_ceil _) ?_
   refine lt_of_lt_of_le (lt_add_one _) ?_
@@ -212,7 +212,7 @@ theorem MemLp.integral_indicator_norm_ge_le (hf : MemLp f 1 μ) (hmeas : Strongl
     · dsimp
       rwa [Set.indicator_of_mem]
     · dsimp
-      rw [Set.indicator_of_not_mem, norm_zero]
+      rw [Set.indicator_of_notMem, norm_zero]
       · exact norm_nonneg _
       · assumption
   rw [ENNReal.tendsto_atTop_zero] at this
@@ -299,7 +299,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : Strongly
       ← ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) ENNReal.toReal_nonneg, ofReal_norm]
     rw [Set.mem_setOf_eq]
     rwa [← hiff]
-  · rw [Set.indicator_of_not_mem hx, Set.indicator_of_not_mem]
+  · rw [Set.indicator_of_notMem hx, Set.indicator_of_notMem]
     · simp [ENNReal.toReal_pos hp_ne_zero hp_ne_top]
     · rw [Set.mem_setOf_eq]
       rwa [← hiff]
@@ -376,8 +376,8 @@ theorem MemLp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf 
       exact hδ s hs hμs
   · ext x
     by_cases hx : M ≤ ‖f x‖
-    · rw [Pi.add_apply, Set.indicator_of_mem, Set.indicator_of_not_mem, add_zero] <;> simpa
-    · rw [Pi.add_apply, Set.indicator_of_not_mem, Set.indicator_of_mem, zero_add] <;>
+    · rw [Pi.add_apply, Set.indicator_of_mem, Set.indicator_of_notMem, add_zero] <;> simpa
+    · rw [Pi.add_apply, Set.indicator_of_notMem, Set.indicator_of_mem, zero_add] <;>
         simpa using hx
 
 /-- This lemma is superseded by `MeasureTheory.MemLp.eLpNorm_indicator_le` which does not require
@@ -474,7 +474,7 @@ theorem eLpNorm_sub_le_of_dist_bdd (μ : Measure α)
     · rw [Set.indicator_of_mem hx, Set.indicator_of_mem hx, Pi.sub_apply, ← dist_eq_norm,
         Real.norm_eq_abs, abs_of_nonneg hc]
       exact hf x hx
-    · simp [Set.indicator_of_not_mem hx]
+    · simp [Set.indicator_of_notMem hx]
   refine le_trans (eLpNorm_mono this) ?_
   rw [eLpNorm_indicator_const hs hp hp']
   refine mul_le_mul_right' (le_of_eq ?_) _
@@ -694,7 +694,7 @@ theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β
     by_cases hfx : x ∈ { x | C ≤ ‖f i x‖₊ }
     · rw [Set.indicator_of_mem hfx, Set.indicator_of_mem, hx]
       rwa [Set.mem_setOf, hx] at hfx
-    · rw [Set.indicator_of_not_mem hfx, Set.indicator_of_not_mem]
+    · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
       rwa [Set.mem_setOf, hx] at hfx
   refine ⟨max C 1, lt_max_of_lt_right one_pos, fun i => le_trans (eLpNorm_mono fun x => ?_) (hCg i)⟩
   rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
@@ -784,7 +784,7 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
           ((hf i).indicator (stronglyMeasurable_const.measurableSet_le (hf i).nnnorm))) hp)
       rw [Pi.add_apply, Set.indicator_apply]
       split_ifs with hx
-      · rw [Set.indicator_of_not_mem, add_zero]
+      · rw [Set.indicator_of_notMem, add_zero]
         simpa using hx
       · rw [Set.indicator_of_mem, zero_add]
         simpa using hx
@@ -820,7 +820,7 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
   by_cases hfx : x ∈ { x | C ≤ ‖f i x‖₊ }
   · rw [Set.indicator_of_mem hfx, Set.indicator_of_mem, hx]
     rwa [Set.mem_setOf, hx] at hfx
-  · rw [Set.indicator_of_not_mem hfx, Set.indicator_of_not_mem]
+  · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
     rwa [Set.mem_setOf, hx] at hfx
 
 /-- This lemma is superseded by `UniformIntegrable.spec` which does not require measurability. -/
@@ -871,7 +871,7 @@ theorem UniformIntegrable.spec (hp : p ≠ 0) (hp' : p ≠ ∞) (hfu : UniformIn
   by_cases hfx : x ∈ { x | C ≤ ‖f i x‖₊ }
   · rw [Set.indicator_of_mem hfx, Set.indicator_of_mem, hx]
     rwa [Set.mem_setOf, hx] at hfx
-  · rw [Set.indicator_of_not_mem hfx, Set.indicator_of_not_mem]
+  · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
     rwa [Set.mem_setOf, hx] at hfx
 
 /-- The definition of uniform integrable in mathlib is equivalent to the definition commonly

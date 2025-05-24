@@ -104,7 +104,7 @@ lemma exists_nonDegenerate (x : X _⦋n⦌) :
   | succ n hn =>
       by_cases hx : x ∈ X.nonDegenerate (n + 1)
       · exact ⟨n + 1, 𝟙 _, inferInstance, ⟨x, hx⟩, by simp⟩
-      · simp only [← mem_degenerate_iff_not_mem_nonDegenerate,
+      · simp only [← mem_degenerate_iff_notMem_nonDegenerate,
           degenerate_eq_iUnion_range_σ, Set.mem_iUnion, Set.mem_range] at hx
         obtain ⟨i, y, rfl⟩ := hx
         obtain ⟨m, f, hf, z, rfl⟩ := hn y
@@ -116,7 +116,7 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
     IsIso f := by
   obtain ⟨x, hx⟩ := x
   induction' m using SimplexCategory.rec with m
-  rw [mem_nonDegenerate_iff_not_mem_degenerate] at hx
+  rw [mem_nonDegenerate_iff_notMem_degenerate] at hx
   by_contra!
   refine hx ⟨_ ,?_, f, y, hy⟩
   by_contra!

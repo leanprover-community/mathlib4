@@ -910,16 +910,16 @@ theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b
 
 -- classical
 theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, ∃ i, x ∉ f i := by
-  simp [Set.eq_empty_iff_forall_not_mem]
+  simp [Set.eq_empty_iff_forall_notMem]
 
 -- classical
 theorem iInter₂_eq_empty_iff {s : ∀ i, κ i → Set α} :
     ⋂ (i) (j), s i j = ∅ ↔ ∀ a, ∃ i j, a ∉ s i j := by
-  simp only [eq_empty_iff_forall_not_mem, mem_iInter, not_forall]
+  simp only [eq_empty_iff_forall_notMem, mem_iInter, not_forall]
 
 -- classical
 theorem sInter_eq_empty_iff {c : Set (Set α)} : ⋂₀ c = ∅ ↔ ∀ a, ∃ b ∈ c, a ∉ b := by
-  simp [Set.eq_empty_iff_forall_not_mem]
+  simp [Set.eq_empty_iff_forall_notMem]
 
 -- classical
 @[simp]

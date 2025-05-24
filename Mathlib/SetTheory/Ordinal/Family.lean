@@ -388,8 +388,8 @@ theorem lift_card_sInf_compl_le (s : Set Ordinal.{u}) :
     Cardinal.lift.{u + 1} (sInf sᶜ).card ≤ #s := by
   rw [← mk_Iio_ordinal]
   refine mk_le_mk_of_subset fun x (hx : x < _) ↦ ?_
-  rw [← not_not_mem]
-  exact not_mem_of_lt_csInf' hx
+  rw [← not_notMem]
+  exact notMem_of_lt_csInf' hx
 
 theorem card_sInf_range_compl_le_lift {ι : Type u} (f : ι → Ordinal.{max u v}) :
     (sInf (range f)ᶜ).card ≤ Cardinal.lift.{v} #ι := by
@@ -701,7 +701,7 @@ theorem lsub_notMem_range {ι : Type u} (f : ι → Ordinal.{max u v}) :
 @[deprecated (since := "2025-05-23")] alias lsub_not_mem_range := lsub_notMem_range
 
 theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set.range f)ᶜ.Nonempty :=
-  ⟨_, lsub_not_mem_range.{_, v} f⟩
+  ⟨_, lsub_notMem_range.{_, v} f⟩
 
 set_option linter.deprecated false in
 @[simp]
@@ -963,7 +963,7 @@ end Ordinal
 
 
 theorem not_surjective_of_ordinal {α : Type u} (f : α → Ordinal.{u}) : ¬Surjective f := fun h =>
-  Ordinal.lsub_not_mem_range.{u, u} f (h _)
+  Ordinal.lsub_notMem_range.{u, u} f (h _)
 
 theorem not_injective_of_ordinal {α : Type u} (f : Ordinal.{u} → α) : ¬Injective f := fun h =>
   not_surjective_of_ordinal _ (invFun_surjective h)

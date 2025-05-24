@@ -134,7 +134,7 @@ lemma mem_factoredNumbers_iff_primeFactors_subset {s : Finset ℕ} {m : ℕ} :
 @[simp]
 lemma factoredNumbers_empty : factoredNumbers ∅ = {1} := by
   ext m
-  simp only [mem_factoredNumbers, Finset.not_mem_empty, ← List.eq_nil_iff_forall_not_mem,
+  simp only [mem_factoredNumbers, Finset.notMem_empty, ← List.eq_nil_iff_forall_not_mem,
     primeFactorsList_eq_nil, and_or_left, not_and_self_iff, ne_and_eq_iff_right zero_ne_one,
     false_or, Set.mem_singleton_iff]
 
@@ -384,7 +384,7 @@ lemma pow_mul_mem_smoothNumbers {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈
 lemma Prime.smoothNumbers_coprime {p n : ℕ} (hp : p.Prime) (hn : n ∈ smoothNumbers p) :
     Nat.Coprime p n := by
   simp only [smoothNumbers_eq_factoredNumbers] at hn
-  exact hp.factoredNumbers_coprime Finset.not_mem_range_self hn
+  exact hp.factoredNumbers_coprime Finset.notMem_range_self hn
 
 /-- If `f : ℕ → F` is multiplicative on coprime arguments, `p` is a prime and `m` is `p`-smooth,
 then `f (p^e * m) = f (p^e) * f m`. -/
@@ -401,7 +401,7 @@ when `p` is not prime. -/
 def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers (p + 1) :=
   ((prodCongrRight fun _ ↦ setCongr <| smoothNumbers_eq_factoredNumbers p).trans <|
-    equivProdNatFactoredNumbers hp Finset.not_mem_range_self).trans <|
+    equivProdNatFactoredNumbers hp Finset.notMem_range_self).trans <|
     setCongr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_succ ▸ rfl
 
 @[simp]

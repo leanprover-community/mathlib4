@@ -272,23 +272,23 @@ theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
   by_cases hx : x ∈ mulTSupport f
   · exact hf x hx
   · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const
-      (not_mem_mulTSupport_iff_eventuallyEq.1 hx)
+      (notMem_mulTSupport_iff_eventuallyEq.1 hx)
 
-@[to_additive contMDiffWithinAt_of_not_mem]
+@[to_additive contMDiffWithinAt_of_notMem]
 theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
   apply contMDiffWithinAt_const.congr_of_eventuallyEq
-    (eventually_nhdsWithin_of_eventually_nhds <| not_mem_mulTSupport_iff_eventuallyEq.mp hx)
+    (eventually_nhdsWithin_of_eventually_nhds <| notMem_mulTSupport_iff_eventuallyEq.mp hx)
     (image_eq_one_of_nmem_mulTSupport hx)
 
 @[deprecated (since := "2025-05-23")]
 alias contMDiffWithinAt_of_not_mem_mulTSupport := contMDiffWithinAt_of_notMem_mulTSupport
 
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
-@[to_additive contMDiffAt_of_not_mem]
+@[to_additive contMDiffAt_of_notMem]
 theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) : ContMDiffAt I I' n f x :=
-  contMDiffWithinAt_of_not_mem_mulTSupport hx n univ
+  contMDiffWithinAt_of_notMem_mulTSupport hx n univ
 
 @[deprecated (since := "2025-05-23")]
 alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport

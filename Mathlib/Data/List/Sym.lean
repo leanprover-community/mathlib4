@@ -143,7 +143,7 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
     rw [List.sym2, map_cons, map_cons, disjoint_cons_left, disjoint_append_right,
       disjoint_cons_right]
     refine ⟨?_, ⟨?_, ?_⟩, ?_⟩
-    · refine not_mem_cons_of_ne_of_not_mem ?_ (not_mem_append ?_ ?_)
+    · refine notMem_cons_of_ne_of_notMem ?_ (notMem_append ?_ ?_)
       · simp [h.1]
       · simp_rw [mem_map, not_exists, not_and]
         intro x'' hx
@@ -173,7 +173,7 @@ theorem dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sy
       refine mem_append_left _ ?_
       rw [mem_map]
       exact ⟨_, hm, Sym2.eq_swap⟩
-    · rw [dedup_cons_of_not_mem hm, List.sym2, map_cons, ← ih, dedup_cons_of_not_mem, cons_append,
+    · rw [dedup_cons_of_notMem hm, List.sym2, map_cons, ← ih, dedup_cons_of_notMem, cons_append,
         List.Disjoint.dedup_append, dedup_map_of_injective]
       · exact (Sym2.mkEmbedding _).injective
       · exact map_mk_disjoint_sym2 x xs hm

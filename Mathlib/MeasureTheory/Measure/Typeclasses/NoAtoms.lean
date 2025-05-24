@@ -63,7 +63,7 @@ alias _root_.Set.Countable.ae_not_mem := _root_.Set.Countable.ae_notMem
 
 lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
     μ.restrict sᶜ = μ :=
-  restrict_eq_self_of_ae_mem <| h.ae_not_mem μ
+  restrict_eq_self_of_ae_mem <| h.ae_notMem μ
 
 @[simp]
 lemma restrict_compl_singleton (a : α) : μ.restrict ({a}ᶜ) = μ :=

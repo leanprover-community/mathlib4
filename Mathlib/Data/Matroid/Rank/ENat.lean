@@ -134,7 +134,7 @@ lemma eRk_ground_union (M : Matroid α) (X : Set α) : M.eRk (M.E ∪ X) = M.eRa
   rw [union_comm, eRk_union_ground]
 
 lemma eRk_insert_of_notMem_ground (X : Set α) (he : e ∉ M.E) : M.eRk (insert e X) = M.eRk X := by
-  rw [← eRk_inter_ground, insert_inter_of_not_mem he, eRk_inter_ground]
+  rw [← eRk_inter_ground, insert_inter_of_notMem he, eRk_inter_ground]
 
 @[deprecated (since := "2025-05-23")]
 alias eRk_insert_of_not_mem_ground := eRk_insert_of_notMem_ground
@@ -254,7 +254,7 @@ lemma Indep.encard_le_eRank (hI : M.Indep I) : I.encard ≤ M.eRank := by
 lemma eRk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
   obtain ⟨I, hI⟩ := M.exists_isBasis (X ∩ M.E)
   rw [← eRk_inter_ground, ← hI.encard_eq_eRk, encard_eq_zero]
-  refine ⟨fun h ↦ by simpa [h] using hI, fun h ↦ eq_empty_iff_forall_not_mem.2 fun e heI ↦ ?_⟩
+  refine ⟨fun h ↦ by simpa [h] using hI, fun h ↦ eq_empty_iff_forall_notMem.2 fun e heI ↦ ?_⟩
   exact (hI.indep.isNonloop_of_mem heI).not_isLoop (h (hI.subset heI))
 
 @[deprecated (since := "2025-05-14")]
@@ -415,7 +415,7 @@ lemma eRk_insert_eq_add_one (he : e ∈ M.E \ M.closure X) : M.eRk (insert e X) 
   obtain ⟨I, hI⟩ := M.exists_isBasis' X
   rw [← hI.closure_eq_closure, mem_diff, hI.indep.mem_closure_iff', not_and] at he
   rw [← eRk_closure_eq, ← closure_insert_congr_right hI.closure_eq_closure, hI.eRk_eq_encard,
-    eRk_closure_eq, Indep.eRk_eq_encard (by tauto), encard_insert_of_not_mem (by tauto)]
+    eRk_closure_eq, Indep.eRk_eq_encard (by tauto), encard_insert_of_notMem (by tauto)]
 
 lemma exists_eRk_insert_eq_add_one_of_lt (h : M.eRk X < M.eRk Y) :
     ∃ y ∈ Y \ X, M.eRk (insert y X) = M.eRk X + 1 := by
@@ -486,7 +486,7 @@ lemma Indep.exists_insert_of_encard_lt {I J : Set α} (hI : M.Indep I) (hJ : M.I
   rw [← hI.eRk_eq_encard, ← hJ.eRk_eq_encard] at hcard
   obtain ⟨e, he, hIe⟩ := exists_eRk_insert_eq_add_one_of_lt hcard
   refine ⟨e, he, ?_⟩
-  rw [indep_iff_eRk_eq_encard_of_finite (hIfin.insert e), hIe, encard_insert_of_not_mem he.2,
+  rw [indep_iff_eRk_eq_encard_of_finite (hIfin.insert e), hIe, encard_insert_of_notMem he.2,
     hI.eRk_eq_encard]
 
 lemma isBasis'_iff_indep_encard_eq_of_finite (hIfin : I.Finite) :
@@ -517,7 +517,7 @@ lemma Indep.isBase_of_eRk_ge (hI : M.Indep I) (hIfin : I.Finite) (h : M.eRank �
 lemma IsCircuit.eRk_add_one_eq {C : Set α} (hC : M.IsCircuit C) : M.eRk C + 1 = C.encard := by
   obtain ⟨I, hI⟩ := M.exists_isBasis C
   obtain ⟨e, ⟨heC, heI⟩, rfl⟩ := hC.isBasis_iff_insert_eq.1 hI
-  rw [hI.eRk_eq_encard, encard_insert_of_not_mem heI]
+  rw [hI.eRk_eq_encard, encard_insert_of_notMem heI]
 
 /-! ### Singletons -/
 

@@ -106,7 +106,7 @@ theorem mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∈ a.support ↔ c
   exact Iff.rfl
 
 theorem notMem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∉ a.support ↔ coeff x a = 0 := by
-  rw [support, Finsupp.not_mem_support_iff]
+  rw [support, Finsupp.notMem_support_iff]
   exact Iff.rfl
 
 @[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff

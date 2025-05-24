@@ -201,7 +201,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
         apply subset_trans _ (compl_subset_compl.mpr (f_supp_in_so 0))
         rw [hso]
         simp only [Fin.isValue, ↓reduceIte, compl_compl, subset_refl]
-      apply not_mem_of_mem_compl
+      apply notMem_of_mem_compl
       exact mem_of_subset_of_mem (subset_trans this (compl_subset_compl_of_subset subset_closure))
         hx
     rw [union_subset_iff] at hst
@@ -216,7 +216,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
         apply subset_trans _ (compl_subset_compl.mpr (f_supp_in_so 1))
         rw [hso]
         simp only [Fin.isValue, one_ne_zero, ↓reduceIte, compl_compl, subset_refl]
-      apply not_mem_of_mem_compl
+      apply notMem_of_mem_compl
       exact mem_of_subset_of_mem (subset_trans this (compl_subset_compl_of_subset subset_closure))
         hx
     rw [union_subset_iff] at hst

@@ -237,7 +237,7 @@ theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f
   calc
     card α = (univ.map ⟨f, h⟩).card := (card_map _).symm
     _ < card β :=
-      Finset.card_lt_univ_of_not_mem (x := b) <| by
+      Finset.card_lt_univ_of_notMem (x := b) <| by
         rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
 
 @[deprecated (since := "2025-05-23")]
@@ -246,7 +246,7 @@ alias card_lt_of_injective_of_not_mem := card_lt_of_injective_of_notMem
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
   let ⟨_y, hy⟩ := not_forall.1 h'
-  card_lt_of_injective_of_not_mem f h hy
+  card_lt_of_injective_of_notMem f h hy
 
 theorem card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card β ≤ card α :=
   card_le_of_injective _ (Function.injective_surjInv h)
@@ -371,7 +371,7 @@ theorem Fintype.card_subtype_le [Fintype α] (p : α → Prop) [Fintype {a // p 
 
 lemma Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [Fintype {a // p a}] {x : α} (hx : ¬p x) :
     Fintype.card { x // p x } < Fintype.card α :=
-  Fintype.card_lt_of_injective_of_not_mem (b := x) (↑) Subtype.coe_injective <| by
+  Fintype.card_lt_of_injective_of_notMem (b := x) (↑) Subtype.coe_injective <| by
     rwa [Subtype.range_coe_subtype]
 
 theorem Fintype.card_subtype [Fintype α] (p : α → Prop) [Fintype {a // p a}] [DecidablePred p] :

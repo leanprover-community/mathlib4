@@ -176,7 +176,7 @@ theorem cons_bagInter_of_pos (l₁ : List α) (h : a ∈ l₂) :
 theorem cons_bagInter_of_neg (l₁ : List α) (h : a ∉ l₂) :
     (a :: l₁).bagInter l₂ = l₁.bagInter l₂ := by
   cases l₂; · simp only [bagInter_nil]
-  simp only [erase_of_not_mem h, List.bagInter, if_neg (mt mem_of_elem_eq_true h)]
+  simp only [erase_of_notMem h, List.bagInter, if_neg (mt mem_of_elem_eq_true h)]
 
 @[simp]
 theorem mem_bagInter {a : α} : ∀ {l₁ l₂ : List α}, a ∈ l₁.bagInter l₂ ↔ a ∈ l₁ ∧ a ∈ l₂

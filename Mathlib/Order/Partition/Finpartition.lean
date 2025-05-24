@@ -91,7 +91,7 @@ def ofErase [DecidableEq α] {a : α} (parts : Finset α) (sup_indep : parts.Sup
   parts := parts.erase ⊥
   supIndep := sup_indep.subset (erase_subset _ _)
   sup_parts := (sup_erase_bot _).trans sup_parts
-  not_bot_mem := not_mem_erase _ _
+  not_bot_mem := notMem_erase _ _
 
 /-- A `Finpartition` constructor from a bigger existing finpartition. -/
 @[simps]
@@ -141,7 +141,7 @@ protected def empty : Finpartition (⊥ : α) where
   parts := ∅
   supIndep := supIndep_empty _
   sup_parts := Finset.sup_empty
-  not_bot_mem := not_mem_empty ⊥
+  not_bot_mem := notMem_empty ⊥
 
 instance : Inhabited (Finpartition (⊥ : α)) :=
   ⟨Finpartition.empty α⟩
@@ -179,7 +179,7 @@ variable {P}
 @[simp]
 theorem parts_eq_empty_iff : P.parts = ∅ ↔ a = ⊥ := by
   simp_rw [← P.sup_parts]
-  refine ⟨fun h ↦ ?_, fun h ↦ eq_empty_iff_forall_not_mem.2 fun b hb ↦ P.not_bot_mem ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ eq_empty_iff_forall_notMem.2 fun b hb ↦ P.not_bot_mem ?_⟩
   · rw [h]
     exact Finset.sup_empty
   · rwa [← le_bot_iff.1 ((le_sup hb).trans h.le)]
@@ -195,7 +195,7 @@ instance : Unique (Finpartition (⊥ : α)) :=
   { (inferInstance : Inhabited (Finpartition (⊥ : α))) with
     uniq := fun P ↦ by
       ext a
-      exact iff_of_false (fun h ↦ P.ne_bot h <| le_bot_iff.1 <| P.le h) (not_mem_empty a) }
+      exact iff_of_false (fun h ↦ P.ne_bot h <| le_bot_iff.1 <| P.le h) (notMem_empty a) }
 
 -- See note [reducible non instances]
 /-- There's a unique partition of an atom. -/
@@ -256,7 +256,7 @@ theorem parts_top_subset (a : α) [Decidable (a = ⊥)] : (⊤ : Finpartition a)
   intro b hb
   have hb : b ∈ Finpartition.parts (dite _ _ _) := hb
   split_ifs at hb
-  · simp only [copy_parts, empty_parts, not_mem_empty] at hb
+  · simp only [copy_parts, empty_parts, notMem_empty] at hb
   · exact hb
 
 theorem parts_top_subsingleton (a : α) [Decidable (a = ⊥)] :
@@ -420,7 +420,7 @@ def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a �
 
 theorem card_extend (P : Finpartition a) (b c : α) {hb : b ≠ ⊥} {hab : Disjoint a b}
     {hc : a ⊔ b = c} : #(P.extend hb hab hc).parts = #P.parts + 1 :=
-  card_insert_of_not_mem fun h ↦ hb <| hab.symm.eq_bot_of_le <| P.le h
+  card_insert_of_notMem fun h ↦ hb <| hab.symm.eq_bot_of_le <| P.le h
 
 end DistribLattice
 
@@ -725,9 +725,9 @@ theorem mem_atomise :
     mem_singleton, and_comm, mem_powerset, exists_prop]
 
 theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
-  simp only [atomise, powerset_empty, image_singleton, not_mem_empty, IsEmpty.forall_iff,
+  simp only [atomise, powerset_empty, image_singleton, notMem_empty, IsEmpty.forall_iff,
     imp_true_iff, filter_True]
-  exact erase_eq_of_not_mem (not_mem_singleton.2 hs.ne_empty.symm)
+  exact erase_eq_of_notMem (notMem_singleton.2 hs.ne_empty.symm)
 
 theorem card_atomise_le : #(atomise s F).parts ≤ 2 ^ #F :=
   (card_le_card <| erase_subset _ _).trans <| Finset.card_image_le.trans (card_powerset _).le

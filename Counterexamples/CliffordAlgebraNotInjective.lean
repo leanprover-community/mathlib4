@@ -131,7 +131,7 @@ theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
 
 /-- Though `αβγ` is not itself zero -/
 theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
-  X0_X1_X2_not_mem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
+  X0_X1_X2_notMem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
 
 /-- The 1-form on $K^3$, the kernel of which we will take a quotient by.
 

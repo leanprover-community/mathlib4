@@ -51,7 +51,7 @@ alias hasHomology_sc'_of_not_mem_boundary := hasHomology_sc'_of_notMem_boundary
 
 lemma hasHomology_of_notMem_boundary (hj : ¬ e.BoundaryGE j) :
     (K.truncGE' e).HasHomology j :=
-  hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
+  hasHomology_sc'_of_notMem_boundary K e _ j _ rfl rfl hj
 
 @[deprecated (since := "2025-05-23")]
 alias hasHomology_of_not_mem_boundary := hasHomology_of_notMem_boundary
@@ -115,7 +115,7 @@ end
 instance truncGE'_hasHomology (i : ι) : (K.truncGE' e).HasHomology i := by
   by_cases hi : e.BoundaryGE i
   · exact ShortComplex.HasHomology.mk' (homologyData K e _ _ _ rfl rfl hi)
-  · exact hasHomology_of_not_mem_boundary K e i hi
+  · exact hasHomology_of_notMem_boundary K e i hi
 
 end truncGE'
 

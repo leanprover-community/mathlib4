@@ -774,7 +774,7 @@ alias finprod_mem_insert_of_eq_one_if_not_mem := finprod_mem_insert_of_eq_one_if
       "If `f a = 0`, then the sum of `f i` over `i ∈ insert a s` equals the sum of `f i`
       over `i ∈ s`."]
 theorem finprod_mem_insert_one (h : f a = 1) : ∏ᶠ i ∈ insert a s, f i = ∏ᶠ i ∈ s, f i :=
-  finprod_mem_insert_of_eq_one_if_not_mem fun _ => h
+  finprod_mem_insert_of_eq_one_if_notMem fun _ => h
 
 /-- If the multiplicative support of `f` is finite, then for every `x` in the domain of `f`, `f x`
 divides `finprod f`. -/

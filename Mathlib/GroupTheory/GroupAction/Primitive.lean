@@ -60,7 +60,7 @@ import Mathlib.GroupTheory.GroupAction.Transitive
   Given an equivariant map from a preprimitive action,
   if the image is at least twice the codomain, then the codomain is preprimitive.
 
-- `MulAction.IsPreprimitive.exists_mem_smul_and_not_mem_smul` : **Theorem of Rudio**.
+- `MulAction.IsPreprimitive.exists_mem_smul_and_notMem_smul` : **Theorem of Rudio**.
   For a preprimitive action, a subset which is neither empty nor full has a translate
   which contains a given point and avoids another one.
 
@@ -182,9 +182,9 @@ alias IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
 theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
     (H : ∀ {B : Set X} (_ : IsBlock G B), IsTrivialBlock B) :
     IsPreprimitive G X := by
-  simp only [Set.top_eq_univ, Set.ne_univ_iff_exists_not_mem] at Hnt
+  simp only [Set.top_eq_univ, Set.ne_univ_iff_exists_notMem] at Hnt
   obtain ⟨_, ha⟩ := Hnt
-  exact .of_isTrivialBlock_of_not_mem_fixedPoints ha fun {B} _ ↦ H
+  exact .of_isTrivialBlock_of_notMem_fixedPoints ha fun {B} _ ↦ H
 
 @[deprecated (since := "2025-03-03")] alias _root_.AddAction.mk' := AddAction.IsPreprimitive.mk'
 @[to_additive existing, deprecated (since := "2025-03-03")] alias mk' := IsPreprimitive.mk'
@@ -282,7 +282,7 @@ variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M α] :
     IsQuasiPreprimitive M α where
   isPretransitive_of_normal {N} _ hNX := by
-    rw [Set.ne_univ_iff_exists_not_mem] at hNX
+    rw [Set.ne_univ_iff_exists_notMem] at hNX
     obtain ⟨a, ha⟩ := hNX
     rw [isPretransitive_iff_orbit_eq_univ a]
     apply Or.resolve_left (isTrivialBlock_of_isBlock (IsBlock.orbit_of_normal a))

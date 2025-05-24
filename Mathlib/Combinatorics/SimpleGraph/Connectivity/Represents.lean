@@ -73,7 +73,7 @@ lemma ncard_sdiff_of_mem (hrep : Represents s C) (h : c ∈ C) :
 
 lemma ncard_sdiff_of_notMem (hrep : Represents s C) (h : c ∉ C) :
     (c.supp \ s).ncard = c.supp.ncard := by
-  rw [(disjoint_supp_of_not_mem hrep h).sdiff_eq_right]
+  rw [(disjoint_supp_of_notMem hrep h).sdiff_eq_right]
 
 @[deprecated (since := "2025-05-23")] alias ncard_sdiff_of_not_mem := ncard_sdiff_of_notMem
 
@@ -83,7 +83,7 @@ lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedC
     (hrep : ConnectedComponent.Represents s G.oddComponents) :
     Even (K.supp \ s).ncard := by
   by_cases h : Even K.supp.ncard
-  · simpa [hrep.ncard_sdiff_of_not_mem
+  · simpa [hrep.ncard_sdiff_of_notMem
       (by simpa [Set.ncard_image_of_injective, ← Nat.not_odd_iff_even] using h)] using h
   · have : K.supp.ncard ≠ 0 := Nat.ne_of_odd_add (Nat.not_even_iff_odd.mp h)
     rw [hrep.ncard_sdiff_of_mem (Nat.not_even_iff_odd.mp h), Nat.even_sub (by omega)]

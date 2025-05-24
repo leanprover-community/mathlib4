@@ -44,7 +44,7 @@ theorem isConj_of_support_equiv
   by_cases hx : x ∈ σ.support
   · rw [Equiv.extendSubtype_apply_of_mem, Equiv.extendSubtype_apply_of_mem]
     · exact hf x (Finset.mem_coe.2 hx)
-  · rwa [Classical.not_not.1 ((not_congr mem_support).1 (Equiv.extendSubtype_not_mem f _ _)),
+  · rwa [Classical.not_not.1 ((not_congr mem_support).1 (Equiv.extendSubtype_notMem f _ _)),
       Classical.not_not.1 ((not_congr mem_support).mp hx)]
 
 end Conjugation
@@ -232,7 +232,7 @@ lemma disjoint_ofSubtype_of_memFixedPoints_self {g : Perm α}
   intro x
   by_cases hx : x ∈ Function.fixedPoints g
   · right; exact hx
-  · left; rw [ofSubtype_apply_of_not_mem u hx]
+  · left; rw [ofSubtype_apply_of_notMem u hx]
 
 section Fintype
 
@@ -250,7 +250,7 @@ lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints 
   rw [Finset.disjoint_iff_ne]
   rintro a ha b hb rfl
   rw [mem_support] at ha hb
-  exact ha (ofSubtype_apply_of_not_mem x (mt Function.mem_fixedPoints_iff.mp hb))
+  exact ha (ofSubtype_apply_of_notMem x (mt Function.mem_fixedPoints_iff.mp hb))
 
 open Subgroup
 

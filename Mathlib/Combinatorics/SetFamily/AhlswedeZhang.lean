@@ -84,7 +84,7 @@ private lemma Fintype.sum_div_mul_card_choose_card :
   simp_rw [sum_congr rfl this, sum_const, card_powersetCard, card_univ, nsmul_eq_mul, mul_div,
     mul_comm, ← mul_div]
   rw [← mul_sum, ← mul_inv_cancel₀ (cast_ne_zero.mpr card_ne_zero : (card α : ℚ) ≠ 0), ← mul_add,
-    add_comm _ ((card α)⁻¹ : ℚ), ← sum_insert (f := fun x : ℕ ↦ (x⁻¹ : ℚ)) not_mem_range_self,
+    add_comm _ ((card α)⁻¹ : ℚ), ← sum_insert (f := fun x : ℕ ↦ (x⁻¹ : ℚ)) notMem_range_self,
     ← range_succ]
   have (n) (hn : n ∈ range (card α + 1)) :
       ((card α).choose n / ((card α - n) * (card α).choose n) : ℚ) = (card α - n : ℚ)⁻¹ := by
@@ -170,7 +170,7 @@ lemma truncatedSup_union_right (hs : a ∉ lowerClosure s) (ht : a ∈ lowerClos
     truncatedSup (s ∪ t) a = truncatedSup t a := by rw [union_comm, truncatedSup_union_left ht hs]
 
 lemma truncatedSup_union_of_notMem (hs : a ∉ lowerClosure s) (ht : a ∉ lowerClosure t) :
-    truncatedSup (s ∪ t) a = ⊤ := truncatedSup_of_not_mem fun h ↦ (lower_aux.1 h).elim hs ht
+    truncatedSup (s ∪ t) a = ⊤ := truncatedSup_of_notMem fun h ↦ (lower_aux.1 h).elim hs ht
 
 @[deprecated (since := "2025-05-23")]
 alias truncatedSup_union_of_not_mem := truncatedSup_union_of_notMem
@@ -249,7 +249,7 @@ lemma truncatedInf_union_right (hs : a ∉ upperClosure s) (ht : a ∈ upperClos
 
 lemma truncatedInf_union_of_notMem (hs : a ∉ upperClosure s) (ht : a ∉ upperClosure t) :
     truncatedInf (s ∪ t) a = ⊥ :=
-  truncatedInf_of_not_mem <| by rw [coe_union, upperClosure_union]; exact fun h ↦ h.elim hs ht
+  truncatedInf_of_notMem <| by rw [coe_union, upperClosure_union]; exact fun h ↦ h.elim hs ht
 
 @[deprecated (since := "2025-05-23")]
 alias truncatedInf_union_of_not_mem := truncatedInf_union_of_notMem
@@ -283,14 +283,14 @@ lemma truncatedInf_sups (hs : a ∈ upperClosure s) (ht : a ∈ upperClosure t) 
 
 lemma truncatedSup_infs_of_notMem (ha : a ∉ lowerClosure s ⊓ lowerClosure t) :
     truncatedSup (s ⊼ t) a = ⊤ :=
-  truncatedSup_of_not_mem <| by rwa [coe_infs, lowerClosure_infs]
+  truncatedSup_of_notMem <| by rwa [coe_infs, lowerClosure_infs]
 
 @[deprecated (since := "2025-05-23")]
 alias truncatedSup_infs_of_not_mem := truncatedSup_infs_of_notMem
 
 lemma truncatedInf_sups_of_notMem (ha : a ∉ upperClosure s ⊔ upperClosure t) :
     truncatedInf (s ⊻ t) a = ⊥ :=
-  truncatedInf_of_not_mem <| by rwa [coe_sups, upperClosure_sups]
+  truncatedInf_of_notMem <| by rwa [coe_sups, upperClosure_sups]
 
 @[deprecated (since := "2025-05-23")]
 alias truncatedInf_sups_of_not_mem := truncatedInf_sups_of_notMem
@@ -317,12 +317,12 @@ lemma card_truncatedSup_union_add_card_truncatedSup_infs (𝒜 ℬ : Finset (Fin
     by_cases hℬ : s ∈ lowerClosure (ℬ : Set <| Finset α)
   · rw [truncatedSup_union h𝒜 hℬ, truncatedSup_infs h𝒜 hℬ]
     exact card_union_add_card_inter _ _
-  · rw [truncatedSup_union_left h𝒜 hℬ, truncatedSup_of_not_mem hℬ,
-      truncatedSup_infs_of_not_mem fun h ↦ hℬ h.2]
-  · rw [truncatedSup_union_right h𝒜 hℬ, truncatedSup_of_not_mem h𝒜,
-      truncatedSup_infs_of_not_mem fun h ↦ h𝒜 h.1, add_comm]
-  · rw [truncatedSup_of_not_mem h𝒜, truncatedSup_of_not_mem hℬ,
-      truncatedSup_union_of_not_mem h𝒜 hℬ, truncatedSup_infs_of_not_mem fun h ↦ h𝒜 h.1]
+  · rw [truncatedSup_union_left h𝒜 hℬ, truncatedSup_of_notMem hℬ,
+      truncatedSup_infs_of_notMem fun h ↦ hℬ h.2]
+  · rw [truncatedSup_union_right h𝒜 hℬ, truncatedSup_of_notMem h𝒜,
+      truncatedSup_infs_of_notMem fun h ↦ h𝒜 h.1, add_comm]
+  · rw [truncatedSup_of_notMem h𝒜, truncatedSup_of_notMem hℬ,
+      truncatedSup_union_of_notMem h𝒜 hℬ, truncatedSup_infs_of_notMem fun h ↦ h𝒜 h.1]
 
 lemma card_truncatedInf_union_add_card_truncatedInf_sups (𝒜 ℬ : Finset (Finset α)) (s : Finset α) :
     #(truncatedInf (𝒜 ∪ ℬ) s) + #(truncatedInf (𝒜 ⊻ ℬ) s) =
@@ -331,12 +331,12 @@ lemma card_truncatedInf_union_add_card_truncatedInf_sups (𝒜 ℬ : Finset (Fin
     by_cases hℬ : s ∈ upperClosure (ℬ : Set <| Finset α)
   · rw [truncatedInf_union h𝒜 hℬ, truncatedInf_sups h𝒜 hℬ]
     exact card_inter_add_card_union _ _
-  · rw [truncatedInf_union_left h𝒜 hℬ, truncatedInf_of_not_mem hℬ,
-      truncatedInf_sups_of_not_mem fun h ↦ hℬ h.2]
-  · rw [truncatedInf_union_right h𝒜 hℬ, truncatedInf_of_not_mem h𝒜,
-      truncatedInf_sups_of_not_mem fun h ↦ h𝒜 h.1, add_comm]
-  · rw [truncatedInf_of_not_mem h𝒜, truncatedInf_of_not_mem hℬ,
-      truncatedInf_union_of_not_mem h𝒜 hℬ, truncatedInf_sups_of_not_mem fun h ↦ h𝒜 h.1]
+  · rw [truncatedInf_union_left h𝒜 hℬ, truncatedInf_of_notMem hℬ,
+      truncatedInf_sups_of_notMem fun h ↦ hℬ h.2]
+  · rw [truncatedInf_union_right h𝒜 hℬ, truncatedInf_of_notMem h𝒜,
+      truncatedInf_sups_of_notMem fun h ↦ h𝒜 h.1, add_comm]
+  · rw [truncatedInf_of_notMem h𝒜, truncatedInf_of_notMem hℬ,
+      truncatedInf_union_of_notMem h𝒜 hℬ, truncatedInf_sups_of_notMem fun h ↦ h𝒜 h.1]
 
 end Finset
 

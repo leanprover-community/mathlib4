@@ -486,7 +486,7 @@ theorem weightedHomogeneousComponent_directSum [DecidableEq M]
   · rw [weightedHomogeneousComponent_of_isWeightedHomogeneous_same (x m).prop]
   · intro n _ hmn
     rw [weightedHomogeneousComponent_of_isWeightedHomogeneous_ne (x n).prop hmn.symm]
-  · rw [DFinsupp.not_mem_support_iff]
+  · rw [DFinsupp.notMem_support_iff]
     intro hm; rw [hm, Submodule.coe_zero, map_zero]
 
 end WeightedHomogeneousComponent
@@ -603,8 +603,8 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
   rw [decompose']
   by_cases hm : m ∈ Finset.image (weight w) φ.support
   · simp only [DirectSum.mk_apply_of_mem hm, Subtype.coe_mk]
-  · rw [DirectSum.mk_apply_of_not_mem hm, Submodule.coe_zero,
-      weightedHomogeneousComponent_eq_zero_of_not_mem w φ m hm]
+  · rw [DirectSum.mk_apply_of_notMem hm, Submodule.coe_zero,
+      weightedHomogeneousComponent_eq_zero_of_notMem w φ m hm]
 
 /-- Given a weight `w`, the decomposition of `MvPolynomial σ R` into weighted homogeneous
 submodules -/

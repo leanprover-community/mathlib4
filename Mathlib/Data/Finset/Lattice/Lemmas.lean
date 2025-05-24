@@ -125,7 +125,7 @@ theorem insert_inter_of_notMem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₂)
 
 @[simp]
 theorem inter_insert_of_notMem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₁) :
-    s₁ ∩ insert a s₂ = s₁ ∩ s₂ := by rw [inter_comm, insert_inter_of_not_mem h, inter_comm]
+    s₁ ∩ insert a s₂ = s₁ ∩ s₂ := by rw [inter_comm, insert_inter_of_notMem h, inter_comm]
 
 @[deprecated (since := "2025-05-23")] alias inter_insert_of_not_mem := inter_insert_of_notMem
 
@@ -135,7 +135,7 @@ theorem singleton_inter_of_mem {a : α} {s : Finset α} (H : a ∈ s) : {a} ∩ 
 
 @[simp]
 theorem singleton_inter_of_notMem {a : α} {s : Finset α} (H : a ∉ s) : {a} ∩ s = ∅ :=
-  eq_empty_of_forall_not_mem <| by
+  eq_empty_of_forall_notMem <| by
     simp only [mem_inter, mem_singleton]; rintro x ⟨rfl, h⟩; exact H h
 
 @[deprecated (since := "2025-05-23")] alias singleton_inter_of_not_mem := singleton_inter_of_notMem
@@ -150,7 +150,7 @@ theorem inter_singleton_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ∩ {a
 
 @[simp]
 theorem inter_singleton_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : s ∩ {a} = ∅ := by
-  rw [inter_comm, singleton_inter_of_not_mem h]
+  rw [inter_comm, singleton_inter_of_notMem h]
 
 @[deprecated (since := "2025-05-23")] alias inter_singleton_of_not_mem := inter_singleton_of_notMem
 

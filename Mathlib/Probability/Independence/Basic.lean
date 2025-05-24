@@ -464,7 +464,7 @@ theorem indep_iSup_of_antitone [SemilatticeInf ι] [IsZeroOrProbabilityMeasure �
 theorem iIndepSets.piiUnionInter_of_notMem {π : ι → Set (Set Ω)} {a : ι} {S : Finset ι}
     (hp_ind : iIndepSets π μ) (haS : a ∉ S) :
     IndepSets (piiUnionInter π S) (π a) μ :=
-  Kernel.iIndepSets.piiUnionInter_of_not_mem hp_ind haS
+  Kernel.iIndepSets.piiUnionInter_of_notMem hp_ind haS
 
 @[deprecated (since := "2025-05-23")]
 alias iIndepSets.piiUnionInter_of_not_mem := iIndepSets.piiUnionInter_of_notMem
@@ -857,7 +857,7 @@ variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂
 lemma iIndepFun.indepFun_finset_prod_of_notMem (hf_Indep : iIndepFun f μ)
     (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) μ :=
-  Kernel.iIndepFun.indepFun_finset_prod_of_not_mem hf_Indep hf_meas hi
+  Kernel.iIndepFun.indepFun_finset_prod_of_notMem hf_Indep hf_meas hi
 
 @[deprecated (since := "2025-05-23")]
 alias iIndepFun.indepFun_finset_prod_of_not_mem := iIndepFun.indepFun_finset_prod_of_notMem
@@ -866,7 +866,7 @@ alias iIndepFun.indepFun_finset_prod_of_not_mem := iIndepFun.indepFun_finset_pro
 lemma iIndepFun.indepFun_finset_prod_of_notMem₀ (hf_Indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) μ :=
-  Kernel.iIndepFun.indepFun_finset_prod_of_not_mem₀ hf_Indep (by simp [hf_meas]) hi
+  Kernel.iIndepFun.indepFun_finset_prod_of_notMem₀ hf_Indep (by simp [hf_meas]) hi
 
 @[deprecated (since := "2025-05-23")]
 alias iIndepFun.indepFun_finset_prod_of_not_mem₀ := iIndepFun.indepFun_finset_prod_of_notMem₀
@@ -880,7 +880,7 @@ lemma iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β} (hf_Indep : iIn
 lemma iIndepFun.indepFun_prod_range_succ₀ {f : ℕ → Ω → β} (hf_Indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) (n : ℕ) :
     IndepFun (∏ j ∈ Finset.range n, f j) (f n) μ :=
-  hf_Indep.indepFun_finset_prod_of_not_mem₀ hf_meas (by simp)
+  hf_Indep.indepFun_finset_prod_of_notMem₀ hf_meas (by simp)
 
 end CommMonoid
 

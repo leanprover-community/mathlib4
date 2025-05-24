@@ -12,7 +12,7 @@ This file provides the basic API for `List.splitBy` which is defined in Core.
 The main results are the following:
 
 - `List.join_splitBy`: the lists in `List.splitBy` join to the original list.
-- `List.nil_not_mem_splitBy`: the empty list is not contained in `List.splitBy`.
+- `List.nil_notMem_splitBy`: the empty list is not contained in `List.splitBy`.
 - `List.chain'_of_mem_splitBy`: any two adjacent elements in a list in `List.splitBy` are related by
   the specified relation.
 - `List.chain'_getLast_head_splitBy`: the last element of each list in `List.splitBy` is not
@@ -68,13 +68,13 @@ private theorem nil_notMem_splitByLoop {r : α → α → Bool} {l : List α} {a
 theorem nil_notMem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.splitBy r :=
   match l with
   | nil => not_mem_nil
-  | cons _ _ => nil_not_mem_splitByLoop
+  | cons _ _ => nil_notMem_splitByLoop
 
 @[deprecated (since := "2025-05-23")] alias nil_not_mem_splitBy := nil_notMem_splitBy
 
 theorem ne_nil_of_mem_splitBy (r : α → α → Bool) {l : List α} (h : m ∈ l.splitBy r) : m ≠ [] := by
   rintro rfl
-  exact nil_not_mem_splitBy r l h
+  exact nil_notMem_splitBy r l h
 
 private theorem chain'_of_mem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α}
     (hga : ∀ b ∈ g.head?, r b a) (hg : g.Chain' fun y x ↦ r x y)
@@ -145,7 +145,7 @@ theorem chain'_getLast_head_splitBy (r : α → α → Bool) (l : List α) :
 
 @[deprecated (since := "2024-10-30")] alias groupBy_nil := splitBy_nil
 @[deprecated (since := "2024-10-30")] alias flatten_groupBy := flatten_splitBy
-@[deprecated (since := "2024-10-30")] alias nil_not_mem_groupBy := nil_not_mem_splitBy
+@[deprecated (since := "2024-10-30")] alias nil_not_mem_groupBy := nil_notMem_splitBy
 @[deprecated (since := "2024-10-30")] alias ne_nil_of_mem_groupBy := ne_nil_of_mem_splitBy
 @[deprecated (since := "2024-10-30")] alias chain'_of_mem_groupBy := chain'_of_mem_splitBy
 @[deprecated (since := "2024-10-30")]

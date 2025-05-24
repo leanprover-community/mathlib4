@@ -17,7 +17,7 @@ definitionally equal to ours.
 
 * `Class`: Defined as `Set ZFSet`.
 * `Class.iota`: Definite description operator.
-* `ZFSet.isOrdinal_not_mem_univ`: The Burali-Forti paradox. Ordinals form a proper class.
+* `ZFSet.isOrdinal_notMem_univ`: The Burali-Forti paradox. Ordinals form a proper class.
 -/
 
 
@@ -133,7 +133,7 @@ def congToClass (x : Set Class.{u}) : Class.{u} :=
 theorem congToClass_empty : congToClass ∅ = ∅ := by
   ext z
   simp only [congToClass, not_empty_hom, iff_false]
-  exact Set.not_mem_empty z
+  exact Set.notMem_empty z
 
 /-- Convert a class into a conglomerate (a collection of classes) -/
 def classToCong (x : Class.{u}) : Set Class.{u} :=
@@ -190,7 +190,7 @@ theorem coe_sep (p : Class.{u}) (x : ZFSet.{u}) :
 
 @[simp, norm_cast]
 theorem coe_empty : ↑(∅ : ZFSet.{u}) = (∅ : Class.{u}) :=
-  ext fun y => iff_false _ ▸ ZFSet.not_mem_empty y
+  ext fun y => iff_false _ ▸ ZFSet.notMem_empty y
 
 @[simp, norm_cast]
 theorem coe_insert (x y : ZFSet.{u}) : ↑(insert x y) = @insert ZFSet.{u} Class.{u} _ x y :=

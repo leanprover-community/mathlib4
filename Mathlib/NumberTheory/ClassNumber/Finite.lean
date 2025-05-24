@@ -158,7 +158,7 @@ noncomputable def finsetApprox : Finset R :=
     0
 
 theorem finsetApprox.zero_notMem : (0 : R) ∉ finsetApprox bS adm :=
-  Finset.not_mem_erase _ _
+  Finset.notMem_erase _ _
 
 @[deprecated (since := "2025-05-23")] alias finsetApprox.zero_not_mem := finsetApprox.zero_notMem
 
@@ -258,7 +258,7 @@ theorem prod_finsetApprox_ne_zero : algebraMap R S (∏ m ∈ finsetApprox bS ad
   refine mt ((injective_iff_map_eq_zero _).mp bS.algebraMap_injective _) ?_
   simp only [Finset.prod_eq_zero_iff, not_exists]
   rintro x ⟨hx, rfl⟩
-  exact finsetApprox.zero_not_mem bS adm hx
+  exact finsetApprox.zero_notMem bS adm hx
 
 theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
     (h : algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J) : J ≠ ⊥ :=

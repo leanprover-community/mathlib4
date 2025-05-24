@@ -246,7 +246,7 @@ lemma Finset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
     Finset.range n = {} := by rw [pn.out, Nat.cast_zero, Finset.range_zero]
 
 lemma Finset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = Nat.succ n') :
-    Finset.range n = Finset.cons n' (Finset.range n') Finset.not_mem_range_self := by
+    Finset.range n = Finset.cons n' (Finset.range n') Finset.notMem_range_self := by
   rw [pn.out, Nat.cast_id, pn', Finset.range_succ, Finset.insert_eq_cons]
 
 lemma Finset.univ_eq_elems {α : Type*} [Fintype α] (elems : Finset α)

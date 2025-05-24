@@ -69,7 +69,7 @@ theorem pderiv_monomial {i : σ} :
     ← (monomial _).map_smul]
   refine (Finset.sum_eq_single i (fun j _ hne => ?_) fun hi => ?_).trans ?_
   · simp [Pi.single_eq_of_ne hne]
-  · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
+  · rw [Finsupp.notMem_support_iff] at hi; simp [hi]
   · simp
 
 lemma X_mul_pderiv_monomial {i : σ} {m : σ →₀ ℕ} {r : R} :

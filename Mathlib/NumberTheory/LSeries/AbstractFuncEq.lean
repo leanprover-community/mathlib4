@@ -284,16 +284,16 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     P.f_modif (1 / x) = (P.ε * ↑(x ^ P.k)) • P.g_modif x := by
   rcases lt_trichotomy 1 x with hx' | rfl | hx'
   · have : 1 / x < 1 := by rwa [one_div_lt hx one_pos, div_one]
-    rw [f_modif, Pi.add_apply, indicator_of_not_mem (not_mem_Ioi.mpr this.le),
+    rw [f_modif, Pi.add_apply, indicator_of_notMem (notMem_Ioi.mpr this.le),
       zero_add, indicator_of_mem (mem_Ioo.mpr ⟨div_pos one_pos hx, this⟩), g_modif, Pi.add_apply,
-      indicator_of_mem (mem_Ioi.mpr hx'), indicator_of_not_mem
-      (not_mem_Ioo_of_ge hx'.le), add_zero, P.h_feq _ hx, smul_sub]
+      indicator_of_mem (mem_Ioi.mpr hx'), indicator_of_notMem
+      (notMem_Ioo_of_ge hx'.le), add_zero, P.h_feq _ hx, smul_sub]
     simp_rw [rpow_neg (one_div_pos.mpr hx).le, one_div, inv_rpow hx.le, inv_inv]
   · simp [f_modif, g_modif]
   · have : 1 < 1 / x := by rwa [lt_one_div one_pos hx, div_one]
     rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr this),
-      indicator_of_not_mem (not_mem_Ioo_of_ge this.le), add_zero, g_modif, Pi.add_apply,
-      indicator_of_not_mem (not_mem_Ioi.mpr hx'.le),
+      indicator_of_notMem (notMem_Ioo_of_ge this.le), add_zero, g_modif, Pi.add_apply,
+      indicator_of_notMem (notMem_Ioi.mpr hx'.le),
       indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩), zero_add, P.h_feq _ hx, smul_sub]
     simp_rw [rpow_neg hx.le, ← mul_smul]
     field_simp [(rpow_pos_of_pos hx P.k).ne', P.hε]
@@ -318,12 +318,12 @@ def toStrongFEPair : StrongFEPair E where
     refine (P.hf_top r).congr' ?_ (by rfl)
     filter_upwards [eventually_gt_atTop 1] with x hx
     rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
-      indicator_of_not_mem (not_mem_Ioo_of_ge hx.le), add_zero, sub_zero]
+      indicator_of_notMem (notMem_Ioo_of_ge hx.le), add_zero, sub_zero]
   hg_top r := by
     refine (P.hg_top r).congr' ?_ (by rfl)
     filter_upwards [eventually_gt_atTop 1] with x hx
     rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
-      indicator_of_not_mem (not_mem_Ioo_of_ge hx.le), add_zero, sub_zero]
+      indicator_of_notMem (notMem_Ioo_of_ge hx.le), add_zero, sub_zero]
     rfl
 
 /- Alternative form for the difference between `f - f₀` and its modified term. -/
@@ -333,14 +333,14 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
   intro x (hx : 0 < x)
   simp_rw [f_modif, Pi.add_apply]
   rcases lt_trichotomy x 1 with hx' | rfl | hx'
-  · simp_rw [indicator_of_not_mem (not_mem_Ioi.mpr hx'.le),
+  · simp_rw [indicator_of_notMem (notMem_Ioi.mpr hx'.le),
       indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩),
-      indicator_of_not_mem (mem_singleton_iff.not.mpr hx'.ne)]
+      indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne)]
     abel
   · simp [add_comm, sub_eq_add_neg]
   · simp_rw [indicator_of_mem (mem_Ioi.mpr hx'),
-      indicator_of_not_mem (not_mem_Ioo_of_ge hx'.le),
-      indicator_of_not_mem (mem_singleton_iff.not.mpr hx'.ne')]
+      indicator_of_notMem (notMem_Ioo_of_ge hx'.le),
+      indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne')]
     abel
 
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at
@@ -358,7 +358,7 @@ lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
       (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x) := by
     refine setIntegral_congr_ae measurableSet_Ioi (eventually_of_mem (U := {1}ᶜ)
         (compl_mem_ae_iff.mpr (subsingleton_singleton.measure_zero _)) (fun x hx _ ↦ ?_))
-    rw [indicator_of_not_mem hx, add_zero]
+    rw [indicator_of_notMem hx, add_zero]
   _ = ∫ (x : ℝ) in Ioc 0 1, (x : ℂ) ^ (s - 1) • (P.f₀ - (P.ε * ↑(x ^ (-P.k))) • P.g₀) := by
     simp_rw [← indicator_smul, setIntegral_indicator measurableSet_Ioo,
       inter_eq_right.mpr Ioo_subset_Ioi_self, integral_Ioc_eq_integral_Ioo]

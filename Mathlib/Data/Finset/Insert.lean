@@ -210,7 +210,7 @@ instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
 
 instance [IsEmpty α] : Unique (Finset α) where
   default := ∅
-  uniq _ := eq_empty_of_forall_not_mem isEmptyElim
+  uniq _ := eq_empty_of_forall_notMem isEmptyElim
 
 instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
@@ -369,7 +369,7 @@ theorem insert_val' (a : α) (s : Finset α) : (insert a s).1 = dedup (a ::ₘ s
   rw [dedup_cons, dedup_eq_self]; rfl
 
 theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : (insert a s).1 = a ::ₘ s.1 := by
-  rw [insert_val, ndinsert_of_not_mem h]
+  rw [insert_val, ndinsert_of_notMem h]
 
 @[deprecated (since := "2025-05-23")] alias insert_val_of_not_mem := insert_val_of_notMem
 
@@ -476,7 +476,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   simp_rw [← coe_subset]; simp [-coe_subset, ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_mem_insert_of_not_mem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
+  ⟨fun h => eq_of_mem_insert_of_notMem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 
 theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := fun _ h _ _ =>
   (insert_inj h).1

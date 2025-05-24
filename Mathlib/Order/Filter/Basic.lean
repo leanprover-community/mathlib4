@@ -699,7 +699,7 @@ theorem eventually_iff_all_subsets {f : Filter α} {p : α → Prop} :
 
 theorem Eventually.frequently {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ᶠ x in f, p x) :
     ∃ᶠ x in f, p x :=
-  compl_not_mem h
+  compl_notMem h
 
 theorem Frequently.of_forall {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ x, p x) :
     ∃ᶠ x in f, p x :=

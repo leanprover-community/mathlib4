@@ -352,7 +352,7 @@ lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
   · exact measurable_rnDeriv _ _
   simp_rw [rnDeriv]
   have hs' : ∀ x ∈ s, rnDerivAux κ (κ + η) a x < 1 := by
-    simp_rw [← not_mem_mutuallySingularSetSlice]
+    simp_rw [← notMem_mutuallySingularSetSlice]
     exact fun x hx hx_mem ↦ hs hx hx_mem
   calc
     ∫⁻ x in s, ↑(Real.toNNReal (1 - rnDerivAux κ (κ + η) a x)) *

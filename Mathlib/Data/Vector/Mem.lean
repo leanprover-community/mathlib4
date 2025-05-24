@@ -38,7 +38,7 @@ theorem notMem_nil : a ∉ (Vector.nil : Vector α 0).toList := by
 @[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 theorem notMem_zero (v : Vector α 0) : a ∉ v.toList :=
-  (Vector.eq_nil v).symm ▸ not_mem_nil a
+  (Vector.eq_nil v).symm ▸ notMem_nil a
 
 @[deprecated (since := "2025-05-23")] alias not_mem_zero := notMem_zero
 
@@ -61,7 +61,7 @@ theorem mem_cons_of_mem (v : Vector α n) (ha' : a' ∈ v.toList) : a' ∈ (a ::
 
 theorem mem_of_mem_tail (v : Vector α n) (ha : a ∈ v.tail.toList) : a ∈ v.toList := by
   induction n with
-  | zero => exact False.elim (Vector.not_mem_zero a v.tail ha)
+  | zero => exact False.elim (Vector.notMem_zero a v.tail ha)
   | succ n _ => exact (mem_succ_iff a v).2 (Or.inr ha)
 
 theorem mem_map_iff (b : β) (v : Vector α n) (f : α → β) :

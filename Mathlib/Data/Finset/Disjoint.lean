@@ -43,7 +43,7 @@ section Disjoint
 variable {f : α → β} {s t u : Finset α} {a b : α}
 
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
-  ⟨fun h a hs ht => not_mem_empty a <|
+  ⟨fun h a hs ht => notMem_empty a <|
     singleton_subset_iff.mp (h (singleton_subset_iff.mpr hs) (singleton_subset_iff.mpr ht)),
     fun h _ hs ht _ ha => (h (hs ha) (ht ha)).elim⟩
 

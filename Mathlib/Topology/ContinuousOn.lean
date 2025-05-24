@@ -1363,9 +1363,9 @@ open Classical in
 theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
     (hs : IsClosed s) (ht : IsClosed t) : ContinuousOn f (s ∪ t) := by
   refine fun x hx ↦ .union ?_ ?_
-  · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_
+  · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_notMem_closure ?_
     rwa [hs.closure_eq]
-  · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_not_mem_closure ?_
+  · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_notMem_closure ?_
     rwa [ht.closure_eq]
 
 @[deprecated ContinuousOn.union_of_isClosed (since := "2025-04-10")]

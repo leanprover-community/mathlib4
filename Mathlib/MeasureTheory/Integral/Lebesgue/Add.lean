@@ -138,7 +138,7 @@ theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurabl
   simp only [g]
   split_ifs with h
   · rfl
-  · have := Set.not_mem_subset hs.1 h
+  · have := Set.notMem_subset hs.1 h
     simp only [not_forall, not_le, mem_setOf_eq, not_exists, not_lt] at this
     exact this n
 

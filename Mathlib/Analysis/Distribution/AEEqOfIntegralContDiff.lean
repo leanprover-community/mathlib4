@@ -93,7 +93,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
       by_cases hxs : x ∈ s
       · have : ∀ n, g n x = 1 := fun n ↦ hg n x hxs
         simp [this, indicator_of_mem hxs f]
-      · simp_rw [indicator_of_not_mem hxs f]
+      · simp_rw [indicator_of_notMem hxs f]
         apply tendsto_const_nhds.congr'
         suffices H : ∀ᶠ n in atTop, g n x = 0 by
           filter_upwards [H] with n hn using by simp [hn]

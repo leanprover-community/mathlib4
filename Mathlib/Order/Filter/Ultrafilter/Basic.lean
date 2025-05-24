@@ -107,12 +107,12 @@ theorem bot_ne_hyperfilter : (⊥ : Filter α) ≠ hyperfilter α :=
   (NeBot.ne inferInstance).symm
 
 theorem nmem_hyperfilter_of_finite {s : Set α} (hf : s.Finite) : s ∉ hyperfilter α := fun hy =>
-  compl_not_mem hy <| hyperfilter_le_cofinite hf.compl_mem_cofinite
+  compl_notMem hy <| hyperfilter_le_cofinite hf.compl_mem_cofinite
 
 alias _root_.Set.Finite.nmem_hyperfilter := nmem_hyperfilter_of_finite
 
 theorem compl_mem_hyperfilter_of_finite {s : Set α} (hf : Set.Finite s) : sᶜ ∈ hyperfilter α :=
-  compl_mem_iff_not_mem.2 hf.nmem_hyperfilter
+  compl_mem_iff_notMem.2 hf.nmem_hyperfilter
 
 alias _root_.Set.Finite.compl_mem_hyperfilter := compl_mem_hyperfilter_of_finite
 

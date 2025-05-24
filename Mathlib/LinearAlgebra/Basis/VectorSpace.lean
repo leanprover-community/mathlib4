@@ -283,7 +283,7 @@ open Submodule LinearMap
 
 theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v ∉ p) :
     ∃ f : V →ₗ[K] K, f v ≠ 0 ∧ p ≤ ker f := by
-  rcases LinearMap.exists_extend_of_not_mem (0 : p →ₗ[K] K) hv 1 with ⟨f, hpf, hfv⟩
+  rcases LinearMap.exists_extend_of_notMem (0 : p →ₗ[K] K) hv 1 with ⟨f, hpf, hfv⟩
   refine ⟨f, by simp [hfv], fun x hx ↦ ?_⟩
   simpa using congr($hpf ⟨x, hx⟩)
 
@@ -295,7 +295,7 @@ alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
   rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩
-  rcases exists_le_ker_of_not_mem hpv with ⟨f, hfv, hpf⟩
+  rcases exists_le_ker_of_notMem hpv with ⟨f, hfv, hpf⟩
   exact ⟨f, ne_of_apply_ne (· v) hfv, hpf⟩
 
 theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=

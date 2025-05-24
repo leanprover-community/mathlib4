@@ -503,7 +503,7 @@ instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
 
 /-- See also `Set.nonempty_iff_ne_empty`. -/
 theorem not_nonempty_iff_eq_empty {s : Set α} : ¬s.Nonempty ↔ s = ∅ := by
-  simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_not_mem]
+  simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
 theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
@@ -511,7 +511,7 @@ theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
 
 /-- See also `nonempty_iff_ne_empty'`. -/
 theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
-  rw [nonempty_subtype, not_exists, eq_empty_iff_forall_not_mem]
+  rw [nonempty_subtype, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `not_nonempty_iff_eq_empty'`. -/
 theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
@@ -562,7 +562,7 @@ theorem setOf_true : { _x : α | True } = univ :=
 
 @[simp]
 theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
-  eq_empty_iff_forall_not_mem.trans
+  eq_empty_iff_forall_notMem.trans
     ⟨fun H => ⟨fun x => H x trivial⟩, fun H x _ => @IsEmpty.false α H x⟩
 
 theorem empty_ne_univ [Nonempty α] : (∅ : Set α) ≠ univ := fun e =>
@@ -1053,7 +1053,7 @@ lemma inl_compl_union_inr_compl {α β : Type*} {s : Set α} {t : Set β} :
   aesop
 
 theorem nonempty_compl : sᶜ.Nonempty ↔ s ≠ univ :=
-  (ne_univ_iff_exists_not_mem s).symm
+  (ne_univ_iff_exists_notMem s).symm
 
 theorem union_eq_compl_compl_inter_compl (s t : Set α) : s ∪ t = (sᶜ ∩ tᶜ)ᶜ :=
   ext fun _ => or_iff_not_and_not
@@ -1507,3 +1507,5 @@ protected lemma setSubtypeComm_symm_apply (p : α → Prop) (s : {s // ∀ a ∈
   rfl
 
 end Equiv
+
+set_option linter.style.longFile 1700

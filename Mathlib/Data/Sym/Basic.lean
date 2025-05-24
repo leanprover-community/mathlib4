@@ -171,7 +171,7 @@ lemma «exists» {p : Sym α n → Prop} :
 
 @[simp]
 theorem notMem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
-  Multiset.not_mem_zero a
+  Multiset.notMem_zero a
 
 @[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
@@ -542,7 +542,7 @@ theorem filter_ne_fill
   sigma_sub_ext
     (by
       rw [filterNe, ← val_eq_coe, Subtype.coe_mk, val_eq_coe, coe_fill]
-      rw [filter_add, filter_eq_self.2, add_eq_left, eq_zero_iff_forall_not_mem]
+      rw [filter_add, filter_eq_self.2, add_eq_left, eq_zero_iff_forall_notMem]
       · intro b hb
         rw [mem_filter, Sym.mem_coe, mem_replicate] at hb
         exact hb.2 hb.1.2.symm

@@ -80,7 +80,7 @@ theorem card_singleton (a : α) : #{a} = 1 :=
 
 theorem card_singleton_inter [DecidableEq α] : #({a} ∩ s) ≤ 1 := by
   obtain h | h := Finset.decidableMem a s
-  · simp [Finset.singleton_inter_of_not_mem h]
+  · simp [Finset.singleton_inter_of_notMem h]
   · simp [Finset.singleton_inter_of_mem h]
 
 @[simp]
@@ -103,7 +103,7 @@ theorem card_insert_le (a : α) (s : Finset α) : #(insert a s) ≤ #s + 1 := by
   by_cases h : a ∈ s
   · rw [insert_eq_of_mem h]
     exact Nat.le_succ _
-  · rw [card_insert_of_not_mem h]
+  · rw [card_insert_of_notMem h]
 
 section
 
@@ -125,12 +125,12 @@ theorem card_le_six : #{a, b, c, d, e, f} ≤ 6 :=
 
 end
 
-/-- If `a ∈ s` is known, see also `Finset.card_insert_of_mem` and `Finset.card_insert_of_not_mem`.
+/-- If `a ∈ s` is known, see also `Finset.card_insert_of_mem` and `Finset.card_insert_of_notMem`.
 -/
 theorem card_insert_eq_ite : #(insert a s) = if a ∈ s then #s else #s + 1 := by
   by_cases h : a ∈ s
   · rw [card_insert_of_mem h, if_pos h]
-  · rw [card_insert_of_not_mem h, if_neg h]
+  · rw [card_insert_of_notMem h, if_neg h]
 
 @[simp]
 theorem card_pair_eq_one_or_two : #{a, b} = 1 ∨ #{a, b} = 2 := by
@@ -158,10 +158,10 @@ theorem card_erase_le : #(s.erase a) ≤ #s :=
 theorem pred_card_le_card_erase : #s - 1 ≤ #(s.erase a) := by
   by_cases h : a ∈ s
   · exact (card_erase_of_mem h).ge
-  · rw [erase_eq_of_not_mem h]
+  · rw [erase_eq_of_notMem h]
     exact Nat.sub_le _ _
 
-/-- If `a ∈ s` is known, see also `Finset.card_erase_of_mem` and `Finset.erase_eq_of_not_mem`. -/
+/-- If `a ∈ s` is known, see also `Finset.card_erase_of_mem` and `Finset.erase_eq_of_notMem`. -/
 theorem card_erase_eq_ite : #(s.erase a) = if a ∈ s then #s - 1 else #s :=
   Multiset.card_erase_eq_ite
 
@@ -601,7 +601,7 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
     (∃ a ∉ s, insert a s = t) ↔ s ⊆ t ∧ #s + 1 = #t := by
   constructor
   · rintro ⟨a, ha, rfl⟩
-    exact ⟨subset_insert _ _, (card_insert_of_not_mem ha).symm⟩
+    exact ⟨subset_insert _ _, (card_insert_of_notMem ha).symm⟩
   · rintro ⟨hst, h⟩
     obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} :=
       card_eq_one.1 (by rw [card_sdiff hst, ← h, Nat.add_sub_cancel_left])
@@ -609,7 +609,7 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
       ⟨a, fun hs => (?_ : a ∉ {a}) <| mem_singleton_self _, by
         rw [insert_eq, ← ha, sdiff_union_of_subset hst]⟩
     rw [← ha]
-    exact not_mem_sdiff_of_mem_right hs
+    exact notMem_sdiff_of_mem_right hs
 
 theorem card_le_one : #s ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
@@ -687,16 +687,16 @@ variable [DecidableEq α]
 theorem card_eq_succ : #s = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ #t = n :=
   ⟨fun h =>
     let ⟨a, has⟩ := card_pos.mp (h.symm ▸ Nat.zero_lt_succ _ : 0 < #s)
-    ⟨a, s.erase a, s.not_mem_erase a, insert_erase has, by
+    ⟨a, s.erase a, s.notMem_erase a, insert_erase has, by
       simp only [h, card_erase_of_mem has, Nat.add_sub_cancel_right]⟩,
-    fun ⟨_, _, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_insert_of_not_mem hat⟩
+    fun ⟨_, _, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_insert_of_notMem hat⟩
 
 theorem card_eq_two : #s = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
   constructor
   · rw [card_eq_succ]
     simp_rw [card_eq_one]
     rintro ⟨a, _, hab, rfl, b, rfl⟩
-    exact ⟨a, b, not_mem_singleton.1 hab, rfl⟩
+    exact ⟨a, b, notMem_singleton.1 hab, rfl⟩
   · rintro ⟨x, y, h, rfl⟩
     exact card_pair h
 
@@ -708,7 +708,7 @@ theorem card_eq_three : #s = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z �
     rw [mem_insert, mem_singleton, not_or] at abc
     exact ⟨a, b, c, abc.1, abc.2, bc, rfl⟩
   · rintro ⟨x, y, z, xy, xz, yz, rfl⟩
-    simp only [xy, xz, yz, mem_insert, card_insert_of_not_mem, not_false_iff, mem_singleton,
+    simp only [xy, xz, yz, mem_insert, card_insert_of_notMem, not_false_iff, mem_singleton,
       or_self_iff, card_singleton]
 
 end DecidableEq

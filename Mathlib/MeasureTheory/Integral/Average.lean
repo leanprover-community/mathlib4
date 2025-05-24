@@ -559,7 +559,7 @@ alias exists_not_mem_null_le_average := exists_notMem_null_le_average
 avoiding a null set. -/
 theorem exists_notMem_null_average_le (hμ : μ ≠ 0) (hf : Integrable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ⨍ a, f a ∂μ ≤ f x := by
-  simpa [integral_neg, neg_div] using exists_not_mem_null_le_average hμ hf.neg hN
+  simpa [integral_neg, neg_div] using exists_notMem_null_le_average hμ hf.neg hN
 
 @[deprecated (since := "2025-05-23")]
 alias exists_not_mem_null_average_le := exists_notMem_null_average_le
@@ -595,7 +595,7 @@ while avoiding a null set. -/
 theorem exists_notMem_null_le_integral (hf : Integrable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ f x ≤ ∫ a, f a ∂μ := by
   simpa only [average_eq_integral] using
-    exists_not_mem_null_le_average (IsProbabilityMeasure.ne_zero μ) hf hN
+    exists_notMem_null_le_average (IsProbabilityMeasure.ne_zero μ) hf hN
 
 @[deprecated (since := "2025-05-23")]
 alias exists_not_mem_null_le_integral := exists_notMem_null_le_integral
@@ -605,7 +605,7 @@ while avoiding a null set. -/
 theorem exists_notMem_null_integral_le (hf : Integrable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ∫ a, f a ∂μ ≤ f x := by
   simpa only [average_eq_integral] using
-    exists_not_mem_null_average_le (IsProbabilityMeasure.ne_zero μ) hf hN
+    exists_notMem_null_average_le (IsProbabilityMeasure.ne_zero μ) hf hN
 
 @[deprecated (since := "2025-05-23")]
 alias exists_not_mem_null_integral_le := exists_notMem_null_integral_le
@@ -760,7 +760,7 @@ while avoiding a null set. -/
 theorem exists_notMem_null_le_lintegral (hf : AEMeasurable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ f x ≤ ∫⁻ a, f a ∂μ := by
   simpa only [laverage_eq_lintegral] using
-    exists_not_mem_null_le_laverage (IsProbabilityMeasure.ne_zero μ) hf hN
+    exists_notMem_null_le_laverage (IsProbabilityMeasure.ne_zero μ) hf hN
 
 @[deprecated (since := "2025-05-23")]
 alias exists_not_mem_null_le_lintegral := exists_notMem_null_le_lintegral
@@ -770,7 +770,7 @@ while avoiding a null set. -/
 theorem exists_notMem_null_lintegral_le (hint : ∫⁻ a, f a ∂μ ≠ ∞) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ∫⁻ a, f a ∂μ ≤ f x := by
   simpa only [laverage_eq_lintegral] using
-    exists_not_mem_null_laverage_le (IsProbabilityMeasure.ne_zero μ) hint hN
+    exists_notMem_null_laverage_le (IsProbabilityMeasure.ne_zero μ) hint hN
 
 @[deprecated (since := "2025-05-23")]
 alias exists_not_mem_null_lintegral_le := exists_notMem_null_lintegral_le

@@ -81,7 +81,7 @@ theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
       dsimp
       simp only [Set.mem_preimage, SetLike.mem_coe]
       rw [X.toRingedSpace.mem_top_basicOpen]
-      exact not_mem_prime_iff_unit_in_stalk ..
+      exact notMem_prime_iff_unit_in_stalk ..
 
 /-- `toΓSpecFun` is continuous. -/
 theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
@@ -219,7 +219,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     apply isUnit_of_mul_isUnit_left (y := t')
     rw [he]
     refine IsLocalization.map_units S (⟨r, ?_⟩ : p.asIdeal.primeCompl)
-    apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
+    apply (notMem_prime_iff_unit_in_stalk _ _ _).mpr
     rw [← toStalk_stalkMap_toΓSpec, CommRingCat.comp_apply]
     erw [← he]
     rw [RingHom.map_mul]

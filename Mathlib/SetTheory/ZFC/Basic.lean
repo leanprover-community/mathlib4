@@ -274,7 +274,7 @@ instance : Inhabited ZFSet :=
 
 @[simp]
 theorem notMem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
-  Quotient.inductionOn x PSet.not_mem_empty
+  Quotient.inductionOn x PSet.notMem_empty
 
 @[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
@@ -419,7 +419,7 @@ theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
 
 @[simp]
 theorem sep_empty (p : ZFSet → Prop) : (∅ : ZFSet).sep p = ∅ :=
-  (eq_empty _).mpr fun _ h ↦ not_mem_empty _ (mem_sep.mp h).1
+  (eq_empty _).mpr fun _ h ↦ notMem_empty _ (mem_sep.mp h).1
 
 @[simp]
 theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
@@ -502,7 +502,7 @@ theorem sInter_empty : ⋂₀ (∅ : ZFSet) = ∅ := by simp [sInter]
 
 theorem mem_of_mem_sInter {x y z : ZFSet} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   rcases eq_empty_or_nonempty x with (rfl | hx)
-  · exact (not_mem_empty z hz).elim
+  · exact (notMem_empty z hz).elim
   · exact (mem_sInter hx).1 hy z hz
 
 theorem mem_sUnion_of_mem {x y z : ZFSet} (hy : y ∈ z) (hz : z ∈ x) : y ∈ ⋃₀ x :=

@@ -48,7 +48,7 @@ theorem Nodup.notMem (h : (a :: l).Nodup) : a ∉ l :=
 @[deprecated (since := "2025-05-23")] alias Nodup.not_mem := Nodup.notMem
 
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
-  imp_not_comm.1 Nodup.not_mem
+  imp_not_comm.1 Nodup.notMem
 
 
 theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
@@ -168,7 +168,7 @@ theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) 
     count a l = if a ∈ l then 1 else 0 := by
   split_ifs with h
   · exact count_eq_one_of_mem d h
-  · exact count_eq_zero_of_not_mem h
+  · exact count_eq_zero_of_notMem h
 
 theorem Nodup.of_append_left : Nodup (l₁ ++ l₂) → Nodup l₁ :=
   Nodup.sublist (sublist_append_left l₁ l₂)

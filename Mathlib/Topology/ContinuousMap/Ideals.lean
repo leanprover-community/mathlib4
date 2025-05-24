@@ -151,11 +151,11 @@ variable (X R)
 theorem ideal_gc : GaloisConnection (setOfIdeal : Ideal C(X, R) → Set X) (idealOfSet R) := by
   refine fun I s => ⟨fun h f hf => ?_, fun h x hx => ?_⟩
   · by_contra h'
-    rcases not_mem_idealOfSet.mp h' with ⟨x, hx, hfx⟩
-    exact hfx (not_mem_setOfIdeal.mp (mt (@h x) hx) hf)
+    rcases notMem_idealOfSet.mp h' with ⟨x, hx, hfx⟩
+    exact hfx (notMem_setOfIdeal.mp (mt (@h x) hx) hf)
   · obtain ⟨f, hf, hfx⟩ := mem_setOfIdeal.mp hx
     by_contra hx'
-    exact not_mem_idealOfSet.mpr ⟨x, hx', hfx⟩ (h hf)
+    exact notMem_idealOfSet.mpr ⟨x, hx', hfx⟩ (h hf)
 
 end IsTopologicalRing
 
@@ -189,7 +189,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     suffices to show that `f` is within `ε` of `I`. -/
   refine le_antisymm ?_
       ((idealOfSet_closed 𝕜 <| setOfIdeal I).closure_subset_iff.mpr fun f hf x hx =>
-        not_mem_setOfIdeal.mp hx hf)
+        notMem_setOfIdeal.mp hx hf)
   refine (fun f hf => Metric.mem_closure_iff.mpr fun ε hε => ?_)
   lift ε to ℝ≥0 using hε.lt.le
   replace hε := show (0 : ℝ≥0) < ε from hε
@@ -300,7 +300,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
     Set.Subset.antisymm
       ((setOfIdeal_open (idealOfSet 𝕜 s)).subset_interior_iff.mpr fun x hx =>
         let ⟨f, hf, hfx⟩ := mem_setOfIdeal.mp hx
-        Set.not_mem_compl_iff.mp (mt (@hf x) hfx))
+        Set.notMem_compl_iff.mp (mt (@hf x) hfx))
       fun x hx => ?_
   -- If `x ∉ closure sᶜ`, we must produce `f : C(X, 𝕜)` which is zero on `sᶜ` and `f x ≠ 0`.
   rw [← compl_compl (interior s), ← closure_compl] at hx

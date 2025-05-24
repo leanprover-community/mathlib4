@@ -171,7 +171,7 @@ theorem lmarginal_insert (f : (∀ i, X i) → ℝ≥0∞) (hf : Measurable f) {
 theorem lmarginal_erase (f : (∀ i, X i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
     (hi : i ∈ s) (x : ∀ i, X i) :
     (∫⋯∫⁻_s, f ∂μ) x = ∫⁻ xᵢ, (∫⋯∫⁻_(erase s i), f ∂μ) (Function.update x i xᵢ) ∂μ i := by
-  simpa [insert_erase hi] using lmarginal_insert _ hf (not_mem_erase i s) x
+  simpa [insert_erase hi] using lmarginal_insert _ hf (notMem_erase i s) x
 
 /-- Peel off a single integral from a `lmarginal` integral at the end (compare with
 `lmarginal_insert`, which peels off an integral at the beginning). -/
@@ -186,7 +186,7 @@ theorem lmarginal_insert' (f : (∀ i, X i) → ℝ≥0∞) (hf : Measurable f) 
 theorem lmarginal_erase' (f : (∀ i, X i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
     (hi : i ∈ s) :
     ∫⋯∫⁻_s, f ∂μ = ∫⋯∫⁻_(erase s i), (fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ∂μ := by
-  simpa [insert_erase hi] using lmarginal_insert' _ hf (not_mem_erase i s)
+  simpa [insert_erase hi] using lmarginal_insert' _ hf (notMem_erase i s)
 
 @[simp] theorem lmarginal_univ [Fintype δ] {f : (∀ i, X i) → ℝ≥0∞} :
     ∫⋯∫⁻_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by

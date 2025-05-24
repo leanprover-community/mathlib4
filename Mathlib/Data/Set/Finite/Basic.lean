@@ -809,7 +809,7 @@ lemma Infinite.exists_notMem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a
 alias Infinite.exists_not_mem_finite := Infinite.exists_notMem_finite
 
 lemma Infinite.exists_notMem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
-  hs.exists_not_mem_finite t.finite_toSet
+  hs.exists_notMem_finite t.finite_toSet
 
 @[deprecated (since := "2025-05-23")]
 alias Infinite.exists_not_mem_finset := Infinite.exists_notMem_finset
@@ -904,8 +904,8 @@ lemma exists_card_eq [Infinite α] : ∀ n : ℕ, ∃ s : Finset α, s.card = n
   | n + 1 => by
     classical
     obtain ⟨s, rfl⟩ := exists_card_eq n
-    obtain ⟨a, ha⟩ := s.exists_not_mem
-    exact ⟨insert a s, card_insert_of_not_mem ha⟩
+    obtain ⟨a, ha⟩ := s.exists_notMem
+    exact ⟨insert a s, card_insert_of_notMem ha⟩
 
 end Finset
 

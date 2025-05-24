@@ -44,7 +44,7 @@ theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ 
 
 theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
     circleMap c R θ ≠ w :=
-  (ne_of_mem_of_not_mem hw (circleMap_not_mem_ball _ _ _)).symm
+  (ne_of_mem_of_not_mem hw (circleMap_notMem_ball _ _ _)).symm
 
 theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
 

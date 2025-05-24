@@ -238,7 +238,7 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
     refine this.congr' ((eventually_gt_atTop 0).mp (Eventually.of_forall fun x hx => ?_))
     dsimp only
     rw [integral_cpow, id]
-    refine Or.inr ⟨?_, not_mem_uIcc_of_lt hc hx⟩
+    refine Or.inr ⟨?_, notMem_uIcc_of_lt hc hx⟩
     apply_fun Complex.re
     rw [Complex.neg_re, Complex.one_re]
     exact ha.ne

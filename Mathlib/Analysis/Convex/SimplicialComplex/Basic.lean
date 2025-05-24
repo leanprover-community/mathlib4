@@ -219,10 +219,10 @@ instance : SemilatticeInf (SimplicialComplex 𝕜 E) :=
 
 instance hasBot : Bot (SimplicialComplex 𝕜 E) :=
   ⟨{  faces := ∅
-      not_empty_mem := Set.not_mem_empty ∅
-      indep := fun hs => (Set.not_mem_empty _ hs).elim
-      down_closed := fun hs => (Set.not_mem_empty _ hs).elim
-      inter_subset_convexHull := fun hs => (Set.not_mem_empty _ hs).elim }⟩
+      not_empty_mem := Set.notMem_empty ∅
+      indep := fun hs => (Set.notMem_empty _ hs).elim
+      down_closed := fun hs => (Set.notMem_empty _ hs).elim
+      inter_subset_convexHull := fun hs => (Set.notMem_empty _ hs).elim }⟩
 
 instance : OrderBot (SimplicialComplex 𝕜 E) :=
   { SimplicialComplex.hasBot 𝕜 E with bot_le := fun _ => Set.empty_subset _ }

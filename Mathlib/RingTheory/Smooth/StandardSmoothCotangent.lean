@@ -202,7 +202,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → P.vars}
   apply P.cotangentSpaceBasis.ofSplitExact (sectionCotangent_comp P)
     Extension.exact_cotangentComplex_toKaehler Extension.toKaehler_surjective hf (b := P.map)
   · intro i
-    apply sectionCotangent_zero_of_not_mem_range _ _
+    apply sectionCotangent_zero_of_notMem_range _ _
     simp [← hcompl.compl_eq]
   · simp only [sectionCotangent, LinearMap.coe_comp, Function.comp_assoc, LinearEquiv.coe_coe]
     apply LinearIndependent.map' _ _ P.cotangentEquiv.symm.ker

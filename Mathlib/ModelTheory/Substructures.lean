@@ -411,7 +411,7 @@ instance [IsEmpty L.Constants] : IsEmpty (⊥ : L.Substructure M) := by
     · intro x hx
       simp only [mem_empty_iff_false, forall_const] at hx
   rw [← closure_empty, ← SetLike.mem_coe, h]
-  exact Set.not_mem_empty _
+  exact Set.notMem_empty _
 
 variable {L} {M}
 

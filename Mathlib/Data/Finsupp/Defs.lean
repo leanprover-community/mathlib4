@@ -123,7 +123,7 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
   rfl
 
 instance instZero : Zero (α →₀ M) :=
-  ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
+  ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (notMem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
 
 @[simp, norm_cast] lemma coe_zero : ⇑(0 : α →₀ M) = 0 := rfl
 
@@ -158,8 +158,8 @@ theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x
     ext fun a => by
       classical
       exact if h : a ∈ f.support then h₂ a h else by
-        have hf : f a = 0 := not_mem_support_iff.1 h
-        have hg : g a = 0 := by rwa [h₁, not_mem_support_iff] at h
+        have hf : f a = 0 := notMem_support_iff.1 h
+        have hg : g a = 0 := by rwa [h₁, notMem_support_iff] at h
         rw [hf, hg]⟩
 
 @[simp]
@@ -378,7 +378,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
     dsimp
     split_ifs with h
     · simp only [h, true_iff, Ne]
-      rw [← not_mem_support_iff, not_not]
+      rw [← notMem_support_iff, not_not]
       classical apply Finset.choose_mem
     · simp only [h, Ne, ne_self_iff_false, not_true_eq_false]
 
@@ -397,7 +397,7 @@ theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f
     split_ifs with h
     · refine congr_arg (v : α → M) (f.inj' ?_)
       exact Finset.choose_property (fun a₁ => f a₁ = f a) _ _
-    · exact (not_mem_support_iff.1 h).symm
+    · exact (notMem_support_iff.1 h).symm
 
 theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     embDomain f v a = 0 := by

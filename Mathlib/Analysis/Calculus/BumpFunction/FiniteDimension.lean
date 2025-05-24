@@ -456,7 +456,7 @@ theorem y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
     support (y D : E → ℝ) = ball (0 : E) (1 + D) :=
   support_eq_iff.2
     ⟨fun _ hx => (y_pos_of_mem_ball Dpos D_lt_one hx).ne', fun _ hx =>
-      y_eq_zero_of_not_mem_ball Dpos hx⟩
+      y_eq_zero_of_notMem_ball Dpos hx⟩
 
 variable {E}
 
