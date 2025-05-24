@@ -408,6 +408,47 @@ end injOn
 section graphOn
 variable {x : α × β}
 
+@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := .rfl
+
+lemma graphOn_eq_image (s : Set α) (f : α → β) : s.graphOn f = (fun x ↦ (x, f x)) '' s := by
+  aesop (add simp graphOn)
+
+@[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := by simp [graphOn]
+@[simp] lemma graphOn_eq_empty : graphOn f s = ∅ ↔ s = ∅ := by simp [graphOn_eq_image]
+@[simp] lemma graphOn_nonempty : (s.graphOn f).Nonempty ↔ s.Nonempty := by simp [graphOn_eq_image]
+
+protected alias ⟨_, Nonempty.graphOn⟩ := graphOn_nonempty
+
+lemma graphOn_union (f : α → β) (s t : Set α) : graphOn f (s ∪ t) = graphOn f s ∪ graphOn f t := by
+  simp [graphOn_eq_image, image_union]
+
+@[simp]
+lemma graphOn_singleton (f : α → β) (x : α) : graphOn f {x} = {(x, f x)} := by
+  simp [graphOn_eq_image]
+
+
+@[simp]
+lemma graphOn_insert (f : α → β) (x : α) (s : Set α) :
+    graphOn f (insert x s) = insert (x, f x) (graphOn f s) := by
+  simp [graphOn_eq_image, image_insert_eq]
+
+@[simp]
+lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s = s := by
+  simp [graphOn_eq_image, image_image]
+
+@[simp] lemma image_snd_graphOn (f : α → β) : Prod.snd '' s.graphOn f = f '' s := by ext x; simp
+
+lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by aesop (add simp InjOn)
+
+lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
+    s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by
+  simpa [graphOn_eq_image] using image_comp (fun x ↦ (x.1, g x.2)) (fun x ↦ (x, f x)) _
+
+lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := by simp [graphOn_eq_image]
+
+@[simp] lemma graphOn_inj {g : α → β} : s.graphOn f = s.graphOn g ↔ s.EqOn f g := by
+  simp [Set.ext_iff, funext_iff, forall_swap, EqOn]
+
 lemma graphOn_univ_inj {g : α → β} : univ.graphOn f = univ.graphOn g ↔ f = g := by simp
 
 lemma graphOn_univ_injective : Injective (univ.graphOn : (α → β) → Set (α × β)) :=
@@ -417,19 +458,35 @@ lemma exists_eq_graphOn_image_fst [Nonempty β] {s : Set (α × β)} :
     (∃ f : α → β, s = graphOn f (Prod.fst '' s)) ↔ InjOn Prod.fst s := by
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨f, hf⟩
-    rw [hf]
+    rw [hf, graphOn_eq_image]
     exact InjOn.image_of_comp <| injOn_id _
   · have : ∀ x ∈ Prod.fst '' s, ∃ y, (x, y) ∈ s := forall_mem_image.2 fun (x, y) h ↦ ⟨y, h⟩
     choose! f hf using this
     rw [forall_mem_image] at hf
     use f
-    rw [graphOn, image_image, EqOn.image_eq_self]
+    rw [graphOn_eq_image, image_image, EqOn.image_eq_self]
     exact fun x hx ↦ h (hf hx) hx rfl
 
 lemma exists_eq_graphOn [Nonempty β] {s : Set (α × β)} :
     (∃ f t, s = graphOn f t) ↔ InjOn Prod.fst s :=
   .trans ⟨fun ⟨f, t, hs⟩ ↦ ⟨f, by rw [hs, image_fst_graphOn]⟩, fun ⟨f, hf⟩ ↦ ⟨f, _, hf⟩⟩
     exists_eq_graphOn_image_fst
+
+lemma graphOn_prod_graphOn (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
+    s.graphOn f ×ˢ t.graphOn g = Equiv.prodProdProdComm .. ⁻¹' (s ×ˢ t).graphOn (Prod.map f g) := by
+  aesop
+
+lemma graphOn_prod_prodMap (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
+    (s ×ˢ t).graphOn (Prod.map f g) = Equiv.prodProdProdComm .. ⁻¹' s.graphOn f ×ˢ t.graphOn g := by
+  aesop
+
+lemma forall_mem_graphOn {α β : Type*} {f : α → β} {s : Set α} {p : α × β → Prop} :
+    (∀ y ∈ s.graphOn f, p y) ↔ ∀ ⦃x : α⦄, x ∈ s → p (x, f x) := by
+  rw [graphOn_eq_image, forall_mem_image]
+
+lemma exists_mem_graphOn {α β : Type*} {f : α → β} {s : Set α} {p : α × β → Prop} :
+    (∃ y ∈ s.graphOn f, p y) ↔ ∃ x ∈ s, p (x, f x) := by
+  rw [graphOn_eq_image, exists_mem_image]
 
 end graphOn
 
