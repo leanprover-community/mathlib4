@@ -6,7 +6,7 @@ Authors: Moritz Doll, Sébastien Gouëzel, Jireh Loreaux
 
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.Normed.Lp.WithLp
-
+import Mathlib.Tactic.Finiteness
 /-!
 # `L^p` distance on products of two metric spaces
 Given two metric spaces, one can put the max distance on their product, but there is also
@@ -356,8 +356,7 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
       rcases p.dichotomy with (rfl | h)
       · exact prod_sup_edist_ne_top_aux f g
       · rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
-        refine ENNReal.rpow_ne_top_of_nonneg (by positivity) (ne_of_lt ?_)
-        simp [ENNReal.add_lt_top, ENNReal.rpow_lt_top_of_nonneg, edist_ne_top] )
+        finiteness)
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [prod_edist_eq_sup, prod_dist_eq_sup]
@@ -371,10 +370,8 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
       · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
         · simp only [le_sup_iff, dist_nonneg, or_self]
         · simp [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_le_ofReal]
-    · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ :=
-        ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
-      have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ :=
-        ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
+    · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ := by finiteness
+      have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ := by finiteness
       simp only [prod_edist_eq_add (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
         prod_dist_eq_add (zero_lt_one.trans_le h), ← ENNReal.toReal_add h1 h2]
 
@@ -540,7 +537,7 @@ instance instProdMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (Wi
 variable {p α β}
 
 theorem prod_nndist_eq_add [PseudoMetricSpace α] [PseudoMetricSpace β]
-    (hp : p ≠ ∞) (x y : WithLp p (α × β)) :
+    (hp : p ≠ ∞ := by finiteness) (x y : WithLp p (α × β)) :
     nndist x y = (nndist x.fst y.fst ^ p.toReal + nndist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) :=
   NNReal.eq <| by
     push_cast
@@ -666,7 +663,7 @@ theorem prod_norm_eq_of_nat [Norm α] [Norm β] (n : ℕ) (h : p = n) (f : WithL
 
 variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
-theorem prod_nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
+theorem prod_nnnorm_eq_add (hp : p ≠ ∞ := by finiteness) (f : WithLp p (α × β)) :
     ‖f‖₊ = (‖f.fst‖₊ ^ p.toReal + ‖f.snd‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
   ext
   simp [prod_norm_eq_add (p.toReal_pos_iff_ne_top.mpr hp)]

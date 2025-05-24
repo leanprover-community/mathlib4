@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Tactic.Finiteness
 
 /-!
 # Extended non-negative reals
@@ -224,7 +225,7 @@ theorem coe_comp_toNNReal_comp {ι : Type*} {f : ι → ℝ≥0∞} (hf : ∀ x,
   simp [coe_toNNReal (hf x)]
 
 @[simp]
-theorem ofReal_toReal {a : ℝ≥0∞} (h : a ≠ ∞) : ENNReal.ofReal a.toReal = a := by
+theorem ofReal_toReal {a : ℝ≥0∞} (h : a ≠ ∞ := by finiteness) : ENNReal.ofReal a.toReal = a := by
   simp [ENNReal.toReal, ENNReal.ofReal, h]
 
 @[simp]
@@ -341,9 +342,7 @@ theorem ofReal_ne_top {r : ℝ} : ENNReal.ofReal r ≠ ∞ := coe_ne_top
 
 @[simp]
 theorem ofReal_toReal_eq_iff : ENNReal.ofReal a.toReal = a ↔ a ≠ ⊤ :=
-  ⟨fun h => by
-    rw [← h]
-    exact ofReal_ne_top, ofReal_toReal⟩
+  ⟨fun h => by rw [← h]; finiteness, fun h ↦ ofReal_toReal h⟩
 
 @[simp]
 theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤ a :=
@@ -610,7 +609,7 @@ theorem natCast_lt_coe {n : ℕ} : n < (r : ℝ≥0∞) ↔ n < r := ENNReal.coe
 
 theorem coe_lt_natCast {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n := ENNReal.coe_natCast n ▸ coe_lt_coe
 
-protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, r < n := by
+protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞ := by finiteness) : ∃ n : ℕ, r < n := by
   lift r to ℝ≥0 using h
   rcases exists_nat_gt r with ⟨n, hn⟩
   exact ⟨n, coe_lt_natCast.2 hn⟩
@@ -619,7 +618,7 @@ protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, 
 theorem iUnion_Iio_coe_nat : ⋃ n : ℕ, Iio (n : ℝ≥0∞) = {∞}ᶜ := by
   ext x
   rw [mem_iUnion]
-  exact ⟨fun ⟨n, hn⟩ => ne_top_of_lt hn, ENNReal.exists_nat_gt⟩
+  exact ⟨fun ⟨n, hn⟩ ↦ ne_top_of_lt hn, fun _ ↦ ENNReal.exists_nat_gt⟩
 
 @[simp]
 theorem iUnion_Iic_coe_nat : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=

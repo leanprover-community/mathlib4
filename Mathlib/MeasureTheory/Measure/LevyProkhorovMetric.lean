@@ -131,7 +131,7 @@ lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure 
   apply levyProkhorovEDist_le_of_forall_add_pos_le
   intro ε B ε_pos ε_lt_top B_mble
   have half_ε_pos : 0 < ε / 2 := ENNReal.div_pos ε_pos.ne' ofNat_ne_top
-  have half_ε_lt_top : ε / 2 < ∞ := ENNReal.div_lt_top ε_lt_top.ne two_ne_zero
+  have half_ε_lt_top : ε / 2 ≠ ∞ := by finiteness
   let r := levyProkhorovEDist μ ν + ε / 2
   let s := levyProkhorovEDist ν κ + ε / 2
   have lt_r : levyProkhorovEDist μ ν < r := lt_add_right LPμν_finite half_ε_pos.ne'
@@ -142,8 +142,6 @@ lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure 
   have hs_add_r' : s.toReal + r.toReal
       = (levyProkhorovEDist μ ν + levyProkhorovEDist ν κ + ε).toReal := by
     rw [← hs_add_r, ← ENNReal.toReal_add]
-    · exact ENNReal.add_ne_top.mpr ⟨LPνκ_finite, half_ε_lt_top.ne⟩
-    · exact ENNReal.add_ne_top.mpr ⟨LPμν_finite, half_ε_lt_top.ne⟩
   rw [← hs_add_r', add_assoc, ← hs_add_r, add_assoc _ _ ε, ← hs_add_r]
   refine ⟨?_, ?_⟩
   · calc μ B ≤ ν (thickening r.toReal B) + r :=
@@ -223,7 +221,7 @@ lemma measure_le_measure_closure_of_levyProkhorovEDist_eq_zero {μ ν : Measure 
       apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within (s := Ioi 0) ENNReal.toReal
       · exact tendsto_nhdsWithin_of_tendsto_nhds (continuousAt_toReal zero_ne_top).tendsto
       · filter_upwards [Ioo_mem_nhdsGT zero_lt_one] with x hx
-        exact toReal_pos hx.1.ne.symm <| ne_top_of_lt hx.2
+        exact toReal_pos hx.1.ne' <| ne_top_of_lt hx.2
     exact (tendsto_measure_thickening h_finite).comp aux
   have obs := Tendsto.add key (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id)
   simp only [id_eq, add_zero] at obs
@@ -380,7 +378,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
       exact fun _ _ hst ↦ measure_mono <| thickening_subset_of_subset ε (fun _ h ↦ hst.trans h)
     · apply Eventually.of_forall <| fun t ↦ ?_
       simp only [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
-      exact ENNReal.toReal_mono (measure_ne_top _ _) <| measure_mono (subset_univ _)
+      exact ENNReal.toReal_mono (by finiteness) <| measure_mono (subset_univ _)
   apply le_trans (setIntegral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
   · rw [integral_add]
     · apply add_le_add_left
@@ -415,7 +413,7 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
     · apply tendsto_measure_thickening_of_isClosed ?_ ?_
       · exact ⟨1, ⟨Real.zero_lt_one, measure_ne_top _ _⟩⟩
       · exact isClosed_le continuous_const f.continuous
-    · exact measure_ne_top _ _
+    · finiteness
 
 /-- The identity map `LevyProkhorov (ProbabilityMeasure Ω) → ProbabilityMeasure Ω` is continuous. -/
 lemma LevyProkhorov.continuous_equiv_probabilityMeasure :
@@ -499,7 +497,7 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure �
   · simp [ε_top, measure_lt_top]
   simp only [not_lt] at easy
   have aux : P.toMeasure G - ε < liminf (fun Q ↦ Q.toMeasure G) (𝓝 P) := by
-    apply lt_of_lt_of_le (ENNReal.sub_lt_self (measure_lt_top _ _).ne _ _)
+    apply lt_of_lt_of_le (ENNReal.sub_lt_self (by finiteness) _ _)
         <| ProbabilityMeasure.le_liminf_measure_open_of_tendsto tendsto_id G_open
     · exact (lt_of_lt_of_le ε_pos easy).ne.symm
     · exact ε_pos.ne.symm

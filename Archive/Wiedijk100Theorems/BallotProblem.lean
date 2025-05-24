@@ -325,7 +325,7 @@ theorem ballot_problem' :
     have h₃ : p + 1 + (q + 1) > 0 := Nat.add_pos_left (Nat.succ_pos _) _
     rw [← uniformOn_add_compl_eq {l : List ℤ | l.headI = 1} _ (countedSequence_finite _ _),
       first_vote_pos _ _ h₃, first_vote_neg _ _ h₃, ballot_pos, ballot_neg _ _ qp]
-    rw [ENNReal.toReal_add, ENNReal.toReal_mul, ENNReal.toReal_mul, ← Nat.cast_add,
+    rw [ENNReal.toReal_add _ _, ENNReal.toReal_mul, ENNReal.toReal_mul, ← Nat.cast_add,
       ENNReal.toReal_div, ENNReal.toReal_div, ENNReal.toReal_natCast, ENNReal.toReal_natCast,
       ENNReal.toReal_natCast, h₁, h₂]
     · have h₄ : (p + 1 : ℝ) + (q + 1 : ℝ) ≠ (0 : ℝ) := by
@@ -341,7 +341,7 @@ theorem ballot_problem' :
         linarith
       field_simp [h₄, h₅, h₆] at *
       ring
-    all_goals exact ENNReal.mul_ne_top (measure_ne_top _ _) (by simp [Ne, ENNReal.div_eq_top])
+    all_goals exact ENNReal.mul_ne_top (by finiteness) (by simp [Ne, ENNReal.div_eq_top])
 
 /-- The ballot problem. -/
 theorem ballot_problem :
@@ -355,12 +355,12 @@ theorem ballot_problem :
     rw [ballot_problem' q p qp]
     rw [ENNReal.toReal_div, ← Nat.cast_add, ← Nat.cast_add, ENNReal.toReal_natCast,
       ENNReal.toReal_sub_of_le, ENNReal.toReal_natCast, ENNReal.toReal_natCast]
-    exacts [Nat.cast_le.2 qp.le, ENNReal.natCast_ne_top _]
-  rwa [ENNReal.toReal_eq_toReal (measure_lt_top _ _).ne] at this
+    exact Nat.cast_le.2 qp.le
+  rwa [ENNReal.toReal_eq_toReal (by finiteness)] at this
   simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
     add_eq_zero, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
     not_false_iff, and_true]
   push_neg
-  exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩
+  exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (by finiteness)).ne⟩
 
 end Ballot

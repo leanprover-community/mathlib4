@@ -536,7 +536,7 @@ theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1
   haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   simp only [haarMeasure, coe_smul, Pi.smul_apply, smul_eq_mul]
   rw [← K₀.isCompact.measure_closure,
-    Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_mul_cancel]
+    Content.measure_apply _ isClosed_closure.measurableSet, ENNReal.inv_mul_cancel _ _]
   · exact (haarContent_outerMeasure_closure_pos K₀).ne'
   · exact (Content.outerMeasure_lt_top_of_isCompact _ K₀.isCompact.closure).ne
 

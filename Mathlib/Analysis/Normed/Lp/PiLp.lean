@@ -7,6 +7,7 @@ import Mathlib.Analysis.MeanInequalities
 import Mathlib.Data.Fintype.Order
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.Analysis.Normed.Lp.ProdLp
+import Mathlib.Tactic.Finiteness
 
 /-!
 # `L^p` distance on finite products of metric spaces
@@ -343,7 +344,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
       · exact iSup_edist_ne_top_aux f g
       · rw [edist_eq_sum (zero_lt_one.trans_le h)]
         exact ENNReal.rpow_ne_top_of_nonneg (by positivity) <| ENNReal.sum_ne_top.2 fun _ _ ↦
-          ENNReal.rpow_ne_top_of_nonneg (by positivity) (edist_ne_top _ _))
+          by finiteness)
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [edist_eq_iSup, dist_eq_iSup]
@@ -362,8 +363,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
             -- Porting note: `le_ciSup` needed some help
             exact ENNReal.ofReal_le_ofReal
               (le_ciSup (Finite.bddAbove_range (fun k => dist (f k) (g k))) i)
-    · have A : ∀ i, edist (f i) (g i) ^ p.toReal ≠ ⊤ := fun i =>
-        ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
+    · have A (i) : edist (f i) (g i) ^ p.toReal ≠ ⊤ := by finiteness
       simp only [edist_eq_sum (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
         dist_eq_sum (zero_lt_one.trans_le h), ← ENNReal.toReal_sum fun i _ => A i]
 
@@ -486,7 +486,7 @@ instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
   MetricSpace.ofT0PseudoMetricSpace _
 
 theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)]
-    (hp : p ≠ ∞) (x y : PiLp p β) :
+    (hp : p ≠ ∞ := by finiteness) (x y : PiLp p β) :
     nndist x y = (∑ i : ι, nndist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) :=
   NNReal.eq <| by
     push_cast
@@ -568,7 +568,7 @@ instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGr
   { PiLp.seminormedAddCommGroup p α with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} (hp : p ≠ ∞)
+theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} (hp : p ≠ ∞ := by finiteness)
     [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp p β) :
     ‖f‖₊ = (∑ i, ‖f i‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
   ext
@@ -930,8 +930,8 @@ end Single
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
 `PiLp.nnnorm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
 `Nonempty ι`. -/
-theorem nnnorm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
-    ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖₊ =
+theorem nnnorm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞ := by finiteness)
+    (b : β) : ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
   rcases p.dichotomy with (h | h)
   · exact False.elim (hp h)
@@ -956,7 +956,7 @@ theorem nnnorm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] 
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
 `PiLp.norm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
 `Nonempty ι`. -/
-theorem norm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
+theorem norm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞ := by finiteness) (b : β) :
     ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_const hp b).trans <| by simp
@@ -970,12 +970,12 @@ theorem norm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_const' b).trans <| by simp
 
-theorem nnnorm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
+theorem nnnorm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞ := by finiteness) [One β] :
     ‖(WithLp.equiv p (ι → β)).symm 1‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖₊ :=
   (nnnorm_equiv_symm_const hp (1 : β)).trans rfl
 
-theorem norm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
+theorem norm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞ := by finiteness) [One β] :
     ‖(WithLp.equiv p (ι → β)).symm 1‖ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖ :=
   (norm_equiv_symm_const hp (1 : β)).trans rfl
 

@@ -323,7 +323,7 @@ theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp 
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : ‖f‖₊ ≤ c * ‖g‖₊ := by
   simp only [nnnorm_def]
   have := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul h p
-  rwa [← ENNReal.toNNReal_le_toNNReal, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
+  rwa [← ENNReal.toNNReal_le_toNNReal _ _, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
     ENNReal.toNNReal_coe] at this
   · exact (Lp.memLp _).eLpNorm_ne_top
   · exact ENNReal.mul_ne_top ENNReal.coe_ne_top (Lp.memLp _).eLpNorm_ne_top
@@ -414,7 +414,7 @@ variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜' E]
 
 theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] E) ∈ Lp E p μ := by
   rw [mem_Lp_iff_eLpNorm_lt_top, eLpNorm_congr_ae (AEEqFun.coeFn_smul _ _)]
-  exact eLpNorm_const_smul_le.trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top f.prop
+  exact eLpNorm_const_smul_le.trans_lt <| ENNReal.mul_lt_top (by finiteness) f.prop
 
 variable (𝕜 E p μ)
 
