@@ -780,6 +780,20 @@ lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g 
 -- TODO - figure out why we need this
 instance Real.t2Space: T2Space ℝ := TopologicalSpace.t2Space_of_metrizableSpace
 
+lemma f_mul_mu_summable (f: G → ℝ) (g: G) (s: G):
+  Summable fun a ↦
+    (f (MulOpposite.unop (Additive.toMul a))) * (Pi.single (f := (fun s ↦ ℝ) ) s (1 : ℝ) (((MulOpposite.unop (Additive.toMul a))⁻¹ * g))) := by
+  apply summable_of_finite_support
+  simp only [one_div, Function.support_mul, Function.support_inv]
+  apply Set.Finite.inter_of_right
+  simp [Pi.single, Function.update]
+  apply Set.Finite.subset (s := {(opAdd (g * s⁻¹))})
+  . simp
+  . intro a ha
+    simp at ha
+    simp [opAdd]
+    simp [← ha]
+
 lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S := S) f (mu (S := S))) g = ((1 : ℝ) / (#(S) : ℝ)) * ∑ s ∈ S, f (g * s) := by
   rw [conv_eq_sum]
   .
@@ -827,17 +841,7 @@ lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S
         rhs
         intro x
         rw [Summable.tsum_mul_left (hf := by (
-          -- TODO - deuplicate this proof
-          apply summable_of_finite_support
-          simp only [one_div, Function.support_mul, Function.support_inv]
-          apply Set.Finite.inter_of_right
-          simp [Pi.single, Function.update]
-          apply Set.Finite.subset (s := {(opAdd (g * x⁻¹))})
-          . simp
-          . intro a ha
-            simp at ha
-            simp [opAdd]
-            simp [← ha]
+          apply f_mul_mu_summable
         ))]
         rw [delta_conv x]
 
@@ -855,14 +859,16 @@ lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S
       simp
     .
       intro s hs
-      apply summable_of_finite_support
-      simp only [one_div, Function.support_mul, Function.support_inv]
-      apply Set.Finite.inter_of_right
-      simp [Pi.single, Function.update]
-      apply Set.Finite.subset (s := {(opAdd (g * s⁻¹))})
-      . simp
-      . intro a ha
-        simp at ha
-        simp [opAdd]
-        simp [← ha]
+      simp_rw [mul_comm, mul_assoc]
+      simp only [one_div]
+      by_cases card_zero: #(S) = 0
+      .
+        simp [card_zero]
+        unfold Summable
+        use 0
+        exact hasSum_zero
+      .
+        rw [summable_mul_left_iff]
+        . apply f_mul_mu_summable
+        . field_simp
   . exact hf
