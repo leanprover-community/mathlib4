@@ -682,10 +682,7 @@ noncomputable def muConv (n: ℕ) := Nat.iterate (Conv (S := S) (mu (S := S))) n
 
 abbrev delta (s: G): G → ℝ := Pi.single s 1
 
--- Proposition 3.12, item 1, in Vikman
-lemma f_conv_delta (f: G → ℝ) (g s: G)
--- TODO - requiring 'LP_2' seems too strong - can we relax this?
-(hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) (ENNReal.ofReal 2) myHaarAddOpp): (Conv (S := S) f (Pi.single s 1)) g = f (g * s⁻¹) := by
+lemma conv_eq_sum (f h: G → ℝ) (hconv: ConvExists f h) (g: G): Conv f h g = ∑' (a : Additive Gᵐᵒᵖ), f (MulOpposite.unop (Additive.toMul a)) * h ((MulOpposite.unop (Additive.toMul a))⁻¹ * g) := by
   unfold Conv
   unfold MeasureTheory.convolution
   rw [MeasureTheory.integral_countable']
@@ -697,6 +694,16 @@ lemma f_conv_delta (f: G → ℝ) (g s: G)
     simp_rw [← singleton_carrier]
     simp_rw [TopologicalSpace.PositiveCompacts.carrier_eq_coe]
     simp [MeasureTheory.Measure.addHaarMeasure_self]
+  . exact (hconv (opAdd g))
+
+
+-- Proposition 3.12, item 1, in Vikman
+-- TODO - requiring 'LP_2' seems too strong - can we relax this?
+lemma f_conv_delta (f: G → ℝ) (g s: G) (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) (ENNReal.ofReal 2) myHaarAddOpp):
+  (Conv (S := S) f (Pi.single s 1)) g = f (g * s⁻¹) := by
+
+  rw [conv_eq_sum]
+  .
     rw [tsum_eq_sum (s := {opAdd ((g * s⁻¹))}) ?_]
     .
       simp
@@ -730,8 +737,11 @@ lemma f_conv_delta (f: G → ℝ) (g s: G)
       simp only [ofMul_toMul]
       exact hb
   .
+    unfold ConvExists MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
     have my_exists := conv_exists (S := S) (p := 2) (q := 2) (by simp) (by simp) (by exact Real.HolderConjugate.two_two) f (delta s) hf ?_
-    . apply MeasureTheory.ConvolutionExistsAt.integrable (my_exists (opAdd g))
+    .
+      intro x
+      exact MeasureTheory.ConvolutionExistsAt.integrable (my_exists x)
     .
       intro x
       unfold delta
@@ -750,3 +760,5 @@ lemma f_conv_delta (f: G → ℝ) (g s: G)
         simp [opAdd]
         rw [← ha]
         simp
+
+lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S := S) f (mu (S := S))) g = ((1 : ℝ) / (#(S) : ℝ)) * ∑ s ∈ S, f (g * s) := by
