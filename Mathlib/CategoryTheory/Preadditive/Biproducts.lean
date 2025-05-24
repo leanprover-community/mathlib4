@@ -46,7 +46,7 @@ In (or between) preadditive categories,
 
 There are connections between this material and the special case of the category whose morphisms are
 matrices over a ring, in particular the Schur complement (see
-`Mathlib.LinearAlgebra.Matrix.SchurComplement`). In particular, the declarations
+`Mathlib/LinearAlgebra/Matrix/SchurComplement.lean`). In particular, the declarations
 `CategoryTheory.Biprod.isoElim`, `CategoryTheory.Biprod.gaussian`
 and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
 
