@@ -261,6 +261,27 @@ lemma partitions_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set 
   have := hP.2.2.2 r (hRP hr)
   simp_all
 
+open Classical in
+/-- If P is a partition then the intersection of P with a set s is a partition of s. -/
+lemma partition_inter {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitions s)
+    (ht : MeasurableSet t) : P.image (fun p ↦ p ∩ t) ∈ partitions t := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro _ h
+    obtain ⟨_, _, hp⟩ := Finset.mem_image.mp h
+    simp [← hp]
+  · intro r hr
+    obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp hr
+    rw [← hp']
+    exact MeasurableSet.inter (hs.2.1 p hp) ht
+  · intro r hr t' ht'
+    obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp hr
+    rw [← hp']
+
+
+    sorry
+  ·
+    sorry
+
 /-- Aditivity of `variationAux` for disjoint measurable sets. -/
 lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
@@ -309,8 +330,8 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     -- Take the partitions defined as intersection of `Q` and `s i`.
     classical
     let P (i : ℕ) := Q.image (fun q ↦ q ∩ (s i))
-    have (i : ℕ) : P i ∈ partitions (s i) := by
-      sorry
+    have hP (i : ℕ) : P i ∈ partitions (s i) := partition_inter hQ (hs i)
+
 
 
     sorry
