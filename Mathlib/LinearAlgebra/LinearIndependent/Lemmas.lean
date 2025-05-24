@@ -446,13 +446,6 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
 @[deprecated (since := "2025-02-15")] alias
   exists_maximal_independent := exists_maximal_linearIndepOn
 
-theorem LinearIndependent.restrict_scalars' (R : Type*) {S M ι : Type*}
-    [CommSemiring R] [Semiring S] [Algebra R S] [FaithfulSMul R S]
-    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
-    {v : ι → M} (li : LinearIndependent S v) :
-    LinearIndependent R v :=
-  restrict_scalars ((faithfulSMul_iff_injective_smul_one R S).mp inferInstance) li
-
 @[stacks 0CKM]
 lemma linearIndependent_algHom_toLinearMap
     (K M L) [CommSemiring K] [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] :
