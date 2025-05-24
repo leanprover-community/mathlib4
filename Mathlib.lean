@@ -3879,6 +3879,7 @@ import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.Countable
 import Mathlib.LinearAlgebra.CrossProduct
 import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.DFinsupp.PiTensorProduct
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Dimension.Basic
 import Mathlib.LinearAlgebra.Dimension.Constructions
