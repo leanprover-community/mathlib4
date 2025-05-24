@@ -387,7 +387,7 @@ theorem Quotient.mkₐ_surjective (I : Ideal A) [I.IsTwoSided] :
 /-- The kernel of `A →ₐ[R₁] I.quotient` is `I`. -/
 @[simp]
 theorem Quotient.mkₐ_ker (I : Ideal A) [I.IsTwoSided] :
-    RingHom.ker (Quotient.mkₐ R₁ I : A →+* A ⧸ I) = I :=
+    RingHom.ker (Quotient.mkₐ R₁ I) = I :=
   Ideal.mk_ker
 
 lemma Quotient.mk_bijective_iff_eq_bot (I : Ideal A) [I.IsTwoSided] :
