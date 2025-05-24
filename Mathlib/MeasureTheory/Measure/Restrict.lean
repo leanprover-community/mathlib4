@@ -341,9 +341,11 @@ theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
     μ.restrict (⋃ i ∈ s, t i) = ν.restrict (⋃ i ∈ s, t i) ↔
       ∀ i ∈ s, μ.restrict (t i) = ν.restrict (t i) := by
   classical
-  induction' s using Finset.induction_on with i s _ hs; · simp
-  simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
-  rw [restrict_union_congr, ← hs]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s _ hs =>
+    simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
+    rw [restrict_union_congr, ← hs]
 
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
@@ -539,10 +541,12 @@ theorem ae_eq_restrict_biUnion_finset_iff (s : ι → Set α) (t : Finset ι) (f
     f =ᵐ[μ.restrict (⋃ i ∈ t, s i)] g ↔ ∀ i ∈ t, f =ᵐ[μ.restrict (s i)] g :=
   ae_eq_restrict_biUnion_iff s t.countable_toSet f g
 
+open scoped Interval in
 theorem ae_restrict_uIoc_eq [LinearOrder α] (a b : α) :
     ae (μ.restrict (Ι a b)) = ae (μ.restrict (Ioc a b)) ⊔ ae (μ.restrict (Ioc b a)) := by
   simp only [uIoc_eq_union, ae_restrict_union_eq]
 
+open scoped Interval in
 /-- See also `MeasureTheory.ae_uIoc_iff`. -/
 theorem ae_restrict_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
     (∀ᵐ x ∂μ.restrict (Ι a b), P x) ↔

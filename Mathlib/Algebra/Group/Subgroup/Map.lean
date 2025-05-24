@@ -117,6 +117,10 @@ theorem coe_map (f : G →* N) (K : Subgroup G) : (K.map f : Set N) = f '' K :=
   rfl
 
 @[to_additive (attr := simp)]
+theorem map_toSubmonoid (f : G →* G') (K : Subgroup G):
+  (Subgroup.map f K).toSubmonoid = Submonoid.map f K.toSubmonoid := rfl
+
+@[to_additive (attr := simp)]
 theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := Iff.rfl
 
 @[to_additive]
@@ -249,12 +253,17 @@ theorem map_inf_eq (H K : Subgroup G) (f : G →* N) (hf : Function.Injective f)
 theorem map_bot (f : G →* N) : (⊥ : Subgroup G).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem map_top_of_surjective (f : G →* N) (h : Function.Surjective f) : Subgroup.map f ⊤ = ⊤ := by
   rw [eq_top_iff]
   intro x _
   obtain ⟨y, hy⟩ := h x
   exact ⟨y, trivial, hy⟩
+
+@[to_additive (attr := simp)]
+lemma map_equiv_top {F : Type*} [EquivLike F G N] [MulEquivClass F G N] (f : F) :
+    map (f : G →* N) ⊤ = ⊤ :=
+  map_top_of_surjective _ (EquivLike.surjective f)
 
 @[to_additive (attr := simp)]
 theorem comap_top (f : G →* N) : (⊤ : Subgroup N).comap f = ⊤ :=
@@ -486,6 +495,11 @@ namespace MonoidHom
 additive subgroup to itself."]
 def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
   f.submonoidComap H'.toSubmonoid
+
+@[to_additive]
+lemma subgroupComap_surjective_of_surjective (f : G →* G') (H' : Subgroup G') (hf : Surjective f) :
+    Surjective (f.subgroupComap H') :=
+  f.submonoidComap_surjective_of_surjective H'.toSubmonoid hf
 
 /-- The `MonoidHom` from a subgroup to its image. -/
 @[to_additive (attr := simps!) "the `AddMonoidHom` from an additive subgroup to its image"]

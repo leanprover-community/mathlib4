@@ -229,17 +229,17 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         refine sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
           aesop (add simp Nat.lt_succ_iff)
       _ ≤ ∑ i ∈ range N, (i + 1) * ∫ _ in i..(i + 1 : ℕ), (1 : ℝ) ∂ρ := by
-        apply sum_le_sum fun i _ => ?_
+        gcongr with i
         simp only [Nat.cast_add, Nat.cast_one, sum_const, card_range, nsmul_eq_mul, Nat.cast_min]
         refine mul_le_mul_of_nonneg_right (min_le_left _ _) ?_
         apply intervalIntegral.integral_nonneg
         · simp only [le_add_iff_nonneg_right, zero_le_one]
         · simp only [zero_le_one, imp_true_iff]
       _ ≤ ∑ i ∈ range N, ∫ x in i..(i + 1 : ℕ), x + 1 ∂ρ := by
-        apply sum_le_sum fun i _ => ?_
+        gcongr with i
         have I : (i : ℝ) ≤ (i + 1 : ℕ) := by
           simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
-        simp_rw [intervalIntegral.integral_of_le I, ← integral_mul_left]
+        simp_rw [intervalIntegral.integral_of_le I, ← integral_const_mul]
         apply setIntegral_mono_on
         · exact continuous_const.integrableOn_Ioc
         · exact (continuous_id.add continuous_const).integrableOn_Ioc
@@ -262,7 +262,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
       _ ≤ 𝔼[X] + 1 := by
         refine add_le_add le_rfl ?_
         rw [intervalIntegral.integral_of_le (Nat.cast_nonneg _)]
-        simp only [integral_const, Measure.restrict_apply', measurableSet_Ioc, Set.univ_inter,
+        simp only [integral_const, measureReal_restrict_apply', measurableSet_Ioc, Set.univ_inter,
           Algebra.id.smul_eq_mul, mul_one]
         rw [← ENNReal.toReal_one]
         exact ENNReal.toReal_mono ENNReal.one_ne_top prob_le_one
@@ -275,9 +275,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
     ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} =
         ∑ j ∈ range K, ENNReal.ofReal (∫ _ in Set.Ioc (j : ℝ) N, (1 : ℝ) ∂ρ) := by simp_rw [B]
     _ = ENNReal.ofReal (∑ j ∈ range K, ∫ _ in Set.Ioc (j : ℝ) N, (1 : ℝ) ∂ρ) := by
-      rw [ENNReal.ofReal_sum_of_nonneg]
-      simp only [integral_const, Algebra.id.smul_eq_mul, mul_one, ENNReal.toReal_nonneg,
-        imp_true_iff]
+      simp [ENNReal.ofReal_sum_of_nonneg]
     _ = ENNReal.ofReal (∑ j ∈ range K, ∫ _ in (j : ℝ)..N, (1 : ℝ) ∂ρ) := by
       congr 1
       refine sum_congr rfl fun j hj => ?_
@@ -298,7 +296,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
       · intro ω hω
         obtain ⟨N, hN⟩ : ∃ N : ℕ, X ω ≤ N := exists_nat_ge (X ω)
         exact Set.mem_iUnion.2 ⟨N, hω, hN⟩
-      · simp (config := {contextual := true}) only [Set.mem_Ioc, Set.mem_Ioi,
+      · simp +contextual only [Set.mem_Ioc, Set.mem_Ioi,
           Set.iUnion_subset_iff, Set.setOf_subset_setOf, imp_true_iff]
     rw [this]
     apply tendsto_measure_iUnion_atTop
@@ -331,12 +329,12 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
       refine sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
         aesop (add unsafe lt_trans)
     _ ≤ ∑ k ∈ range K, 2 / (k + 1 : ℝ) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
-      apply sum_le_sum fun k _ => ?_
-      refine mul_le_mul_of_nonneg_right (sum_Ioo_inv_sq_le _ _) ?_
-      refine intervalIntegral.integral_nonneg_of_forall ?_ fun u => sq_nonneg _
-      simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
+      gcongr with k
+      · refine intervalIntegral.integral_nonneg_of_forall ?_ fun u => sq_nonneg _
+        simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
+      · apply sum_Ioo_inv_sq_le
     _ ≤ ∑ k ∈ range K, ∫ x in k..(k + 1 : ℕ), 2 * x ∂ρ := by
-      apply sum_le_sum fun k _ => ?_
+      gcongr with k
       have Ik : (k : ℝ) ≤ (k + 1 : ℕ) := by simp
       rw [← intervalIntegral.integral_const_mul, intervalIntegral.integral_of_le Ik,
         intervalIntegral.integral_of_le Ik]
@@ -346,14 +344,11 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
       · apply Continuous.integrableOn_Ioc
         exact continuous_const.mul continuous_id'
       · calc
-          ↑2 / (↑k + ↑1) * x ^ 2 = x / (k + 1) * (2 * x) := by ring
-          _ ≤ 1 * (2 * x) :=
-            (mul_le_mul_of_nonneg_right (by
-              convert (div_le_one _).2 hx.2
-              · norm_cast
-              simp only [Nat.cast_add, Nat.cast_one]
-              linarith only [show (0 : ℝ) ≤ k from Nat.cast_nonneg k])
-              (mul_nonneg zero_le_two ((Nat.cast_nonneg k).trans hx.1.le)))
+          2 / (↑k + 1) * x ^ 2 = x / (k + 1) * (2 * x) := by ring
+          _ ≤ 1 * (2 * x) := by
+              have : 0 < x := k.cast_nonneg.trans_lt hx.1
+              gcongr
+              exact (div_le_one <| by positivity).2 <| mod_cast hx.2
           _ = 2 * x := by rw [one_mul]
     _ = 2 * ∫ x in (0 : ℝ)..K, x ∂ρ := by
       rw [intervalIntegral.sum_integral_adjacent_intervals fun k _ => ?_]
@@ -404,8 +399,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
     calc
       ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * Var[Y j] ≤
           ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * 𝔼[truncation (X 0) j ^ 2] := by
-        apply sum_le_sum fun j _ => ?_
-        refine mul_le_mul_of_nonneg_left ?_ (inv_nonneg.2 (sq_nonneg _))
+        gcongr with j
         rw [(hident j).truncation.variance_eq]
         exact variance_le_expectation_sq (hX 0).truncation
       _ ≤ 2 * 𝔼[X 0] := sum_variance_truncation_le hint (hnonneg 0) K
@@ -430,7 +424,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
           exact fun a b haN hb ↦ ⟨hb.trans_le <| u_mono <| Nat.le_pred_of_lt haN, haN, hb⟩
         all_goals simp
       _ ≤ ∑ j ∈ range (u (N - 1)), c ^ 5 * (c - 1)⁻¹ ^ 3 / ↑j ^ 2 * Var[Y j] := by
-        apply sum_le_sum fun j hj => ?_
+        gcongr ∑ _ ∈ _, ?_ with j
         rcases eq_zero_or_pos j with (rfl | hj)
         · simp only [Nat.cast_zero, zero_pow, Ne, Nat.one_ne_zero,
             not_false_iff, div_zero, zero_mul]

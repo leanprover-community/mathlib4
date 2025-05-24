@@ -322,21 +322,21 @@ lemma integrableOn_toReal_rnDeriv {s : Set α} (hμs : μ s ≠ ∞) :
 
 lemma setIntegral_toReal_rnDeriv_eq_withDensity' [SigmaFinite μ]
     {s : Set α} (hs : MeasurableSet s) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
-  rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
+    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν)).real s := by
+  rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable, measureReal_def]
   · rw [ENNReal.toReal_eq_toReal_iff, ← withDensity_apply _ hs]
     simp
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
 
 lemma setIntegral_toReal_rnDeriv_eq_withDensity [SigmaFinite μ] [SFinite ν] (s : Set α) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
-  rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
+    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν)).real s := by
+  rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable, measureReal_def]
   · rw [ENNReal.toReal_eq_toReal_iff, ← withDensity_apply' _ s]
     simp
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
 
 lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s ≠ ∞) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν ≤ (μ s).toReal := by
+    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν ≤ μ.real s := by
   set t := toMeasurable μ s with ht
   have ht_m : MeasurableSet t := measurableSet_toMeasurable μ s
   have hμt : μ t ≠ ∞ := by rwa [ht, measure_toMeasurable s]
@@ -345,31 +345,34 @@ lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s �
         refine setIntegral_mono_set ?_ ?_ (HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _))
         · exact integrableOn_toReal_rnDeriv hμt
         · exact ae_of_all _ (by simp)
-  _ = (withDensity ν (rnDeriv μ ν) t).toReal := setIntegral_toReal_rnDeriv_eq_withDensity' ht_m
-  _ ≤ (μ t).toReal := by
+  _ = (withDensity ν (rnDeriv μ ν)).real t := setIntegral_toReal_rnDeriv_eq_withDensity' ht_m
+  _ ≤ μ.real t := by
+        simp only [measureReal_def]
         gcongr
         · exact hμt
         · apply withDensity_rnDeriv_le
-  _ = (μ s).toReal := by rw [measure_toMeasurable s]
+  _ = μ.real s := by rw [measureReal_def, measureReal_def, measure_toMeasurable s]
 
 lemma setIntegral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) {s : Set α} (hs : MeasurableSet s) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
-  rw [setIntegral_toReal_rnDeriv_eq_withDensity' hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
+    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = μ.real s := by
+  rw [setIntegral_toReal_rnDeriv_eq_withDensity' hs, Measure.withDensity_rnDeriv_eq _ _ hμν,
+    measureReal_def]
 
 lemma setIntegral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
+    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = μ.real s := by
   rw [setIntegral_toReal_rnDeriv_eq_withDensity s, Measure.withDensity_rnDeriv_eq _ _ hμν]
 
 lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal := by
+    ∫ x, (μ.rnDeriv ν x).toReal ∂ν = μ.real Set.univ := by
   rw [← setIntegral_univ, setIntegral_toReal_rnDeriv hμν Set.univ]
 
 lemma integral_toReal_rnDeriv' [IsFiniteMeasure μ] [SigmaFinite ν] :
-    ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal - (μ.singularPart ν Set.univ).toReal := by
-  rw [← ENNReal.toReal_sub_of_le (μ.singularPart_le ν Set.univ) (measure_ne_top _ _),
+    ∫ x, (μ.rnDeriv ν x).toReal ∂ν = μ.real Set.univ - (μ.singularPart ν).real Set.univ := by
+  rw [measureReal_def, measureReal_def,
+    ← ENNReal.toReal_sub_of_le (μ.singularPart_le ν Set.univ) (measure_ne_top _ _),
     ← Measure.sub_apply .univ (Measure.singularPart_le μ ν), Measure.measure_sub_singularPart,
-    ← Measure.setIntegral_toReal_rnDeriv_eq_withDensity, setIntegral_univ]
+    ← measureReal_def, ← Measure.setIntegral_toReal_rnDeriv_eq_withDensity, setIntegral_univ]
 
 end integral
 

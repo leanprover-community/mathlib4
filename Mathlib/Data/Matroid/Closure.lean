@@ -914,7 +914,7 @@ lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by
   rw [spanning_iff, loopyOn_closure_eq, loopyOn_ground, and_iff_right rfl]
 
 @[simp] lemma freeOn_closure_eq (E X : Set α) : (freeOn E).closure X = X ∩ E := by
-  simp (config := {contextual := true}) [← closure_inter_ground _ X, Set.ext_iff, and_comm,
+  simp +contextual [← closure_inter_ground _ X, Set.ext_iff, and_comm,
     insert_subset_iff, freeOn_indep_iff, (freeOn_indep inter_subset_right).mem_closure_iff']
 
 @[simp] lemma uniqueBaseOn_closure_eq (I E X : Set α) :

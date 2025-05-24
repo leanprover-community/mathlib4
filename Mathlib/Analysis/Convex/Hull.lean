@@ -30,7 +30,7 @@ section convexHull
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
@@ -105,7 +105,7 @@ theorem convexHull_zero : convexHull 𝕜 (0 : Set E) = 0 :=
   convexHull_singleton 0
 
 @[simp]
-theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
+theorem convexHull_pair [IsOrderedRing 𝕜] (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
   refine (convexHull_min ?_ <| convex_segment _ _).antisymm
     (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
   rw [insert_subset_iff, singleton_subset_iff]
@@ -157,18 +157,18 @@ end AddCommMonoid
 
 end OrderedSemiring
 
-section OrderedCommSemiring
+section CommSemiring
 
-variable [CommSemiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+variable [CommSemiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [Module 𝕜 E]
 
 theorem convexHull_smul (a : 𝕜) (s : Set E) : convexHull 𝕜 (a • s) = a • convexHull 𝕜 s :=
   (LinearMap.lsmul _ _ a).image_convexHull _ |>.symm
 
-end OrderedCommSemiring
+end CommSemiring
 
 section OrderedRing
 
-variable [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Ring 𝕜] [PartialOrder 𝕜]
 
 section AddCommGroup
 

@@ -221,7 +221,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
       match cdot.find? (·.isOfKind `token.«· ») with
       | some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) =>
         if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
-          logWarningAt cdot <| .tagged linter.style.cdot.name
+          Linter.logLint linter.style.cdot cdot
             m!"This central dot `·` is isolated; please merge it with the next line."
       | _ => return
 
@@ -351,7 +351,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
       | `(set_option linter.style.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
       | _ => false
   if smallOption then
-    logWarningAt stx <| .tagged linter.style.longFile.name
+    logLint0Disable linter.style.longFile stx
       m!"The default value of the `longFile` linter is {defValue}.\n\
         The current value of {linterBound} does not exceed the allowed bound.\n\
         Please, remove the `set_option linter.style.longFile {linterBound}`."
@@ -369,7 +369,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let lastLine := ((← getFileMap).toPosition init).line
     -- In this case, the file has an allowed length, and the linter option is unnecessarily set.
     if lastLine ≤ defValue && defValue < linterBound then
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"The default value of the `longFile` linter is {defValue}.\n\
           This file is {lastLine} lines long which does not exceed the allowed bound.\n\
           Please, remove the `set_option linter.style.longFile {linterBound}`."
@@ -381,7 +381,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let candidate := max candidate defValue
     -- In this case, the file is longer than the default and also than what the option says.
     if defValue ≤ linterBound && linterBound < lastLine then
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
           You can extend the allowed length of the file using \
           `set_option linter.style.longFile {candidate}`.\n\
@@ -392,7 +392,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- In particular, this flags any option that is set to an unnecessarily high value.
     if linterBound == candidate || linterBound + 100 == candidate then return
     else
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"This file is {lastLine} lines long. \
           The current limit is {linterBound}, but it is expected to be {candidate}:\n\
           `set_option linter.style.longFile {candidate}`."
@@ -429,7 +429,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader
           { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
-        return impMods
+        return impMods.raw
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap

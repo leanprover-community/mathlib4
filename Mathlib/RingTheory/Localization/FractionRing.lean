@@ -14,14 +14,14 @@ import Mathlib.RingTheory.SimpleRing.Basic
 
 ## Main definitions
 
- * `IsFractionRing R K` expresses that `K` is a field of fractions of `R`, as an abbreviation of
-   `IsLocalization (NonZeroDivisors R) K`
+* `IsFractionRing R K` expresses that `K` is a field of fractions of `R`, as an abbreviation of
+  `IsLocalization (NonZeroDivisors R) K`
 
 ## Main results
 
- * `IsFractionRing.field`: a definition (not an instance) stating the localization of an integral
-   domain `R` at `R \ {0}` is a field
- * `Rat.isFractionRing` is an instance stating `ℚ` is the field of fractions of `ℤ`
+* `IsFractionRing.field`: a definition (not an instance) stating the localization of an integral
+  domain `R` at `R \ {0}` is a field
+* `Rat.isFractionRing` is an instance stating `ℚ` is the field of fractions of `ℤ`
 
 ## Implementation notes
 
@@ -65,6 +65,23 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
 namespace IsFractionRing
 
 open IsLocalization
+
+theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
+    (surj : ∀ z : K, ∃ x y, z = algebraMap R K x / algebraMap R K y) :
+    IsFractionRing R K :=
+  have inj := FaithfulSMul.algebraMap_injective R K
+  have := inj.noZeroDivisors _ (map_zero _) (map_mul _)
+  have := Module.nontrivial R K
+{ map_units' x :=
+    .mk0 _ <| (map_ne_zero_iff _ inj).mpr <| mem_nonZeroDivisors_iff_ne_zero.mp x.2
+  surj' z := by
+    have ⟨x, y, eq⟩ := surj z
+    obtain rfl | hy := eq_or_ne y 0
+    · obtain rfl : z = 0 := by simpa using eq
+      exact ⟨(0, 1), by simp⟩
+    exact ⟨⟨x, y, mem_nonZeroDivisors_iff_ne_zero.mpr hy⟩,
+      (eq_div_iff_mul_eq <| (map_ne_zero_iff _ inj).mpr hy).mp eq⟩
+  exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
 
 variable {R K}
 

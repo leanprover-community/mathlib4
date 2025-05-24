@@ -547,7 +547,7 @@ theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun
 
 /-- The function `(f, x) ↦ update f a x : (Π a, X a) × X a → Π a, X a` is measurable. -/
 @[measurability, fun_prop]
-theorem measurable_update'  {a : δ} [DecidableEq δ] :
+theorem measurable_update' {a : δ} [DecidableEq δ] :
     Measurable (fun p : (∀ i, X i) × X a ↦ update p.1 a p.2) := by
   rw [measurable_pi_iff]
   intro j
@@ -712,9 +712,9 @@ open List
 variable {X : δ → Type*} [∀ i, MeasurableSpace (X i)]
 
 theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ X l) := by
-  induction' l with i l ih
-  · exact measurable_const
-  · exact (measurable_pi_apply i).prodMk ih
+  induction l with
+  | nil => exact measurable_const
+  | cons i l ih => exact (measurable_pi_apply i).prodMk ih
 
 theorem measurable_tProd_elim [DecidableEq δ] :
     ∀ {l : List δ} {i : δ} (hi : i ∈ l), Measurable fun v : TProd X l => v.elim hi
@@ -732,9 +732,9 @@ theorem measurable_tProd_elim' [DecidableEq δ] {l : List δ} (h : ∀ i, i ∈ 
 
 theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (X i)} (hs : ∀ i, MeasurableSet (s i)) :
     MeasurableSet (Set.tprod l s) := by
-  induction' l with i l ih
-  · exact MeasurableSet.univ
-  · exact (hs i).prod ih
+  induction l with
+  | nil => exact MeasurableSet.univ
+  | cons i l ih => exact (hs i).prod ih
 
 end TProd
 

@@ -179,7 +179,7 @@ theorem units_smul_resolvent_self {r : Rˣ} {a : A} :
 
 /-- The resolvent is a unit when the argument is in the resolvent set. -/
 theorem isUnit_resolvent {r : R} {a : A} : r ∈ resolventSet R a ↔ IsUnit (resolvent a r) :=
-  isUnit_ring_inverse.symm
+  isUnit_ringInverse.symm
 
 theorem inv_mem_resolventSet {r : Rˣ} {a : Aˣ} (h : (r : R) ∈ resolventSet R (a : A)) :
     (↑r⁻¹ : R) ∈ resolventSet R (↑a⁻¹ : A) := by

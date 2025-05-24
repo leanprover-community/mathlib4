@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.WSeq.Basic
+import Mathlib.Logic.Relation
 
 /-!
 # Relations between and equivalence of weak sequences
@@ -398,7 +399,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             apply Nat.lt_succ_of_le (Nat.le_add_right _ _)
           let ⟨ob, mb, rob⟩ := IH _ this ST' rs5'
           refine ⟨ob, ?_, rob⟩
-          · simp (config := { unfoldPartialApp := true }) only [destruct_join, destruct_join.aux]
+          · simp +unfoldPartialApp only [destruct_join, destruct_join.aux]
             apply mem_bind mT
             simp only [destruct_append, destruct_append.aux]
             apply think_mem
@@ -407,7 +408,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
         | some (a, s'), some (b, t'), ⟨ab, st'⟩, _, rs5, mt => by
           simp?  at rs5  says simp only [destruct_append.aux] at rs5
           refine ⟨some (b, append t' (join T')), ?_, ?_⟩
-          · simp (config := { unfoldPartialApp := true }) only [destruct_join, destruct_join.aux]
+          · simp +unfoldPartialApp only [destruct_join, destruct_join.aux]
             apply mem_bind mT
             simp only [destruct_append, destruct_append.aux]
             apply think_mem

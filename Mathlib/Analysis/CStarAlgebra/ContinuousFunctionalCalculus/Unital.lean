@@ -180,8 +180,8 @@ identity to `a`. This is the necessary tool used to establish `cfcHom_comp` and 
 variant `cfc_comp`.
 
 This class has instances, which can be found in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique`, in each of the common cases
-`ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem.
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Unique.lean`, in each of the common
+cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem.
 
 This class is separate from `ContinuousFunctionalCalculus` primarily because we will later use
 `SpectrumRestricts` to derive an instance of `ContinuousFunctionalCalculus` on a scalar subring
@@ -239,9 +239,6 @@ noncomputable def cfcHom : C(spectrum R a, R) →⋆ₐ[R] A :=
 lemma cfcHom_isClosedEmbedding :
     IsClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
-
-@[deprecated (since := "2024-10-20")]
-alias cfcHom_closedEmbedding := cfcHom_isClosedEmbedding
 
 @[fun_prop]
 lemma cfcHom_continuous : Continuous (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=

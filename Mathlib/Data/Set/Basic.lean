@@ -16,11 +16,11 @@ import Mathlib.Tactic.Lift
 
 Sets in Lean are homogeneous; all their elements have the same type. Sets whose elements
 have type `X` are thus defined as `Set X := X → Prop`. Note that this function need not
-be decidable. The definition is in the module `Mathlib.Data.Set.Defs`.
+be decidable. The definition is in the module `Mathlib/Data/Set/Defs.lean`.
 
 This file provides some basic definitions related to sets and functions not present in the
 definitions file, as well as extra lemmas for functions defined in the definitions file and
-`Mathlib.Data.Set.Operations` (empty set, univ, union, intersection, insert, singleton,
+`Mathlib/Data/Set/Operations.lean` (empty set, univ, union, intersection, insert, singleton,
 set-theoretic difference, complement, and powerset).
 
 Note that a set is a term, not a type. There is a coercion from `Set α` to `Type*` sending
@@ -52,7 +52,7 @@ Definitions in the file:
 ## Implementation notes
 
 * `s.Nonempty` is to be preferred to `s ≠ ∅` or `∃ x, x ∈ s`. It has the advantage that
-the `s.Nonempty` dot notation can be used.
+  the `s.Nonempty` dot notation can be used.
 
 * For `s : Set α`, do not use `Subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
 
@@ -1237,6 +1237,9 @@ theorem diff_diff_cancel_left {s t : Set α} (h : s ⊆ t) : t \ (t \ s) = s :=
 
 theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t ∪ t \ s ∪ s ∩ t :=
   sup_eq_sdiff_sup_sdiff_sup_inf
+
+@[simp] lemma sdiff_sep_self (s : Set α) (p : α → Prop) : s \ {a ∈ s | p a} = {a ∈ s | ¬ p a} :=
+  diff_self_inter
 
 /-! ### Powerset -/
 

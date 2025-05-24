@@ -19,14 +19,14 @@ import Mathlib.Topology.Algebra.Module.LocallyConvex
 * `SeminormFamily.basisSets`: The set of open seminorm balls for a family of seminorms.
 * `SeminormFamily.moduleFilterBasis`: A module filter basis formed by the open balls.
 * `Seminorm.IsBounded`: A linear map `f : E →ₗ[𝕜] F` is bounded iff every seminorm in `F` can be
-bounded by a finite number of seminorms in `E`.
+  bounded by a finite number of seminorms in `E`.
 
 ## Main statements
 
 * `WithSeminorms.toLocallyConvexSpace`: A space equipped with a family of seminorms is locally
-convex.
+  convex.
 * `WithSeminorms.firstCountable`: A space is first countable if it's topology is induced by a
-countable family of seminorms.
+  countable family of seminorms.
 
 ## Continuity of semilinear maps
 

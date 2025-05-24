@@ -5,6 +5,7 @@ Authors: Kim Morrison, Yaël Dillies
 -/
 import Mathlib.Order.Cover
 import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Intervals as finsets
@@ -1091,15 +1092,14 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
   /- and if `¬ y ≤ x`, then `x < y`, not because it is a linear order, but because `x ≤ y`
   already. In that case, since `z` is maximal in `Ico x y`, then `z ⩿ y` and we can use the
   induction hypothesis to show that `Relation.TransGen (· ⩿ ·) x z`. -/
-  · have h_non : (Ico x y).Nonempty := ⟨x, mem_Ico.mpr ⟨le_rfl, lt_of_le_not_le hxy hxy'⟩⟩
-    obtain ⟨z, z_mem, hz⟩ := (Ico x y).exists_maximal h_non
+  · obtain ⟨z, hxz, hz⟩ :=
+      (Set.finite_Ico x y).exists_le_maximal <| Set.left_mem_Ico.2 <| hxy.lt_of_not_le hxy'
     have z_card := calc
-      #(Icc x z) ≤ #(Ico x y) := card_le_card <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
+      #(Icc x z) ≤ #(Ico x y) := card_le_card <| Icc_subset_Ico_right hz.1.2
       _          < #(Icc x y) := this
-    have h₁ := transGen_wcovBy_of_le (mem_Ico.mp z_mem).1
-    have h₂ : z ⩿ y := by
-      refine ⟨(mem_Ico.mp z_mem).2.le, fun c hzc hcy ↦ hz c ?_ hzc⟩
-      exact mem_Ico.mpr <| ⟨(mem_Ico.mp z_mem).1.trans hzc.le, hcy⟩
+    have h₁ := transGen_wcovBy_of_le hz.1.1
+    have h₂ : z ⩿ y :=
+      ⟨hz.1.2.le, fun c hzc hcy ↦ hzc.not_le <| hz.2 ⟨hz.1.1.trans hzc.le, hcy⟩ hzc.le⟩
     exact .tail h₁ h₂
 termination_by #(Icc x y)
 
@@ -1121,16 +1121,14 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
     TransGen (· ⋖ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Ico x y`.
   -- It's impossible for the cardinality to be zero since `x < y`
-  have h_non : (Ico x y).Nonempty := ⟨x, mem_Ico.mpr ⟨le_rfl, hxy⟩⟩
   -- `Ico x y` is a nonempty finset and so contains a maximal element `z` and
   -- `Ico x z` has cardinality strictly less than the cardinality of `Ico x y`
-  obtain ⟨z, z_mem, hz⟩ := (Ico x y).exists_maximal h_non
+  obtain ⟨z, hxz, hz⟩ := (Set.finite_Ico x y).exists_le_maximal <| Set.left_mem_Ico.2 hxy
   have z_card : #(Ico x z) < #(Ico x y) := card_lt_card <| ssubset_iff_of_subset
-    (Ico_subset_Ico le_rfl (mem_Ico.mp z_mem).2.le) |>.mpr ⟨z, z_mem, right_not_mem_Ico⟩
+    (Ico_subset_Ico_right hz.1.2.le) |>.mpr ⟨z, mem_Ico.2 hz.1, right_not_mem_Ico⟩
   /- Since `z` is maximal in `Ico x y`, `z ⋖ y`. -/
-  have hzy : z ⋖ y := by
-    refine ⟨(mem_Ico.mp z_mem).2, fun c hc hcy ↦ ?_⟩
-    exact hz _ (mem_Ico.mpr ⟨((mem_Ico.mp z_mem).1.trans_lt hc).le, hcy⟩) hc
+  have hzy : z ⋖ y :=
+    ⟨hz.1.2, fun c hc hcy ↦ hc.not_le <| hz.2 (⟨(hz.1.1.trans_lt hc).le, hcy⟩) hc.le⟩
   by_cases hxz : x < z
   /- when `x < z`, then we may use the induction hypothesis to get a chain
   `Relation.TransGen (· ⋖ ·) x z`, which we can extend with `Relation.TransGen.tail`. -/
@@ -1138,7 +1136,7 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
   /- when `¬ x < z`, then actually `z ≤ x` (not because it's a linear order, but because
   `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y` , then `Relation.TransGen.single`. -/
   · simp only [lt_iff_le_not_le, not_and, not_not] at hxz
-    exact .single (hzy.of_le_of_lt (hxz (mem_Ico.mp z_mem).1) hxy)
+    exact .single (hzy.of_le_of_lt (hxz hz.1.1) hxy)
 termination_by #(Ico x y)
 
 /-- In a locally finite preorder, `<` is the transitive closure of `⋖`. -/
