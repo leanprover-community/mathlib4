@@ -682,7 +682,7 @@ noncomputable def muConv (n: ℕ) := Nat.iterate (Conv (S := S) (mu (S := S))) n
 
 abbrev delta (s: G): G → ℝ := Pi.single s 1
 
-lemma conv_eq_sum (f h: G → ℝ) (hconv: ConvExists f h) (g: G): Conv f h g = ∑' (a : Additive Gᵐᵒᵖ), f (MulOpposite.unop (Additive.toMul a)) * h ((MulOpposite.unop (Additive.toMul a))⁻¹ * g) := by
+lemma conv_eq_sum {f h: G → ℝ} (hconv: ConvExists f h) (g: G): Conv f h g = ∑' (a : Additive Gᵐᵒᵖ), f (MulOpposite.unop (Additive.toMul a)) * h ((MulOpposite.unop (Additive.toMul a))⁻¹ * g) := by
   unfold Conv
   unfold MeasureTheory.convolution
   rw [MeasureTheory.integral_countable']
@@ -763,12 +763,66 @@ lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g 
     right
     simp
 
+-- TODO - figure out why we need this
+instance Real.t2Space: T2Space ℝ := TopologicalSpace.t2Space_of_metrizableSpace
 
 lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S := S) f (mu (S := S))) g = ((1 : ℝ) / (#(S) : ℝ)) * ∑ s ∈ S, f (g * s) := by
   rw [conv_eq_sum]
   .
-    simp only [mu, one_div, Finset.sum_apply, Finset.sum_pi_single, smul_eq_mul,
-      mul_ite, mul_one, mul_zero]
+
+    dsimp [mu]
+    simp_rw [← mul_assoc]
+    conv =>
+      lhs
+      arg 1
+      intro a
+      rhs
+      equals (∑ s ∈ S, (Pi.single s (1 : ℝ) ((MulOpposite.unop (Additive.toMul a))⁻¹ * g))) =>
+        simp
 
 
+        -- rw [tsum_eq_sum (s := Finset.image opAdd S) (by
+        --   intro b hb
+        --   simp
+        --   right
+        --   simp at hb
+        --   simp [Pi.single, Function.update]
+        --   simp [opAdd] at hb
+        --   by_contra!
+        --   simp_rw [← this] at hb
+        --   sorry
+        -- )]
+
+    simp_rw [Finset.mul_sum]
+    rw [Summable.tsum_finsetSum]
+    .
+      --rw [Finset.sum_comm]
+      have delta_conv := f_conv_delta (S := S) f g
+      conv at delta_conv =>
+        intro x
+        rw [conv_eq_sum (by
+          apply conv_exists_fin_supp
+          right
+          simp
+        )]
+
+      simp_rw [mul_comm, mul_assoc]
+      --simp_rw [← mul_tsum]
+      conv =>
+        lhs
+        rhs
+        intro x
+        rw [Summable.tsum_mul_left (hf := by (
+          sorry
+        ))]
+        rw [delta_conv x]
+
+      simp
+      rw [← Finset.mul_sum]
+      rw [← Finset.sum_mul]
+      rw [mul_comm]
+      simp
+      left
+      sorry
+    . sorry
   . sorry
