@@ -165,6 +165,7 @@ noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
 
 
 
+
       sorry
     · intro b hb
       obtain ⟨F, hF⟩ := lt_biSup_iff.mp hb
@@ -276,38 +277,6 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     -- For each set `s i` we choose a partition `P i` such that, for each `i`,
     -- `variationAux μ (s i) ≤ varOfPart μ (P i) + ε`.
     choose P hP using fun i ↦ variationAux_le μ (hs i) (hε)
-    -- Since the union of the partitions `P i` is a partition of `⋃ i, s i`, we know that
-    -- `∑' i, varOfPart μ (E i) ≤ variationAux μ (⋃ i, s i)`.
-    have : ∑ i ∈ Finset.range n, varOfPart μ (P i) ≤ variationAux μ (⋃ i, s i) := by
-      classical
-      let Q := Finset.biUnion (Finset.range n) P
-      have hQ : Q ∈ partitions (⋃ i, s i) := partition_union hs' (fun i ↦ (hP i).1) n
-      calc
-        _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, ENNReal.ofReal ‖μ p‖ := by rfl
-        _ = ∑ q ∈ Q, ENNReal.ofReal ‖μ q‖ := by
-          refine Eq.symm (Finset.sum_biUnion ?_)
-          intro l hl m hm hlm R hRl hRm
-          -- if P, Q are partitions of two disjoint sets then P and Q are disjoint.
-          -- Use newly added `partitions_disjoint` for the following.
-          have : P l ∩ P m = ∅ := by
-            ext p
-            constructor
-            · intro hp
-              have h := (hP l).1.1 p (Finset.mem_of_mem_inter_left hp)
-              have h' := (hP m).1.1 p (Finset.mem_of_mem_inter_right hp)
-              have h_p_emptyset := hs' hlm h h'
-              simp only [Set.bot_eq_empty, Set.le_eq_subset, Set.subset_empty_iff] at h_p_emptyset
-              have h_p_not_emptyset := (hP l).1.2.2.2 p (Finset.mem_of_mem_inter_left hp)
-              exact False.elim (h_p_not_emptyset h_p_emptyset)
-            · intro _
-              simp_all
-          calc R
-            _ ⊆ (P l) ∩ (P m) := by
-              rw [Finset.subset_inter_iff]
-              exact ⟨hRl, hRm⟩
-            _ = ∅ := by exact this
-        _ ≤ variationAux μ (⋃ i, s i) := by
-          exact le_variationAux μ (MeasurableSet.iUnion hs) hQ
     calc ∑ i ∈ Finset.range n, variationAux μ (s i)
       _ ≤ ∑ i ∈ Finset.range n, (varOfPart μ (P i) + ε) := by
         gcongr with i hi
@@ -317,13 +286,32 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
         norm_cast
         simp [show n * ε = ε' by rw [mul_div_cancel₀ _ (by positivity)]]
       _ ≤ variationAux μ (⋃ i, s i) + ε' := by
-        gcongr
+        -- Since the union of the partitions `P i` is a partition of `⋃ i, s i`, we know that
+        -- `∑' i, varOfPart μ (E i) ≤ variationAux μ (⋃ i, s i)`.
+        suffices h : ∑ i ∈ Finset.range n, varOfPart μ (P i) ≤ variationAux μ (⋃ i, s i) by gcongr
+        classical
+        let Q := Finset.biUnion (Finset.range n) P
+        have hQ : Q ∈ partitions (⋃ i, s i) := partition_union hs' (fun i ↦ (hP i).1) n
+        calc
+          _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, ENNReal.ofReal ‖μ p‖ := by rfl
+          _ = ∑ q ∈ Q, ENNReal.ofReal ‖μ q‖ := by
+            refine Eq.symm (Finset.sum_biUnion ?_)
+            intro l _ m _ hlm
+            exact partitions_disjoint (hs' hlm) (hP l).1 (hP m).1
+          _ ≤ variationAux μ (⋃ i, s i) := by
+            exact le_variationAux μ (MeasurableSet.iUnion hs) hQ
   · intro b hb
     simp only [variationAux, hs, reduceIte]
     simp only [variationAux, MeasurableSet.iUnion hs, reduceIte] at hb
     obtain ⟨Q, hQ, hbQ⟩ := lt_biSup_iff.mp hb
     -- Choose `n` large so that considering a finite set of `s i` suffices.
+
     -- Take the partitions defined as intersection of `Q` and `s i`.
+    classical
+    let P (i : ℕ) := Q.image (fun q ↦ q ∩ (s i))
+    have (i : ℕ) : P i ∈ partitions (s i) := by
+      sorry
+
 
     sorry
 
