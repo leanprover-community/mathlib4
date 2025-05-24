@@ -47,7 +47,7 @@ noncomputable section
 
 universe u v w w'
 
-variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type u} {S : Type*} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 variable {ι : Type w} {ι' : Type w'}
 
 open Cardinal Basis Submodule Function Set Module
@@ -503,6 +503,27 @@ theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Alge
   refine finrank_le_finrank_of_rank_le_rank (lift_le.mpr <| rank_le_of_isSMulRegular L L' hr h) ?_
   rw [← Module.finrank_eq_rank R L']
   exact nat_lt_aleph0 (finrank R ↥L')
+
+variable (R S M) in
+/-- Also see `Module.finrank_top_le_finrank_of_isScalarTower_of_free`
+for a version with different typeclass constraints. -/
+lemma Module.finrank_top_le_finrank_of_isScalarTower [Module.Finite R M] [Semiring S]
+    [Module S M] [Module R S] [IsScalarTower R S S] [FaithfulSMul R S] [IsScalarTower R S M] :
+    finrank S M ≤ finrank R M := by
+  rw [finrank, finrank, Cardinal.toNat_le_iff_le_of_lt_aleph0]
+  · exact rank_top_le_rank_of_isScalarTower R S M
+  · exact lt_of_le_of_lt (rank_top_le_rank_of_isScalarTower R S M) (Module.rank_lt_aleph0 R M)
+  · exact Module.rank_lt_aleph0 _ _
+
+variable (R) in
+/-- Also see `Module.finrank_bot_le_finrank_of_isScalarTower_of_free`
+for a version with different typeclass constraints. -/
+lemma Module.finrank_bot_le_finrank_of_isScalarTower (S T : Type*) [Semiring S] [Semiring T]
+    [Module R T] [Module S T] [Module R S] [IsScalarTower R S T]
+    [IsScalarTower S T T] [FaithfulSMul S T] [Module.Finite R T] :
+    finrank R S ≤ finrank R T :=
+  finrank_le_finrank_of_rank_le_rank (lift_rank_bot_le_lift_rank_of_isScalarTower R S T)
+    (Module.rank_lt_aleph0 _ _)
 
 @[deprecated (since := "2024-11-21")]
 alias LinearMap.finrank_le_of_smul_regular := LinearMap.finrank_le_of_isSMulRegular

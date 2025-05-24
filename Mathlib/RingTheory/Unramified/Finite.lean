@@ -196,13 +196,12 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
     apply Finsupp.finsuppProdEquiv.symm.injective
     apply (Finsupp.equivCongrLeft (Equiv.prodComm I I)).injective
     apply (b.tensorProduct b).repr.symm.injective
-    simp only [Basis.repr_symm_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight,
-      LinearMap.id_coe, id_eq, Basis.tensorProduct_apply, Finsupp.finsuppProdEquiv,
-      Equiv.coe_fn_symm_mk, Finsupp.uncurry, map_finsuppSum,
-      Finsupp.linearCombination_single, Basis.tensorProduct_apply, Finsupp.equivCongrLeft_apply,
-      Finsupp.linearCombination_equivMapDomain, Equiv.coe_prodComm]
+    simp? [Finsupp.linearCombination_apply, Finsupp.sum_uncurry_index] says
+      simp only [Finsupp.finsuppProdEquiv_symm_apply, Finsupp.equivCongrLeft_apply,
+        Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum_equivMapDomain,
+        Equiv.prodComm_apply, Finsupp.sum_uncurry_index, Prod.swap_prod_mk,
+        Basis.tensorProduct_apply]
     rw [Finsupp.onFinset_sum, Finsupp.onFinset_sum]
-    simp only [Function.comp_apply, Prod.swap_prod_mk, Basis.tensorProduct_apply]
     have : ∀ i, ((b.repr (x * f i)).sum fun j k ↦ k • b j ⊗ₜ[R] b i) = (x * f i) ⊗ₜ[R] b i := by
       intro i
       simp_rw [Finsupp.sum, TensorProduct.smul_tmul', ← TensorProduct.sum_tmul]
@@ -264,10 +263,10 @@ lemma comp_sec :
     Function.comp_apply, LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply,
     TensorProduct.AlgebraTensorModule.lift_apply, LinearMap.id_coe, id_eq]
   trans (TensorProduct.lmul' R (elem R S)) • x
-  · induction' elem R S using TensorProduct.induction_on with r s y z hy hz
-    · simp
-    · simp [mul_smul, smul_comm r s]
-    · simp [hy, hz, add_smul]
+  · induction elem R S using TensorProduct.induction_on with
+    | zero => simp
+    | tmul r s => simp [mul_smul, smul_comm r s]
+    | add y z hy hz => simp [hy, hz, add_smul]
   · rw [lmul_elem, one_smul]
 
 /-- If `S` is an unramified `R`-algebra, then `R`-flat implies `S`-flat. Iversen I.2.7 -/

@@ -257,6 +257,10 @@ theorem coeff_degree_eq_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) = 0 ↔ f = 0 :=
   m.leadingCoeff_eq_zero_iff
 
+lemma degree_mem_support {p : MvPolynomial σ R} (hp : p ≠ 0) :
+    m.degree p ∈ p.support := by
+  rwa [MvPolynomial.mem_support_iff, coeff_degree_ne_zero_iff]
+
 theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
     m.degree f = 0 ↔ f.totalDegree = 0 := by
   rw [← m.toSyn.injective.eq_iff]
