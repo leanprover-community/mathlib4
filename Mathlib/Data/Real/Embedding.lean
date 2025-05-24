@@ -278,15 +278,7 @@ variable (M) in
 theorem exists_orderAddMonoidHom_real_injective :
     ∃ f : M →+o ℝ, Function.Injective f := by
   by_cases h : Subsingleton M
-  · let f : M →+o ℝ := {
-      toFun := fun _ ↦ 0
-      map_zero' := by simp
-      map_add' := by simp
-      monotone' := by
-        intro a b h
-        simp
-    }
-    exact ⟨f, Function.injective_of_subsingleton _⟩
+  · exact ⟨0, Function.injective_of_subsingleton _⟩
   · have : Nontrivial M := not_subsingleton_iff_nontrivial.mp h
     obtain ⟨a, ha⟩ := exists_ne (0 : M)
     have ha : 0 < |a| := by simpa using ha
