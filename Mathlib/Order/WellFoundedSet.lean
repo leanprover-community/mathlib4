@@ -693,7 +693,7 @@ theorem bddAbove_preimage {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : �
 
 theorem exists_notMem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
     (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
-    ∃ k : ℕ, ∀ m, k < m → (f m) ∉ s := by
+    ∃ k : ℕ, ∀ m, k < m → f m ∉ s := by
   have := hs.bddAbove_preimage hf
   contrapose! this
   simpa [not_bddAbove_iff, and_comm]

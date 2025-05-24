@@ -54,7 +54,7 @@ theorem eq_of_mem_insert_of_notMem : b ∈ insert a s → b ∉ s → b = a :=
   Or.resolve_right
 
 @[deprecated (since := "2025-05-23")]
-alias eq_of_not_mem_of_mem_insert := eq_of_notMem_of_mem_insert
+alias eq_of_not_mem_of_mem_insert := eq_of_mem_insert_of_notMem
 
 @[simp]
 theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ x ∈ s :=
@@ -425,7 +425,7 @@ lemma insert_erase_invOn :
   ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_notMem⟩
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_notMem_of_mem_insert (h ▸ mem_insert a s) ha,
+  ⟨fun h => eq_of_mem_insert_of_notMem (h ▸ mem_insert a s) ha,
     congr_arg (fun x => insert x s)⟩
 
 @[simp]
