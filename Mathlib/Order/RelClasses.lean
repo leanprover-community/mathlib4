@@ -73,7 +73,7 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
     | _, Or.inl rfl, _ => rfl
     | _, _, Or.inl rfl => rfl
     | _, Or.inr h₁, Or.inr h₂ => (asymm h₁ h₂).elim
-  lt_iff_le_not_le x y :=
+  lt_iff_le_not_ge x y :=
     ⟨fun h => ⟨Or.inr h, not_or_intro (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
 
