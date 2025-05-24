@@ -496,11 +496,56 @@ open scoped Convolution
 noncomputable def Conv (f g: G → ℝ) (x: G) : ℝ :=
   (MeasureTheory.convolution (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp (Additive.ofMul (MulOpposite.op x)))
 
+def ConvExists (f g: G → ℝ) := MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp
+
+
+abbrev opAdd (g : G) := Additive.ofMul (MulOpposite.op g)
+
+-- A versi on of `conv_exists` where at least one of the functions has finite support
+-- This lets us avoid dealing with 'MemLp' in most cases
+lemma conv_exists_fin_supp (f g: G → ℝ) (hfg: f.support.Finite ∨ g.support.Finite): ConvExists f g := by
+  unfold ConvExists MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
+  intro x
+  apply Continuous.integrable_of_hasCompactSupport
+  . exact continuous_of_discreteTopology
+  .
+    unfold HasCompactSupport
+    rw [isCompact_iff_finite]
+    dsimp [tsupport]
+    rw [closure_discrete]
+    simp only [Function.support_mul]
+    match hfg with
+    | .inl hf =>
+      apply Set.Finite.inter_of_left
+      apply Set.Finite.subset (s := opAdd '' f.support)
+      . unfold opAdd
+        exact Set.Finite.image (fun g ↦ Additive.ofMul (MulOpposite.op g)) hf
+      . intro a ha
+        simp at ha
+        simp [opAdd]
+        use a.toMul.unop
+        simp only [MulOpposite.op_unop, ofMul_toMul, and_true]
+        exact ha
+    | .inr hg =>
+      apply Set.Finite.inter_of_right
+
+      apply Set.Finite.subset (s := (fun q => x + q) '' (opAdd '' (g.support)))
+      . unfold opAdd
+        simp
+        apply?
+        exact Set.Finite.image (fun a ↦ Additive.ofMul (MulOpposite.op a)) hg
+      . intro a ha
+        simp at ha
+        simp [opAdd]
+        use ((MulOpposite.unop (Additive.toMul a))⁻¹ * MulOpposite.unop (Additive.toMul x))
+        simp
+        refine ⟨ha, ?_⟩
+
 lemma conv_exists (p q : ℝ) (hp: 0 < p) (hq: 0 < q) (hpq: p.HolderConjugate q) (f g: G → ℝ)
   (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) (ENNReal.ofReal p) myHaarAddOpp)
   (hg: ∀ y: G, MeasureTheory.MemLp ((fun x => g (x.toMul.unop⁻¹ * y))) (ENNReal.ofReal q) myHaarAddOpp)
-  : MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp := by
-  unfold MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt MeasureTheory.Integrable
+  : ConvExists f g := by
+  unfold ConvExists MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt MeasureTheory.Integrable
   intro x
   simp only [toMul_sub, MulOpposite.unop_div, ContinuousLinearMap.mul_apply']
   refine ⟨MeasureTheory.AEStronglyMeasurable.of_discrete, ?_⟩
@@ -618,8 +663,6 @@ noncomputable def mu: G → ℝ := ((1 : ℝ) / (#(S) : ℝ)) • ∑ s ∈ S, P
 noncomputable def muConv (n: ℕ) := Nat.iterate (Conv (S := S) (mu (S := S))) n
 
 
-
-abbrev opAdd (g : G) := Additive.ofMul (MulOpposite.op g)
 
 abbrev delta (s: G): G → ℝ := Pi.single s 1
 
