@@ -5,6 +5,7 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Topology.Algebra.UniformConvergence
+import Mathlib.Order.Filter.AtTopBot.Finset
 
 /-!
 # Infinite sum and products that converge uniformly on a set
@@ -62,6 +63,12 @@ lemma hasProdUniformlyOn_iff_tendstoUniformlyOn : HasProdUniformlyOn f g 𝔖 �
     ∀ s ∈ 𝔖, TendstoUniformlyOn (fun I b ↦ ∏ i ∈ I, f i b) g atTop s := by
   simpa [HasProdUniformlyOn, HasProd, ← UniformOnFun.ofFun_prod, Finset.prod_fn] using
     UniformOnFun.tendsto_iff_tendstoUniformlyOn
+
+@[to_additive]
+lemma hasProdUniformlyOn_tendstoUniformlyOn_nat {f : ℕ → β → α} (h : HasProdUniformlyOn f g 𝔖) :
+    ∀ s ∈ 𝔖, TendstoUniformlyOn (fun N : ℕ => fun b ↦ ∏ i ∈ Finset.range N, f i b) g atTop s := by
+  rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at h
+  refine fun s hs v hv => Filter.tendsto_finset_range.eventually (h s hs v hv)
 
 @[to_additive]
 theorem HasProdUniformlyOn.hasProd (h : HasProdUniformlyOn f g 𝔖) (hs : s ∈ 𝔖) (hx : x ∈ s) :
@@ -141,6 +148,11 @@ lemma hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
 
 @[deprecated (since := "2025-05-22")] alias hasSumLocallyUniformlyOn_of_of_forall_exists_nhd :=
   hasSumLocallyUniformlyOn_of_of_forall_exists_nhds
+
+lemma hasProdLocallyUniformlyOn_of_forall_compact (hs : IsOpen s) [LocallyCompactSpace β]
+    (h : ∀ K ⊆ s, IsCompact K → HasProdUniformlyOn f g {K}) : HasProdLocallyUniformlyOn f g s := by
+  rw [HasProdLocallyUniformlyOn, tendstoLocallyUniformlyOn_iff_forall_isCompact hs]
+  simpa [hasProdUniformlyOn_iff_tendstoUniformlyOn] using h
 
 @[to_additive]
 theorem HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn
