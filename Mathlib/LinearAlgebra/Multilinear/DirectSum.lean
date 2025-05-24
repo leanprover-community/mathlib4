@@ -44,28 +44,14 @@ on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ ⨁ 
 def fromDirectSumEquiv :
     ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) M') ≃ₗ[R]
     MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M' :=
-  LinearEquiv.ofLinear
-    ((DirectSum.toModule R _ _ fun _ ↦ .id).compMultilinearMapₗ R ∘ₗ MultilinearMap.dfinsuppFamilyₗ)
-    (LinearMap.pi fun p ↦ MultilinearMap.compLinearMapₗ fun i ↦ DirectSum.lof R (κ i) _ (p i))
-    (by
-      ext f x
-      dsimp
-      erw [MultilinearMap.dfinsuppFamily_single, DirectSum.toModule_lof]
-      rfl)
-    (by
-      ext f p a
-      dsimp
-      erw [MultilinearMap.dfinsuppFamily_single, DirectSum.toModule_lof]
-      rfl)
+  fromDFinsuppEquiv _ _
 
 @[simp]
 theorem fromDirectSumEquiv_lof
     (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
     (p : Π i, κ i) (x : Π i, M i (p i)) :
-    fromDirectSumEquiv R κ f (fun i => DirectSum.lof R (κ i) _ (p i) (x i)) = f p x := by
-  simp [fromDirectSumEquiv]
-  erw [MultilinearMap.dfinsuppFamily_single, DirectSum.toModule_lof]
-  rfl
+    fromDirectSumEquiv R κ f (fun i => DirectSum.lof R (κ i) _ (p i) (x i)) = f p x :=
+  fromDFinsuppEquiv_single _ _ _
 
 /-- Prefer using `fromDirectSumEquiv_lof` where possible. -/
 theorem fromDirectSumEquiv_apply
@@ -73,11 +59,8 @@ theorem fromDirectSumEquiv_apply
     (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
     (x : Π i, ⨁ (j : κ i), M i j) :
     fromDirectSumEquiv R κ f x =
-      ∑ p ∈ Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) := by
-  classical
-  refine (DFinsupp.sumAddHom_apply _ _).trans ?_
-  refine Finset.sum_subset (MultilinearMap.support_dfinsuppFamily_subset _ _) ?_
-  simp
+      ∑ p ∈ Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) :=
+  fromDFinsuppEquiv_apply _ _
 
 @[simp]
 theorem fromDirectSumEquiv_symm_apply (f : MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M')
