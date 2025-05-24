@@ -127,6 +127,12 @@ jobs:
             # This path was the correct path before v4.18: it is here just for compatibility reasons
             du .lake/build/lib/Mathlib || echo "This code should be unreachable"
 
+      - name: compare oleans
+        run: |
+          ./scripts/olean_comparison.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
         # but not if any earlier step failed or was cancelled.
