@@ -61,7 +61,7 @@ theorem image_eq_one_of_notMem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mu
   mulSupport_subset_iff'.mp (subset_mulTSupport f) x hx
 
 @[deprecated (since := "2025-05-24")]
-alias image_eq_one_of_nmem_tsupport := image_eq_one_of_notMem_tsupport
+alias image_eq_zero_of_nmem_tsupport := image_eq_zero_of_notMem_tsupport
 
 @[to_additive existing, deprecated (since := "2025-05-24")]
 alias image_eq_one_of_nmem_mulTSupport := image_eq_one_of_notMem_mulTSupport
