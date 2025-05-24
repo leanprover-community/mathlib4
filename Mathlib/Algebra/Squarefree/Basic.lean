@@ -36,6 +36,9 @@ variable {R : Type*}
 def Squarefree [Monoid R] (r : R) : Prop :=
   ∀ x : R, x * x ∣ r → IsUnit x
 
+theorem squarefree_def [Monoid R] {r : R} :
+    Squarefree r ↔ ∀ x : R, x * x ∣ r → IsUnit x := Iff.rfl
+
 theorem IsRelPrime.of_squarefree_mul [CommMonoid R] {m n : R} (h : Squarefree (m * n)) :
     IsRelPrime m n := fun c hca hcb ↦ h c (mul_dvd_mul hca hcb)
 
@@ -48,7 +51,7 @@ theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
 
 @[simp]
 theorem not_squarefree_zero [MonoidWithZero R] [Nontrivial R] : ¬Squarefree (0 : R) := by
-  erw [not_forall]
+  rw [squarefree_def, not_forall]
   exact ⟨0, by simp⟩
 
 theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squarefree (m : R)) :
