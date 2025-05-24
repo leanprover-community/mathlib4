@@ -50,7 +50,7 @@ theorem eq_or_mem_of_mem_insert {x a : α} {s : Set α} : x ∈ insert a s → x
 theorem mem_of_mem_insert_of_ne : b ∈ insert a s → b ≠ a → b ∈ s :=
   Or.resolve_left
 
-theorem eq_of_notMem_of_mem_insert : b ∈ insert a s → b ∉ s → b = a :=
+theorem eq_of_mem_insert_of_notMem : b ∈ insert a s → b ∉ s → b = a :=
   Or.resolve_right
 
 @[deprecated (since := "2025-05-23")]
