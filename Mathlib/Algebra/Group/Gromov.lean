@@ -205,16 +205,9 @@ lemma singleton_open (x: G): IsOpen {x} := by
   rw [dist_zero] at hy
   exact hy
 
-lemma singleton_open_add_opp (x: Additive (MulOpposite G)): IsOpen {x} := by
-  sorry
-
 instance discreteTopology: DiscreteTopology G := by
   rw [← singletons_open_iff_discrete]
   exact singleton_open
-
-instance discreteTopologyAddOpp: DiscreteTopology (Additive (MulOpposite G)) := by
-  rw [← singletons_open_iff_discrete]
-  exact singleton_open_add_opp
 
 instance : ContinuousMul G where
   continuous_mul := continuous_of_discreteTopology
