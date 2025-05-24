@@ -399,6 +399,13 @@ instance countableG: Countable (Additive (MulOpposite G)) := by
   rw [hl]
   simp
 
+lemma singleton_pairwise_disjoint (s: Set (Additive (MulOpposite G))) : s.PairwiseDisjoint Set.singleton := by
+  refine Set.pairwiseDisjoint_iff.mpr ?_
+  intro a ha b hb hab
+  unfold Set.singleton at hab
+  simp at hab
+  exact hab.symm
+
 
 -- Use the fact that we have the discrete topology
 lemma my_add_haar_eq_count: (myHaarAddOpp (G := G)) = MeasureTheory.Measure.count := by
@@ -410,6 +417,7 @@ lemma my_add_haar_eq_count: (myHaarAddOpp (G := G)) = MeasureTheory.Measure.coun
     rw [MeasureTheory.Measure.count_apply_finite s s_finite]
     rw [MeasureTheory.measure_biUnion]
     .
+      -- TODO - extract 'measure {a} = 1' to a lemma
       simp_rw [MeasureTheory.Measure.addHaar_singleton]
       unfold myHaarAddOpp
       simp_rw [← singleton_carrier]
@@ -421,18 +429,32 @@ lemma my_add_haar_eq_count: (myHaarAddOpp (G := G)) = MeasureTheory.Measure.coun
       rw [Set.Finite.encard_eq_coe_toFinset_card s_finite]
     . exact Set.Finite.countable s_finite
     .
-      simp [singleton]
-      refine Set.pairwiseDisjoint_iff.mpr ?_
-      intro a ha b hb hab
-      unfold Set.singleton at hab
-      simp at hab
-      exact hab.symm
+      apply singleton_pairwise_disjoint
     .
       intro a ha
       apply IsOpen.measurableSet
       simp
-  . sorry
-
+  .
+    have s_infinite: s.Infinite := by
+      exact s_finite
+    rw [MeasureTheory.Measure.count_apply_infinite s_infinite]
+    have eq_singletons := Set.biUnion_of_singleton (s := s)
+    nth_rw 1 [← eq_singletons]
+    rw [MeasureTheory.measure_biUnion]
+    .
+      simp_rw [MeasureTheory.Measure.addHaar_singleton]
+      unfold myHaarAddOpp
+      simp_rw [← singleton_carrier]
+      simp_rw [TopologicalSpace.PositiveCompacts.carrier_eq_coe]
+      rw [MeasureTheory.Measure.addHaarMeasure_self]
+      simp only [ENNReal.tsum_one, ENat.toENNReal_eq_top, ENat.card_eq_top]
+      exact Set.infinite_coe_iff.mpr s_finite
+    . exact Set.to_countable s
+    . apply singleton_pairwise_disjoint
+    .
+      intro a ha
+      apply IsOpen.measurableSet
+      simp
 
 
 -- With the counting measure, A.E is the same as everywgere
