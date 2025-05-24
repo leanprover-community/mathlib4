@@ -97,7 +97,7 @@ def main (args : List String) : IO Unit := do
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
-    let repo ← repo?.getDM getRemoteRepo
+    let repo := repo?.getD MATHLIBREPO
     putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
   | "get"  :: args => get args
