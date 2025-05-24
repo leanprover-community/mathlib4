@@ -60,7 +60,7 @@ theorem primeFactorsList_count_eq {n p : ℕ} : n.primeFactorsList.count p = n.f
   rcases n.eq_zero_or_pos with (rfl | hn0)
   · simp [factorization, count]
   if pp : p.Prime then ?_ else
-    rw [count_eq_zero_of_notMem (mt prime_of_mem_primeFactorsList pp)]
+    rw [count_eq_zero_of_not_mem (mt prime_of_mem_primeFactorsList pp)]
     simp [factorization, pp]
   simp only [factorization_def _ pp]
   apply _root_.le_antisymm

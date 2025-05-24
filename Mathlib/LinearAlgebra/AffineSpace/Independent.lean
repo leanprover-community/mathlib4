@@ -701,7 +701,7 @@ alias affineIndependent_of_ne_of_mem_of_mem_of_not_mem :=
 
 /-- If distinct points `p₁` and `p₃` lie in `s` but `p₂` does not, the three points are affinely
 independent. -/
-theorem affineIndependent_of_ne_of_mem_of_not_mem_of_mem {s : AffineSubspace k P} {p₁ p₂ p₃ : P}
+theorem affineIndependent_of_ne_of_mem_of_notMem_of_mem {s : AffineSubspace k P} {p₁ p₂ p₃ : P}
     (hp₁p₃ : p₁ ≠ p₃) (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∉ s) (hp₃ : p₃ ∈ s) :
     AffineIndependent k ![p₁, p₂, p₃] := by
   rw [← affineIndependent_equiv (Equiv.swap (1 : Fin 3) 2)]
@@ -711,7 +711,7 @@ theorem affineIndependent_of_ne_of_mem_of_not_mem_of_mem {s : AffineSubspace k P
 
 @[deprecated (since := "2025-05-23")]
 alias affineIndependent_of_ne_of_mem_of_not_mem_of_mem :=
-  affineIndependent_of_ne_of_mem_of_not_mem_of_mem
+  affineIndependent_of_ne_of_mem_of_notMem_of_mem
 
 /-- If distinct points `p₂` and `p₃` lie in `s` but `p₁` does not, the three points are affinely
 independent. -/

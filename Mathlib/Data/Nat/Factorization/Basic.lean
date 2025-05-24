@@ -531,7 +531,7 @@ theorem factorization_eq_of_coprime_left {p a b : ℕ} (hab : Coprime a b)
     (hpa : p ∈ a.primeFactorsList) : (a * b).factorization p = a.factorization p := by
   rw [factorization_mul_apply_of_coprime hab, ← primeFactorsList_count_eq,
     ← primeFactorsList_count_eq,
-    count_eq_zero_of_notMem (coprime_primeFactorsList_disjoint hab hpa), add_zero]
+    count_eq_zero_of_not_mem (coprime_primeFactorsList_disjoint hab hpa), add_zero]
 
 /-- If `p` is a prime factor of `b` then the power of `p` in `b` is the same that in `a * b`,
 for any `a` coprime to `b`. -/
