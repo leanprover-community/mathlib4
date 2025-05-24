@@ -696,11 +696,33 @@ lemma conv_eq_sum (f h: G → ℝ) (hconv: ConvExists f h) (g: G): Conv f h g = 
     simp [MeasureTheory.Measure.addHaarMeasure_self]
   . exact (hconv (opAdd g))
 
+-- Old stuff for two LP_2 function - might be useful later
+    -- unfold ConvExists MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
+    -- have my_exists := conv_exists (S := S) (p := 2) (q := 2) (by simp) (by simp) (by exact Real.HolderConjugate.two_two) f (delta s) hf ?_
+    -- .
+    --   intro x
+    --   exact MeasureTheory.ConvolutionExistsAt.integrable (my_exists x)
+    -- .
+    --   intro x
+    --   unfold delta
+    --   apply Continuous.memLp_of_hasCompactSupport
+    --   . exact continuous_of_discreteTopology
+    --   .
+    --     unfold HasCompactSupport
+    --     rw [isCompact_iff_finite]
+    --     dsimp [tsupport]
+    --     rw [closure_discrete]
+
+    --     apply Set.Finite.subset (s := {opAdd (x * s⁻¹)}) (by simp)
+    --     intro a ha
+    --     dsimp [Pi.single, Function.update] at ha
+    --     simp at ha
+    --     simp [opAdd]
+    --     rw [← ha]
+    --     simp
 
 -- Proposition 3.12, item 1, in Vikman
--- TODO - requiring 'LP_2' seems too strong - can we relax this?
-lemma f_conv_delta (f: G → ℝ) (g s: G) (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) (ENNReal.ofReal 2) myHaarAddOpp):
-  (Conv (S := S) f (Pi.single s 1)) g = f (g * s⁻¹) := by
+lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g = f (g * s⁻¹) := by
 
   rw [conv_eq_sum]
   .
@@ -737,28 +759,16 @@ lemma f_conv_delta (f: G → ℝ) (g s: G) (hf: MeasureTheory.MemLp ((fun x => f
       simp only [ofMul_toMul]
       exact hb
   .
-    unfold ConvExists MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
-    have my_exists := conv_exists (S := S) (p := 2) (q := 2) (by simp) (by simp) (by exact Real.HolderConjugate.two_two) f (delta s) hf ?_
-    .
-      intro x
-      exact MeasureTheory.ConvolutionExistsAt.integrable (my_exists x)
-    .
-      intro x
-      unfold delta
-      apply Continuous.memLp_of_hasCompactSupport
-      . exact continuous_of_discreteTopology
-      .
-        unfold HasCompactSupport
-        rw [isCompact_iff_finite]
-        dsimp [tsupport]
-        rw [closure_discrete]
+    apply conv_exists_fin_supp
+    right
+    simp
 
-        apply Set.Finite.subset (s := {opAdd (x * s⁻¹)}) (by simp)
-        intro a ha
-        dsimp [Pi.single, Function.update] at ha
-        simp at ha
-        simp [opAdd]
-        rw [← ha]
-        simp
 
 lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S := S) f (mu (S := S))) g = ((1 : ℝ) / (#(S) : ℝ)) * ∑ s ∈ S, f (g * s) := by
+  rw [conv_eq_sum]
+  .
+    simp only [mu, one_div, Finset.sum_apply, Finset.sum_pi_single, smul_eq_mul,
+      mul_ite, mul_one, mul_zero]
+
+
+  . sorry
