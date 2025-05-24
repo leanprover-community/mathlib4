@@ -26,7 +26,7 @@ TODO: deduce from the above that every minimal element in support is in `Ass(M)`
 
 -/
 
-variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*)  [CommRing R'] [Algebra R R']
+variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*) [CommRing R'] [Algebra R R']
   [IsLocalization S R']
 
 variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
