@@ -54,35 +54,6 @@ noncomputable def Ideal.primeSpectrumLocalizationAtPrime (I : Ideal R) [I.IsPrim
 
 end orderIso
 
-section QuotSMulTop
-
-instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Subsingleton M] (N : Submodule R M) :
-    Subsingleton (M ⧸ N) := by
-  apply subsingleton_of_forall_eq 0
-  rintro ⟨x⟩
-  exact congrArg (Quot.mk ⇑N.quotientRel) (Subsingleton.eq_zero x)
-
-end QuotSMulTop
-
-/- section FiniteDimensionalOrder
-
-open RingTheory Sequence IsLocalRing Submodule Module
-
-variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R] (x : R)
-variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
-
-instance [Nontrivial M] : FiniteDimensionalOrder (Module.support R M) := by
-  rw [support_eq_zeroLocus]
-  have := primeSpectrumQuotientOrderIsoZeroLocus (annihilator R M)
-  have : IsLocalRing (R ⧸ annihilator R M) := by
-    have : annihilator R M ≤ maximalIdeal R := by
-      sorry
-    sorry
-  have : FiniteDimensionalOrder (PrimeSpectrum (R ⧸ annihilator R M)) := inferInstance
-  sorry
-
-end FiniteDimensionalOrder -/
-
 section LTSeries
 
 variable {α : Type*} [Preorder α] (p : LTSeries α) (n : Fin (p.length + 1))
@@ -141,7 +112,7 @@ theorem PrimeSpectrum.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p
   refine lt_of_le_of_ne (IsLocalRing.le_maximalIdeal_of_isPrime q.1) fun hqm ↦ ?_
   have h : (e ⟨q, le_sup_left.trans hq.1.2⟩).1.height ≤ 1 :=
     map_height_le_one_of_mem_minimalPrimes hq
-  simp_rw [show q = ⟨𝔪, inferInstance⟩ from PrimeSpectrum.ext_iff.mpr hqm] at h
+  simp_rw [show q = ⟨𝔪, inferInstance⟩ from PrimeSpectrum.ext hqm] at h
   have hph : (e ⟨p₁, h₀.le⟩).1.height ≤ 0 := by
     refine Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance ?_)
     simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₁]
@@ -152,22 +123,21 @@ theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum 
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.1) :
       ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧ p₀ < q ∧ q < p₂ := by
   let e := p₂.1.primeSpectrumLocalizationAtPrime
-  have h : ⟨IsLocalRing.maximalIdeal (Localization.AtPrime p₂.asIdeal), inferInstance⟩ =
-      e.symm ⟨p₂, le_refl p₂⟩ :=
-    (PrimeSpectrum.ext Localization.AtPrime.map_eq_maximalIdeal).symm
-  obtain ⟨q', hxq, h₀, h₁⟩ :=
+  have hm : ⟨IsLocalRing.maximalIdeal (Localization.AtPrime p₂.1), inferInstance⟩ =
+    e.symm ⟨p₂, le_refl p₂⟩ := (PrimeSpectrum.ext Localization.AtPrime.map_eq_maximalIdeal).symm
+  obtain ⟨q, hxq, h₀, h₁⟩ :=
     @exist_mem_one_of_mem_maximal_ideal (Localization.AtPrime p₂.1) _ _ _
       (e.symm ⟨p₁, h₁.le⟩) (e.symm ⟨p₀, (h₀.trans h₁).le⟩) (e.symm.lt_iff_lt.mpr h₀)
-        (by simp [h, h₁]) (algebraMap R (Localization.AtPrime p₂.1) x) <| by
+        (by simp [hm, h₁]) (algebraMap R (Localization.AtPrime p₂.1) x) <| by
           rw [← Localization.AtPrime.map_eq_maximalIdeal]
           exact mem_map_of_mem (algebraMap R (Localization.AtPrime p₂.1)) hx
-  let q : PrimeSpectrum R := (e q').1
-  have hq : q' = e.symm ⟨q, (e q').2⟩ := (e.symm_apply_apply q').symm
-  rw [← e.symm_apply_apply q'] at h₀ h₁ hxq
-  have hq : q'.1 = q.1.map (algebraMap R _) := congrArg asIdeal (e.symm_apply_apply q').symm
-  refine ⟨q, ?_, e.symm.lt_iff_lt.mp h₀, ?_⟩
-  · sorry
-  · sorry
+  rw [← e.symm_apply_apply q] at h₀ h₁ hxq
+  have hq : (e q).1 < p₂ := by
+    have h : e.symm (e q) < e.symm ⟨p₂, le_refl p₂⟩ :=
+      h₁.trans_eq Localization.AtPrime.map_eq_maximalIdeal.symm
+    rwa [OrderIso.lt_iff_lt, Subtype.mk_lt_mk] at h
+  exact Exists.intro (e q).1
+    ⟨(p₂.1.under_map_of_isLocalizationAtPrime hq.le).le hxq, e.symm.lt_iff_lt.mp h₀, hq⟩
 
 /-- Let $R$ be a Noetherian ring, $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a
   chain of primes, $x \in \mathfrak{p}_n$. Then we can find a chain of primes
@@ -227,6 +197,12 @@ end Semiring
 
 section QuotSMulTop
 
+instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Subsingleton M] (N : Submodule R M) :
+    Subsingleton (M ⧸ N) := by
+  apply subsingleton_of_forall_eq 0
+  rintro ⟨x⟩
+  exact congrArg Submodule.Quotient.mk (Subsingleton.eq_zero x)
+
 variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] [hm : Module.Finite R M]
 
 open Pointwise PrimeSpectrum
@@ -251,6 +227,10 @@ theorem nontrivial_quotSMulTop_of_mem_annihilator_jacobson [h : Nontrivial M] {x
   have : Subsingleton (QuotSMulTop x M) := not_nontrivial_iff_subsingleton.mp hq
   have : Subsingleton M := subsingleton_of_subsingleton_quotSMulTop hx
   exact not_nontrivial M h
+
+theorem nontrivial_quotSMulTop_of_mem_maximalIdeal [IsLocalRing R] [h : Nontrivial M] {x : R}
+    (hx : x ∈ IsLocalRing.maximalIdeal R) : Nontrivial (QuotSMulTop x M) :=
+  nontrivial_quotSMulTop_of_mem_annihilator_jacobson (IsLocalRing.maximalIdeal_le_jacobson _ hx)
 
 end QuotSMulTop
 
@@ -284,7 +264,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   by_cases h : p.length = 0
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
       (supportDim_ne_bot_iff_nontrivial R (QuotSMulTop x M)).mpr <|
-        nontrivial_quotSMulTop_of_mem_annihilator_jacobson (maximalIdeal_le_jacobson _ hx)
+        nontrivial_quotSMulTop_of_mem_maximalIdeal hx
     rw [h, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
     exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
   let q' : LTSeries (support R (QuotSMulTop x M)) := {
