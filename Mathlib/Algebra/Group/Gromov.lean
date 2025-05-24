@@ -7,7 +7,7 @@ open scoped Finset
 open scoped Pointwise
 
 
-variable {G : Type*} [Group G]
+variable {G : Type*} [Group G] [DecidableEq G]
 
 -- TODO - I don't really understand why `S` needs to be an `outParam`?
 -- If I remove that, then the `PseudoMetricSpace G` starts erroring
@@ -239,7 +239,7 @@ noncomputable def myHaar := MeasureTheory.Measure.haarMeasure (G := G) {
     exact ⟨1, one_mem⟩
 }
 
-noncomputable def myHaarAddOpp := MeasureTheory.Measure.addHaarMeasure (G := Additive (MulOpposite G)) {
+noncomputable def addHaarSingleton: TopologicalSpace.PositiveCompacts (Additive (MulOpposite G)) := {
   carrier := {0}
   isCompact' := by
     simp
@@ -251,6 +251,12 @@ noncomputable def myHaarAddOpp := MeasureTheory.Measure.addHaarMeasure (G := Add
     apply Set.nonempty_def.mpr
     exact ⟨0, zero_mem⟩
 }
+
+lemma singleton_carrier: (addHaarSingleton.carrier) = ({0} : (Set (Additive (MulOpposite G)))) := by
+  unfold addHaarSingleton
+  rfl
+
+noncomputable def myHaarAddOpp := MeasureTheory.Measure.addHaarMeasure (G := Additive (MulOpposite G)) addHaarSingleton
 
 -- Definition 3.5 in Vikman - a harmonic function on G
 def Harmonic (f: G → ℂ): Prop := ∀ x: G, f x = ((1 : ℂ) / #(S)) * ∑ s ∈ S, f (x * s)
@@ -385,4 +391,27 @@ instance lipschitzHVectorSpace : V (G := G) := {
 -- TODO - I don't think we can use this, as `MeasureTheory.convolution' would require our group to be commutative
 -- (via `NormedAddCommGroup`)
 open scoped Convolution
-noncomputable def Conv (f g: G → ℝ) := MeasureTheory.convolution (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp
+noncomputable def Conv (f g: G → ℝ) (x: G) : ℝ :=
+  (MeasureTheory.convolution (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp (Additive.ofMul (MulOpposite.op x)))
+
+-- Defintion 3.11 in Vikman: The function 'μ',  not to be confused with a measure on a measure space
+noncomputable def mu: G → ℝ := ((1 : ℝ) / (#(S) : ℝ)) • ∑ s ∈ S, Pi.single s (1 : ℝ)
+
+-- Definition 3.11 in Vikman - the m-fold convolution of μ with itself
+noncomputable def muConv (n: ℕ) := Nat.iterate (Conv (S := S) (mu (S := S))) n
+
+-- TODO - use the fact that G is finitely generated
+instance countableG: Countable (Additive (MulOpposite G)) := by
+  sorry
+
+lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g = f (g * s⁻¹) := by
+  unfold Conv
+  unfold MeasureTheory.convolution
+  rw [MeasureTheory.integral_countable']
+  simp_rw [MeasureTheory.measureReal_def]
+  unfold myHaarAddOpp
+  simp_rw [MeasureTheory.Measure.addHaar_singleton]
+  simp [MeasureTheory.Measure.addHaarMeasure_self]
+  simp_rw [← singleton_carrier]
+  simp_rw [TopologicalSpace.PositiveCompacts.carrier_eq_coe]
+  simp [MeasureTheory.Measure.addHaarMeasure_self]
