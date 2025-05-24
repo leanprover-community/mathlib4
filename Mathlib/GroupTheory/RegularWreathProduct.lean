@@ -56,7 +56,7 @@ instance : Mul (D ≀ᵣ Q) where
 lemma mul_def (a b : D ≀ᵣ Q) : a * b = ⟨a.1 * fun x ↦ b.1 (a.2⁻¹ * x), a.2 * b.2⟩ := rfl
 
 @[simp]
-theorem mul_left (a b : D ≀ᵣ Q) : (a * b).1 = a.1 * fun x => b.1 (a.2⁻¹ * x) := rfl
+theorem mul_left (a b : D ≀ᵣ Q) : (a * b).1 = a.1 * fun x ↦ b.1 (a.2⁻¹ * x) := rfl
 
 @[simp]
 theorem mul_right (a b : D ≀ᵣ Q) : (a * b).right = a.right * b.right := rfl
@@ -70,11 +70,10 @@ theorem one_left : (1 : D ≀ᵣ Q).left = 1 := rfl
 theorem one_right : (1 : D ≀ᵣ Q).right = 1 := rfl
 
 instance : Inv (RegularWreathProduct D Q) where
-  inv x := ⟨fun k => x.1⁻¹ (x.2 * k), x.2⁻¹⟩
+  inv x := ⟨fun k ↦ x.1⁻¹ (x.2 * k), x.2⁻¹⟩
 
 @[simp]
-theorem inv_left (a : D ≀ᵣ Q) :
-    a⁻¹.left = fun x => a.left⁻¹ (a.right * x) := rfl
+theorem inv_left (a : D ≀ᵣ Q) : a⁻¹.left = fun x ↦ a.left⁻¹ (a.right * x) := rfl
 
 @[simp]
 theorem inv_right (a : D ≀ᵣ Q) : a⁻¹.right = a.right⁻¹ := rfl
