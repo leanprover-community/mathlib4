@@ -529,8 +529,8 @@ def equivSubZero : Homotopy φ₁ φ₂ ≃ Homotopy (φ₁ - φ₂) 0 where
   toFun h := (h.sub (refl φ₂)).trans (ofEq (sub_self φ₂))
   invFun h := ((ofEq (sub_add_cancel φ₁ φ₂).symm).trans
     (h.add (refl φ₂))).trans (ofEq (zero_add φ₂))
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 variable {φ₁ φ₂}
 

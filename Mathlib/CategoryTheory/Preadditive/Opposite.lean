@@ -82,8 +82,8 @@ def Preadditive.homSelfLinearEquivEndMulOpposite (G : C) : (G ⟶ G) ≃ₗ[(End
   map_add' := by aesop_cat
   map_smul' := by aesop_cat
   invFun := fun ⟨f⟩ => f
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 variable {D : Type*} [Category D] [Preadditive D]
 
