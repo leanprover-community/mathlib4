@@ -49,7 +49,7 @@ def f₂₁ (i : b.support) : Matrix ι b.support R :=
 
 def f₂₂ (i : b.support) : Matrix ι ι R :=
   Matrix.of fun i' j ↦ open scoped Classical in
-    if P.root i' = P.root i - P.root j then P.chainTopCoeff i j else 0
+    if P.root i' = P.root j - P.root i then P.chainTopCoeff i j else 0
 
 def f (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
@@ -58,6 +58,49 @@ def f (i : b.support) :
 def h (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   Matrix.fromBlocks 0 0 0 <| open scoped Classical in Matrix.diagonal (P.pairingIn ℤ · i)
+
+def ω [Fintype ι] [DecidableEq ι] :
+    Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
+  letI := P.indexNeg
+  Matrix.fromBlocks 1 0 0 <| Matrix.of fun i j ↦ if i = -j then 1 else 0
+
+-- Should `Matrix.fromBlocks` have an extensionality lemma that captures the pattern
+-- `ext (k | k) (l | l)` used repeatedly below?
+
+omit [Finite ι] [IsDomain R] [CharZero R] [P.IsReduced] [P.IsCrystallographic] [P.IsIrreducible] in
+lemma ω_ω [DecidableEq ι] [Fintype ι] [Fintype b.support] :
+    b.ω * b.ω = 1 := by
+  ext (k | k) (l | l) <;>
+  simp [ω, Matrix.mul_apply, Matrix.one_apply, -indexNeg_neg]
+
+omit [P.IsReduced] [P.IsIrreducible] in
+lemma ω_e [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
+    b.ω * b.e i = b.f i * b.ω := by
+  letI := P.indexNeg
+  classical
+  ext (k | k) (l | l)
+  · simp [ω, e, f, Matrix.mul_apply, Matrix.one_apply]
+  · simp [ω, e, e₁₂, f, f₁₂, Matrix.mul_apply, Matrix.one_apply]
+    rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
+    simp [← ite_and, and_comm, ← indexNeg_neg, neg_eq_iff_eq_neg]
+  · simp [ω, e, e₂₁, f, f₂₁, Matrix.mul_apply, Matrix.one_apply]
+  · simp [ω, e, e₂₂, f, f₂₂, Matrix.mul_apply, Matrix.one_apply]
+    rw [Finset.sum_eq_single_of_mem (-k) (Finset.mem_univ _)]
+    · simp only [← indexNeg_neg, neg_neg, reduceIte]
+      simp [neg_eq_iff_eq_neg, sub_eq_add_neg]
+    · simp [← indexNeg_neg, ← neg_eq_iff_eq_neg (a := k)]
+      aesop
+
+omit [Finite ι] [IsDomain R] [P.IsReduced] [P.IsIrreducible] in
+lemma ω_h [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
+    b.ω * b.h i = - b.h i * b.ω := by
+  ext (k | k) (l | l)
+  · simp [ω, h, Matrix.mul_apply, Matrix.one_apply]
+  · simp [ω, h, Matrix.mul_apply, Matrix.one_apply]
+  · simp [ω, h, Matrix.mul_apply, Matrix.one_apply]
+  · simp [ω, h, Matrix.mul_apply, Matrix.one_apply, Matrix.diagonal_apply, -indexNeg_neg]
+    split_ifs with hkl <;>
+    simp [hkl]
 
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsReduced] [P.IsIrreducible] in
 lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
