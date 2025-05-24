@@ -891,7 +891,8 @@ def _root_.LinearMap.compMultilinearMapₗ [LinearMap.CompatibleSMul M₂ M₃ S
 variable (S) in
 /-- An isomorphism of multilinear maps given an isomorphism between their codomains.
 
-This is `LinearMap.compMultilinearMap` as an `S`-linear equivalence. -/
+This is `LinearMap.compMultilinearMap` as an `S`-linear equivalence,
+and the multilinear version of `LinearEquiv.congrRight`. -/
 @[simps! apply symm_apply]
 def _root_.LinearEquiv.congrRightMultilinear
     [LinearMap.CompatibleSMul M₂ M₃ S R] [LinearMap.CompatibleSMul M₃ M₂ S R] (g : M₂ ≃ₗ[R] M₃) :
@@ -1061,7 +1062,8 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
 
 /-- An isomorphism of multilinear maps given an isomorphism between their domains.
 
-This is `MultilinearMap.compLinearMap` as a linear equivalence. -/
+This is `MultilinearMap.compLinearMap` as a linear equivalence,
+and the multilinear version of `LinearEquiv.congrLeft`. -/
 @[simps! apply symm_apply]
 def _root_.LinearEquiv.congrLeftMultilinear (e : Π (i : ι), M₁ i ≃ₗ[R] M₁' i) :
     (MultilinearMap R M₁' M₂) ≃ₗ[R] MultilinearMap R M₁ M₂ where
