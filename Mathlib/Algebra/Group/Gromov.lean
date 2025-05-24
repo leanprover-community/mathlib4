@@ -395,6 +395,7 @@ instance countableG: Countable (Additive (MulOpposite G)) := by
 -- Use the fact that we have the discrete topology
 lemma my_add_haar_eq_count: (myHaarAddOpp (G := G)) = MeasureTheory.Measure.count := by sorry
 
+-- With the counting measure, A.E is the same as everywgere
 lemma count_ae_everywhere (p: G → Prop): (∀ᵐ g ∂(MeasureTheory.Measure.count), p g) = ∀ a: G, p a := by
   rw [MeasureTheory.ae_iff]
   simp [MeasureTheory.Measure.count_eq_zero_iff]
@@ -434,6 +435,23 @@ lemma conv_exists (c: ℝ) (hc: 0 ≤ c) (p q : ENNReal) (hpq: p.HolderConjugate
   : MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp := by
   unfold MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
   intro x
+  -- We can use young's hypothesis to bound the norm of the convolution function, giving us something like `∫ ∫ q < ⊤ ` (or stronger)
+  -- However, we also need the convolution to exist at all (e.g. the inner integral converges: `∫ q < ⊤ )
+  have h_young := ENNReal.eLpNorm_top_convolution_le' (p := p) (q := q) (L := (ContinuousLinearMap.mul ℝ ℝ)) (𝕜 := ℝ) (F := ℝ) (E := ℝ) (E' := ℝ) (G := Additive (MulOpposite G)) (f := (fun x => f x.toMul.unop)) (g := (fun x => g x.toMul.unop)) (μ := myHaarAddOpp)
+    hpq MeasureTheory.AEStronglyMeasurable.of_discrete MeasureTheory.AEStronglyMeasurable.of_discrete (c := c) ?_
+  .
+    simp only [MeasureTheory.eLpNorm_exponent_top, MeasureTheory.eLpNormEssSup] at h_young
+
+-- For now, we should add additional hypothesis that 'f' and 'g' are non-negative
+-- This is enoguh for the Vikman proof
+lemma conv_exists_bad (c: ℝ) (hc: 0 ≤ c) (p q : ENNReal) (hpq: p.HolderConjugate q) (f g: G → ℝ)
+  (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) p myHaarAddOpp)
+  (hg: MeasureTheory.MemLp ((fun x => g x.toMul.unop)) q myHaarAddOpp)
+  : MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp := by
+  unfold MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
+  intro x
+  -- We can use young's hypothesis to bound the norm of the convolution function, giving us something like `∫ ∫ q < ⊤ ` (or stronger)
+  -- However, we also need the convolution to exist at all (e.g. the inner integral converges: `∫ q < ⊤ )
   have h_young := ENNReal.eLpNorm_top_convolution_le' (p := p) (q := q) (L := (ContinuousLinearMap.mul ℝ ℝ)) (𝕜 := ℝ) (F := ℝ) (E := ℝ) (E' := ℝ) (G := Additive (MulOpposite G)) (f := (fun x => f x.toMul.unop)) (g := (fun x => g x.toMul.unop)) (μ := myHaarAddOpp)
     hpq MeasureTheory.AEStronglyMeasurable.of_discrete MeasureTheory.AEStronglyMeasurable.of_discrete (c := c) ?_
 
@@ -455,7 +473,33 @@ lemma conv_exists (c: ℝ) (hc: 0 ≤ c) (p q : ENNReal) (hpq: p.HolderConjugate
 
       have ess_sup_lt_top := lt_of_le_of_lt h_young other_lt_top
       unfold MeasureTheory.convolution at ess_sup_lt_top
+      rw [my_add_haar_eq_count] at ess_sup_lt_top
+      rw [MeasureTheory.eLpNormEssSup_eq_essSup_enorm] at ess_sup_lt_top
+      simp at ess_sup_lt_top
+      rw [lt_top_iff_ne_top] at ess_sup_lt_top
+      rw [ne_eq] at ess_sup_lt_top
+      rw [not_iff_not.mpr (iSup_eq_top _)] at ess_sup_lt_top
+      simp at ess_sup_lt_top
+      obtain ⟨C, hC, bound_integral⟩ := ess_sup_lt_top
+      specialize bound_integral x.toMul.unop
+      simp only [toMul_sub, MulOpposite.unop_div, ContinuousLinearMap.mul_apply',
+        gt_iff_lt]
+      norm_cast at bound_integral
+      rw [MeasureTheory.integral_eq_lintegral_of_nonneg_ae] at bound_integral
+      conv at bound_integral =>
+        lhs
+        arg 1
+        arg 1
+        arg 2
+        intro a
+        rw [← Real.enorm_of_nonneg]
+        tactic =>
+          sorry
+        tactic =>
 
+          sorry
+      simp_rw [← Real.enorm_of_nonneg ?_] at bound_integral
+      have ae_lt := ae_lt_of_essSup_lt other_lt_top
 
       sorry
   . sorry
