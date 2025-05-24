@@ -119,9 +119,7 @@ lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
     aesop
 
 omit [P.IsReduced] [P.IsIrreducible] in
-/-- Lemma 3.3 (a) from [Geck](Geck2017).
-
-TODO Add part (b) as well as Lemmas 3.4, 3.5. -/
+/-- Lemma 3.3 (a) from [Geck](Geck2017). -/
 lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
     ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
   ext (k|k) (l|l)
@@ -163,6 +161,7 @@ lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
       aesop
 
 omit [P.IsReduced] [P.IsIrreducible] in
+/-- Lemma 3.3 (b) from [Geck](Geck2017). -/
 lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
     ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
   classical
@@ -181,10 +180,12 @@ lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
   · rw [Matrix.mul_smul, ω_f]
     simp [mul_assoc]
 
+/-- Lemma 3.4 from [Geck](Geck2017). -/
 lemma lie_e_f_same [Fintype b.support] [Fintype ι] (i : b.support) :
     ⁅e i, f i⁆ = h i := by
   sorry
 
+/-- Lemma 3.5 from [Geck](Geck2017). -/
 lemma lie_e_f_ne [Fintype b.support] [Fintype ι] (i j : b.support) (hij : i ≠ j) :
     ⁅e i, f j⁆ = 0 := by
   sorry
