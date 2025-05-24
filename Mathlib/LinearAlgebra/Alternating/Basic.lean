@@ -592,7 +592,6 @@ theorem domLCongr_trans (e : M ≃ₗ[R] M₂) (f : M₂ ≃ₗ[R] M₃) :
 
 end DomLcongr
 
-
 /-- Composing an alternating map with the same linear equiv on each argument gives the zero map
 if and only if the alternating map is the zero map. -/
 @[simp]
