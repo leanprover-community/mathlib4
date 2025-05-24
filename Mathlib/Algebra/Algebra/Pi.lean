@@ -124,7 +124,7 @@ end AlgHom
 
 namespace AlgEquiv
 
-variable {R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
+variable {α β R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
 variable [CommSemiring R] [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Semiring (A₃ i)]
 variable [∀ i, Algebra R (A₁ i)] [∀ i, Algebra R (A₂ i)] [∀ i, Algebra R (A₃ i)]
 
@@ -189,19 +189,19 @@ variable (ι R) in
 def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
   .ofRingEquiv (f := .piUnique (fun i : ι ↦ S)) (by simp)
 
-variable (R) in
+variable (α β R) in
 /-- `Equiv.sumArrowEquivProdArrow` as an algebra equivalence. -/
 @[simps! apply_fst apply_snd]
-def sumArrowEquivProdArrow (α β : Type*) : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
-  .ofRingEquiv (f := .sumArrowEquivProdArrow S α β) (by intro; ext <;> simp)
+def sumArrowEquivProdArrow : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
+  .ofRingEquiv (f := .sumArrowEquivProdArrow α β S) (by intro; ext <;> simp)
 
 @[simp]
-lemma sumArrowEquivProdArrow_symm_apply_inl (α β) (x : (α → S) × (β → S)) (a : α) :
-    (sumArrowEquivProdArrow R S α β).symm x (Sum.inl a) = x.fst a := rfl
+lemma sumArrowEquivProdArrow_symm_apply_inl (x : (α → S) × (β → S)) (a : α) :
+    (sumArrowEquivProdArrow α β R S).symm x (Sum.inl a) = x.fst a := rfl
 
 @[simp]
-lemma sumArrowEquivProdArrow_symm_apply_inr (α β) (x : (α → S) × (β → S)) (b : β) :
-    (sumArrowEquivProdArrow R S α β).symm x (Sum.inr b) = x.snd b := rfl
+lemma sumArrowEquivProdArrow_symm_apply_inr (x : (α → S) × (β → S)) (b : β) :
+    (sumArrowEquivProdArrow α β R S).symm x (Sum.inr b) = x.snd b := rfl
 
 end
 
