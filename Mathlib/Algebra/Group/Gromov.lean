@@ -528,18 +528,34 @@ lemma conv_exists_fin_supp (f g: G → ℝ) (hfg: f.support.Finite ∨ g.support
         exact ha
     | .inr hg =>
       apply Set.Finite.inter_of_right
+      let myFun := fun a => -(opAdd a) + x
+      have finite_image := Set.finite_image_iff (f := myFun) (s := g.support) ?_
+      .
+        conv =>
+          arg 1
+          equals (myFun '' Function.support g) =>
+            ext a
+            simp
+            refine ⟨?_, ?_⟩
+            . intro ha
+              use (MulOpposite.unop (Additive.toMul a))⁻¹ * MulOpposite.unop (Additive.toMul x)
+              refine ⟨ha, ?_⟩
+              simp [myFun, opAdd]
+            . intro ha
+              simp [myFun, opAdd] at ha
+              obtain ⟨b, b_zero, a_eq⟩ := ha
+              rw [← a_eq]
+              simp [b_zero]
+        rw [finite_image]
+        exact hg
+      .
+        simp [myFun, opAdd]
+        apply Set.injOn_of_injective
+        intro a b hab
+        simp only [add_left_inj, neg_inj, EmbeddingLike.apply_eq_iff_eq, MulOpposite.op_inj,
+          myFun] at hab
+        exact hab
 
-      apply Set.Finite.subset (s := (fun q => x + q) '' (opAdd '' (g.support)))
-      . unfold opAdd
-        simp
-        apply?
-        exact Set.Finite.image (fun a ↦ Additive.ofMul (MulOpposite.op a)) hg
-      . intro a ha
-        simp at ha
-        simp [opAdd]
-        use ((MulOpposite.unop (Additive.toMul a))⁻¹ * MulOpposite.unop (Additive.toMul x))
-        simp
-        refine ⟨ha, ?_⟩
 
 lemma conv_exists (p q : ℝ) (hp: 0 < p) (hq: 0 < q) (hpq: p.HolderConjugate q) (f g: G → ℝ)
   (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) (ENNReal.ofReal p) myHaarAddOpp)
