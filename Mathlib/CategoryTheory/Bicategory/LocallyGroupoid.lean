@@ -142,14 +142,14 @@ variable {B} {B' : Type*} [Bicategory B'] [IsLocallyGroupoid B'] (F : Pseudofunc
 /-- The hom direction of the (strong) natural isomorphism of pseudofunctors
 between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
 noncomputable def pseudofunctorToPithCompInclusionStrongIsoHom :
-    Pseudofunctor.StrongTrans ((pseudofunctorToPith F).comp (inclusion B)) F where
+    ((pseudofunctorToPith F).comp (inclusion B)).StrongTrans F where
   app b' := 𝟙 _
   naturality f := (ρ_ _) ≪≫ (λ_ _).symm
 
 /-- The inv direction of the (strong) natural isomorphism of pseudofunctors
 between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
 noncomputable def pseudofunctorToPithCompInclusionStrongIsoInv :
-    Pseudofunctor.StrongTrans F ((pseudofunctorToPith F).comp (inclusion B)) where
+    F.StrongTrans ((pseudofunctorToPith F).comp (inclusion B)) where
   app b' := 𝟙 _
   naturality f := (ρ_ _) ≪≫ (λ_ _).symm
 
