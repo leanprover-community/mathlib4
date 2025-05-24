@@ -256,7 +256,7 @@ lemma singleton_carrier: (addHaarSingleton.carrier) = ({0} : (Set (Additive (Mul
   unfold addHaarSingleton
   rfl
 
-noncomputable def myHaarAddOpp := MeasureTheory.Measure.addHaarMeasure (G := Additive (MulOpposite G)) addHaarSingleton
+noncomputable abbrev myHaarAddOpp := MeasureTheory.Measure.addHaarMeasure (G := Additive (MulOpposite G)) addHaarSingleton
 
 -- Definition 3.5 in Vikman - a harmonic function on G
 def Harmonic (f: G → ℂ): Prop := ∀ x: G, f x = ((1 : ℂ) / #(S)) * ∑ s ∈ S, f (x * s)
@@ -388,11 +388,32 @@ instance lipschitzHVectorSpace : V (G := G) := {
     simp
 }
 
+-- TODO - use the fact that G is finitely generated
+instance countableG: Countable (Additive (MulOpposite G)) := by
+  sorry
+
+
+-- Use the fact that our measure is the counting measure (since we have the discrete topology),
+-- and negating a finite set of points in an additive group leaves the cardinality unchanged
+instance myNegInvariant: MeasureTheory.Measure.IsNegInvariant (myHaarAddOpp (G := G)) := sorry
+
 -- TODO - I don't think we can use this, as `MeasureTheory.convolution' would require our group to be commutative
 -- (via `NormedAddCommGroup`)
 open scoped Convolution
 noncomputable def Conv (f g: G → ℝ) (x: G) : ℝ :=
   (MeasureTheory.convolution (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp (Additive.ofMul (MulOpposite.op x)))
+
+lemma conv_exists (c: ℝ) (p q : ENNReal) (hpq: p.HolderConjugate q) (f g: G → ℝ)
+  (hf: MeasureTheory.MemLp ((fun x => f x.toMul.unop)) p myHaarAddOpp)
+  (hf: MeasureTheory.MemLp ((fun x => g x.toMul.unop)) q myHaarAddOpp)
+  : MeasureTheory.ConvolutionExists (G := Additive (MulOpposite G)) (fun x => f x.toMul.unop) (fun x => g x.toMul.unop) (ContinuousLinearMap.mul ℝ ℝ) myHaarAddOpp := by
+  unfold MeasureTheory.ConvolutionExists MeasureTheory.ConvolutionExistsAt
+  intro x
+  have h_young := ENNReal.eLpNorm_top_convolution_le' (p := p) (q := q) (L := (ContinuousLinearMap.mul ℝ ℝ)) (𝕜 := ℝ) (F := ℝ) (E := ℝ) (E' := ℝ) (G := Additive (MulOpposite G)) (f := (fun x => f x.toMul.unop)) (g := (fun x => g x.toMul.unop)) (μ := myHaarAddOpp)
+    hpq MeasureTheory.AEStronglyMeasurable.of_discrete MeasureTheory.AEStronglyMeasurable.of_discrete (c := c) ?_
+
+  . sorry
+  . sorry
 
 -- Defintion 3.11 in Vikman: The function 'μ',  not to be confused with a measure on a measure space
 noncomputable def mu: G → ℝ := ((1 : ℝ) / (#(S) : ℝ)) • ∑ s ∈ S, Pi.single s (1 : ℝ)
@@ -400,11 +421,10 @@ noncomputable def mu: G → ℝ := ((1 : ℝ) / (#(S) : ℝ)) • ∑ s ∈ S, P
 -- Definition 3.11 in Vikman - the m-fold convolution of μ with itself
 noncomputable def muConv (n: ℕ) := Nat.iterate (Conv (S := S) (mu (S := S))) n
 
--- TODO - use the fact that G is finitely generated
-instance countableG: Countable (Additive (MulOpposite G)) := by
-  sorry
+
 
 abbrev opAdd (g : G) := Additive.ofMul (MulOpposite.op g)
+
 
 -- Proposition 3.12, item 1, in Vikman
 lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g = f (g * s⁻¹) := by
@@ -452,4 +472,3 @@ lemma f_conv_delta (f: G → ℝ) (g s: G): (Conv (S := S) f (Pi.single s 1)) g 
       simp only [ofMul_toMul]
       exact hb
   .
-    have foo := ENNReal.eLpNorm_top_convolution_le (G := Additive (MulOpposite G)) (f := (fun x => f x.toMul.unop))
