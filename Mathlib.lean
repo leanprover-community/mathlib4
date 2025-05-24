@@ -5023,6 +5023,7 @@ import Mathlib.RingTheory.Artinian.Ring
 import Mathlib.RingTheory.Bezout
 import Mathlib.RingTheory.Bialgebra.Basic
 import Mathlib.RingTheory.Bialgebra.Equiv
+import Mathlib.RingTheory.Bialgebra.GroupLike
 import Mathlib.RingTheory.Bialgebra.Hom
 import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 import Mathlib.RingTheory.Bialgebra.TensorProduct
