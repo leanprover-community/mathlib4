@@ -565,7 +565,9 @@ section DomLcongr
 variable (ι R N)
 variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 
-/-- Construct a linear equivalence between maps from a linear equivalence between domains. -/
+/-- Construct a linear equivalence between maps from a linear equivalence between domains.
+
+This is the alternating version of `LinearEquiv.congrLeftMultilinear`. -/
 @[simps apply]
 def domLCongr (e : M ≃ₗ[R] M₂) : M [⋀^ι]→ₗ[R] N ≃ₗ[S] (M₂ [⋀^ι]→ₗ[R] N) where
   toFun f := f.compLinearMap e.symm
