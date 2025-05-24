@@ -16,6 +16,8 @@ def getRemoteRepo : IO String := do
       Failed to run Git to determine project repository (exit code: {out.exitCode}).\n\
       Ensure Git is installed and the `origin` remote points to the project's GitHub repository.\n\
       Stdout:\n{out.stdout.trim}\nStderr:{out.stderr.trim}\n"
+  -- No strong validation is done here because this is simply used as a smart default
+  -- for `lake exe cache get`, which is freely modifiable by any user.
   let url := out.stdout.trim.stripSuffix ".git"
   let repo? : Option String := do
     let pos ← url.revFind (· == '/')
