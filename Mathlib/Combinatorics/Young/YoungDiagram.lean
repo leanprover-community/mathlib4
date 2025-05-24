@@ -265,7 +265,8 @@ protected theorem exists_notMem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j
   rw [Finset.mem_preimage] at hj
   exact ⟨j, hj⟩
 
-@[deprecated (since := "2025-05-23")] alias exists_not_mem_row := exists_notMem_row
+@[deprecated (since := "2025-05-23")]
+protected alias exists_not_mem_row := YoungDiagram.exists_notMem_row
 
 /-- Length of a row of a Young diagram -/
 def rowLen (μ : YoungDiagram) (i : ℕ) : ℕ :=
@@ -315,7 +316,8 @@ protected theorem exists_notMem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j
   convert μ.transpose.exists_notMem_row j using 1
   simp
 
-@[deprecated (since := "2025-05-23")] alias exists_not_mem_col := exists_notMem_col
+@[deprecated (since := "2025-05-23")]
+protected alias exists_not_mem_col := YoungDiagram.exists_notMem_col
 
 /-- Length of a column of a Young diagram -/
 def colLen (μ : YoungDiagram) (j : ℕ) : ℕ :=
