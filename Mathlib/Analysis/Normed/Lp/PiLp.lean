@@ -84,7 +84,7 @@ instance PiLp.unique (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, U
     Unique (PiLp p α) :=
   Pi.unique
 
-instance PiLp.uniqueOfIsEmpty (p : ℝ≥0∞) {ι : Type*} [Fintype ι] [IsEmpty ι] (α : ι → Type*) :
+instance PiLp.uniqueOfIsEmpty (p : ℝ≥0∞) {ι : Type*} [IsEmpty ι] (α : ι → Type*) :
     Unique (PiLp p α) :=
   Pi.uniqueOfIsEmpty _
 
