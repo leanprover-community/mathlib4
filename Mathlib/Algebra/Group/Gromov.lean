@@ -880,6 +880,7 @@ lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S
 def NTupleSum (n: ℕ) (f: G → ℝ): ℝ := ∑ s : (Fin n → S), f ((List.ofFn s).unattach.prod)
 --∑ s ∈ (Finset.pi (Finset.range (n + 1))) (fun _ => S), f (List.ofFn (n := n + 1) (fun m => s m.val (by simp))).prod
 
+-- The 'm + 1' terms are due to the fact that 'muConv 0' still applies mu once (without any convolution)
 theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ)) ^ (m + 1)) * (NTupleSum (S := S) (m + 1) (delta g))  := by
   induction m with
   | zero =>
@@ -918,11 +919,4 @@ theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ))
         rw [← hx] at g_in_s
         simp at g_in_s
   | succ n ih =>
-    unfold muConv
-    rw [Nat.iterate_succ']
-    rw [ih]
-    rw [f_conv_mu (S := S)]
-    simp_rw [Finset.mul_sum]
-    simp_rw [Finset.sum_mul]
-    simp_rw [Finset.sum_comm]
-    simp_rw [Finset.sum_pow_succ]
+    sorry
