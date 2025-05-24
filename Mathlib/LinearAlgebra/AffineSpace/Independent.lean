@@ -888,7 +888,6 @@ theorem map_comp {n : ℕ} (s : Affine.Simplex k P n)
   ext fun _ => rfl
 
 /-- Mapping a simplex takes the image of the points. -/
-@[simp]
 theorem range_points_map {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     Set.range (s.map f hf).points = f '' Set.range s.points := by
   rw [map, Set.range_comp]
