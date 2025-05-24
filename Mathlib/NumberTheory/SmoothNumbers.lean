@@ -243,7 +243,7 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
     simp only [Set.coe_setOf, Set.mem_setOf_eq, Subtype.mk.injEq]
     rw [← primeFactorsList_count_eq, ← prod_replicate, ← prod_append]
     nth_rewrite 3 [← prod_primeFactorsList hm₀]
-    have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (¬ · ∈ s) := by
+    have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (· ∉ s) := by
       refine (filter_congr fun q hq ↦ ?_).symm
       simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, decide_eq_true_eq]
       rcases Finset.mem_insert.mp <| hm _ hq with h | h

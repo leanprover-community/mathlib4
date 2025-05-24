@@ -348,7 +348,7 @@ theorem NeBot.nonempty_of_mem {f : Filter α} (hf : NeBot f) {s : Set α} (hs : 
   @Filter.nonempty_of_mem α f hf s hs
 
 @[simp]
-theorem empty_notMem (f : Filter α) [NeBot f] : ¬∅ ∈ f := fun h => (nonempty_of_mem h).ne_empty rfl
+theorem empty_notMem (f : Filter α) [NeBot f] : ∅ ∉ f := fun h => (nonempty_of_mem h).ne_empty rfl
 
 @[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
 

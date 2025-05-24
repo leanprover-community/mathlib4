@@ -46,7 +46,7 @@ instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidableEq V] :
     DecidableRel (G.deleteEdges s).Adj :=
   inferInstanceAs <| DecidableRel (G \ fromEdgeSet s).Adj
 
-@[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ ¬s(v, w) ∈ s :=
+@[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ s(v, w) ∉ s :=
   and_congr_right fun h ↦ (and_iff_left h.ne).not
 
 @[simp] lemma deleteEdges_edgeSet (G G' : SimpleGraph V) : G.deleteEdges G'.edgeSet = G \ G' := by

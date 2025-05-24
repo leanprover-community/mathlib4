@@ -262,7 +262,7 @@ partial def Finset.proveEmptyOrCons {α : Q(Type u)} (s : Q(Finset $α)) :
     MetaM (ProveEmptyOrConsResult s) :=
   match s.getAppFnArgs with
   | (``EmptyCollection.emptyCollection, _) => haveI : $s =Q {} := ⟨⟩; pure (.empty q(rfl))
-  | (``Finset.cons, #[_, (a : Q($α)), (s' : Q(Finset $α)), (h : Q(¬ $a ∈ $s'))]) =>
+  | (``Finset.cons, #[_, (a : Q($α)), (s' : Q(Finset $α)), (h : Q($a ∉ $s'))]) =>
     haveI : $s =Q .cons $a $s' $h := ⟨⟩
     pure (.cons a s' h q(.refl $s))
   | (``Finset.mk, #[_, (val : Q(Multiset $α)), (nd : Q(Multiset.Nodup $val))]) => do

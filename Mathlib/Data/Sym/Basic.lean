@@ -590,7 +590,7 @@ theorem encode_of_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h : no
   dif_pos h
 
 @[simp]
-theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h : ¬none ∈ s) :
+theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h : none ∉ s) :
     encode s =
       Sum.inr
         (s.attach.map fun o =>

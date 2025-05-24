@@ -277,7 +277,7 @@ theorem encard_exchange' (ha : a ∉ s) (hb : b ∈ s) : (insert a s \ {b}).enca
   rw [← insert_diff_singleton_comm (by rintro rfl; exact ha hb), encard_exchange ha hb]
 
 theorem encard_eq_add_one_iff {k : ℕ∞} :
-    s.encard = k + 1 ↔ (∃ a t, ¬a ∈ t ∧ insert a t = s ∧ t.encard = k) := by
+    s.encard = k + 1 ↔ (∃ a t, a ∉ t ∧ insert a t = s ∧ t.encard = k) := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨a, ha⟩ := nonempty_of_encard_ne_zero (s := s) (by simp [h])
     refine ⟨a, s \ {a}, fun h ↦ h.2 rfl, by rwa [insert_diff_singleton, insert_eq_of_mem], ?_⟩

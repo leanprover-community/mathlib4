@@ -573,7 +573,7 @@ end
 
 /-- `Disjoint s₁ s₂` holds if `s₁` and `s₂` have no keys in common. -/
 def Disjoint (s₁ s₂ : Finmap β) : Prop :=
-  ∀ x ∈ s₁, ¬x ∈ s₂
+  ∀ x ∈ s₁, x ∉ s₂
 
 theorem disjoint_empty (x : Finmap β) : Disjoint ∅ x :=
   nofun

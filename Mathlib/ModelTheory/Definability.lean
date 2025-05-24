@@ -322,7 +322,7 @@ theorem mem_top : x ∈ (⊤ : L.DefinableSet A α) :=
   mem_univ x
 
 @[simp]
-theorem notMem_bot {x : α → M} : ¬x ∈ (⊥ : L.DefinableSet A α) :=
+theorem notMem_bot {x : α → M} : x ∉ (⊥ : L.DefinableSet A α) :=
   notMem_empty x
 
 @[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
@@ -336,11 +336,11 @@ theorem mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t :=
   Iff.rfl
 
 @[simp]
-theorem mem_compl : x ∈ sᶜ ↔ ¬x ∈ s :=
+theorem mem_compl : x ∈ sᶜ ↔ x ∉ s :=
   Iff.rfl
 
 @[simp]
-theorem mem_sdiff : x ∈ s \ t ↔ x ∈ s ∧ ¬x ∈ t :=
+theorem mem_sdiff : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t :=
   Iff.rfl
 
 @[simp, norm_cast]

@@ -88,7 +88,7 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
           (a ∈ fixedPoints ·)
       · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
-          (¬a ∈ fixedPoints ·)
+          (a ∉ fixedPoints ·)
     _ ≃ { f : Perm α // fixedPoints f = {a} } ⊕ { f : Perm α // fixedPoints f = ∅ } := by
       refine Equiv.sumCongr (subtypeEquivRight fun f => ?_) (subtypeEquivRight fun f => ?_)
       · rw [Set.eq_singleton_iff_unique_mem, and_comm]

@@ -83,7 +83,7 @@ theorem filter_dvd_eq_properDivisors (h : n ≠ 0) : {d ∈ range n | d ∣ n} =
   simp only [properDivisors, mem_filter, mem_range, mem_Ico, and_congr_left_iff, iff_and_self]
   exact fun ha _ => succ_le_iff.mpr (pos_of_dvd_of_pos ha h.bot_lt)
 
-theorem self_notMem_properDivisors : ¬n ∈ properDivisors n := by simp [properDivisors]
+theorem self_notMem_properDivisors : n ∉ properDivisors n := by simp [properDivisors]
 
 @[deprecated (since := "2025-05-23")]
 alias properDivisors.not_self_mem := self_notMem_properDivisors
