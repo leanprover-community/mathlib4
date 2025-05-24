@@ -209,16 +209,17 @@ lemma variation_empty' : variationAux μ ∅ = 0 := by
   simp only [variationAux, varOfPart, MeasurableSet.empty, reduceIte, partitions, and_imp,
     Set.mem_setOf_eq, iSup_eq_zero]
   intro P h _ _ h'
-  have : P = ∅ := by
-    by_contra! hP
-    obtain ⟨p, hp⟩ := Finset.Nonempty.exists_mem (Finset.nonempty_iff_ne_empty.mpr hP)
-    exact (h' p hp) (Set.subset_empty_iff.mp <| h p hp)
-  simp [this]
+  suffices h : P = ∅ by simp [h]
+  by_contra! hP
+  obtain ⟨p, hp⟩ := Finset.Nonempty.exists_mem (Finset.nonempty_iff_ne_empty.mpr hP)
+  exact (h' p hp) (Set.subset_empty_iff.mp <| h p hp)
 
 lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε) :
     ∃ P ∈ partitions s, variationAux μ s ≤ varOfPart μ P + ε := by
-  simp [variationAux, hs]
-  -- Since `variationAux` is defined as the supremum and this supremum is bounded.
+  simp only [variationAux, hs, reduceIte]
+  -- Since `variationAux` is defined as the supremum.
+  -- NOTE: This is a bit more subtle than I previously thought so revert to Rudin and show that:
+  -- If `a < variationAux μ s` then `∃ P ∈ partitions s, a ≤ varOfPart μ P`.
   sorry
 
 lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
@@ -311,7 +312,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     simp only [variationAux, hs, reduceIte]
     simp only [variationAux, MeasurableSet.iUnion hs, reduceIte] at hb
     obtain ⟨Q, hQ, hbQ⟩ := lt_biSup_iff.mp hb
-    -- Choose `n` large so that considering on a finite set of `s i` suffices.
+    -- Choose `n` large so that considering a finite set of `s i` suffices.
     -- Take the partitions defined as intersection of `Q` and `s i`.
     sorry
 
