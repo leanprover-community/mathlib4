@@ -57,7 +57,7 @@ structure SimplicialComplex where
   /-- the faces of this simplicial complex: currently, given by their spanning vertices -/
   faces : Set (Finset E)
   /-- the empty set is not a face: hence, all faces are non-empty -/
-  not_empty_mem : ∅ ∉ faces
+  empty_notMem : ∅ ∉ faces
   /-- the vertices in each face are affine independent: this is an implementation detail -/
   indep : ∀ {s}, s ∈ faces → AffineIndependent 𝕜 ((↑) : s → E)
   /-- faces are downward closed: a non-empty subset of its spanning vertices spans another face -/
@@ -66,6 +66,9 @@ structure SimplicialComplex where
     convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)
 
 namespace SimplicialComplex
+
+@[deprecated (since := "2025-05-23")]
+alias not_empty_mem := empty_notMem
 
 variable {𝕜 E}
 variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
@@ -118,7 +121,7 @@ def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent
       convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)) :
     SimplicialComplex 𝕜 E where
   faces := faces \ {∅}
-  not_empty_mem h := h.2 (mem_singleton _)
+  empty_notMem h := h.2 (mem_singleton _)
   indep hs := indep _ hs.1
   down_closed hs hts ht := ⟨down_closed _ hs.1 _ hts, ht⟩
   inter_subset_convexHull hs ht := inter_subset_convexHull _ hs.1 _ ht.1
@@ -128,7 +131,7 @@ def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent
 def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset : faces ⊆ K.faces)
     (down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t ∈ faces) : SimplicialComplex 𝕜 E :=
   { faces
-    not_empty_mem := fun h => K.not_empty_mem (subset h)
+    empty_notMem := fun h => K.empty_notMem (subset h)
     indep := fun hs => K.indep (subset hs)
     down_closed := fun hs hts _ => down_closed hs hts
     inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull (subset hs) (subset ht) }
@@ -205,7 +208,7 @@ variable (𝕜 E)
 instance : Min (SimplicialComplex 𝕜 E) :=
   ⟨fun K L =>
     { faces := K.faces ∩ L.faces
-      not_empty_mem := fun h => K.not_empty_mem (Set.inter_subset_left h)
+      empty_notMem := fun h => K.empty_notMem (Set.inter_subset_left h)
       indep := fun hs => K.indep hs.1
       down_closed := fun hs hst ht => ⟨K.down_closed hs.1 hst ht, L.down_closed hs.2 hst ht⟩
       inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull hs.1 ht.1 }⟩
@@ -219,7 +222,7 @@ instance : SemilatticeInf (SimplicialComplex 𝕜 E) :=
 
 instance hasBot : Bot (SimplicialComplex 𝕜 E) :=
   ⟨{  faces := ∅
-      not_empty_mem := Set.notMem_empty ∅
+      empty_notMem := Set.notMem_empty ∅
       indep := fun hs => (Set.notMem_empty _ hs).elim
       down_closed := fun hs => (Set.notMem_empty _ hs).elim
       inter_subset_convexHull := fun hs => (Set.notMem_empty _ hs).elim }⟩

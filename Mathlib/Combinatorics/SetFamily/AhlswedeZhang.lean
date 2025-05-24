@@ -407,7 +407,7 @@ lemma infSum_compls_add_supSum (𝒜 : Finset (Finset α)) :
     ← sum_add_distrib, card_compl, cast_sub (card_le_univ _), choose_symm (card_le_univ _),
     div_add_div_same, sub_add_cancel, Fintype.sum_div_mul_card_choose_card]
 
-lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜) :
+lemma supSum_of_univ_notMem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜) :
     supSum 𝒜 = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ := by
   set m := 𝒜.card with hm
   clear_value m
@@ -429,10 +429,13 @@ lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ �
   · exact h𝒜
   · exact fun h ↦ h𝒜₂ (mem_insert_of_mem h)
 
+@[deprecated (since := "2025-05-23")]
+alias supSum_of_not_univ_mem := supSum_of_univ_notMem
+
 /-- The **Ahlswede-Zhang Identity**. -/
 lemma infSum_eq_one (h𝒜₁ : 𝒜.Nonempty) (h𝒜₀ : ∅ ∉ 𝒜) : infSum 𝒜 = 1 := by
   rw [← compls_compls 𝒜, eq_sub_of_add_eq (infSum_compls_add_supSum _),
-    supSum_of_not_univ_mem h𝒜₁.compls, add_sub_cancel_left]
+    supSum_of_univ_notMem h𝒜₁.compls, add_sub_cancel_left]
   simpa
 
 end AhlswedeZhang

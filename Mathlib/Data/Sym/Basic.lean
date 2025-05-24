@@ -590,12 +590,15 @@ theorem encode_of_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h : no
   dif_pos h
 
 @[simp]
-theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h : ¬none ∈ s) :
+theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h : ¬none ∈ s) :
     encode s =
       Sum.inr
         (s.attach.map fun o =>
           o.1.get <| Option.ne_none_iff_isSome.1 <| ne_of_mem_of_not_mem o.2 h) :=
   dif_neg h
+
+@[deprecated (since := "2025-05-23")]
+alias encode_of_not_none_mem := encode_of_none_notMem
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
 def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ

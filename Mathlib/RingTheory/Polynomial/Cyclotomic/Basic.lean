@@ -399,7 +399,7 @@ theorem X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd (R) [CommRing R] {
   rw [mul_assoc]
   congr 1
   rw [← Nat.insert_self_properDivisors hdn.ne_bot, insert_sdiff_of_notMem, prod_insert]
-  · exact Finset.notMem_sdiff_of_notMem_left Nat.properDivisors.not_self_mem
+  · exact Finset.notMem_sdiff_of_notMem_left Nat.not_selfMem_properDivisors
   · exact fun hk => hdn.not_le <| Nat.divisor_le hk
 
 section ArithmeticFunction
