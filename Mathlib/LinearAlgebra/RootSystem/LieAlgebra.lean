@@ -3,6 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Lie.Matrix
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 import Mathlib.LinearAlgebra.RootSystem.Chain
@@ -131,14 +132,6 @@ variable [Fintype b.support] [Fintype ι] [DecidableEq ι]
 def lieAlgebra :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range e ∪ range f)
-
-instance : LieRingModule (Matrix ι ι R) (ι → R) := sorry
-
-instance : LieModule R (Matrix ι ι R) (ι → R) := sorry
-
-instance : LieModule.IsFaithful R (Matrix ι ι R) (ι → R) := sorry
-
-example : LieModule R b.lieAlgebra (b.support ⊕ ι → R) := inferInstance
 
 example [IsNoetherianRing R] : Module.Finite R b.lieAlgebra := inferInstance
 

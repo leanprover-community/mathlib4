@@ -238,6 +238,9 @@ instance [IsFaithful R L M] {L' : LieSubalgebra R L} :
   refine ⟨(?_ : Injective (toEnd R L M ∘ ((↑) : L' → L)))⟩
   exact IsFaithful.injective_toEnd.comp Subtype.val_injective
 
+instance : IsFaithful R (Module.End R M) M where
+  injective_toEnd := by simpa using injective_id
+
 end LieModule
 
 end IsFaithful
