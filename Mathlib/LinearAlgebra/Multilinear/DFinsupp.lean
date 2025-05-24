@@ -244,7 +244,7 @@ end dfinsuppFamily
 section Basis
 variable {ι'} {M : ι → Type uM} {N : Type uN}
 
-variable [Fintype ι] [CommSemiring R]
+variable [Fintype ι] [∀ i, Fintype (κ i)] [CommSemiring R]
 variable [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
 variable [∀ i, Module R (M i)] [Module R N]
 
@@ -254,7 +254,7 @@ noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) 
     Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) where
   repr := by
     classical
-    -- switch to dfinsupp
+    -- switch to DFinsupp, for a future where `Basis` uses this instead...
     refine ?_ ≪≫ₗ (finsuppLequivDFinsupp R).symm
     let b := fun i => (b i).repr ≪≫ₗ (finsuppLequivDFinsupp R)
     let b' := b'.repr ≪≫ₗ (finsuppLequivDFinsupp R)
@@ -266,7 +266,9 @@ noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) 
     refine (fromDFinsuppEquiv _ _).symm ≪≫ₗ
       LinearEquiv.piCongrRight (fun i => MultilinearMap.piRingEquiv.symm) ≪≫ₗ ?_
     -- some annoying swap between Π and Π₀
-    sorry
+    refine ?_ ≪≫ₗ (DFinsupp.domLCongr R (Equiv.sigmaEquivProd _ _).symm).symm
+    refine ?_ ≪≫ₗ (DFinsupp.sigmaCurryLEquiv R (M := fun _ _ => R)).symm
+    exact DFinsupp.linearEquivFunOnFintype R |>.symm
 
 end Basis
 end MultilinearMap

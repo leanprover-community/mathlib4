@@ -7,6 +7,7 @@ import Mathlib.Data.DFinsupp.Submonoid
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+import Mathlib.Data.DFinsupp.Sigma
 
 /-!
 # Properties of the module `Π₀ i, M i`
@@ -34,7 +35,7 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
-variable {ι : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
+variable {ι ι' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
 namespace DFinsupp
 
@@ -110,6 +111,38 @@ instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
     EquivLike (LinearEquiv σ M M₂) M M₂ :=
   inferInstance
+
+variable (R) in
+/-- `DFinsupp.equivCongrLeft` as a linear equivalence.
+
+This is the `DFinsupp` version of `Finsupp.domLCongr`. -/
+@[simps! apply symm_apply]
+def domLCongr (e : ι ≃ ι') : (Π₀ i, M i) ≃ₗ[R] (Π₀ i, M (e.symm i)) where
+  __ := DFinsupp.equivCongrLeft e
+  map_add' _ _ := by ext; rfl
+  map_smul' _ _ := by ext; rfl
+
+variable (R) in
+/-- `DFinsupp.sigmaCurryEquiv` as a linear equivalence.
+
+This is the `DFinsupp` version of `Finsupp.finsuppProdLEquiv`. -/
+@[simps! apply symm_apply]
+def sigmaCurryLEquiv {α : ι → Type*} {M : (i : ι) → α i → Type*}
+    [Π i j, AddCommMonoid (M i j)] [Π i j, Module R (M i j)] [DecidableEq ι] :
+    (Π₀ (i : (x : ι) × α x), M i.fst i.snd) ≃ₗ[R] Π₀ (i : ι) (j : α i), M i j where
+  __ := DFinsupp.sigmaCurryEquiv
+  map_add' _ _ := by ext; rfl
+  map_smul' _ _ := by ext; rfl
+
+variable (R) in
+/-- `DFinsupp.equivFunOnFintype` as a linear equivalence.
+
+This is the `DFinsupp` version of `Finsupp.linearEquivFunOnFintype`. -/
+@[simps! apply symm_apply]
+def linearEquivFunOnFintype [Fintype ι]: (Π₀ i, M i) ≃ₗ[R] (Π i, M i) where
+  __ := equivFunOnFintype
+  map_add' _ _ := by ext; rfl
+  map_smul' _ _ := by ext; rfl
 
 /-- The `DFinsupp` version of `Finsupp.lsum`.
 

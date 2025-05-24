@@ -155,6 +155,50 @@ def piFamilyₗ :
   map_add' := piFamily_add
   map_smul' := piFamily_smul
 
+section
+variable {N : Type*}
+variable [Fintype ι] [DecidableEq ι] [AddCommMonoid N] [Module R N] [(i : ι) → DecidableEq (κ i)]
+variable [(i : ι) → Fintype (κ i)]
+
+variable (R κ) in
+/--
+For a family of families of modules `M i j` where `j : κ i`,
+the collection of multilinear maps `f p` (for each way `p` to select one index `j` from each family
+`i`) is linearly equivalent to multilinear maps where each argument is the
+section along `i` of `m`.
+
+TODO: add the `DFinsupp` version too. -/
+def fromPiEquiv :
+    ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) N) ≃ₗ[R]
+      MultilinearMap R (fun i ↦ Π j : κ i, M i j) N :=
+  LinearEquiv.ofLinear
+    ((LinearMap.lsum _ _ ℕ fun _ => .id).compMultilinearMapₗ R ∘ₗ MultilinearMap.piFamilyₗ)
+    (LinearMap.pi fun p ↦ MultilinearMap.compLinearMapₗ fun i ↦ LinearMap.single R _ (p i))
+    (by ext f x; simp)
+    (by ext f p a; simp)
+
+@[simp]
+theorem fromPiEquiv_single
+    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) N)
+    (p : Π i, κ i) (x : Π i, M i (p i)) :
+    fromPiEquiv κ R f (fun i => Pi.single (p i) (x i)) = f p x := by
+  simp [fromPiEquiv]
+
+/-- Prefer using `fromPiEquiv_single` where possible. -/
+theorem fromPiEquiv_apply
+    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) N)
+    (x : Π i (j : κ i), M i j) :
+    fromPiEquiv κ R f x = ∑ p, f p (fun i ↦ x i (p i)) := by
+  simp [fromPiEquiv]
+
+@[simp]
+theorem fromPiEquiv_symm_apply (f : MultilinearMap R (fun i ↦ Π j : κ i, M i j) N)
+    (p : Π i, κ i) :
+    (fromPiEquiv κ R).symm f p = f.compLinearMap (fun i ↦ LinearMap.single _ _ (p i)) :=
+  rfl
+
+end
+
 end CommSemiring
 
 end piFamily
