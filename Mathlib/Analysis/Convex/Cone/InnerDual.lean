@@ -17,7 +17,7 @@ all points `x` in a given set `0 ≤ ⟪ x, y ⟫`.
 We prove the following theorems:
 * `ConvexCone.innerDualCone_of_innerDualCone_eq_self`:
   The `innerDualCone` of the `innerDualCone` of a nonempty, closed, convex cone is itself.
-* `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`:
+* `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem`:
   This variant of the
   [hyperplane separation theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
   states that given a nonempty, closed, convex cone `K` in a complete, real inner product space `H`
@@ -147,7 +147,7 @@ variable [CompleteSpace H]
 open scoped InnerProductSpace in
 /-- This is a stronger version of the Hahn-Banach separation theorem for closed convex cones. This
 is also the geometric interpretation of Farkas' lemma. -/
-theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : ConvexCone ℝ H)
+theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) {b : H} (disj : b ∉ K) :
     ∃ y : H, (∀ x : H, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ) ∧ ⟪y, b⟫_ℝ < 0 := by
   -- let `z` be the point in `K` closest to `b`
@@ -187,7 +187,7 @@ theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
   constructor
   · rw [mem_innerDualCone, ← SetLike.mem_coe]
     contrapose!
-    exact K.hyperplane_separation_of_nonempty_of_isClosed_of_nmem ne hc
+    exact K.hyperplane_separation_of_nonempty_of_isClosed_of_notMem ne hc
   · rintro hxK y h
     specialize h x hxK
     rwa [real_inner_comm]

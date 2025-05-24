@@ -272,11 +272,11 @@ variable [CompleteLattice ι] {u : ι → Ω → β} {s : Set β}
 theorem hitting_eq_sInf (ω : Ω) : hitting u s ⊥ ⊤ ω = sInf {i : ι | u i ω ∈ s} := by
   simp only [hitting, Set.mem_Icc, bot_le, le_top, and_self_iff, exists_true_left, Set.Icc_bot,
     Set.Iic_top, Set.univ_inter, ite_eq_left_iff, not_exists]
-  intro h_nmem_s
+  intro h_notMem_s
   symm
   rw [sInf_eq_top]
-  simp only [Set.mem_univ, true_and] at h_nmem_s
-  exact fun i hi_mem_s => absurd hi_mem_s (h_nmem_s i)
+  simp only [Set.mem_univ, true_and] at h_notMem_s
+  exact fun i hi_mem_s => absurd hi_mem_s (h_notMem_s i)
 
 end CompleteLattice
 

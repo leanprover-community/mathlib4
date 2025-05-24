@@ -173,7 +173,7 @@ theorem finprod_eq_prod_plift_of_mulSupport_toFinset_subset {f : α → M}
     ∏ᶠ i, f i = ∏ i ∈ s, f i.down := by
   rw [finprod, dif_pos]
   refine Finset.prod_subset hs fun x _ hxf => ?_
-  rwa [hf.mem_toFinset, nmem_mulSupport] at hxf
+  rwa [hf.mem_toFinset, notMem_mulSupport] at hxf
 
 @[to_additive]
 theorem finprod_eq_prod_plift_of_mulSupport_subset {f : α → M} {s : Finset (PLift α)}
@@ -782,7 +782,7 @@ theorem finprod_mem_dvd {f : α → N} (a : α) (hf : (mulSupport f).Finite) : f
   by_cases ha : a ∈ mulSupport f
   · rw [finprod_eq_prod_of_mulSupport_toFinset_subset f hf (Set.Subset.refl _)]
     exact Finset.dvd_prod_of_mem f ((Finite.mem_toFinset hf).mpr ha)
-  · rw [nmem_mulSupport.mp ha]
+  · rw [notMem_mulSupport.mp ha]
     exact one_dvd (finprod f)
 
 /-- The product of `f i` over `i ∈ {a, b}`, `a ≠ b`, is equal to `f a * f b`. -/

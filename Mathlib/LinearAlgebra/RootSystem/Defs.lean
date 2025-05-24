@@ -170,11 +170,11 @@ lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
 lemma ne_zero' [NeZero (2 : R)] : (P.coroot i : N) ≠ 0 :=
   P.flip.ne_zero i
 
-lemma zero_nmem_range_root [NeZero (2 : R)] : 0 ∉ range P.root := by
+lemma zero_notMem_range_root [NeZero (2 : R)] : 0 ∉ range P.root := by
   simpa only [mem_range, not_exists] using fun i ↦ P.ne_zero i
 
-lemma zero_nmem_range_coroot [NeZero (2 : R)] : 0 ∉ range P.coroot :=
-  P.flip.zero_nmem_range_root
+lemma zero_notMem_range_coroot [NeZero (2 : R)] : 0 ∉ range P.coroot :=
+  P.flip.zero_notMem_range_root
 
 lemma exists_ne_zero [Nonempty ι] [NeZero (2 : R)] : ∃ i, P.root i ≠ 0 := by
   obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)

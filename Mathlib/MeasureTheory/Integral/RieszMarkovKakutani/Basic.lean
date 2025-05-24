@@ -196,7 +196,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     simp only [Fin.isValue, nnrealPart_apply,
       CompactlySupportedContinuousMap.coe_mk, Pi.one_apply, Real.toNNReal_eq_one]
     have : (f 0) x = 0 := by
-      rw [← nmem_support]
+      rw [← notMem_support]
       have : s₀ ⊆ (tsupport (f 0))ᶜ := by
         apply subset_trans _ (compl_subset_compl.mpr (f_supp_in_so 0))
         rw [hso]
@@ -211,7 +211,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     simp only [Fin.isValue, nnrealPart_apply,
       CompactlySupportedContinuousMap.coe_mk, Pi.one_apply, Real.toNNReal_eq_one]
     have : (f 1) x = 0 := by
-      rw [← nmem_support]
+      rw [← notMem_support]
       have : s₁ ⊆ (tsupport (f 1))ᶜ := by
         apply subset_trans _ (compl_subset_compl.mpr (f_supp_in_so 1))
         rw [hso]
@@ -342,7 +342,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
   simp only [ContinuousMap.toFun_eq_coe, CompactlySupportedContinuousMap.coe_toContinuousMap]
   by_cases hx : x ∈ tsupport f
   · exact le_trans (hf x) (hg.1 x (Set.mem_of_subset_of_mem h hx))
-  · rw [image_eq_zero_of_nmem_tsupport hx]
+  · rw [image_eq_zero_of_notMem_tsupport hx]
     exact zero_le (g x)
 
 lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1) {V : Set X}

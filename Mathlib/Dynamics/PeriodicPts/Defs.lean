@@ -270,7 +270,7 @@ theorem minimalPeriod_pos_of_mem_periodicPts (hx : x ∈ periodicPts f) : 0 < mi
   classical
   simp only [minimalPeriod, dif_pos hx, (Nat.find_spec hx).1.lt]
 
-theorem minimalPeriod_eq_zero_of_nmem_periodicPts (hx : x ∉ periodicPts f) :
+theorem minimalPeriod_eq_zero_of_notMem_periodicPts (hx : x ∉ periodicPts f) :
     minimalPeriod f x = 0 := by simp only [minimalPeriod, dif_neg hx]
 
 theorem IsPeriodicPt.minimalPeriod_pos (hn : 0 < n) (hx : IsPeriodicPt f n x) :
@@ -281,7 +281,7 @@ theorem minimalPeriod_pos_iff_mem_periodicPts : 0 < minimalPeriod f x ↔ x ∈ 
   ⟨not_imp_not.1 fun h => by simp only [minimalPeriod, dif_neg h, lt_irrefl 0, not_false_iff],
     minimalPeriod_pos_of_mem_periodicPts⟩
 
-theorem minimalPeriod_eq_zero_iff_nmem_periodicPts : minimalPeriod f x = 0 ↔ x ∉ periodicPts f := by
+theorem minimalPeriod_eq_zero_iff_notMem_periodicPts : minimalPeriod f x = 0 ↔ x ∉ periodicPts f := by
   rw [← minimalPeriod_pos_iff_mem_periodicPts, not_lt, nonpos_iff_eq_zero]
 
 theorem IsPeriodicPt.minimalPeriod_le (hn : 0 < n) (hx : IsPeriodicPt f n x) :
@@ -416,7 +416,7 @@ theorem periodicOrbit_length : (periodicOrbit f x).length = minimalPeriod f x :=
 theorem periodicOrbit_eq_nil_iff_not_periodic_pt :
     periodicOrbit f x = Cycle.nil ↔ x ∉ periodicPts f := by
   simp only [periodicOrbit.eq_1, Cycle.coe_eq_nil, List.map_eq_nil_iff, List.range_eq_nil]
-  exact minimalPeriod_eq_zero_iff_nmem_periodicPts
+  exact minimalPeriod_eq_zero_iff_notMem_periodicPts
 
 theorem periodicOrbit_eq_nil_of_not_periodic_pt (h : x ∉ periodicPts f) :
     periodicOrbit f x = Cycle.nil :=
@@ -473,7 +473,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
       nth_rw 3 [← @iterate_minimalPeriod α f x]
       nth_rw 2 [← hM]
       exact H _ (Nat.lt_succ_self _)
-  · rw [periodicOrbit_eq_nil_of_not_periodic_pt hx, minimalPeriod_eq_zero_of_nmem_periodicPts hx]
+  · rw [periodicOrbit_eq_nil_of_not_periodic_pt hx, minimalPeriod_eq_zero_of_notMem_periodicPts hx]
     simp
 
 theorem periodicOrbit_chain' (r : α → α → Prop) {f : α → α} {x : α} (hx : x ∈ periodicPts f) :

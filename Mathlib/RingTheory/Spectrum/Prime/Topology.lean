@@ -994,8 +994,8 @@ lemma basicOpen_injOn_isIdempotentElem :
   have : x ∉ Ideal.span {y} := fun mem ↦ ne' <| by
     obtain ⟨r, rfl⟩ := Ideal.mem_span_singleton'.mp mem
     rw [mul_assoc, hy]
-  have ⟨p, prime, le, nmem⟩ := Ideal.exists_le_prime_nmem_of_isIdempotentElem _ x hx this
-  exact ne_of_mem_of_not_mem' (a := ⟨p, prime⟩) nmem
+  have ⟨p, prime, le, notMem⟩ := Ideal.exists_le_prime_notMem_of_isIdempotentElem _ x hx this
+  exact ne_of_mem_of_not_mem' (a := ⟨p, prime⟩) notMem
     (not_not.mpr <| p.span_singleton_le_iff_mem.mp le) eq
 
 lemma exists_mul_eq_zero_add_eq_one_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}

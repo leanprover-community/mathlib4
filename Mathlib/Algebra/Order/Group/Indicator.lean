@@ -45,7 +45,7 @@ lemma mulSupport_min [LinearOrder M] (f g : α → M) :
 @[to_additive]
 lemma mulSupport_iSup [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
     mulSupport (fun x ↦ ⨆ i, f i x) ⊆ ⋃ i, mulSupport (f i) := by
-  simp only [mulSupport_subset_iff', mem_iUnion, not_exists, nmem_mulSupport]
+  simp only [mulSupport_subset_iff', mem_iUnion, not_exists, notMem_mulSupport]
   intro x hx
   simp only [hx, ciSup_const]
 

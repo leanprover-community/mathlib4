@@ -68,7 +68,7 @@ lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
   · rw [h h']
     exact ⟨1, 1, by simp⟩
 
-lemma two_smul_nmem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i : ι} :
+lemma two_smul_notMem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i : ι} :
     (2 : R) • P.root i ∉ range P.root := by
   have _i : Nontrivial R := ⟨2, 0, two_ne_zero⟩
   have : ¬ LinearIndependent R ![(2 : R) • P.root i, P.root i] := by
@@ -87,9 +87,9 @@ lemma linearIndependent_of_add_mem_range_root
     [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
-  refine IsReduced.linearIndependent P (fun hij ↦ ?_) (fun hij ↦ P.zero_nmem_range_root ?_)
+  refine IsReduced.linearIndependent P (fun hij ↦ ?_) (fun hij ↦ P.zero_notMem_range_root ?_)
   · rw [hij, ← two_smul (R := R)] at h
-    exact P.two_smul_nmem_range_root h
+    exact P.two_smul_notMem_range_root h
   · rwa [hij, neg_add_cancel] at h
 
 lemma linearIndependent_of_sub_mem_range_root

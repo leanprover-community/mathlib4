@@ -279,7 +279,7 @@ theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
   apply contMDiffWithinAt_const.congr_of_eventuallyEq
     (eventually_nhdsWithin_of_eventually_nhds <| notMem_mulTSupport_iff_eventuallyEq.mp hx)
-    (image_eq_one_of_nmem_mulTSupport hx)
+    (image_eq_one_of_notMem_mulTSupport hx)
 
 @[deprecated (since := "2025-05-23")]
 alias contMDiffWithinAt_of_not_mem_mulTSupport := contMDiffWithinAt_of_notMem_mulTSupport

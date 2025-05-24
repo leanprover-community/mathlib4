@@ -122,7 +122,7 @@ theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i,
       refine mt (fun hxt => hu ?_) ht
       refine ⟨_, Set.neg_mem_neg.mpr (subset_closure hxt), _, hx, ?_⟩
       simp only [neg_sub, sub_add_cancel]
-    simp only [nmem_support.mp this, (L _).map_zero, norm_zero, le_rfl]
+    simp only [notMem_support.mp this, (L _).map_zero, norm_zero, le_rfl]
 
 theorem _root_.HasCompactSupport.convolution_integrand_bound_right_of_subset
     (hcg : HasCompactSupport g) (hg : Continuous g)
@@ -215,7 +215,7 @@ theorem _root_.BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
       refine (le_ciSup_set hbg <| mem_preimage.mpr ?_)
       rwa [neg_sub, sub_add_cancel]
     · have : t ∉ support fun t => L (f t) (g (x₀ - t)) := mt (fun h => h2s h) ht
-      rw [nmem_support.mp this, norm_zero]
+      rw [notMem_support.mp this, norm_zero]
   refine Integrable.mono' ?_ ?_ this
   · rw [integrable_indicator_iff hs]; exact ((hf.norm.const_mul _).mul_const _).integrableOn
   · exact hf.aestronglyMeasurable.convolution_integrand_snd' L hmg
@@ -515,7 +515,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   intro x h2x
   by_contra hx
   apply h2x
-  simp_rw [Set.mem_add, ← exists_and_left, not_exists, not_and_or, nmem_support] at hx
+  simp_rw [Set.mem_add, ← exists_and_left, not_exists, not_and_or, notMem_support] at hx
   rw [convolution_def]
   convert integral_zero G F using 2
   ext t
@@ -617,7 +617,7 @@ theorem _root_.HasCompactSupport.continuous_convolution_right (hcg : HasCompactS
   have : ContinuousOn (↿g') (univ ×ˢ univ) := (hg.comp continuous_snd).continuousOn
   exact continuousOn_convolution_right_with_param_comp L
     (continuous_iff_continuousOn_univ.1 continuous_id) hcg
-    (fun p x _ hx => image_eq_zero_of_nmem_tsupport hx) hf this
+    (fun p x _ hx => image_eq_zero_of_notMem_tsupport hx) hf this
 
 /-- The convolution is continuous if one function is integrable and the other is bounded and
 continuous. -/
@@ -724,7 +724,7 @@ theorem convolution_eq_right' {x₀ : G} {R : ℝ} (hf : support f ⊆ ball (0 :
       specialize hg (x₀ - t)
       rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg
       rw [hg h2t]
-    · rw [nmem_support] at ht
+    · rw [notMem_support] at ht
       simp_rw [ht, L.map_zero₂]
   simp_rw [convolution_def, h2]
 
@@ -757,7 +757,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
       rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg
       refine ((L (f t)).dist_le_opNorm _ _).trans ?_
       exact mul_le_mul_of_nonneg_left (hg h2t) (norm_nonneg _)
-    · rw [nmem_support] at ht
+    · rw [notMem_support] at ht
       simp_rw [ht, L.map_zero₂, L.map_zero, norm_zero, zero_mul, dist_self]
       rfl
   simp_rw [convolution_def]

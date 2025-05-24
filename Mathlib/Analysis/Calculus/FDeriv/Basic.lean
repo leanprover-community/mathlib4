@@ -547,7 +547,7 @@ set_option linter.deprecated false in
 theorem fderivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : fderivWithin 𝕜 f s x = 0 := by
   rw [fderivWithin, if_pos (.of_nhdsWithin_eq_bot h)]
 
-theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 :=
+theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 :=
   fderivWithin_zero_of_not_accPt (h ·.clusterPt.mem_closure)
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
@@ -1437,29 +1437,29 @@ open Function
 variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
 
-theorem HasStrictFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
+theorem HasStrictFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
     HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by
   rw [notMem_tsupport_iff_eventuallyEq] at h
   exact (hasStrictFDerivAt_const (0 : F) x).congr_of_eventuallyEq h.symm
 
-theorem HasFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
+theorem HasFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
-  (HasStrictFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivAt
+  (HasStrictFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivAt
 
 theorem HasFDerivWithinAt.of_notMem_tsupport {s : Set E} {x : E} (h : x ∉ tsupport f) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
-  (HasFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivWithinAt
+  (HasFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivWithinAt
 
 @[deprecated (since := "2025-05-23")]
 alias HasFDerivWithinAt.of_not_mem_tsupport := HasFDerivWithinAt.of_notMem_tsupport
 
 theorem fderiv_of_notMem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
-  (HasFDerivAt.of_nmem_tsupport 𝕜 h).fderiv
+  (HasFDerivAt.of_notMem_tsupport 𝕜 h).fderiv
 
 @[deprecated (since := "2025-05-23")] alias fderiv_of_not_mem_tsupport := fderiv_of_notMem_tsupport
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
-  rw [← not_imp_not, nmem_support]
+  rw [← not_imp_not, notMem_support]
   exact fderiv_of_notMem_tsupport _
 
 theorem tsupport_fderiv_subset : tsupport (fderiv 𝕜 f) ⊆ tsupport f :=

@@ -295,7 +295,7 @@ theorem dualCoannihilator_top [Projective R M] :
     (⊤ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊥ := by
   rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
 
-theorem exists_dual_map_eq_bot_of_nmem {x : M} (hx : x ∉ p) (hp' : Free R (M ⧸ p)) :
+theorem exists_dual_map_eq_bot_of_notMem {x : M} (hx : x ∉ p) (hp' : Free R (M ⧸ p)) :
     ∃ f : Dual R M, f x ≠ 0 ∧ p.map f = ⊥ := by
   suffices ∃ f : Dual R (M ⧸ p), f (p.mkQ x) ≠ 0 by
     obtain ⟨f, hf⟩ := this; exact ⟨f.comp p.mkQ, hf, by simp [Submodule.map_comp]⟩
@@ -305,7 +305,7 @@ theorem exists_dual_map_eq_bot_of_nmem {x : M} (hx : x ∉ p) (hp' : Free R (M �
 theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p)) :
     ∃ f : Dual R M, f ≠ 0 ∧ p.map f = ⊥ := by
   obtain ⟨x, hx⟩ : ∃ x : M, x ∉ p := by rw [lt_top_iff_ne_top] at hp; contrapose! hp; ext; simp [hp]
-  obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_nmem hx hp'
+  obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_notMem hx hp'
   exact ⟨f, by aesop, hf'⟩
 
 /-- Consider a reflexive module and a set `s` of linear forms. If for any `z ≠ 0` there exists
@@ -330,7 +330,7 @@ theorem _root_.FiniteDimensional.mem_span_of_iInf_ker_le_ker [FiniteDimensional 
     {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
     (h : ⨅ i, LinearMap.ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
   by_contra hK
-  rcases exists_dual_map_eq_bot_of_nmem hK inferInstance with ⟨φ, φne, hφ⟩
+  rcases exists_dual_map_eq_bot_of_notMem hK inferInstance with ⟨φ, φne, hφ⟩
   let φs := (Module.evalEquiv 𝕜 E).symm φ
   have : K φs = 0 := by
     refine h <| (Submodule.mem_iInf _).2 fun i ↦ (mem_bot 𝕜).1 ?_

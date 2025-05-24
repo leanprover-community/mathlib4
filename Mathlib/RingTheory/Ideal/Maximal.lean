@@ -197,7 +197,7 @@ theorem exists_le_prime_disjoint (S : Submonoid α) (disjoint : Disjoint (I : Se
   have ⟨p, hp⟩ := (Submodule.mem_iSup_of_directed _ hc'.directed).mp (sSup_eq_iSup' c ▸ hx)
   exact Set.disjoint_left.mp (hc p.2) hp
 
-theorem exists_le_prime_nmem_of_isIdempotentElem (a : α) (ha : IsIdempotentElem a) (haI : a ∉ I) :
+theorem exists_le_prime_notMem_of_isIdempotentElem (a : α) (ha : IsIdempotentElem a) (haI : a ∉ I) :
     ∃ p : Ideal α, p.IsPrime ∧ I ≤ p ∧ a ∉ p :=
   have : Disjoint (I : Set α) (Submonoid.powers a) := Set.disjoint_right.mpr <| by
     rw [ha.coe_powers]

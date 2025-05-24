@@ -64,7 +64,7 @@ theorem _root_.HasCompactSupport.memLp_of_bound {f : X → E} (hf : HasCompactSu
     (h2f : AEStronglyMeasurable f μ) (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : MemLp f p μ := by
   have := memLp_top_of_bound h2f C hfC
   exact this.mono_exponent_of_measure_support_ne_top
-    (fun x ↦ image_eq_zero_of_nmem_tsupport) (hf.measure_lt_top.ne) le_top
+    (fun x ↦ image_eq_zero_of_notMem_tsupport) (hf.measure_lt_top.ne) le_top
 
 @[deprecated (since := "2025-02-21")]
 alias _root_.HasCompactSupport.memℒp_of_bound := _root_.HasCompactSupport.memLp_of_bound
@@ -74,7 +74,7 @@ theorem _root_.Continuous.memLp_of_hasCompactSupport [OpensMeasurableSpace X]
     {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) : MemLp f p μ := by
   have := hf.memLp_top_of_hasCompactSupport h'f μ
   exact this.mono_exponent_of_measure_support_ne_top
-    (fun x ↦ image_eq_zero_of_nmem_tsupport) (h'f.measure_lt_top.ne) le_top
+    (fun x ↦ image_eq_zero_of_notMem_tsupport) (h'f.measure_lt_top.ne) le_top
 
 @[deprecated (since := "2025-02-21")]
 alias _root_.Continuous.memℒp_of_hasCompactSupport := _root_.Continuous.memLp_of_hasCompactSupport
@@ -111,7 +111,7 @@ theorem indicatorConstLp_coeFn : ⇑(indicatorConstLp p hs hμs c) =ᵐ[μ] s.in
 theorem indicatorConstLp_coeFn_mem : ∀ᵐ x : α ∂μ, x ∈ s → indicatorConstLp p hs hμs c x = c :=
   indicatorConstLp_coeFn.mono fun _x hx hxs => hx.trans (Set.indicator_of_mem hxs _)
 
-theorem indicatorConstLp_coeFn_nmem : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp p hs hμs c x = 0 :=
+theorem indicatorConstLp_coeFn_notMem : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp p hs hμs c x = 0 :=
   indicatorConstLp_coeFn.mono fun _x hx hxs => hx.trans (Set.indicator_of_notMem hxs _)
 
 theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :

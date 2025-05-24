@@ -393,13 +393,13 @@ theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → 
 theorem noncommProd_mul_distrib {s : Finset α} (f : α → β) (g : α → β) (comm_ff comm_gg comm_gf) :
     noncommProd s (f * g) (noncommProd_mul_distrib_aux comm_ff comm_gg comm_gf) =
       noncommProd s f comm_ff * noncommProd s g comm_gg := by
-  induction' s using Finset.cons_induction_on with x s hnmem ih
+  induction' s using Finset.cons_induction_on with x s hnotMem ih
   · simp
   rw [Finset.noncommProd_cons, Finset.noncommProd_cons, Finset.noncommProd_cons, Pi.mul_apply,
     ih (comm_ff.mono fun _ => mem_cons_of_mem) (comm_gg.mono fun _ => mem_cons_of_mem)
       (comm_gf.mono fun _ => mem_cons_of_mem),
     (noncommProd_commute _ _ _ _ fun y hy => ?_).mul_mul_mul_comm]
-  exact comm_gf (mem_cons_self x s) (mem_cons_of_mem hy) (ne_of_mem_of_not_mem hy hnmem).symm
+  exact comm_gf (mem_cons_self x s) (mem_cons_of_mem hy) (ne_of_mem_of_not_mem hy hnotMem).symm
 
 section FinitePi
 

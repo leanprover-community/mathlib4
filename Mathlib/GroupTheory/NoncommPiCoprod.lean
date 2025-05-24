@@ -54,7 +54,7 @@ theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (
     (heq1 : s.noncommProd f comm = 1) : ∀ i ∈ s, f i = 1 := by
   classical
     revert heq1
-    induction' s using Finset.induction_on with i s hnmem ih
+    induction' s using Finset.induction_on with i s hnotMem ih
     · simp
     · have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
       simp only [Finset.forall_mem_insert] at hmem
@@ -64,10 +64,10 @@ theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (
         have : K x ≤ ⨆ i ∈ (s : Set ι), K i := le_iSup₂ (f := fun i _ => K i) x hx
         exact this (hmem.2 x hx)
       intro heq1
-      rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hnmem] at heq1
-      have hnmem' : i ∉ (s : Set ι) := by simpa
+      rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hnotMem] at heq1
+      have hnotMem' : i ∉ (s : Set ι) := by simpa
       obtain ⟨heq1i : f i = 1, heq1S : s.noncommProd f _ = 1⟩ :=
-        Subgroup.disjoint_iff_mul_eq_one.mp (hind.disjoint_biSup hnmem') hmem.1 hmem_bsupr heq1
+        Subgroup.disjoint_iff_mul_eq_one.mp (hind.disjoint_biSup hnotMem') hmem.1 hmem_bsupr heq1
       intro i h
       simp only [Finset.mem_insert] at h
       rcases h with (rfl | h)

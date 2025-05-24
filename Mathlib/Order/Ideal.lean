@@ -151,11 +151,11 @@ class IsProper (I : Ideal P) : Prop where
   /-- This ideal is not the whole set. -/
   ne_univ : (I : Set P) ≠ univ
 
-theorem isProper_of_notMem {I : Ideal P} {p : P} (nmem : p ∉ I) : IsProper I :=
+theorem isProper_of_notMem {I : Ideal P} {p : P} (notMem : p ∉ I) : IsProper I :=
   ⟨fun hp ↦ by
     have := mem_univ p
     rw [← hp] at this
-    exact nmem this⟩
+    exact notMem this⟩
 
 @[deprecated (since := "2025-05-23")] alias isProper_of_not_mem := isProper_of_notMem
 

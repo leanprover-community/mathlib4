@@ -179,7 +179,7 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
           I2 I1).le using 2
     simp only [sub_add_sub_cancel]
   refine ⟨f, I3, f_cont, f_mem, HasCompactSupport.intro k_compact fun x hx => ?_⟩
-  rw [← Function.nmem_support]
+  rw [← Function.notMem_support]
   contrapose! hx
   exact interior_subset (f_support hx)
 

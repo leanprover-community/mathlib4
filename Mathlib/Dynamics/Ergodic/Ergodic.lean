@@ -63,7 +63,7 @@ theorem measure_self_or_compl_eq_zero (hf : PreErgodic f μ) (hs : MeasurableSet
     (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ sᶜ = 0 := by
   simpa using hf.ae_empty_or_univ hs hs'
 
-theorem ae_mem_or_ae_nmem (hf : PreErgodic f μ) (hsm : MeasurableSet s) (hs : f ⁻¹' s = s) :
+theorem ae_mem_or_ae_notMem (hf : PreErgodic f μ) (hsm : MeasurableSet s) (hs : f ⁻¹' s = s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.1 <| hf.aeconst_set hsm hs
 
@@ -128,7 +128,7 @@ theorem ae_empty_or_univ₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s 
 
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
-theorem ae_mem_or_ae_nmem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
+theorem ae_mem_or_ae_notMem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.mp <| hf.aeconst_set₀ hsm hs

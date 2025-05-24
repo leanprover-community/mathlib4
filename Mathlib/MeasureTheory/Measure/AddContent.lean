@@ -165,7 +165,7 @@ theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
   conv_lhs => rw [← hC.sUnion_insert_disjointOfDiff ht hs hst]
   rw [← coe_insert, addContent_sUnion]
   · rw [sum_insert]
-    exact hC.nmem_disjointOfDiff ht hs
+    exact hC.notMem_disjointOfDiff ht hs
   · rw [coe_insert]
     exact Set.insert_subset hs (hC.subset_disjointOfDiff ht hs)
   · rw [coe_insert]

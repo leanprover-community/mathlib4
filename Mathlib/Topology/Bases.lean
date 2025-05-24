@@ -727,7 +727,7 @@ theorem countable_countableBasis [SecondCountableTopology α] : (countableBasis 
 instance encodableCountableBasis [SecondCountableTopology α] : Encodable (countableBasis α) :=
   (countable_countableBasis α).toEncodable
 
-theorem empty_nmem_countableBasis [SecondCountableTopology α] : ∅ ∉ countableBasis α :=
+theorem empty_notMem_countableBasis [SecondCountableTopology α] : ∅ ∉ countableBasis α :=
   (exists_countable_basis α).choose_spec.2.1
 
 theorem isBasis_countableBasis [SecondCountableTopology α] :
@@ -746,7 +746,7 @@ theorem isOpen_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
 
 theorem nonempty_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
     (hs : s ∈ countableBasis α) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs <| empty_nmem_countableBasis α
+  nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs <| empty_notMem_countableBasis α
 
 variable (α)
 

@@ -826,7 +826,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
       ← div_eq_mul_inv]
     have : ∀ x, x ∉ a i → ‖g i x‖ * ‖(f x - c)‖ = 0 := by
       intro x hx
-      have : g i x = 0 := by rw [← Function.nmem_support]; exact fun h ↦ hx (hi h)
+      have : g i x = 0 := by rw [← Function.notMem_support]; exact fun h ↦ hx (hi h)
       simp [this]
     rw [← setIntegral_eq_integral_of_forall_compl_eq_zero this (μ := μ)]
     refine integral_mono_of_nonneg (Eventually.of_forall (fun x ↦ by positivity)) ?_

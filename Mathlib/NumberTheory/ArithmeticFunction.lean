@@ -296,7 +296,7 @@ theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b 
   have h : {(1, x)} ⊆ divisorsAntidiagonal x := by simp [x0]
   rw [← sum_subset h]
   · simp
-  intro y ymem ynmem
+  intro y ymem ynotMem
   have y1ne : y.fst ≠ 1 := fun con => by simp_all [Prod.ext_iff]
   simp [y1ne]
 
@@ -318,7 +318,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) :=
       have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
       rw [← sum_subset h]
       · simp
-      intro ⟨y₁, y₂⟩ ymem ynmem
+      intro ⟨y₁, y₂⟩ ymem ynotMem
       have y2ne : y₂ ≠ 1 := by
         intro con
         simp_all

@@ -506,7 +506,7 @@ theorem exists_smooth_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s 
       ⟨g.sum_nonneg x, g.sum_le_one x⟩⟩
   suffices ∀ i, g i x = 0 by simp only [this, ContMDiffMap.coeFn_mk, finsum_zero, Pi.zero_apply]
   refine fun i => f.toSmoothPartitionOfUnity_zero_of_zero ?_
-  exact nmem_support.1 (subset_compl_comm.1 (hf.support_subset i) hx)
+  exact notMem_support.1 (subset_compl_comm.1 (hf.support_subset i) hx)
 
 /-- Given two disjoint closed sets `s, t` in a Hausdorff normal σ-compact finite dimensional
 manifold `M`, there exists a smooth function `f : M → [0,1]` that vanishes in a neighbourhood of `s`
@@ -699,12 +699,12 @@ theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
       intro c
       by_cases Hx : x ∈ tsupport (f c)
       · suffices g c (chartAt H c x) = 0 by simp only [this, mul_zero]
-        rw [← nmem_support, g_supp, ← mem_preimage, preimage_inter]
+        rw [← notMem_support, g_supp, ← mem_preimage, preimage_inter]
         contrapose! hx
         simp only [mem_inter_iff, mem_preimage, (chartAt H c).left_inv (hf c Hx)] at hx
         exact hx.2
       · have : x ∉ support (f c) := by contrapose! Hx; exact subset_tsupport _ Hx
-        rw [nmem_support] at this
+        rw [notMem_support] at this
         simp [this]
   · apply SmoothPartitionOfUnity.contMDiff_finsum_smul
     intro c x hx
@@ -750,7 +750,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
     simp only [support_div, f_supp, B, inter_univ]
   -- show that the function equals one exactly on `t`
   · intro x
-    simp [div_eq_one_iff_eq (A x).ne', left_eq_add, ← nmem_support, g_supp]
+    simp [div_eq_one_iff_eq (A x).ne', left_eq_add, ← notMem_support, g_supp]
 
 /-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` exactly on `s` and to `1`
@@ -762,4 +762,4 @@ theorem exists_msmooth_zero_iff_one_iff_of_isClosed {s t : Set M}
   rcases exists_msmooth_support_eq_eq_one_iff I hs.isOpen_compl ht hd.subset_compl_left with
     ⟨f, f_diff, f_range, fs, ft⟩
   refine ⟨f, f_diff, f_range, ?_, ft⟩
-  simp [← nmem_support, fs]
+  simp [← notMem_support, fs]

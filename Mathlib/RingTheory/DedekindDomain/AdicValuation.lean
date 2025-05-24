@@ -262,20 +262,20 @@ theorem intValuation_exists_uniformizer :
     exact
       ⟨v.ne_bot, v.asIdeal, (not_congr Ideal.isUnit_iff).mpr (Ideal.IsPrime.ne_top v.isPrime),
         sq v.asIdeal⟩
-  obtain ⟨π, mem, nmem⟩ := SetLike.exists_of_lt hlt
+  obtain ⟨π, mem, notMem⟩ := SetLike.exists_of_lt hlt
   have hπ : Associates.mk (Ideal.span {π}) ≠ 0 := by
     rw [Associates.mk_ne_zero']
     intro h
-    rw [h] at nmem
-    exact nmem (Submodule.zero_mem (v.asIdeal ^ 2))
+    rw [h] at notMem
+    exact notMem (Submodule.zero_mem (v.asIdeal ^ 2))
   use π
   rw [intValuation_if_neg _ (Associates.mk_ne_zero'.mp hπ), WithZero.coe_inj]
   apply congr_arg
   rw [neg_inj, ← Int.ofNat_one, Int.natCast_inj]
-  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem nmem
+  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem notMem
   rw [← pow_one (Associates.mk v.asIdeal), Associates.prime_pow_dvd_iff_le hπ hv] at mem
-  rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
-  exact Nat.eq_of_le_of_lt_succ mem nmem
+  rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at notMem
+  exact Nat.eq_of_le_of_lt_succ mem notMem
 
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
