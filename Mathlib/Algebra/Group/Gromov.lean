@@ -827,7 +827,17 @@ lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S
         rhs
         intro x
         rw [Summable.tsum_mul_left (hf := by (
-          sorry
+          -- TODO - deuplicate this proof
+          apply summable_of_finite_support
+          simp only [one_div, Function.support_mul, Function.support_inv]
+          apply Set.Finite.inter_of_right
+          simp [Pi.single, Function.update]
+          apply Set.Finite.subset (s := {(opAdd (g * x⁻¹))})
+          . simp
+          . intro a ha
+            simp at ha
+            simp [opAdd]
+            simp [← ha]
         ))]
         rw [delta_conv x]
 
