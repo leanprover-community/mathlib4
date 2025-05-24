@@ -178,56 +178,75 @@ noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
 
 -- ## Alternative 1: define variation as a VectorMeasure
 
-namespace variation1
+namespace var1
 open MeasureTheory BigOperators ENNReal Function
 variable {X : Type*} [MeasurableSpace X]
   {V 𝕜 : Type*} [SeminormedAddCommGroup V] (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 V]
   (μ : VectorMeasure X V)
 
--- Implementation note: instead of working with partitions of `s`, work with sets of disjoints sets
+-- NOTE: instead of working with partitions of `s`, work with sets of disjoints sets
 -- contained within `s` since the same value will be achieved in the supremum.
-private def partitions (s : Set X) : Set (ℕ → Set X) :=
-    {E : ℕ → Set X | (∀ n, (E n) ⊆ s) ∧ (∀ n, MeasurableSet (E n)) ∧ Pairwise (Disjoint on E)}
--- NOTE: or `(∀ n, MeasurableSet (E' n)) ∧ Pairwise (Function.onFun Disjoint E') ∧ ⋃ n, E' n = s`
+-- NOTE: forbid the empty set so that partitions of disjoint sets are disjoint sets of sets.
+-- TO DO: rephrase disjoint condition `(P.toSet.PairwiseDisjoint id)`?
+private def partitions (s : Set X) : Set (Finset (Set X)) :=
+    {P | (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ (∀ t ∈ P, ∀ t' ∈ P, Disjoint t t') ∧
+    (∀ p ∈ P, p ≠ ∅)}
 
-/-- By construction partitions behave in a monotone way. -/
-lemma partitions_mono {s₁ s₂ : Set X} (hs : s₁ ⊆ s₂) : partitions s₁ ⊆ partitions s₂ :=
-  fun _ hE ↦ ⟨fun n ↦ subset_trans (hE.1 n) hs, hE.2⟩
+/- By construction partitions behave in a monotone way. -/
+-- lemma partitions_mono {s₁ s₂ : Set X} (hs : s₁ ⊆ s₂) : partitions s₁ ⊆ partitions s₂ :=
+--   fun _ hE ↦ ⟨fun n ↦ subset_trans (hE.1 n) hs, hE.2⟩
 
 /-- Given a partition `E` of a set `s`, this returns the sum of the norm of the measure of the
 elements of that partition. -/
-private noncomputable def varOfPart (E : ℕ → Set X) : ℝ≥0∞ := ∑' n, ENNReal.ofReal ‖μ (E n)‖
+private noncomputable def varOfPart (P : Finset (Set X)) : ℝ≥0∞ := ∑ p ∈ P, ENNReal.ofReal ‖μ p‖
 
 open Classical in
-/-- The value of variation defined as a supremum over partitions. -/
 noncomputable def variationAux (s : Set X) : ℝ≥0∞ :=
-    if (MeasurableSet s) then ⨆ E ∈ partitions s, varOfPart μ E else 0
+    if (MeasurableSet s) then ⨆ P ∈ partitions s, varOfPart μ P else 0
 
 /-- `variationAux` of the empty set is equal to zero. -/
 lemma variation_empty' : variationAux μ ∅ = 0 := by
   simp only [variationAux, varOfPart, MeasurableSet.empty, reduceIte, partitions, and_imp,
     Set.mem_setOf_eq, iSup_eq_zero]
-  intro E _ _ _
-  simp [show ∀ n, μ (E n) = 0 by simp_all]
+  intro P h _ _ h'
+  have : P = ∅ := by
+    by_contra! hP
+    obtain ⟨p, hp⟩ := Finset.Nonempty.exists_mem (Finset.nonempty_iff_ne_empty.mpr hP)
+    exact (h' p hp) (Set.subset_empty_iff.mp <| h p hp)
+  simp [this]
 
-lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε: 0 < ε) :
-    ∃ E ∈ partitions s, variationAux μ s ≤ varOfPart μ E + ε := by
-  -- Since `variationAux` is defined as the supremum.
+lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε) :
+    ∃ P ∈ partitions s, variationAux μ s ≤ varOfPart μ P + ε := by
+  simp [variationAux, hs]
+  -- Since `variationAux` is defined as the supremum and this supremum is bounded.
   sorry
 
-lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {E : ℕ → Set X} (hE : E ∈ partitions s) :
-    varOfPart μ E ≤ variationAux μ s := by
+lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
+    (hP : P ∈ partitions s) : varOfPart μ P ≤ variationAux μ s := by
   simp only [variationAux, hs, reduceIte]
-  exact le_biSup (varOfPart μ) hE
+  exact le_biSup (varOfPart μ) hP
 
-lemma ENNReal.small_sum {ε' : ℝ≥0∞} (hε' : 0 < ε') : ∃ (ε : ℕ → ℝ≥0∞),
-    ∑' i, ε i = ε' ∧ (∀ i, 0 < ε i) := by
-  -- Basic construction of summable sequence.
-  sorry
-
--- lemma required:
--- If, for each `i`, `E i ∈ partitions (s i)` and the sets `s i` are pairwise disjoin, then the
--- union of the partitions is a partition of `⋃ i, s i`.
+open Classical in
+lemma partition_union {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
+    {P : ℕ → Finset (Set X)} (hP : ∀ i, P i ∈ partitions (s i)) (n : ℕ):
+    Finset.biUnion (Finset.range n) P ∈ partitions (⋃ i, s i) := by
+  simp only [partitions, ne_eq, Finset.forall_mem_not_eq', Set.mem_setOf_eq, Finset.mem_biUnion,
+    Finset.mem_range, forall_exists_index, and_imp, not_exists, not_and]
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro p i _ hp
+    exact Set.subset_iUnion_of_subset i ((hP i).1 p hp)
+  · intro p i _ hp
+    exact (hP i).2.1 p hp
+  · intro p i hi hp q j hj hq
+    obtain hc | hc : i = j ∨ i ≠ j := by omega
+    · rw [hc] at hp
+      exact (hP j).2.2.1 p hp q hq
+    · have hp' := (hP i).1 p hp
+      have hq' := (hP j).1 q hq
+      intro t htp htq
+      exact hs hc (subset_trans htp hp') (subset_trans htq hq')
+  · intro i _ h
+    exact (hP i).2.2.2 ∅ h rfl
 
 /-- Aditivity of `variationAux` for disjoint measurable sets. -/
 lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
@@ -236,20 +255,64 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
   rw [ENNReal.hasSum_iff]
   constructor
   · intro n
+    wlog hn : n ≠ 0
+    · simp [show n = 0 by omega]
     apply ENNReal.le_of_forall_pos_le_add
-    intro ε' hε' hlttop
-    -- Using `small_sum` We fix a positive sequence `ε : ℕ → ℝ≥0∞` such that `∑' i, ε i = ε'`
-    obtain ⟨ε, hε_sum, hε_pos⟩ := ENNReal.small_sum (ofReal_pos.mpr hε')
-    -- Using `variationAux_le`, for each set `s i` we choose a partition `E i` such that, for each
-    -- `i`, `variationAux μ (s i) ≤ varOfPart μ (E i) + ε`.
-    choose E hE using fun i ↦ variationAux_le μ (hs i) (hε_pos i)
-    -- Additionally the combination of the partitions `E i` is a partition of `⋃ i, s i`.
-    -- TO DO
-    -- This means, using also `le_variationAux` that `∑' i, varOfPart μ (E i)` is bounded
-    -- above by `variationAux (⋃ i, s i)`.
-    sorry
-  · --
-
+    intro ε' hε' _
+    let ε := ε' / n
+    have hε : 0 < ε := by positivity
+    -- For each set `s i` we choose a partition `P i` such that, for each `i`,
+    -- `variationAux μ (s i) ≤ varOfPart μ (P i) + ε`.
+    choose P hP using fun i ↦ variationAux_le μ (hs i) (hε)
+    -- Since the union of the partitions `P i` is a partition of `⋃ i, s i`, we know that
+    -- `∑' i, varOfPart μ (E i) ≤ variationAux μ (⋃ i, s i)`.
+    have : ∑ i ∈ Finset.range n, varOfPart μ (P i) ≤ variationAux μ (⋃ i, s i) := by
+      classical
+      let Q := Finset.biUnion (Finset.range n) P
+      have hQ : Q ∈ partitions (⋃ i, s i) := partition_union hs' (fun i ↦ (hP i).1) n
+      -- have : (Finset.range n : Set ℕ).PairwiseDisjoint P
+      calc
+        _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, ENNReal.ofReal ‖μ p‖ := by rfl
+        _ = ∑ q ∈ Q, ENNReal.ofReal ‖μ q‖ := by
+          refine Eq.symm (Finset.sum_biUnion ?_)
+          intro l hl m hm hlm R hRl hRm
+          -- Extract the following into a lemma:
+          -- if P, Q are partitions of two disjoint sets then P and Q are disjoint.
+          have : P l ∩ P m = ∅ := by
+            ext p
+            constructor
+            · intro hp
+              have h := (hP l).1.1 p (Finset.mem_of_mem_inter_left hp)
+              have h' := (hP m).1.1 p (Finset.mem_of_mem_inter_right hp)
+              have h_p_emptyset := hs' hlm h h'
+              simp only [Set.bot_eq_empty, Set.le_eq_subset, Set.subset_empty_iff] at h_p_emptyset
+              have h_p_not_emptyset := (hP l).1.2.2.2 p (Finset.mem_of_mem_inter_left hp)
+              exact False.elim (h_p_not_emptyset h_p_emptyset)
+            · intro _
+              simp_all
+          calc R
+            _ ⊆ (P l) ∩ (P m) := by
+              rw [Finset.subset_inter_iff]
+              exact ⟨hRl, hRm⟩
+            _ = ∅ := by exact this
+        _ ≤ variationAux μ (⋃ i, s i) := by
+          exact le_variationAux μ (MeasurableSet.iUnion hs) hQ
+    calc ∑ i ∈ Finset.range n, variationAux μ (s i)
+      _ ≤ ∑ i ∈ Finset.range n, (varOfPart μ (P i) + ε) := by
+        gcongr with i hi
+        exact (hP i).2
+      _ = ∑ i ∈ Finset.range n, varOfPart μ (P i) + ε' := by
+        rw [Finset.sum_add_distrib]
+        norm_cast
+        simp [show n * ε = ε' by rw [mul_div_cancel₀ _ (by positivity)]]
+      _ ≤ variationAux μ (⋃ i, s i) + ε' := by
+        gcongr
+  · intro b hb
+    simp only [variationAux, hs, reduceIte]
+    simp only [variationAux, MeasurableSet.iUnion hs, reduceIte] at hb
+    obtain ⟨Q, hQ, hbQ⟩ := lt_biSup_iff.mp hb
+    -- Choose `n` large so that considering on a finite set of `s i` suffices.
+    -- Take the partitions defined as intersection of `Q` and `s i`.
     sorry
 
 /-- The variation of a vector-valued measure as a `VectorMeasure`. -/
@@ -259,7 +322,7 @@ noncomputable def variation : VectorMeasure X ℝ≥0∞ where
   not_measurable' _ h := if_neg h
   m_iUnion'           := variation_m_iUnion' μ
 
-end variation1
+end var1
 
 
 -- ## Alternative 2: define variation as a measure
