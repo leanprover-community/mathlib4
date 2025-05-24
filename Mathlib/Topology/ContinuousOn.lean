@@ -1297,6 +1297,14 @@ lemma Topology.IsInducing.continuousOn_iff {f : α → β} {g : β → γ} (hg :
 
 @[deprecated (since := "2024-10-28")] alias Inducing.continuousOn_iff := IsInducing.continuousOn_iff
 
+lemma Topology.IsInducing.map_nhdsWithin_eq {f : α → β} (hf : IsInducing f) (s : Set α) (x : α) :
+    map f (𝓝[s] x) = 𝓝[f '' s] f x := by
+  ext; simp +contextual [mem_nhdsWithin_iff_eventually, hf.nhds_eq_comap, forall_comm (α := _ ∈ _)]
+
+lemma Topology.IsInducing.continuousOn_image_iff {g : β → γ} {s : Set α} (hf : IsInducing f) :
+    ContinuousOn g (f '' s) ↔ ContinuousOn (g ∘ f) s := by
+  simp [ContinuousOn, ContinuousWithinAt, ← hf.map_nhdsWithin_eq]
+
 lemma Topology.IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsEmbedding g)
     {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
   hg.isInducing.continuousOn_iff
@@ -1305,9 +1313,8 @@ lemma Topology.IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg 
 alias Embedding.continuousOn_iff := IsEmbedding.continuousOn_iff
 
 lemma Topology.IsEmbedding.map_nhdsWithin_eq {f : α → β} (hf : IsEmbedding f) (s : Set α) (x : α) :
-    map f (𝓝[s] x) = 𝓝[f '' s] f x := by
-  rw [nhdsWithin, Filter.map_inf hf.injective, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
-    inter_eq_self_of_subset_right (image_subset_range _ _)]
+    map f (𝓝[s] x) = 𝓝[f '' s] f x :=
+  hf.isInducing.map_nhdsWithin_eq s x
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.map_nhdsWithin_eq := IsEmbedding.map_nhdsWithin_eq

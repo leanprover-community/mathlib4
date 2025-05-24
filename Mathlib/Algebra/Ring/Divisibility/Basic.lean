@@ -28,7 +28,7 @@ theorem map_dvd_iff (f : F) {a b} : f a ∣ f b ↔ a ∣ b :=
   ⟨fun h ↦ by rw [← f.left_inv a, ← f.left_inv b]; exact map_dvd f.symm h, map_dvd f⟩
 
 theorem map_dvd_iff_dvd_symm (f : F) {a : α} {b : β} :
-    f a ∣ b ↔ a ∣ ( MulEquivClass.toMulEquiv f).symm b := by
+    f a ∣ b ↔ a ∣ (MulEquivClass.toMulEquiv f).symm b := by
   obtain ⟨c, rfl⟩ : ∃ c, f c = b := EquivLike.surjective f b
   simp [map_dvd_iff]
 
