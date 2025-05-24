@@ -154,4 +154,13 @@ def mkPseudofunctor {B₀ C : Type*} [Category B₀] [Bicategory C]
 
 end LocallyDiscrete
 
+/-- The pseudofunctor from `LocallyDiscrete B` to `LocallyDiscrete C`
+induced by a functor `F : B ⥤ C`. -/
+@[simps! obj map mapId mapComp]
+def mapLocallyDiscrete {B C : Type*} [Category B] [Category C] (F : B ⥤ C):
+    Pseudofunctor (LocallyDiscrete B) (LocallyDiscrete C) :=
+  LocallyDiscrete.mkPseudofunctor
+    (fun X ↦ .mk (F.obj X)) (fun f ↦ .toLoc (F.map f))
+    (fun _ ↦ eqToIso (by simp)) (fun _ _ ↦ eqToIso (by simp))
+
 end CategoryTheory

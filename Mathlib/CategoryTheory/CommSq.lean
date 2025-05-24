@@ -88,6 +88,22 @@ lemma horiz_comp {W X X' Y Z Z' : C} {f : W ⟶ X} {f' : X ⟶ X'} {g : W ⟶ Y}
     CommSq (f ≫ f') g h' (i ≫ i') :=
   ⟨by rw [← Category.assoc, Category.assoc, ← hsq₁.w, hsq₂.w, Category.assoc]⟩
 
+/--
+```
+  X₁ ---t---> Y₁ ---t'---> Z₁
+  |           |            |
+  l           m            r
+  |           |            |
+  v           v            v
+  X₂ ---b---> Y₂ ---b'---> Z₂
+```
+-/
+lemma horiz_comp' {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C} {t : X₁ ⟶ Y₁} {t' : Y₁ ⟶ Z₁}
+    {l : X₁ ⟶ X₂} {m : Y₁ ⟶ Y₂} {r : Z₁ ⟶ Z₂} {b : X₂ ⟶ Y₂} {b' : Y₂ ⟶ Z₂}
+    (sq : CommSq t l m b) (sq' : CommSq t' m r b') {t'' : X₁ ⟶ Z₁} {b'' : X₂ ⟶ Z₂}
+    (ht : t ≫ t' = t'') (hb : b ≫ b' = b''): CommSq t'' l r b'' :=
+  ht ▸ hb ▸ sq.horiz_comp sq'
+
 /-- The vertical composition of two commutative squares as below is a commutative square.
 ```
   W ---f---> X
@@ -109,6 +125,26 @@ lemma vert_comp {W X Y Y' Z Z' : C} {f : W ⟶ X} {g : W ⟶ Y} {g' : Y ⟶ Y'} 
     CommSq f (g ≫ g') (h ≫ h') i' :=
   flip (horiz_comp (flip hsq₁) (flip hsq₂))
 
+/--
+```
+  X₁ ---t---> Y₁
+  |           |
+  l           r
+  |           |
+  v           v
+  X₂ ---m---> Y₂
+  |           |
+  l'          r'
+  |           |
+  v           v
+  X₃ ---b---> Y₃
+```
+-/
+lemma vert_comp' {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} {t : X₁ ⟶ Y₁} {m : X₂ ⟶ Y₂} {b : X₃ ⟶ Y₃}
+    {l : X₁ ⟶ X₂} {l' : X₂ ⟶ X₃} {r : Y₁ ⟶ Y₂} {r' : Y₂ ⟶ Y₃}
+    (sq : CommSq t l r m) (sq' : CommSq m l' r' b) {l'' : X₁ ⟶ X₃} {r'' : Y₁ ⟶ Y₃}
+    (hl : l ≫ l' = l'') (hr : r ≫ r' = r'') : CommSq t l'' r'' b :=
+  hl ▸ hr ▸ sq.vert_comp sq'
 
 section
 
