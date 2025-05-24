@@ -120,10 +120,6 @@ def equivProd D Q : D ≀ᵣ Q ≃ (Q → D) × Q where
   left_inv := fun _ => rfl
   right_inv := fun _ => rfl
 
-omit [Group D] [Group Q] in
-lemma equivProdInj : Function.Injective (equivProd D Q).toFun := by
-  intro a b; simp
-
 instance [Finite D] [Finite Q] : Finite (D ≀ᵣ Q) :=
   Finite.of_equiv _ (equivProd D Q).symm
 
