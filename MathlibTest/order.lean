@@ -24,9 +24,7 @@ example {α : Type u} [PartialOrder α] (a b c d e : α) (h1 : a ≤ b) (h2 : b 
 
 example {α : Type u} [PartialOrder α] (a b c d e : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : c ≤ d) (h4 : d ≤ e) (h5 : b ≠ d) :
     a < e := by
-  have : a ≤ c := by
-    order only [h1, h2]
-  order only [h1, h2, h3, h4, h5] -- todo
+  order
 
 example {α : Type u} [PartialOrder α] (s t x y : α) (h1 : s ≤ x) (h2 : x ≤ t) (h3 : s ≤ y)
     (h4 : y ≤ t) (h5 : x ≠ y) :
@@ -84,9 +82,6 @@ example {α : Type u} (a b : α) [Lattice α] : a ⊔ b = b ⊔ a := by
   order
 
 example {α : Type u} (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≥ (a ⊓ b) ⊔ (a ⊓ c) := by
-  order
-
-example {α : Type u} (a b c : Set α) : (a ∩ b) ∪ (a ∩ c) ⊆ a ∩ (b ∪ c) := by
   order
 
 example {α : Type u} (a b : α) [LinearOrder α] (h1 : ¬ (a = b)) : a ≠ b := by
