@@ -123,16 +123,11 @@ attribute [local instance] Int.ideal_span_isMaximal_of_prime Ideal.Quotient.fiel
 
 open scoped Classical in
 private def Ideal.primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :
-    {Q | Q ∈ normalizedFactors (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)} ≃
+    {Q // Q ∈ normalizedFactors (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)} ≃
     (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset :=
   (normalizedFactorsEquiv (f := (mapEquiv (Int.quotientSpanNatEquivZMod p)).toMulEquiv)
     (by simp) (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)).trans
-      (Equiv.setCongr (by
-        classical
-        ext
-        simp_rw [RingEquiv.toMulEquiv_eq_coe, RingEquiv.coe_toMulEquiv, mapEquiv_apply,
-          Set.mem_setOf_eq, Multiset.toFinset_val, Set.mem_def, Multiset.mem_dedup,
-          Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_Quotient_mk]))
+      (Equiv.subtypeEquivRight (fun _ ↦ by simp [Polynomial.map_map]))
 
 private theorem Ideal.primesOverSpanEquivMonicFactorsModAux_symm_apply (A : ℤ[X]) {Q : (ZMod p)[X]}
     (hQ : Q ∈ (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset) :
