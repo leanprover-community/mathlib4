@@ -547,7 +547,7 @@ theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
 lemma disjoint_support_monomial {a : σ →₀ ℕ} {p : MvPolynomial σ R} {s : R}
     (ha : a ∉ p.support) (hs : s ≠ 0) : Disjoint (monomial a s).support p.support := by
   classical
-  simpa [support_monomial, hs] using not_mem_support_iff.mp ha
+  simpa [support_monomial, hs] using notMem_support_iff.mp ha
 
 @[ext]
 theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q :=
@@ -859,9 +859,9 @@ lemma coeffs_add [DecidableEq R] {p q : MvPolynomial σ R} (h : Disjoint p.suppo
   ext r
   simp only [mem_coeffs_iff, mem_support_iff, coeff_add, ne_eq, Finset.mem_union]
   have hl (n : σ →₀ ℕ) (hne : p.coeff n ≠ 0) : q.coeff n = 0 :=
-    not_mem_support_iff.mp <| h.not_mem_of_mem_left_finset (mem_support_iff.mpr hne)
+    notMem_support_iff.mp <| h.notMem_of_mem_left_finset (mem_support_iff.mpr hne)
   have hr (n : σ →₀ ℕ) (hne : q.coeff n ≠ 0) : p.coeff n = 0 :=
-    not_mem_support_iff.mp <| h.not_mem_of_mem_right_finset (mem_support_iff.mpr hne)
+    notMem_support_iff.mp <| h.notMem_of_mem_right_finset (mem_support_iff.mpr hne)
   have hor (n) (h : ¬coeff n p + coeff n q = 0) : coeff n p ≠ 0 ∨ coeff n q ≠ 0 := by
     by_cases hp : coeff n p = 0 <;> aesop
   refine ⟨fun ⟨n, hn1, hn2⟩ ↦ ?_, ?_⟩
