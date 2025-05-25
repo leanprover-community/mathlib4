@@ -31,16 +31,6 @@ namespace MeromorphicAt
 -/
 
 /--
-If `f` is mermorphic at `x`, then `f` vanishes in a punctured neighborhood of `x` iff it vanishes at
-points arbitrarily close to (but different from) `x`.
-
-See `AnalyticAt.frequently_zero_iff_eventually_zero` for a stronger result in the analytic case.
--/
-theorem frequently_zero_iff_eventually_zero (hf : MeromorphicAt f x) :
-    (∃ᶠ z in 𝓝[≠] x, f z = 0) ↔ ∀ᶠ z in 𝓝[≠] x, f z = 0 :=
-  ⟨hf.eventually_eq_zero_or_eventually_ne_zero.resolve_right, fun h ↦ h.frequently⟩
-
-/--
 Variant of `MeromorphicAt.frequently_zero_iff_eventuallyEq_zero`: If `f` is mermorphic at `x`, then
 `f` vanishes eventually in a punctured neighborhood of `x` iff it vanishes at points arbitrarily
 close to (but different from) `x`.
