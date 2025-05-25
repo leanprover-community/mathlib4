@@ -309,9 +309,8 @@ protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 
-@[simp]
-theorem mk_coe (f : M →ₛₗ[σ] M₃) (h) : (LinearMap.mk f h : M →ₛₗ[σ] M₃) = f :=
-  rfl
+@[simp] lemma mk_coe (f : M →ₛₗ[σ] M₃) (h) : (mk f h : M →ₛₗ[σ] M₃) = f := rfl
+@[simp] lemma mk_coe' (f : M →ₛₗ[σ] M₃) (h) : (mk f.toAddHom h : M →ₛₗ[σ] M₃) = f := rfl
 
 variable (fₗ f g)
 
@@ -988,5 +987,14 @@ def restrictScalarsₗ : (M →ₗ[S] N) →ₗ[R₁] M →ₗ[R] N where
   map_smul' := restrictScalars_smul
 
 end RestrictScalarsAsLinearMap
+
+end LinearMap
+
+
+namespace LinearMap
+variable {R S M M₁ M₂ M₃ : Type*} [Semiring R] [Semiring S]
+variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module R M₂] [Module S M₃]
+variable (σ : R →+* S)
 
 end LinearMap
