@@ -63,6 +63,8 @@ lemma comul_tmul (x : B) (y : A) : comul (x ⊗ₜ y) =
 lemma counit_tmul (x : B) (y : A) :
   counit (R := S) (x ⊗ₜ[R] y) = counit (R := R) y • counit (R := S) x := rfl
 
+/-- `expand_comul R x with x₁ x₂` attempts to replace `comul (R := R) x` by
+`x₁ ⊗ₜ x₂` via linearity. -/
 scoped macro "expand_comul" ring:ident var:ident "with" var₁:ident var₂:ident : tactic =>
   `(tactic|
     (induction comul (R := $ring) $var with
@@ -267,3 +269,4 @@ noncomputable abbrev rTensor (f : N →ₗc[R] P) : N ⊗[R] M →ₗc[R] P ⊗[
   Coalgebra.TensorProduct.map f (CoalgHom.id R M)
 
 end CoalgHom
+#lint
