@@ -590,7 +590,6 @@ end IndexOf
 
 section deprecated
 
-@[simp]
 theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_eq_none le_rfl
 
 /-- A version of `getElem_map` that can be used for rewriting. -/
