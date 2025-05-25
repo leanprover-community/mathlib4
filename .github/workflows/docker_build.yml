@@ -1,7 +1,8 @@
 name: docker
 on:
-  push:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
+  workflow_dispatch:  
 env:
   # Possibly change this to `hub.docker.com` in the future
   REGISTRY: ghcr.io
