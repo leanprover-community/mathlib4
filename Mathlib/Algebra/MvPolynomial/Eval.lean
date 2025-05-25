@@ -556,8 +556,8 @@ theorem mapAlgHom_coe_ringHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S�
       (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
   RingHom.mk_coe _ _ _ _ _
 
-lemma range_mapAlgHom [Algebra R S₁] :
-    (mapAlgHom <| Algebra.ofId R S₁).range.toSubmodule = coeffsIn σ (1 : Submodule R S₁) := by
+lemma range_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+    (mapAlgHom f).range.toSubmodule = coeffsIn σ f.range.toSubmodule := by
   ext
   rw [Subalgebra.mem_toSubmodule, ← SetLike.mem_coe, AlgHom.coe_range, mapAlgHom, AlgHom.coe_mk,
     mem_range_map_iff_coeffs_subset, mem_coeffsIn_iff_coeffs_subset]
