@@ -140,6 +140,15 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
     · dsimp
       simp only [one_smul]
 
+instance [IsCocomm R A] [IsCocomm R B] : IsCocomm R (A ⊗[R] B) where
+  comm_comp_comul := by
+    ext x y
+    dsimp
+    conv_rhs => rw [← comm_comul _ x, ← comm_comul _ y]
+    hopf_tensor_induction comul (R := R) x with x₁ x₂
+    hopf_tensor_induction comul (R := R) y with y₁ y₂
+    simp
+
 end TensorProduct
 
 namespace Coalgebra
