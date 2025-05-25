@@ -3,12 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
 -/
-import Mathlib.Algebra.DirectSum.Internal
-import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.Ideal.BigOperators
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 import Mathlib.SetTheory.Cardinal.Basic
 
@@ -221,6 +220,10 @@ lemma eval₂ (hφ : φ.IsHomogeneous m) (f : R →+* MvPolynomial τ S) (g : σ
 
 lemma map (hφ : φ.IsHomogeneous n) (f : R →+* S) : (map f φ).IsHomogeneous n := by
   simpa only [one_mul] using hφ.eval₂ _ _ (fun r ↦ isHomogeneous_C _ (f r)) (isHomogeneous_X _)
+
+lemma of_map {f : R →+* S} (hf : Function.Injective f)
+    (h : (MvPolynomial.map f φ).IsHomogeneous n) : φ.IsHomogeneous n :=
+  fun u hu ↦ h (coeff_map f φ u ▸ map_zero f ▸ hf.ne hu)
 
 lemma aeval [Algebra R S] (hφ : φ.IsHomogeneous m)
     (g : σ → MvPolynomial τ S) (hg : ∀ i, (g i).IsHomogeneous n) :
@@ -542,3 +545,53 @@ theorem decomposition.decompose'_eq :
 end GradedAlgebra
 
 end MvPolynomial
+
+/-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
+this. -/
+lemma Ideal.exists_isHomogeneous_of_mem_span {ι R : Type*} [CommSemiring R]
+    (x : ι → R) (y : R) (hy : y ∈ Ideal.span (.range x)) :
+    ∃ (p : MvPolynomial ι R), p.IsHomogeneous 1 ∧ p.eval x = y := by
+  induction hy using Submodule.span_induction with
+  | mem s hs =>
+    obtain ⟨i, rfl⟩ := hs
+    exact ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X _ _, by simp⟩
+  | zero => exact ⟨0, MvPolynomial.isHomogeneous_zero _ _ _, by simp⟩
+  | add x y _ _ hx hy =>
+    obtain ⟨px, hpxhom, rfl⟩ := hx
+    obtain ⟨py, hpyhom, rfl⟩ := hy
+    exact ⟨px + py, MvPolynomial.IsHomogeneous.add hpxhom hpyhom, by simp⟩
+  | smul a x _ hx =>
+    obtain ⟨px, hpxhom, rfl⟩ := hx
+    exact ⟨MvPolynomial.C a * px, MvPolynomial.IsHomogeneous.C_mul hpxhom a, by simp⟩
+
+/-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
+this. -/
+lemma Ideal.mem_span_pow_iff {ι R : Type*} [CommSemiring R] {n : ℕ} (x : ι → R) (y : R) :
+    y ∈ (Ideal.span <| Set.range x) ^ n ↔
+      ∃ (p : MvPolynomial ι R), p.IsHomogeneous n ∧ p.eval x = y := by
+  refine ⟨?_, ?_⟩
+  · induction n using Nat.case_strong_induction_on generalizing y with
+    | hz => exact fun _ ↦ ⟨MvPolynomial.C y, MvPolynomial.isHomogeneous_C _ _, by simp⟩
+    | hi n ih =>
+      refine fun h ↦ Submodule.smul_induction_on h (fun r hr t ht ↦ ?_) ?_
+      · obtain ⟨pr, hprhom, rfl⟩ := ih n (by omega) r hr
+        obtain ⟨pt, hpthom, rfl⟩ := Ideal.exists_isHomogeneous_of_mem_span x t ht
+        exact ⟨pr * pt, MvPolynomial.IsHomogeneous.mul hprhom hpthom, by simp⟩
+      · rintro x y ⟨px, hpxhom, rfl⟩ ⟨py, hpyhom, rfl⟩
+        exact ⟨px + py, MvPolynomial.IsHomogeneous.add hpxhom hpyhom, by simp⟩
+  · rintro ⟨p, hp, rfl⟩
+    rw [← p.sum_single, map_finsuppSum, Finsupp.sum]
+    refine Ideal.sum_mem _ fun c hc ↦ ?_
+    simp_rw [MvPolynomial.single_eq_monomial, MvPolynomial.eval_monomial]
+    apply Ideal.mul_mem_left
+    have : Finsupp.degree = Finsupp.weight 1 := Finsupp.degree_eq_weight_one (σ := ι) (R := ℕ)
+    rw [← @hp c (by simpa using hc), ← this, Finsupp.degree, ← Finset.prod_pow_eq_pow_sum,
+      Finsupp.prod]
+    exact Ideal.prod_mem_prod fun _ _ ↦ Ideal.pow_mem_pow (Ideal.subset_span (by simp)) _
+
+/-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
+this. -/
+lemma Ideal.mem_span_iff {ι R : Type*} [CommSemiring R] (x : ι → R) (y : R) :
+    y ∈ Ideal.span (.range x) ↔
+      ∃ (p : MvPolynomial ι R), p.IsHomogeneous 1 ∧ p.eval x = y := by
+  rw [← pow_one (span <| .range x), mem_span_pow_iff]
