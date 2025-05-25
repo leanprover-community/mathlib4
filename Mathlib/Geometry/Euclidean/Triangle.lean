@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers, Manuel Candales
+Authors: Joseph Myers, Manuel Candales, Chu Zheng
 -/
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
@@ -30,6 +30,7 @@ unnecessarily.
 * https://en.wikipedia.org/wiki/Law_of_cosines
 * https://en.wikipedia.org/wiki/Pons_asinorum
 * https://en.wikipedia.org/wiki/Sum_of_angles_of_a_triangle
+* https://en.wikipedia.org/wiki/Law_of_sines
 
 -/
 
@@ -48,7 +49,6 @@ most conveniently be developed in terms of vectors and then used to
 deduce corresponding results for Euclidean affine spaces.
 -/
 
-
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 /-- **Law of cosines** (cosine rule), vector angle form. -/
@@ -60,7 +60,7 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_ang
     sub_add_eq_add_sub]
 
 /-- **Law of sines** (sine rule), vector form. -/
-theorem sin_mul_norm_eq_sin_mul_norm (x y : V) :
+theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
   Real.sin (angle x y) * ‖x‖ = Real.sin (angle y (x - y)) * ‖x - y‖  := by
   cases eq_or_ne x 0 with
   | inl hxl =>
@@ -93,9 +93,9 @@ theorem sin_mul_norm_eq_sin_mul_norm (x y : V) :
         · ring_nf
 
 /-- A variant of the law of sines, (two given sides are nonzero) ,vector angle form. -/
-theorem sin_div_norm_eq_sin_div_norm (x y : V) (hx : x ≠ 0) (hxy: x - y ≠ 0) :
+theorem sin_angle_div_norm_eq_sin_angle_div_norm (x y : V) (hx : x ≠ 0) (hxy: x - y ≠ 0) :
   Real.sin (angle x y) / ‖x - y‖ = Real.sin (angle y (x - y)) / ‖x‖ := by
-  field_simp; exact sin_mul_norm_eq_sin_mul_norm x y
+  field_simp; exact sin_angle_mul_norm_eq_sin_angle_mul_norm x y
 
 /-- **Pons asinorum**, vector angle form. -/
 theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) :
@@ -301,24 +301,36 @@ theorem dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (
 alias law_cos := dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle
 
 /-- **Law of sines** (sine rule),  angle-at-point form. -/
-theorem sin_angle_mul_norm_eq_sin_angle_mul_norm {p₁ p₂ p₃ : P} :
+theorem sin_angle_mul_dist_eq_sin_angle_mul_dist {p₁ p₂ p₃ : P} :
   Real.sin (∠ p₁ p₂ p₃) * dist p₂ p₃ = Real.sin (∠ p₃ p₁ p₂) * dist p₃ p₁:=by
   simp [dist_comm p₂ p₃,angle]
   rw [dist_eq_norm_vsub V p₃ p₂, dist_eq_norm_vsub V p₃ p₁]
-  rw [InnerProductGeometry.angle_comm,sin_mul_norm_eq_sin_mul_norm]
+  rw [InnerProductGeometry.angle_comm,sin_angle_mul_norm_eq_sin_angle_mul_norm]
   simp
   left
   rw [InnerProductGeometry.angle_comm,←neg_vsub_eq_vsub_rev p₁ p₂]
   rw [InnerProductGeometry.angle_neg_right,Real.sin_pi_sub]
 
-alias law_sin := sin_angle_mul_norm_eq_sin_angle_mul_norm
+alias law_sin := sin_angle_mul_dist_eq_sin_angle_mul_dist
 
 /-- A variant of the law of sines, angle-at-point form. -/
-theorem sin_angle_div_norm_eq_sin_angle_div_norm {p₁ p₂ p₃ : P}
+theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P}
   (h23: p₂ ≠ p₃) (h31: p₃ ≠ p₁):
   Real.sin (∠ p₁ p₂ p₃) / dist p₃ p₁ = Real.sin (∠ p₃ p₁ p₂) / dist p₂ p₃ := by
   field_simp [dist_ne_zero.mpr h23,dist_ne_zero.mpr h31]
   exact law_sin
+
+/-- A variant of the law of sines, require not collinear. -/
+theorem dist_eq_dist_mul_sin_angle_div_sin_angle {p₁ p₂ p₃ : P}
+  (h: AffineIndependent ℝ ![p₁,p₂,p₃]):
+  dist p₁ p₂ = dist p₃ p₁ * Real.sin (∠ p₂ p₃ p₁) / Real.sin (∠ p₁ p₂ p₃) :=by
+  have : Real.sin (∠ p₁ p₂ p₃) > 0:=by
+    apply EuclideanGeometry.sin_pos_of_not_collinear
+    rw [←affineIndependent_iff_not_collinear_set]
+    exact h
+  field_simp[this]
+  rw [mul_comm,mul_comm (dist p₃ p₁)]
+  rw [law_sin]
 
 /-- **Isosceles Triangle Theorem**: Pons asinorum, angle-at-point form. -/
 theorem angle_eq_angle_of_dist_eq {p₁ p₂ p₃ : P} (h : dist p₁ p₂ = dist p₁ p₃) :
