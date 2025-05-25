@@ -401,6 +401,10 @@ protected theorem comap_of_continuous_measurableEmbedding [BorelSpace α]
     rw [MeasurableEmbedding.comap_apply f_me]
     apply lt_of_le_of_lt (measure_mono (Set.image_preimage_subset _ _)) hμU
 
+protected theorem comap [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β]
+    (μ : Measure β) [OuterRegular μ] (f : α ≃ₜ β) : (μ.comap f).OuterRegular :=
+  OuterRegular.comap_of_continuous_measurableEmbedding μ f.continuous f.measurableEmbedding
+
 protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) :
     (x • μ).OuterRegular := by
   rcases eq_or_ne x 0 with (rfl | h0)
@@ -723,7 +727,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
   simp
 
 open Topology in
-protected theorem comap_of_isOpenEmbedding [BorelSpace α]
+protected theorem _root_.Topology.IsOpenEmbedding.innerRegular_comap [BorelSpace α]
     [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β]
     (μ : Measure β) [H : InnerRegular μ] {f : α → β} (hf : IsOpenEmbedding f) :
     (μ.comap f).InnerRegular where
@@ -732,6 +736,11 @@ protected theorem comap_of_isOpenEmbedding [BorelSpace α]
     (fun _ hU ↦ hf.measurableEmbedding.measurableSet_image' hU)
     (fun _ hKrange hK ↦ hf.isInducing.isCompact_preimage' hK hKrange)
 
+protected theorem comap [BorelSpace α]
+    [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β]
+    (μ : Measure β) [InnerRegular μ] (f : α ≃ₜ β) :
+    (μ.comap f).InnerRegular :=
+  f.isOpenEmbedding.innerRegular_comap μ
 
 end InnerRegular
 
@@ -1069,6 +1078,10 @@ protected theorem _root_.Topology.IsOpenEmbedding.regular_comap [BorelSpace α]
     ⟨hf.measurableEmbedding.innerRegularWRT_comap Regular.innerRegular (μ := μ)
       (fun _ hU ↦ hf.isOpen_iff_image_isOpen.mp hU)
       (fun _ hKrange hK ↦ hf.isInducing.isCompact_preimage' hK hKrange)⟩
+
+protected theorem comap [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+    [BorelSpace β] {μ : Measure β} [Regular μ] (f : α ≃ₜ β) : (μ.comap f).Regular :=
+  f.isOpenEmbedding.regular_comap
 
 protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).Regular := by
   haveI := OuterRegular.smul μ hx
