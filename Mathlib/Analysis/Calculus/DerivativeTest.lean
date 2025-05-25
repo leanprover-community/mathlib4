@@ -8,20 +8,17 @@ import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 
-
-
-
 /-!
 # The First-Derivative Test
 
-We prove the first-derivative test in the strong form given on [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#First-derivative_test).
+We prove the first-derivative test from calculus, in the strong form given on [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#First-derivative_test).
 
 The test is proved over the real numbers ℝ
 using `monotoneOn_of_deriv_nonneg` from [Mathlib.Analysis.Calculus.MeanValue].
 
 # The Second-Derivative Test
 
-We prove the Second-Derivative test from calculus using the First-Derivative test.
+We prove the Szecond-Derivative Test using the First-Derivative Test.
 Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_second-derivative_test).
 
 ## Main results
@@ -126,14 +123,7 @@ theorem isLocalMin_of_deriv {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     IsLocalMin f b :=
   isLocalMin_of_deriv' h (nhdsLT_le_nhdsNE _ (by tauto)) (nhdsGT_le_nhdsNE _ (by tauto)) h₀ h₁
 
-
-
-
-
-
-
-
-open Set Filter Topology SignType
+open Filter SignType
 
 section SecondDeriv
 
@@ -163,42 +153,54 @@ lemma eventually_nhdsWithin_sign_eq_of_deriv_neg (hf : deriv f x₀ < 0) (hx : f
         (f := (-f ·)) (x₀ := x₀) (by simpa [deriv.neg]) (by simpa)
 
 lemma deriv_neg_left_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ}
-    (h₀ : ∀ᶠ (x : ℝ) in 𝓝 x₀, sign (deriv f x) = sign (x - x₀)) :
+    (h₀ : ∀ᶠ (x : ℝ) in 𝓝[≠] x₀, sign (deriv f x) = sign (x - x₀)) :
     ∀ᶠ (b : ℝ) in 𝓝[<] x₀, deriv f b < 0 := by
-  filter_upwards [inter_mem_nhdsWithin _ h₀] with x ⟨(hx : x < x₀), (hx' : sign _ = _)⟩
+  filter_upwards [nhdsLT_le_nhdsNE _ h₀, self_mem_nhdsWithin] with x hx' (hx : x < x₀)
   rwa [← sub_neg, ← sign_eq_neg_one_iff, ← hx', sign_eq_neg_one_iff] at hx
 
 lemma deriv_neg_right_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ}
-    (h₀ : ∀ᶠ (x : ℝ) in 𝓝 x₀, sign (deriv f x) = sign (x₀ - x)) :
+    (h₀ : ∀ᶠ (x : ℝ) in 𝓝[≠] x₀, sign (deriv f x) = sign (x₀ - x)) :
      ∀ᶠ (b : ℝ) in 𝓝[>] x₀, deriv f b < 0 := by
-  filter_upwards [inter_mem_nhdsWithin _ h₀] with x ⟨(hx : x₀ < x), (hx' : sign _ = _)⟩
+  filter_upwards [nhdsGT_le_nhdsNE _ h₀, self_mem_nhdsWithin] with x hx' (hx : x₀ < x)
   rwa [← sub_neg, ← sign_eq_neg_one_iff, ← hx', sign_eq_neg_one_iff] at hx
 
 lemma deriv_pos_right_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ}
-    (h₀ : ∀ᶠ (x : ℝ) in 𝓝 x₀, sign (deriv f x) = sign (x - x₀)) :
+    (h₀ : ∀ᶠ (x : ℝ) in 𝓝[≠] x₀, sign (deriv f x) = sign (x - x₀)) :
      ∀ᶠ (b : ℝ) in 𝓝[>] x₀, deriv f b > 0 := by
-  filter_upwards [inter_mem_nhdsWithin _ h₀] with x ⟨(hx : x₀ < x), (hx' : sign _ = _)⟩
+  filter_upwards [nhdsGT_le_nhdsNE _ h₀, self_mem_nhdsWithin] with x hx' (hx : x₀ < x)
   rwa [← sub_pos, ← sign_eq_one_iff, ← hx', sign_eq_one_iff] at hx
 
 lemma deriv_pos_left_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ}
-    (h₀ : ∀ᶠ (x : ℝ) in 𝓝 x₀, sign (deriv f x) = sign (x₀ - x)) :
+    (h₀ : ∀ᶠ (x : ℝ) in 𝓝[≠] x₀, sign (deriv f x) = sign (x₀ - x)) :
     ∀ᶠ (b : ℝ) in 𝓝[<] x₀, deriv f b > 0 := by
-  filter_upwards [inter_mem_nhdsWithin _ h₀] with x ⟨(hx : x < x₀), (hx' : sign _ = _)⟩
+  filter_upwards [nhdsLT_le_nhdsNE _ h₀, self_mem_nhdsWithin] with x hx' (hx : x < x₀)
   rwa [← sub_pos, ← sign_eq_one_iff, ← hx', sign_eq_one_iff] at hx
+
+/-- The First Derivative test with a hypothesis on the sign of the derivative, maximum version. -/
+theorem isLocalMax_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ} (h : ContinuousAt f x₀)
+    (hf : ∀ᶠ x in 𝓝[≠] x₀, sign (deriv f x) = sign (x₀ - x)) :
+    IsLocalMax f x₀ := by
+  have hl := deriv_pos_left_of_sign_deriv hf
+  have hg := deriv_neg_right_of_sign_deriv hf
+  replace hf := (nhdsLT_sup_nhdsGT x₀) ▸
+    eventually_sup.mpr ⟨hl.mono fun x hx => hx.ne', hg.mono fun x hx => hx.ne⟩
+  exact isLocalMax_of_deriv h (hf.mono fun x hx ↦ differentiableAt_of_deriv_ne_zero hx)
+    (hl.mono fun _ => le_of_lt) (hg.mono fun _ => le_of_lt)
+
+/-- The First Derivative test with a hypothesis on the sign of the derivative, minimum version. -/
+theorem isLocalMin_of_sign_deriv {f : ℝ → ℝ} {x₀ : ℝ} (h : ContinuousAt f x₀)
+    (hf : ∀ᶠ x in 𝓝[≠] x₀, sign (deriv f x) = sign (x - x₀)) :
+    IsLocalMin f x₀ := by
+  refine neg_neg f ▸ (isLocalMax_of_sign_deriv (f := (-f ·)) h.neg ?foo |>.neg)
+  simpa [Left.sign_neg, -neg_sub, ← neg_sub _ x₀, deriv.neg]
 
 /-- The Second-Derivative Test from calculus, minimum version.
 Applies to functions like `x^2 + 1[x ≥ 0]` as well as twice differentiable
 functions. -/
 theorem isLocalMin_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0)
-    (hc : ContinuousAt f x₀) : IsLocalMin f x₀ := by
-  have h₀ := eventually_nhdsWithin_sign_eq_of_deriv_pos hf hd
-  have hl := deriv_neg_left_of_sign_deriv h₀
-  have hg := deriv_pos_right_of_sign_deriv h₀
-  have hf₀ := eventually_sup.mpr ⟨hl.mono fun x hx => (ne_of_gt hx).symm,
-                                  hg.mono fun x hx => (ne_of_lt hx).symm⟩
-  have hf := (nhdsLT_sup_nhdsGT x₀) ▸ hf₀
-  exact isLocalMin_of_deriv hc (hf.mono fun x a ↦ differentiableAt_of_deriv_ne_zero a)
-    (hl.mono fun _ => le_of_lt) (hg.mono fun _ => le_of_lt)
+    (hc : ContinuousAt f x₀) : IsLocalMin f x₀ :=
+  isLocalMin_of_sign_deriv hc <| nhdsWithin_le_nhds <|
+    eventually_nhdsWithin_sign_eq_of_deriv_pos hf hd
 
 /-- The Second-Derivative Test from calculus, maximum version. -/
 theorem isLocalMax_of_deriv_deriv_neg (hf : deriv (deriv f) x₀ < 0) (hd : deriv f x₀ = 0)
