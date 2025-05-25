@@ -1061,7 +1061,16 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             equals no_coe i =>
               simp [no_coe]
 
-              sorry
+              by_cases i_eq_zero: i = 0
+              . simp [i_eq_zero]
+              .
+                have i_ne_zero : i ≠ 0 := by
+                  exact i_eq_zero
+                rw [← Fin.exists_succ_eq] at i_ne_zero
+                obtain ⟨z, hz⟩ := i_ne_zero
+                rw [← hz]
+                simp
+
 
 
           unfold no_coe
