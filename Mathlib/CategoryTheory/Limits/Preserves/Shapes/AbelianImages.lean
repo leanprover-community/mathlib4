@@ -29,9 +29,8 @@ variable {X Y : C} (f : X ⟶ Y)
 section Images
 
 variable [HasCokernel f] [HasKernel (cokernel.π f)] [PreservesColimit (parallelPair f 0) F]
-  [PreservesLimit (parallelPair (cokernel.π f) 0) F]
-
-variable [HasCokernel (F.map f)] [HasKernel (cokernel.π (F.map f))]
+  [PreservesLimit (parallelPair (cokernel.π f) 0) F] [HasCokernel (F.map f)]
+  [HasKernel (cokernel.π (F.map f))]
 
 /-- If a functor preserves kernels and cokernels, it preserves abelian images. -/
 def PreservesImage.iso : F.obj (Abelian.image f) ≅ Abelian.image (F.map f) :=
@@ -64,9 +63,8 @@ end Images
 section Coimages
 
 variable [HasKernel f] [HasCokernel (kernel.ι f)] [PreservesLimit (parallelPair f 0) F]
-  [PreservesColimit (parallelPair (kernel.ι f) 0) F]
-
-variable [HasKernel (F.map f)] [HasCokernel (kernel.ι (F.map f))]
+  [PreservesColimit (parallelPair (kernel.ι f) 0) F] [HasKernel (F.map f)]
+  [HasCokernel (kernel.ι (F.map f))]
 
 /-- If a functor preserves kernels and cokernels, it preserves abelian coimages. -/
 def PreservesCoimage.iso : F.obj (Abelian.coimage f) ≅ Abelian.coimage (F.map f) :=
@@ -96,22 +94,17 @@ theorem PreservesCoimage.iso_inv_π :
 
 end Coimages
 
-variable [HasCokernel f] [HasKernel (cokernel.π f)] [PreservesColimit (parallelPair f 0) F]
+variable [HasKernel f] [HasCokernel f] [HasKernel (cokernel.π f)] [HasCokernel (kernel.ι f)]
+  [PreservesLimit (parallelPair f 0) F] [PreservesColimit (parallelPair f 0) F]
   [PreservesLimit (parallelPair (cokernel.π f) 0) F]
-
-variable [HasCokernel (F.map f)] [HasKernel (cokernel.π (F.map f))]
-
-variable [HasKernel f] [HasCokernel (kernel.ι f)] [PreservesLimit (parallelPair f 0) F]
   [PreservesColimit (parallelPair (kernel.ι f) 0) F]
-
-variable [HasKernel (F.map f)] [HasCokernel (kernel.ι (F.map f))]
+  [HasKernel (cokernel.π (F.map f))] [HasCokernel (kernel.ι (F.map f))]
 
 theorem PreservesCoimage.hom_coimageImageComparison :
     (PreservesCoimage.iso F f).hom ≫ coimageImageComparison (F.map f) =
       F.map (coimageImageComparison f) ≫ (PreservesImage.iso F f).hom := by
   simp [← Functor.map_comp, ← Iso.eq_inv_comp, ← cancel_epi (Abelian.coimage.π (F.map f)),
     ← cancel_mono (Abelian.image.ι (F.map f))]
-
 
 /-- If a functor preserves kernels and cokernels, it preserves coimage-image comparisons. -/
 @[simps!]
