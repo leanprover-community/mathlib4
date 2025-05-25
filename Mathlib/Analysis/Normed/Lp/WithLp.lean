@@ -59,7 +59,8 @@ protected def equiv : WithLp p V ≃ V := Equiv.refl _
 This unfortunately cannot be registed with `cases_eliminator`, but it can still be used as
 `cases v using WithLp.rec with | toLp v =>`. -/
 @[elab_as_elim]
-protected def rec (motive : WithLp p V → Sort*) (toLp : ∀ v : V, motive ((WithLp.equiv p _).symm v)) :
+protected def rec {motive : WithLp p V → Sort*}
+    (toLp : ∀ v : V, motive ((WithLp.equiv p _).symm v)) :
     ∀ v, motive v :=
   fun v => toLp ((WithLp.equiv p _) v)
 
