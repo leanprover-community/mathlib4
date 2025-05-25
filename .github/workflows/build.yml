@@ -124,6 +124,15 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
+      # `lake build` again with --quiet and --no-build flags to make error messages easier to find
+      - name: build mathlib quietly
+        id: quiet build
+        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
+        with:
+          linters: lean
+          run: |
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --quiet --no-build --wfail -KCI"
+
       - name: print the sizes of the oleans
         run: |
           du .lake/build/lib/lean/Mathlib ||
