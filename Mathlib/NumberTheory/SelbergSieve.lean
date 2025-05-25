@@ -100,7 +100,7 @@ def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα _pα e := do
   | 0, ~q(ℝ), ~q(@BoundingSieve.weights $i $n) =>
     assertInstancesCommute
     pure (.nonnegative q(BoundingSieve.weights_nonneg $n))
-  | _, _, _ => throwError "not ENNReal.toReal"
+  | _, _, _ => throwError "not BoundingSieve.weights"
 
 end Mathlib.Meta.Positivity
 
