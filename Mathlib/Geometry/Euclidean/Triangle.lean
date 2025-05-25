@@ -61,26 +61,23 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_ang
 
 /-- **Law of sines** (sine rule), vector form. -/
 theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
-  Real.sin (angle x y) * ‖x‖ = Real.sin (angle y (x - y)) * ‖x - y‖  := by
+    Real.sin (angle x y) * ‖x‖ = Real.sin (angle y (x - y)) * ‖x - y‖ := by
   cases eq_or_ne x 0 with
   | inl hxl =>
     simp [hxl]
     cases eq_or_ne y 0 with
     | inl hyl => right; exact hyl
-    | inr hyr => left;rw [angle_neg_right,angle_self hyr];simp
+    | inr hyr => left; rw [angle_neg_right,angle_self hyr]; simp
   | inr hxr =>
     cases eq_or_ne y 0 with
     | inl hyl => simp [hyl]
     | inr hyr =>
       cases eq_or_ne x y with
-      | inl hxy =>
-        rw [hxy]
-        simp;left
-        rw [angle_self hyr,Real.sin_zero]
+      | inl hxy => rw [hxy,sub_self, norm_zero,mul_zero, angle_self hyr, Real.sin_zero,zero_mul]
       | inr hxy =>
-        have hsub: x - y ≠ 0 :=by exact sub_ne_zero_of_ne hxy
-        have h_sin (x y: V) (hx: x ≠ 0) (hy: y ≠ 0):
-          Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) :=by
+        have hsub: x - y ≠ 0 := by exact sub_ne_zero_of_ne hxy
+        have h_sin (x y: V) (hx: x ≠ 0) (hy: y ≠ 0) :
+            Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
           field_simp [sin_angle_mul_norm_mul_norm]
         rw [h_sin x y hxr hyr, h_sin y (x - y) hyr hsub]
         field_simp
@@ -89,12 +86,12 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
         · congr 1
           simp_rw [inner_sub_left,inner_sub_right]
           rw [real_inner_comm x y]
-          ring_nf
-        · ring_nf
+          ring
+        · ring
 
 /-- A variant of the law of sines, (two given sides are nonzero) ,vector angle form. -/
 theorem sin_angle_div_norm_eq_sin_angle_div_norm (x y : V) (hx : x ≠ 0) (hxy: x - y ≠ 0) :
-  Real.sin (angle x y) / ‖x - y‖ = Real.sin (angle y (x - y)) / ‖x‖ := by
+    Real.sin (angle x y) / ‖x - y‖ = Real.sin (angle y (x - y)) / ‖x‖ := by
   field_simp; exact sin_angle_mul_norm_eq_sin_angle_mul_norm x y
 
 /-- **Pons asinorum**, vector angle form. -/
@@ -302,11 +299,11 @@ alias law_cos := dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_co
 
 /-- **Law of sines** (sine rule),  angle-at-point form. -/
 theorem sin_angle_mul_dist_eq_sin_angle_mul_dist {p₁ p₂ p₃ : P} :
-  Real.sin (∠ p₁ p₂ p₃) * dist p₂ p₃ = Real.sin (∠ p₃ p₁ p₂) * dist p₃ p₁:=by
-  simp [dist_comm p₂ p₃,angle]
+    Real.sin (∠ p₁ p₂ p₃) * dist p₂ p₃ = Real.sin (∠ p₃ p₁ p₂) * dist p₃ p₁ := by
+  simp only [dist_comm p₂ p₃,angle]
   rw [dist_eq_norm_vsub V p₃ p₂, dist_eq_norm_vsub V p₃ p₁]
   rw [InnerProductGeometry.angle_comm,sin_angle_mul_norm_eq_sin_angle_mul_norm]
-  simp
+  rw [vsub_sub_vsub_cancel_right,mul_eq_mul_right_iff]
   left
   rw [InnerProductGeometry.angle_comm,←neg_vsub_eq_vsub_rev p₁ p₂]
   rw [InnerProductGeometry.angle_neg_right,Real.sin_pi_sub]
@@ -314,19 +311,18 @@ theorem sin_angle_mul_dist_eq_sin_angle_mul_dist {p₁ p₂ p₃ : P} :
 alias law_sin := sin_angle_mul_dist_eq_sin_angle_mul_dist
 
 /-- A variant of the law of sines, angle-at-point form. -/
-theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P}
-  (h23: p₂ ≠ p₃) (h31: p₃ ≠ p₁):
-  Real.sin (∠ p₁ p₂ p₃) / dist p₃ p₁ = Real.sin (∠ p₃ p₁ p₂) / dist p₂ p₃ := by
+theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23: p₂ ≠ p₃) (h31: p₃ ≠ p₁):
+    Real.sin (∠ p₁ p₂ p₃) / dist p₃ p₁ = Real.sin (∠ p₃ p₁ p₂) / dist p₂ p₃ := by
   field_simp [dist_ne_zero.mpr h23,dist_ne_zero.mpr h31]
   exact law_sin
 
 /-- A variant of the law of sines, require not collinear. -/
 theorem dist_eq_dist_mul_sin_angle_div_sin_angle {p₁ p₂ p₃ : P}
-  (h: AffineIndependent ℝ ![p₁,p₂,p₃]):
-  dist p₁ p₂ = dist p₃ p₁ * Real.sin (∠ p₂ p₃ p₁) / Real.sin (∠ p₁ p₂ p₃) :=by
-  have : Real.sin (∠ p₁ p₂ p₃) > 0:=by
+    (h: AffineIndependent ℝ ![p₁,p₂,p₃]) :
+    dist p₁ p₂ = dist p₃ p₁ * Real.sin (∠ p₂ p₃ p₁) / Real.sin (∠ p₁ p₂ p₃) :=by
+  have : Real.sin (∠ p₁ p₂ p₃) > 0 := by
     apply EuclideanGeometry.sin_pos_of_not_collinear
-    rw [←affineIndependent_iff_not_collinear_set]
+    rw [← affineIndependent_iff_not_collinear_set]
     exact h
   field_simp[this]
   rw [mul_comm,mul_comm (dist p₃ p₁)]
