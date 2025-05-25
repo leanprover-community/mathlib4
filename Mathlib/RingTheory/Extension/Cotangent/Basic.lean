@@ -387,12 +387,12 @@ end Extension
 
 namespace Generators
 
-variable (P : Generators.{w} R S)
+variable {ι : Type w} (P : Generators R S ι)
 
 /-- The canonical basis on the `CotangentSpace`. -/
 noncomputable
-def cotangentSpaceBasis : Basis P.vars S P.toExtension.CotangentSpace :=
-  (mvPolynomialBasis _ _).baseChange _
+def cotangentSpaceBasis : Basis ι S P.toExtension.CotangentSpace :=
+  (mvPolynomialBasis _ _).baseChange (R := P.Ring) _
 
 @[simp]
 lemma cotangentSpaceBasis_repr_tmul (r x i) :
@@ -410,13 +410,13 @@ lemma cotangentSpaceBasis_apply (i) :
     P.cotangentSpaceBasis i = ((1 : S) ⊗ₜ[P.Ring] D R P.Ring (.X i) :) := by
   simp [cotangentSpaceBasis, toExtension]
 
-instance (P : Generators R S) : Module.Free S P.toExtension.CotangentSpace :=
+instance (P : Generators R S ι) : Module.Free S P.toExtension.CotangentSpace :=
   .of_basis P.cotangentSpaceBasis
 
 universe w' u' v'
 
-variable {R' : Type u'} {S' : Type v'} [CommRing R'] [CommRing S'] [Algebra R' S']
-variable (P' : Generators.{w'} R' S')
+variable {R' : Type u'} {S' : Type v'} {ι' : Type w'} [CommRing R'] [CommRing S'] [Algebra R' S']
+variable (P' : Generators R' S' ι')
 variable [Algebra R R'] [Algebra S S'] [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 attribute [local instance] SMulCommClass.of_commMonoid
@@ -425,8 +425,8 @@ variable {P P'}
 
 universe w'' u'' v''
 
-variable {R'' : Type u''} {S'' : Type v''} [CommRing R''] [CommRing S''] [Algebra R'' S'']
-variable {P'' : Generators.{w''} R'' S''}
+variable {R'' : Type u''} {S'' : Type v''} {ι'' : Type w''}
+  [CommRing R''] [CommRing S''] [Algebra R'' S''] {P'' : Generators R'' S'' ι''}
 variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
   [IsScalarTower R R'' S''] [IsScalarTower R S S'']
 variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
@@ -462,7 +462,7 @@ instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S (Ω[S⁄
   rw [LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler, ← Submodule.map_top]
   exact (Extension.Cotangent.finite P.ideal_fg_of_isFinite).1.map P.toExtension.cotangentComplex
 
-variable {P : Generators R S}
+variable {ι : Type w} {ι' : Type*} {P : Generators R S ι}
 
 --set_option diagnostics true in
 --set_option maxHeartbeats 0 in
@@ -470,7 +470,7 @@ open Extension.H1Cotangent in
 /-- `H¹(L_{S/R})` is independent of the presentation chosen. -/
 @[simps! apply]
 noncomputable
-def Generators.H1Cotangent.equiv (P : Generators R S) (P' : Generators R S) :
+def Generators.H1Cotangent.equiv (P : Generators R S ι) (P' : Generators R S ι') :
     P.toExtension.H1Cotangent ≃ₗ[S] P'.toExtension.H1Cotangent :=
   Extension.H1Cotangent.equiv (P₁ := P.toExtension) (P₂ := P'.toExtension)
     (Generators.defaultHom P P').toExtensionHom
@@ -519,7 +519,7 @@ variable {R S S' T}
 
 /-- `H¹(L_{S/R})` is independent of the presentation chosen. -/
 noncomputable
-abbrev Generators.equivH1Cotangent (P : Generators.{w} R S) :
+abbrev Generators.equivH1Cotangent (P : Generators R S ι) :
     P.toExtension.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
   Generators.H1Cotangent.equiv _ _
 
@@ -527,7 +527,7 @@ attribute [local instance] Module.finitePresentation_of_projective in
 instance [FinitePresentation R S] [Module.Projective S (Ω[S⁄R])] :
     Module.Finite S (H1Cotangent R S) := by
   let P := Algebra.Presentation.ofFinitePresentation R S
-  have : Algebra.FiniteType R P.toExtension.Ring := FiniteType.mvPolynomial R P.vars
+  have : Algebra.FiniteType R P.toExtension.Ring := FiniteType.mvPolynomial R _
   suffices Module.Finite S P.toExtension.H1Cotangent from
     .of_surjective P.equivH1Cotangent.toLinearMap P.equivH1Cotangent.surjective
   rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]
