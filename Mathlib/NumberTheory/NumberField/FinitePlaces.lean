@@ -192,11 +192,14 @@ theorem FinitePlace.norm_le_one (x : 𝓞 (WithVal (v.valuation K))) : ‖embedd
 @[deprecated (since := "2025-02-28")] alias norm_le_one := FinitePlace.norm_le_one
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
-theorem FinitePlace.norm_eq_one_iff_not_mem (x : 𝓞 (WithVal (v.valuation K))) :
+theorem FinitePlace.norm_eq_one_iff_notMem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ = 1 ↔ x ∉ v.asIdeal := by
   rw [norm_def_int, NNReal.coe_eq_one, toNNReal_eq_one_iff (v.intValuation x)
     (absNorm_ne_zero v) (one_lt_absNorm_nnreal v).ne', ← intValuation_lt_one_iff_mem, not_lt]
   exact (intValuation_le_one v x).ge_iff_eq.symm
+
+@[deprecated (since := "2025-05-23")]
+alias FinitePlace.norm_eq_one_iff_not_mem := FinitePlace.norm_eq_one_iff_notMem
 
 @[deprecated (since := "2025-02-28")]
   alias norm_eq_one_iff_not_mem := FinitePlace.norm_eq_one_iff_not_mem
@@ -256,7 +259,7 @@ theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ �
   use x
   simp only [mk_apply]
   rw [← norm_lt_one_iff_mem] at hx1
-  rw [← norm_eq_one_iff_not_mem] at hx2
+  rw [← norm_eq_one_iff_notMem] at hx2
   linarith
 
 theorem maximalIdeal_mk (v : HeightOneSpectrum (𝓞 K)) : maximalIdeal (mk v) = v := by

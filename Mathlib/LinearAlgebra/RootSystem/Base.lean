@@ -196,7 +196,7 @@ lemma pos_or_neg_of_sum_smul_root_mem [CharZero R] [Fintype ι] (f : ι → ℤ)
   · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
     aesop
 
-lemma sub_nmem_range_root [CharZero R] [Finite ι]
+lemma sub_notMem_range_root [CharZero R] [Finite ι]
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.root i - P.root j ∉ range P.root := by
   rcases eq_or_ne j i with rfl | hij
@@ -213,10 +213,14 @@ lemma sub_nmem_range_root [CharZero R] [Finite ι]
   · simpa [hij, f] using pos j
   · simpa [hij, f] using neg i
 
-lemma sub_nmem_range_coroot [CharZero R] [Finite ι]
+@[deprecated (since := "2025-05-24")] alias sub_nmem_range_root := sub_notMem_range_root
+
+lemma sub_notMem_range_coroot [CharZero R] [Finite ι]
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.coroot i - P.coroot j ∉ range P.coroot :=
-  b.flip.sub_nmem_range_root hi hj
+  b.flip.sub_notMem_range_root hi hj
+
+@[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
 
 end RootPairing
 
