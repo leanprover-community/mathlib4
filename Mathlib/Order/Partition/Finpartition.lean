@@ -604,7 +604,7 @@ instance (s : Finset α) : Bot (Finpartition s) :=
         rw [Finset.coe_map]
         exact Finset.pairwiseDisjoint_range_singleton.subset (Set.image_subset_range _ _)
       sup_parts := by rw [sup_map, id_comp, Embedding.coeFn_mk, Finset.sup_singleton_eq_self]
-      not_bot_mem := by simp }⟩
+      bot_notMem := by simp }⟩
 
 @[simp]
 theorem parts_bot (s : Finset α) :
