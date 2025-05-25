@@ -40,45 +40,43 @@ variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 An extension of an `R`-algebra `S` is an `R` algebra `P` together with a surjection `P →ₐ[R] S`.
 Also see `Algebra.Extension.ofSurjective`.
 -/
-structure Algebra.Extension where
-  /-- The underlying algebra of an extension. -/
-  Ring : Type w
-  [commRing : CommRing Ring]
-  [algebra₁ : Algebra R Ring]
-  [algebra₂ : Algebra Ring S]
-  [isScalarTower : IsScalarTower R Ring S]
+structure Algebra.Extension (E : Type w) [CommRing E] [Algebra R E] [Algebra E S]
+    [IsScalarTower R E S] where
   /-- A chosen (set-theoretic) section of an extension. -/
-  σ : S → Ring
-  algebraMap_σ : ∀ x, algebraMap Ring S (σ x) = x
+  σ : S → E
+  algebraMap_σ : ∀ x, algebraMap E S (σ x) = x
 
 namespace Algebra.Extension
 
 variable {R S}
-variable (P : Extension.{w} R S)
+variable {E : Type w} [CommRing E] [Algebra R E] [Algebra E S] [IsScalarTower R E S]
+  (P : Extension R S E)
 
-attribute [instance] commRing algebra₁ algebra₂ isScalarTower
+set_option linter.unusedVariables false in
+/-- The ring of `P`. -/
+abbrev Ring (P : Extension R S E) : Type w := E
 
 attribute [simp] algebraMap_σ
 
 -- We want to make sure `R₀` acts compatibly on `R` and `S` to avoid unsensical instances
-@[nolint unusedArguments]
-noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
-    Algebra R₀ P.Ring := Algebra.compHom P.Ring (algebraMap R₀ R)
-
-instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
-    IsScalarTower R₀ R P.Ring := IsScalarTower.of_algebraMap_eq' rfl
-
-instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
-    {R₁} [CommRing R₁] [Algebra R₁ R] [Algebra R₁ S] [IsScalarTower R₁ R S]
-    [Algebra R₀ R₁] [IsScalarTower R₀ R₁ R] :
-    IsScalarTower R₀ R₁ P.Ring := IsScalarTower.of_algebraMap_eq' <| by
-  rw [IsScalarTower.algebraMap_eq R₀ R, IsScalarTower.algebraMap_eq R₁ R,
-    RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R₀ R₁ R]
-
-instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
-    IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <| by
-  rw [IsScalarTower.algebraMap_eq R₀ R P.Ring, ← RingHom.comp_assoc,
-    ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
+--@[nolint unusedArguments]
+--noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+--    Algebra R₀ P.Ring := Algebra.compHom P.Ring (algebraMap R₀ R)
+--
+--instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+--    IsScalarTower R₀ R P.Ring := IsScalarTower.of_algebraMap_eq' rfl
+--
+--instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+--    {R₁} [CommRing R₁] [Algebra R₁ R] [Algebra R₁ S] [IsScalarTower R₁ R S]
+--    [Algebra R₀ R₁] [IsScalarTower R₀ R₁ R] :
+--    IsScalarTower R₀ R₁ P.Ring := IsScalarTower.of_algebraMap_eq' <| by
+--  rw [IsScalarTower.algebraMap_eq R₀ R, IsScalarTower.algebraMap_eq R₁ R,
+--    RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R₀ R₁ R]
+--
+--instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+--    IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <| by
+--  rw [IsScalarTower.algebraMap_eq R₀ R P.Ring, ← RingHom.comp_assoc,
+--    ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
 
 @[simp]
 lemma σ_smul (x y) : P.σ x • y = x * y := by
@@ -93,22 +91,21 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) := (⟨_
 section Construction
 
 /-- Construct `Extension` from a surjective algebra homomorphism. -/
-@[simps -isSimp Ring σ]
+@[simps -isSimp σ]
 noncomputable
 def ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
-    (h : Function.Surjective f) : Extension.{w} R S where
-  Ring := P
-  algebra₂ := f.toAlgebra
-  isScalarTower := letI := f.toAlgebra; IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
-  σ x := (h x).choose
-  algebraMap_σ x := (h x).choose_spec
+    (h : Function.Surjective f) :
+    letI : Algebra P S := f.toAlgebra
+    Extension.{w} R S P :=
+  letI : Algebra P S := f.toAlgebra
+  { σ x := (h x).choose
+    algebraMap_σ x := (h x).choose_spec }
 
 variable (R S) in
 /-- The trivial extension of `S`. -/
-@[simps -isSimp Ring σ]
+@[simps -isSimp σ]
 noncomputable
-def self : Extension R S where
-  Ring := S
+def self : Extension R S S where
   σ := _root_.id
   algebraMap_σ _ := rfl
 
@@ -120,25 +117,29 @@ section Localization
 variable (M : Submonoid S) {S' : Type*} [CommRing S'] [Algebra S S'] [IsLocalization M S']
 variable [Algebra R S'] [IsScalarTower R S S']
 
+noncomputable
+instance : Algebra (Localization (Submonoid.comap (algebraMap E S) M)) S' :=
+  (IsLocalization.lift (M := (M.comap (algebraMap E S)))
+    (g := (algebraMap S S').comp (algebraMap E S))
+    (by simpa using fun x hx ↦ IsLocalization.map_units S' ⟨_, hx⟩)).toAlgebra
+
+instance : IsScalarTower R (Localization (Submonoid.comap (algebraMap E S) M)) S' := by
+  letI : Algebra (Localization (M.comap (algebraMap E S))) S' :=
+    (IsLocalization.lift (M := (M.comap (algebraMap E S)))
+      (g := (algebraMap S S').comp (algebraMap E S))
+      (by simpa using fun x hx ↦ IsLocalization.map_units S' ⟨_, hx⟩)).toAlgebra
+  apply IsScalarTower.of_algebraMap_eq'
+  rw [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_eq R E (Localization _),
+    ← RingHom.comp_assoc, IsLocalization.lift_comp, RingHom.comp_assoc,
+    ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
+
 /--
 An `R`-extension `P → S` gives an `R`-extension `Pₘ → Sₘ`.
 Note that this is different from `baseChange` as the base does not change.
 -/
 noncomputable
-def localization (P : Extension.{w} R S) : Extension R S' where
-  Ring := Localization (M.comap (algebraMap P.Ring S))
-  algebra₂ := (IsLocalization.lift (M := (M.comap (algebraMap P.Ring S)))
-      (g := (algebraMap S S').comp (algebraMap P.Ring S))
-      (by simpa using fun x hx ↦ IsLocalization.map_units S' ⟨_, hx⟩)).toAlgebra
-  isScalarTower := by
-    letI : Algebra (Localization (M.comap (algebraMap P.Ring S))) S' :=
-      (IsLocalization.lift (M := (M.comap (algebraMap P.Ring S)))
-        (g := (algebraMap S S').comp (algebraMap P.Ring S))
-        (by simpa using fun x hx ↦ IsLocalization.map_units S' ⟨_, hx⟩)).toAlgebra
-    apply IsScalarTower.of_algebraMap_eq'
-    rw [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_eq R P.Ring (Localization _),
-      ← RingHom.comp_assoc, IsLocalization.lift_comp, RingHom.comp_assoc,
-      ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
+def localization (P : Extension.{w} R S E) :
+    Extension R S' (Localization (M.comap (algebraMap E S))) where
   σ s := Localization.mk (P.σ (IsLocalization.sec M s).1) ⟨P.σ (IsLocalization.sec M s).2, by simp⟩
   algebraMap_σ s := by
     simp [RingHom.algebraMap_toAlgebra, Localization.mk_eq_mk', IsLocalization.lift_mk',
@@ -148,10 +149,13 @@ end Localization
 
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
+noncomputable instance : Algebra (T ⊗[R] E) (T ⊗[R] S) :=
+  (Algebra.TensorProduct.map (AlgHom.id T T) (IsScalarTower.toAlgHom _ _ _)).toAlgebra
+
 /-- The base change of an `R`-extension of `S` to `T` gives a `T`-extension of `T ⊗[R] S`. -/
 noncomputable
-def baseChange {T} [CommRing T] [Algebra R T] (P : Extension R S) : Extension T (T ⊗[R] S) where
-  Ring := T ⊗[R] P.Ring
+def baseChange {T} [CommRing T] [Algebra R T] (P : Extension R S E) :
+    Extension T (T ⊗[R] S) (T ⊗[R] E) where
   __ := ofSurjective (P := T ⊗[R] P.Ring) (Algebra.TensorProduct.map (AlgHom.id T T)
     (IsScalarTower.toAlgHom _ _ _)) (LinearMap.lTensor_surjective T
     (g := (IsScalarTower.toAlgHom R P.Ring S).toLinearMap) P.algebraMap_surjective)
@@ -159,8 +163,10 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Extension R S) : Extension T 
 
 end Construction
 
-variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Extension R' S')
-variable {R'' S''} [CommRing R''] [CommRing S''] [Algebra R'' S''] (P'' : Extension R'' S'')
+variable {R' S' E'} [CommRing R'] [CommRing S'] [CommRing E'] [Algebra R' S'] [Algebra R' E']
+  [Algebra E' S'] [IsScalarTower R' E' S'] (P' : Extension R' S' E')
+variable {R'' S'' E''} [CommRing R''] [CommRing S''] [CommRing E''] [Algebra R'' S'']
+  [Algebra R'' E''] [Algebra E'' S''] [IsScalarTower R'' E'' S''] (P'' : Extension R'' S'' E'')
 
 section Hom
 
@@ -193,13 +199,15 @@ variable {P P'}
 
 /-- A hom between extensions as an algebra homomorphism. -/
 noncomputable
-def Hom.toAlgHom [Algebra R S'] [IsScalarTower R R' S'] (f : Hom P P') :
+def Hom.toAlgHom [Algebra R E'] [IsScalarTower R R' E'] [Algebra R S']
+    [IsScalarTower R R' S'] (f : Hom P P') :
     P.Ring →ₐ[R] P'.Ring where
   __ := f.toRingHom
   commutes' := by simp [← IsScalarTower.algebraMap_apply]
 
 @[simp]
-lemma Hom.toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S'] (f : Hom P P') (x) :
+lemma Hom.toAlgHom_apply [Algebra R E'] [IsScalarTower R R' E'] [Algebra R S']
+    [IsScalarTower R R' S'] (f : Hom P P') (x) :
     f.toAlgHom x = f.toRingHom x := rfl
 
 variable (P P')
@@ -246,19 +254,18 @@ section Infinitesimal
 /-- Given an `R`-algebra extension `0 → I → P → S → 0` of `S`,
 the infinitesimal extension associated to it is `0 → I/I² → P/I² → S → 0`. -/
 noncomputable
-def infinitesimal (P : Extension R S) : Extension R S where
-  Ring := P.Ring ⧸ P.ker ^ 2
+def infinitesimal (P : Extension R S E) : Extension R S (P.Ring ⧸ P.ker ^ 2) where
   σ := Ideal.Quotient.mk _ ∘ P.σ
   algebraMap_σ x := by dsimp; exact P.algebraMap_σ x
 
 /-- The canonical map `P → P/I²` as maps between extensions. -/
 noncomputable
-def toInfinitesimal (P : Extension R S) : P.Hom P.infinitesimal where
+def toInfinitesimal (P : Extension R S E) : P.Hom P.infinitesimal where
   toRingHom := Ideal.Quotient.mk _
   toRingHom_algebraMap _ := rfl
   algebraMap_toRingHom _ := rfl
 
-lemma ker_infinitesimal (P : Extension R S) :
+lemma ker_infinitesimal (P : Extension R S E) :
     P.infinitesimal.ker = P.ker.cotangentIdeal :=
   AlgHom.ker_kerSquareLift _
 
@@ -366,7 +373,7 @@ lemma Cotangent.val_mk (x : P.ker) : (mk x).val = Ideal.toCotangent _ x := rfl
 lemma Cotangent.mk_surjective : Function.Surjective (mk (P := P)) :=
   fun x ↦ Ideal.toCotangent_surjective P.ker x.val
 
-lemma Cotangent.mk_eq_zero_iff {P : Extension R S} (x : P.ker) :
+lemma Cotangent.mk_eq_zero_iff {P : Extension R S E} (x : P.ker) :
     Cotangent.mk x = 0 ↔ x.val ∈ P.ker ^ 2 := by
   simp [Cotangent.ext_iff, Ideal.toCotangent_eq_zero]
 
@@ -377,7 +384,8 @@ variable [Algebra R S'] [IsScalarTower R R' S']
 
 /-- A hom between two extensions induces a map between cotangent spaces. -/
 noncomputable
-def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
+def Cotangent.map [Algebra R E'] [IsScalarTower R R' E'] (f : Hom P P') :
+    P.Cotangent →ₗ[S] P'.Cotangent where
   toFun x := .of (Ideal.mapCotangent (R := R) _ _ f.toAlgHom
     (fun x hx ↦ by simpa using RingHom.congr_arg (algebraMap S S') hx) x.val)
   map_add' x y := ext (map_add _ x.val y.val)
@@ -394,7 +402,7 @@ def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
     simp only [SetLike.val_smul, smul_eq_mul, map_mul, Hom.toAlgHom_apply]
 
 @[simp]
-lemma Cotangent.map_mk (f : Hom P P') (x) :
+lemma Cotangent.map_mk [Algebra R E'] [IsScalarTower R R' E'] (f : Hom P P') (x) :
     Cotangent.map f (.mk x) =
       .mk ⟨f.toAlgHom x, by simpa [-map_aeval] using RingHom.congr_arg (algebraMap S S') x.2⟩ :=
   rfl
@@ -410,7 +418,9 @@ lemma Cotangent.map_id :
 variable [Algebra R R''] [IsScalarTower R R' R''] [IsScalarTower R' R'' S'']
   [Algebra R S''] [IsScalarTower R R'' S''] [IsScalarTower S S' S'']
 
-lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
+lemma Cotangent.map_comp [Algebra R E'] [IsScalarTower R R' E'] [Algebra R E'']
+    [IsScalarTower R R'' E''] [Algebra R' E''] [IsScalarTower R' R'' E'']
+    (f : Hom P P') (g : Hom P' P'') :
     Cotangent.map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext x
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x

@@ -41,11 +41,12 @@ namespace Algebra
 
 universe w u v
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
+variable {R : Type u} {S : Type v} {E : Type w} [CommRing R] [CommRing S] [Algebra R S]
+  [CommRing E] [Algebra R E] [Algebra E S] [IsScalarTower R E S]
 
 namespace Extension
 
-variable (P : Extension.{w} R S)
+variable (P : Extension.{w} R S E)
 
 /--
 The cotangent space on `P = R[X]`.
@@ -66,8 +67,9 @@ lemma cotangentComplex_mk (x) : P.cotangentComplex (.mk x) = 1 ⊗ₜ .D _ _ x :
 
 universe w' u' v'
 
-variable {R' : Type u'} {S' : Type v'} [CommRing R'] [CommRing S'] [Algebra R' S']
-variable (P' : Extension.{w'} R' S')
+variable {R' : Type u'} {S' : Type v'} {E' : Type w'} [CommRing R'] [CommRing S'] [Algebra R' S']
+  [CommRing E'] [Algebra R' E'] [Algebra E' S'] [IsScalarTower R' E' S']
+variable (P' : Extension.{w'} R' S' E')
 variable [Algebra R R'] [Algebra S S'] [Algebra R S'] [IsScalarTower R R' S']
 
 attribute [local instance] SMulCommClass.of_commMonoid
@@ -76,8 +78,9 @@ variable {P P'}
 
 universe w'' u'' v''
 
-variable {R'' : Type u''} {S'' : Type v''} [CommRing R''] [CommRing S''] [Algebra R'' S'']
-variable {P'' : Extension.{w''} R'' S''}
+variable {R'' : Type u''} {S'' : Type v''} {E'' : Type w''} [CommRing R''] [CommRing S'']
+  [Algebra R'' S''] [CommRing E''] [Algebra R'' E''] [Algebra E'' S''] [IsScalarTower R'' E'' S'']
+variable {P'' : Extension.{w''} R'' S'' E''}
 variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
   [IsScalarTower R R'' S'']
 variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
@@ -85,6 +88,8 @@ variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
 variable [IsScalarTower R R' R''] [IsScalarTower S S' S'']
 
 namespace CotangentSpace
+
+variable [Algebra R E'] [IsScalarTower R R' E']
 
 /--
 This is the map on the cotangent space associated to a map of presentation.
@@ -111,6 +116,8 @@ lemma map_tmul (f : Hom P P') (x y) :
 @[simp]
 lemma map_id :
     CotangentSpace.map (.id P) = LinearMap.id := by ext; simp
+
+variable [Algebra R' E''] [IsScalarTower R' R'' E''] [Algebra R E''] [IsScalarTower R R'' E'']
 
 lemma map_comp (f : Hom P P') (g : Hom P' P'') :
     CotangentSpace.map (g.comp f) =
@@ -148,6 +155,8 @@ lemma map_comp_cotangentComplex (f : Hom P P') :
   ext x; exact map_cotangentComplex f x
 
 end CotangentSpace
+
+variable [Algebra R E'] [IsScalarTower R R' E']
 
 lemma Hom.sub_aux (f g : Hom P P') (x y) :
     letI := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
@@ -201,6 +210,7 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
     IsScalarTower.of_algebraMap_eq fun x ↦
       show algebraMap R S' x = algebraMap S S' (algebraMap P.Ring S (algebraMap R P.Ring x)) by
         rw [← IsScalarTower.algebraMap_apply R P.Ring S, ← IsScalarTower.algebraMap_apply]
+  have : LinearMap.CompatibleSMul (↥P'.ker) P'.Cotangent R P'.Ring := sorry
   refine (Derivation.liftKaehlerDifferential ?_).liftBaseChange S
   refine
   { __ := Cotangent.mk.restrictScalars R ∘ₗ f.subToKer g
@@ -284,7 +294,7 @@ defined as the kernel of `I/I² → S ⊗[P] Ω[P⁄R]`.
 protected noncomputable
 def H1Cotangent : Type _ := LinearMap.ker P.cotangentComplex
 
-variable {P : Extension R S}
+variable {P : Extension R S E}
 
 noncomputable
 instance : AddCommGroup P.H1Cotangent := by delta Extension.H1Cotangent; infer_instance
@@ -308,7 +318,7 @@ instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ R₂]
     IsScalarTower R₁ R₂ P.H1Cotangent := by
   delta Extension.H1Cotangent; infer_instance
 
-lemma subsingleton_h1Cotangent (P : Extension R S) :
+lemma subsingleton_h1Cotangent (P : Extension R S E) :
     Subsingleton P.H1Cotangent ↔ Function.Injective P.cotangentComplex := by
   delta Extension.H1Cotangent
   rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, subsingleton_iff_forall_eq 0, Subtype.forall']
@@ -344,6 +354,8 @@ lemma H1Cotangent.map_eq (f g : Hom P P') : map f = map g := by
 
 @[simp] lemma H1Cotangent.map_id : map (.id P) = LinearMap.id := by ext; simp
 
+variable [Algebra R' E''] [IsScalarTower R' R'' E''] [Algebra R E''] [IsScalarTower R R'' E'']
+
 omit [IsScalarTower R S S'] in
 lemma H1Cotangent.map_comp
     (f : Hom P P') (g : Hom P' P'') :
@@ -354,7 +366,11 @@ lemma H1Cotangent.map_comp
 induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/
 @[simps! apply]
 noncomputable
-def H1Cotangent.equiv {P₁ P₂ : Extension R S} (f₁ : P₁.Hom P₂) (f₂ : P₂.Hom P₁) :
+def H1Cotangent.equiv
+    {E₁ E₂ : Type w} [CommRing E₁] [CommRing E₂]
+    [Algebra R E₁] [Algebra R E₂] [Algebra E₁ S] [Algebra E₂ S]
+    [IsScalarTower R E₁ S] [IsScalarTower R E₂ S]
+    {P₁ : Extension R S E₁} {P₂ : Extension R S E₂} (f₁ : P₁.Hom P₂) (f₂ : P₂.Hom P₁) :
     P₁.H1Cotangent ≃ₗ[S] P₂.H1Cotangent where
   __ := map f₁
   invFun := map f₂
@@ -448,14 +464,18 @@ instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S (Ω[S⁄
 
 variable {P : Generators R S}
 
+--set_option diagnostics true in
+--set_option maxHeartbeats 0 in
 open Extension.H1Cotangent in
 /-- `H¹(L_{S/R})` is independent of the presentation chosen. -/
 @[simps! apply]
 noncomputable
 def Generators.H1Cotangent.equiv (P : Generators R S) (P' : Generators R S) :
     P.toExtension.H1Cotangent ≃ₗ[S] P'.toExtension.H1Cotangent :=
-  Extension.H1Cotangent.equiv
-    (Generators.defaultHom P P').toExtensionHom (Generators.defaultHom P' P).toExtensionHom
+  Extension.H1Cotangent.equiv (P₁ := P.toExtension) (P₂ := P'.toExtension)
+    (Generators.defaultHom P P').toExtensionHom
+    (Generators.defaultHom P' P).toExtensionHom
+  --  (Generators.defaultHom P P').toExtensionHom (Generators.defaultHom P' P).toExtensionHom
 
 variable {S' : Type*} [CommRing S'] [Algebra R S']
 variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]

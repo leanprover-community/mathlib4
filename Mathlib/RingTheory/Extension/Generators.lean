@@ -159,8 +159,7 @@ def self : Generators R S where
 /-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
 @[simps]
 noncomputable
-def toExtension : Extension R S where
-  Ring := P.Ring
+def toExtension : Extension R S P.Ring where
   σ := P.σ
   algebraMap_σ := by simp
 
@@ -472,7 +471,7 @@ def Hom.toExtensionHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S
   algebraMap_toRingHom x := by simp
 
 @[simp]
-lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext; simp
+lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext : 1; simp
 
 @[simp]
 lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
@@ -480,7 +479,10 @@ lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
     [IsScalarTower R S S''] [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
     [IsScalarTower S S' S''] [IsScalarTower R R' R''] [IsScalarTower R R' S']
     (f : P'.Hom P'') (g : P.Hom P') :
-    toExtensionHom (f.comp g) = f.toExtensionHom.comp g.toExtensionHom := by ext; simp
+    toExtensionHom (f.comp g) = f.toExtensionHom.comp g.toExtensionHom := by
+  ext : 1
+  apply RingHom.ext
+  simp
 
 lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
     [IsScalarTower R S S'] (f : P.Hom P') (x) :
@@ -490,7 +492,7 @@ lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
-  simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
+  simp only [ker, Extension.ker, algebraMap_eq]
   rfl
 
 variable {P} in
