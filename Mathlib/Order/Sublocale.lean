@@ -79,50 +79,50 @@ instance carrrier.instFrame : Order.Frame S where
   __ := carrier.instHeytingAlgebra
   __ := carrier.instCompleteLattice
 
-/-- See `Sublocale.embedding` for the public-facing version. -/
-private def embeddingAux (S : Sublocale X) (x : X) : S := sInf {s : S | x ≤ s}
+/-- See `Sublocale.restrict` for the public-facing version. -/
+private def restrictAux (S : Sublocale X) (x : X) : S := sInf {s : S | x ≤ s}
 
-/-- See `Sublocale.giEmbedding` for the public-facing version. -/
-private def giAux(S : Sublocale X) : GaloisInsertion S.embeddingAux Subtype.val where
-  choice x _ := S.embeddingAux x
+/-- See `Sublocale.giRestrict` for the public-facing version. -/
+private def giAux(S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val where
+  choice x _ := S.restrictAux x
   gc a b := by
-    rw [embeddingAux]
+    rw [restrictAux]
     refine Iff.intro (fun h ↦ ?_) (fun h ↦ sInf_le (by simp [h]))
     · rw [← Subtype.coe_le_coe] at h
       apply le_trans' h
       simpa [coe_sInf] using fun _ a _ ↦ a
-  le_l_u x := by simp [embeddingAux]
+  le_l_u x := by simp [restrictAux]
   choice_eq a h := rfl
 
-/-- The embedding from a locale X into the sublocale S. -/
-def embedding (S : Sublocale X) : FrameHom X S where
+/-- The restriction from a locale X into the sublocale S. -/
+def restrict (S : Sublocale X) : FrameHom X S where
   toFun x := sInf {s : S | x ≤ s}
   map_inf' a b := by
-    repeat rw [← embeddingAux]
+    repeat rw [← restrictAux]
     refine eq_of_forall_ge_iff (fun s ↦ Iff.symm (iff_eq_eq.mpr ?_))
     calc
-      _ = (S.embeddingAux a ≤ S.embeddingAux b ⇨ s) := by simp
-      _ = (S.embeddingAux b ≤ a ⇨ s) := by rw [S.giAux.gc.le_iff_le, @le_himp_comm, coe_himp]
+      _ = (S.restrictAux a ≤ S.restrictAux b ⇨ s) := by simp
+      _ = (S.restrictAux b ≤ a ⇨ s) := by rw [S.giAux.gc.le_iff_le, @le_himp_comm, coe_himp]
       _ = ( b ≤ a ⇨ s) := by rw [coe_himp', S.giAux.u_le_u_iff, S.giAux.gc.le_iff_le]
-      _ = (S.embeddingAux (a ⊓ b) ≤ s) := by simp [inf_comm, S.giAux.gc.le_iff_le]
-  map_sSup' s := by rw [← embeddingAux, S.giAux.gc.l_sSup, sSup_image]; simp_rw [embeddingAux]
+      _ = (S.restrictAux (a ⊓ b) ≤ s) := by simp [inf_comm, S.giAux.gc.le_iff_le]
+  map_sSup' s := by rw [← restrictAux, S.giAux.gc.l_sSup, sSup_image]; simp_rw [restrictAux]
   map_top' := by
     refine le_antisymm (by simp) ?_
-    rw [← Subtype.coe_le_coe, ← embeddingAux, S.giAux.gc.u_top]
-    simp [embeddingAux, sInf]
+    rw [← Subtype.coe_le_coe, ← restrictAux, S.giAux.gc.u_top]
+    simp [restrictAux, sInf]
 
-/-- The embedding corresponding to a sublocale forms a Galois insertion with the forgetful map from
- the sublcoale to the original locale. -/
-def giEmbedding (S : Sublocale X) : GaloisInsertion S.embedding Subtype.val where
-  choice x _ := S.embedding x
+/-- The restriction corresponding to a sublocale forms a Galois insertion with the forgetful map
+from the sublcoale to the original locale. -/
+def giRestrict (S : Sublocale X) : GaloisInsertion S.restrict Subtype.val where
+  choice x _ := S.restrict x
   __ := S.giAux
 
-/-- The embedding into a sublocale is a nucleus. -/
+/-- The restriction from the locale X into a sublocale is a nucleus. -/
 def toNucleus (S : Sublocale X) : Nucleus X where
-  toFun x := S.embedding x
-  map_inf' _ _ := by simp [S.giEmbedding.gc.u_inf]
-  idempotent' _ := by rw [S.giEmbedding.gc.l_u_l_eq_l]
-  le_apply' _ := S.giEmbedding.gc.le_u_l _
+  toFun x := S.restrict x
+  map_inf' _ _ := by simp [S.giRestrict.gc.u_inf]
+  idempotent' _ := by rw [S.giRestrict.gc.l_u_l_eq_l]
+  le_apply' _ := S.giRestrict.gc.le_u_l _
 
 lemma toNucleus.range : range S.toNucleus = S.carrier := by
   ext x
@@ -160,7 +160,7 @@ def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
   invFun s := s.toNucleus
   left_inv n := by
     rw [Nucleus.ext_iff]
-    simp only [Sublocale.toNucleus, Nucleus.toSublocale, Sublocale.embedding, FrameHom.coe_mk,
+    simp only [Sublocale.toNucleus, Nucleus.toSublocale, Sublocale.restrict, FrameHom.coe_mk,
       InfTopHom.coe_mk, InfHom.coe_mk, Sublocale.coe_sInf, Nucleus.coe_mk]
     refine fun a ↦ le_antisymm (sInf_le ?_) ?_
     · simp [Nucleus.le_apply, Sublocale.instSetLike,← @SetLike.mem_coe]
