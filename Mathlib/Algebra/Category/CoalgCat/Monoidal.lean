@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 
+import Mathlib.Algebra.Category.CoalgCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.RingTheory.Coalgebra.TensorProduct
-import Mathlib.Algebra.Category.CoalgCat.ComonEquivalence
 
 /-!
 # The monoidal category structure on `R`-coalgebras
