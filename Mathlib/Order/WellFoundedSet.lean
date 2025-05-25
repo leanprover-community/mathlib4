@@ -691,12 +691,14 @@ theorem bddAbove_preimage {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : �
   use (φ m), (φ n)
   exact ⟨hφm hmn, hr⟩
 
-theorem exists_not_mem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+theorem exists_notMem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
     (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
-    ∃ k : ℕ, ∀ m, k < m → ¬ (f m) ∈ s := by
+    ∃ k : ℕ, ∀ m, k < m → f m ∉ s := by
   have := hs.bddAbove_preimage hf
   contrapose! this
   simpa [not_bddAbove_iff, and_comm]
+
+@[deprecated (since := "2025-05-23")] alias exists_not_mem_of_gt := exists_notMem_of_gt
 
 -- TODO: move this material to the main file on WQOs.
 
@@ -874,7 +876,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
   refine Finset.cons_induction ?_ ?_
   · intro f
     exists RelEmbedding.refl (· ≤ ·)
-    simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.not_mem_empty]
+    simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.notMem_empty]
   · intro x s hx ih f
     obtain ⟨g, hg⟩ := (IsPWO.of_linearOrder univ).exists_monotone_subseq (f := (f · x)) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)

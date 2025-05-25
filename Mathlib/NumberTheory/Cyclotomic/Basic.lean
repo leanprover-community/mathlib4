@@ -247,7 +247,7 @@ theorem iff_union_singleton_one :
   refine ⟨fun H => ?_, fun H => ?_⟩
   · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
     simp [adjoin_singleton_one, empty]
-  · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (not_mem_empty s hs).elim, ?_⟩
+  · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (notMem_empty s hs).elim, ?_⟩
     simp [@singleton_one A B _ _ _ H]
 
 variable {A B}

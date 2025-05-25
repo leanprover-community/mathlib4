@@ -381,7 +381,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
           simp [hx]
         apply continuousWithinAt_const.congr_of_eventuallyEq this
         simp [hx₀]
-  · apply continuousWithinAt_of_not_mem_closure
+  · apply continuousWithinAt_of_notMem_closure
     rwa [closure_Icc]
 
 theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X]

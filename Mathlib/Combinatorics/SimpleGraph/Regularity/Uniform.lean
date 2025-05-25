@@ -218,7 +218,7 @@ theorem nonUniforms_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.nonUniforms G ε' 
   monotone_filter_right _ fun _ => mt <| SimpleGraph.IsUniform.mono h
 
 theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε = ∅ := by
-  rw [eq_empty_iff_forall_not_mem]
+  rw [eq_empty_iff_forall_notMem]
   rintro ⟨u, v⟩
   simp only [mk_mem_nonUniforms, parts_bot, mem_map, not_and,
     Classical.not_not, exists_imp]; dsimp
