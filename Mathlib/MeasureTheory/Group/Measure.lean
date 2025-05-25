@@ -221,7 +221,7 @@ lemma _root_.MeasurableEmbedding.IsMulLeftInvariant_comap {H : Type*}
   map_mul_left_eq_self g := by
     ext s hs
     rw [map_apply (by fun_prop) hs]
-    repeat rw [MeasurableEmbedding.comap_apply hf]
+    repeat rw [hf.comap_apply]
     have : f '' ((fun x ↦ g * x) ⁻¹' s) = (fun x ↦ f g * x) ⁻¹' (f '' s) := by
       ext
       constructor
@@ -747,7 +747,7 @@ it is a Haar measure. -/
 @[to_additive
 "If a left-invariant measure gives positive mass to some compact set with nonempty interior, then
 it is an additive Haar measure."]
-theorem HaarMeasure_of_isCompact_nonempty_interior [IsTopologicalGroup G] [BorelSpace G]
+theorem isHaarMeasure_of_isCompact_nonempty_interior [IsTopologicalGroup G] [BorelSpace G]
     (μ : Measure G) [IsMulLeftInvariant μ] (K : Set G) (hK : IsCompact K)
     (h'K : (interior K).Nonempty) (h : μ K ≠ 0) (h' : μ K ≠ ∞) : IsHaarMeasure μ :=
   { lt_top_of_isCompact := fun _L hL =>

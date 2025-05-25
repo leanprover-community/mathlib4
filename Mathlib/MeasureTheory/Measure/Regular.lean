@@ -239,7 +239,7 @@ protected theorem map {α β} [MeasurableSpace α] [MeasurableSpace β]
 
 theorem map' {α β} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {pa qa : Set α → Prop}
     (H : InnerRegularWRT μ pa qa) (f : α ≃ᵐ β) {pb qb : Set β → Prop}
-    (hAB : ∀ U, qb U → qa (f ⁻¹' U)) (hAB' : ∀ K, pb K → pa (f ⁻¹' K)) :
+    (hAB : ∀ U, qb U → qa (f ⁻¹' U)) (hAB' : ∀ K, pa K → pb (f '' K)) :
     InnerRegularWRT (map f μ) pb qb := by
   intro U hU r hr
   rw [f.map_apply U] at hr
@@ -247,17 +247,19 @@ theorem map' {α β} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α}
   refine ⟨f '' K, image_subset_iff.2 hKU, hAB' _ hKc, ?_⟩
   rwa [f.map_apply, f.preimage_image]
 
-protected theorem MeasurableEmbedding.innerRegularWRT_comap
+protected theorem _root_.MeasurableEmbedding.innerRegularWRT_comap
     {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    (μ : Measure β) (pa qa : Set α → Prop) {pb qb : Set β → Prop}
+    {μ : Measure β} {pa qa : Set α → Prop} {pb qb : Set β → Prop}
     (H : InnerRegularWRT μ pb qb) {f : α → β} (hf : MeasurableEmbedding f)
-    (hAB : ∀ U, qa U → qb (f '' U)) (hAB' : ∀ K, pb K → pa (f ⁻¹' K)) :
+    (hAB : ∀ U, qa U → qb (f '' U)) (hAB' : ∀ K, K ⊆ range f → pb K → pa (f ⁻¹' K)) :
     (μ.comap f).InnerRegularWRT pa qa := by
   intro U hU r hr
   rw [hf.comap_apply] at hr
   obtain ⟨K, hKU, hK, hμU⟩ := H (hAB U hU) r hr
-  refine ⟨f ⁻¹' K, by rw[← hf.injective.preimage_image U]; exact preimage_mono hKU, hAB' K hK, ?_⟩
-  rwa [hf.comap_apply, image_preimage_eq_iff.mpr (subset_trans hKU (image_subset_range _ _))]
+  have hKrange := (subset_trans hKU (image_subset_range _ _))
+  refine ⟨f ⁻¹' K, ?_, hAB' K hKrange hK, ?_⟩
+  · rw[← hf.injective.preimage_image U]; exact preimage_mono hKU
+  · rwa [hf.comap_apply, image_preimage_eq_iff.mpr hKrange]
 
 theorem smul (H : InnerRegularWRT μ p q) (c : ℝ≥0∞) : InnerRegularWRT (c • μ) p q := by
   intro U hU r hr
@@ -395,8 +397,7 @@ protected theorem comap_of_continuous_measurableEmbedding [BorelSpace α]
     rw [MeasurableEmbedding.comap_apply f_me] at hr
     obtain ⟨U, hUA, Uopen, hμU⟩ :=
       OuterRegular.outerRegular (f_me.measurableSet_image' hA) r hr
-    use f ⁻¹' U
-    refine ⟨by rwa [Superset, ← Set.image_subset_iff], Uopen.preimage f_cont, ?_⟩
+    refine ⟨f ⁻¹' U, by rwa [Superset, ← Set.image_subset_iff], Uopen.preimage f_cont, ?_⟩
     rw [MeasurableEmbedding.comap_apply f_me]
     apply lt_of_le_of_lt (measure_mono (Set.image_preimage_subset _ _)) hμU
 
@@ -724,18 +725,13 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
 open Topology in
 protected theorem comap_of_isOpenEmbedding [BorelSpace α]
     [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β]
-    (μ : Measure β) [InnerRegular μ] {f : α → β} (hf : IsOpenEmbedding f) :
+    (μ : Measure β) [H : InnerRegular μ] {f : α → β} (hf : IsOpenEmbedding f) :
     (μ.comap f).InnerRegular where
-  innerRegular A hA r hr := by
-    rw [MeasurableEmbedding.comap_apply hf.measurableEmbedding] at hr
-    obtain ⟨K, hKA, Kcompact, hμK⟩ :=
-      InnerRegular.innerRegular (μ := μ) (hf.measurableEmbedding.measurableSet_image' hA) r hr
-    have hK := subset_trans hKA (Set.image_subset_range _ _)
-    use f ⁻¹' K
-    refine ⟨?_, hf.isInducing.isCompact_preimage' Kcompact hK, ?_⟩
-    · rw [← hf.injective.preimage_image A]; exact Set.preimage_mono hKA
-    · rwa [MeasurableEmbedding.comap_apply hf.measurableEmbedding,
-        Set.image_preimage_eq_iff.mpr hK]
+  innerRegular :=
+    hf.measurableEmbedding.innerRegularWRT_comap H.innerRegular
+    (fun _ hU ↦ hf.measurableEmbedding.measurableSet_image' hU)
+    (fun _ hKrange hK ↦ hf.isInducing.isCompact_preimage' hK hKrange)
+
 
 end InnerRegular
 
@@ -1060,7 +1056,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
   simp
 
 open Topology in
-protected theorem comap_of_isOpenEmbedding [BorelSpace α]
+protected theorem _root_.Topology.IsOpenEmbedding.regular_comap [BorelSpace α]
     [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β] {μ : Measure β} [Regular μ]
     (f : α → β) (hf : IsOpenEmbedding f) : (μ.comap f).Regular := by
   haveI :=
@@ -1069,8 +1065,10 @@ protected theorem comap_of_isOpenEmbedding [BorelSpace α]
   haveI :=
     IsFiniteMeasureOnCompacts.comap_of_continuous_measurableEmbedding
       μ hf.continuous hf.measurableEmbedding
-  refine ⟨?_⟩
-
+  exact
+    ⟨hf.measurableEmbedding.innerRegularWRT_comap Regular.innerRegular (μ := μ)
+      (fun _ hU ↦ hf.isOpen_iff_image_isOpen.mp hU)
+      (fun _ hKrange hK ↦ hf.isInducing.isCompact_preimage' hK hKrange)⟩
 
 protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).Regular := by
   haveI := OuterRegular.smul μ hx
