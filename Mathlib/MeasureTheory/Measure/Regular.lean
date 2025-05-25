@@ -258,7 +258,7 @@ protected theorem _root_.MeasurableEmbedding.innerRegularWRT_comap
   obtain ⟨K, hKU, hK, hμU⟩ := H (hAB U hU) r hr
   have hKrange := (subset_trans hKU (image_subset_range _ _))
   refine ⟨f ⁻¹' K, ?_, hAB' K hKrange hK, ?_⟩
-  · rw[← hf.injective.preimage_image U]; exact preimage_mono hKU
+  · rw [← hf.injective.preimage_image U]; exact preimage_mono hKU
   · rwa [hf.comap_apply, image_preimage_eq_iff.mpr hKrange]
 
 theorem smul (H : InnerRegularWRT μ p q) (c : ℝ≥0∞) : InnerRegularWRT (c • μ) p q := by
