@@ -155,7 +155,7 @@ when `x` is the interval `[0,1]`. The base `b` must be a natural number bases, s
 about what to do when the base is negative.
 
 When the base `b` is 0, the same junk value of 0 is used as `Nat.log`. When the argument `x` is
-zero or negative, the result is also zoer.
+zero or negative, the result is also zero.
 -/
 example :
     Int.log 2 (100 / 3 : ℚ) = 5 ∧
@@ -175,7 +175,7 @@ example : Real.log 0 = 0 ∧ Real.log (-Real.exp 5) = 5 := by
   simp
 
 /-- The function `ENNReal.log` maybe agrees most with the conventional notion of logarithm, that
-the logarithm at 0 is negative infinity, and not supporting negative arguments. It returns an
+the logarithm of 0 is negative infinity, and not supporting negative arguments. It returns an
 `EReal` accordingly. By its behavior at 0, it breaks the pattern with `Nat.log`, `Int.log`, and
 `Real.log`. -/
 example : ENNReal.log 0 = ⊥ ∧ ENNReal.log ⊤ = ⊤ := by
@@ -244,8 +244,8 @@ But `getElem!` takes an `Inhabited` instance on the type `α` and uses that as t
 any extra indexing. In this example, we make a list of two natural numbers `[3, 5]` and access index
 100. This gives the `Inhabited.default` value for `Nat`, which happens to be 0.
 -/
-example : [3, 5][100]! = 0 := by
-  rfl
+example : [3, 5][100]! = default ∧ default = 0 := by
+  and_intros <;> rfl
 
 /-- A list can also be accessed through `List.get` and `List.getD`. `List.get` takes a
 `Fin l.length`, which is guaranteed to be within bounds; in this sense, it must be "safe". But
@@ -264,7 +264,7 @@ since we access out-of-bounds at index 12. -/
 example : [100,200,300,400,500].getD 12 37 = 37 := by
   rfl
 
-/- Finally there's `List.get!`, which gives the default value from `Inhabited` like `getElem!`,
+/-- Finally there's `List.get!`, which gives the default value from `Inhabited` like `getElem!`,
 and so is equivalent as far as theorem proving goes; but (if run in a program) causes a panic.
 
 This is currently deprecated in favor of `[i]!`, the `getElem!` syntax.
@@ -272,13 +272,13 @@ This is currently deprecated in favor of `[i]!`, the `getElem!` syntax.
 Note that similar APIs are duplicated across several types: e.g. `Vector.get`, `Array.getD`,
 `String.get!`, `Option.getD`, etc.
 -/
-#guard_msgs(drop warning) in
-example : [100,200,300,400,500].get! 12 = 0 := by
+set_option linter.deprecated false in
+example : [100,200,300,400,500].get! 12 = default := by
   rfl
 
 /- Trying to evaluate the expression lead to a panic. -/
 #guard_msgs(drop error) in
-#eval [100,200,300,400,500].getD 12
+#eval [100,200,300,400,500].get! 12
 
 /-! # Strings -/
 
@@ -295,12 +295,13 @@ location if it lands in the middle of a character.
 the middle of a character. -/
 example :
     "Hello!".get 0 = 'H' ∧
-    "Hello!".get (.mk 100) = 'A' ∧
-    "Hello!".get! (.mk 100) = 'A' ∧
+    "Hello!".get (.mk 100) = default ∧
+    "Hello!".get! (.mk 100) = default ∧
     "Hello!".get? (.mk 100) = none ∧
     "Hello!".get' (.mk 3) (by decide) = 'l' ∧
-    "⋃ℕℐℂ₀𝔻ℰ".get' (.mk 2) (by decide) = 'A' ∧
-    "⋃ℕℐℂ₀𝔻ℰ".get' (.mk 3) (by decide) = 'ℕ'
+    "⋃ℕℐℂ₀𝔻ℰ".get' (.mk 2) (by decide) = default ∧
+    "⋃ℕℐℂ₀𝔻ℰ".get' (.mk 3) (by decide) = 'ℕ' ∧
+    default = 'A'
     := by
   and_intros <;> rfl
 
