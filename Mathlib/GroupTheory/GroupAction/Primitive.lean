@@ -395,6 +395,10 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
     use g, x
 
 @[deprecated (since := "2025-05-23")]
+alias _root_.AddAction.IsPreprimitive.exists_mem_vadd_and_not_mem_vadd :=
+  AddAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
 alias exists_mem_smul_and_not_mem_smul := exists_mem_smul_and_notMem_smul
 
 end IsPreprimitive

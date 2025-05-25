@@ -114,6 +114,9 @@ theorem notMem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[�
     ← disjoint_iff_inter_eq_empty, disjoint_mulSupport_iff, eventuallyEq_iff_exists_mem]
 
 @[deprecated (since := "2025-05-23")]
+alias not_mem_tsupport_iff_eventuallyEq := notMem_tsupport_iff_eventuallyEq
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
 alias not_mem_mulTSupport_iff_eventuallyEq := notMem_mulTSupport_iff_eventuallyEq
 
 @[to_additive]
