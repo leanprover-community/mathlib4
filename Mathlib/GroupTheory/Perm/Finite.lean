@@ -44,7 +44,7 @@ theorem isConj_of_support_equiv
   by_cases hx : x ∈ σ.support
   · rw [Equiv.extendSubtype_apply_of_mem, Equiv.extendSubtype_apply_of_mem]
     · exact hf x (Finset.mem_coe.2 hx)
-  · rwa [Classical.not_not.1 ((not_congr mem_support).1 (Equiv.extendSubtype_notMem f _ _)),
+  · rwa [Classical.not_not.1 ((not_congr mem_support).1 (Equiv.extendSubtype_not_mem f _ _)),
       Classical.not_not.1 ((not_congr mem_support).mp hx)]
 
 end Conjugation
