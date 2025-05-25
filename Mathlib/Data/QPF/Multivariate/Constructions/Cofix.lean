@@ -18,10 +18,10 @@ and take a fixed point again.
 
 ## Main definitions
 
- * `Cofix.mk`     - constructor
- * `Cofix.dest`   - destructor
- * `Cofix.corec`  - corecursor: useful for formulating infinite, productive computations
- * `Cofix.bisim`  - bisimulation: proof technique to show the equality of possibly infinite values
+* `Cofix.mk`     - constructor
+* `Cofix.dest`   - destructor
+* `Cofix.corec`  - corecursor: useful for formulating infinite, productive computations
+* `Cofix.bisim`  - bisimulation: proof technique to show the equality of possibly infinite values
                     of `Cofix F α`
 
 ## Implementation notes
@@ -34,8 +34,8 @@ We define the relation `Mcongr` and take its quotient as the definition of `Cofi
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 
@@ -181,9 +181,9 @@ specific values of type `Cofix F α`.
 
 A bisimulation relation `R` for values `x y : Cofix F α`:
 
- * holds for `x y`: `R x y`
- * for any values `x y` that satisfy `R`, their root has the same shape
-   and their children can be paired in such a way that they satisfy `R`.
+* holds for `x y`: `R x y`
+* for any values `x y` that satisfy `R`, their root has the same shape
+  and their children can be paired in such a way that they satisfy `R`.
 
 -/
 

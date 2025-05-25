@@ -138,7 +138,7 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
   ext; simp [Fintype.sum_eq_zero_iff_of_nonneg, funext_iff, not_imp_comm, ← forall_and]
 
 @[simp] lemma piAntidiag_empty_of_ne_zero (hn : n ≠ 0) : piAntidiag (∅ : Finset ι) n = ∅ :=
-  eq_empty_of_forall_not_mem (by simp [@eq_comm _ 0, hn.symm])
+  eq_empty_of_forall_notMem (by simp [@eq_comm _ 0, hn.symm])
 
 lemma piAntidiag_empty (n : μ) : piAntidiag (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
   split_ifs with hn <;> simp [*]
@@ -174,7 +174,7 @@ lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
     addLeftEmbedding_apply, Prod.exists]
   constructor
   · rintro ⟨hn, hf⟩
-    refine ⟨_, _, hn, update f i 0, ⟨sum_update_of_not_mem hi _ _, fun j ↦ ?_⟩, by aesop⟩
+    refine ⟨_, _, hn, update f i 0, ⟨sum_update_of_notMem hi _ _, fun j ↦ ?_⟩, by aesop⟩
     have := fun h₁ h₂ ↦ (hf j h₁).resolve_left h₂
     aesop (add simp [update])
   · rintro ⟨a, _, hn, g, ⟨rfl, hg⟩, rfl⟩
@@ -193,7 +193,7 @@ variable [DecidableEq ι] [AddCommMonoid μ] [PartialOrder μ]
   [CanonicallyOrderedAdd μ] [HasAntidiagonal μ] [DecidableEq μ]
 
 @[simp] lemma piAntidiag_zero (s : Finset ι) : piAntidiag s (0 : μ) = {0} := by
-  ext; simp [Fintype.sum_eq_zero_iff_of_nonneg, funext_iff, not_imp_comm, ← forall_and]
+  ext; simp [funext_iff, not_imp_comm, ← forall_and]
 
 end CanonicallyOrderedAddCommMonoid
 

@@ -210,12 +210,11 @@ theorem eval₂_congr (g₁ g₂ : σ → S₁)
   apply h hi
   rwa [Finsupp.mem_support_iff] at hc
 
-theorem eval₂_sum (s : Finset S₂) (p : S₂ → MvPolynomial σ R) :
+@[simp] theorem eval₂_sum (s : Finset S₂) (p : S₂ → MvPolynomial σ R) :
     eval₂ f g (∑ x ∈ s, p x) = ∑ x ∈ s, eval₂ f g (p x) :=
   map_sum (eval₂Hom f g) _ s
 
-@[to_additive existing (attr := simp)]
-theorem eval₂_prod (s : Finset S₂) (p : S₂ → MvPolynomial σ R) :
+@[simp] theorem eval₂_prod (s : Finset S₂) (p : S₂ → MvPolynomial σ R) :
     eval₂ f g (∏ x ∈ s, p x) = ∏ x ∈ s, eval₂ f g (p x) :=
   map_prod (eval₂Hom f g) _ s
 
@@ -274,7 +273,6 @@ theorem eval_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) (g 
     eval g (∑ i ∈ s, f i) = ∑ i ∈ s, eval g (f i) :=
   map_sum (eval g) _ _
 
-@[to_additive existing]
 theorem eval_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) (g : σ → R) :
     eval g (∏ i ∈ s, f i) = ∏ i ∈ s, eval g (f i) :=
   map_prod (eval g) _ _
@@ -644,7 +642,6 @@ theorem aeval_sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
     aeval f (∑ i ∈ s, φ i) = ∑ i ∈ s, aeval f (φ i) :=
   map_sum (MvPolynomial.aeval f) _ _
 
-@[to_additive existing]
 theorem aeval_prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
     aeval f (∏ i ∈ s, φ i) = ∏ i ∈ s, aeval f (φ i) :=
   map_prod (MvPolynomial.aeval f) _ _
@@ -735,7 +732,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     intro i
     by_cases hi : i ∈ p.support
     · exact hs i hi
-    · rw [MvPolynomial.not_mem_support_iff.1 hi, f.map_zero]
+    · rw [MvPolynomial.notMem_support_iff.1 hi, f.map_zero]
       exact zero_mem s
   induction p using MvPolynomial.monomial_add_induction_on with
   | C a =>
@@ -744,13 +741,13 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     rw [eval₂_add, eval₂_monomial]
     refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
     · have := hs a -- Porting note: was `simpa only [...]`
-      rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
+      rwa [coeff_add, MvPolynomial.notMem_support_iff.1 ha, add_zero, coeff_monomial,
         if_pos rfl] at this
     have := hs i
     rw [coeff_add, coeff_monomial] at this
     split_ifs at this with h
     · subst h
-      rw [MvPolynomial.not_mem_support_iff.1 ha, map_zero]
+      rw [MvPolynomial.notMem_support_iff.1 ha, map_zero]
       exact zero_mem _
     · rwa [zero_add] at this
 

@@ -228,7 +228,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
   · induction' e : Seq.destruct S with a <;> rw [e] at h'
     · exact
         let ⟨d, o, ad⟩ := IH _ _ h'
-        let ⟨c, cl, ac⟩ := this a ⟨d, o.resolve_right (WSeq.not_mem_nil _), ad⟩
+        let ⟨c, cl, ac⟩ := this a ⟨d, o.resolve_right (WSeq.notMem_nil _), ad⟩
         ⟨c, Or.inl cl, ac⟩
     · obtain ⟨o, S'⟩ := a
       obtain - | c := o <;> simp [parallel.aux1] at h' <;> rcases IH _ _ h' with ⟨d, dl | dS', ad⟩

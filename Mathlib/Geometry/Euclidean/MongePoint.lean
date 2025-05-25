@@ -3,6 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Geometry.Euclidean.Altitude
 import Mathlib.Geometry.Euclidean.Circumcenter
 
 /-!
@@ -23,9 +24,6 @@ generalization, the Monge point of a simplex.
   and is orthogonal to the opposite edge (in 2 dimensions, this is the
   same as an altitude).
 
-* `altitude` is the line that passes through a vertex of a simplex and
-  is orthogonal to the opposite face.
-
 * `orthocenter` is defined, for the case of a triangle, to be the same
   as its Monge point, then shown to be the point of concurrence of the
   altitudes.
@@ -37,7 +35,6 @@ generalization, the Monge point of a simplex.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Altitude_(triangle)>
 * <https://en.wikipedia.org/wiki/Monge_point>
 * <https://en.wikipedia.org/wiki/Orthocentric_system>
 * Małgorzata Buba-Brzozowa, [The Monge Point and the 3(n+1) Point
@@ -109,12 +106,7 @@ theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
     ∑ i, mongePointWeightsWithCircumcenter n i = 1 := by
   simp_rw [sum_pointsWithCircumcenter, mongePointWeightsWithCircumcenter, sum_const, card_fin,
     nsmul_eq_mul]
-  -- Porting note: replaced
-  -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
-  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [n.cast_add_one_ne_zero]`, but was really slow
-  -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one,
-    inv_eq_one_div, mul_div_assoc', mul_one, add_div', div_mul_cancel₀, div_eq_iff, one_mul]
+  field_simp
   ring
 
 /-- The Monge point of an (n+2)-simplex, in terms of
@@ -142,11 +134,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
     have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by norm_cast
     field_simp [hn1, hn3, mul_comm]
-  · -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [hn1]`, but was really slow
-  -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-    simp (disch := field_simp_discharge) only
-      [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one, zero_sub, mul_neg, mul_one, neg_div',
-      neg_add_rev, div_add', one_mul, eq_div_iff, div_mul_cancel₀]
+  · field_simp [hn1]
     ring
 
 /-- The weights for the Monge point of an (n+2)-simplex, minus the
@@ -220,9 +208,9 @@ theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n
   · simp_rw [sum_pointsWithCircumcenter, pointsWithCircumcenter_eq_circumcenter,
       pointsWithCircumcenter_point, Pi.sub_apply, pointWeightsWithCircumcenter]
     rw [← sum_subset fs.subset_univ _]
-    · simp_rw [fs, sum_insert (not_mem_singleton.2 h), sum_singleton]
+    · simp_rw [fs, sum_insert (notMem_singleton.2 h), sum_singleton]
       repeat rw [← sum_subset fs.subset_univ _]
-      · simp_rw [fs, sum_insert (not_mem_singleton.2 h), sum_singleton]
+      · simp_rw [fs, sum_insert (notMem_singleton.2 h), sum_singleton]
         simp [h, Ne.symm h, dist_comm (s.points i₁)]
       all_goals intro i _ hi; simp [hfs i hi]
     · intro i _ hi
@@ -310,94 +298,6 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
     exact (Submodule.mem_inf.1 (h' i₂ h₁₂)).2
   exact Submodule.disjoint_def.1 (vectorSpan ℝ (Set.range s.points)).orthogonal_disjoint _ hv hi
 
-/-- An altitude of a simplex is the line that passes through a vertex
-and is orthogonal to the opposite face. -/
-def altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) : AffineSubspace ℝ P :=
-  mk' (s.points i) (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ ⊓
-    affineSpan ℝ (Set.range s.points)
-
-/-- The definition of an altitude. -/
-theorem altitude_def {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
-    s.altitude i =
-      mk' (s.points i) (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ ⊓
-        affineSpan ℝ (Set.range s.points) :=
-  rfl
-
-/-- A vertex lies in the corresponding altitude. -/
-theorem mem_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
-    s.points i ∈ s.altitude i :=
-  (mem_inf_iff _ _ _).2 ⟨self_mem_mk' _ _, mem_affineSpan ℝ (Set.mem_range_self _)⟩
-
-/-- The direction of an altitude. -/
-theorem direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
-    (s.altitude i).direction =
-      (vectorSpan ℝ (s.points '' ↑(Finset.univ.erase i)))ᗮ ⊓ vectorSpan ℝ (Set.range s.points) := by
-  rw [altitude_def,
-    direction_inf_of_mem (self_mem_mk' (s.points i) _) (mem_affineSpan ℝ (Set.mem_range_self _)),
-    direction_mk', direction_affineSpan, direction_affineSpan]
-
-/-- The vector span of the opposite face lies in the direction
-orthogonal to an altitude. -/
-theorem vectorSpan_isOrtho_altitude_direction {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
-    vectorSpan ℝ (s.points '' ↑(Finset.univ.erase i)) ⟂ (s.altitude i).direction := by
-  rw [direction_altitude]
-  exact (Submodule.isOrtho_orthogonal_right _).mono_right inf_le_left
-
-open Module
-
-/-- An altitude is finite-dimensional. -/
-instance finiteDimensional_direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
-    FiniteDimensional ℝ (s.altitude i).direction := by
-  rw [direction_altitude]
-  infer_instance
-
-/-- An altitude is one-dimensional (i.e., a line). -/
-@[simp]
-theorem finrank_direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
-    finrank ℝ (s.altitude i).direction = 1 := by
-  rw [direction_altitude]
-  have h := Submodule.finrank_add_inf_finrank_orthogonal
-    (vectorSpan_mono ℝ (Set.image_subset_range s.points ↑(univ.erase i)))
-  have hc : #(univ.erase i) = n + 1 := by rw [card_erase_of_mem (mem_univ _)]; simp
-  refine add_left_cancel (_root_.trans h ?_)
-  classical
-  rw [s.independent.finrank_vectorSpan (Fintype.card_fin _), ← Finset.coe_image,
-    s.independent.finrank_vectorSpan_image_finset hc]
-
-/-- A line through a vertex is the altitude through that vertex if and
-only if it is orthogonal to the opposite face. -/
-theorem affineSpan_pair_eq_altitude_iff {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2))
-    (p : P) :
-    line[ℝ, p, s.points i] = s.altitude i ↔
-      p ≠ s.points i ∧
-        p ∈ affineSpan ℝ (Set.range s.points) ∧
-          p -ᵥ s.points i ∈ (affineSpan ℝ (s.points '' ↑(Finset.univ.erase i))).directionᗮ := by
-  rw [eq_iff_direction_eq_of_mem (mem_affineSpan ℝ (Set.mem_insert_of_mem _ (Set.mem_singleton _)))
-      (s.mem_altitude _),
-    ← vsub_right_mem_direction_iff_mem (mem_affineSpan ℝ (Set.mem_range_self i)) p,
-    direction_affineSpan, direction_affineSpan, direction_affineSpan]
-  constructor
-  · intro h
-    constructor
-    · intro heq
-      rw [heq, Set.pair_eq_singleton, vectorSpan_singleton] at h
-      have hd : finrank ℝ (s.altitude i).direction = 0 := by rw [← h, finrank_bot]
-      simp at hd
-    · rw [← Submodule.mem_inf, _root_.inf_comm, ← direction_altitude, ← h]
-      exact
-        vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
-  · rintro ⟨hne, h⟩
-    rw [← Submodule.mem_inf, _root_.inf_comm, ← direction_altitude] at h
-    rw [vectorSpan_eq_span_vsub_set_left_ne ℝ (Set.mem_insert _ _),
-      Set.insert_diff_of_mem _ (Set.mem_singleton _),
-      Set.diff_singleton_eq_self fun h => hne (Set.mem_singleton_iff.1 h), Set.image_singleton]
-    refine Submodule.eq_of_le_of_finrank_eq ?_ ?_
-    · rw [Submodule.span_le]
-      simpa using h
-    · rw [finrank_direction_altitude, finrank_span_set_eq_card]
-      · simp
-      · exact LinearIndepOn.id_singleton _ <| by simpa using hne
-
 end Simplex
 
 namespace Triangle
@@ -441,9 +341,9 @@ planes. -/
 theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) : t.altitude i₁ = t.mongePlane i₂ i₃ := by
   have hs : ({i₂, i₃}ᶜ : Finset (Fin 3)) = {i₁} := by decide +revert
-  have he : univ.erase i₁ = {i₂, i₃} := by decide +revert
-  rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton, coe_insert,
-    coe_singleton, vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
+  have he : ({i₁}ᶜ : Set (Fin 3)) = {i₂, i₃} := by ext; decide +revert
+  rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton,
+    vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
   simp [h₂₃, Submodule.span_insert_eq_span]
 
 /-- The orthocenter lies in the altitudes. -/
@@ -526,12 +426,12 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
       ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
     refine Submodule.eq_of_le_of_finrank_eq (direction_le (affineSpan_le_of_subset_coe ?_))
       ?_
-    · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
+    · have hu : (Set.univ : Set (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
+        ext
         decide +revert
-      rw [← Set.image_univ, ← Finset.coe_univ, hu, Finset.coe_insert, Finset.coe_insert,
-        Finset.coe_singleton, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁, h₂,
-        h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
+      rw [← Set.image_univ, hu, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁,
+        h₂, h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
       exact
         ⟨t₁.orthocenter_mem_affineSpan, mem_affineSpan ℝ (Set.mem_range_self _),
           mem_affineSpan ℝ (Set.mem_range_self _)⟩
@@ -540,17 +440,19 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
         t₂.independent.finrank_vectorSpan (Fintype.card_fin _)]
   rw [he]
   use mem_affineSpan ℝ (Set.mem_range_self _)
-  have hu : Finset.univ.erase j₂ = {j₁, j₃} := by
+  have hu : ({j₂}ᶜ : Set _) = {j₁, j₃} := by
     clear h₁ h₂ h₃
+    ext
     decide +revert
-  rw [hu, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
+  rw [hu, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
   have hle : (t₁.altitude i₃).directionᗮ ≤ line[ℝ, t₁.orthocenter, t₁.points i₃].directionᗮ :=
     Submodule.orthogonal_le (direction_le (affineSpan_orthocenter_point_le_altitude _ _))
   refine hle ((t₁.vectorSpan_isOrtho_altitude_direction i₃) ?_)
-  have hui : Finset.univ.erase i₃ = {i₁, i₂} := by
+  have hui : ({i₃}ᶜ : Set _) = {i₁, i₂} := by
     clear hle h₂ h₃
+    ext
     decide +revert
-  rw [hui, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton]
+  rw [hui, Set.image_insert_eq, Set.image_singleton]
   exact vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
 
 /-- Suppose we are given a triangle `t₁`, and replace one of its
@@ -620,7 +522,7 @@ theorem exists_of_range_subset_orthocentricSystem {t : Triangle ℝ P}
     exact ⟨i₁, i₂, i₃, j₂, j₃, h₁₂, h₁₃, h₂₃, h₁₂₃, h₁, hj₂₃, h₂, h₃⟩
   · right
     have hs := Set.subset_diff_singleton hps h
-    rw [Set.insert_diff_self_of_not_mem ho] at hs
+    rw [Set.insert_diff_self_of_notMem ho] at hs
     classical
     refine Set.eq_of_subset_of_card_le hs ?_
     rw [Set.card_range_of_injective hpi, Set.card_range_of_injective t.independent.injective]

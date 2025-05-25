@@ -25,7 +25,7 @@ lemma prodMap {M N M' N' : Type*}
     [Module S M'] [Module S N'] [IsScalarTower R S M'] [IsScalarTower R S N']
     (f : M →ₗ[R] M') (g : N →ₗ[R] N') (hf : IsBaseChange S f) (hg : IsBaseChange S g) :
     IsBaseChange S (f.prodMap g) := by
-  apply of_equiv (TensorProduct.prodRight R _ S M N ≪≫ₗ hf.equiv.prod hg.equiv)
+  apply of_equiv (TensorProduct.prodRight R _ S M N ≪≫ₗ hf.equiv.prodCongr hg.equiv)
   intro p
   simp [equiv_tmul]
 

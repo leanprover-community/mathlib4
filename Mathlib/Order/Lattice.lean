@@ -725,9 +725,9 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [IsTotal α (· �
 See note [reducible non-instances]. -/
 abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] : LinearOrder α where
-  decidableLE := ‹_›
-  decidableEq := ‹_›
-  decidableLT := ‹_›
+  toDecidableLE := ‹_›
+  toDecidableEq := ‹_›
+  toDecidableLT := ‹_›
   le_total := total_of (· ≤ ·)
   max_def := by exact congr_fun₂ sup_eq_maxDefault
   min_def := by exact congr_fun₂ inf_eq_minDefault
@@ -1284,5 +1284,5 @@ instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
 end ULift
 
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
-instance Bool.instDistribLattice : DistribLattice Bool :=
-  inferInstance
+instance Bool.instPartialOrder : PartialOrder Bool := inferInstance
+instance Bool.instDistribLattice : DistribLattice Bool := inferInstance

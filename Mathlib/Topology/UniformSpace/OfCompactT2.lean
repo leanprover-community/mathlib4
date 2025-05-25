@@ -121,6 +121,4 @@ def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ]
       rw [← interior_compl, interior_mem_nhds, ← disjoint_principal_left, principal_singleton]
       rw [← disjoint_nhds_nhds_iff_not_inseparable] at hxy
       exact hxy.mono_left (pure_le_nhds x)
-    simp [comap_const_of_not_mem nxy (not_not_intro (subset_closure (mem_singleton x)))]
-
-@[deprecated (since := "2025-04-15")] alias uniformSpaceOfCompactT2 := uniformSpaceOfCompactR1
+    simp [comap_const_of_notMem nxy (not_not_intro (subset_closure (mem_singleton x)))]

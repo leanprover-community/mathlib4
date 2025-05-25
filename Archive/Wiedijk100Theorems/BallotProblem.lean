@@ -192,9 +192,7 @@ theorem first_vote_pos :
     simp [ENNReal.div_self _ _, List.replicate_succ]
   | 0, q + 1, _ => by
     rw [counted_left_zero, uniformOn_singleton]
-    simp only [List.replicate, Nat.add_eq, add_zero, mem_setOf_eq, List.headI_cons, Nat.cast_zero,
-      ENNReal.zero_div, ite_eq_right_iff]
-    decide
+    simp [List.replicate]
   | p + 1, q + 1, _ => by
     simp_rw [counted_succ_succ]
     rw [← uniformOn_disjoint_union ((countedSequence_finite _ _).image _)
@@ -238,7 +236,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
   all_goals simp_all [ENNReal.div_eq_top]
 
 theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by
-  rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_not_mem]
+  rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_notMem]
   rintro x ⟨hx, t⟩
   apply ne_of_gt (t x _ x.suffix_refl)
   · simpa using sum_of_mem_countedSequence hx

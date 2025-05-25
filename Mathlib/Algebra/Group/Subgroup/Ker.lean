@@ -234,6 +234,9 @@ def ker (f : G →* M) : Subgroup G :=
         _ = 1 := by rw [← map_mul, mul_inv_cancel, map_one] }
 
 @[to_additive (attr := simp)]
+theorem ker_toSubmonoid (f : G →* M) : f.ker.toSubmonoid = MonoidHom.mker f := rfl
+
+@[to_additive (attr := simp)]
 theorem mem_ker {f : G →* M} {x : G} : x ∈ f.ker ↔ f x = 1 :=
   Iff.rfl
 
@@ -261,7 +264,8 @@ instance decidableMemKer [DecidableEq M] (f : G →* M) : DecidablePred (· ∈ 
   decidable_of_iff (f x = 1) f.mem_ker
 
 @[to_additive]
-theorem comap_ker (g : N →* P) (f : G →* N) : g.ker.comap f = (g.comp f).ker :=
+theorem comap_ker {P : Type*} [MulOneClass P] (g : N →* P) (f : G →* N) :
+    g.ker.comap f = (g.comp f).ker :=
   rfl
 
 @[to_additive (attr := simp)]

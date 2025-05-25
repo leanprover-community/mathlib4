@@ -30,7 +30,7 @@ Surreal numbers inherit the relations `≤` and `<` from games (`Surreal.instLE`
 
 In this file, we show that the surreals form a linear ordered commutative group.
 
-In `Mathlib.SetTheory.Surreal.Multiplication`, we define multiplication and show that the
+In `Mathlib/SetTheory/Surreal/Multiplication.lean`, we define multiplication and show that the
 surreals form a linear ordered commutative ring.
 
 One can also map all the ordinals into the surreals!
@@ -370,7 +370,7 @@ noncomputable instance : LinearOrder Surreal :=
     le_total := by
       rintro ⟨⟨x, ox⟩⟩ ⟨⟨y, oy⟩⟩
       exact or_iff_not_imp_left.2 fun h => (PGame.not_le.1 h).le oy ox
-    decidableLE := Classical.decRel _ }
+    toDecidableLE := Classical.decRel _ }
 
 instance : AddMonoidWithOne Surreal :=
   AddMonoidWithOne.unary
