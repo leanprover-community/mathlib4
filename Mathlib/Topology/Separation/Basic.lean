@@ -236,9 +236,12 @@ protected theorem Homeomorph.t0Space [TopologicalSpace Y] [T0Space X] (h : X ≃
 instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
   IsEmbedding.subtypeVal.t0Space
 
-theorem t0Space_iff_or_not_mem_closure (X : Type u) [TopologicalSpace X] :
+theorem t0Space_iff_or_notMem_closure (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
+
+@[deprecated (since := "2025-05-23")]
+alias t0Space_iff_or_not_mem_closure := t0Space_iff_or_notMem_closure
 
 instance Prod.instT0Space [TopologicalSpace Y] [T0Space X] [T0Space Y] : T0Space (X × Y) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
@@ -585,7 +588,7 @@ theorem nhdsWithin_insert_of_ne [T1Space X] {x y : X} {s : Set X} (hxy : x ≠ y
   refine le_antisymm (Filter.le_def.2 fun t ht => ?_) (nhdsWithin_mono x <| subset_insert y s)
   obtain ⟨o, ho, hxo, host⟩ := mem_nhdsWithin.mp ht
   refine mem_nhdsWithin.mpr ⟨o \ {y}, ho.sdiff isClosed_singleton, ⟨hxo, hxy⟩, ?_⟩
-  rw [inter_insert_of_not_mem <| not_mem_diff_of_mem (mem_singleton y)]
+  rw [inter_insert_of_notMem <| notMem_diff_of_mem (mem_singleton y)]
   exact (inter_subset_inter diff_subset Subset.rfl).trans host
 
 /-- If `t` is a subset of `s`, except for one point,
@@ -892,7 +895,7 @@ theorem IsCompact.mem_closure_iff_exists_inseparable {K : Set X} (hK : IsCompact
   contrapose! hy
   have : Disjoint (𝓝 y) (𝓝ˢ K) := hK.disjoint_nhdsSet_right.2 fun x hx ↦
     (disjoint_nhds_nhds_iff_not_inseparable.2 (hy x hx)).symm
-  simpa only [disjoint_iff, not_mem_closure_iff_nhdsWithin_eq_bot]
+  simpa only [disjoint_iff, notMem_closure_iff_nhdsWithin_eq_bot]
     using this.mono_right principal_le_nhdsSet
 
 theorem IsCompact.closure_eq_biUnion_inseparable {K : Set X} (hK : IsCompact K) :
@@ -960,7 +963,7 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
   induction t using Finset.induction generalizing U s with
   | empty =>
     refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
-    simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
+    simpa only [subset_empty_iff, Finset.notMem_empty, iUnion_false, iUnion_empty] using hsC
   | insert x t hx ih =>
     simp only [Finset.set_biUnion_insert] at hsC
     simp only [Finset.forall_mem_insert] at hU
@@ -1036,7 +1039,7 @@ theorem exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds
   · filter_upwards [hf.continuousAt <| Uo.mem_nhds (hxU rfl)] with x hx
       using Set.disjoint_left.1 hd hx
   · by_contra hys
-    exact hy.2 (hV ⟨mem_image_of_mem _ hy.1, not_mem_subset interior_subset hys⟩)
+    exact hy.2 (hV ⟨mem_image_of_mem _ hy.1, notMem_subset interior_subset hys⟩)
 
 instance (priority := 900) {X Y : Type*} [TopologicalSpace X] [WeaklyLocallyCompactSpace X]
     [TopologicalSpace Y] [R1Space Y] : LocallyCompactPair X Y where

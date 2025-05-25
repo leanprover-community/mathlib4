@@ -134,7 +134,7 @@ def Finset.enum [DecidableEq α] : List α → List (Finset α)
 theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
     s ∈ Finset.enum xs ↔ ∀ x ∈ s, x ∈ xs := by
   induction xs generalizing s with
-  | nil => simp [enum, eq_empty_iff_forall_not_mem]
+  | nil => simp [enum, eq_empty_iff_forall_notMem]
   | cons x xs ih =>
       simp only [enum, List.bind_eq_flatMap, List.mem_flatMap, List.mem_cons, List.mem_singleton,
         List.not_mem_nil, or_false, ih]

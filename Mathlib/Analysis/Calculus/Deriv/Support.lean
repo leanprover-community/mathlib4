@@ -35,8 +35,8 @@ theorem support_deriv_subset : support (deriv f) ⊆ tsupport f := by
   intro x
   rw [← not_imp_not]
   intro h2x
-  rw [not_mem_tsupport_iff_eventuallyEq] at h2x
-  exact nmem_support.mpr (h2x.deriv_eq.trans (deriv_const x 0))
+  rw [notMem_tsupport_iff_eventuallyEq] at h2x
+  exact notMem_support.mpr (h2x.deriv_eq.trans (deriv_const x 0))
 
 protected theorem HasCompactSupport.deriv (hf : HasCompactSupport f) :
     HasCompactSupport (deriv f) :=
