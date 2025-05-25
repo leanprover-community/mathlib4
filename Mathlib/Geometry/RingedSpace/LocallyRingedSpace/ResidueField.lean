@@ -84,6 +84,9 @@ lemma Γevaluation_eq_zero_iff_notMem_basicOpen (x : X) (f : X.presheaf.obj (op 
     X.Γevaluation x f = 0 ↔ x ∉ X.toRingedSpace.basicOpen f :=
   evaluation_eq_zero_iff_notMem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
 
+@[deprecated (since := "2025-05-23")]
+alias Γevaluation_eq_zero_iff_not_mem_basicOpen := Γevaluation_eq_zero_iff_notMem_basicOpen
+
 lemma Γevaluation_ne_zero_iff_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
     X.Γevaluation x f ≠ 0 ↔ x ∈ X.toRingedSpace.basicOpen f :=
   evaluation_ne_zero_iff_mem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f

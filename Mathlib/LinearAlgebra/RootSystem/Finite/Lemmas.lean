@@ -153,7 +153,7 @@ lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
   rw [hji, hij'] at aux₂ <;> omega
 
 @[deprecated (since := "2025-05-23")]
-alias RootPositiveForm.rootLength_lt_of_pairingIn_not_mem :=
+alias RootPositiveForm.rootLength_lt_of_pairingIn_nmem :=
   RootPositiveForm.rootLength_lt_of_pairingIn_notMem
 
 variable {i j} in

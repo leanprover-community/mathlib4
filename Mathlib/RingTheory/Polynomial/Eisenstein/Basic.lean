@@ -179,6 +179,8 @@ end ScaleRoots
 
 namespace IsEisensteinAt
 
+@[deprecated (since := "2025-05-23")] alias not_mem := notMem
+
 section CommSemiring
 
 variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}

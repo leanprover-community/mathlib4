@@ -171,6 +171,10 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
 @[deprecated (since := "2025-05-23")]
+alias _root_.AddAction.IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
+  AddAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
 alias IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
   IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
 

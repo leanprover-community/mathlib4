@@ -282,6 +282,9 @@ theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (image_eq_one_of_notMem_mulTSupport hx)
 
 @[deprecated (since := "2025-05-23")]
+alias contMDiffWithinAt_of_not_mem := contMDiffWithinAt_of_notMem
+
+@[to_additive existing contMDiffWithinAt_of_not_mem, deprecated (since := "2025-05-23")]
 alias contMDiffWithinAt_of_not_mem_mulTSupport := contMDiffWithinAt_of_notMem_mulTSupport
 
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
@@ -291,6 +294,9 @@ theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
   contMDiffWithinAt_of_notMem_mulTSupport hx n univ
 
 @[deprecated (since := "2025-05-23")]
+alias contMDiffAt_of_not_mem := contMDiffAt_of_notMem
+
+@[to_additive existing contMDiffAt_of_not_mem, deprecated (since := "2025-05-23")]
 alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport
 
 
