@@ -232,7 +232,7 @@ lemma disjoint_ofSubtype_of_memFixedPoints_self {g : Perm α}
   intro x
   by_cases hx : x ∈ Function.fixedPoints g
   · right; exact hx
-  · left; rw [ofSubtype_apply_of_notMem u hx]
+  · left; rw [ofSubtype_apply_of_not_mem u hx]
 
 section Fintype
 
@@ -250,7 +250,7 @@ lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints 
   rw [Finset.disjoint_iff_ne]
   rintro a ha b hb rfl
   rw [mem_support] at ha hb
-  exact ha (ofSubtype_apply_of_notMem x (mt Function.mem_fixedPoints_iff.mp hb))
+  exact ha (ofSubtype_apply_of_not_mem x (mt Function.mem_fixedPoints_iff.mp hb))
 
 open Subgroup
 

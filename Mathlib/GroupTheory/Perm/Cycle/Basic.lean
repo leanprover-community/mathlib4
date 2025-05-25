@@ -1049,7 +1049,7 @@ theorem IsCycle.commute_iff {g c : Perm α} (hc : c.IsCycle) :
   intro a
   by_cases ha : a ∈ c.support
   · rw [imp_iff_right ha, ofSubtype_subtypePerm_of_mem hc' ha]
-  · rw [iff_true_left (fun b ↦ (ha b).elim), ofSubtype_apply_of_notMem, ← notMem_support]
+  · rw [iff_true_left (fun b ↦ (ha b).elim), ofSubtype_apply_of_not_mem, ← notMem_support]
     · exact Finset.notMem_mono (support_zpow_le c k) ha
     · exact ha
 
@@ -1070,7 +1070,7 @@ theorem zpow_eq_ofSubtype_subtypePerm_iff
     by_cases hx : x ∈ s
     · rw [ofSubtype_apply_of_mem (subtypePerm c _ ^ n) hx,
         subtypePerm_zpow, subtypePerm_apply]
-    · rw [ofSubtype_apply_of_notMem (subtypePerm c _ ^ n) hx,
+    · rw [ofSubtype_apply_of_not_mem (subtypePerm c _ ^ n) hx,
         ← notMem_support]
       exact fun hx' ↦ hx (hc (support_zpow_le _ _ hx'))
 

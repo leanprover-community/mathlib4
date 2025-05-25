@@ -497,7 +497,7 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
   split_ifs with hx
   · have hx' := hx
     rw [cycleOf_mem_cycleFactorsFinset_iff, mem_support, Ne, ← Function.mem_fixedPoints_iff] at hx'
-    rw [kerParam, MonoidHom.noncommCoprod_apply', mul_apply, ofSubtype_apply_of_notMem u hx',
+    rw [kerParam, MonoidHom.noncommCoprod_apply', mul_apply, ofSubtype_apply_of_not_mem u hx',
       noncommPiCoprod_apply, ← Finset.noncommProd_erase_mul _ (Finset.mem_univ ⟨g.cycleOf x, hx⟩),
       mul_apply, ← notMem_support]
     contrapose! hx'

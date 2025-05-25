@@ -34,7 +34,7 @@ namespace truncGE'
 variable (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
 
 include hi hk in
-lemma hasHomology_sc'_of_notMem_boundary (hj : ¬ e.BoundaryGE j) :
+lemma hasHomology_sc'_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     ((K.truncGE' e).sc' i j k).HasHomology := by
   have : (K.restriction e).HasHomology j :=
     restriction.hasHomology K e i j k hi hk rfl rfl rfl
@@ -46,15 +46,9 @@ lemma hasHomology_sc'_of_notMem_boundary (hj : ¬ e.BoundaryGE j) :
   have : IsIso φ.τ₃ := K.isIso_restrictionToTruncGE' e k (e.not_boundaryGE_next' hj hk)
   exact ShortComplex.hasHomology_of_epi_of_isIso_of_mono φ
 
-@[deprecated (since := "2025-05-23")]
-alias hasHomology_sc'_of_not_mem_boundary := hasHomology_sc'_of_notMem_boundary
-
-lemma hasHomology_of_notMem_boundary (hj : ¬ e.BoundaryGE j) :
+lemma hasHomology_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     (K.truncGE' e).HasHomology j :=
-  hasHomology_sc'_of_notMem_boundary K e _ j _ rfl rfl hj
-
-@[deprecated (since := "2025-05-23")]
-alias hasHomology_of_not_mem_boundary := hasHomology_of_notMem_boundary
+  hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
 
 /-- `K.restrictionToTruncGE' e` is a quasi-isomorphism in degrees that are not at the boundary. -/
 lemma quasiIsoAt_restrictionToTruncGE' (hj : ¬ e.BoundaryGE j)
@@ -115,7 +109,7 @@ end
 instance truncGE'_hasHomology (i : ι) : (K.truncGE' e).HasHomology i := by
   by_cases hi : e.BoundaryGE i
   · exact ShortComplex.HasHomology.mk' (homologyData K e _ _ _ rfl rfl hi)
-  · exact hasHomology_of_notMem_boundary K e i hi
+  · exact hasHomology_of_not_mem_boundary K e i hi
 
 end truncGE'
 

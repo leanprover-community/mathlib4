@@ -204,7 +204,7 @@ theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) 
       · simp_rw [hzy, Subtype.coe_eta, swap_apply_right]
       · rw [swap_apply_of_ne_of_ne] <;>
         simp [Subtype.ext_iff, *]
-    · rw [ofSubtype_apply_of_notMem _ hz, swap_apply_of_ne_of_ne]
+    · rw [ofSubtype_apply_of_not_mem _ hz, swap_apply_of_ne_of_ne]
       · intro h
         apply hz
         rw [h]
@@ -359,7 +359,7 @@ lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
     constructor
     · intro a ha
       by_contra ha'
-      rw [mem_support, ← h a, ofSubtype_apply_of_notMem (p := (· ∈ s)) _ ha'] at ha
+      rw [mem_support, ← h a, ofSubtype_apply_of_not_mem (p := (· ∈ s)) _ ha'] at ha
       exact ha rfl
     · intro _ a ha
       rw [← h a, ofSubtype_apply_of_mem (p := (· ∈ s)) _ ha, subtypePerm_apply]
@@ -367,7 +367,7 @@ lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
     specialize h (isInvariant_of_support_le hc)
     by_cases ha : a ∈ s
     · rw [h a ha, ofSubtype_apply_of_mem (p := (· ∈ s)) _ ha, subtypePerm_apply]
-    · rw [ofSubtype_apply_of_notMem (p := (· ∈ s)) _ ha, eq_comm, ← notMem_support]
+    · rw [ofSubtype_apply_of_not_mem (p := (· ∈ s)) _ ha, eq_comm, ← notMem_support]
       exact Finset.notMem_mono hc ha
 
 theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype p)) :
@@ -377,7 +377,7 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype
     exists_and_right, exists_eq_right, not_iff_comm, not_exists, not_not]
   by_cases hx : p x
   · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
-  · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_notMem u hx]
+  · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_not_mem u hx]
 
 theorem mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [Fintype β]
     {s : Finset α} {f : α → Perm β}

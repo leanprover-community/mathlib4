@@ -43,7 +43,7 @@ theorem cycleOf_apply (f : Perm α) [DecidableRel f.SameCycle] (x y : α) :
   split_ifs with h
   · apply ofSubtype_apply_of_mem
     exact h
-  · apply ofSubtype_apply_of_notMem
+  · apply ofSubtype_apply_of_not_mem
     exact h
 
 theorem cycleOf_inv (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
@@ -77,7 +77,7 @@ theorem SameCycle.cycleOf_apply [DecidableRel f.SameCycle] :
 
 theorem cycleOf_apply_of_not_sameCycle [DecidableRel f.SameCycle] :
     ¬SameCycle f x y → cycleOf f x y = y :=
-  ofSubtype_apply_of_notMem _
+  ofSubtype_apply_of_not_mem _
 
 theorem SameCycle.cycleOf_eq [DecidableRel f.SameCycle] (h : SameCycle f x y) :
     cycleOf f x = cycleOf f y := by
