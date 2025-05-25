@@ -941,6 +941,40 @@ theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n 
     (s.map f hf).reindex e = (s.reindex e).map f hf :=
   rfl
 
+section restrict
+attribute [local instance] AffineSubspace.toAddTorsor
+
+/-- Restrict an affine simplex to an affine subspace that contains it. -/
+@[simps]
+def restrict {n : ℕ} (s : Affine.Simplex k P n) (S : AffineSubspace k P)
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    Affine.Simplex (V := S.direction) k S n :=
+  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  { points i := ⟨s.points i, hS <| mem_affineSpan _ <| Set.mem_range_self _⟩
+    independent := AffineIndependent.of_comp S.subtype s.independent }
+
+/-- Restricting to `S₁` then mapping to a larger `S₂` is the same as restricting to `S₂`. -/
+@[simp]
+theorem restrict_map_inclusion {n : ℕ} (s : Affine.Simplex k P n)
+    (S₁ S₂ : AffineSubspace k P) (hS₁) (hS₂ : S₁ ≤ S₂) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
+    letI := Nonempty.map (Set.inclusion hS₂) ‹_›
+    (s.restrict S₁ hS₁).map (AffineSubspace.inclusion hS₂) (Set.inclusion_injective hS₂) =
+      s.restrict S₂ (hS₁.trans hS₂) :=
+  letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
+  letI := Nonempty.map (Set.inclusion hS₂) ‹_›
+  Affine.Simplex.ext fun _i => rfl
+
+/-- Restricting to `affineSpan k (Set.range s.points)` can be reversed by mapping through
+`AffineSubspace.subtype`. -/
+@[simp]
+theorem restrict_map_subtype {n : ℕ} (s : Affine.Simplex k P n) :
+    (s.restrict _ le_rfl).map (AffineSubspace.subtype _) Subtype.coe_injective = s :=
+  Affine.Simplex.ext fun _i => rfl
+
+end restrict
+
 end Simplex
 
 end Affine

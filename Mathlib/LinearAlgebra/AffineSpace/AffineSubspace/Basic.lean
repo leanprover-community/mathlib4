@@ -575,7 +575,7 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
           subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 
 section inclusion
-variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁] [Nonempty S₂]
+variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]
 
 attribute [local instance] AffineSubspace.toAddTorsor
 
@@ -583,10 +583,13 @@ attribute [local instance] AffineSubspace.toAddTorsor
 
 This is the affine version of `Submodule.inclusion`. -/
 @[simps linear]
-def inclusion (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
-  toFun := Set.inclusion h
-  linear := Submodule.inclusion <| AffineSubspace.direction_le h
-  map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
+def inclusion (h : S₁ ≤ S₂) :
+    letI := Nonempty.map (Set.inclusion h) ‹_›
+    S₁ →ᵃ[k] S₂ :=
+  letI := Nonempty.map (Set.inclusion h) ‹_›
+  { toFun := Set.inclusion h
+    linear := Submodule.inclusion <| AffineSubspace.direction_le h
+    map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl }
 
 @[simp]
 theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
