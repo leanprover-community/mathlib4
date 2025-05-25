@@ -114,11 +114,9 @@ alias evariance_lt_top_iff_memℒp := evariance_lt_top_iff_memLp
 lemma evariance_eq_top_iff [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ) :
     evariance X μ = ∞ ↔ ¬ MemLp X 2 μ := by simp [← evariance_lt_top_iff_memLp hX]
 
-lemma variance_of_notMemLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ)
+lemma variance_of_not_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ)
     (hX_not : ¬ MemLp X 2 μ) :
     variance X μ = 0 := by simp [variance, (evariance_eq_top_iff hX).mpr hX_not]
-
-@[deprecated (since := "2025-05-23")] alias variance_of_not_memLp := variance_of_notMemLp
 
 theorem ofReal_variance [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
     .ofReal (variance X μ) = evariance X μ := by
@@ -212,7 +210,7 @@ lemma variance_add_const [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
     rw [variance_eq_integral (hX.add_const _).aemeasurable,
       integral_add hX_int (by fun_prop), integral_const, variance_eq_integral hX.aemeasurable]
     simp
-  · rw [variance_of_notMemLp (hX.add_const _), variance_of_notMemLp hX hX_Lp]
+  · rw [variance_of_not_memLp (hX.add_const _), variance_of_not_memLp hX hX_Lp]
     refine fun h_memLp ↦ hX_Lp ?_
     have : X = fun ω ↦ X ω + c - c := by ext; ring
     rw [this]

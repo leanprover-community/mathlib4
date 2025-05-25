@@ -65,17 +65,15 @@ lemma toLpₗ_apply (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
   simp [toLpₗ, dif_pos h_Lp]
 
 @[simp]
-lemma toLpₗ_of_notMemLp (h_Lp : ¬ MemLp id p μ) (L : Dual 𝕜 E) :
+lemma toLpₗ_of_not_memLp (h_Lp : ¬ MemLp id p μ) (L : Dual 𝕜 E) :
     L.toLpₗ μ p = 0 := by
   simp [toLpₗ, dif_neg h_Lp]
-
-@[deprecated (since := "2025-05-23")] alias toLpₗ_of_not_memLp := toLpₗ_of_notMemLp
 
 lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : Dual 𝕜 E) :
     ‖L.toLpₗ μ p‖ ≤ ‖L‖ * (eLpNorm id p μ).toReal := by
   by_cases h_Lp : MemLp id p μ
   swap
-  · simp only [h_Lp, not_false_eq_true, toLpₗ_of_notMemLp, Lp.norm_zero]
+  · simp only [h_Lp, not_false_eq_true, toLpₗ_of_not_memLp, Lp.norm_zero]
     positivity
   by_cases hp : p = 0
   · simp only [h_Lp, toLpₗ_apply, Lp.norm_toLp]
@@ -146,11 +144,9 @@ lemma toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (L : Dual 𝕜 E) :
   simp [toLp, h_Lp]
 
 @[simp]
-lemma toLp_of_notMemLp [Fact (1 ≤ p)] (h_Lp : ¬ MemLp id p μ) (L : Dual 𝕜 E) :
+lemma toLp_of_not_memLp [Fact (1 ≤ p)] (h_Lp : ¬ MemLp id p μ) (L : Dual 𝕜 E) :
     L.toLp μ p = 0 := by
   simp [toLp, h_Lp]
-
-@[deprecated (since := "2025-05-23")] alias toLp_of_not_memLp := toLp_of_notMemLp
 
 end ContinuousLinearMap
 
@@ -179,17 +175,14 @@ lemma uncenteredCovarianceBilin_apply (h : MemLp id 2 μ) (L₁ L₂ : Dual ℝ 
   simp only [id_eq] at hxL₁ hxL₂
   rw [hxL₁, hxL₂, mul_comm]
 
-lemma uncenteredCovarianceBilin_of_notMemLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
+lemma uncenteredCovarianceBilin_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     uncenteredCovarianceBilin μ L₁ L₂ = 0 := by
-  simp [uncenteredCovarianceBilin, Dual.toLp_of_notMemLp h]
-
-@[deprecated (since := "2025-05-23")]
-alias uncenteredCovarianceBilin_of_not_memLp := uncenteredCovarianceBilin_of_notMemLp
+  simp [uncenteredCovarianceBilin, Dual.toLp_of_not_memLp h]
 
 lemma norm_uncenteredCovarianceBilin_le (L₁ L₂ : Dual ℝ E) :
     ‖uncenteredCovarianceBilin μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
   by_cases h : MemLp id 2 μ
-  swap; · simp only [uncenteredCovarianceBilin_of_notMemLp h, norm_zero]; positivity
+  swap; · simp only [uncenteredCovarianceBilin_of_not_memLp h, norm_zero]; positivity
   calc ‖uncenteredCovarianceBilin μ L₁ L₂‖
   _ = ‖∫ x, L₁ x * L₂ x ∂μ‖ := by rw [uncenteredCovarianceBilin_apply h]
   _ ≤ ∫ x, ‖L₁ x‖ * ‖L₂ x‖ ∂μ := (norm_integral_le_integral_norm _).trans (by simp)
@@ -227,17 +220,14 @@ def covarianceBilin (μ : Measure E) : Dual ℝ E →L[ℝ] Dual ℝ E →L[ℝ]
   uncenteredCovarianceBilin (μ.map (fun x ↦ x - ∫ x, x ∂μ))
 
 @[simp]
-lemma covarianceBilin_of_notMemLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
+lemma covarianceBilin_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Dual ℝ E) :
     covarianceBilin μ L₁ L₂ = 0 := by
-  rw [covarianceBilin, uncenteredCovarianceBilin_of_notMemLp]
+  rw [covarianceBilin, uncenteredCovarianceBilin_of_not_memLp]
   rw [(measurableEmbedding_subRight _).memLp_map_measure_iff]
   refine fun h_Lp ↦ h ?_
   have : (id : E → E) = fun x ↦ x - ∫ x, x ∂μ + ∫ x, x ∂μ := by ext; simp
   rw [this]
   exact h_Lp.add (memLp_const _)
-
-@[deprecated (since := "2025-05-23")]
-alias covarianceBilin_of_not_memLp := covarianceBilin_of_notMemLp
 
 variable [CompleteSpace E]
 
