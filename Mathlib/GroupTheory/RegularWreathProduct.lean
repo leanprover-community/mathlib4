@@ -200,7 +200,7 @@ instance [Finite G] : Finite (IteratedWreathProduct G n) := by
   | zero => rw [IteratedWreathProduct_zero]; infer_instance
   | succ n h => rw [IteratedWreathProduct_succ]; infer_instance
 
-theorem iter_wreath_card [Finite G] : Nat.card (IteratedWreathProduct G n) =
+theorem IteratedWreathProduct.card [Finite G] : Nat.card (IteratedWreathProduct G n) =
     Nat.card G ^ (∑ i ∈ Finset.range n, Nat.card G ^ i) := by
   induction n with
   | zero => simp
@@ -258,7 +258,7 @@ noncomputable def Sylow.mulEquivIteratedWreathProduct  (p : ℕ) [Fact (Nat.Prim
     ((Equiv.Perm.permCongrHom e1.symm).comp_injective _).mpr (iteratedWreathToPermHomInj G n)
   let g := (MonoidHom.ofInjective hf).symm
   let P' : Sylow p (Equiv.Perm α) := Sylow.ofCard (MonoidHom.range f) (by
-    rw [Nat.card_congr g.toEquiv, iter_wreath_card, hG, Nat.card_perm, hα, mu_eq])
+    rw [Nat.card_congr g.toEquiv, IteratedWreathProduct.card, hG, Nat.card_perm, hα, mu_eq])
   exact (P.equiv P').trans g
 
 end iterated
