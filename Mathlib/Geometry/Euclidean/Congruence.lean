@@ -64,9 +64,9 @@ theorem side_side_side (hd₁ : dist a b = dist a' b') (hd₂ : dist b c = dist 
 theorem side_angle_side (h : ∠ a b c = ∠ a' b' c') (hd₁ : dist a b = dist a' b')
     (hd₂ : dist b c = dist b' c') : ![a,b,c] ≅ ![a',b',c'] := by
   rw [triangle_congruent_iff_dist_eq]
-  have h1:= EuclideanGeometry.law_cos a b c
-  have h2:= EuclideanGeometry.law_cos a' b' c'
-  have hdist: dist a c * dist a c = dist a' c' * dist a' c' := by
+  have h1 := EuclideanGeometry.law_cos a b c
+  have h2 := EuclideanGeometry.law_cos a' b' c'
+  have hdist : dist a c * dist a c = dist a' c' * dist a' c' := by
     rw [h1, h2]
     field_simp [h, hd₁, hd₂, dist_comm]
   simp [← pow_two] at hdist
@@ -76,16 +76,16 @@ theorem side_angle_side (h : ∠ a b c = ∠ a' b' c') (hd₁ : dist a b = dist 
 
 /-- Angle Side Angle, require not collinear. -/
 theorem angle_side_angle (hindep: AffineIndependent ℝ ![a,b,c])
-    (hindep': AffineIndependent ℝ ![a',b',c']) (ha₁ : ∠ a b c = ∠ a' b' c')
+    (hindep' : AffineIndependent ℝ ![a',b',c']) (ha₁ : ∠ a b c = ∠ a' b' c')
     (hd : dist b c = dist b' c') (ha₂ : ∠ b c a = ∠ b' c' a') : ![a,b,c] ≅ ![a',b',c'] := by
-  have h_ab1: b ≠ a := hindep.injective.ne (by decide : (1 : Fin 3) ≠ 0)
-  have h_ac1: c ≠ a := hindep.injective.ne (by decide : (2 : Fin 3) ≠ 0)
-  have ha₃:= angle_add_angle_add_angle_eq_pi h_ab1 h_ac1
-  have h_ab2: b' ≠ a' := hindep'.injective.ne (by decide : (1 : Fin 3) ≠ 0)
-  have h_ac2: c' ≠ a' := hindep'.injective.ne (by decide : (2 : Fin 3) ≠ 0)
-  have ha₃':= angle_add_angle_add_angle_eq_pi h_ab2 h_ac2
+  have h_ab1 : b ≠ a := hindep.injective.ne (by decide : (1 : Fin 3) ≠ 0)
+  have h_ac1 : c ≠ a := hindep.injective.ne (by decide : (2 : Fin 3) ≠ 0)
+  have ha₃ := angle_add_angle_add_angle_eq_pi h_ab1 h_ac1
+  have h_ab2 : b' ≠ a' := hindep'.injective.ne (by decide : (1 : Fin 3) ≠ 0)
+  have h_ac2 : c' ≠ a' := hindep'.injective.ne (by decide : (2 : Fin 3) ≠ 0)
+  have ha₃' := angle_add_angle_add_angle_eq_pi h_ab2 h_ac2
   rw [← ha₃'] at ha₃
-  rw [ha₁,ha₂,angle_comm b' c' a',add_left_cancel_iff] at ha₃
+  rw [ha₁, ha₂, angle_comm b' c' a', add_left_cancel_iff] at ha₃
   have h_indep_bac: AffineIndependent ℝ ![b,a,c] := by
     rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 1)]
     convert hindep using 1
@@ -99,33 +99,33 @@ theorem angle_side_angle (hindep: AffineIndependent ℝ ![a,b,c])
     rw [dist_eq_dist_mul_sin_angle_div_sin_angle h_indep_bac]
     rw [dist_eq_dist_mul_sin_angle_div_sin_angle h_indep_bac']
     rw [dist_comm c b, dist_comm c' b']
-    rw [hd,angle_comm,ha₂,angle_comm b' c' a',angle_comm b a c,ha₃,angle_comm b' a' c']
+    rw [hd, angle_comm, ha₂, angle_comm b' c' a', angle_comm b a c, ha₃, angle_comm b' a' c']
   exact side_angle_side ha₁ dist_ab_eq hd
 
 /-- Angle Angle Side, require not collinear. -/
-theorem angle_angle_side (hindep: AffineIndependent ℝ ![a,b,c])
-    (hindep': AffineIndependent ℝ ![a',b',c']) (ha₁ : ∠ a b c = ∠ a' b' c')
+theorem angle_angle_side (hindep : AffineIndependent ℝ ![a,b,c])
+    (hindep' : AffineIndependent ℝ ![a',b',c']) (ha₁ : ∠ a b c = ∠ a' b' c')
     (ha₂ : ∠ b c a = ∠ b' c' a') (hd : dist c a = dist c' a') : ![a,b,c] ≅ ![a',b',c'] := by
-  have h_ab1: b ≠ a := hindep.injective.ne (by decide : (1 : Fin 3) ≠ 0)
-  have h_ac1: c ≠ a := hindep.injective.ne (by decide : (2 : Fin 3) ≠ 0)
-  have ha₃:= angle_add_angle_add_angle_eq_pi h_ab1 h_ac1
-  have h_ab2: b' ≠ a' := hindep'.injective.ne (by decide : (1 : Fin 3) ≠ 0)
-  have h_ac2: c' ≠ a' := hindep'.injective.ne (by decide : (2 : Fin 3) ≠ 0)
-  have ha₃':= angle_add_angle_add_angle_eq_pi h_ab2 h_ac2
+  have h_ab1 : b ≠ a := hindep.injective.ne (by decide : (1 : Fin 3) ≠ 0)
+  have h_ac1 : c ≠ a := hindep.injective.ne (by decide : (2 : Fin 3) ≠ 0)
+  have ha₃ := angle_add_angle_add_angle_eq_pi h_ab1 h_ac1
+  have h_ab2 : b' ≠ a' := hindep'.injective.ne (by decide : (1 : Fin 3) ≠ 0)
+  have h_ac2 : c' ≠ a' := hindep'.injective.ne (by decide : (2 : Fin 3) ≠ 0)
+  have ha₃' := angle_add_angle_add_angle_eq_pi h_ab2 h_ac2
   rw [← ha₃'] at ha₃
-  rw [ha₁,ha₂,angle_comm b' c' a',add_left_cancel_iff] at ha₃
-  have h_indep_bca: AffineIndependent ℝ ![b,c,a] := by
+  rw [ha₁, ha₂, angle_comm b' c' a', add_left_cancel_iff] at ha₃
+  have h_indep_bca : AffineIndependent ℝ ![b,c,a] := by
     rw [← affineIndependent_equiv (Equiv.swap (1 : Fin 3) 2)]
     rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 1)]
     convert hindep using 1
     ext x; fin_cases x <;> rfl
-  have h_indep_bca': AffineIndependent ℝ ![b',c',a'] := by
+  have h_indep_bca' : AffineIndependent ℝ ![b',c',a'] := by
     rw [← affineIndependent_equiv (Equiv.swap (1 : Fin 3) 2)]
     rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 1)]
     convert hindep' using 1
     ext x; fin_cases x <;> rfl
-  have h:= angle_side_angle h_indep_bca h_indep_bca' ha₂ hd ha₃
-  have h_bc: dist b c = dist b' c':=by exact h.dist_eq 0 1
+  have h := angle_side_angle h_indep_bca h_indep_bca' ha₂ hd ha₃
+  have h_bc : dist b c = dist b' c' := by exact h.dist_eq 0 1
   exact angle_side_angle hindep hindep' ha₁ h_bc ha₂
 
 include V₁ V₂
@@ -136,9 +136,9 @@ theorem angle_eq_of_congruent (h: v₁ ≅ v₂) (i j k : ι) :
   unfold EuclideanGeometry.angle
   unfold InnerProductGeometry.angle
   have key := abs_le.1 (abs_real_inner_div_norm_mul_norm_le_one (v₁ i -ᵥ v₁ j) (v₁ k -ᵥ v₁ j))
-  have key':= abs_le.1 (abs_real_inner_div_norm_mul_norm_le_one (v₂ i -ᵥ v₂ j) (v₂ k -ᵥ v₂ j))
+  have key' := abs_le.1 (abs_real_inner_div_norm_mul_norm_le_one (v₂ i -ᵥ v₂ j) (v₂ k -ᵥ v₂ j))
   rw [Real.arccos_inj key.1 key.2 key'.1 key'.2]
   simp [real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-  simp [← dist_eq_norm_vsub,h.dist_eq]
+  simp [← dist_eq_norm_vsub, h.dist_eq]
 
 end EuclideanGeometry
