@@ -965,6 +965,13 @@ theorem restrict_map_inclusion {n : ℕ} (s : Affine.Simplex k P n)
       s.restrict S₂ (hS₁.trans hS₂) :=
   rfl
 
+@[simp]
+theorem map_subtype_restrict
+    {n : ℕ} (S : AffineSubspace k P) [Nonempty S] (s : Affine.Simplex k S n) :
+    (s.map (AffineSubspace.subtype _) Subtype.coe_injective).restrict
+      S (affineSpan_le.2 <| by rintro x ⟨y, rfl⟩; exact Subtype.prop _) = s := by
+  rfl
+
 /-- Restricting to `S₁` then mapping through the restriction of `f` to `S₁ →ᵃ[k] S₂` is the same
 as mapping through unrestricted `f`, then restricting to `S₂`. -/
 theorem restrict_map_restrict
