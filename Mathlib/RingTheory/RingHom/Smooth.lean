@@ -21,7 +21,8 @@ open TensorProduct
 
 namespace RingHom
 
-/-- A ring homomorphism `f : R →+* S` is smooth if `S` is formally smooth as an `R` algebra. -/
+/-- A ring homomorphism `f : R →+* S` is formally smooth
+if `S` is formally smooth as an `R` algebra. -/
 @[algebraize RingHom.FormallySmooth.toAlgebra]
 def FormallySmooth (f : R →+* S) : Prop :=
   letI := f.toAlgebra
@@ -37,14 +38,8 @@ lemma formallySmooth_algebraMap [Algebra R S] :
   congr!
   exact Algebra.algebra_ext _ _ fun _ ↦ rfl
 
-lemma FormallySmooth.localizationPreserves : LocalizationPreserves @FormallySmooth := by
-  intros R S T _ f M R' S' _ _ _ _ _ _ hf
-  algebraize [f, (algebraMap S S').comp f, (IsLocalization.map (S := R') S' f M.le_comap_map)]
-  have : IsScalarTower R S S' := .of_algebraMap_eq' rfl
-  have : IsScalarTower R R' S' := .of_algebraMap_eq'
-    (IsLocalization.map_comp (S := R') M.le_comap_map).symm
-  have : IsLocalization (Submonoid.map (algebraMap R S) M) S' := ‹_›
-  exact .localization_map (S := S) M
+lemma FormallySmooth.holdsForLocalizationAway : HoldsForLocalizationAway @FormallySmooth :=
+  fun _ _ _ _ _ r _ ↦ formallySmooth_algebraMap.mpr <| .of_isLocalization (.powers r)
 
 lemma FormallySmooth.stableUnderComposition : StableUnderComposition @FormallySmooth := by
   intros R S T _ _ _ f g hf hg
@@ -52,7 +47,7 @@ lemma FormallySmooth.stableUnderComposition : StableUnderComposition @FormallySm
   exact .comp R S T
 
 lemma FormallySmooth.respectsIso : RespectsIso @FormallySmooth :=
-  localizationPreserves.away.respectsIso
+  stableUnderComposition.respectsIso fun e ↦ holdsForLocalizationAway.of_bijective _ _ e.bijective
 
 lemma FormallySmooth.isStableUnderBaseChange : IsStableUnderBaseChange @FormallySmooth := by
   refine .mk respectsIso ?_
@@ -60,6 +55,9 @@ lemma FormallySmooth.isStableUnderBaseChange : IsStableUnderBaseChange @Formally
   show (algebraMap _ _).FormallySmooth
   rw [formallySmooth_algebraMap] at H ⊢
   infer_instance
+
+lemma FormallySmooth.localizationPreserves : LocalizationPreserves @FormallySmooth :=
+  isStableUnderBaseChange.localizationPreserves
 
 /-- A ring homomorphism `f : R →+* S` is smooth if `S` is smooth as an `R` algebra. -/
 @[algebraize RingHom.Smooth.toAlgebra]
@@ -122,7 +120,7 @@ lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Smooth := by
     Algebra.basicOpen_subset_smoothLocus_iff, ← formallySmooth_algebraMap]
   exact fun r hr ↦ (hf ⟨r, hr⟩).1
 
-/-- smoothness is a local property of ring homomorphisms. -/
+/-- Smoothness is a local property of ring homomorphisms. -/
 lemma propertyIsLocal : PropertyIsLocal Smooth where
   localizationAwayPreserves := isStableUnderBaseChange.localizationPreserves.away
   ofLocalizationSpanTarget := ofLocalizationSpanTarget
