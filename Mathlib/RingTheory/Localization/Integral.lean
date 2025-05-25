@@ -47,13 +47,13 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
         (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
   else 0
 
-theorem coeffIntegerNormalization_of_notMem_support (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
+theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 := by
   simp only [coeffIntegerNormalization, h, mem_support_iff, eq_self_iff_true, not_true, Ne,
     dif_neg, not_false_iff]
 
 @[deprecated (since := "2025-05-23")]
-alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_of_notMem_support
+alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_of_coeff_zero
 
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
@@ -69,7 +69,7 @@ noncomputable def integerNormalization (p : S[X]) : R[X] :=
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
   simp +contextual [integerNormalization, coeff_monomial,
-    coeffIntegerNormalization_of_notMem_support]
+    coeffIntegerNormalization_of_coeff_zero]
 
 theorem integerNormalization_spec (p : S[X]) :
     ∃ b : M, ∀ i, algebraMap R S ((integerNormalization M p).coeff i) = (b : R) • p.coeff i := by
