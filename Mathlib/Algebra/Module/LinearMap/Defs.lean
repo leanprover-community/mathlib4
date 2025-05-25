@@ -989,12 +989,3 @@ def restrictScalarsₗ : (M →ₗ[S] N) →ₗ[R₁] M →ₗ[R] N where
 end RestrictScalarsAsLinearMap
 
 end LinearMap
-
-
-namespace LinearMap
-variable {R S M M₁ M₂ M₃ : Type*} [Semiring R] [Semiring S]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [Module R M] [Module R M₂] [Module S M₃]
-variable (σ : R →+* S)
-
-end LinearMap
