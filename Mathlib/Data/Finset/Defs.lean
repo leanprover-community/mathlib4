@@ -264,6 +264,9 @@ theorem Subset.antisymm {s₁ s₂ : Finset α} (H₁ : s₁ ⊆ s₂) (H₂ : s
 theorem subset_iff {s₁ s₂ : Finset α} : s₁ ⊆ s₂ ↔ ∀ ⦃x⦄, x ∈ s₁ → x ∈ s₂ :=
   Iff.rfl
 
+theorem subset_iff_not_mem : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
+  simp only [subset_iff, not_imp_not]
+
 @[simp, norm_cast]
 theorem coe_subset {s₁ s₂ : Finset α} : (s₁ : Set α) ⊆ s₂ ↔ s₁ ⊆ s₂ :=
   Iff.rfl
