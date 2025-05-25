@@ -267,7 +267,7 @@ provided independence is determined by its behaviour on finite sets. -/
         (hE₀fin.finite_subsets.subset (by simp))
         ⟨B₀, Subset.rfl, hB₀, subset_union_right.trans (subset_insert _ _)⟩
 
-      have heI₀ : e ∉ I₀ := not_mem_subset hI₀I heI
+      have heI₀ : e ∉ I₀ := notMem_subset hI₀I heI
       have heI₀i : Indep (insert e I₀) := indep_subset hins (insert_subset_insert hI₀I)
 
       have heJ : e ∉ J := fun heJ ↦ hB₀e (indep_subset hJ <| insert_subset heJ hB₀J)
@@ -283,7 +283,7 @@ provided independence is determined by its behaviour on finite sets. -/
           ⟨hB₀J.trans <| subset_insert _ _, hfi, insert_subset hfE₀ hJss⟩) (subset_insert _ _)
 
       -- But this means `|I₀| < |J|`, and extending `I₀` into `J` gives a contradiction
-      rw [ncard_insert_of_not_mem heI₀ hI₀fin, ← Nat.lt_iff_add_one_le] at hcard
+      rw [ncard_insert_of_notMem heI₀ hI₀fin, ← Nat.lt_iff_add_one_le] at hcard
 
       obtain ⟨f, hfJ, hfI₀, hfi⟩ := indep_aug (indep_subset hI hI₀I) hI₀fin hJ hJfin hcard
       exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by aesop), hfI₀⟩ hfi )
@@ -373,7 +373,7 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
       refine lt_of_not_le fun hle ↦ ?_
       obtain ⟨x, hxnot, hxI⟩ := exists_insert_of_not_maximal indep_subset hI hImax
       have hlt : B.encard < (insert x I).encard := by
-        rwa [encard_insert_of_not_mem hxnot, ← not_le, ENat.add_one_le_iff, not_lt]
+        rwa [encard_insert_of_notMem hxnot, ← not_le, ENat.add_one_le_iff, not_lt]
         rw [encard_ne_top_iff]
         obtain ⟨n, hn⟩ := indep_bdd
         exact finite_of_encard_le_coe (hn _ hI)
