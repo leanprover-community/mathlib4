@@ -256,34 +256,21 @@ lemma simplicialEvalσ_of_isAdmissible
 
 /-- Performing a simplicial insert in a list is the same as composition on the right by the
 corresponding degeneracy operator. -/
-lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : j < m + 1) :
-    standardσ (m₂ := m) (simplicialInsert j L) rfl =
-    standardσ (m₂ := m + 1) L (by simp +arith [simplicialInsert_length]) ≫ σ j := by
+lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : j < m + 1)
+    (m₁ : ℕ) (hm₁ : m + L.length + 1 = m₁):
+    standardσ (m₂ := m) (simplicialInsert j L) (m₁ := m₁)
+      (by simpa only [simplicialInsert_length, add_assoc]) =
+    standardσ (m₂ := m + 1) L (by omega) ≫ σ j := by
   induction L generalizing m j with
   | nil => simp [standardσ, simplicialInsert]
   | cons a L h_rec =>
     simp only [List.length_cons, simplicialInsert, Category.id_comp]
-    split_ifs <;> simp only [standardσ, Category.assoc]
-    haveI := h_rec hL.tail (j + 1) (by simpa)
-    generalize_proofs h _ _ h' at this ⊢
-    haveI := standardσ
-      (m₁ := m + (if j < a then j :: a :: L else a :: simplicialInsert (j + 1) L).length) []
-        (by aesop) ≫= this
-    rw [standardσ_comp_standardσ] at this
-    simp only [List.append_eq, List.append_nil] at this
-    rw [this, reassoc_of% standardσ_comp_standardσ]
-    simp only [List.append_eq, List.append_nil, Category.assoc]
-    slice_rhs 2 4 =>
-      equals σ ↑(j + 1) ≫ σ a =>
-        have ha : a < m + 1 := by omega
-        haveI := σ_comp_σ_nat a j ha hj (by omega)
-        generalize_proofs p p' at this
-        -- We have to get rid of the natCasts...
-        have ha₁ : (⟨a, p⟩ : Fin <| m + 1 + 1) = ↑a := by ext; simp [Nat.mod_eq_of_lt p]
-        have ha₂ : (⟨a, ha⟩ : Fin <| m + 1) = ↑a := by ext; simp [Nat.mod_eq_of_lt ha]
-        have hj₁ : (⟨j + 1, p'⟩ : Fin <| m + 1 + 1) = ↑(j + 1) := by ext; simp [Nat.mod_eq_of_lt p']
-        have hj₂ : (⟨j, hj⟩ : Fin <| m + 1) = ↑j := by ext; simp [Nat.mod_eq_of_lt hj]
-        rwa [← ha₁, ← ha₂, ← hj₁, ← hj₂]
+    split_ifs
+    · simp
+    · have : σ (a : Fin (m + 2)) ≫ σ j = σ ((j + 1 : ℕ)) ≫ σ a := by
+        convert σ_comp_σ_nat (n := m) a j (by omega) (by omega) ( by omega) <;> simp <;> omega
+      simp only [standardσ_cons, Category.assoc, this,
+        h_rec hL.tail (j + 1) (by omega) (by simp only [List.length_cons] at hm₁; omega)]
 
 /-- Using `standardσ_simplicialInsert`, we can prove that every morphism satisfying `P_σ` is equal
 to some `standardσ` for some admissible list of indices. -/
