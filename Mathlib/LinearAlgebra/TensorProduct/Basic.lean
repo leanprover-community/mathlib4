@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Tensor product of modules over commutative semirings.
@@ -403,6 +404,17 @@ protected theorem sum_induction {motive : M ⊗[R] N → Prop}
   convert sum (l.foldDups (fun p => (2•p.1, p.2))) using 1
   rw [List.foldDups_sum_map]
   simp [two_nsmul, add_tmul]
+
+
+/-- Is this one more convenient than `sum_induction` above? -/
+@[elab_as_elim, induction_eliminator]
+protected theorem fin_sum_induction {motive : M ⊗[R] N → Prop}
+    (sum : ∀ {n} (m : Fin n → M) (n : Fin n → N), motive (∑ i, (m i ⊗ₜ[R] n i)))
+    (z : M ⊗[R] N) : motive z := by
+  induction z using TensorProduct.listSum_induction with | sum l =>
+  convert sum (Prod.fst ∘ l.get) (Prod.snd ∘ l.get) using 1
+  simp [Function.comp_def]
+  rw [← Fin.sum_univ_fun_getElem]
 
 theorem smul_tmul' (r : R') (m : M) (n : N) : r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n :=
   rfl
