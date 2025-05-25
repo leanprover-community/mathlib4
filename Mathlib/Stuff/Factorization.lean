@@ -1,4 +1,3 @@
-import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.RingTheory.SimpleModule.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
@@ -92,6 +91,25 @@ theorem baz {P : K[X]} (hP : P ∣ cyclotomic n K)
   rw [hPdeg, ← bar hK hn ?_ (irreducible_of_normalized_factor Q HQ)]
   exact dvd_of_mem_normalizedFactors <| mem_of_le
     ((dvd_iff_normalizedFactors_le_normalizedFactors hP0 (cyclotomic_ne_zero n K)).mp hP) HQ
+
+omit hK in
+theorem baz' {n : ℕ} {P : (ZMod p)[X]} (hpn : ¬p ∣ n)
+      (hP : P ∣ cyclotomic n (ZMod p))
+      (hPdeg : P.natDegree = orderOf (unitOfCoprime _ (hp.1.coprime_iff_not_dvd.mpr hpn))) :
+    Irreducible P :=
+  baz (f := 1) (p := p) (by simp) (by simpa using hp.1.coprime_iff_not_dvd.mpr hpn) hP (by simpa)
+
+omit hK in
+lemma uff {n : ℕ} (hn : n.Prime) (hpn : p ≠ n) : p.Coprime n :=
+  hp.1.coprime_iff_not_dvd.mpr (fun h ↦ hpn <|
+    Nat.prime_eq_prime_of_dvd_pow hp.1 hn (m := 1) (by simpa))
+
+omit hK in
+theorem baz'' {n : ℕ} (hn : n.Prime) {P : (ZMod p)[X]} (hpn : p ≠ n)
+      (hP : P ∣ cyclotomic n (ZMod p))
+      (hPdeg : P.natDegree = orderOf (unitOfCoprime _ (uff hn hpn))) :
+    Irreducible P :=
+  baz' (fun h ↦ hpn <| Nat.prime_eq_prime_of_dvd_pow hp.1 hn (m := 1) (by simpa)) hP hPdeg
 
 open UniqueFactorizationMonoid Nat
 

@@ -1,4 +1,3 @@
-import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.NumberTheory.Cyclotomic.Embeddings
 import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.Tactic.NormNum.NatFactorial

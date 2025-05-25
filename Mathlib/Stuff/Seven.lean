@@ -1,9 +1,9 @@
 import Mathlib.Stuff.Inertia
 import Mathlib.NumberTheory.Cyclotomic.Embeddings
 import Mathlib.NumberTheory.Cyclotomic.Rat
-import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.Tactic
 import Mathlib.Stuff.Factorization
+import Mathlib.Stuff.Cyclotomic
 
 set_option linter.style.header false
 
@@ -49,111 +49,36 @@ theorem M7 : ⌊(M K)⌋₊ = 4 := by
     Int.reducePow, reduceSub, neg_mul, one_mul, Int.cast_neg, Int.cast_ofNat, abs_neg, abs_ofNat]
   exact crazy7
 
-theorem cyclotomic_7 : cyclotomic 7 ℤ = 1 + X + X ^ 2 + X ^ 3 + X ^ 4 + X ^ 5 + X ^ 6 := by
+theorem cyclotomic_7 : cyclotomic ((7 : ℕ+) : ℕ) ℤ =
+    1 + X + X ^ 2 + X ^ 3 + X ^ 4 + X ^ 5 + X ^ 6 := by
   simp [cyclotomic_prime, sum_range_succ]
 
-namespace IsCyclotomicExtension.Rat.seven
-
-instance : IsGalois ℚ K := isGalois 7 ℚ K
-
-local notation3 "θ" => (zeta_spec 7 ℚ K).toInteger
-
-lemma exponent : exponent θ = 1 := by
-  simp [exponent_eq_one_iff, ← ((zeta_spec 7 ℚ K).integralPowerBasis').adjoin_gen_eq_top]
-
-lemma ne_dvd_exponent (p : ℕ) (hp : 1 < p := by norm_num) : ¬ (p ∣ RingOfIntegers.exponent θ) := by
-  rw [exponent, dvd_one]
-  omega
-
-lemma minpoly : minpoly ℤ θ = cyclotomic 7 ℤ := by
-  have := cyclotomic_eq_minpoly (zeta_spec 7 ℚ K) (by norm_num)
-  rw [PNat.val_ofNat, ← (zeta_spec 7 ℚ K).coe_toInteger] at this
-  simpa [this] using (minpoly.algebraMap_eq RingOfIntegers.coe_injective θ).symm
-
-section factors
-
-namespace two
-
-local notation3 "poly" => (X ^ 3 + X ^ 2 + 1 : (ZMod 2)[X])
-
-lemma dvd : poly ∣ cyclotomic 7 (ZMod 2) := by
-  refine ⟨X ^ 3 + X + 1, ?_,⟩
-  rw [← map_cyclotomic_int, cyclotomic_7]
-  refine stupid _ ⟨X ^ 3, X ^ 3 + X ^ 2 + 1, X ^ 3 + X + 1, by simp, by simp, ?_⟩
-  ring
-
-lemma monic : Monic poly := by
-  monicity!
-
-lemma natDegree : natDegree poly = 3 := by
-  compute_degree!
-
-lemma irreducible : Irreducible poly := by
-  refine baz (f := 1) (p := 2) (by simp) (by rw [pow_one]; decide) dvd ?_
-  symm
-  rw [natDegree, orderOf_eq_iff (by norm_num)]
-  refine ⟨by decide, fun n hnlt hnpos ↦ ?_⟩
-  have : n ∈ Finset.Ioo 0 3 := by simp [hnpos, hnlt]
-  fin_cases this <;> decide
-
-lemma fact_mem : poly ∈ monicFactorsMod θ 2 := by
-  simp only [Finset.mem_coe, minpoly, map_cyclotomic, mem_toFinset]
-  obtain ⟨P, hPmem, hPass⟩ :=
-    exists_mem_normalizedFactors_of_dvd (cyclotomic_ne_zero 7 (ZMod 2)) irreducible dvd
-  convert hPmem
-  refine eq_of_monic_of_associated monic ?_ hPass
-  rw [← normalize_normalized_factor _ hPmem]
-  refine monic_normalize (prime_of_normalized_factor _ hPmem).ne_zero
-
-end two
-
-namespace three
-
-local notation3 "poly" => (X ^ 6 + X^5 + X ^ 4 + X ^ 3 + X ^ 2 + X + 1 : (ZMod 3)[X])
-
-lemma dvd : poly ∣ cyclotomic 7 (ZMod 3) := by
-  refine ⟨1, ?_,⟩
-  rw [← map_cyclotomic_int, cyclotomic_7]
-  refine stupid _ ⟨0, X ^ 6 + X^5 + X ^ 4 + X ^ 3 + X ^ 2 + X + 1, 1, by simp, by simp, ?_⟩
-  ring
-
-lemma monic : Monic poly := by monicity!
-
-lemma natDegree : natDegree poly = 6 := by compute_degree!
-
-lemma irreducible : Irreducible poly := by
-  refine baz (f := 1) (p := 3) (by simp) (by rw [pow_one]; decide) dvd ?_
-  symm
-  rw [natDegree, orderOf_eq_iff (by norm_num)]
-  refine ⟨by decide, fun n hnlt hnpos ↦ ?_⟩
-  have : n ∈ Finset.Ioo 0 6 := by simp [hnpos, hnlt]
-  fin_cases this <;> decide
-
-lemma fact_mem : poly ∈ monicFactorsMod θ 3 := by
-  simp [minpoly, (Polynomial.mem_normalizedFactors_iff (cyclotomic_ne_zero _ _)).mpr
-    ⟨irreducible, monic, dvd⟩]
-
-end three
-
-end factors
-
 theorem pid : IsPrincipalIdealRing (𝓞 K) := by
-  apply
-    isPrincipalIdealRing_of_isPrincipal_of_pow_inertiaDeg_le_of_mem_primesOver_of_mem_Icc.Galois
-  rw [M7]
-  intro p hp Hp
-  fin_cases hp; any_goals norm_num at Hp
-  · let f := Ideal.primesOverSpanEquivMonicFactorsMod (K := K) (ne_dvd_exponent 2)
-    refine ⟨_, (f.symm ⟨_, two.fact_mem⟩).2, ?_⟩
-    left
-    rw [Ideal.inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' (ne_dvd_exponent _)
-      two.fact_mem, two.natDegree]
-    norm_num
-  · let f := Ideal.primesOverSpanEquivMonicFactorsMod (K := K) (ne_dvd_exponent 3)
-    refine ⟨_, (f.symm ⟨_, three.fact_mem⟩).2, ?_⟩
-    left
-    rw [Ideal.inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' (ne_dvd_exponent _)
-      three.fact_mem, three.natDegree]
-    norm_num
-
-end IsCyclotomicExtension.Rat.seven
+  apply IsCyclotomicExtension.Rat.pid4 7
+  rw [M7, cyclotomic_7]
+  intro p hple hp hpn
+  fin_cases hple; any_goals norm_num at hp
+  · let P : ℤ[X] := X ^ 3 + X + 1; let d := 3
+    use P, X ^ 3 + X ^ 2 + 1, -X ^ 3, 0, 0, 0, 0, 0, 0, 0
+    rw [show P.natDegree = d by simp only [P]; compute_degree!]
+    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
+    · rw [orderOf_eq_iff (by norm_num)]
+      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
+      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
+      fin_cases this <;> decide +revert
+    · simp only [reduceAdd, cast_ofNat, mul_neg, P]
+      ring
+    · left
+      norm_num
+  · let P : ℤ[X] := X ^ 6 + X ^ 5 + X ^ 4 + X ^ 3 + X ^ 2 + X + 1; let d := 6
+    use P, 1, 0, 0, 0, 0, 0, 0, 0, 0
+    rw [show P.natDegree = d by simp only [P]; compute_degree!]
+    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
+    · rw [orderOf_eq_iff (by norm_num)]
+      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
+      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
+      fin_cases this <;> decide +revert
+    · simp only [reduceAdd, cast_ofNat, mul_neg, P]
+      ring
+    · left
+      norm_num
