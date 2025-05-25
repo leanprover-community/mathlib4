@@ -38,6 +38,48 @@ map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in th
 bilinear, tensor, tensor product
 -/
 
+/-- Insert `x` into `f`, unless it is already present, in which case remove it and call
+modify_existing. -/
+def _root_.Finset.upsert {α} [DecidableEq α] (f : Finset α) (x : α) (modify_existing : α → α) :
+      Finset α :=
+  if h : x ∈ f then
+    have := Finset.card_pos.2 ⟨x, h⟩
+    have := Finset.card_erase_of_mem h
+    (f.erase x).upsert (modify_existing x) modify_existing
+  else
+    f.cons x h
+  termination_by f.card
+
+theorem _root_.Finset.upsert_sum {α} {M} [AddCommMonoid M] [DecidableEq α]
+    (s : Finset α) (x : α)
+    (double : α → α)
+    (f : α → M)
+    (h : ∀ x, f x + f x = f (double x)):
+    (∑ i ∈ s.upsert x double, f i) = f x + ∑ i ∈ s, f i := by
+  fun_induction s.upsert x double with
+  | case1 f x h' _ _ ih =>
+    unfold Finset.upsert
+    rw [dif_pos h', ih, ← h, add_assoc, Finset.add_sum_erase _ _ h']
+  | case2 f x h' =>
+    unfold Finset.upsert
+    rw [dif_neg h', Finset.sum_cons]
+@[simp]
+def _root_.List.foldDups {α} [DecidableEq α] (l : List α) (double : α → α) : Finset α :=
+  match l with
+  | [] => ∅
+  | x :: xs => (xs.foldDups double).upsert x double
+
+theorem List.foldDups_sum_map {α} {M} [AddCommMonoid M] [DecidableEq α] (l : List α)
+    (double : α → α)
+    (f : α → M)
+    (h : ∀ a, f a + f a = f (double a)):
+    (∑ i ∈ l.foldDups double, f i) = (l.map f).sum := by
+  induction l with
+  | nil => simp
+  | cons x xs ih =>
+    simp [foldDups, ← ih]
+    rw [Finset.upsert_sum _ _ _ _ h]
+
 suppress_compilation
 
 section Semiring
@@ -334,6 +376,33 @@ instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
 
 instance : DistribMulAction R (M ⊗[R] N) :=
   TensorProduct.leftDistribMulAction
+
+@[elab_as_elim]
+protected theorem listSum_induction {motive : M ⊗[R] N → Prop}
+    (sum : ∀ l : List (M × N), motive (l.map fun i => (i.1 ⊗ₜ[R] i.2)).sum)
+    (z : M ⊗[R] N) : motive z := by
+  suffices ∃ l : List (M × N), z = (l.map fun i => (i.1 ⊗ₜ[R] i.2)).sum by
+    obtain ⟨s, rfl⟩ := this
+    exact sum s
+  induction z with
+  | zero => exact ⟨∅, by simp⟩
+  | tmul x y => exact ⟨[(x, y)], by simp⟩
+  | add a b iha ihb =>
+    obtain ⟨sa, rfl⟩ := iha
+    obtain ⟨sb, rfl⟩ := ihb
+    exact ⟨sa ++ sb, by simp⟩
+
+/-- Finset has more lemmas so is more convenient for the caller than `List`; but this induction
+is harder to prove! -/
+@[elab_as_elim, induction_eliminator]
+protected theorem sum_induction {motive : M ⊗[R] N → Prop}
+    (sum : ∀ s : Finset (M × N), motive (∑ i ∈ s, (i.1 ⊗ₜ[R] i.2)))
+    (z : M ⊗[R] N) : motive z := by
+  induction z using TensorProduct.listSum_induction with | sum l =>
+  classical
+  convert sum (l.foldDups (fun p => (2•p.1, p.2))) using 1
+  rw [List.foldDups_sum_map]
+  simp [two_nsmul, add_tmul]
 
 theorem smul_tmul' (r : R') (m : M) (n : N) : r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n :=
   rfl
