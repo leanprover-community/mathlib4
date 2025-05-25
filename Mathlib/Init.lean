@@ -12,7 +12,6 @@ import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.Multigoal
 import Mathlib.Tactic.Linter.OldObtain
-import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.Style
 -- The following import contains the environment extension for the unused tactic linter.
 import Mathlib.Tactic.Linter.UnusedTacticExtension
