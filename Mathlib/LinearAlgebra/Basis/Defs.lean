@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.Data.Finsupp.ToDFinsupp
+import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
 # Bases
@@ -56,7 +58,7 @@ basis, bases
 
 -/
 
-assert_not_exists LinearMap.pi LinearIndependent Cardinal
+-- assert_not_exists LinearMap.pi LinearIndependent Cardinal
 -- TODO: assert_not_exists Submodule
 -- (should be possible after splitting `Mathlib/LinearAlgebra/Finsupp/LinearCombination.lean`)
 
@@ -86,15 +88,29 @@ They are internally represented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
 available as `Basis.repr`.
 -/
 structure Basis where
-  /-- `Basis.ofRepr` constructs a basis given an assignment of coordinates to each vector. -/
-  ofRepr ::
-    /-- `repr` is the linear equivalence sending a vector `x` to its coordinates:
-    the `c`s such that `x = ∑ i, c i`. -/
-    repr : M ≃ₗ[R] ι →₀ R
+  /-- `Basis.ofRepr'` constructs a basis given an assignment of coordinates to each vector.
+
+  This is a constructive version of `ofRepr`. -/
+  ofRepr' ::
+    /-- `repr'` is the linear equivalence sending a vector `x` to its coordinates:
+    the `c`s such that `x = ∑ i, c i`.
+
+    This is a constructive version of `repr'`. -/
+    repr' : M ≃ₗ[R] Π₀ _ : ι, R
 
 end
 
 namespace Basis
+
+/-- `Basis.ofRepr` constructs a basis given an assignment of coordinates to each vector. -/
+def ofRepr (repr : M ≃ₗ[R] (ι →₀ R)) : Basis ι R M :=
+  .ofRepr' (repr.trans <| open Classical in finsuppLequivDFinsupp R)
+
+/-- `repr` is the linear equivalence sending a vector `x` to its coordinates:
+the `c`s such that `x = ∑ i, c i`. -/
+def repr (b : Basis ι R M) : M ≃ₗ[R] (ι →₀ R) :=
+  b.repr' ≪≫ₗ LinearEquiv.symm (open Classical in finsuppLequivDFinsupp R)
+
 
 instance : Inhabited (Basis ι R (ι →₀ R)) :=
   ⟨.ofRepr (LinearEquiv.refl _ _)⟩
@@ -103,8 +119,22 @@ variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
 
 section repr
 
-theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →₀ R) := fun f g h => by
+theorem repr'_injective : Injective (repr' : Basis ι R M → M ≃ₗ[R] Π₀ _, R) := fun f g h => by
   cases f; cases g; congr
+
+@[simp]
+theorem repr_ofRepr (repr : M ≃ₗ[R] (ι →₀ R)) : (ofRepr repr).repr = repr := by
+  ext : 1
+  simp [Basis.repr, ofRepr]
+
+@[simp]
+theorem ofRepr_repr (b : Basis ι R M) : ofRepr b.repr = b := by
+  apply repr'_injective
+  ext : 1
+  simp [Basis.repr, ofRepr]
+
+theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →₀ R) :=
+  Function.LeftInverse.injective ofRepr_repr
 
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (Basis ι R M) ι M where
@@ -113,8 +143,16 @@ instance instFunLike : FunLike (Basis ι R M) ι M where
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
 
 @[simp]
-theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) :=
-  rfl
+theorem coe_ofRepr' [DecidableEq ι] (e : M ≃ₗ[R] Π₀ _ : ι, R) :
+    ⇑(ofRepr' e) = fun i => e.symm (DFinsupp.single i 1) := by
+  ext i
+  change (ofRepr' _).repr.symm (Finsupp.single i 1) = _
+  simp [repr]
+
+@[simp]
+theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) := by
+  classical
+  simp [ofRepr]
 
 protected theorem injective [Nontrivial R] : Injective b :=
   b.repr.symm.injective.comp fun _ _ => (Finsupp.single_left_inj (one_ne_zero : (1 : R) ≠ 0)).mp
@@ -166,7 +204,7 @@ variable (f : M ≃ₗ[R] M')
 /-- Apply the linear equivalence `f` to the basis vectors. -/
 @[simps]
 protected def map : Basis ι R M' :=
-  ofRepr (f.symm.trans b.repr)
+  ofRepr' (f.symm.trans b.repr')
 
 @[simp]
 theorem map_apply (i) : b.map f i = f (b i) :=
@@ -186,10 +224,11 @@ variable (e : ι ≃ ι')
 def reindex : Basis ι' R M :=
   .ofRepr (b.repr.trans (Finsupp.domLCongr e))
 
-theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
+theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') := by
+  rw [reindex, coe_ofRepr]
   show (b.repr.trans (Finsupp.domLCongr e)).symm (Finsupp.single i' 1) =
     b.repr.symm (Finsupp.single (e.symm i') 1)
-  by rw [LinearEquiv.symm_trans_apply, Finsupp.domLCongr_symm, Finsupp.domLCongr_single]
+  rw [LinearEquiv.symm_trans_apply, Finsupp.domLCongr_symm, Finsupp.domLCongr_single]
 
 @[simp]
 theorem coe_reindex : (b.reindex e : ι' → M) = b ∘ e.symm :=
@@ -394,13 +433,18 @@ def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
     { smul_assoc := fun x y z => by
         change (f.symm x * y) • z = x • (y • z)
         rw [mul_smul, ← h, f.apply_symm_apply] }
-  exact ofRepr <| (b.repr.restrictScalars R').trans <|
-    Finsupp.mapRange.linearEquiv (Module.compHom.toLinearEquiv f.symm).symm
+  exact ofRepr' <| (b.repr'.restrictScalars R').trans <|
+    DFinsupp.mapRange.linearEquiv fun _ => (Module.compHom.toLinearEquiv f.symm).symm
 
 variable (h : ∀ (c) (x : M), f c • x = c • x)
 
-theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
-  apply_eq_iff.mpr <| by simp
+theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i := by
+  classical
+  simp only [mapCoeffs, coe_ofRepr', LinearEquiv.trans_symm, DFinsupp.mapRange.linearEquiv_symm,
+    LinearEquiv.symm_symm, LinearEquiv.trans_apply, DFinsupp.mapRange.linearEquiv_apply,
+    Module.compHom.toLinearEquiv_apply, DFinsupp.mapRange_single, map_one,
+    LinearEquiv.restrictScalars_symm_apply]
+  rw [coe_ofRepr']
 
 @[simp]
 theorem coe_mapCoeffs : (b.mapCoeffs f h : ι → M) = b :=

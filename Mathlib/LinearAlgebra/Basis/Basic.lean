@@ -100,7 +100,8 @@ protected noncomputable def mk : Basis ι R M :=
       right_inv := fun _ => hli.repr_eq rfl }
 
 @[simp]
-theorem mk_repr : (Basis.mk hli hsp).repr x = hli.repr ⟨x, hsp Submodule.mem_top⟩ :=
+theorem mk_repr : (Basis.mk hli hsp).repr x = hli.repr ⟨x, hsp Submodule.mem_top⟩ := by
+  simp [Basis.mk]
   rfl
 
 theorem mk_apply (i : ι) : Basis.mk hli hsp i = v i :=
@@ -232,7 +233,7 @@ protected def empty [Subsingleton M] [IsEmpty ι] : Basis ι R M :=
 
 instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
   default := Basis.empty M
-  uniq := fun _ => congr_arg ofRepr <| Subsingleton.elim _ _
+  uniq := fun _ => congr_arg ofRepr' <| Subsingleton.elim _ _
 
 end Empty
 
