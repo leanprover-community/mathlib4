@@ -428,7 +428,7 @@ theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j 
 multiplied by the coefficient of that row. -/
 theorem det_updateRow_sum (A : Matrix n n R) (j : n) (c : n → R) :
     (A.updateRow j (∑ k, (c k) • A k)).det = (c j) • A.det := by
-  convert det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.not_mem_erase j) c (c j)
+  convert det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.notMem_erase j) c (c j)
   rw [← Finset.univ.add_sum_erase _ (Finset.mem_univ j)]
 
 /-- If we replace a column of a matrix by a linear combination of its columns, then the determinant
@@ -551,7 +551,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const {A B : Matrix n n R} (c : n → R
       not_imp_comm.mp fun hi =>
         Finset.mem_erase.mpr
           ⟨mt (fun h : i = k => show c i = 0 from h.symm ▸ hk) hi, Finset.mem_univ i⟩)
-    k (Finset.not_mem_erase k Finset.univ) A_eq
+    k (Finset.notMem_erase k Finset.univ) A_eq
 
 theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
     ∀ (c : Fin n → R) (_hc : ∀ i : Fin n, k < i.succ → c i = 0)

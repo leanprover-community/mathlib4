@@ -61,6 +61,8 @@ theorem ofMul_symm_eq : (@ofMul α).symm = toMul :=
 theorem toMul_symm_eq : (@toMul α).symm = ofMul :=
   rfl
 
+@[ext] lemma ext {a b : Additive α} (hab : a.toMul = b.toMul) : a = b := hab
+
 @[simp]
 protected lemma «forall» {p : Additive α → Prop} : (∀ a, p a) ↔ ∀ a, p (ofMul a) := Iff.rfl
 
@@ -90,6 +92,8 @@ theorem ofAdd_symm_eq : (@ofAdd α).symm = toAdd :=
 @[simp]
 theorem toAdd_symm_eq : (@toAdd α).symm = ofAdd :=
   rfl
+
+@[ext] lemma ext {a b : Multiplicative α} (hab : a.toAdd = b.toAdd) : a = b := hab
 
 @[simp]
 protected lemma «forall» {p : Multiplicative α → Prop} : (∀ a, p a) ↔ ∀ a, p (ofAdd a) := Iff.rfl

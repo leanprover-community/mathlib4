@@ -139,7 +139,7 @@ theorem normalizedFactors_one : normalizedFactors (1 : α) = 0 := by
     apply factors_unique irreducible_of_normalized_factor
     · intro x hx
       exfalso
-      apply Multiset.not_mem_zero x hx
+      apply Multiset.notMem_zero x hx
     · apply prod_normalizedFactors one_ne_zero
 
 @[simp]
@@ -217,8 +217,11 @@ theorem normalizedFactors_of_irreducible_pow {p : α} (hp : Irreducible p) (k : 
     normalizedFactors (p ^ k) = Multiset.replicate k (normalize p) := by
   rw [normalizedFactors_pow, normalizedFactors_irreducible hp, Multiset.nsmul_singleton]
 
-theorem zero_not_mem_normalizedFactors (x : α) : (0 : α) ∉ normalizedFactors x := fun h =>
+theorem zero_notMem_normalizedFactors (x : α) : (0 : α) ∉ normalizedFactors x := fun h =>
   Prime.ne_zero (prime_of_normalized_factor _ h) rfl
+
+@[deprecated (since := "2025-05-23")]
+alias zero_not_mem_normalizedFactors := zero_notMem_normalizedFactors
 
 theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) : p ∣ a := by
   by_cases hcases : a = 0
@@ -254,7 +257,7 @@ theorem normalizedFactors_prod_of_prime [Subsingleton αˣ] {m : Multiset α}
     (h : ∀ p ∈ m, Prime p) : normalizedFactors m.prod = m := by
   cases subsingleton_or_nontrivial α
   · obtain rfl : m = 0 := by
-      refine Multiset.eq_zero_of_forall_not_mem fun x hx ↦ ?_
+      refine Multiset.eq_zero_of_forall_notMem fun x hx ↦ ?_
       simpa [Subsingleton.elim x 0] using h x hx
     simp
   · simpa only [← Multiset.rel_eq, ← associated_eq_eq] using
@@ -279,7 +282,7 @@ theorem normalizedFactors_pos (x : α) (hx : x ≠ 0) : 0 < normalizedFactors x 
     obtain ⟨p, hp⟩ := exists_mem_normalizedFactors hx h
     exact
       bot_lt_iff_ne_bot.mpr
-        (mt Multiset.eq_zero_iff_forall_not_mem.mp (not_forall.mpr ⟨p, not_not.mpr hp⟩))
+        (mt Multiset.eq_zero_iff_forall_notMem.mp (not_forall.mpr ⟨p, not_not.mpr hp⟩))
 
 theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     DvdNotUnit x y ↔ normalizedFactors x < normalizedFactors y := by
@@ -297,7 +300,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     normalizedFactors (s.prod) = (s.map normalizedFactors).sum := by
   cases subsingleton_or_nontrivial α
   · obtain rfl : s = 0 := by
-      apply Multiset.eq_zero_of_forall_not_mem
+      apply Multiset.eq_zero_of_forall_notMem
       intro _
       convert hs
     simp

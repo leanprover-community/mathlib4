@@ -532,8 +532,10 @@ def coeff (m : σ →₀ ℕ) (p : MvPolynomial σ R) : R :=
 theorem mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∈ p.support ↔ p.coeff m ≠ 0 := by
   simp [support, coeff]
 
-theorem not_mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∉ p.support ↔ p.coeff m = 0 :=
+theorem notMem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∉ p.support ↔ p.coeff m = 0 :=
   by simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ ℕ) → R → A} :
     p.sum b = ∑ m ∈ p.support, b m (p.coeff m) := by simp [support, Finsupp.sum, coeff]
@@ -772,7 +774,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
       simp only [ψ, c', coeff_C_mul, coeff_sum, coeff_monomial, Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]
-      · rw [not_mem_support_iff] at hi
+      · rw [notMem_support_iff] at hi
         rwa [mul_zero]
 
 @[simp] lemma isRegular_X : IsRegular (X n : MvPolynomial σ R) := by
@@ -821,10 +823,12 @@ lemma coeff_mem_coeffs {p : MvPolynomial σ R} (m : σ →₀ ℕ)
   letI := Classical.decEq R
   Finset.mem_image_of_mem p.coeff (mem_support_iff.mpr h)
 
-lemma zero_not_mem_coeffs (p : MvPolynomial σ R) : 0 ∉ p.coeffs := by
+lemma zero_notMem_coeffs (p : MvPolynomial σ R) : 0 ∉ p.coeffs := by
   intro hz
   obtain ⟨n, hnsupp, hn⟩ := mem_coeffs_iff.mp hz
   exact (mem_support_iff.mp hnsupp) hn.symm
+
+@[deprecated (since := "2025-05-23")] alias zero_not_mem_coeffs := zero_notMem_coeffs
 
 end Coeff
 

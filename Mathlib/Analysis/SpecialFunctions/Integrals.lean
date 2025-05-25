@@ -44,6 +44,7 @@ open MeasureTheory
 
 variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
 
+
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
 section
 
@@ -212,11 +213,11 @@ theorem integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log 
 
 @[simp]
 theorem integral_inv_of_pos (ha : 0 < a) (hb : 0 < b) : ∫ x in a..b, x⁻¹ = log (b / a) :=
-  integral_inv <| not_mem_uIcc_of_lt ha hb
+  integral_inv <| notMem_uIcc_of_lt ha hb
 
 @[simp]
 theorem integral_inv_of_neg (ha : a < 0) (hb : b < 0) : ∫ x in a..b, x⁻¹ = log (b / a) :=
-  integral_inv <| not_mem_uIcc_of_gt ha hb
+  integral_inv <| notMem_uIcc_of_gt ha hb
 
 theorem integral_one_div (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x : ℝ in a..b, 1 / x = log (b / a) := by
   simp only [one_div, integral_inv h]

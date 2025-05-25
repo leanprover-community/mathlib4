@@ -163,7 +163,7 @@ lemma netMaxcard_empty {T : X → X} {U : Set (X × X)} {n : ℕ} : netMaxcard T
 lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
     netMaxcard T F U n = 0 ↔ F = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, netMaxcard_empty]⟩
-  rw [eq_empty_iff_forall_not_mem]
+  rw [eq_empty_iff_forall_notMem]
   intro x x_F
   have key := isDynNetIn_singleton T U n x_F
   rw [← Finset.coe_singleton] at key
@@ -245,7 +245,7 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) {U : Set (X × X)} (U
   rw [← s.coe_insert x] at larger_net
   apply larger_net.card_le_netMaxcard.not_lt
   rw [← s_card, Nat.cast_lt]
-  refine (lt_add_one s.card).trans_eq (s.card_insert_of_not_mem fun x_s ↦ ?_).symm
+  refine (lt_add_one s.card).trans_eq (s.card_insert_of_notMem fun x_s ↦ ?_).symm
   apply x_uncov x x_s (ball_mono (dynEntourage_monotone T n (subset_comp_self U_rfl)) x
     (ball_mono (idRel_subset_dynEntourage T U_rfl n) x _))
   simp only [ball, mem_preimage, mem_idRel]

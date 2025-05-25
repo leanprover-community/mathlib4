@@ -235,7 +235,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       simp only [Nat.succ_eq_add_one, add_le_add_iff_right] at h
       simp only [Fin.val_last, Fin.init_def]
       dsimp
-      apply not_mem_span_of_apply_not_mem_span_image (@Polynomial.derivative ℚ _ ^ (n - k))
+      apply notMem_span_of_apply_notMem_span_image (@Polynomial.derivative ℚ _ ^ (n - k))
       -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `span_image` into `span_image _`
       simp only [not_exists, not_and, Submodule.mem_map, Submodule.span_image _]
       intro p m
