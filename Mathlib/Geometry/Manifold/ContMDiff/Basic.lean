@@ -14,7 +14,7 @@ In this file, we show that standard operations on `C^n` maps between manifolds a
 * `contMDiff_const` gives the smoothness of constant functions
 * `contMDiff_inclusion` shows that the inclusion between open sets of a topological space is `C^n`
 * `contMDiff_isOpenEmbedding` shows that if `M` has a `ChartedSpace` structure induced by an open
-embedding `e : M → H`, then `e` is `C^n`.
+  embedding `e : M → H`, then `e` is `C^n`.
 
 ## Tags
 chain rule, manifolds, higher derivative

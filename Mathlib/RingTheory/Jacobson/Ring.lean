@@ -47,9 +47,9 @@ section IsJacobsonRing
 variable {R S : Type*} [CommRing R] [CommRing S] {I : Ideal R}
 
 /-- A ring is a Jacobson ring if for every radical ideal `I`,
- the Jacobson radical of `I` is equal to `I`.
- See `isJacobsonRing_iff_prime_eq` and `isJacobsonRing_iff_sInf_maximal`
- for equivalent definitions. -/
+the Jacobson radical of `I` is equal to `I`.
+See `isJacobsonRing_iff_prime_eq` and `isJacobsonRing_iff_sInf_maximal`
+for equivalent definitions. -/
 class IsJacobsonRing (R : Type*) [CommRing R] : Prop where
   out' : ∀ I : Ideal R, I.IsRadical → I.jacobson = I
 
@@ -62,7 +62,7 @@ theorem IsJacobsonRing.out {R} [CommRing R] :
   isJacobsonRing_iff.1
 
 /-- A ring is a Jacobson ring if and only if for all prime ideals `P`,
- the Jacobson radical of `P` is equal to `P`. -/
+the Jacobson radical of `P` is equal to `P`. -/
 theorem isJacobsonRing_iff_prime_eq :
     IsJacobsonRing R ↔ ∀ P : Ideal R, IsPrime P → P.jacobson = P := by
   refine isJacobsonRing_iff.trans ⟨fun h I hI => h I hI.isRadical, ?_⟩
@@ -75,8 +75,8 @@ theorem isJacobsonRing_iff_prime_eq :
   exact fun J hJ => hx ⟨le_trans hP.left hJ.left, hJ.right⟩
 
 /-- A ring `R` is Jacobson if and only if for every prime ideal `I`,
- `I` can be written as the infimum of some collection of maximal ideals.
- Allowing ⊤ in the set `M` of maximal ideals is equivalent, but makes some proofs cleaner. -/
+`I` can be written as the infimum of some collection of maximal ideals.
+Allowing ⊤ in the set `M` of maximal ideals is equivalent, but makes some proofs cleaner. -/
 theorem isJacobsonRing_iff_sInf_maximal : IsJacobsonRing R ↔ ∀ {I : Ideal R}, I.IsPrime →
     ∃ M : Set (Ideal R), (∀ J ∈ M, IsMaximal J ∨ J = ⊤) ∧ I = sInf M :=
   ⟨fun H _I h => eq_jacobson_iff_sInf_maximal.1 (H.out h.isRadical), fun H =>

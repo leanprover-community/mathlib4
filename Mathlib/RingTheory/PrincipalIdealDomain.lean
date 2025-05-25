@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 A principal ideal ring (PIR) is a ring in which all left ideals are principal. A
 principal ideal domain (PID) is an integral domain which is a principal ideal ring.
 
-The definition of `IsPrincipalIdealRing` can be found in `Mathlib.RingTheory.Ideal.Span`.
+The definition of `IsPrincipalIdealRing` can be found in `Mathlib/RingTheory/Ideal/Span.lean`.
 
 # Main definitions
 
@@ -126,7 +126,7 @@ section CommRing
 
 variable [CommRing R] [Module R M]
 
-theorem associated_generator_span_self [IsPrincipalIdealRing R] [IsDomain R] (r : R) :
+theorem associated_generator_span_self [IsDomain R] (r : R) :
     Associated (generator <| Ideal.span {r}) r := by
   rw [← Ideal.span_singleton_eq_span_singleton]
   exact Ideal.span_singleton_generator _

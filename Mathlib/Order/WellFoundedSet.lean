@@ -16,25 +16,25 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 
 ## Main Definitions
 
- * `Set.WellFoundedOn s r` indicates that the relation `r` is
+* `Set.WellFoundedOn s r` indicates that the relation `r` is
   well-founded when restricted to the set `s`.
- * `Set.IsWF s` indicates that `<` is well-founded when restricted to `s`.
- * `Set.PartiallyWellOrderedOn s r` indicates that the relation `r` is
+* `Set.IsWF s` indicates that `<` is well-founded when restricted to `s`.
+* `Set.PartiallyWellOrderedOn s r` indicates that the relation `r` is
   partially well-ordered (also known as well quasi-ordered) when restricted to the set `s`.
- * `Set.IsPWO s` indicates that any infinite sequence of elements in `s` contains an infinite
+* `Set.IsPWO s` indicates that any infinite sequence of elements in `s` contains an infinite
   monotone subsequence. Note that this is equivalent to containing only two comparable elements.
 
 ## Main Results
 
- * Higman's Lemma, `Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_sublistForall₂`,
+* Higman's Lemma, `Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_sublistForall₂`,
   shows that if `r` is partially well-ordered on `s`, then `List.SublistForall₂` is partially
   well-ordered on the set of lists of elements of `s`. The result was originally published by
   Higman, but this proof more closely follows Nash-Williams.
- * `Set.wellFoundedOn_iff` relates `well_founded_on` to the well-foundedness of a relation on the
- original type, to avoid dealing with subtypes.
- * `Set.IsWF.mono` shows that a subset of a well-founded subset is well-founded.
- * `Set.IsWF.union` shows that the union of two well-founded subsets is well-founded.
- * `Finset.isWF` shows that all `Finset`s are well-founded.
+* `Set.wellFoundedOn_iff` relates `well_founded_on` to the well-foundedness of a relation on the
+  original type, to avoid dealing with subtypes.
+* `Set.IsWF.mono` shows that a subset of a well-founded subset is well-founded.
+* `Set.IsWF.union` shows that the union of two well-founded subsets is well-founded.
+* `Finset.isWF` shows that all `Finset`s are well-founded.
 
 ## TODO
 
@@ -42,8 +42,8 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 * Rename `Set.PartiallyWellOrderedOn` to `Set.WellQuasiOrderedOn` and `Set.IsPWO` to `Set.IsWQO`.
 
 ## References
- * [Higman, *Ordering by Divisibility in Abstract Algebras*][Higman52]
- * [Nash-Williams, *On Well-Quasi-Ordering Finite Trees*][Nash-Williams63]
+* [Higman, *Ordering by Divisibility in Abstract Algebras*][Higman52]
+* [Nash-Williams, *On Well-Quasi-Ordering Finite Trees*][Nash-Williams63]
 -/
 
 assert_not_exists OrderedSemiring
@@ -234,7 +234,7 @@ section Preorder
 variable [Preorder α] {s t : Set α} {a : α}
 
 theorem isWF_iff_no_descending_seq :
-    IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f (OrderDual.toDual n) ∈ s :=
+    IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f n ∈ s :=
   wellFoundedOn_iff_no_descending_seq.trans
     ⟨fun H f hf => H ⟨⟨f, hf.injective⟩, hf.lt_iff_lt⟩, fun H f => H f fun _ _ => f.map_rel_iff.2⟩
 
@@ -740,9 +740,10 @@ theorem exists_min_bad_of_exists_bad (r : α → α → Prop) (rk : α → ℕ) 
         (minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).2.2⟩
   have h : ∀ m n, m ≤ n → (fs m).1 m = (fs n).1 m := fun m n mn => by
     obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le mn; clear mn
-    induction' k with k ih
-    · rfl
-    · rw [ih, (minBadSeqOfBadSeq r rk s (m + k + 1) (fs (m + k)).1 (fs (m + k)).2.1).2.1 m
+    induction k with
+    | zero => rfl
+    | succ k ih =>
+      rw [ih, (minBadSeqOfBadSeq r rk s (m + k + 1) (fs (m + k)).1 (fs (m + k)).2.1).2.1 m
         (Nat.lt_succ_iff.2 (Nat.add_le_add_left k.zero_le m))]
       rfl
   refine ⟨fun n => (fs n).1 n, ⟨fun n => (fs n).2.1.1 n, fun m n mn => ?_⟩, fun n g hg1 hg2 => ?_⟩

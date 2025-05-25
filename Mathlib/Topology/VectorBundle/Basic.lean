@@ -19,10 +19,10 @@ To have a vector bundle structure on `Bundle.TotalSpace F E`, one should additio
 following properties:
 
 * The bundle trivializations in the trivialization atlas should be continuous linear equivs in the
-fibers;
+  fibers;
 * For any two trivializations `e`, `e'` in the atlas the transition function considered as a map
-from `B` into `F →L[R] F` is continuous on `e.baseSet ∩ e'.baseSet` with respect to the operator
-norm topology on `F →L[R] F`.
+  from `B` into `F →L[R] F` is continuous on `e.baseSet ∩ e'.baseSet` with respect to the operator
+  norm topology on `F →L[R] F`.
 
 If these conditions are satisfied, we register the typeclass `VectorBundle R F E`.
 
@@ -46,7 +46,7 @@ We define constructions on vector bundles like pullbacks and direct sums in othe
 ## Implementation notes
 
 The implementation choices in the vector bundle definition are discussed in the "Implementation
-notes" section of `Mathlib.Topology.FiberBundle.Basic`.
+notes" section of `Mathlib/Topology/FiberBundle/Basic.lean`.
 
 ## Tags
 Vector bundle
