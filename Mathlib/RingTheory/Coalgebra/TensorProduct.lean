@@ -11,49 +11,45 @@ import Mathlib.RingTheory.Coalgebra.Equiv
 
 Given two `R`-coalgebras `M, N`, we can define a natural comultiplication map
 `Δ : M ⊗[R] N → (M ⊗[R] N) ⊗[R] (M ⊗[R] N)` and counit map `ε : M ⊗[R] N → R` induced by
-the comultiplication and counit maps of `M` and `N`. These `Δ, ε` are declared as linear maps
-in `TensorProduct.instCoalgebraStruct` in `Mathlib.RingTheory.Coalgebra.Basic`.
+the comultiplication and counit maps of `M` and `N`.
 
 In this file we show that `Δ, ε` satisfy the axioms of a coalgebra, and also define other data
 in the monoidal structure on `R`-coalgebras, like the tensor product of two coalgebra morphisms
 as a coalgebra morphism.
 
-## Implementation notes
-
-We keep the linear maps underlying `Δ, ε` and other definitions in this file syntactically equal
-to the corresponding definitions for tensor products of modules in the hope that this makes
-life easier. However, to fill in prop fields, we use the API in
-`Mathlib.Algebra.Category.CoalgCat.ComonEquivalence`. That file defines the monoidal category
-structure on coalgebras induced by an equivalence with comonoid objects in the category of modules,
-`CoalgCat.instMonoidalCategoryAux`, but we do not declare this as an instance - we just use it
-to prove things. Then, we use the definitions in this file to make a monoidal category instance on
-`CoalgCat R` in `Mathlib.Algebra.Category.CoalgCat.Monoidal` that has simpler data.
-
-However, this approach forces our coalgebras to be in the same universe as the base ring `R`,
-since it relies on the monoidal category structure on `ModuleCat R`, which is currently
-universe monomorphic. Any contribution that achieves universe polymorphism would be welcome. For
-instance, the tensor product of coalgebras in the
-[FLT repo](https://github.com/ImperialCollegeLondon/FLT/blob/eef74b4538c8852363936dfaad23e6ffba72eca5/FLT/mathlibExperiments/Coalgebra/TensorProduct.lean)
-is already universe polymorphic since it does not go via category theory.
-
 -/
 
-universe v u
+open TensorProduct
 
 variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [AddCommMonoid B]
     [Algebra R S] [Module R A] [Module S B] [Coalgebra R A] [Coalgebra S B] [Module R B]
     [IsScalarTower R S B]
 
-open TensorProduct
-namespace Coalgebra.TensorProduct
+namespace TensorProduct
+
+open Coalgebra
 
 noncomputable
-instance : CoalgebraStruct S (B ⊗[R] A) where
+instance instCoalgebraStruct : CoalgebraStruct S (B ⊗[R] A) where
   comul :=
     AlgebraTensorModule.tensorTensorTensorComm R S R S B B A A ∘ₗ
       AlgebraTensorModule.map comul comul
-  counit :=
-    AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map counit counit
+  counit := AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map counit counit
+
+lemma comul_def :
+    Coalgebra.comul (R := S) (A := B ⊗[R] A) =
+      AlgebraTensorModule.tensorTensorTensorComm R S R S B B A A ∘ₗ
+        AlgebraTensorModule.map Coalgebra.comul Coalgebra.comul :=
+  rfl
+
+@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
+
+lemma counit_def :
+    Coalgebra.counit (R := S) (A := B ⊗[R] A) =
+      AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map counit counit :=
+  rfl
+
+@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
 
 @[simp]
 lemma comul_tmul (x : B) (y : A) : comul (x ⊗ₜ y) =
@@ -107,7 +103,7 @@ private lemma coassoc :
     rfl
 
 noncomputable
-instance : Coalgebra S (B ⊗[R] A) where
+instance instCoalgebra : Coalgebra S (B ⊗[R] A) where
   coassoc := coassoc (R := R)
   rTensor_counit_comp_comul := by
     ext x y
@@ -135,6 +131,11 @@ instance : Coalgebra S (B ⊗[R] A) where
       rw [tmul_smul, smul_assoc, one_smul, smul_tmul']
     · dsimp
       simp only [one_smul]
+
+end TensorProduct
+
+namespace Coalgebra
+namespace TensorProduct
 
 variable {R S M N P Q : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
   [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [Module R M] [Module R N]
@@ -254,7 +255,7 @@ end TensorProduct
 end Coalgebra
 namespace CoalgHom
 
-variable {R M N P : Type u} [CommRing R]
+variable {R M N P : Type*} [CommRing R]
   [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N]
   [Module R P] [Coalgebra R M] [Coalgebra R N] [Coalgebra R P]
 
@@ -269,4 +270,3 @@ noncomputable abbrev rTensor (f : N →ₗc[R] P) : N ⊗[R] M →ₗc[R] P ⊗[
   Coalgebra.TensorProduct.map f (CoalgHom.id R M)
 
 end CoalgHom
-#lint
