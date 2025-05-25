@@ -272,12 +272,12 @@ This is currently deprecated in favor of `[i]!`, the `getElem!` syntax.
 Note that similar APIs are duplicated across several types: e.g. `Vector.get`, `Array.getD`,
 `String.get!`, `Option.getD`, etc.
 -/
-set_option linter.deprecated false in
+#guard_msgs(drop warning) in
 example : [100,200,300,400,500].get! 12 = default := by
   rfl
 
 /- Trying to evaluate the expression lead to a panic. -/
-#guard_msgs(drop error) in
+#guard_msgs(drop all) in
 #eval [100,200,300,400,500].get! 12
 
 /-! # Strings -/
