@@ -534,13 +534,6 @@ lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S�
       obtain ⟨u, hu⟩ := hp hx.2
       exact ⟨q + u, by simp [hq, hu]⟩
 
-lemma range_map_algebraMap [Algebra R S₁] :
-    .range (map <| algebraMap R S₁) =
-      (coeffsIn σ (1 : Submodule R S₁) : Set (MvPolynomial σ S₁)) := by
-  ext
-  rw [mem_range_map_iff_coeffs_subset, SetLike.mem_coe, mem_coeffsIn_iff_coeffs_subset]
-  simp [Set.subset_def, SetLike.mem_coe, Submodule.mem_one]
-
 /-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
 @[simps!]
 def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
@@ -564,6 +557,13 @@ theorem mapAlgHom_coe_ringHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S�
     ↑(mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂) =
       (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
   RingHom.mk_coe _ _ _ _ _
+
+lemma range_mapAlgHom [Algebra R S₁] :
+    (mapAlgHom <| Algebra.ofId R S₁).range.toSubmodule = coeffsIn σ (1 : Submodule R S₁) := by
+  ext
+  rw [Subalgebra.mem_toSubmodule, ← SetLike.mem_coe, AlgHom.coe_range, mapAlgHom, AlgHom.coe_mk,
+    mem_range_map_iff_coeffs_subset, mem_coeffsIn_iff_coeffs_subset]
+  simp [Algebra.ofId_apply, Set.subset_def]
 
 end Map
 
