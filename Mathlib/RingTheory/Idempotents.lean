@@ -151,7 +151,7 @@ lemma CompleteOrthogonalIdempotents.unique_iff [Unique I] :
 
 lemma CompleteOrthogonalIdempotents.single {I : Type*} [Fintype I] [DecidableEq I]
     (R : I → Type*) [∀ i, Semiring (R i)] :
-    CompleteOrthogonalIdempotents (Pi.single (f := R) · 1) := by
+    CompleteOrthogonalIdempotents (Pi.single (M := R) · 1) := by
   refine ⟨⟨by simp [IsIdempotentElem, ← Pi.single_mul], ?_⟩, Finset.univ_sum_single 1⟩
   intros i j hij
   ext k
