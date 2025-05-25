@@ -142,7 +142,7 @@ instance (priority := 50) discrete [TopologicalSpace X] [DiscreteTopology X] :
         by_cases x = y <;> by_cases x = z <;> by_cases y = z <;> simp_all
       eq_of_dist_eq_zero := by simp }
   refine ⟨m, ?_, ?_⟩
-  · rw [DiscreteTopology.eq_bot (α := X)]
+  · rw [DiscreteTopology.eq_bot X]
     refine eq_bot_of_singletons_open fun x ↦ ?_
     convert @Metric.isOpen_ball _ _ x 1
     refine subset_antisymm (singleton_subset_iff.2 (Metric.mem_ball_self (by norm_num)))

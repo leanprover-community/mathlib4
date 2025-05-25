@@ -691,11 +691,11 @@ instance isCountablyGenerated_nhdsWithin (x : α) [IsCountablyGenerated (𝓝 x)
     IsCountablyGenerated (𝓝[s] x) :=
   Inf.isCountablyGenerated _ _
 
-variable (α) in
 /-- A second-countable space is one with a countable basis. -/
-class _root_.SecondCountableTopology : Prop where
+class _root_.SecondCountableTopology (α : Type u) [t : TopologicalSpace α] : Prop where
   /-- There exists a countable set of sets that generates the topology. -/
-  is_open_generated_countable : ∃ b : Set (Set α), b.Countable ∧ t = TopologicalSpace.generateFrom b
+  is_open_generated_countable (α) :
+    ∃ b : Set (Set α), b.Countable ∧ t = TopologicalSpace.generateFrom b
 
 protected theorem IsTopologicalBasis.secondCountableTopology {b : Set (Set α)}
     (hb : IsTopologicalBasis b) (hc : b.Countable) : SecondCountableTopology α :=
@@ -713,7 +713,7 @@ variable (α)
 
 theorem exists_countable_basis [SecondCountableTopology α] :
     ∃ b : Set (Set α), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := by
-  obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
+  obtain ⟨b, hb₁, hb₂⟩ := SecondCountableTopology.is_open_generated_countable α
   refine ⟨_, ?_, not_mem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
   exacts [((countable_setOf_finite_subset hb₁).image _).mono diff_subset, rfl]
 
@@ -779,7 +779,7 @@ instance (priority := 100) [Countable α] [FirstCountableTopology α] :
 `f` on `α` is also second-countable. -/
 theorem secondCountableTopology_induced (α β) [t : TopologicalSpace β] [SecondCountableTopology β]
     (f : α → β) : @SecondCountableTopology α (t.induced f) := by
-  rcases @SecondCountableTopology.is_open_generated_countable β _ _ with ⟨b, hb, eq⟩
+  rcases SecondCountableTopology.is_open_generated_countable β with ⟨b, hb, eq⟩
   letI := t.induced f
   refine { is_open_generated_countable := ⟨preimage f '' b, hb.image _, ?_⟩ }
   rw [eq, induced_generateFrom_eq]
