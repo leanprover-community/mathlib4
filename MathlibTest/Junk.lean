@@ -181,6 +181,41 @@ the logarithm at 0 is negative infinity, and not supporting negative arguments. 
 example : ENNReal.log 0 = ⊥ ∧ ENNReal.log ⊤ = ⊤ := by
   simp
 
+/-- Real powers `(_ : ℝ) ^ (_ : ℝ)` agree with the conventional definition when the base is
+nonnegative, and we define them in order to agree with natural numbers where applicable. This means
+adopting the convention that `0 ^ 0 = 1` (which is otherwise sometimes debated). -/
+example : (0 : ℝ) ^ (0 : ℝ) = 1 := by
+  simp
+
+/-- The behavior on negative bases is strange enough that it's often considered "junk", though.
+It's defined as the real part of the complex power `(_ : ℂ) ^ (_ : ℂ)`, which is turn defined as
+`fun x y ↦ exp (y * log x)`. The resulting definition for reals can be expressed in terms of
+`Real.exp`, `Real.log`, and `Real.cos`. In particular, this does _not_ agree with the schoolbook
+definition of odd roots of negative numbers, i.e. `(-1) ^ (1/3) ≠ -1`.
+
+In this example, `(-8) ^ (5/3) = 16`. Contrast with how it might "conventionally" have the value of
+`((-8) ^ (1/3)) ^ 5 = (-2) ^ 5 = -32`.
+-/
+example : (-8 : ℝ) ^ (5/3 : ℝ) = 16 := by
+  rw [Real.rpow_def_of_neg (by norm_num), Real.log_neg_eq_log]
+  rw [← Real.cos_two_pi_sub, ← sub_mul, mul_comm (_ - _)]
+  norm_num
+  rw [mul_div Real.pi, mul_one, Real.cos_pi_div_three]
+  suffices Real.exp (Real.log 8 * (5 / 3)) = Real.exp (Real.log 32) by
+    rw [this, Real.exp_log (by positivity)]
+    norm_num
+  rw [show (8 : ℝ) = 2 ^ 3 by norm_num, show (32 : ℝ) = 2 ^ 5 by norm_num]
+  simp only [Real.log_pow, Nat.cast_ofNat]
+  ring_nf
+
+/-- The binary entropy function `Real.binEntropy` is simply defined in terms of `Real.log` as
+`p * log p⁻¹ + (1 - p) * log (1 - p)⁻¹`, so it happily provides junk values outside of its
+traditional domain `[0, 1]`. In this example, the entropy of the "probability" `-1` turns out to be
+`-2 * log 2`. -/
+example : Real.binEntropy (-1) = -2 * Real.log 2 := by
+  simp only [Real.binEntropy, Real.log_inv]
+  norm_num
+
 /-! ## Arcsin and arccos -/
 
 /-- Several functions on reals are defined using `OrderIso.symm`, for instead, `Real.arcsin`. This
@@ -199,8 +234,6 @@ arguments above `1`. -/
 example : Real.arccos (-37) = Real.pi ∧ Real.arccos 1037 = 0 := by
   norm_num
 
---TODO: rpow
-
 /-! ## Indexing and lists -/
 
 /-- Accessing a list `l : List α` with an "out of bounds" index is possible using the syntax `l[i]?` or
@@ -214,4 +247,110 @@ any extra indexing. In this example, we make a list of two natural numbers `[3, 
 example : [3, 5][100]! = 0 := by
   rfl
 
---TODO: explaining `get` and `getD`. Note that `get` takes a `Fin` and so naturally "wraps around".
+/-- A list can also be accessed through `List.get` and `List.getD`. `List.get` takes a
+`Fin l.length`, which is guaranteed to be within bounds; in this sense, it must be "safe". But
+recall that `Fin` accepts _numerals_ outside the range, casting them mod n. In this example,
+accessing a length-5 list at index (numeric literal) 12 gives element 2. -/
+example :
+    let l : List ℕ := [100,200,300,400,500];
+    have h : l.length = 5 := rfl;
+    let index : Fin l.length := h ▸ 12;
+    l.get index = 300 := by
+  rfl
+
+/-- The `getD` operation gets an element with a Nat index, but returns an (explicitly provided)
+default value if out of range. Here, we provide a default value of 37, which is what we then get out
+since we access out-of-bounds at index 12. -/
+example : [100,200,300,400,500].getD 12 37 = 37 := by
+  rfl
+
+/- Finally there's `List.get!`, which gives the default value from `Inhabited` like `getElem!`,
+and so is equivalent as far as theorem proving goes; but (if run in a program) causes a panic.
+
+This is currently deprecated in favor of `[i]!`, the `getElem!` syntax.
+
+Note that similar APIs are duplicated across several types: e.g. `Vector.get`, `Array.getD`,
+`String.get!`, `Option.getD`, etc.
+-/
+#guard_msgs(drop warning) in
+example : [100,200,300,400,500].get! 12 = 0 := by
+  rfl
+
+/- Trying to evaluate the expression lead to a panic. -/
+#guard_msgs(drop error) in
+#eval [100,200,300,400,500].getD 12
+
+/-! # Strings -/
+
+/-- `String.get`, `String.get!`, and `String.get?` generally mimic arrays and lists by accessing
+individual characters within the String, as if it were a `List Char`. The junk value is the
+character `'A'`.
+
+But there's the additional complication that UTF-8 characters (the encoding of Strings in Lean) are
+a variable number of bytes, so even though the index is a byte offset, this can point to an invalid
+location if it lands in the middle of a character.
+
+`String.get'` splits the difference by requiring a proof (or as the documentation calls it, merely
+"evidence") that the index is within bounds, but it will still give the junk `'A'` if it lands in
+the middle of a character. -/
+example :
+    "Hello!".get 0 = 'H' ∧
+    "Hello!".get (.mk 100) = 'A' ∧
+    "Hello!".get! (.mk 100) = 'A' ∧
+    "Hello!".get? (.mk 100) = none ∧
+    "Hello!".get' (.mk 3) (by decide) = 'l' ∧
+    "⋃ℕℐℂ₀𝔻ℰ".get' (.mk 2) (by decide) = 'A' ∧
+    "⋃ℕℐℂ₀𝔻ℰ".get' (.mk 3) (by decide) = 'ℕ'
+    := by
+  and_intros <;> rfl
+
+/-! # Derivatives -/
+
+/-- The derivative of a function at a point where it's not differentiable is given the junk
+value of 0. In this example, the derivative of `7x + |x|` at `x = 0` is equal to 0 (even though
+the "sensible" values would be 6, 7, or 8).
+
+This holds for the many variants of derivatives, like `fderiv`, `fderivWithin`, etc.
+
+Note this junk value can mean expressions like "twice differentiable" can be harder to express
+than you think: the function `if (x = 0) then 1 else x ^ 2` isn't differentiable at 0, but its
+derivative simplifies to `if (x = 0) then 0 else 2 * x`, which is just `2 * x`, and so its
+derivative is differentiable everywhere.
+
+In that example, instead of writing `Differentiable (deriv f)`, use `ContDiff ℝ 2 f`.
+-/
+example : deriv (fun (x : ℝ) ↦ 7 * x + |x|) 0 = 0 := by
+  apply deriv_zero_of_not_differentiableAt
+  by_contra h
+  have h₂ : DifferentiableAt ℝ (fun (x : ℝ) ↦ (-7) * x) 0 := by
+    fun_prop
+  apply not_differentiableAt_abs_zero
+  simpa using h₂.add h
+
+/-- Another version is that `analyticOrderAt` and `analyticOrderNatAt` give the junk value
+0 when the function isn't analytic at the poit. -/
+example : analyticOrderAt Real.log 0 = 0 := by
+  apply analyticOrderAt_of_not_analyticAt
+  by_contra h
+  replace h := AnalyticAt.continuousAt h
+  simp at h
+
+/- # Find and Nth -/
+
+/-- The function `Nat.nth p n` gives the `n+1`th natural number satisfying a predicate, but if there
+are not this many, it is defined to give the junk index 0. Here, we ask for the 5th prime that's
+less than 10, and find the answer is 0.
+
+`Nat.find` is the "safer" version in the sense that it requires a proof that there are infinitely
+many integers satisfying the condition. -/
+example : Nat.nth (fun n ↦ n < 10 ∧ n.Prime) 4 = 0 := by
+  apply Nat.nth_of_card_le (Set.Finite.sep (Set.finite_lt_nat 10) _) ?_
+  conv in Set.Finite.toFinset _ =>
+    equals {2, 3, 5, 7} =>
+      ext
+      simp only [Set.Finite.mem_toFinset, Set.mem_setOf_eq, Finset.mem_insert, Finset.mem_singleton]
+      constructor
+      · rw [and_imp]
+        decide +revert
+      · rintro (_|_|_|_) <;> subst ‹ℕ› <;> decide
+  rfl
