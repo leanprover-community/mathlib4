@@ -156,9 +156,9 @@ instance : Preorder PGame :=
           (x ≤ y → y ≤ z → x ≤ z) ∧ (y ≤ z → z ≤ x → y ≤ x) ∧ (z ≤ x → x ≤ y → z ≤ y) from
         fun x y z => this.1
       intro x y z
-      induction' x with xl xr xL xR IHxl IHxr generalizing y z
-      induction' y with yl yr yL yR IHyl IHyr generalizing z
-      induction' z with zl zr zL zR IHzl IHzr
+      induction x generalizing y z with | _ xl xr xL xR IHxl IHxr
+      induction y generalizing   z with | _ yl yr yL yR IHyl IHyr
+      induction z                  with | _ zl zr zL zR IHzl IHzr
       exact
         ⟨le_trans_aux (fun {i} => (IHxl i).2.1) fun {j} => (IHzr j).2.2,
           le_trans_aux (fun {i} => (IHyl i).2.2) fun {j} => (IHxr j).1,
