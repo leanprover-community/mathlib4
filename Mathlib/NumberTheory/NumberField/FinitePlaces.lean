@@ -147,7 +147,7 @@ lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
 value. -/
 theorem FinitePlace.norm_def (x : WithVal (v.valuation K)) : ‖embedding v x‖ = adicAbv v x := by
   simp [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField, Valued.norm,
-    Valuation.RankOne.hom, embedding_apply, ← toNNReal_valued_eq_adicAbv]
+    Valuation.RankLeOne.hom, embedding_apply, ← toNNReal_valued_eq_adicAbv]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/

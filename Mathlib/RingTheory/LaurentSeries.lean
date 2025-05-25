@@ -564,7 +564,6 @@ end RatFunc
 
 namespace LaurentSeries
 
-
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc
 
 instance : Valued K⸨X⸩ ℤₘ₀ := Valued.mk' ((PowerSeries.idealX K).valuation _)
@@ -590,6 +589,16 @@ theorem valuation_single_zpow (s : ℤ) :
     · simp only [Int.negSucc_eq, ← Int.natCast_succ, neg_neg, ← HahnSeries.ofPowerSeries_X_pow,
         PowerSeries.coe_pow, valuation_X_pow, ofAdd_neg, WithZero.coe_inv, inv_inv]
   · simp only [Valuation.ne_zero_iff, ne_eq, one_ne_zero, not_false_iff, HahnSeries.single_ne_zero]
+
+theorem rangeGroup₀_eq : Valued.v.rangeGroup₀ (R := K⸨X⸩) = ⊤ := by
+  rw [eq_top_iff]
+  intro n _
+  rw [Valuation.mem_rangeGroup₀_iff]
+  induction n with
+  | zero => exact ⟨1, 0, by simp⟩
+  | coe d =>
+    use 1, HahnSeries.single (- Multiplicative.toAdd d) 1
+    simp [LaurentSeries.valuation_single_zpow]
 
 /- The coefficients of a power series vanish in degree strictly less than its valuation. -/
 theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
@@ -725,11 +734,17 @@ open Filter Multiplicative
 theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
     UniformContinuous fun f : K⸨X⸩ ↦ f.coeff d := by
   refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_
-  let γ : ℤₘ₀ˣ := Units.mk0 (↑(Multiplicative.ofAdd (-(d + 1)))) WithZero.coe_ne_zero
-  use {P | Valued.v (P.snd - P.fst) < ↑γ}
-  refine ⟨(Valued.hasBasis_uniformity K⸨X⸩ ℤₘ₀).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
-  rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
-  exact mem_uniformity_of_eq hS rfl
+  let u := Valued.v.mk_rangeGroup₀_unit (R := K⸨X⸩) (a := HahnSeries.single (d + 1) 1) (by simp)
+  use {P | Valued.v (P.snd - P.fst) < u}
+  constructor
+  · have := (Valued.hasBasis_uniformity K⸨X⸩ ℤₘ₀)
+    simp only [Units.coe_map, Submonoid.subtype_apply] at this
+    exact this.mem_of_mem (by tauto)
+  · intro P hP
+    simp only [Set.mem_setOf_eq, u, valuation_single_zpow,
+      Valued.v.coe_mk_rangeGroup₀_unit] at hP
+    rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
+    exact mem_uniformity_of_eq hS rfl
 
 /-- Since extracting coefficients is uniformly continuous, every Cauchy filter in
 `K⸨X⸩` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
@@ -755,12 +770,13 @@ prime `X`, and this is peculiar to the one-variable setting. In the future we sh
 result in full generality and deduce the case `Γ = ℤ` from that one. -/
 lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
-  let entourage : Set (K⸨X⸩ × K⸨X⸩) :=
-    {P : K⸨X⸩ × K⸨X⸩ |
-      Valued.v (P.snd - P.fst) < ((Multiplicative.ofAdd 0 : Multiplicative ℤ) : ℤₘ₀)}
-  let ζ := Units.mk0 (G₀ := ℤₘ₀) _ (WithZero.coe_ne_zero (a := (Multiplicative.ofAdd 0)))
-  obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
-    <| (Valued.hasBasis_uniformity K⸨X⸩ ℤₘ₀).mem_of_mem (i := ζ) (by tauto)
+  let ζ := Valued.v.mk_rangeGroup₀_unit (R := K⸨X⸩) (a := 1) (by simp)
+  let entourage : Set (K⸨X⸩ × K⸨X⸩) := {P : K⸨X⸩ × K⸨X⸩ | Valued.v (P.snd - P.fst) < ζ}
+--  let ζ := Units.mk0 (G₀ := ℤₘ₀) _ (WithZero.coe_ne_zero (a := (Multiplicative.ofAdd 0)))
+  have := (Valued.hasBasis_uniformity K⸨X⸩ ℤₘ₀)
+  simp only [Units.coe_map, Submonoid.subtype_apply] at this
+  have := this.mem_of_mem (i := ζ) (by tauto)
+  obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage this
   obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
   obtain ⟨N, hN⟩ :  ∃ N : ℤ, ∀ g : K⸨X⸩,
     Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (0 : ℤ)) → ∀ n < N, g.coeff n = 0 := by
@@ -779,6 +795,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
   intro g hg
   have h_prod : (f, g) ∈ entourage := Set.prod_mono (Set.inter_subset_left (t := T))
     (Set.inter_subset_right (s := S)) |>.trans H <| Set.mem_prod.mpr ⟨hf, hg⟩
+  simp only [entourage, Valued.v.coe_mk_rangeGroup₀_unit, ζ, map_one, Set.mem_setOf_eq] at h_prod
   exact hN g (le_of_lt h_prod)
 
 /- The support of `Cauchy.coeff` has a lower bound. -/
@@ -856,18 +873,32 @@ open scoped Topology
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
     {U : Set K⸨X⸩} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
+  simp only [Units.coe_map, Submonoid.subtype_apply] at hU₁
   suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < ↑γ} by
     apply this.mono fun _ hf ↦ hU₁ hf
-  set D := -((WithZero.unzero γ.ne_zero).toAdd - 1) with hD₀
-  have hD : ((Multiplicative.ofAdd (-D) : Multiplicative ℤ) : ℤₘ₀) < γ := by
-    rw [← WithZero.coe_unzero γ.ne_zero, WithZero.coe_lt_coe, hD₀, neg_neg, ofAdd_sub,
-      ofAdd_toAdd, div_lt_comm, div_self', ← ofAdd_zero, Multiplicative.ofAdd_lt]
-    exact zero_lt_one
-  apply coeff_eventually_equal (D := D) hℱ |>.mono
-  intro _ hf
-  apply lt_of_le_of_lt (valuation_le_iff_coeff_lt_eq_zero K |>.mpr _) hD
+  let D : ℤ := Multiplicative.toAdd (WithZero.unzero (x := γ.val)
+    (fun H ↦ γ.ne_zero (by
+      rw [← Subtype.coe_inj, MonoidHomWithZero.range₀_coe_zero, H])))
+  have hD : ((Multiplicative.ofAdd D : Multiplicative ℤ) : ℤₘ₀) = γ := by simp [D]
+  simp only [← hD] at hU₁
+  have hD' : ((Multiplicative.ofAdd (- (-D + 1)) : Multiplicative ℤ) : ℤₘ₀) < γ := by
+    rw [← hD, WithZero.coe_lt_coe]
+    -- TODO: this can be cleaned up
+    suffices - (-D + 1) = D - 1 by
+      simp only [this, ofAdd_sub, div_lt_self_iff, D]
+      exact compareOfLessAndEq_eq_lt.mp rfl
+    abel
+  apply coeff_eventually_equal (D := - (D - 1)) hℱ  |>.mono
+  intro f hf
+  apply lt_of_le_of_lt (valuation_le_iff_coeff_lt_eq_zero K |>.mpr _) hD'
   intro n hn
-  rw [HahnSeries.coeff_sub, sub_eq_zero, hf n hn |>.symm]; rfl
+  rw [HahnSeries.coeff_sub, sub_eq_zero]
+  rw [← hf n ?_]
+  · rfl
+  -- TODO: clean this up
+  · apply lt_of_lt_of_eq hn
+    abel
+
 
 /- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
 instance instLaurentSeriesComplete : CompleteSpace K⸨X⸩ :=
@@ -945,7 +976,7 @@ theorem coe_range_dense : DenseRange ((↑) : RatFunc K → K⸨X⸩) := by
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
-  obtain ⟨P, _⟩ := exists_ratFunc_val_lt f γ
+  obtain ⟨P, _⟩ := exists_ratFunc_val_lt f (γ.map Valued.v.rangeGroup₀.subtype)
   use P
   apply hT₁
   apply hγ
