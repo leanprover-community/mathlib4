@@ -926,6 +926,13 @@ theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ))
 def HasPolynomialGrowthD (d: ℕ): Prop := ∀ n ≥ 2, #(S ^ n) ≤ n ^ d
 def HasPolynomialGrowth: Prop := ∃ d, HasPolynomialGrowthD (S := S) d
 
+lemma smaller_closure (T: Type*) (A B: Set T) (G: Group T) (hc: B ⊆ closure A) (hb: closure B = ⊤): closure A = ⊤ := by
+  apply?
+
+lemma S_nonempty: S.Nonempty := by sorry
+
+variable [Inhabited G]
+
 open Additive
 lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
   have gamma_one: ∃ γ: G, φ γ = 1 := by
@@ -936,9 +943,280 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
     exact hγ
   --
   let e_i: S → (Additive G) := fun s => (ofMul s.val) +  ((-1 : ℤ) • (φ (ofMul s.val))) • (ofMul (γ))
+  let e_i_regular: S → G := fun s => (ofMul s.val) +  ((-1 : ℤ) • (φ (ofMul s.val))) • (ofMul (γ))
+
+
+
+  let max_phi := max 1 ((Finset.image Int.natAbs (Finset.image φ (Finset.image ofMul S))).max' (by simp [S_nonempty]))
+  --have nonempty_image := Finset(Finset.Nonempty.image S_nonempty ofMul)
+  --have second_e
+
   have e_i_zero: ∀ s: S, φ (e_i s) = 0 := by
     intro s
     unfold e_i
     simp
     simp [phi_ofmul]
+
+  have e_i_ker: ∀ s: S, e_i s ∈ φ.ker := by
+    intro s
+    exact e_i_zero s
+
+-- Subgroup.closure_eq_of_l
+
+  let gamma_i := fun (i: ℕ) => γ^(i : ℤ)
+  have closure_enlarge: Subgroup.closure ({1, γ} ∪ (e_i '' Set.univ)) = Subgroup.closure (({1, γ} ∪ (e_i_regular '' Set.univ))^max_phi) := by
+    rw [Subgroup.closure_pow]
+    . simp
+    . unfold max_phi
+      simp
+      -- have max_le := Finset.le_max' (Finset.image Int.natAbs (Finset.image φ (Finset.image ofMul S))) 1 ?_
+      -- . exact Nat.ne_zero_of_lt max_le
+      -- .
+      --   simp
+      --   use γ
+
+    -- Subgroup.closure_pow
+    -- Set.pow_mem_pow
+
+
+  have new_closur_e_i: Subgroup.closure ({1, γ} ∪ (e_i '' Set.univ)) = (Subgroup.closure S) := by
+    rw [closure_enlarge]
+    apply Subgroup.closure_eq_of_le
+    .
+      rw [hGS.generates]
+      exact fun ⦃a⦄ a ↦ trivial
+    .
+      simp
+      intro s hs
+      simp
+      rw [← mem_toSubmonoid]
+      rw [Subgroup.closure_toSubmonoid]
+      dsimp [Membership.mem]
+      rw [Submonoid.closure_eq_image_prod]
+      -- TODO - why do we need any of this?
+      dsimp [Set.Mem]
+      rw [← Set.mem_def (a := s) (s := List.prod '' _)]
+      rw [Set.mem_image]
+
+
+      have foo := Submonoid.exists_list_of_mem_closure (s := ((S ∪ S⁻¹) : Set G)) (x := s)
+      rw [← Subgroup.closure_toSubmonoid _] at foo
+      simp only [mem_toSubmonoid, Finset.mem_coe] at foo
+      have generates := hGS.generates
+      have x_in_top: s ∈ (⊤: Set G) := by
+        simp
+
+      rw [← generates] at x_in_top
+      specialize foo x_in_top
+      obtain ⟨l, ⟨l_mem_s, l_prod⟩⟩ := foo
+      simp [s_union_sinv] at l_mem_s
+
+      let l_attach := l.attach
+      let list_with_mem: List S := (l_attach).map (fun a => ⟨a.val, l_mem_s a.val a.prop⟩)
+      let new_list := list_with_mem.map (fun s => (e_i s) + ofMul (γ^(((φ (ofMul s.val))))))
+
+      use new_list
+      refine ⟨?_, ?_⟩
+      .
+        simp
+        intro x hx
+        unfold new_list list_with_mem l_attach at hx
+        simp at hx
+        obtain ⟨a, ha, x_eq_sum⟩ := hx
+        left
+
+        have gamma_phi_in: γ^(max_phi) ∈ ({1, γ} ∪ Set.range e_i_regular) ^ max_phi := by
+          apply Set.pow_mem_pow
+          simp
+
+        have e_pi_s_mem: e_i_regular ⟨s, hs⟩ ∈ ({1, γ} ∪ Set.range e_i_regular) := by
+          simp
+
+        have max_phi_gt: 0 < max_phi := by
+          simp [max_phi]
+
+        let zero_fin: Fin max_phi := ⟨0, max_phi_gt⟩
+
+        let one_instance: Fin max_phi → One ↑({1, γ} ∪ Set.range e_i_regular) := by
+          intro i
+          use 1
+          simp
+
+        have e_pi_s_mem_pow: e_i_regular ⟨s, hs⟩ ∈ (({1, γ} ∪ Set.range e_i_regular)^(max_phi - 1 + 1)) := by
+          rw [Set.mem_pow]
+          --simp_rw [List.ofFn_eq_map]
+
+
+
+          --rw [List.finRange_eq_pmap_range]
+
+          let no_coe: Fin (max_phi - 1 + 1) → G := (Fin.cons (e_i_regular ⟨s, hs⟩) (fun (n: Fin (max_phi - 1)) => (1 : G)))
+
+          use Fin.cons (⟨e_i_regular ⟨s, hs⟩, e_pi_s_mem⟩) (fun n => ⟨1, by simp⟩)
+          conv =>
+            arg 1
+            arg 1
+            arg 1
+            intro i
+            equals no_coe i =>
+              simp [no_coe]
+
+              sorry
+
+
+          unfold no_coe
+          rw [List.ofFn_cons]
+          simp
+
+
+          --simp_rw [List.ofFn_eq_pmap]
+          --use (fun i => if i = zero_fin then (⟨e_i_regular ⟨s, hs⟩, e_pi_s_mem⟩) else ⟨1, by simp⟩)
+          --use Pi.mulSingle zero_fin ⟨e_i_regular ⟨s, hs⟩, e_pi_s_mem⟩
+          --u--se Fin.cons (e_i_regular ⟨s, hs⟩) (fun n => 1)
+          rw [← List.headI_mul_tail_prod_of_ne_nil _ ?_]
+
+          rw [List.prod_eq_foldl]
+
+
+
+          conv =>
+            arg 1
+            arg 1
+            arg 1
+            intro i
+            simp [Pi.mulSingle, Function.update]
+            equals (if i = zero_fin then e_i_regular ⟨s, hs⟩ else (id 1)) =>
+              split_ifs
+              simp
+              norm_cast
+
+          rw [← List.getElem?_zero_mul_tail_prod]
+
+
+
+
+
+          rw [List.prod_map_ite_eq (g := id) (a := a)]
+          apply List.prod_induction (fun y => y = e_i_regular ⟨s, hs⟩)
+
+
+
+          induction l using List.prod_induction with
+          | unit =>
+            sprod_inductionorry
+
+          --rw [List.prod_ofFn]
+          --rw [List.ofFn_succ]
+          simp [zero_fin]
+          have max_phi_add: max_phi = max_phi - 1 + 1 := by
+            omega
+
+          conv =>
+            pattern List.range _
+            rw [max_phi_add]
+
+
+          simp_rw [List.range_succ_eq_map]
+          simp [Function.comp_def]
+          --have add_sub: List.finRange max_phi = List.finRange (max_phi - 1 + 1) := by
+
+          --rw [List.finRange_succ_eq_map]
+          rw [List.prod_range_succ']
+
+          rw [← List.getElem?_zero_mul_tail_prod]
+          simp
+          rw [List.headI_mul_tail_prod_of_ne_nil]
+
+          rw [List.prod_cons]
+          --rw [← List.getElem?_zero_mul_tail_prod]
+          simp [max_phi_gt]
+
+
+
+          .
+          . sorry
+
+
+
+        rw [Set.mem_pow]
+
+
+
+
+
+
+
+
+      rw [Submonoid.exists_list_of_mem_closure]
+      have foo := Submonoid.exists_list_of_mem_closure (s := ((S ∪ S⁻¹) : Set G)) (x := s)
+      rw [← Subgroup.closure_toSubmonoid _] at foo
+      simp only [mem_toSubmonoid, Finset.mem_coe] at foo
+      have s_in_s_closure: s ∈ (Subgroup.closure S) := by
+        exact _root_.mem_closure s
+      specialize foo s_in_s_closure
+
+
+
+
+  have closure_e_i: Subgroup.closure ({γ} ∪ (e_i '' Set.univ)) = ⊤ := by
+    ext x
+    refine ⟨?_, ?_⟩
+    . intro hs
+      exact trivial
+    . intro hs
+      have foo := Submonoid.exists_list_of_mem_closure (s := ((S ∪ S⁻¹) : Set G)) (x := x)
+      rw [← Subgroup.closure_toSubmonoid _] at foo
+      simp only [mem_toSubmonoid, Finset.mem_coe] at foo
+      have generates := hGS.generates
+      have x_in_top: x ∈ (⊤: Set G) := by
+        simp
+
+      rw [← generates] at x_in_top
+      specialize foo x_in_top
+      obtain ⟨l, ⟨l_mem_s, l_prod⟩⟩ := foo
+      simp [s_union_sinv] at l_mem_s
+
+      rw [← mem_toSubmonoid]
+      rw [Subgroup.closure_toSubmonoid]
+      dsimp [Membership.mem]
+      rw [Submonoid.closure_eq_image_prod]
+      -- TODO - why do we need any of this?
+      dsimp [Set.Mem]
+      rw [← Set.mem_def (a := x) (s := List.prod '' _)]
+      rw [Set.mem_image]
+
+
+      let l_attach := l.attach
+      let list_with_mem: List S := (l_attach).map (fun a => ⟨a.val, l_mem_s a.val a.prop⟩)
+      let new_list := list_with_mem.map e_i
+      use new_list
+      unfold new_list list_with_mem l_attach
+      simp only [Set.mem_setOf_eq]
+      refine ⟨?_, ?_⟩
+      . intro x hx
+        apply Set.mem_union_left
+        apply Set.mem_insert_of_mem
+        simp at hx
+        --obtain ⟨s, hs, other⟩ := hx
+        simp
+        obtain ⟨a, ha, other⟩ := hx
+        use a
+        have a_mem_s := l_mem_s a ha
+        use a_mem_s
+      .
+
+
+
+      -- use l
+      -- simp only [Set.mem_setOf_eq]
+      -- refine ⟨?_, hl.2⟩
+
+
+
+      -- rw [← Subgroup.closure_toSubmonoid _] at foo
+      -- simp only [mem_toSubmonoid, Finset.mem_coe] at foo
+      -- specialize foo (mem_closure x)
+
+
+
 -- lemma three_four (g: G)
