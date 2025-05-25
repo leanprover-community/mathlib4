@@ -324,7 +324,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     filter_upwards with x hx
     dsimp only [f]
     rcases lt_or_le (n : ℝ) x with (hxn | hxn)
-    · rw [indicator_of_not_mem (not_mem_Ioc_of_gt hxn), norm_zero,
+    · rw [indicator_of_notMem (notMem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
       exact rpow_nonneg (le_of_lt hx) _
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_of_nonneg

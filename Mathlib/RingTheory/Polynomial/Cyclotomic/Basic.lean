@@ -398,8 +398,8 @@ theorem X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd (R) [CommRing R] {
   convert X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd R h using 1
   rw [mul_assoc]
   congr 1
-  rw [← Nat.insert_self_properDivisors hdn.ne_bot, insert_sdiff_of_not_mem, prod_insert]
-  · exact Finset.not_mem_sdiff_of_not_mem_left Nat.properDivisors.not_self_mem
+  rw [← Nat.insert_self_properDivisors hdn.ne_bot, insert_sdiff_of_notMem, prod_insert]
+  · exact Finset.notMem_sdiff_of_notMem_left Nat.self_notMem_properDivisors
   · exact fun hk => hdn.not_le <| Nat.divisor_le hk
 
 section ArithmeticFunction
@@ -524,7 +524,7 @@ theorem cyclotomic_coeff_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
   induction' n using Nat.strong_induction_on with n hi
   have hprod : (∏ i ∈ Nat.properDivisors n, (Polynomial.cyclotomic i R).coeff 0) = -1 := by
     rw [← Finset.insert_erase (Nat.one_mem_properDivisors_iff_one_lt.2
-      (lt_of_lt_of_le one_lt_two hn)), Finset.prod_insert (Finset.not_mem_erase 1 _),
+      (lt_of_lt_of_le one_lt_two hn)), Finset.prod_insert (Finset.notMem_erase 1 _),
       cyclotomic_one R]
     have hleq : ∀ j ∈ n.properDivisors.erase 1, 2 ≤ j := by
       intro j hj

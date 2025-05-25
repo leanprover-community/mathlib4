@@ -235,7 +235,7 @@ private theorem add_nonempty (a b : Nimber.{u}) :
 
 theorem exists_of_lt_add (h : c < a + b) : (∃ a' < a, a' + b = c) ∨ ∃ b' < b, a + b' = c := by
   rw [add_def] at h
-  have := not_mem_of_lt_csInf' h
+  have := notMem_of_lt_csInf' h
   rwa [Set.mem_compl_iff, not_not] at this
 
 theorem add_le_of_forall_ne (h₁ : ∀ a' < a, a' + b ≠ c) (h₂ : ∀ b' < b, a + b' ≠ c) :
