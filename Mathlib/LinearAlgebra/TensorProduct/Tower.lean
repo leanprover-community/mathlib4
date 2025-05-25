@@ -566,7 +566,8 @@ lemma baseChange_span (s : Set M) :
   simp only [baseChange, map_coe]
   refine le_antisymm (span_le.mpr ?_) (span_mono <| Set.image_subset _ subset_span)
   rintro - ⟨m : M, hm : m ∈ span R s, rfl⟩
-  apply span_induction (p := fun m' _ ↦ (1 : A) ⊗ₜ[R] m' ∈ span A (TensorProduct.mk R A M 1 '' s))
+  apply span_induction
+    (motive := fun m' _ ↦ (1 : A) ⊗ₜ[R] m' ∈ span A (TensorProduct.mk R A M 1 '' s))
     (hx := hm)
   · intro m hm
     exact subset_span ⟨m, hm, rfl⟩

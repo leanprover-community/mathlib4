@@ -221,10 +221,10 @@ lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
   · rintro - ⟨x, hx, m, hm, rfl⟩
     revert m
     apply Submodule.span_induction
-      (p := fun x' _ ↦ ∀ m' ∈ N.baseChange A, ⁅x', m'⁆ ∈ Submodule.span A s) (hx := hx)
+      (motive := fun x' _ ↦ ∀ m' ∈ N.baseChange A, ⁅x', m'⁆ ∈ Submodule.span A s) (hx := hx)
     · rintro _ ⟨y : L, hy : y ∈ I, rfl⟩ m hm
       apply Submodule.span_induction
-        (p := fun m' _ ↦ ⁅(1 : A) ⊗ₜ[R] y, m'⁆ ∈ Submodule.span A s) (hx := hm)
+        (motive := fun m' _ ↦ ⁅(1 : A) ⊗ₜ[R] y, m'⁆ ∈ Submodule.span A s) (hx := hm)
       · rintro - ⟨m', hm' : m' ∈ N, rfl⟩
         rw [TensorProduct.mk_apply, LieAlgebra.ExtendScalars.bracket_tmul, mul_one]
         apply Submodule.subset_span

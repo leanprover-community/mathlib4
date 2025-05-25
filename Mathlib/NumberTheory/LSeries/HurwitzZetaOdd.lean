@@ -116,7 +116,7 @@ lemma oddKernel_def' (a x : ℝ) : ↑(oddKernel ↑a x) = cexp (-π * a ^ 2 * x
     (by ring : ↑π * I * ↑a ^ 2 * (I * ↑x) = I ^ 2 * ↑π * ↑a ^ 2 * x), I_sq, neg_one_mul]
 
 lemma oddKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : oddKernel a x = 0 := by
-  induction a using QuotientAddGroup.induction_on with | H a' =>
+  induction a using QuotientAddGroup.induction_on with | mk a' =>
   rw [← ofReal_eq_zero, oddKernel_def', jacobiTheta₂_undef, jacobiTheta₂'_undef, zero_div, zero_add,
     mul_zero, mul_zero] <;>
   simpa
@@ -133,11 +133,11 @@ lemma sinKernel_def (a x : ℝ) : ↑(sinKernel ↑a x) = jacobiTheta₂' a (I *
 
 lemma sinKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : sinKernel a x = 0 := by
   induction a using QuotientAddGroup.induction_on with
-  | H a => rw [← ofReal_eq_zero, sinKernel_def, jacobiTheta₂'_undef _ (by simpa), zero_div]
+  | mk a => rw [← ofReal_eq_zero, sinKernel_def, jacobiTheta₂'_undef _ (by simpa), zero_div]
 
 lemma oddKernel_neg (a : UnitAddCircle) (x : ℝ) : oddKernel (-a) x = -oddKernel a x := by
   induction a using QuotientAddGroup.induction_on with
-  | H a => simp [← ofReal_inj, ← QuotientAddGroup.mk_neg, oddKernel_def, jacobiTheta₂''_neg_left]
+  | mk a => simp [← ofReal_inj, ← QuotientAddGroup.mk_neg, oddKernel_def, jacobiTheta₂''_neg_left]
 
 @[simp] lemma oddKernel_zero (x : ℝ) : oddKernel 0 x = 0 := by
   simpa using oddKernel_neg 0 x
@@ -145,7 +145,7 @@ lemma oddKernel_neg (a : UnitAddCircle) (x : ℝ) : oddKernel (-a) x = -oddKerne
 lemma sinKernel_neg (a : UnitAddCircle) (x : ℝ) :
     sinKernel (-a) x = -sinKernel a x := by
   induction a using QuotientAddGroup.induction_on with
-  | H a => simp [← ofReal_inj, ← QuotientAddGroup.mk_neg, sinKernel_def, jacobiTheta₂'_neg_left,
+  | mk a => simp [← ofReal_inj, ← QuotientAddGroup.mk_neg, sinKernel_def, jacobiTheta₂'_neg_left,
       neg_div]
 
 @[simp] lemma sinKernel_zero (x : ℝ) : sinKernel 0 x = 0 := by
@@ -153,7 +153,7 @@ lemma sinKernel_neg (a : UnitAddCircle) (x : ℝ) :
 
 /-- The odd kernel is continuous on `Ioi 0`. -/
 lemma continuousOn_oddKernel (a : UnitAddCircle) : ContinuousOn (oddKernel a) (Ioi 0) := by
-  induction a using QuotientAddGroup.induction_on with | H a =>
+  induction a using QuotientAddGroup.induction_on with | mk a =>
   suffices ContinuousOn (fun x ↦ (oddKernel a x : ℂ)) (Ioi 0) from
     (continuous_re.comp_continuousOn this).congr fun a _ ↦ (ofReal_re _).symm
   simp_rw [oddKernel_def' a]
@@ -167,7 +167,7 @@ lemma continuousOn_oddKernel (a : UnitAddCircle) : ContinuousOn (oddKernel a) (I
         (by rwa [I_mul_im, ofReal_re])).comp (f := fun u : ℝ ↦ (a * I * u, I * u)) hf.continuousAt
 
 lemma continuousOn_sinKernel (a : UnitAddCircle) : ContinuousOn (sinKernel a) (Ioi 0) := by
-  induction a using QuotientAddGroup.induction_on with | H a =>
+  induction a using QuotientAddGroup.induction_on with | mk a =>
   suffices ContinuousOn (fun x ↦ (sinKernel a x : ℂ)) (Ioi 0) from
     (continuous_re.comp_continuousOn this).congr fun a _ ↦ (ofReal_re _).symm
   simp_rw [sinKernel_def]
@@ -180,7 +180,7 @@ lemma oddKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
   -- first reduce to `0 < x`
   rcases le_or_lt x 0 with hx | hx
   · rw [oddKernel_undef _ hx, sinKernel_undef _ (one_div_nonpos.mpr hx), mul_zero]
-  induction a using QuotientAddGroup.induction_on with | H a =>
+  induction a using QuotientAddGroup.induction_on with | mk a =>
   have h1 : -1 / (I * ↑(1 / x)) = I * x := by rw [one_div, ofReal_inv, mul_comm, ← div_div,
     div_inv_eq_mul, div_eq_mul_inv, inv_I, mul_neg, neg_one_mul, neg_mul, neg_neg, mul_comm]
   have h2 : (-I * (I * ↑(1 / x))) = 1 / x := by
@@ -261,7 +261,7 @@ section asymp
 /-- The function `oddKernel a` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_oddKernel (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (oddKernel a) (fun x ↦ Real.exp (-p * x)) := by
-  induction a using QuotientAddGroup.induction_on with | H b =>
+  induction a using QuotientAddGroup.induction_on with | mk b =>
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_one b
   refine ⟨p, hp, (Eventually.isBigO ?_).trans hp'⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
@@ -272,7 +272,7 @@ lemma isBigO_atTop_oddKernel (a : UnitAddCircle) :
 /-- The function `sinKernel a` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_sinKernel (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (sinKernel a) (fun x ↦ Real.exp (-p * x)) := by
-  induction a using QuotientAddGroup.induction_on with | H a =>
+  induction a using QuotientAddGroup.induction_on with | mk a =>
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_nat_one (le_refl 0)
   refine ⟨p, hp, (Eventually.isBigO ?_).trans (hp'.const_mul_left 2)⟩
   filter_upwards [eventually_gt_atTop 0] with t ht

@@ -388,8 +388,9 @@ lemma divNat_mul_right {a : ℕ} (ha : a ≠ 0) (n d : ℕ) : divNat (n * a) (d 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with nonnegative rational
 numbers of the form `n / d` with `d ≠ 0` and `n`, `d` coprime. -/
 @[elab_as_elim]
-def numDenCasesOn.{u} {C : ℚ≥0 → Sort u} (q) (H : ∀ n d, d ≠ 0 → n.Coprime d → C (divNat n d)) :
-    C q := by rw [← q.num_divNat_den]; exact H _ _ q.den_ne_zero q.coprime_num_den
+def numDenCasesOn.{u} {motive : ℚ≥0 → Sort u} (q)
+    (divNat : ∀ n d, d ≠ 0 → n.Coprime d → motive (divNat n d)) :
+    motive q := by rw [← q.num_divNat_den]; exact divNat _ _ q.den_ne_zero q.coprime_num_den
 
 lemma add_def (q r : ℚ≥0) : q + r = divNat (q.num * r.den + r.num * q.den) (q.den * r.den) := by
   ext; simp [Rat.add_def', Rat.mkRat_eq_divInt, num_coe, den_coe]

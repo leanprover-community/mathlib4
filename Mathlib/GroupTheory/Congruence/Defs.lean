@@ -232,10 +232,10 @@ protected def liftOn₂ {β} {c : Con M} (q r : c.Quotient) (f : M → M → β)
 
 /-- A version of `Quotient.hrecOn₂'` for quotients by `Con`. -/
 @[to_additive "A version of `Quotient.hrecOn₂'` for quotients by `AddCon`."]
-protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*}
-    (a : cM.Quotient) (b : cN.Quotient) (f : ∀ (x : M) (y : N), φ x y)
-    (h : ∀ x y x' y', cM x x' → cN y y' → HEq (f x y) (f x' y')) : φ a b :=
-  Quotient.hrecOn₂' a b f h
+protected def hrecOn₂ {cM : Con M} {cN : Con N} {motive : cM.Quotient → cN.Quotient → Sort*}
+    (a : cM.Quotient) (b : cN.Quotient) (toQuotient : ∀ (x : M) (y : N), motive x y)
+    (heq : ∀ x y x' y', cM x x' → cN y y' → HEq (toQuotient x y) (toQuotient x' y')) : motive a b :=
+  Quotient.hrecOn₂' a b toQuotient heq
 
 @[to_additive (attr := simp)]
 theorem hrec_on₂_coe {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*} (a : M)
@@ -676,7 +676,7 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
     (Hf : ∀ x y hxy hyx x' y' hxy' hyx',
       c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx') : α := by
   refine
-    Con.hrecOn₂ (cN := c) (φ := fun x y => x * y = 1 → y * x = 1 → α) (u : c.Quotient)
+    Con.hrecOn₂ (cN := c) (motive := fun x y => x * y = 1 → y * x = 1 → α) (u : c.Quotient)
       (↑u⁻¹ : c.Quotient)
       (fun (x y : M) (hxy : (x * y : c.Quotient) = 1) (hyx : (y * x : c.Quotient) = 1) =>
         f x y (c.eq.1 hxy) (c.eq.1 hyx))
@@ -703,11 +703,12 @@ theorem liftOnUnits_mk (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
   rfl
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on_units {p : Units c.Quotient → Prop} (u : Units c.Quotient)
-    (H : ∀ (x y : M) (hxy : c (x * y) 1) (hyx : c (y * x) 1), p ⟨x, y, c.eq.2 hxy, c.eq.2 hyx⟩) :
-    p u := by
+theorem induction_on_units {motive : Units c.Quotient → Prop} (u : Units c.Quotient)
+    (mk : ∀ (x y : M) (hxy : c (x * y) 1) (hyx : c (y * x) 1),
+      motive ⟨x, y, c.eq.2 hxy, c.eq.2 hyx⟩) :
+    motive u := by
   rcases u with ⟨⟨x⟩, ⟨y⟩, h₁, h₂⟩
-  exact H x y (c.eq.1 h₁) (c.eq.1 h₂)
+  exact mk x y (c.eq.1 h₁) (c.eq.1 h₂)
 
 end Units
 

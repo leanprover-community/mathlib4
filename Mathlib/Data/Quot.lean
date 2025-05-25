@@ -146,12 +146,12 @@ theorem map₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → 
 
 /-- A binary version of `Quot.recOnSubsingleton`. -/
 @[elab_as_elim]
-protected def recOnSubsingleton₂ {φ : Quot r → Quot s → Sort*}
-    [h : ∀ a b, Subsingleton (φ ⟦a⟧ ⟦b⟧)] (q₁ : Quot r)
-    (q₂ : Quot s) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧) : φ q₁ q₂ :=
-  @Quot.recOnSubsingleton _ r (fun q ↦ φ q q₂)
-    (fun a ↦ Quot.ind (β := fun b ↦ Subsingleton (φ (mk r a) b)) (h a) q₂) q₁
-    fun a ↦ Quot.recOnSubsingleton q₂ fun b ↦ f a b
+protected def recOnSubsingleton₂ {motive : Quot r → Quot s → Sort*}
+    [h : ∀ a b, Subsingleton (motive ⟦a⟧ ⟦b⟧)] (q₁ : Quot r)
+    (q₂ : Quot s) (mk : ∀ a b, motive ⟦a⟧ ⟦b⟧) : motive q₁ q₂ :=
+  @Quot.recOnSubsingleton _ r (fun q ↦ motive q q₂)
+    (fun a ↦ Quot.ind (β := fun b ↦ Subsingleton (motive (Quot.mk r a) b)) (h a) q₂) q₁
+    fun a ↦ Quot.recOnSubsingleton q₂ fun b ↦ mk a b
 
 @[elab_as_elim]
 protected theorem induction_on₂ {δ : Quot r → Quot s → Prop} (q₁ : Quot r) (q₂ : Quot s)
@@ -159,11 +159,11 @@ protected theorem induction_on₂ {δ : Quot r → Quot s → Prop} (q₁ : Quot
   Quot.ind (β := fun a ↦ δ a q₂) (fun a₁ ↦ Quot.ind (fun a₂ ↦ h a₁ a₂) q₂) q₁
 
 @[elab_as_elim]
-protected theorem induction_on₃ {δ : Quot r → Quot s → Quot t → Prop} (q₁ : Quot r)
-    (q₂ : Quot s) (q₃ : Quot t) (h : ∀ a b c, δ (Quot.mk r a) (Quot.mk s b) (Quot.mk t c)) :
-    δ q₁ q₂ q₃ :=
-  Quot.ind (β := fun a ↦ δ a q₂ q₃) (fun a₁ ↦ Quot.ind (β := fun b ↦ δ _ b q₃)
-    (fun a₂ ↦ Quot.ind (fun a₃ ↦ h a₁ a₂ a₃) q₃) q₂) q₁
+protected theorem induction_on₃ {motive : Quot r → Quot s → Quot t → Prop} (q₁ : Quot r)
+    (q₂ : Quot s) (q₃ : Quot t) (mk : ∀ a b c, motive (Quot.mk r a) (Quot.mk s b) (Quot.mk t c)) :
+    motive q₁ q₂ q₃ :=
+  Quot.ind (β := fun a ↦ motive a q₂ q₃) (fun a₁ ↦ Quot.ind (β := fun b ↦ motive _ b q₃)
+    (fun a₂ ↦ Quot.ind (fun a₃ ↦ mk a₁ a₂ a₃) q₃) q₂) q₁
 
 instance lift.decidablePred (r : α → α → Prop) (f : α → Prop) (h : ∀ a b, r a b → f a = f b)
     [hf : DecidablePred f] :
@@ -193,7 +193,7 @@ end Quot
 namespace Quotient
 
 variable {sa : Setoid α} {sb : Setoid β}
-variable {φ : Quotient sa → Quotient sb → Sort*}
+variable {motive : Quotient sa → Quotient sb → Sort*}
 
 -- TODO: in mathlib3 this notation took the Setoid as an instance-implicit argument,
 -- now it's explicit but left as a metavariable.
@@ -217,9 +217,10 @@ instance {α : Type*} [Setoid α] : IsEquiv α (· ≈ ·) where
   trans _ _ _ := Setoid.trans
 
 /-- Induction on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
-protected def hrecOn₂ (qa : Quotient sa) (qb : Quotient sb) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧)
-    (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) : φ qa qb :=
-  Quot.hrecOn₂ qa qb f (fun p ↦ c _ _ _ _ p (Setoid.refl _)) fun p ↦ c _ _ _ _ (Setoid.refl _) p
+protected def hrecOn₂ (qa : Quotient sa) (qb : Quotient sb) (mk : ∀ a b, motive ⟦a⟧ ⟦b⟧)
+    (heq : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → HEq (mk a₁ b₁) (mk a₂ b₂)) : motive qa qb :=
+  Quot.hrecOn₂ qa qb mk (fun p ↦ heq _ _ _ _ p (Setoid.refl _))
+    fun p ↦ heq _ _ _ _ (Setoid.refl _) p
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/

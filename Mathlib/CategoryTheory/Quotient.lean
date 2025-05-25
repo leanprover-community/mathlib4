@@ -130,16 +130,13 @@ instance full_functor : (functor r).Full where
   map_surjective f := ⟨Quot.out f, by simp [functor]⟩
 
 instance essSurj_functor : (functor r).EssSurj where
-  mem_essImage Y :=
-    ⟨Y.as, ⟨eqToIso (by
-            ext
-            rfl)⟩⟩
+  mem_essImage Y := ⟨Y.as, ⟨Iso.refl Y⟩⟩
 
-protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
-    (h : ∀ {x y : C} (f : x ⟶ y), P ((functor r).map f)) :
-    ∀ {a b : Quotient r} (f : a ⟶ b), P f := by
+protected theorem induction {motive : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
+    (map : ∀ {x y : C} (f : x ⟶ y), motive ((functor r).map f)) :
+    ∀ {a b : Quotient r} (f : a ⟶ b), motive f := by
   rintro ⟨x⟩ ⟨y⟩ ⟨f⟩
-  exact h f
+  exact map f
 
 protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
     (functor r).map f₁ = (functor r).map f₂ := by
