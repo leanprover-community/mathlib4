@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Amelia Livingston
+Authors: Amelia Livingston, Andrew Yang
 -/
 import Mathlib.RingTheory.HopfAlgebra.Basic
 import Mathlib.RingTheory.Bialgebra.TensorProduct
@@ -13,29 +13,40 @@ We define the Hopf algebra instance on the tensor product of two Hopf algebras.
 
 -/
 
-universe u
-namespace TensorProduct
-variable {R A B : Type u} [CommRing R] [Ring A] [Ring B] [HopfAlgebra R A] [HopfAlgebra R B]
+open TensorProduct Coalgebra.TensorProduct
 
-open HopfAlgebra
+namespace HopfAlgebra.TensorProduct
 
-noncomputable instance instHopfAlgebra : HopfAlgebra R (A ⊗[R] B) :=
-  { antipode := map antipode antipode
-    mul_antipode_rTensor_comul := by
-      simp only [comul_def, counit_def, LinearMap.rTensor_def,
-        ← map_id, ← LinearMap.comp_assoc (map _ _), ← tensorTensorTensorComm_comp_map,
-        Algebra.mul'_comp_tensorTensorTensorComm, ← map_comp]
-      simp only [← LinearMap.rTensor_def, LinearMap.comp_assoc, mul_antipode_rTensor_comul,
-        map_comp, Algebra.linearMap_comp_mul']
-    mul_antipode_lTensor_comul := by
-      simp only [comul_def, counit_def, LinearMap.lTensor_def,
-        ← map_id, ← LinearMap.comp_assoc (map _ _), ← tensorTensorTensorComm_comp_map,
-        Algebra.mul'_comp_tensorTensorTensorComm, ← map_comp]
-      simp only [← LinearMap.lTensor_def, LinearMap.comp_assoc, mul_antipode_lTensor_comul,
-        map_comp, Algebra.linearMap_comp_mul'] }
+variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+    [Algebra R S] [HopfAlgebra R A] [HopfAlgebra S B] [Algebra R B]
+    [IsScalarTower R S B]
+
+noncomputable
+instance : HopfAlgebra S (B ⊗[R] A) where
+  antipode := AlgebraTensorModule.map HopfAlgebra.antipode HopfAlgebra.antipode
+  mul_antipode_rTensor_comul := by
+    ext x y
+    convert congr($(HopfAlgebra.mul_antipode_rTensor_comul_apply (R := S) x) ⊗ₜ[R]
+      $(HopfAlgebra.mul_antipode_rTensor_comul_apply (R := R) y)) using 1
+    · dsimp
+      expand_comul S x with x₁ x₂
+      expand_comul R y with y₁ y₂
+      simp
+    · dsimp [Algebra.TensorProduct.one_def]
+      simp [Algebra.algebraMap_eq_smul_one, smul_tmul']
+  mul_antipode_lTensor_comul := by
+    ext x y
+    convert congr($(HopfAlgebra.mul_antipode_lTensor_comul_apply (R := S) x) ⊗ₜ[R]
+      $(HopfAlgebra.mul_antipode_lTensor_comul_apply (R := R) y)) using 1
+    · dsimp [Algebra.TensorProduct.one_def]
+      expand_comul S x with x₁ x₂
+      expand_comul R y with y₁ y₂
+      simp
+    · dsimp [Algebra.TensorProduct.one_def]
+      simp [Algebra.algebraMap_eq_smul_one, smul_tmul']
 
 @[simp]
 theorem antipode_def :
-    HopfAlgebra.antipode (R := R) (A := A ⊗[R] B) = map antipode antipode := rfl
+    HopfAlgebra.antipode (R := S) (A := B ⊗[R] A) = AlgebraTensorModule.map antipode antipode := rfl
 
-end TensorProduct
+end HopfAlgebra.TensorProduct
