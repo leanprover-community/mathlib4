@@ -49,13 +49,13 @@ theorem dirac_apply_eq_zero_or_one :
 @[simp]
 theorem dirac_apply'_ne_zero_iff_eq_one {a : α} {s : Set α} :
     dirac a s ≠ 0 ↔ dirac a s = 1 where
-  mp := dirac_apply'_eq_zero_or_one.resolve_left
+  mp := dirac_apply_eq_zero_or_one.resolve_left
   mpr := ne_zero_of_eq_one
 
 @[simp]
 theorem dirac_apply'_ne_one_iff_eq_zero {a : α} {s : Set α} :
     dirac a s ≠ 1 ↔ dirac a s = 0 where
-  mp := dirac_apply'_eq_zero_or_one.resolve_right
+  mp := dirac_apply_eq_zero_or_one.resolve_right
   mpr h := h ▸ zero_ne_one
 
 @[simp]
