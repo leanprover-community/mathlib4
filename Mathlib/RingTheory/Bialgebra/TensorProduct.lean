@@ -23,7 +23,7 @@ namespace Bialgebra.TensorProduct
 open Coalgebra.TensorProduct
 
 variable (R A B C D : Type*) [CommSemiring R] [Semiring A] [Semiring B]
-  [Bialgebra R A] [Bialgebra R B]
+  [Bialgebra R A] [Bialgebra R B] [Semiring C] [Semiring D] [Bialgebra R C] [Bialgebra R D]
 
 lemma counit_eq_algHom_toLinearMap :
     Coalgebra.counit (R := R) (A := A ⊗[R] B) =
@@ -45,8 +45,7 @@ noncomputable instance _root_.TensorProduct.instBialgebra : Bialgebra R (A ⊗[R
   simp_all only [AlgHom.toLinearMap_apply] <;>
   simp only [map_one, map_mul]
 
-variable {R A B C D : Type*} [CommRing R] [Ring A] [Ring B] [Ring C] [Ring D]
-    [Bialgebra R A] [Bialgebra R B] [Bialgebra R C] [Bialgebra R D]
+variable {R A B C D}
 
 /-- The tensor product of two bialgebra morphisms as a bialgebra morphism. -/
 noncomputable def map (f : A →ₐc[R] B) (g : C →ₐc[R] D) :
