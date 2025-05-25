@@ -264,7 +264,7 @@ since we access out-of-bounds at index 12. -/
 example : [100,200,300,400,500].getD 12 37 = 37 := by
   rfl
 
-/-- Finally there's `List.get!`, which gives the default value from `Inhabited` like `getElem!`,
+/- Finally there's `List.get!`, which gives the default value from `Inhabited` like `getElem!`,
 and so is equivalent as far as theorem proving goes; but (if run in a program) causes a panic.
 
 This is currently deprecated in favor of `[i]!`, the `getElem!` syntax.
