@@ -93,7 +93,7 @@ identity principle: Let `U` be a subset of `𝕜` and assume that `x ∈ U` is n
 `U`. If function `f` and `g` are meromorphic at `x` and agree along a subset that is codiscrete
 within `U`, then `f` and `g` agree in a punctured neighbourhood of `f`.
 -/
-theorem eventuallyEq_nhdNE_of_eventuallyEq_codiscreteWithin (hf : MeromorphicAt f x)
+theorem eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf : MeromorphicAt f x)
     (hg : MeromorphicAt g x) (h₁x : x ∈ U) (h₂x : Uᶜ ∉ 𝓝[≠] x) (h : f =ᶠ[codiscreteWithin U] g) :
     f =ᶠ[𝓝[≠] x] g := by
   rw [eventuallyEq_iff_sub] at *
