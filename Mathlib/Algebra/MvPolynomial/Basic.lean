@@ -542,6 +542,11 @@ theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p * q).support ⊆ p.support + q.support :=
   AddMonoidAlgebra.support_mul p q
 
+lemma disjoint_support_monomial {a : σ →₀ ℕ} {p : MvPolynomial σ R} {s : R}
+    (ha : a ∉ p.support) (hs : s ≠ 0) : Disjoint (monomial a s).support p.support := by
+  classical
+  simpa [support_monomial, hs] using not_mem_support_iff.mp ha
+
 @[ext]
 theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q :=
   Finsupp.ext
@@ -990,6 +995,14 @@ lemma coeffsIn_le {N : Submodule R (MvPolynomial σ S)} :
     coeffsIn σ M ≤ N ↔ ∀ m ∈ M, ∀ i, monomial i m ∈ N := by
   simp [coeffsIn_eq_span_monomial, Submodule.span_le, Set.subset_def,
     forall_swap (α := MvPolynomial σ S)]
+
+lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S) ⊆ M := by
+  simp only [mem_coeffsIn, coeffs, Finset.coe_image, image_subset_iff]
+  refine ⟨fun h x _ ↦ h x, fun h i ↦ ?_⟩
+  by_cases hp : i ∈ p.support
+  · exact h hp
+  · convert M.zero_mem
+    simpa using hp
 
 end Module
 

@@ -490,28 +490,56 @@ theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (
   apply eq_iff_eq_cancel_right.mpr
   rfl
 
-lemma mem_range_map_of_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S₁}
-    (hx : (x.coeffs : Set _) ⊆ Set.range f) : x ∈ Set.range (MvPolynomial.map f) := by
+lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
+    (map f p).coeffs ⊆ p.coeffs.image f := by
   classical
-  induction x using MvPolynomial.induction_on'' with
-  | C a =>
-    by_cases h : a = 0
-    · subst h
-      exact ⟨0, by simp⟩
-    · simp only [coeffs_C, h, reduceIte, Finset.coe_singleton, Set.singleton_subset_iff] at hx
-      obtain ⟨b, rfl⟩ := hx
-      exact ⟨C b, by simp⟩
-  | mul_X p n ih =>
-    rw [coeffs_mul_X] at hx
-    obtain ⟨q, rfl⟩ := ih hx
-    exact ⟨q * X n, by simp⟩
+  induction p using induction_on'' with
+  | C a => aesop (add simp coeffs_C)
+  | mul_X p n ih => simpa
   | monomial_add a s p ha hs hp ih =>
-    rw [coeffs_add] at hx
-    · simp only [Finset.coe_union, Set.union_subset_iff] at hx
+    rw [coeffs_add (disjoint_support_monomial ha hs), map_add, coeffs_add]
+    · rw [Finset.image_union, Finset.union_subset_iff]
+      exact ⟨ih.trans (by simp), hp.trans (by simp)⟩
+    · exact Finset.disjoint_of_subset_left (support_map_subset _ _) <|
+        Finset.disjoint_of_subset_right (support_map_subset _ _) <|
+          disjoint_support_monomial ha hs
+
+@[simp]
+lemma coe_coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
+    ((map f p).coeffs : Set S₁) ⊆ f '' p.coeffs :=
+  subset_trans (coeffs_map f p) (Finset.coe_image (f := f) ▸ .rfl)
+
+lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S₁} :
+    x ∈ Set.range (MvPolynomial.map f) ↔ (x.coeffs : Set _) ⊆ .range f := by
+  classical
+  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · obtain ⟨p, rfl⟩ := hx
+    exact subset_trans (coe_coeffs_map f p) (by simp)
+  · induction x using induction_on'' with
+    | C a =>
+      by_cases h : a = 0
+      · subst h
+        exact ⟨0, by simp⟩
+      · simp only [coeffs_C, h, reduceIte, Finset.coe_singleton, Set.singleton_subset_iff] at hx
+        obtain ⟨b, rfl⟩ := hx
+        exact ⟨C b, by simp⟩
+    | mul_X p n ih =>
+      rw [coeffs_mul_X] at hx
+      obtain ⟨q, rfl⟩ := ih hx
+      exact ⟨q * X n, by simp⟩
+    | monomial_add a s p ha hs hp ih =>
+      rw [coeffs_add (disjoint_support_monomial ha hs)] at hx
+      simp only [Finset.coe_union, Set.union_subset_iff] at hx
       obtain ⟨q, hq⟩ := ih hx.1
       obtain ⟨u, hu⟩ := hp hx.2
       exact ⟨q + u, by simp [hq, hu]⟩
-    · simpa [support_monomial, hs] using not_mem_support_iff.mp ha
+
+lemma range_map_algebraMap [Algebra R S₁] :
+    .range (map <| algebraMap R S₁) =
+      (coeffsIn σ (1 : Submodule R S₁) : Set (MvPolynomial σ S₁)) := by
+  ext
+  rw [mem_range_map_iff_coeffs_subset, SetLike.mem_coe, mem_coeffsIn_iff_coeffs_subset]
+  simp [Set.subset_def, SetLike.mem_coe, Submodule.mem_one]
 
 /-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
 @[simps!]
