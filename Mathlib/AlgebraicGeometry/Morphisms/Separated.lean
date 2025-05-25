@@ -209,7 +209,19 @@ lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
   rw [pullback.diagonal_comp] at this
   exact ⟨@IsClosedImmersion.of_comp _ _ _ _ _ this inferInstance⟩
 
+variable {f g} in
 lemma IsSeparated.comp_iff [IsSeparated g] : IsSeparated (f ≫ g) ↔ IsSeparated f :=
+  ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
+
+lemma IsAffineHom.of_comp [IsAffineHom (f ≫ g)] [IsSeparated g] :
+    IsAffineHom f := by
+  rw [← pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
+  have := MorphismProperty.pullback_snd (P := @IsAffineHom) (f ≫ g) g inferInstance
+  infer_instance
+
+variable {f g} in
+lemma IsAffineHom.comp_iff [IsAffineHom g] :
+    IsAffineHom (f ≫ g) ↔ IsAffineHom f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
 @[stacks 01KM]
