@@ -214,16 +214,6 @@ instance : Group (IteratedWreathProduct G n) := by
  | zero => rw [IteratedWreathProduct_zero]; infer_instance
  | succ n ih => rw [IteratedWreathProduct_succ]; infer_instance
 
-lemma mu_eq {p n : ℕ} [hp : Fact (Nat.Prime p)] :
-    (p ^ n).factorial.factorization p = ∑ i ∈ Finset.range n, p ^ i := by
-  rw [← Nat.multiplicity_eq_factorization hp.out (p ^ n).factorial_ne_zero, ← ENat.coe_inj,
-    ← (Nat.finiteMultiplicity_iff.2
-      ⟨hp.out.ne_one, (p ^ n).factorial_pos⟩).emultiplicity_eq_multiplicity]
-  induction n with
-  | zero => simp [hp.out.emultiplicity_one]
-  | succ n h =>
-    rw [pow_succ', hp.out.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
-
 /-- The homomorphism from `IteratedWreathProduct G n` to `Perm (Fin n → G)`. -/
 def iteratedWreathToPermHom (G : Type*) [Group G] :
     (n : ℕ) → (IteratedWreathProduct G n →* Equiv.Perm (Fin n → G))
@@ -246,7 +236,7 @@ lemma iteratedWreathToPermHomInj (G : Type*) [Group G] :
         (RegularWreathProduct.toPermInj (IteratedWreathProduct G n) G (Fin n → G))
 
 /-- The encoding of the Sylow `p`-subgroups of `Perm α` as an iterated wreath product. -/
-noncomputable def Sylow.mulEquivIteratedWreathProduct  (p : ℕ) [Fact (Nat.Prime p)] (n : ℕ)
+noncomputable def Sylow.mulEquivIteratedWreathProduct  (p : ℕ) [hp : Fact (Nat.Prime p)] (n : ℕ)
     (α : Type*) [Finite α] (hα : Nat.card α = p ^ n)
     (G : Type*) [Group G] [Finite G] (hG : Nat.card G = p)
     (P : Sylow p (Equiv.Perm α)) :
@@ -258,7 +248,9 @@ noncomputable def Sylow.mulEquivIteratedWreathProduct  (p : ℕ) [Fact (Nat.Prim
     ((Equiv.Perm.permCongrHom e1.symm).comp_injective _).mpr (iteratedWreathToPermHomInj G n)
   let g := (MonoidHom.ofInjective hf).symm
   let P' : Sylow p (Equiv.Perm α) := Sylow.ofCard (MonoidHom.range f) (by
-    rw [Nat.card_congr g.toEquiv, IteratedWreathProduct.card, hG, Nat.card_perm, hα, mu_eq])
+    rw [Nat.card_congr g.toEquiv, IteratedWreathProduct.card, hG, Nat.card_perm, hα,
+        ← Nat.multiplicity_eq_factorization hp.out (p ^ n).factorial_ne_zero,
+        Nat.Prime.multiplicity_factorial_pow hp.out])
   exact (P.equiv P').trans g
 
 end iterated
