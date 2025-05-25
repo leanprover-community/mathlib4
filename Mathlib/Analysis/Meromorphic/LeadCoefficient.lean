@@ -6,13 +6,13 @@ Authors: Stefan Kebekus
 import Mathlib.Analysis.Meromorphic.Order
 
 /-!
-# The Leading Coefficient of a Meromorphic Function
+# The Trailing Coefficient of a Meromorphic Function
 
-This file defines the leading coefficient of a meromorphic function. If `f` is meromorphic at a
-point `x`, the leading coefficient is defined as the (unique!) value `g x` for a presentation of `f`
-in the form `(z - x) ^ order • g z` with `g` analytic at `x`.
+This file defines the trailing coefficient of a meromorphic function. If `f` is meromorphic at a
+point `x`, the trailing coefficient is defined as the (unique!) value `g x` for a presentation of
+`f` in the form `(z - x) ^ order • g z` with `g` analytic at `x`.
 
-The lemma `leadCoeff_eq_limit` expresses the leading coefficient as a limit.
+The lemma `meromorphicTrailingCoeffAt_eq_limit` expresses the trailing coefficient as a limit.
 -/
 
 variable
@@ -22,15 +22,13 @@ variable
 
 open Filter Topology
 
-namespace MeromorphicAt
-
 variable (f x) in
 /--
-If `f` is meromorphic of finite order at a point `x`, the leading coefficient is defined as the
+If `f` is meromorphic of finite order at a point `x`, the trailing coefficient is defined as the
 (unique!) value `g x` for a presentation of `f` in the form `(z - x) ^ order • g z` with `g`
-analytic at `x`. In all other cases, the leading coefficient is defined to be zero.
+analytic at `x`. In all other cases, the trailing coefficient is defined to be zero.
 -/
-noncomputable def leadCoeff : E := by
+noncomputable def meromorphicTrailingCoeffAt : E := by
   by_cases h₁ : MeromorphicAt f x
   · by_cases h₂ : meromorphicOrderAt f x = ⊤
     · exact 0
@@ -38,31 +36,32 @@ noncomputable def leadCoeff : E := by
   · exact 0
 
 /--
-If `f` is not meromorphic at `x`, the leading coefficient is zero by definition.
+If `f` is not meromorphic at `x`, the trailing coefficient is zero by definition.
 -/
-@[simp] lemma leadCoeff_of_not_MeromorphicAt (h : ¬MeromorphicAt f x) :
-    leadCoeff f x = 0 := by simp_all [leadCoeff]
+@[simp] lemma meromorphicTrailingCoeffAt_of_not_MeromorphicAt (h : ¬MeromorphicAt f x) :
+    meromorphicTrailingCoeffAt f x = 0 := by simp_all [meromorphicTrailingCoeffAt]
 
 /--
-If `f` is meromorphic of infinite order at `x`, the leading coefficient is zero by definition.
+If `f` is meromorphic of infinite order at `x`, the trailing coefficient is zero by definition.
 -/
-@[simp] lemma leadCoeff_of_order_eq_top (h₁ : MeromorphicAt f x) (h₂ : meromorphicOrderAt f x = ⊤) :
-    leadCoeff f x = 0 := by simp_all [leadCoeff]
+@[simp] lemma MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_top (h₁ : MeromorphicAt f x)
+    (h₂ : meromorphicOrderAt f x = ⊤) :
+    meromorphicTrailingCoeffAt f x = 0 := by simp_all [meromorphicTrailingCoeffAt]
 
 /-!
 ## Characterization of the Leading Coefficient
 -/
 
 /--
-Definition of the leading coefficient in case where `f` is meromorphic of finite order and a
+Definition of the trailing coefficient in case where `f` is meromorphic of finite order and a
 presentation is given.
 -/
 @[simp]
-lemma leadCoeff_of_order_eq_finite (h₁ : MeromorphicAt f x) (h₂ : AnalyticAt 𝕜 g x)
-    (h₃ : meromorphicOrderAt f x ≠ ⊤)
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_finite (h₁ : MeromorphicAt f x)
+    (h₂ : AnalyticAt 𝕜 g x) (h₃ : meromorphicOrderAt f x ≠ ⊤)
     (h₄ : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ (meromorphicOrderAt f x).untop₀ • g z) :
-    leadCoeff f x = g x := by
-  unfold leadCoeff
+    meromorphicTrailingCoeffAt f x = g x := by
+  unfold meromorphicTrailingCoeffAt
   simp only [h₁, not_true_eq_false, reduceDIte, h₃, ne_eq]
   obtain ⟨h'₁, h'₂, h'₃⟩ := ((meromorphicOrderAt_ne_top_iff h₁).1 h₃).choose_spec
   apply Filter.EventuallyEq.eq_of_nhds
@@ -73,13 +72,13 @@ lemma leadCoeff_of_order_eq_finite (h₁ : MeromorphicAt f x) (h₂ : AnalyticAt
   simp_all [zpow_ne_zero, sub_ne_zero]
 
 /--
-Variant of `leadCoeff_of_order_eq_finite`: Definition of the leading coefficient in case where
-`f` is meromorphic of finite order and a presentation is given.
+Variant of `meromorphicTrailingCoeffAt_of_order_eq_finite`: Definition of the trailing coefficient
+in case where `f` is meromorphic of finite order and a presentation is given.
 -/
 @[simp]
-lemma _root_.AnalyticAt.leadCoeff_of_order_eq_finite₁ (h₁ : AnalyticAt 𝕜 g x) (h₂ : g x ≠ 0)
-    (h₃ : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z) :
-    leadCoeff f x = g x := by
+lemma AnalyticAt.meromorphicTrailingCoeffAt_of_order_eq_finite₁ (h₁ : AnalyticAt 𝕜 g x)
+    (h₂ : g x ≠ 0) (h₃ : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z) :
+    meromorphicTrailingCoeffAt f x = g x := by
   have h₄ : MeromorphicAt f x := by
     rw [MeromorphicAt.meromorphicAt_congr h₃]
     fun_prop
@@ -87,27 +86,28 @@ lemma _root_.AnalyticAt.leadCoeff_of_order_eq_finite₁ (h₁ : AnalyticAt 𝕜 
     simp only [meromorphicOrderAt_eq_int_iff h₄, ne_eq, zpow_natCast]
     use g, h₁, h₂
     exact h₃
-  simp_all [leadCoeff_of_order_eq_finite h₄ h₁, this]
+  simp_all [h₄.meromorphicTrailingCoeffAt_of_order_eq_finite h₁, this]
 
 /--
-If `f` is analytic and does not vanish at `x`, then the leading coefficient of `f` at `x` is `f x`.
+If `f` is analytic and does not vanish at `x`, then the trailing coefficient of `f` at `x` is `f x`.
 -/
 @[simp]
-lemma _root_.AnalyticAt.leadCoeff_of_nonvanish (h₁ : AnalyticAt 𝕜 f x) (h₂ : f x ≠ 0) :
-    leadCoeff f x = f x := by
-  rw [h₁.leadCoeff_of_order_eq_finite₁ (n := 0) h₂]
+lemma AnalyticAt.meromorphicTrailingCoeffAt_of_nonvanish (h₁ : AnalyticAt 𝕜 f x) (h₂ : f x ≠ 0) :
+    meromorphicTrailingCoeffAt f x = f x := by
+  rw [h₁.meromorphicTrailingCoeffAt_of_order_eq_finite₁ (n := 0) h₂]
   filter_upwards
   simp
 
 /--
-If `f` is meromorphic at `x`, then the leading coefficient of `f` at `x` is the limit of the
+If `f` is meromorphic at `x`, then the trailing coefficient of `f` at `x` is the limit of the
 function `(· - x) ^ (-h₁.order.untop₀) • f`.
 -/
-lemma leadCoeff_eq_limit (h : MeromorphicAt f x) :
-    Tendsto ((· - x) ^ (-(meromorphicOrderAt f x).untop₀) • f) (𝓝[≠] x) (𝓝 (leadCoeff f x)) := by
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_eq_limit (h : MeromorphicAt f x) :
+    Tendsto ((· - x) ^ (-(meromorphicOrderAt f x).untop₀) • f) (𝓝[≠] x)
+      (𝓝 (meromorphicTrailingCoeffAt f x)) := by
   by_cases h₂ : meromorphicOrderAt f x = ⊤
   · simp_all only [WithTop.untop₀_top, neg_zero, zpow_zero, one_smul,
-      leadCoeff_of_order_eq_top]
+      meromorphicTrailingCoeffAt_of_order_eq_top]
     apply Tendsto.congr' (f₁ := 0)
     · filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₂] with y hy
       simp_all
@@ -119,7 +119,7 @@ lemma leadCoeff_eq_limit (h : MeromorphicAt f x) :
       ← zpow_neg, ← zpow_add', neg_add_cancel, zpow_zero, one_smul]
     left
     simp_all [sub_ne_zero]
-  · rw [leadCoeff_of_order_eq_finite h h₁g h₂ h₃g]
+  · rw [meromorphicTrailingCoeffAt_of_order_eq_finite h h₁g h₂ h₃g]
     apply h₁g.continuousAt.continuousWithinAt
 
 /-!
@@ -127,41 +127,43 @@ lemma leadCoeff_eq_limit (h : MeromorphicAt f x) :
 -/
 
 /--
-If `f` is meromorphic of finite order at `x`, then the leading coefficient is not zero.
+If `f` is meromorphic of finite order at `x`, then the trailing coefficient is not zero.
 -/
-lemma zero_ne_leadCoeff (h₁ : MeromorphicAt f x) (h₂ : meromorphicOrderAt f x ≠ ⊤) :
-    0 ≠ leadCoeff f x := by
+lemma MeromorphicAt.zero_ne_meromorphicTrailingCoeffAt (h₁ : MeromorphicAt f x)
+    (h₂ : meromorphicOrderAt f x ≠ ⊤) :
+    0 ≠ meromorphicTrailingCoeffAt f x := by
   obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
-  simpa [h₁g.leadCoeff_of_order_eq_finite₁ h₂g h₃g] using h₂g.symm
+  simpa [h₁g.meromorphicTrailingCoeffAt_of_order_eq_finite₁ h₂g h₃g] using h₂g.symm
 
 /-!
 ## Congruence Lemma
 -/
 
 /--
-If two functions agree in a punctured neighborhood, then their leading coefficients agree.
+If two functions agree in a punctured neighborhood, then their trailing coefficients agree.
 -/
-lemma leadCoeff_congr_nhdNE {f₁ f₂ : 𝕜 → E} (h : f₁ =ᶠ[𝓝[≠] x] f₂) :
-    leadCoeff f₁ x = leadCoeff f₂ x := by
+lemma meromorphicTrailingCoeffAt_congr_nhdNE {f₁ f₂ : 𝕜 → E} (h : f₁ =ᶠ[𝓝[≠] x] f₂) :
+    meromorphicTrailingCoeffAt f₁ x = meromorphicTrailingCoeffAt f₂ x := by
   by_cases h₁ : ¬MeromorphicAt f₁ x
   · simp [h₁, (MeromorphicAt.meromorphicAt_congr h).not.1 h₁]
   rw [not_not] at h₁
   by_cases h₂ : meromorphicOrderAt f₁ x = ⊤
   · simp_all [h₁.congr h, meromorphicOrderAt_congr h]
   obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
-  rw [h₁g.leadCoeff_of_order_eq_finite₁ h₂g h₃g,
-    h₁g.leadCoeff_of_order_eq_finite₁ h₂g (h.symm.trans h₃g)]
+  rw [h₁g.meromorphicTrailingCoeffAt_of_order_eq_finite₁ h₂g h₃g,
+    h₁g.meromorphicTrailingCoeffAt_of_order_eq_finite₁ h₂g (h.symm.trans h₃g)]
 
 /-!
 ## Behavior under Arithmetic Operations
 -/
 
 /--
-The leading coefficient of a scalar product is the scalar product of the leading coefficients.
+The trailing coefficient of a scalar product is the scalar product of the trailing coefficients.
 -/
-lemma leadCoeff_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (hf₁ : MeromorphicAt f₁ x)
-    (hf₂ : MeromorphicAt f₂ x) :
-    leadCoeff (f₁ • f₂) x = (leadCoeff f₁ x) • (leadCoeff f₂ x) := by
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E}
+    (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
+    meromorphicTrailingCoeffAt (f₁ • f₂) x =
+      (meromorphicTrailingCoeffAt f₁ x) • (meromorphicTrailingCoeffAt f₂ x) := by
   by_cases h₁f₁ : meromorphicOrderAt f₁ x = ⊤
   · simp_all [hf₁, hf₁.smul hf₂, meromorphicOrderAt_smul hf₁ hf₂, h₁f₁]
   by_cases h₁f₂ : meromorphicOrderAt f₂ x = ⊤
@@ -174,47 +176,50 @@ lemma leadCoeff_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (hf₁ : Meromor
     simp_all [meromorphicOrderAt_smul hf₁ hf₂]
     rw [← smul_assoc, ← smul_assoc, smul_eq_mul, smul_eq_mul, zpow_add₀ (sub_ne_zero.2 h₃y)]
     ring_nf
-  rw [h₁g₁.leadCoeff_of_order_eq_finite₁ h₂g₁ h₃g₁,
-    h₁g₂.leadCoeff_of_order_eq_finite₁ h₂g₂ h₃g₂,
-    leadCoeff_of_order_eq_finite (hf₁.smul hf₂) (h₁g₁.smul h₁g₂)
+  rw [h₁g₁.meromorphicTrailingCoeffAt_of_order_eq_finite₁ h₂g₁ h₃g₁,
+    h₁g₂.meromorphicTrailingCoeffAt_of_order_eq_finite₁ h₂g₂ h₃g₂,
+    meromorphicTrailingCoeffAt_of_order_eq_finite (hf₁.smul hf₂) (h₁g₁.smul h₁g₂)
       (by simp_all [meromorphicOrderAt_smul hf₁ hf₂]) this]
   simp
 
 /--
-The leading coefficient of a product is the product of the leading coefficients.
+The trailing coefficient of a product is the product of the trailing coefficients.
 -/
-lemma leadCoeff_mul {f₁ f₂ : 𝕜 → 𝕜} (hf₁ : MeromorphicAt f₁ x)
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_mul {f₁ f₂ : 𝕜 → 𝕜} (hf₁ : MeromorphicAt f₁ x)
     (hf₂ : MeromorphicAt f₂ x) :
-    leadCoeff (f₁ * f₂) x = (leadCoeff f₁ x) * (leadCoeff f₂ x) := by
-  exact leadCoeff_smul hf₁ hf₂
+    meromorphicTrailingCoeffAt (f₁ * f₂) x =
+      (meromorphicTrailingCoeffAt f₁ x) * (meromorphicTrailingCoeffAt f₂ x) := by
+  exact meromorphicTrailingCoeffAt_smul hf₁ hf₂
 
 /--
-The leading coefficient of the inverse function is the inverse of the leading coefficient.
+The trailing coefficient of the inverse function is the inverse of the trailing coefficient.
 -/
-lemma leadCoeff_inv {f : 𝕜 → 𝕜} :
-    leadCoeff f⁻¹ x = (leadCoeff f x)⁻¹ := by
+lemma meromorphicTrailingCoeffAt_inv {f : 𝕜 → 𝕜} :
+    meromorphicTrailingCoeffAt f⁻¹ x = (meromorphicTrailingCoeffAt f x)⁻¹ := by
   by_cases h₁ : MeromorphicAt f x
   · by_cases h₂ : meromorphicOrderAt f x = ⊤
     · simp_all [meromorphicOrderAt_inv (f := f) (x := x)]
     have : f⁻¹ * f =ᶠ[𝓝[≠] x] 1 := by
       filter_upwards [(meromorphicOrderAt_ne_top_iff_eventually_ne_zero h₁).1 h₂]
       simp_all
-    rw [← mul_eq_one_iff_eq_inv₀ (h₁.zero_ne_leadCoeff h₂).symm,
-      ← leadCoeff_mul h₁.inv h₁, leadCoeff_congr_nhdNE this,
-      analyticAt_const.leadCoeff_of_order_eq_finite₁ (n := 0)]
+    rw [← mul_eq_one_iff_eq_inv₀ (h₁.zero_ne_meromorphicTrailingCoeffAt h₂).symm,
+      ← h₁.inv.meromorphicTrailingCoeffAt_mul h₁, meromorphicTrailingCoeffAt_congr_nhdNE this,
+      analyticAt_const.meromorphicTrailingCoeffAt_of_order_eq_finite₁ (n := 0)]
     <;> simp_all
     exact eventuallyEq_nhdsWithin_of_eqOn fun _ ↦ congrFun rfl
   · simp_all
 
 /--
-Except for edge cases, the leading coefficient of the power of a function is the power of the
-leading coefficient.
+Except for edge cases, the trailing coefficient of the power of a function is the power of the
+trailing coefficient.
 -/
-lemma leadCoeff_zpow₁ {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x) (h₂ : meromorphicOrderAt f x ≠ ⊤) :
-    leadCoeff (f ^ n) x = (leadCoeff f x) ^ n := by
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_zpow₁ {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x)
+    (h₂ : meromorphicOrderAt f x ≠ ⊤) :
+    meromorphicTrailingCoeffAt (f ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n := by
   obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
-  rw [h₁g.leadCoeff_of_order_eq_finite₁ (n := (meromorphicOrderAt f x).untop₀) h₂g h₃g,
-    (h₁g.zpow h₂g (n := n)).leadCoeff_of_order_eq_finite₁
+  rw [h₁g.meromorphicTrailingCoeffAt_of_order_eq_finite₁
+      (n := (meromorphicOrderAt f x).untop₀) h₂g h₃g,
+    (h₁g.zpow h₂g (n := n)).meromorphicTrailingCoeffAt_of_order_eq_finite₁
       (n := (meromorphicOrderAt (f ^ n) x).untop₀)
       (by simp_all [h₂g, zpow_ne_zero])]
   · simp only [Pi.pow_apply]
@@ -222,32 +227,32 @@ lemma leadCoeff_zpow₁ {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x) (h₂ : m
     simp_all [ha, mul_zpow, ← zpow_mul, meromorphicOrderAt_zpow h₁, mul_comm]
 
 /--
-Except for edge cases, the leading coefficient of the power of a function is the power of the
-leading coefficient.
+Except for edge cases, the trailing coefficient of the power of a function is the power of the
+trailing coefficient.
 -/
-lemma leadCoeff_zpow₂ {f : 𝕜 → 𝕜} (h : MeromorphicAt f x) (hn : n ≠ 0):
-    leadCoeff (f ^ n) x = (leadCoeff f x) ^ n := by
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_zpow₂ {f : 𝕜 → 𝕜} (h : MeromorphicAt f x)
+    (hn : n ≠ 0):
+    meromorphicTrailingCoeffAt (f ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n := by
   by_cases h₁ : meromorphicOrderAt f x = ⊤
   · simp_all [meromorphicOrderAt_zpow h, h₁, h.zpow n, zero_zpow n hn]
-  apply leadCoeff_zpow₁ h h₁
+  apply meromorphicTrailingCoeffAt_zpow₁ h h₁
 
 /--
-Except for edge cases, the leading coefficient of the power of a function is the power of the
-leading coefficient.
+Except for edge cases, the trailing coefficient of the power of a function is the power of the
+trailing coefficient.
 -/
-lemma leadCoeff_pow₁ {n : ℕ} {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x)
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_pow₁ {n : ℕ} {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x)
     (h₂ : meromorphicOrderAt f x ≠ ⊤) :
-    leadCoeff (f ^ n) x = (leadCoeff f x) ^ n := by
-  convert leadCoeff_zpow₁ h₁ h₂ (n := n)
+    meromorphicTrailingCoeffAt (f ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n := by
+  convert meromorphicTrailingCoeffAt_zpow₁ h₁ h₂ (n := n)
   <;> simp
 
 /--
-Except for edge cases, the leading coefficient of the power of a function is the power of the
-leading coefficient.
+Except for edge cases, the trailing coefficient of the power of a function is the power of the
+trailing coefficient.
 -/
-lemma leadCoeff_pow₂ {n : ℕ} {f : 𝕜 → 𝕜} (h : MeromorphicAt f x) (hn : n ≠ 0):
-    leadCoeff (f ^ n) x = (leadCoeff f x) ^ n := by
-  convert leadCoeff_zpow₂ h (n := n) (Int.ofNat_ne_zero.mpr hn)
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_pow₂ {n : ℕ} {f : 𝕜 → 𝕜} (h : MeromorphicAt f x)
+    (hn : n ≠ 0) :
+    meromorphicTrailingCoeffAt (f ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n := by
+  convert meromorphicTrailingCoeffAt_zpow₂ h (n := n) (Int.ofNat_ne_zero.mpr hn)
   <;> simp
-
-end MeromorphicAt
