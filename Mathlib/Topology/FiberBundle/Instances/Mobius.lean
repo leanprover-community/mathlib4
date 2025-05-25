@@ -39,30 +39,26 @@ noncomputable def U := chartAt (EuclideanSpace ℝ (Fin 1))
 instance : Fact (Module.finrank ℝ (EuclideanSpace ℝ (Fin 2)) = 1 + 1) :=
   ⟨(finrank_euclideanSpace_fin : Module.finrank ℝ (EuclideanSpace ℝ (Fin 2)) = 2)⟩
 
-lemma h8 : U.source = { x | x ≠ -xh } :=
+lemma hU.source : U.source = { x | x ≠ -xh } :=
   calc U.source = (chartAt (EuclideanSpace ℝ (Fin 1)) xh).source := rfl
     _ = (stereographic' 1 (-xh)).source := rfl
     _ = {-xh}ᶜ := stereographic'_source (-xh)
     _ = { x | x ≠ -xh } := rfl
 
-lemma h9 : V.source = { x | x ≠ -ug} :=
+lemma hV.source : V.source = { x | x ≠ -ug} :=
   calc V.source = (chartAt (EuclideanSpace ℝ (Fin 1)) ug).source := rfl
     _ = (stereographic' 1 (-ug)).source := rfl
     _ = {-ug}ᶜ := stereographic'_source (-ug)
     _ = { x | x ≠ -ug } := rfl
 
 noncomputable
-def MyCoordChange : Fin 2 → Fin 2 → (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) → EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
+def MyCoordChange : Fin 2 → Fin 2 →
+                    (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) → EuclideanSpace ℝ (Fin 1) →
+                    EuclideanSpace ℝ (Fin 1)
   | 0, 0, _, α => α
   | 0, 1, x, α => if (x.val 1) > 0 then α else -α
   | 1, 0, x, α => if (x.val 1) > 0 then α else -α
   | 1, 1, _, α => α
-
-theorem MyCoordChange_self_left :
-    ∀ x ∈ U.source,
-    ∀ (v : EuclideanSpace ℝ (Fin 1)), MyCoordChange 0 0 x v = v := by
-  intro x h v
-  rfl
 
 theorem MyCoordChange_self : ∀ (i : Fin 2),
     ∀ x ∈ (fun i => if i = 0 then U.source else V.source) i,
@@ -73,12 +69,6 @@ theorem MyCoordChange_self : ∀ (i : Fin 2),
         | 0 => rfl
         | 1 => rfl
     exact h
-
-noncomputable def f : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) → EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
-  | x, α => if (x.val 1) > 0 then α else -α
-
-lemma l (x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) (v : EuclideanSpace ℝ (Fin 1)) : f x (f x v) = v := by
-  by_cases h : x.val 1 > 0 <;> simp [f, h]
 
 theorem t1001 (x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1)) (v : EuclideanSpace ℝ (Fin 1)) :
     MyCoordChange 1 0 x (MyCoordChange 0 1 x v) = v := by
@@ -106,33 +96,22 @@ theorem MyCoordChange_comp : ∀ (i j k : Fin 2),
         | 1, 1, 1 => rfl
     exact h
 
-theorem tOpen : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 > 0 } :=
-  isOpen_induced_iff.mpr ⟨{ x : EuclideanSpace ℝ (Fin 2) | x 1 > 0 },
-    isOpen_lt continuous_const (continuous_apply 1), rfl⟩
-
-theorem tOpen' : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 < 0 } := by
-  have h2 (i : Fin 2) : Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x i := continuous_apply i
-  exact isOpen_induced_iff.mpr ⟨{ x : EuclideanSpace ℝ (Fin 2) | x 1 < 0 },
-    isOpen_lt (h2 1) continuous_const, rfl⟩
-
-theorem t00 : ContinuousOn (fun p => MyCoordChange 0 0 p.1 p.2) (U.source ×ˢ univ) := continuousOn_snd
-
 lemma myNeg (a b : ℝ) : -!₂[a, b] = !₂[-a, -b] := by
   let x := ![a, b]
   let y := ![-a, -b]
-  have fleeg : -(![a, b]) = ![-a, -b] := by simp
-  have flarg : -x = y := by rw [fleeg]
-  have flurg : (WithLp.equiv 2 (Fin 2 → ℝ)) (-x) = -(WithLp.equiv 2 (Fin 2 → ℝ)) x := WithLp.equiv_neg 2 x
-  rw [flarg] at flurg
-  exact flurg.symm
+  have h1 : -(![a, b]) = ![-a, -b] := by simp
+  have h2 : -x = y := by rw [h1]
+  have h3 : (WithLp.equiv 2 (Fin 2 → ℝ)) (-x) = -(WithLp.equiv 2 (Fin 2 → ℝ)) x := WithLp.equiv_neg 2 x
+  rw [h2] at h3
+  exact h3.symm
 
 theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := by
   let xh := ((⟨x, h⟩ :  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 ))
   let ug := ((⟨u, g⟩ :  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 ))
   ext y
 
-  have h8 : U.source = { x | x ≠ -xh} := h8
-  have h9 : V.source = { x | x ≠ -ug} := h9
+  have h8 : U.source = { x | x ≠ -xh} := hU.source
+  have h9 : V.source = { x | x ≠ -ug} := hV.source
   have ha : U.source ∩ V.source = { x | x ≠ -xh } ∩ { x | x ≠ -ug } := by rw [h8, h9]
 
   have h1 : { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } = { x | x.val 1 = 0 }ᶜ := by
@@ -290,6 +269,10 @@ lemma barr : { x | 0 < x.1.val 1 } ⊆ {(x : (Metric.sphere (0 : EuclideanSpace 
   intro x hx
   exact ⟨hx, trivial⟩
 
+theorem tOpen : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 > 0 } :=
+  isOpen_induced_iff.mpr ⟨{ x : EuclideanSpace ℝ (Fin 2) | x 1 > 0 },
+    isOpen_lt continuous_const (continuous_apply 1), rfl⟩
+
 lemma s1_is_open : IsOpen s1 := by
   have h2 : IsOpen ({ x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 > 0 }×ˢ (univ : Set (EuclideanSpace ℝ (Fin 1)))) := tOpen.prod isOpen_univ
   rw [HasSubset.Subset.antisymm fooo barr] at h2
@@ -305,10 +288,17 @@ lemma bar' : { x | 0 > x.1.val 1 } ⊆ {(x : (Metric.sphere (0 : EuclideanSpace 
   intro x hx
   exact ⟨hx, trivial⟩
 
+theorem tOpen' : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 < 0 } := by
+  have h2 (i : Fin 2) : Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x i := continuous_apply i
+  exact isOpen_induced_iff.mpr ⟨{ x : EuclideanSpace ℝ (Fin 2) | x 1 < 0 },
+    isOpen_lt (h2 1) continuous_const, rfl⟩
+
 lemma s2_is_open : IsOpen s2 := by
   have h2 : IsOpen ({ x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 < 0 }×ˢ (univ : Set (EuclideanSpace ℝ (Fin 1)))) := tOpen'.prod isOpen_univ
   rw [HasSubset.Subset.antisymm foo' bar'] at h2
   exact h2
+
+theorem t00 : ContinuousOn (fun p => MyCoordChange 0 0 p.1 p.2) (U.source ×ˢ univ) := continuousOn_snd
 
 theorem t01 : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) ((U.source ∩ V.source) ×ˢ univ) := by
   have h1 : (U.source ∩ V.source) = { x | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := SulSource
@@ -376,7 +366,7 @@ theorem my_mem_baseSet_at : ∀ (x : ↑(Metric.sphere 0 1)),
       (fun (i : Fin 2) ↦ if i = 0 then U.source else V.source) ((fun x ↦ if x.val 0 > 0 then 0 else 1) x) = U.source := by
         rw [h2]
         exact if_pos rfl
-    rw [h3, h8]
+    rw [h3, hU.source]
     exact h7
   case neg =>
     have h1 : ug.val 0 = -1 := rfl
@@ -391,7 +381,7 @@ theorem my_mem_baseSet_at : ∀ (x : ↑(Metric.sphere 0 1)),
               V.source := by
                 rw [h2]
                 exact if_neg (by exact one_ne_zero)
-    rw [h3, h9]
+    rw [h3, hV.source]
     exact h7
 
 noncomputable
@@ -408,23 +398,8 @@ def Mobius : FiberBundleCore (Fin 2) (Metric.sphere (0 : EuclideanSpace ℝ (Fin
   continuousOn_coordChange := MyContinuousOn_coordChange
   coordChange_comp := MyCoordChange_comp
 
-open Manifold
-open SmoothManifoldWithCorners
-open scoped Manifold ContDiff
-open IsManifold
-open ChartedSpace
-open Bundle Topology MulAction Set
-open FiberBundle
-open FiberBundleCore
-
-#check IsManifold (𝓡 2) 0 (TotalSpace (EuclideanSpace ℝ (Fin 1)) Mobius.Fiber)
-#synth IsManifold (𝓡 2) 0 (TotalSpace (EuclideanSpace ℝ (Fin 1)) Mobius.Fiber)
-
-#synth ChartedSpace  (ModelProd (EuclideanSpace ℝ (Fin 1)) (EuclideanSpace ℝ (Fin 1)))
-                     ((Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × (EuclideanSpace ℝ (Fin 1)))
-
-#synth ChartedSpace ((Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × (EuclideanSpace ℝ (Fin 1)))
-                    (TotalSpace (EuclideanSpace ℝ (Fin 1)) Mobius.Fiber)
+open scoped Manifold
+open Bundle
 
 noncomputable
 instance : ChartedSpace ((EuclideanSpace ℝ (Fin 1)) × (EuclideanSpace ℝ (Fin 1)))
@@ -433,8 +408,6 @@ instance : ChartedSpace ((EuclideanSpace ℝ (Fin 1)) × (EuclideanSpace ℝ (Fi
   (ModelProd (EuclideanSpace ℝ (Fin 1)) (EuclideanSpace ℝ (Fin 1)))
   ((Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × (EuclideanSpace ℝ (Fin 1)))
   (TotalSpace (EuclideanSpace ℝ (Fin 1)) Mobius.Fiber)
-
-#synth ChartedSpace ((EuclideanSpace ℝ (Fin 1)) × (EuclideanSpace ℝ (Fin 1))) (TotalSpace (EuclideanSpace ℝ (Fin 1)) Mobius.Fiber)
 
 def EuclideanSpace.sumEquivProd (𝕜 : Type*) [RCLike 𝕜] (ι κ : Type*) [Fintype ι] [Fintype κ] :
     EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
@@ -445,13 +418,6 @@ def EuclideanSpace.finAddEquivProd {𝕜 : Type*} [RCLike 𝕜] {n m : ℕ} :
     EuclideanSpace 𝕜 (Fin (n + m)) ≃L[𝕜] EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m) :=
   (LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 finSumFinEquiv.symm).toContinuousLinearEquiv.trans <|
     sumEquivProd 𝕜 _ _
-
-noncomputable
-example (m n : ℕ) : PartialHomeomorph (EuclideanSpace ℝ (Fin n) × EuclideanSpace ℝ (Fin m)) (EuclideanSpace ℝ (Fin (n + m))) := by
-  have h1 : EuclideanSpace ℝ (Fin (n + m)) ≃L[ℝ] EuclideanSpace ℝ (Fin n) × EuclideanSpace ℝ (Fin m) := EuclideanSpace.finAddEquivProd
-  have h2 : EuclideanSpace ℝ (Fin (n + m)) ≃ₜ EuclideanSpace ℝ (Fin n) × EuclideanSpace ℝ (Fin m) :=  ContinuousLinearEquiv.toHomeomorph h1
-  have h3 : PartialHomeomorph (EuclideanSpace ℝ (Fin (n + m))) (EuclideanSpace ℝ (Fin n) × EuclideanSpace ℝ (Fin m)) := Homeomorph.toPartialHomeomorph h2
-  exact h3.symm
 
 noncomputable
 instance (m n : ℕ) : ChartedSpace ((EuclideanSpace ℝ (Fin (n + m)))) (EuclideanSpace ℝ (Fin n) × (EuclideanSpace ℝ (Fin m))) := by
@@ -470,12 +436,4 @@ instance : ChartedSpace (EuclideanSpace ℝ (Fin (1 + 1))) (Bundle.TotalSpace (E
     ((EuclideanSpace ℝ (Fin 1)) × (EuclideanSpace ℝ (Fin 1)))
     (Bundle.TotalSpace (EuclideanSpace ℝ (Fin 1)) Mobius.Fiber)
 
-#check IsManifold (𝓡 2) 0 (TotalSpace (EuclideanSpace ℝ (Fin 1)) Mobius.Fiber)
 #synth IsManifold (𝓡 2) 0 (TotalSpace (EuclideanSpace ℝ (Fin 1)) Mobius.Fiber)
-
-noncomputable
-example : ChartedSpace (Mobius.Base × (EuclideanSpace ℝ (Fin 1))) (TotalSpace (EuclideanSpace ℝ (Fin 1)) Mobius.Fiber) := by
-  have h2 : ChartedSpace (Mobius.Base × (EuclideanSpace ℝ (Fin 1))) (TotalSpace (EuclideanSpace ℝ (Fin 1)) Mobius.Fiber) := FiberBundle.chartedSpace'
-  exact h2
-
-#min_imports
