@@ -329,7 +329,7 @@ example : deriv (fun (x : ℝ) ↦ 7 * x + |x|) 0 = 0 := by
   simpa using h₂.add h
 
 /-- Another version is that `analyticOrderAt` and `analyticOrderNatAt` give the junk value
-0 when the function isn't analytic at the poit. -/
+0 when the function isn't analytic at the point. -/
 example : analyticOrderAt Real.log 0 = 0 := by
   apply analyticOrderAt_of_not_analyticAt
   by_contra h
@@ -342,8 +342,11 @@ example : analyticOrderAt Real.log 0 = 0 := by
 are not this many, it is defined to give the junk index 0. Here, we ask for the 5th prime that's
 less than 10, and find the answer is 0.
 
-`Nat.find` is the "safer" version in the sense that it requires a proof that there are infinitely
-many integers satisfying the condition. -/
+`Nat.find` is similar in its purpose (it only returns the first one, see `Nat.nth_zero_of_exists`),
+but "safe"  in the sense that it requires a proof that there is a natural number satisfying the
+condition. `Nat.Subtype.ofNat` functions similar to `Nat.nth` but takes a proof that the set is
+infinite.
+-/
 example : Nat.nth (fun n ↦ n < 10 ∧ n.Prime) 4 = 0 := by
   apply Nat.nth_of_card_le (Set.Finite.sep (Set.finite_lt_nat 10) _) ?_
   conv in Set.Finite.toFinset _ =>
