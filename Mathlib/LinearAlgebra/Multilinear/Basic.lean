@@ -782,11 +782,10 @@ end MultilinearMap
 namespace LinearMap
 
 variable [Semiring R]
-variable [∀ i, AddCommMonoid (M₁ i)]
+variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₁' i)]
   [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄] [AddCommMonoid M']
-variable [∀ i, Module R (M₁ i)] [Module R M₂] [Module R M₃] [Module R M₄] [Module R M']
-
-variable {M₁' : ι → Type*} [∀ i, AddCommMonoid (M₁' i)] [∀ i, Module R (M₁' i)]
+variable [∀ i, Module R (M₁ i)] [∀ i, Module R (M₁' i)]
+  [Module R M₂] [Module R M₃] [Module R M₄] [Module R M']
 
 /-- Composing a multilinear map with a linear map gives again a multilinear map. -/
 def compMultilinearMap (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R M₁ M₂) : MultilinearMap R M₁ M₃ where
