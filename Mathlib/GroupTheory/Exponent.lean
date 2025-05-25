@@ -650,6 +650,9 @@ lemma mul_notMem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
   aesop
 
 @[deprecated (since := "2025-05-23")]
+alias add_not_mem_of_addOrderOf_eq_two := add_notMem_of_addOrderOf_eq_two
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
 alias mul_not_mem_of_orderOf_eq_two := mul_notMem_of_orderOf_eq_two
 
 @[to_additive]
@@ -659,6 +662,9 @@ lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
     (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one y) hy) hxy
 
 @[deprecated (since := "2025-05-23")]
+alias add_not_mem_of_exponent_two := add_notMem_of_exponent_two
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
 alias mul_not_mem_of_exponent_two := mul_notMem_of_exponent_two
 
 end Group

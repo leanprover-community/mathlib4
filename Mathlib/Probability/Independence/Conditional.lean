@@ -805,6 +805,14 @@ theorem iCondIndepFun.condIndepFun_finset_prod_of_notMem
     CondIndepFun m' hm' (∏ j ∈ s, f j) (f i) μ :=
   Kernel.iIndepFun.indepFun_finset_prod_of_notMem hf_Indep hf_meas hi
 
+@[deprecated (since := "2025-05-24")]
+alias iCondIndepFun.condIndepFun_finset_sum_of_not_mem :=
+  iCondIndepFun.condIndepFun_finset_sum_of_notMem
+
+@[to_additive existing, deprecated (since := "2025-05-24")]
+alias iCondIndepFun.condIndepFun_finset_prod_of_not_mem :=
+  iCondIndepFun.condIndepFun_finset_prod_of_notMem
+
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_prod_range_succ {f : ℕ → Ω → β}
     (hf_Indep : iCondIndepFun m' hm' f μ) (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) :

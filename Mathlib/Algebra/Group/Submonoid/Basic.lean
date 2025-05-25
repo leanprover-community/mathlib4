@@ -124,7 +124,11 @@ theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS =
 theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
+@[deprecated (since := "2025-05-23")]
+alias _root_.AddSubmonoid.not_mem_of_not_mem_closure := AddSubmonoid.notMem_of_notMem_closure
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 variable {S}
 

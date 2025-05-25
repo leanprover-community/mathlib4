@@ -46,6 +46,8 @@ structure Partition [CompleteLattice α] (s : α) where
 
 namespace Partition
 
+@[deprecated (since := "2025-05-23")] alias bot_not_mem' := bot_notMem'
+
 section Basic
 
 variable [CompleteLattice α] {P : Partition s}

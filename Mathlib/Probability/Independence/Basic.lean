@@ -860,6 +860,9 @@ lemma iIndepFun.indepFun_finset_prod_of_notMem (hf_Indep : iIndepFun f μ)
   Kernel.iIndepFun.indepFun_finset_prod_of_notMem hf_Indep hf_meas hi
 
 @[deprecated (since := "2025-05-23")]
+alias iIndepFun.indepFun_finset_sum_of_not_mem := iIndepFun.indepFun_finset_sum_of_notMem
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
 alias iIndepFun.indepFun_finset_prod_of_not_mem := iIndepFun.indepFun_finset_prod_of_notMem
 
 @[to_additive]
@@ -869,6 +872,9 @@ lemma iIndepFun.indepFun_finset_prod_of_notMem₀ (hf_Indep : iIndepFun f μ)
   Kernel.iIndepFun.indepFun_finset_prod_of_notMem₀ hf_Indep (by simp [hf_meas]) hi
 
 @[deprecated (since := "2025-05-23")]
+alias iIndepFun.indepFun_finset_sum_of_not_mem₀ := iIndepFun.indepFun_finset_sum_of_notMem₀
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
 alias iIndepFun.indepFun_finset_prod_of_not_mem₀ := iIndepFun.indepFun_finset_prod_of_notMem₀
 
 @[to_additive]

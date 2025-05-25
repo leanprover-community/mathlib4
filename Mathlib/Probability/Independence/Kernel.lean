@@ -1351,6 +1351,9 @@ theorem iIndepFun.indepFun_finset_prod_of_notMem (hf_Indep : iIndepFun f κ μ)
       h_meas_left h_meas_right
 
 @[deprecated (since := "2025-05-23")]
+alias iIndepFun.indepFun_finset_sum_of_not_mem := iIndepFun.indepFun_finset_sum_of_notMem
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
 alias iIndepFun.indepFun_finset_prod_of_not_mem := iIndepFun.indepFun_finset_prod_of_notMem
 
 @[to_additive]
@@ -1370,7 +1373,11 @@ theorem iIndepFun.indepFun_finset_prod_of_notMem₀ (hf_Indep : iIndepFun f κ �
     exact Finset.prod_congr rfl fun i hi ↦ (hω ⟨i, hi⟩).symm
   · exact Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk.symm
 
+
 @[deprecated (since := "2025-05-23")]
+alias iIndepFun.indepFun_finset_sum_of_not_mem₀ := iIndepFun.indepFun_finset_sum_of_notMem₀
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
 alias iIndepFun.indepFun_finset_prod_of_not_mem₀ := iIndepFun.indepFun_finset_prod_of_notMem₀
 
 @[to_additive]
