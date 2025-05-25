@@ -40,28 +40,23 @@ theorem le_dirac_apply {a} : s.indicator 1 a ≤ dirac a s :=
 theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1 a :=
   toMeasure_apply _ _ hs
 
-theorem dirac_apply'_eq_zero_or_one {a : α} {s : Set α} :
+theorem dirac_apply_eq_zero_or_one :
     dirac a s = 0 ∨ dirac a s = 1 := by
-  rw [← measure_toMeasurable s, Measure.dirac_apply' a (by apply measurableSet_toMeasurable),
-    Set.indicator]
+  rw [← measure_toMeasurable s, dirac_apply' a (measurableSet_toMeasurable ..), indicator]
   simp
   tauto
 
 @[simp]
 theorem dirac_apply'_ne_zero_iff_eq_one {a : α} {s : Set α} :
-    dirac a s ≠ 0 ↔ dirac a s = 1 := by
-  constructor
-  · apply (dirac_apply'_eq_zero_or_one).resolve_left
-  · exact ne_zero_of_eq_one
+    dirac a s ≠ 0 ↔ dirac a s = 1 where
+  mp := dirac_apply'_eq_zero_or_one.resolve_left
+  mpr := ne_zero_of_eq_one
 
 @[simp]
 theorem dirac_apply'_ne_one_iff_eq_zero {a : α} {s : Set α} :
-    dirac a s ≠ 1 ↔ dirac a s = 0 := by
-  constructor
-  · apply (dirac_apply'_eq_zero_or_one).resolve_right
-  · intro h
-    rw [h]
-    exact Ne.symm one_ne_zero
+    dirac a s ≠ 1 ↔ dirac a s = 0 where
+  mp := dirac_apply'_eq_zero_or_one.resolve_right
+  mpr h := h ▸ zero_ne_one
 
 @[simp]
 theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
