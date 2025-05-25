@@ -69,10 +69,10 @@ and so the equality can just be substituted.
 
 open Fin Function Finset Set
 
-universe uR uS uι v v' v₁ v₂ v₃ v₄
+universe uR uS uι v v' v₁ v₁' v₁'' v₂ v₃ v₄
 
 variable {R : Type uR} {S : Type uS} {ι : Type uι} {n : ℕ}
-  {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₁' : ι → Type*} {M₁'' : ι → Type*}
+  {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₁' : ι → Type v₁'} {M₁'' : ι → Type v₁''}
 variable {M₂ : Type v₂} {M₃ : Type v₃} {M₄ : Type v₄} {M' : Type v'}
 
 -- Don't generate injectivity lemmas, which the `simpNF` linter will time out on.
