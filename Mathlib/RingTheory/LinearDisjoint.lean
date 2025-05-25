@@ -278,7 +278,6 @@ variable [CommRing R] [Ring S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
 
-set_option maxSynthPendingDepth 2 in
 lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A) :
     LinearMap.ker (Submodule.mulLeftMap (M := toSubmodule A) (toSubmodule B) a) = ⊥ ↔
     LinearIndependent B.op (MulOpposite.op ∘ A.val ∘ a) := by
@@ -317,7 +316,6 @@ theorem of_basis_left_op {ι : Type*} (a : Basis ι R A)
   rw [← mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at H
   exact Submodule.LinearDisjoint.of_basis_left _ _ a H
 
-set_option maxSynthPendingDepth 2 in
 lemma mulRightMap_ker_eq_bot_iff_linearIndependent {ι : Type*} (b : ι → B) :
     LinearMap.ker (Submodule.mulRightMap (toSubmodule A) (N := toSubmodule B) b) = ⊥ ↔
     LinearIndependent A (B.val ∘ b) := by
@@ -513,7 +511,7 @@ theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
 
 /-- If `A ⊗[R] B` is a field, then for any `R`-algebra `S`
 and injections of `A` and `B` into `S`, their images are linearly disjoint. -/
-theorem of_isField' {A : Type v} [CommRing A] {B : Type w} [CommRing B]
+theorem of_isField' {A : Type v} [Ring A] {B : Type w} [Ring B]
     [Algebra R A] [Algebra R B] (H : IsField (A ⊗[R] B))
     (fa : A →ₐ[R] S) (fb : B →ₐ[R] S) (hfa : Function.Injective fa) (hfb : Function.Injective fb) :
     fa.range.LinearDisjoint fb.range := by
@@ -543,7 +541,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   haveI := hfb.isDomain fb.toRingHom
   haveI := ha.isDomain _
   haveI : Module.Flat R (toSubmodule fa.range) :=
-    .of_linearEquiv _ _ _ (AlgEquiv.ofInjective fa hfa).symm.toLinearEquiv
+    .of_linearEquiv (AlgEquiv.ofInjective fa hfa).symm.toLinearEquiv
   have key1 : Module.rank R ↥(fa.range ⊓ fb.range) ≤ 1 :=
     (include_range R A B).rank_inf_le_one_of_flat_left
   let ga : R[X] →ₐ[R] A := aeval a

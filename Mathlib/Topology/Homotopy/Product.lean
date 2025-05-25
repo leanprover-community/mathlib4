@@ -30,9 +30,9 @@ of products.
   all homotopies are done relative to some set S ⊆ A.
 
 - `ContinuousMap.Homotopy.prod F G` is the product of homotopies F and G,
-   where F is a homotopy between f₀ and f₁, G is a homotopy between g₀ and g₁.
-   The result F × G is a homotopy between (f₀ × g₀) and (f₁ × g₁).
-   Again, all homotopies are done relative to S.
+  where F is a homotopy between f₀ and f₁, G is a homotopy between g₀ and g₁.
+  The result F × G is a homotopy between (f₀ × g₀) and (f₁ × g₁).
+  Again, all homotopies are done relative to S.
 
 - `ContinuousMap.HomotopyRel.prod F G`: Same as `ContinuousMap.Homotopy.prod`, but
   all homotopies are done relative to some set S ⊆ A.
@@ -55,14 +55,6 @@ section Pi
 
 variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [TopologicalSpace A]
   {f g : ∀ i, C(A, X i)} {S : Set A}
-
--- Porting note: this definition is already in `Topology.Homotopy.Basic`
--- /-- The product homotopy of `homotopies` between functions `f` and `g` -/
--- @[simps]
--- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g) where
---   toFun t i := homotopies i t
---   map_zero_left t := by ext i; simp only [pi_eval, Homotopy.apply_zero]
---   map_one_left t := by ext i; simp only [pi_eval, Homotopy.apply_one]
 
 /-- The relative product homotopy of `homotopies` between functions `f` and `g` -/
 @[simps!]

@@ -49,7 +49,7 @@ open Limits Functor
 
 variable [GaloisCategory C] [FiberFunctor F]
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
 
 private local instance fintypeQuotient (H : OpenSubgroup (G)) :
     Fintype (G ⧸ (H : Subgroup (G))) :=
@@ -64,7 +64,7 @@ private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
 /-- If `X` is a finite discrete `G`-set, it can be written as the finite disjoint union
 of quotients of the form `G ⧸ Uᵢ` for open subgroups `(Uᵢ)`. Note that this
 is simply the decomposition into orbits. -/
-lemma has_decomp_quotients (X : Action FintypeCat (MonCat.of G))
+lemma has_decomp_quotients (X : Action FintypeCat G)
     [TopologicalSpace X.V] [DiscreteTopology X.V] [ContinuousSMul G X.V] :
     ∃ (ι : Type) (_ : Finite ι) (f : ι → OpenSubgroup (G)),
       Nonempty ((∐ fun i ↦ G ⧸ₐ (f i).toSubgroup) ≅ X) := by
@@ -250,7 +250,7 @@ If `X` is a finite, discrete `Aut F`-set with continuous `Aut F`-action, then
 there exists `A : C` such that `F.obj A ≅ X` as `Aut F`-sets.
 -/
 @[stacks 0BN4 "Essential surjectivity part"]
-theorem exists_lift_of_continuous (X : Action FintypeCat (MonCat.of (Aut F)))
+theorem exists_lift_of_continuous (X : Action FintypeCat (Aut F))
     [TopologicalSpace X.V] [DiscreteTopology X.V] [ContinuousSMul (Aut F) X.V] :
     ∃ A, Nonempty ((functorToAction F).obj A ≅ X) := by
   obtain ⟨ι, hfin, f, ⟨u⟩⟩ := has_decomp_quotients X

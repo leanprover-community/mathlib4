@@ -29,9 +29,9 @@ Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
- - `M`, `M'`, ... are modules over the commutative semiring `R`,
- - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
- - `V`, ... is a vector space over the field `K`.
+- `M`, `M'`, ... are modules over the commutative semiring `R`,
+- `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
+- `V`, ... is a vector space over the field `K`.
 
 ## References
 
@@ -57,10 +57,6 @@ variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 namespace LinearMap
 
 namespace BilinForm
-
-@[deprecated "No deprecation message was provided." (since := "2024-04-14")]
-theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
-  | _, _, _, _, rfl, rfl => rfl
 
 theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := map_add₂ _ _ _ _
 
@@ -101,34 +97,18 @@ theorem ext (H : ∀ x y : M, B x y = D x y) : B = D := ext₂ H
 
 theorem congr_fun (h : B = D) (x y : M) : B x y = D x y := congr_fun₂ h _ _
 
-@[deprecated "No deprecation message was provided." (since := "2024-04-14")]
-theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
-  rfl
-
 @[simp]
 theorem zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
   rfl
 
 variable (B D B₁ D₁)
 
-@[deprecated "No deprecation message was provided." (since := "2024-04-14")]
-theorem coe_add : ⇑(B + D) = B + D :=
-  rfl
-
 @[simp]
 theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
   rfl
 
-@[deprecated "No deprecation message was provided." (since := "2024-04-14")]
-theorem coe_neg : ⇑(-B₁) = -B₁ :=
-  rfl
-
 @[simp]
 theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
-  rfl
-
-@[deprecated "No deprecation message was provided." (since := "2024-04-14")]
-theorem coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
   rfl
 
 @[simp]
@@ -136,6 +116,7 @@ theorem sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
   rfl
 
 /-- `coeFn` as an `AddMonoidHom` -/
+@[simps]
 def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
   toFun := fun B x y => B x y
   map_zero' := rfl

@@ -37,11 +37,11 @@ theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
 
 /-- If a point of `Spec R[x]` is not contained in the vanishing set of `f`, then its image in
 `Spec R` is contained in the open set where at least one of the coefficients of `f` is non-zero.
-This lemma is a reformulation of `exists_C_coeff_not_mem`. -/
+This lemma is a reformulation of `exists_C_coeff_notMem`. -/
 theorem comap_C_mem_imageOfDf {I : PrimeSpectrum R[X]}
     (H : I ∈ (zeroLocus {f} : Set (PrimeSpectrum R[X]))ᶜ) :
     PrimeSpectrum.comap (Polynomial.C : R →+* R[X]) I ∈ imageOfDf f :=
-  exists_C_coeff_not_mem (mem_compl_zeroLocus_iff_not_mem.mp H)
+  exists_C_coeff_notMem (mem_compl_zeroLocus_iff_notMem.mp H)
 
 /-- The open set `imageOfDf f` coincides with the image of `basicOpen f` under the
 morphism `C⁺ : Spec R[x] → Spec R`. -/
@@ -50,7 +50,7 @@ theorem imageOfDf_eq_comap_C_compl_zeroLocus :
   ext x
   refine ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.isPrime⟩, ⟨?_, ?_⟩⟩, ?_⟩
   · rw [mem_compl_iff, mem_zeroLocus, singleton_subset_iff]
-    cases' hx with i hi
+    obtain ⟨i, hi⟩ := hx
     exact fun a => hi (mem_map_C_iff.mp a i)
   · ext x
     refine ⟨fun h => ?_, fun h => subset_span (mem_image_of_mem C.1 h)⟩
@@ -59,11 +59,8 @@ theorem imageOfDf_eq_comap_C_compl_zeroLocus :
   · rintro ⟨xli, complement, rfl⟩
     exact comap_C_mem_imageOfDf complement
 
-/-- The morphism `C⁺ : Spec R[x] → Spec R` is open.
-Stacks Project "Lemma 00FB", first part.
-
-https://stacks.math.columbia.edu/tag/00FB
--/
+/-- The morphism `C⁺ : Spec R[x] → Spec R` is open. -/
+@[stacks 00FB "First part"]
 theorem isOpenMap_comap_C : IsOpenMap (PrimeSpectrum.comap (C : R →+* R[X])) := by
   rintro U ⟨s, z⟩
   rw [← compl_compl U, ← z, ← iUnion_of_singleton_coe s, zeroLocus_iUnion, compl_iInter,

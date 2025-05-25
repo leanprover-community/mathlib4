@@ -28,7 +28,7 @@ partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (
     throwError "no match"
   else
     return result
-  where
+where
   /-- Auxiliary for `casesMatching`. Accumulates generated subgoals in `acc`. -/
   go (g : MVarId) (acc : Array MVarId := #[]) : MetaM (Array MVarId) :=
     g.withContext do
@@ -40,17 +40,21 @@ partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (
             g.cases ldecl.fvarId
           else
             let s ← saveState
-            let subgoals ← g.cases ldecl.fvarId
+            let subgoals ← g.cases ldecl.fvarId (givenNames := #[⟨true, [ldecl.userName]⟩])
             if subgoals.size > 1 then
               s.restore
               continue
             else
               pure subgoals
           for subgoal in subgoals do
+            -- If only one new hypothesis is generated, rename it to the original name.
+            let g ← match subgoal.fields with
+            | #[.fvar fvarId] => subgoal.mvarId.rename fvarId ldecl.userName
+            | _ => pure subgoal.mvarId
             if recursive then
-              acc ← go subgoal.mvarId acc
+              acc ← go g acc
             else
-              acc := acc.push subgoal.mvarId
+              acc := acc.push g
           return acc
       return (acc.push g)
 
@@ -77,6 +81,11 @@ def matchPatterns (pats : Array AbstractMVarsResult) (e : Expr) : MetaM Bool := 
   let e ← instantiateMVars e
   pats.anyM fun p ↦ return (← Conv.matchPattern? p e) matches some (_, #[])
 
+/-- Common implementation of `casesm` and `casesm!`. -/
+def elabCasesM (pats : Array Term) (recursive allowSplit : Bool) : TacticM Unit := do
+  let pats ← elabPatterns pats
+  liftMetaTactic (casesMatching (matchPatterns pats) recursive allowSplit)
+
 /--
 * `casesm p` applies the `cases` tactic to a hypothesis `h : type`
   if `type` matches the pattern `p`.
@@ -84,6 +93,7 @@ def matchPatterns (pats : Array AbstractMVarsResult) (e : Expr) : MetaM Bool := 
   if `type` matches one of the given patterns.
 * `casesm* p` is a more efficient and compact version of `· repeat casesm p`.
   It is more efficient because the pattern is compiled once.
+* `casesm! p` only applies `cases` if the number of resulting subgoals is <= 1.
 
 Example: The following tactic destructs all conjunctions and disjunctions in the current context.
 ```
@@ -91,8 +101,11 @@ casesm* _ ∨ _, _ ∧ _
 ```
 -/
 elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
-  let pats ← elabPatterns pats.getElems
-  liftMetaTactic (casesMatching (matchPatterns pats) recursive.isSome)
+  elabCasesM pats recursive.isSome true
+
+@[inherit_doc casesM]
+elab (name := casesm!) "casesm!" recursive:"*"? ppSpace pats:term,+ : tactic => do
+  elabCasesM pats recursive.isSome false
 
 /-- Common implementation of `cases_type` and `cases_type!`. -/
 def elabCasesType (heads : Array Ident)

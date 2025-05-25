@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 import Mathlib.CategoryTheory.Monoidal.Subcategory
 import Mathlib.LinearAlgebra.Coevaluation
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # The category of finitely generated modules over a ring
@@ -33,7 +33,7 @@ and then as a right-rigid monoidal category.
 
 noncomputable section
 
-open CategoryTheory ModuleCat.monoidalCategory
+open CategoryTheory
 
 universe u
 
@@ -41,12 +41,16 @@ section Ring
 
 variable (R : Type u) [Ring R]
 
-/-- Define `FGModuleCat` as the subtype of `ModuleCat.{u} R` of finitely generated modules. -/
-def FGModuleCat :=
-  FullSubcategory fun V : ModuleCat.{u} R => Module.Finite R V
--- Porting note: still no derive handler via `dsimp`.
--- see https://github.com/leanprover-community/mathlib4/issues/5020
--- deriving LargeCategory, ConcreteCategory,Preadditive
+/-- Finitely generated modules, as a property of objects of `ModuleCat R`. -/
+def ModuleCat.isFG : ObjectProperty (ModuleCat.{u} R) :=
+  fun V ↦ Module.Finite R V
+
+variable {R} in
+lemma ModuleCat.isFG_iff (V : ModuleCat.{u} R) :
+    isFG R V ↔ Module.Finite R V := Iff.rfl
+
+/-- The category of finitely generated modules. -/
+abbrev FGModuleCat := (ModuleCat.isFG R).FullSubcategory
 
 variable {R}
 
@@ -58,7 +62,7 @@ instance : CoeSort (FGModuleCat R) (Type u) :=
 
 attribute [coe] FGModuleCat.carrier
 
-@[simp] lemma obj_carrier (M : FGModuleCat R) : M.obj.carrier = M.carrier := rfl
+@[simp] lemma FGModuleCat.obj_carrier (M : FGModuleCat R) : M.obj.carrier = M.carrier := rfl
 
 instance (M : FGModuleCat R) : AddCommGroup M := by
   change AddCommGroup M.obj
@@ -66,18 +70,6 @@ instance (M : FGModuleCat R) : AddCommGroup M := by
 
 instance (M : FGModuleCat R) : Module R M := by
   change Module R M.obj
-  infer_instance
-
-instance : LargeCategory (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
-
-instance : ConcreteCategory (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
-
-instance : Preadditive (FGModuleCat R) := by
-  dsimp [FGModuleCat]
   infer_instance
 
 end Ring
@@ -88,6 +80,11 @@ section Ring
 
 variable (R : Type u) [Ring R]
 
+@[simp] lemma hom_comp (A B C : FGModuleCat R) (f : A ⟶ B) (g : B ⟶ C) :
+  (f ≫ g).hom = g.hom.comp f.hom := rfl
+
+@[simp] lemma hom_id (A : FGModuleCat R) : (𝟙 A : A ⟶ A).hom = LinearMap.id := rfl
+
 instance finite (V : FGModuleCat R) : Module.Finite R V :=
   V.property
 
@@ -97,6 +94,10 @@ instance : Inhabited (FGModuleCat R) :=
 /-- Lift an unbundled finitely generated module to `FGModuleCat R`. -/
 abbrev of (V : Type u) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModuleCat R :=
   ⟨ModuleCat.of R V, by change Module.Finite R V; infer_instance⟩
+
+@[simp]
+lemma of_carrier (V : Type u) [AddCommGroup V] [Module R V] [Module.Finite R V] :
+  of R V = V := rfl
 
 variable {R} in
 /-- Lift a linear map between finitely generated modules to `FGModuleCat R`. -/
@@ -111,10 +112,6 @@ variable {R} in
 
 instance (V : FGModuleCat R) : Module.Finite R V :=
   V.property
-
-instance : HasForget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R) := by
-  dsimp [FGModuleCat]
-  infer_instance
 
 instance : (forget₂ (FGModuleCat R) (ModuleCat.{u} R)).Full where
   map_surjective f := ⟨f, rfl⟩
@@ -143,39 +140,15 @@ section CommRing
 
 variable (R : Type u) [CommRing R]
 
-instance : Linear R (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
-
-instance monoidalPredicate_module_finite :
-    MonoidalCategory.MonoidalPredicate fun V : ModuleCat.{u} R => Module.Finite R V where
-  prop_id := Module.Finite.self R
-  prop_tensor := @fun X Y _ _ => Module.Finite.tensorProduct R X Y
-
-instance instMonoidalCategory : MonoidalCategory (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
+instance : (ModuleCat.isFG R).IsMonoidal where
+  prop_unit := Module.Finite.self R
+  prop_tensor X Y (_ : Module.Finite _ _) (_ : Module.Finite _ _) :=
+    Module.Finite.tensorProduct R X Y
 
 open MonoidalCategory
 
 @[simp] lemma tensorUnit_obj : (𝟙_ (FGModuleCat R)).obj = 𝟙_ (ModuleCat R) := rfl
 @[simp] lemma tensorObj_obj (M N : FGModuleCat.{u} R) : (M ⊗ N).obj = (M.obj ⊗ N.obj) := rfl
-
-instance : SymmetricCategory (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
-
-instance : MonoidalPreadditive (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
-
-instance : MonoidalLinear R (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
-
-/-- The forgetful functor `FGModuleCat R ⥤ Module R` is a monoidal functor. -/
-instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Monoidal :=
-  fullSubcategoryInclusionMonoidal _
 
 instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Additive where
 instance : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).Linear R where
@@ -197,16 +170,9 @@ variable (K : Type u) [Field K]
 instance (V W : FGModuleCat K) : Module.Finite K (V ⟶ W) :=
   (inferInstanceAs <| Module.Finite K (V →ₗ[K] W)).equiv ModuleCat.homLinearEquiv.symm
 
-instance closedPredicateModuleFinite :
-    MonoidalCategory.ClosedPredicate fun V : ModuleCat.{u} K ↦ Module.Finite K V where
-  prop_ihom {X Y} _ _ :=
+instance : (ModuleCat.isFG K).IsMonoidalClosed where
+  prop_ihom {X Y} (_ : Module.Finite _ _) (_ : Module.Finite _ _) :=
     (inferInstanceAs <| Module.Finite K (X →ₗ[K] Y)).equiv ModuleCat.homLinearEquiv.symm
-
-instance : MonoidalClosed (FGModuleCat K) := by
-  dsimp [FGModuleCat]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11187): was `infer_instance`
-  exact MonoidalCategory.fullMonoidalClosedSubcategory
-    (fun V : ModuleCat.{u} K => Module.Finite K V)
 
 variable (V W : FGModuleCat K)
 

@@ -5,6 +5,7 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Combinatorics.Quiver.Prefunctor
+import Mathlib.Tactic.CategoryTheory.CheckCompositions
 
 /-!
 # Functors
@@ -30,12 +31,11 @@ section
 To apply a functor `F` to an object use `F.obj X`, and to a morphism use `F.map f`.
 
 The axiom `map_id` expresses preservation of identities, and
-`map_comp` expresses functoriality.
-
-See <https://stacks.math.columbia.edu/tag/001B>.
--/
-structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
-    extends Prefunctor C D : Type max v₁ v₂ u₁ u₂ where
+`map_comp` expresses functoriality. -/
+@[stacks 001B]
+structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D] :
+    Type max v₁ v₂ u₁ u₂
+    extends Prefunctor C D where
   /-- A functor preserves identity morphisms. -/
   map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by aesop_cat
   /-- A functor preserves composition. -/
@@ -101,7 +101,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
-  map_comp := by intros; dsimp; rw [F.map_comp, G.map_comp]
+  map_comp := by intros; rw [F.map_comp, G.map_comp]
 
 /-- Notation for composition of functors. -/
 scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp

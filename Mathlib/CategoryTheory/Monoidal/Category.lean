@@ -90,7 +90,7 @@ class MonoidalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] where
   tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂) :=
     whiskerRight f X₂ ≫ whiskerLeft Y₁ g
   /-- The tensor unity in the monoidal structure `𝟙_ C` -/
-  tensorUnit : C
+  tensorUnit (C) : C
   /-- The associator isomorphism `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
   associator : ∀ X Y Z : C, tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z)
   /-- The left unitor: `𝟙_ C ⊗ X ≃ X` -/
@@ -120,16 +120,7 @@ scoped infixl:81 " ▷ " => MonoidalCategoryStruct.whiskerRight
 scoped infixr:70 " ⊗ " => MonoidalCategoryStruct.tensorHom
 
 /-- Notation for `tensorUnit`, the two-sided identity of `⊗` -/
-scoped notation "𝟙_ " C:max => (MonoidalCategoryStruct.tensorUnit : C)
-
-open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Used to ensure that `𝟙_` notation is used, as the ascription makes this not automatic. -/
-@[app_delab CategoryTheory.MonoidalCategoryStruct.tensorUnit]
-def delabTensorUnit : Delab := whenPPOption getPPNotation <| withOverApp 3 do
-  let e ← getExpr
-  guard <| e.isAppOfArity ``MonoidalCategoryStruct.tensorUnit 3
-  let C ← withNaryArg 0 delab
-  `(𝟙_ $C)
+scoped notation "𝟙_ " C:arg => MonoidalCategoryStruct.tensorUnit C
 
 /-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
 scoped notation "α_" => MonoidalCategoryStruct.associator
@@ -140,6 +131,13 @@ scoped notation "λ_" => MonoidalCategoryStruct.leftUnitor
 /-- Notation for the `rightUnitor`: `X ⊗ 𝟙_C ≃ X` -/
 scoped notation "ρ_" => MonoidalCategoryStruct.rightUnitor
 
+/-- The property that the pentagon relation is satisfied by four objects
+in a category equipped with a `MonoidalCategoryStruct`. -/
+def Pentagon {C : Type u} [Category.{v} C] [MonoidalCategoryStruct C]
+    (Y₁ Y₂ Y₃ Y₄ : C) : Prop :=
+  (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
+    (α_ (Y₁ ⊗ Y₂) Y₃ Y₄).hom ≫ (α_ Y₁ Y₂ (Y₃ ⊗ Y₄)).hom
+
 end MonoidalCategory
 
 open MonoidalCategory
@@ -149,10 +147,8 @@ In a monoidal category, we can take the tensor product of objects, `X ⊗ Y` and
 Tensor product does not need to be strictly associative on objects, but there is a
 specified associator, `α_ X Y Z : (X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)`. There is a tensor unit `𝟙_ C`,
 with specified left and right unitor isomorphisms `λ_ X : 𝟙_ C ⊗ X ≅ X` and `ρ_ X : X ⊗ 𝟙_ C ≅ X`.
-These associators and unitors satisfy the pentagon and triangle equations.
-
-See <https://stacks.math.columbia.edu/tag/0FFK>.
--/
+These associators and unitors satisfy the pentagon and triangle equations. -/
+@[stacks 0FFK]
 -- Porting note: The Mathport did not translate the temporary notation
 class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCategoryStruct C where
   tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
@@ -161,8 +157,8 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCate
   /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
   tensor_id : ∀ X₁ X₂ : C, 𝟙 X₁ ⊗ 𝟙 X₂ = 𝟙 (X₁ ⊗ X₂) := by aesop_cat
   /--
-  Composition of tensor products is tensor product of compositions:
-  `(f₁ ⊗ g₁) ∘ (f₂ ⊗ g₂) = (f₁ ∘ f₂) ⊗ (g₁ ⊗ g₂)`
+  Tensor product of compositions is composition of tensor products:
+  `(f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂)`
   -/
   tensor_comp :
     ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
@@ -705,11 +701,11 @@ abbrev ofTensorHom [MonoidalCategoryStruct C]
             aesop_cat)
     (leftUnitor_naturality :
       ∀ {X Y : C} (f : X ⟶ Y),
-        tensorHom (𝟙 tensorUnit) f ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := by
+        tensorHom (𝟙 (𝟙_ C)) f ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := by
           aesop_cat)
     (rightUnitor_naturality :
       ∀ {X Y : C} (f : X ⟶ Y),
-        tensorHom f (𝟙 tensorUnit) ≫ (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := by
+        tensorHom f (𝟙 (𝟙_ C)) ≫ (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := by
           aesop_cat)
     (pentagon :
       ∀ W X Y Z : C,
@@ -719,7 +715,7 @@ abbrev ofTensorHom [MonoidalCategoryStruct C]
             aesop_cat)
     (triangle :
       ∀ X Y : C,
-        (associator X tensorUnit Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
+        (associator X (𝟙_ C) Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
           tensorHom (rightUnitor X).hom (𝟙 Y) := by
             aesop_cat) :
       MonoidalCategory C where
@@ -1004,5 +1000,36 @@ lemma whiskerLeft_app_tensor_app {X' Y' : J} (f : X' ⟶ Y') (X : J) :
   simpa using tensor_naturality α β (𝟙 X) f
 
 end NatTrans
+
+section ObjectProperty
+
+/-- The restriction of a monoidal category along an object property
+that's closed under the monoidal structure. -/
+-- See note [reducible non instances]
+noncomputable abbrev MonoidalCategory.fullSubcategory
+    {C : Type u} [Category.{v} C] [MonoidalCategory C] (P : ObjectProperty C)
+    (tensorUnit : P (𝟙_ C))
+    (tensorObj : ∀ X Y, P X → P Y → P (X ⊗ Y)) :
+    MonoidalCategory P.FullSubcategory where
+  tensorObj X Y := ⟨X.1 ⊗ Y.1, tensorObj X.1 Y.1 X.2 Y.2⟩
+  whiskerLeft X _ _ f := X.1 ◁ f
+  whiskerRight f X := MonoidalCategoryStruct.whiskerRight (C := C) f X.1
+  tensorHom f g := MonoidalCategoryStruct.tensorHom (C := C) f g
+  tensorUnit := ⟨𝟙_ C, tensorUnit⟩
+  associator X Y Z := P.fullyFaithfulι.preimageIso (α_ X.1 Y.1 Z.1)
+  leftUnitor X := P.fullyFaithfulι.preimageIso (λ_ X.1)
+  rightUnitor X := P.fullyFaithfulι.preimageIso (ρ_ X.1)
+  tensorHom_def := tensorHom_def (C := C)
+  tensor_id X Y := tensor_id X.1 Y.1
+  tensor_comp := tensor_comp (C := C)
+  whiskerLeft_id X Y := MonoidalCategory.whiskerLeft_id X.1 Y.1
+  id_whiskerRight X Y := MonoidalCategory.id_whiskerRight X.1 Y.1
+  associator_naturality := associator_naturality (C := C)
+  leftUnitor_naturality := leftUnitor_naturality (C := C)
+  rightUnitor_naturality := rightUnitor_naturality (C := C)
+  pentagon W X Y Z := pentagon W.1 X.1 Y.1 Z.1
+  triangle X Y := triangle X.1 Y.1
+
+end ObjectProperty
 
 end CategoryTheory

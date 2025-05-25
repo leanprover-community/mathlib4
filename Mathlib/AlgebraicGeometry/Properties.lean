@@ -39,11 +39,19 @@ instance : QuasiSober X := by
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.map_prop i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
-    exact @IsOpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofIsEmbedding _
-      (X.affineCover.map_prop i).base_open.isEmbedding).symm.isOpenEmbedding
+    exact @IsOpenEmbedding.quasiSober _ _ _ _ _
+      (X.affineCover.map_prop i).base_open.isEmbedding.toHomeomorph.symm.isOpenEmbedding
         PrimeSpectrum.quasiSober
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
     intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.covers x⟩
+
+instance {X : Scheme.{u}} : PrespectralSpace X :=
+  have (Y : Scheme.{u}) (_ : IsAffine Y) : PrespectralSpace Y :=
+    .of_isClosedEmbedding (Y := PrimeSpectrum _) _
+      Y.isoSpec.hom.homeomorph.isClosedEmbedding
+  have (i) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
+    this (X.affineCover.map i).opensRange (isAffineOpen_opensRange (X.affineCover.map i))
+  .of_isOpenCover X.affineCover.isOpenCover_opensRange
 
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
 class IsReduced : Prop where
@@ -149,8 +157,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     specialize H (X.presheaf.map i.op s)
     rw [Scheme.basicOpen_res, hs] at H
     specialize H (inf_bot_eq _) x hx
-    -- This seems to be related to a mismatch of `X.sheaf.presheaf` and `X.presheaf` in `H`
-    rw [← CommRingCat.germ_res_apply X.sheaf.presheaf i x hx s]
+    rw [← X.sheaf.presheaf.germ_res_apply i x hx s]
     exact H
   | h₂ X Y f =>
     refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by ext1; simp, rfl, ?_⟩
@@ -209,12 +216,10 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
         toNonempty := inferInstance }
   simp_rw [isPreirreducible_iff_isClosed_union_isClosed, not_forall, not_or] at H
   rcases H with ⟨S, T, hS, hT, h₁, h₂, h₃⟩
-  erw [not_forall] at h₂ h₃
-  simp_rw [not_forall] at h₂ h₃
-  haveI : Nonempty (⟨Sᶜ, hS.1⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec.choose_spec⟩⟩
-  haveI : Nonempty (⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec.choose_spec⟩⟩
-  haveI : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : X.Opens) :=
-    ⟨⟨_, Or.inl h₂.choose_spec.choose_spec⟩⟩
+  rw [Set.not_top_subset] at h₂ h₃
+  haveI : Nonempty (⟨Sᶜ, hS.1⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec⟩⟩
+  haveI : Nonempty (⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec⟩⟩
+  haveI : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, Or.inl h₂.choose_spec⟩⟩
   let e : Γ(X, _) ≅ CommRingCat.of _ :=
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
@@ -224,7 +229,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   · ext x
     constructor
     · rintro ⟨hS, hT⟩
-      cases' h₁ (show x ∈ ⊤ by trivial) with h h
+      rcases h₁ (show x ∈ ⊤ by trivial) with h | h
       exacts [hS h, hT h]
     · simp
 

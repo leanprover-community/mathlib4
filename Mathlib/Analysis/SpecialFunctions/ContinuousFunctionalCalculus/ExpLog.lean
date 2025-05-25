@@ -7,7 +7,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Topology.ContinuousMap.StarOrdered
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus
@@ -58,8 +58,8 @@ namespace CFC
 section RCLikeNormed
 
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
-  [StarRing A] [TopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus 𝕜 p]
+  [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+  [ContinuousFunctionalCalculus 𝕜 A p]
 
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
@@ -76,8 +76,8 @@ end RCLikeNormed
 section RealNormed
 
 variable {A : Type*} [NormedRing A] [StarRing A]
-  [TopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+  [IsTopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
+  [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     cfc Real.exp a = exp ℝ a :=
@@ -95,7 +95,7 @@ end RealNormed
 section ComplexNormed
 
 variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
-  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ p]
+  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ A p]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc Complex.exp a = exp ℂ a :=
@@ -109,7 +109,7 @@ section real_log
 open scoped ComplexOrder
 
 variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
-  [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+  [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 /-- The real logarithm, defined via the continuous functional calculus. This can be used on
 matrices, operators on a Hilbert space, elements of a C⋆-algebra, etc. -/

@@ -3,7 +3,7 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Jiedong Jiang
 -/
-import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 
@@ -113,7 +113,7 @@ end algebraicClosure
 
 protected theorem Transcendental.algebraicClosure {a : E} (ha : Transcendental F a) :
     Transcendental (algebraicClosure F E) a :=
-  ha.extendScalars Subtype.val_injective
+  ha.extendScalars _
 
 variable (F E K)
 

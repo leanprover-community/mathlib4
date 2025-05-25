@@ -41,10 +41,10 @@ lemma counit_eq_algHom_toLinearMap :
 
 lemma comul_eq_algHom_toLinearMap :
     Coalgebra.comul (R := R) (A := A ⊗[R] B) =
-      ((Algebra.TensorProduct.tensorTensorTensorComm R A A B B).toAlgHom.comp
+      ((Algebra.TensorProduct.tensorTensorTensorComm R R A A B B).toAlgHom.comp
       (Algebra.TensorProduct.map (Bialgebra.comulAlgHom R A)
       (Bialgebra.comulAlgHom R B))).toLinearMap := by
-  rfl
+  ext; simp [← Algebra.TensorProduct.toLinearEquiv_tensorTensorTensorComm]
 
 end Bialgebra.TensorProduct
 
@@ -55,7 +55,7 @@ noncomputable instance TensorProduct.instBialgebra
   have hcomul := congr(DFunLike.coe $(Bialgebra.TensorProduct.comul_eq_algHom_toLinearMap R A B))
   refine Bialgebra.mk' R (A ⊗[R] B) ?_ (fun {x y} => ?_) ?_ (fun {x y} => ?_) <;>
   simp_all only [AlgHom.toLinearMap_apply] <;>
-  simp only [_root_.map_one, _root_.map_mul]
+  simp only [map_one, map_mul]
 
 namespace Bialgebra.TensorProduct
 

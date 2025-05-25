@@ -4,16 +4,24 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
+import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-import Mathlib.CategoryTheory.LiftingProperties.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # The left lifting property is stable under transfinite composition
 
-Let `C` be a category, and `p : X ⟶ Y` be a morphism in `C`. In this file,
-we show that a transfinite composition of morphisms that have the left
-lifting property with respect to `p` also has the left lifting property with
-respect to `p`, see `HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot`.
+In this file, we show that if `W : MorphismProperty C`, then
+`W.llp.IsStableUnderTransfiniteCompositionOfShape J`, i.e.
+the class of morphisms which have the left lifting property with
+respect to `W` is stable under transfinite composition.
+
+The main technical lemma is
+`HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot`.
+It corresponds to the particular case `W` contains only one morphism `p : X ⟶ Y`:
+it shows that a transfinite composition of morphisms that have the left
+lifting property with respect to `p` also has the left lifting property
+with respect to `p`.
 
 About the proof, given a colimit cocone `c` for a well-order-continuous
 functor `F : J ⥤ C` from a well-ordered type `J`, we introduce a projective
@@ -37,12 +45,8 @@ F.obj j     | p
 This is constructed by transfinite induction on `j`:
 * When `j = ⊥`, this is `f`;
 * In order to pass from `j` to `Order.succ j`, we use the assumption that
-`F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
+  `F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
 * When `j` is a limit element, we use the "continuity" of `F`.
-
-TODO: Given `P : MorphismProperty C`, deduce that the class of morphisms
-that have the left lifting property with respect to `P` is stable
-by transfinite composition.
 
 -/
 
@@ -56,8 +60,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace HasLiftingProperty
 
-variable {W : MorphismProperty C}
-  {J : Type w} [LinearOrder J] [OrderBot J]
+variable {J : Type w} [LinearOrder J] [OrderBot J]
 
 namespace transfiniteComposition
 
@@ -203,7 +206,7 @@ include hF hc
 variable {c f g} (sq : CommSq f (c.ι.app ⊥) p g)
 
 lemma hasLift : sq.HasLift := by
-  obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w }
+  obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w, .. }
   replace hs := congr_arg SqStruct.f' hs
   dsimp at hs
   let t : Cocone F := Cocone.mk X
@@ -222,5 +225,53 @@ lemma hasLiftingProperty_ι_app_bot : HasLiftingProperty (c.ι.app ⊥) p where
 end transfiniteComposition
 
 end HasLiftingProperty
+
+namespace MorphismProperty
+
+variable (W : MorphismProperty C)
+  (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+
+instance isStableUnderTransfiniteCompositionOfShape_llp :
+    W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
+  rw [isStableUnderTransfiniteCompositionOfShape_iff]
+  rintro X Y f ⟨h⟩
+  have : W.llp (h.incl.app ⊥) := fun _ _ p hp ↦
+    HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot
+      (hc := h.isColimit) (fun j hj ↦ h.map_mem j hj _ hp)
+  exact (MorphismProperty.arrow_mk_iso_iff _
+    (Arrow.isoMk h.isoBot.symm (Iso.refl _))).2 this
+
+lemma transfiniteCompositionsOfShape_le_llp_rlp :
+    W.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
+  have := W.rlp.isStableUnderTransfiniteCompositionOfShape_llp J
+  rw [isStableUnderTransfiniteCompositionOfShape_iff] at this
+  exact le_trans (transfiniteCompositionsOfShape_monotone J W.le_llp_rlp) this
+
+lemma transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
+    (coproducts.{w} W).pushouts.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
+  simpa using transfiniteCompositionsOfShape_le_llp_rlp (coproducts.{w} W).pushouts J
+
+lemma retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
+    ((coproducts.{w} W).pushouts.transfiniteCompositionsOfShape J).retracts ≤ W.rlp.llp := by
+  rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
+  apply transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp
+
+lemma transfiniteCompositions_le_llp_rlp :
+    transfiniteCompositions.{w} W ≤ W.rlp.llp := by
+  intro _ _ f hf
+  rw [transfiniteCompositions_iff] at hf
+  obtain ⟨_, _, _, _, _, hf⟩ := hf
+  exact W.transfiniteCompositionsOfShape_le_llp_rlp _ _ hf
+
+lemma transfiniteCompositions_pushouts_coproducts_le_llp_rlp :
+    (transfiniteCompositions.{w} (coproducts.{w} W).pushouts) ≤ W.rlp.llp := by
+  simpa using transfiniteCompositions_le_llp_rlp (coproducts.{w} W).pushouts
+
+lemma retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp :
+    (transfiniteCompositions.{w} (coproducts.{w} W).pushouts).retracts ≤ W.rlp.llp := by
+  rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
+  apply transfiniteCompositions_pushouts_coproducts_le_llp_rlp
+
+end MorphismProperty
 
 end CategoryTheory

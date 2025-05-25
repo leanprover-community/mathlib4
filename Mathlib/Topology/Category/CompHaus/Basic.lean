@@ -34,9 +34,6 @@ The category `CompHaus` is defined using the structure `CompHausLike`. See the f
 
 universe v u
 
--- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
-
 open CategoryTheory CompHausLike
 
 /-- The category of compact Hausdorff spaces. -/
@@ -45,7 +42,7 @@ abbrev CompHaus := CompHausLike (fun _ ↦ True)
 namespace CompHaus
 
 instance : Inhabited CompHaus :=
-  ⟨{ toTop := { α := PEmpty }, prop := trivial}⟩
+  ⟨{ toTop := TopCat.of PEmpty, prop := trivial}⟩
 
 instance : CoeSort CompHaus Type* :=
   ⟨fun X => X.toTop⟩
@@ -68,10 +65,8 @@ abbrev of : CompHaus := CompHausLike.of _ X
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
--- Porting note: `semireducible` -> `.default`.
 abbrev compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
   CompHausLike.compHausLikeToTop _
-  -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
 
 /-- (Implementation) The object part of the compactification functor from topological spaces to
 compact Hausdorff spaces.
@@ -85,17 +80,15 @@ Hausdorff spaces in topological spaces.
 -/
 noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     (stoneCechObj X ⟶ Y) ≃ (X ⟶ compHausToTop.obj Y) where
-  toFun f :=
+  toFun f := TopCat.ofHom
     { toFun := f ∘ stoneCechUnit
-      continuous_toFun := f.2.comp (@continuous_stoneCechUnit X _) }
-  invFun f :=
-    { toFun := stoneCechExtend f.2
-      continuous_toFun := continuous_stoneCechExtend f.2 }
+      continuous_toFun := f.hom.2.comp (@continuous_stoneCechUnit X _) }
+  invFun f := CompHausLike.ofHom _
+    { toFun := stoneCechExtend f.hom.2
+      continuous_toFun := continuous_stoneCechExtend f.hom.2 }
   left_inv := by
     rintro ⟨f : StoneCech X ⟶ Y, hf : Continuous f⟩
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` fails.
-    apply ContinuousMap.ext
-    intro (x : StoneCech X)
+    ext x
     refine congr_fun ?_ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
     · rintro _ ⟨y, rfl⟩
@@ -103,9 +96,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
       apply continuous_stoneCechUnit
   right_inv := by
     rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` fails.
-    apply ContinuousMap.ext
-    intro
+    ext
     exact congr_fun (stoneCechExtend_extends hf) _
 
 /-- The Stone-Cech compactification functor from topological spaces to compact Hausdorff spaces,
@@ -157,7 +148,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
         apply isClosed_iInter
         intro f
         apply isClosed_eq
-        · exact (ContinuousMap.continuous (F.map f)).comp (continuous_apply i)
+        · exact ((F.map f).hom.continuous).comp (continuous_apply i)
         · exact continuous_apply j
       is_hausdorff :=
         show T2Space { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j } from
@@ -168,7 +159,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
       naturality := by
         intro _ _ f
         ext ⟨x, hx⟩
-        simp only [comp_apply, Functor.const_obj_map, id_apply]
+        simp only [CategoryTheory.comp_apply, Functor.const_obj_map, CategoryTheory.id_apply]
         exact (hx f).symm } }
 
 /-- The limit cone `CompHaus.limitCone F` is indeed a limit cone. -/
@@ -185,7 +176,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.continuous).isClosed
+    have hC : IsClosed C := (isCompact_range f.hom.continuous).isClosed
     let D := ({y} : Set Y)
     have hD : IsClosed D := isClosed_singleton
     have hCD : Disjoint C D := by
@@ -196,27 +187,17 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     haveI : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.compactSpace
     haveI : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space
     let Z := of (ULift.{u} <| Set.Icc (0 : ℝ) 1)
-    let g : Y ⟶ Z :=
+    let g : Y ⟶ Z := ofHom _
       ⟨fun y' => ⟨⟨φ y', hφ01 y'⟩⟩,
-        continuous_uLift_up.comp (φ.continuous.subtype_mk fun y' => hφ01 y')⟩
-    let h : Y ⟶ Z := ⟨fun _ => ⟨⟨0, Set.left_mem_Icc.mpr zero_le_one⟩⟩, continuous_const⟩
+        continuous_uliftUp.comp (φ.continuous.subtype_mk fun y' => hφ01 y')⟩
+    let h : Y ⟶ Z := ofHom _
+      ⟨fun _ => ⟨⟨0, Set.left_mem_Icc.mpr zero_le_one⟩⟩, continuous_const⟩
     have H : h = g := by
       rw [← cancel_epi f]
-      ext x
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` doesn't apply these two lemmas.
-      apply ULift.ext
-      apply Subtype.ext
-      dsimp
-      -- Porting note: This `change` is not ideal.
-      -- I think lean is having issues understanding when a `ContinuousMap` should be considered
-      -- as a morphism.
-      -- TODO(?): Make morphisms in `CompHaus` (and other topological categories)
-      -- into a one-field-structure.
-      change 0 = φ (f x)
-      simp only [hφ0 (Set.mem_range_self x), Pi.zero_apply]
+      ext x : 4
+      simp [g, h, Z, hφ0 (Set.mem_range_self x)]
     apply_fun fun e => (e y).down.1 at H
-    dsimp [Z] at H
-    change 0 = φ y at H
+    dsimp [g, h, Z] at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H
   · rw [← CategoryTheory.epi_iff_surjective]

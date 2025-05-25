@@ -39,7 +39,7 @@ than just a functor known to be a right adjoint. In docstrings, we write `(η, �
 and counit of the adjunction `adj₁ : F ⊣ U` and `(ι, δ)` for the unit and counit of the adjunction
 `adj₂ : F' ⊣ R ⋙ U`.
 
-This file has been adapted to `Mathlib.CategoryTheory.Adjunction.Lifting.Right`.
+This file has been adapted to `Mathlib/CategoryTheory/Adjunction/Lifting/Right.lean`.
 Please try to keep them in sync.
 
 ## TODO
@@ -122,13 +122,6 @@ variable [HasReflexiveCoequalizers A]
 noncomputable def constructLeftAdjointObj (Y : B) : A :=
   coequalizer (F'.map (U.map (adj₁.counit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
-#adaptation_note
-/--
-The new unused variable linter in
-https://github.com/leanprover/lean4/pull/5338
-flags `{ z : F.obj (U.obj X) ⟶ R.obj Y // _ }`.
--/
-set_option linter.unusedVariables false in
 /-- The homset equivalence which helps show that `R` is a right adjoint. -/
 @[simps!]
 noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.counit.app X)] (Y : A)

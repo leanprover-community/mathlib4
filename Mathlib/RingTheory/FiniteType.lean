@@ -75,10 +75,10 @@ protected theorem polynomial : FiniteType R R[X] :=
       rw [Finset.coe_singleton]
       exact Polynomial.adjoin_X⟩⟩
 
-open scoped Classical
 
 protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
   cases nonempty_fintype ι
+  classical
   exact
     ⟨⟨Finset.univ.image (FreeAlgebra.ι R), by
         rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
@@ -86,6 +86,7 @@ protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgeb
 
 protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) := by
   cases nonempty_fintype ι
+  classical
   exact
     ⟨⟨Finset.univ.image MvPolynomial.X, by
         rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
@@ -127,12 +128,8 @@ theorem iff_quotient_freeAlgebra :
   constructor
   · rintro ⟨s, hs⟩
     refine ⟨s, FreeAlgebra.lift _ (↑), ?_⟩
-    intro x
-    have hrw : (↑s : Set A) = fun x : A => x ∈ s.val := rfl
-    rw [← Set.mem_range, ← AlgHom.coe_range]
-    erw [← adjoin_eq_range_freeAlgebra_lift]
-    simp_rw [← hrw, hs]
-    exact Set.mem_univ x
+    rw [← Set.range_eq_univ, ← AlgHom.coe_range, ← adjoin_range_eq_range_freeAlgebra_lift,
+      Subtype.range_coe_subtype, Finset.setOf_mem, hs, coe_top]
   · rintro ⟨s, ⟨f, hsur⟩⟩
     exact FiniteType.of_surjective (FiniteType.freeAlgebra R s) f hsur
 
@@ -197,8 +194,8 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   apply
     isNoetherianRing_of_surjective (MvPolynomial s R) S
       (MvPolynomial.aeval (↑) : MvPolynomial s R →ₐ[R] S).toRingHom
-  erw [← Set.range_eq_univ, ← AlgHom.coe_range, ←
-    Algebra.adjoin_range_eq_range_aeval, Subtype.range_coe_subtype, Finset.setOf_mem, hs]
+  rw [← Set.range_eq_univ, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, ← AlgHom.coe_range,
+    ← Algebra.adjoin_range_eq_range_aeval, Subtype.range_coe_subtype, Finset.setOf_mem, hs]
   rfl
 
 theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
@@ -228,12 +225,9 @@ end Finite
 
 namespace FiniteType
 
-variable (A)
-
+variable (A) in
 theorem id : FiniteType (RingHom.id A) :=
   Algebra.FiniteType.self A
-
-variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
@@ -313,6 +307,11 @@ end FiniteType
 
 end AlgHom
 
+theorem algebraMap_finiteType_iff_algebra_finiteType {R A : Type*} [CommRing R] [CommRing A]
+    [Algebra R A] : (algebraMap R A).FiniteType ↔ Algebra.FiniteType R A := by
+  dsimp [RingHom.FiniteType]
+  constructor <;> (intro h; convert h; apply Algebra.algebra_ext; exact congrFun rfl)
+
 section MonoidAlgebra
 
 variable {R : Type*} {M : Type*}
@@ -380,7 +379,8 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
 theorem of'_mem_span [Nontrivial R] {m : M} {S : Set M} :
     of' R M m ∈ span R (of' R M '' S) ↔ m ∈ S := by
   refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
-  erw [of', ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
+  unfold of' at h
+  rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
 
@@ -409,8 +409,9 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
     Function.Surjective
       (MvPolynomial.aeval fun s : S => of' R M ↑s : MvPolynomial S R → R[M]) := by
   intro f
-  induction' f using induction_on with m f g ihf ihg r f ih
-  · have : m ∈ closure S := hS.symm ▸ mem_top _
+  induction f using induction_on with
+  | hM m =>
+    have : m ∈ closure S := hS.symm ▸ mem_top _
     refine AddSubmonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, map_one _⟩
@@ -419,10 +420,12 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
             one_mul]; rfl⟩
-  · rcases ihf with ⟨P, rfl⟩
+  | hadd f g ihf ihg =>
+    rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  · rcases ih with ⟨P, rfl⟩
+  | hsmul r f ih =>
+    rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
 variable [AddMonoid M]
@@ -434,8 +437,9 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
     Function.Surjective
       (FreeAlgebra.lift R fun s : S => of' R M ↑s : FreeAlgebra R S → R[M]) := by
   intro f
-  induction' f using induction_on with m f g ihf ihg r f ih
-  · have : m ∈ closure S := hS.symm ▸ mem_top _
+  induction f using induction_on with
+  | hM m =>
+    have : m ∈ closure S := hS.symm ▸ mem_top _
     refine AddSubmonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, map_one _⟩
@@ -444,10 +448,12 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
             one_mul]; rfl⟩
-  · rcases ihf with ⟨P, rfl⟩
+  | hadd f g ihf ihg =>
+    rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  · rcases ih with ⟨P, rfl⟩
+  | hsmul r f ih =>
+    rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
 variable (R M)
@@ -456,7 +462,7 @@ variable (R M)
 type. -/
 instance finiteType_of_fg [CommRing R] [h : AddMonoid.FG M] :
     FiniteType R R[M] := by
-  obtain ⟨S, hS⟩ := h.out
+  obtain ⟨S, hS⟩ := h.fg_top
   exact (FiniteType.freeAlgebra R (S : Set M)).of_surjective
       (FreeAlgebra.lift R fun s : (S : Set M) => of' R M ↑s)
       (freeAlgebra_lift_of_surjective_of_closure hS)
@@ -482,7 +488,7 @@ theorem fg_of_finiteType [CommRing R] [Nontrivial R] [h : FiniteType R R[M]] :
 
 /-- An additive group `G` is finitely generated if and only if `R[G]` is of
 finite type. -/
-theorem finiteType_iff_group_fg {G : Type*} [AddCommGroup G] [CommRing R] [Nontrivial R] :
+theorem finiteType_iff_group_fg {G : Type*} [AddGroup G] [CommRing R] [Nontrivial R] :
     FiniteType R R[G] ↔ AddGroup.FG G := by
   simpa [AddGroup.fg_iff_addMonoid_fg] using finiteType_iff_fg
 
@@ -553,7 +559,8 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
 theorem of_mem_span_of_iff [Nontrivial R] {m : M} {S : Set M} :
     of R M m ∈ span R (of R M '' S) ↔ m ∈ S := by
   refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
-  erw [of, MonoidHom.coe_mk, ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
+  dsimp [of] at h
+  rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
 
@@ -577,8 +584,9 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
     Function.Surjective
       (MvPolynomial.aeval fun s : S => of R M ↑s : MvPolynomial S R → MonoidAlgebra R M) := by
   intro f
-  induction' f using induction_on with m f g ihf ihg r f ih
-  · have : m ∈ closure S := hS.symm ▸ mem_top _
+  induction f using induction_on with
+  | hM m =>
+    have : m ∈ closure S := hS.symm ▸ mem_top _
     refine Submonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, map_one _⟩
@@ -586,9 +594,11 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
       exact
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
-  · rcases ihf with ⟨P, rfl⟩; rcases ihg with ⟨Q, rfl⟩
+  | hadd f g ihf ihg =>
+    rcases ihf with ⟨P, rfl⟩; rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  · rcases ih with ⟨P, rfl⟩
+  | hsmul r f ih =>
+    rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
 
@@ -601,8 +611,9 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
     Function.Surjective
       (FreeAlgebra.lift R fun s : S => of R M ↑s : FreeAlgebra R S → MonoidAlgebra R M) := by
   intro f
-  induction' f using induction_on with m f g ihf ihg r f ih
-  · have : m ∈ closure S := hS.symm ▸ mem_top _
+  induction f using induction_on with
+  | hM m =>
+    have : m ∈ closure S := hS.symm ▸ mem_top _
     refine Submonoid.closure_induction (fun m hm => ?_) ?_ ?_ this
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, map_one _⟩
@@ -610,10 +621,12 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
       exact
         ⟨P₁ * P₂, by
           rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
-  · rcases ihf with ⟨P, rfl⟩
+  | hadd f g ihf ihg =>
+    rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
     exact ⟨P + Q, map_add _ _ _⟩
-  · rcases ih with ⟨P, rfl⟩
+  | hsmul r f ih =>
+    rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, map_smul _ _ _⟩
 
 /-- If a monoid `M` is finitely generated then `MonoidAlgebra R M` is of finite type. -/
@@ -731,20 +744,3 @@ instance (priority := 100) CommRing.orzechProperty
   | smul a x _ hx => exact smul_mem _ a hx
 
 end Orzech
-
-section Vasconcelos
-
-/-- A theorem by Vasconcelos, given a finite module `M` over a commutative ring, any
-surjective endomorphism of `M` is also injective.
-It is a consequence of the fact `CommRing.orzechProperty`
-that any commutative ring `R` satisfies the `OrzechProperty`;
-please use `OrzechProperty.injective_of_surjective_endomorphism` instead.
-This is similar to `IsNoetherian.injective_of_surjective_endomorphism` but only applies in the
-commutative case, but does not use a Noetherian hypothesis. -/
-@[deprecated OrzechProperty.injective_of_surjective_endomorphism (since := "2024-05-30")]
-theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing R] {M : Type*}
-    [AddCommGroup M] [Module R M] [Module.Finite R M] (f : M →ₗ[R] M)
-    (f_surj : Function.Surjective f) : Function.Injective f :=
-  OrzechProperty.injective_of_surjective_endomorphism f f_surj
-
-end Vasconcelos

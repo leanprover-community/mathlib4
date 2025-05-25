@@ -24,7 +24,9 @@ namespace CategoryTheory
 
 namespace Presheaf
 
-variable [ConcreteCategory A]
+variable {FA : A → A → Type*} {CA : A → Type*}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
+
 
 lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f] :
     IsLocallyInjective J (whiskerLeft H.op f) where
@@ -40,11 +42,11 @@ lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
     refine K.superset_covering (Sieve.functorPullback_pushforward_le H _) ?_
     refine K.superset_covering (Sieve.functorPushforward_monotone H _ ?_)
       (hH.cover_preserve <| equalizerSieve_mem J (whiskerLeft H.op f)
-        ((forget A).map (F.map map.op) a) ((forget A).map (F.map map.op) b) ?_)
+        (F.map map.op a) (F.map map.op b) ?_)
     · intro W q hq
       simpa using hq
     · simp only [comp_obj, op_obj, whiskerLeft_app, Opposite.op_unop]
-      erw [NatTrans.naturality_apply, NatTrans.naturality_apply, h]
+      rw [NatTrans.naturality_apply, NatTrans.naturality_apply, h]
 
 lemma isLocallyInjective_whisker_iff (hH : CoverPreserving J K H) [H.IsCocontinuous J K]
     [H.IsCoverDense K] : IsLocallyInjective J (whiskerLeft H.op f) ↔ IsLocallyInjective K f :=
@@ -62,8 +64,7 @@ lemma isLocallySurjective_of_whisker (hH : CoverPreserving J K H)
     intro Y g ⟨⟨Z, lift, map, fac⟩⟩
     rw [← fac, Sieve.pullback_comp]
     apply K.pullback_stable
-    have hh := hH.cover_preserve <|
-      imageSieve_mem J (whiskerLeft H.op f) ((forget A).map (G.map map.op) a)
+    have hh := hH.cover_preserve <| imageSieve_mem J (whiskerLeft H.op f) (G.map map.op a)
     refine K.superset_covering (Sieve.functorPullback_pushforward_le H _) ?_
     refine K.superset_covering (Sieve.functorPushforward_monotone H _ ?_) hh
     intro W q ⟨x, h⟩

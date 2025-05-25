@@ -44,9 +44,10 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     split_ifs with h
     · subst h
       simp
-    · #adaptation_note /-- after nightly-2024-03-07, the previous sensible proof
-      `rw [if_neg h]; simp` fails with "motive not type correct".
-      The following is horrible. -/
+    · #adaptation_note /-- nightly-2024-03-07
+      previously was `rw [if_neg h]; simp`, but that fails with "motive not type correct"
+      This is because dsimp does not simplify numerals;
+      this note should be removable once https://github.com/leanprover/lean4/pull/8433 lands. -/
       convert (id_zero (C := V)).symm
       all_goals simp [if_neg h]
   map_comp f g := by
