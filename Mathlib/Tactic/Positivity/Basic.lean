@@ -162,11 +162,11 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     let _a ← synthInstanceQ q(AddLeftStrictMono $α)
     pure (.positive q(add_pos $pa $pb))
   | .positive pa, .nonnegative pb =>
-    let _a ← synthInstanceQ q(AddRightStrictMono $α)
-    pure (.positive q(lt_add_of_pos_of_le $pa $pb))
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
   | .nonnegative pa, .positive pb =>
-    let _a ← synthInstanceQ q(AddLeftStrictMono $α)
-    pure (.positive q(lt_add_of_le_of_pos $pa $pb))
+    let _a ← synthInstanceQ q(AddRightMono $α)
+    pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
   | .nonnegative pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
     pure (.nonnegative q(add_nonneg $pa $pb))
@@ -378,15 +378,16 @@ def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@Nat.cast _ (_) ($a : ℕ)) := e | throwError "not Nat.cast"
   let zα' : Q(Zero Nat) := q(inferInstance)
   let pα' : Q(PartialOrder Nat) := q(inferInstance)
-  let (_rα : Q(Semiring $α)) ← synthInstanceQ q(Semiring $α)
-  let (_oα : Q(IsOrderedRing $α)) ← synthInstanceQ q(IsOrderedRing $α)
+  let (_i1 : Q(AddMonoidWithOne $α)) ← synthInstanceQ q(AddMonoidWithOne $α)
+  let (_i2 : Q(AddLeftMono $α)) ← synthInstanceQ q(AddLeftMono $α)
+  let (_i3 : Q(ZeroLEOneClass $α)) ← synthInstanceQ q(ZeroLEOneClass $α)
   assumeInstancesCommute
   match ← core zα' pα' a with
   | .positive pa =>
-    let _nt ← synthInstanceQ q(Nontrivial $α)
-    pure (.positive q(Nat.cast_pos.mpr $pa))
+    let _nz ← synthInstanceQ q(NeZero (1 : $α))
+    pure (.positive q(Nat.cast_pos'.2 $pa))
   | _ =>
-    pure (.nonnegative q(Nat.cast_nonneg _))
+    pure (.nonnegative q(Nat.cast_nonneg' _))
 
 /-- Extension for the `positivity` tactic: `Int.cast` is positive (resp. non-negative)
 if its input is. -/

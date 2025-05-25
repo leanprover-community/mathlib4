@@ -646,7 +646,7 @@ theorem IsBase.exchange_isBase_of_indep (hB : M.IsBase B) (hf : f ∉ B)
   rw [insert_subset_iff, ← diff_eq_empty, diff_diff_comm, diff_eq_empty, subset_singleton_iff_eq]
     at hIB'
   obtain ⟨hfB, (h | h)⟩ := hIB'
-  · rw [h, encard_empty, encard_eq_zero, eq_empty_iff_forall_not_mem] at hcard
+  · rw [h, encard_empty, encard_eq_zero, eq_empty_iff_forall_notMem] at hcard
     exact (hcard f ⟨hfB, hf⟩).elim
   rw [h, encard_singleton, encard_eq_one] at hcard
   obtain ⟨x, hx⟩ := hcard
@@ -680,7 +680,7 @@ theorem Indep.exists_insert_of_not_isBase (hI : M.Indep I) (hI' : ¬M.IsBase I) 
   by_cases hxB : x ∈ B
   · exact ⟨x, ⟨hxB, hx⟩, hB'.indep.subset (insert_subset hxB' hIB')⟩
   obtain ⟨e,he, hBase⟩ := hB'.exchange hB ⟨hxB',hxB⟩
-  exact ⟨e, ⟨he.1, not_mem_subset hIB' he.2⟩,
+  exact ⟨e, ⟨he.1, notMem_subset hIB' he.2⟩,
     indep_iff.2 ⟨_, hBase, insert_subset_insert (subset_diff_singleton hIB' hx)⟩⟩
 
 /-- This is the same as `Indep.exists_insert_of_not_isBase`, but phrased so that

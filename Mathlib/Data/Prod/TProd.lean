@@ -90,7 +90,7 @@ theorem elim_of_mem (hl : (i :: l).Nodup) (hj : j ∈ l) (v : TProd α (i :: l))
     v.elim (mem_cons_of_mem _ hj) = TProd.elim v.2 hj := by
   apply elim_of_ne
   rintro rfl
-  exact hl.not_mem hj
+  exact hl.notMem hj
 
 theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (TProd.mk l f).elim hi = f i
   | i :: is, f, j, hj => by

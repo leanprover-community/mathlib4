@@ -6,14 +6,13 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Tactic.MinImports
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
 
 -/
 
-assert_not_exists DenselyOrdered MulAction
+assert_not_exists DenselyOrdered MulAction Ring
 
 variable {M M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]

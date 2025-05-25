@@ -213,12 +213,10 @@ theorem oangle_rotation_right {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real
   · exact o.kahler_ne_zero hx hy
 
 /-- The rotation of a vector by `θ` has an angle of `-θ` from that vector. -/
-@[simp]
 theorem oangle_rotation_self_left {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle (o.rotation θ x) x = -θ := by simp [hx]
 
 /-- A vector has an angle of `θ` from the rotation of that vector by `θ`. -/
-@[simp]
 theorem oangle_rotation_self_right {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle x (o.rotation θ x) = θ := by simp [hx]
 

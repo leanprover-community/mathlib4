@@ -120,7 +120,7 @@ theorem rename_leftInverse {f : σ → τ} {g : τ → σ} (hf : Function.LeftIn
 
 theorem rename_rightInverse {f : σ → τ} {g : τ → σ} (hf : Function.RightInverse f g) :
     Function.RightInverse (rename f : MvPolynomial σ R → MvPolynomial τ R) (rename g) :=
- rename_leftInverse hf
+  rename_leftInverse hf
 
 theorem rename_surjective (f : σ → τ) (hf : Function.Surjective f) :
     Function.Surjective (rename f : MvPolynomial σ R → MvPolynomial τ R) :=
@@ -299,7 +299,7 @@ theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPolynomial σ R) (d : σ 
 theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)
     (h : ∀ u : σ →₀ ℕ, u.mapDomain f = d → φ.coeff u = 0) : (rename f φ).coeff d = 0 := by
   classical
-  rw [rename_eq, ← not_mem_support_iff]
+  rw [rename_eq, ← notMem_support_iff]
   intro H
   replace H := mapDomain_support H
   rw [Finset.mem_image] at H

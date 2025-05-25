@@ -590,7 +590,7 @@ def topEquiv : (⊤ : Subgraph G).coe ≃g G where
 
 /-- The bottom of the `Subgraph G` lattice is equivalent to the empty graph on the empty
 vertex type. -/
-def botEquiv : (⊥ : Subgraph G).coe ≃g (⊥ : SimpleGraph Empty) where
+def botEquiv : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
   toFun v := v.property.elim
   invFun v := v.elim
   left_inv := fun ⟨_, h⟩ ↦ h.elim
@@ -1044,7 +1044,7 @@ theorem deleteEdges_verts : (G'.deleteEdges s).verts = G'.verts :=
   rfl
 
 @[simp]
-theorem deleteEdges_adj (v w : V) : (G'.deleteEdges s).Adj v w ↔ G'.Adj v w ∧ ¬s(v, w) ∈ s :=
+theorem deleteEdges_adj (v w : V) : (G'.deleteEdges s).Adj v w ↔ G'.Adj v w ∧ s(v, w) ∉ s :=
   Iff.rfl
 
 @[simp]
@@ -1216,7 +1216,7 @@ theorem deleteVerts_verts : (G'.deleteVerts s).verts = G'.verts \ s :=
   rfl
 
 theorem deleteVerts_adj {u v : V} :
-    (G'.deleteVerts s).Adj u v ↔ u ∈ G'.verts ∧ ¬u ∈ s ∧ v ∈ G'.verts ∧ ¬v ∈ s ∧ G'.Adj u v := by
+    (G'.deleteVerts s).Adj u v ↔ u ∈ G'.verts ∧ u ∉ s ∧ v ∈ G'.verts ∧ v ∉ s ∧ G'.Adj u v := by
   simp [and_assoc]
 
 @[simp]

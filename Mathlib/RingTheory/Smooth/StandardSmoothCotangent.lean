@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.LinearAlgebra.Basis.Exact
-import Mathlib.RingTheory.Kaehler.CotangentComplex
+import Mathlib.RingTheory.Extension.Cotangent.Basic
 import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Etale.Basic
@@ -176,7 +176,7 @@ lemma sectionCotangent_comp :
   intro i
   rfl
 
-lemma sectionCotangent_zero_of_not_mem_range (i : P.vars) (hi : i ∉ Set.range P.map) :
+lemma sectionCotangent_zero_of_notMem_range (i : P.vars) (hi : i ∉ Set.range P.map) :
     (sectionCotangent P) (P.cotangentSpaceBasis i) = 0 := by
   classical
   contrapose hi
@@ -187,6 +187,9 @@ lemma sectionCotangent_zero_of_not_mem_range (i : P.vars) (hi : i ∉ Set.range 
   simp only [Set.mem_range, not_exists, not_forall, not_not]
   use j
   exact hij.symm
+
+@[deprecated (since := "2025-05-23")]
+alias sectionCotangent_zero_of_not_mem_range := sectionCotangent_zero_of_notMem_range
 
 /--
 Given a submersive presentation of `S` as `R`-algebra, any indexing type `κ` complementary to
@@ -199,7 +202,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → P.vars}
   apply P.cotangentSpaceBasis.ofSplitExact (sectionCotangent_comp P)
     Extension.exact_cotangentComplex_toKaehler Extension.toKaehler_surjective hf (b := P.map)
   · intro i
-    apply sectionCotangent_zero_of_not_mem_range _ _
+    apply sectionCotangent_zero_of_notMem_range _ _
     simp [← hcompl.compl_eq]
   · simp only [sectionCotangent, LinearMap.coe_comp, Function.comp_assoc, LinearEquiv.coe_coe]
     apply LinearIndependent.map' _ _ P.cotangentEquiv.symm.ker

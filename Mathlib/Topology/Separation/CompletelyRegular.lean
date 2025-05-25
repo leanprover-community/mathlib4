@@ -48,7 +48,7 @@ space.
 * [Russell C. Walker, *The Stone-Čech Compactification*][russell1974]
 -/
 
-universe u
+universe u v
 
 noncomputable section
 
@@ -88,6 +88,21 @@ instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] [R0Space X] :
   have hgK : EqOn g 1 K := fun k hk => Subtype.ext (hfK hk)
   exact ⟨g, cg, hgx, hgK⟩
 
+lemma Topology.IsInducing.completelyRegularSpace
+    {Y : Type v} [TopologicalSpace Y] [CompletelyRegularSpace Y]
+    {f : X → Y} (hf : IsInducing f) : CompletelyRegularSpace X where
+  completely_regular x K hK hxK := by
+    rw [hf.isClosed_iff] at hK
+    obtain ⟨K, hK, rfl⟩ := hK
+    rw [mem_preimage] at hxK
+    obtain ⟨g, hcf, egfx, hgK⟩ := CompletelyRegularSpace.completely_regular _ _ hK hxK
+    refine ⟨g ∘ f, hcf.comp hf.continuous, egfx, ?_⟩
+    conv => arg 2; equals (1 : Y → ↥I) ∘ f => rfl
+    exact hgK.comp_right <| mapsTo_preimage _ _
+
+instance {p : X → Prop} [CompletelyRegularSpace X] : CompletelyRegularSpace (Subtype p) :=
+  Topology.IsInducing.subtypeVal.completelyRegularSpace
+
 /-- A T₃.₅ space is a completely regular space that is also T1. -/
 @[mk_iff]
 class T35Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyRegularSpace X
@@ -95,6 +110,13 @@ class T35Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, Compl
 instance T35Space.instT3space [T35Space X] : T3Space X where
 
 instance T4Space.instT35Space [T4Space X] : T35Space X where
+
+lemma Topology.IsEmbedding.t35Space
+    {Y : Type v} [TopologicalSpace Y] [T35Space Y]
+    {f : X → Y} (hf : IsEmbedding f) : T35Space X :=
+  @T35Space.mk _ _ hf.t1Space hf.isInducing.completelyRegularSpace
+
+instance {p : X → Prop} [T35Space X] : T35Space (Subtype p) where
 
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     SeparatesPoints (Continuous : Set (X → ℝ)) := by

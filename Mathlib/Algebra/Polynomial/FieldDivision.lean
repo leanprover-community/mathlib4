@@ -21,6 +21,7 @@ This file starts looking like the ring theory of $R[X]$
 noncomputable section
 
 open Polynomial
+open scoped Nat
 
 namespace Polynomial
 
@@ -84,7 +85,7 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
   by_contra! h'
   replace hroot := hroot _ h'
   simp only [IsRoot, eval_iterate_derivative_rootMultiplicity] at hroot
-  obtain ⟨q, hq⟩ := Nat.cast_dvd_cast (α := R) <| Nat.factorial_dvd_factorial h'
+  obtain ⟨q, hq⟩ : ((rootMultiplicity t p)! : R) ∣ n ! := by gcongr
   rw [hq, mul_mem_nonZeroDivisors] at hnzd
   rw [nsmul_eq_mul, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd.1] at hroot
   exact eval_divByMonic_pow_rootMultiplicity_ne_zero t h hroot
@@ -535,6 +536,12 @@ theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   simp only [div_def, leadingCoeff_mul, mul_inv, leadingCoeff_C, C.map_mul, mul_assoc]
   congr 3
   rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one, one_mul]
+
+lemma div_C : p / C a = p * C a⁻¹ := by
+  simpa [mul_comm] using div_C_mul (q := 1)
+
+lemma C_div : C (a / b) = C a / C b := by
+  rw [div_C, ← C_mul, div_eq_mul_inv]
 
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
   ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>

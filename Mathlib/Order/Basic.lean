@@ -160,6 +160,7 @@ protected lemma Eq.not_gt (hab : a = b) : ¬b < a := hab.symm.not_lt
 @[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
 -- Making this a @[simp] lemma causes confluence problems downstream.
+@[nontriviality]
 lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
 
 namespace LT.lt
@@ -472,13 +473,13 @@ abbrev ltTrichotomy (x y : α) (p q r : P) := ltByCases x y (fun _ => p) (fun _ 
 
 variable {p q r s : P}
 
-@[simp]
+-- @[simp] -- simp can prove this
 lemma ltTrichotomy_lt (h : x < y) : ltTrichotomy x y p q r = p := ltByCases_lt h
 
-@[simp]
+-- @[simp] -- simp can prove this
 lemma ltTrichotomy_gt (h : y < x) : ltTrichotomy x y p q r = r := ltByCases_gt h
 
-@[simp]
+-- @[simp] -- simp can prove this
 lemma ltTrichotomy_eq (h : x = y) : ltTrichotomy x y p q r = q := ltByCases_eq h
 
 lemma ltTrichotomy_not_lt (h : ¬ x < y) :
