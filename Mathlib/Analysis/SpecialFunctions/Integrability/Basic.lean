@@ -266,7 +266,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
     apply Real.continuousOn_log.mono
-    apply Set.not_mem_uIcc_of_lt zero_lt_one at hx
+    apply Set.notMem_uIcc_of_lt zero_lt_one at hx
     simpa
 
 theorem intervalIntegrable_one_div_one_add_sq :
