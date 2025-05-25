@@ -289,22 +289,23 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       refine add_le_add_right ?_ 1
       exact le_iSup_iff.mpr fun _ h ↦ h q'
 
+theorem krullDim_eq_coe_iSup_of_nonempty {α : Type*} [Preorder α] [Nonempty α] :
+    Order.krullDim α = ⨆ (p : LTSeries α), (p.length : ℕ∞) := by
+  apply le_antisymm
+  · exact iSup_le fun p ↦ WithBot.coe_le_coe.mpr (by apply le_iSup _ p)
+  · rw [WithBot.coe_iSup (by bddDefault)]
+    exact iSup_le (le_iSup _)
+
 theorem supportDim_quotSMulTop_succ_eq_supportDim_of_notMem_minimalPrimes {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ maximalIdeal R) :
     supportDim R (QuotSMulTop x M) + 1 = supportDim R M := by
   apply le_antisymm
   · have : Nonempty (support R M) := sorry
     have : Nonempty (support R (QuotSMulTop x M)) := sorry
-    rw [supportDim, Order.krullDim_eq_iSup_height_of_nonempty]
-    show (_ + 1 : ℕ∞) ≤ supportDim R M
-    simp only [ENat.iSup_add, supportDim, Order.krullDim_eq_iSup_height_of_nonempty,
-      WithBot.coe_le_coe, iSup_le_iff, Subtype.forall]
-    intro p hp
-    have : supportDim R (QuotSMulTop x M) + 1 =
-      ⨆ (p : LTSeries (Module.support R M)), (p.length + 1 : WithBot ℕ∞) := by
-      rw [supportDim, Order.krullDim_eq_iSup_height_of_nonempty]
-      --apply ENat.iSup_add
-      sorry
+    simp [supportDim, krullDim_eq_coe_iSup_of_nonempty]
+    apply WithBot.coe_le_coe.mpr
+    simp only [ENat.iSup_add, iSup_le_iff]
+    intro p
     sorry
   · exact supportDim_le_supportDim_quotSMulTop_succ hx
 
