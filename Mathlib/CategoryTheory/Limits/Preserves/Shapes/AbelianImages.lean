@@ -21,10 +21,9 @@ open CategoryTheory Limits
 
 namespace CategoryTheory.Abelian
 
-variable {C : Type u₁} [Category.{v₁} C] [HasZeroMorphisms C] --[HasKernels C] [HasCokernels C]
-variable {D : Type u₂} [Category.{v₂} D] [HasZeroMorphisms D] --[HasKernels D] [HasCokernels D]
-variable (F : C ⥤ D) [F.PreservesZeroMorphisms] --[PreservesLimitsOfShape WalkingParallelPair F]
-  --[PreservesColimitsOfShape WalkingParallelPair F]
+variable {C : Type u₁} [Category.{v₁} C] [HasZeroMorphisms C]
+variable {D : Type u₂} [Category.{v₂} D] [HasZeroMorphisms D]
+variable (F : C ⥤ D) [F.PreservesZeroMorphisms]
 variable {X Y : C} (f : X ⟶ Y)
 
 section Images
