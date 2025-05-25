@@ -427,7 +427,7 @@ instance [SMul M X] [SMul N Y] [SMul R Y] [SMulCommClass N R Y] :
     SMul R (X →ₑ[σ] Y) where
   smul h f := ⟨h • f, by simp [smul_comm _ h]⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 lemma coe_smul [SMul M X] [SMul N Y] [SMul R Y] [SMulCommClass N R Y] (f : X →ₑ[σ] Y) (r : R) :
     ⇑(r • f) = r • ⇑f := rfl
 
@@ -435,7 +435,7 @@ instance [SMul M X] [Zero Y] [SMulZeroClass N Y] :
     Zero (X →ₑ[σ] Y) where
   zero := ⟨0, by simp⟩
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_zero [SMul M X] [Zero Y] [SMulZeroClass N Y] : ⇑(0 : X →ₑ[σ] Y) = 0 := rfl
 
 instance [SMul M X] [AddZeroClass Y] [DistribSMul N Y] :
@@ -444,7 +444,7 @@ instance [SMul M X] [AddZeroClass Y] [DistribSMul N Y] :
   zero_add _ := ext fun _ ↦ zero_add _
   add_zero _ := ext fun _ ↦ add_zero _
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_add [SMul M X] [AddZeroClass Y] [DistribSMul N Y] (f g : X →ₑ[σ] Y) :
     ⇑(f + g) = ⇑f + ⇑g := rfl
 
@@ -492,11 +492,11 @@ instance [SMul M X] [AddGroup Y] [DistribSMul N Y] : AddGroup (X →ₑ[σ] Y) w
   zsmul_neg' _ _ := ext fun x ↦ SubNegMonoid.zsmul_neg' _ _
   zsmul_succ' _ _ := ext fun x ↦ SubNegMonoid.zsmul_succ' _ _
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_neg [SMul M X] [AddGroup Y] [DistribSMul N Y] (f : X →ₑ[σ] Y) :
     ⇑(-f) = -⇑f := rfl
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_sub [SMul M X] [AddGroup Y] [DistribSMul N Y] (f g : X →ₑ[σ] Y) :
     ⇑(f - g) = ⇑f - ⇑g := rfl
 
@@ -510,11 +510,11 @@ instance [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] :
   one_mul _ := ext fun x ↦ one_mul _
   mul_one _ := ext fun x ↦ mul_one _
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_mul [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] (f g : X →ₑ[σ] Y) :
     ⇑(f * g) = ⇑f * ⇑g := rfl
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_one [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] :
     ⇑(1 : X →ₑ[σ] Y) = 1 := rfl
 
