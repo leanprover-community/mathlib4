@@ -289,8 +289,37 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       refine add_le_add_right ?_ 1
       exact le_iSup_iff.mpr fun _ h ↦ h q'
 
-theorem supportDim_quotSMulTop_succ_eq_supportDim (x : R) (reg : IsSMulRegular M x)
-    (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M := sorry
+theorem supportDim_quotSMulTop_succ_eq_supportDim_of_notMem_minimalPrimes {x : R}
+    (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ maximalIdeal R) :
+    supportDim R (QuotSMulTop x M) + 1 = supportDim R M := by
+  apply le_antisymm
+  · have : Nonempty (support R M) := sorry
+    have : Nonempty (support R (QuotSMulTop x M)) := sorry
+    rw [supportDim, Order.krullDim_eq_iSup_height_of_nonempty]
+    show (_ + 1 : ℕ∞) ≤ supportDim R M
+    simp only [ENat.iSup_add, supportDim, Order.krullDim_eq_iSup_height_of_nonempty,
+      WithBot.coe_le_coe, iSup_le_iff, Subtype.forall]
+    intro p hp
+    have : supportDim R (QuotSMulTop x M) + 1 =
+      ⨆ (p : LTSeries (Module.support R M)), (p.length + 1 : WithBot ℕ∞) := by
+      rw [supportDim, Order.krullDim_eq_iSup_height_of_nonempty]
+      --apply ENat.iSup_add
+      sorry
+    sorry
+  · exact supportDim_le_supportDim_quotSMulTop_succ hx
+
+theorem notMem_minimalPrimes_of_isSMulRegular {R : Type*} [CommSemiring R]
+    {M : Type*} [AddCommMonoid M] [Module R M] {x : R} (reg : IsSMulRegular M x)
+    {p : Ideal R} (hp : p ∈ (annihilator R M).minimalPrimes) : x ∉ p := by
+  intro hx
+  rcases exists_mul_mem_of_mem_minimalPrimes hp hx with ⟨y, hy, hxy⟩
+  rcases not_forall.mp (mem_annihilator.not.mp hy) with ⟨m, hm⟩
+  exact hm <| reg.eq_zero_of_smul_eq_zero <| (smul_smul x y m).trans <| mem_annihilator.mp hxy m
+
+theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M x)
+    (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
+  supportDim_quotSMulTop_succ_eq_supportDim_of_notMem_minimalPrimes
+    (fun _ ↦ notMem_minimalPrimes_of_isSMulRegular reg) hx
 
 theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
     (reg : IsRegular M rs) :
@@ -311,7 +340,7 @@ theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
         absurd reg.2
         simp [Ideal.span_singleton_eq_top.mpr isu]
       rw [supportDim_eq_of_equiv (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
-        ← supportDim_quotSMulTop_succ_eq_supportDim x this mem,
+        ← supportDim_quotSMulTop_succ_eq_supportDim this mem,
         ← hn rs' ((isRegular_cons_iff M _ _).mp reg).2 len, add_assoc]
 
 end Module
