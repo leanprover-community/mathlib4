@@ -70,7 +70,7 @@ theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
-  classical exact Pi.single_eq_same (f := fun _ ↦ M) a b
+  classical exact Pi.single_eq_same (M := fun _ ↦ M) a b
 
 @[simp]
 theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
