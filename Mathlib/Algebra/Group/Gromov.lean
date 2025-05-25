@@ -920,3 +920,25 @@ theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ))
         simp at g_in_s
   | succ n ih =>
     sorry
+
+
+-- Based on https://github.com/YaelDillies/LeanCamCombi/blob/b6312bee17293272af6bdcdb47b3ffe98fca46a4/LeanCamCombi/GrowthInGroups/Lecture1.lean#L41
+def HasPolynomialGrowthD (d: ℕ): Prop := ∀ n ≥ 2, #(S ^ n) ≤ n ^ d
+def HasPolynomialGrowth: Prop := ∃ d, HasPolynomialGrowthD (S := S) d
+
+open Additive
+lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
+  have gamma_one: ∃ γ: G, φ γ = 1 := by
+    exact hφ 1
+
+  obtain ⟨γ, hγ⟩ := gamma_one
+  have phi_ofmul: φ (ofMul γ) = 1 := by
+    exact hγ
+  --
+  let e_i: S → (Additive G) := fun s => (ofMul s.val) +  ((-1 : ℤ) • (φ (ofMul s.val))) • (ofMul (γ))
+  have e_i_zero: ∀ s: S, φ (e_i s) = 0 := by
+    intro s
+    unfold e_i
+    simp
+    simp [phi_ofmul]
+-- lemma three_four (g: G)
