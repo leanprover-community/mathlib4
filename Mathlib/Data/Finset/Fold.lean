@@ -48,7 +48,7 @@ theorem fold_cons (h : a ∉ s) : (cons a s h).fold op b f = f a * s.fold op b f
 theorem fold_insert [DecidableEq α] (h : a ∉ s) :
     (insert a s).fold op b f = f a * s.fold op b f := by
   unfold fold
-  rw [insert_val, ndinsert_of_not_mem h, Multiset.map_cons, fold_cons_left]
+  rw [insert_val, ndinsert_of_notMem h, Multiset.map_cons, fold_cons_left]
 
 @[simp]
 theorem fold_singleton : ({a} : Finset α).fold op b f = f a * b :=

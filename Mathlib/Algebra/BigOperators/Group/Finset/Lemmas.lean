@@ -39,7 +39,7 @@ open Function in
 @[to_additive]
 lemma mulSupport_prod (s : Finset ι) (f : ι → α → β) :
     mulSupport (fun x ↦ ∏ i ∈ s, f i x) ⊆ ⋃ i ∈ s, mulSupport (f i) := by
-  simp only [mulSupport_subset_iff', Set.mem_iUnion, not_exists, nmem_mulSupport]
+  simp only [mulSupport_subset_iff', Set.mem_iUnion, not_exists, notMem_mulSupport]
   exact fun x ↦ prod_eq_one
 
 @[to_additive]

@@ -1470,7 +1470,7 @@ theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (
   · simp only [Set.indicator_of_mem, hxs, true_implies] at hx ⊢
     gcongr
     rwa [coe_le_enorm]
-  · simp [Set.indicator_of_not_mem hxs]
+  · simp [Set.indicator_of_notMem hxs]
 
 section RCLike
 

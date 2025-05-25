@@ -157,7 +157,7 @@ theorem pos_of_mem_ball (hx : x ∈ ball c f.rOut) : 0 < f x :=
   f.nonneg.lt_of_ne' <| by rwa [← support_eq, mem_support] at hx
 
 theorem zero_of_le_dist (hx : f.rOut ≤ dist x c) : f x = 0 := by
-  rwa [← nmem_support, support_eq, mem_ball, not_lt]
+  rwa [← notMem_support, support_eq, mem_ball, not_lt]
 
 protected theorem hasCompactSupport [FiniteDimensional ℝ E] : HasCompactSupport f := by
   simp_rw [HasCompactSupport, f.tsupport_eq, isCompact_closedBall]
