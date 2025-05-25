@@ -106,23 +106,7 @@ lemma myNeg (a b : ℝ) : -!₂[a, b] = !₂[-a, -b] := by
   exact h3.symm
 
 theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := by
-  let xh := ((⟨x, h⟩ :  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 ))
-  let ug := ((⟨u, g⟩ :  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 ))
   ext y
-
-  have h8 : U.source = { x | x ≠ -xh} := hU.source
-  have h9 : V.source = { x | x ≠ -ug} := hV.source
-  have ha : U.source ∩ V.source = { x | x ≠ -xh } ∩ { x | x ≠ -ug } := by rw [h8, h9]
-
-  have h1 : { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } = { x | x.val 1 = 0 }ᶜ := by
-    ext y
-    simp
-    exact not_congr eq_comm
-
-  have h2 : { x | x ≠ -xh } ∩ { x | x ≠ -ug } = { -xh, -ug }ᶜ := by
-    ext y
-    simp only [Set.mem_inter_iff, Set.mem_compl_iff, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
-    exact not_or.symm
 
   have h3 : { x | x.val 1 = 0 } = { -xh, -ug } := by
     ext y
@@ -173,23 +157,18 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
                   _ = 0 := by rw [h1]
           exact sq_eq_zero_iff.mp h4⟩
 
-    have bar1 : xh.val = !₂[1, 0]  := rfl
-    have bar2 : ug.val = !₂[-1, 0] := rfl
-    have bar3 : -!₂[(1 : ℝ), 0] = !₂[-1, 0] := by rw [myNeg 1 0]; simp
-    have bar4 : y.val 1 = 0 ↔ y.val 0 = 1 ∨ y.val 0 = -1 := h3de
     have bar5a : y.val 1 = 0 -> y.val = xh.val ∨ y.val = ug.val := by
       intro hy1
-      have h1 : y.val 0 = 1 ∨ y.val 0 = -1 := bar4.mp hy1
+      have h1 : y.val 0 = 1 ∨ y.val 0 = -1 := h3de.mp hy1
       cases h1 with
-      | inl hpos =>
-        have h3 : xh.val 0 = 1 := rfl
-        have h4 : xh.val 1 = 0 := rfl
-        have h5 : y.val = xh.val := by
-          ext i
-          fin_cases i
-          · simp [hpos, h3]
-          · simp [hy1, h4]
-        exact Or.inl h5
+      | inl hpos => have h3 : xh.val 0 = 1 := rfl
+                    have h4 : xh.val 1 = 0 := rfl
+                    have h5 : y.val = xh.val := by
+                      ext i
+                      fin_cases i
+                      · simp [hpos, h3]
+                      · simp [hy1, h4]
+                    exact Or.inl h5
       | inr hneg => have h3 : ug.val 0 = -1 := rfl
                     have h4 : ug.val 1 = 0 := rfl
                     have h5 : y.val = ug.val := by
@@ -208,12 +187,14 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
       | inr right =>
         have h3 : ug.val 1 = 0 := rfl
         rw [right, h3]
+
     have bar5 : y.val 1 = 0 <-> y.val = xh.val ∨ y.val = ug.val := ⟨bar5a, bar5b⟩
     have fooo1 : y.val = (xh).val -> y = xh := Subtype.eq
     have fooo2 : y.val = (ug).val -> y = ug := Subtype.eq
     have barr1 : y = xh -> y.val = (xh).val := by intro h; rw[h]
     have barr2 : y = ug -> y.val = (ug).val := by intro h; rw [h]
-    have bar6 : -xh.val = ug.val := by rw [bar1, bar2]; exact bar3
+    have bar3 : -!₂[(1 : ℝ), 0] = !₂[-1, 0] := by rw [myNeg 1 0]; simp
+    have bar6 : -xh.val = ug.val := by exact bar3
     have bar7 : -xh = ug := Subtype.eq bar6
     have bar8 : xh = -ug := by rw [<-bar7]; simp
     have chat1 : y.val 1 = 0 ↔ y = xh ∨ y = ug := by
@@ -241,6 +222,19 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
         | inl hxh_neg => right; rw [bar7] at hxh_neg; exact hxh_neg
         | inr hug_neg => left; rw [← bar7, neg_neg] at hug_neg; exact hug_neg
     exact chat2
+
+  have h1 : { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } = { x | x.val 1 = 0 }ᶜ := by
+    ext y
+    simp
+    exact not_congr eq_comm
+
+  have h2 : { x | x ≠ -xh } ∩ { x | x ≠ -ug } = { -xh, -ug }ᶜ := by
+    ext y
+    simp only [Set.mem_inter_iff, Set.mem_compl_iff, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+    exact not_or.symm
+
+  have ha : U.source ∩ V.source = { x | x ≠ -xh } ∩ { x | x ≠ -ug } := by rw [hU.source, hV.source]
+
   have hq : U.source ∩ V.source = { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := by
     calc U.source ∩ V.source = { x | x ≠ -xh } ∩ { x | x ≠ -ug } := ha
          _ = { -xh, -ug }ᶜ := h2
