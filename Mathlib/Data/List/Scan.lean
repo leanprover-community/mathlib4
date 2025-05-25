@@ -22,7 +22,7 @@ variable {α β : Type*} {f : β → α → β} {b : β} {a : α} {l : List α}
 /-! ### List.scanl -/
 
 @[simp]
-theorem length_scanl : (scanl f b l).length = l.length + 1 := by
+theorem length_scanl (b : β) (l : List α) : length (scanl f b l) = l.length + 1 := by
   induction l generalizing b <;> simp_all
 
 @[simp]
@@ -73,7 +73,7 @@ alias get?_succ_scanl := getElem?_succ_scanl
 theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
     (scanl f b l)[i + 1] =
       f ((scanl f b l)[i]'(Nat.lt_of_succ_lt h))
-        (l[i]'(Nat.lt_of_succ_lt_succ (h.trans_eq length_scanl))) := by
+        (l[i]'(Nat.lt_of_succ_lt_succ (h.trans_eq (length_scanl b l)))) := by
   induction i generalizing b l with
   | zero =>
     cases l
@@ -93,7 +93,7 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
 variable {f : α → β → β}
 
 @[simp]
-theorem scanr_nil : scanr f b [] = [b] :=
+theorem scanr_nil (b : β) : scanr f b [] = [b] :=
   rfl
 
 @[simp]
@@ -114,7 +114,7 @@ theorem scanr_iff_nil : scanr f b l = [b] ↔ l = [] := by
   · simp_all
 
 @[simp]
-theorem length_scanr : (scanr f b l).length = l.length + 1 := by
+theorem length_scanr (b : β) (l : List α) : length (scanr f b l) = l.length + 1 := by
   induction l <;> simp_all
 
 theorem getElem?_scanr_zero : (scanr f b l)[0]? = foldr f b l := by
