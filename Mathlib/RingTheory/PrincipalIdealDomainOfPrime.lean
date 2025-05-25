@@ -22,7 +22,7 @@ variable {R : Type*} [CommRing R]
 theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPrincipal) :
     IsPrincipalIdealRing R := by
   -- Suppose the set of `nonPrincipals` is not empty.
-  rw [← nonPrincipals_eq_empty_iff, Set.eq_empty_iff_forall_not_mem]
+  rw [← nonPrincipals_eq_empty_iff, Set.eq_empty_iff_forall_notMem]
   intro J hJ
   -- We will show a maximal element `I ∈ nonPrincipals R` (which exists by Zorn) is prime.
   obtain ⟨I, hJI, hI⟩ := zorn_le_nonempty₀ (nonPrincipals R) nonPrincipals_zorn _ hJ

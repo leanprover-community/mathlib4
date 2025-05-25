@@ -292,6 +292,38 @@ structure LowerSet (α : Type*) [LE α] where
 
 extend_docs LowerSet before "The type of lower sets of an order."
 
+/-- An upper set relative to a predicate `P` is a set such that all elements satisfy `P` and
+any element greater than one of its members and satisfying `P` is also a member. -/
+def IsRelUpperSet {α : Type*} [LE α] (s : Set α) (P : α → Prop) : Prop :=
+  ∀ ⦃a : α⦄, a ∈ s → P a ∧ ∀ ⦃b : α⦄, a ≤ b → P b → b ∈ s
+
+/-- A lower set relative to a predicate `P` is a set such that all elements satisfy `P` and
+any element less than one of its members and satisfying `P` is also a member. -/
+def IsRelLowerSet {α : Type*} [LE α] (s : Set α) (P : α → Prop) : Prop :=
+  ∀ ⦃a : α⦄, a ∈ s → P a ∧ ∀ ⦃b : α⦄, b ≤ a → P b → b ∈ s
+
+@[inherit_doc IsRelUpperSet]
+structure RelUpperSet {α : Type*} [LE α] (P : α → Prop) where
+  /-- The carrier of a `RelUpperSet`. -/
+  carrier : Set α
+  /-- The carrier of a `RelUpperSet` is an upper set relative to `P`.
+
+  Do NOT use directly. Please use `RelUpperSet.isRelUpperSet` instead. -/
+  isRelUpperSet' : IsRelUpperSet carrier P
+
+extend_docs RelUpperSet before "The type of upper sets of an order relative to `P`."
+
+@[inherit_doc IsRelLowerSet]
+structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
+  /-- The carrier of a `RelLowerSet`. -/
+  carrier : Set α
+  /-- The carrier of a `RelLowerSet` is a lower set relative to `P`.
+
+  Do NOT use directly. Please use `RelLowerSet.isRelLowerSet` instead. -/
+  isRelLowerSet' : IsRelLowerSet carrier P
+
+extend_docs RelLowerSet before "The type of lower sets of an order relative to `P`."
+
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 
 theorem of_eq [IsRefl α r] : ∀ {a b}, a = b → r a b

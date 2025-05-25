@@ -162,11 +162,11 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     let _a ← synthInstanceQ q(AddLeftStrictMono $α)
     pure (.positive q(add_pos $pa $pb))
   | .positive pa, .nonnegative pb =>
-    let _a ← synthInstanceQ q(AddRightStrictMono $α)
-    pure (.positive q(lt_add_of_pos_of_le $pa $pb))
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
   | .nonnegative pa, .positive pb =>
-    let _a ← synthInstanceQ q(AddLeftStrictMono $α)
-    pure (.positive q(lt_add_of_le_of_pos $pa $pb))
+    let _a ← synthInstanceQ q(AddRightMono $α)
+    pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
   | .nonnegative pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
     pure (.nonnegative q(add_nonneg $pa $pb))
