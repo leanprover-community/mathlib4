@@ -768,7 +768,7 @@ theorem map_linearDependent {K : Type*} [Ring K] {M : Type*} [AddCommGroup M] [M
   suffices f (update v i (g i • v i)) = 0 by
     rw [f.map_update_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz
-  rw [← Finset.insert_erase hi, Finset.sum_insert (s.not_mem_erase i), add_eq_zero_iff_eq_neg] at h
+  rw [← Finset.insert_erase hi, Finset.sum_insert (s.notMem_erase i), add_eq_zero_iff_eq_neg] at h
   rw [h, f.map_update_neg, f.map_update_sum, neg_eq_zero]
   apply Finset.sum_eq_zero
   intro j hj

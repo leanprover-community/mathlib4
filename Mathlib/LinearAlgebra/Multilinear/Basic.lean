@@ -441,7 +441,7 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι
     ext j
     by_cases h : j = i
     · rw [h]
-      simp [m'', Finset.not_mem_of_mem_powerset_of_not_mem hs hit]
+      simp [m'', Finset.notMem_of_mem_powerset_of_notMem hs hit]
     · by_cases h' : j ∈ s <;> simp [m'', h, h']
   rw [this]
 
@@ -1097,17 +1097,17 @@ require the index set `ι` to be finite. -/
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (s : Finset ι) :
     f (s.piecewise (fun i => c i • m i) m) = (∏ i ∈ s, c i) • f m := by
   refine s.induction_on (by simp) ?_
-  intro j s j_not_mem_s Hrec
+  intro j s j_notMem_s Hrec
   have A :
     Function.update (s.piecewise (fun i => c i • m i) m) j (m j) =
       s.piecewise (fun i => c i • m i) m := by
     ext i
     by_cases h : i = j
     · rw [h]
-      simp [j_not_mem_s]
+      simp [j_notMem_s]
     · simp [h]
   rw [s.piecewise_insert, f.map_update_smul, A, Hrec]
-  simp [j_not_mem_s, mul_smul]
+  simp [j_notMem_s, mul_smul]
 
 /-- Multiplicativity of a multilinear map along all coordinates at the same time,
 writing `f (fun i => c i • m i)` as `(∏ i, c i) • f m`. -/
@@ -1311,11 +1311,11 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
   simp_rw [s.mem_insert]
   congr 1
   · congr; ext i; split_ifs with h₁ h₂
-    · rw [update_of_ne, Finset.piecewise_eq_of_not_mem]
+    · rw [update_of_ne, Finset.piecewise_eq_of_notMem]
       · exact fun h ↦ (hk i h).not_lt (h₁ <| .inr h)
       · exact fun h ↦ (h₁ <| .inl h).ne h
     · cases h₂
-      rw [update_self, s.piecewise_eq_of_not_mem _ _ (lt_irrefl _ <| hk k ·)]
+      rw [update_self, s.piecewise_eq_of_notMem _ _ (lt_irrefl _ <| hk k ·)]
     · push_neg at h₁
       rw [update_of_ne (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
   · apply sum_congr rfl; intro i hi; congr; ext j; congr 1; apply propext
@@ -1337,7 +1337,7 @@ lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M�
     obtain rfl | hij := eq_or_ne i j
     · rw [if_pos rfl, if_pos rfl, s.piecewise_eq_of_mem _ _ hi]
     · rw [if_neg hij, if_neg hij.symm]
-  · rw [if_neg hjs, if_pos fun h ↦ (hjs h).elim, s.piecewise_eq_of_not_mem _ _ hjs]
+  · rw [if_neg hjs, if_pos fun h ↦ (hjs h).elim, s.piecewise_eq_of_notMem _ _ hjs]
 
 open Finset in
 lemma map_add_eq_map_add_linearDeriv_add [DecidableEq ι] [Fintype ι] (x h : (i : ι) → M₁ i) :

@@ -1298,18 +1298,24 @@ lemma coe_pred_of_mem [PredOrder α] {a : s} (h : pred a.1 ∈ s) :
   change Subtype.val (dite ..) = _
   simp [h]
 
-lemma isMin_of_not_pred_mem [PredOrder α] {a : s} (h : pred ↑a ∉ s) : IsMin a := by classical
+lemma isMin_of_pred_notMem [PredOrder α] {a : s} (h : pred ↑a ∉ s) : IsMin a := by classical
   rw [← pred_eq_iff_isMin]
   change dite .. = _
   simp [h]
 
-lemma not_pred_mem_iff_isMin [PredOrder α] [NoMinOrder α] {a : s} :
+@[deprecated (since := "2025-05-23")]
+alias isMin_of_not_pred_mem := isMin_of_pred_notMem
+
+lemma pred_notMem_iff_isMin [PredOrder α] [NoMinOrder α] {a : s} :
     pred ↑a ∉ s ↔ IsMin a where
-  mp := isMin_of_not_pred_mem
+  mp := isMin_of_pred_notMem
   mpr h nh := by
     replace h := congr($h.pred_eq.1)
     rw [coe_pred_of_mem nh] at h
     simp at h
+
+@[deprecated (since := "2025-05-23")]
+alias not_pred_mem_iff_isMin := pred_notMem_iff_isMin
 
 noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] :
     SuccOrder s :=
@@ -1322,17 +1328,24 @@ lemma coe_succ_of_mem [SuccOrder α] {a : s} (h : succ ↑a ∈ s) :
   change Subtype.val (dite ..) = _
   split_ifs <;> trivial
 
-lemma isMax_of_not_succ_mem [SuccOrder α] {a : s} (h : succ ↑a ∉ s) : IsMax a := by classical
+lemma isMax_of_succ_notMem [SuccOrder α] {a : s} (h : succ ↑a ∉ s) : IsMax a := by
+  classical
   rw [← succ_eq_iff_isMax]
   change dite .. = _
   split_ifs <;> trivial
 
-lemma not_succ_mem_iff_isMax [SuccOrder α] [NoMaxOrder α] {a : s} :
+@[deprecated (since := "2025-05-23")]
+alias isMax_of_not_succ_mem := isMax_of_succ_notMem
+
+lemma succ_notMem_iff_isMax [SuccOrder α] [NoMaxOrder α] {a : s} :
     succ ↑a ∉ s ↔ IsMax a where
-  mp := isMax_of_not_succ_mem
+  mp := isMax_of_succ_notMem
   mpr h nh := by
     replace h := congr($h.succ_eq.1)
     rw [coe_succ_of_mem nh] at h
     simp at h
+
+@[deprecated (since := "2025-05-23")]
+alias not_succ_mem_iff_isMax := succ_notMem_iff_isMax
 
 end OrdConnected

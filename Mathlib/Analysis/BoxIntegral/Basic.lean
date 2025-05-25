@@ -818,9 +818,9 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   /- Now we deal with boxes such that `π.tag J ∉ s`.
     In this case the estimate is straightforward. -/
   calc
-    dist (∑ J ∈ π.boxes with ¬tag π J ∈ s, vol J (f (tag π J)))
-      (∑ J ∈ π.boxes with ¬tag π J ∈ s, g J)
-      ≤ ∑ J ∈ π.boxes with ¬tag π J ∈ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
+    dist (∑ J ∈ π.boxes with tag π J ∉ s, vol J (f (tag π J)))
+      (∑ J ∈ π.boxes with tag π J ∉ s, g J)
+      ≤ ∑ J ∈ π.boxes with tag π J ∉ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
       rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
       refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_ (fun hH => hπδ.2 hH J hJ)
         fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
