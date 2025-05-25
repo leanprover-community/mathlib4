@@ -51,12 +51,13 @@ lemma counit_def :
 @[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
 
 @[simp]
-lemma comul_tmul (x : A) (y : B) : comul (x ⊗ₜ y) =
-  AlgebraTensorModule.tensorTensorTensorComm R R A A B B (comul x ⊗ₜ comul y) := rfl
+lemma comul_tmul (x : A) (y : B) :
+    comul (x ⊗ₜ y) =
+      AlgebraTensorModule.tensorTensorTensorComm R R A A B B (comul x ⊗ₜ comul y) := rfl
 
 @[simp]
 lemma counit_tmul (x : A) (y : B) :
-  counit (R := R) (x ⊗ₜ[R] y) = counit (R := R) y • counit (R := R) x := rfl
+    counit (R := R) (x ⊗ₜ[R] y) = counit (R := R) y • counit (R := R) x := rfl
 
 /-- `expand_comul R x with x₁ x₂` attempts to replace `comul (R := R) x` by
 `x₁ ⊗ₜ x₂` via linearity. -/

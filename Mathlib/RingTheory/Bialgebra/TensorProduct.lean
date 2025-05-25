@@ -45,77 +45,78 @@ noncomputable instance _root_.TensorProduct.instBialgebra : Bialgebra R (A ⊗[R
   simp_all only [AlgHom.toLinearMap_apply] <;>
   simp only [map_one, map_mul]
 
-variable {R A B C D}
-
-variable [Semiring C] [Semiring D] [Bialgebra R C] [Bialgebra R D]
+variable {R A B C D : Type*} [CommRing R] [Ring A] [Ring B] [Ring C] [Ring D]
+    [Bialgebra R A] [Bialgebra R B] [Bialgebra R C] [Bialgebra R D]
 
 /-- The tensor product of two bialgebra morphisms as a bialgebra morphism. -/
-noncomputable def map (f : A →ₐc[R] C) (g : B →ₐc[R] D) :
-    A ⊗[R] B →ₐc[R] C ⊗[R] D :=
-  { Coalgebra.TensorProduct.map (f : A →ₗc[R] C) (g : B →ₗc[R] D),
-    Algebra.TensorProduct.map (f : A →ₐ[R] C) (g : B →ₐ[R] D) with }
+noncomputable def map (f : A →ₐc[R] B) (g : C →ₐc[R] D) :
+    A ⊗[R] C →ₐc[R] B ⊗[R] D :=
+  { Coalgebra.TensorProduct.map (f : A →ₗc[R] B) (g : C →ₗc[R] D),
+    Algebra.TensorProduct.map (f : A →ₐ[R] B) (g : C →ₐ[R] D) with }
 
 @[simp]
-theorem map_tmul (f : A →ₐc[R] C) (g : B →ₐc[R] D) (x : A) (y : B) :
+theorem map_tmul (f : A →ₐc[R] B) (g : C →ₐc[R] D) (x : A) (y : C) :
     map f g (x ⊗ₜ y) = f x ⊗ₜ g y :=
   rfl
 
 @[simp]
-theorem map_toCoalgHom (f : A →ₐc[R] C) (g : B →ₐc[R] D) :
-    map f g = Coalgebra.TensorProduct.map (f : A →ₗc[R] C) (g : B →ₗc[R] D) := rfl
+theorem map_toCoalgHom (f : A →ₐc[R] B) (g : C →ₐc[R] D) :
+    map f g = Coalgebra.TensorProduct.map (f : A →ₗc[R] B) (g : C →ₗc[R] D) := rfl
 
 @[simp]
-theorem map_toAlgHom (f : A →ₐc[R] C) (g : B →ₐc[R] D) :
-    (map f g : A ⊗[R] B →ₐ[R] C ⊗[R] D) =
-      Algebra.TensorProduct.map (f : A →ₐ[R] C) (g : B →ₐ[R] D) :=
+theorem map_toAlgHom (f : A →ₐc[R] B) (g : C →ₐc[R] D) :
+    (map f g : A ⊗[R] C →ₐ[R] B ⊗[R] D) =
+      Algebra.TensorProduct.map (f : A →ₐ[R] B) (g : C →ₐ[R] D) :=
   rfl
 
-variable (R A C D) in
+variable (R A B C) in
 /-- The associator for tensor products of R-bialgebras, as a bialgebra equivalence. -/
 protected noncomputable def assoc :
-    (A ⊗[R] C) ⊗[R] D ≃ₐc[R] A ⊗[R] (C ⊗[R] D) :=
-  { Coalgebra.TensorProduct.assoc R A C D, Algebra.TensorProduct.assoc R A C D with }
+    (A ⊗[R] B) ⊗[R] C ≃ₐc[R] A ⊗[R] (B ⊗[R] C) :=
+  { Coalgebra.TensorProduct.assoc R A B C, Algebra.TensorProduct.assoc R A B C with }
 
 @[simp]
-theorem assoc_tmul (x : A) (y : C) (z : D) :
-    Bialgebra.TensorProduct.assoc R A C D ((x ⊗ₜ y) ⊗ₜ z) = x ⊗ₜ (y ⊗ₜ z) :=
+theorem assoc_tmul (x : A) (y : B) (z : C) :
+    Bialgebra.TensorProduct.assoc R A B C ((x ⊗ₜ y) ⊗ₜ z) = x ⊗ₜ (y ⊗ₜ z) :=
   rfl
 
 @[simp]
-theorem assoc_symm_tmul (x : A) (y : C) (z : D) :
-    (Bialgebra.TensorProduct.assoc R A C D).symm (x ⊗ₜ (y ⊗ₜ z)) = (x ⊗ₜ y) ⊗ₜ z :=
+theorem assoc_symm_tmul (x : A) (y : B) (z : C) :
+    (Bialgebra.TensorProduct.assoc R A B C).symm (x ⊗ₜ (y ⊗ₜ z)) = (x ⊗ₜ y) ⊗ₜ z :=
   rfl
 
 @[simp]
 theorem assoc_toCoalgEquiv :
-    (Bialgebra.TensorProduct.assoc R A C D : _ ≃ₗc[R] _) =
-    Coalgebra.TensorProduct.assoc R A C D := rfl
+    (Bialgebra.TensorProduct.assoc R A B C : _ ≃ₗc[R] _) =
+    Coalgebra.TensorProduct.assoc R A B C := rfl
 
 @[simp]
 theorem assoc_toAlgEquiv :
-    (Bialgebra.TensorProduct.assoc R A C D : _ ≃ₐ[R] _) =
-    Algebra.TensorProduct.assoc R A C D := by ext; rfl
+    (Bialgebra.TensorProduct.assoc R A B C : _ ≃ₐ[R] _) =
+    Algebra.TensorProduct.assoc R A B C := by ext; rfl
 
-variable (R B) in
+variable (R A) in
 /-- The base ring is a left identity for the tensor product of bialgebras, up to
 bialgebra equivalence. -/
-protected noncomputable def lid : R ⊗[R] B ≃ₐc[R] B :=
-  { Coalgebra.TensorProduct.lid R B, Algebra.TensorProduct.lid R B with }
+protected noncomputable def lid : R ⊗[R] A ≃ₐc[R] A :=
+  { Coalgebra.TensorProduct.lid R A, Algebra.TensorProduct.lid R A with }
 
 @[simp]
 theorem lid_toCoalgEquiv :
-    (Bialgebra.TensorProduct.lid R B : R ⊗[R] B ≃ₗc[R] B) = Coalgebra.TensorProduct.lid R B := rfl
+    (Bialgebra.TensorProduct.lid R A : R ⊗[R] A ≃ₗc[R] A) = Coalgebra.TensorProduct.lid R A := rfl
 
 @[simp]
 theorem lid_toAlgEquiv :
-    (Bialgebra.TensorProduct.lid R B : R ⊗[R] B ≃ₐ[R] B) = Algebra.TensorProduct.lid R B := rfl
+    (Bialgebra.TensorProduct.lid R A : R ⊗[R] A ≃ₐ[R] A) = Algebra.TensorProduct.lid R A := rfl
 
 @[simp]
-theorem lid_tmul (r : R) (a : B) : Bialgebra.TensorProduct.lid R B (r ⊗ₜ a) = r • a := rfl
+theorem lid_tmul (r : R) (a : A) : Bialgebra.TensorProduct.lid R A (r ⊗ₜ a) = r • a := rfl
 
 @[simp]
-theorem lid_symm_apply (a : B) : (Bialgebra.TensorProduct.lid R B).symm a = 1 ⊗ₜ a := rfl
+theorem lid_symm_apply (a : A) : (Bialgebra.TensorProduct.lid R A).symm a = 1 ⊗ₜ a := rfl
 
+/- TODO: make this defeq, which would involve adding a heterobasic version of
+`Coalgebra.TensorProduct.rid`. -/
 theorem coalgebra_rid_eq_algebra_rid_apply (x : A ⊗[R] R) :
     Coalgebra.TensorProduct.rid R A x = Algebra.TensorProduct.rid R R A x := rfl
 
