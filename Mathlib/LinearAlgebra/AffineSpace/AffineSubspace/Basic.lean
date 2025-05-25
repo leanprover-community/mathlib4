@@ -574,6 +574,10 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
   · exact ⟨f p, mem_image_of_mem f (subset_affineSpan k _ hp),
           subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 
+@[gcongr]
+theorem map_mono {s₁ s₂ : AffineSubspace k P₁} (h : s₁ ≤ s₂) : s₁.map f ≤ s₂.map f :=
+  Set.image_mono h
+
 section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]
 

@@ -8,6 +8,7 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Sign
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
@@ -962,16 +963,30 @@ theorem restrict_map_inclusion {n : ℕ} (s : Affine.Simplex k P n)
     letI := Nonempty.map (Set.inclusion hS₂) ‹_›
     (s.restrict S₁ hS₁).map (AffineSubspace.inclusion hS₂) (Set.inclusion_injective hS₂) =
       s.restrict S₂ (hS₁.trans hS₂) :=
-  letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
-  letI := Nonempty.map (Set.inclusion hS₂) ‹_›
-  Affine.Simplex.ext fun _i => rfl
+  rfl
+
+/-- Restricting to `S₁` then mapping through the restriction of `f` to `S₁ →ᵃ[k] S₂` is the same
+as mapping through unrestricted `f`, then restricting to `S₂`. -/
+theorem restrict_map_restrict
+    {n : ℕ} (s : Affine.Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f)
+    (S₁ : AffineSubspace k P) (S₂ : AffineSubspace k P₂)
+    (hS₁ : affineSpan k (Set.range s.points) ≤ S₁) (hfS : AffineSubspace.map f S₁ ≤ S₂) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
+    letI : Nonempty (S₁.map f) := AffineSubspace.nonempty_map
+    letI := Nonempty.map (AffineSubspace.inclusion hfS) inferInstance
+    (s.restrict S₁ hS₁).map (f.restrict hfS) (AffineMap.restrict.injective hf _) =
+      (s.map f hf).restrict S₂ (
+        Eq.trans_le
+          (by simp [AffineSubspace.map_span, Set.range_comp])
+          (AffineSubspace.map_mono f hS₁) |>.trans hfS) := by
+  rfl
 
 /-- Restricting to `affineSpan k (Set.range s.points)` can be reversed by mapping through
 `AffineSubspace.subtype`. -/
 @[simp]
 theorem restrict_map_subtype {n : ℕ} (s : Affine.Simplex k P n) :
     (s.restrict _ le_rfl).map (AffineSubspace.subtype _) Subtype.coe_injective = s :=
-  Affine.Simplex.ext fun _i => rfl
+  rfl
 
 end restrict
 
