@@ -54,6 +54,7 @@ variable {E : Type w} [CommRing E] [Algebra R E] [Algebra E S] [IsScalarTower R 
 
 set_option linter.unusedVariables false in
 /-- The ring of `P`. -/
+@[nolint unusedArguments]
 abbrev Ring (P : Extension R S E) : Type w := E
 
 attribute [simp] algebraMap_σ
@@ -199,15 +200,13 @@ variable {P P'}
 
 /-- A hom between extensions as an algebra homomorphism. -/
 noncomputable
-def Hom.toAlgHom [Algebra R E'] [IsScalarTower R R' E'] [Algebra R S']
-    [IsScalarTower R R' S'] (f : Hom P P') :
+def Hom.toAlgHom [Algebra R E'] [IsScalarTower R R' E'] (f : Hom P P') :
     P.Ring →ₐ[R] P'.Ring where
   __ := f.toRingHom
   commutes' := by simp [← IsScalarTower.algebraMap_apply]
 
 @[simp]
-lemma Hom.toAlgHom_apply [Algebra R E'] [IsScalarTower R R' E'] [Algebra R S']
-    [IsScalarTower R R' S'] (f : Hom P P') (x) :
+lemma Hom.toAlgHom_apply [Algebra R E'] [IsScalarTower R R' E'] (f : Hom P P') (x) :
     f.toAlgHom x = f.toRingHom x := rfl
 
 variable (P P')
@@ -378,9 +377,8 @@ lemma Cotangent.mk_eq_zero_iff {P : Extension R S E} (x : P.ker) :
   simp [Cotangent.ext_iff, Ideal.toCotangent_eq_zero]
 
 variable {P'}
-variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']
+variable [Algebra R R'] [Algebra R' R'']
 variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
-variable [Algebra R S'] [IsScalarTower R R' S']
 
 /-- A hom between two extensions induces a map between cotangent spaces. -/
 noncomputable
@@ -402,7 +400,8 @@ def Cotangent.map [Algebra R E'] [IsScalarTower R R' E'] (f : Hom P P') :
     simp only [SetLike.val_smul, smul_eq_mul, map_mul, Hom.toAlgHom_apply]
 
 @[simp]
-lemma Cotangent.map_mk [Algebra R E'] [IsScalarTower R R' E'] (f : Hom P P') (x) :
+lemma Cotangent.map_mk [Algebra R E'] [IsScalarTower R R' E']
+    (f : Hom P P') (x) :
     Cotangent.map f (.mk x) =
       .mk ⟨f.toAlgHom x, by simpa [-map_aeval] using RingHom.congr_arg (algebraMap S S') x.2⟩ :=
   rfl
@@ -415,11 +414,10 @@ lemma Cotangent.map_id :
   simp only [map_mk, Hom.toAlgHom_id, AlgHom.coe_id, id_eq, Subtype.coe_eta, val_mk,
     LinearMap.id_coe]
 
-variable [Algebra R R''] [IsScalarTower R R' R''] [IsScalarTower R' R'' S'']
-  [Algebra R S''] [IsScalarTower R R'' S''] [IsScalarTower S S' S'']
+variable [Algebra R R''] [IsScalarTower R R' R''] [IsScalarTower S S' S'']
 
-lemma Cotangent.map_comp [Algebra R E'] [IsScalarTower R R' E'] [Algebra R E'']
-    [IsScalarTower R R'' E''] [Algebra R' E''] [IsScalarTower R' R'' E'']
+lemma Cotangent.map_comp [Algebra R E'] [IsScalarTower R R' E']
+    [Algebra R E''] [IsScalarTower R R'' E''] [Algebra R' E''] [IsScalarTower R' R'' E'']
     (f : Hom P P') (g : Hom P' P'') :
     Cotangent.map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext x

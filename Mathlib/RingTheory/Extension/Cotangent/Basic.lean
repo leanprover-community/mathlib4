@@ -70,7 +70,7 @@ universe w' u' v'
 variable {R' : Type u'} {S' : Type v'} {E' : Type w'} [CommRing R'] [CommRing S'] [Algebra R' S']
   [CommRing E'] [Algebra R' E'] [Algebra E' S'] [IsScalarTower R' E' S']
 variable (P' : Extension.{w'} R' S' E')
-variable [Algebra R R'] [Algebra S S'] [Algebra R S'] [IsScalarTower R R' S']
+variable [Algebra R R'] [Algebra S S']
 
 attribute [local instance] SMulCommClass.of_commMonoid
 
@@ -81,10 +81,8 @@ universe w'' u'' v''
 variable {R'' : Type u''} {S'' : Type v''} {E'' : Type w''} [CommRing R''] [CommRing S'']
   [Algebra R'' S''] [CommRing E''] [Algebra R'' E''] [Algebra E'' S''] [IsScalarTower R'' E'' S'']
 variable {P'' : Extension.{w''} R'' S'' E''}
-variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
-  [IsScalarTower R R'' S'']
-variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
-  [IsScalarTower R' R'' S'']
+variable [Algebra R R''] [Algebra S S'']
+variable [Algebra R' R''] [Algebra S' S'']
 variable [IsScalarTower R R' R''] [IsScalarTower S S' S'']
 
 namespace CotangentSpace
@@ -193,7 +191,8 @@ def Hom.subToKer (f g : Hom P P') : P.Ring →ₗ[R] P'.ker := by
     Submodule.restrictScalars_mem, RingHom.mem_ker, map_sub, RingHom.coe_coe, algebraMap_toRingHom,
     map_aeval, coe_eval₂Hom, sub_self, toAlgHom_apply]
 
-variable [IsScalarTower R S S'] in
+variable [Algebra R S'] [IsScalarTower R S S'] [IsScalarTower R R' S']
+
 /--
 If `f` and `g` are two maps `P → P'` between presentations,
 their difference induces a map `P.CotangentSpace →ₗ[S] P'.Cotangent` that makes two maps
@@ -228,8 +227,6 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
       Ideal.toCotangent_eq, AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid,
       SetLike.val_smul, smul_eq_mul]
     exact Hom.sub_aux f g x y
-
-variable [IsScalarTower R S S']
 
 lemma Hom.sub_one_tmul (f g : Hom P P') (x) :
     f.sub g (1 ⊗ₜ .D _ _ x) = Cotangent.mk (f.subToKer g x) := by
@@ -359,7 +356,7 @@ lemma H1Cotangent.map_eq (f g : Hom P P') : map f = map g := by
 
 variable [Algebra R' E''] [IsScalarTower R' R'' E''] [Algebra R E''] [IsScalarTower R R'' E'']
 
-omit [IsScalarTower R S S'] in
+omit [Algebra R S'] [IsScalarTower R S S'] in
 lemma H1Cotangent.map_comp
     (f : Hom P P') (g : Hom P' P'') :
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
@@ -527,7 +524,6 @@ attribute [local instance] Module.finitePresentation_of_projective in
 instance [FinitePresentation R S] [Module.Projective S (Ω[S⁄R])] :
     Module.Finite S (H1Cotangent R S) := by
   let P := Algebra.Presentation.ofFinitePresentation R S
-  have : Algebra.FiniteType R P.toExtension.Ring := FiniteType.mvPolynomial R _
   suffices Module.Finite S P.toExtension.H1Cotangent from
     .of_surjective P.equivH1Cotangent.toLinearMap P.equivH1Cotangent.surjective
   rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]
