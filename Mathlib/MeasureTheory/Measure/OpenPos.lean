@@ -146,6 +146,14 @@ theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
   rw [Measure.map_apply hf.measurable hUo.measurableSet]
   exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
 
+theorem _root_.Topology.IsOpenEmbedding.isOpenPosMeasure_comap [BorelSpace X]
+    {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
+    {f : X → Z} (hf : IsOpenEmbedding f) (μ : Measure Z) [IsOpenPosMeasure μ] :
+    (μ.comap f).IsOpenPosMeasure where
+  open_pos U hU Une := by
+    rw [MeasurableEmbedding.comap_apply hf.measurableEmbedding]
+    exact IsOpenPosMeasure.open_pos _ (hf.isOpen_iff_image_isOpen.mp hU) (Une.image f)
+
 end Basic
 
 section LinearOrder

@@ -214,6 +214,25 @@ section Group
 variable [Group G] [MeasurableMul G]
 
 @[to_additive]
+lemma _root_.MeasurableEmbedding.IsMulLeftInvariant_comap {H : Type*}
+    [Group H] [MeasurableSpace H] [MeasurableMul H]
+    {f : G →* H} (hf: MeasurableEmbedding f) (μ : Measure H) [IsMulLeftInvariant μ] :
+    (μ.comap f).IsMulLeftInvariant where
+  map_mul_left_eq_self g := by
+    ext s hs
+    rw [map_apply (by fun_prop) hs]
+    repeat rw [MeasurableEmbedding.comap_apply hf]
+    have : f '' ((fun x ↦ g * x) ⁻¹' s) = (fun x ↦ f g * x) ⁻¹' (f '' s) := by
+      ext
+      constructor
+      · rintro ⟨y, hy, rfl⟩
+        exact ⟨g * y, hy, by simp⟩
+      · intro ⟨y, yins, hy⟩
+        exact ⟨g⁻¹ * y, by simp [yins], by simp [hy]⟩
+    rw [this, ← map_apply (by fun_prop), IsMulLeftInvariant.map_mul_left_eq_self]
+    exact hf.measurableSet_image.mpr hs
+
+@[to_additive]
 theorem measurePreserving_div_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) :
     MeasurePreserving (· / g) μ μ := by simp_rw [div_eq_mul_inv, measurePreserving_mul_right μ g⁻¹]
 
@@ -728,7 +747,7 @@ it is a Haar measure. -/
 @[to_additive
 "If a left-invariant measure gives positive mass to some compact set with nonempty interior, then
 it is an additive Haar measure."]
-theorem isHaarMeasure_of_isCompact_nonempty_interior [IsTopologicalGroup G] [BorelSpace G]
+theorem HaarMeasure_of_isCompact_nonempty_interior [IsTopologicalGroup G] [BorelSpace G]
     (μ : Measure G) [IsMulLeftInvariant μ] (K : Set G) (hK : IsCompact K)
     (h'K : (interior K).Nonempty) (h : μ K ≠ 0) (h' : μ K ≠ ∞) : IsHaarMeasure μ :=
   { lt_top_of_isCompact := fun _L hL =>
@@ -752,6 +771,15 @@ theorem isHaarMeasure_map [BorelSpace G] [ContinuousMul G] {H : Type*} [Group H]
       set g : CocompactMap G H := ⟨⟨f, hf⟩, h_prop⟩
       exact IsCompact.measure_lt_top (g.isCompact_preimage_of_isClosed hK.closure isClosed_closure)
     toIsOpenPosMeasure := hf.isOpenPosMeasure_map h_surj }
+
+theorem _root_.Topology.IsOpenEmbedding.isHaarMeasure_comap [BorelSpace G] [MeasurableMul G]
+    [Group H] [TopologicalSpace H][BorelSpace H] [MeasurableMul H]
+    (μ : Measure H) [IsHaarMeasure μ] {f : G →* H} (hf : Topology.IsOpenEmbedding f) :
+    (μ.comap f).IsHaarMeasure where
+  map_mul_left_eq_self := (hf.measurableEmbedding.IsMulLeftInvariant_comap μ).map_mul_left_eq_self
+  lt_top_of_isCompact := (IsFiniteMeasureOnCompacts.comap_of_continuous_measurableEmbedding
+    μ hf.continuous hf.measurableEmbedding).lt_top_of_isCompact
+  open_pos := (hf.isOpenPosMeasure_comap μ).open_pos
 
 /-- The image of a finite Haar measure under a continuous surjective group homomorphism is again
 a Haar measure. See also `isHaarMeasure_map`. -/

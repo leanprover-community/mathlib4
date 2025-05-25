@@ -927,6 +927,11 @@ protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasu
   rw [← Homeomorph.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
   exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
 
+protected theorem IsFiniteMeasureOnCompacts.comap (μ : Measure β) [IsFiniteMeasureOnCompacts μ]
+    {f : α ≃ₜ β} : IsFiniteMeasureOnCompacts (μ.comap f) :=
+  IsFiniteMeasureOnCompacts.comap_of_continuous_measurableEmbedding
+    μ f.continuous f.measurableEmbedding
+
 end BorelSpace
 
 section ENNReal

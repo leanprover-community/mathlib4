@@ -374,6 +374,20 @@ protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [Topologica
   refine ⟨f.symm ⁻¹' U, image_subset_iff.1 hAU, this, ?_⟩
   rwa [map_apply f.measurable this.measurableSet, f.preimage_symm, f.preimage_image]
 
+open Topology in
+protected theorem comap_of_continuous_measurableEmbedding [BorelSpace α]
+    [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β] (μ : Measure β) [OuterRegular μ]
+    {f : α → β} (f_cont : Continuous f) (f_me : MeasurableEmbedding f) :
+    (μ.comap f).OuterRegular where
+  outerRegular A hA r hr := by
+    rw [MeasurableEmbedding.comap_apply f_me] at hr
+    obtain ⟨U, hUA, Uopen, hμU⟩ :=
+      OuterRegular.outerRegular (f_me.measurableSet_image' hA) r hr
+    use f ⁻¹' U
+    refine ⟨by rwa [Superset, ← Set.image_subset_iff], Uopen.preimage f_cont, ?_⟩
+    rw [MeasurableEmbedding.comap_apply f_me]
+    apply lt_of_le_of_lt (measure_mono (Set.image_preimage_subset _ _)) hμU
+
 protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) :
     (x • μ).OuterRegular := by
   rcases eq_or_ne x 0 with (rfl | h0)
@@ -694,6 +708,22 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
   convert h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
+
+open Topology in
+protected theorem comap_of_isOpenEmbedding [BorelSpace α]
+    [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β]
+    (μ : Measure β) [InnerRegular μ] {f : α → β} (hf : IsOpenEmbedding f) :
+    (μ.comap f).InnerRegular where
+  innerRegular A hA r hr := by
+    rw [MeasurableEmbedding.comap_apply hf.measurableEmbedding] at hr
+    obtain ⟨K, hKA, Kcompact, hμK⟩ :=
+      InnerRegular.innerRegular (μ := μ) (hf.measurableEmbedding.measurableSet_image' hA) r hr
+    have hK := subset_trans hKA (Set.image_subset_range _ _)
+    use f ⁻¹' K
+    refine ⟨?_, hf.isInducing.isCompact_preimage' Kcompact hK, ?_⟩
+    · rw [← hf.injective.preimage_image A]; exact Set.preimage_mono hKA
+    · rwa [MeasurableEmbedding.comap_apply hf.measurableEmbedding,
+        Set.image_preimage_eq_iff.mpr hK]
 
 end InnerRegular
 
@@ -1016,6 +1046,19 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
   convert h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
+
+open Topology in
+protected theorem comap_of_isOpenEmbedding [BorelSpace α]
+    [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β] {μ : Measure β} [Regular μ]
+    (f : α → β) (hf : IsOpenEmbedding f) : (μ.comap f).Regular := by
+  haveI :=
+    OuterRegular.comap_of_continuous_measurableEmbedding
+      μ hf.continuous hf.measurableEmbedding
+  haveI :=
+    IsFiniteMeasureOnCompacts.comap_of_continuous_measurableEmbedding
+      μ hf.continuous hf.measurableEmbedding
+  refine ⟨?_⟩
+  sorry
 
 protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).Regular := by
   haveI := OuterRegular.smul μ hx

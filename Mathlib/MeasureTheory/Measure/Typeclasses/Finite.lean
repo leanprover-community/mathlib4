@@ -594,6 +594,15 @@ noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [T
   obtain ⟨n, rfl⟩ : ∃ n : ℕ, f n = t := by simpa only using tT
   exact mem_iUnion_of_mem _ xt
 
+protected theorem IsFiniteMeasureOnCompacts.comap_of_continuous_measurableEmbedding
+    [TopologicalSpace α] [MeasurableSpace α][TopologicalSpace β] [MeasurableSpace β]
+    (μ : Measure β) [IsFiniteMeasureOnCompacts μ]
+    {f : α → β} (f_cont : Continuous f) (f_me : MeasurableEmbedding f) :
+    IsFiniteMeasureOnCompacts (μ.comap f) where
+  lt_top_of_isCompact K hK := by
+    rw [MeasurableEmbedding.comap_apply f_me]
+    exact IsFiniteMeasureOnCompacts.lt_top_of_isCompact (hK.image f_cont)
+
 section MeasureIxx
 
 variable [Preorder α] [TopologicalSpace α] [CompactIccSpace α] {m : MeasurableSpace α}
