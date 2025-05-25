@@ -3,9 +3,6 @@ Copyright (c) 2023 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.Associator
 
