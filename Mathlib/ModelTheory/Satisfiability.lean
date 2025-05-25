@@ -421,13 +421,11 @@ def IsMaximal (T : L.Theory) : Prop :=
 theorem IsMaximal.isComplete (h : T.IsMaximal) : T.IsComplete :=
   h.imp_right (forall_imp fun _ => Or.imp models_sentence_of_mem models_sentence_of_mem)
 
-theorem IsMaximal.mem_or_notMem (h : T.IsMaximal) (φ : L.Sentence) : φ ∈ T ∨ φ.not ∈ T :=
+theorem IsMaximal.mem_or_not_mem (h : T.IsMaximal) (φ : L.Sentence) : φ ∈ T ∨ φ.not ∈ T :=
   h.2 φ
 
-@[deprecated (since := "2025-05-23")] alias IsMaximal.mem_or_not_mem := IsMaximal.mem_or_notMem
-
 theorem IsMaximal.mem_of_models (h : T.IsMaximal) {φ : L.Sentence} (hφ : T ⊨ᵇ φ) : φ ∈ T := by
-  refine (h.mem_or_notMem φ).resolve_right fun con => ?_
+  refine (h.mem_or_not_mem φ).resolve_right fun con => ?_
   rw [models_iff_not_satisfiable, Set.union_singleton, Set.insert_eq_of_mem con] at hφ
   exact hφ h.1
 
@@ -444,13 +442,11 @@ variable [L.Structure M]
 theorem isSatisfiable [Nonempty M] : (L.completeTheory M).IsSatisfiable :=
   Theory.Model.isSatisfiable M
 
-theorem mem_or_notMem (φ : L.Sentence) : φ ∈ L.completeTheory M ∨ φ.not ∈ L.completeTheory M := by
+theorem mem_or_not_mem (φ : L.Sentence) : φ ∈ L.completeTheory M ∨ φ.not ∈ L.completeTheory M := by
   simp_rw [completeTheory, Set.mem_setOf_eq, Sentence.Realize, Formula.realize_not, or_not]
 
-@[deprecated (since := "2025-05-23")] alias mem_or_not_mem := mem_or_notMem
-
 theorem isMaximal [Nonempty M] : (L.completeTheory M).IsMaximal :=
-  ⟨isSatisfiable L M, mem_or_notMem L M⟩
+  ⟨isSatisfiable L M, mem_or_not_mem L M⟩
 
 theorem isComplete [Nonempty M] : (L.completeTheory M).IsComplete :=
   (completeTheory.isMaximal L M).isComplete
