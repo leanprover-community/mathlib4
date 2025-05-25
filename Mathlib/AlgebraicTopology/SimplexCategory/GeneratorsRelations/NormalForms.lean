@@ -300,7 +300,7 @@ theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
       subst h'
       subst h₂'
       haveI := standardσ (m₁ := m + 1 + L₁.length) [] (by simp +arith [simplicialInsert_length]) ≫=
-        (standardσ_simplicialInsert L₁ hL₁ k k.prop).symm
+        (standardσ_simplicialInsert L₁ hL₁ k k.prop _ rfl).symm
       simp only [Fin.cast_val_eq_self, standardσ_comp_standardσ_assoc, List.append_eq,
         List.append_nil] at this
       simp [this, standardσ_comp_standardσ]
