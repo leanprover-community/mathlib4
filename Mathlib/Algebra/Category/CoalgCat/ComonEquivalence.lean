@@ -7,6 +7,8 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.Algebra.Category.CoalgCat.Basic
+import Mathlib.RingTheory.Coalgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`
@@ -147,10 +149,8 @@ theorem comul_tensorObj :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
       = Coalgebra.comul (A := M ⊗[R] N) := by
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
-    comul_def]
-  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X,
-    toComonObj_comul, tensorμ_eq_tensorTensorTensorComm]
+  simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
+    AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
 theorem comul_tensorObj_tensorObj_right :
@@ -158,14 +158,11 @@ theorem comul_tensorObj_tensorObj_right :
       (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
       = Coalgebra.comul (A := M ⊗[R] N ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
-    comul_def]
-  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X, ModuleCat.of_coe, toComonObj_comul]
+  dsimp
+  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_comul]
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
-  simp only [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
-    ModuleCat.coe_of, Comon_.monoidal_tensorObj_comul, toComonObj_X, toComonObj_comul,
-    tensorμ_eq_tensorTensorTensorComm]
+  simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
+    AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
 theorem comul_tensorObj_tensorObj_left :
@@ -173,31 +170,34 @@ theorem comul_tensorObj_tensorObj_left :
       (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))
       = Coalgebra.comul (A := (M ⊗[R] N) ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
-    comul_def]
-  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X, ModuleCat.of_coe, toComonObj_comul]
+  dsimp
+  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_comul]
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
-  simp only [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
-    ModuleCat.coe_of, Comon_.monoidal_tensorObj_comul, toComonObj_X, toComonObj_comul,
-    tensorμ_eq_tensorTensorTensorComm]
+  simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
+    AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
 theorem counit_tensorObj :
     Coalgebra.counit (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
       = Coalgebra.counit (A := M ⊗[R] N) := by
+  rw [ofComonObjCoalgebraStruct_counit]
+  simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
   rfl
 
 theorem counit_tensorObj_tensorObj_right :
     Coalgebra.counit (R := R)
       (A := (CoalgCat.of R M ⊗ (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
       = Coalgebra.counit (A := M ⊗[R] (N ⊗[R] P)) := by
-  ext; rfl
+  rw [ofComonObjCoalgebraStruct_counit]
+  simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
+  rfl
 
 theorem counit_tensorObj_tensorObj_left :
     Coalgebra.counit (R := R)
       (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))
       = Coalgebra.counit (A := (M ⊗[R] N) ⊗[R] P) := by
-  ext; rfl
+  rw [ofComonObjCoalgebraStruct_counit]
+  simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
+  rfl
 
 end CoalgCat.MonoidalCategoryAux
