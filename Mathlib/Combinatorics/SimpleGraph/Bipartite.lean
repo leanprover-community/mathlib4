@@ -55,7 +55,7 @@ relation `r : α → β → Prop`, see `Mathlib.Combinatorics.Enumerative.Double
 -/
 
 
-open BigOperators Finset Fintype Classical
+open BigOperators Finset Fintype
 
 namespace SimpleGraph
 
@@ -254,8 +254,8 @@ variable {V : Type*} (G : SimpleGraph V)
 def IsBipartite (G : SimpleGraph V) : Prop := G.Colorable 2
 
 /--
-From a 2-coloring of `G`, produce two color classes `s` and `t` witnessing bipartiteness:
-`Disjoint s t` where every edge goes between `s` and `t`.
+From a 2-coloring of G, produce two color classes s and t witnessing bipartiteness:
+Disjoint s t where every edge goes between s and t.
 -/
 lemma twocol_imp_bipartition (h : G.Colorable 2) : ∃ s t, G.IsBipartiteWith s t := by
   rcases h with ⟨c, hc_adj⟩
@@ -273,16 +273,17 @@ lemma twocol_imp_bipartition (h : G.Colorable 2) : ∃ s t, G.IsBipartiteWith s 
     intro v w h_adj
     have h_color := hc_adj h_adj
     simp [s, t, Set.mem_setOf_eq, Fin.forall_fin_two] at h_color ⊢
-    ; omega
+    omega
   exact ⟨s, t, ⟨h₁, h₂⟩⟩
 
 
 /--
-Given a bipartition `s, t` of `G`, construct an explicit 2-coloring by sending vertices in `s` to 0
-and those in `t` to 1. Show adjacent vertices get different colors (through the pattern match).
+Given a bipartition s, t of G, construct an explicit 2-coloring by sending vertices in s to 0
+and those in t to 1. Show adjacent vertices get different colors (through the pattern match).
 -/
 lemma bipartition_imp_twocol {s t : Set V}
   (h : G.IsBipartiteWith s t) : G.Colorable 2 := by
+  classical
   have h_disj  : Disjoint s t := h.1
   have h_edges : ∀ v w, G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s := h.2
   use fun v => if v ∈ s then 0 else 1
@@ -308,11 +309,10 @@ theorem twocol_iff_bipartition :
     exact bipartition_imp_twocol G h
 
 /--
-Using the previous statements to bride `IsBipartite` and `IsBipartiteWith`.
+Using the previous statements to bride IsBipartite and IsBipartiteWith.
 -/
 theorem bipartite_iff_bipartition :
   G.IsBipartite ↔ ∃ s t : Set V, G.IsBipartiteWith s t := by
   dsimp [IsBipartite]
   exact twocol_iff_bipartition G
-
 end SimpleGraph
