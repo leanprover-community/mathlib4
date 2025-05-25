@@ -214,7 +214,7 @@ section Group
 variable [Group G] [MeasurableMul G]
 
 @[to_additive]
-lemma _root_.MeasurableEmbedding.IsMulLeftInvariant_comap {H : Type*}
+theorem _root_.MeasurableEmbedding.IsMulLeftInvariant_comap {H : Type*}
     [Group H] [MeasurableSpace H] [MeasurableMul H]
     {f : G →* H} (hf: MeasurableEmbedding f) (μ : Measure H) [IsMulLeftInvariant μ] :
     (μ.comap f).IsMulLeftInvariant where
