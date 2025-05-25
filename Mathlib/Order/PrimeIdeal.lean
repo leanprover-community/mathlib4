@@ -158,7 +158,7 @@ theorem IsPrime.compl_mem_of_notMem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ ∈
   hI.mem_or_compl_mem.resolve_left hxnI
 
 @[deprecated (since := "2025-05-23")]
-alias IsPrime.mem_compl_of_not_mem := IsPrime.mem_compl_of_notMem
+alias IsPrime.mem_compl_of_not_mem := IsPrime.compl_mem_of_notMem
 
 theorem isPrime_of_mem_or_compl_mem [IsProper I] (h : ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I) : IsPrime I := by
   simp only [isPrime_iff_mem_or_mem, or_iff_not_imp_left]
@@ -177,7 +177,7 @@ instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
   suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J by rwa [sup_inf_inf_compl] at ass
   exact
     sup_mem (J.lower inf_le_right hyJ)
-      (hIJ.le <| I.lower inf_le_right <| IsPrime.mem_compl_of_notMem ‹_› hyI)
+      (hIJ.le <| I.lower inf_le_right <| IsPrime.compl_mem_of_notMem ‹_› hyI)
 
 end BooleanAlgebra
 
