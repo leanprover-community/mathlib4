@@ -183,7 +183,7 @@ lemma sectionCotangent_comp :
   intro i
   rfl
 
-lemma sectionCotangent_zero_of_notMem_range (i : σ) (hi : i ∉ Set.range P.map) :
+lemma sectionCotangent_zero_of_notMem_range (i : ι) (hi : i ∉ Set.range P.map) :
     (sectionCotangent P) (P.cotangentSpaceBasis i) = 0 := by
   letI := P.isFinite_rels
   classical
