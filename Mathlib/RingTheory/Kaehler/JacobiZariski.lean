@@ -86,6 +86,7 @@ lemma Cotangent.exact :
     rw [LinearMap.range_liftBaseChange]
     let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_left hy)⟩
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
+    letI : Algebra (MvPolynomial (ι' ⊕ ι) R) T := inferInstanceAs <| Algebra (Q.comp P).Ring T
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
       Extension.Cotangent.mk z := by
       ext; simpa only [val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
@@ -98,8 +99,7 @@ lemma Cotangent.exact :
     rintro w hw
     simp only [AlgHom.toRingHom_eq_coe, Ideal.mem_comap, RingHom.coe_coe,
       Submodule.mem_map, Submodule.mem_comap, Submodule.restrictScalars_mem, Submodule.coe_subtype,
-      Subtype.exists, exists_and_right, exists_eq_right,
-      toExtension_Ring, toExtension_commRing, toExtension_algebra₂]
+      Subtype.exists, exists_and_right, exists_eq_right]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
     · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
       rw [aeval_val_eq_zero hw, map_zero]
@@ -254,6 +254,8 @@ lemma δAux_toAlgHom {ι₁ : Type u₁} {ι₃ : Type u₃} {Q : Generators S T
     rw [add_left_comm]
     rfl
 
+set_option maxHeartbeats 0 in
+-- needed after unbundling `Extension`
 lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
@@ -362,6 +364,7 @@ lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
 lemma δ_eq_δAux (x : Q.ker) (hx) :
     δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
   let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
+  let _ : Algebra (MvPolynomial ι' S) T := inferInstanceAs <| Algebra Q.Ring T
   have hy : (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) y = Extension.Cotangent.mk x := by
     simp only [y, Extension.Cotangent.map_mk]
     congr

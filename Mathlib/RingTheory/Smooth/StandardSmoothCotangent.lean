@@ -56,9 +56,8 @@ lemma cotangentComplexAux_apply [Finite σ] (P : PreSubmersivePresentation R S �
     P.cotangentComplexAux (Cotangent.mk x) i = (aeval P.val) (pderiv (P.map i) x.val) := by
   dsimp only [cotangentComplexAux, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     cotangentComplex_mk]
-  simp only [Generators.toExtension_Ring, Finsupp.lcomapDomain_apply,
-    Finsupp.linearEquivFunOnFinite_apply, Finsupp.comapDomain_apply,
-    Generators.cotangentSpaceBasis_repr_tmul, one_mul]
+  simp only [Finsupp.lcomapDomain_apply, Finsupp.linearEquivFunOnFinite_apply,
+    Finsupp.comapDomain_apply, Generators.cotangentSpaceBasis_repr_tmul, one_mul]
 
 lemma cotangentComplexAux_zero_iff [Finite σ] {P : PreSubmersivePresentation R S ι σ} (x : P.ker) :
     P.cotangentComplexAux (Cotangent.mk x) = 0 ↔
@@ -142,6 +141,7 @@ noncomputable def basisCotangent : Basis σ S P.toExtension.Cotangent :=
   P.basisDeriv.map P.cotangentEquiv.symm
 
 lemma basisCotangent_apply (r : σ) :
+    letI : Algebra (MvPolynomial ι R) S := inferInstanceAs (Algebra P.Ring S)
     P.basisCotangent r = Extension.Cotangent.mk ⟨P.relation r, P.relation_mem_ker r⟩ := by
   letI := P.isFinite_rels
   symm

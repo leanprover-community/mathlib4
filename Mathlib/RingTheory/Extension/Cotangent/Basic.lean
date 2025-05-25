@@ -210,7 +210,10 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
     IsScalarTower.of_algebraMap_eq fun x ↦
       show algebraMap R S' x = algebraMap S S' (algebraMap P.Ring S (algebraMap R P.Ring x)) by
         rw [← IsScalarTower.algebraMap_apply R P.Ring S, ← IsScalarTower.algebraMap_apply]
-  have : LinearMap.CompatibleSMul (↥P'.ker) P'.Cotangent R P'.Ring := sorry
+  have : IsScalarTower R' P'.Ring P'.Cotangent := inferInstance
+  have : IsScalarTower R P'.Ring P'.Cotangent := ⟨fun x y z ↦ by
+    rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R R' P'.Ring, ← Algebra.smul_def,
+      smul_assoc, algebraMap_smul]⟩
   refine (Derivation.liftKaehlerDifferential ?_).liftBaseChange S
   refine
   { __ := Cotangent.mk.restrictScalars R ∘ₗ f.subToKer g
@@ -367,7 +370,7 @@ induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/
 @[simps! apply]
 noncomputable
 def H1Cotangent.equiv
-    {E₁ E₂ : Type w} [CommRing E₁] [CommRing E₂]
+    {E₁ E₂ : Type*} [CommRing E₁] [CommRing E₂]
     [Algebra R E₁] [Algebra R E₂] [Algebra E₁ S] [Algebra E₂ S]
     [IsScalarTower R E₁ S] [IsScalarTower R E₂ S]
     {P₁ : Extension R S E₁} {P₂ : Extension R S E₂} (f₁ : P₁.Hom P₂) (f₂ : P₂.Hom P₁) :
@@ -464,18 +467,15 @@ instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S (Ω[S⁄
 
 variable {ι : Type w} {ι' : Type*} {P : Generators R S ι}
 
---set_option diagnostics true in
---set_option maxHeartbeats 0 in
 open Extension.H1Cotangent in
 /-- `H¹(L_{S/R})` is independent of the presentation chosen. -/
 @[simps! apply]
 noncomputable
 def Generators.H1Cotangent.equiv (P : Generators R S ι) (P' : Generators R S ι') :
     P.toExtension.H1Cotangent ≃ₗ[S] P'.toExtension.H1Cotangent :=
-  Extension.H1Cotangent.equiv (P₁ := P.toExtension) (P₂ := P'.toExtension)
+  Extension.H1Cotangent.equiv
     (Generators.defaultHom P P').toExtensionHom
     (Generators.defaultHom P' P).toExtensionHom
-  --  (Generators.defaultHom P P').toExtensionHom (Generators.defaultHom P' P).toExtensionHom
 
 variable {S' : Type*} [CommRing S'] [Algebra R S']
 variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]

@@ -68,6 +68,8 @@ open KaehlerDifferential
 attribute [local instance] SMulCommClass.of_commMonoid
 
 variable {R S T}
+variable {E F : Type u} [CommRing E] [CommRing F] [Algebra R E] [Algebra R F]
+  [Algebra E S] [Algebra F T] [IsScalarTower R E S] [IsScalarTower R F T]
 
 /-!
 Suppose we have a morphism of extensions of `R`-algebras
@@ -77,7 +79,7 @@ Suppose we have a morphism of extensions of `R`-algebras
 0 → I → P → S → 0
 ```
 -/
-variable {P : Extension.{u} R S} {Q : Extension.{u} R T} (f : P.Hom Q)
+variable {P : Extension.{u} R S E} {Q : Extension.{u} R T F} (f : P.Hom Q)
 
 /-- If `P → Q` is formally etale, then `T ⊗ₛ (S ⊗ₚ Ω[P/R]) ≃ T ⊗_Q Ω[Q/R]`. -/
 noncomputable
@@ -264,20 +266,20 @@ variable {S}
 noncomputable
 def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
     T ⊗[S] H1Cotangent R S ≃ₗ[T] H1Cotangent R T := by
-  letI P : Extension R S := (Generators.self R S).toExtension
+  letI P : Extension R S _ := (Generators.self R S).toExtension
   letI M' := M.comap (algebraMap P.Ring S)
   letI fQ : Localization M' →ₐ[R] T := IsLocalization.liftAlgHom (M := M')
     (f := (IsScalarTower.toAlgHom R S T).comp (IsScalarTower.toAlgHom R P.Ring S)) (fun ⟨y, hy⟩ ↦
     by simpa using IsLocalization.map_units T ⟨algebraMap P.Ring S y, hy⟩)
-  letI Q : Extension R T := .ofSurjective fQ (by
+  letI Q : Extension R T (Localization M') := .ofSurjective fQ (by
     intro x
     obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective M x
     obtain ⟨x, rfl⟩ := P.algebraMap_surjective x
     obtain ⟨s, rfl⟩ := P.algebraMap_surjective s
     refine ⟨IsLocalization.mk' _ x ⟨s, show s ∈ M' from hs⟩, ?_⟩
-    simp only [fQ, IsLocalization.coe_liftAlgHom, AlgHom.toRingHom_eq_coe]
-    rw [IsLocalization.lift_mk'_spec]
-    simp)
+    simp only [IsLocalization.coe_liftAlgHom, AlgHom.toRingHom_eq_coe, IsLocalization.lift_mk'_spec,
+      RingHom.coe_coe, AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply,
+      IsLocalization.mk'_spec'_mk, fQ])
   letI f : P.Hom Q :=
   { toRingHom := algebraMap P.Ring (Localization M')
     toRingHom_algebraMap x := (IsScalarTower.algebraMap_apply R P.Ring (Localization M') _).symm
@@ -331,25 +333,24 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
   ext x : 3
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, LinearMap.liftBaseChange_tmul, one_smul]
-  simp only [tensorH1CotangentOfIsLocalization, Generators.toExtension_Ring,
-    Generators.toExtension_commRing, Generators.toExtension_algebra₂,
+  simp only [tensorH1CotangentOfIsLocalization,
     AlgHom.toRingHom_eq_coe, Extension.tensorH1Cotangent,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
     Extension.equivH1CotangentOfFormallySmooth, LinearEquiv.trans_apply]
-  letI P : Extension R S := (Generators.self R S).toExtension
+  letI P : Extension R S _ := (Generators.self R S).toExtension
   letI M' := M.comap (algebraMap P.Ring S)
   letI fQ : Localization M' →ₐ[R] T := IsLocalization.liftAlgHom (M := M')
     (f := (IsScalarTower.toAlgHom R S T).comp (IsScalarTower.toAlgHom R P.Ring S)) (fun ⟨y, hy⟩ ↦
     by simpa using IsLocalization.map_units T ⟨algebraMap P.Ring S y, hy⟩)
-  letI Q : Extension R T := .ofSurjective fQ (by
+  letI Q : Extension R T _ := .ofSurjective fQ (by
     intro x
     obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective M x
     obtain ⟨x, rfl⟩ := P.algebraMap_surjective x
     obtain ⟨s, rfl⟩ := P.algebraMap_surjective s
     refine ⟨IsLocalization.mk' _ x ⟨s, show s ∈ M' from hs⟩, ?_⟩
-    simp only [fQ, IsLocalization.coe_liftAlgHom, AlgHom.toRingHom_eq_coe]
-    rw [IsLocalization.lift_mk'_spec]
-    simp)
+    simp only [fQ, IsLocalization.coe_liftAlgHom, AlgHom.toRingHom_eq_coe,
+      IsLocalization.lift_mk'_spec, RingHom.coe_coe, AlgHom.coe_comp, IsScalarTower.coe_toAlgHom',
+      Function.comp_apply, IsLocalization.mk'_spec'_mk, fQ])
   letI f : (Generators.self R T).toExtension.Hom Q :=
   { toRingHom := (MvPolynomial.aeval Q.σ).toRingHom
     toRingHom_algebraMap := (MvPolynomial.aeval Q.σ).commutes
