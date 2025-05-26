@@ -66,8 +66,7 @@ lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
 
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
 valuation -/
-noncomputable def adicAbv : AbsoluteValue K ℝ := IsDedekindDomain.HeightOneSpectrum.adicAbv v
-    <| one_lt_absNorm_nnreal v
+noncomputable def adicAbv : AbsoluteValue K ℝ := v.adicAbv <| one_lt_absNorm_nnreal v
 
 @[deprecated (since := "2025-02-28")] alias vadicAbv := adicAbv
 
@@ -77,7 +76,7 @@ theorem adicAbv_def {x : K} : adicAbv v x = toNNReal (absNorm_ne_zero v) (v.valu
 
 /-- The `v`-adic absolute value is nonarchimedean -/
 theorem isNonarchimedean_adicAbv : IsNonarchimedean (adicAbv v) :=
-  IsDedekindDomain.HeightOneSpectrum.isNonarchimedean_adicAbv v <| one_lt_absNorm_nnreal v
+  v.isNonarchimedean_adicAbv <| one_lt_absNorm_nnreal v
 
 end AbsoluteValue
 

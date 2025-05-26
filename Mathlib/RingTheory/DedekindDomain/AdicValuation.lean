@@ -26,6 +26,8 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   to its `v`-adic valuation.
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
   `v.adicCompletion`.
+- `IsDedekindDomain.HeightOneSpectrum.adicAbv v`is the `v`-adic absolute value on `K` defined as `b`
+  raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
 
 ## Main results
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
@@ -600,8 +602,7 @@ def adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) : AbsoluteValue 
   map_mul' _ _ := by simp [adicAbvDef]
   nonneg' _ := NNReal.zero_le_coe
   eq_zero' _ := by simp [adicAbvDef]
-  add_le' _ _ := (isNonanchimedean_adicAbvDef v hb).add_le
-    (fun x ↦ zero_le ((toNNReal (ne_zero_of_lt hb)) (v.valuation K x)))
+  add_le' _ _ := (isNonanchimedean_adicAbvDef v hb).add_le fun _ ↦ zero_le _
 
 variable {R K} in
 /-- The `v`-adic absolute value is nonarchimedean -/
