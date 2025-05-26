@@ -190,12 +190,12 @@ lemma root_sub_zsmul_mem_range_iff {z : ℤ} :
 
 lemma setOf_root_add_zsmul_mem_eq_Icc :
     {k : ℤ | P.root j + k • P.root i ∈ range P.root} =
-        Icc (-P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
+      Icc (-P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
   ext; simp [← P.root_add_zsmul_mem_range_iff h]
 
 lemma setOf_root_sub_zsmul_mem_eq_Icc :
     {k : ℤ | P.root j - k • P.root i ∈ range P.root} =
-        Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) := by
+      Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) := by
   ext; rw [← root_sub_zsmul_mem_range_iff h, mem_setOf_eq]
 
 lemma chainTopCoeff_eq_sSup :
