@@ -1259,8 +1259,7 @@ theorem toSignedMeasure_toMeasureOfZeroLE :
 theorem toSignedMeasure_restrict_eq_restrict_toSigned (hs : MeasurableSet s) :
     μ.toSignedMeasure.restrict s = (μ.restrict s).toSignedMeasure := by
   ext A hA
-  rw [VectorMeasure.restrict_apply _ hs hA]
-  simp [toSignedMeasure_apply, hA, hs, MeasurableSet.inter, ↓reduceIte, restrict_apply]
+  simp [VectorMeasure.restrict_apply, toSignedMeasure_apply, hA, hs, restrict_apply]
 
 theorem toSignedMeasure_le_iff : μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ μ ≤ ν   := by
   constructor
