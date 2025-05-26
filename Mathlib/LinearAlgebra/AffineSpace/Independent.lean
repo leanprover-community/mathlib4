@@ -108,7 +108,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
       rw [hfg]
       have hf : ∑ ι ∈ s2, f ι = 0 := by
         rw [Finset.sum_insert
-            (Finset.not_mem_map_subtype_of_not_property s (Classical.not_not.2 rfl)),
+            (Finset.notMem_map_subtype_of_not_property s (Classical.not_not.2 rfl)),
           Finset.sum_subtype_map_embedding fun x _ => (hfg x).symm]
         rw [hfdef]
         dsimp only
@@ -153,7 +153,7 @@ theorem affineIndependent_set_iff_linearIndependent_vsub {s : Set P} {p₁ : P} 
       (vsub_left_injective p₁).mem_set_image.1 ((vadd_vsub (v : V) p₁).symm ▸ v.property)
     let f : (fun p : P => (p -ᵥ p₁ : V)) '' (s \ {p₁}) → { x : s // x ≠ ⟨p₁, hp₁⟩ } := fun x =>
       ⟨⟨(x : V) +ᵥ p₁, Set.mem_of_mem_diff (hv x)⟩, fun hx =>
-        Set.not_mem_of_mem_diff (hv x) (Subtype.ext_iff.1 hx)⟩
+        Set.notMem_of_mem_diff (hv x) (Subtype.ext_iff.1 hx)⟩
     convert h.comp f fun x1 x2 hx =>
         Subtype.ext (vadd_right_cancel p₁ (Subtype.ext_iff.1 (Subtype.ext_iff.1 hx)))
     ext v
@@ -443,9 +443,12 @@ protected theorem AffineIndependent.mem_affineSpan_iff [Nontrivial k] {p : ι �
 /-- If a family is affinely independent, a point in the family is not
 in the affine span of the other points, if the underlying ring is
 nontrivial. -/
-theorem AffineIndependent.not_mem_affineSpan_diff [Nontrivial k] {p : ι → P}
+theorem AffineIndependent.notMem_affineSpan_diff [Nontrivial k] {p : ι → P}
     (ha : AffineIndependent k p) (i : ι) (s : Set ι) : p i ∉ affineSpan k (p '' (s \ {i})) := by
   simp [ha]
+
+@[deprecated (since := "2025-05-23")]
+alias AffineIndependent.not_mem_affineSpan_diff := AffineIndependent.notMem_affineSpan_diff
 
 theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
     (h : ¬AffineIndependent k ((↑) : t → V)) :
@@ -630,7 +633,7 @@ variable {k}
 
 /-- If all but one point of a family are affinely independent, and that point does not lie in
 the affine span of that family, the family is affinely independent. -/
-theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : ι}
+theorem AffineIndependent.affineIndependent_of_notMem_span {p : ι → P} {i : ι}
     (ha : AffineIndependent k fun x : { y // y ≠ i } => p x)
     (hi : p i ∉ affineSpan k (p '' { x | x ≠ i })) : AffineIndependent k p := by
   classical
@@ -671,9 +674,13 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
         exact hji.symm ▸ his.neg_resolve_left hj
       · exact ha s' w' hw' hs' ⟨j, hji⟩ (Finset.mem_subtype.2 hj)
 
+@[deprecated (since := "2025-05-23")]
+alias AffineIndependent.affineIndependent_of_not_mem_span :=
+  AffineIndependent.affineIndependent_of_notMem_span
+
 /-- If distinct points `p₁` and `p₂` lie in `s` but `p₃` does not, the three points are affinely
 independent. -/
-theorem affineIndependent_of_ne_of_mem_of_mem_of_not_mem {s : AffineSubspace k P} {p₁ p₂ p₃ : P}
+theorem affineIndependent_of_ne_of_mem_of_mem_of_notMem {s : AffineSubspace k P} {p₁ p₂ p₃ : P}
     (hp₁p₂ : p₁ ≠ p₂) (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∉ s) :
     AffineIndependent k ![p₁, p₂, p₃] := by
   have ha : AffineIndependent k fun x : { x : Fin 3 // x ≠ 2 } => ![p₁, p₂, p₃] x := by
@@ -681,32 +688,44 @@ theorem affineIndependent_of_ne_of_mem_of_mem_of_not_mem {s : AffineSubspace k P
     convert affineIndependent_of_ne k hp₁p₂
     ext x
     fin_cases x <;> rfl
-  refine ha.affineIndependent_of_not_mem_span ?_
+  refine ha.affineIndependent_of_notMem_span ?_
   intro h
   refine hp₃ ((AffineSubspace.le_def' _ s).1 ?_ p₃ h)
   simp_rw [affineSpan_le, Set.image_subset_iff, Set.subset_def, Set.mem_preimage]
   intro x
   fin_cases x <;> simp +decide [hp₁, hp₂]
 
+@[deprecated (since := "2025-05-23")]
+alias affineIndependent_of_ne_of_mem_of_mem_of_not_mem :=
+  affineIndependent_of_ne_of_mem_of_mem_of_notMem
+
 /-- If distinct points `p₁` and `p₃` lie in `s` but `p₂` does not, the three points are affinely
 independent. -/
-theorem affineIndependent_of_ne_of_mem_of_not_mem_of_mem {s : AffineSubspace k P} {p₁ p₂ p₃ : P}
+theorem affineIndependent_of_ne_of_mem_of_notMem_of_mem {s : AffineSubspace k P} {p₁ p₂ p₃ : P}
     (hp₁p₃ : p₁ ≠ p₃) (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∉ s) (hp₃ : p₃ ∈ s) :
     AffineIndependent k ![p₁, p₂, p₃] := by
   rw [← affineIndependent_equiv (Equiv.swap (1 : Fin 3) 2)]
-  convert affineIndependent_of_ne_of_mem_of_mem_of_not_mem hp₁p₃ hp₁ hp₃ hp₂ using 1
+  convert affineIndependent_of_ne_of_mem_of_mem_of_notMem hp₁p₃ hp₁ hp₃ hp₂ using 1
   ext x
   fin_cases x <;> rfl
 
+@[deprecated (since := "2025-05-23")]
+alias affineIndependent_of_ne_of_mem_of_not_mem_of_mem :=
+  affineIndependent_of_ne_of_mem_of_notMem_of_mem
+
 /-- If distinct points `p₂` and `p₃` lie in `s` but `p₁` does not, the three points are affinely
 independent. -/
-theorem affineIndependent_of_ne_of_not_mem_of_mem_of_mem {s : AffineSubspace k P} {p₁ p₂ p₃ : P}
+theorem affineIndependent_of_ne_of_notMem_of_mem_of_mem {s : AffineSubspace k P} {p₁ p₂ p₃ : P}
     (hp₂p₃ : p₂ ≠ p₃) (hp₁ : p₁ ∉ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) :
     AffineIndependent k ![p₁, p₂, p₃] := by
   rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 2)]
-  convert affineIndependent_of_ne_of_mem_of_mem_of_not_mem hp₂p₃.symm hp₃ hp₂ hp₁ using 1
+  convert affineIndependent_of_ne_of_mem_of_mem_of_notMem hp₂p₃.symm hp₃ hp₂ hp₁ using 1
   ext x
   fin_cases x <;> rfl
+
+@[deprecated (since := "2025-05-23")]
+alias affineIndependent_of_ne_of_not_mem_of_mem_of_mem :=
+  affineIndependent_of_ne_of_notMem_of_mem_of_mem
 
 end DivisionRing
 

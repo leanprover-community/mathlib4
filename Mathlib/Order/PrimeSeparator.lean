@@ -75,7 +75,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   refine ⟨?_, ⟨IJ, JF⟩⟩
 
   -- First note that J is proper: ⊤ ∈ F so ⊤ ∉ J because F and J are disjoint.
-  have Jpr : IsProper J := isProper_of_not_mem (Set.disjoint_left.1 JF F.top_mem)
+  have Jpr : IsProper J := isProper_of_notMem (Set.disjoint_left.1 JF F.top_mem)
 
   -- Suppose that a₁ ∉ J, a₂ ∉ J. We need to prove that a₁ ⊔ a₂ ∉ J.
   rw [isPrime_iff_mem_or_mem]

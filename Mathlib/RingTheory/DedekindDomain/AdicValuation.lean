@@ -262,20 +262,20 @@ theorem intValuation_exists_uniformizer :
     exact
       ⟨v.ne_bot, v.asIdeal, (not_congr Ideal.isUnit_iff).mpr (Ideal.IsPrime.ne_top v.isPrime),
         sq v.asIdeal⟩
-  obtain ⟨π, mem, nmem⟩ := SetLike.exists_of_lt hlt
+  obtain ⟨π, mem, notMem⟩ := SetLike.exists_of_lt hlt
   have hπ : Associates.mk (Ideal.span {π}) ≠ 0 := by
     rw [Associates.mk_ne_zero']
     intro h
-    rw [h] at nmem
-    exact nmem (Submodule.zero_mem (v.asIdeal ^ 2))
+    rw [h] at notMem
+    exact notMem (Submodule.zero_mem (v.asIdeal ^ 2))
   use π
   rw [intValuation_if_neg _ (Associates.mk_ne_zero'.mp hπ), WithZero.coe_inj]
   apply congr_arg
   rw [neg_inj, ← Int.ofNat_one, Int.natCast_inj]
-  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem nmem
+  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem notMem
   rw [← pow_one (Associates.mk v.asIdeal), Associates.prime_pow_dvd_iff_le hπ hv] at mem
-  rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
-  exact Nat.eq_of_le_of_lt_succ mem nmem
+  rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at notMem
+  exact Nat.eq_of_le_of_lt_succ mem notMem
 
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
@@ -417,10 +417,13 @@ theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∈ v.adicCompletionIntegers K ↔ Valued.v x ≤ 1 :=
   Iff.rfl
 
-theorem not_mem_adicCompletionIntegers {x : v.adicCompletion K} :
+theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
   rw [not_congr <| mem_adicCompletionIntegers R K v]
   exact not_le
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_adicCompletionIntegers := notMem_adicCompletionIntegers
 
 section AlgebraInstances
 
@@ -550,7 +553,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
     simp [ha, Submonoid.one_mem]
-  · rw [not_mem_adicCompletionIntegers] at ha
+  · rw [notMem_adicCompletionIntegers] at ha
     -- Let the additive valuation of a be -d with d>0
     obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
       Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
