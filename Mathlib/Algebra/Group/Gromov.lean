@@ -1041,6 +1041,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           .
             have eq_self: Int.natAbs (φ a) = φ a := by
               simp [val_pos]
+              linarith
             conv =>
               arg 2
               equals γ ^ (Int.natAbs (φ a)) =>
@@ -1076,6 +1077,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
                 simp
                 rw [Int.abs_eq_natAbs]
                 norm_cast
+            -- TOOD - deduplicate this with the positive case
             apply Set.pow_subset_pow_right (m := Int.natAbs (φ a)) (n := max_phi - 1 + 1)
             . simp
             .
@@ -1090,6 +1092,9 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
               conv =>
                 pattern ofMul a
                 equals a => rfl
+            .
+              apply Set.pow_mem_pow
+              simp
         have a_mem_s: a ∈ S := by exact l_mem_s a ha
 
         have e_pi_s_mem: e_i_regular ⟨s, hs⟩ ∈ ({1, γ} ∪ Set.range e_i_regular) := by
@@ -1216,77 +1221,3 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           rfl
       simp
       exact l_prod
-
-      rw [Submonoid.exists_list_of_mem_closure]
-      have foo := Submonoid.exists_list_of_mem_closure (s := ((S ∪ S⁻¹) : Set G)) (x := s)
-      rw [← Subgroup.closure_toSubmonoid _] at foo
-      simp only [mem_toSubmonoid, Finset.mem_coe] at foo
-      have s_in_s_closure: s ∈ (Subgroup.closure S) := by
-        exact _root_.mem_closure s
-      specialize foo s_in_s_closure
-
-
-
-
-  have closure_e_i: Subgroup.closure ({γ} ∪ (e_i '' Set.univ)) = ⊤ := by
-    ext x
-    refine ⟨?_, ?_⟩
-    . intro hs
-      exact trivial
-    . intro hs
-      have foo := Submonoid.exists_list_of_mem_closure (s := ((S ∪ S⁻¹) : Set G)) (x := x)
-      rw [← Subgroup.closure_toSubmonoid _] at foo
-      simp only [mem_toSubmonoid, Finset.mem_coe] at foo
-      have generates := hGS.generates
-      have x_in_top: x ∈ (⊤: Set G) := by
-        simp
-
-      rw [← generates] at x_in_top
-      specialize foo x_in_top
-      obtain ⟨l, ⟨l_mem_s, l_prod⟩⟩ := foo
-      simp [s_union_sinv] at l_mem_s
-
-      rw [← mem_toSubmonoid]
-      rw [Subgroup.closure_toSubmonoid]
-      dsimp [Membership.mem]
-      rw [Submonoid.closure_eq_image_prod]
-      -- TODO - why do we need any of this?
-      dsimp [Set.Mem]
-      rw [← Set.mem_def (a := x) (s := List.prod '' _)]
-      rw [Set.mem_image]
-
-
-      let l_attach := l.attach
-      let list_with_mem: List S := (l_attach).map (fun a => ⟨a.val, l_mem_s a.val a.prop⟩)
-      let new_list := list_with_mem.map e_i
-      use new_list
-      unfold new_list list_with_mem l_attach
-      simp only [Set.mem_setOf_eq]
-      refine ⟨?_, ?_⟩
-      . intro x hx
-        apply Set.mem_union_left
-        apply Set.mem_insert_of_mem
-        simp at hx
-        --obtain ⟨s, hs, other⟩ := hx
-        simp
-        obtain ⟨a, ha, other⟩ := hx
-        use a
-        have a_mem_s := l_mem_s a ha
-        use a_mem_s
-      .
-
-
-
-      -- use l
-      -- simp only [Set.mem_setOf_eq]
-      -- refine ⟨?_, hl.2⟩
-
-
-
-      -- rw [← Subgroup.closure_toSubmonoid _] at foo
-      -- simp only [mem_toSubmonoid, Finset.mem_coe] at foo
-      -- specialize foo (mem_closure x)
-
-
-
--- lemma three_four (g: G)
