@@ -10,7 +10,25 @@ structure QuadraticAlgebra (R : Type u) (a b : R) : Type u where
 
 namespace QuadraticAlgebra
 
-variable {R : Type u} [CommSemiring R] {a b : R}
+variable {R : Type u}
+
+section SMul
+
+
+variable {α} [SMul α R] {a b : R}
+
+instance : SMul α (QuadraticAlgebra R a b) where
+  smul a z := ⟨a • z.1, a • z.2⟩
+
+@[simp]
+theorem re_smul (r : α) (z : QuadraticAlgebra R a b) : (r • z).re = r • z.re := rfl
+
+@[simp]
+theorem im_smul (r : α) (z : QuadraticAlgebra R a b) : (r • z).im = r • z.im := rfl
+
+end SMul
+
+variable [CommSemiring R] {a b : R}
 
 def ofInt (n : R) : QuadraticAlgebra R a b :=
   ⟨n, 0⟩
@@ -69,11 +87,12 @@ theorem im_mul (z w : QuadraticAlgebra R a b) :
     (z * w).im = z.re * w.im + z.im * w.re + a * z.im * w.im :=
   rfl
 
+
 instance addCommMonoid : AddCommMonoid (QuadraticAlgebra R a b) := by
   refine
   { add := (· + ·)
     zero := 0
-    nsmul n z := ⟨n • z.1, n • z.2⟩
+    nsmul n z := n • z
     add_assoc := ?_
     zero_add := ?_
     add_zero := ?_
