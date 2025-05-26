@@ -59,11 +59,13 @@ lemma comul_tmul (x : A) (y : B) :
 lemma counit_tmul (x : A) (y : B) :
     counit (R := R) (x ⊗ₜ[R] y) = counit (R := R) y • counit (R := R) x := rfl
 
-/-- `expand_comul R, x with x₁ x₂` attempts to replace `comul (R := R) x` by
-`x₁ ⊗ₜ x₂` via linearity. -/
-scoped macro "expand_comul" ring:term ", " var:term "with " var₁:ident var₂:ident : tactic =>
+open Lean.Parser.Tactic in
+/-- `hopf_tensor_induction x with x₁ x₂` attempts to replace `x` by
+`x₁ ⊗ₜ x₂` via linearity. This is an implementation detail that is used to set up
+tensor products of coalgebras and shouldn't be relied on downstream. -/
+scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂:ident : tactic =>
   `(tactic|
-    (induction comul (R := $ring) $var with
+    (induction $var with
       | zero => simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
           zero_tmul, zero_mul, mul_zero]
       | add _ _ h₁ h₂ => simp only [LinearEquiv.map_add, LinearMap.map_add,
@@ -88,18 +90,18 @@ private lemma coassoc :
         TensorProduct.map .id (TensorProduct.mapOfCompatibleSMul _ _ _ _) ∘ₗ F.toLinearMap
   convert congr(F ($(Coalgebra.coassoc_apply x) ⊗ₜ[R] $(Coalgebra.coassoc_apply y))) using 1
   · dsimp
-    expand_comul R, x with x₁ x₂
-    expand_comul R, y with y₁ y₂
+    hopf_tensor_induction comul (R := R) x with x₁ x₂
+    hopf_tensor_induction comul (R := R) y with y₁ y₂
     dsimp
-    expand_comul R, x₁ with x₁₁ x₁₂
-    expand_comul R, y₁ with y₁₁ y₁₂
+    hopf_tensor_induction comul (R := R) x₁ with x₁₁ x₁₂
+    hopf_tensor_induction comul (R := R) y₁ with y₁₁ y₁₂
     rfl
   · dsimp
-    expand_comul R, x with x₁ x₂
-    expand_comul R, y with y₁ y₂
+    hopf_tensor_induction comul (R := R) x with x₁ x₂
+    hopf_tensor_induction comul (R := R) y with y₁ y₂
     dsimp
-    expand_comul R, x₂ with x₂₁ x₂₂
-    expand_comul R, y₂ with y₂₁ y₂₂
+    hopf_tensor_induction comul (R := R) x₂ with x₂₁ x₂₂
+    hopf_tensor_induction comul (R := R) y₂ with y₂₁ y₂₂
     rfl
 
 noncomputable
@@ -111,8 +113,8 @@ instance instCoalgebra : Coalgebra R (A ⊗[R] B) where
       (TensorProduct.lid _ _ $(rTensor_counit_comul (R := R) x) ⊗ₜ[R]
         TensorProduct.lid _ _ $(rTensor_counit_comul (R := R) y)))
     · dsimp
-      expand_comul R, x with x₁ x₂
-      expand_comul R, y with y₁ y₂
+      hopf_tensor_induction comul (R := R) x with x₁ x₂
+      hopf_tensor_induction comul (R := R) y with y₁ y₂
       apply (TensorProduct.lid R _).injective
       dsimp
       rw [tmul_smul, mul_smul, one_smul, smul_tmul']
@@ -124,8 +126,8 @@ instance instCoalgebra : Coalgebra R (A ⊗[R] B) where
       (TensorProduct.rid _ _ $(lTensor_counit_comul (R := R) x) ⊗ₜ[R]
         TensorProduct.rid _ _ $(lTensor_counit_comul (R := R) y)))
     · dsimp
-      expand_comul R, x with x₁ x₂
-      expand_comul R, y with y₁ y₂
+      hopf_tensor_induction comul (R := R) x with x₁ x₂
+      hopf_tensor_induction comul (R := R) y with y₁ y₂
       apply (TensorProduct.rid R _).injective
       dsimp
       rw [tmul_smul, mul_smul, one_smul, smul_tmul']
@@ -153,8 +155,8 @@ noncomputable def map (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
     ext x y
     dsimp
     simp only [← CoalgHomClass.map_comp_comul_apply]
-    expand_comul R, x with x₁ x₂
-    expand_comul R, y with y₁ y₂
+    hopf_tensor_induction comul (R := R) x with x₁ x₂
+    hopf_tensor_induction comul (R := R) y with y₁ y₂
     simp
 
 @[simp]
@@ -176,9 +178,9 @@ protected noncomputable def assoc :
     map_comp_comul := by
       ext x y z
       dsimp
-      expand_comul R, x with x₁ x₂
-      expand_comul R, y with y₁ y₂
-      expand_comul R, z with z₁ z₂
+      hopf_tensor_induction comul (R := R) x with x₁ x₂
+      hopf_tensor_induction comul (R := R) y with y₁ y₂
+      hopf_tensor_induction comul (R := R) z with z₁ z₂
       simp }
 
 variable {R M N P}
@@ -208,7 +210,7 @@ protected noncomputable def lid : R ⊗[R] P ≃ₗc[R] P :=
       ext x
       dsimp
       simp only [one_smul]
-      expand_comul R, x with x₁ x₂
+      hopf_tensor_induction comul (R := R) x with x₁ x₂
       simp }
 
 variable {R P}
@@ -234,7 +236,7 @@ protected noncomputable def rid : M ⊗[R] R ≃ₗc[R] M :=
       ext x
       dsimp
       simp only [one_smul]
-      expand_comul R, x with x₁ x₂
+      hopf_tensor_induction comul (R := R) x with x₁ x₂
       simp }
 
 variable {R M}
