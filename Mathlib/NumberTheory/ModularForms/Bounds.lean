@@ -284,8 +284,8 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup SL(2
 local notation "𝕢" => Function.Periodic.qParam
 
 open Complex in
-def ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex]
-    {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
+lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup SL(2, ℤ)}
+    [Γ.FiniteIndex] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
     (fun n ↦ (ModularFormClass.qExpansion Γ.width f).coeff ℂ n) =O[atTop] fun n ↦ (n : ℝ) ^ k := by
   let h := Γ.width
   haveI : NeZero h := ⟨Γ.width_ne_zero⟩

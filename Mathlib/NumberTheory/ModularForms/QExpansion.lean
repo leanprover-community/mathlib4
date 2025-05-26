@@ -319,7 +319,7 @@ namespace CuspFormClass
 variable [hF : CuspFormClass F Γ k]
 include hF
 
-theorem exp_decay_atImInfty [NeZero h] (hΓ : Γ.width ∣ h):
+theorem exp_decay_atImInfty (hΓ : Γ.width ∣ h):
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) :=
   IsZeroAtImInfty.exp_decay_atImInfty_of_width_dvd (by simpa using zero_at_infty f 1) hΓ
 
