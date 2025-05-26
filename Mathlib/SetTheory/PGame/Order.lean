@@ -43,7 +43,7 @@ universe u
 
 If `0 ≤ x`, then Left can win `x` as the second player. `x ≤ y` means that `0 ≤ y - x`.
 See `PGame.le_iff_sub_nonneg`. -/
-instance le : LE PGame :=
+instance instLE : LE PGame :=
   ⟨Sym2.GameAdd.fix wf_isOption fun x y le =>
       (∀ i, ¬le y (x.moveLeft i) (Sym2.GameAdd.snd_fst <| IsOption.moveLeft i)) ∧
         ∀ j, ¬le (y.moveRight j) x (Sym2.GameAdd.fst_snd <| IsOption.moveRight j)⟩
@@ -78,7 +78,7 @@ The ordering here is chosen so that `And.left` refer to moves by Left, and `And.
 moves by Right. -/
 theorem le_iff_forall_lf {x y : PGame} :
     x ≤ y ↔ (∀ i, x.moveLeft i ⧏ y) ∧ ∀ j, x ⧏ y.moveRight j := by
-  unfold LE.le le
+  unfold LE.le instLE
   simp only
   rw [Sym2.GameAdd.fix_eq]
   rfl
@@ -150,7 +150,7 @@ private theorem le_trans_aux {x y z : PGame}
     fun j => PGame.not_le.1 fun h => (h₂ h hxy).not_gf <| hyz.lf_moveRight j
 
 instance : Preorder PGame :=
-  { PGame.le with
+  { PGame.instLE with
     le_refl := fun x => by
       induction x with | mk _ _ _ _ IHl IHr => _
       exact
