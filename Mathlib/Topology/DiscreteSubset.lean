@@ -109,6 +109,14 @@ lemma mem_codiscreteWithin {S T : Set X} :
   congr! 7 with x - u y
   tauto
 
+/--
+A set `s` is codiscrete within `U` iff `s ∪ Uᶜ` is a punctured neighborhood of every point in `U`.
+-/
+theorem mem_codiscreteWithin_iff_all_nhdNE {S T : Set X} :
+    S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ∀ᶠ z in 𝓝[≠] x, z ∈ S ∪ Tᶜ := by
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_diff]
+  rfl
+
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]

@@ -12,7 +12,7 @@ In line with results in `Mathlib.Analysis.Analytic.IsolatedZeros` and
 `Mathlib.Analysis.Analytic.Uniqueness`, this file establishes principles of isolated zeros and
 identity principles for meromorphic functions.
 
-Compared to the results for analytic function, the principles established here are a litte more
+Compared to the results for analytic functions, the principles established here are a litte more
 complicated to state. This is because meromorphic functions can be modified at will along discrete
 subsets and still remain meromorphic.
 -/
@@ -31,9 +31,8 @@ namespace MeromorphicAt
 -/
 
 /--
-Variant of `MeromorphicAt.frequently_zero_iff_eventuallyEq_zero`: If `f` is mermorphic at `x`, then
-`f` vanishes eventually in a punctured neighborhood of `x` iff it vanishes at points arbitrarily
-close to (but different from) `x`.
+The principle of isolated zeros: If `f` is mermorphic at `x`, then `f` vanishes eventually in a
+punctured neighborhood of `x` iff it vanishes frequently in punctured neighborhoods.
 
 See `AnalyticAt.frequently_zero_iff_eventually_zero` for a stronger result in the analytic case.
 -/
@@ -50,18 +49,19 @@ For a typical application, let `U` be a path in the complex plane and let `x` be
 points. If `f` is meromorphic at `x` and vanishes on `U`, then it will vanish in a punctured
 neighbourhood of `x`, which intersects `U` non-trivally but is not contained in `U`.
 
-The assumption that `x` is not an isolated point of `U` is expressed as `Uᶜ ∉ 𝓝[≠] x`.
+The assumption that `x` is not an isolated point of `U` is expressed as `AccPt x (𝓟 U)`. See
+`accPt_iff_frequently` and `accPt_iff_frequently_nhdNE` for useful reformulations.
 -/
 theorem eventuallyEq_zero_nhdNE_of_eventuallyEq_zero_codiscreteWithin (hf : MeromorphicAt f x)
-    (h₁x : x ∈ U) (h₂x : Uᶜ ∉ 𝓝[≠] x) (h : f =ᶠ[codiscreteWithin U] 0) :
+    (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U)) (h : f =ᶠ[codiscreteWithin U] 0) :
     f =ᶠ[𝓝[≠] x] 0 := by
   rw [← hf.frequently_zero_iff_eventuallyEq_zero]
-  by_contra hCon
-  rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin] at h
-  have := h x h₁x
-  simp only [Pi.zero_apply, disjoint_principal_right, Set.compl_diff] at this
-  have := inter_mem (not_frequently.1 hCon) this
-  simp_all [Set.inter_union_distrib_left, (by tauto_set : {x | ¬f x = 0} ∩ {x | f x = 0} = ∅)]
+  apply ((accPt_iff_frequently_nhdNE.1 h₂x).and_eventually
+    (mem_codiscreteWithin_iff_all_nhdNE.1 h x h₁x)).mp
+  filter_upwards
+  simp only [ne_eq, Set.mem_compl_iff, Set.mem_singleton_iff, Pi.zero_apply, Set.mem_union,
+    Set.mem_setOf_eq, and_imp]
+  tauto
 
 /-!
 ## Identity Principles
@@ -84,7 +84,7 @@ identity principle: Let `U` be a subset of `𝕜` and assume that `x ∈ U` is n
 within `U`, then `f` and `g` agree in a punctured neighbourhood of `f`.
 -/
 theorem eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf : MeromorphicAt f x)
-    (hg : MeromorphicAt g x) (h₁x : x ∈ U) (h₂x : Uᶜ ∉ 𝓝[≠] x) (h : f =ᶠ[codiscreteWithin U] g) :
+    (hg : MeromorphicAt g x) (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U)) (h : f =ᶠ[codiscreteWithin U] g) :
     f =ᶠ[𝓝[≠] x] g := by
   rw [eventuallyEq_iff_sub] at *
   apply (hf.sub hg).eventuallyEq_zero_nhdNE_of_eventuallyEq_zero_codiscreteWithin h₁x h₂x h
