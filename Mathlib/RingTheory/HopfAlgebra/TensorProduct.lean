@@ -28,8 +28,8 @@ instance : HopfAlgebra R (B ⊗[R] A) where
     convert congr($(HopfAlgebra.mul_antipode_rTensor_comul_apply (R := R) x) ⊗ₜ[R]
       $(HopfAlgebra.mul_antipode_rTensor_comul_apply (R := R) y)) using 1
     · dsimp
-      expand_comul R x with x₁ x₂
-      expand_comul R y with y₁ y₂
+      expand_comul R, x with x₁ x₂
+      expand_comul R, y with y₁ y₂
       simp
     · dsimp [Algebra.TensorProduct.one_def]
       simp [Algebra.algebraMap_eq_smul_one, smul_tmul', mul_smul]
@@ -38,8 +38,8 @@ instance : HopfAlgebra R (B ⊗[R] A) where
     convert congr($(HopfAlgebra.mul_antipode_lTensor_comul_apply (R := R) x) ⊗ₜ[R]
       $(HopfAlgebra.mul_antipode_lTensor_comul_apply (R := R) y)) using 1
     · dsimp [Algebra.TensorProduct.one_def]
-      expand_comul R x with x₁ x₂
-      expand_comul R y with y₁ y₂
+      expand_comul R, x with x₁ x₂
+      expand_comul R, y with y₁ y₂
       simp
     · dsimp [Algebra.TensorProduct.one_def]
       simp [Algebra.algebraMap_eq_smul_one, smul_tmul', mul_smul]
