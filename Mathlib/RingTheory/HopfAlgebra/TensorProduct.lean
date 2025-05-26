@@ -15,7 +15,7 @@ We define the Hopf algebra instance on the tensor product of two Hopf algebras.
 
 open TensorProduct Coalgebra.TensorProduct
 
-namespace HopfAlgebra.TensorProduct
+namespace TensorProduct
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [HopfAlgebra R A]
     [HopfAlgebra R B]
@@ -48,4 +48,4 @@ instance : HopfAlgebra R (B ⊗[R] A) where
 theorem antipode_def :
     HopfAlgebra.antipode (R := R) (A := B ⊗[R] A) = AlgebraTensorModule.map antipode antipode := rfl
 
-end HopfAlgebra.TensorProduct
+end TensorProduct
