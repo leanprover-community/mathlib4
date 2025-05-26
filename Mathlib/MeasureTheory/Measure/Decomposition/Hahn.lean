@@ -164,7 +164,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
 
 
 /-- The set where `μ ≤ ν`, defined via measurable set and measure restriction comparisons. -/
-structure IsHahnDecomposition (μ ν : Measure α ) (s : Set α ) : Prop where
+structure IsHahnDecomposition (μ ν : Measure α) (s : Set α) : Prop where
   measurableSet : MeasurableSet s
   le_on : μ.restrict s ≤ ν.restrict s
   ge_on_compl : ν.restrict sᶜ ≤ μ.restrict sᶜ
