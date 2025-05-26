@@ -132,4 +132,4 @@ lemma Multiplicative.monoidHom_ext [AddZeroClass α] [MulOneClass β]
 @[ext]
 lemma Additive.addMonoidHom_ext [MulOneClass α] [AddZeroClass β]
     (f g : Additive α →+ β) (h : f.toMultiplicative' = g.toMultiplicative') : f = g :=
-  AddMonoidHom.toMultiplicative.injective h
+  AddMonoidHom.toMultiplicative'.injective h
