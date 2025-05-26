@@ -37,6 +37,7 @@ private theorem isNilpotent_iff_of_fintype [Fintype σ] :
   · intro P
     simp [Unique.forall_iff, ← IsNilpotent.map_iff (isEmptyRingEquiv R PEmpty).injective,
       -isEmptyRingEquiv_apply, isEmptyRingEquiv_eq_coeff_zero]
+    -- XXX
     rfl
   · intro α _ H P
     obtain ⟨P, rfl⟩ := (optionEquivLeft _ _).symm.surjective P

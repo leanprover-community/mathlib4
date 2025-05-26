@@ -43,7 +43,9 @@ polynomial directly.
 
 The proofs of `det_eq_prod_roots_charpoly_of_splits` and
 `trace_eq_sum_roots_charpoly_of_splits` closely resemble
-`norm_gen_eq_prod_roots` and `trace_gen_eq_sum_roots` respectively, but the
+TODO: stray `Algebra.` in `Algebra.PowerBasis.norm_gen_eq_prod_roots`
+`Algebra.PowerBasis.norm_gen_eq_prod_roots` and `PowerBasis.trace_gen_eq_sum_roots` respectively,
+but the
 dependencies are not general enough to unify them. We should refactor
 `Polynomial.coeff_zero_eq_prod_roots_of_monic_of_split` and
 `Polynomial.nextCoeff_eq_neg_sum_roots_of_monic_of_splits` to assume splitting over an

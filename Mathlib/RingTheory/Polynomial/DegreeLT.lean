@@ -59,6 +59,7 @@ instance : Module.Free R R[X]_n := .of_basis <| basis ..
   rfl
 
 @[simp] lemma basis_val : (basis R n i : R[X]) = X ^ (i : ℕ) := by
+  -- TODO
   change _ = ((⟨X ^ (i : ℕ), mem_degreeLT.2 <| (degree_X_pow_le i).trans_lt <|
       Nat.cast_lt.2 i.is_lt⟩ : R[X]_n) : R[X])
   refine congr_arg _ (Basis.apply_eq_iff.2 <| Finsupp.ext fun j ↦ ?_)
@@ -181,10 +182,11 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
     Matrix.det_of_upperTriangular, Fintype.prod_eq_one]
   · intro i
     rw [LinearMap.toMatrix_apply, degreeLT.basis_repr, ← natDegree_X_pow (R := R) (i : ℕ)]
-    change (taylor r (degreeLT.basis R n i)).coeff _ = 1
-    rw [degreeLT.basis_val, coeff_taylor_natDegree, leadingCoeff_X_pow]
+    simp [taylorLinearEquiv, taylorEquiv, taylorAlgHom, -taylor_pow, -taylor_X, -taylor_X_pow,
+      -natDegree_X_pow]
   · intro i j hji
     rw [LinearMap.toMatrix_apply, LinearEquiv.coe_coe, degreeLT.basis_repr]
+    -- TODO
     change (taylor r (degreeLT.basis R n j)).coeff i = 0
     rw [degreeLT.basis_val, coeff_eq_zero_of_degree_lt (by simpa [-taylor_X_pow, -taylor_pow])]
 

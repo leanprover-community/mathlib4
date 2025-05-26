@@ -657,16 +657,15 @@ theorem monomial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial
 /-- The `n`-th coefficient of the `k`-th power of a power series. -/
 lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :
     coeff n (φ ^ k) = ∑ l ∈ finsuppAntidiag (range k) n, ∏ i ∈ range k, coeff (l i) φ := by
-  have h₁ (i : ℕ) : Function.const ℕ φ i = φ := rfl
-  have h₂ (i : ℕ) : ∏ j ∈ range i, Function.const ℕ φ j = φ ^ i := by
+  have h₁ (i : ℕ) : ∏ j ∈ range i, Function.const ℕ φ j = φ ^ i := by
     apply prod_range_induction (fun _ => φ) (fun i => φ ^ i) rfl i (fun _ => congrFun rfl)
-  rw [← h₂, ← h₁ k]
+  rw [← h₁, ← Function.const_apply (y := φ) (x := k)]
   apply coeff_prod (f := Function.const ℕ φ) (d := n) (s := range k)
 
 /-- First coefficient of the product of two power series. -/
 lemma coeff_one_mul (φ ψ : R⟦X⟧) : coeff 1 (φ * ψ) =
     coeff 1 φ * constantCoeff ψ + coeff 1 ψ * constantCoeff φ := by
-  have : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
+  have : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := rfl
   rw [coeff_mul, this, Finset.sum_insert, Finset.sum_singleton, coeff_zero_eq_constantCoeff,
     mul_comm, add_comm]
   simp
@@ -679,9 +678,8 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
   induction n with
   | zero => cutsat
   | succ n' ih =>
-      have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
-      have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
-      rw [h₁, coeff_mul, h₂, Finset.sum_insert, Finset.sum_singleton]
+      have h₁ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
+      rw [pow_succ, coeff_mul, h₁, Finset.sum_insert, Finset.sum_singleton]
       · simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
           add_tsub_cancel_right]
         have h₀ : n' = 0 ∨ 1 ≤ n' := by omega
