@@ -311,30 +311,20 @@ instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
     [IsScalarTower S A A] [SMulCommClass R S A] : IsScalarTower S (A ⊗[R] B) (A ⊗[R] B) where
   smul_assoc r x y := by
     change r • x * y = r • (x * y)
-    induction y with
-    | zero => simp [smul_zero]
-    | tmul a b => induction x with
-      | zero => simp [smul_zero]
-      | tmul a' b' =>
-        dsimp
-        rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, smul_mul_assoc]
-      | add x y hx hy => simp [smul_add, add_mul _, *]
-    | add x y hx hy => simp [smul_add, mul_add _, *]
+    tensor_induction y with a b
+    tensor_induction x with a' b'
+    dsimp
+    rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, smul_mul_assoc]
 
 -- we want `Algebra.to_smulCommClass` to take priority since it's better for unification elsewhere
 instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
     [SMulCommClass S A A] [SMulCommClass R S A] : SMulCommClass S (A ⊗[R] B) (A ⊗[R] B) where
   smul_comm r x y := by
     change r • (x * y) = x * r • y
-    induction y with
-    | zero => simp [smul_zero]
-    | tmul a b => induction x with
-      | zero => simp [smul_zero]
-      | tmul a' b' =>
-        dsimp
-        rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, mul_smul_comm]
-      | add x y hx hy => simp [smul_add, add_mul _, *]
-    | add x y hx hy => simp [smul_add, mul_add _, *]
+    tensor_induction y with a b
+    tensor_induction x with a' b'
+    dsimp
+    rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, mul_smul_comm]
 
 end NonUnitalNonAssocSemiring
 
