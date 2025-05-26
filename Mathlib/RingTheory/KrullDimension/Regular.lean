@@ -289,35 +289,59 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       refine add_le_add_right ?_ 1
       exact le_iSup_iff.mpr fun _ h ↦ h q'
 
-theorem supportDim_quotSMulTop_succ_eq_supportDim_of_notMem_minimalPrimes {x : R}
+theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
+    (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) :
+    supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
+  have : Nonempty (support R M) := sorry
+  have : Nonempty (support R (QuotSMulTop x M)) := sorry
+  simp only [supportDim, Order.krullDim_eq_iSup_length]
+  apply WithBot.coe_le_coe.mpr
+  simp only [ENat.iSup_add, iSup_le_iff]
+  intro p
+  let q : LTSeries (support R M) := {
+    length := p.length
+    toFun := by
+      intro i
+      have hq := (p i).2
+      simp only [support_quotSMulTop, Set.mem_inter_iff] at hq
+      exact ⟨(p i).1, hq.1⟩
+    step := by
+      intro i
+      simp only [Subtype.mk_lt_mk, Subtype.coe_lt_coe, p.3 i]
+  }
+  have hx : x ∈ q.head.1.1 := by
+    have hq := p.head.2
+    simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff,
+      SetLike.mem_coe] at hq
+    exact hq.2
+  have hq := q.head.2
+  simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hq
+  rcases Ideal.exists_minimalPrimes_le hq with ⟨r, ⟨⟨hrp, har⟩, hrm⟩, hr⟩
+  let r : support R M := ⟨⟨r, hrp⟩, mem_support_iff_of_finite.mpr har⟩
+  have hr : r < q.head := by
+    refine lt_of_le_of_ne hr (fun h ↦ ?_)
+    have hqm : q.head.1.1 ∈ (annihilator R M).minimalPrimes := sorry
+    apply hn _ hqm hx
+  obtain ⟨r, hr⟩ : ∃ r : support R M, r < q.head := by
+    contrapose! hn
+    refine ⟨q.head.1.1, ⟨⟨?_, ?_⟩, ?_⟩, hx⟩
+    · exact q.head.1.2
+    · have hq := q.head.2
+      simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hq
+      exact hq
+    · intro p ⟨hp, h⟩ hpq
+      have h : ⟨p, hp⟩ ∈ support R M := by
+        simpa only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] using h
+      have := hn ⟨⟨p, hp⟩, h⟩
+
+      sorry
+  exact le_of_eq_of_le (by simpa only [q.cons_length] using by rfl) (le_iSup _ (q.cons r hr))
+
+theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ maximalIdeal R) :
-    supportDim R (QuotSMulTop x M) + 1 = supportDim R M := by
-  apply le_antisymm
-  · have : Nonempty (support R M) := sorry
-    have : Nonempty (support R (QuotSMulTop x M)) := sorry
-    simp only [supportDim, Order.krullDim_eq_iSup_length]
-    apply WithBot.coe_le_coe.mpr
-    simp only [ENat.iSup_add, iSup_le_iff]
-    intro p
-    let q : LTSeries (support R M) := {
-      length := p.length
-      toFun := by
-        intro i
-        have hq := (p i).2
-        simp only [support_quotSMulTop, Set.mem_inter_iff] at hq
-        exact ⟨(p i).1, hq.1⟩
-      step := by
-        intro i
-        simp only [Subtype.mk_lt_mk, Subtype.coe_lt_coe, p.3 i]
-    }
-    have : x ∈ q.head.1.1 := by
-      have hq := p.head.2
-      simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff,
-        SetLike.mem_coe] at hq
-      exact hq.2
-    obtain ⟨r, hr⟩ : ∃ r : support R M, r < q.head := sorry
-    exact le_of_eq_of_le (by simpa only [q.cons_length] using by rfl) (le_iSup _ (q.cons r hr))
-  · exact supportDim_le_supportDim_quotSMulTop_succ hx
+    supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
+  le_antisymm (supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes hn)
+    (supportDim_le_supportDim_quotSMulTop_succ hx)
 
 theorem notMem_minimalPrimes_of_isSMulRegular {R : Type*} [CommSemiring R]
     {M : Type*} [AddCommMonoid M] [Module R M] {x : R} (reg : IsSMulRegular M x)
@@ -329,7 +353,7 @@ theorem notMem_minimalPrimes_of_isSMulRegular {R : Type*} [CommSemiring R]
 
 theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M x)
     (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
-  supportDim_quotSMulTop_succ_eq_supportDim_of_notMem_minimalPrimes
+  supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal
     (fun _ ↦ notMem_minimalPrimes_of_isSMulRegular reg) hx
 
 theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
