@@ -173,7 +173,7 @@ lemma IsHahnDecomposition.compl {μ ν : Measure α} {s : Set α}
     (h : IsHahnDecomposition μ ν s) : IsHahnDecomposition ν μ sᶜ where
   measurableSet := h.measurableSet.compl
   le_on := h.ge_on_compl
-  ge_on_compl := by rw [compl_compl]; exact h.le_on
+  ge_on_compl := by simpa using h.le_on
 
 lemma hahn_decomposition' (μ ν : Measure α ) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s : Set α , IsHahnDecomposition μ ν s := by
