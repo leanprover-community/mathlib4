@@ -7,7 +7,6 @@ import Mathlib.Data.Int.DivMod
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # The finite type with `n` elements
@@ -383,6 +382,14 @@ in the same value. -/
 
 @[simp]
 theorem natCast_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
+
+theorem natCast_eq_mk {m n : ℕ} (h : m < n) : have : NeZero n := ⟨Nat.ne_zero_of_lt h⟩
+    (m : Fin n) = Fin.mk m h :=
+  Fin.val_inj.mp (Nat.mod_eq_of_lt h)
+
+theorem one_eq_mk_of_lt {n : ℕ} (h : 1 < n) : have : NeZero n := ⟨Nat.ne_zero_of_lt h⟩
+    1 = Fin.mk 1 h :=
+  Fin.val_inj.mp (Nat.mod_eq_of_lt h)
 
 theorem le_val_last (i : Fin (n + 1)) : i ≤ n := by
   rw [Fin.natCast_eq_last]
