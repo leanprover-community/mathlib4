@@ -10,7 +10,7 @@ import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 This file defines an `IsFiveWheelLike` structure in a graph, and describes properties of these
 structures as well as graphs which avoid this structure. These have two key uses:
 * We use them to prove that a maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is
-complete-multipartite: `colorable_iff_isCompleteMultipartite_of_max_cliqueFree`
+complete-multipartite: `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree`
 * They play a key role in Brandt's proof of the Andrásfai-Erdős-Sós theorem, which is where they
 first appeared.
 
@@ -27,7 +27,7 @@ single edge `w₁w₂`, `s ∪ t` is disjoint from `{v, w₁, w₂}`, and `s ∪
 
 This leads to the definition of an `IsFiveWheelLike` structure which can be found in any maximally
 `Kᵣ₊₂`-free graph that is not complete-multipartite (see
-`exists_isFiveWheelLike_of_max_cliqueFree_not_isCompleteMultipartite`).
+`exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite`).
 
 One key parameter in any such structure is the number of vertices common to all of the cliques: we
 denote this quantity by `k  = #(s ∩ t)` (and we will refer to such a structure as `Wᵣ,ₖ` below.)
@@ -99,7 +99,7 @@ An `IsFiveWheelLike r k v w₁ w₂ s t` structure in `G` consists of vertices `
 `IsPathGraph3Compl`), `v, w₁, w₂ ∉ s ∪ t`, `s ∪ {v}, t ∪ {v}, s ∪ {w₁}, t ∪ {w₂}` are all
 `(r + 1)`- cliques and `#(s ∩ t) = k`. (If `G` is maximally `(r + 2)`-cliquefree and not complete
  multipartite then `G` will contain such a structure : see
-`exists_isFiveWheelLike_of_max_cliqueFree_not_isCompleteMultipartite`.)
+`exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite`.)
 -/
 structure IsFiveWheelLike (G : SimpleGraph α) (r k : ℕ) (v w₁ w₂ : α) (s t : Finset α) :
     Prop where
@@ -115,7 +115,7 @@ structure IsFiveWheelLike (G : SimpleGraph α) (r k : ℕ) (v w₁ w₂ : α) (s
   isNClique_snd_right : G.IsNClique (r + 1) (insert w₂ t)
   card_eq : #(s ∩ t) = k
 
-lemma exists_isFiveWheelLike_of_max_cliqueFree_not_isCompleteMultipartite
+lemma exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite
     (h : Maximal (fun H => H.CliqueFree (r + 2)) G) (hnc : ¬ G.IsCompleteMultipartite) :
     ∃ v w₁ w₂ s t, G.IsFiveWheelLike r #(s ∩ t) v w₁ w₂ s t := by
   obtain ⟨v, w₁, w₂, p3⟩ := exists_isPathGraph3Compl_of_not_isCompleteMultipartite hnc
@@ -189,12 +189,12 @@ end IsFiveWheelLike
 Any maximally `Kᵣ₊₂`-free graph that is not complete-multipartite contains a maximal
 `IsFiveWheelLike` structure `Wᵣ,ₖ` for some `k < r`. (It is maximal in terms of `k`.)
 -/
-lemma exists_max_isFiveWheelLike_of_max_cliqueFree_not_isCompleteMultipartite
+lemma exists_max_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite
     (h : Maximal (fun H => H.CliqueFree (r + 2)) G) (hnc : ¬ G.IsCompleteMultipartite) :
     ∃ k v w₁ w₂ s t, G.IsFiveWheelLike r k v w₁ w₂ s t ∧ k < r ∧
     ∀ j, k < j → G.FiveWheelLikeFree r j := by
   obtain ⟨_, _, _, s, t, hw⟩ :=
-    exists_isFiveWheelLike_of_max_cliqueFree_not_isCompleteMultipartite h hnc
+    exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite h hnc
   let P : ℕ → Prop := fun k ↦ ∃ v w₁ w₂ s t, G.IsFiveWheelLike r k v w₁ w₂ s t
   have hk : P #(s ∩ t) := ⟨_, _, _, _, _, hw⟩
   classical
@@ -207,7 +207,7 @@ lemma CliqueFree.fiveWheelLikeFree_of_le (h : G.CliqueFree (r + 2)) (hk : r ≤ 
     G.FiveWheelLikeFree r k := fun hw ↦ (hw.card_inter_lt_of_cliqueFree h).not_le hk
 
 /-- A maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is complete-multipartite. -/
-theorem colorable_iff_isCompleteMultipartite_of_max_cliqueFree
+theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
     (h : Maximal (fun H => H.CliqueFree (r + 1)) G) : G.Colorable r ↔ G.IsCompleteMultipartite := by
   match r with
   | 0 => exact ⟨fun _ ↦ fun x ↦ cliqueFree_one.1 h.1 |>.elim' x,
@@ -216,7 +216,7 @@ theorem colorable_iff_isCompleteMultipartite_of_max_cliqueFree
     refine ⟨fun hc ↦ ?_, fun hc ↦ hc.colorable_of_cliqueFree h.1⟩
     contrapose! hc
     obtain ⟨_, _, _, _, _, hw⟩ :=
-      exists_isFiveWheelLike_of_max_cliqueFree_not_isCompleteMultipartite h hc
+      exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite h hc
     exact hw.not_colorable_succ
 
 end SimpleGraph
