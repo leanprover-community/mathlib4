@@ -131,7 +131,7 @@ theorem head_scanr : (scanr f b l).head scanr_ne_nil = foldr f b l := by
 theorem tail_scanr (h : 0 < l.length) : (scanr f b l).tail = scanr f b l.tail := by
   induction l <;> simp_all
 
-theorem drop_scanr {i : ℕ} (h : i < l.length + 1) :
+theorem drop_scanr {i : ℕ} (h : i ≤ l.length) :
     (scanr f b l).drop i = scanr f b (l.drop i) := by
   induction i with
   | zero => simp
@@ -144,8 +144,8 @@ theorem getElem_scanr {i : ℕ} (h : i < l.length + 1) :
   induction l generalizing i with
   | nil => simp [h]
   | cons head tail ih =>
-      by_cases h' : i = 0
-      · simp [h']
+      obtain rfl |  h' := eq_or_ne i 0
+      · simp
       · rw [length_cons] at h
         obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h'
         simp [@ih m (by omega)]
