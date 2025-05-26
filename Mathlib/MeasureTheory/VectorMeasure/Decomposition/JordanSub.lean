@@ -97,7 +97,7 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
 
 
 /-- The Jordan decomposition associated to the pair of mutually singular measures μ-ν and ν-μ . -/
-def jordanDecomposition_of_toSignedMeasure_sub
+def jordanDecompositionOfToSignedMeasureSub
     (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : JordanDecomposition X where
   posPart := μ - ν
   negPart := ν - μ
@@ -107,7 +107,7 @@ def jordanDecomposition_of_toSignedMeasure_sub
 @[simp]
 theorem toJordanDecomposition_toSignedMeasure_sub :
     (μ.toSignedMeasure - ν.toSignedMeasure).toJordanDecomposition =
-      jordanDecomposition_of_toSignedMeasure_sub μ ν := by
+      jordanDecompositionOfToSignedMeasureSub μ ν := by
   apply JordanDecomposition.toSignedMeasure_injective
   rw [SignedMeasure.toSignedMeasure_toJordanDecomposition,
     sub_toSignedMeasure_eq_toSignedMeasure_sub]
