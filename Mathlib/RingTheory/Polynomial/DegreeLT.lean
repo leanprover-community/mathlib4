@@ -121,7 +121,7 @@ lemma addLinearEquiv_symm_apply_left (P : R[X]_m) :
 lemma addLinearEquiv_symm_apply_right (Q : R[X]_n) :
     ((addLinearEquiv R m n).symm (LinearMap.inr R _ _ Q) : R[X]) = (Q : R[X]) * X ^ (m : ℕ) := by
   rw [← (basis ..).sum_repr Q]
-  simp? [-LinearMap.coe_inr, Finset.sum_mul, addLinearEquiv_symm_apply_xPow_right,
+  simp [-LinearMap.coe_inr, Finset.sum_mul, addLinearEquiv_symm_apply_xPow_right,
     smul_eq_C_mul, mul_assoc, ← pow_add, add_comm]
 
 lemma addLinearEquiv_symm_apply (PQ) :
