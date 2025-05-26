@@ -61,8 +61,8 @@ lemma counit_tmul (x : A) (y : B) :
 
 open Lean.Parser.Tactic in
 /-- `hopf_tensor_induction x with x₁ x₂` attempts to replace `x` by
-`x₁ ⊗ₜ x₂` via linearity. This is an implementation detail that is used to set up
-tensor products of coalgebras, bialgebras, and hopf algebras, and shouldn't be relied on downstream. -/
+`x₁ ⊗ₜ x₂` via linearity. This is an implementation detail that is used to set up tensor products
+of coalgebras, bialgebras, and hopf algebras, and shouldn't be relied on downstream. -/
 scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂:ident : tactic =>
   `(tactic|
     (induction $var with
