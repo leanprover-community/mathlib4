@@ -75,7 +75,7 @@ theorem mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ} :
       apply Nat.pos_of_ne_zero
       exact Finset.prod_ne_zero_iff.mp h.ne.symm _ (mem_univ _)
   · simp only [not_lt, nonpos_iff_eq_zero] at h
-    simp only [h, not_mem_empty, ne_eq, not_true_eq_false, and_false]
+    simp only [h, notMem_empty, ne_eq, not_true_eq_false, and_false]
 
 @[simp]
 theorem finMulAntidiag_zero_right (d : ℕ) :

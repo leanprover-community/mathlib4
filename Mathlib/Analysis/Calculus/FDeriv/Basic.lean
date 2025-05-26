@@ -72,7 +72,7 @@ example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (fun x ↦ exp x 
   simp [h]
 ```
 Of course, these examples only work once `exp`, `cos` and `sin` have been shown to be
-differentiable, in `Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv`.
+differentiable, in `Mathlib/Analysis/SpecialFunctions/Trigonometric/Deriv.lean`.
 
 The simplifier is not set up to compute the Fréchet derivative of maps (as these are in general
 complicated multidimensional linear maps), but it will compute one-dimensional derivatives,
@@ -530,8 +530,11 @@ theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s \ {x}] x = ⊥) :
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
-theorem HasFDerivWithinAt.of_not_mem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
+theorem HasFDerivWithinAt.of_notMem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
   .of_not_accPt (h ·.clusterPt.mem_closure)
+
+@[deprecated (since := "2025-05-23")]
+alias HasFDerivWithinAt.of_not_mem_closure := HasFDerivWithinAt.of_notMem_closure
 
 @[deprecated (since := "2025-04-20")]
 alias hasFDerivWithinAt_of_nmem_closure := HasFDerivWithinAt.of_not_mem_closure
@@ -544,8 +547,11 @@ set_option linter.deprecated false in
 theorem fderivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : fderivWithin 𝕜 f s x = 0 := by
   rw [fderivWithin, if_pos (.of_nhdsWithin_eq_bot h)]
 
-theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 :=
+theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 :=
   fderivWithin_zero_of_not_accPt (h ·.clusterPt.mem_closure)
+
+@[deprecated (since := "2025-05-24")]
+alias fderivWithin_zero_of_nmem_closure := fderivWithin_zero_of_notMem_closure
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
@@ -1434,25 +1440,36 @@ open Function
 variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
 
-theorem HasStrictFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
+theorem HasStrictFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
     HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by
-  rw [not_mem_tsupport_iff_eventuallyEq] at h
+  rw [notMem_tsupport_iff_eventuallyEq] at h
   exact (hasStrictFDerivAt_const (0 : F) x).congr_of_eventuallyEq h.symm
 
-theorem HasFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
+@[deprecated (since := "2025-05-24")]
+alias HasStrictFDerivAt.of_nmem_tsupport := HasStrictFDerivAt.of_notMem_tsupport
+
+theorem HasFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
-  (HasStrictFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivAt
+  (HasStrictFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivAt
 
-theorem HasFDerivWithinAt.of_not_mem_tsupport {s : Set E} {x : E} (h : x ∉ tsupport f) :
+@[deprecated (since := "2025-05-24")]
+alias HasFDerivAt.of_nmem_tsupport := HasFDerivAt.of_notMem_tsupport
+
+theorem HasFDerivWithinAt.of_notMem_tsupport {s : Set E} {x : E} (h : x ∉ tsupport f) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
-  (HasFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivWithinAt
+  (HasFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivWithinAt
 
-theorem fderiv_of_not_mem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
-  (HasFDerivAt.of_nmem_tsupport 𝕜 h).fderiv
+@[deprecated (since := "2025-05-23")]
+alias HasFDerivWithinAt.of_not_mem_tsupport := HasFDerivWithinAt.of_notMem_tsupport
+
+theorem fderiv_of_notMem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
+  (HasFDerivAt.of_notMem_tsupport 𝕜 h).fderiv
+
+@[deprecated (since := "2025-05-23")] alias fderiv_of_not_mem_tsupport := fderiv_of_notMem_tsupport
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
-  rw [← not_imp_not, nmem_support]
-  exact fderiv_of_not_mem_tsupport _
+  rw [← not_imp_not, notMem_support]
+  exact fderiv_of_notMem_tsupport _
 
 theorem tsupport_fderiv_subset : tsupport (fderiv 𝕜 f) ⊆ tsupport f :=
   closure_minimal (support_fderiv_subset 𝕜) isClosed_closure

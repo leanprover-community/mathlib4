@@ -520,6 +520,13 @@ theorem tensorTensorTensorComm_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
     (tensorTensorTensorComm R A M N P Q).symm ((m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q)) = (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) :=
   rfl
 
+/-- The heterobasic version of `tensorTensorTensorComm` coincides with the regular version. -/
+theorem tensorTensorTensorComm_eq :
+    tensorTensorTensorComm R R M N P Q = TensorProduct.tensorTensorTensorComm R M N P Q := by
+  apply LinearEquiv.toLinearMap_injective
+  ext
+  simp
+
 end tensorTensorTensorComm
 
 end CommSemiring

@@ -544,7 +544,7 @@ theorem dual_apply (g : G) : (dual ρV) g = Module.Dual.transpose (R := k) (ρV 
   rfl
 
 /-- Given $k$-modules $V, W$, there is a homomorphism $φ : V^* ⊗ W → Hom_k(V, W)$
-(implemented by `dualTensorHom` in `Mathlib.LinearAlgebra.Contraction`).
+(implemented by `dualTensorHom` in `Mathlib/LinearAlgebra/Contraction.lean`).
 Given representations of $G$ on $V$ and $W$,there are representations of $G$ on $V^* ⊗ W$ and on
 $Hom_k(V, W)$.
 This lemma says that $φ$ is $G$-linear.

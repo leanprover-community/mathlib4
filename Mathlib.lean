@@ -4875,6 +4875,7 @@ import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
 import Mathlib.Order.UpperLower.Principal
 import Mathlib.Order.UpperLower.Prod
+import Mathlib.Order.UpperLower.Relative
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WellQuasiOrder
@@ -5182,6 +5183,8 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Invariant
+import Mathlib.RingTheory.Invariant.Basic
+import Mathlib.RingTheory.Invariant.Profinite
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.IsPrimary
 import Mathlib.RingTheory.IsTensorProduct
@@ -6089,6 +6092,7 @@ import Mathlib.Topology.ContinuousMap.Ideals
 import Mathlib.Topology.ContinuousMap.Interval
 import Mathlib.Topology.ContinuousMap.Lattice
 import Mathlib.Topology.ContinuousMap.LocallyConstant
+import Mathlib.Topology.ContinuousMap.LocallyConvex
 import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.ContinuousMap.Periodic
 import Mathlib.Topology.ContinuousMap.Polynomial

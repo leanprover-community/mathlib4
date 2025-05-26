@@ -251,7 +251,7 @@ theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Fi
   | insert i s hi hrec =>
     have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
       hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.sum_insert hi]
+    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hi, Finset.sum_insert hi]
     rw [Equiv.Perm.Disjoint.cycleType_mul, hrec hs']
     apply disjoint_noncommProd_right
     intro j hj
