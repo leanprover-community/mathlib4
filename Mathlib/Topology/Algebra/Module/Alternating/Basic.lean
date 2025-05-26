@@ -335,7 +335,7 @@ theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[
 /-- A continuous linear equivalence of domains
 defines an equivalence between continuous alternating maps.
 
-This is available as a continuos linear isomorphism at
+This is available as a continuous linear isomorphism at
 `ContinuousLinearEquiv.continuousAlternatingMapCongrLeft`.
 
 This is `ContinuousAlternatingMap.compContinuousLinearMap` as an equivalence. -/
