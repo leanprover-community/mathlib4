@@ -327,8 +327,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       rw [mem_closedBall_iff_norm] at zr
       apply Set.mem_add.2 ⟨A (z - x), _, f z - f x - A (z - x) + f x, _, _⟩
       · apply mem_image_of_mem
-        simpa only [dist_eq_norm, mem_closedBall, mem_closedBall_zero_iff,
-        sub_zero] using zr
+        simpa only [dist_eq_norm, mem_closedBall, mem_closedBall_zero_iff, sub_zero] using zr
       · rw [mem_closedBall_iff_norm, add_sub_cancel_right]
         calc
           ‖f z - f x - A (z - x)‖ ≤ δ * ‖z - x‖ := hf _ zs _ xs
