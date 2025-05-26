@@ -559,6 +559,12 @@ protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder 
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
   {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
 
+instance : NoZeroDivisors ℕ∞ where
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} h := by
+    by_contra h'
+    cases a <;> cases b <;> simp_all
+    · norm_cast at h; simp_all
+
 end ENat
 
 lemma WithBot.lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by

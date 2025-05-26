@@ -79,9 +79,6 @@ lemma finiteRingKrullDim_iff_ne_bot_and_top :
     FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
   (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
 
-proof_wanted Polynomial.ringKrullDim_le :
-    ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
-
 proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
     [IsNoetherianRing R] (n : ℕ) :
     ringKrullDim (MvPolynomial (Fin n) R) = ringKrullDim R + n
