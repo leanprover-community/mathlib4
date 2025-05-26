@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Positivity
 import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -216,6 +217,20 @@ example (a : ℤ) : 0 ≤ a⁻ := by positivity
 
 section
 
+variable {a b : ℝ≥0∞}
+
+example : 0 ≤ a := by positivity
+example (ha : a ≠ 0) : 0 < a := by positivity
+example : 0 ≤ a + b := by positivity
+example (ha : a ≠ 0) : 0 < a + b := by positivity
+example : 0 < a + 5 := by positivity
+example : 0 < 2 * a + 3 := by positivity
+example (ha : 0 < a) : 0 < a + b := by positivity
+
+end
+
+section
+
 variable {a b : EReal}
 
 example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b := by positivity
@@ -231,6 +246,10 @@ example (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b := by positivity
 example (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
 example (ha : 0 ≤ a) : 0 ≤ 2 * a := by positivity
 example (ha : 0 < a) : 0 < a * 2 := by positivity
+
+example : 0 < (5 : EReal) := by positivity
+example (_ha : 0 ≤ a) : 0 < a + 5 := by positivity
+example (_ha : 0 ≤ a) : 0 < 2 * a + 3 := by positivity
 
 end
 
