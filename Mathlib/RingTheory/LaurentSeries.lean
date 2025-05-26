@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Algebra.Group.Int.TypeTags
 
-
+import Mathlib.Algebra.GroupWithZero.Int
 /-!
 # Laurent Series
 
@@ -590,6 +590,10 @@ theorem valuation_single_zpow (s : ℤ) :
         PowerSeries.coe_pow, valuation_X_pow, ofAdd_neg, WithZero.coe_inv, inv_inv]
   · simp only [Valuation.ne_zero_iff, ne_eq, one_ne_zero, not_false_iff, HahnSeries.single_ne_zero]
 
+-- This should be turned into a typeclass that could simplify
+-- the statements of many theorems
+/-- The valuation of `K⸨X⸩` is normalized, in the sense that
+`Valued.v.rangeGroup₀` is the full value group. -/
 theorem rangeGroup₀_eq : Valued.v.rangeGroup₀ (R := K⸨X⸩) = ⊤ := by
   rw [eq_top_iff]
   intro n _
@@ -598,7 +602,7 @@ theorem rangeGroup₀_eq : Valued.v.rangeGroup₀ (R := K⸨X⸩) = ⊤ := by
   | zero => exact ⟨1, 0, by simp⟩
   | coe d =>
     use 1, HahnSeries.single (- Multiplicative.toAdd d) 1
-    simp [LaurentSeries.valuation_single_zpow]
+    simp [valuation_single_zpow]
 
 /- The coefficients of a power series vanish in degree strictly less than its valuation. -/
 theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
@@ -998,39 +1002,45 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
   · rintro ⟨T, ⟨⟨R, ⟨hR, pre_R⟩⟩, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hR
     use {P : RatFunc K | Valued.v P < ↑d}
-    simp only [Valued.mem_nhds, sub_zero]
-    have hd₀ : d.1.1 ≠ 0 := by
-      have := @Subtype.val_inj _ _ d.1 0
-      simp only [MonoidHomWithZero.range₀_coe_zero, Units.ne_zero, iff_false] at this
-      exact this
-    let γ₀ : Valued.v.rangeGroup₀ (R := RatFunc K) := by
-      use d.1.1
-      obtain ⟨N, hN⟩ := WithZero.ne_zero_iff_exists.mp hd₀
-      rw [Valued.v.mem_rangeGroup₀_iff]
-      use X
-      use RatFunc.X ^ (toAdd N)
-      constructor
-      · simpa only [Valuation.ne_zero_iff] using RatFunc.X_ne_zero
-      · rw [← hN]
-        have := valuation_single_zpow K (ofAdd N)
-        simp at this
-        simp
-        sorry
-    have hγ_nz : γ₀ ≠ 0 := by
-      exact Subtype.coe_ne_coe.mp hd₀
-    let γ : (Valued.v.rangeGroup₀ (R := RatFunc K))ˣ := Units.mk0 γ₀ hγ_nz
-    refine ⟨⟨γ, by rfl⟩, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
-    apply hd
-    simp only [sub_zero, Set.mem_setOf_eq]
-    simp_rw [← RatFunc.coe_sub, valuation_def, ← valuation_eq_LaurentSeries_valuation]
-    assumption
+    simp only [WithZero.valued_def, Valued.mem_nhds, sub_zero, Units.coe_map,
+      Submonoid.subtype_apply, Set.setOf_subset_setOf, Set.preimage_setOf_eq]
+    simp only [sub_zero, Units.coe_map, Submonoid.subtype_apply] at hd
+    have hd₀ : (d.val : ℤₘ₀) ≠ 0 := by
+      simpa only [MonoidHomWithZero.range₀_coe_zero,
+        Units.ne_zero, iff_false] using @Subtype.val_inj _ _ d.val 0
+    rw [WithZero.ne_zero_iff_exists] at hd₀
+    obtain ⟨e, hed⟩ := hd₀
+    constructor
+    · use Valued.v.mk_rangeGroup₀_unit (R := RatFunc K)
+          (a := (X : RatFunc K) ^ (-toAdd e))
+        -- TODO: explain
+          (by simp; exact not_eq_of_beq_eq_false rfl)
+      intro f hf
+      apply lt_of_lt_of_eq hf
+      simp [← hed, ← WithZero.ofAdd_zpow, ofAdd_toAdd]
+    · apply subset_trans (fun _ _ ↦ pre_R ?_) pre_T
+      apply hd
+      simp only [sub_zero, Set.mem_setOf_eq]
+      simp_rw [← RatFunc.coe_sub, valuation_def, ← valuation_eq_LaurentSeries_valuation]
+      assumption
   · rintro ⟨_, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
-    let X := {f : K⸨X⸩ | Valued.v f < ↑d}
-    refine ⟨(fun x : K⸨X⸩ × K⸨X⸩ ↦ x.snd - x.fst) ⁻¹' X, ⟨X, ?_⟩, ?_⟩
+    have hd₀ : (d.val : ℤₘ₀) ≠ 0 := by
+      simpa only [MonoidHomWithZero.range₀_coe_zero,
+        Units.ne_zero, iff_false] using @Subtype.val_inj _ _ d.val 0
+    rw [WithZero.ne_zero_iff_exists] at hd₀
+    obtain ⟨e, hed⟩ := hd₀
+    let S := {f : K⸨X⸩ | Valued.v f < ↑d}
+    refine ⟨(fun x : K⸨X⸩ × K⸨X⸩ ↦ x.snd - x.fst) ⁻¹' S, ⟨S, ?_⟩, ?_⟩
     · refine ⟨?_, Set.Subset.refl _⟩
       · simp only [Valued.mem_nhds, sub_zero]
-        use d
+        let u := Valued.v.mk_rangeGroup₀_unit (R := K⸨X⸩)
+          (a := HahnSeries.single (- toAdd e) 1) (by simp)
+        use u
+        simp only [Units.coe_map, Submonoid.subtype_apply, Set.setOf_subset_setOf, S]
+        intro f hf
+        apply lt_of_lt_of_eq hf
+        simp [u, ← hed, LaurentSeries.valuation_single_zpow]
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
       rw [Set.mem_setOf_eq, sub_zero, WithZero.valued_def, valuation_eq_LaurentSeries_valuation,
@@ -1131,11 +1141,11 @@ open scoped WithZeroTopology Topology Multiplicative
 
 theorem valuation_LaurentSeries_equal_extension :
     (LaurentSeriesPkg K).isDenseInducing.extend Valued.v = (Valued.v : K⸨X⸩ → ℤₘ₀) := by
-  apply IsDenseInducing.extend_unique
+  apply @IsDenseInducing.extend_unique _ _ _ _ _ _ _
   · intro x
     rw [valued_def, valuation_eq_LaurentSeries_valuation K x]
     rfl
-  · exact Valued.continuous_valuation (K := K⸨X⸩)
+  · exact Valued.continuous_valuation' (rangeGroup₀_eq K)
 
 theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     Tendsto (Valued.v : RatFunc K → ℤₘ₀) (comap (↑) (𝓝 a)) (𝓝 (Valued.v a : ℤₘ₀)) := by
@@ -1150,7 +1160,17 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     constructor
     · rw [ha, this]
       use Units.mk0 γ γ_ne_zero
-      rw [Units.val_mk0]
+      simp only [Units.val_mk0, ne_eq, γ_ne_zero, not_false_eq_true, subset_refl, and_self,
+        and_true]
+      convert Submonoid.mem_top _
+      rw [eq_top_iff]
+      intro d _
+      rw [Valuation.mem_rangeGroup₀_iff]
+      induction d with
+      | zero => exact ⟨1, 0, by simp⟩
+      | coe d =>
+        exact ⟨1, (X : RatFunc K) ^ (- Multiplicative.toAdd d),
+          by simp [← WithZero.ofAdd_zpow]⟩
     · refine Set.Subset.trans (fun a _ ↦ ?_) (Set.preimage_mono γ_le)
       rwa [Set.mem_preimage, Set.mem_Iio, hψ, ← Valued.valuedCompletion_apply a]
   · rw [WithZeroTopology.tendsto_of_ne_zero ((Valuation.ne_zero_iff Valued.v).mpr ha), hψ,

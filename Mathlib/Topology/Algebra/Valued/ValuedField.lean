@@ -137,6 +137,28 @@ theorem Valued.continuous_valuation [Valued K Γ₀] :
       exact Valued.loc_const v_ne
     · simpa [ne_eq, ← Subtype.coe_inj] using v_ne
 
+theorem Valued.continuous_valuation' [Valued K Γ₀]
+    (hv : v.rangeGroup₀ (R := K) = ⊤) :
+    Continuous (Valued.v : K → Γ₀) := by
+  rw [@Valuation.coe_comp_rangeGroup₀_restrict]
+  apply @Continuous.comp _ _ _ _ WithZeroTopology.topologicalSpace
+    _ _ _ _ Valued.continuous_valuation
+  rw [@continuous_iff_isClosed]
+  intro s hs
+  rw [WithZeroTopology.isClosed_iff] at hs ⊢
+  rcases hs with hs | hs
+  · left
+    simpa using hs
+  · right
+    obtain ⟨γ, hγ, hs⟩ := hs
+    use ⟨γ, (show γ ∈ v.rangeGroup₀ from by simp [hv])⟩
+    constructor
+    · simp [ne_eq, ← Subtype.coe_inj, hγ]
+    · intro z hz
+      simp only [Submonoid.coe_subtype, mem_preimage, mem_Ici] at hz
+      rw [mem_Ici, ← Subtype.coe_le_coe]
+      simpa only [mem_Ici] using hs hz
+
 end
 
 end ValuationTopologicalDivisionRing
