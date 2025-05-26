@@ -21,11 +21,13 @@ commutative ring `R`, denoted `R[X]_n`.
 * `degreeLT.basis R n`: a basis for `R[X]_n` the submodule of polynomials with degree `< n`,
 given by the monomials `X^i` for `i < n`.
 
-* `degreeLT.basis_prod R m n`: a basis for `(R[X]_m) × (R[X]_n)` as above, which is the sum
+* `degreeLT.basisProd R m n`: a basis for `(R[X]_m) × (R[X]_n)` as above, which is the sum
 of the two bases.
 
 * `degreeLT.addLinearEquiv R m n`: an isomorphism between `(R[X]_(m+n))` and `(R[X]_m) × (R[X]_n)`
-given by the fact that the bases are both indexed by `Fin (m+n)`.
+given by the fact that the bases are both indexed by `Fin (m+n)`. This is used for the Sylvester
+matrix, which is the matrix representing the Sylvester map between these two spaces, in a future
+file.
 
 * `taylorLinear r n`: The linear automorphism induced by `taylor r` on `R[X]_n`.
 
@@ -78,17 +80,17 @@ lemma basis_val (i : Fin n) : (basis R n i : R[X]) = X ^ (i : ℕ) := by
 
 variable (R m n) in
 /-- Basis for `(R[X]_m) × (R[X]_n)`. -/
-noncomputable def basis_prod : Basis (Fin (m + n)) R ((R[X]_m) × (R[X]_n)) :=
+noncomputable def basisProd : Basis (Fin (m + n)) R ((R[X]_m) × (R[X]_n)) :=
   ((basis R m).prod (basis R n)).reindex finSumFinEquiv
 
-@[simp] lemma basis_prod_castAdd (m n : ℕ) (i : Fin m) :
-    basis_prod R m n (i.castAdd n) = (xPow R m i, 0) := by
-  rw [basis_prod, Basis.reindex_apply, finSumFinEquiv_symm_apply_castAdd, Basis.prod_apply,
+@[simp] lemma basisProd_castAdd (m n : ℕ) (i : Fin m) :
+    basisProd R m n (i.castAdd n) = (xPow R m i, 0) := by
+  rw [basisProd, Basis.reindex_apply, finSumFinEquiv_symm_apply_castAdd, Basis.prod_apply,
     Sum.elim_inl, LinearMap.coe_inl, Function.comp_apply, basis_apply]
 
-@[simp] lemma basis_prod_natAdd (m n : ℕ) (i : Fin n) :
-    basis_prod R m n (i.natAdd m) = (0, xPow R n i) := by
-  rw [basis_prod, Basis.reindex_apply, finSumFinEquiv_symm_apply_natAdd, Basis.prod_apply,
+@[simp] lemma basisProd_natAdd (m n : ℕ) (i : Fin n) :
+    basisProd R m n (i.natAdd m) = (0, xPow R n i) := by
+  rw [basisProd, Basis.reindex_apply, finSumFinEquiv_symm_apply_natAdd, Basis.prod_apply,
     Sum.elim_inr, LinearMap.coe_inr, Function.comp_apply, basis_apply]
 
 variable (R m n) in
@@ -96,15 +98,15 @@ variable (R m n) in
 the bases are both indexed by `Fin (m+n)`. -/
 noncomputable def addLinearEquiv :
     (R[X]_(m + n)) ≃ₗ[R] (R[X]_m) × (R[X]_n) :=
-  Basis.equiv (basis ..) (basis_prod ..) (Equiv.refl _)
+  Basis.equiv (basis ..) (basisProd ..) (Equiv.refl _)
 
 lemma addLinearEquiv_castAdd (i : Fin m) :
     addLinearEquiv R m n (xPow R (m+n) (i.castAdd n)) = (xPow R m i, 0) := by
-  rw [addLinearEquiv, ← basis_apply, Basis.equiv_apply, Equiv.refl_apply, basis_prod_castAdd]
+  rw [addLinearEquiv, ← basis_apply, Basis.equiv_apply, Equiv.refl_apply, basisProd_castAdd]
 
 lemma addLinearEquiv_natAdd (i : Fin n) :
     addLinearEquiv R m n (xPow R (m+n) (i.natAdd m)) = (0, xPow R n i) := by
-  rw [addLinearEquiv, ← basis_apply, Basis.equiv_apply, Equiv.refl_apply, basis_prod_natAdd]
+  rw [addLinearEquiv, ← basis_apply, Basis.equiv_apply, Equiv.refl_apply, basisProd_natAdd]
 
 lemma addLinearEquiv_symm_apply_xPow_left (i : Fin m) :
     (addLinearEquiv R m n).symm (LinearMap.inl R _ _ (xPow R m i)) = xPow R (m+n) (i.castAdd n) :=
