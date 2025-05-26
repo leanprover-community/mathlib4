@@ -116,7 +116,7 @@ theorem isEulerian_iff {u v : V} (p : G.Walk u v) :
   · rintro ⟨h, hl⟩
     exact h.isEulerian_of_forall_mem hl
 
-theorem isEulerian.edgeSet_eq {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
+theorem IsEulerian.edgeSet_eq {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
     p.edgeSet = G.edgeSet := by
   have : G.edgeSet ⊆ p.edgeSet := by
     rw [Set.subset_def]
