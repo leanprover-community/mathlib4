@@ -164,15 +164,16 @@ section taylor
 
 variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
 
+lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n :=
+  le_antisymm (Submodule.map_le_iff_le_comap.2
+      fun _ hf ↦ mem_degreeLT.2 <| (degree_taylor ..).trans_lt <| mem_degreeLT.1 hf)
+    (fun f hf ↦ (taylorEquiv r).apply_symm_apply f ▸ Submodule.mem_map_of_mem
+      (mem_degreeLT.2 <| (degree_taylor ..).trans_lt <| mem_degreeLT.1 hf))
+
 /-- The map `taylor r` induces an automorphism of the module `R[X]_n` of polynomials of
 degree `< n`. -/
-noncomputable def taylorLinear (r : R) (n : ℕ) : (R[X]_n) ≃ₗ[R] (R[X]_n) where
-  toFun P  := ⟨P.1.taylor r, mem_degreeLT.2 <| (degree_taylor ..).trans_lt <| mem_degreeLT.1 P.2⟩
-  invFun P := ⟨P.1.taylor (-r), mem_degreeLT.2 <| (degree_taylor ..).trans_lt <| mem_degreeLT.1 P.2⟩
-  map_add'  _ _ := Subtype.ext <| map_add ..
-  map_smul' _ _ := Subtype.ext <| map_smul ..
-  left_inv  _   :=Subtype.ext <| (taylorEquiv r).symm_apply_apply _
-  right_inv _   := Subtype.ext <| (taylorEquiv r).apply_symm_apply _
+noncomputable def taylorLinear (r : R) (n : ℕ) : (R[X]_n) ≃ₗ[R] (R[X]_n) :=
+  (taylorEquiv r : R[X] ≃ₗ[R] R[X]).ofSubmodules _ _ map_taylorEquiv_degreeLT
 
 @[simp] lemma taylorLinear_apply (P : R[X]_n) :
     (taylorLinear r n P : R[X]) = (P : R[X]).taylor r :=
@@ -194,23 +195,7 @@ noncomputable def taylorLinear (r : R) (n : ℕ) : (R[X]_n) ≃ₗ[R] (R[X]_n) w
 
 @[simp] theorem det_taylor :
     (taylorLinear r n).det = 1 :=
-  Units.ext <| by rw [LinearEquiv.coe_det, taylor_det', Units.val_one]
-
-/-- Gluing of the `taylorLinear` automorphisms. -/
-noncomputable def taylorProd (r : R) (m n) : ((R[X]_m) × (R[X]_n)) ≃ₗ[R] ((R[X]_m) × (R[X]_n)) :=
-  (taylorLinear r m).prodCongr (taylorLinear r n)
-
-@[simp] lemma taylorProd_apply (P : (R[X]_m) × (R[X]_n)) :
-    taylorProd r m n P = (taylorLinear r m P.1, taylorLinear r n P.2) := rfl
-
-theorem taylorProd_det' :
-    (taylorProd r m n : ((R[X]_m) × (R[X]_n)) →ₗ[R] _).det = 1 := by
-  rw [taylorProd, LinearEquiv.coe_prodCongr, LinearMap.det_prodMap,
-    taylor_det', taylor_det', one_mul]
-
-theorem taylorProd_det :
-    (taylorProd r m n).det = 1 :=
-  Units.ext <| by rw [LinearEquiv.coe_det, taylorProd_det', Units.val_one]
+  Units.ext <| by rw [LinearEquiv.coe_det, det_taylor_toLinearMap, Units.val_one]
 
 end taylor
 

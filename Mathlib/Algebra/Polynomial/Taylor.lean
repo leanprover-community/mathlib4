@@ -159,7 +159,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] {r : R} {f : R[X]} {s : R}
+variable {R : Type*} [CommRing R] (r : R) {f : R[X]} {s : R}
 
 /-- `Polynomial.taylor` as a `RingEquiv` for commutative rings. -/
 noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
@@ -174,7 +174,7 @@ noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
 @[simp] lemma taylorEquiv_symm : (taylorEquiv r).symm = taylorEquiv (-r) :=
   AlgEquiv.ext fun _ ↦ rfl
 
-variable (r f s)
+variable (f s)
 
 theorem taylor_eval_sub (s : R) : (taylor r f).eval (s - r) = f.eval s := by
   rw [taylor_eval, sub_add_cancel]
