@@ -167,13 +167,31 @@ lemma map_mapₐ {R A B C : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [
     (I.map f).map g = I.map (g.comp f) :=
   I.map_map f.toRingHom g.toRingHom
 
-theorem map_span (f : F) (s : Set R) : map f (span s) = span (f '' s) := by
+theorem map_span (s : Set R) : map f (span s) = span (f '' s) := by
   refine (Submodule.span_eq_of_le _ ?_ ?_).symm
   · rintro _ ⟨x, hx, rfl⟩; exact mem_map_of_mem f (subset_span hx)
   · rw [map_le_iff_le_comap, span_le, coe_comap, ← Set.image_subset_iff]
     exact subset_span
 
 variable {f I J K L}
+
+theorem map_span_singleton_eq_top (hf : Function.Bijective f) (x : R) :
+    map f (span {x}) = ⊤ ↔ span {x} = ⊤ := by
+  refine ⟨?_, fun h => ?_⟩
+  · simp_rw [eq_top_iff_one, map_span, Set.image_singleton, mem_span_singleton']
+    rintro ⟨a, h⟩
+    rcases hf.surjective a with ⟨a, rfl⟩
+    exact ⟨a, by rwa [← map_mul, map_eq_one_iff f hf.injective] at h⟩
+  · rw [h, map_top]
+
+theorem map_span_pair_eq_top (hf : Function.Bijective f) (x y : R) :
+    map f (span {x, y}) = ⊤ ↔ span {x, y} = ⊤ := by
+  refine ⟨?_, fun h => ?_⟩
+  · simp_rw [eq_top_iff_one, map_span, Set.image_pair, mem_span_pair]
+    rintro ⟨a, b, h⟩
+    rcases hf.surjective a, hf.surjective b with ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩
+    exact ⟨a, b, by rwa [← map_mul, ← map_mul, ← map_add, map_eq_one_iff f hf.injective] at h⟩
+  · rw [h, map_top]
 
 theorem map_le_of_le_comap : I ≤ K.comap f → I.map f ≤ K :=
   (gc_map_comap f).l_le

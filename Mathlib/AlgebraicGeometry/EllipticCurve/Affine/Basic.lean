@@ -12,7 +12,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 Let `W` be a Weierstrass curve over a commutative ring `R` with coefficients `aᵢ`. An *affine point*
 on `W` is a tuple `(x, y)` of elements in `R` satisfying the *Weierstrass equation* `W(X, Y) = 0` in
 *affine coordinates*, where `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)`. It is
-*nonsingular* if its partial derivatives `W_X(x, y)` and `W_Y(x, y)` do not vanish simultaneously.
+*nonsingular* if the ideal spanned by its partial derivatives `W_X(x, y)` and `W_Y(x, y)` is `R`.
 
 This file defines polynomials associated to Weierstrass equations and the nonsingular condition in
 affine coordinates. The group law on the actual type of nonsingular points in affine coordinates
@@ -95,7 +95,7 @@ lemma polynomial_eq : W.polynomial = Cubic.toPoly
     ⟨0, 1, Cubic.toPoly ⟨0, 0, W.a₁, W.a₃⟩, Cubic.toPoly ⟨-1, -W.a₂, -W.a₄, -W.a₆⟩⟩ := by
   simp_rw [polynomial, Cubic.toPoly]
   map_simp
-  simp only [C_0, C_1]
+  simp_rw [C_0, C_1]
   ring1
 
 lemma polynomial_ne_zero [Nontrivial R] : W.polynomial ≠ 0 := by
@@ -120,23 +120,23 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   by_contra h
   rcases (monic_polynomial.not_irreducible_iff_exists_add_mul_eq_coeff natDegree_polynomial).mp h
     with ⟨f, g, h0, h1⟩
-  simp only [polynomial_eq, Cubic.coeff_eq_c, Cubic.coeff_eq_d] at h0 h1
+  simp_rw [polynomial_eq, Cubic.coeff_eq_c, Cubic.coeff_eq_d] at h0 h1
   apply_fun degree at h0 h1
   rw [Cubic.degree_of_a_ne_zero' <| neg_ne_zero.mpr <| one_ne_zero' R, degree_mul] at h0
   apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
   rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with h | h | h | h
-  iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
-  iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
+  iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp_rw [h] <;> decide
+  iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp_rw [h] <;> decide
 
 lemma evalEval_polynomial (x y : R) : W.polynomial.evalEval x y =
     y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆) := by
-  simp only [polynomial]
+  rw [polynomial]
   eval_simp
   rw [add_mul, ← add_assoc]
 
 @[simp]
 lemma evalEval_polynomial_zero : W.polynomial.evalEval 0 0 = -W.a₆ := by
-  simp only [evalEval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
+  simp_rw [evalEval_polynomial, zero_pow <| Nat.succ_ne_zero _, mul_zero, zero_add, zero_sub]
 
 variable (W) in
 /-- The proposition that an affine point `(x, y)` lies in a Weierstrass curve `W`.
@@ -174,12 +174,12 @@ noncomputable def polynomialX : R[X][Y] :=
 
 lemma evalEval_polynomialX (x y : R) :
     W.polynomialX.evalEval x y = W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) := by
-  simp only [polynomialX]
+  rw [polynomialX]
   eval_simp
 
 @[simp]
 lemma evalEval_polynomialX_zero : W.polynomialX.evalEval 0 0 = -W.a₄ := by
-  simp only [evalEval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
+  simp_rw [evalEval_polynomialX, zero_pow <| Nat.succ_ne_zero _, mul_zero, zero_sub, zero_add]
 
 variable (W) in
 /-- The partial derivative `W_Y(X, Y)` with respect to `Y` of the polynomial `W(X, Y)` associated to
@@ -189,67 +189,63 @@ noncomputable def polynomialY : R[X][Y] :=
   C (C 2) * Y + C (C W.a₁ * X + C W.a₃)
 
 lemma evalEval_polynomialY (x y : R) : W.polynomialY.evalEval x y = 2 * y + W.a₁ * x + W.a₃ := by
-  simp only [polynomialY]
+  rw [polynomialY]
   eval_simp
-  rw [← add_assoc]
+  rw [add_assoc]
 
 @[simp]
 lemma evalEval_polynomialY_zero : W.polynomialY.evalEval 0 0 = W.a₃ := by
-  simp only [evalEval_polynomialY, zero_add, mul_zero]
+  simp_rw [evalEval_polynomialY, mul_zero, zero_add]
 
 variable (W) in
 /-- The proposition that an affine point `(x, y)` on a Weierstrass curve `W` is nonsingular.
 
-In other words, either `W_X(x, y) ≠ 0` or `W_Y(x, y) ≠ 0`.
+In other words, the ideal spanned by `W_X(x, y)` and `W_Y(x, y)` is the entire ring.
 
-Note that this definition is only mathematically accurate for fields. -/
--- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
+Note that this definition is only mathematically accurate for certain rings whose Picard group has
+trivial 12-torsion, such as a field or a PID. -/
 def Nonsingular (x y : R) : Prop :=
-  W.Equation x y ∧ (W.polynomialX.evalEval x y ≠ 0 ∨ W.polynomialY.evalEval x y ≠ 0)
-
-lemma nonsingular_iff' (x y : R) : W.Nonsingular x y ↔ W.Equation x y ∧
-    (W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) ≠ 0 ∨ 2 * y + W.a₁ * x + W.a₃ ≠ 0) := by
-  rw [Nonsingular, equation_iff', evalEval_polynomialX, evalEval_polynomialY]
+  W.Equation x y ∧ Ideal.span {W.polynomialX.evalEval x y, W.polynomialY.evalEval x y} = ⊤
 
 lemma nonsingular_iff (x y : R) : W.Nonsingular x y ↔ W.Equation x y ∧
-    (W.a₁ * y ≠ 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ ∨ y ≠ -y - W.a₁ * x - W.a₃) := by
-  rw [nonsingular_iff', sub_ne_zero, ← sub_ne_zero (a := y)]
-  congr! 3
-  ring1
+    Ideal.span {W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄), 2 * y + W.a₁ * x + W.a₃} = ⊤ := by
+  rw [Nonsingular, evalEval_polynomialX, evalEval_polynomialY]
+
+@[deprecated (since := "2025-05-26")] alias nonsingular_iff' := nonsingular_iff
 
 @[simp]
-lemma nonsingular_zero : W.Nonsingular 0 0 ↔ W.a₆ = 0 ∧ (W.a₃ ≠ 0 ∨ W.a₄ ≠ 0) := by
-  rw [Nonsingular, equation_zero, evalEval_polynomialX_zero, neg_ne_zero, evalEval_polynomialY_zero,
-    or_comm]
+lemma nonsingular_zero : W.Nonsingular 0 0 ↔ W.a₆ = 0 ∧ Ideal.span {W.a₃, W.a₄} = ⊤ := by
+  rw [Nonsingular, equation_zero, evalEval_polynomialX_zero, Ideal.span_pair_neg_left,
+    evalEval_polynomialY_zero, Ideal.span_pair_comm]
 
 lemma nonsingular_iff_variableChange (x y : R) :
     W.Nonsingular x y ↔ (VariableChange.mk 1 x 0 y • W).toAffine.Nonsingular 0 0 := by
-  rw [nonsingular_iff', equation_iff_variableChange, equation_zero, ← neg_ne_zero, or_comm,
-    nonsingular_zero, variableChange_a₃, variableChange_a₄, inv_one, Units.val_one]
-  simp only [variableChange_def]
-  congr! 3 <;> ring1
+  rw [nonsingular_iff, equation_iff_variableChange, equation_zero, ← neg_sub,
+    Ideal.span_pair_neg_left, Ideal.span_pair_comm, nonsingular_zero, variableChange_a₃,
+    variableChange_a₄, inv_one, Units.val_one]
+  ring_nf
 
-private lemma equation_zero_iff_nonsingular_zero_of_Δ_ne_zero (hΔ : W.Δ ≠ 0) :
+private lemma equation_zero_iff_nonsingular_zero_of_isUnit_Δ (hΔ : IsUnit W.Δ) :
     W.Equation 0 0 ↔ W.Nonsingular 0 0 := by
-  simp only [equation_zero, nonsingular_zero, iff_self_and]
-  contrapose! hΔ
-  simp only [b₂, b₄, b₆, b₈, Δ, hΔ]
-  ring1
+  rw [equation_zero, nonsingular_zero, iff_self_and]
+  refine fun h => Ideal.eq_top_of_isUnit_mem _ (Ideal.mem_span_pair.mpr ?_) hΔ
+  exact ⟨-W.a₂ * W.a₃ * W.b₂ ^ 2 + 9 * W.a₃ * W.b₂ * W.b₄ - 8 * W.a₁ * W.b₄ ^ 2 - 27 * W.a₃ * W.b₆,
+    W.b₂ ^ 2 * W.b₄ - W.a₄ * W.b₂ ^ 2 - 16 * W.b₄ ^ 2, by simp_rw [Δ, b₂, b₄, b₆, b₈, h]; ring1⟩
 
-lemma equation_iff_nonsingular_of_Δ_ne_zero {x y : R} (hΔ : W.Δ ≠ 0) :
+lemma equation_iff_nonsingular_of_isUnit_Δ {x y : R} (hΔ : IsUnit W.Δ) :
     W.Equation x y ↔ W.Nonsingular x y := by
   rw [equation_iff_variableChange, nonsingular_iff_variableChange,
-    equation_zero_iff_nonsingular_zero_of_Δ_ne_zero <| by
+    equation_zero_iff_nonsingular_zero_of_isUnit_Δ <| by
       rwa [variableChange_Δ, inv_one, Units.val_one, one_pow, one_mul]]
 
-lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
+lemma equation_iff_nonsingular [W.IsElliptic] (x y : R) :
     W.toAffine.Equation x y ↔ W.toAffine.Nonsingular x y :=
-  W.toAffine.equation_iff_nonsingular_of_Δ_ne_zero <| W.coe_Δ' ▸ W.Δ'.ne_zero
+  W.toAffine.equation_iff_nonsingular_of_isUnit_Δ W.Δ'.isUnit
 
 @[deprecated (since := "2025-03-01")] alias nonsingular_zero_of_Δ_ne_zero :=
-  equation_iff_nonsingular_of_Δ_ne_zero
+  equation_iff_nonsingular_of_isUnit_Δ
 @[deprecated (since := "2025-03-01")] alias nonsingular_of_Δ_ne_zero :=
-  equation_iff_nonsingular_of_Δ_ne_zero
+  equation_iff_nonsingular_of_isUnit_Δ
 @[deprecated (since := "2025-03-01")] alias nonsingular := equation_iff_nonsingular
 
 /-! ## Maps and base changes -/
@@ -257,31 +253,39 @@ lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
 variable (f : R →+* S) (x y : R)
 
 lemma map_polynomial : (W.map f).toAffine.polynomial = W.polynomial.map (mapRingHom f) := by
-  simp only [polynomial]
+  simp_rw [polynomial]
   map_simp
 
 variable {x y} in
-lemma Equation.map {x y : R} (h : W.Equation x y) : (W.map f).toAffine.Equation (f x) (f y) := by
+lemma Equation.map (h : W.Equation x y) : (W.map f).toAffine.Equation (f x) (f y) := by
   rw [Equation, map_polynomial, map_mapRingHom_evalEval, h, map_zero]
 
 variable {f} in
 lemma map_equation (hf : Function.Injective f) :
     (W.map f).toAffine.Equation (f x) (f y) ↔ W.Equation x y := by
-  simp only [Equation, map_polynomial, map_mapRingHom_evalEval, map_eq_zero_iff f hf]
+  simp_rw [Equation, map_polynomial, map_mapRingHom_evalEval, map_eq_zero_iff f hf]
 
 lemma map_polynomialX : (W.map f).toAffine.polynomialX = W.polynomialX.map (mapRingHom f) := by
-  simp only [polynomialX]
+  simp_rw [polynomialX]
   map_simp
 
 lemma map_polynomialY : (W.map f).toAffine.polynomialY = W.polynomialY.map (mapRingHom f) := by
-  simp only [polynomialY]
+  simp_rw [polynomialY]
   map_simp
 
+variable {x y} in
+lemma Nonsingular.map (h : W.Nonsingular x y) : (W.map f).toAffine.Nonsingular (f x) (f y) := by
+  rw [Nonsingular] at h ⊢
+  simp_rw [map_polynomialX, map_polynomialY, map_mapRingHom_evalEval, ← Set.image_pair f]
+  exact ⟨Equation.map f h.left, by rw [← Ideal.map_span, h.right, Ideal.map_top]⟩
+
 variable {f} in
-lemma map_nonsingular (hf : Function.Injective f) :
+lemma map_nonsingular (hf : Function.Bijective f) :
     (W.map f).toAffine.Nonsingular (f x) (f y) ↔ W.Nonsingular x y := by
-  simp only [Nonsingular, evalEval, map_equation _ _ hf, map_polynomialX, map_polynomialY,
-    map_mapRingHom_evalEval, map_ne_zero_iff f hf]
+  refine ⟨?_, fun h => h.map f⟩
+  simp_rw [Nonsingular, map_equation _ _ hf.left, map_polynomialX, map_polynomialY,
+    map_mapRingHom_evalEval, ← Set.image_pair f, ← Ideal.map_span, Ideal.map_span_pair_eq_top hf,
+    imp_self]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (x y : A)
@@ -293,7 +297,7 @@ lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
 variable {x y} in
 lemma Equation.baseChange (h : (W.baseChange A).toAffine.Equation x y) :
     (W.baseChange B).toAffine.Equation (f x) (f y) := by
-  convert Equation.map f.toRingHom h using 1
+  convert h.map f.toRingHom using 1
   rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
@@ -309,8 +313,14 @@ lemma baseChange_polynomialY : (W.baseChange B).toAffine.polynomialY =
     (W.baseChange A).toAffine.polynomialY.map (mapRingHom f) := by
   rw [← map_polynomialY, map_baseChange]
 
+variable {x y} in
+lemma Nonsingular.baseChange (h :(W.baseChange A).toAffine.Nonsingular x y) :
+    (W.baseChange B).toAffine.Nonsingular (f x) (f y) := by
+  convert h.map f.toRingHom using 1
+  rw [AlgHom.toRingHom_eq_coe, map_baseChange]
+
 variable {f} in
-lemma baseChange_nonsingular (hf : Function.Injective f) :
+lemma baseChange_nonsingular (hf : Function.Bijective f) :
     (W.baseChange B).toAffine.Nonsingular (f x) (f y) ↔
       (W.baseChange A).toAffine.Nonsingular x y := by
   rw [← map_nonsingular _ _ hf, AlgHom.toRingHom_eq_coe, map_baseChange, RingHom.coe_coe]

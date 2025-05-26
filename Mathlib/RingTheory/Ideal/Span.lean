@@ -236,9 +236,26 @@ theorem span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
   exact ⟨fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_comm y x⟩, fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_neg y x⟩⟩
 
 @[simp]
-theorem span_singleton_abs [LinearOrder α] (x : α) :
-    span {|x|} = span {x} := by
+theorem span_pair_neg_left (x y : α) : span {-x, y} = span {x, y} := by
+  rw [span_insert, span_singleton_neg, span_insert]
+
+@[simp]
+theorem span_pair_neg_right (x y : α) : span {x, -y} = span {x, y} := by
+  rw [span_pair_comm, span_pair_neg_left, span_pair_comm]
+
+@[simp]
+theorem span_singleton_abs [LinearOrder α] (x : α) : span {|x|} = span {x} := by
   obtain h | h := abs_choice x <;>
+  simp [h]
+
+@[simp]
+theorem span_pair_abs_left [LinearOrder α] (x y : α) : span {|x|, y} = span {x, y} := by
+  obtain h | h := abs_choice x <;>
+  simp [h]
+
+@[simp]
+theorem span_pair_abs_right [LinearOrder α] (x y : α) : span {x, |y|} = span {x, y} := by
+  obtain h | h := abs_choice y <;>
   simp [h]
 
 end Ideal
