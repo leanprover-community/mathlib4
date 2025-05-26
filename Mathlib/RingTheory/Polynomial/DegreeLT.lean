@@ -72,8 +72,7 @@ noncomputable def xPow (n : ℕ) (i : Fin n) : R[X]_n :=
   rw [Basis.apply_eq_iff]; ext j
   simp only [basis_repr, xPow_val, coeff_X_pow, eq_comm, Finsupp.single_apply, Fin.ext_iff]
 
-@[simp] lemma basis_val (i : Fin n) :
-    (basis R n i : R[X]) = X ^ (i : ℕ) := by
+lemma basis_val (i : Fin n) : (basis R n i : R[X]) = X ^ (i : ℕ) := by
   rw [basis_apply, xPow_val]
 
 variable (R m n) in
