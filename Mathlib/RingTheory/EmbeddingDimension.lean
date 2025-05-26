@@ -9,10 +9,8 @@ import Mathlib.Algebra.Module.SpanRank
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Data.Int.Star
-import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.Cotangent

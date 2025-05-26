@@ -6,6 +6,7 @@ Authors: Brian Nugent
 import Mathlib.RingTheory.EmbeddingDimension
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Local Ring Dimension
