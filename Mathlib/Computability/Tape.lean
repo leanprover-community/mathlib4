@@ -266,7 +266,7 @@ theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : L
   | zero =>
     cases i <;> simp only [ListBlank.nth_zero, if_true, ListBlank.head_cons, ListBlank.modifyNth,
       ListBlank.nth_succ, if_false, ListBlank.tail_cons, reduceCtorEq]
-  | succ n IH  =>
+  | succ n IH =>
     cases i
     · rw [if_neg (Nat.succ_ne_zero _).symm]
       simp only [ListBlank.nth_zero, ListBlank.head_cons, ListBlank.modifyNth]
