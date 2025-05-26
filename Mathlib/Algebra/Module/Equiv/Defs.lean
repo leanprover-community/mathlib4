@@ -419,10 +419,10 @@ theorem eq_comp_toLinearMap_iff (f g : M₂ →ₛₗ[σ₂₃] M₃) :
   rw [(eq_comp_toLinearMap_symm g (f.comp e₁₂.toLinearMap)).mpr h.symm, eq_comp_toLinearMap_symm]
 
 lemma comp_symm_cancel_left (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₃ →ₛₗ[σ₃₂] M₂) :
-    e.toLinearMap ∘ₛₗ e.symm.toLinearMap ∘ₛₗ f = f := by ext; simp
+    e.toLinearMap ∘ₛₗ (e.symm.toLinearMap ∘ₛₗ f) = f := by ext; simp
 
 lemma symm_comp_cancel_left (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₃ →ₛₗ[σ₃₁] M₁) :
-    e.symm.toLinearMap ∘ₛₗ e.toLinearMap ∘ₛₗ f = f := by ext; simp
+    e.symm.toLinearMap ∘ₛₗ (e.toLinearMap ∘ₛₗ f) = f := by ext; simp
 
 lemma comp_symm_cancel_right (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₂ →ₛₗ[σ₂₃] M₃) :
     (f ∘ₛₗ e.toLinearMap) ∘ₛₗ e.symm.toLinearMap = f := by ext; simp
