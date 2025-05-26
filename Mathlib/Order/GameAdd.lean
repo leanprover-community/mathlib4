@@ -89,8 +89,8 @@ end Prod
   stronger condition `∀ b, Acc rβ b`. -/
 theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
     Acc (Prod.GameAdd rα rβ) (a, b) := by
-  induction' ha with a _ iha generalizing b
-  induction' hb with b hb ihb
+  induction ha generalizing b with | _ a _ iha
+  induction hb with | _ b hb ihb
   refine Acc.intro _ fun h => ?_
   rintro (⟨ra⟩ | ⟨rb⟩)
   exacts [iha _ ra (Acc.intro b hb), ihb _ rb]
@@ -175,10 +175,10 @@ end Sym2
 
 theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
     Acc (Sym2.GameAdd rα) s(a, b) := by
-  induction' ha with a _ iha generalizing b
-  induction' hb with b hb ihb
+  induction ha generalizing b with | _ a _ iha
+  induction hb with | _ b hb ihb
   refine Acc.intro _ fun s => ?_
-  induction' s with c d
+  induction s with | _ c d
   rw [Sym2.GameAdd]
   dsimp
   rintro ((rc | rd) | (rd | rc))

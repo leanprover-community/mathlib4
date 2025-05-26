@@ -46,8 +46,8 @@ theorem LocallyIntegrableOn.mono_set (hf : LocallyIntegrableOn f s μ) {t : Set 
 
 theorem LocallyIntegrableOn.norm (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (fun x => ‖f x‖) s μ := fun t ht =>
-  let ⟨U, hU_nhd, hU_int⟩ := hf t ht
-  ⟨U, hU_nhd, hU_int.norm⟩
+  let ⟨U, hU_nhds, hU_int⟩ := hf t ht
+  ⟨U, hU_nhds, hU_int.norm⟩
 
 theorem LocallyIntegrableOn.mono (hf : LocallyIntegrableOn f s μ) {g : X → F}
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ ≤ ‖f x‖) :
@@ -325,7 +325,7 @@ theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
     apply indicator_eq_self.2
     apply support_subset_iff'.2
     intros x hx
-    simp [image_eq_zero_of_nmem_tsupport hx]
+    simp [image_eq_zero_of_notMem_tsupport hx]
   rw [← this, indicator_smul]
   apply Integrable.smul_of_top_right
   · rw [integrable_indicator_iff hK.measurableSet]
@@ -344,7 +344,7 @@ theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
     apply indicator_eq_self.2
     apply support_subset_iff'.2
     intros x hx
-    simp [image_eq_zero_of_nmem_tsupport hx]
+    simp [image_eq_zero_of_notMem_tsupport hx]
   rw [← this, indicator_smul_left]
   apply Integrable.smul_of_top_left
   · rw [integrable_indicator_iff hK.measurableSet]

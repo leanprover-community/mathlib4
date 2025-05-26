@@ -428,16 +428,22 @@ namespace Basis.SmithNormalForm
 
 variable {n : ℕ} {N : Submodule R M} (snf : Basis.SmithNormalForm N ι n) (m : N)
 
-lemma repr_eq_zero_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
+lemma repr_eq_zero_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     snf.bM.repr m i = 0 := by
   obtain ⟨m, hm⟩ := m
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hi : ∀ j, snf.f j ≠ i := by simpa using hi
   simp [Finsupp.single_apply, hi, snf.snf, map_finsuppSum]
 
-lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
+@[deprecated (since := "2025-05-24")]
+alias repr_eq_zero_of_nmem_range := repr_eq_zero_of_notMem_range
+
+lemma le_ker_coord_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
-  fun m hm ↦ snf.repr_eq_zero_of_nmem_range ⟨m, hm⟩ hi
+  fun m hm ↦ snf.repr_eq_zero_of_notMem_range ⟨m, hm⟩ hi
+
+@[deprecated (since := "2025-05-24")]
+alias le_ker_coord_of_nmem_range := le_ker_coord_of_notMem_range
 
 @[simp] lemma repr_apply_embedding_eq_repr_smul {i : Fin n} :
     snf.bM.repr m (snf.f i) = snf.bN.repr (snf.a i • m) i := by

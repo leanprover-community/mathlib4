@@ -128,7 +128,7 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
     hp.pow_dvd_iff_le_factorization ha, hp.pow_dvd_iff_le_factorization hb, Pi.add_apply,
     Finsupp.coe_add]
   have : a.factorization p = 0 ∨ b.factorization p = 0 := by
-    rw [← Finsupp.not_mem_support_iff, ← Finsupp.not_mem_support_iff, ← not_and_or, ←
+    rw [← Finsupp.notMem_support_iff, ← Finsupp.notMem_support_iff, ← not_and_or, ←
       Finset.mem_inter]
     intro t
     simpa using hab.disjoint_primeFactors.le_bot t

@@ -95,7 +95,7 @@ alias condexpKernel_apply_eq_condDistrib := condExpKernel_apply_eq_condDistrib
 instance : IsMarkovKernel (condExpKernel μ m) := by
   rcases isEmpty_or_nonempty Ω with h | h
   · exact ⟨fun a ↦ (IsEmpty.false a).elim⟩
-  · simp [condExpKernel, h]; infer_instance
+  · simpa [condExpKernel, h] using by infer_instance
 
 lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
     (μ.trim hm) ⊗ₘ condExpKernel μ m
@@ -351,7 +351,7 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
   · refine (ae_eq_condExp_of_forall_setIntegral_eq (generateFrom_singleton_le hs) hf.restrict ?_ ?_
       stronglyMeasurable_const.aestronglyMeasurable).symm
     · rintro t - -
-      rw [integrableOn_const]
+      rw [integrableOn_const_iff]
       exact Or.inr <| measure_lt_top (μ.restrict s) t
     · rintro t ht -
       obtain (h | h | h | h) := measurableSet_generateFrom_singleton_iff.1 ht
