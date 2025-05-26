@@ -783,10 +783,10 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       rw [trStmts₁] at h
       rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h; exact IH₂₂ _ h]
     · intro _ ss' _ -- goto
-      simp only [trStmts₁, Finset.not_mem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
+      simp only [trStmts₁, Finset.notMem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
       exact fun _ v ↦ Finset.mem_biUnion.2 ⟨_, ss' v, Finset.mem_insert_self _ _⟩
     · intro _ _ -- halt
-      simp only [trStmts₁, Finset.not_mem_empty]
+      simp only [trStmts₁, Finset.notMem_empty]
       exact ⟨trivial, fun _ ↦ False.elim⟩⟩
 
 end

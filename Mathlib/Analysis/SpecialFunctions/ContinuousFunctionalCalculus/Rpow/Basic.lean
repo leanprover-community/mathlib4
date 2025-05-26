@@ -387,7 +387,7 @@ lemma rpow_neg_mul_rpow {a : A} (x : ℝ) (ha : 0 ∉ spectrum ℝ≥0 a)
 lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
     a ^ (-1 : ℝ) = (↑a⁻¹ : A) := by
   refine a.inv_eq_of_mul_eq_one_left ?_ |>.symm
-  simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_not_mem ℝ≥0 a.isUnit)
+  simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_notMem ℝ≥0 a.isUnit)
 
 lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
     [StarOrderedRing A] [NormedAlgebra ℝ A] [NonnegSpectrumClass ℝ A]
@@ -404,7 +404,7 @@ lemma rpow_neg [IsTopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
     simp [NNReal.rpow_neg, NNReal.inv_rpow]
   refine NNReal.continuousOn_rpow_const (.inl ?_)
   rintro ⟨z, hz, hz'⟩
-  exact spectrum.zero_not_mem ℝ≥0 a.isUnit <| inv_eq_zero.mp hz' ▸ hz
+  exact spectrum.zero_notMem ℝ≥0 a.isUnit <| inv_eq_zero.mp hz' ▸ hz
 
 lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
     (a : A) ^ (n : ℝ) = (↑(a ^ n) : A) := by

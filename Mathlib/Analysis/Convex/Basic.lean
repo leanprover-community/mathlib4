@@ -623,7 +623,7 @@ theorem convex_stdSimplex [IsOrderedRing 𝕜] : Convex 𝕜 (stdSimplex 𝕜 ι
 
 /-- The standard simplex in the zero-dimensional space is empty. -/
 lemma stdSimplex_of_isEmpty_index [IsEmpty ι] [Nontrivial 𝕜] : stdSimplex 𝕜 ι = ∅ :=
-  eq_empty_of_forall_not_mem <| by rintro f ⟨-, hf⟩; simp at hf
+  eq_empty_of_forall_notMem <| by rintro f ⟨-, hf⟩; simp at hf
 
 lemma stdSimplex_unique [ZeroLEOneClass 𝕜] [Nonempty ι] [Subsingleton ι] :
     stdSimplex 𝕜 ι = {fun _ ↦ 1} := by

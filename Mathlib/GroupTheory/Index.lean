@@ -648,7 +648,8 @@ open Pointwise
 
 variable {G H : Type*} [Group H] (h : H)
 
--- TODO: can we make `to_additive` work here?
+-- NB: `to_additive` does not work to generate the second lemma from the first here, because it
+-- would need to additivize `G`, but not `H`.
 
 lemma Subgroup.relindex_pointwise_smul [Group G] [MulDistribMulAction H G] (J K : Subgroup G) :
     (h • J).relindex (h • K) = J.relindex K := by

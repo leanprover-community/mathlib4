@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.Extension
+import Mathlib.RingTheory.Extension.Basic
 
 /-!
 

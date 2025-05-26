@@ -329,7 +329,7 @@ lemma finiteIndex_conjGL (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] (g : GL (Fi
   · -- Show that `[ (t • A ⊓ A) : (t • G ⊓ A)] < ∞`.
     apply relindex_inter_ne_zero
     rw [relindex_pointwise_smul, ← index_comap,
-      comap_map_eq_self_of_injective mapGL_intCast_injective]
+      comap_map_eq_self_of_injective mapGL_injective]
     exact FiniteIndex.index_ne_zero
   · -- Show that `[A : (t • A ⊓ A)] < ∞` (note this is independent of `Γ`)
     obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g 1
