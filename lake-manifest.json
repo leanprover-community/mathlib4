@@ -65,7 +65,7 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "4c790c9473f8e766070a373aabafe07645032769",
+   "rev": "ebb7fcba6e6fbb6e097418c40075a89737594c86",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
    "inputRev": "lean-pr-testing-8470",
