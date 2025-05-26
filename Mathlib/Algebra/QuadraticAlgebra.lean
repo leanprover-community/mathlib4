@@ -15,10 +15,10 @@ variable {R : Type u} [CommSemiring R] {a b : R}
 def ofInt (n : R) : QuadraticAlgebra R a b :=
   ⟨n, 0⟩
 
-theorem ofInt_re (n : R) : (ofInt n : QuadraticAlgebra R a b).re = n :=
+theorem re_ofInt (n : R) : (ofInt n : QuadraticAlgebra R a b).re = n :=
   rfl
 
-theorem ofInt_im (n : R) : (ofInt n : QuadraticAlgebra R a b).im = 0 :=
+theorem im_ofInt (n : R) : (ofInt n : QuadraticAlgebra R a b).im = 0 :=
   rfl
 
 /-- The zero of the ring -/
@@ -26,11 +26,11 @@ instance : Zero (QuadraticAlgebra R a b) :=
   ⟨ofInt 0⟩
 
 @[simp]
-theorem zero_re : (0 : QuadraticAlgebra R a b).re = 0 :=
+theorem re_zero : (0 : QuadraticAlgebra R a b).re = 0 :=
   rfl
 
 @[simp]
-theorem zero_im : (0 : QuadraticAlgebra R a b).im = 0 :=
+theorem im_zero : (0 : QuadraticAlgebra R a b).im = 0 :=
   rfl
 
 /-- The one of the ring -/
@@ -38,34 +38,34 @@ instance : One (QuadraticAlgebra R a b) :=
   ⟨ofInt 1⟩
 
 @[simp]
-theorem one_re : (1 : QuadraticAlgebra R a b).re = 1 :=
+theorem re_one : (1 : QuadraticAlgebra R a b).re = 1 :=
   rfl
 
 @[simp]
-theorem one_im : (1 : QuadraticAlgebra R a b).im = 0 :=
+theorem im_one : (1 : QuadraticAlgebra R a b).im = 0 :=
   rfl
 
 instance : Add (QuadraticAlgebra R a b) :=
   ⟨fun z w => ⟨z.1 + w.1, z.2 + w.2⟩⟩
 
 @[simp]
-theorem add_re (z w : QuadraticAlgebra R a b) : (z + w).re = z.re + w.re :=
+theorem re_add (z w : QuadraticAlgebra R a b) : (z + w).re = z.re + w.re :=
   rfl
 
 @[simp]
-theorem add_im (z w : QuadraticAlgebra R a b) : (z + w).im = z.im + w.im :=
+theorem im_add (z w : QuadraticAlgebra R a b) : (z + w).im = z.im + w.im :=
   rfl
 
 instance : Mul (QuadraticAlgebra R a b) :=
   ⟨fun z w => ⟨z.1 * w.1 + b * z.2 * w.2, z.1 * w.2 + z.2 * w.1 + a * z.2 * w.2⟩⟩
 
 @[simp]
-theorem mul_re (z w : QuadraticAlgebra R a b) :
+theorem re_mul (z w : QuadraticAlgebra R a b) :
     (z * w).re = z.re * w.re + b * z.im * w.im :=
   rfl
 
 @[simp]
-theorem mul_im (z w : QuadraticAlgebra R a b) :
+theorem im_mul (z w : QuadraticAlgebra R a b) :
     (z * w).im = z.re * w.im + z.im * w.re + a * z.im * w.im :=
   rfl
 
@@ -87,9 +87,9 @@ instance addCommMonoid : AddCommMonoid (QuadraticAlgebra R a b) := by
 instance addMonoidWithOne : AddMonoidWithOne (QuadraticAlgebra R a b) :=
   { QuadraticAlgebra.addCommMonoid with
     natCast := fun n => ofInt n
-    natCast_zero := by ext <;> simp [ofInt_re, ofInt_im]
+    natCast_zero := by ext <;> simp [re_ofInt, im_ofInt]
     natCast_succ := fun n => by
-      ext <;> simp [ofInt_re, ofInt_im, Nat.succ_eq_add_one]
+      ext <;> simp [re_ofInt, im_ofInt, Nat.succ_eq_add_one]
     one := 1 }
 
 instance commSemiring : CommSemiring (QuadraticAlgebra R a b) := by
