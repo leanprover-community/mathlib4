@@ -9,7 +9,7 @@ import Mathlib.Topology.Compactification.OnePoint
 /-!
 # Compactly generated topological spaces
 
-This file defines compactly generated topological spaces A compactly generated space is a space `X`
+This file defines compactly generated topological spaces. A compactly generated space is a space `X`
 whose topology is coinduced by continuous maps from compact Hausdorff spaces to `X`. In such a
 space, a set `s` is closed (resp. open) if and only if for all compact Hausdorff space `K` and
 `f : K → X` continuous, `f ⁻¹' s` is closed (resp. open) in `K`.
