@@ -410,9 +410,37 @@ noncomputable def variation : VectorMeasure X ℝ≥0∞ where
   m_iUnion'           := variation_m_iUnion' μ
 
 theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
-    ‖μ E‖ ≤ (variation μ E).toReal := by
-
-  sorry
+    ENNReal.ofReal ‖μ E‖ ≤ (variation μ E) := by
+  dsimp [variation, variationAux]
+  wlog hE' : E ≠ ∅
+  · push_neg at hE'
+    simp [hE']
+  by_cases hE : ¬MeasurableSet E
+  · simp [hE, μ.not_measurable' hE]
+  · push_neg at hE
+    simp only [hE, reduceIte, varOfPart]
+    let P' : Finset (Set X) := {E}
+    have hP' : P' ∈ partitions E := by
+      refine ⟨?_, ?_, ?_, ?_⟩
+      · simp [P']
+      · simpa [P']
+      · simp [P']
+      · simpa [P']
+    have hEP' : ENNReal.ofReal ‖μ E‖ = varOfPart μ P' := by
+      simp [varOfPart, P']
+    rw [hEP']
+    dsimp [varOfPart]
+    refine le_iSup₂_of_le P' hP' fun a ha ↦ ?_
+    -- have : 0 ≤ ∑ p ∈ P', ‖μ p‖ := by
+    --   sorry
+    -- have : ∀ p ∈ P', 0 ≤ ‖μ p‖ := by
+    --   sorry
+    use ∑ p ∈ P', ⟨‖μ p‖, by positivity⟩
+    constructor
+    · simp only [ofReal_norm, WithTop.coe_sum, some_eq_coe']
+      congr
+    · refine NNReal.coe_le_coe.mp ?_
+      sorry
 
 -- TO DO : show that total variation is a norm on the space of vector-valued measures.
 
