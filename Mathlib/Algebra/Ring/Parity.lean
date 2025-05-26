@@ -20,11 +20,11 @@ As opposed to `Even`, `Odd` does not have a multiplicative counterpart.
 
 Try to generalize `Even` lemmas further. For example, there are still a few lemmas whose `Semiring`
 assumptions I (DT) am not convinced are necessary. If that turns out to be true, they could be moved
-to `Mathlib.Algebra.Group.Even`.
+to `Mathlib/Algebra/Group/Even.lean`.
 
 ## See also
 
-`Mathlib.Algebra.Group.Even` for the definition of even elements.
+`Mathlib/Algebra/Group/Even.lean` for the definition of even elements.
 -/
 
 assert_not_exists DenselyOrdered OrderedRing
@@ -291,10 +291,6 @@ lemma div_two_mul_two_add_one_of_odd (h : Odd n) : n / 2 * 2 + 1 = n := by
 
 lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
   rw [← odd_iff.mp h, mod_add_div']
-
-section
-
-end
 
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by

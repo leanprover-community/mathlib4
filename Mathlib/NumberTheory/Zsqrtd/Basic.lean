@@ -347,14 +347,16 @@ end Gcd
 def SqLe (a c b d : ℕ) : Prop :=
   c * a * a ≤ d * b * b
 
-theorem sqLe_of_le {c d x y z w : ℕ} (xz : z ≤ x) (yw : y ≤ w) (xy : SqLe x c y d) : SqLe z c w d :=
-  le_trans (mul_le_mul (Nat.mul_le_mul_left _ xz) xz (Nat.zero_le _) (Nat.zero_le _)) <|
-    le_trans xy (mul_le_mul (Nat.mul_le_mul_left _ yw) yw (Nat.zero_le _) (Nat.zero_le _))
+theorem sqLe_of_le {c d x y z w : ℕ} (xz : z ≤ x) (yw : y ≤ w) (xy : SqLe x c y d) :
+    SqLe z c w d := calc
+  c * z * z ≤ c * x * x := by gcongr
+  _ ≤ d * y * y := xy
+  _ ≤ d * w * w := by gcongr
 
 theorem sqLe_add_mixed {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w d) :
     c * (x * z) ≤ d * (y * w) :=
   Nat.mul_self_le_mul_self_iff.1 <| by
-    simpa [mul_comm, mul_left_comm] using mul_le_mul xy zw (Nat.zero_le _) (Nat.zero_le _)
+    simpa [mul_comm, mul_left_comm] using Nat.mul_le_mul xy zw
 
 theorem sqLe_add {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w d) :
     SqLe (x + z) c (y + w) d := by
@@ -389,7 +391,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
       refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
       convert this using 1
-      simp only [one_mul, Int.ofNat_add, Int.ofNat_mul]
+      simp only [one_mul, Int.natCast_add, Int.natCast_mul]
       ring
 
 open Int in
@@ -768,7 +770,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
             co2.dvd_of_dvd_mul_right <| by simp [this])
 
 theorem divides_sq_eq_zero_z {x y : ℤ} (h : x * x = d * y * y) : x = 0 ∧ y = 0 := by
-  rw [mul_assoc, ← Int.natAbs_mul_self, ← Int.natAbs_mul_self, ← Int.ofNat_mul, ← mul_assoc] at h
+  rw [mul_assoc, ← Int.natAbs_mul_self, ← Int.natAbs_mul_self, ← Int.natCast_mul, ← mul_assoc] at h
   exact
     let ⟨h1, h2⟩ := divides_sq_eq_zero (Int.ofNat.inj h)
     ⟨Int.natAbs_eq_zero.mp h1, Int.natAbs_eq_zero.mp h2⟩

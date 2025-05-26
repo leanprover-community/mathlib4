@@ -260,7 +260,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   split_ifs with h
   · simp_rw [h, add_neg_cancel]
     have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
-    rw [this, integral_const, measure_univ, ENNReal.toReal_one, Complex.real_smul,
+    rw [this, integral_const, measureReal_univ_eq_one, Complex.real_smul,
       Complex.ofReal_one, mul_one]
   have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)
@@ -290,7 +290,7 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
   -- After https://github.com/leanprover/lean4/pull/3124, we need to add `singlePass := true` to avoid an infinite loop.
-  simp_rw (config := {singlePass := true}) [this]
+  simp_rw +singlePass [this]
   rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
@@ -393,7 +393,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
   have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
   rw [← integral_re] at H₃
-  · simp only [← norm_sq_eq_inner] at H₃
+  · simp only [← norm_sq_eq_re_inner] at H₃
     rw [← H₁, H₂, H₃]
   · exact L2.integrable_inner f f
 
@@ -483,7 +483,7 @@ theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ �
   rw [(by ring : ((b - a : ℝ) : ℂ) / (-2 * π * I * n) = ((b - a : ℝ) : ℂ) * (1 / (-2 * π * I * n)))]
   have s2 : (b : AddCircle (b - a)) = (a : AddCircle (b - a)) := by
     simpa using coe_add_period (b - a) a
-  rw [s2, integral_const_mul, ← sub_mul, mul_sub, mul_sub]
+  rw [s2, intervalIntegral.integral_const_mul, ← sub_mul, mul_sub, mul_sub]
   congr 1
   · conv_lhs => rw [mul_comm, mul_div, mul_one]
     rw [div_eq_iff (ofReal_ne_zero.mpr hT.out.ne')]

@@ -418,7 +418,7 @@ instance : MetricSpace GHSpace where
       -- then was changed to be `simp only [hausdorffDist_comm]`,
       -- then `singlePass := true` was readded in https://github.com/leanprover-community/mathlib4/pull/8386 because of timeouts.
       -- TODO: figure out what causes the slowdown and make it a `simp only` again?
-      simp (config := { singlePass := true }) only [hausdorffDist_comm]
+      simp +singlePass only [hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by
     /- To show that two spaces at zero distance are isometric,
@@ -784,7 +784,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
         rw [← Fintype.card_eq, card_empty, Fintype.card_fin]
       use ∅, 0, bot_le, this.some
       exact fun hp' => (hp hp').elim
-    · rcases hcov _ (Set.not_not_mem.1 hp) n with ⟨s, ⟨scard, scover⟩⟩
+    · rcases hcov _ (Set.not_notMem.1 hp) n with ⟨s, ⟨scard, scover⟩⟩
       rcases Cardinal.lt_aleph0.1 (lt_of_le_of_lt scard (Cardinal.nat_lt_aleph0 _)) with ⟨N, hN⟩
       rw [hN, Nat.cast_le] at scard
       have : #s = #(Fin N) := by rw [hN, Cardinal.mk_fin]

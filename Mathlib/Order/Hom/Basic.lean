@@ -16,9 +16,9 @@ homomorphism `f : α →o β` is a function `α → β` along with a proof that 
 ## Main definitions
 
 In this file we define the following bundled monotone maps:
- * `OrderHom α β` a.k.a. `α →o β`: Preorder homomorphism.
+* `OrderHom α β` a.k.a. `α →o β`: Preorder homomorphism.
     An `OrderHom α β` is a function `f : α → β` such that `a₁ ≤ a₂ → f a₁ ≤ f a₂`
- * `OrderEmbedding α β` a.k.a. `α ↪o β`: Relation embedding.
+* `OrderEmbedding α β` a.k.a. `α ↪o β`: Relation embedding.
     An `OrderEmbedding α β` is an embedding `f : α ↪ β` such that `a ≤ b ↔ f a ≤ f b`.
     Defined as an abbreviation of `@RelEmbedding α β (≤) (≤)`.
 * `OrderIso`: Relation isomorphism.
@@ -67,7 +67,7 @@ monotone map, bundled morphism
 -/
 
 -- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
-assert_not_exists Set.range
+assert_not_imported Mathlib.Data.Set.Basic
 
 open OrderDual
 
@@ -376,7 +376,7 @@ def diag : α →o α × α :=
   id.prod id
 
 /-- Restriction of `f : α →o α →o β` to the diagonal. -/
-@[simps! (config := { simpRhs := true })]
+@[simps! +simpRhs]
 def onDiag (f : α →o α →o β) : α →o β :=
   (curry.symm f).comp diag
 
@@ -923,6 +923,12 @@ theorem lt_iff_lt (e : α ≃o β) {x y : α} : e x < e y ↔ x < y :=
   e.toOrderEmbedding.lt_iff_lt
 
 @[gcongr] protected alias ⟨_, GCongr.orderIso_apply_lt_apply⟩ := lt_iff_lt
+
+theorem lt_symm_apply (e : α ≃o β) {x : α} {y : β} : x < e.symm y ↔ e x < y := by
+  rw [← e.lt_iff_lt, e.apply_symm_apply]
+
+theorem symm_apply_lt (e : α ≃o β) {x : α} {y : β} : e.symm y < x ↔ y < e x := by
+  rw [← e.lt_iff_lt, e.apply_symm_apply]
 
 /-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
 def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop) :=

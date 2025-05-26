@@ -718,12 +718,12 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
     compl_subset_compl.mpr <| Set.image_subset _ <| compl_subset_compl.mpr <| Set.image_subset _ h
   let X : ℕ → Set α := fun n => F^[n] univ
   refine ⟨iInter X, ?_, ?_⟩
-  · apply MeasurableSet.iInter
-    intro n
-    induction' n with n ih
-    · exact MeasurableSet.univ
-    rw [Function.iterate_succ', Function.comp_apply]
-    exact (hg.measurableSet_image' (hf.measurableSet_image' ih).compl).compl
+  · refine MeasurableSet.iInter fun n ↦ ?_
+    induction n with
+    | zero => exact MeasurableSet.univ
+    | succ n ih =>
+      rw [Function.iterate_succ', Function.comp_apply]
+      exact (hg.measurableSet_image' (hf.measurableSet_image' ih).compl).compl
   apply subset_antisymm
   · apply subset_iInter
     intro n

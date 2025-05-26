@@ -454,7 +454,8 @@ theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     (a + ∑ i ∈ Ico 1 n.succ, a / b ^ i) = a / b ^ 0 + ∑ i ∈ Ico 1 n.succ, a / b ^ i := by
       rw [pow_zero, Nat.div_one]
     _ = ∑ i ∈ range n.succ, a / b ^ i := by
-      rw [range_eq_Ico, ← Nat.Ico_insert_succ_left (Nat.succ_pos _), sum_insert]
+      rw [range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico (Nat.succ_pos _), sum_insert]
+      · rfl
       exact fun h => zero_lt_one.not_le (mem_Ico.1 h).1
     _ ≤ a * b / (b - 1) := Nat.geom_sum_le hb a _
     _ = (a * 1 + a * (b - 1)) / (b - 1) := by
@@ -483,7 +484,7 @@ theorem geom_sum_pos_and_lt_one [Ring R] [PartialOrder R] [IsStrictOrderedRing R
     ⟨mul_lt_one_of_nonneg_of_lt_one_left (neg_nonneg.2 hx.le) (neg_lt_iff_pos_add'.2 hx') ihn.2.le,
       mul_neg_of_neg_of_pos hx ihn.1⟩
 
-theorem geom_sum_alternating_of_le_neg_one [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
+theorem geom_sum_alternating_of_le_neg_one [Ring R] [PartialOrder R] [IsOrderedRing R]
     (hx : x + 1 ≤ 0) (n : ℕ) :
     if Even n then (∑ i ∈ range n, x ^ i) ≤ 0 else 1 ≤ ∑ i ∈ range n, x ^ i := by
   have hx0 : x ≤ 0 := (le_add_of_nonneg_right zero_le_one).trans hx

@@ -23,14 +23,14 @@ In the list below, and in all this file, `R` is a commutative ring (semiring
 is sometimes enough), `M` and its variations are `R`-modules, `ι`, `κ`, `n` and `m` are finite
 types used for indexing.
 
- * `Basis.det`: the determinant of a family of vectors with respect to a basis,
-   as a multilinear map
- * `LinearMap.det`: the determinant of an endomorphism `f : End R M` as a
-   multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
-   result is `1` instead)
- * `LinearEquiv.det`: the determinant of an isomorphism `f : M ≃ₗ[R] M` as a
-   multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
-   result is `1` instead)
+* `Basis.det`: the determinant of a family of vectors with respect to a basis,
+  as a multilinear map
+* `LinearMap.det`: the determinant of an endomorphism `f : End R M` as a
+  multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
+  result is `1` instead)
+* `LinearEquiv.det`: the determinant of an isomorphism `f : M ≃ₗ[R] M` as a
+  multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
+  result is `1` instead)
 
 ## Tags
 
@@ -260,6 +260,7 @@ theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[
   rw [LinearMap.det, dif_neg, MonoidHom.one_apply]
   exact fun ⟨_, ⟨b⟩⟩ ↦ h (Module.Finite.of_basis b)
 
+@[nontriviality]
 theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
     LinearMap.det (f : M →ₗ[R] M) = 1 := by
   have b : Basis (Fin 0) R M := Basis.empty M

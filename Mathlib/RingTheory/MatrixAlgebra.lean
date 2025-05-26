@@ -44,28 +44,31 @@ def kroneckerTMulLinearEquiv :
   .ofLinear
     (TensorProduct.lift <| kroneckerTMulBilinear _)
     ((LinearMap.lsum R _ R fun ii => LinearMap.lsum R _ R fun jj => TensorProduct.map
-      (stdBasisMatrixLinearMap R ii.1 jj.1) (stdBasisMatrixLinearMap R ii.2 jj.2))
+      (singleLinearMap R ii.1 jj.1) (singleLinearMap R ii.2 jj.2))
       ∘ₗ (ofLinearEquiv R).symm.toLinearMap)
     (by
       ext : 4
       simp [-LinearMap.lsum_apply, LinearMap.lsum_piSingle,
-        stdBasisMatrix_kroneckerTMul_stdBasisMatrix])
+        single_kroneckerTMul_single])
     (by
       ext : 5
       simp [-LinearMap.lsum_apply, LinearMap.lsum_piSingle,
-        stdBasisMatrix_kroneckerTMul_stdBasisMatrix])
+        single_kroneckerTMul_single])
 
 @[simp]
 theorem kroneckerTMulLinearEquiv_tmul (a : Matrix l m M) (b : Matrix n p N) :
     kroneckerTMulLinearEquiv l m n p R M N (a ⊗ₜ b) = a ⊗ₖₜ b := rfl
 
 @[simp]
-theorem kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul
+theorem kroneckerTMulAlgEquiv_symm_single_tmul
     (ia : l) (ja : m) (ib : n) (jb : p) (a : M) (b : N) :
-    (kroneckerTMulLinearEquiv l m n p R M N).symm (stdBasisMatrix (ia, ib) (ja, jb) (a ⊗ₜ b)) =
-      stdBasisMatrix ia ja a ⊗ₜ stdBasisMatrix ib jb b := by
+    (kroneckerTMulLinearEquiv l m n p R M N).symm (single (ia, ib) (ja, jb) (a ⊗ₜ b)) =
+      single ia ja a ⊗ₜ single ib jb b := by
   rw [LinearEquiv.symm_apply_eq, kroneckerTMulLinearEquiv_tmul,
-    stdBasisMatrix_kroneckerTMul_stdBasisMatrix]
+    single_kroneckerTMul_single]
+
+@[deprecated (since := "2025-05-05")]
+alias kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul := kroneckerTMulAlgEquiv_symm_single_tmul
 
 @[simp]
 theorem kroneckerTMulLinearEquiv_one :
@@ -80,7 +83,7 @@ theorem kroneckerTMulLinearEquiv_mul :
         kroneckerTMulLinearEquiv m m n n R A B x * kroneckerTMulLinearEquiv m m n n R A B y :=
   (kroneckerTMulLinearEquiv m m n n R A B).toLinearMap.map_mul_iff.2 <| by
     ext : 10
-    simp [stdBasisMatrix_kroneckerTMul_stdBasisMatrix, mul_kroneckerTMul_mul]
+    simp [single_kroneckerTMul_single, mul_kroneckerTMul_mul]
 
 end Module
 
@@ -137,7 +140,7 @@ The bare function `Matrix n n A → A ⊗[R] Matrix n n R`.
 (We don't need to show that it's an algebra map, thankfully --- just that it's an inverse.)
 -/
 def invFun (M : Matrix n n A) : A ⊗[R] Matrix n n R :=
-  ∑ p : n × n, M p.1 p.2 ⊗ₜ stdBasisMatrix p.1 p.2 1
+  ∑ p : n × n, M p.1 p.2 ⊗ₜ single p.1 p.2 1
 
 @[simp]
 theorem invFun_zero : invFun n R A 0 = 0 := by simp [invFun]
@@ -157,15 +160,15 @@ theorem invFun_algebraMap (M : Matrix n n R) : invFun n R A (M.map (algebraMap R
   dsimp [invFun]
   simp only [Algebra.algebraMap_eq_smul_one, smul_tmul, ← tmul_sum, mul_boole]
   congr
-  conv_rhs => rw [matrix_eq_sum_stdBasisMatrix M]
+  conv_rhs => rw [matrix_eq_sum_single M]
   convert Finset.sum_product (β := Matrix n n R) ..; simp
 
 theorem right_inv (M : Matrix n n A) : (toFunAlgHom n R A) (invFun n R A M) = M := by
   simp only [invFun, map_sum, toFunAlgHom_apply]
   convert Finset.sum_product (β := Matrix n n A) ..
-  conv_lhs => rw [matrix_eq_sum_stdBasisMatrix M]
+  conv_lhs => rw [matrix_eq_sum_single M]
   refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => Matrix.ext fun a b => ?_
-  dsimp [stdBasisMatrix]
+  dsimp [single]
   split_ifs <;> aesop
 
 theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun n R A (toFunAlgHom n R A M) = M := by
@@ -199,15 +202,18 @@ open MatrixEquivTensor
 
 @[simp]
 theorem matrixEquivTensor_apply (M : Matrix n n A) :
-    matrixEquivTensor n R A M = ∑ p : n × n, M p.1 p.2 ⊗ₜ stdBasisMatrix p.1 p.2 1 :=
+    matrixEquivTensor n R A M = ∑ p : n × n, M p.1 p.2 ⊗ₜ single p.1 p.2 1 :=
   rfl
 
 -- Porting note: short circuiting simplifier from simplifying left hand side
 @[simp (high)]
-theorem matrixEquivTensor_apply_stdBasisMatrix (i j : n) (x : A) :
-    matrixEquivTensor n R A (stdBasisMatrix i j x) = x ⊗ₜ stdBasisMatrix i j 1 := by
+theorem matrixEquivTensor_apply_single (i j : n) (x : A) :
+    matrixEquivTensor n R A (single i j x) = x ⊗ₜ single i j 1 := by
   have t : ∀ p : n × n, i = p.1 ∧ j = p.2 ↔ p = (i, j) := by aesop
-  simp [ite_tmul, t, stdBasisMatrix]
+  simp [ite_tmul, t, single]
+
+@[deprecated (since := "2025-05-05")]
+alias matrixEquivTensor_apply_stdBasisMatrix := matrixEquivTensor_apply_single
 
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :

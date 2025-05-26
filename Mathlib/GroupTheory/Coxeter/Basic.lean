@@ -443,7 +443,7 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
         rw [if_neg h_even]
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
-   (alternatingWord i j p)[k+1]'(by simp; exact h) =
+   (alternatingWord i j p)[k+1]'(by simp [h]) =
    (alternatingWord j i p)[k]'(by simp [h]; omega) := by
   rw [getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
   by_cases h_even : Even (p + k)
@@ -505,7 +505,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
 
   /- Rewrite everything in terms of an integer m' which is equal to m.
   The resulting equation holds for all integers m'. -/
-  simp_rw [← zpow_natCast, Int.ofNat_ediv, Int.ofNat_sub hm]
+  simp_rw [← zpow_natCast, Int.natCast_ediv, Int.ofNat_sub hm]
   generalize (m : ℤ) = m'
   clear hm
   push_cast

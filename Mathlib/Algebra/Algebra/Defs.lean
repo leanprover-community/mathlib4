@@ -10,14 +10,14 @@ import Mathlib.Algebra.Module.LinearMap.Defs
 
 In this file we define associative unital `Algebra`s over commutative (semi)rings.
 
-* algebra homomorphisms `AlgHom` are defined in `Mathlib.Algebra.Algebra.Hom`;
+* algebra homomorphisms `AlgHom` are defined in `Mathlib/Algebra/Algebra/Hom.lean`;
 
-* algebra equivalences `AlgEquiv` are defined in `Mathlib.Algebra.Algebra.Equiv`;
+* algebra equivalences `AlgEquiv` are defined in `Mathlib/Algebra/Algebra/Equiv.lean`;
 
-* `Subalgebra`s are defined in `Mathlib.Algebra.Algebra.Subalgebra`;
+* `Subalgebra`s are defined in `Mathlib/Algebra/Algebra/Subalgebra.lean`;
 
-* The category `AlgebraCat R` of `R`-algebras is defined in the file
-  `Mathlib.Algebra.Category.Algebra.Basic`.
+* The category `AlgCat R` of `R`-algebras is defined in the file
+  `Mathlib/Algebra/Category/Algebra/Basic.lean`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
 
@@ -316,10 +316,6 @@ protected theorem smul_mul_assoc (r : R) (x y : A) : r • x * y = r • (x * y)
 theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α A]
     [SMulCommClass α R A] (a : α) (r : R) : a • algebraMap R A r = algebraMap R A r := by
   rw [algebraMap_eq_smul_one, smul_comm a r (1 : A), smul_one]
-
-section
-
-end
 
 section compHom
 

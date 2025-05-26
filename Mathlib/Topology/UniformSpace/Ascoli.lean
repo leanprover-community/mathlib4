@@ -456,9 +456,6 @@ theorem ArzelaAscoli.compactSpace_of_isClosedEmbedding [TopologicalSpace ι] {�
   compactSpace_of_closed_inducing' 𝔖_compact F_clemb.isInducing F_clemb.isClosed_range
     F_eqcont F_pointwiseCompact
 
-@[deprecated (since := "2024-10-20")]
-alias ArzelaAscoli.compactSpace_of_closedEmbedding := ArzelaAscoli.compactSpace_of_isClosedEmbedding
-
 /-- A version of the **Arzela-Ascoli theorem**.
 
 Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, `α` a T2 uniform space,
@@ -489,10 +486,6 @@ theorem ArzelaAscoli.isCompact_closure_of_isClosedEmbedding [TopologicalSpace ι
   exact ArzelaAscoli.compactSpace_of_isClosedEmbedding 𝔖_compact
     (F_clemb.comp isClosed_closure.isClosedEmbedding_subtypeVal) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
-
-@[deprecated (since := "2024-10-20")]
-alias ArzelaAscoli.isCompact_closure_of_closedEmbedding :=
-  ArzelaAscoli.isCompact_closure_of_isClosedEmbedding
 
 /-- A version of the **Arzela-Ascoli theorem**.
 

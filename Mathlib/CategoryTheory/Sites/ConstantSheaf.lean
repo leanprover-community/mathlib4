@@ -19,14 +19,14 @@ essential image of the constant sheaf functor.
 ## Main results
 
 * `Sheaf.isConstant_iff_isIso_counit_app`: Provided that the constant sheaf functor is fully
-faithful, a sheaf is constant if and only if the counit of the constant sheaf adjunction applied to
-it is an isomorphism.
+  faithful, a sheaf is constant if and only if the counit of the constant sheaf adjunction applied
+  to it is an isomorphism.
 
 * `Sheaf.isConstant_iff_of_equivalence` : The property of a sheaf of being constant is invariant
-under equivalence of sheaf categories.
+  under equivalence of sheaf categories.
 
 * `Sheaf.isConstant_iff_forget` : Given a "forgetful" functor `U : D ⥤ B` a sheaf `F : Sheaf J D` is
-constant if and only if the sheaf given by postcomposition with `U` is constant.
+  constant if and only if the sheaf given by postcomposition with `U` is constant.
 -/
 
 namespace CategoryTheory
