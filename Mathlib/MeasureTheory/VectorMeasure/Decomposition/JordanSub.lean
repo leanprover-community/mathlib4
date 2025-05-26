@@ -55,10 +55,10 @@ lemma toSignedMeasure_restrict_sub (hs : IsHahnDecomposition μ ν s) :
     ((ν - μ).restrict s).toSignedMeasure =
       ν.toSignedMeasure.restrict s - μ.toSignedMeasure.restrict s := by
   have hmeas := hs.measurableSet
-  rw [eq_sub_iff_add_eq, toSignedMeasure_restrict_eq_restrict_toSigned _ _ hmeas,
+  rw [eq_sub_iff_add_eq, toSignedMeasure_restrict_eq_restrict_toSignedMeasure _ _ hmeas,
     ← toSignedMeasure_add]
   simp only [restrict_sub_eq_restrict_sub_restrict, hmeas, sub_add_cancel_of_le hs.le_on]
-  exact (toSignedMeasure_restrict_eq_restrict_toSigned _ _ hmeas).symm
+  exact (toSignedMeasure_restrict_eq_restrict_toSignedMeasure _ _ hmeas).symm
 
 theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
     μ.toSignedMeasure - ν.toSignedMeasure =
@@ -77,8 +77,8 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
   have partition₂ := VectorMeasure.restrict_add_restrict_compl (ν - μ).toSignedMeasure
     hs.measurableSet
 
-  rw [toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet,
-    toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet.compl]
+  rw [toSignedMeasure_restrict_eq_restrict_toSignedMeasure _ _ hs.measurableSet,
+    toSignedMeasure_restrict_eq_restrict_toSignedMeasure _ _ hs.measurableSet.compl]
     at partition₁ partition₂
 
   rw [h₁', h₂] at partition₁

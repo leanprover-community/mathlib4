@@ -1256,7 +1256,7 @@ theorem toSignedMeasure_toMeasureOfZeroLE :
   congr
   simp [hi, ← hm, measureReal_def]
 
-theorem toSignedMeasure_restrict_eq_restrict_toSigned (hs : MeasurableSet s) :
+theorem toSignedMeasure_restrict_eq_restrict_toSignedMeasure (hs : MeasurableSet s) :
     μ.toSignedMeasure.restrict s = (μ.restrict s).toSignedMeasure := by
   ext A hA
   simp [VectorMeasure.restrict_apply, toSignedMeasure_apply, hA, hs, restrict_apply]
