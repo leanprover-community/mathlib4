@@ -11,10 +11,10 @@ import Mathlib.Data.ENNReal.Real
 In this file we prove elementary properties of algebraic operations on `ℝ≥0∞`, including addition,
 multiplication, natural powers and truncated subtraction, as well as how these interact with the
 order structure on `ℝ≥0∞`. Notably excluded from this list are inversion and division, the
-definitions and properties of which can be found in `Mathlib.Data.ENNReal.Inv`.
+definitions and properties of which can be found in `Mathlib/Data/ENNReal/Inv.lean`.
 
 Note: the definitions of the operations included in this file can be found in
-`Mathlib.Data.ENNReal.Basic`.
+`Mathlib/Data/ENNReal/Basic.lean`.
 -/
 
 assert_not_exists Finset
@@ -341,13 +341,11 @@ rather than `b`. -/
 protected lemma sub_eq_of_eq_add_rev' (ha : a ≠ ∞) : a = b + c → a - b = c :=
   (cancel_of_ne ha).tsub_eq_of_eq_add_rev'
 
-@[simp]
-protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b :=
-  (cancel_of_ne ha).add_tsub_cancel_left
+protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b := by
+  simp [ha]
 
-@[simp]
-protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a :=
-  (cancel_of_ne hb).add_tsub_cancel_right
+protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a := by
+  simp [hb]
 
 protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
     a - b + c = a + c - b := by

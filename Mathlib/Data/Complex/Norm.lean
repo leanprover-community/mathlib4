@@ -173,7 +173,7 @@ protected theorem sq_norm (z : ℂ) : ‖z‖ ^ 2 = normSq z := (normSq_eq_norm_
 
 @[simp]
 theorem sq_norm_sub_sq_re (z : ℂ) : ‖z‖ ^ 2 - z.re ^ 2 = z.im ^ 2 := by
-   rw [Complex.sq_norm, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
+  rw [Complex.sq_norm, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
 
 @[simp]
 theorem sq_norm_sub_sq_im (z : ℂ) : ‖z‖ ^ 2 - z.im ^ 2 = z.re ^ 2 := by
@@ -253,8 +253,8 @@ theorem norm_le_sqrt_two_mul_max (z : ℂ) : ‖z‖ ≤ √2 * max |z.re| |z.im
       rw [← two_mul, Real.sqrt_mul, Real.sqrt_sq] <;> positivity
 
 theorem abs_re_div_norm_le_one (z : ℂ) : |z.re / ‖z‖| ≤ 1 :=
- if hz : z = 0 then by simp [hz, zero_le_one]
- else by simp_rw [abs_div, abs_norm,
+  if hz : z = 0 then by simp [hz, zero_le_one]
+  else by simp_rw [abs_div, abs_norm,
    div_le_iff₀ (norm_pos_iff.mpr hz), one_mul, abs_re_le_norm]
 
 theorem abs_im_div_norm_le_one (z : ℂ) : |z.im / ‖z‖| ≤ 1 :=

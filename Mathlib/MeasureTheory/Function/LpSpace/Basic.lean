@@ -14,7 +14,7 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 This file provides the space `Lp E p μ` as the subtype of elements of `α →ₘ[μ] E`
 (see `MeasureTheory.AEEqFun`) such that `eLpNorm f p μ` is finite.
 For `1 ≤ p`, `eLpNorm` defines a norm and `Lp` is a complete metric space
-(the latter is proved at `Mathlib.MeasureTheory.Function.LpSpace.Complete`).
+(the latter is proved at `Mathlib/MeasureTheory/Function/LpSpace/Complete.lean`).
 
 ## Main definitions
 
@@ -653,6 +653,12 @@ theorem MeasureTheory.MemLp.of_comp_antilipschitzWith {α E F} {K'} [MeasurableS
 
 @[deprecated (since := "2025-02-21")]
 alias MeasureTheory.Memℒp.of_comp_antilipschitzWith := MeasureTheory.MemLp.of_comp_antilipschitzWith
+
+lemma MeasureTheory.MemLp.continuousLinearMap_comp [NontriviallyNormedField 𝕜]
+    [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {f : α → E}
+    (h_Lp : MemLp f p μ) (L : E →L[𝕜] F) :
+    MemLp (fun x ↦ L (f x)) p μ :=
+  LipschitzWith.comp_memLp L.lipschitz (by simp) h_Lp
 
 namespace LipschitzWith
 

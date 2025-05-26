@@ -20,21 +20,21 @@ In this file, we use the convention that `M`, `N`, `P`, `Q` are all `R`-modules,
 
 ## Main definitions
 
- * `TensorProduct.AlgebraTensorModule.curry`
- * `TensorProduct.AlgebraTensorModule.uncurry`
- * `TensorProduct.AlgebraTensorModule.lcurry`
- * `TensorProduct.AlgebraTensorModule.lift`
- * `TensorProduct.AlgebraTensorModule.lift.equiv`
- * `TensorProduct.AlgebraTensorModule.mk`
- * `TensorProduct.AlgebraTensorModule.map`
- * `TensorProduct.AlgebraTensorModule.mapBilinear`
- * `TensorProduct.AlgebraTensorModule.congr`
- * `TensorProduct.AlgebraTensorModule.rid`
- * `TensorProduct.AlgebraTensorModule.homTensorHomMap`
- * `TensorProduct.AlgebraTensorModule.assoc`
- * `TensorProduct.AlgebraTensorModule.leftComm`
- * `TensorProduct.AlgebraTensorModule.rightComm`
- * `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`
+* `TensorProduct.AlgebraTensorModule.curry`
+* `TensorProduct.AlgebraTensorModule.uncurry`
+* `TensorProduct.AlgebraTensorModule.lcurry`
+* `TensorProduct.AlgebraTensorModule.lift`
+* `TensorProduct.AlgebraTensorModule.lift.equiv`
+* `TensorProduct.AlgebraTensorModule.mk`
+* `TensorProduct.AlgebraTensorModule.map`
+* `TensorProduct.AlgebraTensorModule.mapBilinear`
+* `TensorProduct.AlgebraTensorModule.congr`
+* `TensorProduct.AlgebraTensorModule.rid`
+* `TensorProduct.AlgebraTensorModule.homTensorHomMap`
+* `TensorProduct.AlgebraTensorModule.assoc`
+* `TensorProduct.AlgebraTensorModule.leftComm`
+* `TensorProduct.AlgebraTensorModule.rightComm`
+* `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`
 
 ## Implementation notes
 
@@ -519,6 +519,13 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
 theorem tensorTensorTensorComm_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
     (tensorTensorTensorComm R A M N P Q).symm ((m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q)) = (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) :=
   rfl
+
+/-- The heterobasic version of `tensorTensorTensorComm` coincides with the regular version. -/
+theorem tensorTensorTensorComm_eq :
+    tensorTensorTensorComm R R M N P Q = TensorProduct.tensorTensorTensorComm R M N P Q := by
+  apply LinearEquiv.toLinearMap_injective
+  ext
+  simp
 
 end tensorTensorTensorComm
 

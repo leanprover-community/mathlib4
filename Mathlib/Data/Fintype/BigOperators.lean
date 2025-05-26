@@ -182,7 +182,7 @@ lemma card_filter_piFinset_eq [∀ i, DecidableEq (α i)] (s : ∀ i, Finset (α
     #{f ∈ piFinset s | f i = a} = if a ∈ s i then ∏ b ∈ univ.erase i, #(s b) else 0 := by
   split_ifs with h
   · rw [card_filter_piFinset_eq_of_mem _ _ h]
-  · rw [filter_piFinset_of_not_mem _ _ _ h, Finset.card_empty]
+  · rw [filter_piFinset_of_notMem _ _ _ h, Finset.card_empty]
 
 lemma card_filter_piFinset_const (s : Finset κ) (i : ι) (j : κ) :
     #{f ∈ piFinset fun _ ↦ s | f i = j} = if j ∈ s then #s ^ (card ι - 1) else 0 :=
@@ -193,7 +193,7 @@ end Fintype
 end Pi
 
 -- TODO: this is a basic theorem about `Fintype.card`,
--- and ideally could be moved to `Mathlib.Data.Fintype.Card`.
+-- and ideally could be moved to `Mathlib/Data/Fintype/Card.lean`.
 theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
   simp
