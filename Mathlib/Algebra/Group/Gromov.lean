@@ -979,6 +979,9 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
     -- Set.pow_mem_pow
 
 
+  have set_pow_mul (n: ℕ) (a b: G) (S: Set G) (ha: a ∈ S^n) (hb: b ∈ S^n): a * b ∈ S^(n + 1) := by
+    sorry
+
   have new_closur_e_i: Subgroup.closure ({1, γ} ∪ (e_i '' Set.univ)) = (Subgroup.closure S) := by
     rw [closure_enlarge]
     apply Subgroup.closure_eq_of_le
@@ -1029,8 +1032,18 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           apply Set.pow_mem_pow
           simp
 
+        have gamma_phi_in_minus_plus: γ^(max_phi - 1  +1) ∈ ({1, γ} ∪ Set.range e_i_regular) ^ (max_phi - 1  +1) := by
+          apply Set.pow_mem_pow
+          simp
+
+        have a_mem_s: a ∈ S := by exact l_mem_s a ha
+
         have e_pi_s_mem: e_i_regular ⟨s, hs⟩ ∈ ({1, γ} ∪ Set.range e_i_regular) := by
           simp
+
+        have e_pi_a_mem: e_i_regular ⟨a, a_mem_s⟩ ∈ ({1, γ} ∪ Set.range e_i_regular) := by
+          simp
+
 
         have max_phi_gt: 0 < max_phi := by
           simp [max_phi]
@@ -1042,7 +1055,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           use 1
           simp
 
-        have e_pi_s_mem_pow: e_i_regular ⟨s, hs⟩ ∈ (({1, γ} ∪ Set.range e_i_regular)^(max_phi - 1 + 1)) := by
+        have e_pi_s_mem_pow: e_i_regular ⟨a, l_mem_s a ha⟩ ∈ (({1, γ} ∪ Set.range e_i_regular)^(max_phi - 1 + 1)) := by
           rw [Set.mem_pow]
           --simp_rw [List.ofFn_eq_map]
 
@@ -1050,9 +1063,9 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
           --rw [List.finRange_eq_pmap_range]
 
-          let no_coe: Fin (max_phi - 1 + 1) → G := (Fin.cons (e_i_regular ⟨s, hs⟩) (fun (n: Fin (max_phi - 1)) => (1 : G)))
+          let no_coe: Fin (max_phi - 1 + 1) → G := (Fin.cons (e_i_regular ⟨a, a_mem_s⟩) (fun (n: Fin (max_phi - 1)) => (1 : G)))
 
-          use Fin.cons (⟨e_i_regular ⟨s, hs⟩, e_pi_s_mem⟩) (fun n => ⟨1, by simp⟩)
+          use Fin.cons (⟨e_i_regular ⟨a, l_mem_s a ha⟩, e_pi_a_mem⟩) (fun n => ⟨1, by simp⟩)
           conv =>
             arg 1
             arg 1
@@ -1071,83 +1084,78 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
                 rw [← hz]
                 simp
 
-
-
           unfold no_coe
           rw [List.ofFn_cons]
           simp
 
 
-          --simp_rw [List.ofFn_eq_pmap]
-          --use (fun i => if i = zero_fin then (⟨e_i_regular ⟨s, hs⟩, e_pi_s_mem⟩) else ⟨1, by simp⟩)
-          --use Pi.mulSingle zero_fin ⟨e_i_regular ⟨s, hs⟩, e_pi_s_mem⟩
-          --u--se Fin.cons (e_i_regular ⟨s, hs⟩) (fun n => 1)
-          rw [← List.headI_mul_tail_prod_of_ne_nil _ ?_]
+        have cancel_add_minus: max_phi - 1 + 1 = max_phi := by
+          omega
 
-          rw [List.prod_eq_foldl]
 
+        have prod_mem_power := set_pow_mul (max_phi - 1 + 1) (e_i_regular ⟨a, l_mem_s a ha⟩) (γ ^ (max_phi - 1 + 1)) _ e_pi_s_mem_pow gamma_phi_in_minus_plus
+
+        have prod_eq_sum: e_i ⟨a, l_mem_s a ha⟩ + φ (ofMul a) • ofMul γ = (e_i_regular ⟨a, a_mem_s⟩) * (γ ^ φ (ofMul a)) := by
+          simp [e_i, e_i_regular, cancel_add_minus]
 
 
           conv =>
+            rhs
             arg 1
-            arg 1
-            arg 1
-            intro i
-            simp [Pi.mulSingle, Function.update]
-            equals (if i = zero_fin then e_i_regular ⟨s, hs⟩ else (id 1)) =>
-              split_ifs
+            equals ofMul (a* γ^(-(φ (ofMul a)))) =>
               simp
-              norm_cast
 
-          rw [← List.getElem?_zero_mul_tail_prod]
+          apply_fun (fun x => x * (γ ^ (- φ (ofMul a))))
+          .
+            simp only
+            simp
+            conv =>
+              lhs
+              equals a * (γ ^ φ (ofMul a))⁻¹ =>
+                simp
+                rfl
+            conv =>
+              rhs
+              rhs
+              equals ofMul (γ ^ (- φ (ofMul a))) =>
+                simp
+
+            rw [← ofMul_mul]
+            conv =>
+              rhs
+              equals (a * γ ^ (-φ (ofMul a))) =>
+                rfl
+            simp
+          .
+            exact mul_left_injective (γ ^ (-φ (ofMul a)))
 
 
+          group
+          conv =>
+            rhs
+            simp
+          rw [ofMul_mul]
+          conv =>
+            rhs
+            equals ((ofMul a + ofMul (γ ^ (-φ (ofMul a))))).toMul * γ ^ φ (ofMul a) =>
+              simp
 
-
-
-          rw [List.prod_map_ite_eq (g := id) (a := a)]
-          apply List.prod_induction (fun y => y = e_i_regular ⟨s, hs⟩)
-
-
-
-          induction l using List.prod_induction with
-          | unit =>
-            sprod_inductionorry
-
-          --rw [List.prod_ofFn]
-          --rw [List.ofFn_succ]
-          simp [zero_fin]
-          have max_phi_add: max_phi = max_phi - 1 + 1 := by
-            omega
 
           conv =>
-            pattern List.range _
-            rw [max_phi_add]
-
-
-          simp_rw [List.range_succ_eq_map]
-          simp [Function.comp_def]
-          --have add_sub: List.finRange max_phi = List.finRange (max_phi - 1 + 1) := by
-
-          --rw [List.finRange_succ_eq_map]
-          rw [List.prod_range_succ']
-
-          rw [← List.getElem?_zero_mul_tail_prod]
-          simp
-          rw [List.headI_mul_tail_prod_of_ne_nil]
-
-          rw [List.prod_cons]
-          --rw [← List.getElem?_zero_mul_tail_prod]
-          simp [max_phi_gt]
+            rhs
+            equals ofMul (a) +  ofMul (γ ^ (-φ (ofMul a)) * γ ^ φ (ofMul a) ) =>
+              simp
+              sorry
 
 
 
-          .
-          . sorry
 
 
 
         rw [Set.mem_pow]
+
+        use fun i => if i = zero_fin then ⟨e_i_regular ⟨s, hs⟩, e_pi_s_mem⟩ else ⟨γ ^ max_phi, gamma_phi_in⟩
+        use []
 
 
 
