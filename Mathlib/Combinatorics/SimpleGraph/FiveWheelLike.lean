@@ -54,12 +54,12 @@ while `W₂,₁` is a 5-cycle with an extra central hub vertex adjacent to all o
 The definitions of `IsFiveWheelLike` and `IsFiveWheelLikeFree` in this file have `r` shifted by two
 compared to the definitions in Brandt **On the structure of graphs with bounded clique number**
 
-The definition of `IsFiveWheelLike` does not contain the fact that `#s = #t = r` but rather we
-deduce this later as `card_left` and `card_right`.
+The definition of `IsFiveWheelLike` does not contain the facts that `#s = r ` and `#t = r` but we
+deduce these later as `card_left` and `card_right`.
 
 Although `#(s ∩ t)` can easily be derived from `s` and `t` we include the `IsFiveWheelLike` field
 `card_eq : #(s ∩ t) = k` to match the informal / paper definitions and to simplify some statements
-of results.
+of results and match our definition of `IsFiveWheelLikeFree`.
 
 ## References
 
