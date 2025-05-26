@@ -1310,8 +1310,10 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
       let E: Set G := {γ, γ⁻¹} ∪ Set.range e_i_regular
+      let gamma_sum: List E -> ℤ := fun (l) => l.count ⟨γ, by simp [E]⟩ - l.count ⟨γ⁻¹, by simp [E]⟩
 
-      let rec rewrite_list (list: List (E)): List ((Set.range (Function.uncurry gamma_m))) := by
+
+      let rec rewrite_list (list: List (E)) (hsum: gamma_sum list = 0): List ((Set.range (Function.uncurry gamma_m))) := by
         let is_gamma: E → Bool := fun (k: E) => k = γ ∨ k = γ⁻¹
         let is_gamma_prop: E → Prop := fun (k: E) => k = γ ∨ k = γ⁻¹
         have eq_split: list = list.takeWhile is_gamma ++ list.dropWhile is_gamma := by
@@ -1360,9 +1362,137 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             simp
             rfl
 
+          have phi_ofmul_gamma: φ (ofMul γ) = 1 := by
+            exact hγ
+
+          have gamma_ne_inv: γ ≠ γ⁻¹ := by
+            by_contra this
+            apply_fun ofMul at this
+            apply_fun φ at this
+            rw [phi_ofmul_gamma] at this
+            rw [ofMul_inv] at this
+            rw [AddMonoidHom.map_neg] at this
+            rw [phi_ofmul_gamma] at this
+            omega
 
           let gamma_copy: List E := if (m >= 0) then List.replicate m.natAbs ⟨γ, by simp [E]⟩ else List.replicate (m.natAbs) ⟨γ⁻¹, by simp [E]⟩
+          let gamma_copy_inv: List E := if (m >= 0) then List.replicate m.natAbs ⟨γ⁻¹, by simp [E]⟩ else List.replicate (m.natAbs) ⟨γ, by simp [E]⟩
+
+          have count_gamma_copy: gamma_sum gamma_copy = m := by
+            simp [gamma_sum, gamma_copy]
+            by_cases m_ge: 0 ≤ m
+            .
+              simp [m_ge]
+              rw [List.count_replicate]
+              simp [gamma_ne_inv]
+              exact m_ge
+            .
+              simp [m_ge]
+              rw [List.count_replicate]
+              simp [gamma_ne_inv.symm]
+              simp at m_ge
+              apply_fun (fun x => -x)
+              .
+                simp
+                omega
+              . exact neg_injective
+
+          have count_gamma_inv_eq_zero: ∀ m, List.count ⟨γ⁻¹, by simp [E]⟩ ((List.replicate (α := E) m (⟨γ, by simp [E]⟩ : E))) = 0 := by
+            intro m
+            rw [List.count_replicate]
+            simp [gamma_ne_inv]
+
+          have count_gamma_eq_zero: ∀ m, ((List.replicate (α := E) m (Subtype.mk γ⁻¹ (by simp [E]) : E)).count ⟨γ, by simp [E]⟩ = 0) := by
+            intro m
+            rw [List.count_replicate]
+            simp [gamma_ne_inv.symm]
+
+          have count_gamma_copy_inv: gamma_sum gamma_copy_inv = -m := by
+            simp [gamma_sum, gamma_copy_inv]
+            by_cases m_ge: 0 ≤ m
+            .
+              simp [m_ge]
+              rw [List.count_replicate]
+              simp [gamma_ne_inv.symm]
+              exact m_ge
+            .
+              simp [m_ge]
+              rw [List.count_replicate]
+              simp [gamma_ne_inv]
+              omega
+
+
+          -- have count_gamm_in_copy:  List.count ⟨γ⁻¹, by simp [E]⟩ gamma_copy = 0 := by
+          --   simp [gamma_copy]
+          --   by_cases m_ge: 0 ≤ m
+          --   .
+          --     simp [m_ge]
+          --     rw [List.count_replicate]
+          --     simp [gamma_ne_inv]
+          --   .
+          --     simp only [m_ge, ↓reduceIte]
+          --     rw [List.count_replicate]
+          --     simp [gamma_ne_inv.symm]
+          --     omega
+
+          have gamma_sum_head: gamma_sum (gamma_copy ++ [(List.dropWhile is_gamma list)[0]] ++ gamma_copy_inv) = 0 := by
+            simp [gamma_sum]
+            rw [add_comm, sub_eq_add_neg]
+            simp [List.count_cons]
+            dsimp [gamma_sum] at count_gamma_copy
+            rw [add_assoc]
+            conv =>
+              lhs
+              rhs
+              rhs
+              rw [add_comm]
+            rw [add_assoc]
+            conv =>
+              lhs
+              rhs
+              rhs
+              rw [← add_assoc]
+              lhs
+              rw [← sub_eq_add_neg]
+              rw [count_gamma_copy]
+
+
+            simp [gamma_sum] at count_gamma_copy_inv
+            conv =>
+              lhs
+              rw [← add_assoc]
+              rhs
+              rw [add_comm]
+              lhs
+              rw [add_comm]
+            rw [add_assoc]
+            conv =>
+              lhs
+              rhs
+              rw [add_comm]
+            rw [← add_assoc]
+            rw [← add_assoc]
+            rw [← add_assoc]
+            rw [← sub_eq_add_neg, ← sub_eq_add_neg]
+            rw [count_gamma_copy_inv]
+            abel
+            simp [not_is_gamma_prop.left]
+            simp [not_is_gamma_prop.right]
+
+          have gamma_sum_head: gamma_sum [⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), by (
+            dsimp [E]
+            apply Set.mem_union_right
+            simp
+            simp at drop_head_in_e_i
+            obtain ⟨s, s_mem, rest_eq⟩ := drop_head_in_e_i
+            use s
+            use s_mem
+            rw [← rest_eq]
+          )⟩] = 0 := by
+            sorry
           use (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma)))
+
+      sorry
 
 -- Decompose list of {e_k, γ}:
 
