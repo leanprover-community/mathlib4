@@ -48,7 +48,7 @@ variable (R : Type u) (S : Type v) (ι : Type w) (σ : Type t) [CommRing R] [Com
 
 /--
 A presentation of an `R`-algebra `S` is a family of
-generators with `σ → MvPolynomial vars R`: The assignment of
+generators with `σ → MvPolynomial ι R`: The assignment of
 each relation to a polynomial in the generators.
 -/
 @[nolint checkUnivs]
@@ -103,13 +103,7 @@ is a complete intersection.
 noncomputable def dimension (P : Presentation R S ι σ) : ℕ :=
   Nat.card ι - Nat.card σ
 
--- /-- A presentation is finite if there are only finitely-many
--- relations and finitely-many relations. -/
--- class IsFinite (P : Presentation R S ι σ) : Prop where
---   finite_vars : Finite ι
---   finite_rels : Finite σ
 
--- attribute [instance] IsFinite.finite_vars IsFinite.finite_rels
 
 lemma ideal_fg_of_isFinite [Finite σ] : P.ker.FG := by
   use (Set.finite_range P.relation).toFinset

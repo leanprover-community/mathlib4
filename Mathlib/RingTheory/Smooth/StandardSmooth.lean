@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Extension.Presentation.Basic
 In this file we define standard smooth algebras. For this we introduce
 the notion of a `PreSubmersivePresentation`. This is a presentation `P` that has
 fewer relations than generators. More precisely there exists an injective map from `σ`
-to `P.vars`. To such a presentation we may associate a jacobian. `P` is then a submersive
+to `P.ι`. To such a presentation we may associate a jacobian. `P` is then a submersive
 presentation, if its jacobian is invertible.
 
 Finally, a standard smooth algebra is an algebra that admits a submersive presentation.
@@ -273,8 +273,6 @@ the lower-right block has determinant jacobian of `P`.
 
 -/
 
--- variable [DecidableEq (Q.comp P).rels] [Fintype (Q.comp P).rels]
-
 variable [Fintype σ] [Fintype σ']
 
 open scoped Classical in
@@ -403,8 +401,8 @@ lemma baseChange_jacobian [Finite σ] : (P.baseChange T).jacobian = 1 ⊗ₜ P.j
 
 end BaseChange
 
-/-- Given a pre-submersive presentation `P` and equivalences `ι ≃ P.vars` and
-`κ ≃ σ`, this is the induced pre-sumbersive presentation with variables indexed
+/-- Given a pre-submersive presentation `P` and equivalences `ι' ≃ ι` and
+`σ' ≃ σ`, this is the induced pre-sumbersive presentation with variables indexed
 by `ι` and relations indexed by `κ -/
 @[simps toPresentation, simps -isSimp map]
 noncomputable def reindex (P : PreSubmersivePresentation R S ι σ)
