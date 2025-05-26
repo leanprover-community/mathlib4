@@ -3,7 +3,7 @@ Copyright (c) 2025 Brian Nugent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brian Nugent
 -/
-import Mathlib.RingTheory.EmbDim
+import Mathlib.RingTheory.EmbeddingDimension
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
