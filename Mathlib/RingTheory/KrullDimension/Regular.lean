@@ -68,11 +68,11 @@ theorem IsLocalRing.le_maximalIdeal_of_isPrime {R : Type*} [CommSemiring R] [IsL
     (p : Ideal R) [hp : p.IsPrime] : p ≤ maximalIdeal R :=
   le_maximalIdeal hp.ne_top
 
-theorem Fin.natCast_eq_mk {m n : ℕ} (h : m < n) : have : NeZero n := NeZero.of_gt h ;
+theorem Fin.natCast_eq_mk {m n : ℕ} (h : m < n) : have : NeZero n := NeZero.of_gt h
     (m : Fin n) = Fin.mk m h :=
   Fin.val_inj.mp (Nat.mod_eq_of_lt h)
 
-theorem Fin.one_eq_mk_of_lt {n : ℕ} (h : 1 < n) : have : NeZero n := NeZero.of_gt h ;
+theorem Fin.one_eq_mk_of_lt {n : ℕ} (h : 1 < n) : have : NeZero n := NeZero.of_gt h
     1 = Fin.mk 1 h :=
   Fin.val_inj.mp (Nat.mod_eq_of_lt h)
 
