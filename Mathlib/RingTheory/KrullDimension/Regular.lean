@@ -41,6 +41,8 @@ noncomputable def Ideal.primeSpectrumQuotientOrderIsoZeroLocus (I : Ideal R) :
 
 variable {R : Type*} [CommSemiring R]
 
+/-- The prime spectrum of the localization of a commutative ring at a prime ideal `I` are in
+  order-preserving bijection with the prime ideals contained in `I`. -/
 noncomputable def Ideal.primeSpectrumLocalizationAtPrime (I : Ideal R) [I.IsPrime] :
     PrimeSpectrum (Localization.AtPrime I) ≃o ({ p : PrimeSpectrum R // p.1 ≤ I }) :=
   let e := IsLocalization.AtPrime.orderIsoOfPrime (Localization.AtPrime I) I
@@ -300,8 +302,7 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
   · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
     rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
   rcases subsingleton_or_nontrivial (QuotSMulTop x M) with h | _
-  · rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr h, WithBot.bot_add]
-    exact bot_le
+  · simp [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr h]
   simp only [supportDim, Order.krullDim_eq_iSup_length]
   apply WithBot.coe_le_coe.mpr
   simp only [ENat.iSup_add, iSup_le_iff]
