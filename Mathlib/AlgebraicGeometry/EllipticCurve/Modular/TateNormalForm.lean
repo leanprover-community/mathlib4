@@ -252,7 +252,7 @@ lemma toTateNF_a₄ [P.TwiceNeZero] [P.ThriceNeZero] : (W.toTateNF P • W).a₄
 lemma toTateNF_a₂₃ [P.TwiceNeZero] [P.ThriceNeZero] :
     (W.toTateNF P • W).a₂ = (W.toTateNF P • W).a₃ := by
   rw [toTateNF_eq, mul_smul, variableChange_a₂, variableChange_a₃]
-  simp [toTateNF_aux, -variableChange_a₃, -variableChange_a₂, -Units.val_inv_eq_inv_val]
+  simp [toTateNF_aux, -Units.val_inv_eq_inv_val]
   calc (P.μ * P.pY_inv) ^ 2 * P.μ
     = (P.μ * P.pY_inv) ^ 2 * P.μ * (P.pY * P.pY_inv) := by rw [P.pY_mul_inv, mul_one]
   _ = (P.μ * P.pY_inv) ^ 3 * P.pY := by ring_nf
