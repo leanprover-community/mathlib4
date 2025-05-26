@@ -196,6 +196,7 @@ variable
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
 
+-- TODO
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
@@ -210,7 +211,7 @@ lemma interior_prod :
     rw [IsInteriorPoint, ← aux, mem_prod]
     obtain h := Set.mem_prod.mp hp
     rw [ModelWithCorners.interior] at h
-    exact h
+    exact h -- TODO
 
 /-- The boundary of `M × N` is `∂M × N ∪ (M × ∂N)`. -/
 lemma boundary_prod :
@@ -220,7 +221,7 @@ lemma boundary_prod :
     _ = ((I.interior M) ×ˢ (J.interior N))ᶜ := by rw [interior_prod]
     _ = (I.interior M)ᶜ ×ˢ univ ∪ univ ×ˢ (J.interior N)ᶜ := by rw [compl_prod_eq_union]
   rw [h, I.compl_interior, J.compl_interior, union_comm]
-  rfl
+  rfl -- TODO
 
 /-- If `M` is boundaryless, `∂(M×N) = M × ∂N`. -/
 lemma boundary_of_boundaryless_left [BoundarylessManifold I M] :
