@@ -345,7 +345,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
 
     -- Take the partitions defined as intersection of `Q` and `s i`.
     classical
-    let P (i : ℕ) := Q.image (fun q ↦ q ∩ (s i))
+    let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
     have hP (i : ℕ) : P i ∈ partitions (s i) := partition_inter hQ (hs i)
 
 
