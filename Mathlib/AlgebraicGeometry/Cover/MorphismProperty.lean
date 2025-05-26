@@ -324,7 +324,7 @@ def Cover.reindex (𝒰 : Cover.{v} P X) {ι : Type*} (e : ι ≃ 𝒰.J) : Cove
     rw [Equiv.apply_symm_apply]
   map_prop i := 𝒰.map_prop _
 
-/-- Any cover `v`-cover `𝒰` induces a `u`-cover indexed by the points of `X`. -/
+/-- Any `v`-cover `𝒰` induces a `u`-cover indexed by the points of `X`. -/
 @[simps!]
 def Cover.ulift (𝒰 : Cover.{v} P X) : Cover.{u} P X where
   J := X
