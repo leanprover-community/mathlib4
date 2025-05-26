@@ -108,7 +108,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
   · rwa [IsLocalization.minimalPrimes_map p.primeCompl (Localization.AtPrime p) I,
       Set.mem_preimage, Localization.AtPrime.comap_maximalIdeal]
 
-theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
+theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} (x : R)
     (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk I)).height ≤ 1 :=
   let f := Ideal.Quotient.mk I
   have : p.IsPrime := hp.1.1
@@ -157,6 +157,41 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
   · conv_rhs => rw [← sup_eq_left.mpr hI'p, ← (span t).mk_ker, RingHom.ker_eq_comap_bot,
       ← comap_map_of_surjective f hf p]
     exact comap_mono hrp
+
+theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert' {q p : Ideal R} [q.IsPrime]
+    (hqp : q < p) (x : R) (s : Set R) (hp : p ∈ (span (insert x s)).minimalPrimes)
+    (t : Set R) (htq : t ⊆ q) (hsp : s ⊆ (span (insert x t)).radical) :
+    q ∈ (span t).minimalPrimes := by
+  let f := Quotient.mk (span t)
+  have hf : Function.Surjective f := Quotient.mk_surjective
+  have hI'q : span t ≤ q := span_le.mpr htq
+  have hI'p : span t ≤ p := hI'q.trans hqp.le
+  have := minimalPrimes_isPrime hp
+  have : (p.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
+  suffices h : (p.map f).height ≤ 1 by
+    have h_lt : q.map f < p.map f := (map_mono hqp.le).lt_of_not_le fun e ↦ hqp.not_le <| by
+      simpa only [comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot, f, mk_ker,
+        sup_eq_left.mpr hI'q, sup_eq_left.mpr hI'p] using comap_mono (f := f) e
+    have : (q.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
+    have : (p.map f).FiniteHeight := ⟨Or.inr (h.trans_lt (WithTop.coe_lt_top 1)).ne⟩
+    rw [height_eq_primeHeight] at h
+    have := (primeHeight_strict_mono h_lt).trans_le h
+    rw [ENat.lt_one_iff_eq_zero, primeHeight_eq_zero_iff] at this
+    have := minimal_primes_comap_of_surjective hf this
+    rwa [comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot,
+      mk_ker, sup_eq_left.mpr hI'q] at this
+  apply Ideal.map_height_le_one_of_mem_minimalPrimes x
+  have hst : span (insert x s) ≤ (span (insert x t)).radical := span_le.mpr <|
+    Set.insert_subset (le_radical <| (mem_span x).mpr fun _ a ↦ a (Set.mem_insert x t)) hsp
+  have hst : span (insert x t) ≤ (span (insert x s)).radical := by
+    apply span_le.mpr
+    apply Set.insert_subset (le_radical <| (mem_span x).mpr fun _ a ↦ a (Set.mem_insert x s)) ?_
+    apply htq.trans
+    apply hqp.le.trans
+    sorry
+  rw [← Ideal.span_union, Set.union_singleton, ← radical_minimalPrimes]
+  have : (span (insert x s)).minimalPrimes ≤ (span (insert x t)).radical.minimalPrimes := sorry
+  exact this hp
 
 open IsLocalRing in
 /-- **Krull's height theorem** (also known as **Krullscher Höhensatz**) :
