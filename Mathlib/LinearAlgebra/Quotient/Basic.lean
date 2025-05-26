@@ -70,6 +70,11 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   refine ⟨⟨mk x, 0, ?_⟩⟩
   simpa using not_mem_s
 
+instance [Subsingleton M] : Subsingleton (M ⧸ p) := by
+  apply subsingleton_of_forall_eq 0
+  rintro ⟨x⟩
+  exact congrArg Submodule.Quotient.mk (Subsingleton.eq_zero x)
+
 end Quotient
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=

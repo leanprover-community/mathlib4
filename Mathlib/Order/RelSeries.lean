@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Rel
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Rel
 import Mathlib.Order.OrderIsoNat
 
 /-!
@@ -905,8 +904,10 @@ lemma strictMono (x : LTSeries α) : StrictMono x :=
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
 
-lemma head_le_last (x : LTSeries α) : x.head ≤ x.last :=
-  LTSeries.monotone x (Fin.zero_le _)
+lemma head_le (x : LTSeries α) (n : Fin (x.length + 1)) : x.head ≤ x n :=
+  x.monotone (Fin.zero_le n)
+
+lemma head_le_last (x : LTSeries α) : x.head ≤ x.last := x.head_le _
 
 /-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
 @[simps]

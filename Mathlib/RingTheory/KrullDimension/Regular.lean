@@ -3,142 +3,33 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yonele Hu
 -/
-import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.Module
 import Mathlib.RingTheory.Regular.RegularSequence
+import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 
 /-!
 
 # Krull Dimension of quotient regular sequence
 
+## Main results
+
+- `Module.supportDim_regular_sequence_add_length_eq_supportDim`: If $M$ is a finite module over a
+  Noetherian local ring $R$, $r_1, \dots, r_n$ is an $M$-sequence, then
+  $\dim M/(r_1, \dots, r_n)M + n = \dim M$.
 -/
-
-section orderIso
-
-variable {R : Type*} [CommRing R]
-
-/-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
-noncomputable def primeSpectrum_quotient_orderIso_zeroLocus (I : Ideal R) :
-    PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
-  __ : PrimeSpectrum (R ⧸ I) ≃ (PrimeSpectrum.zeroLocus (R := R) I) := Equiv.ofInjective _
-    (PrimeSpectrum.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective) |>.trans <|
-      Equiv.setCongr <| by
-        rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, Ideal.mk_ker]
-  map_rel_iff' {a b} := by
-    show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
-    rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective,
-      PrimeSpectrum.asIdeal_le_asIdeal]
-
-end orderIso
-
-section QuotSMulTop
-
-instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Subsingleton M] (N : Submodule R M) :
-    Subsingleton (M ⧸ N) := by
-  apply subsingleton_of_forall_eq 0
-  rintro ⟨x⟩
-  exact congrArg (Quot.mk ⇑N.quotientRel) (Subsingleton.eq_zero x)
-
-end QuotSMulTop
-
-/- section FiniteDimensionalOrder
-
-open RingTheory Sequence IsLocalRing Submodule Module
-
-variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R] (x : R)
-variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
-
-instance [Nontrivial M] : FiniteDimensionalOrder (Module.support R M) := by
-  rw [support_eq_zeroLocus]
-  have := primeSpectrum_quotient_orderIso_zeroLocus (annihilator R M)
-  have : IsLocalRing (R ⧸ annihilator R M) := by
-    have : annihilator R M ≤ maximalIdeal R := by
-      sorry
-    sorry
-  have : FiniteDimensionalOrder (PrimeSpectrum (R ⧸ annihilator R M)) := inferInstance
-  sorry
-
-end FiniteDimensionalOrder -/
-
-section LTSeries
-
-variable {α : Type*} [Preorder α] (p : LTSeries α) (n : Fin (p.length + 1))
-
-theorem LTSeries.head_le : p.head ≤ p n := LTSeries.monotone p (Fin.zero_le n)
-
-end LTSeries
-
-section move
-
-variable {R : Type*} [CommRing R] [IsNoetherianRing R]
-
-/-- Let $R$ be a Noetherian ring, $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a
-  chain of primes in $R$, $x \in \mathfrak{p}_n$. Then we can find a chain of primes
-  $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that $x \in \mathfrak{q}_1$,
-  $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$. -/
-theorem PrimeSpectrum.exist_lTSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
-    {x : R} (hx : x ∈ p.last.1) : ∃ q : LTSeries (PrimeSpectrum R),
-      x ∈ (q 1).1 ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := sorry
-
-end move
-
-theorem IsLocalRing.le_maximalIdeal_of_isPrime {R : Type*} [CommSemiring R] [IsLocalRing R]
-    (p : Ideal R) [hp : p.IsPrime] : p ≤ maximalIdeal R :=
-  le_maximalIdeal hp.ne_top
-
-theorem Fin.mk_eq_natCast {m n : ℕ} [NeZero n] (h : m < n) : Fin.mk m h = (m : Fin n) :=
-  Fin.val_inj.mp (Nat.mod_eq_of_lt h).symm
 
 namespace Module
 
-section Semiring
-
-variable {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
-
-theorem subsingleton_of_top_le_bot (h : (⊤ : Submodule R M) ≤ ⊥) : Subsingleton M :=
-  subsingleton_of_forall_eq 0 fun _ ↦ h trivial
-
-end Semiring
-
-section QuotSMulTop
-
-variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] [hm : Module.Finite R M]
-
-open Pointwise PrimeSpectrum
-
-theorem support_quotSMulTop (x : R) :
-    Module.support R (QuotSMulTop x M) = Module.support R M ∩ zeroLocus {x} := by
-  refine (x • (⊤ : Submodule R M)).quotEquivOfEq (Ideal.span {x} • ⊤)
-    ((⊤ : Submodule R M).ideal_span_singleton_smul x).symm |>.support_eq.trans <|
-      (Module.support_quotient _).trans ?_
-  rw [zeroLocus_span]
-
-theorem subsingleton_of_subsingleton_quotSMulTop {x : R} (hx : x ∈ (annihilator R M).jacobson)
-    [h : Subsingleton (QuotSMulTop x M)] : Subsingleton M := by
-  rw [← Submodule.annihilator_top] at hx
-  exact subsingleton_of_top_le_bot <| le_of_eq <|
-    Submodule.eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator hm.1
-      (Submodule.subsingleton_quotient_iff_eq_top.mp h).symm hx
-
-theorem nontrival_quotSMulTop_of_mem_annihilator_jacobson [h : Nontrivial M] {x : R}
-    (hx : x ∈ (annihilator R M).jacobson) : Nontrivial (QuotSMulTop x M) := by
-  by_contra hq
-  have : Subsingleton (QuotSMulTop x M) := not_nontrivial_iff_subsingleton.mp hq
-  have : Subsingleton M := subsingleton_of_subsingleton_quotSMulTop hx
-  exact not_nontrivial M h
-
-end QuotSMulTop
-
 variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
-
-open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum
+  {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
 
 local notation "𝔪" => IsLocalRing.maximalIdeal R
 
+open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum
+
 open scoped Classical in
-/-- If $M$ is a finite module ove a local Noetherian ring $R$, then $\dim M \le \dim (M/xM) + 1$
-  for all $x$ in the maximal ideal of $R$. -/
+/-- If $M$ is a finite module over a Noetherian local ring $R$, then $\dim M \le \dim M/xM + 1$
+  for all $x$ in the maximal ideal of the local ring $R$. -/
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   rcases subsingleton_or_nontrivial M with h | h
@@ -162,7 +53,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   by_cases h : p.length = 0
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
       (supportDim_ne_bot_iff_nontrivial R (QuotSMulTop x M)).mpr <|
-        nontrival_quotSMulTop_of_mem_annihilator_jacobson (maximalIdeal_le_jacobson _ hx)
+        nontrivial_quotSMulTop_of_mem_annihilator_jacobson (maximalIdeal_le_jacobson _ hx)
     rw [h, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
     exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
   let q' : LTSeries (support R (QuotSMulTop x M)) := {
@@ -174,7 +65,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       refine ⟨q ⟨i + 1, hi⟩, ?_⟩
       simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff]
       refine ⟨?_, q.monotone
-        ((Fin.mk_eq_natCast (Nat.lt_of_add_left_lt hi)).symm.trans_le (Nat.le_add_left 1 i)) hxq⟩
+        ((Fin.natCast_eq_mk (Nat.lt_of_add_left_lt hi)).trans_le (Nat.le_add_left 1 i)) hxq⟩
       have hp : p.head.1 ∈ support R M := p.head.2
       simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hp ⊢
       exact hp.trans (h0.trans_le (q.head_le _))
@@ -187,9 +78,57 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       refine add_le_add_right ?_ 1
       exact le_iSup_iff.mpr fun _ h ↦ h q'
 
-theorem supportDim_quotSMulTop_succ_eq_supportDim (x : R) (reg : IsSMulRegular M x)
-    (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M := sorry
+omit [IsNoetherianRing R] [IsLocalRing R] in
+/-- If $M$ is a finite module over a comm ring $R$, then $\dim M/xM + 1 \le \dim M$
+  for all $M$-regular element $x$. -/
+theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
+    (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) :
+    supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
+  rcases subsingleton_or_nontrivial M with h | _
+  · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
+    rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
+  rcases subsingleton_or_nontrivial (QuotSMulTop x M) with h | _
+  · simp [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr h]
+  simp only [supportDim, Order.krullDim_eq_iSup_length]
+  apply WithBot.coe_le_coe.mpr
+  simp only [ENat.iSup_add, iSup_le_iff]
+  intro p
+  let q : LTSeries (support R M) := {
+    length := p.length
+    toFun := by
+      intro i
+      have hq := (p i).2
+      simp only [support_quotSMulTop, Set.mem_inter_iff] at hq
+      exact ⟨(p i).1, hq.1⟩
+    step := by
+      intro i
+      simp only [Subtype.mk_lt_mk, Subtype.coe_lt_coe, p.3 i]
+  }
+  have hx : x ∈ q.head.1.1 := by
+    have hp := p.head.2
+    simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff,
+      SetLike.mem_coe] at hp
+    exact hp.2
+  have hq := q.head.2
+  simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hq
+  rcases Ideal.exists_minimalPrimes_le hq with ⟨r, hrm, hr⟩
+  let r : support R M := ⟨⟨r, minimalPrimes_isPrime hrm⟩, mem_support_iff_of_finite.mpr hrm.1.2⟩
+  have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.1 (by rwa [← h]) hx)
+  exact le_of_eq_of_le (by simpa only [q.cons_length] using by rfl) (le_iSup _ (q.cons r hr))
 
+theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
+    (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ maximalIdeal R) :
+    supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
+  le_antisymm (supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes hn)
+    (supportDim_le_supportDim_quotSMulTop_succ hx)
+
+theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M x)
+    (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
+  supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal
+    (fun _ ↦ notMem_minimalPrimes_of_isSMulRegular reg) hx
+
+/-- If $M$ is a finite module over a Noetherian local ring $R$, $r_1, \dots, r_n$ is an
+  $M$-sequence, then $\dim M/(r_1, \dots, r_n)M + n = \dim M$. -/
 theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
     (reg : IsRegular M rs) :
     supportDim R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M)) + rs.length = supportDim R M := by
@@ -209,7 +148,7 @@ theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
         absurd reg.2
         simp [Ideal.span_singleton_eq_top.mpr isu]
       rw [supportDim_eq_of_equiv (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
-        ← supportDim_quotSMulTop_succ_eq_supportDim x this mem,
+        ← supportDim_quotSMulTop_succ_eq_supportDim this mem,
         ← hn rs' ((isRegular_cons_iff M _ _).mp reg).2 len, add_assoc]
 
 end Module
