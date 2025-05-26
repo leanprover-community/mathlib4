@@ -954,6 +954,8 @@ structure PreservesProd (T: Type*) (l h: List G) (γ: G) where
   prod_eq: l.prod = h.prod
   same_sum: (l.map (fun s => if s = γ then 1 else 0)).sum = (h.map (fun s => if s = γ then 1 else 0)).sum
 
+set_option maxHeartbeats 500000
+
 open Additive
 lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
   have gamma_one: ∃ γ: G, φ γ = 1 := by
@@ -1325,6 +1327,8 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             rw [not_iff_not.mpr List.takeWhile_eq_self_iff] at header_eq_full
             rw [← not_iff_not.mpr List.dropWhile_eq_nil_iff] at header_eq_full
             exact header_eq_full
+          have list_nonempty: 0 < list.length := by
+            sorry
           have dropwhile_len_gt: 0 < (list.dropWhile is_gamma).length := by
             exact List.length_pos_iff.mpr tail_nonempty
           have not_is_gamma := List.dropWhile_get_zero_not is_gamma list dropwhile_len_gt
@@ -1479,7 +1483,11 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             simp [not_is_gamma_prop.left]
             simp [not_is_gamma_prop.right]
 
-          have gamma_sum_head: gamma_sum [⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), by (
+          have gamma_sum_split (p q: List E): gamma_sum (p ++ q) = gamma_sum p + gamma_sum q := by
+            simp [gamma_sum]
+            abel
+
+          have other_term: (γ^m : G) * (List.dropWhile is_gamma list)[0].val * γ^(-m) ∈ E := by
             dsimp [E]
             apply Set.mem_union_right
             simp
@@ -1488,8 +1496,95 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             use s
             use s_mem
             rw [← rest_eq]
-          )⟩] = 0 := by
+
+          have gamma_copy_prod: gamma_copy.unattach.prod = γ^m := by
+            simp [gamma_copy]
+            by_cases m_ge: 0 ≤ m
+            .
+              simp [m_ge]
+              rw [← zpow_natCast]
+              simp
+              rw [← abs_eq_self] at m_ge
+              rw [m_ge]
+            .
+              simp [m_ge]
+              rw [← zpow_natCast]
+              simp
+              simp at m_ge
+              have m_le: m ≤ 0 := by omega
+              rw [← abs_eq_neg_self] at m_le
+              simp [m_le]
+
+          have gamma_copy_inv_prod: gamma_copy_inv.unattach.prod = γ^(-m) := by
+            simp [gamma_copy_inv]
+            by_cases m_ge: 0 ≤ m
+            .
+              simp [m_ge]
+              rw [← zpow_natCast]
+              simp
+              rw [← abs_eq_self] at m_ge
+              rw [m_ge]
+            .
+              simp [m_ge]
+              rw [← zpow_natCast]
+              simp
+              simp at m_ge
+              have m_le: m ≤ 0 := by omega
+              rw [← abs_eq_neg_self] at m_le
+              simp [m_le]
+
+          have E_inhabited: Inhabited E := by
+            use γ
+            simp [E]
+
+          have header_prod: (List.takeWhile is_gamma list).unattach.prod = γ^m := by
             sorry
+
+          -- 'γ^n * a * γ^(_n) * γn * tail', as a list of elements in E
+          let mega_list := (gamma_copy ++ [(List.dropWhile is_gamma list)[0]] ++ gamma_copy_inv) ++ (gamma_copy ++ (list.dropWhile is_gamma).tail)
+          have mega_list_prod: mega_list.unattach.prod = list.unattach.prod := by
+            simp [mega_list]
+            simp [gamma_copy_prod, gamma_copy_inv_prod]
+            conv =>
+              rhs
+              rw [eq_split]
+              rw [List.unattach_append]
+              simp
+            apply_fun (fun x => x * (List.dropWhile is_gamma list).unattach.prod⁻¹)
+            .
+              simp
+              conv =>
+                pattern _[0]
+                equals (List.dropWhile is_gamma list).headI =>
+                  sorry
+              conv =>
+                lhs
+                lhs
+                rhs
+                equals (List.dropWhile is_gamma list).unattach.headI * (List.dropWhile is_gamma list).unattach.tail.prod =>
+                  sorry
+
+              rw [List.headI_mul_tail_prod_of_ne_nil]
+              simp
+              simp [header_prod]
+
+
+
+          have sum_new_zero: gamma_sum ((gamma_copy ++ [(List.dropWhile is_gamma list)[0]] ++ gamma_copy_inv) ++ (gamma_copy ++ (list.dropWhile is_gamma))) = 0 := by
+            rw [gamma_sum_split]
+            rw [gamma_sum_head]
+            sorry
+          -- have gamma_sum_head: gamma_sum [⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), by (
+          --   dsimp [E]
+          --   apply Set.mem_union_right
+          --   simp
+          --   simp at drop_head_in_e_i
+          --   obtain ⟨s, s_mem, rest_eq⟩ := drop_head_in_e_i
+          --   use s
+          --   use s_mem
+          --   rw [← rest_eq]
+          -- )⟩] = 0 := by
+          --   sorry
           use (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma)))
 
       sorry
