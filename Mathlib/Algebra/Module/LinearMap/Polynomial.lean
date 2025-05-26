@@ -282,6 +282,7 @@ lemma polyCharpolyAux_map_eq_toMatrix_charpoly (x : L) :
   congr
   ext
   rw [of_apply, Function.curry_apply, toMvPolynomial_eval_eq_apply, LinearEquiv.symm_apply_apply]
+  -- TODO find lemma
   rfl
 
 open LinearMap in
