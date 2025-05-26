@@ -425,10 +425,10 @@ lemma symm_comp_cancel_left (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₃ →ₛ
     e.symm.toLinearMap ∘ₛₗ e.toLinearMap ∘ₛₗ f = f := by ext; simp
 
 lemma comp_symm_cancel_right (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₂ →ₛₗ[σ₂₃] M₃) :
-    f ∘ₛₗ e.toLinearMap ∘ₛₗ e.symm.toLinearMap = f := by ext; simp
+    (f ∘ₛₗ e.toLinearMap) ∘ₛₗ e.symm.toLinearMap = f := by ext; simp
 
 lemma symm_comp_cancel_right (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₁ →ₛₗ[σ₁₃] M₃) :
-    f ∘ₛₗ e.symm.toLinearMap ∘ₛₗ e.toLinearMap = f := by ext; simp
+    (f ∘ₛₗ e.symm.toLinearMap) ∘ₛₗ e.toLinearMap = f := by ext; simp
 
 lemma trans_symm_cancel_left (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₁ ≃ₛₗ[σ₁₃] M₃) :
     e.trans (e.symm.trans f) = f := by ext; simp
