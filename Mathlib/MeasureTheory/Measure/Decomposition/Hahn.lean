@@ -169,7 +169,7 @@ structure IsHahnDecomposition (μ ν : Measure α) (s : Set α) : Prop where
   le_on : μ.restrict s ≤ ν.restrict s
   ge_on_compl : ν.restrict sᶜ ≤ μ.restrict sᶜ
 
-lemma IsHahnDecomposition.compl {μ ν : Measure α } {s : Set α }
+lemma IsHahnDecomposition.compl {μ ν : Measure α} {s : Set α}
     (h : IsHahnDecomposition μ ν s) : IsHahnDecomposition ν μ sᶜ where
   measurableSet := h.measurableSet.compl
   le_on := h.ge_on_compl
