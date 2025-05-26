@@ -356,7 +356,7 @@ theorem ballot_problem :
     rw [ENNReal.toReal_div, ← Nat.cast_add, ← Nat.cast_add, ENNReal.toReal_natCast,
       ENNReal.toReal_sub_of_le, ENNReal.toReal_natCast, ENNReal.toReal_natCast]
     exact Nat.cast_le.2 qp.le
-  rwa [ENNReal.toReal_eq_toReal (by finiteness)] at this
+  rwa [ENNReal.toReal_eq_toReal (by finiteness) _] at this
   simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
     add_eq_zero, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
     not_false_iff, and_true]
