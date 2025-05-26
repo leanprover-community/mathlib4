@@ -31,6 +31,11 @@ example : (0 : EReal) < 2 := by positivity
 example : 0 < (2 : EReal) := by positivity
 example : (0 : EReal) < 2 := by positivity
 
+example : (0 : ℝ≥0∞) ≤ 1 := by positivity
+example : (0 : ℝ≥0∞) ≤ 0 := by positivity
+example : (0 : EReal) ≤ 0 := by positivity
+example : 0 ≤ (2 : EReal) := by positivity
+
 /- ## Goals working directly from a hypothesis -/
 -- set_option trace.Meta.debug true
 -- sudo set_option trace.Tactic.positivity true
