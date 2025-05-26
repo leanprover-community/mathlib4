@@ -148,10 +148,14 @@ protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
     (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
-theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
-    (ofNat(d) : Matrix n n α) i j = if i = j then d else 0 := by
+theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
+    (d : Matrix n n α) i j = if i = j then d else 0 := by
   rw [Nat.cast_ite, Nat.cast_zero]
   rfl
+
+theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
+    (ofNat(d) : Matrix n n α) i j = if i = j then d else 0 :=
+  natCast_apply
 
 protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
