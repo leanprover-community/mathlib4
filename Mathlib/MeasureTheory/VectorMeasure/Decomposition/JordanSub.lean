@@ -27,7 +27,8 @@ where `μ ≤ ν` and `ν ≤ μ`, and the measure difference behaves like a sig
   The signed measure `μ.toSignedMeasure - ν.toSignedMeasure` equals
   `(μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure`.
 -/
-open scoped MeasureTheory ENNReal NNReal
+
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
