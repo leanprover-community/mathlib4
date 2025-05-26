@@ -175,8 +175,8 @@ lemma IsHahnDecomposition.compl {μ ν : Measure α} {s : Set α}
   le_on := h.ge_on_compl
   ge_on_compl := by simpa using h.le_on
 
-lemma hahn_decomposition' (μ ν : Measure α ) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    ∃ s : Set α , IsHahnDecomposition μ ν s := by
+lemma hahn_decomposition' (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    ∃ s : Set α, IsHahnDecomposition μ ν s := by
   obtain ⟨s, hs, h₁, h₂⟩ := hahn_decomposition ν μ
   replace h₁ : ∀ t, MeasurableSet t → μ.restrict s t ≤ ν.restrict s t := by
     intro t ht
