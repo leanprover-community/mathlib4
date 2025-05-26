@@ -325,6 +325,7 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
     simp only [Convex, StarConvex] at W ⊢
     intro u hu v hv a b ha hb hab
     convert W hu hv ha hb hab using 2
+    -- TODO: mess with two different smuls
     · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
       rfl
     · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
