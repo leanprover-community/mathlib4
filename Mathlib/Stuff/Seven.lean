@@ -50,10 +50,11 @@ theorem M7 : ⌊(M K)⌋₊ = 4 := by
   exact crazy7
 
 theorem cyclotomic_7 : cyclotomic ((7 : ℕ+) : ℕ) ℤ =
-    1 + X + X ^ 2 + X ^ 3 + X ^ 4 + X ^ 5 + X ^ 6 := by
+    X^6 + X^5 + X^4 + X^3 + X^2 + X + 1 := by
   simp [cyclotomic_prime, sum_range_succ]
+  ring
 
-theorem pid : IsPrincipalIdealRing (𝓞 K) := by
+theorem pid7 : IsPrincipalIdealRing (𝓞 K) := by
   apply IsCyclotomicExtension.Rat.pid4 7
   rw [M7, cyclotomic_7]
   intro p hple hp hpn
