@@ -9,6 +9,7 @@ import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Further basic lemmas about asymptotics
@@ -788,3 +789,36 @@ lemma NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : T
     Tendsto (ε • f) l (𝓝 0) := by
   rw [← isLittleO_one_iff 𝕜] at hε ⊢
   simpa using IsLittleO.smul_isBigO hε (hf.isBigO_const (one_ne_zero : (1 : 𝕜) ≠ 0))
+
+section
+
+open Filter Set Metric Topology Asymptotics
+
+open scoped Topology
+
+lemma NormedSpace.tendsto_zero_iff_isLittleO_one {ι : Type*} {L : Filter ι}
+    {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {f : ι → E} :
+    L.Tendsto f (𝓝 0) ↔ (fun i ↦ f i) =o[L] (fun _ ↦ (1 : ℝ)) := by
+  simp only [Metric.tendsto_nhds, gt_iff_lt, dist_zero_right, isLittleO_iff, norm_one, mul_one]
+  constructor
+  · intro h_tends ε ε_pos
+    filter_upwards [h_tends ε ε_pos] with i hi using hi.le
+  · intro h_littleO ε ε_pos
+    filter_upwards [h_littleO (c := ε / 2) (by linarith)] with i hi
+    exact lt_of_le_of_lt hi (by linarith)
+
+lemma NormedSpace.tendsto_of_tendsto_of_sub_isLittleO_one {ι : Type*} {L : Filter ι}
+    {E : Type*} {v : E} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {f g : ι → E}
+    (hf : L.Tendsto f (𝓝 v)) (hfg : (fun i ↦ f i - g i) =o[L] (fun _ ↦ (1 : ℝ))) :
+    L.Tendsto g (𝓝 v) := by
+  apply tendsto_sub_nhds_zero_iff.mp
+  have hfv : L.Tendsto (fun i ↦ f i - v) (𝓝 0) := tendsto_sub_nhds_zero_iff.mpr hf
+  rw [tendsto_zero_iff_isLittleO_one] at hfv
+  simpa only [sub_sub_sub_cancel_left, isLittleO_one_iff] using hfv.sub hfg
+
+lemma NormedSpace.tendsto_iff_sub_const_isLittleO_one {ι : Type*} {L : Filter ι}
+    {E : Type*} {v : E} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {f : ι → E} :
+    L.Tendsto f (𝓝 v) ↔ (fun i ↦ f i - v) =o[L] (fun _ ↦ (1 : ℝ)) := by
+  simpa [← tendsto_zero_iff_isLittleO_one] using tendsto_sub_nhds_zero_iff.symm
+
+end
