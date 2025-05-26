@@ -121,3 +121,15 @@ def MonoidHom.toAdditive'' [AddZeroClass α] [MulOneClass β] :
 @[simp, norm_cast]
 lemma MonoidHom.coe_toAdditive'' [AddZeroClass α] [MulOneClass β] (f : Multiplicative α →* β) :
     ⇑(toAdditive'' f) = ofMul ∘ f ∘ ofAdd := rfl
+
+/-- This ext lemma moves the type tag to the codomain, since most ext lemmas act on the domain. -/
+@[ext]
+lemma Multiplicative.monoidHom_ext [AddZeroClass α] [MulOneClass β]
+    (f g : Multiplicative α →* β) (h : f.toAdditive'' = g.toAdditive'') : f = g :=
+  MonoidHom.toAdditive''.injective h
+
+/-- This ext lemma moves the type tag to the codomain, since most ext lemmas act on the domain. -/
+@[ext]
+lemma Additive.addMonoidHom_ext [MulOneClass α] [AddZeroClass β]
+    (f g : Additive α →+ β) (h : f.toMultiplicative = g.toMultiplicative) : f = g :=
+  AddMonoidHom.toMultiplicative.injective h
