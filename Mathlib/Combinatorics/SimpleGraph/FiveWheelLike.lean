@@ -58,8 +58,8 @@ The definition of `IsFiveWheelLike` does not contain the facts that `#s = r ` an
 deduce these later as `card_left` and `card_right`.
 
 Although `#(s ∩ t)` can easily be derived from `s` and `t` we include the `IsFiveWheelLike` field
-`card_eq : #(s ∩ t) = k` to match the informal / paper definitions and to simplify some statements
-of results and match our definition of `IsFiveWheelLikeFree`.
+`card_inter : #(s ∩ t) = k` to match the informal / paper definitions and to simplify some
+statements of results and match our definition of `IsFiveWheelLikeFree`.
 
 ## References
 
@@ -113,7 +113,7 @@ structure IsFiveWheelLike (G : SimpleGraph α) (r k : ℕ) (v w₁ w₂ : α) (s
   isNClique_fst_left : G.IsNClique (r + 1) (insert w₁ s)
   isNClique_right : G.IsNClique (r + 1) (insert v t)
   isNClique_snd_right : G.IsNClique (r + 1) (insert w₂ t)
-  card_eq : #(s ∩ t) = k
+  card_inter : #(s ∩ t) = k
 
 lemma exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite
     (h : Maximal (fun H => H.CliqueFree (r + 2)) G) (hnc : ¬ G.IsCompleteMultipartite) :
@@ -178,8 +178,8 @@ lemma card_right : t.card = r := hw.symm.card_left
 lemma card_inter_lt_of_cliqueFree (h : G.CliqueFree (r + 2)) : k < r := by
   contrapose! h
 -- If `r ≤ k` then `s = t` and so `s ∪ {w₁, w₂}` is an `r + 2`-clique, a contradiction.
-  have hs := eq_of_subset_of_card_le inter_subset_left (hw.card_eq ▸ hw.card_left ▸ h)
-  have := eq_of_subset_of_card_le inter_subset_right (hw.card_eq ▸ hw.card_right ▸ h)
+  have hs := eq_of_subset_of_card_le inter_subset_left (hw.card_inter ▸ hw.card_left ▸ h)
+  have := eq_of_subset_of_card_le inter_subset_right (hw.card_inter ▸ hw.card_right ▸ h)
   exact (hw.isNClique_fst_left.insert_insert (hs ▸ this.symm ▸ hw.isNClique_snd_right)
     hw.snd_not_mem_left hw.isPathGraph3Compl.adj).not_cliqueFree
 
