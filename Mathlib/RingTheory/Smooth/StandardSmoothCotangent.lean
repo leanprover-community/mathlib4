@@ -70,7 +70,7 @@ end PreSubmersivePresentation
 
 namespace SubmersivePresentation
 
-variable (P : SubmersivePresentation R S ι σ)
+variable [Finite σ] (P : SubmersivePresentation R S ι σ)
 
 lemma cotangentComplexAux_injective [Finite σ] : Function.Injective P.cotangentComplexAux := by
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
@@ -121,11 +121,9 @@ lemma cotangentComplexAux_surjective [Finite σ] : Function.Surjective P.cotange
 by `P.relation i ↦ ∂ⱼ (P.relation i)`. -/
 @[simps! apply]
 noncomputable def cotangentEquiv : P.toExtension.Cotangent ≃ₗ[S] σ → S :=
-  letI := P.isFinite_rels
   LinearEquiv.ofBijective _ ⟨P.cotangentComplexAux_injective, P.cotangentComplexAux_surjective⟩
 
 lemma cotangentComplex_injective : Function.Injective P.toExtension.cotangentComplex := by
-  letI := P.isFinite_rels
   have := P.cotangentComplexAux_injective
   simp only [PreSubmersivePresentation.cotangentComplexAux, LinearMap.coe_comp,
     LinearEquiv.coe_coe] at this
@@ -143,7 +141,6 @@ noncomputable def basisCotangent : Basis σ S P.toExtension.Cotangent :=
 
 lemma basisCotangent_apply (r : σ) :
     P.basisCotangent r = Extension.Cotangent.mk ⟨P.relation r, P.relation_mem_ker r⟩ := by
-  letI := P.isFinite_rels
   symm
   apply P.cotangentEquiv.injective
   ext
@@ -162,7 +159,6 @@ inverse of `P.cotangentEquiv`.
 By `SubmersivePresentation.sectionCotangent_comp` this is indeed a section.
 -/
 noncomputable def sectionCotangent : P.toExtension.CotangentSpace →ₗ[S] P.toExtension.Cotangent :=
-  letI := P.isFinite_rels
   (cotangentEquiv P).symm ∘ₗ (Finsupp.linearEquivFunOnFinite S S σ).toLinearMap ∘ₗ
     Finsupp.lcomapDomain _ P.map_inj ∘ₗ P.cotangentSpaceBasis.repr.toLinearMap
 
@@ -176,7 +172,6 @@ lemma sectionCotangent_eq_iff [Finite σ]
 
 lemma sectionCotangent_comp :
     sectionCotangent P ∘ₗ P.toExtension.cotangentComplex = LinearMap.id := by
-  letI := P.isFinite_rels
   ext : 1
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq]
   rw [sectionCotangent_eq_iff]
@@ -185,7 +180,6 @@ lemma sectionCotangent_comp :
 
 lemma sectionCotangent_zero_of_notMem_range (i : ι) (hi : i ∉ Set.range P.map) :
     (sectionCotangent P) (P.cotangentSpaceBasis i) = 0 := by
-  letI := P.isFinite_rels
   classical
   contrapose hi
   rw [sectionCotangent_eq_iff] at hi
@@ -207,7 +201,6 @@ See `SubmersivePresentation.basisKaehler` for the special case `κ = (Set.range 
 noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     (hf : Function.Injective f) (hcompl : IsCompl (Set.range f) (Set.range P.map)) :
     Basis κ S (Ω[S⁄R]) := by
-  letI := P.isFinite_rels
   apply P.cotangentSpaceBasis.ofSplitExact (sectionCotangent_comp P)
     Extension.exact_cotangentComplex_toKaehler Extension.toKaehler_surjective hf (b := P.map)
   · intro i
@@ -242,10 +235,8 @@ attribute [local instance] Fintype.ofFinite in
 /-- If `P` is a submersive presentation of `S` as an `R`-algebra and `S` is nontrivial,
 `Ω[S⁄R]` is free of rank the dimension of `P`, i.e. the number of generators minus the number
 of relations. -/
-theorem rank_kaehlerDifferential [Nontrivial S]
+theorem rank_kaehlerDifferential [Nontrivial S] [Finite ι]
     (P : SubmersivePresentation R S ι σ) : Module.rank S (Ω[S⁄R]) = P.dimension := by
-  letI := P.isFinite_rels
-  letI := P.isFinite_vars
   simp only [rank_eq_card_basis P.basisKaehler, Nat.cast_inj, Fintype.card_compl_set,
     Presentation.dimension, Nat.card_eq_fintype_card, Set.card_range_of_injective P.map_inj]
 
@@ -254,12 +245,12 @@ end SubmersivePresentation
 /-- If `S` is `R`-standard smooth, `Ω[S⁄R]` is a free `S`-module. -/
 instance IsStandardSmooth.free_kaehlerDifferential [IsStandardSmooth R S] :
     Module.Free S (Ω[S⁄R]) := by
-  obtain ⟨_, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
+  obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
   exact P.free_kaehlerDifferential
 
 instance IsStandardSmooth.subsingleton_h1Cotangent [IsStandardSmooth R S] :
     Subsingleton (H1Cotangent R S) := by
-  obtain ⟨_, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
+  obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
   exact P.equivH1Cotangent.symm.toEquiv.subsingleton
 
 /-- If `S` is non-trivial and `R`-standard smooth of relative dimension, `Ω[S⁄R]` is a free
@@ -267,7 +258,7 @@ instance IsStandardSmooth.subsingleton_h1Cotangent [IsStandardSmooth R S] :
 theorem IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential [Nontrivial S] (n : ℕ)
     [IsStandardSmoothOfRelativeDimension n R S] :
     Module.rank S (Ω[S⁄R]) = n := by
-  obtain ⟨_, _, ⟨P, hP⟩⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
+  obtain ⟨_, _, _, _, ⟨P, hP⟩⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
   rw [P.rank_kaehlerDifferential, hP]
 
 instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
