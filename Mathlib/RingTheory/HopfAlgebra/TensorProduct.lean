@@ -17,36 +17,35 @@ open Coalgebra TensorProduct HopfAlgebra
 
 namespace TensorProduct
 
-variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-    [Algebra R S] [HopfAlgebra R A] [HopfAlgebra S B] [Algebra R B]
-    [IsScalarTower R S B]
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [HopfAlgebra R A]
+    [HopfAlgebra R B]
 
 noncomputable
-instance : HopfAlgebra S (B ⊗[R] A) where
-  antipode := AlgebraTensorModule.map antipode antipode
+instance : HopfAlgebra R (B ⊗[R] A) where
+  antipode := AlgebraTensorModule.map HopfAlgebra.antipode HopfAlgebra.antipode
   mul_antipode_rTensor_comul := by
     ext x y
-    convert congr($(mul_antipode_rTensor_comul_apply (R := S) x) ⊗ₜ[R]
+    convert congr($(mul_antipode_rTensor_comul_apply (R := R) x) ⊗ₜ[R]
       $(mul_antipode_rTensor_comul_apply (R := R) y)) using 1
     · dsimp
-      hopf_tensor_induction comul (R := S) x with x₁ x₂
+      hopf_tensor_induction comul (R := R) x with x₁ x₂
       hopf_tensor_induction comul (R := R) y with y₁ y₂
       simp
     · dsimp [Algebra.TensorProduct.one_def]
-      simp [Algebra.algebraMap_eq_smul_one, smul_tmul']
+      simp [Algebra.algebraMap_eq_smul_one, smul_tmul', mul_smul]
   mul_antipode_lTensor_comul := by
     ext x y
-    convert congr($(mul_antipode_lTensor_comul_apply (R := S) x) ⊗ₜ[R]
+    convert congr($(mul_antipode_lTensor_comul_apply (R := R) x) ⊗ₜ[R]
       $(mul_antipode_lTensor_comul_apply (R := R) y)) using 1
     · dsimp [Algebra.TensorProduct.one_def]
-      hopf_tensor_induction comul (R := S) x with x₁ x₂
+      hopf_tensor_induction comul (R := R) x with x₁ x₂
       hopf_tensor_induction comul (R := R) y with y₁ y₂
       simp
     · dsimp [Algebra.TensorProduct.one_def]
-      simp [Algebra.algebraMap_eq_smul_one, smul_tmul']
+      simp [Algebra.algebraMap_eq_smul_one, smul_tmul', mul_smul]
 
 @[simp]
 theorem antipode_def :
-    antipode (R := S) (A := B ⊗[R] A) = AlgebraTensorModule.map antipode antipode := rfl
+    antipode (R := R) (A := B ⊗[R] A) = AlgebraTensorModule.map antipode antipode := rfl
 
 end TensorProduct
