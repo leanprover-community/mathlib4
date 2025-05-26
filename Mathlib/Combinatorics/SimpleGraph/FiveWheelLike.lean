@@ -10,9 +10,9 @@ import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 This file defines an `IsFiveWheelLike` structure in a graph, and describes properties of these
 structures as well as graphs which avoid this structure. These have two key uses:
 * We use them to prove that a maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is
-complete-multipartite: `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree`
+  complete-multipartite: `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree`
 * They play a key role in Brandt's proof of the Andrásfai-Erdős-Sós theorem, which is where they
-first appeared.
+  first appeared.
 
 If `G` is maximally `Kᵣ₊₂`-free and `¬ G.Adj x y` (with `x ≠ y`) then there exists an `r`-set `s`
  such that `s ∪ {x}` and `s ∪ {y}` are both `r + 1`-cliques.
@@ -150,13 +150,13 @@ lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
   intro ⟨C⟩
   have h := C.surjOn_of_card_le_isClique hw.isNClique_fst_left.1 (by simp [hw.isNClique_fst_left.2])
   have := C.surjOn_of_card_le_isClique hw.isNClique_snd_right.1 (by simp [hw.isNClique_snd_right.2])
--- Since `C` is an `r + 1`-coloring and `insert w₁ s` is an `r + 1`-clique, it contains a vertex `x`
--- which shares its colour with `v`
+  -- Since `C` is an `r + 1`-coloring and `insert w₁ s` is an `r + 1`-clique, it contains a vertex
+  -- `x` which shares its colour with `v`
   obtain ⟨x, hx, hcx⟩ := h (a := C v) trivial
--- Similarly there is a vertex `y` in `insert w₂ t` which shares its colour with `v`.
+  -- Similarly there is a vertex `y` in `insert w₂ t` which shares its colour with `v`.
   obtain ⟨y, hy, hcy⟩ := this (a := C v) trivial
   rw [coe_insert] at *
--- However since `insert v s` and `insert v t` are cliques, we must have `x = w₁` and `y = w₂`.
+  -- However since `insert v s` and `insert v t` are cliques, we must have `x = w₁` and `y = w₂`.
   cases hx with
   | inl hx =>
     cases hy with
@@ -177,7 +177,7 @@ lemma card_right : t.card = r := hw.symm.card_left
 
 lemma card_inter_lt_of_cliqueFree (h : G.CliqueFree (r + 2)) : k < r := by
   contrapose! h
--- If `r ≤ k` then `s = t` and so `s ∪ {w₁, w₂}` is an `r + 2`-clique, a contradiction.
+  -- If `r ≤ k` then `s = t` and so `s ∪ {w₁, w₂}` is an `r + 2`-clique, a contradiction.
   have hs := eq_of_subset_of_card_le inter_subset_left (hw.card_inter ▸ hw.card_left ▸ h)
   have := eq_of_subset_of_card_le inter_subset_right (hw.card_inter ▸ hw.card_right ▸ h)
   exact (hw.isNClique_fst_left.insert_insert (hs ▸ this.symm ▸ hw.isNClique_snd_right)
