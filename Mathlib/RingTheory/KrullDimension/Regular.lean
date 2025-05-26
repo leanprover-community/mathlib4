@@ -17,7 +17,7 @@ section orderIso
 
 variable {R : Type*} [CommRing R]
 
-#check ringKrullDim_quotient
+--#check ringKrullDim_quotient
 /-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
 noncomputable def Ideal.primeSpectrumQuotientOrderIsoZeroLocus (I : Ideal R) :
     PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
@@ -84,7 +84,7 @@ section move
 
 open Ideal
 
-#check Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert
+--#check Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert
 theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
     (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk I)).height ≤ 1 :=
   let f := Ideal.Quotient.mk I
@@ -241,7 +241,7 @@ variable [IsLocalRing R] {M : Type*} [AddCommGroup M] [Module R M] [Module.Finit
 open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum
 
 open scoped Classical in
-/-- If $M$ is a finite module ove a local Noetherian ring $R$, then $\dim M \le \dim (M/xM) + 1$
+/-- If $M$ is a finite module over a local Noetherian ring $R$, then $\dim M \le \dim M/xM + 1$
   for all $x$ in the maximal ideal of the local ring $R$. -/
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
@@ -295,6 +295,8 @@ instance [Nontrivial M] : Nonempty (support R M) :=
   Set.nonempty_iff_ne_empty'.mpr ((Module.support_eq_empty_iff).not.mpr (not_subsingleton M))
 
 omit [IsNoetherianRing R] [IsLocalRing R] in
+/-- If $M$ is a finite module over a comm ring $R$, then $\dim M/xM + 1 \le \dim M$
+  for all $M$-regular element $x$. -/
 theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) :
     supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
@@ -349,6 +351,8 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M
   supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal
     (fun _ ↦ notMem_minimalPrimes_of_isSMulRegular reg) hx
 
+/-- If $M$ is a finite module over a local Noetherian ring $R$, $r_1, \dots, r_n$ is an
+  $M$-sequence, then $\dim M/(r_1, \dots, r_n)M + n = \dim M$. -/
 theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
     (reg : IsRegular M rs) :
     supportDim R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M)) + rs.length = supportDim R M := by
