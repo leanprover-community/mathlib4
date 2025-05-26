@@ -1262,18 +1262,10 @@ theorem toSignedMeasure_restrict_eq_restrict_toSigned (hs : MeasurableSet s) :
   simp [VectorMeasure.restrict_apply, toSignedMeasure_apply, hA, hs, restrict_apply]
 
 theorem toSignedMeasure_le_iff : μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ μ ≤ ν   := by
-  constructor
-  · intro h
-    rw [Measure.le_iff]
-    intro A hA
-    specialize h A hA
-    simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top,
-      not_false_eq_true, ENNReal.toReal_le_toReal, Measure.real] at h
-    exact h
-  · intro h A hA
-    simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top, not_false_eq_true,
-      ENNReal.toReal_le_toReal, Measure.real]
-    exact h A
+  rw [Measure.le_iff, VectorMeasure.le_iff]
+  congrm ∀ s, (hs : MeasurableSet s) → ?_
+  simp_rw [toSignedMeasure_apply_measurable hs, real_def]
+  apply ENNReal.toReal_le_toReal <;> finiteness
 
 end Measure
 
