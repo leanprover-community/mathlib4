@@ -89,7 +89,7 @@ def PreservesPointwiseLeftKanExtension.preserves [h : PreservesPointwiseLeftKanE
 action of `G` on the cocone at that point for the original extension. -/
 @[simps!]
 def LeftExtension.coconeAtWhiskerRightIso (E : LeftExtension L F) (c : C) :
-    ((LeftExtension.postcompose₂ L F G).obj E).coconeAt c ≅ G.mapCocone (E.coconeAt c) :=
+    (LeftExtension.postcompose₂ L F G|>.obj E).coconeAt c ≅ G.mapCocone (E.coconeAt c) :=
   Limits.Cocones.ext (Iso.refl _)
 
 instance hasLeftKanExtension_of_preserves [L.HasLeftKanExtension F]
@@ -197,13 +197,13 @@ lemma pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac :
     (L.pointwiseLeftKanExtensionUnit <| F ⋙ G) := by
   simpa [pointwiseLeftKanExtensionCompIsoOfPreserves] using descOfIsLeftKanExtension_fac
     (α := whiskerRight (L.pointwiseLeftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
-    (β := L.pointwiseLeftKanExtensionUnit (F ⋙ G))
+    (β := L.pointwiseLeftKanExtensionUnit <| F ⋙ G)
 
 @[reassoc]
 lemma pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
     G.map ((L.pointwiseLeftKanExtensionUnit F).app a) ≫
       (G.pointwiseLeftKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) =
-    (L.pointwiseLeftKanExtensionUnit (F ⋙ G)).app a := by
+    (L.pointwiseLeftKanExtensionUnit <| F ⋙ G).app a := by
   simpa [- pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac] using congrArg (fun t ↦ t.app a)
     (pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac G F L)
 
@@ -216,9 +216,9 @@ lemma pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac :
 
 @[reassoc]
 lemma pointwiseLeftKanExtensionCompIsoOfPreserves_fac_app (a : A) :
-    (L.pointwiseLeftKanExtensionUnit (F ⋙ G)).app a ≫
+    (L.pointwiseLeftKanExtensionUnit <| F ⋙ G).app a ≫
       (G.pointwiseLeftKanExtensionCompIsoOfPreserves F L).inv.app (L.obj a) =
-    G.map ((L.pointwiseLeftKanExtensionUnit F).app a) := by
+    G.map (L.pointwiseLeftKanExtensionUnit F|>.app a) := by
   simpa [-pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac] using congrArg (fun t ↦ t.app a)
     (pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac G F L)
 
@@ -349,7 +349,7 @@ variable [PreservesRightKanExtension G F L] [L.HasRightKanExtension F]
 lemma rightKanExtensionCompIsoOfPreserves_hom_fac :
     whiskerLeft L (rightKanExtensionCompIsoOfPreserves G F L).hom ≫
       (L.rightKanExtensionCounit <| F ⋙ G) =
-    ((Functor.associator _ _ _).inv ≫ whiskerRight (L.rightKanExtensionCounit F) G):= by
+    (Functor.associator _ _ _).inv ≫ whiskerRight (L.rightKanExtensionCounit F) G := by
   simp [rightKanExtensionCompIsoOfPreserves]
 
 @[reassoc (attr := simp)]
@@ -418,29 +418,29 @@ variable [PreservesPointwiseRightKanExtension G F L]
 lemma pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac :
     whiskerLeft L (pointwiseRightKanExtensionCompIsoOfPreserves G F L).hom ≫
       (L.pointwiseRightKanExtensionCounit <| F ⋙ G) =
-    ((Functor.associator _ _ _).inv ≫ whiskerRight (L.pointwiseRightKanExtensionCounit F) G):= by
+    (Functor.associator _ _ _).inv ≫ whiskerRight (L.pointwiseRightKanExtensionCounit F) G := by
   simp [pointwiseRightKanExtensionCompIsoOfPreserves]
 
 @[reassoc]
 lemma pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
     (G.pointwiseRightKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) ≫
-      (L.pointwiseRightKanExtensionCounit (F ⋙ G)).app a =
-    G.map ((L.pointwiseRightKanExtensionCounit F).app a) := by
+      (L.pointwiseRightKanExtensionCounit <| F ⋙ G).app a =
+    G.map (L.pointwiseRightKanExtensionCounit F|>.app a) := by
   simpa [-pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac] using
     congrArg (fun t ↦ t.app a) <| pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac G F L
 
 @[reassoc (attr := simp)]
 lemma pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac :
     whiskerLeft L (pointwiseRightKanExtensionCompIsoOfPreserves G F L).inv ≫
-      ((Functor.associator _ _ _).inv ≫ whiskerRight (L.pointwiseRightKanExtensionCounit F) G) =
+      (Functor.associator _ _ _).inv ≫ whiskerRight (L.pointwiseRightKanExtensionCounit F) G =
     (L.pointwiseRightKanExtensionCounit <| F ⋙ G) := by
   simp [pointwiseRightKanExtensionCompIsoOfPreserves]
 
 @[reassoc]
 lemma pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac_app (a : A) :
     (G.pointwiseRightKanExtensionCompIsoOfPreserves F L).inv.app (L.obj a) ≫
-      G.map ((L.pointwiseRightKanExtensionCounit F).app a) =
-    (L.pointwiseRightKanExtensionCounit (F ⋙ G)).app a := by
+      G.map (L.pointwiseRightKanExtensionCounit F|>.app a) =
+    (L.pointwiseRightKanExtensionCounit <| F ⋙ G).app a := by
   simpa [-pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac] using
     congrArg (fun t ↦ t.app a) <| pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac G F L
 
