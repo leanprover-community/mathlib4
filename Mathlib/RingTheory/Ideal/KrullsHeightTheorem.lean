@@ -121,6 +121,21 @@ theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} (x : R)
           (p.comap_map_of_surjective _ Quotient.mk_surjective).trans <|
             sup_eq_left.mpr (I.mk_ker.trans_le (le_sup_left.trans hp.1.2))⟩
 
+theorem Ideal.map_height_le_one_of_mem_minimalPrimes' {I J p : Ideal R} {x : R} (hji : J ≤ I)
+    (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk J)).height ≤ 1 := by
+  let f := Ideal.Quotient.mk J
+  have : p.IsPrime := hp.1.1
+  have hfp : RingHom.ker f ≤ p := J.mk_ker.trans_le (hji.trans (le_sup_left.trans hp.1.2))
+  refine height_le_one_of_isPrincipal_of_mem_minimalPrimes ((span {x}).map f) (p.map f) ⟨
+    ⟨map_isPrime_of_surjective Quotient.mk_surjective <|
+      hfp, map_mono (le_sup_right.trans hp.1.2)⟩,
+    fun q ⟨hr, hxr⟩ hrp ↦ map_le_iff_le_comap.mpr <| hp.2 ⟨hr.comap f, sup_le_iff.mpr
+      ⟨I.mk_ker.symm.trans_le <| ?_, le_comap_of_map_le hxr⟩⟩ <|
+        (comap_mono hrp).trans <| Eq.le <|
+          (p.comap_map_of_surjective _ Quotient.mk_surjective).trans <|
+            sup_eq_left.mpr hfp⟩
+  sorry
+
 /-- If `q < p` are prime ideals such that `p` is minimal over `span (s ∪ {x})` and
 `t` is a set contained in `q` such that `s ⊆ √span (t ∪ {x})`, then `q` is minimal over `span t`.
 This is used in the induction step for the proof of Krull's height theorem. -/
@@ -157,41 +172,6 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
   · conv_rhs => rw [← sup_eq_left.mpr hI'p, ← (span t).mk_ker, RingHom.ker_eq_comap_bot,
       ← comap_map_of_surjective f hf p]
     exact comap_mono hrp
-
-theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert' {q p : Ideal R} [q.IsPrime]
-    (hqp : q < p) (x : R) (s : Set R) (hp : p ∈ (span (insert x s)).minimalPrimes)
-    (t : Set R) (htq : t ⊆ q) (hsp : s ⊆ (span (insert x t)).radical) :
-    q ∈ (span t).minimalPrimes := by
-  let f := Quotient.mk (span t)
-  have hf : Function.Surjective f := Quotient.mk_surjective
-  have hI'q : span t ≤ q := span_le.mpr htq
-  have hI'p : span t ≤ p := hI'q.trans hqp.le
-  have := minimalPrimes_isPrime hp
-  have : (p.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
-  suffices h : (p.map f).height ≤ 1 by
-    have h_lt : q.map f < p.map f := (map_mono hqp.le).lt_of_not_le fun e ↦ hqp.not_le <| by
-      simpa only [comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot, f, mk_ker,
-        sup_eq_left.mpr hI'q, sup_eq_left.mpr hI'p] using comap_mono (f := f) e
-    have : (q.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
-    have : (p.map f).FiniteHeight := ⟨Or.inr (h.trans_lt (WithTop.coe_lt_top 1)).ne⟩
-    rw [height_eq_primeHeight] at h
-    have := (primeHeight_strict_mono h_lt).trans_le h
-    rw [ENat.lt_one_iff_eq_zero, primeHeight_eq_zero_iff] at this
-    have := minimal_primes_comap_of_surjective hf this
-    rwa [comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot,
-      mk_ker, sup_eq_left.mpr hI'q] at this
-  apply Ideal.map_height_le_one_of_mem_minimalPrimes x
-  have hst : span (insert x s) ≤ (span (insert x t)).radical := span_le.mpr <|
-    Set.insert_subset (le_radical <| (mem_span x).mpr fun _ a ↦ a (Set.mem_insert x t)) hsp
-  have hst : span (insert x t) ≤ (span (insert x s)).radical := by
-    apply span_le.mpr
-    apply Set.insert_subset (le_radical <| (mem_span x).mpr fun _ a ↦ a (Set.mem_insert x s)) ?_
-    apply htq.trans
-    apply hqp.le.trans
-    sorry
-  rw [← Ideal.span_union, Set.union_singleton, ← radical_minimalPrimes]
-  have : (span (insert x s)).minimalPrimes ≤ (span (insert x t)).radical.minimalPrimes := sorry
-  exact this hp
 
 open IsLocalRing in
 /-- **Krull's height theorem** (also known as **Krullscher Höhensatz**) :
