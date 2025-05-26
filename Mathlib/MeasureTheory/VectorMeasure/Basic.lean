@@ -622,19 +622,6 @@ theorem restrict_add (v w : VectorMeasure α M) (i : Set α) :
   · simp [restrict_not_measurable _ hi]
 
 
-theorem restrict_neg {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
-  (v : VectorMeasure α M) (i : Set α) :
-    (-v).restrict i = -(v.restrict i) := by
-  by_cases hi : MeasurableSet i
-  · ext j hj; simp [restrict_apply _ hi hj]
-  · simp [restrict_not_measurable _ hi]
-
-theorem restrict_sub {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
-  (v w : VectorMeasure α M) (i : Set α) :
-    (v - w).restrict i = v.restrict i - w.restrict i := by
-  simp [sub_eq_add_neg, restrict_add, restrict_neg]
-
-
 /-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
 @[simps]
 def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
@@ -643,6 +630,21 @@ def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
   map_add' _ _ := restrict_add _ _ i
 
 end ContinuousAdd
+
+section  
+
+variable {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+theorem restrict_neg (v : VectorMeasure α M) (i : Set α) :
+    (-v).restrict i = -(v.restrict i) := by
+  by_cases hi : MeasurableSet i
+  · ext j hj; simp [restrict_apply _ hi hj]
+  · simp [restrict_not_measurable _ hi]
+
+theorem restrict_sub (v w : VectorMeasure α M) (i : Set α) :
+    (v - w).restrict i = v.restrict i - w.restrict i := by
+  simp [sub_eq_add_neg, restrict_add, restrict_neg]
+
+end
 
 end
 
@@ -1261,7 +1263,8 @@ theorem toSignedMeasure_restrict_eq_restrict_toSignedMeasure (hs : MeasurableSet
   ext A hA
   simp [VectorMeasure.restrict_apply, toSignedMeasure_apply, hA, hs, restrict_apply]
 
-theorem toSignedMeasure_le_toSignedMeasure_iff : μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ μ ≤ ν   := by
+theorem toSignedMeasure_le_toSignedMeasure_iff : 
+    μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ μ ≤ ν   := by
   rw [Measure.le_iff, VectorMeasure.le_iff]
   congrm ∀ s, (hs : MeasurableSet s) → ?_
   simp_rw [toSignedMeasure_apply_measurable hs, real_def]
