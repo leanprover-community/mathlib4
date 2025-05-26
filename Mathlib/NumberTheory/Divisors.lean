@@ -6,8 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Data.Int.Interval
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.SuccPred
@@ -16,8 +15,8 @@ import Mathlib.Order.Interval.Finset.Nat
 /-!
 # Divisor Finsets
 
-This file defines sets of divisors of a natural number. This is particularly useful as background
-for defining Dirichlet convolution.
+This file defines sets of divisors of natural numbers and integers. This is particularly useful as
+background for defining Dirichlet convolution.
 
 ## Main Definitions
 Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
@@ -25,6 +24,10 @@ Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
 * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
 * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
 * `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
+
+similarly let `z : ℤ`. All of the following definitions are in the `Int` namespace:
+* `divisors n` is the `Finset` of natural numbers that divide `n`.
+* `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
 
 ## Conventions
 
@@ -603,6 +606,19 @@ local notation "natCast" => Nat.castEmbedding (R := ℤ)
 local notation "negNatCast" =>
   Function.Embedding.trans Nat.castEmbedding (Equiv.toEmbedding (Equiv.neg ℤ))
 
+/-- `divisors n` is the `Finset` of divisors of `n`. By convention, we set `divisors 0 = ∅`. -/
+def divisors : (z : ℤ) → Finset ℤ
+  | (n : ℕ) =>
+    let s : Finset ℕ := n.divisors
+    (s.map natCast).disjUnion (s.map negNatCast) <| by
+      simp +contextual [disjoint_left, s, -Nat.mem_divisors]
+      exact fun a ha b hb hb_ne_zero ha_zero ↦ by simp [ha_zero] at ha
+  | negSucc n =>
+    let s : Finset ℕ := (n + 1).divisors
+    (s.map natCast).disjUnion (s.map negNatCast) <| by
+      simp +contextual [disjoint_left, s, -Nat.mem_divisors]
+      exact fun a ha b hb hb_ne_zero ha_zero ↦ by simp [ha_zero] at ha
+
 /-- Pairs of divisors of an integer as a finset.
 
 `z.divisorsAntidiag` is the finset of pairs `(a, b) : ℤ × ℤ` such that `a * b = z`.
@@ -618,6 +634,92 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
     let s : Finset (ℕ × ℕ) := (n + 1).divisorsAntidiagonal
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
       simp +contextual [s, disjoint_left, eq_comm, forall_swap (α := _ * _ = _)]
+
+@[simp]
+theorem mem_divisors : ∀ {z x}, x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0
+  | (n : ℕ), (m : ℕ) => by
+    simp [divisors]
+    norm_cast
+    simp
+  | (negSucc n), (m : ℕ) => by
+    simp [divisors]
+    norm_cast
+  | (n : ℕ), (negSucc m) => by
+    simp [divisors]
+    norm_cast
+    simp
+  | (negSucc n), (negSucc m) => by
+    simp [divisors]
+    norm_cast
+
+@[simp]
+theorem divisors_zero : divisors 0 = ∅ := by
+  ext
+  simp
+
+@[simp]
+theorem neg_divisors_eq_divisors : (-z).divisors = z.divisors := by
+  ext x
+  simp
+
+theorem neg_mem_divisors_iff_mem_divisors : -x ∈ z.divisors ↔ x ∈ z.divisors := by
+  simp
+
+theorem abs_le_abs_of_mem_divisors (h : x ∈ z.divisors) : |x| ≤ |z| := by
+  simp at h
+  wlog hx : 0 ≤ x generalizing x
+  · simpa using this (by simpa) (neg_nonneg.mpr (le_of_not_le hx))
+  wlog hz : 0 ≤ z generalizing z
+  · simpa using this (by simpa) (neg_nonneg.mpr (le_of_not_le hz))
+  rw [abs_eq_self.mpr hx, abs_eq_self.mpr hz]
+  exact le_of_dvd (lt_of_le_of_ne hz (Ne.symm h.right)) h.left
+
+theorem filter_dvd_eq_divisors (h : z ≠ 0) : {x ∈ Icc (-|z|) |z| | x ∣ z} = z.divisors := by
+  ext x
+  simp [and_comm, h]
+  rw [and_comm, ← abs_le]
+  exact fun hxz ↦ abs_le_abs_of_mem_divisors (by simp [hxz, h])
+
+theorem one_mem_divisors : 1 ∈ divisors z ↔ z ≠ 0 := by simp
+
+theorem neg_one_mem_divisors : -1 ∈ divisors z ↔ z ≠ 0 := by simp
+
+theorem mem_divisors_self (h : z ≠ 0) : z ∈ z.divisors := by simpa
+
+theorem neg_mem_divisors_self (h : z ≠ 0) : -z ∈ z.divisors := by simpa
+
+theorem dvd_of_mem_divisors (h : x ∈ z.divisors) : x ∣ z := by
+  simp at h
+  exact h.left
+
+@[simp]
+lemma nonempty_divisors : z.divisors.Nonempty ↔ z ≠ 0 :=
+  ⟨fun ⟨m, hm⟩ hn ↦ by simp [hn] at hm, fun hn ↦ ⟨1, one_mem_divisors.2 hn⟩⟩
+
+@[simp]
+lemma divisors_eq_empty : divisors z = ∅ ↔ z = 0 :=
+  not_nonempty_iff_eq_empty.symm.trans nonempty_divisors.not_left
+
+theorem divisors_subset_of_dvd (hzero : z ≠ 0) (h : x ∣ z) : divisors x ⊆ divisors z :=
+  Finset.subset_iff.2 fun _y hy => mem_divisors.mpr ⟨(mem_divisors.mp hy).1.trans h, hzero⟩
+
+@[simp]
+theorem divisors_eq : x.divisors = y.divisors ↔ |x| = |y| := by
+  obtain rfl | h := Decidable.eq_or_ne x 0
+  · simp only [divisors_zero, abs_zero, eq_comm, abs_eq_zero]
+    rw [eq_comm]
+    simp
+  · constructor
+    · rintro h'
+      apply le_antisymm
+      · apply abs_le_abs_of_mem_divisors
+        rw [← h']
+        exact mem_divisors_self h
+      · apply abs_le_abs_of_mem_divisors
+        rw [h']
+        exact mem_divisors_self (by rwa [← nonempty_divisors, ← h', nonempty_divisors])
+    · rintro h'
+      obtain rfl | rfl := abs_eq_abs.mp h' <;> simp
 
 @[simp]
 lemma mem_divisorsAntidiag :
