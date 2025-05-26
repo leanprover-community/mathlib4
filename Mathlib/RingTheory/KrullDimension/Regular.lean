@@ -240,7 +240,7 @@ open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum
 
 open scoped Classical in
 /-- If $M$ is a finite module ove a local Noetherian ring $R$, then $\dim M \le \dim (M/xM) + 1$
-  for all $x$ in the maximal ideal of $R$. -/
+  for all $x$ in the maximal ideal of the local ring $R$. -/
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   rcases subsingleton_or_nontrivial M with h | h
@@ -289,24 +289,34 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       refine add_le_add_right ?_ 1
       exact le_iSup_iff.mpr fun _ h ↦ h q'
 
-theorem krullDim_eq_coe_iSup_of_nonempty {α : Type*} [Preorder α] [Nonempty α] :
-    Order.krullDim α = ⨆ (p : LTSeries α), (p.length : ℕ∞) := by
-  apply le_antisymm
-  · exact iSup_le fun p ↦ WithBot.coe_le_coe.mpr (by apply le_iSup _ p)
-  · rw [WithBot.coe_iSup (by bddDefault)]
-    exact iSup_le (le_iSup _)
-
 theorem supportDim_quotSMulTop_succ_eq_supportDim_of_notMem_minimalPrimes {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ maximalIdeal R) :
     supportDim R (QuotSMulTop x M) + 1 = supportDim R M := by
   apply le_antisymm
   · have : Nonempty (support R M) := sorry
     have : Nonempty (support R (QuotSMulTop x M)) := sorry
-    simp [supportDim, krullDim_eq_coe_iSup_of_nonempty]
+    simp only [supportDim, Order.krullDim_eq_iSup_length]
     apply WithBot.coe_le_coe.mpr
     simp only [ENat.iSup_add, iSup_le_iff]
     intro p
-    sorry
+    let q : LTSeries (support R M) := {
+      length := p.length
+      toFun := by
+        intro i
+        have hq := (p i).2
+        simp only [support_quotSMulTop, Set.mem_inter_iff] at hq
+        exact ⟨(p i).1, hq.1⟩
+      step := by
+        intro i
+        simp only [Subtype.mk_lt_mk, Subtype.coe_lt_coe, p.3 i]
+    }
+    have : x ∈ q.head.1.1 := by
+      have hq := p.head.2
+      simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff,
+        SetLike.mem_coe] at hq
+      exact hq.2
+    obtain ⟨r, hr⟩ : ∃ r : support R M, r < q.head := sorry
+    exact le_of_eq_of_le (by simpa only [q.cons_length] using by rfl) (le_iSup _ (q.cons r hr))
   · exact supportDim_le_supportDim_quotSMulTop_succ hx
 
 theorem notMem_minimalPrimes_of_isSMulRegular {R : Type*} [CommSemiring R]
