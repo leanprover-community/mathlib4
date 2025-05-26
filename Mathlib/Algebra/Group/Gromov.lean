@@ -1228,4 +1228,53 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           rfl
       simp
       exact l_prod
-  sorry
+  let gamma_m := fun (m: ℤ) (s: S) => γ^m * (e_i s).toMul * γ^(-m)
+  let a := Set.range (Function.uncurry gamma_m)
+  have gamma_m_ker_phi: (Subgroup.closure (Set.range (Function.uncurry gamma_m))) = φ.ker.toSubgroup := by
+    ext z
+    refine ⟨?_, ?_⟩
+    . intro hz
+      have foo := Submonoid.exists_list_of_mem_closure (s := Set.range (Function.uncurry gamma_m) ∪ (Set.range (Function.uncurry gamma_m))⁻¹) (x := z)
+      rw [← Subgroup.closure_toSubmonoid _] at foo
+      specialize foo hz
+      obtain ⟨l, ⟨l_mem_s, l_prod⟩⟩ := foo
+      rw [← l_prod]
+      rw [← MonoidHom.coe_toMultiplicative_ker]
+      rw [MonoidHom.mem_ker]
+      rw [MonoidHom.map_list_prod]
+      apply List.prod_eq_one
+      intro x hx
+      simp at hx
+      obtain ⟨a, a_mem_l, phi_a⟩ := hx
+      specialize l_mem_s a a_mem_l
+      unfold gamma_m at l_mem_s
+      simp at l_mem_s
+      rw [← phi_a]
+      match l_mem_s with
+      | .inl a_eq_prod =>
+        obtain ⟨n, val, val_in_s, prod_eq_a⟩ := a_eq_prod
+        rw [← prod_eq_a]
+        simp
+        have apply_mult := AddMonoidHom.toMultiplicative_apply_apply φ (toMul (e_i ⟨val, val_in_s⟩))
+        conv at apply_mult =>
+          rhs
+          rhs
+          arg 2
+          equals e_i ⟨val, val_in_s⟩ => rfl
+        rw [e_i_zero] at apply_mult
+        exact apply_mult
+      | .inr a_eq_prod =>
+        obtain ⟨n, val, val_in_s, prod_eq_a⟩ := a_eq_prod
+        apply_fun Inv.inv at prod_eq_a
+        simp at prod_eq_a
+        -- TODO - deduplicate this with the branch above
+        rw [← prod_eq_a]
+        simp
+        have apply_mult := AddMonoidHom.toMultiplicative_apply_apply φ (toMul (e_i ⟨val, val_in_s⟩))
+        conv at apply_mult =>
+          rhs
+          rhs
+          arg 2
+          equals e_i ⟨val, val_in_s⟩ => rfl
+        rw [e_i_zero] at apply_mult
+        exact apply_mult
