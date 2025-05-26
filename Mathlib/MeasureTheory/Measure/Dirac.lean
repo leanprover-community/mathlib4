@@ -43,7 +43,8 @@ theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1
 theorem dirac_apply_eq_zero_or_one :
     dirac a s = 0 ∨ dirac a s = 1 := by
   rw [← measure_toMeasurable s, dirac_apply' a (measurableSet_toMeasurable ..), indicator]
-  simp
+  simp only [Pi.one_apply, ite_eq_right_iff, one_ne_zero, imp_false, ite_eq_left_iff, zero_ne_one,
+    not_not]
   tauto
 
 @[simp]
