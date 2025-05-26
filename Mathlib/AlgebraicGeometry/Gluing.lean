@@ -409,7 +409,7 @@ together into a morphism `X ⟶ Y`.
 Note:
 If `X` is exactly (defeq to) the gluing of `U i`, then using `Multicoequalizer.desc` suffices.
 -/
-def glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
+def glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme.{u}} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.map x) (𝒰.map y) ≫ f x = pullback.snd _ _ ≫ f y) :
     X ⟶ Y := by
   refine inv 𝒰.ulift.fromGlued ≫ ?_
