@@ -9,7 +9,7 @@ import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Spectrum.Prime.Defs
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -276,8 +276,8 @@ end AtPrime
 
 end Localization
 
-variable {R : Type*} [CommRing R] (q : Ideal R) [q.IsPrime] {S : Type*} [CommRing S] [Algebra R S]
-    [IsLocalization.AtPrime S q]
+variable (q : Ideal R) [q.IsPrime] {S : Type*} [CommSemiring S] [Algebra R S]
+  [IsLocalization.AtPrime S q]
 
 lemma Ideal.isPrime_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
     (p.map (algebraMap R S)).IsPrime := by
@@ -291,12 +291,25 @@ lemma Ideal.under_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : 
     simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
   exact IsLocalization.comap_map_of_isPrime_disjoint _ _ p (by simpa) disj
 
+variable (S) in
+/-- The prime spectrum of the localization of a commutative ring at a prime ideal `q` are in
+  order-preserving bijection with the prime ideals contained in `q`. -/
+noncomputable def Ideal.primeSpectrumLocalizationAtPrime :
+    PrimeSpectrum S ≃o { p : PrimeSpectrum R // p.1 ≤ q } :=
+  let e := IsLocalization.AtPrime.orderIsoOfPrime S q
+  {
+  toFun p := ⟨⟨(e ⟨p.1, p.2⟩).1, (e ⟨p.1, p.2⟩).2.1⟩, (e ⟨p.1, p.2⟩).2.2⟩
+  invFun p := ⟨(e.symm ⟨p.1.1, p.1.2, p.2⟩).1, (e.symm ⟨p.1.1, p.1.2, p.2⟩).2⟩
+  left_inv p := by simp only [Subtype.coe_eta, OrderIso.symm_apply_apply]
+  right_inv p := by simp only [Subtype.coe_eta, OrderIso.apply_symm_apply]
+  map_rel_iff' := e.le_iff_le
+}
+
 lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     {R : Type*} [CommSemiring R] (p : Ideal R) (hp : p ∈ minimalPrimes R)
     (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization.AtPrime S p (hp := hp.1.1)] :
     Subsingleton (PrimeSpectrum S) :=
   have := hp.1.1
-  have : Unique {i : Ideal R // i.IsPrime ∧ i ≤ p} := ⟨⟨p, hp.1.1, le_rfl⟩,
-    fun i ↦ Subtype.ext <| (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.2.1 i.2.2⟩
-  have := (IsLocalization.AtPrime.orderIsoOfPrime S p).subsingleton
-  ⟨fun x y ↦ PrimeSpectrum.ext congr($(this.1 ⟨_, x.2⟩ ⟨_, y.2⟩))⟩
+  have : Unique { q : PrimeSpectrum R // q.1 ≤ p } := ⟨⟨⟨p, hp.1.1⟩, le_rfl⟩, fun i ↦ Subtype.ext <|
+    PrimeSpectrum.ext <| (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
+  (p.primeSpectrumLocalizationAtPrime S).subsingleton

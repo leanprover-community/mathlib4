@@ -22,20 +22,30 @@ open nonZeroDivisors
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
+/-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
+noncomputable def Ideal.primeSpectrumQuotientOrderIsoZeroLocus (I : Ideal R) :
+    PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
+  toFun p := ⟨(Ideal.Quotient.mk I).specComap p,
+    I.mk_ker.symm.trans_le (Ideal.ker_le_comap (Ideal.Quotient.mk I))⟩
+  invFun := fun ⟨⟨p, _⟩, hp⟩ ↦ ⟨p.map (Ideal.Quotient.mk I),
+    p.map_isPrime_of_surjective Ideal.Quotient.mk_surjective (I.mk_ker.trans_le hp)⟩
+  left_inv := by
+    intro ⟨p, _⟩
+    simp only [PrimeSpectrum.mk.injEq]
+    exact p.map_comap_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+  right_inv := by
+    intro ⟨⟨p, _⟩, hp⟩
+    simp only [Subtype.mk.injEq, PrimeSpectrum.mk.injEq]
+    exact (p.comap_map_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective).trans <|
+      sup_eq_left.mpr <| I.mk_ker.trans_le hp
+  map_rel_iff' {a b} := by
+    show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
+    rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective,
+      PrimeSpectrum.asIdeal_le_asIdeal]
+
 lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
-  let e : PrimeSpectrum (R ⧸ I) ≃ (PrimeSpectrum.zeroLocus (R := R) I) :=
-    (Equiv.ofInjective _ (PrimeSpectrum.comap_injective_of_surjective _
-      Ideal.Quotient.mk_surjective)).trans (Equiv.setCongr
-      (by rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
-        Ideal.mk_ker]))
-  let e' : PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) :=
-    { __ := e, map_rel_iff' := fun {a b} ↦ by
-        show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
-        rw [← Ideal.map_le_iff_le_comap,
-          Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective,
-          PrimeSpectrum.asIdeal_le_asIdeal] }
-  rw [ringKrullDim, Order.krullDim_eq_of_orderIso e']
+  rw [ringKrullDim, Order.krullDim_eq_of_orderIso I.primeSpectrumQuotientOrderIsoZeroLocus]
 
 lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     {r : R} (hr : r ∈ R⁰) :
