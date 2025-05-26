@@ -1137,10 +1137,6 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
         rw [prod_eq_sum]
         rw [cancel_add_minus] at prod_mem_power
         apply prod_mem_power
-        rw [Set.mem_pow]
-
-        use fun i => if i = zero_fin then ⟨e_i_regular ⟨s, hs⟩, e_pi_s_mem⟩ else ⟨γ ^ max_phi, gamma_phi_in⟩
-        use []
 
 
 
@@ -1148,6 +1144,26 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
 
+
+      unfold new_list list_with_mem l_attach
+      simp
+      conv =>
+        arg 1
+        arg 1
+        arg 1
+        arg 1
+        intro z
+        unfold e_i
+        simp
+      simp
+      conv =>
+        arg 1
+        arg 1
+        arg 1
+        equals id =>
+          rfl
+      simp
+      exact l_prod
 
       rw [Submonoid.exists_list_of_mem_closure]
       have foo := Submonoid.exists_list_of_mem_closure (s := ((S ∪ S⁻¹) : Set G)) (x := s)
