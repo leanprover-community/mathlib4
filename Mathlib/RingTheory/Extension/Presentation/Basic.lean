@@ -103,16 +103,16 @@ is a complete intersection.
 noncomputable def dimension (P : Presentation R S ι σ) : ℕ :=
   Nat.card ι - Nat.card σ
 
-
-
-lemma ideal_fg_of_isFinite [Finite σ] : P.ker.FG := by
+lemma fg_ker [Finite σ] : P.ker.FG := by
   use (Set.finite_range P.relation).toFinset
   simp [span_range_relation_eq_ker]
+
+@[deprecated (since := "2025-05-27")] alias ideal_fg_of_isFinite := fg_ker
 
 /-- If a presentation is finite, the corresponding quotient is
 of finite presentation. -/
 instance [Finite σ] [Finite ι] : FinitePresentation R P.Quotient :=
-  FinitePresentation.quotient P.ideal_fg_of_isFinite
+  FinitePresentation.quotient P.fg_ker
 
 lemma finitePresentation_of_isFinite [Finite σ] [Finite ι] (P : Presentation R S ι σ) :
     FinitePresentation R S :=
@@ -138,20 +138,20 @@ lemma exists_presentation_fin [FinitePresentation R S] :
 variable (R S) in
 /-- The index of generators to `ofFinitePresentation`. -/
 noncomputable
-def ofFinitePresentationN [FinitePresentation R S] : ℕ :=
+def ofFinitePresentationVars [FinitePresentation R S] : ℕ :=
   (exists_presentation_fin R S).choose
 
 variable (R S) in
 /-- The index of relations to `ofFinitePresentation`. -/
 noncomputable
-def ofFinitePresentationM [FinitePresentation R S] : ℕ :=
+def ofFinitePresentationRels [FinitePresentation R S] : ℕ :=
   (exists_presentation_fin R S).choose_spec.choose
 
 variable (R S) in
 /-- An arbitrary choice of a finite presentation of a finitely presented algebra. -/
 noncomputable
 def ofFinitePresentation [FinitePresentation R S] :
-    Presentation R S (Fin (ofFinitePresentationN R S)) (Fin (ofFinitePresentationM R S)) :=
+    Presentation R S (Fin (ofFinitePresentationVars R S)) (Fin (ofFinitePresentationRels R S)) :=
   (exists_presentation_fin R S).choose_spec.choose_spec.some
 section Construction
 

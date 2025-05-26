@@ -442,14 +442,14 @@ end Constructions
 
 end PreSubmersivePresentation
 
+variable [Finite σ]
+
 /--
 A `PreSubmersivePresentation` is submersive if its jacobian is a unit in `S`
 and the presentation is finite.
 -/
 @[nolint checkUnivs]
 structure SubmersivePresentation extends PreSubmersivePresentation.{t, w} R S ι σ where
-  isFinite_vars : Finite ι := by infer_instance
-  isFinite_rels : Finite σ := by infer_instance
   jacobian_isUnit : IsUnit toPreSubmersivePresentation.jacobian
 
 namespace SubmersivePresentation
@@ -475,14 +475,12 @@ noncomputable def id : SubmersivePresentation R R PEmpty.{w + 1} PEmpty.{t + 1} 
 section Composition
 variable {R S ι σ}
 variable {T ι' σ' : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-variable (Q : SubmersivePresentation S T ι' σ') (P : SubmersivePresentation R S ι σ)
+variable [Finite σ'] (Q : SubmersivePresentation S T ι' σ') (P : SubmersivePresentation R S ι σ)
 
 /-- Given an `R`-algebra `S` and an `S`-algebra `T` with submersive presentations,
 this is the canonical submersive presentation of `T` as an `R`-algebra. -/
 noncomputable def comp : SubmersivePresentation R T (ι' ⊕ ι) (σ' ⊕ σ) where
   __ := Q.toPreSubmersivePresentation.comp P.toPreSubmersivePresentation
-  isFinite_rels := _
-  isFinite_vars := letI := P.isFinite_vars; letI := Q.isFinite_vars; inferInstance
   jacobian_isUnit := by
     rw [comp_jacobian_eq_jacobian_smul_jacobian, Algebra.smul_def, IsUnit.mul_iff]
     exact ⟨RingHom.isUnit_map _ <| P.jacobian_isUnit, Q.jacobian_isUnit⟩
@@ -512,9 +510,7 @@ variable {R S ι σ} in
 obtain a natural submersive presentation of `T ⊗[R] S` over `T`. -/
 noncomputable def baseChange : SubmersivePresentation T (T ⊗[R] S) ι σ where
   toPreSubmersivePresentation := P.toPreSubmersivePresentation.baseChange T
-  isFinite_rels := P.isFinite_rels
-  isFinite_vars := P.isFinite_vars
-  jacobian_isUnit := letI := P.isFinite_rels;
+  jacobian_isUnit :=
     P.baseChange_jacobian T ▸ P.jacobian_isUnit.map TensorProduct.includeRight
 
 end BaseChange
@@ -524,11 +520,9 @@ variable {R S ι σ} in
 `κ ≃ σ`, this is the induced sumbersive presentation with variables indexed
 by `ι` and relations indexed by `κ -/
 @[simps toPreSubmersivePresentation]
-noncomputable def reindex [Finite σ] (P : SubmersivePresentation R S ι σ)
-    {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ) : SubmersivePresentation R S ι' σ' where
+noncomputable def reindex (P : SubmersivePresentation R S ι σ)
+    {ι' σ' : Type*} [Finite σ'] (e : ι' ≃ ι) (f : σ' ≃ σ) : SubmersivePresentation R S ι' σ' where
   __ := P.toPreSubmersivePresentation.reindex e f
-  isFinite_vars := (Equiv.finite_iff e.symm).mp P.isFinite_vars
-  isFinite_rels := (Equiv.finite_iff f.symm).mp P.isFinite_rels
   jacobian_isUnit := by simp [P.jacobian_isUnit]
 
 end Constructions
@@ -539,7 +533,6 @@ open Classical in
 /-- If `P` is submersive, `PreSubmersivePresentation.aevalDifferential` is an isomorphism. -/
 noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) :
     (σ → S) ≃ₗ[S] (σ → S) :=
-  letI := P.isFinite_rels
   haveI : Fintype σ := Fintype.ofFinite σ
   have : IsUnit (LinearMap.toMatrix (Pi.basisFun S σ) (Pi.basisFun S σ)
         P.aevalDifferential).det := by
@@ -559,13 +552,11 @@ lemma aevalDifferentialEquiv_apply [Finite σ] (x : σ → S) :
 /-- If `P` is a submersive presentation, the partial derivatives of `P.relation i` by
 `P.map j` form a basis of `σ → S`. -/
 noncomputable def basisDeriv (P : SubmersivePresentation R S ι σ) : Basis σ S (σ → S) :=
-  letI := P.isFinite_rels
   Basis.map (Pi.basisFun S σ) P.aevalDifferentialEquiv
 
 @[simp]
 lemma basisDeriv_apply (i j : σ) :
     P.basisDeriv i j = (aeval P.val) (pderiv (P.map j) (P.relation i)) := by
-  letI := P.isFinite_rels
   classical
   simp [basisDeriv]
 
@@ -576,18 +567,18 @@ lemma linearIndependent_aeval_val_pderiv_relation :
 
 end SubmersivePresentation
 
+attribute [local instance] Fintype.ofFinite
+
 /--
 An `R`-algebra `S` is called standard smooth, if there
 exists a submersive presentation.
 -/
 class IsStandardSmooth : Prop where
-  out : ∃ ι σ : Type, Nonempty (SubmersivePresentation R S ι σ)
+  out : ∃ (ι σ : Type) (_ : Finite σ), Finite ι ∧ Nonempty (SubmersivePresentation R S ι σ)
 
-lemma SubmersivePresentation.isStandardSmooth (P : SubmersivePresentation R S ι σ) :
+lemma SubmersivePresentation.isStandardSmooth [Finite ι] (P : SubmersivePresentation R S ι σ) :
     IsStandardSmooth R S := by
-  letI := @Fintype.ofFinite _ P.isFinite_rels
-  letI := @Fintype.ofFinite _ P.isFinite_vars
-  exact ⟨_, _, ⟨P.reindex (Fintype.equivFin _).symm (Fintype.equivFin _).symm⟩⟩
+  exact ⟨_, _, _, inferInstance, ⟨P.reindex (Fintype.equivFin _).symm (Fintype.equivFin _).symm⟩⟩
 
 /--
 The relative dimension of a standard smooth `R`-algebra `S` is
@@ -598,33 +589,35 @@ equal to the `S`-rank of `Ω[S/R]`
 (see `IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential`).
 -/
 noncomputable def IsStandardSmooth.relativeDimension [IsStandardSmooth R S] : ℕ :=
-  ‹IsStandardSmooth R S›.out.choose_spec.choose_spec.some.dimension
+  letI := ‹IsStandardSmooth R S›.out.choose_spec.choose_spec.choose
+  ‹IsStandardSmooth R S›.out.choose_spec.choose_spec.choose_spec.2.some.dimension
 
 /--
 An `R`-algebra `S` is called standard smooth of relative dimension `n`, if there exists
 a submersive presentation of dimension `n`.
 -/
 class IsStandardSmoothOfRelativeDimension : Prop where
-  out : ∃ ι σ : Type, ∃ P : SubmersivePresentation R S ι σ, P.dimension = n
+  out : ∃ (ι σ : Type) (_ : Finite σ) (_ : Finite ι) (P : SubmersivePresentation R S ι σ),
+    P.dimension = n
 
-lemma SubmersivePresentation.isStandardSmoothOfRelativeDimension
+lemma SubmersivePresentation.isStandardSmoothOfRelativeDimension [Finite ι]
     (P : SubmersivePresentation R S ι σ) (hP : P.dimension = n) :
     IsStandardSmoothOfRelativeDimension n R S := by
-  letI := @Fintype.ofFinite _ P.isFinite_rels
-  letI := @Fintype.ofFinite _ P.isFinite_vars
-  refine ⟨⟨_, _, P.reindex (Fintype.equivFin _).symm (Fintype.equivFin σ).symm, ?_⟩⟩
+  refine ⟨⟨_, _, _, inferInstance,
+    P.reindex (Fintype.equivFin _).symm (Fintype.equivFin σ).symm, ?_⟩⟩
   simp [hP]
 
 variable {R} {S}
 
 lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth
-    [IsStandardSmoothOfRelativeDimension n R S] : IsStandardSmooth R S :=
-  ⟨_, _, ‹IsStandardSmoothOfRelativeDimension n R S›.out.choose_spec.choose_spec.nonempty⟩
+    [H : IsStandardSmoothOfRelativeDimension n R S] : IsStandardSmooth R S :=
+  ⟨_, _, _, H.out.choose_spec.choose_spec.choose_spec.choose,
+    H.out.choose_spec.choose_spec.choose_spec.choose_spec.nonempty⟩
 
 lemma IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective
     (h : Function.Bijective (algebraMap R S)) :
     IsStandardSmoothOfRelativeDimension 0 R S :=
-  ⟨_, _,
+  ⟨_, _, _, inferInstance,
     SubmersivePresentation.ofBijectiveAlgebraMap h, Presentation.ofBijectiveAlgebraMap_dimension h⟩
 
 variable (R) in
@@ -634,9 +627,7 @@ instance IsStandardSmoothOfRelativeDimension.id :
 
 instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth R S] :
     FinitePresentation R S := by
-  obtain ⟨_, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
-  letI := P.isFinite_rels
-  letI := P.isFinite_vars
+  obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
   exact P.finitePresentation_of_isFinite
 
 section Composition
@@ -646,32 +637,28 @@ variable (R S T) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 lemma IsStandardSmooth.trans [IsStandardSmooth R S] [IsStandardSmooth S T] :
     IsStandardSmooth R T where
   out := by
-    obtain ⟨_, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
-    obtain ⟨_, _, ⟨Q⟩⟩ := ‹IsStandardSmooth S T›
-    exact ⟨_, _, ⟨Q.comp P⟩⟩
+    obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
+    obtain ⟨_, _, _, _, ⟨Q⟩⟩ := ‹IsStandardSmooth S T›
+    exact ⟨_, _, _, inferInstance, ⟨Q.comp P⟩⟩
 
 lemma IsStandardSmoothOfRelativeDimension.trans [IsStandardSmoothOfRelativeDimension n R S]
     [IsStandardSmoothOfRelativeDimension m S T] :
     IsStandardSmoothOfRelativeDimension (m + n) R T where
   out := by
-    obtain ⟨_, _, P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
-    obtain ⟨_, _, Q, hQ⟩ := ‹IsStandardSmoothOfRelativeDimension m S T›
-    refine ⟨_, _, Q.comp P, hP ▸ hQ ▸ ?_⟩
-    letI := P.isFinite_rels
-    letI := P.isFinite_vars
-    letI := Q.isFinite_rels
-    letI := Q.isFinite_vars
+    obtain ⟨_, _, _, _, P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
+    obtain ⟨_, _, _, _, Q, hQ⟩ := ‹IsStandardSmoothOfRelativeDimension m S T›
+    refine ⟨_, _, _, inferInstance, Q.comp P, hP ▸ hQ ▸ ?_⟩
     apply PreSubmersivePresentation.dimension_comp_eq_dimension_add_dimension
 
 end Composition
 
 lemma IsStandardSmooth.localization_away (r : R) [IsLocalization.Away r S] :
     IsStandardSmooth R S where
-  out := ⟨_, _, ⟨SubmersivePresentation.localizationAway S r⟩⟩
+  out := ⟨_, _, _, inferInstance, ⟨SubmersivePresentation.localizationAway S r⟩⟩
 
 lemma IsStandardSmoothOfRelativeDimension.localization_away (r : R) [IsLocalization.Away r S] :
     IsStandardSmoothOfRelativeDimension 0 R S where
-  out := ⟨_, _, SubmersivePresentation.localizationAway S r,
+  out := ⟨_, _, _, inferInstance, SubmersivePresentation.localizationAway S r,
     Presentation.localizationAway_dimension_zero r⟩
 
 section BaseChange
@@ -681,15 +668,15 @@ variable (T) [CommRing T] [Algebra R T]
 instance IsStandardSmooth.baseChange [IsStandardSmooth R S] :
     IsStandardSmooth T (T ⊗[R] S) where
   out := by
-    obtain ⟨ι, σ, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
-    exact ⟨ι, σ, ⟨P.baseChange T⟩⟩
+    obtain ⟨ι, σ, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
+    exact ⟨ι, σ, _, inferInstance, ⟨P.baseChange T⟩⟩
 
 instance IsStandardSmoothOfRelativeDimension.baseChange
     [IsStandardSmoothOfRelativeDimension n R S] :
     IsStandardSmoothOfRelativeDimension n T (T ⊗[R] S) where
   out := by
-    obtain ⟨_, _, P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
-    exact ⟨_, _, P.baseChange T, hP⟩
+    obtain ⟨_, _, _, _, P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
+    exact ⟨_, _, _, inferInstance, P.baseChange T, hP⟩
 
 end BaseChange
 
