@@ -13,7 +13,7 @@ We define the Hopf algebra instance on the tensor product of two Hopf algebras.
 
 -/
 
-open TensorProduct Coalgebra.TensorProduct
+open TensorProduct Coalgebra.TensorProduct HopfAlgebra
 
 namespace TensorProduct
 
@@ -25,8 +25,8 @@ instance : HopfAlgebra R (B ⊗[R] A) where
   antipode := AlgebraTensorModule.map HopfAlgebra.antipode HopfAlgebra.antipode
   mul_antipode_rTensor_comul := by
     ext x y
-    convert congr($(HopfAlgebra.mul_antipode_rTensor_comul_apply (R := R) x) ⊗ₜ[R]
-      $(HopfAlgebra.mul_antipode_rTensor_comul_apply (R := R) y)) using 1
+    convert congr($(mul_antipode_rTensor_comul_apply (R := R) x) ⊗ₜ[R]
+      $(mul_antipode_rTensor_comul_apply (R := R) y)) using 1
     · dsimp
       expand_comul R, x with x₁ x₂
       expand_comul R, y with y₁ y₂
@@ -35,8 +35,8 @@ instance : HopfAlgebra R (B ⊗[R] A) where
       simp [Algebra.algebraMap_eq_smul_one, smul_tmul', mul_smul]
   mul_antipode_lTensor_comul := by
     ext x y
-    convert congr($(HopfAlgebra.mul_antipode_lTensor_comul_apply (R := R) x) ⊗ₜ[R]
-      $(HopfAlgebra.mul_antipode_lTensor_comul_apply (R := R) y)) using 1
+    convert congr($(mul_antipode_lTensor_comul_apply (R := R) x) ⊗ₜ[R]
+      $(mul_antipode_lTensor_comul_apply (R := R) y)) using 1
     · dsimp [Algebra.TensorProduct.one_def]
       expand_comul R, x with x₁ x₂
       expand_comul R, y with y₁ y₂
@@ -46,6 +46,6 @@ instance : HopfAlgebra R (B ⊗[R] A) where
 
 @[simp]
 theorem antipode_def :
-    HopfAlgebra.antipode (R := R) (A := B ⊗[R] A) = AlgebraTensorModule.map antipode antipode := rfl
+    antipode (R := R) (A := B ⊗[R] A) = AlgebraTensorModule.map antipode antipode := rfl
 
 end TensorProduct
