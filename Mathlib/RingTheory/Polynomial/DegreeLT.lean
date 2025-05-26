@@ -167,14 +167,12 @@ variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
 /-- The map `taylor r` induces an automorphism of the module `R[X]_n` of polynomials of
 degree `< n`. -/
 noncomputable def taylorLinear (r : R) (n : ℕ) : (R[X]_n) ≃ₗ[R] (R[X]_n) where
-  toFun P    := ⟨P.1.taylor r, mem_degreeLT.2 <| (degree_taylor ..).trans_lt <|
-    mem_degreeLT.1 P.2⟩
-  invFun    := fun P ↦ ⟨P.1.taylor (-r), mem_degreeLT.2 <| (degree_taylor ..).trans_lt <|
-    mem_degreeLT.1 P.2⟩
-  map_add'  := fun _ _ ↦ Subtype.ext <| map_add ..
-  map_smul' := fun _ _ ↦ Subtype.ext <| map_smul ..
-  left_inv  := fun _ ↦ Subtype.ext <| (taylorEquiv r).symm_apply_apply _
-  right_inv := fun _ ↦ Subtype.ext <| (taylorEquiv r).apply_symm_apply _
+  toFun P  := ⟨P.1.taylor r, mem_degreeLT.2 <| (degree_taylor ..).trans_lt <| mem_degreeLT.1 P.2⟩
+  invFun P := ⟨P.1.taylor (-r), mem_degreeLT.2 <| (degree_taylor ..).trans_lt <| mem_degreeLT.1 P.2⟩
+  map_add'  _ _ := Subtype.ext <| map_add ..
+  map_smul' _ _ := Subtype.ext <| map_smul ..
+  left_inv  _   :=Subtype.ext <| (taylorEquiv r).symm_apply_apply _
+  right_inv _   := Subtype.ext <| (taylorEquiv r).apply_symm_apply _
 
 @[simp] lemma taylorLinear_apply (P : R[X]_n) :
     (taylorLinear r n P : R[X]) = (P : R[X]).taylor r :=
@@ -194,7 +192,7 @@ noncomputable def taylorLinear (r : R) (n : ℕ) : (R[X]_n) ≃ₗ[R] (R[X]_n) w
       degreeLT.basis_val, coeff_eq_zero_of_degree_lt]
     · rwa [degree_taylor, degree_X_pow, Nat.cast_lt, Fin.val_fin_lt]
 
-@[simp] theorem taylor_det :
+@[simp] theorem det_taylor :
     (taylorLinear r n).det = 1 :=
   Units.ext <| by rw [LinearEquiv.coe_det, taylor_det', Units.val_one]
 

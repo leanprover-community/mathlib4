@@ -111,7 +111,8 @@ theorem degree_taylor (p : R[X]) (r : R) : degree (taylor r p) = degree p := by
 theorem eq_zero_of_hasseDeriv_eq_zero (f : R[X]) (r : R)
     (h : ∀ k, (hasseDeriv k f).eval r = 0) : f = 0 := by
   rw [← taylor_eq_zero_iff r]
-  ext k; rw [taylor_coeff, h, coeff_zero]
+  ext k
+  rw [taylor_coeff, h, coeff_zero]
 
 end Semiring
 
