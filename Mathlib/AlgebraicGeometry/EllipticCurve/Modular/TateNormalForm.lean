@@ -30,7 +30,7 @@ Importantly, we have generalised the results here to work over any commutative r
 
 * `IsTateNF W`: A typeclass saying that the Weierstrass curve `W` is in Tate normal form.
 * `toTateNF W`: Given a point `P` satisfying the condition `P, 2P, 3P ≠ 0`, this is a variable
-change that brings the Weierstrass curve `W` to Tate normal form.
+  change that brings the Weierstrass curve `W` to Tate normal form.
 
 ## References
 
