@@ -592,6 +592,7 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[�
   simp only [IsSelfAdjoint, star, adjoint, LinearEquiv.trans_apply,
     coe_toContinuousLinearMap_symm,
     ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
+  -- TODO missing API?
   rfl
 
 theorem isStarProjection_toContinuousLinearMap_iff {T : E →ₗ[𝕜] E} :
