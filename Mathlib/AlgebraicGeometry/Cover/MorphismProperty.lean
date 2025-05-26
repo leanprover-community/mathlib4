@@ -324,11 +324,15 @@ def Cover.reindex (𝒰 : Cover.{v} P X) {ι : Type*} (e : ι ≃ 𝒰.J) : Cove
     rw [Equiv.apply_symm_apply]
   map_prop i := 𝒰.map_prop _
 
-/-- If the indexing type of `𝒰` is `u`-small, this is the `u`-cover with index
-type replaced by a small representative. -/
+/-- Any cover `v`-cover `𝒰` induces a `u`-cover indexed by the points of `X`. -/
 @[simps!]
-def Cover.ulift (𝒰 : Cover.{v} P X) [Small.{u} 𝒰.J] : Cover.{u} P X :=
-  𝒰.reindex (Small.equiv_small.{u} (α := 𝒰.J) |>.choose_spec.some).symm
+def Cover.ulift (𝒰 : Cover.{v} P X) : Cover.{u} P X where
+  J := X
+  obj x := 𝒰.obj (𝒰.f x)
+  map x := 𝒰.map (𝒰.f x)
+  f := id
+  covers := 𝒰.covers
+  map_prop _ := 𝒰.map_prop _
 
 section category
 
