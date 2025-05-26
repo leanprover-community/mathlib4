@@ -921,6 +921,22 @@ theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ))
   | succ n ih =>
     sorry
 
+-- structure ListPrefix {T: Type*} (n: ℕ) (head: T) (suffix target: List T): Prop where
+--   suffix_neq: suffix ≠ []
+--   suffix_head: suffix.head suffix_neq ≠ head
+--   target_eq: (List.replicate n head) ++ suffix = target
+
+
+
+-- lemma replicate_head (T: Type*) (l: List T) (a: T) (ha: a ∈ l): (l = List.replicate l.length a) ∨ (∃ n: ℕ, ∃ suffix: List T, ListPrefix n a suffix l)  := by
+--   by_cases all_eq: ∀ x ∈ l, x = a
+--   .
+--     left
+--     exact List.eq_replicate_of_mem all_eq
+--   .
+--     right
+
+
 
 -- Based on https://github.com/YaelDillies/LeanCamCombi/blob/b6312bee17293272af6bdcdb47b3ffe98fca46a4/LeanCamCombi/GrowthInGroups/Lecture1.lean#L41
 def HasPolynomialGrowthD (d: ℕ): Prop := ∀ n ≥ 2, #(S ^ n) ≤ n ^ d
@@ -933,6 +949,10 @@ lemma S_nonempty: S.Nonempty := by
   exact Finset.nonempty_coe_sort.mp hS
 
 variable [Inhabited G]
+
+structure PreservesProd (T: Type*) (l h: List G) (γ: G) where
+  prod_eq: l.prod = h.prod
+  same_sum: (l.map (fun s => if s = γ then 1 else 0)).sum = (h.map (fun s => if s = γ then 1 else 0)).sum
 
 open Additive
 lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
@@ -1278,3 +1298,80 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           equals e_i ⟨val, val_in_s⟩ => rfl
         rw [e_i_zero] at apply_mult
         exact apply_mult
+    .
+      intro hz
+      have foo := AddSubmonoid.exists_list_of_mem_closure (s := (φ.ker : Set (Additive G)) ∪ -(φ.ker)) (x := ofMul z)
+      rw [← AddSubgroup.closure_toAddSubmonoid _] at foo
+      rw [AddSubgroup.mem_toAddSubmonoid] at foo
+      simp at foo
+      --rw [Submonoid.toAddSubmonoid_closure] at foo
+      specialize foo hz
+      obtain ⟨l, ⟨l_mem_s, l_prod⟩⟩ := foo
+
+
+      let E: Set G := {γ, γ⁻¹} ∪ Set.range e_i_regular
+
+      let rec rewrite_list (list: List (E)): List ((Set.range (Function.uncurry gamma_m))) := by
+        let is_gamma: E → Bool := fun (k: E) => k = γ ∨ k = γ⁻¹
+        let is_gamma_prop: E → Prop := fun (k: E) => k = γ ∨ k = γ⁻¹
+        have eq_split: list = list.takeWhile is_gamma ++ list.dropWhile is_gamma := by
+          exact Eq.symm List.takeWhile_append_dropWhile
+        by_cases header_eq_full: list.takeWhile is_gamma = list
+        . exact []
+        .
+          have tail_nonempty: list.dropWhile is_gamma ≠ [] := by
+            rw [not_iff_not.mpr List.takeWhile_eq_self_iff] at header_eq_full
+            rw [← not_iff_not.mpr List.dropWhile_eq_nil_iff] at header_eq_full
+            exact header_eq_full
+          have dropwhile_len_gt: 0 < (list.dropWhile is_gamma).length := by
+            exact List.length_pos_iff.mpr tail_nonempty
+          have not_is_gamma := List.dropWhile_get_zero_not is_gamma list dropwhile_len_gt
+          simp at not_is_gamma
+
+          have not_is_gamma_prop: ¬ is_gamma_prop (List.dropWhile is_gamma list)[0] := by
+            dsimp [is_gamma_prop]
+            dsimp [is_gamma] at not_is_gamma
+            exact of_decide_eq_false not_is_gamma
+
+          simp [is_gamma_prop] at not_is_gamma_prop
+          have drop_head_in_e_i: (List.dropWhile is_gamma list)[0].val ∈ Set.range e_i_regular := by
+            have drop_in_E: (List.dropWhile is_gamma list)[0].val ∈ E := by
+              simp [E]
+            simp only [E] at drop_in_E
+            rw [Set.mem_union] at drop_in_E
+            have not_in_left: (List.dropWhile is_gamma list)[0].val ∉ ({γ, γ⁻¹} : Set G) := by
+              simp [not_is_gamma_prop]
+
+            -- TODO - why can't simp handle this?
+            have in_right := Or.resolve_left drop_in_E not_in_left
+            exact in_right
+
+
+          let m := ((list.takeWhile is_gamma).map (fun (k : E) => if k = γ then 1 else if k = γ then -1 else 0)).sum
+
+          have in_range: γ ^ m * ↑(List.dropWhile is_gamma list)[0] * γ ^ (-m) ∈ Set.range (Function.uncurry gamma_m) := by
+            simp [gamma_m]
+            simp at drop_head_in_e_i
+            obtain ⟨s, s_in_S, eq_e_i⟩ := drop_head_in_e_i
+            use m
+            use s
+            use s_in_S
+            rw [← eq_e_i]
+            simp
+            rfl
+
+
+          let gamma_copy: List E := if (m >= 0) then List.replicate m.natAbs ⟨γ, by simp [E]⟩ else List.replicate (m.natAbs) ⟨γ⁻¹, by simp [E]⟩
+          use (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma)))
+
+-- Decompose list of {e_k, γ}:
+
+-- The starting list must have the powers of γ sum to zero (since it's in the kernel of φ)
+
+
+-- Map the list in a way that maintains the invariant that the powers of γ sum to zero:
+-- If the head is e_i, then map it to γ_0,i = e_i
+-- Otherwise, collect gamma terms:
+-- If we get γ^a e_i * γ^b, then
+-- * If the head is γ^n e_i for some n (collecting up adjacent γ), then choose γ_n,i = γ^n * e_i * γ^(-n)
+-- * If the remaining list is just γ^n, then n must be 0 (since we maintained the invariant)
