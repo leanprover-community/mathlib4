@@ -904,7 +904,7 @@ lemma strictMono (x : LTSeries α) : StrictMono x :=
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
 
-theorem head_le (x : LTSeries α) (n : Fin (x.length + 1)) : x.head ≤ x n :=
+lemma head_le (x : LTSeries α) (n : Fin (x.length + 1)) : x.head ≤ x n :=
   x.monotone (Fin.zero_le n)
 
 lemma head_le_last (x : LTSeries α) : x.head ≤ x.last := x.head_le _

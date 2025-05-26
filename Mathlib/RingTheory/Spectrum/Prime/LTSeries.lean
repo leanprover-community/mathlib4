@@ -3,7 +3,9 @@ Copyright (c) 2025 Yonele Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yonele Hu
 -/
-import Mathlib
+import Mathlib.Order.CompletePartialOrder
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Lemmas about `LTSeries` in the prime spectrum
