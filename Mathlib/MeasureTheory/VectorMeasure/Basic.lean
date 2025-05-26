@@ -843,8 +843,7 @@ end
 
 section
 
-variable {M : Type*} [TopologicalSpace M]
-  [AddCommMonoid M] [PartialOrder M] [OrderClosedTopology M] [ContinuousAdd M]
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] [ContinuousAdd M]
 variable (v : VectorMeasure α M) {i : Set α}
 
 @[simp]
