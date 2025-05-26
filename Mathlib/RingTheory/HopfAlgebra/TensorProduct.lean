@@ -13,7 +13,7 @@ We define the Hopf algebra instance on the tensor product of two Hopf algebras.
 
 -/
 
-open TensorProduct Coalgebra.TensorProduct HopfAlgebra
+open Coalgebra TensorProduct HopfAlgebra
 
 namespace TensorProduct
 
