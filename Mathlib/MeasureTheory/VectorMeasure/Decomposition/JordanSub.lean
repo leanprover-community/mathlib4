@@ -40,7 +40,7 @@ variable {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 namespace Measure
 
-lemma sub_eq_zero_of_le_on {μ ν : Measure X} (hs : IsHahnDecomposition μ ν s) : (μ - ν) s = 0 := by
+lemma sub_apply_eq_zero_of_isHahnDecomposition {μ ν : Measure X} (hs : IsHahnDecomposition μ ν s) : (μ - ν) s = 0 := by
   rw [← restrict_eq_zero, restrict_sub_eq_restrict_sub_restrict hs.measurableSet]
   exact sub_eq_zero_of_le hs.le_on
 
@@ -48,8 +48,8 @@ theorem mutually_singular_measure_sub :
     (μ - ν).MutuallySingular (ν - μ) := by
   obtain ⟨s, hs⟩ := hahn_decomposition' μ ν
   exact ⟨s, hs.measurableSet,
-    sub_eq_zero_of_le_on hs,
-    sub_eq_zero_of_le_on hs.compl⟩
+    sub_apply_eq_zero_of_isHahnDecomposition hs,
+    sub_apply_eq_zero_of_isHahnDecomposition hs.compl⟩
 
 lemma toSignedMeasure_restrict_sub (hs : IsHahnDecomposition μ ν s) :
     ((ν - μ).restrict s).toSignedMeasure =
@@ -69,8 +69,8 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
   have h₁ := toSignedMeasure_restrict_sub hs
   have h₂ := toSignedMeasure_restrict_sub hsc
 
-  have h₁' := toSignedMeasure_congr <| restrict_eq_zero.mpr <| sub_eq_zero_of_le_on hs
-  have h₂' := toSignedMeasure_congr <| restrict_eq_zero.mpr <| sub_eq_zero_of_le_on hsc
+  have h₁' := toSignedMeasure_congr <| restrict_eq_zero.mpr <| sub_apply_eq_zero_of_isHahnDecomposition hs
+  have h₂' := toSignedMeasure_congr <| restrict_eq_zero.mpr <| sub_apply_eq_zero_of_isHahnDecomposition hsc
 
   have partition₁ := VectorMeasure.restrict_add_restrict_compl (μ - ν).toSignedMeasure
     hs.measurableSet
