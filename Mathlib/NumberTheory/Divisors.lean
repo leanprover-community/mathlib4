@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Int.Interval
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.PrimeFin
@@ -662,7 +663,6 @@ theorem neg_divisors_eq_divisors : (-z).divisors = z.divisors := by
   ext x
   simp
 
-@[simp]
 theorem neg_mem_divisors : -x ∈ z.divisors ↔ x ∈ z.divisors := by
   simp
 
@@ -704,23 +704,20 @@ lemma divisors_eq_empty : divisors z = ∅ ↔ z = 0 :=
 theorem divisors_subset_of_dvd (hzero : z ≠ 0) (h : x ∣ z) : divisors x ⊆ divisors z :=
   Finset.subset_iff.2 fun _y hy => mem_divisors.mpr ⟨(mem_divisors.mp hy).1.trans h, hzero⟩
 
+theorem dvd_of_divisors_subset (hzero : x ≠ 0) (h : divisors x ⊆ divisors z) : x ∣ z :=
+  (mem_divisors.mp  <| Finset.mem_of_subset h <| mem_divisors_self hzero).left
+
 @[simp]
 theorem divisors_eq : x.divisors = y.divisors ↔ |x| = |y| := by
-  obtain rfl | h := Decidable.eq_or_ne x 0
-  · simp only [divisors_zero, abs_zero, eq_comm, abs_eq_zero]
-    rw [eq_comm]
-    simp
-  · constructor
-    · rintro h'
-      apply le_antisymm
-      · apply abs_le_abs_of_mem_divisors
-        rw [← h']
-        exact mem_divisors_self h
-      · apply abs_le_abs_of_mem_divisors
-        rw [h']
-        exact mem_divisors_self (by rwa [← nonempty_divisors, ← h', nonempty_divisors])
-    · rintro h'
-      obtain rfl | rfl := abs_eq_abs.mp h' <;> simp
+  obtain rfl | hx := Decidable.eq_or_ne x 0
+  · rw [abs_zero, divisors_zero, eq_comm, divisors_eq_empty, eq_comm (a := 0), abs_eq_zero]
+  · constructor <;> rintro h
+    · rw [subset_antisymm_iff] at h
+      refine dvd_antisymm (by simp) (by simp)
+        ((abs_dvd_abs _ _).mpr <| dvd_of_divisors_subset hx h.left)
+        ((abs_dvd_abs _ _).mpr <| dvd_of_divisors_subset ?_ h.right)
+      exact nonempty_divisors.mp <| (nonempty_divisors.mpr hx).mono h.left
+    · obtain rfl | rfl := abs_eq_abs.mp h <;> simp
 
 @[simp]
 lemma mem_divisorsAntidiag :
@@ -792,14 +789,6 @@ lemma prodMk_mem_divisorsAntidiag (hz : z ≠ 0) : (x, y) ∈ z.divisorsAntidiag
 lemma swap_mem_divisorsAntidiag : xy.swap ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by
   simp [mul_comm]
 
-@[simp]
-theorem map_swap_divisorsAntidiag :
-    z.divisorsAntidiag.map (Equiv.prodComm _ _).toEmbedding = z.divisorsAntidiag := by
-  rw [← coe_inj, coe_map, Equiv.coe_toEmbedding, Equiv.coe_prodComm,
-    Set.image_swap_eq_preimage_swap]
-  ext
-  exact swap_mem_divisorsAntidiag
-
 lemma neg_mem_divisorsAntidiag : -xy ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by simp
 
 @[simp]
@@ -853,7 +842,7 @@ theorem map_div_left_divisors :
       z.divisorsAntidiag := by
   apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
   ext
-  rw [map_swap_divisorsAntidiag, ← map_div_right_divisors, Finset.map_map]
+  rw [map_prodComm_divisorsAntidiag, ← map_div_right_divisors, Finset.map_map]
   simp
 
 /-- This lemma justifies its existence from its utility in crystallographic root system theory. -/
