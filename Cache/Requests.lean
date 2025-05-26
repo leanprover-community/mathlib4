@@ -9,8 +9,9 @@ import Cache.Hashing
 namespace Cache.Requests
 
 /-- Attempts to determine the running project's GitHub repository from its `origin` Git remote. -/
-def getRemoteRepo : IO String := do
-  let out ← IO.Process.output {cmd := "git", args := #["remote", "get-url", "origin"]}
+def getRemoteRepo (mathlibDepPath : System.FilePath) : IO String := do
+  let out ← IO.Process.output
+    {cmd := "git", args := #["remote", "get-url", "origin"], cwd := mathlibDepPath}
   unless out.exitCode == 0 do
     throw <| IO.userError s!"\
       Failed to run Git to determine project repository (exit code: {out.exitCode}).\n\
@@ -224,7 +225,7 @@ def getFiles
   if let some repo := repo? then
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
   else
-    let repo ← getRemoteRepo
+    let repo ← getRemoteRepo (← read).mathlibDepPath
     IO.println s!"Project repository: {repo}"
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := false)
     unless repo == MATHLIBREPO do
