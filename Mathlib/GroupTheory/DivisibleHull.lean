@@ -57,13 +57,8 @@ def mk (m : M) (s : nonZeroDivisors ℕ) : DivisibleHull M := LocalizedModule.mk
 instance : Coe M (DivisibleHull M) where
   coe m := mk m 1
 
-theorem coe_eq_mk (m : M) : m = mk m 1 := rfl
-
 @[simp]
 theorem mk_zero (s : nonZeroDivisors ℕ) : mk (0 : M) s = 0 := by simp [mk]
-
-@[simp]
-theorem coe_zero : (0 : M) = (0 : DivisibleHull M) := by simp
 
 theorem ind {motive : DivisibleHull M → Prop} (mk : ∀ num den, motive (.mk num den)) :
     ∀ x, motive x := by
