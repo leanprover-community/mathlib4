@@ -289,11 +289,19 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       refine add_le_add_right ?_ 1
       exact le_iSup_iff.mpr fun _ h ↦ h q'
 
+instance [Nontrivial M] : Nonempty (support R M) :=
+  Set.nonempty_iff_ne_empty'.mpr ((Module.support_eq_empty_iff).not.mpr (not_subsingleton M))
+
+omit [IsNoetherianRing R] [IsLocalRing R] in
 theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) :
     supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
-  have : Nonempty (support R M) := sorry
-  have : Nonempty (support R (QuotSMulTop x M)) := sorry
+  rcases subsingleton_or_nontrivial M with h | _
+  · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
+    rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
+  rcases subsingleton_or_nontrivial (QuotSMulTop x M) with h | _
+  · rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr h, WithBot.bot_add]
+    exact bot_le
   simp only [supportDim, Order.krullDim_eq_iSup_length]
   apply WithBot.coe_le_coe.mpr
   simp only [ENat.iSup_add, iSup_le_iff]
@@ -310,31 +318,15 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
       simp only [Subtype.mk_lt_mk, Subtype.coe_lt_coe, p.3 i]
   }
   have hx : x ∈ q.head.1.1 := by
-    have hq := p.head.2
+    have hp := p.head.2
     simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff,
-      SetLike.mem_coe] at hq
-    exact hq.2
+      SetLike.mem_coe] at hp
+    exact hp.2
   have hq := q.head.2
   simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hq
-  rcases Ideal.exists_minimalPrimes_le hq with ⟨r, ⟨⟨hrp, har⟩, hrm⟩, hr⟩
-  let r : support R M := ⟨⟨r, hrp⟩, mem_support_iff_of_finite.mpr har⟩
-  have hr : r < q.head := by
-    refine lt_of_le_of_ne hr (fun h ↦ ?_)
-    have hqm : q.head.1.1 ∈ (annihilator R M).minimalPrimes := sorry
-    apply hn _ hqm hx
-  obtain ⟨r, hr⟩ : ∃ r : support R M, r < q.head := by
-    contrapose! hn
-    refine ⟨q.head.1.1, ⟨⟨?_, ?_⟩, ?_⟩, hx⟩
-    · exact q.head.1.2
-    · have hq := q.head.2
-      simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hq
-      exact hq
-    · intro p ⟨hp, h⟩ hpq
-      have h : ⟨p, hp⟩ ∈ support R M := by
-        simpa only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] using h
-      have := hn ⟨⟨p, hp⟩, h⟩
-
-      sorry
+  rcases Ideal.exists_minimalPrimes_le hq with ⟨r, hrm, hr⟩
+  let r : support R M := ⟨⟨r, minimalPrimes_isPrime hrm⟩, mem_support_iff_of_finite.mpr hrm.1.2⟩
+  have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.1 (by rwa [← h]) hx)
   exact le_of_eq_of_le (by simpa only [q.cons_length] using by rfl) (le_iSup _ (q.cons r hr))
 
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
