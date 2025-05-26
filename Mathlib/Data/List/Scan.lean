@@ -131,8 +131,7 @@ theorem head_scanr : (scanr f b l).head scanr_ne_nil = foldr f b l := by
 theorem tail_scanr (h : 0 < l.length) : (scanr f b l).tail = scanr f b l.tail := by
   induction l <;> simp_all
 
-theorem drop_scanr {i : ℕ} (h : i ≤ l.length) :
-    (scanr f b l).drop i = scanr f b (l.drop i) := by
+theorem drop_scanr {i : ℕ} (h : i ≤ l.length) : (scanr f b l).drop i = scanr f b (l.drop i) := by
   induction i with
   | zero => simp
   | succ i ih =>
