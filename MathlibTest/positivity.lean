@@ -206,6 +206,34 @@ example (a : ℤ) : 0 ≤ a⁺ := by positivity
 example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
 example (a : ℤ) : 0 ≤ a⁻ := by positivity
 
+
+section
+
+open scoped ENNReal
+variable {a b : ℝ≥0∞}
+
+example : 0 ≤ a * b := by positivity
+example (ha : a ≠ 0) : 0 < 2 * a := by positivity
+example (ha : a ≠ 0) : 0 < a * 37 := by positivity
+example (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b := by positivity
+example (ha : a ≠ 0) : 0 ≤ a * b := by positivity
+
+end
+
+section
+
+variable {a b : EReal}
+
+example {ha : 0 ≤ a} {hb : 0 ≤ b} : 0 ≤ a * b := by positivity
+-- These tests will only pass after #25094.
+-- example (ha : 0 < a) : 0 < 2 * a := by positivity
+-- example (ha : 0 < a) : 0 < a * 37 := by positivity
+example (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
+example (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
+example {a b : EReal} (ha : 0 < a) (ha : 0 < b) : 0 < a * b := by positivity
+
+end
+
 /-! ### Exponentiation -/
 
 example [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
