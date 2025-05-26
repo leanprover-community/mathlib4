@@ -77,8 +77,8 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
     hs.measurableSet
 
   rw [toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet,
-      toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet.compl]
-      at partition₁ partition₂
+    toSignedMeasure_restrict_eq_restrict_toSigned _ _ hs.measurableSet.compl]
+    at partition₁ partition₂
 
   rw [h₁', h₂] at partition₁
   rw [h₁, h₂'] at partition₂
