@@ -93,41 +93,32 @@ instance of_weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X] : CompactlyC
 instance of_sequentialSpace [SequentialSpace X] : CompactlyCoherentSpace X where
   isCoherentWith := IsCoherentWith.isCompact_of_seq
 
-/-- In a compactly coherent space `X`, a set `s` is open when `f ⁻¹' s` is open for every continuous
-map from a compact space. -/
-lemma preimage_isOpen [CompactlyCoherentSpace X] (s : Set X)
-    (hs : (∀ (K : Type u) [TopologicalSpace K],
-      [CompactSpace K] → ∀ (f : K → X), Continuous f → IsOpen (f ⁻¹' s))) :
-    IsOpen s := by
-  rw [isOpen_iff]
+lemma isOpen_iff_forall_compactSpace [CompactlyCoherentSpace X] (s : Set X) :
+    IsOpen s ↔
+      ∀ (K : Type u) [TopologicalSpace K] [CompactSpace K],
+      ∀ (f : K → X), Continuous f → IsOpen (f ⁻¹' s) := by
+  refine ⟨fun hs _ _ _ _ hf ↦ hs.preimage hf, fun hs ↦ isOpen_iff _ |>.mpr ?_⟩
   intro K hK
-  let _ : CompactSpace (Elem K) := isCompact_iff_compactSpace.mp hK
-  exact hs (Elem K) Subtype.val continuous_subtype_val
+  have : CompactSpace K := isCompact_iff_compactSpace.mp hK
+  exact hs K Subtype.val continuous_subtype_val
 
 /-- A topological space `X` is compactly coherent if a set `s` is open when `f ⁻¹' s?` is open for
 every continuous map `f : K → X`, where `K` is compact. -/
-lemma of_preimage_isOpen (h : ∀ (s : Set X), (∀ (K : Type u) [TopologicalSpace K],
+lemma of_isOpen_forall_compactSpace (h : ∀ (s : Set X), (∀ (K : Type u) [TopologicalSpace K],
       [CompactSpace K] → ∀ (f : K → X), Continuous f → IsOpen (f ⁻¹' s)) → IsOpen s) :
-    CompactlyCoherentSpace X where
-  isCoherentWith := {
-    isOpen_of_forall_induced := by
-      intro s hs
-      apply h s
-      intro K _ _ f hf
-      change IsOpen ((fun x ↦ ⟨f x, mem_image_of_mem f trivial⟩) ⁻¹' ((f '' univ) ↓∩ s))
-      apply (hf.subtype_mk fun x ↦ mem_image_of_mem f trivial).isOpen_preimage
-      exact hs (f '' univ) (CompactSpace.isCompact_univ.image hf)}
+    CompactlyCoherentSpace X := by
+  refine of_isOpen fun A hA ↦ h A fun K _ _ f hf ↦ ?_
+  specialize hA (range f) (isCompact_range hf)
+  have := hA.preimage (hf.codRestrict mem_range_self)
+  rwa [← preimage_comp] at this
 
 /-- Every compactly generated space is a compactly coherent space. -/
-instance of_compactlyGeneratedSpace [CompactlyGeneratedSpace X] : CompactlyCoherentSpace X := by
-  apply of_preimage_isOpen
-  intro s h
-  apply CompactlyGeneratedSpace.isOpen'
-  intro K _ _ _ f hf
-  exact h K f hf
+instance of_compactlyGeneratedSpace [CompactlyGeneratedSpace X] : CompactlyCoherentSpace X :=
+  of_isOpen_forall_compactSpace fun _ h ↦ CompactlyGeneratedSpace.isOpen'
+    fun K _ _ _ f hf ↦ h K f hf
 
 /-- A compactly coherent space that is Hausdorff is compactly generated. -/
-instance compactlyGeneratedSpace_of_kspace_of_t2 [T2Space X] [CompactlyCoherentSpace X] :
+instance to_compactlyGeneratedSpace_of_t2 [T2Space X] [CompactlyCoherentSpace X] :
     CompactlyGeneratedSpace X := by
   apply compactlyGeneratedSpace_of_isClosed_of_t2
   intro s hs
@@ -136,201 +127,128 @@ instance compactlyGeneratedSpace_of_kspace_of_t2 [T2Space X] [CompactlyCoherentS
   rw [← Subtype.preimage_coe_inter_self]
   exact (hs K hK).preimage_val
 
+end CompactlyCoherentSpace
+
 /-- A type synonym used for the compact coherentification of a topological space. -/
 def CompactCoherentification (X : Type*) := X
 
+-- TODO: Some of the following should be generalized to `IsCoherent` with any family of subsets
+namespace CompactCoherentification
+
+local notation "k" X:max => CompactCoherentification X
+
 /-- The map taking a space to its compact coherentification. -/
-def toCompactlyCoherent (X : Type*) : X ≃ CompactCoherentification X := Equiv.refl _
+protected def mk (X : Type*) : X ≃ k X := Equiv.refl _
 
-lemma toCompactlyCoherent_image {X : Type*} (A : Set X) :
-    toCompactlyCoherent X '' A = (A : Set (CompactCoherentification X)) := by
-  ext
-  exact mem_image_iff_of_inverse (congrFun rfl) (congrFun rfl)
+protected def map {X Y : Type*} (f : X → Y) :
+    k X → k Y :=
+  CompactCoherentification.mk Y ∘ f ∘ (CompactCoherentification.mk X).symm
 
-lemma toCompactlyCoherent_symm_image {X : Type*} (A : Set X) :
-    (toCompactlyCoherent X).symm '' A = A := by
-  ext
-  exact mem_image_iff_of_inverse (congrFun rfl) (congrFun rfl)
+protected lemma map_comp_mk {X Y : Type*} {f : X → Y} :
+    (CompactCoherentification.map f) ∘ (CompactCoherentification.mk X) =
+      (CompactCoherentification.mk Y) ∘ f :=
+  rfl
 
-lemma toCompactlyCoherent_preimage {X : Type*} (A : Set X) :
-    toCompactlyCoherent X ⁻¹' A = (A : Set (CompactCoherentification X)) := by
-  ext
-  exact mem_preimage
-
-lemma toCompactlyCoherent_symm_preimage {X : Type*} (A : Set X) :
-    (toCompactlyCoherent X).symm ⁻¹' A = A := by
-  ext
-  exact mem_preimage
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- For a topological space `X` the compact coherentification is defined as:
 `A` is open iff for all compact sets `B`, the intersection `A ∩ B` is open in `B`. -/
-instance CompactCoherentification.instTopologicalSpace :
-    TopologicalSpace (CompactCoherentification X) where
-  IsOpen A := ∀ (K : Set X), IsCompact K → IsOpen (K ↓∩ (toCompactlyCoherent X).symm '' A)
-  isOpen_univ := by simp
-  isOpen_inter A B hA hB K hK := by
-    rw [image_inter (toCompactlyCoherent X).symm.injective]
-    exact (hA K hK).inter (hB K hK)
-  isOpen_sUnion s hs K hK := by
-    rw [image_sUnion]
-    rw [preimage_val_sUnion]
-    apply isOpen_sUnion
-    rintro _ ⟨u, hu, rfl⟩
-    rw [mem_image] at hu
-    obtain ⟨t, ht⟩ := hu
-    exact ht.2 ▸ hs t ht.1 K hK
+instance instTopologicalSpace :
+    TopologicalSpace (k X) :=
+  .coinduced (.mk X)
+    (⨆ (K : Set X) (_ : IsCompact K), .coinduced (↑) (inferInstanceAs <| TopologicalSpace K))
 
 /-- A set `A` in the compact coherentification is open iff for all compact sets `K`,
 the intersection `K ∩ A` is open in `K`. -/
-lemma CompactCoherentification.isOpen_iff {A : Set (CompactCoherentification X)} : IsOpen A ↔
-    ∀ (K : Set X), IsCompact K → IsOpen (K ↓∩ (toCompactlyCoherent X).symm '' A) := by
+lemma isOpen_iff {A : Set (k X)} : IsOpen A ↔
+    ∀ (K : Set X), IsCompact K → IsOpen (K ↓∩ .mk X ⁻¹' A) := by
+  simp_rw [isOpen_iSup_iff, isOpen_coinduced]
   rfl
 
 /-- A set `A` is the compact coherentification is closed iff for all compact sets `K`,
 the intersection `K ∩ A` is closed in `K`. -/
-lemma CompactCoherentification.isClosed_iff {A : Set (CompactCoherentification X)} :
-    IsClosed (X := CompactCoherentification X) A ↔
-      ∀ (K : Set X), IsCompact K → IsClosed (K ↓∩ (toCompactlyCoherent X).symm '' A) := by
-  rw [← isOpen_compl_iff, isOpen_iff, Equiv.image_compl]
-  congrm ∀ (K : Set X), IsCompact K → ?_
-  exact isOpen_compl_iff
+lemma isClosed_iff {A : Set (k X)} :
+    IsClosed A ↔
+      ∀ (K : Set X), IsCompact K → IsClosed (K ↓∩ .mk X ⁻¹' A) := by
+  simp_rw [isClosed_iSup_iff, isClosed_coinduced]
+  rfl
 
-lemma continuous_toCompactlyCoherent_symm :
-    Continuous (toCompactlyCoherent X).symm where
-  isOpen_preimage A hA := by
-    rw [CompactCoherentification.isOpen_iff, Equiv.image_preimage]
-    intros
-    exact isOpen_induced hA
+lemma continuous_dom {f : k X → Y} :
+    Continuous f ↔
+      (∀ (K : Set X), IsCompact K → ContinuousOn (f ∘ CompactCoherentification.mk X) K) := by
+  simp_rw [continuous_iSup_dom, continuous_coinduced_dom, continuousOn_iff_continuous_restrict]
+  rfl
 
-lemma isOpenMap_toCompactlyCoherent : IsOpenMap (toCompactlyCoherent X) := by
+lemma continuous_mk_symm :
+    Continuous (CompactCoherentification.mk X).symm := by
+  rw [continuous_dom]
+  exact fun _ _ ↦ continuousOn_id
+
+lemma continuous_dom_of_continuous {f : X → Y} (hf : Continuous f) :
+    Continuous (f ∘ (CompactCoherentification.mk X).symm) :=
+  hf.comp continuous_mk_symm
+
+lemma isOpenMap_mk : IsOpenMap (CompactCoherentification.mk X) := by
   intro A hA
-  rw [CompactCoherentification.isOpen_iff, Equiv.symm_image_image]
-  intro K hK
-  exact hA.preimage_val
+  rw [Equiv.image_eq_preimage]
+  exact hA.preimage continuous_mk_symm
 
-/-- The compact coherentification is finer than the original topology. -/
-lemma CompactCoherentification_le {X : Type*} [t : TopologicalSpace X] :
-    (CompactCoherentification.instTopologicalSpace :
-    TopologicalSpace X) ≤ (t : TopologicalSpace X) := by
-  rw [← continuous_id_iff_le]
-  change Continuous (toCompactlyCoherent X).symm
-  exact continuous_toCompactlyCoherent_symm
+lemma continuousOn_isCompact_mk {K : Set X} (hK : IsCompact K) :
+    ContinuousOn (CompactCoherentification.mk X) K := by
+  rw [continuousOn_iff_continuous_restrict]
+  exact ⟨fun U hU ↦ isOpen_iff.mp hU K hK⟩
+
+lemma continuous_mk [CompactlyCoherentSpace X] :
+    Continuous (CompactCoherentification.mk X) := by
+  rw [CompactlyCoherentSpace.isCoherentWith.continuous_iff]
+  exact fun K hK ↦ continuousOn_isCompact_mk hK
+
+lemma continuousOn_rng_of_isCompact {f : X → k Y} {K : Set X}
+    (hK : IsCompact K) :
+    ContinuousOn f K ↔ ContinuousOn ((CompactCoherentification.mk Y).symm ∘ f) K := by
+  refine ⟨fun H ↦ continuous_mk_symm.comp_continuousOn H, fun H ↦ ?_⟩
+  exact continuousOn_isCompact_mk (hK.image_of_continuousOn H) |>.comp H (mapsTo_image f K)
+
+lemma continuous_rng_of_compactSpace {f : X → k Y} [CompactSpace X] :
+    Continuous f ↔ Continuous ((CompactCoherentification.mk Y).symm ∘ f) := by
+  rw [continuous_iff_continuousOn_univ, continuousOn_rng_of_isCompact isCompact_univ,
+    ← continuous_iff_continuousOn_univ]
+
+lemma continuous_map {f : X → Y} (hf : ∀ K : Set X, IsCompact K → ContinuousOn f K) :
+    Continuous (CompactCoherentification.map f) := by
+  simp_rw [continuous_dom, CompactCoherentification.map_comp_mk]
+  exact fun K hK ↦ continuousOn_rng_of_isCompact hK |>.mpr <| hf K hK
 
 /-- The compact sets of a topological space and its compact coherentification agree. -/
-lemma isCompact_iff_isCompact_toCompactlyCoherent_image (K : Set X) :
-    IsCompact K ↔ IsCompact (toCompactlyCoherent X '' K) := by
+lemma isCompact_iff {K : Set (CompactCoherentification X)} :
+    IsCompact K ↔ IsCompact (CompactCoherentification.mk X ⁻¹' K) := by
   constructor
   · intro hK
-    rw [isCompact_iff_finite_subcover]
-    intro ι U hU hKU
-    simp_rw [CompactCoherentification.isOpen_iff] at hU
-    choose U' hU' using hU
-    have hKU' : K ⊆ ⋃ i, U' i K hK := by
-      simp_rw [← inter_eq_left, inter_iUnion,
-        Subtype.preimage_coe_eq_preimage_coe_iff.mp (hU' _ K hK).2, ← inter_iUnion, inter_eq_left,
-        toCompactlyCoherent_symm_image]
-      rw [toCompactlyCoherent_image] at hKU
-      exact hKU
-    rcases (isCompact_iff_finite_subcover.1 hK) (fun i ↦ U' i K hK)
-      (fun i ↦ (hU' i K hK).1) hKU' with ⟨ι', hι'⟩
-    use ι'
-    have := fun i ↦ toCompactlyCoherent_symm_image _ ▸
-      Subtype.preimage_coe_eq_preimage_coe_iff.mp (hU' i K hK).2
-    simp_rw [toCompactlyCoherent_image, ← inter_eq_left, inter_iUnion,
-      ← this, ← inter_iUnion, inter_eq_left]
-    exact hι'
+    exact preimage_equiv_eq_image_symm _ _ ▸ hK.image continuous_mk_symm
   · intro hK
-    exact (toCompactlyCoherent X).symm_image_image K ▸ hK.image continuous_toCompactlyCoherent_symm
+    exact Equiv.image_preimage _ _ ▸ hK.image_of_continuousOn <| continuousOn_isCompact_mk hK
+
+/-- The compact sets of a topological space and its compact coherentification agree. -/
+lemma isCompact_image_mk_iff {K : Set X} :
+    IsCompact (CompactCoherentification.mk X '' K) ↔ IsCompact K := by
+  rw [isCompact_iff, Equiv.preimage_image]
 
 /-- The compact coherentification makes any space into a compactly coherent space. -/
-instance CompactCoherentification.instCompactlyCoherentSpace :
-    CompactlyCoherentSpace (CompactCoherentification X) where
-  isCoherentWith := {
-    isOpen_of_forall_induced := by
-      intro A h
-      rw [CompactCoherentification.isOpen_iff]
-      intro K hK
-      obtain ⟨E, hE, hEA⟩ :=
-        h (toCompactlyCoherent X '' K) ((isCompact_iff_isCompact_toCompactlyCoherent_image K).1 hK)
-      rw [CompactCoherentification.isOpen_iff] at hE
-      obtain ⟨F, openF, hF⟩ := hE K hK
-      refine ⟨F, openF, ?_⟩
-      rw [toCompactlyCoherent_image] at hEA
-      simp only [CompactCoherentification] at hEA
-      simp_rw [hF, toCompactlyCoherent_symm_image, hEA]}
+instance instCompactlyCoherentSpace :
+    CompactlyCoherentSpace (k X) := by
+  refine .of_isOpen_forall_compactSpace fun U hU ↦ isOpen_iff.mpr fun K hK ↦ ?_
+  rw [← preimage_comp]
+  have : CompactSpace K := isCompact_iff_compactSpace.mp hK
+  exact hU K _ (continuous_rng_of_compactSpace.mpr continuous_subtype_val)
 
 /-- The compact coherentification preserves the topology of k-spaces. -/
-lemma compactCoherentification_compactlyCoherentSpace_eq_self {X : Type*} [t : TopologicalSpace X]
-    [CompactlyCoherentSpace X] : t = CompactCoherentification.instTopologicalSpace := by
-  rw [TopologicalSpace.ext_iff]
-  intro
-  rw [CompactCoherentification.isOpen_iff, CompactlyCoherentSpace.isOpen_iff,
-    toCompactlyCoherent_symm_image]
+protected def mk_homeo [CompactlyCoherentSpace X] : X ≃ₜ k X where
+  toEquiv := CompactCoherentification.mk X
+  continuous_toFun := continuous_mk
+  continuous_invFun := continuous_mk_symm
 
-variable {Y : Type*} [TopologicalSpace Y]
+instance t2space [T2Space X] :
+    T2Space (k X) :=
+  .of_injective_continuous (Equiv.injective _) continuous_mk_symm
 
-lemma from_compactCoherentification_continuous_of_continuous (f : X → Y)
-    (hf : Continuous f) : Continuous (X := CompactCoherentification X) f := by
-  rw [continuous_def] at hf ⊢
-  intro s hs
-  exact (TopologicalSpace.le_def.1 CompactCoherentification_le) (f ⁻¹' s) (hf s hs)
-
-lemma from_compactCoherentification_continuousOn_of_continuousOn (f : X → Y) (s : Set X)
-    (hf : ContinuousOn f s) : ContinuousOn (X := CompactCoherentification X) f s := by
-  rw [continuousOn_iff'] at hf ⊢
-  intro t ht
-  obtain ⟨u, hu, hut⟩ := hf t ht
-  exact ⟨u, ⟨(TopologicalSpace.le_def.1 CompactCoherentification_le) u hu, hut⟩⟩
-
-lemma continuous_compact_to_compactCoherentification [CompactSpace X] (f : X → Y)
-    (hf : Continuous f) : Continuous ((toCompactlyCoherent Y) ∘ f) := by
-  rw [continuous_iff_isClosed]
-  intro s hs
-  simp_rw [CompactCoherentification.isClosed_iff, isClosed_induced_iff,
-    Subtype.preimage_val_eq_preimage_val_iff] at hs
-  obtain ⟨t, ht, hst⟩ := hs (range f) (isCompact_range hf)
-  suffices IsClosed (f ⁻¹' (range f ∩ s)) by
-    simpa only [preimage_inter, preimage_range, univ_inter]
-  rw [toCompactlyCoherent_symm_image] at hst
-  rw [← hst, Set.preimage_inter, Set.preimage_range, Set.univ_inter]
-  exact ht.preimage hf
-
-lemma continuousOn_compact_to_compactCoherentification {A : Set X} (hA : IsCompact A) (f : X → Y)
-    (hf : ContinuousOn f A) : ContinuousOn ((toCompactlyCoherent Y) ∘ f) A := by
-  rw [continuousOn_iff_continuous_restrict] at hf ⊢
-  have _ := isCompact_iff_compactSpace.1 hA
-  exact continuous_compact_to_compactCoherentification (A.restrict f) hf
-
-/-- If a map `f : X → Y` is continuous on every compact subset of `X` then it is continuous when
-viewed as a map from `CompactCoherentification X` to `CompactCoherentification Y`. -/
-lemma continuous_compactCoherentification_of_continuousOn_compact (f : X → Y)
-    (hf : ∀ (C : Set X), IsCompact C → ContinuousOn f C) :
-    Continuous ((toCompactlyCoherent Y) ∘ f ∘ (toCompactlyCoherent X).symm) := by
-  have hf' :  ∀ (C : Set X), IsCompact C → ContinuousOn ((toCompactlyCoherent Y) ∘ f) C :=
-    fun C hC ↦ continuousOn_compact_to_compactCoherentification hC f (hf C hC)
-  rw [continuous_def]
-  intro V hV
-  simp only [CompactCoherentification.isOpen_iff]
-  intro C hC
-  specialize hf' C hC
-  rw [continuousOn_iff'] at hf'
-  obtain ⟨U, hU, hUV⟩ := hf' V hV
-  rw [← Function.comp_assoc, preimage_comp, Equiv.image_preimage]
-  suffices IsOpen (C ↓∩ (f ⁻¹' V ∩ C)) by
-    rw [preimage_inter, Subtype.coe_preimage_self, inter_univ] at this
-    exact this
-  simp [preimage_comp, toCompactlyCoherent_preimage] at hUV
-  rw [hUV, preimage_inter, Subtype.coe_preimage_self, inter_univ]
-  exact isOpen_induced hU
-
-lemma continuous_compactCoherentification_of_continuous (f : X → Y) (hf : Continuous f) :
-    Continuous ((toCompactlyCoherent Y) ∘ f ∘ (toCompactlyCoherent X).symm) := by
-  apply continuous_compactCoherentification_of_continuousOn_compact
-  intros
-  exact hf.continuousOn
-
-instance t2space_compactCoherentification_of_t2space [t : T2Space X] :
-    T2Space (CompactCoherentification X) :=
-  t2Space_antitone CompactCoherentification_le t
-
-end CompactlyCoherentSpace
+end CompactCoherentification
