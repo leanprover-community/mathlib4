@@ -68,7 +68,9 @@ scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂
     (induction $var with
       | zero => simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
           zero_tmul, zero_mul, mul_zero]
-      | add _ _ h₁ h₂ => simp only [LinearEquiv.map_add, LinearMap.map_add,
+      | add _ _ h₁ h₂ =>
+        -- avoid the more general `map_add` for performance reasons
+        simp only [LinearEquiv.map_add, LinearMap.map_add,
           tmul_add, add_tmul, add_mul, mul_add, h₁, h₂]
       | tmul $var₁ $var₂ => ?_))
 
