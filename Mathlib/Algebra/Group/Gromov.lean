@@ -1228,3 +1228,4 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           rfl
       simp
       exact l_prod
+  sorry
