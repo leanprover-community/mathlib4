@@ -27,7 +27,7 @@ Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
 
 similarly let `z : ℤ`. All of the following definitions are in the `Int` namespace:
 * `divisors n` is the `Finset` of natural numbers that divide `n`.
-* `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
+* `divisorsAntidiag n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
 
 ## Conventions
 
@@ -662,7 +662,8 @@ theorem neg_divisors_eq_divisors : (-z).divisors = z.divisors := by
   ext x
   simp
 
-theorem neg_mem_divisors_iff_mem_divisors : -x ∈ z.divisors ↔ x ∈ z.divisors := by
+@[simp]
+theorem neg_mem_divisors : -x ∈ z.divisors ↔ x ∈ z.divisors := by
   simp
 
 theorem abs_le_abs_of_mem_divisors (h : x ∈ z.divisors) : |x| ≤ |z| := by
@@ -791,6 +792,14 @@ lemma prodMk_mem_divisorsAntidiag (hz : z ≠ 0) : (x, y) ∈ z.divisorsAntidiag
 lemma swap_mem_divisorsAntidiag : xy.swap ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by
   simp [mul_comm]
 
+@[simp]
+theorem map_swap_divisorsAntidiag :
+    z.divisorsAntidiag.map (Equiv.prodComm _ _).toEmbedding = z.divisorsAntidiag := by
+  rw [← coe_inj, coe_map, Equiv.coe_toEmbedding, Equiv.coe_prodComm,
+    Set.image_swap_eq_preimage_swap]
+  ext
+  exact swap_mem_divisorsAntidiag
+
 lemma neg_mem_divisorsAntidiag : -xy ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by simp
 
 @[simp]
@@ -825,6 +834,27 @@ lemma divisorsAntidiag_ofNat (n : ℕ) :
       (n.divisorsAntidiagonal.map <| .prodMap natCast natCast).disjUnion
         (n.divisorsAntidiagonal.map <| .prodMap negNatCast negNatCast) (by
           simp +contextual [disjoint_left, eq_comm]) := rfl
+
+theorem map_div_right_divisors :
+    z.divisors.map ⟨fun d => (d, z / d), fun _ _ => congr_arg Prod.fst⟩ =
+      z.divisorsAntidiag := by
+  ext ⟨d, nd⟩
+  simp only [mem_map, mem_divisorsAntidiag, Function.Embedding.coeFn_mk, mem_divisors,
+    Prod.ext_iff, exists_prop, and_left_comm, exists_eq_left]
+  constructor
+  · rintro ⟨⟨⟨k, rfl⟩, hn⟩, rfl⟩
+    rw [mul_ediv_cancel_left _ (mul_ne_zero_iff.mp hn).left]
+    exact ⟨rfl, hn⟩
+  · rintro ⟨rfl, hn⟩
+    exact ⟨⟨dvd_mul_right _ _, hn⟩, mul_ediv_cancel_left _ (mul_ne_zero_iff.mp hn).left⟩
+
+theorem map_div_left_divisors :
+    z.divisors.map ⟨fun d => (z / d, d), fun _ _ => congr_arg Prod.snd⟩ =
+      z.divisorsAntidiag := by
+  apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
+  ext
+  rw [map_swap_divisorsAntidiag, ← map_div_right_divisors, Finset.map_map]
+  simp
 
 /-- This lemma justifies its existence from its utility in crystallographic root system theory. -/
 lemma mul_mem_one_two_three_iff {a b : ℤ} :
