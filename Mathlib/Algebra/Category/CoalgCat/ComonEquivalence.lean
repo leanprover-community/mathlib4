@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.RingTheory.Coalgebra.TensorProduct
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.Coalgebra.TensorProduct
 
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`
