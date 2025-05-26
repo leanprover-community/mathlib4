@@ -56,7 +56,7 @@ and `ν` is a multiplicative arithmetic function such that `0 < ν p < 1` for al
 Then a sieve-type theorem will give us an upper (or lower) bound on the size of the sifted sum
 `∑ n ∈ {k ∈ support | k.Coprime P}, a n`, obtained by removing any elements of `A` that are a
 multiple of a prime in `P`. -/
-class BoundingSieve where
+structure BoundingSieve where
   /-- The set of natural numbers that is to be sifted. The fundamental lemma yields an upper bound
     on the size of this set after the multiples of small primes have been removed. -/
   support : Finset ℕ
@@ -80,7 +80,7 @@ class BoundingSieve where
 
 /-- The Selberg upper bound sieve in particular introduces a parameter called the `level` which
   gives the user control over the size of the error term. -/
-class SelbergSieve extends BoundingSieve where
+structure SelbergSieve extends BoundingSieve where
   /-- The `level` of the sieve controls how many terms we include in the inclusion-exclusion type
     sum. A higher level will yield a tighter bound for the main term, but will also increase the
     size of the error term. -/
@@ -94,59 +94,97 @@ namespace Mathlib.Meta.Positivity
 open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `BoundingSieve.weights`. -/
-@[positivity BoundingSieve.weights _]
+@[positivity BoundingSieve.weights _ _]
 def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@BoundingSieve.weights $i $n) =>
+  | 0, ~q(ℝ), ~q(@BoundingSieve.weights $s $n) =>
     assertInstancesCommute
-    pure (.nonnegative q(BoundingSieve.weights_nonneg $n))
+    pure (.nonnegative q(BoundingSieve.weights_nonneg $s $n))
   | _, _, _ => throwError "not BoundingSieve.weights"
 
 end Mathlib.Meta.Positivity
 
-namespace SelbergSieve
 open BoundingSieve
 
-namespace Notation
+variable {s : BoundingSieve}
+
+-- private abbrev BoundingSieve.ν := BoundingSieve.nu
+
+-- private abbrev BoundingSieve.P := BoundingSieve.prodPrimes
+
+set_option quotPrecheck false
+set_option hygiene false
 
 @[inherit_doc nu]
-scoped notation3 "ν" => nu
+local macro "ν" : term => `(s.nu)
 @[inherit_doc prodPrimes]
-scoped notation3 "P" => prodPrimes
+local macro "P" : term => `(s.prodPrimes)
 @[inherit_doc weights]
-scoped notation3 "a" => weights
+local macro "a" : term => `(s.weights)
 @[inherit_doc totalMass]
-scoped notation3 "X" => totalMass
+local macro "X" : term => `(s.totalMass)
 @[inherit_doc support]
-scoped notation3 "A" => support
-@[inherit_doc level]
-scoped notation3 "y" => level
+local macro "A" : term => `(s.support)
 
-theorem one_le_y [s : SelbergSieve] : 1 ≤ y := one_le_level
+@[inherit_doc SelbergSieve.level]
+local macro "y" : term => `(s.level)
 
-end Notation
+open Lean PrettyPrinter Delaborator SubExpr
 
-open Notation
+@[local app_unexpander nu]
+def unexpanderNu : Unexpander
+  | `($_nu $_s) => `(ν)
+  | `($fn) => `($fn)
 
-variable [s : BoundingSieve]
+@[local app_unexpander prodPrimes]
+def unexpanderProdPrimes : Unexpander
+  | `($_ $_s) => `(P)
+  | `($fn) => `($fn)
 
+@[local app_unexpander BoundingSieve.weights]
+def unexpanderWeights : Unexpander
+  | `($_ $_s $n) => `(a $n)
+  | `($_ $_s) => `(a)
+  | `($fn) => `($fn)
+
+@[local app_unexpander totalMass]
+def unexpanderTotalMass : Unexpander
+  | `($_ $_s) => `(X)
+  | `($fn) => `($fn)
+
+@[local app_unexpander support]
+def unexpanderSupport : Unexpander
+  | `($_ $_s) => `(A)
+  | `($fn) => `($fn)
+
+@[local app_unexpander SelbergSieve.level]
+def unexpanderLevel : Unexpander
+  | `($_level $_s) => `(y)
+  | `($level) => `($level)
+
+
+
+theorem SelbergSieve.one_le_y {s : SelbergSieve} : 1 ≤ y := s.one_le_level
+
+
+namespace BoundingSieve
 /-! Lemmas about $P$. -/
 
-theorem prodPrimes_ne_zero : P ≠ 0 :=
-  Squarefree.ne_zero prodPrimes_squarefree
+theorem prodPrimes_ne_zero : P ≠ 0 := by
+  apply Squarefree.ne_zero s.prodPrimes_squarefree
 
 theorem squarefree_of_dvd_prodPrimes {d : ℕ} (hd : d ∣ P) : Squarefree d :=
-  Squarefree.squarefree_of_dvd hd prodPrimes_squarefree
+  Squarefree.squarefree_of_dvd hd s.prodPrimes_squarefree
 
 theorem squarefree_of_mem_divisors_prodPrimes {d : ℕ} (hd : d ∈ divisors P) : Squarefree d := by
   simp only [Nat.mem_divisors] at hd
-  exact Squarefree.squarefree_of_dvd hd.left prodPrimes_squarefree
+  exact Squarefree.squarefree_of_dvd hd.left s.prodPrimes_squarefree
 
 /-! Lemmas about $\nu$. -/
 
 theorem prod_primeFactors_nu {d : ℕ} (hd : d ∣ P) : ∏ p ∈ d.primeFactors, ν p = ν d := by
-  rw [← nu_mult.map_prod_of_subset_primeFactors _ _ subset_rfl,
-    Nat.prod_primeFactors_of_squarefree <| Squarefree.squarefree_of_dvd hd prodPrimes_squarefree]
+  rw [← s.nu_mult.map_prod_of_subset_primeFactors _ _ subset_rfl,
+    Nat.prod_primeFactors_of_squarefree <| Squarefree.squarefree_of_dvd hd s.prodPrimes_squarefree]
 
 theorem nu_pos_of_dvd_prodPrimes {d : ℕ} (hd : d ∣ P) : 0 < ν d := by
   calc
@@ -155,7 +193,7 @@ theorem nu_pos_of_dvd_prodPrimes {d : ℕ} (hd : d ∣ P) : 0 < ν d := by
       intro p hpd
       have hp_prime : p.Prime := prime_of_mem_primeFactors hpd
       have hp_dvd : p ∣ P := (dvd_of_mem_primeFactors hpd).trans hd
-      exact nu_pos_of_prime p hp_prime hp_dvd
+      exact s.nu_pos_of_prime p hp_prime hp_dvd
     _ = ν d := prod_primeFactors_nu hd
 
 theorem nu_ne_zero {d : ℕ} (hd : d ∣ P) : ν d ≠ 0 := by
@@ -163,7 +201,7 @@ theorem nu_ne_zero {d : ℕ} (hd : d ∣ P) : ν d ≠ 0 := by
   exact nu_pos_of_dvd_prodPrimes hd
 
 theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ P) (hd_ne_one : d ≠ 1) : ν d < 1 := by
-  have hd_sq : Squarefree d := Squarefree.squarefree_of_dvd hdP prodPrimes_squarefree
+  have hd_sq : Squarefree d := Squarefree.squarefree_of_dvd hdP s.prodPrimes_squarefree
   have := hd_sq.ne_zero
   calc
     ν d = ∏ p ∈ d.primeFactors, ν p := (prod_primeFactors_nu hdP).symm
@@ -171,27 +209,36 @@ theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ P) (hd_ne_one : d ≠
       apply prod_lt_prod_of_nonempty
       · intro p hp
         simp only [mem_primeFactors] at hp
-        apply nu_pos_of_prime p hp.1 (hp.2.1.trans hdP)
+        apply s.nu_pos_of_prime p hp.1 (hp.2.1.trans hdP)
       · intro p hpd; rw [mem_primeFactors_of_ne_zero hd_sq.ne_zero] at hpd
-        apply nu_lt_one_of_prime p hpd.left (hpd.2.trans hdP)
+        apply s.nu_lt_one_of_prime p hpd.left (hpd.2.trans hdP)
       · simp only [nonempty_primeFactors, show 1 < d by omega]
     _ = 1 := by
       simp
 
+variable (s) in
 /-- The weight of all the elements that are a multiple of `d`. -/
 @[simp]
 def multSum (d : ℕ) : ℝ := ∑ n ∈ A, if d ∣ n then a n else 0
 
 @[inherit_doc multSum]
-scoped [SelbergSieve.Notation] notation3 "𝒜" => multSum
+local macro "𝒜" : term => `(s.multSum)
+-- local notation3 "𝒜" => multSum s
 
+variable (s) in
 /-- The remainder term in the approximation A_d = ν (d) X + R_d. This is the degree to which `nu`
   fails to approximate the proportion of the weight that is a multiple of `d`. -/
 @[simp]
 def rem (d : ℕ) : ℝ := 𝒜 d - ν d * X
 
 @[inherit_doc rem]
-scoped [SelbergSieve.Notation] notation3 "R" => rem
+local macro "R" : term => `(s.rem)
+
+@[local app_unexpander BoundingSieve.rem]
+def unexpanderWeights : Unexpander
+  | `($_ $_s $n) => `(R $n)
+  | `($_ $_s) => `(R)
+  | `($fn) => `($fn)
 
 /-- The weight of all the elements that are not a multiple of any of our finite set of primes. -/
 def siftedSum : ℝ := ∑ d ∈ A, if Coprime P d then a d else 0
@@ -202,12 +249,12 @@ def mainSum (muPlus : ℕ → ℝ) : ℝ := ∑ d ∈ divisors P, muPlus d * ν 
 /-- `errSum μ⁺` is the error term in the upper bound on `sifted_sum`. -/
 def errSum (muPlus : ℕ → ℝ) : ℝ := ∑ d ∈ divisors P, |muPlus d| * |R d|
 
-theorem multSum_eq_main_err (d : ℕ) : multSum d = ν d * X + R d := by
+theorem multSum_eq_main_err (d : ℕ) : 𝒜 d = ν d * X + R d := by
   dsimp [rem]
   ring
 
 theorem siftedsum_eq_sum_support_mul_ite :
-    siftedSum = ∑ d ∈ support, a d * if Nat.gcd P d = 1 then 1 else 0 := by
+    s.siftedSum = ∑ d ∈ A, a d * if Nat.gcd P d = 1 then 1 else 0 := by
   dsimp only [siftedSum]
   simp_rw [mul_ite, mul_one, mul_zero]
 
@@ -217,13 +264,14 @@ omit s in
 def IsUpperMoebius (muPlus : ℕ → ℝ) : Prop :=
   ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
 
+
 theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
-    siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := by
+    s.siftedSum ≤ ∑ d ∈ divisors P, muPlus d * 𝒜 d := by
   have hμ : ∀ n, (if n = 1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d := h
   calc siftedSum ≤
-    ∑ n ∈ support, a n * ∑ d ∈ (Nat.gcd P n).divisors, muPlus d := ?caseA
-    _ = ∑ n ∈ support, ∑ d ∈ divisors P, if d ∣ n then a n * muPlus d else 0 := ?caseB
-    _ = ∑ d ∈ divisors P, muPlus d * multSum d := ?caseC
+    ∑ n ∈ A, a n * ∑ d ∈ (Nat.gcd P n).divisors, muPlus d := ?caseA
+    _ = ∑ n ∈ A, ∑ d ∈ divisors P, if d ∣ n then a n * muPlus d else 0 := ?caseB
+    _ = ∑ d ∈ divisors P, muPlus d * 𝒜 d := ?caseC
   case caseA =>
     rw [siftedsum_eq_sum_support_mul_ite]
     gcongr with n
@@ -239,8 +287,8 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoeb
     simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]
 
 theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
-    siftedSum ≤ X * mainSum muPlus + errSum muPlus := calc
-  siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d :=
+    s.siftedSum ≤ X * s.mainSum muPlus + s.errSum muPlus := calc
+  siftedSum ≤ ∑ d ∈ divisors P, muPlus d * 𝒜 d :=
     siftedSum_le_sum_of_upperMoebius _ h
   _ = X * mainSum muPlus + ∑ d ∈ divisors P, muPlus d * R d := by
     rw [mainSum, mul_sum, ←sum_add_distrib]
@@ -252,4 +300,4 @@ theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : 
     rw [←abs_mul]
     exact le_abs_self (muPlus d * R d)
 
-end SelbergSieve
+end BoundingSieve
