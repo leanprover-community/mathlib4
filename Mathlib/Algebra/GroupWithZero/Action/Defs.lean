@@ -332,7 +332,7 @@ instance AddMonoid.nat_smulCommClass {M A : Type*} [AddMonoid A] [DistribSMul M 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
 instance AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A] :
     SMulCommClass M ℕ A :=
-  SMulCommClass.symm _ _ _
+  .symm _ _ _
 
 end DistribSMul
 
