@@ -1149,8 +1149,14 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           simp
 
 
-
-        have prod_mem_power := set_pow_mul (max_phi - 1 + 1) (e_i_regular ⟨a, l_mem_s a ha⟩) (γ ^ (φ (ofMul a))) _ e_pi_s_mem_pow gamma_phi_in_minus_plus
+        have prod_mem_power: e_i_regular ⟨a, a_mem_s⟩ * γ ^ φ (ofMul a) ∈ ({1, γ, γ⁻¹} ∪ Set.range e_i_regular) ^ (max_phi - 1 + 1 + 1) := by
+          rw [pow_succ']
+          rw [Set.mem_mul]
+          use e_i_regular ⟨a, a_mem_s⟩
+          refine ⟨by simp, ?_⟩
+          use γ ^ φ (ofMul a)
+          refine ⟨gamma_phi_in_minus_plus, ?_⟩
+          simp
 
         have prod_eq_sum: e_i ⟨a, l_mem_s a ha⟩ + φ (ofMul a) • ofMul γ = (e_i_regular ⟨a, a_mem_s⟩) * (γ ^ φ (ofMul a)) := by
           simp [e_i, e_i_regular, cancel_add_minus]
