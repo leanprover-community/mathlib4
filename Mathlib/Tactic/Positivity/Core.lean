@@ -120,7 +120,13 @@ variable {A : Type*} {e : A}
 lemma lt_of_le_of_ne' {a b : A} [PartialOrder A] :
     (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
-lemma pos_of_isNat {n : ℕ}
+lemma pos_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A] [Nontrivial A]
+    (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  apply Nat.cast_pos.2
+  simpa using w
+
+lemma pos_of_isNat' {n : ℕ}
     [AddMonoidWithOne A] [PartialOrder A] [AddLeftMono A] [ZeroLEOneClass A] [h'' : NeZero (1 : A)]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
@@ -183,15 +189,26 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isBool .. => failure
   | .isNat _ lit p =>
     if 0 < lit.natLit! then
-      let _a ← synthInstanceQ q(AddMonoidWithOne $α)
-      let _a ← synthInstanceQ q(PartialOrder $α)
-      let _a ← synthInstanceQ q(AddLeftMono $α)
-      let _a ← synthInstanceQ q(ZeroLEOneClass $α)
-      let _a ← synthInstanceQ q(NeZero (1 : $α))
-      assumeInstancesCommute
-      have p : Q(NormNum.IsNat $e $lit) := p
-      haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
-      pure (.positive q(pos_of_isNat (A := $α) $p $p'))
+      try
+        let _a ← synthInstanceQ q(Semiring $α)
+        let _a ← synthInstanceQ q(PartialOrder $α)
+        let _a ← synthInstanceQ q(IsOrderedRing $α)
+        let _a ← synthInstanceQ q(Nontrivial $α)
+        assumeInstancesCommute
+        have p : Q(NormNum.IsNat $e $lit) := p
+        haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+        pure (.positive q(pos_of_isNat (A := $α) $p $p'))
+      catch e : Exception =>
+        trace[Tactic.positivity.failure] "{e.toMessageData}"
+        let _a ← synthInstanceQ q(AddMonoidWithOne $α)
+        let _a ← synthInstanceQ q(PartialOrder $α)
+        let _a ← synthInstanceQ q(AddLeftMono $α)
+        let _a ← synthInstanceQ q(ZeroLEOneClass $α)
+        let _a ← synthInstanceQ q(NeZero (1 : $α))
+        assumeInstancesCommute
+        have p : Q(NormNum.IsNat $e $lit) := p
+        haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+        pure (.positive q(pos_of_isNat' (A := $α) $p $p'))
     else
       let _a ← synthInstanceQ q(Semiring $α)
       let _a ← synthInstanceQ q(PartialOrder $α)
