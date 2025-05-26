@@ -631,7 +631,7 @@ def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
 
 end ContinuousAdd
 
-section  
+section
 
 variable {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
 theorem restrict_neg (v : VectorMeasure α M) (i : Set α) :
@@ -1263,7 +1263,7 @@ theorem toSignedMeasure_restrict_eq_restrict_toSignedMeasure (hs : MeasurableSet
   ext A hA
   simp [VectorMeasure.restrict_apply, toSignedMeasure_apply, hA, hs, restrict_apply]
 
-theorem toSignedMeasure_le_toSignedMeasure_iff : 
+theorem toSignedMeasure_le_toSignedMeasure_iff :
     μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ μ ≤ ν   := by
   rw [Measure.le_iff, VectorMeasure.le_iff]
   congrm ∀ s, (hs : MeasurableSet s) → ?_
