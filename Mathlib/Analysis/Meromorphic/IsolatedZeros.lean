@@ -61,7 +61,8 @@ theorem eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin (hf : Mer
   filter_upwards
   intro a
   simp_rw [Pi.zero_apply]
-  rw [(by rfl : ({x | f x = 0} ∪ Uᶜ) a ↔ a ∈ {x | f x = 0} ∪ Uᶜ)]
+  set_option linter.deprecated false in
+  rw [← Set.mem_def (a := a) (s := {x | f x = 0} ∪ Uᶜ)]
   simp_all
 
 /-!
