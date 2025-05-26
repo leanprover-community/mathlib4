@@ -266,22 +266,22 @@ lemma partitions_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set 
   have := hP.2.2.2 r (hRP hr)
   simp_all
 
--- TO DO: definition of partition intersection must be modifided to filter out empty sets.
 open Classical in
 /-- If P is a partition then the intersection of P with a set s is a partition of s. -/
 lemma partition_inter {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitions s)
-    (ht : MeasurableSet t) : P.image (fun p ↦ p ∩ t) ∈ partitions t := by
+    (ht : MeasurableSet t) : (P.image (fun p ↦ p ∩ t)).filter (· ≠ ∅) ∈ partitions t := by
   refine ⟨?_, ?_, ?_, ?_⟩
   · intro _ h
-    obtain ⟨_, _, hp⟩ := Finset.mem_image.mp h
+    obtain ⟨_, _, hp⟩ := Finset.mem_image.mp (Finset.mem_filter.mp h).1
     simp [← hp]
   · intro r hr
-    obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp hr
+    have := Finset.mem_filter.mp hr
+    obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp (Finset.mem_filter.mp hr).1
     rw [← hp']
     exact MeasurableSet.inter (hs.2.1 p hp) ht
   · intro _ hr _ hr'
-    obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp hr
-    obtain ⟨q, hq, hq'⟩ := Finset.mem_image.mp hr'
+    obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp (Finset.mem_filter.mp hr).1
+    obtain ⟨q, hq, hq'⟩ := Finset.mem_image.mp (Finset.mem_filter.mp hr').1
     rw [← hp', ← hq']
     intro hpqt
     have hpq : p ≠ q := fun h ↦ hpqt (congrFun (congrArg Inter.inter h) t)
@@ -293,9 +293,8 @@ lemma partition_inter {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitions 
       simp only [id_eq, Set.le_eq_subset, Set.subset_inter_iff] at ha'
       exact ha'.1
     exact hs.2.2.1 hp hq hpq hap haq
-  · intro p hp
-    -- Complete after the improved definition which filters out empty sets.
-    sorry
+  · intro _ hp
+    exact (Finset.mem_filter.mp hp).2
 
 /-- Aditivity of `variationAux` for disjoint measurable sets. -/
 lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
@@ -303,7 +302,8 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     HasSum (fun i ↦ variationAux μ (s i)) (variationAux μ (⋃ i, s i)) := by
   rw [ENNReal.hasSum_iff]
   constructor
-  · intro n
+  · -- The sum of `variationAux μ (s i)` is le `variationAux μ (⋃ i, s i)`.
+    intro n
     wlog hn : n ≠ 0
     · simp [show n = 0 by omega]
     apply ENNReal.le_of_forall_pos_le_add
@@ -336,7 +336,8 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
             exact partitions_disjoint (hs' hlm) (hP l).1 (hP m).1
           _ ≤ variationAux μ (⋃ i, s i) := by
             exact le_variationAux μ (MeasurableSet.iUnion hs) hQ
-  · intro b hb
+  · -- Variation of the union, `variationAux μ (⋃ i, s i)` is le the sum of `variationAux μ (s i)`.
+    intro b hb
     simp only [variationAux, hs, reduceIte]
     simp only [variationAux, MeasurableSet.iUnion hs, reduceIte] at hb
     obtain ⟨Q, hQ, hbQ⟩ := lt_biSup_iff.mp hb
