@@ -33,6 +33,9 @@ abbrev Ring.KrullDimLE (n : ℕ) (R : Type*) [CommSemiring R] : Prop :=
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S]
 
+lemma Ring.KrullDimLE_iff_ringKrullDim_le (n : ℕ) (R : Type*) [CommSemiring R] :
+    KrullDimLE n R ↔ ringKrullDim R ≤ n := Order.krullDimLE_iff n (PrimeSpectrum R)
+
 @[nontriviality]
 lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] :
     ringKrullDim R = ⊥ :=

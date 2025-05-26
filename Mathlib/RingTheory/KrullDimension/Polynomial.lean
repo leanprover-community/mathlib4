@@ -11,12 +11,15 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Krull dimension of polynomial ring
 
 This file proves the basic properties of the krull dimension of the polynomial ring over a
 commutative ring
+
 
 ## Main results
 
@@ -34,8 +37,9 @@ lemma Order.krullDim_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [P
     obtain ⟨q, hq⟩ := h
     apply le_trans (Nat.mono_cast hq)
     rw [Nat.cast_add, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
-    apply add_le_add_right
-    sorry
+    apply add_le_add_right <| WithBot.mul_right_mono (n := m + 1) ?_ ?_
+    · exact Ne.symm (not_eq_of_beq_eq_false rfl)
+    · exact le_iSup (fun p ↦ (p.length : WithBot ℕ∞)) q
   let q : List β := List.dedup (List.map f p.toList)
   have hq_lt : List.Chain' (· < ·) q := sorry
   have hq_ne_nil : q ≠ [] := by simp [q, RelSeries.toList_ne_nil p]
@@ -69,8 +73,17 @@ def PrimeSpectrum.preimageOrderIsoTensorResidueField (R S : Type*) [CommRing R]
     (algebraMap R S).specComap ⁻¹' {p} ≃o
       PrimeSpectrum (TensorProduct R p.asIdeal.ResidueField S) := sorry
 
-theorem Polynomial.ringKrullDim_eq_one_of_field (k : Type*) [Field k] :
-    ringKrullDim (Polynomial k) = 1 := sorry
+lemma IsDomain.minimalPrimes_eq_singleton_bot (R : Type*) [CommRing R] [IsDomain R] :
+    minimalPrimes R = {⊥} := by
+  have := Ideal.bot_prime (α := R)
+  exact Ideal.minimalPrimes_eq_subsingleton_self
+
+instance IsPrincipalIdealRing.KrullDimLE_one (R : Type*) [CommRing R] [IsDomain R]
+    [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by
+  rw [Ring.krullDimLE_one_iff]
+  apply fun I hI ↦ Classical.or_iff_not_imp_left.mpr fun hI' ↦
+    IsPrime.to_maximal_ideal (hpi := hI) ?_
+  simp_all [IsDomain.minimalPrimes_eq_singleton_bot]
 
 theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1 := by
@@ -80,4 +93,5 @@ theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
   · rw [show C = (algebraMap R (Polynomial R)) from rfl, Order.krullDim_eq_of_orderIso
       (PrimeSpectrum.preimageOrderIsoTensorResidueField R (Polynomial R) p), ← ringKrullDim,
       ← ringKrullDim_eq_of_ringEquiv (polyEquivTensor R (p.asIdeal.ResidueField)).toRingEquiv,
-      Polynomial.ringKrullDim_eq_one_of_field, Nat.cast_one]
+      ← Ring.KrullDimLE_iff_ringKrullDim_le]
+    infer_instance
