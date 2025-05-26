@@ -22,88 +22,93 @@ as a coalgebra morphism.
 open TensorProduct
 
 variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [AddCommMonoid B]
-    [Algebra R S] [Module R A] [Module S B] [Coalgebra R A] [Coalgebra S B] [Module R B]
-    [IsScalarTower R S B]
+    [Algebra R S] [Module R A] [Module S A] [Module R B] [Coalgebra R B]
+    [Coalgebra S A] [IsScalarTower R S A]
 
 namespace TensorProduct
 
 open Coalgebra
 
 noncomputable
-instance instCoalgebraStruct : CoalgebraStruct S (B ⊗[R] A) where
+instance instCoalgebraStruct : CoalgebraStruct S (A ⊗[R] B) where
   comul :=
-    AlgebraTensorModule.tensorTensorTensorComm R S R S B B A A ∘ₗ
+    AlgebraTensorModule.tensorTensorTensorComm R S R S A A B B ∘ₗ
       AlgebraTensorModule.map comul comul
   counit := AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map counit counit
 
 lemma comul_def :
-    Coalgebra.comul (R := S) (A := B ⊗[R] A) =
-      AlgebraTensorModule.tensorTensorTensorComm R S R S B B A A ∘ₗ
+    Coalgebra.comul (R := S) (A := A ⊗[R] B) =
+      AlgebraTensorModule.tensorTensorTensorComm R S R S A A B B ∘ₗ
         AlgebraTensorModule.map Coalgebra.comul Coalgebra.comul :=
   rfl
 
 @[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
 
 lemma counit_def :
-    Coalgebra.counit (R := S) (A := B ⊗[R] A) =
+    Coalgebra.counit (R := S) (A := A ⊗[R] B) =
       AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map counit counit :=
   rfl
 
 @[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
 
 @[simp]
-lemma comul_tmul (x : B) (y : A) : comul (x ⊗ₜ y) =
-  AlgebraTensorModule.tensorTensorTensorComm R S R S B B A A (comul x ⊗ₜ comul y) := rfl
+lemma comul_tmul (x : A) (y : B) :
+    comul (x ⊗ₜ y) =
+      AlgebraTensorModule.tensorTensorTensorComm R S R S A A B B (comul x ⊗ₜ comul y) := rfl
 
 @[simp]
-lemma counit_tmul (x : B) (y : A) :
-  counit (R := S) (x ⊗ₜ[R] y) = counit (R := R) y • counit (R := S) x := rfl
+lemma counit_tmul (x : A) (y : B) :
+    counit (R := S) (x ⊗ₜ[R] y) = counit (R := R) y • counit (R := S) x := rfl
 
-/-- `expand_comul R x with x₁ x₂` attempts to replace `comul (R := R) x` by
-`x₁ ⊗ₜ x₂` via linearity. -/
-scoped macro "expand_comul" ring:ident var:ident "with" var₁:ident var₂:ident : tactic =>
+open Lean.Parser.Tactic in
+/-- `hopf_tensor_induction x with x₁ x₂` attempts to replace `x` by
+`x₁ ⊗ₜ x₂` via linearity. This is an implementation detail that is used to set up tensor products
+of coalgebras, bialgebras, and hopf algebras, and shouldn't be relied on downstream. -/
+scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂:ident : tactic =>
   `(tactic|
-    (induction comul (R := $ring) $var with
+    (induction $var with
       | zero => simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
           zero_tmul, zero_mul, mul_zero]
-      | add _ _ h₁ h₂ => simp only [LinearEquiv.map_add, LinearMap.map_add,
+      | add _ _ h₁ h₂ =>
+        -- avoid the more general `map_add` for performance reasons
+        simp only [LinearEquiv.map_add, LinearMap.map_add,
           tmul_add, add_tmul, add_mul, mul_add, h₁, h₂]
       | tmul $var₁ $var₂ => ?_))
 
 private lemma coassoc :
-    TensorProduct.assoc S (B ⊗[R] A) (B ⊗[R] A) (B ⊗[R] A) ∘ₗ
-      (comul (R := S) (A := (B ⊗[R] A))).rTensor (B ⊗[R] A) ∘ₗ
-        (comul (R := S) (A := (B ⊗[R] A))) =
-    (comul (R := S) (A := (B ⊗[R] A))).lTensor (B ⊗[R] A) ∘ₗ
-      (comul (R := S) (A := (B ⊗[R] A))) := by
+    TensorProduct.assoc S (A ⊗[R] B) (A ⊗[R] B) (A ⊗[R] B) ∘ₗ
+      (comul (R := S) (A := (A ⊗[R] B))).rTensor (A ⊗[R] B) ∘ₗ
+        (comul (R := S) (A := (A ⊗[R] B))) =
+    (comul (R := S) (A := (A ⊗[R] B))).lTensor (A ⊗[R] B) ∘ₗ
+      (comul (R := S) (A := (A ⊗[R] B))) := by
   ext x y
-  let F : (B ⊗[S] B ⊗[S] B) ⊗[R] (A ⊗[R] A ⊗[R] A) ≃ₗ[S]
-    (B ⊗[R] A) ⊗[S] (B ⊗[R] A) ⊗[S] B ⊗[R] A :=
+  let F : (A ⊗[S] A ⊗[S] A) ⊗[R] (B ⊗[R] B ⊗[R] B) ≃ₗ[S]
+    (A ⊗[R] B) ⊗[S] (A ⊗[R] B) ⊗[S] A ⊗[R] B :=
     AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _ ≪≫ₗ
       AlgebraTensorModule.congr (.refl _ _)
         (AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _)
-  let F' : (B ⊗[S] B ⊗[S] B) ⊗[R] (A ⊗[R] A ⊗[R] A) →ₗ[S]
-      (B ⊗[R] A) ⊗[S] (B ⊗[R] A) ⊗[S] B ⊗[R] A :=
+  let F' : (A ⊗[S] A ⊗[S] A) ⊗[R] (B ⊗[R] B ⊗[R] B) →ₗ[S]
+      (A ⊗[R] B) ⊗[S] (A ⊗[R] B) ⊗[S] A ⊗[R] B :=
     TensorProduct.mapOfCompatibleSMul _ _ _ _ ∘ₗ
         TensorProduct.map .id (TensorProduct.mapOfCompatibleSMul _ _ _ _) ∘ₗ F.toLinearMap
   convert congr(F ($(Coalgebra.coassoc_apply x) ⊗ₜ[R] $(Coalgebra.coassoc_apply y))) using 1
   · dsimp
-    expand_comul S x with x₁ x₂
-    expand_comul R y with y₁ y₂
+    hopf_tensor_induction comul (R := S) x with x₁ x₂
+    hopf_tensor_induction comul (R := R) y with y₁ y₂
     dsimp
-    expand_comul S x₁ with x₁₁ x₁₂
-    expand_comul R y₁ with y₁₁ y₁₂
+    hopf_tensor_induction comul (R := S) x₁ with x₁₁ x₁₂
+    hopf_tensor_induction comul (R := R) y₁ with y₁₁ y₁₂
     rfl
   · dsimp
-    expand_comul S x with x₁ x₂
-    expand_comul R y with y₁ y₂
+    hopf_tensor_induction comul (R := S) x with x₁ x₂
+    hopf_tensor_induction comul (R := R) y with y₁ y₂
     dsimp
-    expand_comul S x₂ with x₂₁ x₂₂
-    expand_comul R y₂ with y₂₁ y₂₂
+    hopf_tensor_induction comul (R := S) x₂ with x₂₁ x₂₂
+    hopf_tensor_induction comul (R := R) y₂ with y₂₁ y₂₂
     rfl
 
 noncomputable
-instance instCoalgebra : Coalgebra S (B ⊗[R] A) where
+instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
   coassoc := coassoc (R := R)
   rTensor_counit_comp_comul := by
     ext x y
@@ -111,8 +116,8 @@ instance instCoalgebra : Coalgebra S (B ⊗[R] A) where
       (TensorProduct.lid _ _ $(rTensor_counit_comul (R := S) x) ⊗ₜ[R]
         TensorProduct.lid _ _ $(rTensor_counit_comul (R := R) y)))
     · dsimp
-      expand_comul S x with x₁ x₂
-      expand_comul R y with y₁ y₂
+      hopf_tensor_induction comul (R := S) x with x₁ x₂
+      hopf_tensor_induction comul (R := R) y with y₁ y₂
       apply (TensorProduct.lid S _).injective
       dsimp
       rw [tmul_smul, smul_assoc, one_smul, smul_tmul']
@@ -124,8 +129,8 @@ instance instCoalgebra : Coalgebra S (B ⊗[R] A) where
       (TensorProduct.rid _ _ $(lTensor_counit_comul (R := S) x) ⊗ₜ[R]
         TensorProduct.rid _ _ $(lTensor_counit_comul (R := R) y)))
     · dsimp
-      expand_comul S x with x₁ x₂
-      expand_comul R y with y₁ y₂
+      hopf_tensor_induction comul (R := S) x with x₁ x₂
+      hopf_tensor_induction comul (R := R) y with y₁ y₂
       apply (TensorProduct.rid S _).injective
       dsimp
       rw [tmul_smul, smul_assoc, one_smul, smul_tmul']
@@ -153,8 +158,8 @@ noncomputable def map (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
     ext x y
     dsimp
     simp only [← CoalgHomClass.map_comp_comul_apply]
-    expand_comul S x with x₁ x₂
-    expand_comul R y with y₁ y₂
+    hopf_tensor_induction comul (R := S) x with x₁ x₂
+    hopf_tensor_induction comul (R := R) y with y₁ y₂
     simp
 
 @[simp]
@@ -176,9 +181,9 @@ protected noncomputable def assoc :
     map_comp_comul := by
       ext x y z
       dsimp
-      expand_comul S x with x₁ x₂
-      expand_comul S y with y₁ y₂
-      expand_comul R z with z₁ z₂
+      hopf_tensor_induction comul (R := S) x with x₁ x₂
+      hopf_tensor_induction comul (R := S) y with y₁ y₂
+      hopf_tensor_induction comul (R := R) z with z₁ z₂
       simp }
 
 variable {R S M N P}
@@ -208,7 +213,7 @@ protected noncomputable def lid : R ⊗[R] P ≃ₗc[R] P :=
       ext x
       dsimp
       simp only [one_smul]
-      expand_comul R x with x₁ x₂
+      hopf_tensor_induction comul (R := R) x with x₁ x₂
       simp }
 
 variable {R P}
@@ -234,7 +239,7 @@ protected noncomputable def rid : M ⊗[R] R ≃ₗc[S] M :=
       ext x
       dsimp
       simp only [one_smul]
-      expand_comul S x with x₁ x₂
+      hopf_tensor_induction comul (R := S) x with x₁ x₂
       simp }
 
 variable {R S M}
