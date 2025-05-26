@@ -401,4 +401,55 @@ end Archimedean
 
 end OrderedGroup
 
+
+section EmbDomain
+variable {Γ Γ' R : Type*} [LinearOrder Γ] [LinearOrder Γ'] [Zero R] [PartialOrder R]
+variable (f : Γ ↪o Γ')
+
+/-- `HahnSeries.embDomain` as an `OrderEmbedding`. -/
+@[simps]
+noncomputable
+def embDomainOrderEmbedding : Lex (HahnSeries Γ R) ↪o Lex (HahnSeries Γ' R) where
+  toFun a := toLex (HahnSeries.embDomain f (ofLex a))
+  inj' := HahnSeries.embDomain_injective
+  map_rel_iff' {a b} := by
+    simp_rw [le_iff_lt_or_eq, lt_iff]
+    simp only [Function.Embedding.coeFn_mk, ofLex_toLex, EmbeddingLike.apply_eq_iff_eq]
+    constructor
+    · rintro (⟨i, hj, hi⟩ | heq)
+      · have himem : i ∈ Set.range f := by
+          contrapose! hi
+          simp [embDomain_notin_range hi]
+        obtain ⟨k, hk⟩ := himem
+        rw [← hk] at hj hi
+        refine Or.inl ⟨k, fun j hjk ↦ ?_, by simpa using hi⟩
+        simpa using hj (f j) (f.lt_iff_lt.mpr hjk)
+      · exact Or.inr <| HahnSeries.embDomain_injective heq
+    · rintro (⟨i, hj, hi⟩ | rfl)
+      · refine Or.inl ⟨f i, fun k hki ↦ ?_, by simpa using hi⟩
+        by_cases hkmem : k ∈ Set.range f
+        · obtain ⟨j', hj'⟩ := hkmem
+          rw [← hj'] at ⊢ hki
+          simpa using hj _ <| f.lt_iff_lt.mp hki
+        · simp_rw [embDomain_notin_range hkmem]
+      · simp
+
+variable {Γ Γ' R : Type*} [LinearOrder Γ] [LinearOrder Γ'] [AddMonoid R] [PartialOrder R]
+variable (f : Γ ↪o Γ')
+
+/-- `HahnSeries.embDomain` as an `OrderAddMonoidHom`. -/
+@[simps]
+noncomputable
+def embDomainOrderAddMonoidHom : Lex (HahnSeries Γ R) →+o Lex (HahnSeries Γ' R) where
+  toFun := embDomainOrderEmbedding f
+  map_zero' := by simp
+  map_add' a b := embDomain_add f a b
+  monotone' := OrderEmbedding.monotone _
+
+theorem embDomainOrderAddMonoidHom_injective :
+    Function.Injective (embDomainOrderAddMonoidHom f (R := R)) := embDomain_injective
+
+
+end EmbDomain
+
 end HahnSeries
