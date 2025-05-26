@@ -228,6 +228,11 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
     zpow_natCast, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
 
+open Set in
+theorem rootsOfUnity_two_unit : ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
+  ext x
+  rw [mem_insert_iff, mem_singleton_iff, ← sq_eq_one_iff, coe_rootsOfUnity_to_set, mem_setOf_eq]
+
 lemma coe_rootsOfUnity_to_nthRootsFinset :
     ((↑) : Rˣ → R) '' (rootsOfUnity k R) = nthRootsFinset k (1 : R) := by
   ext x
