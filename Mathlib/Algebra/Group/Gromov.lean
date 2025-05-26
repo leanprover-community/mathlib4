@@ -964,7 +964,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 -- Subgroup.closure_eq_of_l
 
   let gamma_i := fun (i: ℕ) => γ^(i : ℤ)
-  have closure_enlarge: Subgroup.closure ({1, γ} ∪ (e_i '' Set.univ)) = Subgroup.closure (({1, γ} ∪ (e_i_regular '' Set.univ))^max_phi) := by
+  have closure_enlarge: Subgroup.closure ({1, γ} ∪ (e_i '' Set.univ)) = Subgroup.closure (({1, γ} ∪ (e_i_regular '' Set.univ))^(max_phi + 1)) := by
     rw [Subgroup.closure_pow]
     . simp
     . unfold max_phi
@@ -1032,9 +1032,8 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           apply Set.pow_mem_pow
           simp
 
-        have gamma_phi_in_minus_plus: γ^(max_phi - 1  +1) ∈ ({1, γ} ∪ Set.range e_i_regular) ^ (max_phi - 1  +1) := by
-          apply Set.pow_mem_pow
-          simp
+        have gamma_phi_in_minus_plus: γ^(φ a) ∈ ({1, γ} ∪ Set.range e_i_regular) ^ (max_phi - 1  +1) := by
+          sorry
 
         have a_mem_s: a ∈ S := by exact l_mem_s a ha
 
@@ -1093,7 +1092,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           omega
 
 
-        have prod_mem_power := set_pow_mul (max_phi - 1 + 1) (e_i_regular ⟨a, l_mem_s a ha⟩) (γ ^ (max_phi - 1 + 1)) _ e_pi_s_mem_pow gamma_phi_in_minus_plus
+        have prod_mem_power := set_pow_mul (max_phi - 1 + 1) (e_i_regular ⟨a, l_mem_s a ha⟩) (γ ^ (φ (ofMul a))) _ e_pi_s_mem_pow gamma_phi_in_minus_plus
 
         have prod_eq_sum: e_i ⟨a, l_mem_s a ha⟩ + φ (ofMul a) • ofMul γ = (e_i_regular ⟨a, a_mem_s⟩) * (γ ^ φ (ofMul a)) := by
           simp [e_i, e_i_regular, cancel_add_minus]
@@ -1130,28 +1129,14 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             exact mul_left_injective (γ ^ (-φ (ofMul a)))
 
 
-          group
-          conv =>
-            rhs
-            simp
-          rw [ofMul_mul]
-          conv =>
-            rhs
-            equals ((ofMul a + ofMul (γ ^ (-φ (ofMul a))))).toMul * γ ^ φ (ofMul a) =>
-              simp
-
-
-          conv =>
-            rhs
-            equals ofMul (a) +  ofMul (γ ^ (-φ (ofMul a)) * γ ^ φ (ofMul a) ) =>
-              simp
-              sorry
 
 
 
 
-
-
+        rw [← x_eq_sum]
+        rw [prod_eq_sum]
+        rw [cancel_add_minus] at prod_mem_power
+        apply prod_mem_power
         rw [Set.mem_pow]
 
         use fun i => if i = zero_fin then ⟨e_i_regular ⟨s, hs⟩, e_pi_s_mem⟩ else ⟨γ ^ max_phi, gamma_phi_in⟩
