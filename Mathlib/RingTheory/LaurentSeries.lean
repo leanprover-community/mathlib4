@@ -769,7 +769,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
       exact (valuation_le_iff_coeff_lt_eq_zero K).mp hg
     · refine ⟨min (f.2.isWF.min (HahnSeries.support_nonempty_iff.mpr hf)) 0 - 1, fun _ hg n hn ↦ ?_⟩
       rw [eq_coeff_of_valuation_sub_lt K hg (d := 0)]
-      · exact Function.nmem_support.mp fun h ↦
+      · exact Function.notMem_support.mp fun h ↦
         f.2.isWF.not_lt_min (HahnSeries.support_nonempty_iff.mpr hf) h
         <| lt_trans hn <| Int.sub_one_lt_iff.mpr <| min_le_left _ _
       exact lt_of_lt_of_le hn <| le_of_lt (Int.sub_one_lt_of_le <| min_le_right _ _)

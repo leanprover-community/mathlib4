@@ -270,7 +270,7 @@ lemma CFC.conjugate_rpow_neg_one_half {a : A} (h₀ : IsUnit a) (ha : 0 ≤ a :=
     a ^ (-(1 / 2) : ℝ) * a * a ^ (-(1 / 2) : ℝ) = 1 := by
   lift a to Aˣ using h₀
   nth_rw 2 [← rpow_one (a : A)]
-  simp only [← rpow_add (a.zero_not_mem_spectrum ℝ≥0)]
+  simp only [← rpow_add (a.zero_notMem_spectrum ℝ≥0)]
   norm_num
   exact rpow_zero _
 
@@ -278,10 +278,10 @@ lemma CFC.conjugate_rpow_neg_one_half {a : A} (h₀ : IsUnit a) (ha : 0 ≤ a :=
 invertible. -/
 lemma CStarAlgebra.isUnit_of_le {a b : A} (h₀ : IsUnit a) (ha : 0 ≤ a := by cfc_tac)
     (hab : a ≤ b) : IsUnit b := by
-  rw [← spectrum.zero_not_mem_iff ℝ≥0] at h₀ ⊢
+  rw [← spectrum.zero_notMem_iff ℝ≥0] at h₀ ⊢
   nontriviality A
   have hb := (show 0 ≤ a from ha).trans hab
-  rw [zero_not_mem_iff, SpectrumRestricts.nnreal_lt_iff (.nnreal_of_nonneg ‹_›),
+  rw [zero_notMem_iff, SpectrumRestricts.nnreal_lt_iff (.nnreal_of_nonneg ‹_›),
     NNReal.coe_zero, ← CFC.exists_pos_algebraMap_le_iff (.of_nonneg ‹_›)] at h₀ ⊢
   peel h₀ with r hr _
   exact this.trans hab
@@ -305,7 +305,7 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 
       _ = 1 := conjugate_rpow_neg_one_half b.isUnit
   · calc
       a = (sqrt ↑b * ↑b ^ (-(1 / 2) : ℝ)) * a * (↑b ^ (-(1 / 2) : ℝ) * sqrt ↑b) := by
-        simp only [CFC.sqrt_eq_rpow .., ← CFC.rpow_add (b.zero_not_mem_spectrum ℝ≥0)]
+        simp only [CFC.sqrt_eq_rpow .., ← CFC.rpow_add (b.zero_notMem_spectrum ℝ≥0)]
         norm_num
         simp [CFC.rpow_zero (b : A)]
       _ = sqrt ↑b * (↑b ^ (-(1 / 2) : ℝ) * a * ↑b ^ (-(1 / 2) : ℝ)) * sqrt ↑b := by
