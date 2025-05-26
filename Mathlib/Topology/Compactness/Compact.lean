@@ -54,7 +54,7 @@ lemma IsCompact.exists_mapClusterPt_of_frequently {l : Filter ι} {f : ι → X}
 theorem IsCompact.compl_mem_sets (hs : IsCompact s) {f : Filter X} (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) :
     sᶜ ∈ f := by
   contrapose! hf
-  simp only [not_mem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
+  simp only [notMem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
   exact @hs _ hf inf_le_right
 
 /-- The complement to a compact set belongs to a filter `f` if each `x ∈ s` has a neighborhood `t`
@@ -248,11 +248,11 @@ theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : 
   let ⟨t, ht⟩ :=
     hs.elim_directed_cover (compl ∘ t) (fun i => (htc i).isOpen_compl)
       (by
-        simpa only [subset_def, not_forall, eq_empty_iff_forall_not_mem, mem_iUnion, exists_prop,
+        simpa only [subset_def, not_forall, eq_empty_iff_forall_notMem, mem_iUnion, exists_prop,
           mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using hst)
       (hdt.mono_comp _ fun _ _ => compl_subset_compl.mpr)
   ⟨t, by
-    simpa only [subset_def, not_forall, eq_empty_iff_forall_not_mem, mem_iUnion, exists_prop,
+    simpa only [subset_def, not_forall, eq_empty_iff_forall_notMem, mem_iUnion, exists_prop,
       mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using ht⟩
 
 -- TODO: reformulate using `Disjoint`
@@ -330,7 +330,7 @@ theorem isCompact_of_finite_subcover
     (nhds_basis_opens _).disjoint_iff_left] at h
   choose U hU hUf using h
   refine ⟨s, U, fun x => (hU x).2, fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1⟩, fun t ht => ?_⟩
-  refine compl_not_mem (le_principal_iff.1 hfs) ?_
+  refine compl_notMem (le_principal_iff.1 hfs) ?_
   refine mem_of_superset ((biInter_finset_mem t).2 fun x _ => hUf x) ?_
   rw [subset_compl_comm, compl_iInter₂]
   simpa only [compl_compl]
@@ -486,7 +486,7 @@ protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a 
 -- TODO: reformulate using `𝓝ˢ`
 /-- If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `X` is
-not assumed to be Hausdorff. See `exists_subset_nhd_of_compact` for version assuming this. -/
+not assumed to be Hausdorff. See `exists_subset_nhds_of_compact` for version assuming this. -/
 theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) (hV_closed : ∀ i, IsClosed (V i))
     {U : Set X} (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U := by
@@ -523,9 +523,9 @@ theorem isCompact_generateFrom [T : TopologicalSpace X]
   obtain ⟨Q, hQU, hQ, hsQ⟩ := h (U '' s) (by simpa [Set.subset_def])
     (fun x hx ↦ Set.mem_sUnion_of_mem (hxU _ hx) (by aesop))
   have : ∀ s ∈ Q, s ∉ F := fun s hsQ ↦ (hQU hsQ).choose_spec.2 ▸ hUF _ (hQU hsQ).choose_spec.1
-  have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by simpa [Filter.biInter_mem hQ, F.compl_mem_iff_not_mem]
+  have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by simpa [Filter.biInter_mem hQ, F.compl_mem_iff_notMem]
   have : ⋃₀ Q ∉ F := by
-    simpa [-Set.sInter_image, ← Set.compl_sUnion, hsQ, F.compl_mem_iff_not_mem] using hQF
+    simpa [-Set.sInter_image, ← Set.compl_sUnion, hsQ, F.compl_mem_iff_notMem] using hQF
   exact this (F.mem_of_superset hsF hsQ)
 
 namespace Filter

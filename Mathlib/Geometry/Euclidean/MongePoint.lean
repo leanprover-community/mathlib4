@@ -208,9 +208,9 @@ theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n
   · simp_rw [sum_pointsWithCircumcenter, pointsWithCircumcenter_eq_circumcenter,
       pointsWithCircumcenter_point, Pi.sub_apply, pointWeightsWithCircumcenter]
     rw [← sum_subset fs.subset_univ _]
-    · simp_rw [fs, sum_insert (not_mem_singleton.2 h), sum_singleton]
+    · simp_rw [fs, sum_insert (notMem_singleton.2 h), sum_singleton]
       repeat rw [← sum_subset fs.subset_univ _]
-      · simp_rw [fs, sum_insert (not_mem_singleton.2 h), sum_singleton]
+      · simp_rw [fs, sum_insert (notMem_singleton.2 h), sum_singleton]
         simp [h, Ne.symm h, dist_comm (s.points i₁)]
       all_goals intro i _ hi; simp [hfs i hi]
     · intro i _ hi
@@ -522,7 +522,7 @@ theorem exists_of_range_subset_orthocentricSystem {t : Triangle ℝ P}
     exact ⟨i₁, i₂, i₃, j₂, j₃, h₁₂, h₁₃, h₂₃, h₁₂₃, h₁, hj₂₃, h₂, h₃⟩
   · right
     have hs := Set.subset_diff_singleton hps h
-    rw [Set.insert_diff_self_of_not_mem ho] at hs
+    rw [Set.insert_diff_self_of_notMem ho] at hs
     classical
     refine Set.eq_of_subset_of_card_le hs ?_
     rw [Set.card_range_of_injective hpi, Set.card_range_of_injective t.independent.injective]

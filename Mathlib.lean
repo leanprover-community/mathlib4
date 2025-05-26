@@ -1890,6 +1890,7 @@ import Mathlib.CategoryTheory.Adjunction.Lifting.Right
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Parametrized
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
@@ -4877,6 +4878,7 @@ import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
 import Mathlib.Order.UpperLower.Principal
 import Mathlib.Order.UpperLower.Prod
+import Mathlib.Order.UpperLower.Relative
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WellQuasiOrder
@@ -5136,6 +5138,7 @@ import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.Ideal.BigOperators
@@ -5183,6 +5186,8 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Invariant
+import Mathlib.RingTheory.Invariant.Basic
+import Mathlib.RingTheory.Invariant.Profinite
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.IsPrimary
 import Mathlib.RingTheory.IsTensorProduct
@@ -5363,6 +5368,7 @@ import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.Radical
 import Mathlib.RingTheory.ReesAlgebra
+import Mathlib.RingTheory.Regular.Depth
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.RingHom.Finite
@@ -5742,6 +5748,7 @@ import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Irrational
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.NatFactorial
@@ -6088,6 +6095,7 @@ import Mathlib.Topology.ContinuousMap.Ideals
 import Mathlib.Topology.ContinuousMap.Interval
 import Mathlib.Topology.ContinuousMap.Lattice
 import Mathlib.Topology.ContinuousMap.LocallyConstant
+import Mathlib.Topology.ContinuousMap.LocallyConvex
 import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.ContinuousMap.Periodic
 import Mathlib.Topology.ContinuousMap.Polynomial

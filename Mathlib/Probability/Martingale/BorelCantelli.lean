@@ -118,7 +118,7 @@ theorem norm_stoppedValue_leastGE_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     exact add_nonneg hr R.coe_nonneg
   · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero heq
     rw [hk, add_comm, ← sub_le_iff_le_add]
-    have := not_mem_of_lt_hitting (hk.symm ▸ k.lt_succ_self : k < leastGE f r i ω) (zero_le _)
+    have := notMem_of_lt_hitting (hk.symm ▸ k.lt_succ_self : k < leastGE f r i ω) (zero_le _)
     simp only [Set.mem_union, Set.mem_Iic, Set.mem_Ici, not_or, not_le] at this
     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
 

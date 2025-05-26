@@ -336,25 +336,36 @@ open Function
 variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
 
-theorem HasStrictFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
+theorem HasStrictFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
     HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by
-  rw [not_mem_tsupport_iff_eventuallyEq] at h
+  rw [notMem_tsupport_iff_eventuallyEq] at h
   exact (hasStrictFDerivAt_const (0 : F) x).congr_of_eventuallyEq h.symm
 
-theorem HasFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
+@[deprecated (since := "2025-05-24")]
+alias HasStrictFDerivAt.of_nmem_tsupport := HasStrictFDerivAt.of_notMem_tsupport
+
+theorem HasFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
-  (HasStrictFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivAt
+  (HasStrictFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivAt
 
-theorem HasFDerivWithinAt.of_not_mem_tsupport {s : Set E} {x : E} (h : x ∉ tsupport f) :
+@[deprecated (since := "2025-05-24")]
+alias HasFDerivAt.of_nmem_tsupport := HasFDerivAt.of_notMem_tsupport
+
+theorem HasFDerivWithinAt.of_notMem_tsupport {s : Set E} {x : E} (h : x ∉ tsupport f) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
-  (HasFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivWithinAt
+  (HasFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivWithinAt
 
-theorem fderiv_of_not_mem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
-  (HasFDerivAt.of_nmem_tsupport 𝕜 h).fderiv
+@[deprecated (since := "2025-05-23")]
+alias HasFDerivWithinAt.of_not_mem_tsupport := HasFDerivWithinAt.of_notMem_tsupport
+
+theorem fderiv_of_notMem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
+  (HasFDerivAt.of_notMem_tsupport 𝕜 h).fderiv
+
+@[deprecated (since := "2025-05-23")] alias fderiv_of_not_mem_tsupport := fderiv_of_notMem_tsupport
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
-  rw [← not_imp_not, nmem_support]
-  exact fderiv_of_not_mem_tsupport _
+  rw [← not_imp_not, notMem_support]
+  exact fderiv_of_notMem_tsupport _
 
 theorem tsupport_fderiv_subset : tsupport (fderiv 𝕜 f) ⊆ tsupport f :=
   closure_minimal (support_fderiv_subset 𝕜) isClosed_closure
@@ -368,5 +379,6 @@ protected theorem HasCompactSupport.fderiv_apply (hf : HasCompactSupport f) (v :
   hf.fderiv 𝕜 |>.comp_left (g := fun L : E →L[𝕜] F ↦ L v) rfl
 
 end Support
+
 
 end
