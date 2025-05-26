@@ -84,12 +84,7 @@ theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
 theorem taylor_coeff_natDegree : (taylor r f).coeff f.natDegree = f.leadingCoeff := by
   by_cases hf : f = 0
   · rw [hf, map_zero]; rfl
-  · rw [taylor_coeff, hasseDeriv_apply, eval_sum, sum, leadingCoeff,
-      Finset.sum_eq_single_of_mem f.natDegree (natDegree_mem_support_of_nonzero hf),
-      eval_monomial, Nat.choose_self, Nat.cast_one, one_mul, Nat.sub_self, pow_zero, mul_one]
-    · intro b hb₁ hb₂
-      rw [Nat.choose_eq_zero_of_lt (lt_of_le_of_ne (le_natDegree_of_mem_supp _ hb₁) hb₂),
-        Nat.cast_zero, zero_mul, monomial_zero_right, eval_zero]
+  · rw [taylor_coeff, hassederiv_natDegree_eq_C, eval_C]
 
 @[simp]
 theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p := by
@@ -99,9 +94,12 @@ theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree
   simp [taylor_monomial, natDegree_C_mul_of_mul_ne_zero, natDegree_pow_X_add_C, c0]
 
 @[simp]
+theorem taylor_leadingCoeff : (taylor r f).leadingCoeff = f.leadingCoeff := by
+  rw [leadingCoeff, leadingCoeff, natDegree_taylor, taylor_coeff_natDegree, leadingCoeff]
+
+@[simp]
 theorem taylor_eq_zero_iff : taylor r f = 0 ↔ f = 0 := by
-  refine ⟨fun ht ↦ leadingCoeff_eq_zero.1 (taylor_coeff_natDegree r f ▸ ht ▸ coeff_zero _),
-    fun hf ↦ hf.symm ▸ map_zero _⟩
+  rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero, taylor_leadingCoeff]
 
 @[simp]
 theorem degree_taylor (p : R[X]) (r : R) : degree (taylor r p) = degree p := by
@@ -113,8 +111,7 @@ theorem degree_taylor (p : R[X]) (r : R) : degree (taylor r p) = degree p := by
 theorem eq_zero_of_hasseDeriv_eq_zero (f : R[X]) (r : R)
     (h : ∀ k, (hasseDeriv k f).eval r = 0) : f = 0 := by
   rw [← taylor_eq_zero_iff r]
-  ext k
-  simp only [taylor_coeff, h, coeff_zero]
+  ext k; rw [taylor_coeff, h, coeff_zero]
 
 end Semiring
 
@@ -165,7 +162,7 @@ variable {R : Type*} [CommRing R] {r : R} {f : R[X]} {s : R}
 
 /-- `Polynomial.taylor` as a `RingEquiv` for commutative rings. -/
 noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
-  invFun    := taylorAlgHom (-r)
+  invFun      := taylorAlgHom (-r)
   left_inv P  := by simp [taylor, comp_assoc]
   right_inv P := by simp [taylor, comp_assoc]
   __ := taylorAlgHom r
@@ -174,7 +171,7 @@ noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   rfl
 
 @[simp] lemma taylorEquiv_symm : (taylorEquiv r).symm = taylorEquiv (-r) :=
-  RingEquiv.ext fun _ ↦ rfl
+  AlgEquiv.ext fun _ ↦ rfl
 
 variable (r f s)
 

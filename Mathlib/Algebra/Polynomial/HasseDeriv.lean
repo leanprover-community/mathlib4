@@ -189,6 +189,11 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
       rwa [tsub_add_cancel_of_le (hxn.trans hxp)]
     · simp
 
+theorem hassederiv_natDegree_eq_C : f.hasseDeriv f.natDegree = C f.leadingCoeff := by
+  have : _ ≤ 0 := Nat.sub_self f.natDegree ▸ natDegree_hasseDeriv_le ..
+  rw [eq_C_of_natDegree_le_zero this, hasseDeriv_coeff, zero_add, Nat.choose_self,
+    Nat.cast_one, one_mul, leadingCoeff]
+
 theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
   rcases lt_or_le p.natDegree n with hn | hn
