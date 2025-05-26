@@ -8,8 +8,12 @@ import Cache.Hashing
 
 namespace Cache.Requests
 
-/-- Attempts to determine the running project's GitHub repository from its `origin` Git remote. -/
-def getRemoteRepo (mathlibDepPath : System.FilePath) : IO String := do
+open System (FilePath)
+
+/--
+Attempts to determine the GitHub repository of a version of Mathlib from its `origin` Git remote.
+-/
+def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", "origin"], cwd := mathlibDepPath}
   unless out.exitCode == 0 do
@@ -48,8 +52,6 @@ def getToken : IO String := do
   let some token ← IO.getEnv envVar
     | throw <| IO.userError s!"environment variable {envVar} must be set to upload caches"
   return token
-
-open System (FilePath)
 
 /-- The full name of the main Mathlib GitHub repository. -/
 def MATHLIBREPO := "leanprover-community/mathlib4"
@@ -226,7 +228,7 @@ def getFiles
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
   else
     let repo ← getRemoteRepo (← read).mathlibDepPath
-    IO.println s!"Project repository: {repo}"
+    IO.println s!"Mathlib repository: {repo}"
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := false)
     unless repo == MATHLIBREPO do
       downloadFiles MATHLIBREPO hashMap forceDownload parallel (warnOnMissing := true)
