@@ -267,8 +267,8 @@ lemma partitions_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set 
   simp_all
 
 open Classical in
-/-- If P is a partition then the intersection of P with a set s is a partition of s. -/
-lemma partition_inter {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitions s)
+/-- If `P` is a partition then the restriction of `P` to a set `s` is a partition of `s`. -/
+lemma partition_restrict {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitions s)
     (ht : MeasurableSet t) : (P.image (fun p ↦ p ∩ t)).filter (· ≠ ∅) ∈ partitions t := by
   refine ⟨?_, ?_, ?_, ?_⟩
   · intro _ h
@@ -295,6 +295,42 @@ lemma partition_inter {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitions 
     exact hs.2.2.1 hp hq hpq hap haq
   · intro _ hp
     exact (Finset.mem_filter.mp hp).2
+
+open Classical in
+lemma varOfPart_le_tsum {s : ℕ → Set X} {Q : Finset (Set X)} (hQ : Q ∈ partitions (⋃ i, s i)) :
+    varOfPart μ Q ≤ ∑' i, varOfPart μ ({x ∈ Finset.image (fun q ↦ q ∩ s i) Q | x ≠ ∅}) := by
+  let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
+  calc ∑ q ∈ Q, ENNReal.ofReal ‖μ q‖
+    _ = ∑ q ∈ Q, ENNReal.ofReal ‖μ (⋃ i, q ∩ s i)‖ := ?_
+    _ ≤ ∑ q ∈ Q, ∑' i, ENNReal.ofReal ‖μ (q ∩ s i)‖ := ?_
+    _ ≤ ∑' i, ∑ q ∈ Q, ENNReal.ofReal ‖μ (q ∩ s i)‖ := ?_
+    _ = ∑' i, ∑ p ∈ (P i), ENNReal.ofReal ‖μ p‖ := ?_
+    _ = ∑' i, (varOfPart μ (P i)) := rfl
+  · suffices h : ∀ q ∈ Q, q = ⋃ i, q ∩ s i by
+      refine Finset.sum_congr rfl ?_
+      intro q hq
+      have := h q hq
+      simp_rw [← this]
+    intro q hq
+    ext x
+    constructor
+    · intro hx
+      obtain ⟨s', hs'⟩ := (hQ.1 q hq) hx
+      rw [Set.mem_range] at hs'
+      obtain ⟨i, hi⟩ := hs'.1
+      have : x ∈ q ∩ s i := by simp_all
+      exact Set.mem_iUnion_of_mem i this
+    · intro _
+      simp_all
+  · -- Since the sets `s i` are pairwise disjoint, using the additivity of the measure and triangle
+    -- inequality of the norm.
+    sorry
+  · -- Swapping the order of the sum.
+    sorry
+  · -- Using the defintion of the restricted partition
+    congr with i
+    sorry
+
 
 /-- Aditivity of `variationAux` for disjoint measurable sets. -/
 lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
@@ -346,7 +382,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     -- Take the partitions defined as intersection of `Q` and `s i`.
     classical
     let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
-    have hP (i : ℕ) : P i ∈ partitions (s i) := partition_inter hQ (hs i)
+    have hP (i : ℕ) : P i ∈ partitions (s i) := partition_restrict hQ (hs i)
 
 
 
@@ -358,6 +394,12 @@ noncomputable def variation : VectorMeasure X ℝ≥0∞ where
   empty'              := variation_empty' μ
   not_measurable' _ h := if_neg h
   m_iUnion'           := variation_m_iUnion' μ
+
+theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
+    ‖μ E‖ ≤ (variation μ E).toReal := by
+  sorry
+
+-- TO DO : show that total variation is a norm on the space of vector-valued measures.
 
 end var1
 
