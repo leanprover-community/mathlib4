@@ -82,9 +82,11 @@ The ordering here is chosen so that `And.left` refer to moves by Left, and `And.
 moves by Right. -/
 theorem le_iff_forall_lf {x y : PGame} :
     x ≤ y ↔ (∀ i, x.moveLeft i ⧏ y) ∧ ∀ j, x ⧏ y.moveRight j := by
+  -- TODO
   unfold LE.le instLE
   simp only
   rw [Sym2.GameAdd.fix_eq]
+  -- TODO
   rfl
 
 /-- Definition of `x ≤ y` on pre-games built using the constructor. -/

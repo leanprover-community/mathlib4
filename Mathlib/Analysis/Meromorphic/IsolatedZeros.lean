@@ -60,12 +60,9 @@ theorem eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin (hf : Mer
     (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U)) (h : f =ᶠ[codiscreteWithin U] 0) :
     f =ᶠ[𝓝[≠] x] 0 := by
   rw [← hf.frequently_zero_iff_eventuallyEq_zero]
-  apply ((accPt_iff_frequently_nhdsNE.1 h₂x).and_eventually
-    (mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h x h₁x)).mp
-  filter_upwards
-  intro a
-  simp_rw [Pi.zero_apply]
-  rw [(by rfl : ({x | f x = 0} ∪ Uᶜ) a ↔ a ∈ {x | f x = 0} ∪ Uᶜ)]
+  have h := mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h x h₁x
+  rw [U.compl_def, ← Set.setOf_or, ← Filter.eventually_iff] at h
+  apply ((accPt_iff_frequently_nhdsNE.1 h₂x).and_eventually h).mp
   simp_all
 
 /-!
