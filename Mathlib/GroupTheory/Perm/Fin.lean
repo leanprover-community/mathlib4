@@ -142,7 +142,7 @@ def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
 theorem cycleRange_of_gt {n : ℕ} {i j : Fin n} (h : i < j) : cycleRange i j = j := by
   rw [cycleRange, ofLeftInverse'_eq_ofInjective,
     ← Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_not_mem_range]
+    viaFintypeEmbedding_apply_notMem_range]
   simpa
 
 theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :

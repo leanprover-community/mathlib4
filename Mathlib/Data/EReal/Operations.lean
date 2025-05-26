@@ -19,9 +19,9 @@ logarithm between `EReal` and `ℝ≥0∞` respect the operations. Note that the
 on `ℝ≥0∞` is enforced by measure theory. Subtraction, defined as `x - y = x + (-y)`, does not have
 nice properties but is sometimes convenient to have.
 
-There is also a `CommMonoidWithZero` structure on `EReal`, but `Mathlib.Data.EReal.Basic` only
+There is also a `CommMonoidWithZero` structure on `EReal`, but `Mathlib/Data/EReal/Basic.lean` only
 provides `MulZeroOneClass` because a proof of associativity by hand would have 125 cases.
-The `CommMonoidWithZero` instance is instead delivered in `Mathlib.Data.EReal.Inv`.
+The `CommMonoidWithZero` instance is instead delivered in `Mathlib/Data/EReal/Inv.lean`.
 
 We define `0 * x = x * 0 = 0` for any `x`, with the other cases defined non-ambiguously.
 This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1 * ⊥ + (-1) * ⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.
@@ -327,9 +327,9 @@ def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : EReal) : motive x :=
   if hx : 0 ≤ x then coe_toENNReal hx ▸ coe _
   else
-    have H₁ : 0 < -x := by simpa using hx
-    have H₂ : x = -(-x).toENNReal := by rw [coe_toENNReal H₁.le, neg_neg]
-    H₂ ▸ neg_coe _ <| by simp [H₁]
+    haveI H₁ : 0 < -x := by simpa using hx
+    haveI H₂ : x = -(-x).toENNReal := by rw [coe_toENNReal H₁.le, neg_neg]
+    H₂ ▸ neg_coe _ <| by positivity
 
 @[simp]
 theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
@@ -846,3 +846,52 @@ lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
     convert (EReal.right_distrib_of_nonneg _ _).symm <;> simp
 
 end EReal
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: sum of two `EReal`s. -/
+@[positivity (_ + _ : EReal)]
+def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a + $b) =>
+    assertInstancesCommute
+    match ← core zα pα a with
+    | .positive pa =>
+      match (← core zα pα b).toNonneg with
+      | some pb => pure (.positive q(EReal.add_pos_of_pos_of_nonneg $pa $pb))
+      | _ => pure .none
+    | .nonnegative pa =>
+      match ← core zα pα b with
+      | .positive pb => pure (.positive q(EReal.add_pos_of_nonneg_of_pos $pa $pb))
+      | .nonnegative pb => pure (.nonnegative q(add_nonneg $pa $pb))
+      | _ => pure .none
+    | _ => pure .none
+  | _, _, _ => throwError "not a sum of 2 `EReal`s"
+
+/-- Extension for the `positivity` tactic: product of two `EReal`s. -/
+@[positivity (_ * _ : EReal)]
+def evalERealMul : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a * $b) =>
+    assertInstancesCommute
+    match ← core zα pα a with
+    | .positive pa =>
+      match ← core zα pα b with
+      | .positive pb => pure <| .positive q(EReal.mul_pos $pa $pb)
+      | .nonnegative pb => pure <| .nonnegative q(EReal.mul_nonneg (le_of_lt $pa) $pb)
+      | .nonzero pb => pure <| .nonzero q(mul_ne_zero (ne_of_gt $pa) $pb)
+      | _ => pure .none
+    | .nonnegative pa =>
+      match (← core zα pα b).toNonneg with
+      | .some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
+      | .none => pure .none
+    | .nonzero pa =>
+      match (← core zα pα b).toNonzero with
+      | .some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
+      | none => pure .none
+    | _ => pure .none
+  | _, _, _ => throwError "not a product of 2 `EReal`s"
+
+end Mathlib.Meta.Positivity
