@@ -86,8 +86,8 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
   simp only [toSignedMeasure_zero, zero_add] at partition₁ partition₂
 
   rw [← VectorMeasure.restrict_add_restrict_compl μ.toSignedMeasure hs.measurableSet,
-      ← VectorMeasure.restrict_add_restrict_compl ν.toSignedMeasure hs.measurableSet,
-      ← partition₁, ← partition₂]
+    ← VectorMeasure.restrict_add_restrict_compl ν.toSignedMeasure hs.measurableSet,
+    ← partition₁, ← partition₂]
 
   repeat rw [sub_eq_add_neg]
   abel
