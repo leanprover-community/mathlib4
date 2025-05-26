@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 import Mathlib.Data.Vector.Defs
 import Mathlib.Tactic.CC
 

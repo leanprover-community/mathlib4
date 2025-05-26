@@ -129,7 +129,7 @@ As an example, we can use this to construct particular shapes of limits
 in a category of indexed families.
 
 With the addition of
-`import CategoryTheory.Limits.Shapes.Types`
+`import CategoryTheory.Limits.Types.Shapes`
 we can use:
 ```
 attribute [local instance] hasLimit_of_hasLimit_comp_eval

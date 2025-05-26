@@ -104,6 +104,7 @@ end NonSmall
 
 /-- Let the following diagram commute up to isomorphism:
 
+```
       L       R
   A  ---→ T  ←--- B
   |       |       |
@@ -111,6 +112,7 @@ end NonSmall
   ↓       ↓       ↓
   A' ---→ T' ←--- B'
       L'      R'
+```
 
 Let `F`, `G`, `R` and `R'` be final and `B` be filtered. Then, the induced functor between the comma
 categories of the first and second row of the diagram is final. -/
@@ -164,7 +166,7 @@ attribute [local instance] isFiltered_of_final in
 comma category `Comma L R` is cofiltered. -/
 lemma isCofiltered_of_initial [IsCofiltered A] [IsCofiltered B] [L.Initial] :
     IsCofiltered (Comma L R) :=
- IsCofiltered.of_equivalence (Comma.opEquiv _ _).symm
+  IsCofiltered.of_equivalence (Comma.opEquiv _ _).symm
 
 attribute [local instance] final_of_isFiltered_of_pUnit in
 /-- Let `A` and `B` be filtered categories, `R : B ⥤ T` be final and `R : A ⥤ T`. Then, the

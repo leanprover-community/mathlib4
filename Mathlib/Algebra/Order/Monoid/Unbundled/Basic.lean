@@ -315,6 +315,18 @@ section LinearOrder
 variable [LinearOrder α] {a b c d : α}
 
 @[to_additive]
+theorem trichotomy_of_mul_eq_mul
+    [MulLeftStrictMono α] [MulRightStrictMono α]
+    (h : a * b = c * d) : (a = c ∧ b = d) ∨ a < c ∨ b < d := by
+  obtain hac | rfl | hca := lt_trichotomy a c
+  · right; left; exact hac
+  · left; simpa using mul_right_inj_of_comparable (LinearOrder.le_total d b)|>.1 h
+  · obtain hbd | rfl | hdb := lt_trichotomy b d
+    · right; right; exact hbd
+    · exact False.elim <| ne_of_lt (mul_lt_mul_right' hca b) h.symm
+    · exact False.elim <| ne_of_lt (mul_lt_mul_of_lt_of_lt hca hdb) h.symm
+
+@[to_additive]
 lemma mul_max [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
     a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
 
@@ -1025,9 +1037,6 @@ theorem mul_eq_one_iff_of_one_le [MulLeftMono α]
       And.intro ‹a = 1› ‹b = 1›)
     (by rintro ⟨rfl, rfl⟩; rw [mul_one])
 
-@[deprecated (since := "2024-07-24")] alias mul_eq_one_iff' := mul_eq_one_iff_of_one_le
-@[deprecated (since := "2024-07-24")] alias add_eq_zero_iff' := add_eq_zero_iff_of_nonneg
-
 section Left
 
 variable [MulLeftMono α] {a b : α}
@@ -1347,7 +1356,7 @@ theorem Contravariant.MulLECancellable [Mul α] [LE α] [MulLeftReflectLE α]
   fun _ _ => le_of_mul_le_mul_left'
 
 @[to_additive (attr := simp)]
-theorem mulLECancellable_one [Monoid α] [LE α] : MulLECancellable (1 : α) := fun a b => by
+theorem mulLECancellable_one [MulOneClass α] [LE α] : MulLECancellable (1 : α) := fun a b => by
   simpa only [one_mul] using id
 
 namespace MulLECancellable

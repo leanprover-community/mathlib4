@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.PUnitInstances.Algebra
+import Mathlib.Algebra.Ring.PUnit
 
 /-! # `CharP R 0` and `CharZero R` need not coincide for semirings
 

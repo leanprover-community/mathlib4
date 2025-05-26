@@ -44,67 +44,103 @@ section Prod
 
 variable {f₂ : E → G} {f₂' : E →L[𝕜] G}
 
-protected theorem HasStrictFDerivAt.prod (hf₁ : HasStrictFDerivAt f₁ f₁' x)
+protected theorem HasStrictFDerivAt.prodMk (hf₁ : HasStrictFDerivAt f₁ f₁' x)
     (hf₂ : HasStrictFDerivAt f₂ f₂' x) :
     HasStrictFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
   .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
 
-theorem HasFDerivAtFilter.prod (hf₁ : HasFDerivAtFilter f₁ f₁' x L)
+@[deprecated (since := "2025-03-09")]
+alias HasStrictFDerivAt.prod := HasStrictFDerivAt.prodMk
+
+theorem HasFDerivAtFilter.prodMk (hf₁ : HasFDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' x L) :
     HasFDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x L :=
   .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
 
+@[deprecated (since := "2025-03-09")]
+alias HasFDerivAtFilter.prod := HasFDerivAtFilter.prodMk
+
 @[fun_prop]
-nonrec theorem HasFDerivWithinAt.prod (hf₁ : HasFDerivWithinAt f₁ f₁' s x)
+nonrec theorem HasFDerivWithinAt.prodMk (hf₁ : HasFDerivWithinAt f₁ f₁' s x)
     (hf₂ : HasFDerivWithinAt f₂ f₂' s x) :
     HasFDerivWithinAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') s x :=
-  hf₁.prod hf₂
+  hf₁.prodMk hf₂
+
+@[deprecated (since := "2025-03-09")]
+alias HasFDerivWithinAt.prod := HasFDerivWithinAt.prodMk
 
 @[fun_prop]
-nonrec theorem HasFDerivAt.prod (hf₁ : HasFDerivAt f₁ f₁' x) (hf₂ : HasFDerivAt f₂ f₂' x) :
+nonrec theorem HasFDerivAt.prodMk (hf₁ : HasFDerivAt f₁ f₁' x) (hf₂ : HasFDerivAt f₂ f₂' x) :
     HasFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
-  hf₁.prod hf₂
+  hf₁.prodMk hf₂
+
+@[deprecated (since := "2025-03-09")]
+alias HasFDerivAt.prod := HasFDerivAt.prodMk
 
 @[fun_prop]
-theorem hasFDerivAt_prod_mk_left (e₀ : E) (f₀ : F) :
+theorem hasFDerivAt_prodMk_left (e₀ : E) (f₀ : F) :
     HasFDerivAt (fun e : E => (e, f₀)) (inl 𝕜 E F) e₀ :=
-  (hasFDerivAt_id e₀).prod (hasFDerivAt_const f₀ e₀)
+  (hasFDerivAt_id e₀).prodMk (hasFDerivAt_const f₀ e₀)
+
+@[deprecated (since := "2025-03-09")]
+alias hasFDerivAt_prod_mk_left := hasFDerivAt_prodMk_left
 
 @[fun_prop]
-theorem hasFDerivAt_prod_mk_right (e₀ : E) (f₀ : F) :
+theorem hasFDerivAt_prodMk_right (e₀ : E) (f₀ : F) :
     HasFDerivAt (fun f : F => (e₀, f)) (inr 𝕜 E F) f₀ :=
-  (hasFDerivAt_const e₀ f₀).prod (hasFDerivAt_id f₀)
+  (hasFDerivAt_const e₀ f₀).prodMk (hasFDerivAt_id f₀)
+
+@[deprecated (since := "2025-03-09")]
+alias hasFDerivAt_prod_mk_right := hasFDerivAt_prodMk_right
 
 @[fun_prop]
-theorem DifferentiableWithinAt.prod (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
+theorem DifferentiableWithinAt.prodMk (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
     (hf₂ : DifferentiableWithinAt 𝕜 f₂ s x) :
     DifferentiableWithinAt 𝕜 (fun x : E => (f₁ x, f₂ x)) s x :=
-  (hf₁.hasFDerivWithinAt.prod hf₂.hasFDerivWithinAt).differentiableWithinAt
+  (hf₁.hasFDerivWithinAt.prodMk hf₂.hasFDerivWithinAt).differentiableWithinAt
+
+@[deprecated (since := "2025-03-09")]
+alias DifferentiableWithinAt.prod := DifferentiableWithinAt.prodMk
 
 @[simp, fun_prop]
-theorem DifferentiableAt.prod (hf₁ : DifferentiableAt 𝕜 f₁ x) (hf₂ : DifferentiableAt 𝕜 f₂ x) :
+theorem DifferentiableAt.prodMk (hf₁ : DifferentiableAt 𝕜 f₁ x) (hf₂ : DifferentiableAt 𝕜 f₂ x) :
     DifferentiableAt 𝕜 (fun x : E => (f₁ x, f₂ x)) x :=
-  (hf₁.hasFDerivAt.prod hf₂.hasFDerivAt).differentiableAt
+  (hf₁.hasFDerivAt.prodMk hf₂.hasFDerivAt).differentiableAt
+
+@[deprecated (since := "2025-03-09")]
+alias DifferentiableAt.prod := DifferentiableAt.prodMk
 
 @[fun_prop]
-theorem DifferentiableOn.prod (hf₁ : DifferentiableOn 𝕜 f₁ s) (hf₂ : DifferentiableOn 𝕜 f₂ s) :
-    DifferentiableOn 𝕜 (fun x : E => (f₁ x, f₂ x)) s := fun x hx =>
-  DifferentiableWithinAt.prod (hf₁ x hx) (hf₂ x hx)
+theorem DifferentiableOn.prodMk (hf₁ : DifferentiableOn 𝕜 f₁ s) (hf₂ : DifferentiableOn 𝕜 f₂ s) :
+    DifferentiableOn 𝕜 (fun x : E => (f₁ x, f₂ x)) s := fun x hx => (hf₁ x hx).prodMk (hf₂ x hx)
+
+@[deprecated (since := "2025-03-09")]
+alias DifferentiableOn.prod := DifferentiableOn.prodMk
 
 @[simp, fun_prop]
-theorem Differentiable.prod (hf₁ : Differentiable 𝕜 f₁) (hf₂ : Differentiable 𝕜 f₂) :
-    Differentiable 𝕜 fun x : E => (f₁ x, f₂ x) := fun x => DifferentiableAt.prod (hf₁ x) (hf₂ x)
+theorem Differentiable.prodMk (hf₁ : Differentiable 𝕜 f₁) (hf₂ : Differentiable 𝕜 f₂) :
+    Differentiable 𝕜 fun x : E => (f₁ x, f₂ x) := fun x ↦
+  (hf₁ x).prodMk (hf₂ x)
 
-theorem DifferentiableAt.fderiv_prod (hf₁ : DifferentiableAt 𝕜 f₁ x)
+@[deprecated (since := "2025-03-09")]
+alias Differentiable.prod := Differentiable.prodMk
+
+theorem DifferentiableAt.fderiv_prodMk (hf₁ : DifferentiableAt 𝕜 f₁ x)
     (hf₂ : DifferentiableAt 𝕜 f₂ x) :
     fderiv 𝕜 (fun x : E => (f₁ x, f₂ x)) x = (fderiv 𝕜 f₁ x).prod (fderiv 𝕜 f₂ x) :=
-  (hf₁.hasFDerivAt.prod hf₂.hasFDerivAt).fderiv
+  (hf₁.hasFDerivAt.prodMk hf₂.hasFDerivAt).fderiv
 
-theorem DifferentiableWithinAt.fderivWithin_prod (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
+@[deprecated (since := "2025-03-09")]
+alias DifferentiableAt.fderiv_prod := DifferentiableAt.fderiv_prodMk
+
+theorem DifferentiableWithinAt.fderivWithin_prodMk (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
     (hf₂ : DifferentiableWithinAt 𝕜 f₂ s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x : E => (f₁ x, f₂ x)) s x =
       (fderivWithin 𝕜 f₁ s x).prod (fderivWithin 𝕜 f₂ s x) :=
-  (hf₁.hasFDerivWithinAt.prod hf₂.hasFDerivWithinAt).fderivWithin hxs
+  (hf₁.hasFDerivWithinAt.prodMk hf₂.hasFDerivWithinAt).fderivWithin hxs
+
+@[deprecated (since := "2025-03-09")]
+alias DifferentiableWithinAt.fderivWithin_prod := DifferentiableWithinAt.fderivWithin_prodMk
 
 end Prod
 
@@ -301,17 +337,20 @@ variable {f₂ : G → G'} {f₂' : G →L[𝕜] G'} {y : G} (p : E × G)
 @[fun_prop]
 protected theorem HasStrictFDerivAt.prodMap (hf : HasStrictFDerivAt f f' p.1)
     (hf₂ : HasStrictFDerivAt f₂ f₂' p.2) : HasStrictFDerivAt (Prod.map f f₂) (f'.prodMap f₂') p :=
-  (hf.comp p hasStrictFDerivAt_fst).prod (hf₂.comp p hasStrictFDerivAt_snd)
+  (hf.comp p hasStrictFDerivAt_fst).prodMk (hf₂.comp p hasStrictFDerivAt_snd)
 
 @[fun_prop]
 protected theorem HasFDerivAt.prodMap (hf : HasFDerivAt f f' p.1) (hf₂ : HasFDerivAt f₂ f₂' p.2) :
     HasFDerivAt (Prod.map f f₂) (f'.prodMap f₂') p :=
-  (hf.comp p hasFDerivAt_fst).prod (hf₂.comp p hasFDerivAt_snd)
+  (hf.comp p hasFDerivAt_fst).prodMk (hf₂.comp p hasFDerivAt_snd)
 
 @[simp, fun_prop]
-protected theorem DifferentiableAt.prod_map (hf : DifferentiableAt 𝕜 f p.1)
+protected theorem DifferentiableAt.prodMap (hf : DifferentiableAt 𝕜 f p.1)
     (hf₂ : DifferentiableAt 𝕜 f₂ p.2) : DifferentiableAt 𝕜 (fun p : E × G => (f p.1, f₂ p.2)) p :=
-  (hf.comp p differentiableAt_fst).prod (hf₂.comp p differentiableAt_snd)
+  (hf.comp p differentiableAt_fst).prodMk (hf₂.comp p differentiableAt_snd)
+
+@[deprecated (since := "2025-03-09")]
+alias DifferentiableAt.prod_map := DifferentiableAt.prodMap
 
 end prodMap
 
@@ -352,7 +391,7 @@ theorem hasStrictFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
   let id' := ContinuousLinearMap.id 𝕜 (∀ i, F' i)
   have h := ((hasStrictFDerivAt_pi'
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ' := id') (x := f))).1
-  have h' : comp (proj i) id' = proj i := by rfl
+  have h' : comp (proj i) id' = proj i := by ext; simp [id']
   rw [← h']; apply h; apply hasStrictFDerivAt_id
 
 @[simp 1100] -- Porting note: increased priority to make lint happy

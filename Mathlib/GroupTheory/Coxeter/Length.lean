@@ -5,6 +5,7 @@ Authors: Mitchell Lee
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Zify
 
 /-!
@@ -159,7 +160,7 @@ theorem length_eq_one_iff {w : W} : ℓ w = 1 ↔ ∃ i : B, w = s i := by
   constructor
   · intro h
     rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
-    rcases List.length_eq_one.mp (hω.trans h) with ⟨i, rfl⟩
+    rcases List.length_eq_one_iff.mp (hω.trans h) with ⟨i, rfl⟩
     exact ⟨i, cs.wordProd_singleton i⟩
   · rintro ⟨i, rfl⟩
     exact cs.length_simple i

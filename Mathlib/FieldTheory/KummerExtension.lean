@@ -40,6 +40,7 @@ Criteria for `X ^ n - C a` to be irreducible is given:
 
 TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
 
+TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
 -/
 universe u
 
@@ -73,7 +74,7 @@ lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
     (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
   let K := FractionRing R
   let i := algebraMap R K
-  have h := NoZeroSMulDivisors.algebraMap_injective R K
+  have h := FaithfulSMul.algebraMap_injective R K
   apply_fun Polynomial.map i using map_injective i h
   simpa only [Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, map_mul, map_pow,
     Polynomial.map_prod, Polynomial.map_mul]

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Order.SetNotation
 import Mathlib.Order.Bounds.Defs
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 /-!
 # Definitions about filters
@@ -58,6 +58,8 @@ at the cost of including the assumption `[NeBot f]` in a number of lemmas and de
 
 *  [N. Bourbaki, *General Topology*][bourbaki1966]
 -/
+
+assert_not_exists RelIso
 
 open Set
 
@@ -428,7 +430,7 @@ elab_rules : tactic
       return [m.mvarId!]
   liftMetaTactic fun goal => do
     goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
-  evalTactic <|← `(tactic| dsimp (config := {zeta := false}) only [Set.mem_setOf_eq])
+  evalTactic <|← `(tactic| dsimp -zeta only [Set.mem_setOf_eq])
   if let some l := wth then
     evalTactic <|← `(tactic| intro $[$l]*)
   if let some e := usingArg then

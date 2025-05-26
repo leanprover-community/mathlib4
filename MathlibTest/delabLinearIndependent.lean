@@ -1,4 +1,4 @@
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 set_option linter.style.setOption false
 set_option pp.unicode.fun true

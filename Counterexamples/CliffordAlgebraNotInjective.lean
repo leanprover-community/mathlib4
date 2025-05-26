@@ -5,12 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
-import Mathlib.Algebra.CharP.Two
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Data.ZMod.Basic
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
-import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Ideal
 
@@ -56,12 +51,14 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
   rw [this, mem_ideal_span_monomial_image]
   simp
 
-theorem X0_X1_X2_not_mem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 2)) ∉ kIdeal := by
+theorem X0_X1_X2_notMem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 2)) ∉ kIdeal := by
   intro h
   simp_rw [mem_kIdeal_iff, support_mul_X, support_X, Finset.map_singleton, addRightEmbedding_apply,
     Finset.mem_singleton, forall_eq, ← Fin.sum_univ_three fun i => Finsupp.single i 1,
     ← Finsupp.equivFunOnFinite_symm_eq_sum] at h
   contradiction
+
+@[deprecated (since := "2025-05-23")] alias X0_X1_X2_not_mem_kIdeal := X0_X1_X2_notMem_kIdeal
 
 theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     (h : X 0 * X 1 * X 2 * x ∈ kIdeal) : x * x ∈ kIdeal := by
@@ -134,12 +131,12 @@ theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
 
 /-- Though `αβγ` is not itself zero -/
 theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
-  X0_X1_X2_not_mem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
+  X0_X1_X2_notMem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
 
 /-- The 1-form on $K^3$, the kernel of which we will take a quotient by.
 
 Our source uses $αx - βy - γz$, though since this is characteristic two we just use $αx + βy + γz$.
- -/
+-/
 @[simps!]
 def lFunc : (Fin 3 → K) →ₗ[K] K :=
   letI proj : Fin 3 → (Fin 3 → K) →ₗ[K] K := LinearMap.proj

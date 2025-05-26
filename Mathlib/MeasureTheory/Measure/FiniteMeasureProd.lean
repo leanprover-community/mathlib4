@@ -125,7 +125,7 @@ lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t 
 lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [MeasurableSpace β']
     {f : α → α'} {g : β → β'} (f_mble : Measurable f) (g_mble : Measurable g) :
     (μ.map f_mble.aemeasurable).prod (ν.map g_mble.aemeasurable)
-      = (μ.prod ν).map (f_mble.prod_map g_mble).aemeasurable := by
+      = (μ.prod ν).map (f_mble.prodMap g_mble).aemeasurable := by
   apply Subtype.ext
   simp only [val_eq_to_measure, toMeasure_prod, toMeasure_map]
   rw [Measure.map_prod_map _ _ f_mble g_mble]

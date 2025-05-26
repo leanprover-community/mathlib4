@@ -161,6 +161,16 @@ lemma map_bijective (X Y : C) :
     Function.Bijective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   hF.homEquiv.bijective
 
+@[simp]
+lemma preimage_id {X : C} :
+    hF.preimage (𝟙 (F.obj X)) = 𝟙 X :=
+  hF.map_injective (by simp)
+
+@[simp, reassoc]
+lemma preimage_comp {X Y Z : C} (f : F.obj X ⟶ F.obj Y) (g : F.obj Y ⟶ F.obj Z) :
+    hF.preimage (f ≫ g) = hF.preimage f ≫ hF.preimage g :=
+  hF.map_injective (by simp)
+
 lemma full : F.Full where
   map_surjective := hF.map_surjective
 
@@ -310,12 +320,8 @@ theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] 
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq (G.map (map f)) (F.map f)) :
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by
-  -- Porting note: Have to unfold the structure twice because the first one recovers only the
-  -- prefunctor `F_pre`
-  cases' F with F_pre _ _; cases' G with G_pre _ _
-  cases' F_pre with F_obj _; cases' G_pre with G_obj _
+  obtain ⟨⟨F_obj, _⟩, _, _⟩ := F; obtain ⟨⟨G_obj, _⟩, _, _⟩ := G
   unfold Faithful.div Functor.comp
-  -- Porting note: unable to find the lean4 analogue to `unfold_projs`, works without it
   have : F_obj = G_obj ∘ obj := (funext h_obj).symm
   subst this
   congr
@@ -363,34 +369,4 @@ theorem fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] 
   rfl
 
 end Functor
-
-@[deprecated (since := "2024-04-06")] alias Full := Functor.Full
-@[deprecated (since := "2024-04-06")] alias Faithful := Functor.Faithful
-@[deprecated (since := "2024-04-06")] alias preimage_id := Functor.preimage_id
-@[deprecated (since := "2024-04-06")] alias preimage_comp := Functor.preimage_comp
-@[deprecated (since := "2024-04-06")] alias preimage_map := Functor.preimage_map
-@[deprecated (since := "2024-04-06")] alias Faithful.of_comp := Functor.Faithful.of_comp
-@[deprecated (since := "2024-04-06")] alias Full.ofIso := Functor.Full.of_iso
-@[deprecated (since := "2024-04-06")] alias Faithful.of_iso := Functor.Faithful.of_iso
-@[deprecated (since := "2024-04-06")] alias Faithful.of_comp_iso := Functor.Faithful.of_comp_iso
-@[deprecated (since := "2024-04-06")] alias Faithful.of_comp_eq := Functor.Faithful.of_comp_eq
-@[deprecated (since := "2024-04-06")] alias Faithful.div := Functor.Faithful.div
-@[deprecated (since := "2024-04-06")] alias Faithful.div_comp := Functor.Faithful.div_comp
-@[deprecated (since := "2024-04-06")] alias Faithful.div_faithful := Functor.Faithful.div_faithful
-@[deprecated (since := "2024-04-06")] alias Full.ofCompFaithful := Functor.Full.of_comp_faithful
-
-@[deprecated (since := "2024-04-06")]
-alias Full.ofCompFaithfulIso := Functor.Full.of_comp_faithful_iso
-
-@[deprecated (since := "2024-04-06")]
-alias fullyFaithfulCancelRight := Functor.fullyFaithfulCancelRight
-
-@[deprecated (since := "2024-04-06")]
-alias fullyFaithfulCancelRight_hom_app := Functor.fullyFaithfulCancelRight_hom_app
-
-@[deprecated (since := "2024-04-06")]
-alias fullyFaithfulCancelRight_inv_app := Functor.fullyFaithfulCancelRight_inv_app
-
-@[deprecated (since := "2024-04-26")] alias Functor.image_preimage := Functor.map_preimage
-
 end CategoryTheory

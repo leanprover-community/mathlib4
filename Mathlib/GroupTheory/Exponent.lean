@@ -439,8 +439,8 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
     apply Or.resolve_right (Nat.coprime_or_dvd_of_prime hp _)
     nth_rw 1 [← pow_one p]
     have : 1 = (Nat.factorization (orderOf (t ^ p ^ k))) p + 1 := by
-     rw [hpk', Nat.factorization_div hpk]
-     simp [k, hp]
+      rw [hpk', Nat.factorization_div hpk]
+      simp [k, hp]
     rw [this]
     -- Porting note: convert made to_additive complain
     apply Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
@@ -497,11 +497,6 @@ end Monoid
 section Group
 
 variable [Group G] {n m : ℤ}
-
-@[to_additive (attr := deprecated Monoid.one_lt_exponent (since := "2024-02-17"))
-  AddGroup.one_lt_exponent]
-lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
-  Monoid.one_lt_exponent
 
 @[to_additive]
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
@@ -611,11 +606,13 @@ theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣
     Commute a b := by
   simp_rw [orderOf_dvd_iff_pow_eq_one] at h
   rw [commute_iff_eq, ← mul_right_inj a, ← mul_left_inj b]
+  -- We avoid `group` here to minimize imports while low in the hierarchy;
+  -- typically it would be better to invoke the tactic.
   calc
-    a * (a * b) * b = a ^ 2 * b ^ 2 := by simp only [pow_two]; group
+    a * (a * b) * b = a ^ 2 * b ^ 2 := by simp [pow_two, mul_assoc]
     _ = 1 := by rw [h, h, mul_one]
     _ = (a * b) ^ 2 := by rw [h]
-    _ = a * (b * a) * b := by simp only [pow_two]; group
+    _ = a * (b * a) * b := by simp [pow_two, mul_assoc]
 
 /-- In a cancellative monoid of exponent two, all elements commute. -/
 @[to_additive]
@@ -645,26 +642,30 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
--- TODO: delete
-/-- Any group of exponent two is abelian. -/
-@[to_additive (attr := reducible,
-  deprecated "No deprecation message was provided." (since := "2024-02-17"))
-  "Any additive group of exponent two is abelian."]
-def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
-  mul_comm := mul_comm_of_exponent_two hG
-
 @[to_additive]
-lemma mul_not_mem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
+lemma mul_notMem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
     (hy : orderOf y = 2) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) := by
-  simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_right_eq_self, mul_left_eq_self,
+  simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_eq_left, mul_eq_right,
     mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hy, not_or]
   aesop
 
+@[deprecated (since := "2025-05-23")]
+alias add_not_mem_of_addOrderOf_eq_two := add_notMem_of_addOrderOf_eq_two
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias mul_not_mem_of_orderOf_eq_two := mul_notMem_of_orderOf_eq_two
+
 @[to_additive]
-lemma mul_not_mem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
+lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
     (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) :=
-  mul_not_mem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
+  mul_notMem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
     (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one y) hy) hxy
+
+@[deprecated (since := "2025-05-23")]
+alias add_not_mem_of_exponent_two := add_notMem_of_exponent_two
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias mul_not_mem_of_exponent_two := mul_notMem_of_exponent_two
 
 end Group
 

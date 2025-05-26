@@ -95,7 +95,7 @@ noncomputable instance Forget₂.createsLimit :
           { pt := Grp.of (Types.Small.limitCone (F ⋙ forget Grp)).pt
             π :=
               { app j := ofHom <| MonCat.limitπMonoidHom (F ⋙ forget₂ Grp MonCat) j
-                naturality i j h:= hom_ext <|
+                naturality i j h:= hom_ext <| congr_arg MonCat.Hom.hom <|
                   (MonCat.HasLimits.limitCone
                         (F ⋙ forget₂ Grp MonCat.{u})).π.naturality h } }
         validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
@@ -263,7 +263,8 @@ noncomputable instance Forget₂.createsLimit :
             π :=
               { app j := ofHom <| MonCat.limitπMonoidHom
                   (F ⋙ forget₂ CommGrp Grp.{u} ⋙ forget₂ Grp MonCat.{u}) j
-                naturality i j h := hom_ext <| (MonCat.HasLimits.limitCone _).π.naturality h } }
+                naturality i j h := hom_ext <| congr_arg MonCat.Hom.hom <|
+                  (MonCat.HasLimits.limitCone _).π.naturality h } }
         validLift := by apply IsLimit.uniqueUpToIso (Grp.limitConeIsLimit _) hc
         makesLimit :=
           IsLimit.ofFaithful (forget₂ _ Grp.{u} ⋙ forget₂ _ MonCat.{u})
@@ -322,8 +323,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommGrp.{u} where
 /-- The category of commutative groups has all limits. -/
 @[to_additive "The category of additive commutative groups has all limits.",
   to_additive_relevant_arg 2]
-instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGrp.{u}
-  where has_limits_of_shape _ _ := { }
+instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGrp.{u} where
+  has_limits_of_shape _ _ := { }
 
 @[to_additive]
 instance hasLimits : HasLimits CommGrp.{u} :=

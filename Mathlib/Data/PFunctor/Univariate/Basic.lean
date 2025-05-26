@@ -172,7 +172,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
     Liftp p x ↔ ∃ a f, x = ⟨a, f⟩ ∧ ∀ i, p (f i) := by
   constructor
   · rintro ⟨y, hy⟩
-    cases' h : y with a f
+    rcases h : y with ⟨a, f⟩
     refine ⟨a, fun i => (f i).val, ?_, fun i => (f i).property⟩
     rw [← hy, h, map_eq_map, PFunctor.map_eq]
     congr
@@ -192,7 +192,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
     Liftr r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) := by
   constructor
   · rintro ⟨u, xeq, yeq⟩
-    cases' h : u with a f
+    rcases h : u with ⟨a, f⟩
     use a, fun i => (f i).val.fst, fun i => (f i).val.snd
     constructor
     · rw [← xeq, h]

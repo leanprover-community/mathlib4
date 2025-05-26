@@ -77,16 +77,15 @@ noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySm
     Arrow.{w} (ShrinkHoms C) ≃ Arrow C where
   toFun := (ShrinkHoms.equivalence C).inverse.mapArrow.obj
   invFun := (ShrinkHoms.equivalence C).functor.mapArrow.obj
-  left_inv _ := by simp [Functor.mapArrow]; rfl
-  right_inv _ := by simp [Functor.mapArrow]; rfl
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 /-- The bijection `Arrow (Shrink C) ≃ Arrow C`. -/
 noncomputable def Arrow.shrinkEquiv (C : Type u) [Category.{v} C] [Small.{w} C] :
     Arrow (Shrink.{w} C) ≃ Arrow C where
   toFun := (Shrink.equivalence C).inverse.mapArrow.obj
   invFun := (Shrink.equivalence C).functor.mapArrow.obj
-  left_inv f := by
-    refine Arrow.ext (Equiv.apply_symm_apply _ _)
+  left_inv _ := Arrow.ext (Equiv.apply_symm_apply _ _)
       ((Equiv.apply_symm_apply _ _)) (by simp; rfl)
   right_inv _ := Arrow.ext (by simp [Shrink.equivalence])
     (by simp [Shrink.equivalence]) (by simp [Shrink.equivalence])

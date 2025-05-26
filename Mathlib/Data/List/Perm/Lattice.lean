@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Nodup
 
@@ -44,7 +43,7 @@ theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂
 
 theorem Perm.bagInter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂) :
     l.bagInter t₁ = l.bagInter t₂ := by
-  induction' l with a l IH generalizing t₁ t₂ p; · simp
+  induction l generalizing t₁ t₂ p with | nil => simp | cons a l IH => ?_
   by_cases h : a ∈ t₁
   · simp [h, p.subset h, IH (p.erase _)]
   · simp [h, mt p.mem_iff.2 h, IH p]
@@ -62,7 +61,7 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     · have h₂ : x ∉ t₂ := h h₁
       simp [*]
     by_cases h₂ : x ∈ t₂
-    · simp only [*, inter_cons_of_not_mem, false_or, mem_append, inter_cons_of_mem,
+    · simp only [*, inter_cons_of_notMem, false_or, mem_append, inter_cons_of_mem,
         not_false_iff]
       refine Perm.trans (Perm.cons _ l_ih) ?_
       change [x] ++ xs ∩ t₁ ++ xs ∩ t₂ ~ xs ∩ t₁ ++ ([x] ++ xs ∩ t₂)
@@ -89,7 +88,7 @@ theorem Perm.drop_inter {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup
     rw [inter_reverse]
     apply Perm.take_inter _ _ h'
     apply (reverse_perm _).trans; assumption
-  · have : drop n xs = [] := by
+  · have : xs.drop n = [] := by
       apply eq_nil_of_length_eq_zero
       rw [length_drop, Nat.sub_eq_zero_iff_le]
       apply le_of_not_ge h''

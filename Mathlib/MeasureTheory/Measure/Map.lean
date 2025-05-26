@@ -97,11 +97,11 @@ theorem mapₗ_apply_of_measurable {f : α → β} (hf : Measurable f) (μ : Mea
   exact mapₗ_congr hf hf.aemeasurable.measurable_mk hf.aemeasurable.ae_eq_mk
 
 @[simp]
-theorem map_add (μ ν : Measure α) {f : α → β} (hf : Measurable f) :
+protected theorem map_add (μ ν : Measure α) {f : α → β} (hf : Measurable f) :
     (μ + ν).map f = μ.map f + ν.map f := by simp [← mapₗ_apply_of_measurable hf]
 
 @[simp]
-theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
+protected theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
   by_cases hf : AEMeasurable f (0 : Measure α) <;> simp [map, hf]
 
 @[simp]
@@ -312,8 +312,8 @@ theorem map_measurableEquiv_injective (e : α ≃ᵐ β) : Injective (Measure.ma
   apply_fun Measure.map e.symm at hμ
   simpa [map_symm_map e] using hμ
 
-theorem map_apply_eq_iff_map_symm_apply_eq (e : α ≃ᵐ β) : μ.map e = ν ↔ ν.map e.symm = μ := by
-  rw [← (map_measurableEquiv_injective e).eq_iff, map_map_symm, eq_comm]
+theorem map_apply_eq_iff_map_symm_apply_eq (e : α ≃ᵐ β) : μ.map e = ν ↔ μ = ν.map e.symm := by
+  rw [← (map_measurableEquiv_injective e).eq_iff, map_map_symm]
 
 theorem map_ae (f : α ≃ᵐ β) (μ : Measure α) : Filter.map f (ae μ) = ae (map f μ) := by
   ext s

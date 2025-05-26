@@ -20,6 +20,8 @@ results that the order of `G` is invertible in `k` (e. g. `k` has characteristic
 
 suppress_compilation
 
+universe u
+
 open MonoidAlgebra
 
 open Representation
@@ -81,7 +83,9 @@ theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixe
 
 theorem invariants_eq_top [ρ.IsTrivial] :
     invariants ρ = ⊤ :=
-eq_top_iff.2 (fun x _ g => ρ.apply_eq_self g x)
+eq_top_iff.2 (fun x _ g => ρ.isTrivial_apply g x)
+
+section
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -94,7 +98,7 @@ noncomputable def averageMap : V →ₗ[k] V :=
 /-- The `averageMap` sends elements of `V` to the subspace of invariants.
 -/
 theorem averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun g => by
-  rw [averageMap, ← asAlgebraHom_single_one, ← LinearMap.mul_apply, ← map_mul (asAlgebraHom ρ),
+  rw [averageMap, ← asAlgebraHom_single_one, ← Module.End.mul_apply, ← map_mul (asAlgebraHom ρ),
     mul_average_left]
 
 /-- The `averageMap` acts as the identity on the subspace of invariants.
@@ -106,25 +110,51 @@ theorem averageMap_id (v : V) (hv : v ∈ invariants ρ) : averageMap ρ v = v :
 theorem isProj_averageMap : LinearMap.IsProj ρ.invariants ρ.averageMap :=
   ⟨ρ.averageMap_invariant, ρ.averageMap_id⟩
 
+end
+section Subgroup
+
+variable {V : Type*} [AddCommMonoid V] [Module k V]
+variable (ρ : Representation k G V) (S : Subgroup G) [S.Normal]
+
+lemma le_comap_invariants (g : G) :
+    (invariants <| ρ.comp S.subtype) ≤
+      (invariants <| ρ.comp S.subtype).comap (ρ g) :=
+  fun x hx ⟨s, hs⟩ => by
+    simpa using congr(ρ g $(hx ⟨(g⁻¹ * s * g), Subgroup.Normal.conj_mem' ‹_› s hs g⟩))
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
+the invariants of `ρ|_S`. -/
+abbrev toInvariants :
+    Representation k G (invariants (ρ.comp S.subtype)) :=
+  subrepresentation ρ _ <| le_comap_invariants ρ S
+
+instance : IsTrivial ((toInvariants ρ S).comp S.subtype) where
+  out g := LinearMap.ext fun ⟨x, hx⟩ => Subtype.ext <| by simpa using (hx g)
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
+the invariants of `ρ|_S`. -/
+abbrev quotientToInvariants :
+    Representation k (G ⧸ S) (invariants (ρ.comp S.subtype)) :=
+  ofQuotient (toInvariants ρ S) S
+
+end Subgroup
 end Invariants
 
 namespace linHom
-
-universe u
 
 open CategoryTheory Action
 
 section Rep
 
-variable {k : Type u} [CommRing k] {G : Grp.{u}}
+variable {k : Type u} [CommRing k] {G : Type u} [Group G]
 
 theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
   dsimp
   rw [← LinearMap.comp_assoc, ← ModuleCat.hom_ofHom (Y.ρ g), ← ModuleCat.hom_ofHom f,
       ← ModuleCat.hom_comp, ← ModuleCat.hom_ofHom (X.ρ g⁻¹), ← ModuleCat.hom_comp,
-      Rep.ofHom_ρ, ← ρAut_hom_apply_inv X g, Rep.ofHom_ρ, ← ρAut_hom_apply_hom Y g,
-      ← ModuleCat.hom_ext_iff, Iso.inv_comp_eq, ρAut_hom_apply_hom, ← ModuleCat.hom_ofHom (X.ρ g),
+      Rep.ofHom_ρ, ← ρAut_apply_inv X g, Rep.ofHom_ρ, ← ρAut_apply_hom Y g,
+      ← ModuleCat.hom_ext_iff, Iso.inv_comp_eq, ρAut_apply_hom, ← ModuleCat.hom_ofHom (X.ρ g),
       ← ModuleCat.hom_comp, ← ModuleCat.hom_ext_iff]
   exact comm
 
@@ -145,7 +175,7 @@ end Rep
 
 section FDRep
 
-variable {k : Type u} [Field k] {G : Grp.{u}}
+variable {k : Type u} [Field k] {G : Type u} [Group G]
 
 /-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
@@ -161,3 +191,34 @@ end FDRep
 end linHom
 
 end Representation
+
+namespace Rep
+
+open CategoryTheory
+
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
+the invariants of `ρ|_S`. -/
+abbrev toInvariants : Rep k G := Rep.of <| A.ρ.toInvariants S
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
+the invariants of `ρ|_S`. -/
+abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvariants S)
+
+variable (k G)
+
+/-- The functor sending a representation to its submodule of invariants. -/
+@[simps]
+noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
+  obj A := ModuleCat.of k A.ρ.invariants
+  map {A B} f := ModuleCat.ofHom <| (f.hom.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
+    B.ρ.invariants fun ⟨c, hc⟩ g => by
+      have := (hom_comm_apply f g c).symm
+      simp_all [hc g]
+
+instance : (invariantsFunctor k G).PreservesZeroMorphisms where
+
+instance : (invariantsFunctor k G).Additive where
+
+end Rep

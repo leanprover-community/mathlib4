@@ -38,7 +38,7 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
     -- one can assume without loss of generality that `x` belongs to the closure of `s`, as the
     -- statement is empty otherwise
     by_cases hx : x ∉ closure s
-    · rw [← closure_closure] at hx; exact hasFDerivWithinAt_of_nmem_closure hx
+    · rw [← closure_closure] at hx; exact HasFDerivWithinAt.of_notMem_closure hx
     push_neg at hx
     rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
     /- One needs to show that `‖f y - f x - f' (y - x)‖ ≤ ε ‖y - x‖` for `y` close to `x` in
@@ -100,9 +100,6 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
         tendsto_const_nhds.mul
           (Tendsto.comp continuous_norm.continuousAt <| tendsto_snd.sub tendsto_fst)
 
-@[deprecated (since := "2024-07-10")] alias has_fderiv_at_boundary_of_tendsto_fderiv :=
-  hasFDerivWithinAt_closure_of_tendsto_fderiv
-
 /-- If a function is differentiable on the right of a point `a : ℝ`, continuous at `a`, and
 its derivative also converges at `a`, then `f` is differentiable on the right at `a`. -/
 theorem hasDerivWithinAt_Ici_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ} {f : ℝ → E}
@@ -136,9 +133,6 @@ theorem hasDerivWithinAt_Ici_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ} {f
     rw [hasDerivWithinAt_iff_hasFDerivWithinAt, ← t_closure]
     exact hasFDerivWithinAt_closure_of_tendsto_fderiv t_diff t_conv t_open t_cont t_diff'
   exact this.mono_of_mem_nhdsWithin (Icc_mem_nhdsGE ab)
-
-@[deprecated (since := "2024-07-10")] alias has_deriv_at_interval_left_endpoint_of_tendsto_deriv :=
-  hasDerivWithinAt_Ici_of_tendsto_deriv
 
 /-- If a function is differentiable on the left of a point `a : ℝ`, continuous at `a`, and
 its derivative also converges at `a`, then `f` is differentiable on the left at `a`. -/
@@ -174,9 +168,6 @@ theorem hasDerivWithinAt_Iic_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ}
     rw [hasDerivWithinAt_iff_hasFDerivWithinAt, ← t_closure]
     exact hasFDerivWithinAt_closure_of_tendsto_fderiv t_diff t_conv t_open t_cont t_diff'
   exact this.mono_of_mem_nhdsWithin (Icc_mem_nhdsLE ba)
-
-@[deprecated (since := "2024-07-10")] alias has_deriv_at_interval_right_endpoint_of_tendsto_deriv :=
-  hasDerivWithinAt_Iic_of_tendsto_deriv
 
 /-- If a real function `f` has a derivative `g` everywhere but at a point, and `f` and `g` are
 continuous at this point, then `g` is also the derivative of `f` at this point. -/

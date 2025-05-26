@@ -3,10 +3,10 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Module.ULift
 import Mathlib.Data.Finsupp.Fintype
-import Mathlib.Data.Matrix.Defs
 import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.Logic.Small.Basic
 
 /-!
@@ -23,45 +23,46 @@ module.
 * `Module.Free R M` : the class of free `R`-modules.
 -/
 
+assert_not_exists DirectSum Matrix TensorProduct
 
 universe u v w z
 
 variable {ι : Type*} (R : Type u) (M : Type v) (N : Type z)
 
-open TensorProduct DirectSum
-
+namespace Module
 section Basic
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- `Module.Free R M` is the statement that the `R`-module `M` is free. -/
-class Module.Free : Prop where
-  exists_basis : Nonempty <| (I : Type v) × Basis I R M
+class Free (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
+  exists_basis (R M) : Nonempty <| (I : Type v) × Basis I R M
 
-theorem Module.free_iff_set : Module.Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
-  ⟨fun h => ⟨Set.range h.exists_basis.some.2, ⟨Basis.reindexRange h.exists_basis.some.2⟩⟩,
-    fun ⟨S, hS⟩ => ⟨nonempty_sigma.2 ⟨S, hS⟩⟩⟩
+lemma Free.exists_set [Free R M] : ∃ S : Set M, Nonempty (Basis S R M) :=
+  let ⟨_I, b⟩ := exists_basis R M; ⟨Set.range b, ⟨b.reindexRange⟩⟩
+
+theorem free_iff_set : Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
+  ⟨fun _ ↦ Free.exists_set .., fun ⟨S, hS⟩ ↦ ⟨nonempty_sigma.2 ⟨S, hS⟩⟩⟩
 
 /-- If `M` fits in universe `w`, then freeness is equivalent to existence of a basis in that
 universe.
 
 Note that if `M` does not fit in `w`, the reverse direction of this implication is still true as
 `Module.Free.of_basis`. -/
-theorem Module.free_def [Small.{w,v} M] :
-    Module.Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) :=
-  ⟨fun h =>
+theorem free_def [Small.{w, v} M] : Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) where
+  mp h :=
     ⟨Shrink (Set.range h.exists_basis.some.2),
-      ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩,
-    fun h => ⟨(nonempty_sigma.2 h).map fun ⟨_, b⟩ => ⟨Set.range b, b.reindexRange⟩⟩⟩
+      ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩
+  mpr h := ⟨(nonempty_sigma.2 h).map fun ⟨_, b⟩ => ⟨Set.range b, b.reindexRange⟩⟩
 
 variable {R M}
 
-theorem Module.Free.of_basis {ι : Type w} (b : Basis ι R M) : Module.Free R M :=
-  (Module.free_def R M).2 ⟨Set.range b, ⟨b.reindexRange⟩⟩
+theorem Free.of_basis {ι : Type w} (b : Basis ι R M) : Free R M :=
+  (free_def R M).2 ⟨Set.range b, ⟨b.reindexRange⟩⟩
 
 end Basic
 
-namespace Module.Free
+namespace Free
 
 section Semiring
 
@@ -108,6 +109,9 @@ instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
 theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
+instance [Module.Free R M] [Nontrivial M] : FaithfulSMul R M :=
+  .of_injective _ (Module.Free.repr R M).symm.injective
+
 variable {R M N}
 
 theorem of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=
@@ -146,32 +150,7 @@ variable (R M N)
 instance self : Module.Free R R :=
   of_basis (Basis.singleton Unit R)
 
-instance prod [Module.Free R N] : Module.Free R (M × N) :=
-  of_basis <| (chooseBasis R M).prod (chooseBasis R N)
-
-/-- The product of finitely many free modules is free. -/
-instance pi (M : ι → Type*) [Finite ι] [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
-    [∀ i : ι, Module.Free R (M i)] : Module.Free R (∀ i, M i) :=
-  let ⟨_⟩ := nonempty_fintype ι
-  of_basis <| Pi.basis fun i => chooseBasis R (M i)
-
-/-- The module of finite matrices is free. -/
-instance matrix {m n : Type*} [Finite m] [Finite n] : Module.Free R (Matrix m n M) :=
-  Module.Free.pi R _
-
 instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
-
-variable (ι)
-
-/-- The product of finitely many free modules is free (non-dependent version to help with typeclass
-search). -/
-instance function [Finite ι] : Module.Free R (ι → M) :=
-  Free.pi _ _
-
-instance finsupp : Module.Free R (ι →₀ M) :=
-  of_basis (Finsupp.basis fun _ => chooseBasis R M)
-
-variable {ι}
 
 instance (priority := 100) of_subsingleton [Subsingleton N] : Module.Free R N :=
   of_basis.{u,z,z} (Basis.empty N : Basis PEmpty R N)
@@ -180,27 +159,22 @@ instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :
   letI := Module.subsingleton R N
   Module.Free.of_subsingleton R N
 
-instance dfinsupp {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
-    [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (Π₀ i, M i) :=
-  of_basis <| DFinsupp.basis fun i => chooseBasis R (M i)
-
-instance directSum {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
-    [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (⨁ i, M i) :=
-  Module.Free.dfinsupp R M
-
 end Semiring
 
-section CommSemiring
-
-variable {S} [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M]
-  [Module S M] [IsScalarTower R S M] [Module.Free S M]
-  [AddCommMonoid N] [Module R N] [Module.Free R N]
-
-instance tensor : Module.Free S (M ⊗[R] N) :=
-  let ⟨bM⟩ := exists_basis (R := S) (M := M)
-  let ⟨bN⟩ := exists_basis (R := R) (M := N)
-  of_basis (bM.2.tensorProduct bN.2)
-
-end CommSemiring
-
 end Module.Free
+
+namespace Basis
+
+open Finset
+
+variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
+
+/-- If `B` is a basis of the `R`-algebra `S` such that `B i = 1` for some index `i`, then
+each `r : R` gets represented as `s • B i` as an element of `S`. -/
+theorem repr_algebraMap {ι : Type*} [DecidableEq ι] {B : Basis ι R S} {i : ι} (hBi : B i = 1)
+    (r : R) : B.repr ((algebraMap R S) r) = fun j : ι ↦ if i = j then r else 0 := by
+  ext j
+  rw [Algebra.algebraMap_eq_smul_one, map_smul, ← hBi, Finsupp.smul_apply, B.repr_self_apply]
+  simp
+
+end Basis

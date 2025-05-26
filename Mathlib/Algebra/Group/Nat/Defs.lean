@@ -59,6 +59,7 @@ instance instCommSemigroup    : CommSemigroup ℕ    := by infer_instance
 instance instSemigroup        : Semigroup ℕ        := by infer_instance
 instance instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
+instance instOne : One ℕ := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 

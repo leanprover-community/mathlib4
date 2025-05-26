@@ -119,8 +119,7 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
 /-- The concatenation of compatible pairs of continuous maps on adjacent intervals, defined as a
 `ContinuousMap` on a subtype of the product. -/
 noncomputable def concatCM :
-    C({fg : C(Icc a b, E) × C(Icc b c, E) // fg.1 ⊤ = fg.2 ⊥}, C(Icc a c, E))
-    where
+    C({fg : C(Icc a b, E) × C(Icc b c, E) // fg.1 ⊤ = fg.2 ⊥}, C(Icc a c, E)) where
   toFun fg := concat fg.val.1 fg.val.2
   continuous_toFun := by
     let S : Set (C(Icc a b, E) × C(Icc b c, E)) := {fg | fg.1 ⊤ = fg.2 ⊥}
