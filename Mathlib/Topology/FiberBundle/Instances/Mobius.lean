@@ -105,123 +105,110 @@ lemma myNeg (a b : ℝ) : -!₂[a, b] = !₂[-a, -b] := by
   rw [h2] at h3
   exact h3.symm
 
+lemma sphere_equator_points : { x | x.val 1 = 0 } = { -xh, -ug } := by
+  ext y
+  simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  let A := Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1
+  let B := { x : EuclideanSpace ℝ (Fin 2) | ∑ i : Fin 2, x i ^ 2 = 1 ^ 2}
+  have h1 : A = B := by
+    exact EuclideanSpace.sphere_zero_eq 1 (le_of_lt Real.zero_lt_one)
+  have h2 : y.val ∈ A := y.prop
+  have h3 : y.val ∈ B := by
+    rw [h1] at h2
+    exact h2
+  have h4 : ∑ i : Fin 2, y.val i ^ 2 = 1 ^ 2 := by
+    simp [Set.mem_setOf_eq] at h3
+    exact h3
+  have h5 : (y.val 0) ^ 2 + (y.val 1) ^ 2 = 1 := by
+    rwa [Fin.sum_univ_two, one_pow] at h4
+
+  have hf1 (h : y.val 1 ^ 2 + 1 - 1 = 0) : y.val 1 ^ 2 = 0 := by
+    have h1 : (y.val 1 ^ 2 + 1) + (- 1) = 0 := h
+    have h2 : y.val 1 ^ 2 + (1 - 1) = (y.val 1 ^ 2 + 1) + (- 1) := by rw [add_assoc, sub_eq_add_neg]
+    have h3 : y.val 1 ^ 2 + (1 - 1) = y.val 1 ^ 2 := by rw [sub_self, add_zero]
+    have h4 : y.val 1 ^ 2 = 0 := by
+      calc y.val 1 ^ 2 = y.val 1 ^ 2 + (1 - 1) := by rw [h3]
+                   _ = (y.val 1 ^ 2 + 1) + (- 1) := by rw [h2]
+                   _ = 0 := by rw [h1]
+    exact h4
+
+  have h6 : y.val 1 = 0 ↔ y.val 0 = 1 ∨ y.val 0 = -1 :=
+    ⟨ fun h => by
+      have gg : (y.val 0) ^ 2 = 1 ↔ y.val 0 = 1 ∨ y.val 0 = -1 := sq_eq_one_iff
+      rw [h, zero_pow two_ne_zero, add_zero] at h5
+      rwa [gg] at h5,
+
+    fun h => by
+      cases h with
+      | inl pos1 =>
+        rw [pos1, one_pow, ←sub_eq_zero, add_comm] at h5
+        exact sq_eq_zero_iff.mp (hf1 h5)
+      | inr neg1 =>
+        rw [neg1, neg_one_sq, ←sub_eq_zero, add_comm] at h5
+        exact sq_eq_zero_iff.mp (hf1 h5)⟩
+
+  have h7a : y.val 1 = 0 -> y.val = xh.val ∨ y.val = ug.val := by
+    intro hy1
+    have h1 : y.val 0 = 1 ∨ y.val 0 = -1 := h6.mp hy1
+    cases h1 with
+    | inl hpos => have h5 : y.val = xh.val := by
+                    ext i
+                    fin_cases i
+                    · simp [hpos]; rfl
+                    · simp [hy1]; rfl
+                  exact Or.inl h5
+    | inr hneg => have h5 : y.val = ug.val := by
+                    ext i
+                    fin_cases i
+                    · simp [hneg]; rfl
+                    · simp [hy1]; rfl
+                  exact Or.inr h5
+
+  have h7b : y.val = xh.val ∨ y.val = ug.val -> y.val 1 = 0 := by
+    intro h
+    cases h with
+    | inl left =>
+      rw [left]; rfl
+    | inr right =>
+      rw [right]; rfl
+
+  have h8 : y.val 1 = 0 <-> y.val = xh.val ∨ y.val = ug.val := ⟨h7a, h7b⟩
+  have h9 : y.val = (xh).val -> y = xh := Subtype.eq
+  have ha : y.val = (ug).val -> y = ug := Subtype.eq
+  have hb : y = xh -> y.val = (xh).val := by intro h; rw[h]
+  have hc : y = ug -> y.val = (ug).val := by intro h; rw [h]
+  have hd : -!₂[(1 : ℝ), 0] = !₂[-1, 0] := by rw [myNeg 1 0]; simp
+  have he : -xh.val = ug.val := by exact hd
+  have hf : -xh = ug := Subtype.eq he
+  have hg : xh = -ug := by rw [<-hf]; simp
+  have hh : y.val 1 = 0 ↔ y = xh ∨ y = ug := by
+    rw [h8]
+    constructor
+    · intro h
+      cases h with
+      | inl hxh => left; exact h9 hxh
+      | inr hug => right; exact ha hug
+    · intro h
+      cases h with
+      | inl hxh => left; rw [← hb hxh]
+      | inr hug => right; rw [← hc hug]
+
+  have hi : y.val 1 = 0 ↔ y = -xh ∨ y = -ug := by
+    rw [hh]
+    constructor
+    · intro h
+      have chit : y = -ug ∨ y = -xh := by cases h with
+      | inl hxh => left; rw [hg] at hxh; exact hxh
+      | inr hug => right; rw [<-hf] at hug; exact hug
+      exact or_comm.mp chit
+    · intro h
+      cases h with
+      | inl hxh_neg => right; rw [hf] at hxh_neg; exact hxh_neg
+      | inr hug_neg => left; rw [← hf, neg_neg] at hug_neg; exact hug_neg
+  exact hi
+
 theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := by
   ext y
-
-  have h3 : { x | x.val 1 = 0 } = { -xh, -ug } := by
-    ext y
-    simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
-    let A := Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1
-    let B := { x : EuclideanSpace ℝ (Fin 2) | ∑ i : Fin 2, x i ^ 2 = 1 ^ 2}
-    have h31a : A = B := by
-      exact EuclideanSpace.sphere_zero_eq 1 (le_of_lt Real.zero_lt_one)
-    have h3aa : y.val ∈ A := y.prop
-    have h3ba : y.val ∈ B := by
-      rw [h31a] at h3aa
-      exact h3aa
-    have h3ca : ∑ i : Fin 2, y.val i ^ 2 = 1 ^ 2 := by
-      simp [Set.mem_setOf_eq] at h3ba
-      exact h3ba
-    have h3da : (y.val 0) ^ 2 + (y.val 1) ^ 2 = 1 := by
-      rwa [Fin.sum_univ_two, one_pow] at h3ca
-
-    have h3de : y.val 1 = 0 ↔ y.val 0 = 1 ∨ y.val 0 = -1 :=
-      ⟨ fun h => by
-        have ge : (y.val 0) ^ 2 + (y.val 1) ^ 2  = (y.val 0) ^ 2 + 0 ^ 2 := by rw [h]
-        have gf : (y.val 0) ^ 2 + 0 ^ 2 = (y.val 0) ^ 2 := by rw [zero_pow two_ne_zero, add_zero]
-        have gg : (y.val 0) ^ 2 = 1 ↔ y.val 0 = 1 ∨ y.val 0 = -1 := sq_eq_one_iff
-        rw [ge, gf] at h3da
-        rwa [gg] at h3da,
-
-      fun h => by
-        have : (y.val 0) ^ 2 + (y.val 1) ^ 2 = 1 := h3da
-        cases h with
-        | inl pos1 =>
-          rw [pos1, one_pow, ←sub_eq_zero, add_comm] at this
-          have h1 : (y.val 1 ^ 2 + 1) + (- 1) = 0 := this
-          have h2 : y.val 1 ^ 2 + (1 - 1) = (y.val 1 ^ 2 + 1) + (- 1) := by rw [add_assoc, sub_eq_add_neg]
-          have h3 : y.val 1 ^ 2 + (1 - 1) = y.val 1 ^ 2 := by rw [sub_self, add_zero]
-          have h4 : y.val 1 ^ 2 = 0 := by
-            calc y.val 1 ^ 2 = y.val 1 ^ 2 + (1 - 1) := by rw [h3]
-                  _ = (y.val 1 ^ 2 + 1) + (- 1) := by rw [h2]
-                  _ = 0 := by rw [h1]
-          exact sq_eq_zero_iff.mp h4
-        | inr neg1 =>
-          rw [neg1, neg_one_sq, ←sub_eq_zero, add_comm] at this
-          have h1 : (y.val 1 ^ 2 + 1) + (- 1) = 0 := this
-          have h2 : y.val 1 ^ 2 + (1 - 1) = (y.val 1 ^ 2 + 1) + (- 1) := by rw [add_assoc, sub_eq_add_neg]
-          have h3 : y.val 1 ^ 2 + (1 - 1) = y.val 1 ^ 2 := by rw [sub_self, add_zero]
-          have h4 : y.val 1 ^ 2 = 0 := by
-            calc y.val 1 ^ 2 = y.val 1 ^ 2 + (1 - 1) := by rw [h3]
-                  _ = (y.val 1 ^ 2 + 1) + (- 1) := by rw [h2]
-                  _ = 0 := by rw [h1]
-          exact sq_eq_zero_iff.mp h4⟩
-
-    have bar5a : y.val 1 = 0 -> y.val = xh.val ∨ y.val = ug.val := by
-      intro hy1
-      have h1 : y.val 0 = 1 ∨ y.val 0 = -1 := h3de.mp hy1
-      cases h1 with
-      | inl hpos => have h3 : xh.val 0 = 1 := rfl
-                    have h4 : xh.val 1 = 0 := rfl
-                    have h5 : y.val = xh.val := by
-                      ext i
-                      fin_cases i
-                      · simp [hpos, h3]
-                      · simp [hy1, h4]
-                    exact Or.inl h5
-      | inr hneg => have h3 : ug.val 0 = -1 := rfl
-                    have h4 : ug.val 1 = 0 := rfl
-                    have h5 : y.val = ug.val := by
-                      ext i
-                      fin_cases i
-                      · simp [hneg, h3]
-                      · simp [hy1, h4]
-                    exact Or.inr h5
-
-    have bar5b : y.val = xh.val ∨ y.val = ug.val -> y.val 1 = 0 := by
-      intro h
-      cases h with
-      | inl left =>
-        have h3 : xh.val 1 = 0 := rfl
-        rw [left, h3]
-      | inr right =>
-        have h3 : ug.val 1 = 0 := rfl
-        rw [right, h3]
-
-    have bar5 : y.val 1 = 0 <-> y.val = xh.val ∨ y.val = ug.val := ⟨bar5a, bar5b⟩
-    have fooo1 : y.val = (xh).val -> y = xh := Subtype.eq
-    have fooo2 : y.val = (ug).val -> y = ug := Subtype.eq
-    have barr1 : y = xh -> y.val = (xh).val := by intro h; rw[h]
-    have barr2 : y = ug -> y.val = (ug).val := by intro h; rw [h]
-    have bar3 : -!₂[(1 : ℝ), 0] = !₂[-1, 0] := by rw [myNeg 1 0]; simp
-    have bar6 : -xh.val = ug.val := by exact bar3
-    have bar7 : -xh = ug := Subtype.eq bar6
-    have bar8 : xh = -ug := by rw [<-bar7]; simp
-    have chat1 : y.val 1 = 0 ↔ y = xh ∨ y = ug := by
-      rw [bar5]
-      constructor
-      · intro h
-        cases h with
-        | inl hxh => left; exact fooo1 hxh
-        | inr hug => right; exact fooo2 hug
-      · intro h
-        cases h with
-        | inl hxh => left; rw [← barr1 hxh]
-        | inr hug => right; rw [← barr2 hug]
-
-    have chat2 : y.val 1 = 0 ↔ y = -xh ∨ y = -ug := by
-      rw [chat1]
-      constructor
-      · intro h
-        have chit : y = -ug ∨ y = -xh := by cases h with
-        | inl hxh => left; rw [bar8] at hxh; exact hxh
-        | inr hug => right; rw [<-bar7] at hug; exact hug
-        exact or_comm.mp chit
-      · intro h
-        cases h with
-        | inl hxh_neg => right; rw [bar7] at hxh_neg; exact hxh_neg
-        | inr hug_neg => left; rw [← bar7, neg_neg] at hug_neg; exact hug_neg
-    exact chat2
 
   have h1 : { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } = { x | x.val 1 = 0 }ᶜ := by
     ext y
@@ -238,7 +225,7 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
   have hq : U.source ∩ V.source = { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := by
     calc U.source ∩ V.source = { x | x ≠ -xh } ∩ { x | x ≠ -ug } := ha
          _ = { -xh, -ug }ᶜ := h2
-         _ = { x | x.val 1 = 0 }ᶜ := by rw [← h3]
+         _ = { x | x.val 1 = 0 }ᶜ := by rw [← sphere_equator_points]
          _ =  { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := h1.symm
   simp [hq]
 
