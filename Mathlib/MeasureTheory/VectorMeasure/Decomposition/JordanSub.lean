@@ -69,8 +69,8 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
   have h₁ := toSignedMeasure_restrict_sub hs
   have h₂ := toSignedMeasure_restrict_sub hsc
 
-  have h₁' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_le_on hs
-  have h₂' := toSignedMeasure_congr <|restrict_eq_zero.mpr <|sub_eq_zero_of_le_on hsc
+  have h₁' := toSignedMeasure_congr <| restrict_eq_zero.mpr <| sub_eq_zero_of_le_on hs
+  have h₂' := toSignedMeasure_congr <| restrict_eq_zero.mpr <| sub_eq_zero_of_le_on hsc
 
   have partition₁ := VectorMeasure.restrict_add_restrict_compl (μ - ν).toSignedMeasure
     hs.measurableSet
