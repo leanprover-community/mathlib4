@@ -266,7 +266,6 @@ instance pfunFinEnum (p : Prop) [Decidable p] (α : p → Type) [∀ hp, FinEnum
     FinEnum (∀ hp : p, α hp) :=
   if hp : p then
     ofList ((toList (α hp)).map fun x _ => x) (by intro x; simpa using ⟨x hp, rfl⟩)
-  else ofList [fun hp' => (hp hp').elim]
-    (by intro; simp only [mem_cons, not_mem_nil, or_false]; ext hp'; cases hp hp')
+  else ofList [fun hp' => (hp hp').elim] (by simp [funext_iff, hp])
 
 end List
