@@ -148,8 +148,8 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
       Localization.AtPrime.comap_maximalIdeal]
   intro x
   obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective Q.primeCompl x
-  simp [localize, coe_mk, -mem_maximalIdeal, mem_nonunits_iff, Localization.localRingHom_mk',
-    ← IsLocalization.mk'_pow, h]
+  simp only [localize, coe_mk, Localization.localRingHom_mk', RingHom.coe_coe, h,
+    ← IsLocalization.mk'_pow]
   rw [← IsLocalization.mk'_sub,
     IsLocalization.AtPrime.mk'_mem_maximal_iff (Localization.AtPrime Q) Q]
   simp only [SubmonoidClass.coe_pow, ← Ideal.Quotient.eq_zero_iff_mem]
