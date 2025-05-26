@@ -18,7 +18,7 @@ class Generates {S: outParam (Finset G)}: Prop where
   generates : ((closure (S : Set G) : Set G) = ⊤)
   has_inv: ∀ g ∈ S, g⁻¹ ∈ S
 
-variable {S : Finset G} [hGS: Generates (G := G) (S := S)]
+variable {S : Finset G} [hGS: Generates (G := G) (S := S)] [hS: Nonempty S]
 
 lemma s_union_sinv : (S: Set G) ∪ (S: Set G)⁻¹ = S := by
   ext a
@@ -929,7 +929,8 @@ def HasPolynomialGrowth: Prop := ∃ d, HasPolynomialGrowthD (S := S) d
 lemma smaller_closure (T: Type*) (A B: Set T) (G: Group T) (hc: B ⊆ closure A) (hb: closure B = ⊤): closure A = ⊤ := by
   apply?
 
-lemma S_nonempty: S.Nonempty := by sorry
+lemma S_nonempty: S.Nonempty := by
+  exact Finset.nonempty_coe_sort.mp hS
 
 variable [Inhabited G]
 
@@ -1018,6 +1019,9 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
       let list_with_mem: List S := (l_attach).map (fun a => ⟨a.val, l_mem_s a.val a.prop⟩)
       let new_list := list_with_mem.map (fun s => (e_i s) + ofMul (γ^(((φ (ofMul s.val))))))
 
+      have cancel_add_minus: max_phi - 1 + 1 = max_phi := by
+        omega
+
       use new_list
       refine ⟨?_, ?_⟩
       .
@@ -1028,13 +1032,64 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
         obtain ⟨a, ha, x_eq_sum⟩ := hx
         left
 
-        have gamma_phi_in: γ^(max_phi) ∈ ({1, γ} ∪ Set.range e_i_regular) ^ max_phi := by
+        have gamma_phi_in: γ^(max_phi) ∈ ({1, γ, γ⁻¹} ∪ Set.range e_i_regular) ^ max_phi := by
           apply Set.pow_mem_pow
           simp
 
-        have gamma_phi_in_minus_plus: γ^(φ a) ∈ ({1, γ} ∪ Set.range e_i_regular) ^ (max_phi - 1  +1) := by
-          sorry
-
+        have gamma_phi_in_minus_plus: γ^(φ a) ∈ ({1, γ, γ⁻¹} ∪ Set.range e_i_regular) ^ (max_phi - 1  +1) := by
+          by_cases val_pos: 0 < φ a
+          .
+            have eq_self: Int.natAbs (φ a) = φ a := by
+              simp [val_pos]
+            conv =>
+              arg 2
+              equals γ ^ (Int.natAbs (φ a)) =>
+                nth_rw 1 [← eq_self]
+                norm_cast
+            apply Set.pow_subset_pow_right (m := Int.natAbs (φ a)) (n := max_phi - 1 + 1)
+            . simp
+            .
+              rw [cancel_add_minus]
+              unfold max_phi
+              simp
+              right
+              apply Finset.le_max'
+              simp
+              use a
+              refine ⟨l_mem_s a ha, ?_⟩
+              conv =>
+                pattern ofMul a
+                equals a => rfl
+            .
+              apply Set.pow_mem_pow
+              simp
+          .
+            have eq_neg_abs: (φ a) = -(φ a).natAbs := by
+              rw [← Int.abs_eq_natAbs]
+              simp at val_pos
+              rw [← abs_eq_neg_self] at val_pos
+              omega
+            rw [eq_neg_abs]
+            conv =>
+              arg 2
+              equals (γ⁻¹) ^ (↑(φ a).natAbs) =>
+                simp
+                rw [Int.abs_eq_natAbs]
+                norm_cast
+            apply Set.pow_subset_pow_right (m := Int.natAbs (φ a)) (n := max_phi - 1 + 1)
+            . simp
+            .
+              rw [cancel_add_minus]
+              unfold max_phi
+              simp
+              right
+              apply Finset.le_max'
+              simp
+              use a
+              refine ⟨l_mem_s a ha, ?_⟩
+              conv =>
+                pattern ofMul a
+                equals a => rfl
         have a_mem_s: a ∈ S := by exact l_mem_s a ha
 
         have e_pi_s_mem: e_i_regular ⟨s, hs⟩ ∈ ({1, γ} ∪ Set.range e_i_regular) := by
@@ -1087,9 +1142,6 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           rw [List.ofFn_cons]
           simp
 
-
-        have cancel_add_minus: max_phi - 1 + 1 = max_phi := by
-          omega
 
 
         have prod_mem_power := set_pow_mul (max_phi - 1 + 1) (e_i_regular ⟨a, l_mem_s a ha⟩) (γ ^ (φ (ofMul a))) _ e_pi_s_mem_pow gamma_phi_in_minus_plus
