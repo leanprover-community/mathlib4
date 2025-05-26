@@ -22,20 +22,6 @@ local notation "𝔪" => IsLocalRing.maximalIdeal R
 
 open Ideal
 
-#check Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert
-theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
-    (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk I)).height ≤ 1 :=
-  let f := Ideal.Quotient.mk I
-  have : p.IsPrime := hp.1.1
-  height_le_one_of_isPrincipal_of_mem_minimalPrimes ((span {x}).map f) (p.map f) ⟨
-    ⟨map_isPrime_of_surjective Quotient.mk_surjective <|
-      I.mk_ker.trans_le (le_sup_left.trans hp.1.2), map_mono (le_sup_right.trans hp.1.2)⟩,
-    fun _ ⟨hr, hxr⟩ hrp ↦ map_le_iff_le_comap.mpr <| hp.2 ⟨hr.comap f, sup_le_iff.mpr
-      ⟨I.mk_ker.symm.trans_le <| ker_le_comap (Ideal.Quotient.mk I), le_comap_of_map_le hxr⟩⟩ <|
-        (comap_mono hrp).trans <| Eq.le <|
-          (p.comap_map_of_surjective _ Quotient.mk_surjective).trans <|
-            sup_eq_left.mpr (I.mk_ker.trans_le (le_sup_left.trans hp.1.2))⟩
-
 theorem PrimeSpectrum.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : (PrimeSpectrum R)}
     (h₀ : p₀ < p₁) (h₁ : p₁ < ⟨𝔪, inferInstance⟩) {x : R} (hx : x ∈ 𝔪) :
       ∃ q : PrimeSpectrum R, x ∈ q.1 ∧ p₀ < q ∧ q.1 < 𝔪 := by
