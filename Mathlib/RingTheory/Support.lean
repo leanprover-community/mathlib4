@@ -112,6 +112,9 @@ lemma Module.support_eq_empty_iff :
     subsingleton_iff_forall_eq 0]
   simp only [Submonoid.powers_one, Submonoid.mem_bot, exists_eq_left, one_smul]
 
+instance [Nontrivial M] : Nonempty (Module.support R M) :=
+  Set.nonempty_iff_ne_empty'.mpr ((Module.support_eq_empty_iff).not.mpr (not_subsingleton M))
+
 lemma Module.support_eq_empty [Subsingleton M] :
     Module.support R M = ∅ :=
   Module.support_eq_empty_iff.mpr ‹_›
@@ -239,5 +242,13 @@ theorem Module.support_quotient (I : Ideal R) :
       rw [← Localization.AtPrime.map_eq_maximalIdeal]
       exact Ideal.map_mono hp₂
     exact e.nontrivial
+
+open Pointwise in
+theorem Module.support_quotSMulTop (x : R) :
+    Module.support R (M ⧸ x • (⊤ : Submodule R M)) = Module.support R M ∩ zeroLocus {x} := by
+  refine (x • (⊤ : Submodule R M)).quotEquivOfEq (Ideal.span {x} • ⊤)
+    ((⊤ : Submodule R M).ideal_span_singleton_smul x).symm |>.support_eq.trans <|
+      (Module.support_quotient _).trans ?_
+  rw [zeroLocus_span]
 
 end Finite
