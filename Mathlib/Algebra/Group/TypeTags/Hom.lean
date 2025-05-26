@@ -131,5 +131,5 @@ lemma Multiplicative.monoidHom_ext [AddZeroClass α] [MulOneClass β]
 /-- This ext lemma moves the type tag to the codomain, since most ext lemmas act on the domain. -/
 @[ext]
 lemma Additive.addMonoidHom_ext [MulOneClass α] [AddZeroClass β]
-    (f g : Additive α →+ β) (h : f.toMultiplicative = g.toMultiplicative) : f = g :=
+    (f g : Additive α →+ β) (h : f.toMultiplicative' = g.toMultiplicative') : f = g :=
   AddMonoidHom.toMultiplicative.injective h
