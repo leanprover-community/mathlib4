@@ -61,7 +61,7 @@ lemma counit_tmul (x : A) (y : B) :
 
 /-- `expand_comul R x with x₁ x₂` attempts to replace `comul (R := R) x` by
 `x₁ ⊗ₜ x₂` via linearity. -/
-scoped macro "expand_comul" ring:ident var:ident "with" var₁:ident var₂:ident : tactic =>
+scoped macro "expand_comul" ring:term ", " var:term "with " var₁:ident var₂:ident : tactic =>
   `(tactic|
     (induction comul (R := $ring) $var with
       | zero => simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
