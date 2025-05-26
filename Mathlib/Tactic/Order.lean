@@ -260,7 +260,7 @@ elab "order" : tactic => focus do
       let .succ u ← getLevel type | throwError "Unexpected Prop"
       let type : Q(Type u) := type
       let instLinearOrder ← synthInstanceQ q(LinearOrder $type)
-      let (_, factsNat) := translateToInt type instLinearOrder idxToAtom facts
+      let (_, factsNat) ← translateToInt type instLinearOrder idxToAtom facts
       let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
         match factNat with
         | .eq _ _ proof => some proof

@@ -115,56 +115,18 @@ theorem toInt_inf_toInt_eq_toInt :
     toInt val i ⊓ toInt val j = toInt val k ↔ val i ⊓ val j = val k := by
   simp [le_antisymm_iff, inf_le_iff, le_inf_iff, toInt_le_toInt]
 
-open Qq
-
-/- ## `BinTree` to convert an array of atoms to a function `Fin n → α`. -/
-
-/-- Labeled binary tree, with leaves labeled by `α` and nodes labeled by `ℕ`. -/
-inductive BinTree (α : Type*) where
-| leaf : α → BinTree α
-| node : Nat → BinTree α → BinTree α → BinTree α
-
-namespace BinTree
-
-variable {α : Type*}
-
-/-- Get a value out of a binary tree, deciding at each fork whether to go left or right
-by comparing to the label. -/
-def get (tree : BinTree α) {m : Nat} (n : Fin m) : α :=
-  match tree with
-  | leaf a => a
-  | node m l r => if n < m then l.get n else r.get n
-
-open Lean Qq
-
-/-- Given a nonempty array `atoms`, create an expression representing a binary tree `t`
-such that `t.get n` is defeq to `atoms[n]` for `n < atoms.size`. -/
-def mkExpr {u : Level} {α : Q(Type $u)} (atoms : Array Q($α)) (_ : atoms.size ≠ 0) :
-    Q(BinTree $α) :=
-  go 0 atoms.size
-where
-  /-- Auxiliary definition for `Mathlib.Tactic.Order.ToInt.Bintree.mkExpr`. Builds a tree,
-  using `atoms`, with nodes lying between `lo` and `hi`. -/
-  go (lo hi : Nat) (_ : lo < hi := by omega) (_ : hi ≤ atoms.size := by omega) : Q(BinTree $α) :=
-    let mid := (lo + hi) / 2
-    if h : lo = mid then
-      q(leaf $(atoms[lo]))
-    else
-      let l := go lo mid
-      let r := go mid hi
-      let n : Q(Nat) := mkRawNatLit mid
-      q(node $n $l $r)
-  termination_by hi - lo
+open Lean Meta Qq
 
 /-- Given an array `atoms : Array α`, create an expression representing a function
-`f : Fin atoms.size → α` such that `f n` is defeq to `atoms[n]` for `n : Fin n`. -/
-def mkFinFun {u : Level} {α : Q(Type $u)} (atoms : Array Q($α)) : Expr :=
-  if h : atoms.isEmpty then q(Fin.elim0 : Fin 0 → $α) else
-  let tree := BinTree.mkExpr atoms (mt Array.isEmpty_iff_size_eq_zero.mpr h)
-  let m : Q(ℕ) := mkNatLit atoms.size
-  q(($tree).get (m := $m))
-
-end BinTree
+`f : Fin atoms.size → α` such that `f n` is defeq to `atoms[n]` for `n : Fin atoms.size`. -/
+def mkFinFun {u : Level} {α : Q(Type $u)} (atoms : Array Q($α)) : MetaM Expr := do
+  if h : atoms.isEmpty then
+    return q(Fin.elim0 : Fin 0 → $α)
+  else
+    let rarray := RArray.ofArray atoms (by simpa [Array.size_pos_iff] using h)
+    let rarrayExpr : Q(RArray $α) ← rarray.toExpr α (fun x ↦ x)
+    haveI m : Q(ℕ) := mkNatLit atoms.size
+    return q(fun (x : Fin $m) ↦ ($rarrayExpr).get x.val)
 
 /-- Translates a set of values in a linear ordered type to `ℤ`,
 preserving all the facts except for `.isTop` and `.isBot`. These facts are filtered at the
@@ -172,16 +134,16 @@ preprocessing step. -/
 def translateToInt {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $type))
     (idxToAtom : Std.HashMap ℕ Q($type))
     (facts : Array AtomicFact) :
-    Std.HashMap ℕ Q(ℤ) × Array AtomicFact :=
+    MetaM <| Std.HashMap ℕ Q(ℤ) × Array AtomicFact := do
   haveI mkNatQ : ℕ → Q(ℕ) := Lean.mkNatLit
   haveI nE : Q(ℕ) := mkNatQ idxToAtom.size
   haveI finFun : Q(Fin $nE → $type) :=
-    BinTree.mkFinFun (Array.ofFn fun (n : Fin idxToAtom.size) => idxToAtom[n]!)
+    ← mkFinFun (Array.ofFn fun (n : Fin idxToAtom.size) => idxToAtom[n]!)
   let toFinUnsafe : ℕ → Q(Fin $nE) := fun k =>
     haveI kE := mkNatQ k
     haveI heq : decide ($kE < $nE) =Q true := ⟨⟩
     q(⟨$kE, of_decide_eq_true $heq⟩)
-  Prod.snd <| facts.foldl (fun (curr, map, facts) fact =>
+  return Prod.snd <| facts.foldl (fun (curr, map, facts) fact =>
     match fact with
     | .eq lhs rhs prf =>
       (curr, map, facts.push (
