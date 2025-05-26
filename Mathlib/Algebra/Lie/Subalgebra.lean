@@ -738,6 +738,7 @@ variable (L₁' L₁'' : LieSubalgebra R L₁) (L₂' : LieSubalgebra R L₂)
 def ofEq (h : (L₁' : Set L₁) = L₁'') : L₁' ≃ₗ⁅R⁆ L₁'' :=
   { LinearEquiv.ofEq (L₁' : Submodule R L₁) (L₁'' : Submodule R L₁) (by
       ext x
+      -- TODO
       change x ∈ (L₁' : Set L₁) ↔ x ∈ (L₁'' : Set L₁)
       rw [h]) with
     map_lie' {_ _} := rfl }
