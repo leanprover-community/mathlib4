@@ -988,6 +988,7 @@ section Comparison
 
 open RatFunc AbstractCompletion IsDedekindDomain.HeightOneSpectrum
 
+open Multiplicative in
 theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
   ext S
@@ -998,10 +999,30 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hR
     use {P : RatFunc K | Valued.v P < ↑d}
     simp only [Valued.mem_nhds, sub_zero]
-    refine ⟨⟨d, by rfl⟩, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
+    have hd₀ : d.1.1 ≠ 0 := by
+      have := @Subtype.val_inj _ _ d.1 0
+      simp only [MonoidHomWithZero.range₀_coe_zero, Units.ne_zero, iff_false] at this
+      exact this
+    let γ₀ : Valued.v.rangeGroup₀ (R := RatFunc K) := by
+      use d.1.1
+      obtain ⟨N, hN⟩ := WithZero.ne_zero_iff_exists.mp hd₀
+      rw [Valued.v.mem_rangeGroup₀_iff]
+      use X
+      use RatFunc.X ^ (toAdd N)
+      constructor
+      · simpa only [Valuation.ne_zero_iff] using RatFunc.X_ne_zero
+      · rw [← hN]
+        have := valuation_single_zpow K (ofAdd N)
+        simp at this
+        simp
+        sorry
+    have hγ_nz : γ₀ ≠ 0 := by
+      exact Subtype.coe_ne_coe.mp hd₀
+    let γ : (Valued.v.rangeGroup₀ (R := RatFunc K))ˣ := Units.mk0 γ₀ hγ_nz
+    refine ⟨⟨γ, by rfl⟩, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
     apply hd
     simp only [sub_zero, Set.mem_setOf_eq]
-    rw [← RatFunc.coe_sub, valuation_def, ← valuation_eq_LaurentSeries_valuation]
+    simp_rw [← RatFunc.coe_sub, valuation_def, ← valuation_eq_LaurentSeries_valuation]
     assumption
   · rintro ⟨_, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
