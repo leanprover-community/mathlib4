@@ -1239,9 +1239,7 @@ namespace Measure
 
 open VectorMeasure
 
-variable (μ : Measure α) [IsFiniteMeasure μ]
-variable (ν : Measure α) [IsFiniteMeasure ν]
-variable (s : Set α)
+variable (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] (s : Set α)
 
 theorem zero_le_toSignedMeasure : 0 ≤ μ.toSignedMeasure := by
   rw [← le_restrict_univ_iff_le]
