@@ -57,6 +57,10 @@ compared to the definitions in Brandt **On the structure of graphs with bounded 
 The definition of `IsFiveWheelLike` does not contain the fact that `#s = #t = r` but rather we
 deduce this later as `card_left` and `card_right`.
 
+Although `#(s ∩ t)` can easily be derived from `s` and `t` we include the `IsFiveWheelLike` field
+`card_eq : #(s ∩ t) = k` to match the informal / paper definitions and to simplify some statements
+of results.
+
 ## References
 
 * B. Andrasfái, P Erdős, V. T. Sós
