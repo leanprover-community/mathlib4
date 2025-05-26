@@ -1572,7 +1572,11 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
           have sum_new_zero: gamma_sum ((gamma_copy ++ [(List.dropWhile is_gamma list)[0]] ++ gamma_copy_inv) ++ (gamma_copy ++ (list.dropWhile is_gamma))) = 0 := by
             rw [gamma_sum_split]
+            -- TODO - use 'mega_list_prod' to show that since the origina list has gamma_sum = 0, the new list does as well
+            -- Then, the remaining non-cancelled term is forced to equal 0
             rw [gamma_sum_head]
+            simp
+
             sorry
           -- have gamma_sum_head: gamma_sum [⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), by (
           --   dsimp [E]
@@ -1585,7 +1589,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           --   rw [← rest_eq]
           -- )⟩] = 0 := by
           --   sorry
-          use (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma)))
+          use (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma)) sorry)
 
       sorry
 
