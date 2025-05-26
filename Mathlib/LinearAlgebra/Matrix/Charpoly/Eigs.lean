@@ -38,7 +38,9 @@ polynomial directly.
 
 The proofs of `det_eq_prod_roots_charpoly_of_splits` and
 `trace_eq_sum_roots_charpoly_of_splits` closely resemble
-`norm_gen_eq_prod_roots` and `trace_gen_eq_sum_roots` respectively, but the
+TODO: stray `Algebra.` in `Algebra.PowerBasis.norm_gen_eq_prod_roots`
+`Algebra.PowerBasis.norm_gen_eq_prod_roots` and `PowerBasis.trace_gen_eq_sum_roots` respectively,
+but the
 dependencies are not general enough to unify them. We should refactor
 `Polynomial.prod_roots_eq_coeff_zero_of_monic_of_split` and
 `Polynomial.sum_roots_eq_nextCoeff_of_monic_of_split` to assume splitting over an arbitrary map.
