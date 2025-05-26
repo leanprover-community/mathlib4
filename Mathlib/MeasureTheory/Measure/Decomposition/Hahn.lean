@@ -178,17 +178,16 @@ lemma IsHahnDecomposition.compl {μ ν : Measure α} {s : Set α}
 lemma hahn_decomposition' (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s : Set α, IsHahnDecomposition μ ν s := by
   obtain ⟨s, hs, h₁, h₂⟩ := hahn_decomposition ν μ
-  replace h₁ : ∀ t, MeasurableSet t → μ.restrict s t ≤ ν.restrict s t := by
+  replace h₁ : μ.restrict s ≤ ν.restrict s := by
+    rw [Measure.le_iff]
     intro t ht
     rw [μ.restrict_apply ht, ν.restrict_apply ht]
-    exact h₁ (t ∩ s) (ht.inter hs) Set.inter_subset_right
-  replace h₂ : ∀ t, MeasurableSet t → ν.restrict sᶜ t ≤ μ.restrict sᶜ t := by
+    exact h₁ (t ∩ s) (ht.inter hs) inter_subset_right
+  replace h₂ : ν.restrict sᶜ ≤ μ.restrict sᶜ := by
+    rw [Measure.le_iff]
     intro t ht
     rw [μ.restrict_apply ht, ν.restrict_apply ht]
-    exact h₂ (t ∩ sᶜ) (ht.inter hs.compl) Set.inter_subset_right
-  use s
-  use hs
-  · apply Measure.outerMeasure_le_iff.mpr h₁
-  · apply Measure.outerMeasure_le_iff.mpr h₂
+    exact h₂ (t ∩ sᶜ) (ht.inter hs.compl) inter_subset_right
+  exact ⟨s, ⟨hs, h₁, h₂⟩⟩
 
 end MeasureTheory
