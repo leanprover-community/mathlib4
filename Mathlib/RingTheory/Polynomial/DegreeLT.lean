@@ -69,7 +69,8 @@ noncomputable def xPow (n : ℕ) (i : Fin n) : R[X]_n :=
 
 @[simp] lemma basis_apply (i : Fin n) :
     basis R n i = xPow R n i := by
-  rw [Basis.apply_eq_iff]; ext j
+  rw [Basis.apply_eq_iff]
+  ext j
   simp only [basis_repr, xPow_val, coeff_X_pow, eq_comm, Finsupp.single_apply, Fin.ext_iff]
 
 lemma basis_val (i : Fin n) : (basis R n i : R[X]) = X ^ (i : ℕ) := by
@@ -165,8 +166,8 @@ variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
 
 /-- The map `taylor r` induces an automorphism of the module `R[X]_n` of polynomials of
 degree `< n`. -/
-noncomputable def taylorLinear (r : R) (n) : (R[X]_n) ≃ₗ[R] (R[X]_n) where
-  toFun     := fun P ↦ ⟨P.1.taylor r, mem_degreeLT.2 <| (degree_taylor ..).trans_lt <|
+noncomputable def taylorLinear (r : R) (n : ℕ) : (R[X]_n) ≃ₗ[R] (R[X]_n) where
+  toFun P    := ⟨P.1.taylor r, mem_degreeLT.2 <| (degree_taylor ..).trans_lt <|
     mem_degreeLT.1 P.2⟩
   invFun    := fun P ↦ ⟨P.1.taylor (-r), mem_degreeLT.2 <| (degree_taylor ..).trans_lt <|
     mem_degreeLT.1 P.2⟩
@@ -179,8 +180,8 @@ noncomputable def taylorLinear (r : R) (n) : (R[X]_n) ≃ₗ[R] (R[X]_n) where
     (taylorLinear r n P : R[X]) = (P : R[X]).taylor r :=
   rfl
 
-@[simp] theorem taylor_det' :
-    LinearMap.det (taylorLinear r n : (R[X]_n) →ₗ[R] _) = 1 := by
+@[simp] theorem det_taylor_toLinearMap :
+    (taylorLinear r n).toLinearMap.det = 1 := by
   nontriviality R
   rw [← LinearMap.det_toMatrix (degreeLT.basis R n),
     Matrix.det_of_upperTriangular, Fintype.prod_eq_one]
