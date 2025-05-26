@@ -21,7 +21,7 @@ with an explicit universe parameter. It is intended for categorical purposes.
 `CompactlyGeneratedSpace X` corresponds to the case where compact Hausdorff spaces are taken in
 the same universe as `X`, and is intended for topological purposes.
 
-We prov basic properties and instances, and prove that a `SequentialSpace` is compactly generated,
+We prove basic properties and instances, and prove that a `SequentialSpace` is compactly generated,
 as well as a Hausdorff `WeaklyLocallyCompactSpace`.
 
 ## Main definitions
