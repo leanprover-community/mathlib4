@@ -16,6 +16,7 @@ import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.RealSqrt
+import Mathlib.Tactic.NormNum.Irrational
 
 /-!
 # Tests for `norm_num` extensions
@@ -364,9 +365,9 @@ example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by
   norm_num
 
 -- Finsets:
-example : Finset.prod (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (fun x ↦ x) = 2 := by norm_num1
+example : Finset.prod (Finset.cons 2 ∅ (Finset.notMem_empty _)) (fun x ↦ x) = 2 := by norm_num1
 example : Finset.prod
-    (Finset.cons 6 (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (by norm_num))
+    (Finset.cons 6 (Finset.cons 2 ∅ (Finset.notMem_empty _)) (by norm_num))
     (fun x ↦ x) =
   12 := by norm_num1
 
@@ -517,3 +518,26 @@ example : (1000000).descFactorial 1000001 = 0 := by norm_num1
 example : (200 : ℕ) ! / (10 ^ 370) = 78865 := by norm_num1
 
 end Factorial
+
+section irrational
+
+example : Irrational √2 := by norm_num1
+example : Irrational √(5 - 2) := by norm_num1
+example : Irrational √(7/4) := by norm_num1
+example : Irrational √(4/7) := by norm_num1
+example : Irrational √(1/2 + 1/2 + 1/3) := by norm_num1
+example : Irrational (100 ^ (1/3 : ℝ)) := by norm_num1
+example : Irrational ((27/38) ^ (1/3 : ℝ)) := by norm_num1
+example : Irrational ((87/6) ^ (54/321 : ℝ)) := by norm_num1
+
+-- Large prime number
+-- The current implementation should run in O(log n) time
+example : Irrational
+  √5210644015679228794060694325390955853335898483908056458352183851018372555735221 := by norm_num1
+
+-- Large numerator does not affect performance.
+-- We only need to check that it is coprime with the denominator.
+example : Irrational (100 ^ ((10^1000 + 10^500) / 3 : ℝ)) := by norm_num1
+
+
+end irrational

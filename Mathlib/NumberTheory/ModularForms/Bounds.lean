@@ -335,4 +335,5 @@ def ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup S
       fun_prop -- integrability
   · apply continuous_const.intervalIntegrable
   · rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul]
-    simp only [← mul_assoc, mul_one_div_cancel (NeZero.ne (h : ℝ)), one_mul]
+    simp only [← mul_assoc, mul_one_div_cancel (NeZero.ne (h : ℝ)), one_mul,
+      Real.norm_of_nonneg (show 0 ≤ (n : ℝ) ^ k by positivity)]

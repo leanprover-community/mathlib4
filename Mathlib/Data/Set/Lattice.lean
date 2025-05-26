@@ -10,7 +10,7 @@ import Mathlib.Data.Set.BooleanAlgebra
 # The set lattice
 
 This file is a collection of results on the complete atomic boolean algebra structure of `Set α`.
-Notation for the complete lattice operations can be found in `Mathlib.Order.SetNotation`.
+Notation for the complete lattice operations can be found in `Mathlib/Order/SetNotation.lean`.
 
 ## Main declarations
 * `Set.sInter_eq_biInter`, `Set.sUnion_eq_biInter`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
@@ -740,8 +740,10 @@ theorem mem_sUnion_of_mem {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∈ t
   ⟨t, ht, hx⟩
 
 -- is this theorem really necessary?
-theorem not_mem_of_not_mem_sUnion {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∉ ⋃₀ S)
+theorem notMem_of_notMem_sUnion {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∉ ⋃₀ S)
     (ht : t ∈ S) : x ∉ t := fun h => hx ⟨t, ht, h⟩
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_sUnion := notMem_of_notMem_sUnion
 
 theorem sInter_subset_of_mem {S : Set (Set α)} {t : Set α} (tS : t ∈ S) : ⋂₀ S ⊆ t :=
   sInf_le tS
@@ -908,16 +910,16 @@ theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b
 
 -- classical
 theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, ∃ i, x ∉ f i := by
-  simp [Set.eq_empty_iff_forall_not_mem]
+  simp [Set.eq_empty_iff_forall_notMem]
 
 -- classical
 theorem iInter₂_eq_empty_iff {s : ∀ i, κ i → Set α} :
     ⋂ (i) (j), s i j = ∅ ↔ ∀ a, ∃ i j, a ∉ s i j := by
-  simp only [eq_empty_iff_forall_not_mem, mem_iInter, not_forall]
+  simp only [eq_empty_iff_forall_notMem, mem_iInter, not_forall]
 
 -- classical
 theorem sInter_eq_empty_iff {c : Set (Set α)} : ⋂₀ c = ∅ ↔ ∀ a, ∃ b ∈ c, a ∉ b := by
-  simp [Set.eq_empty_iff_forall_not_mem]
+  simp [Set.eq_empty_iff_forall_notMem]
 
 -- classical
 @[simp]
