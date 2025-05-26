@@ -331,6 +331,11 @@ lemma varOfPart_le_tsum {s : ℕ → Set X} {Q : Finset (Set X)} (hQ : Q ∈ par
     congr with i
     sorry
 
+/-- If `P i` is a countable set of partitions, then there exist a partition `P'` which is a good approximation. -/
+lemma approx_partition (s : Set X) (P : ℕ → Finset (Set X)) (hP : ∀ (i : ℕ), P i ∈ partitions s)
+    (ε : ENNReal) :
+    ∃ P' : Finset (Set X), ∑' (i : ℕ), varOfPart μ (P i) - ε ≤ varOfPart μ P' := by
+  sorry
 
 /-- Aditivity of `variationAux` for disjoint measurable sets. -/
 lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
@@ -383,6 +388,9 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     classical
     let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
     have hP (i : ℕ) : P i ∈ partitions (s i) := partition_restrict hQ (hs i)
+    have : varOfPart μ Q ≤ ∑' (i : ℕ), varOfPart μ (P i) := varOfPart_le_tsum μ hQ
+
+    -- have := ENNReal.tsum_eq_iSup_sum
 
 
 
