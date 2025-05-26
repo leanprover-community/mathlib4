@@ -60,9 +60,8 @@ theorem sub_self : μ - μ = 0 :=
 protected theorem sub_zero : μ - 0 = μ := by
   rw [sub_def]
   apply le_antisymm
-  · simp only [add_zero]; exact sInf_le (by simp)
-  · simp [add_zero]
-
+  · simp [sInf_le]
+  · simp
 
 /-- This application lemma only works in special circumstances. Given knowledge of
 when `μ ≤ ν` and `ν ≤ μ`, a more general application lemma can be written. -/
