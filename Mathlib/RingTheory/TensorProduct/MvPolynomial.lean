@@ -204,7 +204,7 @@ variable (R)
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
 /-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
-equivalent to `MMvPolynomial σ A`. -/
+equivalent to `MvPolynomial σ A`. -/
 noncomputable def algebraTensorAlgEquiv :
     A ⊗[R] MvPolynomial σ R ≃ₐ[A] MvPolynomial σ A := AlgEquiv.ofAlgHom
   (Algebra.TensorProduct.lift
