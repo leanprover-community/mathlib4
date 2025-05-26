@@ -965,7 +965,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 -- Subgroup.closure_eq_of_l
 
   let gamma_i := fun (i: ℕ) => γ^(i : ℤ)
-  have closure_enlarge: Subgroup.closure ({1, γ} ∪ (e_i '' Set.univ)) = Subgroup.closure (({1, γ} ∪ (e_i_regular '' Set.univ))^(max_phi + 1)) := by
+  have closure_enlarge: Subgroup.closure ({1, γ, γ⁻¹} ∪ (e_i '' Set.univ)) = Subgroup.closure (({1, γ, γ⁻¹} ∪ (e_i_regular '' Set.univ))^(max_phi + 1)) := by
     rw [Subgroup.closure_pow]
     . simp
     . unfold max_phi
@@ -981,9 +981,10 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
   have set_pow_mul (n: ℕ) (a b: G) (S: Set G) (ha: a ∈ S^n) (hb: b ∈ S^n): a * b ∈ S^(n + 1) := by
+
     sorry
 
-  have new_closur_e_i: Subgroup.closure ({1, γ} ∪ (e_i '' Set.univ)) = (Subgroup.closure S) := by
+  have new_closur_e_i: Subgroup.closure ({1, γ, γ⁻¹} ∪ (e_i '' Set.univ)) = (Subgroup.closure S) := by
     rw [closure_enlarge]
     apply Subgroup.closure_eq_of_le
     .
@@ -1097,10 +1098,10 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
               simp
         have a_mem_s: a ∈ S := by exact l_mem_s a ha
 
-        have e_pi_s_mem: e_i_regular ⟨s, hs⟩ ∈ ({1, γ} ∪ Set.range e_i_regular) := by
+        have e_pi_s_mem: e_i_regular ⟨s, hs⟩ ∈ ({1, γ ,γ⁻¹} ∪ Set.range e_i_regular) := by
           simp
 
-        have e_pi_a_mem: e_i_regular ⟨a, a_mem_s⟩ ∈ ({1, γ} ∪ Set.range e_i_regular) := by
+        have e_pi_a_mem: e_i_regular ⟨a, a_mem_s⟩ ∈ ({1, γ, γ⁻¹} ∪ Set.range e_i_regular) := by
           simp
 
 
@@ -1109,12 +1110,12 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
         let zero_fin: Fin max_phi := ⟨0, max_phi_gt⟩
 
-        let one_instance: Fin max_phi → One ↑({1, γ} ∪ Set.range e_i_regular) := by
+        let one_instance: Fin max_phi → One ↑({1, γ, γ⁻¹} ∪ Set.range e_i_regular) := by
           intro i
           use 1
           simp
 
-        have e_pi_s_mem_pow: e_i_regular ⟨a, l_mem_s a ha⟩ ∈ (({1, γ} ∪ Set.range e_i_regular)^(max_phi - 1 + 1)) := by
+        have e_pi_s_mem_pow: e_i_regular ⟨a, l_mem_s a ha⟩ ∈ (({1, γ, γ⁻¹} ∪ Set.range e_i_regular)^(max_phi - 1 + 1)) := by
           rw [Set.mem_pow]
           --simp_rw [List.ofFn_eq_map]
 
