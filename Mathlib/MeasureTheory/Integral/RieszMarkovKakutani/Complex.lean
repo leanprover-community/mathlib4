@@ -187,6 +187,7 @@ variable {X : Type*} [MeasurableSpace X]
 
 -- NOTE: instead of working with partitions of `s`, work with sets of disjoints sets
 -- contained within `s` since the same value will be achieved in the supremum.
+-- Perhaps better described as "inner partitions".
 -- NOTE: forbid the empty set so that partitions of disjoint sets are disjoint sets of sets.
 private def partitions (s : Set X) : Set (Finset (Set X)) :=
     {P | (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ (P.toSet.PairwiseDisjoint id) ∧
@@ -220,7 +221,21 @@ lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 <
   -- Since `variationAux` is defined as the supremum.
   -- NOTE: This is a bit more subtle than I previously thought so revert to Rudin and show that:
   -- If `a < variationAux μ s` then `∃ P ∈ partitions s, a ≤ varOfPart μ P`.
-  sorry
+  suffices h : ∃ P ∈ partitions s, variationAux μ s - ε ≤ varOfPart μ P by
+    dsimp [variationAux] at h
+    simp_all
+  simp only [variationAux, hs, reduceIte]
+  by_contra! hc
+  have : ⨆ P ∈ var1.partitions s, var1.varOfPart μ P ≤
+      (⨆ P ∈ var1.partitions s, var1.varOfPart μ P) -  ε := by
+    refine iSup₂_le_iff.mpr ?_
+    exact fun i j ↦ le_of_lt (hc i j)
+  have := calc ⨆ P ∈ var1.partitions s, var1.varOfPart μ P
+    _ < ⨆ P ∈ var1.partitions s, var1.varOfPart μ P + ε := by
+      sorry
+    _ ≤ ⨆ P ∈ var1.partitions s, var1.varOfPart μ P := by
+      sorry
+  exact (lt_self_iff_false _).mp this
 
 lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : P ∈ partitions s) : varOfPart μ P ≤ variationAux μ s := by
