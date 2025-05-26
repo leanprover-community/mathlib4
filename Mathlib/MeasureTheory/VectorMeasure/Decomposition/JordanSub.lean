@@ -54,12 +54,9 @@ lemma toSignedMeasure_restrict_sub (hs : IsHahnDecomposition μ ν s) :
     ((ν - μ).restrict s).toSignedMeasure =
       ν.toSignedMeasure.restrict s - μ.toSignedMeasure.restrict s := by
   have hmeas := hs.measurableSet
-  have hle : μ.restrict s ≤ ν.restrict s := hs.le_on
-  rw [eq_sub_iff_add_eq, toSignedMeasure_restrict_eq_restrict_toSigned _ _ hmeas]
-  rw [← toSignedMeasure_add]
-  have h_restrict := @restrict_sub_eq_restrict_sub_restrict _ _ ν μ s hmeas
-  simp only [h_restrict]
-  simp only [sub_add_cancel_of_le hle]
+  rw [eq_sub_iff_add_eq, toSignedMeasure_restrict_eq_restrict_toSigned _ _ hmeas,
+    ← toSignedMeasure_add]
+  simp only [restrict_sub_eq_restrict_sub_restrict, hmeas, sub_add_cancel_of_le hs.le_on]
   exact (toSignedMeasure_restrict_eq_restrict_toSigned _ _ hmeas).symm
 
 theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
