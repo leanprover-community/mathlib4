@@ -110,30 +110,24 @@ theorem integral_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
 
 /-- If `0 < c`, then `(fun t : ℝ ↦ (t + m) ^ a)` is integrable on `(c, ∞)` for all `a < -1` and
 `0 ≤ m`. -/
-theorem integrableOn_Ioi_add_rpow_of_lt  {a c m : ℝ} (ha : a < -1) (hc : 0 < c) (hm : 0 ≤ m) :
+theorem integrableOn_add_rpow_Ioi_of_lt {a c m : ℝ} (ha : a < -1) (hc : -m < c) :
     IntegrableOn (fun (x : ℝ) ↦ (x + m) ^ a) (Ioi c) := by
   have hd : ∀ x ∈ Ici c, HasDerivAt (fun t => (t + m) ^ (a + 1) / (a + 1)) ((x + m) ^ a) x := by
     intro x hx
     convert (((hasDerivAt_id _).add_const _).rpow_const _).div_const _ using 1
-    field_simp [show a + 1 ≠ 0 from ne_of_lt (by linarith)]
-    left; exact ne_of_gt (by linarith [mem_Ici.mp hx, id_eq x])
-
-  have ht :
-     Tendsto (fun t => ((t + m) ^ (a + 1)) / (a + 1)) atTop (nhds (0 / (a + 1))) := by
-    refine Tendsto.div_const ?_ (a + 1)
-    rw [show (fun t => (t + m) ^ (a + 1)) = (fun x : ℝ => x ^ (a + 1)) ∘ fun t => (t + m) by rfl]
-    have := tendsto_rpow_neg_atTop (by linarith : 0 < -(a + 1))
-    simp [neg_neg] at this
-    exact Tendsto.comp this (tendsto_atTop_add_const_right _ m (fun ⦃U⦄ a ↦ a))
-
-  have hmt {t : ℝ} (ht : t ∈ Ioi c) : 0 ≤ t + m := by linarith [mem_Ioi.mp ht]
-  exact integrableOn_Ioi_deriv_of_nonneg' hd (fun t ht => rpow_nonneg (hmt ht) a) ht
+    field_simp [show a + 1 ≠ 0 by linarith]
+    left; linarith [mem_Ici.mp hx, id_eq x]
+  have ht : Tendsto (fun t => ((t + m) ^ (a + 1)) / (a + 1)) atTop (nhds (0 / (a + 1))) := by
+    rw [← neg_neg (a + 1)]
+    exact (tendsto_rpow_neg_atTop (by linarith)).comp
+      (tendsto_atTop_add_const_right _ m tendsto_id) |>.div_const _
+  exact integrableOn_Ioi_deriv_of_nonneg' hd
+    (fun t ht => rpow_nonneg (by linarith [mem_Ioi.mp ht]) a) ht
 
 /-- If `0 < c`, then `(fun t : ℝ ↦ t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
 theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     IntegrableOn (fun t : ℝ => t ^ a) (Ioi c) := by
-  have := integrableOn_Ioi_add_rpow_of_lt ha hc (le_refl 0)
-  simpa
+  simpa using integrableOn_Ioi_add_rpow_of_lt ha hc (le_refl 0)
 
 theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := by
