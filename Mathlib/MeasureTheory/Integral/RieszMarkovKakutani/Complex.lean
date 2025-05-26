@@ -331,12 +331,6 @@ lemma varOfPart_le_tsum {s : ℕ → Set X} {Q : Finset (Set X)} (hQ : Q ∈ par
     congr with i
     sorry
 
-/-- If `P i` is a countable set of partitions, then there exist a partition `P'` which is a good approximation. -/
-lemma approx_partition (s : Set X) (P : ℕ → Finset (Set X)) (hP : ∀ (i : ℕ), P i ∈ partitions s)
-    (ε : ENNReal) :
-    ∃ P' : Finset (Set X), ∑' (i : ℕ), varOfPart μ (P i) - ε ≤ varOfPart μ P' := by
-  sorry
-
 /-- Aditivity of `variationAux` for disjoint measurable sets. -/
 lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
@@ -382,19 +376,31 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     simp only [variationAux, hs, reduceIte]
     simp only [variationAux, MeasurableSet.iUnion hs, reduceIte] at hb
     obtain ⟨Q, hQ, hbQ⟩ := lt_biSup_iff.mp hb
-    -- Choose `n` large so that considering a finite set of `s i` suffices.
-
     -- Take the partitions defined as intersection of `Q` and `s i`.
     classical
     let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
     have hP (i : ℕ) : P i ∈ partitions (s i) := partition_restrict hQ (hs i)
     have : varOfPart μ Q ≤ ∑' (i : ℕ), varOfPart μ (P i) := varOfPart_le_tsum μ hQ
+    -- Choose `ε`.
+    obtain ⟨ε, hε, hε'⟩ : ∃ (ε : ℝ≥0∞), 0 < ε ∧ b + ε < varOfPart μ Q := by
+      have := hbQ
+      obtain ⟨c, hc, hc'⟩ := exists_between hbQ
+      exact ⟨c - b, tsub_pos_of_lt hc, by simpa [add_tsub_cancel_of_le (le_of_lt hc)]⟩
+    -- Choose `n` large so that considering a finite set of `s i` suffices.
+    obtain ⟨n, hn⟩ : ∃ n, ∑' i, varOfPart μ (P i) ≤
+        ∑ i ∈ Finset.range n, varOfPart μ (P i) + ε := by
 
-    -- have := ENNReal.tsum_eq_iSup_sum
-
-
-
-    sorry
+      sorry
+    use n
+    suffices h : b + ε < (∑ x ∈ Finset.range n, ⨆ P ∈ partitions (s x), varOfPart μ P) + ε by
+      exact lt_of_add_lt_add_right h
+    calc b + ε
+      _ < varOfPart μ Q := hε'
+      _ ≤ ∑' (i : ℕ), var1.varOfPart μ (P i) := varOfPart_le_tsum μ hQ
+      _ ≤ ∑ i ∈ Finset.range n, varOfPart μ (P i) + ε := hn
+      _ ≤ (∑ x ∈ Finset.range n, ⨆ P ∈ partitions (s x), varOfPart μ P) + ε := by
+        gcongr with i hi
+        exact le_biSup (varOfPart μ) (hP i)
 
 /-- The variation of a vector-valued measure as a `VectorMeasure`. -/
 noncomputable def variation : VectorMeasure X ℝ≥0∞ where
@@ -405,6 +411,7 @@ noncomputable def variation : VectorMeasure X ℝ≥0∞ where
 
 theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
     ‖μ E‖ ≤ (variation μ E).toReal := by
+
   sorry
 
 -- TO DO : show that total variation is a norm on the space of vector-valued measures.
