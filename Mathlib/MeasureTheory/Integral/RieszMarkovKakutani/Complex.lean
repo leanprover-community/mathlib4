@@ -189,7 +189,7 @@ variable {X : Type*} [MeasurableSpace X]
 -- contained within `s` since the same value will be achieved in the supremum.
 -- Perhaps better described as "inner partitions".
 -- NOTE: forbid the empty set so that partitions of disjoint sets are disjoint sets of sets.
-private def partitions (s : Set X) : Set (Finset (Set X)) :=
+def partitions (s : Set X) : Set (Finset (Set X)) :=
     {P | (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ (P.toSet.PairwiseDisjoint id) ∧
     (∀ p ∈ P, p ≠ ∅)}
 
@@ -197,44 +197,58 @@ private def partitions (s : Set X) : Set (Finset (Set X)) :=
 -- lemma partitions_mono {s₁ s₂ : Set X} (hs : s₁ ⊆ s₂) : partitions s₁ ⊆ partitions s₂ :=
 --   fun _ hE ↦ ⟨fun n ↦ subset_trans (hE.1 n) hs, hE.2⟩
 
+lemma partitions_empty : partitions (∅ : Set X) = {∅} := by
+  dsimp [partitions]
+  ext P
+  simp only [Set.subset_empty_iff, Finset.forall_mem_not_eq', Set.mem_setOf_eq,
+    Set.mem_singleton_iff]
+  constructor
+  · intro ⟨hP', a, b, hP''⟩
+    by_contra! hP
+    obtain ⟨p, hp⟩ := Finset.Nonempty.exists_mem (Finset.nonempty_iff_ne_empty.mpr hP)
+    simp_all [hP' p hp, ne_eq]
+  · intro hp
+    simp [hp]
+
 /-- Given a partition `E` of a set `s`, this returns the sum of the norm of the measure of the
 elements of that partition. -/
-private noncomputable def varOfPart (P : Finset (Set X)) : ℝ≥0∞ := ∑ p ∈ P, ENNReal.ofReal ‖μ p‖
+private noncomputable def varOfPart (P : Finset (Set X)) := ∑ p ∈ P, ‖μ p‖ₑ
 
 open Classical in
-noncomputable def variationAux (s : Set X) : ℝ≥0∞ :=
+noncomputable def variationAux (s : Set X) :=
     if (MeasurableSet s) then ⨆ P ∈ partitions s, varOfPart μ P else 0
 
 /-- `variationAux` of the empty set is equal to zero. -/
 lemma variation_empty' : variationAux μ ∅ = 0 := by
-  simp only [variationAux, varOfPart, MeasurableSet.empty, reduceIte, partitions, and_imp,
-    Set.mem_setOf_eq, iSup_eq_zero]
-  intro P h _ _ h'
-  suffices h : P = ∅ by simp [h]
-  by_contra! hP
-  obtain ⟨p, hp⟩ := Finset.Nonempty.exists_mem (Finset.nonempty_iff_ne_empty.mpr hP)
-  exact (h' p hp) (Set.subset_empty_iff.mp <| h p hp)
+  simp [variationAux, varOfPart, partitions_empty]
 
 lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε) :
     ∃ P ∈ partitions s, variationAux μ s ≤ varOfPart μ P + ε := by
+  -- This holds since `variationAux μ s` is defined as a supremum over all `P ∈ partitions s`.
   simp only [variationAux, hs, reduceIte]
-  -- Since `variationAux` is defined as the supremum.
-  -- NOTE: This is a bit more subtle than I previously thought so revert to Rudin and show that:
-  -- If `a < variationAux μ s` then `∃ P ∈ partitions s, a ≤ varOfPart μ P`.
   suffices h : ∃ P ∈ partitions s, variationAux μ s - ε ≤ varOfPart μ P by
     dsimp [variationAux] at h
     simp_all
   simp only [variationAux, hs, reduceIte]
   by_contra! hc
-  have : ⨆ P ∈ var1.partitions s, var1.varOfPart μ P ≤
+  replace hc : ⨆ P ∈ var1.partitions s, var1.varOfPart μ P ≤
       (⨆ P ∈ var1.partitions s, var1.varOfPart μ P) -  ε := by
     refine iSup₂_le_iff.mpr ?_
     exact fun i j ↦ le_of_lt (hc i j)
+
+
+
+
   have := calc ⨆ P ∈ var1.partitions s, var1.varOfPart μ P
     _ < ⨆ P ∈ var1.partitions s, var1.varOfPart μ P + ε := by
+
       sorry
     _ ≤ ⨆ P ∈ var1.partitions s, var1.varOfPart μ P := by
-      sorry
+      refine (toNNReal_le_toNNReal ?_ ?_).mp ?_
+      · sorry
+      · sorry
+      ·
+        sorry
   exact (lt_self_iff_false _).mp this
 
 lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
@@ -315,12 +329,13 @@ open Classical in
 lemma varOfPart_le_tsum {s : ℕ → Set X} {Q : Finset (Set X)} (hQ : Q ∈ partitions (⋃ i, s i)) :
     varOfPart μ Q ≤ ∑' i, varOfPart μ ({x ∈ Finset.image (fun q ↦ q ∩ s i) Q | x ≠ ∅}) := by
   let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
-  calc ∑ q ∈ Q, ENNReal.ofReal ‖μ q‖
+  calc
+    _ = ∑ q ∈ Q, ENNReal.ofReal ‖μ q‖ := by simp [varOfPart]
     _ = ∑ q ∈ Q, ENNReal.ofReal ‖μ (⋃ i, q ∩ s i)‖ := ?_
     _ ≤ ∑ q ∈ Q, ∑' i, ENNReal.ofReal ‖μ (q ∩ s i)‖ := ?_
     _ ≤ ∑' i, ∑ q ∈ Q, ENNReal.ofReal ‖μ (q ∩ s i)‖ := ?_
     _ = ∑' i, ∑ p ∈ (P i), ENNReal.ofReal ‖μ p‖ := ?_
-    _ = ∑' i, (varOfPart μ (P i)) := rfl
+    _ = ∑' i, (varOfPart μ (P i)) := by simp [varOfPart]
   · suffices h : ∀ q ∈ Q, q = ⋃ i, q ∩ s i by
       refine Finset.sum_congr rfl ?_
       intro q hq
@@ -379,13 +394,14 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
         let Q := Finset.biUnion (Finset.range n) P
         have hQ : Q ∈ partitions (⋃ i, s i) := partition_union hs' (fun i ↦ (hP i).1) n
         calc
-          _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, ENNReal.ofReal ‖μ p‖ := by rfl
+          _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, ENNReal.ofReal ‖μ p‖ := by simp [varOfPart]
           _ = ∑ q ∈ Q, ENNReal.ofReal ‖μ q‖ := by
             refine Eq.symm (Finset.sum_biUnion ?_)
             intro l _ m _ hlm
             exact partitions_disjoint (hs' hlm) (hP l).1 (hP m).1
           _ ≤ variationAux μ (⋃ i, s i) := by
-            exact le_variationAux μ (MeasurableSet.iUnion hs) hQ
+            have := le_variationAux μ (MeasurableSet.iUnion hs) hQ
+            simpa
   · -- Variation of the union, `variationAux μ (⋃ i, s i)` is le the sum of `variationAux μ (s i)`.
     intro b hb
     simp only [variationAux, hs, reduceIte]
@@ -425,11 +441,12 @@ noncomputable def variation : VectorMeasure X ℝ≥0∞ where
   m_iUnion'           := variation_m_iUnion' μ
 
 theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
-    ENNReal.ofReal ‖μ E‖ ≤ (variation μ E) := by
+    ‖μ E‖ₑ ≤ (variation μ E) := by
   dsimp [variation, variationAux]
   wlog hE' : E ≠ ∅
   · push_neg at hE'
     simp [hE']
+
   by_cases hE : ¬MeasurableSet E
   · simp [hE, μ.not_measurable' hE]
   · push_neg at hE
@@ -457,7 +474,11 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
     · refine NNReal.coe_le_coe.mp ?_
       sorry
 
--- TO DO : show that total variation is a norm on the space of vector-valued measures.
+-- TO DO : the total variation is a norm on the space of vector-valued measures.
+
+-- TO DO : if `μ` is a `ℝ≥0∞`-valued `VectorMeasure` then `variation μ = μ`.
+
+-- TO DO : variation corresponds to the Hahn–Jordan decomposition for a signed measure.
 
 end var1
 
