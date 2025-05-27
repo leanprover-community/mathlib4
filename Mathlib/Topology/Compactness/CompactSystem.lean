@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.Data.Set.Dissipate
+import Mathlib.Logic.IsEmpty
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Separation.Hausdorff
@@ -288,422 +289,26 @@ theorem isCompacts (h : ∀ {s : Set α}, IsCompact s → IsClosed s) :
     IsCompactSystem (fun s : Set α ↦ IsCompact s) := by
   have h : (fun s : Set α ↦ IsCompact s) = (fun s : Set α ↦ IsCompact s ∧ IsClosed s) := by
     ext s
-    refine ⟨fun h' ↦ ⟨h', h h'⟩, fun h' ↦ h'.1⟩
-  exact h ▸ (isClosedCompacts α)
+    refine ⟨fun h' ↦ ⟨h', h'.isClosed⟩, fun h ↦ h.1⟩
+  exact h ▸ (of_isCompact_isClosed)
 
-/-- In a `T2Space` The set of compact sets is a compact system. -/
-theorem _of_isCompact_of_T2Space [T2Space α] :
-    IsCompactSystem (fun s : Set α ↦ IsCompact s) := (isCompacts α) (fun hs ↦ hs.isClosed)
-
-end ClosedCompact
-
-end IsCompactSystem
-
-section PrefixInduction
-
-variable {α : Type}
-variable (q : ∀ n, (Fin n → α) → Prop)
-variable (step0 : q 0 Fin.elim0)
-variable (step :
-    ∀ n (k : Fin n → α) (_ : q n k),
-    { a : α // q (n+1) (Fin.snoc k a)})
-
-/-- In this section, we prove a general induction principle, which we need for the construction
-`Nat.prefixInduction q step0 step : ℕ →  α` based on some `q : (n : ℕ) → (Fin n → α) → Prop`. For
-the inducation start, `step0 : q 0 _` requires that `Fin 0` cannot be satisfied, and
-`step : (n : ℕ) → (k : Fin n → α) → q n k → { a // q (n + 1) (Fin.snoc k a) }) (n : ℕ) : α`
-constructs the next element satisfying `q (n + 1) _` from a proof of `q n k` and finding the next
-element.
-
-In comparisong to other induction principles, the proofs of `q n k` are needed in order to find
-the next element. -/
-
-def Nat.prefixInduction.aux : ∀ (n : Nat), { k : Fin n -> α // q n k }
-    | 0 => ⟨Fin.elim0, step0⟩
-    | n+1 =>
-      let ⟨k, hk⟩ := aux n
-      let ⟨a, ha⟩ := step n k hk
-      ⟨Fin.snoc k a, ha⟩
-
-theorem Nat.prefixInduction.auxConsistent :
-  ∀ n (i : Fin n),
-    (Nat.prefixInduction.aux q step0 step (i+1)).1 (Fin.last i) =
-    (Nat.prefixInduction.aux q step0 step n).1 i := by
-  intro n
-  induction n
-  next => simp
-  next n ih =>
-    apply Fin.lastCases
-    case last => simp
-    case cast =>
-      intro i
-      simp only [Fin.coe_castSucc]
-      rw [ih, aux]
-      simp
-
-def Nat.prefixInduction (n : Nat) : α :=
-  (Nat.prefixInduction.aux q step0 step (n+1)).1 (Fin.last n)
-
-theorem Nat.prefixInduction_spec (n : Nat) : q n (Nat.prefixInduction q step0 step ·) := by
-  cases n
-  next =>
-    convert step0
-  next n =>
-    have hk := (Nat.prefixInduction.aux q step0 step (n+1)).2
-    convert hk with i
-    apply Nat.prefixInduction.auxConsistent
-
-end PrefixInduction
-
-namespace IsCompactSystem
-
-section Union
-
-variable {p : Set α → Prop} (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
-  (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d)
-
-/-- `q n K` is the joint property that `∀ (k : Fin n), K k ∈ L k` and
-`∀ N, (⋂ (j : Fin n), K j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet) ≠ ∅`.` holds. -/
-def q : ∀ n, (Fin n → Set α) → Prop := fun n K ↦ (∀ (k : Fin n), K k ∈ L k) ∧
-  (∀ N, (⋂ j, K j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet) ≠ ∅)
-
-def get_element_zero (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
-    { K : Fin 0 → Set α // (q L) 0 K} := by
-  exists fun _ => ∅
-  simp [q, h]
-
-def find0 (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) : (q L) 0 Fin.elim0 := by
-  sorry
-
-def findSucc (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) : ∀ n (k : Fin n → Set α)
-    (_ : (q L) n k), { a : Set α // (q L) (n + 1) (Fin.snoc k a) } := by
-  sorry
--- ∀ n (k : Fin n → α) (_ : q n k), { a : α // q (n+1) (Fin.snoc k a)})
-
-
-
-/-- For `L : ℕ → Finset (Set α)` such that `∀ K ∈ L n, p K` and
-`h : ∀ N, ⋂ k < N, ⋃₀ L k ≠ ∅`, `mem_of_union h n` is some `K : ℕ → Set α` such that `K n ∈ L n`
-for all `n` (this is `prop₀`) and `∀ N, ⋂ (j < n, K j) ∩ ⋂ (k < N), (⋃₀ L (n + k)) ≠ ∅`
-(this is `prop₁`.) -/
-noncomputable def mem_of_union (L : ℕ → Finset (Set α)) (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :=
-  Nat.prefixInduction (q L) (find0 L h) (findSucc L h)
-
-
-#exit
-
-
-
-
-lemma l2 {ι : Type*} (s t : Set α) (u : Set ι) (L : (i : ι) → (hi : i ∈ u) → Set α)
-  (h : s ⊆ ⋃ (n : ι) (hn : n ∈ u), L n hn) (h' : ∀ (n : ι) (hn : n ∈ u), t ∩ (L n hn) = ∅) :
-    t ∩ s = ∅ := by
-  have j : ⋃ (n : ι) (hn : n ∈ u), t ∩ (L n hn) = ∅ := by
-    simp_rw [iUnion_eq_empty]
-    exact h'
-  simp_rw [← subset_empty_iff] at h' j ⊢
-  have j' : ⋃ (n : u), t ∩ L n.val n.prop = ⋃ n, ⋃ (hn : n ∈ u), t ∩ L n hn := by
-    exact iUnion_coe_set u fun i ↦ t ∩ L (↑i) (Subtype.prop i)
-  rw [← j', ← inter_iUnion, iUnion_coe_set] at j
-  have gf := inter_subset_inter (t₁ := t) (fun ⦃a_1⦄ a ↦ a) h
-  apply le_trans gf j
-
-
--- variable (p : {n : ℕ} → ((k : Fin (n + 1)) → (β k)) → Prop)
-
-/-- `r n K` is the property which must hold for compact systems:
-`∀ N, (⋂ (j < n), (K j)) ∩ (⋂ (k < N), (⋃₀ (L (n + k)).toSet)) ≠ ∅`. -/
-noncomputable def r (n : ℕ) (K : ℕ → Set α) : Prop :=
-  ∀ N, (⋂ (j < n), (K j)) ∩ (⋂ (k < N), (⋃₀ (L (n + k)).toSet)) ≠ ∅
-
--- h0 -> (get_element_zero hL hc)
--- (h0 : ∃ x : (ℕ → α), x 0 ∈ β 0 ∧ p 0 x)
-
-lemma nonempty' (n : ℕ) (K : ℕ → Set α)
-    (hc : ∀ N, (⋂ (k < n), K k) ∩ (⋂ k < N, ⋃₀ (L (n + k))) ≠ ∅) : (L n).Nonempty := by
-  specialize hc 1
-  by_contra! h
-  simp only [Finset.not_nonempty_iff_eq_empty] at h
-  apply hc
-  simp [h]
-
-lemma nonempty (k : ℕ) (hc : ∀ N, ⋂ k < N, ⋃₀ (L k : Set (Set α)) ≠ ∅) : (L k).Nonempty := by
-  specialize hc (k + 1)
-  by_contra! h
-  simp only [Finset.not_nonempty_iff_eq_empty] at h
-  apply hc
-  apply iInter_eq_empty_iff.mpr fun x ↦ ⟨k, ?_⟩
-  -- simp only [Nat.lt_add_one, iInter_true, mem_sUnion, Finset.mem_coe, not_exists, not_and]
-  simp only [Nat.lt_add_one, iInter_true, Finset.mem_coe, not_exists, not_and]
-  have hg : ⋃₀ (L k : Set (Set α)) = ∅ := by
-    rw [h]
-    simp only [Finset.coe_empty, sUnion_empty]
-  exact of_eq_false (congrFun hg x)
-
-/-- `q n K` is the joint property that `(∀ k < n, K k ∈ L k)` and `r n K)` holds. -/
-def q : ℕ → (ℕ → Set α) → Prop := fun n K ↦ (∀ k < n, K k ∈ L k) ∧ (r L n K)
-
-lemma get_element_zero' (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
-    ∃ (K : ℕ → Set α), q L 0 K := by
-  simp [q, r, h]
-
-def get_element_zero (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
-    { K : ℕ → Set α // q L 0 K} := by
-  exists fun _ => ∅
-  simp [q, r, h]
-
-lemma get_element_succ' (n : ℕ)
-  (K : ℕ → Set α) (hK : q L n K) : ∃ y, q L (n + 1) (Function.update K n y) := by
-  simp_rw [q, r] at hK ⊢
-  by_contra! h
-  choose b hb using h
-  have hn : ∀ y ∈ L n, ∀ k < n + 1, Function.update K n y k ∈ L k := by
-    intro y hy k hk
-    by_cases d : n = k
-    · rw [d]
-      simp only [Function.update_self]
-      exact d ▸ hy
-    · have d' : k < n := by
-        by_contra h
-        apply d
-        simp only [not_lt] at h
-        apply Eq.symm
-        exact Nat.eq_of_le_of_lt_succ h hk
-      simp only [ne_eq, d'.ne, not_false_eq_true, Function.update_of_ne]
-      exact hK.1 k d'
-  classical
-  let b' := fun y ↦ dite (y ∈ L n) (fun hy ↦ (b y (hn y hy))) (fun _ ↦ 0)
-  have hb' := fun y hy ↦ hb y (hn y hy)
-  have hb'' (y : Set α) (hy : y ∈ L n) : b y (hn y hy) = b' y  := by
-    simp [b', hy]
-  obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L n) b' (nonempty' L n K hK.2)
-  apply hK.2 (b' K0Max + 1)
-  have h₁ (y s : Set α): (⋂ j, ⋂ (_ : j < n + 1), Function.update K n y j) ∩ s =
-      (⋂ j, ⋂ (_ : j < n), K j) ∩ y ∩ s := by
-    apply congrFun (congrArg Inter.inter _) s
-    ext x
-    refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ ?_⟩ <;> simp only [mem_iInter, mem_inter_iff] at h ⊢
-    · intro i hi
-      have h' := h i (le_trans hi (le_succ n))
-      simp only [ne_eq, hi.ne, not_false_eq_true, Function.update_of_ne] at h'
-      exact h'
-    · have h'' := h n (Nat.lt_add_one n)
-      simp only [Function.update_self] at h''
-      exact h''
-    · intro i hi
-      by_cases h₁ : i < n
-      · simp only [ne_eq, h₁.ne, not_false_eq_true, Function.update_of_ne]
-        exact h.1 i h₁
-      · simp only [not_lt] at h₁
-        have h₂ := Nat.eq_of_le_of_lt_succ h₁ hi
-        rw [h₂]
-        simp only [Function.update_self]
-        exact h.2
-  simp_rw [h₁] at hb'
-
-  have h₂ : ⋂ k < b' K0Max + 1, ⋃₀ (L (n + k)).toSet ⊆
-    ⋃ (y : Set α) (hy : y ∈ L n), y ∩ ⋂ (k < b y (hn y hy)), ⋃₀ (L (n + 1 + k)).toSet := by
-    obtain ⟨y, hy⟩ := nonempty' L n K hK.2
-    intro x hx
-    simp only [mem_iInter, mem_sUnion, Finset.mem_coe, mem_iUnion, mem_inter_iff,
-      exists_and_left] at hx ⊢
-    obtain ⟨i, hi⟩ := hx 0 (zero_lt_succ (b' K0Max))
-    rw [add_zero] at hi
-    use i, hi.2, hi.1
-    intro k hk
-    have hk' : 1 + k < b' K0Max + 1:= by
-      rw [add_comm]
-      simp only [Nat.add_lt_add_iff_right]
-      apply lt_of_lt_of_le hk
-      rw [hb'']
-      apply hK0₂ i hi.1
-      exact hi.1
-    obtain ⟨t, ht⟩ := hx (1 + k) hk'
-    rw [← add_assoc] at ht
-    use t, ht.1, ht.2
-  simp_rw [inter_assoc] at hb'
-  apply l2 (s := ⋂ k < b' K0Max + 1, ⋃₀ (L (n + k)).toSet) (t := (⋂ j < n, K j)) (u := L n)
-    (L := fun (y : Set α) (hy : y ∈ L n) ↦ (y ∩ ⋂ k, ⋂ (hk : k < b y (hn y hy)),
-      ⋃₀ (L (n + 1 + k)).toSet)) h₂ hb'
-
-/-- `mem_of_union_aux h n` is the product of some `K : ℕ → Set α)` and `q n K`.
-Constructing `(mem_of_union_aux h n).1` works inductively. When constructing
-`(mem_of_union_aux h (n + 1)).1`, we update `(mem_of_union_aux h n).1` only at position `n`. -/
-noncomputable def mem_of_union_aux (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :
-    (n : ℕ) → {K : ℕ → Set α | q L n K}
-  | 0 => get_element_zero L h
-  | n + 1 => by
-    have g := (get_element_succ' L) n (mem_of_union_aux h n).1 (mem_of_union_aux h n).2
-    exact ⟨Function.update (mem_of_union_aux h n).1 n g.choose, g.choose_spec⟩
-
-namespace mem_of_union
-
-lemma constantEventually (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n k : ℕ) (hkn : k < n) :
-    (mem_of_union_aux L h n).1 k = (mem_of_union_aux L h (n + 1)).1 k := by
-  simp [mem_of_union_aux, hkn.ne]
-
-lemma constantEventually' (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n k : ℕ) (hkn : k < n) :
-    (mem_of_union_aux L h n).1 k = (mem_of_union_aux L h (k + 1)).1 k := by
-  induction n with
-  | zero =>
-    cases hkn
-  | succ n hn =>
-    by_cases h' : k < n
-    · rw [← hn h']
-      exact (constantEventually L h n k h').symm
-    · have hkn' : k = n := by
-        exact Nat.eq_of_lt_succ_of_not_lt hkn h'
-      rw [hkn']
-
-lemma constantEventually'' (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (m n k : ℕ)
-  (hkn : k < n) (hkm : k < m) : (mem_of_union_aux L h n).1 k
-      = (mem_of_union_aux L h m).1 k := by
-  rw [constantEventually' L h n k hkn, constantEventually' L h m k hkm]
-
-end mem_of_union
-
-/-- For `L : ℕ → Finset (Set α)` such that `∀ K ∈ L n, p K` and
-`h : ∀ N, ⋂ k < N, ⋃₀ L k ≠ ∅`, `mem_of_union h n` is some `K : ℕ → Set α` such that `K n ∈ L n`
-for all `n` (this is `prop₀`) and `∀ N, ⋂ (j < n, K j) ∩ ⋂ (k < N), (⋃₀ L (n + k)) ≠ ∅`
-(this is `prop₁`.) -/
-noncomputable def mem_of_union (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :=
-  fun n ↦ (mem_of_union_aux L h (n + 1)).1 n
-
-namespace mem_of_union
-
-lemma prop₀ (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) : mem_of_union L h n ∈ L n := by
-  exact (mem_of_union_aux L h (n + 1)).2.1 n (Nat.lt_add_one n)
-
-lemma isSubset (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n N : ℕ) :
-    (⋂ j < n, mem_of_union L h j) ∩ ⋂ (k < N), (⋃₀ L (n + k)) ⊆
-      ⋂ (k < n + N), (⋃₀ (L k).toSet) := by
-  have h' : ⋂ (k < n + N), (⋃₀ (L k).toSet) =
-    (⋂ (k < n), (⋃₀ (L k).toSet)) ∩ ⋂ (k <  N), (⋃₀ (L (n + k)).toSet) := by
-    ext x
-    simp only [mem_iInter, mem_sUnion, Finset.mem_coe, mem_inter_iff]
-    refine ⟨fun h ↦ ⟨fun i hi ↦ ?_, fun i hi ↦ ?_⟩, fun h i hi ↦ ?_⟩
-    · refine h i (lt_of_lt_of_le hi (Nat.le_add_right n N))
-    · refine h (n + i) (Nat.add_lt_add_left hi n)
-    · by_cases hin : i < n
-      · exact h.1 i hin
-      · have h₁ : i - n < N := Nat.sub_lt_left_of_lt_add (Nat.le_of_not_lt hin) hi
-        have h₂ : n + (i - n) = i := by
-          exact add_sub_of_le <| Nat.le_of_not_lt hin
-        exact h₂ ▸ h.2 (i - n) h₁
-  rw [h']
-  apply inter_subset_inter _ fun ⦃a⦄ a ↦ a
-  have h'' (j : ℕ) (hj : j < n) : mem_of_union L h j ⊆ ⋃₀ (L j).toSet := by
-    exact subset_sUnion_of_mem <| prop₀ L h j
-  exact iInter₂_mono h''
-
-lemma isSubsetN0 (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :
-    (⋂ j, mem_of_union L h j) ⊆
-      ⋂ k, (⋃₀ (L k).toSet) := by
-  exact iInter_mono <| fun n ↦
-  subset_sUnion_of_subset (↑(L n)) (mem_of_union L h n) (fun ⦃a⦄ a ↦ a) (prop₀ L h n)
-
-lemma has_p (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d)
-    (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) : p (mem_of_union L h n) := by
-  exact hL n (mem_of_union L h n) (prop₀ L h n)
-
-lemma prop₁ (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) :
-    ∀ N, (⋂ (j < n), (mem_of_union L h j)) ∩ (⋂ (k < N), (⋃₀ (L (n + k)).toSet)) ≠ ∅ := by
-  have h' : r L n (mem_of_union_aux L h n).val := (mem_of_union_aux L h n).2.2
-  simp only [r] at h'
-  simp only [mem_of_union]
-  intro N
-  specialize h' N
-  conv at h' =>
-    lhs
-    enter [1,1]
-    intro j
-    enter[1]
-    intro hj
-    rw [constantEventually' L h n j hj]
-  exact h'
-
-lemma prop₁N0 (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) :
-    (⋂ (j < n), (mem_of_union L h j)) ≠ ∅ := by
-  have h' : (⋂ (k < 0), (⋃₀ (L (n + k)).toSet)) = univ := by
-    simp
-  have d (s : Set α) : s = s ∩ univ := by exact left_eq_inter.mpr fun ⦃a⦄ a ↦ trivial
-  rw [d (⋂ j, ⋂ (_ : j < n), mem_of_union L h j)]
-  rw [← h']
-  exact prop₁ L h n 0
-
-end mem_of_union
-
-/-- Finite unions of sets in a compact system. -/
-def union (p : Set α → Prop) : Set α → Prop :=
-  (sUnion '' ({ L : Set (Set α) | L.Finite ∧ ∀ K ∈ L, p K}))
-
-namespace union
-
-lemma mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = ⋃₀ L ∧ ∀ K ∈ L, p K := by
-  refine ⟨fun ⟨L, hL⟩ ↦ ?_, fun h ↦ ?_⟩
-  · simp only [mem_setOf_eq] at hL
-    let L' := (hL.1.1).toFinset
-    use L'
-    rw [← hL.2, Finite.coe_toFinset]
-    refine ⟨rfl, fun K hK ↦ ?_⟩
-    rw [Finite.mem_toFinset] at hK
-    apply hL.1.2 K hK
-  · obtain ⟨L, hL⟩ := h
-    use L
-    simp only [mem_setOf_eq, Finset.finite_toSet, Finset.mem_coe, true_and]
-    refine ⟨hL.2, hL.1.symm⟩
-
-theorem isCompactSystem (p : Set α → Prop)(hp : IsCompactSystem p) : IsCompactSystem (union p) := by
-  have hp' := (IsCompactSystem.iff_of_not_empty p).mp hp
-  rw [IsCompactSystem.iff_of_not_empty]
-  intro C hi
-  simp_rw [mem_iff] at hi
-  choose L' hL' using hi
-  have hL'1 := fun n ↦ (hL' n).1
-  have hL'2 := fun n ↦ (hL' n).2
-  simp_rw [hL'1]
-  intro hL
-  let K := mem_of_union L' hL
-  have h₁ : ⋂ i, K i ⊆ ⋂ i, ⋃₀ (L' i).toSet := by
-    apply mem_of_union.isSubsetN0 L'
-  have h₂ : ⋂ i, K i ≠ ∅ := by
-    apply hp' _
-    · apply mem_of_union.has_p
-      exact hL'2
-    · apply mem_of_union.prop₁N0
-  rw [← nonempty_iff_ne_empty] at h₂ ⊢
-  exact Nonempty.mono h₁ h₂
-
-end union
-
-end Union
-
-end IsCompactSystem
+end IsCompactIsClosed
 
 section pi
 
 variable {ι : Type*}  {α : ι → Type*}
 
+/- In a product space, the intersection of square cylinders is empty iff there is a coordinate `i`
+such that the projections to `i` have empty intersection. -/
 theorem iInter_pi_empty_iff {β : Type*} (s : β → Set ι) (t : β → (i : ι) → Set (α i)) :
-   ( ⋂ b, ((s b).pi (t b)) = ∅) ↔ (∃ i : ι, ⋂ (b : β) (_: i ∈ s b), (t b i) = ∅):= by
+   (⋂ b, ((s b).pi (t b)) = ∅) ↔ (∃ i : ι, ⋂ (b : β) (_: i ∈ s b), (t b i) = ∅):= by
   rw [iInter_eq_empty_iff, not_iff_not.symm]
   push_neg
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have ⟨x, hx⟩ := h
-    simp only [nonempty_iInter]
-    intro i
-    refine ⟨x i, fun j ↦ ?_⟩
-    rw [mem_iInter]
-    intro hi
-    simp_rw [mem_pi] at hx
-    exact hx j i hi
-  · simp only [nonempty_iInter, mem_iInter] at h
-    choose x hx using h
-    use x
-    simp_rw [mem_pi]
-    intro i
-    intro j hj
-    exact hx j i hj
+  simp only [nonempty_iInter, mem_iInter]
+  refine ⟨fun ⟨x, hx⟩ i ↦ ?_, fun h ↦ ?_⟩
+  · refine ⟨x i, fun j hi ↦ hx j i hi⟩
+  · choose x hx using h
+    refine ⟨x, fun i j hj ↦ hx j i hj⟩
 
 theorem iInter_univ_pi_empty_iff {β : Type*} (t : β → (i : ι) → Set (α i)) :
    ( ⋂ b, (univ.pi (t b)) = ∅) ↔ (∃ i : ι, ⋂ (b : β), (t b i) = ∅):= by
@@ -720,7 +325,7 @@ theorem biInter_univ_pi_empty_iff {β : Type*} (t : β → (i : ι) → Set (α 
     exact biInter_eq_iInter p fun x h ↦ t x i
   simp_rw [h, h', iInter_univ_pi_empty_iff]
 
-theorem IsCompactSystem.pi (C : (i : ι) → Set (Set (α i))) (hC : ∀ i, IsCompactSystem (C i)) :
+theorem pi (C : (i : ι) → Set (Set (α i))) (hC : ∀ i, IsCompactSystem (C i)) :
     IsCompactSystem (univ.pi '' univ.pi C) := by
   intro S hS h_empty
   change ∀ i, S i ∈ univ.pi '' univ.pi C at hS
@@ -741,6 +346,8 @@ theorem IsCompactSystem.pi (C : (i : ι) → Set (Set (α i))) (hC : ∀ i, IsCo
 
 end pi
 
+end IsCompactSystem
+
 section ClosedCompactSquareCylinders
 
 variable {ι : Type*} {α : ι → Type*}
@@ -750,95 +357,83 @@ variable [∀ i, TopologicalSpace (α i)]
 variable (α)
 /-- The set of sets of the form `s.pi t`, where `s : Finset ι` and `t i` is both,
 closed and compact, for all `i ∈ s`. -/
-def closedCompactSquareCylinders : Set (Set (Π i, α i)) :=
-  ⋃ (s) (t) (_ : ∀ i ∈ s, IsClosed (t i)) (_ : ∀ i ∈ s, IsCompact (t i)), {squareCylinder s t}
+def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
+  ⋃ (s) (t) (_ : ∀ i ∈ s, IsCompact (t i) ∧ IsClosed (t i)), {squareCylinder s t}
+
+def squareCylinders_of_prop (p : (i : ι) → Set (α i) → Prop) : Set (Set (Π i, α i)) :=
+  ⋃ (s) (t) (_ : ∀ i ∈ s, p i (t i)), {squareCylinder s t}
 
 variable {α}
 @[simp]
-theorem mem_closedCompactSquareCylinders (S : Set (Π i, α i)) :
-    S ∈ closedCompactSquareCylinders α
-      ↔ ∃ (s t : _) (_ : ∀ i ∈ s, IsClosed (t i)) (_ : ∀ i ∈ s, IsCompact (t i)),
+theorem mem_compactClosedSquareCylinders_iff (S : Set (Π i, α i)) :
+    S ∈ compactClosedSquareCylinders α
+      ↔ ∃ (s t : _) (_ : ∀ i ∈ s, IsCompact (t i) ∧ IsClosed (t i)),
         S = squareCylinder s t := by
-  simp_rw [closedCompactSquareCylinders, mem_iUnion, mem_singleton_iff]
+  simp_rw [compactClosedSquareCylinders, mem_iUnion, mem_singleton_iff]
+
 
 variable {S : Set (Π i, α i)}
 
 /-- Given a closed compact cylinder, choose a finset of variables such that it only depends on
 these variables. -/
-noncomputable def closedCompactSquareCylinders.finset (hS : S ∈ closedCompactSquareCylinders α) :
+noncomputable def compactClosedSquareCylinders.finset (hS : S ∈ compactClosedSquareCylinders α) :
     Finset ι :=
-  ((mem_closedCompactSquareCylinders S).mp hS).choose
+  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose
 
 /-- Given a closed compact square cylinder `S`, choose a dependent function `(i : ι) → Set (α i)`
 of which it is a lift. -/
-def closedCompactSquareCylinders.func (hS : S ∈ closedCompactSquareCylinders α) :
+def closedCompactSquareCylinders.func (hS : S ∈ compactClosedSquareCylinders α) :
     (i : ι) → Set (α i) :=
-  ((mem_closedCompactSquareCylinders S).mp hS).choose_spec.choose
+  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose_spec.choose
 
-theorem closedCompactSquareCylinders.isClosed (hS : S ∈ closedCompactSquareCylinders α) :
-    ∀ i ∈ closedCompactSquareCylinders.finset hS,
-      IsClosed (closedCompactSquareCylinders.func hS i) :=
-  ((mem_closedCompactSquareCylinders S).mp hS).choose_spec.choose_spec.choose
+theorem compactClosedSquareCylinders.isCompact_isClosed (hS : S ∈ compactClosedSquareCylinders α) :
+    ∀ i ∈ compactClosedSquareCylinders.finset hS,
+      IsCompact (closedCompactSquareCylinders.func hS i) ∧
+        IsClosed (closedCompactSquareCylinders.func hS i) :=
+  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose_spec.choose_spec.choose
 
-theorem closedCompactSquareCylinders.isCompact (hS : S ∈ closedCompactSquareCylinders α) :
-    ∀ i ∈ closedCompactSquareCylinders.finset hS,
-      IsCompact (closedCompactSquareCylinders.func hS i) :=
-  ((mem_closedCompactSquareCylinders S).mp hS).choose_spec.choose_spec.choose_spec.choose
-
-theorem closedCompactSquareCylinders.eq_squareCylinder (hS : S ∈ closedCompactSquareCylinders α) :
-    S = squareCylinder (closedCompactSquareCylinders.finset hS)
+theorem closedCompactSquareCylinders.eq_squareCylinder (hS : S ∈ compactClosedSquareCylinders α) :
+    S = squareCylinder (compactClosedSquareCylinders.finset hS)
       (closedCompactSquareCylinders.func hS) :=
-  ((mem_closedCompactSquareCylinders S).mp hS).choose_spec.choose_spec.choose_spec.choose_spec
+  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose_spec.choose_spec.choose_spec
 
 theorem squareCylinder_mem_closedCompactSquareCylinders (s : Finset ι) (t : (i : ι) → Set (α i))
-    (hS_closed : ∀ i ∈ s, IsClosed (t i)) (hS_compact : ∀ i ∈ s, IsCompact (t i)) :
-    squareCylinder s t ∈ closedCompactSquareCylinders α := by
-  rw [mem_closedCompactSquareCylinders]
-  exact ⟨s, t, hS_closed, hS_compact, rfl⟩
+    (h : ∀ i ∈ s, IsCompact (t i) ∧ IsClosed (t i)) :
+    squareCylinder s t ∈ compactClosedSquareCylinders α := by
+  rw [mem_compactClosedSquareCylinders_iff]
+  exact ⟨s, t, h, rfl⟩
 
-/-
-theorem mem_cylinder_of_mem_closedCompactSquareCylinders [∀ i, MeasurableSpace (α i)]
-    [∀ i, SecondCountableTopology (α i)] [∀ i, OpensMeasurableSpace (α i)]
-    (hS : S ∈ closedCompactSquareCylinders α) :
-    S ∈ measurableCylinders α := by
-  rw [mem_measurableSquareCylinders]
-  refine ⟨closedCompactCylinders.finset ht, closedCompactCylinders.set ht, ?_, ?_⟩
-  · exact (closedCompactCylinders.isClosed ht).measurableSet
-  · exact closedCompactCylinders.eq_cylinder ht
--/
-
-theorem IsCompactSystem.CompactClosedOrUniv_pi :
+theorem CompactClosedOrUniv_pi :
   IsCompactSystem (univ.pi '' univ.pi
     (fun (i : ι) ↦ (fun (s : Set (α i)) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ)))) := by
   apply IsCompactSystem.pi
     (fun (i : ι) ↦ (fun (s : Set (α i)) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ)))
-      <| fun i ↦ IsCompactSystem.isClosedCompactOrUnivs (α i)
+      <| fun i ↦ IsCompactSystem.of_isCompact_isClosed_or_univ
 
 /-- In `closedCompactSquareCylinders α`, the set of dependent variables is a finset,
   but not necessarily in `univ.pi '' univ.pi _`, where `_` are closed compact set, or `univ`. -/
-theorem closedCompactSquareCylinders_supset (S : _) :
-    S ∈ closedCompactSquareCylinders α → S ∈ (univ.pi '' univ.pi
+theorem compactClosedSquareCylinders_supset (S : _) :
+    S ∈ compactClosedSquareCylinders α → S ∈ (univ.pi '' univ.pi
     (fun (i : ι) ↦ (fun (s : Set (α i)) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ))))  := by
   classical
   intro hS
-  simp_rw [mem_closedCompactSquareCylinders, squareCylinder] at hS
+  simp_rw [mem_compactClosedSquareCylinders_iff, squareCylinder] at hS
   simp only [mem_image, mem_pi, mem_univ, forall_const]
   obtain ⟨s, t, h_cl, h_co, h_pi⟩ := hS
   let t' := fun (i : ι) ↦ if (i ∈ s) then (t i) else univ
-  refine ⟨t', ?_, ?_⟩
-  · intro i
-    by_cases hi : i ∈ s
+  refine ⟨t', fun i ↦ ?_, ?_⟩
+  · by_cases hi : i ∈ s
     · simp only [hi, ↓reduceIte, t']
-      exact Or.inl ⟨h_co i hi, h_cl i hi⟩
+      exact Or.inl (h_cl i hi)
     · simp only [hi, ↓reduceIte, t']
       apply Or.inr rfl
-  · change (pi univ fun i => if i ∈ (s : Set ι) then t i else univ) = S
-    rw [h_pi, univ_pi_ite s t]
+  · change (pi univ fun i => if i ∈ (s : Set ι) then t i else univ) = (s : Set ι).pi t
+    rw [univ_pi_ite s t]
 
 /-- Closed and compact square cylinders form a compact system. -/
-theorem IsCompactSystem.closedCompactSquareCylinders :
-    IsCompactSystem (closedCompactSquareCylinders α) :=
-  IsCompactSystem.of_supset IsCompactSystem.CompactClosedOrUniv_pi
-    closedCompactSquareCylinders_supset
+theorem isCompactSystem.compactClosedSquareCylinders :
+    IsCompactSystem (compactClosedSquareCylinders α) :=
+  IsCompactSystem.mono CompactClosedOrUniv_pi
+    compactClosedSquareCylinders_supset
 
 end ClosedCompactSquareCylinders
