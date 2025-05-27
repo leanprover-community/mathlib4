@@ -60,14 +60,15 @@ noncomputable def toClosedBall {E : Type*} [NormedAddCommGroup E] (r : ℝ) :
 
 /--
 Definition of the logarithmic counting function, as a group morphism mapping functions `D` with
-locally finite support to maps `ℝ → ℝ`.  Given `D`, the result map `logCounting D` takes a real `r :
-ℝ` to a logarithmically weighted measure of values that `D` takes within the disk `∣z∣ ≤ r`.
+locally finite support to maps `ℝ → ℝ`.  Given `D`, the result map `logCounting D` takes `r : ℝ` to
+a logarithmically weighted measure of values that `D` takes within the disk `∣z∣ ≤ r`.
 
 Implementation Note: In case where `z = 0`, the term `log (r * ‖z‖⁻¹)` evaluates to zero, which is
 typically different from `log r - log ‖z‖ = log r`. The summand `(D 0) * log r` compensates this,
 producing cleaner formulas when the logarithmic counting function is used in the main theorms of
 Value Distribution Theory.  We refer the reader to page 164 of [Lang: Introduction to Complex
-Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for more details.
+Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for more details, and
+to the lemma `countingFunction_finsum_eq_finsum_add` for a formal statement.
 -/
 noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E] :
     locallyFinsuppWithin (univ : Set E) ℤ →+ (ℝ → ℝ) where
@@ -91,6 +92,38 @@ noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
         by_contra
         simp_all
     · ring
+
+/--
+Alternate presentation of the finsum that appears in the definition of the counting function.
+-/
+lemma countingFunction_finsum_eq_finsum_add {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
+    (hD : D.support.Finite) :
+    ∑ᶠ u, (D u) * (log R - log ‖u‖) = ∑ᶠ u, (D u) * log (R * ‖u‖⁻¹) + D 0 * log R := by
+  by_cases h : 0 ∈ D.support
+  · have {g : ℂ → ℝ} : (fun u ↦ (D u) * (g u)).support ⊆ hD.toFinset := by
+      intro x
+      contrapose
+      simp_all
+    simp only [finsum_eq_sum_of_support_subset _ this,
+      Finset.sum_eq_sum_diff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), norm_zero,
+      log_zero, sub_zero, inv_zero, mul_zero, add_zero, add_left_inj]
+    apply Finset.sum_congr rfl
+    intro x hx
+    simp only [Finset.mem_sdiff, Set.Finite.mem_toFinset, Function.mem_support, ne_eq,
+      Finset.mem_singleton] at hx
+    congr
+    rw [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr hx.2)), log_inv]
+    ring
+  · simp_all only [ne_eq, Function.mem_support, Decidable.not_not, Int.cast_zero, zero_mul,
+      add_zero]
+    apply finsum_congr
+    intro x
+    by_cases h₁ : x = 0
+    · simp_all
+    · simp only [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr h₁)), log_inv, mul_eq_mul_left_iff,
+        Int.cast_eq_zero]
+      left
+      ring
 
 /--
 Evaluation of the logarithmic counting function at zero yields zero.
