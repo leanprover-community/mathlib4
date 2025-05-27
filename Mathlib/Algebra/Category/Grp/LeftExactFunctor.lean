@@ -3,7 +3,7 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.Grp.ChosenFiniteProducts
+import Mathlib.Algebra.Category.Grp.CartesianMonoidal
 import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
@@ -40,12 +40,11 @@ variable {C : Type u} [Category.{v} C] [Preadditive C] [HasFiniteBiproducts C]
 namespace leftExactFunctorForgetEquivalence
 
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
-attribute [local instance] AddCommGrp.chosenFiniteProductsAddCommGrp
+attribute [local instance] AddCommGrp.cartesianMonoidalCategoryAddCommGrp
 
-private noncomputable local instance : ChosenFiniteProducts C :=
-  ChosenFiniteProducts.ofFiniteProducts _
+private noncomputable local instance : CartesianMonoidalCategory C := .ofHasFiniteProducts
 
-private noncomputable local instance : BraidedCategory C := .ofChosenFiniteProducts
+private noncomputable local instance : BraidedCategory C := .ofCartesianMonoidalCategory
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrp.{v} :=

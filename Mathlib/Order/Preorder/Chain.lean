@@ -7,7 +7,6 @@ import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.Directed
 import Mathlib.Order.Hom.Set
-import Mathlib.Tactic.MinImports
 
 /-!
 # Chains and flags
@@ -289,7 +288,7 @@ instance [BoundedOrder α] (s : Flag α) : BoundedOrder s :=
 lemma mem_iff_forall_le_or_ge : a ∈ s ↔ ∀ ⦃b⦄, b ∈ s → a ≤ b ∨ b ≤ a :=
   ⟨fun ha b => s.le_or_le ha, fun hb =>
     of_not_not fun ha =>
-      Set.ne_insert_of_not_mem _ ‹_› <|
+      Set.ne_insert_of_notMem _ ‹_› <|
         s.maxChain.2 (s.chain_le.insert fun c hc _ => hb hc) <| Set.subset_insert _ _⟩
 
 /-- Flags are preserved under order isomorphisms. -/

@@ -18,8 +18,8 @@ following T. Wedhorn's unpublished notes “Adic Spaces” ([wedhorn_adic]).
 The definition of a valuation we use here is Definition 1.22 of [wedhorn_adic].
 A valuation on a ring `R` is a monoid homomorphism `v` to a linearly ordered
 commutative monoid with zero, that in addition satisfies the following two axioms:
- * `v 0 = 0`
- * `∀ x y, v (x + y) ≤ max (v x) (v y)`
+* `v 0 = 0`
+* `∀ x y, v (x + y) ≤ max (v x) (v y)`
 
 `Valuation R Γ₀` is the type of valuations `R → Γ₀`, with a coercion to the underlying
 function. If `v` is a valuation from `R` to `Γ₀` then the induced group
@@ -51,8 +51,8 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 
 In the `DiscreteValuation` locale:
 
- * `ℕₘ₀` is a shorthand for `WithZero (Multiplicative ℕ)`
- * `ℤₘ₀` is a shorthand for `WithZero (Multiplicative ℤ)`
+* `ℕₘ₀` is a shorthand for `WithZero (Multiplicative ℕ)`
+* `ℤₘ₀` is a shorthand for `WithZero (Multiplicative ℤ)`
 
 ## TODO
 

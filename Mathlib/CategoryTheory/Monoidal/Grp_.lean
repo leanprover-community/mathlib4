@@ -20,9 +20,9 @@ We show that a finite-product-preserving functor takes group objects to group ob
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
-open CategoryTheory Category Limits MonoidalCategory ChosenFiniteProducts Mon_ Mon_Class
+open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon_ Mon_Class
 
-variable {C : Type u₁} [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C]
+variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C]
 
 section
 
@@ -214,11 +214,11 @@ theorem isPullback (A : C) [Grp_Class A] :
         (lift (s.snd ≫ fst _ _ ≫ ι) (s.fst ≫ fst _ _) ≫ μ))
       (s.fst ≫ snd _ _))
     (by
-      refine fun s => ChosenFiniteProducts.hom_ext _ _ ?_ (by simp)
+      refine fun s => CartesianMonoidalCategory.hom_ext _ _ ?_ (by simp)
       simp only [lift_whiskerRight, lift_fst]
       rw [← lift_lift_assoc, ← assoc, lift_comp_inv_right, lift_comp_one_left])
     (by
-      refine fun s => ChosenFiniteProducts.hom_ext _ _ (by simp) ?_
+      refine fun s => CartesianMonoidalCategory.hom_ext _ _ (by simp) ?_
       simp only [lift_lift_associator_hom_assoc, lift_whiskerLeft, lift_snd]
       have : lift (s.snd ≫ fst _ _ ≫ ι) (s.fst ≫ fst _ _) ≫ μ =
           lift (s.snd ≫ snd _ _) (s.fst ≫ snd _ _ ≫ ι) ≫ μ := by
@@ -227,7 +227,7 @@ theorem isPullback (A : C) [Grp_Class A] :
       rw [this, lift_lift_assoc, ← assoc, lift_comp_inv_left, lift_comp_one_right])
     (by
       intro s m hm₁ hm₂
-      refine ChosenFiniteProducts.hom_ext _ _ (ChosenFiniteProducts.hom_ext _ _ ?_ ?_) ?_
+      refine CartesianMonoidalCategory.hom_ext _ _ (CartesianMonoidalCategory.hom_ext _ _ ?_ ?_) ?_
       · simpa using hm₂ =≫ fst _ _
       · have h : m ≫ fst _ _ ≫ fst _ _ = s.snd ≫ fst _ _ := by simpa using hm₂ =≫ fst _ _
         have := hm₁ =≫ fst _ _
@@ -241,7 +241,7 @@ theorem isPullback (A : C) [Grp_Class A] :
 theorem inv_hom [Grp_Class A] [Grp_Class B] (f : A ⟶ B) [IsMon_Hom f] : ι ≫ f = f ≫ ι := by
   suffices lift (lift f (ι ≫ f)) f =
       lift (lift f (f ≫ ι)) f by simpa using (this =≫ fst _ _) =≫ snd _ _
-  apply (isPullback B).hom_ext <;> apply ChosenFiniteProducts.hom_ext <;>
+  apply (isPullback B).hom_ext <;> apply CartesianMonoidalCategory.hom_ext <;>
     simp [lift_inv_comp_right, lift_inv_comp_left]
 
 lemma toMon_Class_injective {X : C} :
@@ -331,8 +331,8 @@ end Grp_
 
 namespace CategoryTheory
 variable
-  {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts D]
-  {E : Type u₃} [Category.{v₃} E] [ChosenFiniteProducts E]
+  {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D]
+  {E : Type u₃} [Category.{v₃} E] [CartesianMonoidalCategory E]
 
 namespace Functor
 variable {F F' : C ⥤ D} [F.Monoidal] [F'.Monoidal] {G : D ⥤ E} [G.Monoidal]
@@ -378,14 +378,14 @@ theorem comp_mapGrp_mul (A : Grp_ C) :
 /-- The identity functor is also the identity on group objects. -/
 @[simps!]
 noncomputable def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp_ C) :=
-  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_chosenFiniteProducts])
-    (by simp [μ_of_chosenFiniteProducts]))
+  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
+    (by simp [μ_of_cartesianMonoidalCategory]))
 
 /-- The composition functor is also the composition on group objects. -/
 @[simps!]
 noncomputable def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
-  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_chosenFiniteProducts])
-    (by simp [μ_of_chosenFiniteProducts]))
+  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
+    (by simp [μ_of_cartesianMonoidalCategory]))
 
 /-- Natural transformations between functors lift to group objects. -/
 @[simps!]

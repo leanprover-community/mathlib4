@@ -21,11 +21,11 @@ over `K` if they have the same minimal polynomial over `K`.
 ## Main results
 
 * `isConjRoot_iff_exists_algEquiv`: Let `L / K` be a normal field extension. For any two elements
-`x` and `y` in `L`, `IsConjRoot K x y` is equivalent to the existence of an algebra equivalence
-`σ : L ≃ₐ[K] L` such that `y = σ x`.
-* `not_mem_iff_exists_ne_and_isConjRoot`: Let `L / K` be a field extension. If `x` is a separable
-element over `K` and the minimal polynomial of `x` splits in `L`, then `x` is not in the `K` iff
-there exists a different conjugate root of `x` in `L` over `K`.
+  `x` and `y` in `L`, `IsConjRoot K x y` is equivalent to the existence of an algebra equivalence
+  `σ : L ≃ₐ[K] L` such that `y = σ x`.
+* `notMem_iff_exists_ne_and_isConjRoot`: Let `L / K` be a field extension. If `x` is a separable
+  element over `K` and the minimal polynomial of `x` splits in `L`, then `x` is not in the `K` iff
+  there exists a different conjugate root of `x` in `L` over `K`.
 
 ## TODO
 * Move `IsConjRoot` to earlier files and refactor the theorems in field theory using `IsConjRoot`.
@@ -356,7 +356,7 @@ Let `L / K` be a field extension. If `x` is a separable element over `K` and the
 of `x` splits in `L`, then `x` is not in `K` if and only if there exists a conjugate
 root of `x` over `K` in `L` which is not equal to `x` itself.
 -/
-theorem not_mem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
+theorem notMem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
     (sp : (minpoly K x).Splits (algebraMap K L)) :
     x ∉ (⊥ : Subalgebra K L) ↔ ∃ y : L, x ≠ y ∧ IsConjRoot K x y := by
   calc
@@ -373,3 +373,6 @@ theorem not_mem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
           (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mpr hy⟩⟩,
           fun ⟨y, hne, hy⟩ => ⟨⟨y,
           (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mp hy⟩, hne.symm⟩⟩
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_iff_exists_ne_and_isConjRoot := notMem_iff_exists_ne_and_isConjRoot

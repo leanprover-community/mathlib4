@@ -20,16 +20,16 @@ positive semi-definite on weight space and positive-definite on the span of root
 
 ## Main definitions / results:
 
- * `RootPairing.InvariantForm`: an invariant bilinear form on a root pairing.
- * `RootPairing.RootPositiveForm`: Given a root pairing this is a structure which contains a
-   bilinear form together with axioms for reflection-invariance, symmetry, and strict positivity on
-   all roots.
- * `RootPairing.zero_lt_pairingIn_iff`: sign relations between `RootPairing.pairingIn` and a
-   root-positive form.
- * `RootPairing.pairing_eq_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
- * `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
- * `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
-   orthogonal.
+* `RootPairing.InvariantForm`: an invariant bilinear form on a root pairing.
+* `RootPairing.RootPositiveForm`: Given a root pairing this is a structure which contains a
+  bilinear form together with axioms for reflection-invariance, symmetry, and strict positivity on
+  all roots.
+* `RootPairing.zero_lt_pairingIn_iff`: sign relations between `RootPairing.pairingIn` and a
+  root-positive form.
+* `RootPairing.pairing_eq_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
+* `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
+* `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
+  orthogonal.
 
 -/
 

@@ -75,6 +75,10 @@ theorem IsBoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ 
   { dist_smul_pair' := fun a b₁ b₂ => by simpa [smul_sub, dist_eq_norm] using h a (b₁ - b₂)
     dist_pair_smul' := fun a₁ a₂ b => by simpa [sub_smul, dist_eq_norm] using h (a₁ - a₂) b }
 
+theorem IsBoundedSMul.of_enorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ) :
+    IsBoundedSMul α β :=
+  .of_norm_smul_le (by simpa [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using h)
+
 @[deprecated (since := "2025-03-10")]
 alias BoundedSMul.of_norm_smul_le := IsBoundedSMul.of_norm_smul_le
 
@@ -105,7 +109,13 @@ instance (priority := 100) NormMulClass.toNormSMulClass_op [SeminormedRing α] [
     NormSMulClass αᵐᵒᵖ α where
   norm_smul a b := mul_comm ‖b‖ ‖a‖ ▸ norm_mul b a.unop
 
-variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β] [NormSMulClass α β]
+variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β]
+
+theorem NormSMulClass.of_nnnorm_smul (h : ∀ (r : α) (x : β), ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊) :
+    NormSMulClass α β where
+  norm_smul r b := congr_arg NNReal.toReal (h r b)
+
+variable [NormSMulClass α β]
 
 theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊ :=
   NNReal.eq <| norm_smul r x

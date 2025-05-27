@@ -91,7 +91,7 @@ attribute [reassoc (attr := simp)] IsMon_Hom.one_hom IsMon_Hom.mul_hom
 
 instance (f : M ⟶ N) (g : N ⟶ O) [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (f ≫ g) where
 
-instance (f : M ≅ N) [IsMon_Hom f.hom] :
+instance {M N : C} [Mon_Class M] [Mon_Class N] (f : M ≅ N) [IsMon_Hom f.hom] :
    IsMon_Hom f.inv where
   one_hom := by simp [Iso.comp_inv_eq]
   mul_hom := by simp [Iso.comp_inv_eq]
@@ -110,21 +110,30 @@ attribute [instance] Mon_.mon
 
 namespace Mon_
 
-variable (C)
+/-- Construct an object of `Mon_ C` from an object `X : C` and `Mon_Class X` instance. -/
+@[simps]
+def mk' (X : C) [Mon_Class X] : Mon_ C where
+  X := X
+  one := η
+  mul := μ
 
+instance {M : Mon_ C} : Mon_Class M.X where
+  one := M.one
+  mul := M.mul
+  one_mul' := M.one_mul
+  mul_one' := M.mul_one
+  mul_assoc' := M.mul_assoc
+
+variable (C) in
 /-- The trivial monoid object. We later show this is initial in `Mon_ C`.
 -/
 @[simps!]
-def trivial : Mon_ C := mk (𝟙_ C)
+def trivial : Mon_ C := mk' (𝟙_ C)
 
 instance : Inhabited (Mon_ C) :=
   ⟨trivial C⟩
 
-end Mon_
-
-namespace Mon_Class
-
-variable {M : C} [Mon_Class M]
+variable {M : Mon_ C}
 
 @[simp]
 theorem one_mul_hom {Z : C} (f : Z ⟶ M) : (η[M] ⊗ f) ≫ μ[M] = (λ_ Z).hom ≫ f := by
@@ -225,8 +234,8 @@ def mkIso' {M N : Mon_ C} (f : M.X ≅ N.X) [IsMon_Hom f.hom] : M ≅ N where
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
 @[simps!]
-def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
-    (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ[N.X] := by aesop_cat) : M ≅ N :=
+def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := by aesop_cat)
+    (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul := by aesop_cat) : M ≅ N :=
   have : IsMon_Hom f.hom := ⟨one_f, mul_f⟩
   mkIso' f
 
@@ -369,7 +378,7 @@ variable (C D) in
 @[simps] -- Porting note: added this, not sure how it worked previously without.
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
   obj F := F.mapMon
-  map α := { app := fun A => { hom := α.hom.app A.X } }
+  map α := { app A := { hom := α.hom.app A.X } }
   map_comp _ _ := rfl
 
 end Functor
@@ -433,7 +442,7 @@ variable (C)
 def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C where
   obj A := LaxMonoidalFunctor.of (monToLaxMonoidalObj A)
   map f :=
-    { hom := { app := fun _ => f.hom }
+    { hom := { app _ := f.hom }
       isMonoidal := { } }
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
@@ -516,7 +525,7 @@ which together form a strength that equips the tensor product functor with a mon
 and the monoid axioms for the tensor product follow from the monoid axioms for the tensor factors
 plus the properties of the strength (i.e., monoidal functor axioms).
 The strength `tensorμ` of the tensor product functor has been defined in
-`Mathlib.CategoryTheory.Monoidal.Braided`.
+`Mathlib/CategoryTheory/Monoidal/Braided.lean`.
 Its properties, stated as independent lemmas in that module,
 are used extensively in the proofs below.
 Notice that we could have followed the above plan not only conceptually
@@ -530,7 +539,7 @@ The obvious candidates are the associator and unitors from `C`,
 but we need to prove that they are monoid morphisms, i.e., compatible with unit and multiplication.
 These properties translate to the monoidality of the associator and unitors
 (with respect to the monoidal structures on the functors they relate),
-which have also been proved in `Mathlib.CategoryTheory.Monoidal.Braided`.
+which have also been proved in `Mathlib/CategoryTheory/Monoidal/Braided.lean`.
 
 -/
 
@@ -653,7 +662,6 @@ instance {f : Y ⟶ Z} [IsMon_Hom f] : IsMon_Hom (X ◁ f) where
   one_hom := by simpa using (inferInstanceAs <| IsMon_Hom (𝟙 X ⊗ f)).one_hom
   mul_hom := by simpa using (inferInstanceAs <| IsMon_Hom (𝟙 X ⊗ f)).mul_hom
 
-@[simps!]
 instance {f : X ⟶ Y} [IsMon_Hom f] : IsMon_Hom (f ▷ Z) where
   one_hom := by simpa using (inferInstanceAs <| IsMon_Hom (f ⊗ (𝟙 Z))).one_hom
   mul_hom := by simpa using (inferInstanceAs <| IsMon_Hom (f ⊗ (𝟙 Z))).mul_hom
@@ -684,14 +692,14 @@ variable [BraidedCategory C]
 
 @[simps! tensorObj_X tensorHom_hom]
 instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) where
-  tensorObj := fun M N ↦ mk (M.X ⊗ N.X)
+  tensorObj M N := mk' (M.X ⊗ N.X)
   tensorHom f g := Hom.mk' (f.hom ⊗ g.hom)
-  whiskerRight := fun f Y => Hom.mk' (f.hom ▷ Y.X)
-  whiskerLeft := fun X _ _ g => Hom.mk' (X.X ◁ g.hom)
-  tensorUnit := mk (𝟙_ C)
-  associator := fun M N P ↦ mkIso' <| associator M.X N.X P.X
-  leftUnitor := fun M ↦ mkIso' <| leftUnitor M.X
-  rightUnitor := fun M ↦ mkIso' <| rightUnitor M.X
+  whiskerRight f Y := Hom.mk' (f.hom ▷ Y.X)
+  whiskerLeft X _ _ g := Hom.mk' (X.X ◁ g.hom)
+  tensorUnit := mk' (𝟙_ C)
+  associator M N P := mkIso' <| associator M.X N.X P.X
+  leftUnitor M := mkIso' <| leftUnitor M.X
+  rightUnitor M := mkIso' <| rightUnitor M.X
 
 @[simp]
 theorem tensorUnit_X : (𝟙_ (Mon_ C)).X = 𝟙_ C := rfl
@@ -757,7 +765,7 @@ variable (C)
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+      μIso _ _ := Iso.refl _ }
 
 @[simp] theorem forget_ε : ε (forget C) = 𝟙 (𝟙_ C) := rfl
 @[simp] theorem forget_η : «η» (forget C) = 𝟙 (𝟙_ C) := rfl
@@ -815,8 +823,8 @@ end Mon_Class
 namespace Mon_
 
 instance : SymmetricCategory (Mon_ C) where
-  braiding := fun X Y => mkIso' (β_ X.X Y.X)
-  symmetry := fun X Y => by
+  braiding X Y := mkIso' (β_ X.X Y.X)
+  symmetry X Y := by
     ext
     simp [← SymmetricCategory.braiding_swap_eq_inv_braiding]
 
@@ -854,9 +862,9 @@ Projects:
 * More generally, check that `Mon_ (Mon_ C) ≌ CommMon_ C` when `C` is braided.
 * Check that `Mon_ TopCat ≌ [bundled topological monoids]`.
 * Check that `Mon_ AddCommGrp ≌ RingCat`.
-  (We've already got `Mon_ (ModuleCat R) ≌ AlgebraCat R`,
-  in `Mathlib.CategoryTheory.Monoidal.Internal.Module`.)
-* Can you transport this monoidal structure to `RingCat` or `AlgebraCat R`?
+  (We've already got `Mon_ (ModuleCat R) ≌ AlgCat R`,
+  in `Mathlib/CategoryTheory/Monoidal/Internal/Module.lean`.)
+* Can you transport this monoidal structure to `RingCat` or `AlgCat R`?
   How does it compare to the "native" one?
 * Show that when `F` is a lax braided functor `C ⥤ D`, the functor `map_Mon F : Mon_ C ⥤ Mon_ D`
   is lax monoidal.

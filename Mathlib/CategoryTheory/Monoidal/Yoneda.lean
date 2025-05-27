@@ -1,10 +1,3 @@
-/-
-Copyright (c) 2025 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
@@ -215,3 +208,4 @@ lemma IsCommMon.ofRepresentableBy [BraidedCategory C] (F : Cᵒᵖ ⥤ CommMonCa
     Functor.comp_obj, braiding_hom_fst, braiding_hom_snd, _root_.mul_comm]
 
 end CommMon_
+deprecated_module (since := "2025-05-11")
