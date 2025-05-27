@@ -54,7 +54,7 @@ while `W₂,₁` is a 5-cycle with an extra central hub vertex adjacent to all o
 The definitions of `IsFiveWheelLike` and `IsFiveWheelLikeFree` in this file have `r` shifted by two
 compared to the definitions in Brandt **On the structure of graphs with bounded clique number**
 
-The definition of `IsFiveWheelLike` does not contain the facts that `#s = r ` and `#t = r` but we
+The definition of `IsFiveWheelLike` does not contain the facts that `#s = r` and `#t = r` but we
 deduce these later as `card_left` and `card_right`.
 
 Although `#(s ∩ t)` can easily be derived from `s` and `t` we include the `IsFiveWheelLike` field
@@ -167,8 +167,8 @@ lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
       apply (C.valid _ hcy.symm).elim
       exact hw.isNClique_right.1 (by simp) (by simp [hy]) fun h ↦ hw.not_mem_right (h ▸ hy)
   | inr hx =>
-      apply (C.valid _ hcx.symm).elim
-      exact hw.isNClique_left.1 (by simp) (by simp [hx]) fun h ↦ hw.not_mem_left (h ▸ hx)
+    apply (C.valid _ hcx.symm).elim
+    exact hw.isNClique_left.1 (by simp) (by simp [hx]) fun h ↦ hw.not_mem_left (h ▸ hx)
 
 lemma card_left : s.card = r := by
   simp [← Nat.succ_inj, ← hw.isNClique_left.2, hw.not_mem_left]
@@ -192,7 +192,7 @@ Any maximally `Kᵣ₊₂`-free graph that is not complete-multipartite contains
 lemma exists_max_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite
     (h : Maximal (fun H => H.CliqueFree (r + 2)) G) (hnc : ¬ G.IsCompleteMultipartite) :
     ∃ k v w₁ w₂ s t, G.IsFiveWheelLike r k v w₁ w₂ s t ∧ k < r ∧
-    ∀ j, k < j → G.FiveWheelLikeFree r j := by
+      ∀ j, k < j → G.FiveWheelLikeFree r j := by
   obtain ⟨_, _, _, s, t, hw⟩ :=
     exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite h hnc
   let P : ℕ → Prop := fun k ↦ ∃ v w₁ w₂ s t, G.IsFiveWheelLike r k v w₁ w₂ s t
@@ -211,7 +211,7 @@ theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
     (h : Maximal (fun H => H.CliqueFree (r + 1)) G) : G.Colorable r ↔ G.IsCompleteMultipartite := by
   match r with
   | 0 => exact ⟨fun _ ↦ fun x ↦ cliqueFree_one.1 h.1 |>.elim' x,
-                 fun _ ↦ G.colorable_zero_iff.2 <| cliqueFree_one.1 h.1⟩
+                fun _ ↦ G.colorable_zero_iff.2 <| cliqueFree_one.1 h.1⟩
   | r + 1 =>
     refine ⟨fun hc ↦ ?_, fun hc ↦ hc.colorable_of_cliqueFree h.1⟩
     contrapose! hc
