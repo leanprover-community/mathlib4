@@ -47,9 +47,9 @@ section IsJacobsonRing
 variable {R S : Type*} [CommRing R] [CommRing S] {I : Ideal R}
 
 /-- A ring is a Jacobson ring if for every radical ideal `I`,
- the Jacobson radical of `I` is equal to `I`.
- See `isJacobsonRing_iff_prime_eq` and `isJacobsonRing_iff_sInf_maximal`
- for equivalent definitions. -/
+the Jacobson radical of `I` is equal to `I`.
+See `isJacobsonRing_iff_prime_eq` and `isJacobsonRing_iff_sInf_maximal`
+for equivalent definitions. -/
 class IsJacobsonRing (R : Type*) [CommRing R] : Prop where
   out' : ∀ I : Ideal R, I.IsRadical → I.jacobson = I
 
@@ -62,7 +62,7 @@ theorem IsJacobsonRing.out {R} [CommRing R] :
   isJacobsonRing_iff.1
 
 /-- A ring is a Jacobson ring if and only if for all prime ideals `P`,
- the Jacobson radical of `P` is equal to `P`. -/
+the Jacobson radical of `P` is equal to `P`. -/
 theorem isJacobsonRing_iff_prime_eq :
     IsJacobsonRing R ↔ ∀ P : Ideal R, IsPrime P → P.jacobson = P := by
   refine isJacobsonRing_iff.trans ⟨fun h I hI => h I hI.isRadical, ?_⟩
@@ -75,8 +75,8 @@ theorem isJacobsonRing_iff_prime_eq :
   exact fun J hJ => hx ⟨le_trans hP.left hJ.left, hJ.right⟩
 
 /-- A ring `R` is Jacobson if and only if for every prime ideal `I`,
- `I` can be written as the infimum of some collection of maximal ideals.
- Allowing ⊤ in the set `M` of maximal ideals is equivalent, but makes some proofs cleaner. -/
+`I` can be written as the infimum of some collection of maximal ideals.
+Allowing ⊤ in the set `M` of maximal ideals is equivalent, but makes some proofs cleaner. -/
 theorem isJacobsonRing_iff_sInf_maximal : IsJacobsonRing R ↔ ∀ {I : Ideal R}, I.IsPrime →
     ∃ M : Set (Ideal R), (∀ J ∈ M, IsMaximal J ∨ J = ⊤) ∧ I = sInf M :=
   ⟨fun H _I h => eq_jacobson_iff_sInf_maximal.1 (H.out h.isRadical), fun H =>
@@ -169,10 +169,10 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     convert hI.right
     by_cases hJ : J = I.map (algebraMap R S)
     · rw [hJ, comap_map_of_isPrime_disjoint (powers y) S I (IsMaximal.isPrime hI.right)]
-      rwa [disjoint_powers_iff_not_mem y hI.right.isPrime.isRadical]
+      rwa [disjoint_powers_iff_notMem y hI.right.isPrime.isRadical]
     · have hI_p : (I.map (algebraMap R S)).IsPrime := by
         refine isPrime_of_isPrime_disjoint (powers y) _ I hI.right.isPrime ?_
-        rwa [disjoint_powers_iff_not_mem y hI.right.isPrime.isRadical]
+        rwa [disjoint_powers_iff_notMem y hI.right.isPrime.isRadical]
       have : J ≤ I.map (algebraMap R S) := map_comap (Submonoid.powers y) S J ▸ map_mono hI.left
       exact absurd (h.1.2 _ (lt_of_le_of_ne this hJ)) hI_p.1
   · refine fun h => ⟨⟨fun hJ => h.1.ne_top (eq_top_iff.2 ?_), fun I hI => ?_⟩⟩
@@ -192,7 +192,7 @@ theorem IsLocalization.isMaximal_of_isMaximal_disjoint
     (hy : y ∉ I) : (I.map (algebraMap R S)).IsMaximal := by
   rw [isMaximal_iff_isMaximal_disjoint S y,
     comap_map_of_isPrime_disjoint (powers y) S I (IsMaximal.isPrime hI)
-      ((disjoint_powers_iff_not_mem y hI.isPrime.isRadical).2 hy)]
+      ((disjoint_powers_iff_notMem y hI.isPrime.isRadical).2 hy)]
   exact ⟨hI, hy⟩
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
@@ -203,7 +203,7 @@ def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isMaximal_of_isMaximal_disjoint y p.1 p.2.1 p.2.2⟩
   left_inv J := Subtype.eq (map_comap (powers y) S J)
   right_inv I := Subtype.eq (comap_map_of_isPrime_disjoint _ _ I.1 (IsMaximal.isPrime I.2.1)
-    ((disjoint_powers_iff_not_mem y I.2.1.isPrime.isRadical).2 I.2.2))
+    ((disjoint_powers_iff_notMem y I.2.1.isPrime.isRadical).2 I.2.2))
   map_rel_iff' {I I'} := ⟨fun h => show I.val ≤ I'.val from
     map_comap (powers y) S I.val ▸ map_comap (powers y) S I'.val ▸ Ideal.map_mono h,
     fun h _ hx => h hx⟩
@@ -237,7 +237,7 @@ theorem isJacobsonRing_localization [H : IsJacobsonRing R] : IsJacobsonRing S :=
   · exact ⟨le_trans (le_of_eq (IsLocalization.map_comap (powers y) S P').symm) (map_mono hI.1),
       isMaximal_of_isMaximal_disjoint y _ hI.2.1 hI.2.2⟩
   · exact IsLocalization.comap_map_of_isPrime_disjoint _ S I (IsMaximal.isPrime hI.2.1)
-      ((disjoint_powers_iff_not_mem y hI.2.1.isPrime.isRadical).2 hI.2.2)
+      ((disjoint_powers_iff_notMem y hI.2.1.isPrime.isRadical).2 hI.2.2)
 
 end Localization
 

@@ -222,8 +222,11 @@ theorem mem_closure_iff_nhds_ne_bot : x ∈ closure s ↔ 𝓝 x ⊓ 𝓟 s ≠ 
 theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
   mem_closure_iff_clusterPt
 
-lemma not_mem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
+lemma notMem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_closure_iff_nhdsWithin_eq_bot := notMem_closure_iff_nhdsWithin_eq_bot
 
 /-- If `x` is not an isolated point of a topological space, then `{x}ᶜ` is dense in the whole
 space. -/

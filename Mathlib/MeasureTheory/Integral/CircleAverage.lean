@@ -17,11 +17,11 @@ radius `R`, equipped with the rotation-invariant measure of total volume one. Li
 compositions of `f` with `circleMap` and avoids the need to manually elemininate `2 * π` every time
 an average is computed.
 
-Note: Like the interval average defined in `Mathlib.MeasureTheory.Integral.IntervalAverage`, the
-`circleAverage` defined here is a purely measure-theoretic average. It should not be confused with
-`circleIntegral`, which is the path integral over the circle path. The relevant integrability
+Note: Like the interval average defined in `Mathlib/MeasureTheory/Integral/IntervalAverage.lean`,
+the `circleAverage` defined here is a purely measure-theoretic average. It should not be confused
+with `circleIntegral`, which is the path integral over the circle path. The relevant integrability
 property `circleAverage` is `CircleIntegrable`, as defined in
-`Mathlib.MeasureTheory.Integral.CircleIntegral`.
+`Mathlib/MeasureTheory/Integral/CircleIntegral.lean`.
 
 Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative radii. The theorem
 `circleAverage_congr_negRadius` shows that the average is independent of the radius' sign.
@@ -31,7 +31,7 @@ open Filter Metric Real
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+  {𝕜 : Type*} [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   {f f₁ f₂ : ℂ → E} {c : ℂ} {R : ℝ} {a : 𝕜}
 
 namespace Real
@@ -83,8 +83,8 @@ lemma circleAverage_fun_add :
 -/
 
 /-- Circle averages do not change when shifting the angle. -/
-lemma circleAverage_eq_integral_add (η : ℝ) : circleAverage f c R =
-    (2 * π)⁻¹ • ∫ (θ : ℝ) in (0)..2 * π, f (circleMap c R (θ + η)) := by
+lemma circleAverage_eq_integral_add (η : ℝ) :
+    circleAverage f c R = (2 * π)⁻¹ • ∫ (θ : ℝ) in (0)..2 * π, f (circleMap c R (θ + η)) := by
   rw [intervalIntegral.integral_comp_add_right (fun θ ↦ f (circleMap c R θ))]
   have t₀ : (fun θ ↦ f (circleMap c R θ)).Periodic (2 * π) :=
     fun x ↦ by simp [periodic_circleMap c R x]

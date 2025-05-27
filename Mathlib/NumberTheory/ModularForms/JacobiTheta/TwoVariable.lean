@@ -326,7 +326,7 @@ lemma continuousAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
 /-- Differentiability of `Θ z τ` in `z`, for fixed `τ`. -/
 lemma differentiableAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     DifferentiableAt ℂ (jacobiTheta₂ · τ) z :=
- ((hasFDerivAt_jacobiTheta₂ z hτ).comp (𝕜 := ℂ) z (hasFDerivAt_prodMk_left z τ) :).differentiableAt
+  ((hasFDerivAt_jacobiTheta₂ z hτ).comp (𝕜 := ℂ) z (hasFDerivAt_prodMk_left z τ) :).differentiableAt
 
 /-- Differentiability of `Θ z τ` in `τ`, for fixed `z`. -/
 lemma differentiableAt_jacobiTheta₂_snd (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :

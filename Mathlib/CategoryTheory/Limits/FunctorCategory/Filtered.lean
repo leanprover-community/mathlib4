@@ -9,8 +9,8 @@ import Mathlib.CategoryTheory.Limits.Filtered
 /-!
 # Functor categories have filtered colimits when the target category does
 
-These declarations cannot be in the file `Mathlib.CategoryTheory.Limits.FunctorCategory` because
-that file shouldn't import `Mathlib.CategoryTheory.Limits.Filtered`.
+These declarations cannot be in `Mathlib/CategoryTheory/Limits/FunctorCategory.lean` because
+that file shouldn't import `Mathlib/CategoryTheory/Limits/Filtered.lean`.
 -/
 
 universe w' w v₁ v₂ u₁ u₂

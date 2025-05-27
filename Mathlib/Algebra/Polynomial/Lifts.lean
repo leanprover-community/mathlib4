@@ -26,8 +26,8 @@ and that a monic polynomial that lifts can be lifted to a monic polynomial (of t
 * `lifts_and_degree_eq_and_monic` : A monic polynomial lifts if and only if it can be lifted to a
   monic polynomial of the same degree.
 * `lifts_iff_alg` : if `R` is commutative, a polynomial lifts if and only if it is in the image of
-`mapAlg`, where `mapAlg : R[X] →ₐ[R] S[X]` is the only `R`-algebra map
-that sends `X` to `X`.
+  `mapAlg`, where `mapAlg : R[X] →ₐ[R] S[X]` is the only `R`-algebra map
+  that sends `X` to `X`.
 
 ## Implementation details
 

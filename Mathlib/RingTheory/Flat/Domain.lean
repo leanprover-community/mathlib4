@@ -15,7 +15,7 @@ and the ring is an integral domain.
 
 universe u
 
-variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M N : Type*} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
 variable [AddCommGroup N] [Module R N]
 variable {P Q : Type*} [AddCommGroup P] [Module R P] [AddCommGroup Q] [Module R Q]
 
@@ -25,7 +25,7 @@ attribute [local instance 1100] Module.Free.of_divisionRing Module.Flat.of_free 
 /-- Tensor product of injective maps over domains are injective under some flatness conditions.
 Also see `TensorProduct.map_injective_of_flat_flat`
 for different flatness conditions but without the domain assumption. -/
-lemma TensorProduct.map_injective_of_flat_flat_of_isDomain [IsDomain R]
+lemma TensorProduct.map_injective_of_flat_flat_of_isDomain
     (f : P →ₗ[R] M) (g : Q →ₗ[R] N) [H : Module.Flat R P] [Module.Flat R Q]
     (hf : Injective f) (hg : Injective g) : Injective (TensorProduct.map f g) := by
   let K := FractionRing R
@@ -50,13 +50,13 @@ lemma TensorProduct.map_injective_of_flat_flat_of_isDomain [IsDomain R]
     (((1 : K) • (algebraMap R K) 1 ⊗ₜ[R] f p) ⊗ₜ[R] g q)
   simp only [map_one, one_smul, AlgebraTensorModule.assoc_tmul]
 
+variable {ι κ : Type*} {v : ι → M} {w : κ → N} {s : Set ι} {t : Set κ}
+
 /-- Tensor product of linearly independent families is linearly independent over domains.
 This is true over non-domains if one of the modules is flat.
 See `LinearIndependent.tmul_of_flat_left`. -/
-lemma LinearIndependent.tmul_of_isDomain [IsDomain R]
-    {ι ι' : Type*} {v : ι → M} (hv : LinearIndependent R v)
-    {w : ι' → N} (hw : LinearIndependent R w) :
-    LinearIndependent R fun i : ι × ι' ↦ v i.1 ⊗ₜ[R] w i.2 := by
+lemma LinearIndependent.tmul_of_isDomain (hv : LinearIndependent R v) (hw : LinearIndependent R w) :
+    LinearIndependent R fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2 := by
   rw [LinearIndependent]
   convert (TensorProduct.map_injective_of_flat_flat_of_isDomain _ _ hv hw).comp
     (finsuppTensorFinsupp' _ _ _).symm.injective
@@ -64,3 +64,10 @@ lemma LinearIndependent.tmul_of_isDomain [IsDomain R]
   congr!
   ext i
   simp [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
+
+/-- Tensor product of linearly independent families is linearly independent over domains.
+This is true over non-domains if one of the modules is flat.
+See `LinearIndepOn.tmul_of_flat_left`. -/
+nonrec lemma LinearIndepOn.tmul_of_isDomain (hv : LinearIndepOn R v s) (hw : LinearIndepOn R w t) :
+    LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
+  ((hv.tmul_of_isDomain hw).comp _ (Equiv.Set.prod _ _).injective:)

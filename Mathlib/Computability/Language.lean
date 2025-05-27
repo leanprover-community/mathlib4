@@ -109,8 +109,10 @@ theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l
   Set.ext h
 
 @[simp]
-theorem not_mem_zero (x : List α) : x ∉ (0 : Language α) :=
+theorem notMem_zero (x : List α) : x ∉ (0 : Language α) :=
   id
+
+@[deprecated (since := "2025-05-23")] alias not_mem_zero := notMem_zero
 
 @[simp]
 theorem mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl

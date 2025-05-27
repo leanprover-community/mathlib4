@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Const
+import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # The derivative of a linear equivalence
@@ -552,6 +553,8 @@ theorem fderivWithin_comp_smul (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 s x) :
   · rw [fderivWithin_comp_smul_eq_fderivWithin_smul, fderivWithin_const_smul_field]
     exact hs.smul hc
 
+theorem fderiv_comp_smul (c : 𝕜) : fderiv 𝕜 (f <| c • ·) x = c • fderiv 𝕜 f (c • x) := by
+  rw [← fderivWithin_univ, fderivWithin_comp_smul _ uniqueDiffWithinAt_univ]
+  rcases eq_or_ne c 0 with rfl | hc <;> simp [smul_set_univ₀, *]
+
 end SMulLeft
-
-

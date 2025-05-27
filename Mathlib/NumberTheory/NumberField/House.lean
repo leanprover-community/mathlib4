@@ -82,20 +82,18 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
       (c K) * house (algebraMap (𝓞 K) K α) := by
   let σ := canonicalEmbedding K
   calc
-    _ ≤ ∑ j, ‖((basisMatrix K).transpose)⁻¹‖ * ‖σ (algebraMap (𝓞 K) K α) j‖  := ?_
+    _ ≤ ∑ j, ‖(basisMatrix K)ᵀ⁻¹ i j‖ * ‖σ (algebraMap (𝓞 K) K α) j‖ := by
+      rw [← inverse_basisMatrix_mulVec_eq_repr]
+      exact norm_sum_le_of_le _ fun _ _ ↦ (norm_mul _ _).le
+    _ ≤ ∑ j, ‖((basisMatrix K).transpose)⁻¹‖ * ‖σ (algebraMap (𝓞 K) K α) j‖  := by
+      gcongr
+      exact norm_entry_le_entrywise_sup_norm ((basisMatrix K).transpose)⁻¹
     _ ≤ ∑ _ : K →+* ℂ, ‖fun i j => ((basisMatrix K).transpose)⁻¹ i j‖
-        * house (algebraMap (𝓞 K) K α) := ?_
-    _ = ↑(finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖ * house (algebraMap (𝓞 K) K α) := ?_
-  · rw [← inverse_basisMatrix_mulVec_eq_repr]
-    apply le_trans
-    · apply le_trans (norm_sum_le _ _)
-      · exact sum_le_sum fun _ _ => (norm_mul _ _).le
-    · apply sum_le_sum fun _ _ => mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-      · exact norm_entry_le_entrywise_sup_norm ((basisMatrix K).transpose)⁻¹
-  · apply sum_le_sum; intros j _
-    apply mul_le_mul_of_nonneg_left _ (norm_nonneg fun i j ↦ ((basisMatrix K).transpose)⁻¹ i j)
-    · exact norm_le_pi_norm (σ ((algebraMap (𝓞 K) K) α)) j
-  · rw [sum_const, card_univ, nsmul_eq_mul, Embeddings.card, mul_assoc]
+        * house (algebraMap (𝓞 K) K α) := by
+      gcongr with j
+      exact norm_le_pi_norm (σ ((algebraMap (𝓞 K) K) α)) j
+    _ = ↑(finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖ * house (algebraMap (𝓞 K) K α) := by
+      simp [Embeddings.card, mul_assoc]
 
 @[deprecated (since := "2025-02-17")] alias basis_repr_abs_le_const_mul_house :=
   basis_repr_norm_le_const_mul_house
@@ -290,7 +288,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
 
 include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
- non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
+non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by

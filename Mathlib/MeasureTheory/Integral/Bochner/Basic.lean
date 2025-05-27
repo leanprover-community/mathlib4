@@ -14,12 +14,12 @@ import Mathlib.MeasureTheory.Measure.Real
 
 The Bochner integral extends the definition of the Lebesgue integral to functions that map from a
 measure space into a Banach space (complete normed vector space). It is constructed here using
-the L1 Bochner integral constructed in the file `Mathlib.MeasureTheory.Integral.Bochner.L1`.
+the L1 Bochner integral constructed in the file `Mathlib/MeasureTheory/Integral/Bochner/L1.lean`.
 
 ## Main definitions
 
 The Bochner integral is defined through the extension process described in the file
-`Mathlib.MeasureTheory.Integral.SetToL1`, which follows these steps:
+`Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
 * `MeasureTheory.integral`: the Bochner integral on functions defined as the Bochner integral of
   its equivalence class in L1 space, if it is in L1, and 0 otherwise.
@@ -27,7 +27,7 @@ The Bochner integral is defined through the extension process described in the f
 The result of that construction is `∫ a, f a ∂μ`, which is definitionally equal to
 `setToFun (dominatedFinMeasAdditive_weightedSMul μ) f`. Some basic properties of the integral
 (like linearity) are particular cases of the properties of `setToFun` (which are described in the
-file `Mathlib.MeasureTheory.Integral.SetToL1`).
+file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
 
 ## Main statements
 
@@ -60,10 +60,10 @@ file `Mathlib.MeasureTheory.Integral.SetToL1`).
     where `f⁺` is the positive part of `f` and `f⁻` is the negative part of `f`.
   * `integral_eq_lintegral_of_nonneg_ae`          : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
 
-4. (In the file `Mathlib.MeasureTheory.Integral.DominatedConvergence`)
+4. (In the file `Mathlib/MeasureTheory/Integral/DominatedConvergence.lean`)
   `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 
-5. (In the file `Mathlib.MeasureTheory.Integral.SetIntegral`) integration commutes with continuous
+5. (In `Mathlib/MeasureTheory/Integral/SetIntegral.lean`) integration commutes with continuous
   linear maps.
 
   * `ContinuousLinearMap.integral_comp_comm`
@@ -76,7 +76,7 @@ Some tips on how to prove a proposition if the API for the Bochner integral is n
 you need to unfold the definition of the Bochner integral and go back to simple functions.
 
 One method is to use the theorem `Integrable.induction` in the file
-`Mathlib.MeasureTheory.Function.SimpleFuncDenseLp` (or one of the related results, like
+`Mathlib/MeasureTheory/Function/SimpleFuncDenseLp.lean` (or one of the related results, like
 `Lp.induction` for functions in `Lp`), which allows you to prove something for an arbitrary
 integrable function.
 
@@ -148,7 +148,7 @@ Define the Bochner integral on functions generally to be the `L1` Bochner integr
 functions, and 0 otherwise; prove its basic properties.
 -/
 
-variable [NormedAddCommGroup E] [hE : CompleteSpace E] [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup E] [hE : CompleteSpace E] [NormedDivisionRing 𝕜]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
@@ -266,12 +266,24 @@ theorem integral_sub' {f g : α → G} (hf : Integrable f μ) (hg : Integrable g
     ∫ a, (f - g) a ∂μ = ∫ a, f a ∂μ - ∫ a, g a ∂μ :=
   integral_sub hf hg
 
+/-- The Bochner integral is linear. Note this requires `𝕜` to be a normed division ring, in order
+to ensure that for `c ≠ 0`, the function `c • f` is integrable iff `f` is. For an analogous
+statement for more general rings with an *a priori* integrability assumption on `f`, see
+`MeasureTheory.Integrable.integral_smul`. -/
 @[integral_simps]
-theorem integral_smul [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G] (c : 𝕜) (f : α → G) :
+theorem integral_smul [Module 𝕜 G] [NormSMulClass 𝕜 G] [SMulCommClass ℝ 𝕜 G] (c : 𝕜) (f : α → G) :
     ∫ a, c • f a ∂μ = c • ∫ a, f a ∂μ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, L1.integral]
     exact setToFun_smul (dominatedFinMeasAdditive_weightedSMul μ) weightedSMul_smul c f
+  · simp [integral, hG]
+
+theorem Integrable.integral_smul {R : Type*} [NormedRing R] [Module R G] [IsBoundedSMul R G]
+    [SMulCommClass ℝ R G] (c : R)
+    {f : α → G} (hf : Integrable f μ) :
+    ∫ a, c • f a ∂μ = c • ∫ a, f a ∂μ := by
+  by_cases hG : CompleteSpace G
+  · simpa only [integral, hG, hf, hf.fun_smul c] using L1.integral_smul c (toL1 f hf)
   · simp [integral, hG]
 
 theorem integral_const_mul {L : Type*} [RCLike L] (r : L) (f : α → L) :

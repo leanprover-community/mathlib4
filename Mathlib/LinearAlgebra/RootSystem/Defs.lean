@@ -13,15 +13,15 @@ This file contains basic definitions for root systems and root data.
 
 ## Main definitions:
 
- * `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N` (over some commutative ring
-   `R`) a root pairing with indexing set `ι` is the data of an `ι`-indexed subset of `M`
-   ("the roots") an `ι`-indexed subset of `N` ("the coroots"), and an `ι`-indexed set of
-   permutations of `ι` such that each root-coroot pair evaluates to `2`, and the permutation
-   attached to each element of `ι` is compatible with the reflections on the corresponding roots and
-   coroots.
- * `RootDatum`: A root datum is a root pairing for which the roots and coroots take values in
-   finitely-generated free Abelian groups.
- * `RootSystem`: A root system is a root pairing for which the roots span their ambient module.
+* `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N` (over some commutative ring
+  `R`) a root pairing with indexing set `ι` is the data of an `ι`-indexed subset of `M`
+  ("the roots") an `ι`-indexed subset of `N` ("the coroots"), and an `ι`-indexed set of
+  permutations of `ι` such that each root-coroot pair evaluates to `2`, and the permutation
+  attached to each element of `ι` is compatible with the reflections on the corresponding roots and
+  coroots.
+* `RootDatum`: A root datum is a root pairing for which the roots and coroots take values in
+  finitely-generated free Abelian groups.
+* `RootSystem`: A root system is a root pairing for which the roots span their ambient module.
 
 ## Implementation details
 
@@ -170,11 +170,15 @@ lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
 lemma ne_zero' [NeZero (2 : R)] : (P.coroot i : N) ≠ 0 :=
   P.flip.ne_zero i
 
-lemma zero_nmem_range_root [NeZero (2 : R)] : 0 ∉ range P.root := by
+lemma zero_notMem_range_root [NeZero (2 : R)] : 0 ∉ range P.root := by
   simpa only [mem_range, not_exists] using fun i ↦ P.ne_zero i
 
-lemma zero_nmem_range_coroot [NeZero (2 : R)] : 0 ∉ range P.coroot :=
-  P.flip.zero_nmem_range_root
+@[deprecated (since := "2025-05-24")] alias zero_nmem_range_root := zero_notMem_range_root
+
+lemma zero_notMem_range_coroot [NeZero (2 : R)] : 0 ∉ range P.coroot :=
+  P.flip.zero_notMem_range_root
+
+@[deprecated (since := "2025-05-24")] alias zero_nmem_range_coroot := zero_notMem_range_coroot
 
 lemma exists_ne_zero [Nonempty ι] [NeZero (2 : R)] : ∃ i, P.root i ≠ 0 := by
   obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)

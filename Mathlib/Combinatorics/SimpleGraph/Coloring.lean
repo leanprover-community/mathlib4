@@ -65,7 +65,7 @@ variable {V : Type u} (G : SimpleGraph V) {n : ℕ}
 /-- An `α`-coloring of a simple graph `G` is a homomorphism of `G` into the complete graph on `α`.
 This is also known as a proper coloring.
 -/
-abbrev Coloring (α : Type v) := G →g (⊤ : SimpleGraph α)
+abbrev Coloring (α : Type v) := G →g completeGraph α
 
 variable {G}
 variable {α β : Type*} (C : G.Coloring α)
@@ -116,7 +116,7 @@ theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.color
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
   classical
-  change Fintype (RelHom G.Adj (⊤ : SimpleGraph α).Adj)
+  change Fintype (RelHom G.Adj (completeGraph α).Adj)
   apply Fintype.ofInjective _ RelHom.coe_fn_injective
 
 variable (G)
@@ -345,7 +345,7 @@ lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     by_contra! hi
     let D : G.Coloring {a // a ≠ i} := ⟨fun v ↦ ⟨C v, hi v⟩, (C.valid · <| congr_arg Subtype.val ·)⟩
     classical
-    exact Nat.not_mem_of_lt_sInf ((Nat.sub_one_lt_of_lt <| card_pos_iff.2 ⟨i⟩).trans_le h)
+    exact Nat.notMem_of_lt_sInf ((Nat.sub_one_lt_of_lt <| card_pos_iff.2 ⟨i⟩).trans_le h)
       ⟨G.recolorOfEquiv (equivOfCardEq <| by simp [Nat.pred_eq_sub_one]) D⟩
   · simp only [chromaticNumber, Set.mem_setOf_eq, le_iInf_iff, Nat.cast_le, exists_prop]
     rintro i ⟨C⟩
@@ -453,6 +453,17 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   rw [← ENat.coe_toNat_eq_self] at hne
   rw [← hne] at hc
   simpa using hc
+
+/--
+Given a colouring `α` of `G`, and a clique of size at least the number of colours, the clique
+contains a vertex of each colour.
+-/
+lemma Coloring.surjOn_of_card_le_isClique [Fintype α] {s : Finset V} (h : G.IsClique s)
+    (hc : Fintype.card α ≤ s.card) (C : G.Coloring α) : Set.SurjOn C s Set.univ := by
+  intro _ _
+  obtain ⟨_, hx⟩ := card_le_chromaticNumber_iff_forall_surjective.mp
+                    (by simp_all [isClique_iff_induce_eq]) (C.comp (Embedding.induce s).toHom) _
+  exact ⟨_, Subtype.coe_prop _, hx⟩
 
 namespace completeMultipartiteGraph
 
