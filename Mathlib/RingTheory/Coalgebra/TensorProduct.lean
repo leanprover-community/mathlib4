@@ -9,13 +9,16 @@ import Mathlib.RingTheory.Coalgebra.Equiv
 /-!
 # Tensor products of coalgebras
 
-Given two `R`-coalgebras `M, N`, we can define a natural comultiplication map
-`Δ : M ⊗[R] N → (M ⊗[R] N) ⊗[R] (M ⊗[R] N)` and counit map `ε : M ⊗[R] N → R` induced by
-the comultiplication and counit maps of `M` and `N`.
+Suppose `S` is an `A` algebra. Given an `S`-coalgebra `A` and `R`-coalgebra `B`, we can define
+a natural comultiplication map `Δ : A ⊗[R] B → (A ⊗[R] B) ⊗[S] (A ⊗[R] B)`
+and counit map `ε : A ⊗[R] B → S` induced by the comultiplication and counit maps of `A` and `B`.
 
 In this file we show that `Δ, ε` satisfy the axioms of a coalgebra, and also define other data
 in the monoidal structure on `R`-coalgebras, like the tensor product of two coalgebra morphisms
 as a coalgebra morphism.
+
+In particular, when `R = S` we get tensor products of coalgebras, and when `A = S` we get
+the base change `S ⊗[R] B` as an `R`-coalgebra.
 
 -/
 
