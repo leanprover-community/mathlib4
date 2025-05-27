@@ -710,8 +710,8 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
   · have : ∀ J ∈ B', ‖μ.toBoxAdditive J • (f (t₁ J) - f (t₂ J))‖ ≤ μ.toBoxAdditive J * (2 * C) := by
       intro J _
       rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg measureReal_nonneg, two_mul]
-      refine mul_le_mul_of_nonneg_left (le_trans (norm_sub_le _ _) (add_le_add ?_ ?_)) (by simp) <;>
-        exact hC _ (TaggedPrepartition.tag_mem_Icc _ J)
+      gcongr
+      apply norm_sub_le_of_le <;> exact hC _ (TaggedPrepartition.tag_mem_Icc _ J)
     apply (norm_sum_le_of_le B' this).trans
     simp_rw [← sum_mul, μ.toBoxAdditive_apply, measureReal_def,
       ← toReal_sum (fun J hJ ↦ μJ_ne_top J (hB' hJ))]
@@ -818,9 +818,9 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   /- Now we deal with boxes such that `π.tag J ∉ s`.
     In this case the estimate is straightforward. -/
   calc
-    dist (∑ J ∈ π.boxes with ¬tag π J ∈ s, vol J (f (tag π J)))
-      (∑ J ∈ π.boxes with ¬tag π J ∈ s, g J)
-      ≤ ∑ J ∈ π.boxes with ¬tag π J ∈ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
+    dist (∑ J ∈ π.boxes with tag π J ∉ s, vol J (f (tag π J)))
+      (∑ J ∈ π.boxes with tag π J ∉ s, g J)
+      ≤ ∑ J ∈ π.boxes with tag π J ∉ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
       rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
       refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_ (fun hH => hπδ.2 hH J hJ)
         fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)

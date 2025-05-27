@@ -302,7 +302,7 @@ theorem mem_iUnionUpTo_lastStep (x : β) : p.c x ∈ p.iUnionUpTo p.lastStep := 
   have A : ∀ z : β, p.c z ∈ p.iUnionUpTo p.lastStep ∨ p.τ * p.r z < p.R p.lastStep := by
     have : p.lastStep ∈ {i | ¬∃ b : β, p.c b ∉ p.iUnionUpTo i ∧ p.R i ≤ p.τ * p.r b} :=
       csInf_mem p.lastStep_nonempty
-    simpa only [not_exists, mem_setOf_eq, not_and_or, not_le, not_not_mem]
+    simpa only [not_exists, mem_setOf_eq, not_and_or, not_le, not_notMem]
   by_contra h
   rcases A x with (H | H); · exact h H
   have Rpos : 0 < p.R p.lastStep := by
@@ -357,7 +357,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     rw [← Inf_eq_N] at hk
     have : k ∈ A := by
       simpa only [true_and, mem_univ, Classical.not_not, mem_diff] using
-        Nat.not_mem_of_lt_sInf hk
+        Nat.notMem_of_lt_sInf hk
     simp only [mem_iUnion, mem_singleton_iff, exists_prop, Subtype.exists, exists_and_right,
       and_assoc] at this
     simpa only [A, exists_prop, mem_iUnion, mem_singleton_iff, mem_closedBall, Subtype.exists,
@@ -387,7 +387,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     rw [this]
     have : ∃ t, p.c t ∉ p.iUnionUpTo (G n) ∧ p.R (G n) ≤ p.τ * p.r t := by
       simpa only [not_exists, exists_prop, not_and, not_lt, not_le, mem_setOf_eq, not_forall] using
-        not_mem_of_lt_csInf (G_lt_last n hn) (OrderBot.bddBelow _)
+        notMem_of_lt_csInf (G_lt_last n hn) (OrderBot.bddBelow _)
     exact Classical.epsilon_spec this
   -- the balls with indices `G k` satisfy the characteristic property of satellite configurations.
   have Gab :
@@ -533,7 +533,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
   rcases le_or_lt (μ s) 0 with (hμs | hμs)
   · have : μ s = 0 := le_bot_iff.1 hμs
     refine ⟨∅, by simp only [Finset.coe_empty, empty_subset], ?_, ?_⟩
-    · simp only [this, Finset.not_mem_empty, diff_empty, iUnion_false, iUnion_empty,
+    · simp only [this, Finset.notMem_empty, diff_empty, iUnion_false, iUnion_empty,
         nonpos_iff_eq_zero, mul_zero]
     · simp only [Finset.coe_empty, pairwiseDisjoint_empty]
   cases isEmpty_or_nonempty α
@@ -695,7 +695,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
         exact ⟨r, ⟨hr, h'r⟩, by simp only [hB, empty_disjoint]⟩
       · let r := infDist x B
         have : 0 < min r 1 :=
-          lt_min ((B_closed.not_mem_iff_infDist_pos hB).1 ((mem_diff x).1 hx).2) zero_lt_one
+          lt_min ((B_closed.notMem_iff_infDist_pos hB).1 ((mem_diff x).1 hx).2) zero_lt_one
         rcases hf x xs _ this with ⟨r, hr, h'r⟩
         refine ⟨r, ⟨hr, ⟨h'r.1, h'r.2.trans_le (min_le_right _ _)⟩⟩, ?_⟩
         rw [disjoint_comm]
@@ -747,7 +747,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
     induction n with
     | zero =>
       simp only [P, u, Prod.forall, id, Function.iterate_zero]
-      simp only [Finset.not_mem_empty, IsEmpty.forall_iff, Finset.coe_empty, forall₂_true_iff,
+      simp only [Finset.notMem_empty, IsEmpty.forall_iff, Finset.coe_empty, forall₂_true_iff,
         and_self_iff, pairwiseDisjoint_empty]
     | succ n IH =>
       rw [u_succ]
@@ -772,7 +772,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       induction n with
       | zero =>
         simp only [u, le_refl, diff_empty, one_mul, iUnion_false, iUnion_empty, pow_zero,
-          Function.iterate_zero, id, Finset.not_mem_empty]
+          Function.iterate_zero, id, Finset.notMem_empty]
       | succ n IH =>
         calc
           _ ≤ N / (N + 1) * μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n), closedBall p.fst p.snd) := by
@@ -917,7 +917,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
   let r x := if x ∈ s' then r1 x else r0 x
   have r_t0 : ∀ x ∈ t0, r x = r0 x := by
     intro x hx
-    have : ¬x ∈ s' := by
+    have : x ∉ s' := by
       simp only [s', not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_lt, not_le,
         mem_diff, not_forall]
       intro _

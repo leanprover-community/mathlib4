@@ -86,7 +86,7 @@ theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonem
   · by_cases ha : a ∈ s
     · simp_rw [mem_upperBounds, forall_mem_image] at hb
       exact hb ha
-    · have ha' := hs.isSuccLimit_of_not_mem hs' ha
+    · have ha' := hs.isSuccLimit_of_notMem hs' ha
       rw [le_iff_forall_le hf ha']
       intro c hc
       obtain ⟨d, hd, hcd, hda⟩ := hs.exists_between hc

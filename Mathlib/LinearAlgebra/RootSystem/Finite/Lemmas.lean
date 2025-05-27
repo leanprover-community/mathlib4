@@ -134,7 +134,7 @@ lemma RootPositiveForm.rootLength_le_of_pairingIn_eq (B : P.RootPositiveForm ℤ
   rw [hij'.1, hij'.2] at h' <;> omega
 
 variable {P} in
-lemma RootPositiveForm.rootLength_lt_of_pairingIn_nmem
+lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
     (B : P.RootPositiveForm ℤ) {i j : ι}
     (hne : α i ≠ α j) (hne' : α i ≠ - α j)
     (hij : P.pairingIn ℤ i j ∉ ({-1, 0, 1} : Set ℤ)) :
@@ -151,6 +151,10 @@ lemma RootPositiveForm.rootLength_lt_of_pairingIn_nmem
   have hi := B.rootLength_pos i
   rcases aux₁ with hji | hji <;> rcases hij' with hij' | hij' | hij' | hij' | hij' | hij' <;>
   rw [hji, hij'] at aux₂ <;> omega
+
+@[deprecated (since := "2025-05-23")]
+alias RootPositiveForm.rootLength_lt_of_pairingIn_nmem :=
+  RootPositiveForm.rootLength_lt_of_pairingIn_notMem
 
 variable {i j} in
 lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
@@ -392,7 +396,7 @@ variable {i j} in
 lemma pairingIn_le_zero_of_ne :
     P.pairingIn ℤ i j ≤ 0 := by
   by_contra! h
-  exact b.sub_nmem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
+  exact b.sub_notMem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
 
 /-- This is Lemma 2.5 (a) from [Geck](Geck2017). -/
 lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
@@ -415,7 +419,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     suffices α l - α k ∉ Φ by contrapose! this; exact P.root_sub_root_mem_of_pairingIn_pos this hkl
     replace hl : α l - α k = α i - α j := by rw [hl]; module
     rw [hl]
-    exact b.sub_nmem_range_root hi hj
+    exact b.sub_notMem_range_root hi hj
   have hki : P.pairingIn ℤ i k ≤ -2 := by
     suffices P.pairingIn ℤ l k = 2 + P.pairingIn ℤ i k - P.pairingIn ℤ j k by linarith
     apply algebraMap_injective ℤ R

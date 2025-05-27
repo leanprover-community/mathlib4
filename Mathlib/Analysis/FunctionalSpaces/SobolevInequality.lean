@@ -123,7 +123,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
       = ∫⋯∫⁻_insert i s,
             f ^ (1 - (s.card : ℝ) * p) * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) ^ p ∂μ := by
           -- unfold `T` and reformulate the exponents
-          simp_rw [T, card_insert_of_not_mem hi]
+          simp_rw [T, card_insert_of_notMem hi]
           congr!
           push_cast
           ring
@@ -226,7 +226,7 @@ theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
   · rw [← lmarginal_union μ f hf]
     · rw [← insert_compl_insert hi]
       rfl
-    rw [Finset.disjoint_singleton_left, not_mem_compl]
+    rw [Finset.disjoint_singleton_left, notMem_compl]
     exact mem_insert_self i s
   · -- the main nontrivial point is to check that an exponent `p` satisfying `0 ≤ p` and
     -- `(#ι - 1) * p ≤ 1` is in the valid range for the inductive-step lemma

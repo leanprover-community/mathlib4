@@ -225,7 +225,7 @@ lemma mrange_mapRangeAddMonoidHom (f : ∀ i, β₁ i →+ β₂ i) :
     simp only [Finset.coe_sort_coe, mapRange.addMonoidHom_apply, mapRange_apply]
     by_cases mem : i ∈ x.support
     · rw [mk_of_mem mem, hg]
-    · rw [DFinsupp.not_mem_support_iff.mp mem, mk_of_not_mem mem, map_zero]
+    · rw [DFinsupp.notMem_support_iff.mp mem, mk_of_notMem mem, map_zero]
 
 theorem mapRange_smul (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (r : R)
     (hf' : ∀ i x, f i (r • x) = r • f i x) (g : Π₀ i, β₁ i) :
