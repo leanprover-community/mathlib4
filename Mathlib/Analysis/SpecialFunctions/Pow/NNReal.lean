@@ -982,24 +982,24 @@ section Tactics
 
 -- end NormNum
 
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 
-namespace Positivity
+open Lean Meta Qq Function
 
--- private theorem nnrpow_pos {a : ℝ≥0} (ha : 0 < a) (b : ℝ) : 0 < a ^ b :=
---   NNReal.rpow_pos ha
+private theorem nnrpow_pos {a : ℝ≥0} (ha : 0 < a) (b : ℝ) : 0 < a ^ b :=
+  NNReal.rpow_pos ha
 
 -- /-- Auxiliary definition for the `positivity` tactic to handle real powers of nonnegative reals.
 -- -/
--- unsafe def prove_nnrpow (a b : expr) : tactic strictness := do
+-- unsafe def prove_nnrpow (a b : Expr) : MetaM (Strictness  zα pα e) := do
 --   let strictness_a ← core a
 --   match strictness_a with
 --     | positive p => positive <$> mk_app `` nnrpow_pos [p, b]
 --     | _ => failed
 
--- -- We already know `0 ≤ x` for all `x : ℝ≥0`
--- private theorem ennrpow_pos {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b :=
---   ENNReal.rpow_pos_of_nonneg ha hb.le
+-- We already know `0 ≤ x` for all `x : ℝ≥0`
+private theorem ennrpow_pos {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b :=
+  ENNReal.rpow_pos_of_nonneg ha hb.le
 
 -- /-- Auxiliary definition for the `positivity` tactic to handle real powers of extended
 -- nonnegative reals. -/
@@ -1013,7 +1013,7 @@ namespace Positivity
 
 -- We already know `0 ≤ x` for all `x : ℝ≥0∞`
 
-end Positivity
+
 
 -- open Positivity
 
@@ -1027,6 +1027,31 @@ end Positivity
 --   | q(ENNReal.rpow $(a) $(b)) => prove_ennrpow a b
 --   | _ => failed
 
-end Tactic
+/-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
+-- the base is nonnegative and positive when the base is positive. -/
+@[positivity _]-- (@HPow.hPow ENNReal Real _)]
+def nnrpow_ennrpow : PositivityExt where eval {u α} _zα _pα e := do
+  match u, e with
+  | 0, ~q(@HPow.hPow ENNReal Real ENNReal $(a) $b $c) =>
+    pure .none
+  -- | ~q(@HPow.hPow ENNReal Real $(a) $(b) $(c) $(d)) =>
+  --   let ra ← core q(inferInstance) q(inferInstance) a
+  --   assertInstancesCommute
+  --   match ra with
+  --   | .positive pa => pure (.positive q(EReal.coe_pos.2 $pa))
+  --   | _ => pure .none
+
+  -- match u, α, e with
+  -- | 0, ~q(EReal), ~q(Real.toEReal $a) =>
+  --   let ra ← core q(inferInstance) q(inferInstance) a
+  --   assertInstancesCommute
+  --   match ra with
+  --   | .positive pa => pure (.positive q(EReal.coe_pos.2 $pa))
+  --   | .nonnegative pa => pure (.nonnegative q(EReal.coe_nonneg.2 $pa))
+  --   | .nonzero pa => pure (.nonzero q(EReal.coe_ne_zero.2 $pa))
+  --   | _ => pure .none
+  | _, _, _ => throwError "failed to prove non-negativity"
+
+end Mathlib.Meta.Positivity
 
 end Tactics
