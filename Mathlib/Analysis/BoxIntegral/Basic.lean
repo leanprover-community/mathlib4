@@ -710,8 +710,8 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
   · have : ∀ J ∈ B', ‖μ.toBoxAdditive J • (f (t₁ J) - f (t₂ J))‖ ≤ μ.toBoxAdditive J * (2 * C) := by
       intro J _
       rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg measureReal_nonneg, two_mul]
-      refine mul_le_mul_of_nonneg_left (le_trans (norm_sub_le _ _) (add_le_add ?_ ?_)) (by simp) <;>
-        exact hC _ (TaggedPrepartition.tag_mem_Icc _ J)
+      gcongr
+      apply norm_sub_le_of_le <;> exact hC _ (TaggedPrepartition.tag_mem_Icc _ J)
     apply (norm_sum_le_of_le B' this).trans
     simp_rw [← sum_mul, μ.toBoxAdditive_apply, measureReal_def,
       ← toReal_sum (fun J hJ ↦ μJ_ne_top J (hB' hJ))]
