@@ -49,13 +49,13 @@ instance finite (x : FGModuleRepr R) : Module.Finite R x := by
   unfold repr; exact inferInstance
 
 /-- A non-canonical representation of a finite module (as a quotient of $$R^n$$). -/
-noncomputable def of_finite : FGModuleRepr R where
+noncomputable def ofFinite : FGModuleRepr R where
   n := (Module.Finite.exists_fin_iso R M).choose
   S := (Module.Finite.exists_fin_iso R M).choose_spec.choose
 
 /-- The non-canonical representation `of_finite` of a finite module is actually isomorphic to
 the given module. -/
-noncomputable def of_finite_iso : of_finite R M ≃ₗ[R] M :=
+noncomputable def ofFiniteEquiv : of_finite R M ≃ₗ[R] M :=
   choice (Module.Finite.exists_fin_iso R M).choose_spec.choose_spec
 
 instance category : Category (FGModuleRepr R) :=
