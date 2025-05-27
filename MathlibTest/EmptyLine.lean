@@ -10,13 +10,13 @@ set_option linter.style.emptyLine true
 -/
 
 /--
-warning: Please, do not place empty lines within commands!
+warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 note: this linter can be disabled with `set_option linter.style.emptyLine false`
 ---
-warning: Please, do not place empty lines within commands!
+warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 note: this linter can be disabled with `set_option linter.style.emptyLine false`
 ---
-warning: Please, do not place empty lines within commands!
+warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 note: this linter can be disabled with `set_option linter.style.emptyLine false`
 -/
 #guard_msgs in
@@ -31,7 +31,7 @@ example : True := by
   trivial
 
 /--
-warning: Please, do not place empty lines within commands!
+warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 note: this linter can be disabled with `set_option linter.style.emptyLine false`
 -/
 #guard_msgs in
@@ -44,13 +44,13 @@ example : True :=
   trivial
 
 /--
-warning: Please, do not place empty lines within commands!
+warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 note: this linter can be disabled with `set_option linter.style.emptyLine false`
 ---
-warning: Please, do not place empty lines within commands!
+warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 note: this linter can be disabled with `set_option linter.style.emptyLine false`
 ---
-warning: Please, do not place empty lines within commands!
+warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 note: this linter can be disabled with `set_option linter.style.emptyLine false`
 -/
 #guard_msgs in
@@ -98,7 +98,7 @@ end
 end TrailingComments
 
 /--
-warning: Please, do not place empty lines within commands!
+warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 note: this linter can be disabled with `set_option linter.style.emptyLine false`
 -/
 #guard_msgs in

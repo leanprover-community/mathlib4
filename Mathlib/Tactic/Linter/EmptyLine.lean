@@ -55,7 +55,7 @@ abbrev AllowEmptyLines : Std.HashSet SyntaxNodeKind := Std.HashSet.emptyWithCapa
   |>.insert ``Parser.Command.mutual
   |>.insert `str
 
-/-- If a file contains one of these names as segments, we disable `emptyLine` linter. -/
+/-- If a file contains one of these names as segments, we disable the `emptyLine` linter. -/
 abbrev SkippedFileSegments : Std.HashSet Name := Std.HashSet.emptyWithCapacity
   |>.insert `Tactic
   |>.insert `Util
@@ -67,7 +67,7 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  if !((← getMainModule).components.filter (SkippedFileSegments.contains)).isEmpty then
+  if !((← getMainModule).components.filter SkippedFileSegments.contains).isEmpty then
     return
   -- We ignore empty lines "after" the command finished.
   let stx := stx.unsetTrailing
@@ -85,7 +85,8 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
         if allowedRanges.any fun okRg => okRg.start ≤ r.start && r.stop ≤ okRg.stop then
           continue
         Linter.logLint linter.style.emptyLine (.ofRange r)
-          m!"Please, do not place empty lines within commands!"
+          m!"Please, write a comment here or remove this line, \
+            but do not place empty lines within commands!"
 
 initialize addLinter emptyLineLinter
 
