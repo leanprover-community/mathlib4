@@ -95,7 +95,7 @@ theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
       apply hb2
       rw [← hb3, Nat.mul_div_cancel_left b hp]
     · intro hn
-      rw [not_mem_support_iff.1 hn]
+      rw [notMem_support_iff.1 hn]
       split_ifs <;> rfl
   · rw [Finset.sum_eq_zero]
     intro k _
