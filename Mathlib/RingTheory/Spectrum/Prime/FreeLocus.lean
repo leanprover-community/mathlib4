@@ -262,7 +262,7 @@ open LocalizedModule Localization
 /-- The rank of `Π i, M i` at a prime `p` is the sum of the ranks of `M i` at `p`. -/
 lemma rankAtStalk_pi {ι : Type*} [Finite ι] (M : ι → Type*)
     [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [∀ i, Module.Flat R (M i)]
-    [∀ i, Module.FinitePresentation R (M i)] (p : PrimeSpectrum R) :
+    [∀ i, Module.Finite R (M i)] (p : PrimeSpectrum R) :
     rankAtStalk (Π i, M i) p = ∑ᶠ i, rankAtStalk (M i) p := by
   cases nonempty_fintype ι
   let f : (Π i, M i) →ₗ[R] Π i, LocalizedModule p.asIdeal.primeCompl (M i) :=
@@ -284,7 +284,7 @@ lemma rankAtStalk_eq_finrank_tensorProduct (p : PrimeSpectrum R):
     LocalizedModule.equivTensorProduct p.asIdeal.primeCompl M
   rw [rankAtStalk, e.finrank_eq]
 
-variable [Flat R M] [FinitePresentation R M]
+variable [Flat R M] [Module.Finite R M]
 
 attribute [local instance] free_of_flat_of_isLocalRing
 
@@ -310,7 +310,7 @@ lemma rankAtStalk_eq_zero_iff_subsingleton :
 variable (M) in
 /-- The rank of `M × N` at `p` is equal to the sum of the ranks. -/
 lemma rankAtStalk_prod (N : Type*) [AddCommGroup N] [Module R N]
-    [Module.Flat R N] [Module.FinitePresentation R N] :
+    [Module.Flat R N] [Module.Finite R N] :
     rankAtStalk (R := R) (M × N) = rankAtStalk M + rankAtStalk N := by
   ext p
   let e : LocalizedModule p.asIdeal.primeCompl (M × N) ≃ₗ[Localization.AtPrime p.asIdeal]
@@ -320,7 +320,7 @@ lemma rankAtStalk_prod (N : Type*) [AddCommGroup N] [Module R N]
       p.asIdeal.primeCompl _
   simp [rankAtStalk, e.finrank_eq]
 
-lemma rankAtStalk_tensorProduct {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSpectrum S) :
+lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSpectrum S) :
     rankAtStalk (S ⊗[R] M) p = rankAtStalk M ((algebraMap R S).specComap p) := by
   let q : PrimeSpectrum R := (algebraMap R S).specComap p
   let e : LocalizedModule p.asIdeal.primeCompl (S ⊗[R] M) ≃ₗ[Localization.AtPrime p.asIdeal]
@@ -334,9 +334,9 @@ lemma rankAtStalk_tensorProduct {S : Type*} [CommRing S] [Algebra R S] (p : Prim
   rw [rankAtStalk, e.finrank_eq]
   apply Module.finrank_baseChange
 
-lemma rankAtStalk_tensorProduct' (N : Type*) [AddCommGroup N] [Module R N] [Module.Finite R N]
-    [Module.Flat R N] :
-    rankAtStalk (M ⊗[R] N) = rankAtStalk M * rankAtStalk (R := R) N := by
+/-- See `rankAtStalk_tensorProduct_of_isScalarTower` for a hetero-basic version. -/
+lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Module.Finite R N]
+    [Module.Flat R N] : rankAtStalk (M ⊗[R] N) = rankAtStalk M * rankAtStalk (R := R) N := by
   ext p
   let e : Localization.AtPrime p.asIdeal ⊗[R] M ⊗[R] N ≃ₗ[Localization.AtPrime p.asIdeal]
       (Localization.AtPrime p.asIdeal ⊗[R] M) ⊗[Localization.AtPrime p.asIdeal]
@@ -345,6 +345,13 @@ lemma rankAtStalk_tensorProduct' (N : Type*) [AddCommGroup N] [Module R N] [Modu
       (AlgebraTensorModule.cancelBaseChange _ _ _ _ _).symm
   rw [rankAtStalk_eq_finrank_tensorProduct, e.finrank_eq, finrank_tensorProduct,
     ← rankAtStalk_eq_finrank_tensorProduct, ← rankAtStalk_eq_finrank_tensorProduct, Pi.mul_apply]
+
+lemma rankAtStalk_tensorProduct_of_isScalarTower {S : Type*} [CommRing S] [Algebra R S]
+    (N : Type*) [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
+    [Module.Finite S N] [Module.Flat S N] (p : PrimeSpectrum S) :
+    rankAtStalk (N ⊗[R] M) p = rankAtStalk N p * rankAtStalk M ((algebraMap R S).specComap p) := by
+  simp [rankAtStalk_eq_of_equiv (AlgebraTensorModule.cancelBaseChange R S S N M).symm,
+    rankAtStalk_tensorProduct, rankAtStalk_baseChange]
 
 /-- The rank of a module `M` at a prime `p` is equal to the dimension
 of `κ(p) ⊗[R] M` as a `κ(p)`-module. -/
