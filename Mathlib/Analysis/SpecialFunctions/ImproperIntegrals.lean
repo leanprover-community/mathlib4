@@ -124,9 +124,9 @@ theorem integrableOn_add_rpow_Ioi_of_lt {a c m : ℝ} (ha : a < -1) (hc : -m < c
     (fun t ht ↦ rpow_nonneg (by linarith [mem_Ioi.mp ht]) a) ht
 
 /-- If `0 < c`, then `(fun t : ℝ ↦ t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
-theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
+theorem integrableOn_Ioi_rpow_of_lt {a c : ℝ} (ha : a < -1) (hc : 0 < c) :
     IntegrableOn (fun t : ℝ ↦ t ^ a) (Ioi c) := by
-  simpa using integrableOn_add_rpow_Ioi_of_lt ha (by simpa only [neg_zero] : -0 < c)
+  simpa using integrableOn_add_rpow_Ioi_of_lt ha (by simpa : -0 < c)
 
 theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := by
