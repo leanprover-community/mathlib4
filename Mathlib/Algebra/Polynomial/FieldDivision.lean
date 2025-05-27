@@ -21,6 +21,7 @@ This file starts looking like the ring theory of $R[X]$
 noncomputable section
 
 open Polynomial
+open scoped Nat
 
 namespace Polynomial
 
@@ -84,7 +85,7 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
   by_contra! h'
   replace hroot := hroot _ h'
   simp only [IsRoot, eval_iterate_derivative_rootMultiplicity] at hroot
-  obtain ⟨q, hq⟩ := Nat.cast_dvd_cast (α := R) <| Nat.factorial_dvd_factorial h'
+  obtain ⟨q, hq⟩ : ((rootMultiplicity t p)! : R) ∣ n ! := by gcongr
   rw [hq, mul_mem_nonZeroDivisors] at hnzd
   rw [nsmul_eq_mul, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd.1] at hroot
   exact eval_divByMonic_pow_rootMultiplicity_ne_zero t h hroot
@@ -677,7 +678,7 @@ open UniqueFactorizationMonoid in
 protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
     p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
   by_cases hp : p = 0
-  · simpa [hp] using zero_not_mem_normalizedFactors _
+  · simpa [hp] using zero_notMem_normalizedFactors _
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
 
 variable (p) in

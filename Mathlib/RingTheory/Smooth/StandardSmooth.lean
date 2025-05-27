@@ -292,7 +292,7 @@ private lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
   classical
   rw [jacobiMatrix_apply]
-  refine MvPolynomial.pderiv_eq_zero_of_not_mem_vars (fun hmem ↦ ?_)
+  refine MvPolynomial.pderiv_eq_zero_of_notMem_vars (fun hmem ↦ ?_)
   apply MvPolynomial.vars_rename at hmem
   simp at hmem
 

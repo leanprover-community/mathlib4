@@ -26,9 +26,6 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
 
 We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X`.
 
-## TODO
-- Affine morphisms are separated.
-
 -/
 
 universe v u
