@@ -1021,6 +1021,13 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
     simp
     simp [phi_ofmul]
 
+  have e_i_regular_zero: ∀ s: S, φ (ofMul (e_i_regular s)) = 0 := by
+    dsimp [ofMul]
+    intro s
+    unfold e_i_regular
+    simp
+    simp [phi_ofmul]
+
   have e_i_ker: ∀ s: S, e_i s ∈ φ.ker := by
     intro s
     exact e_i_zero s
@@ -1357,7 +1364,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
       -- TODO: where do we add this? (hsum: gamma_sum list = 0)
-      let rec rewrite_list (list: List (E)) : List ((Set.range (Function.uncurry gamma_m))) := by
+      let rec rewrite_list (list: List (E)) (hlist: φ (ofMul list.unattach.prod) = 0) : List ((Set.range (Function.uncurry gamma_m))) := by
         let is_gamma: E → Bool := fun (k: E) => k = γ ∨ k = γ⁻¹
         let is_gamma_prop: E → Prop := fun (k: E) => k = γ ∨ k = γ⁻¹
         have eq_split: list = list.takeWhile is_gamma ++ list.dropWhile is_gamma := by
@@ -1650,8 +1657,36 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
             . exact mul_left_injective (List.dropWhile is_gamma list).unattach.prod⁻¹
 
+          have sublist_phi_zero: φ (gamma_copy ++ (List.dropWhile is_gamma list).tail).unattach.prod = 0 := by
+            rw [← mega_list_prod] at hlist
+            unfold mega_list at hlist
+            simp at hlist
+            simp at drop_head_in_e_i
+            obtain ⟨s, s_in_S, eq_e_i⟩ := drop_head_in_e_i
+            rw [← eq_e_i] at hlist
+            simp [e_i_regular_zero] at hlist
+            nth_rw 1 [← ofMul_list_prod] at hlist
+            nth_rw 1 [← ofMul_list_prod] at hlist
+            rw [gamma_copy_prod, gamma_copy_inv_prod] at hlist
+            simp at hlist
+            rw [← ofMul_list_prod] at hlist
+            rw [← ofMul_list_prod] at hlist
+            simp
+            conv =>
+              lhs
+              arg 2
+              equals (ofMul gamma_copy.unattach.prod) + (ofMul (List.dropWhile is_gamma list).tail.unattach.prod) =>
+                rfl
 
-          let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail))
+            simp
+            rw [← ofMul_list_prod]
+            rw [← ofMul_list_prod]
+            exact hlist
+
+
+
+
+          let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sorry)
 
           -- Show that the list (rewritten in terms of `γ^m * e_i * γ^(-m)` terms) is in the kernel of φ
           have return_list_kernel: φ (ofMul return_list.unattach.prod) = 0 := by
@@ -1665,15 +1700,10 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             simp [gamma_m]
             apply e_i_zero
 
-          -- have sublist_sum_zero: gamma_sum (gamma_copy ++ (List.dropWhile is_gamma list).tail) = 0 := by
-          --   unfold mega_list at sum_new_zero
-          --   rw [gamma_sum_split] at sum_new_zero
-          --   rw [gamma_sum_head] at sum_new_zero
-          --   simp at sum_new_zero
-          --   exact sum_new_zero
 
-          -- have sublist_prod_preserve: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_sum_zero).unattach.prod = (gamma_copy ++ (list.dropWhile is_gamma).tail).unattach.prod := by
-          --   sorry
+
+          have sublist_prod_preserve: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail)).unattach.prod = (gamma_copy ++ (list.dropWhile is_gamma).tail).unattach.prod := by
+            sorry
 
 
 
@@ -1695,10 +1725,18 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             rw [mul_assoc]
 
 
-
           have sum_new_zero: gamma_sum mega_list = 0 := by
             sorry
 
+
+
+
+          have sublist_sum_zero: gamma_sum (gamma_copy ++ (List.dropWhile is_gamma list).tail) = 0 := by
+            unfold mega_list at sum_new_zero
+            rw [gamma_sum_split] at sum_new_zero
+            rw [gamma_sum_head] at sum_new_zero
+            simp at sum_new_zero
+            exact sum_new_zero
 
           -- have gamma_sum_head: gamma_sum [⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), by (
           --   dsimp [E]
