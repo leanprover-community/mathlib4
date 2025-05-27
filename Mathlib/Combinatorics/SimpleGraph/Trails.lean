@@ -162,17 +162,13 @@ theorem IsEulerian.mem_support_of_Connected {u v : V} {p : G.Walk u v} (hp : p.I
   · simp [h]
   · have : ∃ e ∈ G.edgeSet, w ∈ e := by
       obtain ⟨p', _⟩ := hc.preconnected.exists_isPath w u
-      have h_p'_not_nil : ¬p'.Nil := by
-        induction p' with
-        | nil => contradiction
-        | cons h p p_ih => simp
       have hw : w ∈ p'.support := by simp
-      obtain ⟨y, _, hwy⟩ := G.adj_of_mem_walk_support p' h_p'_not_nil hw
+      obtain ⟨y, _, hwy⟩ := G.adj_of_mem_walk_support p' (not_nil_of_ne h) hw
       use s(w, y)
       simp [hwy]
     obtain ⟨e, he, hwe⟩ := this
     obtain ⟨x, hx⟩ := e.mem_iff_exists.mp hwe
-    have : e ∈ p.edges := ht.mem_edges_iff.mpr he
+    have : e ∈ p.edges := hp.mem_edges_iff.mpr he
     rw [hx] at this
     exact p.fst_mem_support_of_mem_edges this
 
