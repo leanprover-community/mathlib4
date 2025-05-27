@@ -163,6 +163,12 @@ theorem rootsOfUnity_one_set : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} :
 
 end CommMonoid
 
+open Set in
+theorem rootsOfUnity_two_set [NeZero k] [CommRing R] [NoZeroDivisors R] :
+    ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
+  ext x
+  rw [mem_insert_iff, mem_singleton_iff, ← sq_eq_one_iff, coe_rootsOfUnity_to_set, mem_setOf_eq]
+
 section IsDomain
 
 -- The following results need `k` to be nonzero.
@@ -231,11 +237,6 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
       (m.emod_nonneg (Int.natCast_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
     zpow_natCast, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
-
-open Set in
-theorem rootsOfUnity_two_set : ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
-  ext x
-  rw [mem_insert_iff, mem_singleton_iff, ← sq_eq_one_iff, coe_rootsOfUnity_to_set, mem_setOf_eq]
 
 lemma coe_rootsOfUnity_to_nthRootsFinset :
     ((↑) : Rˣ → R) '' (rootsOfUnity k R) = nthRootsFinset k (1 : R) := by
