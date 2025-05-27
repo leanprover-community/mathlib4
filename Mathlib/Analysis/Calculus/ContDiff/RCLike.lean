@@ -128,11 +128,16 @@ theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDif
     ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=
   (hf.hasStrictFDerivAt le_rfl).exists_lipschitzOnWith
 
+/-- If `f` is `C^1` on an open set, it is locally Lipschitz. -/
+lemma ContDiffOn.locallyLipschitzOn_of_isOpen {f : E' → F'} {s : Set E'} (hf : ContDiffOn 𝕂 1 f s)
+    (hs : IsOpen s) : LocallyLipschitzOn s f := by
+  intro x hx
+  rcases (hf.contDiffAt (hs.mem_nhds hx)).exists_lipschitzOnWith with ⟨K, t', ht', hK⟩
+  exact ⟨K, t', mem_nhdsWithin_of_mem_nhds ht', hK⟩
+
 /-- If `f` is `C^1`, it is locally Lipschitz. -/
-lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : LocallyLipschitz f := by
-  intro x
-  rcases hf.contDiffAt.exists_lipschitzOnWith with ⟨K, t, ht, hf⟩
-  use K, t
+lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : LocallyLipschitz f :=
+  locallyLipschitzOn_univ.mp (hf.contDiffOn.locallyLipschitzOn_of_isOpen isOpen_univ)
 
 /-- A `C^1` function with compact support is Lipschitz. -/
 theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'}
