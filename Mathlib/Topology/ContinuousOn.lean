@@ -564,11 +564,14 @@ theorem ContinuousWithinAt.preimage_mem_nhdsWithin'' {y : β} {s t : Set β}
   rw [hxy] at ht
   exact h.preimage_mem_nhdsWithin' (nhdsWithin_mono _ (image_preimage_subset f s) ht)
 
-theorem continuousWithinAt_of_not_mem_closure (hx : x ∉ closure s) :
+theorem continuousWithinAt_of_notMem_closure (hx : x ∉ closure s) :
     ContinuousWithinAt f s x := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot] at hx
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
+
+@[deprecated (since := "2025-05-23")]
+alias continuousWithinAt_of_not_mem_closure := continuousWithinAt_of_notMem_closure
 
 /-!
 ### `ContinuousOn`
@@ -717,9 +720,6 @@ theorem ContinuousWithinAt.mono_of_mem_nhdsWithin (h : ContinuousWithinAt f t x)
     ContinuousWithinAt f s x :=
   h.mono_left (nhdsWithin_le_of_mem hs)
 
-@[deprecated (since := "2024-10-18")]
-alias ContinuousWithinAt.mono_of_mem := ContinuousWithinAt.mono_of_mem_nhdsWithin
-
 /-- If two sets coincide around `x`, then being continuous within one or the other at `x` is
 equivalent. See also `continuousWithinAt_congr_set'` which requires that the sets coincide
 locally away from a point `y`, in a T1 space. -/
@@ -727,15 +727,9 @@ theorem continuousWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEq.mpr h]
 
-@[deprecated (since := "2024-10-18")]
-alias continuousWithinAt_congr_nhds := continuousWithinAt_congr_set
-
 theorem ContinuousWithinAt.congr_set (hf : ContinuousWithinAt f s x) (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f t x :=
   (continuousWithinAt_congr_set h).1 hf
-
-@[deprecated (since := "2024-10-18")]
-alias ContinuousWithinAt.congr_nhds := ContinuousWithinAt.congr_set
 
 theorem continuousWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     ContinuousWithinAt f (s ∩ t) x ↔ ContinuousWithinAt f s x := by
@@ -1306,6 +1300,14 @@ lemma Topology.IsInducing.continuousOn_iff {f : α → β} {g : β → γ} (hg :
 
 @[deprecated (since := "2024-10-28")] alias Inducing.continuousOn_iff := IsInducing.continuousOn_iff
 
+lemma Topology.IsInducing.map_nhdsWithin_eq {f : α → β} (hf : IsInducing f) (s : Set α) (x : α) :
+    map f (𝓝[s] x) = 𝓝[f '' s] f x := by
+  ext; simp +contextual [mem_nhdsWithin_iff_eventually, hf.nhds_eq_comap, forall_comm (α := _ ∈ _)]
+
+lemma Topology.IsInducing.continuousOn_image_iff {g : β → γ} {s : Set α} (hf : IsInducing f) :
+    ContinuousOn g (f '' s) ↔ ContinuousOn (g ∘ f) s := by
+  simp [ContinuousOn, ContinuousWithinAt, ← hf.map_nhdsWithin_eq]
+
 lemma Topology.IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsEmbedding g)
     {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
   hg.isInducing.continuousOn_iff
@@ -1314,9 +1316,8 @@ lemma Topology.IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg 
 alias Embedding.continuousOn_iff := IsEmbedding.continuousOn_iff
 
 lemma Topology.IsEmbedding.map_nhdsWithin_eq {f : α → β} (hf : IsEmbedding f) (s : Set α) (x : α) :
-    map f (𝓝[s] x) = 𝓝[f '' s] f x := by
-  rw [nhdsWithin, Filter.map_inf hf.injective, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
-    inter_eq_self_of_subset_right (image_subset_range _ _)]
+    map f (𝓝[s] x) = 𝓝[f '' s] f x :=
+  hf.isInducing.map_nhdsWithin_eq s x
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.map_nhdsWithin_eq := IsEmbedding.map_nhdsWithin_eq
@@ -1326,9 +1327,6 @@ theorem Topology.IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf 
   rw [hf.isEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
   apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.isOpen_range
   rw [inter_assoc, inter_self]
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.map_nhdsWithin_preimage_eq := IsOpenEmbedding.map_nhdsWithin_preimage_eq
 
 theorem Topology.IsQuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : IsQuotientMap f)
     {s : Set β} (hs : IsOpen s) : ContinuousOn g s ↔ ContinuousOn (g ∘ f) (f ⁻¹' s) := by
@@ -1362,14 +1360,33 @@ lemma ContinuousOn.union_continuousAt {f : α → β} (s_op : IsOpen s)
 
 open Classical in
 /-- If a function is continuous on two closed sets, it is also continuous on their union. -/
-theorem ContinuousOn.union_isClosed (hs : IsClosed s)
-    (ht : IsClosed t) {f : α → β} (hfs : ContinuousOn f s)
-    (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) := by
+theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
+    (hs : IsClosed s) (ht : IsClosed t) : ContinuousOn f (s ∪ t) := by
   refine fun x hx ↦ .union ?_ ?_
-  · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_
+  · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_notMem_closure ?_
     rwa [hs.closure_eq]
-  · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_not_mem_closure ?_
+  · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_notMem_closure ?_
     rwa [ht.closure_eq]
+
+@[deprecated ContinuousOn.union_of_isClosed (since := "2025-04-10")]
+alias ContinuousOn.union_isClosed := ContinuousOn.union_of_isClosed
+
+/-- A function is continuous on two closed sets iff it is also continuous on their union. -/
+theorem continouousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :
+    ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
+  ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
+   fun h ↦ h.left.union_of_isClosed h.right hs ht⟩
+
+/-- If a function is continuous on two open sets, it is also continuous on their union. -/
+theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
+    (hs : IsOpen s) (ht : IsOpen t) : ContinuousOn f (s ∪ t) :=
+  union_continuousAt hs hfs fun _ hx ↦ ht.continuousOn_iff.mp hft hx
+
+/-- A function is continuous on two open sets iff it is also continuous on their union. -/
+theorem continouousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : IsOpen t) :
+    ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
+  ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
+   fun h ↦ h.left.union_of_isOpen h.right hs ht⟩
 
 /-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
 the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/

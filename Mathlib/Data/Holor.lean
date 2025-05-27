@@ -162,7 +162,7 @@ nonrec theorem mul_zero {α : Type} [MulZeroClass α] (x : Holor α ds₁) : x �
 
 theorem mul_scalar_mul [Mul α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
-  simp (config := { unfoldPartialApp := true }) [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
+  simp +unfoldPartialApp [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
     HSMul.hSMul]
 
 -- holor slices
@@ -285,7 +285,7 @@ theorem cprankMax_sum [NonUnitalNonAssocSemiring α] {β} {n : ℕ} (s : Finset 
   Finset.induction_on s (by simp [CPRankMax.zero])
     (by
       intro x s (h_x_notin_s : x ∉ s) ih h_cprank
-      simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_not_mem h_x_notin_s]
+      simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_notMem h_x_notin_s]
       rw [Nat.right_distrib]
       simp only [Nat.one_mul, Nat.add_comm]
       have ih' : CPRankMax (Finset.card s * n) (∑ x ∈ s, f x) := by

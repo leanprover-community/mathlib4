@@ -81,7 +81,7 @@ theorem detp_mul :
   refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (add_comm _ _)
   replace hσ : ¬ Function.Injective σ := by
     contrapose! hσ
-    rw [not_mem_compl, mem_map, ofSign_disjUnion]
+    rw [notMem_compl, mem_map, ofSign_disjUnion]
     exact ⟨Equiv.ofBijective σ hσ.bijective_of_finite, mem_univ _, rfl⟩
   obtain ⟨i, j, hσ, hij⟩ := Function.not_injective_iff.mp hσ
   replace hσ k : σ (swap i j k) = σ k := by

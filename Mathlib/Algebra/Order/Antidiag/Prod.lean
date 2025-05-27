@@ -29,7 +29,7 @@ These instances are provided as `Finset.Nat.instHasAntidiagonal` and `Finsupp.in
 This is why `Finset.antidiagonalOfLocallyFinite` is an `abbrev` and not an `instance`.
 
 This definition does not exactly match with that of `Multiset.antidiagonal`
-defined in `Mathlib.Data.Multiset.Antidiagonal`, because of the multiplicities.
+defined in `Mathlib/Data/Multiset/Antidiagonal.lean`, because of the multiplicities.
 Indeed, by counting multiplicities, `Multiset α` is equivalent to `α →₀ ℕ`,
 but `Finset.antidiagonal` and `Multiset.antidiagonal` will return different objects.
 For example, for `s : Multiset ℕ := {0,0,0}`, `Multiset.antidiagonal s` has 8 elements
@@ -185,7 +185,7 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
 
 variable {A : Type*}
   [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A]
-  [LocallyFiniteOrder A] [DecidableEq A]
+  [LocallyFiniteOrderBot A] [DecidableEq A]
 
 /-- In a canonically ordered add monoid, the antidiagonal can be construct by filtering.
 

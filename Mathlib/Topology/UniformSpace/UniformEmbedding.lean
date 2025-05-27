@@ -247,9 +247,6 @@ theorem isClosedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopo
     { (isUniformEmbedding_of_spaced_out hs hf).isEmbedding with
       isClosed_range := isClosed_range_of_spaced_out hs hf }
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_of_spaced_out := isClosedEmbedding_of_spaced_out
-
 theorem closure_image_mem_nhds_of_isUniformInducing {s : Set (α × α)} {e : α → β} (b : β)
     (he₁ : IsUniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :
     ∃ a, closure (e '' { a' | (a, a') ∈ s }) ∈ 𝓝 b := by

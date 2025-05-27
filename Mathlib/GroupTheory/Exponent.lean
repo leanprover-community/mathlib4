@@ -439,8 +439,8 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
     apply Or.resolve_right (Nat.coprime_or_dvd_of_prime hp _)
     nth_rw 1 [← pow_one p]
     have : 1 = (Nat.factorization (orderOf (t ^ p ^ k))) p + 1 := by
-     rw [hpk', Nat.factorization_div hpk]
-     simp [k, hp]
+      rw [hpk', Nat.factorization_div hpk]
+      simp [k, hp]
     rw [this]
     -- Porting note: convert made to_additive complain
     apply Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
@@ -643,17 +643,29 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
 @[to_additive]
-lemma mul_not_mem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
+lemma mul_notMem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
     (hy : orderOf y = 2) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) := by
   simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_eq_left, mul_eq_right,
     mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hy, not_or]
   aesop
 
+@[deprecated (since := "2025-05-23")]
+alias add_not_mem_of_addOrderOf_eq_two := add_notMem_of_addOrderOf_eq_two
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias mul_not_mem_of_orderOf_eq_two := mul_notMem_of_orderOf_eq_two
+
 @[to_additive]
-lemma mul_not_mem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
+lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
     (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) :=
-  mul_not_mem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
+  mul_notMem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
     (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one y) hy) hxy
+
+@[deprecated (since := "2025-05-23")]
+alias add_not_mem_of_exponent_two := add_notMem_of_exponent_two
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias mul_not_mem_of_exponent_two := mul_notMem_of_exponent_two
 
 end Group
 

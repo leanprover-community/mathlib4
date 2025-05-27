@@ -54,6 +54,7 @@ variable (C : Type u) [Category.{v} C]
 
 /-- A category is called preadditive if `P ⟶ Q` is an abelian group such that composition is
     linear in both variables. -/
+@[stacks 00ZY]
 class Preadditive where
   homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance
   add_comp : ∀ (P Q R : C) (f f' : P ⟶ Q) (g : Q ⟶ R), (f + f') ≫ g = f ≫ g + f' ≫ g := by
@@ -99,7 +100,7 @@ instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) where
+instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
   homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
   add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
   comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _

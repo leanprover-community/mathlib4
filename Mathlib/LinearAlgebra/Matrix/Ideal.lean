@@ -81,34 +81,37 @@ variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
 /-- A standard basis matrix is in $J(Mₙ(I))$
 as long as its one possibly non-zero entry is in $J(I)$. -/
-theorem stdBasisMatrix_mem_jacobson_matricesOver (I : Ideal R) :
-    ∀ x ∈ I.jacobson, ∀ (i j : n), stdBasisMatrix i j x ∈ (I.matricesOver n).jacobson := by
+theorem single_mem_jacobson_matricesOver (I : Ideal R) :
+    ∀ x ∈ I.jacobson, ∀ (i j : n), single i j x ∈ (I.matricesOver n).jacobson := by
   -- Proof generalized from example 8 in
   -- https://ysharifi.wordpress.com/2022/08/16/the-jacobson-radical-basic-examples/
   simp_rw [Ideal.mem_jacobson_iff]
   intro x xIJ p q M
   have ⟨z, zMx⟩ := xIJ (M q p)
-  let N : Matrix n n R := 1 - ∑ i, stdBasisMatrix i q (if i = q then 1 - z else (M i p)*x*z)
+  let N : Matrix n n R := 1 - ∑ i, single i q (if i = q then 1 - z else (M i p)*x*z)
   use N
   intro i j
   obtain rfl | qj := eq_or_ne q j
   · by_cases iq : i = q
-    · simp [iq, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
+    · simp [iq, N, zMx, single, mul_apply, sum_apply, ite_and, sub_mul]
     · convert I.mul_mem_left (-M i p * x) zMx
-      simp [iq, N, zMx, stdBasisMatrix, mul_apply, sum_apply, ite_and, sub_mul]
+      simp [iq, N, zMx, single, mul_apply, sum_apply, ite_and, sub_mul]
       simp [sub_add, mul_add, mul_sub, mul_assoc]
   · simp [N, qj, sum_apply, mul_apply]
+
+@[deprecated (since := "2025-05-05")]
+alias stdBasisMatrix_mem_jacobson_matricesOver := single_mem_jacobson_matricesOver
 
 /-- For any left ideal $I ≤ R$, we have $Mₙ(J(I)) ≤ J(Mₙ(I))$. -/
 theorem matricesOver_jacobson_le (I : Ideal R) :
     I.jacobson.matricesOver n ≤ (I.matricesOver n).jacobson := by
   intro M MI
-  rw [matrix_eq_sum_stdBasisMatrix M]
+  rw [matrix_eq_sum_single M]
   apply sum_mem
   intro i _
   apply sum_mem
   intro j _
-  apply stdBasisMatrix_mem_jacobson_matricesOver I _ (MI i j)
+  apply single_mem_jacobson_matricesOver I _ (MI i j)
 
 end Ideal
 
@@ -137,14 +140,16 @@ theorem matrix_apply {c : RingCon R} {M N : Matrix n n R} :
   Iff.rfl
 
 @[simp]
-theorem matrix_apply_stdBasisMatrix [DecidableEq n] {c : RingCon R} {i j : n} {x y : R} :
-    c.matrix n (Matrix.stdBasisMatrix i j x) (Matrix.stdBasisMatrix i j y) ↔ c x y := by
+theorem matrix_apply_single [DecidableEq n] {c : RingCon R} {i j : n} {x y : R} :
+    c.matrix n (Matrix.single i j x) (Matrix.single i j y) ↔ c x y := by
   refine ⟨fun h ↦ by simpa using h i j, fun h i' j' ↦ ?_⟩
   obtain hi | rfl := ne_or_eq i i'
   · simpa [hi] using c.refl 0
   obtain hj | rfl := ne_or_eq j j'
   · simpa [hj] using c.refl _
   simpa using h
+
+@[deprecated (since := "2025-05-05")] alias matrix_apply_stdBasisMatrix := matrix_apply_single
 
 theorem matrix_monotone : Monotone (matrix (R := R) n) :=
   fun _ _ hc _ _ h _ _ ↦ hc (h _ _)
@@ -164,24 +169,24 @@ theorem matrix_bot : (⊥ : RingCon R).matrix n = ⊥ :=
 
 @[simp]
 theorem matrix_top : (⊤ : RingCon R).matrix n = ⊤ :=
-  eq_top_iff.2 fun _ _ _ _ _ ↦ trivial
+  eq_top_iff.2 fun _ _ _ _ _ ↦ by simp
 
 open Matrix
 
 variable {n}
 
-/-- The congruence relation induced by `c` on `stdBasisMatrix i j`. -/
+/-- The congruence relation induced by `c` on `single i j`. -/
 def ofMatrix [DecidableEq n] (c : RingCon (Matrix n n R)) : RingCon R where
-  r x y := ∀ i j, c (stdBasisMatrix i j x) (stdBasisMatrix i j y)
+  r x y := ∀ i j, c (single i j x) (single i j y)
   iseqv.refl _ := fun _ _ ↦ c.refl _
   iseqv.symm h := fun _ _ ↦ c.symm <| h _ _
   iseqv.trans h₁ h₂ := fun _ _ ↦ c.trans (h₁ _ _) (h₂ _ _)
-  add' h₁ h₂ := fun _ _ ↦ by simpa [stdBasisMatrix_add] using c.add (h₁ _ _) (h₂ _ _)
+  add' h₁ h₂ := fun _ _ ↦ by simpa [single_add] using c.add (h₁ _ _) (h₂ _ _)
   mul' h₁ h₂ := fun i j ↦ by simpa using c.mul (h₁ i i) (h₂ i j)
 
 @[simp]
 theorem ofMatrix_rel [DecidableEq n] {c : RingCon (Matrix n n R)} {x y : R} :
-    ofMatrix c x y ↔ ∀ i j, c (stdBasisMatrix i j x) (stdBasisMatrix i j y) :=
+    ofMatrix c x y ↔ ∀ i j, c (single i j x) (single i j y) :=
   Iff.rfl
 
 @[simp] theorem ofMatrix_matrix [DecidableEq n] [Nonempty n] (c : RingCon R) :
@@ -193,7 +198,7 @@ theorem ofMatrix_rel [DecidableEq n] {c : RingCon (Matrix n n R)} {x y : R} :
     inhabit n
     simpa using h default default default default
   · intro h i j
-    rwa [matrix_apply_stdBasisMatrix]
+    rwa [matrix_apply_single]
 
 end NonUnitalNonAssocSemiring
 
@@ -211,16 +216,16 @@ theorem matrix_ofMatrix [DecidableEq n] (c : RingCon (Matrix n n R)) :
   classical
   constructor
   · intro h
-    rw [matrix_eq_sum_stdBasisMatrix x, matrix_eq_sum_stdBasisMatrix y]
+    rw [matrix_eq_sum_single x, matrix_eq_sum_single y]
     refine c.finset_sum _ fun i _ ↦ c.finset_sum _ fun j _ ↦ h i j i j
   · intro h i' j' i j
-    simpa using c.mul (c.mul (c.refl <| stdBasisMatrix i i' 1) h) (c.refl <| stdBasisMatrix j' j 1)
+    simpa using c.mul (c.mul (c.refl <| single i i' 1) h) (c.refl <| single j' j 1)
 
 /-- A version of `ofMatrix_rel` for a single matrix index, rather than all indices. -/
 theorem ofMatrix_rel' [DecidableEq n] {c : RingCon (Matrix n n R)} {x y : R} (i j : n) :
-    ofMatrix c x y ↔ c (stdBasisMatrix i j x) (stdBasisMatrix i j y) := by
+    ofMatrix c x y ↔ c (single i j x) (single i j y) := by
   refine ⟨fun h ↦ h i j, fun h i' j' ↦ ?_⟩
-  simpa using c.mul (c.mul (c.refl <| stdBasisMatrix i' i 1) h) (c.refl <| stdBasisMatrix j j' 1)
+  simpa using c.mul (c.mul (c.refl <| single i' i 1) h) (c.refl <| single j j' 1)
 
 theorem coe_ofMatrix_eq_relationMap [DecidableEq n] {c : RingCon (Matrix n n R)} (i j : n) :
     ⇑(ofMatrix c) = Relation.Map c (· i j) (· i j) := by
@@ -230,7 +235,7 @@ theorem coe_ofMatrix_eq_relationMap [DecidableEq n] {c : RingCon (Matrix n n R)}
     refine ⟨_,_, h i j, ?_⟩
     simp
   · rintro ⟨X, Y, h, rfl, rfl⟩ i' j'
-    simpa using c.mul (c.mul (c.refl <| stdBasisMatrix i' i 1) h) (c.refl <| stdBasisMatrix j j' 1)
+    simpa using c.mul (c.mul (c.refl <| single i' i 1) h) (c.refl <| single j j' 1)
 
 end NonAssocSemiring
 
@@ -294,7 +299,7 @@ theorem coe_equivMatricesOver_symm_apply (I : TwoSidedIdeal (Matrix n n R)) (i j
   ext r
   constructor
   · intro h
-    exact ⟨stdBasisMatrix i j r, by simpa using h i j, by simp⟩
+    exact ⟨single i j r, by simpa using h i j, by simp⟩
   · rintro ⟨n, hn, rfl⟩
     rw [SetLike.mem_coe, mem_iff, equivMatricesOver_symm_apply_ringCon,
       RingCon.coe_ofMatrix_eq_relationMap i j]
@@ -343,13 +348,13 @@ private lemma jacobson_matricesOver_le (I : TwoSidedIdeal R) :
   intro M Mmem p q
   simp only [zero_apply, ← mem_iff]
   rw [mem_jacobson_iff]
-  replace Mmem := mul_mem_right _ _ (stdBasisMatrix q p 1) Mmem
+  replace Mmem := mul_mem_right _ _ (single q p 1) Mmem
   rw [mem_jacobson_iff] at Mmem
   intro y
-  specialize Mmem (y • stdBasisMatrix p p 1)
+  specialize Mmem (y • single p p 1)
   have ⟨N, NxMI⟩ := Mmem
   use N p p
-  simpa [mul_apply, stdBasisMatrix, ite_and] using NxMI p p
+  simpa [mul_apply, single, ite_and] using NxMI p p
 
 /-- For any two-sided ideal $I ≤ R$, we have $J(Mₙ(I)) = Mₙ(J(I))$. -/
 theorem jacobson_matricesOver (I : TwoSidedIdeal R) :

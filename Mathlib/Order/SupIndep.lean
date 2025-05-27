@@ -62,7 +62,7 @@ variable {s t : Finset ι} {f : ι → α} {i : ι}
 /-- The RHS looks like the definition of `iSupIndep`. -/
 theorem supIndep_iff_disjoint_erase [DecidableEq ι] :
     s.SupIndep f ↔ ∀ i ∈ s, Disjoint (f i) ((s.erase i).sup f) :=
-  ⟨fun hs _ hi => hs (erase_subset _ _) hi (not_mem_erase _ _), fun hs _ ht i hi hit =>
+  ⟨fun hs _ hi => hs (erase_subset _ _) hi (notMem_erase _ _), fun hs _ ht i hi hit =>
     (hs i hi).mono_right (sup_mono fun _ hj => mem_erase.2 ⟨ne_of_mem_of_not_mem hj hit, ht hj⟩)⟩
 
 /-- If both the index type and the lattice have decidable equality,
@@ -86,7 +86,7 @@ theorem SupIndep.subset (ht : t.SupIndep f) (h : s ⊆ t) : s.SupIndep f := fun 
 
 @[simp]
 theorem supIndep_empty (f : ι → α) : (∅ : Finset ι).SupIndep f := fun _ _ a ha =>
-  (not_mem_empty a ha).elim
+  (notMem_empty a ha).elim
 
 @[simp]
 theorem supIndep_singleton (i : ι) (f : ι → α) : ({i} : Finset ι).SupIndep f :=
@@ -96,7 +96,7 @@ theorem supIndep_singleton (i : ι) (f : ι → α) : ({i} : Finset ι).SupIndep
 
 theorem SupIndep.pairwiseDisjoint (hs : s.SupIndep f) : (s : Set ι).PairwiseDisjoint f :=
   fun _ ha _ hb hab =>
-    sup_singleton.subst <| hs (singleton_subset_iff.2 hb) ha <| not_mem_singleton.2 hab
+    sup_singleton.subst <| hs (singleton_subset_iff.2 hb) ha <| notMem_singleton.2 hab
 
 @[deprecated (since := "2025-01-17")] alias sup_indep.pairwise_disjoint := SupIndep.pairwiseDisjoint
 
@@ -247,7 +247,7 @@ variable {s : Set α} (hs : sSupIndep s)
 
 @[simp]
 theorem sSupIndep_empty : sSupIndep (∅ : Set α) := fun x hx =>
-  (Set.not_mem_empty x hx).elim
+  (Set.notMem_empty x hx).elim
 
 @[deprecated (since := "2024-11-24")] alias CompleteLattice.setIndependent_empty := sSupIndep_empty
 

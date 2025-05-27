@@ -108,7 +108,10 @@ theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := b
 
 /-- Two points in a projective space are independent if and only if the points are not equal. -/
 @[simp]
-theorem independent_pair_iff_neq (u v : ℙ K V) : Independent ![u, v] ↔ u ≠ v := by
+theorem independent_pair_iff_ne (u v : ℙ K V) : Independent ![u, v] ↔ u ≠ v := by
   rw [independent_iff_not_dependent, dependent_pair_iff_eq u v]
+
+@[deprecated (since := "2025-04-27")]
+alias independent_pair_iff_neq := independent_pair_iff_ne
 
 end Projectivization

@@ -39,15 +39,15 @@ lemma cfcₙ_map_pi (f : R → R) (a : ∀ i, A i)
     (hf : ContinuousOn f (⋃ i, quasispectrum R (a i)) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) (ha' : ∀ i, q i (a i) := by cfc_tac) :
     cfcₙ f a = fun i => cfcₙ f (a i) := by
-  by_cases hempty : Nonempty ι
-  · by_cases hf₀ : f 0 = 0
+  cases isEmpty_or_nonempty ι with
+  | inr h =>
+    by_cases hf₀ : f 0 = 0
     · ext i
       let φ := Pi.evalNonUnitalStarAlgHom S A i
       exact φ.map_cfcₙ f a (by rwa [Pi.quasispectrum_eq]) hf₀ (continuous_apply i) ha (ha' i)
-    · simp only [cfcₙ_apply_of_not_map_zero _ hf₀]; rfl
-  · simp only [not_nonempty_iff] at hempty
-    ext i
-    exact hempty.elim i
+    · simp only [cfcₙ_apply_of_not_map_zero _ hf₀, Pi.zero_def]
+  | inl h =>
+    exact Subsingleton.elim _ _
 
 end nonunital_pi
 
@@ -80,7 +80,7 @@ lemma cfcₙ_map_prod (f : R → R) (a : A) (b : B)
       let φ := NonUnitalStarAlgHom.snd S A B
       exact φ.map_cfcₙ f (a, b) (by rwa [Prod.quasispectrum_eq]) hf₀ continuous_snd hab hb
   case neg =>
-    simp [cfcₙ_apply_of_not_map_zero _ hf₀]
+    simpa [cfcₙ_apply_of_not_map_zero _ hf₀] using Prod.mk_zero_zero.symm
 
 end nonunital_prod
 

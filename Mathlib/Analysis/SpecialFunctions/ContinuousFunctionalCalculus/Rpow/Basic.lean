@@ -193,7 +193,7 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Non
   [∀ i, NonUnitalContinuousFunctionalCalculus ℝ (C i) IsSelfAdjoint]
   [NonUnitalContinuousFunctionalCalculus ℝ (∀ i, C i) IsSelfAdjoint]
   [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
-  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀i, NonnegSpectrumClass ℝ (C i)]
+  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
 
 /- Note that there is higher-priority instance of `Pow (∀ i, C i) ℝ≥0` coming from the `Pow`
 instance for pi types, hence the direct use of `nnrpow` here. -/
@@ -293,7 +293,7 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Non
   [∀ i, NonUnitalContinuousFunctionalCalculus ℝ (C i) IsSelfAdjoint]
   [NonUnitalContinuousFunctionalCalculus ℝ (∀ i, C i) IsSelfAdjoint]
   [∀ i, IsTopologicalRing (C i)] [∀ i, T2Space (C i)]
-  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀i, NonnegSpectrumClass ℝ (C i)]
+  [NonnegSpectrumClass ℝ (∀ i, C i)] [∀ i, NonnegSpectrumClass ℝ (C i)]
 
 lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
     sqrt c = fun i => sqrt (c i) := by
@@ -387,7 +387,7 @@ lemma rpow_neg_mul_rpow {a : A} (x : ℝ) (ha : 0 ∉ spectrum ℝ≥0 a)
 lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
     a ^ (-1 : ℝ) = (↑a⁻¹ : A) := by
   refine a.inv_eq_of_mul_eq_one_left ?_ |>.symm
-  simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_not_mem ℝ≥0 a.isUnit)
+  simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_notMem ℝ≥0 a.isUnit)
 
 lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
     [StarOrderedRing A] [NormedAlgebra ℝ A] [NonnegSpectrumClass ℝ A]
@@ -404,7 +404,7 @@ lemma rpow_neg [IsTopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
     simp [NNReal.rpow_neg, NNReal.inv_rpow]
   refine NNReal.continuousOn_rpow_const (.inl ?_)
   rintro ⟨z, hz, hz'⟩
-  exact spectrum.zero_not_mem ℝ≥0 a.isUnit <| inv_eq_zero.mp hz' ▸ hz
+  exact spectrum.zero_notMem ℝ≥0 a.isUnit <| inv_eq_zero.mp hz' ▸ hz
 
 lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
     (a : A) ^ (n : ℝ) = (↑(a ^ n) : A) := by
@@ -515,11 +515,10 @@ lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2
   by_cases htriv : 0 ≤ a
   case neg => simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a htriv]
   case pos =>
-    by_cases hx : x = 0
-    case pos => simp [hx, rpow_zero _ htriv]
-    case neg =>
-      have h₁ : 0 < x := lt_of_le_of_ne (by simp) (Ne.symm hx)
-      have h₂ : (x : ℝ) / 2 = NNReal.toReal (x / 2) := rfl
+    cases eq_zero_or_pos x with
+    | inl hx => simp [hx, rpow_zero _ htriv]
+    | inr h₁ =>
+      have h₂ : (x : ℝ) / 2 = NNReal.toReal (x / 2) := by simp
       have h₃ : 0 < x / 2 := by positivity
       rw [← nnrpow_eq_rpow h₁, h₂, ← nnrpow_eq_rpow h₃, sqrt_nnrpow (A := A)]
 
