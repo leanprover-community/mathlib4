@@ -477,11 +477,11 @@ lemma castLE_injective (hmn : m ≤ n) : Injective (castLE hmn) :=
 
 @[simp]
 lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
-    letI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le (Nat.pos_of_neZero m) h)⟩
+    letI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
     Fin.castLE h a = (a % m : ℕ) := by
   ext
   simp only [coe_castLE, val_natCast]
-  rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ (Nat.pos_of_neZero m)) h)]
+  rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
 
 lemma castAdd_injective (m n : ℕ) : Injective (@Fin.castAdd m n) := castLE_injective _
 
