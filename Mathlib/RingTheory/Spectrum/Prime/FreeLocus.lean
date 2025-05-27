@@ -288,9 +288,9 @@ variable [Flat R M] [FinitePresentation R M]
 
 attribute [local instance] free_of_flat_of_isLocalRing
 
-lemma rankAtStalk_eq_zero_iff_not_mem_support (p : PrimeSpectrum R) :
+lemma rankAtStalk_eq_zero_iff_notMem_support (p : PrimeSpectrum R) :
     rankAtStalk M p = 0 ↔ p ∉ support R M := by
-  rw [not_mem_support_iff]
+  rw [notMem_support_iff]
   refine ⟨fun h ↦ ?_, fun h ↦ Module.finrank_zero_of_subsingleton⟩
   apply subsingleton_of_rank_zero (R := Localization.AtPrime p.asIdeal)
   dsimp [rankAtStalk] at h
@@ -298,14 +298,14 @@ lemma rankAtStalk_eq_zero_iff_not_mem_support (p : PrimeSpectrum R) :
 
 lemma rankAtStalk_pos_iff_mem_support (p : PrimeSpectrum R) :
     0 < rankAtStalk M p ↔ p ∈ support R M := by
-  rw [← not_iff_not, Nat.pos_iff_ne_zero, not_not, rankAtStalk_eq_zero_iff_not_mem_support]
+  rw [← not_iff_not, Nat.pos_iff_ne_zero, not_not, rankAtStalk_eq_zero_iff_notMem_support]
 
 lemma rankAtStalk_eq_zero_iff_subsingleton :
     rankAtStalk (R := R) M = 0 ↔ Subsingleton M := by
   refine ⟨fun h ↦ ?_, fun _ ↦ rankAtStalk_eq_zero_of_subsingleton⟩
-  simp_rw [← support_eq_empty_iff (R := R), Set.eq_empty_iff_forall_not_mem]
+  simp_rw [← support_eq_empty_iff (R := R), Set.eq_empty_iff_forall_notMem]
   intro p
-  rw [← rankAtStalk_eq_zero_iff_not_mem_support, h, Pi.zero_apply]
+  rw [← rankAtStalk_eq_zero_iff_notMem_support, h, Pi.zero_apply]
 
 variable (M) in
 /-- The rank of `M × N` at `p` is equal to the sum of the ranks. -/
