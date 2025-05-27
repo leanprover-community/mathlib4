@@ -431,7 +431,7 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
     obtain ⟨a, hsa⟩ := hsn
     rw [hsa] at hs_prim
 
-    rw [← ofStabilizer.isMultiplyPreprimitive_iff_succ G α (a := a)]
+    rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G α (a := a)]
     · rw [is_one_preprimitive_iff (stabilizer G a) (ofStabilizer G a)]
       exact IsPreprimitive.of_surjective
         (ofFixingSubgroup_of_singleton_bijective G a).surjective
@@ -616,7 +616,7 @@ theorem isMultiplyPreprimitive_jordan
       apply x.prop; rw [hx.right]; exact Set.mem_singleton a
     have ht_prim : IsPreprimitive (stabilizer G a) (SubMulAction.ofStabilizer G a) := by
       rw [← is_one_preprimitive_iff]
-      rw [ofStabilizer.isMultiplyPreprimitive_iff_succ]
+      rw [← isMultiplyPreprimitive_succ_iff_ofStabilizer]
       apply is_two_preprimitive_weak_jordan hG hsn hα hGs
       norm_num
 
@@ -629,7 +629,7 @@ theorem isMultiplyPreprimitive_jordan
       IsPreprimitive.of_surjective
         (ofFixingSubgroup_insert_map_bijective G a t).surjective
     rw [← Nat.succ_eq_one_add]
-    rw [← ofStabilizer.isMultiplyPreprimitive_iff_succ G (a := a)]
+    rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G (a := a)]
     -- stabilizer.isMultiplyPreprimitive G α _ hG.toIsPretransitive]
     suffices n + 2 = 1 + Nat.succ n by
       rw [this]
