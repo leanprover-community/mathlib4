@@ -179,10 +179,8 @@ theorem IsLocalRing.Embdim_eq_spanFinrank_maximalIdeal
     clear h1 h3
     have h5 : subspace.spanRank  = Module.rank (ResidueField R) (CotangentSpace R) := by
       rw [hm_gens_cot_span]
-      have : StrongRankCondition R := by
-        exact strongRankCondition_of_orzechProperty R
-      have : Module.Free (ResidueField R) (CotangentSpace R) := by
-        exact Module.Free.of_divisionRing (ResidueField R) (CotangentSpace R)
+      have : Module.Free (ResidueField R) (CotangentSpace R) :=
+        Module.Free.of_divisionRing (ResidueField R) (CotangentSpace R)
       exact Eq.symm Submodule.rank_eq_spanRank_of_free
     rw [← Module.finrank_eq_rank (ResidueField R) (CotangentSpace R)] at h5
     have subspace_fg : subspace.FG := by
@@ -190,8 +188,8 @@ theorem IsLocalRing.Embdim_eq_spanFinrank_maximalIdeal
     rw [← @Submodule.fg_iff_spanRank_eq_spanFinrank (ResidueField R)
       (CotangentSpace R) _ _ _ subspace] at subspace_fg
     rw [subspace_fg] at h5
-    have h6 : subspace.spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) := by
-      exact Nat.cast_inj.mp h5
+    have h6 : subspace.spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
+      Nat.cast_inj.mp h5
     rw [← h6]
     exact h4
   · unfold EmbDim
@@ -241,13 +239,6 @@ theorem IsLocalRing.ContangentSpace_extend_singleton_basis
     (hx1 : x ∈ (maxl R)) (hx2 : x ∉ ((maxl R)^2)) :
     ∃ s : Set R, span R s = (maxl R) ∧ #s = (maxl R).spanRank ∧ x ∈ s := by
   let x' : Subtype ((maxl R) : Set R) := ⟨x, hx1⟩
-  have : x' ∉ ((maxl R) • ⊤ : Submodule R (maxl R)) := by
-    by_contra hc
-    have a := (Submodule.mem_smul_top_iff (maxl R) (maxl R) x').mp hc
-    simp only [smul_eq_mul] at a
-    have : (maxl R) * (maxl R) = (maxl R)^2 := Eq.symm (pow_two maxl R)
-    rw[this] at a
-    exact hx2 a
   have : (maxl R).toCotangent x' ≠ 0 := by
     by_contra hc
     exact hx2 ((@Ideal.mem_toCotangent_ker R _ (maxl R) x').mp hc)

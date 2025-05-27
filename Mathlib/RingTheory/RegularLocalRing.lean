@@ -185,7 +185,6 @@ theorem IsRegularLocalRing.IsDomain_Induction :
       use ((maxl R)^2)
       use (Set.Finite.mem_toFinset sFin).mpr (Set.mem_union_right (minimalPrimes R) rfl)
       exact xinm2
-      have xminP := isMinPrime x hx xnotinm2
       refine Set.mem_iUnion₂.mpr ?_
       use Ideal.span {x}
       use (Set.Finite.mem_toFinset sFin).mpr (Set.mem_union_left {(maxl R) ^ 2}
