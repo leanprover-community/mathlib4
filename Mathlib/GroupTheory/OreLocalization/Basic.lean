@@ -3,9 +3,10 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.GroupTheory.OreLocalization.OreSet
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Submonoid.MulAction
+import Mathlib.Algebra.Group.Units.Defs
 
 /-!
 
@@ -31,7 +32,7 @@ localization, Ore, non-commutative
 
 -/
 
-assert_not_exists MonoidWithZero Ring
+assert_not_exists RelIso MonoidWithZero
 
 universe u
 
@@ -479,9 +480,7 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
       simp only [one_mul, Units.inv_mul]
   map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
-    -- Porting note: `simp only []` required, not just for beta reductions
     beta_reduce
-    simp only [] -- TODO more!
     induction' x with r₁ s₁
     induction' y with r₂ s₂
     rcases oreDivMulChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'

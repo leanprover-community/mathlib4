@@ -241,10 +241,10 @@ lemma inl_v_d (i j k : ℤ) (hij : i + (-1) = j) (hik : k + (-1) = i) :
   rw [homotopyCofiber.inlX_d φ j i k (by dsimp; omega) (by dsimp; omega)]
   abel
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 lemma inr_f_d (n₁ n₂ : ℤ) :
     (inr φ).f n₁ ≫ (mappingCone φ).d n₁ n₂ = G.d n₁ n₂ ≫ (inr φ).f n₂ := by
-  apply Hom.comm
+  simp
 
 @[reassoc]
 lemma d_fst_v (i j k : ℤ) (hij : i + 1 = j) (hjk : j + 1 = k) :
@@ -393,7 +393,7 @@ end
 /-- Constructor for homotopies between morphisms from a mapping cone. -/
 noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCone φ ⟶ K)
     (γ₁ : Cochain F K (-2)) (γ₂ : Cochain G K (-1))
-    (h₁ : (inl φ).comp (Cochain.ofHom f₁) (add_zero (-1))  =
+    (h₁ : (inl φ).comp (Cochain.ofHom f₁) (add_zero (-1)) =
       δ (-2) (-1) γ₁ + (Cochain.ofHom φ).comp γ₂ (zero_add (-1)) +
       (inl φ).comp (Cochain.ofHom f₂) (add_zero (-1)))
     (h₂ : Cochain.ofHom (inr φ ≫ f₁) = δ (-1) 0 γ₂ + Cochain.ofHom (inr φ ≫ f₂)) :

@@ -146,9 +146,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
       rw [← op_id]
       congr 1
       ext ⟨a, ha⟩
-      change a < 1 at ha
-      change 0 = a
-      omega
+      simp
     · rfl
   right_inv := by
     intro A
@@ -308,9 +306,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
       congr 1
       convert X.right.map_id _
       ext ⟨a, ha⟩
-      change a < 1 at ha
-      change 0 = a
-      omega
+      simp
 
 /-- The augmented Čech conerve construction is left adjoint to the `toArrow` functor. -/
 abbrev cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ ⥤ Arrow C) :=
@@ -368,24 +364,20 @@ instance hasWidePullback [Finite ι] (X : C) :
   cases nonempty_fintype ι
   exact ⟨⟨wideCospan.limitCone ι X⟩⟩
 
--- Porting note: added to make the following definitions work
 instance hasWidePullback' [Finite ι] (X : C) :
     HasWidePullback (⊤_ C)
       (fun _ : ι => X)
       (fun _ => terminal.from X) :=
   hasWidePullback _ _
 
--- Porting note: added to make the following definitions work
 instance hasLimit_wideCospan [Finite ι] (X : C) : HasLimit (wideCospan ι X) := hasWidePullback _ _
 
--- Porting note: added to ease the definition of `iso`
 /-- the isomorphism to the product induced by the limit cone `wideCospan ι X` -/
 def wideCospan.limitIsoPi [Finite ι] (X : C) :
     limit (wideCospan ι X) ≅ ∏ᶜ fun _ : ι => X :=
   (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
     (wideCospan.limitCone ι X).2)
 
--- Porting note: added to ease the definition of `iso`
 @[reassoc (attr := simp)]
 lemma wideCospan.limitIsoPi_inv_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).inv ≫ WidePullback.π _ j = Pi.π _ j :=
@@ -397,7 +389,7 @@ lemma wideCospan.limitIsoPi_hom_comp_pi [Finite ι] (X : C) (j : ι) :
   rw [← wideCospan.limitIsoPi_inv_comp_pi, Iso.hom_inv_id_assoc]
 
 /-- Given an object `X : C`, the Čech nerve of the hom to the terminal object `X ⟶ ⊤_ C` is
-naturally isomorphic to a simplicial object sending `[n]` to `Xⁿ⁺¹` (when `C` is `G-Set`, this is
+naturally isomorphic to a simplicial object sending `⦋n⦌` to `Xⁿ⁺¹` (when `C` is `G-Set`, this is
 `EG`, the universal cover of the classifying space of `G`. -/
 def iso (X : C) : (Arrow.mk (terminal.from X)).cechNerve ≅ cechNerveTerminalFrom X :=
   NatIso.ofComponents (fun _ => wideCospan.limitIsoPi _ _) (fun {m n} f => by

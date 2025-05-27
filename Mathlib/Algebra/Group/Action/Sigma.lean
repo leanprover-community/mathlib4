@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Data.Sigma.Basic
 
 /-!
 # Sigma instances for additive and multiplicative actions
@@ -12,10 +13,10 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 
 ## See also
 
-* `Mathlib.Algebra.Group.Action.Option`
-* `Mathlib.Algebra.Group.Action.Pi`
-* `Mathlib.Algebra.Group.Action.Prod`
-* `Mathlib.Algebra.Group.Action.Sum`
+* `Mathlib/Algebra/Group/Action/Option.lean`
+* `Mathlib/Algebra/Group/Action/Pi.lean`
+* `Mathlib/Algebra/Group/Action/Prod.lean`
+* `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
 assert_not_exists MonoidWithZero

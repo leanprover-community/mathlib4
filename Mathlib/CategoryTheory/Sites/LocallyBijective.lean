@@ -24,7 +24,9 @@ universe w' w v' v u' u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-  {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w} A]
+variable {A : Type u'} [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w'}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w'} A FA]
+
 
 namespace Sheaf
 
@@ -32,6 +34,7 @@ section
 
 variable {F G : Sheaf J (Type w)} (f : F ⟶ G)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- A morphism of sheaves of types is locally bijective iff it is an isomorphism.
 (This is generalized below as `isLocallyBijective_iff_isIso`.) -/
 private lemma isLocallyBijective_iff_isIso' :
@@ -138,19 +141,22 @@ lemma WEqualsLocallyBijective.mk' [HasWeakSheafify J A] [(forget A).ReflectsIsom
     [∀ (P : Cᵒᵖ ⥤ A), Presheaf.IsLocallySurjective J (CategoryTheory.toSheafify J P)] :
     J.WEqualsLocallyBijective A where
   iff {P Q} f := by
-    rw [W_iff, ← Sheaf.isLocallyBijective_iff_isIso,
+    rw [W_iff, ← Sheaf.isLocallyBijective_iff_isIso (A := A),
       ← Presheaf.isLocallyInjective_comp_iff J f (CategoryTheory.toSheafify J Q),
       ← Presheaf.isLocallySurjective_comp_iff J f (CategoryTheory.toSheafify J Q),
       CategoryTheory.toSheafify_naturality, Presheaf.comp_isLocallyInjective_iff,
       Presheaf.comp_isLocallySurjective_iff]
 
-instance {D : Type w} [Category.{w'} D] [ConcreteCategory.{max u v} D]
+instance {D : Type w} [Category.{w'} D] {FD : D → D → Type*} {CD : D → Type (max u v)}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{max u v} D FD]
     [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
     [J.PreservesSheafification (forget D)] [(forget D).ReflectsIsomorphisms] :
     J.WEqualsLocallyBijective D := by
   apply WEqualsLocallyBijective.mk'
 
-instance : J.WEqualsLocallyBijective (Type (max u v)) := inferInstance
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+instance : J.WEqualsLocallyBijective (Type (max u v)) :=
+  inferInstance
 
 end GrothendieckTopology
 

@@ -3,10 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.BigOperators.Pi
 
 /-!
 # Trivial Square-Zero Extension
@@ -208,7 +207,7 @@ instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M
   Prod.instAddCommGroup
 
 instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
-  Prod.smul
+  Prod.instSMul
 
 instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=
@@ -305,7 +304,7 @@ theorem inl_add [Add R] [AddZeroClass M] (r₁ r₂ : R) :
   ext rfl (add_zero 0).symm
 
 @[simp]
-theorem inl_neg [Neg R] [SubNegZeroMonoid M] (r : R) : (inl (-r) : tsze R M) = -inl r :=
+theorem inl_neg [Neg R] [NegZeroClass M] (r : R) : (inl (-r) : tsze R M) = -inl r :=
   ext rfl neg_zero.symm
 
 @[simp]
@@ -333,12 +332,12 @@ theorem inr_zero [Zero R] [Zero M] : (inr 0 : tsze R M) = 0 :=
   rfl
 
 @[simp]
-theorem inr_add [AddZeroClass R] [AddZeroClass M] (m₁ m₂ : M) :
+theorem inr_add [AddZeroClass R] [Add M] (m₁ m₂ : M) :
     (inr (m₁ + m₂) : tsze R M) = inr m₁ + inr m₂ :=
   ext (add_zero 0).symm rfl
 
 @[simp]
-theorem inr_neg [SubNegZeroMonoid R] [Neg M] (m : M) : (inr (-m) : tsze R M) = -inr m :=
+theorem inr_neg [NegZeroClass R] [Neg M] (m : M) : (inr (-m) : tsze R M) = -inr m :=
   ext neg_zero.symm rfl
 
 @[simp]
@@ -347,7 +346,7 @@ theorem inr_sub [SubNegZeroMonoid R] [Sub M] (m₁ m₂ : M) :
   ext (sub_zero _).symm rfl
 
 @[simp]
-theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S M] (r : S) (m : M) :
+theorem inr_smul [Zero R] [SMulZeroClass S R] [SMul S M] (r : S) (m : M) :
     (inr (r • m) : tsze R M) = r • inr m :=
   ext (smul_zero _).symm rfl
 
@@ -451,22 +450,22 @@ theorem inr_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒ�
 
 end
 
-theorem inl_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
-    (inl r * inr m : tsze R M) = inr (r • m) :=
+theorem inl_mul_inr [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M]
+    [DistribMulAction Rᵐᵒᵖ M] (r : R) (m : M) : (inl r * inr m : tsze R M) = inr (r • m) :=
   ext (mul_zero r) <|
     show r • m + (0 : Rᵐᵒᵖ) • (0 : M) = r • m by rw [smul_zero, add_zero]
 
-theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
-    (inr m * inl r : tsze R M) = inr (m <• r) :=
+theorem inr_mul_inl [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M]
+    [DistribMulAction Rᵐᵒᵖ M] (r : R) (m : M) : (inr m * inl r : tsze R M) = inr (m <• r) :=
   ext (zero_mul r) <|
     show (0 : R) •> (0 : M) + m <• r = m <• r by rw [smul_zero, zero_add]
 
-theorem inl_mul_eq_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+theorem inl_mul_eq_smul [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (r : R) (x : tsze R M) :
     inl r * x = r •> x :=
   ext rfl (by dsimp; rw [smul_zero, add_zero])
 
-theorem mul_inl_eq_op_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+theorem mul_inl_eq_op_smul [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (x : tsze R M) (r : R) :
     x * inl r = x <• r :=
   ext rfl (by dsimp; rw [smul_zero, zero_add])
@@ -491,22 +490,13 @@ instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne 
 theorem fst_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).fst = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias fst_nat_cast := fst_natCast
-
 @[simp]
 theorem snd_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).snd = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias snd_nat_cast := snd_natCast
-
 @[simp]
 theorem inl_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsze R M) = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias inl_nat_cast := inl_natCast
 
 instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
@@ -518,22 +508,13 @@ instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsz
 theorem fst_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).fst = z :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias fst_int_cast := fst_intCast
-
 @[simp]
 theorem snd_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).snd = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias snd_int_cast := snd_intCast
-
 @[simp]
 theorem inl_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze R M) = z :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias inl_int_cast := inl_intCast
 
 instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocSemiring (tsze R M) :=
@@ -655,15 +636,15 @@ instance semiring [Semiring R] [AddCommMonoid M]
 
 /-- The second element of a product $\prod_{i=0}^n (r_i + m_i)$ is a sum of terms of the form
 $r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
-theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+theorem snd_list_prod [Monoid R] [AddCommMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
     l.prod.snd =
-      (l.enum.map fun x : ℕ × tsze R M =>
-          ((l.map fst).take x.1).prod •> x.snd.snd <• ((l.map fst).drop x.1.succ).prod).sum := by
+      (l.zipIdx.map fun x : tsze R M × ℕ =>
+          ((l.map fst).take x.2).prod •> x.fst.snd <• ((l.map fst).drop x.2.succ).prod).sum := by
   induction l with
   | nil => simp
   | cons x xs ih =>
-    rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
+    rw [List.zipIdx_cons']
     simp_rw [List.map_cons, List.map_map, Function.comp_def, Prod.map_snd, Prod.map_fst, id,
       List.take_zero, List.take_succ_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul,
       List.drop, mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map,

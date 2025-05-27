@@ -63,7 +63,7 @@ theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum �
 
 /-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
-    [Fintype n]{A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
+    [Fintype n] {A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
     Matrix.unitaryGroup n 𝕜 :=
   ⟨(EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (hA.eigenvectorBasis).toBasis,
     (EuclideanSpace.basisFun n 𝕜).toMatrix_orthonormalBasis_mem_unitary (eigenvectorBasis hA)⟩
@@ -75,13 +75,23 @@ lemma eigenvectorUnitary_coe {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n
   rfl
 
 @[simp]
+theorem eigenvectorUnitary_transpose_apply (j : n) :
+    (eigenvectorUnitary hA)ᵀ j = ⇑(hA.eigenvectorBasis j) :=
+  rfl
+
+@[simp]
+theorem eigenvectorUnitary_col_eq (j : n) :
+    Matrix.col (eigenvectorUnitary hA) j = ⇑(hA.eigenvectorBasis j) :=
+  rfl
+
+@[simp]
 theorem eigenvectorUnitary_apply (i j : n) :
     eigenvectorUnitary hA i j = ⇑(hA.eigenvectorBasis j) i :=
   rfl
 
 theorem eigenvectorUnitary_mulVec (j : n) :
     eigenvectorUnitary hA *ᵥ Pi.single j 1 = ⇑(hA.eigenvectorBasis j) := by
-  simp only [mulVec_single, eigenvectorUnitary_apply, mul_one]
+  simp_rw [mulVec_single_one, eigenvectorUnitary_col_eq]
 
 theorem star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
@@ -106,7 +116,7 @@ theorem star_mul_self_mul_eq_diagonal :
 
 /-- **Diagonalization theorem**, **spectral theorem** for matrices; A hermitian matrix can be
 diagonalized by a change of basis. For the spectral theorem on linear maps, see
-`LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`.-/
+`LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
 theorem spectral_theorem :
     A = (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ hA.eigenvalues)
       * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
@@ -117,7 +127,8 @@ theorem spectral_theorem :
 theorem eigenvalues_eq (i : n) :
     (hA.eigenvalues i) = RCLike.re (dotProduct (star ⇑(hA.eigenvectorBasis i))
     (A *ᵥ ⇑(hA.eigenvectorBasis i))) := by
-  simp only [mulVec_eigenvectorBasis, dotProduct_smul,← EuclideanSpace.inner_eq_star_dotProduct,
+  rw [dotProduct_comm]
+  simp only [mulVec_eigenvectorBasis, smul_dotProduct, ← EuclideanSpace.inner_eq_star_dotProduct,
     inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
     mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
 
@@ -157,4 +168,4 @@ end Matrix
 /-The following were removed as a result of the refactor, since they either were
 unused in the library, followed as immediate consequences of, or were replaced by
 above results (e.g. results about inverses don't need replacement because their unitary
-analogues have replaced them).-/
+analogues have replaced them). -/

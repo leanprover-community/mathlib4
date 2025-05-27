@@ -5,6 +5,8 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Data.Int.Basic
+import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Spread
@@ -17,9 +19,7 @@ We also define `Ring.inverse`, a globally defined function on any ring
 (in fact any `MonoidWithZero`), which inverts units and sends non-units to zero.
 -/
 
--- Guard against import creep
-assert_not_exists DenselyOrdered Equiv Subtype.restrict Multiplicative
-
+assert_not_exists DenselyOrdered Equiv Subtype.restrict Multiplicative Ring
 
 variable {α M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
@@ -84,10 +84,6 @@ noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.u
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 
-theorem IsUnit.ringInverse {x : M₀} (h : IsUnit x) : IsUnit (inverse x) :=
-  match h with
-  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (inverse_unit u).symm⟩
-
 theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
@@ -138,11 +134,14 @@ variable {M₀}
 
 end Ring
 
-theorem IsUnit.ring_inverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
+theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inverse_unit u).symm⟩
 
+@[deprecated (since := "2025-04-22")] alias IsUnit.ring_inverse := IsUnit.ringInverse
+@[deprecated (since := "2025-04-22")] protected alias Ring.IsUnit.ringInverse := IsUnit.ringInverse
+
 @[simp]
-theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
+theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
     · convert h
@@ -150,7 +149,9 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero
       ,
-    IsUnit.ring_inverse⟩
+    IsUnit.ringInverse⟩
+
+@[deprecated (since := "2025-04-22")] alias isUnit_ring_inverse := isUnit_ringInverse
 
 namespace Units
 
@@ -196,7 +197,6 @@ figure out `p` when using `Units.exists0` from right to left. -/
 theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
     (∃ (g : G₀) (hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
   Iff.trans (by simp_rw [val_mk0]) exists0.symm
-  -- Porting note: had to add the `rfl`
 
 @[simp]
 theorem exists_iff_ne_zero {p : G₀ → Prop} : (∃ u : G₀ˣ, p u) ↔ ∃ x ≠ 0, p x := by
@@ -286,7 +286,7 @@ lemma eq_mul_of_inv_mul_eq₀ (hc : c ≠ 0) (h : b⁻¹ * a = c) : a = b * c :=
 lemma eq_mul_of_mul_inv_eq₀ (hb : b ≠ 0) (h : a * c⁻¹ = b) : a = b * c := by
   rwa [← mul_inv_eq_iff_eq_mul₀]; rintro rfl; simp [hb.symm] at h
 
-@[simp] lemma div_mul_cancel₀ (a : G₀) (h : b ≠ 0) : a / b * b = a := h.isUnit.div_mul_cancel _
+lemma div_mul_cancel₀ (a : G₀) (h : b ≠ 0) : a / b * b = a := by simp [h]
 
 lemma mul_one_div_cancel (h : a ≠ 0) : a * (1 / a) = 1 := h.isUnit.mul_one_div_cancel
 
@@ -365,9 +365,6 @@ lemma zpow_ne_zero {a : G₀} : ∀ n : ℤ, a ≠ 0 → a ^ n ≠ 0
   | .negSucc n => fun ha ↦ by rw [zpow_negSucc]; exact inv_ne_zero (pow_ne_zero _ ha)
 
 lemma eq_zero_of_zpow_eq_zero {n : ℤ} : a ^ n = 0 → a = 0 := not_imp_not.1 (zpow_ne_zero _)
-
-@[deprecated (since := "2024-05-07")] alias zpow_ne_zero_of_ne_zero := zpow_ne_zero
-@[deprecated (since := "2024-05-07")] alias zpow_eq_zero := eq_zero_of_zpow_eq_zero
 
 lemma zpow_eq_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
   ⟨eq_zero_of_zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩

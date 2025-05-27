@@ -117,7 +117,7 @@ lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
   fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
     = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
-      (fderivWithin_eventually_congr_set h).fderivWithin_eq_nhds
+      (fderivWithin_eventually_congr_set h).fderivWithin_eq_of_nhds
   _ = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := fderivWithin_congr_set h
 
 lemma fderivWithin_fderivWithin_eq_of_mem_nhds {f : E → F} {x : E} {s : Set E}
@@ -484,6 +484,20 @@ noncomputable irreducible_def minSmoothness (n : WithTop ℕ∞) :=
 lemma le_minSmoothness {n : WithTop ℕ∞} : n ≤ minSmoothness 𝕜 n := by
   simp only [minSmoothness]
   split_ifs <;> simp
+
+lemma minSmoothness_add {n m : WithTop ℕ∞} : minSmoothness 𝕜 (n + m) = minSmoothness 𝕜 n + m := by
+  simp only [minSmoothness]
+  split_ifs <;> simp
+
+lemma minSmoothness_monotone : Monotone (minSmoothness 𝕜) := by
+  intro m n hmn
+  simp only [minSmoothness]
+  split_ifs <;> simp [hmn]
+
+@[simp] lemma minSmoothness_eq_infty {n : WithTop ℕ∞} :
+    minSmoothness 𝕜 n = ∞ ↔ (n = ∞ ∧ IsRCLikeNormedField 𝕜) := by
+  simp only [minSmoothness]
+  split_ifs with h <;> simp [h]
 
 /-- If `minSmoothness 𝕜 m ≤ n` for some (finite) integer `m`, then one can
 find `n' ∈ [minSmoothness 𝕜 m, n]` which is not `∞`: over `ℝ` or `ℂ`, just take `m`, and otherwise

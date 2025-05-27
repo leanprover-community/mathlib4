@@ -6,8 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Spaces with separating dual
@@ -31,7 +30,7 @@ class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V
   /-- Any nonzero vector can be mapped by a continuous linear map to a nonzero scalar. -/
   exists_ne_zero' : ∀ (x : V), x ≠ 0 → ∃ f : V →L[R] R, f x ≠ 0
 
-instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
+instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGroup E]
     [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] [T1Space E] : SeparatingDual ℝ E :=
   ⟨fun x hx ↦ by
     rcases geometric_hahn_banach_point_point hx.symm with ⟨f, hf⟩
@@ -75,7 +74,7 @@ end Ring
 section Field
 
 variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [TopologicalSpace V]
-  [TopologicalRing R] [Module R V]
+  [IsTopologicalRing R] [Module R V]
 
 -- TODO (@alreadydone): this could generalize to CommRing R if we were to add a section
 theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
@@ -114,7 +113,7 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
   · exact ⟨(v x)⁻¹ • v, inv_mul_cancel₀ vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
 
-variable [TopologicalAddGroup V]
+variable [IsTopologicalAddGroup V]
 
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
 acts transitively on the set of nonzero vectors: given two nonzero vectors `x` and `y`, there

@@ -23,7 +23,6 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open scoped Classical
 open NNReal ENNReal
 
 open MeasureTheory
@@ -32,6 +31,7 @@ namespace PMF
 
 section Pure
 
+open scoped Classical in
 /-- The pure `PMF` is the `PMF` where all the mass lies in one point.
   The value of `pure a` is `1` at `a` and `0` elsewhere. -/
 def pure (a : α) : PMF α :=
@@ -39,6 +39,7 @@ def pure (a : α) : PMF α :=
 
 variable (a a' : α)
 
+open scoped Classical in
 @[simp]
 theorem pure_apply : pure a a' = if a' = a then 1 else 0 := rfl
 
@@ -61,6 +62,7 @@ section Measure
 
 variable (s : Set α)
 
+open scoped Classical in
 @[simp]
 theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 1 else 0 := by
   refine (toOuterMeasure_apply (pure a) s).trans ?_
@@ -74,6 +76,7 @@ theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 
 
 variable [MeasurableSpace α]
 
+open scoped Classical in
 /-- The measure of a set under `pure a` is `1` for sets containing `a` and `0` otherwise. -/
 @[simp]
 theorem toMeasure_pure_apply (hs : MeasurableSet s) :
@@ -115,6 +118,7 @@ theorem mem_support_bind_iff (b : β) :
 
 @[simp]
 theorem pure_bind (a : α) (f : α → PMF β) : (pure a).bind f = f a := by
+  classical
   have : ∀ b a', ite (a' = a) (f a' b) 0 = ite (a' = a) (f a b) 0 := fun b a' => by
     split_ifs with h <;> simp [h]
   ext b
@@ -148,13 +152,13 @@ variable (s : Set β)
 
 @[simp]
 theorem toOuterMeasure_bind_apply :
-    (p.bind f).toOuterMeasure s = ∑' a, p a * (f a).toOuterMeasure s :=
+    (p.bind f).toOuterMeasure s = ∑' a, p a * (f a).toOuterMeasure s := by
+  classical
   calc
     (p.bind f).toOuterMeasure s = ∑' b, if b ∈ s then ∑' a, p a * f a b else 0 := by
       simp [toOuterMeasure_apply, Set.indicator_apply]
     _ = ∑' (b) (a), p a * if b ∈ s then f a b else 0 := tsum_congr fun b => by split_ifs <;> simp
-    _ = ∑' (a) (b), p a * if b ∈ s then f a b else 0 :=
-      (tsum_comm' ENNReal.summable (fun _ => ENNReal.summable) fun _ => ENNReal.summable)
+    _ = ∑' (a) (b), p a * if b ∈ s then f a b else 0 := ENNReal.tsum_comm
     _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 := tsum_congr fun _ => ENNReal.tsum_mul_left
     _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 :=
       (tsum_congr fun a => (congr_arg fun x => p a * x) <| tsum_congr fun b => by split_ifs <;> rfl)
@@ -236,6 +240,7 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
     (pure a).bindOnSupport f = f a ((mem_support_pure_iff a a).mpr rfl) := by
   refine PMF.ext fun b => ?_
   simp only [bindOnSupport_apply, pure_apply]
+  classical
   refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a _)
   by_cases h : a' = a <;> simp [h]
 
@@ -252,6 +257,7 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
   refine PMF.ext fun a => ?_
   dsimp only [bindOnSupport_apply]
   simp only [← tsum_dite_right, ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
+  classical
   simp only [ENNReal.tsum_eq_zero, dite_eq_left_iff]
   refine ENNReal.tsum_comm.trans (tsum_congr fun a' => tsum_congr fun b => ?_)
   split_ifs with h _ h_1 _ h_2
@@ -279,6 +285,7 @@ theorem toOuterMeasure_bindOnSupport_apply :
     (p.bindOnSupport f).toOuterMeasure s =
       ∑' a, p a * if h : p a = 0 then 0 else (f a h).toOuterMeasure s := by
   simp only [toOuterMeasure_apply, Set.indicator_apply, bindOnSupport_apply]
+  classical
   calc
     (∑' b, ite (b ∈ s) (∑' a, p a * dite (p a = 0) (fun h => 0) fun h => f a h b) 0) =
         ∑' (b) (a), ite (b ∈ s) (p a * dite (p a = 0) (fun h => 0) fun h => f a h b) 0 :=

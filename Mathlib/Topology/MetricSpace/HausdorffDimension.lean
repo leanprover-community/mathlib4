@@ -232,7 +232,7 @@ theorem bsupr_limsup_dimH (s : Set X) : ⨆ x ∈ s, limsup dimH (𝓝[s] x).sma
   refine le_antisymm (iSup₂_le fun x _ => ?_) ?_
   · refine limsup_le_of_le isCobounded_le_of_bot ?_
     exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
-  · refine le_of_forall_ge_of_dense fun r hr => ?_
+  · refine le_of_forall_lt_imp_le_of_dense fun r hr => ?_
     rcases exists_mem_nhdsWithin_lt_dimH_of_lt_dimH hr with ⟨x, hxs, hxr⟩
     refine le_iSup₂_of_le x hxs ?_; rw [limsup_eq]; refine le_sInf fun b hb => ?_
     rcases eventually_smallSets.1 hb with ⟨t, htx, ht⟩
@@ -265,7 +265,7 @@ theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
   rw [hd, ← ENNReal.coe_rpow_of_nonneg _ d.coe_nonneg, top_le_iff] at this
   have Hrd : μH[(r * d : ℝ≥0)] s = ⊤ := by
     contrapose this
-    exact ENNReal.mul_ne_top ENNReal.coe_ne_top this
+    finiteness
   rw [ENNReal.le_div_iff_mul_le, mul_comm, ← ENNReal.coe_mul]
   exacts [le_dimH_of_hausdorffMeasure_eq_top Hrd, Or.inl (mt ENNReal.coe_eq_zero.1 hr.ne'),
     Or.inl ENNReal.coe_ne_top]

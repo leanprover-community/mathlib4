@@ -47,6 +47,12 @@ theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
 theorem IsPrime.mem_or_mem {I : Ideal α} (hI : I.IsPrime) {x y : α} : x * y ∈ I → x ∈ I ∨ y ∈ I :=
   hI.2
 
+theorem IsPrime.mul_notMem {I : Ideal α} (hI : I.IsPrime) {x y : α} :
+    x ∉ I → y ∉ I → x * y ∉ I := fun hx hy h ↦
+  hy ((hI.mem_or_mem h).resolve_left hx)
+
+@[deprecated (since := "2025-05-23")] alias IsPrime.mul_not_mem := IsPrime.mul_notMem
+
 theorem IsPrime.mem_or_mem_of_mul_eq_zero {I : Ideal α} (hI : I.IsPrime) {x y : α} (h : x * y = 0) :
     x ∈ I ∨ y ∈ I :=
   hI.mem_or_mem (h.symm ▸ I.zero_mem)
@@ -69,25 +75,11 @@ theorem not_isPrime_iff {I : Ideal α} :
       ⟨fun ⟨x, y, hxy, hx, hy⟩ => ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ =>
         ⟨x, y, hxy, hx, hy⟩⟩
 
-theorem bot_prime [IsDomain α] : (⊥ : Ideal α).IsPrime :=
+theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
-end Ideal
-
-end Semiring
-
-section CommSemiring
-
-variable {a b : α}
-
--- A separate namespace definition is needed because the variables were historically in a different
--- order.
-namespace Ideal
-
-variable [CommSemiring α] (I : Ideal α)
-
-theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} (hI : I.IsPrime) :
+theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} [I.IsTwoSided] (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
   ⟨hI.mem_or_mem, by
     rintro (h | h)
@@ -97,9 +89,15 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 
+/-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
+def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
+  carrier := (Pᶜ : Set α)
+  one_mem' := by convert P.ne_top_iff_one.1 hp.1
+  mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
+
 end Ideal
 
-end CommSemiring
+end Semiring
 
 section Ring
 

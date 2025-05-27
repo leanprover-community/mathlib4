@@ -20,7 +20,7 @@ We also provide the dual result for a functor of the form `G : LightProfiniteᵒ
 
 We apply this to define `LightProfinite.diagram'`, `LightProfinite.asLimitCone'`, and
 `LightProfinite.asLimit'`, analogues to their unprimed versions in
-`Mathlib.Topology.Category.LightProfinite.AsLimit`, in which the
+`Mathlib/Topology/Category/LightProfinite/AsLimit.lean`, in which the
 indexing category is `StructuredArrow S toLightProfinite` instead of `ℕᵒᵖ`.
 -/
 
@@ -28,7 +28,7 @@ universe u
 
 open CategoryTheory Limits FintypeCat Functor
 
-attribute [local instance] FintypeCat.discreteTopology ConcreteCategory.instFunLike
+attribute [local instance] FintypeCat.discreteTopology
 
 namespace LightProfinite
 

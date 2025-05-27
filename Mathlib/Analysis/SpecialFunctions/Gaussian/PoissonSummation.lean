@@ -40,14 +40,14 @@ lemma rexp_neg_quadratic_isLittleO_rpow_atTop {a : ℝ} (ha : a < 0) (b s : ℝ)
   have : (fun x ↦ -x - (a * x ^ 2 + b * x)) = fun x ↦ x * (-a * x - (b + 1)) := by
     ext1 x; ring_nf
   rw [this]
-  exact tendsto_id.atTop_mul_atTop <|
-    Filter.tendsto_atTop_add_const_right _ _ <| tendsto_id.const_mul_atTop (neg_pos.mpr ha)
+  exact tendsto_id.atTop_mul_atTop₀ <| tendsto_atTop_add_const_right _ _ <|
+    tendsto_id.const_mul_atTop (neg_pos.mpr ha)
 
 lemma cexp_neg_quadratic_isLittleO_rpow_atTop {a : ℂ} (ha : a.re < 0) (b : ℂ) (s : ℝ) :
     (fun x : ℝ ↦ cexp (a * x ^ 2 + b * x)) =o[atTop] (· ^ s) := by
   apply Asymptotics.IsLittleO.of_norm_left
   convert rexp_neg_quadratic_isLittleO_rpow_atTop ha b.re s with x
-  simp_rw [Complex.norm_eq_abs, Complex.abs_exp, add_re, ← ofReal_pow, mul_comm (_ : ℂ) ↑(_ : ℝ),
+  simp_rw [Complex.norm_exp, add_re, ← ofReal_pow, mul_comm (_ : ℂ) ↑(_ : ℝ),
       re_ofReal_mul, mul_comm _ (re _)]
 
 lemma cexp_neg_quadratic_isLittleO_abs_rpow_cocompact {a : ℂ} (ha : a.re < 0) (b : ℂ) (s : ℝ) :
@@ -66,8 +66,8 @@ lemma cexp_neg_quadratic_isLittleO_abs_rpow_cocompact {a : ℂ} (ha : a.re < 0) 
 theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s : ℝ) :
     Tendsto (fun x : ℝ => |x| ^ s * rexp (-a * x ^ 2)) (cocompact ℝ) (𝓝 0) := by
   conv in rexp _ => rw [← sq_abs]
-  erw [cocompact_eq_atBot_atTop, ← comap_abs_atTop,
-    @tendsto_comap'_iff _ _ _ (fun y => y ^ s * rexp (-a * y ^ 2)) _ _ _
+  rw [cocompact_eq_atBot_atTop, ← comap_abs_atTop]
+  erw [tendsto_comap'_iff (m := fun y => y ^ s * rexp (-a * y ^ 2))
       (mem_atTop_sets.mpr ⟨0, fun b hb => ⟨b, abs_of_nonneg hb⟩⟩)]
   exact
     (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg ha s).tendsto_zero_of_tendsto

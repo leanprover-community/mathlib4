@@ -3,12 +3,12 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison
 -/
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
-# The category of types is a monoidal category
+# The category of types is a (symmetric) monoidal category
 -/
 
 
@@ -20,9 +20,10 @@ universe v u
 
 namespace CategoryTheory
 
-instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) where
-  product := Types.binaryProductLimitCone
-  terminal := Types.terminalLimitCone
+instance typesCartesianMonoidalCategory : CartesianMonoidalCategory (Type u) :=
+  .ofChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
+
+instance : BraidedCategory (Type u) := .ofCartesianMonoidalCategory
 
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :
@@ -91,6 +92,21 @@ theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
 
 @[simp] theorem associator_inv_apply_2 {X Y Z : Type u} {x} :
     (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).2 = x.2.2 :=
+  rfl
+
+@[simp]
+theorem braiding_hom_apply {X Y : Type u} {x : X} {y : Y} :
+    ((β_ X Y).hom : X ⊗ Y → Y ⊗ X) (x, y) = (y, x) :=
+  rfl
+
+@[simp]
+theorem braiding_inv_apply {X Y : Type u} {x : X} {y : Y} :
+    ((β_ X Y).inv : Y ⊗ X → X ⊗ Y) (y, x) = (x, y) :=
+  rfl
+
+@[simp]
+theorem CartesianMonoidalCategory.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g : X ⟶ Z} {x : X} :
+    lift f g x = (f x, g x) :=
   rfl
 
 -- We don't yet have an API for tensor products indexed by finite ordered types,

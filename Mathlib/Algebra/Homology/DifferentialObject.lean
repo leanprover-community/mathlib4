@@ -61,10 +61,7 @@ namespace HomologicalComplex
 variable {β : Type*} [AddCommGroup β] (b : β)
 variable (V : Type*) [Category V] [HasZeroMorphisms V]
 
--- Porting note: this should be moved to an earlier file.
--- Porting note: simpNF linter silenced, both `d_eqToHom` and its `_assoc` version
--- do not simplify under themselves
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 
@@ -92,8 +89,6 @@ def dgoToHomologicalComplex :
         -- Porting note: this `rw` used to be part of the `simp`.
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
         rw [reassoc_of% this] }
-  map_id _ := rfl -- the `aesop_cat` autoparam solves this but it's slow
-  map_comp _ _ := rfl -- the `aesop_cat` autoparam solves this but it's slow
 
 /-- The functor from homological complexes to differential graded objects.
 -/

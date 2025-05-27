@@ -50,8 +50,8 @@ variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 /-- The Galois group of a polynomial. -/
 def Gal :=
   p.SplittingField ≃ₐ[F] p.SplittingField
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020):
--- deriving Group, Fintype
+-- The `Group, Fintype` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 namespace Gal
 
@@ -161,7 +161,6 @@ instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
   one_smul _ := by ext; rfl
   mul_smul _ _ _ := by ext; rfl
 
--- Porting note: split out from `galAction` below to allow using `smul_def` there.
 instance smul [Fact (p.Splits (algebraMap F E))] : SMul p.Gal (rootSet p E) where
   smul ϕ x := rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x)
 
@@ -238,18 +237,15 @@ theorem restrictDvd_def [Decidable (q = 0)] (hpq : p ∣ q) :
         @restrict F _ p _ _ _
           ⟨splits_of_splits_of_dvd (algebraMap F q.SplittingField) hq (SplittingField.splits q)
               hpq⟩ := by
-  -- Porting note: added `unfold`
   unfold restrictDvd
-  convert rfl
+  congr
 
 theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
     Function.Surjective (restrictDvd hpq) := by
   classical
-    -- Porting note: was `simp only [restrictDvd_def, dif_neg hq, restrict_surjective]`
-    haveI := Fact.mk <|
-      splits_of_splits_of_dvd (algebraMap F q.SplittingField) hq (SplittingField.splits q) hpq
-    simp only [restrictDvd_def, dif_neg hq]
-    exact restrict_surjective _ _
+  haveI := Fact.mk <|
+    splits_of_splits_of_dvd (algebraMap F q.SplittingField) hq (SplittingField.splits q) hpq
+  simpa only [restrictDvd_def, dif_neg hq] using restrict_surjective _ _
 
 variable (p q)
 
@@ -265,10 +261,10 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   intro f g hfg
   classical
   simp only [restrictProd, restrictDvd_def] at hfg
-  simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk.inj_iff] at hfg
+  simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk_inj] at hfg
   ext (x hx)
   rw [rootSet_def, aroots_mul hpq] at hx
-  cases' Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h h
+  rcases Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h | h
   · haveI : Fact (p.Splits (algebraMap F (p * q).SplittingField)) :=
       ⟨splits_of_splits_of_dvd _ hpq (SplittingField.splits (p * q)) (dvd_mul_right p q)⟩
     have key :
@@ -329,27 +325,20 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
   have key2 : ∀ {p₁ p₂ : F[X]}, P p₁ → P p₂ → P (p₁ * p₂) := by
     intro p₁ p₂ hp₁ hp₂
     by_cases h₁ : p₁.comp q = 0
-    · cases' comp_eq_zero_iff.mp h₁ with h h
+    · rcases comp_eq_zero_iff.mp h₁ with h | h
       · rw [h, zero_mul]
         exact splits_zero _
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     by_cases h₂ : p₂.comp q = 0
-    · cases' comp_eq_zero_iff.mp h₂ with h h
+    · rcases comp_eq_zero_iff.mp h₂ with h | h
       · rw [h, mul_zero]
         exact splits_zero _
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     have key := mul_splits_in_splittingField_of_mul h₁ h₂ hp₁ hp₂
     rwa [← mul_comp] at key
-  -- Porting note: the last part of the proof needs to be unfolded to avoid timeout
-  -- original proof
-  -- exact
-  --  WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_isUnit _)
-  --    fun _ _ _ h => key2 (key1 h)
-  induction p using WfDvdMonoid.induction_on_irreducible with
-  | h0 => exact splits_zero _
-  | hu u hu => exact splits_of_isUnit (algebraMap F (SplittingField (comp u q))) hu
-  -- Porting note: using `exact` instead of `apply` times out
-  | hi p₁ p₂ _ hp₂ hp₁ => apply key2 (key1 hp₂) hp₁
+  exact
+    WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_isUnit _)
+      fun _ _ _ h => key2 (key1 h)
 
 /-- `Polynomial.Gal.restrict` for the composition of polynomials. -/
 def restrictComp (hq : q.natDegree ≠ 0) : (p.comp q).Gal →* p.Gal :=
@@ -359,12 +348,9 @@ def restrictComp (hq : q.natDegree ≠ 0) : (p.comp q).Gal →* p.Gal :=
 
 theorem restrictComp_surjective (hq : q.natDegree ≠ 0) :
     Function.Surjective (restrictComp p q hq) := by
-  -- Porting note: was
-  -- simp only [restrictComp, restrict_surjective]
   haveI : Fact (Splits (algebraMap F (SplittingField (comp p q))) p) :=
     ⟨splits_in_splittingField_of_comp p q hq⟩
-  rw [restrictComp]
-  exact restrict_surjective _ _
+  simpa only [restrictComp] using restrict_surjective _ _
 
 variable {p q}
 

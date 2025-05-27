@@ -28,8 +28,6 @@ theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| :=
 @[simp]
 theorem norm_natCast (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs]
 
-@[deprecated (since := "2024-04-05")] alias norm_coe_nat := norm_natCast
-
 theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|
     calc

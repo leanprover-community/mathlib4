@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.CategoryTheory.Generator.Coproduct
+import Mathlib.CategoryTheory.Generator.Basic
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!

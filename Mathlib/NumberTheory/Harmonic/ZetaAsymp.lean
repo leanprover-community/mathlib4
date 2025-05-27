@@ -102,17 +102,19 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
       rw [integral_rpow]
       · simp_rw [sub_div, (by norm_num : (-2 : ℝ) + 1 = -1), div_neg, div_one, neg_sub_neg,
           rpow_neg_one, ← one_div]
-      · refine Or.inr ⟨by norm_num, not_mem_uIcc_of_lt ?_ ?_⟩
+      · refine Or.inr ⟨by norm_num, notMem_uIcc_of_lt ?_ ?_⟩
         all_goals positivity
     _ = log (↑n + 1) - log ↑n - 1 / (↑n + 1) := by
       congr 1
       field_simp
 
 lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
-  induction' N with N hN
-  · simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
+  induction N with
+  | zero =>
+    simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
       Nat.cast_zero, zero_add, Nat.cast_one, inv_one, Rat.cast_one, log_one, sub_add_cancel]
-  · unfold term_sum at hN ⊢
+  | succ N hN =>
+    unfold term_sum at hN ⊢
     rw [Finset.sum_range_succ, hN, harmonic_succ (N + 1),
       term_one (by positivity : 0 < N + 1)]
     push_cast
@@ -157,7 +159,7 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
     _ = (∫ x : ℝ in n..(n + 1), x ^ (-s)) - n * (∫ x : ℝ in n..(n + 1), x ^ (-(s + 1))) := by
       rw [intervalIntegral.integral_sub, intervalIntegral.integral_const_mul] <;>
       [skip; apply IntervalIntegrable.const_mul] <;>
-      · refine intervalIntegral.intervalIntegrable_rpow (Or.inr <| not_mem_uIcc_of_lt ?_ ?_)
+      · refine intervalIntegral.intervalIntegrable_rpow (Or.inr <| notMem_uIcc_of_lt ?_ ?_)
         · exact_mod_cast hn
         · linarith
     _ = 1 / (s - 1) * (1 / n ^ (s - 1) - 1 / (n + 1) ^ (s - 1))
@@ -177,15 +179,17 @@ lemma term_sum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
   conv => enter [1, 2, n]; rw [term_of_lt (by simp) hs]
   rw [Finset.sum_sub_distrib]
   congr 1
-  · induction' N with N hN
-    · simp
-    · rw [Finset.sum_range_succ, hN, Nat.cast_add_one]
+  · induction N with
+    | zero => simp
+    | succ N hN =>
+      rw [Finset.sum_range_succ, hN, Nat.cast_add_one]
       ring_nf
   · simp_rw [mul_comm (_ / _), ← mul_div_assoc, div_eq_mul_inv _ s, ← Finset.sum_mul, mul_one]
     congr 1
-    induction' N with N hN
-    · simp
-    · simp_rw [Finset.sum_range_succ, hN, Nat.cast_add_one, sub_eq_add_neg, add_assoc]
+    induction N with
+    | zero => simp
+    | succ N hN =>
+      simp_rw [Finset.sum_range_succ, hN, Nat.cast_add_one, sub_eq_add_neg, add_assoc]
       congr 1
       ring_nf
 
@@ -317,7 +321,7 @@ theorem _root_.tendsto_riemannZeta_sub_one_div :
   -- and then use the previous result to deduce that this limit must be `γ`.
   let f (s : ℂ) := riemannZeta s - 1 / (s - 1)
   suffices ∃ C, Tendsto f (𝓝[≠] 1) (𝓝 C) by
-    cases' this with C hC
+    obtain ⟨C, hC⟩ := this
     suffices Tendsto (fun s : ℝ ↦ f s) _ _
       from (tendsto_nhds_unique this tendsto_riemannZeta_sub_one_div_nhds_right) ▸ hC
     refine hC.comp (tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_)
@@ -368,8 +372,7 @@ lemma tendsto_Gamma_term_aux : Tendsto (fun s ↦ 1 / (s - 1) - 1 / Gammaℝ s /
     simp only [mem_preimage, one_re, mem_Ioi, zero_lt_one]
   rw [EventuallyEq, eventually_nhdsWithin_iff]
   filter_upwards [this] with a ha _
-  rw [Pi.div_apply, ← sub_div, div_right_comm, sub_div' _ _ _ (Gammaℝ_ne_zero_of_re_pos ha),
-    one_mul]
+  rw [Pi.div_apply, ← sub_div, div_right_comm, sub_div' (Gammaℝ_ne_zero_of_re_pos ha), one_mul]
 
 lemma tendsto_riemannZeta_sub_one_div_Gammaℝ :
     Tendsto (fun s ↦ riemannZeta s - 1 / Gammaℝ s / (s - 1)) (𝓝[≠] 1)
