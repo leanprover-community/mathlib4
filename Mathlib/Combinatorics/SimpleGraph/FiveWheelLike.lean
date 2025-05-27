@@ -105,10 +105,10 @@ structure IsFiveWheelLike (G : SimpleGraph α) (r k : ℕ) (v w₁ w₂ : α) (s
     Prop where
   /-- `{v, w₁, w₂}` induces the single edge `w₁w₂` -/
   isPathGraph3Compl : G.IsPathGraph3Compl v w₁ w₂
-  not_mem_left : v ∉ s
-  not_mem_right : v ∉ t
-  fst_not_mem : w₁ ∉ s
-  snd_not_mem : w₂ ∉ t
+  notMem_left : v ∉ s
+  notMem_right : v ∉ t
+  fst_notMem : w₁ ∉ s
+  snd_notMem : w₂ ∉ t
   isNClique_left : G.IsNClique (r + 1) (insert v s)
   isNClique_fst_left : G.IsNClique (r + 1) (insert w₁ s)
   isNClique_right : G.IsNClique (r + 1) (insert v t)
@@ -129,6 +129,14 @@ def FiveWheelLikeFree (G : SimpleGraph α) (r k : ℕ) : Prop :=
 
 namespace IsFiveWheelLike
 
+@[deprecated (since := "2025-05-27")] alias not_mem_left := notMem_left
+
+@[deprecated (since := "2025-05-27")] alias not_mem_right := notMem_right
+
+@[deprecated (since := "2025-05-27")] alias fst_not_mem := fst_notMem
+
+@[deprecated (since := "2025-05-27")] alias snd_not_mem := snd_notMem
+
 variable {v w₁ w₂ : α} {t : Finset α} (hw : G.IsFiveWheelLike r k v w₁ w₂ s t)
 
 include hw
@@ -137,11 +145,15 @@ include hw
   let ⟨p2, d1, d2, d3, d4, c1, c2, c3, c4 , hk⟩ := hw
   ⟨p2.symm, d2, d1, d4, d3, c3, c4, c1, c2, by rwa [inter_comm]⟩
 
-lemma fst_not_mem_right : w₁ ∉ t :=
+lemma fst_notMem_right : w₁ ∉ t :=
   fun h ↦ hw.isPathGraph3Compl.not_adj_fst <| hw.isNClique_right.1 (mem_insert_self ..)
     (mem_insert_of_mem h) hw.isPathGraph3Compl.ne_fst
 
-lemma snd_not_mem_left : w₂ ∉ s := hw.symm.fst_not_mem_right
+@[deprecated (since := "2025-05-27")] alias fst_not_mem_right := fst_notMem_right
+
+lemma snd_notMem_left : w₂ ∉ s := hw.symm.fst_notMem_right
+
+@[deprecated (since := "2025-05-27")] alias snd_not_mem_left := snd_notMem_left
 
 /--
 Any graph containing an `IsFiveWheelLike r k` structure is not `(r + 1)`-colorable.
@@ -165,13 +177,13 @@ lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
       subst_vars; exact C.valid hw.isPathGraph3Compl.adj (hcy ▸ hcx)
     | inr hy =>
       apply (C.valid _ hcy.symm).elim
-      exact hw.isNClique_right.1 (by simp) (by simp [hy]) fun h ↦ hw.not_mem_right (h ▸ hy)
+      exact hw.isNClique_right.1 (by simp) (by simp [hy]) fun h ↦ hw.notMem_right (h ▸ hy)
   | inr hx =>
     apply (C.valid _ hcx.symm).elim
-    exact hw.isNClique_left.1 (by simp) (by simp [hx]) fun h ↦ hw.not_mem_left (h ▸ hx)
+    exact hw.isNClique_left.1 (by simp) (by simp [hx]) fun h ↦ hw.notMem_left (h ▸ hx)
 
 lemma card_left : s.card = r := by
-  simp [← Nat.succ_inj, ← hw.isNClique_left.2, hw.not_mem_left]
+  simp [← Nat.succ_inj, ← hw.isNClique_left.2, hw.notMem_left]
 
 lemma card_right : t.card = r := hw.symm.card_left
 
@@ -181,7 +193,7 @@ lemma card_inter_lt_of_cliqueFree (h : G.CliqueFree (r + 2)) : k < r := by
   have hs := eq_of_subset_of_card_le inter_subset_left (hw.card_inter ▸ hw.card_left ▸ h)
   have := eq_of_subset_of_card_le inter_subset_right (hw.card_inter ▸ hw.card_right ▸ h)
   exact (hw.isNClique_fst_left.insert_insert (hs ▸ this.symm ▸ hw.isNClique_snd_right)
-    hw.snd_not_mem_left hw.isPathGraph3Compl.adj).not_cliqueFree
+    hw.snd_notMem_left hw.isPathGraph3Compl.adj).not_cliqueFree
 
 end IsFiveWheelLike
 
