@@ -169,7 +169,7 @@ theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
   rfl
 
 @[simp]
-theorem mapAlgHom_comp (C : Type z) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
+theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
     (mapAlgHom f).comp (mapAlgHom g) = mapAlgHom (f.comp g) := by
   apply AlgHom.ext
   intro x
@@ -517,13 +517,13 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
     (dvd_terms : ∀ j ≠ i, p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
   by_cases hi : i ∈ f.support
   · rw [eval, eval₂_eq_sum, sum_def] at dvd_eval
-    rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.not_mem_erase _ _)] at dvd_eval
+    rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.notMem_erase _ _)] at dvd_eval
     refine (dvd_add_left ?_).mp dvd_eval
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)
   · convert dvd_zero p
-    rw [not_mem_support_iff] at hi
+    rw [notMem_support_iff] at hi
     simp [hi]
 
 theorem dvd_term_of_isRoot_of_dvd_terms {r p : S} {f : S[X]} (i : ℕ) (hr : f.IsRoot r)
@@ -674,16 +674,18 @@ open nonZeroDivisors
 
 /-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
 such that `a ≠ 0` and `a • P = 0`. -/
-theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
+theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
   refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 _) <| smul_eq_C_mul a ▸ h⟩
   by_contra! h
-  obtain ⟨Q, hQ⟩ := _root_.nmem_nonZeroDivisors_iff.1 hP
+  obtain ⟨Q, hQ⟩ := _root_.notMem_nonZeroDivisors_iff.1 hP
   refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
   contrapose! ha
   exact h a ha
 
+@[deprecated (since := "2025-05-24")] alias nmem_nonZeroDivisors_iff := notMem_nonZeroDivisors_iff
+
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
-  simpa [not_imp_not] using (nmem_nonZeroDivisors_iff (P := P)).not
+  simpa [not_imp_not] using (notMem_nonZeroDivisors_iff (P := P)).not
 
 lemma mem_nonzeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
     p ∈ R[X]⁰ :=

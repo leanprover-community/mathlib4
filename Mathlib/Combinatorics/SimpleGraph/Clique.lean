@@ -80,9 +80,11 @@ lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b := Set.pairwis
 lemma isClique_insert : G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, a ≠ b → G.Adj a b :=
   Set.pairwise_insert_of_symmetric G.symm
 
-lemma isClique_insert_of_not_mem (ha : a ∉ s) :
+lemma isClique_insert_of_notMem (ha : a ∉ s) :
     G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, G.Adj a b :=
-  Set.pairwise_insert_of_symmetric_of_not_mem G.symm ha
+  Set.pairwise_insert_of_symmetric_of_notMem G.symm ha
+
+@[deprecated (since := "2025-05-23")] alias isClique_insert_of_not_mem := isClique_insert_of_notMem
 
 lemma IsClique.insert (hs : G.IsClique s) (h : ∀ b ∈ s, a ≠ b → G.Adj a b) :
     G.IsClique (insert a s) := hs.insert_of_symmetric G.symm h
@@ -251,7 +253,7 @@ protected theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Ad
   constructor
   · push_cast
     exact hs.1.insert fun b hb _ => h _ hb
-  · rw [card_insert_of_not_mem fun ha => (h _ ha).ne rfl, hs.2]
+  · rw [card_insert_of_notMem fun ha => (h _ ha).ne rfl, hs.2]
 
 lemma IsNClique.erase_of_mem (hs : G.IsNClique n s) (ha : a ∈ s) :
     G.IsNClique (n - 1) (s.erase a) where
@@ -262,7 +264,7 @@ protected lemma IsNClique.insert_erase
     (hs : G.IsNClique n s) (ha : ∀ w ∈ s \ {b}, G.Adj a w) (hb : b ∈ s) :
     G.IsNClique n (insert a (erase s b)) := by
   cases n with
-  | zero => exact False.elim <| not_mem_empty _ (isNClique_zero.1 hs ▸ hb)
+  | zero => exact False.elim <| notMem_empty _ (isNClique_zero.1 hs ▸ hb)
   | succ _ => exact (hs.erase_of_mem hb).insert fun w h ↦ by aesop
 
 theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
@@ -466,7 +468,7 @@ lemma cliqueFree_one : G.CliqueFree 1 ↔ IsEmpty α := by
 theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
   classical
   constructor
-  · simp_rw [← edgeSet_eq_empty, Set.eq_empty_iff_forall_not_mem, Sym2.forall, mem_edgeSet]
+  · simp_rw [← edgeSet_eq_empty, Set.eq_empty_iff_forall_notMem, Sym2.forall, mem_edgeSet]
     exact fun h a b hab => h _ ⟨by simpa [hab.ne], card_pair hab.ne⟩
   · rintro rfl
     exact cliqueFree_bot le_rfl
@@ -483,6 +485,23 @@ protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
    (G ⊔ edge v w).CliqueFree (n + 1) :=
   fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
+
+lemma IsNClique.exists_not_adj_of_cliqueFree_succ (hc : G.IsNClique n s)
+    (h : G.CliqueFree (n + 1)) (x : α) : ∃ y, y ∈ s ∧ ¬ G.Adj x y := by
+  classical
+  by_contra! hf
+  exact (hc.insert hf).not_cliqueFree h
+
+lemma exists_of_maximal_cliqueFree_not_adj [DecidableEq α]
+    (h : Maximal (fun H ↦ H.CliqueFree (n + 1)) G) {x y : α} (hne : x ≠ y) (hn : ¬ G.Adj x y) :
+    ∃ s, x ∉ s ∧ y ∉ s ∧ G.IsNClique n (insert x s) ∧ G.IsNClique n (insert y s) := by
+  obtain ⟨t, hc⟩ := not_forall_not.1 <| h.not_prop_of_gt <| G.lt_sup_edge _ _ hne hn
+  use (t.erase x).erase y, erase_right_comm (a := x) ▸ (notMem_erase _ _), notMem_erase _ _
+  have h1 := h.1.mem_of_sup_edge_isNClique hc
+  have h2 := h.1.mem_of_sup_edge_isNClique (edge_comm .. ▸ hc)
+  rw [insert_erase <| mem_erase_of_ne_of_mem hne.symm h2, erase_right_comm,
+      insert_erase <| mem_erase_of_ne_of_mem hne h1]
+  exact ⟨(edge_comm .. ▸ hc).erase_of_sup_edge_of_mem h2, hc.erase_of_sup_edge_of_mem h1⟩
 
 end CliqueFree
 
@@ -563,7 +582,7 @@ theorem mem_cliqueSet_iff : s ∈ G.cliqueSet n ↔ G.IsNClique n s :=
 
 @[simp]
 theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
-  simp_rw [CliqueFree, Set.eq_empty_iff_forall_not_mem, mem_cliqueSet_iff]
+  simp_rw [CliqueFree, Set.eq_empty_iff_forall_notMem, mem_cliqueSet_iff]
 
 protected alias ⟨_, CliqueFree.cliqueSet⟩ := cliqueSet_eq_empty_iff
 
@@ -701,7 +720,7 @@ variable {G}
 
 @[simp]
 theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n := by
-  simp_rw [CliqueFree, eq_empty_iff_forall_not_mem, mem_cliqueFinset_iff]
+  simp_rw [CliqueFree, eq_empty_iff_forall_notMem, mem_cliqueFinset_iff]
 
 protected alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 

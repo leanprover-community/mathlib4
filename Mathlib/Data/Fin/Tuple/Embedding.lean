@@ -29,6 +29,7 @@ open Function.Embedding Fin Set Nat
 namespace Fin.Embedding
 
 variable {α : Type*}
+
 /-- Remove the first element from an injective (n + 1)-tuple. -/
 def tail {n : ℕ} (x : Fin (n + 1) ↪ α) : Fin n ↪ α :=
   ⟨Fin.tail x, x.injective.comp <| Fin.succ_injective _⟩
@@ -115,7 +116,7 @@ def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
   right_inv := fun ⟨⟨a, b⟩, h⟩ ↦ by simp
 
 /-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α`. -/
-def embFinTwo {a b: α} (h : a ≠ b) : Fin 2 ↪ α :=
+def embFinTwo {a b : α} (h : a ≠ b) : Fin 2 ↪ α :=
   twoEmbeddingEquiv.invFun ⟨(a, b), h⟩
 
 theorem embFinTwo_apply_zero {a b : α} (h : a ≠ b) :
@@ -125,4 +126,3 @@ theorem embFinTwo_apply_one {a b : α} (h : a ≠ b) :
     embFinTwo h 1 = b := rfl
 
 end Function.Embedding
-
