@@ -501,12 +501,12 @@ theorem rightComm_tmul (m : M) (p : P) (q : Q) :
   rfl
 
 @[simp]
-theorem rightComm_symm_tmul (m : M) (p : P) (q : Q) :
-    (rightComm R S B M P Q).symm ((m ⊗ₜ q) ⊗ₜ p) = (m ⊗ₜ p) ⊗ₜ q :=
-  rfl
-
 theorem rightComm_symm :
     (rightComm R S B M P Q).symm = rightComm S R B M Q P :=
+  rfl
+
+theorem rightComm_symm_tmul (m : M) (p : P) (q : Q) :
+    (rightComm R S B M P Q).symm ((m ⊗ₜ q) ⊗ₜ p) = (m ⊗ₜ p) ⊗ₜ q :=
   rfl
 
 end rightComm
@@ -545,6 +545,9 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
   rfl
 
 @[simp]
+theorem tensorTensorTensorComm_symm :
+    (tensorTensorTensorComm R S A B M N P Q).symm = tensorTensorTensorComm R A S B M P N Q := rfl
+
 theorem tensorTensorTensorComm_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
     (tensorTensorTensorComm R S A B M N P Q).symm ((m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q)) = (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) :=
   rfl
@@ -555,9 +558,6 @@ theorem tensorTensorTensorComm_eq :
   apply LinearEquiv.toLinearMap_injective
   ext
   simp
-
-theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R S A B M N P Q).symm = tensorTensorTensorComm R A S B M P N Q := rfl
 
 end tensorTensorTensorComm
 
