@@ -958,37 +958,34 @@ set_option maxHeartbeats 500000
 
 abbrev countElemOrInv {T: Type*} [ht: Group T] [heq: DecidableEq T] (l: List T) (γ: T): ℤ := (l.map (fun s => if s = γ then 1 else if s = γ⁻¹ then -1 else 0)).sum
 abbrev isElemOrInv {T: Type*} [ht: Group T] [heq: DecidableEq T] (g: T): T → Bool := fun a => decide (a = g ∨ a = g⁻¹)
-lemma take_count_sum_eq_exp {T: Type*} [ht: Group T] [heq: DecidableEq T] (l: List G) (g: G) (hg: g ≠ g⁻¹): (l.takeWhile (isElemOrInv g)).prod = g^(countElemOrInv l g) := by
+lemma take_count_sum_eq_exp {T: Type*} [ht: Group T] [heq: DecidableEq T] (l: List G) (g: G) (hg: g ≠ g⁻¹) (hl: ∀ val ∈ l, val = g ∨ val = g⁻¹): (l).prod = g^(countElemOrInv l g) := by
   induction l with
   | nil =>
     simp [countElemOrInv]
   | cons h t ih =>
-    rw [List.takeWhile_cons]
-    by_cases elem_or_inv: isElemOrInv g h = true
+    simp [countElemOrInv]
+    by_cases h_eq_g: h = g
     .
-      simp [elem_or_inv]
+      simp [h_eq_g]
       rw [ih]
-      nth_rw 2 [countElemOrInv]
-      by_cases h_eq_g: h = g
-      .
-        simp [h_eq_g]
-        rw [← zpow_one_add]
-      .
-        simp [h_eq_g] at elem_or_inv
-        simp [elem_or_inv.symm]
-        rw [elem_or_inv]
-
-        conv =>
-          lhs
-          equals g ^ (-1 + countElemOrInv t g) =>
-            rw [zpow_add]
-            simp
-        simp [hg.symm]
+      . rw [← zpow_one_add]
+      . simp at hl
+        exact hl.2
     .
-      simp [elem_or_inv]
-      simp [countElemOrInv]
-      simp at elem_or_inv
-      simp [elem_or_inv.left, elem_or_inv.right]
+      have h_eq_inv: h = g⁻¹ := by
+        specialize hl h
+        simp at hl
+        simp  [h_eq_g] at hl
+        exact hl
+      simp [h_eq_g, h_eq_inv]
+      rw [ih]
+      rw [← zpow_neg_one]
+      rw [← zpow_add]
+      simp [hg.symm]
+      simp at hl
+      exact hl.2
+
+
 
 
 
