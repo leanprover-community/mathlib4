@@ -17,8 +17,8 @@ equivalence class `[x : y : z]` of triples `(x, y, z) ≠ (0, 0, 0)` of elements
 Let `W` be a Weierstrass curve over a commutative ring `R` with coefficients `aᵢ`. A
 *Jacobian point* is a point on the projective plane over `R` with weights `(2, 3, 1)` satisfying the
 *`(2, 3, 1)`-homogeneous Weierstrass equation* `W(X, Y, Z) = 0` in *Jacobian coordinates*, where
-`W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)`. It is *nonsingular* if its
-partial derivatives `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_Z(x, y, z)` do not vanish simultaneously.
+`W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)`. It is *nonsingular* if the ideal
+spanned by its partial derivatives `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_Z(x, y, z)` is `R`.
 
 This file gives an explicit implementation of equivalence classes of triples up to scaling by
 weights, and defines polynomials associated to Weierstrass equations and the nonsingular condition
@@ -365,19 +365,19 @@ variable (W') in
 /-- The proposition that a Jacobian point representative `(x, y, z)` on a Weierstrass curve `W` is
 nonsingular.
 
-In other words, either `W_X(x, y, z) ≠ 0`, `W_Y(x, y, z) ≠ 0`, or `W_Z(x, y, z) ≠ 0`.
+In other words, the ideal spanned by `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_z(x, y, z)` is `R`.
 
-Note that this definition is only mathematically accurate for fields. -/
--- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
+Note that this definition is only mathematically accurate for certain rings `R` whose Picard group
+has trivial 12-torsion, such as a field or a PID. -/
 def Nonsingular (P : Fin 3 → R) : Prop :=
   W'.Equation P ∧
-    (eval P W'.polynomialX ≠ 0 ∨ eval P W'.polynomialY ≠ 0 ∨ eval P W'.polynomialZ ≠ 0)
+    Ideal.span {eval P W'.polynomialX, eval P W'.polynomialY, eval P W'.polynomialZ} = ⊤
 
-lemma nonsingular_iff (P : Fin 3 → R) : W'.Nonsingular P ↔ W'.Equation P ∧
-    (W'.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z ^ 2 + W'.a₄ * P z ^ 4) ≠ 0 ∨
-      2 * P y + W'.a₁ * P x * P z + W'.a₃ * P z ^ 3 ≠ 0 ∨
+lemma nonsingular_iff (P : Fin 3 → R) : W'.Nonsingular P ↔ W'.Equation P ∧ Ideal.span
+    {W'.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z ^ 2 + W'.a₄ * P z ^ 4),
+      2 * P y + W'.a₁ * P x * P z + W'.a₃ * P z ^ 3,
       W'.a₁ * P x * P y + 3 * W'.a₃ * P y * P z ^ 2
-        - (2 * W'.a₂ * P x ^ 2 * P z + 4 * W'.a₄ * P x * P z ^ 3 + 6 * W'.a₆ * P z ^ 5) ≠ 0) := by
+        - (2 * W'.a₂ * P x ^ 2 * P z + 4 * W'.a₄ * P x * P z ^ 3 + 6 * W'.a₆ * P z ^ 5)} = ⊤ := by
   rw [Nonsingular, eval_polynomialX, eval_polynomialY, eval_polynomialZ]
 
 lemma nonsingular_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) :
@@ -386,55 +386,59 @@ lemma nonsingular_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) :
       W'.Nonsingular P := by
     rcases (nonsingular_iff _).mp hP with ⟨hP, hP'⟩
     refine (nonsingular_iff P).mpr ⟨(equation_smul P hu).mp hP, ?_⟩
-    contrapose! hP'
-    simp only [smul_fin3_ext]
-    exact ⟨by linear_combination (norm := ring1) u ^ 4 * hP'.left,
-      by linear_combination (norm := ring1) u ^ 3 * hP'.right.left,
-      by linear_combination (norm := ring1) u ^ 5 * hP'.right.right⟩
+    simp_rw [Ideal.span_insert, ← Ideal.span_singleton_mul_left_unit (hu.pow 4) <| _ * _ - _,
+      ← Ideal.span_singleton_mul_left_unit (hu.pow 3) <| _ + _,
+      ← Ideal.span_singleton_mul_left_unit (hu.pow 5) <| _ - _, ← hP', Ideal.span_insert,
+      smul_fin3_ext]
+    ring_nf
   ⟨hP hu, fun h => hP hu.unit⁻¹.isUnit <| by rwa [smul_smul, hu.val_inv_mul, one_smul]⟩
 
 lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Nonsingular P ↔ W'.Nonsingular Q := by
   rcases h with ⟨u, rfl⟩
   exact nonsingular_smul Q u.isUnit
 
-lemma nonsingular_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) :
-    W'.Nonsingular P ↔ W'.Equation P ∧ (3 * P x ^ 2 ≠ 0 ∨ 2 * P y ≠ 0 ∨ W'.a₁ * P x * P y ≠ 0) := by
-  simp only [nonsingular_iff, hPz, add_zero, sub_zero, zero_sub, mul_zero,
-    zero_pow <| OfNat.ofNat_ne_zero _, neg_ne_zero]
+lemma nonsingular_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) : W'.Nonsingular P ↔
+    W'.Equation P ∧ Ideal.span {3 * P x ^ 2, 2 * P y, W'.a₁ * P x * P y} = ⊤ := by
+  simp_rw [nonsingular_iff, hPz, zero_pow <| OfNat.ofNat_ne_zero _, mul_zero, zero_sub, add_zero,
+    sub_zero, Ideal.span_insert, Ideal.span_singleton_neg]
 
-lemma nonsingular_zero [Nontrivial R] : W'.Nonsingular ![1, 1, 0] := by
-  simp only [nonsingular_of_Z_eq_zero, equation_zero, true_and, fin3_def_ext, ← not_and_or]
-  exact fun h => one_ne_zero <| by linear_combination (norm := ring1) h.1 - h.2.1
+lemma nonsingular_zero : W'.Nonsingular ![1, 1, 0] := by
+  rw [nonsingular_of_Z_eq_zero rfl]
+  simp_rw [fin3_def_ext, Ideal.eq_top_iff_one, Ideal.mem_span_insert', Ideal.mem_span_singleton']
+  exact ⟨equation_zero, ⟨-1, 1, 0, by ring1⟩⟩
 
 lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ W'.toAffine.Nonsingular X Y := by
-  simp_rw [nonsingular_iff, equation_some, fin3_def_ext, Affine.nonsingular_iff',
-    Affine.equation_iff', and_congr_right_iff, ← not_and_or, not_iff_not, one_pow, mul_one,
-    and_congr_right_iff, Iff.comm, iff_self_and]
-  intro h hX hY
-  linear_combination (norm := ring1) 6 * h - 2 * X * hX - 3 * Y * hY
+  simp_rw [nonsingular_iff, equation_some, Affine.nonsingular_iff, Affine.equation_iff',
+    and_congr_right_iff, Ideal.span_insert, ← sup_assoc, ← Ideal.span_insert, fin3_def_ext, one_pow,
+    mul_one]
+  intro h
+  congr! 1
+  rw [sup_eq_left, Ideal.span_singleton_le_iff_mem, Ideal.mem_span_pair]
+  exact ⟨-2 * X, -3 * Y, by linear_combination (norm := ring1) -6 * h⟩
 
 lemma nonsingular_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z ^ 2) (P y / P z ^ 3) :=
   (nonsingular_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| nonsingular_some ..
 
-lemma nonsingular_iff_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    W.Nonsingular P ↔ W.Equation P ∧ (eval P W.polynomialX ≠ 0 ∨ eval P W.polynomialY ≠ 0) := by
-  rw [nonsingular_of_Z_ne_zero hPz, Affine.Nonsingular, ← equation_of_Z_ne_zero hPz,
-    ← eval_polynomialX_of_Z_ne_zero hPz, div_ne_zero_iff, and_iff_left <| pow_ne_zero 4 hPz,
-    ← eval_polynomialY_of_Z_ne_zero hPz, div_ne_zero_iff, and_iff_left <| pow_ne_zero 3 hPz]
+lemma nonsingular_iff_of_Z_ne_zero {P : Fin 3 → F} (hPz : IsUnit <| P z) : W.Nonsingular P ↔
+    W.Equation P ∧ Ideal.span {eval P W.polynomialX, eval P W.polynomialY} = ⊤ := by
+  simp_rw [nonsingular_of_Z_ne_zero hPz.ne_zero, Affine.Nonsingular,
+    ← equation_of_Z_ne_zero hPz.ne_zero, Ideal.span_insert,
+    ← eval_polynomialX_of_Z_ne_zero hPz.ne_zero, ← eval_polynomialY_of_Z_ne_zero hPz.ne_zero,
+    div_eq_mul_inv, Ideal.span_singleton_mul_right_unit (hPz.pow _).inv]
 
-lemma X_ne_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Nonsingular P)
-    (hPz : P z = 0) : P x ≠ 0 := by
+lemma X_ne_zero_of_Z_eq_zero [Nontrivial R] [NoZeroDivisors R] {P : Fin 3 → R}
+    (hP : W'.Nonsingular P) (hPz : P z = 0) : P x ≠ 0 := by
   intro hPx
-  simp only [nonsingular_of_Z_eq_zero hPz, equation_of_Z_eq_zero hPz, hPx, mul_zero, zero_mul,
-    zero_pow <| OfNat.ofNat_ne_zero _, ne_self_iff_false, or_false, false_or] at hP
-  rwa [pow_eq_zero_iff two_ne_zero, hP.left, eq_self, true_and, mul_zero, ne_self_iff_false] at hP
+  simp_rw [nonsingular_of_Z_eq_zero hPz, equation_of_Z_eq_zero hPz, hPx, zero_pow three_ne_zero,
+    pow_eq_zero_iff two_ne_zero, hP.left, zero_pow two_ne_zero, mul_zero, Set.pair_eq_singleton,
+    Ideal.span_singleton_eq_top, isUnit_zero_iff, one_ne_zero.symm, and_false] at hP
 
 lemma isUnit_X_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) : IsUnit (P x) :=
   (X_ne_zero_of_Z_eq_zero hP hPz).isUnit
 
-lemma Y_ne_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Nonsingular P)
-    (hPz : P z = 0) : P y ≠ 0 := by
+lemma Y_ne_zero_of_Z_eq_zero [Nontrivial R] [NoZeroDivisors R] {P : Fin 3 → R}
+    (hP : W'.Nonsingular P) (hPz : P z = 0) : P y ≠ 0 := by
   have hPx : P x ≠ 0 := X_ne_zero_of_Z_eq_zero hP hPz
   intro hPy
   rw [nonsingular_of_Z_eq_zero hPz, equation_of_Z_eq_zero hPz, hPy, zero_pow two_ne_zero] at hP
@@ -483,7 +487,8 @@ variable (W') in
 If `P` is a Jacobian point representative on `W`, then `W.NonsingularLift ⟦P⟧` is definitionally
 equivalent to `W.Nonsingular P`.
 
-Note that this definition is only mathematically accurate for fields. -/
+Note that this definition is only mathematically accurate for certain rings `R` whose Picard group
+has trivial 12-torsion, such as a field or a PID. -/
 def NonsingularLift (P : PointClass R) : Prop :=
   P.lift W'.Nonsingular fun _ _ => propext ∘ nonsingular_of_equiv
 
@@ -502,12 +507,12 @@ lemma nonsingularLift_some (X Y : R) :
 variable (f : R →+* S) (P : Fin 3 → R)
 
 @[simp]
-lemma map_polynomial : (W'.map f).toJacobian.polynomial = MvPolynomial.map f W'.polynomial := by
+lemma map_polynomial : (W'.map f).toJacobian.polynomial = W'.polynomial.map f := by
   simp only [polynomial]
   map_simp
 
 variable {P} in
-lemma Equation.map (h : W'.Equation P) : (W'.map f).toJacobian.Equation (f ∘ P) := by
+lemma Equation.map (h : W'.Equation P) : (W'.map f).toJacobian.Equation <| f ∘ P := by
   rw [Equation, map_polynomial, eval_map, ← eval₂_comp, h, map_zero]
 
 variable {f} in
@@ -517,35 +522,43 @@ lemma map_equation (hf : Function.Injective f) :
   simp only [Equation, map_polynomial, eval_map, ← eval₂_comp, map_eq_zero_iff f hf]
 
 @[simp]
-lemma map_polynomialX : (W'.map f).toJacobian.polynomialX = MvPolynomial.map f W'.polynomialX := by
+lemma map_polynomialX : (W'.map f).toJacobian.polynomialX = W'.polynomialX.map f := by
   simp only [polynomialX, map_polynomial, pderiv_map]
 
 @[simp]
-lemma map_polynomialY : (W'.map f).toJacobian.polynomialY = MvPolynomial.map f W'.polynomialY := by
+lemma map_polynomialY : (W'.map f).toJacobian.polynomialY = W'.polynomialY.map f := by
   simp only [polynomialY, map_polynomial, pderiv_map]
 
 @[simp]
-lemma map_polynomialZ : (W'.map f).toJacobian.polynomialZ = MvPolynomial.map f W'.polynomialZ := by
+lemma map_polynomialZ : (W'.map f).toJacobian.polynomialZ = W'.polynomialZ.map f := by
   simp only [polynomialZ, map_polynomial, pderiv_map]
+
+variable {P} in
+lemma Nonsingular.map (h : W'.Nonsingular P) : (W'.map f).toJacobian.Nonsingular <| f ∘ P := by
+  simp_rw [Nonsingular, h.left.map f, true_and, map_polynomialX, map_polynomialY, map_polynomialZ,
+    eval_map, ← eval₂_comp, ← Set.image_pair f, ← Set.image_insert_eq, ← Ideal.map_span, h.right,
+    Ideal.map_top]
 
 variable {f} in
 @[simp]
-lemma map_nonsingular (hf : Function.Injective f) :
+lemma map_nonsingular (hf : Function.Bijective f) :
     (W'.map f).toJacobian.Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
-  simp only [Nonsingular, map_equation P hf, map_polynomialX, map_polynomialY, map_polynomialZ,
-    eval_map, ← eval₂_comp, map_ne_zero_iff f hf]
+  refine ⟨?_, fun h => h.map f⟩
+  simp_rw [Nonsingular, map_equation _ hf.left, map_polynomialX, map_polynomialY, map_polynomialZ,
+    eval_map, ← eval₂_comp, ← Set.image_pair f, ← Set.image_insert_eq, ← Ideal.map_span,
+    Ideal.map_span_triple_eq_top hf, imp_self]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (P : Fin 3 → A)
 
-lemma baseChange_polynomial : (W'.baseChange B).toJacobian.polynomial =
-    MvPolynomial.map f (W'.baseChange A).toJacobian.polynomial := by
+lemma baseChange_polynomial :
+    (W'.baseChange B).toJacobian.polynomial = (W'.baseChange A).toJacobian.polynomial.map f := by
   rw [← map_polynomial, map_baseChange]
 
 variable {P} in
 lemma Equation.baseChange (h : (W'.baseChange A).toJacobian.Equation P) :
-    (W'.baseChange B).toJacobian.Equation (f ∘ P) := by
-  convert Equation.map f.toRingHom h using 1
+    (W'.baseChange B).toJacobian.Equation <| f ∘ P := by
+  convert h.map f.toRingHom using 1
   rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
@@ -553,20 +566,26 @@ lemma baseChange_equation (hf : Function.Injective f) :
     (W'.baseChange B).toJacobian.Equation (f ∘ P) ↔ (W'.baseChange A).toJacobian.Equation P := by
   rw [← RingHom.coe_coe, ← map_equation P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
-lemma baseChange_polynomialX : (W'.baseChange B).toJacobian.polynomialX =
-    MvPolynomial.map f (W'.baseChange A).toJacobian.polynomialX := by
+lemma baseChange_polynomialX :
+    (W'.baseChange B).toJacobian.polynomialX = (W'.baseChange A).toJacobian.polynomialX.map f := by
   rw [← map_polynomialX, map_baseChange]
 
-lemma baseChange_polynomialY : (W'.baseChange B).toJacobian.polynomialY =
-    MvPolynomial.map f (W'.baseChange A).toJacobian.polynomialY := by
+lemma baseChange_polynomialY :
+    (W'.baseChange B).toJacobian.polynomialY = (W'.baseChange A).toJacobian.polynomialY.map f := by
   rw [← map_polynomialY, map_baseChange]
 
-lemma baseChange_polynomialZ : (W'.baseChange B).toJacobian.polynomialZ =
-    MvPolynomial.map f (W'.baseChange A).toJacobian.polynomialZ := by
+lemma baseChange_polynomialZ :
+    (W'.baseChange B).toJacobian.polynomialZ = (W'.baseChange A).toJacobian.polynomialZ.map f := by
   rw [← map_polynomialZ, map_baseChange]
 
+variable {P} in
+lemma Nonsingular.baseChange (h : (W'.baseChange A).toJacobian.Nonsingular P) :
+    (W'.baseChange B).toJacobian.Nonsingular <| f ∘ P := by
+  convert h.map f.toRingHom using 1
+  rw [AlgHom.toRingHom_eq_coe, map_baseChange]
+
 variable {f} in
-lemma baseChange_nonsingular (hf : Function.Injective f) :
+lemma baseChange_nonsingular (hf : Function.Bijective f) :
     (W'.baseChange B).toJacobian.Nonsingular (f ∘ P) ↔
       (W'.baseChange A).toJacobian.Nonsingular P := by
   rw [← RingHom.coe_coe, ← map_nonsingular P hf, AlgHom.toRingHom_eq_coe, map_baseChange]

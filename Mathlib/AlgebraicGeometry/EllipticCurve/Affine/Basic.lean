@@ -200,10 +200,10 @@ lemma evalEval_polynomialY_zero : W.polynomialY.evalEval 0 0 = W.a₃ := by
 variable (W) in
 /-- The proposition that an affine point `(x, y)` on a Weierstrass curve `W` is nonsingular.
 
-In other words, the ideal spanned by `W_X(x, y)` and `W_Y(x, y)` is the entire ring.
+In other words, the ideal spanned by `W_X(x, y)` and `W_Y(x, y)` is the entire ring `R`.
 
-Note that this definition is only mathematically accurate for certain rings whose Picard group has
-trivial 12-torsion, such as a field or a PID. -/
+Note that this definition is only mathematically accurate for certain rings `R` whose Picard group
+has trivial 12-torsion, such as a field or a PID. -/
 def Nonsingular (x y : R) : Prop :=
   W.Equation x y ∧ Ideal.span {W.polynomialX.evalEval x y, W.polynomialY.evalEval x y} = ⊤
 
@@ -242,6 +242,8 @@ lemma equation_iff_nonsingular [W.IsElliptic] (x y : R) :
     W.toAffine.Equation x y ↔ W.toAffine.Nonsingular x y :=
   W.toAffine.equation_iff_nonsingular_of_isUnit_Δ W.Δ'.isUnit
 
+@[deprecated (since := "2025-05-26")] alias equation_iff_nonsingular_of_Δ_ne_zero :=
+  equation_iff_nonsingular_of_isUnit_Δ
 @[deprecated (since := "2025-03-01")] alias nonsingular_zero_of_Δ_ne_zero :=
   equation_iff_nonsingular_of_isUnit_Δ
 @[deprecated (since := "2025-03-01")] alias nonsingular_of_Δ_ne_zero :=
@@ -275,9 +277,8 @@ lemma map_polynomialY : (W.map f).toAffine.polynomialY = W.polynomialY.map (mapR
 
 variable {x y} in
 lemma Nonsingular.map (h : W.Nonsingular x y) : (W.map f).toAffine.Nonsingular (f x) (f y) := by
-  rw [Nonsingular] at h ⊢
-  simp_rw [map_polynomialX, map_polynomialY, map_mapRingHom_evalEval, ← Set.image_pair f]
-  exact ⟨Equation.map f h.left, by rw [← Ideal.map_span, h.right, Ideal.map_top]⟩
+  simp_rw [Nonsingular, h.left.map f, true_and, map_polynomialX, map_polynomialY,
+    map_mapRingHom_evalEval, ← Set.image_pair f, ← Ideal.map_span, h.right, Ideal.map_top]
 
 variable {f} in
 lemma map_nonsingular (hf : Function.Bijective f) :
