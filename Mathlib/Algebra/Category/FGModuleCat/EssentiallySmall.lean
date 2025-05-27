@@ -16,8 +16,11 @@ recommended to use the standard `CategoryTheory.SmallModel (FGModuleCat R)` inst
 
 -/
 
-open CategoryTheory Classical
+universe u v
+
 variable (R : Type u) [CommRing R]
+
+open CategoryTheory
 
 /-- A (category-theoretically) small version of `FGModuleCat R`. This is used to prove that
 `FGModuleCat R` is essentially small. For actual use, it might be recommended to use the canonical
@@ -50,13 +53,13 @@ instance finite (x : FGModuleRepr R) : Module.Finite R x := by
 
 /-- A non-canonical representation of a finite module (as a quotient of $$R^n$$). -/
 noncomputable def ofFinite : FGModuleRepr R where
-  n := (Module.Finite.exists_fin_iso R M).choose
-  S := (Module.Finite.exists_fin_iso R M).choose_spec.choose
+  n := (Module.Finite.exists_fin_quot_equiv R M).choose
+  S := (Module.Finite.exists_fin_quot_equiv R M).choose_spec.choose
 
-/-- The non-canonical representation `of_finite` of a finite module is actually isomorphic to
+/-- The non-canonical representation `ofFinite` of a finite module is actually isomorphic to
 the given module. -/
-noncomputable def ofFiniteEquiv : of_finite R M ≃ₗ[R] M :=
-  choice (Module.Finite.exists_fin_iso R M).choose_spec.choose_spec
+noncomputable def ofFiniteEquiv : ofFinite R M ≃ₗ[R] M :=
+  Classical.choice (Module.Finite.exists_fin_quot_equiv R M).choose_spec.choose_spec
 
 instance category : Category (FGModuleRepr R) :=
   CategoryTheory.InducedCategory.category (fun x : FGModuleRepr R ↦ FGModuleCat.of R x)
@@ -71,7 +74,7 @@ def embed : FGModuleRepr R ⥤ FGModuleCat R :=
 instance : (embed R).IsEquivalence where
   faithful := (fullyFaithfulInducedFunctor _).faithful
   full := (fullyFaithfulInducedFunctor _).full
-  essSurj := ⟨fun M ↦ ⟨of_finite R M, ⟨(of_finite_iso R M).toFGModuleCatIso⟩⟩⟩
+  essSurj := ⟨fun M ↦ ⟨ofFinite R M, ⟨(ofFiniteEquiv R M).toFGModuleCatIso⟩⟩⟩
 
 end FGModuleRepr
 
