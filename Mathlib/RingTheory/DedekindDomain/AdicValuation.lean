@@ -589,7 +589,7 @@ def adicAbvDef (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :=
   fun x ↦ toNNReal (ne_zero_of_lt hb) (v.valuation K x)
 
 variable {R K} in
-lemma isNonanchimedean_adicAbvDef {b : NNReal} (hb : 1 < b) :
+lemma isNonarchimedean_adicAbvDef {b : NNReal} (hb : 1 < b) :
     IsNonarchimedean (α := K) (fun x ↦ v.adicAbvDef hb x) := by
   intro x y
   simp only [adicAbvDef]
@@ -605,12 +605,12 @@ def adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) : AbsoluteValue 
   map_mul' _ _ := by simp [adicAbvDef]
   nonneg' _ := NNReal.zero_le_coe
   eq_zero' _ := by simp [adicAbvDef]
-  add_le' _ _ := (isNonanchimedean_adicAbvDef v hb).add_le fun _ ↦ zero_le _
+  add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ zero_le _
 
 variable {R K} in
 /-- The `v`-adic absolute value is nonarchimedean -/
 theorem isNonarchimedean_adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :
-    IsNonarchimedean (α := K) (v.adicAbv hb) := isNonanchimedean_adicAbvDef v hb
+    IsNonarchimedean (α := K) (v.adicAbv hb) := isNonarchimedean_adicAbvDef v hb
 
 end AbsoluteValue
 
