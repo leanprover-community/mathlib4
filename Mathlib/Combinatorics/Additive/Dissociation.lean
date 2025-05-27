@@ -146,14 +146,14 @@ lemma exists_subset_mulSpan_card_le_of_forall_mulDissociated
       rw [prod_erase_eq_div hat, htu.2.2, div_div_self']
     rw [this]
     exact prod_div_prod_mem_mulSpan
-      ((subset_insert_iff_of_not_mem <| disjoint_left.1 htu.1 hat).1 hu) (subset_insert_iff.1 ht)
-  rw [coe_subset, subset_insert_iff_of_not_mem hat] at ht
+      ((subset_insert_iff_of_notMem <| disjoint_left.1 htu.1 hat).1 hu) (subset_insert_iff.1 ht)
+  rw [coe_subset, subset_insert_iff_of_notMem hat] at ht
   by_cases hau : a ∈ u
   · have : a = (∏ b ∈ t, b) / ∏ b ∈ u.erase a, b := by
       rw [prod_erase_eq_div hau, htu.2.2, div_div_self']
     rw [this]
     exact prod_div_prod_mem_mulSpan ht (subset_insert_iff.1 hu)
-  · rw [coe_subset, subset_insert_iff_of_not_mem hau] at hu
+  · rw [coe_subset, subset_insert_iff_of_notMem hau] at hu
     cases not_mulDissociated_iff_exists_disjoint.2 ⟨t, u, ht, hu, htu⟩ hs'.1.2
 
 end Finset

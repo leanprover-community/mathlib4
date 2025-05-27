@@ -451,8 +451,10 @@ variable [SetLike α β] (l : LowerAdjoint ((↑) : α → Set β))
 theorem subset_closure (s : Set β) : s ⊆ l s :=
   l.le_closure s
 
-theorem not_mem_of_not_mem_closure {s : Set β} {P : β} (hP : P ∉ l s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {s : Set β} {P : β} (hP : P ∉ l s) : P ∉ s := fun h =>
   hP (subset_closure _ s h)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 theorem le_iff_subset (s : Set β) (S : α) : l s ≤ S ↔ s ⊆ S :=
   l.gc s S

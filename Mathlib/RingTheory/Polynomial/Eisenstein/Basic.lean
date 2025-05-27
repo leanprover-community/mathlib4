@@ -50,7 +50,7 @@ is *Eisenstein at `𝓟`* if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree 
 structure IsEisensteinAt [CommSemiring R] (f : R[X]) (𝓟 : Ideal R) : Prop where
   leading : f.leadingCoeff ∉ 𝓟
   mem : ∀ {n}, n < f.natDegree → f.coeff n ∈ 𝓟
-  not_mem : f.coeff 0 ∉ 𝓟 ^ 2
+  notMem : f.coeff 0 ∉ 𝓟 ^ 2
 
 namespace IsWeaklyEisensteinAt
 
@@ -79,7 +79,7 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo
     (hf : f.IsWeaklyEisensteinAt (Submodule.span R {p})) : ∃ y ∈ adjoin R ({x} : Set S),
     (algebraMap R S) p * y = x ^ (f.map (algebraMap R S)).natDegree := by
   rw [aeval_def, Polynomial.eval₂_eq_eval_map, eval_eq_sum_range, range_add_one,
-    sum_insert not_mem_range_self, sum_range, (hmo.map (algebraMap R S)).coeff_natDegree,
+    sum_insert notMem_range_self, sum_range, (hmo.map (algebraMap R S)).coeff_natDegree,
     one_mul] at hx
   replace hx := eq_neg_of_add_eq_zero_left hx
   have : ∀ n < f.natDegree, p ∣ f.coeff n := by
@@ -126,7 +126,7 @@ theorem pow_natDegree_le_of_root_of_monic_mem (hf : f.IsWeaklyEisensteinAt 𝓟)
   rw [hk, pow_add]
   suffices x ^ f.natDegree ∈ 𝓟 by exact mul_mem_right (x ^ k) 𝓟 this
   rw [IsRoot.def, eval_eq_sum_range, Finset.range_add_one,
-    Finset.sum_insert Finset.not_mem_range_self, Finset.sum_range, hmo.coeff_natDegree, one_mul] at
+    Finset.sum_insert Finset.notMem_range_self, Finset.sum_range, hmo.coeff_natDegree, one_mul] at
     *
   rw [eq_neg_of_add_eq_zero_left hroot, Ideal.neg_mem_iff]
   exact Submodule.sum_mem _ fun i _ => mul_mem_right _ _ (hf.mem (Fin.is_lt i))
@@ -179,19 +179,28 @@ end ScaleRoots
 
 namespace IsEisensteinAt
 
+@[deprecated (since := "2025-05-23")] alias not_mem := notMem
+
 section CommSemiring
 
 variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
 
-theorem _root_.Polynomial.Monic.leadingCoeff_not_mem (hf : f.Monic) (h : 𝓟 ≠ ⊤) :
-    ¬f.leadingCoeff ∈ 𝓟 := hf.leadingCoeff.symm ▸ (Ideal.ne_top_iff_one _).1 h
+theorem _root_.Polynomial.Monic.leadingCoeff_notMem (hf : f.Monic) (h : 𝓟 ≠ ⊤) :
+    f.leadingCoeff ∉ 𝓟 := hf.leadingCoeff.symm ▸ (Ideal.ne_top_iff_one _).1 h
 
-theorem _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_not_mem (hf : f.Monic) (h : 𝓟 ≠ ⊤)
-    (hmem : ∀ {n}, n < f.natDegree → f.coeff n ∈ 𝓟) (hnot_mem : f.coeff 0 ∉ 𝓟 ^ 2) :
+@[deprecated (since := "2025-05-23")]
+alias _root_.Polynomial.Monic.leadingCoeff_not_mem := _root_.Polynomial.Monic.leadingCoeff_notMem
+
+theorem _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_notMem (hf : f.Monic) (h : 𝓟 ≠ ⊤)
+    (hmem : ∀ {n}, n < f.natDegree → f.coeff n ∈ 𝓟) (hnotMem : f.coeff 0 ∉ 𝓟 ^ 2) :
     f.IsEisensteinAt 𝓟 :=
-  { leading := Polynomial.Monic.leadingCoeff_not_mem hf h
+  { leading := Polynomial.Monic.leadingCoeff_notMem hf h
     mem := fun hn => hmem hn
-    not_mem := hnot_mem }
+    notMem := hnotMem }
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_not_mem :=
+  _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_notMem
 
 theorem isWeaklyEisensteinAt (hf : f.IsEisensteinAt 𝓟) : IsWeaklyEisensteinAt f 𝓟 :=
   ⟨fun h => hf.mem h⟩
@@ -213,7 +222,7 @@ then `f` is irreducible. -/
 theorem irreducible (hf : f.IsEisensteinAt 𝓟) (hprime : 𝓟.IsPrime) (hu : f.IsPrimitive)
     (hfd0 : 0 < f.natDegree) : Irreducible f :=
   irreducible_of_eisenstein_criterion hprime hf.leading (fun _ hn => hf.mem (coe_lt_degree.1 hn))
-    (natDegree_pos_iff_degree_pos.1 hfd0) hf.not_mem hu
+    (natDegree_pos_iff_degree_pos.1 hfd0) hf.notMem hu
 
 end IsDomain
 
