@@ -1398,9 +1398,15 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
                   simp [h_gamma, hm]
                   rw [← zpow_neg_one]
                   rw [zpow_add]
+              . simp [h_gamma]
 
 
-          exact []
+          have empty_prod_eq: list.unattach.prod = ([] : List E).unattach.prod := by
+            obtain ⟨m, hm⟩ := list_eq_gamma_m
+            rw [hm]
+            simp
+
+          exact ⟨[], empty_prod_eq⟩
         .
           have tail_nonempty: list.dropWhile is_gamma ≠ [] := by
             rw [not_iff_not.mpr List.takeWhile_eq_self_iff] at header_eq_full
