@@ -956,6 +956,42 @@ structure PreservesProd (T: Type*) (l h: List G) (γ: G) where
 
 set_option maxHeartbeats 500000
 
+abbrev countElemOrInv {T: Type*} [ht: Group T] [heq: DecidableEq T] (l: List T) (γ: T): ℤ := (l.map (fun s => if s = γ then 1 else if s = γ⁻¹ then -1 else 0)).sum
+abbrev isElemOrInv {T: Type*} [ht: Group T] [heq: DecidableEq T] (g: T): T → Bool := fun a => decide (a = g ∨ a = g⁻¹)
+lemma take_count_sum_eq_exp {T: Type*} [ht: Group T] [heq: DecidableEq T] (l: List G) (g: G) (hg: g ≠ g⁻¹): (l.takeWhile (isElemOrInv g)).prod = g^(countElemOrInv l g) := by
+  induction l with
+  | nil =>
+    simp [countElemOrInv]
+  | cons h t ih =>
+    rw [List.takeWhile_cons]
+    by_cases elem_or_inv: isElemOrInv g h = true
+    .
+      simp [elem_or_inv]
+      rw [ih]
+      nth_rw 2 [countElemOrInv]
+      by_cases h_eq_g: h = g
+      .
+        simp [h_eq_g]
+        rw [← zpow_one_add]
+      .
+        simp [h_eq_g] at elem_or_inv
+        simp [elem_or_inv.symm]
+        rw [elem_or_inv]
+
+        conv =>
+          lhs
+          equals g ^ (-1 + countElemOrInv t g) =>
+            rw [zpow_add]
+            simp
+        simp [hg.symm]
+    .
+      simp [elem_or_inv]
+      simp [countElemOrInv]
+      simp at elem_or_inv
+      simp [elem_or_inv.left, elem_or_inv.right]
+
+
+
 open Additive
 lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
   have gamma_one: ∃ γ: G, φ γ = 1 := by
@@ -1538,7 +1574,31 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             simp [E]
 
           have header_prod: (List.takeWhile is_gamma list).unattach.prod = γ^m := by
-            sorry
+            let prefix_len := (List.takeWhile is_gamma list).unattach.length
+            induction hlen: prefix_len generalizing list with
+            | zero =>
+              have plain_list_len: (List.takeWhile is_gamma list).length = 0 := by
+                rw [← List.length_unattach]
+                simp_rw [prefix_len] at hlen
+                exact hlen
+              rw [List.length_eq_zero_iff] at hlen
+              simp [hlen, m]
+              rw [List.length_eq_zero_iff] at plain_list_len
+              simp [plain_list_len]
+            | succ n hn =>
+
+
+            -- simp [is_gamma]
+            -- induction hm: m with
+            -- | hz =>
+            --   simp [gamma_copy] at gamma_copy_prod
+            --   have m_ge_zero: m ≥ 0 := by linarith
+            --   simp [m_ge_zero] at gamma_copy_prod
+            --   simp [m_ge_zero] at gamma_copy
+            --   simp [gamma_copy, hm] at hm
+            -- | hp => sorry
+            -- | hn => sorry
+
 
           -- 'γ^n * a * γ^(_n) * γn * tail', as a list of elements in E
           let mega_list := (gamma_copy ++ [(List.dropWhile is_gamma list)[0]] ++ gamma_copy_inv) ++ (gamma_copy ++ (list.dropWhile is_gamma).tail)
