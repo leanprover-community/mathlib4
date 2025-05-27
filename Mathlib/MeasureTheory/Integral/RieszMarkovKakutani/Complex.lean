@@ -210,6 +210,10 @@ lemma partitions_empty : partitions (∅ : Set X) = {∅} := by
   · intro hp
     simp [hp]
 
+lemma partitions_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) : partitions s₁ ⊆ partitions s₂ := by
+
+  sorry
+
 open Classical in
 /-- If each `P i` is a partition of `s i` then the union is a partition of `⋃ i, s i`. -/
 lemma partition_union {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
@@ -295,40 +299,39 @@ lemma variation_empty' : variationAux μ ∅ = 0 := by
   simp [variationAux, varOfPart, partitions_empty]
 
 omit [T2Space V] [SeminormedGroup V] in
-lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < variationAux μ s) :
+/-- VariationAux is monotone as a function of the set. -/
+lemma variationAux_monotone (s₁ s₂ : Set X) (h : s₁ ⊆ s₂) (hs₁ : MeasurableSet s₁)
+    (hs₂ : MeasurableSet s₂) : variationAux μ s₁ ≤ variationAux μ s₂ := by
+  simp only [variationAux, hs₁, reduceIte, hs₂]
+  exact iSup_le_iSup_of_subset (partitions_monotone h)
+
+omit [T2Space V] [SeminormedGroup V] in
+lemma variationAux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < variationAux μ s) :
     ∃ P ∈ partitions s, a < varOfPart μ P := by
   simp only [variationAux, hs, reduceIte] at ha
   exact lt_biSup_iff.mp ha
 
--- lemma variationAux_le' {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε) :
---     ∃ P ∈ partitions s, variationAux μ s ≤ varOfPart μ P + ε := by
---   -- This holds since `variationAux μ s` is defined as a supremum over all `P ∈ partitions s`.
---   simp only [variationAux, hs, reduceIte]
---   suffices h : ∃ P ∈ partitions s, variationAux μ s - ε ≤ varOfPart μ P by
---     dsimp [variationAux] at h
---     simp_all
---   simp only [variationAux, hs, reduceIte]
---   by_contra! hc
---   replace hc : ⨆ P ∈ variation.partitions s, variation.varOfPart μ P ≤
---       (⨆ P ∈ variation.partitions s, variation.varOfPart μ P) -  ε := by
---     refine iSup₂_le_iff.mpr ?_
---     exact fun i j ↦ le_of_lt (hc i j)
---   have := calc ⨆ P ∈ variation.partitions s, variation.varOfPart μ P
---     _ < ⨆ P ∈ variation.partitions s, variation.varOfPart μ P + ε := by
---       sorry
---     _ ≤ ⨆ P ∈ variation.partitions s, variation.varOfPart μ P := by
---       refine (toNNReal_le_toNNReal ?_ ?_).mp ?_
---       · sorry
---       · sorry
---       · sorry
---   exact (lt_self_iff_false _).mp this
+lemma variationAux_le' {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
+    (h : variationAux μ s ≠ ⊤) :
+    ∃ P ∈ partitions s, variationAux μ s ≤ varOfPart μ P + ε := by
+  obtain hw | hw : variationAux μ s ≠ 0 ∨ variationAux μ s = 0 := ne_or_eq _ _
+  · let a := variationAux μ s - ε
+    have ha : a < variationAux μ s := by
+      dsimp [a]
+      refine ENNReal.sub_lt_self h hw (by positivity)
+    obtain ⟨P, hP, hP'⟩ := variationAux_lt μ hs ha
+    refine ⟨P, hP, ?_⟩
+    dsimp [a] at hP'
+    -- search the docs
+    sorry
+  · simp_rw [hw, zero_le, and_true]
+    exact ⟨{}, by simp, by simp [hs], by simp, by simp⟩
 
 omit [T2Space V] [SeminormedGroup V] in
 lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : P ∈ partitions s) : varOfPart μ P ≤ variationAux μ s := by
   simp only [variationAux, hs, reduceIte]
   exact le_biSup (varOfPart μ) hP
-
 
 -- Similar to `norm_tsum_le_tsum_norm` and `nnnorm_tsum_le` in `Analysis/Normed/Group/InfiniteSum`.
 variable {ι E : Type*} [SeminormedAddCommGroup E]
@@ -389,6 +392,7 @@ lemma varOfPart_le_tsum {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
         · simp only [Set.bot_eq_empty, VectorMeasure.empty]
           -- Need that `‖0‖ₑ = 0` but can't see how to do this directly.
           have : ‖(0 : V)‖ₑ = 0 := by
+            -- apply enorm_zero -- doesn't work
             have := ofReal_norm_eq_enorm (0 : V)
             simp_all
           exact this
@@ -421,12 +425,12 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     wlog hn : n ≠ 0
     · simp [show n = 0 by omega]
     apply ENNReal.le_of_forall_pos_le_add
-    intro ε' hε' _
+    intro ε' hε' hsnetop
     let ε := ε' / n
     have hε : 0 < ε := by positivity
     -- For each set `s i` we choose a partition `P i` such that, for each `i`,
     -- `variationAux μ (s i) ≤ varOfPart μ (P i) + ε`.
-    choose P hP using fun i ↦ variationAux_le μ (hs i) (hε)
+    choose P hP using fun i ↦ variationAux_le' μ (hs i) (hε)
     calc ∑ i ∈ Finset.range n, variationAux μ (s i)
       _ ≤ ∑ i ∈ Finset.range n, (varOfPart μ (P i) + ε) := by
         gcongr with i hi
