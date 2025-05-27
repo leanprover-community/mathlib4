@@ -63,7 +63,21 @@ instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Cate
 /-- By `simplexIsNerve` this is isomorphic to a map of the form
 `hoFunctor.binaryProductNerveIsIso`. -/
 instance hoFunctor.binarySimplexProductIsIso (n m : ℕ) :
-    IsIso (prodComparison hoFunctor Δ[n] Δ[m]) := sorry
+    IsIso (prodComparison hoFunctor Δ[n] Δ[m]) := by
+  have := hoFunctor.binaryProductNerveIsIso (Fin (n + 1)) (Fin (m + 1))
+  have := (prodComparison_natural hoFunctor (simplexIsNerve n).hom (simplexIsNerve m).hom).symm
+  have : IsIso (hoFunctor.map (prod.map (simplexIsNerve n).hom (simplexIsNerve m).hom)) := by
+    infer_instance
+  have : IsIso
+    (prod.map (hoFunctor.map (simplexIsNerve n).hom) (hoFunctor.map (simplexIsNerve m).hom)) := by
+    infer_instance
+  have : IsIso (hoFunctor.map (prod.map (simplexIsNerve n).hom (simplexIsNerve m).hom) ≫
+    prodComparison hoFunctor (nerve (Fin (n + 1))) (nerve (Fin (m + 1)))) := inferInstance
+  -- WHY DOES THIS FAIL?
+  -- exact IsIso.of_isIso_fac_right
+  --  (g := (prod.map (hoFunctor.map (simplexIsNerve n).hom)(hoFunctor.map (simplexIsNerve m).hom)))
+  --   (prodComparison_natural hoFunctor (simplexIsNerve n).hom (simplexIsNerve m).hom).symm
+  sorry
 
 /-- Modulo composing with a symmetry on both ends, the natural transformation
 `prodComparisonNatTrans hofunctor Δ[m]` is a natural transformation between cocontinuous
