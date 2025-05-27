@@ -1651,10 +1651,19 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
 
-
+          -- Show that the list (rewritten in terms of `γ^m * e_i * γ^(-m)` terms) is in the kernel of φ
+          have mega_list_kernel: φ (ofMul mega_list.unattach.prod) = 0 := by
+            simp
+            rw [AddMonoidHom.map_list_sum]
+            apply List.sum_eq_zero
+            intro x hx
+            simp at hx
+            obtain ⟨a, ⟨a_mem_e, a_mem_list⟩, phi_a⟩ := hx
 
           have sum_new_zero: gamma_sum mega_list = 0 := by
             sorry
+
+
 
           have sublist_sum_zero: gamma_sum (gamma_copy ++ (List.dropWhile is_gamma list).tail) = 0 := by
             unfold mega_list at sum_new_zero
@@ -1673,7 +1682,33 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           --   rw [← rest_eq]
           -- )⟩] = 0 := by
           --   sorry
-          use (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_sum_zero)
+
+          have sublist_prod_preserve: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_sum_zero).unattach.prod = (gamma_copy ++ (list.dropWhile is_gamma).tail).unattach.prod := by
+            sorry
+
+          let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_sum_zero)
+
+
+          have mega_list_prod_preserve: mega_list.unattach.prod = return_list.unattach.prod := by
+            unfold mega_list return_list
+            simp
+            rw [gamma_copy_prod]
+            rw [gamma_copy_inv_prod]
+            simp
+            rw [sublist_prod_preserve]
+            simp
+            rw [gamma_copy_prod]
+            conv =>
+              rhs
+              rw [mul_assoc]
+              rhs
+              rw [← mul_assoc]
+              simp
+            rw [mul_assoc]
+
+
+
+          use (
 
       sorry
 
