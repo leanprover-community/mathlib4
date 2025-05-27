@@ -312,19 +312,23 @@ lemma variationAux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : 
   simp only [variationAux, hs, reduceIte] at ha
   exact lt_biSup_iff.mp ha
 
+omit [T2Space V] [SeminormedGroup V] in
 lemma variationAux_le' {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
-    (h : variationAux μ s ≠ ⊤) :
+    (hε' : ε ≤ variationAux μ s) (h : variationAux μ s ≠ ⊤) :
     ∃ P ∈ partitions s, variationAux μ s ≤ varOfPart μ P + ε := by
   obtain hw | hw : variationAux μ s ≠ 0 ∨ variationAux μ s = 0 := ne_or_eq _ _
   · let a := variationAux μ s - ε
     have ha : a < variationAux μ s := by
       dsimp [a]
       refine ENNReal.sub_lt_self h hw (by positivity)
+    have ha' : variationAux μ s = a + ε := by
+      exact Eq.symm (tsub_add_cancel_of_le hε')
     obtain ⟨P, hP, hP'⟩ := variationAux_lt μ hs ha
     refine ⟨P, hP, ?_⟩
-    dsimp [a] at hP'
-    -- search the docs
-    sorry
+    calc variationAux μ s
+      _ = a + ε := ha'
+      _ ≤ variation.varOfPart μ P + ε := by
+        refine (ENNReal.add_le_add_iff_right coe_ne_top).mpr (le_of_lt hP')
   · simp_rw [hw, zero_le, and_true]
     exact ⟨{}, by simp, by simp [hs], by simp, by simp⟩
 
@@ -435,7 +439,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
       exact lt_top_iff_ne_top.mp <| lt_of_le_of_lt this hsnetop
     -- For each set `s i` we choose a partition `P i` such that, for each `i`,
     -- `variationAux μ (s i) ≤ varOfPart μ (P i) + ε`.
-    choose P hP using fun i ↦ variationAux_le' μ (hs i) (hε) (hs'' i)
+    choose P hP using fun i ↦ variationAux_le' μ (hs i) (hε) (sorry) (hs'' i)
     calc ∑ i ∈ Finset.range n, variationAux μ (s i)
       _ ≤ ∑ i ∈ Finset.range n, (varOfPart μ (P i) + ε) := by
         gcongr with i hi
