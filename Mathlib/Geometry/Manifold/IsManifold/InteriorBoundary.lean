@@ -76,7 +76,8 @@ variable (M) in
 /-- The **interior** of a manifold `M` is the set of its interior points. -/
 protected def interior : Set M := { x : M | I.IsInteriorPoint x }
 
-protected lemma mem_interior {x : M} : x ∈ ModelWithCorners.interior I M ↔ I.IsInteriorPoint x :=
+protected lemma mem_interior {x : M} :
+    x ∈ ModelWithCorners.interior (I := I) M ↔ I.IsInteriorPoint x :=
   mem_setOf
 
 lemma isInteriorPoint_iff {x : M} :
