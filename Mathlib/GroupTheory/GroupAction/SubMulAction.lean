@@ -211,7 +211,7 @@ theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs
 instance : Bot (SubMulAction R M) where
   bot :=
     { carrier := ∅
-      smul_mem' := fun _c h => Set.not_mem_empty h }
+      smul_mem' := fun _c h => Set.notMem_empty h }
 
 @[to_additive]
 instance : Inhabited (SubMulAction R M) :=
@@ -408,12 +408,9 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
   exact stabilizer_of_subMul.submonoid m
 
 /-- SubMulAction on the complement of an invariant subset -/
-@[to_additive]
+@[to_additive "SubAddAction on the complement of an invariant subset"]
 instance : HasCompl (SubMulAction R M) where
-  compl := fun s ↦ {
-    carrier := sᶜ
-    smul_mem' := fun g x ↦ by
-      simp only [SetLike.mem_coe, Set.mem_compl_iff, SubMulAction.smul_mem_iff', imp_self] }
+  compl s := ⟨sᶜ, by simp⟩
 
 @[to_additive]
 theorem compl_def (s : SubMulAction R M) :

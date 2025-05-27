@@ -16,7 +16,7 @@ This file defines the *adjoint action* of a Lie algebra on itself, and establish
 
 - `LieDerivation.ad`: The adjoint action of a Lie algebra `L` on itself, seen as a morphism of Lie
 algebras from `L` to the Lie algebra of its derivations. The adjoint action is also defined in the
-`Mathlib.Algebra.Lie.OfAssociative.lean` file, under the name `LieAlgebra.ad`, as the morphism with
+`Mathlib/Algebra/Lie/OfAssociative.lean` file, under the name `LieAlgebra.ad`, as the morphism with
 values in the endormophisms of `L`.
 
 ## Main statements
