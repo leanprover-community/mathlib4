@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
 import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.PolynomialAlgebra
 import Mathlib.RingTheory.Spectrum.Prime.RingHom
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Krull dimension of polynomial ring
@@ -175,11 +175,6 @@ noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (R S : Type*)
     erw [Ideal.comap_comap, Ideal.comap_comap]
     simp
 
-lemma IsDomain.minimalPrimes_eq_singleton_bot (R : Type*) [CommRing R] [IsDomain R] :
-    minimalPrimes R = {⊥} := by
-  have := Ideal.bot_prime (α := R)
-  exact Ideal.minimalPrimes_eq_subsingleton_self
-
 instance IsPrincipalIdealRing.KrullDimLE_one (R : Type*) [CommRing R] [IsDomain R]
     [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by
   rw [Ring.krullDimLE_one_iff]
@@ -197,5 +192,3 @@ theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
       ← ringKrullDim_eq_of_ringEquiv (polyEquivTensor R (p.asIdeal.ResidueField)).toRingEquiv,
       ← Ring.KrullDimLE_iff_ringKrullDim_le]
     infer_instance
-
--- #min_imports
