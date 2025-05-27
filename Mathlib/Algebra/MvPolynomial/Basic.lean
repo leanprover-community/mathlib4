@@ -544,6 +544,11 @@ theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p * q).support ⊆ p.support + q.support :=
   AddMonoidAlgebra.support_mul p q
 
+lemma disjoint_support_monomial {a : σ →₀ ℕ} {p : MvPolynomial σ R} {s : R}
+    (ha : a ∉ p.support) (hs : s ≠ 0) : Disjoint (monomial a s).support p.support := by
+  classical
+  simpa [support_monomial, hs] using notMem_support_iff.mp ha
+
 @[ext]
 theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q :=
   Finsupp.ext
@@ -830,6 +835,43 @@ lemma zero_notMem_coeffs (p : MvPolynomial σ R) : 0 ∉ p.coeffs := by
 
 @[deprecated (since := "2025-05-23")] alias zero_not_mem_coeffs := zero_notMem_coeffs
 
+lemma coeffs_C [DecidableEq R] (r : R) : (C (σ := σ) r).coeffs = if r = 0 then ∅ else {r} := by
+  classical
+  aesop (add simp mem_coeffs_iff)
+
+lemma coeffs_C_subset (r : R) : (C (σ := σ) r).coeffs ⊆ {r} := by
+  classical
+  rw [coeffs_C]
+  split <;> simp
+
+@[simp]
+lemma coeffs_mul_X (p : MvPolynomial σ R) (n : σ) : (p * X n).coeffs = p.coeffs := by
+  classical
+  aesop (add simp mem_coeffs_iff)
+
+@[simp]
+lemma coeffs_X_mul (p : MvPolynomial σ R) (n : σ) : (X n * p).coeffs = p.coeffs := by
+  classical
+  aesop (add simp mem_coeffs_iff)
+
+lemma coeffs_add [DecidableEq R] {p q : MvPolynomial σ R} (h : Disjoint p.support q.support) :
+    (p + q).coeffs = p.coeffs ∪ q.coeffs := by
+  ext r
+  simp only [mem_coeffs_iff, mem_support_iff, coeff_add, ne_eq, Finset.mem_union]
+  have hl (n : σ →₀ ℕ) (hne : p.coeff n ≠ 0) : q.coeff n = 0 :=
+    notMem_support_iff.mp <| h.notMem_of_mem_left_finset (mem_support_iff.mpr hne)
+  have hr (n : σ →₀ ℕ) (hne : q.coeff n ≠ 0) : p.coeff n = 0 :=
+    notMem_support_iff.mp <| h.notMem_of_mem_right_finset (mem_support_iff.mpr hne)
+  have hor (n) (h : ¬coeff n p + coeff n q = 0) : coeff n p ≠ 0 ∨ coeff n q ≠ 0 := by
+    by_cases hp : coeff n p = 0 <;> aesop
+  refine ⟨fun ⟨n, hn1, hn2⟩ ↦ ?_, ?_⟩
+  · obtain (h|h) := hor n hn1
+    · exact Or.inl ⟨n, by simp [h, hn2, hl n h]⟩
+    · exact Or.inr ⟨n, by simp [h, hn2, hr n h]⟩
+  · rintro (⟨n, hn, rfl⟩|⟨n, hn, rfl⟩)
+    · exact ⟨n, by simp [hl n hn, hn]⟩
+    · exact ⟨n, by simp [hr n hn, hn]⟩
+
 end Coeff
 
 section ConstantCoeff
@@ -957,6 +999,14 @@ lemma coeffsIn_le {N : Submodule R (MvPolynomial σ S)} :
     coeffsIn σ M ≤ N ↔ ∀ m ∈ M, ∀ i, monomial i m ∈ N := by
   simp [coeffsIn_eq_span_monomial, Submodule.span_le, Set.subset_def,
     forall_swap (α := MvPolynomial σ S)]
+
+lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S) ⊆ M := by
+  simp only [mem_coeffsIn, coeffs, Finset.coe_image, image_subset_iff]
+  refine ⟨fun h x _ ↦ h x, fun h i ↦ ?_⟩
+  by_cases hp : i ∈ p.support
+  · exact h hp
+  · convert M.zero_mem
+    simpa using hp
 
 end Module
 
