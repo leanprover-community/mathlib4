@@ -613,6 +613,12 @@ theorem conj_trans (e₁ : M ≃ₗ[R] M₂) (e₂ : M₂ ≃ₗ[R] M₃) :
     e₁.conj.trans e₂.conj = (e₁.trans e₂).conj :=
   rfl
 
+@[simp] lemma conj_conj_symm (e : M ≃ₗ[R] M₂) (f : Module.End R M₂) :
+    e.conj (e.symm.conj f) = f := by ext; simp [conj_apply]
+
+@[simp] lemma conj_symm_conj (e : M ≃ₗ[R] M₂) (f : Module.End R M) :
+    e.symm.conj (e.conj f) = f := by ext; simp [conj_apply]
+
 @[simp]
 theorem conj_id (e : M ≃ₗ[R] M₂) : e.conj LinearMap.id = LinearMap.id := by
   ext
