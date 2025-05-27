@@ -56,7 +56,7 @@ protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
 /-- A recursor for `WithLp p V`, that reduces to the underlying space `V`.
 
-This unfortunately cannot be registed with `cases_eliminator`, but it can still be used as
+This unfortunately cannot be registered with `cases_eliminator`, but it can still be used as
 `cases v using WithLp.rec with | toLp v =>`. -/
 @[elab_as_elim]
 protected def rec {motive : WithLp p V → Sort*}
