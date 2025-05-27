@@ -21,7 +21,7 @@ theorem PNat.prime_eleven : (11 : ℕ+).Prime :=
 instance Nat.fact_prime_eleven : Fact (Nat.Prime 11) :=
   ⟨prime_eleven⟩
 
-instance PNat.fact_prime_seven : Fact (11 : ℕ+).Prime :=
+instance PNat.fact_prime_eleven : Fact (11 : ℕ+).Prime :=
   ⟨prime_eleven⟩
 
 lemma crazy11 : ⌊(4 / π) ^ 5 * (10! / 10 ^ 10 * √2357947691)⌋₊ = 58 := by

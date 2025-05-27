@@ -113,7 +113,7 @@ theorem blah : (normalizedFactors (cyclotomic n K)).toFinset.card =
   have : ∀ P ∈ normalizedFactors (cyclotomic n K), P.natDegree = orderOf (unitOfCoprime _ hn) :=
     fun P hP ↦ boh hK hn hP
   have H := natDegree_eq_of_degree_eq <| degree_eq_degree_of_associated h
-  rw [natDegree_cyclotomic, natDegree_multiset_prod _ (zero_not_mem_normalizedFactors _),
+  rw [natDegree_cyclotomic, natDegree_multiset_prod _ (zero_notMem_normalizedFactors _),
     map_congr rfl this] at H
   simp only [map_const', sum_replicate, smul_eq_mul] at H
   rw [← H, mul_div_left _ (orderOf_pos _), toFinset_card_of_nodup]

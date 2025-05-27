@@ -186,7 +186,7 @@ theorem Ideal.inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ 
     contrapose! hQ
     rw [hQ]
     simp only [Finset.mem_coe, Multiset.mem_toFinset]
-    exact zero_not_mem_normalizedFactors _
+    exact zero_notMem_normalizedFactors _
   rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span, inertiaDeg_algebraMap,
     ← finrank_quotient_span_eq_natDegree hQ']
   refine Algebra.finrank_eq_of_equiv_equiv (Int.quotientSpanNatEquivZMod p) ?_ ?_
