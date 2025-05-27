@@ -106,10 +106,8 @@ noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (R S : Type*)
       PrimeSpectrum (TensorProduct R p.asIdeal.ResidueField S) := OrderIso.symm <| by
   letI : Algebra S (TensorProduct R (Localization.AtPrime p.asIdeal) S) :=
     Algebra.TensorProduct.rightAlgebra
-  have : IsLocalization (Algebra.algebraMapSubmonoid S p.asIdeal.primeCompl)
-    (TensorProduct R (Localization.AtPrime p.asIdeal) S) := inferInstance
-  let f1 : S →ₐ[R] (TensorProduct R (Localization.AtPrime p.asIdeal) S) :=
-    Algebra.TensorProduct.includeRight
+  let f1 : S →+* (TensorProduct R (Localization.AtPrime p.asIdeal) S) :=
+    Algebra.TensorProduct.includeRight.toRingHom
   let f2r := Algebra.algHom R (Localization.AtPrime p.asIdeal) p.asIdeal.ResidueField
   let f2 : (TensorProduct R (Localization.AtPrime p.asIdeal) S) →ₐ[R]
     (TensorProduct R (p.asIdeal.ResidueField) S) := Algebra.TensorProduct.map
@@ -137,13 +135,12 @@ noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (R S : Type*)
     simp only [AlgHom.toRingHom_eq_coe, RelEmbedding.coe_trans, OrderEmbedding.coe_ofMapLEIff,
       Function.comp_apply, f2', f1', ← specComap_comp]
     let f3 : R →+* p.asIdeal.ResidueField := algebraMap _ _
-    let f4 : p.asIdeal.ResidueField →ₐ[R] TensorProduct R (p.asIdeal.ResidueField) S :=
-      Algebra.TensorProduct.includeLeft
-    have : ((RingHomClass.toRingHom f2).comp ((RingHomClass.toRingHom f1))).comp (algebraMap R S) =
-      f4.toRingHom.comp f3 := by
-      show ((RingHomClass.toRingHom f2).comp ((RingHomClass.toRingHom f1))).comp (algebraMap R S) =
+    let f4 : p.asIdeal.ResidueField →+* TensorProduct R (p.asIdeal.ResidueField) S :=
+      Algebra.TensorProduct.includeLeftRingHom
+    have : ((RingHomClass.toRingHom f2).comp f1).comp (algebraMap R S) = f4.comp f3 := by
+      show ((RingHomClass.toRingHom f2).comp f1).comp (algebraMap R S) =
         Algebra.TensorProduct.includeLeftRingHom.comp (algebraMap R (p.asIdeal.ResidueField))
-      rw [@Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap]
+      rw [Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap]
       rfl
     simp only [this, specComap_comp, f3]
     apply subset_trans (Set.range_comp_subset_range _ _)
@@ -164,19 +161,20 @@ noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (R S : Type*)
         rw [hq]
     let q' := iso ⟨q, ⟨hqp, hq'⟩⟩
     refine ⟨⟨q'.val, q'.prop⟩, ?_, congr($(iso.left_inv ⟨q, ⟨hqp, hq'⟩⟩).val)⟩
-    have aux1 : RingHom.ker (RingHomClass.toRingHom (Algebra.TensorProduct.map f2r (AlgHom.id R S)))
-      = Ideal.map Algebra.TensorProduct.includeLeft (RingHom.ker f2r) :=
-        Algebra.TensorProduct.rTensor_ker (C := S) f2r hf2r_surj
+    have aux1 : RingHom.ker (RingHomClass.toRingHom f2) =
+      Ideal.map Algebra.TensorProduct.includeLeft (RingHom.ker f2r) :=
+        Algebra.TensorProduct.rTensor_ker f2r hf2r_surj
     have aux2 : RingHom.ker f2r = IsLocalRing.maximalIdeal (Localization.AtPrime p.asIdeal) :=
       Ideal.Quotient.mkₐ_ker R _
     rw [aux1, aux2]
     apply Ideal.map_le_of_le_comap <| le_of_eq <| Eq.symm <|
       Localization.AtPrime.eq_maximalIdeal_iff_comap_eq _
-    have aux3 : Ideal.comap Algebra.TensorProduct.includeRight q'.val = q := by
-      exact congr($(iso.left_inv ⟨q, ⟨hqp, hq'⟩⟩).val)
+    have aux3 : Ideal.comap Algebra.TensorProduct.includeRight q'.val = q :=
+      congr($(iso.left_inv ⟨q, ⟨hqp, hq'⟩⟩).val)
     conv_rhs => rw [← hq, ← aux3]
-    erw [Ideal.comap_comap, Ideal.comap_comap]
-    simp
+    nth_rw 2 [← Ideal.comap_coe]
+    nth_rw 4 [← Ideal.comap_coe]
+    simp [Ideal.comap_comap]
 
 instance IsPrincipalIdealRing.KrullDimLE_one (R : Type*) [CommRing R] [IsDomain R]
     [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by
