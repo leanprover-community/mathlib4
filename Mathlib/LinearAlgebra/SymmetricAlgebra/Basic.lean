@@ -109,7 +109,8 @@ theorem algHom_ext {F G : SymmetricAlgebra R M →ₐ[R] A}
 lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
   apply algHom_ext
   rw [lift_comp_ι]
-  rfl
+  ext
+  simp
 
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=
