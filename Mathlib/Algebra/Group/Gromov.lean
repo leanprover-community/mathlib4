@@ -1405,6 +1405,10 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             obtain ⟨m, hm⟩ := list_eq_gamma_m
             rw [hm]
             simp
+            rw [hm] at hlist
+            simp at hlist
+            simp [phi_ofmul] at hlist
+            simp [hlist]
 
           exact ⟨[], empty_prod_eq⟩
         .
