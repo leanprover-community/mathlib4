@@ -993,11 +993,12 @@ lemma take_count_sum_eq_exp {T: Type*} [ht: Group T] [heq: DecidableEq T] {E: Se
       have hl_right := hl.2 val (by simp) (by simp [hval])
       exact hl_right
 
-
-
-
-
 open Additive
+
+def e_i_regular_helper (φ: (Additive G) →+ ℤ) (γ: G) (s: S): G := (ofMul s.val) +  ((-1 : ℤ) • (φ (ofMul s.val))) • (ofMul (γ))
+
+def E_helper (φ: (Additive G) →+ ℤ) (γ: G) := {γ, γ⁻¹} ∪ Set.range (ι := S) (e_i_regular_helper φ γ)
+
 lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
   have gamma_one: ∃ γ: G, φ γ = 1 := by
     exact hφ 1
@@ -1801,7 +1802,9 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
           exact ⟨return_list, return_list_prod⟩
-      --termination_by list => list.countP (fun (k: E) => k ∈ Set.range e_i_regular) list
+      termination_by list.countP (fun (k : E_helper φ γ) => decide (k.val ∈ Set.range (e_i_regular_helper (G := G) φ γ)))
+      decreasing_by sorry
+      --let a := rewrite_list [] (by sorry)
       sorry
   sorry
 -- Decompose list of {e_k, γ}:
