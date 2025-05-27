@@ -1364,7 +1364,8 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
       -- TODO: where do we add this? (hsum: gamma_sum list = 0)
-      let rec rewrite_list (list: List (E)) (hlist: φ (ofMul list.unattach.prod) = 0) : { t: List ((Set.range (Function.uncurry gamma_m))) // list.unattach.prod = t.unattach.prod } := by
+      let rec rewrite_list: (list: List (E)) →  (hlist: φ (ofMul list.unattach.prod) = 0) → { t: List ((Set.range (Function.uncurry gamma_m))) // list.unattach.prod = t.unattach.prod } := by
+        intro list hlist
         let is_gamma: E → Bool := fun (k: E) => k = γ ∨ k = γ⁻¹
         let is_gamma_prop: E → Prop := fun (k: E) => k = γ ∨ k = γ⁻¹
         have eq_split: list = list.takeWhile is_gamma ++ list.dropWhile is_gamma := by
@@ -1587,6 +1588,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             use s
             use s_mem
             rw [← rest_eq]
+            sorry
 
           have gamma_copy_prod: gamma_copy.unattach.prod = γ^m := by
             simp [gamma_copy]
@@ -1799,7 +1801,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
           exact ⟨return_list, return_list_prod⟩
-
+      --termination_by list => list.countP (fun (k: E) => k ∈ Set.range e_i_regular) list
       sorry
   sorry
 -- Decompose list of {e_k, γ}:
