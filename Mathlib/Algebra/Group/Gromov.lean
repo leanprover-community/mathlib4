@@ -1369,7 +1369,9 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             rw [← not_iff_not.mpr List.dropWhile_eq_nil_iff] at header_eq_full
             exact header_eq_full
           have list_nonempty: 0 < list.length := by
-            sorry
+            rw [List.length_pos_iff]
+            apply List.IsSuffix.ne_nil (xs := list.dropWhile is_gamma) (List.dropWhile_suffix _) tail_nonempty
+
           have dropwhile_len_gt: 0 < (list.dropWhile is_gamma).length := by
             exact List.length_pos_iff.mpr tail_nonempty
           have not_is_gamma := List.dropWhile_get_zero_not is_gamma list dropwhile_len_gt
