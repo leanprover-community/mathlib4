@@ -77,7 +77,7 @@ theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
   constructor
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp [Subtype.mk_eq_mk]; exact hxy
-  · exact fun x ↦ ⟨⟨x, (mem_ofFixingSubgroup_iff M).mp (Set.not_mem_empty x)⟩, rfl⟩
+  · exact fun x ↦ ⟨⟨x, (mem_ofFixingSubgroup_iff M).mp (Set.notMem_empty x)⟩, rfl⟩
 
 @[to_additive]
 theorem of_fixingSubgroupEmpty_mapScalars_surjective :
