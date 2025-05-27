@@ -1720,9 +1720,8 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             exact hlist
 
 
-
-
-          let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_phi_zero)
+          let rewritten_sub_list := (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_phi_zero)
+          let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: rewritten_sub_list.val
 
           -- Show that the list (rewritten in terms of `γ^m * e_i * γ^(-m)` terms) is in the kernel of φ
           have return_list_kernel: φ (ofMul return_list.unattach.prod) = 0 := by
@@ -1738,8 +1737,8 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
 
-          have sublist_prod_preserve: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail)).unattach.prod = (gamma_copy ++ (list.dropWhile is_gamma).tail).unattach.prod := by
-            sorry
+          have sublist_prod_preserve: rewritten_sub_list.val.unattach.prod = (gamma_copy ++ (list.dropWhile is_gamma).tail).unattach.prod := by
+            rw [← rewritten_sub_list.property]
 
 
 
@@ -1749,7 +1748,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             rw [gamma_copy_prod]
             rw [gamma_copy_inv_prod]
             simp
-            rw [sublist_prod_preserve]
+            rw [← rewritten_sub_list.property]
             simp
             rw [gamma_copy_prod]
             conv =>
