@@ -125,7 +125,7 @@ theorem isMultiplyPreprimitive_ofStabilizer
       have : IsPreprimitive ↥(fixingSubgroup M (insert a (Subtype.val '' s)))
         ↥(ofFixingSubgroup M (insert a (Subtype.val '' s))) := by
         apply IsMultiplyPreprimitive.isPreprimitive_ofFixingSubgroup M n.succ
-        rw [Set.encard_insert_of_not_mem, Subtype.coe_injective.encard_image, hs, Nat.cast_succ]
+        rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, hs, Nat.cast_succ]
         aesop
       exact IsPreprimitive.of_surjective
         (ofFixingSubgroup_insert_map_bijective M a s).surjective }
@@ -174,7 +174,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
         apply congr_arg₂ _ _ rfl
         rw [show s = g⁻¹ • s' from by ext; simp [hs'],
           ← Set.image_smul, (MulAction.injective g⁻¹).encard_image, hst]
-        rw [Set.encard_insert_of_not_mem, Subtype.coe_injective.encard_image, ENat.coe_one]
+        rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.coe_one]
         -- a ∉ Subtype.val '' t -- make it a general lemma ?
         rintro ⟨b, hb⟩; exact b.prop (by simp [hb]) }
 
