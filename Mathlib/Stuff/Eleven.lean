@@ -4,6 +4,7 @@ import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.Tactic
 import Mathlib.Stuff.Factorization
 import Mathlib.Stuff.Cyclotomic
+import Mathlib.Stuff.OrderOf
 
 set_option linter.style.header false
 
@@ -54,138 +55,20 @@ theorem cyclotomic_11 : cyclotomic ((11 : ℕ+) : ℕ) ℤ =
   simp [cyclotomic_prime, sum_range_succ]
   ring
 
-set_option maxHeartbeats 0 in
 set_option linter.style.maxHeartbeats false in
 set_option linter.style.longLine false in
 set_option linter.unusedTactic false in
 set_option linter.unreachableTactic false in
 set_option linter.unnecessarySeqFocus false in
 theorem pid11 : IsPrincipalIdealRing (𝓞 K) := by
-  apply IsCyclotomicExtension.Rat.pid4 11
+  apply IsCyclotomicExtension.Rat.pid6 11
   rw [M11, cyclotomic_11]
   intro p hple hp hpn
   fin_cases hple; any_goals norm_num at hp
   on_goal 5 => simp at hpn
-  · let P : ℤ[X] := X^10 + X^9 + X^8 + X^7 + X^6 + X^5 + X^4 + X^3 + X^2 + X + 1; let d := 10
-    let Q : ℤ[X] := 1
-    let A : ℤ[X] := 0
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^5 + 2*X^3 + X^2 + 2*X + 2; let d := 5
-    let Q : ℤ[X] := X^5 + X^4 + 2*X^3 + X^2 + 2
-    let A : ℤ[X] := -X^8 - X^7 - 2*X^6 - 3*X^5 - 2*X^4 - 3*X^3 - X^2 - X - 1
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^5 + 2*X^4 + 4*X^3 + X^2 + X + 4; let d := 5
-    let Q : ℤ[X] := X^5 + 4*X^4 + 4*X^3 + X^2 + 3*X + 4
-    let A : ℤ[X] := -X^9 - 3*X^8 - 5*X^7 - 5*X^6 - 5*X^5 - 8*X^4 - 7*X^3 - 2*X^2 - 3*X - 3
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^10 + X^9 + X^8 + X^7 + X^6 + X^5 + X^4 + X^3 + X^2 + X + 1; let d := 10
-    let Q : ℤ[X] := 1
-    let A : ℤ[X] := 0
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^10 + X^9 + X^8 + X^7 + X^6 + X^5 + X^4 + X^3 + X^2 + X + 1; let d := 10
-    let Q : ℤ[X] := 1
-    let A : ℤ[X] := 0
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^10 + X^9 + X^8 + X^7 + X^6 + X^5 + X^4 + X^3 + X^2 + X + 1; let d := 10
-    let Q : ℤ[X] := 1
-    let A : ℤ[X] := 0
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^10 + X^9 + X^8 + X^7 + X^6 + X^5 + X^4 + X^3 + X^2 + X + 1; let d := 10
-    let Q : ℤ[X] := 1
-    let A : ℤ[X] := 0
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X + 5; let d := 1
+  on_goal 8 =>
+    right
+    let P : ℤ[X] := X + 5; let d := 1
     let Q : ℤ[X] := X^9 + 19*X^8 + 21*X^7 + 11*X^6 + 15*X^5 + 18*X^4 + 3*X^3 + 9*X^2 + 2*X + 14
     let A : ℤ[X] := -X^9 - 5*X^8 - 5*X^7 - 3*X^6 - 4*X^5 - 4*X^4 - X^3 - 2*X^2 - X - 3
     use P, Q, A
@@ -200,125 +83,8 @@ theorem pid11 : IsPrincipalIdealRing (𝓞 K) := by
       fin_cases this <;> decide +revert
     · simp
       ring
-    · right
-      simp
+    · simp
       refine ⟨?_, ?_, ?_⟩ <;> ring
-  · let P : ℤ[X] := X^10 + X^9 + X^8 + X^7 + X^6 + X^5 + X^4 + X^3 + X^2 + X + 1; let d := 10
-    let Q : ℤ[X] := 1
-    let A : ℤ[X] := 0
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^5 + 10*X^4 + 30*X^3 + X^2 + 9*X + 30; let d := 5
-    let Q : ℤ[X] := X^5 + 22*X^4 + 30*X^3 + X^2 + 21*X + 30
-    let A : ℤ[X] := -X^9 - 9*X^8 - 31*X^7 - 31*X^6 - 17*X^5 - 60*X^4 - 59*X^3 - 8*X^2 - 29*X - 29
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^5 + 14*X^4 + 36*X^3 + X^2 + 13*X + 36; let d := 5
-    let Q : ℤ[X] := X^5 + 24*X^4 + 36*X^3 + X^2 + 23*X + 36
-    let A : ℤ[X] := -X^9 - 11*X^8 - 37*X^7 - 37*X^6 - 21*X^5 - 72*X^4 - 71*X^3 - 10*X^2 - 35*X - 35
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^10 + X^9 + X^8 + X^7 + X^6 + X^5 + X^4 + X^3 + X^2 + X + 1; let d := 10
-    let Q : ℤ[X] := 1
-    let A : ℤ[X] := 0
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^2 + 7*X + 1; let d := 2
-    let Q : ℤ[X] := X^8 + 37*X^7 + 42*X^6 + 14*X^5 + 33*X^4 + 14*X^3 + 42*X^2 + 37*X + 1
-    let A : ℤ[X] := -X^9 - 7*X^8 - 8*X^7 - 4*X^6 - 6*X^5 - 4*X^4 - 8*X^3 - 7*X^2 - X
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^5 + 21*X^4 + 46*X^3 + X^2 + 20*X + 46; let d := 5
-    let Q : ℤ[X] := X^5 + 27*X^4 + 46*X^3 + X^2 + 26*X + 46
-    let A : ℤ[X] := -X^9 - 14*X^8 - 47*X^7 - 47*X^6 - 27*X^5 - 92*X^4 - 91*X^3 - 13*X^2 - 45*X - 45
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X^5 + 13*X^4 + 52*X^3 + X^2 + 12*X + 52; let d := 5
-    let Q : ℤ[X] := X^5 + 41*X^4 + 52*X^3 + X^2 + 40*X + 52
-    let A : ℤ[X] := -X^9 - 12*X^8 - 53*X^7 - 53*X^6 - 23*X^5 - 104*X^4 - 103*X^3 - 11*X^2 - 51*X - 51
-    use P, Q, A
-    use 0, 0, 0
-    use 0, 0
-    use 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp
-      ring
-    · left
-      norm_num
+  all_goals {
+    left; simp; norm_num; refine orderOf_lt_of (by norm_num) (fun i hi hipos ↦ ?_)
+    have := Finset.mem_Icc.mpr ⟨hipos, hi⟩; fin_cases this <;> norm_num }
