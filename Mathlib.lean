@@ -1137,6 +1137,7 @@ import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.GluingOneHypercover
 import Mathlib.AlgebraicGeometry.IdealSheaf
 import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
+import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Modules.Presheaf
@@ -1384,6 +1385,9 @@ import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Congr
+import Mathlib.Analysis.Calculus.FDeriv.Const
+import Mathlib.Analysis.Calculus.FDeriv.Defs
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.Extend
 import Mathlib.Analysis.Calculus.FDeriv.Linear
@@ -1886,6 +1890,7 @@ import Mathlib.CategoryTheory.Adjunction.Lifting.Right
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Parametrized
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
@@ -2687,6 +2692,7 @@ import Mathlib.Combinatorics.SimpleGraph.Ends.Properties
 import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
+import Mathlib.Combinatorics.SimpleGraph.FiveWheelLike
 import Mathlib.Combinatorics.SimpleGraph.Girth
 import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 import Mathlib.Combinatorics.SimpleGraph.Hasse
@@ -4875,6 +4881,7 @@ import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
 import Mathlib.Order.UpperLower.Principal
 import Mathlib.Order.UpperLower.Prod
+import Mathlib.Order.UpperLower.Relative
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WellQuasiOrder
@@ -5041,6 +5048,7 @@ import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.CotangentLocalizationAway
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.DedekindDomain.Different
@@ -5070,6 +5078,7 @@ import Mathlib.RingTheory.Etale.Field
 import Mathlib.RingTheory.Etale.Kaehler
 import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.EuclideanDomain
+import Mathlib.RingTheory.Extension
 import Mathlib.RingTheory.Extension.Basic
 import Mathlib.RingTheory.Extension.Cotangent.Basic
 import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
@@ -5112,6 +5121,7 @@ import Mathlib.RingTheory.FractionalIdeal.Operations
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Frobenius
+import Mathlib.RingTheory.Generators
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.FiniteType
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
@@ -5134,6 +5144,7 @@ import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.Ideal.BigOperators
@@ -5181,6 +5192,8 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Invariant
+import Mathlib.RingTheory.Invariant.Basic
+import Mathlib.RingTheory.Invariant.Profinite
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.IsPrimary
 import Mathlib.RingTheory.IsTensorProduct
@@ -5191,6 +5204,7 @@ import Mathlib.RingTheory.Jacobson.Radical
 import Mathlib.RingTheory.Jacobson.Ring
 import Mathlib.RingTheory.Jacobson.Semiprimary
 import Mathlib.RingTheory.Kaehler.Basic
+import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Kaehler.JacobiZariski
 import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.Kaehler.TensorProduct
@@ -5355,12 +5369,14 @@ import Mathlib.RingTheory.PowerSeries.Substitution
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
 import Mathlib.RingTheory.PowerSeries.WellKnown
+import Mathlib.RingTheory.Presentation
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.Radical
 import Mathlib.RingTheory.ReesAlgebra
+import Mathlib.RingTheory.Regular.Depth
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.RingHom.Finite
@@ -5740,6 +5756,7 @@ import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Irrational
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.NatFactorial
@@ -5841,6 +5858,7 @@ import Mathlib.Testing.Plausible.Sampleable
 import Mathlib.Testing.Plausible.Testable
 import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Algebra.Affine
+import Mathlib.Topology.Algebra.AffineSubspace
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.Algebra.Equiv
 import Mathlib.Topology.Algebra.Algebra.Rat
@@ -6085,6 +6103,7 @@ import Mathlib.Topology.ContinuousMap.Ideals
 import Mathlib.Topology.ContinuousMap.Interval
 import Mathlib.Topology.ContinuousMap.Lattice
 import Mathlib.Topology.ContinuousMap.LocallyConstant
+import Mathlib.Topology.ContinuousMap.LocallyConvex
 import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.ContinuousMap.Periodic
 import Mathlib.Topology.ContinuousMap.Polynomial

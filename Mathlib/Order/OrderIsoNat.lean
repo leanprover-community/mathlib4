@@ -168,7 +168,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       rw [Nat.orderEmbeddingOfSet_range bad] at h
       exact h _ ((OrderEmbedding.lt_iff_lt _).2 mn)
     · rw [Set.infinite_coe_iff, Set.Infinite, not_not] at hbad
-      obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → ¬n ∈ bad := by
+      obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → n ∉ bad := by
         by_cases he : hbad.toFinset.Nonempty
         · refine
             ⟨(hbad.toFinset.max' he).succ, fun n hn nbad =>
@@ -197,9 +197,10 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
   obtain ⟨g, hr | hnr⟩ := exists_increasing_or_nonincreasing_subseq' r f
   · refine ⟨g, Or.intro_left _ fun m n mn => ?_⟩
     obtain ⟨x, rfl⟩ := Nat.exists_eq_add_of_le (Nat.succ_le_iff.2 mn)
-    induction' x with x ih
-    · apply hr
-    · apply IsTrans.trans _ _ _ _ (hr _)
+    induction x with
+    | zero => apply hr
+    | succ x ih =>
+      apply IsTrans.trans _ _ _ _ (hr _)
       exact ih (lt_of_lt_of_le m.lt_succ_self (Nat.le_add_right _ _))
   · exact ⟨g, Or.intro_right _ hnr⟩
 

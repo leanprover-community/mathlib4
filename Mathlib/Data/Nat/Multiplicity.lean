@@ -119,8 +119,8 @@ theorem emultiplicity_factorial {p : ℕ} (hp : p.Prime) :
 /-- For a prime number `p`, taking `(p - 1)` times the multiplicity of `p` in `n!` equals `n` minus
 the sum of base `p` digits of `n`. -/
 theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
-     (p - 1) * multiplicity p n ! =
-     n - (p.digits n).sum := by
+    (p - 1) * multiplicity p n ! =
+    n - (p.digits n).sum := by
   simp only [multiplicity_eq_of_emultiplicity_eq_some <|
       emultiplicity_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range, ←

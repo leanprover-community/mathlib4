@@ -654,7 +654,7 @@ instance instIsCountablyGenerated_atTop [OrderTopology α] [SecondCountableTopol
         apply b_ne
         convert s.2
         exact H.symm
-      exact Iff.mp nmem_singleton_empty this
+      exact Iff.mp notMem_singleton_empty this
     choose a ha using A
     have : (atTop : Filter α) = (generate (Ici '' (range a))) := by
       apply atTop_eq_generate_of_not_bddAbove
