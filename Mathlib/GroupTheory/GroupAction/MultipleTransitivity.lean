@@ -314,7 +314,7 @@ theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} 
 @[to_additive
   "Multiple transitivity of a pretransitive action
   is equivalent to one less transitivity of stabilizer of a point
-  [Wielandt, th. 9.1, 1st part][Wielandt-1964]." ]
+  [Wielandt, th. 9.1, 1st part][Wielandt-1964]."]
 theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     IsMultiplyPretransitive G α n.succ ↔
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
