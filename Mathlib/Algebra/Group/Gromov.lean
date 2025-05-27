@@ -1051,10 +1051,6 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
     -- Set.pow_mem_pow
 
 
-  have set_pow_mul (n: ℕ) (a b: G) (S: Set G) (ha: a ∈ S^n) (hb: b ∈ S^n): a * b ∈ S^(n + 1) := by
-
-    sorry
-
   have new_closur_e_i: Subgroup.closure ({1, γ, γ⁻¹} ∪ (e_i '' Set.univ)) = (Subgroup.closure S) := by
     rw [closure_enlarge]
     apply Subgroup.closure_eq_of_le
@@ -1365,8 +1361,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
       -- TODO: where do we add this? (hsum: gamma_sum list = 0)
-      let rec rewrite_list: (list: List (E)) →  (hlist: φ (ofMul list.unattach.prod) = 0) → { t: List ((Set.range (Function.uncurry gamma_m))) // list.unattach.prod = t.unattach.prod } := by
-        intro list hlist
+      let rec rewrite_list (list: List (E)) (hlist: φ (ofMul list.unattach.prod) = 0): { t: List ((Set.range (Function.uncurry gamma_m))) // list.unattach.prod = t.unattach.prod } := by
         let is_gamma: E → Bool := fun (k: E) => k = γ ∨ k = γ⁻¹
         let is_gamma_prop: E → Prop := fun (k: E) => k = γ ∨ k = γ⁻¹
         have eq_split: list = list.takeWhile is_gamma ++ list.dropWhile is_gamma := by
@@ -1580,17 +1575,6 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             simp [gamma_sum]
             abel
 
-          have other_term: (γ^m : G) * (List.dropWhile is_gamma list)[0].val * γ^(-m) ∈ E := by
-            dsimp [E]
-            apply Set.mem_union_right
-            simp
-            simp at drop_head_in_e_i
-            obtain ⟨s, s_mem, rest_eq⟩ := drop_head_in_e_i
-            use s
-            use s_mem
-            rw [← rest_eq]
-            sorry
-
           have gamma_copy_prod: gamma_copy.unattach.prod = γ^m := by
             simp [gamma_copy]
             by_cases m_ge: 0 ≤ m
@@ -1771,39 +1755,11 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             exact mega_list_prod.symm
 
 
-
-          have sum_new_zero: gamma_sum mega_list = 0 := by
-            sorry
-
-
-
-
-          have sublist_sum_zero: gamma_sum (gamma_copy ++ (List.dropWhile is_gamma list).tail) = 0 := by
-            unfold mega_list at sum_new_zero
-            rw [gamma_sum_split] at sum_new_zero
-            rw [gamma_sum_head] at sum_new_zero
-            simp at sum_new_zero
-            exact sum_new_zero
-
-          -- have gamma_sum_head: gamma_sum [⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), by (
-          --   dsimp [E]
-          --   apply Set.mem_union_right
-          --   simp
-          --   simp at drop_head_in_e_i
-          --   obtain ⟨s, s_mem, rest_eq⟩ := drop_head_in_e_i
-          --   use s
-          --   use s_mem
-          --   rw [← rest_eq]
-          -- )⟩] = 0 := by
-          --   sorry
-
-
-
-
-
           exact ⟨return_list, return_list_prod⟩
-      termination_by list.countP (fun (k : E_helper φ γ) => decide (k.val ∈ Set.range (e_i_regular_helper (G := G) φ γ)))
+      termination_by 1
       decreasing_by sorry
+
+      let my_res := rewrite_list [] sorry
       --let a := rewrite_list [] (by sorry)
       sorry
   sorry
