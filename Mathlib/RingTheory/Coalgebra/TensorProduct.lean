@@ -31,13 +31,13 @@ open Coalgebra
 noncomputable
 instance instCoalgebraStruct : CoalgebraStruct R (A ⊗[R] B) where
   comul :=
-    AlgebraTensorModule.tensorTensorTensorComm R R A A B B ∘ₗ
+    AlgebraTensorModule.tensorTensorTensorComm R R R R A A B B ∘ₗ
       AlgebraTensorModule.map comul comul
   counit := AlgebraTensorModule.rid R R R ∘ₗ AlgebraTensorModule.map counit counit
 
 lemma comul_def :
     Coalgebra.comul (R := R) (A := A ⊗[R] B) =
-      AlgebraTensorModule.tensorTensorTensorComm R R A A B B ∘ₗ
+      AlgebraTensorModule.tensorTensorTensorComm R R R R A A B B ∘ₗ
         AlgebraTensorModule.map Coalgebra.comul Coalgebra.comul :=
   rfl
 
@@ -53,7 +53,7 @@ lemma counit_def :
 @[simp]
 lemma comul_tmul (x : A) (y : B) :
     comul (x ⊗ₜ y) =
-      AlgebraTensorModule.tensorTensorTensorComm R R A A B B (comul x ⊗ₜ comul y) := rfl
+      AlgebraTensorModule.tensorTensorTensorComm R R R R A A B B (comul x ⊗ₜ comul y) := rfl
 
 @[simp]
 lemma counit_tmul (x : A) (y : B) :
@@ -83,9 +83,9 @@ private lemma coassoc :
   ext x y
   let F : (A ⊗[R] A ⊗[R] A) ⊗[R] (B ⊗[R] B ⊗[R] B) ≃ₗ[R]
     (A ⊗[R] B) ⊗[R] (A ⊗[R] B) ⊗[R] A ⊗[R] B :=
-    AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ ≪≫ₗ
+    AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _ ≪≫ₗ
       AlgebraTensorModule.congr (.refl _ _)
-        (AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _)
+        (AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _)
   let F' : (A ⊗[R] A ⊗[R] A) ⊗[R] (B ⊗[R] B ⊗[R] B) →ₗ[R]
       (A ⊗[R] B) ⊗[R] (A ⊗[R] B) ⊗[R] A ⊗[R] B :=
     TensorProduct.mapOfCompatibleSMul _ _ _ _ ∘ₗ
