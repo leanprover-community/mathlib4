@@ -108,25 +108,24 @@ theorem integral_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
   simpa [neg_mul, ← mul_neg, integral_comp_neg_Ioi (f := fun x : ℝ ↦ Real.exp (a * x))]
     using integral_exp_mul_Ioi (a := -a) (by simpa) (-c)
 
-/-- If `0 < c`, then `(fun t : ℝ ↦ (t + m) ^ a)` is integrable on `(c, ∞)` for all `a < -1` and
-`0 ≤ m`. -/
+/-- If `-m < c`, then `(fun t : ℝ ↦ (t + m) ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
 theorem integrableOn_add_rpow_Ioi_of_lt {a c m : ℝ} (ha : a < -1) (hc : -m < c) :
     IntegrableOn (fun (x : ℝ) ↦ (x + m) ^ a) (Ioi c) := by
-  have hd : ∀ x ∈ Ici c, HasDerivAt (fun t => (t + m) ^ (a + 1) / (a + 1)) ((x + m) ^ a) x := by
+  have hd : ∀ x ∈ Ici c, HasDerivAt (fun t ↦ (t + m) ^ (a + 1) / (a + 1)) ((x + m) ^ a) x := by
     intro x hx
     convert (((hasDerivAt_id _).add_const _).rpow_const _).div_const _ using 1
     field_simp [show a + 1 ≠ 0 by linarith]
     left; linarith [mem_Ici.mp hx, id_eq x]
-  have ht : Tendsto (fun t => ((t + m) ^ (a + 1)) / (a + 1)) atTop (nhds (0 / (a + 1))) := by
+  have ht : Tendsto (fun t ↦ ((t + m) ^ (a + 1)) / (a + 1)) atTop (nhds (0 / (a + 1))) := by
     rw [← neg_neg (a + 1)]
     exact (tendsto_rpow_neg_atTop (by linarith)).comp
       (tendsto_atTop_add_const_right _ m tendsto_id) |>.div_const _
   exact integrableOn_Ioi_deriv_of_nonneg' hd
-    (fun t ht => rpow_nonneg (by linarith [mem_Ioi.mp ht]) a) ht
+    (fun t ht ↦ rpow_nonneg (by linarith [mem_Ioi.mp ht]) a) ht
 
 /-- If `0 < c`, then `(fun t : ℝ ↦ t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
 theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
-    IntegrableOn (fun t : ℝ => t ^ a) (Ioi c) := by
+    IntegrableOn (fun t : ℝ ↦ t ^ a) (Ioi c) := by
   simpa using integrableOn_add_rpow_Ioi_of_lt ha (by simpa only [neg_zero] : -0 < c)
 
 theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
