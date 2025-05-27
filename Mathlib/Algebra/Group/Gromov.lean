@@ -1356,7 +1356,8 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
       let gamma_sum: List E -> ℤ := fun (l) => l.count ⟨γ, by simp [E]⟩ - l.count ⟨γ⁻¹, by simp [E]⟩
 
 
-      let rec rewrite_list (list: List (E)) (hsum: gamma_sum list = 0): List ((Set.range (Function.uncurry gamma_m))) := by
+      -- TODO: where do we add this? (hsum: gamma_sum list = 0)
+      let rec rewrite_list (list: List (E)) : List ((Set.range (Function.uncurry gamma_m))) := by
         let is_gamma: E → Bool := fun (k: E) => k = γ ∨ k = γ⁻¹
         let is_gamma_prop: E → Prop := fun (k: E) => k = γ ∨ k = γ⁻¹
         have eq_split: list = list.takeWhile is_gamma ++ list.dropWhile is_gamma := by
@@ -1650,43 +1651,30 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             . exact mul_left_injective (List.dropWhile is_gamma list).unattach.prod⁻¹
 
 
+          let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail))
 
           -- Show that the list (rewritten in terms of `γ^m * e_i * γ^(-m)` terms) is in the kernel of φ
-          have mega_list_kernel: φ (ofMul mega_list.unattach.prod) = 0 := by
+          have return_list_kernel: φ (ofMul return_list.unattach.prod) = 0 := by
             simp
             rw [AddMonoidHom.map_list_sum]
             apply List.sum_eq_zero
             intro x hx
             simp at hx
-            obtain ⟨a, ⟨a_mem_e, a_mem_list⟩, phi_a⟩ := hx
+            obtain ⟨a, ⟨⟨q, r, r_mem_s, gamma_r⟩, a_mem_list⟩, phi_a⟩ := hx
+            rw [← phi_a, ← gamma_r]
+            simp [gamma_m]
+            apply e_i_zero
 
-          have sum_new_zero: gamma_sum mega_list = 0 := by
-            sorry
+          -- have sublist_sum_zero: gamma_sum (gamma_copy ++ (List.dropWhile is_gamma list).tail) = 0 := by
+          --   unfold mega_list at sum_new_zero
+          --   rw [gamma_sum_split] at sum_new_zero
+          --   rw [gamma_sum_head] at sum_new_zero
+          --   simp at sum_new_zero
+          --   exact sum_new_zero
 
-
-
-          have sublist_sum_zero: gamma_sum (gamma_copy ++ (List.dropWhile is_gamma list).tail) = 0 := by
-            unfold mega_list at sum_new_zero
-            rw [gamma_sum_split] at sum_new_zero
-            rw [gamma_sum_head] at sum_new_zero
-            simp at sum_new_zero
-            exact sum_new_zero
-          -- have gamma_sum_head: gamma_sum [⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), by (
-          --   dsimp [E]
-          --   apply Set.mem_union_right
-          --   simp
-          --   simp at drop_head_in_e_i
-          --   obtain ⟨s, s_mem, rest_eq⟩ := drop_head_in_e_i
-          --   use s
-          --   use s_mem
-          --   rw [← rest_eq]
-          -- )⟩] = 0 := by
+          -- have sublist_prod_preserve: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_sum_zero).unattach.prod = (gamma_copy ++ (list.dropWhile is_gamma).tail).unattach.prod := by
           --   sorry
 
-          have sublist_prod_preserve: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_sum_zero).unattach.prod = (gamma_copy ++ (list.dropWhile is_gamma).tail).unattach.prod := by
-            sorry
-
-          let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_sum_zero)
 
 
           have mega_list_prod_preserve: mega_list.unattach.prod = return_list.unattach.prod := by
@@ -1708,7 +1696,27 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
 
-          use (
+          have sum_new_zero: gamma_sum mega_list = 0 := by
+            sorry
+
+
+          -- have gamma_sum_head: gamma_sum [⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), by (
+          --   dsimp [E]
+          --   apply Set.mem_union_right
+          --   simp
+          --   simp at drop_head_in_e_i
+          --   obtain ⟨s, s_mem, rest_eq⟩ := drop_head_in_e_i
+          --   use s
+          --   use s_mem
+          --   rw [← rest_eq]
+          -- )⟩] = 0 := by
+          --   sorry
+
+
+
+
+
+          use return_list
 
       sorry
 
