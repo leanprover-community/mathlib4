@@ -34,6 +34,28 @@ instance (X : LocallyDiscrete C)  (F : Pseudofunctor (LocallyDiscrete C) (Adj Ca
   change (F.map (𝟙 X).toLoc).l.IsEquivalence
   infer_instance
 
+-- TODO: add `Pseudofunctor.comp_mapComp'`
+lemma mapComp'_comp_forget₁_hom {C : Type*} [Bicategory C] [Strict C]
+    (F : Pseudofunctor C (Adj Cat))
+    {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (fg : X ⟶ Z) (hfg : f ≫ g = fg) :
+    ((F.comp Adj.forget₁).mapComp' f g fg hfg).hom =
+      (F.mapComp' f g fg hfg).hom.τl := by
+  simp [Adj.comp_forget₁_mapComp']
+
+lemma mapComp'_comp_forget₁_inv {C : Type*} [Bicategory C] [Strict C]
+    (F : Pseudofunctor C (Adj Cat))
+    {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (fg : X ⟶ Z) (hfg : f ≫ g = fg) :
+    ((F.comp Adj.forget₁).mapComp' f g fg hfg).inv =
+      (F.mapComp' f g fg hfg).inv.τl := by
+  simp [Adj.comp_forget₁_mapComp']
+
+section
+
+variable {C B : Type*} [Bicategory C] [Strict C] [Bicategory B]
+    (F : Pseudofunctor C (Adj B))
+
+end
+
 variable {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S}
   (sq : ∀ i j, ChosenPullback (f i) (f j))
   (sq₃ : ∀ (i₁ i₂ i₃ : ι), ChosenPullback₃ (sq i₁ i₂) (sq i₂ i₃) (sq i₁ i₃))
@@ -190,6 +212,119 @@ lemma hom_self_iff_dataEquivDescentData' ⦃i : ι⦄ (δ : (sq i i).Diagonal) :
     rw [this]
     apply DescentData'.pullHom'_eq_pullHom <;> simp
 
+lemma homEquiv_symm_pullHom''_eq_pullHom'_dataEquivDescentData' (i₁ i₂ i₃ : ι) :
+    (((F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).adj.toCategory).homEquiv _ _).symm
+      (pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _) =
+        DescentData'.pullHom' (F := F.comp Adj.forget₁)
+          (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃ := by
+  rw [homEquiv_symm_pullHom'', dataEquivDescentData']
+  simp only [comp_toPrelaxFunctor, PrelaxFunctor.comp_toPrelaxFunctorStruct,
+    PrelaxFunctorStruct.comp_toPrefunctor, Prefunctor.comp_obj, Adj.forget₁_obj,
+    Prefunctor.comp_map, Adj.forget₁_map]
+  rw [DescentData'.pullHom'_eq_pullHom _ (sq₃ i₁ i₂ i₃).p _ _ _ _ (sq₃ i₁ i₂ i₃).p₁₃]
+  · rfl
+  · simp
+  · simp
+
+variable (i₁ i₂ i₃ : ι)
+
+@[reassoc]
+lemma map_p₁₂_baseChange_comp_counit (i₁ i₂ i₃ : ι) (M) :
+    (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).l.map
+      ((F.baseChange (sq₃ i₁ i₂ i₃).isPullback₂.toCommSq.flip.op.toLoc).app M) ≫
+      (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).adj.counit.app _ =
+    (F.mapComp' (sq i₁ i₂).p₂.op.toLoc (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc
+        (sq₃ i₁ i₂ i₃).p₂.op.toLoc (by aesoptoloc)).inv.τl.app _ ≫
+      (F.mapComp' (sq i₂ i₃).p₁.op.toLoc (sq₃ i₁ i₂ i₃).p₂₃.op.toLoc
+        (sq₃ i₁ i₂ i₃).p₂.op.toLoc (by aesoptoloc)).hom.τl.app _ ≫
+      (F.map (sq₃ i₁ i₂ i₃).p₂₃.op.toLoc).l.map
+        ((F.map (sq i₂ i₃).p₁.op.toLoc).adj.counit.app _) ≫
+        (by dsimp; exact eqToHom rfl) := by
+  have h1 := congr($(F.whiskerBaseChange_eq_whiskerRight_baseChange
+    (sq₃ i₁ i₂ i₃).isPullback₂.toCommSq.flip.op.toLoc).app M)
+  have h2 := congr($(F.whiskerBaseChange_eq_whiskerLeft_isoMapOfCommSq
+    (sq₃ i₁ i₂ i₃).isPullback₂.toCommSq.flip.op.toLoc).app M)
+  dsimp at h1 h2
+  rw [h2] at h1
+  simp [Cat.associator_hom_app, Cat.associator_inv_app, Cat.rightUnitor_inv_app,
+    Cat.leftUnitor_hom_app, Cat.rightUnitor_hom_app] at h1
+  rw [← h1]
+  simp only [Cat.comp_obj, Cat.id_obj, Adj.comp_l, eqToHom_refl, id_eq, Category.comp_id]
+  rw [F.isoMapOfCommSq_eq _ (sq₃ i₁ i₂ i₃).p₂.op.toLoc (by aesoptoloc)]
+  simp
+
+-- TODO: fix the name, this has nothing to do with `baseChange`, could maybe even be inlined by
+-- adding some more lemmas
+@[reassoc]
+lemma baseChange_eq'' (i₁ i₂ i₃ : ι) (M)
+    (f : (F.map (sq i₁ i₂).p₂.op.toLoc).l.obj ((F.map (sq i₂ i₃).p₁.op.toLoc).r.obj M) ⟶
+      (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).r.obj ((F.map (sq₃ i₁ i₂ i₃).p₂₃.op.toLoc).l.obj M)) :
+    (F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).l.map
+    ((F.map (sq i₁ i₂).p₁.op.toLoc).r.map f) ≫
+      (F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).l.map
+        ((F.mapComp' _ _ (sq₃ i₁ i₂ i₃).p₁.op.toLoc (by aesoptoloc)).hom.τr.app _) ≫
+      (F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).adj.counit.app _ =
+      ((F.mapComp' (sq i₁ i₂).p₁.op.toLoc (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc
+        (sq₃ i₁ i₂ i₃).p₁.op.toLoc (by aesoptoloc)).hom.τl.app _) ≫
+        (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).l.map
+          ((F.map (sq i₁ i₂).p₁.op.toLoc).adj.counit.app _) ≫
+    (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).l.map f ≫
+      (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).adj.counit.app _ := by
+  have := Adj.counit_map_of_comp F (sq i₁ i₂).p₁.op.toLoc (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc
+    (sq₃ i₁ i₂ i₃).p₁.op.toLoc (by aesoptoloc)
+  rw [this]
+  simp [Cat.associator_hom_app, Cat.associator_inv_app, Cat.rightUnitor_inv_app,
+    Cat.leftUnitor_hom_app]
+  congr 1
+  rw [← (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).l.map_comp_assoc]
+  rw [← (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).l.map_comp_assoc]
+  rw [Category.assoc]
+  rw [← (F.map (sq i₁ i₂).p₁.op.toLoc).l.map_comp]
+  rw [← NatTrans.comp_app]
+  rw [Adj.hom_inv_id_τr]
+  simp only [Adj.comp_r, Cat.id_app, Cat.comp_obj, Functor.map_id, Category.comp_id]
+  rw [← (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).l.map_comp_assoc]
+  erw [(F.map (sq i₁ i₂).p₁.op.toLoc).adj.counit.naturality]
+  simp
+
+-- TODO: clean this up, it's an `erw`-massacre
+lemma homEquiv_symm_homComp (i₁ i₂ i₃ : ι) :
+    (((F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).adj.toCategory).homEquiv _ _).symm
+      (homComp sq₃ hom i₁ i₂ i₃) =
+        DescentData'.pullHom' (F := F.comp Adj.forget₁)
+        (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₂ ≫
+      DescentData'.pullHom'
+        (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃ := by
+  rw [DescentData'.pullHom'₁₂_eq_pullHom_of_chosenPullback₃]
+  rw [DescentData'.pullHom'₂₃_eq_pullHom_of_chosenPullback₃]
+  rw [dataEquivDescentData']
+  dsimp only [comp_toPrelaxFunctor, PrelaxFunctor.comp_toPrelaxFunctorStruct,
+    PrelaxFunctorStruct.comp_toPrefunctor, Prefunctor.comp_obj, Adj.forget₁_obj,
+    Prefunctor.comp_map, Adj.forget₁_map, Equiv.piCongrRight_apply, Pi.map_apply]
+  simp_rw [Adjunction.homEquiv_counit]
+  dsimp only [Adjunction.toCategory_counit]
+  rw [homComp]
+  simp only [Cat.comp_obj, Adj.comp_r, Adj.rIso_inv, Adj.comp_l, Adj.lIso_inv, Functor.map_comp,
+    Category.assoc, pullHom, comp_toPrelaxFunctor, PrelaxFunctor.comp_toPrelaxFunctorStruct,
+    PrelaxFunctorStruct.comp_toPrefunctor, Prefunctor.comp_obj, Adj.forget₁_obj,
+    Prefunctor.comp_map, Adj.forget₁_map]
+  erw [(F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).adj.counit.naturality]
+  dsimp only [Cat.comp_obj, Cat.id_obj, Cat.id_map]
+  rw [baseChange_eq''_assoc]
+  rw [map_p₁₂_baseChange_comp_counit_assoc]
+  simp only [Cat.comp_obj, Adj.comp_l, Cat.id_obj, eqToHom_refl, id_eq, Category.id_comp,
+    NatTrans.naturality_assoc, Cat.comp_map]
+  rw [mapComp'_comp_forget₁_hom]
+  rw [mapComp'_comp_forget₁_hom]
+  rw [mapComp'_comp_forget₁_inv]
+  rw [mapComp'_comp_forget₁_inv]
+  congr 2
+  rw [← (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).l.map_comp_assoc]
+  erw [(F.map (sq i₁ i₂).p₁.op.toLoc).adj.counit.naturality]
+  simp only [Cat.comp_obj, Cat.id_obj, Cat.id_map, Functor.map_comp, Category.assoc]
+  erw [(F.mapComp' _ _ _ _).inv.τl.naturality_assoc]
+  simp
+
 lemma hom_comp_iff_dataEquivDescentData' (i₁ i₂ i₃ : ι) :
     homComp sq₃ hom i₁ i₂ i₃ = pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _ ↔
       DescentData'.pullHom' (F := F.comp Adj.forget₁)
@@ -198,7 +333,8 @@ lemma hom_comp_iff_dataEquivDescentData' (i₁ i₂ i₃ : ι) :
         (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃ =
       DescentData'.pullHom'
         (dataEquivDescentData' hom) (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃ := by
-  sorry
+  rw [← homEquiv_symm_pullHom''_eq_pullHom'_dataEquivDescentData', ← homEquiv_symm_homComp]
+  simp
 
 end
 

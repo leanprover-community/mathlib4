@@ -458,6 +458,17 @@ lemma unit_comp_mapComp'_hom_τr_comp_counit :
         simp [-Adjunction.left_triangle, bicategoricalComp]
     · simp
 
+lemma counit_map_of_comp :
+    (F.map fg).adj.counit =
+      (F.mapComp' f g fg hfg).inv.τr ▷ _ ≫
+      _ ◁ (F.mapComp' f g fg hfg).hom.τl ≫
+      (α_ _ _ _).inv ≫
+      (α_ _ _ _).hom ▷ (F.map g).l ≫
+      (_ ◁ (F.map f).adj.counit) ▷ (F.map g).l ≫
+      (ρ_ _).hom ▷ (F.map g).l ≫
+      (F.map g).adj.counit := by
+  sorry
+
 end
 
 end Adj

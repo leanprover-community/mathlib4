@@ -107,17 +107,25 @@ lemma whiskerBaseChange_eq' : F.whiskerBaseChange sq =
   rw [mateEquiv_apply', Equiv.symm_apply_apply, Iso.inv_hom_id_assoc,
     whiskerBaseChange]
 
+lemma whiskerBaseChange_eq_whiskerLeft_isoMapOfCommSq :
+    F.whiskerBaseChange sq =
+      (F.map l).r ◁ (F.isoMapOfCommSq sq).hom.τl ≫
+      (α_ _ _ _).inv ≫
+      (F.map l).adj.counit ▷ _ ≫
+      (λ_ _).hom :=
+  rfl
+
+lemma whiskerBaseChange_eq_whiskerRight_baseChange :
+    F.whiskerBaseChange sq =
+      (α_ _ _ _).inv ≫ F.baseChange sq ▷ (F.map r).l ≫
+      (α_ _ _ _).hom ≫ (F.map b).l ◁ (F.map r).adj.counit ≫ (ρ_ _).hom :=
+  sorry
+
 /-lemma whiskerBaseChange_eq' :
     F.whiskerBaseChange sq =
     (α_ _ _ _).inv ≫ F.baseChange sq ▷ (F.map r).l ≫
       (α_ _ _ _).hom ≫ (F.map b).l ◁ (F.map r).adj.counit ≫ (ρ_ _).hom := by
   rw [whiskerBaseChange_eq, Adjunction.homEquiv₂_symm_apply]-/
-
-
--- is this true?
---instance [IsIso (F.baseChange sq)] : Mono (F.whiskerBaseChange sq) := by
---  dsimp [whiskerBaseChange]
---  sorry
 
 section Horizontal
 
