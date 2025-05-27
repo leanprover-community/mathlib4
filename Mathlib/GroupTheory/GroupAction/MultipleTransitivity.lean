@@ -473,7 +473,7 @@ private theorem index_of_fixingSubgroup_aux
       rw [hat']
       suffices ¬ a ∈ (Subtype.val '' t) by
         rw [add_comm]
-        convert Set.ncard_insert_of_not_mem this ?_
+        convert Set.ncard_insert_of_notMem this ?_
         rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
         apply Set.toFinite
       intro h
@@ -663,63 +663,6 @@ theorem isMultiplyPretransitive :
             simp [ne_eq, EmbeddingLike.apply_eq_iff_eq, ← val_inj,
               coe_castLE, Nat.ne_of_lt hiu, Nat.ne_of_lt hiv] }
 
-namespace SubMulAction.ofStabilizer
-
-open scoped BigOperators Pointwise Cardinal
-
-open MulAction Function.Embedding
-
-@[to_additive SubAddACtion.ofStabilizer.isMultiplyPretransitive_iff_of_conj]
-theorem isMultiplyPretransitive_iff_of_conj
-    {n : ℕ} {a b : α} {g : G} (hg : b = g • a) :
-    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
-      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
-  IsPretransitive.of_embedding_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
-
-@[to_additive]
-theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} :
-    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
-      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
-  let ⟨_, hg⟩ := exists_smul_eq G a b
-  isMultiplyPretransitive_iff_of_conj hg.symm
-
-/-- Multiple transitivity of a pretransitive action
-  is equivalent to one less transitivity of stabilizer of a point
-  [Wielandt, th. 9.1, 1st part][Wielandt-1964]. -/
-@[to_additive
-  "Multiple transitivity of a pretransitive action
-  is equivalent to one less transitivity of stabilizer of a point
-  [Wielandt, th. 9.1, 1st part][Wielandt-1964]." ]
-theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
-    IsMultiplyPretransitive G α n.succ ↔
-      IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
-  constructor
-  · refine fun hn ↦ ⟨fun x y ↦ ?_⟩
-    obtain ⟨g, hgxy⟩ := exists_smul_eq G (snoc x) (snoc y)
-    have hg : g ∈ stabilizer G a := by
-      rw [mem_stabilizer_iff]
-      rw [DFunLike.ext_iff] at hgxy
-      convert hgxy (last n) <;> simp [snoc_last]
-    use ⟨g, hg⟩
-    ext i
-    simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
-    rw [← snoc_castSucc x, ← smul_apply, hgxy, snoc_castSucc]
-  · refine fun hn ↦ ⟨fun x y ↦ ?_⟩
-    -- gx • x = x1 :: a
-    obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
-    -- gy • y = y1 :: a
-    obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
-    -- g • x1 = y1,
-    obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
-    use gy⁻¹ * g * gx
-    ext i
-    simp only [mul_smul, smul_apply, inv_smul_eq_iff]
-    simp only [← smul_apply _ _ i, hgy, hgx]
-    simp [smul_apply]
-    rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-    · simp [snoc_castSucc, ← hg, subgroup_smul_def]
-    · simpa only [snoc_last, ← hg, subgroup_smul_def] using g.prop
-
 /-- A subgroup of `Equiv.Perm α` which is (Fintype.card α - 2)-pretransitive
   contains `alternatingGroup α`. -/
 theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
@@ -782,14 +725,14 @@ theorem isTrivialBlock_of_isBlock {B : Set α} (hB : IsBlock (alternatingGroup �
       -- using h2, get a ≠ b in B
       obtain ⟨a, b, ha, hb, hab⟩ := h2
       -- using h3', get c ≠ a, b
-      obtain ⟨c, _, hc⟩ := Finset.exists_mem_not_mem_of_card_lt_card
+      obtain ⟨c, _, hc⟩ := Finset.exists_mem_notMem_of_card_lt_card
           (s := {a, b}) (t := Finset.univ) (by
             simp only [Finset.card_univ, ← Nat.card_eq_fintype_card, h3']
             exact lt_of_le_of_lt Finset.card_le_two (by norm_num))
       have H1 : {c, a, b} = Finset.univ := by
         apply Finset.eq_univ_of_card
-        rw [← Nat.card_eq_fintype_card, h3', Finset.card_insert_of_not_mem hc,
-          Finset.card_insert_of_not_mem (by simpa only [Finset.mem_singleton]),
+        rw [← Nat.card_eq_fintype_card, h3', Finset.card_insert_of_notMem hc,
+          Finset.card_insert_of_notMem (by simpa only [Finset.mem_singleton]),
           Finset.card_singleton]
       suffices c ∈ B by
         apply subset_antisymm B.subset_univ
@@ -835,4 +778,68 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
 end AlternatingGroup
+
+#exit
+namespace SubMulAction
+
+variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
+
+open MulAction Function.Embedding SubMulAction
+
+namespace ofStabilizer
+
+open scoped BigOperators Pointwise Cardinal
+
+@[to_additive SubAddACtion.ofStabilizer.isMultiplyPretransitive_iff_of_conj]
+theorem isMultiplyPretransitive_iff_of_conj
+    {n : ℕ} {a b : α} {g : G} (hg : b = g • a) :
+    IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n ↔
+      IsMultiplyPretransitive (stabilizer G b) (SubMulAction.ofStabilizer G b) n :=
+  IsPretransitive.of_embedding_congr (MulEquiv.surjective _)
+    (SubMulAction.ofStabilizer.conjMap_bijective hg)
+
+@[to_additive]
+theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} :
+    IsMultiplyPretransitive (stabilizer G a) (ofStabilizer G a) n ↔
+      IsMultiplyPretransitive (stabilizer G b) (ofStabilizer G b) n :=
+  let ⟨_, hg⟩ := exists_smul_eq G a b
+  isMultiplyPretransitive_iff_of_conj hg.symm
+
+/-- Multiple transitivity of a pretransitive action
+  is equivalent to one less transitivity of stabilizer of a point
+  [Wielandt, th. 9.1, 1st part][Wielandt-1964]. -/
+@[to_additive
+  "Multiple transitivity of a pretransitive action
+  is equivalent to one less transitivity of stabilizer of a point
+  [Wielandt, th. 9.1, 1st part][Wielandt-1964]." ]
+theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
+    IsMultiplyPretransitive G α n.succ ↔
+      IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
+  constructor
+  · refine fun hn ↦ ⟨fun x y ↦ ?_⟩
+    obtain ⟨g, hgxy⟩ := exists_smul_eq G (snoc x) (snoc y)
+    have hg : g ∈ stabilizer G a := by
+      rw [mem_stabilizer_iff]
+      rw [DFunLike.ext_iff] at hgxy
+      convert hgxy (last n) <;> simp [snoc_last]
+    use ⟨g, hg⟩
+    ext i
+    simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
+    rw [← snoc_castSucc x, ← smul_apply, hgxy, snoc_castSucc]
+  · refine fun hn ↦ ⟨fun x y ↦ ?_⟩
+    -- gx • x = x1 :: a
+    obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
+    -- gy • y = y1 :: a
+    obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
+    -- g • x1 = y1,
+    obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
+    use gy⁻¹ * g * gx
+    ext i
+    simp only [mul_smul, smul_apply, inv_smul_eq_iff]
+    simp only [← smul_apply _ _ i, hgy, hgx]
+    simp [smul_apply]
+    rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
+    · simp [snoc_castSucc, ← hg, subgroup_smul_def]
+    · simpa only [snoc_last, ← hg, subgroup_smul_def] using g.prop
+
 
