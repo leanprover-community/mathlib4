@@ -72,12 +72,12 @@ of cartesian closure of both `SSet.{u}` and `Cat.{u,u}` to establish cocontinuit
 product functors on both categories.
 
 Using the colimit `Presheaf.colimitOfRepresentable (C := SimplexCategory) X` this reduces to
-the result proven in `hoFunctor.binarySimplexProductIsIso`. Note we only found the
-colimit formula for simplicial sets at level 0 but this can surely be generalized.
+the result proven in `hoFunctor.binarySimplexProductIsIso`.
 -/
-instance hoFunctor.binaryProductWithSimplexIsIso (X : SSet.{0}) (m : ℕ) :
+instance hoFunctor.binaryProductWithSimplexIsIso (X : SSet) (m : ℕ) :
     IsIso (prodComparison hoFunctor X Δ[m]) := by
-  have Xcolim := Presheaf.colimitOfRepresentable (C := SimplexCategory) X
+  have Xcolim := Presheaf.colimitOfRepresentable (C := ULiftHom SimplexCategory)
+    (ULiftHom.down.op ⋙ X)
   sorry
 
 /-- The natural transformation `prodComparisonNatTrans hofunctor X` is a natural
@@ -86,20 +86,15 @@ transformation between cocontinuous functors whose component at `Y : SSet` is
 and `Cat.{u,u}` to establish cocontinuity of the product functors on both categories.
 
 Using the colimit `Presheaf.colimitOfRepresentable (C := SimplexCategory) Y` this reduces to
-the result proven in `hoFunctor.binaryProductWithSimplexIsIso`. Note we only found the
-colimit formula for simplicial sets at level 0 but this can surely be generalized.
+the result proven in `hoFunctor.binaryProductWithSimplexIsIso`.
 -/
-instance hoFunctor.binaryProductIsIsoLevelZero (X : SSet) (Y : SSet.{0}) :
+instance hoFunctor.binaryProductIsIso (X Y : SSet):
     IsIso (prodComparison hoFunctor X Y) := by
   unfold SSet SimplicialObject at X Y
-  have Ycolim := Presheaf.colimitOfRepresentable (C := SimplexCategory) Y
+  have Ycolim := Presheaf.colimitOfRepresentable (C := ULiftHom SimplexCategory)
+    (ULiftHom.down.op ⋙ Y)
   have := prodComparisonNatTrans hoFunctor X
   sorry
-
-/-- The same argument used in `hoFunctor.binaryProductIsIsoLevelZero` should work here
-once the universe errors are fixed. -/
-instance hoFunctor.binaryProductIsIso (X Y : SSet) :
-    IsIso (prodComparison hoFunctor X Y) := sorry
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves binary products of simplicial sets
 `X` and `Y`. -/
