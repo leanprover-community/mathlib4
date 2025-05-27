@@ -956,9 +956,9 @@ structure PreservesProd (T: Type*) (l h: List G) (γ: G) where
 
 set_option maxHeartbeats 500000
 
-abbrev countElemOrInv {T: Type*} [ht: Group T] [heq: DecidableEq T] (l: List T) (γ: T): ℤ := (l.map (fun s => if s = γ then 1 else if s = γ⁻¹ then -1 else 0)).sum
+abbrev countElemOrInv {T: Type*} [ht: Group T] [heq: DecidableEq T] {E: Set T} (l: List E) (γ: T): ℤ := (l.map (fun (s: E) => if s = γ then 1 else if s = γ⁻¹ then -1 else 0)).sum
 abbrev isElemOrInv {T: Type*} [ht: Group T] [heq: DecidableEq T] (g: T): T → Bool := fun a => decide (a = g ∨ a = g⁻¹)
-lemma take_count_sum_eq_exp {T: Type*} [ht: Group T] [heq: DecidableEq T] (l: List G) (g: G) (hg: g ≠ g⁻¹) (hl: ∀ val ∈ l, val = g ∨ val = g⁻¹): (l).prod = g^(countElemOrInv l g) := by
+lemma take_count_sum_eq_exp {T: Type*} [ht: Group T] [heq: DecidableEq T] {E: Set T} (l: List E) (g: T) (hg: g ≠ g⁻¹) (hl: ∀ val ∈ l, val = g ∨ val = g⁻¹): l.unattach.prod = g^(countElemOrInv l g) := by
   induction l with
   | nil =>
     simp [countElemOrInv]
@@ -970,7 +970,9 @@ lemma take_count_sum_eq_exp {T: Type*} [ht: Group T] [heq: DecidableEq T] (l: Li
       rw [ih]
       . rw [← zpow_one_add]
       . simp at hl
-        exact hl.2
+        intro val hval
+        have hl_right := hl.2 val (by simp) (by simp [hval])
+        exact hl_right
     .
       have h_eq_inv: h = g⁻¹ := by
         specialize hl h
@@ -983,7 +985,9 @@ lemma take_count_sum_eq_exp {T: Type*} [ht: Group T] [heq: DecidableEq T] (l: Li
       rw [← zpow_add]
       simp [hg.symm]
       simp at hl
-      exact hl.2
+      intro val hval
+      have hl_right := hl.2 val (by simp) (by simp [hval])
+      exact hl_right
 
 
 
@@ -1386,7 +1390,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             exact in_right
 
 
-          let m := ((list.takeWhile is_gamma).map (fun (k : E) => if k = γ then 1 else if k = γ then -1 else 0)).sum
+          let m := ((list.takeWhile is_gamma).map (fun (k : E) => if k = γ then 1 else if k = γ⁻¹ then -1 else 0)).sum
 
           have in_range: γ ^ m * ↑(List.dropWhile is_gamma list)[0] * γ ^ (-m) ∈ Set.range (Function.uncurry gamma_m) := by
             simp [gamma_m]
@@ -1571,31 +1575,16 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             simp [E]
 
           have header_prod: (List.takeWhile is_gamma list).unattach.prod = γ^m := by
-            let prefix_len := (List.takeWhile is_gamma list).unattach.length
-            induction hlen: prefix_len generalizing list with
-            | zero =>
-              have plain_list_len: (List.takeWhile is_gamma list).length = 0 := by
-                rw [← List.length_unattach]
-                simp_rw [prefix_len] at hlen
-                exact hlen
-              rw [List.length_eq_zero_iff] at hlen
-              simp [hlen, m]
-              rw [List.length_eq_zero_iff] at plain_list_len
-              simp [plain_list_len]
-            | succ n hn =>
-
-
-            -- simp [is_gamma]
-            -- induction hm: m with
-            -- | hz =>
-            --   simp [gamma_copy] at gamma_copy_prod
-            --   have m_ge_zero: m ≥ 0 := by linarith
-            --   simp [m_ge_zero] at gamma_copy_prod
-            --   simp [m_ge_zero] at gamma_copy
-            --   simp [gamma_copy, hm] at hm
-            -- | hp => sorry
-            -- | hn => sorry
-
+            have my_lemma := take_count_sum_eq_exp (List.takeWhile is_gamma list) γ gamma_ne_inv ?_
+            .
+              rw [my_lemma]
+            .
+              have foo (x: E) := List.mem_takeWhile_imp (p := fun (val: E) => (val = γ ∨ val = γ⁻¹)) (l := list) (x := x)
+              conv at foo =>
+                intro x hx
+                equals ↑x = γ ∨ ↑x = γ⁻¹ =>
+                  simp
+              exact foo
 
           -- 'γ^n * a * γ^(_n) * γn * tail', as a list of elements in E
           let mega_list := (gamma_copy ++ [(List.dropWhile is_gamma list)[0]] ++ gamma_copy_inv) ++ (gamma_copy ++ (list.dropWhile is_gamma).tail)
