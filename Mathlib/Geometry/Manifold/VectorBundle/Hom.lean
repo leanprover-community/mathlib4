@@ -3,7 +3,8 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Homs of `C^n` vector bundles over the same base space
@@ -94,6 +95,74 @@ instance ContMDiffVectorBundle.continuousLinearMap :
   (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).contMDiffVectorBundle IB
 
 end
+
+section glouk
+
+variable {𝕜 B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
+  {E₁ : B → Type*} [RCLike 𝕜]
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, NormedAddCommGroup (E₁ x)]
+  [∀ x, InnerProductSpace 𝕜 (E₁ x)]
+  {EB : Type*}
+  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B] [ChartedSpace HB B] {EM : Type*}
+  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
+  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
+  [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
+
+variable (𝕜 n IB F₁ E₁) in
+def IsRiemannianBundle :=
+  ∃ g : Cₛ^n⟮IB; F₁ →L⋆[𝕜] F₁ →L[𝕜] 𝕜, fun (x : B) ↦ E₁ x →L⋆[𝕜] E₁ x →L[𝕜] 𝕜⟯,
+    ∀ (x : B) (v w : E₁ x), ⟪v, w⟫ = g x v w
+
+end glouk
+
+#check innerSL
+
+#check inCoordinates
+
+section myglouk
+
+variable {𝕜 B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
+  [RCLike 𝕜]
+  [NormedAddCommGroup F₁] [InnerProductSpace 𝕜 F₁]
+  {EB : Type*}
+  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B] [ChartedSpace HB B] {EM : Type*}
+  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
+  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
+
+lemma stoo : IsRiemannianBundle 𝕜 F₁ n (Bundle.Trivial B F₁) IB := by
+  refine ⟨⟨fun x ↦ innerSL 𝕜, ?_⟩, fun x v w ↦ rfl⟩
+  intro x
+  simp [contMDiffAt_totalSpace]
+  refine ⟨?_, ?_⟩
+  · apply contMDiffAt_id
+  simp only [hom_trivializationAt_apply]
+  simp [inCoordinates, trivializationAt, coe_comp', Trivialization.continuousLinearMapAt_apply,
+    Trivialization.symmL_apply, Function.comp_apply, innerSL_apply]
+
+  convert contMDiffAt_const (c := innerSL 𝕜)
+  ext v w
+  simp [Trivial.trivialization,
+    Trivialization.linearMapAt, Pretrivialization.linearMapAt]
+  rw [dif_pos]
+  simp
+  sorry
+  simp [FiberBundle.trivializationAt', Trivialization.toPretrivialization]
+  simp [Trivial.trivialization]
+
+
+
+
+
+
+
+
+
+end myglouk
 
 section
 
