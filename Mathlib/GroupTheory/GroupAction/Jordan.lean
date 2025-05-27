@@ -309,7 +309,7 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     obtain ⟨a, ha, b, hb, hab⟩ := this
     -- apply Rudio's theorem to get g ∈ G such that a ∈ g • s, b ∉ g • s
     classical
-    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_not_mem_smul (G := G)
+    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_notMem_smul (G := G)
       s.toFinite hs_nonempty hs_ne_top hab
 
     let t := s ∩ g • s
@@ -344,7 +344,7 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     -- get a, b ∈ sᶜ, a ≠ b
     obtain ⟨a, ha : a ∈ sᶜ, b, hb : b ∈ sᶜ, hab⟩ := this
 
-    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_not_mem_smul (G := G)
+    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_notMem_smul (G := G)
       sᶜ.toFinite (Set.nonempty_of_mem ha)
       (by intro h
           simp only [Set.top_eq_univ, Set.compl_univ_iff] at h
@@ -379,7 +379,7 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
       refine ⟨Set.inter_subset_left, fun h ↦ hb ?_⟩
       suffices s = g • s by
         rw [this]
-        simpa only [Set.smul_set_compl, Set.mem_compl_iff, Set.not_not_mem] using hgb
+        simpa only [Set.smul_set_compl, Set.mem_compl_iff, Set.not_notMem] using hgb
       apply Set.eq_of_subset_of_ncard_le _ _ (g • s).toFinite
       · exact subset_trans h Set.inter_subset_right
       · rw [Set.ncard_smul_set]
@@ -445,7 +445,7 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
     rw [Set.one_lt_ncard] at this
     obtain ⟨a, ha, b, hb, hab⟩ := this
     -- apply rudio to get g ∈ G such that a ∈ g • s, b ∉ g • s
-    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_not_mem_smul (G := G)
+    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_notMem_smul (G := G)
       s.toFinite hs_nonempty hs_ne_top hab
 
     let t := s ∩ g • s
@@ -487,7 +487,7 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
     -- get a, b ∈ sᶜ, a ≠ b
     obtain ⟨a, ha : a ∈ sᶜ, b, hb : b ∈ sᶜ, hab⟩ := this
 
-    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_not_mem_smul (G := G)
+    obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_notMem_smul (G := G)
       sᶜ.toFinite (Set.nonempty_of_mem ha)
       (by intro h
           simp only [Set.top_eq_univ, Set.compl_univ_iff] at h
@@ -522,7 +522,7 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
       refine ⟨Set.inter_subset_left, fun h ↦ hb ?_⟩
       suffices s = g • s by
         rw [this]
-        simpa only [Set.smul_set_compl, Set.mem_compl_iff, Set.not_not_mem] using hgb
+        simpa only [Set.smul_set_compl, Set.mem_compl_iff, Set.not_notMem] using hgb
       apply Set.eq_of_subset_of_ncard_le _ _ (g • s).toFinite
       · exact subset_trans h Set.inter_subset_right
       · rw [Set.ncard_smul_set]
@@ -637,7 +637,7 @@ theorem isMultiplyPreprimitive_jordan
       · -- t.card = Nat.succ n
         rw [← Set.ncard_image_of_injective t Subtype.val_injective]
         apply Nat.add_right_cancel
-        rw [← Set.ncard_insert_of_not_mem ha', ← hst, hsn]
+        rw [← Set.ncard_insert_of_notMem ha', ← hst, hsn]
       · -- 1 + n.succ < Fintype.card (SubMulAction.ofStabilizer G α a)
         change _ < Nat.card (ofStabilizer G a).carrier
         rw [Set.Nat.card_coe_set_eq, ofStabilizer_carrier, ← Nat.succ_eq_one_add]
