@@ -185,14 +185,14 @@ def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
     one_hom := by
       dsimp only [yonedaMon_obj] at α ⊢
       rw [← yonedaMon_naturality, Category.comp_id,
-        ← Category.id_comp M.one, toUnit_unique (𝟙 _) (toUnit _),
-        ← Category.id_comp N.one, toUnit_unique (𝟙 _) (toUnit _)]
+        ← Category.id_comp η[M.X], toUnit_unique (𝟙 _) (toUnit _),
+        ← Category.id_comp η[N.X], toUnit_unique (𝟙 _) (toUnit _)]
       exact (α.app _).hom.map_one
     mul_hom := by
       dsimp only [yonedaMon_obj] at α ⊢
-      rw [← yonedaMon_naturality, Category.comp_id, ← Category.id_comp M.mul, ← lift_fst_snd]
+      rw [← yonedaMon_naturality, Category.comp_id, ← Category.id_comp μ[M.X], ← lift_fst_snd]
       refine ((α.app _).hom.map_mul _ _).trans ?_
-      show lift _ _ ≫ N.mul = _
+      show lift _ _ ≫ μ[N.X] = _
       congr 1
       ext <;> simp only [lift_fst, tensorHom_fst, lift_snd, tensorHom_snd,
         ← yonedaMon_naturality, Category.comp_id] }
@@ -201,7 +201,7 @@ def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
     dsimp only [yonedaMon_obj, yonedaMon_map_app, MonCat.hom_ofHom]
     simp_rw [← yonedaMon_naturality]
     simp
-  preimage_map φ := Mon_.ext (Category.id_comp φ.hom)
+  preimage_map φ := Mon_.Hom.ext (Category.id_comp φ.hom)
 
 instance : yonedaMon (C := C).Full := yonedaMonFullyFaithful.full
 instance : yonedaMon (C := C).Faithful := yonedaMonFullyFaithful.faithful
@@ -214,7 +214,7 @@ lemma essImage_yonedaMon :
     exact ⟨M.X, ⟨Functor.representableByEquiv.symm (isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
     letI := Mon_Class.ofRepresentableBy X F e
-    exact ⟨.mk' X, ⟨yonedaMonObjIsoOfRepresentableBy X F e⟩⟩
+    exact ⟨Mon_.mk X, ⟨yonedaMonObjIsoOfRepresentableBy X F e⟩⟩
 
 @[reassoc]
 lemma Mon_Class.one_comp (f : M ⟶ N) [IsMon_Hom f] : (1 : X ⟶ M) ≫ f = 1 := by simp [Hom.one_def]
@@ -225,11 +225,11 @@ lemma Mon_Class.mul_comp (f₁ f₂ : X ⟶ M) (g : M ⟶ N) [IsMon_Hom g] :
 
 @[reassoc]
 lemma Mon_Class.comp_one (f : X ⟶ Y) : f ≫ (1 : Y ⟶ M) = 1 :=
-  ((yonedaMon.obj <| .mk' M).map f.op).hom.map_one
+  ((yonedaMon.obj <| .mk M).map f.op).hom.map_one
 
 @[reassoc]
 lemma Mon_Class.comp_mul (f : X ⟶ Y) (g₁ g₂ : Y ⟶ M) : f ≫ (g₁ * g₂) = f ≫ g₁ * f ≫ g₂ :=
-  ((yonedaMon.obj <| .mk' M).map f.op).hom.map_mul _ _
+  ((yonedaMon.obj <| .mk M).map f.op).hom.map_mul _ _
 
 variable (M) in
 lemma Mon_Class.one_eq_one : η = (1 : _ ⟶ M) :=

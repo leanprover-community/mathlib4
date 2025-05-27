@@ -110,30 +110,20 @@ attribute [instance] Mon_.mon
 
 namespace Mon_
 
-/-- Construct an object of `Mon_ C` from an object `X : C` and `Mon_Class X` instance. -/
-@[simps]
-def mk' (X : C) [Mon_Class X] : Mon_ C where
-  X := X
-  one := η
-  mul := μ
-
-instance {M : Mon_ C} : Mon_Class M.X where
-  one := M.one
-  mul := M.mul
-  one_mul' := M.one_mul
-  mul_one' := M.mul_one
-  mul_assoc' := M.mul_assoc
-
 variable (C) in
 /-- The trivial monoid object. We later show this is initial in `Mon_ C`.
 -/
 @[simps!]
-def trivial : Mon_ C := mk' (𝟙_ C)
+def trivial : Mon_ C := mk (𝟙_ C)
 
 instance : Inhabited (Mon_ C) :=
   ⟨trivial C⟩
 
-variable {M : Mon_ C}
+end Mon_
+
+namespace Mon_Class
+
+variable {M : C} [Mon_Class M]
 
 @[simp]
 theorem one_mul_hom {Z : C} (f : Z ⟶ M) : (η[M] ⊗ f) ≫ μ[M] = (λ_ Z).hom ≫ f := by
@@ -234,8 +224,8 @@ def mkIso' {M N : Mon_ C} (f : M.X ≅ N.X) [IsMon_Hom f.hom] : M ≅ N where
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
 @[simps!]
-def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := by aesop_cat)
-    (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul := by aesop_cat) : M ≅ N :=
+def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
+    (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ[N.X] := by aesop_cat) : M ≅ N :=
   have : IsMon_Hom f.hom := ⟨one_f, mul_f⟩
   mkIso' f
 
@@ -692,11 +682,11 @@ variable [BraidedCategory C]
 
 @[simps! tensorObj_X tensorHom_hom]
 instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) where
-  tensorObj M N := mk' (M.X ⊗ N.X)
+  tensorObj M N := ⟨M.X ⊗ N.X⟩
   tensorHom f g := Hom.mk' (f.hom ⊗ g.hom)
   whiskerRight f Y := Hom.mk' (f.hom ▷ Y.X)
   whiskerLeft X _ _ g := Hom.mk' (X.X ◁ g.hom)
-  tensorUnit := mk' (𝟙_ C)
+  tensorUnit := ⟨𝟙_ C⟩
   associator M N P := mkIso' <| associator M.X N.X P.X
   leftUnitor M := mkIso' <| leftUnitor M.X
   rightUnitor M := mkIso' <| rightUnitor M.X

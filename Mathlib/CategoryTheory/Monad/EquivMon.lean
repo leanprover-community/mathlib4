@@ -60,11 +60,11 @@ def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   «η» := η[M.X]
   «μ» := μ[M.X]
   left_unit := fun X => by
-    simpa [-Mon_.mul_one] using congrArg (fun t ↦ t.app X) M.mul_one
+    simpa [-Mon_Class.mul_one] using congrArg (fun t ↦ t.app X) (mul_one M.X)
   right_unit := fun X => by
-    simpa [-Mon_.one_mul] using congrArg (fun t ↦ t.app X) M.one_mul
+    simpa [-Mon_Class.one_mul] using congrArg (fun t ↦ t.app X) (one_mul M.X)
   assoc := fun X => by
-    simpa [-Mon_.mul_assoc] using congrArg (fun t ↦ t.app X) M.mul_assoc
+    simpa [-Mon_Class.mul_assoc] using congrArg (fun t ↦ t.app X) (mul_assoc M.X)
 
 -- Porting note: `@[simps]` fails to generate `ofMon_obj`:
 @[simp] lemma ofMon_obj (M : Mon_ (C ⥤ C)) (X : C) : (ofMon M).obj X = M.X.obj X := rfl
@@ -78,9 +78,9 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
   map {X Y} f :=
     { f.hom with
       app_η X := by
-        simpa [-Mon_.Hom.one_hom] using congrArg (fun t ↦ t.app X) f.one_hom
+        simpa [-IsMon_Hom.one_hom] using congrArg (fun t ↦ t.app X) f.one_hom
       app_μ Z := by
-        simpa [-Mon_.Hom.mul_hom] using congrArg (fun t ↦ t.app Z) f.mul_hom }
+        simpa [-IsMon_Hom.mul_hom] using congrArg (fun t ↦ t.app Z) f.mul_hom }
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
 @[simps]
