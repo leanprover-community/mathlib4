@@ -1759,6 +1759,11 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
               simp
             rw [mul_assoc]
 
+          have return_list_prod: list.unattach.prod = return_list.unattach.prod := by
+            rw [← mega_list_prod_preserve]
+            exact mega_list_prod.symm
+
+
 
           have sum_new_zero: gamma_sum mega_list = 0 := by
             sorry
@@ -1789,10 +1794,10 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
 
-          use return_list
+          exact ⟨return_list, return_list_prod⟩
 
       sorry
-
+  sorry
 -- Decompose list of {e_k, γ}:
 
 -- The starting list must have the powers of γ sum to zero (since it's in the kernel of φ)
