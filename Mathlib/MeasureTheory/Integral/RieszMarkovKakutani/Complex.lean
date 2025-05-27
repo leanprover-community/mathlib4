@@ -211,8 +211,9 @@ lemma partitions_empty : partitions (∅ : Set X) = {∅} := by
     simp [hp]
 
 lemma partitions_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) : partitions s₁ ⊆ partitions s₂ := by
-
-  sorry
+  intro P hP
+  obtain ⟨h1, h2, h3, h4⟩ := hP
+  exact ⟨fun p hp ↦ subset_trans (h1 p hp) h, h2, h3, h4⟩
 
 open Classical in
 /-- If each `P i` is a partition of `s i` then the union is a partition of `⋃ i, s i`. -/
@@ -468,7 +469,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     classical
     let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
     have hP (i : ℕ) : P i ∈ partitions (s i) := partition_restrict hQ (hs i)
-    have : varOfPart μ Q ≤ ∑' (i : ℕ), varOfPart μ (P i) := varOfPart_le_tsum μ hQ
+    have : varOfPart μ Q ≤ ∑' (i : ℕ), varOfPart μ (P i) := varOfPart_le_tsum μ hs hs' hQ
     -- Choose `ε`.
     obtain ⟨ε, hε, hε'⟩ : ∃ (ε : ℝ≥0∞), 0 < ε ∧ b + ε < varOfPart μ Q := by
       have := hbQ
@@ -484,7 +485,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
       exact lt_of_add_lt_add_right h
     calc b + ε
       _ < varOfPart μ Q := hε'
-      _ ≤ ∑' (i : ℕ), variation.varOfPart μ (P i) := varOfPart_le_tsum μ hQ
+      _ ≤ ∑' (i : ℕ), variation.varOfPart μ (P i) := varOfPart_le_tsum μ hs hs' hQ
       _ ≤ ∑ i ∈ Finset.range n, varOfPart μ (P i) + ε := hn
       _ ≤ (∑ x ∈ Finset.range n, ⨆ P ∈ partitions (s x), varOfPart μ P) + ε := by
         gcongr with i hi
