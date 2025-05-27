@@ -184,7 +184,8 @@ namespace variation
 open MeasureTheory BigOperators ENNReal Function
 
 variable {X V 𝕜 : Type*} [MeasurableSpace X] [SeminormedAddCommGroup V] (𝕜 : Type*) [NormedField 𝕜]
-  [NormedSpace 𝕜 V] [T2Space V] (μ : VectorMeasure X V)
+  [NormedSpace 𝕜 V] [T2Space V] [SeminormedGroup V]
+ (μ : VectorMeasure X V)
 
 -- Section : Partitions
 -- NOTE: instead of working with partitions of `s`, work with sets of disjoints sets
@@ -393,8 +394,11 @@ lemma varOfPart_le_tsum {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
         intro p hp hp'
         dsimp [P]
         obtain hc | hc : p = ∅ ∨ ¬p = ∅ := eq_or_ne p ∅
-        · -- Remains to show that `‖0‖ₑ = 0` by `enorm_zero` doesn't work.
-          have : ‖(0 : V)‖ₑ = 0 := by sorry
+        · -- Remains to show that `‖0‖ₑ = 0` but `enorm_zero` doesn't work.
+          have : ‖(0 : V)‖ₑ = 0 := by
+            have : ‖(0 : V)‖ = 0 := by exact norm_zero
+            have := ofReal_norm_eq_enorm' (0 : V)
+            sorry
           simp [hc, this] at hp'
         · rw [Finset.mem_filter, Finset.mem_image]
           refine ⟨?_, hc⟩
