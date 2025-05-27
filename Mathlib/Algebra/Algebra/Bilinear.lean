@@ -132,6 +132,7 @@ theorem mulRight_mul [IsScalarTower R A A] (a b : A) :
   ext
   simp only [mulRight_apply, comp_apply, mul_assoc]
 
+
 end one_side
 
 variable [CommSemiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
@@ -165,6 +166,7 @@ theorem map_mul_iff (f : A →ₗ[R] B) :
     (∀ x y, f (x * y) = f x * f y) ↔
       (LinearMap.mul R A).compr₂ f = (LinearMap.mul R B ∘ₗ f).compl₂ f :=
   Iff.symm LinearMap.ext_iff₂
+
 
 end NonUnital
 
