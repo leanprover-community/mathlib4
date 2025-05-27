@@ -164,7 +164,6 @@ theorem comul_tensorObj_tensorObj_right :
       = Coalgebra.comul (A := M ⊗[R] N ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_comul]
   simp only [Comon_.monoidal_tensorObj_comon_comul, toComonObj]
-  -- rw [ofComonObjCoalgebraStruct_comul]
   simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl

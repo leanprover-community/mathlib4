@@ -309,7 +309,7 @@ theorem mul_antipode₁ (A : C) [Hopf_Class A] :
   simp only [Mon_.monMonoidalStruct_tensorObj_X, Category.assoc, pentagon_inv_inv_hom_hom_inv_assoc,
     Mon_.tensorUnit_X]
   slice_lhs 1 7 =>
-    erw [Bimon_.compatibility]
+    rw [Bimon_.compatibility]
   slice_lhs 2 4 =>
     rw [antipode_left]
   simp
