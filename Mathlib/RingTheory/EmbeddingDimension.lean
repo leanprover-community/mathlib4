@@ -38,7 +38,7 @@ open Cardinal
 
 /-- The embedding dimension of a local ring `R` with maximal ideal `m` is
 the dimension of `m ⧸ m²`. -/
-noncomputable def IsLocalRing.EmbDim (R : Type*) [CommRing R] [IsLocalRing R] [IsNoetherianRing R]
+noncomputable def IsLocalRing.EmbDim (R : Type*) [CommRing R] [IsLocalRing R]
     : ℕ :=
   Module.finrank (ResidueField R) (CotangentSpace R)
 
@@ -141,9 +141,8 @@ lemma Module.Finrank_eq_spanFinrankOfTop
     Module.finrank k V = (⊤ : Submodule k V).spanFinrank := by
   have rank_eq_spanRank : Module.rank k V = (⊤ : Submodule k V).spanRank :=
     Submodule.rank_eq_spanRank_of_free
-  have spanrank_eq_spanFinrank : (⊤ : Submodule k V).spanRank=(⊤ : Submodule k V).spanFinrank := by
-    have top_fg : (⊤ : Submodule k V).FG := IsNoetherian.noetherian (⊤ : Submodule k V)
-    exact Submodule.fg_iff_spanRank_eq_spanFinrank.mpr top_fg
+  have spanrank_eq_spanFinrank : (⊤ : Submodule k V).spanRank=(⊤ : Submodule k V).spanFinrank :=
+    Submodule.fg_iff_spanRank_eq_spanFinrank.mpr (IsNoetherian.noetherian (⊤ : Submodule k V))
   have finrank_eq_rank : Module.finrank k V = Module.rank k V := Module.finrank_eq_rank k V
   rw [rank_eq_spanRank, spanrank_eq_spanFinrank, Nat.cast_inj] at finrank_eq_rank
   exact finrank_eq_rank
@@ -239,7 +238,7 @@ theorem Ideal.toCotangent_out {R : Type*} [CommRing R] (I : Ideal R) (x : I.Cota
 
 theorem IsLocalRing.ContangentSpace_extend_singleton_basis
     {R : Type*} {x : R} [CommRing R] [IsLocalRing R] [IsNoetherianRing R]
-    [Nontrivial (R ⧸ Ideal.span {x})] (hx1 : x ∈ (maxl R)) (hx2 : x ∉ ((maxl R)^2)) :
+    (hx1 : x ∈ (maxl R)) (hx2 : x ∉ ((maxl R)^2)) :
     ∃ s : Set R, span R s = (maxl R) ∧ #s = (maxl R).spanRank ∧ x ∈ s := by
   let x' : Subtype ((maxl R) : Set R) := ⟨x, hx1⟩
   have : x' ∉ ((maxl R) • ⊤ : Submodule R (maxl R)) := by
@@ -339,8 +338,7 @@ theorem IsLocalRing.ContangentSpace_extend_singleton_basis
     exists_exists_and_eq_and, true_or, S, B, s', S', s'', x', s]
 
 theorem IsLocalRing.EmbDim_quot_singleton
-{R : Type*} {x : R} [CommRing R] [IsLocalRing R] [IsNoetherianRing R]
-[Nontrivial (R ⧸ Ideal.span {x})] :
+{R : Type*} {x : R} [CommRing R] [IsLocalRing R] [Nontrivial (R ⧸ Ideal.span {x})] :
     (maxl R).spanRank ≤ (maxl (R ⧸ Ideal.span {x})).spanRank + 1 := by
   obtain ⟨s, hs1, hs2⟩ := Submodule.exists_span_set_card_eq_spanRank (maxl (R ⧸ Ideal.span {x}))
   let s' : Set R := Quotient.out '' s
