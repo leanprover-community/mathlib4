@@ -18,7 +18,7 @@ A subsingleton type is `w`-small for any `w`.
 
 If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 
-See `Mathlib.Logic.Small.Basic` for further instances and theorems.
+See `Mathlib/Logic/Small/Basic.lean` for further instances and theorems.
 -/
 
 universe u w v v'
