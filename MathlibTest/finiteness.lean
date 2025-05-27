@@ -1,6 +1,6 @@
-import Mathlib.Tactic.Finiteness
 import Mathlib.Data.ENNReal.Real
-import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+import Mathlib.Tactic.Finiteness
 
 open MeasureTheory
 open scoped ENNReal
@@ -12,9 +12,9 @@ example (a : ℝ) (b : ℕ) : ENNReal.ofReal a + b < ∞ := by finiteness
 
 example {a : ℝ≥0∞} (ha : a ≠ ∞) : a + 3 < ∞ := by finiteness
 example {a : ℝ≥0∞} (ha : a < ∞) : a + 3 < ∞ := by finiteness
-/-- 
-Test that `finiteness_nonterminal` makes progress but does not fail on not 
-closing the goal. 
+/--
+Test that `finiteness_nonterminal` makes progress but does not fail on not
+closing the goal.
 -/
 example {a : ℝ≥0∞} (ha : a = 0) : a + 3 < ∞ := by finiteness_nonterminal; simp [ha]
 

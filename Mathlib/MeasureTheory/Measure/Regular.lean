@@ -3,8 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.Group.MeasurableEquiv
+import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Regular measures
@@ -59,11 +60,11 @@ satisfying a predicate `q` with respect to sets satisfying a predicate `p` if fo
 
 There are two main nontrivial results in the development below:
 * `InnerRegularWRT.measurableSet_of_isOpen` shows that, for an outer regular measure, inner
-regularity for open sets with respect to compact sets or closed sets implies inner regularity for
-all measurable sets of finite measure (with respect to compact sets or closed sets respectively).
+  regularity for open sets with respect to compact sets or closed sets implies inner regularity for
+  all measurable sets of finite measure (with respect to compact sets or closed sets respectively).
 * `InnerRegularWRT.weaklyRegular_of_finite` shows that a finite measure which is inner regular for
-open sets with respect to closed sets (for instance a finite measure on a metric space) is weakly
-regular.
+  open sets with respect to closed sets (for instance a finite measure on a metric space) is weakly
+  regular.
 
 All other results are deduced from these ones.
 
@@ -726,7 +727,7 @@ then any measurable set of finite measure can be approximated by a
 compact subset. See also `MeasurableSet.exists_isCompact_lt_add` and
 `MeasurableSet.exists_lt_isCompact_of_ne_top`. -/
 theorem _root_.MeasurableSet.exists_isCompact_diff_lt [OpensMeasurableSpace α] [T2Space α]
-    [InnerRegularCompactLTTop μ]  ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞)
+    [InnerRegularCompactLTTop μ] ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ μ (A \ K) < ε := by
   rcases hA.exists_isCompact_lt_add h'A hε with ⟨K, hKA, hKc, hK⟩
@@ -1035,6 +1036,11 @@ theorem restrict_of_measure_ne_top [R1Space α] [BorelSpace α] [Regular μ]
   exact MeasurableSet.exists_lt_isCompact_of_ne_top hV.measurableSet R hr
 
 end Regular
+
+instance Regular.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
+    [MeasurableSpace A] [TopologicalSpace A] [BorelSpace A] [ContinuousConstSMul G A]
+    {μ : Measure A} (g : Gᵈᵐᵃ) [Regular μ] : Regular (g • μ) :=
+  .map <| .smul ((DomMulAct.mk.symm g : G)⁻¹)
 
 -- see Note [lower instance priority]
 /-- Any locally finite measure on a `σ`-compact pseudometrizable space is regular. -/

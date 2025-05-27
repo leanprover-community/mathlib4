@@ -231,8 +231,10 @@ theorem comap_id : comap id f = f :=
 
 theorem comap_id' : comap (fun x => x) f = f := comap_id
 
-theorem comap_const_of_not_mem {x : β} (ht : t ∈ g) (hx : x ∉ t) : comap (fun _ : α => x) g = ⊥ :=
+theorem comap_const_of_notMem {x : β} (ht : t ∈ g) (hx : x ∉ t) : comap (fun _ : α => x) g = ⊥ :=
   empty_mem_iff_bot.1 <| mem_comap'.2 <| mem_of_superset ht fun _ hx' _ h => hx <| h.symm ▸ hx'
+
+@[deprecated (since := "2025-05-23")] alias comap_const_of_not_mem := comap_const_of_notMem
 
 theorem comap_const_of_mem {x : β} (h : ∀ t ∈ g, x ∈ t) : comap (fun _ : α => x) g = ⊤ :=
   top_unique fun _ hs => univ_mem' fun _ => h _ (mem_comap'.1 hs) rfl
@@ -763,6 +765,16 @@ theorem inf_principal_eq_bot_iff_comap {F : Filter α} {s : Set α} :
     F ⊓ 𝓟 s = ⊥ ↔ comap ((↑) : s → α) F = ⊥ := by
   rw [principal_eq_map_coe_top s, ← Filter.push_pull', inf_top_eq, map_eq_bot_iff]
 
+lemma map_generate_le_generate_preimage_preimage (U : Set (Set β)) (f : β → α) :
+    map f (generate U) ≤ generate ((f ⁻¹' ·) ⁻¹' U) := by
+  rw [le_generate_iff]
+  exact fun u hu ↦ mem_generate_of_mem hu
+
+lemma generate_image_preimage_le_comap (U : Set (Set α)) (f : β → α) :
+    generate ((f ⁻¹' ·) '' U) ≤ comap f (generate U) := by
+  rw [← map_le_iff_le_comap, le_generate_iff]
+  exact fun u hu ↦ mem_generate_of_mem ⟨u, hu, rfl⟩
+
 section Applicative
 
 theorem singleton_mem_pure {a : α} : {a} ∈ (pure a : Filter α) :=
@@ -772,7 +784,7 @@ theorem pure_injective : Injective (pure : α → Filter α) := fun a _ hab =>
   (Filter.ext_iff.1 hab { x | a = x }).1 rfl
 
 instance pure_neBot {α : Type u} {a : α} : NeBot (pure a) :=
-  ⟨mt empty_mem_iff_bot.2 <| not_mem_empty a⟩
+  ⟨mt empty_mem_iff_bot.2 <| notMem_empty a⟩
 
 @[simp]
 theorem le_pure_iff {f : Filter α} {a : α} : f ≤ pure a ↔ {a} ∈ f := by

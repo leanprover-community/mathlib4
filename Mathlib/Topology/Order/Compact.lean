@@ -67,7 +67,7 @@ instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSp
   isCompact_Icc := by
     intro a b
     convert isCompact_Icc (α := α) (a := b) (b := a) using 1
-    exact dual_Icc (α := α)
+    exact Icc_toDual (α := α)
 
 /-- A closed interval in a conditionally complete linear order is compact. -/
 instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (α : Type*)
@@ -240,7 +240,7 @@ theorem atBot_le_cocompact [NoMinOrder α] [ClosedIicTopology α] :
     obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
     obtain ⟨b, hb⟩ := exists_lt a
     exact Filter.mem_atBot_sets.mpr ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction
-      fun hc ↦ LT.lt.false <| hb'.trans_lt <| hb.trans_le <| ha.2 (not_not_mem.mp hc)⟩
+      fun hc ↦ LT.lt.false <| hb'.trans_lt <| hb.trans_le <| ha.2 (not_notMem.mp hc)⟩
 
 theorem atTop_le_cocompact [NoMaxOrder α] [ClosedIciTopology α] :
     atTop ≤ cocompact α :=

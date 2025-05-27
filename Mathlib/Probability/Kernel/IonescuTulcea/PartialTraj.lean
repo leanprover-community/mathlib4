@@ -87,7 +87,7 @@ variable (κ) in
 /-- Given a family of kernels `κ n` from `X 0 × ... × X n` to `X (n + 1)` for all `n`,
 construct a kernel from `X 0 × ... × X a` to `X 0 × ... × X b` by iterating `κ`.
 
-The idea is that the input is some trajectory up to time `a`, and the ouptut is the distribution
+The idea is that the input is some trajectory up to time `a`, and the output is the distribution
 of the trajectory up to time `b`. In particular if `b ≤ a`, this is just a deterministic kernel
 (see `partialTraj_le`). The name `partialTraj` stands for "partial trajectory".
 

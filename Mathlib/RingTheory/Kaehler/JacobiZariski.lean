@@ -3,8 +3,8 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.CotangentComplex
-import Mathlib.RingTheory.Generators
+import Mathlib.RingTheory.Extension.Cotangent.Basic
+import Mathlib.RingTheory.Extension.Generators
 import Mathlib.Algebra.Module.SnakeLemma
 
 /-!
@@ -138,7 +138,7 @@ lemma CotangentSpace.compEquiv_symm_inr :
       Basis.repr_self, Basis.prod_repr_inl, map_zero, Finsupp.coe_zero,
       Pi.zero_apply, ne_eq, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_apply,
       Finsupp.single_apply, ite_smul, one_smul, zero_smul, Sum.inr.injEq,
-        RingHom.map_ite_one_zero, reduceCtorEq, ↓reduceIte]
+      MonoidWithZeroHom.map_ite_one_zero, reduceCtorEq, ↓reduceIte]
 
 lemma CotangentSpace.compEquiv_symm_zero (x) :
     (compEquiv Q P).symm (0, x) =
@@ -158,9 +158,9 @@ lemma CotangentSpace.fst_compEquiv :
   obtain (i | i) := i <;>
     simp only [comp_vars, Basis.repr_symm_apply, Finsupp.linearCombination_single, Basis.prod_apply,
       LinearMap.coe_inl, LinearMap.coe_inr, Sum.elim_inl, Function.comp_apply, one_smul,
-      Basis.repr_self, Finsupp.single_apply, pderiv_X, Pi.single_apply, RingHom.map_ite_one_zero,
+      Basis.repr_self, Finsupp.single_apply, pderiv_X, Pi.single_apply,
       Sum.elim_inr, Function.comp_apply, Basis.baseChange_apply, one_smul,
-      map_zero, Finsupp.coe_zero, Pi.zero_apply, derivation_C]
+      MonoidWithZeroHom.map_ite_one_zero, map_zero, Finsupp.coe_zero, Pi.zero_apply, derivation_C]
 
 lemma CotangentSpace.fst_compEquiv_apply (x) :
     (compEquiv Q P x).1 = Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom x :=
@@ -216,14 +216,16 @@ lemma δAux_X (i) :
 
 lemma δAux_mul (x y) :
     δAux R Q (x * y) = x • (δAux R Q y) + y • (δAux R Q x) := by
-  induction' x using MvPolynomial.induction_on' with n r x₁ x₂ hx₁ hx₂
-  · induction' y using MvPolynomial.induction_on' with m s y₁ y₂ hy₁ hy₂
-    · simp only [monomial_mul, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
+  induction x using MvPolynomial.induction_on' with
+  | monomial n r =>
+    induction y using MvPolynomial.induction_on' with
+    | monomial m s =>
+      simp only [monomial_mul, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
         smul_tmul', smul_eq_mul, Algebra.smul_def, algebraMap_apply, aeval_monomial, mul_assoc]
       rw [mul_comm (m.prod _) (n.prod _)]
       simp only [pow_zero, implies_true, pow_add, Finsupp.prod_add_index']
-    · simp only [map_add, smul_add, hy₁, hy₂, mul_add, add_smul]; abel
-  · simp only [add_mul, map_add, hx₁, hx₂, add_smul, smul_add]; abel
+    | add y₁ y₂ hy₁ hy₂ => simp only [map_add, smul_add, hy₁, hy₂, mul_add, add_smul]; abel
+  | add x₁ x₂ hx₁ hx₂ => simp only [add_mul, map_add, hx₁, hx₂, add_smul, smul_add]; abel
 
 lemma δAux_C (r) :
     δAux R Q (C r) = 1 ⊗ₜ D R S r := by
@@ -235,11 +237,13 @@ lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
-  induction' x using MvPolynomial.induction_on with s x₁ x₂ hx₁ hx₂ p n IH
-  · simp [MvPolynomial.algebraMap_eq, δAux_C]
-  · simp only [map_add, hx₁, hx₂, tmul_add]
+  induction x using MvPolynomial.induction_on with
+  | C s => simp [MvPolynomial.algebraMap_eq, δAux_C]
+  | add x₁ x₂ hx₁ hx₂ =>
+    simp only [map_add, hx₁, hx₂, tmul_add]
     rw [add_add_add_comm]
-  · simp only [map_mul, Hom.toAlgHom_X, δAux_mul, algebraMap_apply, Hom.algebraMap_toAlgHom,
+  | mul_X p n IH =>
+    simp only [map_mul, Hom.toAlgHom_X, δAux_mul, algebraMap_apply, Hom.algebraMap_toAlgHom,
       ← @IsScalarTower.algebraMap_smul Q'.Ring T, id.map_eq_id, δAux_X, RingHomCompTriple.comp_eq,
       RingHom.id_apply, coe_eval₂Hom, IH, Hom.aeval_val, smul_add, map_aeval, tmul_add, tmul_smul,
       ← @IsScalarTower.algebraMap_smul Q.Ring T, smul_zero, aeval_X, zero_add, Derivation.leibniz,
@@ -255,11 +259,14 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
         (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
-  induction' x using MvPolynomial.induction_on with s x₁ x₂ hx₁ hx₂ p n IH
-  · simp only [algHom_C, δAux_C, sub_self, derivation_C, Derivation.map_algebraMap,
+  induction x using MvPolynomial.induction_on with
+  | C s =>
+    simp only [algHom_C, δAux_C, sub_self, derivation_C, Derivation.map_algebraMap,
       tmul_zero, map_zero, add_zero, MvPolynomial.algebraMap_apply, Prod.snd_zero]
-  · simp only [map_add, hx₁, hx₂, tmul_add, Prod.snd_add]
-  · simp only [map_mul, Hom.toAlgHom_X, ofComp_val, δAux_mul,
+  | add x₁ x₂ hx₁ hx₂ =>
+    simp only [map_add, hx₁, hx₂, tmul_add, Prod.snd_add]
+  | mul_X p n IH =>
+    simp only [map_mul, Hom.toAlgHom_X, ofComp_val, δAux_mul,
       ← @IsScalarTower.algebraMap_smul Q.Ring T, algebraMap_apply, Hom.algebraMap_toAlgHom,
       id.map_eq_id, map_aeval, RingHomCompTriple.comp_eq, comp_val, RingHom.id_apply, coe_eval₂Hom,
       IH, Derivation.leibniz, tmul_add, tmul_smul, ← cotangentSpaceBasis_apply,

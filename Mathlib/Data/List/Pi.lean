@@ -26,7 +26,7 @@ variable {i : ι} {l : List ι}
 
 /-- Given `f` a function whose domain is `i :: l`, get its value at `i`. -/
 def head (f : ∀ j ∈ i :: l, α j) : α i :=
-  f i (mem_cons_self _ _)
+  f i mem_cons_self
 
 /-- Given `f` a function whose domain is `i :: l`, produce a function whose domain
 is restricted to `l`. -/

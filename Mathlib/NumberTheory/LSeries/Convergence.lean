@@ -3,8 +3,8 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+import Mathlib.Data.EReal.Basic
 import Mathlib.NumberTheory.LSeries.Basic
-import Mathlib.Data.Real.EReal
 
 /-!
 # Convergence of L-series
@@ -75,7 +75,7 @@ lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' {f : ℕ → �
     refine le_of_eq <| sInf_eq_bot.mpr fun y hy ↦ ?_
     cases y with
     | bot => simp at hy
-    | coe y => exact ⟨_,  ⟨_, h _ <| EReal.bot_lt_coe _, rfl⟩, mod_cast sub_one_lt y⟩
+    | coe y => exact ⟨_, ⟨_, h _ <| EReal.bot_lt_coe _, rfl⟩, mod_cast sub_one_lt y⟩
     | top => exact ⟨_, ⟨_, h _ <| EReal.bot_lt_coe 0, rfl⟩, EReal.zero_lt_top⟩
 
 /-- If `‖f n‖` is bounded by a constant times `n^x`, then the abscissa of absolute convergence

@@ -52,8 +52,8 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
   intro f hf
   lift f to Lp.simpleFunc E p ν using hf
   induction f using Lp.simpleFunc.induction hp₀ hp with
-  | h_add hfp hgp _ ihf ihg => exact ihf.add ihg
-  | @h_ind c s hs hνs =>
+  | add hfp hgp _ ihf ihg => exact ihf.add ihg
+  | @indicatorConst c s hs hνs =>
     dsimp only [Lp.simpleFunc.coe_indicatorConst, Lp.indicatorConstLp_compMeasurePreserving]
     refine continuous_indicatorConstLp_set hp fun f ↦ ?_
     apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtype_val _ f.2

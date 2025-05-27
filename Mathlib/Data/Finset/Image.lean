@@ -3,13 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Algebra.NeZero
 import Mathlib.Data.Finset.Attach
 import Mathlib.Data.Finset.Disjoint
 import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 import Mathlib.Data.Finset.Range
-import Mathlib.Data.Finset.SymmDiff
+import Mathlib.Data.Finset.SDiff
 
 /-! # Image and map operations on finite sets
 
@@ -454,11 +454,6 @@ lemma image_sdiff_of_injOn [DecidableEq α] {t : Finset α} (hf : Set.InjOn f s)
     (s \ t).image f = s.image f \ t.image f :=
   mod_cast Set.image_diff_of_injOn hf <| coe_subset.2 hts
 
-open scoped symmDiff in
-theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
-    (s ∆ t).image f = s.image f ∆ t.image f :=
-  mod_cast Set.image_symmDiff hf s t
-
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     (h : Disjoint (s.image f) (t.image f)) : Disjoint s t :=
   disjoint_iff_ne.2 fun _ ha _ hb =>
@@ -561,6 +556,11 @@ theorem filterMap_mono (h : s ⊆ t) :
   rw [← val_le_iff] at h ⊢
   exact Multiset.filterMap_le_filterMap f h
 
+@[simp]
+theorem _root_.List.toFinset_filterMap [DecidableEq α] [DecidableEq β] (s : List α) :
+    (s.filterMap f).toFinset = s.toFinset.filterMap f f_inj := by
+  simp [← Finset.coe_inj]
+
 end FilterMap
 
 /-! ### Subtype -/
@@ -611,9 +611,12 @@ theorem property_of_mem_map_subtype {p : α → Prop} (s : Finset { x // p x }) 
 /-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result does not contain any value that does
 not satisfy the property of the subtype. -/
-theorem not_mem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // p x }) {a : α}
+theorem notMem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // p x }) {a : α}
     (h : ¬p a) : a ∉ s.map (Embedding.subtype _) :=
   mt s.property_of_mem_map_subtype h
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_map_subtype_of_not_property := notMem_map_subtype_of_not_property
 
 /-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result is a subset of the set giving the
@@ -624,32 +627,6 @@ theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.su
   convert property_of_mem_map_subtype s ha
 
 end Subtype
-
-/-! ### Fin -/
-
-
-/-- Given a finset `s` of natural numbers and a bound `n`,
-`s.fin n` is the finset of all elements of `s` less than `n`.
--/
-protected def fin (n : ℕ) (s : Finset ℕ) : Finset (Fin n) :=
-  (s.subtype _).map Fin.equivSubtype.symm.toEmbedding
-
-@[simp]
-theorem mem_fin {n} {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
-  | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
-
-@[simp]
-theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp
-
-@[mono]
-theorem fin_mono {n} : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
-
-@[gcongr]
-theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ t.fin n := fin_mono h
-
-@[simp]
-theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
-  simp [Finset.fin, Finset.map_map]
 
 /-- If a `Finset` is a subset of the image of a `Set` under `f`,
 then it is equal to the `Finset.image` of a `Finset` subset of that `Set`. -/
@@ -679,7 +656,7 @@ theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.s
   induction' n with k hk
   · simp
   conv_rhs => rw [range_succ]
-  rw [range_succ, image_insert, ← hk, insert_sdiff_of_not_mem]
+  rw [range_succ, image_insert, ← hk, insert_sdiff_of_notMem]
   simp
 
 end Finset

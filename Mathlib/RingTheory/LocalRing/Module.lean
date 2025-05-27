@@ -166,8 +166,6 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
   let bk : Basis ι k (k ⊗[R] M) := Basis.mk hli (by rw [hsp])
   haveI : Finite ι := Module.Finite.finite_basis bk
   letI : Fintype ι := Fintype.ofFinite ι
-  letI : IsNoetherian k (k ⊗[R] (ι →₀ R)) :=
-    isNoetherian_of_isNoetherianRing_of_finite k (k ⊗[R] (ι →₀ R))
   let i := Finsupp.linearCombination R v
   have hi : Surjective i := by
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
@@ -253,7 +251,7 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
   rw [linearIndependent_iff']; intro s f hfv
   classical
   induction' s using Finset.induction with n s hn ih generalizing v <;> intro i hi
-  · exact (Finset.not_mem_empty _ hi).elim
+  · exact (Finset.notMem_empty _ hi).elim
   rw [← Finset.sum_coe_sort] at hfv
   have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfv
   have : v n ∉ 𝔪 • (⊤ : Submodule R M) := by

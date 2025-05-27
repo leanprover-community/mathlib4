@@ -152,7 +152,7 @@ lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
   have : ∀ (m) (hm : n = m), p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) =
       p m ((t.map (finCongr hm).toEmbedding).piecewise (fun _ ↦ x) fun _ ↦ y) := by
     rintro m rfl
-    simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
+    simp +unfoldPartialApp [Finset.piecewise]
   simp_rw [changeOriginSeriesTerm_apply, eq_comm]; apply this
 
 theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :
@@ -187,7 +187,8 @@ theorem changeOriginSeries_summable_aux₃ {r : ℝ≥0} (hr : ↑r < p.radius) 
   refine NNReal.summable_of_le
     (fun n => ?_) (NNReal.summable_sigma.1 <| p.changeOriginSeries_summable_aux₂ hr k).2
   simp only [NNReal.tsum_mul_right]
-  exact mul_le_mul' (p.nnnorm_changeOriginSeries_le_tsum _ _) le_rfl
+  gcongr
+  apply p.nnnorm_changeOriginSeries_le_tsum
 
 theorem le_changeOriginSeries_radius (k : ℕ) : p.radius ≤ (p.changeOriginSeries k).radius :=
   ENNReal.le_of_forall_nnreal_lt fun _r hr =>
@@ -209,11 +210,11 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
   rw [lt_tsub_iff_right, add_comm] at hr
   have hr' : (‖x‖₊ : ℝ≥0∞) < p.radius := (le_add_right le_rfl).trans_lt hr
   apply le_radius_of_summable_nnnorm
-  have : ∀ k : ℕ,
+  have (k : ℕ) :
       ‖p.changeOrigin x k‖₊ * r ^ k ≤
         (∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1) *
-          r ^ k :=
-    fun k => mul_le_mul_right' (p.nnnorm_changeOrigin_le k hr') (r ^ k)
+          r ^ k := by
+    gcongr; exact p.nnnorm_changeOrigin_le k hr'
   refine NNReal.summable_of_le this ?_
   simpa only [← NNReal.tsum_mul_right] using
     (NNReal.summable_sigma.1 (p.changeOriginSeries_summable_aux₁ hr)).2
@@ -363,9 +364,6 @@ theorem HasFPowerSeriesOnBall.analyticOnNhd (hf : HasFPowerSeriesOnBall f p x r)
     AnalyticOnNhd 𝕜 f (EMetric.ball x r) :=
   fun _y hy => hf.analyticAt_of_mem hy
 
-@[deprecated (since := "2024-09-26")]
-alias HasFPowerSeriesOnBall.analyticOn := HasFPowerSeriesOnBall.analyticOnNhd
-
 variable (𝕜 f) in
 /-- For any function `f` from a normed vector space to a Banach space, the set of points `x` such
 that `f` is analytic at `x` is open. -/
@@ -382,15 +380,9 @@ theorem AnalyticAt.exists_mem_nhds_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
     ∃ s ∈ 𝓝 x, AnalyticOnNhd 𝕜 f s :=
   h.eventually_analyticAt.exists_mem
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticAt.exists_mem_nhds_analyticOn := AnalyticAt.exists_mem_nhds_analyticOnNhd
-
 /-- If we're analytic at a point, we're analytic in a nonempty ball -/
 theorem AnalyticAt.exists_ball_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
     ∃ r : ℝ, 0 < r ∧ AnalyticOnNhd 𝕜 f (Metric.ball x r) :=
   Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticAt.exists_ball_analyticOn := AnalyticAt.exists_ball_analyticOnNhd
 
 end

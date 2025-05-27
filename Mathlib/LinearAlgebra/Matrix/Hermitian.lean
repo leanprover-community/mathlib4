@@ -15,7 +15,7 @@ See also `IsSelfAdjoint`, which generalizes this definition to other star rings.
 
 ## Main definition
 
- * `Matrix.IsHermitian` : a matrix `A : Matrix n n α` is hermitian if `Aᴴ = A`.
+* `Matrix.IsHermitian` : a matrix `A : Matrix n n α` is hermitian if `Aᴴ = A`.
 
 ## Tags
 
@@ -30,7 +30,7 @@ variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
 
 open scoped Matrix
 
-local notation "⟪" x ", " y "⟫" => @inner α _ _ x y
+local notation "⟪" x ", " y "⟫" => inner α x y
 
 section Star
 
@@ -48,7 +48,6 @@ theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :
     IsSelfAdjoint A := h
 
--- @[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): incorrect `ext`, not a structure or a lemma proving `x = y`.
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
 

@@ -75,7 +75,7 @@ theorem mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ} :
       apply Nat.pos_of_ne_zero
       exact Finset.prod_ne_zero_iff.mp h.ne.symm _ (mem_univ _)
   · simp only [not_lt, nonpos_iff_eq_zero] at h
-    simp only [h, not_mem_empty, ne_eq, not_true_eq_false, and_false]
+    simp only [h, notMem_empty, ne_eq, not_true_eq_false, and_false]
 
 @[simp]
 theorem finMulAntidiag_zero_right (d : ℕ) :
@@ -297,12 +297,11 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
     rw [mem_filter, Finset.mem_product] at hb
     refine ⟨?_, hn⟩
     · rw [Fin.prod_univ_three a]
-      simp only [a, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
-      Matrix.cons_val_two, Matrix.tail_cons]
+      dsimp only [a, Matrix.cons_val]
       rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
         Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
   use a; use ha
-  apply Prod.ext <;> simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]
+  apply Prod.ext <;> dsimp only [a, Matrix.cons_val]
     <;> apply Nat.mul_div_cancel'
   · apply Nat.gcd_dvd_left
   · apply Nat.gcd_dvd_right

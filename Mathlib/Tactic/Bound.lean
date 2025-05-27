@@ -58,7 +58,7 @@ lemma as an `apply` rule, tag it with `@[bound]`.  It will be automatically conv
 Score `0` lemmas turn into `norm apply` rules, and score `0 < s` lemmas turn into `safe apply s`
 rules.  The score is roughly lexicographic ordering on the counts of the three type (guessing,
 general, involving-zero), and tries to minimize the complexity of hypotheses we have to prove.
-See `Mathlib.Tactic.Bound.Attribute` for the full algorithm.
+See `Mathlib/Tactic/Bound/Attribute.lean` for the full algorithm.
 
 To register a lemma as a `forward` rule, tag it with `@[bound_forward]`.  The most important
 builtin forward rule is `le_of_lt`, so that strict inequalities can be used to prove weak
@@ -107,8 +107,8 @@ lemma mul_lt_mul_right_of_pos_of_lt {α : Type} {a b c : α} [Mul α] [Zero α] 
     [MulPosStrictMono α] [MulPosReflectLT α] (c0 : 0 < c) : a < b → a * c < b * c :=
   (mul_lt_mul_right c0).mpr
 
-lemma Nat.cast_pos_of_pos {R : Type} [OrderedSemiring R] [Nontrivial R] {n : ℕ} :
-    0 < n → 0 < (n : R) :=
+lemma Nat.cast_pos_of_pos {R : Type} [Semiring R] [PartialOrder R] [IsOrderedRing R] [Nontrivial R]
+    {n : ℕ} : 0 < n → 0 < (n : R) :=
   Nat.cast_pos.mpr
 
 lemma Nat.one_le_cast_of_le {α : Type} [AddCommMonoidWithOne α] [PartialOrder α]
@@ -257,3 +257,9 @@ macro_rules
   | `(tactic| bound%$tk [$[$ts],*]) => do
     let haves ← ts.mapM fun (t : Term) => withRef t `(tactic| have := $t)
     `(tactic| ($haves;*; bound%$tk))
+
+/-!
+We register `bound` with the `hint` tactic.
+-/
+
+register_hint bound
