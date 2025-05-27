@@ -228,10 +228,6 @@ example : 0 < a + 5 := by positivity
 example : 0 < 2 * a + 3 := by positivity
 example (ha : 0 < a) : 0 < a + b := by positivity
 
-end
-
-section
-
 example : 0 ≤ a * b := by positivity
 example (ha : a ≠ 0) : 0 < 2 * a := by positivity
 example (ha : a ≠ 0) : 0 < a * 37 := by positivity
@@ -243,8 +239,8 @@ end ENNReal
 section EReal
 
 example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b := by positivity
-example (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a + b := by positivity
-example (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a + b := by positivity
+example (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b := by positivity
+example (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b := by positivity
 example (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by positivity
 example (ha : 0 ≤ a) : 0 ≤ 2 + a := by positivity
 example (ha : 0 < a) : 0 < a + 2 := by positivity
