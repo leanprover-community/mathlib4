@@ -894,7 +894,7 @@ variable (S) in
 This is `LinearMap.compMultilinearMap` as an `S`-linear equivalence,
 and the multilinear version of `LinearEquiv.congrRight`. -/
 @[simps! apply symm_apply]
-def _root_.LinearEquiv.congrRightMultilinear
+def _root_.LinearEquiv.multilinearMapCongrRight
     [LinearMap.CompatibleSMul M₂ M₃ S R] [LinearMap.CompatibleSMul M₃ M₂ S R] (g : M₂ ≃ₗ[R] M₃) :
     MultilinearMap R M₁ M₂ ≃ₗ[S] MultilinearMap R M₁ M₃ where
   __ := g.toLinearMap.compMultilinearMapₗ S
@@ -1065,7 +1065,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
 This is `MultilinearMap.compLinearMap` as a linear equivalence,
 and the multilinear version of `LinearEquiv.congrLeft`. -/
 @[simps! apply symm_apply]
-def _root_.LinearEquiv.congrLeftMultilinear (e : Π (i : ι), M₁ i ≃ₗ[R] M₁' i) :
+def _root_.LinearEquiv.multilinearMapCongrLeft (e : Π (i : ι), M₁ i ≃ₗ[R] M₁' i) :
     (MultilinearMap R M₁' M₂) ≃ₗ[R] MultilinearMap R M₁ M₂ where
   __ := compLinearMapₗ (e · |>.toLinearMap)
   invFun := compLinearMapₗ (e · |>.symm.toLinearMap)

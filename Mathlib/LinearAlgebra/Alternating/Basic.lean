@@ -568,7 +568,8 @@ variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 /-- Construct a linear equivalence between maps from a linear equivalence between domains.
 
 This is `AlternatingMap.compLinearMap` as an isomorphism,
-and the alternating version of `LinearEquiv.congrLeftMultilinear`. -/
+and the alternating version of `LinearEquiv.multilinearMapCongrLeft`.
+It could also have been called `LinearEquiv.alternatingMapCongrLeft`. -/
 @[simps apply]
 def domLCongr (e : M ≃ₗ[R] M₂) : M [⋀^ι]→ₗ[R] N ≃ₗ[S] (M₂ [⋀^ι]→ₗ[R] N) where
   toFun f := f.compLinearMap e.symm
@@ -900,9 +901,9 @@ variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddComm
 /-- An isomorphism of multilinear maps given an isomorphism between their codomains.
 
 This is `Linear.compAlternatingMap` as an isomorphism,
-and the alternating version of `LinearEquiv.congrRightMultilinear`. -/
+and the alternating version of `LinearEquiv.multilinearMapCongrRight`. -/
 @[simps!]
-def LinearEquiv.congrRightAlternating (e : N'' ≃ₗ[R'] N₂'') :
+def LinearEquiv.alternatingMapCongrRight (e : N'' ≃ₗ[R'] N₂'') :
     M''[⋀^ι]→ₗ[R'] N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[R'] N₂'') where
   toFun f := e.compAlternatingMap f
   invFun f := e.symm.compAlternatingMap f
