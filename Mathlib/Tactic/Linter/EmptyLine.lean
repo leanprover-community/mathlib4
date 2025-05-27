@@ -19,19 +19,37 @@ namespace Lean.Syntax
 # `Syntax` filters
 -/
 
+/--
+`filterMapM stx f` takes as input a `Syntax` `stx` and a monadic function `f : Syntax → m α`.
+It produce the array of the `some` values that `f` takes while traversing `stx`.
+
+See `filterMap` for a non-monadic version.
+-/
 partial
-def filterMapM {m : Type → Type} [Monad m] (stx : Syntax) (f : Syntax → m (Option Syntax)) :
-    m (Array Syntax) := do
+def filterMapM {m : Type → Type} [Monad m] {α} (stx : Syntax) (f : Syntax → m (Option α)) :
+    m (Array α) := do
   let nargs := (← stx.getArgs.mapM (·.filterMapM f)).flatten
   match ← f stx with
     | some new => return nargs.push new
     | none => return nargs
 
-def filterMap (stx : Syntax) (f : Syntax → Option Syntax) : Array Syntax :=
+/--
+`filterMap stx f` takes as input a `Syntax` `stx` and a function `f : Syntax → α`.
+It produce the array of the `some` values that `f` takes while traversing `stx`.
+
+See `filterMapM` for a non-monadic version.
+-/
+def filterMap {α} (stx : Syntax) (f : Syntax → Option α) : Array α :=
   stx.filterMapM (m := Id) f
 
+/--
+`filter stx f` takes as input a `Syntax` `stx` and a function `f : Syntax → Bool`.
+It produce the array of the syntax nodes in `stx` where `f` is `true`.
+
+See also the similar `filterMap` and `filterMapM`.
+-/
 def filter (stx : Syntax) (f : Syntax → Bool) : Array Syntax :=
-  stx.filterMap (fun s => if f s then some s else none)
+  stx.filterMap fun s => if f s then some s else none
 
 end Lean.Syntax
 
