@@ -44,7 +44,7 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
   bounded above by `spectralNorm K L`.
 * `spectralNorm_eq_of_equiv` : the `K`-algebra automorphisms of `L` are isometries with respect to
   the spectral norm.
-* `spectralNorm_eq_iSup_of_finiteDimensional_normal` : iff `L/K` is finite and normal, then
+* `spectralNorm_eq_iSup_of_finiteDimensional_normal` : if `L/K` is finite and normal, then
   `spectralNorm K L x = supr (λ (σ : L ≃ₐ[K] L), f (σ x))`.
 * `isPowMul_spectralNorm` : the spectral norm is power-multiplicative.
 * `isNonarchimedean_spectralNorm` : the spectral norm is nonarchimedean.
