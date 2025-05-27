@@ -153,7 +153,7 @@ lemma _root_.LinearEquiv.map_mem_invtSubmodule_iff {R M N : Type*} [CommSemiring
     [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] {f : End R N}
     {e : M ≃ₗ[R] N} {p : Submodule R M} :
     p.map e ∈ f.invtSubmodule ↔ p ∈ (e.symm.conj f).invtSubmodule := by
-  simp [← e.map_mem_invtSubmodule_conj_iff, ← LinearEquiv.trans_apply, LinearEquiv.conj_trans]
+  simp [← e.map_mem_invtSubmodule_conj_iff]
 
 end invtSubmodule
 
