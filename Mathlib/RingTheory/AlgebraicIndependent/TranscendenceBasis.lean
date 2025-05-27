@@ -171,7 +171,7 @@ theorem IsTranscendenceBasis.mvPolynomial [Nontrivial R] :
   refine isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.2 ⟨algebraicIndependent_X .., ?_⟩
   rw [adjoin_range_X]
   set A := MvPolynomial ι R
-  have := Algebra.isIntegral_of_surjective (R := (⊤ : Subalgebra R A)) (A := A) (⟨⟨·, ⟨⟩⟩, rfl⟩)
+  have := Algebra.isIntegral_of_surjective (R := (⊤ : Subalgebra R A)) (B := A) (⟨⟨·, ⟨⟩⟩, rfl⟩)
   infer_instance
 
 theorem IsTranscendenceBasis.mvPolynomial' [Nonempty ι] :
