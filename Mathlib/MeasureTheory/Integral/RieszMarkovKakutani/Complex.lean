@@ -179,9 +179,9 @@ noncomputable def vectorTotalVariation : VectorMeasure X ℝ≥0∞ where
 
 -- ## Alternative 1: define variation as a VectorMeasure
 
-namespace variation
+namespace VectorMeasure
 
-open MeasureTheory BigOperators ENNReal Function
+open MeasureTheory BigOperators ENNReal Function Filter
 
 variable {X V 𝕜 : Type*} [MeasurableSpace X] [SeminormedAddCommGroup V] (𝕜 : Type*) [NormedField 𝕜]
   [NormedSpace 𝕜 V] [T2Space V] [SeminormedGroup V]
@@ -333,9 +333,9 @@ lemma variationAux_le' {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 
     refine ⟨P, hP, ?_⟩
     calc variationAux μ s
       _ = a + ε' := ha'
-      _ ≤ variation.varOfPart μ P + ε' := by
+      _ ≤ varOfPart μ P + ε' := by
         exact (ENNReal.add_le_add_iff_right coe_ne_top).mpr (le_of_lt hP')
-      _ ≤ variation.varOfPart μ P + ε := by gcongr
+      _ ≤ varOfPart μ P + ε := by gcongr
   · simp_rw [hw, zero_le, and_true]
     exact ⟨{}, by simp, by simp [hs], by simp, by simp⟩
 
@@ -489,6 +489,16 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     -- Choose `n` large so that considering a finite set of `s i` suffices.
     obtain ⟨n, hn⟩ : ∃ n, ∑' i, varOfPart μ (P i) ≤
         ∑ i ∈ Finset.range n, varOfPart μ (P i) + ε := by
+      have A : Tendsto (fun n ↦ ∑ i ∈ Finset.range n, varOfPart μ (P i)) atTop
+          (nhds (∑' i, varOfPart μ (P i))) := by
+        exact tendsto_nat_tsum fun i ↦ VectorMeasure.varOfPart μ (P i)
+      let a := ∑' i, varOfPart μ (P i) - ε
+      have : a < ∑' i, varOfPart μ (P i) := by sorry
+
+      have := (tendsto_order.mp A).1 a this
+      obtain ⟨n, hn, hn'⟩ := (this.and (Ici_mem_atTop 1)).exists
+      dsimp [a] at hn
+      use n
 
       sorry
     use n
@@ -496,7 +506,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
       exact lt_of_add_lt_add_right h
     calc b + ε
       _ < varOfPart μ Q := hε'
-      _ ≤ ∑' (i : ℕ), variation.varOfPart μ (P i) := varOfPart_le_tsum μ hs hs' hQ
+      _ ≤ ∑' (i : ℕ), varOfPart μ (P i) := varOfPart_le_tsum μ hs hs' hQ
       _ ≤ ∑ i ∈ Finset.range n, varOfPart μ (P i) + ε := hn
       _ ≤ (∑ x ∈ Finset.range n, ⨆ P ∈ partitions (s x), varOfPart μ P) + ε := by
         gcongr with i hi
@@ -511,39 +521,39 @@ noncomputable def variation : VectorMeasure X ℝ≥0∞ where
 
 -- Section : properties of variation
 
-theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
-    ‖μ E‖ₑ ≤ (variation μ E) := by
-  dsimp [variation, variationAux]
-  wlog hE' : E ≠ ∅
-  · push_neg at hE'
-    simp [hE']
+-- theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
+--     ‖μ E‖ₑ ≤ (variation μ E) := by
+--   dsimp [variation, variationAux]
+--   wlog hE' : E ≠ ∅
+--   · push_neg at hE'
+--     simp [hE']
 
-  by_cases hE : ¬MeasurableSet E
-  · simp [hE, μ.not_measurable' hE]
-  · push_neg at hE
-    simp only [hE, reduceIte, varOfPart]
-    let P' : Finset (Set X) := {E}
-    have hP' : P' ∈ partitions E := by
-      refine ⟨?_, ?_, ?_, ?_⟩
-      · simp [P']
-      · simpa [P']
-      · simp [P']
-      · simpa [P']
-    have hEP' : ENNReal.ofReal ‖μ E‖ = varOfPart μ P' := by
-      simp [varOfPart, P']
-    rw [hEP']
-    dsimp [varOfPart]
-    refine le_iSup₂_of_le P' hP' fun a ha ↦ ?_
-    -- have : 0 ≤ ∑ p ∈ P', ‖μ p‖ := by
-    --   sorry
-    -- have : ∀ p ∈ P', 0 ≤ ‖μ p‖ := by
-    --   sorry
-    use ∑ p ∈ P', ⟨‖μ p‖, by positivity⟩
-    constructor
-    · simp only [ofReal_norm, WithTop.coe_sum, some_eq_coe']
-      congr
-    · refine NNReal.coe_le_coe.mp ?_
-      sorry
+--   by_cases hE : ¬MeasurableSet E
+--   · simp [hE, μ.not_measurable' hE]
+--   · push_neg at hE
+--     simp only [hE, reduceIte, varOfPart]
+--     let P' : Finset (Set X) := {E}
+--     have hP' : P' ∈ partitions E := by
+--       refine ⟨?_, ?_, ?_, ?_⟩
+--       · simp [P']
+--       · simpa [P']
+--       · simp [P']
+--       · simpa [P']
+--     have hEP' : ENNReal.ofReal ‖μ E‖ = varOfPart μ P' := by
+--       simp [varOfPart, P']
+--     rw [hEP']
+--     dsimp [varOfPart]
+--     refine le_iSup₂_of_le P' hP' fun a ha ↦ ?_
+--     -- have : 0 ≤ ∑ p ∈ P', ‖μ p‖ := by
+--     --   sorry
+--     -- have : ∀ p ∈ P', 0 ≤ ‖μ p‖ := by
+--     --   sorry
+--     use ∑ p ∈ P', ⟨‖μ p‖, by positivity⟩
+--     constructor
+--     · simp only [ofReal_norm, WithTop.coe_sum, some_eq_coe']
+--       congr
+--     · refine NNReal.coe_le_coe.mp ?_
+--       sorry
 
 -- TO DO : the total variation is a norm on the space of vector-valued measures.
 
@@ -551,7 +561,7 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
 
 -- TO DO : variation corresponds to the Hahn–Jordan decomposition for a signed measure.
 
-end variation
+end VectorMeasure
 
 
 -- ## Alternative 2: define variation as a measure
