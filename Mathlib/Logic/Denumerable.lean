@@ -267,7 +267,7 @@ open Finset
 
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
-    rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]
+    rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_notMem]
     rintro n hn
     rw [mem_filter, ofNat, mem_range] at hn
     exact bot_le.not_lt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
@@ -287,7 +287,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
     simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
     conv =>
       rhs
-      rw [← ih, ← card_insert_of_not_mem h₁, ← h₂]
+      rw [← ih, ← card_insert_of_notMem h₁, ← h₂]
 
 /-- Any infinite set of naturals is denumerable. -/
 def denumerable (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : Denumerable s :=

@@ -3,6 +3,8 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+import Mathlib.Data.Int.WithZero
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.Topology.Algebra.Valued.ValuedField
@@ -24,6 +26,8 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   to its `v`-adic valuation.
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
   `v.adicCompletion`.
+- `IsDedekindDomain.HeightOneSpectrum.adicAbv v`is the `v`-adic absolute value on `K` defined as `b`
+  raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
 
 ## Main results
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
@@ -262,20 +266,20 @@ theorem intValuation_exists_uniformizer :
     exact
       ⟨v.ne_bot, v.asIdeal, (not_congr Ideal.isUnit_iff).mpr (Ideal.IsPrime.ne_top v.isPrime),
         sq v.asIdeal⟩
-  obtain ⟨π, mem, nmem⟩ := SetLike.exists_of_lt hlt
+  obtain ⟨π, mem, notMem⟩ := SetLike.exists_of_lt hlt
   have hπ : Associates.mk (Ideal.span {π}) ≠ 0 := by
     rw [Associates.mk_ne_zero']
     intro h
-    rw [h] at nmem
-    exact nmem (Submodule.zero_mem (v.asIdeal ^ 2))
+    rw [h] at notMem
+    exact notMem (Submodule.zero_mem (v.asIdeal ^ 2))
   use π
   rw [intValuation_if_neg _ (Associates.mk_ne_zero'.mp hπ), WithZero.coe_inj]
   apply congr_arg
   rw [neg_inj, ← Int.ofNat_one, Int.natCast_inj]
-  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem nmem
+  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem notMem
   rw [← pow_one (Associates.mk v.asIdeal), Associates.prime_pow_dvd_iff_le hπ hv] at mem
-  rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
-  exact Nat.eq_of_le_of_lt_succ mem nmem
+  rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at notMem
+  exact Nat.eq_of_le_of_lt_succ mem notMem
 
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
@@ -417,10 +421,13 @@ theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∈ v.adicCompletionIntegers K ↔ Valued.v x ≤ 1 :=
   Iff.rfl
 
-theorem not_mem_adicCompletionIntegers {x : v.adicCompletion K} :
+theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
   rw [not_congr <| mem_adicCompletionIntegers R K v]
   exact not_le
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_adicCompletionIntegers := notMem_adicCompletionIntegers
 
 section AlgebraInstances
 
@@ -550,7 +557,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
     simp [ha, Submonoid.one_mem]
-  · rw [not_mem_adicCompletionIntegers] at ha
+  · rw [notMem_adicCompletionIntegers] at ha
     -- Let the additive valuation of a be -d with d>0
     obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
       Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
@@ -570,5 +577,41 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       ← Int.eq_natAbs_of_nonneg ha.le, smul_eq_mul]
     -- and now it's easy
     omega
+
+section AbsoluteValue
+
+open WithZeroMulInt
+
+variable {R K} in
+/-- The `v`-adic absolute value function on `K` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def adicAbvDef (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :=
+  fun x ↦ toNNReal (ne_zero_of_lt hb) (v.valuation K x)
+
+variable {R K} in
+lemma isNonarchimedean_adicAbvDef {b : NNReal} (hb : 1 < b) :
+    IsNonarchimedean (α := K) (fun x ↦ v.adicAbvDef hb x) := by
+  intro x y
+  simp only [adicAbvDef]
+  have h_mono := (toNNReal_strictMono hb).monotone
+  rw [← h_mono.map_max]
+  exact h_mono ((v.valuation _).map_add x y)
+
+variable {R K} in
+/-- The `v`-adic absolute value on `K` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) : AbsoluteValue K ℝ where
+  toFun x := v.adicAbvDef hb x
+  map_mul' _ _ := by simp [adicAbvDef]
+  nonneg' _ := NNReal.zero_le_coe
+  eq_zero' _ := by simp [adicAbvDef]
+  add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ zero_le _
+
+variable {R K} in
+/-- The `v`-adic absolute value is nonarchimedean -/
+theorem isNonarchimedean_adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :
+    IsNonarchimedean (α := K) (v.adicAbv hb) := isNonarchimedean_adicAbvDef v hb
+
+end AbsoluteValue
 
 end IsDedekindDomain.HeightOneSpectrum

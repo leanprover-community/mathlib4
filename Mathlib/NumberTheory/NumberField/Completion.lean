@@ -19,7 +19,7 @@ of instances is through the use of type synonyms. In this case, we use the type 
 of a semiring. In particular this type synonym depends on an absolute value, which provides a
 systematic way of assigning and inferring instances of the semiring that also depend on an absolute
 value. The completion of a field at multiple absolute values is defined in
-`Mathlib.Algebra.Ring.WithAbs` as `AbsoluteValue.Completion`. The completion of a number
+`Mathlib/Algebra/Ring/WithAbs.lean` as `AbsoluteValue.Completion`. The completion of a number
 field at an infinite place is then derived in this file, as `InfinitePlace` is a subtype of
 `AbsoluteValue`.
 
