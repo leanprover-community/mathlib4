@@ -487,28 +487,32 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
       obtain ⟨c, hc, hc'⟩ := exists_between hbQ
       exact ⟨c - b, tsub_pos_of_lt hc, by simpa [add_tsub_cancel_of_le (le_of_lt hc)]⟩
     -- Choose `n` large so that considering a finite set of `s i` suffices.
-    obtain ⟨n, hn⟩ : ∃ n, ∑' i, varOfPart μ (P i) ≤
-        ∑ i ∈ Finset.range n, varOfPart μ (P i) + ε := by
-      have A : Tendsto (fun n ↦ ∑ i ∈ Finset.range n, varOfPart μ (P i)) atTop
-          (nhds (∑' i, varOfPart μ (P i))) := by
-        exact tendsto_nat_tsum fun i ↦ VectorMeasure.varOfPart μ (P i)
-      let a := ∑' i, varOfPart μ (P i) - ε
-      have : a < ∑' i, varOfPart μ (P i) := by sorry
-
-      have := (tendsto_order.mp A).1 a this
-      obtain ⟨n, hn, hn'⟩ := (this.and (Ici_mem_atTop 1)).exists
-      dsimp [a] at hn
-      use n
-
-      sorry
+    obtain ⟨n, hn⟩ : ∃ n, ∑' (i : ℕ), varOfPart μ (P i) - ε ≤
+        ∑ i ∈ Finset.range n, varOfPart μ (P i) := by
+      obtain ht | ht | ht := (∑' (i : ℕ), varOfPart μ (P i)).trichotomy
+      · simp [ht]
+      · --
+        sorry
+      · have A : Tendsto (fun n ↦ ∑ i ∈ Finset.range n, varOfPart μ (P i)) atTop
+            (nhds (∑' i, varOfPart μ (P i))) := by
+          exact tendsto_nat_tsum fun i ↦ VectorMeasure.varOfPart μ (P i)
+        let a := ∑' i, varOfPart μ (P i) - ε
+        have : a < ∑' i, varOfPart μ (P i) := by
+          dsimp [a]
+          refine ENNReal.sub_lt_self ?_ ?_ (Ne.symm (ne_of_lt hε))
+          · exact LT.lt.ne_top (ENNReal.toReal_pos_iff.mp ht).2
+          · exact Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.mp ht).1)
+        have := (tendsto_order.mp A).1 a this
+        obtain ⟨n, hn, hn'⟩ := (this.and (Ici_mem_atTop 1)).exists
+        dsimp [a] at hn
+        use n
+        exact le_of_lt hn
     use n
-    suffices h : b + ε < (∑ x ∈ Finset.range n, ⨆ P ∈ partitions (s x), varOfPart μ P) + ε by
-      exact lt_of_add_lt_add_right h
-    calc b + ε
-      _ < varOfPart μ Q := hε'
-      _ ≤ ∑' (i : ℕ), varOfPart μ (P i) := varOfPart_le_tsum μ hs hs' hQ
-      _ ≤ ∑ i ∈ Finset.range n, varOfPart μ (P i) + ε := hn
-      _ ≤ (∑ x ∈ Finset.range n, ⨆ P ∈ partitions (s x), varOfPart μ P) + ε := by
+    calc b
+      _ < varOfPart μ Q - ε := lt_tsub_iff_right.mpr hε'
+      _ ≤ ∑' (i : ℕ), varOfPart μ (P i) - ε := by gcongr
+      _ ≤ ∑ i ∈ Finset.range n, varOfPart μ (P i) := hn
+      _ ≤ (∑ x ∈ Finset.range n, ⨆ P ∈ partitions (s x), varOfPart μ P) := by
         gcongr with i hi
         exact le_biSup (varOfPart μ) (hP i)
 
