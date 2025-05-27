@@ -5575,6 +5575,7 @@ import Mathlib.Stuff.Inertia
 import Mathlib.Stuff.Minkowski
 import Mathlib.Stuff.OrderOf
 import Mathlib.Stuff.Seven
+import Mathlib.Stuff.Thirteen
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
