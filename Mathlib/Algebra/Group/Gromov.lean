@@ -1364,13 +1364,43 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
       -- TODO: where do we add this? (hsum: gamma_sum list = 0)
-      let rec rewrite_list (list: List (E)) (hlist: φ (ofMul list.unattach.prod) = 0) : List ((Set.range (Function.uncurry gamma_m))) := by
+      let rec rewrite_list (list: List (E)) (hlist: φ (ofMul list.unattach.prod) = 0) : { t: List ((Set.range (Function.uncurry gamma_m))) // list.unattach.prod = t.unattach.prod } := by
         let is_gamma: E → Bool := fun (k: E) => k = γ ∨ k = γ⁻¹
         let is_gamma_prop: E → Prop := fun (k: E) => k = γ ∨ k = γ⁻¹
         have eq_split: list = list.takeWhile is_gamma ++ list.dropWhile is_gamma := by
           exact Eq.symm List.takeWhile_append_dropWhile
         by_cases header_eq_full: list.takeWhile is_gamma = list
-        . exact []
+        .
+          have list_eq_gamma_m: ∃ m: ℤ, list.unattach.prod = γ ^ m := by
+            unfold is_gamma at header_eq_full
+            clear eq_split is_gamma is_gamma_prop hlist
+
+            induction list with
+            | nil =>
+              use 0
+              simp
+            | cons h t ih =>
+              have h_gamma: h = γ ∨ h = γ⁻¹ := by
+                simp at header_eq_full
+                exact header_eq_full.1
+              rw [List.takeWhile_cons_of_pos] at header_eq_full
+              .
+                rw [List.cons_eq_cons] at header_eq_full
+                specialize ih header_eq_full.2
+                obtain ⟨m, hm⟩ := ih
+                by_cases h_eq_gamma: h = γ
+                .
+                  use (m + 1)
+                  simp [h_eq_gamma, hm]
+                  exact mul_self_zpow γ m
+                . use (-1 + m)
+                  simp [h_eq_gamma] at h_gamma
+                  simp [h_gamma, hm]
+                  rw [← zpow_neg_one]
+                  rw [zpow_add]
+
+
+          exact []
         .
           have tail_nonempty: list.dropWhile is_gamma ≠ [] := by
             rw [not_iff_not.mpr List.takeWhile_eq_self_iff] at header_eq_full
@@ -1686,7 +1716,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
 
-          let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sorry)
+          let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_phi_zero)
 
           -- Show that the list (rewritten in terms of `γ^m * e_i * γ^(-m)` terms) is in the kernel of φ
           have return_list_kernel: φ (ofMul return_list.unattach.prod) = 0 := by
