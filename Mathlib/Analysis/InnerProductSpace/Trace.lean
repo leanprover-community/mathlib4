@@ -21,7 +21,7 @@ lemma trace_eq_sum_inner_base_app_base (b : OrthonormalBasis ι 𝕜 E) (T : E �
   rw [LinearMap.trace_eq_matrix_trace 𝕜 b' T]
   apply Fintype.sum_congr
   intro i
-  rw [Matrix.diag_apply, T.toMatrix_apply]
-  rw [b.coe_toBasis, b.coe_toBasis_repr_apply, b.repr_apply_apply]
+  rw [Matrix.diag_apply, T.toMatrix_apply, b.coe_toBasis, b.coe_toBasis_repr_apply,
+    b.repr_apply_apply]
 
 end OrthonormalBasis
