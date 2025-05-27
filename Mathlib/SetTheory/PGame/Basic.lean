@@ -3,7 +3,6 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Convert
@@ -15,9 +14,9 @@ This is the first in a series of files developing the basic theory of combinator
 following Conway's book `On Numbers and Games`:
 
 * this file defines _pregames_ and elementary operations on them (relabelling, option insertion)
-* `Mathlib.SetTheory.PGame.Order` defines an ordering on pregames
-* `Mathlib.SetTheory.PGame.Algebra` defines an `AddCommGroup` structure on pregames
-* `Mathlib.SetTheory.Game.Basic` defines games as the quotient of pregames by the
+* `Mathlib/SetTheory/PGame/Order.lean` defines an ordering on pregames
+* `Mathlib/SetTheory/PGame/Algebra.lean` defines an `AddCommGroup` structure on pregames
+* `Mathlib/SetTheory/Game/Basic.lean` defines games as the quotient of pregames by the
   equivalence relation `p ≈ q ↔ p ≤ q ∧ q ≤ p`.
 
 The surreal numbers will be built as a quotient of a subtype of pregames.

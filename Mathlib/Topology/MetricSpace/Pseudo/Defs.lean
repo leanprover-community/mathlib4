@@ -413,10 +413,10 @@ theorem nonneg_of_mem_sphere (hy : y ∈ sphere x ε) : 0 ≤ ε :=
 
 @[simp]
 theorem sphere_eq_empty_of_neg (hε : ε < 0) : sphere x ε = ∅ :=
-  Set.eq_empty_iff_forall_not_mem.mpr fun _y hy => (nonneg_of_mem_sphere hy).not_lt hε
+  Set.eq_empty_iff_forall_notMem.mpr fun _y hy => (nonneg_of_mem_sphere hy).not_lt hε
 
 theorem sphere_eq_empty_of_subsingleton [Subsingleton α] (hε : ε ≠ 0) : sphere x ε = ∅ :=
-  Set.eq_empty_iff_forall_not_mem.mpr fun _ h => ne_of_mem_sphere h hε (Subsingleton.elim _ _)
+  Set.eq_empty_iff_forall_notMem.mpr fun _ h => ne_of_mem_sphere h hε (Subsingleton.elim _ _)
 
 instance sphere_isEmpty_of_subsingleton [Subsingleton α] [NeZero ε] : IsEmpty (sphere x ε) := by
   rw [sphere_eq_empty_of_subsingleton (NeZero.ne ε)]; infer_instance

@@ -87,7 +87,8 @@ lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 @[simp, norm_cast] lemma coe_lt_enorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [enorm]
 @[simp, norm_cast] lemma enorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [enorm]
 
-@[simp] lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
+@[aesop (rule_sets := [finiteness]) safe apply, simp]
+lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
 @[simp] lemma enorm_lt_top : ‖x‖ₑ < ∞ := by simp [enorm]
 
 end ENorm
@@ -940,6 +941,11 @@ lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
 
 end ENormedMonoid
 
+instance : ENormedAddCommMonoid ℝ≥0∞ where
+  continuous_enorm := continuous_id
+  enorm_eq_zero := by simp
+  enorm_add_le := by simp
+
 open Set in
 @[to_additive]
 lemma SeminormedGroup.disjoint_nhds (x : E) (f : Filter E) :
@@ -1049,6 +1055,9 @@ theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = ⟨r, hr⟩ :=
 
 lemma enorm_of_nonneg (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
   simp [enorm, nnnorm_of_nonneg hr, ENNReal.ofReal, toNNReal, hr]
+
+lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ:= by
+  simp [Real.enorm_of_nonneg, ha]
 
 @[simp] lemma nnnorm_abs (r : ℝ) : ‖|r|‖₊ = ‖r‖₊ := by simp [nnnorm]
 @[simp] lemma enorm_abs (r : ℝ) : ‖|r|‖ₑ = ‖r‖ₑ := by simp [enorm]

@@ -37,7 +37,7 @@ only assumes `R` is a commutative semiring.
 
 ## References
 
- * [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
+* [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
 Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
@@ -51,7 +51,7 @@ open scoped TensorProduct
 open LinearMap TensorProduct AlgHom
 
 /-- A polynomial law `M →ₚₗ[R] N` between `R`-modules is a functorial family of maps
-   `S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
+`S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
 
 For universe reasons, `S` has to be restricted to the same universe as `R`. -/
 @[ext]
@@ -70,7 +70,7 @@ notation:25 M " →ₚₗ[" R:25 "] " N:0 => PolynomialLaw R M N
 @[local simp]
 theorem PolynomialLaw.isCompat_apply'
     {R : Type u} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
-    {N : Type*} [AddCommMonoid N] [Module R N]{f : M →ₚₗ[R] N}
+    {N : Type*} [AddCommMonoid N] [Module R N] {f : M →ₚₗ[R] N}
     {S : Type u} [CommSemiring S] [Algebra R S] {S' : Type u} [CommSemiring S'] [Algebra R S']
     (φ : S →ₐ[R] S') (x : S ⊗[R] M) :
     (φ.toLinearMap.rTensor N) ((f.toFun' S) x) = (f.toFun' S') (φ.toLinearMap.rTensor M x) := by

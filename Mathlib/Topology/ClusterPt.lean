@@ -23,6 +23,9 @@ universe u v w
 variable {X : Type u} [TopologicalSpace X] {Y : Type v} {ι : Sort w} {α β : Type*}
   {x : X} {s s₁ s₂ t : Set X}
 
+theorem clusterPt_sup {F G : Filter X} : ClusterPt x (F ⊔ G) ↔ ClusterPt x F ∨ ClusterPt x G := by
+  simp only [ClusterPt, inf_sup_left, sup_neBot]
+
 theorem ClusterPt.neBot {F : Filter X} (h : ClusterPt x F) : NeBot (𝓝 x ⊓ F) :=
   h
 
@@ -63,6 +66,8 @@ protected theorem Filter.HasBasis.clusterPt_iff_forall_mem_closure {ι} {p : ι 
 theorem clusterPt_iff_forall_mem_closure {F : Filter X} :
     ClusterPt x F ↔ ∀ s ∈ F, x ∈ closure s :=
   F.basis_sets.clusterPt_iff_forall_mem_closure
+
+alias ⟨ClusterPt.mem_closure_of_mem, _⟩ := clusterPt_iff_forall_mem_closure
 
 /-- `x` is a cluster point of a set `s` if every neighbourhood of `x` meets `s` on a nonempty
 set. See also `mem_closure_iff_clusterPt`. -/
@@ -149,43 +154,52 @@ theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p 
 
 end MapClusterPt
 
-theorem accPt_sup (x : X) (F G : Filter X) :
+theorem accPt_sup {x : X} {F G : Filter X} :
     AccPt x (F ⊔ G) ↔ AccPt x F ∨ AccPt x G := by
   simp only [AccPt, inf_sup_left, sup_neBot]
 
-theorem acc_iff_cluster (x : X) (F : Filter X) : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
+theorem accPt_iff_clusterPt {x : X} {F : Filter X} : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 
+@[deprecated (since := "2025-04-20")]
+alias acc_iff_cluster := accPt_iff_clusterPt
+
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
-theorem acc_principal_iff_cluster (x : X) (C : Set X) :
-    AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ {x})) := by
-  rw [acc_iff_cluster, inf_principal, inter_comm, diff_eq]
+theorem accPt_principal_iff_clusterPt {x : X} {C : Set X} :
+    AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ { x })) := by
+  rw [accPt_iff_clusterPt, inf_principal, inter_comm, diff_eq]
+
+@[deprecated (since := "2025-04-20")]
+alias acc_principal_iff_cluster := accPt_principal_iff_clusterPt
 
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
 of `x` contains a point of `C` other than `x`. -/
-theorem accPt_iff_nhds (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
-  simp [acc_principal_iff_cluster, clusterPt_principal_iff, Set.Nonempty, exists_prop, and_assoc,
-    @and_comm (¬_ = x)]
+theorem accPt_iff_nhds {x : X} {C : Set X} : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
+  simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff, Set.Nonempty, exists_prop,
+    and_assoc, @and_comm (¬_ = x)]
 
 /-- `x` is an accumulation point of a set `C` iff
 there are points near `x` in `C` and different from `x`. -/
-theorem accPt_iff_frequently (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∃ᶠ y in 𝓝 x, y ≠ x ∧ y ∈ C := by
-  simp [acc_principal_iff_cluster, clusterPt_principal_iff_frequently, and_comm]
+theorem accPt_iff_frequently {x : X} {C : Set X} : AccPt x (𝓟 C) ↔ ∃ᶠ y in 𝓝 x, y ≠ x ∧ y ∈ C := by
+  simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff_frequently, and_comm]
+
+theorem accPt_principal_iff_nhdsWithin : AccPt x (𝓟 s) ↔ (𝓝[s \ {x}] x).NeBot := by
+  rw [accPt_principal_iff_clusterPt, ClusterPt, nhdsWithin]
 
 /-- If `x` is an accumulation point of `F` and `F ≤ G`, then
 `x` is an accumulation point of `G`. -/
 theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G :=
   NeBot.mono h (inf_le_inf_left _ hFG)
 
-theorem AccPt.clusterPt (x : X) (F : Filter X) (h : AccPt x F) : ClusterPt x F :=
-  ((acc_iff_cluster x F).mp h).mono inf_le_right
+theorem AccPt.clusterPt {x : X} {F : Filter X} (h : AccPt x F) : ClusterPt x F :=
+  (accPt_iff_clusterPt.mp h).mono inf_le_right
 
 theorem clusterPt_principal {x : X} {C : Set X} :
     ClusterPt x (𝓟 C) ↔ x ∈ C ∨ AccPt x (𝓟 C) := by
   constructor
   · intro h
     by_contra! hc
-    rw [acc_principal_iff_cluster] at hc
+    rw [accPt_principal_iff_clusterPt] at hc
     simp_all only [not_false_eq_true, diff_singleton_eq_self, not_true_eq_false, hc.1]
   · rintro (h | h)
     · exact clusterPt_principal_iff.mpr fun _ mem ↦ ⟨x, ⟨mem_of_mem_nhds mem, h⟩⟩
@@ -200,14 +214,19 @@ theorem isClosed_setOf_clusterPt {f : Filter X} : IsClosed { x | ClusterPt x f }
 theorem mem_closure_iff_clusterPt : x ∈ closure s ↔ ClusterPt x (𝓟 s) :=
   mem_closure_iff_frequently.trans clusterPt_principal_iff_frequently.symm
 
+alias ⟨_, ClusterPt.mem_closure⟩ := mem_closure_iff_clusterPt
+
 theorem mem_closure_iff_nhds_ne_bot : x ∈ closure s ↔ 𝓝 x ⊓ 𝓟 s ≠ ⊥ :=
   mem_closure_iff_clusterPt.trans neBot_iff
 
 theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
   mem_closure_iff_clusterPt
 
-lemma not_mem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
+lemma notMem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_closure_iff_nhdsWithin_eq_bot := notMem_closure_iff_nhdsWithin_eq_bot
 
 /-- If `x` is not an isolated point of a topological space, then `{x}ᶜ` is dense in the whole
 space. -/

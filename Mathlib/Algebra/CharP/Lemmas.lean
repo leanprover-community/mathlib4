@@ -27,9 +27,10 @@ protected theorem add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
       x ^ p ^ n + y ^ p ^ n +
         p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := by
   trans x ^ p ^ n + y ^ p ^ n + ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k
-  · simp_rw [h.add_pow, ← Nat.Ico_zero_eq_range, Nat.Ico_succ_right, Icc_eq_cons_Ico (zero_le _),
-      Finset.sum_cons, Ico_eq_cons_Ioo (pow_pos hp.pos _), Finset.sum_cons, tsub_self, tsub_zero,
-      pow_zero, Nat.choose_zero_right, Nat.choose_self, Nat.cast_one, mul_one, one_mul, ← add_assoc]
+  · simp_rw [h.add_pow, ← Nat.Ico_zero_eq_range, Ico_add_one_right_eq_Icc,
+      Icc_eq_cons_Ico (zero_le _), Finset.sum_cons, Ico_eq_cons_Ioo (pow_pos hp.pos _),
+      Finset.sum_cons, tsub_self, tsub_zero, pow_zero, Nat.choose_zero_right, Nat.choose_self,
+      Nat.cast_one, mul_one, one_mul, ← add_assoc]
   · congr 1
     simp_rw [Finset.mul_sum, Nat.cast_comm, mul_assoc _ _ (p : R), ← Nat.cast_mul]
     refine Finset.sum_congr rfl fun i hi => ?_
@@ -144,9 +145,6 @@ lemma add_pow_char_pow : (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n := add_pow_expC
 lemma add_pow_eq_mul_pow_add_pow_div_char :
     (x + y) ^ n = (x + y) ^ (n % p) * (x ^ p + y ^ p) ^ (n / p) :=
   add_pow_eq_mul_pow_add_pow_div_expChar ..
-
-@[deprecated (since := "2024-10-21")]
-alias add_pow_eq_add_pow_mod_mul_pow_add_pow_div := add_pow_eq_mul_pow_add_pow_div_char
 
 end CharP
 end CommSemiring
@@ -282,7 +280,7 @@ end CharP
 /-
 Preliminary definitions and results for the Frobenius map.
 Necessary here for simple results about sums of `p`-powers that are used in files forbidding
-to import algebra-related definitions (see `Mathlib.Algebra.CharP.Two.lean`).
+to import algebra-related definitions (see `Mathlib/Algebra/CharP/Two.lean`).
 -/
 section Frobenius
 

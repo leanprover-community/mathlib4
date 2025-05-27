@@ -338,9 +338,9 @@ variable [PseudoMetricSpace Ω] [OpensMeasurableSpace Ω]
 lemma BoundedContinuousFunction.integral_eq_integral_meas_le_of_hasFiniteIntegral
     {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α]
     (f : α →ᵇ ℝ) (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f) (hf : HasFiniteIntegral f μ) :
-    ∫ ω, f ω ∂μ = ∫ t in Ioc 0 ‖f‖, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
+    ∫ ω, f ω ∂μ = ∫ t in Ioc 0 ‖f‖, μ.real {a : α | t ≤ f a} := by
   rw [Integrable.integral_eq_integral_Ioc_meas_le (M := ‖f‖) ?_ f_nn ?_]
-  · refine ⟨f.continuous.measurable.aestronglyMeasurable, hf⟩
+  · exact ⟨f.continuous.measurable.aestronglyMeasurable, hf⟩
   · exact Eventually.of_forall (fun x ↦ BoundedContinuousFunction.apply_le_norm f x)
 
 /-- A version of the layer cake formula for bounded continuous functions and finite measures:
@@ -348,7 +348,7 @@ lemma BoundedContinuousFunction.integral_eq_integral_meas_le_of_hasFiniteIntegra
 lemma BoundedContinuousFunction.integral_eq_integral_meas_le
     {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α]
     (f : α →ᵇ ℝ) (μ : Measure α) [IsFiniteMeasure μ] (f_nn : 0 ≤ᵐ[μ] f) :
-    ∫ ω, f ω ∂μ = ∫ t in Ioc 0 ‖f‖, ENNReal.toReal (μ {a : α | t ≤ f a}) :=
+    ∫ ω, f ω ∂μ = ∫ t in Ioc 0 ‖f‖, μ.real {a : α | t ≤ f a} :=
   integral_eq_integral_meas_le_of_hasFiniteIntegral _ _ f_nn (f.integrable μ).2
 
 /-- Assuming `levyProkhorovEDist μ ν < ε`, we can bound `∫ f ∂μ` in terms of
@@ -357,36 +357,34 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] {ε : ℝ} (ε_pos : 0 < ε)
     (hμν : levyProkhorovEDist μ ν < ENNReal.ofReal ε) (f : Ω →ᵇ ℝ) (f_nn : 0 ≤ᵐ[μ] f) :
     ∫ ω, f ω ∂μ
-      ≤ (∫ t in Ioc 0 ‖f‖, ENNReal.toReal (ν (thickening ε {a | t ≤ f a}))) + ε * ‖f‖ := by
+      ≤ (∫ t in Ioc 0 ‖f‖, ν.real (thickening ε {a | t ≤ f a})) + ε * ‖f‖ := by
   rw [BoundedContinuousFunction.integral_eq_integral_meas_le f μ f_nn]
-  have key : (fun (t : ℝ) ↦ ENNReal.toReal (μ {a | t ≤ f a}))
-              ≤ (fun (t : ℝ) ↦ ENNReal.toReal (ν (thickening ε {a | t ≤ f a})) + ε) := by
+  have key : (fun (t : ℝ) ↦ μ.real {a | t ≤ f a})
+              ≤ (fun (t : ℝ) ↦ ν.real (thickening ε {a | t ≤ f a}) + ε) := by
     intro t
+    simp only [measureReal_def]
     convert ENNReal.toReal_mono ?_ <| left_measure_le_of_levyProkhorovEDist_lt hμν
       (B := {a | t ≤ f a}) (f.continuous.measurable measurableSet_Ici)
     · rw [ENNReal.toReal_add (measure_ne_top ν _) ofReal_ne_top, ENNReal.toReal_ofReal ε_pos.le]
     · exact ENNReal.add_ne_top.mpr ⟨measure_ne_top ν _, ofReal_ne_top⟩
-  have intble₁ : IntegrableOn (fun t ↦ ENNReal.toReal (μ {a | t ≤ f a})) (Ioc 0 ‖f‖) := by
-    apply Measure.integrableOn_of_bounded (M := ENNReal.toReal (μ univ)) measure_Ioc_lt_top.ne
+  have intble₁ : IntegrableOn (fun t ↦ μ.real {a | t ≤ f a}) (Ioc 0 ‖f‖) := by
+    apply Measure.integrableOn_of_bounded (M := μ.real univ) measure_Ioc_lt_top.ne
     · apply (Measurable.ennreal_toReal (Antitone.measurable ?_)).aestronglyMeasurable
       exact fun _ _ hst ↦ measure_mono (fun _ h ↦ hst.trans h)
     · apply Eventually.of_forall <| fun t ↦ ?_
-      simp only [Real.norm_eq_abs, abs_toReal]
-      exact ENNReal.toReal_mono (measure_ne_top _ _) <| measure_mono (subset_univ _)
-  have intble₂ : IntegrableOn
-                  (fun t ↦ ENNReal.toReal (ν (thickening ε {a | t ≤ f a}))) (Ioc 0 ‖f‖) := by
-    apply Measure.integrableOn_of_bounded (M := ENNReal.toReal (ν univ)) measure_Ioc_lt_top.ne
+      simp only [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
+      exact measureReal_mono (subset_univ _)
+  have intble₂ : IntegrableOn (fun t ↦ ν.real (thickening ε {a | t ≤ f a})) (Ioc 0 ‖f‖) := by
+    apply Measure.integrableOn_of_bounded (M := ν.real univ) measure_Ioc_lt_top.ne
     · apply (Measurable.ennreal_toReal (Antitone.measurable ?_)).aestronglyMeasurable
       exact fun _ _ hst ↦ measure_mono <| thickening_subset_of_subset ε (fun _ h ↦ hst.trans h)
     · apply Eventually.of_forall <| fun t ↦ ?_
-      simp only [Real.norm_eq_abs, abs_toReal]
+      simp only [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
       exact ENNReal.toReal_mono (measure_ne_top _ _) <| measure_mono (subset_univ _)
   apply le_trans (setIntegral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
   · rw [integral_add]
     · apply add_le_add_left
-      simp only [integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
-                  Real.volume_Ioc, sub_zero, norm_nonneg, toReal_ofReal, smul_eq_mul,
-                  (mul_comm _ ε).le]
+      simp [(mul_comm _ ε).le]
     · exact intble₂
     · exact integrable_const ε
   · exact intble₁
@@ -397,8 +395,8 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
 `∫ t in (0, ‖f‖], μ {x | f(x) ≥ t} dt` as `ε → 0`. -/
 lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
     {A : Set ℝ} (A_finmeas : volume A ≠ ∞) (μ : ProbabilityMeasure Ω) :
-    Tendsto (fun ε ↦ ∫ t in A, ENNReal.toReal (μ (thickening ε {a | t ≤ f a}))) (𝓝[>] (0 : ℝ))
-      (𝓝 (∫ t in A, ENNReal.toReal (μ {a | t ≤ f a}))) := by
+    Tendsto (fun ε ↦ ∫ t in A, (Measure.real μ (thickening ε {a | t ≤ f a}))) (𝓝[>] (0 : ℝ))
+      (𝓝 (∫ t in A, (Measure.real μ {a | t ≤ f a}))) := by
   apply tendsto_integral_filter_of_dominated_convergence (G := ℝ) (μ := volume.restrict A)
         (F := fun ε t ↦ (μ (thickening ε {a | t ≤ f a}))) (f := fun t ↦ (μ {a | t ≤ f a})) 1
   · apply Eventually.of_forall fun n ↦ Measurable.aestronglyMeasurable ?_
@@ -456,8 +454,7 @@ lemma LevyProkhorov.continuous_equiv_probabilityMeasure :
     · refine bound.trans ?_
       apply (add_le_add_right hn.le _).trans
       rw [BoundedContinuousFunction.integral_eq_integral_meas_le]
-      · simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
-        rw [add_assoc, mul_comm]
+      · rw [add_assoc, mul_comm]
         gcongr
         calc
           δ / 2 + ‖f‖ * (dist (μs n) ν + εs n)
@@ -654,7 +651,7 @@ theorem levyProkhorov_eq_convergenceInDistribution :
 
 /-- The identity map is a homeomorphism from `ProbabilityMeasure Ω` with the topology of
 convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov (pseudo)metric. -/
-def homeomorph_probabilityMeasure_levyProkhorov :
+noncomputable def homeomorph_probabilityMeasure_levyProkhorov :
     ProbabilityMeasure Ω ≃ₜ LevyProkhorov (ProbabilityMeasure Ω) where
   toFun := LevyProkhorov.equiv _
   invFun := (LevyProkhorov.equiv _).symm

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Zhouhang Zhou
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
 
@@ -130,19 +130,23 @@ def cast (f : α →ₘ[μ] β) : α → β :=
 /-- A measurable representative of an `AEEqFun` [f] -/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
 
+@[fun_prop]
 protected theorem stronglyMeasurable (f : α →ₘ[μ] β) : StronglyMeasurable f := by
   simp only [cast]
   split_ifs with h
   · exact stronglyMeasurable_const
   · apply AEStronglyMeasurable.stronglyMeasurable_mk
 
+@[fun_prop]
 protected theorem aestronglyMeasurable (f : α →ₘ[μ] β) : AEStronglyMeasurable f μ :=
   f.stronglyMeasurable.aestronglyMeasurable
 
+@[fun_prop]
 protected theorem measurable [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     (f : α →ₘ[μ] β) : Measurable f :=
   f.stronglyMeasurable.measurable
 
+@[fun_prop]
 protected theorem aemeasurable [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     (f : α →ₘ[μ] β) : AEMeasurable f μ :=
   f.measurable.aemeasurable

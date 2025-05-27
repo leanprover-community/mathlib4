@@ -267,7 +267,7 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
     have : (fun x => ∑' i, f i x) = (fun x => ∑ i ∈ T, f i x) +
         fun x => ∑' i : { i // i ∉ T }, f i x := by
       ext1 x
-      refine (sum_add_tsum_subtype_compl ?_ T).symm
+      refine (Summable.sum_add_tsum_subtype_compl ?_ T).symm
       refine .of_norm_bounded_eventually _ (hv 0 (zero_le _)) ?_
       filter_upwards [h'f 0 (zero_le _)] with i hi
       simpa only [norm_iteratedFDeriv_zero] using hi x

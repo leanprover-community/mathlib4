@@ -13,20 +13,20 @@ This file proves properties of 2×2 block matrices `[A B; C D]` that relate to t
 `D - C*A⁻¹*B`.
 
 Some of the results here generalize to 2×2 matrices in a category, rather than just a ring. A few
-results in this direction can be found in the file `Mathlib.CategoryTheory.Preadditive.Biproducts`,
+results in this direction can be found in `Mathlib/CategoryTheory/Preadditive/Biproducts.lean`,
 especially the declarations `CategoryTheory.Biprod.gaussian` and `CategoryTheory.Biprod.isoElim`.
 Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 
 ## Main results
 
- * `Matrix.det_fromBlocks₁₁`, `Matrix.det_fromBlocks₂₂`: determinant of a block matrix in terms of
-   the Schur complement.
- * `Matrix.invOf_fromBlocks_zero₂₁_eq`, `Matrix.invOf_fromBlocks_zero₁₂_eq`: the inverse of a
-   block triangular matrix.
- * `Matrix.isUnit_fromBlocks_zero₂₁`, `Matrix.isUnit_fromBlocks_zero₁₂`: invertibility of a
-   block triangular matrix.
- * `Matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
- * `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
+* `Matrix.det_fromBlocks₁₁`, `Matrix.det_fromBlocks₂₂`: determinant of a block matrix in terms of
+  the Schur complement.
+* `Matrix.invOf_fromBlocks_zero₂₁_eq`, `Matrix.invOf_fromBlocks_zero₁₂_eq`: the inverse of a
+  block triangular matrix.
+* `Matrix.isUnit_fromBlocks_zero₂₁`, `Matrix.isUnit_fromBlocks_zero₁₂`: invertibility of a
+  block triangular matrix.
+* `Matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
+* `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
   positive definite, then `[A B; Bᴴ D]` is positive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
   positive semidefinite.
 
@@ -197,7 +197,7 @@ theorem inv_fromBlocks_zero₂₁_of_isUnit_iff (A : Matrix m m α) (B : Matrix 
   · have hD := hAD.not.mp hA
     have : ¬IsUnit (fromBlocks A B 0 D) :=
       isUnit_fromBlocks_zero₂₁.not.mpr (not_and'.mpr fun _ => hA)
-    simp_rw [nonsing_inv_eq_ring_inverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
+    simp_rw [nonsing_inv_eq_ringInverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
       Ring.inverse_non_unit _ this, Matrix.zero_mul, neg_zero, fromBlocks_zero]
 
 /-- An expression for the inverse of a lower block-triangular matrix, when either both elements of
@@ -214,7 +214,7 @@ theorem inv_fromBlocks_zero₁₂_of_isUnit_iff (A : Matrix m m α) (C : Matrix 
   · have hD := hAD.not.mp hA
     have : ¬IsUnit (fromBlocks A 0 C D) :=
       isUnit_fromBlocks_zero₁₂.not.mpr (not_and'.mpr fun _ => hA)
-    simp_rw [nonsing_inv_eq_ring_inverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
+    simp_rw [nonsing_inv_eq_ringInverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
       Ring.inverse_non_unit _ this, Matrix.zero_mul, neg_zero, fromBlocks_zero]
 
 end Triangular

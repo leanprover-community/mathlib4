@@ -416,7 +416,7 @@ theorem unique_pEquivOn (hs : IsLowerSet s) {e₁ e₂ : PEquivOn f equivSucc s}
   obtain ⟨e₁, nat₁, compat₁⟩ := e₁
   obtain ⟨e₂, nat₂, compat₂⟩ := e₂
   ext1; ext1 i; dsimp only
-  refine SuccOrder.prelimitRecOn i.1 (C := fun i ↦ ∀ h : i ∈ s, e₁ ⟨i, h⟩ = e₂ ⟨i, h⟩)
+  refine SuccOrder.prelimitRecOn i.1 (motive := fun i ↦ ∀ h : i ∈ s, e₁ ⟨i, h⟩ = e₂ ⟨i, h⟩)
     (fun i nmax ih hi ↦ ?_) (fun i lim ih hi ↦ ?_) i.2
   · ext x ⟨j, hj⟩
     obtain rfl | hj := ((lt_succ_iff_of_not_isMax nmax).mp hj).eq_or_lt

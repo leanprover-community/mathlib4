@@ -168,9 +168,9 @@ theorem unique_irreducible (hR : HasUnitMulPowIrreducibleFactorization R)
   · obtain ⟨n, rfl⟩ : ∃ k, n = 1 + k + 1 := Nat.exists_eq_add_of_lt H
     rw [pow_succ'] at this
     rcases this.isUnit_or_isUnit rfl with (H0 | H0)
-    · exact (hϖ.not_unit H0).elim
+    · exact (hϖ.not_isUnit H0).elim
     · rw [add_comm, pow_succ'] at H0
-      exact (hϖ.not_unit (isUnit_of_mul_isUnit_left H0)).elim
+      exact (hϖ.not_isUnit (isUnit_of_mul_isUnit_left H0)).elim
 
 variable [IsDomain R]
 
@@ -187,7 +187,7 @@ theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization 
     · intro q hq
       have hpq := Multiset.eq_of_mem_replicate hq
       rw [hpq]
-      refine ⟨spec.1.ne_zero, spec.1.not_unit, ?_⟩
+      refine ⟨spec.1.ne_zero, spec.1.not_isUnit, ?_⟩
       intro a b h
       by_cases ha : a = 0
       · rw [ha]
@@ -464,7 +464,7 @@ lemma addVal_eq_zero_iff {x : R} :
   · simp
   obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
-  simp [isUnit_pow_iff_of_not_isUnit hϖ.not_unit, hϖ]
+  simp [isUnit_pow_iff_of_not_isUnit hϖ.not_isUnit, hϖ]
 
 end
 

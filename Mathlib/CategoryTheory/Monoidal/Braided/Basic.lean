@@ -484,6 +484,7 @@ end
 /-- A braided functor between braided monoidal categories is a monoidal functor
 which preserves the braiding.
 -/
+@[ext]
 class Functor.Braided (F : C ⥤ D) extends F.Monoidal, F.LaxBraided where
 
 @[simp, reassoc]
@@ -505,6 +506,9 @@ namespace Functor.Braided
 instance : (𝟭 C).Braided where
 
 instance (F : C ⥤ D) (G : D ⥤ E) [F.Braided] [G.Braided] : (F ⋙ G).Braided where
+
+lemma toMonoidal_injective (F : C ⥤ D) : Function.Injective
+    (@Braided.toMonoidal _ _ _ _ _ _ _ _ _ : F.Braided → F.Monoidal) := by rintro ⟨⟩ ⟨⟩ rfl; rfl
 
 end Functor.Braided
 

@@ -400,7 +400,7 @@ theorem AECover.integrable_of_lintegral_enorm_bounded [l.NeBot] [l.IsCountablyGe
 
 @[deprecated (since := "2025-01-22")]
 alias AECover.integrable_of_lintegral_nnnorm_bounded :=
- AECover.integrable_of_lintegral_enorm_bounded
+  AECover.integrable_of_lintegral_enorm_bounded
 
 theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfm : AEStronglyMeasurable f μ)
@@ -413,7 +413,7 @@ theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGe
 
 @[deprecated (since := "2025-01-22")]
 alias AECover.integrable_of_lintegral_nnnorm_tendsto :=
- AECover.integrable_of_lintegral_enorm_tendsto
+  AECover.integrable_of_lintegral_enorm_tendsto
 
 theorem AECover.integrable_of_lintegral_enorm_bounded' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
@@ -423,7 +423,7 @@ theorem AECover.integrable_of_lintegral_enorm_bounded' [l.NeBot] [l.IsCountablyG
 
 @[deprecated (since := "2025-01-22")]
 alias AECover.integrable_of_lintegral_nnnorm_bounded' :=
- AECover.integrable_of_lintegral_enorm_bounded'
+  AECover.integrable_of_lintegral_enorm_bounded'
 
 theorem AECover.integrable_of_lintegral_enorm_tendsto' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
@@ -433,7 +433,7 @@ theorem AECover.integrable_of_lintegral_enorm_tendsto' [l.NeBot] [l.IsCountablyG
 
 @[deprecated (since := "2025-01-22")]
 alias AECover.integrable_of_lintegral_nnnorm_tendsto' :=
- AECover.integrable_of_lintegral_enorm_tendsto'
+  AECover.integrable_of_lintegral_enorm_tendsto'
 
 theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfi : ∀ i, IntegrableOn f (φ i) μ)
@@ -660,7 +660,7 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi [CompleteSpace E]
       · rcases exists_nat_gt a with ⟨n, hn⟩
         exact ⟨n, IntegrableOn.mono_set f'int.norm (Ici_subset_Ioi.2 hn)⟩
     have B : ⋂ (n : ℕ), Ici (n : ℝ) = ∅ := by
-      apply eq_empty_of_forall_not_mem (fun x ↦ ?_)
+      apply eq_empty_of_forall_notMem (fun x ↦ ?_)
       simpa only [mem_iInter, mem_Ici, not_forall, not_le] using exists_nat_gt x
     simp only [B, Measure.restrict_empty, integral_zero_measure] at L
     exact (tendsto_order.1 L).2 _ εpos
@@ -1104,8 +1104,8 @@ theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 <
     ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
   congr
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left₀ _ hb.ne']
-  rfl
+  rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left₀ _ hb.ne',
+    Function.comp_def]
 
 theorem integral_comp_mul_right_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
     (∫ x in Ioi a, g (x * b)) = b⁻¹ • ∫ x in Ioi (a * b), g x := by
@@ -1160,8 +1160,7 @@ theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (
   convert integrable_comp_mul_left_iff ((Ioi (a * c)).indicator f) ha.ne' using 2
   ext1 x
   rw [← indicator_comp_right, preimage_const_mul_Ioi _ ha, mul_comm a c,
-    mul_div_cancel_right₀ _ ha.ne']
-  rfl
+    mul_div_cancel_right₀ _ ha.ne', Function.comp_def]
 
 theorem integrableOn_Ioi_comp_mul_right_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
     IntegrableOn (fun x => f (x * a)) (Ioi c) ↔ IntegrableOn f (Ioi <| c * a) := by

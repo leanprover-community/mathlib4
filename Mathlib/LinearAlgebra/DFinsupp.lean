@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 # Properties of the module `Π₀ i, M i`
 
 Given an indexed collection of `R`-modules `M i`, the `R`-module structure on `Π₀ i, M i`
-is defined in `Mathlib.Data.DFinsupp.Module`.
+is defined in `Mathlib/Data/DFinsupp/Module.lean`.
 
 In this file we define `LinearMap` versions of various maps:
 
@@ -101,23 +101,6 @@ theorem lapply_comp_lsingle_of_ne [DecidableEq ι] (i i' : ι) (h : i ≠ i') :
     lapply i ∘ₗ lsingle i' = (0 : M i' →ₗ[R] M i) := by ext; simp [h.symm]
 
 section Lsum
-
--- Porting note: Unclear how true these docstrings are in lean 4
-/-- Typeclass inference can't find `DFinsupp.addCommMonoid` without help for this case.
-This instance allows it to be found where it is needed on the LHS of the colon in
-`DFinsupp.moduleOfLinearMap`. -/
-instance addCommMonoidOfLinearMap : AddCommMonoid (Π₀ i : ι, M i →ₗ[R] N) :=
-  inferInstance
-
-/-- Typeclass inference can't find `DFinsupp.module` without help for this case.
-This is needed to define `DFinsupp.lsum` below.
-
-The cause seems to be an inability to unify the `∀ i, AddCommMonoid (M i →ₗ[R] N)` instance that
-we have with the `∀ i, Zero (M i →ₗ[R] N)` instance which appears as a parameter to the
-`DFinsupp` type. -/
-instance moduleOfLinearMap [Semiring S] [Module S N] [SMulCommClass R S N] :
-    Module S (Π₀ i : ι, M i →ₗ[R] N) :=
-  DFinsupp.module
 
 variable (S)
 variable [DecidableEq ι]
@@ -211,7 +194,7 @@ lemma mrange_mapRangeAddMonoidHom (f : ∀ i, β₁ i →+ β₂ i) :
     simp only [Finset.coe_sort_coe, mapRange.addMonoidHom_apply, mapRange_apply]
     by_cases mem : i ∈ x.support
     · rw [mk_of_mem mem, hg]
-    · rw [DFinsupp.not_mem_support_iff.mp mem, mk_of_not_mem mem, map_zero]
+    · rw [DFinsupp.notMem_support_iff.mp mem, mk_of_notMem mem, map_zero]
 
 theorem mapRange_smul (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (r : R)
     (hf' : ∀ i x, f i (r • x) = r • f i x) (g : Π₀ i, β₁ i) :

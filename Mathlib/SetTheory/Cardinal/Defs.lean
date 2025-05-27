@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.ULift
 import Mathlib.Util.Delaborators
+import Mathlib.Util.AssertExists
 
 /-!
 # Cardinal Numbers
@@ -116,11 +116,6 @@ theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
-/-- Avoid using `Quotient.mk` to construct a `Cardinal` directly -/
-@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
-theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
-  rfl
-
 @[simp]
 theorem mk_out (c : Cardinal) : #c.out = c :=
   Quotient.out_eq _
@@ -165,11 +160,6 @@ theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
 Unfortunately, the simp lemma doesn't work. -/
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
-
-/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
-@[deprecated lift_umax (since := "2024-10-24")]
-theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
-  lift_umax
 
 /-- A cardinal lifted to a lower or equal universe equals itself.
 

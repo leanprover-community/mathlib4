@@ -45,8 +45,7 @@ theorem Equiv.Perm.decomposeFin_symm_apply_succ {n : ℕ} (e : Perm (Fin n)) (p 
   · intro i
     by_cases h : i = e x
     · simp [h, Equiv.Perm.decomposeFin, EquivFunctor.map]
-    · simp [h, Fin.succ_ne_zero, Equiv.Perm.decomposeFin, EquivFunctor.map,
-        swap_apply_def, Ne.symm h]
+    · simp [h, Equiv.Perm.decomposeFin, EquivFunctor.map, swap_apply_def, Ne.symm h]
 
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_apply_one {n : ℕ} (e : Perm (Fin (n + 1))) (p : Fin (n + 2)) :
@@ -56,7 +55,7 @@ theorem Equiv.Perm.decomposeFin_symm_apply_one {n : ℕ} (e : Perm (Fin (n + 1))
 @[simp]
 theorem Equiv.Perm.decomposeFin.symm_sign {n : ℕ} (p : Fin (n + 1)) (e : Perm (Fin n)) :
     Perm.sign (Equiv.Perm.decomposeFin.symm (p, e)) = ite (p = 0) 1 (-1) * Perm.sign e := by
-  refine Fin.cases ?_ ?_ p <;> simp [Equiv.Perm.decomposeFin, Fin.succ_ne_zero]
+  refine Fin.cases ?_ ?_ p <;> simp [Equiv.Perm.decomposeFin]
 
 /-- The set of all permutations of `Fin (n + 1)` can be constructed by augmenting the set of
 permutations of `Fin n` by each element of `Fin (n + 1)` in turn. -/
@@ -143,7 +142,7 @@ def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
 theorem cycleRange_of_gt {n : ℕ} {i j : Fin n} (h : i < j) : cycleRange i j = j := by
   rw [cycleRange, ofLeftInverse'_eq_ofInjective,
     ← Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_not_mem_range]
+    viaFintypeEmbedding_apply_notMem_range]
   simpa
 
 theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
