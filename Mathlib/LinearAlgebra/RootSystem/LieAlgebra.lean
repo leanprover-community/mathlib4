@@ -16,6 +16,15 @@ import Mathlib.LinearAlgebra.RootSystem.Chain
 * Lemma stating `LinearIndependent R b.h` (Uses `RootPairing.Base.cartanMatrix_nondegenerate`.)
 * Lemma stating `⁅e i, f j⁆ = 0` when `i ≠ j` (Lemma 3.5 from [Geck](Geck2017).)
 
+## Alternative approaches
+
+Mention:
+* Serre relations
+* Chevalley / Tits: choose base, ordering, signs for extraspecial pairs. Mention "Tits section",
+  extended Weyl group.
+* Geck: NB does not give basis for Lie algebra
+* Seems no approach that does not require choosing base
+
 -/
 
 noncomputable section
@@ -59,12 +68,12 @@ def ω :
   .fromBlocks 1 0 0 <| .of fun i j ↦ if i = -j then 1 else 0
 
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
-lemma ω_ω [DecidableEq ι] [Fintype ι] [Fintype b.support] :
+lemma ω_mul_ω [DecidableEq ι] [Fintype ι] [Fintype b.support] :
     b.ω * b.ω = 1 := by
   ext (k | k) (l | l) <;>
   simp [ω, Matrix.mul_apply, Matrix.one_apply, -indexNeg_neg]
 
-lemma ω_e [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
+lemma ω_mul_e [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
     b.ω * b.e i = b.f i * b.ω := by
   letI := P.indexNeg
   classical
@@ -74,21 +83,21 @@ lemma ω_e [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
     rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
     simp [← ite_and, and_comm, ← indexNeg_neg, neg_eq_iff_eq_neg]
   · simp [ω, e, f, Matrix.mul_apply, Matrix.one_apply]
-  · simp [ω, e, f, Matrix.mul_apply, Matrix.one_apply]
+  · simp [ω, e, f, Matrix.mul_apply, Matrix.one_apply, -indexNeg_neg]
     rw [Finset.sum_eq_single_of_mem (-k) (Finset.mem_univ _)]
-    · simp only [← indexNeg_neg, neg_neg, reduceIte]
+    · simp only [neg_neg, reduceIte]
       simp [neg_eq_iff_eq_neg, sub_eq_add_neg]
-    · simp [← indexNeg_neg, ← neg_eq_iff_eq_neg (a := k)]
+    · simp only [← indexNeg_neg, ← neg_eq_iff_eq_neg (a := k)]
       aesop
 
-lemma ω_f [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
+lemma ω_mul_f [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
     b.ω * b.f i = b.e i * b.ω := by
-  have := congr_arg (· * ω) (congr_arg (ω * ·) (b.ω_e i))
-  simp only [← mul_assoc, ω_ω] at this
-  simpa [mul_assoc, ω_ω] using this.symm
+  have := congr_arg (· * ω) (congr_arg (ω * ·) (b.ω_mul_e i))
+  simp only [← mul_assoc, ω_mul_ω] at this
+  simpa [mul_assoc, ω_mul_ω] using this.symm
 
 omit [Finite ι] [IsDomain R] in
-lemma ω_h [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
+lemma ω_mul_h [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
     b.ω * b.h i = - b.h i * b.ω := by
   ext (k | k) (l | l)
   · simp [ω, h, Matrix.mul_apply, Matrix.one_apply]
@@ -113,43 +122,26 @@ lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
 /-- Lemma 3.3 (a) from [Geck](Geck2017). -/
 lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
     ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
-  ext (k|k) (l|l)
+  classical
+  ext (k | k) (l | l)
+  · simp [Ring.lie_def, Matrix.mul_apply, h, e]
+  · simp [Ring.lie_def, Matrix.mul_apply, h, e]
+    rw [Finset.sum_eq_ite l (by aesop)]
+    aesop
+  · simp [Ring.lie_def, Matrix.mul_apply, h, e]
+    aesop
   · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e]
-  · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e]
-    rw [Finset.sum_eq_single_of_mem l (Finset.mem_univ _)]
-    · rw [apply_ite (- · : R → R)]
-      convert ite_congr rfl _ (fun _ ↦ neg_zero)
-      simp +contextual
-    · simp +contextual
-  · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e]
-    rw [Finset.sum_eq_single_of_mem k (Finset.mem_univ _)]
-    · convert ite_congr rfl _ (fun _ ↦ rfl)
-      simp +contextual
-    · classical
-      simp +contextual [Matrix.diagonal_apply]
-      aesop
-  · simp [Ring.lie_def, cartanMatrix, cartanMatrixIn_def, Matrix.mul_apply, h, e]
-    classical
-    rw [← Finset.sum_sub_distrib]
-    rw [← Finset.sum_compl_add_sum {k, l}]
-    rw [Finset.sum_eq_zero, zero_add]
-    · rcases eq_or_ne k l with (rfl | hkl)
-      · simp [P.ne_zero]
-      · simp [hkl]
-        rw [ite_sub_ite]
-        convert ite_congr rfl _ _
-        · intro hkil
-          suffices P.pairingIn ℤ k j = P.pairingIn ℤ i j + P.pairingIn ℤ l j by
-            rw [this]
-            push_cast
-            ring
-          suffices P.pairing k j = P.pairing i j + P.pairing l j by
-            apply Int.cast_injective (α := R)
-            simpa [← P.algebraMap_pairingIn ℤ] using this
-          simp only [← root_coroot_eq_pairing, hkil, map_add, LinearMap.add_apply]
-        · simp
-    · simp +contextual [Matrix.diagonal_apply]
-      aesop
+    rw [← Finset.sum_sub_distrib, ← Finset.sum_compl_add_sum {k, l},
+      Finset.sum_eq_zero (by simp only [Matrix.diagonal_apply]; aesop), zero_add]
+    rcases eq_or_ne k l with rfl | hkl
+    · simp [P.ne_zero]
+    simp [hkl, ite_sub_ite]
+    convert ite_congr rfl _ _
+    · intro hkil
+      rw [pairingIn_eq_add_of_root_eq_add hkil]
+      push_cast
+      ring
+    · simp
 
 /-- Lemma 3.3 (b) from [Geck](Geck2017). -/
 lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
@@ -157,17 +149,17 @@ lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
   classical
   suffices ω * ⁅h j, f i⁆ = ω * (-b.cartanMatrix i j • f i) by
     replace this := congr_arg (ω * ·) this
-    simpa [← mul_assoc, ω_ω] using this
+    simpa [← mul_assoc, ω_mul_ω] using this
   calc ω * ⁅h j, f i⁆ = ω * (h j * f i - f i * h j) := by rw [Ring.lie_def]
                     _ = - (h j * e i - e i * h j) * ω := ?_
                     _ = - ⁅h j, e i⁆ * ω := by rw [Ring.lie_def]
                     _ = - (b.cartanMatrix i j • e i) * ω := by rw [lie_h_e]
                     _ = ω * (-b.cartanMatrix i j • f i) := ?_
-  · simp only [mul_sub, ← mul_assoc, ω_h, ω_f]
-    simp only [mul_assoc, ω_f, ω_h]
+  · simp only [mul_sub, ← mul_assoc, ω_mul_h, ω_mul_f]
+    simp only [mul_assoc, ω_mul_f, ω_mul_h]
     simp only [neg_mul, mul_neg, sub_neg_eq_add, neg_sub, sub_mul, mul_assoc]
     abel
-  · rw [Matrix.mul_smul, ω_f]
+  · rw [Matrix.mul_smul, ω_mul_f]
     simp [mul_assoc]
 
 /-- Lemma 3.4 from [Geck](Geck2017). -/
@@ -196,7 +188,7 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
         rintro ⟨h₁, h₂⟩
         have : i = l := by simpa [h₁] using h₂
         replace h₁ : P.root x = (2 : R) • P.root l := by rw [two_smul, h₁, this]
-        exact P.two_smul_nmem_range_root ⟨x, h₁⟩
+        exact P.two_smul_notMem_range_root ⟨x, h₁⟩
       simp_rw [if_neg (this _)]
       aesop
     simp [-indexNeg_neg, hki]
@@ -213,7 +205,7 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
         replace h₁ : P.root x = (2 : R) • P.root l := by
           rw [two_smul, h₁, this.symm, indexNeg_neg, root_reflection_perm, reflection_apply_self]
           abel
-        exact P.two_smul_nmem_range_root ⟨x, h₁⟩
+        exact P.two_smul_notMem_range_root ⟨x, h₁⟩
       simp_rw [if_neg (aux₂ _)]
       simp [-indexNeg_neg]
       rcases eq_or_ne l (-i) with rfl | hil
