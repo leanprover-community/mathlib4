@@ -39,9 +39,10 @@ lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[
   rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
 /-- A finite module can be realised as a quotient of `Fin n → R` (i.e. `R^n`). -/
-theorem exists_fin_equiv (R M : Type*) [Ring R] [AddCommGroup M] [Module R M] [Module.Finite R M] :
+theorem exists_fin_quot_equiv (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
+      [Module.Finite R M] :
     ∃ (n : ℕ) (S : Submodule R (Fin n → R)), Nonempty ((_ ⧸ S) ≃ₗ[R] M) :=
-  let ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M;
+  let ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
   ⟨n, LinearMap.ker f, ⟨f.quotKerEquivOfSurjective hf⟩⟩
 
 variable {M}
