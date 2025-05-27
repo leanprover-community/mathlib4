@@ -157,6 +157,10 @@ theorem coe_rootsOfUnity_to_set [NeZero k] :
   exact ⟨fun ⟨y,hy1,hy2⟩ => by rw [← hy2]; exact (mem_rootsOfUnity' k y).mp hy1,
     fun h => ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
 
+theorem rootsOfUnity_one_set : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
+  ext x
+  simp only [coe_rootsOfUnity_to_set, pow_one, Set.setOf_eq_eq_singleton, Set.mem_singleton_iff]
+
 end CommMonoid
 
 section IsDomain
@@ -229,7 +233,7 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
 
 open Set in
-theorem rootsOfUnity_two_unit : ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
+theorem rootsOfUnity_two_set : ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
   ext x
   rw [mem_insert_iff, mem_singleton_iff, ← sq_eq_one_iff, coe_rootsOfUnity_to_set, mem_setOf_eq]
 
