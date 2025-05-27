@@ -55,7 +55,7 @@ abbrev AllowEmptyLines : Std.HashSet SyntaxNodeKind := Std.HashSet.emptyWithCapa
   |>.insert ``Parser.Command.mutual
   |>.insert `str
 
-/-- If a file contains one of these names as segments, we disable `EmptyLine` linter. -/
+/-- If a file contains one of these names as segments, we disable `emptyLine` linter. -/
 abbrev SkippedFileSegments : Std.HashSet Name := Std.HashSet.emptyWithCapacity
   |>.insert `Tactic
   |>.insert `Util
@@ -69,7 +69,7 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if !((← getMainModule).components.filter (SkippedFileSegments.contains)).isEmpty then
     return
-  -- We ignore empty lines "after" the command finished
+  -- We ignore empty lines "after" the command finished.
   let stx := stx.unsetTrailing
   let allowed := stx.filter (AllowEmptyLines.contains ·.getKind)
   let allowedRanges := allowed.filterMap (·.getRange?)
