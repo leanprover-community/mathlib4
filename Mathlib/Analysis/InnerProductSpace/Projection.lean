@@ -772,6 +772,31 @@ theorem orthogonal_orthogonal [K.HasOrthogonalProjection] : Kᗮᗮ = K := by
     rw [inner_eq_zero_symm]
     exact hw v hv
 
+lemma le_iff_orthogonal_le_orthogonal (K₀ K₁ : Submodule 𝕜 E) [K₀.HasOrthogonalProjection]
+    [K₁.HasOrthogonalProjection] : K₀ ≤ K₁ ↔ K₁ᗮ ≤ K₀ᗮ := by
+  apply Iff.intro
+  · intro h
+    intro x hx
+    rw [mem_orthogonal]
+    rw [mem_orthogonal] at hx
+    intro u hu
+    exact hx u (h hu)
+  · intro h
+    rw [← K₀.orthogonal_orthogonal, ← K₁.orthogonal_orthogonal]
+    intro x hx
+    rw [mem_orthogonal]
+    rw [mem_orthogonal] at hx
+    intro u hu
+    exact hx u (h hu)
+
+lemma orthogonal_le_iff_orthogonal_le (K₀ K₁ : Submodule 𝕜 E) [K₀.HasOrthogonalProjection]
+    [K₁.HasOrthogonalProjection] : K₀ᗮ ≤ K₁ ↔ K₁ᗮ ≤ K₀ := by
+  rw [le_iff_orthogonal_le_orthogonal, orthogonal_orthogonal]
+
+lemma le_orthogonal_iff_le_orthogonal (K₀ K₁ : Submodule 𝕜 E) [K₀.HasOrthogonalProjection]
+    [K₁.HasOrthogonalProjection] : K₀ ≤ K₁ᗮ ↔ K₁ ≤ K₀ᗮ := by
+  rw [le_iff_orthogonal_le_orthogonal, orthogonal_orthogonal]
+
 /-- In a Hilbert space, the orthogonal complement of the orthogonal complement of a subspace `K`
 is the topological closure of `K`.
 
