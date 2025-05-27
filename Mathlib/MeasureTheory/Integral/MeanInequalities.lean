@@ -287,7 +287,7 @@ theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α �
       · finiteness
     _ < ⊤ := by
       rw [lintegral_add_left', lintegral_const_mul'' _ (hf.pow_const p),
-        lintegral_const_mul' _ _ h_two, ENNReal.add_lt_top]
+        lintegral_const_mul' _ _ (by finiteness), ENNReal.add_lt_top]
       · constructor <;> finiteness
       · fun_prop
 
