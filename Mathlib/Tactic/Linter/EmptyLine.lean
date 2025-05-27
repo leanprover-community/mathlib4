@@ -58,6 +58,9 @@ namespace Mathlib.Linter
 /--
 The "emptyLine" linter emits a warning on empty lines inside a command, but outside of a
 doc-string/module-doc.
+
+The linter is only active when there are no other warning, so as to not add noise when developing
+incomplete proofs.
 -/
 register_option linter.style.emptyLine : Bool := {
   defValue := false
@@ -83,7 +86,8 @@ abbrev SkippedFileSegments : Std.HashSet Name := Std.HashSet.emptyWithCapacity
 def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.emptyLine (← getOptions) do
     return
-  if (← get).messages.hasErrors then
+  -- The linter does not report anything on incomplete proofs.
+  if (← get).messages.reportedPlusUnreported.any (!·.severity matches .information) then
     return
   if !((← getMainModule).components.filter SkippedFileSegments.contains).isEmpty then
     return
