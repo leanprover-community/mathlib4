@@ -289,10 +289,12 @@ open Classical in
 noncomputable def variationAux (s : Set X) :=
     if (MeasurableSet s) then ⨆ P ∈ partitions s, varOfPart μ P else 0
 
+omit [T2Space V] [SeminormedGroup V] in
 /-- `variationAux` of the empty set is equal to zero. -/
 lemma variation_empty' : variationAux μ ∅ = 0 := by
   simp [variationAux, varOfPart, partitions_empty]
 
+omit [T2Space V] [SeminormedGroup V] in
 lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < variationAux μ s) :
     ∃ P ∈ partitions s, a < varOfPart μ P := by
   simp only [variationAux, hs, reduceIte] at ha
@@ -321,6 +323,7 @@ lemma variationAux_le {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : 
 --       · sorry
 --   exact (lt_self_iff_false _).mp this
 
+omit [T2Space V] [SeminormedGroup V] in
 lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : P ∈ partitions s) : varOfPart μ P ≤ variationAux μ s := by
   simp only [variationAux, hs, reduceIte]
@@ -333,6 +336,7 @@ variable {ι E : Type*} [SeminormedAddCommGroup E]
 theorem enorm_tsum_le_tsum_enorm {f : ι → E} : ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ := by
   sorry
 
+omit [SeminormedGroup V] in
 open Classical in
 /-- Given a partition `Q`, `varOfPart μ Q` is bounded by the sum of the `varOfPart μ (P i)` where
 the `P i` are the partitions formed by restricting to a disjoint set of sets `s i`. -/
@@ -383,8 +387,10 @@ lemma varOfPart_le_tsum {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
       _ = ∑ p ∈ (Finset.image (fun q ↦ q ∩ s i) Q), ‖μ p‖ₑ := by
         refine Eq.symm (Finset.sum_image_of_disjoint ?_ ?_)
         · simp only [Set.bot_eq_empty, VectorMeasure.empty]
-          -- Remains to show that `‖0‖ₑ = 0` by `enorm_zero` doesn't work.
-          have : ‖(0 : V)‖ₑ = 0 := by sorry
+          -- Need that `‖0‖ₑ = 0` but can't see how to do this directly.
+          have : ‖(0 : V)‖ₑ = 0 := by
+            have := ofReal_norm_eq_enorm (0 : V)
+            simp_all
           exact this
         · intro p hp q hq hpq
           refine Disjoint.inter_left (s i) (Disjoint.inter_right (s i) ?_)
@@ -394,11 +400,10 @@ lemma varOfPart_le_tsum {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
         intro p hp hp'
         dsimp [P]
         obtain hc | hc : p = ∅ ∨ ¬p = ∅ := eq_or_ne p ∅
-        · -- Remains to show that `‖0‖ₑ = 0` but `enorm_zero` doesn't work.
+        · -- Need that `‖0‖ₑ = 0` but can't see how to do this directly.
           have : ‖(0 : V)‖ₑ = 0 := by
-            have : ‖(0 : V)‖ = 0 := by exact norm_zero
-            have := ofReal_norm_eq_enorm' (0 : V)
-            sorry
+            have := ofReal_norm_eq_enorm (0 : V)
+            simp_all
           simp [hc, this] at hp'
         · rw [Finset.mem_filter, Finset.mem_image]
           refine ⟨?_, hc⟩
