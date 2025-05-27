@@ -939,7 +939,7 @@ lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y)
 end ENNReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
--- section Tactics
+section Tactics
 
 -- /-!
 -- ## Tactic extensions for powers on `ℝ≥0` and `ℝ≥0∞`
@@ -982,9 +982,9 @@ end ENNReal
 
 -- end NormNum
 
--- namespace Tactic
+namespace Tactic
 
--- namespace Positivity
+namespace Positivity
 
 -- private theorem nnrpow_pos {a : ℝ≥0} (ha : 0 < a) (b : ℝ) : 0 < a ^ b :=
 --   NNReal.rpow_pos ha
@@ -1011,8 +1011,9 @@ end ENNReal
 --     | positive pa, nonnegative pb => positive <$> mk_app `` ENNReal.rpow_pos_of_nonneg [pa, pb]
 --     | _, _ => failed
 
--- -- We already know `0 ≤ x` for all `x : ℝ≥0∞`
--- end Positivity
+-- We already know `0 ≤ x` for all `x : ℝ≥0∞`
+
+end Positivity
 
 -- open Positivity
 
@@ -1026,6 +1027,6 @@ end ENNReal
 --   | q(ENNReal.rpow $(a) $(b)) => prove_ennrpow a b
 --   | _ => failed
 
--- end Tactic
+end Tactic
 
--- end Tactics
+end Tactics
