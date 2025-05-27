@@ -458,6 +458,7 @@ instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)
   · rfl
   · rfl
 
+@[simps apply]
 private def widePullbackShapeEquivObj {J : Type*} :
     WidePullbackShape J ≃ WithTerminal (Discrete J) where
   toFun
@@ -469,11 +470,12 @@ private def widePullbackShapeEquivObj {J : Type*} :
   left_inv  x := by cases x <;> simp
   right_inv x := by cases x <;> simp
 
-private def widePullbackShapeEquivMap {J : Type*} (x y: WidePullbackShape J):
+@[simps apply]
+private def widePullbackShapeEquivMap {J : Type*} (x y: WidePullbackShape J) :
     (x ⟶ y) ≃ (widePullbackShapeEquivObj x ⟶ widePullbackShapeEquivObj y) where
   toFun
-  | Hom.term _ => PUnit.unit
-  | Hom.id _ => 𝟙 _
+  | .term _ => PUnit.unit
+  | .id _ => 𝟙 _
   invFun f := match x, y with
   | some x, some y =>
     cast (by
@@ -482,36 +484,26 @@ private def widePullbackShapeEquivMap {J : Type*} (x y: WidePullbackShape J):
         rfl
     ) (Hom.id (some y))
   | none, some y => by cases f
-  | some x, none => Hom.term x
-  | none, none => Hom.id none
+  | some x, none => .term x
+  | none, none => .id none
   left_inv f := by apply Subsingleton.allEq
   right_inv f := match x, y with
-  | some x, some y => by apply Subsingleton.allEq
+  | some x, some y => Subsingleton.allEq _ _
   | none, some y => by cases f
   | some x, none
   | none, none => rfl
 
 /-- In the case of a discrete category, `WithTerminal` is the same category as `WidePullbackShape`
--/
-@[simps!]
+
+TODO: Should we simply replace `WidePullbackShape J` with `WithTerminal (Discrete J)` everywhere? -/
+@[simps! functor_obj inverse_obj]
 def widePullbackShapeEquiv {J : Type*} : WidePullbackShape J ≌ WithTerminal (Discrete J) where
   functor.obj := widePullbackShapeEquivObj
-  functor.map {X Y} := widePullbackShapeEquivMap X Y
-  functor.map_comp _ _ := by apply Subsingleton.allEq
+  functor.map := widePullbackShapeEquivMap _ _
   inverse.obj := widePullbackShapeEquivObj.symm
-  inverse.map {X Y} := cast (by
-    have eqX := Equiv.apply_symm_apply widePullbackShapeEquivObj X;
-    have eqY := Equiv.apply_symm_apply widePullbackShapeEquivObj Y;
-    rw [eqX, eqY];)
-    (widePullbackShapeEquivMap
-      (widePullbackShapeEquivObj.symm X) (widePullbackShapeEquivObj.symm Y)).invFun
-  inverse.map_id _ := by apply Subsingleton.allEq
-  inverse.map_comp _ _ := by apply Subsingleton.allEq
-  unitIso.hom.app x := cast (by cases x <;> simp) (𝟙 x)
-  unitIso.inv.app x := cast (by cases x <;> simp) (𝟙 x)
-  counitIso.hom.app x := cast (by cases x <;> simp) (𝟙 x)
-  counitIso.inv.app x := cast (by cases x <;> simp) (𝟙 x)
-  functor_unitIso_comp x := by apply Subsingleton.allEq
+  inverse.map f := (widePullbackShapeEquivMap _ _).symm (eqToHom (by simp) ≫ f ≫ eqToHom (by simp))
+  unitIso := NatIso.ofComponents fun x ↦ eqToIso (by aesop)
+  counitIso := NatIso.ofComponents fun x ↦ eqToIso (by aesop)
 
 end WithTerminal
 

@@ -25,17 +25,19 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {J : Type w} [Category.{w'} J] {X : C} {F : C ⥤ D}
 
+-- TODO: Do we even want to keep `WidePullbackShape` around?
+instance PreservesLimitsOfShape.ofWidePullbacks {J : Type*}
+    [PreservesLimitsOfShape (WidePullbackShape J) F] :
+    PreservesLimitsOfShape (WithTerminal <| Discrete J) F :=
+  preservesLimitsOfShape_of_equiv WithTerminal.widePullbackShapeEquiv F
+
 open WithTerminal in
-instance PreservesLimitsOfShape.overPost
-    [PreservesLimitsOfShape (WithTerminal J) F] :
+instance PreservesLimitsOfShape.overPost [PreservesLimitsOfShape (WithTerminal J) F] :
     PreservesLimitsOfShape J (Over.post F (X := X)) where
-  preservesLimit {K} := {
-    preserves {coneK} isLimitConeK :=
-      have isLimitConeD := (IsLimit.postcomposeHomEquiv liftFromOverComp.symm _).symm <|
-        isLimitOfPreserves F (isLimitEquiv.symm isLimitConeK)
-      ⟨isLimitEquiv <| isLimitConeD.ofIsoLimit <|
-        Cones.ext (.refl _) fun | .star | .of a => by aesop⟩
-  }
+  preservesLimit.preserves {coneK} isLimitConeK :=
+    have isLimitConeD := (IsLimit.postcomposeHomEquiv liftFromOverComp.symm _).symm <|
+      isLimitOfPreserves F (isLimitEquiv.symm isLimitConeK)
+    ⟨isLimitEquiv <| isLimitConeD.ofIsoLimit <| Cones.ext (.refl _) fun | .star | .of a => by aesop⟩
 
 instance PreservesFiniteLimits.overPost [PreservesFiniteLimits F] :
     PreservesFiniteLimits (Over.post F (X := X)) where
@@ -44,27 +46,14 @@ instance PreservesFiniteLimits.overPost [PreservesFiniteLimits F] :
 instance PreservesLimitsOfSize.overPost [PreservesLimitsOfSize.{w', w} F] :
     PreservesLimitsOfSize.{w', w} (Over.post F (X := X)) where
 
-instance PreservesProductsOfWidePullbacks {J : Type*}
-    [PreservesLimitsOfShape (WidePullbackShape J) F] :
-    PreservesLimitsOfShape (Discrete J) (Over.post F (X := X)) := by
-    have : PreservesLimitsOfShape (WithTerminal (Discrete J)) F :=
-      Limits.preservesLimitsOfShape_of_equiv WithTerminal.widePullbackShapeEquiv F
-    infer_instance
-
 open WithInitial in
-instance PreservesColimitsOfShape.underPost
-    [PreservesColimitsOfShape (WithInitial J) F] :
+instance PreservesColimitsOfShape.underPost [PreservesColimitsOfShape (WithInitial J) F] :
     PreservesColimitsOfShape J (Under.post F (X := X)) where
-  preservesColimit {K} := {
-    preserves {coconeK} isLimitCoconeK := by
-      let coconeC := coconeEquiv.functor.obj coconeK
-      obtain ⟨isColimitCoconeD⟩ : Nonempty (IsColimit (F.mapCocone coconeC)) :=
-        PreservesColimitsOfShape.preservesColimit.preserves <| isColimitEquiv.symm isLimitCoconeK
-      replace isColimitCoconeD :=
-        (IsColimit.precomposeHomEquiv liftFromUnderComp (F.mapCocone coconeC)).symm isColimitCoconeD
-      exact ⟨isColimitEquiv <| isColimitCoconeD.ofIsoColimit <|
-        Cocones.ext (.refl _) fun | .star | .of a => by aesop⟩
-  }
+  preservesColimit.preserves {coconeK} isColimitCoconeK :=
+    have isColimitCoconeD := (IsColimit.precomposeHomEquiv liftFromUnderComp _).symm <|
+      isColimitOfPreserves F (isColimitEquiv.symm isColimitCoconeK)
+    ⟨isColimitEquiv <| isColimitCoconeD.ofIsoColimit <|
+      Cocones.ext (.refl _) fun | .star | .of a => by aesop⟩
 
 instance PreservesFiniteColimits.underPost [PreservesFiniteColimits F] :
     PreservesFiniteColimits (Under.post F (X := X)) where
