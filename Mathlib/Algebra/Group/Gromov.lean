@@ -1619,6 +1619,9 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
                       (List.getI_eq_getElem (List.dropWhile is_gamma list)
                         (List.length_pos_iff.mpr dropwhile_not_nul))
 
+              have unattach_len_pos: 0 < (List.dropWhile is_gamma list).unattach.length := by
+                rw [List.length_unattach]
+                exact List.length_pos_iff.mpr dropwhile_not_nul
 
               conv =>
                 lhs
@@ -1628,8 +1631,8 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
                   rw [← List.getI_zero_eq_headI]
                   rw [← List.getI_zero_eq_headI]
                   rw [List.getI_eq_getElem _ (List.length_pos_iff.mpr dropwhile_not_nul)]
-                  rw [List.getI_eq_getElem _ (by sorry)]
-                  simp [List.getElem_unattach _ sorry]
+                  rw [List.getI_eq_getElem _ unattach_len_pos]
+                  simp [List.getElem_unattach _ unattach_len_pos]
                   rw [list_tail_unattach]
 
               rw [List.headI_mul_tail_prod_of_ne_nil]
