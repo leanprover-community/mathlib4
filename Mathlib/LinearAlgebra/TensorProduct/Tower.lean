@@ -475,7 +475,16 @@ variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
   [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
 
 variable (S) in
-/-- A tensor product analogue of `mul_right_comm`. -/
+/-- A tensor product analogue of `mul_right_comm`.
+
+Suppose we have a diagram of algebras `R → B ← S`,
+and a `B`-module `M`, `S`-module `P`, and `R`-module `Q`, then
+```
+(M ⊗ˢ P)      ⎛ M ⎞ ⊗ˢ P
+ ⊗ᴿ       ≅ᴮ  ⎜ ⊗ᴿ⎟
+ Q            ⎝ Q ⎠
+```
+-/
 def rightComm : (M ⊗[S] P) ⊗[R] Q ≃ₗ[B] (M ⊗[R] Q) ⊗[S] P :=
   LinearEquiv.ofLinear
     (lift (lift (LinearMap.lflip ∘ₗ
@@ -496,6 +505,10 @@ theorem rightComm_symm_tmul (m : M) (p : P) (q : Q) :
     (rightComm R S B M P Q).symm ((m ⊗ₜ q) ⊗ₜ p) = (m ⊗ₜ p) ⊗ₜ q :=
   rfl
 
+theorem rightComm_symm :
+    (rightComm R S B M P Q).symm = rightComm S R B M Q P :=
+  rfl
+
 end rightComm
 
 section tensorTensorTensorComm
@@ -508,7 +521,16 @@ variable [IsScalarTower R S M] [SMulCommClass A S M] [SMulCommClass S A M]
 
 variable (S)
 
-/-- Heterobasic version of `tensorTensorTensorComm`. -/
+/-- Heterobasic version of `tensorTensorTensorComm`.
+
+Suppose we have towers of algebras `R → S → B` and `R → A → B`, and
+a `B`-module `M`, `S`-module `N`, `A`-module `P` and `R`-module `Q`, then
+```
+(M ⊗ˢ N)      ⎛ M ⎞ ⊗ˢ ⎛ N ⎞
+ ⊗ᴬ       ≅ᴮ  ⎜ ⊗ᴬ⎟    ⎜ ⊗ᴿ⎟
+(P ⊗ᴿ Q)      ⎝ P ⎠    ⎝ Q ⎠
+```
+-/
 def tensorTensorTensorComm :
     (M ⊗[S] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[B] (M ⊗[A] P) ⊗[S] (N ⊗[R] Q) :=
 (assoc R A B (M ⊗[S] N) P Q).symm
@@ -533,6 +555,9 @@ theorem tensorTensorTensorComm_eq :
   apply LinearEquiv.toLinearMap_injective
   ext
   simp
+
+theorem tensorTensorTensorComm_symm :
+    (tensorTensorTensorComm R S A B M N P Q).symm = tensorTensorTensorComm R A S B M P N Q := rfl
 
 end tensorTensorTensorComm
 
