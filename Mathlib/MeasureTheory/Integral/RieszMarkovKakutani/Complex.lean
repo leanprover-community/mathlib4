@@ -300,7 +300,7 @@ lemma variation_empty' : variationAux μ ∅ = 0 := by
 
 omit [T2Space V] [SeminormedGroup V] in
 /-- VariationAux is monotone as a function of the set. -/
-lemma variationAux_monotone (s₁ s₂ : Set X) (h : s₁ ⊆ s₂) (hs₁ : MeasurableSet s₁)
+lemma variationAux_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (hs₁ : MeasurableSet s₁)
     (hs₂ : MeasurableSet s₂) : variationAux μ s₁ ≤ variationAux μ s₂ := by
   simp only [variationAux, hs₁, reduceIte, hs₂]
   exact iSup_le_iSup_of_subset (partitions_monotone h)
@@ -428,9 +428,13 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     intro ε' hε' hsnetop
     let ε := ε' / n
     have hε : 0 < ε := by positivity
+    have hs'' i : variationAux μ (s i) ≠ ⊤ := by
+      have : s i ⊆ ⋃ i, s i := Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a
+      have := variationAux_monotone μ this (hs i) (MeasurableSet.iUnion hs)
+      exact lt_top_iff_ne_top.mp <| lt_of_le_of_lt this hsnetop
     -- For each set `s i` we choose a partition `P i` such that, for each `i`,
     -- `variationAux μ (s i) ≤ varOfPart μ (P i) + ε`.
-    choose P hP using fun i ↦ variationAux_le' μ (hs i) (hε)
+    choose P hP using fun i ↦ variationAux_le' μ (hs i) (hε) (hs'' i)
     calc ∑ i ∈ Finset.range n, variationAux μ (s i)
       _ ≤ ∑ i ∈ Finset.range n, (varOfPart μ (P i) + ε) := by
         gcongr with i hi
