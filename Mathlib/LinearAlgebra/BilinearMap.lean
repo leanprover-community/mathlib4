@@ -177,7 +177,9 @@ section restrictScalars
 
 variable (R' S' : Type*)
 variable [Semiring R'] [Semiring S'] [Module R' M] [Module S' N] [Module R' Pₗ] [Module S' Pₗ]
-variable [SMulCommClass S' R' Pₗ] [CompatibleSMul M Pₗ R' R] [CompatibleSMul N Pₗ S' S]
+variable [SMulCommClass S' R' Pₗ]
+variable [SMul S' S] [IsScalarTower S' S N] [IsScalarTower S' S Pₗ]
+variable [SMul R' R] [IsScalarTower R' R M] [IsScalarTower R' R Pₗ]
 
 /-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
 then the restriction of scalars is a `R'`-`S'` bilinear map. -/
@@ -186,12 +188,11 @@ def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N �
   LinearMap.mk₂' R' S'
     (B · ·)
     B.map_add₂
-    (fun r' m x ↦ (B.flip x).map_smul_of_tower r' m)
+    (fun r' m _ ↦ by
+      dsimp only
+      rw [← smul_one_smul R r' m, map_smul₂, smul_one_smul])
     (fun _ ↦ map_add _)
     (fun _ x ↦ (B x).map_smul_of_tower _)
-
-instance [SMulCommClass S R' Pₗ] : LinearMap.CompatibleSMul M (N →ₗ[S] Pₗ) R' R where
-  map_smul B := (B.restrictScalars₁₂ R' S).map_smul
 
 theorem restrictScalars₁₂_injective : Function.Injective
     (LinearMap.restrictScalars₁₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
@@ -356,7 +357,8 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
 omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`. -/
-def compr₂ [Module A M] [Module A Qₗ] [SMulCommClass R A Qₗ] [CompatibleSMul Pₗ Qₗ R A]
+def compr₂ [Module R A] [Module A M] [Module A Qₗ]
+    [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
     (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) : M →ₗ[A] Nₗ →ₗ[R] Qₗ where
   toFun x := g.restrictScalars R ∘ₗ (f x)
   map_add' _ _ := by ext; simp
@@ -364,7 +366,8 @@ def compr₂ [Module A M] [Module A Qₗ] [SMulCommClass R A Qₗ] [CompatibleSM
 
 omit [Module R M] in
 @[simp]
-theorem compr₂_apply [Module A M] [Module A Qₗ] [SMulCommClass R A Qₗ] [CompatibleSMul Pₗ Qₗ R A]
+theorem compr₂_apply [Module R A] [Module A M] [Module A Qₗ]
+    [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
     (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) (m : M) (n : Nₗ) :
     f.compr₂ g m n = g (f m n) := rfl
 
