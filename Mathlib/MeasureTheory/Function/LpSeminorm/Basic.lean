@@ -10,7 +10,6 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
-import Mathlib.Tactic.Finiteness
 
 /-!
 # Basic theorems about ℒp space

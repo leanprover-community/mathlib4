@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 import Mathlib.Algebra.GeomSum
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
-import Mathlib.Tactic.Finiteness
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Instances.EReal.Lemmas

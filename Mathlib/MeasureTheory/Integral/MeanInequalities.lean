@@ -7,7 +7,6 @@ import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-import Mathlib.Tactic.Finiteness
 
 /-!
 # Mean value inequalities for integrals

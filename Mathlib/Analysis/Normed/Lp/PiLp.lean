@@ -7,7 +7,6 @@ import Mathlib.Analysis.MeanInequalities
 import Mathlib.Data.Fintype.Order
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.Analysis.Normed.Lp.ProdLp
-import Mathlib.Tactic.Finiteness
 
 /-!
 # `L^p` distance on finite products of metric spaces
