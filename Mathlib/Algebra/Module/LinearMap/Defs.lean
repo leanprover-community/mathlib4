@@ -34,7 +34,7 @@ We then provide `LinearMap` with the following instances:
 
 To ensure that composition works smoothly for semilinear maps, we use the typeclasses
 `RingHomCompTriple`, `RingHomInvPair` and `RingHomSurjective` from
-`Mathlib.Algebra.Ring.CompTypeclasses`.
+`Mathlib/Algebra/Ring/CompTypeclasses.lean`.
 
 ## Notation
 
@@ -309,9 +309,8 @@ protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 
-@[simp]
-theorem mk_coe (f : M →ₛₗ[σ] M₃) (h) : (LinearMap.mk f h : M →ₛₗ[σ] M₃) = f :=
-  rfl
+@[simp] lemma mk_coe (f : M →ₛₗ[σ] M₃) (h) : (mk f h : M →ₛₗ[σ] M₃) = f := rfl
+@[simp] lemma mk_coe' (f : M →ₛₗ[σ] M₃) (h) : (mk f.toAddHom h : M →ₛₗ[σ] M₃) = f := rfl
 
 variable (fₗ f g)
 

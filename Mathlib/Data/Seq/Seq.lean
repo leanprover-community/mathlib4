@@ -494,7 +494,9 @@ instance : Membership α (Seq α) :=
 @[simp]
 theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x ∈ s := ⟨n, h.symm⟩
 
-theorem not_mem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
+theorem notMem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
   | ⟨_, _⟩ => Stream'.mem_cons (some a) _

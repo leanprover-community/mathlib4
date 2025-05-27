@@ -12,7 +12,7 @@ import Mathlib.Topology.LocallyConstant.Algebra
 # Preliminaries for Nöbeling's theorem
 
 This file constructs basic objects and results concerning them that are needed in the proof of
-Nöbeling's theorem, which is in `Mathlib.Topology.Category.Profinite.Nobeling.Induction`.
+Nöbeling's theorem, which is in `Mathlib/Topology/Category/Profinite/Nobeling/Induction.lean`.
 See the section docstrings for more information.
 
 ## Proof idea
@@ -30,9 +30,11 @@ For `i : I`, let `e C i : LocallyConstant C ℤ` denote the map `fun f ↦ (if f
 The basis will consist of products `e C iᵣ * ⋯ * e C i₁` with `iᵣ > ⋯ > i₁` which cannot be written
 as linear combinations of lexicographically smaller products. We call this set `GoodProducts C`.
 
-What is proved by ordinal induction (in `Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit` and
-`Mathlib.Topology.Category.Profinite.Nobeling.Successor`) is that this set is linearly independent.
-The fact that it spans is proved directly in `Mathlib.Topology.Category.Profinite.Nobeling.Span`.
+What is proved by ordinal induction (in
+`Mathlib/Topology/Category/Profinite/Nobeling/ZeroLimit.lean` and
+`Mathlib/Topology/Category/Profinite/Nobeling/Successor.lean`) is that this set is linearly
+independent. The fact that it spans is proved directly in
+`Mathlib/Topology/Category/Profinite/Nobeling/Span.lean`.
 
 ## References
 

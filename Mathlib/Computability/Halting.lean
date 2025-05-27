@@ -143,11 +143,11 @@ def REPred {α} [Primcodable α] (p : α → Prop) :=
 
 @[deprecated (since := "2025-02-06")] alias RePred := REPred
 
-@[deprecated (since := "2025-02-06")] alias RePred.of_eq := RePred
-
 theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (H : ∀ a, p a ↔ q a) :
     REPred q :=
   (funext fun a => propext (H a) : p = q) ▸ hp
+
+@[deprecated (since := "2025-02-06")] alias RePred.of_eq := REPred.of_eq
 
 theorem Partrec.dom_re {α β} [Primcodable α] [Primcodable β] {f : α →. β} (h : Partrec f) :
     REPred fun a => (f a).Dom :=

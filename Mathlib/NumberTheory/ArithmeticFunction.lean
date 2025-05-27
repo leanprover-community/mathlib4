@@ -296,7 +296,7 @@ theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b 
   have h : {(1, x)} ⊆ divisorsAntidiagonal x := by simp [x0]
   rw [← sum_subset h]
   · simp
-  intro y ymem ynmem
+  intro y ymem ynotMem
   have y1ne : y.fst ≠ 1 := fun con => by simp_all [Prod.ext_iff]
   simp [y1ne]
 
@@ -318,7 +318,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) :=
       have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
       rw [← sum_subset h]
       · simp
-      intro ⟨y₁, y₂⟩ ymem ynmem
+      intro ⟨y₁, y₂⟩ ymem ynotMem
       have y2ne : y₂ ≠ 1 := by
         intro con
         simp_all
@@ -560,7 +560,7 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
     | insert _ _ has ih =>
       rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
       rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
-      exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
+      exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_notMem has).symm
 
 theorem map_prod_of_prime [CommMonoidWithZero R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f)

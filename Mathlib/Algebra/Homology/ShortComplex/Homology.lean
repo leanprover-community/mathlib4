@@ -50,7 +50,7 @@ structure HomologyData where
   /-- a right homology data -/
   right : S.RightHomologyData
   /-- the compatibility isomorphism relating the two dual notions of
-    `LeftHomologyData` and `RightHomologyData`  -/
+  `LeftHomologyData` and `RightHomologyData` -/
   iso : left.H ≅ right.H
   /-- the pentagon relation expressing the compatibility of the left
   and right homology data -/
