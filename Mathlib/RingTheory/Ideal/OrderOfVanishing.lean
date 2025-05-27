@@ -77,7 +77,7 @@ The map `R ⧸ I →ₗ[R] R ⧸ (a • I)` defined by multiplication by `a`
 def Ideal.mulQuot (a : R) (I : Ideal R) :
     R ⧸ I →ₗ[R] R ⧸ (a • I) :=
       Submodule.mapQ _ _ (LinearMap.mul R R a) <|
-        have : a • I = Submodule.map ((LinearMap.mul R R) a) I := rfl ;
+        have : a • I = Submodule.map ((LinearMap.mul R R) a) I := rfl;
         by simp [this, Submodule.comap_map_eq]
 /--
 The map `R ⧸ I →ₗ[R] R ⧸ (a • I)` defined by multiplication by `a` is injective if `a` is
