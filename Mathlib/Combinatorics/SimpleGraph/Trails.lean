@@ -156,8 +156,8 @@ theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V} {p
   ext v
   simp
 
-theorem IsEulerian.Connected_forall_mem_support {u v w : V} {p : G.Walk u v} (ht : p.IsEulerian)
-    (hc : G.Connected) : w ∈ p.support := by
+theorem IsEulerian.mem_support_of_Connected {u v : V} {p : G.Walk u v} (hp : p.IsEulerian)
+    (hc : G.Connected) (w : V) : w ∈ p.support := by
   by_cases h : w = u
   · simp [h]
   · have : ∃ e ∈ G.edgeSet, w ∈ e := by
