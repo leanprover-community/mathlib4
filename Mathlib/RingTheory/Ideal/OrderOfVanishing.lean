@@ -202,11 +202,10 @@ def CommRing.ordFrac [Nontrivial R] {K : Type*} [Field K] [Algebra R K] [IsFract
   f this
 
 /--
-The order of vanishing is finite for all elements x of
-Noetherian local domains of Krull dimension less than or equal to 1.
+The order of vanishing is finite for all elements of
+Noetherian rings of Krull dimension less than or equal to 1.
 -/
 theorem CommRing.ord_finite [IsNoetherianRing R]
-         [IsLocalRing R] [IsDomain R] [IsLocalRing R]
          (hR : ringKrullDim R ≤ 1) {x : R} (hx : x ∈ nonZeroDivisors R) :
          IsFiniteLength R (R ⧸ Ideal.span {x}) := by
   rw[isFiniteLength_iff_isNoetherian_isArtinian]
