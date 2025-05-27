@@ -129,14 +129,6 @@ def FiveWheelLikeFree (G : SimpleGraph α) (r k : ℕ) : Prop :=
 
 namespace IsFiveWheelLike
 
-@[deprecated (since := "2025-05-27")] alias not_mem_left := notMem_left
-
-@[deprecated (since := "2025-05-27")] alias not_mem_right := notMem_right
-
-@[deprecated (since := "2025-05-27")] alias fst_not_mem := fst_notMem
-
-@[deprecated (since := "2025-05-27")] alias snd_not_mem := snd_notMem
-
 variable {v w₁ w₂ : α} {t : Finset α} (hw : G.IsFiveWheelLike r k v w₁ w₂ s t)
 
 include hw
@@ -149,11 +141,7 @@ lemma fst_notMem_right : w₁ ∉ t :=
   fun h ↦ hw.isPathGraph3Compl.not_adj_fst <| hw.isNClique_right.1 (mem_insert_self ..)
     (mem_insert_of_mem h) hw.isPathGraph3Compl.ne_fst
 
-@[deprecated (since := "2025-05-27")] alias fst_not_mem_right := fst_notMem_right
-
 lemma snd_notMem_left : w₂ ∉ s := hw.symm.fst_notMem_right
-
-@[deprecated (since := "2025-05-27")] alias snd_not_mem_left := snd_notMem_left
 
 /--
 Any graph containing an `IsFiveWheelLike r k` structure is not `(r + 1)`-colorable.
