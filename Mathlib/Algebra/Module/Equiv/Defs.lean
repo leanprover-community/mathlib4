@@ -248,12 +248,12 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     e.toEquiv.symm with
     toFun := e.toLinearMap.inverse e.invFun e.left_inv e.right_inv
     invFun := e.toEquiv.symm.invFun
-    map_smul' := fun r x ↦ by rw [map_smulₛₗ] }
+    map_smul' r x := by rw [map_smulₛₗ] }
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M : Type*} { M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    {M : Type*} {M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
   e
 
