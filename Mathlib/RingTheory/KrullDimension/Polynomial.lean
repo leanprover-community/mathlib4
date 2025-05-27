@@ -89,14 +89,6 @@ lemma PrimeSpectrum.residueField_specComap {R : Type*} [CommRing R] (I : PrimeSp
   rw [Set.range_unique, Set.singleton_eq_singleton_iff]
   exact PrimeSpectrum.ext (Ideal.ext fun x ↦ Ideal.algebraMap_residueField_eq_zero)
 
-lemma Localization.AtPrime.eq_maximalIdeal_iff_comap_eq {R : Type*} [CommSemiring R] {I : Ideal R}
-    [hI : I.IsPrime] {J : Ideal (Localization.AtPrime I)}
-    (h : Ideal.comap (algebraMap R (Localization.AtPrime I)) J = I) :
-    J = IsLocalRing.maximalIdeal (Localization.AtPrime I) := by
-  refine le_antisymm (IsLocalRing.le_maximalIdeal (fun hJ ↦ (hI.ne_top (h.symm ▸ hJ ▸ rfl)))) ?_
-  simp_rw [← Localization.AtPrime.map_eq_maximalIdeal, ← h]
-  exact Ideal.map_comap_le
-
 /-- The `OrderIso` between fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal
  `p : PrimeSpectrum R` and the prime spectrum of the tensor product of `S` and the residue field of
  `p`. -/
