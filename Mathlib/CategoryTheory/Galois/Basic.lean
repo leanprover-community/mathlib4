@@ -27,7 +27,7 @@ the definitions in Lenstras notes (see below for a reference).
                         and does not have non-trivial subobjects
 
 Any fiber functor `F` induces an equivalence with the category of finite, discrete `Aut F`-types.
-This is proven in `Mathlib.CategoryTheory.Galois.Equivalence`.
+This is proven in `Mathlib/CategoryTheory/Galois/Equivalence.lean`.
 
 ## Implementation details
 
