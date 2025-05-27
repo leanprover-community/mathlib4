@@ -97,6 +97,9 @@ lemma Localization.AtPrime.eq_maximalIdeal_iff_comap_eq {R : Type*} [CommSemirin
   simp_rw [← Localization.AtPrime.map_eq_maximalIdeal, ← h]
   exact Ideal.map_comap_le
 
+/-- The `OrderIso` between fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal
+ `p : PrimeSpectrum R` and the prime spectrum of the tensor product of `S` and the residue field of
+ `p`. -/
 noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (R S : Type*) [CommRing R]
     [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
     (algebraMap R S).specComap ⁻¹' {p} ≃o
