@@ -215,10 +215,7 @@ theorem IsLocalRing.Embdim_eq_spanFinrank_maximalIdeal
     have inequality2 : sinv.ncard ≤ s.ncard := Set.ncard_image_le s_finite
     rw [nakayama] at s_span
     have sinv_finite : sinv.Finite := Set.Finite.image p_inv s_finite
-    have h_span_of_sinv : (Submodule.span R sinv).spanFinrank ≤ sinv.ncard :=
-      Submodule.spanFinrank_span_le_ncard_of_finite sinv_finite
     have top_fg : (⊤ : Submodule res cot).FG := IsNoetherian.noetherian (⊤ : Submodule res cot)
-    rw [s_span] at h_span_of_sinv
     have inequality1 : (Submodule.spanFinrank maxl R) ≤ sinv.ncard := by
       have h1 := (@Submodule.spanFinrank_span_le_ncard_of_finite R (maxl R) _ _ _ sinv) sinv_finite
       have h2 : (Submodule.span R sinv).spanFinrank = (Submodule.spanFinrank maxl R) := by
