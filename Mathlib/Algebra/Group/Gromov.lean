@@ -63,6 +63,10 @@ lemma mem_S_prod_list (x: G): ∃ l: List S, ProdS x l := by
   unfold List.unattach
   simp [prod_eq]
 
+lemma list_tail_unattach (T: Type*)  {p : T → Prop} (l: List { x : T // p x}): l.tail.unattach = l.unattach.tail := by
+  unfold List.unattach
+  simp
+
 noncomputable def WordNorm (g: G) := sInf {n: ℕ | ∃ l: List S, l.length = n ∧ ProdS g l}
 
 lemma word_norm_prod (g: G) (n: ℕ) (hgn: WordNorm (S := S) g = n): ∃ l: List S, ProdS g l ∧ l.length = n := by
@@ -1596,23 +1600,49 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
               rw [eq_split]
               rw [List.unattach_append]
               simp
+            have dropwhile_not_nul : (List.dropWhile is_gamma list) ≠ [] := by
+              exact tail_nonempty
+            --have dropwhile_len-
             apply_fun (fun x => x * (List.dropWhile is_gamma list).unattach.prod⁻¹)
             .
               simp
               conv =>
                 pattern _[0]
                 equals (List.dropWhile is_gamma list).headI =>
-                  sorry
+                  rw [← List.head_eq_getElem_zero dropwhile_not_nul]
+                  rw [← List.getI_zero_eq_headI]
+                  rw [List.head_eq_getElem_zero]
+                  exact
+                    Eq.symm
+                      (List.getI_eq_getElem (List.dropWhile is_gamma list)
+                        (List.length_pos_iff.mpr dropwhile_not_nul))
+
+
               conv =>
                 lhs
                 lhs
                 rhs
                 equals (List.dropWhile is_gamma list).unattach.headI * (List.dropWhile is_gamma list).unattach.tail.prod =>
-                  sorry
+                  rw [← List.getI_zero_eq_headI]
+                  rw [← List.getI_zero_eq_headI]
+                  rw [List.getI_eq_getElem _ (List.length_pos_iff.mpr dropwhile_not_nul)]
+                  rw [List.getI_eq_getElem _ (by sorry)]
+                  simp [List.getElem_unattach _ sorry]
+                  rw [list_tail_unattach]
 
               rw [List.headI_mul_tail_prod_of_ne_nil]
-              simp
-              simp [header_prod]
+              .
+                simp
+                simp [header_prod]
+              .
+                by_contra this
+                rw [List.eq_nil_iff_length_eq_zero] at this
+                rw [List.length_unattach] at this
+                rw [← List.eq_nil_iff_length_eq_zero] at this
+                contradiction
+
+
+            . exact mul_left_injective (List.dropWhile is_gamma list).unattach.prod⁻¹
 
 
 
