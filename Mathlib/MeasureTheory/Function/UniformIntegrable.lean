@@ -258,7 +258,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
         refine lt_of_lt_of_le ?_ hx
         rw [ENNReal.toReal_lt_toReal hbdd.ne]
         · exact ENNReal.lt_add_right hbdd.ne one_ne_zero
-        · exact (ENNReal.add_lt_top.2 ⟨hbdd, ENNReal.one_lt_top⟩).ne
+        · finiteness
       rw [← nonpos_iff_eq_zero]
       refine (measure_mono this).trans ?_
       have hle := enorm_ae_le_eLpNormEssSup f μ
@@ -797,11 +797,7 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
       simp_rw [NNReal.val_eq_coe, ENNReal.ofReal_coe_nnreal, mul_comm]
       exact le_rfl
     _ = ((C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1 : ℝ≥0∞).toNNReal := by
-      rw [ENNReal.coe_toNNReal]
-      exact ENNReal.add_ne_top.2
-        ⟨ENNReal.mul_ne_top ENNReal.coe_ne_top (ENNReal.rpow_ne_top_of_nonneg
-          (inv_nonneg.2 ENNReal.toReal_nonneg) (measure_lt_top _ _).ne),
-        ENNReal.one_ne_top⟩
+      rw [ENNReal.coe_toNNReal (by finiteness)]
 
 /-- A sequence of functions `(fₙ)` is uniformly integrable in the probability sense if for all
 `ε > 0`, there exists some `C` such that `∫ x in {|fₙ| ≥ C}, fₙ x ∂μ ≤ ε` for all `n`. -/
