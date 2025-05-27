@@ -9,18 +9,6 @@ variable {K : Type*} [Field K] [Fintype K] {p f n : ℕ}
 
 open Polynomial ZMod AdjoinRoot FiniteField Multiset
 
-lemma stupid (p : ℕ) {P : ℤ[X]} {q1 q2 : (ZMod p)[X]} (h : ∃ A Q1 Q2 : ℤ[X],
-      Q1.map (Int.castRingHom (ZMod p)) = q1 ∧
-      Q2.map (Int.castRingHom (ZMod p)) = q2 ∧
-      P + p*A = Q1 * Q2) :
-    P.map (Int.castRingHom (ZMod p)) = q1 * q2 := by
-  obtain ⟨A, Q1, Q2, h1, h2, h3⟩ := h
-  apply_fun Polynomial.map (Int.castRingHom (ZMod p)) at h3
-  simp only [Polynomial.map_add, Polynomial.map_mul, h1, h2] at h3
-  suffices Polynomial.map (Int.castRingHom (ZMod p)) p = 0 by
-    rwa [this, zero_mul, add_zero] at h3
-  simp
-
 include hK
 
 lemma f_ne_zero : f ≠ 0 := fun h0 ↦ not_subsingleton K <|

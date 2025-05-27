@@ -54,32 +54,44 @@ theorem cyclotomic_7 : cyclotomic ((7 : ℕ+) : ℕ) ℤ =
   simp [cyclotomic_prime, sum_range_succ]
   ring
 
+example : Nat.log 2 8 = 3 := by
+  norm_num
+
 theorem pid7 : IsPrincipalIdealRing (𝓞 K) := by
-  apply IsCyclotomicExtension.Rat.pid4 7
+  apply IsCyclotomicExtension.Rat.pid6 7
   rw [M7, cyclotomic_7]
   intro p hple hp hpn
   fin_cases hple; any_goals norm_num at hp
-  · let P : ℤ[X] := X ^ 3 + X + 1; let d := 3
-    use P, X ^ 3 + X ^ 2 + 1, -X ^ 3, 0, 0, 0, 0, 0, 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp only [reduceAdd, cast_ofNat, mul_neg, P]
-      ring
-    · left
-      norm_num
-  · let P : ℤ[X] := X ^ 6 + X ^ 5 + X ^ 4 + X ^ 3 + X ^ 2 + X + 1; let d := 6
-    use P, 1, 0, 0, 0, 0, 0, 0, 0, 0
-    rw [show P.natDegree = d by simp only [P]; compute_degree!]
-    refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
-    · rw [orderOf_eq_iff (by norm_num)]
-      refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
-      have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
-      fin_cases this <;> decide +revert
-    · simp only [reduceAdd, cast_ofNat, mul_neg, P]
-      ring
-    · left
-      norm_num
+  · left; simp; norm_num
+    simp [orderOf]
+    sorry
+  · left
+    sorry
+  -- apply IsCyclotomicExtension.Rat.pid4 7
+  -- rw [M7, cyclotomic_7]
+  -- intro p hple hp hpn
+  -- fin_cases hple; any_goals norm_num at hp
+  -- · let P : ℤ[X] := X ^ 3 + X + 1; let d := 3
+  --   use P, X ^ 3 + X ^ 2 + 1, -X ^ 3, 0, 0, 0, 0, 0, 0, 0
+  --   rw [show P.natDegree = d by simp only [P]; compute_degree!]
+  --   refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
+  --   · rw [orderOf_eq_iff (by norm_num)]
+  --     refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
+  --     have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
+  --     fin_cases this <;> decide +revert
+  --   · simp only [reduceAdd, cast_ofNat, mul_neg, P]
+  --     ring
+  --   · left
+  --     norm_num
+  -- · let P : ℤ[X] := X ^ 6 + X ^ 5 + X ^ 4 + X ^ 3 + X ^ 2 + X + 1; let d := 6
+  --   use P, 1, 0, 0, 0, 0, 0, 0, 0, 0
+  --   rw [show P.natDegree = d by simp only [P]; compute_degree!]
+  --   refine ⟨by simp only [P]; monicity!, ?_, ?_, ?_⟩
+  --   · rw [orderOf_eq_iff (by norm_num)]
+  --     refine ⟨by decide +revert, fun n hnlt hnpos ↦ ?_⟩
+  --     have : n ∈ Finset.Ioo 0 d := by simp [hnpos, hnlt]
+  --     fin_cases this <;> decide +revert
+  --   · simp only [reduceAdd, cast_ofNat, mul_neg, P]
+  --     ring
+  --   · left
+  --     norm_num

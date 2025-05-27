@@ -109,10 +109,9 @@ theorem pid4 (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, (hp : p.Prime) → (hpn
       ∃ P Q A G Qp Rp QP RP C1 C2 : ℤ[X],
         P.Monic ∧ orderOf (ZMod.unitOfCoprime _ (uff hn.1 hpn)) = P.natDegree
           ∧ P * Q + p * A = cyclotomic n ℤ ∧
-          (⌊(M K)⌋₊ < p ^ P.natDegree ∨
-            (p = G * Qp + Rp * (cyclotomic n ℤ) ∧
-             P = G * QP + RP * (cyclotomic n ℤ) ∧
-             G = C1 * P + C2 * p ))) : IsPrincipalIdealRing (𝓞 K) := by
+            (⌊(M K)⌋₊ < p ^ P.natDegree ∨
+              (p = G * Qp + Rp * (cyclotomic n ℤ) ∧ P = G * QP + RP * (cyclotomic n ℤ) ∧
+               G = C1 * P + C2 * p ))) : IsPrincipalIdealRing (𝓞 K) := by
   refine pid3 n (fun p hple hp hpn ↦ ?_)
   obtain ⟨P, Q, A, G, Qp, Rp, QP, RP, C1, C2, hPmo, hP, hQA, hM⟩ := h p hple hp hpn
   refine ⟨P, Q, A, hPmo, hP, hQA, ?_⟩
@@ -134,5 +133,61 @@ theorem pid4 (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, (hp : p.Prime) → (hpn
         map_natCast]
       exact add_mem (mul_mem_left _ _ (subset_span (by simp)))
         (mul_mem_left _ _ (subset_span (by simp)))
+
+theorem pid5 (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, (hp : p.Prime) → (hpn : p ≠ n) →
+    haveI : Fact (p.Prime) := ⟨hp⟩
+    ⌊(M K)⌋₊ < p ^ orderOf (ZMod.unitOfCoprime _ (uff hn.1 hpn)) ∨
+    ∃ P Q A G Qp Rp QP RP C1 C2 : ℤ[X],
+      P.Monic ∧ orderOf (ZMod.unitOfCoprime _ (uff hn.1 hpn)) = P.natDegree
+        ∧ P * Q + p * A = cyclotomic n ℤ ∧ (p = G * Qp + Rp * (cyclotomic n ℤ) ∧
+          P = G * QP + RP * (cyclotomic n ℤ) ∧ G = C1 * P + C2 * p)) :
+    IsPrincipalIdealRing (𝓞 K) := by
+  refine pid4 n (fun p hple hp hpn ↦ ?_)
+  have : Fact (p.Prime) := ⟨hp⟩
+  rcases h p hple hp hpn with H | H
+  · obtain ⟨P', hP'⟩ := exists_mem_normalizedFactors (cyclotomic_ne_zero n (ZMod p))
+      (not_isUnit_of_degree_pos _ <| degree_cyclotomic_pos _ _ n.pos)
+    obtain ⟨hP'irr, hP'mo, Q', hQ'⟩ :=
+      (Polynomial.mem_normalizedFactors_iff (cyclotomic_ne_zero n (ZMod p))).mp hP'
+    obtain ⟨P, hP, hPdeg, hPmo⟩ := lifts_and_degree_eq_and_monic ((mem_lifts P').mpr
+      (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p))) _)) hP'mo
+    obtain ⟨Q, hQ⟩ := ((mem_lifts Q').mp (map_surjective _
+      (ZMod.ringHom_surjective (Int.castRingHom (ZMod p))) _))
+    set A' := cyclotomic n ℤ - P * Q with hA'def
+    obtain ⟨A, hA⟩ : ↑p ∣ A' := by
+      rw [← C_eq_natCast, C_dvd_iff_dvd_coeff]
+      intro i
+      rw [← ZMod.intCast_zmod_eq_zero_iff_dvd, hA'def, coeff_sub, Int.cast_sub,
+        ← eq_intCast (Int.castRingHom _), ← eq_intCast (Int.castRingHom _), ← coeff_map,
+        ← coeff_map, ← coeff_sub, Polynomial.map_mul, map_cyclotomic, hP, hQ, hQ']
+      simp
+    have H : orderOf (ZMod.unitOfCoprime p (uff hn.1 hpn)) = P.natDegree := by
+      rw [natDegree_eq_of_degree_eq hPdeg]
+      simp [foo (f := 1) (p := p) (by simp) (by simpa using uff hn.1 hpn) ⟨Q', hQ'⟩ hP'irr hP'mo]
+    refine ⟨P, Q, A, 0, 0, 0, 0, 0, 0, 0, hPmo, H, by simp [← hA, A'], ?_⟩
+    · left
+      rwa [← H]
+  · obtain ⟨P, Q, A, G, Qp, Rp, QP, RP, C1, C2, hPmo, hP, hQA, hG, H1, H2⟩ := H
+    exact ⟨P, Q, A, G, Qp, Rp, QP, RP, C1, C2, hPmo, hP, hQA, Or.inr ⟨hG, H1, H2⟩⟩
+
+open nonZeroDivisors in
+theorem pid6 (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, (hp : p.Prime) → (hpn : p ≠ n) →
+    haveI : Fact (p.Prime) := ⟨hp⟩
+    Nat.log p ⌊(M K)⌋₊ < orderOf (ZMod.unitOfCoprime _ (uff hn.1 hpn)) ∨
+    ∃ P Q A G Qp Rp QP RP C1 C2 : ℤ[X],
+      P.Monic ∧ orderOf (ZMod.unitOfCoprime _ (uff hn.1 hpn)) = P.natDegree
+        ∧ P * Q + p * A = cyclotomic n ℤ ∧ (p = G * Qp + Rp * (cyclotomic n ℤ) ∧
+          P = G * QP + RP * (cyclotomic n ℤ) ∧ G = C1 * P + C2 * p)) :
+    IsPrincipalIdealRing (𝓞 K) := by
+  refine pid5 n (fun p hple hp hpn ↦ ?_)
+  rcases h p hple hp hpn with H | H
+  · left
+    refine (Nat.lt_pow_iff_log_lt hp.one_lt ?_).mpr H
+    simp only [ne_eq, floor_eq_zero, not_lt]
+    obtain ⟨I, -, hI⟩ := exists_ideal_in_class_of_norm_le (1 : ClassGroup (𝓞 K))
+    exact le_trans (one_le_cast.mpr (Nat.one_le_iff_ne_zero.mpr
+      (absNorm_ne_zero_iff_mem_nonZeroDivisors.mpr I.2))) hI
+  · right
+    exact H
 
 end IsCyclotomicExtension.Rat
