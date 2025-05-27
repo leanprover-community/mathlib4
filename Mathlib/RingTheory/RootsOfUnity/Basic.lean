@@ -164,7 +164,7 @@ theorem rootsOfUnity_one_set : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} :
 end CommMonoid
 
 open Set in
-theorem rootsOfUnity_two_set [NeZero k] [CommRing R] [NoZeroDivisors R] :
+theorem rootsOfUnity_two_set [CommRing R] [NoZeroDivisors R] :
     ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
   ext x
   rw [mem_insert_iff, mem_singleton_iff, ← sq_eq_one_iff, coe_rootsOfUnity_to_set, mem_setOf_eq]
