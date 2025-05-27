@@ -21,7 +21,7 @@ namespace Lean.Syntax
 
 /--
 `filterMapM stx f` takes as input a `Syntax` `stx` and a monadic function `f : Syntax → m α`.
-It produce the array of the `some` values that `f` takes while traversing `stx`.
+It produces the array of the `some` values that `f` takes while traversing `stx`.
 
 See `filterMap` for a non-monadic version.
 -/
@@ -35,7 +35,7 @@ def filterMapM {m : Type → Type} [Monad m] {α} (stx : Syntax) (f : Syntax →
 
 /--
 `filterMap stx f` takes as input a `Syntax` `stx` and a function `f : Syntax → α`.
-It produce the array of the `some` values that `f` takes while traversing `stx`.
+It produces the array of the `some` values that `f` takes while traversing `stx`.
 
 See `filterMapM` for a non-monadic version.
 -/
@@ -44,7 +44,7 @@ def filterMap {α} (stx : Syntax) (f : Syntax → Option α) : Array α :=
 
 /--
 `filter stx f` takes as input a `Syntax` `stx` and a function `f : Syntax → Bool`.
-It produce the array of the syntax nodes in `stx` where `f` is `true`.
+It produces the array of the syntax nodes in `stx` where `f` is `true`.
 
 See also the similar `filterMap` and `filterMapM`.
 -/
