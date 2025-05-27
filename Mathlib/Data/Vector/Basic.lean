@@ -512,8 +512,7 @@ def casesOn₃ {motive : ∀ {n}, Vector α n → Vector β n → Vector γ n �
   inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
 
 /-- Convert a `Vector` to an `Array`. -/
-@[deprecated toVector (since := "20/05/2025")]
-def toArray (v : Vector α n) := v.1.toArray
+abbrev toArray (v : Vector α n) := v.1.toArray
 
 section InsertIdx
 

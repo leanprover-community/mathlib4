@@ -34,6 +34,10 @@ namespace List.Vector
 
 variable {α β σ φ : Type*} {n : ℕ} {p : α → Prop}
 
+/-- The list obtained from a vector. -/
+def toList (v : Vector α n) : List α :=
+  v.1
+
 /-- Convert a `List.Vector` to a `Vector`. -/
 @[simps!]
 def toVector (v : List.Vector α n) : _root_.Vector α n := ⟨v.1.toArray, v.2⟩
@@ -42,7 +46,6 @@ theorem toVector_mk (a : List α) (h : a.length = n) :
     toVector ⟨a, h⟩ = ⟨a.toArray, h⟩ := rfl
 
 /-- Convert a `Vector` to a `List.Vector`. -/
-@[simps!]
 def ofVector {α : Type*} {n : ℕ} (v : _root_.Vector α n) : List.Vector α n := ⟨v.toList, v.2⟩
 
 theorem ofVector_mk (a : Array α) (h : a.size = n) :
@@ -50,20 +53,29 @@ theorem ofVector_mk (a : Array α) (h : a.size = n) :
 
 alias _root_.Vector.toListVector := ofVector
 
+@[simp] theorem ofVector_toList (v : _root_.Vector α n) : (ofVector v).toList = v.toArray.toList :=
+  rfl
+
+@[simp] theorem mem_toVector (a : α) : ∀ (v : Vector α n), a ∈ v.toVector ↔ a ∈ v.toList :=
+  fun ⟨_, _⟩ => Vector.mem_mk.trans Array.mem_toArray
+
+theorem mem_toList_ofVector (a : α) : ∀ (v : _root_.Vector α n),
+    a ∈ (ofVector v).toList ↔ a ∈ v := fun ⟨_, _⟩ => Array.mem_toList.trans Vector.mem_mk.symm
+
 @[simp] theorem ofVector_toVector (v : List.Vector α n) : ofVector (v.toVector) = v := rfl
 @[simp] theorem toVector_ofVector (v : _root_.Vector α n) : toVector (ofVector v) = v := rfl
 
-theorem ofVector_leftInverse : Function.LeftInverse ofVector (toVector (α := α) (n := n)) :=
-  ofVector_toVector
+theorem toVector_inj {u v : List.Vector α n} : u.toVector = v.toVector ↔ u = v :=
+  Function.Injective.eq_iff (Function.LeftInverse.injective ofVector_toVector)
 
-theorem toVector_leftInverse : Function.LeftInverse toVector (ofVector (α := α) (n := n)) :=
-  toVector_ofVector
+theorem toVector_surj : ∀ v, ∃ u : Vector α n, u.toVector = v :=
+  (Function.LeftInverse.surjective toVector_ofVector)
 
-theorem ofVector_rightInverse : Function.RightInverse ofVector (toVector (α := α) (n := n)) :=
-  toVector_ofVector
+theorem ofVector_inj {u v : _root_.Vector α n} : ofVector u = ofVector v ↔ u = v :=
+  Function.Injective.eq_iff (Function.LeftInverse.injective toVector_ofVector)
 
-theorem toVector_rightInverse : Function.RightInverse toVector (ofVector (α := α) (n := n)) :=
-  ofVector_toVector
+theorem ofVector_surj : ∀ v, ∃ u : _root_.Vector α n, ofVector u = v :=
+  (Function.LeftInverse.surjective ofVector_toVector)
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
   inferInstanceAs (DecidableEq {l : List α // l.length = n})
@@ -133,20 +145,6 @@ theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
 theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
   | ⟨[], h⟩ => by contradiction
   | ⟨_ :: _, _⟩ => rfl
-
-/-- The list obtained from a vector. -/
-def toList (v : Vector α n) : List α :=
-  v.1
-
-theorem ofVector_toList (v : _root_.Vector α n) : (ofVector v).toList = v.toArray.toList :=
-  ofVector_coe _
-
-@[simp] theorem mem_toVector (a : α) : ∀ (v : Vector α n), a ∈ v.toVector ↔ a ∈ v.toList :=
-  fun ⟨_, _⟩ => Vector.mem_mk.trans Array.mem_toArray
-
-@[simp] theorem mem_toList_ofVector (a : α) : ∀ (v : _root_.Vector α n),
-    a ∈ (ofVector v).toList ↔ a ∈ v :=
-  fun ⟨_, _⟩ => Array.mem_toList.trans Vector.mem_mk.symm
 
 /-- nth element of a vector, indexed by a `Fin` type. -/
 def get (l : Vector α n) (i : Fin n) : α :=

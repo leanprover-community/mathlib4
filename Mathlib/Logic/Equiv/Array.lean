@@ -18,7 +18,7 @@ namespace Equiv
 def arrayEquivList (α : Type*) : Array α ≃ List α :=
   ⟨Array.toList, List.toArray, fun _ => rfl, fun _ => rfl⟩
 
-/-- `toVector` and `ofVector` together form an equivalence. -/
+/-- `List.Vector.toVector` and `List.Vector.ofVector` together form an equivalence. -/
 @[simps! apply symm_apply]
 def vectorEquivListVector (α : Type*) (n : ℕ) : Vector α n ≃ List.Vector α n :=
   ⟨List.Vector.ofVector, List.Vector.toVector, fun _ => rfl, fun _ => rfl⟩
