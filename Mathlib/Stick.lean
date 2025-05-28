@@ -141,8 +141,10 @@ example {P : Ideal (𝓞 K)} (hP : P.IsPrime) [P.LiesOver (span {(p : ℤ)})] :
   simp_rw [ne_eq, Units.ext_iff, pow_one, Units.val_pow_eq_pow_val, ZMod.coe_unitOfCoprime]
   rw [← Int.cast_natCast, ← Int.cast_natCast, Units.val_one, show (1 : ZMod (p ^ f - 1)) = (1 : ℤ) by sorry]
   simp_rw [← Int.cast_pow]
+
   simp_rw [eq_comm (b := ((1 : ℤ) : ZMod (p ^ f - 1)))]
   simp_rw [ZMod.intCast_eq_intCast_iff_dvd_sub]
+  
   refine ⟨?_, ?_⟩
   · rw [Nat.cast_pred, Nat.cast_pow, Int.cast_pow, Int.cast_natCast]
     exact Nat.pos_of_neZero (p ^ f)
@@ -156,7 +158,7 @@ example {P : Ideal (𝓞 K)} (hP : P.IsPrime) [P.LiesOver (span {(p : ℤ)})] :
     sorry
     exact Nat.pos_of_neZero _
   sorry
-  
+
 
 
 #exit

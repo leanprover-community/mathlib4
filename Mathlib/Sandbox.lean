@@ -3,6 +3,18 @@ import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.Data.ZMod.Basic
 
+@[simp] theorem Nat.one_lt_pow_iff' {a : ℕ} (ha : 1 < a) : ∀ {n}, 1 < a ^ n ↔ 1 ≤ n
+ | 0 => by simp
+ | n + 1 => by simp [ha]
+
+@[simp] protected theorem Nat.pow_le_one_iff' {a n : ℕ} (ha : 1 < a) : a ^ n ≤ 1 ↔ n = 0 := by
+  simp [← Nat.not_lt, one_lt_pow_iff' ha]
+
+theorem Nat.pow_sub_one_dvd_pow_sub_one_iff {a n m : ℕ} (ha : 2 ≤ a) :
+    a ^ n - 1 ∣ a ^ m - 1 ↔ n ∣ m := by
+  rw [dvd_iff_mod_eq_zero, pow_sub_one_mod_pow_sub_one, Nat.sub_eq_zero_iff_le,
+    Nat.pow_le_one_iff' ha, dvd_iff_mod_eq_zero]
+
 theorem ZMod.natCast_eq_natCast_iff_dvd_sub (a b : ℕ) (c : ℕ) :
     (a : ZMod c) = ↑b ↔ (c : ℤ) ∣ b - a := by
   rw [← Int.cast_natCast a, ← Int.cast_natCast b, ← intCast_eq_intCast_iff_dvd_sub]
