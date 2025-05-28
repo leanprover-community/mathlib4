@@ -853,15 +853,18 @@ protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M �
     (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
     f (a ^ n) = f a ^ n := map_zpow' f hf a n
 
-/-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
+/-- Makes a `OneHom` inverse from the left inverse of a `OneHom` -/
 @[to_additive (attr := simps)
-  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
+  "Make a `ZeroHom` inverse from the left inverse of a `ZeroHom`"]
 def OneHom.inverse [One M] [One N]
     (f : OneHom M N) (g : N → M)
     (h₁ : Function.LeftInverse g f) :
   OneHom N M :=
   { toFun := g,
     map_one' := by rw [← f.map_one, h₁] }
+
+theorem OneHom.inverse_comp [One M] [One N] {f : OneHom M N} {g : N → M}
+    {h : Function.LeftInverse g f} : (f.inverse g h).comp f = id M := OneHom.ext h
 
 /-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
 @[to_additive (attr := simps)
@@ -870,11 +873,15 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
     (h₁ : Function.LeftInverse g f)
     (h₂ : Function.RightInverse g f) : N →ₙ* M where
   toFun := g
-  map_mul' x y :=
-    calc
-      g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
-      _ = g (f (g x * g y)) := by rw [f.map_mul]
-      _ = g x * g y := h₁ _
+  map_mul' x y := h₁.injective <| by simp only [map_mul, h₂ x, h₂ y, h₂ (x * y)]
+
+theorem MulHom.inverse_comp [Mul M] [Mul N] {f : M →ₙ* N} {g : N → M}
+    {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
+    (f.inverse g h₁ h₂).comp f = id M := MulHom.ext h₁
+
+theorem MulHom.comp_inverse [Mul M] [Mul N] {f : M →ₙ* N} {g : N → M}
+    {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
+    f.comp (f.inverse g h₁ h₂) = id N := MulHom.ext h₂
 
 /-- If `M` and `N` have multiplications, `f : M →ₙ* N` is a surjective multiplicative map,
 and `M` is commutative, then `N` is commutative. -/
@@ -898,6 +905,76 @@ def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B 
   { (f : OneHom A B).inverse g h₁,
     (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g }
 
+theorem MonoidHom.inverse_comp [Monoid M] [Monoid N] {f : M →* N} {g : N → M}
+    {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
+    (f.inverse g h₁ h₂).comp f = id M := MonoidHom.ext h₁
+
+theorem MonoidHom.comp_inverse [Monoid M] [Monoid N] {f : M →* N} {g : N → M}
+    {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
+    f.comp (f.inverse g h₁ h₂) = id N := MonoidHom.ext h₂
+
+/-- If `p : M →ₙ* P` is a surjective `MulHom`, `g : P → N` is a map, and `f : M →ₙ* N`
+  is a `MulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MulHom`. -/
+@[to_additive (attr := simps) " If `p : M →ₙ+ P` is a surjective `AddMulHom, `g : P → N`
+  is a map, and `f : M →ₙ+ N` is an `AddMulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+  `AddMulHom`. "]
+def MulHom.liftLeft [Mul M] [Mul N] [Mul P] (f : M →ₙ* N)
+    {p : M →ₙ* P} (hp : Surjective p) (g : P → N) (h : ∀ x, g (p x) = f x) : P →ₙ* N where
+  toFun := g
+  map_mul' x y := by
+    rcases hp x with ⟨x, rfl⟩
+    rcases hp y with ⟨y, rfl⟩
+    simp only [← map_mul p x y, h, map_mul f]
+
+theorem MulHom.liftLeft_comp [Mul M] [Mul N] [Mul P] {f : M →ₙ* N} {p : M →ₙ* P}
+    {hp : Surjective p} {g h} : (f.liftLeft hp g h).comp p = f := MulHom.ext fun _ => h _
+
+/-- If `p : M →* P` is a surjective `MonoidHom`, `g : P → N` is a map, and `f : M →* N`
+  is a `MonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MonoidHom`. -/
+@[to_additive (attr := simps) " If `p : M →+ P` is a surjective `AddMonoidHom`, `g : P → N`
+  is a map, and `f : M →+ N` is a `AddMonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+  `AddMonoidHom`. "]
+def MonoidHom.liftLeft [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N)
+    {p : M →* P} (hp : Surjective p) (g : P → N) (h : ∀ x, g (p x) = f x) : P →* N where
+  toFun := g
+  map_one' := by simpa only [h, map_one] using h 1
+  map_mul' x y := by
+    rcases hp x with ⟨x, rfl⟩
+    rcases hp y with ⟨y, rfl⟩
+    simp only [← map_mul p x y, h, map_mul f]
+
+theorem MonoidHom.liftLeft_comp [MulOneClass M] [MulOneClass N] [MulOneClass P] {f : M →* N}
+    {p : M →* P} {hp : Surjective p} {g h} : (f.liftLeft hp g h).comp p = f :=
+  MonoidHom.ext fun _ => h _
+
+/-- If `p : P →ₙ* N` is an injective `MulHom`, `g : M → P` is a map, and `f : M →ₙ* N`
+  is a `MulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MulHom`. -/
+@[to_additive (attr := simps) " If `p : P →ₙ+ N` is an injective `AddMulHom`, `g : M → P`
+  is a map, and `f : M →ₙ+ N` is a `AddMulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+  `AddMulHom`. "]
+def MulHom.liftRight [Mul M] [Mul N] [Mul P] (f : M →ₙ* N)
+    {p : P →ₙ* N} (hp : Injective p) (g : M → P) (h : ∀ x, p (g x) = f x) : M →ₙ* P where
+  toFun := g
+  map_mul' x y := hp <| by simp only [h, map_mul]
+
+theorem MulHom.comp_liftRight [Mul M] [Mul N] [Mul P] {f : M →ₙ* N} {p : P →ₙ* N}
+    {hp : Injective p} {g h} : p.comp (f.liftRight hp g h) = f := MulHom.ext fun _ => h _
+
+/-- If `p : P →* N` is an injective `MonoidHom`, `g : M → P` is a map, and `f : M →* N`
+  is a `MonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MonoidHom`. -/
+@[to_additive (attr := simps) " If `p : P →+ N` is an injective `AddMonoidHom`, `g : M → P`
+  is a map, and `f : M →+ N` is a `AddMonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+  `AddMonoidHom`. "]
+def MonoidHom.liftRight [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N)
+    {p : P →* N} (hp : Injective p) (g : M → P) (h : ∀ x, p (g x) = f x) : M →* P where
+  toFun := g
+  map_one' := hp <| by simpa only [map_one] using h 1
+  map_mul' x y := hp <| by simp only [h, map_mul]
+
+theorem MonoidHom.comp_liftRight [MulOneClass M] [MulOneClass N] [MulOneClass P] {f : M →* N}
+    {p : P →* N} {hp : Injective p} {g h} : p.comp (f.liftRight hp g h) = f :=
+  MonoidHom.ext fun _ => h _
+  
 section End
 
 namespace Monoid
