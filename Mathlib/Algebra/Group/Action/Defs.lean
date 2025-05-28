@@ -89,7 +89,7 @@ class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
   add_vadd : ∀ (g₁ g₂ : G) (p : P), (g₁ + g₂) +ᵥ p = g₁ +ᵥ g₂ +ᵥ p
 
 /--
-Type class for multiplicative monoid actions on types, with notation `g • p`.
+Type class for monoid actions on types, with notation `g • p`.
 
 The `MulAction G P` typeclass says that the monoid `G` acts multiplicatively on a type `P`.
 More precisely this means that the action satisfies the two axioms `1 • p = p` and
