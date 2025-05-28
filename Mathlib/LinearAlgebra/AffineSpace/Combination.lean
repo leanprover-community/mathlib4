@@ -1082,7 +1082,6 @@ theorem affineSpan_eq_affineSpan_lineMap_units [Nontrivial k] {s : Set P} {p : P
   have : s = Set.range ((↑) : s → P) := by simp
   conv_rhs =>
     rw [this]
-
   apply le_antisymm
     <;> intro q hq
     <;> erw [mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd k V _ (⟨p, hp⟩ : s) q] at hq ⊢
