@@ -64,13 +64,13 @@ def repr (x : FGModuleRepr R) : Type u :=
 instance : CoeSort (FGModuleRepr R) (Type u) :=
   ⟨repr⟩
 
-instance addCommGroup (x : FGModuleRepr R) : AddCommGroup x := by
+instance (x : FGModuleRepr R) : AddCommGroup x := by
   unfold repr; infer_instance
 
-instance module (x : FGModuleRepr R) : Module R x := by
+instance (x : FGModuleRepr R) : Module R x := by
   unfold repr; infer_instance
 
-instance finite (x : FGModuleRepr R) : Module.Finite R x := by
+instance (x : FGModuleRepr R) : Module.Finite R x := by
   unfold repr; infer_instance
 
 /-- A non-canonical representation of a finite module (as a quotient of $$R^n$$). -/
@@ -83,17 +83,17 @@ the given module. -/
 noncomputable def ofFiniteEquiv : ofFinite R M ≃ₗ[R] M :=
   Classical.choice (Module.Finite.exists_fin_quot_equiv R M).choose_spec.choose_spec
 
-instance category : Category (FGModuleRepr R) :=
+instance : Category (FGModuleRepr R) :=
   InducedCategory.category fun x : FGModuleRepr R ↦ FGModuleCat.of R x
 
-instance smallCategory : SmallCategory (FGModuleRepr R) where
+instance : SmallCategory (FGModuleRepr R) where
 
 /-- The canonical embedding of this small category to the canonical (large) category
 `FGModuleCat R`. -/
 def embed : FGModuleRepr.{u} R ⥤ FGModuleCat.{max u v} R :=
   inducedFunctor _ ⋙ FGModuleCat.ulift R
 
-instance embedIsEquivalence : (embed R).IsEquivalence where
+instance : (embed R).IsEquivalence where
   faithful := (fullyFaithfulInducedFunctor _).faithful.comp _ _
   full := (fullyFaithfulInducedFunctor _).full.comp _ _
   essSurj := ⟨fun M ↦ ⟨ofFinite R M,
@@ -106,6 +106,6 @@ instance : EssentiallySmall.{u} (FGModuleCat.{max u v} R) :=
 
 open FGModuleRepr in
 -- There is probably a proof using `embedIsEquivalence` or `EssentiallySmall`.
-instance FGModuleCat.uliftIsEquivalence : (FGModuleCat.ulift.{max u v, w} R).IsEquivalence where
+instance : (FGModuleCat.ulift.{max u v, w} R).IsEquivalence where
   essSurj := ⟨fun M ↦ ⟨(embed R).obj (ofFinite R M),
     ⟨(ULift.moduleEquiv.trans <| ULift.moduleEquiv.trans <| ofFiniteEquiv R M).toFGModuleCatIso⟩⟩⟩
