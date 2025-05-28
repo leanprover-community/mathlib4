@@ -1808,11 +1808,16 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           . simp [is_gamma] at dropwhile_len_gt
             apply Nat.sub_one_lt
             apply Nat.pos_iff_ne_zero.mp dropwhile_len_gt
-          --apply lt_trans (b := )
-          --add_lt_add_of_le_of_lt
-          trivial
-        . simp [count_gamma_copy_inv]
-          trivial
+        .
+          simp [count_gamma_copy]
+          conv =>
+            rhs
+            rw [← take_drop_len (p := fun (k: E) ↦ decide (↑k = γ) || decide (↑k = γ⁻¹))]
+          apply add_lt_add_of_le_of_lt
+          . apply count_head_lt
+          . simp [is_gamma] at dropwhile_len_gt
+            apply Nat.sub_one_lt
+            apply Nat.pos_iff_ne_zero.mp dropwhile_len_gt
       }
 
       let my_res := rewrite_list [] sorry
