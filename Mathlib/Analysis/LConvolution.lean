@@ -126,7 +126,7 @@ theorem mlconvolution_assoc₀ {f g k : G → ℝ≥0∞}
 theorem mlconvolution_assoc {f g k : G → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hk : Measurable k) :
     f ⋆ₗ[μ] g ⋆ₗ[μ] k = (f ⋆ₗ[μ] g) ⋆ₗ[μ] k :=
-  mlconvolution_assoc₀ (hf.aemeasurable) (hg.aemeasurable) (hk.aemeasurable)
+  mlconvolution_assoc₀ hf.aemeasurable hg.aemeasurable hk.aemeasurable
 
 end Group
 
