@@ -980,7 +980,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       levelParams := univs
       type := declType
       value := declValue }
-  inferRflAttr declName
+  inferDefEqAttr declName
   addDeclarationRangesFromSyntax declName (← getRef) ref
   _ ← MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
     ← mkConstWithLevelParams declName
