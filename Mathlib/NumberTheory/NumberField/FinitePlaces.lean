@@ -3,7 +3,6 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
-import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Data.Int.WithZero
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
@@ -34,7 +33,7 @@ number field, places, finite places
 
 open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
 
-open scoped Multiplicative
+open scoped Multiplicative NNReal
 
 namespace NumberField.RingOfIntegers.HeightOneSpectrum
 
@@ -55,37 +54,29 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
 @[deprecated (since := "2025-02-28")] alias one_lt_norm := one_lt_absNorm
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
-lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : NNReal) := mod_cast one_lt_absNorm v
+lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
 
 @[deprecated (since := "2025-02-28")] alias one_lt_norm_nnreal := one_lt_absNorm_nnreal
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
-lemma absNorm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
+lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
   ne_zero_of_lt (one_lt_absNorm_nnreal v)
 
 @[deprecated (since := "2025-02-28")] alias norm_ne_zero := absNorm_ne_zero
 
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
 valuation -/
-noncomputable def adicAbv : AbsoluteValue K ℝ where
-  toFun x := toNNReal (absNorm_ne_zero v) (v.valuation K x)
-  map_mul' _ _ := by simp only [map_mul, NNReal.coe_mul]
-  nonneg' _ := NNReal.zero_le_coe
-  eq_zero' _ := by simp only [NNReal.coe_eq_zero, map_eq_zero]
-  add_le' x y := by
-    -- the triangle inequality is implied by the ultrametric one
-    apply le_trans _ <| max_le_add_of_nonneg
-      (zero_le ((toNNReal (absNorm_ne_zero v)) (v.valuation _ x)))
-      (zero_le ((toNNReal (absNorm_ne_zero v)) (v.valuation K y)))
-    have h_mono := (toNNReal_strictMono (one_lt_absNorm_nnreal v)).monotone
-    rw [← h_mono.map_max] --max goes inside withZeroMultIntToNNReal
-    exact h_mono ((v.valuation _).map_add x y)
+noncomputable def adicAbv : AbsoluteValue K ℝ := v.adicAbv <| one_lt_absNorm_nnreal v
 
 @[deprecated (since := "2025-02-28")] alias vadicAbv := adicAbv
 
 theorem adicAbv_def {x : K} : adicAbv v x = toNNReal (absNorm_ne_zero v) (v.valuation K x) := rfl
 
 @[deprecated (since := "2025-02-28")] alias vadicAbv_def := adicAbv_def
+
+/-- The `v`-adic absolute value is nonarchimedean -/
+theorem isNonarchimedean_adicAbv : IsNonarchimedean (adicAbv v) :=
+  v.isNonarchimedean_adicAbv <| one_lt_absNorm_nnreal v
 
 end AbsoluteValue
 
@@ -162,22 +153,21 @@ theorem FinitePlace.norm_def_int (x : 𝓞 (WithVal (v.valuation K))) :
 
 /-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
 theorem RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max (x y : K) :
-    adicAbv v (x + y) ≤ (adicAbv v x) ⊔ (adicAbv v y) := by
-  simp [← FinitePlace.norm_def]
+    adicAbv v (x + y) ≤ (adicAbv v x) ⊔ (adicAbv v y) := isNonarchimedean_adicAbv v x y
 
 @[deprecated (since := "2025-02-28")] alias vadicAbv_add_le_max :=
   RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max
 
 /-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
-theorem RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one (n : ℕ) : adicAbv v n ≤ 1 := by
-  simp only [← FinitePlace.norm_def, map_natCast, IsUltrametricDist.norm_natCast_le_one]
+theorem RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one (n : ℕ) : adicAbv v n ≤ 1 :=
+  (isNonarchimedean_adicAbv v).apply_natCast_le_one_of_isNonarchimedean
 
 @[deprecated (since := "2025-02-28")]
   alias vadicAbv_natCast_le_one := RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one
 
 /-- The `v`-adic absolute value of an integer is `≤ 1`. -/
-theorem RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one (n : ℤ) : adicAbv v n ≤ 1 := by
-  simp [← AbsoluteValue.apply_natAbs_eq, adicAbv_natCast_le_one]
+theorem RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one (n : ℤ) : adicAbv v n ≤ 1 :=
+  (isNonarchimedean_adicAbv v).apply_intCast_le_one_of_isNonarchimedean
 
 @[deprecated (since := "2025-02-28")]
   alias vadicAbv_intCast_le_one := RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one
