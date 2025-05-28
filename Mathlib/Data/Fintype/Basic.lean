@@ -35,6 +35,8 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
 
+theorem Finset.val_univ_fin (n : ℕ) : (Finset.univ : Finset (Fin n)).val = List.finRange n := rfl
+
 /-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
 theorem nonempty_fintype (α : Type*) [Finite α] : Nonempty (Fintype α) := by
   rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩

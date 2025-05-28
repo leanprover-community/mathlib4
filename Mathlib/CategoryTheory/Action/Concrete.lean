@@ -3,16 +3,17 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.CategoryTheory.Action.Basic
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.CategoryTheory.Action.Basic
 
 /-!
 # Constructors for `Action V G` for some concrete categories
 
-We construct `Action (Type u) G` from a `[MulAction G X]` instance and give some applications.
+We construct `Action (Type*) G` from a `[MulAction G X]` instance and give some applications.
 -/
 
 assert_not_exists Field
@@ -24,12 +25,12 @@ open CategoryTheory Limits
 namespace Action
 
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
-def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) (MonCat.of G) where
+def ofMulAction (G : Type*) (H : Type u) [Monoid G] [MulAction G H] : Action (Type u) G where
   V := H
-  ρ := MonCat.ofHom <| @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
-theorem ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
+theorem ofMulAction_apply {G H : Type*} [Monoid G] [MulAction G H] (g : G) (x : H) :
     (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
@@ -58,16 +59,16 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/
 @[simps!]
-def leftRegular (G : Type u) [Monoid G] : Action (Type u) (MonCat.of G) :=
+def leftRegular (G : Type u) [Monoid G] : Action (Type u) G :=
   Action.ofMulAction G G
 
 /-- The `G`-set `Gⁿ`, acting on itself by left multiplication. -/
 @[simps!]
-def diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) (MonCat.of G) :=
+def diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) G :=
   Action.ofMulAction G (Fin n → G)
 
 /-- We have `Fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/
-def diagonalOneIsoLeftRegular (G : Type u) [Monoid G] : diagonal G 1 ≅ leftRegular G :=
+def diagonalOneIsoLeftRegular (G : Type*) [Monoid G] : diagonal G 1 ≅ leftRegular G :=
   Action.mkIso (Equiv.funUnique _ _).toIso fun _ => rfl
 
 namespace FintypeCat
@@ -79,13 +80,13 @@ instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
   inferInstanceAs <| MulAction G X
 
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
-def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
-    Action FintypeCat (MonCat.of G) where
+def ofMulAction (G : Type*) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
+    Action FintypeCat G where
   V := H
-  ρ := MonCat.ofHom <| @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
-theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
+theorem ofMulAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
     (g : G) (x : H) : (FintypeCat.ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
@@ -171,7 +172,7 @@ section ToMulAction
 variable {V : Type (u + 1)} [LargeCategory V] {FV : V → V → Type*} {CV : V → Type*}
 variable [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV]
 
-instance instMulAction {G : MonCat.{u}} (X : Action V G) :
+instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
     MulAction G (ToType X) where
   smul g x := ConcreteCategory.hom (X.ρ g) x
   one_smul x := by
@@ -183,8 +184,7 @@ instance instMulAction {G : MonCat.{u}} (X : Action V G) :
     simp
 
 /- Specialize `instMulAction` to assist typeclass inference. -/
-instance {G : MonCat.{u}} (X : Action FintypeCat G) : MulAction G X.V := Action.instMulAction X
-instance {G : Type u} [Group G] (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V :=
+instance {G : Type*} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
   Action.instMulAction X
 
 end ToMulAction

@@ -32,6 +32,7 @@ This file defines the discriminant of a quadratic and gives the solution to a qu
 polynomial, quadratic, discriminant, root
 -/
 
+assert_not_exists Finite Finset
 
 open Filter
 
@@ -117,7 +118,7 @@ end Field
 
 section LinearOrderedField
 
-variable {K : Type*} [LinearOrderedField K] {a b c : K}
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {a b c : K}
 
 /-- If a polynomial of degree 2 is always nonnegative, then its discriminant is nonpositive -/
 theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim a b c ≤ 0 := by
@@ -125,9 +126,9 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim
   obtain ha | rfl | ha : a < 0 ∨ a = 0 ∨ 0 < a := lt_trichotomy a 0
   -- if a < 0
   · have : Tendsto (fun x => (a * x + b) * x + c) atTop atBot :=
-      tendsto_atBot_add_const_right _ c
-        ((tendsto_atBot_add_const_right _ b (tendsto_id.const_mul_atTop_of_neg ha)).atBot_mul_atTop
-          tendsto_id)
+      tendsto_atBot_add_const_right _ c <|
+        (tendsto_atBot_add_const_right _ b (tendsto_id.const_mul_atTop_of_neg ha)).atBot_mul_atTop₀
+          tendsto_id
     rcases (this.eventually (eventually_lt_atBot 0)).exists with ⟨x, hx⟩
     exact False.elim ((h x).not_lt <| by rwa [← mul_assoc, ← add_mul])
   -- if a = 0

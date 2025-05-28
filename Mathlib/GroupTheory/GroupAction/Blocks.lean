@@ -39,7 +39,7 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 - `MulAction.BlockMem` : the type of blocks containing a given element
 
 - `MulAction.BlockMem.instBoundedOrder` :
-  The type of blocks containing a given element is a bounded order.
+  the type of blocks containing a given element is a bounded order.
 
 ## References
 
@@ -121,7 +121,7 @@ variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
 theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Surjective f) {B : Set α} (hB : IsTrivialBlock B) :
     IsTrivialBlock (f '' B) := by
-  cases' hB with hB hB
+  obtain hB | hB := hB
   · apply Or.intro_left; apply Set.Subsingleton.image hB
   · apply Or.intro_right; rw [hB]
     simp only [Set.top_eq_univ, Set.image_univ, Set.range_eq_univ, hf]
@@ -130,7 +130,7 @@ theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
 theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Injective f) {B : Set β} (hB : IsTrivialBlock B) :
     IsTrivialBlock (f ⁻¹' B) := by
-  cases' hB with hB hB
+  obtain hB | hB := hB
   · apply Or.intro_left; exact Set.Subsingleton.preimage hB hf
   · apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
 
@@ -349,10 +349,8 @@ lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
   exact (hB <| ne_of_apply_ne _ hg).preimage _
 
 @[to_additive]
-theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
-    {φ : G →* H} (j : X →ₑ[φ] Y)
-    (hφ : Function.Surjective φ) (hj : Function.Injective j)
-    (hB : IsBlock G B) :
+theorem IsBlock.image {H Y : Type*} [SMul H Y] {φ : G → H} (j : X →ₑ[φ] Y)
+    (hφ : Function.Surjective φ) (hj : Function.Injective j) (hB : IsBlock G B) :
     IsBlock H (j '' B) := by
   simp only [IsBlock, hφ.forall, ← image_smul_setₛₗ]
   exact fun g₁ g₂ hg ↦ disjoint_image_of_injective hj <| hB <| ne_of_apply_ne _ hg
@@ -387,7 +385,6 @@ theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
   rw [← hh, vadd_vadd, vadd_vadd]
   simp
 
-@[to_additive existing]
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (H.map (MulAut.conj g).toMonoidHom) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
@@ -426,9 +423,9 @@ theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
 
 variable (G) in
 /-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
-  for the action of `G` -/
+for the action of `G` -/
 @[to_additive "For `VAdd G X`, a block system of `X` is a partition of `X` into blocks
- for the additive action of `G`"]
+for the additive action of `G`"]
 def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄, B ∈ ℬ → IsBlock G B
 
 /-- Translates of a block form a block system -/
@@ -592,10 +589,10 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H)
 variable (G)
 
 /-- Order equivalence between blocks in `X` containing a point `a`
- and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)-/
+and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5) -/
 @[to_additive
-  "Order equivalence between blocks in `X` containing a point `a`
- and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)"]
+"Order equivalence between blocks in `X` containing a point `a`
+and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)"]
 def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     { B : Set X // a ∈ B ∧ IsBlock G B } ≃o Set.Ici (stabilizer G a) where
   toFun := fun ⟨B, ha, hB⟩ => ⟨stabilizer G B, hB.stabilizer_le ha⟩
@@ -711,7 +708,7 @@ theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X 
 
 @[deprecated (since := "2024-10-29")] alias eq_univ_card_lt := eq_univ_of_card_lt
 
-/-- If a block has too many translates, then it is a (sub)singleton  -/
+/-- If a block has too many translates, then it is a (sub)singleton -/
 @[to_additive "If a block has too many translates, then it is a (sub)singleton"]
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     (hB' : Nat.card X < 2 * Set.ncard (orbit G B)) :
@@ -730,14 +727,14 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     exact fun hb ↦ hB' (Nat.mul_le_mul_right _ hb)
 
 /- The assumption `B.Finite` is necessary :
-   For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
-   are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
-   (Remark by Thomas Browning) -/
+  For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
+  are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
+  (Remark by Thomas Browning) -/
 /-- The intersection of the translates of a *finite* subset which contain a given point
-is a block (Wielandt, th. 7.3)-/
+is a block (Wielandt, th. 7.3). -/
 @[to_additive
   "The intersection of the translates of a *finite* subset which contain a given point
-  is a block (Wielandt, th. 7.3)"]
+  is a block (Wielandt, th. 7.3)."]
 theorem of_subset (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B

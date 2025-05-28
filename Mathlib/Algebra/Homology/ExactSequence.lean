@@ -122,7 +122,7 @@ abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by omega) :
 
 /-- `F : ComposableArrows C n` is exact if it is a complex and that all short
 complexes consisting of two consecutive arrows are exact. -/
-structure Exact extends S.IsComplex : Prop where
+structure Exact : Prop extends S.IsComplex where
   exact (i : ℕ) (hi : i + 2 ≤ n := by omega) : (S.sc toIsComplex i).Exact
 
 variable {S}

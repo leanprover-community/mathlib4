@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 import Batteries.Data.Nat.Gcd
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.ENat.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Multiplicity of a divisor
@@ -32,7 +32,7 @@ variable {α β : Type*}
 
 open Nat
 
-/-- `multiplicity.Finite a b` indicates that the multiplicity of `a` in `b` is finite. -/
+/-- `FiniteMultiplicity a b` indicates that the multiplicity of `a` in `b` is finite. -/
 abbrev FiniteMultiplicity [Monoid α] (a b : α) : Prop :=
   ∃ n : ℕ, ¬a ^ (n + 1) ∣ b
 
@@ -824,10 +824,11 @@ theorem emultiplicity_mul {p a b : α} (hp : Prime p) :
 
 theorem Finset.emultiplicity_prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
     emultiplicity p (∏ x ∈ s, f x) = ∑ x ∈ s, emultiplicity p (f x) := by classical
-    induction' s using Finset.induction with a s has ih h
-    · simp only [Finset.sum_empty, Finset.prod_empty]
-      exact emultiplicity_of_one_right hp.not_unit
-    · simpa [has, ← ih] using emultiplicity_mul hp
+  induction s using Finset.induction with
+  | empty =>
+    simp only [Finset.sum_empty, Finset.prod_empty]
+    exact emultiplicity_of_one_right hp.not_unit
+  | insert a s has ih => simpa [has, ← ih] using emultiplicity_mul hp
 
 theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     emultiplicity p (a ^ k) = k * emultiplicity p a := by

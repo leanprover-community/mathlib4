@@ -490,7 +490,6 @@ to `P` can be (uniquely) extended to all of `yoneda.obj X`.
    S  →  P
    ↓  ↗
    yX
-
 -/
 noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P (S : Presieve X))
     (f : S.functor ⟶ P) : yoneda.obj X ⟶ P :=
@@ -504,7 +503,6 @@ that the triangle below commutes, provided `P` is a sheaf for `S`
    S  →  P
    ↓  ↗
    yX
-
 -/
 @[reassoc (attr := simp)]
 theorem IsSheafFor.functorInclusion_comp_extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P S.arrows)

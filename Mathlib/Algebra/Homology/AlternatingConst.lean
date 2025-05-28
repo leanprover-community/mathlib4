@@ -4,24 +4,28 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.AlgebraicTopology.ExtraDegeneracy
 
 /-!
 # The alternating constant complex
 
-In this file we define the chain complex `X ←0- X ←𝟙- X ←0- X ←𝟙- X ⋯`, and calculate its homology.
+In this file we define the chain complex `X ←0- X ←𝟙- X ←0- X ←𝟙- X ⋯`,
+calculate its homology, and show that it is homotopy equivalent
+to the single complex where `X` is in degree `0`.
 
 -/
 
-open CategoryTheory Limits
+open CategoryTheory Limits AlgebraicTopology
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category C]
 
 namespace ChainComplex
 
 /-- The chain complex `X ←0- X ←𝟙- X ←0- X ←𝟙- X ⋯`.
 It is exact away from `0` and has homology `X` at `0`. -/
 @[simps]
-def alternatingConst : C ⥤ ChainComplex C ℕ where
+def alternatingConst [HasZeroMorphisms C] : C ⥤ ChainComplex C ℕ where
   obj X :=
   { X _ := X
     d i j := if Even i ∧ j + 1 = i then 𝟙 X else 0
@@ -32,9 +36,11 @@ def alternatingConst : C ⥤ ChainComplex C ℕ where
       by_cases h : Even i <;> simp [Nat.even_add_one, ← Nat.not_even_iff_odd, h] }
   map {X Y} f := { f _ := f }
   map_id X := by ext; simp
-  map_comp f g := by ext; simp
+  map_comp f g := by
+    #adaptation_note /-- Around nightly 2025-03-25, need dsimp only -/
+    dsimp only; ext; simp
 
-variable [HasZeroObject C]
+variable [HasZeroMorphisms C] [HasZeroObject C]
 
 open ZeroObject
 
@@ -75,5 +81,26 @@ lemma alternatingConst_exactAt (X : C) (n : ℕ) (hn : n ≠ 0) :
 noncomputable
 def alternatingConstHomologyZero (X : C) : (alternatingConst.obj X).homology 0 ≅ X :=
   (alternatingConstHomologyDataZero X _ rfl).left.homologyIso
+
+end ChainComplex
+
+variable [Preadditive C] [HasZeroObject C]
+
+/-- The alternating face complex of the constant complex is the alternating constant complex. -/
+def AlgebraicTopology.alternatingFaceMapComplexConst :
+    Functor.const _ ⋙ alternatingFaceMapComplex C ≅ ChainComplex.alternatingConst :=
+  NatIso.ofComponents (fun X ↦ HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) <| by
+    rintro _ i rfl
+    simp [SimplicialObject.δ, ← Finset.sum_smul, Fin.sum_neg_one_pow, Nat.even_add_one,
+      ← Nat.not_even_iff_odd]) (by intros; ext; simp)
+
+namespace ChainComplex
+
+/-- `alternatingConst.obj X` is homotopy equivalent to the chain
+complex `(single₀ C).obj X`. -/
+noncomputable def alternatingConstHomotopyEquiv (X : C) :
+    HomotopyEquiv (alternatingConst.obj X) ((single₀ C).obj X) :=
+  (HomotopyEquiv.ofIso (alternatingFaceMapComplexConst.app X).symm).trans
+    ((SimplicialObject.Augmented.ExtraDegeneracy.const X).homotopyEquiv)
 
 end ChainComplex

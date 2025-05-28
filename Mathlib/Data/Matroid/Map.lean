@@ -57,8 +57,8 @@ In the definitions below, `M` and `N` are matroids on `α` and `β` respectively
 * `Matroid.mapSetEquiv f` is a version of `Matroid.map` where `f : M.E ≃ E` is an equivalence on
   subtypes. It gives a matroid on `β` with ground set `E`.
 
-* For `X : Set α`, `Matroid.restrictSubtype M X` is the `Matroid X` with ground set
-  `univ : Set X` that is isomorphic to `M ↾ X`.
+* For `X : Set α`, `Matroid.restrictSubtype M X` is the `Matroid ↥X` with ground set
+  `univ : Set ↥X`. This matroid is isomorphic to `M ↾ X`.
 
 ## Implementation details
 
@@ -78,7 +78,7 @@ we define `mapEmbedding` and `mapEquiv` separately from `map`.
 For finite matroids, both maps and comaps are a special case of a construction of
 Perfect [perfect1969matroid] in which a matroid structure can be transported across an arbitrary
 bipartite graph that may not correspond to a function at all (See [oxley2011], Theorem 11.2.12).
-It would have been nice to use this more general construction as a isBasis for the definition
+It would have been nice to use this more general construction as a basis for the definition
 of both `Matroid.map` and `Matroid.comap`.
 
 Unfortunately, we can't do this, because the construction doesn't extend to infinite matroids.

@@ -18,7 +18,7 @@ bounds in binomial coefficients. These include:
 * `Nat.factorization_choose_le_one`: Primes above `sqrt n` appear at most once
   in the factorization of `n` choose `k`.
 * `Nat.factorization_centralBinom_of_two_mul_self_lt_three_mul`: Primes from `2 * n / 3` to `n`
-do not appear in the factorization of the `n`th central binomial coefficient.
+  do not appear in the factorization of the `n`th central binomial coefficient.
 * `Nat.factorization_choose_eq_zero_of_lt`: Primes greater than `n` do not
   appear in the factorization of `n` choose `k`.
 
@@ -118,9 +118,7 @@ theorem le_two_mul_of_factorization_centralBinom_pos
 /-- A binomial coefficient is the product of its prime factors, which are at most `n`. -/
 theorem prod_pow_factorization_choose (n k : ℕ) (hkn : k ≤ n) :
     (∏ p ∈ Finset.range (n + 1), p ^ (Nat.choose n k).factorization p) = choose n k := by
-  conv => -- Porting note: was `nth_rw_rhs`
-    rhs
-    rw [← factorization_prod_pow_eq_self (choose_pos hkn).ne']
+  conv_rhs => rw [← factorization_prod_pow_eq_self (choose_pos hkn).ne']
   rw [eq_comm]
   apply Finset.prod_subset
   · intro p hp

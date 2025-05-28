@@ -40,7 +40,7 @@ structure ContMDiffSection where
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 
-@[deprecated (since := "024-11-21")] alias SmoothSection := ContMDiffSection
+@[deprecated (since := "2024-11-21")] alias SmoothSection := ContMDiffSection
 
 @[inherit_doc] scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 
@@ -140,9 +140,9 @@ instance instNSMul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
 
 @[simp]
 theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • ⇑s := by
-  induction' k with k ih
-  · simp_rw [zero_smul]; rfl
-  simp_rw [succ_nsmul, ← ih]; rfl
+  induction k with
+  | zero => simp_rw [zero_smul]; rfl
+  | succ k ih => simp_rw [succ_nsmul, ← ih]; rfl
 
 instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
   ⟨zsmulRec⟩
@@ -179,6 +179,9 @@ def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
   toFun := (↑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+theorem coeAddHom_apply (s : Cₛ^n⟮I; F, V⟯) : coeAddHom I F n V s = s := rfl
 
 instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
   coe_injective.module 𝕜 (coeAddHom I F n V) coe_smul

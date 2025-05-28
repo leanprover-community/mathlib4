@@ -60,15 +60,12 @@ section CommutatorMap
 
 section DerivedSeriesMap
 
-variable (f)
-
+variable (f) in
 theorem map_derivedSeries_le_derivedSeries (n : ℕ) :
     (derivedSeries G n).map f ≤ derivedSeries G' n := by
   induction n with
   | zero => exact le_top
   | succ n ih => simp only [derivedSeries_succ, map_commutator, commutator_mono, ih]
-
-variable {f}
 
 theorem derivedSeries_le_map_derivedSeries (hf : Function.Surjective f) (n : ℕ) :
     derivedSeries G' n ≤ (derivedSeries G n).map f := by

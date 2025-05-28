@@ -3,7 +3,7 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
 import Mathlib.Data.Fintype.Perm
 
@@ -184,7 +184,7 @@ private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
 `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum is over all
-permutations of `{1, ..., n}`.-/
+permutations of `{1, ..., n}`. -/
 theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : AnalyticOn 𝕜 f s)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (v : Fin n → E) :
@@ -202,7 +202,7 @@ theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
 `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum is over all
-permutations of `{1, ..., n}`.-/
+permutations of `{1, ..., n}`. -/
 theorem HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum
     (h : HasFPowerSeriesOnBall f p x r) (h' : AnalyticOn 𝕜 f univ) {n : ℕ} (v : Fin n → E) :
     iteratedFDeriv 𝕜 n f x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
@@ -211,7 +211,7 @@ theorem HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
 `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum is over all
-permutations of `{1, ..., n}`.-/
+permutations of `{1, ..., n}`. -/
 theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_completeSpace [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (v : Fin n → E) :
@@ -230,7 +230,7 @@ theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_completeSpace
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
 `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum is over all
-permutations of `{1, ..., n}`.-/
+permutations of `{1, ..., n}`. -/
 theorem HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum_of_completeSpace [CompleteSpace F]
     (h : HasFPowerSeriesOnBall f p x r) {n : ℕ} (v : Fin n → E) :
     iteratedFDeriv 𝕜 n f x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by

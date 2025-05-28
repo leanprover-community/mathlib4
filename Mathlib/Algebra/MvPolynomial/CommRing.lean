@@ -145,8 +145,8 @@ theorem eval_neg (f : σ → R) : eval f (-p) = -eval f p :=
 theorem hom_C (f : MvPolynomial σ ℤ →+* S) (n : ℤ) : f (C n) = (n : S) :=
   eq_intCast (f.comp C) n
 
-/-- A ring homomorphism f : Z[X_1, X_2, ...] → R
-is determined by the evaluations f(X_1), f(X_2), ... -/
+/-- A ring homomorphism `f : Z[X_1, X_2, ...] → R`
+is determined by the evaluations `f(X_1)`, `f(X_2)`, ... -/
 @[simp]
 theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
     eval₂ c (f ∘ X) x = f x := by
@@ -162,7 +162,7 @@ theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+
       exact (f.map_mul _ _).symm)
 
 /-- Ring homomorphisms out of integer polynomials on a type `σ` are the same as
-functions out of the type `σ`, -/
+functions out of the type `σ`. -/
 def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S) where
   toFun f := f ∘ X
   invFun f := eval₂Hom (Int.castRingHom S) f

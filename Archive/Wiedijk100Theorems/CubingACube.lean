@@ -341,7 +341,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
       ∀ ⦃i'⦄ (_ : i' ∈ bcubes cs c),
         i' ≠ mi h v → (cs <| mi h v).b j.succ ∈ (cs i').side j.succ → x ∈ (cs i').side j.succ := by
   let i := mi h v; have hi : i ∈ bcubes cs c := mi_mem_bcubes
-  cases' bi with bi bi
+  obtain bi | bi := bi
   · refine ⟨(cs i).b j.succ + (cs i).w, ⟨?_, ?_⟩, ?_⟩
     · simp [i, side, bi, hw', w_lt_w h v hi]
     · intro h'; simpa [i, lt_irrefl] using h'.2

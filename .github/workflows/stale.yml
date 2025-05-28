@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # until https://github.com/actions/stale/pull/1145 is merged
-      - uses: asterisk/github-actions-stale@main-only-matching-filter
+      - uses: asterisk/github-actions-stale@1b80269ed4fffa62ade5d212089f005f03cde943 # branch: main-only-matching-filter
         with:
           debug-only: 'true' # TODO: remove in follow-up PR after testing is done!
           stale-pr-label: 'stale'

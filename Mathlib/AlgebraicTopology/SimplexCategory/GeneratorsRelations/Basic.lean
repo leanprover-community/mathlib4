@@ -48,42 +48,42 @@ abbrev σ {n : ℕ} (i : Fin (n + 1)) : FreeSimplexQuiver.mk (n + 1) ⟶ .mk n :
 five simplicial identities. -/
 inductive homRel : HomRel (Paths FreeSimplexQuiver)
   | δ_comp_δ {n : ℕ} {i j : Fin (n + 2)} (H : i ≤ j) : homRel
-    (Paths.of.map (δ i) ≫ Paths.of.map (δ j.succ))
-    (Paths.of.map (δ j) ≫ Paths.of.map (δ i.castSucc))
+    ((Paths.of FreeSimplexQuiver).map (δ i) ≫ (Paths.of FreeSimplexQuiver).map (δ j.succ))
+    ((Paths.of FreeSimplexQuiver).map (δ j) ≫ (Paths.of FreeSimplexQuiver).map (δ i.castSucc))
   | δ_comp_σ_of_le {n : ℕ} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.castSucc) : homRel
-    (Paths.of.map (δ i.castSucc) ≫ Paths.of.map (σ j.succ))
-    (Paths.of.map (σ j) ≫ Paths.of.map (δ i))
+    ((Paths.of FreeSimplexQuiver).map (δ i.castSucc) ≫ (Paths.of FreeSimplexQuiver).map (σ j.succ))
+    ((Paths.of FreeSimplexQuiver).map (σ j) ≫ (Paths.of FreeSimplexQuiver).map (δ i))
   | δ_comp_σ_self {n : ℕ} {i : Fin (n + 1)} : homRel
-    (Paths.of.map (δ i.castSucc) ≫ Paths.of.map (σ i)) (𝟙 _)
+    ((Paths.of FreeSimplexQuiver).map (δ i.castSucc) ≫ (Paths.of FreeSimplexQuiver).map (σ i)) (𝟙 _)
   | δ_comp_σ_succ {n : ℕ} {i : Fin (n + 1)} : homRel
-    (Paths.of.map (δ i.succ) ≫ Paths.of.map (σ i)) (𝟙 _)
+    ((Paths.of FreeSimplexQuiver).map (δ i.succ) ≫ (Paths.of FreeSimplexQuiver).map (σ i)) (𝟙 _)
   | δ_comp_σ_of_gt {n : ℕ} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc < i) : homRel
-    (Paths.of.map (δ i.succ) ≫ Paths.of.map (σ j.castSucc))
-    (Paths.of.map (σ j) ≫ Paths.of.map (δ i))
+    ((Paths.of FreeSimplexQuiver).map (δ i.succ) ≫ (Paths.of FreeSimplexQuiver).map (σ j.castSucc))
+    ((Paths.of FreeSimplexQuiver).map (σ j) ≫ (Paths.of FreeSimplexQuiver).map (δ i))
   | σ_comp_σ {n : ℕ} {i j : Fin (n + 1)} (H : i ≤ j) : homRel
-    (Paths.of.map (σ i.castSucc) ≫ Paths.of.map (σ j))
-    (Paths.of.map (σ j.succ) ≫ Paths.of.map (σ i))
+    ((Paths.of FreeSimplexQuiver).map (σ i.castSucc) ≫ (Paths.of FreeSimplexQuiver).map (σ j))
+    ((Paths.of FreeSimplexQuiver).map (σ j.succ) ≫ (Paths.of FreeSimplexQuiver).map (σ i))
 
 end FreeSimplexQuiver
 
 /-- SimplexCategory is the category presented by generators and relation by the simplicial
-identities.-/
+identities. -/
 def SimplexCategoryGenRel := Quotient FreeSimplexQuiver.homRel
   deriving Category
 
 /-- `SimplexCategoryGenRel.mk` is the main constructor for objects of `SimplexCategoryGenRel`. -/
 def SimplexCategoryGenRel.mk (n : ℕ) : SimplexCategoryGenRel where
-  as := Paths.of.obj n
+  as := (Paths.of FreeSimplexQuiver).obj n
 
 namespace SimplexCategoryGenRel
 
 /-- `SimplexCategoryGenRel.δ i` is the `i`-th face map `.mk n ⟶ .mk (n + 1)`. -/
 abbrev δ {n : ℕ} (i : Fin (n + 2)) : mk n ⟶ mk (n + 1) :=
-  (Quotient.functor FreeSimplexQuiver.homRel).map <| Paths.of.map (.δ i)
+  (Quotient.functor FreeSimplexQuiver.homRel).map <| (Paths.of FreeSimplexQuiver).map (.δ i)
 
 /-- `SimplexCategoryGenRel.σ i` is the `i`-th degeneracy map `.mk (n + 1) ⟶ .mk n`. -/
 abbrev σ {n : ℕ} (i : Fin (n + 1)) : mk (n + 1) ⟶ mk n :=
-  (Quotient.functor FreeSimplexQuiver.homRel).map <| Paths.of.map (.σ i)
+  (Quotient.functor FreeSimplexQuiver.homRel).map <| (Paths.of FreeSimplexQuiver).map (.σ i)
 
 /-- The length of an object of `SimplexCategoryGenRel`. -/
 def len (x : SimplexCategoryGenRel) : ℕ := by rcases x with ⟨n⟩; exact n
@@ -174,8 +174,8 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     · simpa using (δ_comp g i hrec)
     · simpa using (σ_comp g i hrec)
 
-/-- An induction principle for reasonning about objects in SimplexCategoryGenRel. This should be
-used instead of identifying an object with `mk` of its len.-/
+/-- An induction principle for reasonning about objects in `SimplexCategoryGenRel`. This should be
+used instead of identifying an object with `mk` of its `len`. -/
 @[elab_as_elim, cases_eliminator]
 protected def rec {P : SimplexCategoryGenRel → Sort*}
     (H : ∀ n : ℕ, P (.mk n)) :
@@ -183,7 +183,7 @@ protected def rec {P : SimplexCategoryGenRel → Sort*}
   intro x
   exact H x.len
 
-/-- A basic ext lemma for objects of SimplexCategoryGenRel --/
+/-- A basic `ext` lemma for objects of `SimplexCategoryGenRel`. -/
 @[ext]
 lemma ext {x y : SimplexCategoryGenRel} (h : x.len = y.len) : x = y := by
   cases x

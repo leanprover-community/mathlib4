@@ -3,6 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 
 /-!
@@ -37,7 +38,7 @@ variable [CountableOrCountablyGenerated α β] {κ : Kernel α (β × Ω)} [IsFi
   {f : β × Ω → ℝ≥0∞}
 
 lemma lintegral_condKernel_mem (a : α) {s : Set (β × Ω)} (hs : MeasurableSet s) :
-    ∫⁻ x, Kernel.condKernel κ (a, x) {y | (x, y) ∈ s} ∂(Kernel.fst κ a) = κ a s := by
+    ∫⁻ x, Kernel.condKernel κ (a, x) (Prod.mk x ⁻¹' s) ∂(Kernel.fst κ a) = κ a s := by
   conv_rhs => rw [← κ.disintegrate κ.condKernel]
   simp_rw [Kernel.compProd_apply hs]
 
@@ -52,7 +53,7 @@ lemma setLIntegral_condKernel_eq_measure_prod (a : α) {s : Set β} (hs : Measur
       = s.indicator (fun b ↦ Kernel.condKernel κ (a, b) t) b := by
     intro b
     by_cases hb : b ∈ s <;> simp [hb]
-  simp_rw [this]
+  simp_rw [Set.preimage, this]
   rw [lintegral_indicator hs]
 
 lemma lintegral_condKernel (hf : Measurable f) (a : α) :

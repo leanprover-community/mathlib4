@@ -3,7 +3,7 @@ Copyright (c) 2023 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Ruben Van de Velde
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
@@ -45,8 +45,6 @@ theorem iteratedDerivWithin_add
 theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c + f z) s x = iteratedDerivWithin n f s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs; swap
-  · simp [iteratedDerivWithin_succ, derivWithin_zero_of_isolated hxs]
   rw [iteratedDerivWithin_succ', iteratedDerivWithin_succ']
   congr with y
   exact derivWithin_const_add _
@@ -54,8 +52,6 @@ theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
 theorem iteratedDerivWithin_const_sub (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c - f z) s x = iteratedDerivWithin n (fun z => -f z) s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs; swap
-  · simp [iteratedDerivWithin_succ, derivWithin_zero_of_isolated hxs]
   rw [iteratedDerivWithin_succ', iteratedDerivWithin_succ']
   congr with y
   rw [derivWithin.neg]

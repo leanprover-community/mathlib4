@@ -63,7 +63,7 @@ properties of Grothendieck categories is ensured by `IsGrothendieckAbelian.of_eq
 which shows that every instance for `C` implies an instance for `ShrinkHoms C` with hom sets in
 `Type w`.
 -/
-@[stacks 079B]
+@[stacks 079B, pp_with_univ]
 class IsGrothendieckAbelian [Abelian C] : Prop where
   locallySmall : LocallySmall.{w} C := by infer_instance
   hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{w, w} C := by infer_instance
@@ -102,6 +102,10 @@ instance IsGrothendieckAbelian.hasLimits : HasLimitsOfSize.{w, w} C :=
 
 instance IsGrothendieckAbelian.wellPowered : WellPowered.{w} C :=
   wellPowered_of_equiv.{w} (ShrinkHoms.equivalence.{w} C).symm
+
+instance IsGrothendieckAbelian.ab4OfSize : AB4OfSize.{w} C := by
+  have : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
+  apply AB4.of_AB5
 
 end Instances
 

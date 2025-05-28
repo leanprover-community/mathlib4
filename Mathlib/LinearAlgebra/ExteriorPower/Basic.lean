@@ -18,16 +18,16 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
 * `exteriorPower.presentation R n M` is the standard presentation of the `R`-module `⋀[R]^n M`.
 
 * `exteriorPower.map n f : ⋀[R]^n M →ₗ[R] ⋀[R]^n N` is the linear map on `nth` exterior powers
-induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.ModuleCat.ExteriorPower`
-for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
+  induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.ModuleCat.ExteriorPower`
+  for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
 
 ## Theorems
 * `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 
 * We construct `exteriorPower.alternatingMapLinearEquiv` which
-expresses the universal property of the exterior power as a
-linear equivalence `(M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N` between
-alternating maps and linear maps from the exterior power.
+  expresses the universal property of the exterior power as a
+  linear equivalence `(M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N` between
+  alternating maps and linear maps from the exterior power.
 
 -/
 
@@ -109,7 +109,7 @@ variable {R} in
 /-- The solutions in a module `N` to the linear equations
 given by `exteriorPower.relations R ι M` identify to alternating maps to `N`. -/
 @[simps!]
-def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
+noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
     [AddCommGroup M] [Module R M] :
     (relations R ι M).Solution N ≃ AlternatingMap R M N ι where
   toFun s :=
@@ -141,7 +141,7 @@ def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
   right_inv _ := rfl
 
 /-- The universal property of the exterior power. -/
-def isPresentationCore :
+noncomputable def isPresentationCore :
     (relationsSolutionEquiv.symm (ιMulti R n (M := M))).IsPresentationCore where
   desc s := LinearMap.comp (ExteriorAlgebra.liftAlternating
       (Function.update 0 n (relationsSolutionEquiv s))) (Submodule.subtype _)
@@ -263,7 +263,7 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
 
 variable (R M) in
 /-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
-@[simps! (config := .lemmasOnly) symm_apply]
+@[simps! -isSimp symm_apply]
 noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
   LinearEquiv.ofLinear
     (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
@@ -282,7 +282,7 @@ lemma zeroEquiv_naturality (f : M →ₗ[R] N) :
 
 variable (R M) in
 /-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
-@[simps! (config := .lemmasOnly) symm_apply]
+@[simps! -isSimp symm_apply]
 noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
   LinearEquiv.ofLinear
     (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
@@ -293,7 +293,6 @@ noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
       exact
         { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
           map_add' := fun m₁ m₂ ↦ by
-            dsimp
             rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
             simp only [Fin.isValue, AlternatingMap.map_update_add]
           map_smul' := fun r m ↦ by

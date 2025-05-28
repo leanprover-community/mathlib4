@@ -1,5 +1,5 @@
 import Mathlib.Util.Notation3
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
@@ -231,15 +231,16 @@ Instead, it matches that it's an application of `Inhabited.default` whose first 
 -/
 /--
 info: [notation3] syntax declaration has name Test.termδNat
-[notation3] Generating matcher for pattern default
+---
+info: [notation3] Generating matcher for pattern default
 [notation3] Matcher creation succeeded; assembling delaborator
 [notation3] matcher:
-      matchApp✝ (matchApp✝ (matchExpr✝ (Expr.isConstOf✝ · `Inhabited.default))
-(matchExpr✝ (Expr.isConstOf✝ · `Nat)))
+      matchApp✝ (matchApp✝ (matchExpr✝ (Expr.isConstOf✝ · `Inhabited.default)) (matchExpr✝ (Expr.isConstOf✝ · `Nat)))
           pure✝ >=>
         pure✝
 [notation3] Creating delaborator for key Mathlib.Notation3.DelabKey.app (some `Inhabited.default) 2
-[notation3] Defined delaborator Test.termδNat.«delab_app.Inhabited.default»
+---
+info: [notation3] Defined delaborator Test.termδNat.«delab_app.Inhabited.default»
 -/
 #guard_msgs in
 set_option trace.notation3 true in

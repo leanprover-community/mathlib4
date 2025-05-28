@@ -128,11 +128,11 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     refine ((continuousOn_id.sub continuousOn_const).inv₀ ?_).smul (hd.continuousOn_ball.mono hsub)
     exact fun ζ hζ => sub_ne_zero.2 (ne_of_mem_sphere hζ hr.ne')
   · show ∀ ζ ∈ sphere z r, ‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r
-    rintro ζ (hζ : abs (ζ - z) = r)
-    rw [le_div_iff₀ hr, norm_smul, norm_inv, norm_eq_abs, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
+    rintro ζ (hζ : ‖ζ - z‖ = r)
+    rw [le_div_iff₀ hr, norm_smul, norm_inv, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
-  rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
+  rw [norm_smul, norm_inv, ← div_eq_inv_mul]
   exact (div_lt_div_iff_of_pos_right hr).2 hw_lt
 
 /-!
@@ -314,7 +314,7 @@ theorem eqOn_closedBall_of_isMaxOn_norm {f : E → F} {z : E} {r : ℝ}
   eq_of_isMaxOn_of_ball_subset hd hz <| ball_subset_ball hx
 
 /-- If `f` is differentiable on the open unit ball `{z : ℂ | ‖z‖ < 1}`, and `‖f‖` attains a maximum
-in this open ball, then `f` is constant.-/
+in this open ball, then `f` is constant. -/
 lemma eq_const_of_exists_max {f : E → F} {b : ℝ} (h_an : DifferentiableOn ℂ f (ball 0 b))
     {v : E} (hv : v ∈ ball 0 b) (hv_max : IsMaxOn (norm ∘ f) (ball 0 b) v) :
     Set.EqOn f (Function.const E (f v)) (ball 0 b) :=

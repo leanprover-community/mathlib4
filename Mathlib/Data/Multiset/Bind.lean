@@ -169,6 +169,7 @@ theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ}
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
     (s.bind t).prod = (s.map fun a => (t a).prod).prod := by simp [bind]
 
+open scoped Relator in
 theorem rel_bind {r : α → β → Prop} {p : γ → δ → Prop} {s t} {f : α → Multiset γ}
     {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) :
     Rel p (s.bind f) (t.bind g) := by
@@ -192,7 +193,7 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
   rw [count_bind, hm', sum_cons]
   exact Nat.le_add_right _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed because not in normal form
+@[simp]
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _
@@ -216,7 +217,7 @@ lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : 
   ext x
   -- Porting note: was `simp_rw [count_dedup, mem_bind, mem_dedup]`
   simp_rw [count_dedup]
-  refine if_congr ?_ rfl rfl
+  congr 1
   simp
 
 variable (op : α → α → α) [hc : Std.Commutative op] [ha : Std.Associative op]
