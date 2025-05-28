@@ -92,23 +92,18 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
     haveI hne : Nonempty K := by rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty]
     let f' n : C(K, R) := ⟨_, continuousOn_iff_continuous_restrict.mp (hcts n)⟩
     have hf'_bd : ∀ᶠ (n : ι) in cofinite, ‖f' n‖ ≤ u n := by
-      filter_upwards [h] with n hn
-      rw [ContinuousMap.norm_le_of_nonempty]
-      refine fun x ↦ hn x x.2
+      simp_rw [ContinuousMap.norm_le_of_nonempty]
+      filter_upwards [h] with n hn using fun x ↦ hn x x.2
     have hM : Multipliable fun i ↦ 1 + f' i := by
       apply _root_.multipliable_one_add_of_summable
       apply hu.of_norm_bounded_eventually
       simpa only [norm_norm] using hf'_bd
-    have hF := hM.hasProd
-    rw [HasProd, ContinuousMap.tendsto_iff_tendstoUniformly] at hF
-    convert hF
+    convert ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd
     · aesop
-    · ext k
-      simpa using ContinuousMap.tprod_apply hM k
+    · exact funext fun k ↦ ContinuousMap.tprod_apply hM k
 
-lemma multipliableUniformlyOn_one_add (hK : IsCompact K)
-    (hu : Summable u) (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n)
-    (hcts : ∀ n, ContinuousOn (f n) K) :
+lemma multipliableUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
+    (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableUniformlyOn (fun n x ↦ 1 + f n x) {K} :=
     ⟨_, hasProdUniformlyOn_one_add hK hu h hcts⟩
 
@@ -125,24 +120,21 @@ lemma multipliableUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsCompact
   ⟨_, hasProdUniformlyOn_nat_one_add hK hu h hcts⟩
 
 lemma hasProdLocallyUniformlyOn_one_add [LocallyCompactSpace α] (hK : IsOpen K) (hu : Summable u)
-    (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n)
-    (hcts : ∀ n, ContinuousOn (f n) K) :
+    (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hcts : ∀ n, ContinuousOn (f n) K) :
     HasProdLocallyUniformlyOn (fun n x ↦ 1 + f n x) (fun x ↦ ∏' i, (1 + f i x)) K := by
   apply hasProdLocallyUniformlyOn_of_forall_compact hK
   refine fun S hS hC ↦ hasProdUniformlyOn_one_add hC hu ?_ fun n ↦ (hcts n).mono hS
   filter_upwards [h] with n hn a ha using hn a (hS ha)
 
 lemma multipliableLocallyUniformlyOn_one_add [LocallyCompactSpace α]
-    (hK : IsOpen K) (hu : Summable u)
-    (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n)
+    (hK : IsOpen K) (hu : Summable u) (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n)
     (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableLocallyUniformlyOn (fun n x ↦ 1 + f n x) K :=
   ⟨_, hasProdLocallyUniformlyOn_one_add hK hu h hcts⟩
 
 lemma hasProdLocallyUniformlyOn_nat_one_add [LocallyCompactSpace α]
     {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ} (hu : Summable u)
-    (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
-    (hcts : ∀ n, ContinuousOn (f n) K) :
+    (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hcts : ∀ n, ContinuousOn (f n) K) :
     HasProdLocallyUniformlyOn (fun n x ↦ 1 + f n x) (fun x ↦ ∏' i, (1 + f i x)) K := by
   apply hasProdLocallyUniformlyOn_of_forall_compact hK
   refine fun S hS hC ↦ hasProdUniformlyOn_nat_one_add hC hu ?_ fun n ↦ (hcts n).mono hS
@@ -150,8 +142,7 @@ lemma hasProdLocallyUniformlyOn_nat_one_add [LocallyCompactSpace α]
 
 lemma multipliableLocallyUniformlyOn_nat_one_add [LocallyCompactSpace α]
     {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ} (hu : Summable u)
-    (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
-    (hcts : ∀ n, ContinuousOn (f n) K) :
+    (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableLocallyUniformlyOn (fun n x ↦ 1 + f n x) K :=
   ⟨_, hasProdLocallyUniformlyOn_nat_one_add hK hu h hcts⟩
 
