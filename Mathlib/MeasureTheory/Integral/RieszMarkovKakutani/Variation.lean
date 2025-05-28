@@ -126,8 +126,7 @@ theorem tsum_of_enorm_bounded {f : ι → E} {g : ι → ℝ≥0∞} {a : ℝ≥
       have : HasSum g ∞ := by
         obtain ⟨i, hi⟩ := h
         have hg' : g i ≤ ∑' i, g i := ENNReal.le_tsum i
-        have : HasSum g (∑' i, g i) := by
-          sorry
+        have : HasSum g (∑' i, g i) := (ENNReal.summable).hasSum
         rw [hi] at hg'
         simp only [top_le_iff] at hg'
         rwa [← hg']
@@ -140,7 +139,30 @@ theorem tsum_of_enorm_bounded {f : ι → E} {g : ι → ℝ≥0∞} {a : ℝ≥
       exact hc' i
     have hg' : HasSum (fun i ↦ (g i).toReal) a.toReal := by
       -- Since each term and the sum are finite.
-      sorry
+      have ha' := HasSum.tsum_eq hg
+      have h2 : (∑' (x : ι), (g x).toReal) = a.toReal := by
+        rw [← ENNReal.tsum_toReal_eq hc']
+        apply (ENNReal.toReal_eq_toReal _ _).mpr ha'
+        · rw [ha']
+          exact hc
+        · exact hc
+      have hb' : ∑' b, g b ≠ ⊤ := by
+        rw [ha']
+        exact hc
+      have hh := ENNReal.hasSum_toReal hb'
+      rw [← ENNReal.coe_toNNReal hc] at ha'
+      have : ∑' b, g b = ∑' b, ((g b).toNNReal : ENNReal) := by
+        congr
+        ext b
+        exact Eq.symm (ENNReal.coe_toNNReal (hc' b))
+      rw [this] at ha'
+      have fsummable : Summable (fun b => (g b).toNNReal) := by
+        apply ENNReal.tsum_coe_ne_top_iff_summable.mp
+        rw [ha']
+        exact coe_ne_top
+      rw [← NNReal.summable_coe] at fsummable
+      rw [h2] at hh
+      exact hh
     have := tsum_of_norm_bounded hg' hfg
     exact (ofReal_le_iff_le_toReal hc).mpr this
   · push_neg at hc
