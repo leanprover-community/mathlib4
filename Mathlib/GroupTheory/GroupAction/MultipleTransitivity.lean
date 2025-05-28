@@ -320,7 +320,7 @@ theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} 
 /-- Multiple transitivity of a pretransitive action
   is equivalent to one less transitivity of stabilizer of a point
   (Wielandt, th. 9.1, 1st part) -/
-@[to_additive
+ @[to_additive
   "Multiple transitivity of a pretransitive action
   is equivalent to one less transitivity of stabilizer of a point
   [Wielandt, th. 9.1, 1st part][Wielandt-1964]."]
@@ -328,6 +328,18 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     IsMultiplyPretransitive G α n.succ ↔
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
   constructor
+  · intro hn
+    exact {
+      exists_smul_eq x y := by
+        obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
+        have hg : g ∈ stabilizer G a := by
+          rw [mem_stabilizer_iff]
+          rw [DFunLike.ext_iff] at hgxy
+          convert hgxy (last n) <;> simp [smul_apply, ofStabilizer.snoc_last]
+        use ⟨g, hg⟩
+        ext i
+        simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
+        rw [← ofStabilizer.snoc_castSucc x, ← smul_apply, hgxy, ofStabilizer.snoc_castSucc] }
   · exact fun hn ↦ {
       exists_smul_eq x y := by
         -- gx • x = x1 :: a
@@ -346,18 +358,6 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
           simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
         · simp only [ofStabilizer.snoc_last, ← hg, subgroup_smul_def]
           exact g.prop }
-  · intro hn
-    exact {
-      exists_smul_eq x y := by
-        obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
-        have hg : g ∈ stabilizer G a := by
-          rw [mem_stabilizer_iff]
-          rw [DFunLike.ext_iff] at hgxy
-          convert hgxy (last n) <;> simp [smul_apply, ofStabilizer.snoc_last]
-        use ⟨g, hg⟩
-        ext i
-        simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
-        rw [← ofStabilizer.snoc_castSucc x, ← smul_apply, hgxy, ofStabilizer.snoc_castSucc] }
 
 end ofStabilizer
 
@@ -494,7 +494,7 @@ private theorem index_of_fixingSubgroup_aux
       have := Nat.sub_eq_of_eq_add hscard
       simp only [hs, Nat.pred_succ] at this
       convert hrec (stabilizer G a) (α := SubMulAction.ofStabilizer G a)
-        (ofStabilizer.isMultiplyPretransitive_iff_succ.mpr hmk) htcard
+        (ofStabilizer.isMultiplyPretransitive.mp hmk) htcard
       all_goals { rw [nat_card_ofStabilizer_eq G a] }
 
  /-- For a multiply pretransitive action,
