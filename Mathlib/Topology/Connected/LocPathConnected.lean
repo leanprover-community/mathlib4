@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Ben Eltschig
 -/
 import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # Locally path-connected spaces
@@ -220,30 +219,3 @@ instance Sigma.locPathConnectedSpace {X : ι → Type*}
   · exact ⟨x.2, mem_pathComponentIn_self hxu, rfl⟩
 
 end LocPathConnectedSpace
-
-section PathComponentOne
-
-variable (G : Type*) [TopologicalSpace G]
-
-/-- The path component of the identity in a locally path connected topological group,
-as an open normal subgroup. It is, in fact, clopen. -/
-@[to_additive (attr := simps!)
-"The path component of the identity in a locally path connected additive topological group,
-as an open normal additive subgroup. It is, in fact, clopen."]
-def OpenNormalSubgroup.pathComponentOne [Group G]
-    [IsTopologicalGroup G] [LocPathConnectedSpace G] :
-    OpenNormalSubgroup (G) where
-  toSubgroup := .pathComponentOne G
-  isOpen' := .pathComponent 1
-  isNormal' := .pathComponentOne G
-
-namespace OpenNormalSubgroup
-
-@[to_additive]
-instance [Group G] [IsTopologicalGroup G] [LocPathConnectedSpace G] :
-    IsClosed (OpenNormalSubgroup.pathComponentOne G : Set G) :=
-  .pathComponent 1
-
-end OpenNormalSubgroup
-
-end PathComponentOne
