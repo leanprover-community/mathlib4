@@ -197,10 +197,10 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by
       rcases this with h₁ | h₁
       · replace h₁ : P.pairing i j = 1 := by simpa [← P.algebraMap_pairingIn ℤ]
-        exact ⟨P.reflection_perm j i, by simpa [h₁] using P.reflection_apply_root j i⟩
+        exact ⟨P.reflectionPerm j i, by simpa [h₁] using P.reflection_apply_root j i⟩
       · replace h₁ : P.pairing j i = 1 := by simpa [← P.algebraMap_pairingIn ℤ]
         rw [← neg_mem_range_root_iff, neg_sub]
-        exact ⟨P.reflection_perm i j, by simpa [h₁] using P.reflection_apply_root i j⟩
+        exact ⟨P.reflectionPerm i j, by simpa [h₁] using P.reflection_apply_root i j⟩
     have : P.coxeterWeightIn ℤ i j ∈ ({1, 2, 3} : Set _) := by
       have aux₁ := P.coxeterWeightIn_mem_set_of_isCrystallographic i j
       have aux₂ := (linearIndependent_iff_coxeterWeightIn_ne_four P ℤ).mp hli
@@ -455,12 +455,12 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   replace hk : α (-k) + α j - α i ∈ Φ := by
     rw [← neg_mem_range_root_iff]
     convert hk using 1
-    simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
+    simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
     module
   rw [← neg_mem_range_root_iff]
   convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose! hkj; aesop)
     (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
-  simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
+  simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 
 end Base
