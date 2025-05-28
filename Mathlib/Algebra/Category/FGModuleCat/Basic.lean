@@ -91,7 +91,7 @@ variable (R : Type u) [Ring R]
 
 @[simp] lemma hom_id (A : FGModuleCat.{v} R) : (𝟙 A : A ⟶ A).hom = LinearMap.id := rfl
 
-instance foo : Inhabited (FGModuleCat.{v} R) :=
+instance : Inhabited (FGModuleCat.{v} R) :=
   ⟨⟨ModuleCat.of R PUnit, by unfold ModuleCat.isFG; infer_instance⟩⟩
 
 /-- Lift an unbundled finitely generated module to `FGModuleCat R`. -/
