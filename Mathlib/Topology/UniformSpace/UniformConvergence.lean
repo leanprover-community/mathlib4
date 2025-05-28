@@ -351,7 +351,6 @@ theorem UniformContinuous₂.tendstoUniformly [UniformSpace α] [UniformSpace γ
     (h : UniformContinuous₂ f) : TendstoUniformly f (f x) (𝓝 x) :=
   UniformContinuousOn.tendstoUniformly univ_mem <| by rwa [univ_prod_univ, uniformContinuousOn_univ]
 
-
 namespace Filter.HasBasis
 
 variable {X ιX ια ιβ : Type*}
@@ -362,8 +361,7 @@ lemma uniformity_tendstoUniformlyOnFilter_iff {F : X → α → β} {f : α → 
     (hβ : (uniformity β).HasBasis pβ sβ) :
     TendstoUniformlyOnFilter F f l l' ↔
       (∀ i, pβ i → ∀ᶠ n in l ×ˢ l', (f n.2, F n.1 n.2) ∈ sβ i) := by
-  rw [TendstoUniformlyOnFilter, hβ.forall_iff]
-  exact fun _ _ _ h ↦ h.mp <| .of_forall <| by aesop
+  rw [tendstoUniformlyOnFilter_iff_tendsto, hβ.tendsto_right_iff]
 
 /-- An anologue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformlyOnFilter`. -/
 lemma tendstoUniformlyOnFilter_iff {F : X → α → β} {f : α → β}
@@ -381,8 +379,7 @@ lemma uniformity_tendstoUniformlyOn_iff {F : X → α → β} {f : α → β}
     (hβ : (uniformity β).HasBasis pβ sβ) :
     TendstoUniformlyOn F f l s ↔
       (∀ i, pβ i → ∀ᶠ n in l, ∀ x ∈ s, (f x, F n x) ∈ sβ i) := by
-  rw [TendstoUniformlyOn, hβ.forall_iff]
-  exact fun _ _ _ h ↦ h.mp <| .of_forall <| by aesop
+  simp_rw [tendstoUniformlyOn_iff_tendsto, hβ.tendsto_right_iff, eventually_prod_principal_iff]
 
 /-- An anologue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformlyOn`. -/
 lemma tendstoUniformlyOn_iff {F : X → α → β} {f : α → β}
@@ -398,8 +395,7 @@ lemma uniformity_tendstoUniformly_iff {F : X → α → β} {f : α → β}
     (hβ : (uniformity β).HasBasis pβ sβ) :
     TendstoUniformly F f l ↔
       (∀ i, pβ i → ∀ᶠ n in l, ∀ x, (f x, F n x) ∈ sβ i) := by
-  rw [TendstoUniformly, hβ.forall_iff]
-  exact fun _ _ _ h ↦ h.mp <| .of_forall <| by aesop
+  simp_rw [← tendstoUniformlyOn_univ, hβ.uniformity_tendstoUniformlyOn_iff, mem_univ, true_imp_iff]
 
 /-- An anologue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformly`. -/
 lemma tendstoUniformly_iff {F : X → α → β} {f : α → β}

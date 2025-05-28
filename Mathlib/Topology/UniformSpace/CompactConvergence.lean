@@ -322,7 +322,7 @@ open UniformFun in
 theorem isUniformEmbedding_uniformFunOfFun :
     IsUniformEmbedding ((ofFun ·) : C(α, β) → α →ᵤ β) where
   comap_uniformity := UniformOnFun.uniformEquivUniformFun β _ isCompact_univ
-    |>.isUniformInducing.comp isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing
+    |>.isUniformEmbedding.comp isUniformEmbedding_toUniformOnFunIsCompact
     |>.comap_uniformity
   injective := DFunLike.coe_injective
 
