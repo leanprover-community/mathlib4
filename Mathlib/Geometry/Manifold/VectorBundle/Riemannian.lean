@@ -132,3 +132,9 @@ lemma ContMDiff.inner
   fun x ↦ (hv x).inner (hw x)
 
 end ContMDiff
+
+section Construction
+
+
+
+end Construction

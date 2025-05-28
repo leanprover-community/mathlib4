@@ -503,6 +503,18 @@ def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : InnerProduct
 
 end
 
+section
+
+lemma glouk [AddCommGroup F] [Module 𝕜 F] [tF : TopologicalSpace F] -- [TopologicalAddGroup F]
+    (cd : InnerProductSpace.Core 𝕜 F) (h : Continuous (fun (v : F) ↦ cd.inner v v))
+    (h' : {v : F | re (cd.inner v v) < 1} ∈ 𝓝 (0 : F)) :
+    tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
+  sorry
+
+
+
+end
+
 /-- A Hilbert space is a complete normed inner product space. -/
 @[variable_alias]
 structure HilbertSpace (𝕜 E : Type*) [RCLike 𝕜]
