@@ -654,6 +654,8 @@ theorem mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
 instance fiberBundle : FiberBundle F Z.Fiber :=
   Z.toFiberBundleCore.fiberBundle
 
+@[simp] protected lemma trivializationAt : trivializationAt F Z.Fiber b = Z.localTrivAt b := rfl
+
 instance vectorBundle : VectorBundle R F Z.Fiber where
   trivialization_linear' := by
     rintro _ ⟨i, rfl⟩
