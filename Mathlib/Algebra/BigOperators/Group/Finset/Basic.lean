@@ -318,6 +318,14 @@ theorem prod_eq_single_of_mem {s : Finset ι} {f : ι → M} (a : ι) (h : a ∈
     _ = f a := prod_singleton _ _
 
 @[to_additive]
+theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈ s, b ≠ a → f b = 1)
+    (h₁ : a ∉ s → f a = 1) : ∏ x ∈ s, f x = f a :=
+  haveI := Classical.decEq ι
+  by_cases (prod_eq_single_of_mem a · h₀) fun this =>
+    (prod_congr rfl fun b hb => h₀ b hb <| by rintro rfl; exact this hb).trans <|
+      prod_const_one.trans (h₁ this).symm
+
+@[to_additive]
 lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
     (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) :
     ∏ x ∈ s, f x = if a ∈ s then f a else 1 := by
@@ -325,14 +333,6 @@ lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
   · simp [Finset.prod_eq_single_of_mem a h h₀, h]
   · replace h₀ : ∀ b ∈ s, f b = 1 := by aesop
     simp +contextual [h₀]
-
-@[to_additive]
-theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈ s, b ≠ a → f b = 1)
-    (h₁ : a ∉ s → f a = 1) : ∏ x ∈ s, f x = f a :=
-  haveI := Classical.decEq ι
-  by_cases (prod_eq_single_of_mem a · h₀) fun this =>
-    (prod_congr rfl fun b hb => h₀ b hb <| by rintro rfl; exact this hb).trans <|
-      prod_const_one.trans (h₁ this).symm
 
 @[to_additive]
 lemma prod_union_eq_left [DecidableEq ι] (hs : ∀ a ∈ s₂, a ∉ s₁ → f a = 1) :
