@@ -997,6 +997,22 @@ lemma take_count_sum_eq_exp {T: Type*} [ht: Group T] [heq: DecidableEq T] {E: Se
 
 open Additive
 
+
+lemma list_filter_one {T: Type*} [DecidableEq T] [Group T] (l: List T): (l.filter (fun s => !decide (s = 1))).prod = l.prod := by
+  induction l with
+  | nil =>
+    simp
+  | cons h t ih =>
+    simp
+    by_cases h_eq_one: h = 1
+    .
+      simp [h_eq_one]
+      exact ih
+    .
+      rw [List.filter_cons]
+      simp [h_eq_one]
+      exact ih
+
 def e_i_regular_helper (φ: (Additive G) →+ ℤ) (γ: G) (s: S): G := (ofMul s.val) +  ((-1 : ℤ) • (φ (ofMul s.val))) • (ofMul (γ))
 
 def E_helper (φ: (Additive G) →+ ℤ) (γ: G) := {γ, γ⁻¹} ∪ Set.range (ι := S) (e_i_regular_helper φ γ)
@@ -1360,10 +1376,10 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
       -- γ^(φ(f_1)) (f_1⁻¹ ) = f_2 γ^(-φ(f_2))
 
-      -- have first_set_inv_self: ({(1 : G), γ, γ⁻¹} : (Set G)) = ( {(1 : G), γ, γ⁻¹} : (Set G))⁻¹ := by
-      --   simp
-      --   -- Why can't simp do this for us? Soemthing to do with the wrong '⁻¹' instances?
-      --   rw [Set.pair_comm]
+      have first_set_inv_self: ({(1 : G), γ, γ⁻¹} : (Set G)) = ( {(1 : G), γ, γ⁻¹} : (Set G))⁻¹ := by
+        simp
+        -- Why can't simp do this for us? Soemthing to do with the wrong '⁻¹' instances?
+        rw [Set.pair_comm]
 
       -- This is *false* - we would need to be able t swap the order of 'f_i' and 'γ'
       -- have e_i_eq_inv: (e_i '' Set.univ) = -(e_i '' Set.univ) := by
@@ -1437,20 +1453,52 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
       --have foo := Submonoid.exists_list_of_mem_closure (s := ({1, γ, γ⁻¹} ∪ (e_i '' Set.univ))) (x := z)
-      have foo := Submonoid.exists_list_of_mem_closure (s := S ∪ S⁻¹) (x := z)
+      have foo := Submonoid.exists_list_of_mem_closure (s := ({1, γ, γ⁻¹} ∪ e_i '' Set.univ) ∪ ({1, γ, γ⁻¹} ∪ e_i '' Set.univ)⁻¹) (x := z)
       --rw [s_union_sinv] at foo
-      rw [← Subgroup.closure_toSubmonoid _] at foo
       --rw [← Subgroup.closure_toSubmonoid _] at foo
-      rw [← new_closure_e_i] at foo
-      rw [Subgroup.closure_toSubmonoid] at foo
+      apply_fun Subgroup.toSubmonoid at new_closure_e_i
+      rw [Subgroup.closure_toSubmonoid _] at new_closure_e_i
+      rw [Subgroup.closure_toSubmonoid _] at new_closure_e_i
+      rw [new_closure_e_i] at foo
+      rw [← Subgroup.closure_toSubmonoid _] at foo
+      simp only [mem_toSubmonoid, Finset.mem_coe] at foo
+
+      conv at foo =>
+        intro hz
+        arg 1
+        intro l
+        lhs
+        intro y
+        intro hy
+        rw [Set.union_comm {1, γ, γ⁻¹} (e_i '' Set.univ)]
+        rw [Set.union_assoc]
+        arg 1
+        rhs
+        rw [Set.union_comm]
+        rw [Set.union_inv]
+        rw [Set.union_assoc]
+        rhs
+        simp
+
       have generates := hGS.generates
       have z_in_top: z ∈ (⊤: Set G) := by
         simp
+
       rw [← generates] at z_in_top
-      simp at z_in_top
-      rw [s_union_sinv] at foo
-      simp at foo
-      --specialize foo (z_in_top)
+      have z_eq_prod := foo z_in_top
+      clear foo
+
+
+
+
+      -- have generates := hGS.generates
+      -- have z_in_top: z ∈ (⊤: Set G) := by
+      --   simp
+      -- rw [← generates] at z_in_top
+      -- simp at z_in_top
+      -- rw [s_union_sinv] at foo
+      -- simp at foo
+      -- --specialize foo (z_in_top)
 
 
 
@@ -1966,7 +2014,44 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             apply Nat.pos_iff_ne_zero.mp dropwhile_len_gt
       }
 
-      let my_res := rewrite_list (l.map ( fun g => ⟨g.toMul, by simp [E]⟩)) sorry
+      obtain ⟨z_list, h_z_list⟩ := z_eq_prod
+      rw [← list_filter_one] at h_z_list
+      have z_filter_mem_e: ∀ p ∈ (List.filter (fun s ↦ !decide (s = 1)) z_list), p ∈ E := by
+        intro p hp
+        dsimp [E]
+        simp at hp
+        obtain ⟨h_z_list_in, _⟩ := h_z_list
+        specialize h_z_list_in p hp.1
+        rw [Set.mem_union] at h_z_list_in
+        rw [Set.mem_union] at h_z_list_in
+        match h_z_list_in with
+        | .inl h_z_list_in =>
+          simp at h_z_list_in
+          obtain ⟨a, a_mem_s, e_i_ap⟩ := h_z_list_in
+          apply Set.mem_union_left
+          apply Set.mem_union_right
+          simp
+          use a
+          use a_mem_s
+        | .inr h_z_list_in =>
+          simp at h_z_list_in
+          match h_z_list_in with
+          | .inl h_z_list_in =>
+            obtain ⟨a, a_mem_s, e_i_ap⟩ := h_z_list_in
+            apply Set.mem_union_right
+            simp
+            use a
+            use a_mem_s
+          | .inr h_z_list_in =>
+            simp [hp.2] at h_z_list_in
+            apply Set.mem_union_left
+            apply Set.mem_union_left
+            simp
+            exact h_z_list_in.symm
+
+      let my_res := rewrite_list ((z_list.filter (fun s ↦ !decide (s = 1))).attach.map (fun (g) => ⟨g.val, z_filter_mem_e g.val g.property⟩))
+
+      --let my_res := rewrite_list (z_list.attach.map ( fun g => ⟨g, by dsimp [E]⟩)) sorry
 
       --let a := rewrite_list [] (by sorry)
       sorry
