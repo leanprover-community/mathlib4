@@ -277,7 +277,7 @@ theorem ofBialgHom_symm (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ h₂) :
   rfl
 
 /-- Construct a bialgebra equiv from an algebra equiv respecting counit and comultiplication. -/
-@[simps] def ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp : counit ∘ₗ f.toLinearMap = counit)
+@[simps apply] def ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp : counit ∘ₗ f.toLinearMap = counit)
     (map_comp_comul : map f.toLinearMap f.toLinearMap ∘ₗ comul = comul ∘ₗ f.toLinearMap) :
     A ≃ₐc[R] B where
   __ := f
