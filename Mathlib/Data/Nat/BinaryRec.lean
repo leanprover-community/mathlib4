@@ -149,6 +149,4 @@ theorem binaryRec_eq {z : motive 0} {f : ∀ b n, motive n → motive (bit b n)}
     rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
 
-@[deprecated (since := "2024-10-21")] alias binaryRec_eq' := binaryRec_eq
-
 end Nat

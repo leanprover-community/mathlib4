@@ -175,7 +175,7 @@ theorem isMulLeftInvariant_map_smul
 /-- The image of a right invariant measure under a left action is right invariant, assuming that
 the action preserves multiplication. -/
 @[to_additive "The image of a right invariant measure under a left additive action is right
- invariant, assuming that the action preserves addition."]
+invariant, assuming that the action preserves addition."]
 theorem isMulRightInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulRightInvariant μ] (a : α) :
@@ -603,23 +603,23 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
     exists_disjoint_smul_of_isCompact hL hK
   choose! g hg using A
   set L : ℕ → Set G := fun n => (fun T => T ∪ g T • K)^[n] K
-  have Lcompact : ∀ n, IsCompact (L n) := by
-    intro n
-    induction' n with n IH
-    · exact hK
-    · simp_rw [L, iterate_succ']
+  have Lcompact : ∀ n, IsCompact (L n) := fun n ↦ by
+    induction n with
+    | zero => exact hK
+    | succ n IH =>
+      simp_rw [L, iterate_succ']
       apply IsCompact.union IH (hK.smul (g (L n)))
-  have Lclosed : ∀ n, IsClosed (L n) := by
-    intro n
-    induction' n with n IH
-    · exact Kclosed
-    · simp_rw [L, iterate_succ']
+  have Lclosed : ∀ n, IsClosed (L n) := fun n ↦ by
+    induction n with
+    | zero => exact Kclosed
+    | succ n IH =>
+      simp_rw [L, iterate_succ']
       apply IsClosed.union IH (Kclosed.smul (g (L n)))
-  have M : ∀ n, μ (L n) = (n + 1 : ℕ) * μ K := by
-    intro n
-    induction' n with n IH
-    · simp only [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_add]
-    · calc
+  have M : ∀ n, μ (L n) = (n + 1 : ℕ) * μ K := fun n ↦ by
+    induction n with
+    | zero => simp only [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_add]
+    | succ n IH =>
+      calc
         μ (L (n + 1)) = μ (L n) + μ (g (L n) • K) := by
           simp_rw [L, iterate_succ']
           exact measure_union' (hg _ (Lcompact _)) (Lclosed _).measurableSet
@@ -864,11 +864,9 @@ instance (priority := 100) IsHaarMeasure.noAtoms [IsTopologicalGroup G] [BorelSp
       K_compact.measure_lt_top.ne
 
 instance IsAddHaarMeasure.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
-    -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
-    -- assume `MeasurableSpace G` + `MeasurableSMul G A`
-    [MeasurableSpace A] [MeasurableSpace G] [MeasurableSMul G A] [TopologicalSpace A] [BorelSpace A]
-    [IsTopologicalAddGroup A] [ContinuousConstSMul G A] {μ : Measure A} [μ.IsAddHaarMeasure]
-    (g : Gᵈᵐᵃ) : (g • μ).IsAddHaarMeasure :=
+    [MeasurableSpace A] [TopologicalSpace A] [BorelSpace A] [IsTopologicalAddGroup A]
+    [ContinuousConstSMul G A] {μ : Measure A} [μ.IsAddHaarMeasure] (g : Gᵈᵐᵃ) :
+    (g • μ).IsAddHaarMeasure :=
   (DistribMulAction.toAddEquiv _ (DomMulAct.mk.symm g⁻¹)).isAddHaarMeasure_map _
     (continuous_const_smul _) (continuous_const_smul _)
 

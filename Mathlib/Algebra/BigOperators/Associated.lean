@@ -59,7 +59,7 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
   | empty =>
     simp only [Finset.prod_empty]
     rfl
-  | @insert j s hjs IH =>
+  | insert j s hjs IH =>
     classical
     convert_to (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
     rw [Finset.prod_insert hjs, Finset.prod_insert hjs]
@@ -89,7 +89,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
     simp only [Set.mem_setOf]
     simp only [Multiset.prod_zero] at hprod
     left; exact isUnit_of_mul_eq_one _ _ hprod.symm
-  | @cons c s hind =>
+  | cons c s hind =>
     simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
     simp only [Multiset.prod_cons] at hprod
     simp only [Set.mem_setOf_eq] at hind

@@ -280,8 +280,8 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le'
     [TendstoIxxClass Ioc l l'] (hfm : StronglyMeasurableAtFilter f l' μ)
     (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
     (hv : Tendsto v lt l) (huv : u ≤ᶠ[lt] v) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) - (μ (Ioc (u t) (v t))).toReal • c) =o[lt] fun t =>
-      (μ <| Ioc (u t) (v t)).toReal :=
+    (fun t => (∫ x in u t..v t, f x ∂μ) - μ.real (Ioc (u t) (v t)) • c) =o[lt] fun t =>
+      μ.real (Ioc (u t) (v t)) :=
   (measure_integral_sub_linear_isLittleO_of_tendsto_ae' hfm hf hl hu hv).congr'
     (huv.mono fun x hx => by simp [integral_const', hx])
     (huv.mono fun x hx => by simp [integral_const', hx])
@@ -301,8 +301,8 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge'
     [TendstoIxxClass Ioc l l'] (hfm : StronglyMeasurableAtFilter f l' μ)
     (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
     (hv : Tendsto v lt l) (huv : v ≤ᶠ[lt] u) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) + (μ (Ioc (v t) (u t))).toReal • c) =o[lt] fun t =>
-      (μ <| Ioc (v t) (u t)).toReal :=
+    (fun t => (∫ x in u t..v t, f x ∂μ) + μ.real (Ioc (v t) (u t)) • c) =o[lt] fun t =>
+      μ.real (Ioc (v t) (u t)) :=
   (measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le' hfm hf hl hv hu
           huv).neg_left.congr_left
     fun t => by simp [integral_symm (u t), add_comm]
@@ -344,8 +344,8 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le
     [CompleteSpace E] [FTCFilter a l l']
     (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) (huv : u ≤ᶠ[lt] v) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) - (μ (Ioc (u t) (v t))).toReal • c) =o[lt] fun t =>
-      (μ <| Ioc (u t) (v t)).toReal :=
+    (fun t => (∫ x in u t..v t, f x ∂μ) - μ.real (Ioc (u t) (v t)) • c) =o[lt] fun t =>
+      μ.real (Ioc (u t) (v t)) :=
   haveI := FTCFilter.meas_gen l
   measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le' hfm hf (FTCFilter.finiteAt_inner l) hu
     hv huv
@@ -362,8 +362,8 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge
     [CompleteSpace E] [FTCFilter a l l']
     (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) (huv : v ≤ᶠ[lt] u) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) + (μ (Ioc (v t) (u t))).toReal • c) =o[lt] fun t =>
-      (μ <| Ioc (v t) (u t)).toReal :=
+    (fun t => (∫ x in u t..v t, f x ∂μ) + μ.real (Ioc (v t) (u t)) • c) =o[lt] fun t =>
+      μ.real (Ioc (v t) (u t)) :=
   haveI := FTCFilter.meas_gen l
   measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge' hfm hf (FTCFilter.finiteAt_inner l) hu
     hv huv
@@ -993,13 +993,12 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
       have I : Icc t u ⊆ Icc a b := Icc_subset_Icc ht.2.1 (hu.2.le.trans (min_le_right _ _))
       calc
         (u - t) * y = ∫ _ in Icc t u, y := by
-          simp only [hu.left.le, MeasureTheory.integral_const, Algebra.id.smul_eq_mul, sub_nonneg,
-            MeasurableSet.univ, Real.volume_Icc, Measure.restrict_apply, univ_inter,
-            ENNReal.toReal_ofReal]
+          simp only [MeasureTheory.integral_const, MeasurableSet.univ, measureReal_restrict_apply,
+            univ_inter, hu.left.le, Real.volume_real_Icc_of_le, smul_eq_mul, s]
         _ ≤ ∫ w in t..u, (G' w).toReal := by
           rw [intervalIntegral.integral_of_le hu.1.le, ← integral_Icc_eq_integral_Ioc]
           apply setIntegral_mono_ae_restrict
-          · simp only [integrableOn_const, Real.volume_Icc, ENNReal.ofReal_lt_top, or_true]
+          · simp
           · exact IntegrableOn.mono_set G'int I
           · have C1 : ∀ᵐ x : ℝ ∂volume.restrict (Icc t u), G' x < ∞ :=
               ae_mono (Measure.restrict_mono I le_rfl) G'lt_top
@@ -1015,7 +1014,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     -- bound from above the increase of `g u - g a` on the right of `t`, using the derivative at `t`
     have I2 : ∀ᶠ u in 𝓝[>] t, g u - g t ≤ (u - t) * y := by
       have g'_lt_y : g' t < y := EReal.coe_lt_coe_iff.1 g'_lt_y'
-      filter_upwards [(hderiv t ⟨ht.2.1, ht.2.2⟩).limsup_slope_le' (not_mem_Ioi.2 le_rfl) g'_lt_y,
+      filter_upwards [(hderiv t ⟨ht.2.1, ht.2.2⟩).limsup_slope_le' (notMem_Ioi.2 le_rfl) g'_lt_y,
         self_mem_nhdsWithin] with u hu t_lt_u
       have := mul_le_mul_of_nonneg_left hu.le (sub_pos.2 t_lt_u.out).le
       rwa [← smul_eq_mul, sub_smul_slope] at this

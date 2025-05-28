@@ -777,43 +777,39 @@ lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n /
   exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
 
 /-- The String representation produced by toDigitsCore has the proper length relative to
-the number of digits in `n < e` for some base `b`. Since this works with any base greater
-than one, it can be used for binary, decimal, and hex. -/
-lemma toDigitsCore_length (b : Nat) (h : 2 <= b) (f n e : Nat)
-    (hlt : n < b ^ e) (h_e_pos : 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
+the number of digits in `n < e` for some base `b`. Since this works with any base,
+it can be used for binary, decimal, and hex. -/
+lemma toDigitsCore_length (b f n e : Nat) (h_e_pos : 0 < e) (hlt : n < b ^ e) :
+    (Nat.toDigitsCore b f n []).length ≤ e := by
   induction f generalizing n e hlt h_e_pos with
-    simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
+  | zero => simp only [toDigitsCore, List.length, zero_le]
   | succ f ih =>
+    simp only [toDigitsCore]
     cases e with
     | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
     | succ e =>
-      if h_pred_pos : 0 < e then
-        have _ : 0 < b := Nat.lt_trans (by decide) h
-        specialize ih (n / b) e (nat_repr_len_aux n b e ‹0 < b› hlt) h_pred_pos
-        if hdiv_ten : n / b = 0 then
-          simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
-        else
-          simp only [hdiv_ten,
-            toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b), if_false]
-          exact Nat.succ_le_succ ih
-      else
-        obtain rfl : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
-        have _ : b ^ 1 = b := by simp only [Nat.pow_succ, pow_zero, Nat.one_mul]
-        have _ : n < b := ‹b ^ 1 = b› ▸ hlt
-        simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
+      cases e with
+      | zero =>
+        rw [zero_add, pow_one] at hlt
+        simp [Nat.div_eq_of_lt hlt]
+      | succ e =>
+        specialize ih (n / b) _ (add_one_pos e) (Nat.div_lt_of_lt_mul <| by rwa [← pow_add_one'])
+        split_ifs
+        · simp only [List.length_singleton, _root_.zero_le, succ_le_succ]
+        · simp only [toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b),
+            Nat.succ_le_succ_iff, ih]
+
+/-- The core implementation of `Nat.toDigits` returns a String with length less than or equal to the
+number of digits in the base-`b` number (represented by `e`). For example, the string
+representation of any number less than `b ^ 3` has a length less than or equal to 3. -/
+lemma toDigits_length (b n e : Nat) : 0 < e → n < b ^ e → (Nat.toDigits b n).length ≤ e :=
+  toDigitsCore_length _ _ _ _
 
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string
 representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
-lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= e := by
-  cases n with
-    (intro e0 he; simp only [Nat.repr, Nat.toDigits, String.length, List.asString])
-  | zero => assumption
-  | succ n =>
-    if hterm : n.succ / 10 = 0 then
-      simp only [hterm, Nat.toDigitsCore]; assumption
-    else
-      exact toDigitsCore_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
+lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e :=
+  toDigits_length _ _ _
 
 /-! ### `norm_digits` tactic -/
 

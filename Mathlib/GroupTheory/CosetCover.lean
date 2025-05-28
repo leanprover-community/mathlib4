@@ -370,24 +370,27 @@ variable {k E : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k 
     {s : Finset (Subspace k E)}
 
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
-theorem Subspace.biUnion_ne_univ_of_top_nmem (hs : ⊤ ∉ s) :
+theorem Subspace.biUnion_ne_univ_of_top_notMem (hs : ⊤ ∉ s) :
     ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
   intro hcovers
   have ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
-  have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex _
+  have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex
   have : Nontrivial (E ⧸ p) :=
     Submodule.Quotient.nontrivial_of_lt_top p (ne_of_mem_of_not_mem hp hs).lt_top
   have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
   exact not_finite (E ⧸ p)
 
+@[deprecated (since := "2025-05-24")]
+alias Subspace.biUnion_ne_univ_of_top_nmem := Subspace.biUnion_ne_univ_of_top_notMem
+
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
 theorem Subspace.top_mem_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :
     ⊤ ∈ s := by
   contrapose! hcovers
-  exact Subspace.biUnion_ne_univ_of_top_nmem hcovers
+  exact Subspace.biUnion_ne_univ_of_top_notMem hcovers
 
 @[deprecated (since := "2024-10-29")]
-alias Subspace.biUnion_ne_univ_of_ne_top := Subspace.biUnion_ne_univ_of_top_nmem
+alias Subspace.biUnion_ne_univ_of_ne_top := Subspace.biUnion_ne_univ_of_top_notMem
 @[deprecated (since := "2024-10-29")]
 alias Subspace.exists_eq_top_of_biUnion_eq_univ := Subspace.top_mem_of_biUnion_eq_univ
 

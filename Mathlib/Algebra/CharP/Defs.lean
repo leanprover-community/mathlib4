@@ -12,9 +12,9 @@ import Mathlib.Order.Lattice
 # Characteristic of semirings
 
 ## Main definitions
- * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
- * `ringChar`: the characteristic of a ring
- * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
+* `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
+* `ringChar`: the characteristic of a ring
+* `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
     exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
     prime characteristic `p`)
 -/
@@ -38,7 +38,7 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
 @[mk_iff]
-class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : ℕ) : Prop where
+class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : semiOutParam ℕ) : Prop where
   cast_eq_zero_iff (R p) : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
 
 variable [CharP R p] {a b : ℕ}
@@ -166,7 +166,8 @@ lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 
 end ringChar
 
-lemma CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1 : R) ≠ (1 : R) := by
+lemma CharP.neg_one_ne_one [AddGroupWithOne R] (p : ℕ) [CharP R p] [Fact (2 < p)] :
+    (-1 : R) ≠ (1 : R) := by
   rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two, ← Nat.cast_two, Ne,
     CharP.cast_eq_zero_iff R p 2]
   exact fun h ↦ (Fact.out : 2 < p).not_le <| Nat.le_of_dvd Nat.zero_lt_two h

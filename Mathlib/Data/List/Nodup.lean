@@ -42,11 +42,13 @@ theorem nodup_singleton (a : α) : Nodup [a] :=
 theorem Nodup.of_cons (h : Nodup (a :: l)) : Nodup l :=
   (nodup_cons.1 h).2
 
-theorem Nodup.not_mem (h : (a :: l).Nodup) : a ∉ l :=
+theorem Nodup.notMem (h : (a :: l).Nodup) : a ∉ l :=
   (nodup_cons.1 h).1
 
+@[deprecated (since := "2025-05-23")] alias Nodup.not_mem := Nodup.notMem
+
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
-  imp_not_comm.1 Nodup.not_mem
+  imp_not_comm.1 Nodup.notMem
 
 
 theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
@@ -340,7 +342,7 @@ theorem Nodup.diff_eq_filter [BEq α] [LawfulBEq α] :
   | l₁, [], _ => by simp
   | l₁, a :: l₂, hl₁ => by
     rw [diff_cons, (hl₁.erase _).diff_eq_filter, hl₁.erase_eq_filter, filter_filter]
-    simp only [decide_not, bne, Bool.and_comm, mem_cons, not_or, decide_mem_cons, Bool.not_or]
+    simp only [decide_not, bne, Bool.and_comm, decide_mem_cons, Bool.not_or]
 
 theorem Nodup.mem_diff_iff [DecidableEq α] (hl₁ : l₁.Nodup) : a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
   rw [hl₁.diff_eq_filter, mem_filter, decide_eq_true_iff]
@@ -386,7 +388,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     refine List.filter_congr ?_
     intro x hx
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
-    simp (config := {contextual := true}) [List.mem_filter, this, hx]
+    simp +contextual [List.mem_filter, this, hx]
 end List
 
 theorem Option.toList_nodup : ∀ o : Option α, o.toList.Nodup

@@ -132,8 +132,6 @@ theorem bit_false : bit false = (2 * ·) :=
 theorem bit_true : bit true = (2 * · + 1) :=
   rfl
 
-@[deprecated (since := "2024-10-19")] alias bit_eq_zero := bit_eq_zero_iff
-
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
   simp
 

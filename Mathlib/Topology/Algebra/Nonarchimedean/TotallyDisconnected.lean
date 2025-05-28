@@ -20,8 +20,8 @@ is implied by the fact that a nonarchimedean group is totally separated.
 
 ## Notation
 
- - `G` : Is a nonarchimedean group.
- - `V` : Is an open subgroup which is a neighbourhood of the identity in `G`.
+- `G` : Is a nonarchimedean group.
+- `V` : Is an open subgroup which is a neighbourhood of the identity in `G`.
 
 ## References
 

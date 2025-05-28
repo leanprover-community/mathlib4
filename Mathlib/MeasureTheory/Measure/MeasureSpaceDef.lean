@@ -66,7 +66,11 @@ namespace MeasureTheory
 
 /-- A measure is defined to be an outer measure that is countably additive on
 measurable sets, with the additional assumption that the outer measure is the canonical
-extension of the restricted measure. -/
+extension of the restricted measure.
+
+The measure of a set `s`, denoted `μ s`, is an extended nonnegative real. The real-valued version
+is written `μ.real s`.
+-/
 structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where
   m_iUnion ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
     toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)
@@ -88,6 +92,16 @@ instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass 
   measure_empty m := measure_empty (μ := m.toOuterMeasure)
   measure_iUnion_nat_le m := m.iUnion_nat
   measure_mono m := m.mono
+
+/-- The real-valued version of a measure. Maps infinite measure sets to zero. Use as `μ.real s`.
+The API is developed in `Mathlib/MeasureTheory/Measure/Real.lean`. -/
+protected def Measure.real {α : Type*} {m : MeasurableSpace α} (μ : Measure α) (s : Set α) : ℝ :=
+  (μ s).toReal
+
+theorem measureReal_def {α : Type*} {m : MeasurableSpace α} (μ : Measure α) (s : Set α) :
+    μ.real s = (μ s).toReal := rfl
+
+alias Measure.real_def := measureReal_def
 
 section
 

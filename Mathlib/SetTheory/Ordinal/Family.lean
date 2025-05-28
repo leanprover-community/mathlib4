@@ -388,8 +388,8 @@ theorem lift_card_sInf_compl_le (s : Set Ordinal.{u}) :
     Cardinal.lift.{u + 1} (sInf sᶜ).card ≤ #s := by
   rw [← mk_Iio_ordinal]
   refine mk_le_mk_of_subset fun x (hx : x < _) ↦ ?_
-  rw [← not_not_mem]
-  exact not_mem_of_lt_csInf' hx
+  rw [← not_notMem]
+  exact notMem_of_lt_csInf' hx
 
 theorem card_sInf_range_compl_le_lift {ι : Type u} (f : ι → Ordinal.{max u v}) :
     (sInf (range f)ᶜ).card ≤ Cardinal.lift.{v} #ι := by
@@ -460,7 +460,7 @@ set_option linter.deprecated false in
 @[simp]
 theorem bsup_eq_sup' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → Ordinal.{max u v}) :
     bsup.{_, v} _ (bfamilyOfFamily' r f) = sup.{_, v} f := by
-  simp (config := { unfoldPartialApp := true }) only [← sup_eq_bsup' r, enum_typein,
+  simp +unfoldPartialApp only [← sup_eq_bsup' r, enum_typein,
     familyOfBFamily', bfamilyOfFamily']
 
 theorem bsup_eq_bsup {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r] [IsWellOrder ι r']
@@ -694,12 +694,14 @@ theorem lsub_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
       max (lsub.{u, max v w} fun a => f (Sum.inl a)) (lsub.{v, max u w} fun b => f (Sum.inr b)) :=
   sup_sum _
 
-theorem lsub_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) :
+theorem lsub_notMem_range {ι : Type u} (f : ι → Ordinal.{max u v}) :
     lsub.{_, v} f ∉ Set.range f := fun ⟨i, h⟩ =>
   h.not_lt (lt_lsub f i)
 
+@[deprecated (since := "2025-05-23")] alias lsub_not_mem_range := lsub_notMem_range
+
 theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set.range f)ᶜ.Nonempty :=
-  ⟨_, lsub_not_mem_range.{_, v} f⟩
+  ⟨_, lsub_notMem_range.{_, v} f⟩
 
 set_option linter.deprecated false in
 @[simp]
@@ -708,7 +710,7 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.toType) (· < �
     (by
       by_contra! h
       -- Porting note: `nth_rw` → `conv_rhs` & `rw`
-      conv_rhs at h => rw [← type_lt o]
+      conv_rhs at h => rw [← type_toType o]
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
 set_option linter.deprecated false in
@@ -953,24 +955,6 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
         ext b hb
         exact H b hb⟩
 
-/-- A two-argument version of `Ordinal.blsub`.
-
-Deprecated. If you need this value explicitly, write it in terms of `iSup`. If you just want an
-upper bound for the image of `op`, use that `Iio a ×ˢ Iio b` is a small set. -/
-@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
-def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
-    Ordinal :=
-  lsub (fun x : o₁.toType × o₂.toType => op (typein_lt_self x.1) (typein_lt_self x.2))
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
-theorem lt_blsub₂ {o₁ o₂ : Ordinal}
-    (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
-    (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
-  convert lt_lsub _ (Prod.mk (enum (· < ·) ⟨a, by rwa [type_lt]⟩)
-    (enum (· < ·) ⟨b, by rwa [type_lt]⟩))
-  simp only [typein_enum]
-
 end blsub
 
 end Ordinal
@@ -979,7 +963,7 @@ end Ordinal
 
 
 theorem not_surjective_of_ordinal {α : Type u} (f : α → Ordinal.{u}) : ¬Surjective f := fun h =>
-  Ordinal.lsub_not_mem_range.{u, u} f (h _)
+  Ordinal.lsub_notMem_range.{u, u} f (h _)
 
 theorem not_injective_of_ordinal {α : Type u} (f : Ordinal.{u} → α) : ¬Injective f := fun h =>
   not_surjective_of_ordinal _ (invFun_surjective h)

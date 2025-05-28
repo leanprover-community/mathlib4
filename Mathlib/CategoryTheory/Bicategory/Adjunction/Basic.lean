@@ -71,7 +71,7 @@ theorem rightZigzag_idempotent_of_left_triangle
     _ = 𝟙 _ ⊗≫ g ◁ (η ▷ 𝟙 a ≫ (f ≫ g) ◁ η) ⊗≫ (ε ▷ (g ≫ f) ≫ 𝟙 b ◁ ε) ▷ g ⊗≫ 𝟙 _ := by
       rw [← whisker_exchange]; bicategory
     _ = g ◁ η ⊗≫ g ◁ leftZigzag η ε ▷ g ⊗≫ ε ▷ g := by
-      rw [← whisker_exchange,  ← whisker_exchange, leftZigzag]; bicategory
+      rw [← whisker_exchange, ← whisker_exchange, leftZigzag]; bicategory
     _ = g ◁ η ⊗≫ ε ▷ g := by
       rw [h]; bicategory
 
