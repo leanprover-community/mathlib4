@@ -42,7 +42,7 @@ This combines `DistribMulAction` with `MulDistribMulAction`: it expresses
 the interplay between the action and both addition and multiplication on the target.
 Two key axioms are `g • (x + y) = (g • x) + (g • y)` and `g • (x * y) = (g • x) * (g • y)`.
 
-A typical use case is the action of a Galois group `Gal(L/K)` on the field `L`.
+A typical use case is the action of a Galois group $Gal(L/K)$ on the field `L`.
 -/
 class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extends
   DistribMulAction M R where
