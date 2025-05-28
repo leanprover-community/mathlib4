@@ -1475,7 +1475,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
       -- TODO: where do we add this? (hsum: gamma_sum list = 0)
-      let rec rewrite_list (list: List (E)) (hlist: φ (ofMul list.unattach.prod) = 0): { t: List ((Set.range (Function.uncurry gamma_m))) // list.unattach.prod = t.unattach.prod } := by
+      let rec rewrite_list (list: List (E)) (hlist: φ (ofMul list.unattach.prod) = 0): { t: List (((Set.range (Function.uncurry gamma_m) : (Set G)) ∪ (Set.range (Function.uncurry gamma_m))⁻¹ : (Set G))) // list.unattach.prod = t.unattach.prod } := by
         let is_gamma: E → Bool := fun (k: E) => k = γ ∨ k = γ⁻¹
         let is_gamma_prop: E → Prop := fun (k: E) => k = γ ∨ k = γ⁻¹
         have eq_split: list = list.takeWhile is_gamma ++ list.dropWhile is_gamma := by
@@ -1560,12 +1560,13 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
           let m := ((list.takeWhile is_gamma).map (fun (k : E) => if k = γ then 1 else if k = γ⁻¹ then -1 else 0)).sum
 
-          have in_range: γ ^ m * ↑(List.dropWhile is_gamma list)[0] * γ ^ (-m) ∈ Set.range (Function.uncurry gamma_m) := by
+          have in_range: γ ^ m * ↑(List.dropWhile is_gamma list)[0] * γ ^ (-m) ∈ (Set.range (Function.uncurry gamma_m)) ∪ ((Set.range (Function.uncurry gamma_m)))⁻¹ := by
             simp [gamma_m]
             simp at drop_head_in_e_i
             match drop_head_in_e_i with
             | .inl drop_head_in_e_i =>
               obtain ⟨s, s_in_S, eq_e_i⟩ := drop_head_in_e_i
+              left
               use m
               use s
               use s_in_S
@@ -1574,14 +1575,16 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
               rfl
             | .inr drop_head_in_e_i =>
               obtain ⟨s, s_in_S, eq_e_i⟩ := drop_head_in_e_i
-              use -m
-              use s⁻¹
-              sorry
-              --use s_in_S
-              --simp
-              --rw [eq_e_i]
-              --simp
-              --rfl
+              right
+              use m
+              use s
+              use s_in_S
+              conv =>
+                rhs
+                rw [← mul_assoc]
+              simp
+              rw [← eq_e_i]
+              rfl
 
           have phi_ofmul_gamma: φ (ofMul γ) = 1 := by
             exact hγ
@@ -1841,6 +1844,8 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
               rw [← ofMul_list_prod]
               exact hlist
             | .inr drop_head_in_e_i =>
+              obtain ⟨s, s_in_S, eq_e_i⟩ := drop_head_in_e_i
+              rw [inv_eq_iff_eq_inv.symm] at eq_e_i
               rw [← eq_e_i] at hlist
               simp [e_i_regular_zero] at hlist
               nth_rw 1 [← ofMul_list_prod] at hlist
@@ -1889,16 +1894,16 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: rewritten_sub_list.val
 
           -- Show that the list (rewritten in terms of `γ^m * e_i * γ^(-m)` terms) is in the kernel of φ
-          have return_list_kernel: φ (ofMul return_list.unattach.prod) = 0 := by
-            simp
-            rw [AddMonoidHom.map_list_sum]
-            apply List.sum_eq_zero
-            intro x hx
-            simp at hx
-            obtain ⟨a, ⟨⟨q, r, r_mem_s, gamma_r⟩, a_mem_list⟩, phi_a⟩ := hx
-            rw [← phi_a, ← gamma_r]
-            simp [gamma_m]
-            apply e_i_zero
+          -- have return_list_kernel: φ (ofMul return_list.unattach.prod) = 0 := by
+          --   simp
+          --   rw [AddMonoidHom.map_list_sum]
+          --   apply List.sum_eq_zero
+          --   intro x hx
+          --   simp at hx
+          --   obtain ⟨a, ⟨⟨q, r, r_mem_s, gamma_r⟩, a_mem_list⟩, phi_a⟩ := hx
+          --   rw [← phi_a, ← gamma_r]
+          --   simp [gamma_m]
+          --   apply e_i_zero
 
 
 
