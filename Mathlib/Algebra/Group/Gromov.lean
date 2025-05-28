@@ -2049,7 +2049,51 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             simp
             exact h_z_list_in.symm
 
-      let my_res := rewrite_list ((z_list.filter (fun s ↦ !decide (s = 1))).attach.map (fun (g) => ⟨g.val, z_filter_mem_e g.val g.property⟩))
+      let my_res := rewrite_list ((z_list.filter (fun s ↦ !decide (s = 1))).attach.map (fun (g) => ⟨g.val, z_filter_mem_e g.val g.property⟩)) (by
+        simp
+        -- TODO - there has to be a less awful way of doing this
+        conv =>
+          arg 1
+          arg 2
+          arg 1
+          arg 2
+          equals (List.filter (fun s ↦ !decide (s = 1)) z_list) =>
+            clear h_z_list
+
+            ext i q
+            simp
+            by_cases list_get: (List.filter (fun s ↦ !decide (s = 1)) z_list)[i]? = none
+            . simp [list_get]
+            . simp at list_get
+              simp [list_get]
+            -- match (List.filter (fun s ↦ !decide (s = 1)) z_list)[i]? with
+            -- | .none =>
+            --   simp
+            -- | .rhs h =>
+            --   simp [h]
+            -- simp
+            -- simp
+            -- induction z_list with
+            -- | nil =>
+            --   simp
+            -- | cons h t ih =>
+            --   simp_rw [List.filter_cons]
+            --   simp
+            --   by_cases h_eq_one: h = 1
+            --   . simp [h_eq_one]
+            --     simp_rw [List.filter_cons] at z_filter_mem_e
+            --     simp only [h_eq_one] at z_filter_mem_e
+            --     simp only [decide_true, Bool.not_true, Bool.false_eq_true, ↓reduceIte] at z_filter_mem_e
+            --     specialize ih z_filter_mem_e
+            --     rw [← ih]
+            --     simp_rw [List.filter_cons]
+            --     exact ih
+            --     simp_rw [List.filter_cons]
+            --     rw [ih]
+        rw [← ofMul_list_prod]
+        rw [h_z_list.2]
+        exact hz
+      )
 
       --let my_res := rewrite_list (z_list.attach.map ( fun g => ⟨g, by dsimp [E]⟩)) sorry
 
