@@ -98,7 +98,7 @@ variable [Group G] [MeasurableMul₂ G] [MeasurableInv G]
 
 variable {μ : Measure G} [IsMulLeftInvariant μ] [SFinite μ]
 
-/-- The convolution of AEMeasurable functions is AEMeasurable. -/
+/-- The convolution of AEMeasurable functions is `AEMeasurable`. -/
 @[to_additive (attr := measurability, fun_prop)
 "The convolution of AEMeasurable functions is AEMeasurable"]
 theorem aemeasurable_mlconvolution {f g : G → ℝ≥0∞}
