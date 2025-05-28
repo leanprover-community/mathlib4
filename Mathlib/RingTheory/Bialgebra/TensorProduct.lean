@@ -33,7 +33,7 @@ lemma counit_eq_algHom_toLinearMap :
 
 lemma comul_eq_algHom_toLinearMap :
     Coalgebra.comul (R := R) (A := A ⊗[R] B) =
-      ((Algebra.TensorProduct.tensorTensorTensorComm R R A A B B).toAlgHom.comp
+      ((Algebra.TensorProduct.tensorTensorTensorComm R R R R A A B B).toAlgHom.comp
       (Algebra.TensorProduct.map (Bialgebra.comulAlgHom R A)
       (Bialgebra.comulAlgHom R B))).toLinearMap :=
   rfl
@@ -72,7 +72,7 @@ variable (R A B C) in
 /-- The associator for tensor products of R-bialgebras, as a bialgebra equivalence. -/
 protected noncomputable def assoc :
     (A ⊗[R] B) ⊗[R] C ≃ₐc[R] A ⊗[R] (B ⊗[R] C) :=
-  { Coalgebra.TensorProduct.assoc R A B C, Algebra.TensorProduct.assoc R A B C with }
+  { Coalgebra.TensorProduct.assoc R A B C, Algebra.TensorProduct.assoc R R A B C with }
 
 @[simp]
 theorem assoc_tmul (x : A) (y : B) (z : C) :
@@ -92,7 +92,7 @@ theorem assoc_toCoalgEquiv :
 @[simp]
 theorem assoc_toAlgEquiv :
     (Bialgebra.TensorProduct.assoc R A B C : _ ≃ₐ[R] _) =
-    Algebra.TensorProduct.assoc R A B C := by ext; rfl
+    Algebra.TensorProduct.assoc R R A B C := by ext; rfl
 
 variable (R A) in
 /-- The base ring is a left identity for the tensor product of bialgebras, up to
