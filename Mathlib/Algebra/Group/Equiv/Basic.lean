@@ -137,6 +137,28 @@ def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
 
 end MulEquiv
 
+namespace MulHom
+
+@[to_additive (attr := simps)]
+def liftLeftEquiv {M N P : Type*} [Mul M] [Mul N] [Mul P] (f : M →ₙ* N)
+    {p : M →ₙ* P} (hp : Surjective p) : {g : P → N // ∀ x, g (p x) = f x} ≃
+    {g : P →ₙ* N // g.comp p = f} where
+  toFun g := ⟨f.liftLeft hp g.1 g.2, liftLeft_comp⟩
+  invFun g := ⟨g, congrFun (congrArg (⇑) g.2)⟩
+  left_inv g := Subtype.ext <| funext <| fun _ => by simp only [liftLeft_apply]
+  right_inv g := Subtype.ext <| ext <| fun _ => by simp only [liftLeft_apply]
+
+@[to_additive (attr := simps)]
+def liftRightEquiv {M N P : Type*} [Mul M] [Mul N] [Mul P] (f : M →ₙ* N)
+    {p : P →ₙ* N} (hp : Injective p) : {g : M → P // ∀ x, p (g x) = f x} ≃
+    {g : M →ₙ* P // p.comp g = f} where
+  toFun g := ⟨f.liftRight hp g.1 g.2, comp_liftRight⟩
+  invFun g := ⟨g, congrFun (congrArg (⇑) g.2)⟩
+  left_inv g := Subtype.ext <| funext <| fun _ => by simp only [liftRight_apply]
+  right_inv g := Subtype.ext <| ext <| fun _ => by simp only [liftRight_apply]
+
+end MulHom
+
 namespace MonoidHom
 
 /-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
@@ -162,6 +184,24 @@ def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ :
   invFun g := e.symm.toMonoidHom.comp g
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
+
+@[to_additive (attr := simps)]
+def liftLeftEquiv {M N P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N)
+    {p : M →* P} (hp : Surjective p) : {g : P → N // ∀ x, g (p x) = f x} ≃
+    {g : P →* N // g.comp p = f} where
+  toFun g := ⟨f.liftLeft hp g.1 g.2, liftLeft_comp⟩
+  invFun g := ⟨g, congrFun (congrArg (⇑) g.2)⟩
+  left_inv g := Subtype.ext <| funext <| fun _ => by simp only [liftLeft_apply]
+  right_inv g := Subtype.ext <| ext <| fun _ => by simp only [liftLeft_apply]
+
+@[to_additive (attr := simps)]
+def liftRightEquiv {M N P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N)
+    {p : P →* N} (hp : Injective p) : {g : M → P // ∀ x, p (g x) = f x} ≃
+    {g : M →* P // p.comp g = f} where
+  toFun g := ⟨f.liftRight hp g.1 g.2, comp_liftRight⟩
+  invFun g := ⟨g, congrFun (congrArg (⇑) g.2)⟩
+  left_inv g := Subtype.ext <| funext <| fun _ => by simp only [liftRight_apply]
+  right_inv g := Subtype.ext <| ext <| fun _ => by simp only [liftRight_apply]
 
 end MonoidHom
 
