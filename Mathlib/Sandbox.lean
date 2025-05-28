@@ -2,6 +2,22 @@ import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.Data.ZMod.Basic
+import Mathlib.NumberTheory.RamificationInertia.Basic
+
+theorem Ideal.absNorm_eq_pow_inertiaDeg' {R : Type*} [CommRing R] [IsDedekindDomain R]
+    [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ} (P : Ideal R) [P.LiesOver (span {(p : ℤ)})]
+    (hp : Nat.Prime p) :
+    absNorm P = p ^ (span {(p : ℤ)}).inertiaDeg P := by
+  exact absNorm_eq_pow_inertiaDeg P (p := p) (Nat.prime_iff_prime_int.mp hp)
+
+theorem Nat.coprime_iff {a b : ℕ} :
+    a.Coprime b ↔ ∃ u v : ℤ, u * a + v * b = 1 := by
+  refine ⟨?_, ?_⟩
+  · intro h
+    refine ⟨a.gcdA b, a.gcdB b, ?_⟩
+    rw [mul_comm _ (a : ℤ), mul_comm _ (b : ℤ), ← Nat.gcd_eq_gcd_ab, h, Nat.cast_one]
+  · intro ⟨u, v, h⟩
+    exact Int.gcd_eq_one_iff.mpr fun _ ha hb ↦ h ▸ Dvd.dvd.linear_comb ha hb u v
 
 theorem ZMod.natCast_eq_natCast_iff_dvd_sub (a b : ℕ) (c : ℕ) :
     (a : ZMod c) = ↑b ↔ (c : ℤ) ∣ b - a := by

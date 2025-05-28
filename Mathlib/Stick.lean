@@ -94,18 +94,23 @@ namespace Stick
 
 open Polynomial Ideal NumberField RingOfIntegers IsCyclotomicExtension
 
-variable {p : ℕ} [hF : Fact (Nat.Prime p)] {f : ℕ} (hf : f ≠ 0)
+variable (p : ℕ) [hF : Fact (Nat.Prime p)] (f : ℕ) [NeZero f]
+
+attribute [local instance] Ideal.Quotient.field
+
+local instance : NeZero (p ^ f - 1) := sorry
 
 variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {p ^ f - 1} ℚ K]
 
-example {P : Ideal (𝓞 K)} (hP : P.IsPrime) [P.LiesOver (span {(p : ℤ)})] :
+theorem inertiaDeg_eq_of_liesOver {P : Ideal (𝓞 K)}
+    (hP : P ∈ Ideal.primesOver (span {(p : ℤ)}) (𝓞 K)) :
     inertiaDeg (span {(p : ℤ)}) P = f := by
   have hm {m : ℕ} (hm : m ≠ 0) : 0 < p ^ m - 1 := by
     refine Nat.sub_pos_iff_lt.mpr ?_
     refine Nat.one_lt_pow hm ?_
     apply Nat.Prime.one_lt
     exact hF.out
-  have : NeZero (p ^ f - 1) := ⟨(hm hf).ne'⟩
+--  have : NeZero (p ^ f - 1) := sorry -- ⟨(hm hf).ne'⟩
   let ζ := (zeta_spec (p ^ f - 1) ℚ K).toInteger
   have hζ := (zeta_spec (p ^ f - 1) ℚ K).toInteger_isPrimitiveRoot
 --  let hζ := (IsCyclotomicExtension.zeta_spec (p ^ f) ℚ K)
@@ -117,7 +122,7 @@ example {P : Ideal (𝓞 K)} (hP : P.IsPrime) [P.LiesOver (span {(p : ℤ)})] :
   have h₂ : ¬ p ∣ exponent ζ := by
     rw [h₁, Nat.dvd_one]
     exact Nat.Prime.ne_one hF.out
-  obtain ⟨Q, hQ, rfl⟩ := Ideal.exists_mem_monicFactorsMod h₂ ⟨hP, inferInstance⟩
+  obtain ⟨Q, hQ, rfl⟩ := Ideal.exists_mem_monicFactorsMod h₂ hP
   rw [Ideal.inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' h₂]
   rw [Multiset.mem_toFinset] at hQ
   rw [Polynomial.mem_normalizedFactors_iff
@@ -137,91 +142,54 @@ example {P : Ideal (𝓞 K)} (hP : P.IsPrime) [P.LiesOver (span {(p : ℤ)})] :
   have := foo (K := ZMod p) (p := p) (f := 1) (n := p ^ f - 1) (P := Q) (by simp) this hQ.2.2 hQ.1
     hQ.2.1
   rw [← this]
-  rw [orderOf_eq_iff]
-  simp_rw [ne_eq, Units.ext_iff, pow_one, Units.val_pow_eq_pow_val, ZMod.coe_unitOfCoprime]
-  rw [← Int.cast_natCast, ← Int.cast_natCast, Units.val_one, show (1 : ZMod (p ^ f - 1)) = (1 : ℤ) by sorry]
-  simp_rw [← Int.cast_pow]
-  simp_rw [eq_comm (b := ((1 : ℤ) : ZMod (p ^ f - 1)))]
-  simp_rw [ZMod.intCast_eq_intCast_iff_dvd_sub]
-  refine ⟨?_, ?_⟩
-  · rw [Nat.cast_pred, Nat.cast_pow, Int.cast_pow, Int.cast_natCast]
-    exact Nat.pos_of_neZero (p ^ f)
-  · intro m hm₁ hm₂ h
-    rw [Nat.cast_pred] at h
-    simp at h
-    have := (Int.le_iff_pos_of_dvd ?_ h).mpr ?_
-    have t₁ := Nat.pow_lt_pow_right (a := p) sorry hm₁
-    linarith
-    sorry
-    sorry
-    exact Nat.pos_of_neZero _
   sorry
-  
+  -- rw [orderOf_eq_iff (Nat.zero_lt_of_ne_zero hf)]
+  -- simp_rw [ne_eq, Units.ext_iff, pow_one, Units.val_pow_eq_pow_val, ZMod.coe_unitOfCoprime]
+  -- rw [← Int.cast_natCast, ← Int.cast_natCast, Units.val_one,
+  --   show (1 : ZMod (p ^ f - 1)) = (1 : ℤ) by sorry]
 
+  -- simp_rw [← Int.cast_pow]
+  -- simp_rw [eq_comm (b := ((1 : ℤ) : ZMod (p ^ f - 1)))]
+  -- simp_rw [ZMod.intCast_eq_intCast_iff_dvd_sub]
+  -- refine ⟨?_, ?_⟩
+  -- · rw [Nat.cast_pred, Nat.cast_pow, Int.cast_pow, Int.cast_natCast]
+  --   exact Nat.pos_of_neZero (p ^ f)
+  -- · intro m hm₁ hm₂ h
+  --   rw [Nat.cast_pred] at h
+  --   simp at h
+  --   have := (Int.le_iff_pos_of_dvd ?_ h).mpr ?_
+  --   have t₁ := Nat.pow_lt_pow_right (a := p) sorry hm₁
+  --   linarith
+  --   sorry
+  --   sorry
+  --   exact Nat.pos_of_neZero _
 
-#exit
-
-    ← Nat.cast_pow, Units.val_one, show (1 : ZMod (p ^ f - 1)) = (1 : ℕ) by sorry,
-    ZMod.natCast_eq_natCast_iff_dvd_sub]
-  simp [PNat.pos, pow_pos, Nat.cast_pred, Nat.cast_pow, Nat.cast_one, dvd_refl, true_and]
-  intro m hm₁ hm₂ h
-  have := (Int.le_iff_pos_of_dvd sorry h).mpr ?_
-  simp at this
-  have t₁ := pow_lt_pow_right' (a := p) sorry hm₁
-  rw [← PNat.coe_lt_coe] at t₁
-  linarith
-  rw [Int.sub_pos]
-  refine one_lt_pow₀ ?_ ?_
-  rw [Nat.one_lt_cast]
-  exact Nat.Prime.one_lt hF.out
-  exact Nat.ne_zero_of_lt hm₂
-  exact Nat.zero_lt_of_ne_zero hf
-
-#exit
-
-
-  simp [pow_one, Units.ext_iff, Units.val_pow_eq_pow_val, ZMod.coe_unitOfCoprime,
-      Units.val_one, ← Nat.cast_pow, ZMod.natCast_eq_natCast_iff_dvd_sub]
-  have h_pow {a} : (p : ZMod (p ^ f - 1)) ^ a = 1 ↔ f ∣ a := by
-    rw [show (1 : ZMod _) = (1 : ℕ) by sorry]
-    rw [← Nat.cast_pow]
-    rw [ZMod.natCast_eq_natCast_iff_dvd_sub]
-
-    have : NeZero ((p : ℕ) ^ f - 1) := sorry
-    have : Fact (1 < (p : ℕ) ^ f - 1) := sorry
-    rw [← Nat.cast_pow]
-    rw [ZMod.natCast_eq_iff]
-    rw [ZMod.val_one]
-    refine ⟨?_, ?_⟩
-    · rintro ⟨k, _⟩
-
-      sorry
-    · rintro ⟨c, rfl⟩
-
-
-      sorry
-  refine ⟨?_, ?_⟩
-  · simp only [pow_one, Units.ext_iff, Units.val_pow_eq_pow_val, ZMod.coe_unitOfCoprime,
-      Units.val_one]
-    rw [h_pow]
-  · intro m hm hm'
-    simp only [pow_one, ne_eq, Units.ext_iff, Units.val_pow_eq_pow_val, ZMod.coe_unitOfCoprime,
-      Units.val_one]
-    rw [h_pow]
-    exact Nat.not_dvd_of_pos_of_lt hm' hm
-
-#exit
-
-  have := IsPrimitiveRoot.minpoly_dvd_cyclotomic (K := K) (zeta_spec (p ^ f) ℚ K) sorry
-
-
-  have : (minpoly ℤ ζ).map (Int.castRingHom (ZMod p)) = cyclotomic (p ^ f) (ZMod p) := by
-    have := cyclotomic_eq_minpoly hζ sorry
-    rw [← cyclotomic_eq_minpoly hζ, ← map_cyclotomic_int, cyclotomic_eq_minpoly]
-
-     sorry
-
-
+noncomputable def teichmullerAt₀ {P : Ideal (𝓞 K)}
+  (hP : P ∈ Ideal.primesOver (span {(p : ℤ)}) (𝓞 K)) :
+    ((𝓞 K) ⧸ P)ˣ ≃* (rootsOfUnity (p ^ f - 1) (𝓞 K)) := by
+  have inst₁ := hP.1
+  have inst₂ := hP.2
+  have inst₃ := hF.out
+  have h₁ : absNorm P = p ^ f := by
+    rw [absNorm_eq_pow_inertiaDeg' P hF.out, inertiaDeg_eq_of_liesOver p f hP]
+  have h₂ : 1 < p ^ f := Nat.one_lt_pow (NeZero.ne _) (Nat.Prime.one_lt inst₃)
+  refine MulEquiv.symm ?_
+  apply Ideal.rootsOfUnityEquivQuot
+  · exact (zeta_spec (p ^ f - 1) ℚ K).toInteger_isPrimitiveRoot
+  · rw [ne_eq, ← absNorm_eq_zero_iff, h₁]
+    linarith
+  · rw [h₁]
+    exact h₂.ne'
+  · rw [h₁]
+    rw [Nat.coprime_iff]
+    refine ⟨1, -1, ?_⟩
+    rw [Nat.cast_sub h₂.le]
+    norm_num
+  · have : IsMaximal P := by
+      refine IsPrime.isMaximal inferInstance ?_
+      exact Ideal.ne_bot_of_liesOver_of_ne_bot (p := span {(p :ℤ)}) (by simp [NeZero.ne p]) P
+    rw [Nat.card_units (𝓞 K ⧸ P), ← h₁]
+    rfl
 
 
 
