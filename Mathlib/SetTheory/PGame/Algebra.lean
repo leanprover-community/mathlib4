@@ -22,7 +22,7 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x := sorry
 We show that these operations respect the equivalence relation, and hence descend to games. At the
 level of games, these operations satisfy all the laws of a commutative group. To prove the necessary
 equivalence relations at the level of pregames, the notion of a `Relabelling` of a game is used
-(defined in `Mathlib.SetTheory.PGame.Basic`); for example, there is a relabelling between
+(defined in `Mathlib/SetTheory/PGame/Basic.lean`); for example, there is a relabelling between
 `x + (y + z)` and `(x + y) + z`.
 -/
 

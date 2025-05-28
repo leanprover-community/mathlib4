@@ -13,7 +13,7 @@ import Mathlib.RingTheory.SimpleRing.Basic
 In this file we define `Subalgebra`s and the usual operations on them (`map`, `comap`).
 
 The `Algebra.adjoin` operation and complete lattice structure can be found in
-`Mathlib.Algebra.Algebra.Subalgebra.Lattice`.
+`Mathlib/Algebra/Algebra/Subalgebra/Lattice.lean`.
 -/
 
 universe u u' v w w'
