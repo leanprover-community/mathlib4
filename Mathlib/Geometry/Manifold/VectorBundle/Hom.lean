@@ -135,24 +135,18 @@ variable {𝕜 B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
 
 lemma stoo : IsRiemannianBundle 𝕜 F₁ n (Bundle.Trivial B F₁) IB := by
-  refine ⟨⟨fun x ↦ innerSL 𝕜, ?_⟩, fun x v w ↦ rfl⟩
-  intro x
-  simp [contMDiffAt_totalSpace]
-  refine ⟨?_, ?_⟩
-  · apply contMDiffAt_id
-  simp only [hom_trivializationAt_apply]
-  simp [inCoordinates, trivializationAt, coe_comp', Trivialization.continuousLinearMapAt_apply,
-    Trivialization.symmL_apply, Function.comp_apply, innerSL_apply]
-
+  refine ⟨⟨fun x ↦ innerSL 𝕜, fun x ↦ ?_⟩, fun x v w ↦ rfl⟩
+  simp only [contMDiffAt_totalSpace]
+  refine ⟨contMDiffAt_id, ?_⟩
   convert contMDiffAt_const (c := innerSL 𝕜)
   ext v w
-  simp [Trivial.trivialization,
-    Trivialization.linearMapAt, Pretrivialization.linearMapAt]
-  rw [dif_pos]
-  simp
-  sorry
-  simp [FiberBundle.trivializationAt', Trivialization.toPretrivialization]
-  simp [Trivial.trivialization]
+  simp [hom_trivializationAt_apply, inCoordinates, Trivial.trivialization,
+    Trivialization.linearMapAt_apply,
+    Trivialization.symm, Trivialization.toPretrivialization,
+    Pretrivialization.symm, Trivial.homeomorphProd, TotalSpace.toProd,
+    Pretrivialization.toFun']
+
+
 
 
 
