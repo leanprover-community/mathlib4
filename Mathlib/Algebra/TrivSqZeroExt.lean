@@ -1003,7 +1003,7 @@ theorem lift_inlAlgHom_inrHom :
 
 @[simp]
 theorem range_inlAlgHom_sup_adjoin_range_inr :
-    (inlAlgHom S R M).range ⊔ Algebra.adjoin S (Set.range inr : Set (tsze R M)) = ⊤ := by
+    (inlAlgHom S R M).range ⊔ Algebra.adjoin S (Set.range inr) = (⊤ : Subalgebra S (tsze R M)) := by
   refine top_unique fun x hx => ?_; clear hx
   rw [← x.inl_fst_add_inr_snd_eq]
   refine add_mem ?_ ?_
