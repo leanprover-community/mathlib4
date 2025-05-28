@@ -61,6 +61,18 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   target_eq := univ_prod_univ.symm
   proj_toFun _ _ := rfl
 
+variable {B F} in
+@[simp] lemma trivialization_apply (v : TotalSpace F (Bundle.Trivial B F)) :
+    trivialization B F v = ⟨v.1, v.2⟩ := rfl
+
+@[simp] lemma trivialization_symm_apply [Zero F] (b : B) (f : F) :
+    (trivialization B F).symm b f = f := by
+  simp [trivialization, homeomorphProd, TotalSpace.toProd, Trivialization.symm,
+    Pretrivialization.symm, Trivialization.toPretrivialization]
+
+@[simp] lemma toPartialHomeomorph_trivialization_symm_apply (v : B × F) :
+    (trivialization B F).toPartialHomeomorph.symm v = ⟨v.1, v.2⟩ := rfl
+
 /-- Fiber bundle instance on the trivial bundle. -/
 @[simps] instance fiberBundle : FiberBundle F (Bundle.Trivial B F) where
   trivializationAtlas' := {trivialization B F}

@@ -676,7 +676,6 @@ theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTriv
   simp only [mfld_simps]
 
 /-- A fiber bundle constructed from core is indeed a fiber bundle. -/
-@[simps]
 instance fiberBundle : FiberBundle F Z.Fiber where
   totalSpaceMk_isInducing' b := isInducing_iff_nhds.2 fun x ↦ by
     rw [(Z.localTrivAt b).nhds_eq_comap_inf_principal (mk_mem_localTrivAt_source _ _ _), comap_inf,
