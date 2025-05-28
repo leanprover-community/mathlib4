@@ -278,6 +278,8 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   -- (`Mathlib.Topology, `Mathlib.Algebra),
 
   -- The following are a list of existing non-dependent top-level directory pairs.
+  -- TODO: read forbiddendirs instead
+  -- XXX: does Lean support parsing JSON with comments?
   (`Mathlib.Algebra, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Algebra, `Mathlib.Computability),
   (`Mathlib.Algebra, `Mathlib.Condensed),
