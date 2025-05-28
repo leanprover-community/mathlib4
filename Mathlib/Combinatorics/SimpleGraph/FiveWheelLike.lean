@@ -503,8 +503,9 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     obtain ⟨H, hle, hmcf⟩ := @Finite.exists_le_maximal _ _ _ (fun H ↦ H.CliqueFree (r + 3)) G hf
     -- If `H` is `r + 2`-colorable then so is `G`
     apply Colorable.mono_left hle
+    -- Suppose, for a contradiction, that `H` is not `r + 2`-colorable
     by_contra! hnotcol
-    -- If `H` is complete-multipartite then, since `H` is `Kᵣ₊₃`-free, it is `r + 2`-colorable
+    -- `H` is not complete-multipartite, since otherwise it would `r + 2`-colorable
     have hn : ¬ H.IsCompleteMultipartite := fun hc ↦ hnotcol <| hc.colorable_of_cliqueFree hmcf.1
     -- So `H` contains `Wᵣ₊₁,ₖ` but not `Wᵣ₊₁,ₖ₊₁`, for some `k ≤ r`
     obtain ⟨_, _, _, _, _, _, hw, hlt, hm⟩ :=
