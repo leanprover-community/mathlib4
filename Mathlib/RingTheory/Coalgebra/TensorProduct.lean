@@ -231,8 +231,7 @@ theorem lid_tmul (r : R) (a : P) : Coalgebra.TensorProduct.lid R P (r ⊗ₜ a) 
 @[simp]
 theorem lid_symm_apply (a : P) : (Coalgebra.TensorProduct.lid R P).symm a = 1 ⊗ₜ a := rfl
 
-variable (R S M)
-
+variable (R S M) in
 /-- The base ring is a right identity for the tensor product of coalgebras, up to
 coalgebra equivalence. -/
 protected noncomputable def rid : M ⊗[R] R ≃ₗc[S] M :=
@@ -244,8 +243,6 @@ protected noncomputable def rid : M ⊗[R] R ≃ₗc[S] M :=
       simp only [one_smul]
       hopf_tensor_induction comul (R := S) x with x₁ x₂
       simp }
-
-variable {R S M}
 
 @[simp]
 theorem rid_toLinearEquiv :
