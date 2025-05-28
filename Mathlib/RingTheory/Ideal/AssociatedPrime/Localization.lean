@@ -20,11 +20,6 @@ This file mainly proof the relation between `Ass(S⁻¹M)` and `Ass(M)`
   for an `R` module `M`, if `p` is a prime ideal of `S⁻¹R` and `p ∩ R ∈ Ass(M)` then
   `p ∈ Ass (S⁻¹M)`.
 
-TODO: prove the reverse when `p` is finitely generated and
-      get `Ass (S⁻¹M) = Ass(M) ∩ Spec(S⁻¹R)` when `R` noetherian.
-
-TODO: deduce from the above that every minimal element in support is in `Ass(M)`.
-
 -/
 
 variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*)  [CommRing R'] [Algebra R R']
