@@ -658,6 +658,8 @@ theorem support_subtypePerm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
     (f.subtypePerm h : Perm s).support = ({x | f x ≠ x} : Finset s) := by
   ext; simp [Subtype.ext_iff]
 
+@[deprecated (since := "2025-05-19")] alias support_subtype_perm := support_subtypePerm
+
 end Equiv.Perm
 
 section FixedPoints
