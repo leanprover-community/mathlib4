@@ -25,6 +25,24 @@ open Module Polynomial
 
 namespace IntermediateField
 
+section
+
+lemma restrictScalars_le_iff (K : Type*) {L E : Type*} [Field K] [Field L]
+    [Field E] [Algebra K L] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
+    {E₁ E₂ : IntermediateField L E} : E₁.restrictScalars K ≤ E₂.restrictScalars K ↔ E₁ ≤ E₂ := .rfl
+
+lemma FG.of_restrictScalars {K L E : Type*} [Field K] [Field L] [Field E]
+    [Algebra K L] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
+    {E' : IntermediateField L E} (H : (E'.restrictScalars K).FG) : E'.FG := by
+  obtain ⟨s, hs⟩ := H
+  refine ⟨s, le_antisymm ?_ ?_⟩
+  · rw [adjoin_le_iff]
+    exact (subset_adjoin K _).trans_eq congr(($hs : Set E))
+  · rw [← restrictScalars_le_iff K, ← hs, adjoin_le_iff]
+    exact subset_adjoin L _
+
+end
+
 section AdjoinDef
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {S : Set E}
@@ -286,7 +304,7 @@ lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
   refine ⟨?_, (· ▸ IntermediateField.finrank_top)⟩
   rw [← Subalgebra.bot_eq_top_iff_finrank_eq_one, ← top_le_iff, ← top_le_iff]
   intro H x _
-  obtain ⟨x, rfl⟩ := @H x trivial
+  obtain ⟨x, rfl⟩ := @H x IntermediateField.mem_top
   exact x.2
 
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
