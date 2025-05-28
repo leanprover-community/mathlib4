@@ -913,68 +913,166 @@ theorem MonoidHom.comp_inverse [Monoid M] [Monoid N] {f : M →* N} {g : N → M
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     f.comp (f.inverse g h₁ h₂) = id N := MonoidHom.ext h₂
 
+section Lift
+
+namespace MulHom
+
+variable [Mul M] [Mul N] [Mul P]
+
 /-- If `p : M →ₙ* P` is a surjective `MulHom`, `g : P → N` is a map, and `f : M →ₙ* N`
   is a `MulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MulHom`. -/
 @[to_additive (attr := simps) " If `p : M →ₙ+ P` is a surjective `AddMulHom, `g : P → N`
   is a map, and `f : M →ₙ+ N` is an `AddMulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
   `AddMulHom`. "]
-def MulHom.liftLeft [Mul M] [Mul N] [Mul P] (f : M →ₙ* N)
-    {p : M →ₙ* P} (hp : Surjective p) (g : P → N) (h : ∀ x, g (p x) = f x) : P →ₙ* N where
+def liftLeft (f : M →ₙ* N) {p : M →ₙ* P} (hp : Surjective p) (g : P → N)
+    (hg : ∀ x, g (p x) = f x) : P →ₙ* N where
   toFun := g
   map_mul' x y := by
     rcases hp x with ⟨x, rfl⟩
     rcases hp y with ⟨y, rfl⟩
-    simp only [← map_mul p x y, h, map_mul f]
+    simp only [← map_mul p x y, hg, map_mul f]
 
-theorem MulHom.liftLeft_comp [Mul M] [Mul N] [Mul P] {f : M →ₙ* N} {p : M →ₙ* P}
-    {hp : Surjective p} {g h} : (f.liftLeft hp g h).comp p = f := MulHom.ext fun _ => h _
+section
 
-/-- If `p : M →* P` is a surjective `MonoidHom`, `g : P → N` is a map, and `f : M →* N`
-  is a `MonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MonoidHom`. -/
-@[to_additive (attr := simps) " If `p : M →+ P` is a surjective `AddMonoidHom`, `g : P → N`
-  is a map, and `f : M →+ N` is a `AddMonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
-  `AddMonoidHom`. "]
-def MonoidHom.liftLeft [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N)
-    {p : M →* P} (hp : Surjective p) (g : P → N) (h : ∀ x, g (p x) = f x) : P →* N where
-  toFun := g
-  map_one' := by simpa only [h, map_one] using h 1
-  map_mul' x y := by
-    rcases hp x with ⟨x, rfl⟩
-    rcases hp y with ⟨y, rfl⟩
-    simp only [← map_mul p x y, h, map_mul f]
+variable {f : M →ₙ* N} {p : M →ₙ* P} {hp : Surjective p} {g hg}
 
-theorem MonoidHom.liftLeft_comp [MulOneClass M] [MulOneClass N] [MulOneClass P] {f : M →* N}
-    {p : M →* P} {hp : Surjective p} {g h} : (f.liftLeft hp g h).comp p = f :=
-  MonoidHom.ext fun _ => h _
+@[to_additive (attr := simp)]
+theorem liftLeft_comp : (f.liftLeft hp g hg).comp p = f := ext fun _ => hg _
+
+@[to_additive]
+theorem liftLeft_comp_apply : ∀ x, (f.liftLeft hp g hg) (p x) = f x := hg
+
+@[to_additive]
+theorem eq_liftLeft {g'} (hg' : g'.comp p = f) : g' = f.liftLeft hp g hg := ext <| by
+  simp only [MulHom.ext_iff, coe_comp, Function.comp_apply] at hg'
+  simp only [hp.forall, hg', liftLeft_apply, hg, implies_true]
+
+@[to_additive (attr := simp)]
+theorem liftLeft_liftLeft : f.liftLeft hp (f.liftLeft hp g hg) liftLeft_comp_apply =
+    f.liftLeft hp g hg := eq_liftLeft (by rw [liftLeft_comp])
+
+end
 
 /-- If `p : P →ₙ* N` is an injective `MulHom`, `g : M → P` is a map, and `f : M →ₙ* N`
   is a `MulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MulHom`. -/
 @[to_additive (attr := simps) " If `p : P →ₙ+ N` is an injective `AddMulHom`, `g : M → P`
   is a map, and `f : M →ₙ+ N` is a `AddMulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
   `AddMulHom`. "]
-def MulHom.liftRight [Mul M] [Mul N] [Mul P] (f : M →ₙ* N)
-    {p : P →ₙ* N} (hp : Injective p) (g : M → P) (h : ∀ x, p (g x) = f x) : M →ₙ* P where
+def liftRight (f : M →ₙ* N)
+    {p : P →ₙ* N} (hp : Injective p) (g : M → P) (hg : ∀ x, p (g x) = f x) : M →ₙ* P where
   toFun := g
-  map_mul' x y := hp <| by simp only [h, map_mul]
+  map_mul' x y := hp <| by simp only [hg, map_mul]
 
-theorem MulHom.comp_liftRight [Mul M] [Mul N] [Mul P] {f : M →ₙ* N} {p : P →ₙ* N}
-    {hp : Injective p} {g h} : p.comp (f.liftRight hp g h) = f := MulHom.ext fun _ => h _
+section
+
+variable {f : M →ₙ* N} {p : P →ₙ* N} {hp : Injective p} {g hg}
+
+@[to_additive (attr := simp)]
+theorem comp_liftRight : p.comp (f.liftRight hp g hg) = f := ext fun _ => hg _
+
+@[to_additive]
+theorem comp_liftRight_apply : ∀ x, p ((f.liftRight hp g hg) x) = f x := hg
+
+@[to_additive]
+theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := ext <| by
+  simp only [MulHom.ext_iff, coe_comp, Function.comp_apply] at hg'
+  simp only [← hp.eq_iff, hg', liftRight_apply, hg, implies_true]
+
+@[to_additive (attr := simp)]
+theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
+    f.liftRight hp g hg := eq_liftRight (by rw [comp_liftRight])
+
+end
+
+end MulHom
+
+namespace MonoidHom
+
+variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
+
+/-- If `p : M →* P` is a surjective `MonoidHom`, `g : P → N` is a map, and `f : M →* N`
+  is a `MonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MonoidHom`. -/
+@[to_additive (attr := simps) " If `p : M →+ P
+` is a surjective `AddMonoidHom`, `g : P → N`
+  is a map, and `f : M →+ N` is a `AddMonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+  `AddMonoidHom`. "]
+def liftLeft (f : M →* N) {p : M →* P} (hp : Surjective p) (g : P → N) (hg : ∀ x, g (p x) = f x) :
+    P →* N where
+  toFun := g
+  map_one' := by simpa only [hg, map_one] using hg 1
+  map_mul' x y := by
+    rcases hp x with ⟨x, rfl⟩
+    rcases hp y with ⟨y, rfl⟩
+    simp only [← map_mul p x y, hg, map_mul f]
+
+section
+
+variable {f : M →* N} {p : M →* P} {hp : Surjective p} {g hg}
+
+@[to_additive (attr := simp)]
+theorem liftLeft_comp : (f.liftLeft hp g hg).comp p = f := ext fun _ => hg _
+
+@[to_additive]
+theorem liftLeft_comp_apply {f : M →* N} {p : M →* P} {hp : Surjective p} {g hg} :
+    ∀ x, (f.liftLeft hp g hg) (p x) = f x := hg
+
+@[to_additive]
+theorem eq_liftLeft {f : M →* N} {p : M →* P} {hp : Surjective p} {g hg g'}
+    (hg' : g'.comp p = f) : g' = f.liftLeft hp g hg := ext <| by
+  simp only [MonoidHom.ext_iff, coe_comp, Function.comp_apply] at hg'
+  simp only [hp.forall, hg', liftLeft_apply, hg, implies_true]
+
+@[to_additive (attr := simp)]
+theorem liftLeft_liftLeft {f : M →* N} {p : M →* P} {hp : Surjective p} {g hg} :
+    f.liftLeft hp (f.liftLeft hp g hg) liftLeft_comp_apply = f.liftLeft hp g hg :=
+  eq_liftLeft (by rw [liftLeft_comp])
+
+@[to_additive (attr := simp)]
+theorem toMulHom_liftLeft : (f.liftLeft hp g hg).toMulHom =
+    f.toMulHom.liftLeft (p := p.toMulHom) hp g hg := rfl
+
+end
 
 /-- If `p : P →* N` is an injective `MonoidHom`, `g : M → P` is a map, and `f : M →* N`
   is a `MonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MonoidHom`. -/
 @[to_additive (attr := simps) " If `p : P →+ N` is an injective `AddMonoidHom`, `g : M → P`
   is a map, and `f : M →+ N` is a `AddMonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
   `AddMonoidHom`. "]
-def MonoidHom.liftRight [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N)
-    {p : P →* N} (hp : Injective p) (g : M → P) (h : ∀ x, p (g x) = f x) : M →* P where
+def liftRight (f : M →* N) {p : P →* N} (hp : Injective p) (g : M → P) (hg : ∀ x, p (g x) = f x) :
+    M →* P where
   toFun := g
-  map_one' := hp <| by simpa only [map_one] using h 1
-  map_mul' x y := hp <| by simp only [h, map_mul]
+  map_one' := hp <| by simpa only [map_one] using hg 1
+  map_mul' x y := hp <| by simp only [hg, map_mul]
 
-theorem MonoidHom.comp_liftRight [MulOneClass M] [MulOneClass N] [MulOneClass P] {f : M →* N}
-    {p : P →* N} {hp : Injective p} {g h} : p.comp (f.liftRight hp g h) = f :=
-  MonoidHom.ext fun _ => h _
-  
+section
+
+variable {f : M →* N} {p : P →* N} {hp : Injective p} {g hg}
+
+@[to_additive (attr := simp)]
+theorem comp_liftRight : p.comp (f.liftRight hp g hg) = f := ext fun _ => hg _
+
+@[to_additive]
+theorem comp_liftRight_apply : ∀ x, p ((f.liftRight hp g hg) x) = f x := hg
+
+@[to_additive]
+theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := ext <| by
+  simp only [MonoidHom.ext_iff, coe_comp, Function.comp_apply] at hg'
+  simp only [← hp.eq_iff, hg', liftRight_apply, hg, implies_true]
+
+@[to_additive (attr := simp)]
+theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
+    f.liftRight hp g hg := eq_liftRight (by rw [comp_liftRight])
+
+@[to_additive (attr := simp)]
+theorem toMulHom_liftRight : (f.liftRight hp g hg).toMulHom =
+    f.toMulHom.liftRight (p := p.toMulHom) hp g hg := rfl
+
+end
+
+end MonoidHom
+
+end Lift
+
 section End
 
 namespace Monoid
