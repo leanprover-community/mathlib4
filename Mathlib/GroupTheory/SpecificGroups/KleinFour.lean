@@ -111,8 +111,8 @@ lemma eq_finset_univ [Fintype G] [DecidableEq G]
     {x y : G} (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : {x * y, x, y, (1 : G)} = Finset.univ := by
   apply Finset.eq_univ_of_card
   rw [card_four']
-  repeat rw [card_insert_of_not_mem]
-  on_goal 4 => simpa using mul_not_mem_of_exponent_two (by simp) hx hy hxy
+  repeat rw [card_insert_of_notMem]
+  on_goal 4 => simpa using mul_notMem_of_exponent_two (by simp) hx hy hxy
   all_goals simp_all
 
 @[to_additive]
@@ -120,7 +120,7 @@ lemma eq_mul_of_ne_all {x y z : G} (hx : x ≠ 1)
     (hy : y ≠ 1) (hxy : x ≠ y) (hz : z ≠ 1) (hzx : z ≠ x) (hzy : z ≠ y) : z = x * y := by
   classical
   let _ := Fintype.ofFinite G
-  apply eq_of_mem_insert_of_not_mem <| (eq_finset_univ hx hy hxy).symm ▸ mem_univ _
+  apply eq_of_mem_insert_of_notMem <| (eq_finset_univ hx hy hxy).symm ▸ mem_univ _
   simpa only [mem_singleton, mem_insert, not_or] using ⟨hzx, hzy, hz⟩
 
 variable {G₁ G₂ : Type*} [Group G₁] [Group G₂] [IsKleinFour G₁]
@@ -146,8 +146,8 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
       rw [← Ne, ← e.injective.ne_iff] at hx hy hxy
       rw [he] at hx hy
       symm
-      apply eq_of_mem_insert_of_not_mem <| univ₂.symm ▸ mem_univ _
-      simpa using mul_not_mem_of_exponent_two h hx hy hxy
+      apply eq_of_mem_insert_of_notMem <| univ₂.symm ▸ mem_univ _
+      simpa using mul_notMem_of_exponent_two h hx hy hxy
 
 /-- Any two `IsKleinFour` groups are isomorphic via any equivalence which sends the identity of one
 group to the identity of the other. -/
