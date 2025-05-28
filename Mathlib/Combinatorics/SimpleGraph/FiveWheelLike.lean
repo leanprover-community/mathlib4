@@ -254,8 +254,8 @@ private lemma kr_bound (hk : k ≤ r) :
 variable [DecidableRel G.Adj]
 
 /-- Transform a lower bound on non-adjacencies into an upper bound on adjacencies. -/
-private lemma card_adj_le_of_le_card_not_adj (hx : i ≤ #(s.filter (¬ G.Adj x ·))) :
-    #(s.filter (G.Adj x ·)) ≤ #s - i := by
+private lemma card_adj_le_of_le_card_not_adj (hx : i ≤ #{z ∈ s | ¬ G.Adj x z}) :
+    #{z ∈ s | G.Adj x z} ≤ #s - i := by
   rw [← filter_card_add_filter_neg_card_eq_card (s := s) (G.Adj x ·), add_tsub_assoc_of_le hx]
   exact Nat.le_add_right ..
 
@@ -271,8 +271,7 @@ private lemma eq_of_card_le_two_of_ne (hab : a ≠ b) (had : a ≠ d) (hbc : b �
 Given lower bounds on non-adjacencies from `W` into `X`,`Xᶜ` we can bound the degree sum over `W`.
 -/
 private lemma sum_degree_le_of_le_not_adj [Fintype α] {W X : Finset α}
-    (hx : ∀ x, x ∈ X → i ≤ #(W.filter (¬ G.Adj x ·)))
-    (hxc : ∀ y, y ∈ Xᶜ → j ≤ #(W.filter (¬ G.Adj y ·))) :
+    (hx : ∀ x ∈ X, i ≤ #{z ∈ W | ¬ G.Adj x z}) (hxc : ∀ y ∈ Xᶜ, j ≤ #{z ∈ W | ¬ G.Adj y z}) :
     ∑ w ∈ W, G.degree w ≤ #X * (#W - i) + #Xᶜ * (#W - j) := calc
   _ = ∑ v, #(G.neighborFinset v ∩ W) := by
     simp_rw [degree, card_eq_sum_ones]
@@ -342,7 +341,7 @@ If `G` is `Kᵣ₊₂`-free and contains a `Wᵣ,ₖ` together with a vertex `x`
 two vertices of `Wᵣ,ₖ`, including all of its common clique vertices, then `G` contains a `Wᵣ,ₖ₊₁`.
 -/
 lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s ∩ t → G.Adj x y)
-    (h2 : #(({v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t)))).filter (¬ G.Adj x ·)) ≤ 2) :
+    (h2 : #{z ∈ {v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t))) | ¬ G.Adj x z} ≤ 2) :
     ∃ a b, G.IsFiveWheelLike r (k + 1) v w₁ w₂ (insert x (s.erase a)) (insert x (t.erase b)) := by
   obtain ⟨a, b, c, d, ha, haj, hb, hbj, hc, hcj, hd, hdj, hab, had, hbc, hat, hbs⟩ :=
     hw.exist_not_adj_of_adj_inter hcf hW
@@ -377,7 +376,7 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
       · exact hbj <| hw.isNClique_snd_right.1 (mem_insert_self ..) (mem_insert_of_mem hbt) hbx
   -- Since `x` is not adjacent to `a` and `b` but is adjacent to all but at most two vertices
   -- from `W` we have `∀ w ∈ W, w ≠ a → w ≠ b → G.Adj w x`
-  have wadj : ∀ w ∈ W, w ≠ a → w ≠ b → G.Adj w x := by
+  have wa : ∀ ⦃w⦄, w ∈ W → w ≠ a → w ≠ b → G.Adj w x := by
     intro _ hz haz hbz
     by_contra! hf
     apply h2.not_lt
@@ -397,21 +396,19 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
   -- First check that `v, w₁, w₂` are not in the new cliques
   · exact ⟨hxv, fun hv ↦ hw.notMem_left (mem_erase.1 hv).2⟩
   · exact ⟨hxv, fun hv ↦ hw.notMem_right (mem_erase.1 hv).2⟩
-  · exact ⟨hxw₁, fun hw1 ↦ hw.fst_notMem (mem_erase.1 hw1).2⟩
-  · exact ⟨hxw₂, fun hv ↦ hw.snd_notMem (mem_erase.1 hv).2⟩
+  · exact ⟨hxw₁, fun hw₁ ↦ hw.fst_notMem (mem_erase.1 hw₁).2⟩
+  · exact ⟨hxw₂, fun hw₂ ↦ hw.snd_notMem (mem_erase.1 hw₂).2⟩
   -- Next check that the new cliques are indeed cliques
-  · apply hw.isNClique_left.insert_insert_erase has hw.notMem_left fun _ hz hZ ↦
-            wadj _ ((insert_subset_insert _ fun _ hx ↦ (by simp [hx])) hz) hZ fun hr ↦ ?_
-    exact habv.2 <| (mem_insert.1 (hr ▸ hz)).resolve_right hbs
-  · apply hw.isNClique_fst_left.insert_insert_erase has hw.fst_notMem fun _ hz hZ ↦
-            wadj _ (h1s hz) hZ fun hr ↦ ?_
-    exact hbw1 <| (mem_insert.1 (hr ▸ hz)).resolve_right hbs
-  · apply hw.isNClique_right.insert_insert_erase hbt hw.notMem_right fun _ hz hZ ↦
-            wadj _ ((insert_subset_insert _ fun _ hx ↦ (by simp [hx])) hz) (fun hr ↦ ?_) hZ
-    exact habv.1 <| (mem_insert.1 (hr ▸ hz)).resolve_right hat
-  · apply hw.isNClique_snd_right.insert_insert_erase hbt hw.snd_notMem
-            fun _ hz hZ ↦ wadj _ (h2t hz) (fun hr ↦ ?_) hZ
-    exact haw2 <| (mem_insert.1 (hr ▸ hz)).resolve_right hat
+  · exact hw.isNClique_left.insert_insert_erase has hw.notMem_left fun _ hz hZ ↦
+            wa ((insert_subset_insert _ fun _ hx ↦ (by simp [hx])) hz) hZ
+              fun h ↦ habv.2 <| (mem_insert.1 (h ▸ hz)).resolve_right hbs
+  · exact hw.isNClique_fst_left.insert_insert_erase has hw.fst_notMem fun _ hz hZ ↦
+            wa (h1s hz) hZ fun h ↦ hbw1 <| (mem_insert.1 (h ▸ hz)).resolve_right hbs
+  · exact hw.isNClique_right.insert_insert_erase hbt hw.notMem_right fun _ hz hZ ↦
+            wa ((insert_subset_insert _ fun _ hx ↦ (by simp [hx])) hz)
+              (fun h ↦ habv.1 <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
+  · exact hw.isNClique_snd_right.insert_insert_erase hbt hw.snd_notMem
+            fun _ hz hZ ↦ wa (h2t hz) (fun h ↦ haw2 <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
   · -- Finally check that this new `IsFiveWheelLike` structure has `k + 1` common clique
     -- vertices i.e. `#((insert x (s.erase a)) ∩ (insert x (s.erase b))) = k + 1`.
     rw [← insert_inter_distrib, erase_inter, inter_erase, erase_eq_of_notMem <|
@@ -423,7 +420,7 @@ If `G` is `Kᵣ₊₂`- free and contains a `Wᵣ,ₖ` then every vertex is not 
 vertex.
 -/
 lemma one_le_not_adj_of_cliqueFree (x : α) :
-    1 ≤ #((({v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t))))).filter (¬ G.Adj x ·)) := by
+    1 ≤ #{z ∈ {v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t))) | ¬ G.Adj x z} := by
   apply card_pos.2
   obtain ⟨_, hz⟩ := hw.isNClique_fst_left.exists_not_adj_of_cliqueFree_succ hcf x
   exact ⟨_, mem_filter.2 ⟨by aesop, hz.2⟩⟩
@@ -437,7 +434,7 @@ lemma minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ [Fintype α]
   let X := {x | ∀ ⦃y⦄, y ∈ s ∩ t → G.Adj x y}.toFinset
   let W := insert v <| insert w₁ <| insert w₂ (s ∪ t)
   -- Any vertex in `X` has at least 3 non-neighbors in `W` (otherwise we could build a bigger wheel)
-  have dXle : ∀ x, x ∈ X → 3 ≤ #(W.filter (¬ G.Adj x ·)) := by
+  have dXle : ∀ x ∈ X, 3 ≤ #{z ∈ W | ¬ G.Adj x z} := by
     intro z hx
     by_contra! h
     obtain ⟨_, _, hW⟩ := hw.exists_isFiveWheelLike_succ_of_not_adj_le_two hcf
@@ -447,7 +444,7 @@ lemma minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ [Fintype α]
   -- `∑ w ∈ W, H.degree w ≤ #X * (#W - 3) + #Xᶜ * (#W - 1)`
   have bdW := sum_degree_le_of_le_not_adj dXle (fun y _ ↦ (hw.one_le_not_adj_of_cliqueFree hcf) y)
   -- By the definition of `X`, any `x ∈ Xᶜ` has at least one non-neighbour in `X`.
-  have xcle : ∀ x, x ∈ Xᶜ → 1 ≤ #((s ∩ t).filter (¬ G.Adj x ·)) := by
+  have xcle : ∀ x ∈ Xᶜ, 1 ≤ #{z ∈ s ∩ t | ¬ G.Adj x z} := by
     intro x hx
     apply card_pos.2
     obtain ⟨_, hy⟩ : ∃ y ∈ s ∩ t, ¬ G.Adj x y := by
