@@ -119,7 +119,7 @@ theorem isMultiplyPreprimitive_ofStabilizer
     apply is_zero_preprimitive
   exact {
     isMultiplyPretransitive := by
-      rw [ofStabilizer.isMultiplyPretransitive_iff_succ]
+      rw [← ofStabilizer.isMultiplyPretransitive]
       exact IsMultiplyPreprimitive.isMultiplyPretransitive M α n.succ
     isPreprimitive_ofFixingSubgroup {s} hs  := by
       have : IsPreprimitive ↥(fixingSubgroup M (insert a (Subtype.val '' s)))
@@ -142,7 +142,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
   · intro H
     exact {
       isMultiplyPretransitive :=
-        ofStabilizer.isMultiplyPretransitive_iff_succ.mp H.isMultiplyPretransitive
+        ofStabilizer.isMultiplyPretransitive.mpr H.isMultiplyPretransitive
       isPreprimitive_ofFixingSubgroup {s} hs := by
         have : ∃ b : α, b ∈ s := by
           rw [← Set.nonempty_def, Set.nonempty_iff_ne_empty]

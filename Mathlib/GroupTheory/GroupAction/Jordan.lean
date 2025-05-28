@@ -202,7 +202,7 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     obtain ⟨b, c, hbc⟩ := this
     have : IsPretransitive (stabilizer G a) (ofStabilizer G a) := by
       rw [← is_one_pretransitive_iff]
-      rwa [ofStabilizer.isMultiplyPretransitive_iff_succ]
+      rwa [← ofStabilizer.isMultiplyPretransitive]
     -- get g ∈ stabilizer G a, g • b = c,
     obtain ⟨⟨g, hg⟩, hgbc⟩ := exists_smul_eq (stabilizer G a) b c
     apply hbc
@@ -292,7 +292,7 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     obtain ⟨a, hsa⟩ := hsn
     rw [hsa] at hs_trans
 
-    rw [← ofStabilizer.isMultiplyPretransitive_iff_succ (a := a)]
+    rw [ofStabilizer.isMultiplyPretransitive (a := a)]
     rw [is_one_pretransitive_iff]
 
     apply IsPretransitive.of_surjective_map
@@ -589,7 +589,7 @@ theorem isMultiplyPreprimitive_jordan
     rw [hsa] at hGs
 
     constructor
-    · rw [← ofStabilizer.isMultiplyPretransitive_iff_succ (a := a)]
+    · rw [ofStabilizer.isMultiplyPretransitive (a := a)]
       rw [is_one_pretransitive_iff]
       apply IsPretransitive.of_surjective_map
         (ofFixingSubgroup_of_singleton_bijective G a).surjective hGs.toIsPretransitive
