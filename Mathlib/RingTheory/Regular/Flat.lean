@@ -6,13 +6,14 @@ Authors: Yongle Hu, Nailin Guan
 import Mathlib
 
 /-!
-# Weakly regular seqence is stable under flat base change
+# `RingTheory.Sequence.IsWeaklyRegular` is stable under flat base change
+
+## Main results
+* `ToBeAdded`: Let `R` be a comm ring, `M` is a `R`-module, `S` is a flat $R$-algebra.
+  If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `M ⊗[R] S`
+  is a weakly regular `M ⊗[R] S`-sequence.
 
 -/
-
-universe v' v u' u
-
-variable {R : Type u} [CommRing R]
 
 abbrev SemiLinearMapAlgebraMapOfLinearMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
@@ -26,13 +27,11 @@ abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A
   __ := f
   map_smul' m r := by simp
 
-open RingTheory.Sequence IsLocalRing ModuleCat
-
-
+open RingTheory.Sequence Pointwise Module
 
 section IsLocalization
 
-variable [IsLocalRing R] [IsNoetherianRing R] (p : Ideal R)
+variable {R : Type*} [CommRing R] (p : Ideal R)
 
 lemma ENat.add_right_cancel_iff (a b c : ℕ∞) (netop : c ≠ ⊤) : a + c = b + c ↔ a = b :=
   ⟨fun h ↦ ENat.add_left_injective_of_ne_top netop h, fun h ↦ by rw [h]⟩
@@ -52,14 +51,10 @@ lemma withBotENat_add_coe_cancel (a b : WithBot ℕ∞) (c : ℕ) : a + c = b + 
       rw [← WithBot.coe_unbot a eqbot, ← WithBot.coe_unbot b eqbot', WithBot.coe_inj]
       simpa [ENat.add_right_cancel_iff _ _ _ (ENat.coe_ne_top c)] using this
 
-variable [p.IsPrime] {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
-  [IsLocalRing Rₚ]
-  -- This can be deduced from `IsLocalization.AtPrime Rₚ p`, but cannot be an
-  -- `instance`, so we need to manually add this condition.
+variable [p.IsPrime] (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
 
-variable (Rₚ) in
-open Pointwise in
-omit [IsLocalRing R] [IsNoetherianRing R] [IsLocalization.AtPrime Rₚ p] [IsLocalRing Rₚ] in
+open Pointwise
+omit [IsLocalization.AtPrime Rₚ p] in
 lemma isLocaliation_map_isSMulRegular_of_isSMulRegular (r : R)
     (M : Type*) [AddCommGroup M] [Module R M] (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ]
     [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f]
@@ -79,7 +74,6 @@ lemma isLocaliation_map_isSMulRegular_of_isSMulRegular (r : R)
     ← (isSMulRegular_iff_ker_lsmul_eq_bot M r).mp reg]
   exact hs
 
-variable (Rₚ) in
 abbrev quotSMulTop_isLocalizedModule_map (x : R) (M : Type*) [AddCommGroup M] [Module R M]
     (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
     (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] :
@@ -96,8 +90,6 @@ abbrev quotSMulTop_isLocalizedModule_map (x : R) (M : Type*) [AddCommGroup M] [M
         algebra_compatible_smul Rₚ x (r' • f m)]
         using Submodule.smul_mem_pointwise_smul (r' • f m) ((algebraMap R Rₚ) x) ⊤ hm))
 
-variable (Rₚ) in
-omit [IsLocalRing R] [IsNoetherianRing R] [IsLocalRing Rₚ] in
 lemma isLocalizedModule_quotSMulTop_isLocalizedModule_map (x : R)
     (M : Type*) [AddCommGroup M] [Module R M] (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ]
     [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] :
@@ -130,9 +122,6 @@ lemma isLocalizedModule_quotSMulTop_isLocalizedModule_map (x : R)
         Submodule.smul_mem_pointwise_smul z x ⊤ Submodule.mem_top).symm
     simp [h, smul_sub, mul_smul]
 
-variable (Rₚ) in
-omit [IsLocalRing R] [IsNoetherianRing R] [IsLocalRing Rₚ] in
-open Pointwise in
 lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
     (M : Type*) [AddCommGroup M] [Module R M] (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ]
     [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f]
@@ -151,3 +140,11 @@ lemma isLocaliation_map_is_weakly_regular_of_is_weakly_regular (rs : List R)
       exact ih rs' (QuotSMulTop x M) (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ) g reg.2 len
 
 end IsLocalization
+
+section flat
+
+variable {R M N : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [Flat R S]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module S N]
+  [IsScalarTower R S N] (f : M →ₗ[R] N) (hf : IsBaseChange S f)
+
+end flat
