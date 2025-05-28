@@ -1214,9 +1214,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
         if let .some n := cfg.nameStem then
           if n == "" then [] else [n]
         else
-          let s := nm.lastComponentAsString
-          -- TODO: how can we tell if this is an instance? The `instance` attribute hasn't run yet.
-          if s.startsWith "inst" then [] else [s]}
+          if ← isInstance nm then [] else [nm.lastComponentAsString]}
   MetaM.run' <| addProjections ref d.levelParams
     nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
 
@@ -1234,5 +1232,6 @@ def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
 initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
+    applicationTime := .afterCompilation
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
     getParam := simpsTacFromSyntax }
