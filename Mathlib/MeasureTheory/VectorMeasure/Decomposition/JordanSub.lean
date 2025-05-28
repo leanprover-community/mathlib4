@@ -66,32 +66,25 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
       (μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure := by
   obtain ⟨s, hs⟩ := hahn_decomposition' μ ν
   let hsc := hs.compl
-
   have h₁ := toSignedMeasure_restrict_sub hs
   have h₂ := toSignedMeasure_restrict_sub hsc
-
   have h₁' := toSignedMeasure_congr <| restrict_eq_zero.mpr <|
     sub_apply_eq_zero_of_isHahnDecomposition hs
   have h₂' := toSignedMeasure_congr <| restrict_eq_zero.mpr <|
   sub_apply_eq_zero_of_isHahnDecomposition hsc
-
   have partition₁ := VectorMeasure.restrict_add_restrict_compl (μ - ν).toSignedMeasure
     hs.measurableSet
   have partition₂ := VectorMeasure.restrict_add_restrict_compl (ν - μ).toSignedMeasure
     hs.measurableSet
-
   rw [toSignedMeasure_restrict_eq_restrict_toSignedMeasure _ _ hs.measurableSet,
     toSignedMeasure_restrict_eq_restrict_toSignedMeasure _ _ hs.measurableSet.compl]
     at partition₁ partition₂
-
   rw [h₁', h₂] at partition₁
   rw [h₁, h₂'] at partition₂
   simp only [toSignedMeasure_zero, zero_add] at partition₁ partition₂
-
   rw [← VectorMeasure.restrict_add_restrict_compl μ.toSignedMeasure hs.measurableSet,
     ← VectorMeasure.restrict_add_restrict_compl ν.toSignedMeasure hs.measurableSet,
     ← partition₁, ← partition₂]
-
   repeat rw [sub_eq_add_neg]
   abel
 
