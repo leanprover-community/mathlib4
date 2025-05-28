@@ -308,11 +308,8 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
   let e : Fin (s.length + 1 + 1) ≃ Fin (s.length + 1 + 1) :=
     Equiv.swap (Fin.last _) (Fin.castSucc (Fin.last _))
   have h1 : ∀ {i : Fin s.length},
-      (Fin.castSucc (Fin.castSucc i)) ≠ (Fin.castSucc (Fin.last _)) := fun {_} =>
-    ne_of_lt (by simp [Fin.castSucc_lt_last])
-  have h2 : ∀ {i : Fin s.length},
-      (Fin.castSucc (Fin.castSucc i)) ≠ Fin.last _ := fun {_} =>
-    ne_of_lt (by simp [Fin.castSucc_lt_last])
+      (Fin.castSucc (Fin.castSucc i)) ≠ (Fin.castSucc (Fin.last _)) := by simp
+  have h2 : ∀ {i : Fin s.length}, (Fin.castSucc (Fin.castSucc i)) ≠ Fin.last _ := by simp
   ⟨e, by
     intro i
     dsimp only [e]
@@ -371,11 +368,12 @@ theorem exists_last_eq_snoc_equivalent (s : CompositionSeries X) (x : X) (hm : I
       t.head = s.head ∧ t.length + 1 = s.length ∧
       ∃ htx : t.last = x,
         Equivalent s (snoc t s.last (show IsMaximal t.last _ from htx.symm ▸ hm)) := by
-  induction' hn : s.length with n ih generalizing s x
-  · exact
-      (ne_of_gt (lt_of_le_of_lt hb (lt_of_isMaximal hm))
-          (subsingleton_of_length_eq_zero hn s.last_mem s.head_mem)).elim
-  · have h0s : 0 < s.length := hn.symm ▸ Nat.succ_pos _
+  induction hn : s.length generalizing s x with
+  | zero =>
+    exact (ne_of_gt (lt_of_le_of_lt hb (lt_of_isMaximal hm))
+      (subsingleton_of_length_eq_zero hn s.last_mem s.head_mem)).elim
+  | succ n ih =>
+    have h0s : 0 < s.length := hn.symm ▸ Nat.succ_pos _
     by_cases hetx : s.eraseLast.last = x
     · use s.eraseLast
       simp [← hetx, hn, Equivalent.refl]
@@ -405,9 +403,10 @@ If two composition series start and finish at the same place, they are equivalen
 theorem jordan_holder (s₁ s₂ : CompositionSeries X)
     (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) :
     Equivalent s₁ s₂ := by
-  induction' hle : s₁.length with n ih generalizing s₁ s₂
-  · rw [eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero hb ht hle]
-  · have h0s₂ : 0 < s₂.length :=
+  induction hle : s₁.length generalizing s₁ s₂ with
+  | zero => rw [eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero hb ht hle]
+  | succ n ih =>
+    have h0s₂ : 0 < s₂.length :=
       length_pos_of_head_eq_head_of_last_eq_last_of_length_pos hb ht (hle.symm ▸ Nat.succ_pos _)
     rcases exists_last_eq_snoc_equivalent s₁ s₂.eraseLast.last
         (ht.symm ▸ isMaximal_eraseLast_last h0s₂)

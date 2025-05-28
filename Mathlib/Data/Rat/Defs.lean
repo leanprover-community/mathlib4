@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
-import Mathlib.Data.Int.Init
 import Mathlib.Data.Nat.Basic
 
 /-!
@@ -17,7 +16,7 @@ import Mathlib.Data.Nat.Basic
 ## Summary
 
 We define the integral domain structure on `ℚ` and prove basic lemmas about it.
-The definition of the field structure on `ℚ` will be done in `Mathlib.Data.Rat.Basic` once the
+The definition of the field structure on `ℚ` will be done in `Mathlib/Data/Rat/Basic.lean` once the
 `Field` class has been defined.
 
 ## Main Definitions

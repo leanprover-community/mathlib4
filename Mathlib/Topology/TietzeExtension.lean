@@ -71,7 +71,7 @@ function on `X₁` with values in a `TietzeExtension` space `Y`. Then there exis
 continuous function `g : C(X, Y)` such that `g ∘ e = f`. -/
 theorem ContinuousMap.exists_extension (he : IsClosedEmbedding e) (f : C(X₁, Y)) :
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
-  let e' : X₁ ≃ₜ Set.range e := Homeomorph.ofIsEmbedding _ he.isEmbedding
+  let e' : X₁ ≃ₜ Set.range e := he.isEmbedding.toHomeomorph
   obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
   exact ⟨g, by ext x; simpa using congr($(hg) ⟨e' x, x, rfl⟩)⟩
 

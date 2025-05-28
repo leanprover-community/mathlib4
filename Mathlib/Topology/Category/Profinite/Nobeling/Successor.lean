@@ -36,7 +36,7 @@ sequence mentioned in the previous paragraph (see `succ_mono` and `succ_exact`).
 the penultimate paragraph of the proof in [scholze2019condensed]. The second one, `GoodProducts`
 corresponds to the last paragraph in the proof in [scholze2019condensed].
 
-For the overall proof outline see `Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
 ## Main definitions
 
@@ -133,7 +133,7 @@ def SwapTrue : (I → Bool) → I → Bool :=
   fun f i ↦ if ord I i = o then true else f i
 
 theorem continuous_swapTrue : Continuous (SwapTrue o : (I → Bool) → I → Bool) := by
-  dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
+  dsimp +unfoldPartialApp [SwapTrue]
   apply continuous_pi
   intro i
   apply Continuous.comp'
@@ -147,7 +147,7 @@ theorem swapTrue_mem_C1 (f : π (C1 C ho) (ord I · < o)) :
     SwapTrue o f.val ∈ C1 C ho := by
   obtain ⟨f, g, hg, rfl⟩ := f
   convert hg
-  dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
+  dsimp +unfoldPartialApp [SwapTrue]
   ext i
   split_ifs with h
   · rw [ord_term ho] at h

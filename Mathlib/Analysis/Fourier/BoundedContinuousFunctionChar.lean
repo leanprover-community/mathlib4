@@ -45,7 +45,7 @@ variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
 /-- The bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`. -/
-def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
+noncomputable def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     (w : W) :
     V →ᵇ ℂ where
   toFun := fun v ↦ e (L v w)
@@ -100,7 +100,7 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
   _ ≠ 1 := ha
 
 /-- Monoid homomorphism mapping `w` to `fun v ↦ e (L v w)`. -/
-def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+noncomputable def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     Multiplicative W →* (V →ᵇ ℂ) where
   toFun w := char he hL w
   map_one' := char_zero_eq_one

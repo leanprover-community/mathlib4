@@ -9,7 +9,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 /-! ## Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
 
-The API in this file is mostly copied from `Mathlib.Geometry.Manifold.ContMDiff.NormedSpace`,
+The API in this file is mostly copied from `Mathlib/Geometry/Manifold/ContMDiff/NormedSpace.lean`,
 providing the same statements for higher smoothness. In this file, we do the same for
 differentiability.
 

@@ -229,7 +229,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
       fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), ?_⟩⟩
   intros
   funext n
-  simp (config := { unfoldPartialApp := true }) only [peval, aeval_bind₁, Function.comp, hh, hf, hg,
+  simp +unfoldPartialApp only [peval, aeval_bind₁, Function.comp, hh, hf, hg,
     uncurry]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
@@ -251,7 +251,7 @@ instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x 
   obtain ⟨φ, hf⟩ := hf
   refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n
-  simp (config := { unfoldPartialApp := true }) only [hf, peval, uncurry, aeval_bind₁]
+  simp +unfoldPartialApp only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, k⟩
   fin_cases i <;> simp
@@ -368,7 +368,7 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
   -- so that applications do not have to worry about the universe issue
   obtain ⟨φ, hf⟩ := hf
   ext n
-  simp (config := { unfoldPartialApp := true }) only [map_coeff, hf, map_aeval, peval, uncurry]
+  simp +unfoldPartialApp only [map_coeff, hf, map_aeval, peval, uncurry]
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   ext ⟨i, k⟩
   fin_cases i <;> simp

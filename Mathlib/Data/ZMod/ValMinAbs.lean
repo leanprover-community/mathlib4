@@ -50,7 +50,8 @@ lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val 
   · simp
   by_cases h : a.val ≤ n.succ / 2
   · dsimp [valMinAbs]
-    rw [if_pos h, ← Int.natCast_inj, Nat.cast_mul, Nat.cast_two, mul_comm]
+    rw [if_pos h, ← Int.natCast_inj, Nat.cast_mul, Nat.cast_two, mul_comm, Int.natCast_add,
+      Nat.cast_one]
   apply iff_of_false _ (mt _ h)
   · intro he
     rw [← a.valMinAbs_nonneg_iff, ← mul_nonneg_iff_left_nonneg_of_pos, he] at h

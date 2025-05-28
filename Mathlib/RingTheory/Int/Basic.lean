@@ -69,7 +69,7 @@ theorem natAbs_euclideanDomain_gcd (a b : ℤ) :
   · rw [Int.natAbs_dvd]
     exact Int.dvd_coe_gcd (EuclideanDomain.gcd_dvd_left _ _) (EuclideanDomain.gcd_dvd_right _ _)
   · rw [Int.dvd_natAbs]
-    exact EuclideanDomain.dvd_gcd Int.gcd_dvd_left Int.gcd_dvd_right
+    exact EuclideanDomain.dvd_gcd (Int.gcd_dvd_left ..) (Int.gcd_dvd_right ..)
 
 end Int
 

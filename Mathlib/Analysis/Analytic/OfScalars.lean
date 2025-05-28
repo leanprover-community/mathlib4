@@ -11,13 +11,13 @@ import Mathlib.Analysis.Analytic.Basic
 This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in terms of scalars
 `c₀, c₁, c₂, …`.
 ## Main definitions / results:
- * `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
- * `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
-   otherwise.
- * `FormalMultilinearSeries.ofScalars_radius_eq_(zero/inv/top)_of_tendsto`:
-   the ratio test for an analytic function defined in terms of a formal power series `∑ cᵢ • xⁱ`.
- * `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
-   the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
+* `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
+* `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
+  otherwise.
+* `FormalMultilinearSeries.ofScalars_radius_eq_(zero/inv/top)_of_tendsto`:
+  the ratio test for an analytic function defined in terms of a formal power series `∑ cᵢ • xⁱ`.
+* `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
+  the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
 -/
 
 namespace FormalMultilinearSeries
@@ -78,7 +78,7 @@ theorem ofScalars_series_eq_iff [Nontrivial E] (c' : ℕ → 𝕜) :
   ⟨fun e => ofScalars_series_injective 𝕜 E e, _root_.congrArg _⟩
 
 theorem ofScalars_apply_zero (n : ℕ) :
-    (ofScalars E c n fun _ => 0) = Pi.single (f := fun _ => E) 0 (c 0 • 1) n := by
+    ofScalars E c n (fun _ => 0) = Pi.single (M := fun _ => E) 0 (c 0 • 1) n := by
   rw [ofScalars]
   cases n <;> simp
 

@@ -187,7 +187,7 @@ theorem prod_piecewise [DecidableEq α] (s t : Finset α) (f g : α → β) :
 theorem prod_inter_mul_prod_diff [DecidableEq α] (s t : Finset α) (f : α → β) :
     (∏ x ∈ s ∩ t, f x) * ∏ x ∈ s \ t, f x = ∏ x ∈ s, f x := by
   convert (s.prod_piecewise t f f).symm
-  simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
+  simp +unfoldPartialApp [Finset.piecewise]
 
 @[to_additive]
 theorem prod_eq_mul_prod_diff_singleton [DecidableEq α] {s : Finset α} {i : α} (h : i ∈ s)
@@ -216,7 +216,7 @@ theorem dvd_prod_of_mem (f : α → β) {a : α} {s : Finset α} (ha : a ∈ s) 
     exact dvd_mul_right _ _
 
 @[to_additive]
-theorem prod_update_of_not_mem [DecidableEq α] {s : Finset α} {i : α} (h : i ∉ s) (f : α → β)
+theorem prod_update_of_notMem [DecidableEq α] {s : Finset α} {i : α} (h : i ∉ s) (f : α → β)
     (b : β) : ∏ x ∈ s, Function.update f i b x = ∏ x ∈ s, f x := by
   apply prod_congr rfl
   intros j hj
@@ -224,6 +224,11 @@ theorem prod_update_of_not_mem [DecidableEq α] {s : Finset α} {i : α} (h : i 
     rintro rfl
     exact h hj
   simp [this]
+
+@[deprecated (since := "2025-05-23")] alias sum_update_of_not_mem := sum_update_of_notMem
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias prod_update_of_not_mem := prod_update_of_notMem
 
 @[to_additive]
 theorem prod_update_of_mem [DecidableEq α] {s : Finset α} {i : α} (h : i ∈ s) (f : α → β) (b : β) :
