@@ -325,7 +325,6 @@ open scoped Classical in
 to a `RatFunc R →* RatFunc S`,
 on the condition that `φ` maps non zero divisors to non zero divisors,
 by mapping both the numerator and denominator and quotienting them. -/
-
 def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     RatFunc R →* RatFunc S where
   toFun f :=
