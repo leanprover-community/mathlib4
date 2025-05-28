@@ -19,7 +19,7 @@ commutative ring `R`, denoted `R[X]_n`.
 ## Main definitions/lemmas
 
 * `degreeLT.basis R n`: a basis for `R[X]_n` the submodule of polynomials with degree `< n`,
-given by the monomials `X^i` for `i < n`.
+  given by the monomials `X^i` for `i < n`.
 
 * `degreeLT.basisProd R m n`: a basis for `(R[X]_m) × (R[X]_n)` as above, which is the sum
 of the two bases.
@@ -60,7 +60,7 @@ lemma X_pow_mem_degreeLT (i : Fin n) : X ^ i.val ∈ R[X]_n := by
 
 variable (R) in
 /-- The element `X^i` in `R[X]_n`. This is equal to `basis R n i`. -/
-noncomputable def xPow (n : ℕ) (i : Fin n) : R[X]_n :=
+noncomputable def xpow (n : ℕ) (i : Fin n) : R[X]_n :=
   ⟨X ^ (i : ℕ), X_pow_mem_degreeLT i⟩
 
 @[simp] lemma xPow_val : (xPow R n i : R[X]) = X ^ (i : ℕ) :=

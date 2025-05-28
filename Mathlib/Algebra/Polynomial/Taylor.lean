@@ -81,7 +81,7 @@ theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
   rw [taylor_coeff, hasseDeriv_one]
 
 @[simp]
-theorem taylor_coeff_natDegree : (taylor r f).coeff f.natDegree = f.leadingCoeff := by
+theorem coeff_taylor_natDegree : (taylor r f).coeff f.natDegree = f.leadingCoeff := by
   by_cases hf : f = 0
   · rw [hf, map_zero]; rfl
   · rw [taylor_coeff, hassederiv_natDegree_eq_C, eval_C]
@@ -94,11 +94,11 @@ theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree
   simp [taylor_monomial, natDegree_C_mul_of_mul_ne_zero, natDegree_pow_X_add_C, c0]
 
 @[simp]
-theorem taylor_leadingCoeff : (taylor r f).leadingCoeff = f.leadingCoeff := by
+theorem leadingCoeff_taylor : (taylor r f).leadingCoeff = f.leadingCoeff := by
   rw [leadingCoeff, leadingCoeff, natDegree_taylor, taylor_coeff_natDegree, leadingCoeff]
 
 @[simp]
-theorem taylor_eq_zero_iff : taylor r f = 0 ↔ f = 0 := by
+theorem taylor_eq_zero : taylor r f = 0 ↔ f = 0 := by
   rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero, taylor_leadingCoeff]
 
 @[simp]
@@ -148,7 +148,7 @@ theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r +
 theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
 
-theorem eval_add_of_sq_eq_zero (p : R[X]) (x y : R) (hy : y ^ 2 = 0) :
+theorem eval_add_of_sq_eq_zero {y : R} (hy : y ^ 2 = 0) (p : R[X]) (x : R) :
     p.eval (x + y) = p.eval x + p.derivative.eval x * y := by
   rw [add_comm, ← Polynomial.taylor_eval,
     Polynomial.eval_eq_sum_range' ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)),
@@ -168,7 +168,7 @@ noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   right_inv P := by simp [taylor, comp_assoc]
   __ := taylorAlgHom r
 
-@[simp] lemma taylorEquiv_eq_taylor : (taylorEquiv r : R[X] → R[X]) = taylor r :=
+@[simp, norm_cast] lemma coe_taylorEquiv : taylorEquiv r = taylor r :=
   rfl
 
 @[simp] lemma taylorEquiv_symm : (taylorEquiv r).symm = taylorEquiv (-r) :=
