@@ -52,6 +52,7 @@ def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
   (TotalSpace.toProd _ _).toHomeomorphOfIsInducing (isInducing_toProd B F)
 
 /-- Local trivialization for trivial bundle. -/
+@[simps!]
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   toPartialHomeomorph := (homeomorphProd B F).toPartialHomeomorph
   baseSet := univ
@@ -60,14 +61,8 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   target_eq := univ_prod_univ.symm
   proj_toFun _ _ := rfl
 
-@[simp]
-theorem trivialization_source : (trivialization B F).source = univ := rfl
-
-@[simp]
-theorem trivialization_target : (trivialization B F).target = univ := rfl
-
 /-- Fiber bundle instance on the trivial bundle. -/
-instance fiberBundle : FiberBundle F (Bundle.Trivial B F) where
+@[simps] instance fiberBundle : FiberBundle F (Bundle.Trivial B F) where
   trivializationAtlas' := {trivialization B F}
   trivializationAt' _ := trivialization B F
   mem_baseSet_trivializationAt' := mem_univ
@@ -187,6 +182,7 @@ variable (e₁ e₂)
 /-- Given trivializations `e₁`, `e₂` for bundle types `E₁`, `E₂` over a base `B`, the induced
 trivialization for the fiberwise product of `E₁` and `E₂`, whose base set is
 `e₁.baseSet ∩ e₂.baseSet`. -/
+@[simps!]
 noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ ×ᵇ E₂)) where
   toFun := Prod.toFun' e₁ e₂
   invFun := Prod.invFun' e₁ e₂
@@ -224,7 +220,7 @@ variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSp
   [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
 
 /-- The product of two fiber bundles is a fiber bundle. -/
-noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
+@[simps] noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
   totalSpaceMk_isInducing' b := by
     rw [← (Prod.isInducing_diag F₁ E₁ F₂ E₂).of_comp_iff]
     exact (totalSpaceMk_isInducing F₁ E₁ b).prodMap (totalSpaceMk_isInducing F₂ E₂ b)
@@ -297,6 +293,7 @@ variable {E F}
 variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
+@[simps]
 noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
     Trivialization F (π F ((f : B' → B) *ᵖ E)) where
   toFun z := (z.proj, (e (Pullback.lift f z)).2)
@@ -336,6 +333,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
   target_eq := rfl
   proj_toFun _ _ := rfl
 
+@[simps]
 noncomputable instance FiberBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     (f : K) : FiberBundle F ((f : B' → B) *ᵖ E) where
   totalSpaceMk_isInducing' x :=
