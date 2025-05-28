@@ -891,17 +891,17 @@ theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f 
 @[to_additive (attr := measurability, fun_prop)
 "Compositional version of `Finset.measurable_sum` for use by `fun_prop`."]
 lemma Finset.measurable_prod' {f : ι → α → β → M} {g : α → β} {s : Finset ι}
-    (hf : ∀ i, Measurable ↿(f i)) (hg : Measurable g) :
-    Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by simp; fun_prop
+    (hf : ∀ i ∈ s, Measurable ↿(f i)) (hg : Measurable g) :
+    Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by simp; fun_prop (disch := assumption)
 
-@[to_additive (attr := measurability)]
+@[to_additive (attr := measurability, fun_prop)]
 theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (∏ i ∈ s, f i) μ :=
   Multiset.aemeasurable_prod' _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
 
-@[to_additive (attr := measurability)]
+@[to_additive (attr := measurability, fun_prop)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (fun a => ∏ i ∈ s, f i a) μ := by
   simpa only [← Finset.prod_apply] using s.aemeasurable_prod' hf
