@@ -36,8 +36,7 @@ While `Convex 𝕜` is a predicate on sets, `ConvexCone 𝕜 E` is a bundled con
 * [Emo Welzl and Bernd Gärtner, *Cone Programming*][welzl_garter]
 -/
 
-
-assert_not_exists NormedSpace Real Cardinal
+assert_not_exists TopologicalSpace Real Cardinal
 
 open Set LinearMap Pointwise
 
