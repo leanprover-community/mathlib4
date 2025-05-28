@@ -18,7 +18,7 @@ in the monoidal structure on `R`-coalgebras, like the tensor product of two coal
 as a coalgebra morphism.
 
 In particular, when `R = S` we get tensor products of coalgebras, and when `A = S` we get
-the base change `S ⊗[R] B` as an `R`-coalgebra.
+the base change `S ⊗[R] B` as an `S`-coalgebra.
 
 -/
 
