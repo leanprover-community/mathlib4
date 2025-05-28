@@ -78,6 +78,11 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
   mem_map_of_injective f.2
 
+@[simp 1100]
+theorem mem_map_mk (f : α → β) {a : α} {s : Finset α} (hf : Function.Injective f) :
+    f a ∈ s.map ⟨f, hf⟩ ↔ a ∈ s :=
+  Finset.mem_map' _
+
 theorem mem_map_of_mem (f : α ↪ β) {a} {s : Finset α} : a ∈ s → f a ∈ s.map f :=
   (mem_map' _).2
 
@@ -611,9 +616,12 @@ theorem property_of_mem_map_subtype {p : α → Prop} (s : Finset { x // p x }) 
 /-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result does not contain any value that does
 not satisfy the property of the subtype. -/
-theorem not_mem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // p x }) {a : α}
+theorem notMem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // p x }) {a : α}
     (h : ¬p a) : a ∉ s.map (Embedding.subtype _) :=
   mt s.property_of_mem_map_subtype h
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_map_subtype_of_not_property := notMem_map_subtype_of_not_property
 
 /-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result is a subset of the set giving the
@@ -653,7 +661,7 @@ theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.s
   induction' n with k hk
   · simp
   conv_rhs => rw [range_succ]
-  rw [range_succ, image_insert, ← hk, insert_sdiff_of_not_mem]
+  rw [range_succ, image_insert, ← hk, insert_sdiff_of_notMem]
   simp
 
 end Finset
