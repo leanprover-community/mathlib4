@@ -96,15 +96,30 @@ def jordanDecompositionOfToSignedMeasureSub
   negPart := ν - μ
   mutuallySingular := mutually_singular_measure_sub
 
+lemma jordanDecompositionOfToSignedMeasureSub_posPart :
+    (jordanDecompositionOfToSignedMeasureSub μ ν).posPart = μ - ν := by
+      trivial
+
+lemma jordanDecompositionOfToSignedMeasureSub_negPart :
+    (jordanDecompositionOfToSignedMeasureSub μ ν).negPart = ν - μ := by
+      trivial
+
+lemma jordanDecompositionOfToSignedMeasureSub_toSignedMeasure :
+    (jordanDecompositionOfToSignedMeasureSub μ ν).toSignedMeasure =
+    μ.toSignedMeasure - ν.toSignedMeasure := by
+      unfold JordanDecomposition.toSignedMeasure
+      simp [jordanDecompositionOfToSignedMeasureSub_posPart]
+      simp [jordanDecompositionOfToSignedMeasureSub_negPart]
+      rw [← sub_toSignedMeasure_eq_toSignedMeasure_sub]
+
 /-- The Jordan decomposition of `μ.toSignedMeasure - ν.toSignedMeasure` is `(μ - ν, ν - μ)`. -/
 @[simp]
 theorem toJordanDecomposition_toSignedMeasure_sub :
     (μ.toSignedMeasure - ν.toSignedMeasure).toJordanDecomposition =
       jordanDecompositionOfToSignedMeasureSub μ ν := by
   apply JordanDecomposition.toSignedMeasure_injective
-  rw [SignedMeasure.toSignedMeasure_toJordanDecomposition,
-    sub_toSignedMeasure_eq_toSignedMeasure_sub]
-  rfl
+  rw [SignedMeasure.toSignedMeasure_toJordanDecomposition]
+  rw [jordanDecompositionOfToSignedMeasureSub_toSignedMeasure]
 
 end
 end MeasureTheory.Measure
