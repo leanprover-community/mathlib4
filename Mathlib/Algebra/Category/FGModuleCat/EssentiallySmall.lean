@@ -16,11 +16,30 @@ recommended to use the standard `CategoryTheory.SmallModel (FGModuleCat R)` inst
 
 -/
 
-universe u v
+universe v w u
 
 variable (R : Type u) [CommRing R]
 
 open CategoryTheory
+
+namespace FGModuleCat
+
+/-- Universe lifting as a functor. -/
+def ulift : FGModuleCat.{v,u} R ⥤ FGModuleCat.{max v w,u} R where
+  obj M := .of R <| _root_.ULift M
+  map f := ofHom <| ULift.moduleEquiv.symm.toLinearMap ∘ₗ f.hom ∘ₗ ULift.moduleEquiv.toLinearMap
+
+instance fullyFaithful : (ulift R).FullyFaithful where
+  preimage f := ofHom <| ULift.moduleEquiv.toLinearMap ∘ₗ f.hom ∘ₗ
+    ULift.moduleEquiv.symm.toLinearMap
+
+instance : (ulift R).Faithful :=
+  (fullyFaithful R).faithful
+
+instance : (ulift R).Full :=
+  (fullyFaithful R).full
+
+end FGModuleCat
 
 /-- A (category-theoretically) small version of `FGModuleCat R`. This is used to prove that
 `FGModuleCat R` is essentially small. For actual use, it might be recommended to use the canonical
@@ -70,15 +89,22 @@ instance smallCategory : SmallCategory (FGModuleRepr R) where
 
 /-- The canonical embedding of this small category to the canonical (large) category
 `FGModuleCat R`. -/
-def embed : FGModuleRepr R ⥤ FGModuleCat R :=
-  inducedFunctor _
+def embed : FGModuleRepr.{u} R ⥤ FGModuleCat.{max u v} R :=
+  inducedFunctor _ ⋙ FGModuleCat.ulift R
 
-instance : (embed R).IsEquivalence where
-  faithful := (fullyFaithfulInducedFunctor _).faithful
-  full := (fullyFaithfulInducedFunctor _).full
-  essSurj := ⟨fun M ↦ ⟨ofFinite R M, ⟨(ofFiniteEquiv R M).toFGModuleCatIso⟩⟩⟩
+instance embedIsEquivalence : (embed R).IsEquivalence where
+  faithful := (fullyFaithfulInducedFunctor _).faithful.comp _ _
+  full := (fullyFaithfulInducedFunctor _).full.comp _ _
+  essSurj := ⟨fun M ↦ ⟨ofFinite R M,
+    ⟨(ULift.moduleEquiv.trans <| ofFiniteEquiv R M).toFGModuleCatIso⟩⟩⟩
 
 end FGModuleRepr
 
-instance : EssentiallySmall.{u} (FGModuleCat.{u} R) :=
+instance : EssentiallySmall.{u} (FGModuleCat.{max u v} R) :=
   ⟨_, _, ⟨(FGModuleRepr.embed R).asEquivalence.symm⟩⟩
+
+open FGModuleRepr in
+-- There is probably a proof using `embedIsEquivalence` or `EssentiallySmall`.
+instance : (FGModuleCat.ulift.{max u v, w} R).IsEquivalence where
+  essSurj := ⟨fun M ↦ ⟨(embed R).obj (ofFinite R M),
+    ⟨(ULift.moduleEquiv.trans <| ULift.moduleEquiv.trans <| ofFiniteEquiv R M).toFGModuleCatIso⟩⟩⟩
