@@ -24,12 +24,13 @@ open CategoryTheory
 
 namespace FGModuleCat
 
-/-- Universe lifting as a functor. -/
+/-- Universe lifting as a functor on `FGModuleCat`. -/
 def ulift : FGModuleCat.{v,u} R ⥤ FGModuleCat.{max v w,u} R where
   obj M := .of R <| _root_.ULift M
   map f := ofHom <| ULift.moduleEquiv.symm.toLinearMap ∘ₗ f.hom ∘ₗ ULift.moduleEquiv.toLinearMap
 
-instance fullyFaithful : (ulift R).FullyFaithful where
+/-- Universe lifting is fully faithful. -/
+def fullyFaithful : (ulift R).FullyFaithful where
   preimage f := ofHom <| ULift.moduleEquiv.toLinearMap ∘ₗ f.hom ∘ₗ
     ULift.moduleEquiv.symm.toLinearMap
 
@@ -105,6 +106,6 @@ instance : EssentiallySmall.{u} (FGModuleCat.{max u v} R) :=
 
 open FGModuleRepr in
 -- There is probably a proof using `embedIsEquivalence` or `EssentiallySmall`.
-instance : (FGModuleCat.ulift.{max u v, w} R).IsEquivalence where
+instance FGModuleCat.uliftIsEquivalence : (FGModuleCat.ulift.{max u v, w} R).IsEquivalence where
   essSurj := ⟨fun M ↦ ⟨(embed R).obj (ofFinite R M),
     ⟨(ULift.moduleEquiv.trans <| ULift.moduleEquiv.trans <| ofFiniteEquiv R M).toFGModuleCatIso⟩⟩⟩
