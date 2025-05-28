@@ -68,7 +68,7 @@ end cexp_clog
 
 section UniformlyOn
 
-lemma HasProdUniformlyOn_of_clog {f : ι → α → ℂ} {𝔖 : Set (Set α)}
+lemma hasProdUniformlyOn_of_clog {f : ι → α → ℂ} {𝔖 : Set (Set α)}
     (hf : SummableUniformlyOn (fun i a => log (f i a)) 𝔖) (hfn : ∀ K ∈ 𝔖, ∀ x ∈ K, ∀ i, f i x ≠ 0)
     (hg : ∀ K ∈ 𝔖, BddAbove <| (fun x => (∑' n : ι, log (f n x)).re) '' K) :
     HasProdUniformlyOn f (fun a => ∏' i, f i a) 𝔖 := by
@@ -76,21 +76,27 @@ lemma HasProdUniformlyOn_of_clog {f : ι → α → ℂ} {𝔖 : Set (Set α)}
   obtain ⟨r, hr⟩ := hf.exists
   intro K hK
   suffices H : TendstoUniformlyOn (fun s a => ∏ i ∈ s, f i a) (cexp ∘ r) atTop K by
-        apply TendstoUniformlyOn.congr_right H
-        apply Set.EqOn.trans (Set.EqOn.comp_left (hr.tsum_eqOn hK)).symm
-        exact fun x hx ↦ (cexp_tsum_eq_tprod (hfn K hK x hx) (hf.summable hK hx))
-  have h1 := (hr.tsum_eqOn (s := K) hK)
+    apply TendstoUniformlyOn.congr_right H
+    apply Set.EqOn.trans (Set.EqOn.comp_left (hr.tsum_eqOn hK)).symm
+    exact fun x hx ↦ (cexp_tsum_eq_tprod (hfn K hK x hx) (hf.summable hK hx))
+  have h1 := hr.tsum_eqOn hK
   simp only [hasSumUniformlyOn_iff_tendstoUniformlyOn, Set.mem_singleton_iff, forall_eq] at hr
   apply TendstoUniformlyOn.congr ((hr K hK).comp_cexp ?_)
   · filter_upwards with s i hi using by simp [exp_sum, fun y ↦ exp_log (hfn K hK i hi y)]
   · convert hg K hK
     simp_all only [h1 _, ne_eq]
 
-lemma HasProdUniformlyOn_nat_one_add [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
+lemma multipliableUniformlyOn_of_clog {f : ι → α → ℂ} {𝔖 : Set (Set α)}
+    (hf : SummableUniformlyOn (fun i a => log (f i a)) 𝔖) (hfn : ∀ K ∈ 𝔖, ∀ x ∈ K, ∀ i, f i x ≠ 0)
+    (hg : ∀ K ∈ 𝔖, BddAbove <| (fun x => (∑' n : ι, log (f n x)).re) '' K) :
+    MultipliableUniformlyOn f 𝔖 :=
+    ⟨(fun a => ∏' i, f i a), hasProdUniformlyOn_of_clog  hf hfn hg⟩
+
+lemma hasProdUniformlyOn_nat_one_add [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
     (hK : IsCompact K) {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
     (hfn : ∀ x ∈ K, ∀ n, 1 + f n x ≠ 0) (hcts : ∀ n, ContinuousOn (f n) K) :
     HasProdUniformlyOn (fun n a => (1 + f n a)) (fun a => ∏' i, (1 + f i a)) {K} := by
-  refine HasProdUniformlyOn_of_clog ?_ (by simpa using hfn) ?_
+  refine hasProdUniformlyOn_of_clog ?_ (by simpa using hfn) ?_
   · apply HasSumUniformlyOn.summableUniformlyOn (g := fun x => ∑' i, log (1 + f i x))
     apply Complex.HasSumUniformlyOn_log_one_add K hu (Nat.cofinite_eq_atTop ▸ h)
   · simp only [Set.mem_singleton_iff, forall_eq]
@@ -100,26 +106,26 @@ lemma HasProdUniformlyOn_nat_one_add [TopologicalSpace α] {f : ℕ → α → �
     filter_upwards with n using continuousOn_finset_sum _ fun c _ ↦
       (continuousOn_const.add (hcts c)).norm.log (fun z hz ↦ by simpa using hfn z hz c)
 
-lemma MultipliableUniformlyOn_nat_one_add [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
+lemma multipliableUniformlyOn_nat_one_add [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
     (hK : IsCompact K) {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
     (hfn : ∀ x ∈ K, ∀ n, 1 + f n x ≠ 0) (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableUniformlyOn (fun n a => (1 + f n a)) {K} :=
-  ⟨(fun a => ∏' i, (1 + f i a)), HasProdUniformlyOn_nat_one_add hK hu h hfn hcts⟩
+  ⟨(fun a => ∏' i, (1 + f i a)), hasProdUniformlyOn_nat_one_add hK hu h hfn hcts⟩
 
-lemma HasProdLocallyUniformlyOn_nat_one_add [TopologicalSpace α] [LocallyCompactSpace α]
+lemma hasProdLocallyUniformlyOn_nat_one_add [TopologicalSpace α] [LocallyCompactSpace α]
     {f : ℕ → α → ℂ} {K : Set α} (hK : IsOpen K) {u : ℕ → ℝ} (hu : Summable u)
     (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hfn : ∀ x ∈ K, ∀ n, 1 + f n x ≠ 0)
     (hcts : ∀ n, ContinuousOn (f n) K) :
     HasProdLocallyUniformlyOn (fun n a => (1 + f n a)) (fun a => ∏' i, (1 + (f i a))) K := by
   apply hasProdLocallyUniformlyOn_of_forall_compact hK
-  refine fun S hS hC => HasProdUniformlyOn_nat_one_add hC hu ?_ (by tauto) fun n => (hcts n).mono hS
+  refine fun S hS hC => hasProdUniformlyOn_nat_one_add hC hu ?_ (by tauto) fun n => (hcts n).mono hS
   filter_upwards [h] with n hn a ha using hn a (hS ha)
 
-lemma MultipliableLocallyUniformlyOn_nat_one_add [TopologicalSpace α] [LocallyCompactSpace α]
+lemma multipliableLocallyUniformlyOn_nat_one_add [TopologicalSpace α] [LocallyCompactSpace α]
     {f : ℕ → α → ℂ} {K : Set α} (hK : IsOpen K) {u : ℕ → ℝ} (hu : Summable u)
     (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hfn : ∀ x ∈ K, ∀ n, 1 + f n x ≠ 0)
     (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableLocallyUniformlyOn (fun n a => (1 + f n a)) K :=
-  ⟨(fun a => ∏' i, (1 + (f i a))), HasProdLocallyUniformlyOn_nat_one_add hK hu h hfn hcts⟩
+  ⟨(fun a => ∏' i, (1 + (f i a))), hasProdLocallyUniformlyOn_nat_one_add hK hu h hfn hcts⟩
 
 end UniformlyOn
