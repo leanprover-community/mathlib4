@@ -26,7 +26,9 @@ open CategoryTheory
 `FGModuleCat R` is essentially small. For actual use, it might be recommended to use the canonical
 `CategoryTheory.SmallModel` instead of this construction. -/
 structure FGModuleRepr : Type u where
+  /-- The natural number `n` that defines the module as a quotient of `Fin n → R` (i.e. `R^n`). -/
   (n : ℕ)
+  /-- The kernel of the surjective map from `Fin n → R` (i.e. `R^n`) to the module represented. -/
   (S : Submodule R (Fin n → R))
 
 namespace FGModuleRepr
