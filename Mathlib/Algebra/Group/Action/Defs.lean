@@ -72,11 +72,15 @@ lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b =
 lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := rfl
 
 /--
-Type class for additive monoid actions. The `AddAction G P` typeclass says that the
-additive monoid `G` acts additively on a type `P`.
+Type class for additive monoid actions on types, with notation `g +ᵥ p`.
 
-For example, if `A` is an additive group and `X` is a type, the way to
-say "let `A` act on `X`" is `[AddAction A X]`.
+The `AddAction G P` typeclass says that the additive monoid `G` acts additively on a type `P`.
+More precisely this means that the action satisfies the two axioms `0 +ᵥ p = p` and
+`(g₁ + g₂) +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)`. A mathematician might simply say that the monoid `G`
+acts on `P`.
+
+For example, if `A` is an additive group and `X` is a type, if a mathematician says
+say "let `A` act on the set `X`" they will usually mean `[AddAction A X]`.
 -/
 class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
@@ -84,11 +88,16 @@ class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
   /-- Associativity of `+` and `+ᵥ` -/
   add_vadd : ∀ (g₁ g₂ : G) (p : P), (g₁ + g₂) +ᵥ p = g₁ +ᵥ g₂ +ᵥ p
 
-/-- Typeclass for multiplicative actions by monoids. The `MulAction G P` typeclass says that the
-monoid `G` acts multiplicatively on a type `P`.
+/--
+Type class for multiplicative monoid actions on types, with notation `g • p`.
 
-For example, if `G` is a group (with group law multiplication) and `X` is a type, the way to
-say "let `G` act on `X`" is `[MulAction G X]`.
+The `MulAction G P` typeclass says that the monoid `G` acts multiplicatively on a type `P`.
+More precisely this means that the action satisfies the two axioms `1 • p = p` and
+`(g₁ * g₂) • p = g₁ • (g₂ • p)`. A mathematician might simply say that the monoid `G`
+acts on `P`.
+
+For example, if `G` is a group and `X` is a type, if a mathematician says
+say "let `G` act on the set `X`" they will probably mean  `[AddAction G X]`.
 -/
 @[to_additive (attr := ext)]
 class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where

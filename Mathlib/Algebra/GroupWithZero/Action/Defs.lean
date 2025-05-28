@@ -330,8 +330,10 @@ end DistribSMul
 /-- Typeclass for multiplicative actions on additive structures.
 
 For example, if `G` is a group (with group law written as multiplication) and `A` is an
-abelian group (with group law written as addition), then the way to give `A` a `G`-module
+abelian group (with group law written as addition), then to give `A` a `G`-module
 structure (for example, to use the theory of group cohomology) is to say `[DistribMulAction G A]`.
+Note in that we do not use the `Module` typeclass for `G`-modules, as this is for modules
+over a ring rather than a group.
 
 Mathematically, `DistribMulAction G A` is equivalent to giving `A` the structure of
 a `ℤ[G]`-module.
