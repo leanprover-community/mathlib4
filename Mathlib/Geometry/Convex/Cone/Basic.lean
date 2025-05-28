@@ -41,7 +41,7 @@ assert_not_exists NormedSpace Real Cardinal
 
 open Set LinearMap Pointwise
 
-variable {𝕜 R M F G : Type*}
+variable {𝕜 R M N O : Type*}
 
 /-! ### Definition of `ConvexCone` and basic properties -/
 
@@ -191,25 +191,25 @@ end Module
 
 section Maps
 
-variable [AddCommMonoid F] [AddCommMonoid G]
-variable [Module R M] [Module R F] [Module R G]
+variable [AddCommMonoid N] [AddCommMonoid O]
+variable [Module R M] [Module R N] [Module R O]
 
 /-- The image of a convex cone under a `R`-linear map is a convex cone. -/
-def map (f : M →ₗ[R] F) (S : ConvexCone R M) : ConvexCone R F where
+def map (f : M →ₗ[R] N) (S : ConvexCone R M) : ConvexCone R N where
   carrier := f '' S
   smul_mem' := fun c hc _ ⟨x, hx, hy⟩ => hy ▸ f.map_smul c x ▸ mem_image_of_mem f (S.smul_mem hc hx)
   add_mem' := fun _ ⟨x₁, hx₁, hy₁⟩ _ ⟨x₂, hx₂, hy₂⟩ =>
     hy₁ ▸ hy₂ ▸ f.map_add x₁ x₂ ▸ mem_image_of_mem f (S.add_mem hx₁ hx₂)
 
 @[simp, norm_cast]
-theorem coe_map (S : ConvexCone R M) (f : M →ₗ[R] F) : (S.map f : Set F) = f '' S :=
+theorem coe_map (S : ConvexCone R M) (f : M →ₗ[R] N) : (S.map f : Set N) = f '' S :=
   rfl
 
 @[simp]
-theorem mem_map {f : M →ₗ[R] F} {S : ConvexCone R M} {y : F} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
+theorem mem_map {f : M →ₗ[R] N} {S : ConvexCone R M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
   Set.mem_image f S y
 
-theorem map_map (g : F →ₗ[R] G) (f : M →ₗ[R] F) (S : ConvexCone R M) :
+theorem map_map (g : N →ₗ[R] O) (f : M →ₗ[R] N) (S : ConvexCone R M) :
     (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| image_image g f S
 
@@ -218,7 +218,7 @@ theorem map_id (S : ConvexCone R M) : S.map LinearMap.id = S :=
   SetLike.coe_injective <| image_id _
 
 /-- The preimage of a convex cone under a `R`-linear map is a convex cone. -/
-def comap (f : M →ₗ[R] F) (S : ConvexCone R F) : ConvexCone R M where
+def comap (f : M →ₗ[R] N) (S : ConvexCone R N) : ConvexCone R M where
   carrier := f ⁻¹' S
   smul_mem' c hc x hx := by
     rw [mem_preimage, f.map_smul c]
@@ -228,19 +228,19 @@ def comap (f : M →ₗ[R] F) (S : ConvexCone R F) : ConvexCone R M where
     exact S.add_mem hx hy
 
 @[simp]
-theorem coe_comap (f : M →ₗ[R] F) (S : ConvexCone R F) : (S.comap f : Set M) = f ⁻¹' S :=
+theorem coe_comap (f : M →ₗ[R] N) (S : ConvexCone R N) : (S.comap f : Set M) = f ⁻¹' S :=
   rfl
 
 @[simp]
 theorem comap_id (S : ConvexCone R M) : S.comap LinearMap.id = S :=
   rfl
 
-theorem comap_comap (g : F →ₗ[R] G) (f : M →ₗ[R] F) (S : ConvexCone R G) :
+theorem comap_comap (g : N →ₗ[R] O) (f : M →ₗ[R] N) (S : ConvexCone R O) :
     (S.comap g).comap f = S.comap (g.comp f) :=
   rfl
 
 @[simp]
-theorem mem_comap {f : M →ₗ[R] F} {S : ConvexCone R F} {x : M} : x ∈ S.comap f ↔ f x ∈ S :=
+theorem mem_comap {f : M →ₗ[R] N} {S : ConvexCone R N} {x : M} : x ∈ S.comap f ↔ f x ∈ S :=
   Iff.rfl
 
 end Maps
