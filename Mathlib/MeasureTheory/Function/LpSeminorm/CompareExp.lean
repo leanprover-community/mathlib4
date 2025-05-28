@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Eric Wieser
 import Mathlib.Data.ENNReal.Holder
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 import Mathlib.MeasureTheory.Integral.MeanInequalities
-import Mathlib.Tactic.Finiteness
 
 /-!
 # Compare Lp seminorms for different values of `p`

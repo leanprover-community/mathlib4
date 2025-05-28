@@ -321,12 +321,12 @@ theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} 
   is equivalent to one less transitivity of stabilizer of a point
   (Wielandt, th. 9.1, 1st part) -/
 @[to_additive
-   "Multiple transitivity of a pretransitive action
-   is equivalent to one less transitivity of stabilizer of a point
-   (Wielandt, th. 9.1, 1st part)"]
-theorem isMultiplyPretransitive_iff_succ [IsPretransitive G α] {n : ℕ} {a : α} :
-    IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n ↔
-      IsMultiplyPretransitive G α n.succ := by
+  "Multiple transitivity of a pretransitive action
+  is equivalent to one less transitivity of stabilizer of a point
+  [Wielandt, th. 9.1, 1st part][Wielandt-1964]."]
+theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
+    IsMultiplyPretransitive G α n.succ ↔
+      IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
   constructor
   · exact fun hn ↦ {
       exists_smul_eq x y := by
