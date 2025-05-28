@@ -12,13 +12,9 @@ import Mathlib.LinearAlgebra.RootSystem.Chain
 /-!
 # The Lie algebra of a root system
 
-## TODO
-* Lemma stating `LinearIndependent R b.h` (Uses `RootPairing.Base.cartanMatrix_nondegenerate`.)
-* Lemma stating `⁅e i, f j⁆ = 0` when `i ≠ j` (Lemma 3.5 from [Geck](Geck2017).)
-
 ## Main definitions:
-* `RootPairing.Base.lieAlgebra`: ...
-* `RootPairing.Base.cartanSubalgebra`: ...
+* `RootPairing.GeckConstruction.lieAlgebra`: ...
+* `RootPairing.GeckConstruction.cartanSubalgebra`: ...
 
 ## Alternative approaches
 
@@ -29,19 +25,23 @@ Mention:
 * Geck: NB does not give basis for Lie algebra
 * Seems no approach that does not require choosing base
 
+## TODO
+* Lemma stating `LinearIndependent R h` (Uses `RootPairing.Base.cartanMatrix_nondegenerate`.)
+* Lemma stating `⁅e i, f j⁆ = 0` when `i ≠ j` (Lemma 3.5 from [Geck](Geck2017).)
+
 -/
 
 noncomputable section
 
 open Set
 
-namespace RootPairing.Base
+namespace RootPairing.GeckConstruction
 
 variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-  {P : RootSystem ι R M N} [P.IsCrystallographic]
-  {b : P.Base}
+  {P : RootSystem ι R M N} [P.IsCrystallographic] {b : P.Base}
 
+/-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
 def e (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   open scoped Classical in
@@ -51,6 +51,7 @@ def e (i : b.support) :
     (.of fun i' j ↦ if i' = i then ↑|b.cartanMatrix i j| else 0)
     (.of fun i' j ↦ if P.root i' = P.root i + P.root j then P.chainBotCoeff i j + 1 else 0)
 
+/-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
 def f (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   open scoped Classical in
@@ -60,27 +61,55 @@ def f (i : b.support) :
     (.of fun i' j ↦ if i' = - i then ↑|b.cartanMatrix i j| else 0)
     (.of fun i' j ↦ if P.root i' = P.root j - P.root i then P.chainTopCoeff i j + 1 else 0)
 
+/-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
 def h (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   open scoped Classical in
   .fromBlocks 0 0 0 (.diagonal (P.pairingIn ℤ · i))
 
+variable (b)
+
+/-- An involutive matrix which can transfer results between `RootPairing.GeckConstruction.e` and
+`RootPairing.GeckConstruction.f`. -/
 def ω :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   open scoped Classical in
   letI := P.indexNeg
   .fromBlocks 1 0 0 <| .of fun i j ↦ if i = -j then 1 else 0
 
+/-- Geck's construction of the Lie algebra associated to a root system with distinguished base. -/
+def lieAlgebra [Fintype b.support] [Fintype ι] [DecidableEq ι] :
+    LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
+  LieSubalgebra.lieSpan R _ (range e ∪ range f)
+
+/-- A distinguished Cartan subalgebra inside Geck's construction of the Lie algebra associated to a
+root system with distinguished base. -/
+def cartanSubalgebra [Fintype b.support] [Fintype ι] [DecidableEq ι] :
+    LieSubalgebra R (lieAlgebra b) :=
+  (LieSubalgebra.lieSpan R _ (range h)).comap (lieAlgebra b).incl
+
+variable {b}
+
 attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply
 
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
 lemma ω_mul_ω [DecidableEq ι] [Fintype ι] [Fintype b.support] :
-    b.ω * b.ω = 1 := by
+    ω b * ω b = 1 := by
   ext (k | k) (l | l) <;>
   simp [ω, -indexNeg_neg]
 
+omit [Finite ι] [IsDomain R] in
+lemma ω_mul_h [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
+    ω b * h i = - h i * ω b := by
+  ext (k | k) (l | l)
+  · simp [ω, h]
+  · simp [ω, h]
+  · simp [ω, h]
+  · simp only [ω, h, Matrix.mul_apply, Fintype.sum_sum_type, Matrix.fromBlocks_apply₂₂]
+    aesop
+
 lemma ω_mul_e [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
-    b.ω * b.e i = b.f i * b.ω := by
+    ω b * e i = f i * ω b := by
   letI := P.indexNeg
   classical
   ext (k | k) (l | l)
@@ -96,20 +125,10 @@ lemma ω_mul_e [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support)
     simp [neg_eq_iff_eq_neg, sub_eq_add_neg]
 
 lemma ω_mul_f [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
-    b.ω * b.f i = b.e i * b.ω := by
-  have := congr_arg (· * ω) (congr_arg (ω * ·) (b.ω_mul_e i))
+    ω b * f i = e i * ω b := by
+  have := congr_arg (· * ω b) (congr_arg (ω b * ·) (ω_mul_e i))
   simp only [← mul_assoc, ω_mul_ω] at this
   simpa [mul_assoc, ω_mul_ω] using this.symm
-
-omit [Finite ι] [IsDomain R] in
-lemma ω_mul_h [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
-    b.ω * b.h i = - b.h i * b.ω := by
-  ext (k | k) (l | l)
-  · simp [ω, h]
-  · simp [ω, h]
-  · simp [ω, h]
-  · simp only [ω, h, Matrix.mul_apply, Fintype.sum_sum_type, Matrix.fromBlocks_apply₂₂]
-    aesop
 
 omit [Finite ι] [IsDomain R] [CharZero R] in
 lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
@@ -145,7 +164,7 @@ lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
     simp only [Matrix.diagonal_apply, ite_mul, zero_mul, mul_ite, mul_zero, Finset.sum_sub_distrib,
       Finset.mem_singleton, Finset.sum_singleton, Finset.sum_insert, hkl, not_false_eq_true,
       reduceIte, right_eq_add, ite_self, add_zero, zero_add, ite_sub_ite, sub_self,
-      cartanMatrix, cartanMatrixIn_def]
+      Base.cartanMatrix, Base.cartanMatrixIn_def]
     refine ite_congr rfl (fun hkil ↦ ?_) (fun _ ↦ rfl)
     simp only [pairingIn_eq_add_of_root_eq_add hkil, Int.cast_add]
     ring
@@ -154,14 +173,14 @@ lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
 lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
     ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
   classical
-  suffices ω * ⁅h j, f i⁆ = ω * (-b.cartanMatrix i j • f i) by
-    replace this := congr_arg (ω * ·) this
+  suffices ω b * ⁅h j, f i⁆ = ω b * (-b.cartanMatrix i j • f i) by
+    replace this := congr_arg (ω b * ·) this
     simpa [← mul_assoc, ω_mul_ω] using this
-  calc ω * ⁅h j, f i⁆ = ω * (h j * f i - f i * h j) := by rw [Ring.lie_def]
-                    _ = - (h j * e i - e i * h j) * ω := ?_
-                    _ = - ⁅h j, e i⁆ * ω := by rw [Ring.lie_def]
-                    _ = - (b.cartanMatrix i j • e i) * ω := by rw [lie_h_e]
-                    _ = ω * (-b.cartanMatrix i j • f i) := ?_
+  calc ω b * ⁅h j, f i⁆ = ω b * (h j * f i - f i * h j) := by rw [Ring.lie_def]
+                      _ = - (h j * e i - e i * h j) * ω b := ?_
+                      _ = - ⁅h j, e i⁆ * ω b := by rw [Ring.lie_def]
+                      _ = - (b.cartanMatrix i j • e i) * ω b := by rw [lie_h_e]
+                      _ = ω b * (-b.cartanMatrix i j • f i) := ?_
   · rw [mul_sub, ← mul_assoc, ← mul_assoc, ω_mul_h, ω_mul_f, mul_assoc, mul_assoc, ω_mul_f, ω_mul_h,
       neg_sub, neg_mul, neg_mul, mul_neg, sub_mul, mul_assoc, mul_assoc]
     abel
@@ -209,7 +228,8 @@ private lemma lie_e_f_same_aux [P.IsReduced] [Fintype b.support] [Fintype ι] (i
       P.chainBotCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₁ x <| by simp [hx]
     have h_lin_ind_y : LinearIndependent R ![P.root i, P.root y] := by
       rw [← add_eq_of_eq_sub hy, add_comm]; simpa
-    simp [hy, h₁, chainTopCoeff_of_sub h_lin_ind_y hy]
+    have hy' : P.chainTopCoeff i k = P.chainTopCoeff i y + 1 := chainTopCoeff_of_sub h_lin_ind_y hy
+    simp [hy, hy', h₁]
   · suffices P.chainBotCoeff i k = 0 ∧ P.chainTopCoeff i k = 0 by simp [if_neg, h₁, h₂, this]
     exact ⟨P.chainBotCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₁ x <| by simp [hx],
            P.chainTopCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₂ x <| by simp [hx]⟩
@@ -217,66 +237,49 @@ private lemma lie_e_f_same_aux [P.IsReduced] [Fintype b.support] [Fintype ι] (i
 /-- Lemma 3.4 from [Geck](Geck2017). -/
 lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support) :
     ⁅e i, f i⁆ = h i := by
-  letI := P.indexNeg
+  letI _i := P.indexNeg
   have _i : NoZeroSMulDivisors ℤ M := have := P.reflexive_left; .int_of_charZero R M
   classical
   ext (k | k) (l | l)
-  · simp [Ring.lie_def, e, f, h, Matrix.mul_apply]
-  · simp [Ring.lie_def, e, f, h, Matrix.mul_apply, ← indexNeg_neg, sub_eq_zero]
-    congr
-    ext m
-    rw [← ite_and, ← ite_and, if_neg, if_neg]
-    · rintro ⟨contra, -, rfl⟩
-      simp [P.ne_zero l] at contra
-    · rintro ⟨contra, -, rfl⟩
-      simp [P.ne_zero l, sub_eq_add_neg] at contra
-  · simp [Ring.lie_def, e, f, h, Matrix.mul_apply]
+  · simp [e, f, h]
+  · have h₁ (x : ι) : ¬ (P.root x = P.root l - P.root i ∧ k = i ∧ x = -i) := by
+      simp only [not_and]
+      rintro contra rfl rfl
+      simp [P.ne_zero, sub_eq_add_neg] at contra
+    have h₂ (x : ι) : ¬ (P.root x = P.root i + P.root l ∧ k = i ∧ x = i) := by
+      simp only [not_and]
+      rintro contra rfl rfl
+      simp [P.ne_zero] at contra
+    simp [e, f, h, h₁, h₂, ← indexNeg_neg, ← ite_and]
+  · simp [e, f, h]
   · rcases eq_or_ne k i with rfl | hki
-    · simp [Ring.lie_def, e, f, h, Matrix.mul_apply, ← indexNeg_neg, Matrix.diagonal_apply,
-        ← ite_and]
-      simp [-indexNeg_neg, P.ne_zero, P.ne_neg]
+    · have hx (x : ι) : ¬ (P.root x = P.root i + P.root l ∧ P.root i = P.root x - P.root i) := by
+        rintro ⟨-, contra⟩
+        refine P.two_smul_notMem_range_root (i := i) ⟨x, ?_⟩
+        rwa [eq_sub_iff_add_eq, ← two_smul R, eq_comm] at contra
+      simp only [e, f, h, P.ne_zero, P.ne_neg, Ring.lie_def, Fintype.sum_sum_type, Matrix.sub_apply,
+        Matrix.mul_apply, Matrix.fromBlocks_apply₂₁, Matrix.of_apply, Matrix.fromBlocks_apply₂₂,
+        left_eq_add, zero_mul, mul_zero, ite_mul, mul_ite, ← ite_and]
       rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
-      have (x : ι) : ¬ (P.root x = P.root i + P.root l ∧ P.root ↑i = P.root x - P.root i) := by
-        rintro ⟨h₁, h₂⟩
-        have : i = l := by simpa [h₁] using h₂
-        replace h₁ : P.root x = (2 : R) • P.root l := by rw [two_smul, h₁, this]
-        exact P.two_smul_notMem_range_root ⟨x, h₁⟩
-      simp_rw [if_neg (this _)]
-      aesop
+      simp [hx, eq_comm]
     rcases eq_or_ne k (-i) with rfl | hki'
-    · simp [Ring.lie_def, e, f, h, Matrix.mul_apply, ← indexNeg_neg, Matrix.diagonal_apply,
-        ← ite_and, -indexNeg_neg, hki]
-      have aux₁ (x : ι) : ¬ P.root (-i) = P.root x - P.root i := by
-        rw [eq_comm]
-        simp [eq_sub_iff_add_eq, P.ne_zero x]
-      simp [-indexNeg_neg, aux₁]
-      have aux₂ (x : ι) :
-          ¬ (P.root x = P.root l - P.root i ∧ P.root (-i) = P.root i + P.root x) := by
-        rintro ⟨h₁, h₂⟩
-        have : -i = l := by simpa [-indexNeg_neg, h₁] using h₂
-        replace h₁ : P.root x = (2 : R) • P.root l := by
-          rw [two_smul, h₁, this.symm, indexNeg_neg, root_reflection_perm, reflection_apply_self]
-          abel
-        exact P.two_smul_notMem_range_root ⟨x, h₁⟩
-      simp_rw [if_neg (aux₂ _)]
-      simp [-indexNeg_neg]
-      rcases eq_or_ne l (-i) with rfl | hil
-      · simp
-      simp [-indexNeg_neg, hil, hil.symm]
-    have h_lin_ind : LinearIndependent R ![P.root i, P.root k] := by
-      rw [LinearIndependent.pair_symm_iff]
-      simpa [IsReduced.linearIndependent_iff, hki] using hki'
+    · have hx (x : ι) : ¬ (P.root x = P.root l - P.root i ∧ P.root (-i) = P.root i + P.root x) := by
+        rintro ⟨-, contra⟩
+        refine P.two_smul_notMem_range_root (i := -i) ⟨x, ?_⟩
+        replace contra : P.root x = -(P.root i + P.root i) := by
+          simpa [neg_eq_iff_add_eq_zero, ← add_assoc, add_eq_zero_iff_eq_neg'] using contra
+        simp [contra, two_smul]
+      have aux (x : ι) : ¬ P.root (-i) = P.root x - P.root i := by
+        simp [eq_sub_iff_add_eq, P.ne_zero x, eq_comm]
+      simp only [e, f, h, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
+        Matrix.fromBlocks_apply₂₁, Matrix.of_apply, hki, reduceIte, zero_mul, Finset.sum_const_zero,
+        Matrix.fromBlocks_apply₂₂, mul_ite, ite_mul, mul_zero, ← ite_and, if_neg (hx _), add_zero,
+        aux, zero_sub, Matrix.diagonal_apply]
+      rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
+      simp [pairingIn_reflection_perm_self_left, eq_comm, apply_ite ((- ·) : R → R)]
     rcases eq_or_ne k l with rfl | hkl
     · exact lie_e_f_same_aux i k hki hki'
-    have h₁ (x : ι) : ¬ (P.root x = P.root l - P.root i ∧ P.root k = P.root i + P.root x) := by
-      rintro ⟨hx₁, hx₂⟩
-      simp [hx₁, hkl] at hx₂
-    have h₂ (x : ι) : ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root i) := by
-      rintro ⟨hx₁, hx₂⟩
-      simp [hx₁, hkl] at hx₂
-    simp [if_neg (h₁ _), if_neg (h₂ _), hkl]
-    simp [h, e, f, hkl]
-    aesop
+    · simp_all [h, e, f]
 
 lemma isSl2Triple [P.IsReduced] [Fintype b.support] [Fintype ι] [DecidableEq ι] (i : b.support) :
     IsSl2Triple (h i) (e i) (f i) where
@@ -285,17 +288,4 @@ lemma isSl2Triple [P.IsReduced] [Fintype b.support] [Fintype ι] [DecidableEq ι
   lie_h_e_nsmul := by rw [lie_h_e]; simp
   lie_h_f_nsmul := by rw [lie_h_f]; simp
 
-variable (b)
-variable [Fintype b.support] [Fintype ι] [DecidableEq ι]
-
-/-- The Lie algebra associated to a root system with distinguished base. -/
-def lieAlgebra :
-    LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
-  LieSubalgebra.lieSpan R _ (range e ∪ range f)
-
-/-- The Cartan subalgebra of the Lie algebra associated to a root system with distinguished base. -/
-def cartanSubalgebra :
-    LieSubalgebra R b.lieAlgebra :=
-  (LieSubalgebra.lieSpan R _ (range b.h)).comap (lieAlgebra b).incl
-
-end RootPairing.Base
+end RootPairing.GeckConstruction
