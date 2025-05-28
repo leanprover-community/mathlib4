@@ -211,3 +211,24 @@ example : True := by
 trivial -- also a comment
 
 -- with a line break
+
+-- Check that `where` fields allow empty lines.
+structure F where
+
+  a : Unit → Unit
+
+  b : Unit
+
+  c : Unit
+
+-- Check that `where` fields allow empty lines.
+def F₀ : F where
+
+  a _ := by
+    exact ()
+
+  b := ()
+
+  c := ()
+
+--

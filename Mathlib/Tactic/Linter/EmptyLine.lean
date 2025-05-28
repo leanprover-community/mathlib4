@@ -106,9 +106,16 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       -- leading and trailing whitespace from them.
       -- These ranges typically represent embedded comments and we ignore line breaks inside them.
       -- We do inspect leading and trailing whitespace though.
+      -- We treat `where` specially, since we allow empty lines in `where` fields.
       let trails := stx.filterMap fun s =>
         if let some str := s.getTrailing?
         then
+          -- Handle `where` and `where` fields.
+          if s.getAtomVal == "where" ||
+             s.isOfKind ``Parser.Term.structInstField ||
+             s.isOfKind ``Parser.Command.structSimpleBinder then
+            s.getTrailing?.map (·.getRange)
+          else
           let strim := str.trim
           if (strim.splitOn "\n\n").length != 1 then
             some strim.getRange
