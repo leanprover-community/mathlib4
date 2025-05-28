@@ -107,10 +107,8 @@ theorem aemeasurable_mlconvolution {f g : G → ℝ≥0∞}
   unfold mlconvolution
   fun_prop
 
-set_option trace.Meta.Tactic.fun_prop true
-
 @[to_additive]
-theorem mlconvolution_assoc'₀ {f g k : G → ℝ≥0∞}
+theorem mlconvolution_assoc₀ {f g k : G → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) (hk : AEMeasurable k μ) :
     f ⋆ₗ[μ] g ⋆ₗ[μ] k = (f ⋆ₗ[μ] g) ⋆ₗ[μ] k := by
   ext x
@@ -124,17 +122,28 @@ theorem mlconvolution_assoc'₀ {f g k : G → ℝ≥0∞}
   simp only [mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left]
   fun_prop
 
-@[to_additive]
-theorem mlconvolution_assoc₀ {μ : Measure G} [IsMulLeftInvariant μ] [SFinite μ]
-    {f g k : G → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) (hk : AEMeasurable k μ) :
-    f ⋆ₗ[μ] g ⋆ₗ[μ] k = (f ⋆ₗ[μ] g) ⋆ₗ[μ] k := by
+/- Convolution is associative. -/
+@[to_additive "Convolution is associative."]
+theorem mlconvolution_assoc {f g k : G → ℝ≥0∞}
+    (hf : Measurable f) (hg : Measurable g) (hk : Measurable k) :
+    f ⋆ₗ[μ] g ⋆ₗ[μ] k = (f ⋆ₗ[μ] g) ⋆ₗ[μ] k :=
+  mlconvolution_assoc₀ (hf.aemeasurable) (hg.aemeasurable) (hk.aemeasurable)
+
+end Group
+
+section CommGroup
+
+variable [CommGroup G] [MeasurableMul₂ G] [MeasurableInv G] (μ : Measure G)
+
+/-- Convolution is commutative when the group is commutative. -/
+@[to_additive "Convolution is commutative when the group is commutative."]
+theorem mlconvolution_comm [IsMulLeftInvariant μ] [IsInvInvariant μ] {f g : G → ℝ≥0∞} :
+    (f ⋆ₗ[μ] g) = (g ⋆ₗ[μ] f) := by
   ext x
   simp only [mlconvolution_def]
-  conv in f _ * (∫⁻ _ , _ ∂μ) =>
-    rw [← lintegral_const_mul'' _ (by fun_prop), ← lintegral_mul_left_eq_self _ y⁻¹]
-  conv in (∫⁻ _ , _ ∂μ) * k _ =>
-    rw [← lintegral_mul_const'' _ (by fun_prop)]
-  rw [lintegral_lintegral_swap (by fun_prop)]
-  simp [mul_assoc]
+  rw [← lintegral_mul_left_eq_self _ x, ← lintegral_inv_eq_self]
+  simp [mul_comm]
+
+end CommGroup
 
 end MeasureTheory
