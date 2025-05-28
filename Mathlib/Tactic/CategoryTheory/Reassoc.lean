@@ -22,6 +22,9 @@ This is useful for generating lemmas which the simplifier can use even on expres
 that are already right associated.
 
 There is also a term elaborator `reassoc_of% t` for use within proofs.
+
+The `Mathlib.Tactic.CategoryTheory.IsoReassoc` extends `@[reassoc]` and `reassoc_of%`
+to support creating isomorphism reassociation lemmas.
 -/
 
 open Lean Meta Elab Tactic
@@ -42,12 +45,12 @@ def categorySimp (e : Expr) : MetaM Simp.Result :=
     (config := { decide := false })
 
 /--
-Given an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),
+Given an equation `f = g` between morphisms `X ⟶ Y` in a category,
 produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
 -/
-def reassocExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
+def reassocExprHom (e : Expr) : MetaM Expr := do
+  simpType categorySimp (← mkAppM ``eq_whisker' #[e])
 
 /--
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ⟶ Y` are
@@ -73,35 +76,49 @@ isomorphisms, provided that `Tactic.CategoryTheory.IsoReassoc` has been imported
 syntax (name := reassoc) "reassoc" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
 
 /--
-First implementation of the `reassoc` attribute.
-Will be overriden in `Tactic.CategoryTheory.IsoReassoc.lean` to allow use on equality of
-isomorphisms.
+IO ref for reassociation handlers `reassoc` attribute, so that it can be extended
+with additional handlers. Handlers take a proof of the equation.
+
+The default handler is `reassocExprHom` for morphism reassociation.
+This will be extended in `Tactic.CategoryTheory.IsoReassoc` for isomorphism reassociation.
 -/
-initialize reassocImplRef : IO.Ref (Name → Syntax → AttributeKind → AttrM Unit) ←
-  IO.mkRef fun src ref kind => match ref with
-    | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
-      if (kind != AttributeKind.global) then
-        throwError "`reassoc` can only be used as a global attribute"
-      addRelatedDecl src "_assoc" ref stx? fun type value levels => do
-        pure (← reassocExpr (← mkExpectedTypeHint value type), levels)
-    | _ => throwUnsupportedSyntax
+private initialize reassocImplRef : IO.Ref (Array (Expr → MetaM Expr)) ← IO.mkRef #[]
 
 /--
-First implementation of the `reassoc_of%` elaborator.
-Will be overriden in `Tactic.CategoryTheory.IsoReassoc.lean` to allow use on equality of
-isomorphisms.
+Registers a handler for `reassocExpr`. The handler takes a proof of an equation
+and returns a proof of the reassociation lemma.
+Handlers are considered in order of registration.
+They are applied directly to the equation in the body of the forall.
 -/
-initialize reassocOfImplRef : IO.Ref (TSyntax `term → TermElabM Expr) ←
-  IO.mkRef fun t => do reassocExpr (← Term.elabTerm t none)
+def registerReassocExpr (f : Expr → MetaM Expr) : IO Unit := do
+  reassocImplRef.modify (·.push f)
 
+initialize registerReassocExpr reassocExprHom
+
+/--
+Reassociates the morphisms in `type?` using the registered handlers,
+using `reassocExprHom` as the default ()
+If `type?` is not given, it is assumed to be the type of `pf`.
+-/
+def reassocExpr (pf : Expr) (type? : Option Expr) : MetaM Expr := do
+  let pf ← if let some type := type? then mkExpectedTypeHint pf type else pure pf
+  mapForallTelescope (forallTerm := pf) fun pf => do
+    let handlers ← reassocImplRef.get
+    handlers.firstM (fun h => h pf) <|> do
+      throwError "`reassoc` can only be used on terms about equality of (iso)morphisms"
 
 initialize registerBuiltinAttribute {
   name := `reassoc
   descr := ""
   applicationTime := .afterCompilation
-  add := fun src ref kind => do (← reassocImplRef.get) src ref kind }
+  add := fun src ref kind => match ref with
+  | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
+    if (kind != AttributeKind.global) then
+      throwError "`reassoc` can only be used as a global attribute"
+    addRelatedDecl src "_assoc" ref stx? fun type value levels => do
+      pure (← reassocExpr value type, levels)
+  | _ => throwUnsupportedSyntax }
 
-open Term in
 /--
 `reassoc_of% t`, where `t` is
 an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),
@@ -111,6 +128,7 @@ This also works for equations between isomorphisms, provided that
 `Tactic.CategoryTheory.IsoReassoc` has been imported.
 -/
 elab "reassoc_of% " t:term : term => do
-  (← reassocOfImplRef.get) t
+  let e ← Term.elabTerm t none
+  reassocExpr e none
 
 end CategoryTheory
