@@ -2094,6 +2094,41 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
         rw [h_z_list.2]
         exact hz
       )
+      have my_res_prop := my_res.property
+      rw [← Subgroup.mem_toSubmonoid]
+      rw [Subgroup.closure_toSubmonoid _]
+      conv =>
+        equals z ∈ (Submonoid.closure (Set.range (Function.uncurry gamma_m) ∪ (Set.range (Function.uncurry gamma_m))⁻¹) : Set _) =>
+          rfl
+      rw [Submonoid.closure_eq_image_prod]
+      rw [Set.mem_image]
+      use my_res.val.unattach
+      refine ⟨?_, ?_⟩
+      . simp only [Set.mem_setOf_eq]
+        intro x hx
+        rw [List.mem_unattach] at hx
+        obtain ⟨x_prop, x_and_prop_in⟩ := hx
+        exact x_prop
+      .
+        rw [← my_res_prop]
+        conv =>
+          pattern List.unattach _
+          equals (List.filter (fun s ↦ !decide (s = 1)) z_list) =>
+            ext i q
+            simp
+            by_cases list_get: (List.filter (fun s ↦ !decide (s = 1)) z_list)[i]? = none
+            . simp [list_get]
+            . simp at list_get
+              simp [list_get]
+        exact h_z_list.2
+
+      use (my_res.val : List G)
+      simp
+      have new_list_prod_eq := my_res.property
+      have foo := Submonoid.exists_list_of_mem_closure (s := Set.range (Function.uncurry gamma_m) ∪ (Set.range (Function.uncurry gamma_m))⁻¹) (x := z)
+      rw [← Subgroup.closure_toSubmonoid _] at foo
+      specialize foo hz
+      obtain ⟨l, ⟨l_mem_s, l_prod⟩⟩ := foo
 
       --let my_res := rewrite_list (z_list.attach.map ( fun g => ⟨g, by dsimp [E]⟩)) sorry
 
