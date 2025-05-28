@@ -67,7 +67,6 @@ noncomputable section
 /-- Given an `A`-algebra `B` and `S : Set ℕ`, we define `IsCyclotomicExtension S A B` requiring
 that there is an `n`-th primitive root of unity in `B` for all nonzero `n ∈ S` and that
 `B` is generated over `A` by the roots of `X ^ n - 1`. -/
-
 @[mk_iff]
 class IsCyclotomicExtension
   (S : Set ℕ) (A : Type u) (B : Type v)
@@ -261,7 +260,7 @@ private theorem iff_union_singleton_one_aux (hS : (∃ x ∈ S, x ≠ 0) ∨ S =
   refine ⟨fun H => ?_, fun H => ?_⟩
   · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ => ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
     simp [adjoin_singleton_one, empty]
-  · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (not_mem_empty s hs).elim, ?_⟩
+  · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (notMem_empty s hs).elim, ?_⟩
     simp [@singleton_one A B _ _ _ H]
 
 /-- `IsCyclotomicExtension S A B` is equivalent to `IsCyclotomicExtension (S ∪ {1}) A B`. -/
