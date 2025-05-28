@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Coalgebra.Equiv
 /-!
 # Tensor products of coalgebras
 
-Suppose `S` is an `A` algebra. Given an `S`-coalgebra `A` and `R`-coalgebra `B`, we can define
+Suppose `S` is an `R`-algebra. Given an `S`-coalgebra `A` and `R`-coalgebra `B`, we can define
 a natural comultiplication map `Δ : A ⊗[R] B → (A ⊗[R] B) ⊗[S] (A ⊗[R] B)`
 and counit map `ε : A ⊗[R] B → S` induced by the comultiplication and counit maps of `A` and `B`.
 
