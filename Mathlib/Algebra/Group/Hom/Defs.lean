@@ -209,9 +209,18 @@ the entirety of the `FunLike` hierarchy in order to determine this because so ma
 a significant performance hit when `map_one` fails to apply.
 
 To avoid this problem, we mark these widely applicable simp lemmas with key discimination tree keys
-with `mid` priority in order to ensure that they are not tried first. We do not use `low`, to allow
-bundled morphisms to unfold themselves with `low` priority, such that the generic morphism lemmas
-are applied first.
+with `mid` priority in order to ensure that they are not tried first.
+
+We do not use `low`, to allow bundled morphisms to unfold themselves with `low` priority such that
+the generic morphism lemmas are applied first. For instance, we might have
+```lean
+def fooMonoidHom : M →* N where
+  toFun := foo; map_one' := sorry; map_mul' := sorry
+
+@[simp low] lemma fooMonoidHom_apply (x : M) : fooMonoidHom x = foo x := rfl
+```
+As `map_mul` is tagged `simp mid`, this means that it still fires before `fooMonoidHom_apply`, which
+is the behavior we desire.
 -/
 
 variable [FunLike F M N]
