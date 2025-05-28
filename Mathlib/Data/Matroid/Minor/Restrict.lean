@@ -76,38 +76,39 @@ section restrict
 
 /-- The `IndepMatroid` whose independent sets are the independent subsets of `R`. -/
 @[simps] def restrictIndepMatroid (M : Matroid α) (R : Set α) : IndepMatroid α where
+
   E := R
+
   Indep I := M.Indep I ∧ I ⊆ R
+
   indep_empty := ⟨M.empty_indep, empty_subset _⟩
+
   indep_subset := fun _ _ h hIJ ↦ ⟨h.1.subset hIJ, hIJ.trans h.2⟩
+
   indep_aug := by
     rintro I I' ⟨hI, hIY⟩ (hIn : ¬ M.IsBasis' I R) (hI' : M.IsBasis' I' R)
     rw [isBasis'_iff_isBasis_inter_ground] at hIn hI'
     obtain ⟨B', hB', rfl⟩ := hI'.exists_isBase
     obtain ⟨B, hB, hIB, hBIB'⟩ := hI.exists_isBase_subset_union_isBase hB'
     rw [hB'.inter_isBasis_iff_compl_inter_isBasis_dual, diff_inter_diff] at hI'
-
     have hss : M.E \ (B' ∪ (R ∩ M.E)) ⊆ M.E \ (B ∪ (R ∩ M.E)) := by
       apply diff_subset_diff_right
       rw [union_subset_iff, and_iff_left subset_union_right, union_comm]
       exact hBIB'.trans (union_subset_union_left _ (subset_inter hIY hI.subset_ground))
-
     have hi : M✶.Indep (M.E \ (B ∪ (R ∩ M.E))) := by
       rw [dual_indep_iff_exists]
       exact ⟨B, hB, disjoint_of_subset_right subset_union_left disjoint_sdiff_left⟩
-
     have h_eq := hI'.eq_of_subset_indep hi hss
       (diff_subset_diff_right subset_union_right)
     rw [h_eq, ← diff_inter_diff, ← hB.inter_isBasis_iff_compl_inter_isBasis_dual] at hI'
-
     obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis_of_subset
       (subset_inter hIB (subset_inter hIY hI.subset_ground))
     obtain rfl := hI'.indep.eq_of_isBasis hJ
-
     have hIJ' : I ⊂ B ∩ (R ∩ M.E) := hIJ.ssubset_of_ne (fun he ↦ hIn (by rwa [he]))
     obtain ⟨e, he⟩ := exists_of_ssubset hIJ'
     exact ⟨e, ⟨⟨(hBIB' he.1.1).elim (fun h ↦ (he.2 h).elim) id,he.1.2⟩, he.2⟩,
       hI'.indep.subset (insert_subset he.1 hIJ), insert_subset he.1.2.1 hIY⟩
+
   indep_maximal := by
     rintro A hAR I ⟨hI, _⟩ hIA
     obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis'_of_subset hIA
@@ -115,6 +116,7 @@ section restrict
     simp only [hIJ, and_assoc, maximal_subset_iff, hJ.indep, hJ.subset, and_imp, true_and,
       hJ.subset.trans hAR]
     exact fun K hK _ hKA hJK ↦ hJ.eq_of_subset_indep hK hJK hKA
+
   subset_ground _ := And.right
 
 /-- Change the ground set of a matroid to some `R : Set α`. The independent sets of the restriction
