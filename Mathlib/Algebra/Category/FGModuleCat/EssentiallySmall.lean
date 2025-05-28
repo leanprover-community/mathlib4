@@ -43,13 +43,13 @@ instance : CoeSort (FGModuleRepr R) (Type u) :=
   ⟨repr⟩
 
 instance addCommGroup (x : FGModuleRepr R) : AddCommGroup x := by
-  unfold repr; infer_Instance
+  unfold repr; infer_instance
 
 instance module (x : FGModuleRepr R) : Module R x := by
-  unfold repr; infer_Instance
+  unfold repr; infer_instance
 
 instance finite (x : FGModuleRepr R) : Module.Finite R x := by
-  unfold repr; infer_Instance
+  unfold repr; infer_instance
 
 /-- A non-canonical representation of a finite module (as a quotient of $$R^n$$). -/
 noncomputable def ofFinite : FGModuleRepr R where
@@ -62,7 +62,7 @@ noncomputable def ofFiniteEquiv : ofFinite R M ≃ₗ[R] M :=
   Classical.choice (Module.Finite.exists_fin_quot_equiv R M).choose_spec.choose_spec
 
 instance category : Category (FGModuleRepr R) :=
-  InducedCategory.category fun x : FGModuleRepr R ↦ .of R x
+  InducedCategory.category fun x : FGModuleRepr R ↦ FGModuleCat.of R x
 
 instance smallCategory : SmallCategory (FGModuleRepr R) where
 
