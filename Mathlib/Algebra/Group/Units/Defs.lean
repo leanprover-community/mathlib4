@@ -92,7 +92,7 @@ instance instInv : Inv αˣ :=
 attribute [instance] AddUnits.instNeg
 
 /-- See Note [custom simps projection] -/
-@[to_additive "See Note [custom simps projection]"]
+@[to_additive "See Note [custom simps projection]"] -- this comment fixes the syntax highlighting "
 def Simps.val_inv (u : αˣ) : α := ↑(u⁻¹)
 
 initialize_simps_projections Units (as_prefix val, val_inv → null, inv → val_inv, as_prefix val_inv)
@@ -113,6 +113,14 @@ theorem ext : Function.Injective (val : αˣ → α)
 @[to_additive (attr := norm_cast)]
 theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
   ext.eq_iff
+
+theorem forall_iff {p : αˣ → Prop} : (∀ x, p x) ↔
+    ∀ (a : α) (b : α) (hab : a * b = 1) (hba : b * a = 1), p ⟨a, b, hab, hba⟩ :=
+  ⟨fun h _ _ _ _ => h _, fun h ⟨_,  _, _, _⟩ => h _ _ _ _⟩
+
+theorem exists_iff {p : αˣ → Prop} : (∃ x, p x) ↔
+    ∃ (a : α) (b : α) (hab : a * b = 1) (hba : b * a = 1), p ⟨a, b, hab, hba⟩ :=
+  ⟨fun ⟨⟨_, _, _, _⟩, h⟩ => ⟨_, _, _, _, h⟩, fun ⟨_, _, _, _, h⟩ => ⟨_, h⟩⟩
 
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality

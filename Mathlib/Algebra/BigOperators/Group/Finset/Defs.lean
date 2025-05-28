@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Data.Fintype.Sets
 import Mathlib.Data.Multiset.Bind
 
@@ -881,3 +881,4 @@ theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
   rfl
 
 end AddCommMonoid
+#min_imports

@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Notation.Prod
 import Mathlib.Logic.Equiv.Prod
 import Mathlib.Tactic.TermCongr
@@ -576,127 +575,7 @@ end
 
 end MulEquiv
 
-namespace Units
-
-variable [Monoid M] [Monoid N]
-
-/-- The monoid equivalence between units of a product of two monoids, and the product of the
-    units of each monoid. -/
-@[to_additive prodAddEquiv
-      "The additive monoid equivalence between additive units of a product
-      of two additive monoids, and the product of the additive units of each additive monoid."]
-def prodEquiv : (M × N)ˣ ≃* Mˣ × Nˣ :=
-  ((map (.fst _ _)).prod (map (.snd _ _))).toMulEquiv
-  ((coeHom _).prodMap (coeHom _)).toHomUnits rfl rfl
-
-theorem prodEquiv_apply (g : (M × N)ˣ) :
-    prodEquiv g = (map (.fst _ _) g, map (.snd _ _) g) := rfl
-@[to_additive (attr := simp) val_prodEquiv_apply]
-theorem val_prodEquiv_symm_apply (g : Mˣ × Nˣ) :
-    (prodEquiv.symm g).val = (g.1.val, g.2.val) := rfl
-@[to_additive (attr := simp) val_inv_prodEquiv_apply]
-theorem val_inv_prodEquiv_apply (g : Mˣ × Nˣ) :
-    (prodEquiv.symm g)⁻¹.val = (g.1⁻¹.val, g.2⁻¹.val) := rfl
-
-@[deprecated (since := "2025-05-22")]
-alias _root_.MulEquiv.prodEquiv := Units.prodEquiv
-
-@[deprecated (since := "2025-05-22")]
-alias _root_.MulEquiv.prodAddUnits := AddUnits.prodAddEquiv
-
-/-- The first element of the units of the product of two monoids. -/
-@[to_additive (attr := simps!) "The first element of the additive units of the
-  product of two additive monoids."]
-def fst : (M × N)ˣ →* Mˣ := (MonoidHom.fst _ _).comp prodEquiv.toMonoidHom
-
-/-- The second element of the units of the product of two monoids. -/
-@[to_additive (attr := simps!) "The second element of the additive units of the
-  product of two additive monoids."]
-def snd : (M × N)ˣ →* Nˣ := (MonoidHom.snd _ _).comp prodEquiv.toMonoidHom
-
-/-- The inclusion homomorphism from the units of a monoid to the
-  units of its product on the right with another. -/
-@[to_additive (attr := simps!) "The inclusion homomorphism from the additive units of an additive
-  monoid to the additive units of its product on the right with another."]
-def inl : Mˣ →* (M × N)ˣ := Units.map (MonoidHom.inl M N)
-
-/-- The inclusion homomorphism from the units of a monoid to the
-  units of its product on the left with another. -/
-@[to_additive (attr := simps!) "The inclusion homomorphism from the additive units of an additive
-  monoid to the additive units of its product on the left with another."]
-def inr : Nˣ →* (M × N)ˣ := Units.map (MonoidHom.inr M N)
-
-@[to_additive (attr := simp)]
-theorem fst_comp_inl  : fst.comp (inl (N := N)) = MonoidHom.id Mˣ := rfl
-@[to_additive (attr := simp)]
-theorem fst_inl (u : Mˣ) : fst (inl (N := N) u) = u := rfl
-@[to_additive (attr := simp)]
-theorem snd_comp_inl : snd.comp inl = (1 : Mˣ →* Nˣ) := rfl
-@[to_additive (attr := simp)]
-theorem snd_inl (u : Mˣ) : snd (inl (N := N) u) = 1 := rfl
-@[to_additive (attr := simp)]
-theorem fst_comp_inr : fst.comp inr = (1 : Nˣ →* Mˣ) := rfl
-@[to_additive (attr := simp)]
-theorem fst_inr (u : Nˣ) : fst (inr (M := M) u) = 1 := rfl
-@[to_additive (attr := simp)]
-theorem snd_comp_inr : snd.comp (inr (M := M)) = MonoidHom.id Nˣ := rfl
-@[to_additive (attr := simp)]
-theorem snd_inr (u : Nˣ) : snd (inr (M := M) u) = u := rfl
-
-/-- A map from the product of the units of two monoids to the units of their product. -/
-@[to_additive prod "A map from the product of the additive units of two
-    additive monoids to the additive units of their product."]
-def prod : Mˣ × Nˣ →* (M × N)ˣ := prodEquiv.symm.toMonoidHom
-
-@[to_additive (attr := simp) val_prod_apply]
-theorem val_prod_apply (g : Mˣ × Nˣ) : (prod g).val = (g.1.val, g.2.val) := rfl
-
-@[to_additive (attr := simp) val_inv_prod_apply]
-theorem val_inv_prod_apply (g : Mˣ × Nˣ) : (prod g)⁻¹.val = (g.1⁻¹.val, g.2⁻¹.val) := rfl
-
-@[to_additive (attr := simp) fst_prod]
-theorem fst_prod (g : Mˣ × Nˣ) : (prod g).fst = g.1 := rfl
-
-@[to_additive (attr := simp) snd_prod]
-theorem snd_prod (g : Mˣ × Nˣ) : (prod g).snd = g.2 := rfl
-
-@[to_additive (attr := simp) prod_fst_snd]
-theorem prod_fst_snd (g : (M × N)ˣ) : prod (fst g, snd g) = g := rfl
-
-@[to_additive]
-lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
-  mp h := ⟨h.unit.fst.isUnit, h.unit.snd.isUnit⟩
-  mpr h := (prod (h.1.unit, h.2.unit)).isUnit
-
-@[to_additive (attr := simp) toMonoidHom_prodEquiv_eq_fst_prod_snd]
-theorem toMonoidHom_prodEquiv_eq_fst_prod_snd :
-    (prodEquiv (M := M) (N := N) : (M × N)ˣ →* Mˣ × Nˣ) = fst.prod snd := rfl
-
-@[to_additive (attr := simp) toMonoidHom_prodEquiv_symm_eq_prod]
-theorem toMonoidHom_prodEquiv_symm_eq_prod :
-    ((prodEquiv (M := M) (N := N)).symm : Mˣ × Nˣ →* (M × N)ˣ) = prod := rfl
-
-open MulOpposite
-
-/-- Canonical homomorphism of monoids from `αˣ` into `α × αᵐᵒᵖ`.
-Used mainly to define the natural topology of `αˣ`. -/
-@[to_additive (attr := simps)
-      "Canonical homomorphism of additive monoids from `AddUnits α` into `α × αᵃᵒᵖ`.
-      Used mainly to define the natural topology of `AddUnits α`."]
-def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
-  toFun x := ⟨x, op ↑x⁻¹⟩
-  map_one' := by
-    simp only [inv_one, eq_self_iff_true, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
-  map_mul' x y := by simp only [mul_inv_rev, op_mul, Units.val_mul, Prod.mk_mul_mk]
-
-@[to_additive]
-theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
-  fun _ _ h => Units.ext <| (congr_arg Prod.fst h :)
-
-end Units
-
 /-! ### Multiplication and division as homomorphisms -/
-
 
 section BundledMulDiv
 
@@ -722,3 +601,4 @@ def divMonoidHom [DivisionCommMonoid α] : α × α →* α where
   map_mul' _ _ := mul_div_mul_comm _ _ _ _
 
 end BundledMulDiv
+#min_imports

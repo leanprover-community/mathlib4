@@ -37,6 +37,32 @@ open Function
 
 universe u v w
 
+namespace MonoidHom
+
+variable {M N G} [Monoid M] [Monoid N] [Monoid G]
+
+@[to_additive]
+def liftLeft (f : M →* N) {p : M →* G} (hp : Function.Surjective p) (g : G → N)
+    (h : ∀ x, g (p x) = f x) : G →* N where
+  toFun := g
+  map_one' := by
+    have h := h 1
+    simp only [map_one] at h
+    assumption
+  map_mul' x y := by
+    rcases hp x with ⟨_, rfl⟩
+    rcases hp y with ⟨_, rfl⟩
+    simp_rw [← p.map_mul, h, f.map_mul]
+
+@[to_additive]
+def liftRight (f : M →* N) {p : G →* N} (hp : Function.Injective p) (g : M → G)
+    (h : ∀ x, p (g x) = f x) : M →* G where
+  toFun := g
+  map_one' := hp (by simp_rw [h, map_one])
+  map_mul' x y := hp (by simp_rw [map_mul, h, map_mul])
+
+end MonoidHom
+
 section MonoidHomClass
 
 /-- If two homomorphisms from a division monoid to a monoid are equal at a unit `x`, then they are
@@ -57,20 +83,96 @@ theorem eq_on_inv {F G M} [Group G] [Monoid M] [FunLike F G M] [MonoidHomClass F
     (f g : F) {x : G} (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   (Group.isUnit x).eq_on_inv f g h
 
+
 end MonoidHomClass
+
+@[to_additive (attr := simps!)]
+def MonoidHom.mkUnit {G M : Type*} [Group G] [Monoid M] (f : G →* M) (x : G) : Mˣ :=
+  Units.mk _ _ (map_mul_eq_one f (mul_inv_cancel x)) (map_mul_eq_one f (inv_mul_cancel x))
 
 namespace Units
 
-variable {α : Type*} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
+variable {α : Type*} (M : Type u) {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
+
+/-- Coercion `Mˣ → M` as a monoid homomorphism. -/
+@[to_additive "Coercion `AddUnits M → M` as an AddMonoid homomorphism."]
+def coeHom : Mˣ →* M where
+  toFun := Units.val; map_one' := val_one; map_mul' := val_mul
+
+variable {M}
+
+@[to_additive (attr := simp)]
+theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
+
+@[to_additive]
+theorem coeHom_injective : Function.Injective (coeHom M) := Units.ext
+
+@[to_additive]
+theorem coeHom_inj {x y} : coeHom M x = coeHom M y ↔ x = y := coeHom_injective.eq_iff
+
+section DivisionMonoid
+
+variable [DivisionMonoid α]
+
+@[to_additive (attr := simp, norm_cast)]
+theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
+  (Units.coeHom α).map_zpow
+
+@[to_additive (attr := simp)]
+theorem _root_.map_units_inv {F : Type*} [FunLike F M α] [MonoidHomClass F M α]
+    (f : F) (u : Units M) :
+    f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
+
+end DivisionMonoid
+
+/-- If a map `g : M → Nˣ` agrees with a homomorphism `f : M →* N`, then
+this map is a monoid homomorphism too. -/
+@[to_additive
+  "If a map `g : M → AddUnits N` agrees with a homomorphism `f : M →+ N`, then this map
+  is an AddMonoid homomorphism too."]
+def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, g x = f x) : M →* Nˣ :=
+  f.liftRight coeHom_injective _ h
+
+@[to_additive (attr := simp)]
+theorem liftRight_apply {f : M →* N} {g : M → Nˣ} (h : ∀ x, g x = f x) (x) :
+    liftRight f g h x = g x := rfl
+
+@[to_additive (attr := simp)]
+theorem inv_liftRight_apply {f : M →* N} {g : M → Nˣ} (h : ∀ x, g x = f x) (x) :
+    (liftRight f g h x)⁻¹ = (g x)⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem mul_liftRight_inv {f : M →* N} {g : M → Nˣ} (h : ∀ x, g x = f x) (x) :
+    f x * ↑(liftRight f g h x)⁻¹ = 1 := h x ▸ Units.mul_inv _
+
+@[to_additive (attr := simp)]
+theorem liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, g x = f x) (x) :
+    ↑(liftRight f g h x)⁻¹ * f x = 1 := h x ▸ Units.inv_mul _
+
+theorem coeHom_comp_liftRight {f : M →* N} {g : M → Nˣ} (h : ∀ x, g x = f x) :
+    (coeHom N).comp (liftRight f g h) = f := MonoidHom.ext h
+
+/-- If `f` is a homomorphism from a group `G` to a monoid `M`,
+then its image lies in the units of `M`,
+and `f.toHomUnits` is the corresponding monoid homomorphism from `G` to `Mˣ`. -/
+@[to_additive
+  "If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
+  then its image lies in the `AddUnits` of `M`,
+  and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`."]
+def _root_.MonoidHom.toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
+  f.liftRight coeHom_injective f.mkUnit fun _ => rfl
+
+@[to_additive (attr := simp)]
+theorem coe_toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) (g : G) :
+    (f.toHomUnits g : M) = f g := rfl
+
+theorem coeHom_comp_toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) :
+  (coeHom M).comp f.toHomUnits = f := rfl
 
 /-- The group homomorphism on units induced by a `MonoidHom`. -/
-@[to_additive "The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]
-def map (f : M →* N) : Mˣ →* Nˣ :=
-  MonoidHom.mk'
-    (fun u => ⟨f u.val, f u.inv,
-      by rw [← f.map_mul, u.val_inv, f.map_one],
-      by rw [← f.map_mul, u.inv_val, f.map_one]⟩)
-    fun x y => ext (f.map_mul x y)
+@[to_additive
+  "The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]
+def map (f : M →* N) : Mˣ →* Nˣ := (f.comp (coeHom M)).toHomUnits
 
 @[to_additive (attr := simp)]
 theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
@@ -93,78 +195,12 @@ lemma map_injective {f : M →* N} (hf : Function.Injective f) :
 variable (M)
 
 @[to_additive (attr := simp)]
-theorem map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := by ext; rfl
-
-/-- Coercion `Mˣ → M` as a monoid homomorphism. -/
-@[to_additive "Coercion `AddUnits M → M` as an AddMonoid homomorphism."]
-def coeHom : Mˣ →* M where
-  toFun := Units.val; map_one' := val_one; map_mul' := val_mul
-
-variable {M}
+theorem map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := rfl
 
 @[to_additive (attr := simp)]
-theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
-
-section DivisionMonoid
-
-variable [DivisionMonoid α]
-
-@[to_additive (attr := simp, norm_cast)]
-theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
-  (Units.coeHom α).map_zpow
-
-@[to_additive (attr := simp)]
-theorem _root_.map_units_inv {F : Type*} [FunLike F M α] [MonoidHomClass F M α]
-    (f : F) (u : Units M) :
-    f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
-
-end DivisionMonoid
-
-/-- If a map `g : M → Nˣ` agrees with a homomorphism `f : M →* N`, then
-this map is a monoid homomorphism too. -/
-@[to_additive
-  "If a map `g : M → AddUnits N` agrees with a homomorphism `f : M →+ N`, then this map
-  is an AddMonoid homomorphism too."]
-def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →* Nˣ where
-  toFun := g
-  map_one' := by ext; rw [h 1]; exact f.map_one
-  map_mul' x y := Units.ext <| by simp only [h, val_mul, f.map_mul]
-
-@[to_additive (attr := simp)]
-theorem coe_liftRight {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
-    (liftRight f g h x : N) = f x := h x
-
-@[to_additive (attr := simp)]
-theorem mul_liftRight_inv {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
-    f x * ↑(liftRight f g h x)⁻¹ = 1 := by
-  rw [Units.mul_inv_eq_iff_eq_mul, one_mul, coe_liftRight]
-
-@[to_additive (attr := simp)]
-theorem liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
-    ↑(liftRight f g h x)⁻¹ * f x = 1 := by
-  rw [Units.inv_mul_eq_iff_eq_mul, mul_one, coe_liftRight]
+theorem map_one : map (1 : M →* N) = 1 := rfl
 
 end Units
-
-namespace MonoidHom
-
-/-- If `f` is a homomorphism from a group `G` to a monoid `M`,
-then its image lies in the units of `M`,
-and `f.toHomUnits` is the corresponding monoid homomorphism from `G` to `Mˣ`. -/
-@[to_additive
-  "If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
-  then its image lies in the `AddUnits` of `M`,
-  and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`."]
-def toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
-  Units.liftRight f (fun g => ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_cancel _),
-    map_mul_eq_one f (inv_mul_cancel _)⟩)
-    fun _ => rfl
-
-@[to_additive (attr := simp)]
-theorem coe_toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) (g : G) :
-    (f.toHomUnits g : M) = f g := rfl
-
-end MonoidHom
 
 namespace IsUnit
 
