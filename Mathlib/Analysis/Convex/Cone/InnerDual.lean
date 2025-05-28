@@ -237,6 +237,10 @@ theorem dual_dual (K : ProperCone ℝ H) : K.dual.dual = K :=
   ProperCone.toPointedCone_injective <| PointedCone.toConvexCone_injective <|
     (K : ConvexCone ℝ H).innerDualCone_of_innerDualCone_eq_self K.nonempty K.isClosed
 
+variable [CompleteSpace F]
+
+open scoped InnerProductSpace
+
 /-- This is a relative version of
 `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem`, which we recover by setting
 `f` to be the identity map. This is also a geometric interpretation of the Farkas' lemma
@@ -245,9 +249,9 @@ theorem hyperplane_separation (K : ProperCone ℝ H) {f : H →L[ℝ] F} {b : F}
     b ∈ K.map f ↔ ∀ y : F, f.adjoint y ∈ K.dual → 0 ≤ ⟪y, b⟫_ℝ where
   mp := by
     -- suppose `b ∈ K.map f`
-    simp_rw [mem_map, PointedCone.mem_closure, PointedCone.coe_map, coe_coe,
+    simp only [mem_map, PointedCone.mem_closure, PointedCone.coe_map, ContinuousLinearMap.coe_coe,
       mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, mem_coe, mem_dual,
-      adjoint_inner_right, forall_exists_index, and_imp]
+      ContinuousLinearMap.adjoint_inner_right, forall_exists_index, and_imp]
     -- there is a sequence `seq : ℕ → F` in the image of `f` that converges to `b`
     rintro seq hmem htends y hinner
     suffices h : ∀ n, 0 ≤ ⟪y, seq n⟫_ℝ from
@@ -268,16 +272,12 @@ theorem hyperplane_separation (K : ProperCone ℝ H) {f : H →L[ℝ] F} {b : F}
       _ _ _ _ C (K.map f).nonempty (K.map f).isClosed b h
     -- the rest of the proof is a straightforward algebraic manipulation
     refine ⟨y, ?_, hyb⟩
-    simp_rw [ProperCone.mem_dual, adjoint_inner_right]
+    simp only [mem_dual, ContinuousLinearMap.adjoint_inner_right]
     intro x hxK
-    apply hxy (f x)
-    simp_rw [C, coe_map]
-    apply subset_closure
-    simp_rw [PointedCone.toConvexCone_map, ConvexCone.coe_map, coe_coe, mem_image, SetLike.mem_coe]
-    exact ⟨x, hxK, rfl⟩
+    exact hxy (f x) <| subset_closure <| Set.mem_image_of_mem _ hxK
 
-theorem hyperplane_separation_of_notMem (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
-    (disj : b ∉ K.map f) : ∃ y : F, adjoint f y ∈ K.dual ∧ ⟪y, b⟫_ℝ < 0 := by
+theorem hyperplane_separation_of_notMem (K : ProperCone ℝ H) {f : H →L[ℝ] F} {b : F}
+    (disj : b ∉ K.map f) : ∃ y : F, ContinuousLinearMap.adjoint f y ∈ K.dual ∧ ⟪y, b⟫_ℝ < 0 := by
   contrapose! disj; rwa [K.hyperplane_separation]
 
 @[deprecated (since := "2025-05-24")]
