@@ -193,7 +193,7 @@ lemma rTensorAlgEquiv_apply (x : (MvPolynomial σ S) ⊗[R] N) :
 
 /-- The tensor product of the polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra with
-  coefficients in that algegra -/
+  coefficients in that algebra -/
 noncomputable def scalarRTensorAlgEquiv :
     MvPolynomial σ R ⊗[R] N ≃ₐ[R] MvPolynomial σ N :=
   rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))
@@ -204,7 +204,7 @@ variable (R)
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
 /-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
-equivalent to `M̀vPolynomial σ A`. -/
+equivalent to `MvPolynomial σ A`. -/
 noncomputable def algebraTensorAlgEquiv :
     A ⊗[R] MvPolynomial σ R ≃ₐ[A] MvPolynomial σ A := AlgEquiv.ofAlgHom
   (Algebra.TensorProduct.lift
@@ -239,12 +239,13 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
 
 lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
     (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by
-  induction' p using MvPolynomial.induction_on with a p q hp hq p i h
-  · simp only [map_C, algHom_C, Algebra.TensorProduct.algebraMap_apply,
+  induction p using MvPolynomial.induction_on with
+  | C a =>
+    simp only [map_C, algHom_C, Algebra.TensorProduct.algebraMap_apply,
       RingHomCompTriple.comp_apply]
     rw [← mul_one ((algebraMap R N) a), ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
-  · simp [hp, hq, tmul_add]
-  · simp [h]
+  | add p q hp hq => simp [hp, hq, tmul_add]
+  | mul_X p i h => simp [h]
 
 section Pushout
 
