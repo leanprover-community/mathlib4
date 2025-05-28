@@ -513,7 +513,7 @@ The key axiom here is `smul_mul : g • (x * y) = (g • x) * (g • y)`.
 If `G` is a group (with group law multiplication) and `Γ` is its automorphism
 group then there is a natural instance of `MulDistribMulAction Γ G`.
 
-The axiom is also satisfied by a Galois group `Gal(L/K)` acting on the field `L`,
+The axiom is also satisfied by a Galois group $Gal(L/K)$ acting on the field `L`,
 but here you can use the even stronger class `MulSemiringAction`, which captures
 how the action plays with both multiplication and addition. -/
 @[ext]
