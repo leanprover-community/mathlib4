@@ -38,15 +38,15 @@ namespace Module.associatedPrimes
 
 include S f in
 lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
-    (p : Ideal R') [p.IsPrime]
+    (p : Ideal R')
     (ass : p.comap (algebraMap R R') ∈ associatedPrimes R M) :
     p ∈ associatedPrimes R' M' := by
   rcases ass with ⟨hp, x, hx⟩
   constructor
-  · /- use the following to  remove `p.IsPrime`
-      exact (IsLocalization.isPrime_iff_isPrime_disjoint S _ _).mpr
-      ⟨hp, (IsLocalization.disjoint_comap_iff S R' p).mpr (p ≠ ⊤)⟩ -/
-    assumption
+  · refine (IsLocalization.isPrime_iff_isPrime_disjoint S _ _).mpr
+      ⟨hp, (IsLocalization.disjoint_comap_iff S R' p).mpr ?_⟩
+    by_contra eqtop
+    simp [eqtop, Ideal.comap_top, Ideal.isPrime_iff] at hp
   · use f x
     ext t
     rcases IsLocalization.mk'_surjective S t with ⟨r, s, hrs⟩
@@ -116,6 +116,36 @@ lemma comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg
     have := (Ideal.IsPrime.mul_mem_iff_mem_or_mem prime).mp mem
     tauto
 
+include S f in
+open Set in
+lemma associatedPrimes_isLocalizedModule_eq_preimage_comap_associatedPrimes [IsNoetherianRing R] :
+    (Ideal.comap (algebraMap R R'))⁻¹' (associatedPrimes R M) = associatedPrimes R' M' := by
+  ext p
+  exact ⟨fun h ↦ mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule S R' f p
+    (mem_preimage.mp h),
+    fun h ↦ comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg S R' f p h
+    ((isNoetherianRing_iff_ideal_fg R).mp (by assumption) _)⟩
 
+/-
+include S f in
+lemma preimage_map_associatedPrimes_isLocalizedModule_eq_associatedPrimes_disjoint
+    [IsNoetherianRing R] : (Ideal.map (algebraMap R R'))⁻¹' (associatedPrimes R' M') =
+    {p | p ∈ associatedPrimes R M ∧ Disjoint (S : Set R) p} := by
+  ext p
+  rw [← associatedPrimes_isLocalizedModule_eq_preimage_comap_associatedPrimes S R' f]
+  simp only [Set.mem_preimage, Set.mem_setOf_eq]
+  refine ⟨fun h ↦ ?_, fun ⟨ass, h⟩ ↦ ?_⟩
+  · have netop : Ideal.map (algebraMap R R') p ≠ ⊤ := by
+      by_contra eqtop
+      simp [eqtop, AssociatePrimes.mem_iff, IsAssociatedPrime, Ideal.isPrime_iff] at h
+    have : Disjoint (S : Set R) p :=
+      (IsLocalization.map_algebraMap_ne_top_iff_disjoint S R' _).mp netop
+    simp only [this, and_true]
+    convert h
+    apply (IsLocalization.comap_map_of_isPrime_disjoint S R' p _ this).symm
+
+    sorry
+  · simpa [IsLocalization.comap_map_of_isPrime_disjoint S R' p ass.1 h]
+-/
 
 end Module.associatedPrimes
