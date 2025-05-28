@@ -639,17 +639,15 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
       |>.filter (!initImports.contains ·)
 
     -- Find all prefixes which are allowed for one of these directories.
-    let mut allRules := NameSet.empty
-    for prfix in matchingPrefixes do
-      let some rules := RBMap.find? allowedImportDirs prfix | unreachable!
-      allRules := allRules.append rules
-    -- Error about those imports which are not covered by allRules.
+    let mut allRules := allowedImportDirs.getAllLeft mainModule
+    -- Error about those imports which are not covered by allowedImportDirs.
     let mut messages := #[]
     for imported in importsToCheck do
       if !allowedImportDirs.contains mainModule imported then
         let importPath := env.importPath imported
         let mut msg := m!"Module {mainModule} depends on {imported},\n\
-        but is only allowed to import modules starting with one of {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
+        but is only allowed to import modules starting with one of \
+        {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
         Note: module {imported}"
         let mut superseded := false
         match importPath.toList with
