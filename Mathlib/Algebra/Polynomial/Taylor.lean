@@ -40,21 +40,18 @@ theorem taylor_apply : taylor r f = f.comp (X + C r) :=
   rfl
 
 @[simp]
-theorem taylor_X : taylor r X = X + C r := by simp only [taylor_apply, X_comp]
+theorem taylor_X : taylor r X = X + C r := X_comp
 
 @[simp]
-theorem taylor_C (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C_comp]
+theorem taylor_C (x : R) : taylor r (C x) = C x := C_comp
+
+theorem taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_apply, C_0, add_zero, comp_X]
 
 @[simp]
-theorem taylor_zero' : taylor (0 : R) = LinearMap.id := by
-  ext
-  simp only [taylor_apply, add_zero, comp_X, map_zero, LinearMap.id_comp,
-    Function.comp_apply, LinearMap.coe_comp]
-
-theorem taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_zero', LinearMap.id_apply]
+theorem taylor_zero' : taylor (0 : R) = LinearMap.id := LinearMap.ext taylor_zero
 
 @[simp]
-theorem taylor_one : taylor r (1 : R[X]) = C 1 := by rw [← C_1, taylor_C]
+theorem taylor_one : taylor r (1 : R[X]) = C 1 := taylor_C r 1
 
 @[simp]
 theorem taylor_monomial (i : ℕ) (k : R) : taylor r (monomial i k) = C k * (X + C r) ^ i := by
@@ -102,12 +99,10 @@ theorem taylor_mul (p q : R[X]) :
 def taylorAlgHom (r : R) : R[X] →ₐ[R] R[X] :=
   AlgHom.ofLinearMap (taylor r) (taylor_one r) (taylor_mul r)
 
-theorem taylor_taylor (f : R[X]) (r s : R) :
-    taylor r (taylor s f) = taylor (r + s) f := by
+theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r + s) f := by
   simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, C_add, add_assoc]
 
-theorem taylor_eval (r : R) (f : R[X]) (s : R) :
-    (taylor r f).eval s = f.eval (s + r) := by
+theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
 
 theorem eval_add_of_sq_eq_zero (p : R[X]) (x y : R) (hy : y ^ 2 = 0) :
