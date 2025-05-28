@@ -616,10 +616,10 @@ end composition
 end LinearGrowth
 
 /-! ### Subadditive sequences -/
+
 namespace Subadditive
 
-open EReal Filter Function LinearGrowth
-open scoped Topology
+open EReal Filter LinearGrowth
 
 variable {u v : ℕ → EReal} {a : EReal}
 
@@ -635,7 +635,7 @@ lemma apply_mul_add_le' {n : ℕ} (h : ∀ m, u (m + n) ≤ u m + a) (k r : ℕ)
     exact (h (m * n + r)).trans (add_le_add_right hm a)
 
 lemma linearGrowthSup_le_div {n : ℕ} (hn : 1 ≤ n) (h : ∀ m, u (m + n) ≤ u m + a)
-    (hu : ∀ n, u n ≠ ⊤) :
+    (hu : ∀ m, u m ≠ ⊤) :
     linearGrowthSup u ≤ a / n := by
   -- This is the heart of Fekete's lemma. We first deal with the edge cases where `a` is infinite.
   rcases eq_or_ne a ⊤ with rfl | a_top
@@ -680,7 +680,7 @@ lemma linearGrowthSup_le_div {n : ℕ} (hn : 1 ≤ n) (h : ∀ m, u (m + n) ≤ 
       exact (Nat.lt_div_mul_add hn).le
 
 /-- A generalization of Fekete's lemma. If `u = v` is subadditive, it implies that `u n / n`
-converges to its infimum. -/
+  converges to its infimum. -/
 lemma linearGrowthSup_le_iInf (h : ∀ m n, u (m + n) ≤ u m + v n) (hu : ∀ n, u n ≠ ⊤) :
     linearGrowthSup u ≤ ⨅ n ≥ 1, v n / n :=
   le_iInf₂ fun n n_1 ↦ linearGrowthSup_le_div n_1 (fun m ↦ h m n) hu
@@ -691,7 +691,7 @@ lemma linearGrowthSup_le_linearGrowthInf (h : ∀ m n, u (m + n) ≤ u m + v n) 
   exact ⟨1, fun n n_1 ↦ (linearGrowthSup_le_iInf h hu).trans (iInf₂_le n n_1)⟩
 
 lemma div_le_linearGrowthInf {n : ℕ} (hn : 1 ≤ n) (h : ∀ m, u m + a ≤ u (m + n))
-    (hu : ∀ n, u n ≠ ⊥) :
+    (hu : ∀ m, u m ≠ ⊥) :
     a / n ≤ linearGrowthInf u := by
   rcases eq_or_ne a ⊥ with rfl | a_bot
   · rw [bot_div_of_pos_ne_top (by positivity) (natCast_ne_top n)]; exact bot_le

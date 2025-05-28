@@ -432,3 +432,46 @@ lemma _root_.Monotone.expGrowthSup_comp_mul {m : ℕ} (h : Monotone u) (hm : m �
 end composition
 
 end ExpGrowth
+
+/-! ### Submultiplicative sequences -/
+
+namespace Subadditive
+
+open ENNReal ExpGrowth Filter LinearGrowth
+
+variable {u v : ℕ → ENNReal} {a : ENNReal}
+
+lemma expGrowthSup_le_div {n : ℕ} (hn : 1 ≤ n) (h : ∀ m, u (m + n) ≤ u m * a) (hu : ∀ m, u m ≠ ⊤) :
+    expGrowthSup u ≤ log a / n := by
+  refine linearGrowthSup_le_div hn (fun m ↦ ?_) (fun m ↦ by simp [hu m])
+  rw [← log_mul_add]
+  exact log_monotone (h m)
+
+/-- A generalization of Fekete's lemma. If `u = v` is submultiplicative,
+  it implies that `log (u n) / n` converges to its infimum. -/
+lemma expGrowthSup_le_iInf (h : ∀ m n, u (m + n) ≤ u m * v n) (hu : ∀ n, u n ≠ ⊤) :
+    expGrowthSup u ≤ ⨅ n ≥ 1, log (v n) / n :=
+  le_iInf₂ fun n n_1 ↦ expGrowthSup_le_div n_1 (fun m ↦ h m n) hu
+
+lemma expGrowthSup_le_expGrowthInf (h : ∀ m n, u (m + n) ≤ u m * v n) (hu : ∀ n, u n ≠ ⊤) :
+    expGrowthSup u ≤ expGrowthInf v := by
+  refine (le_liminf_of_le) (eventually_atTop.2 ?_)
+  exact ⟨1, fun n n_1 ↦ (expGrowthSup_le_iInf h hu).trans (iInf₂_le n n_1)⟩
+
+lemma div_le_expGrowthInf {n : ℕ} (hn : 1 ≤ n) (h : ∀ m, u m * a ≤ u (m + n)) (hu : ∀ m, u m ≠ 0) :
+    log a / n ≤ expGrowthInf u := by
+  refine div_le_linearGrowthInf hn (fun m ↦ ?_) (fun m ↦ by simp [hu m])
+  rw [← log_mul_add]
+  exact log_monotone (h m)
+
+/-- A version of `expGrowthSup_le_iInf` for supermultiplicative sequences. -/
+lemma iSup_le_expGrowthInf (h : ∀ m n, u m * v n ≤ u (m + n)) (hu : ∀ n, u n ≠ 0) :
+    ⨆ n ≥ 1, log (v n) / n ≤ expGrowthInf u :=
+  iSup₂_le fun n n_1 ↦ div_le_expGrowthInf n_1 (fun m ↦ h m n) hu
+
+lemma expGrowthSup_le_expGrowthInf' (h : ∀ m n, u m * v n ≤ u (m + n)) (hu : ∀ n, u n ≠ 0) :
+    expGrowthSup v ≤ expGrowthInf u := by
+  refine (limsup_le_of_le) (eventually_atTop.2 ?_)
+  exact ⟨1, fun n n_1 ↦ (le_iSup₂ n n_1).trans (iSup_le_expGrowthInf h hu)⟩
+
+end Subadditive
