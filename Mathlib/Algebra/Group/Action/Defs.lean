@@ -76,7 +76,7 @@ Type class for additive monoid actions on types, with notation `g +ᵥ p`.
 
 The `AddAction G P` typeclass says that the additive monoid `G` acts additively on a type `P`.
 More precisely this means that the action satisfies the two axioms `0 +ᵥ p = p` and
-`(g₁ + g₂) +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)`. A mathematician might simply say that the monoid `G`
+`(g₁ + g₂) +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)`. A mathematician might simply say that the additive monoid `G`
 acts on `P`.
 
 For example, if `A` is an additive group and `X` is a type, if a mathematician says
