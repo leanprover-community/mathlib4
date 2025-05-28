@@ -47,7 +47,7 @@ variable  [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 theorem mutually_singular_measure_sub :
     (μ - ν).MutuallySingular (ν - μ) := by
-  obtain ⟨s, hs⟩ := hahn_decomposition' μ ν
+  obtain ⟨s, hs⟩ := exists_isHahnDecomposition μ ν
   exact ⟨s, hs.measurableSet,
     sub_apply_eq_zero_of_isHahnDecomposition hs,
     sub_apply_eq_zero_of_isHahnDecomposition hs.compl⟩
@@ -64,7 +64,7 @@ lemma toSignedMeasure_restrict_sub (hs : IsHahnDecomposition μ ν s) :
 theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
     μ.toSignedMeasure - ν.toSignedMeasure =
       (μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure := by
-  obtain ⟨s, hs⟩ := hahn_decomposition' μ ν
+  obtain ⟨s, hs⟩ := exists_isHahnDecomposition μ ν
   let hsc := hs.compl
   have h₁ := toSignedMeasure_restrict_sub hs
   have h₂ := toSignedMeasure_restrict_sub hsc
