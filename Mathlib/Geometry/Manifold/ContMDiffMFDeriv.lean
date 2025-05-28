@@ -271,18 +271,6 @@ theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M)
         (fun x => mfderiv I I' (f x) (g x)) (g₁ x₀) (g₁ x) (g₂ x)) x₀ :=
   ((hf.mfderiv f g hg hmn).comp_of_eq hg₁ rfl).clm_apply hg₂
 
-/-- The derivative of a function `f`, viewed through tangent coordinates, is `C^m` on a set `s` when `f` is `C^n`
-on `s` with `m + 1 ≤ n`. This is the set-wise version of `ContMDiffWithinAt.mfderivWithin_const`. -/
-theorem ContMDiffOn.mfderivWithin_const {f : M → M'}
-    (hf : ContMDiffOn I I' n f s)
-    (hmn : m + 1 ≤ n) (hs : UniqueMDiffOn I s) :
-    ContMDiffOn I 𝓘(𝕜, E →L[𝕜] E') m
-      (fun x => inTangentCoordinates I I' id f (mfderivWithin I I' f s) x x) s := by
-  intro x hx
-  have : ContMDiffWithinAt (I.prod I) I' n (fun p : M × M => f p.2) (s ×ˢ s) (x, x) :=
-    ContMDiffWithinAt.comp (x, x) (hf x hx) contMDiffWithinAt_snd mapsTo_snd_prod
-  sorry
-
 end mfderiv
 
 /-! ### The tangent map of a `C^(n+1)` function is `C^n` -/

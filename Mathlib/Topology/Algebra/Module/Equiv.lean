@@ -956,10 +956,6 @@ theorem isInvertible_zero_iff :
     exact Subsingleton.elim _ _
   · exact inverse_of_not_isInvertible h
 
-lemma IsInvertible.injective {f : M →L[R] M₂} (hf : f.IsInvertible) : Function.Injective f := by
-  rcases hf with ⟨e, rfl⟩
-  exact e.injective
-
 lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
     (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).IsInvertible := by
   rcases hg with ⟨N, rfl⟩
