@@ -10,11 +10,15 @@ import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 import Mathlib.LinearAlgebra.RootSystem.Chain
 
 /-!
-# The Lie algebra of a root system
+# Geck's construction of a Lie algebra associated to a root system
 
 ## Main definitions:
-* `RootPairing.GeckConstruction.lieAlgebra`: ...
-* `RootPairing.GeckConstruction.cartanSubalgebra`: ...
+* `RootPairing.GeckConstruction.lieAlgebra`: the Geck construction of the Lie algebra associated to
+  a root system with distinguished base.
+* `RootPairing.GeckConstruction.cartanSubalgebra`: a distinguished subalgebra corresponding to a
+  Cartan subalgebra of the Geck's construction.
+* `RootPairing.GeckConstruction.cartanSubalgebra_le_lieAlgebra`: the distinguished subalgebra is
+  contained in the Geck construction.
 
 ## Alternative approaches
 
@@ -82,11 +86,10 @@ def lieAlgebra [Fintype b.support] [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range e ∪ range f)
 
-/-- A distinguished Cartan subalgebra inside Geck's construction of the Lie algebra associated to a
-root system with distinguished base. -/
+/-- A distinguished subalgebra corresponding to a Cartan subalgebra of the Geck's construction. -/
 def cartanSubalgebra [Fintype b.support] [Fintype ι] [DecidableEq ι] :
-    LieSubalgebra R (lieAlgebra b) :=
-  (LieSubalgebra.lieSpan R _ (range h)).comap (lieAlgebra b).incl
+    LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
+  LieSubalgebra.lieSpan R _ (range h)
 
 variable {b}
 
@@ -287,5 +290,13 @@ lemma isSl2Triple [P.IsReduced] [Fintype b.support] [Fintype ι] [DecidableEq ι
   lie_e_f := by rw [lie_e_f_same]
   lie_h_e_nsmul := by rw [lie_h_e]; simp
   lie_h_f_nsmul := by rw [lie_h_f]; simp
+
+lemma cartanSubalgebra_le_lieAlgebra [P.IsReduced] [Fintype b.support] [Fintype ι] [DecidableEq ι] :
+    cartanSubalgebra b ≤ lieAlgebra b := by
+  rw [cartanSubalgebra, lieAlgebra, LieSubalgebra.lieSpan_le]
+  rintro - ⟨i, rfl⟩
+  rw [← lie_e_f_same]
+  apply LieSubalgebra.lie_mem <;>
+  exact LieSubalgebra.subset_lieSpan <| by simp
 
 end RootPairing.GeckConstruction
