@@ -126,6 +126,9 @@ def comulAlgHom : A →ₐ[R] A ⊗[R] A :=
 
 variable {R A}
 
+@[simp] lemma toLinearMap_counitAlgHom : (counitAlgHom R A).toLinearMap = counit := rfl
+@[simp] lemma toLinearMap_comulAlgHom : (comulAlgHom R A).toLinearMap = comul := rfl
+
 @[simp] lemma counit_algebraMap (r : R) : counit (R := R) (algebraMap R A r) = r :=
   (counitAlgHom R A).commutes r
 
