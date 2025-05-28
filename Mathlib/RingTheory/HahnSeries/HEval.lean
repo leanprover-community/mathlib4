@@ -10,15 +10,15 @@ import Mathlib.RingTheory.PowerSeries.Basic
 # A summable family given by a power series
 
 ## Main Definitions
- * `HahnSeries.SummableFamily.powerSeriesFamily`: A summable family of Hahn series whose elements
-   are non-negative powers of a fixed positive-order Hahn series multiplied by the coefficients of a
-   formal power series.
- * `PowerSeries.heval`: The `R`-algebra homomorphism from `PowerSeries σ R` to `HahnSeries Γ R` that
-   takes `X` to a fixed positive-order Hahn Series and extends to formal infinite sums.
+* `HahnSeries.SummableFamily.powerSeriesFamily`: A summable family of Hahn series whose elements
+  are non-negative powers of a fixed positive-order Hahn series multiplied by the coefficients of a
+  formal power series.
+* `PowerSeries.heval`: The `R`-algebra homomorphism from `PowerSeries σ R` to `HahnSeries Γ R` that
+  takes `X` to a fixed positive-order Hahn Series and extends to formal infinite sums.
 
 ## TODO
- * `MvPowerSeries.heval`: An `R`-algebra homomorphism from `MvPowerSeries σ R` to `HahnSeries Γ R`
-   (for finite σ) taking each `X i` to a positive order Hahn Series.
+* `MvPowerSeries.heval`: An `R`-algebra homomorphism from `MvPowerSeries σ R` to `HahnSeries Γ R`
+  (for finite σ) taking each `X i` to a positive order Hahn Series.
 
 -/
 

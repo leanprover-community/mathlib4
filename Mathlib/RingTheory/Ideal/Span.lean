@@ -73,6 +73,7 @@ theorem subset_span {s : Set α} : s ⊆ span s :=
 theorem span_le {s : Set α} {I} : span s ≤ I ↔ s ⊆ I :=
   Submodule.span_le
 
+@[gcongr]
 theorem span_mono {s t : Set α} : s ⊆ t → span s ≤ span t :=
   Submodule.span_mono
 
@@ -234,6 +235,12 @@ theorem span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
   ext
   simp only [mem_span_singleton']
   exact ⟨fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_comm y x⟩, fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_neg y x⟩⟩
+
+@[simp]
+theorem span_singleton_abs [LinearOrder α] (x : α) :
+    span {|x|} = span {x} := by
+  obtain h | h := abs_choice x <;>
+  simp [h]
 
 end Ideal
 

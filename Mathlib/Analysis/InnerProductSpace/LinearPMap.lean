@@ -5,6 +5,7 @@ Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 
 /-!
 

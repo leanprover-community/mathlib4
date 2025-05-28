@@ -98,6 +98,7 @@
   "Mathlib.Tactic.FailIfNoProgress",
   "Mathlib.Tactic.FastInstance",
   "Mathlib.Tactic.FieldSimp",
+  "Mathlib.Tactic.Finiteness",
   "Mathlib.Tactic.FinCases",
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.GCongr",
@@ -454,6 +455,7 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
+  "Mathlib.Combinatorics.Graph.Basic": ["Mathlib.Data.Set.Basic"],
   "Mathlib.Combinatorics.Additive.ApproximateSubgroup":
   ["Mathlib.Tactic.Bound"],
   "Mathlib.CategoryTheory.Sites.IsSheafFor":

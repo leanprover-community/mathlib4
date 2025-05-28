@@ -17,12 +17,12 @@ of the form: `β - q • α, ..., β - α, β, β + α, ..., β + p • α` for 
 length, `p + q` is at most 3.
 
 ## Main definitions / results:
- * `RootPairing.chainTopCoeff`: the natural number `p` in the chain
-   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
- * `RootPairing.chainTopCoeff`: the natural number `q` in the chain
-   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
- * `RootPairing.root_add_zsmul_mem_range_iff`: every chain is an interval (aka unbroken).
- * `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
+* `RootPairing.chainTopCoeff`: the natural number `p` in the chain
+  `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
+* `RootPairing.chainTopCoeff`: the natural number `q` in the chain
+  `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
+* `RootPairing.root_add_zsmul_mem_range_iff`: every chain is an interval (aka unbroken).
+* `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
 
 -/
 
@@ -56,18 +56,18 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
   refine ⟨sInf S, csInf_le h_fin.bddBelow hS₀, sSup S, le_csSup h_fin.bddAbove hS₀,
     (h_ne.eq_Icc_iff_int h_fin.bddBelow h_fin.bddAbove).mpr fun r ⟨k, hk⟩ s ⟨l, hl⟩ hrs ↦ ?_⟩
   by_contra! contra
-  have hki_nmem : P.root k + P.root i ∉ range P.root := by
+  have hki_notMem : P.root k + P.root i ∉ range P.root := by
     replace hk : P.root k + P.root i = P.root j + (r + 1) • P.root i := by rw [hk]; module
-    replace contra : r + 1 ∉ S := hrs.not_mem_of_mem_left <| by simp [contra]
+    replace contra : r + 1 ∉ S := hrs.notMem_of_mem_left <| by simp [contra]
     simpa only [hk, S_def, mem_setOf_eq, S] using contra
   have hki_ne : P.root k ≠ -P.root i := by
     rw [hk]
     contrapose! h
     replace h : r • P.root i = - P.root j - P.root i := by rw [← sub_eq_of_eq_add h.symm]; module
     exact ⟨r + 1, 1, by simp [add_smul, h], by omega⟩
-  have hli_nmem : P.root l - P.root i ∉ range P.root := by
+  have hli_notMem : P.root l - P.root i ∉ range P.root := by
     replace hl : P.root l - P.root i = P.root j + (s - 1) • P.root i := by rw [hl]; module
-    replace contra : s - 1 ∉ S := hrs.not_mem_of_mem_left <| by simp [lt_sub_right_of_add_lt contra]
+    replace contra : s - 1 ∉ S := hrs.notMem_of_mem_left <| by simp [lt_sub_right_of_add_lt contra]
     simpa only [hl, S_def, mem_setOf_eq, S] using contra
   have hli_ne : P.root l ≠ P.root i := by
     rw [hl]
@@ -77,7 +77,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
   have h₁ : 0 ≤ P.pairingIn ℤ k i := by
     have := P.root_add_root_mem_of_pairingIn_neg (i := k) (j := i)
     contrapose! this
-    exact ⟨this, hki_ne, hki_nmem⟩
+    exact ⟨this, hki_ne, hki_notMem⟩
   have h₂ : P.pairingIn ℤ k i = P.pairingIn ℤ j i + r * 2 := by
     apply algebraMap_injective ℤ R
     rw [algebraMap_pairingIn, map_add, map_mul, algebraMap_pairingIn, ← root_coroot'_eq_pairing, hk]
@@ -85,7 +85,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
   have h₃ : P.pairingIn ℤ l i ≤ 0 := by
     have := P.root_sub_root_mem_of_pairingIn_pos (i := l) (j := i)
     contrapose! this
-    exact ⟨this, fun x ↦ hli_ne (congrArg P.root x), hli_nmem⟩
+    exact ⟨this, fun x ↦ hli_ne (congrArg P.root x), hli_notMem⟩
   have h₄ : P.pairingIn ℤ l i = P.pairingIn ℤ j i + s * 2 := by
     apply algebraMap_injective ℤ R
     rw [algebraMap_pairingIn, map_add, map_mul, algebraMap_pairingIn, ← root_coroot'_eq_pairing, hl]
@@ -480,8 +480,8 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   have hnk_ne : n ≠ k := by rintro rfl; simp [sub_eq_zero, hij, add_sub_assoc] at hn
   have hkj_ne : k ≠ j ∧ P.root k ≠ -P.root j := (IsReduced.linearIndependent_iff _).mp <|
     P.linearIndependent_of_sub_mem_range_root <| h₂ ▸ mem_range_self m
-  have hnk_nmem : P.root n - P.root k ∉ range P.root := by
-    convert b.sub_nmem_range_root hi hj using 2; rw [hn]; module
+  have hnk_notMem : P.root n - P.root k ∉ range P.root := by
+    convert b.sub_notMem_range_root hi hj using 2; rw [hn]; module
   /- Calculate some auxiliary relationships between root pairings. -/
   have aux₀ : P.pairingIn ℤ j i = - P.pairingIn ℤ m i := by
     suffices P.pairing j i = - P.pairing m i from
@@ -505,7 +505,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
       simp only [map_add, map_sub, algebraMap_pairingIn, ← root_coroot_eq_pairing, hn]
       simp
     have hn₂ : P.pairingIn ℤ n k ≤ 0 := by
-      by_contra! contra; exact hnk_nmem <| P.root_sub_root_mem_of_pairingIn_pos contra hnk_ne
+      by_contra! contra; exact hnk_notMem <| P.root_sub_root_mem_of_pairingIn_pos contra hnk_ne
     omega
   have key₄ : P.pairingIn ℤ l j = 1 := by
     have hij : P.pairing i j = 0 := by
@@ -573,7 +573,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
   have ⟨aux₃, aux₄⟩ : B.rootLength i = B.rootLength j ∧ B.rootLength j < B.rootLength k := by
     have hij_le : B.rootLength i ≤ B.rootLength j := B.rootLength_le_of_pairingIn_eq <| Or.inl aux₁
     have hjk_lt : B.rootLength j < B.rootLength k :=
-      B.rootLength_lt_of_pairingIn_nmem (by aesop) hkj_ne.2 <| by aesop
+      B.rootLength_lt_of_pairingIn_notMem (by aesop) hkj_ne.2 <| by aesop
     refine ⟨?_, hjk_lt⟩
     simpa [posForm, rootLength] using (B.toInvariantForm.apply_eq_or_of_apply_ne (i := j) (j := k)
       (by simpa [posForm, rootLength] using hjk_lt.ne) i).resolve_right

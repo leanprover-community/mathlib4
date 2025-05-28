@@ -14,10 +14,10 @@ The file is a place to collect measure-theoretic results about the additive circ
 
 ## Main definitions:
 
- * `AddCircle.closedBall_ae_eq_ball`: open and closed balls in the additive circle are almost
-   equal
- * `AddCircle.isAddFundamentalDomain_of_ae_ball`: a ball is a fundamental domain for rational
-   angle rotation in the additive circle
+* `AddCircle.closedBall_ae_eq_ball`: open and closed balls in the additive circle are almost
+  equal
+* `AddCircle.isAddFundamentalDomain_of_ae_ball`: a ball is a fundamental domain for rational
+  angle rotation in the additive circle
 
 -/
 

@@ -21,17 +21,17 @@ See also `Circle` and `Real.angle`.  For the normed group structure on `AddCircl
 
 ## Main definitions and results:
 
- * `AddCircle`: the additive circle `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`
- * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
- * `AddCircle.equivAddCircle`: the rescaling equivalence `AddCircle p ≃+ AddCircle q`
- * `AddCircle.equivIco`: the natural equivalence `AddCircle p ≃ Ico a (a + p)`
- * `AddCircle.addOrderOf_div_of_gcd_eq_one`: rational points have finite order
- * `AddCircle.exists_gcd_eq_one_of_isOfFinAddOrder`: finite-order points are rational
- * `AddCircle.homeoIccQuot`: the natural topological equivalence between `AddCircle p` and
-   `Icc a (a + p)` with its endpoints identified.
- * `AddCircle.liftIco_continuous`: if `f : ℝ → B` is continuous, and `f a = f (a + p)` for
-   some `a`, then there is a continuous function `AddCircle p → B` which agrees with `f` on
-   `Icc a (a + p)`.
+* `AddCircle`: the additive circle `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`
+* `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
+* `AddCircle.equivAddCircle`: the rescaling equivalence `AddCircle p ≃+ AddCircle q`
+* `AddCircle.equivIco`: the natural equivalence `AddCircle p ≃ Ico a (a + p)`
+* `AddCircle.addOrderOf_div_of_gcd_eq_one`: rational points have finite order
+* `AddCircle.exists_gcd_eq_one_of_isOfFinAddOrder`: finite-order points are rational
+* `AddCircle.homeoIccQuot`: the natural topological equivalence between `AddCircle p` and
+  `Icc a (a + p)` with its endpoints identified.
+* `AddCircle.liftIco_continuous`: if `f : ℝ → B` is continuous, and `f a = f (a + p)` for
+  some `a`, then there is a continuous function `AddCircle p → B` which agrees with `f` on
+  `Icc a (a + p)`.
 
 ## Implementation notes:
 
@@ -40,9 +40,9 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 
 ## TODO
 
- * Link with periodicity
- * Lie group structure
- * Exponential equivalence to `Circle`
+* Link with periodicity
+* Lie group structure
+* Exponential equivalence to `Circle`
 
 -/
 

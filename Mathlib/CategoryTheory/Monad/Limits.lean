@@ -79,9 +79,7 @@ def liftedCone : Cone D where
     { app := fun j => { f := c.π.app j }
       naturality := fun X Y f => by
         ext1
-        dsimp
-        erw [c.w f]
-        simp }
+        simpa using (c.w f).symm }
 
 /-- (Impl) Prove that the lifted cone is limiting. -/
 @[simps]
@@ -237,8 +235,7 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
                   h := commuting _ _ _ }
               naturality := fun A B f => by
                 ext1
-                dsimp
-                erw [comp_id, c.w] } }
+                simpa using (c.w f) } }
       validLift := Cocones.ext (Iso.refl _)
       makesColimit := liftedCoconeIsColimit _ _ }
 
@@ -418,9 +415,7 @@ def liftedCocone : Cocone D where
     { app := fun j => { f := c.ι.app j }
       naturality := fun X Y f => by
         ext1
-        dsimp
-        erw [c.w f]
-        simp }
+        simpa using (c.w f) }
 
 /-- (Impl) Prove that the lifted cocone is colimiting. -/
 @[simps]
@@ -565,8 +560,7 @@ noncomputable instance forgetCreatesLimit (D : J ⥤ Coalgebra T)
                   h := commuting _ _ _ }
               naturality := fun A B f => by
                 ext1
-                dsimp
-                erw [id_comp, c.w] } }
+                simpa using (c.w f).symm } }
       validLift := Cones.ext (Iso.refl _)
       makesLimit := liftedConeIsLimit _ _ }
 
