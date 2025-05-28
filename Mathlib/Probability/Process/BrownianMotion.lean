@@ -57,7 +57,7 @@ namespace Probability
 namespace BrownianMotion
 
 /-- The covariance matrix of Brownian Motion. -/
-def covMatrix (t : n → ℝ≥0) : Matrix n n ℝ := fun i j ↦ min (t i) (t j)
+def covMatrix (t : n → ℝ≥0) : Matrix n n ℝ := of fun i j ↦ min (t i) (t j)
 
 namespace CovMatrix
 
