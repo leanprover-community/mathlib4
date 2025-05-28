@@ -77,6 +77,19 @@ theorem Joined.mul {M : Type*} [Mul M] [TopologicalSpace M] [ContinuousMul M]
     {a b c d : M} (hs : Joined a b) (ht : Joined c d) : Joined (a * c) (b * d) :=
   ⟨hs.somePath.mul ht.somePath⟩
 
+@[to_additive]
+theorem Joined.listProd {M : Type*} [MulOneClass M] [TopologicalSpace M] [ContinuousMul M]
+    {l l' : List M} (h : List.Forall₂ Joined l l') :
+    Joined l.prod l'.prod := by
+  induction h with
+  | nil => rfl
+  | cons h₁ _ h₂ => exact h₁.mul h₂
+
+@[to_additive]
+theorem Joined.inv {G : Type*} [Inv G] [TopologicalSpace G] [ContinuousInv G]
+    {x y : G} (h : Joined x y) : Joined x⁻¹ y⁻¹ :=
+  ⟨h.somePath.inv⟩
+
 variable (X)
 
 /-- The setoid corresponding the equivalence relation of being joined by a continuous path. -/
@@ -201,6 +214,12 @@ theorem JoinedIn.mul {M : Type*} [Mul M] [TopologicalSpace M] [ContinuousMul M]
     JoinedIn (s * t) (a * c) (b * d) :=
   ⟨hs.somePath.mul ht.somePath, fun t ↦ Set.mul_mem_mul (hs.somePath_mem t) (ht.somePath_mem t)⟩
 
+@[to_additive]
+theorem JoinedIn.inv {G : Type*} [InvolutiveInv G] [TopologicalSpace G] [ContinuousInv G]
+    {s : Set G} {a b : G} (hs : JoinedIn s a b) :
+    JoinedIn s⁻¹ a⁻¹ b⁻¹ :=
+  ⟨hs.somePath.inv, fun t ↦ Set.inv_mem_inv.mpr (hs.somePath_mem t)⟩
+
 /-! ### Path component -/
 
 /-- The path component of `x` is the set of points that can be joined to `x`. -/
@@ -267,6 +286,31 @@ theorem pathComponentIn_mono {G : Set X} (h : F ⊆ G) :
     pathComponentIn x F ⊆ pathComponentIn x G :=
   fun _ ⟨γ, hγ⟩ ↦ ⟨γ, fun t ↦ h (hγ t)⟩
 
+/-! ### Path component of the identity in a group -/
+
+/-- The path component of the identity in a topological monoid, as a submonoid. -/
+@[to_additive (attr := simps)
+"The path component of the identity in an additive topological monoid, as an additive submonoid."]
+def Submonoid.pathComponentOne (M : Type*) [Monoid M] [TopologicalSpace M] [ContinuousMul M] :
+    Submonoid M where
+  carrier := pathComponent (1 : M)
+  mul_mem' {m₁ m₂} hm₁ hm₂ := by simpa using hm₁.mul hm₂
+  one_mem' := mem_pathComponent_self 1
+
+/-- The path component of the identity in a topological group, as a subgroup. -/
+@[to_additive (attr := simps!)
+"The path component of the identity in an additive topological group, as an additive subgroup."]
+def Subgroup.pathComponentOne (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
+    Subgroup G where
+  toSubmonoid := .pathComponentOne G
+  inv_mem' {g} hg := by simpa using hg.inv
+
+/-- The path component of the identity in a topological group is normal. -/
+@[to_additive]
+instance Subgroup.Normal.pathComponentOne (G : Type*) [Group G] [TopologicalSpace G]
+    [IsTopologicalGroup G] : (Subgroup.pathComponentOne G).Normal where
+  conj_mem _ := fun ⟨γ⟩ g ↦ ⟨⟨⟨(g * γ · * g⁻¹), by fun_prop⟩, by simp, by simp⟩⟩
+
 /-! ### Path connected sets -/
 
 
@@ -312,6 +356,13 @@ theorem IsPathConnected.mul {M : Type*} [Mul M] [TopologicalSpace M] [Continuous
     IsPathConnected (s * t) :=
   let ⟨a, ha_mem, ha⟩ := hs; let ⟨b, hb_mem, hb⟩ := ht
   ⟨a * b, mul_mem_mul ha_mem hb_mem, Set.forall_mem_image2.2 fun _x hx _y hy ↦ (ha hx).mul (hb hy)⟩
+
+@[to_additive]
+theorem IsPathConnected.inv {G : Type*} [InvolutiveInv G] [TopologicalSpace G] [ContinuousInv G]
+    {s : Set G} (hs : IsPathConnected s) :
+    IsPathConnected s⁻¹ :=
+  let ⟨a, ha_mem, ha⟩ := hs
+  ⟨a⁻¹, inv_mem_inv.mpr ha_mem, fun x hx ↦ by simpa using ha (mem_inv.mp hx) |>.map continuous_inv⟩
 
 /-- If `f : X → Y` is an inducing map, `f(F)` is path-connected iff `F` is. -/
 nonrec theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
