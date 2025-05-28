@@ -295,6 +295,16 @@ theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap �
 
 theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
 
+@[simp]
+theorem range_liftAux (I' : A) (hI') : (liftAux I' hI').range = Algebra.adjoin ℝ {I'} := by
+  apply le_antisymm
+  · rintro x ⟨y, rfl⟩
+    refine add_mem (algebraMap_mem _ _) (Subalgebra.smul_mem _ (Algebra.subset_adjoin ?_) _)
+    simp
+  · rw [Algebra.adjoin_le_iff]
+    rintro x rfl
+    exact ⟨I, liftAux_apply_I _ _⟩
+
 /-- A universal property of the complex numbers, providing a unique `ℂ →ₐ[ℝ] A` for every element
 of `A` which squares to `-1`.
 
