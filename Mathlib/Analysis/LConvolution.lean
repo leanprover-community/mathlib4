@@ -132,7 +132,7 @@ end Group
 
 section CommGroup
 
-variable [CommGroup G] [MeasurableMul₂ G] [MeasurableInv G] (μ : Measure G)
+variable [CommGroup G] [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure G}
 
 /-- Convolution is commutative when the group is commutative. -/
 @[to_additive "Convolution is commutative when the group is commutative."]
