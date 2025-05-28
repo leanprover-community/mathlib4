@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jack McKoen
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
@@ -25,8 +25,8 @@ open Simplicial CategoryTheory MonoidalCategory
 
 namespace SSet
 
-noncomputable instance : ChosenFiniteProducts SSet.{u} :=
-  (inferInstance : ChosenFiniteProducts (SimplexCategoryᵒᵖ ⥤ Type u))
+noncomputable instance : CartesianMonoidalCategory SSet.{u} :=
+  (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type u))
 
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :

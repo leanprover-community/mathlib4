@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - bump/*
 
 jobs:
   zulip-emoji-merged:

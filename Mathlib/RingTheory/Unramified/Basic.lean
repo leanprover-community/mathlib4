@@ -286,8 +286,8 @@ instance [FormallyUnramified R S] (M : Submonoid S) : FormallyUnramified R (Loca
 /-- This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
- The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
- without the need to change anything (including removing redundant arguments). -/
+The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
+without the need to change anything (including removing redundant arguments). -/
 -- @[nolint unusedArguments] -- Porting note: removed
 theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
   -- Porting note: added

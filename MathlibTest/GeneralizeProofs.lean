@@ -89,7 +89,7 @@ example (x : ℕ) (h : x < 2) (H : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) 
 
 example (H : ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y) :
     ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y := by
-  generalize_proofs (config := { abstract := false })
+  generalize_proofs -abstract
   guard_target =ₛ ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y
   generalize_proofs a at H ⊢
   guard_hyp a :ₛ ∀ (y w : ℕ), w < y → ∃ x, x < y
