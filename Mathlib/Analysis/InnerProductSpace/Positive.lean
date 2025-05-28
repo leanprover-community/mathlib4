@@ -57,12 +57,35 @@ def IsPositive (T : E →ₗ[𝕜] E) : Prop :=
 theorem IsPositive.isSelfAdjoint {T : E →ₗ[𝕜] E} (hT : IsPositive T) : IsSelfAdjoint T :=
   hT.1
 
-theorem IsPositive.inner_nonneg_left {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) :
+theorem IsPositive.isSymmetric {T : E →ₗ[𝕜] E} (hT : IsPositive T) : IsSymmetric T :=
+  (isSymmetric_iff_isSelfAdjoint T).mpr hT.isSelfAdjoint
+
+theorem IsPositive.re_inner_nonneg_left {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ re ⟪T x, x⟫ :=
   hT.2 x
 
+theorem IsPositive.re_inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) :
+    0 ≤ re ⟪x, T x⟫ := by rw [inner_re_symm]; exact hT.re_inner_nonneg_left x
+
+open ComplexOrder in
+theorem IsPositive_iff_IsSelfAdjoint_and_inner_nonneg_left (T : E →ₗ[𝕜] E) :
+    IsPositive T ↔ IsSelfAdjoint T ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := by
+  unfold IsPositive
+  rw [and_congr_right_iff]
+  intro hT
+  apply forall_congr'
+  intro x
+  rw [nonneg_iff (z := ⟪T x, x⟫), ← conj_eq_iff_im, inner_conj_symm,
+    (isSymmetric_iff_isSelfAdjoint T).mpr hT]
+  simp
+
+open ComplexOrder in
+theorem IsPositive.inner_nonneg_left {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) : 0 ≤ ⟪T x, x⟫ :=
+  ((IsPositive_iff_IsSelfAdjoint_and_inner_nonneg_left T).mp hT).right x
+
+open ComplexOrder in
 theorem IsPositive.inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) :
-    0 ≤ re ⟪x, T x⟫ := by rw [inner_re_symm]; exact hT.inner_nonneg_left x
+    0 ≤ ⟪x, T x⟫ := by rw [← hT.isSymmetric]; exact hT.inner_nonneg_left x
 
 theorem isPositive_zero : IsPositive (0 : E →ₗ[𝕜] E) := by
   refine ⟨.zero _, fun x => ?_⟩
@@ -76,7 +99,7 @@ theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPo
     (T + S).IsPositive := by
   refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => ?_⟩
   rw [add_apply, inner_add_left, map_add]
-  exact add_nonneg (hT.inner_nonneg_left x) (hS.inner_nonneg_left x)
+  exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
 theorem IsPositive.conj_adjoint {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : E →ₗ[𝕜] F) :
     (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
@@ -85,7 +108,7 @@ theorem IsPositive.conj_adjoint {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : 
     rfl
   · intro x
     rw [comp_apply, ← adjoint_inner_right]
-    exact hT.inner_nonneg_left _
+    exact hT.re_inner_nonneg_left _
 
 theorem IsPositive.adjoint_conj {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : F →ₗ[𝕜] E) :
     (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
@@ -116,13 +139,10 @@ instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
     rw [← sub_eq_zero]
     have h_isSymm := (isSymmetric_iff_isSelfAdjoint (f₁ - f₂)).mpr h₂.isSelfAdjoint
     exact h_isSymm.inner_map_self_eq_zero.mp fun x ↦ by
-      apply RCLike.ext
-      · rw [map_zero]
-        apply le_antisymm
-        · rw [← neg_nonneg, ← map_neg, ← inner_neg_left]
-          simpa using h₁.inner_nonneg_left _
-        · exact h₂.inner_nonneg_left _
-      · rw [map_zero, ← h_isSymm.reApplyInnerSelf_apply, RCLike.ofReal_im]
+      open scoped ComplexOrder in
+      refine le_antisymm ?_ (h₂.inner_nonneg_left x)
+      rw [← neg_nonneg, ← inner_neg_left]
+      simpa using h₁.inner_nonneg_left x
 
 lemma le_def (f g : E →ₗ[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
@@ -145,12 +165,12 @@ def IsPositive (T : E →L[𝕜] E) : Prop :=
 theorem IsPositive.isSelfAdjoint {T : E →L[𝕜] E} (hT : IsPositive T) : IsSelfAdjoint T :=
   hT.1
 
-theorem IsPositive.inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
+theorem IsPositive.re_inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ re ⟪T x, x⟫ :=
   hT.2 x
 
-theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
-    0 ≤ re ⟪x, T x⟫ := by rw [inner_re_symm]; exact hT.inner_nonneg_left x
+theorem IsPositive.re_inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
+    0 ≤ re ⟪x, T x⟫ := by rw [inner_re_symm]; exact hT.re_inner_nonneg_left x
 
 theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := by
   refine ⟨.zero _, fun x => ?_⟩
@@ -164,13 +184,13 @@ theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPosi
     (T + S).IsPositive := by
   refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => ?_⟩
   rw [reApplyInnerSelf, add_apply, inner_add_left, map_add]
-  exact add_nonneg (hT.inner_nonneg_left x) (hS.inner_nonneg_left x)
+  exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
 theorem IsPositive.conj_adjoint {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E →L[𝕜] F) :
     (S ∘L T ∘L S†).IsPositive := by
   refine ⟨hT.isSelfAdjoint.conj_adjoint S, fun x => ?_⟩
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
-  exact hT.inner_nonneg_left _
+  exact hT.re_inner_nonneg_left _
 
 theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F →L[𝕜] E) :
     (S† ∘L T ∘L S).IsPositive := by
@@ -244,8 +264,8 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
       · rw [map_zero]
         apply le_antisymm
         · rw [← neg_nonneg, ← map_neg, ← inner_neg_left]
-          simpa using h₁.inner_nonneg_left _
-        · exact h₂.inner_nonneg_left _
+          simpa using h₁.re_inner_nonneg_left _
+        · exact h₂.re_inner_nonneg_left _
       · rw [coe_sub, LinearMap.sub_apply, coe_coe, coe_coe, map_zero, ← sub_apply,
           ← h_isSymm.coe_reApplyInnerSelf_apply (T := f₁ - f₂) x, RCLike.ofReal_im]
 
