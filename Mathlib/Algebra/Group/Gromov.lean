@@ -519,6 +519,7 @@ def ConvExists (f g: G → ℝ) := MeasureTheory.ConvolutionExists (G := Additiv
 
 abbrev opAdd (g : G) := Additive.ofMul (MulOpposite.op g)
 
+
 -- A versi on of `conv_exists` where at least one of the functions has finite support
 -- This lets us avoid dealing with 'MemLp' in most cases
 lemma conv_exists_fin_supp (f g: G → ℝ) (hfg: f.support.Finite ∨ g.support.Finite): ConvExists f g := by
@@ -947,7 +948,8 @@ def HasPolynomialGrowthD (d: ℕ): Prop := ∀ n ≥ 2, #(S ^ n) ≤ n ^ d
 def HasPolynomialGrowth: Prop := ∃ d, HasPolynomialGrowthD (S := S) d
 
 lemma smaller_closure (T: Type*) (A B: Set T) (G: Group T) (hc: B ⊆ closure A) (hb: closure B = ⊤): closure A = ⊤ := by
-  apply?
+  --apply?
+  sorry
 
 lemma S_nonempty: S.Nonempty := by
   exact Finset.nonempty_coe_sort.mp hS
@@ -998,6 +1000,12 @@ open Additive
 def e_i_regular_helper (φ: (Additive G) →+ ℤ) (γ: G) (s: S): G := (ofMul s.val) +  ((-1 : ℤ) • (φ (ofMul s.val))) • (ofMul (γ))
 
 def E_helper (φ: (Additive G) →+ ℤ) (γ: G) := {γ, γ⁻¹} ∪ Set.range (ι := S) (e_i_regular_helper φ γ)
+
+lemma take_drop_len {T: Type*} {l: List T} {p: T → Bool}: (l.takeWhile p).length + (l.dropWhile p).length = l.length := by
+  suffices h: l.takeWhile p ++ l.dropWhile p = l by
+    nth_rw 3 [← h]
+    rw [List.length_append]
+  exact List.takeWhile_append_dropWhile
 
 lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
   have gamma_one: ∃ γ: G, φ γ = 1 := by
@@ -1409,6 +1417,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
           exact ⟨[], empty_prod_eq⟩
         .
+
           have tail_nonempty: list.dropWhile is_gamma ≠ [] := by
             rw [not_iff_not.mpr List.takeWhile_eq_self_iff] at header_eq_full
             rw [← not_iff_not.mpr List.dropWhile_eq_nil_iff] at header_eq_full
@@ -1419,6 +1428,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
           have dropwhile_len_gt: 0 < (list.dropWhile is_gamma).length := by
             exact List.length_pos_iff.mpr tail_nonempty
+
           have not_is_gamma := List.dropWhile_get_zero_not is_gamma list dropwhile_len_gt
           simp at not_is_gamma
 
@@ -1710,6 +1720,29 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             rw [← ofMul_list_prod]
             exact hlist
 
+          have gamma_copy_len: gamma_copy.length = m.natAbs := by
+            simp [gamma_copy]
+            split_ifs <;> simp
+
+          have gamma_copy_inv_len: gamma_copy_inv.length = m.natAbs := by
+            simp [gamma_copy_inv]
+            split_ifs <;> simp
+
+          have count_head_lt: (List.map (fun (k: E) ↦ if ↑k = γ then (1 : ℤ) else if ↑k = γ⁻¹ then -1 else 0)
+          (List.takeWhile (fun (k: E) ↦ decide (↑k = γ) || decide (↑k = γ⁻¹)) list)).sum.natAbs ≤ (List.takeWhile (fun (k: E) ↦ decide (↑k = γ) || decide (↑k = γ⁻¹)) list).length := by
+            induction (List.takeWhile (fun (k: E) ↦ decide (↑k = γ) || decide (↑k = γ⁻¹)) list) with
+            | nil =>
+              simp
+            | cons h t ih =>
+              simp
+              split_ifs
+              . omega
+              . omega
+              . omega
+
+          have take_drop_le: ((List.takeWhile (fun (k: E) ↦ decide (↑k = γ) || decide (↑k = γ⁻¹)) list)).length + ((List.dropWhile (fun (k: E) ↦ decide (↑k = γ) || decide (↑k = γ⁻¹)) list)).length = list.length := by
+            apply take_drop_len
+
 
           let rewritten_sub_list := (rewrite_list (gamma_copy ++ (list.dropWhile is_gamma).tail) sublist_phi_zero)
           let return_list := (⟨γ^m * (List.dropWhile is_gamma list)[0] * γ^(-m), in_range⟩) :: rewritten_sub_list.val
@@ -1756,8 +1789,31 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
 
 
           exact ⟨return_list, return_list_prod⟩
-      termination_by 1
-      decreasing_by sorry
+      --termination_by list.countP (fun (k : E_helper φ γ) => decide (k.val ∈ Set.range (e_i_regular_helper (G := G) φ γ)))
+      termination_by list.length
+      decreasing_by {
+        simp
+        simp [gamma_copy] at gamma_copy_len
+        simp [gamma_copy_inv] at gamma_copy_inv_len
+        dsimp [gamma_sum] at count_gamma_copy
+        dsimp [gamma_sum] at count_gamma_copy_inv
+        split_ifs
+        .
+          simp [count_gamma_copy]
+          conv =>
+            rhs
+            rw [← take_drop_len (p := fun (k: E) ↦ decide (↑k = γ) || decide (↑k = γ⁻¹))]
+          apply add_lt_add_of_le_of_lt
+          . apply count_head_lt
+          . simp [is_gamma] at dropwhile_len_gt
+            apply Nat.sub_one_lt
+            apply Nat.pos_iff_ne_zero.mp dropwhile_len_gt
+          --apply lt_trans (b := )
+          --add_lt_add_of_le_of_lt
+          trivial
+        . simp [count_gamma_copy_inv]
+          trivial
+      }
 
       let my_res := rewrite_list [] sorry
       --let a := rewrite_list [] (by sorry)
