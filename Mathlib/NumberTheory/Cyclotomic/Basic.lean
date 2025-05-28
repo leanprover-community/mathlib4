@@ -67,7 +67,6 @@ noncomputable section
 /-- Given an `A`-algebra `B` and `S : Set ℕ+`, we define `IsCyclotomicExtension S A B` requiring
 that there is an `n`-th primitive root of unity in `B` for all `n ∈ S` and that `B` is generated
 over `A` by the roots of `X ^ n - 1`. -/
-
 @[mk_iff]
 class IsCyclotomicExtension
     (S : Set ℕ+) (A : Type u) (B : Type v)
