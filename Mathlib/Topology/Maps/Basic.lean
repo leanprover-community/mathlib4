@@ -296,14 +296,6 @@ alias quotientMap_iff_closed := isQuotientMap_iff_isClosed
 @[deprecated (since := "2024-11-19")]
 alias isQuotientMap_iff_closed := isQuotientMap_iff_isClosed
 
-theorem IsInducing.isOpenQuotientMap_of_surjective (ind : IsInducing f)
-    (surj : Function.Surjective f) : IsOpenQuotientMap f where
-  surjective := surj
-  continuous := ind.continuous
-  isOpenMap U U_open := by
-    obtain ⟨V, hV, rfl⟩ := ind.isOpen_iff.mp U_open
-    rwa [V.image_preimage_eq surj]
-
 namespace IsQuotientMap
 
 protected theorem id : IsQuotientMap (@id X) :=
