@@ -182,9 +182,9 @@ lemma rootLength_pos (i : ι) : 0 < B.rootLength i := by
   simpa using B.zero_lt_posForm_apply_root i
 
 @[simp]
-lemma rootLength_reflection_perm_self (i : ι) :
-    B.rootLength (P.reflection_perm i i) = B.rootLength i := by
-  simp [rootLength, rootSpanMem_reflection_perm_self]
+lemma rootLength_reflectionPerm_self (i : ι) :
+    B.rootLength (P.reflectionPerm i i) = B.rootLength i := by
+  simp [rootLength, rootSpanMem_reflectionPerm_self]
 
 @[simp] lemma algebraMap_rootLength (i : ι) :
     algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by

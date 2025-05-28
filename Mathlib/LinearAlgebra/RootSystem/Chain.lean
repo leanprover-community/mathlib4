@@ -182,7 +182,7 @@ lemma root_sub_zsmul_mem_range_iff {z : ℤ} :
 
 omit h
 
-private lemma chainCoeff_reflection_perm_left_aux :
+private lemma chainCoeff_reflectionPerm_left_aux :
     letI := P.indexNeg
     Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) =
       Icc (-P.chainBotCoeff (-i) j : ℤ) (P.chainTopCoeff (-i) j) := by
@@ -190,14 +190,14 @@ private lemma chainCoeff_reflection_perm_left_aux :
   by_cases h : LinearIndependent R ![P.root i, P.root j]
   · have h' : LinearIndependent R ![P.root (-i), P.root j] := by simpa
     ext z
-    rw [← P.root_add_zsmul_mem_range_iff h', indexNeg_neg, root_reflection_perm, mem_Icc,
+    rw [← P.root_add_zsmul_mem_range_iff h', indexNeg_neg, root_reflectionPerm, mem_Icc,
       reflection_apply_self, smul_neg, ← neg_smul, P.root_add_zsmul_mem_range_iff h, mem_Icc]
     omega
   · have h' : ¬ LinearIndependent R ![P.root (-i), P.root j] := by simpa
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
-private lemma chainCoeff_reflection_perm_right_aux :
+private lemma chainCoeff_reflectionPerm_right_aux :
     letI := P.indexNeg
     Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) =
       Icc (-P.chainBotCoeff i (-j) : ℤ) (P.chainTopCoeff i (-j)) := by
@@ -205,7 +205,7 @@ private lemma chainCoeff_reflection_perm_right_aux :
   by_cases h : LinearIndependent R ![P.root i, P.root j]
   · have h' : LinearIndependent R ![P.root i, P.root (-j)] := by simpa
     ext z
-    rw [← P.root_add_zsmul_mem_range_iff h', indexNeg_neg, root_reflection_perm, mem_Icc,
+    rw [← P.root_add_zsmul_mem_range_iff h', indexNeg_neg, root_reflectionPerm, mem_Icc,
       reflection_apply_self, ← sub_neg_eq_add, ← neg_sub', neg_mem_range_root_iff,
       P.root_sub_zsmul_mem_range_iff h, mem_Icc]
   · have h' : ¬ LinearIndependent R ![P.root i, P.root (-j)] := by simpa
@@ -213,45 +213,45 @@ private lemma chainCoeff_reflection_perm_right_aux :
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
 @[simp]
-lemma chainTopCoeff_reflection_perm_left :
-    P.chainTopCoeff (P.reflection_perm i i) j = P.chainBotCoeff i j := by
+lemma chainTopCoeff_reflectionPerm_left :
+    P.chainTopCoeff (P.reflectionPerm i i) j = P.chainBotCoeff i j := by
   letI := P.indexNeg
   have (z : ℤ) : z ∈ Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) ↔
       z ∈ Icc (-P.chainBotCoeff (-i) j : ℤ) (P.chainTopCoeff (-i) j) := by
-    rw [P.chainCoeff_reflection_perm_left_aux]
+    rw [P.chainCoeff_reflectionPerm_left_aux]
   refine le_antisymm ?_ ?_
   · simpa using this (P.chainTopCoeff (-i) j)
   · simpa using this (P.chainBotCoeff i j)
 
 @[simp]
-lemma chainBotCoeff_reflection_perm_left :
-    P.chainBotCoeff (P.reflection_perm i i) j = P.chainTopCoeff i j := by
+lemma chainBotCoeff_reflectionPerm_left :
+    P.chainBotCoeff (P.reflectionPerm i i) j = P.chainTopCoeff i j := by
   letI := P.indexNeg
   have (z : ℤ) : z ∈ Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) ↔
       z ∈ Icc (-P.chainBotCoeff (-i) j : ℤ) (P.chainTopCoeff (-i) j) := by
-    rw [P.chainCoeff_reflection_perm_left_aux]
+    rw [P.chainCoeff_reflectionPerm_left_aux]
   refine le_antisymm ?_ ?_
   · simpa using this (-P.chainBotCoeff (-i) j)
   · simpa using this (-P.chainTopCoeff i j)
 
 @[simp]
-lemma chainTopCoeff_reflection_perm_right :
-    P.chainTopCoeff i (P.reflection_perm j j) = P.chainBotCoeff i j := by
+lemma chainTopCoeff_reflectionPerm_right :
+    P.chainTopCoeff i (P.reflectionPerm j j) = P.chainBotCoeff i j := by
   letI := P.indexNeg
   have (z : ℤ) : z ∈ Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) ↔
       z ∈ Icc (-P.chainBotCoeff i (-j) : ℤ) (P.chainTopCoeff i (-j)) := by
-    rw [P.chainCoeff_reflection_perm_right_aux]
+    rw [P.chainCoeff_reflectionPerm_right_aux]
   refine le_antisymm ?_ ?_
   · simpa using this (P.chainTopCoeff i (-j))
   · simpa using this (P.chainBotCoeff i j)
 
 @[simp]
-lemma chainBotCoeff_reflection_perm_right :
-    P.chainBotCoeff i (P.reflection_perm j j) = P.chainTopCoeff i j := by
+lemma chainBotCoeff_reflectionPerm_right :
+    P.chainBotCoeff i (P.reflectionPerm j j) = P.chainTopCoeff i j := by
   letI := P.indexNeg
   have (z : ℤ) : z ∈ Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) ↔
       z ∈ Icc (-P.chainBotCoeff i (-j) : ℤ) (P.chainTopCoeff i (-j)) := by
-    rw [P.chainCoeff_reflection_perm_right_aux]
+    rw [P.chainCoeff_reflectionPerm_right_aux]
   refine le_antisymm ?_ ?_
   · simpa using this (-P.chainBotCoeff i (-j))
   · simpa using this (-P.chainTopCoeff i j)
@@ -307,9 +307,9 @@ lemma chainBotCoeff_sub_chainTopCoeff :
   suffices ∀ i j, LinearIndependent R ![P.root i, P.root j] →
       P.chainBotCoeff i j - P.chainTopCoeff i j ≤ P.pairingIn ℤ j i by
     refine le_antisymm (this i j h) ?_
-    specialize this (P.reflection_perm i i) j (by simpa)
-    simp only [chainBotCoeff_reflection_perm_left, chainTopCoeff_reflection_perm_left,
-      pairingIn_reflection_perm_self_right] at this
+    specialize this (P.reflectionPerm i i) j (by simpa)
+    simp only [chainBotCoeff_reflectionPerm_left, chainTopCoeff_reflectionPerm_left,
+      pairingIn_reflectionPerm_self_right] at this
     omega
   intro i j h
   have h₁ : P.reflection i (P.root <| P.chainBotIdx i j) =
@@ -317,7 +317,7 @@ lemma chainBotCoeff_sub_chainTopCoeff :
     simp [reflection_apply_root, ← P.algebraMap_pairingIn ℤ]
     module
   have h₂ : P.reflection i (P.root <| P.chainBotIdx i j) ∈ range P.root := by
-    rw [← root_reflection_perm]
+    rw [← root_reflectionPerm]
     exact mem_range_self _
   rw [h₁, root_add_zsmul_mem_range_iff h, mem_Icc] at h₂
   omega
@@ -413,7 +413,7 @@ lemma pairingIn_le_zero_of_root_add_mem [P.IsNotG2] (h : P.root i + P.root j ∈
 
 lemma zero_le_pairingIn_of_root_sub_mem [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     0 ≤ P.pairingIn ℤ i j := by
-  replace h : P.root i + P.root (P.reflection_perm j j) ∈ range P.root := by
+  replace h : P.root i + P.root (P.reflectionPerm j j) ∈ range P.root := by
     simpa [-mem_range, ← sub_eq_add_neg]
   simpa using P.pairingIn_le_zero_of_root_add_mem h
 
@@ -608,11 +608,11 @@ lemma chainBotCoeff_mul_chainTopCoeff :
   have hjl_mem : P.root j + P.root (-l) ∈ range P.root := by
     rw [h₁, ← neg_mem_range_root_iff] at h₃; convert h₃ using 1; simp [sub_eq_add_neg]
   have h₁' : P.root (-k) - P.root i = P.root (-l) := by
-    simp only [root_reflection_perm, reflection_apply_self, indexNeg_neg]; rw [← h₁]; abel
+    simp only [root_reflectionPerm, reflection_apply_self, indexNeg_neg]; rw [← h₁]; abel
   have h₂' : P.root (-k) + P.root j = P.root (-m) := by
-    simp only [root_reflection_perm, reflection_apply_self, indexNeg_neg]; rw [← h₂]; abel
+    simp only [root_reflectionPerm, reflection_apply_self, indexNeg_neg]; rw [← h₂]; abel
   have h₃' : P.root (-k) + P.root j - P.root i ∈ range P.root := by
-    simp only [root_reflection_perm, reflection_apply_self, indexNeg_neg]
+    simp only [root_reflectionPerm, reflection_apply_self, indexNeg_neg]
     rw [← neg_mem_range_root_iff]; convert h₃ using 1; abel
   /- Proceed to the main argument, following Geck's case splits. It's all just bookkeeping. -/
   rcases aux_0 hik_mem with hki | ⟨hki, hik⟩

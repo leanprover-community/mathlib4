@@ -82,19 +82,19 @@ lemma pairingIn_same [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
     P.pairingIn S i i = 2 :=
   FaithfulSMul.algebraMap_injective S R <| by simp [map_ofNat]
 
-lemma pairingIn_reflection_perm [FaithfulSMul S R] [P.IsValuedIn S] (i j k : ι) :
-    P.pairingIn S j (P.reflection_perm i k) = P.pairingIn S (P.reflection_perm i j) k := by
+lemma pairingIn_reflectionPerm [FaithfulSMul S R] [P.IsValuedIn S] (i j k : ι) :
+    P.pairingIn S j (P.reflectionPerm i k) = P.pairingIn S (P.reflectionPerm i j) k := by
   simp only [← (FaithfulSMul.algebraMap_injective S R).eq_iff, algebraMap_pairingIn]
-  exact pairing_reflection_perm P i j k
+  exact pairing_reflectionPerm P i j k
 
 @[simp]
-lemma pairingIn_reflection_perm_self_left [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
-    P.pairingIn S (P.reflection_perm i i) j = - P.pairingIn S i j := by
+lemma pairingIn_reflectionPerm_self_left [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
+    P.pairingIn S (P.reflectionPerm i i) j = - P.pairingIn S i j := by
   simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
 
 @[simp]
-lemma pairingIn_reflection_perm_self_right [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
-    P.pairingIn S i (P.reflection_perm j j) = - P.pairingIn S i j := by
+lemma pairingIn_reflectionPerm_self_right [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
+    P.pairingIn S i (P.reflectionPerm j j) = - P.pairingIn S i j := by
   simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
 
 lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
@@ -144,13 +144,13 @@ abbrev corootSpanMem [Module S N] (i : ι) : P.corootSpan S :=
   ⟨P.coroot i, Submodule.subset_span (mem_range_self i)⟩
 
 omit [Algebra S R] in
-lemma rootSpanMem_reflection_perm_self [Module S M] (i : ι) :
-    P.rootSpanMem S (P.reflection_perm i i) = - P.rootSpanMem S i := by
+lemma rootSpanMem_reflectionPerm_self [Module S M] (i : ι) :
+    P.rootSpanMem S (P.reflectionPerm i i) = - P.rootSpanMem S i := by
   ext; simp
 
 omit [Algebra S R] in
-lemma corootSpanMem_reflection_perm_self [Module S N] (i : ι) :
-    P.corootSpanMem S (P.reflection_perm i i) = - P.corootSpanMem S i := by
+lemma corootSpanMem_reflectionPerm_self [Module S N] (i : ι) :
+    P.corootSpanMem S (P.reflectionPerm i i) = - P.corootSpanMem S i := by
   ext; simp
 
 /-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
