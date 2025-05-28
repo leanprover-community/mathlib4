@@ -755,13 +755,18 @@ variable {R S T : Type*} [CommRing S]
 variable {K L F : Type*} [Field K] [Field L] [Field F]
 variable [Algebra K S] [Algebra K L]
 
+theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
+    (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
+    Nat.card (S →ₐ[K] L) = pb.dim := by
+  classical
+  rw [Nat.card_congr pb.liftEquiv', Nat.subtype_card _ (fun x => Multiset.mem_toFinset),
+    ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
+  exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
+
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
     (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
   classical
-  let _ := (PowerBasis.AlgHom.fintype pb : Fintype (S →ₐ[K] L))
-  rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype _ (fun x => Multiset.mem_toFinset),
-    ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
-  exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
+  rw [Fintype.card_eq_nat_card, AlgHom.natCard_of_powerBasis pb h_sep h_splits]
 
 end CardAlgHom
