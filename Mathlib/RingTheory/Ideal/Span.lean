@@ -176,6 +176,14 @@ theorem span_pair_add_mul_right {R : Type u} [CommRing R] {x y : R} (z : R) :
     (span {x, y + x * z} : Ideal R) = span {x, y} := by
   rw [span_pair_comm, span_pair_add_mul_left, span_pair_comm]
 
+@[simp]
+theorem span_pair_zero_left {R : Type u} [CommRing R] {x : R} : span {0, x} = span {x} := by
+  rw [← span_pair_add_mul_left, zero_add, mul_one, Set.pair_eq_singleton]
+
+@[simp]
+theorem span_pair_zero_right {R : Type u} [CommRing R] {x : R} : span {x, 0} = span {x} := by
+  rw [span_pair_comm, span_pair_zero_left]
+
 end Ideal
 
 end Semiring

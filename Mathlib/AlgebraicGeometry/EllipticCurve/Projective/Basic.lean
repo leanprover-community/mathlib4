@@ -105,8 +105,8 @@ abbrev Projective : Type r :=
   WeierstrassCurve R
 
 /-- The conversion from a Weierstrass curve to projective coordinates. -/
-abbrev toProjective (W : WeierstrassCurve R) : Projective R :=
-  W
+abbrev toProjective (W' : WeierstrassCurve R) : Projective R :=
+  W'
 
 namespace Projective
 
@@ -194,24 +194,26 @@ lemma not_equiv_of_X_ne {P Q : Fin 3 → R} (hx : P x * Q z ≠ Q x * P z) : ¬P
 lemma not_equiv_of_Y_ne {P Q : Fin 3 → R} (hy : P y * Q z ≠ Q y * P z) : ¬P ≈ Q :=
   hy.comp Y_eq_of_equiv
 
-lemma equiv_of_X_eq_of_Y_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+lemma equiv_of_X_eq_of_Y_eq {P Q : Fin 3 → R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z)
     (hx : P x * Q z = Q x * P z) (hy : P y * Q z = Q y * P z) : P ≈ Q := by
-  use Units.mk0 _ hPz / Units.mk0 _ hQz
-  simp only [Units.smul_def, smul_fin3, Units.val_div_eq_div_val, Units.val_mk0, mul_comm, mul_div,
-    ← hx, ← hy, mul_div_cancel_right₀ _ hQz, fin3_def]
+  use hPz.unit * hQz.unit⁻¹
+  simp_rw [Units.smul_def, smul_fin3, Units.val_mul, mul_comm, ← mul_assoc, hPz.unit_spec, ← hx,
+    ← hy, mul_assoc, hQz.mul_val_inv, mul_one, mul_comm <| Q z, mul_assoc, hQz.val_inv_mul, mul_one,
+    fin3_def]
 
-lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : P ≈ ![P x / P z, P y / P z, 1] :=
-  equiv_of_X_eq_of_Y_eq hPz one_ne_zero
-    (by linear_combination (norm := (matrix_simp; ring1)) -P x * div_self hPz)
-    (by linear_combination (norm := (matrix_simp; ring1)) -P y * div_self hPz)
+lemma equiv_some_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
+    P ≈ ![P x * hPz.unit⁻¹, P y * hPz.unit⁻¹, 1] :=
+  equiv_of_X_eq_of_Y_eq hPz isUnit_one
+    (by linear_combination (norm := (matrix_simp; ring1)) -P x * hPz.mul_val_inv)
+    (by linear_combination (norm := (matrix_simp; ring1)) -P y * hPz.mul_val_inv)
 
-lemma X_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
-    P x * Q z = Q x * P z ↔ P x / P z = Q x / Q z :=
-  (div_eq_div_iff hPz hQz).symm
+lemma X_eq_iff {P Q : Fin 3 → R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
+    P x * Q z = Q x * P z ↔ P x * hPz.unit⁻¹ = Q x * hQz.unit⁻¹ :=
+  (hPz.mul_val_inv_eq_mul_val_inv hQz).symm
 
-lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
-    P y * Q z = Q y * P z ↔ P y / P z = Q y / Q z :=
-  (div_eq_div_iff hPz hQz).symm
+lemma Y_eq_iff {P Q : Fin 3 → R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
+    P y * Q z = Q y * P z ↔ P y * hPz.unit⁻¹ = Q y * hQz.unit⁻¹ :=
+  (hPz.mul_val_inv_eq_mul_val_inv hQz).symm
 
 /-! ## Weierstrass equations in projective coordinates -/
 
@@ -231,12 +233,13 @@ lemma eval_polynomial (P : Fin 3 → R) : eval P W'.polynomial =
   rw [polynomial]
   eval_simp
 
-lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P W.polynomial / P z ^ 3 =
-    W.toAffine.polynomial.evalEval (P x / P z) (P y / P z) := by
+lemma eval_polynomial_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
+    eval P W'.polynomial * hPz.unit⁻¹ ^ 3 =
+      W'.toAffine.polynomial.evalEval (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) := by
   linear_combination (norm := (rw [eval_polynomial, Affine.evalEval_polynomial]; ring1))
-    P y ^ 2 / P z ^ 2 * div_self hPz + W.a₁ * P x * P y / P z ^ 2 * div_self hPz
-      + W.a₃ * P y / P z * div_self (pow_ne_zero 2 hPz) - W.a₂ * P x ^ 2 / P z ^ 2 * div_self hPz
-      - W.a₄ * P x / P z * div_self (pow_ne_zero 2 hPz) - W.a₆ * div_self (pow_ne_zero 3 hPz)
+    (-W'.a₆ + (W'.a₃ * P y - W'.a₄ * P x - W'.a₆ * P z) * ↑hPz.unit⁻¹ + (P y ^ 2 + W'.a₁ * P x * P y
+      - W'.a₂ * P x ^ 2 + W'.a₃ * P y * P z - W'.a₄ * P x * P z - W'.a₆ * P z ^ 2) * hPz.unit⁻¹ ^ 2)
+      * hPz.mul_val_inv
 
 variable (W') in
 /-- The proposition that a projective point representative `(x, y, z)` lies in a Weierstrass curve
@@ -271,9 +274,9 @@ lemma equation_zero : W'.Equation ![0, 1, 0] := by
 lemma equation_some (X Y : R) : W'.Equation ![X, Y, 1] ↔ W'.toAffine.Equation X Y := by
   simp only [equation_iff, Affine.equation_iff', fin3_def_ext, one_pow, mul_one]
 
-lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    W.Equation P ↔ W.toAffine.Equation (P x / P z) (P y / P z) :=
-  (equation_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| equation_some ..
+lemma equation_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
+    W'.Equation P ↔ W'.toAffine.Equation (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) :=
+  (equation_of_equiv <| equiv_some_of_isUnit_Z hPz).trans <| equation_some ..
 
 lemma X_eq_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equation P)
     (hPz : P z = 0) : P x = 0 :=
@@ -298,11 +301,11 @@ lemma eval_polynomialX (P : Fin 3 → R) : eval P W'.polynomialX =
   rw [polynomialX_eq]
   eval_simp
 
-lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    eval P W.polynomialX / P z ^ 2 = W.toAffine.polynomialX.evalEval (P x / P z) (P y / P z) := by
+lemma eval_polynomialX_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
+    eval P W'.polynomialX * hPz.unit⁻¹ ^ 2 =
+      W'.toAffine.polynomialX.evalEval (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) := by
   linear_combination (norm := (rw [eval_polynomialX, Affine.evalEval_polynomialX]; ring1))
-    W.a₁ * P y / P z * div_self hPz - 2 * W.a₂ * P x / P z * div_self hPz
-      - W.a₄ * div_self (pow_ne_zero 2 hPz)
+    (-W'.a₄ + (W'.a₁ * P y - 2 * W'.a₂ * P x - W'.a₄ * P z) * ↑hPz.unit⁻¹) * hPz.mul_val_inv
 
 variable (W') in
 /-- The partial derivative `W_Y(X, Y, Z)` with respect to `Y` of the polynomial `W(X, Y, Z)`
@@ -321,11 +324,11 @@ lemma eval_polynomialY (P : Fin 3 → R) :
   rw [polynomialY_eq]
   eval_simp
 
-lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    eval P W.polynomialY / P z ^ 2 = W.toAffine.polynomialY.evalEval (P x / P z) (P y / P z) := by
+lemma eval_polynomialY_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
+    eval P W'.polynomialY * hPz.unit⁻¹ ^ 2 =
+      W'.toAffine.polynomialY.evalEval (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) := by
   linear_combination (norm := (rw [eval_polynomialY, Affine.evalEval_polynomialY]; ring1))
-    2 * P y / P z * div_self hPz + W.a₁ * P x / P z * div_self hPz
-      + W.a₃ * div_self (pow_ne_zero 2 hPz)
+    (W'.a₃ + (2 * P y + W'.a₁ * P x + W'.a₃ * P z) * ↑hPz.unit⁻¹) * hPz.mul_val_inv
 
 variable (W') in
 /-- The partial derivative `W_Z(X, Y, Z)` with respect to `Z` of the polynomial `W(X, Y, Z)`
@@ -406,36 +409,34 @@ lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ W'.toAffine.Non
   rw [sup_eq_left, Ideal.span_singleton_le_iff_mem, Ideal.mem_span_pair]
   exact ⟨-X, -Y, by linear_combination (norm := ring1) -3 * h⟩
 
-lemma nonsingular_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z) (P y / P z) :=
-  (nonsingular_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| nonsingular_some ..
+lemma nonsingular_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
+    W'.Nonsingular P ↔ W'.toAffine.Nonsingular (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) :=
+  (nonsingular_of_equiv <| equiv_some_of_isUnit_Z hPz).trans <| nonsingular_some ..
 
-lemma nonsingular_iff_of_Z_ne_zero {P : Fin 3 → F} (hPz : IsUnit <| P z) : W.Nonsingular P ↔
-    W.Equation P ∧ Ideal.span {eval P W.polynomialX, eval P W.polynomialY} = ⊤ := by
-  simp_rw [nonsingular_of_Z_ne_zero hPz.ne_zero, Affine.Nonsingular,
-    ← equation_of_Z_ne_zero hPz.ne_zero, Ideal.span_insert,
-    ← eval_polynomialX_of_Z_ne_zero hPz.ne_zero, ← eval_polynomialY_of_Z_ne_zero hPz.ne_zero,
-    div_eq_mul_inv, Ideal.span_singleton_mul_right_unit (hPz.pow 2).inv]
+lemma nonsingular_iff_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) : W'.Nonsingular P ↔
+    W'.Equation P ∧ Ideal.span {eval P W'.polynomialX, eval P W'.polynomialY} = ⊤ := by
+  simp_rw [nonsingular_of_isUnit_Z hPz, Affine.Nonsingular, ← equation_of_isUnit_Z hPz,
+    Ideal.span_insert, ← eval_polynomialX_of_isUnit_Z hPz, ← eval_polynomialY_of_isUnit_Z hPz,
+    Ideal.span_singleton_mul_right_unit <| (Units.isUnit _).pow 2]
 
-lemma Y_ne_zero_of_Z_eq_zero [Nontrivial R] [NoZeroDivisors R] {P : Fin 3 → R}
-    (hP : W'.Nonsingular P) (hPz : P z = 0) : P y ≠ 0 := by
-  intro hPy
-  simp_rw [nonsingular_of_Z_eq_zero hPz, X_eq_zero_of_Z_eq_zero hP.left hPz, hPy,
-    zero_pow two_ne_zero, mul_zero, add_sub_cancel_right, Set.pair_eq_singleton,
-    Ideal.span_singleton_eq_top, isUnit_zero_iff, one_ne_zero.symm, and_false] at hP
+lemma isUnit_Y_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Nonsingular P)
+    (hPz : P z = 0) : IsUnit <| P y := by
+  simp_rw [nonsingular_of_Z_eq_zero hPz, X_eq_zero_of_Z_eq_zero hP.left hPz, zero_pow two_ne_zero,
+    mul_zero, zero_mul, add_zero, sub_zero, Ideal.span_pair_zero_left, Ideal.span_singleton_eq_top,
+    isUnit_pow_succ_iff] at hP
+  exact hP.right
 
-lemma isUnit_Y_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) : IsUnit (P y) :=
-  (Y_ne_zero_of_Z_eq_zero hP hPz).isUnit
+@[deprecated (since := "2025-05-28")] alias Y_ne_zero_of_Z_eq_zero := isUnit_Y_of_Z_eq_zero
 
-lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
-    (hPz : P z = 0) (hQz : Q z = 0) : P ≈ Q := by
-  use (isUnit_Y_of_Z_eq_zero hP hPz).unit / (isUnit_Y_of_Z_eq_zero hQ hQz).unit
-  simp only [Units.smul_def, smul_fin3, X_eq_zero_of_Z_eq_zero hQ.left hQz, hQz, mul_zero,
-    Units.val_div_eq_div_val, IsUnit.unit_spec, (isUnit_Y_of_Z_eq_zero hQ hQz).div_mul_cancel]
+lemma equiv_of_Z_eq_zero [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Nonsingular P)
+    (hQ : W'.Nonsingular Q) (hPz : P z = 0) (hQz : Q z = 0) : P ≈ Q := by
+  use (isUnit_Y_of_Z_eq_zero hP hPz).unit * (isUnit_Y_of_Z_eq_zero hQ hQz).unit⁻¹
+  simp_rw [Units.smul_def, smul_fin3, X_eq_zero_of_Z_eq_zero hQ.left hQz, hQz, mul_zero,
+    Units.val_mul, IsUnit.unit_spec, mul_assoc, IsUnit.val_inv_mul, mul_one]
   conv_rhs => rw [← fin3_def P, X_eq_zero_of_Z_eq_zero hP.left hPz, hPz]
 
-lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) :
-    P ≈ ![0, 1, 0] :=
+lemma equiv_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Nonsingular P)
+    (hPz : P z = 0) : P ≈ ![0, 1, 0] :=
   equiv_of_Z_eq_zero hP nonsingular_zero hPz rfl
 
 lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
@@ -444,8 +445,8 @@ lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
   · by_cases hz : f (P z) = 0
     · exact equiv_of_Z_eq_zero hP hQ ((map_eq_zero_iff f f.injective).mp hz) <|
         (map_eq_zero_iff f f.injective).mp <| (Z_eq_zero_of_equiv h).mp hz
-    · refine equiv_of_X_eq_of_Y_eq ((map_ne_zero_iff f f.injective).mp hz)
-        ((map_ne_zero_iff f f.injective).mp <| hz.comp (Z_eq_zero_of_equiv h).mpr) ?_ ?_
+    · refine equiv_of_X_eq_of_Y_eq ((map_ne_zero_iff f f.injective).mp hz).isUnit
+        ((map_ne_zero_iff f f.injective).mp <| hz.comp (Z_eq_zero_of_equiv h).mpr).isUnit ?_ ?_
       all_goals apply f.injective; map_simp
       exacts [X_eq_of_equiv h, Y_eq_of_equiv h]
   · rcases h with ⟨u, rfl⟩
