@@ -3,7 +3,6 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
---import Mathlib
 import Mathlib.RingTheory.PowerSeries.GaussNormC
 /-!
 # Gauss norm for polynomials
@@ -54,7 +53,7 @@ private lemma sup'_nonneg_of_ne_zero [NonnegHomClass F R ℝ] {p : R[X]} (h : p.
   positivity
 
 private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i) * c ^ i = x} := by
-  let f : p.support → ℝ := fun i ↦ v (p.coeff i) * c ^ i.1
+  let f : p.support → ℝ := fun i ↦ v (p.coeff i) * c ^ i.val
   have h_fin : (f '' ⊤ ∪ {0}).Finite := by
     apply Set.Finite.union _ <| Set.finite_singleton 0
     apply Set.Finite.image f
@@ -69,24 +68,23 @@ private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i
     use ⟨i, hi⟩
     simp [f]
   · right
-    simp [not_mem_support_iff.mp hi]
+    simp [Polynomial.notMem_support_iff.mp hi]
 
 @[simp]
 theorem gaussNormC_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
     {c : ℝ} (hc : 0 ≤ c) : (p.toPowerSeries).gaussNormC v c = p.gaussNormC v c := by
   by_cases hp : p = 0
   · simp [hp]
-  · have h_supp : p.support.Nonempty := support_nonempty.mpr hp
-    simp only [PowerSeries.gaussNormC, coeff_coe, gaussNormC, support_nonempty, ne_eq, hp,
+  · simp only [PowerSeries.gaussNormC, coeff_coe, gaussNormC, support_nonempty, ne_eq, hp,
       not_false_eq_true, ↓reduceDIte]
     apply le_antisymm
     · apply ciSup_le
       intro n
       by_cases h : n ∈ p.support
       · exact Finset.le_sup' (fun j ↦ v (p.coeff j) * c ^ j) h
-      · simp_all [sup'_nonneg_of_ne_zero v h_supp hc]
+      · simp_all [sup'_nonneg_of_ne_zero v (support_nonempty.mpr hp) hc]
     · obtain ⟨i, hi⟩ := exists_eq_gaussNormC v c p
-      simp only [gaussNormC, h_supp, ↓reduceDIte] at hi
+      simp only [gaussNormC, support_nonempty.mpr hp, ↓reduceDIte] at hi
       rw [hi]
       exact le_ciSup (aux_bdd v c p) i
 
@@ -98,9 +96,8 @@ theorem gaussNormC_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
     coe_eq_zero_iff]
 
 theorem gaussNormC_nonneg {c : ℝ} (hc : 0 ≤ c) [NonnegHomClass F R ℝ] : 0 ≤ p.gaussNormC v c := by
-  by_cases hp : p.support.Nonempty
-  · simp_all [gaussNormC, sup'_nonneg_of_ne_zero, -Finset.le_sup'_iff]
-  · simp [gaussNormC, hp]
+  by_cases hp : p.support.Nonempty <;>
+  simp_all [gaussNormC, sup'_nonneg_of_ne_zero, -Finset.le_sup'_iff]
 
 @[simp]
 lemma gaussNormC_C [ZeroHomClass F R ℝ] (r : R) : (C r).gaussNormC v c = v r := by
@@ -124,11 +121,11 @@ namespace PowerSeries
 @[simp]
 theorem gaussNormC_C [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {c : ℝ} (hc : 0 ≤ c) (r : R) :
     (C R r).gaussNormC v c = v r := by
-  simp [← @Polynomial.coe_C, hc]
+  simp [← Polynomial.coe_C, hc]
 
 @[simp]
 theorem gaussNormC_monomial [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {c : ℝ} (hc : 0 ≤ c)
     (n : ℕ) (r : R) : (monomial R n r).gaussNormC v c = v r * c ^ n := by
-  simp [← @Polynomial.coe_monomial, hc]
+  simp [← Polynomial.coe_monomial, hc]
 
 end PowerSeries
