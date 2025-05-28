@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Topology.Algebra.Group.Defs
 import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Algebra.Monoid
 
 /-! # `unitary R` is a topological group
 
@@ -14,13 +15,10 @@ In a topological star monoid, the unitary group is a topological group.
 
 variable {R : Type*} [Monoid R] [StarMul R] [TopologicalSpace R]
 
-instance [ContinuousMul R] : ContinuousMul (unitary R) where
-  continuous_mul := continuous_induced_rng.mpr <| by fun_prop
-
 instance [ContinuousStar R] : ContinuousStar (unitary R) where
-  continuous_star := continuous_induced_rng.mpr <| by fun_prop
+  continuous_star := continuous_induced_rng.mpr continuous_subtype_val.star
 
 instance [ContinuousStar R] : ContinuousInv (unitary R) where
-  continuous_inv := by simp_rw [← unitary.star_eq_inv]; fun_prop
+  continuous_inv := continuous_star
 
 instance [ContinuousMul R] [ContinuousStar R] : IsTopologicalGroup (unitary R) where
