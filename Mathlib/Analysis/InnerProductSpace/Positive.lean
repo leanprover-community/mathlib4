@@ -172,6 +172,14 @@ theorem IsPositive.re_inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T)
 theorem IsPositive.re_inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ re ⟪x, T x⟫ := by rw [inner_re_symm]; exact hT.re_inner_nonneg_left x
 
+@[deprecated re_inner_nonneg_left (since := "2025-05-28")]
+theorem IsPositive.inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
+    0 ≤ re ⟪T x, x⟫ := hT.re_inner_nonneg_left x
+
+@[deprecated re_inner_nonneg_right (since := "2025-05-28")]
+theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
+    0 ≤ re ⟪x, T x⟫ := hT.re_inner_nonneg_right x
+
 theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := by
   refine ⟨.zero _, fun x => ?_⟩
   change 0 ≤ re ⟪_, _⟫
