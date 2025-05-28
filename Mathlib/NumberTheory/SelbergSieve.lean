@@ -131,33 +131,33 @@ local macro "y" : term => `(s.level)
 
 open Lean PrettyPrinter Delaborator SubExpr
 
-@[local app_unexpander nu]
+@[local app_unexpander nu, inherit_doc nu]
 def unexpanderNu : Unexpander
   | `($_nu $_s) => `(ν)
   | `($fn) => `($fn)
 
-@[local app_unexpander prodPrimes]
+@[local app_unexpander prodPrimes, inherit_doc prodPrimes]
 def unexpanderProdPrimes : Unexpander
   | `($_ $_s) => `(P)
   | `($fn) => `($fn)
 
-@[local app_unexpander BoundingSieve.weights]
+@[local app_unexpander weights, inherit_doc weights]
 def unexpanderWeights : Unexpander
   | `($_ $_s $n) => `(a $n)
   | `($_ $_s) => `(a)
   | `($fn) => `($fn)
 
-@[local app_unexpander totalMass]
+@[local app_unexpander totalMass, inherit_doc totalMass]
 def unexpanderTotalMass : Unexpander
   | `($_ $_s) => `(X)
   | `($fn) => `($fn)
 
-@[local app_unexpander support]
+@[local app_unexpander support, inherit_doc support]
 def unexpanderSupport : Unexpander
   | `($_ $_s) => `(A)
   | `($fn) => `($fn)
 
-@[local app_unexpander SelbergSieve.level]
+@[local app_unexpander SelbergSieve.level, inherit_doc SelbergSieve.level]
 def unexpanderLevel : Unexpander
   | `($_level $_s) => `(y)
   | `($level) => `($level)
@@ -223,7 +223,12 @@ def multSum (d : ℕ) : ℝ := ∑ n ∈ A, if d ∣ n then a n else 0
 
 @[inherit_doc multSum]
 local macro "𝒜" : term => `(s.multSum)
--- local notation3 "𝒜" => multSum s
+
+@[local app_unexpander multSum, inherit_doc multSum]
+def unexpanderMultSum : Unexpander
+  | `($_ $_s $n) => `(𝒜 $n)
+  | `($_ $_s) => `(𝒜)
+  | `($fn) => `($fn)
 
 variable (s) in
 /-- The remainder term in the approximation A_d = ν (d) X + R_d. This is the degree to which `nu`
@@ -234,8 +239,8 @@ def rem (d : ℕ) : ℝ := 𝒜 d - ν d * X
 @[inherit_doc rem]
 local macro "R" : term => `(s.rem)
 
-@[local app_unexpander BoundingSieve.rem]
-def unexpanderWeights : Unexpander
+@[local app_unexpander rem, inherit_doc rem]
+def unexpanderRem : Unexpander
   | `($_ $_s $n) => `(R $n)
   | `($_ $_s) => `(R)
   | `($fn) => `($fn)
