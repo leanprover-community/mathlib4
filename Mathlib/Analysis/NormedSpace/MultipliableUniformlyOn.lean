@@ -100,9 +100,9 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
       apply _root_.multipliable_one_add_of_summable
       apply hu.of_norm_bounded_eventually
       simpa only [norm_norm] using hf'_bd
-    have hF3 := hM.hasProd
-    rw [HasProd, ContinuousMap.tendsto_iff_tendstoUniformly] at hF3
-    convert hF3
+    have hF := hM.hasProd
+    rw [HasProd, ContinuousMap.tendsto_iff_tendstoUniformly] at hF
+    convert hF
     · aesop
     · ext k
       simpa using ContinuousMap.tprod_apply hM k
