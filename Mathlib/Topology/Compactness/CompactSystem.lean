@@ -7,6 +7,7 @@ import Mathlib.Data.Set.Dissipate
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Separation.Hausdorff
+
 /-!
 # Compact systems.
 
@@ -27,6 +28,52 @@ This files defines compact systems of sets.
 * `IsCompactSystem.closedCompactSquareCylinders`: Closed and compact square cylinders form a
   compact system in a product space.
 -/
+
+section PrefixInduction
+
+variable {α : Type}
+variable (q : ∀ n, (Fin n → α) → Prop)
+variable (step0 : q 0 Fin.elim0)
+variable (step :
+    ∀ n (k : Fin n → α) (_ : q n k),
+    { a : α // q (n+1) (Fin.snoc k a)})
+
+def Nat.prefixInduction.aux : ∀ (n : Nat), { k : Fin n -> α // q n k }
+    | 0 => ⟨Fin.elim0, step0⟩
+    | n+1 =>
+      let ⟨k, hk⟩ := aux n
+      let ⟨a, ha⟩ := step n k hk
+      ⟨Fin.snoc k a, ha⟩
+
+theorem Nat.prefixInduction.auxConsistent :
+  ∀ n (i : Fin n),
+    (Nat.prefixInduction.aux q step0 step (i+1)).1 (Fin.last i) =
+    (Nat.prefixInduction.aux q step0 step n).1 i := by
+  intro n
+  induction n
+  next => simp
+  next n ih =>
+    apply Fin.lastCases
+    case last => simp
+    case cast =>
+      intro i
+      simp only [Fin.coe_castSucc]
+      rw [ih, aux]
+      simp
+
+def Nat.prefixInduction (n : Nat) : α :=
+  (Nat.prefixInduction.aux q step0 step (n+1)).1 (Fin.last n)
+
+theorem Nat.prefixInduction_spec (n : Nat) : q n (Nat.prefixInduction q step0 step ·) := by
+  cases n
+  next =>
+    convert step0
+  next n =>
+    have hk := (Nat.prefixInduction.aux q step0 step (n+1)).2
+    convert hk with i
+    apply Nat.prefixInduction.auxConsistent
+
+end PrefixInduction
 
 open Set Nat MeasureTheory
 
@@ -228,8 +275,13 @@ lemma nonempty (k : ℕ) (hc : ∀ N, ⋂ k < N, ⋃₀ (L k : Set (Set α)) ≠
 /-- `q n K` is the joint property that `(∀ k < n, K k ∈ L k)` and `r n K)` holds. -/
 def q : ℕ → (ℕ → Set α) → Prop := fun n K ↦ (∀ k < n, K k ∈ L k) ∧ (r L n K)
 
-lemma get_element_zero (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
+lemma get_element_zero' (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
     ∃ (K : ℕ → Set α), q L 0 K := by
+  simp [q, r, h]
+
+def get_element_zero (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
+    { K : ℕ → Set α // q L 0 K} := by
+  exists fun _ => ∅
   simp [q, r, h]
 
 lemma get_element_succ' (n : ℕ)
@@ -310,8 +362,8 @@ lemma get_element_succ' (n : ℕ)
 Constructing `(mem_of_union_aux h n).1` works inductively. When constructing
 `(mem_of_union_aux h (n + 1)).1`, we update `(mem_of_union_aux h n).1` only at position `n`. -/
 noncomputable def mem_of_union_aux (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :
-    (n : ℕ) → ((K : ℕ → Set α) ×' (q L n K))
-  | 0 => ⟨(get_element_zero L h).choose, (get_element_zero L h).choose_spec⟩
+    (n : ℕ) → {K : ℕ → Set α | q L n K}
+  | 0 => get_element_zero L h
   | n + 1 => by
     have g := (get_element_succ' L) n (mem_of_union_aux h n).1 (mem_of_union_aux h n).2
     exact ⟨Function.update (mem_of_union_aux h n).1 n g.choose, g.choose_spec⟩
@@ -388,7 +440,7 @@ lemma has_p (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p
 
 lemma prop₁ (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) :
     ∀ N, (⋂ (j < n), (mem_of_union L h j)) ∩ (⋂ (k < N), (⋃₀ (L (n + k)).toSet)) ≠ ∅ := by
-  have h' : r L n (mem_of_union_aux L h n).fst := (mem_of_union_aux L h n).2.2
+  have h' : r L n (mem_of_union_aux L h n).val := (mem_of_union_aux L h n).2.2
   simp only [r] at h'
   simp only [mem_of_union]
   intro N
