@@ -67,7 +67,7 @@ lemma hasProdUniformlyOn_iff_tendstoUniformlyOn : HasProdUniformlyOn f g 𝔖 �
 @[to_additive]
 lemma HasProdUniformlyOn.tendstoUniformlyOn_finset_range
     {f : ℕ → β → α} (h : HasProdUniformlyOn f g 𝔖) (hs : s ∈ 𝔖) :
-    TendstoUniformlyOn (fun N ↦ fun b ↦ ∏ i ∈ Finset.range N, f i b) g atTop s := by
+    TendstoUniformlyOn (fun N b ↦ ∏ i ∈ Finset.range N, f i b) g atTop s := by
   rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at h
   exact fun v hv => Filter.tendsto_finset_range.eventually (h s hs v hv)
 

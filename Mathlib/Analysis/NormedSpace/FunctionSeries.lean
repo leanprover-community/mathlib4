@@ -14,7 +14,7 @@ additionally suitable uniform summable bounds are satisfied, in `continuous_tsum
 
 For smoothness of series of functions, see the file `Analysis.Calculus.SmoothSeries`.
 
-TODO: update this to use `SummableUniformlyOn`
+TODO: update this to use `SummableUniformlyOn`.
 
 -/
 
