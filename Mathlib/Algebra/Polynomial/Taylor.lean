@@ -84,7 +84,7 @@ theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
 theorem coeff_taylor_natDegree : (taylor r f).coeff f.natDegree = f.leadingCoeff := by
   by_cases hf : f = 0
   · rw [hf, map_zero]; rfl
-  · rw [taylor_coeff, hassederiv_natDegree_eq_C, eval_C]
+  · rw [taylor_coeff, hasseDeriv_natDegree_eq_C, eval_C]
 
 @[simp]
 theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p := by
@@ -95,22 +95,22 @@ theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree
 
 @[simp]
 theorem leadingCoeff_taylor : (taylor r f).leadingCoeff = f.leadingCoeff := by
-  rw [leadingCoeff, leadingCoeff, natDegree_taylor, taylor_coeff_natDegree, leadingCoeff]
+  rw [leadingCoeff, leadingCoeff, natDegree_taylor, coeff_taylor_natDegree, leadingCoeff]
 
 @[simp]
 theorem taylor_eq_zero : taylor r f = 0 ↔ f = 0 := by
-  rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero, taylor_leadingCoeff]
+  rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero, leadingCoeff_taylor]
 
 @[simp]
 theorem degree_taylor (p : R[X]) (r : R) : degree (taylor r p) = degree p := by
   by_cases hp : p = 0
   · rw [hp, map_zero]
-  · have ht := (taylor_eq_zero_iff r p).not.2 hp
+  · have ht := (taylor_eq_zero r p).not.2 hp
     exact degree_eq_natDegree hp ▸ (degree_eq_iff_natDegree_eq ht).2 (natDegree_taylor ..)
 
 theorem eq_zero_of_hasseDeriv_eq_zero (f : R[X]) (r : R)
     (h : ∀ k, (hasseDeriv k f).eval r = 0) : f = 0 := by
-  rw [← taylor_eq_zero_iff r]
+  rw [← taylor_eq_zero r]
   ext k
   rw [taylor_coeff, h, coeff_zero]
 
@@ -121,7 +121,9 @@ section Ring
 variable {R : Type*} [Ring R]
 
 theorem taylor_injective (r : R) : Function.Injective (taylor r) :=
-  (injective_iff_map_eq_zero' _).2 (taylor_eq_zero_iff r)
+  (injective_iff_map_eq_zero' _).2 (taylor_eq_zero r)
+
+alias taylor_inj := taylor_injective
 
 end Ring
 
