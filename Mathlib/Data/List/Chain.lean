@@ -250,6 +250,12 @@ theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?,
   | [], _, _ => chain'_singleton x
   | _ :: _, hl, H => hl.cons <| H _ rfl
 
+lemma Chain'.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
+    (hl : Chain' R l) (h : R x (l.head l_ne_nil)) : Chain' R (x :: l) := by
+  refine hl.cons' fun y hy ↦ ?_
+  convert h
+  simpa [l.head?_eq_head l_ne_nil] using hy.symm
+
 theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
   ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
 
@@ -399,7 +405,7 @@ theorem Chain.backwards_induction (p : α → Prop) (l : List α) (h : Chain r a
     (final : p b) : ∀ i ∈ a :: l, p i := by
   have : Chain' (flip (flip r)) (a :: l) := by simpa [Chain']
   replace this := chain'_reverse.mpr this
-  simp_rw (config := {singlePass := true}) [← List.mem_reverse]
+  simp_rw +singlePass [← List.mem_reverse]
   apply this.induction _ _ (fun _ _ h ↦ carries h)
   simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb,
     reduceCtorEq]

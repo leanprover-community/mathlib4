@@ -218,12 +218,10 @@ set `s : R[X]` is finite. There exists a polynomial `p' ∈ s` whose degree domi
 every element of `p ∈ span R s`. -/
 theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite) (hs : s.Nonempty) :
     ∃ p' ∈ s, ∀ (p : R[X]), p ∈ Submodule.span R s → degree p ≤ degree p' := by
-  rcases Set.Finite.exists_maximal_wrt degree s s_fin hs with ⟨a, has, hmax⟩
+  obtain ⟨a, has, hmax⟩ := s_fin.exists_maximalFor degree s hs
   refine ⟨a, has, fun p hp => ?_⟩
-  rcases exists_degree_le_of_mem_span hs hp with ⟨p', hp'⟩
-  by_cases h : degree a ≤ degree p'
-  · rw [← hmax p' hp'.left h] at hp'; exact hp'.right
-  · exact le_trans hp'.right (not_le.mp h).le
+  obtain ⟨p', hp', hpp'⟩ := exists_degree_le_of_mem_span hs hp
+  exact hpp'.trans <| not_lt.1 <| not_lt_iff_le_imp_le.2 <| hmax hp'
 
 /-- The span of every finite set of polynomials is contained in a `degreeLE n` for some `n`. -/
 theorem span_le_degreeLE_of_finite {s : Set R[X]} (s_fin : s.Finite) :
@@ -510,7 +508,7 @@ theorem polynomial_mem_ideal_of_coeff_mem_ideal (I : Ideal R[X]) (p : R[X])
   sum_C_mul_X_pow_eq p ▸ Submodule.sum_mem I fun n _ => I.mul_mem_right _ (hp n)
 
 /-- The push-forward of an ideal `I` of `R` to `R[X]` via inclusion
- is exactly the set of polynomials whose coefficients are in `I` -/
+is exactly the set of polynomials whose coefficients are in `I` -/
 theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     f ∈ (Ideal.map (C : R →+* R[X]) I : Ideal R[X]) ↔ ∀ n : ℕ, f.coeff n ∈ I := by
   constructor
@@ -676,7 +674,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         let n := Nat.find hg
         refine ⟨m + n, ?_⟩
         rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
-          Finset.sum_insert (Finset.not_mem_erase _ _), (P.add_mem_iff_left _).not]
+          Finset.sum_insert (Finset.notMem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
           rw [not_or]
           exact ⟨Nat.find_spec hf, Nat.find_spec hg⟩
@@ -734,8 +732,10 @@ theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coe
   simp only [monomial_mul_C, one_mul, smul_eq_mul]
   rw [← C_mul_X_pow_eq_monomial]
 
-theorem exists_C_coeff_not_mem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
+theorem exists_C_coeff_notMem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
   Not.imp_symm fun cf => span_le_of_C_coeff_mem (not_exists_not.mp cf) mem_span_C_coeff
+
+@[deprecated (since := "2025-05-23")] alias exists_C_coeff_not_mem := exists_C_coeff_notMem
 
 end Ideal
 
@@ -1084,7 +1084,7 @@ theorem mem_ideal_of_coeff_mem_ideal (I : Ideal (MvPolynomial σ R)) (p : MvPoly
   simpa [Ideal.mem_comap] using hcoe m
 
 /-- The push-forward of an ideal `I` of `R` to `MvPolynomial σ R` via inclusion
- is exactly the set of polynomials whose coefficients are in `I` -/
+is exactly the set of polynomials whose coefficients are in `I` -/
 theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
     f ∈ (Ideal.map (C : R →+* MvPolynomial σ R) I : Ideal (MvPolynomial σ R)) ↔
       ∀ m : σ →₀ ℕ, f.coeff m ∈ I := by

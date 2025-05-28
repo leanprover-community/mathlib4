@@ -96,7 +96,7 @@ variable {R}
 `r / s` in each of the stalks (which are localizations at various prime ideals).
 -/
 def IsFraction {U : Opens (PrimeSpectrum.Top R)} (f : ∀ x : U, Localizations R x) : Prop :=
-  ∃ r s : R, ∀ x : U, ¬s ∈ x.1.asIdeal ∧ f x * algebraMap _ _ s = algebraMap _ _ r
+  ∃ r s : R, ∀ x : U, s ∉ x.1.asIdeal ∧ f x * algebraMap _ _ s = algebraMap _ _ r
 
 theorem IsFraction.eq_mk' {U : Opens (PrimeSpectrum.Top R)} {f : ∀ x : U, Localizations R x}
     (hf : IsFraction f) :
@@ -146,7 +146,7 @@ theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)} (f : ∀ x : U,
       ∀ x : U,
         ∃ (V : _) (_ : x.1 ∈ V) (i : V ⟶ U),
           ∃ r s : R,
-            ∀ y : V, ¬s ∈ y.1.asIdeal ∧ f (i y : U) * algebraMap _ _ s = algebraMap _ _ r :=
+            ∀ y : V, s ∉ y.1.asIdeal ∧ f (i y : U) * algebraMap _ _ s = algebraMap _ _ r :=
   rfl
 
 /-- The functions satisfying `isLocallyFraction` form a subring.

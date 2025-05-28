@@ -12,7 +12,7 @@ import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 # Nöbeling's theorem
 
 This file proves Nöbeling's theorem. For the overall proof outline see
-`Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+`Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
 ## Main result
 
@@ -104,7 +104,7 @@ Given a profinite set `S` and a closed embedding `S → (I → Bool)`, the `ℤ`
 -/
 theorem Nobeling_aux : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
   (Module.Free.of_basis <| GoodProducts.Basis _ hι.isClosed_range) (LocallyConstant.congrLeftₗ ℤ
-    (.ofIsEmbedding ι hι.isEmbedding)).symm
+    hι.isEmbedding.toHomeomorph).symm
 
 end NobelingProof
 

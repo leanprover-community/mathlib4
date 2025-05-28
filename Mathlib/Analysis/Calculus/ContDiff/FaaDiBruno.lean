@@ -400,7 +400,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
         apply this
       intro a' b'
       induction b' using Fin.induction with
-      | zero => simpa using succ_ne_zero (c.emb i a')
+      | zero => simp
       | succ b' =>
         simp only [Nat.succ_eq_add_one, cases_succ, comp_apply, ne_eq, succ_inj]
         apply c.emb_ne_emb_of_ne hij
@@ -749,7 +749,7 @@ theorem applyOrderedFinpartition_update_right
   · simp only [applyOrderedFinpartition, ne_eq, h, not_false_eq_true,
       update_of_ne]
     congr
-    apply Function.update_comp_eq_of_not_mem_range
+    apply Function.update_comp_eq_of_notMem_range
     have A : Disjoint (range (c.emb m)) (range (c.emb (c.index j))) :=
       c.disjoint (mem_univ m) (mem_univ (c.index j)) h
     have : j ∈ range (c.emb (c.index j)) := mem_range.2 ⟨c.invEmbedding j, by simp⟩
@@ -880,7 +880,7 @@ theorem analyticOn_taylorComp
     (hp : ∀ n, AnalyticOn 𝕜 (fun x ↦ p x n) s) {f : E → F}
     (hf : AnalyticOn 𝕜 f s) (h : MapsTo f s t) (n : ℕ) :
     AnalyticOn 𝕜 (fun x ↦ (q (f x)).taylorComp (p x) n) s := by
-  apply Finset.analyticOn_sum _ (fun c _ ↦ ?_)
+  apply Finset.analyticOn_fun_sum _ (fun c _ ↦ ?_)
   let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
   change AnalyticOn 𝕜
     ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s

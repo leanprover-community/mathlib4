@@ -20,8 +20,8 @@ in the following files:
 See these files for a mathematical explanation of the proof of the coherence theorem.
 
 The actual tactics that users will use are given in
-- `Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence`
-- `Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence`
+- `Mathlib/Tactic/CategoryTheory/Monoidal/PureCoherence.lean`
+- `Mathlib/Tactic/CategoryTheory/Bicategory/PureCoherence.lean`
 
 -/
 

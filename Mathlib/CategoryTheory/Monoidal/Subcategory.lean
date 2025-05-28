@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 Given a monoidal category `C` and a property of objects `P : ObjectProperty C`
 that is monoidal (i.e. it holds for the unit and is stable by `⊗`),
 we can put a monoidal structure on `P.FullSubcategory` (the category
-structure is defined in `Mathlib.CategoryTheory.ObjectProperty.FullSubcategory`).
+structure is defined in `Mathlib/CategoryTheory/ObjectProperty/FullSubcategory.lean`).
 
 When `C` is also braided/symmetric, the full monoidal subcategory also inherits the
 braided/symmetric structure.
@@ -126,7 +126,7 @@ variable {P} {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P')
 
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a monoidal functor between full monoidal subcategories. -/
-instance  : (ιOfLE h).Monoidal :=
+instance : (ιOfLE h).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
