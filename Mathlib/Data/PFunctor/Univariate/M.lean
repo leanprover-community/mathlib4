@@ -96,7 +96,6 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
     suffices (fun x => truncate (y x)) = f
       by simp [this]
     funext y
-
     apply n_ih
     apply h₁
 
