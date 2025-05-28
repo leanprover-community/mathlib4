@@ -239,7 +239,7 @@ theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
 end withDecEq
 
 section AES
-variable {i j n : ℕ} {d x : α}
+variable {i j n : ℕ} {d x v w₁ w₂ : α} {s t : Finset α}
 
 section Counting
 
@@ -285,8 +285,7 @@ end Counting
 
 namespace IsFiveWheelLike
 
-variable [DecidableEq α] {v w₁ w₂ : α} {s t : Finset α}
-(hw : G.IsFiveWheelLike r k v w₁ w₂ s t) (hcf : G.CliqueFree (r + 2))
+variable [DecidableEq α] (hw : G.IsFiveWheelLike r k v w₁ w₂ s t) (hcf : G.CliqueFree (r + 2))
 
 include hw hcf
 
@@ -454,46 +453,36 @@ lemma minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ [Fintype α]
     exact ⟨_, mem_filter.2 hy⟩
   -- So we also have an upper bound on the degree sum over `s ∩ t`
   -- `∑ w ∈ s ∩ t, H.degree w ≤ #Xᶜ * (#(s ∩ t) - 1) + #X * #(s ∩ t)`
-  have bdX := sum_degree_le_of_le_not_adj xcle (fun x _ ↦ Nat.zero_le _)
+  have bdX := sum_degree_le_of_le_not_adj xcle (fun _ _ ↦ Nat.zero_le _)
   rw [compl_compl, tsub_zero, add_comm] at bdX
   rw [Nat.le_div_iff_mul_le <| Nat.add_pos_right _ zero_lt_three]
   have Wc : #W + k = 2 * r + 3 := hw.card_add_card_inter
   have w3 : 3 ≤ #W := two_lt_card.2 ⟨_, mem_insert_self .., _, by simp [W], _, by simp [W],
     hw.isPathGraph3Compl.ne_fst, hw.isPathGraph3Compl.ne_snd, hw.isPathGraph3Compl.fst_ne_snd⟩
-  -- For simplicity we now split depending on whether or not `s ∩ t` is empty.
-  by_cases hst : k = 0
-  · -- `s ∩ t = ∅`
-    -- In this case the degree sum over `W` implies the required upper bound on minimum degree
-    rw [hst, add_zero] at Wc ⊢
-    rw [← Wc, ← tsub_eq_of_eq_add Wc]
-    have Xu : X = univ := by
-      apply eq_univ_of_forall
-      rw [← hw.card_inter, card_eq_zero] at hst
-      intro x; simp [X, hst]
-    rw [Xu, card_univ, compl_univ, card_empty, zero_mul, add_zero, mul_comm] at bdW
-    apply bdW.trans'
-    rw [card_eq_sum_ones, mul_sum, mul_one]
-    exact sum_le_sum (fun i _ ↦ G.minDegree_le_degree i)
-  · -- `s ∩ t ≠ ∅` so `1 ≤ k`
-    -- In this case the sum of the degree sum over `W` with twice the degree sum over `s ∩ t`
-    -- must be at least `G.minDegree * (#W + 2 * #(s ∩ t))` which implies the result
-    have hap : #W - 1 + 2 * (k - 1) = #W - 3 + 2 * k := by omega
-    calc
-      minDegree G * (2 * r + k + 3) ≤ ∑ w ∈ W, G.degree w + 2 * ∑ w ∈ s ∩ t, G.degree w := by
-        rw [add_assoc, add_comm k, ← add_assoc, ← Wc, add_assoc, ← two_mul, mul_add]
-        simp_rw [← hw.card_inter, card_eq_sum_ones, ← mul_assoc, mul_sum, mul_one]
-        apply add_le_add <;> apply sum_le_sum <;> intro i _
-        · exact minDegree_le_degree ..
-        · exact mul_comm 2 _ ▸ (Nat.mul_le_mul_left _ <| G.minDegree_le_degree _)
-      _ ≤ #X * (#W - 3) + #Xᶜ * (#W - 1) + 2 * (#X * k + #Xᶜ * (k - 1)) :=
-          add_le_add bdW <| Nat.mul_le_mul_left _ (hw.card_inter ▸ bdX)
-      _ = #X * (#W - 3 + 2 * k) + #Xᶜ * ((#W - 1) + 2 * (k - 1)) := by ring_nf
-      _ ≤ (2 * r + k) * ‖α‖ := by
-        rw [hap, ← add_mul, card_compl, add_tsub_cancel_of_le (card_le_univ _), mul_comm]
-        apply Nat.mul_le_mul_right
-        rw [two_mul, ← add_assoc]
-        apply Nat.add_le_add_right
-        rw [tsub_add_eq_add_tsub w3, Wc, Nat.add_sub_cancel_right]
+  -- The sum of the degree sum over `W` and twice the degree sum over `s ∩ t`
+  -- is at least `G.minDegree * (#W + 2 * #(s ∩ t))` which implies the result
+  calc
+    _ ≤ ∑ w ∈ W, G.degree w + 2 * ∑ w ∈ s ∩ t, G.degree w := by
+      simp_rw [add_assoc, add_comm k, ← add_assoc, ← Wc, add_assoc, ← two_mul, mul_add,
+               ← hw.card_inter, card_eq_sum_ones, ← mul_assoc, mul_sum, mul_one]
+      apply add_le_add <;> apply sum_le_sum <;> intro i _
+      · exact minDegree_le_degree ..
+      · exact mul_comm 2 _ ▸ (Nat.mul_le_mul_left _ <| G.minDegree_le_degree _)
+    _ ≤ #X * (#W - 3) + #Xᶜ * (#W - 1) + 2 * (#X * k + #Xᶜ * (k - 1)) :=
+        add_le_add bdW <| Nat.mul_le_mul_left _ (hw.card_inter ▸ bdX)
+    _ = #X * (#W - 3 + 2 * k) + #Xᶜ * ((#W - 1) + 2 * (k - 1)) := by ring_nf
+    _ ≤ _ := by
+        by_cases hk : k = 0 -- so `s ∩ t = ∅` and hence `Xᶜ = ∅`
+        · have Xu : X = univ := by
+            rw [← hw.card_inter, card_eq_zero] at hk
+            exact eq_univ_of_forall fun _ ↦ by simp [X, hk]
+          subst k
+          rw [add_zero] at Wc
+          simp [Xu, Wc, mul_comm]
+        have hap : #W - 1 + 2 * (k - 1) = #W - 3 + 2 * k := by omega
+        rw [hap, ← add_mul, card_compl, add_tsub_cancel_of_le <| card_le_univ _, mul_comm, two_mul,
+            ← add_assoc]
+        exact Nat.mul_le_mul_right _ (by omega)
 
 end IsFiveWheelLike
 
@@ -525,7 +514,7 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     -- a contradiction.
     have hD := hw.minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ hmcf.1 <| hm _ <| lt_add_one _
     exact (hd.trans_le <| minDegree_le_minDegree hle).not_le
-             <| hD.trans (kr_bound <| Nat.le_of_succ_le_succ <| hlt)
+             <| hD.trans <| kr_bound <| Nat.le_of_succ_le_succ <| hlt
 
 end AES
 end SimpleGraph
