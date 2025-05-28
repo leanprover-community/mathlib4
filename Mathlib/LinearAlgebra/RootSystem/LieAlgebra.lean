@@ -168,6 +168,52 @@ lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
   · rw [Matrix.mul_smul, ω_mul_f]
     simp [mul_assoc]
 
+/-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_same`. -/
+private lemma lie_e_f_same_aux [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support) (k : ι)
+    (hki : k ≠ i) (hki' : k ≠ P.reflection_perm i i) :
+    ⁅e i, f i⁆ (Sum.inr k) (Sum.inr k) = h i (Sum.inr k) (Sum.inr k) := by
+  classical
+  have h_lin_ind : LinearIndependent R ![P.root i, P.root k] := by
+    rw [LinearIndependent.pair_symm_iff, IsReduced.linearIndependent_iff]; aesop
+  suffices  (∑ x, if P.root k = P.root i + P.root x then
+              (P.chainBotCoeff i x + 1 : R) * (P.chainTopCoeff i k + 1) else 0) -
+            (∑ x, if P.root k = P.root x - P.root i then
+              (P.chainTopCoeff i x + 1 : R) * (P.chainBotCoeff i k + 1) else 0) =
+      P.chainBotCoeff i k - P.chainTopCoeff i k by
+    have aux (x : ι) : P.root x = P.root k - P.root i ↔ P.root k = P.root i + P.root x := by
+      rw [eq_sub_iff_add_eq', eq_comm]
+    have aux' (x : ι) : P.root x = P.root i + P.root k ↔ P.root k = P.root x - P.root i := by
+      rw [eq_sub_iff_add_eq', eq_comm]
+    simpa [e, f, h, hki, hki', aux, aux', ← ite_and, ← P.chainBotCoeff_sub_chainTopCoeff h_lin_ind]
+  rcases exists_or_forall_not (fun x ↦ P.root k = P.root i + P.root x) with ⟨x, hx⟩ | h₁ <;>
+  rcases exists_or_forall_not (fun x ↦ P.root k = P.root x - P.root i) with ⟨y, hy⟩ | h₂
+  · have h_lin_ind_x : LinearIndependent R ![P.root i, P.root x] := by simpa [hx] using h_lin_ind
+    have h_lin_ind_y : LinearIndependent R ![P.root i, P.root y] := by
+      rw [← add_eq_of_eq_sub hy, add_comm]; simpa
+    have hx' : P.chainBotCoeff i k = P.chainBotCoeff i x + 1 :=
+      chainBotCoeff_of_add h_lin_ind_x (add_comm (P.root i) _ ▸ hx)
+    have hy' : P.chainTopCoeff i k = P.chainTopCoeff i y + 1 := chainTopCoeff_of_sub h_lin_ind_y hy
+    rw [Finset.sum_eq_single_of_mem x (Finset.mem_univ _) (by aesop),
+      Finset.sum_eq_single_of_mem y (Finset.mem_univ _) (by aesop)]
+    simp only [hx, hy.symm, hx', hy', reduceIte, Nat.cast_add]
+    ring
+  · simp_rw [if_neg (h₂ _), Finset.sum_const_zero, sub_zero]
+    replace h₂ : P.chainTopCoeff i k = 0 :=
+      P.chainTopCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₂ x <| by simp [hx]
+    have h_lin_ind_x : LinearIndependent R ![P.root i, P.root x] := by simpa [hx] using h_lin_ind
+    have hx' : P.chainBotCoeff i k = P.chainBotCoeff i x + 1 :=
+      chainBotCoeff_of_add h_lin_ind_x (add_comm (P.root i) _ ▸ hx)
+    simp [hx, hx', h₂]
+  · simp_rw [if_neg (h₁ _), Finset.sum_const_zero, zero_sub]
+    replace h₁ : P.chainBotCoeff i k = 0 :=
+      P.chainBotCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₁ x <| by simp [hx]
+    have h_lin_ind_y : LinearIndependent R ![P.root i, P.root y] := by
+      rw [← add_eq_of_eq_sub hy, add_comm]; simpa
+    simp [hy, h₁, chainTopCoeff_of_sub h_lin_ind_y hy]
+  · suffices P.chainBotCoeff i k = 0 ∧ P.chainTopCoeff i k = 0 by simp [if_neg, h₁, h₂, this]
+    exact ⟨P.chainBotCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₁ x <| by simp [hx],
+           P.chainTopCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₂ x <| by simp [hx]⟩
+
 /-- Lemma 3.4 from [Geck](Geck2017). -/
 lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support) :
     ⁅e i, f i⁆ = h i := by
@@ -185,10 +231,10 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
     · rintro ⟨contra, -, rfl⟩
       simp [P.ne_zero l, sub_eq_add_neg] at contra
   · simp [Ring.lie_def, e, f, h, Matrix.mul_apply]
-  · simp [Ring.lie_def, e, f, h, Matrix.mul_apply, ← indexNeg_neg, Matrix.diagonal_apply,
-      ← ite_and]
-    rcases eq_or_ne k i with rfl | hki
-    · simp [-indexNeg_neg, P.ne_zero, P.ne_neg]
+  · rcases eq_or_ne k i with rfl | hki
+    · simp [Ring.lie_def, e, f, h, Matrix.mul_apply, ← indexNeg_neg, Matrix.diagonal_apply,
+        ← ite_and]
+      simp [-indexNeg_neg, P.ne_zero, P.ne_neg]
       rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
       have (x : ι) : ¬ (P.root x = P.root i + P.root l ∧ P.root ↑i = P.root x - P.root i) := by
         rintro ⟨h₁, h₂⟩
@@ -197,9 +243,9 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
         exact P.two_smul_notMem_range_root ⟨x, h₁⟩
       simp_rw [if_neg (this _)]
       aesop
-    simp [-indexNeg_neg, hki]
     rcases eq_or_ne k (-i) with rfl | hki'
-    · simp [-indexNeg_neg, P.ne_zero, P.ne_neg]
+    · simp [Ring.lie_def, e, f, h, Matrix.mul_apply, ← indexNeg_neg, Matrix.diagonal_apply,
+        ← ite_and, -indexNeg_neg, hki]
       have aux₁ (x : ι) : ¬ P.root (-i) = P.root x - P.root i := by
         rw [eq_comm]
         simp [eq_sub_iff_add_eq, P.ne_zero x]
@@ -220,76 +266,8 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
     have h_lin_ind : LinearIndependent R ![P.root i, P.root k] := by
       rw [LinearIndependent.pair_symm_iff]
       simpa [IsReduced.linearIndependent_iff, hki] using hki'
-    simp [-indexNeg_neg, hki', ← P.chainBotCoeff_sub_chainTopCoeff h_lin_ind]
     rcases eq_or_ne k l with rfl | hkl
-    · simp [-indexNeg_neg]
-      have aux (x : ι) : P.root x = P.root k - P.root i ↔ P.root k = P.root i + P.root x := by
-        rw [eq_sub_iff_add_eq', eq_comm]
-      simp only [aux, and_self]
-      replace aux (x : ι) : P.root x = P.root i + P.root k ↔ P.root k = P.root x - P.root i := by
-        rw [eq_sub_iff_add_eq', eq_comm]
-      simp only [aux, and_self]
-      -- This goal is essentially the only part with content. Separate lemma?
-      rcases exists_or_forall_not (fun x ↦ P.root k = P.root i + P.root x) with h₁ | h₁ <;>
-      rcases exists_or_forall_not (fun x ↦ P.root k = P.root x - P.root i) with h₂ | h₂
-      · obtain ⟨x, hx⟩ := h₁
-        obtain ⟨y, hy⟩ := h₂
-        have h_lin_ind_x : LinearIndependent R ![P.root i, P.root x] := by
-          simpa [hx] using h_lin_ind
-        have h_lin_ind_y : LinearIndependent R ![P.root i, P.root y] := by
-          rw [← add_eq_of_eq_sub hy, add_comm]; simpa
-        have hx' : P.chainBotCoeff i k = P.chainBotCoeff i x + 1 := by
-          rw [add_comm] at hx
-          exact chainBotCoeff_of_add h_lin_ind_x hx
-        have hy' : P.chainTopCoeff i k = P.chainTopCoeff i y + 1 :=
-          chainTopCoeff_of_sub h_lin_ind_y hy
-        rw [Finset.sum_eq_single_of_mem x (Finset.mem_univ _) (by aesop),
-          Finset.sum_eq_single_of_mem y (Finset.mem_univ _) (by aesop)]
-        simp [hx, hy.symm, hx', hy']
-        ring
-      · simp_rw [if_neg (h₂ _), Finset.sum_const_zero, sub_zero]
-        replace h₂ : P.chainTopCoeff i k = 0 := by
-          rw [chainTopCoeff_eq_zero_iff]
-          right
-          rintro ⟨m, hm⟩
-          apply h₂ m
-          simp [hm]
-        obtain ⟨x, hx⟩ := h₁
-        have h_lin_ind' : LinearIndependent R ![P.root i, P.root x] := by simpa [hx] using h_lin_ind
-        rw [Finset.sum_eq_single_of_mem x (Finset.mem_univ _) (by aesop)]
-        rw [add_comm] at hx
-        rw [chainBotCoeff_of_add h_lin_ind' hx]
-        rw [add_comm] at hx
-        simp [hx, h₂]
-      · simp_rw [if_neg (h₁ _), Finset.sum_const_zero, zero_sub]
-        replace h₁ : P.chainBotCoeff i k = 0 := by
-          rw [chainBotCoeff_eq_zero_iff]
-          right
-          rintro ⟨m, hm⟩
-          apply h₁ m
-          simp [hm]
-        obtain ⟨x, hx⟩ := h₂
-        have h_lin_ind' : LinearIndependent R ![P.root i, P.root x] := by
-          rw [← add_eq_of_eq_sub hx, add_comm]; simpa
-        rw [Finset.sum_eq_single_of_mem x (Finset.mem_univ _) (by aesop)]
-        simp [hx, h₁, chainTopCoeff_of_sub h_lin_ind' hx]
-      · suffices P.chainBotCoeff i k = 0 ∧ P.chainTopCoeff i k = 0 by
-          simp [if_neg (h₁ _), if_neg (h₂ _), this]
-        replace h₁ : P.root k - P.root i ∉ range P.root := by
-          rintro ⟨x, hx⟩
-          apply h₁ x
-          simp [hx]
-        replace h₂ : P.root k + P.root i ∉ range P.root := by
-          rintro ⟨x, hx⟩
-          apply h₂ x
-          simp [hx]
-        refine ⟨?_, ?_⟩
-        · contrapose! h₁
-          replace h₁ : 1 ≤ P.chainBotCoeff i k := by omega
-          simpa [← P.root_sub_nsmul_mem_range_iff_le_chainBotCoeff h_lin_ind] using h₁
-        · contrapose! h₂
-          replace h₂ : 1 ≤ P.chainTopCoeff i k := by omega
-          simpa [← P.root_add_nsmul_mem_range_iff_le_chainTopCoeff h_lin_ind] using h₂
+    · exact lie_e_f_same_aux i k hki hki'
     have h₁ (x : ι) : ¬ (P.root x = P.root l - P.root i ∧ P.root k = P.root i + P.root x) := by
       rintro ⟨hx₁, hx₂⟩
       simp [hx₁, hkl] at hx₂
@@ -297,6 +275,8 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
       rintro ⟨hx₁, hx₂⟩
       simp [hx₁, hkl] at hx₂
     simp [if_neg (h₁ _), if_neg (h₂ _), hkl]
+    simp [h, e, f, hkl]
+    aesop
 
 lemma isSl2Triple [P.IsReduced] [Fintype b.support] [Fintype ι] [DecidableEq ι] (i : b.support) :
     IsSl2Triple (h i) (e i) (f i) where
