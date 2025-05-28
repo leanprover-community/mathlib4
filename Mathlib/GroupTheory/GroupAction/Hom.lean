@@ -295,7 +295,6 @@ def inverse (f : X →[M] Y₁) (g : Y₁ → X)
       _ = g (f (m • g x)) := by simp only [map_smul, id_eq]
       _ = m • g x := by rw [h₁]
 
-
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[to_additive (attr := simps) "The inverse of a bijective equivariant map is equivariant."]
 def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ)
@@ -343,6 +342,13 @@ theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
   intro x
   simp only [comp_apply, inverse_apply, id_apply]
   exact h₂ x
+
+@[to_additive EquivLike.inv_map_vaddₛₗ]
+lemma EquivLike.inv_map_smulₛₗ {S F : Type*} [EquivLike S M N] [EquivLike F X Y] (f : S)
+    [MulActionSemiHomClass F f X Y] (f₁ : F) (u : N) (v : Y) :
+    EquivLike.inv f₁ (u • v) = EquivLike.inv f u • EquivLike.inv f₁ v :=
+  MulActionSemiHomClass.map_smulₛₗ (MulActionHom.inverse' f₁ (EquivLike.inv f₁)
+    (EquivLike.right_inv f) (EquivLike.left_inv f₁) (EquivLike.right_inv f₁)) u v
 
 /-- If actions of `M` and `N` on `α` commute,
   then for `c : M`, `(c • · : α → α)` is an `N`-action homomorphism. -/

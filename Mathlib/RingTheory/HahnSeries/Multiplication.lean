@@ -49,7 +49,7 @@ open Finset Function Pointwise
 
 noncomputable section
 
-variable {Γ Γ' R S U V : Type*}
+variable {Γ Γ' Γ₁ Γ₂ F R S U V : Type*}
 
 namespace HahnSeries
 
@@ -129,7 +129,7 @@ theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm 
 
 end
 
-section SMul
+section BaseStructure
 
 variable [PartialOrder Γ] [AddCommMonoid V] [SMul R V]
 
@@ -152,9 +152,58 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 @[simp] theorem of_symm_nsmul (n : ℕ) (x : HahnModule Γ R V) :
   (of R).symm (n • x) = n • (of R).symm x := rfl
 
-variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
+instance instBaseSMulZeroClass [SMulZeroClass R V] :
+    SMulZeroClass R (HahnModule Γ R V) :=
+  inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
 
-instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
+@[simp] theorem of_smul [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
+  (of R) (r • x) = r • (of R) x := rfl
+@[simp] theorem of_symm_smul [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
+  (of R).symm (r • x) = r • (of R).symm x := rfl
+
+instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V) :=
+  inferInstanceAs <| Module R (HahnSeries Γ V)
+
+/-- The isomorphism between HahnSeries and HahnModules, as a linear map. -/
+@[simps]
+def lof (R : Type*) [Semiring R] [Module R V] : HahnSeries Γ V ≃ₗ[R] HahnModule Γ R V where
+  toFun := of R
+  map_add' := of_add
+  map_smul' := of_smul
+  invFun := (of R).symm
+  left_inv := congrFun rfl
+  right_inv := congrFun rfl
+
+/-- HahnModule coefficient-wise map as a HahnSeries-linear map. -/
+def map [Semiring R] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) :
+    HahnModule Γ R U →ₗ[R] HahnModule Γ R V where
+  toFun x := (of R) (HahnSeries.map ((of R).symm x) f)
+  map_add' x y := by ext; simp
+  map_smul' s x := by ext; simp
+
+@[simp]
+protected lemma map_coeff [Semiring R] [Module R V] [AddCommMonoid U] [Module R U]
+    (x : HahnModule Γ R U) (f : U →ₗ[R] V) (g : Γ) :
+    ((of R).symm (map f x)).coeff g = f (((of R).symm x).coeff g) := by
+  simp [map]
+
+/-- The linear equivalence between Hahn modules induced by an order equivalence. -/
+def equivDomain [Semiring R] [Module R V] [PartialOrder Γ'] (f : Γ ≃o Γ') :
+    HahnModule Γ R V ≃ₗ[R] HahnModule Γ' R V where
+  toFun x := (of R) (HahnSeries.equivDomain f ((of R).symm x))
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+  invFun x := (of R) (HahnSeries.equivDomain f.symm ((of R).symm x))
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+end BaseStructure
+
+section HahnSMul
+
+variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [AddCommMonoid V]
+
+instance instSMul [Zero R] [SMul R V] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
   smul x y := (of R) {
     coeff := fun a =>
       ∑ ij ∈ VAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
@@ -171,29 +220,13 @@ instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
           simp [not_nonempty_iff_eq_empty.1 ha]
         isPWO_support_vaddAntidiagonal.mono h }
 
-theorem coeff_smul [Zero R] (x : HahnSeries Γ R) (y : HahnModule Γ' R V) (a : Γ') :
+theorem coeff_smul [Zero R] [SMul R V] (x : HahnSeries Γ R) (y : HahnModule Γ' R V) (a : Γ') :
     ((of R).symm <| x • y).coeff a =
       ∑ ij ∈ VAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd :=
   rfl
 
 @[deprecated (since := "2025-01-31")] alias smul_coeff := coeff_smul
-
-end SMul
-
-section SMulZeroClass
-
-variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
-  [AddCommMonoid V]
-
-instance instBaseSMulZeroClass [SMulZeroClass R V] :
-    SMulZeroClass R (HahnModule Γ R V) :=
-  inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
-
-@[simp] theorem of_smul [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
-  (of R) (r • x) = r • (of R) x := rfl
-@[simp] theorem of_symm_smul [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
-  (of R).symm (r • x) = r • (of R).symm x := rfl
 
 variable [Zero R]
 
@@ -232,7 +265,7 @@ theorem coeff_smul_left [SMulWithZero R V] {x : HahnSeries Γ R}
 
 @[deprecated (since := "2025-01-31")] alias smul_coeff_left := coeff_smul_left
 
-end SMulZeroClass
+end HahnSMul
 
 section DistribSMul
 
@@ -729,41 +762,13 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe [Set.vadd_mem_vadd, Set.add_mem_add]) (add simp [add_vadd, mul_smul])
 
-instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ' R V) :=
-  inferInstanceAs <| Module R (HahnSeries Γ' V)
-
-/-- The isomorphism between HahnSeries and HahnModules, as a linear map. -/
-@[simps]
-def lof (R : Type*) [Semiring R] [Module R V] : HahnSeries Γ V ≃ₗ[R] HahnModule Γ R V where
-  toFun := of R
-  map_add' := of_add
-  map_smul' := of_smul
-  invFun := (of R).symm
-  left_inv := congrFun rfl
-  right_inv := congrFun rfl
-
 instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
     (HahnModule Γ' R V) := {
   inferInstanceAs (DistribSMul (HahnSeries Γ R) (HahnModule Γ' R V)) with
   mul_smul := fun x y z => mul_smul' x y z
   one_smul := fun _ => one_smul'
   add_smul := fun _ _ _ => add_smul Module.add_smul
-  zero_smul := fun _ => zero_smul'
-  }
-
-/-- HahnModule coefficient-wise map as a HahnSeries-linear map. -/
-def map [Semiring R] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) :
-    HahnModule Γ' R U →ₗ[R] HahnModule Γ' R V where
-  toFun x := (of R) (HahnSeries.map ((of R).symm x) f)
-  map_add' x y := by ext; simp
-  map_smul' s x := by ext; simp
-
-omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
-@[simp]
-protected lemma map_coeff [Semiring R] [Module R V] [AddCommMonoid U] [Module R U]
-    (x : HahnModule Γ R U) (f : U →ₗ[R] V) (g : Γ) :
-    ((of R).symm (map f x)).coeff g = f (((of R).symm x).coeff g) := by
-  simp [map]
+  zero_smul := fun _ => zero_smul' }
 
 /-- HahnModule coefficient-wise map as a HahnSeries-linear map. -/
 def hmap [Semiring R] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) :
@@ -1142,82 +1147,87 @@ theorem embDomainRingHom_C [NonAssocSemiring R] {f : Γ →+ Γ'} {hfi : Functio
     {hf : ∀ g g' : Γ, f g ≤ f g' ↔ g ≤ g'} {r : R} : embDomainRingHom f hfi hf (C r) = C r :=
   embDomain_single.trans (by simp)
 
-/-- Extending the domain of Hahn series is a ring homomorphism. -/
-def equivDomainRingHom [NonAssocSemiring R] (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) :
+variable [EquivLike F Γ Γ'] [AddMonoidHomClass F Γ Γ'] [OrderIsoClass F Γ Γ']
+
+/-- A ring isomorphism on Hahn series induced by an additive order isomorphism. -/
+def equivDomainRingHom [NonAssocSemiring R] (f : F) :
     HahnSeries Γ R ≃+* HahnSeries Γ' R where
   toFun x := equivDomain f x
   invFun x := (equivDomain f).symm x
   left_inv x := by simp
   right_inv x := by simp
-  map_mul' x y := by simp [equivDomain_eq_embDomain, embDomain_mul (RelIso.toRelEmbedding f) hf]
+  map_mul' x y := by
+    simp only [equivDomain_eq_embDomain]
+    rw [embDomain_mul _ (fun g g' ↦ map_add f g g')]
   map_add' x y := by simp [equivDomain_eq_embDomain, embDomain_add]
 
 @[simp]
-theorem equivDomainRingHom_apply_apply [NonAssocSemiring R] (f : Γ ≃o Γ')
-    (hf : ∀ x y, f (x + y) = f x + f y) (x : HahnSeries Γ R) (g : Γ') :
-    (equivDomainRingHom f hf x).coeff g = x.coeff (f.symm g) := by
+theorem equivDomainRingHom_apply_apply [NonAssocSemiring R] (f : F) (x : HahnSeries Γ R) (g : Γ') :
+    (equivDomainRingHom f x).coeff g = x.coeff (EquivLike.inv f g) := by
   rfl
 
 @[simp]
-theorem equivDomainRingHom_symm_apply_apply [NonAssocSemiring R] (f : Γ ≃o Γ')
-    (hf : ∀ x y, f (x + y) = f x + f y) (x : HahnSeries Γ' R) (g : Γ) :
-    ((equivDomainRingHom f hf).symm x).coeff g = x.coeff (f g) := by
+theorem equivDomainRingHom'_symm_apply_apply [NonAssocSemiring R] (f : F) (x : HahnSeries Γ' R)
+    (g : Γ) :
+    ((equivDomainRingHom f).symm x).coeff g = x.coeff (f g) := by
   rfl
 
-instance [Semiring R] (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) :
-    RingHomCompTriple HahnSeries.C (HahnSeries.equivDomainRingHom (R := R) f hf).symm.toRingHom
+instance [Semiring R] (f : F) :
+    RingHomCompTriple HahnSeries.C (HahnSeries.equivDomainRingHom (R := R) f).symm.toRingHom
       HahnSeries.C where
   comp_eq := by
-    have h : f 0 = 0 := (left_eq_add (a := f 0)).mp (by rw [← hf 0 0, add_zero])
     ext _ g
+    have : f 0 = 0 := by exact map_zero f
     by_cases hg : g = 0
-    · simp [equivDomainRingHom, hg, h]
-    · have : f g ≠ 0 := by
+    · rw [hg]
+      simp
+    · have : (OrderIsoClass.toOrderIso f) g ≠ 0 := by
         contrapose! hg
-        exact f.injective (h.symm ▸ hg)
-      simp [equivDomainRingHom, hg, this]
+        rw [show (OrderIsoClass.toOrderIso f) g = f g by rfl, ← this] at hg
+        exact EmbeddingLike.injective' f hg
+      simp [equivDomainRingHom, this, hg]
 
-instance [Semiring R] (f : Γ ≃o Γ') (hf : ∀ x y, f (x + y) = f x + f y) :
-    RingHomCompTriple HahnSeries.C (HahnSeries.equivDomainRingHom (R := R) f hf).toRingHom
+instance [Semiring R] (f : F) :
+    RingHomCompTriple HahnSeries.C (HahnSeries.equivDomainRingHom (R := R) f).toRingHom
       HahnSeries.C where
   comp_eq := by
-    have h : f.symm 0 = 0 := (left_eq_add (a := f.symm 0)).mp <| (f.injective) (by simp [hf])
+    have h : EquivLike.inv f 0 = 0 := EquivLike.inv_apply_eq_iff_eq_apply.mpr (map_zero f).symm
     ext r g
     by_cases hg : g = 0
     · simp [h, hg]
-    · have : f.symm g ≠ 0 := by
+    · have : EquivLike.inv f g ≠ 0 := by
         contrapose! hg
-        exact f.symm.injective (h.symm ▸ hg)
+        rw [← h] at hg
+        exact EquivLike.injective_inv f hg
       simp [this, hg]
 
 @[simp]
-theorem equivDomainRingHom_single [NonAssocSemiring R] (f : Γ ≃o Γ')
-    (hf : ∀ x y, f (x + y) = f x + f y) (g : Γ) (r : R) :
-    equivDomainRingHom f hf (single g r) = single (f g) r := by
+theorem equivDomainRingHom_single [NonAssocSemiring R] (f : F) (g : Γ) (r : R) :
+    equivDomainRingHom f (single g r) = single (f g) r := by
   ext g'
   by_cases h : g' = f g
   · simp [h]
-  · have : f.symm g' ≠ g := by
+  · have : EquivLike.inv f g' ≠ g := by
       contrapose! h
-      exact (OrderIso.symm_apply_eq f).mp h
+      exact EquivLike.inv_apply_eq_iff_eq_apply.mp h
     simp [h, this]
 
 @[simp]
-theorem equivDomainRingHom_symm_single [NonAssocSemiring R] (f : Γ ≃o Γ')
-    (hf : ∀ x y, f (x + y) = f x + f y) (g : Γ') (r : R) :
-    (equivDomainRingHom f hf).symm (single g r) = single (f.symm g) r := by
+theorem equivDomainRingHom_symm_single [NonAssocSemiring R] (f : F) (g : Γ') (r : R) :
+    (equivDomainRingHom f).symm (single g r) = single (EquivLike.inv f g) r := by
   ext g'
   by_cases h : f g' = g
-  · simp [h, (OrderIso.symm_apply_eq f).mpr h.symm]
-  · have : f.symm g ≠ g' := by
+  · have hinv : EquivLike.inv f g = g' := EquivLike.inv_apply_eq_iff_eq_apply.mpr h.symm
+    have : OrderIsoClass.toOrderIso f g'= f g' := rfl
+    simp [equivDomainRingHom, h, hinv, this]
+  · have : EquivLike.inv f g ≠ g' := by
       contrapose! h
-      rw [← h, OrderIso.apply_symm_apply]
+      rw [← h, EquivLike.apply_inv_apply]
     simp [h, coeff_single_of_ne this.symm]
 
 @[simp]
-theorem equivDomainRingHom_smul [NonAssocSemiring R] (f : Γ ≃o Γ')
-    (hf : ∀ x y, f (x + y) = f x + f y) (r : R) (x : HahnSeries Γ R) :
-    equivDomainRingHom f hf (r • x) = r • equivDomainRingHom f hf x := by
+theorem equivDomainRingHom_smul [NonAssocSemiring R] (f : F) (r : R) (x : HahnSeries Γ R) :
+    equivDomainRingHom f (r • x) = r • equivDomainRingHom f x := by
   ext
   simp
 
@@ -1225,19 +1235,9 @@ end HahnSeries
 
 end Mul
 
-omit [PartialOrder Γ] [AddCommMonoid Γ] in
-@[to_additive]
-theorem symm_map_smul {P Q : Type*} [SMul Γ P] [SMul Γ' Q] (f : Γ ≃ Γ') (f₁ : P ≃ Q)
-    (h : ∀ (x : Γ) (y : P), f₁ (x • y) = f x • f₁ y) (u : Γ') (v : Q) :
-    f₁.symm (u • v) = f.symm u • f₁.symm v := by
-  simpa [Equiv.symm_apply_apply f₁, Equiv.apply_symm_apply] using
-    congrArg f₁.symm (h (f.symm u) (f₁.symm v)).symm
--- Ask zulip where this should go!!!
---#find_home symm_map_vadd
-
 namespace HahnModule
 
-/-- The linear equivalence between Hahn modules induced by an order equivalence. -/
+/-- The Hahn-semilinear equivalence between Hahn modules induced by an order equivalence. -/
 def equivDomainModuleHom_base {Γ₁ Γ₂ : Type*} [PartialOrder Γ₁] [PartialOrder Γ₂] [Semiring R]
     [AddCommMonoid V] [Module R V] (f : Γ₁ ≃o Γ₂) :
     (HahnModule Γ₁ R V) ≃ₗ[R] (HahnModule Γ₂ R V) where
@@ -1248,27 +1248,27 @@ def equivDomainModuleHom_base {Γ₁ Γ₂ : Type*} [PartialOrder Γ₁] [Partia
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
 
-variable {Γ' : Type*} [AddCommMonoid Γ'] [PartialOrder Γ'] [IsOrderedCancelAddMonoid Γ']
-[Semiring R] (f : Γ ≃o Γ') (hf : ∀ (x y : Γ), f (x + y) = f x + f y)
+variable [AddCommMonoid Γ'] [PartialOrder Γ'] [IsOrderedCancelAddMonoid Γ'] [EquivLike S Γ Γ']
+[AddMonoidHomClass S Γ Γ'] [OrderIsoClass S Γ Γ'] (f : S) [Semiring R]
 
-scoped instance : RingHomInvPair (HahnSeries.equivDomainRingHom (R := R) f hf).toRingHom
-    (HahnSeries.equivDomainRingHom f hf).symm.toRingHom where
+scoped instance : RingHomInvPair (HahnSeries.equivDomainRingHom (R := R) f).toRingHom
+    (HahnSeries.equivDomainRingHom f).symm.toRingHom where
   comp_eq := by simp
   comp_eq₂ := by simp
 
-scoped instance : RingHomInvPair (HahnSeries.equivDomainRingHom (R := R) f hf).symm.toRingHom
-    (HahnSeries.equivDomainRingHom f hf).toRingHom where
+scoped instance : RingHomInvPair (HahnSeries.equivDomainRingHom (R := R) f).symm.toRingHom
+    (HahnSeries.equivDomainRingHom f).toRingHom where
   comp_eq := by simp
   comp_eq₂ := by simp
 
-variable [AddCommMonoid V] [Module R V] {Γ₁ Γ₂ : Type*}
-    [PartialOrder Γ₁] [PartialOrder Γ₂] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁]
-    [AddAction Γ' Γ₂] [IsOrderedCancelVAdd Γ' Γ₂] (f₁ : Γ₁ ≃o Γ₂)
-    (hf₁ : ∀ (x : Γ) (y : Γ₁), f₁ (x +ᵥ y) = f x +ᵥ f₁ y)
+variable [PartialOrder Γ₁] [PartialOrder Γ₂] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁]
+    [AddAction Γ' Γ₂] [IsOrderedCancelVAdd Γ' Γ₂] [EquivLike F Γ₁ Γ₂] [OrderIsoClass F Γ₁ Γ₂]
+    [AddActionSemiHomClass F f Γ₁ Γ₂] (f₁ : F) [AddCommMonoid V] [Module R V]
 
 /-- The semilinear equivalence between Hahn modules induced by order equivalences. -/
+@[simps]
 def equivDomainModuleHom :
-    (HahnModule Γ₁ R V) ≃ₛₗ[(HahnSeries.equivDomainRingHom (R := R) f hf).toRingHom]
+    (HahnModule Γ₁ R V) ≃ₛₗ[(HahnSeries.equivDomainRingHom (R := R) f).toRingHom]
       (HahnModule Γ₂ R V) where
   toFun x := (of R) ((HahnSeries.equivDomain f₁) ((of R).symm x))
   invFun x := (of R) ((HahnSeries.equivDomain f₁).symm ((of R).symm x))
@@ -1279,18 +1279,32 @@ def equivDomainModuleHom :
     ext g
     simp only [Equiv.symm_apply_apply, HahnSeries.equivDomain_coeff, coeff_smul,
       RingEquiv.toRingHom_eq_coe, RingHom.coe_coe, HahnSeries.equivDomainRingHom_apply_apply]
-    refine sum_equiv (f.prodCongr f₁) (fun i ↦ ?_) fun _ _ ↦ (by simp)
-    simp only [mem_vaddAntidiagonal, HahnSeries.mem_support, Equiv.prodCongr_apply,
-      RelIso.coe_fn_toEquiv, EquivLike.coe_coe, Prod.map_fst,
-      HahnSeries.equivDomainRingHom_apply_apply, OrderIso.symm_apply_apply, Prod.map_snd,
-      HahnSeries.equivDomain_coeff, and_congr_right_iff]
-    intro _ _
-    constructor
-    · intro h
-      rw [← hf₁, h, OrderIso.apply_symm_apply]
-    · intro h
-      rw [← hf₁] at h
-      rw [← h, OrderIso.symm_apply_apply]
+    refine sum_equiv (Equiv.prodCongr f f₁) (fun i ↦ ?_) ?_
+    · simp only [mem_vaddAntidiagonal, HahnSeries.mem_support, ne_eq, Equiv.prodCongr_apply,
+      EquivLike.coe_coe, Prod.map_fst, HahnSeries.equivDomainRingHom_apply_apply,
+      EquivLike.inv_apply_apply, Prod.map_snd, HahnSeries.equivDomain_coeff, and_congr_right_iff]
+      intro _
+      constructor
+      · intro h
+        constructor
+        · rw [show (OrderIsoClass.toOrderIso f₁).symm = EquivLike.inv f₁ by rfl,
+            EquivLike.inv_apply_apply]
+          exact h.1
+        · rw [← AddActionSemiHomClass.map_vaddₛₗ, h.2,
+            show (OrderIsoClass.toOrderIso f₁).symm = EquivLike.inv f₁ by rfl,
+            EquivLike.apply_inv_apply]
+      · intro h
+        constructor
+        · rw [show (OrderIsoClass.toOrderIso f₁).symm = EquivLike.inv f₁ by rfl,
+            EquivLike.inv_apply_apply] at h
+          exact h.1
+        · rw [show (OrderIsoClass.toOrderIso f₁).symm = EquivLike.inv f₁ by rfl, ← h.2,
+            AddActionHom.EquivLike.inv_map_vaddₛₗ, EquivLike.inv_apply_apply,
+            EquivLike.inv_apply_apply]
+    · intro i hi
+      simp only [Equiv.prodCongr_apply, EquivLike.coe_coe, Prod.map_fst, Prod.map_snd]
+      rw [show (OrderIsoClass.toOrderIso f₁).symm = EquivLike.inv f₁ by rfl,
+        EquivLike.inv_apply_apply, EquivLike.inv_apply_apply]
   left_inv x := by
     ext
     rw [Equiv.symm_apply_apply, Equiv.symm_apply_apply, Equiv.symm_apply_apply]
@@ -1298,59 +1312,49 @@ def equivDomainModuleHom :
     ext
     rw [Equiv.symm_apply_apply, Equiv.symm_apply_apply, Equiv.apply_symm_apply]
 
-theorem equivDomainModuleHom_apply (x : HahnModule Γ₁ R V) :
-    equivDomainModuleHom f hf f₁ hf₁ x =
-      (of R) ((HahnSeries.equivDomain f₁) ((of R).symm x)) :=
-  rfl
-
-theorem equivDomainModuleHom_symm_apply (x : HahnModule Γ₂ R V) :
-    (equivDomainModuleHom f hf f₁ hf₁).symm x =
-      (of R) ((HahnSeries.equivDomain f₁).symm ((of R).symm x)) :=
-  rfl
-
 @[simp]
 theorem equivDomainModuleHom_apply_coeff (x : HahnModule Γ₁ R V) (g : Γ₂) :
-    ((of R).symm (equivDomainModuleHom f hf f₁ hf₁ x)).coeff g =
-      ((of R).symm x).coeff (f₁.symm g) := by
+    ((of R).symm (equivDomainModuleHom f f₁ x)).coeff g =
+      ((of R).symm x).coeff (EquivLike.inv f₁ g) := by
   rfl
 
+/-!
 @[simp]
-theorem equivDomainModuleHom_symm_apply' (x : HahnModule Γ₂ R V) :
-    (equivDomainModuleHom f hf f₁ hf₁).symm x =
-      equivDomainModuleHom f.symm (fun x y ↦ AddEquiv.symm_map_add (AddEquiv.mk' f.toEquiv hf) x y)
-        f₁.symm (symm_map_vadd f.toEquiv f₁.toEquiv hf₁) x := by
+theorem equivDomainModuleHom_symm_apply' :
+    (equivDomainModuleHom (R := R) f f₁).symm =
+      equivDomainModuleHom (EquivLike.inv f) := by
   rfl
+-/
 
 @[simp]
 theorem equivDomainModuleHom_symm_apply_coeff (x : HahnModule Γ₂ R V) (g : Γ₁) :
-    ((of R).symm ((equivDomainModuleHom f hf f₁ hf₁).symm x)).coeff g =
-      ((of R).symm x).coeff (f₁ g) := by
+    ((of R).symm ((equivDomainModuleHom f f₁).symm x)).coeff g = ((of R).symm x).coeff (f₁ g) := by
   rfl
 
 @[simp]
 theorem equivDomainModuleHom_smul (u : HahnSeries Γ R) (x : HahnModule Γ₁ R V) :
-    equivDomainModuleHom f hf f₁ hf₁ (u • x) =
-      (HahnSeries.equivDomainRingHom f hf u) • equivDomainModuleHom f hf f₁ hf₁ x :=
-  map_smulₛₗ (equivDomainModuleHom (R := R) (V := V) f hf f₁ hf₁) u x
+    equivDomainModuleHom f f₁ (u • x) =
+      (HahnSeries.equivDomainRingHom f u) • equivDomainModuleHom f f₁ x :=
+  map_smulₛₗ (equivDomainModuleHom (R := R) (V := V) f f₁) u x
 
 @[simp]
 theorem equivDomainModuleHom_symm_smul (u : HahnSeries Γ' R) (x : HahnModule Γ₂ R V) :
-    (equivDomainModuleHom f hf f₁ hf₁).symm (u • x) =
-      ((HahnSeries.equivDomainRingHom f hf).symm u) •
-        (equivDomainModuleHom f hf f₁ hf₁).symm x :=
-  map_smulₛₗ (equivDomainModuleHom (R := R) (V := V) f hf f₁ hf₁).symm u x
+    (equivDomainModuleHom f f₁).symm (u • x) =
+      ((HahnSeries.equivDomainRingHom f).symm u) •
+        (equivDomainModuleHom f f₁).symm x :=
+  map_smulₛₗ (equivDomainModuleHom (R := R) (V := V) f f₁).symm u x
 
 @[simp]
 theorem equivDomainModuleHom_base_smul (x : HahnModule Γ₁ R V) (r : R) :
-    equivDomainModuleHom f hf f₁ hf₁ (r • x) =
-      r • equivDomainModuleHom f hf f₁ hf₁ x := by
+    equivDomainModuleHom f f₁ (r • x) =
+      r • equivDomainModuleHom f f₁ x := by
   ext
   simp [equivDomainModuleHom]
 
 @[simp]
 theorem equivDomainModuleHom_symm_base_smul (x : HahnModule Γ₂ R V) (r : R) :
-    (equivDomainModuleHom f hf f₁ hf₁).symm (r • x) =
-      r • (equivDomainModuleHom f hf f₁ hf₁).symm x := by
+    (equivDomainModuleHom f f₁).symm (r • x) =
+      r • (equivDomainModuleHom f f₁).symm x := by
   ext
   rw [equivDomainModuleHom_symm_apply_coeff, of_symm_smul, of_symm_smul, HahnSeries.coeff_smul,
     HahnSeries.coeff_smul, equivDomainModuleHom_symm_apply_coeff]
