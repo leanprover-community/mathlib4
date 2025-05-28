@@ -69,6 +69,7 @@ variable {X : Type*} [MeasurableSpace X]
 --    `MeasureTheory.inducedOuterMeasure_eq`, `inducedOuterMeasure` coincide on measurable sets.
 -- This seems better because many other parts of the project depends on `Measure` (concerning the
 --  L^p spaces).
+-- The connection is already established in `MeasureTheory.VectorMeasure.equivMeasure`.
 
 lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a ↔
     (∀ (n : ℕ), ∑ i ∈ Finset.range n, f i ≤ a) ∧
@@ -463,8 +464,8 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
         let Q := Finset.biUnion (Finset.range n) P
         have hQ : Q ∈ partitions (⋃ i, s i) := partition_union hs' (fun i ↦ (hP i).1) n
         calc
-          _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, ENNReal.ofReal ‖μ p‖ := by simp [varOfPart]
-          _ = ∑ q ∈ Q, ENNReal.ofReal ‖μ q‖ := by
+          _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, ‖μ p‖ₑ := by simp [varOfPart]
+          _ = ∑ q ∈ Q, ‖μ q‖ₑ := by
             refine Eq.symm (Finset.sum_biUnion ?_)
             intro l _ m _ hlm
             exact partitions_disjoint (hs' hlm) (hP l).1 (hP m).1
@@ -473,48 +474,24 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
             simpa
   · -- Variation of the union, `variationAux μ (⋃ i, s i)` is le the sum of `variationAux μ (s i)`.
     intro b hb
-    simp only [variationAux, hs, reduceIte]
+    -- simp only [variationAux, hs, reduceIte]
     simp only [variationAux, MeasurableSet.iUnion hs, reduceIte] at hb
     obtain ⟨Q, hQ, hbQ⟩ := lt_biSup_iff.mp hb
     -- Take the partitions defined as intersection of `Q` and `s i`.
     classical
     let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
     have hP (i : ℕ) : P i ∈ partitions (s i) := partition_restrict hQ (hs i)
-    have : varOfPart μ Q ≤ ∑' (i : ℕ), varOfPart μ (P i) := varOfPart_le_tsum μ hs hs' hQ
-    -- Choose `ε`.
-    obtain ⟨ε, hε, hε'⟩ : ∃ (ε : ℝ≥0∞), 0 < ε ∧ b + ε < varOfPart μ Q := by
-      have := hbQ
-      obtain ⟨c, hc, hc'⟩ := exists_between hbQ
-      exact ⟨c - b, tsub_pos_of_lt hc, by simpa [add_tsub_cancel_of_le (le_of_lt hc)]⟩
-    -- Choose `n` large so that considering a finite set of `s i` suffices.
-    obtain ⟨n, hn⟩ : ∃ n, ∑' (i : ℕ), varOfPart μ (P i) - ε ≤
-        ∑ i ∈ Finset.range n, varOfPart μ (P i) := by
-      obtain ht | ht | ht := (∑' (i : ℕ), varOfPart μ (P i)).trichotomy
-      · simp [ht]
-      · --
-        sorry
-      · have A : Tendsto (fun n ↦ ∑ i ∈ Finset.range n, varOfPart μ (P i)) atTop
-            (nhds (∑' i, varOfPart μ (P i))) := by
-          exact tendsto_nat_tsum fun i ↦ VectorMeasure.varOfPart μ (P i)
-        let a := ∑' i, varOfPart μ (P i) - ε
-        have : a < ∑' i, varOfPart μ (P i) := by
-          dsimp [a]
-          refine ENNReal.sub_lt_self ?_ ?_ (Ne.symm (ne_of_lt hε))
-          · exact LT.lt.ne_top (ENNReal.toReal_pos_iff.mp ht).2
-          · exact Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.mp ht).1)
-        have := (tendsto_order.mp A).1 a this
-        obtain ⟨n, hn, hn'⟩ := (this.and (Ici_mem_atTop 1)).exists
-        dsimp [a] at hn
-        use n
-        exact le_of_lt hn
+    have hP' := calc
+      b < varOfPart μ Q := hbQ
+      _ ≤ ∑' i, varOfPart μ (P i) := by exact varOfPart_le_tsum μ hs hs' hQ
+    have := tendsto_nat_tsum fun i ↦ VectorMeasure.varOfPart μ (P i)
+    obtain ⟨n, hn, hn'⟩ := (((tendsto_order.mp this).1 b hP').and (Ici_mem_atTop 1)).exists
     use n
-    calc b
-      _ < varOfPart μ Q - ε := lt_tsub_iff_right.mpr hε'
-      _ ≤ ∑' (i : ℕ), varOfPart μ (P i) - ε := by gcongr
-      _ ≤ ∑ i ∈ Finset.range n, varOfPart μ (P i) := hn
-      _ ≤ (∑ x ∈ Finset.range n, ⨆ P ∈ partitions (s x), varOfPart μ P) := by
+    calc
+      b < ∑ i ∈ Finset.range n, varOfPart μ (P i) := hn
+      _ ≤ ∑ i ∈ Finset.range n, variationAux μ (s i) := by
         gcongr with i hi
-        exact le_biSup (varOfPart μ) (hP i)
+        exact le_variationAux μ (hs i) (hP i)
 
 /-- The variation of a vector-valued measure as a `VectorMeasure`. -/
 noncomputable def variation : VectorMeasure X ℝ≥0∞ where
@@ -523,15 +500,14 @@ noncomputable def variation : VectorMeasure X ℝ≥0∞ where
   not_measurable' _ h := if_neg h
   m_iUnion'           := variation_m_iUnion' μ
 
--- Section : properties of variation
+-- ## Section : properties of variation
 
--- theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
---     ‖μ E‖ₑ ≤ (variation μ E) := by
+theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
+    ‖μ E‖ₑ ≤ (variation μ E) := by
 --   dsimp [variation, variationAux]
 --   wlog hE' : E ≠ ∅
 --   · push_neg at hE'
 --     simp [hE']
-
 --   by_cases hE : ¬MeasurableSet E
 --   · simp [hE, μ.not_measurable' hE]
 --   · push_neg at hE
@@ -558,12 +534,15 @@ noncomputable def variation : VectorMeasure X ℝ≥0∞ where
 --       congr
 --     · refine NNReal.coe_le_coe.mp ?_
 --       sorry
+  sorry
 
 -- TO DO : the total variation is a norm on the space of vector-valued measures.
 
 -- TO DO : if `μ` is a `ℝ≥0∞`-valued `VectorMeasure` then `variation μ = μ`.
 
 -- TO DO : variation corresponds to the Hahn–Jordan decomposition for a signed measure.
+
+-- TO DO : if `μ` is a complex measure then `variation univ < ∞`.
 
 end VectorMeasure
 
