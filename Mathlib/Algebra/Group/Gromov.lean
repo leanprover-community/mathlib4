@@ -8,7 +8,7 @@ open scoped Finset
 open scoped Pointwise
 
 
-variable {G : Type*} [Group G] [DecidableEq G]
+variable {G : Type*} [hG: Group G] [DecidableEq G]
 
 -- TODO - I don't really understand why `S` needs to be an `outParam`?
 -- If I remove that, then the `PseudoMetricSpace G` starts erroring
@@ -1059,7 +1059,7 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
     -- Set.pow_mem_pow
 
 
-  have new_closur_e_i: Subgroup.closure ({1, γ, γ⁻¹} ∪ (e_i '' Set.univ)) = (Subgroup.closure S) := by
+  have new_closure_e_i: Subgroup.closure ({1, γ, γ⁻¹} ∪ (e_i '' Set.univ)) = (Subgroup.closure S) := by
     rw [closure_enlarge]
     apply Subgroup.closure_eq_of_le
     .
@@ -1355,16 +1355,122 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
         exact apply_mult
     .
       intro hz
-      have foo := AddSubmonoid.exists_list_of_mem_closure (s := (φ.ker : Set (Additive G)) ∪ -(φ.ker)) (x := ofMul z)
-      rw [← AddSubgroup.closure_toAddSubmonoid _] at foo
-      rw [AddSubgroup.mem_toAddSubmonoid] at foo
+
+      -- We need to write 'γ^a (f⁻¹ )' as an element of e_i
+
+      -- γ^(φ(f_1)) (f_1⁻¹ ) = f_2 γ^(-φ(f_2))
+
+      -- have first_set_inv_self: ({(1 : G), γ, γ⁻¹} : (Set G)) = ( {(1 : G), γ, γ⁻¹} : (Set G))⁻¹ := by
+      --   simp
+      --   -- Why can't simp do this for us? Soemthing to do with the wrong '⁻¹' instances?
+      --   rw [Set.pair_comm]
+
+      -- This is *false* - we would need to be able t swap the order of 'f_i' and 'γ'
+      -- have e_i_eq_inv: (e_i '' Set.univ) = -(e_i '' Set.univ) := by
+      --   ext p
+      --   refine ⟨?_, ?_⟩
+      --   . intro hp
+      --     simp [e_i] at hp
+      --     simp [e_i]
+      --     obtain ⟨a, a_mem, e_i_ap⟩ := hp
+      --     use a⁻¹
+      --     rw [S_eq_Sinv (S := S)]
+      --     simp
+      --     refine ⟨a_mem, ?_⟩
+
+      --     simp_rw [← e_i_ap]
+      --     use a⁻¹
+      --     have eq_inv := S_eq_Sinv (S := S)
+      --     rw [eq_inv]
+      --     simp
+      --     refine ⟨a_mem, ?_⟩
+      --     apply_fun (fun x => (ofMul a) + x)
+      --     .
+      --       simp
+
+
+
+
+
+      -- have new_set_inv_self: {(1 : G), γ, γ⁻¹} ∪ (e_i '' Set.univ) = -({(1 : G), γ, γ⁻¹} ∪ (e_i '' Set.univ)) := by
+      --   ext p
+        -- TODO - find a cleaner way of proving this
+        -- refine ⟨?_, ?_⟩
+        -- . intro hp
+        --   simp at hp
+        --   match hp with
+        --   | .inl p_in_set =>
+        --     match p_in_set with
+        --     | .inl p_eq_one =>
+        --       simp [p_eq_one]
+        --       left
+        --       left
+        --       simp [neg]
+        --       unfold toMul
+        --       simp [Multiplicative.ofAdd]
+        --       rfl
+        --     | .inr p_eq_other =>
+        --       match p_eq_other with
+        --       | .inl p_eq_gamma =>
+        --         simp [p_eq_gamma]
+        --         left
+        --         right
+        --         right
+        --         rfl
+        --       | .inr p_eq_gamma_inv =>
+        --         simp [p_eq_gamma_inv]
+        --         left
+        --         right
+        --         left
+        --         simp [neg]
+        --         unfold toMul
+        --         simp [Multiplicative.ofAdd]
+        --         conv =>
+        --           lhs
+        --           arg 1
+        --           equals γ⁻¹ => rfl
+        --         simp
+        --   | .inr p_in_set =>
+
+
+
+
+
+      --have foo := Submonoid.exists_list_of_mem_closure (s := ({1, γ, γ⁻¹} ∪ (e_i '' Set.univ))) (x := z)
+      have foo := Submonoid.exists_list_of_mem_closure (s := S ∪ S⁻¹) (x := z)
+      --rw [s_union_sinv] at foo
+      rw [← Subgroup.closure_toSubmonoid _] at foo
+      --rw [← Subgroup.closure_toSubmonoid _] at foo
+      rw [← new_closure_e_i] at foo
+      rw [Subgroup.closure_toSubmonoid] at foo
+      have generates := hGS.generates
+      have z_in_top: z ∈ (⊤: Set G) := by
+        simp
+      rw [← generates] at z_in_top
+      simp at z_in_top
+      rw [s_union_sinv] at foo
       simp at foo
-      --rw [Submonoid.toAddSubmonoid_closure] at foo
-      specialize foo hz
-      obtain ⟨l, ⟨l_mem_s, l_prod⟩⟩ := foo
+      --specialize foo (z_in_top)
 
 
-      let E: Set G := {γ, γ⁻¹} ∪ Set.range e_i_regular
+
+      -- --rw [← Subgroup.closure_toSubmonoid] at foo
+      -- rw [← new_closure_e_i] at foo
+      -- rw [Subgroup.closure_toSubmonoid] at foo
+      -- --rw [← Subgroup.closure_toSubmonoid _] at foo
+      -- simp only [mem_toSubmonoid, Finset.mem_coe] at foo
+
+
+      -- have foo := AddSubmonoid.exists_list_of_mem_closure (s := (φ.ker : Set (Additive G)) ∪ -(φ.ker)) (x := ofMul z)
+      -- rw [← AddSubgroup.closure_toAddSubmonoid _] at foo
+      -- rw [AddSubgroup.mem_toAddSubmonoid] at foo
+      -- simp at foo
+      -- --rw [Submonoid.toAddSubmonoid_closure] at foo
+      -- specialize foo hz
+      -- obtain ⟨l, ⟨l_mem_s, l_prod⟩⟩ := foo
+
+
+      let E: Set G := {γ, γ⁻¹} ∪ Set.range e_i_regular ∪ (Set.range e_i_regular)⁻¹
       let gamma_sum: List E -> ℤ := fun (l) => l.count ⟨γ, by simp [E]⟩ - l.count ⟨γ⁻¹, by simp [E]⟩
 
 
@@ -1438,10 +1544,11 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             exact of_decide_eq_false not_is_gamma
 
           simp [is_gamma_prop] at not_is_gamma_prop
-          have drop_head_in_e_i: (List.dropWhile is_gamma list)[0].val ∈ Set.range e_i_regular := by
+          have drop_head_in_e_i: (List.dropWhile is_gamma list)[0].val ∈ (Set.range e_i_regular) ∪ (Set.range e_i_regular)⁻¹ := by
             have drop_in_E: (List.dropWhile is_gamma list)[0].val ∈ E := by
               simp [E]
             simp only [E] at drop_in_E
+            simp_rw [Set.union_assoc] at drop_in_E
             rw [Set.mem_union] at drop_in_E
             have not_in_left: (List.dropWhile is_gamma list)[0].val ∉ ({γ, γ⁻¹} : Set G) := by
               simp [not_is_gamma_prop]
@@ -1456,13 +1563,25 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
           have in_range: γ ^ m * ↑(List.dropWhile is_gamma list)[0] * γ ^ (-m) ∈ Set.range (Function.uncurry gamma_m) := by
             simp [gamma_m]
             simp at drop_head_in_e_i
-            obtain ⟨s, s_in_S, eq_e_i⟩ := drop_head_in_e_i
-            use m
-            use s
-            use s_in_S
-            rw [← eq_e_i]
-            simp
-            rfl
+            match drop_head_in_e_i with
+            | .inl drop_head_in_e_i =>
+              obtain ⟨s, s_in_S, eq_e_i⟩ := drop_head_in_e_i
+              use m
+              use s
+              use s_in_S
+              simp
+              rw [← eq_e_i]
+              rfl
+            | .inr drop_head_in_e_i =>
+              obtain ⟨s, s_in_S, eq_e_i⟩ := drop_head_in_e_i
+              use -m
+              use s⁻¹
+              sorry
+              --use s_in_S
+              --simp
+              --rw [eq_e_i]
+              --simp
+              --rfl
 
           have phi_ofmul_gamma: φ (ofMul γ) = 1 := by
             exact hγ
@@ -1699,26 +1818,48 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             unfold mega_list at hlist
             simp at hlist
             simp at drop_head_in_e_i
-            obtain ⟨s, s_in_S, eq_e_i⟩ := drop_head_in_e_i
-            rw [← eq_e_i] at hlist
-            simp [e_i_regular_zero] at hlist
-            nth_rw 1 [← ofMul_list_prod] at hlist
-            nth_rw 1 [← ofMul_list_prod] at hlist
-            rw [gamma_copy_prod, gamma_copy_inv_prod] at hlist
-            simp at hlist
-            rw [← ofMul_list_prod] at hlist
-            rw [← ofMul_list_prod] at hlist
-            simp
-            conv =>
-              lhs
-              arg 2
-              equals (ofMul gamma_copy.unattach.prod) + (ofMul (List.dropWhile is_gamma list).tail.unattach.prod) =>
-                rfl
+            match drop_head_in_e_i with
+            | .inl drop_head_in_e_i =>
+              obtain ⟨s, s_in_S, eq_e_i⟩ := drop_head_in_e_i
+              rw [← eq_e_i] at hlist
+              simp [e_i_regular_zero] at hlist
+              nth_rw 1 [← ofMul_list_prod] at hlist
+              nth_rw 1 [← ofMul_list_prod] at hlist
+              rw [gamma_copy_prod, gamma_copy_inv_prod] at hlist
+              simp at hlist
+              rw [← ofMul_list_prod] at hlist
+              rw [← ofMul_list_prod] at hlist
+              simp
+              conv =>
+                lhs
+                arg 2
+                equals (ofMul gamma_copy.unattach.prod) + (ofMul (List.dropWhile is_gamma list).tail.unattach.prod) =>
+                  rfl
 
-            simp
-            rw [← ofMul_list_prod]
-            rw [← ofMul_list_prod]
-            exact hlist
+              simp
+              rw [← ofMul_list_prod]
+              rw [← ofMul_list_prod]
+              exact hlist
+            | .inr drop_head_in_e_i =>
+              rw [← eq_e_i] at hlist
+              simp [e_i_regular_zero] at hlist
+              nth_rw 1 [← ofMul_list_prod] at hlist
+              nth_rw 1 [← ofMul_list_prod] at hlist
+              rw [gamma_copy_prod, gamma_copy_inv_prod] at hlist
+              simp at hlist
+              rw [← ofMul_list_prod] at hlist
+              rw [← ofMul_list_prod] at hlist
+              simp
+              conv =>
+                lhs
+                arg 2
+                equals (ofMul gamma_copy.unattach.prod) + (ofMul (List.dropWhile is_gamma list).tail.unattach.prod) =>
+                  rfl
+
+              simp
+              rw [← ofMul_list_prod]
+              rw [← ofMul_list_prod]
+              exact hlist
 
           have gamma_copy_len: gamma_copy.length = m.natAbs := by
             simp [gamma_copy]
@@ -1820,7 +1961,8 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             apply Nat.pos_iff_ne_zero.mp dropwhile_len_gt
       }
 
-      let my_res := rewrite_list [] sorry
+      let my_res := rewrite_list (l.map ( fun g => ⟨g.toMul, by simp [E]⟩)) sorry
+
       --let a := rewrite_list [] (by sorry)
       sorry
   sorry
