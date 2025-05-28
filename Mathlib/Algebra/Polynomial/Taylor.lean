@@ -123,7 +123,8 @@ variable {R : Type*} [Ring R]
 theorem taylor_injective (r : R) : Function.Injective (taylor r) :=
   (injective_iff_map_eq_zero' _).2 (taylor_eq_zero r)
 
-@[simp] lemma taylor_inj : taylor r p = taylor r q ↔ p = q := taylor_injective.eq_iff
+@[simp] lemma taylor_inj {r : R} (p q : R[X]) :
+  taylor r p = taylor r q ↔ p = q := (taylor_injective r).eq_iff
 
 end Ring
 
