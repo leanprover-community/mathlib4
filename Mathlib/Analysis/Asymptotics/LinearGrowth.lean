@@ -621,74 +621,94 @@ namespace Subadditive
 open EReal Filter Function LinearGrowth
 open scoped Topology
 
-variable {u v : ℕ → EReal}
+variable {u v : ℕ → EReal} {a : EReal}
 
-lemma apply_mul_add_le' (h : ∀ n m, u (n + m) ≤ u n + v m) (k n r : ℕ) :
-    u (k * n + r) ≤ k * v n + u r := by
+lemma apply_mul_add_le' {n : ℕ} (h : ∀ m, u (m + n) ≤ u m + a) (k r : ℕ) :
+    u (k * n + r) ≤ k * a + u r := by
   induction k with
   | zero =>
     simp
   | succ m hm =>
     rw [add_one_mul, add_assoc (m * n), add_comm n, ← add_assoc, Nat.cast_add, Nat.cast_one,
-      right_distrib_of_nonneg m.cast_nonneg' zero_le_one, one_mul, add_assoc _ (v n),
-      add_comm (v n), ← add_assoc]
-    exact (h (m * n + r) n).trans (add_le_add_right hm (v n))
+      right_distrib_of_nonneg m.cast_nonneg' zero_le_one, one_mul, add_assoc _ a, add_comm a,
+      ← add_assoc]
+    exact (h (m * n + r)).trans (add_le_add_right hm a)
 
-lemma test (h : ∀ n m, u (n + m) ≤ u n + v m) (hu : ∀ n, u n ≠ ⊤) :
-    linearGrowthSup u ≤ ⨅ n ≥ 1, v n / n := by
-  refine le_iInf₂ fun n n_1 ↦ ?_
-  by_cases vn_top : v n = ⊤
-  · rw [vn_top, top_div_of_pos_ne_top (by positivity) (natCast_ne_top n)]; exact le_top
-  by_cases vn_bot : v n = ⊥
+lemma linearGrowthSup_le_div {n : ℕ} (hn : 1 ≤ n) (h : ∀ m, u (m + n) ≤ u m + a)
+    (hu : ∀ n, u n ≠ ⊤) :
+    linearGrowthSup u ≤ a / n := by
+  -- This is the heart of Fekete's lemma. We first deal with the edge cases where `a` is infinite.
+  rcases eq_or_ne a ⊤ with rfl | a_top
+  · rw [top_div_of_pos_ne_top (by positivity) (natCast_ne_top n)]; exact le_top
+  rcases eq_or_ne a ⊥ with rfl | a_bot
   · apply le_of_eq_of_le _ bot_le
     rw [← linearGrowthSup_bot]
     apply linearGrowthSup_congr
     rw [Pi.bot_def, EventuallyEq, eventually_atTop]
     refine ⟨n, fun m m_n ↦ le_bot_iff.1 ?_⟩
-    specialize h (m - n) n
-    rwa [vn_bot, add_bot, Nat.sub_add_cancel m_n] at h
-  have _ := Fin.pos_iff_nonempty.1 n_1
-  obtain ⟨x, hx⟩ := Finite.exists_max (fun m : Fin n ↦ u m)
-  refine le_of_le_of_eq (linearGrowthSup_le_of_eventually_le (v := fun m ↦ (v n / n) * m)
-    (b := u x + max (v n) (- v n)) ?_ ?_) linearGrowthSup_const_mul_self
-  · apply add_ne_top (hu x) (max_lt (Ne.lt_top vn_top) (Ne.lt_top _)).ne
+    specialize h (m - n)
+    rwa [add_bot, Nat.sub_add_cancel m_n] at h
+  -- Now we develop the subadditive argument.
+  -- We prove that `u` is bounded above by an explicit affine function,
+  -- and apply `linearGrowthSup_le_of_eventually_le`.
+  have _ := Fin.pos_iff_nonempty.1 hn
+  obtain ⟨x, hx⟩ := Finite.exists_max fun m : Fin n ↦ u m
+  refine le_of_le_of_eq (linearGrowthSup_le_of_eventually_le (v := fun m ↦ (a / n) * m)
+    (b := u x + max a (- a)) ?_ ?_) linearGrowthSup_const_mul_self
+  · apply add_ne_top (hu x) (max_lt (Ne.lt_top a_top) (Ne.lt_top _)).ne
     rwa [ne_eq, neg_eq_top_iff]
   · refine Eventually.of_forall fun m ↦ ?_
-    rw [add_comm (u x), ← add_assoc]
-    have u_mn := apply_mul_add_le' h (m / n) n (m % n)
+    rw [add_comm (u _), ← add_assoc]
+    have u_mn := apply_mul_add_le' h (m / n) (m % n)
     rw [mul_comm (m / n), Nat.div_add_mod] at u_mn
-    refine u_mn.trans (add_le_add ?_ (hx ⟨m % n, m.mod_lt n_1⟩))
-    rcases lt_or_ge 0 (v n) with vn_0 | vn_0
+    refine u_mn.trans (add_le_add ?_ (hx ⟨m % n, m.mod_lt hn⟩))
+    -- The proof of the upper bound is quite different depending on the sign of `v n`.
+    rcases lt_or_ge 0 a with vn_0 | vn_0
     · apply (mul_le_mul_of_nonneg_right (natCast_div_le m n) vn_0.le).trans
-      rw [mul_comm _ (v n), mul_div_left_comm, mul_comm (m : EReal)]
-      exact le_add_of_nonneg_right (vn_0.le.trans (le_max_left (v n) (- v n)))
+      rw [mul_comm _ a, mul_div_left_comm, mul_comm (m : EReal)]
+      exact le_add_of_nonneg_right (vn_0.le.trans (le_max_left a (- a)))
     · simp only
-      apply (add_le_add_left (le_max_right (v n) (- v n)) _).trans'
-      rw [← sub_eq_add_neg, mul_comm _ (m : EReal), mul_div_left_comm, mul_comm (v n),
-        le_sub_iff_add_le (.inl vn_bot) (.inl vn_top)]
-      nth_rw 2 [← one_mul (v n)]
+      apply (add_le_add_left (le_max_right a (- a)) _).trans'
+      rw [← sub_eq_add_neg, mul_comm _ (m : EReal), mul_div_left_comm, mul_comm a,
+        le_sub_iff_add_le (.inl a_bot) (.inl a_top)]
+      nth_rw 2 [← one_mul a]
       rw [← right_distrib_of_nonneg (by positivity) zero_le_one]
       apply mul_le_mul_of_nonpos_right _ vn_0
       rw [div_le_iff_le_mul (by positivity) (natCast_ne_top n)]
       norm_cast
       rw [mul_add, mul_one, mul_comm]
-      exact (Nat.lt_div_mul_add n_1).le
+      exact (Nat.lt_div_mul_add hn).le
 
-lemma test' (h : ∀ n m, u n + v m ≥ u (n + m)) (hu : ∀ n, u n ≠ ⊥) :
-    ⨅ n ≥ 1, v n / n ≤ linearGrowthInf u := by
-  rw [← neg_neg (linearGrowthInf u), ← linearGrowthSup_neg, EReal.le_neg]
-  refine le_of_le_of_eq (test (v := fun n ↦ - v n) (fun n m ↦ ?_) (fun n ↦ ?_)) ?_
-  · simp only [Pi.neg_apply]
-    rw [← sub_eq_add_neg, ← EReal.neg_add (.inl (hu n)) _]
-    sorry
-  · simp only [Pi.neg_apply, ne_eq, neg_eq_top_iff, hu n, not_false_eq_true]
-  · sorry
+/-- A generalization of Fekete's lemma. If `u = v` is subadditive, it implies that `u n / n`
+converges to its infimum. -/
+lemma linearGrowthSup_le_iInf (h : ∀ m n, u (m + n) ≤ u m + v n) (hu : ∀ n, u n ≠ ⊤) :
+    linearGrowthSup u ≤ ⨅ n ≥ 1, v n / n :=
+  le_iInf₂ fun n n_1 ↦ linearGrowthSup_le_div n_1 (fun m ↦ h m n) hu
 
-lemma linearGrowthSup_le_linearGrowthInf (h : ∀ n m, u (n + m) ≤ u n + v m) (hu : ∀ n, u n ≠ ⊤) :
+lemma linearGrowthSup_le_linearGrowthInf (h : ∀ m n, u (m + n) ≤ u m + v n) (hu : ∀ n, u n ≠ ⊤) :
     linearGrowthSup u ≤ linearGrowthInf v := by
-  apply (test h hu).trans
-  sorry
+  refine (le_liminf_of_le) (eventually_atTop.2 ?_)
+  exact ⟨1, fun n n_1 ↦ (linearGrowthSup_le_iInf h hu).trans (iInf₂_le n n_1)⟩
 
+lemma div_le_linearGrowthInf {n : ℕ} (hn : 1 ≤ n) (h : ∀ m, u m + a ≤ u (m + n))
+    (hu : ∀ n, u n ≠ ⊥) :
+    a / n ≤ linearGrowthInf u := by
+  rcases eq_or_ne a ⊥ with rfl | a_bot
+  · rw [bot_div_of_pos_ne_top (by positivity) (natCast_ne_top n)]; exact bot_le
+  rw [← neg_neg (linearGrowthInf u), ← linearGrowthSup_neg, ← EReal.le_neg, ← EReal.neg_div]
+  refine linearGrowthSup_le_div hn (fun m ↦ ?_) (fun n ↦ by simp [hu n])
+  rw [Pi.neg_apply, Pi.neg_apply, ← sub_eq_add_neg, ← EReal.neg_add (.inl (hu m)) (.inr a_bot),
+      neg_le_neg_iff]
+  exact h m
 
+/-- A version of `linearGrowthSup_le_iInf` for superadditive sequences. -/
+lemma iSup_le_linearGrowthInf (h : ∀ m n, u m + v n ≤ u (m + n)) (hu : ∀ n, u n ≠ ⊥) :
+    ⨆ n ≥ 1, v n / n ≤ linearGrowthInf u :=
+  iSup₂_le fun n n_1 ↦ div_le_linearGrowthInf n_1 (fun m ↦ h m n) hu
+
+lemma linearGrowthSup_le_linearGrowthInf' (h : ∀ m n, u m + v n ≤ u (m + n)) (hu : ∀ n, u n ≠ ⊥) :
+    linearGrowthSup v ≤ linearGrowthInf u := by
+  refine (limsup_le_of_le) (eventually_atTop.2 ?_)
+  exact ⟨1, fun n n_1 ↦ (le_iSup₂ n n_1).trans (iSup_le_linearGrowthInf h hu)⟩
 
 end Subadditive

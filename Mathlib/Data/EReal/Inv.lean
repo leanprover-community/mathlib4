@@ -350,6 +350,8 @@ lemma bot_div_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊥ / a =
 lemma bot_div_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : ⊥ / a = ⊤ :=
   bot_mul_of_neg (inv_neg_of_neg_ne_bot h h')
 
+lemma neg_div {a b : EReal} : - a / b = - (a / b) := neg_mul a b⁻¹
+
 /-! #### Division and Multiplication -/
 
 lemma div_self {a : EReal} (h₁ : a ≠ ⊥) (h₂ : a ≠ ⊤) (h₃ : a ≠ 0) : a / a = 1 := by
