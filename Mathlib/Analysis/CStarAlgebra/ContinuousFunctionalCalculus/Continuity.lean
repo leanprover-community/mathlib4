@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-import Mathlib.Topology.MetricSpace.UniformConvergence
+import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Continuity of the continuous functional calculus in each variable
 
@@ -48,10 +48,12 @@ these functions are continuous on the spectrum, then `fun x ↦ cfc (F x) a` ten
 to `cfc f a`. -/
 theorem tendsto_cfc_fun {l : Filter X} (F : X → R → R) (f : R → R) (a : A)
     (h_tendsto : TendstoUniformlyOn F f l (spectrum R a))
-    (hF : ∀ x, ContinuousOn (F x) (spectrum R a) := by cfc_cont_tac)
-    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
+    (hF : ∀ x, ContinuousOn (F x) (spectrum R a) := by cfc_cont_tac) :
     Tendsto (fun x ↦ cfc (F x) a) l (𝓝 (cfc f a)) := by
   open scoped ContinuousFunctionalCalculus in
+  obtain (rfl | hl) := l.eq_or_neBot
+  · simp
+  have hf := h_tendsto.continuousOn <| .of_forall hF
   by_cases ha : p a
   · conv =>
       enter [1, x]
@@ -68,7 +70,7 @@ theorem continuousAt_cfc_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (x₀ : X) (h_tendsto : TendstoUniformlyOn f (f x₀) (𝓝 x₀) (spectrum R a))
     (hf : ∀ x, ContinuousOn (f x) (spectrum R a) := by cfc_cont_tac) :
     ContinuousAt (fun x ↦ cfc (f x) a) x₀ :=
-  tendsto_cfc_fun f (f x₀) a h_tendsto hf (hf x₀)
+  tendsto_cfc_fun f (f x₀) a h_tendsto hf
 
 open UniformOnFun in
 /-- If `f : X → R → R` is continuous in the topology on `X → R →ᵤ[{spectrum R a}] → R`,
@@ -192,11 +194,14 @@ these functions are continuous on the spectrum and map zero to itself, then
 theorem tendsto_cfcₙ_fun {l : Filter X} (F : X → R → R) (f : R → R) (a : A)
     (h_tendsto : TendstoUniformlyOn F f l (quasispectrum R a))
     (hF : ∀ x, ContinuousOn (F x) (quasispectrum R a) := by cfc_cont_tac)
-    (hF0 : ∀ x, F x 0 = 0 := by cfc_zero_tac)
-    (hf : ContinuousOn f (quasispectrum R a) := by cfc_cont_tac)
-    (hf0 : f 0 = 0 := by cfc_zero_tac) :
+    (hF0 : ∀ x, F x 0 = 0 := by cfc_zero_tac) :
     Tendsto (fun x ↦ cfcₙ (F x) a) l (𝓝 (cfcₙ f a)) := by
   open scoped NonUnitalContinuousFunctionalCalculus in
+  obtain (rfl | hl) := l.eq_or_neBot
+  · simp
+  have hf := h_tendsto.continuousOn <| .of_forall hF
+  have hf0 : f 0 = 0 := Eq.symm <| by
+    simpa [hF0] using h_tendsto.tendsto_at (quasispectrum.zero_mem R a)
   by_cases ha : p a
   · conv =>
       enter [1, x]
@@ -215,7 +220,7 @@ theorem continuousAt_cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (hf : ∀ x, ContinuousOn (f x) (quasispectrum R a) := by cfc_cont_tac)
     (hf0 : ∀ x, f x 0 = 0 := by cfc_zero_tac) :
     ContinuousAt (fun x ↦ cfcₙ (f x) a) x₀ :=
-  tendsto_cfcₙ_fun f (f x₀) a h_tendsto hf hf0 (hf x₀) (hf0 x₀)
+  tendsto_cfcₙ_fun f (f x₀) a h_tendsto hf hf0
 
 open UniformOnFun in
 /-- If `f : X → R → R` is continuous in the topology on `X → R →ᵤ[{spectrum R a}] → R`,
