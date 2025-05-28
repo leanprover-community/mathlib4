@@ -184,9 +184,8 @@ namespace VectorMeasure
 
 open MeasureTheory BigOperators ENNReal Function Filter
 
-variable {X V 𝕜 : Type*} [MeasurableSpace X] [SeminormedAddCommGroup V] (𝕜 : Type*) [NormedField 𝕜]
-  [NormedSpace 𝕜 V] [T2Space V] [SeminormedGroup V]
- (μ : VectorMeasure X V)
+variable {X V 𝕜 : Type*} [MeasurableSpace X] [NormedAddCommGroup V] [NormedField 𝕜]
+  [NormedSpace 𝕜 V] [T2Space V] (μ : VectorMeasure X V)
 
 -- Section : Partitions
 -- NOTE: instead of working with partitions of `s`, work with sets of disjoints sets
@@ -295,25 +294,25 @@ open Classical in
 noncomputable def variationAux (s : Set X) :=
     if (MeasurableSet s) then ⨆ P ∈ partitions s, varOfPart μ P else 0
 
-omit [T2Space V] [SeminormedGroup V] in
+omit [T2Space V]  in
 /-- `variationAux` of the empty set is equal to zero. -/
 lemma variation_empty' : variationAux μ ∅ = 0 := by
   simp [variationAux, varOfPart, partitions_empty]
 
-omit [T2Space V] [SeminormedGroup V] in
+omit [T2Space V] in
 /-- VariationAux is monotone as a function of the set. -/
 lemma variationAux_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (hs₁ : MeasurableSet s₁)
     (hs₂ : MeasurableSet s₂) : variationAux μ s₁ ≤ variationAux μ s₂ := by
   simp only [variationAux, hs₁, reduceIte, hs₂]
   exact iSup_le_iSup_of_subset (partitions_monotone h)
 
-omit [T2Space V] [SeminormedGroup V] in
+omit [T2Space V] in
 lemma variationAux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < variationAux μ s) :
     ∃ P ∈ partitions s, a < varOfPart μ P := by
   simp only [variationAux, hs, reduceIte] at ha
   exact lt_biSup_iff.mp ha
 
-omit [T2Space V] [SeminormedGroup V] in
+omit [T2Space V] in
 lemma variationAux_le' {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
     (h : variationAux μ s ≠ ⊤) :
     ∃ P ∈ partitions s, variationAux μ s ≤ varOfPart μ P + ε := by
@@ -340,7 +339,7 @@ lemma variationAux_le' {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 
   · simp_rw [hw, zero_le, and_true]
     exact ⟨{}, by simp, by simp [hs], by simp, by simp⟩
 
-omit [T2Space V] [SeminormedGroup V] in
+omit [T2Space V]  in
 lemma le_variationAux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : P ∈ partitions s) : varOfPart μ P ≤ variationAux μ s := by
   simp only [variationAux, hs, reduceIte]
@@ -352,7 +351,6 @@ variable {ι E : Type*} [SeminormedAddCommGroup E]
 theorem enorm_tsum_le_tsum_enorm {f : ι → E} : ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ := by
   sorry
 
-omit [SeminormedGroup V] in
 open Classical in
 /-- Given a partition `Q`, `varOfPart μ Q` is bounded by the sum of the `varOfPart μ (P i)` where
 the `P i` are the partitions formed by restricting to a disjoint set of sets `s i`. -/
@@ -402,13 +400,7 @@ lemma varOfPart_le_tsum {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     calc ∑ q ∈ Q, ‖μ (q ∩ s i)‖ₑ
       _ = ∑ p ∈ (Finset.image (fun q ↦ q ∩ s i) Q), ‖μ p‖ₑ := by
         refine Eq.symm (Finset.sum_image_of_disjoint ?_ ?_)
-        · simp only [Set.bot_eq_empty, VectorMeasure.empty]
-          -- Need that `‖0‖ₑ = 0` but can't see how to do this directly.
-          have : ‖(0 : V)‖ₑ = 0 := by
-            -- apply enorm_zero -- doesn't work
-            have := ofReal_norm_eq_enorm (0 : V)
-            simp_all
-          exact this
+        · simp
         · intro p hp q hq hpq
           refine Disjoint.inter_left (s i) (Disjoint.inter_right (s i) ?_)
           exact hQ.2.2.1 hp hq hpq
@@ -417,11 +409,7 @@ lemma varOfPart_le_tsum {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
         intro p hp hp'
         dsimp [P]
         obtain hc | hc : p = ∅ ∨ ¬p = ∅ := eq_or_ne p ∅
-        · -- Need that `‖0‖ₑ = 0` but can't see how to do this directly.
-          have : ‖(0 : V)‖ₑ = 0 := by
-            have := ofReal_norm_eq_enorm (0 : V)
-            simp_all
-          simp [hc, this] at hp'
+        · simp [hc] at hp'
         · rw [Finset.mem_filter, Finset.mem_image]
           refine ⟨?_, hc⟩
           obtain ⟨q, _, _⟩ := Finset.mem_image.mp hp
@@ -503,38 +491,24 @@ noncomputable def variation : VectorMeasure X ℝ≥0∞ where
 -- ## Section : properties of variation
 
 theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
-    ‖μ E‖ₑ ≤ (variation μ E) := by
---   dsimp [variation, variationAux]
---   wlog hE' : E ≠ ∅
---   · push_neg at hE'
---     simp [hE']
---   by_cases hE : ¬MeasurableSet E
---   · simp [hE, μ.not_measurable' hE]
---   · push_neg at hE
---     simp only [hE, reduceIte, varOfPart]
---     let P' : Finset (Set X) := {E}
---     have hP' : P' ∈ partitions E := by
---       refine ⟨?_, ?_, ?_, ?_⟩
---       · simp [P']
---       · simpa [P']
---       · simp [P']
---       · simpa [P']
---     have hEP' : ENNReal.ofReal ‖μ E‖ = varOfPart μ P' := by
---       simp [varOfPart, P']
---     rw [hEP']
---     dsimp [varOfPart]
---     refine le_iSup₂_of_le P' hP' fun a ha ↦ ?_
---     -- have : 0 ≤ ∑ p ∈ P', ‖μ p‖ := by
---     --   sorry
---     -- have : ∀ p ∈ P', 0 ≤ ‖μ p‖ := by
---     --   sorry
---     use ∑ p ∈ P', ⟨‖μ p‖, by positivity⟩
---     constructor
---     · simp only [ofReal_norm, WithTop.coe_sum, some_eq_coe']
---       congr
---     · refine NNReal.coe_le_coe.mp ?_
---       sorry
-  sorry
+    ‖μ E‖ₑ ≤ variation μ E := by
+  dsimp [variation, variationAux]
+  wlog hE' : E ≠ ∅
+  · push_neg at hE'
+    simp [hE', varOfPart, partitions_empty]
+  by_cases hE : ¬MeasurableSet E
+  · simp [hE, μ.not_measurable' hE]
+  · push_neg at hE
+    simp only [hE, reduceIte, varOfPart]
+    let P' : Finset (Set X) := {E}
+    have hP' : P' ∈ partitions E := by
+      refine ⟨by simp [P'], by simpa [P'], by simp [P'], by simpa [P']⟩
+    have hEP' : ‖μ E‖ₑ = varOfPart μ P' := by
+      simp [varOfPart, P']
+    rw [hEP']
+    have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) hP'
+    simp only [Finset.sum_singleton] at this
+    exact this
 
 -- TO DO : the total variation is a norm on the space of vector-valued measures.
 
