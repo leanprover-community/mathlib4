@@ -119,8 +119,7 @@ theorem mlconvolution_assoc₀ {f g k : G → ℝ≥0∞}
     rw [← lintegral_mul_const'' _ (by fun_prop)]
   rw [lintegral_lintegral_swap]
   · simp [mul_assoc]
-  simp only [mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left]
-  fun_prop
+  simpa [mul_assoc] using by fun_prop
 
 /- Convolution is associative. -/
 @[to_additive "Convolution is associative."]
