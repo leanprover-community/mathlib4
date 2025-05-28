@@ -8,7 +8,9 @@ import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Homs of `C^n` vector bundles over the same base space
 
-Here we show that `Bundle.ContinuousLinearMap` is a `C^n` vector bundle.
+Here we show that `Bundle.ContinuousLinearMap` is a `C^n` vector bundle. We also show
+that applying a smooth family of linear maps to a smooth family of vectors gives a smooth
+result, in several versions.
 
 Note that we only do this for bundles of linear maps, not for bundles of arbitrary semilinear maps.
 Indeed, semilinear maps are typically not smooth. For instance, complex conjugation is not
@@ -332,3 +334,5 @@ lemma ContMDiff.clm_bundle_apply₂
   fun x ↦ ContMDiffAt.clm_bundle_apply₂ (hψ x) (hv x) (hw x)
 
 end TwoVariables
+
+end
