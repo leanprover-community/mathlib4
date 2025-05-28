@@ -131,12 +131,12 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
         if allowedRanges.any fun okRg => okRg.start ≤ rg.start && rg.stop ≤ okRg.stop then
           continue
         -- `s` is a string of as many spaces (` `) as the characters of the previous line.
-        -- This, followed by the uparrow (`↑`) creates a pointer to an offending line break.
+        -- This, followed by the downarrow (`↓`) creates a pointer to an offending line break.
         let s : String := ⟨List.replicate (before.length + 1) ' '⟩
         Linter.logLint linter.style.emptyLine (.ofRange rg)
           m!"Please, write a comment here or remove this line, \
             but do not place empty lines within commands!\nContext:\n\
-            {indentD s!"⏎{before}⏎⏎{after}⏎"}{indentD s!"{s.push '↑'}"}\n"
+            {indentD s!"{s.push '↓'}"}{indentD s!"⏎{before}⏎⏎{after}⏎"}\n"
 
 initialize addLinter emptyLineLinter
 
