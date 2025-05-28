@@ -1,6 +1,6 @@
 # Convex analysis
 
-This subfolder is destined to contain convexity results that require a norm nor an inner product.
+This subfolder is destined to contain convexity results that require a norm or an inner product.
 
 See the `Mathlib.Geometry.Convex` folder for the results that do not need a norm or an inner product.
 
