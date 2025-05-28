@@ -487,12 +487,10 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     iterate 3 (have := mk_inj ‹_›; cases this)
     rename_i n_ih a f₃ f₂ hAgree₂ _ _ h₂ _ _ f₁ h₁ hAgree₁ clr
     simp only [approx_mk, eq_self_iff_true, heq_iff_eq]
-
     have := mk_inj h₁
     cases this; clear h₁
     have := mk_inj h₂
     cases this; clear h₂
-
     congr
     ext i
     apply n_ih
