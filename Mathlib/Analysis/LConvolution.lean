@@ -3,7 +3,8 @@ Copyright (c) 2025 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
-import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.MeasureTheory.Group.Prod
+import Mathlib.MeasureTheory.Group.LIntegral
 
 /-!
 # Convolution of functions using the Lebesgue integral
@@ -34,7 +35,11 @@ namespace MeasureTheory
 open Measure
 open scoped ENNReal
 
-variable {G : Type*} {mG : MeasurableSpace G} [Mul G] [Inv G]
+variable {G : Type*} {mG : MeasurableSpace G}
+
+section NoGroup
+
+variable [Mul G] [Inv G]
 
 /-- Multiplicative convolution of functions. -/
 @[to_additive "Additive convolution of functions"]
@@ -71,13 +76,65 @@ theorem zero_mlconvolution (f : G → ℝ≥0∞) (μ : Measure G) : 0 ⋆ₗ[μ
 theorem mlconvolution_zero (f : G → ℝ≥0∞) (μ : Measure G) : f ⋆ₗ[μ] 0 = 0 := by
   ext; simp [mlconvolution]
 
+section Measurable
+
+variable [MeasurableMul₂ G] [MeasurableInv G]
+
 /-- The convolution of measurable functions is measurable. -/
 @[to_additive (attr := measurability, fun_prop)
 "The convolution of measurable functions is measurable."]
-theorem measurable_mlconvolution [MeasurableMul₂ G] [MeasurableInv G]
-    {f g : G → ℝ≥0∞} (μ : Measure G) [SFinite μ]
+theorem measurable_mlconvolution {f g : G → ℝ≥0∞} (μ : Measure G) [SFinite μ]
     (hf : Measurable f) (hg : Measurable g) : Measurable (f ⋆ₗ[μ] g) := by
-  apply Measurable.lintegral_prod_right
+  unfold mlconvolution
   fun_prop
+
+end Measurable
+
+end NoGroup
+
+section Group
+
+variable [Group G] [MeasurableMul₂ G] [MeasurableInv G]
+
+variable {μ : Measure G} [IsMulLeftInvariant μ] [SFinite μ]
+
+/-- The convolution of AEMeasurable functions is AEMeasurable. -/
+@[to_additive (attr := measurability, fun_prop)
+"The convolution of AEMeasurable functions is AEMeasurable"]
+theorem aemeasurable_mlconvolution {f g : G → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    AEMeasurable (f ⋆ₗ[μ] g) μ := by
+  unfold mlconvolution
+  fun_prop
+
+set_option trace.Meta.Tactic.fun_prop true
+
+@[to_additive]
+theorem mlconvolution_assoc'₀ {f g k : G → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) (hk : AEMeasurable k μ) :
+    f ⋆ₗ[μ] g ⋆ₗ[μ] k = (f ⋆ₗ[μ] g) ⋆ₗ[μ] k := by
+  ext x
+  simp only [mlconvolution_def]
+  conv in f _ * (∫⁻ _ , _ ∂μ) =>
+    rw [← lintegral_const_mul'' _ (by fun_prop), ← lintegral_mul_left_eq_self _ y⁻¹]
+  conv in (∫⁻ _ , _ ∂μ) * k _ =>
+    rw [← lintegral_mul_const'' _ (by fun_prop)]
+  rw [lintegral_lintegral_swap]
+  · simp [mul_assoc]
+  simp only [mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left]
+  fun_prop
+
+@[to_additive]
+theorem mlconvolution_assoc₀ {μ : Measure G} [IsMulLeftInvariant μ] [SFinite μ]
+    {f g k : G → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) (hk : AEMeasurable k μ) :
+    f ⋆ₗ[μ] g ⋆ₗ[μ] k = (f ⋆ₗ[μ] g) ⋆ₗ[μ] k := by
+  ext x
+  simp only [mlconvolution_def]
+  conv in f _ * (∫⁻ _ , _ ∂μ) =>
+    rw [← lintegral_const_mul'' _ (by fun_prop), ← lintegral_mul_left_eq_self _ y⁻¹]
+  conv in (∫⁻ _ , _ ∂μ) * k _ =>
+    rw [← lintegral_mul_const'' _ (by fun_prop)]
+  rw [lintegral_lintegral_swap (by fun_prop)]
+  simp [mul_assoc]
 
 end MeasureTheory
