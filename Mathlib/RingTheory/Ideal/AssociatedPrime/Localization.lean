@@ -80,4 +80,42 @@ lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes
     p.primeCompl (Localization.AtPrime p) (LocalizedModule.mkLinearMap p.primeCompl M)
   simpa [Localization.AtPrime.comap_maximalIdeal] using ass
 
+include S f in
+lemma comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg (p : Ideal R')
+    (ass : p ∈ associatedPrimes R' M') (fg : (p.comap (algebraMap R R')).FG) :
+    p.comap (algebraMap R R') ∈ associatedPrimes R M := by
+  --note : here `p.FG` should imply `(p.comap (algebraMap R R')).FG` however lemmas aren't ready yet
+  rcases ass with ⟨hp, ⟨x, hx⟩⟩
+  rcases fg with ⟨T, hT⟩
+  rcases IsLocalizedModule.mk'_surjective S f x with ⟨⟨m, s⟩, eq⟩
+  simp only [← eq, Function.uncurry_apply_pair] at hx
+  have mem (a : T) : (algebraMap R R') a ∈ p := by
+    simpa [← Ideal.mem_comap, ← hT] using Ideal.subset_span a.2
+  simp only [hx, mem_ker, toSpanSingleton_apply, algebraMap_smul,
+    ← IsLocalizedModule.mk'_smul] at mem
+  let g : T → S := fun a ↦ Classical.choose <| (IsLocalizedModule.mk'_eq_zero' f _).mp (mem a)
+  let hg (a : T) : g a • a.1 • m = 0:=
+    Classical.choose_spec <| (IsLocalizedModule.mk'_eq_zero' f _).mp (mem a)
+  have prime : (Ideal.comap (algebraMap R R') p).IsPrime := Ideal.IsPrime.under R p
+  refine ⟨prime, (∏ a, g a).1 • m, ?_⟩
+  apply le_antisymm
+  · rw [← hT, Ideal.span_le]
+    intro a ha
+    simp only [SetLike.mem_coe, mem_ker, toSpanSingleton_apply]
+    obtain ⟨u, hu⟩ : g ⟨a, ha⟩ ∣ (∏ a, g a) := by
+      apply Finset.dvd_prod_of_mem g (Finset.mem_univ ⟨a, ha⟩)
+    rw [hu, Submonoid.coe_mul, smul_smul, ← mul_assoc, mul_comm, ← smul_smul, mul_comm, ← smul_smul]
+    exact smul_eq_zero_of_right u.1 (hg ⟨a, ha⟩)
+  · intro r hr
+    simp only [mem_ker, toSpanSingleton_apply, smul_smul] at hr
+    have mem : r * (∏ a, g a).1 ∈ Ideal.comap (algebraMap R R') p := by
+      simpa only [hx, Ideal.mem_comap, mem_ker, toSpanSingleton_apply, algebraMap_smul,
+        ← IsLocalizedModule.mk'_smul, hr] using IsLocalizedModule.mk'_zero f s
+    have nmem := Set.disjoint_left.mp ((IsLocalization.disjoint_comap_iff S R' p).mpr
+        (Ideal.IsPrime.ne_top hp)) (∏ a, g a).2
+    have := (Ideal.IsPrime.mul_mem_iff_mem_or_mem prime).mp mem
+    tauto
+
+
+
 end Module.associatedPrimes
