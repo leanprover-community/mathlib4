@@ -41,7 +41,7 @@ complex measures.
 * If `μ` is a complex measure then `variation univ < ∞`.
 -/
 
-open MeasureTheory BigOperators ENNReal Function Filter
+open MeasureTheory BigOperators NNReal ENNReal Function Filter
 
 section CompleteLinearOrder
 
@@ -112,14 +112,47 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
         _ ≤ ∑ i ∈ Finset.range m, f i + ε := by gcongr
       · exact le_add_right (hf m)
 
--- Similar to `norm_tsum_le_tsum_norm` and `nnnorm_tsum_le` in `Analysis/Normed/Group/InfiniteSum`.
 variable {ι E : Type*} [SeminormedAddCommGroup E]
-/-- `‖∑' i, f i‖ₑ ≤ (∑' i, ‖f i‖ₑ)`, automatically `∑' i, ‖f i‖ₑ` is summable. -/
+/-- Quantitative result associated to the direct comparison test for series: If, for all `i`,
+`‖f i‖ₑ ≤ g i`, then `‖∑' i, f i‖ₑ ≤ ∑' i, g i`. -/
+theorem tsum_of_enorm_bounded {f : ι → E} {g : ι → ℝ≥0∞} {a : ℝ≥0∞} (hg : HasSum g a)
+    (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖∑' i : ι, f i‖ₑ ≤ a := by
+  -- simp [← NNReal.coe_le_coe, ← NNReal.hasSum_coe, coe_nnnorm] at *
+  -- have : ∀ i, ‖f i‖ₑ = ENNReal.ofReal ‖f i‖ := by simp only [ofReal_norm, implies_true]
+  -- have (i : ι) := ofReal_norm (f i)
+  by_cases hc : a ≠ ∞
+  · have hc' : ∀ i, g i ≠ ∞ := by
+      by_contra! h
+      have : HasSum g ∞ := by
+        obtain ⟨i, hi⟩ := h
+        have hg' : g i ≤ ∑' i, g i := ENNReal.le_tsum i
+        have : HasSum g (∑' i, g i) := by
+          sorry
+        rw [hi] at hg'
+        simp only [top_le_iff] at hg'
+        rwa [← hg']
+      have : a = ⊤ := HasSum.unique hg this
+      exact hc this
+    simp_rw [← ofReal_norm] at *
+    have hfg (i : ι) : ‖f i‖ ≤ (g i).toReal := by
+      have := h i
+      refine (ofReal_le_iff_le_toReal ?_).mp (h i)
+      exact hc' i
+    have hg' : HasSum (fun i ↦ (g i).toReal) a.toReal := by
+      -- Since each term and the sum are finite.
+      sorry
+    have := tsum_of_norm_bounded hg' hfg
+    exact (ofReal_le_iff_le_toReal hc).mpr this
+  · push_neg at hc
+    simp [hc]
+
+-- Similar to `norm_tsum_le_tsum_norm` and `nnnorm_tsum_le` in `Analysis/Normed/Group/InfiniteSum`.
+
+variable {ι E : Type*} [SeminormedAddCommGroup E]
+/-- `‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ`, automatically `∑' i, ‖f i‖ₑ` is summable. -/
 theorem enorm_tsum_le_tsum_enorm {f : ι → E} : ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ := by
-  by_cases hc : ∑' i, ‖f i‖ₑ = ∞
-  · simp [hc]
-  · have : ∀ i, ‖f i‖ₑ = ENNReal.ofReal ‖f i‖ := by simp
-    sorry
+  have hg : Summable fun i ↦  ‖f i‖ₑ := by exact ENNReal.summable
+  exact tsum_of_enorm_bounded hg.hasSum fun _i => le_rfl
 
 namespace VectorMeasure
 
