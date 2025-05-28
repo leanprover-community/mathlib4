@@ -76,15 +76,10 @@ section restrict
 
 /-- The `IndepMatroid` whose independent sets are the independent subsets of `R`. -/
 @[simps] def restrictIndepMatroid (M : Matroid α) (R : Set α) : IndepMatroid α where
-
   E := R
-
   Indep I := M.Indep I ∧ I ⊆ R
-
   indep_empty := ⟨M.empty_indep, empty_subset _⟩
-
   indep_subset := fun _ _ h hIJ ↦ ⟨h.1.subset hIJ, hIJ.trans h.2⟩
-
   indep_aug := by
     rintro I I' ⟨hI, hIY⟩ (hIn : ¬ M.IsBasis' I R) (hI' : M.IsBasis' I' R)
     rw [isBasis'_iff_isBasis_inter_ground] at hIn hI'
@@ -108,7 +103,6 @@ section restrict
     obtain ⟨e, he⟩ := exists_of_ssubset hIJ'
     exact ⟨e, ⟨⟨(hBIB' he.1.1).elim (fun h ↦ (he.2 h).elim) id,he.1.2⟩, he.2⟩,
       hI'.indep.subset (insert_subset he.1 hIJ), insert_subset he.1.2.1 hIY⟩
-
   indep_maximal := by
     rintro A hAR I ⟨hI, _⟩ hIA
     obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis'_of_subset hIA
@@ -116,7 +110,6 @@ section restrict
     simp only [hIJ, and_assoc, maximal_subset_iff, hJ.indep, hJ.subset, and_imp, true_and,
       hJ.subset.trans hAR]
     exact fun K hK _ hKA hJK ↦ hJ.eq_of_subset_indep hK hJK hKA
-
   subset_ground _ := And.right
 
 /-- Change the ground set of a matroid to some `R : Set α`. The independent sets of the restriction
