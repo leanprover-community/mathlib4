@@ -2,8 +2,8 @@ import Mathlib
 
 set_option linter.style.longLine false
 set_option linter.style.cdot false
-set_option linter.unusedVariables true
-set_option linter.unusedVariables.analyzeTactics true
+--set_option linter.unusedVariables true
+--set_option linter.unusedVariables.analyzeTactics true
 
 open Subgroup
 open scoped Finset
@@ -1026,9 +1026,6 @@ lemma take_drop_len {T: Type*} {l: List T} {p: T → Bool}: (l.takeWhile p).leng
 
 def gamma_m_helper (φ: (Additive G) →+ ℤ) (γ: G) (m: ℤ) (s: S): G := γ^m * (e_i_regular_helper φ γ s) * γ^(-m)
 
-lemma three_two_kernel_fg (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
-  sorry
-
 -- The kernel of `φ` is gemerated by {γ_m_i}
 lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): ∃ γ: G, φ γ = 1 ∧ Subgroup.closure (Set.range (Function.uncurry (gamma_m_helper (G := G) (S := S) φ γ))) = AddSubgroup.toSubgroup φ.ker := by
   have gamma_one: ∃ γ: G, φ γ = 1 := by
@@ -1777,6 +1774,10 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
         exact h_z_list.2
   use γ
   refine ⟨hγ, gamma_m_ker_phi⟩
+
+lemma three_two_kernel_fg (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
+  sorry
+
 -- Decompose list of {e_k, γ}:
 
 -- The starting list must have the powers of γ sum to zero (since it's in the kernel of φ)
