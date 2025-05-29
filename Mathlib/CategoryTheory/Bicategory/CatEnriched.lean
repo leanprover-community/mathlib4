@@ -30,8 +30,9 @@ theorem comp_eq {X Y Z : CatEnriched C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 instance {X Y : CatEnriched C} : Category (X ⟶ Y) := inferInstanceAs (Category (X ⟶[Cat] Y).α)
 
+/-- The operation of the composition bifunctor on 2-morphisms. -/
 def bicomp {a b c : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c}
-  (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := (eComp Cat ..).map (η, θ)
+  (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := (eComp Cat a b c).map (η, θ)
 
 @[simp]
 theorem id_bicomp_id {a b c : CatEnriched C} (f : a ⟶ b) (g : b ⟶ c) :
