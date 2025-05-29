@@ -161,7 +161,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           rw [this, ← map_smul, h, map_zero]
         rcases mul_eq_zero.mp this with xzero|zero
         · absurd xzero
-          exact Ideal.Quotient.eq_zero_iff_mem.not.mpr (Set.not_mem_of_mem_diff hx)
+          exact Ideal.Quotient.eq_zero_iff_mem.not.mpr (Set.notMem_of_mem_diff hx)
         · rw [zero, map_zero]
       have hS := reg.smulShortComplex_shortExact
       apply le_sSup
@@ -184,7 +184,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
               simpa [← Submodule.Quotient.mk_smul] using
                 Submodule.smul_mem_pointwise_smul l x ⊤ trivial
             have : Ideal.Quotient.mk p.asIdeal x ∈ nonZeroDivisors (R ⧸ p.asIdeal) := by
-              simpa [Ideal.Quotient.eq_zero_iff_mem] using Set.not_mem_of_mem_diff hx
+              simpa [Ideal.Quotient.eq_zero_iff_mem] using Set.notMem_of_mem_diff hx
             exact ringKrullDim_succ_le_of_surjective (Quotient.factor ple)
               (Quotient.factor_surjective ple) this
               (by simpa [Quotient.eq_zero_iff_mem] using mem_ann)
