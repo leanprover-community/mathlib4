@@ -26,8 +26,8 @@ The value of `μH[d]`, `d > 0`, on a set `s` (measurable or not) is given by
 
 For every set `s` for any `d < d'` we have either `μH[d] s = ∞` or `μH[d'] s = 0`, see
 `MeasureTheory.Measure.hausdorffMeasure_zero_or_top`. In
-`Mathlib.Topology.MetricSpace.HausdorffDimension` we use this fact to define the Hausdorff dimension
-`dimH` of a set in an (extended) metric space.
+`Mathlib/Topology/MetricSpace/HausdorffDimension.lean` we use this fact to define the Hausdorff
+dimension `dimH` of a set in an (extended) metric space.
 
 We also define two generalizations of the Hausdorff measure. In one generalization (see
 `MeasureTheory.Measure.mkMetric`) we take any function `m (diam s)` instead of `(diam s) ^ d`. In
@@ -737,8 +737,9 @@ end LipschitzWith
 open scoped Pointwise
 
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
-    [NormedField 𝕜] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E] {d : ℝ} (hd : 0 ≤ d)
-    {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
+    [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    {d : ℝ} (hd : 0 ≤ d) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
+    μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
   have {r : 𝕜} (s : Set E) : μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s := by
     simpa [ENNReal.coe_rpow_of_nonneg, hd]
       using (lipschitzWith_smul r).hausdorffMeasure_image_le hd s

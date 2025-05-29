@@ -21,31 +21,31 @@ to form the Dirichlet ring.
 
 ## Main Definitions
 
- * `ArithmeticFunction R` consists of functions `f : ℕ → R` such that `f 0 = 0`.
- * An arithmetic function `f` `IsMultiplicative` when `x.Coprime y → f (x * y) = f x * f y`.
- * The pointwise operations `pmul` and `ppow` differ from the multiplication
+* `ArithmeticFunction R` consists of functions `f : ℕ → R` such that `f 0 = 0`.
+* An arithmetic function `f` `IsMultiplicative` when `x.Coprime y → f (x * y) = f x * f y`.
+* The pointwise operations `pmul` and `ppow` differ from the multiplication
   and power instances on `ArithmeticFunction R`, which use Dirichlet multiplication.
- * `ζ` is the arithmetic function such that `ζ x = 1` for `0 < x`.
- * `σ k` is the arithmetic function such that `σ k x = ∑ y ∈ divisors x, y ^ k` for `0 < x`.
- * `pow k` is the arithmetic function such that `pow k x = x ^ k` for `0 < x`.
- * `id` is the identity arithmetic function on `ℕ`.
- * `ω n` is the number of distinct prime factors of `n`.
- * `Ω n` is the number of prime factors of `n` counted with multiplicity.
- * `μ` is the Möbius function (spelled `moebius` in code).
+* `ζ` is the arithmetic function such that `ζ x = 1` for `0 < x`.
+* `σ k` is the arithmetic function such that `σ k x = ∑ y ∈ divisors x, y ^ k` for `0 < x`.
+* `pow k` is the arithmetic function such that `pow k x = x ^ k` for `0 < x`.
+* `id` is the identity arithmetic function on `ℕ`.
+* `ω n` is the number of distinct prime factors of `n`.
+* `Ω n` is the number of prime factors of `n` counted with multiplicity.
+* `μ` is the Möbius function (spelled `moebius` in code).
 
 ## Main Results
 
- * Several forms of Möbius inversion:
- * `sum_eq_iff_sum_mul_moebius_eq` for functions to a `CommRing`
- * `sum_eq_iff_sum_smul_moebius_eq` for functions to an `AddCommGroup`
- * `prod_eq_iff_prod_pow_moebius_eq` for functions to a `CommGroup`
- * `prod_eq_iff_prod_pow_moebius_eq_of_nonzero` for functions to a `CommGroupWithZero`
- * And variants that apply when the equalities only hold on a set `S : Set ℕ` such that
+* Several forms of Möbius inversion:
+* `sum_eq_iff_sum_mul_moebius_eq` for functions to a `CommRing`
+* `sum_eq_iff_sum_smul_moebius_eq` for functions to an `AddCommGroup`
+* `prod_eq_iff_prod_pow_moebius_eq` for functions to a `CommGroup`
+* `prod_eq_iff_prod_pow_moebius_eq_of_nonzero` for functions to a `CommGroupWithZero`
+* And variants that apply when the equalities only hold on a set `S : Set ℕ` such that
   `m ∣ n → n ∈ S → m ∈ S`:
- * `sum_eq_iff_sum_mul_moebius_eq_on` for functions to a `CommRing`
- * `sum_eq_iff_sum_smul_moebius_eq_on` for functions to an `AddCommGroup`
- * `prod_eq_iff_prod_pow_moebius_eq_on` for functions to a `CommGroup`
- * `prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero` for functions to a `CommGroupWithZero`
+* `sum_eq_iff_sum_mul_moebius_eq_on` for functions to a `CommRing`
+* `sum_eq_iff_sum_smul_moebius_eq_on` for functions to an `AddCommGroup`
+* `prod_eq_iff_prod_pow_moebius_eq_on` for functions to a `CommGroup`
+* `prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero` for functions to a `CommGroupWithZero`
 
 ## Notation
 
@@ -296,7 +296,7 @@ theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b 
   have h : {(1, x)} ⊆ divisorsAntidiagonal x := by simp [x0]
   rw [← sum_subset h]
   · simp
-  intro y ymem ynmem
+  intro y ymem ynotMem
   have y1ne : y.fst ≠ 1 := fun con => by simp_all [Prod.ext_iff]
   simp [y1ne]
 
@@ -318,7 +318,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) :=
       have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
       rw [← sum_subset h]
       · simp
-      intro ⟨y₁, y₂⟩ ymem ynmem
+      intro ⟨y₁, y₂⟩ ymem ynotMem
       have y2ne : y₂ ≠ 1 := by
         intro con
         simp_all
@@ -560,7 +560,7 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
     | insert _ _ has ih =>
       rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
       rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
-      exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
+      exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_notMem has).symm
 
 theorem map_prod_of_prime [CommMonoidWithZero R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f)
