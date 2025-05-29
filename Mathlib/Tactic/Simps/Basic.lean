@@ -315,15 +315,15 @@ Some common uses:
   This will generate `foo_apply` lemmas for each declaration `foo`.
 * If you prefer `coe_foo` lemmas that state equalities between functions, use
   `initialize_simps_projections MulHom (toFun → coe, as_prefix coe)`
-  In this case you have to use `@[simps (config := .asFn)]` whenever you call `@[simps]`.
+  In this case you have to use `@[simps -fullyApplied]` whenever you call `@[simps]`.
 * You can also initialize to use both, in which case you have to choose which one to use by default,
   by using either of the following
   ```
     initialize_simps_projections MulHom (toFun → apply, toFun → coe, as_prefix coe, -coe)
     initialize_simps_projections MulHom (toFun → apply, toFun → coe, as_prefix coe, -apply)
   ```
-  In the first case, you can get both lemmas using `@[simps, simps (config := .asFn) coe]` and in
-  the second case you can get both lemmas using `@[simps (config := .asFn), simps apply]`.
+  In the first case, you can get both lemmas using `@[simps, simps -fullyApplied coe]` and in
+  the second case you can get both lemmas using `@[simps -fullyApplied, simps apply]`.
 * If you declare a new homomorphism-like structure (like `RelEmbedding`),
   then `initialize_simps_projections` will automatically find any `DFunLike` coercions
   that will be used as the default projection for the `toFun` field.
@@ -877,12 +877,14 @@ structure Config where
 declare_command_config_elab elabSimpsConfig Config
 
 /-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
-between fully applied Expressions. Use this using `@[simps (config := .asFn)]`. -/
+between fully applied Expressions. Replaced by `@[simps -fullyApplied]`. -/
+@[deprecated "use `-fullyApplied` instead" (since := "2025-03-10")]
 def Config.asFn : Simps.Config where
   fullyApplied := false
 
 /-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`.
-Use this using `@[simps (config := .lemmasOnly)]`. -/
+Replaced by `@[simps -isSimp]`. -/
+@[deprecated "use `-isSimp` instead" (since := "2025-03-10")]
 def Config.lemmasOnly : Config where
   isSimp := false
 

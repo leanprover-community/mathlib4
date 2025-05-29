@@ -43,15 +43,11 @@ general limits can be used.
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
 
-/- Porting note: removed global noncomputable since there are things that might be
-computable value like WalkingPair -/
 section
 
 open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
-
--- attribute [local tidy] tactic.case_bash -- Porting note: no tidy nor cases_bash
 
 universe v v₂ u u₂
 

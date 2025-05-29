@@ -83,6 +83,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
     simp
   · exact A x hx
 
+@[fun_prop]
 theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
   intro x hx
   simp only [mem_compl_iff, mem_singleton_iff] at hx
@@ -157,17 +158,21 @@ theorem DifferentiableAt.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
     DifferentiableAt ℝ (fun x => log (f x)) x :=
   (hf.hasFDerivAt.log hx).differentiableAt
 
+@[fun_prop]
 theorem ContDiffAt.log {n} (hf : ContDiffAt ℝ n f x) (hx : f x ≠ 0) :
     ContDiffAt ℝ n (fun x => log (f x)) x :=
   (contDiffAt_log.2 hx).comp x hf
 
+@[fun_prop]
 theorem ContDiffWithinAt.log {n} (hf : ContDiffWithinAt ℝ n f s x) (hx : f x ≠ 0) :
     ContDiffWithinAt ℝ n (fun x => log (f x)) s x :=
   (contDiffAt_log.2 hx).comp_contDiffWithinAt x hf
 
+@[fun_prop]
 theorem ContDiffOn.log {n} (hf : ContDiffOn ℝ n f s) (hs : ∀ x ∈ s, f x ≠ 0) :
     ContDiffOn ℝ n (fun x => log (f x)) s := fun x hx => (hf x hx).log (hs x hx)
 
+@[fun_prop]
 theorem ContDiff.log {n} (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) :
     ContDiff ℝ n fun x => log (f x) :=
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.log (h x)
@@ -196,22 +201,11 @@ end LogDifferentiable
 
 namespace Real
 
-/-- The function `x * log (1 + t / x)` tends to `t` at `+∞`. -/
-theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
-    Tendsto (fun x => x * log (1 + t / x)) atTop (𝓝 t) := by
-  have h₁ : Tendsto (fun h => h⁻¹ * log (1 + t * h)) (𝓝[≠] 0) (𝓝 t) := by
-    simpa [hasDerivAt_iff_tendsto_slope, slope_fun_def] using
-      (((hasDerivAt_id (0 : ℝ)).const_mul t).const_add 1).log (by simp)
-  have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (𝓝[≠] 0) :=
-    tendsto_inv_atTop_nhdsGT_zero.mono_right (nhdsGT_le_nhdsNE _)
-  simpa only [Function.comp_def, inv_inv] using h₁.comp h₂
-
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
 expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
 
-Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use one of generic theorems about Taylor's series
-to prove this estimate.
+TODO: use one of generic theorems about Taylor's series to prove this estimate.
 -/
 theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     |(∑ i ∈ range n, x ^ (i + 1) / (i + 1)) + log (1 - x)| ≤ |x| ^ (n + 1) / (1 - |x|) := by

@@ -5,8 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -114,11 +112,11 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
   · decide
 
 /-- Like `Int.ediv_emod_unique`, but permitting negative `b`. -/
-theorem ediv_emod_unique' {a b r q : Int} (h : b ≠ 0) :
+theorem ediv_emod_unique'' {a b r q : Int} (h : b ≠ 0) :
     a / b = q ∧ a % b = r ↔ r + b * q = a ∧ 0 ≤ r ∧ r < |b| := by
   constructor
   · intro ⟨rfl, rfl⟩
-    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt _ h⟩
+    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt_abs _ h⟩
   · intro ⟨rfl, hz, hb⟩
     constructor
     · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]

@@ -95,45 +95,67 @@ def moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom where
   map_add' x y := by aesop
   map_smul' a x := by aesop
 
-/-- The homology of `S`, defined as the quotient of the kernel of `S.g` by
-the image of `S.moduleCatToCycles` -/
-abbrev moduleCatHomology :=
-  ModuleCat.of R (LinearMap.ker S.g.hom ⧸ LinearMap.range S.moduleCatToCycles)
-
-/-- The canonical map `ModuleCat.of R (LinearMap.ker S.g) ⟶ S.moduleCatHomology`. -/
-abbrev moduleCatHomologyπ : ModuleCat.of R (LinearMap.ker S.g.hom) ⟶ S.moduleCatHomology :=
-  ModuleCat.ofHom (LinearMap.range S.moduleCatToCycles).mkQ
-
 /-- The explicit left homology data of a short complex of modules that is
-given by a kernel and a quotient given by the `LinearMap` API. -/
+given by a kernel and a quotient given by the `LinearMap` API. The projections to `K` and `H` are
+not simp lemmas because the generic lemmas about `LeftHomologyData` are more useful here. -/
 @[simps! K H i_hom π_hom]
 def moduleCatLeftHomologyData : S.LeftHomologyData where
   K := ModuleCat.of R (LinearMap.ker S.g.hom)
-  H := S.moduleCatHomology
+  H := ModuleCat.of R (LinearMap.ker S.g.hom ⧸ LinearMap.range S.moduleCatToCycles)
   i := ModuleCat.ofHom (LinearMap.ker S.g.hom).subtype
-  π := S.moduleCatHomologyπ
+  π := ModuleCat.ofHom (LinearMap.range S.moduleCatToCycles).mkQ
   wi := by aesop
   hi := ModuleCat.kernelIsLimit _
   wπ := by aesop
   hπ := ModuleCat.cokernelIsColimit (ModuleCat.ofHom S.moduleCatToCycles)
 
+/-- The homology of a short complex of modules as a concrete quotient. -/
+@[deprecated "This abbreviation is now inlined" (since := "2025-05-14")]
+abbrev moduleCatHomology := S.moduleCatLeftHomologyData.H
+
+/-- The natural projection map to the homology of a short complex of modules as a
+concrete quotient. -/
+@[deprecated "This abbreviation is now inlined" (since := "2025-05-14")]
+abbrev moduleCatHomologyπ := S.moduleCatLeftHomologyData.π
+
+@[deprecated (since := "2025-05-09")]
+alias moduleCatLeftHomologyData_i := moduleCatLeftHomologyData_i_hom
+
+@[deprecated (since := "2025-05-09")]
+alias moduleCatLeftHomologyData_π := moduleCatLeftHomologyData_π_hom
+
 @[simp]
-lemma moduleCatLeftHomologyData_f' :
+lemma moduleCatLeftHomologyData_f'_hom :
     S.moduleCatLeftHomologyData.f'.hom = S.moduleCatToCycles := rfl
 
-instance : Epi S.moduleCatHomologyπ :=
-  (inferInstance : Epi S.moduleCatLeftHomologyData.π)
+@[deprecated (since := "2025-05-09")]
+alias moduleCatLeftHomologyData_f' := moduleCatLeftHomologyData_f'_hom
+
+@[simp]
+lemma moduleCatLeftHomologyData_descH_hom {M : ModuleCat R}
+    (φ : S.moduleCatLeftHomologyData.K ⟶ M) (h : S.moduleCatLeftHomologyData.f' ≫ φ = 0) :
+    (S.moduleCatLeftHomologyData.descH φ h).hom =
+      (LinearMap.range <| ModuleCat.Hom.hom _).liftQ
+         φ.hom (LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.1 h) := rfl
+
+@[simp]
+lemma moduleCatLeftHomologyData_liftK_hom {M : ModuleCat R} (φ : M ⟶ S.X₂) (h : φ ≫ S.g = 0) :
+    (S.moduleCatLeftHomologyData.liftK φ h).hom =
+      φ.hom.codRestrict (LinearMap.ker S.g.hom) (fun m => congr($h m)) := rfl
 
 /-- Given a short complex `S` of modules, this is the isomorphism between
 the abstract `S.cycles` of the homology API and the more concrete description as
 `LinearMap.ker S.g`. -/
-noncomputable def moduleCatCyclesIso : S.cycles ≅ ModuleCat.of R (LinearMap.ker S.g.hom) :=
+noncomputable def moduleCatCyclesIso : S.cycles ≅ S.moduleCatLeftHomologyData.K :=
   S.moduleCatLeftHomologyData.cyclesIso
 
 @[reassoc (attr := simp, elementwise)]
 lemma moduleCatCyclesIso_hom_i :
     S.moduleCatCyclesIso.hom ≫ S.moduleCatLeftHomologyData.i = S.iCycles :=
   S.moduleCatLeftHomologyData.cyclesIso_hom_comp_i
+
+@[deprecated (since := "2025-05-09")]
+alias moduleCatCyclesIso_hom_subtype := moduleCatCyclesIso_hom_i
 
 @[reassoc (attr := simp, elementwise)]
 lemma moduleCatCyclesIso_inv_iCycles :
@@ -145,28 +167,12 @@ lemma toCycles_moduleCatCyclesIso_hom :
     S.toCycles ≫ S.moduleCatCyclesIso.hom = S.moduleCatLeftHomologyData.f' := by
   simp [← cancel_mono S.moduleCatLeftHomologyData.i]
 
-theorem mapCyclesIso_trans_forget₂_moduleCatCyclesIso (M : ShortComplex (ModuleCat R)) :
-    (M.mapCyclesIso (forget₂ (ModuleCat R) Ab)) ≪≫
-      (forget₂ (ModuleCat R) Ab).mapIso M.moduleCatCyclesIso = ShortComplex.abCyclesIso _ := by
-  refine Iso.ext <| (Iso.inv_eq_inv _ _).1 <|
-    (cancel_mono (M.map (forget₂ (ModuleCat R) Ab)).iCycles).1 ?_
-  simpa only [Iso.trans_inv, Functor.mapIso_inv, ← Functor.map_comp, Category.assoc, mapCyclesIso,
-    LeftHomologyData.cyclesIso_inv_comp_iCycles, abCyclesIso]
-    using congr((forget₂ (ModuleCat R) Ab).map $(moduleCatCyclesIso_inv_iCycles _))
-
-theorem moduleCatCyclesIso_inv_apply {M : ShortComplex (ModuleCat R)}
-    (x : M.X₂) (hx : M.g x = 0) :
-    M.moduleCatCyclesIso.inv ⟨x, hx⟩ = M.cyclesMk x hx := by
-  have := congr(Iso.inv $(mapCyclesIso_trans_forget₂_moduleCatCyclesIso M))
-  rw [Iso.trans_inv, Iso.comp_inv_eq] at this
-  exact congr($this ⟨x, _⟩)
-
 /-- Given a short complex `S` of modules, this is the isomorphism between
 the abstract `S.homology` of the homology API and the more explicit
 quotient of `LinearMap.ker S.g` by the image of
 `S.moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g`. -/
 noncomputable def moduleCatHomologyIso :
-    S.homology ≅ S.moduleCatHomology :=
+    S.homology ≅ S.moduleCatLeftHomologyData.H :=
   S.moduleCatLeftHomologyData.homologyIso
 
 @[reassoc (attr := simp, elementwise)]
@@ -183,7 +189,8 @@ lemma moduleCatCyclesIso_inv_π :
 
 lemma exact_iff_surjective_moduleCatToCycles :
     S.Exact ↔ Function.Surjective S.moduleCatToCycles := by
-  simp [S.moduleCatLeftHomologyData.exact_iff_epi_f', ModuleCat.epi_iff_surjective]
+  simp [S.moduleCatLeftHomologyData.exact_iff_epi_f',
+    ModuleCat.epi_iff_surjective, moduleCatLeftHomologyData_K]
 
 end ShortComplex
 

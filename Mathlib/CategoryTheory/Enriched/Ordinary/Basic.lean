@@ -26,7 +26,7 @@ using an abbreviation for `EnrichedOrdinaryCategory SSet C`.
 
 universe v' v u u'
 
-open CategoryTheory Category MonoidalCategory
+open CategoryTheory Category MonoidalCategory Opposite
 
 namespace CategoryTheory
 
@@ -172,5 +172,8 @@ instance ForgetEnrichment.EnrichedOrdinaryCategory {D : Type*} [EnrichedCategory
   homEquiv := Equiv.refl _
   homEquiv_id _ := Category.id_comp _
   homEquiv_comp _ _ := Category.assoc _ _ _
+
+/-- enriched coyoneda functor `(X ⟶[V] _) : C ⥤ V`. -/
+abbrev eCoyoneda (X : C) := (eHomFunctor V C).obj (op X)
 
 end CategoryTheory

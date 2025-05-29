@@ -12,7 +12,7 @@ import Mathlib.Topology.MetricSpace.Lipschitz
 # Compatibility of algebraic operations with metric space structures
 
 In this file we define mixin typeclasses `LipschitzMul`, `LipschitzAdd`,
-`BoundedSMul` expressing compatibility of multiplication, addition and scalar-multiplication
+`IsBoundedSMul` expressing compatibility of multiplication, addition and scalar-multiplication
 operations with an underlying metric space structure.  The intended use case is to abstract certain
 properties shared by normed groups and by `R≥0`.
 
@@ -20,7 +20,7 @@ properties shared by normed groups and by `R≥0`.
 
 We deduce a `ContinuousMul` instance from `LipschitzMul`, etc.  In principle there should
 be an intermediate typeclass for uniform spaces, but the algebraic hierarchy there (see
-`UniformGroup`) is structured differently.
+`IsUniformGroup`) is structured differently.
 
 -/
 
@@ -103,30 +103,37 @@ instance NNReal.hasLipschitzAdd : LipschitzAdd ℝ≥0 where
 
 end LipschitzMul
 
-section BoundedSMul
+section IsBoundedSMul
 
 variable [Zero α] [Zero β] [SMul α β]
 
 /-- Mixin typeclass on a scalar action of a metric space `α` on a metric space `β` both with
 distinguished points `0`, requiring compatibility of the action in the sense that
 `dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂` and
-`dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0`. -/
-class BoundedSMul : Prop where
+`dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0`.
+
+If `[NormedDivisionRing α] [SeminormedAddCommGroup β] [Module α β]` are assumed, then prefer writing
+`[NormSMulClass α β]` instead of using `[IsBoundedSMul α β]`, since while equivalent, typeclass
+search can only infer the latter from the former and not vice versa. -/
+class IsBoundedSMul : Prop where
   dist_smul_pair' : ∀ x : α, ∀ y₁ y₂ : β, dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂
   dist_pair_smul' : ∀ x₁ x₂ : α, ∀ y : β, dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0
 
+@[deprecated (since := "2025-03-10")] alias BoundedSMul := IsBoundedSMul
+
 variable {α β}
-variable [BoundedSMul α β]
+variable [IsBoundedSMul α β]
 
 theorem dist_smul_pair (x : α) (y₁ y₂ : β) : dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂ :=
-  BoundedSMul.dist_smul_pair' x y₁ y₂
+  IsBoundedSMul.dist_smul_pair' x y₁ y₂
 
 theorem dist_pair_smul (x₁ x₂ : α) (y : β) : dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0 :=
-  BoundedSMul.dist_pair_smul' x₁ x₂ y
+  IsBoundedSMul.dist_pair_smul' x₁ x₂ y
 
 -- see Note [lower instance priority]
-/-- The typeclass `BoundedSMul` on a metric-space scalar action implies continuity of the action. -/
-instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β where
+/-- The typeclass `IsBoundedSMul` on a metric-space scalar action implies continuity of the
+action. -/
+instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β where
   continuous_smul := by
     rw [Metric.continuous_iff]
     rintro ⟨a, b⟩ ε ε0
@@ -145,30 +152,30 @@ instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β whe
           gcongr
       _ < ε := hδε
 
-instance (priority := 100) BoundedSMul.toUniformContinuousConstSMul :
+instance (priority := 100) IsBoundedSMul.toUniformContinuousConstSMul :
     UniformContinuousConstSMul α β :=
   ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nndist c 0)).2 fun _ _ =>
     dist_smul_pair c _ _).uniformContinuous⟩
 
--- this instance could be deduced from `NormedSpace.boundedSMul`, but we prove it separately
+-- this instance could be deduced from `NormedSpace.isBoundedSMul`, but we prove it separately
 -- here so that it is available earlier in the hierarchy
-instance Real.boundedSMul : BoundedSMul ℝ ℝ where
+instance Real.isBoundedSMul : IsBoundedSMul ℝ ℝ where
   dist_smul_pair' x y₁ y₂ := by simpa [Real.dist_eq, mul_sub] using (abs_mul x (y₁ - y₂)).le
   dist_pair_smul' x₁ x₂ y := by simpa [Real.dist_eq, sub_mul] using (abs_mul (x₁ - x₂) y).le
 
-instance NNReal.boundedSMul : BoundedSMul ℝ≥0 ℝ≥0 where
+instance NNReal.isBoundedSMul : IsBoundedSMul ℝ≥0 ℝ≥0 where
   dist_smul_pair' x y₁ y₂ := by convert dist_smul_pair (x : ℝ) (y₁ : ℝ) y₂ using 1
   dist_pair_smul' x₁ x₂ y := by convert dist_pair_smul (x₁ : ℝ) x₂ (y : ℝ) using 1
 
 /-- If a scalar is central, then its right action is bounded when its left action is. -/
-instance BoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : BoundedSMul αᵐᵒᵖ β where
+instance IsBoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : IsBoundedSMul αᵐᵒᵖ β where
   dist_smul_pair' :=
     MulOpposite.rec' fun x y₁ y₂ => by simpa only [op_smul_eq_smul] using dist_smul_pair x y₁ y₂
   dist_pair_smul' :=
     MulOpposite.rec' fun x₁ =>
       MulOpposite.rec' fun x₂ y => by simpa only [op_smul_eq_smul] using dist_pair_smul x₁ x₂ y
 
-end BoundedSMul
+end IsBoundedSMul
 
 instance [Monoid α] [LipschitzMul α] : LipschitzAdd (Additive α) :=
   ⟨@LipschitzMul.lipschitz_mul α _ _ _⟩
@@ -182,9 +189,9 @@ instance [Monoid α] [LipschitzMul α] : LipschitzMul αᵒᵈ :=
 
 variable {ι : Type*} [Fintype ι]
 
-instance Pi.instBoundedSMul {α : Type*} {β : ι → Type*} [PseudoMetricSpace α]
+instance Pi.instIsBoundedSMul {α : Type*} {β : ι → Type*} [PseudoMetricSpace α]
     [∀ i, PseudoMetricSpace (β i)] [Zero α] [∀ i, Zero (β i)] [∀ i, SMul α (β i)]
-    [∀ i, BoundedSMul α (β i)] : BoundedSMul α (∀ i, β i) where
+    [∀ i, IsBoundedSMul α (β i)] : IsBoundedSMul α (∀ i, β i) where
   dist_smul_pair' x y₁ y₂ :=
     (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_smul_pair _ _ _).trans <| mul_le_mul_of_nonneg_left (dist_le_pi_dist _ _ _) dist_nonneg
@@ -192,9 +199,9 @@ instance Pi.instBoundedSMul {α : Type*} {β : ι → Type*} [PseudoMetricSpace 
     (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_pair_smul _ _ _).trans <| mul_le_mul_of_nonneg_left (dist_le_pi_dist _ 0 _) dist_nonneg
 
-instance Pi.instBoundedSMul' {α β : ι → Type*} [∀ i, PseudoMetricSpace (α i)]
+instance Pi.instIsBoundedSMul' {α β : ι → Type*} [∀ i, PseudoMetricSpace (α i)]
     [∀ i, PseudoMetricSpace (β i)] [∀ i, Zero (α i)] [∀ i, Zero (β i)] [∀ i, SMul (α i) (β i)]
-    [∀ i, BoundedSMul (α i) (β i)] : BoundedSMul (∀ i, α i) (∀ i, β i) where
+    [∀ i, IsBoundedSMul (α i) (β i)] : IsBoundedSMul (∀ i, α i) (∀ i, β i) where
   dist_smul_pair' x y₁ y₂ :=
     (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_smul_pair _ _ _).trans <|
@@ -204,9 +211,9 @@ instance Pi.instBoundedSMul' {α β : ι → Type*} [∀ i, PseudoMetricSpace (�
       (dist_pair_smul _ _ _).trans <|
         mul_le_mul (dist_le_pi_dist _ _ _) (dist_le_pi_dist _ 0 _) dist_nonneg dist_nonneg
 
-instance Prod.instBoundedSMul {α β γ : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
-    [PseudoMetricSpace γ] [Zero α] [Zero β] [Zero γ] [SMul α β] [SMul α γ] [BoundedSMul α β]
-    [BoundedSMul α γ] : BoundedSMul α (β × γ) where
+instance Prod.instIsBoundedSMul {α β γ : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
+    [PseudoMetricSpace γ] [Zero α] [Zero β] [Zero γ] [SMul α β] [SMul α γ] [IsBoundedSMul α β]
+    [IsBoundedSMul α γ] : IsBoundedSMul α (β × γ) where
   dist_smul_pair' _x _y₁ _y₂ :=
     max_le ((dist_smul_pair _ _ _).trans <| mul_le_mul_of_nonneg_left (le_max_left _ _) dist_nonneg)
       ((dist_smul_pair _ _ _).trans <| mul_le_mul_of_nonneg_left (le_max_right _ _) dist_nonneg)
@@ -215,10 +222,10 @@ instance Prod.instBoundedSMul {α β γ : Type*} [PseudoMetricSpace α] [PseudoM
       ((dist_pair_smul _ _ _).trans <| mul_le_mul_of_nonneg_left (le_max_right _ _) dist_nonneg)
 
 instance {α β : Type*}
-    [PseudoMetricSpace α] [PseudoMetricSpace β] [Zero α] [Zero β] [SMul α β] [BoundedSMul α β] :
-    BoundedSMul α (SeparationQuotient β) where
+    [PseudoMetricSpace α] [PseudoMetricSpace β] [Zero α] [Zero β] [SMul α β] [IsBoundedSMul α β] :
+    IsBoundedSMul α (SeparationQuotient β) where
   dist_smul_pair' _ := Quotient.ind₂ <| dist_smul_pair _
   dist_pair_smul' _ _ := Quotient.ind <| dist_pair_smul _ _
 
 -- We don't have the `SMul α γ → SMul β δ → SMul (α × β) (γ × δ)` instance, but if we did, then
--- `BoundedSMul α γ → BoundedSMul β δ → BoundedSMul (α × β) (γ × δ)` would hold
+-- `IsBoundedSMul α γ → IsBoundedSMul β δ → IsBoundedSMul (α × β) (γ × δ)` would hold

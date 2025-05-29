@@ -94,7 +94,6 @@ variable {α}
 
 namespace Regular
 
--- Porting note: `val` and `prop` are new
 /-- The coercion `Regular α → α` -/
 @[coe] def val : Regular α → α :=
   Subtype.val
@@ -226,7 +225,6 @@ theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
   compl_compl
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
--- Porting note: removed @[nolint decidable_classical]
 theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
   propext <| Decidable.not_not
 

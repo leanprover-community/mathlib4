@@ -20,11 +20,11 @@ We show:
 * When `V` is monoidal, braided, or symmetric, so is `Action V G`.
 -/
 
-universe u v
+universe u
 
 open CategoryTheory Limits MonoidalCategory
 
-variable {V : Type (u + 1)} [LargeCategory V] {G : Type u} [Monoid G]
+variable {V : Type*} [Category V] {G : Type*} [Monoid G]
 
 namespace Action
 
@@ -145,7 +145,7 @@ lemma FunctorCategoryEquivalence.functor_δ (A B : Action V G) :
     δ FunctorCategoryEquivalence.functor A B = 𝟙 _ := rfl
 
 
-variable (H : Type u) [Group H]
+variable (H : Type*) [Group H]
 
 instance [RightRigidCategory V] : RightRigidCategory (SingleObj H ⥤ V) := by
   infer_instance
@@ -274,7 +274,7 @@ namespace CategoryTheory.Functor
 
 open Action
 
-variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCategory W]
+variable {W : Type*} [Category W] [MonoidalCategory V] [MonoidalCategory W]
   (F : V ⥤ W)
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal

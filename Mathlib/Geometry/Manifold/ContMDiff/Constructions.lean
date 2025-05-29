@@ -47,42 +47,66 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section ProdMk
 
-theorem ContMDiffWithinAt.prod_mk {f : M → M'} {g : M → N'} (hf : ContMDiffWithinAt I I' n f s x)
+theorem ContMDiffWithinAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffWithinAt I I' n f s x)
     (hg : ContMDiffWithinAt I J' n g s x) :
     ContMDiffWithinAt I (I'.prod J') n (fun x => (f x, g x)) s x := by
   rw [contMDiffWithinAt_iff] at *
-  exact ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
+  exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
-theorem ContMDiffWithinAt.prod_mk_space {f : M → E'} {g : M → F'}
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffWithinAt.prod_mk := ContMDiffWithinAt.prodMk
+
+theorem ContMDiffWithinAt.prodMk_space {f : M → E'} {g : M → F'}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, E') n f s x) (hg : ContMDiffWithinAt I 𝓘(𝕜, F') n g s x) :
     ContMDiffWithinAt I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) s x := by
   rw [contMDiffWithinAt_iff] at *
-  exact ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
+  exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
-nonrec theorem ContMDiffAt.prod_mk {f : M → M'} {g : M → N'} (hf : ContMDiffAt I I' n f x)
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffWithinAt.prod_mk_space := ContMDiffWithinAt.prodMk_space
+
+nonrec theorem ContMDiffAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffAt I I' n f x)
     (hg : ContMDiffAt I J' n g x) : ContMDiffAt I (I'.prod J') n (fun x => (f x, g x)) x :=
-  hf.prod_mk hg
+  hf.prodMk hg
 
-nonrec theorem ContMDiffAt.prod_mk_space {f : M → E'} {g : M → F'}
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffAt.prod_mk := ContMDiffAt.prodMk
+
+nonrec theorem ContMDiffAt.prodMk_space {f : M → E'} {g : M → F'}
     (hf : ContMDiffAt I 𝓘(𝕜, E') n f x) (hg : ContMDiffAt I 𝓘(𝕜, F') n g x) :
     ContMDiffAt I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) x :=
-  hf.prod_mk_space hg
+  hf.prodMk_space hg
 
-theorem ContMDiffOn.prod_mk {f : M → M'} {g : M → N'} (hf : ContMDiffOn I I' n f s)
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffAt.prod_mk_space := ContMDiffAt.prodMk_space
+
+theorem ContMDiffOn.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffOn I I' n f s)
     (hg : ContMDiffOn I J' n g s) : ContMDiffOn I (I'.prod J') n (fun x => (f x, g x)) s :=
-  fun x hx => (hf x hx).prod_mk (hg x hx)
+  fun x hx => (hf x hx).prodMk (hg x hx)
 
-theorem ContMDiffOn.prod_mk_space {f : M → E'} {g : M → F'} (hf : ContMDiffOn I 𝓘(𝕜, E') n f s)
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffOn.prod_mk := ContMDiffOn.prodMk
+
+theorem ContMDiffOn.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiffOn I 𝓘(𝕜, E') n f s)
     (hg : ContMDiffOn I 𝓘(𝕜, F') n g s) : ContMDiffOn I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) s :=
-  fun x hx => (hf x hx).prod_mk_space (hg x hx)
+  fun x hx => (hf x hx).prodMk_space (hg x hx)
 
-nonrec theorem ContMDiff.prod_mk {f : M → M'} {g : M → N'} (hf : ContMDiff I I' n f)
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffOn.prod_mk_space := ContMDiffOn.prodMk_space
+
+nonrec theorem ContMDiff.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiff I I' n f)
     (hg : ContMDiff I J' n g) : ContMDiff I (I'.prod J') n fun x => (f x, g x) := fun x =>
-  (hf x).prod_mk (hg x)
+  (hf x).prodMk (hg x)
 
-theorem ContMDiff.prod_mk_space {f : M → E'} {g : M → F'} (hf : ContMDiff I 𝓘(𝕜, E') n f)
+@[deprecated (since := "2025-03-08")]
+alias ContMDiff.prod_mk := ContMDiff.prodMk
+
+theorem ContMDiff.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiff I 𝓘(𝕜, E') n f)
     (hg : ContMDiff I 𝓘(𝕜, F') n g) : ContMDiff I 𝓘(𝕜, E' × F') n fun x => (f x, g x) := fun x =>
-  (hf x).prod_mk_space (hg x)
+  (hf x).prodMk_space (hg x)
+
+@[deprecated (since := "2025-03-08")]
+alias ContMDiff.prod_mk_space := ContMDiff.prodMk_space
 
 @[deprecated (since := "2024-11-20")] alias SmoothWithinAt.prod_mk := ContMDiffWithinAt.prod_mk
 
@@ -206,7 +230,7 @@ end Projections
 theorem contMDiffWithinAt_prod_iff (f : M → M' × N') :
     ContMDiffWithinAt I (I'.prod J') n f s x ↔
       ContMDiffWithinAt I I' n (Prod.fst ∘ f) s x ∧ ContMDiffWithinAt I J' n (Prod.snd ∘ f) s x :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prodMk h.2⟩
 
 theorem contMDiffWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiffWithinAt I 𝓘(𝕜, F₁ × F₂) n f s x ↔
@@ -242,7 +266,7 @@ theorem contMDiffOn_prod_module_iff (f : M → F₁ × F₂) :
 theorem contMDiff_prod_iff (f : M → M' × N') :
     ContMDiff I (I'.prod J') n f ↔
       ContMDiff I I' n (Prod.fst ∘ f) ∧ ContMDiff I J' n (Prod.snd ∘ f) :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prod_mk h.2⟩
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prodMk h.2⟩
 
 theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiff I 𝓘(𝕜, F₁ × F₂) n f ↔
@@ -253,7 +277,7 @@ theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
 theorem contMDiff_prod_assoc :
     ContMDiff ((I.prod I').prod J) (I.prod (I'.prod J)) n
       fun x : (M × M') × N => (x.1.1, x.1.2, x.2) :=
-  contMDiff_fst.fst.prod_mk <| contMDiff_fst.snd.prod_mk contMDiff_snd
+  contMDiff_fst.fst.prodMk <| contMDiff_fst.snd.prodMk contMDiff_snd
 
 @[deprecated (since := "2024-11-20")] alias smoothAt_prod_iff := contMDiffAt_prod_iff
 
@@ -267,37 +291,52 @@ variable {g : N → N'} {r : Set N} {y : N}
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
-theorem ContMDiffWithinAt.prod_map' {p : M × N} (hf : ContMDiffWithinAt I I' n f s p.1)
+theorem ContMDiffWithinAt.prodMap' {p : M × N} (hf : ContMDiffWithinAt I I' n f s p.1)
     (hg : ContMDiffWithinAt J J' n g r p.2) :
     ContMDiffWithinAt (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) p :=
-  (hf.comp p contMDiffWithinAt_fst (prod_subset_preimage_fst _ _)).prod_mk <|
-    hg.comp p contMDiffWithinAt_snd (prod_subset_preimage_snd _ _)
+  (hf.comp p contMDiffWithinAt_fst mapsTo_fst_prod).prodMk <|
+    hg.comp p contMDiffWithinAt_snd mapsTo_snd_prod
 
-theorem ContMDiffWithinAt.prod_map (hf : ContMDiffWithinAt I I' n f s x)
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffWithinAt.prod_map' := ContMDiffWithinAt.prodMap'
+
+theorem ContMDiffWithinAt.prodMap (hf : ContMDiffWithinAt I I' n f s x)
     (hg : ContMDiffWithinAt J J' n g r y) :
     ContMDiffWithinAt (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) (x, y) :=
-  ContMDiffWithinAt.prod_map' hf hg
+  ContMDiffWithinAt.prodMap' hf hg
 
-theorem ContMDiffAt.prod_map (hf : ContMDiffAt I I' n f x) (hg : ContMDiffAt J J' n g y) :
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffWithinAt.prod_map := ContMDiffWithinAt.prodMap
+
+theorem ContMDiffAt.prodMap (hf : ContMDiffAt I I' n f x) (hg : ContMDiffAt J J' n g y) :
     ContMDiffAt (I.prod J) (I'.prod J') n (Prod.map f g) (x, y) := by
-  rw [← contMDiffWithinAt_univ] at *
-  convert hf.prod_map hg
-  exact univ_prod_univ.symm
+  simp only [← contMDiffWithinAt_univ, ← univ_prod_univ] at *
+  exact hf.prodMap hg
 
-theorem ContMDiffAt.prod_map' {p : M × N} (hf : ContMDiffAt I I' n f p.1)
-    (hg : ContMDiffAt J J' n g p.2) : ContMDiffAt (I.prod J) (I'.prod J') n (Prod.map f g) p := by
-  rcases p with ⟨⟩
-  exact hf.prod_map hg
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffAt.prod_map := ContMDiffAt.prodMap
 
-theorem ContMDiffOn.prod_map (hf : ContMDiffOn I I' n f s) (hg : ContMDiffOn J J' n g r) :
+theorem ContMDiffAt.prodMap' {p : M × N} (hf : ContMDiffAt I I' n f p.1)
+    (hg : ContMDiffAt J J' n g p.2) : ContMDiffAt (I.prod J) (I'.prod J') n (Prod.map f g) p :=
+  hf.prodMap hg
+
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffAt.prod_map' := ContMDiffAt.prodMap'
+
+theorem ContMDiffOn.prodMap (hf : ContMDiffOn I I' n f s) (hg : ContMDiffOn J J' n g r) :
     ContMDiffOn (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) :=
-  (hf.comp contMDiffOn_fst (prod_subset_preimage_fst _ _)).prod_mk <|
-    hg.comp contMDiffOn_snd (prod_subset_preimage_snd _ _)
+  (hf.comp contMDiffOn_fst mapsTo_fst_prod).prodMk <| hg.comp contMDiffOn_snd mapsTo_snd_prod
 
-theorem ContMDiff.prod_map (hf : ContMDiff I I' n f) (hg : ContMDiff J J' n g) :
+@[deprecated (since := "2025-03-08")]
+alias ContMDiffOn.prod_map := ContMDiffOn.prodMap
+
+theorem ContMDiff.prodMap (hf : ContMDiff I I' n f) (hg : ContMDiff J J' n g) :
     ContMDiff (I.prod J) (I'.prod J') n (Prod.map f g) := by
   intro p
-  exact (hf p.1).prod_map' (hg p.2)
+  exact (hf p.1).prodMap' (hg p.2)
+
+@[deprecated (since := "2025-03-08")]
+alias ContMDiff.prod_map := ContMDiff.prodMap
 
 @[deprecated (since := "2024-11-20")] alias SmoothWithinAt.prod_map := ContMDiffWithinAt.prod_map
 

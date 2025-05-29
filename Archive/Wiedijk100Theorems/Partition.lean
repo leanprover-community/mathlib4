@@ -130,7 +130,7 @@ theorem num_series' [Field α] (i : ℕ) :
       simp only [coeff_one, if_false, mul_sub, mul_one, coeff_indicator,
         LinearMap.map_sub, reduceCtorEq]
       simp_rw [coeff_mul, coeff_X_pow, coeff_indicator, @boole_mul _ _ _ _]
-      erw [sum_ite, sum_ite]
+      rw [sum_ite (hp := fun _ ↦ Classical.propDecidable _), sum_ite]
       simp_rw [@filter_filter _ _ _ _ _, sum_const_zero, add_zero, sum_const, nsmul_eq_mul, mul_one,
         sub_eq_iff_eq_add, zero_add]
       symm
@@ -153,7 +153,7 @@ theorem num_series' [Field α] (i : ℕ) :
       · suffices #{a ∈ antidiagonal (n + 1) | i + 1 ∣ a.fst ∧ a.snd = i + 1} = 0 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_zero]
-        apply eq_empty_of_forall_not_mem
+        apply eq_empty_of_forall_notMem
         simp only [Prod.forall, mem_filter, not_and, mem_antidiagonal]
         rintro _ h₁ h₂ ⟨a, rfl⟩ rfl
         apply h
@@ -206,8 +206,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     simp only [φ, ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, Finsupp.mk.injEq] at h
     by_cases hi : i = 0
     · rw [hi]
-      rw [Multiset.count_eq_zero_of_not_mem]
-      · rw [Multiset.count_eq_zero_of_not_mem]
+      rw [Multiset.count_eq_zero_of_notMem]
+      · rw [Multiset.count_eq_zero_of_notMem]
         intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₁.2 0 a))
     · rw [← mul_left_inj' hi]
@@ -248,8 +248,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         rcases hf₄ i h with ⟨w, _, hw₂⟩
         apply Dvd.intro_left _ hw₂
       · apply symm
-        rw [← Finsupp.not_mem_support_iff]
-        exact not_mem_mono hf'.2 h
+        rw [← Finsupp.notMem_support_iff]
+        exact notMem_mono hf'.2 h
 
 theorem partialOddGF_prop [Field α] (n m : ℕ) :
     #{p : n.Partition | ∀ j ∈ p.parts, j ∈ (range m).map mkOdd} = coeff α n (partialOddGF m) := by

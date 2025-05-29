@@ -49,7 +49,7 @@ theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
   rfl
 
 /-- Left multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := .asFn) apply)
+@[to_additive (attr := simps -fullyApplied apply)
   "Left addition of an additive unit is a permutation of the underlying type."]
 def mulLeft (u : Mˣ) : Equiv.Perm M where
   toFun x := u * x
@@ -66,7 +66,7 @@ theorem mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
   (mulLeft a).bijective
 
 /-- Right multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := .asFn) apply)
+@[to_additive (attr := simps -fullyApplied apply)
 "Right addition of an additive unit is a permutation of the underlying type."]
 def mulRight (u : Mˣ) : Equiv.Perm M where
   toFun x := x * u
@@ -184,13 +184,17 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 
-@[instance]
-theorem isLocalHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
-    [MulEquivClass F M N] (f : F) : IsLocalHom f where
-  map_nonunit a ha := by
-    convert ha.map (f : M ≃* N).symm
-    rw [MulEquiv.eq_symm_apply]
-    rfl -- note to reviewers: ugly `rfl`
+section EquivLike
+variable [Monoid M] [Monoid N] [EquivLike F M N] [MulEquivClass F M N] (f : F) {x : M}
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_equiv := isLocalHom_equiv
+-- Higher priority to take over the non-additivisable `isUnit_map_iff`
+@[to_additive (attr := simp high)]
+lemma MulEquiv.isUnit_map : IsUnit (f x) ↔ IsUnit x where
+  mp hx := by
+    simpa using hx.map <| MonoidHom.mk ⟨EquivLike.inv f, EquivLike.injective f <| by simp⟩
+      fun x y ↦ EquivLike.injective f <| by simp
+  mpr := .map f
+
+@[instance] theorem isLocalHom_equiv : IsLocalHom f where map_nonunit := by simp
+
+end EquivLike

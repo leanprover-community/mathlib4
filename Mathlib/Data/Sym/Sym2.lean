@@ -162,10 +162,10 @@ theorem mk_prod_swap_eq {p : α × α} : Sym2.mk p.swap = Sym2.mk p := by
   exact eq_swap
 
 theorem congr_right {a b c : α} : s(a, b) = s(a, c) ↔ b = c := by
-  simp (config := {contextual := true})
+  simp +contextual
 
 theorem congr_left {a b c : α} : s(b, a) = s(c, a) ↔ b = c := by
-  simp (config := {contextual := true})
+  simp +contextual
 
 theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
   simp
@@ -305,8 +305,8 @@ instance : SetLike (Sym2 α) α where
   coe z := { x | z.Mem x }
   coe_injective' z z' h := by
     simp only [Set.ext_iff, Set.mem_setOf_eq] at h
-    induction' z with x y
-    induction' z' with x' y'
+    obtain ⟨x, y⟩ := z
+    obtain ⟨x', y'⟩ := z'
     have hx := h x; have hy := h y; have hx' := h x'; have hy' := h y'
     simp only [mem_iff', eq_self_iff_true] at hx hy hx' hy'
     aesop
@@ -351,8 +351,8 @@ noncomputable def Mem.other {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
   Classical.choose h
 
 @[simp]
-theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other h) = z := by
-  erw [← Classical.choose_spec h]
+theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other h) = z :=
+  (Classical.choose_spec h).symm
 
 theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z := by
   convert mem_mk_right a <| Mem.other h
@@ -360,7 +360,7 @@ theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z := by
 
 theorem mem_and_mem_iff {x y : α} {z : Sym2 α} (hne : x ≠ y) : x ∈ z ∧ y ∈ z ↔ z = s(x, y) := by
   constructor
-  · induction' z with x' y'
+  · cases z
     rw [mem_iff, mem_iff]
     aesop
   · rintro rfl
@@ -377,7 +377,7 @@ end Membership
 
 @[simp]
 theorem mem_map {f : α → β} {b : β} {z : Sym2 α} : b ∈ Sym2.map f z ↔ ∃ a, a ∈ z ∧ f a = b := by
-  induction' z with x y
+  cases z
   simp only [map_pair_eq, mem_iff, exists_eq_or_imp, exists_eq_left]
   aesop
 
@@ -426,39 +426,34 @@ lemma pmap_pair {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : ∀ x 
 @[simp]
 lemma mem_pmap_iff {P : α → Prop} (f : ∀ a, P a → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) (b : β) :
     b ∈ z.pmap f h ↔ ∃ (a : α) (ha : a ∈ z), b = f a (h a ha) := by
-  induction' z with x y
+  obtain ⟨x, y⟩ := z
   rw [pmap_pair f x y h]
   aesop
 
 lemma pmap_eq_map {P : α → Prop} (f : α → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) :
     z.pmap (fun a _ => f a) h = z.map f := by
-  induction' z with x y
-  rfl
+  cases z; rfl
 
 lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sym2 α) (h : ∀ b ∈ z.map f, Q b):
     (z.map f).pmap g h =
     z.pmap (fun a ha => g (f a) (h (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun _ ha => ha) := by
-  induction' z with x y
-  rfl
+  cases z; rfl
 
 lemma pmap_map {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : β → γ)
     (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
     (z.pmap f h).map g = z.pmap (fun a ha => g (f a (h a ha))) (fun _ ha ↦ ha) := by
-  induction' z with x y
-  rfl
+  cases z; rfl
 
 lemma pmap_pmap {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : ∀ b, Q b → γ)
     (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
     (z.pmap f h).pmap g h' = z.pmap (fun a ha => g (f a (h a ha))
     (h' _ ((mem_pmap_iff f z h _).mpr ⟨a, ha, rfl⟩))) (fun _ ha ↦ ha) := by
-  induction' z with x y
-  rfl
+  cases z; rfl
 
 @[simp]
 lemma pmap_subtype_map_subtypeVal {P : α → Prop} (s : Sym2 α) (h : ∀ a ∈ s, P a) :
     (s.pmap Subtype.mk h).map Subtype.val = s := by
-  induction' s with x y
-  rfl
+  cases s; rfl
 
 /--
 "Attach" a proof `P a` that holds for all the elements of `s` to produce a new Sym2 object
@@ -470,8 +465,7 @@ def attachWith {P : α → Prop} (s : Sym2 α) (h : ∀ a ∈ s, P a) : Sym2 {a 
 @[simp]
 lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s, P a) :
     (s.attachWith h).map Subtype.val = s := by
-  induction' s with x y
-  rfl
+  cases s; rfl
 
 /-! ### Diagonal -/
 
@@ -507,7 +501,7 @@ theorem diag_isDiag (a : α) : IsDiag (diag a) :=
   Eq.refl a
 
 theorem IsDiag.mem_range_diag {z : Sym2 α} : IsDiag z → z ∈ Set.range (@diag α) := by
-  induction' z with x y
+  obtain ⟨x, y⟩ := z
   rintro (rfl : x = y)
   exact ⟨_, rfl⟩
 
@@ -545,7 +539,7 @@ theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym �
   Iff.rfl
 
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
-  apply Set.eq_empty_of_forall_not_mem fun e => _
+  apply Set.eq_empty_of_forall_notMem fun e => _
   apply Sym2.ind
   simp [-Set.bot_eq_empty, Prop.bot_eq_false]
 
@@ -568,6 +562,14 @@ theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r)
 
 instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
     DecidablePred (· ∈ Sym2.fromRel sym) := fun z => z.recOnSubsingleton fun _ => h _ _
+
+lemma fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
+    fromRel (Relation.map_symmetric hr f) = Sym2.map f '' Sym2.fromRel hr := by
+  ext ⟨a, b⟩
+  simp only [fromRel_proj_prop, Relation.Map, Set.mem_image, Sym2.exists, map_pair_eq, Sym2.eq,
+    rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left, exists_or, iff_self_or,
+    forall_exists_index, and_imp]
+  exact fun c d hcd hc hd ↦ ⟨d, c, hr hcd, hd, hc⟩
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symmetric`). -/
@@ -736,8 +738,7 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
 
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
     {a ∈ (s ×ˢ s).image Sym2.mk | a.IsDiag} = s.diag.image Sym2.mk := by
-  ext z
-  induction' z
+  ext ⟨x, y⟩
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
   constructor
   · rintro ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩

@@ -89,7 +89,6 @@ def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
-  -- Porting note: added `letI`
   letI := ofEquiv _ e
   refine ofNat_of_decode ?_
   rw [decode_ofEquiv e]
@@ -115,14 +114,14 @@ instance option : Denumerable (Option α) :=
       rw [decode_option_zero, Option.mem_def]
     | succ n =>
       refine ⟨some (ofNat α n), ?_, ?_⟩
-      · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
+      · rw [decode_option_succ, decode_eq_ofNat, Option.map_some, Option.mem_def]
       rw [encode_some, encode_ofNat]⟩
 
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
-    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
+    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some,
       Option.mem_def, Sum.exists]
     cases bodd n <;> simp [decodeSum, bit, encodeSum, Nat.two_mul]⟩
 
@@ -217,9 +216,8 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
 
 theorem lt_succ_self (x : s) : x < succ x :=
   calc
-    -- Porting note: replaced `x + _`, added type annotations
-    (x : ℕ) ≤ (x + Nat.find (exists_succ x) : ℕ) := le_add_right ..
-    _ < (succ x : ℕ) := Nat.lt_succ_self (x + _)
+    (x : ℕ) ≤ (x + _)  := le_add_right ..
+    _       < (succ x) := Nat.lt_succ_self (x + _)
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
   ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
@@ -240,7 +238,7 @@ theorem ofNat_surjective : Surjective (ofNat s)
       simp [List.mem_filter, Subtype.ext_iff_val, ht]
     cases hmax : List.maximum t with
     | bot =>
-      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
+      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (a := (⊥ : s)) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
     | coe m =>
       have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)
@@ -269,7 +267,7 @@ open Finset
 
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
-    rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]
+    rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_notMem]
     rintro n hn
     rw [mem_filter, ofNat, mem_range] at hn
     exact bot_le.not_lt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
@@ -289,7 +287,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
     simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
     conv =>
       rhs
-      rw [← ih, ← card_insert_of_not_mem h₁, ← h₂]
+      rw [← ih, ← card_insert_of_notMem h₁, ← h₂]
 
 /-- Any infinite set of naturals is denumerable. -/
 def denumerable (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : Denumerable s :=

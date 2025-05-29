@@ -62,33 +62,40 @@ open Polynomial Algebra Module Set
 
 universe u v w z
 
-variable (n : ℕ+) (S T : Set ℕ+) (A : Type u) (B : Type v) (K : Type w) (L : Type z)
-variable [CommRing A] [CommRing B] [Algebra A B]
-variable [Field K] [Field L] [Algebra K L]
-
 noncomputable section
 
 /-- Given an `A`-algebra `B` and `S : Set ℕ+`, we define `IsCyclotomicExtension S A B` requiring
 that there is an `n`-th primitive root of unity in `B` for all `n ∈ S` and that `B` is generated
 over `A` by the roots of `X ^ n - 1`. -/
-
 @[mk_iff]
-class IsCyclotomicExtension : Prop where
+class IsCyclotomicExtension
+    (S : Set ℕ+) (A : Type u) (B : Type v)
+    [CommRing A] [CommRing B] [Algebra A B] : Prop where
   /-- For all `n ∈ S`, there exists a primitive `n`-th root of unity in `B`. -/
-  exists_prim_root {n : ℕ+} (ha : n ∈ S) : ∃ r : B, IsPrimitiveRoot r n
+  exists_isPrimitiveRoot {S} (A B) {n : ℕ+} (ha : n ∈ S) : ∃ r : B, IsPrimitiveRoot r n
   /-- The `n`-th roots of unity, for `n ∈ S`, generate `B` as an `A`-algebra. -/
   adjoin_roots : ∀ x : B, x ∈ adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}
+
+variable (n : ℕ+) (S T : Set ℕ+) (A : Type u) (B : Type v) (K : Type w) (L : Type z)
+variable [CommRing A] [CommRing B] [Algebra A B]
+variable [Field K] [Field L] [Algebra K L]
 
 namespace IsCyclotomicExtension
 
 section Basic
+
+variable {S B} in
+@[deprecated exists_isPrimitiveRoot (since := "2025-05-21")]
+theorem exists_prim_root [IsCyclotomicExtension S A B] {n : ℕ+} (ha : n ∈ S) :
+    ∃ r : B, IsPrimitiveRoot r n :=
+  exists_isPrimitiveRoot A B ha
 
 /-- A reformulation of `IsCyclotomicExtension` that uses `⊤`. -/
 theorem iff_adjoin_eq_top :
     IsCyclotomicExtension S A B ↔
       (∀ n : ℕ+, n ∈ S → ∃ r : B, IsPrimitiveRoot r n) ∧
         adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1} = ⊤ :=
-  ⟨fun h => ⟨fun _ => h.exists_prim_root, Algebra.eq_top_iff.2 h.adjoin_roots⟩, fun h =>
+  ⟨fun h => ⟨fun _ => h.exists_isPrimitiveRoot, Algebra.eq_top_iff.2 h.adjoin_roots⟩, fun h =>
     ⟨h.1 _, Algebra.eq_top_iff.1 h.2⟩⟩
 
 /-- A reformulation of `IsCyclotomicExtension` in the case `S` is a singleton. -/
@@ -111,8 +118,7 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension ∅ A B`. -/
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension ∅ A B := by
--- Porting note: Lean3 is able to infer `A`.
-  refine (iff_adjoin_eq_top _ A _).2
+  refine (iff_adjoin_eq_top _ _ _).2
     ⟨fun s hs => by simp at hs, _root_.eq_top_iff.2 fun x hx => ?_⟩
   rw [← h] at hx
   simpa using hx
@@ -152,8 +158,7 @@ theorem subsingleton_iff [Subsingleton B] : IsCyclotomicExtension S A B ↔ S = 
     rw [mem_singleton_iff, ← PNat.coe_eq_one_iff]
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
   · rintro (rfl | rfl)
--- Porting note: `R := A` was not needed.
-    · exact ⟨fun h => h.elim, fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
+    · exact ⟨fun h => h.elim, fun x => by convert (mem_top : x ∈ ⊤)⟩
     · rw [iff_singleton]
       exact ⟨⟨0, IsPrimitiveRoot.of_subsingleton 0⟩,
         fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
@@ -199,10 +204,10 @@ theorem of_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) [H : IsCycl
   refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => ?_, ?_⟩
   · rw [mem_union, mem_singleton_iff] at hs
     obtain hs | rfl := hs
-    · exact H.exists_prim_root hs
+    · exact H.exists_isPrimitiveRoot hs
     · obtain ⟨m, hm⟩ := hS
       obtain ⟨x, rfl⟩ := h m hm
-      obtain ⟨ζ, hζ⟩ := H.exists_prim_root hm
+      obtain ⟨ζ, hζ⟩ := H.exists_isPrimitiveRoot hm
       refine ⟨ζ ^ (x : ℕ), ?_⟩
       convert hζ.pow_of_dvd x.ne_zero (dvd_mul_left (x : ℕ) s)
       simp only [PNat.mul_coe, Nat.mul_div_left, PNat.pos]
@@ -219,7 +224,7 @@ theorem iff_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {n}) A B := by
   refine
     ⟨fun H => of_union_of_dvd A B h hS, fun H => (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => ?_, ?_⟩⟩
-  · exact H.exists_prim_root (subset_union_left hs)
+  · exact H.exists_isPrimitiveRoot (subset_union_left hs)
   · rw [_root_.eq_top_iff, ← ((iff_adjoin_eq_top _ A B).1 H).2]
     refine adjoin_mono fun x hx => ?_
     simp only [union_singleton, mem_insert_iff, mem_setOf_eq] at hx ⊢
@@ -241,7 +246,7 @@ theorem iff_union_singleton_one :
   refine ⟨fun H => ?_, fun H => ?_⟩
   · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
     simp [adjoin_singleton_one, empty]
-  · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (not_mem_empty s hs).elim, ?_⟩
+  · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (notMem_empty s hs).elim, ?_⟩
     simp [@singleton_one A B _ _ _ H]
 
 variable {A B}
@@ -382,7 +387,7 @@ variable (A)
 
 theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+}
     (h : IsPrimitiveRoot ζ n) : IsCyclotomicExtension {n} A (adjoin A ({ζ} : Set B)) :=
-  { exists_prim_root := fun hi => by
+  { exists_isPrimitiveRoot := fun hi => by
       rw [Set.mem_singleton_iff] at hi
       refine ⟨⟨ζ, subset_adjoin <| Set.mem_singleton ζ⟩, ?_⟩
       rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk, hi]
@@ -462,8 +467,7 @@ theorem splitting_field_cyclotomic : IsSplittingField K L (cyclotomic n K) :=
     adjoin_rootSet' := by
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
       letI := Classical.decEq L
-      -- todo: make `exists_prim_root` take an explicit `L`
-      obtain ⟨ζ : L, hζ⟩ := IsCyclotomicExtension.exists_prim_root K (B := L) (mem_singleton n)
+      obtain ⟨ζ, hζ⟩ := IsCyclotomicExtension.exists_isPrimitiveRoot K L (mem_singleton n)
       exact adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ }
 
 scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.splitting_field_cyclotomic
@@ -484,15 +488,12 @@ def CyclotomicField : Type w :=
 
 namespace CyclotomicField
 
--- Porting note: could not be derived
 instance : Field (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
--- Porting note: could not be derived
 instance algebra : Algebra K (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
--- Porting note: could not be derived
 instance : Inhabited (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
@@ -508,12 +509,14 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
     exists_root_of_splits (algebraMap K (CyclotomicField n K)) (SplittingField.splits _)
       (degree_cyclotomic_pos n K n.pos).ne'
   rw [← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
--- Porting note: the first `?_` was `forall_eq.2 ⟨ζ, hζ⟩` that now fails.
   refine ⟨?_, ?_⟩
   · simp only [mem_singleton_iff, forall_eq]
     exact ⟨ζ, hζ⟩
   · rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
     exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
+
+instance [NumberField K] : NumberField (CyclotomicField n K) :=
+  IsCyclotomicExtension.numberField {n} K _
 
 end CyclotomicField
 
@@ -554,19 +557,15 @@ is nonzero in `A`, it has the instance `IsCyclotomicExtension {n} A (CyclotomicR
 @[nolint unusedArguments]
 def CyclotomicRing : Type w :=
   adjoin A {b : CyclotomicField n K | b ^ (n : ℕ) = 1}
---deriving CommRing, IsDomain, Inhabited
 
 namespace CyclotomicRing
 
--- Porting note: could not be derived
 instance : CommRing (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
--- Porting note: could not be derived
 instance : IsDomain (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
--- Porting note: could not be derived
 instance : Inhabited (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
@@ -601,12 +600,13 @@ instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
 
 instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     IsCyclotomicExtension {n} A (CyclotomicRing n A K) where
-  exists_prim_root := @fun a han => by
+  exists_isPrimitiveRoot {a} han := by
     rw [mem_singleton_iff] at han
     subst a
     have := NeZero.of_faithfulSMul A K n
     have := NeZero.of_faithfulSMul A (CyclotomicField n K) n
-    obtain ⟨μ, hμ⟩ := (CyclotomicField.isCyclotomicExtension n K).exists_prim_root (mem_singleton n)
+    obtain ⟨μ, hμ⟩ := (CyclotomicField.isCyclotomicExtension n K).exists_isPrimitiveRoot
+      (mem_singleton n)
     refine ⟨⟨μ, subset_adjoin ?_⟩, ?_⟩
     · apply (isRoot_of_unity_iff n.pos (CyclotomicField n K)).mpr
       refine ⟨n, Nat.mem_divisors_self _ n.ne_zero, ?_⟩
@@ -638,7 +638,6 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero ((n : ℕ) : A)] :
         (hx := ((IsCyclotomicExtension.iff_singleton n K (CyclotomicField n K)).1
             (CyclotomicField.isCyclotomicExtension n K)).2 x)
         (fun y hy => ?_) (fun k => ?_) ?_ ?_
--- Porting note: the last goal was `by simpa` that now fails.
     · exact ⟨⟨⟨y, subset_adjoin hy⟩, 1⟩, by simp; rfl⟩
     · have : IsLocalization (nonZeroDivisors A) K := inferInstance
       replace := this.surj

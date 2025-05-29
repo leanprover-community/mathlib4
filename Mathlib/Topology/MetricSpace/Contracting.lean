@@ -136,7 +136,7 @@ theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx :
     <;> try apply efixedPoint_isFixedPt
   change edistLtTopSetoid _ _
   trans x
-  · apply Setoid.symm' -- Porting note: Originally `symm`
+  · apply Setoid.symm'
     exact hf.edist_efixedPoint_lt_top hx
   trans y
   exacts [lt_top_iff_ne_top.2 h, hf.edist_efixedPoint_lt_top hy]
@@ -217,7 +217,7 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
     <;> try apply efixedPoint_isFixedPt'
   change edistLtTopSetoid _ _
   trans x
-  · apply Setoid.symm' -- Porting note: Originally `symm`
+  · apply Setoid.symm'
     apply edist_efixedPoint_lt_top'
   trans y
   · exact lt_top_iff_ne_top.2 hxy
@@ -314,10 +314,7 @@ theorem isFixedPt_fixedPoint_iterate {n : ℕ} (hf : ContractingWith K f^[n]) :
   have hx : f^[n] x = x := hf.fixedPoint_isFixedPt
   have := hf.toLipschitzWith.dist_le_mul x (f x)
   rw [← iterate_succ_apply, iterate_succ_apply', hx] at this
-  -- Porting note: Originally `contrapose! this`
-  revert this
-  contrapose!
-  intro this
+  contrapose! this
   have := dist_pos.2 (Ne.symm this)
   simpa only [NNReal.coe_one, one_mul, NNReal.val_eq_coe] using (mul_lt_mul_right this).mpr hf.left
 

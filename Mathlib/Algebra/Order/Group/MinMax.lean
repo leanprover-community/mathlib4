@@ -30,7 +30,7 @@ end
 
 section LinearOrderedCommGroup
 
-variable {α : Type*} [LinearOrderedCommGroup α]
+variable {α : Type*} [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 
 @[to_additive min_neg_neg]
 theorem min_inv_inv' (a b : α) : min a⁻¹ b⁻¹ = (max a b)⁻¹ :=
@@ -62,7 +62,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type*} [LinearOrderedAddCommGroup α]
+variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 
 theorem max_sub_max_le_max (a b c d : α) : max a b - max c d ≤ max (a - c) (b - d) := by
   simp only [sub_le_iff_le_add, max_le_iff]; constructor

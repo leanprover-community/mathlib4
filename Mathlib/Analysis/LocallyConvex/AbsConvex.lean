@@ -74,6 +74,10 @@ theorem AbsConvex.iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, AbsConvex �
     AbsConvex 𝕜 (⋂ i, s i) :=
   sInter_range s ▸ AbsConvex.sInter <| forall_mem_range.2 h
 
+theorem AbsConvex.iInter₂ {ι : Sort*} {κ : ι → Sort*} {f : ∀ i, κ i → Set E}
+    (h : ∀ i j, AbsConvex 𝕜 (f i j)) : AbsConvex 𝕜 (⋂ (i) (j), f i j) :=
+  AbsConvex.iInter fun _  => (AbsConvex.iInter fun _ => h _ _)
+
 variable (𝕜)
 
 /-- The absolute convex hull of a set `s` is the minimal absolute convex set that includes `s`. -/
@@ -189,7 +193,7 @@ end AbsolutelyConvex
 section NormedField
 
 variable [NormedField 𝕜]
-  [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]  [TopologicalSpace E]
+  [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [ContinuousSMul 𝕜 E]
 
 theorem AbsConvex.closure {s : Set E} (hs : AbsConvex 𝕜 s) : AbsConvex 𝕜 (closure s) :=
@@ -290,7 +294,7 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
 
 variable (E 𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
+variable [UniformSpace E] [IsUniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
 theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
@@ -301,3 +305,7 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
   exact ⟨hs, totallyBounded_neg hs⟩
 
 end
+
+lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [AddCommGroup E] [Module ℝ E]
+    [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
+  balanced_absConvexHull.zero_mem (Nonempty.mono subset_absConvexHull Set.Nonempty.of_subtype)

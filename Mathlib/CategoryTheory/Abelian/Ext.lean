@@ -37,8 +37,6 @@ the first argument of `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`
 (which is the second argument of `linearYoneda`).
 -/
 
--- Porting note: the mathlib3 proofs of `map_id` and `map_comp` were timing out,
--- but `aesop_cat` is fast if we leave them out.
 def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
   Functor.flip
     { obj := fun Y => (((linearYoneda R C).obj Y).rightOp.leftDerived n).leftOp

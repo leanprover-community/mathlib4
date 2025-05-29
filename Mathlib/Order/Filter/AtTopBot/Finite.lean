@@ -74,7 +74,6 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
 /-- If `u` is a sequence which is unbounded below,
 then after any point, it reaches a value strictly smaller than all previous values.
 -/
--- @[nolint ge_or_gt] Porting note: restore attribute
 theorem low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β} (hu : Tendsto u atTop atBot) :
     ∀ N, ∃ n ≥ N, ∀ k < n, u n < u k :=
   @high_scores βᵒᵈ _ _ _ hu
@@ -161,14 +160,5 @@ theorem eventually_mul_pow_lt_factorial_sub (a c d : ℕ) :
     with n hn hn0
   rw [mul_pow] at hn
   exact (Nat.mul_le_mul_right _ (Nat.le_self_pow hn0.ne' _)).trans_lt hn
-
-@[deprecated eventually_pow_lt_factorial_sub (since := "2024-09-25")]
-theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n - 1)! :=
-  let ⟨n0, h⟩ := (eventually_pow_lt_factorial_sub c 1).exists_forall_of_atTop
-  ⟨max n0 2, by omega, fun n hn ↦ h n (by omega)⟩
-
-@[deprecated eventually_mul_pow_lt_factorial_sub (since := "2024-09-25")]
-theorem exists_mul_pow_lt_factorial (a : ℕ) (c : ℕ) : ∃ n0, ∀ n ≥ n0, a * c ^ n < (n - 1)! :=
-  (eventually_mul_pow_lt_factorial_sub a c 1).exists_forall_of_atTop
 
 end Nat
