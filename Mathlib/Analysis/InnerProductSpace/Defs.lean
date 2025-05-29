@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 import Mathlib.Algebra.QuadraticDiscriminant
+import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Complex.Basic
 
@@ -507,7 +508,53 @@ section
 
 open scoped Pointwise
 
-def MyCopy (F : Type*) : Type _ := F
+open Bornology
+
+#check Seminorm
+
+lemma glouk [hF : AddCommGroup F] [h'F : Module 𝕜 F] [tF : TopologicalSpace F]
+    [IsTopologicalAddGroup F]
+    (cd : InnerProductSpace.Core 𝕜 F) (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
+    (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
+    tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
+  let F' := id F
+  letI : AddCommGroup F' := hF
+  letI : Module 𝕜 F' := h'F
+  letI : NormedAddCommGroup F' := cd.toNormedAddCommGroup
+  letI : InnerProductSpace 𝕜 F' := .ofCore cd
+  let e : F ≃ₗ[𝕜] F' := LinearEquiv.refl 𝕜 F
+  have : Continuous e := by
+    apply continuous_of_continuousAt_zero
+    intro s hs
+    simp only [map_zero, mem_map] at hs ⊢
+    rcases Metric.mem_nhds_iff.1 hs with ⟨r, r_pos, hr⟩
+    suffices e ⁻¹' (Metric.ball 0 r) ∈ 𝓝 0 by
+      apply Filter.mem_of_superset this (by simpa using hr)
+    have : {v : F | re (cd.inner v v) < r ^ 2} ⊆ e ⁻¹' (Metric.ball 0 r) := by
+      intro v (hv : re (cd.inner v v) < r ^ 2)
+      have : cd.inner v v = inner 𝕜 (e v) (e v) := rfl
+      rw [this, ← InnerProductSpace.norm_sq_eq_re_inner, sq_lt_sq, abs_of_nonneg (norm_nonneg _),
+        abs_of_pos r_pos] at hv
+      simpa using hv
+    apply Filter.mem_of_superset _ this
+    have A : ContinuousAt (fun (v : F) ↦ re (cd.inner v v)) 0 := by fun_prop
+    have B : Set.Iio (r ^ 2) ∈ 𝓝 (re (cd.inner 0 0)) := by
+      simp only [InnerProductSpace.Core.inner_zero_left, map_zero]
+      exact Iio_mem_nhds (by positivity)
+    exact A B
+  have : Continuous e.symm := by
+    apply continuous_of_continuousAt_zero
+    intro s hs
+    simp only [map_zero, mem_map] at hs ⊢
+    obtain ⟨c, hc, c_ne⟩ : ∃ (c : 𝕜), {v | re (cd.inner v v) < 1} ⊆ c • s ∧ c ≠ 0 :=
+      ((h' hs).and (eventually_ne_cobounded 0)).exists
+
+
+
+
+
+
+#exit
 
 lemma glouk [hF : AddCommGroup F] [h'F : Module 𝕜 F] [tF : TopologicalSpace F]
     [IsTopologicalAddGroup F]
