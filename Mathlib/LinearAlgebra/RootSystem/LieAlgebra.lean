@@ -192,7 +192,7 @@ lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
 
 /-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_same`. -/
 private lemma lie_e_f_same_aux [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support) (k : ι)
-    (hki : k ≠ i) (hki' : k ≠ P.reflection_perm i i) :
+    (hki : k ≠ i) (hki' : k ≠ P.reflectionPerm i i) :
     ⁅e i, f i⁆ (Sum.inr k) (Sum.inr k) = h i (Sum.inr k) (Sum.inr k) := by
   classical
   have h_lin_ind : LinearIndependent R ![P.root i, P.root k] := by
@@ -279,7 +279,7 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
         Matrix.fromBlocks_apply₂₂, mul_ite, ite_mul, mul_zero, ← ite_and, if_neg (hx _), add_zero,
         aux, zero_sub, Matrix.diagonal_apply]
       rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
-      simp [pairingIn_reflection_perm_self_left, eq_comm, apply_ite ((- ·) : R → R)]
+      simp [eq_comm, apply_ite ((- ·) : R → R)]
     rcases eq_or_ne k l with rfl | hkl
     · exact lie_e_f_same_aux i k hki hki'
     · simp_all [h, e, f]
