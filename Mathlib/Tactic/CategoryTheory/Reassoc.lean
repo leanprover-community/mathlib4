@@ -97,7 +97,7 @@ initialize registerReassocExpr reassocExprHom
 
 /--
 Reassociates the morphisms in `type?` using the registered handlers,
-using `reassocExprHom` as the default ()
+using `reassocExprHom` as the default.
 If `type?` is not given, it is assumed to be the type of `pf`.
 -/
 def reassocExpr (pf : Expr) (type? : Option Expr) : MetaM Expr := do
