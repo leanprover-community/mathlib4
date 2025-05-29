@@ -24,7 +24,7 @@ import Mathlib.Tactic.StacksAttribute
 
 -/
 
-open Topology
+open Topology TopologicalSpace
 
 variable (X) {Y} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
@@ -148,30 +148,31 @@ instance (priority := 100) [Finite X] [JacobsonSpace X] : DiscreteTopology X :=
 instance (priority := 100) [T1Space X] : JacobsonSpace X :=
   ⟨by simp [closedPoints_eq_univ, closure_eq_iff_isClosed]⟩
 
-open TopologicalSpace in
-lemma jacobsonSpace_iff_of_iSup_eq_top {ι : Type*} {U : ι → Opens X} (hU : iSup U = ⊤) :
-    JacobsonSpace X ↔ ∀ i, JacobsonSpace (U i) := by
+lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Opens X}
+    (hU : IsOpenCover U) : JacobsonSpace X ↔ ∀ i, JacobsonSpace (U i) := by
   refine ⟨fun H i ↦ .of_isOpenEmbedding (U i).2.isOpenEmbedding_subtypeVal, fun H ↦ ?_⟩
   rw [jacobsonSpace_iff_locallyClosed]
   intros Z hZ hZ'
-  have : (⋃ i, (U i : Set X)) = Set.univ := by rw [← Opens.coe_iSup]; injection hU
-  have : (⋃ i, Z ∩ U i) = Z := by rw [← Set.inter_iUnion, this, Set.inter_univ]
-  rw [← this, Set.nonempty_iUnion] at hZ
+  rw [← hU.iUnion_inter Z, Set.nonempty_iUnion] at hZ
   obtain ⟨i, x, hx, hx'⟩ := hZ
-  obtain ⟨y, hy, hy'⟩ := (jacobsonSpace_iff_locallyClosed.mp (H i)) (Subtype.val ⁻¹' Z)
-    ⟨⟨x, hx'⟩, hx⟩ (hZ'.preimage continuous_subtype_val)
-  refine ⟨y, hy, (isClosed_iff_coe_preimage_of_iSup_eq_top hU _).mpr fun j ↦ ?_⟩
+  obtain ⟨y, hy, hy'⟩ := (jacobsonSpace_iff_locallyClosed.mp (H i)) _ ⟨⟨x, hx'⟩, hx⟩
+    (hZ'.preimage continuous_subtype_val)
+  refine ⟨y, hy, hU.isClosed_iff_coe_preimage.mpr fun j ↦ ?_⟩
   by_cases h : (y : X) ∈ U j
   · convert_to IsClosed {(⟨y, h⟩ : U j)}
-    · ext z; exact @Subtype.coe_inj _ _ z ⟨y, h⟩
+    · ext; simp [← Subtype.coe_inj]
     apply isClosed_singleton_of_isLocallyClosed_singleton
     convert (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
       (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
       continuous_subtype_val
-    rw [Set.image_singleton]
-    ext z
-    exact (@Subtype.coe_inj _ _ z ⟨y, h⟩).symm
+    ext
+    simp [← Subtype.coe_inj]
   · convert isClosed_empty
-    rw [Set.eq_empty_iff_forall_not_mem]
+    rw [Set.eq_empty_iff_forall_notMem]
     intro z (hz : z.1 = y.1)
     exact h (hz ▸ z.2)
+
+@[deprecated IsOpenCover.jacobsonSpace_iff (since := "2025-02-10")]
+lemma jacobsonSpace_iff_of_iSup_eq_top {ι : Type*} {U : ι → Opens X} (hU : iSup U = ⊤) :
+    JacobsonSpace X ↔ ∀ i, JacobsonSpace (U i) :=
+  (IsOpenCover.mk hU).jacobsonSpace_iff

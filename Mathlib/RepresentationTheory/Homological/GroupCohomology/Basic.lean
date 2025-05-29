@@ -31,19 +31,19 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
-`Mathlib.RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for
+`Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean`, which gives simpler expressions for
 `H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
 
 ## Main definitions
 
 * `groupCohomology.inhomogeneousCochains A`: a complex whose objects are
-$\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
+  $\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
 * `groupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above complex and the
-complex $\mathrm{Hom}(P, A),$ where `P` is the bar resolution of `k` as a trivial resolution.
+  complex $\mathrm{Hom}(P, A),$ where `P` is the bar resolution of `k` as a trivial resolution.
 * `groupCohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of
-`inhomogeneousCochains A`.
+  `inhomogeneousCochains A`.
 * `groupCohomologyIsoExt A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
-(where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
+  (where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
 
 ## Implementation notes
 
@@ -56,14 +56,14 @@ possible scalar action diamonds.
 ## TODO
 
 * API for cohomology in low degree: $\mathrm{H}^0, \mathrm{H}^1$ and $\mathrm{H}^2.$ For example,
-the inflation-restriction exact sequence.
+  the inflation-restriction exact sequence.
 * The long exact sequence in cohomology attached to a short exact sequence of representations.
 * Upgrading `groupCohomologyIsoExt` to an isomorphism of derived functors.
 * Profinite cohomology.
 
 Longer term:
 * The Hochschild-Serre spectral sequence (this is perhaps a good toy example for the theory of
-spectral sequences in general).
+  spectral sequences in general).
 -/
 
 
@@ -95,10 +95,10 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) : ((Fin n → G) → A) →ₗ[k] (Fin 
 variable [Group G] (A : Rep k G) (n : ℕ)
 
 theorem d_eq :
-    ModuleCat.ofHom (d A n) =
-      (freeLiftLEquiv (Fin n → G) A).toModuleIso.inv ≫
+    d A n =
+      ((freeLiftLEquiv (Fin n → G) A).toModuleIso.inv ≫
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
-          (freeLiftLEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
+          (freeLiftLEquiv (Fin (n + 1) → G) A).toModuleIso.hom).hom := by
   ext f g
   have h := barComplex.d_single (k := k) _ g
   simp_all [d_apply]

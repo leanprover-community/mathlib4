@@ -24,7 +24,3 @@ theorem IsCompact.exterior_iff : IsCompact (exterior s) ↔ IsCompact s := by
     (isOpen_iUnion fun i ↦ isOpen_iUnion fun _ ↦ hUo i).exterior_subset]
 
 protected alias ⟨IsCompact.of_exterior, IsCompact.exterior⟩ := IsCompact.exterior_iff
-
-@[deprecated IsCompact.exterior (since := "2024-09-18")]
-lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) :=
-  hs.isCompact.exterior

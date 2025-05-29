@@ -3,6 +3,7 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.IntegralDomain
@@ -86,7 +87,7 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   classical
   let s := (sf.bind fun α' => sg.map fun β' => -(α' - α) / (β' - β)).toFinset
   let s' := s.preimage ϕ fun x _ y _ h => ϕ.injective h
-  obtain ⟨c, hc⟩ := Infinite.exists_not_mem_finset s'
+  obtain ⟨c, hc⟩ := Infinite.exists_notMem_finset s'
   simp_rw [s', s, Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map]
     at hc
   push_neg at hc
@@ -132,7 +133,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
         mul_sub, coeff_C, mul_div_cancel_left₀ β (mt leadingCoeff_eq_zero.mp h_ne_zero)]
     rw [finale]
     exact Subtype.mem (-p.coeff 0 / p.coeff 1)
-  have h_sep : h.Separable := separable_gcd_right _ (Algebra.IsSeparable.isSeparable F β).map
+  have h_sep : h.Separable := separable_gcd_right _ (.map (Algebra.IsSeparable.isSeparable F β))
   have h_root : h.eval β = 0 := by
     apply eval_gcd_eq_zero
     · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map, ← aeval_def, ←
@@ -209,10 +210,10 @@ theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
     have base : P ⊥ := ⟨0, adjoin_zero⟩
     have ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F) := by
       intro K β hK
-      cases' hK with α hK
+      obtain ⟨α, hK⟩ := hK
       rw [← hK, adjoin_simple_adjoin_simple]
       haveI : Infinite F := isEmpty_fintype.mp F_inf
-      cases' primitive_element_inf_aux F α β with γ hγ
+      obtain ⟨γ, hγ⟩ := primitive_element_inf_aux F α β
       exact ⟨γ, hγ.symm⟩
     exact induction_on_adjoin P base ih ⊤
   · exact exists_primitive_element_of_finite_bot F E
