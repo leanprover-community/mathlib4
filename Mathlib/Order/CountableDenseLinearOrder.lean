@@ -82,16 +82,16 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
     then if hyS : y ∈ S
       then simpa only [hxS, hyS, ↓reduceDIte, OrderEmbedding.lt_iff_lt, Subtype.mk_lt_mk]
       else
-        obtain rfl := Finset.eq_of_mem_insert_of_not_mem hy hyS
+        obtain rfl := Finset.eq_of_mem_insert_of_notMem hy hyS
         simp only [hxS, hyS, ↓reduceDIte]
         exact hb _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
     else
-      obtain rfl := Finset.eq_of_mem_insert_of_not_mem hx hxS
+      obtain rfl := Finset.eq_of_mem_insert_of_notMem hx hxS
       if hyS : y ∈ S
       then
         simp only [hxS, hyS, ↓reduceDIte]
         exact hb' _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
-      else simp only [Finset.eq_of_mem_insert_of_not_mem hy hyS, lt_self_iff_false] at hxy
+      else simp only [Finset.eq_of_mem_insert_of_notMem hy hyS, lt_self_iff_false] at hxy
   · ext x
     simp only [Finset.coe_sort_coe, OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
       Function.comp_apply, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
@@ -109,7 +109,7 @@ def PartialIso : Type _ :=
 
 namespace PartialIso
 
-instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.not_mem_empty _ h).elim⟩⟩
+instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.notMem_empty _ h).elim⟩⟩
 
 instance : Preorder (PartialIso α β) := Subtype.preorder _
 

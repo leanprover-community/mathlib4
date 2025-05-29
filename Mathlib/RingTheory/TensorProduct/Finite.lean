@@ -122,7 +122,7 @@ lemma Module.exists_isPrincipal_quotient_of_finite  :
   have hs₂ : BddAbove s := ⟨n, fun x hx ↦ (hns x hx).le⟩
   have hs := Nat.sSup_mem hs₁ hs₂
   refine ⟨_, hs, ⟨⟨Submodule.mkQ _ (f ⟨_, hns _ hs⟩), ?_⟩⟩⟩
-  have := not_not.mp (not_mem_of_csSup_lt (Order.lt_succ _) hs₂)
+  have := not_not.mp (notMem_of_csSup_lt (Order.lt_succ _) hs₂)
   rw [← Set.image_singleton, ← Submodule.map_span,
     ← (Submodule.comap_injective_of_surjective (Submodule.mkQ_surjective _)).eq_iff,
     Submodule.comap_map_eq, Submodule.ker_mkQ, Submodule.comap_top, ← this, ← Submodule.span_union,
