@@ -3,9 +3,6 @@ Copyright (c) 2023 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.Associator
 
@@ -380,36 +377,3 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
         TensorProduct.map_map_comp_assoc_eq]
 
 end Finsupp
-
-namespace TensorProduct
-open Coalgebra
-
-variable {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
-  [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
-
-/-- See `Mathlib.RingTheory.Coalgebra.TensorProduct` for the `Coalgebra` instance. -/
-instance instCoalgebraStruct : CoalgebraStruct R (A ⊗[R] B) where
-  comul := TensorProduct.tensorTensorTensorComm R A A B B ∘ₗ TensorProduct.map comul comul
-  counit := LinearMap.mul' R R ∘ₗ TensorProduct.map counit counit
-
-lemma comul_def :
-    Coalgebra.comul (R := R) (A := A ⊗[R] B) =
-    tensorTensorTensorComm R A A B B ∘ₗ map comul comul :=
-  rfl
-
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
-
-@[simp] lemma comul_tmul (a : A) (b : B) :
-    comul (R := R) (a ⊗ₜ[R] b) =
-      tensorTensorTensorComm _ _ _ _ _ (comul (R := R) a ⊗ₜ[R] comul (R := R) b) := rfl
-
-lemma counit_def :
-    Coalgebra.counit (R := R) (A := A ⊗[R] B) = LinearMap.mul' R R ∘ₗ map counit counit :=
-  rfl
-
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
-
-@[simp] lemma counit_tmul (a : A) (b : B) :
-    counit (R := R) (a ⊗ₜ[R] b) = counit a * counit b := rfl
-
-end TensorProduct
