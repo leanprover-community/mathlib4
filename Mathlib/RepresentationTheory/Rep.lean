@@ -356,6 +356,7 @@ theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
   simp
 
 end Linearization
+
 end
 
 section MonoidalClosed
