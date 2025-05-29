@@ -171,21 +171,22 @@ theorem sin_pi_z_ne_zero {z : ℂ} (hz : z ∈ ℂ_ℤ) : Complex.sin (π * z) �
 
 theorem tendsto_logDeriv_euler_sin_div (x : ℂ) (hx : x ∈ ℂ_ℤ) :
     Tendsto (fun n : ℕ =>
-      logDeriv (fun z => ∏ j ∈ Finset.range n, sinTerm z j) x)
+      logDeriv (fun z => ∏ j ∈ Finset.range n, (1 + sinTerm z j)) x)
         atTop (𝓝 <| logDeriv (fun t => (Complex.sin (π * t) / (π * t))) x) := by
   apply logDeriv_tendsto
-      (fun n : ℕ => fun z => ∏ j in Finset.range n, sinTerm z j) (s := ℂ_ℤ)
+      (fun n : ℕ => fun z => ∏ j in Finset.range n, (1 + sinTerm z j)) (s := ℂ_ℤ)
         _ (by apply isOpen_compl_range_intCast) ⟨x, hx⟩
   · rw [tendstoLocallyUniformlyOn_iff_forall_isCompact (by apply isOpen_compl_range_intCast)]
     · intro K hK hK2
       have hZ := IsCompact.image (isCompact_iff_isCompact_univ.mp hK2) (continuous_inclusion hK)
-      have := tendstoUniformlyOn_compact_euler_sin_prod ((Set.inclusion hK)'' ⊤) hZ
+      sorry
+/-       have := tendstoUniformlyOn_compact_euler_sin_prod ((Set.inclusion hK)'' ⊤) hZ
       rw [Metric.tendstoUniformlyOn_iff] at *
       simp only [Set.coe_setOf, Set.mem_setOf_eq, Set.image_univ, Set.range_inclusion, gt_iff_lt,
         Set.top_eq_univ, Subtype.forall, not_exists, eventually_atTop, ge_iff_le] at *
       intro ε hε
       obtain ⟨N, hN⟩ := this ε hε
-      refine ⟨N, fun n hn y hy => hN n hn y (by simpa using hK hy) (by aesop)⟩
+      refine ⟨N, fun n hn y hy => hN n hn y (by simpa using hK hy) (by aesop)⟩ -/
   · simp only [not_exists, eventually_atTop, ge_iff_le]
     refine ⟨1, fun b _ => by simpa using (by simp only [sinTerm]; fun_prop)⟩
   · simp only [Set.mem_setOf_eq, ne_eq, div_eq_zero_iff, mul_eq_zero, ofReal_eq_zero, not_or]
@@ -210,7 +211,7 @@ theorem logDeriv_sin_div (z : ℂ) (hz : z ∈ ℂ_ℤ) :
 noncomputable def cotTerm (x : ℂ) (n : ℕ) : ℂ := 1 / (x - (n + 1)) + 1 / (x + (n + 1))
 
 theorem logDeriv_sinTerm_eq_cotTerm (x : ℂ) (hx: x ∈ ℂ_ℤ) (i : ℕ) :
-    logDeriv (fun (z : ℂ) ↦ sinTerm z i) x = cotTerm x i := by
+    logDeriv (fun (z : ℂ) ↦ 1 + sinTerm z i) x = cotTerm x i := by
   simp only [sinTerm, logDeriv_apply, differentiableAt_const, deriv_const_add', deriv_div_const,
     deriv.neg', differentiableAt_id', deriv_pow'', Nat.cast_ofNat, Nat.add_one_sub_one, pow_one,
     deriv_id'', mul_one, cotTerm, one_div]
@@ -242,8 +243,8 @@ theorem logDeriv_sinTerm_eq_cotTerm (x : ℂ) (hx: x ∈ ℂ_ℤ) (i : ℕ) :
   ring
 
 lemma logDeriv_of_prod {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℕ) :
-    logDeriv (fun (z : ℂ) => ∏ j in Finset.range n, sinTerm z j) x =
-    ∑ j in Finset.range n, cotTerm x j := by
+    logDeriv (fun (z : ℂ) => ∏ j ∈ Finset.range n, (1 + sinTerm z j)) x =
+    ∑ j ∈ Finset.range n, cotTerm x j := by
   rw [logDeriv_prod]
   · congr
     ext i
@@ -292,11 +293,10 @@ theorem Summable_cotTerm {z : ℂ} (hz : z ∈ ℂ_ℤ) : Summable fun n : ℕ =
   have HT := abs_norm_sub_norm_le ((z / (b + B + 1))^2) 1
   have H2 : 2⁻¹ ≤ ‖(z /(b + B + 1))^2 - 1‖ := by
     apply le_trans _ HT
-    simp only [Complex.norm_eq_abs, one_div, mul_inv_rev, inv_inv, div_pow, norm_div, norm_pow,
+    simp only [ one_div, mul_inv_rev, inv_inv, div_pow, norm_div, norm_pow,
       norm_one] at *
     convert (hB2 (b + B + 1) (by omega))
     norm_cast
-    exact abs_natCast (b + B + 1)
   have : z^2 - (((b + B) : ℕ) + 1)^2 = ((z / ((b + B) + 1))^2 - 1) * ((b + B) + 1)^2 := by
       have H3 : ((b : ℂ) + (B : ℂ) + 1)^2 ≠ 0 := by
         norm_cast
@@ -307,10 +307,10 @@ theorem Summable_cotTerm {z : ℂ} (hz : z ∈ ℂ_ℤ) : Summable fun n : ℕ =
     · norm_cast
   · rw [this, norm_mul]
     apply mul_pos (by linarith)
-    simp only [norm_pow, Complex.norm_eq_abs]
+    simp only [norm_pow]
     apply pow_pos
-    rw [AbsoluteValue.pos_iff Complex.abs]
     norm_cast
+    omega
   · simp only [inv_pos, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
     apply pow_pos
     norm_cast
