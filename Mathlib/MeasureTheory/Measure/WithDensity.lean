@@ -319,7 +319,7 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
       rw [ha this]
     · rw [ae_restrict_iff' A.compl]
       filter_upwards [hf'_ae] with a ha ha_null
-      have ha_null : f' a = 0 := Function.nmem_support.mp ha_null
+      have ha_null : f' a = 0 := Function.notMem_support.mp ha_null
       rw [ha_null] at ha ⊢
       rw [ha]
       simp only [ENNReal.coe_zero, zero_mul]

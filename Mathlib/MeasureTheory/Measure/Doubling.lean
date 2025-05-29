@@ -65,18 +65,18 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
   let C := doublingConstant μ
   have hμ :
     ∀ n : ℕ, ∀ᶠ ε in 𝓝[>] 0, ∀ x,
-      μ (closedBall x ((2 : ℝ) ^ n * ε)) ≤ ↑(C ^ n) * μ (closedBall x ε) := by
-    intro n
-    induction' n with n ih
-    · simp
-    replace ih := eventually_nhdsGT_zero_mul_left (two_pos : 0 < (2 : ℝ)) ih
-    refine (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => ?_
-    calc
-      μ (closedBall x ((2 : ℝ) ^ (n + 1) * ε)) = μ (closedBall x ((2 : ℝ) ^ n * (2 * ε))) := by
-        rw [pow_succ, mul_assoc]
-      _ ≤ ↑(C ^ n) * μ (closedBall x (2 * ε)) := hε.1 x
-      _ ≤ ↑(C ^ n) * (C * μ (closedBall x ε)) := by gcongr; exact hε.2 x
-      _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ, ENNReal.coe_mul]
+      μ (closedBall x ((2 : ℝ) ^ n * ε)) ≤ ↑(C ^ n) * μ (closedBall x ε) := fun n ↦ by
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      replace ih := eventually_nhdsGT_zero_mul_left (two_pos : 0 < (2 : ℝ)) ih
+      refine (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => ?_
+      calc
+        μ (closedBall x ((2 : ℝ) ^ (n + 1) * ε)) = μ (closedBall x ((2 : ℝ) ^ n * (2 * ε))) := by
+          rw [pow_succ, mul_assoc]
+        _ ≤ ↑(C ^ n) * μ (closedBall x (2 * ε)) := hε.1 x
+        _ ≤ ↑(C ^ n) * (C * μ (closedBall x ε)) := by gcongr; exact hε.2 x
+        _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ, ENNReal.coe_mul]
   rcases lt_or_le K 1 with (hK | hK)
   · refine ⟨1, ?_⟩
     simp only [ENNReal.coe_one, one_mul]
