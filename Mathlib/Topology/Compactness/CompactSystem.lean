@@ -519,6 +519,25 @@ theorem IsCompactSystem.pi (C : (i : ι) → Set (Set (α i))) (hC : ∀ i, IsCo
   rw [biInter_univ_pi_empty_iff x]
   use i
 
+theorem squareCylinders (C : (i : ι) → Set (Set (α i))) (hC : ∀ i, IsCompactSystem (C i)) :
+    IsCompactSystem (squareCylinders C) := by
+  apply IsCompactSystem.mono (pi C hC)
+  intro S hS
+  obtain ⟨s, t, h₀, h₁⟩ := hS
+  simp [squareCylinder] at h₁
+  rw [h₁]
+  simp at h₀
+  classical
+  let t' := fun i ↦ (if i ∈ s then (t i) else univ)
+  use t'
+  refine ⟨?_, ?_⟩
+  · simp
+    sorry
+  · sorry
+
+  sorry
+
+
 end pi
 
 section ClosedCompactSquareCylinders
