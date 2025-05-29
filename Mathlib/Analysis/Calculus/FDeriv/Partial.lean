@@ -98,33 +98,20 @@ theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
       + f (x,z.2) - f (z.1,z.2) - (fx z) (x - z.1) := by
         rw [ContinuousLinearMap.sub_apply]
         simp only [map_sub, sub_add_cancel, Prod.mk.eta, sub_add_sub_cancel]
-    _ = f (x,y) - fy (x,z.2) y - (f (x,z.2) - fy (x,z.2) z.2)
+    _ = f (x,y) - f (x,z.2) - (fy (x,z.2)) (y - z.2)
       + (fy (x,z.2) - fy z) (y - z.2)
       + (f (x,z.2) - f (z.1,z.2) - (fx z) (x - z.1)) := by
-        rw [map_sub, sub_sub, sub_sub_eq_add_sub]
-        rw [add_sub_right_comm _ _ (fy _ _), sub_right_comm]
-        rw [← add_sub_right_comm, sub_sub_eq_add_sub]
-        rw [add_sub_assoc _ (f _) _, ← sub_sub _ _ _]
+        rw [add_sub_assoc _ (f _) _, add_sub_assoc _ ((f _) - _) _]
   -- set up the hypotheses and use the inequality version of the Mean Value Theorem
-  have mvt_diff : ∀ y ∈ ball z.2 (min δy δt), HasFDerivWithinAt
-      (fun y' => f (x,y') - fy (x,z.2) y')
-      (fy (x,y) - fy (x,z.2))
-      (ball z.2 (min δy δt))
-      y := by
+  have mvt_diff : ∀ y ∈ ball z.2 (min δy δt),
+      HasFDerivWithinAt (f ∘ (x,·)) (fy (x,y)) (ball z.2 (min δy δt)) y := by
     intro y' hy'
     rw [mem_ball_iff_norm, lt_min_iff] at hy'
-    rw [show (fun y' => f (x,y') - fy (x,z.2) y')
-        = (fun y' => f (x,y')) - (fun y' => fy (x,z.2) y')
-        by ext; rfl]
-    apply HasFDerivWithinAt.sub
-    · apply (hfy_within (x,y') (mem_prod.mpr ⟨hst.1.1, _⟩)).mono
-      · calc
-          ball z.2 (min δy δt) ⊆ ball z.2 δt := ball_subset_ball (min_le_right _ _)
-          _ ⊆ t := hδt.2
-      · exact mem_of_subset_of_mem hδt.2 (mem_ball_iff_norm.mpr hy'.2)
-    · convert (hasFDerivWithinAt_const (fy (x, z.2)) _ _).clm_apply (hasFDerivWithinAt_id _ _)
-      simp only [ContinuousLinearMap.comp_id, id_eq, left_eq_add]
-      rfl
+    apply (hfy_within (x,y') (mem_prod.mpr ⟨hst.1.1, _⟩)).mono
+    · calc
+        ball z.2 (min δy δt) ⊆ ball z.2 δt := ball_subset_ball (min_le_right _ _)
+        _ ⊆ t := hδt.2
+    · exact mem_of_subset_of_mem hδt.2 (mem_ball_iff_norm.mpr hy'.2)
   have mvt_bound : ∀ y' ∈ ball z.2 (min δy δt), ‖fy (x,y') - fy (x,z.2)‖ ≤ ε + ε := by
     intro y' hy'
     rw [mem_ball_iff_norm, lt_min_iff] at hy'
@@ -143,17 +130,19 @@ theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
       exact mem_of_subset_of_mem hδt.2 (mem_ball_iff_norm.mpr hy'.2)
     · exact mem_prod.mpr ⟨hst.1.1, hz.1.2⟩
   have mvt {a b} (ha : a ∈ _) (hb : b ∈ _) :=
-    Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le -- inequality version of Mean Value Theorem
+    -- inequality version of Mean Value Theorem
+    Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le'
       mvt_diff
       mvt_bound
       (convex_ball z.2 (min δy δt)) ha hb
+  simp only [comp_apply] at mvt
   -- use the calculation above and start applying norms and estimates, term by term
   rw [hf]
   replace hf := calc
-    ‖f (x,y) - fy (x,z.2) y - (f (x,z.2) - fy (x,z.2) z.2)
+    ‖f (x,y) - f (x,z.2) - (fy (x,z.2)) (y - z.2)
       + (fy (x,z.2) - fy z) (y - z.2)
       + (f (x,z.2) - f (z.1,z.2) - (fx z) (x - z.1))‖
-      ≤ ‖f (x,y) - fy (x,z.2) y - (f (x,z.2) - fy (x,z.2) z.2)‖
+      ≤ ‖f (x,y) - f (x,z.2) - (fy (x,z.2)) (y - z.2)‖
       + ‖(fy (x,z.2) - fy z) (y - z.2)‖
       + ‖(f (x,z.2) - f (z.1,z.2) - (fx z) (x - z.1))‖ := norm_add₃_le
     _ ≤ (ε + ε) * ‖y - z.2‖
