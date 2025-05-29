@@ -30,7 +30,7 @@ functions are also called approximations of unity, or approximations of identity
   at `0` and integrable.
 
 Note that there are related results about convolution with respect to peak functions in the file
-`Mathlib.Analysis.Convolution`, such as `MeasureTheory.convolution_tendsto_right` there.
+`Mathlib/Analysis/Convolution.lean`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
@@ -134,7 +134,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
         · exact IntegrableOn.mono_set h''i.norm inter_subset_left
         · exact IntegrableOn.mono_set (I.norm.mul_const _) ut
         rw [norm_smul]
-        apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
+        gcongr
         rw [inter_comm] at hu
         exact (mem_ball_zero_iff.1 (hu x hx)).le
       _ ≤ ∫ x in t, ‖φ i x‖ * δ ∂μ := by
@@ -156,7 +156,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
         · exact IntegrableOn.mono_set h''i.norm diff_subset
         · exact IntegrableOn.mono_set (hmg.norm.const_mul _) diff_subset
         rw [norm_smul]
-        apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
+        gcongr
         simpa only [Pi.zero_apply, dist_zero_left] using (hi x hx).le
       _ ≤ δ * ∫ x in s, ‖g x‖ ∂μ := by
         rw [integral_const_mul]

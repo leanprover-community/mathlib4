@@ -294,6 +294,14 @@ theorem relindex_eq_zero_of_le_left (hHK : H ≤ K) (hKL : K.relindex L = 0) : H
 theorem relindex_eq_zero_of_le_right (hKL : K ≤ L) (hHK : H.relindex K = 0) : H.relindex L = 0 :=
   Finite.card_eq_zero_of_embedding (quotientSubgroupOfEmbeddingOfLE H hKL) hHK
 
+/-- If `J` has finite index in `K`, then the same holds for their comaps under any group hom. -/
+@[to_additive "If `J` has finite index in `K`, then the same holds for their comaps under any
+additive group hom."]
+lemma relindex_comap_ne_zero (f : G →* G') {J K : Subgroup G'} (hJK : J.relindex K ≠ 0) :
+    (J.comap f).relindex (K.comap f) ≠ 0 := by
+  rw [relindex_comap]
+  exact fun h ↦ hJK <| relindex_eq_zero_of_le_right (map_comap_le _ _) h
+
 @[to_additive]
 theorem index_eq_zero_of_relindex_eq_zero (h : H.relindex K = 0) : H.index = 0 :=
   H.relindex_top_right.symm.trans (relindex_eq_zero_of_le_right le_top h)
@@ -326,6 +334,15 @@ theorem relindex_inf_ne_zero (hH : H.relindex L ≠ 0) (hK : K.relindex L ≠ 0)
 theorem index_inf_ne_zero (hH : H.index ≠ 0) (hK : K.index ≠ 0) : (H ⊓ K).index ≠ 0 := by
   rw [← relindex_top_right] at hH hK ⊢
   exact relindex_inf_ne_zero hH hK
+
+/-- If `J` has finite index in `K`, then `J ⊓ L` has finite index in `K ⊓ L` for any `L`. -/
+@[to_additive "If `J` has finite index in `K`, then `J ⊓ L` has finite index in `K ⊓ L` for any
+`L`."]
+lemma relindex_inter_ne_zero {J K : Subgroup G} (hJK : J.relindex K ≠ 0) (L : Subgroup G) :
+    (J ⊓ L).relindex (K ⊓ L) ≠ 0 := by
+  rw [← range_subtype L, inf_comm, ← map_comap_eq, inf_comm, ← map_comap_eq, ← relindex_comap,
+    comap_map_eq_self_of_injective (subtype_injective L)]
+  exact relindex_comap_ne_zero _ hJK
 
 @[to_additive]
 theorem relindex_inf_le : (H ⊓ K).relindex L ≤ H.relindex L * K.relindex L := by
@@ -624,6 +641,27 @@ theorem index_range {f : G →* G} [hf : f.ker.FiniteIndex] :
 end FiniteIndex
 
 end Subgroup
+
+section Pointwise
+
+open Pointwise
+
+variable {G H : Type*} [Group H] (h : H)
+
+-- NB: `to_additive` does not work to generate the second lemma from the first here, because it
+-- would need to additivize `G`, but not `H`.
+
+lemma Subgroup.relindex_pointwise_smul [Group G] [MulDistribMulAction H G] (J K : Subgroup G) :
+    (h • J).relindex (h • K) = J.relindex K := by
+  rw [pointwise_smul_def K, ← relindex_comap, pointwise_smul_def,
+    comap_map_eq_self_of_injective (by intro a b; simp)]
+
+lemma AddSubgroup.relindex_pointwise_smul [AddGroup G] [DistribMulAction H G]
+    (J K : AddSubgroup G) : (h • J).relindex (h • K) = J.relindex K := by
+  rw [pointwise_smul_def K, ← relindex_comap, pointwise_smul_def,
+    comap_map_eq_self_of_injective (by intro a b; simp)]
+
+end Pointwise
 
 namespace MulAction
 
