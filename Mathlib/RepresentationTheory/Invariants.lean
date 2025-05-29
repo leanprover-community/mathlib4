@@ -22,11 +22,11 @@ suppress_compilation
 
 universe u
 
+open MonoidAlgebra
+
 open Representation
 
 namespace GroupAlgebra
-
-open MonoidAlgebra
 
 variable (k G : Type*) [CommSemiring k] [Group G]
 variable [Fintype G] [Invertible (Fintype.card G : k)]
