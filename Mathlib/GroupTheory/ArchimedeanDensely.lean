@@ -88,6 +88,19 @@ instance : Unique (ℤ ≃+o ℤ) where
         simp
       simp [H] at h1
 
+open OrderDual in
+instance : Unique (ℤ ≃+o ℤᵒᵈ) where
+  default := ⟨AddEquiv.neg ℤ |>.trans ⟨toDual, toDual_add⟩, by simp⟩
+  uniq e := OrderAddMonoidIso.toAddEquiv_injective <| by
+    simp only [OrderAddMonoidIso.toAddEquiv_eq_coe]
+    refine Int.addEquiv_eq_refl_or_neg ((e : ℤ ≃+ ℤᵒᵈ).trans ⟨toDual, toDual_add⟩)
+        |>.resolve_left fun H => by
+      replace H : e 1 = 1 := congr($H 1)
+      have h1 : 0 < e 1 := by
+        rw [← map_zero e, map_lt_map_iff]
+        simp
+      simp [H, ← ofDual_lt_ofDual] at h1
+
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
