@@ -110,13 +110,13 @@ instance : Bicategory (CatEnriched C) where
   whiskerRight_id := hcomp_id
   whiskerRight_comp := by simp [hcomp_assoc]
   whisker_assoc := by simp [hcomp_assoc]
-  pentagon {a b c d e} f g h i := by
+  pentagon f g h i := by
     generalize_proofs h1 h2 h3 h4; revert h1 h2 h3 h4
     generalize (f ≫ g) ≫ h = x, (g ≫ h) ≫ i = w
     rintro rfl _ rfl _; simp
-  triangle {a b c} f g := by
+  triangle f g := by
     generalize_proofs h1 h2 h3; revert h1 h2 h3
-    generalize 𝟙 b ≫ g = g, f ≫ 𝟙 b = f
+    generalize 𝟙 _ ≫ g = g, f ≫ 𝟙 _ = f
     rintro _ rfl rfl; simp
 
 /-- As the associator and left and right unitors are defined as eqToIso of category axioms, the
