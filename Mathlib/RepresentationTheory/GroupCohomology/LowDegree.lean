@@ -821,7 +821,6 @@ theorem H1IsoOfIsTrivial_H1π_apply_apply
 @[deprecated (since := "2025-05-09")]
 alias H1LequivOfIsTrivial_comp_H1_π_apply_apply := H1IsoOfIsTrivial_H1π_apply_apply
 
-@[simp]
 theorem H1IsoOfIsTrivial_inv_apply [A.IsTrivial] (f : Additive G →+ A) :
     (H1IsoOfIsTrivial A).inv f = H1π A ((oneCocyclesIsoOfIsTrivial A).inv f) := rfl
 
