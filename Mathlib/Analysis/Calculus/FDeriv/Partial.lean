@@ -40,7 +40,7 @@ theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
   {f : E × F → G} {s : Set E} {t : Set F} (hs : IsOpen s) (ht : IsOpen t)
   {fx : E × F → E →L[ℝ] G} {fy : E × F → F →L[ℝ] G}
-  (_fx_cont : ContinuousOn fx (s ×ˢ t)) (fy_cont : ContinuousOn fy (s ×ˢ t))
+  (fx_cont : ContinuousOn fx (s ×ˢ t)) (fy_cont : ContinuousOn fy (s ×ˢ t))
   (hfx : ∀ z ∈ s ×ˢ t, HasFDerivWithinAt (f ∘ (·, z.2)) (fx z) s z.1)
   (hfy : ∀ z ∈ s ×ˢ t, HasFDerivWithinAt (f ∘ (z.1, ·)) (fy z) t z.2) :
     ∀ z ∈ s ×ˢ t, HasFDerivWithinAt f ((fx z).coprod (fy z)) (s ×ˢ t) z := by
@@ -52,7 +52,7 @@ theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
   -- rewrite derivatives as limits using norms
   simp only [hasFDerivWithinAt_iff_tendsto, tendsto_nhdsWithin_nhds, dist_eq_norm] at ⊢ hfx hfy
   simp only [ContinuousLinearMap.coprod_apply, sub_zero, norm_mul, norm_inv, norm_norm] at ⊢ hfx hfy
-  simp only [Metric.continuousOn_iff, dist_eq_norm, norm_eq_abs] at _fx_cont fy_cont
+  simp only [Metric.continuousOn_iff, dist_eq_norm, norm_eq_abs] at fx_cont fy_cont
   -- get a target ε' and immediately shrink it to ε for convenice
   intro ε' hε'
   rw [show ε' = 2*(ε'/2/2/2) + 2*(ε'/2/2/2) + 2*(ε'/2/2/2) + 2*(ε'/2/2/2) by ring]
