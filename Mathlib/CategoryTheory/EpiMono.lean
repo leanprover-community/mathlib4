@@ -270,38 +270,6 @@ lemma mono_comp_iff_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono g] :
     Mono (f ≫ g) ↔ Mono f := by
   refine ⟨fun h ↦ mono_of_mono _ g, fun h ↦ inferInstance⟩
 
-/-- For any natural transformation `f : F ⟶ G`, if `X` and `Y` are isomorphic, the component of
-`f` at `X` is epic iff the component of `f` at `Y` is. -/
-lemma NatTrans.epi_app_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {f : F ⟶ G} {X Y : C} (α : X ≅ Y) : Epi (f.app X) ↔ Epi (f.app Y) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.hom]; infer_instance
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.inv]; infer_instance
-
-/-- For any natural transformation `f : F ⟶ G`, if `X` and `Y` are isomorphic, the component of
-`f` at `X` is monic iff the component of `f` at `Y` is. -/
-lemma NatTrans.mono_app_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {f : F ⟶ G} {X Y : C} (α : X ≅ Y) : Mono (f.app X) ↔ Mono (f.app Y) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.hom]; infer_instance
-  · rw [(IsIso.eq_inv_comp _).2 <| f.naturality α.inv]; infer_instance
-
-/-- For any natural isomorphism `α : F ≅ G` and morphism `f : X ⟶ Y`, `F.map f` is epic
-iff `G.map f` is. -/
-lemma Functor.epi_map_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {X Y : C} (f : X ⟶ Y) (α : F ≅ G) : Epi (F.map f) ↔ Epi (G.map f) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.hom.naturality f]; infer_instance
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.inv.naturality f]; infer_instance
-
-/-- For any natural isomorphism `α : F ≅ G` and morphism `f : X ⟶ Y`, `F.map f` is monic
-iff `G.map f` is. -/
-lemma Functor.mono_map_congr_iso {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} {X Y : C} (f : X ⟶ Y) (α : F ≅ G) : Mono (F.map f) ↔ Mono (G.map f) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.hom.naturality f]; infer_instance
-  · rw [← (IsIso.inv_comp_eq _).2 <| α.inv.naturality f]; infer_instance
-
 end
 
 end CategoryTheory

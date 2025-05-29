@@ -38,7 +38,7 @@ bundle the adjunctions in a structure `Triple F G H`.
   monic iff all components of `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H` are.
 -/
 
-open CategoryTheory
+open CategoryTheory Functor
 
 variable {C D : Type*} [Category C] [Category D]
 variable (F : C ⥤ D) (G : D ⥤ C) (H : C ⥤ D)
@@ -86,64 +86,38 @@ noncomputable def fullyFaithfulEquiv : F.FullyFaithful ≃ H.FullyFaithful where
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
-/-- For an adjoint triple `F ⊣ G ⊣ H`, the components of the natural transformation
-`H ⋙ G ⟶ F ⋙ G` obtained from the units and counits of the adjunctions are
-under the second adjunction adjunct to the image of the unit of the first adjunction under `H`. -/
-lemma homEquiv_counit_unit_app_eq_H_map_unit {X : C} :
-    t.adj₂.homEquiv _ _ (t.adj₂.counit.app X ≫ t.adj₁.unit.app X) = H.map (t.adj₁.unit.app X) := by
-  simp [Adjunction.homEquiv_apply]
-
-/-- For an adjoint triple `F ⊣ G ⊣ H`, the components of the natural transformation
-`H ⋙ G ⟶ F ⋙ G` obtained from the units and counits of the adjunctions are
-under the first adjunction adjunct to the image of the counit of the second adjunction under `F`. -/
-lemma homEquiv_symm_counit_unit_app_eq_F_map_counit {X : C} :
-    (t.adj₁.homEquiv _ _).symm (t.adj₂.counit.app X ≫ t.adj₁.unit.app X) =
-      F.map (t.adj₂.counit.app X) := by
-  simp [Adjunction.homEquiv_symm_apply]
-
-/-- For an adjoint triple `F ⊣ G ⊣ H`, the components of the natural transformation
-`G ⋙ F ⟶ G ⋙ H` obtained from the units and counits of the adjunctions are
-under the first adjunction adjunct to the image of the unit of the second adjunction under `G`. -/
-lemma homEquiv_counit_unit_app_eq_G_map_unit {X : D} :
-    t.adj₁.homEquiv _ _ (t.adj₁.counit.app X ≫ t.adj₂.unit.app X) = G.map (t.adj₂.unit.app X) := by
-  simp [homEquiv_apply]
-
-/-- For an adjoint triple `F ⊣ G ⊣ H`, the components of the natural transformation
-`G ⋙ F ⟶ G ⋙ H` obtained from the units and counits of the adjunctions are
-under the second adjunction adjunct to the image of the counit of the first adjunction under `G`. -/
-lemma homEquiv_symm_counit_unit_app_eq_G_map_counit {X : D} :
-    (t.adj₂.homEquiv _ _).symm (t.adj₁.counit.app X ≫ t.adj₂.unit.app X) =
-      G.map (t.adj₁.counit.app X) := by
-  simp [homEquiv_symm_apply]
-
 section InnerFullyFaithful
 
 variable [G.Full] [G.Faithful]
 
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the two natural transformations
-`H ⋙ G ⋙ F ⟶ F ⋙ G ⋙ H` obtained by following the whiskered counit and units of either
-adjunction agree. Note that this is also true when `F` and `H` are fully faithful instead of `G`;
-see `whiskered_counit_unit_eq_of_outer` for the corresponding variant of this lemma. -/
-lemma whiskered_counit_unit_eq_of_inner :
-    whiskerLeft H t.adj₁.counit ≫ H.rightUnitor.hom ≫ H.leftUnitor.inv ≫
-    whiskerRight t.adj₁.unit H ≫ (Functor.associator _ _ _).hom =
-    (Functor.associator _ _ _).inv ≫ whiskerRight t.adj₂.counit F ≫ F.leftUnitor.hom ≫
-    F.rightUnitor.inv ≫ whiskerLeft F t.adj₂.unit := by
-  ext X
-  dsimp; simp only [Category.id_comp, Category.comp_id]
-  refine (t.adj₁.counit_naturality <| (whiskerRight t.adj₁.unit H).app X).symm.trans ?_
-  rw [whiskerRight_app, (asIso (t.adj₂.counit.app (G.obj _))).eq_comp_inv.2
-      (t.adj₂.counit_naturality (t.adj₁.unit.app X)),
-    ← (asIso _).comp_hom_eq_id.1 <| t.adj₂.left_triangle_components (F.obj X)]
-  simp
-
 /-- The natural transformation `H ⟶ F` that exists for every adjoint triple `F ⊣ G ⊣ H` where `G`
-is fully faithful, given here as the whiskered unit `H ⟶ F ⋙ G ⋙ H` of the first adjunction
-followed by the inverse of the whiskered unit `F ⟶ F ⋙ G ⋙ H` of the second. -/
-@[simps!]
+is fully faithful, given here as the preimage of `adj₂.counit ≫ adj₁.unit : H ⋙ G ⟶ F ⋙ G`
+under whiskering with `G`. -/
 noncomputable def rightToLeft : H ⟶ F :=
-  H.leftUnitor.inv ≫ whiskerRight t.adj₁.unit H ≫ (Functor.associator _ _ _).hom ≫
-  inv (whiskerLeft F t.adj₂.unit) ≫ F.rightUnitor.hom
+  ((FullyFaithful.ofFullyFaithful G).whiskeringRight _).preimage (t.adj₂.counit ≫ t.adj₁.unit)
+
+/-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, whiskering the natural
+transformation `H ⟶ F` with `G` yields the composition of the counit of the second adjunction with
+the unit of the first adjunction. -/
+@[simp, reassoc]
+lemma whiskerRight_rightToLeft : whiskerRight t.rightToLeft G = t.adj₂.counit ≫ t.adj₁.unit :=
+  ((FullyFaithful.ofFullyFaithful G).whiskeringRight _).map_preimage _
+
+/-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the images of the components of
+the natural transformation `H ⟶ F` under `G` are the components of the composition of counit of the
+second adjunction with the unit of the first adjunction. -/
+@[simp, reassoc]
+lemma map_rightToLeft_app (X : C) :
+    G.map (t.rightToLeft.app X) = t.adj₂.counit.app X ≫ t.adj₁.unit.app X :=
+  congr_app t.whiskerRight_rightToLeft X
+
+/-- The natural transformation `H ⟶ F` for an adjoint triple `F ⊣ G ⊣ H` with `G` fully faithful
+is also equal to the whiskered unit `H ⟶ F ⋙ G ⋙ H` of the first adjunction followed by the
+inverse of the whiskered unit `F ⟶ F ⋙ G ⋙ H` of the second. -/
+lemma rightToLeft_eq_units :
+    t.rightToLeft = H.leftUnitor.inv ≫ whiskerRight t.adj₁.unit H ≫ (Functor.associator _ _ _).hom ≫
+    inv (whiskerLeft F t.adj₂.unit) ≫ F.rightUnitor.hom := by
+  ext X; apply G.map_injective; simp [rightToLeft]
 
 /-- The natural transformation `H ⟶ F` for an adjoint triple `F ⊣ G ⊣ H` with `G` fully faithful
 is also equal to the inverse of the whiskered counit `H ⋙ G ⋙ F ⟶ H` of the first adjunction
@@ -151,69 +125,46 @@ followed by the whiskered counit `H ⋙ G ⋙ F ⟶ F` of the second. -/
 lemma rightToLeft_eq_counits :
     t.rightToLeft = H.rightUnitor.inv ≫ inv (whiskerLeft H t.adj₁.counit) ≫
     (Functor.associator _ _ _).inv ≫ whiskerRight t.adj₂.counit F ≫ F.leftUnitor.hom := by
-  ext X; dsimp [rightToLeft]
-  simp only [NatIso.isIso_inv_app, Functor.comp_obj, Category.comp_id, Category.id_comp]
-  rw [IsIso.comp_inv_eq]
-  simpa using congr_app t.whiskered_counit_unit_eq_of_inner X
+  ext X; apply G.map_injective; simp [rightToLeft]
 
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the components of the natural
-transformation `H ⋙ G ⟶ F ⋙ G` obtained from the units and counits of the adjunctions are simply
-the images of the components of the natural transformation `H ⟶ F` under `G`. -/
-lemma counit_unit_app_eq_map_rightToLeft {X : C} :
-    t.adj₂.counit.app X ≫ t.adj₁.unit.app X = G.map (t.rightToLeft.app X) := by
-  refine ((t.adj₂.homEquiv _ _).symm_apply_apply _).symm.trans ?_
-  rw [homEquiv_counit_unit_app_eq_H_map_unit]; dsimp
-  rw [Adjunction.homEquiv_symm_apply, ← Adjunction.inv_map_unit, ← G.map_inv,
-    ← G.map_comp, rightToLeft_app]
+@[reassoc (attr := simp)]
+lemma adj₁_counit_app_rightToLeft_app (X : C) :
+    t.adj₁.counit.app (H.obj X) ≫ t.rightToLeft.app X = F.map (t.adj₂.counit.app X) :=
+  G.map_injective (by simp [← cancel_epi (t.adj₁.unit.app _)])
 
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the natural transformation
-`H ⋙ G ⟶ F ⋙ G` obtained from the units and counits of the adjunctions is simply the
-natural transformation `H ⟶ F` whiskered with `G`. -/
-lemma counit_unit_eq_whiskerRight : t.adj₂.counit ≫ t.adj₁.unit = whiskerRight t.rightToLeft G := by
-  ext X; exact t.counit_unit_app_eq_map_rightToLeft
+@[reassoc (attr := simp)]
+lemma rightToLeft_app_adj₂_unit_app (X : C) :
+    t.rightToLeft.app X ≫ t.adj₂.unit.app (F.obj X) = H.map (t.adj₁.unit.app X) :=
+  G.map_injective (by simp [← cancel_mono (t.adj₂.counit.app _)])
 
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the natural transformation
 `H ⟶ F` is epic at `X` iff the image of the unit of the adjunction `F ⊣ G` under `H` is. -/
-lemma rightToLeft_app_epi_iff_map_unit_app_epi {X : C} :
+lemma epi_rightToLeft_app_iff_epi_map_adj₁_unit_app {X : C} :
     Epi (t.rightToLeft.app X) ↔ Epi (H.map (t.adj₁.unit.app X)) := by
-  rw [← epi_comp_iff_of_epi (H.map (t.adj₂.counit.app _)) (H.map (t.adj₁.unit.app _)),
-    ← H.map_comp, counit_unit_app_eq_map_rightToLeft]
-  exact Functor.epi_map_congr_iso _ (asIso t.adj₂.unit)
+  rw [← epi_comp_iff_of_isIso _ (t.adj₂.unit.app (F.obj X)), rightToLeft_app_adj₂_unit_app]
+
+/-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the natural transformation
+`H ⟶ F` is epic at `X` iff the image of the counit of the adjunction `G ⊣ H` under `F` is. -/
+lemma epi_rightToLeft_app_iff_epi_map_adj₂_counit_app {X : C} :
+    Epi (t.rightToLeft.app X) ↔ Epi (F.map (t.adj₂.counit.app X)) := by
+  rw [← epi_comp_iff_of_epi (t.adj₁.counit.app (H.obj X)), adj₁_counit_app_rightToLeft_app]
 
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful and `H` preserves epimorphisms
 (which is for example the case if `H` has a further right adjoint), the components of the natural
 transformation `H ⟶ F` are epic iff the respective components of the natural transformation
 `H ⋙ G ⟶ F ⋙ G` obtained from the units and counits of the adjunctions are. -/
-lemma rightToLeft_app_epi_iff_counit_unit_app_epi [H.PreservesEpimorphisms] {X : C} :
+lemma epi_rightToLeft_app_iff [H.PreservesEpimorphisms] {X : C} :
     Epi (t.rightToLeft.app X) ↔ Epi (t.adj₂.counit.app X ≫ t.adj₁.unit.app X) := by
   have _ := t.adj₂.isLeftAdjoint
-  refine ⟨fun h ↦ by rw [counit_unit_app_eq_map_rightToLeft]; exact G.map_epi _, fun h ↦ ?_⟩
-  rw [rightToLeft_app, ← t.homEquiv_counit_unit_app_eq_H_map_unit, t.adj₂.homEquiv_apply]
-  infer_instance
+  refine ⟨fun h ↦ by rw [← map_rightToLeft_app]; exact G.map_epi _, fun h ↦ ?_⟩
+  rw [epi_rightToLeft_app_iff_epi_map_adj₁_unit_app]
+  simpa using epi_comp (t.adj₂.unit.app (H.obj X)) (H.map (t.adj₂.counit.app X ≫ t.adj₁.unit.app X))
 
 end InnerFullyFaithful
 
 section OuterFullyFaithful
 
 variable [F.Full] [F.Faithful] [H.Full] [H.Faithful]
-
-omit [F.Full] [F.Faithful] in
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the two natural
-transformations `H ⋙ G ⋙ F ⟶ F ⋙ G ⋙ H` obtained by following the whiskered counit and unit
-of either adjunction agree. Note that this is also true when `G` is fully faithful instead of `F`
-and `H`; see `whiskered_counit_unit_eq_of_inner` for the corresponding variant of this lemma. -/
-lemma whiskered_counit_unit_eq_of_outer :
-    whiskerLeft H t.adj₁.counit ≫ H.rightUnitor.hom ≫ H.leftUnitor.inv ≫
-    whiskerRight t.adj₁.unit H ≫ (Functor.associator _ _ _).hom =
-    (Functor.associator _ _ _).inv ≫ whiskerRight t.adj₂.counit F ≫ F.leftUnitor.hom ≫
-    F.rightUnitor.inv ≫ whiskerLeft F t.adj₂.unit := by
-  ext X
-  dsimp; simp only [Category.id_comp, Category.comp_id]
-  refine (t.adj₁.counit_naturality <| (whiskerRight t.adj₁.unit H).app X).symm.trans ?_
-  rw [whiskerRight_app, (asIso (t.adj₂.counit.app (G.obj _))).eq_comp_inv.2
-      (t.adj₂.counit_naturality (t.adj₁.unit.app X)),
-    ← (asIso _).comp_hom_eq_id.1 <| t.adj₂.left_triangle_components (F.obj X)]
-  simp
 
 /-- The natural transformation `F ⟶ H` that exists for every adjoint triple `F ⊣ G ⊣ H` where `F`
 and `H` are fully faithful, given here as the whiskered unit `F ⟶ F ⋙ G ⋙ H` of the second
@@ -229,51 +180,73 @@ adjunction followed by the whiskered counit `H ⋙ G ⋙ F ⟶ H` of the first. 
 lemma leftToRight_eq_counits :
     t.leftToRight = F.leftUnitor.inv ≫ inv (whiskerRight t.adj₂.counit F) ≫
     (Functor.associator _ _ _).hom ≫ whiskerLeft H t.adj₁.counit ≫ H.rightUnitor.hom := by
-  ext X; dsimp [leftToRight]
-  simp only [NatIso.isIso_inv_app, Functor.comp_obj, Category.comp_id, Category.id_comp]
-  rw [IsIso.comp_inv_eq]
-  simpa using congr_app t.whiskered_counit_unit_eq_of_outer.symm X
+  ext X; dsimp [leftToRight]; simp only [Category.id_comp, Category.comp_id, NatIso.isIso_inv_app]
+  rw [IsIso.comp_inv_eq, Category.assoc, IsIso.eq_inv_comp]
+  refine Eq.trans ?_ (t.adj₁.counit_naturality <| (whiskerRight t.adj₁.unit H).app X)
+  rw [whiskerRight_app _ H, (asIso (t.adj₂.counit.app (G.obj _))).eq_comp_inv.2
+      (t.adj₂.counit_naturality (t.adj₁.unit.app X)),
+    ← (asIso _).comp_hom_eq_id.1 <| t.adj₂.left_triangle_components (F.obj X)]
+  simp
 
 omit [H.Full] [H.Faithful] in
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the components of the
-natural transformation `G ⋙ F ⟶ G ⋙ H` obtained from the units and counits of the adjunctions
-are simply the components of the natural transformation `F ⟶ H` at `G`. -/
-lemma counit_unit_app_eq_leftToRight_app {X : D} :
-    t.adj₁.counit.app X ≫ t.adj₂.unit.app X = t.leftToRight.app (G.obj X) := by
-  refine ((t.adj₂.homEquiv _ _).apply_symm_apply _).symm.trans ?_
-  rw [homEquiv_symm_counit_unit_app_eq_G_map_counit, homEquiv_apply, leftToRight_app, ← H.map_inv]
+natural transformation `F ⟶ H` at `G` are precisely the components of the natural transformation
+`G ⋙ F ⟶ G ⋙ H` obtained from the units and counits of the adjunctions. -/
+@[simp, reassoc]
+lemma leftToRight_app_obj {X : D} :
+    t.leftToRight.app (G.obj X) = t.adj₁.counit.app X ≫ t.adj₂.unit.app X := by
+  refine (((t.adj₂.homEquiv _ _).apply_symm_apply _).symm.trans ?_).symm
+  rw [homEquiv_symm_apply, map_comp, Category.assoc, left_triangle_components,
+    homEquiv_apply, leftToRight_app, ← H.map_inv]
   congr
-  exact IsIso.eq_inv_of_hom_inv_id (t.adj₁.right_triangle_components _)
+  simpa using IsIso.eq_inv_of_hom_inv_id (t.adj₁.right_triangle_components _)
 
 omit [H.Full] [H.Faithful] in
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the natural
-transformation `G ⋙ F ⟶ G ⋙ H` obtained from the units and counits of the adjunctions is simply
-the natural transformation `F ⟶ H` whiskered from the left with `G`. -/
-lemma counit_unit_eq_whiskerLeft : t.adj₁.counit ≫ t.adj₂.unit = whiskerLeft G t.leftToRight := by
-  ext X; exact t.counit_unit_app_eq_leftToRight_app
+/-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, whiskering `G` with the
+natural transformation `F ⟶ H` yields the composition of the counit of the first adjunction with
+the unit of the second adjunction. -/
+@[simp, reassoc]
+lemma whiskerLeft_leftToRight : whiskerLeft G t.leftToRight = t.adj₁.counit ≫ t.adj₂.unit := by
+  ext X; exact t.leftToRight_app_obj
+
+@[reassoc (attr := simp)]
+lemma map_adj₂_counit_app_leftToRight_app (X : C) :
+    F.map (t.adj₂.counit.app X) ≫ t.leftToRight.app X = t.adj₁.counit.app (H.obj X) := by
+  simp [leftToRight_eq_counits]
+
+omit [H.Full] [H.Faithful] in
+@[reassoc (attr := simp)]
+lemma leftToRight_app_map_adj₁_unit_app (X : C) :
+    t.leftToRight.app X ≫ H.map (t.adj₁.unit.app X) = t.adj₂.unit.app (F.obj X) := by
+  simp
 
 omit [H.Full] [H.Faithful] in
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the natural
 transformation `F ⟶ H` is monic at `X` iff the unit of the adjunction `G ⊣ H` is monic
 at `F.obj X`. -/
-lemma leftToRight_app_mono_iff_unit_app_mono {X : C} :
+lemma mono_leftToRight_app_iff_mono_adj₂_unit_app {X : C} :
     Mono (t.leftToRight.app X) ↔ Mono (t.adj₂.unit.app (F.obj X)) := by
-  rw [← mono_comp_iff_of_isIso (t.adj₁.counit.app _) (t.adj₂.unit.app _),
-    counit_unit_app_eq_leftToRight_app]
-  exact NatTrans.mono_app_congr_iso (asIso (t.adj₁.unit.app X))
+  rw [← leftToRight_app_map_adj₁_unit_app, mono_comp_iff_of_mono]
 
-/-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, all components of the
-natural transformation `F ⟶ H` are monic iff all components of the natural transformation
-`G ⋙ F ⟶ G ⋙ H` obtained from the units and counits of the adjunctions are.
-Note that unlike `rightToLeft_app_epi_iff_counit_unit_app_epi`, this equivalence does not make sense
+/-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the natural
+transformation `F ⟶ H` is monic at `X` iff the counit of the adjunction `F ⊣ G` is monic
+at `H.obj X`. -/
+lemma mono_leftToRight_app_iff_mono_adj₁_counit_app {X : C} :
+    Mono (t.leftToRight.app X) ↔ Mono (t.adj₁.counit.app (H.obj X)) := by
+  rw [← map_adj₂_counit_app_leftToRight_app, mono_comp_iff_of_isIso]
+
+omit [H.Full] [H.Faithful] in
+/-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the natural
+transformation `F ⟶ H` is componentwise monic iff the natural transformation `G ⋙ F ⟶ G ⋙ H`
+obtained from the units and counits of the adjunctions is.
+Note that unlike `epi_rightToLeft_app_iff`, this equivalence does not make sense
 on a per-object basis because the components of the two natural transformations are indexed by
 different categories. -/
-lemma leftToRight_app_mono_iff_counit_unit_app_mono :
+lemma mono_leftToRight_app_iff :
     (∀ X, Mono (t.leftToRight.app X)) ↔ ∀ X, Mono (t.adj₁.counit.app X ≫ t.adj₂.unit.app X) := by
-  refine ⟨fun h X ↦ by rw [counit_unit_app_eq_leftToRight_app]; exact h _, fun h X ↦ ?_⟩
-  specialize h (H.obj X)
-  rw [counit_unit_app_eq_leftToRight_app] at h
-  exact (NatTrans.mono_app_congr_iso (asIso (t.adj₂.counit.app X))).1 h
+  refine ⟨fun h X ↦ by rw [← leftToRight_app_obj]; exact h _, fun h X ↦ ?_⟩
+  rw [mono_leftToRight_app_iff_mono_adj₂_unit_app]
+  simpa using h (F.obj X)
 
 end OuterFullyFaithful
 
