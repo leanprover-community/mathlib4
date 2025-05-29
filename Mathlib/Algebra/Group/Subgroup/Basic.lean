@@ -687,27 +687,13 @@ namespace MonoidHom
 variable {G₁ G₂ G₃ : Type*} [Group G₁] [Group G₂] [Group G₃]
 variable (f : G₁ →* G₂) (f_inv : G₂ → G₁)
 
-/-- Auxiliary definition used to define `liftOfRightInverse` -/
-@[to_additive "Auxiliary definition used to define `liftOfRightInverse`"]
-def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : G₁ →* G₃) (hg : f.ker ≤ g.ker) :
-    G₂ →* G₃ where
-  toFun b := g (f_inv b)
-  map_one' := hg (hf 1)
-  map_mul' := by
-    intro x y
-    rw [← g.map_mul, ← mul_inv_eq_one, ← g.map_inv, ← g.map_mul, ← g.mem_ker]
-    apply hg
-    rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one, f.map_mul]
-    simp only [hf _]
-
-@[to_additive (attr := simp)]
-theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g : G₁ →* G₃)
-    (hg : f.ker ≤ g.ker) (x : G₁) : (f.liftOfRightInverseAux f_inv hf g hg) (f x) = g x := by
-  dsimp [liftOfRightInverseAux]
-  rw [← mul_inv_eq_one, ← g.map_inv, ← g.map_mul, ← g.mem_ker]
-  apply hg
-  rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one]
-  simp only [hf _]
+@[to_additive]
+theorem ker_le_ker_iff (hf : RightInverse f_inv f) {g : G₁ →* G₃} :
+    f.ker ≤ g.ker ↔ ∀ x, g (f_inv (f x)) = g x := by
+  refine ⟨fun h x => ?_, fun h x hx => ?_⟩
+  · simpa [mul_inv_eq_one, hf (f x)] using (@h (f_inv (f x) * x⁻¹))
+  · refine (h x).symm.trans ?_
+    simpa [mem_ker.mp hx] using h 1
 
 /-- `liftOfRightInverse f hf g hg` is the unique group homomorphism `φ`
 
@@ -744,14 +730,15 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
       ```"]
 def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
     { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃) where
-  toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
+  toFun g := g.1.liftOfRightInverse' f_inv hf ((ker_le_ker_iff f f_inv hf).mp g.2)
   invFun φ := ⟨φ.comp f, fun x hx ↦ mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
-    ext
-    simp only [comp_apply, liftOfRightInverseAux_comp_apply, Subtype.coe_mk]
+    unfold liftOfRightInverse'
+    exact Subtype.ext liftLeft_comp
   right_inv φ := by
+    simp
     ext b
-    simp [liftOfRightInverseAux, hf b]
+    simp only [liftOfRightInverse'_apply, coe_comp, Function.comp_apply, hf b]
 
 /-- A non-computable version of `MonoidHom.liftOfRightInverse` for when no computable right
 inverse is available, that uses `Function.surjInv`. -/
@@ -766,7 +753,7 @@ noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
 theorem liftOfRightInverse_comp_apply (hf : Function.RightInverse f_inv f)
     (g : { g : G₁ →* G₃ // f.ker ≤ g.ker }) (x : G₁) :
     (f.liftOfRightInverse f_inv hf g) (f x) = g.1 x :=
-  f.liftOfRightInverseAux_comp_apply f_inv hf g.1 g.2 x
+  liftLeft_comp_apply x (hg := ((ker_le_ker_iff f f_inv hf).mp g.2)) (hp := hf.surjective)
 
 @[to_additive (attr := simp)]
 theorem liftOfRightInverse_comp (hf : Function.RightInverse f_inv f)
