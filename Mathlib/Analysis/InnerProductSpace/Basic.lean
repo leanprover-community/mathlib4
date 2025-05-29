@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.InnerProductSpace.Defs
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Properties of inner product spaces
@@ -58,6 +57,9 @@ theorem real_inner_comm (x y : F) : ⟪y, x⟫_ℝ = ⟪x, y⟫_ℝ :=
 theorem inner_eq_zero_symm {x y : E} : ⟪x, y⟫ = 0 ↔ ⟪y, x⟫ = 0 := by
   rw [← inner_conj_symm]
   exact star_eq_zero
+
+instance {ι : Sort*} (v : ι → E) : IsSymm ι fun i j => ⟪v i, v j⟫ = 0 where
+  symm _ _ := inner_eq_zero_symm.1
 
 @[simp]
 theorem inner_self_im (x : E) : im ⟪x, x⟫ = 0 := by rw [← @ofReal_inj 𝕜, im_eq_conj_sub]; simp
@@ -534,7 +536,7 @@ theorem norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (x y : E) (h : ⟪x,
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ := by
   rw [@norm_add_mul_self 𝕜, add_right_cancel_iff, add_eq_left, mul_eq_zero]
   apply Or.inr
-  simp only [h, zero_re']
+  simp only [h, zero_re]
 
 /-- Pythagorean theorem, vector inner product form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_real {x y : F} (h : ⟪x, y⟫_ℝ = 0) :
@@ -578,7 +580,7 @@ theorem real_inner_add_sub_eq_zero_iff (x y : F) : ⟪x + y, x - y⟫_ℝ = 0 �
 /-- Given two orthogonal vectors, their sum and difference have equal norms. -/
 theorem norm_sub_eq_norm_add {v w : E} (h : ⟪v, w⟫ = 0) : ‖w - v‖ = ‖w + v‖ := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg _) (norm_nonneg _)]
-  simp only [h, ← @inner_self_eq_norm_mul_norm 𝕜, sub_neg_eq_add, sub_zero, map_sub, zero_re',
+  simp only [h, ← @inner_self_eq_norm_mul_norm 𝕜, sub_neg_eq_add, sub_zero, map_sub, zero_re,
     zero_sub, add_zero, map_add, inner_add_right, inner_sub_left, inner_sub_right, inner_re_symm,
     zero_add]
 
