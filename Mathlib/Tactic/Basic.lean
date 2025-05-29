@@ -160,3 +160,13 @@ elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic =>
 attribute [pp_with_univ] ULift PUnit PEmpty
 
 end Mathlib.Tactic
+
+/-- A mathlib library note: the note's content should be contained in its doc-string. -/
+def LibraryNote := Unit
+
+
+open Lean in
+/-- `library_note2 myNote /-- documentation -/` creates a library note named `myNote`
+in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`. -/
+macro "library_note2 " name:ident ppSpace dc:docComment : command =>
+  `($dc:docComment def $(mkIdent (Name.append `Mathlib.LibraryNote name.getId)) : LibraryNote := ())
