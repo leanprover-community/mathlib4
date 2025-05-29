@@ -27,11 +27,9 @@ def checkTitleLabelsCLI (args : Parsed) : IO UInt32 := do
     -- We do not complain about WIP PRs.
     -- The title should be of the form "abbrev: main title" or "abbrev(scope): main title".
     let titleErrors := validateTitle title
+    numberErrors := numberErrors + titleErrors.size
     for err in titleErrors do
       IO.println err
-      numberErrors := numberErrors + 1
-    -- TODO: can I use this, with some casting?
-    -- numberErrors := numberErrors + titleErrors.size
     -- A feature PR should have a topic label.
     if title.startsWith "feat" && !labels.any
         (fun s ↦ s.startsWith "t-" || ["CI", "IMO"].contains s) then
