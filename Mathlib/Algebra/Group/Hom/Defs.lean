@@ -1019,12 +1019,12 @@ end
 @[to_additive (attr := simps!)
   "Makes an additive inverse from a bijection which preserves addition."]
 def inverse (f : M →ₙ* N) (g : N → M)
-    (h₁ : Function.LeftInverse g f)
-    (h₂ : Function.RightInverse g f) : N →ₙ* M := liftLeft (id M) h₂.surjective g h₁
+    (h₁ : LeftInverse g f)
+    (h₂ : RightInverse g f) : N →ₙ* M := liftLeft (id M) h₂.surjective g h₁
 
 section
 
-variable {f : M →ₙ* N} {g : N → M} {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f}
+variable {f : M →ₙ* N} {g : N → M} {h₁ : LeftInverse g f} {h₂ : RightInverse g f}
 
 @[to_additive (attr := simp)]
 theorem inverse_comp : (f.inverse g h₁ h₂).comp f = id M := ext h₁
@@ -1137,12 +1137,12 @@ end
 @[to_additive (attr := simps!)
   "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
 def inverse (f : M →* N) (g : N → M)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : N →* M :=
+    (h₁ : LeftInverse g f) (h₂ : RightInverse g f) : N →* M :=
   liftLeft (id M) h₂.surjective g h₁
 
 section
 
-variable {f : M →* N} {g : N → M} {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f}
+variable {f : M →* N} {g : N → M} {h₁ : LeftInverse g f} {h₂ : RightInverse g f}
 
 @[to_additive (attr := simp)]
 theorem inverse_comp : (f.inverse g h₁ h₂).comp f = id M := ext h₁
