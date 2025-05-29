@@ -18,7 +18,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 /-!
 # Embedding Dimension
 
-* This file defines the embedding dimension of a commutative noetherian local ring and
+This file defines the embedding dimension of a commutative noetherian local ring and
 proves properties about it.
 
 ## Main results
