@@ -111,8 +111,8 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
     rw [← Nat.cast_one, ← Nat.cast_add, Complex.norm_natCast]
     have hkn : 1 ≤ (k / (n + 1 :) : ℝ) :=
       (one_le_div (by positivity)).mpr <| mod_cast Nat.le_of_succ_le H
-    exact div_le_div_of_nonneg_left (norm_nonneg _)
-      (rpow_pos_of_pos (zero_lt_one.trans_le hkn) _) <| rpow_le_rpow_of_exponent_le hkn hy'
+    gcongr
+    assumption
   · simp [hF₀ _ H]
 
 open Filter in
