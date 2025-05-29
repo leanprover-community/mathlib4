@@ -35,11 +35,12 @@ section PartialFDeriv
   the deriative given by combining `fx` and `fy`.
 -/
 theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f : E × F → G} {s : Set E} {t : Set F} (hs : IsOpen s) (ht : IsOpen t)
-  {fx : E × F → E →L[ℝ] G} {fy : E × F → F →L[ℝ] G}
+  {fx : E × F → E →L[𝕜] G} {fy : E × F → F →L[𝕜] G}
   (fxy_cont : ContinuousOn fx (s ×ˢ t) ∧ ContinuousOn fy (s ×ˢ t)) --TODO: should be disjunction
   (hfx : ∀ z ∈ s ×ˢ t, HasFDerivWithinAt (f ∘ (·, z.2)) (fx z) s z.1)
   (hfy : ∀ z ∈ s ×ˢ t, HasFDerivWithinAt (f ∘ (z.1, ·)) (fy z) t z.2) :
@@ -202,11 +203,12 @@ theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
   version with `u = s ×ˢ t` being a product of two opens.
 -/
 theorem HasFDerivWithinAt.continuousOn_open_of_partial_continuousOn
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f : E × F → G} {u : Set (E × F)} (hu : IsOpen u)
-  {fx : E × F → E →L[ℝ] G} {fy : E × F → F →L[ℝ] G}
+  {fx : E × F → E →L[𝕜] G} {fy : E × F → F →L[𝕜] G}
   (fx_cont : ContinuousOn fx u) (fy_cont : ContinuousOn fy u)
   (hfx : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (·, z.2)) (fx z) ((·,z.2) ⁻¹' u) z.1)
   (hfy : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (z.1, ·)) (fy z) ((z.1,·) ⁻¹' u) z.2) :
