@@ -453,7 +453,7 @@ theorem toOneHom_liftRight : (f.liftRight hp g hg).toOneHom =
 
 end LiftRight
 
-section LiftOfRightInverse'
+section LiftOfRightInverse
 
 variable {p : M →* P} {p_inv : P → M} {hp : RightInverse p_inv p} {f : M →* N}
   {hf : ∀ (x : M), f (p_inv (p x)) = f x} {φ : P →* N}
@@ -487,7 +487,7 @@ theorem liftOfRightInverse_apply_comp : p.liftOfRightInverse p_inv hp (φ.comp p
     (fun x => by simp only [comp_apply, hp (p x)]) = φ := ext fun x => by
   simp only [liftOfRightInverse_apply, comp_apply, hp x]
 
-end LiftOfRightInverse'
+end LiftOfRightInverse
 
 section LiftOfLeftInverse
 
@@ -511,11 +511,11 @@ theorem liftRight_liftOfLeftInverse :
     p.liftOfLeftInverse p_inv hp f hf := rfl
 
 @[to_additive (attr := simp)]
-theorem toMulHom_liftOfRightInverse : (p.liftOfLeftInverse p_inv hp f hf).toMulHom =
+theorem toMulHom_liftOfLeftInverse : (p.liftOfLeftInverse p_inv hp f hf).toMulHom =
     p.toMulHom.liftOfLeftInverse p_inv hp f hf := rfl
 
 @[to_additive (attr := simp)]
-theorem toOneHom_liftOfRightInverse : (p.liftOfLeftInverse p_inv hp f hf).toOneHom =
+theorem toOneHom_liftOfLeftInverse : (p.liftOfLeftInverse p_inv hp f hf).toOneHom =
     p.toOneHom.liftOfLeftInverse p_inv hp f hf := rfl
 
 @[to_additive (attr := simp)]
