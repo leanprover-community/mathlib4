@@ -108,7 +108,7 @@ end Representation
 
 namespace Rep
 
-open CategoryTheory
+open CategoryTheory Representation
 
 namespace Coinvariants
 
@@ -149,8 +149,8 @@ noncomputable def functor : Rep k G ⥤ ModuleCat k where
 variable {k G} in
 @[ext]
 lemma functor_hom_ext {M : ModuleCat k} {f g : (functor k G).obj A ⟶ M}
-    (hfg : f.hom ∘ₗ A.ρ.Coinvariants.mk = g.hom ∘ₗ A.ρ.Coinvariants.mk) :
-    f = g := ModuleCat.hom_ext <| Representation.Coinvariants.hom_ext hfg
+    (hfg : f.hom ∘ₗ Coinvariants.mk A.ρ = g.hom ∘ₗ Coinvariants.mk A.ρ) :
+    f = g := ModuleCat.hom_ext <| Coinvariants.hom_ext hfg
 
 instance : (functor k G).Additive where
   map_add := ModuleCat.hom_ext <| LinearMap.ext fun x => Quotient.inductionOn' x (fun _ => rfl)
@@ -161,10 +161,10 @@ noncomputable def adjunction : functor k G ⊣ trivialFunctor G :=
   Adjunction.mkOfHomEquiv {
     homEquiv X Y := {
       toFun f := {
-        hom := ModuleCat.ofHom (f.hom ∘ₗ X.ρ.Coinvariants.mk)
+        hom := ModuleCat.ofHom (f.hom ∘ₗ Coinvariants.mk X.ρ)
         comm g := by
           ext x
-          exact congr(f.hom $(X.ρ.Coinvariants.mk_eq_iff.2
+          exact congr(f.hom $((Coinvariants.mk_eq_iff X.ρ).2
             (X.ρ.mem_augmentationSubmodule_of_eq g x _ rfl))) }
       invFun f := ModuleCat.ofHom (lift f)
       left_inv _ := by ext; rfl
