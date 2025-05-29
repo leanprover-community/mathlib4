@@ -615,13 +615,16 @@ theorem floor_le_ceil (a : R) : ⌊a⌋ ≤ ⌈a⌉ :=
 theorem floor_lt_ceil_of_lt {a b : R} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
   cast_lt.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
 
-lemma ceil_eq_floor_add_one_iff_not_mem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
+lemma ceil_eq_floor_add_one_iff_notMem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
   refine ⟨fun h ht => ?_, fun h => ?_⟩
   · have := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
     linarith [Int.cast_inj.mp this]
   · apply le_antisymm (Int.ceil_le_floor_add_one _)
     rw [Int.add_one_le_ceil_iff]
     exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
+
+@[deprecated (since := "2025-05-23")]
+alias ceil_eq_floor_add_one_iff_not_mem := ceil_eq_floor_add_one_iff_notMem
 
 theorem fract_eq_zero_or_add_one_sub_ceil (a : R) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : R) := by
   rcases eq_or_ne (fract a) 0 with ha | ha
