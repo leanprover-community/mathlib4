@@ -202,7 +202,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
           return (val, tp)
       let .some (val,tp) ← getValType | return
       /- Find all arguments to `Algebra.Property A B` which are of the form
-        `RingHom.toAlgebra x` or `Algebra.toModule (ringHom.toAlgebra x)`. -/
+        `RingHom.toAlgebra x` or `Algebra.toModule (RingHom.toAlgebra x)`. -/
       let algebra_args ← tp.getAppArgs.mapM <| fun x => liftMetaM do
         let y := (← whnfUntil x ``Algebra.toModule) >>= (·.getAppArgs.back?)
         whnfUntil (y.getD x) ``RingHom.toAlgebra
