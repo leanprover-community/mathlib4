@@ -944,7 +944,7 @@ theorem liftLeft_comp_apply : ∀ x, (f.liftLeft hp g hg) (p x) = f x := hg
 
 @[to_additive]
 theorem eq_liftLeft {g'} (hg' : g'.comp p = f) : g' = f.liftLeft hp g hg := ext <| by
-  simp only [MulHom.ext_iff, coe_comp, Function.comp_apply] at hg'
+  simp only [DFunLike.ext_iff, coe_comp, Function.comp_apply] at hg'
   simp only [hp.forall, hg', liftLeft_apply, hg, implies_true]
 
 @[to_additive (attr := simp)]
@@ -975,12 +975,12 @@ theorem comp_liftRight_apply : ∀ x, p ((f.liftRight hp g hg) x) = f x := hg
 
 @[to_additive]
 theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := ext <| by
-  simp only [MulHom.ext_iff, coe_comp, Function.comp_apply] at hg'
+  simp only [DFunLike.ext_iff, coe_comp, Function.comp_apply] at hg'
   simp only [← hp.eq_iff, hg', liftRight_apply, hg, implies_true]
 
 @[to_additive (attr := simp)]
 theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
-    f.liftRight hp g hg := eq_liftRight (by rw [comp_liftRight])
+    f.liftRight hp g hg := rfl
 
 end
 
@@ -1013,19 +1013,16 @@ variable {f : M →* N} {p : M →* P} {hp : Surjective p} {g hg}
 theorem liftLeft_comp : (f.liftLeft hp g hg).comp p = f := ext fun _ => hg _
 
 @[to_additive]
-theorem liftLeft_comp_apply {f : M →* N} {p : M →* P} {hp : Surjective p} {g hg} :
-    ∀ x, (f.liftLeft hp g hg) (p x) = f x := hg
+theorem liftLeft_comp_apply : ∀ x, (f.liftLeft hp g hg) (p x) = f x := hg
 
 @[to_additive]
-theorem eq_liftLeft {f : M →* N} {p : M →* P} {hp : Surjective p} {g hg g'}
-    (hg' : g'.comp p = f) : g' = f.liftLeft hp g hg := ext <| by
-  simp only [MonoidHom.ext_iff, coe_comp, Function.comp_apply] at hg'
+theorem eq_liftLeft {g'} (hg' : g'.comp p = f) : g' = f.liftLeft hp g hg := ext <| by
+  simp only [DFunLike.ext_iff, coe_comp, Function.comp_apply] at hg'
   simp only [hp.forall, hg', liftLeft_apply, hg, implies_true]
 
 @[to_additive (attr := simp)]
-theorem liftLeft_liftLeft {f : M →* N} {p : M →* P} {hp : Surjective p} {g hg} :
-    f.liftLeft hp (f.liftLeft hp g hg) liftLeft_comp_apply = f.liftLeft hp g hg :=
-  eq_liftLeft (by rw [liftLeft_comp])
+theorem liftLeft_liftLeft : f.liftLeft hp (f.liftLeft hp g hg) liftLeft_comp_apply =
+    f.liftLeft hp g hg := eq_liftLeft (by rw [liftLeft_comp])
 
 @[to_additive (attr := simp)]
 theorem toMulHom_liftLeft : (f.liftLeft hp g hg).toMulHom =
@@ -1056,12 +1053,12 @@ theorem comp_liftRight_apply : ∀ x, p ((f.liftRight hp g hg) x) = f x := hg
 
 @[to_additive]
 theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := ext <| by
-  simp only [MonoidHom.ext_iff, coe_comp, Function.comp_apply] at hg'
+  simp only [DFunLike.ext_iff, coe_comp, Function.comp_apply] at hg'
   simp only [← hp.eq_iff, hg', liftRight_apply, hg, implies_true]
 
 @[to_additive (attr := simp)]
 theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
-    f.liftRight hp g hg := eq_liftRight (by rw [comp_liftRight])
+    f.liftRight hp g hg := rfl
 
 @[to_additive (attr := simp)]
 theorem toMulHom_liftRight : (f.liftRight hp g hg).toMulHom =
