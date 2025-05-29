@@ -10,6 +10,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -268,6 +269,17 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
 lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
   rw [sqrt_eq_iff a _, mul_zero, eq_comm]
 
+/-- Note that the hypothesis `0 ≤ a` is necessary because the continuous functional calculi over
+`ℝ≥0` (for the left-hand side) and `ℝ` (for the right-hand side) use different predicates (i.e.,
+`(0 ≤ ·)` versus `IsSelfAdjoint`). Consequently, if `a` is selfadjoint but not nonnegative, then
+the left-hand side is zero, but the right-hand side is (provably equal to) `CFC.sqrt a⁺`. -/
+lemma sqrt_eq_real_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) :
+    CFC.sqrt a = cfcₙ Real.sqrt a := by
+  suffices cfcₙ (fun x : ℝ ↦ √x * √x) a = cfcₙ (fun x : ℝ ↦ x) a by
+    rwa [cfcₙ_mul .., cfcₙ_id' ..,
+      ← sqrt_eq_iff _ (hb := cfcₙ_nonneg (fun x _ ↦ Real.sqrt_nonneg x))] at this
+  exact cfcₙ_congr fun x hx ↦ Real.mul_self_sqrt <| quasispectrum_nonneg_of_nonneg a ha x hx
+
 section prod
 
 variable {B : Type*} [PartialOrder B] [NonUnitalRing B] [TopologicalSpace B] [StarRing B]
@@ -387,7 +399,7 @@ lemma rpow_neg_mul_rpow {a : A} (x : ℝ) (ha : 0 ∉ spectrum ℝ≥0 a)
 lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
     a ^ (-1 : ℝ) = (↑a⁻¹ : A) := by
   refine a.inv_eq_of_mul_eq_one_left ?_ |>.symm
-  simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_not_mem ℝ≥0 a.isUnit)
+  simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_notMem ℝ≥0 a.isUnit)
 
 lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
     [StarOrderedRing A] [NormedAlgebra ℝ A] [NonnegSpectrumClass ℝ A]
@@ -404,7 +416,7 @@ lemma rpow_neg [IsTopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
     simp [NNReal.rpow_neg, NNReal.inv_rpow]
   refine NNReal.continuousOn_rpow_const (.inl ?_)
   rintro ⟨z, hz, hz'⟩
-  exact spectrum.zero_not_mem ℝ≥0 a.isUnit <| inv_eq_zero.mp hz' ▸ hz
+  exact spectrum.zero_notMem ℝ≥0 a.isUnit <| inv_eq_zero.mp hz' ▸ hz
 
 lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
     (a : A) ^ (n : ℝ) = (↑(a ^ n) : A) := by
@@ -433,9 +445,11 @@ lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (h
   rw [Prod.le_def]
   constructor <;> simp [ha', hb']
 
-lemma rpow_eq_rpow_rpod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (hb : 0 ∉ spectrum ℝ≥0 b)
+lemma rpow_eq_rpow_prod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (hb : 0 ∉ spectrum ℝ≥0 b)
     (ha' : 0 ≤ a := by cfc_tac) (hb' : 0 ≤ b := by cfc_tac) :
     rpow (a, b) x = (a, b) ^ x := rpow_map_prod ha hb
+
+@[deprecated (since := "2025-05-13")] alias rpow_eq_rpow_rpod := rpow_eq_rpow_prod
 
 end prod
 

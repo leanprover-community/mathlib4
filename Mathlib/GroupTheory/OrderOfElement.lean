@@ -1204,6 +1204,6 @@ section single
 lemma orderOf_piMulSingle {ι : Type*} [DecidableEq ι] {M : ι → Type*} [(i : ι) → Monoid (M i)]
     (i : ι) (g : M i) :
     orderOf (Pi.mulSingle i g) = orderOf g :=
-  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective M i) g
+  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective i) g
 
 end single

@@ -18,8 +18,8 @@ on intervals.
 
 ## Notes
 
-This file is very similar to the n-ary section of `Mathlib.Data.Set.Basic`, to
-`Mathlib.Data.Finset.NAry` and to `Mathlib.Order.Filter.NAry`. Please keep them in sync.
+This file is very similar to the n-ary section of `Mathlib/Data/Set/Basic.lean`, to
+`Mathlib/Data/Finset/NAry.lean` and to `Mathlib/Order/Filter/NAry.lean`. Please keep them in sync.
 
 We do not define `Option.map₃` as its only purpose so far would be to prove properties of
 `Option.map₂` and casing already fulfills this task.

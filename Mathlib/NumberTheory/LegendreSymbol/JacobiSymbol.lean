@@ -487,7 +487,7 @@ section FastJacobi
 
 /-!
 ### Fast computation of the Jacobi symbol
-We follow the implementation as in `Mathlib.Tactic.NormNum.LegendreSymbol`.
+We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -/
 
 
