@@ -5388,6 +5388,7 @@ import Mathlib.RingTheory.RingHom.Flat
 import Mathlib.RingTheory.RingHom.Injective
 import Mathlib.RingTheory.RingHom.Integral
 import Mathlib.RingTheory.RingHom.Locally
+import Mathlib.RingTheory.RingHom.Smooth
 import Mathlib.RingTheory.RingHom.StandardSmooth
 import Mathlib.RingTheory.RingHom.Surjective
 import Mathlib.RingTheory.RingHom.Unramified
@@ -5972,6 +5973,7 @@ import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.Star.Real
+import Mathlib.Topology.Algebra.Star.Unitary
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Algebra.TopologicallyNilpotent
