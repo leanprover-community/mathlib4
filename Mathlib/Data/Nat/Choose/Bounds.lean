@@ -3,7 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Rodriguez
 -/
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Nat.Choose.Basic
 
@@ -22,7 +23,7 @@ bounds `n^r/r^r ≤ n.choose r ≤ e^r n^r/r^r` in the future.
 
 open Nat
 
-variable {α : Type*} [LinearOrderedSemifield α]
+variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
 
 namespace Nat
 
@@ -53,9 +54,10 @@ theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.cho
 theorem choose_succ_le_two_pow (n k : ℕ) : (n + 1).choose k ≤ 2 ^ n := by
   by_cases lt : n + 1 < k
   · simp [choose_eq_zero_of_lt lt]
-  · cases' n with n
-    · cases k <;> simp_all
-    · cases' k with k
+  · cases n with
+    | zero => cases k <;> simp_all
+    | succ n =>
+      rcases k with - | k
       · rw [choose_zero_right]
         exact Nat.one_le_two_pow
       · rw [choose_succ_succ', two_pow_succ]

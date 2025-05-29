@@ -63,8 +63,9 @@ class IsAlgClosed : Prop where
 
 See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
 -/
-theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : K →+* k}
-    (p : K[X]) : p.Splits f := by convert IsAlgClosed.splits (p.map f); simp [splits_map_iff]
+theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [CommRing K]
+    {f : K →+* k} (p : K[X]) : p.Splits f := by
+  convert IsAlgClosed.splits (p.map f); simp [splits_map_iff]
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed.
 
@@ -107,18 +108,18 @@ theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
     simp at hz
 
-theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Ring R] [IsAlgClosed k] (f : R →+* k)
+theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Semiring R] [IsAlgClosed k] (f : R →+* k)
     (hf : Function.Injective f) (p : R[X]) (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
   let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective hf])
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
 
-theorem exists_eval₂_eq_zero {R : Type*} [Field R] [IsAlgClosed k] (f : R →+* k) (p : R[X])
+theorem exists_eval₂_eq_zero {R : Type*} [DivisionRing R] [IsAlgClosed k] (f : R →+* k) (p : R[X])
     (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
   exists_eval₂_eq_zero_of_injective f f.injective p hp
 
 variable (k)
 
-theorem exists_aeval_eq_zero_of_injective {R : Type*} [CommRing R] [IsAlgClosed k] [Algebra R k]
+theorem exists_aeval_eq_zero_of_injective {R : Type*} [CommSemiring R] [IsAlgClosed k] [Algebra R k]
     (hinj : Function.Injective (algebraMap R k)) (p : R[X]) (hp : p.degree ≠ 0) :
     ∃ x : k, aeval x p = 0 :=
   exists_eval₂_eq_zero_of_injective (algebraMap R k) hinj p hp
@@ -166,10 +167,10 @@ theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducibl
     p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)
 
-theorem algebraMap_surjective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
+theorem algebraMap_bijective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
     [hk : IsAlgClosed k] [Algebra k K] [Algebra.IsIntegral k K] :
-    Function.Surjective (algebraMap k K) := by
-  refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
+    Function.Bijective (algebraMap k K) := by
+  refine ⟨RingHom.injective _, fun x ↦ ⟨-(minpoly k x).coeff 0, ?_⟩⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (Algebra.IsIntegral.isIntegral x)
   have h : (minpoly k x).degree = 1 := degree_eq_one_of_irreducible k (minpoly.irreducible
     (Algebra.IsIntegral.isIntegral x))
@@ -178,11 +179,16 @@ theorem algebraMap_surjective_of_isIntegral {k K : Type*} [Field k] [Ring K] [Is
     add_eq_zero_iff_eq_neg] at this
   exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
-theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K] [IsDomain K]
-    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
+theorem ringHom_bijective_of_isIntegral {k K : Type*} [Field k] [CommRing K] [IsDomain K]
+    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Bijective f :=
   let _ : Algebra k K := f.toAlgebra
   have : Algebra.IsIntegral k K := ⟨hf⟩
-  algebraMap_surjective_of_isIntegral
+  algebraMap_bijective_of_isIntegral
+
+@[deprecated "ringHom_bijective_of_isIntegral" (since := "2025-04-16")]
+theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K] [IsDomain K]
+    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
+  (ringHom_bijective_of_isIntegral f hf).surjective
 
 end IsAlgClosed
 
@@ -194,7 +200,7 @@ This statement is 09GR (4) ⟹ (1)."]
 theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Field k] [Field K]
     [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) [Algebra.IsAlgebraic k L] :
     L = ⊥ := bot_unique fun x hx ↦ by
-  obtain ⟨y, hy⟩ := IsAlgClosed.algebraMap_surjective_of_isIntegral (k := k) (⟨x, hx⟩ : L)
+  obtain ⟨y, hy⟩ := (IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)).2 (⟨x, hx⟩ : L)
   exact ⟨y, congr_arg (algebraMap L K) hy⟩
 
 lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field K] [IsAlgClosed K]
@@ -214,9 +220,6 @@ class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K
     [NoZeroSMulDivisors R K] : Prop where
   isAlgClosed : IsAlgClosed K
   isAlgebraic : Algebra.IsAlgebraic R K
-
-@[deprecated (since := "2024-08-31")] alias IsAlgClosure.alg_closed := IsAlgClosure.isAlgClosed
-@[deprecated (since := "2024-08-31")] alias IsAlgClosure.algebraic := IsAlgClosure.isAlgebraic
 
 attribute [instance] IsAlgClosure.isAlgebraic
 
@@ -320,7 +323,9 @@ instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K :=
   have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp [n]) one_ne_zero
   apply Nat.not_succ_le_self (Fintype.card K)
   have hroot : n.succ = Fintype.card (f.rootSet K) := by
-    erw [card_rootSet_eq_natDegree hfsep (IsAlgClosed.splits_domain _), natDegree_X_pow_sub_C]
+    rw [card_rootSet_eq_natDegree hfsep (IsAlgClosed.splits_domain _)]
+    unfold f
+    rw [← C_1, natDegree_X_pow_sub_C]
   rw [hroot]
   exact Fintype.card_le_of_injective _ Subtype.coe_injective
 

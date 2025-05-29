@@ -3,10 +3,8 @@ Copyright (c) 2022 Rémy Degenne, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
 import Mathlib.MeasureTheory.Function.Egorov
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
+import Mathlib.MeasureTheory.Function.LpSpace.Complete
 
 /-!
 # Convergence in measure
@@ -138,7 +136,7 @@ theorem tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable [IsFiniteMeasure μ
   suffices { x : α | ε ≤ dist (f n x) (g x) } ⊆ t from (measure_mono this).trans ht
   rw [← Set.compl_subset_compl]
   intro x hx
-  rw [Set.mem_compl_iff, Set.nmem_setOf_iff, dist_comm, not_le]
+  rw [Set.mem_compl_iff, Set.notMem_setOf_iff, dist_comm, not_le]
   exact hN n hn x hx
 
 /-- Convergence a.e. implies convergence in measure in a finite measure space. -/
@@ -271,10 +269,10 @@ theorem exists_seq_tendstoInMeasure_atTop_iff [IsFiniteMeasure μ]
   obtain ⟨ε, hε, h2⟩ := h1
   obtain ⟨δ, ns, hδ, hns, h3⟩ : ∃ (δ : ℝ≥0) (ns : ℕ → ℕ), 0 < δ ∧ StrictMono ns ∧
       ∀ n, δ ≤ (μ {x | ε ≤ dist (f (ns n) x) (g x)}).toNNReal := by
-    obtain ⟨s, hs, h4⟩ := not_tendsto_iff_exists_frequently_nmem.1 h2
+    obtain ⟨s, hs, h4⟩ := not_tendsto_iff_exists_frequently_notMem.1 h2
     obtain ⟨δ, hδ, h5⟩ := NNReal.nhds_zero_basis.mem_iff.1 hs
     obtain ⟨ns, hns, h6⟩ := extraction_of_frequently_atTop h4
-    exact ⟨δ, ns, hδ, hns, fun n ↦ Set.not_mem_Iio.1 (Set.not_mem_subset h5 (h6 n))⟩
+    exact ⟨δ, ns, hδ, hns, fun n ↦ Set.notMem_Iio.1 (Set.notMem_subset h5 (h6 n))⟩
   refine ⟨ns, hns, fun ns' _ ↦ ?_⟩
   by_contra h6
   have h7 := tendstoInMeasure_iff_tendsto_toNNReal.mp <|
@@ -388,7 +386,7 @@ theorem tendstoInMeasure_of_tendsto_Lp [hp : Fact (1 ≤ p)] {f : ι → Lp E p 
     {l : Filter ι} (hfg : Tendsto f l (𝓝 g)) : TendstoInMeasure μ (fun n => f n) l g :=
   tendstoInMeasure_of_tendsto_eLpNorm (zero_lt_one.trans_le hp.elim).ne.symm
     (fun _ => Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _)
-    ((Lp.tendsto_Lp_iff_tendsto_ℒp' _ _).mp hfg)
+    ((Lp.tendsto_Lp_iff_tendsto_eLpNorm' _ _).mp hfg)
 
 end TendstoInMeasureOf
 

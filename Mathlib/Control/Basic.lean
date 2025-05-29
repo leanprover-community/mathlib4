@@ -71,17 +71,17 @@ theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
 
 @[functor_norm]
 theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 @[functor_norm]
 theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 -- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
 theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
     (f >=> g) >=> h = f >=> g >=> h := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 variable {β' γ' : Type v}
 variable {m' : Type v → Type w} [Monad m']
@@ -197,7 +197,7 @@ end Sum
 
 /-- A `CommApplicative` functor `m` is a (lawful) applicative functor which behaves identically on
 `α × β` and `β × α`, so computations can occur in either order. -/
-class CommApplicative (m : Type u → Type v) [Applicative m] extends LawfulApplicative m : Prop where
+class CommApplicative (m : Type u → Type v) [Applicative m] : Prop extends LawfulApplicative m where
   /-- Computations performed first on `a : α` and then on `b : β` are equal to those performed in
   the reverse order. -/
   commutative_prod : ∀ {α β} (a : m α) (b : m β),

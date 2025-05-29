@@ -3,11 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
 import Mathlib.Order.Shrink
+import Mathlib.Order.Interval.Set.SuccOrder
 import Mathlib.Logic.UnivLE
-
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
@@ -27,13 +28,13 @@ holds for any well ordered type `J` in a certain universe `w`.
 
 -/
 
-universe w w' v u
+universe w w' v v' u u'
 
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 namespace MorphismProperty
 
@@ -88,6 +89,49 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
     replace eq := congr_arg h.F.mapArrow.obj eq
     convert this using 1
 
+/-- If `f` is a transfinite composition of shape `J` of morphisms
+in `W.inverseImage F`, then `F` is a transfinite composition of shape `J`
+of morphisms in `W` provided `F` preserves suitable colimits. -/
+@[simps toTransfiniteCompositionOfShape]
+noncomputable def map {W : MorphismProperty D} {F : C ⥤ D}
+    [PreservesWellOrderContinuousOfShape J F]
+    [PreservesColimitsOfShape J F]
+    (h : (W.inverseImage F).TransfiniteCompositionOfShape J f) :
+    W.TransfiniteCompositionOfShape J (F.map f) where
+  __ := h.toTransfiniteCompositionOfShape.map F
+  map_mem j hj := h.map_mem j hj
+
+/-- A transfinite composition of shape `J` of morphisms in `W` induces a transfinite
+composition of shape `Set.Iic j` (for any `j : J`). -/
+noncomputable def iic (j : J) :
+    W.TransfiniteCompositionOfShape (Set.Iic j) (h.F.map (homOfLE bot_le : ⊥ ⟶ j)) where
+  __ := h.toTransfiniteCompositionOfShape.iic j
+  map_mem i hi := by
+    have := h.map_mem i.1 (by
+      rw [not_isMax_iff] at hi ⊢
+      obtain ⟨i', hi'⟩ := hi
+      exact ⟨j, lt_of_lt_of_le hi' i'.2⟩)
+    rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
+    have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
+      Arrow.mk (homOfLE (Order.le_succ i.1)) :=
+        Arrow.ext rfl (Set.Iic.coe_succ_of_not_isMax hi) rfl
+    replace eq := congr_arg h.F.mapArrow.obj eq
+    convert this using 1
+
+/-- A transfinite composition of shape `J` of morphisms in `W` induces a transfinite
+composition of shape `Set.Ici j` (for any `j : J`). -/
+noncomputable def ici (j : J) :
+    W.TransfiniteCompositionOfShape (Set.Ici j) (h.incl.app j) where
+  __ := h.toTransfiniteCompositionOfShape.ici j
+  map_mem i hi := by
+    have := h.map_mem i.1 (Set.not_isMax_coe _ hi)
+    rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
+    have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
+      Arrow.mk (homOfLE (Order.le_succ i.1)) :=
+        Arrow.ext rfl (coe_succ_of_mem (i.2.trans (Order.le_succ _))) rfl
+    replace eq := congr_arg h.F.mapArrow.obj eq
+    convert this using 1
+
 end
 
 /-- If `F : ComposableArrows C n` and all maps `F.obj i.castSucc ⟶ F.obj i.succ`
@@ -128,6 +172,45 @@ def ofComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g) :
     W.TransfiniteCompositionOfShape (Fin 3) (f ≫ g) :=
   ofComposableArrows W (.mk₂ f g) (fun i ↦ by fin_cases i <;> assumption)
 
+variable {J}
+
+section isomorphisms
+
+variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfShape J f)
+
+instance {j : J} (g : ⊥ ⟶ j) : IsIso (h.F.map g) := by
+  obtain rfl : g = homOfLE bot_le := rfl
+  induction j using SuccOrder.limitRecOn with
+  | isMin j hj =>
+    obtain rfl := hj.eq_bot
+    dsimp
+    infer_instance
+  | succ j hj hj' =>
+    have : IsIso _ := h.map_mem j hj
+    rw [← homOfLE_comp bot_le (Order.le_succ j), h.F.map_comp]
+    infer_instance
+  | isSuccLimit j hj hj' =>
+    letI : OrderBot (Set.Iio j) :=
+      { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
+        bot_le j := bot_le }
+    simpa using Functor.IsEventuallyConstantFrom.isIso_ι_of_isColimit
+      (i₀ := ⊥) (fun i _ ↦ hj' i.1 i.2) (h.F.isColimitOfIsWellOrderContinuous j hj)
+
+instance {j j' : J} (f : j ⟶ j') : IsIso (h.F.map f) :=
+  IsIso.of_isIso_fac_left (h.F.map_comp (homOfLE bot_le) f).symm
+
+instance (j : J) : IsIso (h.incl.app j) :=
+  Functor.IsEventuallyConstantFrom.isIso_ι_of_isColimit'
+    (fun _ _  ↦ inferInstance) h.isColimit j (homOfLE bot_le)
+
+include h in
+/-- A transfinite composition of isomorphisms is an isomorphism. -/
+lemma isIso : IsIso f := by
+  rw [← h.fac]
+  infer_instance
+
+end isomorphisms
+
 end TransfiniteCompositionOfShape
 
 /-- Given `W : MorphismProperty C` and a well-ordered type `J`, this is
@@ -155,6 +238,14 @@ variable {W J} in
 lemma TransfiniteCompositionOfShape.mem {X Y : C} (f : X ⟶ Y)
     (h : W.TransfiniteCompositionOfShape J f) :
     W.transfiniteCompositionsOfShape J f := ⟨h⟩
+
+lemma transfiniteCompositionsOfShape_map_of_preserves (G : C ⥤ D)
+    [PreservesWellOrderContinuousOfShape J G]
+    {X Y : C} (f : X ⟶ Y) {P : MorphismProperty D}
+    [PreservesColimitsOfShape J G]
+    (h : (P.inverseImage G).transfiniteCompositionsOfShape J f) :
+    P.transfiniteCompositionsOfShape J (G.map f) :=
+  h.some.map.mem
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under transfinite compositions
 of shape `J` if for any well-order-continuous functor `F : J ⥤ C` such that
@@ -195,6 +286,11 @@ class IsStableUnderTransfiniteComposition : Prop where
 namespace IsStableUnderTransfiniteComposition
 
 attribute [instance] isStableUnderTransfiniteCompositionOfShape
+
+instance : (isomorphisms C).IsStableUnderTransfiniteComposition where
+  isStableUnderTransfiniteCompositionOfShape J _ _ _ _ := ⟨by
+    rintro _ _ f ⟨hf⟩
+    exact hf.isIso⟩
 
 variable [IsStableUnderTransfiniteComposition.{w'} W]
 
@@ -238,6 +334,37 @@ lemma transfiniteCompositionsOfShape_le_transfiniteCompositions
   intro A B f hf
   rw [transfiniteCompositions_iff]
   exact ⟨_, _, _, _, _, hf⟩
+
+lemma transfiniteCompositions_monotone :
+    Monotone (transfiniteCompositions.{w} (C := C)) := by
+  intro W₁ W₂ h X Y f hf
+  rw [transfiniteCompositions_iff] at hf
+  obtain ⟨J, _, _, _, _, hf⟩ := hf
+  exact transfiniteCompositionsOfShape_le_transfiniteCompositions _ _ _
+    (transfiniteCompositionsOfShape_monotone J h _ hf)
+
+lemma le_transfiniteCompositions :
+    W ≤ transfiniteCompositions.{w} W :=
+  le_trans (fun _ _ _ hf ↦
+    (MorphismProperty.TransfiniteCompositionOfShape.ofOrderIso (.ofMem _ hf)
+      (orderIsoShrink.{w} (Fin 2)).symm).mem)
+    (transfiniteCompositionsOfShape_le_transfiniteCompositions _ _)
+
+lemma transfiniteCompositions_le [IsStableUnderTransfiniteComposition.{w} W] :
+    transfiniteCompositions.{w} W ≤ W := by
+  intro _ _ f hf
+  rw [transfiniteCompositions_iff] at hf
+  obtain ⟨J, _, _, _, _, hf⟩ := hf
+  exact W.transfiniteCompositionsOfShape_le J _ hf
+
+@[simp]
+lemma transfiniteCompositions_le_iff {P Q : MorphismProperty C}
+    [IsStableUnderTransfiniteComposition.{w} Q] :
+    transfiniteCompositions.{w} P ≤ Q ↔ P ≤ Q := by
+  constructor
+  · exact (le_transfiniteCompositions P).trans
+  · intro h
+    exact (transfiniteCompositions_monotone.{w} h).trans Q.transfiniteCompositions_le
 
 end MorphismProperty
 

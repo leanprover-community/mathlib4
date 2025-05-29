@@ -158,7 +158,7 @@ theorem eq_of_uniformity_basis {α : Type*} [UniformSpace α] [T0Space α] {ι :
   (hs.inseparable_iff_uniformity.2 @h).eq
 
 theorem eq_of_forall_symmetric {α : Type*} [UniformSpace α] [T0Space α] {x y : α}
-    (h : ∀ {V}, V ∈ 𝓤 α → SymmetricRel V → (x, y) ∈ V) : x = y :=
+    (h : ∀ {V}, V ∈ 𝓤 α → IsSymmetricRel V → (x, y) ∈ V) : x = y :=
   eq_of_uniformity_basis hasBasis_symmetric (by simpa)
 
 theorem eq_of_clusterPt_uniformity [T0Space α] {x y : α} (h : ClusterPt (x, y) (𝓤 α)) : x = y :=
@@ -167,9 +167,9 @@ theorem eq_of_clusterPt_uniformity [T0Space α] {x y : α} (h : ClusterPt (x, y)
 theorem Filter.Tendsto.inseparable_iff_uniformity {β} {l : Filter β} [NeBot l] {f g : β → α}
     {a b : α} (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) :
     Inseparable a b ↔ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α) := by
-  refine ⟨fun h ↦ (ha.prod_mk_nhds hb).mono_right h.nhds_le_uniformity, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ (ha.prodMk_nhds hb).mono_right h.nhds_le_uniformity, fun h ↦ ?_⟩
   rw [inseparable_iff_clusterPt_uniformity]
-  exact (ClusterPt.of_le_nhds (ha.prod_mk_nhds hb)).mono h
+  exact (ClusterPt.of_le_nhds (ha.prodMk_nhds hb)).mono h
 
 theorem isClosed_of_spaced_out [T0Space α] {V₀ : Set (α × α)} (V₀_in : V₀ ∈ 𝓤 α) {s : Set α}
     (hs : s.Pairwise fun x y => (x, y) ∉ V₀) : IsClosed s := by

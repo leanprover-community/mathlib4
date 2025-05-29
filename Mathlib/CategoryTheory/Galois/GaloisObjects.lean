@@ -40,8 +40,8 @@ noncomputable instance {G : Type v} [Group G] [Finite G] :
   exact Limits.preservesColimitsOfShape_of_equiv (Classical.choice e).toSingleObjEquiv.symm _
 
 /-- A connected object `X` of `C` is Galois if the quotient `X / Aut X` is terminal. -/
-class IsGalois {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X : C)
-    extends IsConnected X : Prop where
+class IsGalois {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X : C) : Prop
+    extends IsConnected X where
   quotientByAutTerminal : Nonempty (IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X)
 
 variable {C : Type u₁} [Category.{u₂, u₁} C]

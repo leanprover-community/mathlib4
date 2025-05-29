@@ -158,7 +158,6 @@ def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
   inv :=
     { hom := fun a => (iso a).inv
       comm := fun n a a' ha' => by
-        dsimp only
         rw [← cancel_mono (iso a).hom, assoc, assoc, Iso.inv_hom_id, comp_id, comm,
           ← whiskerRight_comp_assoc, Iso.inv_hom_id, whiskerRight_id', id_comp] }
 

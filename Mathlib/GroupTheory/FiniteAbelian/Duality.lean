@@ -21,7 +21,7 @@ namespace CommGroup
 open MonoidHom
 
 private
-lemma dvd_exponent {ι G : Type*} [Finite ι] [CommGroup G] {n : ι → ℕ}
+lemma dvd_exponent {ι G : Type*} [Finite ι] [Monoid G] {n : ι → ℕ}
     (e : G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) (i : ι) :
     n i ∣ Monoid.exponent G := by
   classical -- to get `DecidableEq ι`

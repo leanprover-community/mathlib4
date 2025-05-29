@@ -3,9 +3,9 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Equidecompositions
@@ -50,7 +50,7 @@ We take this as our definition as it is easier to work with. It is implemented a
 
 -/
 
-variable {X G : Type*} {A B C: Set X}
+variable {X G : Type*} {A B C : Set X}
 
 open Function Set Pointwise PartialEquiv
 
@@ -93,9 +93,8 @@ def witness (f : Equidecomp X G) : Finset G := f.isDecompOn'.choose
 theorem isDecompOn (f : Equidecomp X G) : IsDecompOn f f.source f.witness :=
   f.isDecompOn'.choose_spec
 
-@[simp]
 theorem apply_mem_target {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
-    f x ∈ f.target := f.toPartialEquiv.map_source h
+    f x ∈ f.target := by simp [h]
 
 theorem toPartialEquiv_injective : Injective <| toPartialEquiv (X := X) (G := G) := by
   intro ⟨_, _, _⟩ _ _
@@ -132,8 +131,6 @@ theorem restr_univ (f : Equidecomp X G) : f.restr univ = f :=
 
 end SMul
 
-open scoped Classical
-
 section Monoid
 
 variable [Monoid G] [MulAction G X]
@@ -148,6 +145,7 @@ def refl : Equidecomp X G where
 
 variable {X} {G}
 
+open scoped Classical in
 theorem IsDecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) :
     IsDecompOn (g ∘ f) (A ∩ f ⁻¹' B) (T * S)  := by
@@ -157,6 +155,7 @@ theorem IsDecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
   use δ * γ, Finset.mul_mem_mul δ_mem γ_mem
   rwa [mul_smul, ← hγ]
 
+open scoped Classical in
 theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) (h : MapsTo f A B) :
     IsDecompOn (g ∘ f) A (T * S)  := by
@@ -167,7 +166,7 @@ theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
 @[simps toPartialEquiv, trans]
 noncomputable def trans (f g : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.trans g.toPartialEquiv
-  isDecompOn' := ⟨g.witness * f.witness, g.isDecompOn.comp' f.isDecompOn⟩
+  isDecompOn' := by classical exact ⟨g.witness * f.witness, g.isDecompOn.comp' f.isDecompOn⟩
 
 end Monoid
 
@@ -175,6 +174,7 @@ section Group
 
 variable [Group G] [MulAction G X]
 
+open scoped Classical in
 theorem IsDecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}
     (hf : IsDecompOn f A S) (h : LeftInvOn g f A) : IsDecompOn g (f '' A) S⁻¹ := by
   rintro _ ⟨a, ha, rfl⟩
@@ -186,20 +186,18 @@ theorem IsDecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}
 @[symm, simps toPartialEquiv]
 noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.symm
-  isDecompOn' := ⟨f.witness⁻¹, by
+  isDecompOn' := by classical exact ⟨f.witness⁻¹, by
     convert f.isDecompOn.of_leftInvOn f.leftInvOn
     rw [image_source_eq_target, symm_source]⟩
 
 theorem map_target {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
     f.symm x ∈ f.source := f.toPartialEquiv.map_target h
 
-@[simp]
 theorem left_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
-    f.toPartialEquiv.symm (f x) = x := f.toPartialEquiv.left_inv h
+    f.toPartialEquiv.symm (f x) = x := by simp [h]
 
-@[simp]
 theorem right_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
-    f (f.toPartialEquiv.symm x) = x := f.toPartialEquiv.right_inv h
+    f (f.toPartialEquiv.symm x) = x := by simp [h]
 
 @[simp]
 theorem symm_symm (f : Equidecomp X G) : f.symm.symm = f := rfl

@@ -31,8 +31,6 @@ We give methods for computing coefficients of the characteristic polynomial.
 
 
 noncomputable section
---  porting note: whenever there was `∏ i : n, X - C (M i i)`, I replaced it with
---  `∏ i : n, (X - C (M i i))`, since otherwise Lean would parse as `(∏ i : n, X) - C (M i i)`
 
 universe u v w z
 
@@ -58,7 +56,7 @@ variable (M)
 theorem charpoly_sub_diagonal_degree_lt :
     (M.charpoly - ∏ i : n, (X - C (M i i))).degree < ↑(Fintype.card n - 1) := by
   rw [charpoly, det_apply', ← insert_erase (mem_univ (Equiv.refl n)),
-    sum_insert (not_mem_erase (Equiv.refl n) univ), add_comm]
+    sum_insert (notMem_erase (Equiv.refl n) univ), add_comm]
   simp only [charmatrix_apply_eq, one_mul, Equiv.Perm.sign_refl, id, Int.cast_one,
     Units.val_one, add_sub_cancel_right, Equiv.coe_refl]
   rw [← mem_degreeLT]
@@ -117,7 +115,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   natDegree_eq_of_degree_eq_some (charpoly_degree_eq_dim M)
 
 theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
-  nontriviality R -- Porting note: was simply `nontriviality`
+  nontriviality R
   by_cases h : Fintype.card n = 0
   · rw [charpoly, det_of_card_zero h]
     apply monic_one
@@ -169,7 +167,6 @@ theorem eval_det (M : Matrix n n R[X]) (r : R) :
   apply congr_arg det
   ext
   symm
-  -- Porting note: `exact` was `convert`
   exact matPolyEquiv_eval _ _ _ _
 
 theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
@@ -179,7 +176,7 @@ theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
 
 lemma eval_det_add_X_smul (A : Matrix n n R[X]) (M : Matrix n n R) :
     (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by
-  simp only [eval_det, map_zero, map_add, eval_add, Algebra.smul_def, _root_.map_mul]
+  simp only [eval_det, map_zero, map_add, eval_add, Algebra.smul_def, map_mul]
   simp only [Algebra.algebraMap_eq_smul_one, matPolyEquiv_smul_one, map_X, X_mul, eval_mul_X,
     mul_zero, add_zero]
 
@@ -244,22 +241,17 @@ end Matrix
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [Field K] (M : Matrix n n K) :
+theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [CommRing K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
-  -- Porting note: `i` and `j` are used later on, but were not mentioned in mathlib3
   ext m i j
   rw [coeff_sub, coeff_C, matPolyEquiv_coeff_apply, RingHom.mapMatrix_apply, Matrix.map_apply,
     AlgHom.coe_toRingHom, DMatrix.sub_apply, coeff_X_pow]
   by_cases hij : i = j
   · rw [hij, charmatrix_apply_eq, map_sub, expand_C, expand_X, coeff_sub, coeff_X_pow, coeff_C]
-                             -- Porting note: the second `Matrix.` was `DMatrix.`
-    split_ifs with mp m0 <;> simp only [Matrix.one_apply_eq, Matrix.zero_apply]
+    split_ifs with mp m0 <;> simp
   · rw [charmatrix_apply_ne _ _ _ hij, map_neg, expand_C, coeff_neg, coeff_C]
-    split_ifs with m0 mp <;>
-      -- Porting note: again, the first `Matrix.` that was `DMatrix.`
-      simp only [hij, zero_sub, Matrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne,
-        not_false_iff]
+    split_ifs with m0 mp <;> simp_all
 
 namespace Matrix
 
@@ -289,8 +281,7 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
   apply coeff_prod_mem_ideal_pow_tsub
   rintro i - (_ | k)
   · rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, smul_apply,
-      smul_eq_mul, coeff_X_mul_zero, coeff_C_zero, zero_sub]
-    apply neg_mem  -- Porting note: was `rw [neg_mem_iff]`, but Lean could not synth `NegMemClass`
+      smul_eq_mul, coeff_X_mul_zero, coeff_C_zero, zero_sub, neg_mem_iff]
     exact h (c i) i
   · rw [add_comm, tsub_self_add, pow_zero, Ideal.one_eq_top]
     exact Submodule.mem_top
@@ -323,11 +314,11 @@ lemma reverse_charpoly (M : Matrix n n R) :
   suffices t_inv ^ Fintype.card n * p = invert q by
     apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
-      _root_.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
+      map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
       ← mul_one (Fintype.card n : ℤ), ← T_pow, map_pow, invert_T, mul_comm]
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
     diagonal_one, invert.map_det]
-  simp [t_inv, map_sub, _root_.map_one, _root_.map_mul, t, map_smul', smul_eq_diagonal_mul]
+  simp [t_inv, map_sub, map_one, map_mul, t, map_smul', smul_eq_diagonal_mul]
 
 
 @[simp] lemma eval_charpolyRev :

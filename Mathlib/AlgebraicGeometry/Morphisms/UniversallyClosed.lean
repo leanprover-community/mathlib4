@@ -95,7 +95,7 @@ instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed 
   apply universally_isLocalAtTarget
   intro X Y f ι U hU H
   simp_rw [topologically, morphismRestrict_base] at H
-  exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H
+  exact hU.isClosedMap_iff_restrictPreimage.mpr H
 
 open Scheme.Pullback _root_.PrimeSpectrum MvPolynomial in
 /-- If `X` is universally closed over a field, then `X` is quasi-compact. -/
@@ -161,5 +161,10 @@ lemma universallyClosed_eq_universallySpecializing :
     exact universally_mono fun X Y f H ↦ ⟨f.isClosedMap.specializingMap, inferInstance⟩
   · rw [universallyClosed_eq]
     exact universally_mono fun X Y f ⟨h₁, h₂⟩ ↦ (isClosedMap_iff_specializingMap _).mpr h₁
+
+instance (priority := low) Surjective.of_universallyClosed_of_isDominant
+    [UniversallyClosed f] [IsDominant f] : Surjective f := by
+  rw [surjective_iff, ← Set.range_eq_univ, ← f.denseRange.closure_range,
+    f.isClosedMap.isClosed_range.closure_eq]
 
 end AlgebraicGeometry

@@ -25,16 +25,16 @@ This file contains basic definitions and results for such Lie algebras.
 
 ## Main declarations
 
- * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
-   Killing form.
- * `LieAlgebra.IsKilling.instSemisimple`: if a finite-dimensional Lie algebra over a field
-   has non-singular Killing form then it is semisimple.
- * `LieAlgebra.IsKilling.instHasTrivialRadical`: if a Lie algebra over a PID
-   has non-singular Killing form then it has trivial radical.
+* `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
+  Killing form.
+* `LieAlgebra.IsKilling.instSemisimple`: if a finite-dimensional Lie algebra over a field
+  has non-singular Killing form then it is semisimple.
+* `LieAlgebra.IsKilling.instHasTrivialRadical`: if a Lie algebra over a PID
+  has non-singular Killing form then it has trivial radical.
 
 ## TODO
 
- * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
+* Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
 
 -/
 
