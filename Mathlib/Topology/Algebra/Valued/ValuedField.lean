@@ -299,7 +299,6 @@ theorem continuous_rangeGroup₀_extension :
       rintro rfl
       exact mul_ne_zero (ne_of_mem_of_not_mem y₀_in zeroV') h H
     rcases this with ⟨z₀, y₀, y₀_in, hz₀, z₀_ne⟩
-    have vz₀_ne : (v z₀ : Γ₀) ≠ 0 := by rwa [Valuation.ne_zero_iff]
     refine ⟨⟨v z₀, v.mem_rangeGroup₀⟩, ?_⟩
     rw [WithZeroTopology.tendsto_of_ne_zero _, eventually_comap]
     · filter_upwards [nhds_right] with x x_in a ha
@@ -416,8 +415,6 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     simp only [extension]
     simp only [Submonoid.coe_subtype, preimage_comp]
     let γ'₀ := rangeGroup₀_extension x
-    have hγ'₀ : γ'₀ ∈ Subtype.val ⁻¹' {γ₀} := by
-      simp [γ'₀, γ₀, extensionValuation, extension]
     suffices rangeGroup₀_extension ⁻¹' {γ'₀} ∈ 𝓝 x by
       apply Filter.sets_of_superset _ this
       apply Set.preimage_mono

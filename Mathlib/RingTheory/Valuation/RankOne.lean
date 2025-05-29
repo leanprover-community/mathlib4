@@ -190,6 +190,8 @@ namespace RankLeOne
 
 variable {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v]
 
+/-- If a valuation has rank at most one and is non trivial,
+then it has rank one -/
 def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
   nontrivial' := by
     by_contra H'
@@ -197,6 +199,8 @@ def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
     obtain ⟨x, hx, hx'⟩ := H
     exact hx' (H' x ((ne_zero_iff v).mpr hx))
 
+/-- If a valuation has rank at most one and is non trivial,
+then it has rank one -/
 def rankOne_of_nontrivial (H : Nontrivial v.rangeGroup₀ˣ) : RankOne v where
   nontrivial' := by
     by_contra H'
