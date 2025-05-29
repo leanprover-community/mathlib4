@@ -832,7 +832,7 @@ def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k 
 end
 
 instance : EnoughProjectives (Rep k G) :=
-  equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.moduleCat_enoughProjectives.{u}
+  equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives.{u}
 
 instance free_projective {G α : Type u} [Group G] :
     Projective (free k G α) :=
@@ -843,7 +843,7 @@ instance free_projective {G α : Type u} [Group G] :
 
 section
 
-variable {G : Type u} [Group G] {n : ℕ}
+variable {G : Type u} [Group G] {n : ℕ} [DecidableEq (Fin n → G)]
 
 instance diagonal_succ_projective :
     Projective (diagonal k G (n + 1)) :=
