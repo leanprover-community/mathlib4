@@ -194,7 +194,7 @@ equipped with the representation induced by the diagonal action of `G`. -/
 def xIso [Monoid G] : (standardComplex k G).X n ≅ Rep.ofMulAction k G Gⁿ⁺¹ :=
   Iso.refl _
 
-instance x_projective [Group G] :
+instance x_projective [Group G] [DecidableEq (Fin n → G)] :
     Projective ((standardComplex k G).X n) :=
   inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
@@ -297,10 +297,11 @@ end standardComplex
 
 open HomologicalComplex.Hom standardComplex
 
-variable [Group G]
+variable [Group G] [DecidableEq G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
 def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
+  complex := standardComplex k G
   π := εToSingle₀ k G
 
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
