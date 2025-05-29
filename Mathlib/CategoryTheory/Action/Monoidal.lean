@@ -212,12 +212,12 @@ The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
 noncomputable abbrev leftRegularTensorIso (X : Action (Type u) G) :
     leftRegular G ⊗ X ≅ leftRegular G ⊗ trivial G X.V :=
   mkIso (Equiv.toIso {
-    toFun := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
-    invFun := fun g => ⟨g.1, X.ρ g.1 g.2⟩
-    left_inv := fun _ => Prod.ext rfl <| by simp
-    right_inv := fun _ => Prod.ext rfl <| by simp }) <| fun _ => by
+    toFun g := ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
+    invFun g := ⟨g.1, X.ρ g.1 g.2⟩
+    left_inv _ := Prod.ext rfl <| by simp
+    right_inv _ := Prod.ext rfl <| by simp }) <| fun _ => by
       ext _
-      simp only [instMonoidalCategory_tensorObj_V, tensor_ρ', types_comp_apply, tensor_apply,
+      simp only [instMonoidalCategory_tensorObj_V, tensor_ρ, types_comp_apply, tensor_apply,
         ofMulAction_apply]
       simp
 
@@ -248,7 +248,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom {n : ℕ} (f : Fin (n + 1) → G) :
     induction' x using Fin.cases
     <;> simp_all only [instMonoidalCategory_tensorObj_V, diagonalSuccIsoTensorTrivial,
         Iso.trans_hom, tensorIso_hom, Iso.refl_hom, id_tensorHom, comp_hom,
-        instMonoidalCategory_whiskerLeft_hom, mkIso_hom_hom, tensor_ρ', tensor_apply,
+        instMonoidalCategory_whiskerLeft_hom, mkIso_hom_hom, tensor_ρ, tensor_apply,
         ofMulAction_apply, types_comp_apply, whiskerLeft_apply]
     <;> simp [tensorObj_def, Fin.tail, Fin.castSucc_fin_succ, ofMulAction_V]
 
@@ -263,7 +263,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G)
   · funext x
     induction' x using Fin.cases
     <;> simp_all only [diagonalSuccIsoTensorTrivial, instMonoidalCategory_tensorObj_V,
-        Iso.trans_inv, comp_hom, mkIso_inv_hom, tensor_ρ', tensor_apply, ofMulAction_apply]
+        Iso.trans_inv, comp_hom, mkIso_inv_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
     <;> simp_all [tensorObj_def, mul_assoc, Fin.partialProd_succ', ofMulAction_V]
 
 end
