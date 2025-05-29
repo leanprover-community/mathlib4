@@ -3,6 +3,7 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Ultra.Basic
 
@@ -70,10 +71,9 @@ instance IsUltraUniformity.pi {ι : Type*} {X : ι → Type*} [U : Π i, Uniform
     simpa [Pi.uniformSpace_eq _] using this
   exact .iInf fun i ↦ .comap (h i) (Function.eval i)
 
-lemma IsUltraUniformity.bot : @IsUltraUniformity X (⊥ : UniformSpace X) := by
-  letI : UniformSpace X := ⊥
+instance IsUltraUniformity.bot [UniformSpace X] [DiscreteUniformity X] : IsUltraUniformity X := by
   have := Filter.hasBasis_principal (idRel (α := X))
-  rw [← bot_uniformity] at this
+  rw [← DiscreteUniformity.eq_principal_idRel] at this
   apply mk_of_hasBasis this
   · simpa using isSymmetricRel_idRel
   · simpa using isTransitiveRel_idRel
