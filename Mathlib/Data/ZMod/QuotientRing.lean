@@ -14,9 +14,9 @@ This file relates `ZMod n` to the quotient ring `ℤ ⧸ Ideal.span {(n : ℤ)}`
 
 ## Main definitions
 
- - `ZMod.quotient_span_nat_equiv_zmod` and `ZMod.quotientSpanEquivZMod `:
-   `ZMod n` is the ring quotient of `ℤ` by `n ℤ : Ideal.span {n}`
-   (where `n : ℕ` and `n : ℤ` respectively)
+- `ZMod.quotient_span_nat_equiv_zmod` and `ZMod.quotientSpanEquivZMod `:
+  `ZMod n` is the ring quotient of `ℤ` by `n ℤ : Ideal.span {n}`
+  (where `n : ℕ` and `n : ℤ` respectively)
 
 ## Tags
 
@@ -46,7 +46,7 @@ open Ideal
 
 open scoped Function in -- required for scoped `on` notation
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
-`Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
+`Mathlib/Data/ZMod/Basic.lean` for versions involving only two numbers. -/
 def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
     (coprime : Pairwise (Nat.Coprime on a)) : ZMod (∏ i, a i) ≃+* Π i, ZMod (a i) :=
   have : Pairwise fun i j => IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=

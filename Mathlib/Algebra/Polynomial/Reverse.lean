@@ -126,7 +126,7 @@ theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c 
   rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]
   split_ifs with h
   · rw [h, revAt_invol, coeff_X_pow_self]
-  · rw [not_mem_support_iff.mp]
+  · rw [notMem_support_iff.mp]
     intro a
     rw [← one_mul (X ^ n), ← C_1] at a
     apply h
@@ -282,7 +282,7 @@ theorem reverse_mul {f g : R[X]} (fg : f.leadingCoeff * g.leadingCoeff ≠ 0) :
   rw [natDegree_mul' fg, reflect_mul f g rfl.le rfl.le]
 
 @[simp]
-theorem reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X]) :
+theorem reverse_mul_of_domain {R : Type*} [Semiring R] [NoZeroDivisors R] (f g : R[X]) :
     reverse (f * g) = reverse f * reverse g := by
   by_cases f0 : f = 0
   · simp only [f0, zero_mul, reverse_zero]
@@ -290,7 +290,7 @@ theorem reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X
   · rw [g0, mul_zero, reverse_zero, mul_zero]
   simp [reverse_mul, *]
 
-theorem trailingCoeff_mul {R : Type*} [Ring R] [NoZeroDivisors R] (p q : R[X]) :
+theorem trailingCoeff_mul {R : Type*} [Semiring R] [NoZeroDivisors R] (p q : R[X]) :
     (p * q).trailingCoeff = p.trailingCoeff * q.trailingCoeff := by
   rw [← reverse_leadingCoeff, reverse_mul_of_domain, leadingCoeff_mul, reverse_leadingCoeff,
     reverse_leadingCoeff]

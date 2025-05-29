@@ -78,12 +78,12 @@ variable (n)
 /-- If `B` is an `n`-th cyclotomic extension of `A`, then `zeta n A B` is a primitive root of
 unity in `B`. -/
 noncomputable def zeta : B :=
-  (exists_prim_root A <| Set.mem_singleton n : ∃ r : B, IsPrimitiveRoot r n).choose
+  (exists_isPrimitiveRoot A B <| Set.mem_singleton n : ∃ r : B, IsPrimitiveRoot r n).choose
 
 /-- `zeta n A B` is a primitive `n`-th root of unity. -/
 @[simp]
 theorem zeta_spec : IsPrimitiveRoot (zeta n A B) n :=
-  Classical.choose_spec (exists_prim_root A (Set.mem_singleton n) : ∃ r : B, IsPrimitiveRoot r n)
+  (exists_isPrimitiveRoot A B (Set.mem_singleton n) : ∃ r : B, IsPrimitiveRoot r n).choose_spec
 
 theorem aeval_zeta [IsDomain B] [NeZero ((n : ℕ) : B)] :
     aeval (zeta n A B) (cyclotomic n A) = 0 := by
@@ -300,7 +300,8 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
     exact (totient_even <| h1.lt_of_ne hn.symm).neg_one_pow
 
 /-- If `K` is linearly ordered, the norm of a primitive root is `1` if `n` is odd. -/
-theorem norm_eq_one_of_linearly_ordered {K : Type*} [LinearOrderedField K] [Algebra K L]
+theorem norm_eq_one_of_linearly_ordered {K : Type*}
+    [Field K] [LinearOrder K] [IsStrictOrderedRing K] [Algebra K L]
     (hodd : Odd (n : ℕ)) : norm K ζ = 1 := by
   have hz := congr_arg (norm K) ((IsPrimitiveRoot.iff_def _ n).1 hζ).1
   rw [← (algebraMap K L).map_one, Algebra.norm_algebraMap, one_pow, map_pow, ← one_pow ↑n] at hz

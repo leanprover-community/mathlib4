@@ -261,9 +261,8 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
-#adaptation_note /-- nightly-2025-03-25
-Requires more heartbeats after nightly-2025-03-25. -/
 set_option maxHeartbeats 400000 in
+-- Requires more heartbeats after nightly-2025-03-25.
 open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
@@ -791,8 +790,8 @@ A constructible set of complexity at most `M` in `Spec R[X₁, ..., Xₘ]` gets 
 `f : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ]` to a constructible set of complexity `O_{M, m, n}(1)` in
 `Spec R[Y₁, ..., Yₙ]`.
 
-See the module doc of `Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity` for an explanation of
-this notion of complexity. -/
+See the module doc of `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean` for an
+explanation of this notion of complexity. -/
 lemma chevalley_mvPolynomial_mvPolynomial
     {m n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] MvPolynomial (Fin m) R)
     (k : ℕ) (d : Multiset (Fin m))

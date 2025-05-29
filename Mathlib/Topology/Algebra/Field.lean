@@ -100,22 +100,26 @@ def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜 where
     exact mul_div_cancel_left₀ x h
   right_inv y := by simp [mul_div_cancel₀ _ h]
 
-theorem affineHomeomorph_image_Icc {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜]
+theorem affineHomeomorph_image_Icc {𝕜 : Type*}
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne' '' Set.Icc c d = Set.Icc (a * c + b) (a * d + b) := by
   simp [h]
 
-theorem affineHomeomorph_image_Ico {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜]
+theorem affineHomeomorph_image_Ico {𝕜 : Type*}
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne' '' Set.Ico c d = Set.Ico (a * c + b) (a * d + b) := by
   simp [h]
 
-theorem affineHomeomorph_image_Ioc {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜]
+theorem affineHomeomorph_image_Ioc {𝕜 : Type*}
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne' '' Set.Ioc c d = Set.Ioc (a * c + b) (a * d + b) := by
   simp [h]
 
-theorem affineHomeomorph_image_Ioo {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜]
+theorem affineHomeomorph_image_Ioo {𝕜 : Type*}
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
     [IsTopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne' '' Set.Ioo c d = Set.Ioo (a * c + b) (a * d + b) := by
   simp [h]
@@ -124,7 +128,8 @@ end affineHomeomorph
 
 section LocalExtr
 
-variable {α β : Type*} [TopologicalSpace α] [LinearOrderedSemifield β] {a : α}
+variable {α β : Type*} [TopologicalSpace α]
+  [Semifield β] [LinearOrder β] [IsStrictOrderedRing β] {a : α}
 
 open Topology
 
@@ -162,7 +167,7 @@ theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ �
     EqOn f g S ∨ EqOn f (-g) S := by
   have hsq : EqOn ((f / g) ^ 2) 1 S := fun x hx => by
     simpa [div_eq_one_iff_eq (pow_ne_zero _ (hg_ne hx)), div_pow] using hsq hx
-  simpa (config := { contextual := true }) [EqOn, div_eq_iff (hg_ne _)]
+  simpa +contextual [EqOn, div_eq_iff (hg_ne _)]
     using hS.eq_one_or_eq_neg_one_of_sq_eq (hf.div hg fun z => hg_ne) hsq
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with

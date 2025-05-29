@@ -519,7 +519,7 @@ theorem sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
     ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ ‖f‖ ^ p.toReal := by
   rw [lp.norm_rpow_eq_tsum hp f]
   have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i => Real.rpow_nonneg (norm_nonneg _) _
-  refine sum_le_tsum _ (fun i _ => this i) ?_
+  refine Summable.sum_le_tsum _ (fun i _ => this i) ?_
   exact (lp.memℓp f).summable hp
 
 theorem norm_le_of_forall_le' [Nonempty α] {f : lp E ∞} (C : ℝ) (hCf : ∀ i, ‖f i‖ ≤ C) :
@@ -541,7 +541,7 @@ theorem norm_le_of_tsum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp 
 
 theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
     (hf : ∀ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
-  norm_le_of_tsum_le hp hC (tsum_le_of_sum_le ((lp.memℓp f).summable hp) hf)
+  norm_le_of_tsum_le hp hC (((lp.memℓp f).summable hp).tsum_le_of_sum_le hf)
 
 end ComparePointwise
 
@@ -1131,7 +1131,7 @@ theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (h
   gcongr
 
 /-- "Semicontinuity of the `lp` norm": If all sufficiently large elements of a sequence in `lp E p`
- have `lp` norm `≤ C`, then the pointwise limit, if it exists, also has `lp` norm `≤ C`. -/
+have `lp` norm `≤ C`, then the pointwise limit, if it exists, also has `lp` norm `≤ C`. -/
 theorem norm_le_of_tendsto {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, ‖F k‖ ≤ C) {f : lp E p}
     (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) : ‖f‖ ≤ C := by
   obtain ⟨i, hi⟩ := hCF.exists

@@ -106,14 +106,14 @@ because:
   anyway. It is easily copied over.
 
 In the future, it would be good to make the corresponding typeclasses in
-`Mathlib.Algebra.Order.GroupWithZero.Unbundled` custom typeclasses too.
+`Mathlib/Algebra/Order/GroupWithZero/Unbundled.lean` custom typeclasses too.
 
 ## TODO
 
-This file acts as a substitute for `Mathlib.Algebra.Order.SMul`. We now need to
+This file acts as a substitute for `Mathlib/Algebra/Order/SMul.lean`. We now need to
 * finish the transition by deleting the duplicate lemmas
 * rearrange the non-duplicate lemmas into new files
-* generalise (most of) the lemmas from `Mathlib.Algebra.Order.Module` to here
+* generalise (most of) the lemmas from `Mathlib/Algebra/Order/Module.lean` to here
 * rethink `OrderedSMul`
 -/
 
@@ -1004,10 +1004,6 @@ lemma smul_inv_lt_iff_of_neg (h : a < 0) : b₁ < a⁻¹ • b₂ ↔ b₂ < a �
   rw [← smul_lt_smul_iff_of_neg_left h, smul_inv_smul₀ h.ne]
 
 end Field
-
-namespace Prod
-
-end Prod
 
 namespace Pi
 variable {ι : Type*} {β : ι → Type*} [Zero α] [∀ i, Zero (β i)]

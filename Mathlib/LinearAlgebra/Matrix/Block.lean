@@ -16,14 +16,15 @@ matrices built out of blocks.
 
 ## Main definitions
 
- * `Matrix.BlockTriangular` expresses that an `o` by `o` matrix is block triangular,
-   if the rows and columns are ordered according to some order `b : o → α`
+* `Matrix.BlockTriangular` expresses that an `o` by `o` matrix is block triangular,
+  if the rows and columns are ordered according to some order `b : o → α`
 
 ## Main results
-  * `Matrix.det_of_blockTriangular`: the determinant of a block triangular matrix
-    is equal to the product of the determinants of all the blocks
-  * `Matrix.det_of_upperTriangular` and `Matrix.det_of_lowerTriangular`: the determinant of
-    a triangular matrix is the product of the entries along the diagonal
+
+* `Matrix.det_of_blockTriangular`: the determinant of a block triangular matrix
+  is equal to the product of the determinants of all the blocks
+* `Matrix.det_of_upperTriangular` and `Matrix.det_of_lowerTriangular`: the determinant of
+  a triangular matrix is the product of the entries along the diagonal
 
 ## Tags
 
@@ -142,16 +143,21 @@ variable [DecidableEq m]
 theorem blockTriangular_one [One R] : BlockTriangular (1 : Matrix m m R) b :=
   blockTriangular_diagonal _
 
-theorem blockTriangular_stdBasisMatrix {i j : m} (hij : b i ≤ b j) (c : R) :
-    BlockTriangular (stdBasisMatrix i j c) b := by
+theorem blockTriangular_single {i j : m} (hij : b i ≤ b j) (c : R) :
+    BlockTriangular (single i j c) b := by
   intro r s hrs
-  apply StdBasisMatrix.apply_of_ne
+  apply single_apply_of_ne
   rintro ⟨rfl, rfl⟩
   exact (hij.trans_lt hrs).false
 
-theorem blockTriangular_stdBasisMatrix' {i j : m} (hij : b j ≤ b i) (c : R) :
-    BlockTriangular (stdBasisMatrix i j c) (toDual ∘ b) :=
-  blockTriangular_stdBasisMatrix (by exact toDual_le_toDual.mpr hij) _
+@[deprecated (since := "2025-05-05")] alias blockTriangular_stdBasisMatrix := blockTriangular_single
+
+theorem blockTriangular_single' {i j : m} (hij : b j ≤ b i) (c : R) :
+    BlockTriangular (single i j c) (toDual ∘ b) :=
+  blockTriangular_single (by exact toDual_le_toDual.mpr hij) _
+
+@[deprecated (since := "2025-05-05")]
+alias blockTriangular_stdBasisMatrix' := blockTriangular_single'
 
 end Zero
 
@@ -159,11 +165,11 @@ variable [CommRing R] [DecidableEq m]
 
 theorem blockTriangular_transvection {i j : m} (hij : b i ≤ b j) (c : R) :
     BlockTriangular (transvection i j c) b :=
-  blockTriangular_one.add (blockTriangular_stdBasisMatrix hij c)
+  blockTriangular_one.add (blockTriangular_single hij c)
 
 theorem blockTriangular_transvection' {i j : m} (hij : b j ≤ b i) (c : R) :
     BlockTriangular (transvection i j c) (OrderDual.toDual ∘ b) :=
-  blockTriangular_one.add (blockTriangular_stdBasisMatrix' hij c)
+  blockTriangular_one.add (blockTriangular_single' hij c)
 
 end Preorder
 
@@ -247,7 +253,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
   · have : univ.image b = insert k ((univ.image b).erase k) := by
       rw [insert_erase]
       apply max'_mem
-    rw [this, prod_insert (not_mem_erase _ _)]
+    rw [this, prod_insert (notMem_erase _ _)]
     refine congr_arg _ ?_
     let b' := fun i : { a // b a ≠ k } => b ↑i
     have h' : BlockTriangular (M.toSquareBlockProp fun i => b i ≠ k) b' := hM.submatrix

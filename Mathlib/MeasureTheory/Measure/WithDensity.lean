@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Measure with a given density with respect to another measure
@@ -142,6 +143,9 @@ theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure 
   refine AbsolutelyContinuous.mk fun s hs₁ hs₂ => ?_
   rw [withDensity_apply _ hs₁]
   exact setLIntegral_measure_zero _ _ hs₂
+
+instance noAtoms_withDensity [NoAtoms μ] (f : α → ℝ≥0∞) : NoAtoms (μ.withDensity f) where
+  measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
 
 @[simp]
 theorem withDensity_zero : μ.withDensity 0 = 0 := by
@@ -315,7 +319,7 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
       rw [ha this]
     · rw [ae_restrict_iff' A.compl]
       filter_upwards [hf'_ae] with a ha ha_null
-      have ha_null : f' a = 0 := Function.nmem_support.mp ha_null
+      have ha_null : f' a = 0 := Function.notMem_support.mp ha_null
       rw [ha_null] at ha ⊢
       rw [ha]
       simp only [ENNReal.coe_zero, zero_mul]
@@ -628,6 +632,59 @@ theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : 
   infer_instance
 
 end SFinite
+
+section Prod
+
+variable {β : Type*} {mβ : MeasurableSpace β} {ν : Measure β} [SFinite ν]
+
+theorem prod_withDensity_left₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+    (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) := by
+  refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ hf,
+    lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable, lintegral_prod]
+  · refine lintegral_congr (fun x ↦ ?_)
+    rw [Pi.mul_apply, ← lintegral_const_mul'' _ (by fun_prop)]
+    simp
+  all_goals fun_prop (disch := intro _ hs; simp [hs])
+
+theorem prod_withDensity_left {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) :=
+  prod_withDensity_left₀ hf.aemeasurable
+
+theorem prod_withDensity_right₀ {g : β → ℝ≥0∞} (hg : AEMeasurable g ν) :
+    μ.prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ g z.2) := by
+  refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable,
+    lintegral_prod]
+  · refine lintegral_congr (fun x ↦ ?_)
+    rw [lintegral_withDensity_eq_lintegral_mul₀ hg (by fun_prop)]
+    simp
+  all_goals fun_prop (disch := intro _ hs; simp [hs])
+
+theorem prod_withDensity_right {g : β → ℝ≥0∞} (hg : Measurable g) :
+    μ.prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ g z.2) :=
+  prod_withDensity_right₀ hg.aemeasurable
+
+theorem prod_withDensity₀ {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
+    (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) := by
+  rw [prod_withDensity_left₀ hf, prod_withDensity_right₀ hg, ← withDensity_mul₀, mul_comm]
+  · rfl
+  all_goals fun_prop (disch := intro _ hs; simp [hs])
+
+theorem prod_withDensity {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
+    (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) :=
+  prod_withDensity₀ hf.aemeasurable hg.aemeasurable
+
+-- `prod_smul_left` is in the `Prod` file. This lemma is here because this is the file in which
+-- we prove the instance that gives `SFinite (c • ν)`.
+lemma Measure.prod_smul_right (c : ℝ≥0∞) : μ.prod (c • ν) = c • (μ.prod ν) := by
+  ext s hs
+  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, smul_eq_mul]
+  rw [lintegral_const_mul]
+  exact measurable_measure_prodMk_left hs
+
+end Prod
 
 variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
 

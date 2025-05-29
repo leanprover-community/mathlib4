@@ -65,8 +65,8 @@ instance inhabited : Inhabited IntWithEpsilon := ⟨69⟩
 instance linearOrder : LinearOrder ℤ[ε] :=
   LinearOrder.lift' (toLex ∘ coeff) coeff_injective
 
-instance orderedAddCommGroup : OrderedAddCommGroup ℤ[ε] := by
-  refine (toLex.injective.comp coeff_injective).orderedAddCommGroup _ ?_ ?_ ?_ ?_ ?_ ?_ <;>
+instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] := by
+  refine (toLex.injective.comp coeff_injective).isOrderedAddMonoid _ ?_ ?_ ?_ <;>
   (first | rfl | intros) <;> funext <;>
   (simp only [comp_apply, Pi.toLex_apply, coeff_add, coeff_neg, coeff_sub,
     ← nsmul_eq_mul, ← zsmul_eq_mul]; rfl)
@@ -81,11 +81,11 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   exact (natTrailingDegree_le_of_ne_zero hn.2.ne').antisymm
     (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm => (hn.1 _ hm).symm)
 
-instance : LinearOrderedCommRing ℤ[ε] :=
-  { IntWithEpsilon.linearOrder, IntWithEpsilon.commRing, IntWithEpsilon.orderedAddCommGroup,
-    IntWithEpsilon.nontrivial with
-    zero_le_one := Or.inr ⟨0, by simp⟩
-    mul_pos := fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos}
+instance : ZeroLEOneClass ℤ[ε] :=
+  { zero_le_one := Or.inr ⟨0, by simp⟩ }
+
+instance : IsStrictOrderedRing ℤ[ε] :=
+  .of_mul_pos fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos
 
 instance : FloorRing ℤ[ε] :=
   FloorRing.ofFloor _ (fun p => if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)

@@ -54,11 +54,11 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLE : DecidableLE α
+  toDecidableLE : DecidableLE α
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
+  toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ decidableLE
+  toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
@@ -72,9 +72,9 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
 
 variable [LinearOrder α] {a b c : α}
 
-attribute [instance 900] LinearOrder.decidableLT
-attribute [instance 900] LinearOrder.decidableLE
-attribute [instance 900] LinearOrder.decidableEq
+attribute [instance 900] LinearOrder.toDecidableLT
+attribute [instance 900] LinearOrder.toDecidableLE
+attribute [instance 900] LinearOrder.toDecidableEq
 
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
@@ -129,8 +129,6 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
 
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
-
--- Porting note: no `min_tac` tactic in the following series of lemmas
 
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b

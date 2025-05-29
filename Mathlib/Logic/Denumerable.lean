@@ -114,14 +114,14 @@ instance option : Denumerable (Option α) :=
       rw [decode_option_zero, Option.mem_def]
     | succ n =>
       refine ⟨some (ofNat α n), ?_, ?_⟩
-      · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
+      · rw [decode_option_succ, decode_eq_ofNat, Option.map_some, Option.mem_def]
       rw [encode_some, encode_ofNat]⟩
 
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
-    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
+    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some,
       Option.mem_def, Sum.exists]
     cases bodd n <;> simp [decodeSum, bit, encodeSum, Nat.two_mul]⟩
 
@@ -267,7 +267,7 @@ open Finset
 
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
-    rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]
+    rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_notMem]
     rintro n hn
     rw [mem_filter, ofNat, mem_range] at hn
     exact bot_le.not_lt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
@@ -287,7 +287,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
     simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
     conv =>
       rhs
-      rw [← ih, ← card_insert_of_not_mem h₁, ← h₂]
+      rw [← ih, ← card_insert_of_notMem h₁, ← h₂]
 
 /-- Any infinite set of naturals is denumerable. -/
 def denumerable (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : Denumerable s :=

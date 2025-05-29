@@ -80,7 +80,7 @@ lemma hasPointwiseRightKanExtensionAt_iff_of_iso {Y₁ Y₂ : D} (e : Y₁ ≅ Y
 
 variable {L} in
 /-- `HasPointwiseLeftKanExtensionAt` is invariant when we replace `L` by an equivalent functor. -/
-lemma hasPointwiseLeftKanExtensionAt_iff_of_iso' {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
+lemma hasPointwiseLeftKanExtensionAt_iff_of_natIso {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
     HasPointwiseLeftKanExtensionAt L F Y ↔
       HasPointwiseLeftKanExtensionAt L' F Y := by
   revert L L' e
@@ -95,7 +95,7 @@ lemma hasPointwiseLeftKanExtensionAt_iff_of_iso' {L' : C ⥤ D} (e : L ≅ L') (
 
 variable {L} in
 /-- `HasPointwiseRightKanExtensionAt` is invariant when we replace `L` by an equivalent functor. -/
-lemma hasPointwiseRightKanExtensionAt_iff_of_iso' {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
+lemma hasPointwiseRightKanExtensionAt_iff_of_natIso {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
     HasPointwiseRightKanExtensionAt L F Y ↔
       HasPointwiseRightKanExtensionAt L' F Y := by
   revert L L' e
@@ -112,7 +112,7 @@ lemma hasPointwiseLeftKanExtensionAt_of_equivalence
     (E : D ≌ D') (eL : L ⋙ E.functor ≅ L') (Y : D) (Y' : D') (e : E.functor.obj Y ≅ Y')
     [HasPointwiseLeftKanExtensionAt L F Y] :
     HasPointwiseLeftKanExtensionAt L' F Y' := by
-  rw [← hasPointwiseLeftKanExtensionAt_iff_of_iso' F eL,
+  rw [← hasPointwiseLeftKanExtensionAt_iff_of_natIso F eL,
     hasPointwiseLeftKanExtensionAt_iff_of_iso _ F e.symm]
   let Φ := CostructuredArrow.post L E.functor Y
   have : HasColimit ((asEquivalence Φ).functor ⋙
@@ -137,7 +137,7 @@ lemma hasPointwiseRightKanExtensionAt_of_equivalence
     (E : D ≌ D') (eL : L ⋙ E.functor ≅ L') (Y : D) (Y' : D') (e : E.functor.obj Y ≅ Y')
     [HasPointwiseRightKanExtensionAt L F Y] :
     HasPointwiseRightKanExtensionAt L' F Y' := by
-  rw [← hasPointwiseRightKanExtensionAt_iff_of_iso' F eL,
+  rw [← hasPointwiseRightKanExtensionAt_iff_of_natIso F eL,
     hasPointwiseRightKanExtensionAt_iff_of_iso _ F e.symm]
   let Φ := StructuredArrow.post Y L E.functor
   have : HasLimit ((asEquivalence Φ).functor ⋙
