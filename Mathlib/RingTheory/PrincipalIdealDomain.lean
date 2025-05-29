@@ -9,7 +9,6 @@ import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
-import Mathlib.RingTheory.KrullDimension.Basic
 
 /-!
 # Principal ideal rings, principal ideal domains, and Bézout rings
@@ -512,14 +511,3 @@ theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
   exact hs ⟨⟨x, rfl⟩⟩
 
 end PrincipalOfPrime
-
-section KrullDimension
-
-instance PrincipalIdealRing.KrullDimLE_one (R : Type*) [CommRing R] [IsDomain R]
-    [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by
-  rw [Ring.krullDimLE_one_iff]
-  apply fun I hI ↦ Classical.or_iff_not_imp_left.mpr fun hI' ↦
-    IsPrime.to_maximal_ideal (hpi := hI) ?_
-  simp_all [IsDomain.minimalPrimes_eq_singleton_bot]
-
-end KrullDimension
