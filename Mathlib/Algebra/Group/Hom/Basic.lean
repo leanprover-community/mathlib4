@@ -116,7 +116,7 @@ theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRigh
 
 end LiftRight
 
-section LiftOfRightInverse'
+section LiftOfRightInverse
 
 variable {p : OneHom M P} {p_inv : P → M}  {f : OneHom M N}
   {hf : ∀ (x : M), f (p_inv (p x)) = f x} {φ : OneHom P N}
@@ -142,7 +142,7 @@ theorem liftOfRightInverse_apply_comp {hp : RightInverse p_inv p} :
     p.liftOfRightInverse p_inv (φ.comp p) (fun x => by simp only [comp_apply, hp (p x)]) = φ :=
   ext fun x => by simp only [liftOfRightInverse_apply, comp_apply, hp x]
 
-end LiftOfRightInverse'
+end LiftOfRightInverse
 
 section LiftOfLeftInverse
 
@@ -262,7 +262,7 @@ theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRigh
 
 end LiftRight
 
-section LiftOfRightInverse'
+section LiftOfRightInverse
 
 variable {p : M →ₙ* P} {p_inv : P → M} {hp : RightInverse p_inv p} {f : M →ₙ* N}
   {hf : ∀ (x : M), f (p_inv (p x)) = f x} {φ : P →ₙ* N}
@@ -288,7 +288,7 @@ theorem liftOfRightInverse_apply_comp : p.liftOfRightInverse p_inv hp (φ.comp p
     (fun x => by simp only [comp_apply, hp (p x)]) = φ := ext fun x => by
   simp only [liftOfRightInverse_apply, comp_apply, hp x]
 
-end LiftOfRightInverse'
+end LiftOfRightInverse
 
 section LiftOfLeftInverse
 
