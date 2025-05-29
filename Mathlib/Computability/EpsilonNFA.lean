@@ -58,7 +58,7 @@ theorem subset_εClosure (S : Set σ) : S ⊆ M.εClosure S :=
 
 @[simp]
 theorem εClosure_empty : M.εClosure ∅ = ∅ :=
-  eq_empty_of_forall_not_mem fun s hs ↦ by induction hs <;> assumption
+  eq_empty_of_forall_notMem fun s hs ↦ by induction hs <;> assumption
 
 @[simp]
 theorem εClosure_univ : M.εClosure univ = univ :=
