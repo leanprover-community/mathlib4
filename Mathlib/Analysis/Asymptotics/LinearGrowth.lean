@@ -86,9 +86,8 @@ lemma linearGrowthSup_monotone (h : u ≤ v) : linearGrowthSup u ≤ linearGrowt
   linearGrowthSup_eventually_monotone (Eventually.of_forall h)
 
 lemma linearGrowthInf_le_linearGrowthSup_of_frequently_le (h : ∃ᶠ n in atTop, u n ≤ v n) :
-    linearGrowthInf u ≤ linearGrowthSup v := by
-  refine (liminf_le_limsup_of_frequently_le) (h.mono fun n u_v ↦ ?_)
-  exact div_le_div_right_of_nonneg n.cast_nonneg' u_v
+    linearGrowthInf u ≤ linearGrowthSup v :=
+  (liminf_le_limsup_of_frequently_le) <| h.mono fun n u_v ↦ by gcongr
 
 lemma linearGrowthInf_le_iff :
     linearGrowthInf u ≤ a ↔ ∀ b > a, ∃ᶠ n : ℕ in atTop, u n ≤ b * n := by
@@ -382,7 +381,7 @@ lemma tendsto_atTop_of_linearGrowthInf_natCast_pos (h : (linearGrowthInf fun n �
   have := tendsto_atTop_of_linearGrowthInf_pos (h.lt_of_le' (linearGrowthInf_natCast_nonneg v))
   refine (tendsto_nhds_top_iff_real.1 this M).mono fun n ↦ ?_
   rw [coe_coe_eq_natCast, Nat.cast_lt]
-  exact LT.lt.le
+  exact le_of_lt
 
 lemma le_linearGrowthInf_comp (hu : 0 ≤ᶠ[atTop] u) (hv : Tendsto v atTop atTop) :
     (linearGrowthInf fun n ↦ v n : EReal) * linearGrowthInf u ≤ linearGrowthInf (u ∘ v) := by
