@@ -55,6 +55,7 @@ def hcomp {a b c : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c}
 theorem id_hcomp_id {a b c : CatEnriched C} (f : a ⟶ b) (g : b ⟶ c) :
     hcomp (𝟙 f) (𝟙 g) = 𝟙 (f ≫ g) := Functor.map_id ..
 
+/-- The interchange law for horizontal and vertical composition of 2-cells in a bicategory. -/
 @[simp]
 theorem hcomp_comp {a b c : CatEnriched C} {f₁ f₂ f₃ : a ⟶ b} {g₁ g₂ g₃ : b ⟶ c}
     (η : f₁ ⟶ f₂) (η' : f₂ ⟶ f₃) (θ : g₁ ⟶ g₂) (θ' : g₂ ⟶ g₃) :
