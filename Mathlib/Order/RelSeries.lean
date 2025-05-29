@@ -618,12 +618,14 @@ def inductionOn (motive : RelSeries r → Sort*)
       motive (p.cons x hx)) (p : RelSeries r) :
     motive p := by
   let this {n : ℕ} (heq : p.length = n) : motive p := by
-    induction' n with d hd generalizing p
-    · convert singleton p.head
+    induction n generalizing p with
+    | zero =>
+      convert singleton p.head
       ext n
       exact heq
       simp [show n = 0 by omega, apply_zero]
-    · have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
+    | succ d hd =>
+      have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
       nth_rw 3 [heq] at lq
       convert cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head
         (p.3 ⟨0, heq ▸ d.zero_lt_succ⟩) (hd _ lq)
@@ -681,12 +683,14 @@ def inductionOn' (motive : RelSeries r → Sort*)
       motive (p.snoc x hx)) (p : RelSeries r) :
     motive p := by
   let this {n : ℕ} (heq : p.length = n) : motive p := by
-    induction' n with d hd generalizing p
-    · convert singleton p.head
+    induction n generalizing p with
+    | zero =>
+      convert singleton p.head
       ext n
       · exact heq
       · simp [show n = 0 by omega, apply_zero]
-    · have ne0 : p.length ≠ 0 := by simp [heq]
+    | succ d hd =>
+      have ne0 : p.length ≠ 0 := by simp [heq]
       have len : p.eraseLast.length = d := by simp [heq]
       convert snoc p.eraseLast p.last (p.eraseLast_last_rel_last ne0)
         (hd _ len)

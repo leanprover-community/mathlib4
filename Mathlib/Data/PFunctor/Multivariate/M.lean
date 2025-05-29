@@ -250,12 +250,10 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   introv Hr
   specialize h _ _ Hr
   clear Hr
-
   revert h
   rcases M.dest P x with ⟨ax, fx⟩
   rcases M.dest P y with ⟨ay, fy⟩
   intro h
-
   rw [map_eq, map_eq] at h
   injection h with h₀ h₁
   subst ay
