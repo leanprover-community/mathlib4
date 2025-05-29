@@ -271,21 +271,25 @@ the statement of `compare_comp_eq_compare` is the commutativity of the right tri
 ```
  -/
 theorem compare_comp_eq_compare (γ : Type*) [TopologicalSpace γ]
-    [T3Space γ] {f : α → γ} (cont_f : Continuous f) :
-    letI := pkg.uniformStruct.toTopologicalSpace
-    letI := pkg'.uniformStruct.toTopologicalSpace
-    (∀ a : pkg.space,
-      Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.isDenseInducing.extend f) a))) →
-      pkg.isDenseInducing.extend f ∘ pkg'.compare pkg = pkg'.isDenseInducing.extend f := by
-  let _ := pkg'.uniformStruct
-  let _ := pkg.uniformStruct
-  intro h
+    [T3Space γ] {f : α → γ} (cont_f : Continuous f)
+    (h : ∀ a : pkg.space,
+      Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.isDenseInducing.extend f) a))) :
+    pkg.isDenseInducing.extend f ∘ pkg'.compare pkg = pkg'.isDenseInducing.extend f := by
   have (x : α) : (pkg.isDenseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
     simp only [Function.comp_apply, compare_coe, IsDenseInducing.extend_eq _ cont_f, implies_true]
   apply (IsDenseInducing.extend_unique (AbstractCompletion.isDenseInducing _) this
     (Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous )).symm
   apply IsDenseInducing.continuous_extend
   exact fun a ↦ ⟨(pkg.isDenseInducing.extend f) a, h a⟩
+
+theorem compare_comp_eq_compare_apply (γ : Type*) [TopologicalSpace γ]
+    [T3Space γ] {f : α → γ} (cont_f : Continuous f)
+    (h : ∀ a : pkg.space,
+      Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.isDenseInducing.extend f) a)))
+    (a' : pkg'.space) :
+    pkg.isDenseInducing.extend f (pkg'.compare pkg a') = pkg'.isDenseInducing.extend f a' := by
+  conv_rhs => rw [← compare_comp_eq_compare _ _ _ cont_f h]
+  simp [comp_apply]
 
 end Compare
 

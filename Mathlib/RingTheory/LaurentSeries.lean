@@ -594,7 +594,7 @@ theorem valuation_single_zpow (s : ℤ) :
 -- the statements of many theorems
 /-- The valuation of `K⸨X⸩` is normalized, in the sense that
 `Valued.v.rangeGroup₀` is the full value group. -/
-theorem rangeGroup₀_eq : Valued.v.rangeGroup₀ (R := K⸨X⸩) = ⊤ := by
+theorem rangeGroup₀_eq_top : Valued.v.rangeGroup₀ (R := K⸨X⸩) = ⊤ := by
   rw [eq_top_iff]
   intro n _
   rw [Valuation.mem_rangeGroup₀_iff]
@@ -903,7 +903,6 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
   · apply lt_of_lt_of_eq hn
     abel
 
-
 /- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
 instance instLaurentSeriesComplete : CompleteSpace K⸨X⸩ :=
   ⟨fun hℱ ↦ ⟨Cauchy.limit hℱ, fun _ hS ↦ Cauchy.eventually_mem_nhds hℱ hS⟩⟩
@@ -1081,8 +1080,8 @@ abbrev extensionAsRingHom :=
 abbrev RatFuncAdicCompl := adicCompletion (RatFunc K) (idealX K)
 
 /- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
-instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
-instance : UniformSpace K⸨X⸩ := inferInstance
+-- instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
+-- instance : UniformSpace K⸨X⸩ := inferInstance
 
 /-- The uniform space isomorphism between two abstract completions of `ratfunc K` -/
 abbrev comparePkg : RatFuncAdicCompl K ≃ᵤ K⸨X⸩ :=
@@ -1139,13 +1138,25 @@ open Filter WithZero
 
 open scoped WithZeroTopology Topology Multiplicative
 
+theorem rangeGroup₀_eq_top' : Valued.v.rangeGroup₀ (R := RatFunc K) = ⊤ := by
+  rw [eq_top_iff]
+  intro n _
+  rw [Valuation.mem_rangeGroup₀_iff]
+  induction n with
+  | zero => exact ⟨1, 0, by simp⟩
+  | coe d =>
+    use 1, (X : RatFunc K) ^ (- Multiplicative.toAdd d)
+    constructor
+    · simp
+    · simp [← ofAdd_zpow, ofAdd_toAdd]
+
 theorem valuation_LaurentSeries_equal_extension :
     (LaurentSeriesPkg K).isDenseInducing.extend Valued.v = (Valued.v : K⸨X⸩ → ℤₘ₀) := by
   apply @IsDenseInducing.extend_unique _ _ _ _ _ _ _
   · intro x
     rw [valued_def, valuation_eq_LaurentSeries_valuation K x]
     rfl
-  · exact Valued.continuous_valuation' (rangeGroup₀_eq K)
+  · exact Valued.continuous_valuation_of_rangeGroup₀_eq_top (rangeGroup₀_eq_top K)
 
 theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     Tendsto (Valued.v : RatFunc K → ℤₘ₀) (comap (↑) (𝓝 a)) (𝓝 (Valued.v a : ℤₘ₀)) := by
@@ -1163,43 +1174,55 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
       simp only [Units.val_mk0, ne_eq, γ_ne_zero, not_false_eq_true, subset_refl, and_self,
         and_true]
       convert Submonoid.mem_top _
-      rw [eq_top_iff]
-      intro d _
-      rw [Valuation.mem_rangeGroup₀_iff]
-      induction d with
-      | zero => exact ⟨1, 0, by simp⟩
-      | coe d =>
-        exact ⟨1, (X : RatFunc K) ^ (- Multiplicative.toAdd d),
-          by simp [← WithZero.ofAdd_zpow]⟩
+      rw [← rangeGroup₀_eq_top' K]
+      exact Valued.rangeGroup₀_extensionValuation
     · refine Set.Subset.trans (fun a _ ↦ ?_) (Set.preimage_mono γ_le)
       rwa [Set.mem_preimage, Set.mem_Iio, hψ, ← Valued.valuedCompletion_apply a]
   · rw [WithZeroTopology.tendsto_of_ne_zero ((Valuation.ne_zero_iff Valued.v).mpr ha), hψ,
       Filter.eventually_comap, Filter.Eventually, Valued.mem_nhds]
-    set γ := Valued.v a / (↑(Multiplicative.ofAdd (1 : ℤ)) : ℤₘ₀) with h_aγ
-    have γ_ne_zero : γ ≠ 0 := by
-      rw [ne_eq, _root_.div_eq_zero_iff, Valuation.zero_iff]
-      simpa only [coe_ne_zero, or_false]
-    use Units.mk0 γ γ_ne_zero
+    have : Valued.v (X : RatFunc K) = ↑(Multiplicative.ofAdd (-1 : ℤ)):= by simp
+    set γ := Valued.v (a * (X : RatFunc K)) with hγ
+    have va_ne_zero : Valued.v a ≠ 0 := by simpa
+    have γ_ne_zero : γ ≠ 0 := by simpa [γ]
+    use Valued.v.mk_rangeGroup₀_unit γ_ne_zero
     intro y val_y b diff_b_y
+    replace val_y : Valued.v (y - a) < γ := by simpa [γ] using val_y
     replace val_y : Valued.v y = Valued.v a := by
       refine Valuation.map_eq_of_sub_lt _ (val_y.trans ?_)
-      rw [Units.val_mk0, h_aγ, ← coe_unzero ((Valuation.ne_zero_iff Valued.v).mpr ha), ←
-        WithZero.coe_div, coe_lt_coe, div_lt_self_iff, ← ofAdd_zero,
-        Multiplicative.ofAdd_lt]
-      exact Int.zero_lt_one
+      obtain ⟨m, hm⟩ := ne_zero_iff_exists.mp va_ne_zero
+      simp only [map_mul, ← hm, Valued.valuedCompletion_apply, adicValued_apply',
+        valuation_X_eq_neg_one, Int.reduceNeg, ofAdd_neg, γ, ← WithZero.coe_mul, coe_lt_coe,
+        mul_inv_lt_iff_lt_mul]
+      apply lt_mul_of_one_lt_right'
+      exact Multiplicative.ofAdd_strictMono Int.one_pos
     rw [← Valued.extension_extends, ← val_y, ← diff_b_y]
     congr
+
+example : Valued (RatFuncAdicCompl K) ℤₘ₀ := by
+  exact Valued.valuedCompletion
+
+example : Valued K⸨X⸩ ℤₘ₀ :=
+  instValuedWithZeroMultiplicativeInt K
+
+open scoped WithZeroTopology
 
 /- The extension of the `X`-adic valuation from `RatFunc K` up to its abstract completion coincides,
 modulo the isomorphism with `K⸨X⸩`, with the `X`-adic valuation on `K⸨X⸩`. -/
 theorem valuation_compare (f : K⸨X⸩) :
     (Valued.v : (RatFuncAdicCompl K) → ℤₘ₀)
-        (AbstractCompletion.compare (LaurentSeriesPkg K) ratfuncAdicComplPkg f) =
+    (AbstractCompletion.compare (LaurentSeriesPkg K) ratfuncAdicComplPkg f) =
       Valued.v f := by
-  rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare
-    (pkg := ratfuncAdicComplPkg) (cont_f := Valued.continuous_valuation)]
-  · rfl
-  exact (tendsto_valuation K)
+  rw [← valuation_LaurentSeries_equal_extension]
+  set pkg := ratfuncAdicComplPkg (K := K)
+  set pkg' := LaurentSeriesPkg (K := K)
+  set hdi := isDenseInducing pkg
+  set hdi' := isDenseInducing pkg'
+  change Valued.extension (pkg'.compare pkg f) = hdi'.extend _ f
+  rw [Valued.extension_eq_of_rangeGroup₀_eq_top (rangeGroup₀_eq_top' K)]
+  apply compare_comp_eq_compare_apply
+  · exact Valued.continuous_valuation_of_rangeGroup₀_eq_top (rangeGroup₀_eq_top' K)
+  · rw [← Valued.extension_eq_of_rangeGroup₀_eq_top (rangeGroup₀_eq_top' K)]
+    exact tendsto_valuation K
 
 section PowerSeries
 

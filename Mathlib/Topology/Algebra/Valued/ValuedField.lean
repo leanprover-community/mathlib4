@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot
+Authors: Patrick Massot, Antoine Chambert-Loir, Filippo Nuccio
 -/
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.Topology.Algebra.WithZeroTopology
@@ -107,9 +107,6 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
 
 section
 
--- This is false, the zero topology on Γ₀ is too fine in general
--- if the valuation is not surjective
-
 open WithZeroTopology
 
 open Valued
@@ -137,12 +134,9 @@ theorem Valued.continuous_valuation [Valued K Γ₀] :
       exact Valued.loc_const v_ne
     · simpa [ne_eq, ← Subtype.coe_inj] using v_ne
 
-theorem Valued.continuous_valuation' [Valued K Γ₀]
-    (hv : v.rangeGroup₀ (R := K) = ⊤) :
-    Continuous (Valued.v : K → Γ₀) := by
-  rw [@Valuation.coe_comp_rangeGroup₀_restrict]
-  apply @Continuous.comp _ _ _ _ WithZeroTopology.topologicalSpace
-    _ _ _ _ Valued.continuous_valuation
+theorem Valued.subtype_continuous_of_rangeGroup₀_eq_top
+    [hv : Valued K Γ₀] (H : hv.v.rangeGroup₀ = ⊤) :
+    @Continuous _ _ topologicalSpace _ (hv.v.rangeGroup₀.subtype) := by
   rw [@continuous_iff_isClosed]
   intro s hs
   rw [WithZeroTopology.isClosed_iff] at hs ⊢
@@ -151,13 +145,21 @@ theorem Valued.continuous_valuation' [Valued K Γ₀]
     simpa using hs
   · right
     obtain ⟨γ, hγ, hs⟩ := hs
-    use ⟨γ, (show γ ∈ v.rangeGroup₀ from by simp [hv])⟩
+    use ⟨γ, (show γ ∈ v.rangeGroup₀ from by simp [H])⟩
     constructor
     · simp [ne_eq, ← Subtype.coe_inj, hγ]
     · intro z hz
       simp only [Submonoid.coe_subtype, mem_preimage, mem_Ici] at hz
       rw [mem_Ici, ← Subtype.coe_le_coe]
       simpa only [mem_Ici] using hs hz
+
+theorem Valued.continuous_valuation_of_rangeGroup₀_eq_top
+    [Valued K Γ₀] (H : v.rangeGroup₀ (R := K) = ⊤) :
+    Continuous (Valued.v : K → Γ₀) := by
+  rw [@Valuation.coe_comp_rangeGroup₀_restrict]
+  apply @Continuous.comp _ _ _ _ WithZeroTopology.topologicalSpace
+  · exact subtype_continuous_of_rangeGroup₀_eq_top H
+  · exact Valued.continuous_valuation
 
 end
 
@@ -453,6 +455,18 @@ noncomputable instance valuedCompletion :
 @[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
+
+theorem continuous_extension_of_rangeGroup₀_eq_top
+    (H : hv.v.rangeGroup₀ = ⊤) :
+    Continuous hv.extension :=
+  @Continuous.comp _ _ _ _ topologicalSpace _ _ _
+    (subtype_continuous_of_rangeGroup₀_eq_top H)
+    continuous_rangeGroup₀_extension
+
+theorem extension_eq_of_rangeGroup₀_eq_top (H : hv.v.rangeGroup₀ = ⊤) :
+    extension = Completion.isDenseInducing_coe.extend hv.v :=
+  (IsDenseInducing.extend_unique _ extension_extends
+    (continuous_extension_of_rangeGroup₀_eq_top H)).symm
 
 end Valued
 
