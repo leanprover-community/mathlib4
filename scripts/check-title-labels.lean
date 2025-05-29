@@ -23,21 +23,22 @@ def checkTitleLabelsCLI (args : Parsed) : IO UInt32 := do
   let title := (args.positionalArg! "title").value
   let labels : Array String := args.variableArgsAs! String
   let mut numberErrors := 0
-  if !labels.contains "WIP" then
-    -- We do not complain about WIP PRs.
-    -- The title should be of the form "abbrev: main title" or "abbrev(scope): main title".
-    let titleErrors := validateTitle title
-    numberErrors := numberErrors + titleErrors.size
-    for err in titleErrors do
-      IO.println err
-    -- A feature PR should have a topic label.
-    if title.startsWith "feat" && !labels.any
-        (fun s ↦ s.startsWith "t-" || ["CI", "IMO"].contains s) then
-      IO.println "error: feature PRs should have a 't-something',  'CI' or 'IMO' label"
-      numberErrors := numberErrors + 1
   -- Check for contradictory labels.
   if hasContradictoryLabels labels then
     IO.println "error: PR labels are contradictory"
+    numberErrors := numberErrors + 1
+  -- We not validate titles of WIP PRs.
+  if labels.contains "WIP" then return numberErrors
+
+  -- The title should be of the form "abbrev: main title" or "abbrev(scope): main title".
+  let titleErrors := validateTitle title
+  numberErrors := numberErrors + titleErrors.size
+  for err in titleErrors do
+    IO.println err
+  -- A feature PR should have a topic label.
+  if title.startsWith "feat" && !labels.any
+      (fun s ↦ s.startsWith "t-" || ["CI", "IMO"].contains s) then
+    IO.println "error: feature PRs should have a 't-something',  'CI' or 'IMO' label"
     numberErrors := numberErrors + 1
   return numberErrors
 
