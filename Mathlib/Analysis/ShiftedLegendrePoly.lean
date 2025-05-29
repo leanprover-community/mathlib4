@@ -6,10 +6,7 @@ Authors: Junqi Liu
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.Data.Real.StarOrdered
 
 /-!
 # shifted Legendre Polynomials
@@ -96,3 +93,5 @@ lemma shiftedLegendre_eval_symm (n : ℕ) (x : ℝ) :
   simp only [even_two, Even.mul_right, Even.neg_pow, one_pow, mul_one]
 
 end Polynomial
+
+#min_imports
