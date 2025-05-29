@@ -295,13 +295,11 @@ variable (S) in
 noncomputable def Ideal.primeSpectrumLocalizationAtPrime :
     PrimeSpectrum S ≃o { p : PrimeSpectrum R // p.1 ≤ q } :=
   let e := IsLocalization.AtPrime.orderIsoOfPrime S q
-  {
-  toFun p := ⟨⟨(e ⟨p.1, p.2⟩).1, (e ⟨p.1, p.2⟩).2.1⟩, (e ⟨p.1, p.2⟩).2.2⟩
+{ toFun p := ⟨⟨(e ⟨p.1, p.2⟩).1, (e ⟨p.1, p.2⟩).2.1⟩, (e ⟨p.1, p.2⟩).2.2⟩
   invFun p := ⟨(e.symm ⟨p.1.1, p.1.2, p.2⟩).1, (e.symm ⟨p.1.1, p.1.2, p.2⟩).2⟩
   left_inv p := by simp only [Subtype.coe_eta, OrderIso.symm_apply_apply]
   right_inv p := by simp only [Subtype.coe_eta, OrderIso.apply_symm_apply]
-  map_rel_iff' := e.le_iff_le
-}
+  map_rel_iff' := e.le_iff_le }
 
 lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     {R : Type*} [CommSemiring R] (p : Ideal R) (hp : p ∈ minimalPrimes R)
