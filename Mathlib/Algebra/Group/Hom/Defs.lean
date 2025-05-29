@@ -988,7 +988,7 @@ theorem eq_inverse_of_comp_right_eq_id {g'} (h' : RightInverse g f) (hg : f.comp
 theorem eq_inverse_of_comp_left_eq_id {g'} (h' : RightInverse g f) (hg : g'.comp f = id M) :
     g' = f.inverse g h := eq_liftLeft h'.surjective hg
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem inverse_inverse (h' : RightInverse g f) :
     (f.inverse g h).inverse f (comp_inverse_apply h') = f := rfl
 
@@ -1442,3 +1442,4 @@ lemma iterate_map_zpow {M F : Type*} [Group M] [FunLike F M M] [MonoidHomClass F
     (f : F) (n : ℕ) (x : M) (k : ℤ) :
     f^[n] (x ^ k) = f^[n] x ^ k :=
   Commute.iterate_left (map_zpow f · k) n x
+#lint
