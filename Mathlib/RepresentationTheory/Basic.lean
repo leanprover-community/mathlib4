@@ -359,6 +359,12 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
     ext z w
     simp [mul_smul]
 
+/-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication in `G`. -/
+noncomputable abbrev leftRegular := ofMulAction k G G
+
+/-- The natural `k`-linear `G`-representation on `k[Gⁿ]` induced by left multiplication in `G`. -/
+noncomputable abbrev diagonal (n : ℕ) := ofMulAction k G (Fin n → G)
+
 variable {k G H}
 
 theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
