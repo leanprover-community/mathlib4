@@ -380,6 +380,12 @@ end Valued
 
 end Notation
 
+-- TODO: where does this go
+@[simp]
+lemma Subring.smul_eq_mul {R : Type*} [Ring R] {S : Subring R} (x : S) (y : R) :
+    x • y = x * y := by
+  rfl
+
 namespace Valued
 
 variable (K : Type*) {Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Valued K Γ₀]
