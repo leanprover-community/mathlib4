@@ -168,13 +168,6 @@ noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (R S : Type*)
     nth_rw 4 [← Ideal.comap_coe]
     simp [Ideal.comap_comap]
 
-instance IsPrincipalIdealRing.KrullDimLE_one (R : Type*) [CommRing R] [IsDomain R]
-    [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by
-  rw [Ring.krullDimLE_one_iff]
-  apply fun I hI ↦ Classical.or_iff_not_imp_left.mpr fun hI' ↦
-    IsPrime.to_maximal_ideal (hpi := hI) ?_
-  simp_all [IsDomain.minimalPrimes_eq_singleton_bot]
-
 theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1 := by
   rw [ringKrullDim, ringKrullDim]
