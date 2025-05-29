@@ -79,8 +79,6 @@ include S f in
 lemma comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg (p : Ideal R')
     (ass : p ∈ associatedPrimes R' M') (fg : (p.comap (algebraMap R R')).FG) :
     p.comap (algebraMap R R') ∈ associatedPrimes R M := by
-  --note : here `p.FG` should imply `(p.comap (algebraMap R R')).FG`
-  --where `R'` is localization of `R`, however lemmas aren't ready yet
   rcases ass with ⟨hp, ⟨x, hx⟩⟩
   rcases fg with ⟨T, hT⟩
   rcases IsLocalizedModule.mk'_surjective S f x with ⟨⟨m, s⟩, eq⟩
