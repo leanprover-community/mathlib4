@@ -292,8 +292,8 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
     rw [hζ, show 1 = algebraMap K L 1 by simp, Algebra.norm_algebraMap, one_pow]
   · replace h1 : 2 ≤ n := (two_le_iff n).mpr ⟨NeZero.ne _, h1⟩
 -- Porting note: specifying the type of `cyclotomic_coeff_zero K h1` was not needed.
-    rw [← hζ.powerBasis_gen K, PowerBasis.norm_gen_eq_coeff_zero_minpoly, hζ.powerBasis_gen K, ←
-      hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
+    rw [← hζ.powerBasis_gen K, PowerBasis.norm_gen_eq_coeff_zero_minpoly, hζ.powerBasis_gen K,
+      ← hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
       (cyclotomic_coeff_zero K h1 : coeff (cyclotomic n K) 0 = 1), mul_one,
       hζ.powerBasis_dim K, ← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, natDegree_cyclotomic]
     exact (totient_even <| h1.lt_of_ne hn.symm).neg_one_pow
@@ -348,7 +348,7 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
     rw [cyclotomic', eval_prod, ← @Finset.prod_attach E E, ← univ_eq_attach]
     refine Fintype.prod_equiv (hζ.embeddingsEquivPrimitiveRoots E hirr) _ _ fun σ => ?_
     simp
-  haveI : NeZero (n : E) := NeZero.of_faithfulSMul K _ n
+  have : NeZero (n : E) := NeZero.of_faithfulSMul K _ n
   rw [Hprod, cyclotomic', ← cyclotomic_eq_prod_X_sub_primitiveRoots (isRoot_cyclotomic_iff.1 hz),
     ← map_cyclotomic_int, _root_.map_intCast, ← Int.cast_one, eval_intCast_map, eq_intCast,
     Int.cast_id]
@@ -358,7 +358,7 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
 theorem sub_one_norm_isPrimePow (hn : IsPrimePow n) [IsCyclotomicExtension {n} K L]
     (hirr : Irreducible (cyclotomic n K)) (h : n ≠ 2) : norm K (ζ - 1) = n.minFac := by
   have := (lt_of_le_of_ne (succ_le_of_lt (IsPrimePow.one_lt hn)) h.symm)
-  letI hprime : Fact n.minFac.Prime := ⟨minFac_prime (IsPrimePow.ne_one hn)⟩
+  let hprime : Fact n.minFac.Prime := ⟨minFac_prime (IsPrimePow.ne_one hn)⟩
   rw [sub_one_norm_eq_eval_cyclotomic hζ this hirr]
   nth_rw 1 [← IsPrimePow.minFac_pow_factorization_eq hn]
   obtain ⟨k, hk⟩ : ∃ k, n.factorization n.minFac = k + 1 :=
@@ -490,7 +490,7 @@ then the norm of `ζ - 1` is `2`. -/
 theorem norm_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ k)) (hk : 2 ≤ k)
     [H : IsCyclotomicExtension {2 ^ k} K L] (hirr : Irreducible (cyclotomic (2 ^ k) K)) :
     norm K (ζ - 1) = 2 := by
-  have : 2 < 2^ k := by
+  have : 2 < 2 ^ k := by
     nth_rw 1 [← pow_one 2]
     exact Nat.pow_lt_pow_right one_lt_two (lt_of_lt_of_le one_lt_two hk)
   replace hirr : Irreducible (cyclotomic (2 ^ k) K) := by simp [hirr]

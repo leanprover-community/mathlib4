@@ -69,8 +69,8 @@ that there is an `n`-th primitive root of unity in `B` for all nonzero `n ∈ S`
 `B` is generated over `A` by the roots of `X ^ n - 1`. -/
 @[mk_iff]
 class IsCyclotomicExtension
-  (S : Set ℕ) (A : Type u) (B : Type v)
-  [CommRing A] [CommRing B] [Algebra A B] : Prop where
+    (S : Set ℕ) (A : Type u) (B : Type v)
+    [CommRing A] [CommRing B] [Algebra A B] : Prop where
   /-- For all nonzero `n ∈ S`, there exists a primitive `n`-th root of unity in `B`. -/
   exists_isPrimitiveRoot {S} (A B) {n : ℕ} (ha : n ∈ S) (ha' : n ≠ 0) :
     ∃ r : B, IsPrimitiveRoot r n
@@ -305,7 +305,7 @@ theorem neZero [h : IsCyclotomicExtension {n} A B] [IsDomain B] : NeZero (n : B)
 
 protected
 theorem neZero' [IsCyclotomicExtension {n} A B] [IsDomain B] : NeZero (n : A) := by
-  haveI := IsCyclotomicExtension.neZero n A B
+  have := IsCyclotomicExtension.neZero n A B
   exact NeZero.nat_of_neZero (algebraMap A B)
 
 end Basic
@@ -340,9 +340,9 @@ protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExte
     · have : insert n S \ {0} = S \ {0} := by aesop
       rw [eq_self_sdiff_zero, this, ← eq_self_sdiff_zero] at h₂
       exact H A B
-    haveI : IsCyclotomicExtension S A (adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ n = 1}) :=
+    have : IsCyclotomicExtension S A (adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ n = 1}) :=
         union_left _ (insert n S) _ _ (subset_insert n S)
-    haveI := H A (adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ n = 1})
+    have := H A (adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ n = 1})
     have : Module.Finite (adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ n = 1}) B := by
       rw [← union_singleton] at h₂
       let _ := union_right S {n} A B
@@ -669,7 +669,7 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     · apply adjoin_algebra_injective
     · exact hx
   surj' x := by
-    letI : NeZero (n : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
+    let _ : NeZero (n : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
     refine
       Algebra.adjoin_induction
         (hx := ((IsCyclotomicExtension.iff_singleton n K (CyclotomicField n K)).1
