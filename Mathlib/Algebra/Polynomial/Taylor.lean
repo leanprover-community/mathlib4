@@ -78,11 +78,32 @@ theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
   rw [taylor_coeff, hasseDeriv_one]
 
 @[simp]
+theorem coeff_taylor_natDegree : (taylor r f).coeff f.natDegree = f.leadingCoeff := by
+  by_cases hf : f = 0
+  · rw [hf, map_zero]; rfl
+  · rw [taylor_coeff, hasseDeriv_natDegree_eq_C, eval_C]
+
+@[simp]
 theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p := by
   refine map_natDegree_eq_natDegree _ ?_
   nontriviality R
   intro n c c0
   simp [taylor_monomial, natDegree_C_mul_of_mul_ne_zero, natDegree_pow_X_add_C, c0]
+
+@[simp]
+theorem leadingCoeff_taylor : (taylor r f).leadingCoeff = f.leadingCoeff := by
+  rw [leadingCoeff, leadingCoeff, natDegree_taylor, coeff_taylor_natDegree, leadingCoeff]
+
+@[simp]
+theorem taylor_eq_zero : taylor r f = 0 ↔ f = 0 := by
+  rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero, leadingCoeff_taylor]
+
+@[simp]
+theorem degree_taylor (p : R[X]) (r : R) : degree (taylor r p) = degree p := by
+  by_cases hp : p = 0
+  · rw [hp, map_zero]
+  · rw [degree_eq_natDegree hp, degree_eq_iff_natDegree_eq ((taylor_eq_zero r p).not.2 hp),
+      natDegree_taylor]
 
 end Semiring
 
@@ -91,8 +112,7 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] (r : R) (f : R[X])
 
 @[simp]
-theorem taylor_mul (p q : R[X]) :
-    taylor r (p * q) = taylor r p * taylor r q := by simp only [taylor_apply, mul_comp]
+theorem taylor_mul (p q : R[X]) : taylor r (p * q) = taylor r p * taylor r q := mul_comp ..
 
 /-- `Polynomial.taylor` as an `AlgHom` for commutative semirings -/
 @[simps!]
