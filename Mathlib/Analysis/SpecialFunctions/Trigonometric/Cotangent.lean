@@ -8,7 +8,8 @@ import Mathlib.Analysis.Complex.IntegerCompl
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
-import Mathlib.Topology.Algebra.InfiniteSum.MultipliableTendstoUniformly
+import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
+
 
 /-!
 # Cotangent
@@ -56,7 +57,7 @@ section MittagLeffler
 
 open Filter Function Complex Real
 
-open scoped Interval Topology BigOperators Nat Classical Complex
+open scoped Interval Topology BigOperators Nat Complex
 
 local notation "ℂ_ℤ " => integerComplement
 
@@ -80,7 +81,7 @@ lemma sinTerm_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℕ) : sinTerm x n ≠
     exact Nat.cast_add_one_ne_zero n
 
 theorem tendsto_euler_sin_prod' (x : ℂ) (h0 : x ≠ 0) :
-    Tendsto (fun n : ℕ => ∏ i : ℕ in Finset.range n, sinTerm x i) atTop
+    Tendsto (fun n : ℕ => ∏ i ∈ Finset.range n, sinTerm x i) atTop
     (𝓝 (sin (π * x) / (π * x))) := by
   rw [show (sin (π * x) / (π * x)) = sin (↑π * x) * (1 / (↑π * x)) by ring]
   apply (Filter.Tendsto.mul_const (b := 1 / (π * x)) (tendsto_euler_sin_prod x)).congr
@@ -95,20 +96,17 @@ theorem tendsto_euler_sin_prod' (x : ℂ) (h0 : x ≠ 0) :
   rw [sub_eq_add_neg, ←neg_div]
   rfl
 
-theorem multipliable_sinTerm (x : ℂ) (hx : x ∈ ℂ_ℤ) :
+theorem multipliable_sinTerm (x : ℂ) :
     Multipliable fun i => sinTerm x i := by
-  apply Complex.multipliable_one_add_of_summable
-  · rw [← summable_norm_iff]
-    have := (summable_pow_div_add (x^2) 2 1 (by omega))
-    simpa only [norm_div, norm_neg, norm_pow, Complex.norm_eq_abs, Nat.cast_one]
-  · apply sinTerm_ne_zero hx
+  apply _root_.multipliable_one_add_of_summable
+  have := (summable_pow_div_add (x ^ 2) 2 1 (by omega))
+  simpa using this
 
 lemma euler_sin_tprod (x : ℂ) (hx : x ∈ ℂ_ℤ) :
     ∏' i : ℕ, sinTerm x i = Complex.sin (π * x) / (π * x) := by
-  rw [← Multipliable.hasProd_iff, Multipliable.hasProd_iff_tendsto_nat]
-  · apply tendsto_euler_sin_prod' x (by apply integerComplement.ne_zero hx)
-  · exact multipliable_sinTerm x hx
-  · exact multipliable_sinTerm x hx
+  rw [← Multipliable.hasProd_iff  (multipliable_sinTerm x) ,
+    Multipliable.hasProd_iff_tendsto_nat (multipliable_sinTerm x )]
+  exact tendsto_euler_sin_prod' x (by apply integerComplement.ne_zero hx)
 
 private lemma sinTerm_bound_aux (Z : Set ℂ_ℤ) (hZ : IsCompact Z) : ∃ u : ℕ → ℝ, Summable u ∧
     ∀ (j : ℕ) z, z ∈ Z → (‖-z.1 ^ 2 / (j + 1) ^ 2‖) ≤ u j := by
