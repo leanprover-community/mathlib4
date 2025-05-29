@@ -71,6 +71,11 @@ theorem pi_comp (f : (i : ι) → M₂ →ₗ[R] φ i) (g : M₃ →ₗ[R] M₂)
     (pi f).comp g = pi fun i => (f i).comp g :=
   rfl
 
+/-- The constant linear map, taking `x` to `Function.const ι x`. -/
+def const : M₂ →ₗ[R] (ι → M₂) := pi fun _ ↦ .id
+
+@[simp] lemma const_apply (x : M₂) : LinearMap.const (R := R) x = Function.const ι x := rfl
+
 /-- The projections from a family of modules are linear maps.
 
 Note:  known here as `LinearMap.proj`, this construction is in other categories called `eval`, for
@@ -315,7 +320,7 @@ theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
   rfl
 
 theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
-  ker_eq_bot_of_injective <| Pi.single_injective _ _
+  ker_eq_bot_of_injective <| Pi.single_injective _
 
 theorem proj_comp_single (i j : ι) : (proj i).comp (single R φ j) = diag j i := by
   rw [single_eq_pi_diag, proj_pi]

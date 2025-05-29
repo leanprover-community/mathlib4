@@ -8,7 +8,6 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Atoms
-import Mathlib.Order.Minimal
 
 /-!
 # Order structures on finite types
@@ -160,38 +159,6 @@ noncomputable abbrev toCompleteLinearOrderOfNonempty [LinearOrder α] : Complete
 end Nonempty
 
 end Fintype
-
-/-! ### Properties for PartialOrders -/
-
-section PartialOrder
-
-variable {α : Type*} [PartialOrder α] {a : α} {p : α → Prop}
-
-lemma Finite.exists_minimal_le [Finite α] (h : p a) : ∃ b, b ≤ a ∧ Minimal p b := by
-  obtain ⟨b, ⟨hba, hb⟩, hbmin⟩ :=
-    Set.Finite.exists_minimal_wrt id {x | x ≤ a ∧ p x} (Set.toFinite _) ⟨a, rfl.le, h⟩
-  exact ⟨b, hba, hb, fun x hx hxb ↦ (hbmin x ⟨hxb.trans hba, hx⟩ hxb).le⟩
-
-lemma Finite.exists_le_maximal [Finite α] (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
-  Finite.exists_minimal_le (α := αᵒᵈ) h
-
-lemma Finset.exists_minimal_le (s : Finset α) (h : a ∈ s) : ∃ b, b ≤ a ∧ Minimal (· ∈ s) b := by
-  obtain ⟨⟨b, _⟩, lb, minb⟩ := @Finite.exists_minimal_le s _ ⟨a, h⟩ (·.1 ∈ s) _ h
-  use b, lb; rwa [minimal_subtype, inf_idem] at minb
-
-lemma Finset.exists_le_maximal (s : Finset α) (h : a ∈ s) : ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
-  s.exists_minimal_le (α := αᵒᵈ) h
-
-lemma Set.Finite.exists_minimal_le {s : Set α} (hs : s.Finite) (h : a ∈ s) :
-    ∃ b, b ≤ a ∧ Minimal (· ∈ s) b := by
-  obtain ⟨b, lb, minb⟩ := hs.toFinset.exists_minimal_le (hs.mem_toFinset.mpr h)
-  use b, lb; simpa using minb
-
-lemma Set.Finite.exists_le_maximal {s : Set α} (hs : s.Finite) (h : a ∈ s) :
-    ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
-  hs.exists_minimal_le (α := αᵒᵈ) h
-
-end PartialOrder
 
 /-! ### Concrete instances -/
 

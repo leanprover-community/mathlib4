@@ -949,7 +949,7 @@ def trTape' (L R : ListBlank Γ) : Tape Bool := by
       Tape.mk' (L.flatMap (fun x ↦ (enc x).toList.reverse) ⟨n, ?_⟩)
         (R.flatMap (fun x ↦ (enc x).toList) ⟨n, ?_⟩) <;>
     simp only [enc0, List.Vector.replicate, List.reverse_replicate, Bool.default_bool,
-      Vector.toList_mk]
+      List.Vector.toList_mk]
 
 /-- The low level tape corresponding to the given tape over alphabet `Γ`. -/
 def trTape (T : Tape Γ) : Tape Bool :=
@@ -975,10 +975,10 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
     (Tape.move Dir.left)^[n] (trTape' enc0 L R) = trTape' enc0 L.tail (R.cons L.head) := by
   obtain ⟨a, L, rfl⟩ := L.exists_cons
   simp only [trTape', ListBlank.cons_flatMap, ListBlank.head_cons, ListBlank.tail_cons]
-  suffices ∀ {L' R' l₁ l₂} (_ : Vector.toList (enc a) = List.reverseAux l₁ l₂),
+  suffices ∀ {L' R' l₁ l₂} (_ : List.Vector.toList (enc a) = List.reverseAux l₁ l₂),
       (Tape.move Dir.left)^[l₁.length]
       (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
-      Tape.mk' L' (ListBlank.append (Vector.toList (enc a)) R') by
+      Tape.mk' L' (ListBlank.append (List.Vector.toList (enc a)) R') by
     simpa only [List.length_reverse, Vector.toList_length] using this (List.reverse_reverse _).symm
   intro _ _ l₁ l₂ e
   induction' l₁ with b l₁ IH generalizing l₂
@@ -1150,11 +1150,11 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
       replace IH₂ := IH₂ hs.2 fun q hq ↦ hw q (Or.inr hq)
       exact ⟨supportsStmt_read _ fun _ ↦ ⟨IH₁.1, IH₂.1⟩, fun q ↦ Or.rec (IH₁.2 _) (IH₂.2 _)⟩
     | goto l =>
-      simp only [writes, Finset.not_mem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
+      simp only [writes, Finset.notMem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
       refine supportsStmt_read _ fun a _ s ↦ ?_
       exact Finset.mem_biUnion.2 ⟨_, hs _ _, Finset.mem_insert_self _ _⟩
     | halt =>
-      simp only [writes, Finset.not_mem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
+      simp only [writes, Finset.notMem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
       simp only [SupportsStmt, supportsStmt_move, trNormal]⟩
 
 end TM1to1

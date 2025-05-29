@@ -553,7 +553,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
     | throwError "parse CNF failed"
   if arr.isEmpty then throwError "empty CNF"
   let ctx' := buildConj arr 0 arr.size
-  let ctxName ← mkAuxName (name ++ `ctx) 1
+  let ctxName ← mkAuxDeclName (name ++ `ctx)
   addDecl <| Declaration.defnDecl {
     name := ctxName
     levelParams := []
@@ -566,7 +566,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
   let Parsec.ParseResult.success _ steps := Parser.parseLRAT lrat.mkIterator
     | throwError "parse LRAT failed"
   let proof ← buildProof arr ctx ctx' steps
-  let declName ← mkAuxName (name ++ `proof) 1
+  let declName ← mkAuxDeclName (name ++ `proof)
   addDecl <| Declaration.thmDecl {
     name := declName
     levelParams := []

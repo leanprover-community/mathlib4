@@ -631,8 +631,8 @@ private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :
   .ofCore CStarMatrix.normedSpaceCore
 
 /- In this `Aux` section, we locally activate the following instances: a norm on `CStarMatrix`
- which induces a topology that is not defeq with the matrix one, and the elementwise norm on
- matrices, in order to show that the two topologies are in fact equal -/
+which induces a topology that is not defeq with the matrix one, and the elementwise norm on
+matrices, in order to show that the two topologies are in fact equal -/
 attribute [local instance] normedSpaceAux Matrix.normedAddCommGroup Matrix.normedSpace
 
 private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}

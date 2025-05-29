@@ -64,7 +64,7 @@ structure Config where
   zetaDelta := false
   /-- if true, atoms inside ring expressions will be reduced recursively -/
   recursive := true
-  /-- if true, then fail if no progess is made -/
+  /-- if true, then fail if no progress is made -/
   failIfUnchanged := true
   /-- The normalization style. -/
   mode := RingMode.SOP

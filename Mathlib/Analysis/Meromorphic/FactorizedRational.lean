@@ -143,27 +143,31 @@ theorem meromorphicNFOn (d : 𝕜 → ℤ) (U : Set 𝕜) :
 /--
 The order of the factorized rational function `(∏ᶠ u, fun z ↦ (z - u) ^ d u)` at `z` equals `d z`.
 -/
-theorem order {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : d.support.Finite) :
-    (meromorphicNFOn_univ d (mem_univ z)).meromorphicAt.order = d z := by
+theorem meromorphicOrderAt_eq {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : d.support.Finite) :
+    meromorphicOrderAt (∏ᶠ u, (· - u) ^ d u) z = d z := by
   classical
-  rw [MeromorphicAt.order_eq_int_iff]
+  rw [meromorphicOrderAt_eq_int_iff ((meromorphicNFOn_univ d).meromorphicOn _ (mem_univ _))]
   use ∏ᶠ u, (· - u) ^ update d z 0 u
   simp only [update_self, le_refl, analyticAt, ne_eq, ne_zero, not_false_eq_true, smul_eq_mul,
     true_and]
   filter_upwards
   simp [extractFactor z h₁d]
 
+@[deprecated (since := "2025-05-22")] alias order := meromorphicOrderAt_eq
+
 /--
 Factorized rational functions are nowhere locally constant zero.
 -/
-theorem order_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
-    (meromorphicNFOn_univ d (mem_univ z)).meromorphicAt.order ≠ ⊤ := by
+theorem meromorphicOrderAt_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
+    meromorphicOrderAt (∏ᶠ u, (· - u) ^ d u) z ≠ ⊤ := by
   by_cases hd : d.support.Finite
-  · simp [order d hd]
+  · simp [meromorphicOrderAt_eq d hd]
   · rw [← mulSupport] at hd
     have : AnalyticAt 𝕜 (1 : 𝕜 → 𝕜) z := analyticAt_const
-    simp [finprod_of_infinite_mulSupport hd, this.meromorphicAt_order,
-      this.order_eq_zero_iff.2 (by simp)]
+    simp [finprod_of_infinite_mulSupport hd, this.meromorphicOrderAt_eq,
+      this.analyticOrderAt_eq_zero.2 (by simp)]
+
+@[deprecated (since := "2025-05-22")] alias order_ne_top := meromorphicOrderAt_ne_top
 
 /--
 If `D` is a divisor, then the divisor of the factorized rational function equals `D`.
@@ -172,7 +176,7 @@ theorem divisor {U : Set 𝕜} {D : locallyFinsuppWithin U ℤ} (hD : D.support.
     MeromorphicOn.divisor (∏ᶠ u, (· - u) ^ D u) U = D := by
   ext z
   by_cases hz : z ∈ U
-  <;> simp [(meromorphicNFOn D U).meromorphicOn, hz, order D hD]
+  <;> simp [(meromorphicNFOn D U).meromorphicOn, hz, meromorphicOrderAt_eq D hD]
 
 end Function.FactorizedRational
 
@@ -197,7 +201,7 @@ zeros such that `f` is equivalent, modulo equality on codiscrete sets, to the pr
 factorized rational function associated with the divisor of `f`.
 -/
 theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicOn f U)
-    (h₂f : ∀ u : U, (h₁f u u.2).order ≠ ⊤) (h₃f : (divisor f U).support.Finite) :
+    (h₂f : ∀ u : U, meromorphicOrderAt f u ≠ ⊤) (h₃f : (divisor f U).support.Finite) :
     ∃ g : 𝕜 → E, AnalyticOnNhd 𝕜 g U ∧ (∀ u : U, g u ≠ 0) ∧
       f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ divisor f U u) • g := by
   -- Take `g` as the inverse of the Laurent polynomial defined below, converted to a meromorphic
@@ -212,15 +216,16 @@ theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicO
       divisor_smul hφ.inv h₁f _ (fun z hz ↦ h₂f ⟨z, hz⟩), divisor_inv,
       Function.FactorizedRational.divisor h₃f, neg_add_cancel]
     intro z hz
-    simp [(hφ z hz).order_inv, order_ne_top (divisor f U)]
+    simpa [meromorphicOrderAt_inv] using meromorphicOrderAt_ne_top (divisor f U)
   · -- ∀ (u : ↑U), g ↑u ≠ 0
     intro ⟨u, hu⟩
-    rw [← (hg hu).order_eq_zero_iff, ← ((hφ.inv.smul h₁f) u hu).order_congr
-      (toMeromorphicNFOn_eq_self_on_nhdNE (hφ.inv.smul h₁f) hu).symm,
-      (hφ u hu).inv.order_smul (h₁f u hu), (hφ u hu).order_inv, order _ h₃f]
+    rw [← (hg hu).meromorphicOrderAt_eq_zero_iff, ← meromorphicOrderAt_congr
+        (toMeromorphicNFOn_eq_self_on_nhdsNE (hφ.inv.smul h₁f) hu).symm,
+      meromorphicOrderAt_smul (hφ u hu).inv (h₁f u hu), meromorphicOrderAt_inv,
+      meromorphicOrderAt_eq _ h₃f]
     simp only [Pi.neg_apply, h₁f, hu, divisor_apply, WithTop.LinearOrderedAddCommGroup.coe_neg]
-    lift (h₁f u hu).order to ℤ using (h₂f ⟨u, hu⟩) with n hn
-    rw [WithTop.untop₀_coe, (by rfl : -↑(n : WithTop ℤ) = (↑(-n) : WithTop ℤ)), ← WithTop.coe_add]
+    lift meromorphicOrderAt f u to ℤ using (h₂f ⟨u, hu⟩) with n hn
+    rw [WithTop.untop₀_coe, ← WithTop.LinearOrderedAddCommGroup.coe_neg, ← WithTop.coe_add]
     simp
   · -- f =ᶠ[codiscreteWithin U] (∏ᶠ (u : 𝕜), fun z ↦ (z - u) ^ (divisor f U) u) * g
     filter_upwards [(divisor f U).eq_zero_codiscreteWithin,
@@ -230,8 +235,8 @@ theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicO
     simp only [Pi.smul_apply', toMeromorphicNFOn_eq_toMeromorphicNFAt (hφ.inv.smul h₁f) h₄a,
       toMeromorphicNFAt_eq_self.2 h₃a, Pi.inv_apply]
     rw [← smul_assoc, smul_eq_mul, mul_inv_cancel₀ _, one_smul]
-    rwa [← ((meromorphicNFOn_univ (divisor f U)) trivial).order_eq_zero_iff,
-      order, h₂a, Pi.zero_apply, WithTop.coe_zero]
+    rwa [← ((meromorphicNFOn_univ (divisor f U)) trivial).meromorphicOrderAt_eq_zero_iff,
+      meromorphicOrderAt_eq, h₂a, Pi.zero_apply, WithTop.coe_zero]
 
 /--
 In the setting of `MeromorphicOn.extract_zeros_poles`, the function `log ‖f‖` is equivalent, modulo
@@ -257,27 +262,25 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
       · simp only [h, lt_self_iff_false] at hy
       · simp only [h, lt_neg_self_iff] at hy
         linarith
-    · simp_all only [ne_eq, Subtype.forall, Int.cast_zero, zero_mul]
-      rfl
+    · simp_all [Pi.zero_def]
   -- Trivial case: the support of D is infinite
-  by_cases h₃f : ¬D.support.Finite
-  · rw [finsum_of_infinite_support (by simpa [t₁] using h₃f)]
+  by_cases h₃f : D.support.Finite
+  case neg =>
+    rw [finsum_of_infinite_support (by simpa [t₁] using h₃f)]
     rw [finprod_of_infinite_mulSupport (by simpa [mulSupport] using h₃f)] at h
     filter_upwards [h] with x hx
     simp [hx]
-  rw [not_not] at h₃f
   -- General case
   filter_upwards [h, D.eq_zero_codiscreteWithin, self_mem_codiscreteWithin U] with z hz h₂z h₃z
+  rw [Pi.zero_apply] at h₂z
   rw [hz, finprod_eq_prod_of_mulSupport_subset (s := h₃f.toFinset) _
     (by simp_all [mulSupport]), finsum_eq_sum_of_support_subset (s := h₃f.toFinset) _ (by simp_all)]
   have : ∀ x ∈ h₃f.toFinset, ‖z - x‖ ^ D x ≠ 0 := by
     intro x hx
-    rw [Finite.mem_toFinset, Function.mem_support, ne_eq] at hx
-    rw [ne_eq, zpow_eq_zero_iff hx, norm_eq_zero]
-    by_contra hCon
-    rw [sub_eq_zero] at hCon
-    rw [hCon] at h₂z
-    tauto
+    rw [Finite.mem_toFinset, Function.mem_support] at hx
+    rw [ne_eq, zpow_eq_zero_iff hx, norm_eq_zero, sub_eq_zero, eq_comm]
+    apply ne_of_apply_ne D
+    rwa [h₂z]
   simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply, norm_smul, norm_prod, norm_zpow]
   rw [log_mul (Finset.prod_ne_zero_iff.2 this) (by simp [hg ⟨z, h₃z⟩]), log_prod _ _ this]
   simp [log_zpow]
