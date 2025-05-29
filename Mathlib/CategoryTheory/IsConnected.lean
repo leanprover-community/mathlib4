@@ -56,7 +56,8 @@ namespace CategoryTheory
 -/
 class IsPreconnected (J : Type u₁) [Category.{v₁} J] : Prop where
   iso_constant :
-    ∀ {α : Type u₁} (F : J ⥤ Discrete α) (j : J), Nonempty (F ≅ (Functor.const J).obj (F.obj j))
+    ∀ {α : Type u₁} (F : J ⥤ Discrete.{u₁} α) (j : J),
+      Nonempty (F ≅ (Functor.const J).obj (F.obj j))
 
 attribute [inherit_doc IsPreconnected] IsPreconnected.iso_constant
 
@@ -113,7 +114,7 @@ theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₂} (F : J ⥤ 
 The converse of `any_functor_const_on_obj`.
 -/
 theorem IsPreconnected.of_any_functor_const_on_obj
-    (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') :
+    (h : ∀ {α : Type u₁} (F : J ⥤ Discrete.{u₁} α), ∀ j j' : J, F.obj j = F.obj j') :
     IsPreconnected J where
   iso_constant := fun F j' => ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩
 
@@ -128,7 +129,8 @@ instance IsConnected.prod [IsConnected J] [IsConnected K] : IsConnected (J × K)
 The converse of `any_functor_const_on_obj`.
 -/
 theorem IsConnected.of_any_functor_const_on_obj [Nonempty J]
-    (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') : IsConnected J :=
+    (h : ∀ {α : Type u₁} (F : J ⥤ Discrete.{u₁} α),
+      ∀ j j' : J, F.obj j = F.obj j') : IsConnected J :=
   { IsPreconnected.of_any_functor_const_on_obj h with }
 
 /-- If `J` is connected, then given any function `F` such that the presence of a
@@ -141,7 +143,7 @@ theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F :
     (h : ∀ (j₁ j₂ : J) (_ : j₁ ⟶ j₂), F j₁ = F j₂) (j j' : J) : F j = F j' := by
   simpa using
     any_functor_const_on_obj
-      { obj := Discrete.mk ∘ F
+      { obj := Discrete.mk.{u₂} ∘ F
         map := fun f => eqToHom (by ext; exact h _ _ f) }
       j j'
 
@@ -424,7 +426,7 @@ theorem isConnected_of_zigzag [Nonempty J] (h : ∀ j₁ j₂ : J, ∃ l,
 
 /-- If `Discrete α` is connected, then `α` is (type-)equivalent to `PUnit`. -/
 def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] : α ≃ PUnit :=
-  Discrete.equivOfEquivalence.{u₁, u₁}
+  Discrete.equivOfEquivalence.{u₁, u₁, u₁, u₁}
     { functor := Functor.star (Discrete α)
       inverse := Discrete.functor fun _ => Classical.arbitrary _
       unitIso := isoConstant _ (Classical.arbitrary _)
