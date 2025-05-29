@@ -853,19 +853,6 @@ protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M �
     (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
     f (a ^ n) = f a ^ n := map_zpow' f hf a n
 
-/-- Makes a `OneHom` inverse from the left inverse of a `OneHom` -/
-@[to_additive (attr := simps)
-  "Make a `ZeroHom` inverse from the left inverse of a `ZeroHom`"]
-def OneHom.inverse [One M] [One N]
-    (f : OneHom M N) (g : N → M)
-    (h₁ : Function.LeftInverse g f) :
-  OneHom N M :=
-  { toFun := g,
-    map_one' := by rw [← f.map_one, h₁] }
-
-theorem OneHom.inverse_comp [One M] [One N] {f : OneHom M N} {g : N → M}
-    {h : Function.LeftInverse g f} : (f.inverse g h).comp f = id M := OneHom.ext h
-
 /-- If `M` and `N` have multiplications, `f : M →ₙ* N` is a surjective multiplicative map,
 and `M` is commutative, then `N` is commutative. -/
 @[to_additive
@@ -943,6 +930,45 @@ theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := by
 @[to_additive (attr := simp)]
 theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
     f.liftRight hp g hg := rfl
+
+end
+
+/-- Makes a `OneHom` inverse from the left inverse of a `OneHom` -/
+@[to_additive (attr := simps!)
+  "Make a `ZeroHom` inverse from the left inverse of a `ZeroHom`"]
+def inverse [One M] [One N] (f : OneHom M N) (g : N → M) (h : LeftInverse g f) : OneHom N M :=
+  liftLeft (id M) f g h
+
+section
+
+variable {f : OneHom M N} {g : N → M} {h : LeftInverse g f}
+
+@[to_additive (attr := simp)]
+theorem inverse_comp : (f.inverse g h).comp f = id M := ext h
+@[to_additive]
+theorem inverse_comp_apply : ∀ x, (f.inverse g h) (f x) = x := h
+@[to_additive (attr := simp)]
+theorem comp_inverse (h' : RightInverse g f) : f.comp (f.inverse g h) = id N := ext h'
+@[to_additive]
+theorem comp_inverse_apply (h' : RightInverse g f) : ∀ x, f ((f.inverse g h) x) = x := h'
+
+@[to_additive]
+theorem inverse_eq_liftLeft : f.inverse g h = liftLeft (id M) f g h := rfl
+@[to_additive]
+theorem inverse_eq_liftRight (h' : RightInverse g f) : f.inverse g h =
+  liftRight (id N) h.injective g h' := rfl
+
+@[to_additive]
+theorem eq_inverse_of_comp_right_eq_id {g'} (h' : RightInverse g f) (hg : f.comp g' = id N) :
+    g' = f.inverse g h := eq_liftRight hg (hg := fun _ => h' _) (hp := h.injective)
+
+@[to_additive]
+theorem eq_inverse_of_comp_left_eq_id {g'} (h' : RightInverse g f) (hg : g'.comp f = id M) :
+    g' = f.inverse g h := eq_liftLeft h'.surjective hg
+
+@[to_additive (attr := simp)]
+theorem inverse_inverse (h' : RightInverse g f) :
+    (f.inverse g h).inverse f (comp_inverse_apply h') = f := rfl
 
 end
 
@@ -1096,6 +1122,10 @@ theorem liftLeft_liftLeft : f.liftLeft hp (f.liftLeft hp g hg) liftLeft_comp_app
 theorem toMulHom_liftLeft : (f.liftLeft hp g hg).toMulHom =
     f.toMulHom.liftLeft (p := p.toMulHom) hp g hg := rfl
 
+@[to_additive (attr := simp)]
+theorem toOneHom_liftLeft : (f.liftLeft hp g hg).toOneHom =
+    f.toOneHom.liftLeft p.toOneHom g hg := rfl
+
 end
 
 /-- If `p : P →* N` is an injective `MonoidHom`, `g : M → P` is a map, and `f : M →* N`
@@ -1130,6 +1160,10 @@ theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRigh
 @[to_additive (attr := simp)]
 theorem toMulHom_liftRight : (f.liftRight hp g hg).toMulHom =
     f.toMulHom.liftRight (p := p.toMulHom) hp g hg := rfl
+
+@[to_additive (attr := simp)]
+theorem toOneHom_liftRight : (f.liftRight hp g hg).toOneHom =
+    f.toOneHom.liftRight (p := p.toOneHom) hp g hg := rfl
 
 end
 
@@ -1172,6 +1206,9 @@ theorem inverse_inverse : (f.inverse g h₁ h₂).inverse f comp_inverse_apply i
 
 @[to_additive (attr := simp)]
 theorem toMulHom_inverse : (f.inverse g h₁ h₂).toMulHom = f.toMulHom.inverse g h₁ h₂ := rfl
+
+@[to_additive (attr := simp)]
+theorem toOneHom_inverse : (f.inverse g h₁ h₂).toOneHom = f.toOneHom.inverse g h₁ := rfl
 
 end
 
