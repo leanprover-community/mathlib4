@@ -26,6 +26,8 @@ noncomputable section
 
 namespace Polynomial
 
+section Semiring
+
 variable {R : Type*} [Semiring R] (r : R) (f : R[X])
 
 /-- The Taylor expansion of a polynomial `f` at `r`. -/
@@ -38,21 +40,18 @@ theorem taylor_apply : taylor r f = f.comp (X + C r) :=
   rfl
 
 @[simp]
-theorem taylor_X : taylor r X = X + C r := by simp only [taylor_apply, X_comp]
+theorem taylor_X : taylor r X = X + C r := X_comp
 
 @[simp]
-theorem taylor_C (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C_comp]
+theorem taylor_C (x : R) : taylor r (C x) = C x := C_comp
+
+theorem taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_apply, C_0, add_zero, comp_X]
 
 @[simp]
-theorem taylor_zero' : taylor (0 : R) = LinearMap.id := by
-  ext
-  simp only [taylor_apply, add_zero, comp_X, map_zero, LinearMap.id_comp,
-    Function.comp_apply, LinearMap.coe_comp]
-
-theorem taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_zero', LinearMap.id_apply]
+theorem taylor_zero' : taylor (0 : R) = LinearMap.id := LinearMap.ext taylor_zero
 
 @[simp]
-theorem taylor_one : taylor r (1 : R[X]) = C 1 := by rw [← C_1, taylor_C]
+theorem taylor_one : taylor r (1 : R[X]) = C 1 := taylor_C r 1
 
 @[simp]
 theorem taylor_monomial (i : ℕ) (k : R) : taylor r (monomial i k) = C k * (X + C r) ^ i := by
@@ -85,33 +84,50 @@ theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree
   intro n c c0
   simp [taylor_monomial, natDegree_C_mul_of_mul_ne_zero, natDegree_pow_X_add_C, c0]
 
+end Semiring
+
+section CommSemiring
+
+variable {R : Type*} [CommSemiring R] (r : R) (f : R[X])
+
 @[simp]
-theorem taylor_mul {R} [CommSemiring R] (r : R) (p q : R[X]) :
+theorem taylor_mul (p q : R[X]) :
     taylor r (p * q) = taylor r p * taylor r q := by simp only [taylor_apply, mul_comp]
 
 /-- `Polynomial.taylor` as an `AlgHom` for commutative semirings -/
 @[simps!]
-def taylorAlgHom {R} [CommSemiring R] (r : R) : R[X] →ₐ[R] R[X] :=
+def taylorAlgHom (r : R) : R[X] →ₐ[R] R[X] :=
   AlgHom.ofLinearMap (taylor r) (taylor_one r) (taylor_mul r)
 
-theorem taylor_taylor {R} [CommSemiring R] (f : R[X]) (r s : R) :
-    taylor r (taylor s f) = taylor (r + s) f := by
+theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r + s) f := by
   simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, C_add, add_assoc]
 
-theorem taylor_eval {R} [CommSemiring R] (r : R) (f : R[X]) (s : R) :
-    (taylor r f).eval s = f.eval (s + r) := by
+theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
 
-theorem taylor_eval_sub {R} [CommRing R] (r : R) (f : R[X]) (s : R) :
+theorem eval_add_of_sq_eq_zero (p : R[X]) (x y : R) (hy : y ^ 2 = 0) :
+    p.eval (x + y) = p.eval x + p.derivative.eval x * y := by
+  rw [add_comm, ← Polynomial.taylor_eval,
+    Polynomial.eval_eq_sum_range' ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)),
+    Finset.sum_range_succ', Finset.sum_range_succ']
+  simp [pow_succ, mul_assoc, ← pow_two, hy, add_comm (eval x p)]
+
+end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R] (r : R) (f : R[X])
+
+theorem taylor_eval_sub (s : R) :
     (taylor r f).eval (s - r) = f.eval s := by rw [taylor_eval, sub_add_cancel]
 
-theorem taylor_injective {R} [CommRing R] (r : R) : Function.Injective (taylor r) := by
+theorem taylor_injective (r : R) : Function.Injective (taylor r) := by
   intro f g h
   apply_fun taylor (-r) at h
   simpa only [taylor_apply, comp_assoc, add_comp, X_comp, C_comp, C_neg, neg_add_cancel_right,
     comp_X] using h
 
-theorem eq_zero_of_hasseDeriv_eq_zero {R} [CommRing R] (f : R[X]) (r : R)
+theorem eq_zero_of_hasseDeriv_eq_zero (f : R[X]) (r : R)
     (h : ∀ k, (hasseDeriv k f).eval r = 0) : f = 0 := by
   apply taylor_injective r
   rw [LinearMap.map_zero]
@@ -119,16 +135,11 @@ theorem eq_zero_of_hasseDeriv_eq_zero {R} [CommRing R] (f : R[X]) (r : R)
   simp only [taylor_coeff, h, coeff_zero]
 
 /-- Taylor's formula. -/
-theorem sum_taylor_eq {R} [CommRing R] (f : R[X]) (r : R) :
+theorem sum_taylor_eq (f : R[X]) (r : R) :
     ((taylor r f).sum fun i a => C a * (X - C r) ^ i) = f := by
   rw [← comp_eq_sum_left, sub_eq_add_neg, ← C_neg, ← taylor_apply, taylor_taylor, neg_add_cancel,
     taylor_zero]
 
-theorem eval_add_of_sq_eq_zero {A} [CommSemiring A] (p : Polynomial A) (x y : A) (hy : y ^ 2 = 0) :
-    p.eval (x + y) = p.eval x + p.derivative.eval x * y := by
-  rw [add_comm, ← Polynomial.taylor_eval,
-    Polynomial.eval_eq_sum_range' ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)),
-    Finset.sum_range_succ', Finset.sum_range_succ']
-  simp [pow_succ, mul_assoc, ← pow_two, hy, add_comm (eval x p)]
+end CommRing
 
 end Polynomial

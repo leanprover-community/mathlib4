@@ -102,12 +102,12 @@ lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure �
           (⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s) - 1/n
         < ⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s)
     have ht_meas : MeasurableSet t := by
-      by_contra h_not_mem
-      simp only [h_not_mem] at ht
+      by_contra h_notMem
+      simp only [h_notMem] at ht
       simp at ht
     have ht_mem : SigmaFinite (μ.restrict t) := by
-      by_contra h_not_mem
-      simp only [h_not_mem] at ht
+      by_contra h_notMem
+      simp only [h_notMem] at ht
       simp at ht
     refine ⟨t, ht_meas, ht_mem, ?_⟩
     simp only [ht_meas, ht_mem, iSup_true] at ht

@@ -309,7 +309,7 @@ theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (
     (x : α) : (s.map f).count (f x) = s.count x := by
   by_cases H : x ∈ s
   · exact count_map_eq_count f _ hf.injOn _ H
-  · rw [count_eq_zero_of_not_mem H, count_eq_zero, mem_map]
+  · rw [count_eq_zero_of_notMem H, count_eq_zero, mem_map]
     rintro ⟨k, hks, hkx⟩
     rw [hf hkx] at hks
     contradiction
@@ -340,12 +340,12 @@ lemma filter_sub (p : α → Prop) [DecidablePred p] (s t : Multiset α) :
     by_cases m : a ∈ s
     · rw [← cons_inj_right a, ← filter_cons_of_pos _ h, cons_erase (mem_filter_of_mem m h),
         cons_erase m]
-    · rw [erase_of_not_mem m, erase_of_not_mem (mt mem_of_mem_filter m)]
+    · rw [erase_of_notMem m, erase_of_notMem (mt mem_of_mem_filter m)]
   · rw [filter_cons_of_neg _ h]
     by_cases m : a ∈ s
     · rw [(by rw [filter_cons_of_neg _ h] : filter p (erase s a) = filter p (a ::ₘ erase s a)),
         cons_erase m]
-    · rw [erase_of_not_mem m]
+    · rw [erase_of_notMem m]
 
 @[simp]
 lemma sub_filter_eq_filter_not (p : α → Prop) [DecidablePred p] (s : Multiset α) :
@@ -421,8 +421,10 @@ theorem Nodup.mem_erase_iff [DecidableEq α] {a b : α} {l} (d : Nodup l) :
     a ∈ l.erase b ↔ a ≠ b ∧ a ∈ l := by
   rw [d.erase_eq_filter b, mem_filter, and_comm]
 
-theorem Nodup.not_mem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ s.erase a := fun ha =>
+theorem Nodup.notMem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ s.erase a := fun ha =>
   (h.mem_erase_iff.1 ha).1 rfl
+
+@[deprecated (since := "2025-05-23")] alias Nodup.not_mem_erase := Nodup.notMem_erase
 
 end Nodup
 
