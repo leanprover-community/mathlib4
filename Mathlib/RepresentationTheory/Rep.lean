@@ -86,15 +86,15 @@ lemma ρ_hom {X : Rep k G} (g : G) : (Action.ρ X g).hom = X.ρ g := rfl
 @[simp]
 lemma ofHom_ρ {X : Rep k G} (g : G) : ModuleCat.ofHom (X.ρ g) = Action.ρ X g := rfl
 
-@[simp]
+@[deprecated Representation.inv_self_apply (since := "2025-05-09")]
 theorem ρ_inv_self_apply {G : Type u} [Group G] (A : Rep k G) (g : G) (x : A) :
     A.ρ g⁻¹ (A.ρ g x) = x :=
-  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, LinearMap.one_apply]
+  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, Module.End.one_apply]
 
-@[simp]
+@[deprecated Representation.self_inv_apply (since := "2025-05-09")]
 theorem ρ_self_inv_apply {G : Type u} [Group G] {A : Rep k G} (g : G) (x : A) :
     A.ρ g (A.ρ g⁻¹ x) = x :=
-  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, LinearMap.one_apply]
+  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, Module.End.one_apply]
 
 theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
     f.hom (A.ρ g x) = B.ρ g (f.hom x) :=
@@ -121,12 +121,57 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
     IsTrivial (Rep.of ρ) where
 
+section
+
+variable {G : Type u} [Group G] (A : Rep k G) (S : Subgroup G)
+  [S.Normal] [Representation.IsTrivial (A.ρ.comp S.subtype)]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
+through `G ⧸ S`. -/
+abbrev ofQuotient : Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotient S)
+
+/-- A `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially induces a
+`G ⧸ S`-representation on `A`, and composing this with the quotient map `G → G ⧸ S` gives the
+original representation by definition. Useful for typechecking. -/
+abbrev resOfQuotientIso [Representation.IsTrivial (A.ρ.comp S.subtype)] :
+    (Action.res _ (QuotientGroup.mk' S)).obj (A.ofQuotient S) ≅ A := Iso.refl _
+
+end
+
+variable (A : Rep k G)
+
+/-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
+restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
+abbrev subrepresentation (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    Rep k G :=
+  Rep.of (A.ρ.subrepresentation W le_comap)
+
+/-- The natural inclusion of a subrepresentation into the ambient representation. -/
+@[simps]
+def subtype (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    subrepresentation A W le_comap ⟶ A where
+  hom := ModuleCat.ofHom W.subtype
+  comm _ := rfl
+
+/-- Given a `k`-linear `G`-representation `(V, ρ)` and a `G`-invariant `k`-submodule `W ≤ V`, this
+is the representation induced on `V ⧸ W` by `ρ`. -/
+abbrev quotient (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    Rep k G :=
+  Rep.of (A.ρ.quotient W le_comap)
+
+/-- The natural projection from a representation to its quotient by a subrepresentation. -/
+@[simps]
+def mkQ (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
+    A ⟶ quotient A W le_comap where
+  hom := ModuleCat.ofHom <| Submodule.mkQ _
+  comm _ := rfl
+
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
-  Action.preservesLimits_forget.{u} _ _
+  Action.preservesLimits_forget _ _
 
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
-  Action.preservesColimits_forget.{u} _ _
+  Action.preservesColimits_forget _ _
 
 theorem epi_iff_surjective {A B : Rep k G} (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
   ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
@@ -402,15 +447,13 @@ def MonoidalClosed.linearHomEquivComm : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B ⟶[Re
 
 variable {A B C}
 
--- `simpNF` times out
-@[simp, nolint simpNF]
+@[simp]
 theorem MonoidalClosed.linearHomEquiv_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquiv A B C f).hom =
       ModuleCat.ofHom (TensorProduct.curry f.hom.hom).flip :=
   rfl
 
--- `simpNF` times out
-@[simp, nolint simpNF]
+@[simp]
 theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquivComm A B C f).hom =
       ModuleCat.ofHom (TensorProduct.curry f.hom.hom) :=
@@ -515,14 +558,13 @@ theorem ofModuleMonoidAlgebra_obj_ρ (M : ModuleCat.{u} (MonoidAlgebra k G)) :
 def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≃+ M := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
-  exact (Representation.ofModule M).asModuleEquiv.trans
+  exact (Representation.ofModule M).asModuleEquiv.toAddEquiv.trans
     (RestrictScalars.addEquiv k (MonoidAlgebra k G) _)
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
-  refine V.ρ.asModuleEquiv.symm.trans ?_
-  exact (RestrictScalars.addEquiv _ _ _).symm
+  exact V.ρ.asModuleEquiv.symm.toAddEquiv.trans (RestrictScalars.addEquiv _ _ _).symm
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
@@ -537,9 +579,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
 theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
     unitIsoAddEquiv ((V.ρ g).toFun x) = ((ofModuleMonoidAlgebra.obj
       (toModuleMonoidAlgebra.obj V)).ρ g).toFun (unitIsoAddEquiv x) := by
-  dsimp [unitIsoAddEquiv, ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
-  simp only [AddEquiv.apply_eq_iff_eq, AddEquiv.apply_symm_apply,
-    Representation.asModuleEquiv_symm_map_rho, Representation.ofModule_asModule_act]
+  simp [unitIsoAddEquiv, ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V :=
@@ -547,13 +587,8 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
     (LinearEquiv.toModuleIso
       { unitIsoAddEquiv with
         map_smul' := fun r x => by
-          dsimp [unitIsoAddEquiv]
-/- Porting note: rest of broken proof was
-          simp only [Representation.asModuleEquiv_symm_map_smul,
-            RestrictScalars.addEquiv_symm_map_algebraMap_smul] -/
-          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-          erw [AddEquiv.trans_apply,
-            Representation.asModuleEquiv_symm_map_smul]
+          change (RestrictScalars.addEquiv _ _ _).symm (V.ρ.asModuleEquiv.symm (r • x)) = _
+          simp only [Representation.asModuleEquiv_symm_map_smul]
           rfl })
     fun g => by ext; apply unit_iso_comm
 

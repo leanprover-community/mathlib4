@@ -39,7 +39,7 @@ Retrieve all names in the environment satisfying a predicate,
 gathered together into a `HashMap` according to the module they are defined in.
 -/
 def allNamesByModule (p : Name → Bool) : CoreM (Std.HashMap Name (Array Name)) := do
-  (← getEnv).constants.foldM (init := Std.HashMap.empty) fun names n _ => do
+  (← getEnv).constants.foldM (init := ∅) fun names n _ => do
     if p n && !(← isBlackListed n) then
       let some m ← findModuleOf? n | return names
       -- TODO use `modify` and/or `alter` when available
@@ -56,7 +56,10 @@ def Lean.Name.decapitalize (n : Name) : Name :=
     | n       => n
 
 /-- Whether the lemma has a name of the form produced by `Lean.Meta.mkAuxLemma`. -/
-def Lean.Name.isAuxLemma (n : Name) : Bool := n matches .num (.str _ "_auxLemma") _
+def Lean.Name.isAuxLemma (n : Name) : Bool :=
+  match n with
+  | .str _ s => "_proof_".isPrefixOf s
+  | _ => false
 
 /-- Unfold all lemmas created by `Lean.Meta.mkAuxLemma`.
 The names of these lemmas end in `_auxLemma.nn` where `nn` is a number. -/

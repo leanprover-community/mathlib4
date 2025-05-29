@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.WithBot
-import Mathlib.Tactic.MinImports
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
@@ -357,7 +356,7 @@ theorem zero_lt_coe [Zero α] [LT α] (a : α) : (0 : WithTop α) < a ↔ 0 < a 
   coe_lt_coe
 
 /-- A version of `WithTop.map` for `OneHom`s. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "A version of `WithTop.map` for `ZeroHom`s"]
 protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
@@ -365,14 +364,14 @@ protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom
   map_one' := by rw [WithTop.map_one, map_one, coe_one]
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddHom.withTopMap {M N : Type*} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_add' := WithTop.map_add f
 
 /-- A version of `WithTop.map` for `AddMonoidHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddMonoidHom.withTopMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithTop M →+ WithTop N :=
   { ZeroHom.withTopMap f.toZeroHom, AddHom.withTopMap f.toAddHom with toFun := WithTop.map f }
@@ -646,7 +645,7 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (
   WithTop.addCommMonoidWithOne
 
 /-- A version of `WithBot.map` for `OneHom`s. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "A version of `WithBot.map` for `ZeroHom`s"]
 protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithBot M) (WithBot N) where
@@ -654,14 +653,14 @@ protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
 
 /-- A version of `WithBot.map` for `AddHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddHom.withBotMap {M N : Type*} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_add' := WithBot.map_add f
 
 /-- A version of `WithBot.map` for `AddMonoidHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }

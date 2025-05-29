@@ -3,10 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Ella Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Ella Yu
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Prod
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Additive energy
@@ -85,7 +85,7 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
   rw [← card_product]
   refine
     card_le_card_of_injOn (@fun x => ((x.1, x.1), x.2, x.2)) (by simp) fun a _ b _ => ?_
-  simp only [Prod.mk.inj_iff, and_self_iff, and_imp]
+  simp only [Prod.mk_inj, and_self_iff, and_imp]
   exact Prod.ext
 
 @[to_additive] lemma mulEnergy_pos (hs : s.Nonempty) (ht : t.Nonempty) : 0 < Eₘ[s, t] :=

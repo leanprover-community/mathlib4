@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
+import Mathlib.Algebra.Algebra.Hom
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
@@ -48,6 +49,14 @@ theorem lid_tmul (m : M) (r : R) : (TensorProduct.lid R M : R ⊗ M → M) (r �
 @[simp]
 theorem lid_symm_apply (m : M) : (TensorProduct.lid R M).symm m = 1 ⊗ₜ m :=
   rfl
+
+lemma includeRight_lid {S : Type*} [Semiring S] [Algebra R S] (m : R ⊗[R] M) :
+    (1 : S) ⊗ₜ[R] (TensorProduct.lid R M) m =
+      (LinearMap.rTensor M (Algebra.algHom R R S).toLinearMap) m := by
+  suffices ∀ m, (LinearMap.rTensor M (Algebra.algHom R R S).toLinearMap).comp
+    (TensorProduct.lid R M).symm.toLinearMap m = 1 ⊗ₜ[R] m by
+    simp [← this]
+  intros; simp
 
 section
 

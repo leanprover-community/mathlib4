@@ -40,7 +40,7 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 
-open Lean hiding Literal HashMap
+open Lean hiding Literal
 open Std (HashMap)
 
 namespace Sat

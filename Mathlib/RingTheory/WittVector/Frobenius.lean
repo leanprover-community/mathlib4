@@ -239,8 +239,8 @@ def frobenius : 𝕎 R →+* 𝕎 R where
         (@IsPoly.comp p _ _ WittVector.oneIsPoly (frobeniusFun_isPoly p)) ?_ _ 0
     simp only [Function.comp_apply, map_one, forall_const]
     ghost_simp
-  map_add' := by dsimp only; ghost_calc _ _; ghost_simp
-  map_mul' := by dsimp only; ghost_calc _ _; ghost_simp
+  map_add' := by ghost_calc _ _; ghost_simp
+  map_mul' := by ghost_calc _ _; ghost_simp
 
 theorem coeff_frobenius (x : 𝕎 R) (n : ℕ) :
     coeff (frobenius x) n = MvPolynomial.aeval x.coeff (frobeniusPoly p n) :=
@@ -290,7 +290,7 @@ theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
 variable (R)
 
 /-- `WittVector.frobenius` as an equiv. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius

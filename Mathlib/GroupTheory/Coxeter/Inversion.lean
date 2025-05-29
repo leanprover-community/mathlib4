@@ -160,7 +160,7 @@ theorem isLeftInversion_mul_right_iff {w : W} :
   rw [← isRightInversion_inv_iff, ← isRightInversion_inv_iff, mul_inv_rev, ht.inv,
     ht.isRightInversion_mul_left_iff]
 
-theorem not_isLeftInversion_mul_right_iff {w : W}  :
+theorem not_isLeftInversion_mul_right_iff {w : W} :
     ¬cs.IsLeftInversion (t * w) t ↔ cs.IsLeftInversion w t :=
   ht.isLeftInversion_mul_right_iff.not_left
 
@@ -456,7 +456,7 @@ theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.
 
 lemma getElem_succ_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k + 1 < 2 * p) :
-    (lis (alternatingWord i j (2 * p)))[k + 1]'(by simp; exact h) =
+    (lis (alternatingWord i j (2 * p)))[k + 1]'(by simpa using h) =
     MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; omega)) := by
   rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
     cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[h]; omega)]

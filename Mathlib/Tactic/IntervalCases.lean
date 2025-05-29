@@ -121,14 +121,14 @@ structure Methods where
 
 variable {α : Type*} {a b a' b' : α}
 
-theorem of_not_lt_left [LinearOrder α] (h : ¬(a:α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
-theorem of_not_lt_right [LinearOrder α] (h : ¬(a:α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
-theorem of_not_le_left [LE α] (h : ¬(a:α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
-theorem of_not_le_right [LE α] (h : ¬(a:α) ≤ b) (eq : b = b') : ¬a ≤ b' := eq ▸ h
-theorem of_lt_left [LinearOrder α] (h : (a:α) < b) (eq : a = a') : ¬b ≤ a' := eq ▸ not_le.2 h
-theorem of_lt_right [LinearOrder α] (h : (a:α) < b) (eq : b = b') : ¬b' ≤ a := eq ▸ not_le.2 h
-theorem of_le_left [LE α] (h : (a:α) ≤ b) (eq : a = a') : a' ≤ b := eq ▸ h
-theorem of_le_right [LE α] (h : (a:α) ≤ b) (eq : b = b') : a ≤ b' := eq ▸ h
+theorem of_not_lt_left [LinearOrder α] (h : ¬(a : α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
+theorem of_not_lt_right [LinearOrder α] (h : ¬(a : α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
+theorem of_not_le_left [LE α] (h : ¬(a : α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
+theorem of_not_le_right [LE α] (h : ¬(a : α) ≤ b) (eq : b = b') : ¬a ≤ b' := eq ▸ h
+theorem of_lt_left [LinearOrder α] (h : (a : α) < b) (eq : a = a') : ¬b ≤ a' := eq ▸ not_le.2 h
+theorem of_lt_right [LinearOrder α] (h : (a : α) < b) (eq : b = b') : ¬b' ≤ a := eq ▸ not_le.2 h
+theorem of_le_left [LE α] (h : (a : α) ≤ b) (eq : a = a') : a' ≤ b := eq ▸ h
+theorem of_le_right [LE α] (h : (a : α) ≤ b) (eq : b = b') : a ≤ b' := eq ▸ h
 
 /--
 Given a proof `pf`, attempts to parse it as an upper (`lb = false`) or lower (`lb = true`)
@@ -215,8 +215,8 @@ This tells `interval_cases` how to work on natural numbers. -/
 def natMethods : Methods where
   initLB (e : Q(ℕ)) :=
     pure (.le 0, q(0), q(Nat.zero_le $e))
-  eval e := do
-    let ⟨z, e, p⟩ := (← NormNum.derive (α := (q(ℕ) : Q(Type))) e).toRawIntEq.get!
+  eval (e : Q(ℕ)) := do
+    let ⟨z, e, p⟩ := (← NormNum.derive q($e)).toRawIntEq.get!
     pure (z, e, p)
   proveLE (lhs rhs : Q(ℕ)) := mkDecideProofQ q($lhs ≤ $rhs)
   proveLT (lhs rhs : Q(ℕ)) := mkDecideProofQ q(¬$rhs ≤ $lhs)
@@ -234,8 +234,8 @@ theorem _root_.Int.le_sub_one_of_not_le {a b : ℤ} (h : ¬b ≤ a) : a ≤ b - 
 /-- A `Methods` implementation for `ℤ`.
 This tells `interval_cases` how to work on integers. -/
 def intMethods : Methods where
-  eval e := do
-    let ⟨z, e, p⟩ := (← NormNum.derive (α := (q(ℤ) : Q(Type))) e).toRawIntEq.get!
+  eval (e : Q(ℤ)) := do
+    let ⟨z, e, p⟩ := (← NormNum.derive q($e)).toRawIntEq.get!
     pure (z, e, p)
   proveLE (lhs rhs : Q(ℤ)) := mkDecideProofQ q($lhs ≤ $rhs)
   proveLT (lhs rhs : Q(ℤ)) := mkDecideProofQ q(¬$rhs ≤ $lhs)

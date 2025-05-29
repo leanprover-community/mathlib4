@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 /-!
 # Prime spectrum of a commutative (semi)ring
 
-For the Zariski topology, see `Mathlib.RingTheory.Spectrum.Prime.Topology`.
+For the Zariski topology, see `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 
 (It is also naturally endowed with a sheaf of rings,
 which is constructed in `AlgebraicGeometry.StructureSheaf`.)
@@ -33,9 +33,13 @@ whereas we denote subsets of prime spectra with `t`, `t'`, etc...
 The contents of this file draw inspiration from <https://github.com/ramonfmir/lean-scheme>
 which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
+
+## References
+* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/
 
--- A dividing line between this file and `Mathlib.RingTheory.Spectrum.Prime.Topology` is
+-- A dividing line between this file and `Mathlib/RingTheory/Spectrum/Prime/Topology.lean` is
 -- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
@@ -91,7 +95,7 @@ noncomputable def primeSpectrumProd :
     Equiv.ofBijective (primeSpectrumProdOfSum R S) (by
         constructor
         · rintro (⟨I, hI⟩ | ⟨J, hJ⟩) (⟨I', hI'⟩ | ⟨J', hJ'⟩) h <;>
-          simp only [mk.injEq, Ideal.prod.ext_iff, primeSpectrumProdOfSum] at h
+          simp only [mk.injEq, Ideal.prod_inj, primeSpectrumProdOfSum] at h
           · simp only [h]
           · exact False.elim (hI.ne_top h.left)
           · exact False.elim (hJ.ne_top h.right)
@@ -205,6 +209,9 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
 theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
   apply range_asIdeal R ▸ nilradical_eq_sInf R
 
+@[simp] theorem vanishingIdeal_univ : vanishingIdeal Set.univ = nilradical R := by
+  rw [vanishingIdeal, iInf_univ, nilradical_eq_iInf]
+
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=
   vanishingIdeal_zeroLocus_eq_radical I ▸ (gc R).l_u_l_eq_l I
@@ -237,6 +244,10 @@ theorem zeroLocus_bot : zeroLocus ((⊥ : Ideal R) : Set R) = Set.univ :=
   (gc R).l_bot
 
 @[simp]
+lemma zeroLocus_nilradical : zeroLocus (nilradical R : Set R) = Set.univ := by
+  rw [nilradical, zeroLocus_radical, Ideal.zero_eq_bot, zeroLocus_bot]
+
+@[simp]
 theorem zeroLocus_singleton_zero : zeroLocus ({0} : Set R) = Set.univ :=
   zeroLocus_bot
 
@@ -249,7 +260,7 @@ theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (PrimeSpectrum R)) = �
   simpa using (gc R).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set R} (h : (1 : R) ∈ s) : zeroLocus s = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   intro x hx
   rw [mem_zeroLocus] at hx
   have x_prime : x.asIdeal.IsPrime := by infer_instance
@@ -280,18 +291,11 @@ theorem vanishingIdeal_eq_top_iff {s : Set (PrimeSpectrum R)} : vanishingIdeal s
   rw [← top_le_iff, ← subset_zeroLocus_iff_le_vanishingIdeal, Submodule.top_coe, zeroLocus_univ,
     Set.subset_empty_iff]
 
-theorem zeroLocus_eq_top_iff (s : Set R) :
-    zeroLocus s = ⊤ ↔ s ⊆ nilradical R := by
-  constructor
-  · intro h x hx
-    refine nilpotent_iff_mem_prime.mpr (fun J hJ ↦ ?_)
-    have hJz : ⟨J, hJ⟩ ∈ zeroLocus s := by
-      rw [h]
-      trivial
-    exact (mem_zeroLocus _ _).mpr hJz hx
-  · rw [eq_top_iff]
-    intro h p _
-    apply Set.Subset.trans h (nilradical_le_prime p.asIdeal)
+theorem zeroLocus_eq_univ_iff (s : Set R) :
+    zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by
+  rw [← Set.univ_subset_iff, subset_zeroLocus_iff_subset_vanishingIdeal, vanishingIdeal_univ]
+
+@[deprecated (since := "2025-04-05")] alias zeroLocus_eq_top_iff := zeroLocus_eq_univ_iff
 
 theorem zeroLocus_sup (I J : Ideal R) :
     zeroLocus ((I ⊔ J : Ideal R) : Set R) = zeroLocus I ∩ zeroLocus J :=
@@ -358,9 +362,12 @@ theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
   rw [mem_vanishingIdeal] at hf hg
   apply Submodule.add_mem <;> solve_by_elim
 
-theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
+theorem mem_compl_zeroLocus_iff_notMem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
+
+@[deprecated (since := "2025-05-23")]
+alias mem_compl_zeroLocus_iff_not_mem := mem_compl_zeroLocus_iff_notMem
 
 @[simp]
 lemma zeroLocus_insert_zero (s : Set R) : zeroLocus (insert 0 s) = zeroLocus s := by
@@ -381,7 +388,7 @@ section Order
 
 We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
 This is exactly the specialization order.
-See the corresponding section at `Mathlib.RingTheory.Spectrum.Prime.Topology`.
+See the corresponding section at `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 -/
 
 instance : PartialOrder (PrimeSpectrum R) :=
@@ -427,7 +434,7 @@ variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
 /-- In a noetherian ring, every ideal contains a product of prime ideals
-([samuel, § 3.3, Lemma 3]). -/
+([samuel1967, § 3.3, Lemma 3]). -/
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
   -- Porting note: Need to specify `P` explicitly
@@ -459,7 +466,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
 
 /-- In a noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
   product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
-  product or prime ideals ([samuel, § 3.3, Lemma 3]) -/
+  product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
 theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
     (h_nzI : I ≠ ⊥) :
     ∃ Z : Multiset (PrimeSpectrum A),

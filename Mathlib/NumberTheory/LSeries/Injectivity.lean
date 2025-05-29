@@ -70,7 +70,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
   -- we can write `(n+1)^x * LSeries f x` as `f (n+1)` plus the series over `F x`
   have key : ∀ x ≥ y, (n + 1) ^ (x : ℂ) * LSeries f x = f (n + 1) + ∑' m : ℕ, F x m := by
     intro x hx
-    rw [LSeries, ← tsum_mul_left, tsum_eq_add_tsum_ite (hs hx) (n + 1), pow_mul_term_eq f x n]
+    rw [LSeries, ← tsum_mul_left, (hs hx).tsum_eq_add_tsum_ite (n + 1), pow_mul_term_eq f x n]
     congr
     ext1 m
     rcases eq_or_ne m (n + 1) with rfl | hm
@@ -139,9 +139,11 @@ open Filter Nat in
 for all `n ≠ 0` or the L-series converges nowhere. -/
 lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
     (fun x : ℝ ↦ LSeries f x) =ᶠ[atTop] 0 ↔ (∀ n ≠ 0, f n = 0) ∨ abscissaOfAbsConv f = ⊤ := by
-  by_cases h : abscissaOfAbsConv f = ⊤ <;> simp [h]
-  · exact Eventually.of_forall <| by simp [LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h]
-  · refine ⟨fun H ↦ ?_, fun H ↦ Eventually.of_forall fun x ↦ ?_⟩
+  by_cases h : abscissaOfAbsConv f = ⊤
+  · simpa [h] using
+      Eventually.of_forall <| by simp [LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h]
+  · simp only [ne_eq, h, or_false]
+    refine ⟨fun H ↦ ?_, fun H ↦ Eventually.of_forall fun x ↦ ?_⟩
     · let F (n : ℕ) : ℂ := if n = 0 then 0 else f n
       have hF₀ : F 0 = 0 := rfl
       have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := if_neg hn
@@ -172,9 +174,10 @@ open Nat in
 L-series converges nowhere. -/
 lemma LSeries_eq_zero_iff {f : ℕ → ℂ} (hf : f 0 = 0) :
     LSeries f = 0 ↔ f = 0 ∨ abscissaOfAbsConv f = ⊤ := by
-  by_cases h : abscissaOfAbsConv f = ⊤ <;> simp [h]
-  · exact LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h
-  · refine ⟨fun H ↦ ?_, fun H ↦ H ▸ LSeries_zero⟩
+  by_cases h : abscissaOfAbsConv f = ⊤
+  · simpa [h] using LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h
+  · simp only [h, or_false]
+    refine ⟨fun H ↦ ?_, fun H ↦ H ▸ LSeries_zero⟩
     convert (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
     · refine ⟨fun H' _ _ ↦ by rw [H', Pi.zero_apply], fun H' ↦ ?_⟩
       ext (- | m)

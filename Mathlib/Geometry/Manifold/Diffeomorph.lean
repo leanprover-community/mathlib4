@@ -530,9 +530,9 @@ section Product
 /-- Product of two diffeomorphisms. -/
 def prodCongr (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : N ≃ₘ^n⟮J, J'⟯ N') :
     (M × N) ≃ₘ^n⟮I.prod J, I'.prod J'⟯ M' × N' where
-  contMDiff_toFun := (h₁.contMDiff.comp contMDiff_fst).prod_mk (h₂.contMDiff.comp contMDiff_snd)
+  contMDiff_toFun := (h₁.contMDiff.comp contMDiff_fst).prodMk (h₂.contMDiff.comp contMDiff_snd)
   contMDiff_invFun :=
-    (h₁.symm.contMDiff.comp contMDiff_fst).prod_mk (h₂.symm.contMDiff.comp contMDiff_snd)
+    (h₁.symm.contMDiff.comp contMDiff_fst).prodMk (h₂.symm.contMDiff.comp contMDiff_snd)
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
 
 @[simp]
@@ -551,8 +551,8 @@ variable (I J J' M N N' n)
 
 /-- `M × N` is diffeomorphic to `N × M`. -/
 def prodComm : (M × N) ≃ₘ^n⟮I.prod J, J.prod I⟯ N × M where
-  contMDiff_toFun := contMDiff_snd.prod_mk contMDiff_fst
-  contMDiff_invFun := contMDiff_snd.prod_mk contMDiff_fst
+  contMDiff_toFun := contMDiff_snd.prodMk contMDiff_fst
+  contMDiff_invFun := contMDiff_snd.prodMk contMDiff_fst
   toEquiv := Equiv.prodComm M N
 
 @[simp]
@@ -566,10 +566,10 @@ theorem coe_prodComm : ⇑(prodComm I J M N n) = Prod.swap :=
 /-- `(M × N) × N'` is diffeomorphic to `M × (N × N')`. -/
 def prodAssoc : ((M × N) × N') ≃ₘ^n⟮(I.prod J).prod J', I.prod (J.prod J')⟯ M × N × N' where
   contMDiff_toFun :=
-    (contMDiff_fst.comp contMDiff_fst).prod_mk
-      ((contMDiff_snd.comp contMDiff_fst).prod_mk contMDiff_snd)
+    (contMDiff_fst.comp contMDiff_fst).prodMk
+      ((contMDiff_snd.comp contMDiff_fst).prodMk contMDiff_snd)
   contMDiff_invFun :=
-    (contMDiff_fst.prod_mk (contMDiff_fst.comp contMDiff_snd)).prod_mk
+    (contMDiff_fst.prodMk (contMDiff_fst.comp contMDiff_snd)).prodMk
       (contMDiff_snd.comp contMDiff_snd)
   toEquiv := Equiv.prodAssoc M N N'
 
@@ -584,7 +584,7 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
   {N J : Type*} [TopologicalSpace N] [ChartedSpace H N] {J : ModelWithCorners 𝕜 E' H}
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N']
 
-/-- The sum of two diffeomorphisms -/
+/-- The sum of two diffeomorphisms: this is `Sum.map` as a diffeomorphism. -/
 def sumCongr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     Diffeomorph I J (M ⊕ M') (N ⊕ N') n where
   toEquiv := Equiv.sumCongr φ.toEquiv ψ.toEquiv
@@ -594,7 +594,7 @@ def sumCongr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
 lemma sumCongr_symm_symm (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     sumCongr φ.symm ψ.symm = (sumCongr φ ψ).symm := rfl
 
-@[simp]
+@[simp, mfld_simps]
 lemma sumCongr_coe (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     sumCongr φ ψ = Sum.map φ ψ := rfl
 
@@ -605,16 +605,16 @@ lemma sumCongr_inr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     (sumCongr φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := rfl
 
 variable (I M M' n) in
-/-- The canonical diffeomorphism `M ⊕ M' → M' ⊕ M` -/
+/-- The canonical diffeomorphism `M ⊕ M' → M' ⊕ M`: this is `Sum.swap` as a diffeomorphism -/
 def sumComm : Diffeomorph I I (M ⊕ M') (M' ⊕ M) n where
   toEquiv := Equiv.sumComm M M'
   contMDiff_toFun := ContMDiff.swap
   contMDiff_invFun := ContMDiff.swap
 
-@[simp]
+@[simp, mfld_simps]
 theorem sumComm_coe : (Diffeomorph.sumComm I M n M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := rfl
 
-@[simp]
+@[simp, mfld_simps]
 theorem sumComm_symm : (Diffeomorph.sumComm I M n M').symm = Diffeomorph.sumComm I M' n M := rfl
 
 variable (I M M' n) in
@@ -651,8 +651,17 @@ def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
   contMDiff_toFun := contMDiff_id.sumElim fun x ↦ (IsEmpty.false x).elim
   contMDiff_invFun := ContMDiff.inl
 
-@[simp]
+@[simp, mfld_simps]
 theorem sumEmpty_toEquiv [IsEmpty M'] : (sumEmpty I M n).toEquiv = Equiv.sumEmpty M M' := rfl
+
+@[simp, mfld_simps]
+lemma sumEmpty_apply_inl [IsEmpty M'] (x : M) : (sumEmpty I M (M' := M') n) (Sum.inl x) = x := rfl
+
+/-- The unique diffeomorphism between two empty types -/
+protected def empty [IsEmpty M] [IsEmpty M'] : Diffeomorph I I M M' n where
+  __ := Equiv.equivOfIsEmpty M M'
+  contMDiff_toFun x := (IsEmpty.false x).elim
+  contMDiff_invFun x := (IsEmpty.false x).elim
 
 end disjointUnion
 
