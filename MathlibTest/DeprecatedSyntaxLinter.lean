@@ -128,6 +128,11 @@ example : 1 + 1 = 2 := by decide +native -native +native +native
 #guard_msgs in
 example : 1 + 1 = 2 := by decide +native -native +native +native -native
 
+-- TODO: false negative in the linter!
+#guard_msgs in
+example : 1 + 1 = 2 := by decide (config := { native := true })
+example : 1 + 1 = 2 := by decide (config := { native := false })
+
 set_option linter.style.nativeDecide false
 
 set_option linter.style.maxHeartbeats true
