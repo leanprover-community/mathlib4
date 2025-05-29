@@ -1055,11 +1055,6 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
     simp
     simp [phi_ofmul]
 
-  have e_i_ker: ∀ s: S, e_i s ∈ φ.ker := by
-    intro s
-    exact e_i_zero s
-
-  let gamma_i := fun (i: ℕ) => γ^(i : ℤ)
   have closure_enlarge: Subgroup.closure ({1, γ, γ⁻¹} ∪ (e_i '' Set.univ)) = Subgroup.closure (({1, γ, γ⁻¹} ∪ (e_i_regular '' Set.univ))^(max_phi + 1)) := by
     rw [Subgroup.closure_pow]
     . simp
@@ -1115,10 +1110,6 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
         simp at hx
         obtain ⟨a, ha, x_eq_sum⟩ := hx
         left
-
-        have gamma_phi_in: γ^(max_phi) ∈ ({1, γ, γ⁻¹} ∪ Set.range e_i_regular) ^ max_phi := by
-          apply Set.pow_mem_pow
-          simp
 
         have gamma_phi_in_minus_plus: γ^(φ a) ∈ ({1, γ, γ⁻¹} ∪ Set.range e_i_regular) ^ (max_phi - 1  +1) := by
           by_cases val_pos: 0 < φ a
@@ -1180,17 +1171,6 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
               apply Set.pow_mem_pow
               simp
         have a_mem_s: a ∈ S := by exact l_mem_s a ha
-
-        have e_pi_s_mem: e_i_regular ⟨s, hs⟩ ∈ ({1, γ ,γ⁻¹} ∪ Set.range e_i_regular) := by
-          simp
-
-        have e_pi_a_mem: e_i_regular ⟨a, a_mem_s⟩ ∈ ({1, γ, γ⁻¹} ∪ Set.range e_i_regular) := by
-          simp
-
-
-        have max_phi_gt: 0 < max_phi := by
-          simp [max_phi]
-
         have prod_mem_power: e_i_regular ⟨a, a_mem_s⟩ * γ ^ φ (ofMul a) ∈ ({1, γ, γ⁻¹} ∪ Set.range e_i_regular) ^ (max_phi - 1 + 1 + 1) := by
           rw [pow_succ']
           rw [Set.mem_mul]
@@ -1271,7 +1251,6 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
       simp
       exact l_prod
   let gamma_m := fun (m: ℤ) (s: S) => γ^m * (e_i s).toMul * γ^(-m)
-  let a := Set.range (Function.uncurry gamma_m)
   have gamma_m_ker_phi: (Subgroup.closure (Set.range (Function.uncurry gamma_m))) = φ.ker.toSubgroup := by
     ext z
     refine ⟨?_, ?_⟩
@@ -1327,12 +1306,6 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
 
       -- γ^(φ(f_1)) (f_1⁻¹ ) = f_2 γ^(-φ(f_2))
 
-      have first_set_inv_self: ({(1 : G), γ, γ⁻¹} : (Set G)) = ( {(1 : G), γ, γ⁻¹} : (Set G))⁻¹ := by
-        simp
-        -- Why can't simp do this for us? Soemthing to do with the wrong '⁻¹' instances?
-        rw [Set.pair_comm]
-
-
       have foo := Submonoid.exists_list_of_mem_closure (s := ({1, γ, γ⁻¹} ∪ e_i '' Set.univ) ∪ ({1, γ, γ⁻¹} ∪ e_i '' Set.univ)⁻¹) (x := z)
       apply_fun Subgroup.toSubmonoid at new_closure_e_i
       rw [Subgroup.closure_toSubmonoid _] at new_closure_e_i
@@ -1367,8 +1340,6 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
       clear foo
 
       let E: Set G := {γ, γ⁻¹} ∪ Set.range e_i_regular ∪ (Set.range e_i_regular)⁻¹
-      let gamma_sum: List E -> ℤ := fun (l) => l.count ⟨γ, by simp [E]⟩ - l.count ⟨γ⁻¹, by simp [E]⟩
-
 
       let rec rewrite_list (list: List (E)) (hlist: φ (ofMul list.unattach.prod) = 0): { t: List (((Set.range (Function.uncurry gamma_m) : (Set G)) ∪ (Set.range (Function.uncurry gamma_m))⁻¹ : (Set G))) // list.unattach.prod = t.unattach.prod } := by
         let is_gamma: E → Bool := fun (k: E) => k = γ ∨ k = γ⁻¹
@@ -1423,9 +1394,6 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
             rw [not_iff_not.mpr List.takeWhile_eq_self_iff] at header_eq_full
             rw [← not_iff_not.mpr List.dropWhile_eq_nil_iff] at header_eq_full
             exact header_eq_full
-          have list_nonempty: 0 < list.length := by
-            rw [List.length_pos_iff]
-            apply List.IsSuffix.ne_nil (xs := list.dropWhile is_gamma) (List.dropWhile_suffix _) tail_nonempty
 
           have dropwhile_len_gt: 0 < (list.dropWhile is_gamma).length := by
             exact List.length_pos_iff.mpr tail_nonempty
@@ -1497,111 +1465,6 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
           let gamma_copy: List E := if (m >= 0) then List.replicate m.natAbs ⟨γ, by simp [E]⟩ else List.replicate (m.natAbs) ⟨γ⁻¹, by simp [E]⟩
           let gamma_copy_inv: List E := if (m >= 0) then List.replicate m.natAbs ⟨γ⁻¹, by simp [E]⟩ else List.replicate (m.natAbs) ⟨γ, by simp [E]⟩
 
-          have count_gamma_copy: gamma_sum gamma_copy = m := by
-            simp [gamma_sum, gamma_copy]
-            by_cases m_ge: 0 ≤ m
-            .
-              simp [m_ge]
-              rw [List.count_replicate]
-              simp [gamma_ne_inv]
-              exact m_ge
-            .
-              simp [m_ge]
-              rw [List.count_replicate]
-              simp [gamma_ne_inv.symm]
-              simp at m_ge
-              apply_fun (fun x => -x)
-              .
-                simp
-                omega
-              . exact neg_injective
-
-          have count_gamma_inv_eq_zero: ∀ m, List.count ⟨γ⁻¹, by simp [E]⟩ ((List.replicate (α := E) m (⟨γ, by simp [E]⟩ : E))) = 0 := by
-            intro m
-            rw [List.count_replicate]
-            simp [gamma_ne_inv]
-
-          have count_gamma_eq_zero: ∀ m, ((List.replicate (α := E) m (Subtype.mk γ⁻¹ (by simp [E]) : E)).count ⟨γ, by simp [E]⟩ = 0) := by
-            intro m
-            rw [List.count_replicate]
-            simp [gamma_ne_inv.symm]
-
-          have count_gamma_copy_inv: gamma_sum gamma_copy_inv = -m := by
-            simp [gamma_sum, gamma_copy_inv]
-            by_cases m_ge: 0 ≤ m
-            .
-              simp [m_ge]
-              rw [List.count_replicate]
-              simp [gamma_ne_inv.symm]
-              exact m_ge
-            .
-              simp [m_ge]
-              rw [List.count_replicate]
-              simp [gamma_ne_inv]
-              omega
-
-
-          -- have count_gamm_in_copy:  List.count ⟨γ⁻¹, by simp [E]⟩ gamma_copy = 0 := by
-          --   simp [gamma_copy]
-          --   by_cases m_ge: 0 ≤ m
-          --   .
-          --     simp [m_ge]
-          --     rw [List.count_replicate]
-          --     simp [gamma_ne_inv]
-          --   .
-          --     simp only [m_ge, ↓reduceIte]
-          --     rw [List.count_replicate]
-          --     simp [gamma_ne_inv.symm]
-          --     omega
-
-          have gamma_sum_head: gamma_sum (gamma_copy ++ [(List.dropWhile is_gamma list)[0]] ++ gamma_copy_inv) = 0 := by
-            simp [gamma_sum]
-            rw [add_comm, sub_eq_add_neg]
-            simp [List.count_cons]
-            dsimp [gamma_sum] at count_gamma_copy
-            rw [add_assoc]
-            conv =>
-              lhs
-              rhs
-              rhs
-              rw [add_comm]
-            rw [add_assoc]
-            conv =>
-              lhs
-              rhs
-              rhs
-              rw [← add_assoc]
-              lhs
-              rw [← sub_eq_add_neg]
-              rw [count_gamma_copy]
-
-
-            simp [gamma_sum] at count_gamma_copy_inv
-            conv =>
-              lhs
-              rw [← add_assoc]
-              rhs
-              rw [add_comm]
-              lhs
-              rw [add_comm]
-            rw [add_assoc]
-            conv =>
-              lhs
-              rhs
-              rw [add_comm]
-            rw [← add_assoc]
-            rw [← add_assoc]
-            rw [← add_assoc]
-            rw [← sub_eq_add_neg, ← sub_eq_add_neg]
-            rw [count_gamma_copy_inv]
-            abel
-            simp [not_is_gamma_prop.left]
-            simp [not_is_gamma_prop.right]
-
-          have gamma_sum_split (p q: List E): gamma_sum (p ++ q) = gamma_sum p + gamma_sum q := by
-            simp [gamma_sum]
-            abel
-
           have gamma_copy_prod: gamma_copy.unattach.prod = γ^m := by
             simp [gamma_copy]
             by_cases m_ge: 0 ≤ m
@@ -1666,7 +1529,6 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
               simp
             have dropwhile_not_nul : (List.dropWhile is_gamma list) ≠ [] := by
               exact tail_nonempty
-            --have dropwhile_len-
             apply_fun (fun x => x * (List.dropWhile is_gamma list).unattach.prod⁻¹)
             .
               simp
@@ -1805,11 +1667,9 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
       termination_by list.length
       decreasing_by {
         simp
-        dsimp [gamma_sum] at count_gamma_copy
-        dsimp [gamma_sum] at count_gamma_copy_inv
         split_ifs
         .
-          simp [count_gamma_copy]
+          simp
           conv =>
             rhs
             rw [← take_drop_len (p := fun (k: E) ↦ decide (↑k = γ) || decide (↑k = γ⁻¹))]
@@ -1819,7 +1679,7 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
             apply Nat.sub_one_lt
             apply Nat.pos_iff_ne_zero.mp dropwhile_len_gt
         .
-          simp [count_gamma_copy]
+          simp-- [count_gamma_copy]
           conv =>
             rhs
             rw [← take_drop_len (p := fun (k: E) ↦ decide (↑k = γ) || decide (↑k = γ⁻¹))]
@@ -1899,7 +1759,7 @@ lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G)
       . simp only [Set.mem_setOf_eq]
         intro x hx
         rw [List.mem_unattach] at hx
-        obtain ⟨x_prop, x_and_prop_in⟩ := hx
+        obtain ⟨x_prop, _⟩ := hx
         exact x_prop
       .
         rw [← my_res_prop]
