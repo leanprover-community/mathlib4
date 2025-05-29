@@ -23,7 +23,7 @@ variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Semir
 
 noncomputable
 instance : HopfAlgebra S (B ⊗[R] A) where
-  antipode := AlgebraTensorModule.map antipode antipode
+  antipode := AlgebraTensorModule.map (HopfAlgebra.antipode S) (HopfAlgebra.antipode R)
   mul_antipode_rTensor_comul := by
     ext x y
     convert congr($(mul_antipode_rTensor_comul_apply (R := S) x) ⊗ₜ[R]
@@ -47,6 +47,6 @@ instance : HopfAlgebra S (B ⊗[R] A) where
 
 @[simp]
 theorem antipode_def :
-    antipode (R := S) (A := B ⊗[R] A) = AlgebraTensorModule.map antipode antipode := rfl
+    antipode S (A := B ⊗[R] A) = AlgebraTensorModule.map (antipode S) (antipode R) := rfl
 
 end TensorProduct
