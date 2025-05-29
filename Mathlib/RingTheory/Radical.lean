@@ -125,7 +125,7 @@ theorem radical_ne_zero (a : M) [Nontrivial M] : radical a ≠ 0 := by
   apply Multiset.prod_ne_zero
   rw [primeFactors]
   simp only [Multiset.toFinset_val, Multiset.mem_dedup]
-  exact zero_not_mem_normalizedFactors _
+  exact zero_notMem_normalizedFactors _
 
 end UniqueFactorizationMonoid
 

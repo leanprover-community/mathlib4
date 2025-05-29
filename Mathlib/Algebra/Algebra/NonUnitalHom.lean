@@ -202,6 +202,8 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h�
 theorem mk_coe (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₛₙₐ[φ] B) = f := by
   rfl
 
+@[simp] lemma addHomMk_coe (f : A →ₛₙₐ[φ] B) : AddHom.mk f (map_add f) = f := rfl
+
 @[simp]
 theorem toDistribMulActionHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toDistribMulActionHom = ↑f :=
   rfl
