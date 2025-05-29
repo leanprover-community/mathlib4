@@ -63,8 +63,8 @@ theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
   -- also δs and δt are constrained by the possibly small sizes of s and t
   obtain ⟨δx, hδx, hfx_z⟩ := hfx z hz.2 ε hε
   obtain ⟨δy, hδy, hfy_z⟩ := fy_cont z hz.2 ε hε
-  obtain ⟨δs, hδs⟩ := Metric.isOpen_iff.mp hs z.1 hz.1.1
-  obtain ⟨δt, hδt⟩ := Metric.isOpen_iff.mp ht z.2 hz.1.2
+  obtain ⟨δs, hδs⟩ := isOpen_iff.mp hs z.1 hz.1.1
+  obtain ⟨δt, hδt⟩ := isOpen_iff.mp ht z.2 hz.1.2
   use (min (min δx δs) (min δy δt)) -- derive desired δ
   constructor; · exact lt_min (lt_min hδx hδs.1) (lt_min hδy hδt.1) -- positivity of δ
   -- get working point (x,y) ∈ E × F within δ distance of z
@@ -160,7 +160,7 @@ theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
       + ε * ‖x - z.1‖ := by
         apply add_le_add (add_le_add _ _) _ -- compare term by term
         · exact mvt -- Mean Value estimate
-            (Metric.mem_ball_self (lt_min hδy hδt.1))
+            (mem_ball_self (lt_min hδy hδt.1))
             (mem_ball_iff_norm.mpr (lt_min hyy hyt))
         · exact ContinuousLinearMap.le_opNorm _ _ -- operator norm estimate
         · rw [mul_comm]
