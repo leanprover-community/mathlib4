@@ -546,6 +546,17 @@ abbrev PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceUniformity {𝕜 E :
     PseudoMetricSpace E :=
   .replaceUniformity (.ofSeminormedAddCommGroupCore core) H
 
+/-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedAddCommGroup.Core` on a type that
+already has an existing topology. This requires a proof that the topology induced
+by the norm is equal to the preexisting topology. See note [reducible non-instances]. -/
+abbrev PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceTopology {𝕜 E : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Norm E] [Module 𝕜 E] [T : TopologicalSpace E]
+    (core : SeminormedAddCommGroup.Core 𝕜 E)
+    (H : T = (PseudoEMetricSpace.ofSeminormedAddCommGroupCore
+      core).toUniformSpace.toTopologicalSpace) :
+    PseudoMetricSpace E :=
+  .replaceTopology (.ofSeminormedAddCommGroupCore core) H
+
 open Bornology in
 /-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedAddCommGroup.Core` on a type that
 already has a preexisting uniform space structure and a preexisting bornology. This requires proofs
@@ -579,6 +590,17 @@ abbrev SeminormedAddCommGroup.ofCoreReplaceUniformity {𝕜 : Type*} {E : Type*}
       (self := PseudoEMetricSpace.ofSeminormedAddCommGroupCore core)]) :
     SeminormedAddCommGroup E :=
   { PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceUniformity core H with }
+
+/-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedAddCommGroup.Core` on a type
+that already has an existing topology. This requires a proof that the uniformity
+induced by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
+abbrev SeminormedAddCommGroup.ofCoreReplaceTopology {𝕜 : Type*} {E : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Norm E] [Module 𝕜 E] [T : TopologicalSpace E]
+    (core : SeminormedAddCommGroup.Core 𝕜 E)
+    (H : T = (PseudoEMetricSpace.ofSeminormedAddCommGroupCore
+      core).toUniformSpace.toTopologicalSpace) :
+    SeminormedAddCommGroup E :=
+  { PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceTopology core H with }
 
 open Bornology in
 /-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedAddCommGroup.Core` on a type

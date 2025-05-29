@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.LocallyConvex.Bounded
+import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Complex.Basic
 
@@ -510,13 +510,43 @@ open scoped Pointwise
 
 open Bornology
 
-#check Seminorm
-
-lemma glouk [hF : AddCommGroup F] [h'F : Module 𝕜 F] [tF : TopologicalSpace F]
-    [IsTopologicalAddGroup F]
+/-- In a topological vector space, if the unit ball of a continuous scalar product is von Neumann
+bounded, then the scalar product defines the same topology as the original one. -/
+lemma InnerProductSpace.Core.topology_eq
+    [hF : AddCommGroup F] [h'F : Module 𝕜 F] [tF : TopologicalSpace F]
+    [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (cd : InnerProductSpace.Core 𝕜 F) (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
     tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
+  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup.toSeminormedAddCommGroup
+    cd.toNormedSpace
+  suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
+    rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]
+    simp
+  have : p.ball 0 1 = {v | re (cd.inner v v) < 1} := by
+    ext v
+    simp only [ball_normSeminorm, Metric.mem_ball, dist_eq_norm, sub_zero, Set.mem_setOf_eq, p]
+    change √(re (cd.inner v v)) < 1 ↔ re (cd.inner v v) < 1
+    conv_lhs => rw [show (1 : ℝ) = √ 1 by simp]
+    rw [sqrt_lt_sqrt_iff]
+    exact InnerProductSpace.Core.inner_self_nonneg
+  rw [withSeminorms_iff_mem_nhds_isVonNBounded, this]
+  refine ⟨?_, h'⟩
+  have A : ContinuousAt (fun (v : F) ↦ re (cd.inner v v)) 0 := by fun_prop
+  have B : Set.Iio 1 ∈ 𝓝 (re (cd.inner 0 0)) := by
+    simp only [InnerProductSpace.Core.inner_zero_left, map_zero]
+    exact Iio_mem_nhds (by positivity)
+  exact A B
+
+#check NormedAddCommGroup.ofCoreReplaceTopology
+
+
+
+
+
+
+#exit
+
   let F' := id F
   letI : AddCommGroup F' := hF
   letI : Module 𝕜 F' := h'F
