@@ -305,13 +305,11 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
   -- It is however active in the test files for the linter itself.
   unless inMathlib? ||
-    mainModule == `MathlibTest.DirectoryDependencyLinter.Test ||
-    mainModule == `MathlibTest.Header do return
+    mainModule == `MathlibTest.Header || mainModule == `MathlibTest.DirectoryDependencyLinter.Test do return
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
-
   -- `Mathlib.lean` imports `Mathlib.Tactic`, which the broad imports check below would flag.
   -- Since that file is imports-only, we can simply skip linting it.
   if mainModule == `Mathlib then return
