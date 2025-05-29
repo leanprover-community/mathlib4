@@ -454,7 +454,6 @@ with appropriate multiplicity.
 
 We can use `nodal` to define the barycentric forms of the evaluated interpolant.
 -/
-
 def nodal (s : Finset ι) (v : ι → R) : R[X] :=
   ∏ i ∈ s, (X - C (v i))
 
