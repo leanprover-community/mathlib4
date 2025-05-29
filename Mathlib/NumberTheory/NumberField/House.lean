@@ -169,7 +169,6 @@ variable [Fintype β] (cardβ : Fintype.card β = q) (hmulvec0 : asiegel K a *�
 include hxl hmulvec0 in
 private theorem ξ_mulVec_eq_0 : a *ᵥ ξ K x = 0 := by
   funext k; simp only [Pi.zero_apply]; rw [eq_comm]
-
   have lin_0 : ∀ u, ∑ r, ∑ l, (a' K a k l r u * x (l, r) : 𝓞 K) = 0 := by
     intros u
     have hξ := ξ_ne_0 K x hxl
@@ -180,10 +179,8 @@ private theorem ξ_mulVec_eq_0 : a *ᵥ ξ K x = 0 := by
     simp only [Fintype.sum_prod_type, mulVec, dotProduct, asiegel] at hmulvec0
     rw [sum_comm] at hmulvec0
     exact mod_cast hmulvec0
-
   have : 0 = ∑ u, (∑ r, ∑ l, a' K a k l r u * x (l, r) : 𝓞 K) * (newBasis K) u := by
     simp only [lin_0, zero_mul, sum_const_zero]
-
   have : 0 = ∑ r, ∑ l, x (l, r) * ∑ u, a' K a k l r u * (newBasis K) u := by
     conv at this => enter [2, 2, u]; rw [sum_mul]
     rw [sum_comm] at this
