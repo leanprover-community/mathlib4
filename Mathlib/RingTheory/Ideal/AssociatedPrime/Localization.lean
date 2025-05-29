@@ -10,9 +10,9 @@ import Mathlib.RingTheory.Support
 
 /-!
 
-# Assocaited primes of localized module
+# Associated primes of localized module
 
-This file mainly proof the relation between `Ass(S⁻¹M)` and `Ass(M)`
+This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
 
 # Main Results
 
@@ -22,7 +22,7 @@ This file mainly proof the relation between `Ass(S⁻¹M)` and `Ass(M)`
 
 -/
 
-variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*)  [CommRing R'] [Algebra R R']
+variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*) [CommRing R'] [Algebra R R']
   [IsLocalization S R']
 
 variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
