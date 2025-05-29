@@ -52,7 +52,7 @@ theorem shiftedLegendre_eq_sum (n : ℕ) : (n ! : ℤ[X]) * (shiftedLegendre n) 
   congr 1
   nth_rw 2 [mul_rotate, mul_assoc, mul_comm]
   congr 1
-  simp [← Nat.cast_mul, mul_comm]
+  simp only [mul_comm, ← Nat.cast_mul, Nat.cast_inj]
   rw [Nat.div_eq_iff_eq_mul_left (by positivity)]
   · rw [mul_comm, ← mul_assoc, mul_comm (x !), ← Nat.mul_div_assoc]
     · rw [Nat.mul_div_cancel_left _ (by positivity)]
@@ -63,7 +63,8 @@ theorem shiftedLegendre_eq_sum (n : ℕ) : (n ! : ℤ[X]) * (shiftedLegendre n) 
 lemma shiftedLegendre_eq_int_poly (n : ℕ) : ∃ a : ℕ → ℤ, shiftedLegendre n =
     ∑ k ∈ Finset.range (n + 1), (a k) • X ^ k := by
   use fun k => (- 1) ^ k * (Nat.choose n k) * (Nat.choose (n + k) n)
-  simp [shiftedLegendre]
+  simp only [shiftedLegendre, Int.reduceNeg, eq_intCast, Int.cast_mul, Int.cast_pow, Int.cast_neg,
+    Int.cast_one, Int.cast_natCast, zsmul_eq_mul]
 
 /-- The values ​​of the Legendre polynomial at `x` and `1 - x` differ by a factor `(-1)ⁿ`. -/
 lemma shiftedLegendre_eval_symm (n : ℕ) (x : ℝ) :
@@ -93,5 +94,3 @@ lemma shiftedLegendre_eval_symm (n : ℕ) (x : ℝ) :
   simp only [even_two, Even.mul_right, Even.neg_pow, one_pow, mul_one]
 
 end Polynomial
-
-#min_imports
