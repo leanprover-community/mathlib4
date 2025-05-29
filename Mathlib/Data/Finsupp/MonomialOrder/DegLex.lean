@@ -29,14 +29,14 @@ def DegLex (α : Type*) := α
 
 variable {α : Type*}
 
-/-- `toDegLex` is the identity function to the `DegLex` of a type.  -/
+/-- `toDegLex` is the identity function to the `DegLex` of a type. -/
 @[match_pattern] def toDegLex : α ≃ DegLex α := Equiv.refl _
 
 theorem toDegLex_injective : Function.Injective (toDegLex (α := α)) := fun _ _ ↦ _root_.id
 
 theorem toDegLex_inj {a b : α} : toDegLex a = toDegLex b ↔ a = b := Iff.rfl
 
-/-- `ofDegLex` is the identity function from the `DegLex` of a type.  -/
+/-- `ofDegLex` is the identity function from the `DegLex` of a type. -/
 @[match_pattern] def ofDegLex : DegLex α ≃ α := Equiv.refl _
 
 theorem ofDegLex_injective : Function.Injective (ofDegLex (α := α)) := fun _ _ ↦ _root_.id
@@ -138,7 +138,7 @@ theorem le_iff {x y : DegLex (α →₀ ℕ)} :
     · simp [k]
     · simp only [h, k, false_or]
 
-noncomputable instance : OrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
+instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
   le_of_add_le_add_left a b c h := by
     rw [le_iff] at h ⊢
     simpa only [ofDegLex_add, degree_add, add_lt_add_iff_left, add_right_inj, toLex_add,
@@ -146,13 +146,6 @@ noncomputable instance : OrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) whe
   add_le_add_left a b h c := by
     rw [le_iff] at h ⊢
     simpa [ofDegLex_add, degree_add] using h
-
-/-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
-noncomputable instance :
-    LinearOrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
-  le_total := instLinearOrderDegLexNat.le_total
-  decidableLE := instLinearOrderDegLexNat.decidableLE
-  compare_eq_compareOfLessAndEq := instLinearOrderDegLexNat.compare_eq_compareOfLessAndEq
 
 theorem single_strictAnti : StrictAnti (fun (a : α) ↦ toDegLex (single a 1)) := by
   intro _ _ h
@@ -178,7 +171,7 @@ theorem monotone_degree :
   · apply le_of_lt h
   · apply le_of_eq h.1
 
-instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
+noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
   bot := toDegLex (0 : α →₀ ℕ)
   bot_le x := by
     simp only [le_iff, ofDegLex_toDegLex, toLex_zero, degree_zero]

@@ -6,7 +6,7 @@ Authors: Justus Springer, Andrew Yang
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Topology.Sheaves.Stalks
 
@@ -35,7 +35,8 @@ open TopCat.Presheaf
 namespace AlgebraicGeometry
 
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
-abbrev RingedSpace : TypeMax.{u+1, v+1} :=
+@[nolint checkUnivs] -- The universes appear together in the type, but separately in the value.
+abbrev RingedSpace : Type max (u+1) (v+1) :=
   SheafedSpace.{v+1, v, u} CommRingCat.{v}
 
 namespace RingedSpace

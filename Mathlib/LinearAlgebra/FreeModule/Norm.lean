@@ -3,10 +3,10 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.RingTheory.Norm.Defs
 
 /-!
 # Norms on free modules over principal ideal domains
@@ -44,9 +44,10 @@ theorem associated_norm_prod_smith [Fintype ι] (b : Basis ι R S) {f : S} (hf :
     Finsupp.single_eq_pi_single, Matrix.diagonal_mulVec_single, Pi.single_apply, ite_smul,
     zero_smul, Finset.sum_ite_eq', mul_one, if_pos (Finset.mem_univ _), b'.equiv_apply]
   change _ = f * _
+  rw [mul_comm, ← smul_eq_mul, LinearEquiv.restrictScalars_apply]
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [mul_comm, ← smul_eq_mul, LinearEquiv.restrictScalars_apply, LinearEquiv.coord_apply_smul,
-    Ideal.selfBasis_def]
+  erw [LinearEquiv.coord_apply_smul]
+  rw [Ideal.selfBasis_def]
   rfl
 
 end CommRing
@@ -56,17 +57,8 @@ section Field
 variable {F : Type*} [Field F] [Algebra F[X] S] [Finite ι]
 
 instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
-    FiniteDimensional F (F[X] ⧸ span ({I.smithCoeffs b hI i} : Set F[X])) := by
-  -- Porting note: we need to do this proof in two stages otherwise it times out
-  -- original proof: (AdjoinRoot.powerBasis <| I.smithCoeffs_ne_zero b hI i).FiniteDimensional
-  -- The first tactic takes over 10 seconds, spending a lot of time in checking
-  -- that instances on the quotient commute.  My guess is that we unfold
-  -- operations to the `Quotient.lift` level and then end up comparing huge
-  -- terms.  We should probably make most of the quotient operations
-  -- irreducible so that they don't expose `Quotient.lift` accidentally.
-  refine PowerBasis.finite ?_
-  refine AdjoinRoot.powerBasis ?_
-  exact I.smithCoeffs_ne_zero b hI i
+    FiniteDimensional F (F[X] ⧸ span ({I.smithCoeffs b hI i} : Set F[X])) :=
+  PowerBasis.finite <| AdjoinRoot.powerBasis <| I.smithCoeffs_ne_zero b hI i
 
 /-- For a nonzero element `f` in a `F[X]`-module `S`, the dimension of $S/\langle f \rangle$ as an
 `F`-vector space is the degree of the norm of `f` relative to `F[X]`. -/
@@ -78,7 +70,6 @@ theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F
   rw [natDegree_eq_of_degree_eq
       (degree_eq_degree_of_associated <| associated_norm_prod_smith b hf)]
   rw [natDegree_prod _ _ fun i _ => smithCoeffs_ne_zero b _ h i, finrank_quotient_eq_sum F h b]
-  -- finrank_quotient_eq_sum slow
   congr with i
   exact (AdjoinRoot.powerBasis <| smithCoeffs_ne_zero b _ h i).finrank
 

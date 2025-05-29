@@ -37,9 +37,10 @@ and the morphisms of the monoidal category become the 2-morphisms.)
 -/
 @[nolint unusedArguments]
 def MonoidalSingleObj (C : Type*) [Category C] [MonoidalCategory C] :=
-  PUnit --deriving Inhabited
+  PUnit
+-- The `Inhabited` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving` didn't work. Create this instance manually.
 instance : Inhabited (MonoidalSingleObj C) := by
   unfold MonoidalSingleObj
   infer_instance

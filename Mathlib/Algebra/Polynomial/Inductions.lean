@@ -156,7 +156,7 @@ if it holds for
 with appropriate restrictions on each term.
 
 See `natDegree_ne_zero_induction_on` for a similar statement involving no explicit multiplication.
- -/
+-/
 @[elab_as_elim]
 theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree p)
     (hC : ∀ {a}, a ≠ 0 → P (C a * X)) (hX : ∀ {p}, 0 < degree p → P p → P (p * X))
@@ -184,7 +184,7 @@ with appropriate restrictions on each term.
 Note that multiplication is "hidden" in the assumption on monomials, so there is no explicit
 multiplication in the statement.
 See `degree_pos_induction_on` for a similar statement involving more explicit multiplications.
- -/
+-/
 @[elab_as_elim]
 theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.natDegree ≠ 0)
     (h_C_add : ∀ {a p}, M p → M (C a + p)) (h_add : ∀ {p q}, M p → M q → M (p + q))

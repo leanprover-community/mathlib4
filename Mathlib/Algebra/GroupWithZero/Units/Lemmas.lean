@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Hom
 
@@ -13,7 +12,7 @@ import Mathlib.Algebra.GroupWithZero.Hom
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered MulAction Ring
 
 variable {M M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]
@@ -32,9 +31,6 @@ lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G₀ 
       rw [← one_mul (f (t * 0)), mul_zero] at this
       exact (h.mul_right_cancel this).symm
     · exact ⟨⟨a, a⁻¹, mul_inv_cancel₀ h, inv_mul_cancel₀ h⟩, rfl⟩
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_exists_map_ne_one := isLocalHom_of_exists_map_ne_one
 
 instance [GroupWithZero G₀] [FunLike F G₀ M₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial M₀]
     (f : F) : IsLocalHom f :=
@@ -117,16 +113,6 @@ theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) 
 /-- Inversion on a commutative group with zero, considered as a monoid with zero homomorphism. -/
 def invMonoidWithZeroHom {G₀ : Type*} [CommGroupWithZero G₀] : G₀ →*₀ G₀ :=
   { invMonoidHom with map_zero' := inv_zero }
-
-namespace Units
-
-variable [GroupWithZero G₀]
-
-@[simp]
-theorem smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=
-  rfl
-
-end Units
 
 /-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
 `n : ℤ`, to `(f x)^n`. -/

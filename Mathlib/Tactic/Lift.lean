@@ -147,10 +147,8 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
     for decl in ← getLCtx do
       if decl.userName != newEqName then
         let declIdent := mkIdent decl.userName
-        -- The line below fails if $declIdent is there only once.
-        evalTactic (← `(tactic| simp (config := {failIfUnchanged := false})
-          only [← $newEqIdent] at $declIdent $declIdent))
-    evalTactic (← `(tactic| simp (config := {failIfUnchanged := false}) only [← $newEqIdent]))
+        evalTactic (← `(tactic| simp -failIfUnchanged only [← $newEqIdent] at $declIdent:ident))
+    evalTactic (← `(tactic| simp -failIfUnchanged only [← $newEqIdent]))
   -- Clear the temporary hypothesis used for the new variable name if applicable
   if isNewVar && !isNewEq then
     evalTactic (← `(tactic| clear $newEqIdent))

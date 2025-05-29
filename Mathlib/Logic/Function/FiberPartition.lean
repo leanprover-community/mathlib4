@@ -15,6 +15,8 @@ set, and the forgetful functor from the category of condensed sets to the catego
 (see PR https://github.com/leanprover-community/mathlib4/pull/14027).
 -/
 
+assert_not_exists RelIso
+
 variable {X Y Z : Type*}
 
 namespace Function

@@ -18,7 +18,7 @@ respectively.
 ## Main statements
 
 * `lucas_theorem`: the binomial coefficient `n choose k` is congruent to the product of `n_i choose
-k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
+  k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
 -/
 
 open Finset hiding choose
@@ -50,7 +50,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
     · simp only [mem_product, mem_range] at hx
       have h' : x₁ < p := lt_of_lt_of_le hx.left <| mod_lt _ Fin.pos'
       rw [h, add_mul_mod_self_left, add_mul_div_left _ _ Fin.pos', eq_comm (b := x₂)]
-      exact ⟨mod_eq_of_lt h', self_eq_add_left.mpr (div_eq_of_lt h')⟩
+      exact ⟨mod_eq_of_lt h', right_eq_add.mpr (div_eq_of_lt h')⟩
     · rw [← h.left, ← h.right, mod_add_div]
   simp only [finset_sum_coeff, coeff_mul_natCast, coeff_X_pow, ite_mul, zero_mul, ← cast_mul]
   rw [← sum_product', sum_congr rfl (fun a ha ↦ if_congr (h_iff a ha) rfl rfl), sum_ite_eq]

@@ -30,7 +30,7 @@ namespace Functor
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
-/-- `Fiber p S` is the type of elements of `𝒳` mapping to `S` via `p`.  -/
+/-- `Fiber p S` is the type of elements of `𝒳` mapping to `S` via `p`. -/
 def Fiber (p : 𝒳 ⥤ 𝒮) (S : 𝒮) := { a : 𝒳 // p.obj a = S }
 
 namespace Fiber

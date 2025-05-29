@@ -104,7 +104,8 @@ satisfying the sheaf condition.
 nonrec def Sheaf : Type max u v w :=
   Sheaf (Opens.grothendieckTopology X) C
 
--- Porting note: `deriving Cat` failed
+-- The following instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance SheafCat : Category (Sheaf C X) :=
   show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
 
@@ -127,11 +128,12 @@ namespace Sheaf
 def forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X :=
   sheafToPresheaf _ _
 
--- Porting note: `deriving Full` failed
+-- The following instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance forget_full : (forget C X).Full where
   map_surjective f := ⟨Sheaf.Hom.mk f, rfl⟩
 
--- Porting note: `deriving Faithful` failed
 instance forgetFaithful : (forget C X).Faithful where
   map_injective := Sheaf.Hom.ext
 

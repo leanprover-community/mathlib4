@@ -16,8 +16,8 @@ universe v
 
 /-- A (unital) star subsemiring is a non-associative ring which is closed under the `star`
 operation. -/
-structure StarSubsemiring (R : Type v) [NonAssocSemiring R] [Star R]
-    extends Subsemiring R : Type v where
+structure StarSubsemiring (R : Type v) [NonAssocSemiring R] [Star R] : Type v
+    extends Subsemiring R where
   /-- The `carrier` of a `StarSubsemiring` is closed under the `star` operation. -/
   star_mem' {a} : a ∈ carrier → star a ∈ carrier
 
@@ -28,11 +28,37 @@ namespace StarSubsemiring
 /-- Reinterpret a `StarSubsemiring` as a `Subsemiring`. -/
 add_decl_doc StarSubsemiring.toSubsemiring
 
-variable {R : Type v} [NonAssocSemiring R] [StarRing R]
-
-instance setLike : SetLike (StarSubsemiring R) R where
+instance setLike {R : Type v} [NonAssocSemiring R] [Star R] :
+    SetLike (StarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+
+initialize_simps_projections StarSubsemiring (carrier → coe, as_prefix coe)
+
+variable {R : Type v} [NonAssocSemiring R] [StarRing R]
+
+/-- The actual `StarSubsemiring` obtained from an element of a `StarSubsemiringClass`. -/
+@[simps]
+def ofClass {S R : Type*} [NonAssocSemiring R] [SetLike S R] [StarRing R] [SubsemiringClass S R]
+    [StarMemClass S R] (s : S) : StarSubsemiring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  one_mem' := one_mem _
+  star_mem' := star_mem
+
+instance (priority := 100) : CanLift (Set R) (StarSubsemiring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ 1 ∈ s ∧
+      (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ (∀ {x}, x ∈ s → star x ∈ s)) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        one_mem' := h.2.2.1
+        mul_mem' := h.2.2.2.1
+        star_mem' := h.2.2.2.2 },
+      rfl ⟩
 
 instance starMemClass : StarMemClass (StarSubsemiring R) R where
   star_mem {s} := s.star_mem'
@@ -101,7 +127,7 @@ variable (R)
 
 /-- The center of a semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
-def center (R) [NonAssocSemiring R][StarRing R] : StarSubsemiring R where
+def center (R) [NonAssocSemiring R] [StarRing R] : StarSubsemiring R where
   toSubsemiring := Subsemiring.center R
   star_mem' := Set.star_mem_center
 

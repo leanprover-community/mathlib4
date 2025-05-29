@@ -177,14 +177,7 @@ theorem iff_exists_algEquiv_prod [EssFiniteType K A] :
     exact ⟨_, inferInstance, _, _, _, e, fun I ↦ (iff_isSeparable _ _).mp inferInstance⟩
   · intro ⟨I, _, Ai, _, _, e, _⟩
     rw [FormallyEtale.iff_of_equiv e, FormallyEtale.pi_iff]
-    have (i) : EssFiniteType K (Ai i) := by
-      letI := ((Pi.evalRingHom Ai i).comp e.toRingHom).toAlgebra
-      have : IsScalarTower K A (Ai i) :=
-        .of_algebraMap_eq fun r ↦ by simp [RingHom.algebraMap_toAlgebra]
-      have : Algebra.FiniteType A (Ai i) := .of_surjective inferInstance (Algebra.ofId _ _)
-        (RingHomSurjective.is_surjective (σ := Pi.evalRingHom Ai i).comp e.surjective)
-      exact EssFiniteType.comp K A (Ai i)
-    exact fun I ↦ (iff_isSeparable _ _).mpr inferInstance
+    exact fun I ↦ of_isSeparable K (Ai I)
 
 end Algebra.FormallyEtale
 

@@ -5,7 +5,9 @@ Authors: Johan Commelin, Chris Hughes
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Data.Fintype.Inv
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Integral domains
@@ -20,7 +22,7 @@ Assorted theorems about integral domains.
 ## Notes
 
 Wedderburn's little theorem, which shows that all finite division rings are actually fields,
-is in `Mathlib.RingTheory.LittleWedderburn`.
+is in `Mathlib/RingTheory/LittleWedderburn.lean`.
 
 ## Tags
 
@@ -70,12 +72,12 @@ theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiri
     (hprod : ∏ i ∈ s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
   classical
     intro i hi
-    rw [← insert_erase hi, prod_insert (not_mem_erase i s)] at hprod
+    rw [← insert_erase hi, prod_insert (notMem_erase i s)] at hprod
     refine
       exists_eq_pow_of_mul_eq_pow_of_coprime
         (IsCoprime.prod_right fun j hj => h i hi j (erase_subset i s hj) fun hij => ?_) hprod
     rw [hij] at hj
-    exact (s.not_mem_erase _) hj
+    exact (s.notMem_erase _) hj
 
 end CancelMonoidWithZero
 
@@ -86,7 +88,7 @@ section Ring
 variable [Ring R] [IsDomain R] [Fintype R]
 
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
-`Mathlib.RingTheory.LittleWedderburn`. -/
+`Mathlib/RingTheory/LittleWedderburn.lean`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
   __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
@@ -97,7 +99,7 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
   qsmul_def := fun _ _ => rfl
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
-can be found in `Mathlib.RingTheory.LittleWedderburn`. -/
+can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 
@@ -182,7 +184,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       apply hf
       ext g
       rw [MonoidHom.one_apply]
-      cases' hx ⟨f.toHomUnits g, g, rfl⟩ with n hn
+      obtain ⟨n, hn⟩ := hx ⟨f.toHomUnits g, g, rfl⟩
       rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
         eq_comm] at hn
     replace hx1 : (x.val : R) - 1 ≠ 0 := -- Porting note: was `(x : R)`

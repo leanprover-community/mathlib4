@@ -115,7 +115,7 @@ theorem derivative_coe (f : R[X]) : d⁄dX R f = Polynomial.derivative f := deri
 @[simp] theorem derivative_X : d⁄dX R (X : R⟦X⟧) = 1 := by
   ext
   rw [coeff_derivative, coeff_one, coeff_X, boole_mul]
-  simp_rw [add_left_eq_self]
+  simp_rw [add_eq_right]
   split_ifs with h
   · rw [h, cast_zero, zero_add]
   · rfl
