@@ -490,8 +490,11 @@ def diagonalSuccIsoTensorTrivial :
     (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
       tensorIso (Iso.refl _) (linearizationTrivialIso k G (Fin n → G))
 
+@[simp]
 theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
-    (diagonalSuccIsoTensorTrivial k G n).hom.hom (single f a) =
+    DFunLike.coe (F := ((Fin (n + 1) → G) →₀ k) →ₗ[k]
+      ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k ((Fin n → G) →₀ k)))
+    (diagonalSuccIsoTensorTrivial k G n).hom.hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
   simp [diagonalSuccIsoTensorTrivial, instMonoidalCategoryStruct_whiskerLeft, tensorObj_def,
     ModuleCat.MonoidalCategory.whiskerLeft, instMonoidalCategoryStruct_tensorObj,
@@ -525,6 +528,8 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : 
     simpa [-Action.instMonoidalCategory_tensorObj_V, map_add, hx, TensorProduct.add_tmul] using
       diagonalSuccIsoTensorTrivial_inv_hom_single_single ..
 
+variable [DecidableEq (Fin n → G)]
+
 variable (k G n) in
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the righthand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
@@ -536,18 +541,15 @@ def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
 theorem diagonalSuccIsoFree_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
     (diagonalSuccIsoFree k G n).hom.hom (single f a) =
       single (fun i => (f i.castSucc)⁻¹ * f i.succ) (single (f 0) a) := by
-  have := diagonalSuccIsoTensorTrivial_hom_hom_single f a
-  have := leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single
-    (k := k) (G := G) (α := Fin n → G)
-  simp_all [diagonalSuccIsoFree]
+  simp [diagonalSuccIsoFree, leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single
+    (k := k)]
 
 @[simp]
 theorem diagonalSuccIsoFree_inv_hom_single_single (g : G) (f : Fin n → G) (a : k) :
     (diagonalSuccIsoFree k G n).inv.hom (single f (single g a)) =
       single (g • Fin.partialProd f) a := by
-  have := leftRegularTensorTrivialIsoFree_inv_hom_single_single (k := k) (G := G) (α := Fin n → G)
   have := diagonalSuccIsoTensorTrivial_inv_hom_single_single g f a 1
-  simp_all [diagonalSuccIsoFree]
+  simp_all [diagonalSuccIsoFree, leftRegularTensorTrivialIsoFree_inv_hom_single_single (k := k)]
 
 theorem diagonalSuccIsoFree_inv_hom_single (g : G →₀ k) (f : Fin n → G) :
     (diagonalSuccIsoFree k G n).inv.hom (single f g) =
