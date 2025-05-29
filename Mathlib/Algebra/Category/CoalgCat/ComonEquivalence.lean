@@ -3,10 +3,12 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.Algebra.Category.CoalgCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+import Mathlib.CategoryTheory.Monoidal.Comon_
+import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.Coalgebra.TensorProduct
 
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`
@@ -15,7 +17,7 @@ Given a commutative ring `R`, this file defines the equivalence of categories be
 `R`-coalgebras and comonoid objects in the category of `R`-modules.
 
 We then use this to set up boilerplate for the `Coalgebra` instance on a tensor product of
-coalgebras defined in `Mathlib.RingTheory.Coalgebra.TensorProduct`.
+coalgebras defined in `Mathlib/RingTheory/Coalgebra/TensorProduct.lean`.
 
 ## Implementation notes
 
@@ -23,7 +25,7 @@ We make the definition `CoalgCat.instMonoidalCategoryAux` in this file, which is
 monoidal structure on `CoalgCat` induced by the equivalence with `Comon(R-Mod)`. We
 use this to show the comultiplication and counit on a tensor product of coalgebras satisfy
 the coalgebra axioms, but our actual `MonoidalCategory` instance on `CoalgCat` is
-constructed in `Mathlib.Algebra.Category.CoalgCat.Monoidal` to have better
+constructed in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` to have better
 definitional equalities.
 
 -/
@@ -99,7 +101,7 @@ variable {R}
 
 /-- The monoidal category structure on the category of `R`-coalgebras induced by the
 equivalence with `Comon(R-Mod)`. This is just an auxiliary definition; the `MonoidalCategory`
-instance we make in `Mathlib.Algebra.Category.CoalgCat.Monoidal` has better
+instance we make in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` has better
 definitional equalities. -/
 noncomputable def instMonoidalCategoryAux : MonoidalCategory (CoalgCat R) :=
   Monoidal.transport (comonEquivalence R).symm
@@ -147,10 +149,8 @@ theorem comul_tensorObj :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
       = Coalgebra.comul (A := M ⊗[R] N) := by
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
-    comul_def]
-  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X,
-    toComonObj_comul, tensorμ_eq_tensorTensorTensorComm]
+  simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
+    AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
 theorem comul_tensorObj_tensorObj_right :
@@ -158,14 +158,11 @@ theorem comul_tensorObj_tensorObj_right :
       (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
       = Coalgebra.comul (A := M ⊗[R] N ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
-    comul_def]
-  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X, ModuleCat.of_coe, toComonObj_comul]
+  dsimp
+  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_comul]
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
-  simp only [
-    ModuleCat.coe_of, Comon_.monoidal_tensorObj_comul, toComonObj_X, toComonObj_comul,
-    tensorμ_eq_tensorTensorTensorComm]
+  simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
+    AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
 theorem comul_tensorObj_tensorObj_left :
@@ -173,31 +170,34 @@ theorem comul_tensorObj_tensorObj_left :
       (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))
       = Coalgebra.comul (A := (M ⊗[R] N) ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj,
-    comul_def]
-  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_X, ModuleCat.of_coe, toComonObj_comul]
+  dsimp
+  simp only [Comon_.monoidal_tensorObj_comul, toComonObj_comul]
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
-  simp only [
-    ModuleCat.coe_of, Comon_.monoidal_tensorObj_comul, toComonObj_X, toComonObj_comul,
-    tensorμ_eq_tensorTensorTensorComm]
+  simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
+    AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
 theorem counit_tensorObj :
     Coalgebra.counit (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
       = Coalgebra.counit (A := M ⊗[R] N) := by
+  rw [ofComonObjCoalgebraStruct_counit]
+  simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
   rfl
 
 theorem counit_tensorObj_tensorObj_right :
     Coalgebra.counit (R := R)
       (A := (CoalgCat.of R M ⊗ (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
       = Coalgebra.counit (A := M ⊗[R] (N ⊗[R] P)) := by
-  ext; rfl
+  rw [ofComonObjCoalgebraStruct_counit]
+  simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
+  rfl
 
 theorem counit_tensorObj_tensorObj_left :
     Coalgebra.counit (R := R)
       (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))
       = Coalgebra.counit (A := (M ⊗[R] N) ⊗[R] P) := by
-  ext; rfl
+  rw [ofComonObjCoalgebraStruct_counit]
+  simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
+  rfl
 
 end CoalgCat.MonoidalCategoryAux
