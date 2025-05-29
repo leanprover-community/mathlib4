@@ -35,7 +35,7 @@ def checkTitleLabelsCLI (args : Parsed) : IO UInt32 := do
     -- A feature PR should have a topic label.
     if title.startsWith "feat" && !labels.any
         (fun s ↦ s.startsWith "t-" || ["CI", "IMO"].contains s) then
-      IO.println "error: feature PRs should have a 't-something' or the 'CI' label"
+      IO.println "error: feature PRs should have a 't-something',  'CI' or 'IMO' label"
       numberErrors := numberErrors + 1
   -- Check for contradictory labels.
   if hasContradictoryLabels labels then

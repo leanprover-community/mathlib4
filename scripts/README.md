@@ -37,8 +37,8 @@ to learn about it as well!
 - `lint-style.lean`, `lint-style.py`, `print-style-errors.sh`
   style linters, written in Python and Lean. Run via `lake exe lint-style`.
   Medium-term, the latter two scripts should be rewritten and incorporated in `lint-style.lean`.
-- `check-title-labels.lean` verifies that a (non-WIP, non-draft) has a topic label (if a feature PR)
-  and that the PR title confirms to mathlib's commit conventions.
+- `check-title-labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title, and has a topic label if it is a feature PR.
+  and that the PR title conforms to mathlib's commit conventions.
   (Currently, some checks are skipped or omitted to avoid warning fatigue.)
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
