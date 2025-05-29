@@ -144,8 +144,8 @@ a multiplicative equivalence `e : α ≃* β`. -/
 @[to_additive (attr := simps)
 "The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
 an additive equivalence `e : α ≃+ β`."]
-def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (β →* γ) ≃ (α →* γ) where
+def precompEquiv {α β : Type*} [MulOneClass α] [MulOneClass β] (e : α ≃* β)
+    (γ : Type*) [MulOneClass γ] : (β →* γ) ≃ (α →* γ) where
   toFun f := f.comp e
   invFun g := g.comp e.symm
   left_inv _ := by ext; simp
@@ -156,8 +156,8 @@ a multiplicative equivalence `e : α ≃* β`. -/
 @[to_additive (attr := simps)
 "The equivalence `(γ →+ α) ≃ (γ →+ β)` obtained by postcomposition with
 an additive equivalence `e : α ≃+ β`."]
-def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (γ →* α) ≃ (γ →* β) where
+def postcompEquiv {α β : Type*} [MulOneClass α] [MulOneClass β] (e : α ≃* β)
+    (γ : Type*) [MulOneClass γ] : (γ →* α) ≃ (γ →* β) where
   toFun f := e.toMonoidHom.comp f
   invFun g := e.symm.toMonoidHom.comp g
   left_inv _ := by ext; simp
