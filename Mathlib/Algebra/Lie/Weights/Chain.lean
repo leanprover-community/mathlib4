@@ -172,8 +172,8 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
     {x : H} (hx : x ∈ corootSpace α) :
     LinearMap.trace R _ (toEnd R H (genWeightSpaceChain M α χ p q) x) = 0 := by
   rw [LieAlgebra.mem_corootSpace'] at hx
-  induction hx using Submodule.span_induction
-  · next u hu =>
+  induction hx using Submodule.span_induction with
+  | mem u hu =>
     obtain ⟨y, hy, z, hz, hyz⟩ := hu
     let f : Module.End R (genWeightSpaceChain M α χ p q) :=
       { toFun := fun ⟨m, hm⟩ ↦ ⟨⁅(y : L), m⁆,
@@ -191,9 +191,9 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
       simp only [lie_lie, LieHom.lie_apply, LinearMap.coe_mk, AddHom.coe_mk, Module.End.lie_apply,
       AddSubgroupClass.coe_sub, f, g]
     simp [hfg]
-  · simp
-  · simp_all
-  · simp_all
+  | zero => simp
+  | add => simp_all
+  | smul => simp_all
 
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
 `I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
