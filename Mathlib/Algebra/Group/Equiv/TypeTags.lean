@@ -72,7 +72,7 @@ def AddEquiv.toMultiplicative' [MulOneClass G] [AddZeroClass H] :
   left_inv x := by ext; rfl
   right_inv x := by ext; rfl
 
-/-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H` as. -/
+/-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H`. -/
 abbrev MulEquiv.toAdditive' [MulOneClass G] [AddZeroClass H] :
     G ≃* Multiplicative H ≃ (Additive G ≃+ H) :=
   AddEquiv.toMultiplicative'.symm
