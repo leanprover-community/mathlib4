@@ -6,6 +6,19 @@ Authors: Mario Carneiro, Emily Riehl
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 import Mathlib.CategoryTheory.Enriched.Basic
 
+/-!
+# The strict bicategory associated to a Cat-enriched category
+
+If `C` is a type with a `EnrichedCategory Cat C` structure, then it has hom-categories, whose
+objects define 1-dimensional arrows on `C` and whose morphisms define 2-dimensional arrows between
+these. The enriched category axioms equip this data with the structure of a strict bicategory.
+
+We define a type alias `CatEnriched C` for a type `C` with a `EnrichedCategory Cat C` structure.
+
+We provide this with an instance of a strict bicategory structure constructing
+`Bicategory.Strict (CatEnriched C)`.
+-/
+
 namespace CategoryTheory
 open Category
 
@@ -19,6 +32,9 @@ namespace CatEnriched
 
 instance : EnrichedCategory Cat (CatEnriched C) := inferInstanceAs (EnrichedCategory Cat C)
 
+/-- Any enriched category has an underlying category structure defined by `ForgetEnrichment`.
+This is equivalent but not definitionally equal the category structure constructed here, which is
+more canonically associated to the data of an `EnrichedCategory Cat` structure. -/
 instance : CategoryStruct (CatEnriched C) where
   Hom X Y := X ⟶[Cat] Y
   id X := (eId Cat X).obj ⟨⟨()⟩⟩
@@ -30,66 +46,68 @@ theorem comp_eq {X Y Z : CatEnriched C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 instance {X Y : CatEnriched C} : Category (X ⟶ Y) := inferInstanceAs (Category (X ⟶[Cat] Y).α)
 
-/-- The operation of the composition bifunctor on 2-morphisms. -/
-def bicomp {a b c : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c}
+/-- The horizonal composition on 2-morphisms is defined using the action on arrows of the
+composition bifunctor from the enriched category structure. -/
+def hcomp {a b c : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c}
   (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := (eComp Cat a b c).map (η, θ)
 
 @[simp]
-theorem id_bicomp_id {a b c : CatEnriched C} (f : a ⟶ b) (g : b ⟶ c) :
-    bicomp (𝟙 f) (𝟙 g) = 𝟙 (f ≫ g) := Functor.map_id ..
+theorem id_hcomp_id {a b c : CatEnriched C} (f : a ⟶ b) (g : b ⟶ c) :
+    hcomp (𝟙 f) (𝟙 g) = 𝟙 (f ≫ g) := Functor.map_id ..
 
 @[simp]
-theorem bicomp_comp {a b c : CatEnriched C} {f₁ f₂ f₃ : a ⟶ b} {g₁ g₂ g₃ : b ⟶ c}
+theorem hcomp_comp {a b c : CatEnriched C} {f₁ f₂ f₃ : a ⟶ b} {g₁ g₂ g₃ : b ⟶ c}
     (η : f₁ ⟶ f₂) (η' : f₂ ⟶ f₃) (θ : g₁ ⟶ g₂) (θ' : g₂ ⟶ g₃) :
-    bicomp η θ ≫ bicomp η' θ' = bicomp (η ≫ η') (θ ≫ θ') :=
+    hcomp η θ ≫ hcomp η' θ' = hcomp (η ≫ η') (θ ≫ θ') :=
   ((eComp Cat a b c).map_comp (Y := (_, _)) (_, _) (_, _)).symm
 
+/-- The action on objects of the `EnrichedCategory Cat` coherences proves the category axioms. -/
 instance : Category (CatEnriched C) where
   id_comp {X Y} f := congrArg (·.obj f) (e_id_comp (V := Cat) X Y)
   comp_id {X Y} f := congrArg (·.obj f) (e_comp_id (V := Cat) X Y)
   assoc {X Y Z W} f g h := congrArg (·.obj (f, g, h)) (e_assoc (V := Cat) X Y Z W)
 
-theorem id_bicomp_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
-    HEq (bicomp (𝟙 (𝟙 a)) η) η := by
+theorem id_hcomp_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    HEq (hcomp (𝟙 (𝟙 a)) η) η := by
   rw [id_eq, ← Functor.map_id]
   exact congr_arg_heq (·.map η) (e_id_comp (V := Cat) a b)
 
-theorem id_bicomp {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
-    bicomp (𝟙 (𝟙 a)) η = eqToHom (id_comp f) ≫ η ≫ eqToHom (id_comp f').symm := by
-  simp [← heq_eq_eq, id_bicomp_heq]
+theorem id_hcomp {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    hcomp (𝟙 (𝟙 a)) η = eqToHom (id_comp f) ≫ η ≫ eqToHom (id_comp f').symm := by
+  simp [← heq_eq_eq, id_hcomp_heq]
 
-theorem bicomp_id_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
-    HEq (bicomp η (𝟙 (𝟙 b))) η := by
+theorem hcomp_id_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    HEq (hcomp η (𝟙 (𝟙 b))) η := by
   rw [id_eq, ← Functor.map_id]
   exact congr_arg_heq (·.map η) (e_comp_id (V := Cat) a b)
 
-theorem bicomp_id {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
-    bicomp η (𝟙 (𝟙 b)) = eqToHom (comp_id f) ≫ η ≫ eqToHom (comp_id f').symm := by
-  simp [← heq_eq_eq, bicomp_id_heq]
+theorem hcomp_id {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    hcomp η (𝟙 (𝟙 b)) = eqToHom (comp_id f) ≫ η ≫ eqToHom (comp_id f').symm := by
+  simp [← heq_eq_eq, hcomp_id_heq]
 
-theorem bicomp_assoc_heq {a b c d : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
+theorem hcomp_assoc_heq {a b c d : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
     (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
-    HEq (bicomp (bicomp η θ) κ) (bicomp η (bicomp θ κ)) :=
+    HEq (hcomp (hcomp η θ) κ) (hcomp η (hcomp θ κ)) :=
   congr_arg_heq (·.map (X := (_, _, _)) (Y := (_, _, _)) (η, θ, κ)) (e_assoc (V := Cat) a b c d)
 
-theorem bicomp_assoc {a b c d : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
+theorem hcomp_assoc {a b c d : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
     (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
-    bicomp (bicomp η θ) κ =
-      eqToHom (assoc f g h) ≫ bicomp η (bicomp θ κ) ≫ eqToHom (assoc f' g' h').symm := by
-  simp [← heq_eq_eq, bicomp_assoc_heq]
+    hcomp (hcomp η θ) κ =
+      eqToHom (assoc f g h) ≫ hcomp η (hcomp θ κ) ≫ eqToHom (assoc f' g' h').symm := by
+  simp [← heq_eq_eq, hcomp_assoc_heq]
 
 instance : Bicategory (CatEnriched C) where
   homCategory := inferInstance
-  whiskerLeft {_ _ _} f {_ _} η := bicomp (𝟙 f) η
-  whiskerRight η h := bicomp η (𝟙 h)
+  whiskerLeft {_ _ _} f {_ _} η := hcomp (𝟙 f) η
+  whiskerRight η h := hcomp η (𝟙 h)
   associator f g h := eqToIso (assoc f g h)
   leftUnitor f := eqToIso (id_comp f)
   rightUnitor f := eqToIso (comp_id f)
-  id_whiskerLeft := id_bicomp
-  comp_whiskerLeft := by simp [← id_bicomp_id, bicomp_assoc]
-  whiskerRight_id := bicomp_id
-  whiskerRight_comp := by simp [bicomp_assoc]
-  whisker_assoc := by simp [bicomp_assoc]
+  id_whiskerLeft := id_hcomp
+  comp_whiskerLeft := by simp [← id_hcomp_id, hcomp_assoc]
+  whiskerRight_id := hcomp_id
+  whiskerRight_comp := by simp [hcomp_assoc]
+  whisker_assoc := by simp [hcomp_assoc]
   pentagon {a b c d e} f g h i := by
     generalize_proofs h1 h2 h3 h4; revert h1 h2 h3 h4
     generalize (f ≫ g) ≫ h = x, (g ≫ h) ≫ i = w
@@ -99,6 +117,8 @@ instance : Bicategory (CatEnriched C) where
     generalize 𝟙 b ≫ g = g, f ≫ 𝟙 b = f
     rintro _ rfl rfl; simp
 
+/-- As the associator and left and right unitors are defined as eqToIso of category axioms, the
+bicategory structure on `CatEnriched C` is strict. -/
 instance : Bicategory.Strict (CatEnriched C) where
 
 end CatEnriched
