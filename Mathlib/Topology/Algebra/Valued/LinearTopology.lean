@@ -10,15 +10,15 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 # Valuation rings of valued fields have a linear topology
 
 ## Main Results
-* `IsLinearTopology.of_isDiscreteValuationRing`: for a valued field `K`,
-  the valuation ring `𝒪[K]` has a linear topology, when the valuation ring is a DVR.
+* `IsLinearTopology.of_valued`: for a valued field `K`,
+  the valuation ring `𝒪[K]` has a linear topology
 
 -/
 open Valued Filter Topology
 
 variable {K Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Valued K Γ₀]
 
-instance IsLinearTopology.of_isDiscreteValuationRing :
+instance IsLinearTopology.of_valued :
     IsLinearTopology 𝒪[K] 𝒪[K] := by
   by_cases hd : DiscreteTopology K
   · have : DiscreteTopology 𝒪[K] := inferInstance
