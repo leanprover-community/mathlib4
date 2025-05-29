@@ -53,16 +53,16 @@ theorem IsTotallyReal.ofRingEquiv [IsTotallyReal F] (f : F ≃+* K) : IsTotallyR
   isReal _ := (isReal_comap_iff f).mp <| IsTotallyReal.isReal _
 
 variable (F K) in
-theorem IsTotally.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal F where
+theorem IsTotallyReal.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal F where
   isReal w := by
     obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
     exact IsReal.comap _ (IsTotallyReal.isReal W)
 
 instance [IsTotallyReal K] (F : IntermediateField ℚ K) : IsTotallyReal F :=
-  IsTotally.of_algebra F K
+  IsTotallyReal.of_algebra F K
 
 instance [IsTotallyReal K] (F : Subfield K) : IsTotallyReal F :=
-  IsTotally.of_algebra F K
+  IsTotallyReal.of_algebra F K
 
 variable (K)
 
@@ -111,7 +111,7 @@ variable {K}
 theorem IsTotallyReal.le_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] :
     E ≤ maximalRealSubfield K := by
   intro x hx φ
-  rw [show φ x = (φ.comp E.subtype) ⟨x, hx⟩ by rfl, RCLike.star_def, ← conjugate_coe_eq]
+  rw [show φ x = (φ.comp E.subtype) ⟨x, hx⟩ by simp, RCLike.star_def, ← conjugate_coe_eq]
   refine RingHom.congr_fun ?_ _
   exact ComplexEmbedding.isReal_iff.mp  <| isReal_mk_iff.mp <| isReal _
 
@@ -128,7 +128,7 @@ instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotal
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
 
- end maximalRealSubfield
+end maximalRealSubfield
 
 end TotallyRealField
 

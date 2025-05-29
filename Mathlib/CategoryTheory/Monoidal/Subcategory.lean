@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 Given a monoidal category `C` and a property of objects `P : ObjectProperty C`
 that is monoidal (i.e. it holds for the unit and is stable by `⊗`),
 we can put a monoidal structure on `P.FullSubcategory` (the category
-structure is defined in `Mathlib.CategoryTheory.ObjectProperty.FullSubcategory`).
+structure is defined in `Mathlib/CategoryTheory/ObjectProperty/FullSubcategory.lean`).
 
 When `C` is also braided/symmetric, the full monoidal subcategory also inherits the
 braided/symmetric structure.
