@@ -14,9 +14,9 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
 
 ## Main definitions
 
- * `Matrix.diagonal d`: matrix with the vector `d` along the diagonal
- * `Matrix.diag M`: the diagonal of a square matrix
- * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
+* `Matrix.diagonal d`: matrix with the vector `d` along the diagonal
+* `Matrix.diag M`: the diagonal of a square matrix
+* `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
 assert_not_exists Algebra Star
@@ -158,6 +158,16 @@ theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
   ext i j
   rw [Subsingleton.elim i default, Subsingleton.elim j default, diagonal_apply_eq _ _, of_apply]
 
+@[simp]
+theorem col_diagonal [Zero α] (d : n → α) (i) : (diagonal d).col i = Pi.single i (d i) := by
+  ext
+  simp +contextual [diagonal, Pi.single_apply]
+
+@[simp]
+theorem row_diagonal [Zero α] (d : n → α) (j) : (diagonal d).row j = Pi.single j (d j) := by
+  ext
+  simp +contextual [diagonal, eq_comm, Pi.single_apply]
+
 section One
 
 variable [Zero α] [One α]
@@ -190,7 +200,7 @@ protected theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h
   simp only [one_apply, map_apply]
   split_ifs <;> simp [h₀, h₁]
 
-theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _ => α) i 1 j := by
+theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (M := fun _ => α) i 1 j := by
   simp only [one_apply, Pi.single_apply, eq_comm]
 
 end One

@@ -10,10 +10,10 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 
 Let `W` be a Weierstrass curve over a field `F` with coefficients `aᵢ`. The nonsingular affine
 points on `W` can be given negation and addition operations defined by a secant-and-tangent process.
- * Given a nonsingular affine point `P`, its *negation* `-P` is defined to be the unique third
+* Given a nonsingular affine point `P`, its *negation* `-P` is defined to be the unique third
     nonsingular point of intersection between `W` and the vertical line through `P`.
     Explicitly, if `P` is `(x, y)`, then `-P` is `(x, -y - a₁x - a₃)`.
- * Given two nonsingular affine points `P` and `Q`, their *addition* `P + Q` is defined to be the
+* Given two nonsingular affine points `P` and `Q`, their *addition* `P + Q` is defined to be the
     negation of the unique third nonsingular point of intersection between `W` and the line `L`
     through `P` and `Q`. Explicitly, let `P` be `(x₁, y₁)` and let `Q` be `(x₂, y₂)`.
       * If `x₁ = x₂` and `y₁ = -y₂ - a₁x₂ - a₃`, then `L` is vertical.
@@ -34,17 +34,17 @@ coordinates will be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/P
 
 ## Main definitions
 
- * `WeierstrassCurve.Affine.negY`: the `Y`-coordinate of `-P`.
- * `WeierstrassCurve.Affine.addX`: the `X`-coordinate of `P + Q`.
- * `WeierstrassCurve.Affine.negAddY`: the `Y`-coordinate of `-(P + Q)`.
- * `WeierstrassCurve.Affine.addY`: the `Y`-coordinate of `P + Q`.
+* `WeierstrassCurve.Affine.negY`: the `Y`-coordinate of `-P`.
+* `WeierstrassCurve.Affine.addX`: the `X`-coordinate of `P + Q`.
+* `WeierstrassCurve.Affine.negAddY`: the `Y`-coordinate of `-(P + Q)`.
+* `WeierstrassCurve.Affine.addY`: the `Y`-coordinate of `P + Q`.
 
 ## Main statements
 
- * `WeierstrassCurve.Affine.equation_neg`: negation preserves the Weierstrass equation.
- * `WeierstrassCurve.Affine.nonsingular_neg`: negation preserves the nonsingular condition.
- * `WeierstrassCurve.Affine.equation_add`: addition preserves the Weierstrass equation.
- * `WeierstrassCurve.Affine.nonsingular_add`: addition preserves the nonsingular condition.
+* `WeierstrassCurve.Affine.equation_neg`: negation preserves the Weierstrass equation.
+* `WeierstrassCurve.Affine.nonsingular_neg`: negation preserves the nonsingular condition.
+* `WeierstrassCurve.Affine.equation_add`: addition preserves the Weierstrass equation.
+* `WeierstrassCurve.Affine.nonsingular_add`: addition preserves the nonsingular condition.
 
 ## References
 

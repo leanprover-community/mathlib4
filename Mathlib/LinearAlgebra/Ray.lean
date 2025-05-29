@@ -22,7 +22,7 @@ This file defines rays in modules.
   coefficient.
 
 * `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
-common positive multiple.
+  common positive multiple.
 -/
 
 

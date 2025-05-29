@@ -130,7 +130,7 @@ theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pai
 
 theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
   simp only [pair, Nat.pow_two, Nat.mul_add, Nat.add_mul, Nat.mul_one, Nat.one_mul, Nat.add_assoc]
-  split_ifs <;> simp [Nat.max_eq_left, Nat.max_eq_right, Nat.le_of_lt,  not_lt.1, *] <;> omega
+  split_ifs <;> simp [Nat.max_eq_left, Nat.max_eq_right, Nat.le_of_lt, not_lt.1, *] <;> omega
 
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]

@@ -19,15 +19,15 @@ with a formula).
 
 ## Main definitions
 
- * `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` : The bijection in the
+* `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` : The bijection in the
     Kummer-Dedekind theorem. This is the pairing between the prime factors of `I * S` and the prime
     factors of `f mod I`.
 
 ## Main results
 
- * `normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map` : The Kummer-Dedekind
+* `normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map` : The Kummer-Dedekind
     theorem.
- * `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
+* `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
     `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
     of `S` over `R`.
   * `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span` : Let `Q` be a lift of
@@ -38,13 +38,13 @@ with a formula).
 
 ## TODO
 
- * Prove the Kummer-Dedekind theorem in full generality.
+* Prove the Kummer-Dedekind theorem in full generality.
 
- * Prove the converse of `Ideal.irreducible_map_of_irreducible_minpoly`.
+* Prove the converse of `Ideal.irreducible_map_of_irreducible_minpoly`.
 
 ## References
 
- * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
 
