@@ -113,6 +113,7 @@ variable [StarAddMonoid E] [StarModule 𝕜 E] [ContinuousStar E] [NormedStarGro
 
 /-- If `f` has derivative `f'` at `z`, then `star ∘ f ∘ star` has derivative `starL ∘ f' ∘ starL`
 at `star z`. -/
+@[fun_prop]
 lemma HasFDerivAt.star_star {f : E → F} {z : E} {f' : E →L[𝕜] F} (hf : HasFDerivAt f f' z) :
     HasFDerivAt (star ∘ f ∘ star)
       ((starL 𝕜).toContinuousLinearMap.comp <| f'.comp (starL 𝕜).toContinuousLinearMap) (star z) :=
@@ -120,6 +121,7 @@ lemma HasFDerivAt.star_star {f : E → F} {z : E} {f' : E →L[𝕜] F} (hf : Ha
     (by simpa using hf)
 
 /-- If `f` is differentiable at `z`, then `star ∘ f ∘ star` is differentiable at `star z`. -/
+@[fun_prop]
 lemma DifferentiableAt.star_star {f : E → F} {z : E} (hf : DifferentiableAt 𝕜 f z) :
     DifferentiableAt 𝕜 (star ∘ f ∘ star) (star z) :=
   hf.hasFDerivAt.star_star.differentiableAt

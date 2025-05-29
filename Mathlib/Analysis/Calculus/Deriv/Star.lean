@@ -66,7 +66,7 @@ variable [NormedStarGroup 𝕜]
 
 open scoped ComplexConjugate
 
-/-- If `f` has derivative `f'` at `z`, then `conj ∘ f ∘ conj` has derivative `conj f'` at
+/-- If `f` has derivative `f'` at `z`, then `star ∘ f ∘ conj` has derivative `conj f'` at
 `conj z`. -/
 lemma HasDerivAt.star_conj {f : 𝕜 → F} {f' : F} (hf : HasDerivAt f f' x) :
     HasDerivAt (star ∘ f ∘ conj) (star f') (conj x) := by
