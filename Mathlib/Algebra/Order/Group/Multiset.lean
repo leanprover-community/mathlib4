@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Multiset.Dedup
+import Mathlib.Data.Multiset.Fold
 
 /-!
 # Multisets form an ordered monoid
@@ -181,5 +181,18 @@ lemma addHom_ext [AddZeroClass β] ⦃f g : Multiset α →+ β⦄ (h : ∀ x, f
   induction' s using Multiset.induction_on with a s ih
   · simp only [_root_.map_zero]
   · simp only [← singleton_add, _root_.map_add, ih, h]
+
+open Nat
+
+theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
+  ⟨(s.map fun a => count a s).fold max 0,
+    le_iff_count.2 fun a => by
+      rw [count_nsmul]; by_cases h : a ∈ s
+      · refine le_trans ?_ (Nat.mul_le_mul_left _ <| count_pos.2 <| mem_dedup.2 h)
+        have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) := by
+          simp [le_max_left]
+        rw [cons_erase h] at this
+        simpa [mul_succ] using this
+      · simp [count_eq_zero.2 h, Nat.zero_le]⟩
 
 end Multiset

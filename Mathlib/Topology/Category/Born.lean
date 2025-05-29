@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Topology.Bornology.Hom
 
 /-!
@@ -18,33 +18,32 @@ universe u
 open CategoryTheory
 
 /-- The category of bornologies. -/
-def Born :=
-  Bundled Bornology
+structure Born where
+  /-- The underlying bornology. -/
+  carrier : Type*
+  [str : Bornology carrier]
+
+attribute [instance] Born.str
 
 namespace Born
 
 instance : CoeSort Born Type* :=
-  Bundled.coeSort
-
-instance (X : Born) : Bornology X :=
-  X.str
+  ⟨carrier⟩
 
 /-- Construct a bundled `Born` from a `Bornology`. -/
-def of (α : Type*) [Bornology α] : Born :=
-  Bundled.of α
+abbrev of (α : Type*) [Bornology α] : Born where
+  carrier := α
 
 instance : Inhabited Born :=
   ⟨of PUnit⟩
 
-instance : BundledHom @LocallyBoundedMap where
-  id := @LocallyBoundedMap.id
-  comp := @LocallyBoundedMap.comp
-  hom_ext _ _ := DFunLike.coe_injective
+instance : LargeCategory.{u} Born where
+  Hom X Y := LocallyBoundedMap X Y
+  id X := LocallyBoundedMap.id X
+  comp f g := g.comp f
 
-instance : LargeCategory.{u} Born :=
-  BundledHom.category LocallyBoundedMap
-
-instance : HasForget Born :=
-  BundledHom.hasForget LocallyBoundedMap
+instance : ConcreteCategory Born (LocallyBoundedMap · ·) where
+  hom f := f
+  ofHom f := f
 
 end Born

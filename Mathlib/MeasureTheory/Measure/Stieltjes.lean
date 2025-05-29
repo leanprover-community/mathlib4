@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.Topology.Order.LeftRightLim
+import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 import Mathlib.Topology.Algebra.UniformMulAction
+import Mathlib.Topology.Order.LeftRightLim
 
 /-!
 # Stieltjes measures on the real line
@@ -16,8 +17,8 @@ corresponding measure, giving mass `f b - f a` to the interval `(a, b]`.
 ## Main definitions
 
 * `StieltjesFunction` is a structure containing a function from `ℝ → ℝ`, together with the
-assertions that it is monotone and right-continuous. To `f : StieltjesFunction`, one associates
-a Borel measure `f.measure`.
+  assertions that it is monotone and right-continuous. To `f : StieltjesFunction`, one associates
+  a Borel measure `f.measure`.
 * `f.measure_Ioc` asserts that `f.measure (Ioc a b) = ofReal (f b - f a)`
 * `f.measure_Ioo` asserts that `f.measure (Ioo a b) = ofReal (leftLim f b - f a)`.
 * `f.measure_Icc` and `f.measure_Ico` are analogous.
@@ -185,7 +186,7 @@ theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
   rcases le_or_lt b a with ab | ab
   · rw [Real.toNNReal_of_nonpos (sub_nonpos.2 (f.mono ab))]
     apply zero_le
-  cases' (Ioc_subset_Ioc_iff ab).1 h with h₁ h₂
+  obtain ⟨h₁, h₂⟩ := (Ioc_subset_Ioc_iff ab).1 h
   exact Real.toNNReal_le_toNNReal (sub_le_sub (f.mono h₁) (f.mono h₂))
 
 theorem length_mono {s₁ s₂ : Set ℝ} (h : s₁ ⊆ s₂) : f.length s₁ ≤ f.length s₂ :=

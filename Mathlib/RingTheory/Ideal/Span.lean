@@ -197,7 +197,7 @@ theorem span_singleton_le_span_singleton {x y : α} :
     span ({x} : Set α) ≤ span ({y} : Set α) ↔ y ∣ x :=
   span_le.trans <| singleton_subset_iff.trans mem_span_singleton
 
-theorem span_singleton_eq_span_singleton {α : Type u} [CommRing α] [IsDomain α] {x y : α} :
+theorem span_singleton_eq_span_singleton {α : Type u} [CommSemiring α] [IsDomain α] {x y : α} :
     span ({x} : Set α) = span ({y} : Set α) ↔ Associated x y := by
   rw [← dvd_dvd_iff_associated, le_antisymm_iff, and_comm]
   apply and_congr <;> rw [span_singleton_le_span_singleton]
@@ -235,6 +235,12 @@ theorem span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
   simp only [mem_span_singleton']
   exact ⟨fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_comm y x⟩, fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_neg y x⟩⟩
 
+@[simp]
+theorem span_singleton_abs [LinearOrder α] (x : α) :
+    span {|x|} = span {x} := by
+  obtain h | h := abs_choice x <;>
+  simp [h]
+
 end Ideal
 
 end Ring
@@ -257,3 +263,10 @@ theorem ker_toSpanSingleton_one_sub_eq_span :
   rw [ker_toSpanSingleton_eq_span he.one_sub, sub_sub_cancel]
 
 end IsIdempotentElem
+
+section PrincipalIdeal
+
+instance {R : Type*} [Semiring R] {x : R} : (Ideal.span {x}).IsPrincipal :=
+  ⟨x, rfl⟩
+
+end PrincipalIdeal

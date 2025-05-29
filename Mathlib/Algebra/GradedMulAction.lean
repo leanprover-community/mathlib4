@@ -57,7 +57,7 @@ section Defs
 variable (A : ιA → Type*) (M : ιM → Type*)
 
 /-- A graded version of `SMul`. Scalar multiplication combines grades additively, i.e.
-if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`-/
+if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`. -/
 class GSMul [VAdd ιA ιM] where
   /-- The homogeneous multiplication map `smul` -/
   smul {i j} : A i → M j → M (i +ᵥ j)
@@ -129,9 +129,13 @@ section HomogeneousElements
 
 variable {S R N M : Type*} [SetLike S R] [SetLike N M]
 
-theorem SetLike.Homogeneous.graded_smul [VAdd ιA ιB] [SMul R M] {A : ιA → S} {B : ιB → N}
+theorem SetLike.IsHomogeneousElem.graded_smul [VAdd ιA ιB] [SMul R M] {A : ιA → S} {B : ιB → N}
     [SetLike.GradedSMul A B] {a : R} {b : M} :
-    SetLike.Homogeneous A a → SetLike.Homogeneous B b → SetLike.Homogeneous B (a • b)
+    SetLike.IsHomogeneousElem A a → SetLike.IsHomogeneousElem B b →
+    SetLike.IsHomogeneousElem B (a • b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i +ᵥ j, SetLike.GradedSMul.smul_mem hi hj⟩
+
+@[deprecated (since := "2025-01-31")] alias SetLike.Homogeneous.graded_smul :=
+  SetLike.IsHomogeneousElem.graded_smul
 
 end HomogeneousElements

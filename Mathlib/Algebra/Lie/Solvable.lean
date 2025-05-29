@@ -85,7 +85,7 @@ theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J
   revert l; induction' k with k ih <;> intro l h₂
   · rw [le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
   · have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
-    cases' h with h h
+    rcases h with h | h
     · rw [h, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ]
       exact LieSubmodule.mono_lie (ih (le_refl k)) (ih (le_refl k))
     · rw [derivedSeriesOfIdeal_succ]; exact le_trans (LieSubmodule.lie_le_left _ _) (ih h)
@@ -226,8 +226,8 @@ private theorem coe_derivedSeries_eq_int_aux (R₁ R₂ L : Type*) [CommRing R�
 
 theorem coe_derivedSeries_eq_int (k : ℕ) :
     (derivedSeries R L k : Set L) = (derivedSeries ℤ L k : Set L) := by
-  show ((derivedSeries R L k).toSubmodule : Set L) = ((derivedSeries ℤ L k).toSubmodule : Set L)
-  rw [derivedSeries_def, derivedSeries_def]
+  rw [← LieSubmodule.coe_toSubmodule, ← LieSubmodule.coe_toSubmodule, derivedSeries_def,
+    derivedSeries_def]
   induction k with
   | zero => rfl
   | succ k ih =>
@@ -432,7 +432,7 @@ instance : Unique {x // x ∈ (⊥ : LieIdeal R L)} :=
 theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by
   dsimp only [derivedAbelianOfIdeal]
-  cases' h : derivedLengthOfIdeal R L I with k
+  rcases h : derivedLengthOfIdeal R L I with - | k
   · dsimp; infer_instance
   · rw [derivedSeries_of_derivedLength_succ] at h; exact h.1
 
@@ -449,13 +449,11 @@ theorem derivedLength_zero (I : LieIdeal R L) [IsSolvable I] :
 theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable I] :
     derivedAbelianOfIdeal I = ⊥ ↔ I = ⊥ := by
   dsimp only [derivedAbelianOfIdeal]
-  split -- Porting note: Original tactic was `cases' h : derivedAbelianOfIdeal R L I with k`
-  · rename_i h
-    rw [derivedLength_zero] at h
-    rw [h]
+  split
+  · simp_all only [derivedLength_zero]
   · rename_i k h
     obtain ⟨_, h₂⟩ := (derivedSeries_of_derivedLength_succ R L I k).mp h
-    have h₃ : I ≠ ⊥ := by intro contra; apply h₂; rw [contra]; apply derivedSeries_of_bot_eq_bot
+    have h₃ : I ≠ ⊥ := by rintro rfl; apply h₂; apply derivedSeries_of_bot_eq_bot
     simp only [h₂, h₃]
 
 end LieAlgebra

@@ -60,10 +60,8 @@ namespace CategoryTheory
 
 variable [Category.{v₁} C]
 
-/-- The opposite category.
-
-See <https://stacks.math.columbia.edu/tag/001M>.
--/
+/-- The opposite category. -/
+@[stacks 001M]
 instance Category.opposite : Category.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
@@ -115,6 +113,12 @@ def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
   inverse := opOp C
   unitIso := Iso.refl (𝟭 Cᵒᵖᵒᵖ)
   counitIso := Iso.refl (opOp C ⋙ unopUnop C)
+
+instance : (opOp C).IsEquivalence :=
+  (opOpEquivalence C).isEquivalence_inverse
+
+instance : (unopUnop C).IsEquivalence :=
+  (opOpEquivalence C).isEquivalence_functor
 
 end
 
@@ -228,6 +232,10 @@ instance {F : C ⥤ D} [Full F] : Full F.op where
 instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
   map_injective h := Quiver.Hom.unop_inj <| by simpa using map_injective F (Quiver.Hom.op_inj h)
 
+/-- The opposite of a fully faithful functor is fully faithful. -/
+protected def FullyFaithful.op {F : C ⥤ D} (hF : F.FullyFaithful) : F.op.FullyFaithful where
+  preimage {X Y} f := .op <| hF.preimage f.unop
+
 /-- If F is faithful then the right_op of F is also faithful. -/
 instance rightOp_faithful {F : Cᵒᵖ ⥤ D} [Faithful F] : Faithful F.rightOp where
   map_injective h := Quiver.Hom.op_inj (map_injective F (Quiver.Hom.op_inj h))
@@ -242,6 +250,15 @@ instance rightOp_full {F : Cᵒᵖ ⥤ D} [Full F] : Full F.rightOp where
 instance leftOp_full {F : C ⥤ Dᵒᵖ} [Full F] : Full F.leftOp where
   map_surjective f := ⟨(F.preimage f.op).op, by simp⟩
 
+/-- The opposite of a fully faithful functor is fully faithful. -/
+protected def FullyFaithful.leftOp {F : C ⥤ Dᵒᵖ} (hF : F.FullyFaithful) :
+    F.leftOp.FullyFaithful where
+  preimage {X Y} f := .op <| hF.preimage f.op
+
+/-- The opposite of a fully faithful functor is fully faithful. -/
+protected def FullyFaithful.rightOp {F : Cᵒᵖ ⥤ D} (hF : F.FullyFaithful) :
+    F.rightOp.FullyFaithful where
+  preimage {X Y} f := .unop <| hF.preimage f.unop
 
 /-- The isomorphism between `F.leftOp.rightOp` and `F`. -/
 @[simps!]
@@ -494,6 +511,12 @@ def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
     apply Quiver.Hom.op_inj
     dsimp
     simp
+
+/-- An equivalence between `C` and `Dᵒᵖ` gives an equivalence between `Cᵒᵖ` and `D`. -/
+@[simps!] def leftOp (e : C ≌ Dᵒᵖ) : Cᵒᵖ ≌ D := e.op.trans (opOpEquivalence D)
+
+/-- An equivalence between `Cᵒᵖ` and `D` gives an equivalence between `C` and `Dᵒᵖ`. -/
+@[simps!] def rightOp (e : Cᵒᵖ ≌ D) : C ≌ Dᵒᵖ := (opOpEquivalence C).symm.trans e.op
 
 end Equivalence
 

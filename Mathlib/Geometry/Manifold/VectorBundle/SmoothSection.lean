@@ -31,7 +31,8 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `V` vector bundle
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
 
-/-- Bundled `n` times continuously differentiable sections of a vector bundle. -/
+/-- Bundled `n` times continuously differentiable sections of a vector bundle.
+Denoted as `Cₛ^n⟮I; F, V⟯` within the `Manifold` namespace. -/
 structure ContMDiffSection where
   /-- the underlying function of this section -/
   protected toFun : ∀ x, V x
@@ -39,7 +40,7 @@ structure ContMDiffSection where
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 
-@[deprecated (since := "024-11-21")] alias SmoothSection := ContMDiffSection
+@[deprecated (since := "2024-11-21")] alias SmoothSection := ContMDiffSection
 
 @[inherit_doc] scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 
@@ -148,7 +149,7 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 
 @[simp]
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
-  cases' z with n n
+  rcases z with n | n
   · refine (coe_nsmul s n).trans ?_
     simp only [Int.ofNat_eq_coe, natCast_zsmul]
   · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
@@ -178,6 +179,9 @@ def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
   toFun := (↑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+theorem coeAddHom_apply (s : Cₛ^n⟮I; F, V⟯) : coeAddHom I F n V s = s := rfl
 
 instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
   coe_injective.module 𝕜 (coeAddHom I F n V) coe_smul

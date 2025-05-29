@@ -61,7 +61,7 @@ instance DivisionRing.hasRankNullity : HasRankNullity.{u₀} K where
   rank_quotient_add_rank := rank_quotient_add_rank_of_divisionRing
   exists_set_linearIndependent V _ _ := by
     let b := Module.Free.chooseBasis K V
-    refine ⟨range b, ?_, b.linearIndependent.to_subtype_range⟩
+    refine ⟨range b, ?_, b.linearIndependent.linearIndepOn_id⟩
     rw [← lift_injective.eq_iff, mk_range_eq_of_injective b.injective,
       Module.Free.rank_eq_card_chooseBasisIndex]
 
@@ -84,12 +84,9 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rw [← rank_prod', rank_eq_of_surjective hf]
   congr 1
   apply LinearEquiv.rank_eq
-  let L : V₁ →ₗ[K] ker (coprod db eb) := by -- Porting note: this is needed to avoid a timeout
-    refine LinearMap.codRestrict _ (prod cd (-ce)) ?_
-    · intro c
-      simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, Pi.prod, coprod_apply,
-        neg_neg, map_neg, neg_apply]
-      exact LinearMap.ext_iff.1 eq c
+  let L : V₁ →ₗ[K] ker (coprod db eb) :=
+    LinearMap.codRestrict _ (prod cd (-ce)) <| by
+      simpa [add_eq_zero_iff_eq_neg] using LinearMap.ext_iff.1 eq
   refine LinearEquiv.ofBijective L ⟨?_, ?_⟩
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
   · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap,
@@ -97,7 +94,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)
     simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, SetLike.mem_coe,
-      Prod.mk.inj_iff, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
+      Prod.mk_inj, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
     intro hde
     rcases h hde with ⟨c, h₁, h₂⟩
     refine ⟨c, h₁, ?_⟩

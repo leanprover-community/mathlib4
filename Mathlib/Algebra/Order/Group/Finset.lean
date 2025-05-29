@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Lattice.Prod
 
 /-!
 # `Finset.sup` in a group
@@ -82,7 +82,7 @@ lemma mul_sup' [MulLeftMono G] (s : Finset ι) (f : ι → G) (a : G) (hs) :
 end Group
 
 section CanonicallyLinearOrderedAddCommMonoid
-variable [LinearOrderedAddCommMonoid M] [CanonicallyOrderedAdd M]
+variable [AddCommMonoid M] [LinearOrder M] [CanonicallyOrderedAdd M]
   [Sub M] [AddLeftReflectLE M] [OrderedSub M] {s : Finset ι} {t : Finset κ}
 
 /-- Also see `Finset.sup'_add` that works for ordered groups. -/
@@ -97,6 +97,8 @@ lemma sup'_add' (s : Finset ι) (f : ι → M) (a : M) (hs : s.Nonempty) :
 /-- Also see `Finset.add_sup'` that works for ordered groups. -/
 lemma add_sup'' (hs : s.Nonempty) (f : ι → M) (a : M) :
     a + s.sup' hs f = s.sup' hs fun i ↦ a + f i := by simp_rw [add_comm a, Finset.sup'_add']
+
+variable [OrderBot M]
 
 protected lemma sup_add (hs : s.Nonempty) (f : ι → M) (a : M) :
     s.sup f + a = s.sup fun i ↦ f i + a := by

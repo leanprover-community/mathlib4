@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -17,12 +18,12 @@ For connections with Laurent Series, see `Mathlib.RingTheory.LaurentSeries`.
 
 ## Main definitions
 We provide a set of recursion and induction principles:
- - `RatFunc.liftOn`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
-   if `f` is well-defined in the sense that `p/q = p'/q' → f p q = f p' q'`.
- - `RatFunc.liftOn'`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
-   if `f` is well-defined in the sense that `f (a * p) (a * q) = f p' q'`.
- - `RatFunc.induction_on`: if `P` holds on `p / q` for all polynomials `p q`, then `P` holds on all
-   rational functions
+- `RatFunc.liftOn`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
+  if `f` is well-defined in the sense that `p/q = p'/q' → f p q = f p' q'`.
+- `RatFunc.liftOn'`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
+  if `f` is well-defined in the sense that `f (a * p) (a * q) = f p' q'`.
+- `RatFunc.induction_on`: if `P` holds on `p / q` for all polynomials `p q`, then `P` holds on all
+  rational functions
 
 ## Implementation notes
 
@@ -47,8 +48,6 @@ the codomain is not a field or even an integral domain.
 -/
 
 noncomputable section
-
-open scoped Classical
 
 open scoped nonZeroDivisors Polynomial
 

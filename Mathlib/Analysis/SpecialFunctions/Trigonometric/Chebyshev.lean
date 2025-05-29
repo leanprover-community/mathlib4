@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Data.Complex.Module
 import Mathlib.RingTheory.Polynomial.Chebyshev
 
@@ -22,12 +22,10 @@ open Polynomial
 
 variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
--- Porting note: added type ascriptions to the statement
 @[simp, norm_cast]
 theorem complex_ofReal_eval_T : ∀ (x : ℝ) n, (((T ℝ n).eval x : ℝ) : ℂ) = (T ℂ n).eval (x : ℂ) :=
   @algebraMap_eval_T ℝ ℂ _ _ _
 
--- Porting note: added type ascriptions to the statement
 @[simp, norm_cast]
 theorem complex_ofReal_eval_U : ∀ (x : ℝ) n, (((U ℝ n).eval x : ℝ) : ℂ) = (U ℂ n).eval (x : ℂ) :=
   @algebraMap_eval_U ℝ ℂ _ _ _

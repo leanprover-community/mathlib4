@@ -22,8 +22,8 @@ variable {α : Type u}
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
   the integers or other nontrivial `OrderedAddCommGroup`s. -/
-class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] extends
-  ExistsAddOfLE α : Prop where
+class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] : Prop
+    extends ExistsAddOfLE α where
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 
@@ -38,13 +38,14 @@ attribute [instance 50] CanonicallyOrderedAdd.toExistsAddOfLE
   Dedekind domain satisfy this; collections of all things ≤ 1 seem to
   be more natural that collections of all things ≥ 1). -/
 @[to_additive]
-class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] extends
-  ExistsMulOfLE α : Prop where
+class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] : Prop
+    extends ExistsMulOfLE α where
   /-- For any `a` and `b`, `a ≤ a * b` -/
   protected le_self_mul : ∀ a b : α, a ≤ a * b
 
 attribute [instance 50] CanonicallyOrderedMul.toExistsMulOfLE
 
+set_option linter.deprecated false in
 /-- A canonically ordered additive monoid is an ordered commutative additive monoid
   in which the ordering coincides with the subtractibility relation,
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
@@ -59,6 +60,7 @@ structure CanonicallyOrderedAddCommMonoid (α : Type*) extends
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 
+set_option linter.deprecated false in
 set_option linter.existingAttributeWarning false in
 /-- A canonically ordered monoid is an ordered commutative monoid
   in which the ordering coincides with the divisibility relation,
@@ -165,10 +167,7 @@ variable [LE α] [CanonicallyOrderedMul α] {a b : α}
 theorem one_le (a : α) : 1 ≤ a :=
   le_self_mul.trans_eq (one_mul _)
 
-@[to_additive]
-instance (priority := 10) CanonicallyOrderedMul.toOrderBot : OrderBot α where
-  bot := 1
-  bot_le := one_le
+@[to_additive] theorem isBot_one : IsBot (1 : α) := one_le
 
 end LE
 
@@ -179,14 +178,16 @@ variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   (one_le _).trans_lt h
 
+alias LT.lt.pos := pos_of_gt
+@[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
+
 end Preorder
 
 section PartialOrder
 variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
-theorem bot_eq_one : (⊥ : α) = 1 :=
-  le_antisymm bot_le (one_le ⊥)
+theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
@@ -197,11 +198,18 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
   (one_le a).lt_iff_ne.trans ne_comm
 
 @[to_additive]
+theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a :=
+  one_lt_iff_ne_one.2 h
+
+@[to_additive]
 theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
 
 @[to_additive]
-lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
+lemma one_not_mem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
   bot_eq_one (α := α) ▸ bot_not_mem_iff
+
+alias NE.ne.pos := pos_of_ne_zero
+@[to_additive existing] alias NE.ne.one_lt := one_lt_of_ne_one
 
 @[to_additive]
 theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
@@ -248,6 +256,12 @@ end LE
 
 end Semigroup
 
+-- TODO: make it an instance
+@[to_additive]
+lemma CanonicallyOrderedMul.toIsOrderedMonoid
+    [CommMonoid α] [PartialOrder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
+  mul_le_mul_left _ _ := mul_le_mul_left'
+
 section Monoid
 variable [Monoid α]
 
@@ -275,9 +289,6 @@ end PartialOrder
 
 end CommMonoid
 
-@[deprecated (since := "2024-07-24")] alias mul_eq_one_iff := mul_eq_one
-@[deprecated (since := "2024-07-24")] alias add_eq_zero_iff := add_eq_zero
-
 namespace NeZero
 
 theorem pos {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
@@ -293,7 +304,6 @@ theorem of_gt {M} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
 -- metavariable and it will hugely slow down typeclass inference.
 instance (priority := 10) of_gt' {M : Type*} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
     [One M] {y : M}
-    -- Porting note: Fact.out has different type signature from mathlib3
     [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 
 end NeZero
@@ -321,7 +331,7 @@ attribute [nolint docBlame] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCo
 
 section CanonicallyLinearOrderedCommMonoid
 
-variable [LinearOrderedCommMonoid α] [CanonicallyOrderedMul α]
+variable [CommMonoid α] [LinearOrder α] [CanonicallyOrderedMul α]
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by
@@ -346,7 +356,7 @@ theorem min_one (a : α) : min a 1 = 1 :=
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)
   "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
-theorem bot_eq_one' : (⊥ : α) = 1 :=
+theorem bot_eq_one' [OrderBot α] : (⊥ : α) = 1 :=
   bot_eq_one
 
 end CanonicallyLinearOrderedCommMonoid

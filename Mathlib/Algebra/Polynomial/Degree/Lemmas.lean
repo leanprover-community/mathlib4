@@ -116,8 +116,8 @@ theorem natDegree_mul_C_eq_of_mul_eq_one {ai : R} (au : a * ai = 1) :
       _ = (p * C a * C ai).natDegree := by rw [← C_1, ← au, RingHom.map_mul, ← mul_assoc]
       _ ≤ (p * C a).natDegree := natDegree_mul_C_le (p * C a) ai)
 
-/-- Although not explicitly stated, the assumptions of lemma `nat_degree_mul_C_eq_of_mul_ne_zero`
-force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
+/-- Although not explicitly stated, the assumptions of lemma `natDegree_mul_C_eq_of_mul_ne_zero`
+force the polynomial `p` to be non-zero, via `p.leadingCoeff ≠ 0`.
 -/
 theorem natDegree_mul_C_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
     (p * C a).natDegree = p.natDegree := by
@@ -125,8 +125,8 @@ theorem natDegree_mul_C_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
   refine mem_support_iff.mpr ?_
   rwa [coeff_mul_C]
 
-/-- Although not explicitly stated, the assumptions of lemma `nat_degree_C_mul_eq_of_mul_ne_zero`
-force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
+/-- Although not explicitly stated, the assumptions of lemma `natDegree_C_mul_of_mul_ne_zero`
+force the polynomial `p` to be non-zero, via `p.leadingCoeff ≠ 0`.
 -/
 theorem natDegree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
     (C a * p).natDegree = p.natDegree := by
@@ -277,7 +277,7 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
   rcases eq_or_ne (natDegree p) 0 with h|h
   · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
   have h2 : p ≠ 0 := by rintro rfl; simp at h
-  simp_all [natDegree, WithBot.unbot'_eq_unbot'_iff]
+  simp_all [natDegree, WithBot.unbotD_eq_unbotD_iff]
 
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
   rw [nextCoeff] at h
@@ -402,19 +402,18 @@ theorem irreducible_mul_leadingCoeff_inv {p : K[X]} :
   exact irreducible_mul_isUnit
     (isUnit_C.mpr (IsUnit.mk0 _ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))
 
-@[simp] lemma dvd_mul_leadingCoeff_inv {p q : K[X]} (hp0 : p ≠ 0) :
-    q ∣ p * C (leadingCoeff p)⁻¹ ↔ q ∣ p :=
-  IsUnit.dvd_mul_right <| isUnit_C.mpr <| IsUnit.mk0 _ <|
-    inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0
+lemma dvd_mul_leadingCoeff_inv {p q : K[X]} (hp0 : p ≠ 0) :
+    q ∣ p * C (leadingCoeff p)⁻¹ ↔ q ∣ p := by
+  simp [hp0]
 
 theorem monic_mul_leadingCoeff_inv {p : K[X]} (h : p ≠ 0) : Monic (p * C (leadingCoeff p)⁻¹) := by
   rw [Monic, leadingCoeff_mul, leadingCoeff_C,
     mul_inv_cancel₀ (show leadingCoeff p ≠ 0 from mt leadingCoeff_eq_zero.1 h)]
 
 -- `simp` normal form of `degree_mul_leadingCoeff_inv`
-@[simp] lemma degree_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :
-    degree (C (leadingCoeff p)⁻¹) = 0 :=
-  degree_C (inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0)
+lemma degree_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :
+    degree (C (leadingCoeff p)⁻¹) = 0 := by
+  simp [hp0]
 
 theorem degree_mul_leadingCoeff_inv (p : K[X]) {q : K[X]} (h : q ≠ 0) :
     degree (p * C (leadingCoeff q)⁻¹) = degree p := by

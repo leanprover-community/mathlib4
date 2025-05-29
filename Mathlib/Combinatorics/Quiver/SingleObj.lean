@@ -24,12 +24,12 @@ itself using `pathEquivList`.
 namespace Quiver
 
 /-- Type tag on `Unit` used to define single-object quivers. -/
--- Porting note: Removed `deriving Unique`.
 @[nolint unusedArguments]
 def SingleObj (_ : Type*) : Type :=
   Unit
+-- The `Unique` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving` from above has been moved to below.
 instance {α : Type*} : Unique (SingleObj α) where
   default := ⟨⟩
   uniq := fun _ => rfl

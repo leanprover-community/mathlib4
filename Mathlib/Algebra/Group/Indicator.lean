@@ -52,7 +52,6 @@ noncomputable def mulIndicator (s : Set α) (f : α → M) (x : α) : M :=
 theorem piecewise_eq_mulIndicator [DecidablePred (· ∈ s)] : s.piecewise f 1 = s.mulIndicator f :=
   funext fun _ => @if_congr _ _ _ _ (id _) _ _ _ _ Iff.rfl rfl rfl
 
--- Porting note: needed unfold for mulIndicator
 @[to_additive]
 theorem mulIndicator_apply (s : Set α) (f : α → M) (a : α) [Decidable (a ∈ s)] :
     mulIndicator s f a = if a ∈ s then f a else 1 := by
@@ -152,6 +151,17 @@ theorem mulIndicator_congr (h : EqOn f g s) : mulIndicator s f = mulIndicator s 
     split_ifs with h_1
     · exact h h_1
     rfl
+
+@[to_additive]
+theorem mulIndicator_eq_mulIndicator {t : Set β} {g : β → M} {b : β}
+    (h1 : a ∈ s ↔ b ∈ t) (h2 : f a = g b) :
+    s.mulIndicator f a = t.mulIndicator g b := by
+  by_cases a ∈ s <;> simp_all
+
+@[to_additive]
+theorem mulIndicator_const_eq_mulIndicator_const {t : Set β} {b : β} {c : M} (h : a ∈ s ↔ b ∈ t) :
+    s.mulIndicator (fun _ ↦ c) a = t.mulIndicator (fun _ ↦ c) b :=
+  mulIndicator_eq_mulIndicator h rfl
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_univ (f : α → M) : mulIndicator (univ : Set α) f = f :=

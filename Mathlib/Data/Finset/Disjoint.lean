@@ -47,8 +47,12 @@ theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
     singleton_subset_iff.mp (h (singleton_subset_iff.mpr hs) (singleton_subset_iff.mpr ht)),
     fun h _ hs ht _ ha => (h (hs ha) (ht ha)).elim⟩
 
+alias ⟨_root_.Disjoint.not_mem_of_mem_left_finset, _⟩ := disjoint_left
+
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by
   rw [_root_.disjoint_comm, disjoint_left]
+
+alias ⟨_root_.Disjoint.not_mem_of_mem_right_finset, _⟩ := disjoint_right
 
 theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp only [disjoint_left, imp_not_comm, forall_eq']
@@ -86,7 +90,7 @@ theorem disjoint_singleton_left : Disjoint (singleton a) s ↔ a ∉ s := by
 theorem disjoint_singleton_right : Disjoint s (singleton a) ↔ a ∉ s :=
   disjoint_comm.trans disjoint_singleton_left
 
--- Porting note: Left-hand side simplifies @[simp]
+-- Not `simp` since `disjoint_singleton_{left,right}` prove it.
 theorem disjoint_singleton : Disjoint ({a} : Finset α) {b} ↔ a ≠ b := by
   rw [disjoint_singleton_left, mem_singleton]
 

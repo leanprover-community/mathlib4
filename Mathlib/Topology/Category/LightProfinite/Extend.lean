@@ -28,7 +28,7 @@ universe u
 
 open CategoryTheory Limits FintypeCat Functor
 
-attribute [local instance] FintypeCat.discreteTopology HasForget.instFunLike
+attribute [local instance] FintypeCat.discreteTopology
 
 namespace LightProfinite
 

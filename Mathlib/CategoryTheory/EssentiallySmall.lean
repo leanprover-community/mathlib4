@@ -190,6 +190,10 @@ noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
 noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
   (Equivalence.induced _).symm
 
+instance [Small.{w'} C] [LocallySmall.{w} C] :
+    LocallySmall.{w} (Shrink.{w'} C) :=
+  locallySmall_of_faithful.{w} (equivalence.{w'} C).inverse
+
 end Shrink
 
 /-- A category is essentially small if and only if
@@ -220,13 +224,14 @@ theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w
 
 section FullSubcategory
 
-instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : C → Prop) :
-    LocallySmall.{w} (FullSubcategory P) :=
-  locallySmall_of_faithful <| fullSubcategoryInclusion P
+instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : ObjectProperty C) :
+    LocallySmall.{w} P.FullSubcategory :=
+  locallySmall_of_faithful <| P.ι
 
 instance essentiallySmall_fullSubcategory_mem (s : Set C) [Small.{w} s] [LocallySmall.{w} C] :
-    EssentiallySmall.{w} (FullSubcategory (· ∈ s)) :=
-  suffices Small.{w} (FullSubcategory (· ∈ s)) from essentiallySmall_of_small_of_locallySmall _
+    EssentiallySmall.{w} (ObjectProperty.FullSubcategory (· ∈ s)) :=
+  suffices Small.{w} (ObjectProperty.FullSubcategory (· ∈ s)) from
+    essentiallySmall_of_small_of_locallySmall _
   small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by aesop_cat)
 
 end FullSubcategory

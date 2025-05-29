@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
 /-!
@@ -15,6 +16,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 * `UniqueFactorizationMonoid.normalizationMonoid`: choose a way of normalizing the elements of a UFM
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -77,6 +79,11 @@ theorem normalize_normalized_factor {a : α} :
   obtain ⟨y, _, rfl⟩ := Multiset.mem_map.1 hx
   apply normalize_idem
 
+theorem dvd_of_normalized_factor {a x : α} (hx : x ∈ normalizedFactors a ) :
+    x ∣ a := by
+  obtain ⟨y, hy, rfl⟩ := Multiset.mem_map.mp hx
+  exact normalize_dvd_iff.mpr <| dvd_of_mem_factors hy
+
 theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
     normalizedFactors a = {normalize a} := by
   obtain ⟨p, a_assoc, hp⟩ :=
@@ -125,7 +132,7 @@ theorem normalizedFactors_zero : normalizedFactors (0 : α) = 0 := by
 
 @[simp]
 theorem normalizedFactors_one : normalizedFactors (1 : α) = 0 := by
-  cases' subsingleton_or_nontrivial α with h h
+  rcases subsingleton_or_nontrivial α with h | h
   · dsimp [normalizedFactors, factors]
     simp [Subsingleton.elim (1 : α) 0]
   · rw [← Multiset.rel_zero_right]
@@ -161,9 +168,9 @@ theorem normalizedFactors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
 theorem normalizedFactors_pow {x : α} (n : ℕ) :
     normalizedFactors (x ^ n) = n • normalizedFactors x := by
   induction' n with n ih
-  · simp
+  · simp [zero_nsmul]
   by_cases h0 : x = 0
-  · simp [h0, zero_pow n.succ_ne_zero, smul_zero]
+  · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
   rw [pow_succ', succ_nsmul', normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]
 
 theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (k : ℕ) :
@@ -228,6 +235,14 @@ theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) 
     obtain ⟨q, hqmem, hqeq⟩ := exists_mem_normalizedFactors_of_dvd hx hprime.irreducible hdvd
     rw [associated_iff_eq] at hqeq
     exact hqeq ▸ hqmem
+
+theorem mem_normalizedFactors_iff' {p x : α} (h : x ≠ 0) :
+    p ∈ normalizedFactors x ↔ Irreducible p ∧ normalize p = p ∧ p ∣ x := by
+  refine ⟨fun h ↦ ⟨irreducible_of_normalized_factor p h, normalize_normalized_factor p h,
+    dvd_of_normalized_factor h⟩, fun ⟨h₁, h₂, h₃⟩ ↦ ?_⟩
+  obtain ⟨y, hy₁, hy₂⟩ := exists_mem_factors_of_dvd h h₁ h₃
+  exact Multiset.mem_map.mpr ⟨y, hy₁, by
+    rwa [← h₂, normalize_eq_normalize_iff_associated, Associated.comm]⟩
 
 theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
     (h : ∀ {m}, m ∈ normalizedFactors r → m = p) (hr : r ≠ 0) : ∃ i : ℕ, Associated (p ^ i) r := by
@@ -294,6 +309,32 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     · exact fun h ↦ hs (h ▸ Multiset.mem_cons_self _ _)
     · apply Multiset.prod_ne_zero
       exact fun h ↦ hs (Multiset.mem_cons_of_mem h)
+
+variable {β : Type*} [CancelCommMonoidWithZero β] [NormalizationMonoid β]
+  [UniqueFactorizationMonoid β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] {f : F}
+
+/--
+If the monoid equiv `f : α ≃* β` commutes with `normalize` then, for `a : α`, it yields a
+bijection between the `normalizedFactors` of `a` and of `f a`.
+-/
+def normalizedFactorsEquiv [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
+    {x // x ∈ normalizedFactors a} ≃ {y // y ∈ normalizedFactors (f a)} :=
+  Equiv.subtypeEquiv f fun x ↦
+    if ha : a = 0 then by simp [ha] else by
+      simp [mem_normalizedFactors_iff' ha,
+        mem_normalizedFactors_iff' (EmbeddingLike.map_ne_zero_iff.mpr ha), map_dvd_iff_dvd_symm,
+        MulEquiv.irreducible_iff, he]
+
+@[simp]
+theorem normalizedFactorsEquiv_apply [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x))
+    {a p : α} (hp : p ∈ normalizedFactors a) :
+    normalizedFactorsEquiv he a ⟨p, hp⟩ = f p := rfl
+
+@[simp]
+theorem normalizedFactorsEquiv_symm_apply [DecidableEq α]
+    (he : ∀ x, normalize (f x) = f (normalize x))
+    {a : α} {q : β} (hq : q ∈ normalizedFactors (f a)) :
+    (normalizedFactorsEquiv he a).symm ⟨q, hq⟩ = (MulEquivClass.toMulEquiv f).symm q := rfl
 
 end UniqueFactorizationMonoid
 

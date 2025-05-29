@@ -3,10 +3,7 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.GroupTheory.Complement
-import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Semidirect product
@@ -177,19 +174,25 @@ theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.
     fun x hx ↦ ⟨x.left, by ext <;> simp_all [MonoidHom.mem_ker]⟩
 
 /-- The bijection between the semidirect product and the product. -/
-@[simps!]
-def equivProd : N ⋊[φ] G ≃ N × G :=
-  { toFun := fun ⟨n, g⟩ ↦ ⟨n, g⟩
-    invFun := fun ⟨n, g⟩ ↦ ⟨n, g⟩
-    left_inv := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl }
+@[simps]
+def equivProd : N ⋊[φ] G ≃ N × G where
+  toFun x := ⟨x.1, x.2⟩
+  invFun x := ⟨x.1, x.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- The group isomorphism between a semidirect product with respect to the trivial map
+  and the product. -/
+@[simps (config := { rhsMd := .default })]
+def mulEquivProd : N ⋊[1] G ≃* N × G :=
+  { equivProd with map_mul' _ _ := rfl }
 
 section lift
 
 variable (fn : N →* H) (fg : G →* H)
   (h : ∀ g, fn.comp (φ g).toMonoidHom = (MulAut.conj (fg g)).toMonoidHom.comp fn)
 
-/-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H`  -/
+/-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H` -/
 def lift : N ⋊[φ] G →* H where
   toFun a := fn a.1 * fg a.2
   map_one' := by simp
@@ -302,5 +305,9 @@ def congr' :
   congr fn fg (fun _ ↦ by ext; simp)
 
 end Congr
+
+@[simp]
+lemma card : Nat.card (N ⋊[φ] G) = Nat.card N * Nat.card G :=
+  Nat.card_prod _ _ ▸ Nat.card_congr equivProd
 
 end SemidirectProduct

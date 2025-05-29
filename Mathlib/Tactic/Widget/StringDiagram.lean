@@ -186,12 +186,12 @@ variable {ρ : Type} [MonadMor₁ (CoherenceM ρ)]
 
 /-- The list of nodes at the top of a string diagram. -/
 def topNodes (η : WhiskerLeft) : CoherenceM ρ (List Node) := do
-  return (← η.srcM).toList.enum.map (fun (i, f) => .id ⟨0, i, i, f⟩)
+  return (← η.srcM).toList.mapIdx fun i f => .id ⟨0, i, i, f⟩
 
 /-- The list of nodes at the top of a string diagram. The position is counted from the
 specified natural number. -/
 def NormalExpr.nodesAux (v : ℕ) : NormalExpr → CoherenceM ρ (List (List Node))
-  | NormalExpr.nil _ α => return [(← α.srcM).toList.enum.map (fun (i, f) => .id ⟨v, i, i, f⟩)]
+  | NormalExpr.nil _ α => return [(← α.srcM).toList.mapIdx fun i f => .id ⟨v, i, i, f⟩]
   | NormalExpr.cons _ _ η ηs => do
     let s₁ := η.nodes v 0 0
     let s₂ ← ηs.nodesAux (v + 1)
@@ -216,7 +216,7 @@ def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := 
     -- sanity check
     if xs.length ≠ ys.length then
       throwError "The number of the start and end points of a string does not match."
-    (xs.zip ys).enum.mapM fun (k, (n₁, f₁), (n₂, _)) => do
+    (xs.zip ys).mapIdxM fun k ((n₁, f₁), (n₂, _)) => do
       return ⟨n₁.hPosTar + k, n₁, n₂, f₁⟩
 
 end BicategoryLike

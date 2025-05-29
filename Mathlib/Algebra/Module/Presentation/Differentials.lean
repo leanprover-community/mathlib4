@@ -6,8 +6,8 @@ Authors: Joël Riou
 
 import Mathlib.Algebra.Module.Presentation.Basic
 import Mathlib.RingTheory.Kaehler.Polynomial
-import Mathlib.RingTheory.Kaehler.CotangentComplex
-import Mathlib.RingTheory.Presentation
+import Mathlib.RingTheory.Extension.Cotangent.Basic
+import Mathlib.RingTheory.Extension.Presentation.Basic
 
 /-!
 # Presentation of the module of differentials
@@ -158,6 +158,9 @@ lemma differentialsSolution_isPresentation :
 /-- The presentation of the `S`-module `Ω[S⁄R]` deduced from a presentation
 of `S` as a `R`-algebra. -/
 noncomputable def differentials : Module.Presentation S (Ω[S⁄R]) where
+  G := pres.vars
+  R := pres.rels
+  relation := _
   toSolution := differentialsSolution pres
   toIsPresentation := pres.differentialsSolution_isPresentation
 

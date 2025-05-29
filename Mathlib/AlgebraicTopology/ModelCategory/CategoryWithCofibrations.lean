@@ -115,6 +115,11 @@ lemma mem_trivialFibrations [Fibration f] [WeakEquivalence f] :
     trivialFibrations C f :=
   ⟨mem_fibrations f, mem_weakEquivalences f⟩
 
+lemma mem_trivialFibrations_iff :
+    trivialFibrations C f ↔ Fibration f ∧ WeakEquivalence f := by
+  rw [fibration_iff, weakEquivalence_iff]
+  rfl
+
 end TrivFib
 
 section TrivCof
@@ -136,6 +141,11 @@ variable {C}
 lemma mem_trivialCofibrations [Cofibration f] [WeakEquivalence f] :
     trivialCofibrations C f :=
   ⟨mem_cofibrations f, mem_weakEquivalences f⟩
+
+lemma mem_trivialCofibrations_iff :
+    trivialCofibrations C f ↔ Cofibration f ∧ WeakEquivalence f := by
+  rw [cofibration_iff, weakEquivalence_iff]
+  rfl
 
 end TrivCof
 

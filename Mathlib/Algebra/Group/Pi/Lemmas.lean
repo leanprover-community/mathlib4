@@ -5,7 +5,9 @@ Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Data.Set.Function
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Logic.Pairwise
 
 /-!
@@ -21,9 +23,7 @@ universe u v w
 
 variable {ι α : Type*}
 variable {I : Type u}
-
--- The indexing type
-variable {f : I → Type v}
+variable {f : I → Type v} {M : ι → Type*}
 
 variable (i : I)
 
@@ -37,6 +37,10 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
   Set.preimage_const 1 s
 
 namespace Pi
+
+instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
+    IsMulTorsionFree (∀ i, M i) where
+  pow_left_injective n hn a b hab := by ext i; exact pow_left_injective hn <| congr_fun hab i
 
 variable {α β : Type*} [Preorder α] [Preorder β]
 
@@ -338,7 +342,7 @@ theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
     SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := funext_iff
 
 @[to_additive]
-theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h
+theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := SemiconjBy.pi h
 
 @[to_additive]
 theorem Pi.commute_iff {x y : ∀ i, f i} : Commute x y ↔ ∀ i, Commute (x i) (y i) := semiconjBy_iff
@@ -424,6 +428,12 @@ theorem mulSingle_mono : Monotone (Pi.mulSingle i : f i → ∀ i, f i) :=
 @[to_additive]
 theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) :=
   Function.update_strictMono
+
+@[to_additive]
+lemma mulSingle_comp_equiv {m n : Type*} [DecidableEq n] [DecidableEq m] [One α] (σ : n ≃ m)
+    (i : m) (x : α) : Pi.mulSingle i x ∘ σ = Pi.mulSingle (σ.symm i) x := by
+  ext x
+  aesop (add simp Pi.mulSingle_apply)
 
 end Pi
 

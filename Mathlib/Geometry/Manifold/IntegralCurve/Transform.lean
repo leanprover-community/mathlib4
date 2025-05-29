@@ -41,7 +41,7 @@ lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
   apply HasMFDerivAt.comp t (hγ (t + dt) ht)
   refine ⟨(continuous_add_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
-  exact HasFDerivAt.add_const (hasFDerivAt_id _) _
+  exact (hasFDerivAt_id _).add_const _
 
 lemma isIntegralCurveOn_comp_add {dt : ℝ} :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· + dt)) v (-dt +ᵥ s) := by
