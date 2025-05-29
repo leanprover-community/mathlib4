@@ -7,7 +7,6 @@ Authors: Antoine Chambert-Loir, Filippo Nuccio
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Tactic.NthRewrite
-import Mathlib.Algebra.Group.Units.Hom
 
 /-! # The range of a `MonoidHomWithZero`,
   when the codomain is a `GroupWithZero`

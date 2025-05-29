@@ -3,16 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
+import Mathlib.Algebra.GroupWithZero.Range
+import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
-
-import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.GroupWithZero.Range
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Group.Subgroup.Order
-import Mathlib.Algebra.Order.Monoid.Submonoid
 /-!
 
 # The basics of valuation theory.
