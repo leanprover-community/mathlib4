@@ -112,32 +112,25 @@ private lemma one_add_sinTerm_bound_aux (Z : Set ℂ) (hZ : IsCompact Z) :
     ∃ u : ℕ → ℝ, Summable u ∧ ∀ (j : ℕ) z, z ∈ Z → (‖sinTerm z j‖) ≤ u j := by
   have hf : ContinuousOn (fun x : ℂ => ‖(-x ^ 2)‖) Z := by
     apply ContinuousOn.comp
-    let g := fun x : ℂ => -x ^ 2
-    apply Continuous.continuousOn continuous_norm (s := ((g '' Z)))
+    apply Continuous.continuousOn continuous_norm (s := (((fun x : ℂ => -x ^ 2) '' Z)))
     fun_prop
-    intro y hy
-    simp
-    use y
+    refine fun y hy => by aesop
   have := IsCompact.bddAbove_image hZ hf
   simp only [map_neg_eq_map, map_pow, bddAbove_def, Set.mem_image, Subtype.exists, not_exists,
     exists_and_right, forall_exists_index, and_imp] at this
   obtain ⟨s, hs⟩ := this
   use (fun n : ℕ => ‖((s : ℂ) / (n + 1) ^ 2)‖)
   constructor
-  · have := summable_pow_div_add (s : ℂ) 2 1 (by omega)
-    simpa using this
-  · intro n x hx
-    simp only [sinTerm, Complex.norm_div, norm_neg, norm_pow, norm_real, norm_eq_abs]
+  · simpa using summable_pow_div_add (s : ℂ) 2 1 (by omega)
+  · simp only [sinTerm, Complex.norm_div, norm_neg, norm_pow, norm_real, norm_eq_abs]
+    intro n x hx
     gcongr
     apply le_trans (hs _ x (by simp [hx]) (by simp)) (le_abs_self s)
 
 theorem multipliableUniformlyOn_euler_sin_prod_on_compact {Z : Set ℂ} (hZC : IsCompact Z) :
     MultipliableUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sinTerm z n)) {Z} := by
   obtain ⟨u, hu, hu2⟩ := one_add_sinTerm_bound_aux Z hZC
-  have := Summable.multipliableUniformlyOn_nat_one_add
-    (f := fun n : ℕ => fun z : ℂ => (sinTerm z n)) hZC hu ?_ ?_
-  · simp at this
-    apply this
+  refine Summable.multipliableUniformlyOn_nat_one_add hZC hu ?_ ?_
   · filter_upwards with n z hz using hu2 n z hz
   · intro n
     apply ContinuousOn.div_const
@@ -148,9 +141,7 @@ theorem HasProdUniformlyOn_euler_sin_prod_on_compact
     HasProdUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sinTerm z n))
     (fun x => (Complex.sin (↑π * x) / (↑π * x))) {Z} := by
   apply (multipliableUniformlyOn_euler_sin_prod_on_compact hZC).hasProdUniformlyOn.congr_right
-  intro s hs x hx
-  apply euler_sin_tprod x
-  aesop
+  refine fun s hs x hx => euler_sin_tprod x (by aesop)
 
 theorem HasProdLocallyUniformlyOn_euler_sin_prod :
     HasProdLocallyUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sinTerm z n))
