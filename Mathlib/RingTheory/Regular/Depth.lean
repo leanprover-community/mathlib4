@@ -601,4 +601,12 @@ lemma ring_depth_invariant [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤)
   apply moduleDepth_eq_moduleDepth_shrink I (R ⧸ I) R smul_lt
   simp [Module.support_eq_zeroLocus, Ideal.annihilator_quotient]
 
+omit [Small.{v, u} R] in
+lemma ring_depth_uLift [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤) :
+    I.depth (ModuleCat.of R (ULift.{w} R)) = I.depth (ModuleCat.of R R) := by
+  let e : (of R (Shrink.{max u w} R)) ≅ (of R (ULift.{w} R)) :=
+    ((Shrink.linearEquiv.{u, max u w} R R).trans ULift.moduleEquiv.symm).toModuleIso
+  rw [← I.depth_eq_of_iso e]
+  exact ring_depth_invariant.{max u w} I lt_top
+
 end depth
