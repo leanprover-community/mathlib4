@@ -141,9 +141,8 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
 theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
 
-@[deprecated zero_re (since := "2025-05-26")]
-theorem zero_re' : re (0 : K) = (0 : ℝ) :=
-  zero_re
+@[deprecated (since := "2025-05-29")]
+alias zero_re' := zero_re
 
 @[rclike_simps]
 theorem zero_im : im (0 : K) = (0 : ℝ) :=
