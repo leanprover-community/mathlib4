@@ -78,7 +78,6 @@ instance instHopfAlgebra : HopfAlgebra R A[G] where
     simpa [← (ℛ R b).eq, single_mul_single] using congr(lsingle (R := R) (0 : G)
       $(sum_mul_antipode_eq_algebraMap_counit (ℛ R b)))
 
-
 end AddMonoidAlgebra
 
 namespace LaurentPolynomial
