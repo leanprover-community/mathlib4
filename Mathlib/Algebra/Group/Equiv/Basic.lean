@@ -163,6 +163,26 @@ def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ :
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
 
+/-- TBD -/
+@[to_additive (attr := simps!) "TBD"]
+def liftOfRightInverseEquiv [MulOneClass M] [MulOneClass N] [MulOneClass P]
+    (p : M →* P) (p_inv : P → M) (hp : RightInverse p_inv p) :
+    {f : M →* N // ∀ x, f (p_inv (p x)) = f x} ≃ (P →* N) where
+  toFun f := p.liftOfRightInverse' p_inv hp f.1 f.2
+  invFun φ := ⟨φ.comp p, fun _ => by simp only [comp_apply, hp (p _)]⟩
+  left_inv f := Subtype.ext liftOfRightInverse'_comp
+  right_inv φ := liftOfRightInverse'_apply_comp
+
+/-- TBD -/
+@[to_additive (attr := simps!) "TBD"]
+def liftOfLeftInverseEquiv [MulOneClass M] [MulOneClass N] [MulOneClass P]
+    (p : P →* N) (p_inv : N → P) (hp : LeftInverse p_inv p)  :
+    {f : M →* N // ∀ x, p (p_inv (f x)) = f x} ≃ (M →* P) where
+  toFun f := p.liftOfLeftInverse p_inv hp f.1 f.2
+  invFun φ := ⟨p.comp φ, fun _ => by simp only [comp_apply, hp (φ _)]⟩
+  left_inv f := Subtype.ext comp_liftOfLeftInverse
+  right_inv φ := liftOfLeftInverse_apply_comp
+
 end MonoidHom
 
 namespace Equiv
