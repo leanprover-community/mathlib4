@@ -69,7 +69,7 @@ instance : CommSemiring (BitVec w) :=
   rw [Fin.intCast_def]
   split <;> rename_i h
   · simp [Int.emod_natAbs_of_nonneg h]
-  · simp only [Fin.ofNat'_eq_cast, Fin.val_neg, Fin.natCast_eq_zero, Fin.val_natCast]
+  · simp only [Fin.ofNat_eq_cast, Fin.val_neg, Fin.natCast_eq_zero, Fin.val_natCast]
     split <;> rename_i h
     · rw [← Int.natCast_dvd] at h
       rw [Int.emod_eq_zero_of_dvd h, Int.toNat_zero]
