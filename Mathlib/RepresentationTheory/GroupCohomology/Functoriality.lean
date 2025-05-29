@@ -278,6 +278,10 @@ lemma mapOneCocycles_comp_i :
       (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fOne f φ) := by
   simp
 
+@[simp]
+lemma coe_mapOneCocycles (x) :
+    ⇑(mapOneCocycles f φ x) = fOne f φ x := rfl
+
 @[deprecated (since := "2025-05-09")]
 alias mapOneCocycles_comp_subtype := mapOneCocycles_comp_i
 
@@ -355,14 +359,14 @@ noncomputable def H1InfRes :
 instance : Mono (H1InfRes A S).f := by
   rw [ModuleCat.mono_iff_injective, injective_iff_map_eq_zero]
   intro x hx
-  induction x using H1_induction_on
+  induction x using H1_induction_on with | @h x =>
   simp_all only [H1InfRes_X₂, H1InfRes_X₁, H1InfRes_f, H1π_comp_H1Map_apply (QuotientGroup.mk' S),
-    Submodule.Quotient.mk_eq_zero]
+    Submodule.Quotient.mk_eq_zero, moduleCatLeftHomologyData_H]
   rcases hx with ⟨y, hy⟩
   refine ⟨⟨y, fun s => ?_⟩, Subtype.ext <| funext fun g => Quotient.inductionOn' g
     fun g => Subtype.ext <| congr_fun (Subtype.ext_iff.1 hy) g⟩
-  simpa [sub_eq_zero, shortComplexH1, moduleCatToCycles, (QuotientGroup.eq_one_iff s.1).2 s.2]
-    using congr_fun (Subtype.ext_iff.1 hy) s.1
+  simpa [coe_mapOneCocycles (x := x), sub_eq_zero, moduleCatToCycles, shortComplexH1,
+    (QuotientGroup.eq_one_iff s.1).2 s.2] using congr_fun (Subtype.ext_iff.1 hy) s.1
 
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the short complex
 `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)` is exact. -/
@@ -371,7 +375,8 @@ lemma H1InfRes_exact : (H1InfRes A S).Exact := by
   intro x hx
   induction x using H1_induction_on with | @h x =>
   simp_all only [H1InfRes_X₂, H1InfRes_X₃, H1InfRes_g, H1InfRes_X₁, LinearMap.mem_ker,
-    H1π_comp_H1Map_apply S.subtype, Submodule.Quotient.mk_eq_zero, H1InfRes_f]
+    H1π_comp_H1Map_apply S.subtype, Submodule.Quotient.mk_eq_zero, H1InfRes_f,
+    moduleCatLeftHomologyData_H]
   rcases hx with ⟨(y : A), hy⟩
   have h1 := (mem_oneCocycles_iff x).1 x.2
   have h2 : ∀ s ∈ S, x s = A.ρ s y - y :=
@@ -398,13 +403,13 @@ lemma H1InfRes_exact : (H1InfRes A S).Exact := by
     apply Subtype.ext
     simp [← QuotientGroup.mk_mul, h1 g h, sub_add_eq_add_sub, add_assoc]
   · symm
-    simp only [ModuleCat.hom_ofHom, oneCocycles.val_eq_coe, Submodule.mkQ_apply,
-      H1π_comp_H1Map_apply, Submodule.Quotient.eq]
+    simp only [moduleCatLeftHomologyData_H, moduleCatLeftHomologyData_π_hom,
+      Submodule.mkQ_apply, H1π_comp_H1Map_apply, Submodule.Quotient.eq]
     use y
     refine Subtype.ext <| funext fun g => ?_
     simp only [moduleCatToCycles_apply_coe, AddSubgroupClass.coe_sub]
-    simp [shortComplexH1, mapOneCocycles_comp_subtype_apply (A := A.quotientToInvariants S)
-      (QuotientGroup.mk' S), oneCocycles.coe_mk (A := A.quotientToInvariants S), ← sub_sub]
+    simp [shortComplexH1, coe_mapOneCocycles (QuotientGroup.mk' S),
+      oneCocycles.coe_mk (A := A.quotientToInvariants S), ← sub_sub]
 
 end InfRes
 
@@ -460,6 +465,10 @@ lemma mapTwoCocycles_comp_i :
     mapTwoCocycles f φ ≫ (shortComplexH2 B).moduleCatLeftHomologyData.i =
       (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ ModuleCat.ofHom (fTwo f φ) := by
   simp
+
+@[simp]
+lemma coe_mapTwoCocycles (x) :
+    ⇑(mapTwoCocycles f φ x) = fTwo f φ x := rfl
 
 @[deprecated (since := "2025-05-09")]
 alias mapTwoCocycles_comp_subtype := mapTwoCocycles_comp_i
