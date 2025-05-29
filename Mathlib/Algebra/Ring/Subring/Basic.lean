@@ -1096,6 +1096,11 @@ theorem comap_map_eq_self_of_injective
     {f : R →+* S} (hf : Function.Injective f) (s : Subring R) : (s.map f).comap f = s :=
   SetLike.coe_injective (Set.preimage_image_eq _ hf)
 
+@[simp]
+lemma smul_eq_mul {s : Subring R} (x : s) (y : R) :
+    x • y = x * y := by
+  rfl
+
 end Subring
 
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
