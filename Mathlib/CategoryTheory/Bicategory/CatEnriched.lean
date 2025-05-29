@@ -41,6 +41,7 @@ instance : CategoryStruct (CatEnriched C) where
   comp {X Y Z} f g := (eComp Cat X Y Z).obj (f, g)
 
 theorem id_eq (X : CatEnriched C) : 𝟙 X = (eId Cat X).obj ⟨⟨()⟩⟩ := rfl
+
 theorem comp_eq {X Y Z : CatEnriched C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     f ≫ g = (eComp Cat X Y Z).obj (f, g) := rfl
 
