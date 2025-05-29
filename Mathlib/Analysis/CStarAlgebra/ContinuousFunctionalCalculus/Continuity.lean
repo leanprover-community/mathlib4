@@ -43,24 +43,35 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] [ContinuousFunctionalCalculus R A p]
 
+
+example {α β : Type*} {f : α → β} {l : Filter α} {l' : Filter β} {s : Set α} {hs : s ∈ l} :
+    Tendsto f l l' ↔ Tendsto (fun x : s ↦ f x) (comap (↑) l) l' :=
+  tendsto_comap'_iff (by simpa) |>.symm
+
 /-- If `F : X → R → R` tends to `f : R → R` uniformly on the spectrum of `a`, and all
 these functions are continuous on the spectrum, then `fun x ↦ cfc (F x) a` tends
 to `cfc f a`. -/
 theorem tendsto_cfc_fun {l : Filter X} (F : X → R → R) (f : R → R) (a : A)
     (h_tendsto : TendstoUniformlyOn F f l (spectrum R a))
-    (hF : ∀ x, ContinuousOn (F x) (spectrum R a) := by cfc_cont_tac) :
+    (hF : ∀ᶠ x in l, ContinuousOn (F x) (spectrum R a) := by cfc_cont_tac) :
     Tendsto (fun x ↦ cfc (F x) a) l (𝓝 (cfc f a)) := by
   open scoped ContinuousFunctionalCalculus in
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
-  have hf := h_tendsto.continuousOn <| .of_forall hF
+  have hf := h_tendsto.continuousOn hF
   by_cases ha : p a
-  · conv =>
+  · let s : Set X := {x | ContinuousOn (F x) (spectrum R a)}
+    rw [← tendsto_comap'_iff (i := ((↑) : s → X)) (by simpa)]
+    conv =>
       enter [1, x]
-      rw [cfc_apply (hf := hF x)]
+      rw [Function.comp_apply, cfc_apply (hf := x.2)]
     rw [cfc_apply ..]
     apply cfcHom_continuous _ |>.tendsto _ |>.comp
-    rwa [hf.tendsto_restrict_iff_tendstoUniformlyOn hF]
+    rw [hf.tendsto_restrict_iff_tendstoUniformlyOn Subtype.property]
+    intro t
+    simp only [eventually_comap, Subtype.forall]
+    peel h_tendsto t with ht x _
+    aesop
   · simpa [cfc_apply_of_not_predicate a ha] using tendsto_const_nhds
 
 /-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,
@@ -68,7 +79,7 @@ and each `f x` is continuous on the spectrum of `a`, then `fun x ↦ cfc (f x) a
 continuous at `x₀`. -/
 theorem continuousAt_cfc_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (x₀ : X) (h_tendsto : TendstoUniformlyOn f (f x₀) (𝓝 x₀) (spectrum R a))
-    (hf : ∀ x, ContinuousOn (f x) (spectrum R a) := by cfc_cont_tac) :
+    (hf : ∀ᶠ x in 𝓝 x₀, ContinuousOn (f x) (spectrum R a) := by cfc_cont_tac) :
     ContinuousAt (fun x ↦ cfc (f x) a) x₀ :=
   tendsto_cfc_fun f (f x₀) a h_tendsto hf
 
@@ -82,7 +93,7 @@ theorem continuous_cfc_fun [TopologicalSpace X] (f : X → R → R) (a : A)
   rw [continuous_iff_continuousAt] at h_cont ⊢
   simp only [ContinuousAt, UniformOnFun.tendsto_iff_tendstoUniformlyOn,
     Set.mem_singleton_iff, toFun_ofFun, forall_eq] at h_cont
-  exact fun x ↦ continuousAt_cfc_fun f a x (h_cont x)
+  exact fun x ↦ continuousAt_cfc_fun f a x (h_cont x) (.of_forall hf)
 
 end Left
 
@@ -193,23 +204,33 @@ these functions are continuous on the spectrum and map zero to itself, then
 `fun x ↦ cfcₙ (F x) a` tends to `cfcₙ f a`. -/
 theorem tendsto_cfcₙ_fun {l : Filter X} (F : X → R → R) (f : R → R) (a : A)
     (h_tendsto : TendstoUniformlyOn F f l (quasispectrum R a))
-    (hF : ∀ x, ContinuousOn (F x) (quasispectrum R a) := by cfc_cont_tac)
-    (hF0 : ∀ x, F x 0 = 0 := by cfc_zero_tac) :
+    (hF : ∀ᶠ x in l, ContinuousOn (F x) (quasispectrum R a) := by cfc_cont_tac)
+    (hF0 : ∀ᶠ x in l, F x 0 = 0 := by cfc_zero_tac) :
     Tendsto (fun x ↦ cfcₙ (F x) a) l (𝓝 (cfcₙ f a)) := by
   open scoped NonUnitalContinuousFunctionalCalculus in
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
-  have hf := h_tendsto.continuousOn <| .of_forall hF
-  have hf0 : f 0 = 0 := Eq.symm <| by
-    simpa [hF0] using h_tendsto.tendsto_at (quasispectrum.zero_mem R a)
+  have hf := h_tendsto.continuousOn hF
+  have hf0 : f 0 = 0 := Eq.symm <|
+    tendsto_nhds_unique (tendsto_const_nhds.congr' <| .symm hF0) <|
+    h_tendsto.tendsto_at (quasispectrum.zero_mem R a)
   by_cases ha : p a
-  · conv =>
+  · let s : Set X := {x | ContinuousOn (F x) (quasispectrum R a) ∧ F x 0 = 0}
+    have hs : s ∈ l := hF.and hF0
+    rw [← tendsto_comap'_iff (i := ((↑) : s → X)) (by simpa)]
+    conv =>
       enter [1, x]
-      rw [cfcₙ_apply (hf := hF x)]
+      rw [Function.comp_apply, cfcₙ_apply (hf := x.2.1) (hf0 := x.2.2)]
     rw [cfcₙ_apply ..]
     apply cfcₙHom_continuous _ |>.tendsto _ |>.comp
     rw [ContinuousMapZero.isEmbedding_toContinuousMap.isInducing.tendsto_nhds_iff]
-    exact hf.tendsto_restrict_iff_tendstoUniformlyOn hF |>.mpr h_tendsto
+    show Tendsto (fun x : s ↦ (⟨_, x.2.1.restrict⟩ : C(quasispectrum R a, R))) _
+      (𝓝 ⟨_, hf.restrict⟩)
+    rw [hf.tendsto_restrict_iff_tendstoUniformlyOn (fun x ↦ x.2.1)]
+    intro t
+    simp only [eventually_comap, Subtype.forall]
+    peel h_tendsto t with ht x _
+    aesop
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
 /-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,
@@ -217,8 +238,8 @@ and each `f x` is continuous on the spectrum of `a` and maps zero to itself, the
 `fun x ↦ cfcₙ (f x) a` is continuous at `x₀`. -/
 theorem continuousAt_cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (x₀ : X) (h_tendsto : TendstoUniformlyOn f (f x₀) (𝓝 x₀) (quasispectrum R a))
-    (hf : ∀ x, ContinuousOn (f x) (quasispectrum R a) := by cfc_cont_tac)
-    (hf0 : ∀ x, f x 0 = 0 := by cfc_zero_tac) :
+    (hf : ∀ᶠ x in 𝓝 x₀, ContinuousOn (f x) (quasispectrum R a) := by cfc_cont_tac)
+    (hf0 : ∀ᶠ x in 𝓝 x₀, f x 0 = 0 := by cfc_zero_tac) :
     ContinuousAt (fun x ↦ cfcₙ (f x) a) x₀ :=
   tendsto_cfcₙ_fun f (f x₀) a h_tendsto hf hf0
 
@@ -234,7 +255,7 @@ theorem continuous_cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
   rw [continuous_iff_continuousAt] at h_cont ⊢
   simp only [ContinuousAt, UniformOnFun.tendsto_iff_tendstoUniformlyOn,
     Set.mem_singleton_iff, toFun_ofFun, forall_eq] at h_cont
-  exact fun x ↦ continuousAt_cfcₙ_fun f a x (h_cont x)
+  exact fun x ↦ continuousAt_cfcₙ_fun f a x (h_cont x) (.of_forall hf) (.of_forall hf0)
 
 end Left
 
