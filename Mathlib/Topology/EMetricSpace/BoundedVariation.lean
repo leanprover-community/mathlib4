@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Order.Interval.Set.ProjIcc
+import Mathlib.Tactic.Finiteness
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
@@ -748,7 +749,7 @@ theorem LipschitzOnWith.comp_eVariationOn_le {f : E → F} {C : ℝ≥0} {t : Se
 theorem LipschitzOnWith.comp_boundedVariationOn {f : E → F} {C : ℝ≥0} {t : Set E}
     (hf : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t)
     (h : BoundedVariationOn g s) : BoundedVariationOn (f ∘ g) s :=
-  ne_top_of_le_ne_top (ENNReal.mul_ne_top ENNReal.coe_ne_top h) (hf.comp_eVariationOn_le hg)
+  ne_top_of_le_ne_top (by finiteness) (hf.comp_eVariationOn_le hg)
 
 theorem LipschitzOnWith.comp_locallyBoundedVariationOn {f : E → F} {C : ℝ≥0} {t : Set E}
     (hf : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t)

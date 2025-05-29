@@ -18,7 +18,7 @@ using `monotoneOn_of_deriv_nonneg` from [Mathlib.Analysis.Calculus.MeanValue].
 
 # The Second-Derivative Test
 
-We prove the Szecond-Derivative Test using the First-Derivative Test.
+We prove the Second-Derivative Test using the First-Derivative Test.
 Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_second-derivative_test).
 
 ## Main results
