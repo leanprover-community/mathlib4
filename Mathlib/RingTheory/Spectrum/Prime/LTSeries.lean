@@ -22,10 +22,12 @@ variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
 local notation "𝔪" => IsLocalRing.maximalIdeal R
 
-open Ideal
+open Ideal IsLocalRing
 
-theorem PrimeSpectrum.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpectrum R}
-    (h₀ : p₀ < p₁) (h₁ : p₁ < IsLocalRing.closedPoint R) {x : R} (hx : x ∈ 𝔪) :
+namespace PrimeSpectrum
+
+theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpectrum R}
+    (h₀ : p₀ < p₁) (h₁ : p₁ < closedPoint R) {x : R} (hx : x ∈ 𝔪) :
       ∃ q : PrimeSpectrum R, x ∈ q.asIdeal ∧ p₀ < q ∧ q.asIdeal < 𝔪 := by
   by_cases hn : x ∈ p₀.1
   · exact ⟨p₁, h₀.le hn, h₀, h₁⟩
@@ -40,18 +42,18 @@ theorem PrimeSpectrum.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p
   refine lt_of_le_of_ne (IsLocalRing.le_maximalIdeal_of_isPrime q.1) fun hqm ↦ ?_
   have h : (e ⟨q, le_sup_left.trans hq.1.2⟩).1.height ≤ 1 :=
     map_height_le_one_of_mem_minimalPrimes hq
-  simp_rw [show q = ⟨𝔪, inferInstance⟩ from PrimeSpectrum.ext hqm] at h
+  simp_rw [show q = closedPoint R from PrimeSpectrum.ext hqm] at h
   have hph : (e ⟨p₁, h₀.le⟩).1.height ≤ 0 := by
     refine Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance ?_)
-    simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₁]
+    simpa only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk] using h₁
   refine ENat.not_lt_zero (e ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
   simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₀]
 
-theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
-    (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.1) :
-      ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧ p₀ < q ∧ q < p₂ := by
+theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
+    (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.asIdeal) :
+      ∃ q : (PrimeSpectrum R), x ∈ q.asIdeal ∧ p₀ < q ∧ q < p₂ := by
   let e := p₂.1.primeSpectrumLocalizationAtPrime (Localization.AtPrime p₂.1)
-  have hm : ⟨IsLocalRing.maximalIdeal (Localization.AtPrime p₂.1), inferInstance⟩ =
+  have hm : closedPoint (Localization.AtPrime p₂.1) =
     e.symm ⟨p₂, le_refl p₂⟩ := (PrimeSpectrum.ext Localization.AtPrime.map_eq_maximalIdeal).symm
   obtain ⟨q, hxq, h₀, h₁⟩ :=
     @exist_mem_one_of_mem_maximal_ideal (Localization.AtPrime p₂.1) _ _ _
@@ -71,9 +73,9 @@ theorem PrimeSpectrum.exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum 
   chain of primes, $x \in \mathfrak{p}_n$. Then we can find another chain of primes
   $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that $x \in \mathfrak{q}_1$,
   $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$. -/
-theorem PrimeSpectrum.exist_lTSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
-    {x : R} (hx : x ∈ p.last.1) : ∃ q : LTSeries (PrimeSpectrum R),
-      x ∈ (q 1).1 ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
+theorem exist_lTSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
+    {x : R} (hx : x ∈ p.last.asIdeal) : ∃ q : LTSeries (PrimeSpectrum R),
+      x ∈ (q 1).asIdeal ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
   generalize hp : p.length = n
   induction' n with n hn generalizing p
   · use RelSeries.singleton (· < ·) p.last
@@ -109,3 +111,5 @@ theorem PrimeSpectrum.exist_lTSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpe
   · simp only [hQ, RelSeries.snoc_length, Nat.add_left_cancel_iff]
   · simp only [RelSeries.head_snoc, ← hh, RelSeries.head_eraseLast]
   · simp only [RelSeries.last_snoc]
+
+end PrimeSpectrum
