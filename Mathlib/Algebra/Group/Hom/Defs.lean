@@ -933,6 +933,23 @@ theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRigh
 
 end
 
+/-- If `p : OneHom M P` is a `OneHom`, `p_inv : P → M` a map, and `f : OneHom M N`
+  is a `OneHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also a `OneHom`. -/
+@[to_additive (attr := simps!)
+  " If `p : ZeroHom P N` is a `ZeroHom`, `p_inv : P → M` a map, and `f : ZeroHom M N`
+  is a `ZeroHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also a `ZeroHom`. "]
+def liftOfRightInverse' (f : OneHom M N) {p : OneHom M P} (p_inv : P → M)
+    (hg : ∀ x, f (p_inv (p x)) = f x) : OneHom P N := liftLeft f p (f ∘ p_inv) hg
+
+/-- If `p : OneHom P N` is a `MulHom` with `p_inv : N → P` a left inverse map, and `f : OneHom M N`
+  is a `OneHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is also a `OneHom`. -/
+@[to_additive (attr := simps!)
+  " If `p : ZeroHom P N` is a `ZeroHom` with `p_inv : N → P` a left inverse map, and
+  `f : ZeroHom M N` is a `ZeroHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f`
+  is also a `ZeroHom`. "]
+def liftOfLeftInverse (f : OneHom M N) {p : OneHom P N} (p_inv : N → P) (hp : LeftInverse p_inv p)
+    (hg : ∀ x, p (p_inv (f x)) = f x) : OneHom M P := liftRight f hp.injective (p_inv ∘ f) hg
+
 /-- Makes a `OneHom` inverse from the left inverse of a `OneHom` -/
 @[to_additive (attr := simps!)
   "Make a `ZeroHom` inverse from the left inverse of a `ZeroHom`"]
@@ -952,6 +969,11 @@ theorem comp_inverse (h' : RightInverse g f) : f.comp (f.inverse g h) = id N := 
 @[to_additive]
 theorem comp_inverse_apply (h' : RightInverse g f) : ∀ x, f ((f.inverse g h) x) = x := h'
 
+@[to_additive]
+theorem inverse_eq_liftOfRightInverse' : f.inverse g h = liftOfRightInverse' (id M) g h := rfl
+@[to_additive]
+theorem inverse_eq_liftOfLeftInverse (h' : RightInverse g f) :
+    f.inverse g h = liftOfLeftInverse (id N) g h h' := rfl
 @[to_additive]
 theorem inverse_eq_liftLeft : f.inverse g h = liftLeft (id M) f g h := rfl
 @[to_additive]
@@ -1041,9 +1063,25 @@ theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRigh
 
 end
 
+/-- If `p : M →ₙ* P` is a `MulHom` with `p_inv : P → M` a right inverse map, and `f : M →ₙ* N`
+  is a `MulHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also a `MulHom`. -/
+@[to_additive (attr := simps!)
+  " If `p : P →ₙ+ N` is an `AddHom` with `p_inv : P → M` a right inverse map, and `f : M →ₙ+ N`
+  is an `AddHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also an `AddHom`. "]
+def liftOfRightInverse' (f : M →ₙ* N) {p : M →ₙ* P} (p_inv : P → M) (hp : RightInverse p_inv p)
+    (hg : ∀ x, f (p_inv (p x)) = f x) : P →ₙ* N := liftLeft f hp.surjective (f ∘ p_inv) hg
+
+/-- If `p : P →ₙ* N` is a `MulHom` with `p_inv : N → P` a left inverse map, and `f : M →ₙ* N`
+  is a `MulHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is also a `MulHom`. -/
+@[to_additive (attr := simps!)
+  " If `p : P →ₙ+ N` is an `AddHom` with `p_inv : N → P` a left inverse map, and `f : M →ₙ+ N`
+  is an `AddHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is also an `AddHom`. "]
+def liftOfLeftInverse (f : M →ₙ* N) {p : P →ₙ* N} (p_inv : N → P) (hp : LeftInverse p_inv p)
+    (hg : ∀ x, p (p_inv (f x)) = f x) : M →ₙ* P := liftRight f hp.injective (p_inv ∘ f) hg
+
 /-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
 @[to_additive (attr := simps!)
-  "Makes an additive inverse from a bijection which preserves addition."]
+  " Makes an additive inverse from a bijection which preserves addition. "]
 def inverse (f : M →ₙ* N) (g : N → M)
     (h₁ : LeftInverse g f)
     (h₂ : RightInverse g f) : N →ₙ* M := liftLeft (id M) h₂.surjective g h₁
@@ -1061,6 +1099,11 @@ theorem comp_inverse : f.comp (f.inverse g h₁ h₂) = id N := ext h₂
 @[to_additive]
 theorem comp_inverse_apply : ∀ x, f ((f.inverse g h₁ h₂) x) = x := h₂
 
+@[to_additive]
+theorem inverse_eq_liftOfRightInverse' : f.inverse g h₁ h₂ =
+    liftOfRightInverse' (id M) g h₂ h₁ := rfl
+@[to_additive]
+theorem inverse_eq_liftOfLeftInverse : f.inverse g h₁ h₂ = liftOfLeftInverse (id N) g h₁ h₂ := rfl
 @[to_additive]
 theorem inverse_eq_liftLeft : f.inverse g h₁ h₂ = liftLeft (id M) h₂.surjective g h₁ := rfl
 @[to_additive]
@@ -1167,6 +1210,24 @@ theorem toOneHom_liftRight : (f.liftRight hp g hg).toOneHom =
 
 end
 
+/-- If `p : M →* P` is a `MonoidHom` with `p_inv : P → M` a right inverse map, and `f : M →* N`
+  is a `MonoidHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also a `MonoidHom`. -/
+@[to_additive (attr := simps!)
+  " If `p : P →+ N` is an `AddMonoidHom` with `p_inv : P → M` a right inverse map, and
+    `f : M →+ N` is an `AddMonoidHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is
+    also an `AddMonoidHom`. "]
+def liftOfRightInverse' (f : M →* N) {p : M →* P} (p_inv : P → M) (hp : RightInverse p_inv p)
+    (hg : ∀ x, f (p_inv (p x)) = f x) : P →* N := liftLeft f hp.surjective (f ∘ p_inv) hg
+
+/-- If `p : P →* N` is a `MonoidHom` with `p_inv : N → P` a left inverse map, and `f : M →* N`
+  is a `MonoidHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is also a `MonoidHom`. -/
+@[to_additive (attr := simps!)
+  " If `p : P →+ N` is an `AddMonoidHom` with `p_inv : N → P` a left inverse map, and
+    `f : M →+ N` is an `AddMonoidHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is
+    also an `AddMonoidHom`. "]
+def liftOfLeftInverse (f : M →* N) {p : P →* N} (p_inv : N → P) (hp : LeftInverse p_inv p)
+    (hg : ∀ x, p (p_inv (f x)) = f x) : M →* P := liftRight f hp.injective (p_inv ∘ f) hg
+
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
 @[to_additive (attr := simps!)
   "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
@@ -1187,6 +1248,11 @@ theorem comp_inverse : f.comp (f.inverse g h₁ h₂) = id N := ext h₂
 @[to_additive]
 theorem comp_inverse_apply : ∀ x, f ((f.inverse g h₁ h₂) x) = x := h₂
 
+@[to_additive]
+theorem inverse_eq_liftOfRightInverse' : f.inverse g h₁ h₂ =
+    liftOfRightInverse' (id M) g h₂ h₁ := rfl
+@[to_additive]
+theorem inverse_eq_liftOfLeftInverse : f.inverse g h₁ h₂ = liftOfLeftInverse (id N) g h₁ h₂ := rfl
 @[to_additive]
 theorem inverse_eq_liftLeft : f.inverse g h₁ h₂ = liftLeft (id M) h₂.surjective g h₁ := rfl
 @[to_additive]
