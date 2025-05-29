@@ -728,17 +728,17 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
          G₂----> G₃
             ∃!φ
       ```"]
-def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
+def liftOfRightInverseEquivKerLeKer (hf : Function.RightInverse f_inv f) :
     { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃) where
-  toFun g := g.1.liftOfRightInverse' f_inv hf ((ker_le_ker_iff f f_inv hf).mp g.2)
+  toFun g := g.1.liftOfRightInverse f_inv hf ((ker_le_ker_iff f f_inv hf).mp g.2)
   invFun φ := ⟨φ.comp f, fun x hx ↦ mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
-    unfold liftOfRightInverse'
+    unfold liftOfRightInverse
     exact Subtype.ext liftLeft_comp
   right_inv φ := by
     simp
     ext b
-    simp only [liftOfRightInverse'_apply, coe_comp, Function.comp_apply, hf b]
+    simp only [liftOfRightInverse_apply, coe_comp, Function.comp_apply, hf b]
 
 /-- A non-computable version of `MonoidHom.liftOfRightInverse` for when no computable right
 inverse is available, that uses `Function.surjInv`. -/
@@ -747,7 +747,7 @@ inverse is available, that uses `Function.surjInv`. -/
       computable right inverse is available."]
 noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
     { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃) :=
-  f.liftOfRightInverse (Function.surjInv hf) (Function.rightInverse_surjInv hf)
+  f.liftOfRightInverseEquivKerLeKer (Function.surjInv hf) (Function.rightInverse_surjInv hf)
 
 @[to_additive (attr := simp)]
 theorem liftOfRightInverse_comp_apply (hf : Function.RightInverse f_inv f)

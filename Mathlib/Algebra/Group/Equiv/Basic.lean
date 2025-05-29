@@ -172,10 +172,10 @@ def postcompEquiv {α β : Type*} [MulOneClass α] [MulOneClass β] (e : α ≃*
 def liftOfRightInverseEquiv [MulOneClass M] [MulOneClass N] [MulOneClass P]
     (p : M →* P) (p_inv : P → M) (hp : RightInverse p_inv p) :
     {f : M →* N // ∀ x, f (p_inv (p x)) = f x} ≃ (P →* N) where
-  toFun f := p.liftOfRightInverse' p_inv hp f.1 f.2
+  toFun f := p.liftOfRightInverse p_inv hp f.1 f.2
   invFun φ := ⟨φ.comp p, fun _ => by simp only [comp_apply, hp (p _)]⟩
-  left_inv f := Subtype.ext liftOfRightInverse'_comp
-  right_inv φ := liftOfRightInverse'_apply_comp
+  left_inv f := Subtype.ext liftOfRightInverse_comp
+  right_inv φ := liftOfRightInverse_apply_comp
 
 /-- Given a monoid homomorphism `p : P →* N` with left inverse map `p_inv : N → P`,
   the equivalence between monoid homomorphisms `f : M →* N` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`

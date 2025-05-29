@@ -895,7 +895,7 @@ def liftRight (f : OneHom M N) {p : OneHom P N} (hp : Injective p) (g : M → P)
 @[to_additive (attr := simps!)
   " If `p : ZeroHom P N` is a `ZeroHom`, `p_inv : P → M` a map, and `f : ZeroHom M N`
   is a `ZeroHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also a `ZeroHom`. "]
-def liftOfRightInverse' (p : OneHom M P) (p_inv : P → M) (f : OneHom M N) :
+def liftOfRightInverse (p : OneHom M P) (p_inv : P → M) (f : OneHom M N) :
     (hf : ∀ x, f (p_inv (p x)) = f x) → OneHom P N := f.liftLeft p (f ∘ p_inv)
 
 /-- If `p : OneHom P N` is a `MulHom` with `p_inv : N → P` a left inverse map, and `f : OneHom M N`
@@ -946,7 +946,7 @@ def liftRight (f : M →ₙ* N)
 @[to_additive (attr := simps!)
   " If `p : P →ₙ+ N` is an `AddHom` with `p_inv : P → M` a right inverse map, and `f : M →ₙ+ N`
   is an `AddHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also an `AddHom`. "]
-def liftOfRightInverse' (p : M →ₙ* P) (p_inv : P → M) (hp : RightInverse p_inv p) (f : M →ₙ* N):
+def liftOfRightInverse (p : M →ₙ* P) (p_inv : P → M) (hp : RightInverse p_inv p) (f : M →ₙ* N):
     (hf : ∀ x, f (p_inv (p x)) = f x) → P →ₙ* N := f.liftLeft hp.surjective (f ∘ p_inv)
 
 /-- If `p : P →ₙ* N` is a `MulHom` with `p_inv : N → P` a left inverse map, and `f : M →ₙ* N`
@@ -1000,7 +1000,7 @@ def liftRight (f : M →* N) {p : P →* N} (hp : Injective p) (g : M → P) (hg
   " If `p : P →+ N` is an `AddMonoidHom` with `p_inv : P → M` a right inverse map, and
     `f : M →+ N` is an `AddMonoidHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is
     also an `AddMonoidHom`. "]
-def liftOfRightInverse' (p : M →* P) (p_inv : P → M) (hp : RightInverse p_inv p) (f : M →* N) :
+def liftOfRightInverse (p : M →* P) (p_inv : P → M) (hp : RightInverse p_inv p) (f : M →* N) :
     (hf : ∀ x, f (p_inv (p x)) = f x) → P →* N := f.liftLeft hp.surjective (f ∘ p_inv)
 
 

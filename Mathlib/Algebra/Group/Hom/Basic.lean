@@ -122,25 +122,25 @@ variable {p : OneHom M P} {p_inv : P → M}  {f : OneHom M N}
   {hf : ∀ (x : M), f (p_inv (p x)) = f x} {φ : OneHom P N}
 
 @[to_additive (attr := simp)]
-theorem liftOfRightInverse'_comp : (p.liftOfRightInverse' p_inv f hf).comp p = f := liftLeft_comp
+theorem liftOfRightInverse_comp : (p.liftOfRightInverse p_inv f hf).comp p = f := liftLeft_comp
 
 @[to_additive]
-theorem liftOfRightInverse'_comp_apply : ∀ x, (p.liftOfRightInverse' p_inv f hf) (p x) = f x :=
+theorem liftOfRightInverse_comp_apply : ∀ x, (p.liftOfRightInverse p_inv f hf) (p x) = f x :=
   liftLeft_comp_apply
 
 @[to_additive]
-theorem eq_liftOfRightInverse' {hp : RightInverse p_inv p} {f'} :
-    f'.comp p = f → f' = p.liftOfRightInverse' p_inv f hf := eq_liftLeft hp.surjective
+theorem eq_liftOfRightInverse {hp : RightInverse p_inv p} {f'} :
+    f'.comp p = f → f' = p.liftOfRightInverse p_inv f hf := eq_liftLeft hp.surjective
 
 @[to_additive (attr := simp)]
-theorem liftLeft_liftOfRightInverse' :
-    f.liftLeft p (p.liftOfRightInverse' p_inv f hf) liftOfRightInverse'_comp_apply =
-    p.liftOfRightInverse' p_inv f hf := rfl
+theorem liftLeft_liftOfRightInverse :
+    f.liftLeft p (p.liftOfRightInverse p_inv f hf) liftOfRightInverse_comp_apply =
+    p.liftOfRightInverse p_inv f hf := rfl
 
 @[to_additive (attr := simp)]
-theorem liftOfRightInverse'_apply_comp {hp : RightInverse p_inv p} :
-    p.liftOfRightInverse' p_inv (φ.comp p) (fun x => by simp only [comp_apply, hp (p x)]) = φ :=
-  ext fun x => by simp only [liftOfRightInverse'_apply, comp_apply, hp x]
+theorem liftOfRightInverse_apply_comp {hp : RightInverse p_inv p} :
+    p.liftOfRightInverse p_inv (φ.comp p) (fun x => by simp only [comp_apply, hp (p x)]) = φ :=
+  ext fun x => by simp only [liftOfRightInverse_apply, comp_apply, hp x]
 
 end LiftOfRightInverse'
 
@@ -186,7 +186,7 @@ theorem comp_inverse (h' : RightInverse g f) : f.comp (f.inverse g h) = id N := 
 theorem comp_inverse_apply (h' : RightInverse g f) : ∀ x, f ((f.inverse g h) x) = x := h'
 
 @[to_additive]
-theorem inverse_eq_liftOfRightInverse' : f.inverse g h = liftOfRightInverse' f g (id M) h := rfl
+theorem inverse_eq_liftOfRightInverse : f.inverse g h = liftOfRightInverse f g (id M) h := rfl
 @[to_additive]
 theorem inverse_eq_liftOfLeftInverse (h' : RightInverse g f) :
     f.inverse g h = liftOfLeftInverse f g h (id N) h' := rfl
@@ -268,25 +268,25 @@ variable {p : M →ₙ* P} {p_inv : P → M} {hp : RightInverse p_inv p} {f : M 
   {hf : ∀ (x : M), f (p_inv (p x)) = f x} {φ : P →ₙ* N}
 
 @[to_additive (attr := simp)]
-theorem liftOfRightInverse'_comp : (p.liftOfRightInverse' p_inv hp f hf).comp p = f := liftLeft_comp
+theorem liftOfRightInverse_comp : (p.liftOfRightInverse p_inv hp f hf).comp p = f := liftLeft_comp
 
 @[to_additive]
-theorem liftOfRightInverse'_comp_apply : ∀ x, (p.liftOfRightInverse' p_inv hp f hf) (p x) = f x :=
+theorem liftOfRightInverse_comp_apply : ∀ x, (p.liftOfRightInverse p_inv hp f hf) (p x) = f x :=
   liftLeft_comp_apply
 
 @[to_additive]
-theorem eq_liftOfRightInverse' {f'} : f'.comp p = f → f' = p.liftOfRightInverse' p_inv hp f hf :=
+theorem eq_liftOfRightInverse {f'} : f'.comp p = f → f' = p.liftOfRightInverse p_inv hp f hf :=
   eq_liftLeft
 
 @[to_additive (attr := simp)]
-theorem liftLeft_liftOfRightInverse' :
-    f.liftLeft hp.surjective (p.liftOfRightInverse' p_inv hp f hf) liftOfRightInverse'_comp_apply =
-    p.liftOfRightInverse' p_inv hp f hf := rfl
+theorem liftLeft_liftOfRightInverse :
+    f.liftLeft hp.surjective (p.liftOfRightInverse p_inv hp f hf) liftOfRightInverse_comp_apply =
+    p.liftOfRightInverse p_inv hp f hf := rfl
 
 @[to_additive (attr := simp)]
-theorem liftOfRightInverse'_apply_comp : p.liftOfRightInverse' p_inv hp (φ.comp p)
+theorem liftOfRightInverse_apply_comp : p.liftOfRightInverse p_inv hp (φ.comp p)
     (fun x => by simp only [comp_apply, hp (p x)]) = φ := ext fun x => by
-  simp only [liftOfRightInverse'_apply, comp_apply, hp x]
+  simp only [liftOfRightInverse_apply, comp_apply, hp x]
 
 end LiftOfRightInverse'
 
@@ -332,8 +332,8 @@ theorem comp_inverse : f.comp (f.inverse g h₁ h₂) = id N := ext h₂
 theorem comp_inverse_apply : ∀ x, f ((f.inverse g h₁ h₂) x) = x := h₂
 
 @[to_additive]
-theorem inverse_eq_liftOfRightInverse' : f.inverse g h₁ h₂ =
-    liftOfRightInverse' f g h₂ (id M) h₁ := rfl
+theorem inverse_eq_liftOfRightInverse : f.inverse g h₁ h₂ =
+    liftOfRightInverse f g h₂ (id M) h₁ := rfl
 @[to_additive]
 theorem inverse_eq_liftOfLeftInverse : f.inverse g h₁ h₂ =
     liftOfLeftInverse f g h₁ (id N) h₂ := rfl
@@ -459,33 +459,33 @@ variable {p : M →* P} {p_inv : P → M} {hp : RightInverse p_inv p} {f : M →
   {hf : ∀ (x : M), f (p_inv (p x)) = f x} {φ : P →* N}
 
 @[to_additive (attr := simp)]
-theorem liftOfRightInverse'_comp : (p.liftOfRightInverse' p_inv hp f hf).comp p = f := liftLeft_comp
+theorem liftOfRightInverse_comp : (p.liftOfRightInverse p_inv hp f hf).comp p = f := liftLeft_comp
 
 @[to_additive]
-theorem liftOfRightInverse'_comp_apply : ∀ x, (p.liftOfRightInverse' p_inv hp f hf) (p x) = f x :=
+theorem liftOfRightInverse_comp_apply : ∀ x, (p.liftOfRightInverse p_inv hp f hf) (p x) = f x :=
   liftLeft_comp_apply
 
 @[to_additive]
-theorem eq_liftOfRightInverse' {f'} : f'.comp p = f → f' = p.liftOfRightInverse' p_inv hp f hf :=
+theorem eq_liftOfRightInverse {f'} : f'.comp p = f → f' = p.liftOfRightInverse p_inv hp f hf :=
   eq_liftLeft
 
 @[to_additive (attr := simp)]
-theorem liftLeft_liftOfRightInverse' :
-    f.liftLeft hp.surjective (p.liftOfRightInverse' p_inv hp f hf) liftOfRightInverse'_comp_apply =
-    p.liftOfRightInverse' p_inv hp f hf := rfl
+theorem liftLeft_liftOfRightInverse :
+    f.liftLeft hp.surjective (p.liftOfRightInverse p_inv hp f hf) liftOfRightInverse_comp_apply =
+    p.liftOfRightInverse p_inv hp f hf := rfl
 
 @[to_additive (attr := simp)]
-theorem toMulHom_liftOfRightInverse' : (p.liftOfRightInverse' p_inv hp f hf).toMulHom =
-    p.toMulHom.liftOfRightInverse' p_inv hp f hf := rfl
+theorem toMulHom_liftOfRightInverse : (p.liftOfRightInverse p_inv hp f hf).toMulHom =
+    p.toMulHom.liftOfRightInverse p_inv hp f hf := rfl
 
 @[to_additive (attr := simp)]
-theorem toOneHom_liftOfRightInverse' : (p.liftOfRightInverse' p_inv hp f hf).toOneHom =
-    p.toOneHom.liftOfRightInverse' p_inv f hf := rfl
+theorem toOneHom_liftOfRightInverse : (p.liftOfRightInverse p_inv hp f hf).toOneHom =
+    p.toOneHom.liftOfRightInverse p_inv f hf := rfl
 
 @[to_additive (attr := simp)]
-theorem liftOfRightInverse'_apply_comp : p.liftOfRightInverse' p_inv hp (φ.comp p)
+theorem liftOfRightInverse_apply_comp : p.liftOfRightInverse p_inv hp (φ.comp p)
     (fun x => by simp only [comp_apply, hp (p x)]) = φ := ext fun x => by
-  simp only [liftOfRightInverse'_apply, comp_apply, hp x]
+  simp only [liftOfRightInverse_apply, comp_apply, hp x]
 
 end LiftOfRightInverse'
 
@@ -539,8 +539,8 @@ theorem comp_inverse : f.comp (f.inverse g h₁ h₂) = id N := ext h₂
 theorem comp_inverse_apply : ∀ x, f ((f.inverse g h₁ h₂) x) = x := h₂
 
 @[to_additive]
-theorem inverse_eq_liftOfRightInverse' : f.inverse g h₁ h₂ =
-    liftOfRightInverse' f g h₂ (id M) h₁ := rfl
+theorem inverse_eq_liftOfRightInverse : f.inverse g h₁ h₂ =
+    liftOfRightInverse f g h₂ (id M) h₁ := rfl
 @[to_additive]
 theorem inverse_eq_liftOfLeftInverse : f.inverse g h₁ h₂ = liftOfLeftInverse f g h₁ (id N) h₂ := rfl
 @[to_additive]
