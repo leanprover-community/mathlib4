@@ -283,10 +283,9 @@ variable {N}
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
 
-local notation "α" => TensorProduct.assoc
-
 lemma lTensor_tensor (f : P →ₗ[R] Q) :
-    lTensor (M ⊗[R] N) f = (α R M N Q).symm ∘ₗ (f.lTensor N).lTensor M ∘ₗ α R M N P :=
+    lTensor (M ⊗[R] N) f = (TensorProduct.assoc R M N Q).symm ∘ₗ
+      (f.lTensor N).lTensor M ∘ₗ TensorProduct.assoc R M N P :=
   TensorProduct.ext <| TensorProduct.ext rfl
 
 theorem rTensor_tensor : rTensor (M ⊗[R] N) g =
