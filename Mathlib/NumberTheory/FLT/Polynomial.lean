@@ -90,7 +90,6 @@ private theorem Polynomial.flt_catalan_deriv
   have hcap : IsCoprime (C w * c ^ r) (C u * a ^ p) := by
     rw [isCoprime_mul_units_left hw.isUnit_C hu.isUnit_C]; exact hca.pow
   have habcp := hcap.symm.mul_left hbcp
-
   -- Use Mason-Stothers theorem
   classical
   rcases Polynomial.abc
@@ -107,7 +106,6 @@ private theorem Polynomial.flt_catalan_deriv
       natDegree_C, natDegree_pow, zero_add,
       ← radical_mul hab,
       ← radical_mul (hca.symm.mul_left hbc)] at nd_lt
-
     obtain ⟨hpa', hqb', hrc'⟩ := nd_lt
     have hpa := hpa'.trans natDegree_radical_le
     have hqb := hqb'.trans natDegree_radical_le
@@ -245,7 +243,6 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
   have hdc : d ∣ c := by
     have hn : 0 < n := by omega
     have hdncn : d ^ n ∣ c ^ n := ⟨_, heq.symm⟩
-
     rw [dvd_iff_normalizedFactors_le_normalizedFactors hd hc]
     rw [dvd_iff_normalizedFactors_le_normalizedFactors
           (pow_ne_zero n hd) (pow_ne_zero n hc),

@@ -197,9 +197,9 @@ lemma basisSets_mem_nhds {𝕜 E ι : Type*} [NormedField 𝕜]
   clear hU
   refine Seminorm.ball_mem_nhds ?_ hr
   classical
-  induction s using Finset.induction_on
-  case empty => simpa using continuous_zero
-  case insert a s _ hs =>
+  induction s using Finset.induction_on with
+  | empty => simpa using continuous_zero
+  | insert a s _ hs =>
     simp only [Finset.sup_insert, coe_sup]
     exact Continuous.max (hp a) hs
 
