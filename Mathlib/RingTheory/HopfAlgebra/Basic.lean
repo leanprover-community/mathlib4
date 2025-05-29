@@ -117,13 +117,12 @@ lemma sum_counit_smul (𝓡 : Repr R a) :
   convert this
   simp
 
-lemma counit_antipode (a : A) : counit (R := R) (antipode (R := R) a) = counit (R := R) a := by
+lemma counit_antipode (a : A) : counit (R := R) (antipode R a) = counit a := by
   calc
-        counit (antipode a)
-    _ = counit (∑ i ∈ (ℛ R a).index, (ℛ R a).left i * antipode (R := R) ((ℛ R a).right i)) := by
+        counit (antipode R a)
+    _ = counit (∑ i ∈ (ℛ R a).index, (ℛ R a).left i * antipode R ((ℛ R a).right i)) := by
       simp_rw [map_sum, counit_mul, ← smul_eq_mul, ← map_smul, ← map_sum, sum_counit_smul]
     _ = counit a := by simpa using congr(counit (R := R) $(sum_mul_antipode_eq_smul (ℛ R a)))
-
 
 end HopfAlgebra
 
