@@ -947,13 +947,10 @@ theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ))
 def HasPolynomialGrowthD (d: ℕ): Prop := ∀ n ≥ 2, #(S ^ n) ≤ n ^ d
 def HasPolynomialGrowth: Prop := ∃ d, HasPolynomialGrowthD (S := S) d
 
-lemma smaller_closure (T: Type*) (A B: Set T) (G: Group T) (hc: B ⊆ closure A) (hb: closure B = ⊤): closure A = ⊤ := by
-  --apply?
-  sorry
-
 lemma S_nonempty: S.Nonempty := by
   exact Finset.nonempty_coe_sort.mp hS
 
+-- TODO - get rid of this, since all groups must be inhabited
 variable [Inhabited G]
 
 structure PreservesProd (T: Type*) (l h: List G) (γ: G) where
@@ -1023,7 +1020,13 @@ lemma take_drop_len {T: Type*} {l: List T} {p: T → Bool}: (l.takeWhile p).leng
     rw [List.length_append]
   exact List.takeWhile_append_dropWhile
 
-lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
+def gamma_m_helper (φ: (Additive G) →+ ℤ) (γ: G) (m: ℤ) (s: S): G := γ^m * (e_i_regular_helper φ γ s) * γ^(-m)
+
+lemma three_two_kernel_fg (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): φ.ker.FG := by
+  sorry
+
+-- The kernel of `φ` is gemerated by {γ_m_i}
+lemma three_two_gamma_m_generates (d: ℕ) (hd: d >= 1) (g: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): ∃ γ: G, φ γ = 1 ∧ Subgroup.closure (Set.range (Function.uncurry (gamma_m_helper (G := G) (S := S) φ γ))) = AddSubgroup.toSubgroup φ.ker := by
   have gamma_one: ∃ γ: G, φ γ = 1 := by
     exact hφ 1
 
@@ -2121,20 +2124,8 @@ lemma three_two (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (g: 
             . simp at list_get
               simp [list_get]
         exact h_z_list.2
-
-      use (my_res.val : List G)
-      simp
-      have new_list_prod_eq := my_res.property
-      have foo := Submonoid.exists_list_of_mem_closure (s := Set.range (Function.uncurry gamma_m) ∪ (Set.range (Function.uncurry gamma_m))⁻¹) (x := z)
-      rw [← Subgroup.closure_toSubmonoid _] at foo
-      specialize foo hz
-      obtain ⟨l, ⟨l_mem_s, l_prod⟩⟩ := foo
-
-      --let my_res := rewrite_list (z_list.attach.map ( fun g => ⟨g, by dsimp [E]⟩)) sorry
-
-      --let a := rewrite_list [] (by sorry)
-      sorry
-  sorry
+  use γ
+  refine ⟨hγ, gamma_m_ker_phi⟩
 -- Decompose list of {e_k, γ}:
 
 -- The starting list must have the powers of γ sum to zero (since it's in the kernel of φ)
