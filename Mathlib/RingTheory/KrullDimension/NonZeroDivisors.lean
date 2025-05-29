@@ -30,8 +30,7 @@ noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj {f : R →+* S}
     (hf : Function.Surjective f) {I : Ideal R} (hI : RingHom.ker f = I) :
     PrimeSpectrum S ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
   toFun p := ⟨f.specComap p, hI.symm.trans_le (Ideal.ker_le_comap f)⟩
-  invFun := fun ⟨⟨p, _⟩, hp⟩ ↦ ⟨p.map f,
-    p.map_isPrime_of_surjective hf (hI.trans_le hp)⟩
+  invFun := fun ⟨⟨p, _⟩, hp⟩ ↦ ⟨p.map f, p.map_isPrime_of_surjective hf (hI.trans_le hp)⟩
   left_inv := by
     intro ⟨p, _⟩
     simp only [PrimeSpectrum.mk.injEq]
@@ -39,10 +38,10 @@ noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj {f : R →+* S}
   right_inv := by
     intro ⟨⟨p, _⟩, hp⟩
     simp only [Subtype.mk.injEq, PrimeSpectrum.mk.injEq]
-    exact (p.comap_map_of_surjective f hf).trans <| sup_eq_left.mpr <| hI.trans_le hp
+    exact (p.comap_map_of_surjective f hf).trans <| sup_eq_left.mpr (hI.trans_le hp)
   map_rel_iff' {a b} := by
     show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
-    rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ hf,
+    rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective f hf,
       PrimeSpectrum.asIdeal_le_asIdeal]
 
 /-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
