@@ -138,6 +138,20 @@ theorem orthogonalProjectionFn_eq {s : AffineSubspace ℝ P} [Nonempty s]
     orthogonalProjectionFn s p = orthogonalProjection s p :=
   rfl
 
+/-- Since both instance arguments are propositions, allow `simp` to rewrite them
+alongside the `s` argument.
+
+Note that without the coercion to `P`, the LHS and RHS would have different types. -/
+@[congr]
+theorem orthogonalProjection_congr {s₁ s₂ : AffineSubspace ℝ P} {p₁ p₂ : P}
+    [Nonempty s₁] [s₁.direction.HasOrthogonalProjection]
+    (h : s₁ = s₂) (hp : p₁ = p₂) :
+    letI : Nonempty s₂ := h ▸ ‹_›
+    letI : s₂.direction.HasOrthogonalProjection := h ▸ ‹_›
+    (orthogonalProjection s₁ p₁ : P) = (orthogonalProjection s₂ p₂ : P) := by
+  subst h hp
+  rfl
+
 /-- The linear map corresponding to `orthogonalProjection`. -/
 @[simp]
 theorem orthogonalProjection_linear {s : AffineSubspace ℝ P} [Nonempty s]
@@ -233,10 +247,13 @@ theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace ℝ P} [Nonemp
 
 /-- The distance between a point and its orthogonal projection is
 nonzero if it does not lie in the subspace. -/
-theorem dist_orthogonalProjection_ne_zero_of_not_mem {s : AffineSubspace ℝ P} [Nonempty s]
+theorem dist_orthogonalProjection_ne_zero_of_notMem {s : AffineSubspace ℝ P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p : P} (hp : p ∉ s) :
     dist p (orthogonalProjection s p) ≠ 0 :=
   mt dist_orthogonalProjection_eq_zero_iff.mp hp
+
+@[deprecated (since := "2025-05-23")]
+alias dist_orthogonalProjection_ne_zero_of_not_mem := dist_orthogonalProjection_ne_zero_of_notMem
 
 /-- Subtracting `p` from its `orthogonalProjection` produces a result
 in the orthogonal direction. -/

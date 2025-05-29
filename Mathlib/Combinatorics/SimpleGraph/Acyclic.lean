@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Data.Fintype.Order
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Linarith
 
@@ -65,7 +64,7 @@ variable {G}
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
-  simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]
+  simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
   constructor
   · intro ha v w hvw
     apply And.intro hvw
@@ -208,7 +207,7 @@ lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
 
 /-- Every connected graph has a spanning tree. -/
 lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
-  obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_minimal_le h
+  obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_le_minimal h
   exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
 
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/

@@ -14,9 +14,9 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
 
 ## Main definitions
 
- * `Matrix.diagonal d`: matrix with the vector `d` along the diagonal
- * `Matrix.diag M`: the diagonal of a square matrix
- * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
+* `Matrix.diagonal d`: matrix with the vector `d` along the diagonal
+* `Matrix.diag M`: the diagonal of a square matrix
+* `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
 assert_not_exists Algebra Star
@@ -200,7 +200,7 @@ protected theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h
   simp only [one_apply, map_apply]
   split_ifs <;> simp [h₀, h₁]
 
-theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _ => α) i 1 j := by
+theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (M := fun _ => α) i 1 j := by
   simp only [one_apply, Pi.single_apply, eq_comm]
 
 end One

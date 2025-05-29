@@ -103,7 +103,7 @@ string to be derivable, namely that the string must start with an M and contain 
 /-- `Goodm xs` holds if `xs : Miustr` begins with `M` and has no `M` in its tail.
 -/
 def Goodm (xs : Miustr) : Prop :=
-  List.headI xs = M ∧ ¬M ∈ List.tail xs
+  List.headI xs = M ∧ M ∉ List.tail xs
 
 instance : DecidablePred Goodm := by unfold Goodm; infer_instance
 
@@ -125,7 +125,7 @@ theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ [I])) (h₂ : Good
   obtain ⟨mhead, nmtail⟩ := h₂
   constructor
   · cases xs <;> simp_all
-  · change ¬M ∈ tail (xs ++ ([I] ++ [U]))
+  · change M ∉ tail (xs ++ ([I] ++ [U]))
     rw [← append_assoc, tail_append_singleton_of_ne_nil]
     · simp_rw [mem_append, mem_singleton, reduceCtorEq, or_false]; exact nmtail
     · simp

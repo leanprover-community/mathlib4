@@ -626,7 +626,7 @@ theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ :
   constructor
   · intro h
     rw [mk_eq_zero_iff] at h
-    exact eq_empty_iff_forall_not_mem.2 fun x hx => h.elim' ⟨x, hx⟩
+    exact eq_empty_iff_forall_notMem.2 fun x hx => h.elim' ⟨x, hx⟩
   · rintro rfl
     exact mk_emptyCollection _
 
@@ -927,7 +927,7 @@ theorem mk_eq_two_iff' (x : α) : #α = 2 ↔ ∃! y, y ≠ x := by
   · rintro ⟨y, hne, hy⟩
     exact ⟨x, y, hne.symm, eq_univ_of_forall fun z => or_iff_not_imp_left.2 (hy z)⟩
 
-theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length < #α) :
+theorem exists_notMem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length < #α) :
     ∃ z : α, z ∉ l := by
   classical
   contrapose! h
@@ -937,10 +937,13 @@ theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length 
     _ = l.toFinset.card := Cardinal.mk_coe_finset
     _ ≤ l.length := Nat.cast_le.mpr (List.toFinset_card_le l)
 
+@[deprecated (since := "2025-05-23")]
+alias exists_not_mem_of_length_lt := exists_notMem_of_length_lt
+
 theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α := by simpa using h
   have : ↑(2 : ℕ) < #α := by rwa [← succ_le_iff, ← Cardinal.nat_succ]
-  have := exists_not_mem_of_length_lt [x, y] this
+  have := exists_notMem_of_length_lt [x, y] this
   simpa [not_or] using this
 
 /-! ### `powerlt` operation -/

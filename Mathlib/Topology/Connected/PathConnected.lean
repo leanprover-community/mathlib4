@@ -8,7 +8,7 @@ import Mathlib.Topology.Path
 /-!
 # Path connectedness
 
-Continuing from `Mathlib.Topology.Path`, this file defines path components and path-connected
+Continuing from `Mathlib/Topology/Path.lean`, this file defines path components and path-connected
 spaces.
 
 ## Main definitions
@@ -290,7 +290,7 @@ theorem isPathConnected_iff :
     IsPathConnected F ↔ F.Nonempty ∧ ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y :=
   ⟨fun h =>
     ⟨let ⟨b, b_in, _hb⟩ := h; ⟨b, b_in⟩, h.joinedIn⟩,
-    fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in,  h _ b_in⟩⟩
+    fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, h _ b_in⟩⟩
 
 /-- If `f` is continuous on `F` and `F` is path-connected, so is `f(F)`. -/
 theorem IsPathConnected.image' (hF : IsPathConnected F)
