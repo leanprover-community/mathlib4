@@ -137,6 +137,3 @@ theorem exists_embedding_euclidean_of_compact [T2Space M] [CompactSpace M] :
   haveI := f.fintype
   rcases f.exists_immersion_euclidean with ⟨n, e, hsmooth, hinj, hinj_mfderiv⟩
   exact ⟨n, e, hsmooth, hsmooth.continuous.isClosedEmbedding hinj, hinj_mfderiv⟩
-
-lemma test : 1 + 1 = 2 := by
-  native_decide
