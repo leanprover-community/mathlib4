@@ -85,16 +85,11 @@ instance : Bicategory (CatEnriched C) where
   associator f g h := eqToIso (assoc f g h)
   leftUnitor f := eqToIso (id_comp f)
   rightUnitor f := eqToIso (comp_id f)
-  whiskerLeft_id := id_bicomp_id
-  whiskerLeft_comp := by simp
   id_whiskerLeft := id_bicomp
   comp_whiskerLeft := by simp [← id_bicomp_id, bicomp_assoc]
-  id_whiskerRight := id_bicomp_id
-  comp_whiskerRight := by simp
   whiskerRight_id := bicomp_id
   whiskerRight_comp := by simp [bicomp_assoc]
   whisker_assoc := by simp [bicomp_assoc]
-  whisker_exchange η θ := by simp
   pentagon {a b c d e} f g h i := by
     generalize_proofs h1 h2 h3 h4; revert h1 h2 h3 h4
     generalize (f ≫ g) ≫ h = x, (g ≫ h) ≫ i = w
