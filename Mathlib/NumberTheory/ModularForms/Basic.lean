@@ -31,13 +31,13 @@ section ModularForm
 
 open ModularForm
 
-/-- The weight `k` slash action of `GL(2, ℝ)⁺` preserves holomorphic functions. -/
+/-- The weight `k` slash action of `GL(2, ℝ)⁺` preserves holomorphic functions. This is private,
+since it is a step towards the proof of `MDifferentiable.slash` which is more general. -/
 private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
     (k : ℤ) {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
-  refine .mul (.mul ?_ mdifferentiable_const) (UpperHalfPlane.mdifferentiable_denom_zpow g _)
-  simp only [σ, hg, ↓reduceIte]
-  exact hf.comp (UpperHalfPlane.mdifferentiable_smul hg)
+  refine .mul (.mul ?_ mdifferentiable_const) (mdifferentiable_denom_zpow g _)
+  simpa only [σ, hg, ↓reduceIte] using hf.comp (mdifferentiable_smul hg)
 
 private abbrev J : GL (Fin 2) ℝ :=
   ⟨!![1, 0; 0, -1], !![1, 0; 0, -1], by simp [Matrix.one_fin_two], by simp [Matrix.one_fin_two]⟩
@@ -63,7 +63,8 @@ private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
     ← zpow_add₀ (by norm_num : (-1 : ℂ) ≠ 0), (by ring : k - 1 + -k = -1),
     zpow_neg_one, inv_neg_one, mul_neg_one, J_smul]
 
-/-- The weight `k` slash action of `GL(2, ℝ)⁺` preserves holomorphic functions. -/
+/-- The weight `k` slash action of the negative-determinant matrix `J` preserves holomorphic
+functions. -/
 private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f) (k : ℤ) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] J) := by
   simp only [mdifferentiable_iff, slash_J, Function.comp_def] at hf ⊢
@@ -79,13 +80,10 @@ private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable �
 lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
     (k : ℤ) (g : GL (Fin 2) ℝ) : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
   rcases g.det_ne_zero.lt_or_lt with hg | hg
-  · have : g = J * (J * g) := by
-      rw [← mul_assoc, ← sq, J_sq, one_mul]
+  · have : g = J * (J * g) := by rw [← mul_assoc, ← sq, J_sq, one_mul]
     rw [this, SlashAction.slash_mul]
     apply (hf.slashJ k).slash_of_pos
-    rw [map_mul, Units.val_mul, g.val_det_apply]
-    refine mul_pos_of_neg_of_neg ?_ hg
-    simp [J, Matrix.det_fin_two]
+    simpa only [map_mul, Units.val_mul, g.val_det_apply] using mul_pos_of_neg_of_neg (by simp) hg
   · exact hf.slash_of_pos k hg
 
 variable (F : Type*) (Γ : Subgroup SL(2, ℤ)) (k : ℤ)
