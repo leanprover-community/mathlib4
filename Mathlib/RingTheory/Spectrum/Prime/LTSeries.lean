@@ -25,7 +25,7 @@ local notation "𝔪" => IsLocalRing.maximalIdeal R
 open Ideal
 
 theorem PrimeSpectrum.exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : (PrimeSpectrum R)}
-    (h₀ : p₀ < p₁) (h₁ : p₁ < ⟨𝔪, inferInstance⟩) {x : R} (hx : x ∈ 𝔪) :
+    (h₀ : p₀ < p₁) (h₁ : p₁ < IsLocalRing.closedPoint R) {x : R} (hx : x ∈ 𝔪) :
       ∃ q : PrimeSpectrum R, x ∈ q.1 ∧ p₀ < q ∧ q.1 < 𝔪 := by
   by_cases hn : x ∈ p₀.1
   · exact ⟨p₁, h₀.le hn, h₀, h₁⟩
