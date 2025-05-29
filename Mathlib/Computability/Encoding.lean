@@ -33,9 +33,13 @@ namespace Computability
 
 /-- An encoding of a type in a certain alphabet, together with a decoding. -/
 structure Encoding (α : Type u) where
+  /-- The alphabet of the encoding -/
   Γ : Type v
+  /-- The encoding function -/
   encode : α → List Γ
+  /-- The decoding function -/
   decode : List Γ → Option α
+  /-- Decoding and encoding are inverses of each other. -/
   decode_encode : ∀ x, decode (encode x) = some x
 
 theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
@@ -44,6 +48,7 @@ theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Inj
 
 /-- An encoding plus a guarantee of finiteness of the alphabet. -/
 structure FinEncoding (α : Type u) extends Encoding.{u, 0} α where
+  /-- The alphabet of the encoding is finite -/
   ΓFin : Fintype Γ
 
 instance Γ.fintype {α : Type u} (e : FinEncoding α) : Fintype e.toEncoding.Γ :=
@@ -122,7 +127,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
 
 @[simp] theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
   intro n
-  cases' n with n <;> unfold encodeNum decodeNum
+  obtain - | n := n <;> unfold encodeNum decodeNum
   · rfl
   rw [decode_encodePosNum n]
   rw [PosNum.cast_to_num]

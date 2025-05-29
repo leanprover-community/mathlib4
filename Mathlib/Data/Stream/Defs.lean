@@ -64,7 +64,6 @@ def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
 /-- The constant stream: `Stream'.get n (Stream'.const a) = a`. -/
 def const (a : α) : Stream' α := fun _ => a
 
--- Porting note: used to be implemented using RecOn
 /-- Iterates of a function as a stream. -/
 def iterate (f : α → α) (a : α) : Stream' α
   | 0 => a
@@ -147,8 +146,7 @@ def pure (a : α) : Stream' α :=
 /-- Given a stream of functions and a stream of values, apply `n`-th function to `n`-th value. -/
 def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (get f n) (get s n)
 
-@[inherit_doc] infixl:75 " ⊛ " => apply
--- Porting note: "input as \o*" was here but doesn't work for the above notation
+@[inherit_doc] infixl:75 " ⊛ " => apply -- input as `\circledast`
 
 /-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
 def nats : Stream' ℕ := fun n => n

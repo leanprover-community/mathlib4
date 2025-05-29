@@ -3,7 +3,8 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
@@ -19,7 +20,7 @@ This file defines square and even elements in a monoid.
 ## Note
 
 * Many lemmas about `Even` / `IsSquare`, including important `simp` lemmas,
-  are in `Mathlib.Algebra.Ring.Parity`.
+  are in `Mathlib/Algebra/Ring/Parity.lean`.
 
 ## TODO
 
@@ -31,7 +32,7 @@ This file defines square and even elements in a monoid.
 
 ## See also
 
-`Mathlib.Algebra.Ring.Parity` for the definition of odd elements as well as facts about
+`Mathlib/Algebra/Ring/Parity.lean` for the definition of odd elements as well as facts about
 `Even` / `IsSquare` in rings.
 -/
 
@@ -51,9 +52,6 @@ for some `r : α`."]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
 @[to_additive (attr := simp)] lemma IsSquare.mul_self (r : α) : IsSquare (r * r) := ⟨r, rfl⟩
-
-@[deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
-@[deprecated (since := "2024-08-27")] alias even_add_self := Even.add_self
 
 @[to_additive]
 lemma isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=

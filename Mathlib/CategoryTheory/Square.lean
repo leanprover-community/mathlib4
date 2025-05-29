@@ -147,6 +147,10 @@ def isoMk {sq₁ sq₂ : Square C} (e₁ : sq₁.X₁ ≅ sq₂.X₁) (e₂ : sq
 /-- Flipping a square by switching the top-right and the bottom-left objects. -/
 @[simps]
 def flip (sq : Square C) : Square C where
+  f₁₂ := sq.f₁₃
+  f₁₃ := sq.f₁₂
+  f₂₄ := sq.f₃₄
+  f₃₄ := sq.f₂₄
   fac := sq.fac.symm
 
 /-- The functor which flips commutative squares. -/
@@ -181,7 +185,7 @@ a morphism `Arrow.mk f ⟶ Arrow.mk g` to the commutative square
 with `f` on the left side and `g` on the right side. -/
 @[simps!]
 def fromArrowArrowFunctor : Arrow (Arrow C) ⥤ Square C where
-  obj f := { fac := f.hom.w }
+  obj f := { fac := f.hom.w, .. }
   map φ :=
     { τ₁ := φ.left.left
       τ₂ := φ.right.left
@@ -216,7 +220,7 @@ a morphism `Arrow.mk f ⟶ Arrow.mk g` to the commutative square
 with `f` on the top side and `g` on the bottom side. -/
 @[simps!]
 def fromArrowArrowFunctor' : Arrow (Arrow C) ⥤ Square C where
-  obj f := { fac := f.hom.w.symm }
+  obj f := { fac := f.hom.w.symm, .. }
   map φ :=
     { τ₁ := φ.left.left
       τ₂ := φ.left.right

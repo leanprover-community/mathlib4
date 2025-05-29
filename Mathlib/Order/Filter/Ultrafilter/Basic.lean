@@ -26,9 +26,10 @@ namespace Ultrafilter
 
 variable {f : Ultrafilter α} {s : Set α}
 
-theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ f ↔ ∃ t ∈ s, t ∈ f :=
-  Finite.induction_on _ hs (by simp) fun _ _ his => by
-    simp [union_mem_iff, his, or_and_right, exists_or]
+theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ f ↔ ∃ t ∈ s, t ∈ f := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ his => simp [union_mem_iff, his, or_and_right, exists_or]
 
 theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :
     (⋃ i ∈ is, s i) ∈ f ↔ ∃ i ∈ is, s i ∈ f := by
@@ -72,14 +73,11 @@ namespace Filter
 
 open Ultrafilter
 
-lemma atTop_eq_pure_of_isTop [LinearOrder α] {x : α} (hx : IsTop x) :
-    (atTop : Filter α) = pure x := by
-  have : Nonempty α := ⟨x⟩
-  apply atTop_neBot.eq_pure_iff.2
-  convert Ici_mem_atTop x using 1
-  exact (Ici_eq_singleton_iff_isTop.2 hx).symm
+lemma atTop_eq_pure_of_isTop [PartialOrder α] {x : α} (hx : IsTop x) :
+    (atTop : Filter α) = pure x :=
+  {top := x, le_top := hx : OrderTop α}.atTop_eq
 
-lemma atBot_eq_pure_of_isBot [LinearOrder α] {x : α} (hx : IsBot x) :
+lemma atBot_eq_pure_of_isBot [PartialOrder α] {x : α} (hx : IsBot x) :
     (atBot : Filter α) = pure x :=
   @atTop_eq_pure_of_isTop αᵒᵈ _ _ hx
 
@@ -108,13 +106,19 @@ theorem _root_.Nat.hyperfilter_le_atTop : (hyperfilter ℕ).toFilter ≤ atTop :
 theorem bot_ne_hyperfilter : (⊥ : Filter α) ≠ hyperfilter α :=
   (NeBot.ne inferInstance).symm
 
-theorem nmem_hyperfilter_of_finite {s : Set α} (hf : s.Finite) : s ∉ hyperfilter α := fun hy =>
-  compl_not_mem hy <| hyperfilter_le_cofinite hf.compl_mem_cofinite
+theorem notMem_hyperfilter_of_finite {s : Set α} (hf : s.Finite) : s ∉ hyperfilter α := fun hy =>
+  compl_notMem hy <| hyperfilter_le_cofinite hf.compl_mem_cofinite
 
-alias _root_.Set.Finite.nmem_hyperfilter := nmem_hyperfilter_of_finite
+@[deprecated (since := "2025-05-24")]
+alias nmem_hyperfilter_of_finite := notMem_hyperfilter_of_finite
+
+alias _root_.Set.Finite.notMem_hyperfilter := notMem_hyperfilter_of_finite
+
+@[deprecated (since := "2025-05-24")]
+alias _root_.Set.Finite.nmem_hyperfilter := _root_.Set.Finite.notMem_hyperfilter
 
 theorem compl_mem_hyperfilter_of_finite {s : Set α} (hf : Set.Finite s) : sᶜ ∈ hyperfilter α :=
-  compl_mem_iff_not_mem.2 hf.nmem_hyperfilter
+  compl_mem_iff_notMem.2 hf.notMem_hyperfilter
 
 alias _root_.Set.Finite.compl_mem_hyperfilter := compl_mem_hyperfilter_of_finite
 

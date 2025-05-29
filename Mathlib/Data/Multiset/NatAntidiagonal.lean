@@ -3,8 +3,8 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.List.NatAntidiagonal
+import Mathlib.Data.Multiset.MapFold
 
 /-!
 # Antidiagonals in ℕ × ℕ as multisets

@@ -59,7 +59,6 @@ noncomputable def ShiftSequence.tautological : ShiftSequence F M where
   shiftIso n a a' ha' := (Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (shiftFunctorAdd' C n a a' ha').symm _
   shiftIso_zero a := by
-    dsimp
     rw [shiftFunctorAdd'_zero_add]
     aesop_cat
   shiftIso_add n m a a' a'' ha' ha'' := by
@@ -97,12 +96,9 @@ lemma shiftIso_inv_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X �
       (shiftIso F n a a' ha').inv.app X ≫ (shift F a).map (f⟦n⟧') := by
   simp
 
-variable (M)
-
+variable (M) in
 /-- The canonical isomorphism `F.shift 0 ≅ F`. -/
 def isoShiftZero : F.shift (0 : M) ≅ F := ShiftSequence.isoZero
-
-variable {M}
 
 /-- The canonical isomorphism `shiftFunctor C n ⋙ F ≅ F.shift n`. -/
 def isoShift (n : M) : shiftFunctor C n ⋙ F ≅ F.shift n :=
