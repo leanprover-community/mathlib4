@@ -136,7 +136,7 @@ def sigmaCurryLEquiv {α : ι → Type*} {M : (i : ι) → α i → Type*}
 
 This is the `DFinsupp` version of `Finsupp.linearEquivFunOnFintype`. -/
 @[simps! apply symm_apply]
-def linearEquivFunOnFintype [Fintype ι] : (Π₀ i, M i) ≃ₗ[R] (Π i, M i) where
+def linearEquivFunOnFintype [Fintype ι]: (Π₀ i, M i) ≃ₗ[R] (Π i, M i) where
   __ := equivFunOnFintype
   map_add' _ _ := by ext; rfl
   map_smul' _ _ := by ext; rfl
