@@ -209,20 +209,19 @@ theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
 
 variable {n S}
 
-/-- If `∀ s ∈ S, n ∣ s` and `S` contains a nonzero element, then `IsCyclotomicExtension S A B`
+/-- If there exists a nonzero `s ∈ S` such that `n ∣ s`, then `IsCyclotomicExtension S A B`
 implies `IsCyclotomicExtension (S ∪ {n}) A B`. -/
-theorem of_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : ∃ x ∈ S, x ≠ 0)
-    [H : IsCyclotomicExtension S A B] :
+theorem of_union_of_dvd (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s) [H : IsCyclotomicExtension S A B] :
     IsCyclotomicExtension (S ∪ {n}) A B := by
   refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs hs' => ?_, ?_⟩
   · rw [mem_union, mem_singleton_iff] at hs
     obtain hs | rfl := hs
     · exact H.exists_isPrimitiveRoot hs hs'
-    · obtain ⟨m, hm, hm'⟩ := hS
-      obtain ⟨x, rfl⟩ := h m hm
-      obtain ⟨ζ, hζ⟩ := H.exists_isPrimitiveRoot hm hm'
+    · obtain ⟨m, hm, hm'⟩ := h
+      obtain ⟨x, rfl⟩ := hm'.2
+      obtain ⟨ζ, hζ⟩ := H.exists_isPrimitiveRoot hm hm'.1
       refine ⟨ζ ^ x, ?_⟩
-      have h_xnz : x ≠ 0 := Nat.ne_zero_of_mul_ne_zero_right hm'
+      have h_xnz : x ≠ 0 := Nat.ne_zero_of_mul_ne_zero_right hm'.1
       have := hζ.pow_of_dvd h_xnz (dvd_mul_left x s)
       rwa [mul_div_cancel_right₀ _ h_xnz] at this
   · refine _root_.eq_top_iff.2 ?_
@@ -232,21 +231,21 @@ theorem of_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : ∃ x ∈ S, x ≠ 0)
     obtain ⟨m, hm⟩ := hx
     exact ⟨m, ⟨Or.inr hm.1, hm.2⟩⟩
 
-/-- If `∀ s ∈ S, n ∣ s` and `S` contains a nonzero element, then `IsCyclotomicExtension S A B`
+/-- If there exists a nonzero `s ∈ S` such that `n ∣ s`, then `IsCyclotomicExtension S A B`
   if and only if `IsCyclotomicExtension (S ∪ {n}) A B`. -/
-theorem iff_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : ∃ x ∈ S, x ≠ 0) :
+theorem iff_union_of_dvd (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s) :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {n}) A B := by
   refine
-    ⟨fun H => of_union_of_dvd A B h hS, fun H => (iff_adjoin_eq_top _ A _).2
+    ⟨fun H => of_union_of_dvd A B h, fun H => (iff_adjoin_eq_top _ A _).2
       ⟨fun s hs => ?_, ?_⟩⟩
   · exact H.exists_isPrimitiveRoot (subset_union_left hs)
   · rw [_root_.eq_top_iff, ← ((iff_adjoin_eq_top _ A B).1 H).2]
     refine adjoin_mono fun x hx => ?_
     simp only [union_singleton, mem_insert_iff, mem_setOf_eq] at hx ⊢
     obtain ⟨m, rfl | hm, hxpow⟩ := hx
-    · obtain ⟨y, ⟨hy, hy'⟩⟩ := hS
+    · obtain ⟨y, ⟨hy, hy', hy''⟩⟩ := h
       refine ⟨y, ⟨hy, hy', ?_⟩⟩
-      obtain ⟨z, rfl⟩ := h y hy
+      obtain ⟨z, rfl⟩ := hy''
       simp only [pow_mul, hxpow, one_pow]
     · exact ⟨m, ⟨hm, hxpow⟩⟩
 
@@ -537,7 +536,7 @@ instance [CharZero K] : CharZero (CyclotomicField n K) :=
 
 instance isCyclotomicExtension [NeZero (n : K)] :
     IsCyclotomicExtension {n} K (CyclotomicField n K) := by
-  haveI : NeZero (n : CyclotomicField n K) :=
+  have : NeZero (n : CyclotomicField n K) :=
     NeZero.nat_of_injective (algebraMap K _).injective
   letI := Classical.decEq (CyclotomicField n K)
   obtain ⟨ζ, hζ⟩ :=
