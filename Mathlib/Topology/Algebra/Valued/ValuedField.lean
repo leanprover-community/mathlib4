@@ -380,13 +380,13 @@ end Valued
 
 end Notation
 
-open Valued
+namespace Valued
 
 variable (K : Type*) {Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Valued K Γ₀]
 
 /-- In a valued field, the closed ball is an ideal of the valuation ring. -/
 @[simps]
-def Valued.idealClosedBall (r : Γ₀) : Ideal 𝒪[K] where
+def idealClosedBall (r : Γ₀) : Ideal 𝒪[K] where
   carrier := {x | Valued.v (x : K) ≤ r}
   zero_mem' := by simp
   add_mem' := by simp +contextual [Valued.v.map_add_le]
@@ -398,7 +398,7 @@ def Valued.idealClosedBall (r : Γ₀) : Ideal 𝒪[K] where
 
 /-- In a valued field, the open ball is an ideal of the valuation ring. -/
 @[simps]
-def Valued.idealBall (r : Γ₀ˣ) : Ideal 𝒪[K] where
+def idealBall (r : Γ₀ˣ) : Ideal 𝒪[K] where
   carrier := {x | Valued.v (x : K) < r}
   zero_mem' := by simp
   add_mem' := by simp +contextual [Valued.v.map_add_lt]
@@ -408,29 +408,74 @@ def Valued.idealBall (r : Γ₀ˣ) : Ideal 𝒪[K] where
     exact mul_lt_of_le_one_of_lt hx
 
 /-- The closed ball ideal of a valuation ring is open in the valuation ring. -/
-lemma Valued.isOpen_idealClosedBall {r : Γ₀} (hr : r ≠ 0) :
-    IsOpen (Valued.idealClosedBall K r : Set 𝒪[K]) :=
+lemma isOpen_idealClosedBall {r : Γ₀} (hr : r ≠ 0) :
+    IsOpen (idealClosedBall K r : Set 𝒪[K]) :=
   continuous_subtype_val (p := fun x ↦ x ∈ 𝒪[K]).isOpen_preimage _ (isOpen_closedball K hr)
 
 /-- The closed ball ideal of a valuation ring is closed in the valuation ring. -/
-lemma Valued.isClosed_idealClosedBall (r : Γ₀) :
-    IsClosed (Valued.idealClosedBall K r : Set 𝒪[K]) :=
+lemma isClosed_idealClosedBall (r : Γ₀) :
+    IsClosed (idealClosedBall K r : Set 𝒪[K]) :=
   continuous_iff_isClosed.mp (continuous_subtype_val (p := fun x ↦ x ∈ 𝒪[K])) _
     (isClosed_closedBall K r)
 
 /-- The ball ideal of a valuation ring is open in the valuation ring. -/
-lemma Valued.isOpen_idealBall (r : Γ₀ˣ) :
-    IsOpen (Valued.idealBall K r : Set 𝒪[K]) :=
+lemma isOpen_idealBall (r : Γ₀ˣ) :
+    IsOpen (idealBall K r : Set 𝒪[K]) :=
   continuous_subtype_val (p := fun x ↦ x ∈ 𝒪[K]).isOpen_preimage _ (isOpen_ball K (r : Γ₀))
 
 /-- The ball ideal of a valuation ring is closed in the valuation ring. -/
-lemma Valued.isClosed_idealBall (r : Γ₀ˣ) :
-    IsClosed (Valued.idealBall K r : Set 𝒪[K]) :=
+lemma isClosed_idealBall (r : Γ₀ˣ) :
+    IsClosed (idealBall K r : Set 𝒪[K]) :=
   continuous_iff_isClosed.mp (continuous_subtype_val (p := fun x ↦ x ∈ 𝒪[K])) _
     (isClosed_ball K (r : Γ₀))
 
-variable {K} in
-lemma Valued.discreteTopology_valuationRing_iff_discreteTopology :
+variable {K}
+
+@[simp]
+lemma mem_idealClosedBall_iff {r : Γ₀} {x : 𝒪[K]} :
+    x ∈ idealClosedBall K r ↔ Valued.v (x : K) ≤ r :=
+  Iff.rfl
+
+@[simp]
+lemma mem_idealBall_iff {r : Γ₀ˣ} {x : 𝒪[K]} :
+    x ∈ idealBall K r ↔ Valued.v (x : K) < r :=
+  Iff.rfl
+
+lemma idealClosedBall_mono :
+    Monotone (idealClosedBall K : Γ₀ → Ideal 𝒪[K]) :=
+  fun _ _ h _ ↦ h.trans'
+
+lemma idealBall_mono :
+    Monotone (idealBall K : Γ₀ˣ → Ideal 𝒪[K]) :=
+  fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
+
+@[simp]
+lemma idealClosedBall_zero : idealClosedBall K (0 : Γ₀) = ⊥ := by
+  ext; simp
+
+lemma idealBall_le_idealClosedBall (r : Γ₀ˣ) :
+    idealBall K r ≤ idealClosedBall K (r : Γ₀) :=
+  fun _ h ↦ h.le
+
+lemma idealClosedBall_v_le_of_mem {I : Ideal 𝒪[K]} {x : 𝒪[K]} (hx : x ∈ I) :
+    idealClosedBall K (Valued.v (x : K)) ≤ I := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp
+  intro y hy
+  simp only [mem_idealClosedBall_iff] at hy
+  have hyx : Valued.v ((y : K) / x) ≤ 1 := by
+    simp [map_div₀,div_le_one_of_le₀ hy]
+  have : y = x * ⟨_, hyx⟩ := by
+    ext
+    rw [Subring.coe_mul, mul_div_cancel₀ _ (by simpa using hx0)]
+  rw [this]
+  exact Ideal.IsTwoSided.mul_mem_of_left _ hx
+
+lemma idealBall_v_le_of_mem {I : Ideal 𝒪[K]} {x : 𝒪[K]} (hx : x ∈ I) (hxv : Valued.v (x : K) ≠ 0) :
+    idealBall K (Units.mk0 _ hxv) ≤ I :=
+  (idealClosedBall_v_le_of_mem hx).trans' (idealBall_le_idealClosedBall _)
+
+lemma discreteTopology_valuationRing_iff_discreteTopology :
     DiscreteTopology 𝒪[K] ↔ DiscreteTopology K := by
   refine ⟨fun _ ↦ singletons_open_iff_discrete.mp fun x ↦ ?_, fun _ ↦ inferInstance⟩
   have hk : IsOpen (𝒪[K] : Set K) := isOpen_integer K
@@ -442,3 +487,5 @@ lemma Valued.discreteTopology_valuationRing_iff_discreteTopology :
     have h2 : IsOpen {x⁻¹} := by simpa using hk.isOpenMap_subtype_val _ h1
     simp only [isOpen_iff_mem_nhds, Set.mem_singleton_iff, forall_eq] at h2
     simpa [isOpen_iff_mem_nhds, -Filter.map_inv] using continuousAt_inv₀ hx0 h2
+
+end Valued

@@ -42,22 +42,7 @@ instance IsLinearTopology.of_valued :
       rw [Valued.discreteTopology_valuationRing_iff_discreteTopology] at this
       contradiction
     obtain ⟨x, hx, hx0⟩ : ∃ y ∈ I, y ≠ 0 := Submodule.exists_mem_ne_zero_of_ne_bot hI'
-    let y : Γ₀ := Valued.v (x : K)
-    lift y to Γ₀ˣ with y' hy'
-    · simp [y, hx0]
-    refine ⟨y', trivial, ?_⟩
-    simp only [Set.preimage_setOf_eq, y, hy']
-    intro a ha
-    simp only [Set.mem_setOf_eq, y] at ha
-    have hax : Valued.v ((a : K) / x) ≤ 1 := by
-      simp only [map_div₀, y]
-      rw [div_le_one₀]
-      · exact ha.le
-      · simp [Valued.v.pos_iff, hx0]
-    have : a = x * ⟨_, hax⟩ := by
-      ext
-      simp only [Subring.coe_mul, y]
-      rw [mul_div_cancel₀]
-      simpa using hx0
-    rw [this, SetLike.mem_coe]
-    exact Ideal.IsTwoSided.mul_mem_of_left _ hx
+    replace hx0 : Valued.v (x : K) ≠ 0 := by simp [hx0]
+    refine ⟨Units.mk0 _ hx0, trivial, ?_⟩
+    rw [Set.preimage_subset_iff]
+    exact idealBall_v_le_of_mem hx hx0
