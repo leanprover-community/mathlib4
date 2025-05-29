@@ -669,7 +669,7 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     · apply adjoin_algebra_injective
     · exact hx
   surj' x := by
-    let _ : NeZero (n : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
+    have : NeZero (n : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
     refine
       Algebra.adjoin_induction
         (hx := ((IsCyclotomicExtension.iff_singleton n K (CyclotomicField n K)).1

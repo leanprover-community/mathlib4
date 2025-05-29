@@ -312,7 +312,7 @@ theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
 theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1))) :
     Prime (hζ.toInteger - 1) := by
-  letI := IsCyclotomicExtension.numberField {2 ^ (k + 1)} ℚ K
+  have := IsCyclotomicExtension.numberField {2 ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
   · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow₀ (by decide) (by simp))
     rw [sub_eq_zero] at h
@@ -528,7 +528,7 @@ lemma toInteger_sub_one_dvd_prime [hcycl : IsCyclotomicExtension {p ^ (k + 1)} �
 
 /-- In a `p`-th cyclotomic extension of `ℚ`, we have that `ζ - 1` divides `p` in `𝓞 K`. -/
 lemma toInteger_sub_one_dvd_prime' [hcycl : IsCyclotomicExtension {p} ℚ K]
-    (hζ : IsPrimitiveRoot ζ p) : (hζ.toInteger - 1) ∣ p := by
+    (hζ : IsPrimitiveRoot ζ p) : hζ.toInteger - 1 ∣ p := by
   have : IsCyclotomicExtension {p ^ (0 + 1)} ℚ K := by simpa using hcycl
   replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
   exact toInteger_sub_one_dvd_prime hζ
