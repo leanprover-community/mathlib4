@@ -312,6 +312,7 @@ noncomputable def coinvariantsTensor : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
 
 variable (A B)
 
+/-- The bilinear map sending `a : A, b : B` to `⟦a ⊗ₖ b⟧` in `(A ⊗[k] B)_G`. -/
 noncomputable abbrev coinvariantsTensorMk :
     A →ₗ[k] B →ₗ[k] ((coinvariantsTensor k G).obj A).obj B :=
   (TensorProduct.mk k A B).compr₂ (Coinvariants.mk _)
