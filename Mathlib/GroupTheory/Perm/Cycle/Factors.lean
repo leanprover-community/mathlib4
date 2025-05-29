@@ -373,7 +373,7 @@ where
     if hx : g x = x then go l g (by
         intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (hg hy)) hfg
     else
-      let ⟨m, hm₁, hm₂, hm₃⟩ :=
+      let ⟨m, hm⟩ :=
         go l ((cycleOf f x)⁻¹ * g) (by
             rw [hfg hx]
             intro y hy
@@ -397,6 +397,7 @@ where
               · simp [cycleOf_apply_of_not_sameCycle, hz]
             · exact cycleOf_apply_of_not_sameCycle hy.left)
       ⟨cycleOf f x :: m, by
+        obtain ⟨hm₁, hm₂, hm₃⟩ := hm
         rw [hfg hx] at hm₁ ⊢
         constructor
         · rw [List.prod_cons, hm₁]
