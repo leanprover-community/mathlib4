@@ -48,23 +48,6 @@ end
 
 namespace Representation
 
-section
-
-variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-  (ρ : Representation k G V)
-
-@[simp]
-theorem inv_self_apply (g : G) (x : V) :
-    ρ g⁻¹ (ρ g x) = x := by
-  simp [← LinearMap.mul_apply, ← map_mul]
-
-@[simp]
-theorem self_inv_apply (g : G) (x : V) :
-    ρ g (ρ g⁻¹ x) = x := by
-  simp [← LinearMap.mul_apply, ← map_mul]
-
-end
-
 section trivial
 
 variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
