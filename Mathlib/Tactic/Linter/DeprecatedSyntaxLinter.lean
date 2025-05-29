@@ -105,18 +105,26 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
         some default
   | _ => none
 
-/-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option enable. -/
+/-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option enabled. -/
 def isDecideNative (stx : Syntax ): Bool := Id.run do
   match stx with
   | .node _ ``Lean.Parser.Tactic.decide args =>
     -- The configuration passed to the tactic call.
-    let config := args[1]![0][0]
-    -- TODO: check all config items, not just the first one
-    let it := config[0]
-    dbg_trace it
-    if let (.node _ ``Lean.Parser.Tactic.posConfigItem args) := it then
-      return args[1]! matches (.ident _ _ `native _)
-    return false
+    let config := args[1]![0]
+    -- Check all configuration arguments in order to determine the final
+    -- toggling of the native decide option.
+    let mut enabled := false
+    if let (.node _ _ config_args) := config then
+      for arg in config_args do
+        match arg[0] with
+        | (.node _ ``Lean.Parser.Tactic.posConfigItem args') =>
+          if args'[1]! matches (.ident _ _ `native _) then
+            enabled := true
+        | (.node _ ``Lean.Parser.Tactic.negConfigItem args') =>
+          if args'[1]! matches (.ident _ _ `native _) then
+            enabled := false
+        | _ => let _n := 0
+    return enabled
   | _ => false
 
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
@@ -138,13 +146,17 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
-    | ``Lean.Parser.Tactic.decide | ``Lean.Parser.Tactic.nativeDecide =>
+    | ``Lean.Parser.Tactic.decide =>
       if isDecideNative stx then
-        rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib:\n\
+        rargs.push (kind, stx, "Using `decide +native` is not allowed in mathlib:\n\
         because it trusts the entire Lean compiler (not just the Lean kernel),\n\
         quite possibly that could be used to prove false.")
       else
         rargs
+    | ``Lean.Parser.Tactic.nativeDecide =>
+      rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib:\n\
+        because it trusts the entire Lean compiler (not just the Lean kernel),\n\
+        quite possibly that could be used to prove false.")
     | ``Lean.Parser.Command.in =>
       match getSetOptionMaxHeartbeatsComment stx with
       | none => rargs

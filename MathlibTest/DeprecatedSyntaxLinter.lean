@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
+import Lean.Parser.Command
 
 set_option linter.style.refine true
 /--
@@ -95,11 +96,39 @@ note: this linter can be disabled with `set_option linter.style.nativeDecide fal
 example : 1 + 1 = 2 := by native_decide
 
 /--
-warning: foo
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+quite possibly that could be used to prove false.
 note: this linter can be disabled with `set_option linter.style.nativeDecide false`
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by decide +native
+#guard_msgs in
+example : 1 + 1 = 2 := by decide -native
+
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+quite possibly that could be used to prove false.
+note: this linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+theorem foo : 1 + 1 = 2 := by decide -native +native
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native -native
+
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+quite possibly that could be used to prove false.
+note: this linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native -native +native +native
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native -native +native +native -native
+
+set_option linter.style.nativeDecide false
 
 set_option linter.style.maxHeartbeats true
 /--
