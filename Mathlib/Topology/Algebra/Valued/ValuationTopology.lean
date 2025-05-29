@@ -250,4 +250,8 @@ theorem isClopen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
     IsClopen (hv.v.valuationSubring : Set K) :=
   isClopen_integer K
 
+lemma isOpenEmbedding_subtype_integer :
+    Topology.IsOpenEmbedding (Subtype.val : _i.v.integer → R) :=
+  ⟨.subtypeVal, by simpa using isOpen_integer _⟩
+
 end Valued
