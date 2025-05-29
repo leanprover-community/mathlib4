@@ -19,5 +19,4 @@ variable
   {M : Type*} [EMetricSpace M] [ChartedSpace H M]
   [∀ (x : M), NormedAddCommGroup (TangentSpace I x)]
   [∀ (x : M), InnerProductSpace ℝ (TangentSpace I x)]
-  [∀ x, InnerProductSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]

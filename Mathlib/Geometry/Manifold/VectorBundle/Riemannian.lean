@@ -18,7 +18,7 @@ is a smooth function.
 -/
 
 open Manifold Bundle ContinuousLinearMap ENat
-open scoped ContDiff
+open scoped ContDiff Topology
 
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
@@ -133,8 +133,32 @@ lemma ContMDiff.inner
 
 end ContMDiff
 
+namespace Bundle
+
 section Construction
 
 
+variable
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : WithTop ℕ∞}
+  {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
+  [∀ b, TopologicalSpace (E b)] [∀ b, AddCommGroup (E b)] [∀ b, Module ℝ (E b)]
+  [FiberBundle F E] [VectorBundle ℝ F E]
+
+
+structure riemannianMetric where
+  inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
+  contMDiff : ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) n
+    (fun b ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) (E := fun b ↦ (E b →L[ℝ] E b →L[ℝ] ℝ)) b (inner b))
+  symm (b : B) (v w : E b) : inner b v w = inner b w v
+  pos (b : B) (v : E b) (hv : v ≠ 0) : 0 < inner b v v
+  inducing (b : B) : {v : E b | inner b v v < 1} ∈ 𝓝 (0 : E b)
+
+
+#check InnerProductSpace.Core
 
 end Construction
+
+end Bundle

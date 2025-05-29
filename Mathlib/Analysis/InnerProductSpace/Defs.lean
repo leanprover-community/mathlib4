@@ -505,11 +505,42 @@ end
 
 section
 
-lemma glouk [AddCommGroup F] [Module 𝕜 F] [tF : TopologicalSpace F] -- [TopologicalAddGroup F]
-    (cd : InnerProductSpace.Core 𝕜 F) (h : Continuous (fun (v : F) ↦ cd.inner v v))
+open scoped Pointwise
+
+def MyCopy (F : Type*) : Type _ := F
+
+lemma glouk [hF : AddCommGroup F] [h'F : Module 𝕜 F] [tF : TopologicalSpace F]
+    [IsTopologicalAddGroup F]
+    (cd : InnerProductSpace.Core 𝕜 F) (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : {v : F | re (cd.inner v v) < 1} ∈ 𝓝 (0 : F)) :
     tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
-  sorry
+  let F' := MyCopy F
+  letI : AddCommGroup F' := hF
+  letI : Module 𝕜 F' := h'F
+  letI : NormedAddCommGroup F' := cd.toNormedAddCommGroup
+  letI : InnerProductSpace 𝕜 F' := .ofCore cd
+  let e : F ≃ₗ[𝕜] F' := LinearEquiv.refl 𝕜 F
+  have : Continuous e := by
+    apply continuous_of_continuousAt_zero
+    intro v hv
+    simp at hv ⊢
+    rcases Metric.mem_nhds_iff.1 hv with ⟨r, r_pos, hr⟩
+    suffices e ⁻¹' (Metric.ball 0 r) ∈ 𝓝 0 by
+      apply Filter.mem_of_superset this (by simpa using hr)
+    have : {v : F | re (cd.inner v v) < r ^ 2} ⊆ e ⁻¹' (Metric.ball 0 r) := by
+      intro v (hv : re (cd.inner v v) < r ^ 2)
+      have : cd.inner v v = inner 𝕜 (e v) (e v) := rfl
+      rw [this, ← InnerProductSpace.norm_sq_eq_re_inner, sq_lt_sq, abs_of_nonneg (norm_nonneg _),
+        abs_of_pos r_pos] at hv
+      simpa using hv
+    apply Filter.mem_of_superset _ this
+
+
+
+
+
+
+
 
 
 
