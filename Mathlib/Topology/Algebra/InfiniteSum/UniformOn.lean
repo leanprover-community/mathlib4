@@ -223,4 +223,13 @@ theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
     (h : HasProdLocallyUniformlyOn f g s) : Set.EqOn (∏' i, f i ·) g s :=
   fun _ hx ↦ (h.hasProd hx).tprod_eq
 
+@[to_additive]
+lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finset_range
+    {f : ℕ → β → α} (h : HasProdLocallyUniformlyOn f g s)  :
+    TendstoLocallyUniformlyOn (fun N b ↦ ∏ i ∈ Finset.range N, f i b) g atTop s := by
+  rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn] at h
+  intro v hv r hr
+  obtain ⟨t, ht, htr⟩ := h v hv r hr
+  refine ⟨t, ht, Filter.tendsto_finset_range.eventually htr⟩
+
 end LocallyUniformlyOn
