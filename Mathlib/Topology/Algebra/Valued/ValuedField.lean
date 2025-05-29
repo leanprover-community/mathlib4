@@ -380,12 +380,6 @@ end Valued
 
 end Notation
 
--- TODO: where does this go
-@[simp]
-lemma Subring.smul_eq_mul {R : Type*} [Ring R] {S : Subring R} (x : S) (y : R) :
-    x • y = x * y := by
-  rfl
-
 namespace Valued
 
 variable (K : Type*) {Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Valued K Γ₀]
@@ -401,7 +395,7 @@ def submoduleClosedBall (r : Γ₀) : Submodule 𝒪[K] K where
   zero_mem' := by simp
   add_mem' := by simp +contextual [Valued.v.map_add_le]
   smul_mem' := by
-    simp only [mem_setOf_eq, Subring.smul_eq_mul, map_mul, Subtype.forall]
+    simp only [mem_setOf_eq, Subring.smul_def, smul_eq_mul, map_mul, Subtype.forall]
     intro x hx y hy
     rw [mul_comm]
     exact mul_le_of_le_of_le_one hy hx
@@ -413,7 +407,7 @@ def submoduleBall (r : Γ₀ˣ) : Submodule 𝒪[K] K where
   zero_mem' := by simp
   add_mem' := by simp +contextual [Valued.v.map_add_lt]
   smul_mem' := by
-    simp only [mem_setOf_eq, Subring.smul_eq_mul, map_mul, Subtype.forall]
+    simp only [mem_setOf_eq, Subring.smul_def, smul_eq_mul, map_mul, Subtype.forall]
     intro _ hx _
     exact mul_lt_of_le_one_of_lt hx
 
@@ -519,7 +513,7 @@ lemma submoduleClosedBall_v_le_of_mem {I : Submodule 𝒪[K] K} {x : K} (hx : x 
   have hyx : Valued.v ((y : K) / x) ≤ 1 := by
     simp [map_div₀,div_le_one_of_le₀ hy]
   have : y = (⟨_, hyx⟩ : 𝒪[K]) • x := by
-    rw [Subring.smul_eq_mul, mul_comm, mul_div_cancel₀ _ (by simpa using hx0)]
+    rw [Subring.smul_def, smul_eq_mul, mul_comm, mul_div_cancel₀ _ (by simpa using hx0)]
   rw [this]
   exact Submodule.smul_mem _ _ hx
 
