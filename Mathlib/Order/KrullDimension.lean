@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.SuccPred.WithBot
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Order.Atoms
 import Mathlib.Order.RelSeries
+import Mathlib.Tactic.FinCases
 
 /-!
 # Krull dimension of a preordered set and height of an element
