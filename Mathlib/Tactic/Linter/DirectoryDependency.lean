@@ -69,7 +69,7 @@ def Lean.Environment.importPath (env : Environment) (imported : Name) : Array Na
 
 namespace Mathlib.Linter
 
-open Lean Elab Command Linter
+open Lean Elab Command
 
 /--
 The `directoryDependency` linter detects detects imports between directories that are supposed to be
@@ -596,12 +596,9 @@ end DirectoryDependency
 
 open DirectoryDependency
 
-@[inherit_doc Mathlib.Linter.linter.directoryDependency]
-def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageData) := do
-  unless getLinterValue linter.directoryDependency (← getLinterOptions) do
-    return none
-  let env ← getEnv
-  let imports := env.allImportedModuleNames
+/-- Check if one of the imports `imports` to `mainModule` is forbidden by `forbiddenImportDirs`;
+if so, return an error describing how the import transitively arises. -/
+private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
   match forbiddenImportDirs.findAny mainModule imports with
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
