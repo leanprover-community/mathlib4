@@ -73,6 +73,12 @@ lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg 
   rw [← AddSubgroup.zmultiples_eq_zmultiples_iff]
   simpa [e.surjective, eq_comm] using (e : ℤ →+ ℤ).map_zmultiples 1
 
+instance : Fintype (ℤ ≃+ ℤ) where
+  elems := .cons (.neg _) ({.refl _}) (by simp [AddEquiv.ext_int_iff])
+  complete x := by
+    obtain rfl | rfl := Int.addEquiv_eq_refl_or_neg x <;>
+    simp
+
 instance : Unique (ℤ ≃+o ℤ) where
   uniq e := OrderAddMonoidIso.toAddEquiv_injective <|
     Int.addEquiv_eq_refl_or_neg e |>.resolve_right fun H => by
