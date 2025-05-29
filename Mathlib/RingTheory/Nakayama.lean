@@ -54,8 +54,8 @@ theorem eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (h
     (hIN : N ≤ I • N) (hIjac : I ≤ jacobson J) : N = J • N := by
   refine le_antisymm ?_ (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _)
   intro n hn
-  cases' Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I N hN hIN with r hr
-  cases' exists_mul_sub_mem_of_sub_one_mem_jacobson r (hIjac hr.1) with s hs
+  obtain ⟨r, hr⟩ := Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I N hN hIN
+  obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r (hIjac hr.1)
   have : n = -(s * r - 1) • n := by
     rw [neg_sub, sub_smul, mul_smul, hr.2 n hn, one_smul, smul_zero, sub_zero]
   rw [this]
@@ -170,11 +170,12 @@ lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
   obtain ⟨r, hmem, hr⟩ := exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I _
     (h1 ▸ hN'.map _) hle
   refine ⟨r, hmem, fun x hx ↦ ?_⟩
-  induction' hx using Submodule.smul_inductionOn_pointwise with p hp _ _ _ h _ _ _ _ hx hy
-  · rw [← Submodule.Quotient.mk_eq_zero, Quotient.mk_smul]
+  induction hx using Submodule.smul_inductionOn_pointwise with
+  | smul₀ p hp =>
+    rw [← Submodule.Quotient.mk_eq_zero, Quotient.mk_smul]
     exact hr _ ⟨p, hp, rfl⟩
-  · exact N.smul_mem _ h
-  · exact N.add_mem hx hy
-  · exact N.zero_mem
+  | smul₁ _ _ _ h => exact N.smul_mem _ h
+  | add _ _ _ _ hx hy => exact N.add_mem hx hy
+  | zero => exact N.zero_mem
 
 end Submodule

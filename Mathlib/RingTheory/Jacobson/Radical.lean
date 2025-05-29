@@ -123,6 +123,9 @@ namespace Ring
 -- TODO: replace all `Ideal.jacobson ⊥` by this.
 abbrev jacobson : Ideal R := Module.jacobson R R
 
+theorem jacobson_eq_sInf_isMaximal : jacobson R = sInf {I : Ideal R | I.IsMaximal} := by
+  simp_rw [jacobson, Module.jacobson, Ideal.isMaximal_def]
+
 instance : (jacobson R).IsTwoSided :=
   ⟨fun b ha ↦ Module.le_comap_jacobson (f := LinearMap.toSpanSingleton R R b) ha⟩
 

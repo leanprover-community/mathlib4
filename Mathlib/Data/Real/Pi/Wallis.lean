@@ -27,7 +27,7 @@ algebraic manipulation.
 * `Real.Wallis.W_eq_integral_sin_pow_div_integral_sin_pow`: express `W n` as a ratio of integrals.
 * `Real.Wallis.W_le` and `Real.Wallis.le_W`: upper and lower bounds for `W n`.
 * `Real.tendsto_prod_pi_div_two`: the Wallis product formula.
- -/
+-/
 
 
 open scoped Real Topology Nat

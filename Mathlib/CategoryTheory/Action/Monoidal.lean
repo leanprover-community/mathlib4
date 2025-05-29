@@ -20,11 +20,11 @@ We show:
 * When `V` is monoidal, braided, or symmetric, so is `Action V G`.
 -/
 
-universe u v
+universe u
 
 open CategoryTheory Limits MonoidalCategory
 
-variable {V : Type (u + 1)} [LargeCategory V] {G : Type u} [Monoid G]
+variable {V : Type*} [Category V] {G : Type*} [Monoid G]
 
 namespace Action
 
@@ -40,26 +40,14 @@ variable [MonoidalCategory V]
 instance instMonoidalCategory : MonoidalCategory (Action V G) :=
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
-/- Adding this solves `simpNF` linter report at `tensorUnit_ρ` -/
 @[simp]
-theorem tensorUnit_ρ' {g : G} :
+theorem tensorUnit_ρ {g : G} :
     @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
   rfl
 
 @[simp]
-theorem tensorUnit_ρ {g : G} :
-    (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
-  rfl
-
-/- Adding this solves `simpNF` linter report at `tensor_ρ` -/
-@[simp]
-theorem tensor_ρ' {X Y : Action V G} {g : G} :
-    @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
-  rfl
-
-@[simp]
 theorem tensor_ρ {X Y : Action V G} {g : G} :
-    (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+    @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
@@ -93,6 +81,12 @@ variable [BraidedCategory V]
 instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
     (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by simp)
+
+@[simp]
+theorem β_hom_hom {X Y : Action V G} : (β_ X Y).hom.hom = (β_ X.V Y.V).hom := rfl
+
+@[simp]
+theorem β_inv_hom {X Y : Action V G} : (β_ X Y).inv.hom = (β_ X.V Y.V).inv := rfl
 
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 instance : (Action.forget V G).Braided where
@@ -151,7 +145,7 @@ lemma FunctorCategoryEquivalence.functor_δ (A B : Action V G) :
     δ FunctorCategoryEquivalence.functor A B = 𝟙 _ := rfl
 
 
-variable (H : Type u) [Group H]
+variable (H : Type*) [Group H]
 
 instance [RightRigidCategory V] : RightRigidCategory (SingleObj H ⥤ V) := by
   infer_instance
@@ -280,7 +274,7 @@ namespace CategoryTheory.Functor
 
 open Action
 
-variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCategory W]
+variable {W : Type*} [Category W] [MonoidalCategory V] [MonoidalCategory W]
   (F : V ⥤ W)
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal

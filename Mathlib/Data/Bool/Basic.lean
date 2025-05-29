@@ -126,7 +126,7 @@ lemma self_ne_not : ∀ b : Bool, b ≠ !b := by decide
 
 lemma eq_or_eq_not : ∀ a b, a = b ∨ a = !b := by decide
 
--- Porting note: naming issue again: these two `not` are different.
+-- TODO naming issue: these two `not` are different.
 theorem not_iff_not : ∀ {b : Bool}, !b ↔ ¬b := by simp
 
 theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by
@@ -148,9 +148,9 @@ instance linearOrder : LinearOrder Bool where
   le_trans := by decide
   le_antisymm := by decide
   le_total := by decide
-  decidableLE := inferInstance
-  decidableEq := inferInstance
-  decidableLT := inferInstance
+  toDecidableLE := inferInstance
+  toDecidableEq := inferInstance
+  toDecidableLT := inferInstance
   lt_iff_le_not_le := by decide
   max_def := by decide
   min_def := by decide

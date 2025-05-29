@@ -34,7 +34,7 @@ namespace MorphismProperty
 /-- A class of morphisms `W` in a monoidal category is monoidal if it is multiplicative
 and stable under left and right whiskering. Under this condition, the localized
 category can be equipped with a monoidal category structure, see `LocalizedMonoidal`. -/
-class IsMonoidal extends W.IsMultiplicative : Prop where
+class IsMonoidal : Prop extends W.IsMultiplicative where
   whiskerLeft (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) (hg : W g) : W (X ◁ g)
   whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (hf : W f) (Y : C) : W (f ▷ Y)
 
@@ -319,7 +319,7 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
           (α_ ((L').obj X₁) ((L').obj (X₂ ⊗ X₃)) ((L').obj X₄)).hom :=
     pentagon_aux₂ _ _ _ (μ L W ε X₂ X₃).symm
   rw [associator_hom_app, tensorHom_id, id_tensorHom, associator_hom_app, tensorHom_id,
-    whiskerLeft_comp, whiskerRight_comp,  whiskerRight_comp,  whiskerRight_comp, assoc, assoc,
+    whiskerLeft_comp, whiskerRight_comp, whiskerRight_comp, whiskerRight_comp, assoc, assoc,
     assoc, whiskerRight_comp, assoc,
     reassoc_of% this, associator_hom_app, tensorHom_id,
     ← pentagon_aux₁ (X₂ := (L').obj X₃) (X₃ := (L').obj X₄) (i := μ L W ε X₁ X₂),

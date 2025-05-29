@@ -126,7 +126,7 @@ lemma toLawson_inj {a b : α} : toLawson a = toLawson b ↔ a = b := Iff.rfl
 
 lemma ofLawson_inj {a b : WithLawson α} : ofLawson a = ofLawson b ↔ a = b := Iff.rfl
 
-/-- A recursor for `WithLawson`. Use as `induction' x`. -/
+/-- A recursor for `WithLawson`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithLawson α → Sort*}
     (h : ∀ a, β (toLawson a)) : ∀ a, β a := fun a => h (ofLawson a)
@@ -143,7 +143,7 @@ instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
 -/
 def homeomorph [TopologicalSpace α] [IsLawson α] : WithLawson α ≃ₜ α :=
-  ofLawson.toHomeomorphOfIsInducing ⟨by erw [IsLawson.topology_eq_lawson (α := α), induced_id]; rfl⟩
+  ofLawson.toHomeomorphOfIsInducing ⟨IsLawson.topology_eq_lawson (α := α) ▸ induced_id.symm⟩
 
 theorem isOpen_preimage_ofLawson {S : Set α} :
     IsOpen (ofLawson ⁻¹' S) ↔ (lawson α).IsOpen S := Iff.rfl

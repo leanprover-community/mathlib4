@@ -133,9 +133,9 @@ instance : OrderTop (Prepartition I) where
 
 instance : OrderBot (Prepartition I) where
   bot := ⟨∅,
-    fun _ hJ => (Finset.not_mem_empty _ hJ).elim,
-    fun _ hJ => (Set.not_mem_empty _ <| Finset.coe_empty ▸ hJ).elim⟩
-  bot_le _ _ hJ := (Finset.not_mem_empty _ hJ).elim
+    fun _ hJ => (Finset.notMem_empty _ hJ).elim,
+    fun _ hJ => (Set.notMem_empty _ <| Finset.coe_empty ▸ hJ).elim⟩
+  bot_le _ _ hJ := (Finset.notMem_empty _ hJ).elim
 
 instance : Inhabited (Prepartition I) := ⟨⊤⟩
 
@@ -149,8 +149,10 @@ theorem mem_top : J ∈ (⊤ : Prepartition I) ↔ J = I :=
 theorem top_boxes : (⊤ : Prepartition I).boxes = {I} := rfl
 
 @[simp]
-theorem not_mem_bot : J ∉ (⊥ : Prepartition I) :=
-  Finset.not_mem_empty _
+theorem notMem_bot : J ∉ (⊥ : Prepartition I) :=
+  Finset.notMem_empty _
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ := rfl
@@ -169,7 +171,7 @@ theorem injOn_setOf_mem_Icc_setOf_lower_eq (x : ι → ℝ) :
   · have hi₂ : J₂.lower i = x i := (H _).1 hi₁
     have H₁ : x i < J₁.upper i := by simpa only [hi₁] using J₁.lower_lt_upper i
     have H₂ : x i < J₂.upper i := by simpa only [hi₂] using J₂.lower_lt_upper i
-    rw [Ioc_inter_Ioc, hi₁, hi₂, sup_idem, Set.nonempty_Ioc]
+    rw [Set.Ioc_inter_Ioc, hi₁, hi₂, sup_idem, Set.nonempty_Ioc]
     exact lt_min H₁ H₂
   · have hi₂ : J₂.lower i < x i := (hx₂.1 i).lt_of_ne (mt (H _).2 hi₁.ne)
     exact ⟨x i, ⟨hi₁, hx₁.2 i⟩, ⟨hi₂, hx₂.2 i⟩⟩

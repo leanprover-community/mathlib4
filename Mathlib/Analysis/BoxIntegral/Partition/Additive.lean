@@ -77,7 +77,7 @@ theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π 
     (h : π.IsPartition) : ∑ J ∈ π.boxes, f J = f I :=
   f.sum_partition_boxes' I hI π h
 
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 instance : Zero (ι →ᵇᵃ[I₀] M) :=
   ⟨⟨0, fun _ _ _ _ => sum_const_zero⟩⟩
 
@@ -125,7 +125,7 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
     by_cases h : a.2 ∈ Ioo (J'.lower a.1) (J'.upper a.1)
     · rw [sum_split_boxes]
       exact hf _ ((WithTop.coe_le_coe.2 <| le_of_mem _ hJ').trans hI) h
-    · rw [split_of_not_mem_Ioo h, top_boxes, Finset.sum_singleton]
+    · rw [split_of_notMem_Ioo h, top_boxes, Finset.sum_singleton]
   intro I hI π hπ
   have Hle : ∀ J ∈ π, ↑J ≤ I₀ := fun J hJ => (WithTop.coe_le_coe.2 <| π.le_of_mem hJ).trans hI
   rcases hπ.exists_splitMany_le with ⟨s, hs⟩
@@ -134,7 +134,7 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
 
 /-- If `g : M → N` is an additive map and `f` is a box additive map, then `g ∘ f` is a box additive
 map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def map (f : ι →ᵇᵃ[I₀] M) (g : M →+ N) : ι →ᵇᵃ[I₀] N where
   toFun := g ∘ f
   sum_partition_boxes' I hI π hπ := by simp_rw [comp, ← map_sum, f.sum_partition_boxes hI hπ]

@@ -143,6 +143,7 @@ def prop : MorphismProperty C := .ofHoms (fun (X : C) ↦ Φ.toSucc X)
 lemma prop_toSucc (X : C) : Φ.prop (Φ.toSucc X) := ⟨_⟩
 
 /-- The map `Φ.toSucc X : X ⟶ Φ.Succ X`, as an element in `Arrow C`. -/
+@[simps!]
 def toSuccArrow (X : C) : Arrow C := Arrow.mk (Φ.toSucc X)
 
 lemma prop_iff {X Y : C} (f : X ⟶ Y) :
@@ -154,19 +155,28 @@ lemma prop_iff {X Y : C} (f : X ⟶ Y) :
     rw [← Φ.prop.arrow_mk_mem_toSet_iff, h]
     apply prop_toSucc
 
-variable {Φ} in
+variable {Φ}
+
 lemma prop.succ_eq {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
     Φ.succ X = Y := by
   cases hf
   rfl
 
-variable {Φ} in
 @[reassoc]
 lemma prop.fac {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
     f = Φ.toSucc X ≫ eqToHom hf.succ_eq := by
   cases hf
   simp
 
+/-- If `Φ : SuccStruct C` and `f` is a morphism in `C` which
+satisfies `Φ.prop f`, then this is the isomorphism of arrows
+between `f` and `Φ.toSuccArrow X`. -/
+@[simps!]
+def prop.arrowIso {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
+    Arrow.mk f ≅ Φ.toSuccArrow X :=
+  Arrow.isoMk (Iso.refl _) (eqToIso hf.succ_eq.symm) (by simp [hf.fac])
+
+variable (Φ)
 variable [LinearOrder J]
 
 /-- Given a functor `F : Set.Iic ⥤ C`, this is the morphism in `C`, as an element
@@ -219,7 +229,7 @@ end
 
 variable [SuccOrder J] [OrderBot J] [HasIterationOfShape J C]
 
-/-- The category of `j`th iterations of a succesor structure `Φ : SuccStruct C`.
+/-- The category of `j`th iterations of a successor structure `Φ : SuccStruct C`.
 An object consists of the data of all iterations of `Φ` for `i : J` such
 that `i ≤ j` (this is the field `F`). Such objects are
 equipped with data and properties which characterizes uniquely the iterations
@@ -349,49 +359,49 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
     suffices iter₁.F = iter₂.F by aesop
     revert iter₁ iter₂
     induction j using SuccOrder.limitRecOn with
-    | hm j h =>
-        obtain rfl := h.eq_bot
-        intro iter₁ iter₂
-        refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
-        obtain rfl : k₂ = ⊥ := by simpa using h₂
-        obtain rfl : k₁ = ⊥ := by simpa using h₁₂
-        apply mapEq_refl _ _ (by simp only [obj_bot])
-    | hs j hj₁ hj₂ =>
-        intro iter₁ iter₂
-        refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
-        have h₀ := Order.le_succ j
-        replace hj₂ := hj₂ (iter₁.trunc h₀) (iter₂.trunc h₀)
-        have hsucc := Functor.congr_obj hj₂ ⟨j, by simp⟩
-        dsimp at hj₂ hsucc
-        wlog h : k₂ ≤ j generalizing k₁ k₂
-        · obtain h₂ | rfl := h₂.lt_or_eq
-          · exact this _ _ _ _ ((Order.lt_succ_iff_of_not_isMax hj₁).1 h₂)
-          · by_cases h' : k₁ ≤ j
-            · apply mapEq_trans _ h₀ (this k₁ j h' h₀ (by simp))
-              simp only [MapEq, ← arrowSucc_def _ _ (Order.lt_succ_of_not_isMax hj₁),
-                arrowSucc_eq, hsucc]
-            · simp only [not_le] at h'
-              obtain rfl : k₁ = Order.succ j := le_antisymm h₁₂
-                ((Order.succ_le_iff_of_not_isMax hj₁).2 h')
-              rw [MapEq, arrowMap_refl, arrowMap_refl,
-                obj_succ _ _ h', obj_succ _ _ h', hsucc]
-        simp only [MapEq, ← arrowMap_restrictionLE _ (Order.le_succ j) _ _ _ h, hj₂]
-    | hl j h₁ h₂ =>
-        intro iter₁ iter₂
-        refine ext (fun k₁ k₂ h₁₂ h₃ ↦ ?_)
-        wlog h₄ : k₂ < j generalizing k₁ k₂; swap
-        · have := h₂ k₂ h₄ (iter₁.trunc h₄.le) (iter₂.trunc h₄.le)
-          simp at this
-          simp only [MapEq, ← arrowMap_restrictionLE _ h₄.le _ _ _ (by rfl), this]
-        · obtain rfl : j = k₂ := le_antisymm (by simpa using h₄) h₃
-          have : restrictionLT iter₁.F le_rfl = restrictionLT iter₂.F le_rfl :=
-            Arrow.functor_ext (fun _ l _ ↦ this _ _ _ _ l.2)
-          by_cases h₅ : k₁ < j
-          · dsimp [MapEq]
-            simp_rw [arrowMap_limit _ _ h₁ _ _ h₅, this]
-          · obtain rfl : k₁ = j := le_antisymm h₁₂ (by simpa using h₅)
-            apply mapEq_refl
-            simp only [obj_limit _ _ h₁, this]
+    | isMin j h =>
+      obtain rfl := h.eq_bot
+      intro iter₁ iter₂
+      refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
+      obtain rfl : k₂ = ⊥ := by simpa using h₂
+      obtain rfl : k₁ = ⊥ := by simpa using h₁₂
+      apply mapEq_refl _ _ (by simp only [obj_bot])
+    | succ j hj₁ hj₂ =>
+      intro iter₁ iter₂
+      refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
+      have h₀ := Order.le_succ j
+      replace hj₂ := hj₂ (iter₁.trunc h₀) (iter₂.trunc h₀)
+      have hsucc := Functor.congr_obj hj₂ ⟨j, by simp⟩
+      dsimp at hj₂ hsucc
+      wlog h : k₂ ≤ j generalizing k₁ k₂
+      · obtain h₂ | rfl := h₂.lt_or_eq
+        · exact this _ _ _ _ ((Order.lt_succ_iff_of_not_isMax hj₁).1 h₂)
+        · by_cases h' : k₁ ≤ j
+          · apply mapEq_trans _ h₀ (this k₁ j h' h₀ (by simp))
+            simp only [MapEq, ← arrowSucc_def _ _ (Order.lt_succ_of_not_isMax hj₁),
+              arrowSucc_eq, hsucc]
+          · simp only [not_le] at h'
+            obtain rfl : k₁ = Order.succ j := le_antisymm h₁₂
+              ((Order.succ_le_iff_of_not_isMax hj₁).2 h')
+            rw [MapEq, arrowMap_refl, arrowMap_refl,
+              obj_succ _ _ h', obj_succ _ _ h', hsucc]
+      simp only [MapEq, ← arrowMap_restrictionLE _ (Order.le_succ j) _ _ _ h, hj₂]
+    | isSuccLimit j h₁ h₂ =>
+      intro iter₁ iter₂
+      refine ext (fun k₁ k₂ h₁₂ h₃ ↦ ?_)
+      wlog h₄ : k₂ < j generalizing k₁ k₂; swap
+      · have := h₂ k₂ h₄ (iter₁.trunc h₄.le) (iter₂.trunc h₄.le)
+        simp at this
+        simp only [MapEq, ← arrowMap_restrictionLE _ h₄.le _ _ _ (by rfl), this]
+      · obtain rfl : j = k₂ := le_antisymm (by simpa using h₄) h₃
+        have : restrictionLT iter₁.F le_rfl = restrictionLT iter₂.F le_rfl :=
+          Arrow.functor_ext (fun _ l _ ↦ this _ _ _ _ l.2)
+        by_cases h₅ : k₁ < j
+        · dsimp [MapEq]
+          simp_rw [arrowMap_limit _ _ h₁ _ _ h₅, this]
+        · obtain rfl : k₁ = j := le_antisymm h₁₂ (by simpa using h₅)
+          apply mapEq_refl
+          simp only [obj_limit _ _ h₁, this]
 
 lemma congr_obj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)
     (k : J) (h₁ : k ≤ j₁) (h₂ : k ≤ j₂) :

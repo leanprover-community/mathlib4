@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Order.CompleteLattice
 import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets
@@ -79,11 +78,13 @@ noncomputable def disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t �
     Finset (Set α) :=
   (hC.diff_eq_sUnion' s hs t ht).choose \ {∅}
 
-lemma empty_nmem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+lemma empty_notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     ∅ ∉ hC.disjointOfDiff hs ht := by
   classical
   simp only [disjointOfDiff, mem_sdiff, Finset.mem_singleton, eq_self_iff_true,
     not_true, and_false, not_false_iff]
+
+@[deprecated (since := "2025-05-24")] alias empty_nmem_disjointOfDiff := empty_notMem_disjointOfDiff
 
 lemma subset_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     ↑(hC.disjointOfDiff hs ht) ⊆ C := by
@@ -105,17 +106,19 @@ lemma sUnion_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   simp only [disjointOfDiff, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   rw [sUnion_diff_singleton_empty]
 
-lemma nmem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+lemma notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     t ∉ hC.disjointOfDiff hs ht := by
   intro hs_mem
   suffices t ⊆ s \ t by
     have h := @disjoint_sdiff_self_right _ t s _
     specialize h le_rfl this
     simp only [Set.bot_eq_empty, Set.le_eq_subset, subset_empty_iff] at h
-    refine hC.empty_nmem_disjointOfDiff hs ht ?_
+    refine hC.empty_notMem_disjointOfDiff hs ht ?_
     rwa [← h]
   rw [← hC.sUnion_disjointOfDiff hs ht]
   exact subset_sUnion_of_mem hs_mem
+
+@[deprecated (since := "2025-05-24")] alias nmem_disjointOfDiff := notMem_disjointOfDiff
 
 lemma sUnion_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C)
     (ht : t ∈ C) (hst : t ⊆ s) :
@@ -132,7 +135,7 @@ lemma pairwiseDisjoint_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ 
     (ht : t ∈ C) :
     PairwiseDisjoint (insert t (hC.disjointOfDiff hs ht) : Set (Set α)) id := by
   have h := hC.pairwiseDisjoint_disjointOfDiff hs ht
-  refine PairwiseDisjoint.insert_of_not_mem h (hC.nmem_disjointOfDiff hs ht) fun u hu ↦ ?_
+  refine PairwiseDisjoint.insert_of_notMem h (hC.notMem_disjointOfDiff hs ht) fun u hu ↦ ?_
   simp_rw [id]
   refine Disjoint.mono_right ?_ (hC.disjoint_sUnion_disjointOfDiff hs ht)
   simp only [Set.le_eq_subset]
@@ -157,8 +160,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
     refine ⟨{s}, singleton_subset_set_iff.mpr hs, ?_⟩
     simp only [coe_singleton, pairwiseDisjoint_singleton, sUnion_singleton, eq_self_iff_true,
       and_self_iff]
-  | @insert t I' _ h => ?_
-
+  | insert t I' _ h => ?_
   rw [coe_insert] at hI
   have ht : t ∈ C := hI (Set.mem_insert _ _)
   obtain ⟨J, h_ss, h_dis, h_eq⟩ := h ((Set.subset_insert _ _).trans hI)
@@ -221,12 +223,15 @@ noncomputable def disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
   (hI : ↑I ⊆ C) : Finset (Set α) :=
   (hC.exists_disjoint_finset_diff_eq hs hI).choose \ {∅}
 
-lemma empty_nmem_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
+lemma empty_notMem_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) :
     ∅ ∉ hC.disjointOfDiffUnion hs hI := by
   classical
   simp only [disjointOfDiffUnion, mem_sdiff, Finset.mem_singleton, eq_self_iff_true,
     not_true, and_false, not_false_iff]
+
+@[deprecated (since := "2025-05-24")]
+alias empty_nmem_disjointOfDiffUnion := empty_notMem_disjointOfDiffUnion
 
 lemma disjointOfDiffUnion_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     ↑(hC.disjointOfDiffUnion hs hI) ⊆ C := by
@@ -280,7 +285,7 @@ lemma disjoint_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C) (hI : �
     hC.disjoint_sUnion_disjointOfDiffUnion hs hI (subset_sUnion_of_mem huI)
     (subset_sUnion_of_mem hu_disjointOfDiffUnion)
   simp only [Set.bot_eq_empty, Set.le_eq_subset, subset_empty_iff] at h_disj
-  refine hC.empty_nmem_disjointOfDiffUnion hs hI ?_
+  refine hC.empty_notMem_disjointOfDiffUnion hs hI ?_
   rwa [h_disj] at hu_disjointOfDiffUnion
 
 lemma pairwiseDisjoint_union_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
@@ -354,7 +359,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
           refine disjoint_of_sSup_disjoint_of_le_of_le
             (hC.subset_of_diffUnion_disjointOfDiffUnion h1.1 h1.2) ?_
             (@disjoint_sdiff_left _ (⋃₀ J) s) (Or.inl
-              (hC.empty_nmem_disjointOfDiffUnion h1.1 h1.2))
+              (hC.empty_notMem_disjointOfDiffUnion h1.1 h1.2))
           simp only [mem_coe, Set.le_eq_subset]
           apply sUnion_subset_iff.mp
           exact (hK3 i hi).trans (subset_sUnion_of_mem hi)
@@ -384,7 +389,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
       change ∀ t' ∈ (K a : Set (Set α)), t' ⊆ a
       rw [← sUnion_subset_iff]
       exact hK3 a ha
-    · refine ⟨hC.empty_nmem_disjointOfDiffUnion h1.1 h1.2, ?_⟩
+    · refine ⟨hC.empty_notMem_disjointOfDiffUnion h1.1 h1.2, ?_⟩
       intros a ha
       rw [ht1' a ha]
       exact hK4 a ha
@@ -397,7 +402,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
 a `Finset (Set α)` such that `K j := hC.disjointOfUnion hJ` are disjoint
 and `⋃₀ K j ⊆ j`, for `j ∈ J`.
 Using these we write `⋃₀ J` as a disjoint union `⋃₀ J = ⋃₀ ⋃ x ∈ J, (K x)`.
-See `MeasureTheory.IsSetSemiring.disjointOfUnion_props`.-/
+See `MeasureTheory.IsSetSemiring.disjointOfUnion_props`. -/
 noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : Set α) :=
   (hC.disjointOfUnion_props hJ).choose j
 
@@ -426,13 +431,16 @@ lemma subset_of_mem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj
     (hx : x ∈ (hC.disjointOfUnion hJ) j) : x ⊆ j :=
   sUnion_subset_iff.mp (hC.disjointOfUnion_subset_of_mem hJ hj) x hx
 
-lemma empty_nmem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
+lemma empty_notMem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
     ∅ ∉ hC.disjointOfUnion hJ j :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.1 j hj
 
+@[deprecated (since := "2025-05-24")]
+alias empty_nmem_disjointOfUnion := empty_notMem_disjointOfUnion
+
 lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     ⋃₀ ⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α)) = ⋃₀ J :=
-    (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
+  (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
 
 end disjointOfUnion
 
@@ -442,8 +450,8 @@ end IsSetSemiring
 It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
 structure IsSetRing (C : Set (Set α)) : Prop where
   empty_mem : ∅ ∈ C
-  union_mem ⦃s t⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
-  diff_mem ⦃s t⦄ : s ∈ C → t ∈ C → s \ t ∈ C
+  union_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
+  diff_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s \ t ∈ C
 
 namespace IsSetRing
 
@@ -466,7 +474,7 @@ lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
   classical
   induction S using Finset.induction with
   | empty => simp [hC.empty_mem]
-  | @insert i S _ h =>
+  | insert i S _ h =>
     simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     refine hC.union_mem (hs i (mem_insert_self i S)) ?_
     exact h (fun n hnS ↦ hs n (mem_insert_of_mem hnS))
@@ -489,7 +497,7 @@ lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Fin
   classical
   induction t using Finset.induction_on with
   | empty => exact hC.empty_mem
-  | @insert m t hm ih =>
+  | insert m t hm ih =>
     simpa only [sup_insert] using
       hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
 

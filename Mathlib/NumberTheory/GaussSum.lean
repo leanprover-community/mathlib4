@@ -201,9 +201,10 @@ sum of`χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
 theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') :
     gaussSum χ ψ ^ p ^ n = χ ((p : R) ^ n) * gaussSum χ ψ := by
-  induction' n with n ih
-  · rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
-  · rw [pow_succ, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ, map_mul,
+  induction n with
+  | zero => rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
+  | succ n ih =>
+    rw [pow_succ, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ, map_mul,
       ← pow_apply' χ fp.1.ne_zero ((p : R) ^ n), hχ.pow_char p]
 
 end gaussSum_frob
@@ -278,7 +279,6 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by
   have hp2 (n : ℕ) : (2 ^ n : F) ≠ 0 := pow_ne_zero n (Ring.two_ne_zero hF)
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
-
   -- we work in `FF`, the eighth cyclotomic field extension of `F`
   let FF := CyclotomicField 8 F
   have hchar := Algebra.ringChar_eq F FF
@@ -290,7 +290,6 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
     rw [Ne, ← Nat.prime_dvd_prime_iff_eq FFp Nat.prime_two] at hFF
     change ¬_ ∣ 2 ^ 3
     exact mt FFp.dvd_of_dvd_pow hFF
-
   -- there is a primitive additive character `ℤ/8ℤ → FF`, sending `a + 8ℤ ↦ τ^a`
   -- with a primitive eighth root of unity `τ`
   let ψ₈ := primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
@@ -305,12 +304,10 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
       decide
     · rw [← map_nsmul_eq_pow ψ₈.char, ψ₈.prim.zmod_char_eq_one_iff]
       decide
-
   -- we consider `χ₈` as a multiplicative character `ℤ/8ℤ → FF`
   let χ := χ₈.ringHomComp (Int.castRingHom FF)
   have hχ : χ (-1) = 1 := Int.cast_one
   have hq : IsQuadratic χ := isQuadratic_χ₈.comp _
-
   -- we now show that the Gauss sum of `χ` and `ψ₈` has the relevant property
   have h₁ : (fun (a : Fin 8) ↦ ↑(χ₈ a) * τ ^ (a : ℕ)) = fun a ↦ χ a * ↑(ψ₈char a) := by
     ext1; congr; apply pow_one
@@ -329,11 +326,9 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   have hg : gaussSum χ ψ₈char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
     rw [hχ, one_mul, ZMod.card, Nat.cast_ofNat, hg₁]
     linear_combination (4 * τ ^ 2 - 8) * τ_spec
-
   -- this allows us to apply `card_pow_char_pow` to our situation
   have h := Char.card_pow_char_pow (R := ZMod 8) hq ψ₈char (ringChar FF) n hu hFF hg
   rw [ZMod.card, ← hchar, hχ, one_mul, ← hc, ← Nat.cast_pow (ringChar F), ← hc] at h
-
   -- finally, we change `2` to `8` on the left hand side
   convert_to (8 : F) ^ (Fintype.card F / 2) = _
   · rw [(by norm_num : (8 : F) = 2 ^ 2 * 2), mul_pow,
