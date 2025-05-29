@@ -144,8 +144,8 @@ a multiplicative equivalence `e : α ≃* β`. -/
 @[to_additive (attr := simps)
 "The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
 an additive equivalence `e : α ≃+ β`."]
-def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (β →* γ) ≃ (α →* γ) where
+def precompEquiv {α β : Type*} [MulOneClass α] [MulOneClass β] (e : α ≃* β)
+    (γ : Type*) [MulOneClass γ] : (β →* γ) ≃ (α →* γ) where
   toFun f := f.comp e
   invFun g := g.comp e.symm
   left_inv _ := by ext; simp
@@ -156,12 +156,40 @@ a multiplicative equivalence `e : α ≃* β`. -/
 @[to_additive (attr := simps)
 "The equivalence `(γ →+ α) ≃ (γ →+ β)` obtained by postcomposition with
 an additive equivalence `e : α ≃+ β`."]
-def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (γ →* α) ≃ (γ →* β) where
+def postcompEquiv {α β : Type*} [MulOneClass α] [MulOneClass β] (e : α ≃* β)
+    (γ : Type*) [MulOneClass γ] : (γ →* α) ≃ (γ →* β) where
   toFun f := e.toMonoidHom.comp f
   invFun g := e.symm.toMonoidHom.comp g
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
+
+/-- Given a monoid homomorphism `p : M →* P` with right inverse map `p_inv : P → M`,
+  the equivalence between monoid homomorphisms `f : M →* N` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`
+  and monoid homomorphisms `φ : P →* N`. -/
+@[to_additive (attr := simps!) " Given an additive monoid homomorphism `p : M →+ P` with right
+  inverse map `p_inv : P → M`, the equivalence between additive monoid homomorphisms `f : M →+ N`
+  such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f` and additive monoid homomorphisms `φ : P →+ N`. "]
+def liftOfRightInverseEquiv [MulOneClass M] [MulOneClass N] [MulOneClass P]
+    (p : M →* P) (p_inv : P → M) (hp : RightInverse p_inv p) :
+    {f : M →* N // ∀ x, f (p_inv (p x)) = f x} ≃ (P →* N) where
+  toFun f := p.liftOfRightInverse' p_inv hp f.1 f.2
+  invFun φ := ⟨φ.comp p, fun _ => by simp only [comp_apply, hp (p _)]⟩
+  left_inv f := Subtype.ext liftOfRightInverse'_comp
+  right_inv φ := liftOfRightInverse'_apply_comp
+
+/-- Given a monoid homomorphism `p : P →* N` with left inverse map `p_inv : N → P`,
+  the equivalence between monoid homomorphisms `f : M →* N` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`
+  and monoid homomorphisms `φ : M →* P`. -/
+@[to_additive (attr := simps!) " Given an additive monoid homomorphism `p : P →* N` with left
+  inverse map `p_inv : N → P`, the equivalence between additive monoid homomorphisms `f : M →* N`
+  such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f` and additive monoid homomorphisms `φ : M →* P`. "]
+def liftOfLeftInverseEquiv [MulOneClass M] [MulOneClass N] [MulOneClass P]
+    (p : P →* N) (p_inv : N → P) (hp : LeftInverse p_inv p)  :
+    {f : M →* N // ∀ x, p (p_inv (f x)) = f x} ≃ (M →* P) where
+  toFun f := p.liftOfLeftInverse p_inv hp f.1 f.2
+  invFun φ := ⟨p.comp φ, fun _ => by simp only [comp_apply, hp (φ _)]⟩
+  left_inv f := Subtype.ext comp_liftOfLeftInverse
+  right_inv φ := liftOfLeftInverse_apply_comp
 
 end MonoidHom
 
