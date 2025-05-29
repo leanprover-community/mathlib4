@@ -11,15 +11,15 @@ import Mathlib.Data.ULift
 # Discrete categories
 
 We define `Discrete α` as a structure containing a term `a : α` for any type `α`,
-and use this type alias to provide a `SmallCategory` instance
+and use this type alias to provide a `Category` instance
 whose only morphisms are the identities.
 
 There is an annoying technical difficulty that it has turned out to be inconvenient
 to allow categories with morphisms living in `Prop`,
 so instead of defining `X ⟶ Y` in `Discrete α` as `X = Y`,
 one might define it as `PLift (X = Y)`.
-In fact, to allow `Discrete α` to be a `SmallCategory`
-(i.e. with morphisms in the same universe as the objects),
+In fact, to allow `Discrete α` to be a `Category.{v}`
+(i.e. with morphisms in some arbitrary universe level `v`),
 we actually define the hom type `X ⟶ Y` as `ULift (PLift (X = Y))`.
 
 `Discrete.functor` promotes a function `f : I → C` (for any category `C`) to a functor
@@ -47,7 +47,7 @@ with the only morphisms being equalities.
 structure Discrete (α : Type u₁) where
   /-- A wrapper for promoting any type to a category,
   with the only morphisms being equalities. -/
-  as : α
+  as : let _ := ULift.{v₁} α; α
 
 @[simp]
 theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
@@ -69,7 +69,7 @@ instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
 Because we do not allow morphisms in `Prop` (only in `Type`),
 somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`. -/
 @[stacks 001A]
-instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
+instance discreteCategory (α : Type u₁) : Category.{v₁} (Discrete.{v₁} α) where
   Hom X Y := ULift (PLift (X.as = Y.as))
   id _ := ULift.up (PLift.up rfl)
   comp {X Y Z} g f := by
