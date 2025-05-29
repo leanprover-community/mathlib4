@@ -119,6 +119,9 @@ theorem taylor_mul (p q : R[X]) : taylor r (p * q) = taylor r p * taylor r q := 
 def taylorAlgHom (r : R) : R[X] →ₐ[R] R[X] :=
   AlgHom.ofLinearMap (taylor r) (taylor_one r) (taylor_mul r)
 
+@[simp, norm_cast] lemma coe_taylorAlgHom : taylorAlgHom r = taylor r :=
+  rfl
+
 theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r + s) f := by
   simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, C_add, add_assoc]
 
@@ -137,6 +140,19 @@ end CommSemiring
 section CommRing
 
 variable {R : Type*} [CommRing R] (r : R) (f : R[X])
+
+/-- `Polynomial.taylor` as an `AlgEquiv` for commutative rings. -/
+noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
+  invFun      := taylorAlgHom (-r)
+  left_inv P  := by simp [taylor, comp_assoc]
+  right_inv P := by simp [taylor, comp_assoc]
+  __ := taylorAlgHom r
+
+@[simp, norm_cast] lemma coe_taylorEquiv : taylorEquiv r = taylorAlgHom r :=
+  rfl
+
+@[simp] lemma taylorEquiv_symm : (taylorEquiv r).symm = taylorEquiv (-r) :=
+  AlgEquiv.ext fun _ ↦ rfl
 
 theorem taylor_eval_sub (s : R) :
     (taylor r f).eval (s - r) = f.eval s := by rw [taylor_eval, sub_add_cancel]
