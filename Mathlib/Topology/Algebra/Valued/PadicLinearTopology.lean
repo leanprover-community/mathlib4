@@ -12,8 +12,10 @@ import Mathlib.Topology.Algebra.Valued.NormedValued
 
 ## Implementation details
 
-We don't have `Valued ℚ_[p] Γ₀` for any `Γ₀` unless we open `NormedField`, which converts
-`NormedField ℚ_[p]` to `Valued ℚ_[p] ℝ≥0`, which is what allows us to refer to `𝒪[ℚ_[p]]`.
+We don't have `Valued ℚ_[p] Γ₀` for any `Γ₀` unless we open `NormedField`, which actives a scoped
+instance of `NormedField.toValued : Valued ℚ_[p] ℝ≥0`.
+The `Valued` instance allows us to refer to `𝒪[ℚ_[p]]`.
+
 Since `ℤ_[p]` is `{x : ℚ_[p] // ‖x‖ ≤ 1}`, then that is definitionally `𝒪[ℚ_[p]]` when
 the valuation is based on the norm. That allows us to tansfer `IsDiscreteValuationRing`.
 
