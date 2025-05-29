@@ -142,7 +142,7 @@ lemma quotSMulTop_isCohenMacaulay_iff_isCohenMacaulay (M : ModuleCat.{v} R) [Mod
   · have ntr1 : Nontrivial M := not_subsingleton_iff_nontrivial.mp ntr
     have ntr2 : Nontrivial (QuotSMulTop r M) := quotSMulTop_nontrivial mem M
     simp only [not_subsingleton_iff_nontrivial.mpr ntr2, false_or, ntr]
-    rw [← Module.supportDim_quotSMulTop_succ_eq_supportDim r reg mem,
+    rw [← Module.supportDim_quotSMulTop_succ_eq_supportDim reg mem,
       ← IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth M r reg mem, WithBot.coe_add]
     exact withBotENat_add_coe_cancel _ _ 1
 
@@ -406,7 +406,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
       ((IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p a _).mpr mem)
     let _ : Nontrivial M'ₚ := quotSMulTop_nontrivial map_mem Mₚ
     have eq_succ : Module.supportDim Rₚ M'ₚ + 1 = Module.supportDim Rₚ Mₚ :=
-      Module.supportDim_quotSMulTop_succ_eq_supportDim ((algebraMap R Rₚ) a)
+      Module.supportDim_quotSMulTop_succ_eq_supportDim
         (isLocaliation_map_isSMulRegular_of_isSMulRegular p Rₚ a M Mₚ f reg) map_mem
     let _ := isLocalizedModule_quotSMulTop_isLocalizedModule_map p Rₚ a M Mₚ f
     have := ih M' M'ₚ (quotSMulTop_isLocalizedModule_map p Rₚ a M Mₚ f) netop' depth_eq.symm
@@ -510,7 +510,3 @@ lemma isCohenMacaulayRing_iff [IsNoetherianRing R] : IsCohenMacaulayRing R ↔
   exact (isCohenMacaulayLocalRing_iff _).mpr
     (isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay (p.map (algebraMap R Rₘ))
     (ModuleCat.of Rₘ Rₘ) (ModuleCat.of Rₚ Rₚ) (Algebra.linearMap Rₘ Rₚ))
-
---unmixedness theorem
-
---polynomial ring over CM ring is CM
