@@ -35,7 +35,7 @@ discrete categories.
 namespace CategoryTheory
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
-universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
+universe v₁ v₁' v₂ v₃ u₁ u₁' u₂ u₃
 
 -- This is intentionally a structure rather than a type synonym
 -- to enforce using `DiscreteEquiv` (or `Discrete.mk` and `Discrete.as`) to move between
@@ -153,7 +153,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
 /-- Any function `I → C` gives a functor `Discrete I ⥤ C`. -/
-def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
+def functor {I : Type u₁} (F : I → C) : Discrete.{v₁} I ⥤ C where
   obj := F ∘ Discrete.as
   map {X Y} f := by
     dsimp
@@ -162,22 +162,23 @@ def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
 
 @[simp]
 theorem functor_obj {I : Type u₁} (F : I → C) (i : I) :
-    (Discrete.functor F).obj (Discrete.mk i) = F i :=
+    (Discrete.functor.{v₁} F).obj (Discrete.mk i) = F i :=
   rfl
 
 theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
-    (Discrete.functor F).map f = 𝟙 (F i.as) := by aesop_cat
+    (Discrete.functor.{v₁} F).map f = 𝟙 (F i.as) := by aesop_cat
 
 @[simp]
 theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
-    (Discrete.functor F).obj X = F X.as :=
+    (Discrete.functor.{v₁} F).obj X = F X.as :=
   rfl
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
 -/
 @[simps!]
 def functorComp {I : Type u₁} {J : Type u₁'} (f : J → C) (g : I → J) :
-    Discrete.functor (f ∘ g) ≅ Discrete.functor (Discrete.mk ∘ g) ⋙ Discrete.functor f :=
+    Discrete.functor.{v₁} (f ∘ g) ≅
+      Discrete.functor.{v₁} (Discrete.mk ∘ g) ⋙ Discrete.functor.{v₁'} f :=
   NatIso.ofComponents fun _ => Iso.refl _
 
 /-- For functors out of a discrete category,
@@ -185,7 +186,7 @@ a natural transformation is just a collection of maps,
 as the naturality squares are trivial.
 -/
 @[simps]
-def natTrans {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ⟶ G.obj i) :
+def natTrans {I : Type u₁} {F G : Discrete.{v₁} I ⥤ C} (f : ∀ i : Discrete I, F.obj i ⟶ G.obj i) :
     F ⟶ G where
   app := f
   naturality := fun {X Y} ⟨⟨g⟩⟩ => by
@@ -199,7 +200,7 @@ a natural isomorphism is just a collection of isomorphisms,
 as the naturality squares are trivial.
 -/
 @[simps!]
-def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i) :
+def natIso {I : Type u₁} {F G : Discrete.{v₁} I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i) :
     F ≅ G :=
   NatIso.ofComponents f fun ⟨⟨g⟩⟩ => by
     discrete_cases
@@ -207,32 +208,34 @@ def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.o
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
     simp
 
-instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [∀ i, IsIso (f i)] :
+instance {I : Type*} {F G : Discrete.{v₁} I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [∀ i, IsIso (f i)] :
     IsIso (Discrete.natTrans f) := by
   change IsIso (Discrete.natIso (fun i => asIso (f i))).hom
   infer_instance
 
 @[simp]
-theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)
-    (i : Discrete I) : (Discrete.natIso f).app i = f i := by aesop_cat
+theorem natIso_app {I : Type u₁} {F G : Discrete.{v₁} I ⥤ C}
+    (f : ∀ i : Discrete I, F.obj i ≅ G.obj i) (i : Discrete I) :
+    (Discrete.natIso f).app i = f i := by aesop_cat
 
 /-- Every functor `F` from a discrete category is naturally isomorphic (actually, equal) to
   `Discrete.functor (F.obj)`. -/
 @[simps!]
-def natIsoFunctor {I : Type u₁} {F : Discrete I ⥤ C} : F ≅ Discrete.functor (F.obj ∘ Discrete.mk) :=
+def natIsoFunctor {I : Type u₁} {F : Discrete.{v₁} I ⥤ C} :
+    F ≅ Discrete.functor (F.obj ∘ Discrete.mk) :=
   natIso fun _ => Iso.refl _
 
 /-- Composing `Discrete.functor F` with another functor `G` amounts to composing `F` with `G.obj` -/
 @[simps!]
 def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : I → C) (G : C ⥤ D) :
-    Discrete.functor F ⋙ G ≅ Discrete.functor (G.obj ∘ F) :=
+    Discrete.functor.{v₁} F ⋙ G ≅ Discrete.functor (G.obj ∘ F) :=
   natIso fun _ => Iso.refl _
 
 /-- We can promote a type-level `Equiv` to
 an equivalence between the corresponding `discrete` categories.
 -/
 @[simps]
-def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ Discrete J where
+def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete.{v₁} I ≌ Discrete.{v₂} J where
   functor := Discrete.functor (Discrete.mk ∘ (e : I → J))
   inverse := Discrete.functor (Discrete.mk ∘ (e.symm : J → I))
   unitIso :=
@@ -242,7 +245,8 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
 
 /-- We can convert an equivalence of `discrete` categories to a type-level `Equiv`. -/
 @[simps]
-def equivOfEquivalence {α : Type u₁} {β : Type u₂} (h : Discrete α ≌ Discrete β) : α ≃ β where
+def equivOfEquivalence {α : Type u₁} {β : Type u₂}
+    (h : Discrete.{v₁} α ≌ Discrete.{v₂} β) : α ≃ β where
   toFun := Discrete.as ∘ h.functor.obj ∘ Discrete.mk
   invFun := Discrete.as ∘ h.inverse.obj ∘ Discrete.mk
   left_inv a := by simpa using eq_of_hom (h.unitIso.app (Discrete.mk a)).2
@@ -258,7 +262,7 @@ open Opposite
 
 /-- A discrete category is equivalent to its opposite category. -/
 @[simps! functor_obj_as inverse_obj]
-protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
+protected def opposite (α : Type u₁) : (Discrete.{v₁} α)ᵒᵖ ≌ Discrete α :=
   let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
   { functor := F.leftOp
     inverse := F
@@ -268,7 +272,7 @@ protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
 variable {C : Type u₂} [Category.{v₂} C]
 
 @[simp]
-theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
+theorem functor_map_id (F : Discrete.{v₁} J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
     F.map f = 𝟙 (F.obj j) := by
   have h : f = 𝟙 j := by aesop_cat
   rw [h]
@@ -279,7 +283,7 @@ end Discrete
 /-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
 @[simps]
 def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁} C] :
-    (J → C) ≌ (Discrete J ⥤ C) where
+    (J → C) ≌ (Discrete.{v₁} J ⥤ C) where
   functor :=
     { obj := fun F => Discrete.functor F
       map := fun f => Discrete.natTrans (fun j => f j.as) }
