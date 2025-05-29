@@ -81,7 +81,12 @@ theorem rid_tmul (m : M) (r : R) : (TensorProduct.rid R M) (m ⊗ₜ r) = r • 
 theorem rid_symm_apply (m : M) : (TensorProduct.rid R M).symm m = m ⊗ₜ 1 :=
   rfl
 
-theorem rid_def : TensorProduct.rid R M = TensorProduct.comm R M R ≪≫ₗ TensorProduct.lid R M :=
+theorem comm_trans_lid :
+    TensorProduct.comm R M R ≪≫ₗ TensorProduct.lid R M = TensorProduct.rid R M :=
+  LinearEquiv.toLinearMap_injective (ext (by ext; rfl))
+
+theorem comm_trans_rid :
+    TensorProduct.comm R R M ≪≫ₗ TensorProduct.rid R M = TensorProduct.lid R M :=
   LinearEquiv.toLinearMap_injective (ext (by ext; rfl))
 
 variable (R) in
