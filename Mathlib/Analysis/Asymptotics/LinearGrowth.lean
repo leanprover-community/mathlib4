@@ -382,7 +382,7 @@ lemma tendsto_atTop_of_linearGrowthInf_natCast_pos (h : (linearGrowthInf fun n �
   have := tendsto_atTop_of_linearGrowthInf_pos (h.lt_of_le' (linearGrowthInf_natCast_nonneg v))
   refine (tendsto_nhds_top_iff_real.1 this M).mono fun n ↦ ?_
   rw [coe_coe_eq_natCast, Nat.cast_lt]
-  exact LT.lt.le
+  exact le_of_lt
 
 lemma le_linearGrowthInf_comp (hu : 0 ≤ᶠ[atTop] u) (hv : Tendsto v atTop atTop) :
     (linearGrowthInf fun n ↦ v n : EReal) * linearGrowthInf u ≤ linearGrowthInf (u ∘ v) := by

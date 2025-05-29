@@ -746,8 +746,7 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Finty
   · simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, star_def, PiLp.inner_apply,
       inner_apply']
     congr
-  · rw [orthonormal_iff_ite.mp b.orthonormal i j]
-    rfl
+  · rw [orthonormal_iff_ite.mp b.orthonormal i j, Matrix.one_apply]
 
 /-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
 different index types. -/

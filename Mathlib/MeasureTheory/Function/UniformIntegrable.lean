@@ -440,12 +440,12 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
     · rw [(_ : f i = g ⟨i.val, hi⟩)]
       · exact hδ₁ _ s hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_left _ _)
       · simp [g]
-    · rw [(_ : i = n)]
-      · exact hδ₂ _ hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_right _ _)
-      · have hi' := Fin.is_lt i
+    · obtain rfl : i = n := by
+        have hi' := Fin.is_lt i
         rw [Nat.lt_succ_iff] at hi'
         rw [not_lt] at hi
         simp [← le_antisymm hi' hi]
+      exact hδ₂ _ hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_right _ _)
 
 /-- A finite sequence of Lp functions is uniformly integrable. -/
 theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {f : ι → α → β}
@@ -456,9 +456,7 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
   have hg : ∀ i, MemLp (g i) p μ := fun _ => hf _
   obtain ⟨δ, hδpos, hδ⟩ := unifIntegrable_fin hp_one hp_top hg hε
   refine ⟨δ, hδpos, fun i s hs hμs => ?_⟩
-  specialize hδ (hn.some i) s hs hμs
-  simp_rw [g, Function.comp_apply, Equiv.symm_apply_apply] at hδ
-  assumption
+  simpa [g] using hδ (hn.some i) s hs hμs
 
 end
 
