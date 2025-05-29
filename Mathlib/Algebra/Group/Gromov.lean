@@ -986,13 +986,15 @@ lemma take_count_sum_eq_exp {T: Type*} [ht: Group T] [heq: DecidableEq T] {E: Se
         exact hl
       simp [h_eq_g, h_eq_inv]
       rw [ih]
-      rw [← zpow_neg_one]
-      rw [← zpow_add]
-      simp [hg.symm]
-      simp at hl
-      intro val hval
-      have hl_right := hl.2 val (by simp) (by simp [hval])
-      exact hl_right
+      .
+        rw [← zpow_neg_one]
+        rw [← zpow_add]
+        simp [hg.symm]
+      .
+        simp at hl
+        intro val hval
+        have hl_right := hl.2 val (by simp) (by simp [hval])
+        exact hl_right
 
 open Additive
 
