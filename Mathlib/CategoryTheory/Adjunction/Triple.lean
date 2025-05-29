@@ -217,10 +217,10 @@ the unit of the second adjunction. -/
 lemma whiskerLeft_leftToRight : whiskerLeft G t.leftToRight = t.adj₁.counit ≫ t.adj₂.unit := by
   ext X; exact t.leftToRight_app_obj
 
-@[reassoc (attr := simp)]
+omit [H.Full] [H.Faithful] in
 lemma map_adj₂_counit_app_leftToRight_app (X : C) :
     F.map (t.adj₂.counit.app X) ≫ t.leftToRight.app X = t.adj₁.counit.app (H.obj X) := by
-  simp [leftToRight_eq_counits]
+  simp
 
 omit [H.Full] [H.Faithful] in
 @[reassoc (attr := simp)]
