@@ -467,7 +467,8 @@ lemma latticeClosure_idem (s : Set α) : latticeClosure (latticeClosure s) = lat
 @[simp] lemma latticeClosure_singleton (a : α) : latticeClosure {a} = {a} := by simp
 @[simp] lemma latticeClosure_univ : latticeClosure (Set.univ : Set α) = Set.univ := by simp
 
-variable (s) in
+variable (s)
+
 lemma image_latticeClosure [Lattice β] {f : α → β}
     (map_sup : ∀ a₁ a₂ : α, f (a₁ ⊔ a₂) = f a₁ ⊔ f a₂)
     (map_inf : ∀ a₁ a₂ : α, f (a₁ ⊓ a₂) = f a₁ ⊓ f a₂) :
@@ -489,27 +490,19 @@ lemma image_latticeClosure [Lattice β] {f : α → β}
           fun _ ⟨c, hcs, hfc⟩ _ ⟨d, hds, hfd⟩ =>
             ⟨c ⊓ d, hfc ▸ hfd ▸ ⟨isSublattice_latticeClosure.infClosed hcs hds, map_inf c d⟩⟩⟩
 
-variable (s) in
+lemma preimage_ofDual_latticeClosure :
+    ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
+  change ClosureOperator.ofCompletePred _ _ _ = ClosureOperator.ofCompletePred _ _ _
+  congr
+  ext
+  exact ⟨fun h => ⟨h.2, h.1⟩, fun h => ⟨h.2, h.1⟩⟩
+
 lemma image_latticeClosure_of_sup_inf [Lattice β] {f : α → β}
     (hf1 : ∀ a₁ a₂ : α, f (a₁ ⊔ a₂) = f a₁ ⊓ f a₂)
     (hf2 : ∀ a₁ a₂ : α, f (a₁ ⊓ a₂) = f a₁ ⊔ f a₂) :
     f '' latticeClosure s = latticeClosure (f '' s) := by
-  refine Set.eq_of_subset_of_subset ?_ ?_
-  · intro _ ⟨_, h1, h2⟩
-    refine h2 ▸ latticeClosure_sup_inf_induction (fun a _ => f a ∈ _) ?_ ?_ ?_ h1
-    · intro _ h
-      exact subset_latticeClosure <| Set.mem_image_of_mem _ h
-    · intro a1 _ a2 _ h1 h2
-      exact hf1 a1 a2 ▸ isSublattice_latticeClosure.infClosed h1 h2
-    · intro a1 _ a2 _ h1 h2
-      exact hf2 a1 a2 ▸ isSublattice_latticeClosure.supClosed h1 h2
-  · refine latticeClosure_min ?_ ?_
-    · intro _ ⟨a, h1, h2⟩
-      exact ⟨a, subset_latticeClosure h1, h2⟩
-    · exact ⟨fun _ ⟨c, hcs, hfc⟩ _ ⟨d, hds, hfd⟩ =>
-        ⟨c ⊓ d, hfc ▸ hfd ▸ ⟨isSublattice_latticeClosure.infClosed hcs hds, hf2 ..⟩⟩,
-          fun _ ⟨c, hcs, hfc⟩ _ ⟨d, hds, hfd⟩ =>
-            ⟨c ⊔ d, hfc ▸ hfd ▸ ⟨isSublattice_latticeClosure.supClosed hcs hds, hf1 ..⟩⟩⟩
+  simpa only [Set.image_comp, ← Set.preimage_equiv_eq_image_symm, ← preimage_ofDual_latticeClosure]
+    using @image_latticeClosure _ _ _ s _ (ofDual.symm ∘ f) hf1 hf2
 
 end Lattice
 
