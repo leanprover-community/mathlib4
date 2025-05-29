@@ -31,6 +31,10 @@ open Rep CategoryTheory Representation
 variable {k G H : Type u} [CommRing k] [Group G] [Group H]
   {A : Rep k H} {B : Rep k G} (f : G →* H) (φ : (Action.res _ f).obj A ⟶ B) (n : ℕ)
 
+section
+
+variable [DecidableEq G] [DecidableEq H]
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the chain map sending `x : Hⁿ → A` to `(g : Gⁿ) ↦ φ (x (f ∘ g))`. -/
 @[simps! -isSimp f f_hom]
@@ -42,7 +46,8 @@ noncomputable def cochainsMap :
     subst hij
     ext
     funext
-    simpa [inhomogeneousCochains.d_apply, Fin.comp_contractNth] using (hom_comm_apply φ _ _).symm
+    simpa [inhomogeneousCochains.d_hom_apply, Fin.comp_contractNth]
+      using (hom_comm_apply φ _ _).symm
 
 @[simp]
 lemma cochainsMap_id :
@@ -56,8 +61,8 @@ lemma cochainsMap_id_f_eq_compLeft {A B : Rep k G} (f : A ⟶ B) (i : ℕ) :
   rfl
 
 @[reassoc]
-lemma cochainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
-    {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
+lemma cochainsMap_comp {G H K : Type u} [Group G] [DecidableEq G] [Group H] [DecidableEq H]
+    [Group K] [DecidableEq K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
     (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) :
     cochainsMap (f.comp g) ((Action.res _ g).map φ ≫ ψ) =
       cochainsMap f φ ≫ cochainsMap g ψ := by
@@ -180,6 +185,8 @@ lemma cochainsMap_f_3_comp_threeCochainsIso :
 @[deprecated (since := "2025-05-09")]
 alias cochainsMap_f_3_comp_threeCochainsLequiv := cochainsMap_f_3_comp_threeCochainsIso
 
+end
+
 open ShortComplex
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
@@ -218,12 +225,14 @@ instance mono_H0Map_of_mono {A B : Rep k G} (f : A ⟶ B) [Mono f] :
   (ModuleCat.mono_iff_injective _).2 fun _ _ hxy => Subtype.ext <|
     (mono_iff_injective f).1 ‹_› (Subtype.ext_iff.1 hxy)
 
+variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem cocyclesMap_comp_isoZeroCocycles_hom :
     cocyclesMap f φ 0 ≫ (isoZeroCocycles B).hom = (isoZeroCocycles A).hom ≫ H0Map f φ := by
   have := cochainsMap_f_0_comp_zeroCochainsIso f φ
   simp_all [← cancel_mono (shortComplexH0 B).f]
 
+variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_comp_isoH0_hom :
     map f φ 0 ≫ (isoH0 B).hom = (isoH0 A).hom ≫ H0Map f φ := by
@@ -285,6 +294,7 @@ lemma mapOneCocycles_comp_i :
 @[deprecated (since := "2025-05-09")]
 alias mapOneCocycles_comp_subtype := mapOneCocycles_comp_i
 
+variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoOneCocycles_hom :
     cocyclesMap f φ 1 ≫ (isoOneCocycles B).hom = (isoOneCocycles A).hom ≫ mapOneCocycles f φ := by
@@ -319,6 +329,7 @@ lemma H1π_comp_H1Map :
     H1π A ≫ H1Map f φ = mapOneCocycles f φ ≫ H1π B := by
   simp
 
+variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma map_comp_isoH1_hom :
     map f φ 1 ≫ (isoH1 B).hom = (isoH1 A).hom ≫ H1Map f φ := by
@@ -380,6 +391,7 @@ lemma mapTwoCocycles_comp_i :
 @[deprecated (since := "2025-05-09")]
 alias mapTwoCocycles_comp_subtype := mapTwoCocycles_comp_i
 
+variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoTwoCocycles_hom :
     cocyclesMap f φ 2 ≫ (isoTwoCocycles B).hom = (isoTwoCocycles A).hom ≫ mapTwoCocycles f φ := by
@@ -414,10 +426,13 @@ lemma H2π_comp_H2Map :
     H2π A ≫ H2Map f φ = mapTwoCocycles f φ ≫ H2π B := by
   simp
 
+variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma map_comp_isoH2_hom :
     map f φ 2 ≫ (isoH2 B).hom = (isoH2 A).hom ≫ H2Map f φ := by
   simp [← cancel_epi (groupCohomologyπ _ _), H2Map, Category.assoc]
+
+variable [DecidableEq G]
 
 variable (k G) in
 /-- The functor sending a representation to its complex of inhomogeneous cochains. -/
