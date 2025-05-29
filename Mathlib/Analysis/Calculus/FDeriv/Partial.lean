@@ -238,8 +238,8 @@ theorem HasFDerivWithinAt.partial_continuousOn_of_continuousOn
     let fx' := fun z => (f' z).comp (.inl _ _ _);
     let fy' := fun z => (f' z).comp (.inr _ _ _);
     (ContinuousOn fx' u ∧ ContinuousOn fy' u) ∧
-    ( (∀ z ∈ u, HasFDerivWithinAt (fun x => f (x, z.2)) (fx' z) ((·,z.2) ⁻¹' u) z.1)
-    ∧ (∀ z ∈ u, HasFDerivWithinAt (fun y => f (z.1, y)) (fy' z) ((z.1,·) ⁻¹' u) z.2) )
+    ( (∀ z ∈ u, HasFDerivWithinAt (f ∘ (· ,z.2)) (fx' z) ((·,z.2) ⁻¹' u) z.1)
+    ∧ (∀ z ∈ u, HasFDerivWithinAt (f ∘ (z.1, ·)) (fy' z) ((z.1,·) ⁻¹' u) z.2) )
     := by
   set fx' := fun z => (f' z).comp (.inl _ _ _)
   set fy' := fun z => (f' z).comp (.inr _ _ _)
@@ -252,13 +252,10 @@ theorem HasFDerivWithinAt.partial_continuousOn_of_continuousOn
     rw [← forall₂_and]
     intro z hz
     have hz12 := (Prod.mk.eta (p := z)).symm ▸ hz
-    set su := (fun x => (x, z.2)) ⁻¹' u
-    set tu := (fun y => (z.1, y)) ⁻¹' u
-    set fx := (fun x => f (x, z.2))
-    set fy := (fun y => f (z.1, y))
-    have fx_eq : fx = f.comp (fun x => (id x, const _ z.2 x)) := rfl
-    have fy_eq : fy = f.comp (fun y => (const _ z.1 y, id y)) := rfl
-    rw [fx_eq, fy_eq]
+    set su := ((· ,z.2)) ⁻¹' u
+    set tu := ((z.1, ·)) ⁻¹' u
+    set fx := (f ∘ (· ,z.2))
+    set fy := (f ∘ (z.1, ·))
     have hfx (x:E) := HasFDerivWithinAt.prodMk
       (hasFDerivWithinAt_id (𝕜 := 𝕜) x su)
       (hasFDerivWithinAt_const z.2 x su)
@@ -267,10 +264,8 @@ theorem HasFDerivWithinAt.partial_continuousOn_of_continuousOn
       (hasFDerivWithinAt_id (𝕜 := 𝕜) y tu)
     refine ⟨HasFDerivWithinAt.comp z.1 (hf (z.1,z.2) hz12) (hfx z.1) ?_,
       HasFDerivWithinAt.comp z.2 (hf (z.1,z.2) hz12) (hfy z.2) ?_⟩
-    · simp only [id_eq, const_apply]
-      exact fun ⦃x⦄ a ↦ a
-    · simp only [const_apply, id_eq]
-      exact fun ⦃x⦄ a ↦ a
+    · exact fun ⦃_⦄ a ↦ a
+    · exact fun ⦃_⦄ a ↦ a
 
 /-- If `f : E × F → G` is continuously differentiable within a set `s ×ˢ t`, then
   it is partially differentiable within `s ×ˢ t` and its partial derivatives,
@@ -286,8 +281,8 @@ theorem HasFDerivWithinAt.partial_continuousOn_of_continuousOn_prod
     let fx' := fun z => (f' z).comp (.inl _ _ _);
     let fy' := fun z => (f' z).comp (.inr _ _ _);
     (ContinuousOn fx' (s ×ˢ t) ∧ ContinuousOn fy' (s ×ˢ t)) ∧
-    ( (∀ z ∈ s ×ˢ t, HasFDerivWithinAt (fun x => f (x, z.2)) (fx' z) s z.1)
-    ∧ (∀ z ∈ s ×ˢ t, HasFDerivWithinAt (fun y => f (z.1, y)) (fy' z) t z.2) )
+    ( (∀ z ∈ s ×ˢ t, HasFDerivWithinAt (f ∘ (· ,z.2)) (fx' z) s z.1)
+    ∧ (∀ z ∈ s ×ˢ t, HasFDerivWithinAt (f ∘ (z.1, ·)) (fy' z) t z.2) )
      := by
   refine ⟨?cont, ?diff⟩
   case cont =>
