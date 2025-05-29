@@ -195,6 +195,21 @@ def OrderAddMonoidIso.toMultiplicative {G H : Type*}
   left_inv e := by ext; simp
   right_inv e := by ext; simp
 
+/-- Reinterpret `Additive G ≃+o H` as `G ≃*o Multiplicative H`. -/
+def OrderAddMonoidIso.toMultiplicative' {G H : Type*}
+    [CommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] :
+    (Additive G ≃+o H) ≃ (G ≃*o Multiplicative H) where
+  toFun e := ⟨AddEquiv.toMultiplicative' e, by simp⟩
+  invFun e := ⟨AddEquiv.toMultiplicative'.symm e, by simp⟩
+  left_inv e := by ext; simp
+  right_inv e := by ext; simp
+
+/-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H`. -/
+abbrev OrderMonoidIso.toAdditive' {G H : Type*}
+    [CommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] :
+    (G ≃*o Multiplicative H) ≃ (Additive G ≃+o H) :=
+  OrderAddMonoidIso.toMultiplicative'.symm
+
 instance Additive.instUniqueOrderAddMonoidIso {G H : Type*}
     [CommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] [Unique (G ≃*o H)] :
     Unique (Additive G ≃+o Additive H) :=
