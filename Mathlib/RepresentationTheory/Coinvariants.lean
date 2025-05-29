@@ -107,11 +107,12 @@ end Coinvariants
 end Representation
 
 namespace Rep
+
+open CategoryTheory
+
 namespace Coinvariants
 
 variable {k G : Type u} [CommRing k] [Monoid G] {A B C : Rep k G} {n : ℕ}
-
-open CategoryTheory
 
 /-- The linear map underlying a `G`-representation morphism `A ⟶ B`, where `B` has the trivial
 representation, factors through `A_G`. -/
@@ -140,10 +141,16 @@ theorem map_comp (f : A ⟶ B) (g : B ⟶ C) :
 variable (k G)
 
 /-- The functor sending a representation to its coinvariants. -/
-@[simps]
+@[simps obj map]
 noncomputable def functor : Rep k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k (A.ρ.Coinvariants)
   map f := ModuleCat.ofHom (map f)
+
+variable {k G} in
+@[ext]
+lemma functor_hom_ext {M : ModuleCat k} {f g : (functor k G).obj A ⟶ M}
+    (hfg : f.hom ∘ₗ A.ρ.Coinvariants.mk = g.hom ∘ₗ A.ρ.Coinvariants.mk) :
+    f = g := ModuleCat.hom_ext <| Representation.Coinvariants.hom_ext hfg
 
 instance : (functor k G).Additive where
   map_add := ModuleCat.hom_ext <| LinearMap.ext fun x => Quotient.inductionOn' x (fun _ => rfl)
@@ -154,19 +161,19 @@ noncomputable def adjunction : functor k G ⊣ trivialFunctor G :=
   Adjunction.mkOfHomEquiv {
     homEquiv X Y := {
       toFun f := {
-        hom := ModuleCat.ofHom (f.hom ∘ₗ X.ρ.augmentationSubmodule.mkQ)
+        hom := ModuleCat.ofHom (f.hom ∘ₗ X.ρ.Coinvariants.mk)
         comm g := by
           ext x
-          exact congr(f.hom $((Submodule.Quotient.eq <| X.ρ.augmentationSubmodule).2
+          exact congr(f.hom $(X.ρ.Coinvariants.mk_eq_iff.2
             (X.ρ.mem_augmentationSubmodule_of_eq g x _ rfl))) }
       invFun f := ModuleCat.ofHom (lift f)
-      left_inv _ := ModuleCat.hom_ext <| Submodule.linearMap_qext _ rfl
+      left_inv _ := by ext; rfl
       right_inv _ := Action.Hom.ext <| rfl }
-    homEquiv_naturality_left_symm _ _ := ModuleCat.hom_ext <| Submodule.linearMap_qext _ rfl
+    homEquiv_naturality_left_symm _ _ := by ext; rfl
     homEquiv_naturality_right := by intros; rfl }
 
 instance : (functor k G).PreservesZeroMorphisms where
-  map_zero _ _ := ModuleCat.hom_ext <| Submodule.linearMap_qext _ rfl
+  map_zero _ _ := by ext; rfl
 
 instance : Limits.PreservesColimits (functor k G) :=
   (adjunction k G).leftAdjoint_preservesColimits
