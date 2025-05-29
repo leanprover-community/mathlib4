@@ -92,7 +92,14 @@ quite possibly that could be used to prove false.
 note: this linter can be disabled with `set_option linter.style.nativeDecide false`
 -/
 #guard_msgs in
-theorem test : 1 + 1 = 2 := by native_decide
+example : 1 + 1 = 2 := by native_decide
+
+/--
+warning: foo
+note: this linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native
 
 set_option linter.style.maxHeartbeats true
 /--

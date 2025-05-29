@@ -105,9 +105,24 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
         some default
   | _ => none
 
+/-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option enable. -/
+def isDecideNative (stx : Syntax ): Bool := Id.run do
+  match stx with
+  | .node _ ``Lean.Parser.Tactic.decide args =>
+    -- The configuration passed to the tactic call.
+    let config := args[1]![0][0]
+    -- TODO: check all config items, not just the first one
+    let it := config[0]
+    dbg_trace it
+    if let (.node _ ``Lean.Parser.Tactic.posConfigItem args) := it then
+      return args[1]! matches (.ident _ _ `native _)
+    return false
+  | _ => false
+
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
-def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
+def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData) := Id.run do
+  fun stx ↦ match stx with
   | stx@(.node _ kind args) =>
     let rargs := args.flatMap getDeprecatedSyntax
     match kind with
@@ -123,10 +138,13 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
-    | ``Lean.Parser.Tactic.nativeDecide =>
-      rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib:\n\
+    | ``Lean.Parser.Tactic.decide | ``Lean.Parser.Tactic.nativeDecide =>
+      if isDecideNative stx then
+        rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib:\n\
         because it trusts the entire Lean compiler (not just the Lean kernel),\n\
         quite possibly that could be used to prove false.")
+      else
+        rargs
     | ``Lean.Parser.Command.in =>
       match getSetOptionMaxHeartbeatsComment stx with
       | none => rargs
@@ -174,7 +192,8 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
       | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
-      | ``Lean.Parser.Tactic.nativeDecide => Linter.logLintIf linter.style.nativeDecide stx' msg
+      | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide =>
+        Linter.logLintIf linter.style.nativeDecide stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
       | _ => continue) stx
 
