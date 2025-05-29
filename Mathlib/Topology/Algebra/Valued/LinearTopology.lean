@@ -28,21 +28,9 @@ instance IsLinearTopology.of_valued :
   have hn0 : 𝓝 (0 : 𝒪[K]) = comap Subtype.val (𝓝 0) := nhds_induced Subtype.val 0
   rw [← hn0] at this
   refine this.to_hasBasis ?_ ?_
-  · intro y _
-    let I : Set 𝒪[K] := {x : 𝒪[K] | Valued.v (x : K) < y}
-    lift I to Ideal 𝒪[K] with I' hI'
-    · simp only [Set.mem_setOf_eq, ZeroMemClass.coe_zero, map_zero, Subring.coe_add,
-      Subtype.forall, smul_eq_mul, Subring.coe_mul, map_mul, I,]
-      refine ⟨by simp, fun _ _ _ _ ↦ Valued.v.map_add_lt, ?_⟩
-      intro a ha b hb hva
-      suffices v a * v b < 1 * y by simpa
-      apply mul_lt_mul_of_le_of_lt_of_nonneg_of_pos ha hva zero_le'
-      norm_num
-    refine ⟨I', ?_, ?_⟩
-    · refine IsOpen.mem_nhds ?_ ?_
-      · simpa [hI', I] using continuous_subtype_val.isOpen_preimage _ (isOpen_ball _ _)
-      · simp
-    · simp [hI', I]
+  · intro r _
+    refine ⟨idealBall _ r, (isOpen_idealBall _ r).mem_nhds <| zero_mem _, ?_⟩
+    simp
   · intro I hI
     have hI' : I ≠ ⊥ := by
       rintro rfl
