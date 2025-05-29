@@ -3,15 +3,8 @@ Copyright (c) 2025 Brian Nugent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brian Nugent, Jarod Alper
 -/
-import Mathlib.Algebra.Azumaya.Basic
-import Mathlib.Algebra.Lie.OfAssociative
+
 import Mathlib.Algebra.Module.SpanRank
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Data.Int.Star
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.Cotangent
 
@@ -23,11 +16,11 @@ proves properties about it.
 
 ## Main results
 
-* `IsLocalRing.EmbDim`: definition of embedding dimension
-* `IsLocalRing.Embdim_eq_spanFinrank_maximalIdeal`: the embedding dimension is equal
+* `IsLocalRing.embDim`: definition of embedding dimension
+* `IsLocalRing.embDim_eq_spanFinrank_maximalIdeal`: the embedding dimension is equal
 to the minimum number of generators of `m`.
-* `IsLocalRing.Embdim_Quotient_span_singleton`: if `x ∈ m \ m²` then
-`EmbDim R = EmbDim R ⧸ x + 1`
+* `IsLocalRing.embDim_Quotient_span_singleton`: if `x ∈ m \ m²` then
+`embDim R = embDim R ⧸ x + 1`
 
 -/
 
@@ -38,7 +31,7 @@ open Cardinal
 
 /-- The embedding dimension of a local ring `R` with maximal ideal `m` is
 the dimension of `m ⧸ m²`. -/
-noncomputable def IsLocalRing.EmbDim (R : Type*) [CommRing R] [IsLocalRing R]
+noncomputable def IsLocalRing.embDim (R : Type*) [CommRing R] [IsLocalRing R]
     : ℕ :=
   Module.finrank (ResidueField R) (CotangentSpace R)
 
@@ -148,9 +141,9 @@ lemma Module.Finrank_eq_spanFinrankOfTop
   exact finrank_eq_rank
 
 /-- the embedding dimension of `R` is equal to the minimum number of generators of `m`. -/
-theorem IsLocalRing.Embdim_eq_spanFinrank_maximalIdeal
+theorem IsLocalRing.embDim_eq_spanFinrank_maximalIdeal
     (R : Type*) [CommRing R] [IsLocalRing R] [IsNoetherianRing R] :
-    IsLocalRing.EmbDim R = (maxl R).spanFinrank := by
+    IsLocalRing.embDim R = (maxl R).spanFinrank := by
   rw [Nat.eq_iff_le_and_ge]
   constructor
   · have h1 : ∃ s : Set (maxl R),
@@ -165,7 +158,7 @@ theorem IsLocalRing.Embdim_eq_spanFinrank_maximalIdeal
       rw [← (Set.Finite.cast_ncard_eq m_gens_finite)] at m_gens_card
       exact Eq.symm ((fun {a b} ↦ ENat.coe_inj.mp) (id (Eq.symm m_gens_card)))
     rw [← m_gens_card2]
-    rw [EmbDim]
+    rw [embDim]
     let im_m_gens := ⇑(maxl R).toCotangent '' m_gens
     let subspace := Submodule.span (ResidueField R) im_m_gens
     have hm_gens_cot_span : subspace = ⊤ :=
@@ -192,7 +185,7 @@ theorem IsLocalRing.Embdim_eq_spanFinrank_maximalIdeal
       Nat.cast_inj.mp h5
     rw [← h6]
     exact h4
-  · unfold EmbDim
+  · unfold embDim
     let res := ResidueField R
     let cot := CotangentSpace R
     have cot_fg : Module.Finite res cot :=
@@ -250,8 +243,8 @@ theorem IsLocalRing.ContangentSpace_extend_singleton_basis
   have hxS : (maxl R).toCotangent x' ∈ S := s'sub t
   have Sspan : span (ResidueField R) S = ⊤ := Basis.span_eq B
   have Scard := Basis.mk_eq_rank'' B
-  have a := IsLocalRing.Embdim_eq_spanFinrank_maximalIdeal R
-  unfold EmbDim at a
+  have a := IsLocalRing.embDim_eq_spanFinrank_maximalIdeal R
+  unfold embDim at a
   have b : Module.rank (ResidueField R) (maxl R).Cotangent =
     Module.finrank (ResidueField R) (maxl R).Cotangent :=
     Eq.symm (Module.finrank_eq_rank (ResidueField R) (maxl R).Cotangent)
@@ -324,7 +317,7 @@ theorem IsLocalRing.ContangentSpace_extend_singleton_basis
     Set.mem_image, Set.mem_insert_iff, Set.mem_diff, Set.mem_singleton_iff, exists_eq_or_imp,
     exists_exists_and_eq_and, true_or, S, B, s', S', s'', x', s]
 
-theorem IsLocalRing.EmbDim_quot_singleton
+theorem IsLocalRing.embDim_quot_singleton
 {R : Type*} {x : R} [CommRing R] [IsLocalRing R] [Nontrivial (R ⧸ Ideal.span {x})] :
     (maxl R).spanRank ≤ (maxl (R ⧸ Ideal.span {x})).spanRank + 1 := by
   obtain ⟨s, hs1, hs2⟩ := Submodule.exists_span_set_card_eq_spanRank (maxl (R ⧸ Ideal.span {x}))
@@ -358,7 +351,7 @@ theorem IsLocalRing.EmbDim_quot_singleton
     @add_le_add_right Cardinal _ _ _ #s' #s ss' 1
   exact Preorder.le_trans (spanRank maxl R) (#s' + 1) (#s + 1) b this
 
-lemma IsLocalRing.EmbDim_quot_singleton'
+lemma IsLocalRing.embDim_quot_singleton'
 {R : Type*} {x : R} [CommRing R] [IsLocalRing R] [IsNoetherianRing R]
 [Nontrivial (R ⧸ Ideal.span {x})] (hx1 : x ∈ (maxl R)) (hx2 : x ∉ ((maxl R)^2)) :
     (maxl (R ⧸ Ideal.span {x})).spanRank + 1 ≤ (maxl R).spanRank := by
@@ -404,16 +397,16 @@ lemma IsNoetherianRing.Ideal_spanRank_eq_spanFinrank
     I.spanRank = I.spanFinrank :=
   Submodule.fg_iff_spanRank_eq_spanFinrank.mpr (IsNoetherian.noetherian I)
 
-/-- if `x ∈ m \ m²` then `EmbDim R = EmbDim R ⧸ x + 1` -/
-theorem IsLocalRing.Embdim_Quotient_span_singleton.{u}
+/-- if `x ∈ m \ m²` then `embDim R = embDim R ⧸ x + 1` -/
+theorem IsLocalRing.embDim_Quotient_span_singleton.{u}
 {R : Type u} {x : R} [CommRing R] [IsLocalRing R] [IsNoetherianRing R]
 [Nontrivial (R ⧸ Ideal.span {x})] (hx1 : x ∈ (maxl R)) (hx2 : x ∉ ((maxl R)^2)) :
-    (IsLocalRing.EmbDim R) = IsLocalRing.EmbDim (R ⧸ Ideal.span {x}) + 1 := by
+    (IsLocalRing.embDim R) = IsLocalRing.embDim (R ⧸ Ideal.span {x}) + 1 := by
 
-  rw[IsLocalRing.Embdim_eq_spanFinrank_maximalIdeal, IsLocalRing.Embdim_eq_spanFinrank_maximalIdeal]
+  rw[IsLocalRing.embDim_eq_spanFinrank_maximalIdeal, IsLocalRing.embDim_eq_spanFinrank_maximalIdeal]
   have sreq : (maxl R).spanRank = (maxl (R ⧸ Ideal.span {x})).spanRank + 1 :=
     le_antisymm_iff.mpr
-      ⟨IsLocalRing.EmbDim_quot_singleton , IsLocalRing.EmbDim_quot_singleton' hx1 hx2⟩
+      ⟨IsLocalRing.embDim_quot_singleton , IsLocalRing.embDim_quot_singleton' hx1 hx2⟩
 
   rw[IsNoetherianRing.Ideal_spanRank_eq_spanFinrank (maxl R),
   IsNoetherianRing.Ideal_spanRank_eq_spanFinrank (maxl R ⧸ Ideal.span {x})] at sreq
