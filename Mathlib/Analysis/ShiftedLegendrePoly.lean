@@ -42,7 +42,7 @@ theorem shiftedLegendre_eq_sum (n : ℕ) : (n ! : ℤ[X]) * (shiftedLegendre n) 
     Finset.mul_sum]
   congr! 1 with x _
   rw [show (n.choose x • (-1) ^ x : ℤ[X]) = C (n.choose x • (-1) ^ x) by simp,
-    Polynomial.iterate_derivative_C_mul, Polynomial.iterate_derivative_X_pow_eq_smul,
+    iterate_derivative_C_mul, iterate_derivative_X_pow_eq_smul,
     Nat.descFactorial_eq_div (by omega), show n + x - n = x by omega, nsmul_eq_mul,
     ← mul_assoc, mul_assoc, mul_comm]
   simp only [map_mul, map_natCast, map_pow, map_neg, map_one, Algebra.mul_smul_comm,
@@ -72,7 +72,7 @@ lemma shiftedLegendre_eval_symm (n : ℕ) (x : ℝ) :
   rw [mul_comm, ← mul_right_inj' (a := (aeval x) (n ! : ℤ[X])) (by simp; positivity), ← mul_assoc,
     ← aeval_mul, show (aeval x) (n ! : ℤ[X]) = (aeval (1 - x)) (n ! : ℤ[X]) by simp, ← aeval_mul]
   simp only [shiftedLegendre_eq_sum]
-  rw [Polynomial.iterate_derivative_mul]
+  rw [iterate_derivative_mul]
   simp only [Nat.succ_eq_add_one, nsmul_eq_mul, map_sum, map_mul, map_natCast]
   rw [← Finset.sum_flip, Finset.sum_mul]
   congr! 1 with i hi
@@ -81,8 +81,8 @@ lemma shiftedLegendre_eval_symm (n : ℕ) (x : ℝ) :
   simp only [Finset.mem_range, Nat.lt_add_one_iff] at hi
   have hx : (1 - X : ℤ[X]) ^ n = (X ^ n : ℤ[X]).comp (1 - X) := by simp only [pow_comp, X_comp]
   rw [hx]
-  simp only [Polynomial.iterate_derivative_comp_one_sub_X,
-    Polynomial.iterate_derivative_X_pow_eq_smul, Algebra.smul_def, algebraMap_eq, map_natCast]
+  simp only [iterate_derivative_comp_one_sub_X, iterate_derivative_X_pow_eq_smul, Algebra.smul_def,
+    algebraMap_eq, map_natCast]
   rw [Nat.choose_symm hi]
   simp only [mul_comp, natCast_comp, pow_comp, X_comp, map_mul, map_pow, map_neg, map_one,
     map_natCast, map_sub, aeval_X, sub_sub_cancel]
