@@ -83,7 +83,7 @@ variable {R : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] [Topo
   {f : ι → α → R}
 
 /-- If a sequence of continuous functions `f i x` on an open compact `K` have norms eventually
-bounded by a summable function, then `∏' i, f i x` is uniformly convergent on `K`. -/
+bounded by a summable function, then `∏' i, (1 + f i x)` is uniformly convergent on `K`. -/
 lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
     (h : ∀ᶠ i in cofinite, ∀ x ∈ K, ‖f i x‖ ≤ u i) (hcts : ∀ i, ContinuousOn (f i) K) :
     HasProdUniformlyOn (fun i x ↦ 1 + f i x) (fun x ↦ ∏' i, (1 + f i x)) {K} := by
@@ -127,7 +127,7 @@ section LocallyCompactSpace
 variable [LocallyCompactSpace α]
 
 /-- If a sequence of continuous functions `f i x` on an open subset `K` have norms eventually
-bounded by a summable function, then `∏' i, f i x` is locally uniformly convergent on `K`. -/
+bounded by a summable function, then `∏' i, (1 + f i x)` is locally uniformly convergent on `K`. -/
 lemma hasProdLocallyUniformlyOn_one_add (hK : IsOpen K) (hu : Summable u)
     (h : ∀ᶠ i in cofinite, ∀ x ∈ K, ‖f i x‖ ≤ u i) (hcts : ∀ i, ContinuousOn (f i) K) :
     HasProdLocallyUniformlyOn (fun i x ↦ 1 + f i x) (fun x ↦ ∏' i, (1 + f i x)) K := by
