@@ -91,17 +91,19 @@ end Modification
 
 /-- Category structure on the oplax natural transformations between OplaxFunctors. -/
 @[simps]
-scoped instance homCategory (F G : OplaxFunctor B C) : Category (F ⟶ G) where
+instance homCategory (F G : OplaxFunctor B C) : Category (OplaxTrans F G) where
   Hom := Modification
   id η := { app := fun a ↦ 𝟙 (η.app a) }
   comp Γ Δ := { app := fun a => Γ.app a ≫ Δ.app a }
+
+-- TODO: FIX
+variable {η θ : OplaxTrans F G}
 
 instance : Inhabited (Modification η η) :=
   ⟨𝟙 η⟩
 
 @[ext]
-lemma homCategory.ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β}
-    (w : ∀ b, m.app b = n.app b) : m = n :=
+lemma homCategory.ext {α β : OplaxTrans F G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) : m = n :=
   Modification.ext (funext w)
 
 /-- Construct a modification isomorphism between oplax natural transformations
@@ -185,7 +187,7 @@ end Modification
 
 /-- Category structure on the oplax natural transformations between oplax functors. -/
 @[simps]
-scoped instance homCategory : Category (F ⟶ G) where
+instance homCategory : Category (F ⟶ G) where
   Hom := Modification
   id η := { app := fun a ↦ 𝟙 (η.app a) }
   comp Γ Δ := { app := fun a => Γ.app a ≫ Δ.app a }
@@ -212,6 +214,11 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
       naturality := fun {a b} f => by
         simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _)
           (naturality f).symm }
+
+def ModificationIso.mkOfOplax (Φ : η.toOplax ≅ θ.toOplax) : η ≅ θ where
+  hom := Modification.mkOfOplax Φ.hom
+  inv := Modification.mkOfOplax Φ.inv
+  hom_inv_id := by simp [Modificatin.mkOfOplax, Φ.hom_inv_id]
 
 end StrongTrans
 
