@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
+import Mathlib.Data.Set.Operations
+import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.RelClasses
-import Mathlib.Data.Set.Image
 import Mathlib.Order.Hom.Basic
 import Mathlib.Lean.Thunk
 
@@ -31,7 +32,7 @@ An appropriate well-foundedness condition would then ensure that repeated improv
 the exact value.
 -/
 
-set_option autoImplicit true
+variable {α ε : Type*}
 
 /--
 Given `[EstimatorData a ε]`
@@ -39,8 +40,8 @@ Given `[EstimatorData a ε]`
 * we can ask for an improved lower bound via `improve a e : Option ε`.
 
 The value `a` in `α` that we are estimating is hidden inside a `Thunk` to avoid evaluation.
- -/
-class EstimatorData (a : Thunk α) (ε : Type _) where
+-/
+class EstimatorData (a : Thunk α) (ε : Type*) where
   /-- The value of the bound for `a` representation by a term of `ε`. -/
   bound : ε → α
   /-- Generate an improved lower bound. -/
@@ -52,7 +53,7 @@ Given `[Estimator a ε]`
 * `improve a e` returns none iff `bound a e = a.get`,
   and otherwise it returns a strictly better bound.
 -/
-class Estimator [Preorder α] (a : Thunk α) (ε : Type _) extends EstimatorData a ε where
+class Estimator [Preorder α] (a : Thunk α) (ε : Type*) extends EstimatorData a ε where
   /-- The calculated bounds are always lower bounds. -/
   bound_le e : bound e ≤ a.get
   /-- Calling `improve` either gives a strictly better bound,
@@ -63,18 +64,38 @@ class Estimator [Preorder α] (a : Thunk α) (ε : Type _) extends EstimatorData
 
 open EstimatorData Set
 
-/--
-A trivial estimator.
--/
-instance [Preorder α] (a : α) : Estimator (Thunk.pure a) { x // x = a } where
-  bound e := e
+section trivial
+
+variable [Preorder α]
+
+/-- A trivial estimator, containing the actual value. -/
+abbrev Estimator.trivial.{u} {α : Type u} (a : α) : Type u := { b : α // b = a }
+
+instance {a : α} : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
+
+instance : WellFoundedGT Unit where
+  wf := ⟨fun .unit => ⟨Unit.unit, nofun⟩⟩
+
+instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
+  let f : Estimator.trivial a ≃o Unit := RelIso.ofUniqueOfRefl _ _
+  let f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
+  f'.wellFoundedGT
+
+instance {a : α} : Estimator (Thunk.pure a) (Estimator.trivial a) where
+  bound b := b.val
   improve _ := none
-  bound_le e := e.property.le
-  improve_spec e := e.property
+  bound_le b := b.prop.le
+  improve_spec b := b.prop
+
+end trivial
+
+section improveUntil
+
+variable [Preorder α]
 
 attribute [local instance] WellFoundedGT.toWellFoundedRelation in
 /-- Implementation of `Estimator.improveUntil`. -/
-def Estimator.improveUntilAux [PartialOrder α]
+def Estimator.improveUntilAux
     (a : Thunk α) (p : α → Bool) [Estimator a ε]
     [WellFoundedGT (range (bound a : ε → α))]
     (e : ε) (r : Bool) : Except (Option ε) ε :=
@@ -85,18 +106,16 @@ def Estimator.improveUntilAux [PartialOrder α]
       | none, _ => .error <| if r then none else e
       | some e', _ =>
         improveUntilAux a p e' true
-termination_by Estimator.improveUntilAux p I e r => (⟨_, mem_range_self e⟩ : range (bound a))
+termination_by (⟨_, mem_range_self e⟩ : range (bound a))
 
 /--
 Improve an estimate until it satisfies a predicate,
 or else return the best available estimate, if any improvement was made.
 -/
-def Estimator.improveUntil [PartialOrder α] (a : Thunk α) (p : α → Bool)
+def Estimator.improveUntil (a : Thunk α) (p : α → Bool)
     [Estimator a ε] [WellFoundedGT (range (bound a : ε → α))] (e : ε) :
     Except (Option ε) ε :=
   Estimator.improveUntilAux a p e false
-
-variable [PartialOrder α]
 
 attribute [local instance] WellFoundedGT.toWellFoundedRelation in
 /--
@@ -119,7 +138,7 @@ theorem Estimator.improveUntilAux_spec (a : Thunk α) (p : α → Bool)
       exact Bool.bool_eq_false h
     | some e', _ =>
       exact Estimator.improveUntilAux_spec a p e' true
-termination_by Estimator.improveUntilAux_spec p I e r => (⟨_, mem_range_self e⟩ : range (bound a))
+termination_by (⟨_, mem_range_self e⟩ : range (bound a))
 
 /--
 If `Estimator.improveUntil a p e` returns `some e'`, then `bound a e'` satisfies `p`.
@@ -132,26 +151,64 @@ theorem Estimator.improveUntil_spec
     | .ok e' => p (bound a e') :=
   Estimator.improveUntilAux_spec a p e false
 
-variable [∀ a : α, WellFoundedGT { x // x ≤ a }]
+end improveUntil
 
-instance [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
-  let f : range (bound a : ε → α) ↪o { x // x ≤ a.get } :=
-    Subtype.orderEmbedding (by rintro _ ⟨e, rfl⟩; exact Estimator.bound_le e)
-  f.wellFoundedGT
+/-! Estimators for sums. -/
+section add
+
+variable [Preorder α]
+
+@[simps]
+instance [Add α] {a b : Thunk α} (εa εb : Type*) [EstimatorData a εa] [EstimatorData b εb] :
+    EstimatorData (a + b) (εa × εb) where
+  bound e := bound a e.1 + bound b e.2
+  improve e := match improve a e.1 with
+  | some e' => some { e with fst := e' }
+  | none => match improve b e.2 with
+    | some e' => some { e with snd := e' }
+    | none => none
+
+instance (a b : Thunk ℕ) {εa εb : Type*} [Estimator a εa] [Estimator b εb] :
+    Estimator (a + b) (εa × εb) where
+  bound_le e :=
+    Nat.add_le_add (Estimator.bound_le e.1) (Estimator.bound_le e.2)
+  improve_spec e := by
+    dsimp
+    have s₁ := Estimator.improve_spec (a := a) e.1
+    have s₂ := Estimator.improve_spec (a := b) e.2
+    revert s₁ s₂
+    cases improve a e.fst <;> cases improve b e.snd <;> intro s₁ s₂ <;> simp_all only
+    · apply Nat.add_lt_add_left s₂
+    · apply Nat.add_lt_add_right s₁
+    · apply Nat.add_lt_add_right s₁
+
+end add
+
+/-! Estimator for the first component of a pair. -/
+section fst
+
+variable {β : Type*} [PartialOrder α] [PartialOrder β]
 
 /--
 An estimator for `(a, b)` can be turned into an estimator for `a`,
 simply by repeatedly running `improve` until the first factor "improves".
 The hypothesis that `>` is well-founded on `{ q // q ≤ (a, b) }` ensures this terminates.
 -/
-structure Estimator.fst [Preorder α] [Preorder β]
-    (p : Thunk (α × β)) (ε : Type _) [Estimator p ε] where
+structure Estimator.fst
+    (p : Thunk (α × β)) (ε : Type*) [Estimator p ε] where
   /-- The wrapped bound for a value in `α × β`,
   which we will use as a bound for the first component. -/
   inner : ε
 
-instance [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β] {a : Thunk α} {b : Thunk β}
-    (ε : Type _) [Estimator (a.prod b) ε] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }] :
+variable [∀ a : α, WellFoundedGT { x // x ≤ a }]
+
+instance {a : Thunk α} [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
+  let f : range (bound a : ε → α) ↪o { x // x ≤ a.get } :=
+    Subtype.orderEmbedding (by rintro _ ⟨e, rfl⟩; exact Estimator.bound_le e)
+  f.wellFoundedGT
+
+instance [DecidableLT α] {a : Thunk α} {b : Thunk β}
+    (ε : Type*) [Estimator (a.prod b) ε] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }] :
     EstimatorData a (Estimator.fst (a.prod b) ε) where
   bound e := (bound (a.prod b) e.inner).1
   improve e :=
@@ -162,9 +219,8 @@ instance [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β] {a 
 /-- Given an estimator for a pair, we can extract an estimator for the first factor. -/
 -- This isn't an instance as at the sole use case we need to provide
 -- the instance arguments by hand anyway.
-def Estimator.fstInst [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β]
-    [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
-    (a : Thunk α) (b : Thunk β) {ε : Type _} (i : Estimator (a.prod b) ε) :
+def Estimator.fstInst [DecidableLT α] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
+    (a : Thunk α) (b : Thunk β) (i : Estimator (a.prod b) ε) :
     Estimator a (Estimator.fst (a.prod b) ε) where
   bound_le e := (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1
   improve_spec e := by
@@ -174,8 +230,10 @@ def Estimator.fstInst [PartialOrder α] [DecidableRel ((· : α) < ·)] [Partial
     simp only [EstimatorData.improve, decide_eq_true_eq]
     match Estimator.improveUntil (a.prod b) _ _ with
     | .error _ =>
-      simp only [Option.map_none']
+      simp only [Option.map_none]
       exact fun w =>
         eq_of_le_of_not_lt
           (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1 w
     | .ok e' => exact fun w => w
+
+end fst

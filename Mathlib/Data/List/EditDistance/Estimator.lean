@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
 import Mathlib.Data.List.EditDistance.Bounds
 import Mathlib.Order.Estimator
@@ -11,7 +11,7 @@ import Mathlib.Order.Estimator
 
 The usual algorithm for computing Levenshtein distances
 provides successively better lower bounds for the Levenshtein distance as it runs,
-as proved in `Mathlib.Data.List.EditDistance.Bounds`.
+as proved in `Mathlib/Data/List/EditDistance/Bounds.lean`.
 
 In this file we package that fact as an instance of
 ```
@@ -23,10 +23,8 @@ This is then used in the implementation of `rewrite_search`
 to avoid needing the entire edit distance calculation in unlikely search paths.
 -/
 
-set_option autoImplicit true
-
-variable {α β δ : Type} [CanonicallyLinearOrderedAddMonoid δ]
-    (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β)
+variable {α : Type*} {β δ : Type} [AddCommMonoid δ] [LinearOrder δ] [CanonicallyOrderedAdd δ]
+  (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β)
 
 /--
 Data showing that the Levenshtein distance from `xs` to `ys`
@@ -80,7 +78,7 @@ instance estimator' :
   | [], split, eq => by
     simp only [List.reverse_nil, List.nil_append] at split
     rw [e.distances_eq] at eq
-    simp only [List.getElem_eq_get] at eq
+    simp only [← List.get_eq_getElem] at eq
     rw [split] at eq
     exact eq.le
   | y :: t, split, eq => by
@@ -88,35 +86,37 @@ instance estimator' :
     simp only at eq
     dsimp [EstimatorData.bound]
     rw [eq]
-    simp only [←split]
+    simp only [← split]
     constructor
     · simp only [List.minimum_of_length_pos_le_iff]
       exact suffixLevenshtein_minimum_le_levenshtein_append _ _ _
-    · exact List.length_le_of_sublist (List.sublist_append_right _ _)
+    · exact (List.sublist_append_right _ _).length_le
   improve_spec e := by
     dsimp [EstimatorData.improve]
     match e.pre_rev, e.split, e.bound_eq, e.distances_eq with
     | [], split, eq, _ =>
       simp only [List.reverse_nil, List.nil_append] at split
       rw [e.distances_eq] at eq
-      simp only [List.getElem_eq_get] at eq
+      simp only [← List.get_eq_getElem] at eq
       rw [split] at eq
       exact eq
     | [y], split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff, List.reverse_nil, List.nil_append]
       right
-      have b_eq : e.bound = (List.minimum_of_length_pos _, List.length e.suff) := by
+      have b_eq :
+          e.bound = (List.minimum_of_length_pos e.distances.property, List.length e.suff) := by
         simpa using b_eq
       rw [b_eq]
       constructor
       · refine (?_ : _ ≤ _).trans (List.minimum_of_length_pos_le_getElem _)
         simp only [List.minimum_of_length_pos_le_iff, List.coe_minimum_of_length_pos, d_eq]
         apply le_suffixLevenshtein_cons_minimum
-      · simp [←split]
+      · simp [← split]
     | y₁ :: y₂ :: t, split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff]
       right
-      have b_eq : e.bound = (List.minimum_of_length_pos _, List.length e.suff) := by
+      have b_eq :
+          e.bound = (List.minimum_of_length_pos e.distances.property, List.length e.suff) := by
         simpa using b_eq
       rw [b_eq]
       constructor
@@ -133,12 +133,13 @@ instance [∀ a : δ × ℕ, WellFoundedGT { x // x ≤ a }] :
   Estimator.fstInst (Thunk.mk fun _ => _) (Thunk.mk fun _ => _) (estimator' C xs ys)
 
 /-- The initial estimator for Levenshtein distances. -/
-instance [CanonicallyLinearOrderedAddMonoid δ]
-    (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β) :
+instance (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β) :
     Bot (LevenshteinEstimator C xs ys) where
   bot :=
   { inner :=
-    { pre_rev := ys.reverse
+    { distances := suffixLevenshtein C xs []
+      bound := _
+      pre_rev := ys.reverse
       suff := []
       split := by simp
       distances_eq := rfl

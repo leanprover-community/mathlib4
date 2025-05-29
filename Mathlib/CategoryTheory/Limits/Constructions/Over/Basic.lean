@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 
-#align_import category_theory.limits.constructions.over.basic from "leanprover-community/mathlib"@"15db1b4f26ba89c6eb0c78b0a44c7e779a788e29"
-
 /-!
 # Limits in the over category
 
@@ -25,7 +23,6 @@ universe w v u
 open CategoryTheory CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X : C}
 
 namespace CategoryTheory.Over
@@ -48,16 +45,14 @@ instance hasFiniteLimits {B : C} [HasFiniteWidePullbacks C] : HasFiniteLimits (O
   apply @hasFiniteLimits_of_hasEqualizers_and_finite_products _ _ ?_ ?_
   · exact ConstructProducts.over_finiteProducts_of_finiteWidePullbacks
   · apply @hasEqualizers_of_hasPullbacks_and_binary_products _ _ ?_ _
-    · haveI : HasPullbacks C := ⟨inferInstance⟩
-      exact ConstructProducts.over_binaryProduct_of_pullback
-#align category_theory.over.has_finite_limits CategoryTheory.Over.hasFiniteLimits
+    haveI : HasPullbacks C := ⟨inferInstance⟩
+    exact ConstructProducts.over_binaryProduct_of_pullback
 
-instance hasLimits {B : C} [HasWidePullbacks.{w} C] : HasLimitsOfSize.{w} (Over B) := by
+instance hasLimits {B : C} [HasWidePullbacks.{w} C] : HasLimitsOfSize.{w, w} (Over B) := by
   apply @has_limits_of_hasEqualizers_and_products _ _ ?_ ?_
   · exact ConstructProducts.over_products_of_widePullbacks
   · apply @hasEqualizers_of_hasPullbacks_and_binary_products _ _ ?_ _
-    · haveI : HasPullbacks C := ⟨inferInstance⟩
-      exact ConstructProducts.over_binaryProduct_of_pullback
-#align category_theory.over.has_limits CategoryTheory.Over.hasLimits
+    haveI : HasPullbacks C := ⟨inferInstance⟩
+    exact ConstructProducts.over_binaryProduct_of_pullback
 
 end CategoryTheory.Over

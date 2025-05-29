@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Group.Defs
+import Batteries.Data.List.Basic
 
 /-!
 # Levenshtein distances
@@ -37,17 +38,17 @@ theorem levenshtein_cons_cons :
 ```
 -/
 
-variable {α β δ : Type _} [AddZeroClass δ] [Min δ]
+variable {α β δ : Type*} [AddZeroClass δ] [Min δ]
 
 namespace Levenshtein
 
 /-- A cost structure for Levenshtein edit distance. -/
-structure Cost (α β : Type _) (δ : Type _) where
+structure Cost (α β δ : Type*) where
   /-- Cost to delete an element from a list. -/
   delete : α → δ
   /-- Cost in insert an element into a list. -/
   insert : β → δ
-  /-- Cost to substitute one elemenet for another in a list. -/
+  /-- Cost to substitute one element for another in a list. -/
   substitute : α → β → δ
 
 /-- The default cost structure, for which all operations cost `1`. -/
@@ -58,6 +59,28 @@ def defaultCost [DecidableEq α] : Cost α α ℕ where
   substitute a b := if a = b then 0 else 1
 
 instance [DecidableEq α] : Inhabited (Cost α α ℕ) := ⟨defaultCost⟩
+
+/--
+Cost structure given by a function.
+Delete and insert cost the same, and substitution costs the greater value.
+-/
+@[simps]
+def weightCost (f : α → ℕ) : Cost α α ℕ where
+  delete a := f a
+  insert b := f b
+  substitute a b := max (f a) (f b)
+
+/--
+Cost structure for strings, where cost is the length of the token.
+-/
+@[simps!]
+def stringLengthCost : Cost String String ℕ := weightCost String.length
+
+/--
+Cost structure for strings, where cost is the log base 2 length of the token.
+-/
+@[simps!]
+def stringLogLengthCost : Cost String String ℕ := weightCost fun s => Nat.log2 (s.length + 1)
 
 variable (C : Cost α β δ)
 
@@ -77,7 +100,7 @@ def impl
     (xs : List α) (y : β) (d : {r : List δ // 0 < r.length}) : {r : List δ // 0 < r.length} :=
   let ⟨ds, w⟩ := d
   xs.zip (ds.zip ds.tail) |>.foldr
-    (init := ⟨[C.insert y + ds.getLast (List.length_pos.mp w)], by simp⟩)
+    (init := ⟨[C.insert y + ds.getLast (List.length_pos_iff.mp w)], by simp⟩)
     (fun ⟨x, d₀, d₁⟩ ⟨r, w⟩ =>
       ⟨min (C.delete x + r[0]) (min (C.insert y + d₀) (C.substitute x y + d₁)) :: r, by simp⟩)
 
@@ -94,24 +117,23 @@ theorem impl_cons (w' : 0 < List.length ds) :
 
 -- Note this lemma has two unspecified proofs: `h` appears on the left-hand-side
 -- and should be found by matching, but `w'` will become an extra goal when rewriting.
-theorem impl_cons_fst_zero (h) (w' : 0 < List.length ds) :
-    (impl C (x :: xs) y ⟨d :: ds, w⟩).1[0] =
+theorem impl_cons_fst_zero (h : 0 < (impl C (x :: xs) y ⟨d :: ds, w⟩).val.length)
+    (w' : 0 < List.length ds) : (impl C (x :: xs) y ⟨d :: ds, w⟩).1[0] =
       let ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
       min (C.delete x + r[0]) (min (C.insert y + d) (C.substitute x y + ds[0])) :=
   match ds, w' with | _ :: _, _ => rfl
 
 theorem impl_length (d : {r : List δ // 0 < r.length}) (w : d.1.length = xs.length + 1) :
     (impl C xs y d).1.length = xs.length + 1 := by
-  induction xs generalizing d
-  · case nil =>
-    rfl
-  · case cons x xs ih =>
+  induction xs generalizing d with
+  | nil => rfl
+  | cons x xs ih =>
     dsimp [impl]
     match d, w with
     | ⟨d₁ :: d₂ :: ds, _⟩, w =>
       dsimp
       congr 1
-      refine ih ⟨d₂ :: ds, (by simp)⟩ (by simpa using w)
+      exact ih ⟨d₂ :: ds, (by simp)⟩ (by simpa using w)
 
 end Levenshtein
 
@@ -142,14 +164,14 @@ variable {C}
 
 theorem suffixLevenshtein_length (xs : List α) (ys : List β) :
     (suffixLevenshtein C xs ys).1.length = xs.length + 1 := by
-  induction ys
-  · case nil =>
+  induction ys with
+  | nil =>
     dsimp [suffixLevenshtein]
-    induction xs
-    · case nil => rfl
-    · case cons _ xs ih =>
+    induction xs with
+    | nil => rfl
+    | cons _ xs ih =>
       simp_all
-  · case cons y ys ih =>
+  | cons y ys ih =>
     dsimp [suffixLevenshtein]
     rw [impl_length]
     exact ih
@@ -184,7 +206,7 @@ theorem suffixLevenshtein_nil_nil : (suffixLevenshtein C [] []).1 = [0] := by
 
 -- Not sure if this belongs in the main `List` API, or can stay local.
 theorem List.eq_of_length_one (x : List α) (w : x.length = 1) :
-    have : 0 < x.length := (lt_of_lt_of_eq Nat.zero_lt_one w.symm)
+    have : 0 < x.length := lt_of_lt_of_eq Nat.zero_lt_one w.symm
     x = [x[0]] := by
   match x, w with
   | [r], _ => rfl
@@ -197,7 +219,7 @@ theorem suffixLevenshtein_cons₂ (xs : List α) (y ys) :
     suffixLevenshtein C xs (y :: ys) = (impl C xs) y (suffixLevenshtein C xs ys) :=
   rfl
 
-theorem suffixLevenshtein_cons₁_aux {x y : {r : List δ // 0 < r.length}}
+theorem suffixLevenshtein_cons₁_aux {α} {x y : { l : List α // 0 < l.length }}
     (w₀ : x.1[0]'x.2 = y.1[0]'y.2) (w : x.1.tail = y.1.tail) : x = y := by
   match x, y with
   | ⟨hx :: tx, _⟩, ⟨hy :: ty, _⟩ => simp_all
@@ -207,10 +229,10 @@ theorem suffixLevenshtein_cons₁
     suffixLevenshtein C (x :: xs) ys =
       ⟨levenshtein C (x :: xs) ys ::
         (suffixLevenshtein C xs ys).1, by simp⟩ := by
-  induction ys
-  · case nil =>
+  induction ys with
+  | nil =>
     dsimp [levenshtein, suffixLevenshtein]
-  · case cons y ys ih =>
+  | cons y ys ih =>
     apply suffixLevenshtein_cons₁_aux
     · rfl
     · rw [suffixLevenshtein_cons₂ (x :: xs), ih, impl_cons]
@@ -224,8 +246,8 @@ theorem suffixLevenshtein_cons₁_fst (x : α) (xs ys) :
   simp [suffixLevenshtein_cons₁]
 
 theorem suffixLevenshtein_cons_cons_fst_get_zero
-    (x : α) (xs y ys) (w) :
-    (suffixLevenshtein C (x :: xs) (y :: ys)).1[0] =
+    (x : α) (xs y ys) (w : 0 < (suffixLevenshtein C (x :: xs) (y :: ys)).val.length) :
+    (suffixLevenshtein C (x :: xs) (y :: ys)).1[0]'w =
       let ⟨dx, _⟩ := suffixLevenshtein C xs (y :: ys)
       let ⟨dy, _⟩ := suffixLevenshtein C (x :: xs) ys
       let ⟨dxy, _⟩ := suffixLevenshtein C xs ys
@@ -243,11 +265,11 @@ theorem suffixLevenshtein_cons_cons_fst_get_zero
 
 theorem suffixLevenshtein_eq_tails_map (xs ys) :
     (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := by
-  induction xs
-  · case nil =>
-    simp only [List.map, suffixLevenshtein_nil']
-  · case cons x xs ih =>
-    simp only [List.map, suffixLevenshtein_cons₁, ih]
+  induction xs with
+  | nil =>
+    simp only [suffixLevenshtein_nil', List.tails, List.map_cons, List.map]
+  | cons x xs ih =>
+    simp only [suffixLevenshtein_cons₁, ih, List.tails, List.map_cons]
 
 @[simp]
 theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
@@ -256,9 +278,9 @@ theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
 @[simp]
 theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
-  dsimp [levenshtein, suffixLevenshtein, impl]
+  dsimp +unfoldPartialApp [levenshtein, suffixLevenshtein, impl]
   congr
-  rw [List.getLast_eq_get]
+  rw [List.getLast_eq_getElem]
   congr
   rw [show (List.length _) = 1 from _]
   induction ys <;> simp
@@ -275,12 +297,4 @@ theorem levenshtein_cons_cons
       min (C.delete x + levenshtein C xs (y :: ys))
         (min (C.insert y + levenshtein C (x :: xs) ys)
           (C.substitute x y + levenshtein C xs ys)) :=
-  suffixLevenshtein_cons_cons_fst_get_zero _ _ _ _ _
-
-#guard
-  (suffixLevenshtein Levenshtein.defaultCost "kitten".toList "sitting".toList).1 =
-    [3, 3, 4, 5, 6, 6, 7]
-
-#guard levenshtein Levenshtein.defaultCost
-  "but our fish said, 'no! no!'".toList
-  "'put me down!' said the fish.".toList = 21
+  suffixLevenshtein_cons_cons_fst_get_zero ..

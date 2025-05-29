@@ -5,8 +5,6 @@ Authors: Joseph Hua
 -/
 import Mathlib.Data.W.Basic
 
-#align_import data.W.constructions from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
-
 /-!
 # Examples of W-types
 
@@ -27,7 +25,6 @@ universe u v
 namespace WType
 
 -- For "W_type"
-set_option linter.uppercaseLean3 false
 
 section Nat
 
@@ -35,7 +32,6 @@ section Nat
 inductive Natα : Type
   | zero : Natα
   | succ : Natα
-#align W_type.nat_α WType.Natα
 
 instance : Inhabited Natα :=
   ⟨Natα.zero⟩
@@ -44,7 +40,6 @@ instance : Inhabited Natα :=
 def Natβ : Natα → Type
   | Natα.zero => Empty
   | Natα.succ => Unit
-#align W_type.nat_β WType.Natβ
 
 instance : Inhabited (Natβ Natα.succ) :=
   ⟨()⟩
@@ -54,14 +49,12 @@ instance : Inhabited (Natβ Natα.succ) :=
 def ofNat : ℕ → WType Natβ
   | Nat.zero => ⟨Natα.zero, Empty.elim⟩
   | Nat.succ n => ⟨Natα.succ, fun _ ↦ ofNat n⟩
-#align W_type.of_nat WType.ofNat
 
 /-- The isomorphism from the `WType` of the naturals to the naturals -/
 @[simp]
 def toNat : WType Natβ → ℕ
   | WType.mk Natα.zero _ => 0
   | WType.mk Natα.succ f => (f ()).toNat.succ
-#align W_type.to_nat WType.toNat
 
 theorem leftInverse_nat : Function.LeftInverse ofNat toNat
   | WType.mk Natα.zero f => by
@@ -72,12 +65,10 @@ theorem leftInverse_nat : Function.LeftInverse ofNat toNat
   | WType.mk Natα.succ f => by
     simp only [toNat, ofNat, leftInverse_nat (f ()), mk.injEq, heq_eq_eq, true_and]
     rfl
-#align W_type.left_inv_nat WType.leftInverse_nat
 
 theorem rightInverse_nat : Function.RightInverse ofNat toNat
   | Nat.zero => rfl
   | Nat.succ n => by rw [ofNat, toNat, rightInverse_nat n]
-#align W_type.right_inv_nat WType.rightInverse_nat
 
 /-- The naturals are equivalent to their associated `WType` -/
 def equivNat : WType Natβ ≃ ℕ where
@@ -85,7 +76,6 @@ def equivNat : WType Natβ ≃ ℕ where
   invFun := ofNat
   left_inv := leftInverse_nat
   right_inv := rightInverse_nat
-#align W_type.equiv_nat WType.equivNat
 
 open Sum PUnit
 
@@ -93,8 +83,7 @@ open Sum PUnit
 This is useful when considering the associated polynomial endofunctor.
 -/
 @[simps]
-def NatαEquivPUnitSumPUnit : Natα ≃ Sum PUnit.{u + 1} PUnit
-    where
+def NatαEquivPUnitSumPUnit : Natα ≃ PUnit.{u + 1} ⊕ PUnit where
   toFun c :=
     match c with
     | Natα.zero => inl unit
@@ -111,7 +100,6 @@ def NatαEquivPUnitSumPUnit : Natα ≃ Sum PUnit.{u + 1} PUnit
     match b with
     | inl _ => rfl
     | inr _ => rfl
-#align W_type.nat_α_equiv_punit_sum_punit WType.NatαEquivPUnitSumPUnit
 
 end Nat
 
@@ -132,7 +120,6 @@ since we view `List γ` as
 inductive Listα : Type u
   | nil : Listα
   | cons : γ → Listα
-#align W_type.list_α WType.Listα
 
 instance : Inhabited (Listα γ) :=
   ⟨Listα.nil⟩
@@ -141,7 +128,6 @@ instance : Inhabited (Listα γ) :=
 def Listβ : Listα γ → Type u
   | Listα.nil => PEmpty
   | Listα.cons _ => PUnit
-#align W_type.list_β WType.Listβ
 
 instance (hd : γ) : Inhabited (Listβ γ (Listα.cons hd)) :=
   ⟨PUnit.unit⟩
@@ -151,14 +137,12 @@ instance (hd : γ) : Inhabited (Listβ γ (Listα.cons hd)) :=
 def ofList : List γ → WType (Listβ γ)
   | List.nil => ⟨Listα.nil, PEmpty.elim⟩
   | List.cons hd tl => ⟨Listα.cons hd, fun _ ↦ ofList tl⟩
-#align W_type.of_list WType.ofList
 
 /-- The isomorphism from the `WType` construction of lists to lists -/
 @[simp]
 def toList : WType (Listβ γ) → List γ
   | WType.mk Listα.nil _ => []
   | WType.mk (Listα.cons hd) f => hd :: (f PUnit.unit).toList
-#align W_type.to_list WType.toList
 
 theorem leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
   | WType.mk Listα.nil f => by
@@ -166,29 +150,24 @@ theorem leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
     ext x
     cases x
   | WType.mk (Listα.cons x) f => by
-    simp only [ofList, leftInverse_list (f PUnit.unit), mk.injEq, heq_eq_eq, true_and]
+    simp only [toList, ofList, leftInverse_list (f PUnit.unit), mk.injEq, heq_eq_eq, true_and]
     rfl
-#align W_type.left_inv_list WType.leftInverse_list
 
 theorem rightInverse_list : Function.RightInverse (ofList γ) (toList _)
   | List.nil => rfl
-  | List.cons hd tl => by simp only [toList, rightInverse_list tl]
-#align W_type.right_inv_list WType.rightInverse_list
+  | List.cons hd tl => by simp [rightInverse_list tl]
 
 /-- Lists are equivalent to their associated `WType` -/
-def equivList : WType (Listβ γ) ≃ List γ
-    where
+def equivList : WType (Listβ γ) ≃ List γ where
   toFun := toList _
   invFun := ofList _
   left_inv := leftInverse_list _
   right_inv := rightInverse_list _
-#align W_type.equiv_list WType.equivList
 
 /-- `WType.Listα` is equivalent to `γ` with an extra point.
 This is useful when considering the associated polynomial endofunctor
 -/
-def ListαEquivPUnitSum : Listα γ ≃ Sum PUnit.{v + 1} γ
-    where
+def ListαEquivPUnitSum : Listα γ ≃ PUnit.{v + 1} ⊕ γ where
   toFun c :=
     match c with
     | Listα.nil => Sum.inl PUnit.unit
@@ -202,7 +181,6 @@ def ListαEquivPUnitSum : Listα γ ≃ Sum PUnit.{v + 1} γ
     match x with
     | Sum.inl PUnit.unit => rfl
     | Sum.inr _ => rfl
-#align W_type.list_α_equiv_punit_sum WType.ListαEquivPUnitSum
 
 end List
 

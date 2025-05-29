@@ -3,9 +3,7 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Lean
-import Std.Util.TermUnsafe
-import Std.Tactic.OpenPrivate
+import Mathlib.Init
 
 /-!
 Defines a command wrapper that prints the changes the command makes to the
@@ -87,8 +85,12 @@ private def printIdCore (id : Name) : ConstantInfo → CoreM MessageData
 def diffExtension (old new : Environment)
     (ext : PersistentEnvExtension EnvExtensionEntry EnvExtensionEntry EnvExtensionState) :
     CoreM (Option MessageData) := unsafe do
-  let oldSt := ext.toEnvExtension.getState old
-  let newSt := ext.toEnvExtension.getState new
+  let mut asyncMode := ext.toEnvExtension.asyncMode
+  if asyncMode matches .async then
+    -- allow for diffing async extensions by bumping mode to sync
+    asyncMode := .sync
+  let oldSt := ext.toEnvExtension.getState (asyncMode := asyncMode) old
+  let newSt := ext.toEnvExtension.getState (asyncMode := asyncMode) new
   if ptrAddrUnsafe oldSt == ptrAddrUnsafe newSt then return none
   let oldEntries := ext.exportEntriesFn oldSt.state
   let newEntries := ext.exportEntriesFn newSt.state
@@ -107,7 +109,7 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
 
   if diffs.isEmpty then return "no new constants"
 
-  pure $ MessageData.joinSep diffs.toList "\n\n"
+  pure <| MessageData.joinSep diffs.toList "\n\n"
 
 /-- `whatsnew in $command` executes the command and then prints the
 declarations that were added to the environment. -/
@@ -118,3 +120,5 @@ elab "whatsnew " "in" ppLine cmd:command : command => do
   finally
     let newEnv ← getEnv
     logInfo (← liftCoreM <| whatsNew oldEnv newEnv)
+
+end Mathlib.WhatsNew

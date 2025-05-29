@@ -25,18 +25,18 @@ from `α` to a nonempty space with a countable family of measurable sets
 separating points of a set `s` such that `f x ∈ s` for a.e. `x`.
 If `g` that is a.e.-invariant under `f`, then `g` is a.e. constant. -/
 theorem QuasiErgodic.ae_eq_const_of_ae_eq_comp_of_ae_range₀ [Nonempty X] [MeasurableSpace X]
-    {s : Set X} [HasCountableSeparatingOn X MeasurableSet s] {f : α → α} {g : α → X}
+    {s : Set X} [MeasurableSpace.CountablySeparated s] {f : α → α} {g : α → X}
     (h : QuasiErgodic f μ) (hs : ∀ᵐ x ∂μ, g x ∈ s) (hgm : NullMeasurable g μ)
     (hg_eq : g ∘ f =ᵐ[μ] g) :
     ∃ c, g =ᵐ[μ] const α c := by
   refine exists_eventuallyEq_const_of_eventually_mem_of_forall_separating MeasurableSet hs ?_
-  refine fun U hU ↦ h.ae_mem_or_ae_nmem₀ (s := g ⁻¹' U) (hgm hU) ?_b
+  refine fun U hU ↦ h.ae_mem_or_ae_notMem₀ (s := g ⁻¹' U) (hgm hU) ?_b
   refine (hg_eq.mono fun x hx ↦ ?_).set_eq
   rw [← preimage_comp, mem_preimage, mem_preimage, hx]
 
 section CountableSeparatingOnUniv
 
-variable [Nonempty X] [MeasurableSpace X] [HasCountableSeparatingOn X MeasurableSet univ]
+variable [Nonempty X] [MeasurableSpace X] [MeasurableSpace.CountablySeparated X]
   {f : α → α} {g : α → X}
 
 /-- Let `f : α → α` be a (pre)ergodic map.
@@ -46,7 +46,7 @@ If `g` is invariant under `f`, then `g` is a.e. constant. -/
 theorem PreErgodic.ae_eq_const_of_ae_eq_comp (h : PreErgodic f μ) (hgm : Measurable g)
     (hg_eq : g ∘ f = g) : ∃ c, g =ᵐ[μ] const α c :=
   exists_eventuallyEq_const_of_forall_separating MeasurableSet fun U hU ↦
-    h.ae_mem_or_ae_nmem (s := g ⁻¹' U) (hgm hU) <| by rw [← preimage_comp, hg_eq]
+    h.ae_mem_or_ae_notMem (s := g ⁻¹' U) (hgm hU) <| by rw [← preimage_comp, hg_eq]
 
 /-- Let `f : α → α` be a quasi ergodic map.
 Let `g : α → X` be a null-measurable function from `α` to a nonempty measurable space

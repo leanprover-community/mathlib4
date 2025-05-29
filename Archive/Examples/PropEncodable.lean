@@ -6,8 +6,6 @@ Authors: Jeremy Avigad
 import Mathlib.Data.W.Basic
 import Mathlib.Data.Fin.VecNotation
 
-#align_import examples.prop_encodable from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-!
 # W types
 
@@ -30,26 +28,15 @@ show encodability.
 namespace PropEncodable
 
 /-- Propositional formulas with labels from `α`. -/
-inductive PropForm (α : Type _)
+inductive PropForm (α : Type*)
   | var : α → PropForm α
   | not : PropForm α → PropForm α
   | and : PropForm α → PropForm α → PropForm α
   | or : PropForm α → PropForm α → PropForm α
-#align prop_encodable.prop_form PropEncodable.PropForm
-
-/-!
-The next three functions make it easier to construct functions from a small
-`Fin`.
--/
-
--- porting note: using `![_, _]` notation instead
-#noalign prop_encodable.mk_fn0
-#noalign prop_encodable.mk_fn1
-#noalign prop_encodable.mk_fn2
 
 namespace PropForm
 
-private def Constructors (α : Type _) :=
+private def Constructors (α : Type*) :=
   α ⊕ (Unit ⊕ (Unit ⊕ Unit))
 
 local notation "cvar " a => Sum.inl a
@@ -61,13 +48,13 @@ local notation "cand" => Sum.inr (Sum.inr (Sum.inr Unit.unit))
 local notation "cor" => Sum.inr (Sum.inr (Sum.inl Unit.unit))
 
 @[simp]
-private def arity (α : Type _) : Constructors α → Nat
+private def arity (α : Type*) : Constructors α → Nat
   | cvar _ => 0
   | cnot => 1
   | cand => 2
   | cor => 2
 
-variable {α : Type _}
+variable {α : Type*}
 
 instance : ∀ c : Unit ⊕ (Unit ⊕ Unit), NeZero (arity α (.inr c))
   | .inl () => ⟨one_ne_zero⟩

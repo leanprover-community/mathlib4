@@ -46,7 +46,7 @@ def proveIntIsCoprime (ex ey : Q(ℤ)) : Q(IsCoprime $ex $ey) ⊕ Q(¬ IsCoprime
 
 /-- Evaluates the `IsCoprime` predicate over `ℤ`. -/
 @[norm_num IsCoprime (_ : ℤ) (_ : ℤ)]
-def evalIntIsCoprime : NormNumExt where eval {u α} e := do
+def evalIntIsCoprime : NormNumExt where eval {_ _} e := do
   let .app (.app _ (x : Q(ℤ))) (y : Q(ℤ)) ← Meta.whnfR e | failure
   let ⟨ex, p⟩ ← deriveInt x _
   let ⟨ey, q⟩ ← deriveInt y _

@@ -3,11 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.Extension
+import Mathlib.FieldTheory.Normal.Defs
 import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.Localization.Integral
-
-#align_import field_theory.is_alg_closed.basic from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
 # Algebraically Closed Field
@@ -34,12 +33,18 @@ polynomial in `k` splits.
 
 algebraic closure, algebraically closed
 
+## Main results
+
+- `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
+  `k` splits in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
+  For the stronger fact that only requires every such polynomial has a root in `K`,
+  see `IsAlgClosure.of_exist_roots`.
+
+  Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
+
 -/
 
-
 universe u v w
-
-open scoped Classical BigOperators Polynomial
 
 open Polynomial
 
@@ -50,17 +55,17 @@ variable (k : Type u) [Field k]
 To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsAlgClosed.splits_codomain` and `IsAlgClosed.splits_domain`.
 -/
+@[stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
 class IsAlgClosed : Prop where
   splits : ∀ p : k[X], p.Splits <| RingHom.id k
-#align is_alg_closed IsAlgClosed
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
 
 See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
 -/
-theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : K →+* k}
-    (p : K[X]) : p.Splits f := by convert IsAlgClosed.splits (p.map f); simp [splits_map_iff]
-#align is_alg_closed.splits_codomain IsAlgClosed.splits_codomain
+theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [CommRing K]
+    {f : K →+* k} (p : K[X]) : p.Splits f := by
+  convert IsAlgClosed.splits (p.map f); simp [splits_map_iff]
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed.
 
@@ -69,75 +74,75 @@ See also `IsAlgClosed.splits_codomain` for the case where `k` is algebraically c
 theorem IsAlgClosed.splits_domain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : k →+* K}
     (p : k[X]) : p.Splits f :=
   Polynomial.splits_of_splits_id _ <| IsAlgClosed.splits _
-#align is_alg_closed.splits_domain IsAlgClosed.splits_domain
 
 namespace IsAlgClosed
 
 variable {k}
 
+/--
+If `k` is algebraically closed, then every nonconstant polynomial has a root.
+-/
+@[stacks 09GR "(4) ⟹ (3)"]
 theorem exists_root [IsAlgClosed k] (p : k[X]) (hp : p.degree ≠ 0) : ∃ x, IsRoot p x :=
   exists_root_of_splits _ (IsAlgClosed.splits p) hp
-#align is_alg_closed.exists_root IsAlgClosed.exists_root
 
 theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z, z ^ n = x := by
   have : degree (X ^ n - C x) ≠ 0 := by
     rw [degree_X_pow_sub_C hn x]
     exact ne_of_gt (WithBot.coe_lt_coe.2 hn)
   obtain ⟨z, hz⟩ := exists_root (X ^ n - C x) this
-  · use z
-    simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
-    exact sub_eq_zero.1 hz
-#align is_alg_closed.exists_pow_nat_eq IsAlgClosed.exists_pow_nat_eq
+  use z
+  simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
+  exact sub_eq_zero.1 hz
 
 theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
   rcases exists_pow_nat_eq x zero_lt_two with ⟨z, rfl⟩
   exact ⟨z, sq z⟩
-#align is_alg_closed.exists_eq_mul_self IsAlgClosed.exists_eq_mul_self
 
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
-  cases' le_or_lt (degree p) 0 with hd hd
+  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
+  rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
     simp at hz
-#align is_alg_closed.roots_eq_zero_iff IsAlgClosed.roots_eq_zero_iff
 
-theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Ring R] [IsAlgClosed k] (f : R →+* k)
+theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Semiring R] [IsAlgClosed k] (f : R →+* k)
     (hf : Function.Injective f) (p : R[X]) (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
   let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective hf])
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
-#align is_alg_closed.exists_eval₂_eq_zero_of_injective IsAlgClosed.exists_eval₂_eq_zero_of_injective
 
-theorem exists_eval₂_eq_zero {R : Type*} [Field R] [IsAlgClosed k] (f : R →+* k) (p : R[X])
+theorem exists_eval₂_eq_zero {R : Type*} [DivisionRing R] [IsAlgClosed k] (f : R →+* k) (p : R[X])
     (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
   exists_eval₂_eq_zero_of_injective f f.injective p hp
-#align is_alg_closed.exists_eval₂_eq_zero IsAlgClosed.exists_eval₂_eq_zero
 
 variable (k)
 
-theorem exists_aeval_eq_zero_of_injective {R : Type*} [CommRing R] [IsAlgClosed k] [Algebra R k]
+theorem exists_aeval_eq_zero_of_injective {R : Type*} [CommSemiring R] [IsAlgClosed k] [Algebra R k]
     (hinj : Function.Injective (algebraMap R k)) (p : R[X]) (hp : p.degree ≠ 0) :
     ∃ x : k, aeval x p = 0 :=
   exists_eval₂_eq_zero_of_injective (algebraMap R k) hinj p hp
-#align is_alg_closed.exists_aeval_eq_zero_of_injective IsAlgClosed.exists_aeval_eq_zero_of_injective
 
 theorem exists_aeval_eq_zero {R : Type*} [Field R] [IsAlgClosed k] [Algebra R k] (p : R[X])
     (hp : p.degree ≠ 0) : ∃ x : k, aeval x p = 0 :=
   exists_eval₂_eq_zero (algebraMap R k) p hp
-#align is_alg_closed.exists_aeval_eq_zero IsAlgClosed.exists_aeval_eq_zero
 
+
+/--
+If every nonconstant polynomial over `k` has a root, then `k` is algebraically closed.
+-/
+@[stacks 09GR "(3) ⟹ (4)"]
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
   refine ⟨fun p ↦ Or.inr ?_⟩
   intro q hq _
   have : Irreducible (q * C (leadingCoeff q)⁻¹) := by
+    classical
     rw [← coe_normUnit_of_ne_zero hq.ne_zero]
     exact (associated_normalize _).irreducible hq
   obtain ⟨x, hx⟩ := H (q * C (leadingCoeff q)⁻¹) (monic_mul_leadingCoeff_inv hq.ne_zero) this
   exact degree_mul_leadingCoeff_inv q hq.ne_zero ▸ degree_eq_one_of_irreducible_of_root this hx
-#align is_alg_closed.of_exists_root IsAlgClosed.of_exists_root
 
 theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
     [IsAlgClosed k] : IsAlgClosed k' := by
@@ -146,7 +151,7 @@ theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
   have hpe : degree (p.map e.symm.toRingHom) ≠ 0 := by
     rw [degree_map]
     exact ne_of_gt (degree_pos_of_irreducible hp)
-  rcases IsAlgClosed.exists_root (k := k) (p.map e.symm) hpe with ⟨x, hx⟩
+  rcases IsAlgClosed.exists_root (k := k) (p.map e.symm.toRingHom) hpe with ⟨x, hx⟩
   use e x
   rw [IsRoot] at hx
   apply e.symm.injective
@@ -154,257 +159,160 @@ theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
   clear hx hpe hp hmp
   induction p using Polynomial.induction_on <;> simp_all
 
+/--
+If `k` is algebraically closed, then every irreducible polynomial over `k` is linear.
+-/
+@[stacks 09GR "(4) ⟹ (2)"]
 theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducible p) :
     p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)
-#align is_alg_closed.degree_eq_one_of_irreducible IsAlgClosed.degree_eq_one_of_irreducible
 
-theorem algebraMap_surjective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
-    [hk : IsAlgClosed k] [Algebra k K] (hf : Algebra.IsIntegral k K) :
-    Function.Surjective (algebraMap k K) := by
-  refine' fun x => ⟨-(minpoly k x).coeff 0, _⟩
-  have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (hf x)
-  have h : (minpoly k x).degree = 1 := degree_eq_one_of_irreducible k (minpoly.irreducible (hf x))
+theorem algebraMap_bijective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
+    [hk : IsAlgClosed k] [Algebra k K] [Algebra.IsIntegral k K] :
+    Function.Bijective (algebraMap k K) := by
+  refine ⟨RingHom.injective _, fun x ↦ ⟨-(minpoly k x).coeff 0, ?_⟩⟩
+  have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (Algebra.IsIntegral.isIntegral x)
+  have h : (minpoly k x).degree = 1 := degree_eq_one_of_irreducible k (minpoly.irreducible
+    (Algebra.IsIntegral.isIntegral x))
   have : aeval x (minpoly k x) = 0 := minpoly.aeval k x
   rw [eq_X_add_C_of_degree_eq_one h, hq, C_1, one_mul, aeval_add, aeval_X, aeval_C,
     add_eq_zero_iff_eq_neg] at this
   exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
-#align is_alg_closed.algebra_map_surjective_of_is_integral IsAlgClosed.algebraMap_surjective_of_isIntegral
 
+theorem ringHom_bijective_of_isIntegral {k K : Type*} [Field k] [CommRing K] [IsDomain K]
+    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Bijective f :=
+  let _ : Algebra k K := f.toAlgebra
+  have : Algebra.IsIntegral k K := ⟨hf⟩
+  algebraMap_bijective_of_isIntegral
+
+@[deprecated "ringHom_bijective_of_isIntegral" (since := "2025-04-16")]
 theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K] [IsDomain K]
     [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
-  @algebraMap_surjective_of_isIntegral k K _ _ _ _ f.toAlgebra hf
-#align is_alg_closed.algebra_map_surjective_of_is_integral' IsAlgClosed.algebraMap_surjective_of_isIntegral'
-
-theorem algebraMap_surjective_of_isAlgebraic {k K : Type*} [Field k] [Ring K] [IsDomain K]
-    [IsAlgClosed k] [Algebra k K] (hf : Algebra.IsAlgebraic k K) :
-    Function.Surjective (algebraMap k K) :=
-  algebraMap_surjective_of_isIntegral (Algebra.isAlgebraic_iff_isIntegral.mp hf)
-#align is_alg_closed.algebra_map_surjective_of_is_algebraic IsAlgClosed.algebraMap_surjective_of_isAlgebraic
+  (ringHom_bijective_of_isIntegral f hf).surjective
 
 end IsAlgClosed
 
+/-- If `k` is algebraically closed, `K / k` is a field extension, `L / k` is an intermediate field
+which is algebraic, then `L` is equal to `k`. A corollary of
+`IsAlgClosed.algebraMap_surjective_of_isAlgebraic`. -/
+@[stacks 09GQ "The result is the definition of algebraically closedness in Stacks Project. \
+This statement is 09GR (4) ⟹ (1)."]
+theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Field k] [Field K]
+    [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) [Algebra.IsAlgebraic k L] :
+    L = ⊥ := bot_unique fun x hx ↦ by
+  obtain ⟨y, hy⟩ := (IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)).2 (⟨x, hx⟩ : L)
+  exact ⟨y, congr_arg (algebraMap L K) hy⟩
+
+lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field K] [IsAlgClosed K]
+    [Algebra k K] (p q : k[X]) : IsCoprime p q ↔ ∀ a : K, aeval a p ≠ 0 ∨ aeval a q ≠ 0 := by
+  refine ⟨fun h => aeval_ne_zero_of_isCoprime h, fun h => isCoprime_of_dvd _ _ ?_ fun x hu h0 => ?_⟩
+  · replace h := h 0
+    contrapose! h
+    rw [h.left, h.right, map_zero, and_self]
+  · rintro ⟨_, rfl⟩ ⟨_, rfl⟩
+    obtain ⟨a, ha : _ = _⟩ := IsAlgClosed.exists_root (x.map <| algebraMap k K) <| by
+      simpa only [degree_map] using (ne_of_lt <| degree_pos_of_ne_zero_of_nonunit h0 hu).symm
+    exact not_and_or.mpr (h a) (by simp_rw [map_mul, ← eval_map_algebraMap, ha, zero_mul, true_and])
+
 /-- Typeclass for an extension being an algebraic closure. -/
+@[stacks 09GS]
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
     [NoZeroSMulDivisors R K] : Prop where
-  alg_closed : IsAlgClosed K
-  algebraic : Algebra.IsAlgebraic R K
-#align is_alg_closure IsAlgClosure
+  isAlgClosed : IsAlgClosed K
+  isAlgebraic : Algebra.IsAlgebraic R K
+
+attribute [instance] IsAlgClosure.isAlgebraic
 
 theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
     IsAlgClosure k K ↔ IsAlgClosed K ∧ Algebra.IsAlgebraic k K :=
   ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
-#align is_alg_closure_iff isAlgClosure_iff
 
 instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K] [Algebra R K]
-    [IsAlgClosure R K] : Normal R K :=
-  ⟨IsAlgClosure.algebraic, fun _ =>
-    @IsAlgClosed.splits_codomain _ _ _ (IsAlgClosure.alg_closed R) _ _ _⟩
-#align is_alg_closure.normal IsAlgClosure.normal
+    [IsAlgClosure R K] : Normal R K where
+  toIsAlgebraic := IsAlgClosure.isAlgebraic
+  splits' _ := @IsAlgClosed.splits_codomain _ _ _ (IsAlgClosure.isAlgClosed R) _ _ _
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
-    [IsAlgClosure R K] [CharZero R] : IsSeparable R K :=
-  ⟨fun _ => isAlgebraic_iff_isIntegral.mp (IsAlgClosure.algebraic _), fun _ =>
-    (minpoly.irreducible (isAlgebraic_iff_isIntegral.mp (IsAlgClosure.algebraic _))).separable⟩
-#align is_alg_closure.separable IsAlgClosure.separable
+    [IsAlgClosure R K] [CharZero R] : Algebra.IsSeparable R K :=
+  ⟨fun _ => (minpoly.irreducible (Algebra.IsIntegral.isIntegral _)).separable⟩
+
+instance IsAlgClosed.instIsAlgClosure (F : Type*) [Field F] [IsAlgClosed F] : IsAlgClosure F F where
+  isAlgClosed := ‹_›
+  isAlgebraic := .of_finite F F
+
+theorem IsAlgClosure.of_splits {R K} [CommRing R] [IsDomain R] [Field K] [Algebra R K]
+    [Algebra.IsIntegral R K] [NoZeroSMulDivisors R K]
+    (h : ∀ p : R[X], p.Monic → Irreducible p → p.Splits (algebraMap R K)) : IsAlgClosure R K where
+  isAlgebraic := inferInstance
+  isAlgClosed := .of_exists_root _ fun _p _ p_irred ↦
+    have ⟨g, monic, irred, dvd⟩ := p_irred.exists_dvd_monic_irreducible_of_isIntegral (K := R)
+    exists_root_of_splits _ (splits_of_splits_of_dvd _ (map_monic_ne_zero monic)
+      ((splits_id_iff_splits _).mpr <| h g monic irred) dvd) <|
+        degree_ne_of_natDegree_ne p_irred.natDegree_pos.ne'
 
 namespace IsAlgClosed
 
-namespace lift
-
-/- In this section, the homomorphism from any algebraic extension into an algebraically
-  closed extension is proven to exist. The assumption that M is algebraically closed could probably
-  easily be switched to an assumption that M contains all the roots of polynomials in K -/
-variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
-  [Algebra K M] [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L)
-
-variable (K L M)
-
-open Subalgebra AlgHom Function
-
-/-- This structure is used to prove the existence of a homomorphism from any algebraic extension
-into an algebraic closure -/
-structure SubfieldWithHom where
-  /-- The corresponding `Subalgebra` -/
-  carrier : Subalgebra K L
-  /-- The embedding into the algebraically closed field -/
-  emb : carrier →ₐ[K] M
-#align lift.subfield_with_hom IsAlgClosed.lift.SubfieldWithHom
-
-variable {K L M hL}
-
-namespace SubfieldWithHom
-
-variable {E₁ E₂ E₃ : SubfieldWithHom K L M}
-
-instance : LE (SubfieldWithHom K L M) where
-  le E₁ E₂ := ∃ h : E₁.carrier ≤ E₂.carrier, ∀ x, E₂.emb (inclusion h x) = E₁.emb x
-
-noncomputable instance : Inhabited (SubfieldWithHom K L M) :=
-  ⟨{  carrier := ⊥
-      emb := (Algebra.ofId K M).comp (Algebra.botEquiv K L).toAlgHom }⟩
-
-theorem le_def : E₁ ≤ E₂ ↔ ∃ h : E₁.carrier ≤ E₂.carrier, ∀ x, E₂.emb (inclusion h x) = E₁.emb x :=
-  Iff.rfl
-#align lift.subfield_with_hom.le_def IsAlgClosed.lift.SubfieldWithHom.le_def
-
-theorem compat (h : E₁ ≤ E₂) : ∀ x, E₂.emb (inclusion h.fst x) = E₁.emb x := by
-  rw [le_def] at h; cases h; assumption
-#align lift.subfield_with_hom.compat IsAlgClosed.lift.SubfieldWithHom.compat
-
-instance : Preorder (SubfieldWithHom K L M) where
-  le := (· ≤ ·)
-  le_refl E := ⟨le_rfl, by simp⟩
-  le_trans E₁ E₂ E₃ h₁₂ h₂₃ := by
-    refine ⟨h₁₂.1.trans h₂₃.1, fun _ ↦ ?_⟩
-    erw [← inclusion_inclusion h₁₂.fst h₂₃.fst, compat h₂₃, compat h₁₂]
-
-open Lattice
-
-theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
-    (hc : IsChain (· ≤ ·) c) : ∃ ub : SubfieldWithHom K L M, ∀ N, N ∈ c → N ≤ ub := by
-  by_cases hcn : c.Nonempty
-  case neg => rw [Set.not_nonempty_iff_eq_empty] at hcn; simp [hcn]
-  case pos =>
-    have : Nonempty c := Set.Nonempty.to_subtype hcn
-    let ub : SubfieldWithHom K L M :=
-      ⟨⨆ i : c, (i : SubfieldWithHom K L M).carrier,
-        @Subalgebra.iSupLift _ _ _ _ _ _ _ _ _ this
-            (fun i : c => (i : SubfieldWithHom K L M).carrier)
-            (fun i j =>
-              let ⟨k, hik, hjk⟩ := directedOn_iff_directed.1 hc.directedOn i j
-              ⟨k, hik.fst, hjk.fst⟩)
-            (fun i => (i : SubfieldWithHom K L M).emb)
-            (by
-              intro i j h
-              ext x
-              cases' hc.total i.prop j.prop with hij hji
-              · simp [← hij.snd x]
-              · erw [AlgHom.comp_apply, ← hji.snd (inclusion h x), inclusion_inclusion,
-                  inclusion_self, AlgHom.id_apply x])
-            _ rfl⟩
-    exact ⟨ub, fun N hN =>
-         ⟨(le_iSup (fun i : c => (i : SubfieldWithHom K L M).carrier) ⟨N, hN⟩ : _), by
-           intro x
-           simp⟩⟩
-#align lift.subfield_with_hom.maximal_subfield_with_hom_chain_bounded IsAlgClosed.lift.SubfieldWithHom.maximal_subfieldWithHom_chain_bounded
-
-variable (K L M)
-
-theorem exists_maximal_subfieldWithHom : ∃ E : SubfieldWithHom K L M, ∀ N, E ≤ N → N ≤ E :=
-  exists_maximal_of_chains_bounded maximal_subfieldWithHom_chain_bounded le_trans
-#align lift.subfield_with_hom.exists_maximal_subfield_with_hom IsAlgClosed.lift.SubfieldWithHom.exists_maximal_subfieldWithHom
-
-/-- The maximal `SubfieldWithHom`. We later prove that this is equal to `⊤`. -/
-noncomputable def maximalSubfieldWithHom : SubfieldWithHom K L M :=
-  Classical.choose (exists_maximal_subfieldWithHom K L M)
-#align lift.subfield_with_hom.maximal_subfield_with_hom IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom
-
-theorem maximalSubfieldWithHom_is_maximal :
-    ∀ N : SubfieldWithHom K L M,
-      maximalSubfieldWithHom K L M ≤ N → N ≤ maximalSubfieldWithHom K L M :=
-  Classical.choose_spec (exists_maximal_subfieldWithHom K L M)
-#align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
-
--- Porting note: split out this definition from `maximalSubfieldWithHom_eq_top`
-/-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
-a root of `x`'s minimal polynomial in `T`. -/
-noncomputable def _root_.Algebra.adjoin.liftSingleton (R : Type*) [Field R] {S T : Type*}
-  [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-  (x : S) (y : T) (h : aeval y (minpoly R x) = 0) :
-  Algebra.adjoin R {x} →ₐ[R] T :=
-AlgHom.comp
-  (AdjoinRoot.liftHom _ y h)
-  (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly R x).toAlgHom
-
--- porting note: this was much faster in lean 3
-set_option maxHeartbeats 300000 in
-set_option synthInstance.maxHeartbeats 200000 in
-theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
-  rw [eq_top_iff]
-  intro x _
-  let N : Subalgebra K L := (maximalSubfieldWithHom K L M).carrier
-  letI : Field N := (Subalgebra.isField_of_algebraic N hL).toField
-  letI : Algebra N M := (maximalSubfieldWithHom K L M).emb.toRingHom.toAlgebra
-  obtain ⟨y, hy⟩ := IsAlgClosed.exists_aeval_eq_zero M (minpoly N x) <|
-    (minpoly.degree_pos
-      (isAlgebraic_iff_isIntegral.1 (Algebra.isAlgebraic_of_larger_base _ hL x))).ne'
-  let O : Subalgebra N L := Algebra.adjoin N {(x : L)}
-  letI : Algebra N O := Subalgebra.algebra O
-  -- Porting note: there are some tricky unfolds going on here:
-  -- (O.restrictScalars K : Type*) is identified with (O : Type*) in a few places
-  let larger_emb : O →ₐ[N] M := Algebra.adjoin.liftSingleton N x y hy
-  let larger_emb' : O →ₐ[K] M := AlgHom.restrictScalars K (S := N) (A := O) (B := M) larger_emb
-  have hNO : N ≤ O.restrictScalars K := by
-    intro z hz
-    show algebraMap N L ⟨z, hz⟩ ∈ O
-    exact O.algebraMap_mem _
-  let O' : SubfieldWithHom K L M :=
-    ⟨O.restrictScalars K, larger_emb'⟩
-  have hO' : maximalSubfieldWithHom K L M ≤ O' := by
-    refine' ⟨hNO, _⟩
-    intro z
-    -- Porting note: have to help Lean unfold even more here
-    show Algebra.adjoin.liftSingleton N x y hy (@algebraMap N O _ _ (Subalgebra.algebra O) z) =
-        algebraMap N M z
-    exact AlgHom.commutes _ _
-  refine' (maximalSubfieldWithHom_is_maximal K L M O' hO').fst _
-  show x ∈ Algebra.adjoin N {(x : L)}
-  exact Algebra.subset_adjoin (Set.mem_singleton x)
-#align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
-
-end SubfieldWithHom
-
-end lift
-
 variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]
-  [Algebra K M] [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L)
+  [Algebra K M] [IsAlgClosed M]
 
-variable (K L M)
+/-- If E/L/K is a tower of field extensions with E/L algebraic, and if M is an algebraically
+  closed extension of K, then any embedding of L/K into M/K extends to an embedding of E/K.
+  Known as the extension lemma in https://math.stackexchange.com/a/687914. -/
+theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
+    [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [Algebra.IsAlgebraic L E] :
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.restrictDomain L :=
+  fun f ↦ IntermediateField.exists_algHom_of_splits'
+    (E := E) f fun s ↦ ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
+
+@[deprecated (since := "2024-11-15")]
+alias surjective_comp_algebraMap_of_isAlgebraic := surjective_restrictDomain_of_isAlgebraic
+
+variable [Algebra.IsAlgebraic K L] (K L M)
 
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
-  (lift.SubfieldWithHom.maximalSubfieldWithHom K L M).emb.comp <|
-    (lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top (K := K) (L := L) (M := M) (hL := hL)).symm
-      ▸ Algebra.toTop
+  Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
+    (fun x _ ↦ ⟨Algebra.IsIntegral.isIntegral x, splits_codomain (minpoly K x)⟩)
+    (IntermediateField.adjoin_univ K L)
 
 variable {R : Type u} [CommRing R]
-
 variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [NoZeroSMulDivisors R S]
-  [NoZeroSMulDivisors R M] (hS : Algebra.IsAlgebraic R S)
+  [NoZeroSMulDivisors R M] [Algebra.IsAlgebraic R S]
 
 variable {M}
 
-private theorem FractionRing.isAlgebraic :
-    letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+private instance FractionRing.isAlgebraic :
+    letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
     letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
     Algebra.IsAlgebraic (FractionRing R) (FractionRing S) := by
-  letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
   letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
   have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
+  have := (IsFractionRing.isAlgebraic_iff' R S (FractionRing S)).1 inferInstance
+  constructor
   intro
-  exact
-    (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
-      ((IsFractionRing.isAlgebraic_iff' R S (FractionRing S)).1 hS _)
+  exact (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
+      (Algebra.IsAlgebraic.isAlgebraic _)
 
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
   closed extension of R. -/
+@[stacks 09GU]
 noncomputable irreducible_def lift : S →ₐ[R] M := by
-  letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
   letI := FractionRing.liftAlgebra R M
   letI := FractionRing.liftAlgebra R (FractionRing S)
   have := FractionRing.isScalarTower_liftAlgebra R M
   have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
-  have : Algebra.IsAlgebraic (FractionRing R) (FractionRing S) :=
-    FractionRing.isAlgebraic hS
-  let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M this
+  let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M
   exact (f.restrictScalars R).comp ((Algebra.ofId S (FractionRing S)).restrictScalars R)
-#align is_alg_closed.lift IsAlgClosed.lift
 
 noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [CharP k p]
     [IsAlgClosed k] : PerfectRing k p :=
   PerfectRing.ofSurjective k p fun _ => IsAlgClosed.exists_pow_nat_eq _ <| NeZero.pos p
-#align is_alg_closed.perfect_ring IsAlgClosed.perfectRing
+
+noncomputable instance (priority := 100) perfectField [IsAlgClosed k] : PerfectField k := by
+  obtain _ | ⟨p, _, _⟩ := CharP.exists' k
+  exacts [.ofCharZero, PerfectRing.toPerfectField k p]
 
 /-- Algebraically closed fields are infinite since `Xⁿ⁺¹ - 1` is separable when `#K = n` -/
 instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K := by
@@ -412,10 +320,12 @@ instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K :=
   intro hfin
   set n := Fintype.card K
   set f := (X : K[X]) ^ (n + 1) - 1
-  have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp) one_ne_zero
+  have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp [n]) one_ne_zero
   apply Nat.not_succ_le_self (Fintype.card K)
   have hroot : n.succ = Fintype.card (f.rootSet K) := by
-    erw [card_rootSet_eq_natDegree hfsep (IsAlgClosed.splits_domain _), natDegree_X_pow_sub_C]
+    rw [card_rootSet_eq_natDegree hfsep (IsAlgClosed.splits_domain _)]
+    unfold f
+    rw [← C_1, natDegree_X_pow_sub_C]
   rw [hroot]
   exact Fintype.card_le_of_injective _ Subtype.coe_injective
 
@@ -423,34 +333,19 @@ end IsAlgClosed
 
 namespace IsAlgClosure
 
--- Porting note: errors with
--- > cannot find synthesization order for instance alg_closed with type
--- > all remaining arguments have metavariables
--- attribute [local instance] IsAlgClosure.alg_closed
-
 section
 
 variable (R : Type u) [CommRing R] (L : Type v) (M : Type w) [Field L] [Field M]
 variable [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M]
 variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 
+attribute [local instance] IsAlgClosure.isAlgClosed in
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
+@[stacks 09GV]
 noncomputable def equiv : L ≃ₐ[R] M :=
-  -- Porting note: added to replace local instance above
-  haveI : IsAlgClosed M := IsAlgClosure.alg_closed R
-  let f : L →ₐ[R] M := IsAlgClosed.lift IsAlgClosure.algebraic
-  AlgEquiv.ofBijective f
-    ⟨RingHom.injective f.toRingHom, by
-      letI : Algebra L M := RingHom.toAlgebra f
-      letI : IsScalarTower R L M := IsScalarTower.of_algebraMap_eq <| by
-        simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_coe, AlgHom.commutes, forall_const]
-      letI : IsAlgClosed L := IsAlgClosure.alg_closed R
-      show Function.Surjective (algebraMap L M)
-      exact
-        IsAlgClosed.algebraMap_surjective_of_isAlgebraic
-          (Algebra.isAlgebraic_of_larger_base_of_injective
-            (NoZeroSMulDivisors.algebraMap_injective R _) IsAlgClosure.algebraic)⟩
-#align is_alg_closure.equiv IsAlgClosure.equiv
+  AlgEquiv.ofBijective _ (IsAlgClosure.isAlgebraic.algHom_bijective₂
+    (IsAlgClosed.lift : L →ₐ[R] M)
+    (IsAlgClosed.lift : M →ₐ[R] L)).1
 
 end
 
@@ -466,29 +361,24 @@ variable [Algebra K J] [Algebra J L] [IsAlgClosure J L] [Algebra K L] [IsScalarT
 
 /-- If `J` is an algebraic extension of `K` and `L` is an algebraic closure of `J`, then it is
   also an algebraic closure of `K`. -/
-theorem ofAlgebraic (hKJ : Algebra.IsAlgebraic K J) : IsAlgClosure K L :=
-  ⟨IsAlgClosure.alg_closed J, Algebra.isAlgebraic_trans hKJ IsAlgClosure.algebraic⟩
-#align is_alg_closure.of_algebraic IsAlgClosure.ofAlgebraic
+theorem ofAlgebraic [Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
+  ⟨IsAlgClosure.isAlgClosed J, .trans K J L⟩
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
   an algebraic extension of `R` -/
 noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
-    (hRL : Algebra.IsAlgebraic R L) : L ≃ₐ[R] M := by
-  letI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective <| by
-    rw [IsScalarTower.algebraMap_eq R S L]
-    exact (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective S L)
-            (NoZeroSMulDivisors.algebraMap_injective R S) : _)
-  letI : IsAlgClosure R L :=
-    { alg_closed := IsAlgClosure.alg_closed S
-      algebraic := hRL }
+    [Algebra.IsAlgebraic R L] : L ≃ₐ[R] M := by
+  have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans_faithfulSMul R S L
+  have : IsAlgClosure R L :=
+    { isAlgClosed := IsAlgClosure.isAlgClosed S
+      isAlgebraic := ‹_› }
   exact IsAlgClosure.equiv _ _ _
-#align is_alg_closure.equiv_of_algebraic' IsAlgClosure.equivOfAlgebraic'
 
 /-- A (random) isomorphism between an algebraic closure of `K` and an algebraic closure
   of an algebraic extension of `K` -/
-noncomputable def equivOfAlgebraic (hKJ : Algebra.IsAlgebraic K J) : L ≃ₐ[K] M :=
-  equivOfAlgebraic' K J _ _ (Algebra.isAlgebraic_trans hKJ IsAlgClosure.algebraic)
-#align is_alg_closure.equiv_of_algebraic IsAlgClosure.equivOfAlgebraic
+noncomputable def equivOfAlgebraic [Algebra.IsAlgebraic K J] : L ≃ₐ[K] M :=
+  have := Algebra.IsAlgebraic.trans K J L
+  equivOfAlgebraic' K J _ _
 
 end EquivOfAlgebraic
 
@@ -501,81 +391,119 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
     { e : L ≃+* M // e.toRingHom.comp (algebraMap S L) = (algebraMap R M).comp hSR.toRingHom } := by
   letI : Algebra R S := RingHom.toAlgebra hSR.symm.toRingHom
   letI : Algebra S R := RingHom.toAlgebra hSR.toRingHom
-  letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R M).isDomain _
-  letI : IsDomain S := (NoZeroSMulDivisors.algebraMap_injective S L).isDomain _
+  have : IsDomain S := (FaithfulSMul.algebraMap_injective S L).isDomain _
   letI : Algebra R L := RingHom.toAlgebra ((algebraMap S L).comp (algebraMap R S))
-  haveI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq fun _ => rfl
-  haveI : IsScalarTower S R L :=
-    IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
-  haveI : NoZeroSMulDivisors R S := NoZeroSMulDivisors.of_algebraMap_injective hSR.symm.injective
-  refine'
-    ⟨equivOfAlgebraic' R S L M
-        (Algebra.isAlgebraic_of_larger_base_of_injective
-          (show Function.Injective (algebraMap S R) from hSR.injective) IsAlgClosure.algebraic),
-      _⟩
+  haveI : IsScalarTower R S L := .of_algebraMap_eq fun _ => rfl
+  haveI : IsScalarTower S R L := .of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
+  have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hSR.symm.injective
+  have : Algebra.IsAlgebraic R L := (IsAlgClosure.isAlgebraic.extendScalars
+    (show Function.Injective (algebraMap S R) from hSR.injective))
+  refine ⟨equivOfAlgebraic' R S L M, ?_⟩
   ext x
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
     AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]
   conv_lhs => rw [← hSR.symm_apply_apply x]
-  show equivOfAlgebraic' R S L M _ (algebraMap R L (hSR x)) = _
+  show equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
   rw [AlgEquiv.commutes]
-#align is_alg_closure.equiv_of_equiv_aux IsAlgClosure.equivOfEquivAux
 
 /-- Algebraic closure of isomorphic fields are isomorphic -/
 noncomputable def equivOfEquiv (hSR : S ≃+* R) : L ≃+* M :=
   equivOfEquivAux L M hSR
-#align is_alg_closure.equiv_of_equiv IsAlgClosure.equivOfEquiv
 
 @[simp]
 theorem equivOfEquiv_comp_algebraMap (hSR : S ≃+* R) :
     (↑(equivOfEquiv L M hSR) : L →+* M).comp (algebraMap S L) = (algebraMap R M).comp hSR :=
   (equivOfEquivAux L M hSR).2
-#align is_alg_closure.equiv_of_equiv_comp_algebra_map IsAlgClosure.equivOfEquiv_comp_algebraMap
 
 @[simp]
 theorem equivOfEquiv_algebraMap (hSR : S ≃+* R) (s : S) :
     equivOfEquiv L M hSR (algebraMap S L s) = algebraMap R M (hSR s) :=
   RingHom.ext_iff.1 (equivOfEquiv_comp_algebraMap L M hSR) s
-#align is_alg_closure.equiv_of_equiv_algebra_map IsAlgClosure.equivOfEquiv_algebraMap
 
 @[simp]
 theorem equivOfEquiv_symm_algebraMap (hSR : S ≃+* R) (r : R) :
     (equivOfEquiv L M hSR).symm (algebraMap R M r) = algebraMap S L (hSR.symm r) :=
   (equivOfEquiv L M hSR).injective (by simp)
-#align is_alg_closure.equiv_of_equiv_symm_algebra_map IsAlgClosure.equivOfEquiv_symm_algebraMap
 
 @[simp]
 theorem equivOfEquiv_symm_comp_algebraMap (hSR : S ≃+* R) :
     ((equivOfEquiv L M hSR).symm : M →+* L).comp (algebraMap R M) =
       (algebraMap S L).comp hSR.symm :=
   RingHom.ext_iff.2 (equivOfEquiv_symm_algebraMap L M hSR)
-#align is_alg_closure.equiv_of_equiv_symm_comp_algebra_map IsAlgClosure.equivOfEquiv_symm_comp_algebraMap
 
 end EquivOfEquiv
 
 end IsAlgClosure
 
+section Algebra.IsAlgebraic
+
+variable {F K : Type*} (A : Type*) [Field F] [Field K] [Field A] [Algebra F K] [Algebra F A]
+  [Algebra.IsAlgebraic F K]
+
 /-- Let `A` be an algebraically closed field and let `x ∈ K`, with `K/F` an algebraic extension
   of fields. Then the images of `x` by the `F`-algebra morphisms from `K` to `A` are exactly
   the roots in `A` of the minimal polynomial of `x` over `F`. -/
-theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly {F K} (A) [Field F] [Field K] [Field A]
-    [IsAlgClosed A] [Algebra F K] (hK : Algebra.IsAlgebraic F K) [Algebra F A] (x : K) :
-    (Set.range fun ψ : K →ₐ[F] A => ψ x) = (minpoly F x).rootSet A := by
-  have hFK := Algebra.isAlgebraic_iff_isIntegral.1 hK
-  ext a
-  rw [mem_rootSet_of_ne (minpoly.ne_zero (hFK x))]
-  refine' ⟨_, fun ha => _⟩
-  · rintro ⟨ψ, rfl⟩; rw [aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
-  let Fx := AdjoinRoot (minpoly F x)
-  have hx : aeval x (minpoly F x) = 0 := minpoly.aeval F x
-  letI : Algebra Fx A := (AdjoinRoot.lift (algebraMap F A) a ha).toAlgebra
-  letI : Algebra Fx K := (AdjoinRoot.lift (algebraMap F K) x hx).toAlgebra
-  haveI : IsScalarTower F Fx A := IsScalarTower.of_ring_hom (AdjoinRoot.liftHom _ a ha)
-  haveI : IsScalarTower F Fx K := IsScalarTower.of_ring_hom (AdjoinRoot.liftHom _ x hx)
-  haveI : Fact (Irreducible <| minpoly F x) := ⟨minpoly.irreducible <| hFK x⟩
-  let ψ₀ : K →ₐ[Fx] A := IsAlgClosed.lift (Algebra.isAlgebraic_of_larger_base Fx hK)
-  exact
-    ⟨ψ₀.restrictScalars F,
-      (congr_arg ψ₀ (AdjoinRoot.lift_root hx).symm).trans <|
-        (ψ₀.commutes _).trans <| AdjoinRoot.lift_root ha⟩
-#align algebra.is_algebraic.range_eval_eq_root_set_minpoly Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly
+theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly [IsAlgClosed A] (x : K) :
+    (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A :=
+  range_eval_eq_rootSet_minpoly_of_splits A (fun _ ↦ IsAlgClosed.splits_codomain _) x
+
+/-- All `F`-embeddings of a field `K` into another field `A` factor through any intermediate
+field of `A/F` in which the minimal polynomial of elements of `K` splits. -/
+@[simps]
+def IntermediateField.algHomEquivAlgHomOfSplits (L : IntermediateField F A)
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
+    (K →ₐ[F] L) ≃ (K →ₐ[F] A) where
+  toFun := L.val.comp
+  invFun f := f.codRestrict _ fun x ↦
+    ((Algebra.IsIntegral.isIntegral x).map f).mem_intermediateField_of_minpoly_splits <| by
+      rw [minpoly.algHom_eq f f.injective]; exact hL x
+  left_inv _ := rfl
+  right_inv _ := by rfl
+
+theorem IntermediateField.algHomEquivAlgHomOfSplits_apply_apply (L : IntermediateField F A)
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
+    algHomEquivAlgHomOfSplits A L hL f x = algebraMap L A (f x) := rfl
+
+/-- All `F`-embeddings of a field `K` into another field `A` factor through any subextension
+of `A/F` in which the minimal polynomial of elements of `K` splits. -/
+noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits (L : Type*) [Field L]
+    [Algebra F L] [Algebra L A] [IsScalarTower F L A]
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
+    (K →ₐ[F] L) ≃ (K →ₐ[F] A) :=
+  (AlgEquiv.refl.arrowCongr (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L A))).trans <|
+    IntermediateField.algHomEquivAlgHomOfSplits A (IsScalarTower.toAlgHom F L A).fieldRange
+    fun x ↦ splits_of_algHom (hL x) (AlgHom.rangeRestrict _)
+
+theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits_apply_apply (L : Type*) [Field L]
+    [Algebra F L] [Algebra L A] [IsScalarTower F L A]
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
+    Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits A L hL f x = algebraMap L A (f x) := rfl
+
+end Algebra.IsAlgebraic
+
+/-- Over an algebraically closed field of characteristic zero a necessary and sufficient condition
+for the set of roots of a nonzero polynomial `f` to be a subset of the set of roots of `g` is that
+`f` divides `f.derivative * g`. Over an integral domain, this is a sufficient but not necessary
+condition. See `isRoot_of_isRoot_of_dvd_derivative_mul` -/
+theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
+    [IsAlgClosed K] [CharZero K] {f g : K[X]} (hf0 : f ≠ 0) :
+    (∀ x, IsRoot f x → IsRoot g x) ↔ f ∣ f.derivative * g := by
+  refine ⟨?_, isRoot_of_isRoot_of_dvd_derivative_mul hf0⟩
+  by_cases hg0 : g = 0
+  · simp [hg0]
+  by_cases hdf0 : derivative f = 0
+  · rw [eq_C_of_derivative_eq_zero hdf0]
+    simp only [eval_C, derivative_C, zero_mul, dvd_zero, implies_true]
+  have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
+  classical rw [Splits.dvd_iff_roots_le_roots (IsAlgClosed.splits f) hf0 hdg, Multiset.le_iff_count]
+  simp only [count_roots, rootMultiplicity_mul hdg]
+  refine forall_imp fun a => ?_
+  by_cases haf : f.eval a = 0
+  · have h0 : 0 < f.rootMultiplicity a := (rootMultiplicity_pos hf0).2 haf
+    rw [derivative_rootMultiplicity_of_root haf]
+    intro h
+    calc rootMultiplicity a f
+        = rootMultiplicity a f - 1 + 1 := (Nat.sub_add_cancel (Nat.succ_le_iff.1 h0)).symm
+      _ ≤ rootMultiplicity a f - 1 + rootMultiplicity a g := add_le_add le_rfl (Nat.succ_le_iff.1
+        ((rootMultiplicity_pos hg0).2 (h haf)))
+  · simp [haf, rootMultiplicity_eq_zero haf]
