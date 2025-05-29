@@ -137,7 +137,7 @@ theorem liftLeft_liftOfRightInverse' :
     f.liftLeft p (p.liftOfRightInverse' p_inv f hf) liftOfRightInverse'_comp_apply =
     p.liftOfRightInverse' p_inv f hf := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem liftOfRightInverse'_apply_comp {hp : RightInverse p_inv p} :
     p.liftOfRightInverse' p_inv (φ.comp p) (fun x => by simp only [comp_apply, hp (p x)]) = φ :=
   ext fun x => by simp only [liftOfRightInverse'_apply, comp_apply, hp x]
