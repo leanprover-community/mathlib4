@@ -927,28 +927,6 @@ variable [One M] [One N] [One P]
 def liftLeft (f : OneHom M N) (p : OneHom M P) (g : P → N) (hg : ∀ x, g (p x) = f x) :
     OneHom P N where toFun := g; map_one' := by simpa only [hg, map_one] using hg 1
 
-section
-
-variable {f : OneHom M N} {p : OneHom M P} {g hg}
-
-@[to_additive (attr := simp)]
-theorem liftLeft_comp : (f.liftLeft p g hg).comp p = f := ext fun _ => hg _
-
-@[to_additive]
-theorem liftLeft_comp_apply : ∀ x, (f.liftLeft p g hg) (p x) = f x := hg
-
-@[to_additive]
-theorem eq_liftLeft (hp : Surjective p) {g'} (hg' : g'.comp p = f) :
-    g' = f.liftLeft p g hg := by
-  simpa only [cancel_right hp] using
-    hg'.trans (liftLeft_comp (f := f) (p := p) (hg := hg)).symm
-
-@[to_additive (attr := simp)]
-theorem liftLeft_liftLeft : f.liftLeft p (f.liftLeft p g hg) liftLeft_comp_apply =
-    f.liftLeft p g hg := rfl
-
-end
-
 /-- If `p : OneHom P N` is an injective `OneHom`, `g : M → P` is a map, and `f : OneHom M N`
   is a `OneHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `OneHom`. -/
 @[to_additive (attr := simps) " If `p : ZeroHom P N` is an injective `ZeroHom`, `g : M → P`
@@ -957,27 +935,6 @@ end
 def liftRight (f : OneHom M N) {p : OneHom P N} (hp : Injective p) (g : M → P)
     (hg : ∀ x, p (g x) = f x) : OneHom M P where
   toFun := g; map_one' := hp <| by simpa only [map_one] using hg 1
-
-section
-
-variable {f : OneHom M N} {p : OneHom P N} {hp : Injective p} {g hg}
-
-@[to_additive (attr := simp)]
-theorem comp_liftRight : p.comp (f.liftRight hp g hg) = f := ext fun _ => hg _
-
-@[to_additive]
-theorem comp_liftRight_apply : ∀ x, p ((f.liftRight hp g hg) x) = f x := hg
-
-@[to_additive]
-theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := by
-  simpa only [cancel_left hp] using
-    hg'.trans (comp_liftRight (f := f) (hp := hp) (hg := hg)).symm
-
-@[to_additive (attr := simp)]
-theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
-    f.liftRight hp g hg := rfl
-
-end
 
 end OneHom
 
@@ -997,27 +954,6 @@ def liftLeft (f : M →ₙ* N) {p : M →ₙ* P} (hp : Surjective p) (g : P → 
     rcases hp y with ⟨y, rfl⟩
     simp only [← map_mul p x y, hg, map_mul f]
 
-section
-
-variable {f : M →ₙ* N} {p : M →ₙ* P} {hp : Surjective p} {g hg}
-
-@[to_additive (attr := simp)]
-theorem liftLeft_comp : (f.liftLeft hp g hg).comp p = f := ext fun _ => hg _
-
-@[to_additive]
-theorem liftLeft_comp_apply : ∀ x, (f.liftLeft hp g hg) (p x) = f x := hg
-
-@[to_additive]
-theorem eq_liftLeft {g'} (hg' : g'.comp p = f) : g' = f.liftLeft hp g hg := by
-  simpa only [cancel_right hp] using
-    hg'.trans (liftLeft_comp (f := f) (hp := hp) (hg := hg)).symm
-
-@[to_additive (attr := simp)]
-theorem liftLeft_liftLeft : f.liftLeft hp (f.liftLeft hp g hg) liftLeft_comp_apply =
-    f.liftLeft hp g hg := rfl
-
-end
-
 /-- If `p : P →ₙ* N` is an injective `MulHom`, `g : M → P` is a map, and `f : M →ₙ* N`
   is a `MulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MulHom`. -/
 @[to_additive (attr := simps) " If `p : P →ₙ+ N` is an injective `AddMulHom`, `g : M → P`
@@ -1026,27 +962,6 @@ end
 def liftRight (f : M →ₙ* N)
     {p : P →ₙ* N} (hp : Injective p) (g : M → P) (hg : ∀ x, p (g x) = f x) : M →ₙ* P where
   toFun := g; map_mul' x y := hp <| by simp only [hg, map_mul]
-
-section
-
-variable {f : M →ₙ* N} {p : P →ₙ* N} {hp : Injective p} {g hg}
-
-@[to_additive (attr := simp)]
-theorem comp_liftRight : p.comp (f.liftRight hp g hg) = f := ext fun _ => hg _
-
-@[to_additive]
-theorem comp_liftRight_apply : ∀ x, p ((f.liftRight hp g hg) x) = f x := hg
-
-@[to_additive]
-theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := by
-  simpa only [cancel_left hp] using
-    hg'.trans (comp_liftRight (f := f) (hp := hp) (hg := hg)).symm
-
-@[to_additive (attr := simp)]
-theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
-    f.liftRight hp g hg := rfl
-
-end
 
 end MulHom
 
@@ -1067,31 +982,6 @@ def liftLeft (f : M →* N) {p : M →* P} (hp : Surjective p) (g : P → N) (hg
     rcases hp y with ⟨y, rfl⟩
     simp only [← map_mul p x y, hg, map_mul f]
 
-section
-
-variable {f : M →* N} {p : M →* P} {hp : Surjective p} {g hg}
-
-@[to_additive (attr := simp)]
-theorem liftLeft_comp : (f.liftLeft hp g hg).comp p = f := ext fun _ => hg _
-
-@[to_additive]
-theorem liftLeft_comp_apply : ∀ x, (f.liftLeft hp g hg) (p x) = f x := hg
-
-@[to_additive]
-theorem eq_liftLeft {g'} (hg' : g'.comp p = f) : g' = f.liftLeft hp g hg := by
-  simpa only [cancel_right hp] using
-    hg'.trans (liftLeft_comp (f := f) (hp := hp) (hg := hg)).symm
-
-@[to_additive (attr := simp)]
-theorem liftLeft_liftLeft : f.liftLeft hp (f.liftLeft hp g hg) liftLeft_comp_apply =
-    f.liftLeft hp g hg := rfl
-
-@[to_additive (attr := simp)]
-theorem toMulHom_liftLeft : (f.liftLeft hp g hg).toMulHom =
-    f.toMulHom.liftLeft (p := p.toMulHom) hp g hg := rfl
-
-end
-
 /-- If `p : P →* N` is an injective `MonoidHom`, `g : M → P` is a map, and `f : M →* N`
   is a `MonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MonoidHom`. -/
 @[to_additive (attr := simps) " If `p : P →+ N` is an injective `AddMonoidHom`, `g : M → P`
@@ -1101,31 +991,6 @@ def liftRight (f : M →* N) {p : P →* N} (hp : Injective p) (g : M → P) (hg
     M →* P where
   toFun := g; map_one' := hp <| by simpa only [map_one] using hg 1
   map_mul' x y := hp <| by simp only [hg, map_mul]
-
-section
-
-variable {f : M →* N} {p : P →* N} {hp : Injective p} {g hg}
-
-@[to_additive (attr := simp)]
-theorem comp_liftRight : p.comp (f.liftRight hp g hg) = f := ext fun _ => hg _
-
-@[to_additive]
-theorem comp_liftRight_apply : ∀ x, p ((f.liftRight hp g hg) x) = f x := hg
-
-@[to_additive]
-theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := by
-  simpa only [cancel_left hp] using
-    hg'.trans (comp_liftRight (f := f) (hp := hp) (hg := hg)).symm
-
-@[to_additive (attr := simp)]
-theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
-    f.liftRight hp g hg := rfl
-
-@[to_additive (attr := simp)]
-theorem toMulHom_liftRight : (f.liftRight hp g hg).toMulHom =
-    f.toMulHom.liftRight (p := p.toMulHom) hp g hg := rfl
-
-end
 
 end MonoidHom
 
