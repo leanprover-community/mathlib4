@@ -410,8 +410,8 @@ then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   refine cauchySeq_of_edist_le_of_tsum_ne_top _ hu ?_
   rw [ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
-  refine ENNReal.mul_ne_top hC (ENNReal.inv_ne_top.2 ?_)
-  exact (tsub_pos_iff_lt.2 hr).ne'
+  have := (tsub_pos_iff_lt.2 hr).ne'
+  finiteness
 
 include hu in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from

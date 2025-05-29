@@ -9,8 +9,8 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 /-!
 # Derivative of the absolute value
 
-This file compiles basic derivability properties of the absolute value, and is largely inspired
-from `Mathlib.Analysis.InnerProductSpace.Calculus`, which is the analogous file for norms derived
+This file compiles basic derivability properties of the absolute value, and is largely inspired from
+`Mathlib/Analysis/InnerProductSpace/Calculus.lean`, which is the analogous file for norms derived
 from an inner product space.
 
 ## Tags

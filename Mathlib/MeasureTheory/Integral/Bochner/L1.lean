@@ -11,16 +11,17 @@ import Mathlib.MeasureTheory.Integral.SetToL1
 The Bochner integral extends the definition of the Lebesgue integral to functions that map from a
 measure space into a Banach space (complete normed vector space). It is constructed here
 for L1 functions by extending the integral on simple functions. See the file
-`Mathlib.MeasureTheory.Integral.Bochner.Basic` for the integral of functions and corresponding API.
+`Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` for the integral of functions
+and corresponding API.
 
 ## Main definitions
 
 The Bochner integral is defined through the extension process described in the file
-`Mathlib.MeasureTheory.Integral.SetToL1`, which follows these steps:
+`Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
 1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s * x`.
   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
-  (defined in the file `Mathlib.MeasureTheory.Integral.SetToL1`) with respect to the set `s`.
+  (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
 2. Define the integral on simple functions of the type `SimpleFunc α E` (notation : `α →ₛ E`)
   where `E` is a real normed space. (See `SimpleFunc.integral` for details.)
@@ -236,7 +237,7 @@ theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ :
     rcases hy with ⟨⟨rfl, -⟩ | ⟨x, -, rfl⟩, h₀⟩
     exacts [(h₀ rfl).elim, ⟨Set.mem_range_self _, h₀⟩]
   · dsimp
-    rw [Set.piecewise_eq_indicator, indicator_preimage_of_not_mem,
+    rw [Set.piecewise_eq_indicator, indicator_preimage_of_notMem,
       measureReal_restrict_apply (f.measurableSet_preimage _)]
     exact fun h₀ => (mem_filter.1 hy).2 (Eq.symm h₀)
 
