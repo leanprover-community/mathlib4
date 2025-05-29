@@ -93,11 +93,11 @@ include hf
 
 theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
     leftLim f x = sSup (f '' Iio x) :=
-  leftLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Iio x)
+  leftLim_eq_of_tendsto h (hf.tendsto_nhdsLT x)
 
 theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
     rightLim f x = sInf (f '' Ioi x) :=
-  rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
+  rightLim_eq_of_tendsto h (hf.tendsto_nhdsGT x)
 
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   letI : TopologicalSpace α := Preorder.topology α
@@ -148,11 +148,9 @@ theorem leftLim_le_rightLim (h : x ≤ y) : leftLim f x ≤ rightLim f y :=
 theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
-  rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
+  rcases eq_or_neBot (𝓝[<] y) with (h' | h')
   · simpa [leftLim, h'] using rightLim_le hf h
-  obtain ⟨a, ⟨xa, ay⟩⟩ : (Ioo x y).Nonempty :=
-    forall_mem_nonempty_iff_neBot.2 (neBot_iff.2 h') (Ioo x y)
-      (Ioo_mem_nhdsWithin_Iio ⟨h, le_refl _⟩)
+  obtain ⟨a, ⟨xa, ay⟩⟩ : (Ioo x y).Nonempty := nonempty_of_mem (Ioo_mem_nhdsLT h)
   calc
     rightLim f x ≤ f a := hf.rightLim_le xa
     _ ≤ leftLim f y := hf.le_leftLim ay
@@ -163,7 +161,7 @@ theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) :=
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simp [h']
   rw [leftLim_eq_sSup hf h']
-  exact hf.tendsto_nhdsWithin_Iio x
+  exact hf.tendsto_nhdsLT x
 
 theorem tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≤] leftLim f x) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within f (hf.tendsto_leftLim x)
@@ -223,7 +221,7 @@ theorem countable_not_continuousWithinAt_Ioi [SecondCountableTopology β] :
   · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
       (hf (le_of_lt hy))
   rcases hx u hu with ⟨v, xv, fvu⟩
-  have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsWithin_Ioi ⟨le_refl _, xv⟩
+  have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsGT xv
   filter_upwards [this] with y hy
   apply (hf hy.2.le).trans_lt fvu
 

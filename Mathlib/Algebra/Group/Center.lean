@@ -20,14 +20,15 @@ import Mathlib.Data.Set.Basic
 
 ## See also
 
-See `Mathlib.GroupTheory.Subsemigroup.Center` for the definition of the center as a subsemigroup:
+See `Mathlib/GroupTheory/Subsemigroup/Center.lean` for the definition of the center as a
+subsemigroup:
 * `Subsemigroup.center`: the center of a semigroup
 * `AddSubsemigroup.center`: the center of an additive semigroup
 
 We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSubgroup.center`,
 `Subsemiring.center`, and `Subring.center` in other files.
 
-See `Mathlib.GroupTheory.Subsemigroup.Centralizer` for the definition of the centralizer
+See `Mathlib/GroupTheory/Subsemigroup/Centralizer.lean` for the definition of the centralizer
 as a subsemigroup:
 * `Subsemigroup.centralizer`: the centralizer of a subset of a semigroup
 * `AddSubsemigroup.centralizer`: the centralizer of a subset of an additive semigroup
@@ -36,9 +37,7 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 `AddSubgroup.centralizer` in other files.
 -/
 
-assert_not_exists Finset
-assert_not_exists MonoidWithZero
-assert_not_exists Subsemigroup
+assert_not_exists RelIso Finset MonoidWithZero Subsemigroup
 
 variable {M : Type*} {S T : Set M}
 
@@ -102,7 +101,6 @@ variable (S) in
 @[to_additive addCentralizer " The centralizer of a subset of an additive magma. "]
 def centralizer : Set M := {c | ∀ m ∈ S, m * c = c * m}
 
--- Porting note: The `to_additive` version used to be `mem_addCenter` without the iff
 @[to_additive mem_addCenter_iff]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ IsMulCentral z :=
   Iff.rfl

@@ -3,8 +3,8 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Multilinear.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Constructions relating multilinear maps and tensor products.
@@ -22,6 +22,47 @@ variable {R ι₁ ι₂ ι₃ ι₄ : Type*}
 variable [CommSemiring R]
 variable {N₁ : Type*} [AddCommMonoid N₁] [Module R N₁]
 variable {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
+
+attribute [local simp] add_tmul tmul_add smul_tmul
+
+section
+
+variable {N : ι₁ ⊕ ι₂ → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+
+/-- Given a family of modules `N` indexed by a type `ι₁ ⊕ ι₂`,
+a multilinear map from the modules `N (.inl i₁)` to `N₁` and
+a multilinear map from the modules `N (.inr i₁)` to `N₂`, this
+is the induced multilinear map from all the modules `N i` to `N₁ ⊗ N₂`. -/
+@[simps apply]
+def domCoprodDep (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
+    (b : MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂) :
+    MultilinearMap R N (N₁ ⊗[R] N₂) where
+  toFun v := a (fun i₁ ↦ v (.inl i₁)) ⊗ₜ b (fun i₂ ↦ v (.inr i₂))
+  map_update_add' := by
+    rintro _ _ (_ | _) _ _
+    · letI := Classical.decEq ι₁; simp
+    · letI := Classical.decEq ι₂; simp
+  map_update_smul' := by
+    rintro _ m (i₁ | i₂) p q
+    · letI := Classical.decEq ι₁; simp
+    · letI := Classical.decEq ι₂; simp
+
+/-- A more bundled version of `MultilinearMap.domCoprodDep`, as a linear map
+from the tensor product of spaces of multilinear maps. -/
+def domCoprodDep' :
+    MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁ ⊗[R] MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂ →ₗ[R]
+        MultilinearMap R N (N₁ ⊗[R] N₂) :=
+  TensorProduct.lift (LinearMap.mk₂ R domCoprodDep
+    (by aesop) (by aesop) (by aesop) (by aesop))
+
+@[simp]
+theorem domCoprodDep'_apply (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
+    (b : MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂) :
+    domCoprodDep' (a ⊗ₜ b) = domCoprodDep a b := by
+  rfl
+
+end
+
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 
 /-- Given two multilinear maps `(ι₁ → N) → N₁` and `(ι₂ → N) → N₂`, this produces the map
@@ -37,39 +78,18 @@ introduces `Sum.elim N'₁ N'₂` types in the result which are difficult to wor
 to the simple case defined here. See [this zulip thread](
 https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there.20code.20for.20X.3F/topic/Instances.20on.20.60sum.2Eelim.20A.20B.20i.60/near/218484619).
 -/
-@[simps apply]
+@[simps! apply]
 def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
     (b : MultilinearMap R (fun _ : ι₂ => N) N₂) :
-    MultilinearMap R (fun _ : ι₁ ⊕ ι₂ => N) (N₁ ⊗[R] N₂) where
-  toFun v := (a fun i => v (Sum.inl i)) ⊗ₜ b fun i => v (Sum.inr i)
-  map_update_add' _ i p q := by
-    letI := (@Sum.inl_injective ι₁ ι₂).decidableEq
-    letI := (@Sum.inr_injective ι₁ ι₂).decidableEq
-    cases i <;> simp [TensorProduct.add_tmul, TensorProduct.tmul_add]
-  map_update_smul' _ i c p := by
-    letI := (@Sum.inl_injective ι₁ ι₂).decidableEq
-    letI := (@Sum.inr_injective ι₁ ι₂).decidableEq
-    cases i <;> simp [TensorProduct.smul_tmul', TensorProduct.tmul_smul]
+    MultilinearMap R (fun _ : ι₁ ⊕ ι₂ => N) (N₁ ⊗[R] N₂) :=
+  domCoprodDep a b
 
 /-- A more bundled version of `MultilinearMap.domCoprod` that maps
 `((ι₁ → N) → N₁) ⊗ ((ι₂ → N) → N₂)` to `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂`. -/
 def domCoprod' :
     MultilinearMap R (fun _ : ι₁ => N) N₁ ⊗[R] MultilinearMap R (fun _ : ι₂ => N) N₂ →ₗ[R]
       MultilinearMap R (fun _ : ι₁ ⊕ ι₂ => N) (N₁ ⊗[R] N₂) :=
-  TensorProduct.lift <|
-    LinearMap.mk₂ R domCoprod
-      (fun m₁ m₂ n => by
-        ext
-        simp only [domCoprod_apply, TensorProduct.add_tmul, add_apply])
-      (fun c m n => by
-        ext
-        simp only [domCoprod_apply, TensorProduct.smul_tmul', smul_apply])
-      (fun m n₁ n₂ => by
-        ext
-        simp only [domCoprod_apply, TensorProduct.tmul_add, add_apply])
-      fun c m n => by
-      ext
-      simp only [domCoprod_apply, TensorProduct.tmul_smul, smul_apply]
+  domCoprodDep' (R := R) (N := fun (_ : ι₁ ⊕ ι₂) ↦ N)
 
 @[simp]
 theorem domCoprod'_apply (a : MultilinearMap R (fun _ : ι₁ => N) N₁)

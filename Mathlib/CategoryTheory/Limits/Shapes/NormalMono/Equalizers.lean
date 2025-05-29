@@ -23,7 +23,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 namespace CategoryTheory.NormalMonoCategory
 
-variable [HasFiniteProducts C] [HasKernels C] [NormalMonoCategory C]
+variable [HasFiniteProducts C] [HasKernels C] [IsNormalMonoCategory C]
 
 /-- The pullback of two monomorphisms exists. -/
 @[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def
@@ -101,7 +101,7 @@ private abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (
   pullback (prod.lift (𝟙 X) f) (prod.lift (𝟙 X) g)
 
 /-- The equalizer of `f` and `g` exists. -/
- -- Porting note: changed to irreducible def since irreducible_def was breaking things
+-- Porting note: changed to irreducible def since irreducible_def was breaking things
 @[irreducible, nolint defLemma]
 def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   have huv : (pullback.fst _ _ : P f g ⟶ X) = pullback.snd _ _ :=
@@ -173,7 +173,7 @@ end CategoryTheory.NormalMonoCategory
 
 namespace CategoryTheory.NormalEpiCategory
 
-variable [HasFiniteCoproducts C] [HasCokernels C] [NormalEpiCategory C]
+variable [HasFiniteCoproducts C] [HasCokernels C] [IsNormalEpiCategory C]
 
 /-- The pushout of two epimorphisms exists. -/
 @[irreducible, nolint defLemma] -- Porting note: made a def and re-added irreducible

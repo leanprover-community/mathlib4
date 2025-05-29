@@ -37,7 +37,7 @@ theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degr
           rw [leadingCoeff_eq_zero_iff_deg_eq_bot.1 h] at hq
           cases hq
     _ = LinearMap.ker (aeval f (C q.leadingCoeff * X + C (q.coeff 0))) := by
-          rw [C_mul', aeval_def]; simp [algebraMap, Algebra.toRingHom]
+          rw [C_mul', aeval_def]; simp [algebraMap, Algebra.algebraMap]
     _ = LinearMap.ker (aeval f q) := by rwa [← eq_X_add_C_of_degree_eq_one]
 
 theorem ker_aeval_ring_hom'_unit_polynomial (f : End K V) (c : K[X]ˣ) :
@@ -53,7 +53,7 @@ theorem aeval_apply_of_hasEigenvector {f : End K V} {p : K[X]} {μ : K} {x : V}
   · intro a; simp [Module.algebraMap_end_apply]
   · intro p q hp hq; simp [hp, hq, add_smul]
   · intro n a hna
-    rw [mul_comm, pow_succ', mul_assoc, map_mul, LinearMap.mul_apply, mul_comm, hna]
+    rw [mul_comm, pow_succ', mul_assoc, map_mul, Module.End.mul_apply, mul_comm, hna]
     simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       LinearMap.map_smulₛₗ, RingHom.id_apply, mul_comm]
 
@@ -67,10 +67,10 @@ variable [FiniteDimensional K V] (f : End K V)
 variable {f} {μ : K}
 
 theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue μ := by
-  cases' dvd_iff_isRoot.2 h with p hp
+  obtain ⟨p, hp⟩ := dvd_iff_isRoot.2 h
   rw [hasEigenvalue_iff, eigenspace_def]
   intro con
-  cases' (LinearMap.isUnit_iff_ker_eq_bot _).2 con with u hu
+  obtain ⟨u, hu⟩ := (LinearMap.isUnit_iff_ker_eq_bot _).2 con
   have p_ne_0 : p ≠ 0 := by
     intro con
     apply minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := K) f)

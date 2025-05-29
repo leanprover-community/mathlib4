@@ -3,12 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.Algebra.Polynomial.Basic
 
 /-!
 # Univariate monomials
-
-Preparatory lemmas for degree_basic.
 -/
 
 
@@ -23,7 +22,6 @@ variable [Semiring R] {p q r : R[X]}
 
 theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
     (monomial i 1 : R[X]) = monomial j 1 ↔ i = j := by
-  -- Porting note: `ofFinsupp.injEq` is required.
   simp_rw [← ofFinsupp_single, ofFinsupp.injEq]
   exact AddMonoidAlgebra.of_injective.eq_iff
 
@@ -41,7 +39,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
     by_cases hi : i = n
     · simp [hi, coeff_monomial]
     · have : f.coeff i = 0 := by
-        rw [← not_mem_support_iff]
+        rw [← notMem_support_iff]
         exact fun hi' => hi (Finset.mem_singleton.1 (hn hi'))
       simp [this, Ne.symm hi, coeff_monomial]
   · rintro ⟨n, a, rfl⟩

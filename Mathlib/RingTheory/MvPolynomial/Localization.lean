@@ -3,11 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -35,41 +36,11 @@ attribute [local instance] algebraMvPolynomial
 /--
 If `S` is the localization of `R` at a submonoid `M`, then `MvPolynomial σ S`
 is the localization of `MvPolynomial σ R` at `M.map MvPolynomial.C`.
--/
-instance isLocalization : IsLocalization (M.map <| C (σ := σ))
-    (MvPolynomial σ S) where
-  map_units' := by
-    rintro ⟨p, q, hq, rfl⟩
-    simp only [algebraMap_def, map_C]
-    exact IsUnit.map _ (IsLocalization.map_units _ ⟨q, hq⟩)
-  surj' p := by
-    simp only [algebraMap_def, Prod.exists, Subtype.exists,
-      Submonoid.mem_map, exists_prop, exists_exists_and_eq_and, map_C]
-    refine induction_on' p ?_ ?_
-    · intro u s
-      obtain ⟨⟨r, m⟩, hr⟩ := IsLocalization.surj M s
-      use monomial u r, m, m.property
-      simp only [map_monomial]
-      rw [← hr, mul_comm, C_mul_monomial, mul_comm]
-    · intro p p' ⟨x, m, hm, hxm⟩ ⟨x', m', hm', hxm'⟩
-      use x * (C m') + x' * (C m), m * m', Submonoid.mul_mem _ hm hm'
-      simp only [map_mul, map_add, map_C]
-      rw [add_mul, ← mul_assoc, hxm, ← mul_assoc, ← hxm, ← hxm']
-      ring
-  exists_of_eq {p q} := by
-    intro h
-    simp_rw [algebraMap_def, MvPolynomial.ext_iff, coeff_map] at h
-    choose c hc using (fun m ↦ IsLocalization.exists_of_eq (M := M) (h m))
-    simp only [Subtype.exists, Submonoid.mem_map, exists_prop, exists_exists_and_eq_and]
-    classical
-    refine ⟨Finset.prod (p.support ∪ q.support) (fun m ↦ c m), ?_, ?_⟩
-    · exact M.prod_mem (fun m _ ↦ (c m).property)
-    · ext m
-      simp only [coeff_C_mul]
-      by_cases h : m ∈ p.support ∪ q.support
-      · exact Finset.prod_mul_eq_prod_mul_of_exists m h (hc m)
-      · simp only [Finset.mem_union, mem_support_iff, ne_eq, not_or, Decidable.not_not] at h
-        rw [h.left, h.right]
+
+See also `Polynomial.isLocalization` for the univariate case. -/
+instance isLocalization : IsLocalization (M.map <| C (σ := σ)) (MvPolynomial σ S) :=
+  isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange M S _).mpr <|
+    .of_equiv (algebraTensorAlgEquiv _ _).toLinearEquiv fun _ ↦ by simp
 
 lemma isLocalization_C_mk' (a : R) (m : M) :
     C (IsLocalization.mk' S a m) = IsLocalization.mk' (MvPolynomial σ S) (C (σ := σ) a)
@@ -126,8 +97,8 @@ private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = 
   ext x
   · simp [auxInv]
   · simp only [auxInv, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
-      Function.comp_apply, auxHom_mk, aeval_X, RingHomCompTriple.comp_eq]
-    erw [IsLocalization.lift_mk'_spec]
+      Function.comp_apply, auxHom_mk, aeval_X, RingHomCompTriple.comp_eq, invSelf, Away.lift,
+      lift_mk'_spec]
     simp only [map_one, RingHom.coe_comp, Function.comp_apply]
     rw [← map_one (Ideal.Quotient.mk _), ← map_mul, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
       ← Ideal.neg_mem_iff, neg_sub]

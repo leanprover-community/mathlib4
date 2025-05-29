@@ -90,6 +90,10 @@ lemma Disjoint.eq_iff (hab : Disjoint a b) : a = b ↔ a = ⊥ ∧ b = ⊥ := by
 lemma Disjoint.ne_iff (hab : Disjoint a b) : a ≠ b ↔ a ≠ ⊥ ∨ b ≠ ⊥ :=
   hab.eq_iff.not.trans not_and_or
 
+theorem disjoint_of_le_iff_left_eq_bot (h : a ≤ b) :
+    Disjoint a b ↔ a = ⊥ :=
+  ⟨fun hd ↦ hd.eq_bot_of_le h, fun h ↦ h ▸ disjoint_bot_left⟩
+
 end PartialOrderBot
 
 section PartialBoundedOrder
@@ -115,10 +119,6 @@ theorem disjoint_iff_inf_le : Disjoint a b ↔ a ⊓ b ≤ ⊥ :=
 
 theorem disjoint_iff : Disjoint a b ↔ a ⊓ b = ⊥ :=
   disjoint_iff_inf_le.trans le_bot_iff
-
-theorem disjoint_of_le_iff_left_eq_bot (h : a ≤ b) :
-    Disjoint a b ↔ a = ⊥ := by
-  simp only [disjoint_iff, inf_eq_left.mpr h]
 
 theorem Disjoint.le_bot : Disjoint a b → a ⊓ b ≤ ⊥ :=
   disjoint_iff_inf_le.mp
@@ -356,31 +356,31 @@ end Codisjoint
 
 open OrderDual
 
-theorem Disjoint.dual [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem Disjoint.dual [PartialOrder α] [OrderBot α] {a b : α} :
     Disjoint a b → Codisjoint (toDual a) (toDual b) :=
   id
 
-theorem Codisjoint.dual [SemilatticeSup α] [OrderTop α] {a b : α} :
+theorem Codisjoint.dual [PartialOrder α] [OrderTop α] {a b : α} :
     Codisjoint a b → Disjoint (toDual a) (toDual b) :=
   id
 
 @[simp]
-theorem disjoint_toDual_iff [SemilatticeSup α] [OrderTop α] {a b : α} :
+theorem disjoint_toDual_iff [PartialOrder α] [OrderTop α] {a b : α} :
     Disjoint (toDual a) (toDual b) ↔ Codisjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem disjoint_ofDual_iff [SemilatticeInf α] [OrderBot α] {a b : αᵒᵈ} :
+theorem disjoint_ofDual_iff [PartialOrder α] [OrderBot α] {a b : αᵒᵈ} :
     Disjoint (ofDual a) (ofDual b) ↔ Codisjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem codisjoint_toDual_iff [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem codisjoint_toDual_iff [PartialOrder α] [OrderBot α] {a b : α} :
     Codisjoint (toDual a) (toDual b) ↔ Disjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem codisjoint_ofDual_iff [SemilatticeSup α] [OrderTop α] {a b : αᵒᵈ} :
+theorem codisjoint_ofDual_iff [PartialOrder α] [OrderTop α] {a b : αᵒᵈ} :
     Codisjoint (ofDual a) (ofDual b) ↔ Disjoint a b :=
   Iff.rfl
 
@@ -633,13 +633,11 @@ theorem coe_injective : Injective ((↑) : Complementeds α → α) := Subtype.c
 @[simp, norm_cast]
 theorem coe_inj : (a : α) = b ↔ a = b := Subtype.coe_inj
 
--- Porting note: removing `simp` because `Subtype.coe_le_coe` already proves it
 @[norm_cast]
 theorem coe_le_coe : (a : α) ≤ b ↔ a ≤ b := by simp
 
--- Porting note: removing `simp` because `Subtype.coe_lt_coe` already proves it
 @[norm_cast]
-theorem coe_lt_coe : (a : α) < b ↔ a < b := Iff.rfl
+theorem coe_lt_coe : (a : α) < b ↔ a < b := by simp
 
 instance : BoundedOrder (Complementeds α) :=
   Subtype.boundedOrder isComplemented_bot isComplemented_top
@@ -650,11 +648,9 @@ theorem coe_bot : ((⊥ : Complementeds α) : α) = ⊥ := rfl
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : Complementeds α) : α) = ⊤ := rfl
 
--- Porting note: removing `simp` because `Subtype.mk_bot` already proves it
-theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := rfl
+theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := by simp
 
--- Porting note: removing `simp` because `Subtype.mk_top` already proves it
-theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := rfl
+theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := by simp
 
 instance : Inhabited (Complementeds α) := ⟨⊥⟩
 

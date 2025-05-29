@@ -15,6 +15,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   primes `p`, and `f` is multiplicative on coprime elements, then `f` is multiplicative everywhere.
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -78,7 +79,7 @@ theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}
   · rwa [ha0]
   haveI : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
   letI : NormalizationMonoid α := UniqueFactorizationMonoid.normalizationMonoid
-  refine P_of_associated (normalizedFactors_prod ha0) ?_
+  refine P_of_associated (prod_normalizedFactors ha0) ?_
   rw [← (normalizedFactors a).map_id, Finset.prod_multiset_map_count]
   refine induction_on_prime_power _ _ ?_ ?_ @h1 @hpr @hcp <;> simp only [Multiset.mem_toFinset]
   · apply prime_of_normalized_factor
@@ -131,8 +132,8 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
         p ^ (normalizedFactors a).count p) *
       f (∏ p ∈ (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
         p ^ (normalizedFactors b).count p) by
-    obtain ⟨ua, a_eq⟩ := normalizedFactors_prod ha0
-    obtain ⟨ub, b_eq⟩ := normalizedFactors_prod hb0
+    obtain ⟨ua, a_eq⟩ := prod_normalizedFactors ha0
+    obtain ⟨ub, b_eq⟩ := prod_normalizedFactors hb0
     rw [← a_eq, ← b_eq, mul_right_comm (Multiset.prod (normalizedFactors a)) ua
         (Multiset.prod (normalizedFactors b) * ub), h1 ua.isUnit, h1 ub.isUnit, h1 ua.isUnit, ←
       mul_assoc, h1 ub.isUnit, mul_right_comm _ (f ua), ← mul_assoc]

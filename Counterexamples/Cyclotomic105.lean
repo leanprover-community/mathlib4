@@ -87,14 +87,14 @@ theorem cyclotomic_105 :
         X ^ 46 + X ^ 47 + X ^ 48 := by
   refine ((eq_cyclotomic_iff (by norm_num) _).2 ?_).symm
   rw [properDivisors_105]
-  repeat rw [Finset.prod_insert (α := ℕ) (β := ℤ[X])]
+  repeat rw [Finset.prod_insert]
   · rw [Finset.prod_singleton, cyclotomic_one, cyclotomic_3, cyclotomic_5, cyclotomic_7,
       cyclotomic_15, cyclotomic_21, cyclotomic_35]
     ring
   repeat' norm_num
 
 theorem coeff_cyclotomic_105 : coeff (cyclotomic 105 ℤ) 7 = -2 := by
-  simp [cyclotomic_105, coeff_one, coeff_X_of_ne_one]
+  simp [cyclotomic_105, coeff_X_of_ne_one, coeff_one]
 
 theorem not_forall_coeff_cyclotomic_neg_one_zero_one :
     ¬∀ n i, coeff (cyclotomic n ℤ) i ∈ ({-1, 0, 1} : Set ℤ) := by

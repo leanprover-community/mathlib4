@@ -3,8 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Ring.Subring.Defs
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 
 /-!
 # Subfields
@@ -49,8 +50,8 @@ variable {K : Type u} {L : Type v} {M : Type w}
 variable [DivisionRing K] [DivisionRing L] [DivisionRing M]
 
 /-- `SubfieldClass S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
-class SubfieldClass (S K : Type*) [DivisionRing K] [SetLike S K] extends SubringClass S K,
-  InvMemClass S K : Prop
+class SubfieldClass (S K : Type*) [DivisionRing K] [SetLike S K] : Prop
+    extends SubringClass S K, InvMemClass S K
 
 namespace SubfieldClass
 
@@ -61,7 +62,7 @@ variable (S : Type*) [SetLike S K] [h : SubfieldClass S K]
 
 Be assured that we're not actually proving that subfields are subgroups:
 `SubgroupClass` is really an abbreviation of `SubgroupWithOrWithoutZeroClass`.
- -/
+-/
 instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
   { h with }
 
@@ -89,10 +90,6 @@ lemma nnqsmul_mem (s : S) (q : ℚ≥0) (hx : x ∈ s) : q • x ∈ s := by
 lemma qsmul_mem (s : S) (q : ℚ) (hx : x ∈ s) : q • x ∈ s := by
   simpa only [Rat.smul_def] using mul_mem (ratCast_mem _ _) hx
 
-@[deprecated (since := "2024-04-05")] alias coe_rat_cast := coe_ratCast
-@[deprecated (since := "2024-04-05")] alias coe_rat_mem := ratCast_mem
-@[deprecated (since := "2024-04-05")] alias rat_smul_mem := qsmul_mem
-
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
     (OfScientific.ofScientific n b m : K) ∈ s :=
@@ -107,7 +104,7 @@ instance instSMulRat (s : S) : SMul ℚ s where smul q x := ⟨q • x, qsmul_me
 variable (S)
 
 /-- A subfield inherits a division ring structure -/
-instance (priority := 75) toDivisionRing (s : S) : DivisionRing s :=
+instance (priority := 75) toDivisionRing (s : S) : DivisionRing s := fast_instance%
   Subtype.coe_injective.divisionRing ((↑) : s → K)
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
@@ -117,7 +114,7 @@ instance (priority := 75) toDivisionRing (s : S) : DivisionRing s :=
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield of a field inherits a field structure -/
 instance (priority := 75) toField {K} [Field K] [SetLike S K] [SubfieldClass S K] (s : S) :
-    Field s :=
+    Field s := fast_instance%
   Subtype.coe_injective.field ((↑) : s → K)
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
@@ -256,8 +253,6 @@ protected theorem zsmul_mem {x : K} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
 
 protected theorem intCast_mem (n : ℤ) : (n : K) ∈ s := intCast_mem s n
 
-@[deprecated (since := "2024-04-05")] alias coe_int_mem := intCast_mem
-
 theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n
   · simpa using s.pow_mem hx _
@@ -276,14 +271,14 @@ instance : Pow s ℤ :=
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
 
 -- TODO: Those are just special cases of `SubfieldClass.toDivisionRing`/`SubfieldClass.toField`
-instance toDivisionRing (s : Subfield K) : DivisionRing s :=
+instance toDivisionRing (s : Subfield K) : DivisionRing s := fast_instance%
   Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ ↦ rfl) fun _ ↦ rfl
 
 /-- A subfield inherits a field structure -/
-instance toField {K} [Field K] (s : Subfield K) : Field s :=
+instance toField {K} [Field K] (s : Subfield K) : Field s := fast_instance%
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ ↦ rfl) (fun _ => rfl)
@@ -326,6 +321,14 @@ end DerivedFromSubfieldClass
 /-- The embedding from a subfield of the field `K` to `K`. -/
 def subtype (s : Subfield K) : s →+* K :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
+
+@[simp]
+lemma subtype_apply {s : Subfield K} (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective (s : Subfield K) :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K) :=

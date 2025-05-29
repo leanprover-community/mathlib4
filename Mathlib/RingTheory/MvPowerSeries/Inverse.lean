@@ -56,9 +56,9 @@ The inverse of a multivariate formal power series is defined by
 well-founded recursion on the coefficients of the inverse.
 -/
 /-- Auxiliary definition that unifies
- the totalised inverse formal power series `(_)⁻¹` and
- the inverse formal power series that depends on
- an inverse of the constant coefficient `invOfUnit`. -/
+the totalised inverse formal power series `(_)⁻¹` and
+the inverse formal power series that depends on
+an inverse of the constant coefficient `invOfUnit`. -/
 protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerSeries σ R
   | n =>
     letI := Classical.decEq σ
@@ -110,17 +110,17 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
       classical
       have : ((0 : σ →₀ ℕ), n) ∈ antidiagonal n := by rw [mem_antidiagonal, zero_add]
       rw [coeff_one, if_neg H, coeff_mul, ← Finset.insert_erase this,
-        Finset.sum_insert (Finset.not_mem_erase _ _), coeff_zero_eq_constantCoeff_apply, h,
+        Finset.sum_insert (Finset.notMem_erase _ _), coeff_zero_eq_constantCoeff_apply, h,
         coeff_invOfUnit, if_neg H, neg_mul, mul_neg, Units.mul_inv_cancel_left, ←
-        Finset.insert_erase this, Finset.sum_insert (Finset.not_mem_erase _ _),
+        Finset.insert_erase this, Finset.sum_insert (Finset.notMem_erase _ _),
         Finset.insert_erase this, if_neg (not_lt_of_ge <| le_rfl), zero_add, add_comm, ←
         sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
       rintro ⟨i, j⟩ hij
       rw [Finset.mem_erase, mem_antidiagonal] at hij
-      cases' hij with h₁ h₂
+      obtain ⟨h₁, h₂⟩ := hij
       subst n
       rw [if_pos]
-      suffices (0 : _) + j < i + j by simpa
+      suffices 0 + j < i + j by simpa
       apply add_lt_add_right
       constructor
       · intro s
@@ -172,7 +172,7 @@ variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 -- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
 /-- The map between multivariate formal power series over the same indexing set
- induced by a local ring hom `A → B` is local -/
+induced by a local ring hom `A → B` is local -/
 @[instance]
 theorem map.isLocalHom : IsLocalHom (map σ f) :=
   ⟨by
@@ -183,9 +183,6 @@ theorem map.isLocalHom : IsLocalHom (map σ f) :=
     rw [h] at this
     rcases isUnit_of_map_unit f _ this with ⟨c, hc⟩
     exact isUnit_of_mul_eq_one φ (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
-
-@[deprecated (since := "2024-10-10")]
-alias map.isLocalRingHom := map.isLocalHom
 
 end IsLocalRing
 
@@ -267,7 +264,7 @@ protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
   · rw [inv_eq_zero.mpr h]
     simp only [map_mul, mul_eq_zero] at h
     -- we don't have `NoZeroDivisors (MvPowerSeries σ k)` yet,
-    cases' h with h h <;> simp [inv_eq_zero.mpr h]
+    rcases h with h | h <;> simp [inv_eq_zero.mpr h]
   · rw [MvPowerSeries.inv_eq_iff_mul_eq_one h]
     simp only [not_or, map_mul, mul_eq_zero] at h
     rw [← mul_assoc, mul_assoc _⁻¹, MvPowerSeries.inv_mul_cancel _ h.left, mul_one,

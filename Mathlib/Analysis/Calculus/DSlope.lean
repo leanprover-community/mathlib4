@@ -34,13 +34,13 @@ noncomputable def dslope (f : 𝕜 → E) (a : 𝕜) : 𝕜 → E :=
 @[simp]
 theorem dslope_same (f : 𝕜 → E) (a : 𝕜) : dslope f a a = deriv f a := by
   classical
-  exact update_same _ _ _
+  exact update_self ..
 
 variable {f : 𝕜 → E} {a b : 𝕜} {s : Set 𝕜}
 
 theorem dslope_of_ne (f : 𝕜 → E) (h : b ≠ a) : dslope f a b = slope f a b := by
   classical
-  exact update_noteq h _ _
+  exact update_of_ne h ..
 
 theorem ContinuousLinearMap.dslope_comp {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     (f : E →L[𝕜] F) (g : 𝕜 → E) (a b : 𝕜) (H : a = b → DifferentiableAt 𝕜 g a) :
@@ -56,8 +56,11 @@ theorem eqOn_dslope_slope (f : 𝕜 → E) (a : 𝕜) : EqOn (dslope f a) (slope
 theorem dslope_eventuallyEq_slope_of_ne (f : 𝕜 → E) (h : b ≠ a) : dslope f a =ᶠ[𝓝 b] slope f a :=
   (eqOn_dslope_slope f a).eventuallyEq_of_mem (isOpen_ne.mem_nhds h)
 
-theorem dslope_eventuallyEq_slope_punctured_nhds (f : 𝕜 → E) : dslope f a =ᶠ[𝓝[≠] a] slope f a :=
+theorem dslope_eventuallyEq_slope_nhdsNE (f : 𝕜 → E) : dslope f a =ᶠ[𝓝[≠] a] slope f a :=
   (eqOn_dslope_slope f a).eventuallyEq_of_mem self_mem_nhdsWithin
+
+@[deprecated (since := "2025-03-02")]
+alias dslope_eventuallyEq_slope_punctured_nhds := dslope_eventuallyEq_slope_nhdsNE
 
 @[simp]
 theorem sub_smul_dslope (f : 𝕜 → E) (a b : 𝕜) : (b - a) • dslope f a b = f b - f a := by
@@ -129,10 +132,13 @@ theorem differentiableWithinAt_dslope_of_ne (h : b ≠ a) :
   refine (eqOn_dslope_slope _ _).eventuallyEq_of_mem ?_
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 
-theorem differentiableOn_dslope_of_nmem (h : a ∉ s) :
+theorem differentiableOn_dslope_of_notMem (h : a ∉ s) :
     DifferentiableOn 𝕜 (dslope f a) s ↔ DifferentiableOn 𝕜 f s :=
   forall_congr' fun _ =>
     forall_congr' fun hx => differentiableWithinAt_dslope_of_ne <| ne_of_mem_of_not_mem hx h
+
+@[deprecated (since := "2025-05-24")]
+alias differentiableOn_dslope_of_nmem := differentiableOn_dslope_of_notMem
 
 theorem differentiableAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableAt 𝕜 (dslope f a) b ↔ DifferentiableAt 𝕜 f b := by

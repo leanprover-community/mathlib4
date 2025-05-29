@@ -3,15 +3,14 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # A collection of specific asymptotic results
 
 This file contains specific lemmas about asymptotics which don't have their place in the general
-theory developed in `Mathlib.Analysis.Asymptotics.Asymptotics`.
+theory developed in `Mathlib/Analysis/Asymptotics/Asymptotics.lean`.
 -/
 
 
@@ -28,13 +27,13 @@ theorem Filter.IsBoundedUnder.isLittleO_sub_self_inv {𝕜 E : Type*} [NormedFie
     f =o[𝓝[≠] a] fun x => (x - a)⁻¹ := by
   refine (h.isBigO_const (one_ne_zero' ℝ)).trans_isLittleO (isLittleO_const_left.2 <| Or.inr ?_)
   simp only [Function.comp_def, norm_inv]
-  exact (tendsto_norm_sub_self_punctured_nhds a).inv_tendsto_zero
+  exact (tendsto_norm_sub_self_nhdsNE a).inv_tendsto_nhdsGT_zero
 
 end NormedField
 
 section LinearOrderedField
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 theorem pow_div_pow_eventuallyEq_atTop {p q : ℕ} :
     (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atTop] fun x => x ^ ((p : ℤ) - q) := by
@@ -64,9 +63,10 @@ end LinearOrderedField
 
 section NormedLinearOrderedField
 
-variable {𝕜 : Type*} [NormedLinearOrderedField 𝕜]
+variable {𝕜 : Type*} [NormedField 𝕜]
 
-theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
+theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt
+    [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
     (fun x : 𝕜 => x ^ p) =o[atTop] fun x => x ^ q := by
   refine (isLittleO_iff_tendsto' ?_).mpr (tendsto_pow_div_pow_atTop_zero hpq)
   exact (eventually_gt_atTop 0).mono fun x hx hxq => (pow_ne_zero q hx.ne' hxq).elim
@@ -143,3 +143,20 @@ theorem Filter.Tendsto.cesaro {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (
   h.cesaro_smul
 
 end Real
+
+section NormedLinearOrderedField
+
+variable {R : Type*} [NormedField R] [LinearOrder R] [IsStrictOrderedRing R]
+  [OrderTopology R] [FloorRing R]
+
+theorem Asymptotics.isEquivalent_nat_floor :
+    (fun (x : R) ↦ ↑⌊x⌋₊) ~[atTop] (fun x ↦ x) := by
+  refine isEquivalent_of_tendsto_one ?_ tendsto_nat_floor_div_atTop
+  filter_upwards with x hx using by rw [hx, Nat.floor_zero, Nat.cast_eq_zero]
+
+theorem Asymptotics.isEquivalent_nat_ceil :
+    (fun (x : R) ↦ ↑⌈x⌉₊) ~[atTop] (fun x ↦ x) := by
+  refine isEquivalent_of_tendsto_one ?_ tendsto_nat_ceil_div_atTop
+  filter_upwards with x hx using by rw [hx, Nat.ceil_zero, Nat.cast_eq_zero]
+
+end NormedLinearOrderedField

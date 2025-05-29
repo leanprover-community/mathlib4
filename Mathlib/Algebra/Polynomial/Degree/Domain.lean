@@ -40,6 +40,17 @@ lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegre
   rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree (mul_ne_zero hp hq),
     Nat.cast_add, ← degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
 
+omit [NoZeroDivisors R] in
+variable (p) in
+lemma natDegree_smul {R' : Type*} [Zero R'] [SMulWithZero R' R] [NoZeroSMulDivisors R' R] {a : R'}
+    (ha : a ≠ 0) : (a • p).natDegree = p.natDegree := by
+  by_cases hp : p = 0
+  · simp only [hp, smul_zero]
+  · apply natDegree_eq_of_le_of_coeff_ne_zero
+    · exact (natDegree_smul_le _ _).trans (le_refl _)
+    · simpa only [coeff_smul, coeff_natDegree, ne_eq, smul_eq_zero,
+        leadingCoeff_eq_zero, not_or] using ⟨ha, hp⟩
+
 @[simp]
 lemma natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
   classical

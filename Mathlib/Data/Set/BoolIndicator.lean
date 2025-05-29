@@ -11,6 +11,8 @@ import Mathlib.Data.Set.Basic
 See also `Set.indicator` and `Set.piecewise`.
 -/
 
+assert_not_exists RelIso
+
 open Bool
 
 namespace Set
@@ -25,18 +27,19 @@ theorem mem_iff_boolIndicator (x : α) : x ∈ s ↔ s.boolIndicator x = true :=
   unfold boolIndicator
   split_ifs with h <;> simp [h]
 
-theorem not_mem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = false := by
+theorem notMem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = false := by
   unfold boolIndicator
   split_ifs with h <;> simp [h]
+
+@[deprecated (since := "2025-05-23")] alias not_mem_iff_boolIndicator := notMem_iff_boolIndicator
 
 theorem preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
   ext fun x ↦ (s.mem_iff_boolIndicator x).symm
 
 theorem preimage_boolIndicator_false : s.boolIndicator ⁻¹' {false} = sᶜ :=
-  ext fun x ↦ (s.not_mem_iff_boolIndicator x).symm
+  ext fun x ↦ (s.notMem_iff_boolIndicator x).symm
 
-open scoped Classical
-
+open scoped Classical in
 theorem preimage_boolIndicator_eq_union (t : Set Bool) :
     s.boolIndicator ⁻¹' t = (if true ∈ t then s else ∅) ∪ if false ∈ t then sᶜ else ∅ := by
   ext x

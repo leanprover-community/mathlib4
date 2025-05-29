@@ -151,7 +151,7 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
   map_zero_left x := by simp [Path.trans]
   map_one_left x := by simp [Path.trans]
   prop' x t ht := by
-    cases' ht with ht ht
+    rcases ht with ht | ht
     · norm_num [ht]
     · rw [Set.mem_singleton_iff] at ht
       norm_num [ht]
@@ -182,7 +182,7 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
   map_zero_left x := by norm_num
   map_one_left x := by norm_num
   prop' t x hx := by
-    cases' hx with hx hx
+    rcases hx with hx | hx
     · rw [hx]
       simp [hf₀]
     · rw [Set.mem_singleton_iff] at hx
@@ -199,7 +199,7 @@ def symm₂ {p q : Path x₀ x₁} (F : p.Homotopy q) : p.symm.Homotopy q.symm w
   map_zero_left := by simp [Path.symm]
   map_one_left := by simp [Path.symm]
   prop' t x hx := by
-    cases' hx with hx hx
+    rcases hx with hx | hx
     · rw [hx]
       simp
     · rw [Set.mem_singleton_iff] at hx
@@ -217,7 +217,7 @@ def map {p q : Path x₀ x₁} (F : p.Homotopy q) (f : C(X, Y)) :
   map_zero_left := by simp
   map_one_left := by simp
   prop' t x hx := by
-    cases' hx with hx hx
+    rcases hx with hx | hx
     · simp [hx]
     · rw [Set.mem_singleton_iff] at hx
       simp [hx]
@@ -289,9 +289,9 @@ def Quotient.mapFn (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
 theorem map_lift (P₀ : Path x₀ x₁) (f : C(X, Y)) : ⟦P₀.map f.continuous⟧ = Quotient.mapFn ⟦P₀⟧ f :=
   rfl
 
--- Porting note: Type was originally `HEq ⟦p₁⟧ ⟦p₂⟧`
+-- Porting note: we didn't previously need the `α := ...` and `β := ...` hints.
 theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
-    @HEq (Path.Homotopic.Quotient _ _) ⟦p₁⟧ (Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
+    HEq (α := Path.Homotopic.Quotient _ _) ⟦p₁⟧ (β := Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
   obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
   obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
   rw [heq_iff_eq]; congr; ext t; exact hp t

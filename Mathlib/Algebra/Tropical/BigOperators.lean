@@ -3,10 +3,10 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.MinMax
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 
@@ -23,7 +23,7 @@ collection of linear functions.
 
 ## Implementation notes
 
-No concrete (semi)ring is used here, only ones with inferrable order/lattice structure, to support
+No concrete (semi)ring is used here, only ones with inferable order/lattice structure, to support
 `Real`, `Rat`, `EReal`, and others (`ERat` is not yet defined).
 
 Minima over `List α` are defined as producing a value in `WithTop α` so proofs about lists do not
@@ -66,7 +66,6 @@ theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
--- Porting note: replaced `coe` with `WithTop.some` in statement
 theorem List.trop_minimum [LinearOrder R] (l : List R) :
     trop l.minimum = List.sum (l.map (trop ∘ WithTop.some)) := by
   induction' l with hd tl IH

@@ -2,7 +2,6 @@ import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Logic.Function.Defs
-import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Matrix.ConjTranspose
 
 private axiom test_sorry : ∀ {α}, α
@@ -234,6 +233,7 @@ example (α β : Type u) [Fintype α] [Fintype β] (h : α = β) : True := by
   trivial
 
 -- Check that metavariables in the goal do not prevent apply_fun from detecting the relation
+set_option linter.unusedTactic false in
 example (f : α ≃ β) (x y : α) (h : f x = f y) : x = y := by
   change _
   -- now the goal is a metavariable

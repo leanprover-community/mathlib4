@@ -3,9 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Algebra.Group.Operations
 
 /-!
 # Partial values of a type
@@ -42,6 +42,8 @@ For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a
 `o.Dom` and `o.get _ = a`.
 -/
 
+assert_not_exists RelIso
+
 open Function
 
 /-- `Part α` is the type of "partial values" of type `α`. It
@@ -66,8 +68,6 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 
 @[simp] lemma toOption_eq_none (o : Part α) [Decidable o.Dom] : o.toOption = none ↔ ¬o.Dom := by
   by_cases h : o.Dom <;> simp [h, toOption]
-
-@[deprecated (since := "2024-06-20")] alias toOption_isNone := toOption_eq_none
 
 /-- `Part` extensionality -/
 theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p
@@ -114,7 +114,9 @@ instance : Inhabited (Part α) :=
   ⟨none⟩
 
 @[simp]
-theorem not_mem_none (a : α) : a ∉ @none α := fun h => h.fst
+theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
+
+@[deprecated (since := "2025-05-23")] alias not_mem_none := notMem_none
 
 /-- The `some a` value in `Part` has a `True` domain and the
   function returns `a`. -/
@@ -128,8 +130,14 @@ theorem some_dom (a : α) : (some a).Dom :=
 theorem mem_unique : ∀ {a b : α} {o : Part α}, a ∈ o → b ∈ o → a = b
   | _, _, ⟨_, _⟩, ⟨_, rfl⟩, ⟨_, rfl⟩ => rfl
 
+theorem mem_right_unique : ∀ {a : α} {o p : Part α}, a ∈ o → a ∈ p → o = p
+  | _, _, _, ⟨ho, _⟩, ⟨hp, _⟩ => ext' (iff_of_true ho hp) (by simp [*])
+
 theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ =>
   mem_unique
+
+theorem Mem.right_unique : Relator.RightUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ =>
+  mem_right_unique
 
 theorem get_eq_of_mem {o : Part α} {a} (h : a ∈ o) (h') : get o h' = a :=
   mem_unique ⟨_, rfl⟩ h
@@ -152,7 +160,7 @@ theorem eq_some_iff {a : α} {o : Part α} : o = some a ↔ a ∈ o :=
   ⟨fun e => e.symm ▸ mem_some _, fun ⟨h, e⟩ => e ▸ ext' (iff_true_intro h) fun _ _ => rfl⟩
 
 theorem eq_none_iff {o : Part α} : o = none ↔ ∀ a, a ∉ o :=
-  ⟨fun e => e.symm ▸ not_mem_none, fun h => ext (by simpa)⟩
+  ⟨fun e => e.symm ▸ notMem_none, fun h => ext (by simpa)⟩
 
 theorem eq_none_iff' {o : Part α} : o = none ↔ ¬o.Dom :=
   ⟨fun e => e.symm ▸ id, fun h => eq_none_iff.2 fun _ h' => h h'.fst⟩
@@ -239,7 +247,7 @@ theorem getOrElse_none (d : α) [Decidable (none : Part α).Dom] : getOrElse non
 theorem getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (some a) d = a :=
   (some a).getOrElse_of_dom (some_dom a) d
 
--- Porting note: removed `simp`
+-- `simp`-normal form is `toOption_eq_some_iff`.
 theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o ↔ a ∈ o := by
   unfold toOption
   by_cases h : o.Dom <;> simp [h]
@@ -257,8 +265,7 @@ protected theorem Dom.toOption {o : Part α} [Decidable o.Dom] (h : o.Dom) : o.t
 theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Option.none ↔ ¬a.Dom :=
   Ne.dite_eq_right_iff fun _ => Option.some_ne_none _
 
-/- Porting TODO: Removed `simp`. Maybe add `@[simp]` later if `@[simp]` is taken off definition of
-`Option.elim` -/
+@[simp]
 theorem elim_toOption {α β : Type*} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
     a.toOption.elim b f = if h : a.Dom then f (a.get h) else b := by
   split_ifs with h
@@ -397,7 +404,7 @@ theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := 
   simp only [h', mk.injEq, h, exists_prop_of_true, true_and]
   apply Function.hfunext
   · simp only [h, h', exists_prop_of_true]
-  · aesop
+  · simp
 
 theorem assert_neg {p : Prop} {f : p → Part α} (h : ¬p) : assert p f = none := by
   dsimp [assert, none]; congr
@@ -436,7 +443,7 @@ theorem bind_some (a : α) (f : α → Part β) : (some a).bind f = f a :=
 theorem bind_of_mem {o : Part α} {a : α} (h : a ∈ o) (f : α → Part β) : o.bind f = f a := by
   rw [eq_some_iff.2 h, bind_some]
 
-theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (some ∘ f) = map f x :=
+theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (fun y => some (f y)) = map f x :=
   ext <| by simp [eq_comm]
 
 theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]
@@ -465,7 +472,7 @@ theorem map_bind {γ} (f : α → Part β) (x : Part α) (g : β → γ) :
   rw [← bind_some_eq_map, bind_assoc]; simp [bind_some_eq_map]
 
 theorem map_map (g : β → γ) (f : α → β) (o : Part α) : map g (map f o) = map (g ∘ f) o := by
-  erw [← bind_some_eq_map, bind_map, bind_some_eq_map]
+  simp [map, Function.comp_assoc]
 
 instance : Monad Part where
   pure := @some
@@ -498,7 +505,8 @@ theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := b
 
 @[simp]
 theorem bind_some_right (x : Part α) : x.bind some = x := by
-  erw [bind_some_eq_map]; simp [map_id']
+  rw [bind_some_eq_map]
+  simp [map_id']
 
 @[simp]
 theorem pure_eq_some (a : α) : pure a = some a :=
@@ -528,7 +536,7 @@ theorem bind_le {α} (x : Part α) (f : α → Part β) (y : Part β) :
     rcases h' with ⟨a, h₀, h₁⟩
     apply h _ h₀ _ h₁
 
--- Porting note: No MonadFail in Lean4 yet
+-- TODO: if `MonadFail` is defined, define the below instance.
 -- instance : MonadFail Part :=
 --   { Part.monad with fail := fun _ _ => none }
 
@@ -565,7 +573,8 @@ section Instances
 /-!
 We define several instances for constants and operations on `Part α` inherited from `α`.
 
-This section could be moved to a separate file to avoid the import of `Mathlib.Algebra.Group.Defs`.
+This section could be moved to a separate file to avoid the import of
+`Mathlib/Algebra/Notation/Defs.lean`.
 -/
 
 @[to_additive]
@@ -592,10 +601,18 @@ instance [SDiff α] : SDiff (Part α) where sdiff a b := (· \ ·) <$> a <*> b
 
 section
 
+@[to_additive]
 theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·) b := rfl
+
+@[to_additive]
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
+
+@[to_additive]
 theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
+
+@[to_additive]
 theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / ·) b := rfl
+
 theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y => map (y % ·) b := rfl
 theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y => map (y ++ ·) b := rfl
 theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y => map (y ∩ ·) b := rfl

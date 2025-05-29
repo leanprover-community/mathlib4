@@ -3,10 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
+import Mathlib.Algebra.Group.Irreducible.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
 
 /-!
-# Prime and irreducible elements.
+# Prime elements
 
 In this file we define the predicate `Prime p`
 saying that an element of a commutative monoid with zero is prime.
@@ -17,15 +18,15 @@ In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `
 (see `irreducible_iff_prime`), however this is not true in general.
 
 ## Main definitions
- * `Prime`: a prime element of a commutative monoid with zero
- * `Irreducible`: an irreducible element of a commutative monoid with zero
+
+* `Prime`: a prime element of a commutative monoid with zero
 
 ## Main results
- * `irreducible_iff_prime`: the two definitions are equivalent in a decomposition monoid.
+
+* `irreducible_iff_prime`: the two definitions are equivalent in a decomposition monoid.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset
+assert_not_exists OrderedCommMonoid Multiset
 
 variable {M : Type*}
 
@@ -92,66 +93,23 @@ theorem not_prime_one : ¬Prime (1 : M) := fun h => h.not_unit isUnit_one
 
 end Prime
 
-/-- `Irreducible p` states that `p` is non-unit and only factors into units.
-
-We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a
-monoid allows us to reuse irreducible for associated elements.
--/
-structure Irreducible [Monoid M] (p : M) : Prop where
-  /-- `p` is not a unit -/
-  not_unit : ¬IsUnit p
-  /-- if `p` factors then one factor is a unit -/
-  isUnit_or_isUnit' : ∀ a b, p = a * b → IsUnit a ∨ IsUnit b
-
-namespace Irreducible
-
-theorem not_dvd_one [CommMonoid M] {p : M} (hp : Irreducible p) : ¬p ∣ 1 :=
-  mt (isUnit_of_dvd_one ·) hp.not_unit
-
-theorem isUnit_or_isUnit [Monoid M] {p : M} (hp : Irreducible p) {a b : M} (h : p = a * b) :
-    IsUnit a ∨ IsUnit b :=
-  hp.isUnit_or_isUnit' a b h
-
-end Irreducible
-
-theorem irreducible_iff [Monoid M] {p : M} :
-    Irreducible p ↔ ¬IsUnit p ∧ ∀ a b, p = a * b → IsUnit a ∨ IsUnit b :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
-
-@[simp]
-theorem not_irreducible_one [Monoid M] : ¬Irreducible (1 : M) := by simp [irreducible_iff]
-
-theorem Irreducible.ne_one [Monoid M] : ∀ {p : M}, Irreducible p → p ≠ 1
-  | _, hp, rfl => not_irreducible_one hp
+theorem Irreducible.not_dvd_one [CommMonoid M] {p : M} (hp : Irreducible p) : ¬p ∣ 1 :=
+  mt (isUnit_of_dvd_one ·) hp.not_isUnit
 
 @[simp]
 theorem not_irreducible_zero [MonoidWithZero M] : ¬Irreducible (0 : M)
   | ⟨hn0, h⟩ =>
-    have : IsUnit (0 : M) ∨ IsUnit (0 : M) := h 0 0 (mul_zero 0).symm
+    have : IsUnit (0 : M) ∨ IsUnit (0 : M) := h (mul_zero 0).symm
     this.elim hn0 hn0
 
 theorem Irreducible.ne_zero [MonoidWithZero M] : ∀ {p : M}, Irreducible p → p ≠ 0
   | _, hp, rfl => not_irreducible_zero hp
 
-theorem of_irreducible_mul {M} [Monoid M] {x y : M} : Irreducible (x * y) → IsUnit x ∨ IsUnit y
-  | ⟨_, h⟩ => h _ _ rfl
-
-theorem irreducible_or_factor {M} [Monoid M] (x : M) (h : ¬IsUnit x) :
-    Irreducible x ∨ ∃ a b, ¬IsUnit a ∧ ¬IsUnit b ∧ a * b = x := by
-  haveI := Classical.dec
-  refine or_iff_not_imp_right.2 fun H => ?_
-  simp? [h, irreducible_iff] at H ⊢ says
-    simp only [exists_and_left, not_exists, not_and, irreducible_iff, h, not_false_eq_true,
-      true_and] at H ⊢
-  refine fun a b h => by_contradiction fun o => ?_
-  simp? [not_or] at o says simp only [not_or] at o
-  exact H _ o.1 _ o.2 h.symm
-
 /-- If `p` and `q` are irreducible, then `p ∣ q` implies `q ∣ p`. -/
 theorem Irreducible.dvd_symm [Monoid M] {p q : M} (hp : Irreducible p) (hq : Irreducible q) :
     p ∣ q → q ∣ p := by
   rintro ⟨q', rfl⟩
-  rw [IsUnit.mul_right_dvd (Or.resolve_left (of_irreducible_mul hq) hp.not_unit)]
+  rw [IsUnit.mul_right_dvd (Or.resolve_left (of_irreducible_mul hq) hp.not_isUnit)]
 
 theorem Irreducible.dvd_comm [Monoid M] {p q : M} (hp : Irreducible p) (hq : Irreducible q) :
     p ∣ q ↔ q ∣ p :=
@@ -163,7 +121,7 @@ variable [CommMonoidWithZero M]
 
 theorem Irreducible.prime_of_isPrimal {a : M}
     (irr : Irreducible a) (primal : IsPrimal a) : Prime a :=
-  ⟨irr.ne_zero, irr.not_unit, fun a b dvd ↦ by
+  ⟨irr.ne_zero, irr.not_isUnit, fun a b dvd ↦ by
     obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := primal dvd
     exact (of_irreducible_mul irr).symm.imp (·.mul_right_dvd.mpr h₁) (·.mul_left_dvd.mpr h₂)⟩
 

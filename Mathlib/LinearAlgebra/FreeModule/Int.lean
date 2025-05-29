@@ -3,7 +3,8 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.GroupTheory.Index
 import Mathlib.LinearAlgebra.FreeModule.PID
 
@@ -81,7 +82,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
       by_cases hj : ∃ j, f j = i
       · calc ∑ x : Fin n, _ =
             if i = f hj.choose then (h (f hj.choose)).choose * a hj.choose else 0 := by
-              convert Finset.sum_eq_single (β := R) hj.choose ?_ ?_
+              convert Finset.sum_eq_single (M := R) hj.choose ?_ ?_
               · simp [hj]
               · rintro j - h
                 have hinj := f.injective.ne h

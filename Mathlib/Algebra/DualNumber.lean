@@ -149,36 +149,24 @@ theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
 @[simp] theorem coe_lift_symm_apply (F : A[ε] →ₐ[R] B) :
     (lift.symm F).val = (F.comp (inlAlgHom _ _ _), F ε) := rfl
 
-#adaptation_note
-/--
-The new unused variable linter in
-https://github.com/leanprover/lean4/pull/5338
-flags `{fe : (A →ₐ[R] B) × B // _}`.
--/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
+The new unused variable linter flags `{fe : (A →ₐ[R] B) × B // _}`. -/
 set_option linter.unusedVariables false in
 /-- When applied to `inl`, `DualNumber.lift` applies the map `f : A →ₐ[R] B`. -/
 @[simp] theorem lift_apply_inl (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) :
     lift fe (inl a : A[ε]) = fe.val.1 a := by
   rw [lift_apply_apply, fst_inl, snd_inl, map_zero, zero_mul, add_zero]
 
-#adaptation_note
-/--
-The new unused variable linter in
-https://github.com/leanprover/lean4/pull/5338
-flags `{fe : (A →ₐ[R] B) × B // _}`.
--/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
+The new unused variable linter flags `{fe : (A →ₐ[R] B) × B // _}`. -/
 set_option linter.unusedVariables false in
 /-- Scaling on the left is sent by `DualNumber.lift` to multiplication on the left -/
 @[simp] theorem lift_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
     lift fe (a • ad) = fe.val.1 a * lift fe ad := by
   rw [← inl_mul_eq_smul, map_mul, lift_apply_inl]
 
-#adaptation_note
-/--
-The new unused variable linter in
-https://github.com/leanprover/lean4/pull/5338
-flags `{fe : (A →ₐ[R] B) × B // _}`.
--/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
+The new unused variable linter flags `{fe : (A →ₐ[R] B) × B // _}`. -/
 set_option linter.unusedVariables false in
 /-- Scaling on the right is sent by `DualNumber.lift` to multiplication on the right -/
 @[simp] theorem lift_op_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :

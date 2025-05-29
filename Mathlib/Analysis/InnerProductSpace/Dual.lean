@@ -36,7 +36,6 @@ dual, Fréchet-Riesz
 
 noncomputable section
 
-open scoped Classical
 open ComplexConjugate
 
 universe u v
@@ -51,7 +50,7 @@ section Seminormed
 
 variable [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local postfix:90 "†" => starRingEnd _
 
@@ -89,7 +88,7 @@ end Seminormed
 section Normed
 variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local postfix:90 "†" => starRingEnd _
 
@@ -119,7 +118,7 @@ theorem ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
 variable (𝕜) (E)
 variable [CompleteSpace E]
 
-/-- Fréchet-Riesz representation: any `ℓ` in the dual of a Hilbert space `E` is of the form
+/-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
 def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=

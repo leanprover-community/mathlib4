@@ -27,7 +27,7 @@ def _root_.Lean.Expr.relSidesIfSymm? (e : Expr) : MetaM (Option (Name × Expr ×
   if let some (_, lhs, _, rhs) := e.heq? then
     return (``HEq, lhs, rhs)
   if let .app (.app rel lhs) rhs := e then
-    unless (← (symmExt.getState (← getEnv)).getMatch rel symmExt.config).isEmpty do
+    unless (← (symmExt.getState (← getEnv)).getMatch rel).isEmpty do
       match rel.getAppFn.constName? with
       | some n => return some (n, lhs, rhs)
       | none => return none

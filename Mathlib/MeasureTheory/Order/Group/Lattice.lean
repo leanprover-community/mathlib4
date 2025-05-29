@@ -44,6 +44,11 @@ variable [MeasurableSup₂ α]
 theorem measurable_mabs : Measurable (mabs : α → α) :=
   measurable_id'.sup measurable_inv
 
-@[to_additive (attr := measurability)]
+@[to_additive (attr := measurability, fun_prop)]
 protected theorem Measurable.mabs (hf : Measurable f) : Measurable fun x ↦ mabs (f x) :=
   measurable_mabs.comp hf
+
+@[to_additive (attr := measurability, fun_prop)]
+protected theorem AEMeasurable.mabs {μ : MeasureTheory.Measure β} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x ↦ mabs (f x)) μ :=
+  measurable_mabs.comp_aemeasurable hf

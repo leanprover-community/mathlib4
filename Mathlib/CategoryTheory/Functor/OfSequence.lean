@@ -81,7 +81,7 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
           · omega
           · obtain rfl : j = 0 := by omega
             rw [map_id, comp_id]
-          · dsimp [map]
+          · simp only [map, Nat.reduceAdd]
             rw [hj (fun n ↦ f (n + 1)) (k + 1) (by omega) (by omega)]
             obtain _|j := j
             all_goals simp [map]

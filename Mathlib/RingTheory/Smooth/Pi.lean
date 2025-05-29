@@ -118,4 +118,7 @@ theorem pi_iff [Finite I] :
       rwa [mul_sub, ← map_mul, mul_comm, mul_assoc, (he.idem i).eq, he', ← map_mul, ← Pi.single_mul,
         one_mul, sub_eq_zero] at this
 
+instance [Finite I] [∀ i, FormallySmooth R (A i)] : FormallySmooth R (Π i, A i) :=
+  (pi_iff _).mpr ‹_›
+
 end Algebra.FormallySmooth

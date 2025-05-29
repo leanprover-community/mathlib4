@@ -12,6 +12,7 @@ import Mathlib.SetTheory.Cardinal.Finite
 # fintype instances relating to units
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 

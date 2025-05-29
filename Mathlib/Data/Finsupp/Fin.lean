@@ -3,7 +3,7 @@ Copyright (c) 2021 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Single
 
 /-!
 # `cons` and `tail` for maps `Fin n →₀ M`
@@ -42,12 +42,17 @@ theorem cons_zero : cons y s 0 = y :=
 
 @[simp]
 theorem cons_succ : cons y s i.succ = s i :=
-  -- Porting note: was Fin.cons_succ _ _ _
   rfl
 
 @[simp]
 theorem tail_cons : tail (cons y s) = s :=
   ext fun k => by simp only [tail_apply, cons_succ]
+
+@[simp]
+theorem tail_update_zero : tail (update t 0 y) = tail t := by simp [tail]
+
+@[simp]
+theorem tail_update_succ : tail (update t i.succ y) = update (tail t) i y := by ext; simp [tail]
 
 @[simp]
 theorem cons_tail : cons (t 0) (tail t) = t := by
