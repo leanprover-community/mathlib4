@@ -1180,7 +1180,6 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
       rwa [Set.mem_preimage, Set.mem_Iio, hψ, ← Valued.valuedCompletion_apply a]
   · rw [WithZeroTopology.tendsto_of_ne_zero ((Valuation.ne_zero_iff Valued.v).mpr ha), hψ,
       Filter.eventually_comap, Filter.Eventually, Valued.mem_nhds]
-    have : Valued.v (X : RatFunc K) = ↑(Multiplicative.ofAdd (-1 : ℤ)):= by simp
     set γ := Valued.v (a * (X : RatFunc K))
     have va_ne_zero : Valued.v a ≠ 0 := by simpa
     have γ_ne_zero : γ ≠ 0 := by simpa [γ]
