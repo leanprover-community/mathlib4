@@ -1331,7 +1331,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
       have : e ≠ 0 := hv.ne_zero ⟨e, hev⟩
       contradiction
     -- put this together with `v` to provide a candidate orthonormal basis for the whole space
-    refine ⟨insert e v, v.subset_insert e, ⟨?_, ?_⟩, (ne_insert_of_not_mem v he'').symm⟩
+    refine ⟨insert e v, v.subset_insert e, ⟨?_, ?_⟩, (ne_insert_of_notMem v he'').symm⟩
     · -- show that the elements of `insert e v` have unit length
       rintro ⟨a, ha'⟩
       rcases eq_or_mem_of_mem_insert ha' with ha | ha

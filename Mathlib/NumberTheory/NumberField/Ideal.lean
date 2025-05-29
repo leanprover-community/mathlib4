@@ -143,8 +143,8 @@ The limit of the number of integral ideals of norm `≤ s` divided by `s` when `
 -/
 theorem tendsto_norm_le_div_atTop :
     Tendsto (fun s : ℝ ↦ (Nat.card {I : Ideal (𝓞 K) // absNorm I ≤ s} : ℝ) / s) atTop
-          (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
-            (torsionOrder K *  Real.sqrt |discr K|))) := by
+      (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
+        (torsionOrder K *  Real.sqrt |discr K|))) := by
   have := (tendsto_norm_le_div_atTop₀ K).add tendsto_inv_atTop_zero
   rw [add_zero] at this
   apply this.congr'

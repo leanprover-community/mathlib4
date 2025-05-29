@@ -256,8 +256,8 @@ the tensor product (over `R`) carries an action of `R'`.
 
 This instance defines this `R'` action in the case that it is the left module which has the `R'`
 action. Two natural ways in which this situation arises are:
- * Extension of scalars
- * A tensor product of a group representation with a module not carrying an action
+* Extension of scalars
+* A tensor product of a group representation with a module not carrying an action
 
 Note that in the special case that `R = R'`, since `R` is commutative, we just get the usual scalar
 action on a tensor product of two modules. This special case is important enough that, for
@@ -566,7 +566,7 @@ def lift.equiv : (M →ₗ[R] N →ₗ[R] P) ≃ₗ[R] M ⊗[R] N →ₗ[R] P :=
   { uncurry R M N P with
     invFun := fun f => (mk R M N).compr₂ f
     left_inv := fun _ => LinearMap.ext₂ fun _ _ => lift.tmul _ _
-    right_inv := fun _ => ext' fun _ _ => lift.tmul _ _ }
+    right_inv := fun _ => ext' fun _ _ => rfl }
 
 @[simp]
 theorem lift.equiv_apply (f : M →ₗ[R] N →ₗ[R] P) (m : M) (n : N) :

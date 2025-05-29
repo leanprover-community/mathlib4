@@ -16,7 +16,7 @@ import Mathlib.Data.Real.ConjExponents
 In this file we prove several inequalities for finite sums, including AM-GM inequality,
 HM-GM inequality, Young's inequality, Hölder inequality, and Minkowski inequality. Versions for
 integrals of some of these inequalities are available in
-`Mathlib.MeasureTheory.Integral.MeanInequalities`.
+`Mathlib/MeasureTheory/Integral/MeanInequalities.lean`.
 
 ## Main theorems
 

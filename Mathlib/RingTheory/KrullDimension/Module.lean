@@ -50,12 +50,14 @@ lemma supportDim_self_eq_ringKrullDim : supportDim R R = ringKrullDim R := by
   rw [supportDim_eq_ringKrullDim_quotient_annihilator, this]
   exact (RingEquiv.ringKrullDim (RingEquiv.quotientBot R))
 
+lemma supportDim_le_ringKrullDim : supportDim R M ≤ ringKrullDim R :=
+  krullDim_le_of_strictMono (fun a ↦ a) fun {_ _} lt ↦ lt
+
+variable {R M N}
+
 lemma supportDim_quotient_eq_ringKrullDim (I : Ideal R) :
     supportDim R (R ⧸ I) = ringKrullDim (R ⧸ I) := by
   rw [supportDim_eq_ringKrullDim_quotient_annihilator, Ideal.annihilator_quotient]
-
-lemma supportDim_le_ringKrullDim : supportDim R M ≤ ringKrullDim R :=
-  krullDim_le_of_strictMono (fun a ↦ a) fun {_ _} lt ↦ lt
 
 lemma supportDim_le_of_injective (f : M →ₗ[R] N) (h : Function.Injective f) :
     supportDim R M ≤ supportDim R N :=
@@ -69,7 +71,7 @@ lemma supportDim_le_of_surjective (f : M →ₗ[R] N) (h : Function.Surjective f
 
 lemma supportDim_eq_of_equiv (e : M ≃ₗ[R] N) :
     supportDim R M = supportDim R N :=
-  le_antisymm (supportDim_le_of_injective R M N e e.injective)
-    (supportDim_le_of_surjective R M N e e.surjective)
+  le_antisymm (supportDim_le_of_injective e e.injective)
+    (supportDim_le_of_surjective e e.surjective)
 
 end Module

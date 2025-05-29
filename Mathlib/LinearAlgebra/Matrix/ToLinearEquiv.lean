@@ -18,11 +18,11 @@ to linear equivs.
 
 ## Main definitions
 
- * `Matrix.toLinearEquiv`: a matrix with an invertible determinant forms a linear equiv
+* `Matrix.toLinearEquiv`: a matrix with an invertible determinant forms a linear equiv
 
 ## Main results
 
- * `Matrix.exists_mulVec_eq_zero_iff`: `M` maps some `v ≠ 0` to zero iff `det M = 0`
+* `Matrix.exists_mulVec_eq_zero_iff`: `M` maps some `v ≠ 0` to zero iff `det M = 0`
 
 ## Tags
 

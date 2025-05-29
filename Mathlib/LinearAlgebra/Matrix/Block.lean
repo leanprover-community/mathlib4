@@ -16,14 +16,15 @@ matrices built out of blocks.
 
 ## Main definitions
 
- * `Matrix.BlockTriangular` expresses that an `o` by `o` matrix is block triangular,
-   if the rows and columns are ordered according to some order `b : o → α`
+* `Matrix.BlockTriangular` expresses that an `o` by `o` matrix is block triangular,
+  if the rows and columns are ordered according to some order `b : o → α`
 
 ## Main results
-  * `Matrix.det_of_blockTriangular`: the determinant of a block triangular matrix
-    is equal to the product of the determinants of all the blocks
-  * `Matrix.det_of_upperTriangular` and `Matrix.det_of_lowerTriangular`: the determinant of
-    a triangular matrix is the product of the entries along the diagonal
+
+* `Matrix.det_of_blockTriangular`: the determinant of a block triangular matrix
+  is equal to the product of the determinants of all the blocks
+* `Matrix.det_of_upperTriangular` and `Matrix.det_of_lowerTriangular`: the determinant of
+  a triangular matrix is the product of the entries along the diagonal
 
 ## Tags
 
@@ -252,7 +253,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
   · have : univ.image b = insert k ((univ.image b).erase k) := by
       rw [insert_erase]
       apply max'_mem
-    rw [this, prod_insert (not_mem_erase _ _)]
+    rw [this, prod_insert (notMem_erase _ _)]
     refine congr_arg _ ?_
     let b' := fun i : { a // b a ≠ k } => b ↑i
     have h' : BlockTriangular (M.toSquareBlockProp fun i => b i ≠ k) b' := hM.submatrix

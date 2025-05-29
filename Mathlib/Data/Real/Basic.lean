@@ -201,9 +201,9 @@ def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
 
 /-! Extra instances to short-circuit type class resolution.
 
- These short-circuits have an additional property of ensuring that a computable path is found; if
- `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
- version of them. -/
+These short-circuits have an additional property of ensuring that a computable path is found; if
+`Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
+version of them. -/
 
 instance instRing : Ring ℝ := by infer_instance
 
@@ -338,6 +338,7 @@ theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
   convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 
+@[deprecated ZeroLEOneClass.factZeroLtOne (since := "2025-05-12")]
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
 
@@ -560,6 +561,12 @@ end Real
 `f (r ^ n) = (f r) ^ n`. -/
 def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
+
+lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
+    f 1 ≤ 1 := by
+  have hf1 : (f 1)^2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
+  rcases eq_zero_or_one_of_sq_eq_self hf1 with h | h <;> rw [h]
+  exact zero_le_one
 
 /-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
   `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,

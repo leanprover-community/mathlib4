@@ -29,7 +29,7 @@ that all these points of view are equivalent, with the following lemmas
 
 - `Module.finBasis` and `Module.finBasisOfFinrankEq`
   are bases for finite dimensional vector spaces, where the index type
-  is `Fin` (in `Mathlib.LinearAlgebra.Dimension.Free`)
+  is `Fin` (in `Mathlib/LinearAlgebra/Dimension/Free.lean`)
 - `fintypeBasisIndex` states that a finite-dimensional
   vector space has a finite basis
 - `of_fintype_basis` states that the existence of a basis indexed by a
@@ -39,13 +39,13 @@ that all these points of view are equivalent, with the following lemmas
 - `of_finrank_pos` states that a nonzero finrank (implying non-infinite dimension)
   implies finite-dimensionality
 - `IsNoetherian.iff_fg` states that the space is finite-dimensional if and only if
-  it is noetherian (in `Mathlib.FieldTheory.Finiteness`)
+  it is noetherian (in `Mathlib/FieldTheory/Finiteness.lean`)
 
 We make use of `finrank`, the dimension of a finite dimensional space, returning a `Nat`, as
 opposed to `Module.rank`, which returns a `Cardinal`. When the space has infinite dimension, its
 `finrank` is by convention set to `0`. `finrank` is not defined using `FiniteDimensional`.
 For basic results that do not need the `FiniteDimensional` class, import
-`Mathlib.LinearAlgebra.Finrank`.
+`Mathlib/LinearAlgebra/Finrank.lean`.
 
 Preservation of finite-dimensionality and formulas for the dimension are given for
 - submodules (`FiniteDimensional.finiteDimensional_submodule`)
@@ -56,7 +56,7 @@ Preservation of finite-dimensionality and formulas for the dimension are given f
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
 Plenty of the results hold for general fg modules or notherian modules, and they can be found in
-`Mathlib.LinearAlgebra.FreeModule.Finite.Rank` and `Mathlib.RingTheory.Noetherian`.
+`Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
 -/
 
 assert_not_exists Module.Projective Subalgebra
