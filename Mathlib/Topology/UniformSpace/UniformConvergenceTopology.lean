@@ -1155,8 +1155,8 @@ theorem UniformContinuousOn.comp_tendstoUniformlyOn_eventually {t : Set α}
     (hF : ∀ᶠ i in p, ∀ x ∈ t, F i x ∈ s) (hf : ∀ x ∈ t, f x ∈ s)
     {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformlyOn F f p t) :
     TendstoUniformlyOn (fun i x ↦ g (F i x)) (fun x => g (f x)) p t := by
-  rw [tendstouniformlyOn_iff_restrict]
+  rw [tendstoUniformlyOn_iff_restrict]
   apply UniformContinuousOn.comp_tendstoUniformly_eventually (by simpa using hF )
-     (by simpa using hf) hg (tendstouniformlyOn_iff_restrict.mp h)
+     (by simpa using hf) hg (tendstoUniformlyOn_iff_restrict.mp h)
 
 end UniformComposition

@@ -123,7 +123,7 @@ theorem tendstoUniformlyOn_iff_tendstoUniformly_comp_coe :
     TendstoUniformlyOn F f p s ↔ TendstoUniformly (fun i (x : s) => F i x) (f ∘ (↑)) p :=
   forall₂_congr fun u _ => by simp
 
-lemma tendstouniformlyOn_iff_restrict {K : Set α} : TendstoUniformlyOn F f p K ↔
+lemma tendstoUniformlyOn_iff_restrict {K : Set α} : TendstoUniformlyOn F f p K ↔
     TendstoUniformly (fun n : ι => K.restrict (F n)) (K.restrict f) p :=
   tendstoUniformlyOn_iff_tendstoUniformly_comp_coe
 
