@@ -866,23 +866,6 @@ def OneHom.inverse [One M] [One N]
 theorem OneHom.inverse_comp [One M] [One N] {f : OneHom M N} {g : N → M}
     {h : Function.LeftInverse g f} : (f.inverse g h).comp f = id M := OneHom.ext h
 
-/-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
-@[to_additive (attr := simps)
-  "Makes an additive inverse from a bijection which preserves addition."]
-def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
-    (h₁ : Function.LeftInverse g f)
-    (h₂ : Function.RightInverse g f) : N →ₙ* M where
-  toFun := g
-  map_mul' x y := h₁.injective <| by simp only [map_mul, h₂ x, h₂ y, h₂ (x * y)]
-
-theorem MulHom.inverse_comp [Mul M] [Mul N] {f : M →ₙ* N} {g : N → M}
-    {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    (f.inverse g h₁ h₂).comp f = id M := MulHom.ext h₁
-
-theorem MulHom.comp_inverse [Mul M] [Mul N] {f : M →ₙ* N} {g : N → M}
-    {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    f.comp (f.inverse g h₁ h₂) = id N := MulHom.ext h₂
-
 /-- If `M` and `N` have multiplications, `f : M →ₙ* N` is a surjective multiplicative map,
 and `M` is commutative, then `N` is commutative. -/
 @[to_additive
@@ -896,22 +879,6 @@ theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N}
     obtain ⟨b', hb'⟩ := is_surj b
     simp only [← ha', ← hb', ← map_mul]
     rw [is_comm.comm]
-
-/-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
-@[to_additive (attr := simps)
-  "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
-def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
-  { (f : OneHom A B).inverse g h₁,
-    (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g }
-
-theorem MonoidHom.inverse_comp [Monoid M] [Monoid N] {f : M →* N} {g : N → M}
-    {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    (f.inverse g h₁ h₂).comp f = id M := MonoidHom.ext h₁
-
-theorem MonoidHom.comp_inverse [Monoid M] [Monoid N] {f : M →* N} {g : N → M}
-    {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    f.comp (f.inverse g h₁ h₂) = id N := MonoidHom.ext h₂
 
 section Lift
 
@@ -981,6 +948,45 @@ theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := ex
 @[to_additive (attr := simp)]
 theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
     f.liftRight hp g hg := rfl
+
+end
+
+/-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
+@[to_additive (attr := simps!)
+  "Makes an additive inverse from a bijection which preserves addition."]
+def inverse (f : M →ₙ* N) (g : N → M)
+    (h₁ : Function.LeftInverse g f)
+    (h₂ : Function.RightInverse g f) : N →ₙ* M := liftLeft (id M) h₂.surjective g h₁
+
+section
+
+variable {f : M →ₙ* N} {g : N → M} {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f}
+
+@[to_additive (attr := simp)]
+theorem inverse_comp : (f.inverse g h₁ h₂).comp f = id M := ext h₁
+@[to_additive]
+theorem inverse_comp_apply : ∀ x, (f.inverse g h₁ h₂) (f x) = x := h₁
+@[to_additive (attr := simp)]
+theorem comp_inverse : f.comp (f.inverse g h₁ h₂) = id N := ext h₂
+@[to_additive]
+theorem comp_inverse_apply : ∀ x, f ((f.inverse g h₁ h₂) x) = x := h₂
+
+@[to_additive]
+theorem inverse_eq_liftLeft : f.inverse g h₁ h₂ = liftLeft (id M) h₂.surjective g h₁ := rfl
+@[to_additive]
+theorem inverse_eq_liftRight : f.inverse g h₁ h₂ = liftRight (id N) h₁.injective g h₂ := rfl
+
+@[to_additive]
+theorem eq_inverse_of_comp_right_eq_id {g'} (hg : f.comp g' = id N) : g' = f.inverse g h₁ h₂ :=
+  eq_liftRight hg (hg := fun _ => h₂ _) (hp := h₁.injective)
+
+@[to_additive]
+theorem eq_inverse_of_comp_left_eq_id {g'} (hg : g'.comp f = id M) : g' = f.inverse g h₁ h₂ :=
+  eq_liftLeft hg (hg := fun _ => h₁ _) (hp := h₂.surjective)
+
+@[to_additive (attr := simp)]
+theorem inverse_inverse : (f.inverse g h₁ h₂).inverse f comp_inverse_apply inverse_comp_apply =
+    f := rfl
 
 end
 
@@ -1063,6 +1069,48 @@ theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRigh
 @[to_additive (attr := simp)]
 theorem toMulHom_liftRight : (f.liftRight hp g hg).toMulHom =
     f.toMulHom.liftRight (p := p.toMulHom) hp g hg := rfl
+
+end
+
+/-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
+@[to_additive (attr := simps!)
+  "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
+def inverse (f : M →* N) (g : N → M)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : N →* M :=
+  liftLeft (id M) h₂.surjective g h₁
+
+section
+
+variable {f : M →* N} {g : N → M} {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f}
+
+@[to_additive (attr := simp)]
+theorem inverse_comp : (f.inverse g h₁ h₂).comp f = id M := ext h₁
+@[to_additive]
+theorem inverse_comp_apply : ∀ x, (f.inverse g h₁ h₂) (f x) = x := h₁
+@[to_additive (attr := simp)]
+theorem comp_inverse : f.comp (f.inverse g h₁ h₂) = id N := ext h₂
+@[to_additive]
+theorem comp_inverse_apply : ∀ x, f ((f.inverse g h₁ h₂) x) = x := h₂
+
+@[to_additive]
+theorem inverse_eq_liftLeft : f.inverse g h₁ h₂ = liftLeft (id M) h₂.surjective g h₁ := rfl
+@[to_additive]
+theorem inverse_eq_liftRight : f.inverse g h₁ h₂ = liftRight (id N) h₁.injective g h₂ := rfl
+
+@[to_additive]
+theorem eq_inverse_of_comp_right_eq_id {g'} (hg : f.comp g' = id N) : g' = f.inverse g h₁ h₂ :=
+  eq_liftRight hg (hg := fun _ => h₂ _) (hp := h₁.injective)
+
+@[to_additive]
+theorem eq_inverse_of_comp_left_eq_id {g'} (hg : g'.comp f = id M) : g' = f.inverse g h₁ h₂ :=
+  eq_liftLeft hg (hg := fun _ => h₁ _) (hp := h₂.surjective)
+
+@[to_additive (attr := simp)]
+theorem inverse_inverse : (f.inverse g h₁ h₂).inverse f comp_inverse_apply inverse_comp_apply =
+    f := rfl
+
+@[to_additive (attr := simp)]
+theorem toMulHom_inverse : (f.inverse g h₁ h₂).toMulHom = f.toMulHom.inverse g h₁ h₂ := rfl
 
 end
 
