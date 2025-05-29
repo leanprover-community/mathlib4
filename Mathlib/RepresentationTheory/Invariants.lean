@@ -28,8 +28,6 @@ open Representation
 
 namespace GroupAlgebra
 
-open MonoidAlgebra
-
 variable (k G : Type*) [CommSemiring k] [Group G]
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -227,12 +225,12 @@ instance : (invariantsFunctor k G).Additive where
 the functor sending a representation to its submodule of invariants. -/
 noncomputable abbrev invariantsAdjunction : trivialFunctor G ⊣ invariantsFunctor k G :=
   Adjunction.mkOfHomEquiv {
-    homEquiv := fun _ _ => {
-      toFun := fun f => ModuleCat.ofHom <|
+    homEquiv _ _ := {
+      toFun f := ModuleCat.ofHom <|
         LinearMap.codRestrict _ f.hom.hom fun x g => (hom_comm_apply f _ _).symm
-      invFun := fun f => {
+      invFun f := {
         hom := ModuleCat.ofHom (Submodule.subtype _ ∘ₗ f.hom)
-        comm := fun g => by ext x; exact ((f x).2 g).symm }
+        comm g := by ext x; exact ((f x).2 g).symm }
       left_inv := by intro; rfl
       right_inv := by intro; rfl }
     homEquiv_naturality_left_symm := by intros; rfl
