@@ -325,8 +325,8 @@ lemma chainBotCoeff_eq_zero_iff :
 lemma chainTopCoeff_eq_zero_iff :
     P.chainTopCoeff i j = 0 ↔
       ¬ LinearIndependent R ![P.root i, P.root j] ∨ P.root j + P.root i ∉ range P.root := by
-  rw [← chainBotCoeff_reflection_perm_left]
-  simp [-chainBotCoeff_reflection_perm_left, chainBotCoeff_eq_zero_iff]
+  rw [← chainBotCoeff_reflectionPerm_left]
+  simp [-chainBotCoeff_reflectionPerm_left, chainBotCoeff_eq_zero_iff]
 
 include h
 
