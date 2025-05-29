@@ -52,7 +52,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
 -- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
--- The file `Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone` slows down by
+-- The file `Mathlib/NumberTheory/NumberField/CanonicalEmbedding/FundamentalCone.lean` slows down by
 -- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/pull/18040).
 -- attribute [simp] AlgHomClass.commutes
 
@@ -198,6 +198,8 @@ theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁
 theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
   rfl
 
+@[simp] lemma addHomMk_coe (f : A →ₐ[R] B) : AddHom.mk f (map_add f) = f := rfl
+
 @[simp]
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
@@ -288,6 +290,9 @@ theorem comp_toLinearMap (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
 
 @[simp]
 theorem toLinearMap_id : toLinearMap (AlgHom.id R A) = LinearMap.id :=
+  rfl
+
+@[simp] lemma linearMapMk_toAddHom (f : A →ₐ[R] B) : LinearMap.mk f (map_smul f) = f.toLinearMap :=
   rfl
 
 /-- Promote a `LinearMap` to an `AlgHom` by supplying proofs about the behavior on `1` and `*`. -/

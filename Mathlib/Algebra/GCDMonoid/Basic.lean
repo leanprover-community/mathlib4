@@ -21,7 +21,7 @@ This file defines extra structures on `CancelCommMonoidWithZero`s, including `Is
 * `gcdMonoidOfLCM`, `gcdMonoidOfExistsLCM`, `normalizedGCDMonoidOfLCM`,
   `normalizedGCDMonoidOfExistsLCM`
 
-For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib.Algebra.GCDMonoid.Nat`.
+For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib/Algebra/GCDMonoid/Nat.lean`.
 
 ## Implementation Notes
 
