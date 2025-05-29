@@ -258,7 +258,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ)
         refine lt_of_lt_of_le ?_ hx
         rw [ENNReal.toReal_lt_toReal hbdd.ne]
         · exact ENNReal.lt_add_right hbdd.ne one_ne_zero
-        · exact (ENNReal.add_lt_top.2 ⟨hbdd, ENNReal.one_lt_top⟩).ne
+        · finiteness
       rw [← nonpos_iff_eq_zero]
       refine (measure_mono this).trans ?_
       have hle := enorm_ae_le_eLpNormEssSup f μ
@@ -440,12 +440,12 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
     · rw [(_ : f i = g ⟨i.val, hi⟩)]
       · exact hδ₁ _ s hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_left _ _)
       · simp [g]
-    · rw [(_ : i = n)]
-      · exact hδ₂ _ hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_right _ _)
-      · have hi' := Fin.is_lt i
+    · obtain rfl : i = n := by
+        have hi' := Fin.is_lt i
         rw [Nat.lt_succ_iff] at hi'
         rw [not_lt] at hi
         simp [← le_antisymm hi' hi]
+      exact hδ₂ _ hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_right _ _)
 
 /-- A finite sequence of Lp functions is uniformly integrable. -/
 theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {f : ι → α → β}
@@ -456,9 +456,7 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
   have hg : ∀ i, MemLp (g i) p μ := fun _ => hf _
   obtain ⟨δ, hδpos, hδ⟩ := unifIntegrable_fin hp_one hp_top hg hε
   refine ⟨δ, hδpos, fun i s hs hμs => ?_⟩
-  specialize hδ (hn.some i) s hs hμs
-  simp_rw [g, Function.comp_apply, Equiv.symm_apply_apply] at hδ
-  assumption
+  simpa [g] using hδ (hn.some i) s hs hμs
 
 end
 
@@ -797,11 +795,7 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
       simp_rw [NNReal.val_eq_coe, ENNReal.ofReal_coe_nnreal, mul_comm]
       exact le_rfl
     _ = ((C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1 : ℝ≥0∞).toNNReal := by
-      rw [ENNReal.coe_toNNReal]
-      exact ENNReal.add_ne_top.2
-        ⟨ENNReal.mul_ne_top ENNReal.coe_ne_top (ENNReal.rpow_ne_top_of_nonneg
-          (inv_nonneg.2 ENNReal.toReal_nonneg) (measure_lt_top _ _).ne),
-        ENNReal.one_ne_top⟩
+      rw [ENNReal.coe_toNNReal (by finiteness)]
 
 /-- A sequence of functions `(fₙ)` is uniformly integrable in the probability sense if for all
 `ε > 0`, there exists some `C` such that `∫ x in {|fₙ| ≥ C}, fₙ x ∂μ ≤ ε` for all `n`. -/
