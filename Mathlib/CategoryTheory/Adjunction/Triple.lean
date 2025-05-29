@@ -19,23 +19,27 @@ All results are about an adjoint triple `F ⊣ G ⊣ H` where `adj₁ : F ⊣ G`
 bundle the adjunctions in a structure `Triple F G H`.
 * `fullyFaithfulEquiv`: `F` is fully faithful iff `H` is.
 * `rightToLeft`: the canonical natural transformation `H ⟶ F` that exists whenever `G` is fully
-  faithful. This is defined in terms of the units of the adjunctions, but a formula in terms of the
-  counits is also given.
-* `counit_unit_eq_whiskerRight`: when `G` is fully faithful, the natural transformation
-  `H ⋙ G ⟶ F ⋙ G` given by `adj₂.counit ≫ adj₁.unit` is just `rightToLeft` whiskered with `G`.
-* `rightToLeft_app_epi_iff_map_unit_app_epi`: `rightToLeft : H ⟶ F` is epi at `X` iff the image of
-  `adj₁.unit.app X` under `H` is.
-* `rightToLeft_app_epi_iff_counit_unit_app_epi`: when `H` preserves epimorphisms,
-  `rightToLeft : H ⟶ F` is epic at `X` iff `adj₂.counit ≫ adj₁.unit : H ⋙ G ⟶ F ⋙ G` is.
-* `leftToRight`: the canonical natural transformation `F ⟶ H` that exists whenever `F` and `G` are
+  faithful. This is defined as the preimage of `adj₂.counit ≫ adj₁.unit` under whiskering with `G`,
+  but formulas in terms of the units resp. counits of the adjunctions are also given.
+* `whiskerRight_rightToLeft`: whiskering `rightToLeft : H ⟶ F` with `G` yields
+  `adj₂.counit ≫ adj₁.unit : H ⋙ G ⟶ F ⋙ G`.
+* `epi_rightToLeft_app_iff_epi_map_adj₁_unit_app`: `rightToLeft : H ⟶ F` is epic at `X` iff the
+  image of `adj₁.unit.app X` under `H` is.
+* `epi_rightToLeft_app_iff_epi_map_adj₂_counit_app`: `rightToLeft : H ⟶ F` is epic at `X` iff the
+  image of `adj₂.counit.app X` under `F` is.
+* `epi_rightToLeft_app_iff`: when `H` preserves epimorphisms, `rightToLeft : H ⟶ F` is epic at `X`
+  iff `adj₂.counit ≫ adj₁.unit : H ⋙ G ⟶ F ⋙ G` is.
+* `leftToRight`: the canonical natural transformation `F ⟶ H` that exists whenever `F` and `H` are
   fully faithful. This is defined in terms of the units of the adjunctions, but a formula in terms
   of the counits is also given.
-* `counit_unit_eq_whiskerLeft`: when `F` and `H` are fully faithful, the natural transformation
-  `G ⋙ F ⟶ G ⋙ H` given by `adj₁.counit ≫ adj₂.unit` is just `G` whiskered with `leftToRight`.
-* `leftToRight_app_mono_iff_unit_app_mono`: `leftToRight : F ⟶ H` is monic at `X` iff `adj₂.unit`
-  is monic at `F.obj X`.
-* `leftToRight_app_mono_iff_counit_unit_app_mono`: all components of `leftToRight : H ⟶ F` are
-  monic iff all components of `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H` are.
+* `whiskerLeft_leftToRight`: whiskering `G` with `leftToRight : F ⟶ H` yields
+  `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H`.
+* `mono_leftToRight_app_iff_mono_adj₂_unit_app`: `leftToRight : F ⟶ H` is monic at `X` iff
+  `adj₂.unit` is monic at `F.obj X`.
+* `mono_leftToRight_app_iff_mono_adj₁_counit_app`: `leftToRight : F ⟶ H` is monic at `X` iff
+  `adj₁.unit` is monic at `H.obj X`.
+* `mono_leftToRight_app_iff`: `leftToRight : H ⟶ F` is componentwise monic iff
+  `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H` is.
 -/
 
 open CategoryTheory Functor
