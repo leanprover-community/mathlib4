@@ -420,14 +420,14 @@ lemma natDegree_optionEquivLeft (p : MvPolynomial (Option S₁) R) :
     ext σ
     trans p.coeff (σ.embDomain .some + .single .none N)
     · simpa using optionEquivLeft_coeff_coeff R S₁ (σ.embDomain .some + .single .none N) p
-    simp only [coeff_zero, ← not_mem_support_iff]
+    simp only [coeff_zero, ← notMem_support_iff]
     intro H
     simpa using (degreeOf_lt_iff ((zero_le _).trans_lt hN)).mp hN _ H
   · rw [degreeOf_le_iff]
     intro σ hσ
     refine Polynomial.le_natDegree_of_ne_zero fun H ↦ ?_
     have := optionEquivLeft_coeff_coeff R S₁ σ p
-    rw [H, coeff_zero, eq_comm, ← not_mem_support_iff] at this
+    rw [H, coeff_zero, eq_comm, ← notMem_support_iff] at this
     exact this hσ
 
 lemma totalDegree_coeff_optionEquivLeft_add_le

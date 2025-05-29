@@ -98,7 +98,7 @@ end HahnSeries
 /-- We introduce a type alias for `HahnSeries` in order to work with scalar multiplication by
 series. If we wrote a `SMul (HahnSeries Γ R) (HahnSeries Γ V)` instance, then when
 `V = HahnSeries Γ R`, we would have two different actions of `HahnSeries Γ R` on `HahnSeries Γ V`.
-See `Mathlib.Algebra.Polynomial.Module` for more discussion on this problem. -/
+See `Mathlib/Algebra/Polynomial/Module.lean` for more discussion on this problem. -/
 @[nolint unusedArguments]
 def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
   HahnSeries Γ V
@@ -277,7 +277,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
   · simp only [hx, smul_zero]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
-    simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
+    simp only [notMem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
       mem_vaddAntidiagonal, Set.mem_setOf_eq, iff_false]
     rintro rfl h2 h1
     rw [IsCancelVAdd.left_cancel a1 a2 a h1] at h2
@@ -451,7 +451,7 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
   · simp only [hx, zero_mul]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
-    simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
+    simp only [notMem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
       mem_addAntidiagonal, Set.mem_setOf_eq, iff_false]
     rintro h2 rfl h1
     rw [← add_right_cancel h1] at hx

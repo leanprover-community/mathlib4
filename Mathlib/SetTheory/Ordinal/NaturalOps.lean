@@ -493,7 +493,7 @@ theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
 theorem lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' ≤ a' ⨳ b ♯ a ⨳ b' := by
   refine ⟨fun h => ?_, ?_⟩
   · rw [nmul] at h
-    simpa using not_mem_of_lt_csInf h ⟨0, fun _ _ => bot_le⟩
+    simpa using notMem_of_lt_csInf h ⟨0, fun _ _ => bot_le⟩
   · rintro ⟨a', ha, b', hb, h⟩
     have := h.trans_lt (nmul_nadd_lt ha hb)
     rwa [nadd_lt_nadd_iff_right] at this

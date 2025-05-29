@@ -30,7 +30,7 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
-`Mathlib.RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for
+`Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean`, which gives simpler expressions for
 `H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
 
 ## Main definitions
@@ -197,7 +197,6 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
       map_zero, Pi.zero_apply, LinearMap.zero_apply]
     rfl
 
-@[simp]
 theorem inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = ModuleCat.ofHom (inhomogeneousCochains.d n A) :=
   CochainComplex.of_d _ _ _ _

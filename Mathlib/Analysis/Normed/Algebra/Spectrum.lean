@@ -479,8 +479,9 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     refine .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial ‖a - ↑ₐ z‖) ?_
     filter_upwards [Filter.eventually_cofinite_ne 0] with n hn
     rw [norm_smul, mul_comm, norm_inv, RCLike.norm_natCast, ← div_eq_mul_inv]
-    exact div_le_div₀ (pow_nonneg (norm_nonneg _) n) (norm_pow_le' (a - ↑ₐ z) (zero_lt_iff.mpr hn))
-      (mod_cast Nat.factorial_pos n) (mod_cast Nat.factorial_le (lt_add_one n).le)
+    gcongr
+    · exact norm_pow_le' _ (pos_iff_ne_zero.mpr hn)
+    · exact n.le_succ
   have h₀ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = (a - ↑ₐ z) * b := by
     simpa only [mul_smul_comm, pow_succ'] using hb.tsum_mul_left (a - ↑ₐ z)
   have h₁ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = b * (a - ↑ₐ z) := by
@@ -621,19 +622,19 @@ lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x 
   have : CompleteSpace S := hS.completeSpace_coe
   intro μ hμ
   by_contra h
-  rw [spectrum.not_mem_iff] at h
+  rw [spectrum.notMem_iff] at h
   rw [← frontier_compl, (spectrum.isClosed _).isOpen_compl.frontier_eq, mem_diff] at hμ
   obtain ⟨hμ₁, hμ₂⟩ := hμ
   rw [mem_closure_iff_clusterPt] at hμ₁
   apply hμ₂
-  rw [mem_compl_iff, spectrum.not_mem_iff]
+  rw [mem_compl_iff, spectrum.notMem_iff]
   refine Subalgebra.isUnit_of_isUnit_val_of_eventually S h ?_ ?_ <| .map hμ₁ (algebraMap 𝕜 S · - x)
   · calc
       _ ≤ map _ (𝓝 μ) := map_mono (by simp)
       _ ≤ _ := by rw [← Filter.Tendsto, ← ContinuousAt]; fun_prop
   · rw [eventually_map]
     apply Eventually.filter_mono inf_le_right
-    simp [spectrum.not_mem_iff]
+    simp [spectrum.notMem_iff]
 
 /-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the boundary of
 the spectrum of `x` relative to `S` is a subset of the boundary of the spectrum of `↑x : A`
@@ -699,7 +700,7 @@ lemma Subalgebra.spectrum_eq_of_isPreconnected_compl (h : IsPreconnected (σ �
   suffices σ 𝕜 x \ σ 𝕜 (x : A) = ∅ by
     rw [spectrum_sUnion_connectedComponentIn, this]
     simp
-  refine eq_empty_of_forall_not_mem fun z hz ↦ NormedSpace.unbounded_univ 𝕜 𝕜 ?_
+  refine eq_empty_of_forall_notMem fun z hz ↦ NormedSpace.unbounded_univ 𝕜 𝕜 ?_
   obtain ⟨hz, hz'⟩ := mem_diff _ |>.mp hz
   have := (spectrum.isBounded (x : A)).union <|
     h.connectedComponentIn hz' ▸ spectrum_isBounded_connectedComponentIn S x hz
