@@ -123,6 +123,14 @@ def isDecideNative (stx : Syntax ): Bool := Id.run do
         | (.node _ ``Lean.Parser.Tactic.negConfigItem args') =>
           if args'[1]! matches (.ident _ _ `native _) then
             enabled := false
+        | (.node _ ``Lean.Parser.Tactic.valConfigItem args') =>
+          if args'[1]! matches (.ident _ _ `config _) then
+            match args'[3]! with
+            |  `({ native := true }) => return true
+            |  `({ native := false }) => return false
+            | _ =>
+              dbg_trace "warning: unhandled config {args'[3]!}"
+              return false
         | _ => let _n := 0
     return enabled
   | _ => false

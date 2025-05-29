@@ -126,12 +126,19 @@ note: this linter can be disabled with `set_option linter.style.nativeDecide fal
 #guard_msgs in
 example : 1 + 1 = 2 := by decide +native -native +native +native
 #guard_msgs in
-example : 1 + 1 = 2 := by decide +native -native +native +native -native
+example : 1 + 1 = 2 := by decide +native -native +kernel +native -kernel +native -native
 
--- TODO: false negative in the linter!
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+it could quite possibly be used to prove false.
+note: this linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
 #guard_msgs in
 example : 1 + 1 = 2 := by decide (config := { native := true })
 example : 1 + 1 = 2 := by decide (config := { native := false })
+-- Not handled yet: perhaps this is rare enough to not matter much yet.
+example : 1 + 1 = 2 := by decide (config := { native := false, kernel := false })
 
 set_option linter.style.nativeDecide false
 
