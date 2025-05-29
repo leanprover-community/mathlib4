@@ -131,10 +131,8 @@ private lemma one_add_sinTerm_bound_aux (Z : Set ℂ) (hZ : IsCompact Z) :
     gcongr
     apply le_trans (hs _ x (by simp [hx]) (by simp)) (le_abs_self s)
 
-theorem multipliableUniformlyOn_euler_sin_prod_on_compact
-    {Z : Set ℂ} (hZ2 : Z ⊆ ℂ_ℤ) (hZC : IsCompact Z) :
+theorem multipliableUniformlyOn_euler_sin_prod_on_compact {Z : Set ℂ} (hZC : IsCompact Z) :
     MultipliableUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sinTerm z n)) {Z} := by
-  have h2 := IsCompact.image (isCompact_iff_isCompact_univ.mp hZC) (continuous_inclusion hZ2)
   obtain ⟨u, hu, hu2⟩ := one_add_sinTerm_bound_aux Z hZC
   have := Summable.multipliableUniformlyOn_nat_one_add
     (f := fun n : ℕ => fun z : ℂ => (sinTerm z n)) hZC hu ?_ ?_
@@ -149,7 +147,7 @@ theorem HasProdUniformlyOn_euler_sin_prod_on_compact
     {Z : Set ℂ} (hZ2 : Z ⊆ ℂ_ℤ) (hZC : IsCompact Z) :
     HasProdUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sinTerm z n))
     (fun x => (Complex.sin (↑π * x) / (↑π * x))) {Z} := by
-  apply (multipliableUniformlyOn_euler_sin_prod_on_compact hZ2 hZC).hasProdUniformlyOn.congr_right
+  apply (multipliableUniformlyOn_euler_sin_prod_on_compact hZC).hasProdUniformlyOn.congr_right
   intro s hs x hx
   apply euler_sin_tprod x
   aesop
@@ -246,8 +244,8 @@ lemma logDeriv_of_prod {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℕ) :
       DifferentiableAt.div_const]
 
 theorem tendsto_logDeriv_euler_cot_sub (x : ℂ) (hx : x ∈ ℂ_ℤ) :
-    Tendsto (fun n : ℕ => ∑ j ∈ Finset.range n, cotTerm x j)
-      atTop (𝓝 <| π * cot (π * x)- 1 / x) := by
+    Tendsto (fun n : ℕ => ∑ j ∈ Finset.range n, cotTerm x j) atTop
+    (𝓝 <| π * cot (π * x)- 1 / x) := by
   simp_rw [← logDeriv_sin_div x hx, ← logDeriv_of_prod hx]
   simpa using tendsto_logDeriv_euler_sin_div x hx
 
