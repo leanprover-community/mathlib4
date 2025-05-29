@@ -42,7 +42,8 @@ lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
   filter_upwards [hf.norm.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi
     using norm_log_one_add_half_le_self hi
 
-lemma multipliable_one_add_of_summable (hf : Summable f) : Multipliable (fun i ↦ 1 + f i) :=
+protected lemma multipliable_one_add_of_summable (hf : Summable f) :
+    Multipliable (fun i ↦ 1 + f i) :=
   multipliable_of_summable_log (summable_log_one_add_of_summable hf)
 
 end Complex

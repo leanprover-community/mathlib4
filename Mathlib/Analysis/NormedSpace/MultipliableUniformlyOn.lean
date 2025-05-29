@@ -51,7 +51,12 @@ end summable
 
 section UniformlyOn
 
-/-Note this is false without hfn. -/
+/- If `x ↦ ∑' i, log (f i x)` is uniformly convergent on `𝔖`, its sum has bounded-above real part
+on each set in `𝔖`, and the functions `f i x` have no zeroes, then  `∏' i, f i x` is uniformly
+convergent on `𝔖`.
+
+Note that the non-vanishing assumption is really needed here: if this assumption is dropped then
+one obtains a counterexample by taking `ι = α = ℕ` and `f i x` is 0 if `i = x` and `1` otherwise. -/
 lemma hasProdUniformlyOn_of_clog {f : ι → α → ℂ} {𝔖 : Set (Set α)}
     (hf : SummableUniformlyOn (fun i x ↦ log (f i x)) 𝔖) (hfn : ∀ K ∈ 𝔖, ∀ x ∈ K, ∀ i, f i x ≠ 0)
     (hg : ∀ K ∈ 𝔖, BddAbove <| (fun x ↦ (∑' n, log (f n x)).re) '' K) :
@@ -74,13 +79,15 @@ lemma multipliableUniformlyOn_of_clog {f : ι → α → ℂ} {𝔖 : Set (Set �
     (hf : SummableUniformlyOn (fun i x ↦ log (f i x)) 𝔖) (hfn : ∀ K ∈ 𝔖, ∀ x ∈ K, ∀ i, f i x ≠ 0)
     (hg : ∀ K ∈ 𝔖, BddAbove <| (fun x ↦ (∑' n, log (f n x)).re) '' K) :
     MultipliableUniformlyOn f 𝔖 :=
-    ⟨_, hasProdUniformlyOn_of_clog hf hfn hg⟩
+  ⟨_, hasProdUniformlyOn_of_clog hf hfn hg⟩
 
 namespace Summable
 
 variable {R : Type*} [NormedCommRing R] [NormOneClass R] [CompleteSpace R] [TopologicalSpace α]
   {f : ι → α → R} {K : Set α} {u : ι → ℝ}
 
+/-- If a sequence of continuous functions `f i x` are a.e. bounded above uniformly a on compact
+space `K`  by a Summable `u`, then `∏' i, f i x` is uniformly convergent on `K`. -/
 lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
     (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hcts : ∀ n, ContinuousOn (f n) K) :
     HasProdUniformlyOn (fun n x ↦ 1 + f n x) (fun x ↦ ∏' i, (1 + f i x)) {K} := by
@@ -95,7 +102,7 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
       simp_rw [ContinuousMap.norm_le_of_nonempty]
       filter_upwards [h] with n hn using fun x ↦ hn x x.2
     have hM : Multipliable fun i ↦ 1 + f' i := by
-      apply _root_.multipliable_one_add_of_summable
+      apply multipliable_one_add_of_summable
       apply hu.of_norm_bounded_eventually
       simpa only [norm_norm] using hf'_bd
     convert ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd
@@ -105,8 +112,9 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
 lemma multipliableUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
     (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableUniformlyOn (fun n x ↦ 1 + f n x) {K} :=
-    ⟨_, hasProdUniformlyOn_one_add hK hu h hcts⟩
+  ⟨_, hasProdUniformlyOn_one_add hK hu h hcts⟩
 
+/-- This is a version of `hasProdUniformlyOn_one_add` for sequences indexed by `ℕ`. -/
 lemma hasProdUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsCompact K) {u : ℕ → ℝ}
     (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
     (hcts : ∀ n, ContinuousOn (f n) K) :
@@ -119,32 +127,41 @@ lemma multipliableUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsCompact
     MultipliableUniformlyOn (fun n x ↦ 1 + f n x) {K} :=
   ⟨_, hasProdUniformlyOn_nat_one_add hK hu h hcts⟩
 
-lemma hasProdLocallyUniformlyOn_one_add [LocallyCompactSpace α] (hK : IsOpen K) (hu : Summable u)
+section LocallyCompactSpace
+
+variable [LocallyCompactSpace α]
+
+/-- If a sequence of continuous functions `f i x` are a.e. bounded above uniformly a on open
+subset `K` of a locally compact space  by a Summable `u`, then `∏' i, f i x` is locally uniformly
+convergent on `K`. -/
+lemma hasProdLocallyUniformlyOn_one_add (hK : IsOpen K) (hu : Summable u)
     (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hcts : ∀ n, ContinuousOn (f n) K) :
     HasProdLocallyUniformlyOn (fun n x ↦ 1 + f n x) (fun x ↦ ∏' i, (1 + f i x)) K := by
   apply hasProdLocallyUniformlyOn_of_forall_compact hK
   refine fun S hS hC ↦ hasProdUniformlyOn_one_add hC hu ?_ fun n ↦ (hcts n).mono hS
   filter_upwards [h] with n hn a ha using hn a (hS ha)
 
-lemma multipliableLocallyUniformlyOn_one_add [LocallyCompactSpace α]
-    (hK : IsOpen K) (hu : Summable u) (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n)
-    (hcts : ∀ n, ContinuousOn (f n) K) :
+lemma multipliableLocallyUniformlyOn_one_add (hK : IsOpen K) (hu : Summable u)
+    (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableLocallyUniformlyOn (fun n x ↦ 1 + f n x) K :=
   ⟨_, hasProdLocallyUniformlyOn_one_add hK hu h hcts⟩
 
-lemma hasProdLocallyUniformlyOn_nat_one_add [LocallyCompactSpace α]
-    {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ} (hu : Summable u)
-    (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hcts : ∀ n, ContinuousOn (f n) K) :
+/-- This is a version of `hasProdLocallyUniformlyOn_one_add` for sequences indexed by `ℕ`. -/
+lemma hasProdLocallyUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ}
+    (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
+    (hcts : ∀ n, ContinuousOn (f n) K) :
     HasProdLocallyUniformlyOn (fun n x ↦ 1 + f n x) (fun x ↦ ∏' i, (1 + f i x)) K := by
   apply hasProdLocallyUniformlyOn_of_forall_compact hK
   refine fun S hS hC ↦ hasProdUniformlyOn_nat_one_add hC hu ?_ fun n ↦ (hcts n).mono hS
   filter_upwards [h] with n hn a ha using hn a (hS ha)
 
-lemma multipliableLocallyUniformlyOn_nat_one_add [LocallyCompactSpace α]
-    {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ} (hu : Summable u)
-    (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hcts : ∀ n, ContinuousOn (f n) K) :
+lemma multipliableLocallyUniformlyOn_nat_one_add  {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ}
+    (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
+    (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableLocallyUniformlyOn (fun n x ↦ 1 + f n x) K :=
   ⟨_, hasProdLocallyUniformlyOn_nat_one_add hK hu h hcts⟩
+
+end LocallyCompactSpace
 
 end Summable
 

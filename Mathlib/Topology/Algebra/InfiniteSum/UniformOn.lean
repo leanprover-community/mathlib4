@@ -150,6 +150,13 @@ lemma hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
 @[deprecated (since := "2025-05-22")] alias hasSumLocallyUniformlyOn_of_of_forall_exists_nhd :=
   hasSumLocallyUniformlyOn_of_of_forall_exists_nhds
 
+@[to_additive]
+lemma HasProdUniformlyOn.hasProdLocallyUniformlyOn (h : HasProdUniformlyOn f g {s}) :
+  HasProdLocallyUniformlyOn f g s := by
+  simp [HasProdLocallyUniformlyOn, hasProdUniformlyOn_iff_tendstoUniformlyOn] at *
+  exact TendstoUniformlyOn.tendstoLocallyUniformlyOn h
+
+@[to_additive]
 lemma hasProdLocallyUniformlyOn_of_forall_compact (hs : IsOpen s) [LocallyCompactSpace β]
     (h : ∀ K ⊆ s, IsCompact K → HasProdUniformlyOn f g {K}) : HasProdLocallyUniformlyOn f g s := by
   rw [HasProdLocallyUniformlyOn, tendstoLocallyUniformlyOn_iff_forall_isCompact hs]
