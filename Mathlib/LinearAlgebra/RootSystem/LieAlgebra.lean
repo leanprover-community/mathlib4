@@ -3,7 +3,6 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Matrix
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Sl2
 import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
@@ -86,7 +85,7 @@ def lieAlgebra [Fintype b.support] [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range e ∪ range f)
 
-/-- A distinguished subalgebra corresponding to a Cartan subalgebra of the Geck's construction. -/
+/-- A distinguished subalgebra corresponding to a Cartan subalgebra of the Geck construction. -/
 def cartanSubalgebra [Fintype b.support] [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range h)
