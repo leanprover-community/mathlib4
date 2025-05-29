@@ -24,6 +24,10 @@ in Lean 3, `refine` and `cases`. They have been superseded by Lean 4 tactics:
 
 The `admit` tactic is a synonym for the much more common `sorry`, so the latter should be preferred.
 
+The `native_decide` tactic is not allowed in mathlib, as it trusts the entire Lean compiler
+(and not just the Lean kernel). Because the latter is large and complicated, at present it is
+probably possible to prove `False` using `native_decide`.
+
 This linter is an incentive to discourage uses of such deprecated syntax, without being a ban.
 It is not inherently limited to tactics.
 -/
@@ -60,6 +64,13 @@ the `admit` tactic, which is a synonym for the much more common `sorry`. -/
 register_option linter.style.admit : Bool := {
   defValue := false
   descr := "enable the admit linter"
+}
+
+/-- The option `linter.style.nativeDecide` of the deprecated syntax linter flags usages of
+the `native_decide` tactic, which is disallowed in mathlib. -/
+register_option linter.style.nativeDecide : Bool := {
+  defValue := false
+  descr := "enable the nativeDecide linter"
 }
 
 /-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
@@ -112,6 +123,10 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
+    | ``Lean.Parser.Tactic.nativeDecide =>
+      rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib:\n\
+        because it trusts the entire Lean compiler (not just the Lean kernel),\n\
+        quite possibly that could be used to prove false.")
     | ``Lean.Parser.Command.in =>
       match getSetOptionMaxHeartbeatsComment stx with
       | none => rargs
@@ -142,7 +157,8 @@ def deprecatedSyntaxLinter : Linter where run stx := do
   unless Linter.getLinterValue linter.style.refine (← getOptions) ||
       Linter.getLinterValue linter.style.cases (← getOptions) ||
       Linter.getLinterValue linter.style.admit (← getOptions) ||
-      Linter.getLinterValue linter.style.maxHeartbeats (← getOptions) do
+      Linter.getLinterValue linter.style.maxHeartbeats (← getOptions) ||
+      Linter.getLinterValue linter.style.nativeDecide (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -158,6 +174,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
       | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
+      | ``Lean.Parser.Tactic.nativeDecide => Linter.logLintIf linter.style.nativeDecide stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
       | _ => continue) stx
 

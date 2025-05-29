@@ -83,6 +83,17 @@ warning: declaration uses 'sorry'
 #guard_msgs in
 example : False := by admit
 
+set_option linter.style.nativeDecide true
+
+/--
+warning: Using `native_decide` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+quite possibly that could be used to prove false.
+note: this linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+theorem test : 1 + 1 = 2 := by native_decide
+
 set_option linter.style.maxHeartbeats true
 /--
 warning: Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in
