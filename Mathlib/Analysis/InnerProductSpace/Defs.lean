@@ -420,6 +420,13 @@ def toSeminormedSpace : NormedSpace 𝕜 F where
     · simp [sqrt_normSq_eq_norm, RCLike.sqrt_normSq_eq_norm]
     · positivity
 
+def toSeminormedSpaceCore : SeminormedSpace.Core 𝕜 F where
+  norm_nonneg x := norm_nonneg x
+  norm_smul c x := by
+    letI : NormedSpace 𝕜 F := toSeminormedSpace
+    exact _root_.norm_smul c x
+  norm_triangle x y := norm_add_le x y
+
 end PreInnerProductSpace.Core
 
 section InnerProductSpace.Core
@@ -481,6 +488,13 @@ def toNormedSpace : NormedSpace 𝕜 F where
       ofReal_re]
     · simp [sqrt_normSq_eq_norm, RCLike.sqrt_normSq_eq_norm]
     · positivity
+
+def toNormedSpaceCore : NormedSpace.Core 𝕜 F where
+  norm_nonneg x := norm_nonneg x
+  norm_smul c x := by
+    letI : NormedSpace 𝕜 F := toSeminormedSpace
+    exact _root_.norm_smul c x
+  norm_triangle x y := norm_add_le x y
 
 /-- In a topological vector space, if the unit ball of a continuous scalar product is von Neumann
 bounded, then the scalar product defines the same topology as the original one. -/
