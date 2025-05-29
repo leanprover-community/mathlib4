@@ -281,15 +281,6 @@ variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
-/-- Extract a real bilinear form from an linear map `T`,
-by taking the pairing `fun x ↦ re ⟪T x, x⟫`. -/
-def LinearMap.reApplyInnerSelf (T : E →ₗ[𝕜] E) (x : E) : ℝ :=
-  re ⟪T x, x⟫
-
-theorem LinearMap.reApplyInnerSelf_apply (T : E →ₗ[𝕜] E) (x : E) :
-    T.reApplyInnerSelf x = re ⟪T x, x⟫ :=
-  rfl
-
 /-- Extract a real bilinear form from an operator `T`,
 by taking the pairing `fun x ↦ re ⟪T x, x⟫`. -/
 def ContinuousLinearMap.reApplyInnerSelf (T : E →L[𝕜] E) (x : E) : ℝ :=
