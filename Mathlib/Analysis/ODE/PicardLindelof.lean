@@ -33,12 +33,12 @@ repeated applications of the right hand side of this equation.
 
 ## Main definitions and results
 
-* `picard f t₀ x₀ α t`: the Picard iteration, applied to the curve `α`.
-* `IsPicardLindelof`: the structure holding the assumptions of the Picard-Lindelöf theorem.
+* `picard f t₀ x₀ α t`: the Picard iteration, applied to the curve `α`
+* `IsPicardLindelof`: the structure holding the assumptions of the Picard-Lindelöf theorem
 * `IsPicardLindelof.exists_eq_hasDerivWithinAt`: the existence theorem for local solutions to
-  time-dependent ODEs.
+  time-dependent ODEs
 * `IsPicardLindelof.exists_forall_mem_closedBall_eq_hasDerivWithinAt_Icc`: the existence theorem for
-  local flows to time-dependent vector fields.
+  local flows to time-dependent vector fields
 
 ## Implementation notes
 
@@ -53,12 +53,13 @@ repeated applications of the right hand side of this equation.
   certain quantities constructed from them can be shown more easily. When subtraction is involved,
   especially note whether it is the usual subtraction between two reals or the truncated subtraction
   between two non-negative reals.
-* We only prove the existence of a solution in this file. For uniqueness, see `ODE_solution_unique`
+* In this file, We only prove the existence of a solution. For uniqueness, see `ODE_solution_unique`
   and related theorems in `Mathlib/Analysis/ODE/Gronwall.lean`.
 
 ## Tags
 
-differential equation, dynamical system, initial value problem
+differential equation, dynamical system, initial value problem, Picard-Lindelöf theorem,
+Cauchy-Lipschitz theorem
 
 -/
 
@@ -68,19 +69,19 @@ open scoped Nat NNReal Topology
 /-! ## Assumptions of the Picard-Lindelof theorem-/
 
 /-- Prop structure holding the assumptions of the Picard-Lindelöf theorem.
-`IsPicardLindelof f t₀ x₀ a r L K` means that the time-dependent vector field `f` satisfies the
-conditions to admit an integral curve `α : ℝ → E` to `f` defined on `Icc tmin tmax` with the
-initial condition `α t₀ = x`, where `‖x - x₀‖ ≤ r`. Note that the initial point `x` is allowed
-to differ from the point `x₀` about which the conditions on `f` are stated. -/
+`IsPicardLindelof f t₀ x₀ a r L K`, where `t₀ ∈ Icc tmin tmax`, means that the time-dependent vector
+field `f` satisfies the conditions to admit an integral curve `α : ℝ → E` to `f` defined on
+`Icc tmin tmax` with the initial condition `α t₀ = x`, where `‖x - x₀‖ ≤ r`. Note that the initial
+point `x` is allowed to differ from the point `x₀` about which the conditions on `f` are stated. -/
 structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E]
     (f : ℝ → E → E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (a r L K : ℝ≥0) : Prop where
-  /-- The vector field at any time is Lipschitz in with constant `K` within a closed ball. -/
+  /-- The vector field at any time is Lipschitz with constant `K` within a closed ball. -/
   lipschitzOnWith : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ a)
   /-- The vector field is continuous in time within a closed ball. -/
   continuousOn : ∀ x ∈ closedBall x₀ a, ContinuousOn (f · x) (Icc tmin tmax)
   /-- `L` is an upper bound of the norm of the vector field. -/
   norm_le : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ a, ‖f t x‖ ≤ L
-  /-- The time interval of validity. -/
+  /-- The time interval of validity -/
   mul_max_le : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r
 
 namespace ODE
@@ -104,8 +105,7 @@ noncomputable def picard (f : ℝ → E → E) (t₀ : ℝ) (x₀ : E) (α : ℝ
 @[simp]
 lemma picard_apply {x₀ : E} {t : ℝ} : picard f t₀ x₀ α t = x₀ + ∫ τ in t₀..t, f τ (α τ) := rfl
 
-lemma picard_apply₀ {x₀ : E} : picard f t₀ x₀ α t₀ = x₀ := by
-  simp only [picard_apply, integral_same, add_zero]
+lemma picard_apply₀ {x₀ : E} : picard f t₀ x₀ α t₀ = x₀ := by simp
 
 /-- Given a $C^n$ time-dependent vector field `f` and a $C^n$ curve `α`, the composition `f t (α t)`
 is $C^n$ in `t`. -/
@@ -115,7 +115,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
     ContDiffOn ℝ n (fun t ↦ f t (α t)) s := by
   have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl -- should this be a lemma?
   rw [this]
-  apply hf.comp <| contDiffOn_id.prodMk hα
+  apply hf.comp (by fun_prop)
   intro _ ht
   rw [mem_prod]
   exact ⟨ht, hmem _ ht⟩
@@ -125,7 +125,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
 lemma continuousOn_comp
     (hf : ContinuousOn (uncurry f) (s ×ˢ u)) (hα : ContinuousOn α s) (hmem : MapsTo α s u) :
     ContinuousOn (fun t ↦ f t (α t)) s :=
-  contDiffOn_zero.mp <| contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem
+  contDiffOn_zero.mp <| (contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem)
 
 end
 
@@ -159,13 +159,13 @@ variable {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a r L : ℝ≥0}
 
 instance : CoeFun (FunSpace t₀ x₀ r L) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
-/-- The constant map -/
+/-- `FunSpace t₀ x₀ r L` contains the constant map at `x₀`. -/
 instance : Inhabited (FunSpace t₀ x₀ r L) :=
   ⟨fun _ ↦ x₀, (LipschitzWith.const _).weaken (zero_le _), mem_closedBall_self r.2⟩
 
 protected lemma continuous (α : FunSpace t₀ x₀ L r) : Continuous α := α.lipschitzWith.continuous
 
-/-- The embedding of `FunSpace` into the space of continuous maps. -/
+/-- The embedding of `FunSpace` into the space of continuous maps -/
 def toContinuousMap : FunSpace t₀ x₀ r L ↪ C(Icc tmin tmax, E) :=
   ⟨fun α ↦ ⟨α, α.continuous⟩, fun α β h ↦ by cases α; cases β; simpa using h⟩
 
@@ -182,8 +182,9 @@ noncomputable instance : MetricSpace (FunSpace t₀ x₀ r L) :=
 lemma isUniformInducing_toContinuousMap :
     IsUniformInducing fun α : FunSpace t₀ x₀ r L ↦ α.toContinuousMap := ⟨rfl⟩
 
-lemma range_toContinuousMap : range (fun α : FunSpace t₀ x₀ r L ↦ α.toContinuousMap) =
-    { α : C(Icc tmin tmax, E) | LipschitzWith L α ∧ α t₀ ∈ closedBall x₀ r } := by
+lemma range_toContinuousMap :
+    range (fun α : FunSpace t₀ x₀ r L ↦ α.toContinuousMap) =
+      { α : C(Icc tmin tmax, E) | LipschitzWith L α ∧ α t₀ ∈ closedBall x₀ r } := by
   ext α
   constructor
   · rintro ⟨⟨α, hα1, hα2⟩, rfl⟩
@@ -326,7 +327,7 @@ lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
     calc
       _ ≤ ∫ τ in uIoc t₀.1 t.1, K ^ (n + 1) * |τ - t₀| ^ n / n ! * dist α β := by
         rw [intervalIntegral.norm_intervalIntegral_eq]
-        apply norm_integral_le_of_norm_le <| Continuous.integrableOn_uIoc (by fun_prop)
+        apply MeasureTheory.norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc (by fun_prop))
         apply ae_restrict_mem measurableSet_Ioc |>.mono
         intro t' ht'
         -- any tactic for this?
