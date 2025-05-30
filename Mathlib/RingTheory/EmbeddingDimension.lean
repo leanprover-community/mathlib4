@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brian Nugent, Jarod Alper
 -/
 
+import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.Algebra.Module.SpanRank
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.Cotangent
@@ -46,84 +47,157 @@ lemma Module.Finrank_eq_spanFinrankOfTop
   rw [rank_eq_spanRank, spanrank_eq_spanFinrank, Nat.cast_inj] at finrank_eq_rank
   exact finrank_eq_rank
 
+lemma Submodule.finrank_eq_spanFinrank_of_free
+    (R : Type*) [Semiring R] [StrongRankCondition R]
+    (V : Type*) [AddCommMonoid V] [Module R V] [Module.Free R V] :
+    Module.finrank R V = (⊤ : Submodule R V).spanFinrank := by
+  rw [Module.finrank, Submodule.rank_eq_spanRank_of_free, spanFinrank]
+
+lemma Submodule.le_spanRank_restrictScalars
+    {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    {V : Type*} [AddCommMonoid V] [Module R V] [Module S V] [IsScalarTower R S V]
+    (p : Submodule S V) :
+    p.spanRank ≤ (p.restrictScalars R).spanRank := by
+  refine le_ciInf fun ⟨s, hs⟩ ↦ (ciInf_le' _ ⟨s, ?_⟩).trans le_rfl
+  exact le_antisymm (span_le.mpr (subset_span.trans hs.le))
+    (hs.ge.trans (span_le_restrictScalars R S s))
+
+lemma Submodule.spanRank_restrictScalars
+    {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    {V : Type*} [AddCommMonoid V] [Module R V] [Module S V] [IsScalarTower R S V]
+    (p : Submodule S V) (H : Function.Surjective (algebraMap R S)) :
+    (p.restrictScalars R).spanRank = p.spanRank := by
+  refine p.le_spanRank_restrictScalars.antisymm'
+    (le_ciInf fun ⟨s, hs⟩ ↦ (ciInf_le' _ ⟨s, ?_⟩).trans le_rfl)
+  rw [← hs, Submodule.restrictScalars_span _ _ H]
+
+lemma Submodule.le_spanFinrank_restrictScalars
+    {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    {V : Type*} [AddCommMonoid V] [Module R V] [Module S V] [IsScalarTower R S V]
+    (p : Submodule S V) (hp : (p.restrictScalars R).FG) :
+    p.spanFinrank ≤ (p.restrictScalars R).spanFinrank :=
+  Cardinal.toNat_le_toNat p.le_spanRank_restrictScalars (by simpa)
+
+lemma Submodule.spanFinrank_restrictScalars
+    {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    {V : Type*} [AddCommMonoid V] [Module R V] [Module S V] [IsScalarTower R S V]
+    (p : Submodule S V) (H : Function.Surjective (algebraMap R S)) :
+    (p.restrictScalars R).spanFinrank = p.spanFinrank := by
+  rw [spanFinrank, spanFinrank, Submodule.spanRank_restrictScalars p H]
+
+lemma lift_spanRank_map_le.{u, v}
+    {R : Type*} {M : Type u} {N : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (σ : M →ₗ[R] N) (p : Submodule R M) :
+    Cardinal.lift.{u} (p.map σ).spanRank ≤ Cardinal.lift p.spanRank := by
+  obtain ⟨s, hs, rfl⟩ := exists_span_set_card_eq_spanRank p
+  rw [Submodule.map_span, ← hs]
+  exact (Cardinal.lift_monotone (spanRank_span_le_card _)).trans Cardinal.mk_image_le_lift
+
+lemma lift_spanRank_map.{u, v}
+    {R : Type*} {M : Type u} {N : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (σ : M →ₗ[R] N) (hσ : Function.Injective σ) (p : Submodule R M) :
+    Cardinal.lift.{u} (p.map σ).spanRank = Cardinal.lift p.spanRank := by
+  refine (lift_spanRank_map_le σ p).antisymm ?_
+  obtain ⟨s, hs, hsp⟩ := exists_span_set_card_eq_spanRank (p.map σ)
+  choose! v hv e using subset_span.trans hsp.le
+  have : span R (v '' s) = p := by
+    apply Submodule.map_injective_of_injective hσ
+    rw [Submodule.map_span, ← hsp, ← Set.image_comp, Set.EqOn.image_eq_self]
+    aesop
+  rw [← hs, ← this]
+  exact (Cardinal.lift_monotone (spanRank_span_le_card _)).trans Cardinal.mk_image_le_lift
+
+lemma spanRank_map.{u}
+    {R : Type*} {M N : Type u} [Semiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (σ : M →ₗ[R] N) (hσ : Function.Injective σ) (p : Submodule R M) :
+    (p.map σ).spanRank = p.spanRank := by
+  simpa using lift_spanRank_map σ hσ p
+
+lemma spanFinrank_map_le
+    {R M N : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (σ : M →ₗ[R] N) (p : Submodule R M) (hp : p.FG) :
+    (map σ p).spanFinrank ≤ p.spanFinrank := by
+  simpa using Cardinal.toNat_le_toNat (lift_spanRank_map_le σ p) (by simpa)
+
+lemma spanFinrank_map
+    {R M N : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (σ : M →ₗ[R] N)
+    (hσ : Function.Injective σ) (p : Submodule R M) :
+    (map σ p).spanFinrank = p.spanFinrank := by
+  simpa using congr($(lift_spanRank_map σ hσ p).toNat)
+
+lemma spanRank_eq_spanRank_top {R M : Type*} [Semiring R]
+    [AddCommGroup M] [Module R M] (N : Submodule R M) :
+    N.spanRank = (⊤ : Submodule R N).spanRank := by
+  rw [← spanRank_map N.subtype Subtype.val_injective, Submodule.map_top, range_subtype]
+
+lemma spanFinrank_eq_spanFinrank_top {R M : Type*} [Semiring R]
+    [AddCommGroup M] [Module R M] (N : Submodule R M) :
+    N.spanFinrank = (⊤ : Submodule R N).spanFinrank := by
+  rw [spanFinrank, spanRank_eq_spanRank_top, spanFinrank]
+
+open TensorProduct in
+noncomputable
+def Ideal.cotangentEquivTensorProduct {R : Type*} [CommRing R] (I : Ideal R) :
+    I.Cotangent ≃ₗ[R ⧸ I] (R ⧸ I) ⊗[R] I :=
+  (LinearEquiv.ofLinear
+    (Submodule.liftQ _ (TensorProduct.mk _ _ _ 1) (by
+      simp +contextual [Submodule.smul_le, TensorProduct.smul_tmul', Algebra.smul_def,
+        Ideal.Quotient.eq_zero_iff_mem.mpr]))
+    (TensorProduct.lift (Submodule.liftQ _ (.toSpanSingleton _ _ I.toCotangent) (fun x hx ↦ by
+      ext a
+      simp only [LinearMap.toSpanSingleton_apply, LinearMap.smul_apply, ← map_smul,
+        LinearMap.zero_apply, Ideal.toCotangent_eq_zero, pow_two, SetLike.val_smul, smul_eq_mul]
+      exact Ideal.mul_mem_mul hx a.2)))
+    (by ext x; show 1 ⊗ₜ (1 • x) = 1 ⊗ₜ[R] x; rw [one_smul]) (by
+      ext x
+      obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
+      show (1 : R ⧸ I) • I.toCotangent x = I.toCotangent x
+      rw [one_smul]) : I.Cotangent ≃ₗ[R] (R ⧸ I) ⊗[R] I).extendScalarsOfSurjective
+    Ideal.Quotient.mk_surjective
+
+open TensorProduct in
+@[simp]
+lemma Ideal.cotangentEquivTensorProduct_symm_tmul {R : Type*} [CommRing R] (I : Ideal R)
+    (x : R ⧸ I) (y : I) :
+    I.cotangentEquivTensorProduct.symm (x ⊗ₜ y) = x • I.toCotangent y := by
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+  rfl
+
+lemma Set.ncard_image {α β : Type*} (f : α → β) {s : Set α} (hs : s.Finite) :
+    (f '' s).ncard ≤ s.ncard := by
+  classical
+  lift s to Finset α using hs
+  rw [← Finset.coe_image, ncard_coe_Finset, ncard_coe_Finset]
+  exact Finset.card_image_le
+
+lemma Set.ncard_range {α β : Type*} (f : α → β) [Finite α] :
+    (Set.range f).ncard ≤ Nat.card α := by
+  rw [← Set.image_univ, ← Set.ncard_univ]
+  exact Set.ncard_image _ Set.finite_univ
+
 /-- the embedding dimension of `R` is equal to the minimum number of generators of `m`. -/
 theorem IsLocalRing.embDim_eq_spanFinrank_maximalIdeal
     (R : Type*) [CommRing R] [IsLocalRing R] [IsNoetherianRing R] :
     IsLocalRing.embDim R = (maxl R).spanFinrank := by
-  rw [Nat.eq_iff_le_and_ge]
-  constructor
-  · have h1 : ∃ s : Set (maxl R),
-        s.encard = ↑(Submodule.spanFinrank maxl R) ∧ Submodule.span R s = ⊤ := by
-      have : (⊤ : Submodule R (maxl R)).FG := Module.Finite.fg_top
-      have := Submodule.FG.exists_span_set_encard_eq_spanFinrank this
-      rw[SpanFinRankOfSubmodule_eq_spanFinrankOfTop]
-      exact this
-    obtain ⟨m_gens, m_gens_card, hm_gens_span⟩ := h1
-    have m_gens_finite : m_gens.Finite := Set.finite_of_encard_eq_coe m_gens_card
-    have m_gens_card2 : m_gens.ncard = (maxl R).spanFinrank := by
-      rw [← (Set.Finite.cast_ncard_eq m_gens_finite)] at m_gens_card
-      exact Eq.symm ((fun {a b} ↦ ENat.coe_inj.mp) (id (Eq.symm m_gens_card)))
-    rw [← m_gens_card2]
-    rw [embDim]
-    let im_m_gens := ⇑(maxl R).toCotangent '' m_gens
-    let subspace := Submodule.span (ResidueField R) im_m_gens
-    have hm_gens_cot_span : subspace = ⊤ :=
-      IsLocalRing.CotangentSpace.span_image_eq_top_iff.mpr hm_gens_span
-    have h1 : im_m_gens.ncard ≤ m_gens.ncard := by
-      exact Set.ncard_image_le m_gens_finite
-    have h2 : im_m_gens.Finite := Set.Finite.image (⇑(maxl R).toCotangent) m_gens_finite
-    have h3 : subspace.spanFinrank ≤ im_m_gens.ncard :=
-      Submodule.spanFinrank_span_le_ncard_of_finite h2
-    have h4 : subspace.spanFinrank ≤ m_gens.ncard := Nat.le_trans h3 h1
-    clear h1 h3
-    have h5 : subspace.spanRank  = Module.rank (ResidueField R) (CotangentSpace R) := by
-      rw [hm_gens_cot_span]
-      have : Module.Free (ResidueField R) (CotangentSpace R) :=
-        Module.Free.of_divisionRing (ResidueField R) (CotangentSpace R)
-      exact Eq.symm Submodule.rank_eq_spanRank_of_free
-    rw [← Module.finrank_eq_rank (ResidueField R) (CotangentSpace R)] at h5
-    have subspace_fg : subspace.FG := by
-      exact IsNoetherian.noetherian subspace
-    rw [← @Submodule.fg_iff_spanRank_eq_spanFinrank (ResidueField R)
-      (CotangentSpace R) _ _ _ subspace] at subspace_fg
-    rw [subspace_fg] at h5
-    have h6 : subspace.spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
-      Nat.cast_inj.mp h5
-    rw [← h6]
-    exact h4
-  · unfold embDim
-    let res := ResidueField R
-    let cot := CotangentSpace R
-    have cot_fg : Module.Finite res cot :=
-      instFiniteDimensionalResidueFieldCotangentSpaceOfIsNoetherianRing R
-    have cot_fg' : (⊤ : Submodule res cot).FG :=
-      IsNoetherian.noetherian (⊤ : Submodule res cot)
-    obtain ⟨s, s_card, s_span⟩ := Submodule.FG.exists_span_set_encard_eq_spanFinrank cot_fg'
-    have s_finite : s.Finite := Set.finite_of_encard_eq_coe s_card
-    let p := ⇑(maxl R).toCotangent
-    have p_surj : Function.Surjective p := Ideal.toCotangent_surjective maxl R
-    let p_has_right_inv := p_surj.hasRightInverse
-    obtain ⟨p_inv, hp_inv⟩ := p_has_right_inv
-    clear p_surj
-    change cot → ↥maxl R at p_inv
-    let sinv := p_inv '' s
-    have im_of_sinv_eq_s : (p '' sinv) = s := Function.LeftInverse.image_image hp_inv s
-    have nakayama : Submodule.span (ResidueField R) (⇑(maxl R).toCotangent '' sinv) = ⊤
-      ↔ Submodule.span R sinv = ⊤ := IsLocalRing.CotangentSpace.span_image_eq_top_iff
-    rw [im_of_sinv_eq_s] at nakayama
-    have inequality2 : sinv.ncard ≤ s.ncard := Set.ncard_image_le s_finite
-    rw [nakayama] at s_span
-    have sinv_finite : sinv.Finite := Set.Finite.image p_inv s_finite
-    have inequality1 : (Submodule.spanFinrank maxl R) ≤ sinv.ncard := by
-      have h1 := (@Submodule.spanFinrank_span_le_ncard_of_finite R (maxl R) _ _ _ sinv) sinv_finite
-      have h2 : (Submodule.span R sinv).spanFinrank = (Submodule.spanFinrank maxl R) := by
-        rw [s_span, ← SpanFinRankOfSubmodule_eq_spanFinrankOfTop]
-      linarith
-    have equality3 : s.ncard = Module.finrank res cot := by
-      rw [Module.Finrank_eq_spanFinrankOfTop]
-      rw [← Set.Finite.cast_ncard_eq s_finite] at s_card
-      exact Eq.symm ((fun {a b} ↦ ENat.coe_inj.mp) (id (Eq.symm s_card)))
-    linarith
+  rw [embDim, spanFinrank_eq_spanFinrank_top (maximalIdeal R)]
+  apply le_antisymm
+  · rw [Submodule.finrank_eq_spanFinrank_of_free]
+    refine (Submodule.le_spanFinrank_restrictScalars (R := R) _
+      (Module.finite_def.mp inferInstance)).trans ?_
+    refine le_trans ?_ (spanFinrank_map_le (Ideal.toCotangent _) _ ?_)
+    · simp [LinearMap.range_eq_top.mpr (Ideal.toCotangent_surjective _)]
+    · exact Module.finite_def.mp inferInstance
+  · let I := Module.Free.ChooseBasisIndex (ResidueField R) (CotangentSpace R)
+    let b : Basis I (ResidueField R) (CotangentSpace R) := Module.Free.chooseBasis _ _
+    choose x hx using fun i ↦ Ideal.toCotangent_surjective _ (b i)
+    have := IsLocalRing.span_eq_top_of_tmul_eq_basis x
+      (b.map (Ideal.cotangentEquivTensorProduct (maximalIdeal R)))
+      (by simp [← LinearEquiv.symm_apply_eq, ResidueField, hx, CotangentSpace])
+    rw [← this]
+    refine (spanFinrank_span_le_ncard_of_finite (Set.finite_range x)).trans ?_
+    rw [Module.finrank_eq_card_basis b, ← Nat.card_eq_fintype_card]
+    exact Set.ncard_range _
 
 theorem Ideal.toCotangent_out {R : Type*} [CommRing R] (I : Ideal R) (x : I.Cotangent) :
     I.toCotangent (Quotient.out x) = x := by
