@@ -32,8 +32,8 @@ def ord (x : R) : ℕ∞ := Module.length R (R ⧸ Ideal.span {x})
 /--
 The order of vanishing of `1` is `0`.
 -/
-lemma ord_one : Ring.ord R 1 = 0 := by
-  simp_all [Ring.ord, Module.length_eq_zero_iff,
+lemma ord_one : ord R 1 = 0 := by
+  simp_all [ord, Module.length_eq_zero_iff,
     Ideal.span_singleton_one, Submodule.Quotient.subsingleton_iff]
 
 end Ring
