@@ -396,4 +396,3 @@ instance instCompleteSpaceOfSequentialSpace [SequentialSpace α] :
 end CompleteSpace
 
 end ContinuousMap
-#min_imports
