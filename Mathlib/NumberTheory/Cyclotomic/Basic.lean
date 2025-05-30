@@ -153,27 +153,17 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
     obtain ⟨b₁, ⟨⟨n, hn⟩, h₁⟩⟩ := hy
     exact ⟨n, ⟨mem_union_left T hn.1, hn.2.1, by rw [← h₁, ← map_pow, hn.2.2, map_one]⟩⟩
 
-private theorem subsingleton_iff_aux [Subsingleton B] (hS : 0 ∉ S) :
-    IsCyclotomicExtension S A B ↔ S = { } ∨ S = {1} := by
-  have : Subsingleton (Subalgebra A B) := inferInstance
-  constructor
-  · rintro ⟨hprim, -⟩
-    rw [← subset_singleton_iff_eq]
-    intro t ht
-    obtain ⟨ζ, hζ⟩ := hprim ht (ne_of_mem_of_not_mem ht hS)
-    rw [mem_singleton_iff]
-    exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
-  · rintro (rfl | rfl)
-    · exact ⟨fun h => h.elim, fun x => by convert (mem_top : x ∈ ⊤)⟩
-    · rw [iff_singleton]
-      exact ⟨⟨0, IsPrimitiveRoot.of_subsingleton 0⟩,
-        fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
-
 @[nontriviality]
 theorem subsingleton_iff [Subsingleton B] :
     IsCyclotomicExtension S A B ↔ S ⊆ {0, 1} := by
-  rw [eq_self_sdiff_zero, subsingleton_iff_aux _ _ _ (by simp), ← subset_singleton_iff_eq,
-    diff_singleton_subset_iff]
+  have : Subsingleton (Subalgebra A B) := inferInstance
+  refine ⟨fun ⟨hprim, _⟩ ↦ ?_, fun hS ↦ ?_⟩
+  · refine subset_pair_iff.mpr fun s hs ↦ Decidable.or_iff_not_imp_left.mpr fun hs' ↦ ?_
+    obtain ⟨ζ, hζ⟩ := hprim hs hs'
+    exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
+  · refine ⟨fun {s} hs hs' ↦ ?_, fun x ↦ by convert (mem_top (R := A) : x ∈ ⊤)⟩
+    · have : s = 1 := (subset_pair_iff.mp hS s hs).resolve_left hs'
+      exact ⟨0, this ▸ IsPrimitiveRoot.of_subsingleton 0⟩
 
 /-- If `B` is a cyclotomic extension of `A` given by roots of unity of order in `S ∪ T`, then `B`
 is a cyclotomic extension of `adjoin A { b : B | ∃ a : ℕ, a ∈ S ∧ a ≠ 0 ∧ b ^ a = 1 }` given by
@@ -248,26 +238,18 @@ theorem iff_union_of_dvd (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s) :
 
 variable (n S)
 
-private theorem iff_union_singleton_one_aux (hS : (∃ x ∈ S, x ≠ 0) ∨ S = ∅) :
-    IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {1}) A B := by
-  obtain ⟨s, hs, hs'⟩ | rfl := hS
-  · exact iff_union_of_dvd _ _ ⟨s, hs, hs', s.one_dvd⟩
-  rw [empty_union]
-  refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
-  · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ => ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
-    simp [adjoin_singleton_one, empty]
-  · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (notMem_empty s hs).elim, ?_⟩
-    simp [@singleton_one A B _ _ _ H]
-
 /-- `IsCyclotomicExtension S A B` is equivalent to `IsCyclotomicExtension (S ∪ {1}) A B`. -/
 theorem iff_union_singleton_one :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {1}) A B := by
-  have h₁ : (∃ x ∈ S \ {0}, x ≠ 0) ∨ S \ {0} = ∅ := by
-    classical
-    exact Decidable.or_iff_not_imp_left.mpr (by aesop)
-  have h₂ : (S \ {0} ∪ {1}) = (S \ {0} ∪ {1} \ {0}) := by simp
-  rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), iff_union_singleton_one_aux _ _ _ h₁,
-    Set.union_diff_distrib, h₂]
+  by_cases hS: ∃ s ∈ S, s ≠ 0
+  · exact iff_union_of_dvd _ _ (by simpa)
+  · rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), union_diff_distrib,
+      show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by aesop]
+    refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
+    · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ => ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
+      simp [adjoin_singleton_one, empty]
+    · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (notMem_empty s hs).elim, ?_⟩
+      simp [@singleton_one A B _ _ _ H]
 
 variable {A B}
 
