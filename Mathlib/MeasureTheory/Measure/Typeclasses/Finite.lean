@@ -140,7 +140,7 @@ theorem Measure.le_of_add_le_add_left [IsFiniteMeasure μ] (A2 : μ + ν₁ ≤ 
 
 theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
     (hf₁ : ∀ i : ℕ, MeasurableSet (f i)) (hf₂ : Pairwise (Disjoint on f)) :
-    Summable fun x => (μ (f x)).toReal := by
+    Summable fun x => μ.real (f x) := by
   apply ENNReal.summable_toReal
   rw [← MeasureTheory.measure_iUnion hf₂ hf₁]
   exact ne_of_lt (measure_lt_top _ _)
@@ -180,9 +180,10 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
 
 open scoped symmDiff
 
-theorem abs_toReal_measure_sub_le_measure_symmDiff'
+theorem abs_measureReal_sub_le_measureReal_symmDiff'
     (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
-    |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal := by
+    |μ.real s - μ.real t| ≤ μ.real (s ∆ t) := by
+  simp only [Measure.real]
   have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset diff_subset hs').ne
   have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset diff_subset ht').ne
   suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
@@ -194,10 +195,16 @@ theorem abs_toReal_measure_sub_le_measure_symmDiff'
     union_comm t s]
   abel
 
-theorem abs_toReal_measure_sub_le_measure_symmDiff [IsFiniteMeasure μ]
+@[deprecated (since := "2025-04-18")] alias
+  abs_toReal_measure_sub_le_measure_symmDiff' := abs_measureReal_sub_le_measureReal_symmDiff'
+
+theorem abs_measureReal_sub_le_measureReal_symmDiff [IsFiniteMeasure μ]
     (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) :
-    |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal :=
-  abs_toReal_measure_sub_le_measure_symmDiff' hs ht (measure_ne_top μ s) (measure_ne_top μ t)
+    |μ.real s - μ.real t| ≤ μ.real (s ∆ t) :=
+  abs_measureReal_sub_le_measureReal_symmDiff' hs ht (measure_ne_top μ s) (measure_ne_top μ t)
+
+@[deprecated (since := "2025-04-18")] alias
+  abs_toReal_measure_sub_le_measure_symmDiff := abs_measureReal_sub_le_measureReal_symmDiff
 
 instance {s : Finset ι} {μ : ι → Measure α} [∀ i, IsFiniteMeasure (μ i)] :
     IsFiniteMeasure (∑ i ∈ s, μ i) where measure_univ_lt_top := by simp [measure_lt_top]
@@ -329,6 +336,11 @@ theorem measure_closedBall_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : 
 theorem measure_ball_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measure α}
     [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.ball x r) < ∞ :=
   Metric.isBounded_ball.measure_lt_top
+
+@[aesop (rule_sets := [finiteness]) safe apply]
+theorem measure_ball_ne_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measure α}
+    [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.ball x r) ≠ ∞ :=
+  measure_ball_lt_top.ne
 
 protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Measure α)
     [IsFiniteMeasureOnCompacts μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : IsFiniteMeasureOnCompacts (c • μ) :=

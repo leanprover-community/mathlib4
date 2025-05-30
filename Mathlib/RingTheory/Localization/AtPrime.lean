@@ -16,14 +16,14 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 ## Main definitions
 
- * `IsLocalization.AtPrime (P : Ideal R) [IsPrime P] (S : Type*)` expresses that `S` is a
-   localization at (the complement of) a prime ideal `P`, as an abbreviation of
-   `IsLocalization P.prime_compl S`
+* `IsLocalization.AtPrime (P : Ideal R) [IsPrime P] (S : Type*)` expresses that `S` is a
+  localization at (the complement of) a prime ideal `P`, as an abbreviation of
+  `IsLocalization P.prime_compl S`
 
 ## Main results
 
- * `IsLocalization.AtPrime.isLocalRing`: a theorem (not an instance) stating a localization at the
-   complement of a prime ideal is a local ring
+* `IsLocalization.AtPrime.isLocalRing`: a theorem (not an instance) stating a localization at the
+  complement of a prime ideal is a local ring
 
 ## Implementation notes
 
@@ -157,8 +157,6 @@ namespace Localization
 
 open IsLocalization
 
-attribute [local instance] Classical.propDecidable
-
 variable (I : Ideal R) [hI : I.IsPrime]
 variable {I}
 
@@ -219,9 +217,6 @@ theorem isLocalHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
     rw [localRingHom_mk'] at hx
     rw [AtPrime.isUnit_mk'_iff] at hx ⊢
     exact fun hr => hx ((SetLike.ext_iff.mp hIJ r).mp hr)
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_localRingHom := isLocalHom_localRingHom
 
 theorem localRingHom_unique (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f)
     {j : Localization.AtPrime I →+* Localization.AtPrime J}

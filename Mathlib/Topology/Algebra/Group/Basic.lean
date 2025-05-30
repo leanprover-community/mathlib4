@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Topology.Algebra.Group.Defs
 import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological groups
@@ -437,7 +438,7 @@ end ZPow
 
 section OrderedCommGroup
 
-variable [TopologicalSpace H] [OrderedCommGroup H] [ContinuousInv H]
+variable [TopologicalSpace H] [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] [ContinuousInv H]
 
 @[to_additive]
 theorem tendsto_inv_nhdsGT {a : H} : Tendsto Inv.inv (𝓝[>] a) (𝓝[<] a⁻¹) :=
@@ -459,7 +460,7 @@ alias tendsto_inv_nhdsWithin_Iio := tendsto_inv_nhdsLT
 
 @[to_additive]
 theorem tendsto_inv_nhdsGT_inv {a : H} : Tendsto Inv.inv (𝓝[>] a⁻¹) (𝓝[<] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsGT _ _ _ _ a⁻¹
+  simpa only [inv_inv] using tendsto_inv_nhdsGT (a := a⁻¹)
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Ioi_neg := tendsto_neg_nhdsGT_neg
@@ -468,7 +469,7 @@ alias tendsto_inv_nhdsWithin_Ioi_inv := tendsto_inv_nhdsGT_inv
 
 @[to_additive]
 theorem tendsto_inv_nhdsLT_inv {a : H} : Tendsto Inv.inv (𝓝[<] a⁻¹) (𝓝[>] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsLT _ _ _ _ a⁻¹
+  simpa only [inv_inv] using tendsto_inv_nhdsLT (a := a⁻¹)
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Iio_neg := tendsto_neg_nhdsLT_neg
@@ -495,7 +496,7 @@ alias tendsto_inv_nhdsWithin_Iic := tendsto_inv_nhdsLE
 
 @[to_additive]
 theorem tendsto_inv_nhdsGE_inv {a : H} : Tendsto Inv.inv (𝓝[≥] a⁻¹) (𝓝[≤] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsGE _ _ _ _ a⁻¹
+  simpa only [inv_inv] using tendsto_inv_nhdsGE (a := a⁻¹)
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Ici_neg := tendsto_neg_nhdsGE_neg
@@ -504,7 +505,7 @@ alias tendsto_inv_nhdsWithin_Ici_inv := tendsto_inv_nhdsGE_inv
 
 @[to_additive]
 theorem tendsto_inv_nhdsLE_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻¹) (𝓝[≥] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsLE _ _ _ _ a⁻¹
+  simpa only [inv_inv] using tendsto_inv_nhdsLE (a := a⁻¹)
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Iic_neg := tendsto_neg_nhdsLE_neg
@@ -944,7 +945,7 @@ section DivInvTopologicalGroup
 variable [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
-@[to_additive (attr := simps! (config := { simpRhs := true }))
+@[to_additive (attr := simps! +simpRhs)
   "A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`."]
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
   { Equiv.divLeft x with
@@ -960,7 +961,7 @@ theorem isClosedMap_div_left (a : G) : IsClosedMap (a / ·) :=
   (Homeomorph.divLeft _).isClosedMap
 
 /-- A version of `Homeomorph.mulRight a⁻¹ b` that is defeq to `b / a`. -/
-@[to_additive (attr := simps! (config := { simpRhs := true }))
+@[to_additive (attr := simps! +simpRhs)
   "A version of `Homeomorph.addRight (-a) b` that is defeq to `b - a`. "]
 def Homeomorph.divRight (x : G) : G ≃ₜ G :=
   { Equiv.divRight x with

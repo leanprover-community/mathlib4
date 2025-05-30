@@ -347,7 +347,7 @@ variable {K}
 
 variable {A : Set (mixedSpace K)}
 
-theorem normAtComplexPlaces_polarSpaceCoord_symm  [NumberField K] (x : polarSpace K) :
+theorem normAtComplexPlaces_polarSpaceCoord_symm [NumberField K] (x : polarSpace K) :
     normAtComplexPlaces ((polarSpaceCoord K).symm x) =
       normAtComplexPlaces (mixedSpaceOfRealSpace x.1) := by
   ext w

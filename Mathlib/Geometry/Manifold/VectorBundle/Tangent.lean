@@ -29,8 +29,8 @@ This defines a vector bundle `TangentBundle` with fibers `TangentSpace`.
 * `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 
 * When `M` is a `C^{n+1}` manifold, `TangentBundle I M` has a `C^n` vector bundle
-structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
-and a `C^n` manifold.
+  structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
+  and a `C^n` manifold.
 -/
 
 
@@ -93,13 +93,13 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
       exact (i.1.extend I).right_inv hy
     · simp_rw [Function.comp_apply, i.1.extend_left_inv hx]
   continuousOn_coordChange i j := by
-    have : IsManifold I (0 + 1) M := by simp; infer_instance
+    have : IsManifold I (0 + 1) M := by simpa
     refine (contDiffOn_fderiv_coord_change (n := 0) i j).continuousOn.comp
       (i.1.continuousOn_extend.mono ?_) ?_
     · rw [i.1.extend_source]; exact inter_subset_left
     simp_rw [← i.1.extend_image_source_inter, mapsTo_image]
   coordChange_comp := by
-    have : IsManifold I (0 + 1) M := by simp; infer_instance
+    have : IsManifold I (0 + 1) M := by simpa
     rintro i j k x ⟨⟨hxi, hxj⟩, hxk⟩ v
     rw [fderivWithin_fderivWithin, Filter.EventuallyEq.fderivWithin_eq]
     · have := i.1.extend_preimage_mem_nhds (I := I) hxi (j.1.extend_source_mem_nhds (I := I) hxj)
@@ -428,8 +428,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm :
   simp only [mfld_simps, mem_range, TotalSpace.toProd, Equiv.coe_fn_symm_mk, forall_exists_index,
     Prod.forall, Prod.mk.injEq]
   rintro a b x rfl
-  simp [PartialEquiv.prod]
-  exact ⟨rfl, rfl⟩
+  simpa [PartialEquiv.prod] using ⟨rfl, rfl⟩
 
 variable (H I) in
 /-- In the tangent bundle to the model space, the second projection is `C^n`. -/
@@ -510,7 +509,7 @@ def inTangentCoordinates (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E
 
 theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N → E →L[𝕜] E') (x₀ : N) :
     inTangentCoordinates I I' f g ϕ x₀ = ϕ := by
-  simp (config := { unfoldPartialApp := true }) only [inTangentCoordinates,
+  simp +unfoldPartialApp only [inTangentCoordinates,
     inCoordinates_tangent_bundle_core_model_space]
 
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and

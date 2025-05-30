@@ -121,8 +121,14 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Submonoid M, s ⊆ S �
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
 @[to_additive]
-theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.AddSubmonoid.not_mem_of_not_mem_closure := AddSubmonoid.notMem_of_notMem_closure
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 variable {S}
 
@@ -163,9 +169,6 @@ theorem closure_induction {s : Set M} {motive : (x : M) → x ∈ closure s → 
       one_mem' := ⟨_, one⟩
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩ }
   closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
-
-@[deprecated closure_induction (since := "2024-10-10")]
-alias closure_induction' := closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)

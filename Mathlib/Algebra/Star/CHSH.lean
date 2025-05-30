@@ -114,7 +114,8 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
 
 (We could work over ℤ[⅟2] if we wanted to!)
 -/
-theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarRing R] [StarOrderedRing R] [Algebra ℝ R]
+theorem CHSH_inequality_of_comm [CommRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+    [Algebra ℝ R]
     [OrderedSMul ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
     A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2 := by
   let P := 2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁
@@ -172,7 +173,8 @@ of the difference.
 
 (We could work over `ℤ[2^(1/2), 2^(-1/2)]` if we really wanted to!)
 -/
-theorem tsirelson_inequality [OrderedRing R] [StarRing R] [StarOrderedRing R] [Algebra ℝ R]
+theorem tsirelson_inequality [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+  [Algebra ℝ R]
     [OrderedSMul ℝ R] [StarModule ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
     A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √2 ^ 3 • (1 : R) := by
   -- abel will create `ℤ` multiplication. We will `simp` them away to `ℝ` multiplication.
@@ -209,6 +211,6 @@ theorem tsirelson_inequality [OrderedRing R] [StarRing R] [StarOrderedRing R] [A
         T.B₁_sa]
     have P2_nonneg : 0 ≤ P ^ 2 := by simpa only [P_sa, sq] using star_mul_self_nonneg P
     have Q2_nonneg : 0 ≤ Q ^ 2 := by simpa only [Q_sa, sq] using star_mul_self_nonneg Q
-    exact smul_nonneg (by positivity) (add_nonneg P2_nonneg Q2_nonneg)
+    positivity
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add, w, Nat.cast_zero] using pos

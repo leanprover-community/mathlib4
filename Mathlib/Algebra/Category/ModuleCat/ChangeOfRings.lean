@@ -385,7 +385,7 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 -- local notation "S'" => (restrictScalars f).obj ⟨S⟩
 
 /-- Given an `R`-module M, consider Hom(S, M) -- the `R`-linear maps between S (as an `R`-module by
- means of restriction of scalars) and M. `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`
+means of restriction of scalars) and M. `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`
 -/
 instance hasSMul : SMul S <| (restrictScalars f).obj (of _ S) →ₗ[R] M where
   smul s g :=

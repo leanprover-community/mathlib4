@@ -521,8 +521,11 @@ theorem mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∈ f ↔ f
     ⟨fun h hs => by simpa [Set.not_nonempty_empty] using h s hs, fun hs t ht =>
       inter_compl_nonempty_iff.2 fun hts => hs <| mem_of_superset ht hts⟩
 
-theorem not_mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 sᶜ) :=
+theorem notMem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 sᶜ) :=
   (not_congr mem_iff_inf_principal_compl).trans neBot_iff.symm
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_iff_inf_principal_compl := notMem_iff_inf_principal_compl
 
 @[simp]
 theorem disjoint_principal_right {f : Filter α} {s : Set α} : Disjoint f (𝓟 s) ↔ sᶜ ∈ f := by
@@ -703,6 +706,7 @@ protected theorem HasBasis.top_prod (h : lb.HasBasis pb sb) :
 protected theorem HasBasis.prod_top (h : la.HasBasis pa sa) :
     (la ×ˢ ⊤ : Filter (α × β)).HasBasis pa (sa · ×ˢ univ) := by
   simpa only [principal_univ] using h.prod_principal univ
+
 theorem HasBasis.prod_same_index {p : ι → Prop} {sb : ι → Set β} (hla : la.HasBasis p sa)
     (hlb : lb.HasBasis p sb) (h_dir : ∀ {i j}, p i → p j → ∃ k, p k ∧ sa k ⊆ sa i ∧ sb k ⊆ sb j) :
     (la ×ˢ lb).HasBasis p fun i => sa i ×ˢ sb i := by

@@ -138,7 +138,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ (Nat.lt_of_not_le hkd))
   rw [List.getElem?_reverse (by simpa [withBotSucc_degree_eq_natDegree_add_one h] using hkd),
     List.getElem?_cons_succ, List.length_map, List.length_range, List.getElem?_map,
-    List.getElem?_range (by omega), Option.map_some']
+    List.getElem?_range (by omega), Option.map_some]
   conv_lhs => arg 1; equals P.eraseLead.coeff dk =>
     rw [eraseLead_coeff_of_ne (f := P) dk (by omega)]
     congr
@@ -148,7 +148,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   · rw [List.getElem?_append_right (List.length_replicate ▸ Nat.le_of_not_gt hkn),
       List.length_replicate, List.getElem?_reverse, List.getElem?_map]
     · rw [List.length_map, List.length_range,
-        List.getElem?_range (by omega), Option.map_some']
+        List.getElem?_range (by omega), Option.map_some]
       congr 2
       omega
     · simpa using by omega

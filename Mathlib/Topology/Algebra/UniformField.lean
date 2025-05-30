@@ -90,7 +90,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     exact comap_bot
 
 open Classical in
-/-
+/--
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
 -/
