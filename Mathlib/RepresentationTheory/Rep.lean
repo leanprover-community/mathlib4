@@ -114,7 +114,7 @@ theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) :
 
 variable (k G) in
 /-- The functor equipping a module with the trivial representation. -/
-@[simps! obj map_hom]
+@[simps! obj_V map_hom]
 noncomputable def trivialFunctor : ModuleCat k ⥤ Rep k G where
   obj V := trivial k G V
   map f := { hom := f, comm := fun _ => rfl }
