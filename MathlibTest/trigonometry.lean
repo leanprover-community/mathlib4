@@ -33,11 +33,13 @@ example : cos (5 * π / 3) = 1 / 2 := by
 example : sin (2 * π / 3) = √3 / 2 := by
   norm_num
 
-example  : sin (4 * π / 3) = - (√3 / 2) := by
+example  : sin (4 * π / 3) = - √3 / 2 := by
   norm_num
+  rw [neg_div']
 
-example : sin (5 * π / 3) = - (√3 / 2) := by
+example : sin (5 * π / 3) = - √3 / 2 := by
   norm_num
+  rw [neg_div']
 
 -- tan of multiples of π / 3
 
