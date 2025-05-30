@@ -90,7 +90,7 @@ lemma mk_comp_dZero : Coinvariants.mk A.ρ ∘ₗ (dZero A).hom = 0 := by
 
 /-- The 0th differential in the complex of inhomogeneous chains of a `G`-representation `A` as a
 linear map into the `k`-submodule of `A` spanned by elements of the form
-`ρ(g)(x) - x, g ∈ G, x ∈ A`.-/
+`ρ(g)(x) - x, g ∈ G, x ∈ A`. -/
 def oneChainsToAugmentationSubmodule :
     (G →₀ A) →ₗ[k] augmentationSubmodule A.ρ :=
   (dZero A).hom.codRestrict _ <|
