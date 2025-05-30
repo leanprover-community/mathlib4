@@ -777,8 +777,8 @@ protected theorem IsHaarMeasure.comap [BorelSpace G] [MeasurableMul G]
     (μ : Measure H) [IsHaarMeasure μ] {f : G →* H} (hf : Topology.IsOpenEmbedding f) :
     (μ.comap f).IsHaarMeasure where
   map_mul_left_eq_self := (IsMulLeftInvariant.comap hf.measurableEmbedding).map_mul_left_eq_self
-  lt_top_of_isCompact := (IsFiniteMeasureOnCompacts.comap_of_continuous_measurableEmbedding
-    μ hf.continuous hf.measurableEmbedding).lt_top_of_isCompact
+  lt_top_of_isCompact := (IsFiniteMeasureOnCompacts.comap' hf.continuous
+    hf.measurableEmbedding).lt_top_of_isCompact
   open_pos := (IsOpenPosMeasure.comap hf).open_pos
 
 /-- The image of a finite Haar measure under a continuous surjective group homomorphism is again
