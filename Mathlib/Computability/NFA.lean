@@ -172,7 +172,7 @@ def Path.supp [DecidableEq σ] {s t : σ} {x : List α} : M.Path s t x → Finse
   | nil s => {s}
   | cons _ _ _ _ _ _ p => {s} ∪ p.supp
 
-theorem mem_evalFrom_iff_exists_path {s t : σ} {x : List α} :
+theorem mem_evalFrom_iff_nonempty_path {s t : σ} {x : List α} :
     t ∈ M.evalFrom {s} x ↔ Nonempty (M.Path s t x) where
   mp h := match x with
     | [] =>
@@ -182,17 +182,17 @@ theorem mem_evalFrom_iff_exists_path {s t : σ} {x : List α} :
       have h : ∃ s' ∈ M.step s a, t ∈ M.evalFrom {s'} x :=
         by rw [evalFrom_cons, mem_evalFrom_iff_exists, stepSet_singleton] at h; exact h
       let ⟨s', h₁, h₂⟩ := h
-      let ⟨p'⟩ := mem_evalFrom_iff_exists_path.1 h₂
+      let ⟨p'⟩ := mem_evalFrom_iff_nonempty_path.1 h₂
       ⟨Path.cons s' _ _ _ _ h₁ p'⟩
   mpr p := match p with
     | ⟨Path.nil s⟩ => by simp
     | ⟨Path.cons s' s t a x h₁ h₂⟩ => by
       rw [evalFrom_cons, stepSet_singleton, mem_evalFrom_iff_exists]
-      exact ⟨s', h₁, mem_evalFrom_iff_exists_path.2 ⟨h₂⟩⟩
+      exact ⟨s', h₁, mem_evalFrom_iff_nonempty_path.2 ⟨h₂⟩⟩
 
 theorem accepts_iff_exists_path {x : List α} :
     x ∈ M.accepts ↔ ∃ s ∈ M.start, ∃ t ∈ M.accept, Nonempty (M.Path s t x) := by
-  simp only [← mem_evalFrom_iff_exists_path, mem_accepts, mem_evalFrom_iff_exists (S := M.start)]
+  simp only [← mem_evalFrom_iff_nonempty_path, mem_accepts, mem_evalFrom_iff_exists (S := M.start)]
   tauto
 
 variable (M) in
