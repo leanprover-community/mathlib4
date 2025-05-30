@@ -618,6 +618,8 @@ theorem mul_rightUnitor {M : C} [Mon_Class M] :
   slice_lhs 1 3 => rw [← rightUnitor_monoidal]
   simp only [Category.assoc, Category.id_comp]
 
+namespace tensorObj
+
 @[simps]
 instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) where
   one := (λ_ (𝟙_ C)).inv ≫ (η ⊗ η)
@@ -625,6 +627,8 @@ instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) where
   one_mul' := Mon_tensor_one_mul M N
   mul_one' := Mon_tensor_mul_one M N
   mul_assoc' := Mon_tensor_mul_assoc M N
+
+end tensorObj
 
 open IsMon_Hom
 
@@ -660,7 +664,7 @@ instance : IsMon_Hom (ρ_ X).hom :=
   ⟨one_rightUnitor, mul_rightUnitor⟩
 
 theorem one_braiding (X Y : C) [Mon_Class X] [Mon_Class Y] : η ≫ (β_ X Y).hom = η := by
-  simp only [instTensorObj_one, Category.assoc, BraidedCategory.braiding_naturality,
+  simp only [tensorObj.one_def, Category.assoc, BraidedCategory.braiding_naturality,
     braiding_tensorUnit_right, Iso.cancel_iso_inv_left]
   monoidal
 
