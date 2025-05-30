@@ -22,4 +22,5 @@ variable {p : ℕ} [Fact (Nat.Prime p)]
 section
 open NormedField Valued
 instance : IsLinearTopology ℤ_[p] ℤ_[p] := inferInstanceAs (IsLinearTopology 𝒪[ℚ_[p]] 𝒪[ℚ_[p]])
+instance : IsLinearTopology ℤ_[p] ℚ_[p] := inferInstanceAs (IsLinearTopology 𝒪[ℚ_[p]] ℚ_[p])
 end
