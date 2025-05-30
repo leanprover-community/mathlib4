@@ -300,16 +300,16 @@ include hw hcf
 
 /--
 If `G` is `Kᵣ₊₂`-free and contains a `Wᵣ,ₖ` together with a vertex `x` adjacent to all of its common
- clique vertices then there exist (not necessarily distinct) vertices `a, b, c, d` that are not
-adjacent to `x` and satisfy various conditions.
+ clique vertices then there exist (not necessarily distinct) vertices `a, b, c, d`, one from each of
+ the four `r + 1`-cliques of `Wᵣ,ₖ`, none of which are adjacent to `x`.
 -/
 private lemma exist_not_adj_of_adj_inter (hW : ∀ ⦃y⦄, y ∈ s ∩ t → G.Adj x y) :
     ∃ a b c d, a ∈ insert w₁ s ∧ ¬ G.Adj x a ∧ b ∈ insert w₂ t ∧ ¬ G.Adj x b ∧ c ∈ insert v s ∧
     ¬ G.Adj x c ∧ d ∈ insert v t ∧ ¬ G.Adj x d ∧ a ≠ b ∧ a ≠ d ∧ b ≠ c ∧ a ∉ t ∧ b ∉ s := by
-  obtain ⟨_, ha, haj⟩ := hw.isNClique_fst_left.exists_not_adj_of_cliqueFree_succ hcf x
-  obtain ⟨_, hb, hbj⟩ := hw.isNClique_snd_right.exists_not_adj_of_cliqueFree_succ hcf x
-  obtain ⟨_, hc, hcj⟩ := hw.isNClique_left.exists_not_adj_of_cliqueFree_succ hcf x
-  obtain ⟨_, hd, hdj⟩ := hw.isNClique_right.exists_not_adj_of_cliqueFree_succ hcf x
+  obtain ⟨a, ha, haj⟩ := hw.isNClique_fst_left.exists_not_adj_of_cliqueFree_succ hcf x
+  obtain ⟨b, hb, hbj⟩ := hw.isNClique_snd_right.exists_not_adj_of_cliqueFree_succ hcf x
+  obtain ⟨c, hc, hcj⟩ := hw.isNClique_left.exists_not_adj_of_cliqueFree_succ hcf x
+  obtain ⟨d, hd, hdj⟩ := hw.isNClique_right.exists_not_adj_of_cliqueFree_succ hcf x
   refine ⟨_, _, _, _, ha, haj, hb, hbj, hc, hcj, hd, hdj, ?_, ?_, ?_, ?_, ?_⟩
     <;> rw [mem_insert] at * <;> try rintro rfl
   · obtain (rfl | ha) := ha
@@ -354,7 +354,7 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
   obtain ⟨a, b, c, d, ha, haj, hb, hbj, hc, hcj, hd, hdj, hab, had, hbc, hat, hbs⟩ :=
     hw.exist_not_adj_of_adj_inter hcf hW
   -- Let `W` denote the vertices of the copy of `Wᵣ,ₖ` in `G`
-  let W := insert v <| insert w₁ <| insert w₂ (s ∪ t)
+  let W := {v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t)))
   have hfst := hw.isPathGraph3Compl.ne_fst
   have hsnd := hw.isPathGraph3Compl.ne_snd
   have ⟨hca, hdb⟩ : c = a ∧ d = b :=
@@ -391,11 +391,11 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
     exact two_lt_card.2 ⟨_, by simp [has, hcj], _, by simp [hbt, hdj], _,
                          mem_filter.2 ⟨hz, by rwa [adj_comm] at hf⟩, hab, haz.symm, hbz.symm⟩
   have h1s : insert w₁ s ⊆ W := by
-    change _ ⊆ insert _ _
+    change _ ⊆ insert _ (insert _ _)
     rw [insert_comm]
     exact insert_subset_insert _ fun _ hx ↦ (by simp [hx])
   have h2t : insert w₂ t ⊆ W := by
-    change _ ⊆ insert _ _
+    change _ ⊆ insert _ (insert _ (insert _ _))
     rw [insert_comm w₁, insert_comm v]
     exact insert_subset_insert _ fun _ hx ↦ (by simp [hx])
   -- We now check that we can build a `Wᵣ,ₖ₊₁` be inserting `x` and erasing `a` and `b`
