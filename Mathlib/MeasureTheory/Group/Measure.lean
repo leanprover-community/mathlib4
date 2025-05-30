@@ -773,7 +773,7 @@ theorem isHaarMeasure_map [BorelSpace G] [ContinuousMul G] {H : Type*} [Group H]
     toIsOpenPosMeasure := hf.isOpenPosMeasure_map h_surj }
 
 theorem _root_.Topology.IsOpenEmbedding.isHaarMeasure_comap [BorelSpace G] [MeasurableMul G]
-    [Group H] [TopologicalSpace H][BorelSpace H] [MeasurableMul H]
+    [Group H] [TopologicalSpace H] [BorelSpace H] [MeasurableMul H]
     (μ : Measure H) [IsHaarMeasure μ] {f : G →* H} (hf : Topology.IsOpenEmbedding f) :
     (μ.comap f).IsHaarMeasure where
   map_mul_left_eq_self := (hf.measurableEmbedding.IsMulLeftInvariant_comap μ).map_mul_left_eq_self
