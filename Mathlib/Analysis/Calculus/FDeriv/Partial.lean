@@ -30,30 +30,98 @@ open Set Function Metric Real
 
 section PartialFDeriv
 
+universe u_EF
+
+theorem continuousOn_swap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (s : Set (X × Y)) : ContinuousOn Prod.swap s := by
+  unfold ContinuousOn; intro z hz
+  apply continuous_swap.continuousWithinAt
+
+open ContinuousLinearMap in
+theorem ContinousLinearMap.coprod_comp_prod
+  (R : Type*) [Semiring R]
+  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+  (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
+  (M₃ : Type*) [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R M₃]
+  (M₄ : Type*) [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R M₄] [ContinuousAdd M₄]
+  (f : M₂ →L[R] M₄) (g : M₃ →L[R] M₄) (f' : M →L[R] M₂) (g' : M →L[R] M₃) :
+    (f.coprod g).comp  (f'.prod g') = f.comp f' + g.comp g' := by
+  ext
+  simp only [coe_comp', Function.comp_apply, prod_apply, coprod_apply, add_apply]
+
+abbrev ContinuousLinearMap.swap
+  (𝕜 : Type*) [Semiring 𝕜]
+  (E : Type*) [TopologicalSpace E] [AddCommMonoid E] [Module 𝕜 E]
+  (F : Type*) [TopologicalSpace F] [AddCommMonoid F] [Module 𝕜 F]
+  := (ContinuousLinearMap.snd 𝕜 E F).prod (ContinuousLinearMap.fst 𝕜 E F)
+
+open ContinuousLinearMap in
+theorem ContinousLinearMap.coprod_comp_swap
+  (R : Type*) [Semiring R]
+  (M₁ : Type*) [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R M₁]
+  (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
+  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousAdd M]
+  (f : M₁ →L[R] M) (g : M₂ →L[R] M) :
+    (f.coprod g).comp (ContinuousLinearMap.swap R _ _) = (g.coprod f) := by
+  ext; all_goals
+  simp only [coe_comp', Function.comp_apply, inl_apply, inr_apply, prod_apply, coe_snd', coe_fst',
+    coprod_apply, map_zero, zero_add, add_zero, coprod_comp_inl, coprod_comp_inr]
+
+theorem hasFDerivWithinAt_swap
+  (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+  (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  (s : Set (E × F)) (z : E × F) :
+    HasFDerivWithinAt
+      (Prod.swap : E × F → F × E)
+      (ContinuousLinearMap.swap 𝕜 E F)
+      s z
+  := hasFDerivWithinAt_snd.prodMk hasFDerivWithinAt_fst
+
 /-- If a function `f : E × F → G` has partial derivatives `fx` and `fy` continuous
   on an open set `s ×ˢ t`, then `f` is continously differentiable on this set, with
   the deriative given by combining `fx` and `fy`.
 -/
 theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+  {E : Type u_EF} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+  {F : Type u_EF} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f : E × F → G} {s : Set E} {t : Set F} (hs : IsOpen s) (ht : IsOpen t)
   {fx : E × F → E →L[𝕜] G} {fy : E × F → F →L[𝕜] G}
-  (fxy_cont : ContinuousOn fx (s ×ˢ t) ∧ ContinuousOn fy (s ×ˢ t)) --TODO: should be disjunction
+  (fxy_cont : ContinuousOn fx (s ×ˢ t) ∨ ContinuousOn fy (s ×ˢ t))
   (hfx : ∀ z ∈ s ×ˢ t, HasFDerivWithinAt (f ∘ (·, z.2)) (fx z) s z.1)
   (hfy : ∀ z ∈ s ×ˢ t, HasFDerivWithinAt (f ∘ (z.1, ·)) (fy z) t z.2) :
     ∀ z ∈ s ×ˢ t, HasFDerivWithinAt f ((fx z).coprod (fy z)) (s ×ˢ t) z := by
-  -- save hypothesis hfy before rewriting it
+  -- if fx is continuous, WLOG swap the E and F arguments
+  wlog fy_cont : ContinuousOn fy (s ×ˢ t)
+  case inr =>
+    have fx_cont := Or.resolve_right fxy_cont fy_cont
+    clear fy_cont fxy_cont
+    intro z hz
+    simp only [mem_prod, Prod.fst_swap, Prod.snd_swap] at hz
+    have hmt_st := mapsTo_swap_prod s t
+    have hmt_ts := mapsTo_swap_prod t s
+    have fx_swap_cont := fx_cont.comp (continuousOn_swap (t ×ˢ s)) hmt_ts
+    have hswap := this
+      (f := f ∘ Prod.swap)
+      ht hs
+      (Or.inr fx_swap_cont)
+      (fun z' hz' => (hfy z'.swap (hmt_ts hz')))
+      (fun z' hz' => (hfx z'.swap (hmt_ts hz')))
+      fx_swap_cont
+      z.swap hz.symm
+    convert hswap.comp z (hasFDerivWithinAt_swap 𝕜 E F (s ×ˢ t) z) hmt_st
+    simp only [ContinousLinearMap.coprod_comp_swap, comp_apply, Prod.swap_swap]
+  -- now continue the proof with the default hypothesis that fy is continuous
+  clear fxy_cont
   intro z hz
   replace hz : _ ∧ _ := ⟨mem_prod.mp hz, hz⟩
   simp only at hz
-  have hfy_within := hfy
+  have hfy_within := hfy -- save hypothesis hfy before rewriting it
   -- rewrite derivatives as limits using norms
   simp only [hasFDerivWithinAt_iff_tendsto, tendsto_nhdsWithin_nhds, dist_eq_norm] at ⊢ hfx hfy
   simp only [ContinuousLinearMap.coprod_apply, sub_zero, norm_mul, norm_inv, norm_norm] at ⊢ hfx hfy
-  obtain ⟨_, fy_cont⟩ := fxy_cont
   simp only [Metric.continuousOn_iff, dist_eq_norm, norm_eq_abs] at fy_cont
   -- get a target ε' and immediately shrink it to ε for convenice
   intro ε' hε'
@@ -193,12 +261,12 @@ theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
 -/
 theorem HasFDerivWithinAt.continuousOn_open_of_partial_continuousOn
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+  {E : Type u_EF} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+  {F : Type u_EF} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f : E × F → G} {u : Set (E × F)} (hu : IsOpen u)
   {fx : E × F → E →L[𝕜] G} {fy : E × F → F →L[𝕜] G}
-  (fx_cont : ContinuousOn fx u) (fy_cont : ContinuousOn fy u)
+  (fxy_cont : ContinuousOn fx u ∨ ContinuousOn fy u)
   (hfx : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (·, z.2)) (fx z) ((·,z.2) ⁻¹' u) z.1)
   (hfy : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (z.1, ·)) (fy z) ((z.1,·) ⁻¹' u) z.2) :
     ∀ z ∈ u, HasFDerivWithinAt f ((fx z).coprod (fy z)) u z := by
@@ -213,9 +281,13 @@ theorem HasFDerivWithinAt.continuousOn_open_of_partial_continuousOn
   have htu (z : E × F) (hz : z ∈ s ×ˢ t) : t ⊆ ((z.1,·) ⁻¹' u) := by
     apply HasSubset.Subset.trans _ (preimage_mono hst)
     rw [mk_preimage_prod_right (mem_prod.mpr hz).1]
+  have fxy_cont_st : ContinuousOn fx (s ×ˢ t) ∨ ContinuousOn fy (s ×ˢ t) := by
+    rcases fxy_cont with fx_cont | fy_cont
+    · exact Or.inl (fx_cont.mono hst)
+    · exact Or.inr (fy_cont.mono hst)
   apply HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
     hs ht
-    ⟨fx_cont.mono hst, fy_cont.mono hst⟩
+    fxy_cont_st
     _ _
     z (mem_prod.mpr ⟨hz1, hz2⟩)
   · exact (fun z hz => (hfx z (mem_of_subset_of_mem hst hz)).mono (hsu z hz))
