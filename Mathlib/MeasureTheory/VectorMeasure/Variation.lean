@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Yoh Tanimoto
 -/
 import Mathlib.MeasureTheory.VectorMeasure.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!
