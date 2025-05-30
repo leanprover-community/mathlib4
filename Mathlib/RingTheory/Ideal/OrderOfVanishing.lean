@@ -17,22 +17,30 @@ field of fractions
 
 open LinearMap Multiplicative Pointwise IsLocalization Ideal
 
-variable {R : Type*} [CommRing R] {M : Type*} [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [AddCommMonoid M]
 
-variable (R) in
+namespace Ring
+
+variable (R) [Ring R]
 /--
 Order of vanishing function for elements of a ring.
 -/
 @[stacks 02MD]
 noncomputable
-def CommRing.ord (x : R) : ℕ∞ := Module.length R (R ⧸ Ideal.span {x})
+def ord (x : R) : ℕ∞ := Module.length R (R ⧸ Ideal.span {x})
 
 /--
 The order of vanishing of `1` is `0`.
 -/
-lemma CommRing.ord_one : CommRing.ord R 1 = 0 := by
-  simp_all [CommRing.ord, Module.length_eq_zero_iff,
+lemma ord_one : Ring.ord R 1 = 0 := by
+  simp_all [Ring.ord, Module.length_eq_zero_iff,
     Ideal.span_singleton_one, Submodule.Quotient.subsingleton_iff]
+
+end Ring
+
+section CommRing
+
+variable [CommRing R] [Module R M]
 
 lemma Ideal.Quotient.smul_top (a : R) (I : Ideal R) :
     (a • ⊤ : Submodule R (R ⧸ I)) = Submodule.span R {Submodule.Quotient.mk a} := by
@@ -104,11 +112,11 @@ of vanishing of b.
 -/
 theorem CommRing.ord_mul {a b : R}
   (hb : b ∈ nonZeroDivisors R) :
-  CommRing.ord R (a*b) = CommRing.ord R a + CommRing.ord R b := by
+  Ring.ord R (a*b) = Ring.ord R a + Ring.ord R b := by
   have :=  Module.length_eq_add_of_exact (Ideal.mulQuot b (Ideal.span {a}))
           (Ideal.quotOfMul b (Ideal.span {a})) (Ideal.mulQuotInjective (Ideal.span {a}) hb)
           (Ideal.quotOfMulSurjective (Ideal.span {a})) (LinearMap.quotMulExact (Ideal.span {a}))
-  simp only [ord, submodule_span_eq, ← this]
+  simp only [Ring.ord, submodule_span_eq, ← this]
   have lem : (({b} : Set R) • Ideal.span {a}) = Ideal.span {b * a} := by
     simp [←Ideal.submodule_span_eq, Submodule.set_smul_span]
   have : (({b} : Set R) • Ideal.span {a}) = b • Ideal.span {a} := Submodule.singleton_set_smul
@@ -126,11 +134,11 @@ then ord R 0 will be some non top value, meaninig in this case 0 will not be map
 @[stacks 02MD]
 noncomputable
 def CommRing.ordMonoidWithZeroHom [Nontrivial R] : R →*₀ WithZero (Multiplicative ℕ) where
-  toFun x := if x ∈ nonZeroDivisors R then CommRing.ord R x else 0
+  toFun x := if x ∈ nonZeroDivisors R then Ring.ord R x else 0
   map_zero' := by
     simp [nonZeroDivisors, exists_ne]
   map_one' := by
-    simp [nonZeroDivisors, CommRing.ord_one]
+    simp [nonZeroDivisors, Ring.ord_one]
     rfl
   map_mul' := by
     intro x y
@@ -214,7 +222,7 @@ def CommRing.ordFrac [Nontrivial R] {K : Type*} [Field K] [Algebra R K] [IsFract
       MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Function.comp_apply, isUnit_iff_ne_zero, ne_eq]
     intro a
     have : ∃ a : Multiplicative ℕ, WithZero.coe a = ((CommRing.ordMonoidWithZeroHom R) y.1) := by
-      simp only [ordMonoidWithZeroHom, ord, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+      simp only [ordMonoidWithZeroHom, Ring.ord, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
         SetLike.coe_mem, ↓reduceIte, Multiplicative.exists]
       have := Module.length_ne_top_iff.mpr <| CommRing.ord_finite R hR y.2
       exact ENat.ne_top_iff_exists.mp this
@@ -222,3 +230,5 @@ def CommRing.ordFrac [Nontrivial R] {K : Type*} [Field K] [Algebra R K] [IsFract
     rw [← hm] at a
     simp at a
   f this
+
+end CommRing
