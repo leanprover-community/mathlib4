@@ -422,7 +422,7 @@ protected theorem IsMulLeftInvariant.comap {H : Type*}
     ext s hs
     rw [map_apply (by fun_prop) hs]
     repeat rw [hf.comap_apply]
-    have : f '' ((fun x ↦ g * x) ⁻¹' s) = (fun x ↦ f g * x) ⁻¹' (f '' s) := by
+    have : f '' ((g * ·) ⁻¹' s) = (f g * ·) ⁻¹' (f '' s) := by
       ext
       constructor
       · rintro ⟨y, hy, rfl⟩
