@@ -414,8 +414,7 @@ instance : (count : Measure G).IsMulRightInvariant where
       encard_preimage_of_bijective (Group.mulRight_bijective _)]
 
 @[to_additive]
-protected theorem IsMulLeftInvariant.comap {H : Type*}
-    [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
+protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
     {f : G →* H} (hf : MeasurableEmbedding f) {μ : Measure H} [IsMulLeftInvariant μ] :
     (μ.comap f).IsMulLeftInvariant where
   map_mul_left_eq_self g := by
