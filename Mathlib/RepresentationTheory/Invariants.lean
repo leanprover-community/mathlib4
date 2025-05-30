@@ -22,11 +22,11 @@ suppress_compilation
 
 universe u
 
+open MonoidAlgebra
+
 open Representation
 
 namespace GroupAlgebra
-
-open MonoidAlgebra
 
 variable (k G : Type*) [CommSemiring k] [Group G]
 variable [Fintype G] [Invertible (Fintype.card G : k)]
@@ -98,7 +98,7 @@ noncomputable def averageMap : V →ₗ[k] V :=
 /-- The `averageMap` sends elements of `V` to the subspace of invariants.
 -/
 theorem averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun g => by
-  rw [averageMap, ← asAlgebraHom_single_one, ← LinearMap.mul_apply, ← map_mul (asAlgebraHom ρ),
+  rw [averageMap, ← asAlgebraHom_single_one, ← Module.End.mul_apply, ← map_mul (asAlgebraHom ρ),
     mul_average_left]
 
 /-- The `averageMap` acts as the identity on the subspace of invariants.
@@ -225,12 +225,12 @@ instance : (invariantsFunctor k G).Additive where
 the functor sending a representation to its submodule of invariants. -/
 noncomputable abbrev invariantsAdjunction : trivialFunctor G ⊣ invariantsFunctor k G :=
   Adjunction.mkOfHomEquiv {
-    homEquiv := fun _ _ => {
-      toFun := fun f => ModuleCat.ofHom <|
+    homEquiv _ _ := {
+      toFun f := ModuleCat.ofHom <|
         LinearMap.codRestrict _ f.hom.hom fun x g => (hom_comm_apply f _ _).symm
-      invFun := fun f => {
+      invFun f := {
         hom := ModuleCat.ofHom (Submodule.subtype _ ∘ₗ f.hom)
-        comm := fun g => by ext x; exact ((f x).2 g).symm }
+        comm g := by ext x; exact ((f x).2 g).symm }
       left_inv := by intro; rfl
       right_inv := by intro; rfl }
     homEquiv_naturality_left_symm := by intros; rfl

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Control.Basic
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Order.Filter.Basic
 
 /-!
@@ -59,6 +59,7 @@ theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
 
 -- The simpNF linter says that the LHS can be simplified via `Filter.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
@@ -109,9 +110,12 @@ theorem mem_comap'' : s ∈ comap f l ↔ kernImage f s ∈ l :=
   mem_comap'
 
 /-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
-lemma mem_comap_prod_mk {x : α} {s : Set β} {F : Filter (α × β)} :
+lemma mem_comap_prodMk {x : α} {s : Set β} {F : Filter (α × β)} :
     s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F := by
   simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
+
+@[deprecated (since := "2025-03-10")]
+alias mem_comap_prod_mk := mem_comap_prodMk
 
 @[simp]
 theorem eventually_comap : (∀ᶠ a in comap f l, p a) ↔ ∀ᶠ b in l, ∀ a, f a = b → p a :=
@@ -227,8 +231,10 @@ theorem comap_id : comap id f = f :=
 
 theorem comap_id' : comap (fun x => x) f = f := comap_id
 
-theorem comap_const_of_not_mem {x : β} (ht : t ∈ g) (hx : x ∉ t) : comap (fun _ : α => x) g = ⊥ :=
+theorem comap_const_of_notMem {x : β} (ht : t ∈ g) (hx : x ∉ t) : comap (fun _ : α => x) g = ⊥ :=
   empty_mem_iff_bot.1 <| mem_comap'.2 <| mem_of_superset ht fun _ hx' _ h => hx <| h.symm ▸ hx'
+
+@[deprecated (since := "2025-05-23")] alias comap_const_of_not_mem := comap_const_of_notMem
 
 theorem comap_const_of_mem {x : β} (h : ∀ t ∈ g, x ∈ t) : comap (fun _ : α => x) g = ⊤ :=
   top_unique fun _ hs => univ_mem' fun _ => h _ (mem_comap'.1 hs) rfl
@@ -759,6 +765,16 @@ theorem inf_principal_eq_bot_iff_comap {F : Filter α} {s : Set α} :
     F ⊓ 𝓟 s = ⊥ ↔ comap ((↑) : s → α) F = ⊥ := by
   rw [principal_eq_map_coe_top s, ← Filter.push_pull', inf_top_eq, map_eq_bot_iff]
 
+lemma map_generate_le_generate_preimage_preimage (U : Set (Set β)) (f : β → α) :
+    map f (generate U) ≤ generate ((f ⁻¹' ·) ⁻¹' U) := by
+  rw [le_generate_iff]
+  exact fun u hu ↦ mem_generate_of_mem hu
+
+lemma generate_image_preimage_le_comap (U : Set (Set α)) (f : β → α) :
+    generate ((f ⁻¹' ·) '' U) ≤ comap f (generate U) := by
+  rw [← map_le_iff_le_comap, le_generate_iff]
+  exact fun u hu ↦ mem_generate_of_mem ⟨u, hu, rfl⟩
+
 section Applicative
 
 theorem singleton_mem_pure {a : α} : {a} ∈ (pure a : Filter α) :=
@@ -768,7 +784,7 @@ theorem pure_injective : Injective (pure : α → Filter α) := fun a _ hab =>
   (Filter.ext_iff.1 hab { x | a = x }).1 rfl
 
 instance pure_neBot {α : Type u} {a : α} : NeBot (pure a) :=
-  ⟨mt empty_mem_iff_bot.2 <| not_mem_empty a⟩
+  ⟨mt empty_mem_iff_bot.2 <| notMem_empty a⟩
 
 @[simp]
 theorem le_pure_iff {f : Filter α} {a : α} : f ≤ pure a ↔ {a} ∈ f := by

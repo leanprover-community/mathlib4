@@ -12,12 +12,6 @@ import Mathlib.NumberTheory.Cyclotomic.Basic
 We provide an instance for `HasEnoughRootsOfUnity F n` when `F` is an algebraically closed field
 and `n` is not divisible by the characteristic. In particular, when `F` has characteristic zero,
 this hold for all `n ≠ 0`.
-
-### TODO
-
-Add an instance `HasEnoughRootsOfUnity Circle n` for all `n ≠ 0`.
-This is probably easiest via setting up an isomorphism
-`rootsOfUnity n Circle ≃* rootsOfUnity n ℂ`.
 -/
 
 namespace IsAlgClosed
@@ -29,7 +23,7 @@ instance hasEnoughRootsOfUnity (F : Type*) [Field F] [IsAlgClosed F] (n : ℕ) [
   prim := by
     have : NeZero n := .of_neZero_natCast F
     have := isCyclotomicExtension {⟨n, NeZero.pos n⟩} F fun _ h ↦ Set.mem_singleton_iff.mp h ▸ i
-    exact IsCyclotomicExtension.exists_prim_root (S := {(⟨n, NeZero.pos n⟩ : ℕ+)}) F rfl
+    exact IsCyclotomicExtension.exists_isPrimitiveRoot (S := {(⟨n, NeZero.pos n⟩ : ℕ+)}) F _ rfl
   cyc :=
     have : NeZero n := .of_neZero_natCast F
     rootsOfUnity.isCyclic F n

@@ -45,7 +45,7 @@ protected theorem uniformContinuous_dist :
 /-- The new distance is continuous. -/
 protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x ↦ dist (f x) (g x) :=
-  Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg :)
+  Completion.uniformContinuous_dist.continuous.comp (hf.prodMk hg :)
 
 /-- The new distance is an extension of the original distance. -/
 @[simp]
@@ -166,8 +166,8 @@ theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
 protected theorem edist_eq (x y : α) : edist (x : Completion α) y = edist x y :=
   coe_isometry x y
 
-instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [BoundedSMul M α] :
-    BoundedSMul M (Completion α) where
+instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [IsBoundedSMul M α] :
+    IsBoundedSMul M (Completion α) where
   dist_smul_pair' c x₁ x₂ := by
     induction x₁, x₂ using induction_on₂ with
     | hp =>
@@ -175,7 +175,7 @@ instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [BoundedSMul M
         ((continuous_fst.const_smul _).dist (continuous_snd.const_smul _))
         (continuous_const.mul (continuous_fst.dist continuous_snd))
     | ih x₁ x₂ =>
-      rw [← coe_smul, ← coe_smul, Completion.dist_eq,  Completion.dist_eq]
+      rw [← coe_smul, ← coe_smul, Completion.dist_eq, Completion.dist_eq]
       exact dist_smul_pair c x₁ x₂
   dist_pair_smul' c₁ c₂ x := by
     induction x using induction_on with

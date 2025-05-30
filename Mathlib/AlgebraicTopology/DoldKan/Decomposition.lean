@@ -49,8 +49,7 @@ $x = x' + \sum (i=0}^{q-1} σ_{n-i}(y_i)$ where $x'$ is in the image of `P q` an
 the $y_i$ are in degree $n$. -/
 theorem decomposition_Q (n q : ℕ) :
     ((Q q).f (n + 1) : X _⦋n + 1⦌ ⟶ X _⦋n + 1⦌) =
-      ∑ i ∈ Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
-        (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
+      ∑ i : Fin (n + 1) with i.val < q, (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
   induction' q with q hq
   · simp only [Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
       Finset.filter_False, Finset.sum_empty]

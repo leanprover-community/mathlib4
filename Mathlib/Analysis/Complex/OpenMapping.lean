@@ -165,6 +165,3 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
     rintro z ⟨w, hw1, rfl⟩
     exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left (h w (hs1 hw1))
         (image_mem_map (hs2.mem_nhds hw1))
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.is_constant_or_isOpen := AnalyticOnNhd.is_constant_or_isOpen

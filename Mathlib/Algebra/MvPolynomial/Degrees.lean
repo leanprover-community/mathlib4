@@ -290,7 +290,7 @@ theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
   simp only [degreeOf_eq_sup i, support_mul_X, Finset.sup_map]
   congr
   ext
-  simp only [Finsupp.single, add_right_eq_self, addRightEmbedding_apply, coe_mk,
+  simp only [Finsupp.single, add_eq_left, addRightEmbedding_apply, coe_mk,
     Pi.add_apply, comp_apply, ite_eq_right_iff, Finsupp.coe_add, Pi.single_eq_of_ne h]
 
 @[deprecated (since := "2024-12-01")] alias degreeOf_mul_X_ne := degreeOf_mul_X_of_ne
@@ -400,7 +400,7 @@ theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
     obtain ⟨b, hb₁, hb₂⟩ :=
       p.support.exists_mem_eq_sup (Finsupp.support_nonempty_iff.mpr hp) fun m : σ →₀ ℕ =>
         Multiset.card (toMultiset m)
-    have hb : ¬b ∈ q.support := by
+    have hb : b ∉ q.support := by
       contrapose! h
       rw [totalDegree_eq p, hb₂, totalDegree_eq]
       apply Finset.le_sup h
@@ -521,6 +521,10 @@ theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
     rw [Finset.mem_image] at h'
     rcases h' with ⟨s, hs, rfl⟩
     exact (sum_mapDomain_index (fun _ => rfl) (fun _ _ _ => rfl)).trans_le (le_totalDegree hs)
+
+lemma totalDegree_renameEquiv (f : σ ≃ τ) (p : MvPolynomial σ R) :
+    (renameEquiv R f p).totalDegree = p.totalDegree :=
+  (totalDegree_rename_le f p).antisymm (le_trans (by simp) (totalDegree_rename_le f.symm _))
 
 end TotalDegree
 

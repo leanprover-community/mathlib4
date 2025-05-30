@@ -22,49 +22,66 @@ The `WithVal` type synonym is used to define the completion of `R` with respect 
 fractions of a Dedekind domain with respect to a height-one prime ideal of the domain.
 
 ## Main definitions
- - `WithVal` : type synonym for a ring equipped with the topology coming from a valuation.
- - `WithVal.equiv` : the canonical ring equivalence between `WithValuation v` and `R`.
- - `Valuation.Completion` : the uniform space completion of a field `K` according to the
+- `WithVal` : type synonym for a ring equipped with the topology coming from a valuation.
+- `WithVal.equiv` : the canonical ring equivalence between `WithValuation v` and `R`.
+- `Valuation.Completion` : the uniform space completion of a field `K` according to the
   uniform structure defined by the specified valuation.
 -/
 
 noncomputable section
 
-variable {R Γ₀ : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
+variable {R Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 /-- Type synonym for a ring equipped with the topology coming from a valuation. -/
 @[nolint unusedArguments]
-def WithVal : Valuation R Γ₀ → Type _ := fun _ => R
+def WithVal [Ring R] : Valuation R Γ₀ → Type _ := fun _ => R
 
 namespace WithVal
 
-variable (v : Valuation R Γ₀)
+section Instances
 
-instance : Ring (WithVal v) := ‹Ring R›
+variable {P S : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
-instance [CommRing R] : CommRing (WithVal v) := ‹CommRing R›
+instance [Ring R] (v : Valuation R Γ₀) : Ring (WithVal v) := inferInstanceAs (Ring R)
 
-instance [Field R] : Field (WithVal v) := ‹Field R›
+instance [CommRing R] (v : Valuation R Γ₀) : CommRing (WithVal v) := inferInstanceAs (CommRing R)
 
-instance : Inhabited (WithVal v) := ⟨0⟩
+instance [Field R] (v : Valuation R Γ₀) : Field (WithVal v) := inferInstanceAs (Field R)
 
-instance {S : Type*} [CommSemiring S] [CommRing R] [Algebra S R] : Algebra S (WithVal v) :=
-  ‹Algebra S R›
+instance [Ring R] (v : Valuation R Γ₀) : Inhabited (WithVal v) := ⟨0⟩
 
-instance {S : Type*} [CommRing S] [CommRing R] [Algebra S R] [IsFractionRing S R] :
-    IsFractionRing S (WithVal v) :=
-  ‹IsFractionRing S R›
+instance [CommSemiring S] [CommRing R] [Algebra S R] (v : Valuation R Γ₀) :
+    Algebra S (WithVal v) := inferInstanceAs (Algebra S R)
 
-instance {S : Type*} [SMul S R] : SMul S (WithVal v) :=
-  ‹SMul S R›
+instance [CommRing S] [CommRing R] [Algebra S R] [IsFractionRing S R] (v : Valuation R Γ₀) :
+    IsFractionRing S (WithVal v) := inferInstanceAs (IsFractionRing S R)
 
-instance {P S : Type*} [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] :
+instance [Ring R] [SMul S R] (v : Valuation R Γ₀) : SMul S (WithVal v) :=
+  inferInstanceAs (SMul S R)
+
+instance [Ring R] [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] (v : Valuation R Γ₀) :
     IsScalarTower P S (WithVal v) :=
-  ‹IsScalarTower P S R›
+  inferInstanceAs (IsScalarTower P S R)
 
-instance (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
+variable [CommRing R] (v : Valuation R Γ₀)
 
-/-- Canonical ring equivalence between `WithValuation v` and `R`. -/
+instance {S : Type*} [Ring S] [Algebra R S] :
+    Algebra (WithVal v) S := inferInstanceAs (Algebra R S)
+
+instance {S : Type*} [Ring S] [Algebra R S] (w : Valuation S Γ₀) :
+    Algebra R (WithVal w) := inferInstanceAs (Algebra R S)
+
+instance {P S : Type*} [Ring S] [Semiring P] [Module P R] [Module P S]
+    [Algebra R S] [IsScalarTower P R S] :
+    IsScalarTower P (WithVal v) S := inferInstanceAs (IsScalarTower P R S)
+
+instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
+
+end Instances
+
+variable [Ring R] (v : Valuation R Γ₀)
+
+/-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
 theorem apply_equiv (r : WithVal v) : v (WithVal.equiv v r) = v r := rfl
@@ -95,4 +112,20 @@ instance : CoeHead (𝓞 (WithVal v)) (WithVal v) := inferInstanceAs (CoeHead (�
 
 instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDomain (𝓞 K))
 
+instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
+    IsIntegralClosure R ℤ (WithVal v) := ‹IsIntegralClosure R ℤ K›
+
+/-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
+`ℤ` in `K`. -/
+@[simps!]
+def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
+    𝓞 (WithVal v) ≃+* R := NumberField.RingOfIntegers.equiv R
+
 end NumberField.RingOfIntegers
+
+open scoped NumberField in
+/-- The ring of integers of `WithVal v`, when `v` is a valuation on `ℚ`, is
+equivalent to `ℤ`. -/
+@[simps! apply]
+def Rat.ringOfIntegersWithValEquiv (v : Valuation ℚ Γ₀) : 𝓞 (WithVal v) ≃+* ℤ :=
+  NumberField.RingOfIntegers.withValEquiv v ℤ

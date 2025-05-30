@@ -164,7 +164,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     specialize C T
     rw [sub_eq_zero] at C
     unfold verticalIntegral
-    rw [integral_const_mul, intervalIntegral.integral_sub]
+    rw [intervalIntegral.integral_const_mul, intervalIntegral.integral_sub]
     · simp_rw [(fun a b => by rw [sq]; ring_nf : ∀ a b : ℂ, (a - b * I) ^ 2 = (-a + b * I) ^ 2)]
       change I₁ T = I₂ T + I * (I₄ T - I₅ T)
       rw [mul_sub, ← C]
@@ -185,7 +185,7 @@ theorem _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
     congr 1
     field_simp
     ring_nf
-  simp_rw [h, integral_mul_right]
+  simp_rw [h, MeasureTheory.integral_mul_const]
   rw [← re_add_im (c / (2 * b))]
   simp_rw [← add_assoc, ← ofReal_add]
   rw [integral_add_right_eq_self fun a : ℝ ↦ cexp (- -b * (↑a + ↑(c / (2 * b)).im * I) ^ 2),
@@ -266,7 +266,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     Finset.sum_neg_distrib, mul_assoc, add_left_inj, neg_inj]
   norm_cast
   rw [sq_sqrt]
-  · simp [Finset.mul_sum]
+  · simp [Finset.mul_sum, mul_comm]
   · exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
 
 /-- In a real inner product space, the complex exponential of minus the square of the norm plus
@@ -314,6 +314,7 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     rw [sq_sqrt]
     exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
   · simp [PiLp.inner_apply, EuclideanSpace.measurableEquiv, Finset.mul_sum, mul_assoc]
+    simp_rw [mul_comm]
   · simp only [EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, mul_pow, ← Finset.mul_sum]
     congr
     norm_cast

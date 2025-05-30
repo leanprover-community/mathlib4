@@ -504,6 +504,15 @@ theorem Ico_succ_right_eq_insert (h : a ≤ b) : Ico a (succ b) = insert b (Ico 
 theorem Ioo_succ_right_eq_insert (h : a < b) : Ioo a (succ b) = insert b (Ioo a b) :=
   Ioo_succ_right_eq_insert_of_not_isMax h <| not_isMax b
 
+@[simp]
+theorem Ioo_eq_empty_iff_le_succ : Ioo a b = ∅ ↔ b ≤ succ a := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    exact ⟨succ a, lt_succ_iff_not_isMax.mpr (not_isMax a), h⟩
+  · ext x
+    suffices a < x → b ≤ x by simpa
+    exact fun hx ↦ le_of_lt_succ <| lt_of_le_of_lt h <| succ_strictMono hx
+
 end NoMaxOrder
 
 section OrderBot
@@ -632,9 +641,9 @@ theorem Iic_pred_of_not_isMin (ha : ¬IsMin a) : Iic (pred a) = Iio a :=
   Set.ext fun _ => le_pred_iff_of_not_isMin ha
 
 theorem Icc_subset_Ioc_pred_left_of_not_isMin (ha : ¬IsMin a) : Icc a b ⊆ Ioc (pred a) b := by
- rw [← Ioi_inter_Iic, ← Ici_inter_Iic]
- gcongr
- apply Ici_subset_Ioi_pred_of_not_isMin ha
+  rw [← Ioi_inter_Iic, ← Ici_inter_Iic]
+  gcongr
+  apply Ici_subset_Ioi_pred_of_not_isMin ha
 
 theorem Ico_subset_Ioo_pred_left_of_not_isMin (ha : ¬IsMin a) : Ico a b ⊆ Ioo (pred a) b  := by
   rw [← Ioi_inter_Iio, ← Ici_inter_Iio]
@@ -880,6 +889,15 @@ theorem Ico_pred_right_eq_insert (h : a ≤ b) : Ioc (pred a) b = insert a (Ioc 
 theorem Ioo_pred_right_eq_insert (h : a < b) : Ioo (pred a) b = insert a (Ioo a b) := by
   simp_rw [← Ioi_inter_Iio, Ioi_pred_eq_insert, insert_inter_of_mem (mem_Iio.2 h)]
 
+@[simp]
+theorem Ioo_eq_empty_iff_pred_le : Ioo a b = ∅ ↔ pred b ≤ a := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    exact ⟨pred b, h, pred_lt_iff_not_isMin.mpr (not_isMin b)⟩
+  · ext x
+    suffices a < x → b ≤ x by simpa
+    exact fun hx ↦ le_of_pred_lt <| lt_of_le_of_lt h hx
+
 end NoMinOrder
 
 section OrderTop
@@ -951,23 +969,24 @@ theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
 
 theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[n - 1] i)) :
     pred^[n] (succ^[n] i) = i := by
-  induction' n with n hn
-  · simp only [Nat.zero_eq, Function.iterate_zero, id]
-  rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
-  have h_not_max : ¬IsMax (succ^[n - 1] i) := by
-    rcases n with - | n
-    · simpa using hin
-    rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hn ⊢
-    have h_sub_le : succ^[n] i ≤ succ^[n.succ] i := by
-      rw [Function.iterate_succ']
-      exact le_succ _
-    refine fun h_max => hin fun j hj => ?_
-    have hj_le : j ≤ succ^[n] i := h_max (h_sub_le.trans hj)
-    exact hj_le.trans h_sub_le
-  rw [Function.iterate_succ, Function.iterate_succ']
-  simp only [Function.comp_apply]
-  rw [pred_succ_of_not_isMax hin]
-  exact hn h_not_max
+  induction n with
+  | zero => simp only [Nat.zero_eq, Function.iterate_zero, id]
+  | succ n hn =>
+    rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
+    have h_not_max : ¬IsMax (succ^[n - 1] i) := by
+      rcases n with - | n
+      · simpa using hin
+      rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hn ⊢
+      have h_sub_le : succ^[n] i ≤ succ^[n.succ] i := by
+        rw [Function.iterate_succ']
+        exact le_succ _
+      refine fun h_max => hin fun j hj => ?_
+      have hj_le : j ≤ succ^[n] i := h_max (h_sub_le.trans hj)
+      exact hj_le.trans h_sub_le
+    rw [Function.iterate_succ, Function.iterate_succ']
+    simp only [Function.comp_apply]
+    rw [pred_succ_of_not_isMax hin]
+    exact hn h_not_max
 
 theorem succ_pred_iterate_of_not_isMin (i : α) (n : ℕ) (hin : ¬IsMin (pred^[n - 1] i)) :
     succ^[n] (pred^[n] i) = i :=
@@ -1279,18 +1298,24 @@ lemma coe_pred_of_mem [PredOrder α] {a : s} (h : pred a.1 ∈ s) :
   change Subtype.val (dite ..) = _
   simp [h]
 
-lemma isMin_of_not_pred_mem [PredOrder α] {a : s} (h : pred ↑a ∉ s) : IsMin a := by classical
+lemma isMin_of_pred_notMem [PredOrder α] {a : s} (h : pred ↑a ∉ s) : IsMin a := by classical
   rw [← pred_eq_iff_isMin]
   change dite .. = _
   simp [h]
 
-lemma not_pred_mem_iff_isMin [PredOrder α] [NoMinOrder α] {a : s} :
+@[deprecated (since := "2025-05-23")]
+alias isMin_of_not_pred_mem := isMin_of_pred_notMem
+
+lemma pred_notMem_iff_isMin [PredOrder α] [NoMinOrder α] {a : s} :
     pred ↑a ∉ s ↔ IsMin a where
-  mp := isMin_of_not_pred_mem
+  mp := isMin_of_pred_notMem
   mpr h nh := by
     replace h := congr($h.pred_eq.1)
     rw [coe_pred_of_mem nh] at h
     simp at h
+
+@[deprecated (since := "2025-05-23")]
+alias not_pred_mem_iff_isMin := pred_notMem_iff_isMin
 
 noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] :
     SuccOrder s :=
@@ -1303,17 +1328,24 @@ lemma coe_succ_of_mem [SuccOrder α] {a : s} (h : succ ↑a ∈ s) :
   change Subtype.val (dite ..) = _
   split_ifs <;> trivial
 
-lemma isMax_of_not_succ_mem [SuccOrder α] {a : s} (h : succ ↑a ∉ s) : IsMax a := by classical
+lemma isMax_of_succ_notMem [SuccOrder α] {a : s} (h : succ ↑a ∉ s) : IsMax a := by
+  classical
   rw [← succ_eq_iff_isMax]
   change dite .. = _
   split_ifs <;> trivial
 
-lemma not_succ_mem_iff_isMax [SuccOrder α] [NoMaxOrder α] {a : s} :
+@[deprecated (since := "2025-05-23")]
+alias isMax_of_not_succ_mem := isMax_of_succ_notMem
+
+lemma succ_notMem_iff_isMax [SuccOrder α] [NoMaxOrder α] {a : s} :
     succ ↑a ∉ s ↔ IsMax a where
-  mp := isMax_of_not_succ_mem
+  mp := isMax_of_succ_notMem
   mpr h nh := by
     replace h := congr($h.succ_eq.1)
     rw [coe_succ_of_mem nh] at h
     simp at h
+
+@[deprecated (since := "2025-05-23")]
+alias not_succ_mem_iff_isMax := succ_notMem_iff_isMax
 
 end OrdConnected
