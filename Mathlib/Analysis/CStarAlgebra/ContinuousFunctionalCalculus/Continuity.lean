@@ -257,7 +257,7 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `a : X → A` tends to `a₀ : A` along a
 filter `l` (such that eventually `0 ≤ a x` and has spectrum contained in `s`, as does `a₀`), then
 `fun x ↦ cfc f (a x)` tends to `cfc f a₀`. -/
-theorem Filter.Tendsto.cfc_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : IsCompact s)
+theorem Filter.Tendsto.cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
     (f : ℝ≥0 → ℝ≥0) {a : X → A} {a₀ : A} {l : Filter X} (ha_tendsto : Tendsto a l (𝓝 a₀))
     (ha : ∀ᶠ x in l, spectrum ℝ≥0 (a x) ⊆ s) (ha' : ∀ᶠ x in l, 0 ≤ a x)
     (ha₀ : spectrum ℝ≥0 a₀ ⊆ s) (ha₀' : 0 ≤ a₀) (hf : ContinuousOn f s := by cfc_cont_tac) :
