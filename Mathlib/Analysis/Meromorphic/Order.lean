@@ -66,7 +66,7 @@ lemma meromorphicOrderAt_eq_top_iff :
   · simp only [hf, not_false_eq_true, meromorphicOrderAt_of_not_meromorphicAt, WithTop.zero_ne_top,
       false_iff]
     contrapose! hf
-    exact (MeromorphicAt.const 0 x).congr  (EventuallyEq.symm hf)
+    exact (MeromorphicAt.const 0 x).congr (EventuallyEq.symm hf)
   simp only [meromorphicOrderAt, hf, ↓reduceDIte, sub_eq_top_iff, ENat.map_eq_top_iff,
     WithTop.natCast_ne_top, or_false]
   by_cases h : analyticOrderAt (fun z ↦ (z - x) ^ hf.choose • f z) x = ⊤
