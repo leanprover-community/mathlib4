@@ -115,14 +115,6 @@ lemma sum_mul_antipode_eq_smul (repr : Repr R a) :
       counit (R := R) a • 1 := by
   rw [sum_mul_antipode_eq_algebraMap_counit, Algebra.smul_def, mul_one]
 
-lemma sum_counit_smul (𝓡 : Repr R a) :
-    ∑ x ∈ 𝓡.index, counit (R := R) (𝓡.left x) • 𝓡.right x = a := by
-  have := sum_counit_tmul_eq (R := R) 𝓡
-  apply_fun TensorProduct.lift (LinearMap.lsmul R A) at this
-  simp_rw [map_sum] at this
-  convert this
-  simp
-
 @[simp] lemma counit_antipode (a : A) : counit (R := R) (antipode R a) = counit a := by
   calc
         counit (antipode R a)
