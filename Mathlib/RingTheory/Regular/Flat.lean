@@ -147,9 +147,9 @@ open TensorProduct
 
 variable {R S M N Ms Ns : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
   [AddCommGroup M] [Module R M] [AddCommGroup Ms] [Module R Ms] [Module S Ms] [IsScalarTower R S Ms]
-  (gm : M →ₗ[R] Ms) (hm : IsBaseChange S gm)
+  {gm : M →ₗ[R] Ms} (hm : IsBaseChange S gm)
   [AddCommGroup N] [Module R N] [AddCommGroup Ns] [Module R Ns] [Module S Ns] [IsScalarTower R S Ns]
-  (gn : N →ₗ[R] Ns) (hn : IsBaseChange S gn)
+  {gn : N →ₗ[R] Ns} (hn : IsBaseChange S gn)
   (f : M →ₗ[R] N) (hf : Function.Injective f)
 
 omit [Flat R S] in
@@ -163,23 +163,17 @@ theorem smul_lTensor (s : S) (m : S ⊗[R] M) :
 include hn hf
 theorem Module.Flat.isBaseChange_preserves_injective_linearMap :
     Function.Injective (hm.lift (gn ∘ₗ f)) := by
-  let em := IsBaseChange.equiv hm
-  let en := IsBaseChange.equiv hn
-  have : hm.lift (gn ∘ₗ f) = (en.toLinearMap.restrictScalars R) ∘ₗ
-    ((LinearMap.lTensor S f) ∘ₗ (em.symm.toLinearMap.restrictScalars R)) := sorry
-  have h : hm.lift (gn ∘ₗ f) = en ∘ ((LinearMap.lTensor S f) ∘ em.symm) := by
+  have h : hm.lift (gn ∘ₗ f) = hn.equiv ∘ ((LinearMap.lTensor S f) ∘ hm.equiv.symm) := by
     ext x
     refine hm.inductionOn x _ ?_ ?_ ?_ ?_
     · simp only [map_zero, Function.comp_apply]
-    · intro m
-      simp only [IsBaseChange.lift_eq, LinearMap.coe_comp, Function.comp_apply]
-      sorry
+    · intro _
+      simp [hm.lift_eq, hm.equiv_symm_apply, hn.equiv_tmul]
     · intro s m h
       simp only [map_smul, h, Function.comp_apply]
-      rw [← map_smul, smul_lTensor f s (em.symm m)]
+      rw [← map_smul, smul_lTensor f s (hm.equiv.symm m)]
     · intro _ _ h₁ h₂
       simp only [map_add, h₁, Function.comp_apply, h₂]
-
   simp only [h, EmbeddingLike.comp_injective, EquivLike.injective_comp]
   exact Module.Flat.lTensor_preserves_injective_linearMap f hf
 
@@ -191,12 +185,20 @@ variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
   [IsScalarTower R S N] (f : M →ₗ[R] N) (hf : IsBaseChange S f)
 
-theorem isSMulRegular_flat_isBaseChange (r : R) (reg : IsSMulRegular M r) : IsSMulRegular N (algebraMap R S r) := by
-  rw [isSMulRegular_algebraMap_iff r, isSMulRegular_iff_ker_lsmul_eq_bot N r,
-    LinearMap.ker_eq_bot']
-  intro n hn
-  have : M →ₗ[R] M := LinearMap.lsmul R M r
-  have := Module.Flat.lTensor_preserves_injective_linearMap (LinearMap.lsmul R M r) (M := S) reg
+include hf
 
+theorem IsSMulRegular.of_flat_isBaseChange (r : R) (reg : IsSMulRegular M r) :
+    IsSMulRegular N (algebraMap R S r) := by
+  have eq : hf.lift (f ∘ₗ (LinearMap.lsmul R M) r) = (LinearMap.lsmul S N) (algebraMap R S r) :=
+    hf.algHom_ext _ _ (fun _ ↦ by simp [hf.lift_eq])
+  convert Module.Flat.isBaseChange_preserves_injective_linearMap hf hf ((LinearMap.lsmul R M) r) reg
+  rw [eq]
+  rfl
+
+abbrev quotSMulTop_isBaseChange_map (x : R) :
+    QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R S) x) N := by
+  refine LinearMapOfSemiLinearMapAlgebraMap <| Submodule.mapQ _ _
+    (SemiLinearMapAlgebraMapOfLinearMap f) (fun m hm ↦ ?_)
+  sorry
 
 end flat
