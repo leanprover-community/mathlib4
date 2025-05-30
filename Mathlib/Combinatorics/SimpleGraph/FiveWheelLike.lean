@@ -16,7 +16,7 @@ structures as well as graphs which avoid this structure. These have two key uses
 * We use them to prove that a maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is
   complete-multipartite: `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree`.
 * They play a key role in Brandt's proof of the Andrásfai-Erdős-Sós theorem, which is where they
-  first appeared: `colorable_of_cliqueFree_lt_minDegree`.
+  first appeared. We give this proof below, see `colorable_of_cliqueFree_lt_minDegree`.
 
 If `G` is maximally `Kᵣ₊₂`-free and `¬ G.Adj x y` (with `x ≠ y`) then there exists an `r`-set `s`
  such that `s ∪ {x}` and `s ∪ {y}` are both `r + 1`-cliques.
