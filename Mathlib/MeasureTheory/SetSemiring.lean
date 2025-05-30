@@ -545,7 +545,7 @@ theorem pi {s : Set ι} (hs : Finite s)
       rw [← hx2, ← hy2, ← union_pi, ← union_pi]
       apply pi_setdiff_eq_union
     -- Show that the two sets from `h1` are disjoint.
-    obtain h2 := pi_setdiff_union_disjoint ({a} : Set ι) t x y
+    obtain h2 := disjoint_pi_of_interSetdiff_of_interSetdiffInter ({a} : Set ι) t x y
     -- `K : Set (Set (α a))` is such that `x a \ y a = ⋃₀ K`.
     /- Several sets need to be constructed based on `K`.
         We use that convention that for some set system  `X`
@@ -576,19 +576,19 @@ theorem pi {s : Set ι} (hs : Finite s)
       rfl
     by_cases h : t.Nonempty
     rotate_left
-    · have h : t = ∅ := Set.not_nonempty_iff_eq_empty.mp h; clear h_ind
+    · have h : t = ∅ := Set.not_nonempty_iff_eq_empty.mp h;
       use F.toFinset
       simp only [coe_union, coe_toFinset]
       refine ⟨hF1, hF2, ?_⟩
       simp only [h, empty_pi, Set.univ_inter, sdiff_self, Set.bot_eq_empty,
         Set.empty_inter, Set.union_empty] at hF3 h1
       exact hF3.symm ▸ h1
-    · have h_ind' := h_ind h; clear h h_ind
+    · have h_ind' := h_ind h;
       let G := Set.inter (({a} : Set ι).pi y ∩ ({a} : Set ι).pi x) ''
         (h_ind'.disjointOfDiff hx1' hy1')
       have hG1 : G ⊆ (insert a t).pi '' (insert a t).pi C := by
         simp only [G]
-        rw [← singleton_union, union_comm, ← Set.pi_inter_distrib]
+        rw [← singleton_union, Set.union_comm, ← Set.pi_inter_distrib]
         exact pi_inter_image (Set.disjoint_singleton_right.mpr t_fin)
           (fun i hi ↦ hi ▸ (hC a ha).inter_mem (y a)
           (hy1 a (Or.inl rfl)) (x a) (hx1 a (Or.inl rfl)))
