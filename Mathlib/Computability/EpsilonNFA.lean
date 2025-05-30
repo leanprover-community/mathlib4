@@ -275,9 +275,9 @@ theorem toNFA_correct : M.toNFA.accepts = M.accepts :=
   rfl
 
 theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
-    (hlen : Fintype.card (Set σ) ≤ List.length x) :
+    (hlen : Fintype.card σ ≤ List.length x) :
     ∃ a b c, x = a ++ b ++ c ∧
-      a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts :=
+      a.length + b.length ≤ Fintype.card σ ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts :=
   M.toNFA.pumping_lemma hx hlen
 
 end εNFA

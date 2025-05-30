@@ -195,6 +195,105 @@ theorem accepts_iff_exists_path {x : List α} :
   simp only [← mem_evalFrom_iff_nonempty_path, mem_accepts, mem_evalFrom_iff_exists (S := M.start)]
   tauto
 
+/-- Append two paths. -/
+def Path.append {s t u : σ} {x y : List α} (p : M.Path s t x) (q : M.Path t u y) :
+    M.Path s u (x ++ y) :=
+  match p with
+  | nil _ => q
+  | cons s' _ _ _ _ h p' => cons s' _ _ _ _ h (p'.append q)
+
+/-- Split `p` at the point just after it has matched `x`. -/
+def Path.splitAfter {s u : σ} {y : List α} (x : List α) (p : M.Path s u (x ++ y)) :
+    (t : σ) × M.Path s t x × M.Path t u y :=
+  match x, p with
+  | [], p => ⟨s, nil s, p⟩
+  | _ :: x, cons s' _ _ _ _ h p =>
+    let ⟨t, p', q⟩ := p.splitAfter x
+    ⟨t, cons s' _ _ _ _ h p', q⟩
+
+/-- Split `p` at the intermediate state `t`. -/
+def Path.splitAt [DecidableEq σ] {x : List α} {s u : σ}
+    (p : M.Path s u x) (t : σ) (h : t ∈ p.supp) :
+    (x₁ x₂ : List α) × M.Path s t x₁ × M.Path t u x₂ ×' x₁ ++ x₂ = x :=
+  if e : s = t then
+    ⟨[], x, e ▸ nil s, e ▸ p, rfl⟩
+  else
+    match p with
+    | nil _ => by simp at h; tauto
+    | cons s' _ _ a x h' p =>
+      have ⟨x₁, x₂, p', q, e'⟩ := p.splitAt t (by simp at h; tauto)
+      ⟨a :: x₁, x₂, cons s' _ _ _ _ h' p', q, e' ▸ rfl⟩
+
+/-- Knowing that the length of the word guarantees that a state will repeat
+somewhere along the path, find one such state and split the path around it. -/
+def Path.splitAtRepeatingState [DecidableEq σ] {x : List α} {s u : σ}
+    (p : M.Path s u x) (h : p.supp.card ≤ x.length) :
+    (t : σ) × (x₁ x₂ x₃ : List α) × M.Path s t x₁ × M.Path t t x₂ × M.Path t u x₃ ×'
+    x = x₁ ++ x₂ ++ x₃ ∧ x₂ ≠ [] :=
+  match p with
+  | nil _ => by simp at h
+  | cons s₁ _ _ a x h₁ p =>
+    if h' : s ∈ p.supp then
+      have ⟨x₂, x₃, p₂, p₃, e⟩ := p.splitAt s h'
+      have p₂ : M.Path s s (a :: x₂) := cons s₁ _ _ _ _ h₁ p₂
+      ⟨s, [], a :: x₂, x₃, nil s, p₂, p₃, e ▸ rfl, by simp⟩
+    else
+      have hle : p.supp.card ≤ x.length := by simpa [h', add_comm 1] using h
+      have ⟨t, x₁, x₂, x₃, p₁, p₂, p₃, e, hne⟩ := p.splitAtRepeatingState hle
+      ⟨t, a :: x₁, x₂, x₃, cons s₁ _ _ _ _ h₁ p₁, p₂, p₃, e ▸ rfl, hne⟩
+
+/-- Repeat a looping path to construct a path for `x∗`. -/
+noncomputable def Path.ofMemKStar {x : List α} {s : σ} (p : M.Path s s x) (x' : List α)
+    (h : x' ∈ ({x}∗ : Language α)) : M.Path s s x' := by
+  rw [Language.mem_kstar] at h
+  -- NOTE: This could be made computable with some effort, there's no fundamental reason
+  -- to invoke choice here.
+  obtain ⟨xs, rfl, hxs⟩ := Classical.indefiniteDescription _ h; clear h
+  induction xs with
+  | nil => exact nil s
+  | cons a xs ih =>
+    obtain rfl := hxs a List.mem_cons_self |> Set.mem_singleton_iff.1
+    rw [List.flatten_cons]
+    apply p.append
+    apply ih
+    tauto
+
+variable (M) in
+theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
+    (hlen : Fintype.card σ ≤ x.length) :
+    ∃ a b c,
+      x = a ++ b ++ c ∧
+        a.length + b.length ≤ Fintype.card σ ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
+  classical -- Discharge the DecidableEq assumptions
+  have ⟨s, hs, u, hu, ⟨p⟩⟩ := accepts_iff_exists_path.1 hx
+  let k := Fintype.card σ
+  -- To make sure that the repeated state occurs within the first `k` steps, split
+  -- the path and carry out the rest of the argument on the first `k` characters of the word.
+  have e₁ : x.take k ++ x.drop k = x := x.take_append_drop k
+  have ⟨u', p, p₄⟩ := (e₁ ▸ p).splitAfter (x.take k)
+  have hle : p.supp.card ≤ (x.take k).length := calc
+    p.supp.card ≤ Fintype.card σ := p.supp.card_le_univ
+    _           = (x.take k).length := by simp [hlen, k]
+  -- Find the repeating state `t`.
+  have ⟨t, a, b, c, p₁, p₂, p₃, e₂, hne⟩ := p.splitAtRepeatingState hle
+  refine ⟨a, b, c ++ x.drop k, ?eq, ?le, hne, ?mem⟩
+  case eq =>
+    nth_rw 1 [← e₁, e₂]
+    simp
+  case le => calc
+    a.length + b.length ≤ (a ++ b ++ c).length := by simp
+    _                   = (x.take k).length := by rw [e₂]
+    _                   = Fintype.card σ := by simp [hlen, k]
+  case mem =>
+    intro y hy
+    obtain ⟨ab, hab, c', hc', rfl⟩ := Language.mem_mul.1 hy; clear hy
+    obtain ⟨a', ha', b', hb', rfl⟩ := Language.mem_mul.1 hab; clear hab
+    rw [Set.mem_singleton_iff] at ha' hc'
+    substs a' c'
+    have p₂' := p₂.ofMemKStar b' hb'
+    have p' := p₁.append p₂' |>.append p₃ |>.append p₄
+    simpa using accepts_iff_exists_path.2 ⟨s, hs, u, hu, ⟨p'⟩⟩
+
 variable (M) in
 /-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
   states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
@@ -208,14 +307,6 @@ theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
   ext x
   rw [mem_accepts, DFA.mem_accepts]
   constructor <;> · exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
-
-theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
-    (hlen : Fintype.card (Set σ) ≤ List.length x) :
-    ∃ a b c,
-      x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
-  rw [← toDFA_correct] at hx ⊢
-  exact M.toDFA.pumping_lemma hx hlen
 
 end NFA
 
