@@ -51,3 +51,16 @@ example  : tan (4 * π / 3) = √3 := by
 
 example : tan (5 * π / 3) = - √3 := by
   norm_num
+
+-- cosine of multiples of π / 5
+
+example : cos (4 * π / 5) = - (1 + √5) / 4 := by
+  norm_num
+  ring_nf
+
+example : cos (6 * π / 5) = - (1 + √5) / 4 := by
+  norm_num
+  ring_nf
+
+example : cos (9 * π / 5) = (1 + √5) / 4 := by
+  norm_num
