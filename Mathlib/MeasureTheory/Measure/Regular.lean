@@ -730,7 +730,7 @@ protected theorem comap' [BorelSpace α]
     {μ : Measure β} [H : InnerRegular μ] {f : α → β} (hf : IsOpenEmbedding f) :
     (μ.comap f).InnerRegular where
   innerRegular :=
-    InnerRegularWRT.comap H.innerRegular hf.measurableEmbedding
+    H.innerRegular.comap hf.measurableEmbedding
     (fun _ hU ↦ hf.measurableEmbedding.measurableSet_image' hU)
     (fun _ hKrange hK ↦ hf.isInducing.isCompact_preimage' hK hKrange)
 
