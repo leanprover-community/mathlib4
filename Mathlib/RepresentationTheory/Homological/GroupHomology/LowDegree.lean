@@ -244,9 +244,7 @@ theorem dOne_comp_dZero : dOne A ≫ dZero A = 0 := by
   simp [dZero, dOne, sum_add_index, sum_sub_index, sub_sub_sub_comm, add_sub_add_comm]
 
 theorem dTwo_comp_done : dTwo A ≫ dOne A = 0 := by
-  apply_fun ModuleCat.ofHom using (fun _ _ h => ModuleCat.hom_ext_iff.1 h)
-  simp [(Iso.eq_inv_comp _).2 (dOne_comp_eq A), (Iso.eq_inv_comp _).2 (dTwo_comp_eq A),
-    ModuleCat.hom_ext_iff, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
+  simp [(Iso.eq_inv_comp _).2 (comp_dOne_eq A), (Iso.eq_inv_comp _).2 (comp_dTwo_eq A)]
 
 end
 end Differentials
