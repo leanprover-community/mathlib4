@@ -99,7 +99,7 @@ variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the induced `H`-representation `ind φ A`, with action on maps induced by left tensoring. -/
 @[simps obj map]
-noncomputable abbrev indFunctor : Rep k G ⥤ Rep k H where
+noncomputable def indFunctor : Rep k G ⥤ Rep k H where
   obj A := ind φ A
   map f := indMap φ f
   map_id _ := by ext; rfl
@@ -112,8 +112,9 @@ open Representation
 
 variable (B : Rep k H)
 
-#exit
-
+/-- Given a group homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
+`A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
+the `G`-representation morphisms `A ⟶ B`. -/
 @[simps]
 noncomputable def indResHomLEquiv :
     (ind φ A ⟶ B) ≃ₗ[k] (A ⟶ (Action.res _ φ).obj B) where
@@ -126,7 +127,7 @@ noncomputable def indResHomLEquiv :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := {
-    hom := ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <|
+    hom := ModuleCat.ofHom <| Representation.Coinvariants.lift _ (TensorProduct.lift <|
       lift _ _ _ fun h => B.ρ h⁻¹ ∘ₗ f.hom.hom) fun _ => by ext; have := hom_comm_apply f; simp_all
     comm _ := by ext; simp [ModuleCat.endRingEquiv] }
   left_inv f := by
@@ -134,14 +135,15 @@ noncomputable def indResHomLEquiv :
     simpa using (hom_comm_apply f h⁻¹ (IndV.mk φ A.ρ 1 a)).symm
   right_inv _ := by ext; simp
 
-set_option maxHeartbeats 0 in
 variable (k) in
-open TensorProduct in
+/-- Given a group homomorphism `φ : G →* H`, the induction functor `Rep k G ⥤ Rep k H` is left
+adjoint to the restriction functor along `φ`. -/
 @[simps! unit_app_hom_hom counit_app_hom_hom]
-noncomputable abbrev indResAdjunction : indFunctor k φ ⊣ Action.res _ φ :=
+noncomputable def indResAdjunction : indFunctor k φ ⊣ Action.res _ φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv A B := (indResHomLEquiv φ A B).toEquiv
-    homEquiv_naturality_left_symm _ _ := by ext; simp
+    homEquiv_naturality_left_symm _ _ :=
+      Action.hom_ext _ _ <| ModuleCat.hom_ext <| IndV.hom_ext _ _ fun _ => by ext; simp
     homEquiv_naturality_right := by intros; rfl }
 
 open Finsupp
@@ -149,7 +151,7 @@ open Finsupp
 noncomputable instance : Limits.PreservesColimits (indFunctor k φ) :=
   (indResAdjunction k φ).leftAdjoint_preservesColimits
 
-noncomputable instance : Limits.PreservesLimits (Action.res (ModuleCat k) φ) :=
+noncomputable instance : Limits.PreservesLimits (Action.res (ModuleCat.{u} k) φ) :=
   (indResAdjunction k φ).rightAdjoint_preservesLimits
 
 end Adjunction
