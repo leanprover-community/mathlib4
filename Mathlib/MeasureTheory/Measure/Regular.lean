@@ -1063,8 +1063,7 @@ open Topology in
 protected theorem comap' [BorelSpace α]
     {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β] {μ : Measure β} [Regular μ]
     {f : α → β} (hf : IsOpenEmbedding f) : (μ.comap f).Regular := by
-  haveI := OuterRegular.comap_of_continuous_of_measurableEmbedding
-    μ hf.continuous hf.measurableEmbedding
+  haveI := OuterRegular.comap' (μ := μ) hf.continuous hf.measurableEmbedding
   haveI := IsFiniteMeasureOnCompacts.comap' (μ := μ) hf.continuous hf.measurableEmbedding
   exact ⟨InnerRegularWRT.comap Regular.innerRegular hf.measurableEmbedding
     (fun _ hU ↦ hf.isOpen_iff_image_isOpen.mp hU)
