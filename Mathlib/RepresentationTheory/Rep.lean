@@ -420,7 +420,7 @@ def finsuppTensorLeft :
     fun _ => ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => by
       ext
       simp [Action_ρ_eq_ρ, TensorProduct.finsuppLeft_apply_tmul,
-        instMonoidalCategoryStruct_tensorObj, instMonoidalCategoryStruct_tensorHom,
+        tensorObj_def, ModuleCat.MonoidalCategory.tensorHom_def,
         ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv]
 
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
@@ -432,7 +432,7 @@ def finsuppTensorRight :
       TensorProduct.ext <| LinearMap.ext fun _ => lhom_ext fun _ _ => by
       ext
       simp [Action_ρ_eq_ρ, TensorProduct.finsuppRight_apply_tmul, ModuleCat.endRingEquiv,
-        instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
+        tensorObj_def, ModuleCat.MonoidalCategory.tensorObj]
 
 variable (k G) in
 /-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
@@ -443,8 +443,8 @@ def leftRegularTensorTrivialIsoFree :
     finsuppProdLEquiv k).toModuleIso fun _ =>
       ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => lhom_ext fun _ _ => by
         ext
-        simp [Action_ρ_eq_ρ, instMonoidalCategoryStruct_tensorObj, ModuleCat.endRingEquiv,
-          instMonoidalCategoryStruct_whiskerRight, ModuleCat.MonoidalCategory.whiskerRight,
+        simp [Action_ρ_eq_ρ, tensorObj_def, ModuleCat.endRingEquiv,
+          whiskerRight_def, ModuleCat.MonoidalCategory.whiskerRight,
           ModuleCat.MonoidalCategory.tensorObj]
 
 variable {α}
@@ -454,7 +454,7 @@ lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G
     DFunLike.coe (F := ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k (α →₀ k)) →ₗ[k] α →₀ G →₀ k)
     (leftRegularTensorTrivialIsoFree k G α).hom.hom.hom (single g r ⊗ₜ[k] single i s) =
       single i (single g (r * s)) := by
-  simp [leftRegularTensorTrivialIsoFree, instMonoidalCategoryStruct_tensorObj,
+  simp [leftRegularTensorTrivialIsoFree, tensorObj_def,
     ModuleCat.MonoidalCategory.tensorObj]
 
 @[simp]
@@ -463,7 +463,7 @@ lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r 
     (leftRegularTensorTrivialIsoFree k G α).inv.hom.hom (single i (single g r)) =
       single g r ⊗ₜ[k] single i 1 := by
   simp [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one,
-    instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
+    tensorObj_def, ModuleCat.MonoidalCategory.tensorObj]
 
 end
 end Finsupp
