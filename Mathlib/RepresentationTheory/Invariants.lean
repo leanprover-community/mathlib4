@@ -225,7 +225,7 @@ instance : (invariantsFunctor k G).Linear k where
 the functor sending a representation to its submodule of invariants. -/
 @[simps]
 noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFunctor k G where
-  unit := { app _ := ModuleCat.ofHom <| LinearMap.id.codRestrict _ <| by simp }
+  unit := { app _ := ModuleCat.ofHom <| LinearMap.id.codRestrict _ <| by simp [trivialFunctor] }
   counit := { app X := {
     hom := ModuleCat.ofHom <| Submodule.subtype _
     comm g := by ext x; exact (x.2 g).symm }}
