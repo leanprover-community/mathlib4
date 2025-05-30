@@ -745,6 +745,11 @@ lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ ⇑x ∈ oneCoboun
   show (LinearMap.range ((dZero A).hom.codRestrict (oneCocycles A) _)).mkQ _ = 0 ↔ _
   simp [LinearMap.range_codRestrict, oneCoboundaries]
 
+@[elab_as_elim]
+theorem H1_induction_on {C : H1 A → Prop}
+    (h : ∀ x : oneCocycles A, C (Submodule.Quotient.mk x)) (x : H1 A) :
+    C x := Quotient.inductionOn' x h
+
 /-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
 (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
@@ -758,6 +763,11 @@ variable {A} in
 lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
   show (LinearMap.range ((dOne A).hom.codRestrict (twoCocycles A) _)).mkQ _ = 0 ↔ _
   simp [LinearMap.range_codRestrict, twoCoboundaries]
+
+@[elab_as_elim]
+theorem H2_induction_on {C : H2 A → Prop}
+    (h : ∀ x : twoCocycles A, C (Submodule.Quotient.mk x)) (x : H2 A) :
+    C x := Quotient.inductionOn' x h
 
 end Cohomology
 
@@ -820,12 +830,11 @@ theorem H1IsoOfIsTrivial_H1π_apply_apply
 @[deprecated (since := "2025-05-09")]
 alias H1LequivOfIsTrivial_comp_H1_π_apply_apply := H1IsoOfIsTrivial_H1π_apply_apply
 
-@[simp]
-theorem H1IsoOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
+theorem H1IsoOfIsTrivial_inv_apply [A.IsTrivial] (f : Additive G →+ A) :
     (H1IsoOfIsTrivial A).inv f = H1π A ((oneCocyclesIsoOfIsTrivial A).inv f) := rfl
 
 @[deprecated (since := "2025-05-09")]
-alias H1LequivOfIsTrivial_symm_apply := H1IsoOfIsTrivial_symm_apply
+alias H1LequivOfIsTrivial_symm_apply := H1IsoOfIsTrivial_inv_apply
 
 end H1
 
