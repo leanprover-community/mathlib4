@@ -257,6 +257,13 @@ abbrev groupCohomologyπ [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
 
+@[elab_as_elim]
+theorem groupCohomology_induction [Group G] {A : Rep k G} {n : ℕ}
+    {C : groupCohomology A n → Prop} (h : ∀ x : cocycles A n, C (groupCohomologyπ A n x))
+    (x : groupCohomology A n) : C x := by
+  rcases (ModuleCat.epi_iff_surjective (groupCohomologyπ A n)).1 inferInstance x with ⟨y, rfl⟩
+  exact h y
+
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :

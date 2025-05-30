@@ -99,12 +99,14 @@ variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
 /-- Noether's generalization of Hilbert's Theorem 90: given a finite extension of fields `L/K`, the
 first group cohomology `H¹(Aut_K(L), Lˣ)` is trivial. -/
-noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
+noncomputable instance H1ofAutOnUnitsUnique :
+    Unique (groupCohomology (Rep.ofAlgebraAutOnUnits K L) 1) where
   default := 0
-  uniq := fun a => Quotient.inductionOn' a fun x => (H1π_eq_zero_iff _).2 <| by
-    refine (oneCoboundariesOfIsMulOneCoboundary ?_).2
-    rcases isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units x.1
-      (isMulOneCocycle_of_mem_oneCocycles _ x.2) with ⟨β, hβ⟩
+  uniq := fun a => by
+    induction a using groupCohomology_induction with | @h x =>
+    refine (H1π_eq_zero_iff _).2 <| (oneCoboundariesOfIsMulOneCoboundary ?_).2
+    rcases isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units x
+      (isMulOneCocycle_of_memOneCocycles _ <| memOneCocycles_coe_oneCocycles x) with ⟨β, hβ⟩
     use β
 
 end groupCohomology

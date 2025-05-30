@@ -274,6 +274,8 @@ instance : FunLike (cocycles A 1) G A :=
 def iOneCocycles : cocycles A 1 ⟶ ModuleCat.of k (G → A) :=
   iCocycles A 1 ≫ (oneCochainsIso A).hom
 
+instance : Mono (iOneCocycles A) := by unfold iOneCocycles; infer_instance
+
 variable {A}
 
 @[simp]
@@ -295,7 +297,7 @@ def mkOneCocycles (f : G → A) (hf : MemOneCocycles f) : cocycles A 1 :=
     have := congr($((CommSq.horiz_inv ⟨comp_dOne_eq A⟩).w) f)
     simp_all [-HomologicalComplex.d_comp_XIsoOfEq_hom]
 
-theorem memOneCocycles_coe_oneCocycles (f : cocycles A 1) :
+theorem memOneCocycles (f : cocycles A 1) :
     MemOneCocycles f := by
   simpa using congr($(congr(iCocycles A 1 ≫ $(comp_dOne_eq A))) f)
 
@@ -312,6 +314,10 @@ theorem coe_mkOneCocycles (f : G → A) (hf) :
 theorem oneCocycles_ext {f₁ f₂ : cocycles A 1} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
   DFunLike.ext f₁ f₂ h
 
+@[simp]
+theorem mkOneCocycles_coe (f : cocycles A 1) :
+    mkOneCocycles (f : G → A) (memOneCocycles f) = f := by ext; simp
+
 theorem memOneCocycles_def (f : G → A) :
     MemOneCocycles f ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 :=
   LinearMap.mem_ker.trans <| by
@@ -322,29 +328,38 @@ theorem memOneCocycles_iff (f : G → A) :
     MemOneCocycles f ↔ ∀ g h : G, f (g * h) = A.ρ g (f h) + f g := by
   simp_rw [memOneCocycles_def, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
 
-@[simp] theorem oneCocycles_map_one (f : cocycles A 1) : f 1 = 0 := by
-  have := (memOneCocycles_def f).1 (memOneCocycles_coe_oneCocycles f) 1 1
+theorem memOneCocycles_map_one (f : G → A) (hf : MemOneCocycles f) : f 1 = 0 := by
+  have := (memOneCocycles_def f).1 hf 1 1
   simpa only [map_one, Module.End.one_apply, mul_one, sub_self, zero_add] using this
 
-@[simp] theorem oneCocycles_map_inv (f : cocycles A 1) (g : G) :
+@[simp]
+theorem oneCocycles_map_one (f : cocycles A 1) : f 1 = 0 :=
+  memOneCocycles_map_one f (memOneCocycles f)
+
+theorem memOneCocycles_map_inv (f : G → A) (hf : MemOneCocycles f) (g : G) :
     A.ρ g (f g⁻¹) = - f g := by
-  rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_cancel g,
-    (memOneCocycles_iff f).1 (memOneCocycles_coe_oneCocycles f) g g⁻¹]
+  rw [← add_eq_zero_iff_eq_neg, ← memOneCocycles_map_one f hf, ← mul_inv_cancel g,
+    (memOneCocycles_iff f).1 hf g g⁻¹]
+
+@[simp]
+theorem oneCocycles_map_inv (f : cocycles A 1) (g : G) :
+    A.ρ g (f g⁻¹) = - f g :=
+  memOneCocycles_map_inv f (memOneCocycles f) g
 
 theorem memOneCocycles_dZero_apply (x : A) :
     MemOneCocycles (dZero A x) :=
   congr($(dZero_comp_dOne A) x)
 
-theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : cocycles A 1) (g h : G) :
+theorem memOneCocycles_map_mul_of_isTrivial [A.IsTrivial]
+    (f : G → A) (hf : MemOneCocycles f) (g h : G) :
     f (g * h) = f g + f h := by
-  rw [(memOneCocycles_iff f).1 (memOneCocycles_coe_oneCocycles f),
-    isTrivial_apply A.ρ g (f h), add_comm]
+  rw [(memOneCocycles_iff f).1 hf, isTrivial_apply A.ρ g (f h), add_comm]
 
 theorem memOneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     MemOneCocycles (f ∘ Additive.ofMul) :=
   (memOneCocycles_iff _).2 fun g h => by
     simp only [Function.comp_apply, ofMul_mul, map_add,
-      oneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
+      memOneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
       add_comm (f (Additive.ofMul g))]
 
 variable (A)
@@ -357,8 +372,8 @@ def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
   LinearEquiv.toModuleIso
   { toFun (f : cocycles A 1) :=
       { toFun := f ∘ Additive.toMul
-        map_zero' := oneCocycles_map_one f
-        map_add' := oneCocycles_map_mul_of_isTrivial f }
+        map_zero' := memOneCocycles_map_one f (memOneCocycles f)
+        map_add' := memOneCocycles_map_mul_of_isTrivial f (memOneCocycles f) }
     map_add' _ _ := by ext; simp [← iOneCocycles_apply]
     map_smul' _ _ := by ext; simp [← iOneCocycles_apply]
     invFun f := mkOneCocycles (f ∘ Additive.ofMul) (memOneCocycles_of_addMonoidHom f)
@@ -392,7 +407,7 @@ def mkTwoCocycles (f : G × G → A) (hf : MemTwoCocycles f) : cocycles A 2 :=
     have := congr($((CommSq.horiz_inv ⟨comp_dTwo_eq A⟩).w) f)
     simp_all [-HomologicalComplex.d_comp_XIsoOfEq_hom]
 
-theorem memTwoCocycles_coe_twoCocycles (f : cocycles A 2) :
+theorem memTwoCocycles (f : cocycles A 2) :
     MemTwoCocycles f := by
   simpa using congr($(congr(iCocycles A 2 ≫ $(comp_dTwo_eq A))) f)
 
@@ -402,12 +417,16 @@ theorem iTwoCocycles_mkTwoCocycles (f : G × G → A) (hf) :
   simpa [iTwoCocycles] using ((inhomogeneousCochains A).sc 2).i_cyclesMk _ _
 
 @[simp]
-theorem coe_mkTwpCocycles (f : G × G → A) (hf) :
+theorem coe_mkTwoCocycles (f : G × G → A) (hf) :
     (mkTwoCocycles f hf : G × G → A) = f := iTwoCocycles_mkTwoCocycles _ _
 
 @[ext]
 theorem twoCocycles_ext {f₁ f₂ : cocycles A 2} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) : f₁ = f₂ :=
   DFunLike.ext f₁ f₂ (Prod.forall.2 h)
+
+@[simp]
+theorem mkTwoCocycles_coe (f : cocycles A 2) :
+    mkTwoCocycles (f : G × G → A) (memTwoCocycles f) = f := by ext; simp
 
 theorem memTwoCocycles_def (f : G × G → A) :
     MemTwoCocycles f ↔
@@ -423,22 +442,21 @@ theorem memTwoCocycles_iff (f : G × G → A) :
   simp_rw [memTwoCocycles_def, sub_eq_zero, sub_add_eq_add_sub, sub_eq_iff_eq_add, eq_comm,
     add_comm (f (_ * _, _))]
 
-theorem twoCocycles_map_one_fst (f : cocycles A 2) (g : G) :
+theorem memTwoCocycles_map_one_fst (f : G × G → A) (hf : MemTwoCocycles f) (g : G) :
     f (1, g) = f (1, 1) := by
-  have := ((memTwoCocycles_iff f).1 (memTwoCocycles_coe_twoCocycles f) 1 1 g).symm
+  have := ((memTwoCocycles_iff f).1 hf 1 1 g).symm
   simpa only [map_one, Module.End.one_apply, one_mul, add_right_inj, this]
 
-theorem twoCocycles_map_one_snd (f : cocycles A 2) (g : G) :
+theorem memTwoCocycles_map_one_snd (f : G × G → A) (hf : MemTwoCocycles f) (g : G) :
     f (g, 1) = A.ρ g (f (1, 1)) := by
-  have := (memTwoCocycles_iff f).1 (memTwoCocycles_coe_twoCocycles f) g 1 1
+  have := (memTwoCocycles_iff f).1 hf g 1 1
   simpa only [mul_one, add_left_inj, this]
 
-lemma twoCocycles_ρ_map_inv_sub_map_inv (f : cocycles A 2) (g : G) :
+lemma memTwoCocycles_ρ_map_inv_sub_map_inv (f : G × G → A) (hf : MemTwoCocycles f) (g : G) :
     A.ρ g (f (g⁻¹, g)) - f (g, g⁻¹)
       = f (1, 1) - f (g, 1) := by
-  have := (memTwoCocycles_iff f).1 (memTwoCocycles_coe_twoCocycles f) g g⁻¹ g
-  simp only [mul_inv_cancel, inv_mul_cancel, twoCocycles_map_one_fst _ g]
-    at this
+  have := (memTwoCocycles_iff f).1 hf g g⁻¹ g
+  simp only [mul_inv_cancel, inv_mul_cancel, memTwoCocycles_map_one_fst f hf g] at this
   exact sub_eq_sub_iff_add_eq_add.2 this.symm
 
 theorem memTwoCocycles_dOne_apply (x : G → A) :
@@ -874,10 +892,10 @@ lemma pOpcocycles_hom_comp_zeroOpcocyclesIso :
 def isoZeroCocycles : groupCohomology A 0 ≅ cocycles A 0 :=
   (CochainComplex.isoHomologyπ₀ _).symm
 
-abbrev i₀ : groupCohomology A 0 ⟶ A.V :=
+abbrev iZero : groupCohomology A 0 ⟶ A.V :=
   (isoZeroCocycles A).hom ≫ iCocycles A 0 ≫ (zeroCochainsIso A).hom
 
-instance : Mono (i₀ A) := by unfold i₀; infer_instance
+instance : Mono (iZero A) := by unfold iZero; infer_instance
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem π_isoZeroCocycles_hom :
@@ -893,17 +911,17 @@ theorem π_H0Iso_hom :
   simp [H0Iso]
 
 @[ext]
-theorem groupCohomology₀_ext {x y : groupCohomology A 0}
-    (h : i₀ A x = i₀ A y) : x = y := (ModuleCat.mono_iff_injective _).1 inferInstance h
+theorem H0_ext {x y : groupCohomology A 0}
+    (h : iZero A x = iZero A y) : x = y := (ModuleCat.mono_iff_injective _).1 inferInstance h
 
 /-- When the representation on `A` is trivial, then `H⁰(G, A)` is all of `A.` -/
 def H0IsoOfIsTrivial [A.IsTrivial] :
     groupCohomology A 0 ≅ A.V :=
   H0Iso A ≪≫ LinearEquiv.toModuleIso (LinearEquiv.ofTop _ (invariants_eq_top A.ρ))
 
-@[simp] theorem H0IsoOfIsTrivial_hom_eq_i₀ [A.IsTrivial] :
-    (H0IsoOfIsTrivial A).hom = i₀ A := by
-  simp [i₀, H0IsoOfIsTrivial, H0Iso, ← zeroCocyclesIso_hom_comp_f, shortComplexH0,
+@[simp] theorem H0IsoOfIsTrivial_hom_eq_iZero [A.IsTrivial] :
+    (H0IsoOfIsTrivial A).hom = iZero A := by
+  simp [H0IsoOfIsTrivial, H0Iso, ← zeroCocyclesIso_hom_comp_f, shortComplexH0,
     LinearEquiv.ofTop]
 
 @[reassoc]
@@ -947,16 +965,25 @@ theorem _root_.CategoryTheory.HomologicalComplex.moduleCat_ker_homologyπ_eq
 
 variable {A} in
 lemma H1π_eq_zero_iff (x : cocycles A 1) : H1π A x = 0 ↔ ⇑x ∈ oneCoboundaries A := by
-  rw [H1π, ← LinearMap.mem_ker, groupCohomologyπ,
-    (inhomogeneousCochains A).moduleCat_ker_homologyπ_eq]
   sorry
+
+variable {A} in
+lemma H1π_eq_iff (x y : cocycles A 1) : H1π A x = H1π A y ↔ ⇑(x - y) ∈ oneCoboundaries A := by
+  rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff]
+
+@[elab_as_elim]
+theorem H1_induction {C : groupCohomology A 1 → Prop}
+    (h : ∀ (f : G → A) (hf : MemOneCocycles f), C (H1π A <| mkOneCocycles f hf))
+    (x : groupCohomology A 1) : C x := by
+  induction x using groupCohomology_induction with | @h x =>
+  simpa using h x (memOneCocycles x)
 
 /-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
 def H1IsoOfIsTrivial [A.IsTrivial] :
     groupCohomology A 1 ≅ ModuleCat.of k (Additive G →+ A) :=
     (((inhomogeneousCochains A).sc 1).asIsoHomologyπ <| sorry).symm ≪≫ oneCocyclesIsoOfIsTrivial A
-/-
+
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem H1π_comp_H1IsoOfIsTrivial [A.IsTrivial] :
     H1π A ≫ (H1IsoOfIsTrivial A).hom = (oneCocyclesIsoOfIsTrivial A).hom := by
@@ -972,7 +999,6 @@ theorem H1IsoOfIsTrivial_H1π_apply_apply
 theorem H1IsoOfIsTrivial_inv_apply [A.IsTrivial] (f : Additive G →+ A) :
     (H1IsoOfIsTrivial A).inv f = H1π A ((oneCocyclesIsoOfIsTrivial A).inv f) := by
   rfl
--/
 
 end H1
 
@@ -985,6 +1011,17 @@ abbrev H2π : cocycles A 2 ⟶ groupCohomology A 2 := groupCohomologyπ A 2
 variable {A} in
 lemma H2π_eq_zero_iff (x : cocycles A 2) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
   sorry
+
+variable {A} in
+lemma H2π_eq_iff (x y : cocycles A 2) : H2π A x = H2π A y ↔ ⇑(x - y) ∈ twoCoboundaries A := by
+  rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff]
+
+@[elab_as_elim]
+theorem H2_induction {C : groupCohomology A 2 → Prop}
+    (h : ∀ (f : G × G → A) (hf : MemTwoCocycles f), C (H2π A <| mkTwoCocycles f hf))
+    (x : groupCohomology A 2) : C x := by
+  induction x using groupCohomology_induction with | @h x =>
+  simpa using h x (memTwoCocycles x)
 
 end H2
 end groupCohomology
