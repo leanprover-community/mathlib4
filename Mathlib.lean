@@ -5166,7 +5166,6 @@ import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 import Mathlib.RingTheory.Ideal.Norm.RelNorm
 import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.OrderOfVanishing
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Pointwise
 import Mathlib.RingTheory.Ideal.Prime
@@ -5309,6 +5308,7 @@ import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.NormTrace
 import Mathlib.RingTheory.Nullstellensatz
+import Mathlib.RingTheory.OrderOfVanishing
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.Cardinality
 import Mathlib.RingTheory.OreLocalization.OreSet
