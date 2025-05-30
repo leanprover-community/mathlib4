@@ -30,8 +30,6 @@ open Set Function Metric Real
 
 section PartialFDeriv
 
-universe u_EF
-
 theorem continuousOn_swap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (s : Set (X × Y)) : ContinuousOn Prod.swap s := by
   unfold ContinuousOn; intro z hz
@@ -78,6 +76,7 @@ theorem hasFDerivWithinAt_swap
       s z
   := hasFDerivWithinAt_snd.prodMk hasFDerivWithinAt_fst
 
+universe u_EF in
 /-- If a function `f : E × F → G` has partial derivatives `fx` and `fy` continuous
   on an open set `s ×ˢ t`, then `f` is continously differentiable on this set, with
   the deriative given by combining `fx` and `fy`.
@@ -252,6 +251,7 @@ theorem HasFDerivWithinAt.continuousOn_open_prod_of_partial_continuousOn
     simp only [mul_one, Prod.norm_def, Prod.fst_sub, Prod.snd_sub]
     first | exact le_max_right _ _ | exact le_max_left _ _
 
+universe u_EF in
 /-- If a function `f : E × F → G` has partial derivatives `fx` and `fy` continuous
   on an open set `u`, then `f` is continously differentiable on this set, with
   the deriative given by combining `fx` and `fy`.
