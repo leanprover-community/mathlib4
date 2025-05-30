@@ -158,7 +158,7 @@ theorem subsingleton_iff [Subsingleton B] :
     IsCyclotomicExtension S A B ↔ S ⊆ {0, 1} := by
   have : Subsingleton (Subalgebra A B) := inferInstance
   refine ⟨fun ⟨hprim, _⟩ ↦ ?_, fun hS ↦ ?_⟩
-  · refine subset_pair_iff.mpr fun s hs ↦ Decidable.or_iff_not_imp_left.mpr fun hs' ↦ ?_
+  · refine subset_pair_iff.mpr fun s hs ↦ or_iff_not_imp_left.mpr fun hs' ↦ ?_
     obtain ⟨ζ, hζ⟩ := hprim hs hs'
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
   · refine ⟨fun {s} hs hs' ↦ ?_, fun x ↦ by convert (mem_top (R := A) : x ∈ ⊤)⟩
@@ -246,10 +246,10 @@ theorem iff_union_singleton_one :
   · rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), union_diff_distrib,
       show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by aesop]
     refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
-    · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ => ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
+    · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ ↦ ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
       simp [adjoin_singleton_one, empty]
-    · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (notMem_empty s hs).elim, ?_⟩
-      simp [@singleton_one A B _ _ _ H]
+    · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs ↦ (notMem_empty s hs).elim, ?_⟩
+      simp [singleton_one]
 
 variable {A B}
 
