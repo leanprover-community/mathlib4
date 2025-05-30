@@ -742,10 +742,9 @@ theorem pi_antitone (h : s₁ ⊆ s₂) : s₂.pi t ⊆ s₁.pi t := by
 
 open scoped Classical in
 lemma union_pi_ite_of_disjoint {s t : Set ι} {x y : (i : ι) → Set (α i)} (hst : Disjoint s t) :
-((s ∪ t).pi fun i ↦ if i ∈ s then x i else y i)  = (s.pi x) ∩ (t.pi y) := by
- rw [union_pi, Set.pi_congr rfl (fun i hi ↦ if_pos hi), Set.pi_congr rfl (fun i hi ↦
+    ((s ∪ t).pi fun i ↦ if i ∈ s then x i else y i)  = (s.pi x) ∩ (t.pi y) := by
+  rw [union_pi, Set.pi_congr rfl (fun i hi ↦ if_pos hi), Set.pi_congr rfl (fun i hi ↦
     if_neg <| hst.symm.not_mem_of_mem_left hi)]
-
 
 theorem union_pi_inter
     (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :
@@ -910,17 +909,18 @@ theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α 
 
 section Setdiff
 
-/-- Write that set difference `(s ∪ t).pi x \ (s ∪ t).pi y` as a union. -/
+/-- Write the set difference `(s ∪ t).pi x \ (s ∪ t).pi y` as a union. -/
 lemma pi_setdiff_eq_union (s t : Set ι) (x y : (i : ι) → Set (α i)) :
-  (s ∪ t).pi x \ (s ∪ t).pi y = t.pi x ∩ (s.pi x \ s.pi y) ∪ (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)
-     := by
+  (s ∪ t).pi x \ (s ∪ t).pi y =
+    t.pi x ∩ (s.pi x \ s.pi y) ∪ (t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y) := by
   rw [union_pi, union_pi, diff_eq_compl_inter, compl_inter,  union_inter_distrib_right,
     ← inter_assoc, ← diff_eq_compl_inter, ← inter_assoc, inter_comm, inter_assoc,
     inter_comm (s.pi x ) (t.pi x), ← inter_assoc,  ← diff_eq_compl_inter, ← union_diff_self]
   apply congrArg (Union.union (t.pi x ∩ (s.pi x \ s.pi y)))
   aesop
 
-lemma pi_setdiff_union_disjoint (s t : Set ι) (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
+lemma disjoint_pi_of_interSetdiff_of_interSetdiffInter (s t : Set ι)
+  (x : (i : ι) → Set (α i)) (y : (i : ι) → Set (α i)) :
   Disjoint (t.pi x ∩ (s.pi x \ s.pi y)) ((t.pi x \ t.pi y) ∩ (s.pi x ∩ s.pi y)) :=
     Disjoint.symm (Disjoint.inter_left' (t.pi x \ t.pi y) (Disjoint.symm
     (Disjoint.inter_left' (t.pi x) disjoint_sdiff_inter)))
@@ -971,7 +971,7 @@ open Set
 variable {ι ι' : Type*} {α : ι → Type*}
 
 lemma subset_pi_image_of_subset {s : Set ι} {B C : (i : ι) → Set (Set (α i))}
-    (hBC : ∀ i ∈ s, B i ⊆ C i) : s.pi  '' s.pi B ⊆ s.pi  '' s.pi C := by
+    (hBC : ∀ i ∈ s, B i ⊆ C i) : s.pi '' s.pi B ⊆ s.pi '' s.pi C := by
   simp only [Set.image_subset_iff]
   intro b hb
   simp only [Set.mem_preimage, Set.mem_image, Set.mem_pi] at hb ⊢
