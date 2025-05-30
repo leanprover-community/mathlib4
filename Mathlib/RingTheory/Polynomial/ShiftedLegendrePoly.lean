@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2025 Junqi Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junqi Liu
+Authors: Junqi Liu, Jinzhao Pan
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # shifted Legendre Polynomials
