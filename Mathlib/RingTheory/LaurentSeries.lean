@@ -3,18 +3,18 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+import Mathlib.Algebra.Group.Int.TypeTags
+import Mathlib.Algebra.GroupWithZero.Int
 import Mathlib.Data.Int.Interval
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
+import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Topology.UniformSpace.DiscreteUniformity
-import Mathlib.Algebra.Group.Int.TypeTags
 
-import Mathlib.Algebra.GroupWithZero.Int
 /-!
 # Laurent Series
 
