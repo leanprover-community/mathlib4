@@ -25,17 +25,17 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 ## Main definitions
 
- * `AffineBasis`: a structure representing an affine basis of an affine space.
- * `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
- * `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
- * `AffineBasis.coord_apply_ne`: the behaviour of `AffineBasis.coord i` on `p j` when `j ≠ i`.
- * `AffineBasis.coord_apply`: the behaviour of `AffineBasis.coord i` on `p j` for general `j`.
- * `AffineBasis.coord_apply_combination`: the characterisation of `AffineBasis.coord i` in terms
+* `AffineBasis`: a structure representing an affine basis of an affine space.
+* `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
+* `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
+* `AffineBasis.coord_apply_ne`: the behaviour of `AffineBasis.coord i` on `p j` when `j ≠ i`.
+* `AffineBasis.coord_apply`: the behaviour of `AffineBasis.coord i` on `p j` for general `j`.
+* `AffineBasis.coord_apply_combination`: the characterisation of `AffineBasis.coord i` in terms
     of affine combinations, i.e., `AffineBasis.coord i (w₀ p₀ + w₁ p₁ + ⋯) = wᵢ`.
 
 ## TODO
 
- * Construct the affine equivalence between `P` and `{ f : ι →₀ k | f.sum = 1 }`.
+* Construct the affine equivalence between `P` and `{ f : ι →₀ k | f.sum = 1 }`.
 
 -/
 

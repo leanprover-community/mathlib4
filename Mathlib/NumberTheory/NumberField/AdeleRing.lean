@@ -15,19 +15,20 @@ finite product of completions over its infinite places and the adele ring of a n
 direct product of the infinite adele ring and the finite adele ring.
 
 ## Main definitions
- - `NumberField.InfiniteAdeleRing` of a number field `K` is defined as the product of
-   the completions of `K` over its infinite places.
- - `NumberField.InfiniteAdeleRing.ringEquiv_mixedSpace` is the ring isomorphism between
-   the infinite adele ring of `K` and `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of `K`.
- - `NumberField.AdeleRing K` is the adele ring of a number field `K`.
- - `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
+
+- `NumberField.InfiniteAdeleRing` of a number field `K` is defined as the product of
+  the completions of `K` over its infinite places.
+- `NumberField.InfiniteAdeleRing.ringEquiv_mixedSpace` is the ring isomorphism between
+  the infinite adele ring of `K` and `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of `K`.
+- `NumberField.AdeleRing K` is the adele ring of a number field `K`.
+- `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
 
 ## Main results
- - `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
-   locally compact space.
+- `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
+  locally compact space.
 
 ## References
- * [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 
 ## Tags
 infinite adele ring, adele ring, number field

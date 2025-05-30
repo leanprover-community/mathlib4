@@ -32,10 +32,10 @@ We use the following variables:
 Definitions in this file:
 
 * `finsum f : M` : the sum of `f x` as `x` ranges over the support of `f`, if it's finite.
-   Zero otherwise.
+  Zero otherwise.
 
 * `finprod f : M` : the product of `f x` as `x` ranges over the multiplicative support of `f`, if
-   it's finite. One otherwise.
+  it's finite. One otherwise.
 
 ## Notation
 

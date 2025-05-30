@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # The Weierstrass approximation theorem for continuous functions on `[a,b]`

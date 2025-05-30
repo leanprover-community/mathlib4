@@ -70,6 +70,10 @@ theorem Convex.openSegment_subset (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (
     openSegment 𝕜 x y ⊆ s :=
   (openSegment_subset_segment 𝕜 x y).trans (h.segment_subset hx hy)
 
+theorem convex_iff_add_mem : Convex 𝕜 s ↔
+    ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • x + b • y ∈ s := by
+  simp_rw [convex_iff_segment_subset, segment_subset_iff]
+
 /-- Alternative definition of set convexity, in terms of pointwise set operations. -/
 theorem convex_iff_pointwise_add_subset :
     Convex 𝕜 s ↔ ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • s + b • s ⊆ s :=

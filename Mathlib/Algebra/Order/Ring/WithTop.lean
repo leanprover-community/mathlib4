@@ -229,7 +229,8 @@ protected def _root_.RingHom.withTopMap {R S : Type*}
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
 
-variable [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] [PosMulStrictMono α]
+variable [CommSemiring α] [PartialOrder α] [OrderBot α]
+  [CanonicallyOrderedAdd α] [PosMulStrictMono α]
   {a a₁ a₂ b₁ b₂ : WithTop α}
 
 @[gcongr]

@@ -126,7 +126,7 @@ section CommRing
 
 variable [CommRing R] [Module R M]
 
-theorem associated_generator_span_self [IsPrincipalIdealRing R] [IsDomain R] (r : R) :
+theorem associated_generator_span_self [IsDomain R] (r : R) :
     Associated (generator <| Ideal.span {r}) r := by
   rw [← Ideal.span_singleton_eq_span_singleton]
   exact Ideal.span_singleton_generator _
