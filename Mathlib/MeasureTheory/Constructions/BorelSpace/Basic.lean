@@ -713,7 +713,7 @@ protected theorem comap' [MeasurableSpace α] {mβ : MeasurableSpace β}
     {μ : Measure β} [IsFiniteMeasureOnCompacts μ] {f : α → β} (f_cont : Continuous f)
     (f_me : MeasurableEmbedding f) : IsFiniteMeasureOnCompacts (μ.comap f) where
   lt_top_of_isCompact K hK := by
-    rw [MeasurableEmbedding.comap_apply f_me]
+    rw [f_me.comap_apply]
     exact IsFiniteMeasureOnCompacts.lt_top_of_isCompact (hK.image f_cont)
 
 protected theorem comap [MeasurableSpace α] [BorelSpace α] {mβ : MeasurableSpace β} [BorelSpace β]
