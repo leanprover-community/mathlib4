@@ -43,11 +43,6 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] [ContinuousFunctionalCalculus R A p]
 
-
-example {α β : Type*} {f : α → β} {l : Filter α} {l' : Filter β} {s : Set α} {hs : s ∈ l} :
-    Tendsto f l l' ↔ Tendsto (fun x : s ↦ f x) (comap (↑) l) l' :=
-  tendsto_comap'_iff (by simpa) |>.symm
-
 /-- If `F : X → R → R` tends to `f : R → R` uniformly on the spectrum of `a`, and all
 these functions are continuous on the spectrum, then `fun x ↦ cfc (F x) a` tends
 to `cfc f a`. -/
