@@ -400,7 +400,7 @@ theorem comap_of_continuous_of_measurableEmbedding
     rw [f_me.comap_apply]
     exact lt_of_le_of_lt (measure_mono (image_preimage_subset _ _)) hμU
 
-protected theorem comap [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β]
+protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β]
     (μ : Measure β) [OuterRegular μ] (f : α ≃ₜ β) : (μ.comap f).OuterRegular :=
   OuterRegular.comap_of_continuous_measurableEmbedding μ f.continuous f.measurableEmbedding
 
