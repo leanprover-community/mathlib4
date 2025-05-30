@@ -150,7 +150,8 @@ theorem laverage_lt_top (hf : ∫⁻ x, f x ∂μ ≠ ∞) : ⨍⁻ x, f x ∂μ
   obtain rfl | hμ := eq_or_ne μ 0
   · simp
   · rw [laverage_eq]
-    exact div_lt_top hf (measure_univ_ne_zero.2 hμ)
+    have := measure_univ_ne_zero.2 hμ
+    finiteness
 
 theorem setLAverage_lt_top : ∫⁻ x in s, f x ∂μ ≠ ∞ → ⨍⁻ x in s, f x ∂μ < ∞ :=
   laverage_lt_top
