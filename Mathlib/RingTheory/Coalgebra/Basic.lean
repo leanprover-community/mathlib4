@@ -165,7 +165,7 @@ lemma sum_counit_smul (𝓡 : Coalgebra.Repr R a) :
   convert this
   simp
 
-lemma lift_lsmul_comp_counit_comp_comul : 
+lemma lift_lsmul_comp_counit_comp_comul :
     TensorProduct.lift (.lsmul R A ∘ₗ counit) ∘ₗ comul = .id := by
   have := Coalgebra.rTensor_counit_comp_comul (R := R) (A := A)
   apply_fun (TensorProduct.lift (LinearMap.lsmul R A) ∘ₗ ·) at this
