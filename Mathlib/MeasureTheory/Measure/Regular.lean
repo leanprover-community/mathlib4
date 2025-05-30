@@ -386,8 +386,8 @@ protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [Topologica
   refine ⟨f.symm ⁻¹' U, image_subset_iff.1 hAU, this, ?_⟩
   rwa [map_apply f.measurable this.measurableSet, f.preimage_symm, f.preimage_image]
 
-theorem comap_of_continuous_of_measurableEmbedding
-    {mβ : MeasurableSpace β} [TopologicalSpace β] (μ : Measure β) [OuterRegular μ]
+theorem comap'
+    {mβ : MeasurableSpace β} [TopologicalSpace β] {μ : Measure β} [OuterRegular μ]
     {f : α → β} (f_cont : Continuous f) (f_me : MeasurableEmbedding f) :
     (μ.comap f).OuterRegular where
   outerRegular A hA r hr := by
@@ -399,7 +399,7 @@ theorem comap_of_continuous_of_measurableEmbedding
 
 protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β]
     (μ : Measure β) [OuterRegular μ] (f : α ≃ₜ β) : (μ.comap f).OuterRegular :=
-  OuterRegular.comap_of_continuous_of_measurableEmbedding μ f.continuous f.measurableEmbedding
+  OuterRegular.comap' f.continuous f.measurableEmbedding
 
 protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) :
     (x • μ).OuterRegular := by

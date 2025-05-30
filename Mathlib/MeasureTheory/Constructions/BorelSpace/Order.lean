@@ -915,6 +915,9 @@ theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i))
 
 end ConditionallyCompleteLinearOrder
 
+@[deprecated (since := "2025-05-30")]
+alias Homemorph.toMeasurableEquiv := Homeomorph.toMeasurableEquiv
+
 end BorelSpace
 
 section ENNReal

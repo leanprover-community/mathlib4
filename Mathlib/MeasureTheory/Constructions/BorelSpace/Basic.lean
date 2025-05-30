@@ -696,29 +696,30 @@ instance EReal.measurableSpace : MeasurableSpace EReal :=
 instance EReal.borelSpace : BorelSpace EReal :=
   ⟨rfl⟩
 
-end BorelSpace
+namespace MeasureTheory.Measure.IsFiniteMeasureOnCompacts
 
-variable [TopologicalSpace α] [TopologicalSpace β]
-
-namespace IsFiniteMeasureOnCompacts
-
-protected theorem map {mα : MeasurableSpace α} [BorelSpace α] [MeasurableSpace β] [BorelSpace β]
+omit [MeasurableSpace α] in
+protected theorem map {mα : MeasurableSpace α} [BorelSpace α]
     (μ : Measure α) [IsFiniteMeasureOnCompacts μ] (f : α ≃ₜ β) :
     IsFiniteMeasureOnCompacts (μ.map f) := by
   refine ⟨fun K hK ↦ ?_⟩
   rw [← f.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
   exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
 
-protected theorem comap' [MeasurableSpace α] {mβ : MeasurableSpace β}
-    {μ : Measure β} [IsFiniteMeasureOnCompacts μ] {f : α → β} (f_cont : Continuous f)
-    (f_me : MeasurableEmbedding f) : IsFiniteMeasureOnCompacts (μ.comap f) where
+omit [BorelSpace α] [MeasurableSpace β] in
+protected theorem comap' {mβ : MeasurableSpace β} {μ : Measure β} [IsFiniteMeasureOnCompacts μ]
+    {f : α → β} (f_cont : Continuous f) (f_me : MeasurableEmbedding f) :
+    IsFiniteMeasureOnCompacts (μ.comap f) where
   lt_top_of_isCompact K hK := by
     rw [f_me.comap_apply]
     exact IsFiniteMeasureOnCompacts.lt_top_of_isCompact (hK.image f_cont)
 
-protected theorem comap [MeasurableSpace α] [BorelSpace α] {mβ : MeasurableSpace β} [BorelSpace β]
+omit [MeasurableSpace β] in
+protected theorem comap {mβ : MeasurableSpace β} [BorelSpace β]
     {μ : Measure β} [IsFiniteMeasureOnCompacts μ] {f : α ≃ₜ β} :
     IsFiniteMeasureOnCompacts (μ.comap f) :=
   IsFiniteMeasureOnCompacts.comap' f.continuous f.measurableEmbedding
 
-end IsFiniteMeasureOnCompacts
+end MeasureTheory.Measure.IsFiniteMeasureOnCompacts
+
+end BorelSpace
