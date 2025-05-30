@@ -3,7 +3,6 @@ Copyright (c) 2025 Junqi Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junqi Liu
 -/
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Analysis.RCLike.Basic
@@ -18,8 +17,6 @@ polynomial in `ℤ[X]`. We prove some basic properties of the Legendre polynomia
 open scoped Nat
 open BigOperators Finset
 
-variable {R : Type*}
-
 namespace Polynomial
 
 /-- `shiftedLegendre n` is the polynomial defined as the sum of integer monomials. -/
@@ -27,16 +24,16 @@ noncomputable def shiftedLegendre (n : ℕ) : ℤ[X] :=
   ∑ k ∈ Finset.range (n + 1), C ((-1) ^ k * (Nat.choose n k) * (Nat.choose (n + k) n) : ℤ) * X ^ k
 
 /-- The expand of `shiftedLegendre n`. -/
-theorem shiftedLegendre_eq_sum (n : ℕ) : (n ! : ℤ[X]) * (shiftedLegendre n) =
-   derivative^[n] (X ^ n * (1 - (X : ℤ[X])) ^ n) := by
+theorem mul_shiftedLegendre_n_dervi (n : ℕ) : (n ! : ℤ[X]) * (shiftedLegendre n) =
+    derivative^[n] (X ^ n * (1 - (X : ℤ[X])) ^ n) := by
   symm
   have h : ((X : ℤ[X]) - X ^ 2) ^ n =
     ∑ m ∈ range (n + 1), n.choose m • (- 1) ^ m * X ^ (n + m) := by
-    rw[sub_eq_add_neg, add_comm, add_pow]
+    rw [sub_eq_add_neg, add_comm, add_pow]
     congr! 1 with m hm
-    rw[neg_pow, pow_two, mul_pow,← mul_assoc, mul_comm, mul_assoc, pow_mul_pow_sub, mul_assoc,
+    rw [neg_pow, pow_two, mul_pow,← mul_assoc, mul_comm, mul_assoc, pow_mul_pow_sub, mul_assoc,
       ← pow_add, ← mul_assoc, nsmul_eq_mul, add_comm]
-    rw[Finset.mem_range] at hm
+    rw [Finset.mem_range] at hm
     linarith
   rw [shiftedLegendre, ← mul_pow, mul_one_sub, ← pow_two, h, iterate_derivative_sum,
     Finset.mul_sum]
@@ -71,7 +68,7 @@ lemma shiftedLegendre_eval_symm (n : ℕ) (x : ℝ) :
     aeval x (shiftedLegendre n) = (-1) ^ n * aeval (1 - x) (shiftedLegendre n) := by
   rw [mul_comm, ← mul_right_inj' (a := (aeval x) (n ! : ℤ[X])) (by simp; positivity), ← mul_assoc,
     ← aeval_mul, show (aeval x) (n ! : ℤ[X]) = (aeval (1 - x)) (n ! : ℤ[X]) by simp, ← aeval_mul]
-  simp only [shiftedLegendre_eq_sum]
+  simp only [mul_shiftedLegendre_n_dervi]
   rw [iterate_derivative_mul]
   simp only [Nat.succ_eq_add_one, nsmul_eq_mul, map_sum, map_mul, map_natCast]
   rw [← Finset.sum_flip, Finset.sum_mul]
