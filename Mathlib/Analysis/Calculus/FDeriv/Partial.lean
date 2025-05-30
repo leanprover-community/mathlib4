@@ -47,6 +47,7 @@ theorem ContinousLinearMap.coprod_comp_prod
   ext
   simp only [coe_comp', Function.comp_apply, prod_apply, coprod_apply, add_apply]
 
+/-- Like `Prod.swap`, but for `ContinuousLinearMap`. -/
 abbrev ContinuousLinearMap.swap
   (𝕜 : Type*) [Semiring 𝕜]
   (E : Type*) [TopologicalSpace E] [AddCommMonoid E] [Module 𝕜 E]
