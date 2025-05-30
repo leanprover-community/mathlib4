@@ -26,6 +26,8 @@ continuous. Moreover, it is required that the continuous functional calculus be 
 variant.
 
 Finally, all of this is developed for both the unital and non-unital functional calculi.
+The continuity results in the function variable are valid for all scalar rings, but the continuity
+results in the variable `a` come in two flavors: those for `RCLike 𝕜` and those for `ℝ≥0`.
 
 # To do
 
@@ -170,7 +172,7 @@ theorem continuousOn_cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
 /-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `a : X → A` tends to `a₀ : A` along a
 filter `l` (such that eventually `a x` satisfies the predicate `p` associated to `𝕜` and has
 spectrum contained in `s`, as does `a₀`), then `fun x ↦ cfc f (a x)` tends to `cfc f a₀`. -/
-protected theorem Filter.Tendsto.cfc [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
+protected theorem Filter.Tendsto.cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
     {a : X → A} {a₀ : A} {l : Filter X} (ha_tendsto : Tendsto a l (𝓝 a₀))
     (ha : ∀ᶠ x in l, spectrum 𝕜 (a x) ⊆ s) (ha' : ∀ᶠ x in l, p (a x))
     (ha₀ : spectrum 𝕜 a₀ ⊆ s) (ha₀' : p a₀) (hf : ContinuousOn f s := by cfc_cont_tac) :
@@ -264,24 +266,48 @@ theorem Filter.Tendsto.cfc_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : I
   rw [tendsto_nhdsWithin_iff]
   exact ⟨ha_tendsto, ha'.and ha⟩
 
-open scoped NNReal in
-/-- A version of `continuous_cfc` over `ℝ≥0` instead of `RCLike 𝕜`. -/
-theorem continuous_cfc_nnreal [TopologicalSpace X] (s : Set ℝ≥0) (hs : IsCompact s) (f : ℝ≥0 → ℝ≥0)
-    (hf : ContinuousOn f s := by cfc_cont_tac)
-    (a : X → A) (ha_cont : Continuous a) (ha' : ∀ x, 0 ≤ a x) (ha : ∀ x, spectrum ℝ≥0 (a x) ⊆ s) :
+/-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `a : X → A` is continuous at `x₀`, and
+eventually `0 ≤ a x` and has spectrum contained in `s`), then `fun x ↦ cfc f (a x)` is continuous
+at `x₀`. -/
+theorem ContinuousAt.cfc_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : IsCompact s)
+    (f : ℝ≥0 → ℝ≥0) {a : X → A} {x₀ : X} (ha_cont : ContinuousAt a x₀)
+    (ha : ∀ᶠ x in 𝓝 x₀, spectrum ℝ≥0 (a x) ⊆ s) (ha' : ∀ᶠ x in 𝓝 x₀, 0 ≤ a x)
+    (hf : ContinuousOn f s := by cfc_cont_tac) :
+    ContinuousAt (fun x ↦ cfc f (a x)) x₀ :=
+  ha_cont.tendsto.cfc_nnreal hs f ha ha' ha.self_of_nhds ha'.self_of_nhds
+
+/-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `a : X → A` is continuous at `x₀`
+within a set `t : Set X`, and eventually `0 ≤ a x` and has spectrum contained in `s`), then
+`fun x ↦ cfc f (a x)` is continuous at `x₀` within `t`. -/
+theorem ContinuousWithinAt.cfc_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : IsCompact s)
+    (f : ℝ≥0 → ℝ≥0) {a : X → A} {x₀ : X} {t : Set X} (hx₀ : x₀ ∈ t)
+    (ha_cont : ContinuousWithinAt a t x₀) (ha : ∀ᶠ x in 𝓝[t] x₀, spectrum ℝ≥0 (a x) ⊆ s)
+    (ha' : ∀ᶠ x in 𝓝[t] x₀, 0 ≤ a x) (hf : ContinuousOn f s := by cfc_cont_tac) :
+    ContinuousWithinAt (fun x ↦ cfc f (a x)) t x₀ :=
+  ha_cont.tendsto.cfc_nnreal hs f ha ha' (ha.self_of_nhdsWithin hx₀) (ha'.self_of_nhdsWithin hx₀)
+
+/-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `a : X → A` is continuous on
+`t : Set X`, and `0 ≤ a x` and has spectrum contained in `s` for all `x ∈ t`, then
+`fun x ↦ cfc f (a x)` is continuous on `t`. -/
+theorem ContinuousOn.cfc_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : IsCompact s)
+    (f : ℝ≥0 → ℝ≥0) {a : X → A} {t : Set X} (ha_cont : ContinuousOn a t)
+    (ha : ∀ x ∈ t, spectrum ℝ≥0 (a x) ⊆ s) (ha' : ∀ x ∈ t, 0 ≤ a x)
+    (hf : ContinuousOn f s := by cfc_cont_tac) :
+    ContinuousOn (fun x ↦ cfc f (a x)) t := by
+  rw [ContinuousOn] at ha_cont ⊢
+  refine fun x hx ↦ (ha_cont x hx).cfc_nnreal hs f hx ?_ ?_ hf
+  all_goals filter_upwards [self_mem_nhdsWithin] with x hx
+  exacts [ha x hx, ha' x hx]
+
+/-- `cfc` is continuous in the variable `a : A` when `s : Set ℝ≥0` is compact and `a` varies over
+nonnegative elements whose spectrum is contained in `s`, and the function `f` is
+continuous on `s`. -/
+theorem Continuous.cfc_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ≥0 → ℝ≥0)
+    {a : X → A} (ha_cont : Continuous a) (ha : ∀ x, spectrum ℝ≥0 (a x) ⊆ s)
+    (hf : ContinuousOn f s := by cfc_cont_tac) (ha' : ∀ x, 0 ≤ a x := by cfc_tac) :
     Continuous (fun x ↦ cfc f (a x)) := by
-  conv =>
-    enter [1, x]
-    rw [cfc_nnreal_eq_real]
-  simp only [nonneg_iff_isSelfAdjoint_and_spectrumRestricts, forall_and] at ha'
-  refine Continuous.cfc (hs.image (continuous_algebraMap ℝ≥0 ℝ)) _ ha_cont ?hf ?hs
-  · intro x
-    rw [← ha'.2 x |>.algebraMap_image]
-    exact Set.image_mono (ha x)
-  · apply NNReal.continuous_coe.comp_continuousOn
-    refine hf.comp (by fun_prop) ?_
-    rintro - ⟨x, hx, rfl⟩
-    simpa
+  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  exact ha_cont.cfc_nnreal hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end NNReal
 
@@ -355,7 +381,7 @@ open UniformOnFun in
 /-- If `f : X → R → R` is continuous on `s : Set X` in the topology on
 `X → R →ᵤ[{spectrum R a}] → R`, and for each `x ∈ s`, `f x` is continuous on the spectrum and
 maps zero to itself, then `x ↦ cfcₙ (f x) a` is continuous on `s` also. -/
-theorem continuousOn_cfcₙ_fun [TopologicalSpace X] {f : X → R → R} {a : A} {s : Set X}
+theorem ContinuousOn.cfcₙ_fun [TopologicalSpace X] {f : X → R → R} {a : A} {s : Set X}
     (h_cont : ContinuousOn (fun x ↦ ofFun {quasispectrum R a} (f x)) s)
     (hf : ∀ x ∈ s, ContinuousOn (f x) (quasispectrum R a))
     (hf0 : ∀ x ∈ s, f x 0 = 0) :
@@ -371,13 +397,13 @@ open UniformOnFun in
 /-- If `f : X → R → R` is continuous in the topology on `X → R →ᵤ[{spectrum R a}] → R`,
 and each `f` is continuous on the spectrum and maps zero to itself, then
 `x ↦ cfcₙ (f x) a` is continuous. -/
-theorem continuous_cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
+theorem Continuous.cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (h_cont : Continuous (fun x ↦ ofFun {quasispectrum R a} (f x)))
     (hf : ∀ x, ContinuousOn (f x) (quasispectrum R a) := by cfc_cont_tac)
     (hf0 : ∀ x, f x 0 = 0 := by cfc_zero_tac) :
     Continuous fun x ↦ cfcₙ (f x) a := by
   rw [continuous_iff_continuousOn_univ] at h_cont ⊢
-  exact continuousOn_cfcₙ_fun h_cont (fun x _ ↦ hf x) (fun x _ ↦ hf0 x)
+  exact h_cont.cfcₙ_fun (fun x _ ↦ hf x) (fun x _ ↦ hf0 x)
 
 end Left
 
@@ -393,7 +419,7 @@ open scoped NonUnitalContinuousFunctionalCalculus ContinuousMapZero in
 varies over elements whose spectrum is contained in `s`, all of which satisfy the predicate `p`. -/
 theorem continuous_cfcₙHomSuperset_left
     [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s) [hs0 : Fact (0 ∈ s)]
-    (f : C(s, 𝕜)₀) (a : X → A) (ha_cont : Continuous a)
+    (f : C(s, 𝕜)₀) {a : X → A} (ha_cont : Continuous a)
     (ha : ∀ x, quasispectrum 𝕜 (a x) ⊆ s) (ha' : ∀ x, p (a x) := by cfc_tac) :
     Continuous (fun x ↦ cfcₙHomSuperset (ha' x) (ha x) f) := by
   have : CompactSpace s := by rwa [isCompact_iff_compactSpace] at hs
@@ -418,6 +444,83 @@ theorem continuous_cfcₙHomSuperset_left
     rw [ContinuousMapZero.norm_def, ContinuousMap.norm_le _ hε.le] at hg ⊢
     aesop
 
+variable (A) in
+/-- For `f : 𝕜 → 𝕜` continuous on a set `s` for which `f 0 = 0`, `cfcₙ f` is continuous on the
+set of `a : A` satisfying the predicate `p` (associated to `𝕜`) and whose `𝕜`-quasispectrum is
+contained in `s`. -/
+theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
+    (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
+    ContinuousOn (cfcₙ f · : A → A) {a | p a ∧ quasispectrum 𝕜 a ⊆ s} := by
+  by_cases hs0 : 0 ∈ s
+  · rw [continuousOn_iff_continuous_restrict]
+    convert continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩
+      (X := {a : A | p a ∧ quasispectrum 𝕜 a ⊆ s}) continuous_subtype_val (fun x ↦ x.2.2) with x
+    rw [cfcₙHomSuperset_apply, Set.restrict_apply, cfcₙ_apply _ _ (hf.mono x.2.2) hf0 x.2.1]
+    congr!
+  · convert continuousOn_empty _
+    rw [Set.eq_empty_iff_forall_notMem]
+    exact fun a ha ↦ hs0 <| ha.2 <| quasispectrum.zero_mem 𝕜 a
+
+/-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` tends to
+`a₀ : A` along a filter `l` (such that eventually `a x` satisfies the predicate `p` associated to
+`𝕜` and has quasispectrum contained in `s`, as does `a₀`), then `fun x ↦ cfcₙ f (a x)` tends to
+`cfcₙ f a₀`. -/
+protected theorem Filter.Tendsto.cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
+    {a : X → A} {a₀ : A} {l : Filter X} (ha_tendsto : Tendsto a l (𝓝 a₀))
+    (ha : ∀ᶠ x in l, quasispectrum 𝕜 (a x) ⊆ s) (ha' : ∀ᶠ x in l, p (a x))
+    (ha₀ : quasispectrum 𝕜 a₀ ⊆ s) (ha₀' : p a₀) (hf : ContinuousOn f s := by cfc_cont_tac)
+    (hf0 : f 0 = 0 := by cfc_zero_tac) :
+    Tendsto (fun x ↦ cfcₙ f (a x)) l (𝓝 (cfcₙ f a₀)) := by
+  apply continuousOn_cfcₙ A hs f |>.continuousWithinAt ⟨ha₀', ha₀⟩ |>.tendsto.comp
+  rw [tendsto_nhdsWithin_iff]
+  exact ⟨ha_tendsto, ha'.and ha⟩
+
+/-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` is continuous
+at `x₀`, and eventually `a x` satisfies the predicate `p` associated to `𝕜` and has quasispectrum
+contained in `s`), then `fun x ↦ cfcₙ f (a x)` is continuous at `x₀`. -/
+protected theorem ContinuousAt.cfcₙ [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
+    {a : X → A} {x₀ : X} (ha_cont : ContinuousAt a x₀)
+    (ha : ∀ᶠ x in 𝓝 x₀, quasispectrum 𝕜 (a x) ⊆ s) (ha' : ∀ᶠ x in 𝓝 x₀, p (a x))
+    (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
+    ContinuousAt (fun x ↦ cfcₙ f (a x)) x₀ :=
+  ha_cont.tendsto.cfcₙ hs f ha ha' ha.self_of_nhds ha'.self_of_nhds
+
+/-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` is continuous
+at `x₀` within a set `t : Set X`, and eventually `a x` satisfies the predicate `p` associated to `𝕜`
+and has quasispectrum contained in `s`), then `fun x ↦ cfcₙ f (a x)` is continuous at `x₀`
+within `t`. -/
+protected theorem ContinuousWithinAt.cfcₙ [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s)
+    (f : 𝕜 → 𝕜) {a : X → A} {x₀ : X} {t : Set X} (hx₀ : x₀ ∈ t)
+    (ha_cont : ContinuousWithinAt a t x₀) (ha : ∀ᶠ x in 𝓝[t] x₀, quasispectrum 𝕜 (a x) ⊆ s)
+    (ha' : ∀ᶠ x in 𝓝[t] x₀, p (a x)) (hf : ContinuousOn f s := by cfc_cont_tac)
+    (hf0 : f 0 = 0 := by cfc_zero_tac) :
+    ContinuousWithinAt (fun x ↦ cfcₙ f (a x)) t x₀ :=
+  ha_cont.tendsto.cfcₙ hs f ha ha' (ha.self_of_nhdsWithin hx₀) (ha'.self_of_nhdsWithin hx₀)
+
+/-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` is continuous
+on `t : Set X`, and `a x` satisfies the predicate `p` associated to `𝕜` and has quasispectrum
+contained in `s` for all `x ∈ t`, then `fun x ↦ cfcₙ f (a x)` is continuous on `t`. -/
+protected theorem ContinuousOn.cfcₙ [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s)
+    (f : 𝕜 → 𝕜) {a : X → A} {t : Set X} (ha_cont : ContinuousOn a t)
+    (ha : ∀ x ∈ t, quasispectrum 𝕜 (a x) ⊆ s) (ha' : ∀ x ∈ t, p (a x))
+    (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
+    ContinuousOn (fun x ↦ cfcₙ f (a x)) t := by
+  rw [ContinuousOn] at ha_cont ⊢
+  refine fun x hx ↦ (ha_cont x hx).cfcₙ hs f hx ?_ ?_ hf
+  all_goals filter_upwards [self_mem_nhdsWithin] with x hx
+  exacts [ha x hx, ha' x hx]
+
+/-- `cfcₙ` is continuous in the variable `a : A` when `s : Set 𝕜` is compact and `a` varies over
+elements whose quasispectrum is contained in `s`, all of which satisfy the predicate `p`, and the
+function `f` is continuous `s` and `f 0 = 0`. -/
+protected theorem Continuous.cfcₙ [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
+    {a : X → A} (ha_cont : Continuous a) (ha : ∀ x, quasispectrum 𝕜 (a x) ⊆ s)
+    (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
+    (ha' : ∀ x, p (a x) := by cfc_tac) :
+    Continuous (fun x ↦ cfcₙ f (a x)) := by
+  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  exact ha_cont.cfcₙ hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
+
 /-- `cfcₙ` is continuous in the variable `a : A` when `s : Set 𝕜` is compact and `a` varies over
 elements whose spectrum is contained in `s`, all of which satisfy the predicate `p`, and the
 function `f` is continuous on the spectrum of `a` and maps zero to itself. -/
@@ -426,49 +529,101 @@ theorem continuous_cfcₙ [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s)
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha' : ∀ x, p (a x) := by cfc_tac) :
     Continuous (fun x ↦ cfcₙ f (a x)) := by
-  convert continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩ a ha_cont ha
+  convert continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩ ha_cont ha
   rw [cfcₙHomSuperset_apply, cfcₙ_apply (hf := hf.mono (ha _))]
   congr!
-
-/-- For `f : 𝕜 → 𝕜` continuous on a set `s` for which `f 0 = 0`, `cfcₙ f` is continuous on the
-set of `a : A` satisfying the predicate `p` (associated to `𝕜`) and whose `𝕜`-quasispectrum is
-contained in `s`. -/
-theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (hs0 : 0 ∈ s) (f : 𝕜 → 𝕜)
-    (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
-    ContinuousOn (cfcₙ f · : A → A) {a | p a ∧ quasispectrum 𝕜 a ⊆ s} :=
-  continuousOn_iff_continuous_restrict.mpr <|
-    continuous_cfcₙ hs hs0 f _ continuous_subtype_val (by simp)
 
 end RCLike
 
 section NNReal
 
+open scoped NNReal
 variable {X A : Type*} [NonUnitalNormedRing A] [StarRing A]
     [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [ContinuousStar A]
     [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
     [T2Space A] [IsTopologicalRing A]
 
-open scoped NNReal in
-/-- A version of `continuous_cfcₙ` over `ℝ≥0` instead of `RCLike 𝕜`. -/
-theorem continuous_cfcₙ_nnreal [TopologicalSpace X] (s : Set ℝ≥0)
-    (hs : IsCompact s) (hs0 : 0 ∈ s) (f : ℝ≥0 → ℝ≥0) (a : X → A) (ha_cont : Continuous a)
-    (ha' : ∀ x, 0 ≤ a x) (ha : ∀ x, quasispectrum ℝ≥0 (a x) ⊆ s)
+variable (A) in
+/-- A version of `continuousOn_cfcₙ` over `ℝ≥0` instead of `RCLike 𝕜`. -/
+theorem continuousOn_cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ≥0 → ℝ≥0)
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
-    Continuous (fun x ↦ cfcₙ f (a x)) := by
-  conv =>
-    enter [1, x]
-    rw [cfcₙ_nnreal_eq_real]
-  simp only [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts, forall_and] at ha'
-  refine continuous_cfcₙ (hs.image (continuous_algebraMap ℝ≥0 ℝ))
-    ⟨0, hs0, map_zero _⟩ _ _ ha_cont ?hf ?hs
-  · intro x
-    rw [← ha'.2 x |>.algebraMap_image]
-    exact Set.image_mono (ha x)
-  · apply NNReal.continuous_coe.comp_continuousOn
-    refine hf.comp (by fun_prop) ?_
-    rintro - ⟨x, hx, rfl⟩
+    ContinuousOn (cfcₙ f · : A → A) {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s} := by
+  have : {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s}.EqOn (cfcₙ f)
+      (cfcₙ (fun x : ℝ ↦ f x.toNNReal)) :=
+    fun a ha ↦ cfcₙ_nnreal_eq_real _ ha.1
+  refine ContinuousOn.congr ?_ this
+  replace hf : ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) (NNReal.toReal '' s) := by
+    apply hf.ofReal_map_toNNReal
+    rw [Set.mapsTo_image_iff]
+    intro x hx
     simpa
+  refine continuousOn_cfcₙ A (hs.image NNReal.continuous_coe) _ hf |>.mono fun a ha ↦ ?_
+  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
+  refine ⟨ha.1.1, ?_⟩
+  rw [← ha.1.2.algebraMap_image]
+  exact Set.image_mono ha.2
+
+/-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` tends to
+`a₀ : A` along a filter `l` (such that eventually `a x` satisfies the predicate `p` associated to
+`ℝ≥0` and has quasispectrum contained in `s`, as does `a₀`), then `fun x ↦ cfcₙ f (a x)` tends to
+`cfcₙ f a₀`. -/
+theorem Filter.Tendsto.cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ≥0 → ℝ≥0)
+    {a : X → A} {a₀ : A} {l : Filter X} (ha_tendsto : Tendsto a l (𝓝 a₀))
+    (ha : ∀ᶠ x in l, quasispectrum ℝ≥0 (a x) ⊆ s) (ha' : ∀ᶠ x in l, 0 ≤ a x)
+    (ha₀ : quasispectrum ℝ≥0 a₀ ⊆ s) (ha₀' : 0 ≤ a₀) (hf : ContinuousOn f s := by cfc_cont_tac)
+    (hf0 : f 0 = 0 := by cfc_zero_tac) :
+    Tendsto (fun x ↦ cfcₙ f (a x)) l (𝓝 (cfcₙ f a₀)) := by
+  apply continuousOn_cfcₙ_nnreal A hs f |>.continuousWithinAt ⟨ha₀', ha₀⟩ |>.tendsto.comp
+  rw [tendsto_nhdsWithin_iff]
+  exact ⟨ha_tendsto, ha'.and ha⟩
+
+/-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` is
+continuous at `x₀`, and eventually `a x` satisfies the predicate `p` associated to `ℝ≥0` and has
+quasispectrum contained in `s`), then `fun x ↦ cfcₙ f (a x)` is continuous at `x₀`. -/
+theorem ContinuousAt.cfcₙ_nnreal [TopologicalSpace X] {s : Set ℝ≥0}
+    (hs : IsCompact s) (f : ℝ≥0 → ℝ≥0) {a : X → A} {x₀ : X} (ha_cont : ContinuousAt a x₀)
+    (ha : ∀ᶠ x in 𝓝 x₀, quasispectrum ℝ≥0 (a x) ⊆ s) (ha' : ∀ᶠ x in 𝓝 x₀, 0 ≤ a x)
+    (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
+    ContinuousAt (fun x ↦ cfcₙ f (a x)) x₀ :=
+  ha_cont.tendsto.cfcₙ_nnreal hs f ha ha' ha.self_of_nhds ha'.self_of_nhds
+
+/-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` is
+continuous at `x₀` within a set `t : Set X`, and eventually `a x` satisfies the predicate `p`
+associated to `ℝ≥0` and has quasispectrum contained in `s`), then `fun x ↦ cfcₙ f (a x)` is
+continuous at `x₀` within `t`. -/
+theorem ContinuousWithinAt.cfcₙ_nnreal [TopologicalSpace X] {s : Set ℝ≥0}
+    (hs : IsCompact s) (f : ℝ≥0 → ℝ≥0) {a : X → A} {x₀ : X} {t : Set X} (hx₀ : x₀ ∈ t)
+    (ha_cont : ContinuousWithinAt a t x₀) (ha : ∀ᶠ x in 𝓝[t] x₀, quasispectrum ℝ≥0 (a x) ⊆ s)
+    (ha' : ∀ᶠ x in 𝓝[t] x₀, 0 ≤ a x) (hf : ContinuousOn f s := by cfc_cont_tac)
+    (hf0 : f 0 = 0 := by cfc_zero_tac) :
+    ContinuousWithinAt (fun x ↦ cfcₙ f (a x)) t x₀ :=
+  ha_cont.tendsto.cfcₙ_nnreal hs f ha ha' (ha.self_of_nhdsWithin hx₀) (ha'.self_of_nhdsWithin hx₀)
+
+/-- If `f : ℝ≥0 → ℝ≥0` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` is
+continuous on `t : Set X`, and `a x` satisfies the predicate `p` associated to `ℝ≥0` and has
+quasispectrum contained in `s` for all `x ∈ t`, then `fun x ↦ cfcₙ f (a x)` is continuous
+on `t`. -/
+theorem ContinuousOn.cfcₙ_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : IsCompact s)
+    (f : ℝ≥0 → ℝ≥0) {a : X → A} {t : Set X} (ha_cont : ContinuousOn a t)
+    (ha : ∀ x ∈ t, quasispectrum ℝ≥0 (a x) ⊆ s) (ha' : ∀ x ∈ t, 0 ≤ a x)
+    (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
+    ContinuousOn (fun x ↦ cfcₙ f (a x)) t := by
+  rw [ContinuousOn] at ha_cont ⊢
+  refine fun x hx ↦ (ha_cont x hx).cfcₙ_nnreal hs f hx ?_ ?_ hf
+  all_goals filter_upwards [self_mem_nhdsWithin] with x hx
+  exacts [ha x hx, ha' x hx]
+
+/-- `cfcₙ` is continuous in the variable `a : A` when `s : Set ℝ≥0` is compact and `a` varies over
+elements whose quasispectrum is contained in `s`, all of which satisfy the predicate `p`, and the
+function `f` is continuous `s` and `f 0 = 0`. -/
+theorem Continuous.cfcₙ_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : IsCompact s)
+    (f : ℝ≥0 → ℝ≥0) {a : X → A} (ha_cont : Continuous a) (ha : ∀ x, quasispectrum ℝ≥0 (a x) ⊆ s)
+    (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
+    (ha' : ∀ x, 0 ≤ a x := by cfc_tac) :
+    Continuous (fun x ↦ cfcₙ f (a x)) := by
+  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  exact ha_cont.cfcₙ_nnreal hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end NNReal
 
