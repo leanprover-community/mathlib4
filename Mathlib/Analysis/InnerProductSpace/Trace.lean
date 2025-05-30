@@ -15,8 +15,10 @@ namespace OrthonormalBasis
 variable {𝕜 E ι : Type*} [RCLike 𝕜] [Fintype ι] [DecidableEq ι]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
+open scoped InnerProductSpace
+
 lemma trace_eq_sum_inner_base_app_base (b : OrthonormalBasis ι 𝕜 E) (T : E →ₗ[𝕜] E) :
-    LinearMap.trace 𝕜 E T = ∑i : ι, inner 𝕜 (b i) (T (b i)) := by
+    T.trace 𝕜 E = ∑ i, ⟪b i, T (b i)⟫_𝕜 := by
   let b' := b.toBasis
   rw [LinearMap.trace_eq_matrix_trace 𝕜 b' T]
   apply Fintype.sum_congr
