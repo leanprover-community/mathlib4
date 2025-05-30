@@ -212,6 +212,12 @@ theorem two_add_two_eq_four [AddMonoidWithOne R] : 2 + 2 = (4 : R) := by
   simp [← one_add_one_eq_two, ← Nat.cast_one, ← three_add_one_eq_four,
     ← two_add_one_eq_three, add_assoc]
 
+theorem four_add_one_eq_five [AddMonoidWithOne R] : 4 + 1 = (5 : R) := by
+  rw [← three_add_one_eq_four, ← two_add_one_eq_three, ← one_add_one_eq_two, ← Nat.cast_one,
+    ← Nat.cast_add, ← Nat.cast_add, ← Nat.cast_add, ← Nat.cast_add]
+  apply congrArg
+  decide
+
 section nsmul
 
 @[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n
