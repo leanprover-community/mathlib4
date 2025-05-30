@@ -183,22 +183,61 @@ section flat
 
 variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
-  [IsScalarTower R S N] (f : M →ₗ[R] N) (hf : IsBaseChange S f)
+  [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R)
+
+def QuotSMulTop.congr (e : M ≃ₗ[R] N) : QuotSMulTop x M ≃ₗ[R] QuotSMulTop x N :=
+  Submodule.Quotient.equiv (x • ⊤) (x • ⊤) e <|
+    (Submodule.map_pointwise_smul x _ e.toLinearMap).trans (by simp)
+
+open TensorProduct QuotSMulTop
 
 include hf
 
-theorem IsSMulRegular.of_flat_isBaseChange (r : R) (reg : IsSMulRegular M r) :
-    IsSMulRegular N (algebraMap R S r) := by
-  have eq : hf.lift (f ∘ₗ (LinearMap.lsmul R M) r) = (LinearMap.lsmul S N) (algebraMap R S r) :=
+theorem IsSMulRegular.of_flat_isBaseChange (reg : IsSMulRegular M x) :
+    IsSMulRegular N (algebraMap R S x) := by
+  have eq : hf.lift (f ∘ₗ (LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x) :=
     hf.algHom_ext _ _ (fun _ ↦ by simp [hf.lift_eq])
-  convert Module.Flat.isBaseChange_preserves_injective_linearMap hf hf ((LinearMap.lsmul R M) r) reg
+  convert Module.Flat.isBaseChange_preserves_injective_linearMap hf hf ((LinearMap.lsmul R M) x) reg
   rw [eq]
   rfl
 
-abbrev quotSMulTop_isBaseChange_map (x : R) :
-    QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R S) x) N := by
-  refine LinearMapOfSemiLinearMapAlgebraMap <| Submodule.mapQ _ _
-    (SemiLinearMapAlgebraMapOfLinearMap f) (fun m hm ↦ ?_)
+noncomputable instance : Module (R ⧸ Ideal.span {x}) (QuotSMulTop ((algebraMap R S) x) N) where
+  smul r n := Quot.out r • n
+  one_smul := sorry
+  mul_smul := sorry
+  smul_zero := sorry
+  smul_add := sorry
+  add_smul := sorry
+  zero_smul := sorry
+
+instance : IsScalarTower R (R ⧸ Ideal.span {x}) (QuotSMulTop ((algebraMap R S) x) N) := sorry
+
+include f hf in
+noncomputable abbrev tensorQuotSMulTopEquivQuotSMulTopAlgebraMap :
+    (S ⊗[R] QuotSMulTop x M) ≃ₗ[S] (QuotSMulTop ((algebraMap R S) x) N) := by
+  have := hf.equiv
   sorry
+  /- have h : x • (⊤ : Submodule R N) = (algebraMap R S) x • ⊤ := by
+    sorry
+  tensorQuotSMulTopEquivQuotSMulTop x S M ≪≫ₗ QuotSMulTop.congr x (hf.equiv.restrictScalars R)
+    ≪≫ₗ Submodule.quotEquivOfEq (x • ⊤) ((algebraMap R S) x • ⊤) h -/
+
+
+theorem RingTheory.Sequence.isWeaklyRegular.of_flat_isBaseChange (rs : List R)
+    (reg : IsWeaklyRegular M rs) : IsWeaklyRegular N (rs.map (algebraMap R S)) := by
+  generalize len : rs.length = n
+  induction' n with n ih generalizing M N rs
+  · simp [List.length_eq_zero_iff.mp len]
+  · match rs with
+    | [] => simp at len
+    | x :: rs' =>
+      simp only [List.length_cons, Nat.add_right_cancel_iff] at len
+      simp only [isWeaklyRegular_cons_iff, List.map_cons] at reg ⊢
+      let e := (tensorQuotSMulTopEquivQuotSMulTopAlgebraMap hf x)
+      sorry
+      /- have := IsBaseChange.of_equiv (R := R) (S := S) (M := QuotSMulTop x M)
+        (N := (QuotSMulTop ((algebraMap R S) x) N)) e
+      refine ⟨IsSMulRegular.of_flat_isBaseChange hf x reg.1,
+        ih (isBaseChange_quotSMulTop S hf x) rs' reg.2 len⟩ -/
 
 end flat
