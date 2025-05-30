@@ -43,19 +43,13 @@ instance nerveHoNerve.binaryProductIsIso (C D : Type v) [Category.{v} C] [Catego
       (Cat.of C) (Cat.of D)) := by
   sorry
 
-/-- This proof can surely be golfed. -/
+-- This proof can probably be golfed.
 instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
     IsIso (prodComparison hoFunctor (nerve C) (nerve D)) := by
   have : IsIso (nerveFunctor.map (prodComparison hoFunctor (nerve C) (nerve D))) := by
-    have : IsIso (prodComparison nerveFunctor
-      (hoFunctor.obj (nerve C)) (hoFunctor.obj (nerve D))) := inferInstance
     have : IsIso (prodComparison (hoFunctor ⋙ nerveFunctor) (nerve C) (nerve D)) := by
       have eq := prodComparison_comp
         nerveFunctor (hoFunctor ⋙ nerveFunctor) (A := Cat.of C) (B := Cat.of D)
-      simp only [nerveFunctor_obj] at eq
-      have : IsIso
-        ((hoFunctor ⋙ nerveFunctor).map
-          (prodComparison nerveFunctor (Cat.of C) (Cat.of D))) := inferInstance
       exact IsIso.of_isIso_fac_left eq.symm
     exact IsIso.of_isIso_fac_right (prodComparison_comp hoFunctor nerveFunctor).symm
   apply isIso_of_fully_faithful nerveFunctor
