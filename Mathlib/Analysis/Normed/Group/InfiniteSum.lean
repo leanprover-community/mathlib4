@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.Instances.NNReal.Lemmas
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Infinite sums in (semi)normed groups
@@ -28,7 +29,7 @@ In a complete (semi)normed group,
 infinite series, absolute convergence, normed group
 -/
 
-open Topology NNReal
+open Topology NNReal ENNReal
 
 open Finset Filter Metric
 
@@ -138,6 +139,47 @@ we do not assume that `∑' i, f i` is summable, and it might not be the case if
 space. -/
 theorem nnnorm_tsum_le {f : ι → E} (hf : Summable fun i => ‖f i‖₊) : ‖∑' i, f i‖₊ ≤ ∑' i, ‖f i‖₊ :=
   tsum_of_nnnorm_bounded hf.hasSum fun _i => le_rfl
+
+/-- Quantitative result associated to the direct comparison test for series: If, for all `i`,
+`‖f i‖ₑ ≤ g i`, then `‖∑' i, f i‖ₑ ≤ ∑' i, g i`. -/
+theorem tsum_of_enorm_bounded {f : ι → E} {g : ι → ℝ≥0∞} {a : ℝ≥0∞} (hg : HasSum g a)
+    (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖∑' i : ι, f i‖ₑ ≤ a := by
+  by_cases hc : a ≠ ∞
+  · have hc' : ∀ i, g i ≠ ∞ := by
+      by_contra! h
+      have : HasSum g ∞ := by
+        obtain ⟨i, hi⟩ := h
+        have hg' : g i ≤ ∑' i, g i := ENNReal.le_tsum i
+        have : HasSum g (∑' i, g i) := (ENNReal.summable).hasSum
+        rw [hi] at hg'
+        simp only [top_le_iff] at hg'
+        rwa [← hg']
+      exact hc (HasSum.unique hg this)
+    simp_rw [← ofReal_norm] at *
+    have hfg (i : ι) : ‖f i‖ ≤ (g i).toReal := by
+      refine (ofReal_le_iff_le_toReal ?_).mp (h i)
+      exact hc' i
+    have hg' : HasSum (fun i ↦ (g i).toReal) a.toReal := by
+      have ha' := HasSum.tsum_eq hg
+      have h2 : (∑' (x : ι), (g x).toReal) = a.toReal := by
+        rw [← ENNReal.tsum_toReal_eq hc']
+        apply (ENNReal.toReal_eq_toReal _ _).mpr ha'
+        · rw [ha']
+          exact hc
+        · exact hc
+      have hb' : ∑' b, g b ≠ ∞ := by simpa [ha']
+      have hh := ENNReal.hasSum_toReal hb'
+      rw [← ENNReal.coe_toNNReal hc] at ha'
+      rw [h2] at hh
+      exact hh
+    exact (ofReal_le_iff_le_toReal hc).mpr <| tsum_of_norm_bounded hg' hfg
+  · push_neg at hc
+    simp [hc]
+
+/-- `‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ`, automatically `∑' i, ‖f i‖ₑ` is summable. -/
+theorem enorm_tsum_le_tsum_enorm {f : ι → E} : ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ := by
+  have hg : Summable fun i ↦  ‖f i‖ₑ := by exact ENNReal.summable
+  exact tsum_of_enorm_bounded hg.hasSum fun _i => le_rfl
 
 variable [CompleteSpace E]
 

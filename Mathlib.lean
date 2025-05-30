@@ -4417,6 +4417,7 @@ import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
+import Mathlib.MeasureTheory.VectorMeasure.Variation
 import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 import Mathlib.ModelTheory.Algebra.Field.Basic
 import Mathlib.ModelTheory.Algebra.Field.CharP
