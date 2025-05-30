@@ -250,7 +250,7 @@ theorem map' {α β} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α}
 protected theorem comap {α β} [MeasurableSpace α] {mβ : MeasurableSpace β}
     {μ : Measure β} {pa qa : Set α → Prop} {pb qb : Set β → Prop}
     (H : InnerRegularWRT μ pb qb) {f : α → β} (hf : MeasurableEmbedding f)
-    (hAB : ∀ U, qa U → qb (f '' U)) (hAB' : ∀ K, K ⊆ range f → pb K → pa (f ⁻¹' K)) :
+    (hAB : ∀ U, qa U → qb (f '' U)) (hAB' : ∀ K ⊆ range f, pb K → pa (f ⁻¹' K)) :
     (μ.comap f).InnerRegularWRT pa qa := by
   intro U hU r hr
   rw [hf.comap_apply] at hr
