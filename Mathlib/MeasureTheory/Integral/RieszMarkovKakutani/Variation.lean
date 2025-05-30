@@ -39,6 +39,8 @@ complex measures.
 * If `μ` is a `ℝ≥0∞`-valued `VectorMeasure` then `variation μ = μ`.
 * Variation is equivalent to that defined via the Hahn–Jordan decomposition for signed measures.
 * If `μ` is a complex measure then `variation univ < ∞`.
+* Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`.
+  Then `variation μ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
