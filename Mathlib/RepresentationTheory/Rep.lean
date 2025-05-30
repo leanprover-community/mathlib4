@@ -112,17 +112,17 @@ theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) :
     (trivial k G V).ρ g = LinearMap.id :=
   rfl
 
-variable (G) in
+variable (k G) in
 /-- The functor equipping a module with the trivial representation. -/
-@[simps]
+@[simps! obj map_hom]
 noncomputable def trivialFunctor : ModuleCat k ⥤ Rep k G where
   obj V := trivial k G V
   map f := { hom := f, comm := fun _ => rfl }
 
-instance (X : ModuleCat k) : ((trivialFunctor G).obj X).ρ.IsTrivial where
-
 /-- A predicate for representations that fix every element. -/
 abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
+
+instance (X : ModuleCat k) : ((trivialFunctor k G).obj X).IsTrivial where
 
 instance {V : Type u} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
