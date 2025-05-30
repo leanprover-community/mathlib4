@@ -32,24 +32,24 @@ variable [DecidableEq G]
 
 /-- The 0th object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def zeroChainsLequiv : (inhomogeneousChains A).X 0 ≃ₗ[k] A :=
-  LinearEquiv.finsuppUnique _ _ _
+def zeroChainsIso : (inhomogeneousChains A).X 0 ≅ A.V :=
+  (LinearEquiv.finsuppUnique _ _ _).toModuleIso
 
 /-- The 1st object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G →₀ A` as a `k`-module. -/
-def oneChainsLequiv : (inhomogeneousChains A).X 1 ≃ₗ[k] G →₀ A :=
-  Finsupp.domLCongr (Equiv.funUnique (Fin 1) G)
+def oneChainsIso : (inhomogeneousChains A).X 1 ≅ ModuleCat.of k (G →₀ A) :=
+  (Finsupp.domLCongr (Equiv.funUnique (Fin 1) G)).toModuleIso
 
 /-- The 2nd object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G² →₀ A` as a `k`-module. -/
-def twoChainsLequiv : (inhomogeneousChains A).X 2 ≃ₗ[k] G × G →₀ A :=
-  Finsupp.domLCongr (piFinTwoEquiv fun _ => G)
+def twoChainsIso : (inhomogeneousChains A).X 2 ≅ ModuleCat.of k (G × G →₀ A) :=
+  (Finsupp.domLCongr (piFinTwoEquiv fun _ => G)).toModuleIso
 
 /-- The 3rd object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G³ → A` as a `k`-module. -/
-def threeChainsLequiv : (inhomogeneousChains A).X 3 ≃ₗ[k] G × G × G →₀ A :=
-  Finsupp.domLCongr ((Fin.consEquiv _).symm.trans
-    ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))
+def threeChainsIso : (inhomogeneousChains A).X 3 ≅ ModuleCat.of k (G × G × G →₀ A) :=
+  (Finsupp.domLCongr ((Fin.consEquiv _).symm.trans
+    ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))).toModuleIso
 
 end Chains
 
@@ -57,7 +57,8 @@ section Differentials
 
 /-- The 0th differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G →₀ A) → A`. It sends `single g a ↦ ρ_A(g⁻¹)(a) - a.` -/
-def dZero : (G →₀ A) →ₗ[k] A := lsum k fun g => A.ρ g⁻¹ - LinearMap.id
+def dZero : ModuleCat.of k (G →₀ A) ⟶ A.V :=
+  ModuleCat.ofHom <| lsum k fun g => A.ρ g⁻¹ - LinearMap.id
 
 @[simp]
 theorem dZero_single (g : G) (a : A) : dZero A (single g a) = A.ρ g⁻¹ a - a := by
@@ -101,8 +102,8 @@ theorem dZero_eq_zero_of_isTrivial [A.IsTrivial] : dZero A = 0 := by
 
 /-- The 1st differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G² →₀ A) → (G →₀ A)`. It sends `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
-def dOne : (G × G →₀ A) →ₗ[k] G →₀ A :=
-  lsum k fun g => lsingle g.2 ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2) + lsingle g.1
+def dOne : ModuleCat.of k (G × G →₀ A) ⟶ ModuleCat.of k (G →₀ A) :=
+  ModuleCat.ofHom <| lsum k fun g => lsingle g.2 ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2) + lsingle g.1
 
 variable {A}
 
@@ -147,8 +148,9 @@ variable (A) in
 /-- The 2nd differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G³ →₀ A) → (G² →₀ A)`. It sends
 `a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
-def dTwo : (G × G × G →₀ A) →ₗ[k] G × G →₀ A :=
-  lsum k fun g => lsingle (g.2.1, g.2.2) ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2.1, g.2.2) +
+def dTwo : ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (G × G →₀ A) :=
+  ModuleCat.ofHom <| lsum k fun g =>
+    lsingle (g.2.1, g.2.2) ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2.1, g.2.2) +
     lsingle (g.1, g.2.1 * g.2.2) - lsingle (g.1, g.2.1)
 
 @[simp]
@@ -183,13 +185,12 @@ square commutes:
     v                  v
   (G →₀ A) --dZero --> A
 ```
-where the vertical arrows are `oneChainsLequiv` and `zeroChainsLequiv` respectively.
+where the vertical arrows are `oneChainsIso` and `zeroChainsIso` respectively.
 -/
-theorem dZero_comp_eq :
-    (oneChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (dZero A) =
-      (inhomogeneousChains A).d 1 0 ≫ (zeroChainsLequiv A).toModuleIso.hom :=
+theorem comp_dZero_eq :
+    (oneChainsIso A).hom ≫ dZero A = (inhomogeneousChains A).d 1 0 ≫ (zeroChainsIso A).hom :
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, zeroChainsLequiv, oneChainsLequiv,
+    simp [inhomogeneousChains.d_def, zeroChainsIso, oneChainsIso,
       Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
@@ -203,14 +204,13 @@ square commutes:
     v                      v
   (G² →₀ A) --dOne--->  (G →₀ A)
 ```
-where the vertical arrows are `twoChainsLequiv` and `oneChainsLequiv` respectively.
+where the vertical arrows are `twoChainsIso` and `oneChainsIso` respectively.
 -/
 
-theorem dOne_comp_eq :
-    (twoChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (dOne A) =
-      (inhomogeneousChains A).d 2 1 ≫ (oneChainsLequiv A).toModuleIso.hom :=
+theorem comp_dOne_eq :
+    (twoChainsIso A).hom ≫ dOne A = (inhomogeneousChains A).d 2 1 ≫ (oneChainsIso A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, oneChainsLequiv, add_assoc, twoChainsLequiv,
+    simp [inhomogeneousChains.d_def, oneChainsIso, add_assoc, twoChainsIso,
       -Finsupp.domLCongr_apply, domLCongr_single, sub_eq_add_neg, Fin.contractNth]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
@@ -224,22 +224,21 @@ square commutes:
     v                      v
   (G³ →₀ A) --dTwo--> (G² →₀ A)
 ```
-where the vertical arrows are `threeChainsLequiv` and `twoChainsLequiv` respectively.
+where the vertical arrows are `threeChainsIso` and `twoChainsIso` respectively.
 -/
-theorem dTwo_comp_eq :
-    (threeChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (dTwo A) =
-      (inhomogeneousChains A).d 3 2 ≫ (twoChainsLequiv A).toModuleIso.hom :=
+theorem comp_dTwo_eq :
+    (threeChainsIso A).hom ≫ dTwo A = (inhomogeneousChains A).d 3 2 ≫ (twoChainsIso A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, twoChainsLequiv, pow_succ, threeChainsLequiv,
+    simp [inhomogeneousChains.d_def, twoChainsIso, pow_succ, threeChainsIso,
       -domLCongr_apply, domLCongr_single, dTwo, Fin.sum_univ_three,
       Fin.contractNth, Fin.tail_def, sub_eq_add_neg, add_assoc,
       add_rotate' (-(single (_ * _, _) _)), add_left_comm (single (_, _ * _) _)]
 
-theorem dZero_comp_dOne : dZero A ∘ₗ dOne A = 0 := by
+theorem dOne_comp_dZero : dOne A ≫ dZero A = 0 := by
   ext x g
   simp [dZero, dOne, sum_add_index, sum_sub_index, sub_sub_sub_comm, add_sub_add_comm]
 
-theorem dOne_comp_dTwo : dOne A ∘ₗ dTwo A = 0 := by
+theorem dTwo_comp_done : dTwo A ≫ dOne A = 0 := by
   apply_fun ModuleCat.ofHom using (fun _ _ h => ModuleCat.hom_ext_iff.1 h)
   simp [(Iso.eq_inv_comp _).2 (dOne_comp_eq A), (Iso.eq_inv_comp _).2 (dTwo_comp_eq A),
     ModuleCat.hom_ext_iff, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
