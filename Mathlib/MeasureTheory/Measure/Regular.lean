@@ -397,7 +397,7 @@ theorem comap_of_continuous_of_measurableEmbedding
     obtain ⟨U, hUA, Uopen, hμU⟩ := OuterRegular.outerRegular (f_me.measurableSet_image' hA) r hr
     refine ⟨f ⁻¹' U, by rwa [Superset, ← image_subset_iff], Uopen.preimage f_cont, ?_⟩
     rw [f_me.comap_apply]
-    exact lt_of_le_of_lt (measure_mono (image_preimage_subset _ _)) hμU
+    exact (measure_mono (image_preimage_subset _ _)).trans_lt hμU
 
 protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β]
     (μ : Measure β) [OuterRegular μ] (f : α ≃ₜ β) : (μ.comap f).OuterRegular :=
