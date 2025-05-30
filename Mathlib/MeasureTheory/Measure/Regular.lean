@@ -247,8 +247,8 @@ theorem map' {α β} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α}
   refine ⟨f '' K, image_subset_iff.2 hKU, hAB' _ hKc, ?_⟩
   rwa [f.map_apply, f.preimage_image]
 
-protected theorem _root_.MeasurableEmbedding.innerRegularWRT_comap
-    {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+protected theorem InnerRegularWRT.comap
+    {α β : Type*} [MeasurableSpace α] {mβ : MeasurableSpace β}
     {μ : Measure β} {pa qa : Set α → Prop} {pb qb : Set β → Prop}
     (H : InnerRegularWRT μ pb qb) {f : α → β} (hf : MeasurableEmbedding f)
     (hAB : ∀ U, qa U → qb (f '' U)) (hAB' : ∀ K, K ⊆ range f → pb K → pa (f ⁻¹' K)) :
