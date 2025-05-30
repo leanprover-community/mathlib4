@@ -1073,10 +1073,9 @@ protected theorem Regular.comap' [BorelSpace α]
   haveI :=
     IsFiniteMeasureOnCompacts.comap_of_continuous_measurableEmbedding
       μ hf.continuous hf.measurableEmbedding
-  exact
-    ⟨hf.measurableEmbedding.innerRegularWRT_comap Regular.innerRegular (μ := μ)
-      (fun _ hU ↦ hf.isOpen_iff_image_isOpen.mp hU)
-      (fun _ hKrange hK ↦ hf.isInducing.isCompact_preimage' hK hKrange)⟩
+  exact ⟨hf.measurableEmbedding.innerRegularWRT_comap Regular.innerRegular (μ := μ)
+    (fun _ hU ↦ hf.isOpen_iff_image_isOpen.mp hU)
+    (fun _ hKrange hK ↦ hf.isInducing.isCompact_preimage' hK hKrange)⟩
 
 protected theorem comap [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] {μ : Measure β} [Regular μ] (f : α ≃ₜ β) : (μ.comap f).Regular :=
