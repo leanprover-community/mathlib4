@@ -704,9 +704,9 @@ namespace IsFiniteMeasureOnCompacts
 
 protected theorem map {mα : MeasurableSpace α} [BorelSpace α] [MeasurableSpace β] [BorelSpace β]
     (μ : Measure α) [IsFiniteMeasureOnCompacts μ] (f : α ≃ₜ β) :
-    IsFiniteMeasureOnCompacts (Measure.map f μ) := by
+    IsFiniteMeasureOnCompacts (μ.map f) := by
   refine ⟨fun K hK ↦ ?_⟩
-  rw [← Homeomorph.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
+  rw [← f.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
   exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
 
 protected theorem comap' [MeasurableSpace α] {mβ : MeasurableSpace β}
