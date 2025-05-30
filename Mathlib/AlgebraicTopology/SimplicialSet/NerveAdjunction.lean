@@ -76,8 +76,6 @@ def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ 𝟭 Cat where
   app _ := nerve₂Adj.counit.app _
   naturality _ _ _ := nerve₂Adj.counit.naturality _
 
-local notation (priority := high) "[" n "]" => SimplexCategory.mk n
-
 variable {C : Type u} [SmallCategory C] {X : SSet.Truncated.{u} 2}
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
 
