@@ -216,7 +216,7 @@ variable [Group G] [MeasurableMul G]
 @[to_additive]
 theorem _root_.MeasurableEmbedding.IsMulLeftInvariant_comap {H : Type*}
     [Group H] [MeasurableSpace H] [MeasurableMul H]
-    {f : G →* H} (hf: MeasurableEmbedding f) (μ : Measure H) [IsMulLeftInvariant μ] :
+    {f : G →* H} (hf : MeasurableEmbedding f) (μ : Measure H) [IsMulLeftInvariant μ] :
     (μ.comap f).IsMulLeftInvariant where
   map_mul_left_eq_self g := by
     ext s hs
