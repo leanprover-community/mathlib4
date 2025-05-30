@@ -98,7 +98,7 @@ lemma linearIndependent_of_sub_mem_range_root
     [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
-  suffices LinearIndependent R ![P.root i, P.root (P.reflection_perm j j)] by simpa using this
+  suffices LinearIndependent R ![P.root i, P.root (P.reflectionPerm j j)] by simpa using this
   apply P.linearIndependent_of_add_mem_range_root
   simpa [sub_eq_add_neg] using h
 
@@ -207,7 +207,7 @@ lemma pairing_neg_two_neg_two_iff :
     P.pairing i j = -2 ∧ P.pairing j i = -2 ↔ P.root i = -P.root j := by
   simp only [← neg_eq_iff_eq_neg]
   simpa [eq_comm (a := -P.root i), eq_comm (b := j)] using
-    P.pairing_two_two_iff (P.reflection_perm i i) j
+    P.pairing_two_two_iff (P.reflectionPerm i i) j
 
 variable [NoZeroSMulDivisors R N]
 
@@ -230,7 +230,7 @@ lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
 
 lemma pairing_neg_one_neg_four_iff' (h2 : IsSMulRegular R (2 : R)) :
     P.pairing i j = -1 ∧ P.pairing j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
-  simpa [neg_smul, ← neg_eq_iff_eq_neg] using P.pairing_one_four_iff' i (P.reflection_perm j j) h2
+  simpa [neg_smul, ← neg_eq_iff_eq_neg] using P.pairing_one_four_iff' i (P.reflectionPerm j j) h2
 
 /-- See also `RootPairing.pairingIn_one_four_iff`. -/
 @[simp]

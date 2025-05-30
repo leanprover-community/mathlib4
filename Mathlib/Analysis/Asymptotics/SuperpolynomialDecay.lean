@@ -130,8 +130,8 @@ theorem SuperpolynomialDecay.trans_eventuallyLE (hk : 0 ≤ᶠ[l] k) (hg : Super
     (hg' : SuperpolynomialDecay l k g') (hfg : g ≤ᶠ[l] f) (hfg' : f ≤ᶠ[l] g') :
     SuperpolynomialDecay l k f := fun z =>
   tendsto_of_tendsto_of_tendsto_of_le_of_le' (hg z) (hg' z)
-    (hfg.mp (hk.mono fun _ hx hx' => mul_le_mul_of_nonneg_left hx' (pow_nonneg hx z)))
-    (hfg'.mp (hk.mono fun _ hx hx' => mul_le_mul_of_nonneg_left hx' (pow_nonneg hx z)))
+    (by filter_upwards [hfg, hk] with x hx (hx' : 0 ≤ k x) using by gcongr)
+    (by filter_upwards [hfg', hk] with x hx (hx' : 0 ≤ k x) using by gcongr)
 
 end OrderedCommSemiring
 

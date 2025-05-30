@@ -46,7 +46,8 @@ lemma isBigO_exp_neg_mul_of_le {c d : ℝ} (hcd : c ≤ d) :
     (fun t ↦ exp (-d * t)) =O[atTop] fun t ↦ exp (-c * t) := by
   apply Eventually.isBigO
   filter_upwards [eventually_gt_atTop 0] with t ht
-  rwa [norm_of_nonneg (exp_pos _).le, exp_le_exp, mul_le_mul_right ht, neg_le_neg_iff]
+  rw [norm_of_nonneg (exp_pos _).le]
+  gcongr
 
 private lemma exp_lt_aux {t : ℝ} (ht : 0 < t) : rexp (-π * t) < 1 := by
   simpa only [exp_lt_one_iff, neg_mul, neg_lt_zero] using mul_pos pi_pos ht
@@ -70,14 +71,12 @@ def g_nat (k : ℕ) (a t : ℝ) (n : ℕ) : ℝ := (n + a) ^ k * exp (-π * (n +
 
 lemma f_le_g_nat (k : ℕ) {a t : ℝ} (ha : 0 ≤ a) (ht : 0 < t) (n : ℕ) :
     ‖f_nat k a t n‖ ≤ g_nat k a t n := by
-  rw [f_nat, norm_of_nonneg (by positivity)]
-  refine mul_le_mul_of_nonneg_left ?_ (by positivity)
-  rw [Real.exp_le_exp, mul_le_mul_right ht,
-    mul_le_mul_left_of_neg (neg_lt_zero.mpr pi_pos), ← sub_nonneg]
-  have u : (n : ℝ) ≤ (n : ℝ) ^ 2 := by
-    simpa only [← Nat.cast_pow, Nat.cast_le] using Nat.le_self_pow two_ne_zero _
-  convert add_nonneg (sub_nonneg.mpr u) (by positivity : 0 ≤ 2 * n * a) using 1
-  ring
+  rw [f_nat, norm_of_nonneg (by positivity), g_nat]
+  simp only [neg_mul, add_sq]
+  gcongr
+  have H₁ : (n : ℝ) ≤ n ^ 2 := mod_cast Nat.le_self_pow two_ne_zero n
+  have H₂ : 0 ≤ 2 * n * a := by positivity
+  linear_combination H₁ + H₂
 
 /-- The sum to be bounded (`ℕ` version). -/
 def F_nat (k : ℕ) (a t : ℝ) : ℝ := ∑' n, f_nat k a t n
@@ -88,8 +87,8 @@ lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_na
       (rexp (-π * a ^ 2 * t))).comp_injective Nat.cast_injective).of_norm_bounded _ (fun n ↦ ?_)
     simp_rw [mul_assoc, Function.comp_apply, ← Real.exp_add, norm_mul, norm_pow, Int.cast_abs,
       Int.cast_natCast, norm_eq_abs, Nat.abs_cast, abs_exp]
-    refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (Nat.cast_nonneg _) _)
-    rw [exp_le_exp, ← sub_nonneg]
+    gcongr
+    rw [← sub_nonneg]
     rw [show -π * (t * n ^ 2 - 2 * (|a| * (t * n))) + -π * (a ^ 2 * t) - -π * ((n + a) ^ 2 * t)
          = π * t * n * (|a| + a) * 2 by ring]
     refine mul_nonneg (mul_nonneg (by positivity) ?_) two_pos.le
