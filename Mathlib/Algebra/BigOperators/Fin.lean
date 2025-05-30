@@ -650,7 +650,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
   rcases k with ⟨⟨iv, hi⟩, j⟩
   rw [finSigmaFinEquiv]
   unfold finSumFinEquiv
-  simp only [Equiv.coe_fn_mk, Equiv.sigmaCongrLeft, Equiv.coe_fn_symm_mk, Equiv.instTrans_trans,
+  simp only [Equiv.coe_fn_mk, Equiv.sigmaCongrLeft, Equiv.coe_fn_symm_mk, Equiv.trans_def,
     Equiv.trans_apply, finCongr_apply, Fin.coe_cast]
   conv  =>
     enter [1,1,3]
