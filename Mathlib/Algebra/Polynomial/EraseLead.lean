@@ -87,8 +87,11 @@ theorem ne_natDegree_of_mem_eraseLead_support {a : ℕ} (h : a ∈ (eraseLead f)
     a ≠ f.natDegree :=
   (lt_natDegree_of_mem_eraseLead_support h).ne
 
-theorem natDegree_not_mem_eraseLead_support : f.natDegree ∉ (eraseLead f).support := fun h =>
+theorem natDegree_notMem_eraseLead_support : f.natDegree ∉ (eraseLead f).support := fun h =>
   ne_natDegree_of_mem_eraseLead_support h rfl
+
+@[deprecated (since := "2025-05-23")]
+alias natDegree_not_mem_eraseLead_support := natDegree_notMem_eraseLead_support
 
 theorem eraseLead_support_card_lt (h : f ≠ 0) : #(eraseLead f).support < #f.support := by
   rw [eraseLead_support]

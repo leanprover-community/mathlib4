@@ -70,16 +70,16 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
-@[measurability]
+@[fun_prop, measurability]
 lemma measurable_gammaPDFReal (a r : ℝ) : Measurable (gammaPDFReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
 /-- The gamma pdf is strongly measurable -/
-@[measurability]
- lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
-     StronglyMeasurable (gammaPDFReal a r) :=
-   (measurable_gammaPDFReal a r).stronglyMeasurable
+@[fun_prop, measurability]
+lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
+    StronglyMeasurable (gammaPDFReal a r) :=
+  (measurable_gammaPDFReal a r).stronglyMeasurable
 
 /-- The gamma pdf is positive for all positive reals -/
 lemma gammaPDFReal_pos {x a r : ℝ} (ha : 0 < a) (hr : 0 < r) (hx : 0 < x) :
@@ -144,7 +144,7 @@ lemma gammaCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
   · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, gammaPDFReal_nonneg ha hr]
-  · exact (measurable_gammaPDFReal a r).aestronglyMeasurable.restrict
+  · fun_prop
 
 lemma gammaCDFReal_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCDFReal a r x = ENNReal.toReal (∫⁻ x in Iic x, gammaPDF a r x) := by
