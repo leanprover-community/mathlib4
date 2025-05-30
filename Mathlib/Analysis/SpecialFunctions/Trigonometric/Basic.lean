@@ -828,7 +828,7 @@ theorem sin_ofNat_mul_pi_div_ofNat_of_eq_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
   rw [← sin_pi_sub, sub_div' (NeZero.ne _), h]
   ring_nf
 
-/-- `sin ((2 * n - 1) * π / n) = sin π / n` -/
+/-- `sin ((2 * n - 1) * π / n) = - sin π / n` -/
 @[simp]
 theorem sin_ofNat_mul_pi_div_ofNat_of_eq_two_mul_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
     (h : ofNat(m) = 2 * (ofNat(n) : ℝ) - 1 := by norm_num) :
