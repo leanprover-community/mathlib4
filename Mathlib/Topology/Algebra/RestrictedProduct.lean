@@ -336,7 +336,7 @@ variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
 section set
 
-variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, Set.MapsTo (φ j) (A₁ (f j)) (A₂ j))
+variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (A₁ (f j)) (A₂ j))
 
 /--
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, A₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, A₂ j]_[𝓕₂]`,
@@ -360,7 +360,7 @@ section monoid
 
 variable [Π i, Monoid (R₁ i)] [Π i, Monoid (R₂ i)] [∀ i, SubmonoidClass (S₁ i) (R₁ i)]
     [∀ i, SubmonoidClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →* R₂ j)
-    (hφ : ∀ᶠ j in 𝓕₂, Set.MapsTo (φ j) (B₁ (f j)) (B₂ j))
+    (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (B₁ (f j)) (B₂ j))
 
 /--
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
@@ -395,7 +395,7 @@ section ring
 
 variable [Π i, Ring (R₁ i)] [Π i, Ring (R₂ i)] [∀ i, SubringClass (S₁ i) (R₁ i)]
     [∀ i, SubringClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →+* R₂ j)
-    (hφ : ∀ᶠ j in 𝓕₂, Set.MapsTo (φ j) (B₁ (f j)) (B₂ j))
+    (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (B₁ (f j)) (B₂ j))
 
 /--
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
@@ -934,17 +934,17 @@ variable {𝓕₁ : Filter ι₁} {𝓕₂ : Filter ι₂}
 variable {A₁ : (i : ι₁) → Set (R₁ i)} {A₂ : (i : ι₂) → Set (R₂ i)}
 variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
-variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, A₁ (f j) ⊆ φ j ⁻¹' A₂ j)
+variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (A₁ (f j)) (A₂ j))
 
 theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R₁ R₂ f hf φ hφ) := by
   rw [continuous_dom]
   intro S hS
-  set T := f ⁻¹' S ∩ {j | A₁ (f j) ⊆ φ j ⁻¹' A₂ j}
+  set T := f ⁻¹' S ∩ {j | MapsTo (φ j) (A₁ (f j)) (A₂ j)}
   have hT : 𝓕₂ ≤ 𝓟 T := by
     rw [le_principal_iff] at hS ⊢
     exact inter_mem (hf hS) hφ
   have hf' : Tendsto f (𝓟 T) (𝓟 S) := by aesop
-  have hφ' : ∀ᶠ j in 𝓟 T, A₁ (f j) ⊆ φ j ⁻¹' (A₂ j) := by aesop
+  have hφ' : ∀ᶠ j in 𝓟 T, MapsTo (φ j) (A₁ (f j)) (A₂ j) := by aesop
   have key : map R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
       inclusion R₂ A₂ hT ∘ map R₁ R₂ f hf' φ hφ' := rfl
   rw [key]
