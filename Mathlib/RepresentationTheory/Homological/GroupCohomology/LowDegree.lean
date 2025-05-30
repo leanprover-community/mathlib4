@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.RepresentationTheory.GroupCohomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
 /-!
@@ -13,10 +13,11 @@ import Mathlib.RepresentationTheory.Invariants
 Let `k` be a commutative ring and `G` a group. This file gives simple expressions for
 the group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 
-In `RepresentationTheory.GroupCohomology.Basic`, we define the `n`th group cohomology of `A` to be
-the cohomology of a complex `inhomogeneousCochains A`, whose objects are `(Fin n → G) → A`; this is
-unnecessarily unwieldy in low degree. Moreover, cohomology of a complex is defined as an abstract
-cokernel, whereas the definitions here are explicit quotients of cocycles by coboundaries.
+In `RepresentationTheory.Homological.GroupCohomology.Basic`, we define the `n`th group cohomology
+of `A` to be the cohomology of a complex `inhomogeneousCochains A`, whose objects are
+`(Fin n → G) → A`; this is unnecessarily unwieldy in low degree. Moreover, cohomology of a complex
+is defined as an abstract cokernel, whereas the definitions here are explicit quotients of cocycles
+by coboundaries.
 
 We also show that when the representation on `A` is trivial, `H¹(G, A) ≃ Hom(G, A)`.
 
@@ -28,7 +29,7 @@ multiplicative case, starting with the section `IsMulCocycle`, just mirrors the 
 unfortunately `@[to_additive]` can't deal with scalar actions.
 
 The file also contains an identification between the definitions in
-`RepresentationTheory.GroupCohomology.Basic`, `groupCohomology.cocycles A n` and
+`RepresentationTheory.Homological.GroupCohomology.Basic`, `groupCohomology.cocycles A n` and
 `groupCohomology A n`, and the `nCocycles` and `Hn A` in this file, for `n = 0, 1, 2`.
 
 ## Main definitions
@@ -62,6 +63,8 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 namespace groupCohomology
 
 section Cochains
+
+variable [DecidableEq G]
 
 /-- The 0th object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
@@ -146,6 +149,8 @@ def dTwo : ModuleCat.of k (G × G → A) ⟶ ModuleCat.of k (G × G × G → A) 
           add_sub_assoc, add_sub_assoc]
     map_smul' r x := funext fun g => by dsimp; simp only [map_smul, smul_add, smul_sub] }
 
+variable [DecidableEq G]
+
 /-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `dZero` gives a simpler expression for the 0th differential: that is, the following
 square commutes:
@@ -221,15 +226,20 @@ theorem comp_dTwo_eq :
 
 @[deprecated (since := "2025-05-09")] alias dTwo_comp_eq := comp_dTwo_eq
 
+omit [DecidableEq G] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem dZero_comp_dOne : dZero A ≫ dOne A = 0 := by
-  simp [(Iso.eq_inv_comp _).2 (comp_dOne_eq A), (Iso.eq_inv_comp _).2 (comp_dZero_eq A)]
+  ext
+  simp [Pi.zero_apply (M := fun _ => A)]
 
 @[deprecated (since := "2025-05-14")] alias dOne_comp_dZero := dZero_comp_dOne
 
+omit [DecidableEq G] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem dOne_comp_dTwo : dOne A ≫ dTwo A = 0 := by
-  simp [(Iso.eq_inv_comp _).2 (comp_dOne_eq A), (Iso.eq_inv_comp _).2 (comp_dTwo_eq A)]
+  ext f g
+  simp [mul_assoc, Pi.zero_apply (M := fun _ => A)]
+  abel
 
 @[deprecated (since := "2025-05-14")] alias dTwo_comp_dOne := dOne_comp_dTwo
 
@@ -846,6 +856,8 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rw [← sub_eq_zero]
   exact congr_fun hx g
 
+variable [DecidableEq G]
+
 /-- The arrow `A --dZero--> Fun(G, A)` is isomorphic to the differential
 `(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom_left hom_right inv_left inv_right]
@@ -890,6 +902,8 @@ end H0
 
 section H1
 
+variable [DecidableEq G]
+
 /-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
@@ -932,6 +946,8 @@ lemma groupCohomologyπ_comp_isoH1_hom  :
 end H1
 
 section H2
+
+variable [DecidableEq G]
 
 /-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)` is
 isomorphic to the 2nd short complex associated to the complex of inhomogeneous cochains of `A`. -/
