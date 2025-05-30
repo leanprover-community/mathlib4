@@ -398,7 +398,7 @@ theorem comap'
     exact (measure_mono (image_preimage_subset _ _)).trans_lt hμU
 
 protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β]
-    (μ : Measure β) [OuterRegular μ] (f : α ≃ₜ β) : (μ.comap f).OuterRegular :=
+    {μ : Measure β} [OuterRegular μ] (f : α ≃ₜ β) : (μ.comap f).OuterRegular :=
   OuterRegular.comap' f.continuous f.measurableEmbedding
 
 protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) :
