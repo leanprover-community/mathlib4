@@ -151,7 +151,7 @@ theorem _root_.Topology.IsOpenEmbedding.isOpenPosMeasure_comap [BorelSpace X]
     {f : X → Z} (hf : IsOpenEmbedding f) (μ : Measure Z) [IsOpenPosMeasure μ] :
     (μ.comap f).IsOpenPosMeasure where
   open_pos U hU Une := by
-    rw[hf.measurableEmbedding.comap_apply]
+    rw [hf.measurableEmbedding.comap_apply]
     exact IsOpenPosMeasure.open_pos _ (hf.isOpen_iff_image_isOpen.mp hU) (Une.image f)
 
 end Basic
