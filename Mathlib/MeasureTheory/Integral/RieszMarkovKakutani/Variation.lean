@@ -112,9 +112,6 @@ variable {ι E : Type*} [SeminormedAddCommGroup E]
 `‖f i‖ₑ ≤ g i`, then `‖∑' i, f i‖ₑ ≤ ∑' i, g i`. -/
 theorem tsum_of_enorm_bounded {f : ι → E} {g : ι → ℝ≥0∞} {a : ℝ≥0∞} (hg : HasSum g a)
     (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖∑' i : ι, f i‖ₑ ≤ a := by
-  -- simp [← NNReal.coe_le_coe, ← NNReal.hasSum_coe, coe_nnnorm] at *
-  -- have : ∀ i, ‖f i‖ₑ = ENNReal.ofReal ‖f i‖ := by simp only [ofReal_norm, implies_true]
-  -- have (i : ι) := ofReal_norm (f i)
   by_cases hc : a ≠ ∞
   · have hc' : ∀ i, g i ≠ ∞ := by
       by_contra! h
@@ -125,15 +122,12 @@ theorem tsum_of_enorm_bounded {f : ι → E} {g : ι → ℝ≥0∞} {a : ℝ≥
         rw [hi] at hg'
         simp only [top_le_iff] at hg'
         rwa [← hg']
-      have : a = ⊤ := HasSum.unique hg this
-      exact hc this
+      exact hc (HasSum.unique hg this)
     simp_rw [← ofReal_norm] at *
     have hfg (i : ι) : ‖f i‖ ≤ (g i).toReal := by
-      have := h i
       refine (ofReal_le_iff_le_toReal ?_).mp (h i)
       exact hc' i
     have hg' : HasSum (fun i ↦ (g i).toReal) a.toReal := by
-      -- Since each term and the sum are finite.
       have ha' := HasSum.tsum_eq hg
       have h2 : (∑' (x : ι), (g x).toReal) = a.toReal := by
         rw [← ENNReal.tsum_toReal_eq hc']
@@ -141,21 +135,9 @@ theorem tsum_of_enorm_bounded {f : ι → E} {g : ι → ℝ≥0∞} {a : ℝ≥
         · rw [ha']
           exact hc
         · exact hc
-      have hb' : ∑' b, g b ≠ ∞ := by
-        rw [ha']
-        exact hc
+      have hb' : ∑' b, g b ≠ ∞ := by simpa [ha']
       have hh := ENNReal.hasSum_toReal hb'
       rw [← ENNReal.coe_toNNReal hc] at ha'
-      have : ∑' b, g b = ∑' b, ((g b).toNNReal : ENNReal) := by
-        congr
-        ext b
-        exact Eq.symm (ENNReal.coe_toNNReal (hc' b))
-      rw [this] at ha'
-      have fsummable : Summable (fun b => (g b).toNNReal) := by
-        apply ENNReal.tsum_coe_ne_top_iff_summable.mp
-        rw [ha']
-        exact coe_ne_top
-      rw [← NNReal.summable_coe] at fsummable
       rw [h2] at hh
       exact hh
     exact (ofReal_le_iff_le_toReal hc).mpr <| tsum_of_norm_bounded hg' hfg
@@ -184,6 +166,9 @@ contained within `s` since the same value will be achieved in the supremum.
 The empty set is forbidden so that partitions of disjoint sets are disjoint sets of sets.
 -/
 
+/-- An inner partition is a finite collection of pairwise disjoint sets which are all contained
+within a given set. Different to `Setoid.IsPartition` there is no requirement for the union to be
+the entire set and the the number of partition elements is required to be finite. -/
 def partitions (s : Set X) : Set (Finset (Set X)) :=
     {P | (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ (P.toSet.PairwiseDisjoint id) ∧
     (∀ p ∈ P, p ≠ ∅)}
@@ -254,7 +239,6 @@ lemma partition_restrict {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitio
     obtain ⟨_, _, hp⟩ := Finset.mem_image.mp (Finset.mem_filter.mp h).1
     simp [← hp]
   · intro r hr
-    have := Finset.mem_filter.mp hr
     obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp (Finset.mem_filter.mp hr).1
     rw [← hp']
     exact MeasurableSet.inter (hs.2.1 p hp) ht
@@ -284,6 +268,8 @@ elements of that partition. -/
 private noncomputable def varOfPart (P : Finset (Set X)) := ∑ p ∈ P, ‖μ p‖ₑ
 
 open Classical in
+/-- The variation of a measure is defined as the supremum over all partitions of the sum of the norm
+of the measure of each partition element. -/
 noncomputable def variation_aux (s : Set X) :=
     if (MeasurableSet s) then ⨆ P ∈ partitions s, varOfPart μ P else 0
 
@@ -478,7 +464,7 @@ end VectorMeasure
 
 namespace VectorMeasure
 variable {X V 𝕜 : Type*} [MeasurableSpace X] [NormedAddCommGroup V] [NormedField 𝕜]
-  [NormedSpace 𝕜 V] (μ : VectorMeasure X V)
+  [NormedSpace 𝕜 V]
 
 theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E‖ₑ ≤ variation μ E := by
   wlog hE' : E ≠ ∅
