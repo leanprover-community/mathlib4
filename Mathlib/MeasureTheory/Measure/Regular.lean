@@ -394,8 +394,7 @@ theorem comap_of_continuous_of_measurableEmbedding
     (μ.comap f).OuterRegular where
   outerRegular A hA r hr := by
     rw [f_me.comap_apply] at hr
-    obtain ⟨U, hUA, Uopen, hμU⟩ :=
-      OuterRegular.outerRegular (f_me.measurableSet_image' hA) r hr
+    obtain ⟨U, hUA, Uopen, hμU⟩ := OuterRegular.outerRegular (f_me.measurableSet_image' hA) r hr
     refine ⟨f ⁻¹' U, by rwa [Superset, ← image_subset_iff], Uopen.preimage f_cont, ?_⟩
     rw [f_me.comap_apply]
     exact lt_of_le_of_lt (measure_mono (image_preimage_subset _ _)) hμU
