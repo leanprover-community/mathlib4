@@ -22,7 +22,7 @@ instance hasEnoughRootsOfUnity (F : Type*) [Field F] [IsAlgClosed F] (n : ℕ) [
     HasEnoughRootsOfUnity F n where
   prim := by
     have : NeZero n := .of_neZero_natCast F
-    have := isCyclotomicExtension {n} F fun _ h ↦ Set.mem_singleton_iff.mp h ▸ i
+    have := isCyclotomicExtension {n} F fun _ h _ ↦ Set.mem_singleton_iff.mp h ▸ i
     exact IsCyclotomicExtension.exists_isPrimitiveRoot (S := {n}) F _ rfl (NeZero.ne _)
   cyc :=
     have : NeZero n := .of_neZero_natCast F
