@@ -69,6 +69,10 @@ theorem mk_eq_iff {x y : V} :
     mk ρ x = mk ρ y ↔ x - y ∈ ρ.augmentationSubmodule :=
   Submodule.Quotient.eq _
 
+theorem mk_eq_zero_iff {x : V} :
+    mk ρ x = 0 ↔ x ∈ ρ.augmentationSubmodule :=
+  Submodule.Quotient.mk_eq_zero _
+
 @[simp]
 lemma mk_ρ_apply (g : G) (x : V) :
     mk ρ (ρ g x) = mk ρ x :=

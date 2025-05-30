@@ -65,40 +65,41 @@ theorem dZero_single (g : G) (a : A) : dZero A (single g a) = A.ρ g⁻¹ a - a 
   simp [dZero]
 
 theorem dZero_single_one (a : A) : dZero A (single 1 a) = 0 := by
-  simp
+  simp [dZero] -- why can't it find the previous lemma
 
 theorem dZero_single_inv (g : G) (a : A) :
     dZero A (single g⁻¹ a) = - dZero A (single g (A.ρ g a)) := by
-  simp
+  simp [dZero]
 
 theorem range_dZero_eq_augmentationSubmodule :
-    LinearMap.range (dZero A) = augmentationSubmodule A.ρ := by
+    LinearMap.range (dZero A).hom = augmentationSubmodule A.ρ := by
   symm
   apply Submodule.span_eq_of_le
   · rintro _ ⟨x, rfl⟩
     use single x.1⁻¹ x.2
-    simp
+    simp [dZero]
   · rintro x ⟨y, hy⟩
     induction' y using Finsupp.induction with _ _ _ _ _ h generalizing x
     · simp [← hy]
-    · simpa [← hy, add_sub_add_comm, sum_add_index]
+    · simpa [← hy, add_sub_add_comm, sum_add_index, dZero_single (G := G)]
         using Submodule.add_mem _ (mem_augmentationSubmodule_of_eq _ _ _ rfl) (h rfl)
 
-lemma mkQ_comp_dZero : (augmentationSubmodule A.ρ).mkQ ∘ₗ dZero A = 0 := by
-  rw [← range_dZero_eq_augmentationSubmodule]
-  exact LinearMap.range_mkQ_comp _
+lemma mk_comp_dZero : Coinvariants.mk A.ρ ∘ₗ (dZero A).hom = 0 := by
+  ext x
+  simp [dZero]
 
 /-- The 0th differential in the complex of inhomogeneous chains of a `G`-representation `A` as a
 linear map into the `k`-submodule of `A` spanned by elements of the form
 `ρ(g)(x) - x, g ∈ G, x ∈ A`.-/
 def oneChainsToAugmentationSubmodule :
     (G →₀ A) →ₗ[k] augmentationSubmodule A.ρ :=
-  (dZero A).codRestrict _ <| range_dZero_eq_augmentationSubmodule A ▸ LinearMap.mem_range_self _
+  (dZero A).hom.codRestrict _ <|
+    range_dZero_eq_augmentationSubmodule A ▸ LinearMap.mem_range_self _
 
 @[simp]
 theorem dZero_eq_zero_of_isTrivial [A.IsTrivial] : dZero A = 0 := by
   ext
-  simp
+  simp [dZero]
 
 /-- The 1st differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G² →₀ A) → (G →₀ A)`. It sends `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
@@ -114,34 +115,36 @@ lemma dOne_single (g : G × G) (a : A) :
 
 lemma dOne_single_one_fst (g : G) (a : A) :
     dOne A (single (1, g) a) = single 1 a := by
-  simp
+  simp [dOne]
 
 lemma dOne_single_one_snd (g : G) (a : A) :
     dOne A (single (g, 1) a) = single 1 (A.ρ g⁻¹ a) := by
-  simp
+  simp [dOne]
 
 lemma dOne_single_inv_self_ρ_sub_self_inv (g : G) (a : A) :
     dOne A (single (g⁻¹, g) (A.ρ g⁻¹ a) - single (g, g⁻¹) a) =
       single 1 a - single 1 (A.ρ g⁻¹ a) := by
-  simp only [map_sub, dOne_single, inv_inv, self_inv_apply, inv_mul_cancel, mul_inv_cancel]
+  simp only [map_sub, dOne_single (G := G), inv_inv, self_inv_apply, inv_mul_cancel,
+    mul_inv_cancel]
   abel
 
 lemma dOne_single_self_inv_ρ_sub_inv_self (g : G) (a : A) :
     dOne A (single (g, g⁻¹) (A.ρ g a) - single (g⁻¹, g) a) =
       single 1 a - single 1 (A.ρ g a) := by
-  simp only [map_sub, dOne_single, inv_self_apply, mul_inv_cancel, inv_inv, inv_mul_cancel]
+  simp only [map_sub, dOne_single (G := G), inv_self_apply, mul_inv_cancel, inv_inv,
+    inv_mul_cancel]
   abel
 
 lemma dOne_single_ρ_add_single_inv_mul (g h : G) (a : A) :
     dOne A (single (g, h) (A.ρ g a) + single (g⁻¹, g * h) a) =
       single g (A.ρ g a) + single g⁻¹ a := by
-  simp only [map_add, dOne_single, inv_self_apply, inv_inv, inv_mul_cancel_left]
+  simp only [map_add, dOne_single (G := G), inv_self_apply, inv_inv, inv_mul_cancel_left]
   abel
 
 lemma dOne_single_inv_mul_ρ_add_single (g h : G) (a : A) :
     dOne A (single (g⁻¹, g * h) (A.ρ g⁻¹ a) + single (g, h) a) =
       single g⁻¹ (A.ρ g⁻¹ a) + single g a := by
-  simp only [map_add, dOne_single, inv_inv, self_inv_apply, inv_mul_cancel_left]
+  simp only [map_add, dOne_single (G := G), inv_inv, self_inv_apply, inv_mul_cancel_left]
   abel
 
 variable (A) in
@@ -161,15 +164,15 @@ lemma dTwo_single (g : G × G × G) (a : A) :
 
 lemma dTwo_single_one_fst (g h : G) (a : A) :
     dTwo A (single (1, g, h) a) = single (1, g * h) a - single (1, g) a := by
-  simp
+  simp [dTwo]
 
 lemma dTwo_single_one_snd (g h : G) (a : A) :
     dTwo A (single (g, 1, h) a) = single (1, h) (A.ρ g⁻¹ a) - single (g, 1) a := by
-  simp
+  simp [dTwo]
 
 lemma dTwo_single_one_thd (g h : G) (a : A) :
     dTwo A (single (g, h, 1) a) = single (h, 1) (A.ρ g⁻¹ a) - single (g * h, 1) a := by
-  simp
+  simp [dTwo]
 
 section
 variable (A) [DecidableEq G]
@@ -188,10 +191,10 @@ square commutes:
 where the vertical arrows are `oneChainsIso` and `zeroChainsIso` respectively.
 -/
 theorem comp_dZero_eq :
-    (oneChainsIso A).hom ≫ dZero A = (inhomogeneousChains A).d 1 0 ≫ (zeroChainsIso A).hom :
+    (oneChainsIso A).hom ≫ dZero A = (inhomogeneousChains A).d 1 0 ≫ (zeroChainsIso A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, zeroChainsIso, oneChainsIso,
-      Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg]
+    simp [inhomogeneousChains.d_def, zeroChainsIso, oneChainsIso, dZero_single (G := G),
+      Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg, inhomogeneousChains.d_single (G := G)]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `dOne` gives a simpler expression for the 1st differential: that is, the following
@@ -210,8 +213,9 @@ where the vertical arrows are `twoChainsIso` and `oneChainsIso` respectively.
 theorem comp_dOne_eq :
     (twoChainsIso A).hom ≫ dOne A = (inhomogeneousChains A).d 2 1 ≫ (oneChainsIso A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, oneChainsIso, add_assoc, twoChainsIso,
-      -Finsupp.domLCongr_apply, domLCongr_single, sub_eq_add_neg, Fin.contractNth]
+    simp [inhomogeneousChains.d_def, oneChainsIso, add_assoc, twoChainsIso, dOne_single (G := G),
+      -Finsupp.domLCongr_apply, domLCongr_single, sub_eq_add_neg, Fin.contractNth,
+      inhomogeneousChains.d_single (G := G)]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `dTwo` gives a simpler expression for the 2nd differential: that is, the following
@@ -232,7 +236,8 @@ theorem comp_dTwo_eq :
     simp [inhomogeneousChains.d_def, twoChainsIso, pow_succ, threeChainsIso,
       -domLCongr_apply, domLCongr_single, dTwo, Fin.sum_univ_three,
       Fin.contractNth, Fin.tail_def, sub_eq_add_neg, add_assoc,
-      add_rotate' (-(single (_ * _, _) _)), add_left_comm (single (_, _ * _) _)]
+      inhomogeneousChains.d_single (G := G), add_rotate' (-(single (_ * _, _) _)),
+      add_left_comm (single (_, _ * _) _)]
 
 theorem dOne_comp_dZero : dOne A ≫ dZero A = 0 := by
   ext x g
