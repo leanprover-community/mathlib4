@@ -1234,6 +1234,9 @@ def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
 initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
+    /- So as to be run _after_ the `instance` attribute, as this handler uses
+    `Lean.Meta.isInstance`, which requires the `instance` handler to have
+    already run. -/
     applicationTime := .afterCompilation
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
     getParam := simpsTacFromSyntax }
