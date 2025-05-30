@@ -104,6 +104,7 @@ lemma map_comp_mk {f : V →ₗ[k] W} {hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f
 lemma map_mk (f : V →ₗ[k] W) (hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f) (x : V) :
     map ρ τ f hf (mk _ x) = mk _ (f x) := rfl
 
+end Coinvariants
 section
 
 variable {k G V : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
@@ -126,24 +127,23 @@ noncomputable abbrev toAugmentationSubmodule :
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G`-representation on the
 coinvariants of `ρ|_S`. -/
 noncomputable abbrev toCoinvariants :
-    Representation k G (coinvariants <| ρ.comp S.subtype) :=
+    Representation k G (Coinvariants <| ρ.comp S.subtype) :=
   quotient ρ (augmentationSubmodule <| ρ.comp S.subtype)
     fun g => le_comap_augmentationSubmodule ρ S g
 
 instance : IsTrivial ((toCoinvariants ρ S).comp S.subtype) where
-  out g := Submodule.linearMap_qext _ <| by
+  out g := by
     ext x
-    simpa [Submodule.Quotient.eq] using mem_augmentationSubmodule_of_eq g x _ rfl
+    exact (Coinvariants.mk_eq_iff _).2 <| mem_augmentationSubmodule_of_eq g x _ rfl
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
 noncomputable abbrev quotientToCoinvariants :
-    Representation k (G ⧸ S) (coinvariants (ρ.comp S.subtype)) :=
+    Representation k (G ⧸ S) (Coinvariants (ρ.comp S.subtype)) :=
   ofQuotient (toCoinvariants ρ S) S
 
 end
 
-end Coinvariants
 end Representation
 
 namespace Rep
