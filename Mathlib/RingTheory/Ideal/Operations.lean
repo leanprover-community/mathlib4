@@ -440,7 +440,7 @@ theorem mem_span_singleton_mul {x y : R} {I : Ideal R} : x ∈ span {y} * I ↔ 
   simp only [mul_comm, mem_mul_span_singleton]
 
 lemma range_mul (A : Type*) [CommSemiring A] [Module R A]
-  [SMulCommClass R A A] [IsScalarTower R A A] (a : A) : LinearMap.range (LinearMap.mul R A a) =
+    [SMulCommClass R A A] [IsScalarTower R A A] (a : A) : LinearMap.range (LinearMap.mul R A a) =
     (Ideal.span {a}).restrictScalars R := by
   aesop (add simp Ideal.mem_span_singleton) (add simp dvd_def)
 
