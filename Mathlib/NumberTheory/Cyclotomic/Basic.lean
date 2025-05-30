@@ -692,23 +692,16 @@ section IsAlgClosed
 
 variable [IsAlgClosed K]
 
-private theorem IsAlgClosed.isCyclotomicExtension_aux (h₀ : ∀ a ∈ S, a ≠ 0)
-    (h : ∀ a ∈ S, NeZero (a : K)) :
-    IsCyclotomicExtension S K K := by
-  refine ⟨@fun a ha => ?_, Algebra.eq_top_iff.mp <| Subsingleton.elim _ _⟩
-  obtain ⟨r, hr⟩ := IsAlgClosed.exists_aeval_eq_zero K _
-    (degree_cyclotomic_pos a K (Nat.pos_of_ne_zero (h₀ a ha))).ne'
-  refine fun _ ↦ ⟨r, ?_⟩
-  haveI := h a ha
-  rwa [coe_aeval_eq_eval, ← IsRoot.def, isRoot_cyclotomic_iff] at hr
-
 /-- Algebraically closed fields are `S`-cyclotomic extensions over themselves if
 `NeZero ((a : ℕ) : K))` for all `a ∈ S`. -/
 theorem IsAlgClosed.isCyclotomicExtension (h : ∀ a ∈ S, NeZero (a : K)) :
     IsCyclotomicExtension S K K := by
   rw [IsCyclotomicExtension.eq_self_sdiff_zero]
-  refine IsAlgClosed.isCyclotomicExtension_aux _ K (by simp) ?_
-  exact fun a ha ↦ h a <| mem_of_mem_diff ha
+  refine ⟨@fun a ha ha' ↦ ?_, Algebra.eq_top_iff.mp <| Subsingleton.elim _ _⟩
+  obtain ⟨r, hr⟩ := IsAlgClosed.exists_aeval_eq_zero K _
+    (degree_cyclotomic_pos a K (Nat.pos_of_ne_zero ha')).ne'
+  have : NeZero (a : K) := h a (mem_of_mem_diff ha)
+  exact ⟨r,  by rwa [coe_aeval_eq_eval, ← IsRoot.def, isRoot_cyclotomic_iff] at hr⟩
 
 instance IsAlgClosedOfCharZero.isCyclotomicExtension [CharZero K] :
     ∀ S, IsCyclotomicExtension S K K := fun S => by
