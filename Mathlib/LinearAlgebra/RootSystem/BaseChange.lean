@@ -14,15 +14,15 @@ When the coefficients are a field, root pairings behave well with respect to res
 extension of scalars.
 
 ## Main results:
- * `RootPairing.restrict`: if `RootPairing.pairing` takes values in a subfield, we may restrict to
-   get a root _system_ with coefficients in the subfield. Of particular interest is the case when
-   the pairing takes values in its prime subfield (which happens for crystallographic pairings).
+* `RootPairing.restrict`: if `RootPairing.pairing` takes values in a subfield, we may restrict to
+  get a root _system_ with coefficients in the subfield. Of particular interest is the case when
+  the pairing takes values in its prime subfield (which happens for crystallographic pairings).
 
 ## TODO
 
- * Extension of scalars
- * Crystallographic root systems are isomorphic to base changes of root systems over `ℤ`: Take
-   `M₀` and `N₀` to be the `ℤ`-span of roots and coroots.
+* Extension of scalars
+* Crystallographic root systems are isomorphic to base changes of root systems over `ℤ`: Take
+  `M₀` and `N₀` to be the `ℤ`-span of roots and coroots.
 
 -/
 

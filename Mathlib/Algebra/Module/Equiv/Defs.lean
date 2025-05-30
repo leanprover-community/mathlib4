@@ -175,11 +175,16 @@ theorem toLinearMap_eq_coe {e : M ≃ₛₗ[σ] M₂} : e.toLinearMap = Semiline
   rfl
 
 @[simp]
-theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
-    (⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) = to_fun := rfl
+theorem coe_mk {f invFun left_inv right_inv} :
+    ((⟨f, invFun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) : M → M₂) = f := rfl
 
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
   DFunLike.coe_injective
+
+@[simp]
+lemma _root_.SemilinearEquivClass.semilinearEquiv_apply {F : Type*} [EquivLike F M M₂]
+    [SemilinearEquivClass F σ M M₂] (f : F) (x : M) :
+    SemilinearEquivClass.semilinearEquiv (M₂ := M₂) f x = f x := rfl
 
 end
 

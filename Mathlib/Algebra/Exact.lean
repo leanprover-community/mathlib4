@@ -11,13 +11,13 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 /-! # Exactness of a pair
 
 * For two maps `f : M → N` and `g : N → P`, with `Zero P`,
-`Function.Exact f g` says that `Set.range f = Set.preimage g {0}`
+  `Function.Exact f g` says that `Set.range f = Set.preimage g {0}`
 
 * For additive maps `f : M →+ N`  and `g : N →+ P`,
-`Exact f g` says that `range f = ker g`
+  `Exact f g` says that `range f = ker g`
 
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
-`Exact f g` says that `range f = ker g`
+  `Exact f g` says that `range f = ker g`
 
 ## TODO :
 
@@ -74,10 +74,9 @@ may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0,
 lemma iff_rangeFactorization [Zero P] (hg : 0 ∈ Set.range g) :
     letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
     Exact f g ↔ Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
-  rw [Exact, Exact, Subtype.range_coe]
-  congr! 2
-  rw [Set.rangeFactorization]
-  exact ⟨fun _ ↦ by rwa [Subtype.ext_iff], fun h ↦ by rwa [Subtype.ext_iff] at h⟩
+  letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
+  have : ((0 : Set.range g) : P) = 0 := rfl
+  simp [Exact, Subtype.range_coe, Set.rangeFactorization, Subtype.ext_iff, this]
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
@@ -303,7 +302,7 @@ lemma of_ladder_linearEquiv_of_exact
 /-- Two maps `f : M →ₗ[R] N` and `g : N →ₗ[R] P` are exact if and only if the induced maps
 `LinearMap.range f → N → LinearMap.range g` are exact. -/
 lemma iff_linearMap_rangeRestrict :
-    Exact f g ↔ Exact f.range.subtype g.rangeRestrict :=
+    Exact f g ↔ Exact (LinearMap.range f).subtype g.rangeRestrict :=
   iff_rangeFactorization (zero_mem (LinearMap.range g))
 
 alias ⟨linearMap_rangeRestrict, _⟩ := iff_linearMap_rangeRestrict

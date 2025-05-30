@@ -57,14 +57,14 @@ matched because they preserve the properties of QPF. The latter example,
 
 ## Related modules
 
- * constructions
-   * Fix
-   * Cofix
-   * Quot
-   * Comp
-   * Sigma / Pi
-   * Prj
-   * Const
+* constructions
+  * Fix
+  * Cofix
+  * Quot
+  * Comp
+  * Sigma / Pi
+  * Prj
+  * Const
 
 each proves that some operations on functors preserves the QPF structure
 -/

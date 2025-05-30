@@ -78,6 +78,37 @@ theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀
     refine pi_image_eq_of_subset hC (subset_univ s)
   simp_rw [← mem_image, h]
 
+@[simp]
+theorem mem_squareCylinders (C : ∀ i, Set (Set (α i))) (hC : ∀ i, Nonempty (C i)) (S : _) :
+    S ∈ squareCylinders C ↔ ∃ (s t : _) (_ : ∀ i ∈ s, t i ∈ C i), S = squareCylinder s t := by
+  simp_rw [squareCylinders_eq_iUnion_image, squareCylinder]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp only [mem_iUnion, mem_image, mem_pi, mem_univ, forall_const] at h
+    obtain ⟨s, t, h₀, h₁⟩ := h
+    use s, t
+    simp only [h₁, h₀, implies_true, exists_const]
+  · obtain ⟨s, t, h₀, rfl⟩ := h
+    simp only [mem_iUnion, mem_image, mem_pi, mem_univ, forall_const]
+    classical
+    use s, (fun i ↦ if i ∈ s.toSet then t i else (hC i).some)
+    refine ⟨fun i ↦ ?_ ,?_⟩
+    · by_cases h : i ∈ s <;> simp only [Finset.mem_coe, h, ↓reduceIte, Subtype.coe_prop, h₀]
+    · refine Set.pi_congr rfl (fun i hi ↦ by simp only [hi, ↓reduceIte] at *)
+
+theorem squareCylinders_subset_pi (C : ∀ i, Set (Set (α i))) (hC : ∀ i, univ ∈ C i) :
+    squareCylinders C ⊆ univ.pi '' univ.pi C := by
+  intro S hS
+  obtain ⟨s, t, h₀, h₁⟩ := hS
+  simp only [squareCylinder, mem_pi, mem_univ, forall_const] at h₀ h₁
+  classical
+  use fun i ↦ (if i ∈ s.toSet then (t i) else univ)
+  refine ⟨fun i ↦ ?_, ?_⟩
+  · simp only [mem_pi, mem_univ, forall_const]
+    by_cases hi : i ∈ s.toSet <;> simp only [hi, ↓reduceIte]
+    · exact h₀ i
+    · exact hC i
+  · rw [h₁, univ_pi_ite s t]
+
 theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Set (α i))}
     (hC : ∀ i, IsPiSystem (C i)) (hC_univ : ∀ i, univ ∈ C i) : IsPiSystem (squareCylinders C) := by
   classical

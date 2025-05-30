@@ -235,7 +235,7 @@ theorem erase_le_iff_le_cons {s t : Multiset α} {a : α} : s.erase a ≤ t ↔ 
 theorem card_erase_of_mem {a : α} {s : Multiset α} : a ∈ s → card (s.erase a) = pred (card s) :=
   Quot.inductionOn s fun _l => length_erase_of_mem
 
-@[simp]
+-- @[simp] -- removed because LHS is not in simp normal form
 theorem card_erase_add_one {a : α} {s : Multiset α} : a ∈ s → card (s.erase a) + 1 = card s :=
   Quot.inductionOn s fun _l => length_erase_add_one
 
