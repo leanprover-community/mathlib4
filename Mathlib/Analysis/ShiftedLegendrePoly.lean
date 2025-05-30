@@ -23,8 +23,9 @@ namespace Polynomial
 noncomputable def shiftedLegendre (n : ℕ) : ℤ[X] :=
   ∑ k ∈ Finset.range (n + 1), C ((-1) ^ k * (Nat.choose n k) * (Nat.choose (n + k) n) : ℤ) * X ^ k
 
-/-- The expand of `shiftedLegendre n`. -/
-theorem mul_shiftedLegendre_n_dervi (n : ℕ) : (n ! : ℤ[X]) * (shiftedLegendre n) =
+/-- The shifted Legendre polynomial multiplied by a factorial equals the higher-order derivative of
+  the combinatorial function `X ^ n * (1 - X) ^ n`. -/
+theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLegendre n) =
     derivative^[n] (X ^ n * (1 - (X : ℤ[X])) ^ n) := by
   symm
   have h : ((X : ℤ[X]) - X ^ 2) ^ n =
@@ -56,38 +57,42 @@ theorem mul_shiftedLegendre_n_dervi (n : ℕ) : (n ! : ℤ[X]) * (shiftedLegendr
     · simp only [add_comm, Nat.factorial_mul_factorial_dvd_factorial_add]
   · exact Nat.factorial_dvd_factorial (by omega)
 
-/-- `shiftedLegendre n` is an integer polynomial. -/
-lemma shiftedLegendre_eq_int_poly (n : ℕ) : ∃ a : ℕ → ℤ, shiftedLegendre n =
-    ∑ k ∈ Finset.range (n + 1), (a k) • X ^ k := by
-  use fun k => (- 1) ^ k * (Nat.choose n k) * (Nat.choose (n + k) n)
-  simp only [shiftedLegendre, Int.reduceNeg, eq_intCast, Int.cast_mul, Int.cast_pow, Int.cast_neg,
-    Int.cast_one, Int.cast_natCast, zsmul_eq_mul]
+/-- The coefficient of the shifted Legendre polynomial at `k` is
+  `(-1) ^ k * (n.choose k) * (n + k).choose n`. -/
+theorem coeff_shiftedLegendre (n k : ℕ) :
+    (shiftedLegendre n).coeff k = (-1) ^ k * (Nat.choose n k) * (Nat.choose (n + k) n) := by
+  rw [shiftedLegendre, finset_sum_coeff]
+  simp_rw [coeff_C_mul_X_pow]
+  simp only [Int.reduceNeg, sum_ite_eq, mem_range, ite_eq_left_iff, not_lt, zero_eq_mul,
+    mul_eq_zero, pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq, false_and, Int.natCast_eq_zero,
+    false_or]
+  intro h
+  simp [Nat.choose_eq_zero_of_lt h]
+
+/-- The degree of `shiftedLegendre n` is `n`. -/
+theorem degree_shiftedLegendre (n : ℕ) : (shiftedLegendre n).degree = n := by
+  refine le_antisymm ?_ (le_degree_of_ne_zero ?_)
+  · rw [degree_le_iff_coeff_zero]
+    intro k h
+    norm_cast at h
+    simp [coeff_shiftedLegendre, Nat.choose_eq_zero_of_lt h]
+  · simp [coeff_shiftedLegendre, (Nat.choose_pos (show n ≤ n + n by simp)).ne']
+
+theorem natDegree_shiftedLegendre (n : ℕ) : (shiftedLegendre n).natDegree = n :=
+  natDegree_eq_of_degree_eq_some (degree_shiftedLegendre n)
+
+theorem neg_one_pow_mul_shiftedLegendre_comp_one_sub_X_eq (n : ℕ) :
+    (-1) ^ n * (shiftedLegendre n).comp (1 - X) = shiftedLegendre n := by
+  rw [← mul_right_inj' (a := (n ! : ℤ[X])) (by exact_mod_cast Nat.factorial_ne_zero n),
+    ← mul_assoc, mul_comm (n ! : ℤ[X]), mul_assoc, ← natCast_mul_comp,
+    factorial_mul_shiftedLegendre_eq, ← iterate_derivative_comp_one_sub_X]
+  congr 1
+  simp [mul_comm]
 
 /-- The values ​​of the Legendre polynomial at `x` and `1 - x` differ by a factor `(-1)ⁿ`. -/
-lemma shiftedLegendre_eval_symm (n : ℕ) (x : ℝ) :
+lemma shiftedLegendre_eval_symm (n : ℕ) {R : Type*} [Ring R] (x : R) :
     aeval x (shiftedLegendre n) = (-1) ^ n * aeval (1 - x) (shiftedLegendre n) := by
-  rw [mul_comm, ← mul_right_inj' (a := (aeval x) (n ! : ℤ[X])) (by simp; positivity), ← mul_assoc,
-    ← aeval_mul, show (aeval x) (n ! : ℤ[X]) = (aeval (1 - x)) (n ! : ℤ[X]) by simp, ← aeval_mul]
-  simp only [mul_shiftedLegendre_n_dervi]
-  rw [iterate_derivative_mul]
-  simp only [Nat.succ_eq_add_one, nsmul_eq_mul, map_sum, map_mul, map_natCast]
-  rw [← Finset.sum_flip, Finset.sum_mul]
-  congr! 1 with i hi
-  simp only [iterate_derivative_X_pow_eq_smul, zsmul_eq_mul, Int.cast_natCast, map_mul, map_natCast,
-    map_pow, aeval_X]
-  simp only [Finset.mem_range, Nat.lt_add_one_iff] at hi
-  have hx : (1 - X : ℤ[X]) ^ n = (X ^ n : ℤ[X]).comp (1 - X) := by simp only [pow_comp, X_comp]
-  rw [hx]
-  simp only [iterate_derivative_comp_one_sub_X, iterate_derivative_X_pow_eq_smul, Algebra.smul_def,
-    algebraMap_eq, map_natCast]
-  rw [Nat.choose_symm hi]
-  simp only [mul_comp, natCast_comp, pow_comp, X_comp, map_mul, map_pow, map_neg, map_one,
-    map_natCast, map_sub, aeval_X, sub_sub_cancel]
-  rw [show n - (n - i) = i by omega]
-  ring_nf
-  rw [mul_assoc (b := (-1) ^ i)]
-  congr 2
-  rw [← pow_add, show i + n = n - i + 2 * i by omega, pow_add]
-  simp only [even_two, Even.mul_right, Even.neg_pow, one_pow, mul_one]
+  have := congr(aeval x $(neg_one_pow_mul_shiftedLegendre_comp_one_sub_X_eq n))
+  simpa [aeval_comp] using this.symm
 
 end Polynomial
