@@ -265,6 +265,11 @@ theorem of_isCompact_isClosed :
   · simp only [ne_eq, coe_setOf, nonempty_subtype, not_exists, not_not, s'] at h
     simp [s', h]
 
+theorem nonempty_isCompactIsClosed : Nonempty { t : Set α | IsCompact t ∧ IsClosed t } := by
+  simp only [coe_setOf, nonempty_subtype]
+  use ∅
+  simp
+
 /-- The set of sets which are either compact and closed, or `univ`, is a compact system. -/
 theorem of_isCompact_isClosed_or_univ :
     IsCompactSystem (fun s : Set α ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ)) := by
@@ -331,6 +336,21 @@ theorem pi (C : (i : ι) → Set (Set (α i))) (hC : ∀ i, IsCompactSystem (C i
   rw [biInter_univ_pi_empty_iff x]
   use i
 
+theorem squareCylinders (C : (i : ι) → Set (Set (α i))) (hC₀ : ∀ i, IsCompactSystem (C i))
+    (hC₁ : ∀ i, Nonempty (C i)) :
+    IsCompactSystem (squareCylinders C) := by
+  apply IsCompactSystem.mono (pi _ (fun i ↦ iff_isCompactSystem_of_or_univ.mp (hC₀  i)))
+  intro S hS
+  apply squareCylinders_subset_pi _ (fun i ↦ Or.inr rfl)
+  change S ∈ MeasureTheory.squareCylinders C at hS
+  rw [mem_squareCylinders C hC₁] at hS
+  rw [mem_squareCylinders (fun i s ↦ C i s ∨ s = univ)
+    (fun i ↦ nonempty_subtype.mpr ⟨univ, Or.inr rfl⟩)]
+  obtain ⟨s, t, h₀, h₁⟩ := hS
+  use s, t
+  simp only [exists_prop]
+  exact ⟨fun i hi ↦ Or.inl (h₀ i hi), h₁⟩
+
 end pi
 
 end IsCompactSystem
@@ -344,83 +364,18 @@ variable [∀ i, TopologicalSpace (α i)]
 variable (α)
 /-- The set of sets of the form `s.pi t`, where `s : Finset ι` and `t i` is both,
 closed and compact, for all `i ∈ s`. -/
-def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
-  ⋃ (s) (t) (_ : ∀ i ∈ s, IsCompact (t i) ∧ IsClosed (t i)), {squareCylinder s t}
+def MeasureTheory.compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
+  MeasureTheory.squareCylinders (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t })
 
-def squareCylinders_of_prop (p : (i : ι) → Set (α i) → Prop) : Set (Set (Π i, α i)) :=
-  ⋃ (s) (t) (_ : ∀ i ∈ s, p i (t i)), {squareCylinder s t}
+/-- Products of compact and closed sets form a a compact system. -/
+theorem IsCompactSystem.compactClosedPi :
+    IsCompactSystem (univ.pi '' univ.pi (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t })) :=
+  IsCompactSystem.pi _ (fun _ ↦ IsCompactSystem.of_isCompact_isClosed)
 
-variable {α}
-@[simp]
-theorem mem_compactClosedSquareCylinders_iff (S : Set (Π i, α i)) :
-    S ∈ compactClosedSquareCylinders α
-      ↔ ∃ (s t : _) (_ : ∀ i ∈ s, IsCompact (t i) ∧ IsClosed (t i)),
-        S = squareCylinder s t := by
-  simp_rw [compactClosedSquareCylinders, mem_iUnion, mem_singleton_iff]
-
-
-variable {S : Set (Π i, α i)}
-
-/-- Given a closed compact cylinder, choose a finset of variables such that it only depends on
-these variables. -/
-noncomputable def compactClosedSquareCylinders.finset (hS : S ∈ compactClosedSquareCylinders α) :
-    Finset ι :=
-  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose
-
-/-- Given a closed compact square cylinder `S`, choose a dependent function `(i : ι) → Set (α i)`
-of which it is a lift. -/
-def closedCompactSquareCylinders.func (hS : S ∈ compactClosedSquareCylinders α) :
-    (i : ι) → Set (α i) :=
-  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose_spec.choose
-
-theorem compactClosedSquareCylinders.isCompact_isClosed (hS : S ∈ compactClosedSquareCylinders α) :
-    ∀ i ∈ compactClosedSquareCylinders.finset hS,
-      IsCompact (closedCompactSquareCylinders.func hS i) ∧
-        IsClosed (closedCompactSquareCylinders.func hS i) :=
-  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose_spec.choose_spec.choose
-
-theorem closedCompactSquareCylinders.eq_squareCylinder (hS : S ∈ compactClosedSquareCylinders α) :
-    S = squareCylinder (compactClosedSquareCylinders.finset hS)
-      (closedCompactSquareCylinders.func hS) :=
-  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose_spec.choose_spec.choose_spec
-
-theorem squareCylinder_mem_closedCompactSquareCylinders (s : Finset ι) (t : (i : ι) → Set (α i))
-    (h : ∀ i ∈ s, IsCompact (t i) ∧ IsClosed (t i)) :
-    squareCylinder s t ∈ compactClosedSquareCylinders α := by
-  rw [mem_compactClosedSquareCylinders_iff]
-  exact ⟨s, t, h, rfl⟩
-
-theorem CompactClosedOrUniv_pi :
-  IsCompactSystem (univ.pi '' univ.pi
-    (fun (i : ι) ↦ (fun (s : Set (α i)) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ)))) := by
-  apply IsCompactSystem.pi
-    (fun (i : ι) ↦ (fun (s : Set (α i)) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ)))
-      <| fun i ↦ IsCompactSystem.of_isCompact_isClosed_or_univ
-
-/-- In `closedCompactSquareCylinders α`, the set of dependent variables is a finset,
-  but not necessarily in `univ.pi '' univ.pi _`, where `_` are closed compact set, or `univ`. -/
-theorem compactClosedSquareCylinders_supset (S : _) :
-    S ∈ compactClosedSquareCylinders α → S ∈ (univ.pi '' univ.pi
-    (fun (i : ι) ↦ (fun (s : Set (α i)) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ))))  := by
-  classical
-  intro hS
-  simp_rw [mem_compactClosedSquareCylinders_iff, squareCylinder] at hS
-  simp only [mem_image, mem_pi, mem_univ, forall_const]
-  obtain ⟨s, t, h_cl, h_co, h_pi⟩ := hS
-  let t' := fun (i : ι) ↦ if (i ∈ s) then (t i) else univ
-  refine ⟨t', fun i ↦ ?_, ?_⟩
-  · by_cases hi : i ∈ s
-    · simp only [hi, ↓reduceIte, t']
-      exact Or.inl (h_cl i hi)
-    · simp only [hi, ↓reduceIte, t']
-      apply Or.inr rfl
-  · change (pi univ fun i => if i ∈ (s : Set ι) then t i else univ) = (s : Set ι).pi t
-    rw [univ_pi_ite s t]
-
-/-- Closed and compact square cylinders form a compact system. -/
+/-- Compact and closed square cylinders are a compact system. -/
 theorem isCompactSystem.compactClosedSquareCylinders :
-    IsCompactSystem (compactClosedSquareCylinders α) :=
-  IsCompactSystem.mono CompactClosedOrUniv_pi
-    compactClosedSquareCylinders_supset
+    IsCompactSystem (MeasureTheory.compactClosedSquareCylinders α) :=
+  IsCompactSystem.squareCylinders _ (fun _ ↦ IsCompactSystem.of_isCompact_isClosed)
+    (fun _ ↦ IsCompactSystem.nonempty_isCompactIsClosed)
 
 end ClosedCompactSquareCylinders
