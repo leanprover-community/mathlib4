@@ -726,7 +726,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
   simp
 
 open Topology in
-protected theorem _root_.Topology.IsOpenEmbedding.innerRegular_comap [BorelSpace α]
+protected theorem InnerRegular.comap' [BorelSpace α]
     [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β]
     (μ : Measure β) [H : InnerRegular μ] {f : α → β} (hf : IsOpenEmbedding f) :
     (μ.comap f).InnerRegular where
