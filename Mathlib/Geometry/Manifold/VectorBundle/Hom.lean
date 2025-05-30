@@ -8,7 +8,7 @@ import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Homs of `C^n` vector bundles over the same base space
 
-Here we show that `Bundle.ContinuousLinearMap` is a `C^n` vector bundle. We also show
+Here we show that the bundle of continuous linear maps is a `C^n` vector bundle. We also show
 that applying a smooth family of linear maps to a smooth family of vectors gives a smooth
 result, in several versions.
 
@@ -40,7 +40,7 @@ variable {𝕜 B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂] {e₁ e₁' : Trivialization F₁ (π F₁ E₁)}
   {e₂ e₂' : Trivialization F₂ (π F₂ E₂)}
 
-local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂)
+local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) ( (fun x ↦ E₁ x →L[𝕜] E₂ x))
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): moved slow parts to separate lemmas
 theorem contMDiffOn_continuousLinearMapCoordChange

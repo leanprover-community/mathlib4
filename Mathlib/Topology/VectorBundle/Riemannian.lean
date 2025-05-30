@@ -4,24 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
-import Mathlib.Geometry.Manifold.VectorBundle.Hom
+import Mathlib.Topology.VectorBundle.Constructions
+import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Riemannian vector bundles
 
 Given a vector bundle over a manifold whose fibers are all endowed with a scalar product, we
-say that this bundle is Riemannian if the scalar product depends smoothly on the base point.
+say that this bundle is Riemannian if the scalar product depends continuously on the base point.
 
-We introduce a typeclass `[IsContMDiffRiemannianBundle IB n F E]` registering this property.
-Under this assumption, we show that the scalar product of two smooth maps into the same fibers of
-the bundle is a smooth function.
+We introduce a typeclass `[IsContinuousRiemannianBundle IB n F E]` registering this property.
+Under this assumption, we show that the scalar product of two continuous maps into the same fibers
+of the bundle is a continuous function.
 
-If one wants to endow an existing vector bundle with a Riemannian metric, there are two
-subtleties:
-* The inner product space structure on the fibers should give rise to a topology on the fibers
-which is defeq to the original one, to avoid diamonds;
-* This should be somewhat accessible to typeclass inference, so it should not involve an arbitrary
-smoothness that typeclass inference could not guess.
+If one wants to endow an existing vector bundle with a Riemannian metric, there is a subtlety:
+the inner product space structure on the fibers should give rise to a topology on the fibers
+which is defeq to the original one, to avoid diamonds.
 
 Therefore, we introduce a class `[RiemannianBundle F E]` containing the data of a scalar
 product on the fibers depending continuously on the basepoint. Given this class, we can construct
@@ -32,13 +29,11 @@ in specific situations like the tangent bundle, and the general theory should in
 assuming `[IsContMDiffRiemannianBundle IB n F E]`
 -/
 
-open Manifold Bundle ContinuousLinearMap ENat
-open scoped ContDiff Topology
+open Bundle ContinuousLinearMap ENat
+open scoped Topology
 
 variable
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
-  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : WithTop ℕ∞}
-  {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+  {B : Type*} [TopologicalSpace B]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)]
@@ -46,36 +41,15 @@ variable
 
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
-variable (IB n F E) in
+variable (F E) in
 /-- Consider a real vector bundle in which each fiber is endowed with a scalar product.
-We that the bundle is Riemannian if the scalar product depends smoothly on the base point.
-This assumption is spelled `IsRiemannianBundle IB n F E` where `IB` is the model space of the base,
-`n` is the smoothness, `F` is the model fiber, and `E : B → Type*` is the bundle. -/
-class IsRiemannianBundle : Prop where
-  exists_contMDiff : ∃ g : Cₛ^n⟮IB; F →L[ℝ] F →L[ℝ] ℝ, fun (x : B) ↦ E x →L[ℝ] E x →L[ℝ] ℝ⟯,
-    ∀ (x : B) (v w : E x), ⟪v, w⟫ = g x v w
-
-lemma IsRiemannianBundle.of_le [h : IsRiemannianBundle IB n F E] (h' : n' ≤ n) :
-    IsRiemannianBundle IB n' F E := by
-  rcases h.exists_contMDiff with ⟨⟨g, g_smooth⟩, hg⟩
-  exact ⟨⟨g, g_smooth.of_le h'⟩, hg⟩
-
-instance {a : WithTop ℕ∞} [IsRiemannianBundle IB ∞ F E] [h : LEInfty a] :
-    IsRiemannianBundle IB a F E :=
-  IsRiemannianBundle.of_le h.out
-
-instance {a : WithTop ℕ∞} [IsRiemannianBundle IB ω F E] :
-    IsRiemannianBundle IB a F E :=
-  IsRiemannianBundle.of_le le_top
-
-instance [IsRiemannianBundle IB 1 F E] : IsRiemannianBundle IB 0 F E :=
-  IsRiemannianBundle.of_le zero_le_one
-
-instance [IsRiemannianBundle IB 2 F E] : IsRiemannianBundle IB 1 F E :=
-  IsRiemannianBundle.of_le one_le_two
-
-instance [IsRiemannianBundle IB 3 F E] : IsRiemannianBundle IB 2 F E :=
-  IsRiemannianBundle.of_le (n := 3) (by norm_cast)
+We that the bundle is Riemannian if the scalar product depends continuously on the base point.
+This assumption is spelled `IsContinuousRiemannianBundle F E` where `F` is the model fiber,
+and `E : B → Type*` is the bundle. -/
+class IsContinuousRiemannianBundle : Prop where
+  exists_continuous : ∃ g : (Π x, E x →L[ℝ] E x →L[ℝ] ℝ),
+    Continuous (fun (x : B) ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x (g x))
+    ∧ ∀ (x : B) (v w : E x), ⟪v, w⟫ = g x v w
 
 section Trivial
 
@@ -83,43 +57,43 @@ variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
 /-- A trivial vector bundle, in which the model fiber has a scalar product,
 is a Riemannian bundle. -/
-instance : IsRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
-  refine ⟨⟨fun x ↦ innerSL ℝ, fun x ↦ ?_⟩, fun x v w ↦ rfl⟩
-  simp only [contMDiffAt_section]
-  convert contMDiffAt_const (c := innerSL ℝ)
+instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
+  refine ⟨fun x ↦ innerSL ℝ, ?_, fun x v w ↦ rfl⟩
+  rw [continuous_iff_continuousAt]
+  intro x
+  rw [FiberBundle.continuousAt_totalSpace]
+  refine ⟨continuousAt_id, ?_⟩
+  convert continuousAt_const (y := innerSL ℝ)
   ext v w
   simp [hom_trivializationAt_apply, inCoordinates, Trivialization.linearMapAt_apply,
     Trivial.trivialization_symm_apply B F₁]
 
 end Trivial
 
-section ContMDiff
+section Continuous
 
 variable
-  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace ℝ EM]
-  {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners ℝ EM HM}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace HM M]
-  [h : IsRiemannianBundle IB n F E]
+  {M : Type*} [TopologicalSpace M] [h : IsContinuousRiemannianBundle F E]
   {b : M → B} {v w : ∀ x, E (b x)} {s : Set M} {x : M}
 
-/-- Given two smooth maps into the same fibers of a Riemannian bundle,
-their scalar product is smooth. -/
-lemma ContMDiffWithinAt.inner
-    (hv : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)) s x)
-    (hw : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E)) s x) :
-    ContMDiffWithinAt IM 𝓘(ℝ) n (fun m ↦ ⟪v m, w m⟫) s x := by
-  rcases h.exists_contMDiff with ⟨⟨g, g_smooth⟩, hg⟩
-  have hf : ContMDiffWithinAt IM IB n b s x := by
-    simp only [contMDiffWithinAt_totalSpace] at hv
+/-- Given two continuous maps into the same fibers of a Riemannian bundle,
+their scalar product is continuous. -/
+lemma ContinuousWithinAt.inner_bundle
+    (hv : ContinuousWithinAt (fun m ↦ (v m : TotalSpace F E)) s x)
+    (hv : ContinuousWithinAt (fun m ↦ (w m : TotalSpace F E)) s x) :
+    ContinuousWithinAt (fun m ↦ ⟪v m, w m⟫) s x := by
+  rcases h.exists_continuous with ⟨g, g_cont, hg⟩
+  have hf : ContinuousWithinAt b s x := by
+    simp only [FiberBundle.continuousWithinAt_totalSpace] at hv
     exact hv.1
   simp only [hg]
-  have : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ)) n
+  have : ContinuousWithinAt
       (fun m ↦ TotalSpace.mk' ℝ (E := Bundle.Trivial B ℝ) (b m) (g (b m) (v m) (w m))) s x := by
     apply ContMDiffWithinAt.clm_bundle_apply₂ (F₁ := F) (F₂ := F)
     · exact ContMDiffAt.comp_contMDiffWithinAt x g_smooth.contMDiffAt hf
     · exact hv
     · exact hw
-  simp only [contMDiffWithinAt_totalSpace] at this
+  simp only [FiberBundle.continuousWithinAt_totalSpace] at this
   exact this.2
 
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
