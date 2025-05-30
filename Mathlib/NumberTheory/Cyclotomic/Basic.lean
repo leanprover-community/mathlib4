@@ -213,50 +213,47 @@ variable {n S}
 implies `IsCyclotomicExtension (S ∪ {n}) A B`. -/
 theorem of_union_of_dvd (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s) [H : IsCyclotomicExtension S A B] :
     IsCyclotomicExtension (S ∪ {n}) A B := by
-  refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs hs' => ?_, ?_⟩
+  refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs hs' ↦ ?_, ?_⟩
   · rw [mem_union, mem_singleton_iff] at hs
     obtain hs | rfl := hs
     · exact H.exists_isPrimitiveRoot hs hs'
-    · obtain ⟨m, hm, hm'⟩ := h
-      obtain ⟨x, rfl⟩ := hm'.2
-      obtain ⟨ζ, hζ⟩ := H.exists_isPrimitiveRoot hm hm'.1
+    · obtain ⟨m, hm, hm', ⟨x, rfl⟩⟩ := h
+      obtain ⟨ζ, hζ⟩ := H.exists_isPrimitiveRoot hm hm'
       refine ⟨ζ ^ x, ?_⟩
-      have h_xnz : x ≠ 0 := Nat.ne_zero_of_mul_ne_zero_right hm'.1
+      have h_xnz : x ≠ 0 := Nat.ne_zero_of_mul_ne_zero_right hm'
       have := hζ.pow_of_dvd h_xnz (dvd_mul_left x s)
       rwa [mul_div_cancel_right₀ _ h_xnz] at this
   · refine _root_.eq_top_iff.2 ?_
     rw [← ((iff_adjoin_eq_top S A B).1 H).2]
-    refine adjoin_mono fun x hx => ?_
+    refine adjoin_mono fun x hx ↦ ?_
     simp only [union_singleton, mem_insert_iff, mem_setOf_eq] at hx ⊢
-    obtain ⟨m, hm⟩ := hx
-    exact ⟨m, ⟨Or.inr hm.1, hm.2⟩⟩
+    obtain ⟨m, hm, hm'⟩ := hx
+    exact ⟨m, ⟨Or.inr hm, hm'⟩⟩
 
 /-- If there exists a nonzero `s ∈ S` such that `n ∣ s`, then `IsCyclotomicExtension S A B`
   if and only if `IsCyclotomicExtension (S ∪ {n}) A B`. -/
 theorem iff_union_of_dvd (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s) :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {n}) A B := by
   refine
-    ⟨fun H => of_union_of_dvd A B h, fun H => (iff_adjoin_eq_top _ A _).2
-      ⟨fun s hs => ?_, ?_⟩⟩
+    ⟨fun H ↦ of_union_of_dvd A B h, fun H => (iff_adjoin_eq_top _ A _).2
+      ⟨fun s hs ↦ ?_, ?_⟩⟩
   · exact H.exists_isPrimitiveRoot (subset_union_left hs)
   · rw [_root_.eq_top_iff, ← ((iff_adjoin_eq_top _ A B).1 H).2]
     refine adjoin_mono fun x hx => ?_
     simp only [union_singleton, mem_insert_iff, mem_setOf_eq] at hx ⊢
     obtain ⟨m, rfl | hm, hxpow⟩ := hx
-    · obtain ⟨y, ⟨hy, hy', hy''⟩⟩ := h
-      refine ⟨y, ⟨hy, hy', ?_⟩⟩
-      obtain ⟨z, rfl⟩ := hy''
-      simp only [pow_mul, hxpow, one_pow]
+    · obtain ⟨y, ⟨hy, hy', ⟨z, rfl⟩⟩⟩ := h
+      exact ⟨_, ⟨hy, hy', by simp only [pow_mul, hxpow, one_pow]⟩⟩
     · exact ⟨m, ⟨hm, hxpow⟩⟩
 
 variable (n S)
 
 private theorem iff_union_singleton_one_aux (hS : (∃ x ∈ S, x ≠ 0) ∨ S = ∅) :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {1}) A B := by
-  obtain hS' | rfl := hS
-  · exact iff_union_of_dvd _ _ (fun s _ => one_dvd _) hS'
+  obtain ⟨s, hs, hs'⟩ | rfl := hS
+  · exact iff_union_of_dvd _ _ ⟨s, hs, hs', s.one_dvd⟩
   rw [empty_union]
-  refine ⟨fun H => ?_, fun H => ?_⟩
+  refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
   · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ => ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
     simp [adjoin_singleton_one, empty]
   · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (notMem_empty s hs).elim, ?_⟩
