@@ -25,7 +25,7 @@ open Category
 variable {C : Type*} [EnrichedCategory Cat C]
 
 /-- A type synonym for `C`, which should come equipped with a `Cat`-enriched category structure.
-This converts it to a strict bicategory where `X ⟶ Y` is `(𝟙_ Cat) ⟶ (X ⟶[W] Y)`. -/
+This converts it to a strict bicategory where `X ⟶ Y` is `(X ⟶[Cat] Y)`. -/
 def CatEnriched (C : Type*) := C
 
 namespace CatEnriched
@@ -49,18 +49,18 @@ instance {X Y : CatEnriched C} : Category (X ⟶ Y) := inferInstanceAs (Category
 
 /-- The horizonal composition on 2-morphisms is defined using the action on arrows of the
 composition bifunctor from the enriched category structure. -/
-def hcomp {a b c : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c}
+def hComp {a b c : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c}
   (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := (eComp Cat a b c).map (η, θ)
 
 @[simp]
-theorem id_hcomp_id {a b c : CatEnriched C} (f : a ⟶ b) (g : b ⟶ c) :
-    hcomp (𝟙 f) (𝟙 g) = 𝟙 (f ≫ g) := Functor.map_id ..
+theorem id_hComp_id {a b c : CatEnriched C} (f : a ⟶ b) (g : b ⟶ c) :
+    hComp (𝟙 f) (𝟙 g) = 𝟙 (f ≫ g) := Functor.map_id ..
 
 /-- The interchange law for horizontal and vertical composition of 2-cells in a bicategory. -/
 @[simp]
-theorem hcomp_comp {a b c : CatEnriched C} {f₁ f₂ f₃ : a ⟶ b} {g₁ g₂ g₃ : b ⟶ c}
+theorem hComp_comp {a b c : CatEnriched C} {f₁ f₂ f₃ : a ⟶ b} {g₁ g₂ g₃ : b ⟶ c}
     (η : f₁ ⟶ f₂) (η' : f₂ ⟶ f₃) (θ : g₁ ⟶ g₂) (θ' : g₂ ⟶ g₃) :
-    hcomp η θ ≫ hcomp η' θ' = hcomp (η ≫ η') (θ ≫ θ') :=
+    hComp η θ ≫ hComp η' θ' = hComp (η ≫ η') (θ ≫ θ') :=
   ((eComp Cat a b c).map_comp (Y := (_, _)) (_, _) (_, _)).symm
 
 /-- The action on objects of the `EnrichedCategory Cat` coherences proves the category axioms. -/
@@ -69,47 +69,47 @@ instance : Category (CatEnriched C) where
   comp_id {X Y} f := congrArg (·.obj f) (e_comp_id (V := Cat) X Y)
   assoc {X Y Z W} f g h := congrArg (·.obj (f, g, h)) (e_assoc (V := Cat) X Y Z W)
 
-theorem id_hcomp_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
-    HEq (hcomp (𝟙 (𝟙 a)) η) η := by
+theorem id_hComp_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    HEq (hComp (𝟙 (𝟙 a)) η) η := by
   rw [id_eq, ← Functor.map_id]
   exact congr_arg_heq (·.map η) (e_id_comp (V := Cat) a b)
 
-theorem id_hcomp {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
-    hcomp (𝟙 (𝟙 a)) η = eqToHom (id_comp f) ≫ η ≫ eqToHom (id_comp f').symm := by
-  simp [← heq_eq_eq, id_hcomp_heq]
+theorem id_hComp {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    hComp (𝟙 (𝟙 a)) η = eqToHom (id_comp f) ≫ η ≫ eqToHom (id_comp f').symm := by
+  simp [← heq_eq_eq, id_hComp_heq]
 
-theorem hcomp_id_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
-    HEq (hcomp η (𝟙 (𝟙 b))) η := by
+theorem hComp_id_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    HEq (hComp η (𝟙 (𝟙 b))) η := by
   rw [id_eq, ← Functor.map_id]
   exact congr_arg_heq (·.map η) (e_comp_id (V := Cat) a b)
 
-theorem hcomp_id {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
-    hcomp η (𝟙 (𝟙 b)) = eqToHom (comp_id f) ≫ η ≫ eqToHom (comp_id f').symm := by
-  simp [← heq_eq_eq, hcomp_id_heq]
+theorem hComp_id {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    hComp η (𝟙 (𝟙 b)) = eqToHom (comp_id f) ≫ η ≫ eqToHom (comp_id f').symm := by
+  simp [← heq_eq_eq, hComp_id_heq]
 
-theorem hcomp_assoc_heq {a b c d : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
+theorem hComp_assoc_heq {a b c d : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
     (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
-    HEq (hcomp (hcomp η θ) κ) (hcomp η (hcomp θ κ)) :=
+    HEq (hComp (hComp η θ) κ) (hComp η (hComp θ κ)) :=
   congr_arg_heq (·.map (X := (_, _, _)) (Y := (_, _, _)) (η, θ, κ)) (e_assoc (V := Cat) a b c d)
 
-theorem hcomp_assoc {a b c d : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
+theorem hComp_assoc {a b c d : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
     (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
-    hcomp (hcomp η θ) κ =
-      eqToHom (assoc f g h) ≫ hcomp η (hcomp θ κ) ≫ eqToHom (assoc f' g' h').symm := by
-  simp [← heq_eq_eq, hcomp_assoc_heq]
+    hComp (hComp η θ) κ =
+      eqToHom (assoc f g h) ≫ hComp η (hComp θ κ) ≫ eqToHom (assoc f' g' h').symm := by
+  simp [← heq_eq_eq, hComp_assoc_heq]
 
 instance : Bicategory (CatEnriched C) where
   homCategory := inferInstance
-  whiskerLeft {_ _ _} f {_ _} η := hcomp (𝟙 f) η
-  whiskerRight η h := hcomp η (𝟙 h)
+  whiskerLeft {_ _ _} f {_ _} η := hComp (𝟙 f) η
+  whiskerRight η h := hComp η (𝟙 h)
   associator f g h := eqToIso (assoc f g h)
   leftUnitor f := eqToIso (id_comp f)
   rightUnitor f := eqToIso (comp_id f)
-  id_whiskerLeft := id_hcomp
-  comp_whiskerLeft := by simp [← id_hcomp_id, hcomp_assoc]
-  whiskerRight_id := hcomp_id
-  whiskerRight_comp := by simp [hcomp_assoc]
-  whisker_assoc := by simp [hcomp_assoc]
+  id_whiskerLeft := id_hComp
+  comp_whiskerLeft := by simp [← id_hComp_id, hComp_assoc]
+  whiskerRight_id := hComp_id
+  whiskerRight_comp := by simp [hComp_assoc]
+  whisker_assoc := by simp [hComp_assoc]
   pentagon f g h i := by
     generalize_proofs h1 h2 h3 h4; revert h1 h2 h3 h4
     generalize (f ≫ g) ≫ h = x, (g ≫ h) ≫ i = w
