@@ -148,7 +148,7 @@ theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
 
 theorem _root_.Topology.IsOpenEmbedding.isOpenPosMeasure_comap [BorelSpace X]
     {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
-    {f : X → Z} (hf : IsOpenEmbedding f) (μ : Measure Z) [IsOpenPosMeasure μ] :
+    {f : X → Z} (hf : IsOpenEmbedding f) {μ : Measure Z} [IsOpenPosMeasure μ] :
     (μ.comap f).IsOpenPosMeasure where
   open_pos U hU Une := by
     rw [hf.measurableEmbedding.comap_apply]
