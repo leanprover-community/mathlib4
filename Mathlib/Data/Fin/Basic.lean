@@ -300,7 +300,8 @@ section Add
 ### addition, numerals, and coercion from Nat
 -/
 
-theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n := rfl
+theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
+  rfl
 
 @[deprecated val_one' (since := "2025-03-10")]
 theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
@@ -312,8 +313,6 @@ instance nontrivial {n : ℕ} [NeZero n] : Nontrivial (Fin (n + 1)) where
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   rcases n with (_ | _ | n) <;>
   simp [Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
-
-instance : NeZero (2 : Fin (n + 3)) := by simp [neZero_iff, Fin.ext_iff]
 
 section Monoid
 
@@ -1440,6 +1439,11 @@ theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
 theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
     ((ofNat(n) : Fin m) : ℕ) = ofNat(n) % m :=
   rfl
+
+instance [NeZero n] : NeZero (2 : Fin (n + 2)) := by
+  rw [neZero_iff, ne_eq, Fin.ext_iff, coe_ofNat_eq_mod, coe_ofNat_eq_mod]
+  obtain ⟨m, rfl⟩ : ∃ m, m + 1 = n := ⟨n - 1, Nat.sub_one_add_one (NeZero.ne n)⟩
+  simpa only [Nat.reduceAdd, ne_eq] using add_one_ne_zero 1
 
 section Mul
 
