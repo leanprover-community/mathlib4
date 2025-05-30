@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Group.MeasurableEquiv
-import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Regular measures
