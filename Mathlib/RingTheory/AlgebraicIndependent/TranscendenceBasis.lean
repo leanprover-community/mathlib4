@@ -251,7 +251,7 @@ variable (R A) [FaithfulSMul R A]
 section
 
 variable [NoZeroDivisors A]
-#check Nonempty.ne_empty
+
 private def indepMatroid : IndepMatroid A where
   E := univ
   Indep := AlgebraicIndepOn R id
