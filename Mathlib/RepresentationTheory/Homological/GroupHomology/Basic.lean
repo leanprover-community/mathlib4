@@ -96,7 +96,7 @@ lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :
 
 /-- Given a `k`-linear `G`-representation `A`, this is the chain complex `(A ⊗[k] P)_G`, where
 `P` is the bar resolution of `k` as a trivial representation. -/
-def coinvariantsTensorBarResolution :=
+def coinvariantsTensorBarResolution [DecidableEq G] :=
   (((coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj (barComplex k G)
 
 end Rep
@@ -110,33 +110,34 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (n : ℕ)
 namespace inhomogeneousChains
 
 /-- The differential in the complex of inhomogeneous chains used to calculate group homology. -/
-def d : ((Fin (n + 1) → G) →₀ A) →ₗ[k] (Fin n → G) →₀ A :=
-  lsum (R := k) k fun g => lsingle (fun i => g i.succ) ∘ₗ A.ρ (g 0)⁻¹ +
+def d : ModuleCat.of k ((Fin (n + 1) → G) →₀ A) ⟶ ModuleCat.of k ((Fin n → G) →₀ A) :=
+  ModuleCat.ofHom <| lsum (R := k) k fun g => lsingle (fun i => g i.succ) ∘ₗ A.ρ (g 0)⁻¹ +
     Finset.univ.sum fun j : Fin (n + 1) =>
       (-1 : k) ^ ((j : ℕ) + 1) • lsingle (Fin.contractNth j (· * ·) g)
 
+variable {A n} in
 @[simp]
 theorem d_single (n : ℕ) (g : Fin (n + 1) → G) (a : A) :
     d A n (single g a) = single (fun i => g i.succ) (A.ρ (g 0)⁻¹ a) +
       Finset.univ.sum fun j : Fin (n + 1) =>
         (-1 : k) ^ ((j : ℕ) + 1) • single (Fin.contractNth j (· * ·) g) a := by
-  rw [d, lsum_apply, sum_single_index]
-  <;> simp
+  simp [d]
 
 open ModuleCat.MonoidalCategory
 
 theorem d_eq [DecidableEq G] :
-    ModuleCat.ofHom (d A n) = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
+    d A n = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
       (coinvariantsTensorBarResolution A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext g a : 3
-  have := finsuppToCoinvariantsTensorFree_single (A := A) g
-  have := barComplex.d_single (k := k) _ g
-  have := coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G)
-  simp_all [instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
+  simp only [LinearMap.coe_comp, Function.comp_apply, lsingle_apply]
+  rw [d_single]
+  simp_all [finsuppToCoinvariantsTensorFree_single (A := A) g,
+    coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G),
+    instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
     instMonoidalCategoryStruct_whiskerLeft, ModuleCat.MonoidalCategory.whiskerLeft,
-    coinvariantsTensorBarResolution, coinvariantsMap, TensorProduct.tmul_add,
-    TensorProduct.tmul_sum, ← Submodule.mkQ_apply _ (Finset.sum _ _)]
+    coinvariantsTensorBarResolution, TensorProduct.tmul_add, Coinvariants.map,
+    TensorProduct.tmul_sum, map_sum, map_add, barComplex.d_single (k := k) _ g]
 
 end inhomogeneousChains
 
@@ -146,7 +147,7 @@ which calculates the group homology of `A`. -/
 noncomputable abbrev inhomogeneousChains [DecidableEq G] :
     ChainComplex (ModuleCat k) ℕ :=
   ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
-    (fun n => ModuleCat.ofHom (inhomogeneousChains.d A n)) fun n => by
+    (fun n => inhomogeneousChains.d A n) fun n => by
     simp only [inhomogeneousChains.d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
     slice_lhs 2 4 => { rw [Category.id_comp, (coinvariantsTensorBarResolution A).d_comp_d] }
@@ -155,13 +156,12 @@ noncomputable abbrev inhomogeneousChains [DecidableEq G] :
 open inhomogeneousChains
 
 theorem inhomogeneousChains.d_def [DecidableEq G] (n : ℕ) :
-    (inhomogeneousChains A).d (n + 1) n = ModuleCat.ofHom (d A n) := by
+    (inhomogeneousChains A).d (n + 1) n = d A n := by
   simp [inhomogeneousChains]
 
 theorem inhomogeneousChains.d_comp_d [DecidableEq G] :
-    d A n ∘ₗ d A (n + 1) = 0 := by
-  simpa [ChainComplex.of] using
-    congr(ModuleCat.Hom.hom $((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n))
+    d A (n + 1) ≫ d A n = 0 := by
+  simpa [ChainComplex.of] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
