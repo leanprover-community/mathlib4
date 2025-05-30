@@ -130,6 +130,25 @@ instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
     (f : K →+* R) : IsLocalHom f where
   map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
 
+instance {R : Type*} [CommRing R] [IsLocalRing R] {I : Ideal R} [Nontrivial (R ⧸ I)] :
+    IsLocalRing (R ⧸ I) :=
+  IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+
+theorem Quotient_comap_maximalIdeal
+    {R : Type*} [CommRing R] [IsLocalRing R] (I : Ideal R) [Nontrivial (R ⧸ I)] :
+    Ideal.comap (Ideal.Quotient.mk I) (maximalIdeal (R ⧸ I)) = (maximalIdeal R) := by
+  have : Ideal.IsMaximal (Ideal.comap (Ideal.Quotient.mk I) (maximalIdeal (R ⧸ I))) :=
+    Ideal.comap_isMaximal_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+  exact eq_maximalIdeal this
+
+theorem Quotient_map_maximalIdeal
+    {R : Type*} [CommRing R] [IsLocalRing R] (I : Ideal R) [Nontrivial (R ⧸ I)] :
+    Ideal.map (Ideal.Quotient.mk I) (maximalIdeal R) = (maximalIdeal (R ⧸ I)) := by
+  have := Ideal.map_comap_of_surjective (Ideal.Quotient.mk I)
+    Ideal.Quotient.mk_surjective (maximalIdeal (R ⧸ I))
+  rw[IsLocalRing.Quotient_comap_maximalIdeal] at this
+  exact this
+
 end IsLocalRing
 
 @[deprecated (since := "2024-11-11")] alias LocalRing.local_hom_TFAE := IsLocalRing.local_hom_TFAE

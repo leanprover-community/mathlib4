@@ -35,25 +35,6 @@ noncomputable def IsLocalRing.embDim (R : Type*) [CommRing R] [IsLocalRing R]
     : ℕ :=
   Module.finrank (ResidueField R) (CotangentSpace R)
 
-instance {R : Type*} [CommRing R] [IsLocalRing R] {I : Ideal R} [Nontrivial (R ⧸ I)] :
-    IsLocalRing (R ⧸ I) :=
-  IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
-
-theorem IsLocalRing.Quotient_comap_maximalIdeal
-    {R : Type*} [CommRing R] [IsLocalRing R] (I : Ideal R) [Nontrivial (R ⧸ I)] :
-    Ideal.comap (Ideal.Quotient.mk I) (maxl (R ⧸ I)) = (maxl R) := by
-  have : Ideal.IsMaximal (Ideal.comap (Ideal.Quotient.mk I) (maxl (R ⧸ I))) :=
-    Ideal.comap_isMaximal_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
-  exact IsLocalRing.eq_maximalIdeal this
-
-theorem IsLocalRing.Quotient_map_maximalIdeal
-    {R : Type*} [CommRing R] [IsLocalRing R] (I : Ideal R) [Nontrivial (R ⧸ I)] :
-    Ideal.map (Ideal.Quotient.mk I) (maxl R) = (maxl (R ⧸ I)) := by
-  have := Ideal.map_comap_of_surjective (Ideal.Quotient.mk I)
-    Ideal.Quotient.mk_surjective (maxl (R ⧸ I))
-  rw[IsLocalRing.Quotient_comap_maximalIdeal] at this
-  exact this
-
 lemma Module.Finrank_eq_spanFinrankOfTop
     (k : Type*) [Field k] (V : Type*) [AddCommGroup V] [Module k V] [Module.Finite k V] :
     Module.finrank k V = (⊤ : Submodule k V).spanFinrank := by
