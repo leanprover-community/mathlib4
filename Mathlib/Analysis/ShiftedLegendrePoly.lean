@@ -28,10 +28,10 @@ theorem mul_shiftedLegendre_n_dervi (n : ℕ) : (n ! : ℤ[X]) * (shiftedLegendr
     derivative^[n] (X ^ n * (1 - (X : ℤ[X])) ^ n) := by
   symm
   have h : ((X : ℤ[X]) - X ^ 2) ^ n =
-    ∑ m ∈ range (n + 1), n.choose m • (- 1) ^ m * X ^ (n + m) := by
+      ∑ m ∈ range (n + 1), n.choose m • (- 1) ^ m * X ^ (n + m) := by
     rw [sub_eq_add_neg, add_comm, add_pow]
     congr! 1 with m hm
-    rw [neg_pow, pow_two, mul_pow,← mul_assoc, mul_comm, mul_assoc, pow_mul_pow_sub, mul_assoc,
+    rw [neg_pow, pow_two, mul_pow, ← mul_assoc, mul_comm, mul_assoc, pow_mul_pow_sub, mul_assoc,
       ← pow_add, ← mul_assoc, nsmul_eq_mul, add_comm]
     rw [Finset.mem_range] at hm
     linarith
