@@ -147,7 +147,7 @@ theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
   exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
 
 theorem _root_.Topology.IsOpenEmbedding.isOpenPosMeasure_comap [BorelSpace X]
-    {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
+    {Z : Type*} [TopologicalSpace Z] {mZ : MeasurableSpace Z} [BorelSpace Z]
     {f : X → Z} (hf : IsOpenEmbedding f) {μ : Measure Z} [IsOpenPosMeasure μ] :
     (μ.comap f).IsOpenPosMeasure where
   open_pos U hU Une := by
