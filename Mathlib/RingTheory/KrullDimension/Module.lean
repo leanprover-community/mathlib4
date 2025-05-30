@@ -103,11 +103,10 @@ lemma support_of_dimension_zero [IsLocalRing R] [Module.Finite R N] [Nontrivial 
     simp at nmem
     have : p < ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩ :=
       lt_of_le_of_ne (IsLocalRing.le_maximalIdeal IsPrime.ne_top') nmem
-    have := IsLocalRing.maximalIdeal_mem_support R N
     have : Module.supportDim R N > 0 := by
-      simp [Module.supportDim, Order.krullDim_pos_iff]
+      simp only [Module.supportDim, gt_iff_lt, Order.krullDim_pos_iff, Subtype.exists,
+        Subtype.mk_lt_mk, exists_prop]
       use p
-      simp only [hp, true_and]
-      use ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩
+      simpa only [hp, true_and] using ⟨_, IsLocalRing.maximalIdeal_mem_support R N, this⟩
     exact (ne_of_lt this) dim.symm
   · simpa using IsLocalRing.maximalIdeal_mem_support R N
