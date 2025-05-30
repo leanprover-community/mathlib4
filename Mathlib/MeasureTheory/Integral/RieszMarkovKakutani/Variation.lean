@@ -48,17 +48,13 @@ section CompleteLinearOrder
 variable {α : Type*}{ι : Type*} [CompleteLinearOrder α] {s : Set α} {a b : α}
 
 theorem lt_biSup_iff {s : Set ι} {f : ι → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
-  constructor
-  · intro h
-    obtain ⟨i, hi⟩ := lt_iSup_iff.mp h
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨i, hi⟩ := lt_iSup_iff.mp h
     obtain ⟨his, ha⟩ := lt_iSup_iff.mp hi
     exact ⟨i, ⟨his, ha⟩⟩
-  · intro h
-    obtain ⟨i, hi⟩ := h
+  · obtain ⟨i, hi⟩ := h
     apply lt_iSup_iff.mpr
-    use i
-    apply lt_iSup_iff.mpr
-    simpa [exists_prop]
+    exact ⟨i , lt_iSup_iff.mpr (by simpa [exists_prop])⟩
 
 end CompleteLinearOrder
 
@@ -82,8 +78,7 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
     obtain ⟨ha'', ha'⟩ := (a.toReal_pos_iff).mp ha
     rw [ENNReal.hasSum_iff_tendsto_nat]
     constructor
-    · intro h
-      refine ⟨fun n ↦ ?_, fun b hb ↦ ?_⟩
+    · refine fun h ↦ ⟨fun n ↦ ?_, fun b hb ↦ ?_⟩
       · rw [tendsto_atTop_nhds] at h
         by_contra! hc
         have hn : ∀ m, n ≤ m → ∑ i ∈ Finset.range n, f i ≤  ∑ i ∈ Finset.range m, f i :=
@@ -97,15 +92,13 @@ lemma ENNReal.hasSum_iff (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a 
         have hs : a ∈ s := by simpa [s, hb] using lt_add_right (LT.lt.ne_top ha') one_ne_zero
         obtain ⟨n, hn⟩ := h s hs isOpen_Ioo
         exact ⟨n, (hn n (Nat.le_refl _)).1⟩
-    · rw [and_imp]
-      intro hf hf'
+    · intro ⟨hf, hf'⟩
       rw [ENNReal.tendsto_nhds ha'.ne_top]
       intro ε hε
       simp only [Set.mem_Icc, tsub_le_iff_right, Filter.eventually_atTop, ge_iff_le]
       have hε' := (ENNReal.sub_lt_self_iff (LT.lt.ne_top ha')).mpr ⟨ha'', hε⟩
       obtain ⟨n, hn⟩ := hf' (a - ε) hε'
-      refine ⟨n, fun m hm ↦ ?_⟩
-      constructor
+      refine ⟨n, fun m hm ↦ ⟨?_, ?_⟩⟩
       · calc a
         _ ≤ a - ε + ε := by exact le_tsub_add
         _ ≤ ∑ i ∈ Finset.range n, f i + ε := add_le_add_right (le_of_lt hn) ε
@@ -146,7 +139,7 @@ theorem tsum_of_enorm_bounded {f : ι → E} {g : ι → ℝ≥0∞} {a : ℝ≥
         · rw [ha']
           exact hc
         · exact hc
-      have hb' : ∑' b, g b ≠ ⊤ := by
+      have hb' : ∑' b, g b ≠ ∞ := by
         rw [ha']
         exact hc
       have hh := ENNReal.hasSum_toReal hb'
@@ -163,8 +156,7 @@ theorem tsum_of_enorm_bounded {f : ι → E} {g : ι → ℝ≥0∞} {a : ℝ≥
       rw [← NNReal.summable_coe] at fsummable
       rw [h2] at hh
       exact hh
-    have := tsum_of_norm_bounded hg' hfg
-    exact (ofReal_le_iff_le_toReal hc).mpr this
+    exact (ofReal_le_iff_le_toReal hc).mpr <| tsum_of_norm_bounded hg' hfg
   · push_neg at hc
     simp [hc]
 
@@ -486,24 +478,14 @@ namespace VectorMeasure
 variable {X V 𝕜 : Type*} [MeasurableSpace X] [NormedAddCommGroup V] [NormedField 𝕜]
   [NormedSpace 𝕜 V] (μ : VectorMeasure X V)
 
-theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
-    ‖μ E‖ₑ ≤ variation μ E := by
-  dsimp [variation, variation_aux]
+theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E‖ₑ ≤ variation μ E := by
   wlog hE' : E ≠ ∅
   · push_neg at hE'
     simp [hE', varOfPart, partitions_empty]
-  by_cases hE : ¬MeasurableSet E
+  by_cases hE : MeasurableSet E
+  · have h : {E} ∈ partitions E := ⟨by simp, by simpa, by simp, by simpa⟩
+    have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
+    simp_all [varOfPart, variation, variation_aux]
   · simp [hE, μ.not_measurable' hE]
-  · push_neg at hE
-    simp only [hE, reduceIte, varOfPart]
-    let P' : Finset (Set X) := {E}
-    have hP' : P' ∈ partitions E := by
-      refine ⟨by simp [P'], by simpa [P'], by simp [P'], by simpa [P']⟩
-    have hEP' : ‖μ E‖ₑ = varOfPart μ P' := by
-      simp [varOfPart, P']
-    rw [hEP']
-    have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) hP'
-    simp only [Finset.sum_singleton] at this
-    exact this
 
 end VectorMeasure
