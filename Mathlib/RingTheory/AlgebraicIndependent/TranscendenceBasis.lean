@@ -251,7 +251,7 @@ variable (R A) [FaithfulSMul R A]
 section
 
 variable [NoZeroDivisors A]
-
+#check Nonempty.ne_empty
 private def indepMatroid : IndepMatroid A where
   E := univ
   Indep := AlgebraicIndepOn R id
@@ -264,7 +264,7 @@ private def indepMatroid : IndepMatroid A where
     · rw [isTranscendenceBasis_iff_of_subsingleton] at B_base ⊢
       contrapose! h
       have ⟨b, hb⟩ := B_base
-      exact ⟨b, ⟨hb, fun hbI ↦ h ⟨b, hbI⟩⟩, .of_subsingleton⟩
+      exact ⟨b, ⟨hb, fun hbI ↦ Nonempty.ne_empty ⟨b, hbI⟩ h⟩, .of_subsingleton⟩
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
     simp_rw [id_eq]
