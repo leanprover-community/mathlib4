@@ -1068,9 +1068,8 @@ open Topology in
 protected theorem Regular.comap' [BorelSpace α]
     {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β] {μ : Measure β} [Regular μ]
     (f : α → β) (hf : IsOpenEmbedding f) : (μ.comap f).Regular := by
-  haveI :=
-    OuterRegular.comap_of_continuous_measurableEmbedding
-      μ hf.continuous hf.measurableEmbedding
+  haveI := OuterRegular.comap_of_continuous_measurableEmbedding
+    μ hf.continuous hf.measurableEmbedding
   haveI :=
     IsFiniteMeasureOnCompacts.comap_of_continuous_measurableEmbedding
       μ hf.continuous hf.measurableEmbedding
