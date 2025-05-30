@@ -249,7 +249,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom {n : ℕ} (f : Fin (n + 1) → G) :
         Iso.trans_hom, tensorIso_hom, Iso.refl_hom, id_tensorHom, comp_hom,
         whiskerLeft_hom, mkIso_hom_hom, tensor_ρ, tensor_apply,
         ofMulAction_apply, types_comp_apply, whiskerLeft_apply]
-    <;> simp [tensorObj_def, Fin.tail, Fin.castSucc_fin_succ, ofMulAction_V]
+    <;> simp [types_tensorObj_def, Fin.tail, Fin.castSucc_fin_succ, ofMulAction_V]
 
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G) :
@@ -263,7 +263,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G)
     induction' x using Fin.cases
     <;> simp_all only [diagonalSuccIsoTensorTrivial, tensorObj_V, Iso.trans_inv, comp_hom,
       mkIso_inv_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
-    <;> simp_all [tensorObj_def, mul_assoc, Fin.partialProd_succ', ofMulAction_V]
+    <;> simp_all [types_tensorObj_def, mul_assoc, Fin.partialProd_succ', ofMulAction_V]
 
 end
 
