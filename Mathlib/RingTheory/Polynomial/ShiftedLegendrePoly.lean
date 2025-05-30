@@ -12,6 +12,19 @@ import Mathlib.Analysis.RCLike.Basic
 
 In this file, we define the shifted Legendre polynomials `shiftedLegendre n` for `n : ℕ` as a
 polynomial in `ℤ[X]`. We prove some basic properties of the Legendre polynomials.
+
+* `factorial_mul_shiftedLegendre_eq`: The analogue of Rodrigues' formula for the shifted Legendre
+  polynomials;
+* `shiftedLegendre_eval_symm`: The values of the shifted Legendre polynomial at `x` and `1 - x`
+  differ by a factor `(-1)ⁿ`.
+
+## Reference
+
+* <https://en.wikipedia.org/wiki/Legendre_polynomials>
+
+## Tags
+
+shifted Legendre polynomials, derivative
 -/
 
 open scoped Nat
@@ -24,7 +37,8 @@ noncomputable def shiftedLegendre (n : ℕ) : ℤ[X] :=
   ∑ k ∈ Finset.range (n + 1), C ((-1) ^ k * (Nat.choose n k) * (Nat.choose (n + k) n) : ℤ) * X ^ k
 
 /-- The shifted Legendre polynomial multiplied by a factorial equals the higher-order derivative of
-  the combinatorial function `X ^ n * (1 - X) ^ n`. -/
+  the combinatorial function `X ^ n * (1 - X) ^ n`. This is the analogue of Rodrigues' formula for
+  the shifted Legendre polynomials. -/
 theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLegendre n) =
     derivative^[n] (X ^ n * (1 - (X : ℤ[X])) ^ n) := by
   symm
