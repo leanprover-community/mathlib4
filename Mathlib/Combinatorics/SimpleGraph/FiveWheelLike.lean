@@ -253,7 +253,7 @@ variable {i j n : ℕ} {d x v w₁ w₂ : α} {s t : Finset α}
 
 section Counting
 
-private lemma kr_bound (hk : k ≤ r) :
+private lemma kr_bound (hk : k < r + 1) :
     (2 * (r + 1) + k) * n / (2 * (r + 1) + k + 3) ≤ (3 * r + 2) * n / (3 * r + 5) := by
   apply (Nat.le_div_iff_mul_le <| Nat.succ_pos _).2 <| (mul_le_mul_left (_ + 2).succ_pos).1 _
   rw [← mul_assoc, mul_comm (2 * r + 2 + k + 3), mul_comm _ (_ * n)]
@@ -512,15 +512,14 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     by_contra! hnotcol
     -- so `H` is not complete-multipartite
     have hn : ¬ H.IsCompleteMultipartite := fun hc ↦ hnotcol <| hc.colorable_of_cliqueFree hmcf.1
-    -- Hence `H` contains `Wᵣ₊₁,ₖ` but not `Wᵣ₊₁,ₖ₊₁`, for some `k ≤ r`
+    -- Hence `H` contains `Wᵣ₊₁,ₖ` but not `Wᵣ₊₁,ₖ₊₁`, for some `k < r + 1`
     obtain ⟨_, _, _, _, _, _, hw, hlt, hm⟩ :=
       exists_max_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite hmcf hn
     classical
     -- But the minimum degree of `G`, and hence of `H`, is too large for it to be `Wᵣ₊₁,ₖ₊₁`-free,
     -- a contradiction.
     have hD := hw.minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ hmcf.1 <| hm _ <| lt_add_one _
-    exact (hd.trans_le <| minDegree_le_minDegree hle).not_le
-             <| hD.trans <| kr_bound <| Nat.le_of_succ_le_succ <| hlt
+    exact (hd.trans_le <| minDegree_le_minDegree hle).not_le <| hD.trans <| kr_bound hlt
 
 end AES
 end SimpleGraph
