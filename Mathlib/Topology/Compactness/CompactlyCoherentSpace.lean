@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
 
-import Mathlib.Topology.Defs.Induced
 import Mathlib.Topology.Coherent
-import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Data.Set.Subset
 
 /-!
 # Compactly coherent spaces and the k-ification
@@ -27,8 +27,6 @@ the literature while the compact coherentification is often called the k-ificati
 * `CompactlyCoherentSpace.of_weaklyLocallyCompactSpace`: every weakly locally compact space is a
   compactly coherent space.
 * `CompactlyCoherentSpace.of_sequentialSpace`: every sequential space is a compactly coherent space.
-* `CompactlyCoherentSpace.of_compactlyGeneratedSpace`: every compactly generated space is a
-  compactly coherent space.
 * `CompactlyCoherentSpace.isCompact_iff_isCompact_in_compactCoherentification`: The compact sets of
   a topological space and its compact coherentification agree.
 * `CompactlyCoherentSpace.CompactCoherentification.instCompactlyCoherentSpace`: The compact
@@ -90,14 +88,14 @@ instance of_weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X] : CompactlyC
   isCoherentWith := IsCoherentWith.of_nhds exists_compact_mem_nhds
 
 @[deprecated (since := "2025-05-30")] alias
-_root_.Topology.IsCoherentWith.isCompact_of_seq := of_weaklyLocallyCompactSpace
+_root_.Topology.IsCoherentWith.isCompact_of_weaklyLocallyCompact := of_weaklyLocallyCompactSpace
 
 /-- Every sequential space is a compactly coherent space. -/
 instance of_sequentialSpace [SequentialSpace X] : CompactlyCoherentSpace X where
   isCoherentWith := IsCoherentWith.of_seq fun _u _x hux ↦ hux.isCompact_insert_range
 
 @[deprecated (since := "2025-05-30")] alias
-_root_.Topology.IsCoherentWith.isCompact_of_weaklyLocallyCompact := of_sequentialSpace
+_root_.Topology.IsCoherentWith.isCompact_of_seq := of_sequentialSpace
 
 /-- In a compactly coherent space `X`, a set `s` is open iff `f ⁻¹' s` is open for every continuous
 map from a compact space. -/
@@ -119,21 +117,6 @@ lemma of_isOpen_forall_compactSpace (h : ∀ (s : Set X), (∀ (K : Type u) [Top
   specialize hA (range f) (isCompact_range hf)
   have := hA.preimage (hf.codRestrict mem_range_self)
   rwa [← preimage_comp] at this
-
-/-- Every compactly generated space is a compactly coherent space. -/
-instance of_compactlyGeneratedSpace [CompactlyGeneratedSpace X] : CompactlyCoherentSpace X :=
-  of_isOpen_forall_compactSpace fun _ h ↦ CompactlyGeneratedSpace.isOpen'
-    fun K _ _ _ f hf ↦ h K f hf
-
-/-- A compactly coherent space that is Hausdorff is compactly generated. -/
-instance to_compactlyGeneratedSpace_of_t2 [T2Space X] [CompactlyCoherentSpace X] :
-    CompactlyGeneratedSpace X := by
-  apply compactlyGeneratedSpace_of_isClosed_of_t2
-  intro s hs
-  rw [isClosed_iff]
-  intro K hK
-  rw [← Subtype.preimage_coe_inter_self]
-  exact (hs K hK).preimage_val
 
 /-- A type synonym used for the compact coherentification of a topological space. -/
 def CompactCoherentification (X : Type*) := X

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Yury Kudryashov
 -/
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.LocallyFinite
+import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Compact convergence (uniform convergence on compact sets)
@@ -386,11 +386,14 @@ lemma completeSpace_of_isCoherentWith (h : IsCoherentWith {K : Set α | IsCompac
 alias completeSpace_of_restrictGenTopology := completeSpace_of_isCoherentWith
 
 instance instCompleteSpaceOfWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace α] :
-    CompleteSpace C(α, β) := completeSpace_of_isCoherentWith .isCompact_of_weaklyLocallyCompact
+    CompleteSpace C(α, β) :=
+  completeSpace_of_isCoherentWith CompactlyCoherentSpace.of_weaklyLocallyCompactSpace.isCoherentWith
 
 instance instCompleteSpaceOfSequentialSpace [SequentialSpace α] :
-    CompleteSpace C(α, β) := completeSpace_of_isCoherentWith .isCompact_of_seq
+    CompleteSpace C(α, β) :=
+  completeSpace_of_isCoherentWith CompactlyCoherentSpace.of_sequentialSpace.isCoherentWith
 
 end CompleteSpace
 
 end ContinuousMap
+#min_imports
