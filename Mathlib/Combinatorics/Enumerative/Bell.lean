@@ -83,8 +83,8 @@ theorem bell_mul_eq (m : Multiset ℕ) :
         rw [← Finset.prod_erase_mul _ _ hm]
         simp only [factorial_zero, one_pow, mul_one, zero_mul]
         exact this
-      · nth_rewrite 1 [← Finset.erase_eq_of_not_mem hm]
-        nth_rewrite 3 [← Finset.erase_eq_of_not_mem hm]
+      · nth_rewrite 1 [← Finset.erase_eq_of_notMem hm]
+        nth_rewrite 3 [← Finset.erase_eq_of_notMem hm]
         exact this
     rw [← Finset.prod_mul_distrib]
     apply Finset.prod_congr rfl
@@ -156,7 +156,7 @@ theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   · simp only [toFinset_replicate]
     split_ifs with hm
     · rw [hm, factorial_zero, eq_comm]
-      rw [show (∅ : Finset ℕ).erase 0 = ∅ from rfl,  Finset.prod_empty]
+      rw [show (∅ : Finset ℕ).erase 0 = ∅ from rfl, Finset.prod_empty]
     · rw [show ({n} : Finset ℕ).erase 0 = {n} by simp [Ne.symm hn]]
       simp only [Finset.prod_singleton, count_replicate_self]
   · simp

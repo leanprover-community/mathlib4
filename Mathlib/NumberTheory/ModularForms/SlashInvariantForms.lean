@@ -3,6 +3,7 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.ModularForms.SlashActions
 
 /-!
@@ -84,14 +85,14 @@ theorem slash_action_eqn' {k : ℤ} {Γ : Subgroup SL(2, ℤ)} [SlashInvariantFo
     f (γ • z) = (γ 1 0 * z + γ 1 1) ^ k * f z := by
   rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn f γ hγ]
 
-/--Every `SlashInvariantForm` `f` satisfies ` f (γ • z) = (denom γ z) ^ k * f z`. -/
+/-- Every `SlashInvariantForm` `f` satisfies ` f (γ • z) = (denom γ z) ^ k * f z`. -/
 theorem slash_action_eqn'' {F : Type*} [FunLike F ℍ ℂ] {k : ℤ} {Γ : Subgroup SL(2, ℤ)}
     [SlashInvariantFormClass F Γ k] (f : F) {γ : SL(2, ℤ)} (hγ : γ ∈ Γ) (z : ℍ) :
     f (γ • z) = (denom γ z) ^ k * f z :=
   SlashInvariantForm.slash_action_eqn' f hγ z
 
 instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
-  ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f }⟩
+  ⟨fun f ↦ { slash_action_eq' := slash_action_eqn f, .. }⟩
 
 instance instAdd : Add (SlashInvariantForm Γ k) :=
   ⟨fun f g ↦
@@ -115,15 +116,14 @@ instance instZero : Zero (SlashInvariantForm Γ k) :=
 theorem coe_zero : ⇑(0 : SlashInvariantForm Γ k) = (0 : ℍ → ℂ) :=
   rfl
 
-section
+section smul
 
 variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
-instance instSMul : SMul α (SlashInvariantForm Γ k) :=
-  ⟨fun c f =>
-    { toFun := c • ↑f
-      slash_action_eq' := fun γ hγ => by
-        rw [SlashAction.smul_slash_of_tower, slash_action_eqn f _ hγ]}⟩
+instance instSMul : SMul α (SlashInvariantForm Γ k) where
+  smul c f :=
+  { toFun := c • ↑f
+    slash_action_eq' γ hγ := by rw [ModularForm.SL_smul_slash, slash_action_eqn f _ hγ]}
 
 @[simp]
 theorem coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
@@ -133,7 +133,7 @@ theorem coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • �
 theorem smul_apply (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) : (n • f) z = n • f z :=
   rfl
 
-end
+end smul
 
 instance instNeg : Neg (SlashInvariantForm Γ k) :=
   ⟨fun f =>
@@ -175,7 +175,7 @@ instance : Module ℂ (SlashInvariantForm Γ k) :=
   coeHom_injective.module ℂ coeHom fun _ _ => rfl
 
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def const (x : ℂ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' A _ := ModularForm.is_invariant_const A x
@@ -214,5 +214,38 @@ instance (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
 
 @[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
+
+/-- Translating a `SlashInvariantForm` by `g : GL (Fin 2) ℝ`, to obtain a new
+`SlashInvariantForm` of level `SL(2, ℤ) ∩ g⁻¹ Γ g`. -/
+noncomputable def translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
+    SlashInvariantForm (CongruenceSubgroup.conjGL Γ g) k where
+  toFun := f ∣[k] g
+  slash_action_eq' j hj := by
+    obtain ⟨y, hy, hy'⟩ := CongruenceSubgroup.mem_conjGL'.mp hj
+    simp only [ModularForm.SL_slash, ← hy', ← SlashAction.slash_mul, mul_assoc,
+      mul_inv_cancel_left]
+    rw [SlashAction.slash_mul, ← ModularForm.SL_slash,
+      SlashInvariantFormClass.slash_action_eq f _ hy]
+
+@[simp]
+lemma coe_translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
+    translateGL f g = ⇑f ∣[k] g :=
+  rfl
+
+@[deprecated (since := "2025-05-15")] alias translateGLPos := translateGL
+@[deprecated (since := "2025-05-15")] alias coe_translateGLPos := coe_translateGL
+
+open Pointwise ConjAct in
+/-- Translating a `SlashInvariantForm` by `g : SL(2, ℤ)`, to obtain a new `SlashInvariantForm`
+of level `g⁻¹ Γ g`. -/
+noncomputable def translate [SlashInvariantFormClass F Γ k]
+    (f : F) (g : SL(2, ℤ)) : SlashInvariantForm ((toConjAct g⁻¹) • Γ) k where
+  toFun := f ∣[k] g
+  slash_action_eq' j hj := (translateGL f g).slash_action_eq' j (by simpa using hj)
+
+@[simp]
+lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : SL(2, ℤ)) :
+    translate f g = ⇑f ∣[k] g :=
+  rfl
 
 end SlashInvariantForm

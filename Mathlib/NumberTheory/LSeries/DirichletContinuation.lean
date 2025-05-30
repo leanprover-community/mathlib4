@@ -52,7 +52,7 @@ latter is convergent. This is constructed as a linear combination of Hurwitz zet
 
 Note that this is not the same as `LSeries χ`: they agree in the convergence range, but
 `LSeries χ s` is defined to be `0` if `re s ≤ 1`.
- -/
+-/
 @[pp_nodot]
 noncomputable def LFunction (χ : DirichletCharacter ℂ N) (s : ℂ) : ℂ := ZMod.LFunction χ s
 

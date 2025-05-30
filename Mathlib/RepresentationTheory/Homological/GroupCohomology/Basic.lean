@@ -31,19 +31,19 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
-`Mathlib.RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for
+`Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean`, which gives simpler expressions for
 `H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
 
 ## Main definitions
 
 * `groupCohomology.inhomogeneousCochains A`: a complex whose objects are
-$\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
+  $\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
 * `groupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above complex and the
-complex $\mathrm{Hom}(P, A),$ where `P` is the bar resolution of `k` as a trivial resolution.
+  complex $\mathrm{Hom}(P, A),$ where `P` is the bar resolution of `k` as a trivial resolution.
 * `groupCohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of
-`inhomogeneousCochains A`.
+  `inhomogeneousCochains A`.
 * `groupCohomologyIsoExt A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
-(where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
+  (where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
 
 ## Implementation notes
 
@@ -56,14 +56,14 @@ possible scalar action diamonds.
 ## TODO
 
 * API for cohomology in low degree: $\mathrm{H}^0, \mathrm{H}^1$ and $\mathrm{H}^2.$ For example,
-the inflation-restriction exact sequence.
+  the inflation-restriction exact sequence.
 * The long exact sequence in cohomology attached to a short exact sequence of representations.
 * Upgrading `groupCohomologyIsoExt` to an isomorphism of derived functors.
 * Profinite cohomology.
 
 Longer term:
 * The Hochschild-Serre spectral sequence (this is perhaps a good toy example for the theory of
-spectral sequences in general).
+  spectral sequences in general).
 -/
 
 
@@ -79,35 +79,37 @@ namespace inhomogeneousCochains
 
 /-- The differential in the complex of inhomogeneous cochains used to
 calculate group cohomology. -/
-@[simps (config := .lemmasOnly)]
-def d [Monoid G] (A : Rep k G) (n : ℕ) : ((Fin n → G) → A) →ₗ[k] (Fin (n + 1) → G) → A where
-  toFun f g :=
-    A.ρ (g 0) (f fun i => g i.succ) +
-      Finset.univ.sum fun j : Fin (n + 1) =>
-        (-1 : k) ^ ((j : ℕ) + 1) • f (Fin.contractNth j (· * ·) g)
-  map_add' f g := by
-    ext x
-    simp [Finset.sum_add_distrib, add_add_add_comm]
-  map_smul' r f := by
-    ext x
-    simp [Finset.smul_sum, ← smul_assoc, mul_comm r]
+@[simps! -isSimp]
+def d [Monoid G] (A : Rep k G) (n : ℕ) :
+    ModuleCat.of k ((Fin n → G) → A) ⟶ ModuleCat.of k ((Fin (n + 1) → G) → A) :=
+  ModuleCat.ofHom
+  { toFun f g :=
+      A.ρ (g 0) (f fun i => g i.succ) +
+        Finset.univ.sum fun j : Fin (n + 1) =>
+          (-1 : k) ^ ((j : ℕ) + 1) • f (Fin.contractNth j (· * ·) g)
+    map_add' f g := by
+      ext x
+      simp [Finset.sum_add_distrib, add_add_add_comm]
+    map_smul' r f := by
+      ext x
+      simp [Finset.smul_sum, ← smul_assoc, mul_comm r] }
 
-variable [Group G] (A : Rep k G) (n : ℕ)
+variable [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
 
 theorem d_eq :
-    ModuleCat.ofHom (d A n) =
+    d A n =
       (freeLiftLEquiv (Fin n → G) A).toModuleIso.inv ≫
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
           (freeLiftLEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
   ext f g
   have h := barComplex.d_single (k := k) _ g
-  simp_all [d_apply]
+  simp_all [d_hom_apply, map_add]
 
 end inhomogeneousCochains
 
 namespace groupCohomology
 
-variable [Group G] (A : Rep k G) (n : ℕ)
+variable [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
 
 open inhomogeneousCochains
 
@@ -116,20 +118,19 @@ $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \
 which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
-    (fun n => ModuleCat.ofHom <| inhomogeneousCochains.d A n) fun n => by
+    (fun n => inhomogeneousCochains.d A n) fun n => by
     simp only [d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
     slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d] }
     simp
 
 theorem inhomogeneousCochains.d_def (n : ℕ) :
-    (inhomogeneousCochains A).d n (n + 1) = ModuleCat.ofHom (d A n) := by
+    (inhomogeneousCochains A).d n (n + 1) = d A n := by
   simp
 
 theorem inhomogeneousCochains.d_comp_d :
-    d A (n + 1) ∘ₗ d A n = 0 := by
-  simpa [CochainComplex.of] using
-    congr(ModuleCat.Hom.hom $((inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)))
+    d A n ≫ d A (n + 1) = 0 := by
+  simpa [CochainComplex.of] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
@@ -160,18 +161,18 @@ open groupCohomology
 
 /-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
 of inhomogeneous cochains. -/
-def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
+def groupCohomology [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 
 /-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
 `G`-representation `A`. -/
-abbrev groupCohomologyπ [Group G] (A : Rep k G) (n : ℕ) :
+abbrev groupCohomologyπ [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
-def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
+def groupCohomologyIsoExt [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
     (Rep.barResolution.extIso k G A n).symm

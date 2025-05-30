@@ -12,18 +12,16 @@ import Mathlib.Algebra.Field.Subfield.Defs
 This file is a home for results about base change for matrices.
 
 ## Main results:
- * `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_right`: if an invertible matrix over `L` takes
-   values in subfield `K ⊆ L`, then so does its (right) inverse.
- * `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left`: if an invertible matrix over `L` takes
-   values in subfield `K ⊆ L`, then so does its (left) inverse.
+* `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_right`: if an invertible matrix over `L` takes
+  values in subfield `K ⊆ L`, then so does its (right) inverse.
+* `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left`: if an invertible matrix over `L` takes
+  values in subfield `K ⊆ L`, then so does its (left) inverse.
 
 -/
 
 namespace Matrix
 
-open scoped Matrix
-
-variable {m n L : Type*} [Fintype m] [Fintype n] [DecidableEq m] [Field L]
+variable {m n L : Type*} [Finite m] [Fintype n] [DecidableEq m] [Field L]
   (e : m ≃ n) (K : Subfield L) {A : Matrix m n L} {B : Matrix n m L} (hAB : A * B = 1)
 
 include e hAB
@@ -31,6 +29,7 @@ include e hAB
 lemma mem_subfield_of_mul_eq_one_of_mem_subfield_right
     (h_mem : ∀ i j, A i j ∈ K) (i : n) (j : m) :
     B i j ∈ K := by
+  cases nonempty_fintype m
   let A' : Matrix m m K := of fun i j ↦ ⟨A.submatrix id e i j, h_mem i (e j)⟩
   have hA' : A'.map K.subtype = A.submatrix id e := rfl
   have hA : IsUnit A' := by
@@ -43,7 +42,7 @@ lemma mem_subfield_of_mul_eq_one_of_mem_subfield_right
   suffices (B'.submatrix e.symm id).map K.subtype = B by simp [← this]
   replace hB : A * (B'.submatrix e.symm id).map K.subtype = 1 := by
     replace hB := congr_arg (fun C ↦ C.map K.subtype) hB
-    simp_rw [map_mul] at hB
+    simp_rw [Matrix.map_mul] at hB
     rw [hA', ← e.symm_symm, ← submatrix_id_mul_left] at hB
     simpa using hB
   classical

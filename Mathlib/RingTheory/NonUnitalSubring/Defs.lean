@@ -35,6 +35,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 non-unital subring
 -/
 
+assert_not_exists RelIso
 
 universe u v w
 
@@ -46,8 +47,8 @@ section NonUnitalSubringClass
 
 /-- `NonUnitalSubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class NonUnitalSubringClass (S : Type*) (R : Type u) [NonUnitalNonAssocRing R]
-    [SetLike S R] extends NonUnitalSubsemiringClass S R, NegMemClass S R : Prop where
+class NonUnitalSubringClass (S : Type*) (R : Type u) [NonUnitalNonAssocRing R] [SetLike S R] : Prop
+  extends NonUnitalSubsemiringClass S R, NegMemClass S R where
 
 -- See note [lower instance priority]
 instance (priority := 100) NonUnitalSubringClass.addSubgroupClass (S : Type*) (R : Type u)
@@ -85,6 +86,14 @@ def subtype (s : S) : s →ₙ+* R :=
     AddSubgroupClass.subtype s with
     toFun := Subtype.val }
 
+variable {s} in
+@[simp]
+theorem subtype_apply (x : s) : subtype s x = x :=
+  rfl
+
+theorem subtype_injective : Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
 @[simp]
 theorem coe_subtype : (subtype s : s → R) = Subtype.val :=
   rfl
@@ -114,6 +123,27 @@ def toSubsemigroup (s : NonUnitalSubring R) : Subsemigroup R :=
 instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+
+/-- The actual `NonUnitalSubring` obtained from an element of a `NonUnitalSubringClass`. -/
+@[simps]
+def ofClass {S R : Type*} [NonUnitalNonAssocRing R] [SetLike S R] [NonUnitalSubringClass S R]
+    (s : S) : NonUnitalSubring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  neg_mem' := neg_mem
+
+instance (priority := 100) : CanLift (Set R) (NonUnitalSubring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧
+      (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ {x}, x ∈ s → -x ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        mul_mem' := h.2.2.1
+        neg_mem' := h.2.2.2 },
+      rfl ⟩
 
 instance : NonUnitalSubringClass (NonUnitalSubring R) R where
   zero_mem s := s.zero_mem'

@@ -20,6 +20,8 @@ This file contains results on left Ore sets for rings and monoids with zero.
 
 -/
 
+assert_not_exists RelIso
+
 namespace OreLocalization
 
 /-- Cancellability in monoids with zeros can act as a replacement for the `ore_right_cancel`
@@ -40,7 +42,7 @@ def oreSetOfNoZeroDivisors {R : Type*} [Ring R] [NoZeroDivisors R] {S : Submonoi
   letI : CancelMonoidWithZero R := NoZeroDivisors.toCancelMonoidWithZero
   oreSetOfCancelMonoidWithZero oreNum oreDenom ore_eq
 
-lemma nonempty_oreSet_iff {R : Type*} [Ring R] {S : Submonoid R} :
+lemma nonempty_oreSet_iff {R : Type*} [Monoid R] {S : Submonoid R} :
     Nonempty (OreSet S) ↔ (∀ (r₁ r₂ : R) (s : S), r₁ * s = r₂ * s → ∃ s' : S, s' * r₁ = s' * r₂) ∧
       (∀ (r : R) (s : S), ∃ (r' : R) (s' : S), s' * r = r' * s) := by
   constructor

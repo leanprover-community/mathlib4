@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Order.Notation
+import Mathlib.Tactic.Convert
 
 /-!
 # Idempotent elements of a ring

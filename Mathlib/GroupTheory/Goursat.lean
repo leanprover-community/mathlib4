@@ -71,7 +71,7 @@ lemma mk_goursatFst_eq_iff_mk_goursatSnd_eq {x y : G × H} (hx : x ∈ I) (hy : 
   have := normal_goursatFst hI₁
   have := normal_goursatSnd hI₂
   rw [eq_comm]
-  simp [QuotientGroup.eq_iff_div_mem]
+  simp only [QuotientGroup.eq_iff_div_mem, mem_goursatFst, mem_goursatSnd]
   constructor <;> intro h
   · simpa [Prod.mul_def, Prod.div_def] using div_mem (mul_mem h hx) hy
   · simpa [Prod.mul_def, Prod.div_def] using div_mem (mul_mem h hy) hx
@@ -153,12 +153,12 @@ lemma goursat :
     constructor
     · intro hgh
       simpa only [G', H', mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
-        Prod.exists, MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply,
+        Prod.exists, MonoidHom.coe_prodMap, coe_subtype, Prod.mk.injEq, Prod.map_apply,
         MonoidHom.coe_snd, exists_eq_right, exists_and_right, exists_eq_right_right,
         MonoidHom.coe_fst]
         using ⟨⟨h, hgh⟩, ⟨g, hgh⟩, g, h, hgh, ⟨rfl, rfl⟩⟩
     · simp only [G', H', mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
-        Prod.exists, MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply,
+        Prod.exists, MonoidHom.coe_prodMap, coe_subtype, Prod.mk.injEq, Prod.map_apply,
         MonoidHom.coe_snd, exists_eq_right, exists_and_right, exists_eq_right_right,
         MonoidHom.coe_fst, forall_exists_index, and_imp]
       rintro h₁ hgh₁ g₁ hg₁h g₂ h₂ hg₂h₂ hP hQ

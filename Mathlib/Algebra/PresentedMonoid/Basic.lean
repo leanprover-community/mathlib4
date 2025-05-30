@@ -98,12 +98,10 @@ theorem closure_range_of (rels : FreeMonoid α → FreeMonoid α → Prop) :
   rw [Submonoid.eq_top_iff']
   intro x
   induction' x with a
-  induction a
-  · exact Submonoid.one_mem _
-  · rename_i x
-    exact subset_closure (Exists.intro x rfl)
-  rename_i x y hx hy
-  exact Submonoid.mul_mem _ hx hy
+  induction a with
+  | one => exact Submonoid.one_mem _
+  | of x => exact subset_closure <| by simp [range, of]
+  | mul x y hx hy => exact Submonoid.mul_mem _ hx hy
 
 @[to_additive]
 theorem surjective_mk {rels : FreeMonoid α → FreeMonoid α → Prop} :

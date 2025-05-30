@@ -13,10 +13,10 @@ This file contains elementary definitions involving congruence relations and mor
 
 ## Main definitions
 
- * `Con.ker`: the kernel of a monoid homomorphism as a congruence relation
- * `Con.mk'`: the map from a monoid to its quotient by a congruence relation
- * `Con.lift`: the homomorphism on the quotient given that the congruence is in the kernel
- * `Con.map`: homomorphism from a smaller to a larger quotient
+* `Con.ker`: the kernel of a monoid homomorphism as a congruence relation
+* `Con.mk'`: the map from a monoid to its quotient by a congruence relation
+* `Con.lift`: the homomorphism on the quotient given that the congruence is in the kernel
+* `Con.map`: homomorphism from a smaller to a larger quotient
 
 ## Tags
 
@@ -33,30 +33,132 @@ variable {M}
 
 namespace Con
 
-section MulOneClass
+section Mul
+variable {F} [Mul M] [Mul N] [Mul P] [FunLike F M N] [MulHomClass F M N]
 
-variable [MulOneClass M] [MulOneClass N] [MulOneClass P] {c : Con M}
 
-/-- The kernel of a monoid homomorphism as a congruence relation. -/
-@[to_additive "The kernel of an `AddMonoid` homomorphism as an additive congruence relation."]
-def ker (f : M →* P) : Con M :=
-  mulKer f (map_mul f)
+/-- The natural homomorphism from a magma to its quotient by a congruence relation. -/
+@[to_additive (attr := simps)"The natural homomorphism from an additive magma to its quotient by an
+additive congruence relation."]
+def mkMulHom (c : Con M) : MulHom M c.Quotient where
+  toFun := (↑)
+  map_mul' _ _ := rfl
+/-- The kernel of a multiplicative homomorphism as a congruence relation. -/
+@[to_additive "The kernel of an additive homomorphism as an additive congruence relation."]
+def ker (f : F) : Con M where
+  toSetoid := Setoid.ker f
+  mul' h1 h2 := by
+    dsimp [Setoid.ker, onFun] at *
+    rw [map_mul, h1, h2, map_mul]
+
+@[to_additive (attr := norm_cast)]
+theorem ker_coeMulHom (f : F) : ker (f : MulHom M N) = ker f := rfl
 
 /-- The definition of the congruence relation defined by a monoid homomorphism's kernel. -/
 @[to_additive (attr := simp) "The definition of the additive congruence relation defined by an
 `AddMonoid` homomorphism's kernel."]
-theorem ker_rel (f : M →* P) {x y} : ker f x y ↔ f x = f y :=
+theorem ker_rel (f : F) {x y} : ker f x y ↔ f x = f y :=
   Iff.rfl
+
+@[to_additive (attr := simp) "The kernel of the quotient map induced by an additive congruence
+relation `c` equals `c`."]
+theorem ker_mkMulHom_eq (c : Con M) : ker (mkMulHom c) = c :=
+  ext fun _ _ => Quotient.eq''
+
+/-- The kernel of a multiplication-preserving function as a congruence relation. -/
+@[to_additive "The kernel of an addition-preserving function as an additive congruence relation."]
+abbrev mulKer (f : M → P) (h : ∀ x y, f (x * y) = f x * f y) : Con M :=
+  ker <| MulHom.mk f h
+
+attribute [deprecated Con.ker (since := "2025-03-23")] mulKer
+attribute [deprecated AddCon.ker (since := "2025-03-23")] AddCon.addKer
+
+set_option linter.deprecated false in
+/-- The kernel of the quotient map induced by a congruence relation `c` equals `c`. -/
+@[to_additive (attr := simp) "The kernel of the quotient map induced by an additive congruence
+relation `c` equals `c`."]
+theorem mul_ker_mk_eq {c : Con M} :
+    (mulKer ((↑) : M → c.Quotient) fun _ _ => rfl) = c :=
+  ext fun _ _ => Quotient.eq''
+
+attribute [deprecated Con.ker_mkMulHom_eq (since := "2025-03-23")] mul_ker_mk_eq
+attribute [deprecated AddCon.ker_mkAddHom_eq (since := "2025-03-23")] AddCon.add_ker_mk_eq
+
+/-- Given a function `f`, the smallest congruence relation containing the binary relation on `f`'s
+image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)`
+by a congruence relation `c`.' -/
+@[to_additive "Given a function `f`, the smallest additive congruence relation containing the
+binary relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the
+elements of `f⁻¹(y)` by an additive congruence relation `c`.'"]
+def mapGen {c : Con M} (f : M → N) : Con N :=
+  conGen <| Relation.Map c f f
+
+/-- Given a surjective multiplicative-preserving function `f` whose kernel is contained in a
+congruence relation `c`, the congruence relation on `f`'s codomain defined by '`x ≈ y` iff the
+elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)` by `c`.' -/
+@[to_additive "Given a surjective addition-preserving function `f` whose kernel is contained in
+an additive congruence relation `c`, the additive congruence relation on `f`'s codomain defined
+by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)` by `c`.'"]
+def mapOfSurjective {c : Con M} (f : F) (h : ker f ≤ c) (hf : Surjective f) : Con N where
+  __ := c.toSetoid.mapOfSurjective f h hf
+  mul' h₁ h₂ := by
+    rcases h₁ with ⟨a, b, h1, rfl, rfl⟩
+    rcases h₂ with ⟨p, q, h2, rfl, rfl⟩
+    exact ⟨a * p, b * q, c.mul h1 h2, map_mul f _ _, map_mul f _ _⟩
+
+/-- A specialization of 'the smallest congruence relation containing a congruence relation `c`
+equals `c`'. -/
+@[to_additive "A specialization of 'the smallest additive congruence relation containing
+an additive congruence relation `c` equals `c`'."]
+theorem mapOfSurjective_eq_mapGen {c : Con M} {f : F} (h : ker f ≤ c) (hf : Surjective f) :
+    c.mapGen f = c.mapOfSurjective f h hf := by
+  rw [← conGen_of_con (c.mapOfSurjective f h hf)]; rfl
+
+/-- Given a congruence relation `c` on a type `M` with a multiplication, the order-preserving
+bijection between the set of congruence relations containing `c` and the congruence relations
+on the quotient of `M` by `c`. -/
+@[to_additive "Given an additive congruence relation `c` on a type `M` with an addition,
+the order-preserving bijection between the set of additive congruence relations containing `c` and
+the additive congruence relations on the quotient of `M` by `c`."]
+def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
+  toFun d :=
+    d.1.mapOfSurjective (mkMulHom c) (by rw [Con.ker_mkMulHom_eq]; exact d.2) <|
+      Quotient.mk_surjective
+  invFun d :=
+    ⟨comap ((↑) : M → c.Quotient) (fun _ _ => rfl) d, fun x y h =>
+      show d x y by rw [c.eq.2 h]; exact d.refl _⟩
+  left_inv d :=
+    Subtype.ext_iff_val.2 <|
+      ext fun x y =>
+        ⟨fun ⟨a, b, H, hx, hy⟩ =>
+          d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
+          fun h => ⟨_, _, h, rfl, rfl⟩⟩
+  right_inv d :=
+    ext fun x y =>
+      ⟨fun ⟨_, _, H, hx, hy⟩ =>
+        hx ▸ hy ▸ H,
+        Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
+  map_rel_iff' {s t} := by
+    constructor
+    · intros h x y hs
+      rcases h ⟨x, y, hs, rfl, rfl⟩ with ⟨a, b, ht, hx, hy⟩
+      exact t.1.trans (t.1.symm <| t.2 <| c.eq.1 hx) (t.1.trans ht (t.2 <| c.eq.1 hy))
+    · exact Relation.map_mono
+
+end Mul
+
+section MulOneClass
+
+variable [MulOneClass M] [MulOneClass N] [MulOneClass P] {c : Con M}
 
 variable (c)
 
 /-- The natural homomorphism from a monoid to its quotient by a congruence relation. -/
 @[to_additive "The natural homomorphism from an `AddMonoid` to its quotient by an additive
 congruence relation."]
-def mk' : M →* c.Quotient :=
-  { toFun := (↑)
-    map_one' := rfl
-    map_mul' := fun _ _ => rfl }
+def mk' : M →* c.Quotient where
+  __ := mkMulHom c
+  map_one' := rfl
 
 variable (x y : M)
 
@@ -80,7 +182,6 @@ theorem mk'_surjective : Surjective c.mk' :=
 theorem coe_mk' : (c.mk' : M → c.Quotient) = ((↑) : M → c.Quotient) :=
   rfl
 
--- Porting note: used to abuse defeq between sets and predicates
 @[to_additive]
 theorem ker_apply {f : M →* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
 
