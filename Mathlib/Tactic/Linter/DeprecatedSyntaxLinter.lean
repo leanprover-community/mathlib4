@@ -24,6 +24,10 @@ in Lean 3, `refine` and `cases`. They have been superseded by Lean 4 tactics:
 
 The `admit` tactic is a synonym for the much more common `sorry`, so the latter should be preferred.
 
+The `native_decide` tactic is not allowed in mathlib, as it trusts the entire Lean compiler
+(and not just the Lean kernel). Because the latter is large and complicated, at present it is
+probably possible to prove `False` using `native_decide`.
+
 This linter is an incentive to discourage uses of such deprecated syntax, without being a ban.
 It is not inherently limited to tactics.
 -/
@@ -62,6 +66,13 @@ register_option linter.style.admit : Bool := {
   descr := "enable the admit linter"
 }
 
+/-- The option `linter.style.nativeDecide` of the deprecated syntax linter flags usages of
+the `native_decide` tactic, which is disallowed in mathlib. -/
+register_option linter.style.nativeDecide : Bool := {
+  defValue := false
+  descr := "enable the nativeDecide linter"
+}
+
 /-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
 `set_option <name-containing-maxHeartbeats> n in cmd` that do not add a comment explaining
 the reason for the modification of the `maxHeartbeats`.
@@ -94,9 +105,40 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
         some default
   | _ => none
 
+/-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option enabled. -/
+def isDecideNative (stx : Syntax ): Bool := Id.run do
+  match stx with
+  | .node _ ``Lean.Parser.Tactic.decide args =>
+    -- The configuration passed to the tactic call.
+    let config := args[1]![0]
+    -- Check all configuration arguments in order to determine the final
+    -- toggling of the native decide option.
+    let mut enabled := false
+    if let (.node _ _ config_args) := config then
+      for arg in config_args do
+        match arg[0] with
+        | (.node _ ``Lean.Parser.Tactic.posConfigItem args') =>
+          if args'[1]! matches (.ident _ _ `native _) then
+            enabled := true
+        | (.node _ ``Lean.Parser.Tactic.negConfigItem args') =>
+          if args'[1]! matches (.ident _ _ `native _) then
+            enabled := false
+        | (.node _ ``Lean.Parser.Tactic.valConfigItem args') =>
+          if args'[1]! matches (.ident _ _ `config _) then
+            match args'[3]! with
+            |  `({ native := true }) => return true
+            |  `({ native := false }) => return false
+            | _ =>
+              dbg_trace "warning: unhandled config {args'[3]!}"
+              return false
+        | _ => let _n := 0
+    return enabled
+  | _ => false
+
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
-def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
+def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData) := Id.run do
+  fun stx ↦ match stx with
   | stx@(.node _ kind args) =>
     let rargs := args.flatMap getDeprecatedSyntax
     match kind with
@@ -112,6 +154,17 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
+    | ``Lean.Parser.Tactic.decide =>
+      if isDecideNative stx then
+        rargs.push (kind, stx, "Using `decide +native` is not allowed in mathlib:\n\
+        because it trusts the entire Lean compiler (not just the Lean kernel),\n\
+        it could quite possibly be used to prove false.")
+      else
+        rargs
+    | ``Lean.Parser.Tactic.nativeDecide =>
+      rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib:\n\
+        because it trusts the entire Lean compiler (not just the Lean kernel),\n\
+        it could quite possibly be used to prove false.")
     | ``Lean.Parser.Command.in =>
       match getSetOptionMaxHeartbeatsComment stx with
       | none => rargs
@@ -142,7 +195,8 @@ def deprecatedSyntaxLinter : Linter where run stx := do
   unless Linter.getLinterValue linter.style.refine (← getOptions) ||
       Linter.getLinterValue linter.style.cases (← getOptions) ||
       Linter.getLinterValue linter.style.admit (← getOptions) ||
-      Linter.getLinterValue linter.style.maxHeartbeats (← getOptions) do
+      Linter.getLinterValue linter.style.maxHeartbeats (← getOptions) ||
+      Linter.getLinterValue linter.style.nativeDecide (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -158,6 +212,8 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
       | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
+      | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide =>
+        Linter.logLintIf linter.style.nativeDecide stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
       | _ => continue) stx
 
