@@ -189,7 +189,6 @@ end Fintype
 theorem dualTensorHom_bijective [Module.Finite R M] [Projective R M] :
     Function.Bijective (dualTensorHom R M N) := by
   obtain ⟨n, f, g, -, -, eq⟩ := Finite.exists_comp_eq_id_of_projective R M
-  have e := dualTensorHomEquivOfBasis (N := N) (Pi.basisFun R <| Fin n)
   constructor
   · refine .of_comp (f := f.lcomp R N) ?_
     rw [← coe_comp, ← dualTensorHom_comp_rTensor_dualMap, coe_comp,
