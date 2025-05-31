@@ -98,7 +98,7 @@ alias Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :=
   Bundle.ContinuousLinearMap.vectorPrebundle.isContMDiff
 
 instance ContMDiffVectorBundle.continuousLinearMap :
-    ContMDiffVectorBundle n (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB :=
+    ContMDiffVectorBundle n (F₁ →L[𝕜] F₂) (fun x ↦ E₁ x →L[𝕜] E₂ x) IB :=
   (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).contMDiffVectorBundle IB
 
 end
