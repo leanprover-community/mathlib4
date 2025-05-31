@@ -57,7 +57,7 @@ open CategoryTheory.Limits
 Note that `R` can be any ring,
 but the main case of interest is when `R = k` is a field and `G` is a group. -/
 abbrev FDRep (R G : Type u) [Ring R] [Monoid G] :=
-  Action (FGModuleCat R) G
+  Action (FGModuleCat.{u} R) G
 
 namespace FDRep
 
