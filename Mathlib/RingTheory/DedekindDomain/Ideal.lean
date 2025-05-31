@@ -995,7 +995,7 @@ def equivMaximalSpectrum (hR : ¬IsField R) : HeightOneSpectrum R ≃ MaximalSpe
 
 /-- An ideal of `R` is not the whole ring if and only if it is contained in an element of
 `HeightOneSpectrum R` -/
-theorem _root_.Ideal.ne_top_iff_exists [Nontrivial R] (hR : ¬IsField R) {I : Ideal R} : I ≠ ⊤ ↔
+theorem _root_.Ideal.ne_top_iff_exists (hR : ¬IsField R) {I : Ideal R} : I ≠ ⊤ ↔
     ∃ P : HeightOneSpectrum R, I ≤ P.asIdeal := by
   rw [Ideal.ne_top_iff_exists_isMaximal]
   constructor
