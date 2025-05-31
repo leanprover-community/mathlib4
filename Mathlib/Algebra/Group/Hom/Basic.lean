@@ -67,7 +67,112 @@ theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
 
 end DivisionCommMonoid
 
+namespace OneHom
+
+section
+
+open Function
+
+variable [One M] [One N] [One P]
+
+section LiftLeft
+
+variable {f : OneHom M N} {p : OneHom M P} {g hg}
+
+@[to_additive (attr := simp)]
+theorem liftLeft_comp : (f.liftLeft p g hg).comp p = f := ext fun _ => hg _
+
+@[to_additive]
+theorem liftLeft_comp_apply : ∀ x, (f.liftLeft p g hg) (p x) = f x := hg
+
+@[to_additive]
+theorem eq_liftLeft (hp : Surjective p) {g'} (hg' : g'.comp p = f) :
+    g' = f.liftLeft p g hg := by
+  simpa only [cancel_right hp] using
+    hg'.trans (liftLeft_comp (f := f) (p := p) (hg := hg)).symm
+
+@[to_additive (attr := simp)]
+theorem liftLeft_liftLeft : f.liftLeft p (f.liftLeft p g hg) liftLeft_comp_apply =
+    f.liftLeft p g hg := rfl
+
+end LiftLeft
+
+section LiftRight
+
+variable {f : OneHom M N} {p : OneHom P N} {hp : Injective p} {g hg}
+
+@[to_additive (attr := simp)]
+theorem comp_liftRight : p.comp (f.liftRight hp g hg) = f := ext fun _ => hg _
+
+@[to_additive]
+theorem comp_liftRight_apply : ∀ x, p ((f.liftRight hp g hg) x) = f x := hg
+
+@[to_additive]
+theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := by
+  simpa only [cancel_left hp] using
+    hg'.trans (comp_liftRight (f := f) (hp := hp) (hg := hg)).symm
+
+@[to_additive (attr := simp)]
+theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
+    f.liftRight hp g hg := rfl
+
+end LiftRight
+
+end
+
+end OneHom
+
 namespace MulHom
+
+section
+
+open Function
+
+variable [Mul M] [Mul N] [Mul P]
+
+section LiftLeft
+
+variable {f : M →ₙ* N} {p : M →ₙ* P} {hp : Surjective p} {g hg}
+
+@[to_additive (attr := simp)]
+theorem liftLeft_comp : (f.liftLeft hp g hg).comp p = f := ext fun _ => hg _
+
+@[to_additive]
+theorem liftLeft_comp_apply : ∀ x, (f.liftLeft hp g hg) (p x) = f x := hg
+
+@[to_additive]
+theorem eq_liftLeft {g'} (hg' : g'.comp p = f) : g' = f.liftLeft hp g hg := by
+  simpa only [cancel_right hp] using
+    hg'.trans (liftLeft_comp (f := f) (hp := hp) (hg := hg)).symm
+
+@[to_additive (attr := simp)]
+theorem liftLeft_liftLeft : f.liftLeft hp (f.liftLeft hp g hg) liftLeft_comp_apply =
+    f.liftLeft hp g hg := rfl
+
+end LiftLeft
+
+section LiftRight
+
+variable {f : M →ₙ* N} {p : P →ₙ* N} {hp : Injective p} {g hg}
+
+@[to_additive (attr := simp)]
+theorem comp_liftRight : p.comp (f.liftRight hp g hg) = f := ext fun _ => hg _
+
+@[to_additive]
+theorem comp_liftRight_apply : ∀ x, p ((f.liftRight hp g hg) x) = f x := hg
+
+@[to_additive]
+theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := by
+  simpa only [cancel_left hp] using
+    hg'.trans (comp_liftRight (f := f) (hp := hp) (hg := hg)).symm
+
+@[to_additive (attr := simp)]
+theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
+    f.liftRight hp g hg := rfl
+
+end LiftRight
+
+end
 
 /-- Given two mul morphisms `f`, `g` to a commutative semigroup, `f * g` is the mul morphism
 sending `x` to `f x * g x`. -/
@@ -97,6 +202,75 @@ theorem comp_mul [Mul M] [CommSemigroup N] [CommSemigroup P] (g : N →ₙ* P) (
 end MulHom
 
 namespace MonoidHom
+
+section
+
+open Function
+
+variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
+
+section LiftLeft
+
+variable {f : M →* N} {p : M →* P} {hp : Surjective p} {g hg} {φ : P →* N}
+
+@[to_additive (attr := simp)]
+theorem liftLeft_comp : (f.liftLeft hp g hg).comp p = f := ext fun _ => hg _
+
+@[to_additive]
+theorem liftLeft_comp_apply : ∀ x, (f.liftLeft hp g hg) (p x) = f x := hg
+
+@[to_additive]
+theorem eq_liftLeft {g'} (hg' : g'.comp p = f) : g' = f.liftLeft hp g hg := by
+  simpa only [cancel_right hp] using
+    hg'.trans (liftLeft_comp (f := f) (hp := hp) (hg := hg)).symm
+
+@[to_additive (attr := simp)]
+theorem liftLeft_liftLeft : f.liftLeft hp (f.liftLeft hp g hg) liftLeft_comp_apply =
+    f.liftLeft hp g hg := rfl
+
+@[to_additive (attr := simp)]
+theorem toMulHom_liftLeft : (f.liftLeft hp g hg).toMulHom =
+    f.toMulHom.liftLeft (p := p.toMulHom) hp g hg := rfl
+
+@[to_additive (attr := simp)]
+theorem toOneHom_liftLeft : (f.liftLeft hp g hg).toOneHom =
+    f.toOneHom.liftLeft p.toOneHom g hg := rfl
+
+theorem liftLeft_apply_comp : (φ.comp p).liftLeft hp φ (fun _ => rfl) = φ := rfl
+
+end LiftLeft
+
+section LiftRight
+
+variable {f : M →* N} {p : P →* N} {hp : Injective p} {g hg}
+
+@[to_additive (attr := simp)]
+theorem comp_liftRight : p.comp (f.liftRight hp g hg) = f := ext fun _ => hg _
+
+@[to_additive]
+theorem comp_liftRight_apply : ∀ x, p ((f.liftRight hp g hg) x) = f x := hg
+
+@[to_additive]
+theorem eq_liftRight {g'} (hg' : p.comp g' = f) : g' = f.liftRight hp g hg := by
+  simpa only [cancel_left hp] using
+    hg'.trans (comp_liftRight (f := f) (hp := hp) (hg := hg)).symm
+
+@[to_additive (attr := simp)]
+theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRight_apply =
+    f.liftRight hp g hg := rfl
+
+@[to_additive (attr := simp)]
+theorem toMulHom_liftRight : (f.liftRight hp g hg).toMulHom =
+    f.toMulHom.liftRight (p := p.toMulHom) hp g hg := rfl
+
+@[to_additive (attr := simp)]
+theorem toOneHom_liftRight : (f.liftRight hp g hg).toOneHom =
+    f.toOneHom.liftRight (p := p.toOneHom) hp g hg := rfl
+
+end LiftRight
+
+end
+
 section Group
 variable [Group G]
 
