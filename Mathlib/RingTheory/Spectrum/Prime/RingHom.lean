@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
@@ -221,7 +222,32 @@ theorem range_specComap_of_surjective (hf : Surjective f) :
   convert image_specComap_zeroLocus_eq_zeroLocus_comap _ _ hf _
   rw [zeroLocus_bot]
 
-variable {S} in
+variable {S}
+
+/-- Let `f : R →+* S` be a surjective ring homomorphisms, then `Spec S` is isomorphic to `Z(I)`
+  where `I = ker f`. -/
+noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj (hf : Surjective f) {I : Ideal R}
+    (hI : RingHom.ker f = I) : PrimeSpectrum S ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
+  toFun p := ⟨f.specComap p, hI.symm.trans_le (Ideal.ker_le_comap f)⟩
+  invFun := fun ⟨⟨p, _⟩, hp⟩ ↦ ⟨p.map f, p.map_isPrime_of_surjective hf (hI.trans_le hp)⟩
+  left_inv := by
+    intro ⟨p, _⟩
+    simp only [PrimeSpectrum.mk.injEq]
+    exact p.map_comap_of_surjective f hf
+  right_inv := by
+    intro ⟨⟨p, _⟩, hp⟩
+    simp only [Subtype.mk.injEq, PrimeSpectrum.mk.injEq]
+    exact (p.comap_map_of_surjective f hf).trans <| sup_eq_left.mpr (hI.trans_le hp)
+  map_rel_iff' {a b} := by
+    show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
+    rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective f hf,
+      PrimeSpectrum.asIdeal_le_asIdeal]
+
+/-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
+noncomputable def Ideal.primeSpectrumQuotientOrderIsoZeroLocus (I : Ideal R) :
+    PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) :=
+  primeSpectrumOrderIsoZeroLocusOfSurj (Quotient.mk I) Quotient.mk_surjective I.mk_ker
+
 /-- `p` is in the image of `Spec S → Spec R` if and only if `p` extended to `S` and
 restricted back to `R` is `p`. -/
 lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
