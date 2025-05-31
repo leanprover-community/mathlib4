@@ -1061,6 +1061,19 @@ theorem orthogonalProjection_isSymmetric [K.HasOrthogonalProjection] :
     (K.subtypeL ∘L K.orthogonalProjection : E →ₗ[𝕜] E).IsSymmetric :=
   inner_orthogonalProjection_left_eq_right K
 
+lemma re_inner_orthogonalProjection_eq_sqNorm [K.HasOrthogonalProjection] (v : E) :
+    RCLike.re (inner 𝕜 (↑(K.orthogonalProjection v)) v) = ‖(↑(K.orthogonalProjection v))‖^2 := by
+  rw [re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two,
+    div_eq_iff (NeZero.ne' 2).symm, pow_two, add_sub_assoc, eq_sub_iff_add_eq'.symm,
+    AddSubgroupClass.coe_norm, ← mul_sub_one, show (2 : ℝ) - 1 = 1 by ring,
+    Lean.Grind.CommRing.mul_one, ← orthogonalProjectionFn_eq, sub_eq_iff_eq_add', norm_sub_rev]
+  exact orthogonalProjectionFn_norm_sq K v
+
+lemma re_inner_orthogonalProjection_nonneg [K.HasOrthogonalProjection] (v : E) :
+    0 ≤ RCLike.re (inner 𝕜 (↑(K.orthogonalProjection v)) v) := by
+  rw [re_inner_orthogonalProjection_eq_sqNorm K v]
+  exact sq_nonneg ‖K.orthogonalProjection v‖
+
 open Module
 
 /-- Given a finite-dimensional subspace `K₂`, and a subspace `K₁`
