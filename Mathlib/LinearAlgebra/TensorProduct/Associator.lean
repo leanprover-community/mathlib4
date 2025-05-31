@@ -283,6 +283,11 @@ variable {N}
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
 
+lemma lTensor_tensor (f : P →ₗ[R] Q) :
+    lTensor (M ⊗[R] N) f = (TensorProduct.assoc R M N Q).symm ∘ₗ
+      (f.lTensor N).lTensor M ∘ₗ TensorProduct.assoc R M N P :=
+  TensorProduct.ext <| TensorProduct.ext rfl
+
 theorem rTensor_tensor : rTensor (M ⊗[R] N) g =
     TensorProduct.assoc R Q M N ∘ₗ rTensor N (rTensor M g) ∘ₗ (TensorProduct.assoc R P M N).symm :=
   TensorProduct.ext <| LinearMap.ext fun _ ↦ TensorProduct.ext rfl
