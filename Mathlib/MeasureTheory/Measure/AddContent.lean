@@ -191,8 +191,7 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
     exact (Exists.choose_spec (hC.disjointOfUnion_props h_ss)).2.2.2.2.2
   rw [h3, addContent_sUnion h1 h2, sum_disjiUnion]
-  · apply sum_le_sum
-    intro x hx
+  · gcongr with x hx
     refine sum_addContent_le_of_subset hC (hC.disjointOfUnion_subset h_ss hx)
       (hC.pairwiseDisjoint_disjointOfUnion_of_mem h_ss hx) (h_ss hx)
       (fun _ s ↦ hC.subset_of_mem_disjointOfUnion h_ss hx s)

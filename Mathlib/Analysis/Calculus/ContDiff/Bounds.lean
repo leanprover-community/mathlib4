@@ -308,15 +308,12 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
       (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp_assoc]; simp)]
     rw [← Finset.univ_sigma_univ, Finset.sum_sigma, Finset.sum_range]
     simp only [comp_apply, Finset.symInsertEquiv_symm_apply_coe]
-    refine Finset.sum_le_sum ?_
-    intro m _
-    specialize IH hf.2 (n := n - m) (le_trans (by exact_mod_cast n.sub_le m) hn)
-    refine le_trans (mul_le_mul_of_nonneg_left IH (by simp [mul_nonneg])) ?_
+    gcongr with m _
+    specialize IH hf.2 (n := n - m) (le_trans (mod_cast n.sub_le m) hn)
+    refine (mul_le_mul_of_nonneg_left IH (by positivity)).trans_eq ?_
     rw [Finset.mul_sum, ← Finset.sum_coe_sort]
-    refine Finset.sum_le_sum ?_
-    simp only [Finset.mem_univ, forall_true_left, Subtype.forall, Finset.mem_sym_iff]
-    intro p hp
-    refine le_of_eq ?_
+    refine Finset.sum_congr rfl fun ⟨p, hp⟩ _ ↦ ?_
+    rw [Finset.mem_sym_iff] at hp
     rw [Finset.prod_insert hi]
     have hip : i ∉ p := mt (hp i) hi
     rw [Sym.count_coe_fill_self_of_notMem hip, Sym.multinomial_coe_fill_of_notMem hip]
@@ -326,7 +323,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
       ring
     refine Finset.prod_congr rfl ?_
     intro j hj
-    have hji : j ≠ i := mt (· ▸ hj) hi
+    have hji : j ≠ i := ne_of_mem_of_not_mem hj hi
     rw [Sym.count_coe_fill_of_ne hji]
 
 theorem norm_iteratedFDeriv_prod_le [DecidableEq ι] [NormOneClass A'] {u : Finset ι}

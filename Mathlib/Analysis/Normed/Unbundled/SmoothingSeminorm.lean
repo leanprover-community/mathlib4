@@ -147,7 +147,7 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
   have hL_le : L ≤ smoothingSeminormSeq μ x n := by
     rw [← PNat.mk_coe n hn0]
     apply ciInf_le (smoothingSeminormSeq_bddBelow μ x)
-  refine ⟨lt_of_lt_of_le (neg_lt_zero.mpr hε) (sub_nonneg.mpr hL_le), ?_⟩
+  refine ⟨by linarith, ?_⟩
   -- It is enough to show that `smoothingSeminormSeq μ x n < L + ε`, that is,
   -- `μ (x ^ n) ^ (1 / ↑n) < L + ε`.
   suffices h : smoothingSeminormSeq μ x n < L + ε by rwa [tsub_lt_iff_left hL_le]
@@ -160,7 +160,9 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
     nth_rw 1 [← div_add_mod n m1]
     have hLε : 0 < L + ε := add_pos_of_nonneg_of_pos hL0 hε
     apply lt_of_le_of_lt _ hLε
-    rw [pow_add, ← MulZeroClass.mul_zero (μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) ^ (1 / (n : ℝ))),
+    rw [pow_add]
+    #check map_mul_le_mul
+    rw [pow_add, ← mul_zero (μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) ^ (1 / (n : ℝ))),
       ← zero_rpow (one_div_cast_ne_zero (pos_iff_ne_zero.mp hn0)), ← hxn,
       ← mul_rpow (apply_nonneg μ _) (apply_nonneg μ _)]
     exact rpow_le_rpow (apply_nonneg μ _) (map_mul_le_mul μ _ _) (one_div_cast_nonneg _)
