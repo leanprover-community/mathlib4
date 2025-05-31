@@ -93,6 +93,10 @@ theorem smoothingSeminormSeq_bddBelow (x : R) :
 abbrev smoothingFun (x : R) : ℝ :=
   iInf fun n : PNat => μ (x ^ (n : ℕ)) ^ (1 / (n : ℝ))
 
+/-- The `smoothingFun μ x` is nonnegative. -/
+theorem smoothingFun_nonneg (x : R) : 0 ≤ smoothingFun μ x :=
+  le_ciInf fun _ => by positivity
+
 /-- If `μ x = 0`, then `smoothingFun μ x` is the limit of `smoothingSeminormSeq μ x`. -/
 theorem tendsto_smoothingFun_of_eq_zero {x : R} (hx : μ x = 0) :
     Tendsto (smoothingSeminormSeq μ x) atTop (𝓝 (smoothingFun μ x)) := by
@@ -112,8 +116,8 @@ theorem tendsto_smoothingFun_of_eq_zero {x : R} (hx : μ x = 0) :
 `smoothingSeminormSeq μ x`. -/
 theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x ≠ 0) :
     Tendsto (smoothingSeminormSeq μ x) atTop (𝓝 (smoothingFun μ x)) := by
-  let L := iInf fun n : PNat => μ (x ^ (n : ℕ)) ^ (1 / (n : ℝ))
-  have hL0 : 0 ≤ L := le_ciInf fun x => rpow_nonneg (apply_nonneg _ _) _
+  let L := smoothingFun μ x
+  have hL0 : 0 ≤ L := smoothingFun_nonneg μ x
   rw [Metric.tendsto_atTop]
   intro ε hε
   /- For each `ε > 0`, we can find a positive natural number `m1` such that
@@ -156,16 +160,11 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
      `μ (x ^ (↑m1 * (n / ↑m1)) * x ^ (n % ↑m1)) ^ (1 / ↑n) ≤
      (μ (x ^ (↑m1 * (n / ↑m1))) * μ (x ^ (n % ↑m1))) ^ (1 / ↑n)`, which follows from the
      submultiplicativity of `μ`. -/
-    simp only [smoothingSeminormSeq]
-    nth_rw 1 [← div_add_mod n m1]
-    have hLε : 0 < L + ε := add_pos_of_nonneg_of_pos hL0 hε
-    apply lt_of_le_of_lt _ hLε
-    rw [pow_add]
-    #check map_mul_le_mul
-    rw [pow_add, ← mul_zero (μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) ^ (1 / (n : ℝ))),
-      ← zero_rpow (one_div_cast_ne_zero (pos_iff_ne_zero.mp hn0)), ← hxn,
-      ← mul_rpow (apply_nonneg μ _) (apply_nonneg μ _)]
-    exact rpow_le_rpow (apply_nonneg μ _) (map_mul_le_mul μ _ _) (one_div_cast_nonneg _)
+    rw [smoothingSeminormSeq, map_eq_zero_of_dvd μ _ hxn, zero_rpow]
+    · positivity
+    · positivity
+    · apply pow_dvd_pow
+      apply Nat.mod_le
   · --Otherwise, we have `0 < μ (x ^ (n % ↑m1))`.
     have hxn' : 0 < μ (x ^ (n % ↑m1)) := lt_of_le_of_ne (apply_nonneg _ _) (Ne.symm hxn)
     simp only [smoothingSeminormSeq]
@@ -241,25 +240,12 @@ theorem tendsto_smoothingFun_of_map_one_le_one (hμ1 : μ 1 ≤ 1) (x : R) :
   · exact tendsto_smoothingFun_of_eq_zero μ hx
   · exact tendsto_smoothingFun_of_ne_zero μ hμ1 hx
 
-/-- If `μ 1 ≤ 1`, then `smoothingFun μ x` is nonnegative. -/
-theorem smoothingFun_nonneg (hμ1 : μ 1 ≤ 1) (x : R) : 0 ≤ smoothingFun μ x := by
-  apply ge_of_tendsto (tendsto_smoothingFun_of_map_one_le_one μ hμ1 x)
-  simpa [eventually_atTop, ge_iff_le] using ⟨1, fun _ _ ↦ rpow_nonneg (apply_nonneg μ _) _⟩
-
 /-- If `μ 1 ≤ 1`, then `smoothingFun μ 1 ≤ 1`. -/
 theorem smoothingFun_one_le (hμ1 : μ 1 ≤ 1) : smoothingFun μ 1 ≤ 1 := by
-  apply le_of_tendsto (tendsto_smoothingFun_of_map_one_le_one μ hμ1 (1 : R))
-  simp only [eventually_atTop, ge_iff_le]
-  use 1
-  rintro n hn
-  simp only [smoothingSeminormSeq]
-  rw [one_pow]
-  conv_rhs => rw [← one_rpow (1 / n : ℝ)]
-  have hn1 : 0 < (1 / n : ℝ) := by
-    apply _root_.div_pos zero_lt_one
-    rw [← cast_zero, cast_lt]
-    exact succ_le_iff.mp hn
-  exact (rpow_le_rpow_iff (apply_nonneg μ _) zero_le_one hn1).mpr hμ1
+  apply le_of_tendsto' (tendsto_smoothingFun_of_map_one_le_one μ hμ1 (1 : R))
+  intro n
+  rw [smoothingSeminormSeq, one_pow]
+  apply rpow_le_one <;> first | assumption | positivity
 
 /-- For any `x` and any positive `n`, `smoothingFun μ x ≤ μ (x ^ (n : ℕ))^(1 / n : ℝ)`. -/
 theorem smoothingFun_le (x : R) (n : PNat) :
@@ -471,7 +457,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
       RingSeminorm.isBoundedUnder μ hμ1 hnu_le ψ
     apply le_trans hxy' (mul_le_mul hx hy (le_limsup_of_frequently_le (Frequently.of_forall
       (fun n ↦ rpow_nonneg (apply_nonneg μ _) _)) h_bdd)
-        (rpow_nonneg (smoothingFun_nonneg μ hμ1 x) _))
+        (rpow_nonneg (smoothingFun_nonneg μ x) _))
   apply le_of_forall_sub_le
   /- Fix `ε > 0`. We first show that `smoothingFun μ x ^ a * smoothingFun μ y ^ b + ε ≤
     max (smoothingFun μ x) (smoothingFun μ y) + ε`. -/
@@ -483,15 +469,15 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
     split_ifs with h
     · rw [add_le_add_iff_right]
       apply le_trans (mul_le_mul_of_nonneg_right
-        (rpow_le_rpow (smoothingFun_nonneg μ hμ1 _) h a_in.1)
-        (rpow_nonneg (smoothingFun_nonneg μ hμ1 _) _))
-      rw [hb, ← rpow_add_of_nonneg (smoothingFun_nonneg μ hμ1 _) a_in.1
+        (rpow_le_rpow (smoothingFun_nonneg μ _) h a_in.1)
+        (rpow_nonneg (smoothingFun_nonneg μ _) _))
+      rw [hb, ← rpow_add_of_nonneg (smoothingFun_nonneg μ _) a_in.1
         (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel_left, rpow_one]
     · rw [add_le_add_iff_right]
       apply le_trans (mul_le_mul_of_nonneg_left
-        (rpow_le_rpow (smoothingFun_nonneg μ hμ1 _) (le_of_lt (not_le.mp h)) b_in.1)
-        (rpow_nonneg (smoothingFun_nonneg μ hμ1 _) _))
-      rw [hb, ← rpow_add_of_nonneg (smoothingFun_nonneg μ hμ1 _) a_in.1
+        (rpow_le_rpow (smoothingFun_nonneg μ _) (le_of_not_le h) b_in.1)
+        (rpow_nonneg (smoothingFun_nonneg μ _) _))
+      rw [hb, ← rpow_add_of_nonneg (smoothingFun_nonneg μ _) a_in.1
         (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel_left, rpow_one]
   apply le_trans _ h_mul
   /- We then show that there exists some natural number `N` such that
@@ -525,7 +511,7 @@ def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSemi
     simp only [smoothingSeminormSeq]
     rw [zero_pow (pos_iff_ne_zero.mp hn), map_zero, zero_rpow]
     exact one_div_ne_zero (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn))
-  add_le' _ _ :=  (isNonarchimedean_smoothingFun μ hμ1 hna).add_le (smoothingFun_nonneg μ hμ1)
+  add_le' _ _ :=  (isNonarchimedean_smoothingFun μ hμ1 hna).add_le (smoothingFun_nonneg μ)
   neg' n := by
     simp only [smoothingFun]
     congr
@@ -542,7 +528,8 @@ def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSemi
     have hn : 0 ≤ 1 / (n : ℝ) := by simp only [one_div, inv_nonneg, cast_nonneg]
     simp only [smoothingSeminormSeq]
     rw [← mul_rpow (apply_nonneg μ _) (apply_nonneg μ _), mul_pow]
-    exact rpow_le_rpow (apply_nonneg μ _) (map_mul_le_mul μ _ _) hn
+    gcongr
+    apply map_mul_le_mul
 
 /-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingSeminorm μ 1 ≤ 1`. -/
 theorem smoothingSeminorm_map_one_le_one (hμ1 : μ 1 ≤ 1)

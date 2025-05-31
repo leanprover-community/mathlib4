@@ -137,6 +137,15 @@ theorem le_map_div_add_map_div [Group α] [Add β] [LE β] [MulLEAddHomClass F �
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel] using map_mul_le_add f (a / b) (b / c)
 
+/-- If `f` is nonnegative and submultiplicative (e.g., a ring norm),
+then `a ∣ b` and `f a = 0` imply `f b = 0`. -/
+theorem map_eq_zero_of_dvd [Monoid α] [MulZeroClass β] [PartialOrder β]
+    [SubmultiplicativeHomClass F α β] [NonnegHomClass F α β]
+    (f : F) {a b : α} (h : a ∣ b) (ha : f a = 0) : f b = 0 := by
+  rcases h with ⟨c, rfl⟩
+  refine le_antisymm ((map_mul_le_mul ..).trans_eq ?_) (apply_nonneg f _)
+  simp [ha]
+
 namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
