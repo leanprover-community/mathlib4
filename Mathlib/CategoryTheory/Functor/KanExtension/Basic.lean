@@ -103,7 +103,7 @@ noncomputable def homEquivOfIsRightKanExtension (G : D ⥤ H) :
   toFun β := whiskerLeft _ β ≫ α
   invFun β := liftOfIsRightKanExtension _ α _ β
   left_inv β := Functor.hom_ext_of_isRightKanExtension _ α _ _ (by simp)
-  right_inv := by aesop_cat
+  right_inv _ := by aesop_cat
 
 lemma isRightKanExtension_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'') {L : C ⥤ D} {F : C ⥤ H}
     (α : L ⋙ F' ⟶ F) (α' : L ⋙ F'' ⟶ F) (comm : whiskerLeft L e.hom ≫ α' = α)
@@ -194,7 +194,7 @@ noncomputable def homEquivOfIsLeftKanExtension (G : D ⥤ H) :
   toFun β := α ≫ whiskerLeft _ β
   invFun β := descOfIsLeftKanExtension _ α _ β
   left_inv β := Functor.hom_ext_of_isLeftKanExtension _ α _ _ (by simp)
-  right_inv := by aesop_cat
+  right_inv _ := by aesop_cat
 
 lemma isLeftKanExtension_of_iso {F' : D ⥤ H} {F'' : D ⥤ H} (e : F' ≅ F'')
     {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') (α' : F ⟶ L ⋙ F'')

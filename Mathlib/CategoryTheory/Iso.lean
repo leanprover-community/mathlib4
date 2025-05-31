@@ -211,16 +211,16 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
 def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
   toFun f := f ≫ α.hom
   invFun g := g ≫ α.inv
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 /-- The bijection `(X ⟶ Z) ≃ (Y ⟶ Z)` induced by `α : X ≅ Y`. -/
 @[simps]
 def homFromEquiv (α : X ≅ Y) {Z : C} : (X ⟶ Z) ≃ (Y ⟶ Z) where
   toFun f := α.inv ≫ f
   invFun g := α.hom ≫ g
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 end Iso
 

@@ -187,8 +187,8 @@ in the opposite category. -/
 def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op where
   toFun := op
   invFun := unop
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 /-- Equivalences of `LiftStruct` for a square in the oppositive category and
 the corresponding square in the original category. -/
@@ -196,8 +196,8 @@ def unopEquiv {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g :
     (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.unop where
   toFun := unop
   invFun := op
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 end LiftStruct
 
