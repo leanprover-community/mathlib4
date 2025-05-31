@@ -118,85 +118,89 @@ lemma of_isOpen_forall_compactSpace (h : ∀ (s : Set X), (∀ (K : Type u) [Top
   have := hA.preimage (hf.codRestrict mem_range_self)
   rwa [← preimage_comp] at this
 
+end CompactlyCoherentSpace
+
 /-- A type synonym used for the compact coherentification of a topological space. -/
 def CompactCoherentification (X : Type*) := X
 
+-- TODO: Some of the following should be generalized to `IsCoherent` with any family of subsets
+namespace CompactCoherentification
+
+local notation "k" X:max => CompactCoherentification X
+
 /-- The map taking a space to its compact coherentification. -/
-def toCompactlyCoherent (X : Type*) : X ≃ CompactCoherentification X := Equiv.refl _
+protected def mk (X : Type*) : X ≃ CompactCoherentification X := Equiv.refl _
 
-lemma toCompactlyCoherent_image {X : Type*} (A : Set X) :
-    toCompactlyCoherent X '' A = (A : Set (CompactCoherentification X)) := by
+lemma mk_image {X : Type*} (A : Set X) :
+    CompactCoherentification.mk X '' A = (A : Set (CompactCoherentification X)) := by
   ext
   exact mem_image_iff_of_inverse (congrFun rfl) (congrFun rfl)
 
-lemma toCompactlyCoherent_symm_image {X : Type*} (A : Set X) :
-    (toCompactlyCoherent X).symm '' A = A := by
+lemma mk_symm_image {X : Type*} (A : Set X) :
+    (CompactCoherentification.mk X).symm '' A = A := by
   ext
   exact mem_image_iff_of_inverse (congrFun rfl) (congrFun rfl)
 
-lemma toCompactlyCoherent_preimage {X : Type*} (A : Set X) :
-    toCompactlyCoherent X ⁻¹' A = (A : Set (CompactCoherentification X)) := by
+lemma mk_preimage {X : Type*} (A : Set X) :
+    CompactCoherentification.mk X ⁻¹' A = (A : Set (CompactCoherentification X)) := by
   ext
   exact mem_preimage
 
-lemma toCompactlyCoherent_symm_preimage {X : Type*} (A : Set X) :
-    (toCompactlyCoherent X).symm ⁻¹' A = A := by
+lemma mk_symm_preimage {X : Type*} (A : Set X) :
+    (CompactCoherentification.mk X).symm ⁻¹' A = A := by
   ext
   exact mem_preimage
+
+protected def map {X Y : Type*} (f : X → Y) : k X → k Y :=
+  CompactCoherentification.mk Y ∘ f ∘ (CompactCoherentification.mk X).symm
+
+protected lemma map_comp_mk {X Y : Type*} {f : X → Y} :
+    (CompactCoherentification.map f) ∘ (CompactCoherentification.mk X) =
+      (CompactCoherentification.mk Y) ∘ f :=
+  rfl
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- For a topological space `X` the compact coherentification is defined as:
 `A` is open iff for all compact sets `B`, the intersection `A ∩ B` is open in `B`. -/
-instance CompactCoherentification.instTopologicalSpace :
-    TopologicalSpace (CompactCoherentification X) where
-  IsOpen A := ∀ (K : Set X), IsCompact K → IsOpen (K ↓∩ (toCompactlyCoherent X).symm '' A)
-  isOpen_univ := by simp
-  isOpen_inter A B hA hB K hK := by
-    rw [image_inter (toCompactlyCoherent X).symm.injective]
-    exact (hA K hK).inter (hB K hK)
-  isOpen_sUnion s hs K hK := by
-    rw [image_sUnion]
-    rw [preimage_val_sUnion]
-    apply isOpen_sUnion
-    rintro _ ⟨u, hu, rfl⟩
-    rw [mem_image] at hu
-    obtain ⟨t, ht⟩ := hu
-    exact ht.2 ▸ hs t ht.1 K hK
+instance instTopologicalSpace :
+    TopologicalSpace (k X) :=
+  .coinduced (.mk X)
+    (⨆ (K : Set X) (_ : IsCompact K), .coinduced (↑) (inferInstanceAs <| TopologicalSpace K))
 
 /-- A set `A` in the compact coherentification is open iff for all compact sets `K`,
 the intersection `K ∩ A` is open in `K`. -/
-lemma CompactCoherentification.isOpen_iff {A : Set (CompactCoherentification X)} : IsOpen A ↔
-    ∀ (K : Set X), IsCompact K → IsOpen (K ↓∩ (toCompactlyCoherent X).symm '' A) := by
+lemma isOpen_iff {A : Set (k X)} : IsOpen A ↔
+    ∀ (K : Set X), IsCompact K → IsOpen (K ↓∩ .mk X ⁻¹' A) := by
+  simp_rw [isOpen_iSup_iff, isOpen_coinduced]
   rfl
 
 /-- A set `A` is the compact coherentification is closed iff for all compact sets `K`,
 the intersection `K ∩ A` is closed in `K`. -/
-lemma CompactCoherentification.isClosed_iff {A : Set (CompactCoherentification X)} :
-    IsClosed (X := CompactCoherentification X) A ↔
-      ∀ (K : Set X), IsCompact K → IsClosed (K ↓∩ (toCompactlyCoherent X).symm '' A) := by
-  rw [← isOpen_compl_iff, isOpen_iff, Equiv.image_compl]
-  congrm ∀ (K : Set X), IsCompact K → ?_
-  exact isOpen_compl_iff
+lemma isClosed_iff {A : Set (k X)} :
+    IsClosed A ↔ ∀ (K : Set X), IsCompact K → IsClosed (K ↓∩ .mk X ⁻¹' A) := by
+  simp_rw [isClosed_iSup_iff, isClosed_coinduced]
+  rfl
 
-lemma continuous_toCompactlyCoherent_symm :
-    Continuous (toCompactlyCoherent X).symm where
+lemma continuous_mk_symm :
+    Continuous (CompactCoherentification.mk X).symm where
   isOpen_preimage A hA := by
-    rw [CompactCoherentification.isOpen_iff, Equiv.image_preimage]
+    rw [CompactCoherentification.isOpen_iff]
     intros
     exact isOpen_induced hA
 
-lemma isOpenMap_toCompactlyCoherent : IsOpenMap (toCompactlyCoherent X) := by
+lemma isOpenMap_mk : IsOpenMap (CompactCoherentification.mk X) := by
   intro A hA
-  rw [CompactCoherentification.isOpen_iff, Equiv.symm_image_image]
+  rw [CompactCoherentification.isOpen_iff, Equiv.preimage_image]
   intro K hK
   exact hA.preimage_val
 
 /-- The compact coherentification is finer than the original topology. -/
-lemma CompactCoherentification_le {X : Type*} [t : TopologicalSpace X] :
-    (CompactCoherentification.instTopologicalSpace :
-    TopologicalSpace X) ≤ (t : TopologicalSpace X) := by
+lemma le {X : Type*} [t : TopologicalSpace X] :
+    (instTopologicalSpace : TopologicalSpace X) ≤ (t : TopologicalSpace X) := by
   rw [← continuous_id_iff_le]
-  change Continuous (toCompactlyCoherent X).symm
-  exact continuous_toCompactlyCoherent_symm
+  change Continuous (CompactCoherentification.mk X).symm
+  exact continuous_mk_symm
 
 /-- The compact sets of a topological space and its compact coherentification agree. -/
 lemma isCompact_iff_isCompact_toCompactlyCoherent_image (K : Set X) :
@@ -315,4 +319,4 @@ instance t2space_compactCoherentification_of_t2space [t : T2Space X] :
     T2Space (CompactCoherentification X) :=
   t2Space_antitone CompactCoherentification_le t
 
-end CompactlyCoherentSpace
+end CompactCoherentification
