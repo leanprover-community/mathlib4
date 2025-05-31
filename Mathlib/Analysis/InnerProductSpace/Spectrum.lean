@@ -169,7 +169,7 @@ noncomputable def diagonalization (hT : T.IsSymmetric) : E ≃ₗᵢ[𝕜] PiLp 
 @[simp]
 theorem diagonalization_symm_apply (hT : T.IsSymmetric)
     (w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ) :
-        hT.diagonalization.symm w = ∑ μ, w μ :=
+    hT.diagonalization.symm w = ∑ μ, w μ :=
   hT.direct_sum_isInternal.isometryL2OfOrthogonalFamily_symm_apply
     hT.orthogonalFamily_eigenspaces' w
 
@@ -229,7 +229,8 @@ private theorem hasEigenvector_eigenvectorBasis_helper (hT : T.IsSymmetric)
 /-- The eigenvalues for a self-adjoint operator `T` on a
 finite-dimensional inner product space `E`, sorted in decreasing order -/
 noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
-  Fin n → ℝ := (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
+    Fin n → ℝ :=
+  (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
 
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
 finite-dimensional inner product space `E`.  Eigenvectors are sorted in decreasing
@@ -267,8 +268,9 @@ theorem apply_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E 
 finite-dimensional inner product space `E` acts diagonally on the identification of `E` with
 Euclidean space induced by an orthonormal basis of eigenvectors of `T`. -/
 theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
-    (v : E) (i : Fin n) : (hT.eigenvectorBasis hn).repr (T v) i =
-        hT.eigenvalues hn i * (hT.eigenvectorBasis hn).repr v i := by
+    (v : E) (i : Fin n) :
+    (hT.eigenvectorBasis hn).repr (T v) i =
+      hT.eigenvalues hn i * (hT.eigenvectorBasis hn).repr v i := by
   suffices
     ∀ w : EuclideanSpace 𝕜 (Fin n),
       T ((hT.eigenvectorBasis hn).repr.symm w) =

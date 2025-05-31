@@ -12,21 +12,21 @@ import Mathlib.Algebra.Lie.Semisimple.Basic
 This file is a home for lemmas about semisimple and reductive Lie algebras.
 
 ## Main definitions / results:
- * `LieAlgebra.hasCentralRadical_and_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
-   algebra with a irreducible faithful finite-dimensional representation is reductive.
- * `LieAlgebra.hasTrivialRadical_and_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
-   algebra with a irreducible faithful finite-dimensional trace-free representation is semisimple.
+* `LieAlgebra.hasCentralRadical_and_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
+  algebra with a irreducible faithful finite-dimensional representation is reductive.
+* `LieAlgebra.hasTrivialRadical_and_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
+  algebra with a irreducible faithful finite-dimensional trace-free representation is semisimple.
 
 ## TODO
 
- * It appears that the lemmas in this file may hold for any principal ideal domain (of
-   characteristic zero) instead of a field. The plan would be to define the nilradical of a Lie
-   algebra (currently missing) and use it with
-   `LieModule.exists_nontrivial_weightSpace_of_isNilpotent` instead of using the solvable radical
-   with `LieModule.exists_nontrivial_weightSpace_of_isSolvable`, as below. The conclusion of
-   `LieAlgebra.hasCentralRadical_and_of_isIrreducible_of_isFaithful` would then make a statement
-   that the nilradical vanishes and one would prove elsewhere that vanishing nilradical is
-   equivalent to `HasCentralRadical`.
+* It appears that the lemmas in this file may hold for any principal ideal domain (of
+  characteristic zero) instead of a field. The plan would be to define the nilradical of a Lie
+  algebra (currently missing) and use it with
+  `LieModule.exists_nontrivial_weightSpace_of_isNilpotent` instead of using the solvable radical
+  with `LieModule.exists_nontrivial_weightSpace_of_isSolvable`, as below. The conclusion of
+  `LieAlgebra.hasCentralRadical_and_of_isIrreducible_of_isFaithful` would then make a statement
+  that the nilradical vanishes and one would prove elsewhere that vanishing nilradical is
+  equivalent to `HasCentralRadical`.
 
 -/
 
