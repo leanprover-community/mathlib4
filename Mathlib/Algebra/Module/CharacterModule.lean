@@ -62,7 +62,7 @@ section module
 variable [Module R A] [Module R A'] [Module R B]
 
 instance : Module R (CharacterModule A) :=
-  Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
+  Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵃ)
 
 variable {R A B}
 
