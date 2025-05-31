@@ -1052,7 +1052,7 @@ section Equiv
 
 open Finset
 
-variable {κ : Type*}
+variable {κ κ' : Type*}
 
 /-- Reindexing (and possibly removing) terms of a dfinsupp. -/
 noncomputable def comapDomain [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.Injective h)
@@ -1067,6 +1067,24 @@ noncomputable def comapDomain [∀ i, Zero (β i)] (h : κ → ι) (hh : Functio
 theorem comapDomain_apply [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.Injective h) (f : Π₀ i, β i)
     (k : κ) : comapDomain h hh f k = f (h k) :=
   rfl
+
+@[simp]
+theorem comapDomain_id [∀ i, Zero (β i)] : comapDomain (β := β) id Function.injective_id = id := by
+  ext; rfl
+
+@[simp]
+theorem comapDomain_comp [∀ i, Zero (β i)]
+    (h : κ → ι) (hh : Function.Injective h)
+    (h' : κ' → κ) (hh' : Function.Injective h') :
+    comapDomain h' hh' ∘ comapDomain h hh = comapDomain (β := β) (h ∘ h') (hh.comp hh') := by
+  ext; rfl
+
+@[simp]
+theorem comapDomain_comapDomain [∀ i, Zero (β i)]
+    (h : κ → ι) (hh : Function.Injective h)
+    (h' : κ' → κ) (hh' : Function.Injective h') (f : Π₀ i, β i) :
+    comapDomain h' hh' (comapDomain h hh f) = comapDomain (h ∘ h') (hh.comp hh') f := by
+  ext; rfl
 
 @[simp]
 theorem comapDomain_zero [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.Injective h) :
@@ -1105,6 +1123,25 @@ theorem comapDomain'_apply [∀ i, Zero (β i)] (h : κ → ι) {h' : ι → κ}
   rfl
 
 @[simp]
+theorem comapDomain'_id [∀ i, Zero (β i)] :
+    comapDomain' (β := β) id (h' := id) (fun _ => rfl) = id := by
+  ext; rfl
+
+@[simp]
+theorem comapDomain'_comp [∀ i, Zero (β i)]
+    (h : κ → ι) {h' : ι → κ} (hh' : Function.LeftInverse h' h)
+    (h₂ : κ' → κ) {h'₂ : κ → κ'} (hh'₂ : Function.LeftInverse h'₂ h₂):
+    comapDomain' h₂ hh'₂ ∘ comapDomain' h hh' = comapDomain' (β := β) (h ∘ h₂) (hh'.comp hh'₂) := by
+  ext; rfl
+
+@[simp]
+theorem comapDomain'_comapDomain' [∀ i, Zero (β i)]
+    (h : κ → ι) {h' : ι → κ} (hh' : Function.LeftInverse h' h)
+    (h₂ : κ' → κ) {h'₂ : κ → κ'} (hh'₂ : Function.LeftInverse h'₂ h₂) (f : Π₀ i, β i) :
+    comapDomain' h₂ hh'₂ (comapDomain' h hh' f) = comapDomain' (h ∘ h₂) (hh'.comp hh'₂) f := by
+  ext; rfl
+
+@[simp]
 theorem comapDomain'_zero [∀ i, Zero (β i)] (h : κ → ι) {h' : ι → κ}
     (hh' : Function.LeftInverse h' h) : comapDomain' h hh' (0 : Π₀ i, β i) = 0 := by
   ext
@@ -1127,16 +1164,54 @@ theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i
   · rw [single_eq_same, single_eq_same]
   · rw [single_eq_of_ne hik.symm, single_eq_of_ne (hh'.injective.ne hik.symm)]
 
+section mapRange.equiv
+variable [∀ i, Zero (β i)] [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
+/-- `DFinsupp.mapRange` as an equiv.
+
+Note that while `he'` is redundant, it allows `equiv_symm` to fire in both directions, as the
+proof is carried around. -/
+@[simps apply]
+def mapRange.equiv (e : ∀ i, β i ≃ β₁ i)
+    (he : ∀ i, e i 0 = 0)
+    (he' : ∀ i, (e i).symm 0 = 0 := fun i => (e i).symm_apply_eq.2 (he i).symm) :
+    (Π₀ i, β i) ≃ (Π₀ i, β₁ i) where
+  toFun := mapRange (fun i x => e i x) he
+  invFun := mapRange (fun i x => (e i).symm x) he'
+  left_inv x := by rw [← mapRange_comp] <;> simp [Equiv.symm_comp_self]
+  right_inv x := by rw [← mapRange_comp] <;> simp [Equiv.self_comp_symm]
+
+@[simp]
+theorem mapRange.equiv_refl :
+    mapRange.equiv (fun i => Equiv.refl (β i)) (fun _ => rfl) = Equiv.refl (Π₀ i, β i) :=
+  Equiv.ext mapRange_id
+
+theorem mapRange.equiv_trans (e : ∀ i, β i ≃ β₁ i) (he he') (e₂ : ∀ i, β₁ i ≃ β₂ i) (he₂ he₂') :
+    (mapRange.equiv (fun i => (e i).trans (e₂ i))
+          (fun i => by rw [Equiv.trans_apply, he, he₂])
+          (fun i => by rw [Equiv.symm_trans_apply, he₂', he']) :
+        (Π₀ i, β i) ≃ _) =
+      (mapRange.equiv e he he').trans (mapRange.equiv e₂ he₂ he₂') :=
+  Equiv.ext <| mapRange_comp _ _ he₂ he (fun i => (congrArg (e₂ i) (he i)).trans (he₂ i))
+
+@[simp]
+theorem mapRange.equiv_symm (e : ∀ i, β i ≃ β₁ i) (he he') :
+    ((mapRange.equiv e he he').symm : (Π₀ i, β₁ i) ≃ _) =
+      mapRange.equiv (fun i => (e i).symm) he' he :=
+  Equiv.ext fun _ => rfl
+
+end mapRange.equiv
+
+private def equivCongrLeft_aux_proof [∀ i, Zero (β i)] (h : ι ≃ κ) (i : ι) :
+    (Equiv.cast <| congr_arg β <| h.symm_apply_apply i) 0 = 0 :=
+  (Equiv.cast_eq_iff_heq _).mpr <| by rw [h.symm_apply_apply]
+
 /-- Reindexing terms of a dfinsupp.
 
 This is the dfinsupp version of `Equiv.piCongrLeft'`. -/
 @[simps apply]
 def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π₀ k, β (h.symm k) where
   toFun := comapDomain' h.symm h.right_inv
-  invFun f :=
-    mapRange (fun i => Equiv.cast <| congr_arg β <| h.symm_apply_apply i)
-      (fun i => (Equiv.cast_eq_iff_heq _).mpr <| by rw [Equiv.symm_apply_apply])
-      (@comapDomain' _ _ _ _ h _ h.left_inv f)
+  invFun f := mapRange (fun i => _) (equivCongrLeft_aux_proof h) (comapDomain' h h.left_inv f)
   left_inv f := by
     ext i
     rw [mapRange_apply, comapDomain'_apply, comapDomain'_apply, Equiv.cast_eq_iff_heq,
@@ -1145,6 +1220,29 @@ def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π
     ext k
     rw [comapDomain'_apply, mapRange_apply, comapDomain'_apply, Equiv.cast_eq_iff_heq,
       h.apply_symm_apply]
+
+@[simp]
+theorem equivCongrLeft_refl [∀ i, Zero (β i)] :
+    equivCongrLeft (Equiv.refl ι) = Equiv.refl (Π₀ i, β i) := by
+  ext; rfl
+
+theorem equivCongrLeft_symm [∀ i, Zero (β i)] (h : ι ≃ κ) :
+    (equivCongrLeft h).symm =
+      (equivCongrLeft (β := fun i => β (h.symm i)) h.symm).trans
+        (mapRange.equiv (fun _ => Equiv.cast _) (equivCongrLeft_aux_proof h)) := by
+  ext; rfl
+
+theorem equivCongrLeft_symm' [∀ i, Zero (β i)] (h : κ ≃ ι) :
+    equivCongrLeft (β := β) h.symm =
+      (mapRange.equiv (fun _ => Equiv.cast _) (equivCongrLeft_aux_proof h.symm)).symm.trans
+        (equivCongrLeft (β := fun i => β (h i)) h).symm := by
+  ext; simp [equivCongrLeft]
+
+@[simp]
+theorem equivCongrLeft_trans [∀ i, Zero (β i)] (h : ι ≃ κ) (h' : κ ≃ κ') :
+    equivCongrLeft (h.trans h') =
+      (equivCongrLeft h).trans (equivCongrLeft (β := fun _ => β _) h') := by
+  ext; rfl
 
 section SigmaCurry
 
