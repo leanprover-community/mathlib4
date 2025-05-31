@@ -522,7 +522,6 @@ theorem isBoundedUnder_le_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMo
 in complete and conditionally complete lattices but let automation fill automatically the
 boundedness proofs in complete lattices, we use the tactic `isBoundedDefault` in the statements,
 in the form `(hf : f.IsBounded (≥) := by isBoundedDefault)`. -/
-
 macro "isBoundedDefault" : tactic =>
   `(tactic| first
     | apply isCobounded_le_of_bot

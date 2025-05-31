@@ -422,7 +422,6 @@ theorem card_le_of_interleaved {s t : Finset α}
       _ < f y :=
         (Finset.lt_inf_iff <| WithTop.coe_lt_top a).2 fun b hb =>
           WithTop.coe_lt_coe.2 <| hay.trans (by simpa using (mem_filter.1 hb).2)
-
   calc
     s.card = (s.image f).card := (card_image_of_injOn f_mono.injOn).symm
     _ ≤ (insert ⊤ (t.image (↑)) : Finset (WithTop α)).card :=
