@@ -286,6 +286,21 @@ theorem hom_trivializationAt_baseSet (x₀ : B) :
       ((trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet) :=
   rfl
 
+theorem continuousWithinAt_hom_bundle {M : Type*} [TopologicalSpace M]
+    (f : M → TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) {s : Set M} {x₀ : M} :
+    ContinuousWithinAt f s x₀ ↔
+      ContinuousWithinAt (fun x => (f x).1) s x₀ ∧
+        ContinuousWithinAt
+          (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
+  FiberBundle.continuousWithinAt_totalSpace ..
+
+theorem continuousAt_hom_bundle {M : Type*} [TopologicalSpace M]
+    (f : M → TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) {x₀ : M} :
+    ContinuousAt f x₀ ↔
+      ContinuousAt (fun x => (f x).1) x₀ ∧
+        ContinuousAt
+          (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+  FiberBundle.continuousAt_totalSpace ..
 
 section
 
@@ -305,20 +320,20 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
   {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M}
   {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
 
-/-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
-another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
-on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
+/-- Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
+another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
+continuously on `m`, one can apply `ϕ m` to `g m`, and the resulting map is continuous.
 
-Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
+Note that the continuity of `ϕ` can not be always be stated as continuity of a map into a bundle,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁` and `b₂` are globally
-smooth, but we want to apply this lemma with only local information. Therefore, we formulate it
-using smoothness of `ϕ` read in coordinates.
+continuous, but we want to apply this lemma with only local information. Therefore, we formulate it
+using continuity of `ϕ` read in coordinates.
 
 Version for `ContinuousWithinAt`. We also give a version for `ContinuousAt`, but no version for
 `ContinuousOn` or `Continuous` as our assumption, written in coordinates, only makes sense around
 a point.
 
-For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
+For a version with `B₁ = B₂` and `b₁ = b₂`, in which continuity can be expressed without
 `inCoordinates`, see `ContinuousWithinAt.clm_bundle_apply`
 -/
 lemma ContinuousWithinAt.clm_apply_of_inCoordinates
@@ -332,11 +347,11 @@ lemma ContinuousWithinAt.clm_apply_of_inCoordinates
   refine ⟨hb₂, ?_⟩
   apply (ContinuousWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)
   have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
-    apply hv.1.continuousWithinAt
+    apply hv.1
     apply (trivializationAt F₁ E₁ (b₁ m₀)).open_baseSet.mem_nhds
     exact FiberBundle.mem_baseSet_trivializationAt' (b₁ m₀)
   have A' : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₂ m ∈ (trivializationAt F₂ E₂ (b₂ m₀)).baseSet := by
-    apply hb₂.continuousWithinAt
+    apply hb₂
     apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
     exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
   filter_upwards [A, A'] with m hm h'm
@@ -346,21 +361,21 @@ lemma ContinuousWithinAt.clm_apply_of_inCoordinates
   congr
   rw [Trivialization.symm_apply_apply_mk (trivializationAt F₁ E₁ (b₁ m₀)) hm (v m)]
 
-/-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
-another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
-on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
+/-- Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
+another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
+continuously on `m`, one can apply `ϕ m` to `g m`, and the resulting map is continuous.
 
-Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
+Note that the continuity of `ϕ` can not be always be stated as continuity of a map into a bundle,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁` and `b₂` are globally
-smooth, but we want to apply this lemma with only local information. Therefore, we formulate it
-using smoothness of `ϕ` read in coordinates.
+continuous, but we want to apply this lemma with only local information. Therefore, we formulate it
+using continuity of `ϕ` read in coordinates.
 
 Version for `ContinuousAt`. We also give a version for `ContinuousWithinAt`, but no version for
 `ContinuousOn` or `Continuous` as our assumption, written in coordinates, only makes sense around
 a point.
 
-For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
-`inCoordinates`, see `ContinuousAt.clm_bundle_apply`
+For a version with `B₁ = B₂` and `b₁ = b₂`, in which continuity can be expressed without
+`inCoordinates`, see `ContinuousWithinAt.clm_bundle_apply`
 -/
 lemma ContinuousAt.clm_apply_of_inCoordinates
     (hϕ : ContinuousAt
@@ -375,10 +390,10 @@ end
 
 section
 
-/- Declare a manifold `B` (with model `IB : HB → EB`),
-and three vector bundles `E₁`, `E₂` and `E₃` over `B` (with model fibers `F₁`, `F₂` and `F₃`).
+/- Declare a base space `B` and three vector bundles `E₁`, `E₂` and `E₃` over `B`
+(with model fibers `F₁`, `F₂` and `F₃`).
 
-Also a third manifold `M`, which will be the source of all our maps.
+Also a second space `M`, which will be the source of all our maps.
 -/
 variable {𝕜 B F₁ F₂ F₃ M : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {E₁ : B → Type*}
