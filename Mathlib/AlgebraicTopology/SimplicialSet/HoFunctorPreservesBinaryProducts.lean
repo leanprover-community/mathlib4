@@ -48,6 +48,18 @@ universe u v
 
 open Category Functor Limits Opposite SimplexCategory Simplicial SSet Nerve
 
+-- This `unfold` looks bad. Could it be somewhere else/done differently?
+def SimplexCategory.homIsoOrderHom {a b : SimplexCategory} :
+    (a ⟶ b) ≅ (Fin (a.len + 1) →o Fin (b.len + 1)) := by
+  simp only [Quiver.Hom]
+  unfold SimplexCategory.Hom
+  exact eqToIso rfl
+
+-- what's the policy on defining short-but-convenient compositions?
+def SimplexCategory.homIsoFunctor {a b : SimplexCategory} :
+    (a ⟶ b) ≅ (Fin (a.len + 1) ⥤ Fin (b.len + 1)) :=
+  SimplexCategory.homIsoOrderHom ≪≫ OrderHom.isoFunctor
+
 /-- The Yoneda embedding from the `SimplexCategory` into simplicial sets is naturally
 isomorphic to `SimplexCategory.toCat ⋙ nerveFunctor` with component isomorphisms
 `Δ[n] ≅ nerve (Fin (n + 1))`. -/
