@@ -539,6 +539,22 @@ def toNormedAddCommGroupOfTopology
     NormedAddCommGroup F :=
   NormedAddCommGroup.ofCoreReplaceTopology cd.toNormedSpaceCore (cd.topology_eq h h')
 
+/-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
+topology to make sure it is defeq to an already existing topology. -/
+def toNormedSpaceOfTopology
+    [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+    (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
+    (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
+    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
+    NormedSpace 𝕜 F :=
+  letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  { norm_smul_le r x := by
+      rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
+      rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
+        ofReal_re]
+      · simp [sqrt_normSq_eq_norm, RCLike.sqrt_normSq_eq_norm]
+      · positivity }
+
 end InnerProductSpace.Core
 
 end InnerProductSpace.Core
@@ -552,7 +568,7 @@ the space into an inner product space. The `NormedAddCommGroup` structure is exp
 to already be defined with `InnerProductSpace.ofCore.toNormedAddCommGroup`. -/
 def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : InnerProductSpace.Core 𝕜 F) :
     InnerProductSpace 𝕜 F :=
-  letI : NormedSpace 𝕜 F := @InnerProductSpace.Core.toNormedSpace 𝕜 F _ _ _ cd
+  letI : NormedSpace 𝕜 F := cd.toNormedSpace
   { cd with
     norm_sq_eq_re_inner := fun x => by
       have h₁ : ‖x‖ ^ 2 = √(re (cd.inner x x)) ^ 2 := rfl
@@ -560,6 +576,24 @@ def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : InnerProduct
       simp [h₁, sq_sqrt, h₂] }
 
 end
+
+/-- Given an `InnerProductSpace.Core` structure on a space with a topology, one can use it to turn
+the space into an inner product space. The `NormedAddCommGroup` structure is expected
+to already be defined with `InnerProductSpace.ofCore.toNormedAddCommGroupOfTopology`. -/
+def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [TopologicalSpace F]
+    [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+    (cd : InnerProductSpace.Core 𝕜 F)
+    (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
+    (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
+    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
+    InnerProductSpace 𝕜 F :=
+  letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  letI : NormedSpace 𝕜 F := cd.toNormedSpaceOfTopology h h'
+  { cd with
+    norm_sq_eq_re_inner := fun x => by
+      have h₁ : ‖x‖ ^ 2 = √(re (cd.inner x x)) ^ 2 := rfl
+      have h₂ : 0 ≤ re (cd.inner x x) := InnerProductSpace.Core.inner_self_nonneg
+      simp [h₁, sq_sqrt, h₂] }
 
 /-- A Hilbert space is a complete normed inner product space. -/
 @[variable_alias]

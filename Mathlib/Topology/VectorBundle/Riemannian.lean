@@ -141,13 +141,21 @@ variable
 open Bornology
 
 variable (E) in
+/-- A family of inner product space structure on the fibers of a fiber bundle, defining the same
+topology as the already existing one. Used to create an instance of `[RiemannianBundle E]`, which
+registers the inner product space structure without creating diamonds. -/
 structure RiemannianMetric where
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
   symm (b : B) (v w : E b) : inner b v w = inner b w v
   pos (b : B) (v : E b) (hv : v ≠ 0) : 0 < inner b v v
+  /-- The continuity at `0` is automatic when `E b` is isomorphic to a normed space, but since
+  we are not making this assumption here we have to include it. -/
   continuousAt (b : B) : ContinuousAt (fun (v : E b) ↦ inner b v v) 0
   isVonNBounded (b : B) : IsVonNBounded ℝ {v : E b | inner b v v < 1}
 
+/-- `Core structure associated to a family of inner products on the fibers of a fiber bundle. This
+is an auxiliary construction to endow the fibers with an inner product space structure without
+creating diamonds. -/
 noncomputable def RiemannianMetric.toCore  (g : RiemannianMetric E) (b : B) :
     InnerProductSpace.Core ℝ (E b) where
   inner v w := g.inner b v w
@@ -161,36 +169,63 @@ noncomputable def RiemannianMetric.toCore  (g : RiemannianMetric E) (b : B) :
   definite v h := by contrapose! h; exact (g.pos b v h).ne'
 
 variable (E) in
+/-- Class used to create an inner product structure space on the fibers of a fiber bundle, without
+creating diamonds. Use as follows:
+* `instance : RiemannianBundle E := ⟨g⟩` where `g : RiemannianMetric E` registers the inner product
+space on the fibers;
+* `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
+`g : ContinuousRiemannianMetric F E` registers the inner product space on the fibers, and the fact
+that it varies continuously.
+* `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
+`g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
+fact that it varies smoothly (and continuously).
+-/
 class RiemannianBundle where
   out : RiemannianMetric E
 
 noncomputable instance [h : RiemannianBundle E] (b : B) : NormedAddCommGroup (E b) :=
   (h.out.toCore b).toNormedAddCommGroupOfTopology (h.out.continuousAt b) (h.out.isVonNBounded b)
 
-#check MetricSpace.ext
-
-noncomputable instance [h : RiemannianBundle E] (b : B) : NormedSpace ℝ (E b) := by
-  convert (h.out.toCore b).toNormedSpace
-
-
-
---  (h.out.toCore b).toNormedAddCommGroupOfTopology (h.out.continuousAt b) (h.out.isVonNBounded b)
-
-
-
-#exit
-
-
-
-def riemannianMetric.toNormedAddCommGroup (g : riemannianMetric E) :
-    ∀ x, NormedAddCommGroup (E x) := fun
+noncomputable instance [h : RiemannianBundle E] (b : B) : InnerProductSpace ℝ (E b) :=
+  .ofCoreOfTopology (h.out.toCore b) (h.out.continuousAt b) (h.out.isVonNBounded b)
 
 variable (F E) in
-structure continuousRiemannianMetric extends riemannianMetric E where
+/-- A family of inner product space structure on the fibers of a fiber bundle, defining the same
+topology as the already existing one, and varying continuously with the base point.
+Used to create an instance of `[RiemannianBundle E]`, which registers the inner product space
+structure, and the fact that it varies continuously, without creating diamonds. -/
+structure ContinuousRiemannianMetric where
+  inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
+  symm (b : B) (v w : E b) : inner b v w = inner b w v
+  pos (b : B) (v : E b) (hv : v ≠ 0) : 0 < inner b v v
+  isVonNBounded (b : B) : IsVonNBounded ℝ {v : E b | inner b v v < 1}
   continuous : Continuous (fun (b : B) ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) b (inner b))
 
+/-- A continuous Riemannian metric is in particular a Riemannian metric. -/
+def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetric F E) :
+    RiemannianMetric E where
+  inner := g.inner
+  symm := g.symm
+  pos := g.pos
+  isVonNBounded := g.isVonNBounded
+  continuousAt b := by
+    -- Continuity of bilinear maps is only true on normed spaces. As `F` is a normed space by
+    -- assumption, we transfer everything to `F` and argue there.
+    let e : E b ≃L[ℝ] F := Trivialization.continuousLinearEquivAt ℝ (trivializationAt F E b) _
+      (FiberBundle.mem_baseSet_trivializationAt' b)
+    let m : (E b →L[ℝ] E b →L[ℝ] ℝ) ≃L[ℝ] (F →L[ℝ] F →L[ℝ] ℝ) :=
+      e.arrowCongr (e.arrowCongr (ContinuousLinearEquiv.refl ℝ ℝ ))
+    have A (v : E b) : g.inner b v v = ((fun w ↦ m (g.inner b) w w) ∘ e) v := by simp [m]
+    simp only [A]
+    fun_prop
 
-#check InnerProductSpace.Core
+instance (g : ContinuousRiemannianMetric F E) :
+    letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩;
+    IsContinuousRiemannianBundle F E := by
+  sorry
+
+
+
 
 end Construction
 
