@@ -289,11 +289,10 @@ theorem hom_trivializationAt_baseSet (x₀ : B) :
 
 section
 
-/- Declare two manifolds `B₁` and `B₂` (with models `IB₁ : HB₁ → EB₁` and `IB₂ : HB₂ → EB₂`),
-and two vector bundles `E₁` and `E₂` respectively over `B₁` and `B₂` (with model fibers
-`F₁` and `F₂`).
+/- Declare two bases spaces `B₁` and `B₂` and two vector bundles `E₁` and `E₂` respectively
+over `B₁` and `B₂` (with model fibers `F₁` and `F₂`).
 
-Also a third manifold `M`, which will be the source of all our maps.
+Also a third space `M`, which will be the source of all our maps.
 -/
 variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
