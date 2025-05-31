@@ -1321,6 +1321,14 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
                 rw [x_eq_gamma] at ih
                 simp at ih
                 exact ih
+              .
+                simp at p_gt_n
+                apply Subgroup.subset_closure
+                simp
+                use p
+                refine ⟨by omega, ?_⟩
+                use s'
+                use s'_mem
 
 
             sorry
