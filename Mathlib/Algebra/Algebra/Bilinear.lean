@@ -47,6 +47,10 @@ variable (A) in
 @[simp]
 theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext fun _ => zero_mul _
 
+@[fun_prop]
+theorem _root_.IsLinearMap.mul_left (a : A) : IsLinearMap R (fun b : A => a * b) :=
+  ⟨(mulLeft R a).1.2, (mulLeft R a).2⟩
+
 end left
 
 section right
@@ -72,6 +76,10 @@ theorem mulRight_toAddMonoidHom (a : A) : (mulRight R a : A →+ A) = AddMonoidH
 variable (A) in
 @[simp]
 theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 := ext fun _ => mul_zero _
+
+@[fun_prop]
+theorem _root_.IsLinearMap.mul_right (b : A) : IsLinearMap R (fun a : A => a * b) :=
+  ⟨(mulRight R b).1.2, (mulRight R b).2⟩
 
 end right
 
