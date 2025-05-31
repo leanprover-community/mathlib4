@@ -435,6 +435,24 @@ def latticeClosure : ClosureOperator (Set α) :=
 lemma latticeClosure_min : s ⊆ t → IsSublattice t → latticeClosure s ⊆ t :=
   latticeClosure.closure_min
 
+lemma latticeClosure_sup_inf_induction (p : (a : α) → a ∈ latticeClosure s → Prop)
+    (mem : ∀ (a : α) (has : a ∈ s), p a (subset_latticeClosure has))
+    (sup : ∀ (a : α) (has : a ∈ latticeClosure s) (b : α) (hbs : b ∈ latticeClosure s),
+      p a has → p b hbs → p (a ⊔ b) (isSublattice_latticeClosure.supClosed has hbs))
+    (inf : ∀ (a : α) (has : a ∈ latticeClosure s) (b : α) (hbs : b ∈ latticeClosure s),
+      p a has → p b hbs → p (a ⊓ b) (isSublattice_latticeClosure.infClosed has hbs))
+    {a : α} (has : a ∈ latticeClosure s) :
+    p a has := by
+  have h1 : s ⊆ { a : α | ∃ has : a ∈ latticeClosure s, p a has } := by
+    intro a ha
+    exact ⟨subset_latticeClosure ha, mem a ha⟩
+  have h2 : IsSublattice { a : α | ∃ has : a ∈ latticeClosure s, p a has } := {
+    supClosed := fun a ⟨has, hpa⟩ b ⟨hbs, hpb⟩ =>
+      ⟨isSublattice_latticeClosure.supClosed has hbs, sup a has b hbs hpa hpb⟩
+    infClosed := fun a ⟨has, hpa⟩ b ⟨hbs, hpb⟩ =>
+      ⟨isSublattice_latticeClosure.infClosed has hbs, inf a has b hbs hpa hpb⟩ }
+  exact (latticeClosure_min h1 h2 has).choose_spec
+
 lemma latticeClosure_mono : Monotone (latticeClosure : Set α → Set α) := latticeClosure.monotone
 
 @[simp] lemma latticeClosure_eq_self : latticeClosure s = s ↔ IsSublattice s :=
@@ -448,6 +466,43 @@ lemma latticeClosure_idem (s : Set α) : latticeClosure (latticeClosure s) = lat
 @[simp] lemma latticeClosure_empty : latticeClosure (∅ : Set α) = ∅ := by simp
 @[simp] lemma latticeClosure_singleton (a : α) : latticeClosure {a} = {a} := by simp
 @[simp] lemma latticeClosure_univ : latticeClosure (Set.univ : Set α) = Set.univ := by simp
+
+variable (s)
+
+lemma image_latticeClosure [Lattice β] {f : α → β}
+    (map_sup : ∀ a₁ a₂ : α, f (a₁ ⊔ a₂) = f a₁ ⊔ f a₂)
+    (map_inf : ∀ a₁ a₂ : α, f (a₁ ⊓ a₂) = f a₁ ⊓ f a₂) :
+    f '' latticeClosure s = latticeClosure (f '' s) := by
+  refine Set.eq_of_subset_of_subset ?_ ?_
+  · intro _ ⟨_, h1, h2⟩
+    refine h2 ▸ latticeClosure_sup_inf_induction (fun a _ => f a ∈ _) ?_ ?_ ?_ h1
+    · intro _ h
+      exact subset_latticeClosure <| Set.mem_image_of_mem _ h
+    · intro _ _ _ _ h1 h2
+      exact  map_sup .. ▸ isSublattice_latticeClosure.supClosed h1 h2
+    · intro _ _ _ _ h1 h2
+      exact map_inf .. ▸ isSublattice_latticeClosure.infClosed h1 h2
+  · refine latticeClosure_min ?_ ?_
+    · intro _ ⟨a, h1, h2⟩
+      exact ⟨a, subset_latticeClosure h1, h2⟩
+    · exact ⟨fun _ ⟨c, hcs, hfc⟩ _ ⟨d, hds, hfd⟩ =>
+        ⟨c ⊔ d, hfc ▸ hfd ▸ ⟨isSublattice_latticeClosure.supClosed hcs hds, map_sup c d⟩⟩,
+          fun _ ⟨c, hcs, hfc⟩ _ ⟨d, hds, hfd⟩ =>
+            ⟨c ⊓ d, hfc ▸ hfd ▸ ⟨isSublattice_latticeClosure.infClosed hcs hds, map_inf c d⟩⟩⟩
+
+lemma preimage_ofDual_latticeClosure :
+    ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
+  change ClosureOperator.ofCompletePred _ _ _ = ClosureOperator.ofCompletePred _ _ _
+  congr
+  ext
+  exact ⟨fun h => ⟨h.2, h.1⟩, fun h => ⟨h.2, h.1⟩⟩
+
+lemma image_latticeClosure_of_sup_inf [Lattice β] {f : α → β}
+    (hf1 : ∀ a₁ a₂ : α, f (a₁ ⊔ a₂) = f a₁ ⊓ f a₂)
+    (hf2 : ∀ a₁ a₂ : α, f (a₁ ⊓ a₂) = f a₁ ⊔ f a₂) :
+    f '' latticeClosure s = latticeClosure (f '' s) := by
+  simpa only [Set.image_comp, ← Set.preimage_equiv_eq_image_symm, ← preimage_ofDual_latticeClosure]
+    using @image_latticeClosure _ _ _ s _ (ofDual.symm ∘ f) hf1 hf2
 
 end Lattice
 
@@ -527,6 +582,21 @@ lemma InfClosed.sInf_mem_of_nonempty (hs : InfClosed s) (ht : t.Finite) (ht' : t
     (hts : t ⊆ s) : sInf t ∈ s := hs.dual.sSup_mem_of_nonempty ht ht' hts
 
 end ConditionallyCompleteLattice
+
+section BooleanAlgebra
+variable [BooleanAlgebra α] (s : Set α)
+
+lemma compl_image_latticeClosure :
+    compl '' latticeClosure s = latticeClosure (compl '' s) :=
+  image_latticeClosure_of_sup_inf s compl_sup_distrib (fun _ _ => compl_inf)
+
+variable {s}
+
+lemma compl_image_latticeClosure_eq_of_compl_image_eq_self (hs : compl '' s = s) :
+    compl '' latticeClosure s = latticeClosure s :=
+  compl_image_latticeClosure s ▸ hs.symm ▸ rfl
+
+end BooleanAlgebra
 
 variable [CompleteLattice α] {f : ι → α} {s t : Set α}
 
