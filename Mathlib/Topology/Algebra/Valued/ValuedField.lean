@@ -379,3 +379,204 @@ scoped notation "𝓀[" K "]" => ResidueField K
 end Valued
 
 end Notation
+
+namespace Valued
+
+variable (K : Type*) {Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Valued K Γ₀]
+
+lemma isOpenEmbedding_algebraMap_integer :
+    Topology.IsOpenEmbedding (algebraMap 𝒪[K] K) :=
+  isOpenEmbedding_subtype_integer _
+
+/-- In a valued field, the closed ball is a submodule over the valuation ring. -/
+@[simps]
+def submoduleClosedBall (r : Γ₀) : Submodule 𝒪[K] K where
+  carrier := {x | Valued.v (x : K) ≤ r}
+  zero_mem' := by simp
+  add_mem' := by simp +contextual [Valued.v.map_add_le]
+  smul_mem' := by
+    simp only [mem_setOf_eq, Subring.smul_def, smul_eq_mul, map_mul, Subtype.forall]
+    intro x hx y hy
+    rw [mul_comm]
+    exact mul_le_of_le_of_le_one hy hx
+
+/-- In a valued field, the open ball is a submodule over the valuation ring. -/
+@[simps]
+def submoduleBall (r : Γ₀ˣ) : Submodule 𝒪[K] K where
+  carrier := {x | Valued.v (x : K) < r}
+  zero_mem' := by simp
+  add_mem' := by simp +contextual [Valued.v.map_add_lt]
+  smul_mem' := by
+    simp only [mem_setOf_eq, Subring.smul_def, smul_eq_mul, map_mul, Subtype.forall]
+    intro _ hx _
+    exact mul_lt_of_le_one_of_lt hx
+
+/-- In a valued field, the closed ball is an ideal of the valuation ring. -/
+@[simps]
+def idealClosedBall (r : Γ₀) : Ideal 𝒪[K] where
+  carrier := {x | Valued.v (x : K) ≤ r}
+  zero_mem' := by simp
+  add_mem' := by simp +contextual [Valued.v.map_add_le]
+  smul_mem' := by
+    simp only [Set.mem_setOf_eq, smul_eq_mul, Subring.coe_mul, map_mul, Subtype.forall]
+    intro x hx y hy h
+    rw [mul_comm]
+    exact mul_le_of_le_of_le_one h hx
+
+/-- In a valued field, the open ball is an ideal of the valuation ring. -/
+@[simps]
+def idealBall (r : Γ₀ˣ) : Ideal 𝒪[K] where
+  carrier := {x | Valued.v (x : K) < r}
+  zero_mem' := by simp
+  add_mem' := by simp +contextual [Valued.v.map_add_lt]
+  smul_mem' := by
+    simp only [Set.mem_setOf_eq, smul_eq_mul, Subring.coe_mul, map_mul, Subtype.forall]
+    intro _ hx _ _
+    exact mul_lt_of_le_one_of_lt hx
+
+/-- The closed ball submodule over a valuation ring is open in the valuation ring. -/
+lemma isOpen_submoduleClosedBall {r : Γ₀} (hr : r ≠ 0) :
+    IsOpen (submoduleClosedBall K r : Set K) :=
+  isOpen_closedball K hr
+
+/-- The closed ball submodule over a valuation ring is closed in the valuation ring. -/
+lemma isClosed_submoduleClosedBall (r : Γ₀) :
+    IsClosed (submoduleClosedBall K r : Set K) :=
+  isClosed_closedBall K r
+
+/-- The ball submodule over a valuation ring is open in the valuation ring. -/
+lemma isOpen_submoduleBall (r : Γ₀ˣ) :
+    IsOpen (submoduleBall K r : Set K) :=
+  isOpen_ball K (r : Γ₀)
+
+/-- The ball submodule over a valuation ring is closed in the valuation ring. -/
+lemma isClosed_submoduleBall (r : Γ₀ˣ) :
+    IsClosed (submoduleBall K r : Set K) :=
+  isClosed_ball K (r : Γ₀)
+
+/-- The closed ball ideal of a valuation ring is open in the valuation ring. -/
+lemma isOpen_idealClosedBall {r : Γ₀} (hr : r ≠ 0) :
+    IsOpen (idealClosedBall K r : Set 𝒪[K]) :=
+  continuous_subtype_val (p := fun x ↦ x ∈ 𝒪[K]).isOpen_preimage _ (isOpen_closedball K hr)
+
+/-- The closed ball ideal of a valuation ring is closed in the valuation ring. -/
+lemma isClosed_idealClosedBall (r : Γ₀) :
+    IsClosed (idealClosedBall K r : Set 𝒪[K]) :=
+  continuous_iff_isClosed.mp (continuous_subtype_val (p := fun x ↦ x ∈ 𝒪[K])) _
+    (isClosed_closedBall K r)
+
+/-- The ball ideal of a valuation ring is open in the valuation ring. -/
+lemma isOpen_idealBall (r : Γ₀ˣ) :
+    IsOpen (idealBall K r : Set 𝒪[K]) :=
+  continuous_subtype_val (p := fun x ↦ x ∈ 𝒪[K]).isOpen_preimage _ (isOpen_ball K (r : Γ₀))
+
+/-- The ball ideal of a valuation ring is closed in the valuation ring. -/
+lemma isClosed_idealBall (r : Γ₀ˣ) :
+    IsClosed (idealBall K r : Set 𝒪[K]) :=
+  continuous_iff_isClosed.mp (continuous_subtype_val (p := fun x ↦ x ∈ 𝒪[K])) _
+    (isClosed_ball K (r : Γ₀))
+
+variable {K}
+
+@[simp]
+lemma mem_submoduleClosedBall_iff {r : Γ₀} {x : K} :
+    x ∈ submoduleClosedBall K r ↔ Valued.v (x : K) ≤ r :=
+  Iff.rfl
+
+@[simp]
+lemma mem_submoduleBall_iff {r : Γ₀ˣ} {x : K} :
+    x ∈ submoduleBall K r ↔ Valued.v (x : K) < r :=
+  Iff.rfl
+
+lemma submoduleClosedBall_mono :
+    Monotone (submoduleClosedBall K : Γ₀ → Submodule 𝒪[K] K) :=
+  fun _ _ h _ ↦ h.trans'
+
+lemma submoduleBall_mono :
+    Monotone (submoduleBall K : Γ₀ˣ → Submodule 𝒪[K] K) :=
+  fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
+
+@[simp]
+lemma submoduleClosedBall_zero : submoduleClosedBall K (0 : Γ₀) = ⊥ := by
+  ext; simp
+
+lemma submoduleBall_le_submoduleClosedBall (r : Γ₀ˣ) :
+    submoduleBall K r ≤ submoduleClosedBall K (r : Γ₀) :=
+  fun _ h ↦ h.le
+
+lemma submoduleClosedBall_v_le_of_mem {I : Submodule 𝒪[K] K} {x : K} (hx : x ∈ I) :
+    submoduleClosedBall K (Valued.v x) ≤ I := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp
+  intro y hy
+  simp only [mem_submoduleClosedBall_iff] at hy
+  have hyx : Valued.v ((y : K) / x) ≤ 1 := by
+    simp [map_div₀,div_le_one_of_le₀ hy]
+  have : y = (⟨_, hyx⟩ : 𝒪[K]) • x := by
+    rw [Subring.smul_def, smul_eq_mul, mul_comm, mul_div_cancel₀ _ (by simpa using hx0)]
+  rw [this]
+  exact Submodule.smul_mem _ _ hx
+
+lemma submoduleBall_v_le_of_mem {I : Submodule 𝒪[K] K} {x : K} (hx : x ∈ I)
+    (hxv : Valued.v x ≠ 0) :
+    submoduleBall K (Units.mk0 _ hxv) ≤ I :=
+  (submoduleClosedBall_v_le_of_mem hx).trans' (submoduleBall_le_submoduleClosedBall _)
+
+@[simp]
+lemma mem_idealClosedBall_iff {r : Γ₀} {x : 𝒪[K]} :
+    x ∈ idealClosedBall K r ↔ Valued.v (x : K) ≤ r :=
+  Iff.rfl
+
+@[simp]
+lemma mem_idealBall_iff {r : Γ₀ˣ} {x : 𝒪[K]} :
+    x ∈ idealBall K r ↔ Valued.v (x : K) < r :=
+  Iff.rfl
+
+lemma idealClosedBall_mono :
+    Monotone (idealClosedBall K : Γ₀ → Ideal 𝒪[K]) :=
+  fun _ _ h _ ↦ h.trans'
+
+lemma idealBall_mono :
+    Monotone (idealBall K : Γ₀ˣ → Ideal 𝒪[K]) :=
+  fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
+
+@[simp]
+lemma idealClosedBall_zero : idealClosedBall K (0 : Γ₀) = ⊥ := by
+  ext; simp
+
+lemma idealBall_le_idealClosedBall (r : Γ₀ˣ) :
+    idealBall K r ≤ idealClosedBall K (r : Γ₀) :=
+  fun _ h ↦ h.le
+
+lemma idealClosedBall_v_le_of_mem {I : Ideal 𝒪[K]} {x : 𝒪[K]} (hx : x ∈ I) :
+    idealClosedBall K (Valued.v (x : K)) ≤ I := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp
+  intro y hy
+  simp only [mem_idealClosedBall_iff] at hy
+  have hyx : Valued.v ((y : K) / x) ≤ 1 := by
+    simp [map_div₀,div_le_one_of_le₀ hy]
+  have : y = x * ⟨_, hyx⟩ := by
+    ext
+    rw [Subring.coe_mul, mul_div_cancel₀ _ (by simpa using hx0)]
+  rw [this]
+  exact Ideal.IsTwoSided.mul_mem_of_left _ hx
+
+lemma idealBall_v_le_of_mem {I : Ideal 𝒪[K]} {x : 𝒪[K]} (hx : x ∈ I) (hxv : Valued.v (x : K) ≠ 0) :
+    idealBall K (Units.mk0 _ hxv) ≤ I :=
+  (idealClosedBall_v_le_of_mem hx).trans' (idealBall_le_idealClosedBall _)
+
+lemma discreteTopology_valuationRing_iff_discreteTopology :
+    DiscreteTopology 𝒪[K] ↔ DiscreteTopology K := by
+  refine ⟨fun _ ↦ singletons_open_iff_discrete.mp fun x ↦ ?_, fun _ ↦ inferInstance⟩
+  have hk : IsOpen (𝒪[K] : Set K) := isOpen_integer K
+  rcases le_total (Valued.v x) 1 with hx | hx
+  · simpa using hk.isOpenMap_subtype_val _ (show IsOpen {⟨x, hx⟩} from isOpen_discrete _)
+  · have hx0 : x ≠ 0 := v.pos_iff.mp <| hx.trans_lt' zero_lt_one
+    replace hx : Valued.v x⁻¹ ≤ 1 := by rwa [map_inv₀, inv_le_one₀ (zero_lt_one.trans_le hx)]
+    have h1 : IsOpen ({⟨x⁻¹, hx⟩} : Set 𝒪[K]) := isOpen_discrete _
+    have h2 : IsOpen {x⁻¹} := by simpa using hk.isOpenMap_subtype_val _ h1
+    simp only [isOpen_iff_mem_nhds, Set.mem_singleton_iff, forall_eq] at h2
+    simpa [isOpen_iff_mem_nhds, -Filter.map_inv] using continuousAt_inv₀ hx0 h2
+
+end Valued
