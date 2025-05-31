@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Analysis.Convex.Extreme
-import Mathlib.Analysis.Convex.Function
+import Mathlib.Analysis.Convex.Function.Basic
 import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Topology.Order.OrderClosed
 

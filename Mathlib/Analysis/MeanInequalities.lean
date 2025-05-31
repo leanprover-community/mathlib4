@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Convex.Function.Jensen
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Data.Real.ConjExponents

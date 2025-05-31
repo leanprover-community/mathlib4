@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Analysis.Convex.Function
+import Mathlib.Analysis.Convex.Function.Basic
 import Mathlib.Tactic.FieldSimp
 
 /-!
