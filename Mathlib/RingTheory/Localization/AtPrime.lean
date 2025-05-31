@@ -179,6 +179,13 @@ theorem AtPrime.map_eq_maximalIdeal :
   -- Porting note: can not find `hI`
   rw [map_comap I.primeCompl]
 
+lemma AtPrime.eq_maximalIdeal_iff_comap_eq {J : Ideal (Localization.AtPrime I)} :
+    Ideal.comap (algebraMap R (Localization.AtPrime I)) J = I ↔
+    J = IsLocalRing.maximalIdeal (Localization.AtPrime I) := ⟨fun h ↦ by
+  refine le_antisymm (IsLocalRing.le_maximalIdeal (fun hJ ↦ (hI.ne_top (h.symm ▸ hJ ▸ rfl)))) ?_
+  simpa [← AtPrime.map_eq_maximalIdeal, ← h] using Ideal.map_comap_le,
+  fun h ↦ h.symm ▸ AtPrime.comap_maximalIdeal⟩
+
 theorem le_comap_primeCompl_iff {J : Ideal P} [J.IsPrime] {f : R →+* P} :
     I.primeCompl ≤ J.primeCompl.comap f ↔ J.comap f ≤ I :=
   ⟨fun h x hx => by

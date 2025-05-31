@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 # The residue field of a prime ideal
@@ -104,3 +105,8 @@ lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaxima
     Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
     ((Quotient.maximal_ideal_iff_isField_quotient I).mp inferInstance)⟩
+
+lemma PrimeSpectrum.residueField_specComap (I : PrimeSpectrum R) :
+    Set.range (algebraMap R I.asIdeal.ResidueField).specComap = {I} := by
+  rw [Set.range_unique, Set.singleton_eq_singleton_iff]
+  exact PrimeSpectrum.ext (Ideal.ext fun x ↦ Ideal.algebraMap_residueField_eq_zero)
