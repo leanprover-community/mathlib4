@@ -1132,14 +1132,20 @@ set_option linter.docPrime false in
   induction' s using cons_induction <;> simp [*]
 
 @[simp]
-theorem sup_singleton'' (s : Finset β) (f : β → α) :
+theorem sup_singleton_apply (s : Finset β) (f : β → α) :
     (s.sup fun b => {f b}) = s.image f := by
   ext a
   rw [mem_sup, mem_image]
   simp only [mem_singleton, eq_comm]
 
+@[deprecated (since := "2025-05-24")]
+alias sup_singleton'' := sup_singleton_apply
+
 @[simp]
-theorem sup_singleton' (s : Finset α) : s.sup singleton = s :=
-  (s.sup_singleton'' _).trans image_id
+theorem sup_singleton_eq_self (s : Finset α) : s.sup singleton = s :=
+  (s.sup_singleton_apply _).trans image_id
+
+@[deprecated (since := "2025-05-24")]
+alias sup_singleton' := sup_singleton_eq_self
 
 end Finset
