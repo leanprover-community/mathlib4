@@ -1440,10 +1440,10 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
     ((ofNat(n) : Fin m) : ℕ) = ofNat(n) % m :=
   rfl
 
-instance [NeZero n] : NeZero (2 : Fin (n + 2)) := by
-  rw [neZero_iff, ne_eq, Fin.ext_iff, coe_ofNat_eq_mod, coe_ofNat_eq_mod]
-  obtain ⟨m, rfl⟩ : ∃ m, m + 1 = n := ⟨n - 1, Nat.sub_one_add_one (NeZero.ne n)⟩
-  simpa only [Nat.reduceAdd, ne_eq] using add_one_ne_zero 1
+instance [NeZero n] [NeZero ofNat(m)] : NeZero (ofNat(m) : Fin (n + ofNat(m))) := by
+  suffices m % (n + m) = m by simpa [neZero_iff, Fin.ext_iff, OfNat.ofNat, this] using NeZero.ne m
+  apply Nat.mod_eq_of_lt
+  simpa using zero_lt_of_ne_zero (NeZero.ne n)
 
 section Mul
 
