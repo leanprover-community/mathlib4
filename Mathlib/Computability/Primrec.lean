@@ -484,8 +484,7 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
       rcases @decode α _ n.unpair.1 with - | a; · rfl
       simp only [Nat.pred_eq_sub_one, encode_some, Nat.succ_eq_add_one, encodek, Option.map_some,
         Option.some_bind, Option.map_map]
-      induction' n.unpair.2 with m <;> simp [encodek]
-      simp [*, encodek]
+      induction n.unpair.2 <;> simp [*, encodek]
 
 theorem nat_rec' {f : α → ℕ} {g : α → β} {h : α → ℕ × β → β}
     (hf : Primrec f) (hg : Primrec g) (hh : Primrec₂ h) :
@@ -898,7 +897,7 @@ theorem list_rec {f : α → List β} {g : α → σ} {h : α → β × List β 
   (snd.comp this).of_eq fun a => by
     suffices F a = (f a, List.recOn (f a) (g a) fun b l IH => h a (b, l, IH)) by rw [this]
     dsimp [F]
-    induction' f a with b l IH <;> simp [*]
+    induction f a <;> simp [*]
 
 theorem list_getElem? : Primrec₂ ((·[·]? : List α → ℕ → Option α)) :=
   let F (l : List α) (n : ℕ) :=
@@ -916,12 +915,14 @@ theorem list_getElem? : Primrec₂ ((·[·]? : List α → ℕ → Option α)) :
     sumCasesOn hF (const none).to₂ (option_some.comp snd).to₂
   this.to₂.of_eq fun l n => by
     dsimp; symm
-    induction' l with a l IH generalizing n; · rfl
-    rcases n with - | n
-    · dsimp [F]
-      clear IH
-      induction' l with _ l IH <;> simp_all
-    · simpa using IH ..
+    induction l generalizing n with
+    | nil => rfl
+    | cons a l IH =>
+      rcases n with - | n
+      · dsimp [F]
+        clear IH
+        induction l <;> simp_all
+      · simpa using IH ..
 
 @[deprecated (since := "2025-02-14")] alias list_get? := list_getElem?
 theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
@@ -1005,8 +1006,8 @@ theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α 
         (option_some.comp <| snd.comp <| fst.comp snd)
         (snd.comp <| snd.comp snd)).of_eq
   fun a ps => by
-  induction' ps with p ps ih <;> simp [List.lookup, *]
-  cases ha : a == p.1 <;> simp [ha]
+  induction ps with simp [List.lookup, *]
+  | cons p ps ih => cases ha : a == p.1 <;> simp [ha]
 
 theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
     (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g)
@@ -1040,28 +1041,31 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
         graph b i = (bindList b (m b + 1 - i)).map fun x ↦ (x, f x) := by
       have bindList_eq_nil : bindList b (m b + 1) = [] :=
         have bindList_m_lt (k : ℕ) : ∀ b' ∈ bindList b k, m b' < m b + 1 - k := by
-          induction' k with k ih <;> simp [bindList]
-          intro a₂ a₁ ha₁ ha₂
-          have : k ≤ m b :=
-            Nat.lt_succ.mp (by simpa using Nat.add_lt_of_lt_sub <| Nat.zero_lt_of_lt (ih a₁ ha₁))
-          have : m a₁ ≤ m b - k :=
-            Nat.lt_succ.mp (by rw [← Nat.succ_sub this]; simpa using ih a₁ ha₁)
-          exact lt_of_lt_of_le (Ord a₁ a₂ ha₂) this
+          induction k with simp [bindList]
+          | succ k ih =>
+            intro a₂ a₁ ha₁ ha₂
+            have : k ≤ m b :=
+              Nat.lt_succ.mp (by simpa using Nat.add_lt_of_lt_sub <| Nat.zero_lt_of_lt (ih a₁ ha₁))
+            have : m a₁ ≤ m b - k :=
+              Nat.lt_succ.mp (by rw [← Nat.succ_sub this]; simpa using ih a₁ ha₁)
+            exact lt_of_lt_of_le (Ord a₁ a₂ ha₂) this
         List.eq_nil_iff_forall_not_mem.mpr
           (by intro b' ha'; by_contra; simpa using bindList_m_lt (m b + 1) b' ha')
       have mapGraph_graph {bs bs' : List β} (has : bs' ⊆ bs) :
           mapGraph (bs.map <| fun x => (x, f x)) bs' = bs'.map f := by
-        induction' bs' with b bs' ih <;> simp [mapGraph]
-        · have : b ∈ bs ∧ bs' ⊆ bs := by simpa using has
+        induction bs' with simp [mapGraph]
+        | cons b bs' ih =>
+          have : b ∈ bs ∧ bs' ⊆ bs := by simpa using has
           rcases this with ⟨ha, has'⟩
           simpa [List.lookup_graph f ha] using ih has'
       have graph_succ : ∀ i, graph b (i + 1) =
         (bindList b (m b - i)).filterMap fun b' =>
           (g b' <| mapGraph (graph b i) (l b')).map (b', ·) := fun _ => rfl
       have bindList_succ : ∀ i, bindList b (i + 1) = (bindList b i).flatMap l := fun _ => rfl
-      induction' i with i ih
-      · symm; simpa [graph] using bindList_eq_nil
-      · simp only [graph_succ, ih (Nat.le_of_lt hi), Nat.succ_sub (Nat.lt_succ.mp hi),
+      induction i with
+      | zero => symm; simpa [graph] using bindList_eq_nil
+      | succ i ih =>
+        simp only [graph_succ, ih (Nat.le_of_lt hi), Nat.succ_sub (Nat.lt_succ.mp hi),
           Nat.succ_eq_add_one, bindList_succ, Nat.reduceSubDiff]
         apply List.filterMap_eq_map_iff_forall_eq_some.mpr
         intro b' ha'; simp; rw [mapGraph_graph]
@@ -1368,11 +1372,13 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
     have y1 : @Primrec' 3 fun v => v.tail.head.succ := succ.comp₁ _ (tail head)
     exact if_lt x1 (mul.comp₂ _ y1 y1) (tail head) y1
   introv; symm
-  induction' n with n IH; · simp
-  dsimp; rw [IH]; split_ifs with h
-  · exact le_antisymm (Nat.sqrt_le_sqrt (Nat.le_succ _)) (Nat.lt_succ_iff.1 <| Nat.sqrt_lt.2 h)
-  · exact
-      Nat.eq_sqrt.2 ⟨not_lt.1 h, Nat.sqrt_lt.1 <| Nat.lt_succ_iff.2 <| Nat.sqrt_succ_le_succ_sqrt _⟩
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    dsimp; rw [IH]; split_ifs with h
+    · exact le_antisymm (Nat.sqrt_le_sqrt (Nat.le_succ _)) (Nat.lt_succ_iff.1 <| Nat.sqrt_lt.2 h)
+    · exact Nat.eq_sqrt.2
+        ⟨not_lt.1 h, Nat.sqrt_lt.1 <| Nat.lt_succ_iff.2 <| Nat.sqrt_succ_le_succ_sqrt _⟩
 
 theorem unpair₁ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.1 := by
   have s := sqrt.comp₁ _ hf
