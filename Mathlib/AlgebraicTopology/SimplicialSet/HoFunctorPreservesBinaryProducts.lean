@@ -23,6 +23,25 @@ Both `Cat.{u, u}` and `SSet.{u}` are cartesian closed categories. This files pro
 
 -/
 
+-- Where do these belong?
+namespace OrderHom
+
+open CategoryTheory Functor
+
+def toFunctor {X Y} [Preorder X] [Preorder Y] (f : X →o Y) : X ⥤ Y where
+  obj := f
+  map := fun ⟨⟨le⟩⟩ => ⟨⟨f.monotone le⟩⟩
+
+def ofFunctor {X Y} [Preorder X] [Preorder Y] (F : X ⥤ Y) : (X →o Y) where
+  toFun := F.obj
+  monotone' := monotone F
+
+def isoFunctor {X Y} [Preorder X] [Preorder Y] : (X →o Y) ≅ (X ⥤ Y) where
+  hom := toFunctor
+  inv := ofFunctor
+
+end OrderHom
+
 namespace CategoryTheory
 
 universe u v
