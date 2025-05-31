@@ -191,7 +191,7 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
   simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Iso.trans_hom, Iso.refl_inv,
     Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom,
-    ModuleCat.hom_comp, LinearMap.comp_apply, Action.instMonoidalCategory_tensorObj_V,
+    ModuleCat.hom_comp, LinearMap.comp_apply, Action.tensorObj_V,
     diagonalSuccIsoTensorTrivial_hom_hom_single x 1]
   -- The prototype linter that checks if `erw` could be replaced with `rw` would time out
   -- if it replaces the next `erw`s with `rw`s. So we focus down on the relevant part.
