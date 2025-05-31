@@ -175,6 +175,6 @@ theorem subtype_isoBaseOfIsPrincipal_eq_mul {I : Ideal R}
     Submodule.subtype I ∘ₗ ↑(Ideal.isoBaseOfIsPrincipal h) =
     LinearMap.mul R R (IsPrincipal.generator I) := by
   ext
-  simp [isoBaseOfIsPrincipal_apply]
+  simp
 
 end Ideal
