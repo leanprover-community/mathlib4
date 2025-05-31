@@ -155,14 +155,7 @@ variable {σ : Type v} (g : σ → Scheme.{u})
 
 noncomputable
 instance [Small.{u} σ] :
-    CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} := by
-  choose σ' eq using Small.equiv_small.{u} (α := σ)
-  let e : Discrete σ ≌ Discrete σ' := Discrete.equivalence eq.some
-  let _ : CreatesColimitsOfShape (Discrete σ') Scheme.forgetToLocallyRingedSpace := by
-    constructor
-    intro K
-    exact createsColimitOfIsoDiagram _ (Discrete.natIsoFunctor (F := K)).symm
-  apply CategoryTheory.createsColimitsOfShapeOfEquiv e.symm
+  CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} where
 
 instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetToTop.{u} :=
   inferInstanceAs (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
@@ -170,15 +163,6 @@ instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetTo
 
 instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
   ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
-
-instance [UnivLE.{v, u}] : HasCoproducts.{v} Scheme.{u} :=
-  fun _ ↦ ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
-
-instance [Small.{u} σ] (i) : IsOpenImmersion (Sigma.ι g i) := by
-  obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small (α := σ)
-  obtain ⟨i, rfl⟩ := e.symm.surjective i
-  rw [← Sigma.ι_reindex_hom e.symm g i]
-  infer_instance
 
 lemma sigmaι_eq_iff (i j : ι) (x y) :
     (Sigma.ι f i).base x = (Sigma.ι f j).base y ↔
@@ -198,19 +182,6 @@ lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
   obtain ⟨y, hy⟩ := hU' hx
   obtain ⟨rfl⟩ := (sigmaι_eq_iff _ _ _ _ _).mp hy
   cases h rfl
-
-/-- The open cover of the coproduct. -/
-@[simps! obj map]
-noncomputable
-def sigmaOpenCover [Small.{u} σ] : (∐ g).OpenCover :=
-  ((Scheme.coverOfIsIso (Sigma.reindex (equivShrink σ).symm g).hom).bind
-    fun i ↦ Scheme.IsLocallyDirected.openCover _).copy σ g (Sigma.ι g)
-    ((Equiv.uniqueSigma fun (_ : Unit) ↦ _).trans
-      (discreteEquiv.trans (equivShrink σ).symm)).symm
-    (fun i ↦ ((Discrete.functor g).mapIso (eqToIso (by simp)))) fun i ↦ by
-  dsimp
-  rw [Sigma.ι_reindex_hom]
-  simp
 
 /-- The underlying topological space of the coproduct is homeomorphic to the disjoint union. -/
 noncomputable
@@ -250,12 +221,13 @@ private lemma isOpenImmersion_sigmaDesc_aux
       intro i
       simpa [← Scheme.comp_base_apply] using (α i).isOpenEmbedding.isOpenMap
   · intro x
-    have ⟨y, hy⟩ := (sigmaOpenCover f).covers x
+    have ⟨y, hy⟩ := (Scheme.IsLocallyDirected.openCover (Discrete.functor f)).covers x
     rw [← hy]
-    refine IsIso.of_isIso_fac_right (g := ((sigmaOpenCover f).map _).stalkMap y)
+    refine IsIso.of_isIso_fac_right
+      (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).map _).stalkMap y)
       (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
     · simp [← Scheme.comp_base_apply]
-    · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (Sigma.ι_desc _ _)]
+    · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
 
 open scoped Function in
 lemma isOpenImmersion_sigmaDesc [Small.{u} σ]
