@@ -1038,6 +1038,15 @@ def three_two_S_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset G := Fins
 -- "length at most n"
 -- The Vikman paper says "words of length n", which seems incorrect
 
+lemma gamma_helper_subset_S_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Set.range (gamma_m_helper (S := S) φ γ n) ⊆ three_two_S_n (S := S) φ γ n := by
+  intro val hval
+  simp [three_two_S_n]
+  use n
+  refine ⟨by omega, ?_⟩
+  simp at hval
+  exact hval
+
+
 -- List.finite_length_le
 lemma finite_list (P: Finset G) (n: ℕ): Finite { l: List G | l.length ≤ n ∧ ∀ x ∈ l, x ∈ P } := by
   --apply Finite.of_injective (fun l => ⟨l.val, l.property.1⟩ )
@@ -1054,7 +1063,7 @@ noncomputable def three_two_B_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Fi
 lemma three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1): ∃ n, three_two_S_n (S := S) φ γ (n + 1) ⊆ ((three_two_B_n (S := S) φ γ n) * (three_two_B_n (S := S) φ γ n)⁻¹)  := by
   sorry
 
-
+set_option maxHeartbeats 600000
 
 --- Consequence of `three_two_poly_growth` - the set of all 'γ^n *e_i γ^(-n)' is contained the closure of S_n
 lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1)
@@ -1063,7 +1072,7 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
   use n
   intro m
 
-  by_cases m_lt_n: Int.natAbs m < n
+  by_cases m_le_n: Int.natAbs m ≤ n
   .
     simp
     intro e_i h_e_i
@@ -1078,18 +1087,159 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
       use a
       use a_mem
   . --have conj_gamma_in: ∀ p: ℕ, n ≤ p → ConjAct.
-    simp at m_lt_n
-    let m_abs := Int.natAbs m
-    have n_le_m_abs: n ≤ m_abs := by
-      omega
+    simp at m_le_n
 
-    suffices abs_mem: (Finset.image (gamma_m_helper φ γ m.natAbs) Finset.univ).toSet ⊆ Subgroup.closure (three_two_S_n (G := G) (S := S) φ γ (n)).toSet
+    by_cases m_pos: 0 < m
+    .
+
+      have m_eq_abs: ∃ m_abs: ℕ, m = m_abs := by
+        use m.natAbs
+        exact Int.eq_natAbs_of_nonneg (by omega)
+      obtain ⟨m_abs, m_eq_abs⟩ := m_eq_abs
+      rw [m_eq_abs]
+      have n_le_m_abs: n < m_abs := by
+        omega
+
+      -- Needed so that we get a useable induction hypothesis
+      clear m_le_n
+      clear m_pos
+      clear m_eq_abs
+      clear m
+
+      -- TODO - why can't we just do induction on a 'let' variable?
+      induction m_abs, n_le_m_abs using Nat.le_induction with
+      | base =>
+        simp
+        intro val h_val
+
+        have val_in_s_n_succ: val ∈ (three_two_S_n (G := G) (S := S) φ γ (n + 1)).toSet := by
+          apply gamma_helper_subset_S_n
+          exact h_val
+
+        --specialize s_n_subset val_in_s_n_succ
+
+
+        simp [three_two_B_n] at s_n_subset
+
+
+        simp [three_two_S_n]
+        simp [three_two_S_n] at s_n_subset
+        --obtain ⟨p, hp⟩ := s_n_subset
+
+
+
+        simp at h_val
+        obtain ⟨s, s_mem, e_i_eq⟩ := h_val
+        specialize s_n_subset (n + 1) (by linarith) (by simp) s s_mem
+        rw [Finset.mem_mul] at s_n_subset
+        obtain ⟨val_left, h_val_left, val_right, h_val_right, left_right_prod⟩ := s_n_subset
+        simp at h_val_left
+        obtain ⟨list_left, list_left_in, list_left_prod⟩ := h_val_left
+        simp at h_val_right
+        obtain ⟨list_right, list_right_in, list_right_prod⟩ := h_val_right
+        apply_fun Inv.inv at list_right_prod
+        simp at list_right_prod
+        rw [← list_left_prod, ← list_right_prod] at left_right_prod
+        rw [e_i_eq] at left_right_prod
+        rw [← left_right_prod]
+
+        rw [← Subgroup.mem_toSubmonoid]
+        rw [Subgroup.closure_toSubmonoid _]
+        rw [← SetLike.mem_coe]
+        --conv =>
+        --  equals z ∈ (Submonoid.closure (Set.range (Function.uncurry gamma_m) ∪ (Set.range (Function.uncurry gamma_m))⁻¹) : Set _) =>
+        --    rfl
+        rw [Submonoid.closure_eq_image_prod]
+        rw [Set.mem_image]
+        use list_left ++ (list_right.map Inv.inv).reverse
+        simp [← List.prod_inv_reverse]
+        intro g g_mem
+        match g_mem with
+        | .inl g_mem_left =>
+          left
+          simp [list_len_n] at list_left_in
+          have g_s_n := list_left_in.2 g g_mem_left
+          simp [three_two_S_n] at g_s_n
+          exact g_s_n
+        | .inr g_mem_right =>
+          right
+          simp [list_len_n] at list_right_in
+          have g_s_n := list_right_in.2 g⁻¹ g_mem_right
+          simp [three_two_S_n] at g_s_n
+          exact g_s_n
+        --simp at s_n_subset
+        -- have val_eq_conj_n: val = (MulAut.conj γ) (gamma_m_helper φ γ (n) ⟨s, s_mem⟩) := by
+        --   simp [gamma_m_helper]
+
+        --   rw [← mul_assoc]
+        --   rw [← mul_assoc]
+        --   rw [← pow_succ']
+        --   rw [mul_assoc]
+        --   rw [← inv_pow]
+        --   nth_rw 2 [← zpow_one (a := γ⁻¹)]
+        --   conv =>
+        --     rhs
+        --     rhs
+        --     lhs
+        --     equals γ⁻¹ ^ (n : ℤ) =>
+        --       simp
+        --   rw [← zpow_add]
+        --   simp [gamma_m_helper] at e_i_eq
+        --   rw [← e_i_eq]
+        --   simp
+        --   rw [← zpow_natCast]
+        --   rfl
+        -- have gamma_n_in_range: (gamma_m_helper φ γ ↑n ⟨s, s_mem⟩) ∈ (Set.range (gamma_m_helper (S := S) φ γ n)) := by
+        --   simp
+        -- have gamma_n_in := (gamma_helper_subset_S_n φ γ n) gamma_n_in_range
+        -- simp [three_two_S_n] at gamma_n_in
+        -- obtain ⟨q, hq, s', s'_mem, e_i_eq'⟩ := gamma_n_in
+        -- simp [three_two_B_n] at s_n_subset
+
+        -- specialize s_n_subset val_in_s_n_succ
+        -- rw [val_eq_conj_n] at s_n_subset
+        -- simp at s_n_subset
+        -- use n
+        -- refine ⟨by simp, ?_⟩
+        -- . use s
+        --   use s_mem
+      | succ k hak ih =>
+        intro val hval
+        simp at hval
+        simp_rw [gamma_m_eq_mulAt] at hval
+
+      --apply Nat.le_induction (P := fun m m_le => ↑(Finset.image (gamma_m_helper φ γ m) Finset.univ) ⊆ ↑(Subgroup.closure ↑(three_two_S_n φ γ n)))
+
+      simp
+
+      have m_abs := 5
+      have fake_m: 0 < m_abs := by sorry
+
+      have foo: m.natAbs > 3 := by
+        induction m_abs, fake_m using Nat.le_induction with
+        | base => sorry
+        | succ k hak ih => sorry
+      sorry
+    suffices abs_mem: (Finset.image (gamma_m_helper φ γ m.natAbs) Finset.univ).toSet ⊆ (three_two_S_n (G := G) (S := S) φ γ (n)).toSet
     .
       by_cases m_pos: 0 < m
       .
         have m_eq_abs: m = m.natAbs := Int.eq_natAbs_of_nonneg (by omega)
         rw [← m_eq_abs] at abs_mem
-        exact abs_mem
+        simp at abs_mem
+        simp
+        intro p hp
+        apply Subgroup.subset_closure
+        simp [three_two_S_n]
+        simp [gamma_m_helper] at hp
+        obtain ⟨s, s_mem, e_i_eq⟩ := hp
+        use m
+        refine ⟨?_, ?_⟩
+        . refine ⟨?_, ?_⟩
+          .
+            omega
+
+
       .
         have m_eq_neg_abs: -m = m.natAbs := by omega
         rw [← m_eq_neg_abs] at abs_mem
