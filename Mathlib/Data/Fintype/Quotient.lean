@@ -50,6 +50,7 @@ theorem listChoice_mk {l : List ι} (a : ∀ i ∈ l, α i) : listChoice (S := S
     rw [listChoice_mk]
     exact congrArg (⟦·⟧) (List.Pi.cons_eta a)
 
+omit [DecidableEq ι] in
 /-- Choice-free induction principle for quotients indexed by a `List`. -/
 @[elab_as_elim]
 lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
@@ -57,6 +58,7 @@ lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
   match l with
   |     [] => cast (congr_arg _ (funext₂ nofun)) (f nofun)
   | i :: l => by
+    classical
     rw [← List.Pi.cons_eta q]
     induction' List.Pi.head q using Quotient.ind with a
     refine @list_ind _ (fun q ↦ C (List.Pi.cons _ _ ⟦a⟧ q)) ?_ (List.Pi.tail q)
