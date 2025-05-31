@@ -250,4 +250,8 @@ lemma IsConj.symm (hσ : IsConj φ σ) :
 lemma isConj_symm : IsConj φ σ.symm ↔ IsConj φ σ :=
   ⟨IsConj.symm, IsConj.symm⟩
 
+lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
+    σ (σ x) = x := by
+  rw [← φ.injective.eq_iff, hσ.eq, hσ.eq, star_star]
+
 end NumberField.ComplexEmbedding
