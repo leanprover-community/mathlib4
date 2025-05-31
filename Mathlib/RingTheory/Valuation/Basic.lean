@@ -124,6 +124,8 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
   map_zero f := f.map_zero'
   map_add_le_max f := f.map_add_le_max'
 
+initialize_simps_projections Valuation (toFun → apply)
+
 @[simp]
 theorem coe_mk (f : R →*₀ Γ₀) (h) : ⇑(Valuation.mk f h) = f := rfl
 
@@ -238,18 +240,24 @@ theorem comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S�
 
 /-- A `≤`-preserving group homomorphism `Γ₀ → Γ'₀` induces a map `Valuation R Γ₀ → Valuation R Γ'₀`.
 -/
-def map (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ₀) : Valuation R Γ'₀ :=
-  { MonoidWithZeroHom.comp f v.toMonoidWithZeroHom with
-    toFun := f ∘ v
-    map_add_le_max' := fun r s =>
-      calc
-        f (v (r + s)) ≤ f (max (v r) (v s)) := hf (v.map_add r s)
-        _ = max (f (v r)) (f (v s)) := hf.map_max
-         }
+@[simps!]
+def map (f : Γ₀ →*₀o Γ'₀) (v : Valuation R Γ₀) : Valuation R Γ'₀ where
+  toMonoidWithZeroHom := f.toMonoidWithZeroHom.comp v.toMonoidWithZeroHom
+  map_add_le_max' r s := calc
+    f (v (r + s)) ≤ f (max (v r) (v s)) := f.monotone' (v.map_add r s)
+    _ = max (f (v r)) (f (v s)) := f.monotone'.map_max
 
-@[simp]
-lemma map_apply (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ₀) (r : R) :
-    v.map f hf r = f (v r) := rfl
+@[simp] lemma map_id (v : Valuation R Γ₀) : v.map (.id _) = v := rfl
+
+lemma map_map (f : Γ₀ →*₀o Γ'₀) (g : Γ'₀ →*₀o Γ''₀) (v : Valuation R Γ₀) :
+    (v.map f).map g = v.map (g.comp f) := rfl
+
+/-- Isomorphic ordered groups have equivalent valuations. -/
+def mapEquiv (f : Γ₀ ≃*o Γ'₀) : Valuation R Γ₀ ≃ Valuation R Γ'₀ where
+  toFun := map f
+  invFun := map f.symm
+  left_inv v := by simp [map_map]
+  right_inv v := by simp [map_map]
 
 /-- Two valuations on `R` are defined to be equivalent if they induce the same preorder on `R`. -/
 def IsEquiv (v₁ : Valuation R Γ₀) (v₂ : Valuation R Γ'₀) : Prop :=
