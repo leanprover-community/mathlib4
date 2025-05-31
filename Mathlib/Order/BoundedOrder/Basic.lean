@@ -101,7 +101,7 @@ attribute [aesop (rule_sets := [finiteness]) unsafe 20%] ne_top_of_lt
 
 end Preorder
 
-variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α}
+variable [PartialOrder α] [OrderTop α] {f : α → β} {a b : α}
 
 @[simp]
 theorem isMax_iff_eq_top : IsMax a ↔ a = ⊤ :=
@@ -273,7 +273,7 @@ alias LT.lt.bot_lt := bot_lt_of_lt
 
 end Preorder
 
-variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α}
+variable [PartialOrder α] [OrderBot α] {f : α → β} {a b : α}
 
 @[simp]
 theorem isMin_iff_eq_bot : IsMin a ↔ a = ⊥ :=

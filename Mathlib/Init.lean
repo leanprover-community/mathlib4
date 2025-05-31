@@ -12,10 +12,11 @@ import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.Multigoal
 import Mathlib.Tactic.Linter.OldObtain
+import Mathlib.Tactic.Linter.Style
 -- The following import contains the environment extension for the unused tactic linter.
 import Mathlib.Tactic.Linter.UnusedTacticExtension
 import Mathlib.Tactic.Linter.UnusedTactic
-import Mathlib.Tactic.Linter.Style
+import Mathlib.Tactic.Linter.UnusedVariableCommand
 -- This import makes the `#min_imports` command available globally.
 import Mathlib.Tactic.MinImports
 
