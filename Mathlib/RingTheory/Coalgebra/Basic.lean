@@ -414,3 +414,4 @@ instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
     simp [LinearMap.comp_assoc]
 
 end Finsupp
+onoida
