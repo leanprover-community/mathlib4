@@ -220,6 +220,43 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter, `ImportGraph),
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
+
+  (`Mathlib.Logic, `Batteries),
+  -- XXX: should this import be allowed on a more fine-grained level?
+  (`Mathlib.Logic, `Mathlib.Control),
+  (`Mathlib.Logic, `Mathlib.Lean),
+  (`Mathlib.Logic, `Mathlib.Util),
+  (`Mathlib.Logic, `Mathlib.Tactic),
+  (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
+  (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
+  (`Mathlib.Logic, `Mathlib.Algebra.Notation),
+  (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
+  -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
+  (`Mathlib.Logic, `Mathlib.Data),
+  -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
+  (`Mathlib.Logic, `Mathlib.Order),
+  -- Particular modules with larger imports.
+  (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
+  (`Mathlib.Logic.Hydra, `Mathlib.Algebra),
+  (`Mathlib.Logic.Encodable.Pi, `Mathlib.Algebra),
+  (`Mathlib.Logic.Equiv.Fin.Rotate, `Mathlib.Algebra.Group),
+  (`Mathlib.Logic.Equiv.Array, `Mathlib.Algebra),
+  (`Mathlib.Logic.Equiv.Finset, `Mathlib.Algebra),
+  (`Mathlib.Logic.Godel.GodelBetaFunction, `Mathlib.Algebra),
+  (`Mathlib.Logic.Small.List, `Mathlib.Algebra),
+
+  (`Mathlib.Testing, `Batteries),
+  -- XXX: is this intended? just a single transitive import
+  (`Mathlib.Testing, `Mathlib.GroupTheory),
+  -- XXX: is this intended? just a handful of transitive imports
+  (`Mathlib.Testing, `Mathlib.Control),
+  (`Mathlib.Testing, `Mathlib.Algebra),
+  (`Mathlib.Testing, `Mathlib.Data),
+  (`Mathlib.Testing, `Mathlib.Logic),
+  (`Mathlib.Testing, `Mathlib.Order),
+  (`Mathlib.Testing, `Mathlib.Lean),
+  (`Mathlib.Testing, `Mathlib.Tactic),
+  (`Mathlib.Testing, `Mathlib.Util),
 ]
 
 /-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
@@ -428,27 +465,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.LinearAlgebra, `Mathlib.ModelTheory),
   (`Mathlib.LinearAlgebra, `Mathlib.Probability),
   (`Mathlib.LinearAlgebra, `Mathlib.Testing),
-  (`Mathlib.Logic, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Logic, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Logic, `Mathlib.Analysis),
-  (`Mathlib.Logic, `Mathlib.CategoryTheory),
-  (`Mathlib.Logic, `Mathlib.Combinatorics),
-  (`Mathlib.Logic, `Mathlib.Computability),
-  (`Mathlib.Logic, `Mathlib.Condensed),
-  (`Mathlib.Logic, `Mathlib.Dynamics),
-  (`Mathlib.Logic, `Mathlib.FieldTheory),
-  (`Mathlib.Logic, `Mathlib.Geometry),
-  (`Mathlib.Logic, `Mathlib.InformationTheory),
-  (`Mathlib.Logic, `Mathlib.LinearAlgebra),
-  (`Mathlib.Logic, `Mathlib.MeasureTheory),
-  (`Mathlib.Logic, `Mathlib.ModelTheory),
-  (`Mathlib.Logic, `Mathlib.NumberTheory),
-  (`Mathlib.Logic, `Mathlib.Probability),
-  (`Mathlib.Logic, `Mathlib.RepresentationTheory),
-  (`Mathlib.Logic, `Mathlib.RingTheory),
-  (`Mathlib.Logic, `Mathlib.SetTheory),
-  (`Mathlib.Logic, `Mathlib.Testing),
-  (`Mathlib.Logic, `Mathlib.Topology),
   (`Mathlib.MeasureTheory, `Mathlib.AlgebraicGeometry),
   (`Mathlib.MeasureTheory, `Mathlib.AlgebraicTopology),
   (`Mathlib.MeasureTheory, `Mathlib.Computability),
@@ -544,27 +560,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.SetTheory, `Mathlib.Probability),
   (`Mathlib.SetTheory, `Mathlib.RepresentationTheory),
   (`Mathlib.SetTheory, `Mathlib.Testing),
-  (`Mathlib.Testing, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Testing, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Testing, `Mathlib.Analysis),
-  (`Mathlib.Testing, `Mathlib.CategoryTheory),
-  (`Mathlib.Testing, `Mathlib.Combinatorics),
-  (`Mathlib.Testing, `Mathlib.Computability),
-  (`Mathlib.Testing, `Mathlib.Condensed),
-  (`Mathlib.Testing, `Mathlib.Dynamics),
-  (`Mathlib.Testing, `Mathlib.FieldTheory),
-  (`Mathlib.Testing, `Mathlib.Geometry),
-  (`Mathlib.Testing, `Mathlib.InformationTheory),
-  (`Mathlib.Testing, `Mathlib.LinearAlgebra),
-  (`Mathlib.Testing, `Mathlib.MeasureTheory),
-  (`Mathlib.Testing, `Mathlib.ModelTheory),
-  (`Mathlib.Testing, `Mathlib.NumberTheory),
-  (`Mathlib.Testing, `Mathlib.Probability),
-  (`Mathlib.Testing, `Mathlib.RepresentationTheory),
-  (`Mathlib.Testing, `Mathlib.RingTheory),
-  (`Mathlib.Testing, `Mathlib.SetTheory),
-  (`Mathlib.Testing, `Mathlib.Testing),
-  (`Mathlib.Testing, `Mathlib.Topology),
   (`Mathlib.Topology, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Topology, `Mathlib.Computability),
   (`Mathlib.Topology, `Mathlib.Condensed),
@@ -630,26 +625,29 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
     if let some msg := checkBlocklist env mainModule imports then return #[msg] else return #[]
   else
     -- We always allow imports in the same directory (for each matching prefix),
-    -- and from `Init`, `Lean`, `Std` and `Qq`.
+    -- from `Init`, `Lean` and `Std`, as well as imports in `Aesop`, `Qq`, `Plausible`,
+    -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
     let initImports := (← findImports ("Mathlib" / "Init.lean")).append
       #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
     let exclude := [
-      `Init, `Std, `Lean, `Qq,
+      `Init, `Std, `Lean,
+      `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient
     ]
     let importsToCheck := imports.filter (fun imp ↦ !exclude.any (·.isPrefixOf imp))
       |>.filter (fun imp ↦ !matchingPrefixes.any (·.isPrefixOf imp))
       |>.filter (!initImports.contains ·)
 
     -- Find all prefixes which are allowed for one of these directories.
-    let allRules := allowedImportDirs.getAllLeft mainModule
+    let mut allRules := allowedImportDirs.getAllLeft mainModule
     -- Error about those imports which are not covered by allowedImportDirs.
     let mut messages := #[]
     for imported in importsToCheck do
       if !allowedImportDirs.contains mainModule imported then
         let importPath := env.importPath imported
         let mut msg := m!"Module {mainModule} depends on {imported},\n\
-        but is only allowed to import modules starting with one of {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
+        but is only allowed to import modules starting with one of \
+        {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
         Note: module {imported}"
         let mut superseded := false
         match importPath.toList with
