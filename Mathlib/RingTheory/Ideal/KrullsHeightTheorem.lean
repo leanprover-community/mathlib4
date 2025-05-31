@@ -108,6 +108,18 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
   · rwa [IsLocalization.minimalPrimes_map p.primeCompl (Localization.AtPrime p) I,
       Set.mem_preimage, Localization.AtPrime.comap_maximalIdeal]
 
+theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
+    (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk I)).height ≤ 1 :=
+  let f := Ideal.Quotient.mk I
+  have : p.IsPrime := hp.1.1
+  have hfp : RingHom.ker f ≤ p := I.mk_ker.trans_le (le_sup_left.trans hp.1.2)
+  height_le_one_of_isPrincipal_of_mem_minimalPrimes ((span {x}).map f) (p.map f)
+    ⟨⟨map_isPrime_of_surjective Quotient.mk_surjective hfp, map_mono (le_sup_right.trans hp.1.2)⟩,
+      fun _ ⟨hr, hxr⟩ hrp ↦ map_le_iff_le_comap.mpr <| hp.2 ⟨hr.comap f, sup_le_iff.mpr
+        ⟨I.mk_ker.symm.trans_le <| ker_le_comap (Ideal.Quotient.mk I), le_comap_of_map_le hxr⟩⟩ <|
+          (comap_mono hrp).trans <| Eq.le <|
+            (p.comap_map_of_surjective _ Quotient.mk_surjective).trans <| sup_eq_left.mpr hfp⟩
+
 /-- If `q < p` are prime ideals such that `p` is minimal over `span (s ∪ {x})` and
 `t` is a set contained in `q` such that `s ⊆ √span (t ∪ {x})`, then `q` is minimal over `span t`.
 This is used in the induction step for the proof of Krull's height theorem. -/
