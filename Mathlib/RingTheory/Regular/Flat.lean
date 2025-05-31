@@ -9,10 +9,9 @@ import Mathlib
 # `RingTheory.Sequence.IsWeaklyRegular` is stable under flat base change
 
 ## Main results
-* `ToBeAdded`: Let `R` be a comm ring, `M` is a `R`-module, `S` is a flat $R$-algebra.
-  If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `M ⊗[R] S`
-  is a weakly regular `M ⊗[R] S`-sequence.
-
+* `RingTheory.Sequence.isWeaklyRegular.of_flat_isBaseChange`: Let `R` be a comm ring, `M` is an
+  `R`-module, `S` is a flat $R$-algebra. If `[r₁, …, rₙ]` is a weakly regular `M`-sequence,
+  then its image in `M ⊗[R] S` is a weakly regular `M ⊗[R] S`-sequence.
 -/
 
 abbrev SemiLinearMapAlgebraMapOfLinearMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
@@ -201,26 +200,17 @@ theorem IsSMulRegular.of_flat_isBaseChange (reg : IsSMulRegular M x) :
   rw [eq]
   rfl
 
-noncomputable instance : Module (R ⧸ Ideal.span {x}) (QuotSMulTop ((algebraMap R S) x) N) where
-  smul r n := Quot.out r • n
-  one_smul := sorry
-  mul_smul := sorry
-  smul_zero := sorry
-  smul_add := sorry
-  add_smul := sorry
-  zero_smul := sorry
-
-instance : IsScalarTower R (R ⧸ Ideal.span {x}) (QuotSMulTop ((algebraMap R S) x) N) := sorry
-
-include f hf in
-noncomputable abbrev tensorQuotSMulTopEquivQuotSMulTopAlgebraMap :
-    (S ⊗[R] QuotSMulTop x M) ≃ₗ[S] (QuotSMulTop ((algebraMap R S) x) N) := by
-  have := hf.equiv
-  sorry
-  /- have h : x • (⊤ : Submodule R N) = (algebraMap R S) x • ⊤ := by
+noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapAux :
+    (S ⊗[R] QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop ((algebraMap R S) x) N) :=
+  have h : x • (⊤ : Submodule R N) = (algebraMap R S) x • ⊤ := by
     sorry
   tensorQuotSMulTopEquivQuotSMulTop x S M ≪≫ₗ QuotSMulTop.congr x (hf.equiv.restrictScalars R)
-    ≪≫ₗ Submodule.quotEquivOfEq (x • ⊤) ((algebraMap R S) x • ⊤) h -/
+    ≪≫ₗ Submodule.quotEquivOfEq (x • ⊤) ((algebraMap R S) x • ⊤) h
+
+noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMap :
+    (S ⊗[R] QuotSMulTop x M) ≃ₗ[S] (QuotSMulTop ((algebraMap R S) x) N) where
+  __ := tensorQuotSMulTopEquivQuotSMulTopAlgebraMapAux hf x
+  map_smul' := sorry
 
 
 theorem RingTheory.Sequence.isWeaklyRegular.of_flat_isBaseChange (rs : List R)
@@ -234,10 +224,9 @@ theorem RingTheory.Sequence.isWeaklyRegular.of_flat_isBaseChange (rs : List R)
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
       simp only [isWeaklyRegular_cons_iff, List.map_cons] at reg ⊢
       let e := (tensorQuotSMulTopEquivQuotSMulTopAlgebraMap hf x)
-      sorry
-      /- have := IsBaseChange.of_equiv (R := R) (S := S) (M := QuotSMulTop x M)
-        (N := (QuotSMulTop ((algebraMap R S) x) N)) e
-      refine ⟨IsSMulRegular.of_flat_isBaseChange hf x reg.1,
-        ih (isBaseChange_quotSMulTop S hf x) rs' reg.2 len⟩ -/
+      have hg : IsBaseChange S <|
+          e.toLinearMap.restrictScalars R ∘ₗ TensorProduct.mk R S (QuotSMulTop x M) 1 :=
+        IsBaseChange.of_equiv e (fun _ ↦ by simp)
+      exact ⟨IsSMulRegular.of_flat_isBaseChange hf x reg.1, ih hg rs' reg.2 len⟩
 
 end flat
