@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
@@ -241,6 +242,11 @@ noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj (hf : Surjective f)
     show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
     rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective f hf,
       PrimeSpectrum.asIdeal_le_asIdeal]
+
+/-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
+noncomputable def Ideal.primeSpectrumQuotientOrderIsoZeroLocus (I : Ideal R) :
+    PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) :=
+  primeSpectrumOrderIsoZeroLocusOfSurj (Quotient.mk I) Quotient.mk_surjective I.mk_ker
 
 /-- `p` is in the image of `Spec S → Spec R` if and only if `p` extended to `S` and
 restricted back to `R` is `p`. -/
