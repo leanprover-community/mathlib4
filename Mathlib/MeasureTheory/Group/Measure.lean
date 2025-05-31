@@ -415,7 +415,7 @@ instance : (count : Measure G).IsMulRightInvariant where
 
 @[to_additive]
 protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
-    (μ : Measure H) {f : G →* H} (hf : MeasurableEmbedding f) [IsMulLeftInvariant μ] :
+    (μ : Measure H) [IsMulLeftInvariant μ] {f : G →* H} (hf : MeasurableEmbedding f) :
     (μ.comap f).IsMulLeftInvariant where
   map_mul_left_eq_self g := by
     ext s hs
@@ -778,7 +778,7 @@ protected theorem IsHaarMeasure.comap [BorelSpace G] [MeasurableMul G]
   map_mul_left_eq_self := (IsMulLeftInvariant.comap μ hf.measurableEmbedding).map_mul_left_eq_self
   lt_top_of_isCompact := (IsFiniteMeasureOnCompacts.comap' μ hf.continuous
     hf.measurableEmbedding).lt_top_of_isCompact
-  open_pos := (IsOpenPosMeasure.comap hf).open_pos
+  open_pos := (IsOpenPosMeasure.comap μ hf).open_pos
 
 /-- The image of a finite Haar measure under a continuous surjective group homomorphism is again
 a Haar measure. See also `isHaarMeasure_map`. -/
