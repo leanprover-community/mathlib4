@@ -291,6 +291,31 @@ jobs:
           mode: check
           lint-bib-file: true
 
+  check_title_and_labels:
+    name: "check the formatting of the PR title and for missing or inconsistent labels"
+    if: github.event.pull_request.draft == false && github.event.pull_request.base == 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Lean
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          reinstall-transient-toolchain: true
+
+    steps:
+      - name: Configure check PR title and for contradictory labels
+        shell: bash
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -eo pipefail
+          echo "$TITLE"
+          label_names=$(echo "${{ toJson(github.event.pull_request.labels) }}" | jq -r '.[].name')
+          echo "$label_names"
+          lake exe check-title-labels "$TITLE" "$label_names"
+
   final:
     name: Post-CI jobJOB_NAME
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
