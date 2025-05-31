@@ -1362,8 +1362,7 @@ variable {R M A N : Type*} [CommRing R] [AddCommMonoid M] [Module R M]
   (f : M →ₗ[R] N)
 
 theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocalization S A]
-    [IsLocalizedModule S f] :
-    NoZeroSMulDivisors A N := by
+    [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
   rw [noZeroSMulDivisors_iff]
   intro c x hcx
   obtain ⟨a, s, rfl⟩ := IsLocalization.mk'_surjective S c
@@ -1372,10 +1371,9 @@ theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocaliz
   rw [mk'_smul_mk', mk'_eq_zero, IsLocalizedModule.eq_zero_iff S] at hcx
   obtain ⟨u, hl⟩ := hcx
   rw [← smul_assoc] at hl
-  obtain (hua|rfl) := NoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hl
-  · left
-    rw [IsLocalization.mk'_eq_zero_iff]
-    exact ⟨u, hua⟩
+  obtain (hua | rfl) := NoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hl
+  · rw [IsLocalization.mk'_eq_zero_iff]
+    exact Or.inl ⟨u, hua⟩
   · simp
 
 instance (S : Submonoid R) [NoZeroSMulDivisors R M] :
