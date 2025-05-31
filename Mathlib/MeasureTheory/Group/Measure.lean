@@ -415,7 +415,7 @@ instance : (count : Measure G).IsMulRightInvariant where
 
 @[to_additive]
 protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
-    {f : G →* H} (hf : MeasurableEmbedding f) {μ : Measure H} [IsMulLeftInvariant μ] :
+    (μ : Measure H) {f : G →* H} (hf : MeasurableEmbedding f) [IsMulLeftInvariant μ] :
     (μ.comap f).IsMulLeftInvariant where
   map_mul_left_eq_self g := by
     ext s hs
@@ -773,10 +773,10 @@ theorem isHaarMeasure_map [BorelSpace G] [ContinuousMul G] {H : Type*} [Group H]
 
 protected theorem IsHaarMeasure.comap [BorelSpace G] [MeasurableMul G]
     [Group H] [TopologicalSpace H] [BorelSpace H] {mH : MeasurableMul H}
-    {μ : Measure H} [IsHaarMeasure μ] {f : G →* H} (hf : Topology.IsOpenEmbedding f) :
+    (μ : Measure H) [IsHaarMeasure μ] {f : G →* H} (hf : Topology.IsOpenEmbedding f) :
     (μ.comap f).IsHaarMeasure where
-  map_mul_left_eq_self := (IsMulLeftInvariant.comap hf.measurableEmbedding).map_mul_left_eq_self
-  lt_top_of_isCompact := (IsFiniteMeasureOnCompacts.comap' hf.continuous
+  map_mul_left_eq_self := (IsMulLeftInvariant.comap μ hf.measurableEmbedding).map_mul_left_eq_self
+  lt_top_of_isCompact := (IsFiniteMeasureOnCompacts.comap' μ hf.continuous
     hf.measurableEmbedding).lt_top_of_isCompact
   open_pos := (IsOpenPosMeasure.comap hf).open_pos
 

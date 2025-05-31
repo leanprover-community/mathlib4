@@ -351,7 +351,7 @@ instance instIsFiniteMeasureOnCompactsRestrict [TopologicalSpace α] {μ : Measu
 
 variable {mβ} in
 protected theorem IsFiniteMeasureOnCompacts.comap' [TopologicalSpace α] [TopologicalSpace β]
-    {μ : Measure β} [IsFiniteMeasureOnCompacts μ] {f : α → β} (f_cont : Continuous f)
+    (μ : Measure β) [IsFiniteMeasureOnCompacts μ] {f : α → β} (f_cont : Continuous f)
     (f_me : MeasurableEmbedding f) : IsFiniteMeasureOnCompacts (μ.comap f) where
   lt_top_of_isCompact K hK := by
     rw [f_me.comap_apply]

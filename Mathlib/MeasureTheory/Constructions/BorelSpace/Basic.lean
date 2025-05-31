@@ -706,9 +706,9 @@ protected theorem map (μ : Measure α) [IsFiniteMeasureOnCompacts μ] (f : α �
   exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
 
 variable {mβ} in
-protected theorem comap {μ : Measure β} [IsFiniteMeasureOnCompacts μ] {f : α ≃ₜ β} :
+protected theorem comap (μ : Measure β) [IsFiniteMeasureOnCompacts μ] {f : α ≃ₜ β} :
     IsFiniteMeasureOnCompacts (μ.comap f) :=
-  IsFiniteMeasureOnCompacts.comap' f.continuous f.measurableEmbedding
+  IsFiniteMeasureOnCompacts.comap' μ f.continuous f.measurableEmbedding
 
 end MeasureTheory.Measure.IsFiniteMeasureOnCompacts
 

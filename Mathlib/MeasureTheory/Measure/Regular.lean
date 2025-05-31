@@ -387,7 +387,7 @@ protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [Topologica
   rwa [map_apply f.measurable this.measurableSet, f.preimage_symm, f.preimage_image]
 
 theorem comap'
-    {mβ : MeasurableSpace β} [TopologicalSpace β] {μ : Measure β} [OuterRegular μ]
+    {mβ : MeasurableSpace β} [TopologicalSpace β] (μ : Measure β) [OuterRegular μ]
     {f : α → β} (f_cont : Continuous f) (f_me : MeasurableEmbedding f) :
     (μ.comap f).OuterRegular where
   outerRegular A hA r hr := by
@@ -398,8 +398,8 @@ theorem comap'
     exact (measure_mono (image_preimage_subset _ _)).trans_lt hμU
 
 protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β]
-    {μ : Measure β} [OuterRegular μ] (f : α ≃ₜ β) : (μ.comap f).OuterRegular :=
-  OuterRegular.comap' f.continuous f.measurableEmbedding
+    (μ : Measure β) [OuterRegular μ] (f : α ≃ₜ β) : (μ.comap f).OuterRegular :=
+  OuterRegular.comap' μ f.continuous f.measurableEmbedding
 
 protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) :
     (x • μ).OuterRegular := by
@@ -725,7 +725,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
 open Topology in
 protected theorem comap' [BorelSpace α]
     {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β]
-    {μ : Measure β} [H : InnerRegular μ] {f : α → β} (hf : IsOpenEmbedding f) :
+    (μ : Measure β) [H : InnerRegular μ] {f : α → β} (hf : IsOpenEmbedding f) :
     (μ.comap f).InnerRegular where
   innerRegular :=
     H.innerRegular.comap hf.measurableEmbedding
@@ -735,7 +735,7 @@ protected theorem comap' [BorelSpace α]
 protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β]
     {μ : Measure β} [InnerRegular μ] (f : α ≃ₜ β) :
     (μ.comap f).InnerRegular :=
-  InnerRegular.comap' f.isOpenEmbedding
+  InnerRegular.comap' μ f.isOpenEmbedding
 
 end InnerRegular
 
@@ -1061,17 +1061,17 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
 
 open Topology in
 protected theorem comap' [BorelSpace α]
-    {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β] {μ : Measure β} [Regular μ]
+    {mβ : MeasurableSpace β} [TopologicalSpace β] [BorelSpace β] (μ : Measure β) [Regular μ]
     {f : α → β} (hf : IsOpenEmbedding f) : (μ.comap f).Regular := by
-  haveI := OuterRegular.comap' (μ := μ) hf.continuous hf.measurableEmbedding
-  haveI := IsFiniteMeasureOnCompacts.comap' (μ := μ) hf.continuous hf.measurableEmbedding
+  haveI := OuterRegular.comap' μ hf.continuous hf.measurableEmbedding
+  haveI := IsFiniteMeasureOnCompacts.comap' μ hf.continuous hf.measurableEmbedding
   exact ⟨InnerRegularWRT.comap Regular.innerRegular hf.measurableEmbedding
     (fun _ hU ↦ hf.isOpen_iff_image_isOpen.mp hU)
     (fun _ hKrange hK ↦ hf.isInducing.isCompact_preimage' hK hKrange)⟩
 
 protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalSpace β]
-    [BorelSpace β] {μ : Measure β} [Regular μ] (f : α ≃ₜ β) : (μ.comap f).Regular :=
-  Regular.comap' f.isOpenEmbedding
+    [BorelSpace β] (μ : Measure β) [Regular μ] (f : α ≃ₜ β) : (μ.comap f).Regular :=
+  Regular.comap' μ f.isOpenEmbedding
 
 protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).Regular := by
   haveI := OuterRegular.smul μ hx
