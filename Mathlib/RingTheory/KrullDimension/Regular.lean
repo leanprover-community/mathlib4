@@ -35,10 +35,10 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   rcases subsingleton_or_nontrivial M with h | h
   · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
     rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
-  have hm : ⟨𝔪, IsMaximal.isPrime' 𝔪⟩ ∈ support R M := maximalIdeal_mem_support R M
+  have hm : closedPoint R ∈ support R M := maximalIdeal_mem_support R M
   refine iSup_le_iff.mpr (fun q ↦ ?_)
   let p : LTSeries (support R M) :=
-    if lt : (q.last).1.1 < 𝔪 then q.snoc ⟨⟨𝔪, IsMaximal.isPrime' 𝔪⟩, hm⟩ lt else q
+    if lt : (q.last).1.1 < 𝔪 then q.snoc ⟨closedPoint R, hm⟩ lt else q
   obtain ⟨hxp, le⟩ : x ∈ p.last.1.1 ∧ q.length ≤ p.length := by
     by_cases lt : (q.last).1.1 < 𝔪
     · rw [show p = q.snoc ⟨⟨𝔪, IsMaximal.isPrime' 𝔪⟩, hm⟩ lt from dif_pos lt]
