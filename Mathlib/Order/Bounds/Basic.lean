@@ -832,7 +832,6 @@ protected theorem OrderBot.bddBelow [OrderBot α] (s : Set α) : BddBelow s :=
 in complete and conditionally complete lattices but let automation fill automatically the
 boundedness proofs in complete lattices, we use the tactic `bddDefault` in the statements,
 in the form `(hA : BddAbove A := by bddDefault)`. -/
-
 macro "bddDefault" : tactic =>
   `(tactic| first
     | apply OrderTop.bddAbove

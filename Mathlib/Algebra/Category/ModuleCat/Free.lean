@@ -52,7 +52,6 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
   exact range_ker_disjoint hw
 
 include hv hm in
-
 /-- In the commutative diagram
 ```
              f     g
