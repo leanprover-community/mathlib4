@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
@@ -23,6 +24,14 @@ This file proves results about bipartite simple graphs, including several double
   do not cover all the vertices, one recovers a covering of all the vertices by unioning the
   missing vertices `(s ∪ t)ᶜ` to either `s` or `t`.
 
+* `SimpleGraph.IsBipartite`: Predicate for a simple graph to be bipartite.
+  `G.IsBipartite` is defined as an abbreviation for `G.Colorable 2`.
+
+* `twocol_iff_bipartition` is the proof that a twocoloring implies a bipartition and vice versa.
+
+* `bipartite_iff_bipartition` proves that `G.IsBipartite` iff there exist sets
+  `s t : Set V` such that `G.IsBipartiteWith s t`.
+
 * `SimpleGraph.isBipartiteWith_sum_degrees_eq` is the proof that if `G.IsBipartiteWith s t`, then
   the sum of the degrees of the vertices in `s` is equal to the sum of the degrees of the vertices
   in `t`.
@@ -40,9 +49,6 @@ For the formulation of double-counting arguments where a bipartite graph is cons
 relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/DoubleCounting.lean`.
 
 ## TODO
-
-* Define `G.IsBipartite := G.Colorable 2` and prove `G.IsBipartite` iff there exist sets
-  `s t : Set V` such that `G.IsBipartiteWith s t`.
 
 * Prove that `G.IsBipartite` iff `G` does not contain an odd cycle.
   I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
@@ -240,5 +246,60 @@ theorem isBipartiteWith_sum_degrees_eq_card_edges' (h : G.IsBipartiteWith s t) :
     ∑ v ∈ t, G.degree v = #G.edgeFinset := isBipartiteWith_sum_degrees_eq_card_edges h.symm
 
 end IsBipartiteWith
+variable {V : Type*} (G : SimpleGraph V)
+
+/-- A simple graph is bipartite if it admits a 2-coloring. -/
+abbrev IsBipartite (G : SimpleGraph V) : Prop := G.Colorable 2
+
+/--
+From a 2-coloring of G, produce two color classes s and t witnessing bipartiteness:
+Disjoint s t where every edge goes between s and t.
+-/
+lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) :
+    ∃ s t, G.IsBipartiteWith s t := by
+  rcases h with ⟨c, hc_adj⟩
+  let s := { v | c v = 0 }
+  let t := { v | c v = 1 }
+  have h₁ : Disjoint s t := by
+    rw [Set.disjoint_iff]
+    intro v hv
+    simp only [Set.mem_inter_iff, Set.mem_setOf_eq] at hv
+    have hv' : c v = 0 := hv.1
+    have hv'' : c v = 1 := hv.2
+    omega
+  have h₂ ⦃v w : V⦄ (h_adj : G.Adj v w) : v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s := by
+    have h_color := hc_adj h_adj
+    simp [s, t, Set.mem_setOf_eq, Fin.forall_fin_two] at h_color ⊢
+    omega
+  exact ⟨s, t, h₁, h₂⟩
+
+
+/--
+Given a bipartition s, t of G, construct an explicit 2-coloring by sending vertices in s to 0
+and those in t to 1. Show adjacent vertices get different colors (through the pattern match).
+-/
+lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) :
+    G.IsBipartite := by
+  classical
+  have h_disj  : Disjoint s t := h.1
+  have h_edges : ∀ v w, G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s := h.2
+  use fun v => if v ∈ s then 0 else 1
+  intro v w hw
+  obtain (⟨hv_s, hw_t⟩ | ⟨hv_t, hw_s⟩) := h_edges v w hw
+  · have hw_not_s : w ∉ s := h_disj.subset_compl_left hw_t
+    simp [hv_s, hw_not_s]
+  · have hv_not_s : v ∉ s := h_disj.subset_compl_left hv_t
+    simp [hv_not_s, hw_s]
+
+/--
+Putting the two previous lemmas together to show a biimplication between having a twocoloring
+and having a bipartition.
+-/
+theorem twocol_iff_bipartition :
+  G.Colorable 2 ↔ ∃ s t : Set V, G.IsBipartiteWith s t := by
+  constructor
+  · exact twocol_imp_bipartition G
+  · rintro ⟨s, t, h⟩
+    exact bipartition_imp_twocol G h
 
 end SimpleGraph
