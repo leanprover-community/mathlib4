@@ -5,7 +5,7 @@ Authors: Junyan Xu
 -/
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 import Mathlib.Topology.Connected.LocPathConnected
-import Mathlib.Topology.Covering
+import Mathlib.Topology.Covering.Basic
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.UnitInterval
 
