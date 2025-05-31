@@ -1106,9 +1106,9 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
       clear m_eq_abs
       clear m
 
-      have s_k_subset: ∀ k: ℕ, n ≤ k → three_two_S_n (S := S) φ γ (n + 1) ⊆ three_two_B_n (S := S) φ γ n * (three_two_B_n (S := S) φ γ n)⁻¹ := by
-        intro k hk
-        induction k, hk using Nat.le_induction with
+      have s_k_subset: ∀ k: ℕ, n ≤ k → three_two_S_n (S := S) φ γ (k + 1) ⊆ three_two_B_n (S := S) φ γ k * (three_two_B_n (S := S) φ γ k)⁻¹ := by
+        intro z hz
+        induction z, hz using Nat.le_induction with
         | base =>
           exact s_n_subset
         | succ k hsucc ih =>
@@ -1127,7 +1127,7 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
 
           obtain ⟨m , hm, s, s_mem, e_i_eq⟩ := h_val
           simp [three_two_S_n] at ih
-          specialize ih (m) (by linarith) (by omega) s s_mem
+          specialize ih (m) (by omega) (by omega) s s_mem
           rw [Finset.mem_mul] at ih
           obtain ⟨val_left, h_val_left, val_right, h_val_right, left_right_prod⟩ := ih
           simp at h_val_left
@@ -1187,6 +1187,7 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
           --   exact g_s_n
 
       -- TODO - why can't we just do induction on a 'let' variable?
+
 
       induction m_abs, n_le_m_abs using Nat.le_induction with
       | base =>
@@ -1285,39 +1286,114 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
         -- . use s
         --   use s_mem
       | succ k hak ih =>
-        intro val hval
-        simp at hval
-        simp_rw [gamma_m_eq_mulAt] at hval
-        obtain ⟨s, s_mem, val_eq⟩ := hval
         simp
-        have val_eq_conj_n: val = (MulAut.conj γ) (gamma_m_helper φ γ (k) ⟨s, s_mem⟩) := by
-          simp [gamma_m_helper]
-          rw [← val_eq]
-          simp [MulAut.conj]
-          rw [add_comm]
-          rw [zpow_add]
-          simp
-          conv =>
-            rhs
-            rw [← mul_assoc]
-            rw [← mul_assoc]
+        intro val h_val
+        simp at hak
+        zify at hak
 
-          nth_rw 3 [mul_assoc]
-        rw [val_eq_conj_n]
-        simp at ih
-        rw [Set.range_subset_iff] at ih
-        specialize ih ⟨s, s_mem⟩
-        simp at ih
-        rw [← Subgroup.mem_toSubmonoid] at ih
-        rw [Subgroup.closure_toSubmonoid _] at ih
-        rw [← SetLike.mem_coe] at ih
-        rw [Submonoid.closure_eq_image_prod] at ih
+        have val_in_s_n_succ: val ∈ (three_two_S_n (G := G) (S := S) φ γ (k + 1)).toSet := by
+          apply gamma_helper_subset_S_n
+          exact h_val
 
+        --specialize s_n_subset val_in_s_n_succ
+
+
+        simp [three_two_B_n] at s_k_subset
+
+
+        simp [three_two_S_n]
+        simp [three_two_S_n] at s_k_subset
+        simp [three_two_S_n] at ih
+        --obtain ⟨p, hp⟩ := s_n_subset
+
+
+
+        simp at h_val
+        obtain ⟨s, s_mem, e_i_eq⟩ := h_val
+        specialize s_k_subset (k) (by omega) (k + 1) (by omega) (by omega) s s_mem
+        rw [Finset.mem_mul] at s_k_subset
+        obtain ⟨val_left, h_val_left, val_right, h_val_right, left_right_prod⟩ := s_k_subset
+        simp at h_val_left
+        obtain ⟨list_left, list_left_in, list_left_prod⟩ := h_val_left
+        simp at h_val_right
+        obtain ⟨list_right, list_right_in, list_right_prod⟩ := h_val_right
+        apply_fun Inv.inv at list_right_prod
+        simp at list_right_prod
+        rw [← list_left_prod, ← list_right_prod] at left_right_prod
+        rw [e_i_eq] at left_right_prod
+        rw [← left_right_prod]
+        apply Subgroup.mul_mem
+        .
+          apply Subgroup.list_prod_mem
+          intro x hx
+          simp [list_len_n] at list_left_in
+          have x_s_n := list_left_in.2 x hx
+          simp [three_two_S_n] at x_s_n
+          rw [Set.range_subset_iff] at ih
+          obtain ⟨p, hp, s', s'_mem, x_eq_gamma⟩ := x_s_n
+          specialize ih ⟨s', s'_mem⟩
+
+
+          sorry
+        . sorry
+
+        rw [← Subgroup.mem_toSubmonoid]
+        rw [Subgroup.closure_toSubmonoid _]
+        rw [← SetLike.mem_coe]
         --conv =>
         --  equals z ∈ (Submonoid.closure (Set.range (Function.uncurry gamma_m) ∪ (Set.range (Function.uncurry gamma_m))⁻¹) : Set _) =>
         --    rfl
+        rw [Submonoid.closure_eq_image_prod]
+        rw [Set.mem_image]
+        use list_left ++ (list_right.map Inv.inv).reverse
+        simp [← List.prod_inv_reverse]
+        intro g g_mem
+        match g_mem with
+        | .inl g_mem_left =>
+          left
+          simp [list_len_n] at list_left_in
+          have g_s_n := list_left_in.2 g g_mem_left
+          simp [three_two_S_n] at g_s_n
+          exact g_s_n
+        | .inr g_mem_right =>
+          right
+          simp [list_len_n] at list_right_in
+          have g_s_n := list_right_in.2 g⁻¹ g_mem_right
+          simp [three_two_S_n] at g_s_n
+          exact g_s_n
+        -- intro val hval
+        -- simp at hval
+        -- simp_rw [gamma_m_eq_mulAt] at hval
+        -- obtain ⟨s, s_mem, val_eq⟩ := hval
+        -- simp
+        -- have val_eq_conj_n: val = (MulAut.conj γ) (gamma_m_helper φ γ (k) ⟨s, s_mem⟩) := by
+        --   simp [gamma_m_helper]
+        --   rw [← val_eq]
+        --   simp [MulAut.conj]
+        --   rw [add_comm]
+        --   rw [zpow_add]
+        --   simp
+        --   conv =>
+        --     rhs
+        --     rw [← mul_assoc]
+        --     rw [← mul_assoc]
 
-        simp
+        --   nth_rw 3 [mul_assoc]
+        -- rw [val_eq_conj_n]
+        -- simp at ih
+        -- rw [Set.range_subset_iff] at ih
+        -- specialize ih ⟨s, s_mem⟩
+        -- simp at ih
+        -- rw [← Subgroup.mem_toSubmonoid] at ih
+        -- rw [Subgroup.closure_toSubmonoid _] at ih
+        -- rw [← SetLike.mem_coe] at ih
+        -- rw [Submonoid.closure_eq_image_prod] at ih
+
+        -- --conv =>
+        -- --  equals z ∈ (Submonoid.closure (Set.range (Function.uncurry gamma_m) ∪ (Set.range (Function.uncurry gamma_m))⁻¹) : Set _) =>
+        -- --    rfl
+
+        -- simp
 
 
 
