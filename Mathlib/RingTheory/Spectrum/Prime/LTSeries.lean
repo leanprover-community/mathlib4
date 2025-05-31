@@ -5,7 +5,6 @@ Authors: Yonele Hu
 -/
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Lemmas about `LTSeries` in the prime spectrum
