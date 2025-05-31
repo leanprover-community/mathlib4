@@ -1026,6 +1026,10 @@ lemma take_drop_len {T: Type*} {l: List T} {p: T → Bool}: (l.takeWhile p).leng
 
 def gamma_m_helper (φ: (Additive G) →+ ℤ) (γ: G) (m: ℤ) (s: S): G := γ^m * (e_i_regular_helper φ γ s) * γ^(-m)
 
+lemma gamma_m_eq_mulAt (φ: (Additive G) →+ ℤ) (γ: G) (m: ℤ) (s: S): gamma_m_helper φ γ m s = (MulAut.conj ((γ^m))) (e_i_regular_helper φ γ s) := by
+  dsimp [gamma_m_helper]
+  simp
+
 -- The set {γ_m_i}_{m ≤ n}
 def three_two_S_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset G := Finset.image (Function.uncurry (gamma_m_helper (S := S) φ γ)) ((Finset.Icc (-n : ℤ) n).product S.attach)
 --def three_two_S_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset G := (Function.uncurry (gamma_m_helper (S := S) φ γ)) '' ({ m: ℤ | |m| ≤ n} ×ˢ Set.univ)
@@ -1035,14 +1039,16 @@ def three_two_S_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset G := Fins
 -- The Vikman paper says "words of length n", which seems incorrect
 
 -- List.finite_length_le
-lemma finite_list (n: ℕ): Finite { l: List G | l.length ≤ n } := by
-  apply?
-
-def list_len_n (n: ℕ): Finset (List G) := @Set.toFinset _ { l: List G | l.length ≤ n } (Fintype.ofFinite (by
+lemma finite_list (P: Finset G) (n: ℕ): Finite { l: List G | l.length ≤ n ∧ ∀ x ∈ l, x ∈ P } := by
+  --apply Finite.of_injective (fun l => ⟨l.val, l.property.1⟩ )
+  --apply List.finite_length_le G n
   sorry
+
+noncomputable def list_len_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset (List G) := @Set.toFinset _ { l: List G | l.length ≤ n ∧ ∀ x ∈ l, x ∈ (three_two_S_n φ γ n (S := S)) } (@Fintype.ofFinite _ (by
+  exact finite_list _ n
 ))
 
-def three_two_B_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset G := Finset.image List.prod ( { l: List G | l.length ≤ n ∧ ∀ x ∈ l, x ∈ (three_two_S_n φ γ n (S := S)) })
+noncomputable def three_two_B_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset G := Finset.image List.prod (list_len_n φ γ n (S := S))
 
 -- If G has polynomial growth, than we can find an N such that S_n ⊆ B_n * B_n⁻¹
 lemma three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1): ∃ n, three_two_S_n (S := S) φ γ (n + 1) ⊆ ((three_two_B_n (S := S) φ γ n) * (three_two_B_n (S := S) φ γ n)⁻¹)  := by
@@ -1050,7 +1056,104 @@ lemma three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S
 
 
 
--- The kernel of `φ` is gemerated by {γ_m_i}
+--- Consequence of `three_two_poly_growth` - the set of all 'γ^n *e_i γ^(-n)' is contained the closure of S_n
+lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1)
+  : ∃ n, ∀ m, (Finset.image (gamma_m_helper (S := S) (G := G) φ γ m) Finset.univ).toSet ⊆ Subgroup.closure (three_two_S_n (G := G) (S := S) φ γ (n)).toSet := by
+  obtain ⟨n, s_n_subset⟩ := three_two_poly_growth (G := G) (S := S) d hd hG γ φ hφ hγ
+  use n
+  intro m
+
+  by_cases m_lt_n: Int.natAbs m < n
+  .
+    simp
+    intro e_i h_e_i
+    apply Subgroup.subset_closure
+    simp at h_e_i
+    obtain ⟨a, a_mem, e_i_eq⟩ := h_e_i
+    simp [three_two_S_n]
+    use m
+    refine ⟨?_, ?_⟩
+    . refine ⟨by omega, by omega⟩
+    .
+      use a
+      use a_mem
+  . --have conj_gamma_in: ∀ p: ℕ, n ≤ p → ConjAct.
+    simp at m_lt_n
+    let m_abs := Int.natAbs m
+    have n_le_m_abs: n ≤ m_abs := by
+      omega
+
+    suffices abs_mem: (Finset.image (gamma_m_helper φ γ m.natAbs) Finset.univ).toSet ⊆ Subgroup.closure (three_two_S_n (G := G) (S := S) φ γ (n)).toSet
+    .
+      by_cases m_pos: 0 < m
+      .
+        have m_eq_abs: m = m.natAbs := Int.eq_natAbs_of_nonneg (by omega)
+        rw [← m_eq_abs] at abs_mem
+        exact abs_mem
+      .
+        have m_eq_neg_abs: -m = m.natAbs := by omega
+        rw [← m_eq_neg_abs] at abs_mem
+        simp at abs_mem
+        intro e_i e_i_mem_gamma
+        simp at e_i_mem_gamma
+        unfold gamma_m_helper at abs_mem
+        simp at abs_mem
+
+        obtain ⟨s, s_mem, e_i_eq⟩ := e_i_mem_gamma
+        simp
+        rw [Set.range_subset_iff] at abs_mem
+        --rw [← Subgroup.inv_mem_iff]
+        simp [gamma_m_helper] at e_i_eq
+        apply Subgroup.subset_closure
+        specialize abs_mem ⟨s, s_mem⟩
+        simp []
+        simp [three_two_S_n]
+        use -m
+        refine ⟨?_, ?_⟩
+        . refine ⟨?_, ?_⟩
+          .
+            omega
+          .
+            zify at n_le_m_abs
+            rw [← m_eq_neg_abs] at n_le_m_abs
+            apply_fun (fun (x : ℤ) => -x) at n_le_m_abs
+            simp at n_le_m_abs
+
+        have e_i_inv_range: e_i ∈ (Set.range (ι := S) (gamma_m_helper φ γ (-m))) := by
+          rw [← e_i_eq]
+          simp [gamma_m_helper]
+          use s
+          use s_mem
+
+
+
+    . sorry
+
+    apply Nat.le_induction
+
+    induction m_abs, n_le_m_abs using Nat.le_induction with
+    | base => sorry
+    | succ k hak => sorry
+
+    intro z hz
+    simp at hz
+
+    simp at m_lt_n
+    simp
+    rw [← mem_toSubmonoid]
+    rw [Subgroup.closure_toSubmonoid]
+    rw [← SetLike.mem_coe]
+    rw [Submonoid.closure_eq_image_prod]
+    simp
+    simp at hz
+
+
+    simp at hz
+    simp_rw [gamma_m_eq_mulAt] at hz
+    obtain ⟨a, a_mem, z_eq_conj⟩ := hz
+
+
+-- The kernel of `φ` is generated by {γ_m_i}
 lemma three_two_gamma_m_generates(φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ): ∃ γ: G, φ γ = 1 ∧ Subgroup.closure (Set.range (Function.uncurry (gamma_m_helper (G := G) (S := S) φ γ))) = AddSubgroup.toSubgroup φ.ker := by
   have gamma_one: ∃ γ: G, φ γ = 1 := by
     exact hφ 1
@@ -1832,6 +1935,28 @@ lemma three_two_ker_fg (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S
       exact fun z ↦ Eq.to_iff rfl
     rw [← mem_ker_iff] at hz
     rw [← generates_ker] at hz
+    --have exists_prod_list := Submonoid.exists_list_of_mem_closure (s := S ∪ S⁻¹) (x := x)
+    rw [← mem_toSubmonoid] at hz
+    rw [Subgroup.closure_toSubmonoid _] at hz
+    have exists_prod := Submonoid.exists_list_of_mem_closure hz
+    obtain ⟨l, l_mem, z_eq_prod⟩ := exists_prod
+    rw [← z_eq_prod]
+    conv =>
+      arg 2
+      equals ofMul l.prod => rfl
+    apply AddSubgroup.list_sum_mem
+    simp only [Additive.forall]
+    intro a ha
+    apply AddSubgroup.subset_closure
+    simp
+    specialize l_mem (ofMul a) ha
+    simp [three_two_S_n]
+    simp at l_mem
+    match l_mem with
+    | .inl l_mem =>
+      obtain ⟨p, s, s_mem, helper_eq_a⟩ := l_mem
+      simp [gamam]
+    | .inr l_mem => sorry
 
     simp at hz
 
