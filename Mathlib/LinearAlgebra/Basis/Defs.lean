@@ -254,6 +254,11 @@ theorem Basis.equivFun_apply [Finite ι] (b : Basis ι R M) (u : M) : b.equivFun
   rfl
 
 @[simp]
+theorem Basis.equivFun_symm_single [Finite ι] [DecidableEq ι] (b : Basis ι R M) (i : ι) :
+    b.equivFun.symm (Pi.single i 1) = b i := by
+  simp [LinearEquiv.symm_apply_eq, Finsupp.single_eq_pi_single]
+
+@[simp]
 theorem Basis.map_equivFun [Finite ι] (b : Basis ι R M) (f : M ≃ₗ[R] M') :
     (b.map f).equivFun = f.symm.trans b.equivFun :=
   rfl

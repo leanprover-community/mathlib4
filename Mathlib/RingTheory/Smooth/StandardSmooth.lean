@@ -167,7 +167,7 @@ lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMa
 
 lemma jacobiMatrix_apply (i j : P.rels) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
-  simp [jacobiMatrix, LinearMap.toMatrix, differential, basis]
+  simp [jacobiMatrix, LinearMap.toMatrix, differential, basis, Pi.single_apply]
 
 lemma aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix :
     P.aevalDifferential.toMatrix' = (aeval P.val).mapMatrix P.jacobiMatrix := by
