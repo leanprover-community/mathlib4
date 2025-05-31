@@ -1106,7 +1106,88 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
       clear m_eq_abs
       clear m
 
+      have s_k_subset: ∀ k: ℕ, n ≤ k → three_two_S_n (S := S) φ γ (n + 1) ⊆ three_two_B_n (S := S) φ γ n * (three_two_B_n (S := S) φ γ n)⁻¹ := by
+        intro k hk
+        induction k, hk using Nat.le_induction with
+        | base =>
+          exact s_n_subset
+        | succ k hsucc ih =>
+          intro val h_val
+
+          --specialize s_n_subset val_in_s_n_succ
+
+
+          simp [three_two_B_n] at ih
+          simp [three_two_S_n] at h_val
+          --simp [three_two_B_n]
+          --simp [three_two_S_n] at s_n_subset
+          --obtain ⟨p, hp⟩ := s_n_subset
+
+
+
+          obtain ⟨m , hm, s, s_mem, e_i_eq⟩ := h_val
+          simp [three_two_S_n] at ih
+          specialize ih (m) (by linarith) (by omega) s s_mem
+          rw [Finset.mem_mul] at ih
+          obtain ⟨val_left, h_val_left, val_right, h_val_right, left_right_prod⟩ := ih
+          simp at h_val_left
+          obtain ⟨list_left, list_left_in, list_left_prod⟩ := h_val_left
+          simp at h_val_right
+          obtain ⟨list_right, list_right_in, list_right_prod⟩ := h_val_right
+          apply_fun Inv.inv at list_right_prod
+          simp at list_right_prod
+          rw [← list_left_prod, ← list_right_prod] at left_right_prod
+          rw [e_i_eq] at left_right_prod
+          rw [← left_right_prod]
+
+          simp [three_two_B_n]
+          rw [Finset.mem_mul]
+          refine ⟨list_left.prod, ?_, (list_right.map Inv.inv).reverse.prod, ?_, ?_⟩
+          . simp
+            use list_left
+          . simp
+            use list_right
+            refine ⟨?_, ?_⟩
+            .
+              simp [list_len_n]
+              simp [list_len_n] at list_right_in
+              exact list_right_in
+            .
+              simp [List.prod_inv_reverse]
+          .
+            simp [← List.prod_inv_reverse]
+
+          -- use list_left.prod
+
+          -- apply Finset.mem_mul
+
+          -- rw [← Subgroup.mem_toSubmonoid]
+          -- rw [Subgroup.closure_toSubmonoid _]
+          -- rw [← SetLike.mem_coe]
+          -- --conv =>
+          -- --  equals z ∈ (Submonoid.closure (Set.range (Function.uncurry gamma_m) ∪ (Set.range (Function.uncurry gamma_m))⁻¹) : Set _) =>
+          -- --    rfl
+          -- rw [Submonoid.closure_eq_image_prod]
+          -- rw [Set.mem_image]
+          -- use list_left ++ (list_right.map Inv.inv).reverse
+          -- simp [← List.prod_inv_reverse]
+          -- intro g g_mem
+          -- match g_mem with
+          -- | .inl g_mem_left =>
+          --   left
+          --   simp [list_len_n] at list_left_in
+          --   have g_s_n := list_left_in.2 g g_mem_left
+          --   simp [three_two_S_n] at g_s_n
+          --   exact g_s_n
+          -- | .inr g_mem_right =>
+          --   right
+          --   simp [list_len_n] at list_right_in
+          --   have g_s_n := list_right_in.2 g⁻¹ g_mem_right
+          --   simp [three_two_S_n] at g_s_n
+          --   exact g_s_n
+
       -- TODO - why can't we just do induction on a 'let' variable?
+
       induction m_abs, n_le_m_abs using Nat.le_induction with
       | base =>
         simp
@@ -1207,7 +1288,58 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
         intro val hval
         simp at hval
         simp_rw [gamma_m_eq_mulAt] at hval
+        obtain ⟨s, s_mem, val_eq⟩ := hval
+        simp
+        have val_eq_conj_n: val = (MulAut.conj γ) (gamma_m_helper φ γ (k) ⟨s, s_mem⟩) := by
+          simp [gamma_m_helper]
+          rw [← val_eq]
+          simp [MulAut.conj]
+          rw [add_comm]
+          rw [zpow_add]
+          simp
+          conv =>
+            rhs
+            rw [← mul_assoc]
+            rw [← mul_assoc]
 
+          nth_rw 3 [mul_assoc]
+        rw [val_eq_conj_n]
+        simp at ih
+        rw [Set.range_subset_iff] at ih
+        specialize ih ⟨s, s_mem⟩
+        simp at ih
+        rw [← Subgroup.mem_toSubmonoid] at ih
+        rw [Subgroup.closure_toSubmonoid _] at ih
+        rw [← SetLike.mem_coe] at ih
+        rw [Submonoid.closure_eq_image_prod] at ih
+
+        --conv =>
+        --  equals z ∈ (Submonoid.closure (Set.range (Function.uncurry gamma_m) ∪ (Set.range (Function.uncurry gamma_m))⁻¹) : Set _) =>
+        --    rfl
+
+        simp
+
+
+
+
+          -- rw [← mul_assoc]
+          -- rw [← mul_assoc]
+          -- rw [← pow_succ']
+          -- rw [mul_assoc]
+          -- rw [← inv_pow]
+          -- nth_rw 2 [← zpow_one (a := γ⁻¹)]
+          -- conv =>
+          --   rhs
+          --   rhs
+          --   lhs
+          --   equals γ⁻¹ ^ (n : ℤ) =>
+          --     simp
+          -- rw [← zpow_add]
+          -- simp [gamma_m_helper] at e_i_eq
+          -- rw [← e_i_eq]
+          -- simp
+          -- rw [← zpow_natCast]
+          -- rfl
       --apply Nat.le_induction (P := fun m m_le => ↑(Finset.image (gamma_m_helper φ γ m) Finset.univ) ⊆ ↑(Subgroup.closure ↑(three_two_S_n φ γ n)))
 
       simp
