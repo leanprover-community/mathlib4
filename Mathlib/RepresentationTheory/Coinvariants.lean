@@ -3,6 +3,7 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Rep
 
 /-!
@@ -124,15 +125,91 @@ lemma map_comp (φ : V →ₗ[k] W) (ψ : W →ₗ[k] X)
       ext x; have : φ _ = _ := congr($(H g) x); have : ψ _ = _ := congr($(h g) (φ x)); simp_all) :=
   hom_ext rfl
 
-end Representation.Coinvariants
+end Coinvariants
+section
+
+open Coinvariants
+
+variable {k G V : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
+variable (ρ : Representation k G V) (S : Subgroup G) [S.Normal]
+
+lemma Coinvariants.le_comap_ker (g : G) :
+    ker (ρ.comp S.subtype) ≤ (ker <| ρ.comp S.subtype).comap (ρ g) :=
+  Submodule.span_le.2 fun _ ⟨⟨s, x⟩, hs⟩ => by
+    simpa [← hs] using mem_ker_of_eq
+      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem ‹_› s.1 s.2 g⟩ (ρ g x) _ <| by simp
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
+the augmentation submodule of `ρ|_S`. -/
+noncomputable abbrev toCoinvariantsKer :
+    Representation k G (ker <| ρ.comp S.subtype) :=
+  subrepresentation ρ (ker <| ρ.comp S.subtype) fun g => le_comap_ker ρ S g
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G`-representation on the
+coinvariants of `ρ|_S`. -/
+noncomputable abbrev toCoinvariants :
+    Representation k G (Coinvariants <| ρ.comp S.subtype) :=
+  quotient ρ (ker <| ρ.comp S.subtype) fun g => le_comap_ker ρ S g
+
+instance : IsTrivial ((toCoinvariants ρ S).comp S.subtype) where
+  out g := by
+    ext x
+    exact (Coinvariants.mk_eq_iff _).2 <| mem_ker_of_eq g x _ rfl
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
+the coinvariants of `ρ|_S`. -/
+noncomputable abbrev quotientToCoinvariants :
+    Representation k (G ⧸ S) (Coinvariants (ρ.comp S.subtype)) :=
+  ofQuotient (toCoinvariants ρ S) S
+
+end
+
+end Representation
 
 namespace Rep
 
 open CategoryTheory Representation
 
-variable {k G : Type u} [CommRing k] [Monoid G] {A B C : Rep k G} {n : ℕ}
+variable {k G : Type u} [CommRing k]
 
-variable (k G)
+noncomputable section
+
+variable [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` restricts to a `G`-representation on
+the kernel of `A → A_S`. -/
+abbrev toCoinvariantsKer : Rep k G := Rep.of (A.ρ.toCoinvariantsKer S)
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a `G`-representation on
+`A_S`. -/
+abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
+`G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map `A → A_S`. -/
+@[simps X₁ X₂ X₃ f g]
+def coinvariantsShortComplex : ShortComplex (Rep k G) where
+  X₁ := toCoinvariantsKer A S
+  X₂ := A
+  X₃ := toCoinvariants A S
+  f := subtype ..
+  g := mkQ ..
+  zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
+
+lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).ShortExact where
+  exact := (forget₂ _ (ModuleCat k)).reflects_exact_of_faithful _ <|
+    (ShortComplex.moduleCat_exact_iff _).2
+      fun x hx => ⟨(⟨x, (Submodule.Quotient.mk_eq_zero _).1 hx⟩ :
+      Representation.Coinvariants.ker <| A.ρ.comp S.subtype), rfl⟩
+  mono_f := (Rep.mono_iff_injective _).2 fun _ _ h => Subtype.ext h
+  epi_g := (Rep.epi_iff_surjective _).2 <| Submodule.mkQ_surjective _
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
+the coinvariants of `ρ|_S`. -/
+abbrev quotientToCoinvariants : Rep k (G ⧸ S) := ofQuotient (toCoinvariants A S) S
+
+end
+
+variable (k G) [Monoid G] (A B : Rep k G)
 
 /-- The functor sending a representation to its coinvariants. -/
 @[simps! obj_carrier map_hom]
@@ -158,6 +235,8 @@ variable {k G}
 lemma coinvariantsFunctor_hom_ext {M : ModuleCat k} {f g : (coinvariantsFunctor k G).obj A ⟶ M}
     (hfg : (coinvariantsMk k G).app A ≫ f = (coinvariantsMk k G).app A ≫ g) :
     f = g := (cancel_epi _).1 hfg
+
+variable {A B}
 
 /-- The linear map underlying a `G`-representation morphism `A ⟶ B`, where `B` has the trivial
 representation, factors through `A_G`. -/
