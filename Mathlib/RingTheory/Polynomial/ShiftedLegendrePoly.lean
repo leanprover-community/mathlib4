@@ -5,7 +5,6 @@ Authors: Junqi Liu, Jinzhao Pan
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # shifted Legendre Polynomials
@@ -97,8 +96,8 @@ theorem natDegree_shiftedLegendre (n : ℕ) : (shiftedLegendre n).natDegree = n 
 
 theorem neg_one_pow_mul_shiftedLegendre_comp_one_sub_X_eq (n : ℕ) :
     (-1) ^ n * (shiftedLegendre n).comp (1 - X) = shiftedLegendre n := by
-  rw [← mul_right_inj' (a := (n ! : ℤ[X])) (by exact_mod_cast Nat.factorial_ne_zero n),
-    ← mul_assoc, mul_comm (n ! : ℤ[X]), mul_assoc, ← natCast_mul_comp,
+  refine nat_mul_inj' ?_ (Nat.factorial_ne_zero n)
+  rw [← mul_assoc, mul_comm (n ! : ℤ[X]), mul_assoc, ← natCast_mul_comp,
     factorial_mul_shiftedLegendre_eq, ← iterate_derivative_comp_one_sub_X]
   congr 1
   simp [mul_comm]
