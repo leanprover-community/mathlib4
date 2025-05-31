@@ -562,6 +562,7 @@ Logic and computation:
     halting problem: 'ComputablePred.halting_problem'
     Rice theorem: 'ComputablePred.rice'
     combinatorial game: 'SetTheory.Game'
+    Turing degrees: 'TuringDegree'
   Complexity:
     polynomial-time computation: 'Turing.TM2ComputableInPolyTime'
   Formal languages:
