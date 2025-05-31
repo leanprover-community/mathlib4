@@ -123,6 +123,10 @@ theorem tendstoUniformlyOn_iff_tendstoUniformly_comp_coe :
     TendstoUniformlyOn F f p s ↔ TendstoUniformly (fun i (x : s) => F i x) (f ∘ (↑)) p :=
   forall₂_congr fun u _ => by simp
 
+lemma tendstoUniformlyOn_iff_restrict {K : Set α} : TendstoUniformlyOn F f p K ↔
+    TendstoUniformly (fun n : ι => K.restrict (F n)) (K.restrict f) p :=
+  tendstoUniformlyOn_iff_tendstoUniformly_comp_coe
+
 /-- A sequence of functions `Fₙ` converges uniformly to a limiting function `f` w.r.t.
 filter `p` iff the function `(n, x) ↦ (f x, Fₙ x)` converges along `p ×ˢ ⊤` to the uniformity.
 In other words: one knows nothing about the behavior of `x` in this limit.
