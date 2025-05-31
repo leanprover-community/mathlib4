@@ -80,7 +80,7 @@ end Module
 open Ideal IsLocalRing
 
 lemma IsLocalRing.maximalIdeal_mem_support [IsLocalRing R] [Module.Finite R M] [Nontrivial M] :
-    ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩ ∈ Module.support R M:= by
+    IsLocalRing.closedPoint R ∈ Module.support R M := by
   simp only [Module.support_eq_zeroLocus, PrimeSpectrum.mem_zeroLocus, SetLike.coe_subset_coe]
   apply IsLocalRing.le_maximalIdeal
   simpa [Module.annihilator_eq_top_iff.not, not_subsingleton_iff_nontrivial]
