@@ -55,7 +55,7 @@ instance instZeroHomClass : ZeroHomClass C(X, R)₀ X R where
 /-- not marked as an instance because it would be a bad one in general, but it can
 be useful when working with `ContinuousMapZero` and the non-unital continuous
 functional calculus. -/
-def _root_.Set.zeroOffFactMem {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)] :
+def _root_.Set.zeroOfFactMem {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)] :
     Zero s where
   zero := ⟨0, Fact.out⟩
 
