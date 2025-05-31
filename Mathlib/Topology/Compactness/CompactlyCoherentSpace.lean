@@ -5,8 +5,7 @@ Authors: Floris van Doorn, Hannah Scholz
 -/
 
 import Mathlib.Topology.Coherent
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Data.Set.Subset
+import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Compactly coherent spaces and the k-ification
