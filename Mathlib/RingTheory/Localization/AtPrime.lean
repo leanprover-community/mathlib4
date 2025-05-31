@@ -305,11 +305,13 @@ variable (S) in
 /-- The prime spectrum of the localization of a commutative ring at a prime ideal `q` are in
   order-preserving bijection with the prime ideals contained in `q`. -/
 noncomputable def Ideal.primeSpectrumLocalizationAtPrime :
-    PrimeSpectrum S ≃o { p : PrimeSpectrum R // p.1 ≤ q } := by
-  apply (IsLocalization.primeSpectrumOrderIso q.primeCompl S).trans <| OrderIso.setCongr _ _ ?_
-  show {p : PrimeSpectrum R | Disjoint (q.primeCompl : Set R) p.1} = {p  | p.1 ≤ q}
-  ext
-  simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left]
+    PrimeSpectrum S ≃o { p : PrimeSpectrum R // p.1 ≤ q } :=
+  let e := IsLocalization.AtPrime.orderIsoOfPrime S q
+{ toFun p := ⟨⟨(e ⟨p.1, p.2⟩).1, (e ⟨p.1, p.2⟩).2.1⟩, (e ⟨p.1, p.2⟩).2.2⟩
+  invFun p := ⟨(e.symm ⟨p.1.1, p.1.2, p.2⟩).1, (e.symm ⟨p.1.1, p.1.2, p.2⟩).2⟩
+  left_inv p := by simp
+  right_inv p := by simp
+  map_rel_iff' := e.le_iff_le }
 
 lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     {R : Type*} [CommSemiring R] (p : Ideal R) (hp : p ∈ minimalPrimes R)
