@@ -890,4 +890,6 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
       forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordToCat
 
+theorem toCat.obj_eq_Fin (n : ℕ) : toCat.obj ⦋n⦌ = Fin (n + 1) := rfl
+
 end SimplexCategory
