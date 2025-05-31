@@ -3,6 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Ext
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Topology.Algebra.Support
@@ -48,19 +49,19 @@ open ENNReal Filter NNReal Uniformity Pointwise Topology
 /-- Auxiliary class, endowing a type `E` with a function `norm : E → ℝ` with notation `‖x‖`. This
 class is designed to be extended in more interesting classes specifying the properties of the norm.
 -/
-@[notation_class]
+@[notation_class, ext]
 class Norm (E : Type*) where
   /-- the `ℝ`-valued norm function. -/
   norm : E → ℝ
 
 /-- Auxiliary class, endowing a type `α` with a function `nnnorm : α → ℝ≥0` with notation `‖x‖₊`. -/
-@[notation_class]
+@[notation_class, ext]
 class NNNorm (E : Type*) where
   /-- the `ℝ≥0`-valued norm function. -/
   nnnorm : E → ℝ≥0
 
 /-- Auxiliary class, endowing a type `α` with a function `enorm : α → ℝ≥0∞` with notation `‖x‖ₑ`. -/
-@[notation_class]
+@[notation_class, ext]
 class ENorm (E : Type*) where
   /-- the `ℝ≥0∞`-valued norm function. -/
   enorm : E → ℝ≥0∞
@@ -393,6 +394,29 @@ theorem dist_eq_norm_div' (a b : E) : dist a b = ‖b / a‖ := by rw [dist_comm
 alias dist_eq_norm := dist_eq_norm_sub
 
 alias dist_eq_norm' := dist_eq_norm_sub'
+
+/-- Two seminormed group structures with the same multiplication and the same norm
+coincide. -/
+@[to_additive (attr := ext) "Two seminormed additive group structures with the same
+addition and the same norm coincide."]
+theorem SeminormedGroup.ext {G : Type*} {m m' : SeminormedGroup G}
+    (h_mul : (letI := m; HMul.hMul : G → G → G) = (letI := m'; HMul.hMul : G → G → G))
+    (h_norm : (letI := m; norm : G → ℝ) = (letI := m'; norm : G → ℝ)) :
+    m = m' := by
+  have A : m.toGroup = m'.toGroup := by ext x y; simp [h_mul]
+  have C x y : m.toPseudoMetricSpace.dist x y = m'.toPseudoMetricSpace.dist x y := by
+    rw [@dist_eq_norm_div _ m, @dist_eq_norm_div _ m']
+    congr 1
+    · ext x
+      simp [h_norm]
+    · congr 4
+  cases m
+  cases m'
+  congr
+  · ext x
+    simp [h_norm]
+  · ext x y
+    exact C x y
 
 @[to_additive of_forall_le_norm]
 lemma DiscreteTopology.of_forall_le_norm' (hpos : 0 < r) (hr : ∀ x : E, x ≠ 1 → r ≤ ‖x‖) :
@@ -1008,6 +1032,32 @@ abbrev NormedCommGroup.induced [CommGroup E] [NormedGroup F] [MonoidHomClass �
 
 end Induced
 
+/-- Two normed commutative group structures with the same multiplication and the same norm
+coincide. -/
+@[to_additive (attr := ext) "Two normed additive commutative group structures with the same
+addition and the same norm coincide."]
+theorem NormedCommGroup.ext {G : Type*} {m m' : NormedCommGroup G}
+    (h_mul : (letI := m; HMul.hMul : G → G → G) = (letI := m'; HMul.hMul : G → G → G))
+    (h_norm : (letI := m; norm : G → ℝ) = (letI := m'; norm : G → ℝ)) :
+    m = m' := by
+  have A : m.toGroup = m'.toGroup := by ext x y; simp [h_mul]
+  have C x y : m.toPseudoMetricSpace.dist x y = m'.toPseudoMetricSpace.dist x y := by
+    rw [@dist_eq_norm_div _ m.toSeminormedCommGroup.toSeminormedGroup,
+      @dist_eq_norm_div _ m'.toSeminormedCommGroup.toSeminormedGroup]
+    congr 1
+    · ext x
+      simp [h_norm]
+    · congr 4
+  cases m
+  cases m'
+  congr
+  · ext x
+    simp [h_norm]
+  · ext x y
+    simp [h_mul]
+  · ext x y
+    exact C x y
+
 namespace Real
 
 variable {r : ℝ}
@@ -1095,6 +1145,30 @@ instance : NNNorm ℝ≥0 where
 end NNReal
 
 section SeminormedCommGroup
+
+/-- Two seminormed commutative group structures with the same multiplication and the same norm
+coincide. -/
+@[to_additive (attr := ext) "Two seminormed commutative additive group structures with the same
+addition and the same norm coincide."]
+theorem SeminormedCommGroup.ext {G : Type*} {m m' : SeminormedCommGroup G}
+    (h_mul : (letI := m; HMul.hMul : G → G → G) = (letI := m'; HMul.hMul : G → G → G))
+    (h_norm : (letI := m; norm : G → ℝ) = (letI := m'; norm : G → ℝ)) :
+    m = m' := by
+  have A : m.toGroup = m'.toGroup := by ext x y; simp [h_mul]
+  have B : m.toCommGroup = m'.toCommGroup := by ext x y; simp [h_mul]
+  have C x y : m.toPseudoMetricSpace.dist x y = m'.toPseudoMetricSpace.dist x y := by
+    rw [@dist_eq_norm_div _ m.toSeminormedGroup, @dist_eq_norm_div _ m'.toSeminormedGroup]
+    congr 1
+    · ext x
+      simp [h_norm]
+    · congr 4
+  cases m
+  cases m'
+  congr
+  · ext x
+    simp [h_norm]
+  · ext x y
+    exact C x y
 
 variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
 
@@ -1239,6 +1313,29 @@ end SeminormedCommGroup
 section NormedGroup
 
 variable [NormedGroup E] {a b : E}
+
+/-- Two normed group structures with the same multiplication and the same norm
+coincide. -/
+@[to_additive (attr := ext) "Two normed additive group structures with the same
+addition and the same norm coincide."]
+theorem NormedGroup.ext {G : Type*} {m m' : NormedGroup G}
+    (h_mul : (letI := m; HMul.hMul : G → G → G) = (letI := m'; HMul.hMul : G → G → G))
+    (h_norm : (letI := m; norm : G → ℝ) = (letI := m'; norm : G → ℝ)) :
+    m = m' := by
+  have A : m.toGroup = m'.toGroup := by ext x y; simp [h_mul]
+  have C x y : m.toPseudoMetricSpace.dist x y = m'.toPseudoMetricSpace.dist x y := by
+    rw [@dist_eq_norm_div _ m.toSeminormedGroup, @dist_eq_norm_div _ m'.toSeminormedGroup]
+    congr 1
+    · ext x
+      simp [h_norm]
+    · congr 4
+  cases m
+  cases m'
+  congr
+  · ext x
+    simp [h_norm]
+  · ext x y
+    exact C x y
 
 @[to_additive (attr := simp) norm_le_zero_iff]
 lemma norm_le_zero_iff' : ‖a‖ ≤ 0 ↔ a = 1 := by rw [← dist_one_right, dist_le_zero]
