@@ -1376,7 +1376,7 @@ theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocaliz
   rw [mk'_smul_mk', mk'_eq_zero, IsLocalizedModule.eq_zero_iff S] at hcx
   obtain ⟨u, hl⟩ := hcx
   rw [← smul_assoc] at hl
-  obtain (hua|rfl) := NoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hl
+  obtain (hua | rfl) := NoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hl
   · left
     rw [IsLocalization.mk'_eq_zero_iff]
     exact ⟨u, hua⟩

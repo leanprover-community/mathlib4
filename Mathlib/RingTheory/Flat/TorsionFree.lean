@@ -11,11 +11,13 @@ import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Relationships between flatness and torsionfreeness.
+
 We show that flat implies torsion-free, and that they're the same
 concept for rings satisfying a certain property, including Dedekind
 domains and valuation rings.
 
 ## Main theorems
+
 * `Module.Flat.isSMulRegular_of_nonZeroDivisors`: Scalar multiplication by a nonzerodivisor of `R`
   is injective on a flat `R`-module.
 * `Module.Flat.torsion_eq_bot`: `Torsion R M = ⊥` if `M` is a flat `R`-module.
@@ -36,18 +38,18 @@ open TensorProduct
 
 namespace Module.Flat
 
-variable {R : Type u} [CommRing R]
-    {M : Type v} [AddCommGroup M] [Module R M]
+section Semiring
 
-open scoped nonZeroDivisors
+variable {R M : Type u} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 open LinearMap in
-/-- Scalar multiplication `m ↦ r • m` by a nonzerodivisor `r` is injective on a flat module. -/
-lemma isSMulRegular_of_nonZeroDivisors {r : R} (hr : r ∈ R⁰) [Flat R M] : IsSMulRegular M r := by
+/-- Scalar multiplication `m ↦ r • m` by a regular `r` is injective on a flat module. -/
+lemma isSMulRegular_of_isRegular {r : R} (hr : IsRegular r) [Flat R M] :
+    IsSMulRegular M r := by
   -- `r ∈ R⁰` implies that `toSpanSingleton R R r`, i.e. `(r * ⬝) : R → R` is injective
   -- Flatness implies that corresponding map `R ⊗[R] M →ₗ[R] R ⊗[R] M` is injective
   have h := Flat.rTensor_preserves_injective_linearMap (M := M)
-    (toSpanSingleton R R r) <| (injective_iff_map_eq_zero _).mpr hr
+    (toSpanSingleton R R r) <| hr.right
   -- But precomposing and postcomposing with the isomorphism `M ≃ₗ[R] (R ⊗[R] M)`
   -- we get a map `M →ₗ[R] M` which is just `(r • ·)`.
   have h2 : (fun (x : M) ↦ r • x) = ((TensorProduct.lid R M) ∘ₗ
@@ -57,6 +59,21 @@ lemma isSMulRegular_of_nonZeroDivisors {r : R} (hr : r ∈ R⁰) [Flat R M] : Is
   rw [IsSMulRegular, h2]
   simp [h, LinearEquiv.injective]
 
+end Semiring
+
+section Ring
+
+variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
+
+open scoped nonZeroDivisors
+
+open LinearMap in
+
+/-- Scalar multiplication `m ↦ r • m` by a nonzerodivisor `r` is injective on a flat module. -/
+lemma isSMulRegular_of_nonZeroDivisors {r : R} (hr : r ∈ R⁰) [Flat R M] : IsSMulRegular M r := by
+  have hr : IsRegular r := le_nonZeroDivisors_iff_isRegular.mp (le_refl R⁰) ⟨r, hr⟩
+  apply isSMulRegular_of_isRegular hr
+
 /-- Flat modules have no torsion. -/
 theorem torsion_eq_bot [hflat : Flat R M] : torsion R M = ⊥ := by
   rw [eq_bot_iff]
@@ -65,48 +82,42 @@ theorem torsion_eq_bot [hflat : Flat R M] : torsion R M = ⊥ := by
   -- and we just showed that 0 is the only element with this property
   exact isSMulRegular_of_nonZeroDivisors hr (by simp [h])
 
-theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {y : R} :
-    lift (lsmul R M ∘ₗ LinearMap.mul R R y) = lsmul R M y ∘ₗ lift (lsmul R M) := by
-  ext x
-  simp
-
 /-- If `R` is Bezout then an `R`-module is flat iff it has no torsion. -/
-@[stacks 0539 "Generalized valuation ring to IsBezout"]
+@[stacks 0539 "Generalized valuation ring to Bezout domain"]
 theorem flat_iff_torsion_eq_bot_of_isBezout [IsBezout R] [IsDomain R] :
     Flat R M ↔ torsion R M = ⊥ := by
-  refine ⟨?_, ?_⟩
-    -- one way is true in general
-  · apply torsion_eq_bot
-    -- now assume R is a PID and M is a torsionfree R-module
-  · intro htors
-    -- we need to show that if I is an ideal of R then the natural map I ⊗ M → M is injective
-    rw [iff_lift_lsmul_comp_subtype_injective]
-    rintro I hFG
-    -- If I = 0 this is obvious because I ⊗ M is a subsingleton (i.e. has ≤1 element)
-    obtain (rfl | h) := eq_or_ne I ⊥
-    · rintro x y -
-      apply Subsingleton.elim
-    · -- If I ≠ 0 then I ≅ R because R is Bezout and I is finitely generated
-      have hprinc : I.IsPrincipal := IsBezout.isPrincipal_of_FG I hFG
-      apply Function.Injective.of_comp_right _
-        (LinearEquiv.rTensor M (Ideal.isoBaseOfIsPrincipal h)).surjective
-      rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp, LinearEquiv.coe_rTensor, rTensor,
-        lift_comp_map, LinearMap.compl₂_id, LinearMap.comp_assoc,
-        Ideal.subtype_isoBaseOfIsPrincipal_eq_mul, lift_lsmul_mul_eq_lsmul_lift_lsmul,
-        LinearMap.coe_comp]
-      rw [← Submodule.noZeroSMulDivisors_iff_torsion_eq_bot] at htors
-      have : IsPrincipal.generator I ≠ 0 := by
-        rwa [ne_eq, ← IsPrincipal.eq_bot_iff_generator_eq_zero]
-      refine Function.Injective.comp (LinearMap.lsmul_injective this) ?_
-      rw [← Equiv.injective_comp (TensorProduct.lid R M).symm.toEquiv]
-      convert Function.injective_id
-      ext x
-      simp
+  -- one way is true in general
+  refine ⟨fun _ ↦ torsion_eq_bot, ?_⟩
+  -- now assume R is a Bezout domain and M is a torsionfree R-module
+  intro htors
+  -- we need to show that if I is an ideal of R then the natural map I ⊗ M → M is injective
+  rw [iff_lift_lsmul_comp_subtype_injective]
+  rintro I hFG
+  -- If I = 0 this is obvious because I ⊗ M is a subsingleton (i.e. has ≤1 element)
+  obtain (rfl | h) := eq_or_ne I ⊥
+  · rintro x y -
+    apply Subsingleton.elim
+  · -- If I ≠ 0 then I ≅ R because R is Bezout and I is finitely generated
+    have hprinc : I.IsPrincipal := IsBezout.isPrincipal_of_FG I hFG
+    apply Function.Injective.of_comp_right _
+      (LinearEquiv.rTensor M (Ideal.isoBaseOfIsPrincipal h)).surjective
+    rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp, LinearEquiv.coe_rTensor, rTensor,
+      lift_comp_map, LinearMap.compl₂_id, LinearMap.comp_assoc,
+      Ideal.subtype_isoBaseOfIsPrincipal_eq_mul, LinearMap.lift_lsmul_mul_eq_lsmul_lift_lsmul,
+      LinearMap.coe_comp]
+    rw [← Submodule.noZeroSMulDivisors_iff_torsion_eq_bot] at htors
+    have : IsPrincipal.generator I ≠ 0 := by
+      rwa [ne_eq, ← IsPrincipal.eq_bot_iff_generator_eq_zero]
+    refine Function.Injective.comp (LinearMap.lsmul_injective this) ?_
+    rw [← Equiv.injective_comp (TensorProduct.lid R M).symm.toEquiv]
+    convert Function.injective_id
+    ext x
+    simp
 
 -- TODO: Add definition and properties of Prüfer domains
 /-- If every localization of `R` at a maximal ideal is a valuation ring then an `R`-module
 is flat iff it has no torsion. -/
-theorem flat_iff_torsion_eq_bot_of_isValuationRing_localized_maximal [IsDomain R]
+theorem flat_iff_torsion_eq_bot_of_valuationRing_localization_isMaximal [IsDomain R]
     (h : ∀ (P : Ideal R), [P.IsMaximal] → ValuationRing (Localization P.primeCompl)) :
     Flat R M ↔ torsion R M = ⊥ := by
   refine ⟨fun _ ↦ Flat.torsion_eq_bot, fun h ↦ ?_⟩
@@ -121,7 +132,9 @@ theorem flat_iff_torsion_eq_bot_of_isValuationRing_localized_maximal [IsDomain R
 @[stacks 0AUW "(1)"]
 theorem _root_.IsDedekindDomain.flat_iff_noZeroSMulDivisors [IsDedekindDomain R] :
     Flat R M ↔ torsion R M = ⊥ := by
-  apply flat_iff_torsion_eq_bot_of_isValuationRing_localized_maximal
+  apply flat_iff_torsion_eq_bot_of_valuationRing_localization_isMaximal
   exact fun P ↦ inferInstance
+
+end Ring
 
 end Module.Flat
