@@ -779,6 +779,32 @@ theorem IsClosed.hypograph [TopologicalSpace β] {f : β → α} {s : Set β} (h
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ p.2 ≤ f p.1 } :=
   (hs.preimage continuous_fst).isClosed_le continuousOn_snd (hf.comp continuousOn_fst Subset.rfl)
 
+/-- The set of monotone functions on a set is closed. -/
+theorem isClosed_monotoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | MonotoneOn f s} := by
+  rw [isClosed_iff_forall_filter]
+  intro f l hl hl₁ hl₂
+  have hmain : ∀ x, Tendsto (fun f' ↦ f' x) l (𝓝 (f x)) :=
+    fun x => (continuousAt_apply x f).mono_left hl₂
+  intro a ha b hb hab
+  refine le_of_tendsto_of_tendsto (f := fun f' : β → α => f' a) (g := fun f' : β → α => f' b)
+    (b := l) (hmain a) (hmain b) ?_
+  rw [Filter.le_principal_iff] at hl₁
+  filter_upwards [hl₁] with g hg
+  exact hg ha hb hab
+
+/-- The set of monotone functions is closed. -/
+theorem isClosed_monotone [Preorder β] : IsClosed {f : β → α | Monotone f} := by
+  simp_rw [← monotoneOn_univ]
+  exact isClosed_monotoneOn
+
+/-- The set of antitone functions on a set is closed. -/
+theorem isClosed_antitoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | AntitoneOn f s} :=
+  isClosed_monotoneOn (α := αᵒᵈ) (β := β)
+
+/-- The set of antitone functions is closed. -/
+theorem isClosed_antitone [Preorder β] : IsClosed {f : β → α | Antitone f} :=
+  isClosed_monotone (α := αᵒᵈ) (β := β)
+
 end Preorder
 
 section PartialOrder
