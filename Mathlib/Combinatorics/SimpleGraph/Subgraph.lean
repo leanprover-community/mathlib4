@@ -202,7 +202,7 @@ def IsInduced (G' : Subgraph G) : Prop :=
   ⟨coe_adj_sub _ _ _, hG' a.2 b.2⟩
 
 /-- `H.support` is the set of vertices that form edges in the subgraph `H`. -/
-def support (H : Subgraph G) : Set V := Rel.dom H.Adj
+def support (H : Subgraph G) : Set V := Rel.dom {'H.Adj}
 
 theorem mem_support (H : Subgraph G) {v : V} : v ∈ H.support ↔ ∃ w, H.Adj v w := Iff.rfl
 
