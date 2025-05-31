@@ -993,6 +993,17 @@ def equivMaximalSpectrum (hR : ¬IsField R) : HeightOneSpectrum R ≃ MaximalSpe
   left_inv := fun ⟨_, _, _⟩ => rfl
   right_inv := fun ⟨_, _⟩ => rfl
 
+/-- An ideal of `R` is not the whole ring if and only if it is contained in an element of
+`HeightOneSpectrum R` -/
+theorem _root_.Ideal.ne_top_iff_exists [Nontrivial R] (hR : ¬IsField R) {I : Ideal R} : I ≠ ⊤ ↔
+    ∃ P : HeightOneSpectrum R, I ≤ P.asIdeal := by
+  rw [Ideal.ne_top_iff_exists_isMaximal]
+  constructor
+  · rintro ⟨M, hMmax, hIM⟩
+    exact ⟨(equivMaximalSpectrum hR).invFun <| ⟨M, hMmax⟩, hIM⟩
+  · rintro ⟨P, hP⟩
+    exact ⟨((equivMaximalSpectrum hR) P).asIdeal, ((equivMaximalSpectrum hR) P).isMaximal, hP⟩
+
 variable (R)
 
 /-- A Dedekind domain is equal to the intersection of its localizations at all its height one
