@@ -646,6 +646,27 @@ theorem thickening_ball [PseudoMetricSpace α] (x : α) (ε δ : ℝ) :
 
 end Metric
 
+section Clopen
+
+open Metric
+
+variable [PseudoMetricSpace α] {s : Set α}
+
+lemma IsClopen.of_thickening_subset_self {α : Type*} [PseudoMetricSpace α] {s : Set α}
+    {δ : ℝ} (hδ : 0 < δ) (hs : thickening δ s ⊆ s) :
+    IsClopen s := by
+  replace hs : thickening δ s = s := le_antisymm hs (self_subset_thickening hδ s)
+  refine ⟨?_, hs ▸ isOpen_thickening⟩
+  rw [← closure_subset_iff_isClosed, closure_eq_iInter_thickening]
+  exact Set.biInter_subset_of_mem hδ |>.trans_eq hs
+
+lemma IsClopen.of_cthickening_subset_self {α : Type*} [PseudoMetricSpace α] {s : Set α}
+    {δ : ℝ} (hδ : 0 < δ) (hs : cthickening δ s ⊆ s) :
+    IsClopen s :=
+  .of_thickening_subset_self hδ <| (thickening_subset_cthickening δ s).trans hs
+
+end Clopen
+
 open Metric in
 theorem IsCompact.exists_thickening_image_subset
     [PseudoEMetricSpace α] {β : Type*} [PseudoEMetricSpace β]
