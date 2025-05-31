@@ -259,29 +259,13 @@ lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
       { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
         bot_le j := bot_le }
     exact MorphismProperty.colimitsOfShape_le _
-      (colimitsOfShape.mk' _ _ _ _ (isColimitConstCocone (Set.Iio j) (hf.F.obj ⊥))
-        (hf.F.isColimitOfIsWellOrderContinuous j hj)
-        { app k := hf.F.map (homOfLE bot_le)
-          naturality _ _ _ := by
-            dsimp
-            rw [id_comp, ← Functor.map_comp]
-            rfl }
-        (fun k ↦ hj' _ k.2) (hf.F.map (homOfLE bot_le : ⊥ ⟶ j)) (fun ⟨k, hk⟩ ↦ by
-          dsimp
-          rw [id_comp, ← Functor.map_comp, homOfLE_comp]))
+      (.of_isColimit (hf.F.isColimitOfIsWellOrderContinuous j hj) (fun k ↦ hj' _ k.2))
 
 include hf hJ in
-lemma mem [W.RespectsIso] : W f := by
-  suffices W (hf.incl.app ⊥) from
-    (MorphismProperty.arrow_mk_iso_iff _
-      (Arrow.isoMk hf.isoBot.symm (Iso.refl _)) ).2 this
-  exact MorphismProperty.colimitsOfShape_le _
-    (colimitsOfShape.mk' _ _ _ _ (isColimitConstCocone J (hf.F.obj ⊥)) (hf.isColimit)
-        { app j := hf.F.map (homOfLE bot_le)
-          naturality _ _ _ := by
-            dsimp
-            rw [id_comp, ← Functor.map_comp]
-            rfl} (fun j ↦ mem_map_bot_le _ hJ _) _ (fun j ↦ by simp))
+lemma mem [W.RespectsIso] : W f :=
+  (MorphismProperty.arrow_mk_iso_iff _ (Arrow.isoMk hf.isoBot.symm (Iso.refl _))).2
+    (MorphismProperty.colimitsOfShape_le _
+      (.of_isColimit hf.isColimit (fun j ↦ mem_map_bot_le _ hJ _)))
 
 end IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape
 
