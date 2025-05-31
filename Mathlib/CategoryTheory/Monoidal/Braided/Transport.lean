@@ -34,13 +34,15 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     simp [Transported.instBraidedCategory, braidedCategoryOfFullyFaithful,
       braidedCategoryOfFaithful]
 
-instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
+def transportedFunctorCompInverseLaxBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).LaxBraided :=
   Functor.LaxBraided.ofNatIso _ _ (e' e).unitIso
 
-instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
+attribute [local instance] transportedFunctorCompInverseLaxBraided in
+def transportedInverseCompFunctorLaxBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).Braided where
 
+attribute [local instance] transportedInverseCompFunctorLaxBraided in
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).functor.Braided where
   braided X Y := by
