@@ -24,7 +24,7 @@ open Function
 variable {M G : Type*}
 
 variable (M) in
-/-- A monoid is torsion-free if scalar multiplication by every non-zero element `a : ℕ` is
+/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `a : ℕ` is
 injective. -/
 @[mk_iff]
 class IsAddTorsionFree [AddMonoid M] where
