@@ -43,7 +43,7 @@ theorem taylor_apply : taylor r f = f.comp (X + C r) :=
 theorem taylor_X : taylor r X = X + C r := X_comp
 
 @[simp]
-theorem taylor_X_pow (n) : taylor r (X ^ n) = (X + C r) ^ n := X_pow_comp
+theorem taylor_X_pow (n : ℕ) : taylor r (X ^ n) = (X + C r) ^ n := X_pow_comp
 
 @[simp]
 theorem taylor_C (x : R) : taylor r (C x) = C x := C_comp
@@ -123,8 +123,8 @@ variable {R : Type*} [Ring R]
 theorem taylor_injective (r : R) : Function.Injective (taylor r) :=
   (injective_iff_map_eq_zero' _).2 (taylor_eq_zero r)
 
-@[simp] lemma taylor_inj {r : R} (p q : R[X]) :
-  taylor r p = taylor r q ↔ p = q := (taylor_injective r).eq_iff
+@[simp] lemma taylor_inj {r : R} {p q : R[X]} :
+    taylor r p = taylor r q ↔ p = q := (taylor_injective r).eq_iff
 
 end Ring
 
