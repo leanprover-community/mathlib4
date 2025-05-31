@@ -326,6 +326,15 @@ theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈
       prod_const_one.trans (h₁ this).symm
 
 @[to_additive]
+lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
+    (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) :
+    ∏ x ∈ s, f x = if a ∈ s then f a else 1 := by
+  by_cases h : a ∈ s
+  · simp [Finset.prod_eq_single_of_mem a h h₀, h]
+  · replace h₀ : ∀ b ∈ s, f b = 1 := by aesop
+    simp +contextual [h₀]
+
+@[to_additive]
 lemma prod_union_eq_left [DecidableEq ι] (hs : ∀ a ∈ s₂, a ∉ s₁ → f a = 1) :
     ∏ a ∈ s₁ ∪ s₂, f a = ∏ a ∈ s₁, f a :=
   Eq.symm <|

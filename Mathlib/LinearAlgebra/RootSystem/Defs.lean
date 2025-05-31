@@ -223,6 +223,11 @@ lemma coroot_root_eq_pairing : P.toLinearMap.flip (P.coroot i) (P.root j) = P.pa
 @[simp]
 lemma pairing_same : P.pairing i i = 2 := P.root_coroot_two i
 
+variable {P} in
+lemma pairing_eq_add_of_root_eq_add {i j k l : ι} (h : P.root k = P.root i + P.root j) :
+    P.pairing k l = P.pairing i l + P.pairing j l := by
+  simp only [← root_coroot_eq_pairing, h, map_add, LinearMap.add_apply]
+
 lemma coroot_root_two :
     P.toLinearMap.flip (P.coroot i) (P.root i) = 2 := by
   simp
@@ -442,6 +447,14 @@ of a root / coroot. -/
       coreflection_apply_self, LinearMap.sub_apply, map_neg, LinearMap.smul_apply, smul_eq_mul,
       mul_neg, sub_neg_eq_add]
     module
+
+lemma ne_neg [NeZero (2 : R)] [IsDomain R] :
+    letI := P.indexNeg
+    i ≠ -i := by
+  have := P.reflexive_left
+  intro contra
+  replace contra : P.root i = -P.root i := by simpa using congr_arg P.root contra
+  simp [eq_neg_iff_add_eq_zero, ← two_smul R, NeZero.out, P.ne_zero i] at contra
 
 variable {i j} in
 @[simp]
