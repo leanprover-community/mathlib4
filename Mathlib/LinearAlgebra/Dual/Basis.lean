@@ -65,7 +65,7 @@ theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
     Finset.sum_ite_eq']
   split_ifs with h
   · rfl
-  · rw [Finsupp.not_mem_support_iff.mp h]
+  · rw [Finsupp.notMem_support_iff.mp h]
 
 @[simp]
 theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
@@ -74,7 +74,7 @@ theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
   simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq]
   split_ifs with h
   · rfl
-  · rw [Finsupp.not_mem_support_iff.mp h]
+  · rw [Finsupp.notMem_support_iff.mp h]
 
 theorem toDual_apply_left (m : M) (i : ι) : b.toDual m (b i) = b.repr m i := by
   rw [← b.toDual_linearCombination_left, b.linearCombination_repr]

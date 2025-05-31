@@ -3,7 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Distributions.Gaussian
+import Mathlib.Probability.Distributions.Gaussian.Real
 
 /-!
 # Gaussian distributions in Banach spaces
@@ -11,7 +11,7 @@ import Mathlib.Probability.Distributions.Gaussian
 We introduce a predicate `IsGaussian` for measures on a Banach space `E` such that the map by
 any continuous linear form is a Gaussian measure on `ℝ`.
 
-For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distributions.Gaussian`.
+For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distributions.Gaussian.Real`.
 
 ## Main definitions
 
@@ -140,5 +140,17 @@ theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :
 alias ⟨_, isGaussian_of_charFunDual_eq⟩ := isGaussian_iff_charFunDual_eq
 
 end charFunDual
+
+instance isGaussian_conv [SecondCountableTopology E]
+    {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
+    IsGaussian (μ ∗ ν) where
+  map_eq_gaussianReal L := by
+    have : (μ ∗ ν)[L] = ∫ x, x ∂((μ.map L).conv (ν.map L)) := by
+      rw [← Measure.map_conv_continuousLinearMap L,
+        integral_map (φ := L) (by fun_prop) (by fun_prop)]
+    rw [Measure.map_conv_continuousLinearMap L, this, ← variance_id_map (by fun_prop),
+      Measure.map_conv_continuousLinearMap L, IsGaussian.map_eq_gaussianReal L,
+      IsGaussian.map_eq_gaussianReal L, gaussianReal_conv_gaussianReal]
+    congr <;> simp [variance_nonneg]
 
 end ProbabilityTheory
