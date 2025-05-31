@@ -180,6 +180,14 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
         Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
       )
 
+@[to_additive]
+theorem Filter.Tendsto.uniformity_mul {ι : Type*} {f g : ι → α × α} {l : Filter ι}
+    (hf : Tendsto f l (𝓤 α)) (hg : Tendsto g l (𝓤 α)) :
+    Tendsto (f * g) l (𝓤 α) :=
+  have : Tendsto (fun ⟨p, q⟩ ↦ ⟨p.1 * q.1, p.2 * q.2⟩) (𝓤 α ×ˢ 𝓤 α) (𝓤 α) := by
+    simpa [UniformContinuous, uniformity_prod_eq_prod] using uniformContinuous_mul (α := α)
+  this.comp (hf.prod_mk hg)
+
 namespace MulOpposite
 
 @[to_additive]
