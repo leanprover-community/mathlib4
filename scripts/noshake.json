@@ -100,6 +100,7 @@
   "Mathlib.Tactic.FieldSimp",
   "Mathlib.Tactic.Finiteness",
   "Mathlib.Tactic.FinCases",
+  "Mathlib.Tactic.Finiteness",
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.GCongr",
   "Mathlib.Tactic.GCongr.CoreAttrs",

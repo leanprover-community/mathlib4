@@ -324,7 +324,7 @@ theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp 
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : ‖f‖₊ ≤ c * ‖g‖₊ := by
   simp only [nnnorm_def]
   have := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul h p
-  rwa [← ENNReal.toNNReal_le_toNNReal, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
+  rwa [← ENNReal.toNNReal_le_toNNReal _ _, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
     ENNReal.toNNReal_coe] at this
   · finiteness
   · exact ENNReal.mul_ne_top ENNReal.coe_ne_top (by finiteness)
