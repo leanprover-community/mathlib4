@@ -184,6 +184,10 @@ abbrev toCoinvariantsKer : Rep k G := Rep.of (A.ρ.toCoinvariantsKer S)
 `A_S`. -/
 abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
 
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
+the coinvariants of `ρ|_S`. -/
+abbrev quotientToCoinvariants : Rep k (G ⧸ S) := ofQuotient (toCoinvariants A S) S
+
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
 `G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map `A → A_S`. -/
 @[simps X₁ X₂ X₃ f g]
@@ -202,10 +206,6 @@ lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).Short
       Representation.Coinvariants.ker <| A.ρ.comp S.subtype), rfl⟩
   mono_f := (Rep.mono_iff_injective _).2 fun _ _ h => Subtype.ext h
   epi_g := (Rep.epi_iff_surjective _).2 <| Submodule.mkQ_surjective _
-
-/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
-the coinvariants of `ρ|_S`. -/
-abbrev quotientToCoinvariants : Rep k (G ⧸ S) := ofQuotient (toCoinvariants A S) S
 
 end
 
