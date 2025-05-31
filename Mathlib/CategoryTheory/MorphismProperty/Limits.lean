@@ -512,7 +512,7 @@ attribute [local instance] IsCofiltered.isConnected in
 variable {W} in
 lemma colimitsOfShape.of_isColimit
     {J : Type*} [Preorder J] [OrderBot J] {F : J ⥤ C}
-    {c : Cocone F} (hc : IsColimit c) (h : ∀ (j : J), W (F.map (homOfLE bot_le : ⊥ ⟶ j))):
+    {c : Cocone F} (hc : IsColimit c) (h : ∀ (j : J), W (F.map (homOfLE bot_le : ⊥ ⟶ j))) :
     W.colimitsOfShape J (c.ι.app ⊥) :=
   .mk' _ _ _ _ (isColimitConstCocone J (F.obj ⊥)) hc
     { app k := F.map (homOfLE bot_le)
