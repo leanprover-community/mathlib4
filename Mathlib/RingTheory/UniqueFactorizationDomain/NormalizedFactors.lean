@@ -247,6 +247,15 @@ theorem mem_normalizedFactors_iff' {p x : α} (h : x ≠ 0) :
   exact Multiset.mem_map.mpr ⟨y, hy₁, by
     rwa [← h₂, normalize_eq_normalize_iff_associated, Associated.comm]⟩
 
+/-- Relatively prime elements have disjoint prime factors (as multisets). -/
+theorem disjoint_normalizedFactors {a b : α} (hc : IsRelPrime a b) :
+    Disjoint (normalizedFactors a) (normalizedFactors b) := by
+  rw [Multiset.disjoint_left]
+  intro x hxa hxb
+  have x_dvd_a := dvd_of_mem_normalizedFactors hxa
+  have x_dvd_b := dvd_of_mem_normalizedFactors hxb
+  exact (prime_of_normalized_factor x hxa).not_unit (hc x_dvd_a x_dvd_b)
+
 theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
     (h : ∀ {m}, m ∈ normalizedFactors r → m = p) (hr : r ≠ 0) : ∃ i : ℕ, Associated (p ^ i) r := by
   use (normalizedFactors r).card
