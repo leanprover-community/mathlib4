@@ -63,7 +63,8 @@ def SimplexCategory.homIsoFunctor {a b : SimplexCategory} :
 /-- The Yoneda embedding from the `SimplexCategory` into simplicial sets is naturally
 isomorphic to `SimplexCategory.toCat ⋙ nerveFunctor` with component isomorphisms
 `Δ[n] ≅ nerve (Fin (n + 1))`. -/
-def simplexIsNerve (n : ℕ) : Δ[n] ≅ nerve (Fin (n + 1)) := sorry
+def simplexIsNerve (n : ℕ) : Δ[n] ≅ nerve (Fin (n + 1)) := NatIso.ofComponents <| fun n ↦
+    Equiv.toIso stdSimplex.objEquiv ≪≫ SimplexCategory.homIsoFunctor
 
 /-- Via the whiskered counit (or unit) of `nerveAdjunction`, the triple composite
 `nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor` is naturally isomorphic to `nerveFunctor`.
