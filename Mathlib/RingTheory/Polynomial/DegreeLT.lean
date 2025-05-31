@@ -63,20 +63,20 @@ variable (R) in
 noncomputable def xpow (n : ℕ) (i : Fin n) : R[X]_n :=
   ⟨X ^ (i : ℕ), X_pow_mem_degreeLT i⟩
 
-@[simp] lemma xPow_val : (xPow R n i : R[X]) = X ^ (i : ℕ) :=
+@[simp] lemma xpow_val : (xpow R n i : R[X]) = X ^ (i : ℕ) :=
   rfl
 
 @[simp] lemma basis_repr : (basis R n).repr P i = (P : R[X]).coeff i :=
   rfl
 
 @[simp] lemma basis_apply (i : Fin n) :
-    basis R n i = xPow R n i := by
+    basis R n i = xpow R n i := by
   rw [Basis.apply_eq_iff]
   ext j
-  simp only [basis_repr, xPow_val, coeff_X_pow, eq_comm, Finsupp.single_apply, Fin.ext_iff]
+  simp only [basis_repr, xpow_val, coeff_X_pow, eq_comm, Finsupp.single_apply, Fin.ext_iff]
 
 lemma basis_val (i : Fin n) : (basis R n i : R[X]) = X ^ (i : ℕ) := by
-  rw [basis_apply, xPow_val]
+  rw [basis_apply, xpow_val]
 
 variable (R m n) in
 /-- Basis for `(R[X]_m) × (R[X]_n)`. -/
@@ -84,12 +84,12 @@ noncomputable def basisProd : Basis (Fin (m + n)) R ((R[X]_m) × (R[X]_n)) :=
   ((basis R m).prod (basis R n)).reindex finSumFinEquiv
 
 @[simp] lemma basisProd_castAdd (m n : ℕ) (i : Fin m) :
-    basisProd R m n (i.castAdd n) = (xPow R m i, 0) := by
+    basisProd R m n (i.castAdd n) = (xpow R m i, 0) := by
   rw [basisProd, Basis.reindex_apply, finSumFinEquiv_symm_apply_castAdd, Basis.prod_apply,
     Sum.elim_inl, LinearMap.coe_inl, Function.comp_apply, basis_apply]
 
 @[simp] lemma basisProd_natAdd (m n : ℕ) (i : Fin n) :
-    basisProd R m n (i.natAdd m) = (0, xPow R n i) := by
+    basisProd R m n (i.natAdd m) = (0, xpow R n i) := by
   rw [basisProd, Basis.reindex_apply, finSumFinEquiv_symm_apply_natAdd, Basis.prod_apply,
     Sum.elim_inr, LinearMap.coe_inr, Function.comp_apply, basis_apply]
 
@@ -101,30 +101,30 @@ noncomputable def addLinearEquiv :
   Basis.equiv (basis ..) (basisProd ..) (Equiv.refl _)
 
 lemma addLinearEquiv_castAdd (i : Fin m) :
-    addLinearEquiv R m n (xPow R (m+n) (i.castAdd n)) = (xPow R m i, 0) := by
+    addLinearEquiv R m n (xpow R (m+n) (i.castAdd n)) = (xpow R m i, 0) := by
   rw [addLinearEquiv, ← basis_apply, Basis.equiv_apply, Equiv.refl_apply, basisProd_castAdd]
 
 lemma addLinearEquiv_natAdd (i : Fin n) :
-    addLinearEquiv R m n (xPow R (m+n) (i.natAdd m)) = (0, xPow R n i) := by
+    addLinearEquiv R m n (xpow R (m+n) (i.natAdd m)) = (0, xpow R n i) := by
   rw [addLinearEquiv, ← basis_apply, Basis.equiv_apply, Equiv.refl_apply, basisProd_natAdd]
 
-lemma addLinearEquiv_symm_apply_xPow_left (i : Fin m) :
-    (addLinearEquiv R m n).symm (LinearMap.inl R _ _ (xPow R m i)) = xPow R (m+n) (i.castAdd n) :=
+lemma addLinearEquiv_symm_apply_xpow_left (i : Fin m) :
+    (addLinearEquiv R m n).symm (LinearMap.inl R _ _ (xpow R m i)) = xpow R (m+n) (i.castAdd n) :=
   (LinearEquiv.symm_apply_eq _).2 (addLinearEquiv_castAdd i).symm
 
-lemma addLinearEquiv_symm_apply_xPow_right (j : Fin n) :
-    (addLinearEquiv R m n).symm (LinearMap.inr R _ _ (xPow R n j)) = xPow R (m+n) (j.natAdd m) :=
+lemma addLinearEquiv_symm_apply_xpow_right (j : Fin n) :
+    (addLinearEquiv R m n).symm (LinearMap.inr R _ _ (xpow R n j)) = xpow R (m+n) (j.natAdd m) :=
   (LinearEquiv.symm_apply_eq _).2 (addLinearEquiv_natAdd j).symm
 
 lemma addLinearEquiv_symm_apply_left (P : R[X]_m) :
     ((addLinearEquiv R m n).symm (LinearMap.inl R _ _ P) : R[X]) = (P : R[X]) := by
   rw [← (basis ..).sum_repr P]
-  simp [-LinearMap.coe_inl, addLinearEquiv_symm_apply_xPow_left]
+  simp [-LinearMap.coe_inl, addLinearEquiv_symm_apply_xpow_left]
 
 lemma addLinearEquiv_symm_apply_right (Q : R[X]_n) :
     ((addLinearEquiv R m n).symm (LinearMap.inr R _ _ Q) : R[X]) = (Q : R[X]) * X ^ (m : ℕ) := by
   rw [← (basis ..).sum_repr Q]
-  simp [-LinearMap.coe_inr, Finset.sum_mul, addLinearEquiv_symm_apply_xPow_right,
+  simp [-LinearMap.coe_inr, Finset.sum_mul, addLinearEquiv_symm_apply_xpow_right,
     smul_eq_C_mul, mul_assoc, ← pow_add, add_comm]
 
 lemma addLinearEquiv_symm_apply (PQ) :
@@ -188,7 +188,7 @@ noncomputable def taylorLinear (r : R) (n : ℕ) : (R[X]_n) ≃ₗ[R] (R[X]_n) :
     Matrix.det_of_upperTriangular, Fintype.prod_eq_one]
   · intro i
     rw [LinearMap.toMatrix_apply, degreeLT.basis_repr, ← natDegree_X_pow (R:=R) (i:ℕ),
-      LinearEquiv.coe_coe, taylorLinear_apply, degreeLT.basis_val, taylor_coeff_natDegree,
+      LinearEquiv.coe_coe, taylorLinear_apply, degreeLT.basis_val, coeff_taylor_natDegree,
       leadingCoeff_X_pow]
   · intro i j hji
     rw [LinearMap.toMatrix_apply, LinearEquiv.coe_coe, degreeLT.basis_repr, taylorLinear_apply,
