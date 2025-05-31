@@ -61,7 +61,7 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
     · simp only [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton,
         le_refl]
   | insert a s hs ih =>
-  rw [card_insert_of_not_mem hs, ← card_memberSubfamily_add_card_nonMemberSubfamily a 𝒜, ←
+  rw [card_insert_of_notMem hs, ← card_memberSubfamily_add_card_nonMemberSubfamily a 𝒜, ←
     card_memberSubfamily_add_card_nonMemberSubfamily a ℬ, add_mul, mul_add, mul_add,
     add_comm (_ * _), add_add_add_comm]
   refine
@@ -76,12 +76,12 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
       ∀ t ∈ 𝒞.nonMemberSubfamily a, t ⊆ s := by
     rintro 𝒞 h𝒞 t ht
     rw [mem_nonMemberSubfamily] at ht
-    exact (subset_insert_iff_of_not_mem ht.2).1 (h𝒞 _ ht.1)
+    exact (subset_insert_iff_of_notMem ht.2).1 (h𝒞 _ ht.1)
   have h₁ : ∀ 𝒞 : Finset (Finset α), (∀ t ∈ 𝒞, t ⊆ insert a s) →
       ∀ t ∈ 𝒞.memberSubfamily a, t ⊆ s := by
     rintro 𝒞 h𝒞 t ht
     rw [mem_memberSubfamily] at ht
-    exact (subset_insert_iff_of_not_mem ht.2).1 ((subset_insert _ _).trans <| h𝒞 _ ht.1)
+    exact (subset_insert_iff_of_notMem ht.2).1 ((subset_insert _ _).trans <| h𝒞 _ ht.1)
   refine mul_le_mul_left' ?_ _
   refine (add_le_add (ih h𝒜.memberSubfamily hℬ.memberSubfamily (h₁ _ h𝒜s) <| h₁ _ hℬs) <|
     ih h𝒜.nonMemberSubfamily hℬ.nonMemberSubfamily (h₀ _ h𝒜s) <| h₀ _ hℬs).trans_eq ?_

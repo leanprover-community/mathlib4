@@ -141,17 +141,17 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     apply IntervalIntegrable.symm
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc.le]
     rw [← Ioo_union_right hc, integrableOn_union, and_comm]; constructor
-    · refine integrableOn_singleton_iff.mpr (Or.inr ?_)
-      exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact
-        isCompact_singleton
+    · exact integrableOn_singleton (by simp) <|
+        isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact isCompact_singleton
     · have : ∀ x : ℝ, x ∈ Ioo c 0 → ‖Complex.exp (↑π * Complex.I * r)‖ = ‖(x : ℂ) ^ r‖ := by
         intro x hx
         rw [Complex.ofReal_cpow_of_nonpos hx.2.le, norm_mul, ← Complex.ofReal_neg,
           Complex.norm_cpow_eq_rpow_re_of_pos (neg_pos.mpr hx.2), ← h',
           rpow_zero, one_mul]
       refine IntegrableOn.congr_fun ?_ this measurableSet_Ioo
-      rw [integrableOn_const]
-      refine Or.inr ((measure_mono Set.Ioo_subset_Icc_self).trans_lt ?_)
+      rw [integrableOn_const_iff]
+      right
+      refine (measure_mono Set.Ioo_subset_Icc_self).trans_lt ?_
       exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact isCompact_Icc
 
 /-- See `intervalIntegrable_cpow` for a version applying to any locally finite measure, but with a
@@ -255,7 +255,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
     apply Real.continuousOn_log.mono
-    apply Set.not_mem_uIcc_of_lt zero_lt_one at hx
+    apply Set.notMem_uIcc_of_lt zero_lt_one at hx
     simpa
 
 @[simp]
@@ -445,11 +445,11 @@ theorem integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log 
 
 @[simp]
 theorem integral_inv_of_pos (ha : 0 < a) (hb : 0 < b) : ∫ x in a..b, x⁻¹ = log (b / a) :=
-  integral_inv <| not_mem_uIcc_of_lt ha hb
+  integral_inv <| notMem_uIcc_of_lt ha hb
 
 @[simp]
 theorem integral_inv_of_neg (ha : a < 0) (hb : b < 0) : ∫ x in a..b, x⁻¹ = log (b / a) :=
-  integral_inv <| not_mem_uIcc_of_gt ha hb
+  integral_inv <| notMem_uIcc_of_gt ha hb
 
 theorem integral_one_div (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x : ℝ in a..b, 1 / x = log (b / a) := by
   simp only [one_div, integral_inv h]
@@ -762,9 +762,8 @@ theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
       simp only [_root_.pow_zero, _root_.pow_succ, mul_assoc, pow_mul, one_mul]
       congr! 5
       rw [← sq, ← sq, cos_sq']
-    _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n := by
-      -- Note(kmill): Didn't need `by exact`, but elaboration order seems to matter here.
-      exact integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
+    _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n :=
+      integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
 
 /-- The integral of `sin x * cos x`, given in terms of sin².
   See `integral_sin_mul_cos₂` below for the integral given in terms of cos². -/
