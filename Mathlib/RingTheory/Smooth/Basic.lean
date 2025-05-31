@@ -223,9 +223,8 @@ theorem iff_split_surjection [FormallySmooth R P] :
   · intro
     have surj : Function.Surjective f.kerSquareLift := fun x =>
       ⟨Submodule.Quotient.mk (hf x).choose, (hf x).choose_spec⟩
-    have sqz : RingHom.ker f.kerSquareLift.toRingHom ^ 2 = 0 := by
+    have sqz : RingHom.ker f.kerSquareLift ^ 2 = 0 := by
       rw [AlgHom.ker_kerSquareLift, Ideal.cotangentIdeal_square, Ideal.zero_eq_bot]
-    dsimp only [AlgHom.toRingHom_eq_coe, RingHom.ker_coe_toRingHom] at sqz
     refine
       ⟨FormallySmooth.lift _ ⟨2, sqz⟩ (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom,
         ?_⟩
