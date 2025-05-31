@@ -714,4 +714,158 @@ lemma depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRing R]
   absurd reg.2
   simp [eq_top_of_isUnit_mem (ofList rs) (Ideal.subset_span hr) isu]
 
+section ring
+
+local instance (R : Type*) [CommRing R] (I : Ideal R) [IsNoetherianRing R] :
+    IsNoetherianRing (R ⧸ I) :=
+  isNoetherianRing_of_surjective R _ (Ideal.Quotient.mk I)
+    Ideal.Quotient.mk_surjective
+
+lemma IsLocalRing.depth_eq_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
+    [IsLocalRing R] [IsNoetherianRing R] [IsLocalRing R'] [IsNoetherianRing R'] (e : R ≃+* R') :
+    IsLocalRing.depth (ModuleCat.of R R) = IsLocalRing.depth (ModuleCat.of R' R') := by
+  let _ : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+  let _ : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+  let e' : R ≃ₛₗ[e.toRingHom] R' := {
+    __ := e
+    map_smul' a b := by simp }
+  simp only [depth_eq_sSup_length_regular]
+  congr!
+  rename_i n
+  refine ⟨fun ⟨rs, reg, mem, len⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
+  · use List.map e.toRingHom rs, (LinearEquiv.isRegular_congr' e' rs).mp reg
+    simpa [len]
+  · use List.map e.symm.toRingHom rs, (LinearEquiv.isRegular_congr' e'.symm rs).mp reg
+    simpa [len]
+
+omit [Small.{v, u} R] in
+lemma IsLocalRing.depth_quotient_regular_succ_eq_depth  [IsLocalRing R] [IsNoetherianRing R] (x : R)
+    (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
+    letI : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
+      have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
+        Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+      have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
+        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+      IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
+    IsLocalRing.depth (ModuleCat.of (R ⧸ x • (⊤ : Ideal R)) (R ⧸ x • (⊤ : Ideal R))) + 1 =
+    IsLocalRing.depth (ModuleCat.of R R) := by
+  have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
+        Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+  have loc_hom : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
+      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+  have : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
+    IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
+  rw [← IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth (ModuleCat.of R R) x reg mem, eq_comm]
+  simp only [depth_eq_sSup_length_regular]
+  congr!
+  rename_i n
+  refine ⟨fun ⟨rs, reg, mem, len⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
+  · have mem' : ∀ r ∈ rs.map (algebraMap R (R ⧸ x • (⊤ : Ideal R))),
+      r ∈ maximalIdeal (R ⧸ x • ⊤) := by
+      intro r hr
+      simp only [Quotient.algebraMap_eq, List.mem_map] at hr
+      rcases hr with ⟨r', hr', eq⟩
+      simpa [← eq] using mem r' hr'
+    have reg' : RingTheory.Sequence.IsRegular (R ⧸ x • (⊤ : Ideal R))
+      (rs.map (algebraMap R (R ⧸ x • (⊤ : Ideal R)))) := by
+      refine ⟨(RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff
+        (R ⧸ x • (⊤ : Ideal R)) (R ⧸ x • (⊤ : Ideal R)) rs).mpr reg.1, ?_⟩
+      apply (ne_top_of_le_ne_top (Ne.symm _) (Ideal.mul_mono_left (span_le.mpr mem'))).symm
+      apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+      exact IsLocalRing.maximalIdeal_le_jacobson _
+    use rs.map (algebraMap R (R ⧸ x • (⊤ : Ideal R))), reg', mem'
+    simpa
+  · rcases List.map_surjective_iff.mpr Ideal.Quotient.mk_surjective rs with ⟨rs', hrs'⟩
+    have mem' : ∀ r ∈ rs', r ∈ maximalIdeal R := by
+      intro r hr
+      have : (Ideal.Quotient.mk (x • (⊤ : Ideal R))) r ∈ maximalIdeal (R ⧸ x • ⊤) := by
+        apply mem
+        simp only [← hrs', List.mem_map]
+        use r
+      simpa using this
+    have reg' : RingTheory.Sequence.IsRegular (QuotSMulTop x R) rs' := by
+      refine ⟨(RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff
+        (R ⧸ x • (⊤ : Ideal R)) (R ⧸ x • (⊤ : Ideal R)) rs').mp (by simpa [hrs'] using reg.1), ?_⟩
+      apply (ne_top_of_le_ne_top (Ne.symm _) (Submodule.smul_mono_left (span_le.mpr mem'))).symm
+      apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+      exact IsLocalRing.maximalIdeal_le_jacobson _
+    use rs', reg', mem'
+    simpa [← hrs'] using len
+
+lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth  [IsLocalRing R]
+    [IsNoetherianRing R] (rs : List R) (reg : RingTheory.Sequence.IsWeaklyRegular R rs)
+    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R):
+    letI : IsLocalRing (R ⧸ Ideal.ofList rs) :=
+      have : Nontrivial (R ⧸ Ideal.ofList rs) :=
+        Submodule.Quotient.nontrivial_of_lt_top _
+          (lt_of_le_of_lt (span_le.mpr mem) (Ne.lt_top IsPrime.ne_top'))
+      have : IsLocalHom (Ideal.Quotient.mk (Ideal.ofList rs)) :=
+        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+      IsLocalRing.of_surjective (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
+    IsLocalRing.depth (ModuleCat.of (R ⧸ Ideal.ofList rs)
+      (R ⧸ Ideal.ofList rs)) + rs.length =
+    IsLocalRing.depth (ModuleCat.of R R) := by
+  generalize len : rs.length = n
+  induction' n with n hn generalizing R rs
+  · let e : R ⧸ ofList rs ≃+* R :=
+      (RingEquiv.ofBijective _ ((Ideal.Quotient.mk_bijective_iff_eq_bot (Ideal.ofList rs)).mpr
+        (by simp [List.length_eq_zero_iff.mp len]))).symm
+    have : IsLocalRing (R ⧸ ofList rs) := RingEquiv.isLocalRing e.symm
+    have : IsNoetherianRing (R ⧸ ofList rs) := isNoetherianRing_of_ringEquiv R e.symm
+    simpa using IsLocalRing.depth_eq_of_ringEquiv e
+  · match rs with
+    | [] => simp at len
+    | x :: rs' =>
+      let _ : IsLocalRing (R ⧸ Ideal.ofList (x :: rs')) :=
+        have : Nontrivial (R ⧸ Ideal.ofList (x :: rs')) :=
+          Submodule.Quotient.nontrivial_of_lt_top _
+          (lt_of_le_of_lt (span_le.mpr mem) (Ne.lt_top IsPrime.ne_top'))
+        have : IsLocalHom (Ideal.Quotient.mk (Ideal.ofList (x :: rs'))) :=
+          IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+        IsLocalRing.of_surjective (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
+      simp only [List.length_cons, Nat.add_right_cancel_iff] at len
+      simp only [List.mem_cons, forall_eq_or_imp] at mem
+      simp only [Nat.cast_add, Nat.cast_one, ← add_assoc,
+       ← depth_quotient_regular_succ_eq_depth x ((isWeaklyRegular_cons_iff _ x rs').mp reg).1 mem.1]
+      have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
+        Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul] using mem.1)
+      have loc_hom : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
+        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+      have : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
+        IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R)))
+          Ideal.Quotient.mk_surjective
+      have mem' : ∀ r ∈ List.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))) rs',
+        r ∈ maximalIdeal (R ⧸ x • (⊤ : Ideal R)) := by
+        intro r hr
+        simp only [Quotient.algebraMap_eq, List.mem_map] at hr
+        rcases hr with ⟨r', hr', eq⟩
+        simpa [← eq] using mem.2 r' hr'
+      simp [← hn (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))))
+        ((RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff (R ⧸ x • (⊤ : Ideal R))
+          (R ⧸ x • (⊤ : Ideal R)) rs').mpr ((isWeaklyRegular_cons_iff _ x rs').mp reg).2) mem'
+          (by simpa using len)]
+      congr 2
+      let f := (Ideal.Quotient.mk (ofList (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R)))))).comp
+        (Ideal.Quotient.mk (x • (⊤ : Ideal R)))
+      have surj : Function.Surjective f := by
+        simp only [RingHom.coe_comp, f]
+        exact Function.Surjective.comp Ideal.Quotient.mk_surjective Ideal.Quotient.mk_surjective
+      have eq : RingHom.ker f = ofList (x :: rs') := by
+        have := Submodule.ideal_span_singleton_smul x (⊤ : Ideal R)
+        simp only [smul_eq_mul, mul_top] at this
+        simp only [← RingHom.comap_ker, mk_ker, ofList_cons, this, f, sup_comm]
+        convert Ideal.comap_map_of_surjective' (Ideal.Quotient.mk (x • (⊤ : Ideal R)))
+          Ideal.Quotient.mk_surjective (Ideal.span {r | r ∈ rs'})
+        · simp
+        · exact mk_ker.symm
+      let e : R ⧸ ofList (x :: rs') ≃+* ((R ⧸ x • (⊤ : Ideal R)) ⧸
+        ofList (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))))) :=
+        (Ideal.quotientEquivAlgOfEq R eq).symm.toRingEquiv.trans
+        (RingHom.quotientKerEquivOfSurjective surj)
+      let _ := RingEquiv.isLocalRing e
+      let _ := isNoetherianRing_of_ringEquiv _ e
+      exact IsLocalRing.depth_eq_of_ringEquiv e
+
+end ring
+
 end depth
