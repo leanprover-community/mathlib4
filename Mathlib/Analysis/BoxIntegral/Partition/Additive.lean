@@ -125,7 +125,7 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
     by_cases h : a.2 ∈ Ioo (J'.lower a.1) (J'.upper a.1)
     · rw [sum_split_boxes]
       exact hf _ ((WithTop.coe_le_coe.2 <| le_of_mem _ hJ').trans hI) h
-    · rw [split_of_not_mem_Ioo h, top_boxes, Finset.sum_singleton]
+    · rw [split_of_notMem_Ioo h, top_boxes, Finset.sum_singleton]
   intro I hI π hπ
   have Hle : ∀ J ∈ π, ↑J ≤ I₀ := fun J hJ => (WithTop.coe_le_coe.2 <| π.le_of_mem hJ).trans hI
   rcases hπ.exists_splitMany_le with ⟨s, hs⟩

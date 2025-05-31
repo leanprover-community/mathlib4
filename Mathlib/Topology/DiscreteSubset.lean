@@ -191,7 +191,7 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
     by_cases hz : z ∈ U \ s
     · rw [inter_comm, inter_insert_of_mem hz, inter_comm, h₂t]
       simp
-    · rw [inter_comm, inter_insert_of_not_mem hz, inter_comm, h₂t]
+    · rw [inter_comm, inter_insert_of_notMem hz, inter_comm, h₂t]
       simp
   · intro h z h₁z
     obtain ⟨t, h₁t, h₂t⟩ := h z h₁z

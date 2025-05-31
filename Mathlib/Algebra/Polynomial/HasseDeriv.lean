@@ -74,7 +74,7 @@ theorem hasseDeriv_coeff (n : ℕ) :
       contrapose! hink
       exact (tsub_eq_iff_eq_add_of_le hik).mp hink
   · intro h
-    simp only [not_mem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
+    simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
 theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
   simp only [hasseDeriv_apply, tsub_zero, Nat.choose_zero_right, Nat.cast_one, one_mul,
