@@ -7,6 +7,8 @@ import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+import Mathlib.Data.Nat.PrimeFin
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
@@ -58,11 +60,28 @@ open scoped Classical in
 def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
 
+@[simp] lemma mem_primeFactors {a b : M} : a ∈ primeFactors b ↔ a ∈ normalizedFactors b := by
+  simp only [primeFactors, Multiset.mem_toFinset]
+
 theorem _root_.Associated.primeFactors_eq {a b : M} (h : Associated a b) :
     primeFactors a = primeFactors b := by
   unfold primeFactors
   rw [h.normalizedFactors_eq]
 
+@[simp] lemma primeFactors_zero : primeFactors (0 : M) = ∅ := by simp [primeFactors]
+
+@[simp] lemma primeFactors_one : primeFactors (1 : M) = ∅ := by simp [primeFactors]
+
+lemma primeFactors_pairwise_isRelPrime {a : M} :
+    (primeFactors a).toSet.Pairwise IsRelPrime := by
+  obtain rfl | ha₀ := eq_or_ne a 0
+  · simp
+  intro x hx y hy hxy
+  simp only [Finset.mem_coe, mem_primeFactors, mem_normalizedFactors_iff' ha₀] at hx hy
+  rw [hx.1.isRelPrime_iff_not_dvd]
+  contrapose! hxy
+  have : Associated x y := hx.1.associated_of_dvd hy.1 hxy
+  exact this.eq_of_normalized hx.2.1 hy.2.1
 
 /--
 Radical of an element `a` in a unique factorization monoid is the product of
@@ -71,19 +90,12 @@ the prime factors of `a`.
 def radical (a : M) : M :=
   (primeFactors a).prod id
 
-@[simp]
-theorem radical_zero_eq : radical (0 : M) = 1 := by
-  classical
-  rw [radical, primeFactors, normalizedFactors_zero, Multiset.toFinset_zero, Finset.prod_empty]
+@[simp] theorem radical_zero_eq : radical (0 : M) = 1 := by simp [radical]
 
-@[simp]
-theorem radical_one_eq : radical (1 : M) = 1 := by
-  classical
-  rw [radical, primeFactors, normalizedFactors_one, Multiset.toFinset_zero, Finset.prod_empty]
+@[simp] theorem radical_one_eq : radical (1 : M) = 1 := by simp [radical]
 
 theorem radical_eq_of_associated {a b : M} (h : Associated a b) : radical a = radical b := by
-  unfold radical
-  rw [h.primeFactors_eq]
+  rw [radical, radical, h.primeFactors_eq]
 
 theorem radical_of_isUnit {a : M} (h : IsUnit a) : radical a = 1 :=
   (radical_eq_of_associated (associated_one_iff_isUnit.mpr h)).trans radical_one_eq
@@ -126,6 +138,19 @@ theorem radical_ne_zero (a : M) [Nontrivial M] : radical a ≠ 0 := by
   rw [primeFactors]
   simp only [Multiset.toFinset_val, Multiset.mem_dedup]
   exact zero_notMem_normalizedFactors _
+
+/--
+An irreducible `a` divides the radical of `b` if and only if it divides `b` itself.
+Note this generalises to radical elements `a`, see `dvd_radical_iff`.
+-/
+lemma dvd_radical_iff_of_irreducible {a b : M} (ha : Irreducible a) (hb : b ≠ 0) :
+    a ∣ radical b ↔ a ∣ b := by
+  constructor
+  · intro ha
+    exact ha.trans (radical_dvd_self b)
+  · intro ha'
+    obtain ⟨c, hc, hc'⟩ := exists_mem_normalizedFactors_of_dvd hb ha ha'
+    exact hc'.dvd.trans (Finset.dvd_prod_of_mem _ (by simpa))
 
 end UniqueFactorizationMonoid
 
@@ -227,3 +252,14 @@ theorem _root_.IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
   exact h.of_mul_left_right.of_mul_right_right
 
 end EuclideanDomain
+
+section Nat
+
+lemma primeFactors_eq_natPrimeFactors :
+    primeFactors = Nat.primeFactors := by
+  ext n : 1
+  rw [primeFactors, Nat.factors_eq, Nat.primeFactors]
+  -- this convert is necessary because of the different DecidableEq instances
+  convert List.toFinset_coe _
+
+end Nat
