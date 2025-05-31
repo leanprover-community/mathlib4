@@ -714,8 +714,25 @@ lemma depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRing R]
 
 section ring
 
+lemma IsLocalRing.depth_eq_of_ringEquiv (R R' : Type*) [CommRing R] [CommRing R']
+    [IsLocalRing R] [IsNoetherianRing R] [IsLocalRing R'] [IsNoetherianRing R'] (e : R ≃+* R') :
+    IsLocalRing.depth (ModuleCat.of R R) = IsLocalRing.depth (ModuleCat.of R' R') := by
+  let _ : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+  let _ : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+  let e' : R ≃ₛₗ[e.toRingHom] R' := {
+    __ := e
+    map_smul' a b := by simp }
+  simp only [depth_eq_sSup_length_regular]
+  congr!
+  rename_i n
+  refine ⟨fun ⟨rs, reg, mem, len⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
+  · use List.map e.toRingHom rs, (LinearEquiv.isRegular_congr' e' rs).mp reg
+    simpa [len]
+  · use List.map e.symm.toRingHom rs, (LinearEquiv.isRegular_congr' e'.symm rs).mp reg
+    simpa [len]
+
 omit [Small.{v, u} R] in
-lemma Ideal.depth_quotient_regular_succ_eq_depth  [IsLocalRing R] [IsNoetherianRing R] (x : R)
+lemma IsLocalRing.depth_quotient_regular_succ_eq_depth  [IsLocalRing R] [IsNoetherianRing R] (x : R)
     (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
       have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
@@ -756,7 +773,7 @@ lemma Ideal.depth_quotient_regular_succ_eq_depth  [IsLocalRing R] [IsNoetherianR
   · rcases List.map_surjective_iff.mpr Ideal.Quotient.mk_surjective rs with ⟨rs', hrs'⟩
     have mem' : ∀ r ∈ rs', r ∈ maximalIdeal R := by
       intro r hr
-      have : (Quotient.mk (x • (⊤ : Ideal R))) r ∈ maximalIdeal (R ⧸ x • ⊤) := by
+      have : (Ideal.Quotient.mk (x • (⊤ : Ideal R))) r ∈ maximalIdeal (R ⧸ x • ⊤) := by
         apply mem
         simp only [← hrs', List.mem_map]
         use r
