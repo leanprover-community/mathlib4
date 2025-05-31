@@ -21,6 +21,7 @@ This file starts looking like the ring theory of $R[X]$
 noncomputable section
 
 open Polynomial
+open scoped Nat
 
 namespace Polynomial
 
@@ -84,7 +85,7 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
   by_contra! h'
   replace hroot := hroot _ h'
   simp only [IsRoot, eval_iterate_derivative_rootMultiplicity] at hroot
-  obtain ⟨q, hq⟩ := Nat.cast_dvd_cast (α := R) <| Nat.factorial_dvd_factorial h'
+  obtain ⟨q, hq⟩ : ((rootMultiplicity t p)! : R) ∣ n ! := by gcongr
   rw [hq, mul_mem_nonZeroDivisors] at hnzd
   rw [nsmul_eq_mul, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd.1] at hroot
   exact eval_divByMonic_pow_rootMultiplicity_ne_zero t h hroot
@@ -520,6 +521,10 @@ theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) :=
   rw [Monic, leadingCoeff_normalize, normalize_eq_one]
   apply hp0
 
+theorem normalize_eq_self_iff_monic [DecidableEq R] {p : Polynomial R} (hp : p ≠ 0) :
+    normalize p = p ↔ p.Monic :=
+  ⟨fun h ↦ h ▸ monic_normalize hp, fun h ↦ Monic.normalize_eq_self h⟩
+
 theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
     (p / q).leadingCoeff = p.leadingCoeff / q.leadingCoeff := by
   by_cases hq : q = 0
@@ -535,6 +540,12 @@ theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   simp only [div_def, leadingCoeff_mul, mul_inv, leadingCoeff_C, C.map_mul, mul_assoc]
   congr 3
   rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one, one_mul]
+
+lemma div_C : p / C a = p * C a⁻¹ := by
+  simpa [mul_comm] using div_C_mul (q := 1)
+
+lemma C_div : C (a / b) = C a / C b := by
+  rw [div_C, ← C_mul, div_eq_mul_inv]
 
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
   ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
@@ -662,6 +673,21 @@ theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
   rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
     mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
   simp_all
+
+open UniqueFactorizationMonoid in
+protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
+    p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
+  by_cases hp : p = 0
+  · simpa [hp] using zero_notMem_normalizedFactors _
+  · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
+
+variable (p) in
+@[simp]
+theorem map_normalize [DecidableEq R] [Field S] [DecidableEq S] (f : R →+* S) :
+    map f (normalize p) = normalize (map f p) := by
+  by_cases hp : p = 0
+  · simp [hp]
+  · simp [normalize_apply, Polynomial.map_mul, normUnit, hp]
 
 end Field
 

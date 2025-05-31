@@ -34,7 +34,7 @@ The following notations are scoped to the `Cardinal` namespace.
 
 - `ℵ_ o` is notation for `aleph o`. `ℵ₁` is notation for `ℵ_ 1`.
 - `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
-  `Mathlib.SetTheory.Cardinal.Continuum`.
+  `Mathlib/SetTheory/Cardinal/Continuum.lean`.
 -/
 
 assert_not_exists Field Finsupp Module Cardinal.mul_eq_self
@@ -525,8 +525,8 @@ theorem preBeth_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
   exact le_ciSup (bddAbove_of_small _) (⟨_, ho.succ_lt a.2⟩ : Iio o)
 
 theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
- | 0 => by simp
- | (n + 1) => by
+  | 0 => by simp
+  | (n + 1) => by
     rw [natCast_succ, preBeth_succ, Function.iterate_succ_apply', preBeth_nat]
     simp
 

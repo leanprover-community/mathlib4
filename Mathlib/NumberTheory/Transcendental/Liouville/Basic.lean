@@ -112,8 +112,11 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
     -- use the "separation from `1`" (assumption `L`) for numerators,
     refine (L this).trans ?_
     -- remove a common factor and use the Lipschitz assumption `B`
-    refine mul_le_mul_of_nonneg_left ((B this).trans ?_) (zero_le_one.trans (d0 a))
-    exact mul_le_mul_of_nonneg_left (le_max_right _ M) dist_nonneg
+    gcongr
+    · exact zero_le_one.trans (d0 a)
+    · refine (B this).trans ?_
+      gcongr
+      apply le_max_right
 
 theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : ℤ[X]} (f0 : f ≠ 0)
     (fa : eval α (map (algebraMap ℤ ℝ) f) = 0) :
@@ -201,7 +204,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
     refine hn.le.trans ?_
     rw [one_add_one_eq_two]
     gcongr
-    exact Int.cast_two.symm.le.trans (Int.cast_le.mpr (Int.add_one_le_iff.mpr b1))
+    norm_cast
   -- this branch of the proof exploits the "integrality" of evaluations of polynomials
   -- at ratios of integers.
   · lift b to ℕ using zero_le_one.trans b1.le

@@ -95,7 +95,7 @@ alias condexpKernel_apply_eq_condDistrib := condExpKernel_apply_eq_condDistrib
 instance : IsMarkovKernel (condExpKernel μ m) := by
   rcases isEmpty_or_nonempty Ω with h | h
   · exact ⟨fun a ↦ (IsEmpty.false a).elim⟩
-  · simp [condExpKernel, h]; infer_instance
+  · simpa [condExpKernel, h] using by infer_instance
 
 lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
     (μ.trim hm) ⊗ₘ condExpKernel μ m
@@ -313,10 +313,10 @@ theorem condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable
     [NormedAddCommGroup F] {f : Ω → F} [NormedSpace ℝ F] [CompleteSpace F]
     (hm : m ≤ mΩ) (hf : StronglyMeasurable f) (hf_int : Integrable f μ) :
     μ[f|m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
- refine StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm ?_ ?_ ?_
- · exact stronglyMeasurable_condExp
- · exact hf.integral_condExpKernel
- · exact condExp_ae_eq_integral_condExpKernel hm hf_int
+  refine StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm ?_ ?_ ?_
+  · exact stronglyMeasurable_condExp
+  · exact hf.integral_condExpKernel
+  · exact condExp_ae_eq_integral_condExpKernel hm hf_int
 
 /-- The conditional expectation of `f` with respect to a σ-algebra `m` is
 (`μ.trim hm`)-almost everywhere equal to the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
@@ -351,7 +351,7 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
   · refine (ae_eq_condExp_of_forall_setIntegral_eq (generateFrom_singleton_le hs) hf.restrict ?_ ?_
       stronglyMeasurable_const.aestronglyMeasurable).symm
     · rintro t - -
-      rw [integrableOn_const]
+      rw [integrableOn_const_iff]
       exact Or.inr <| measure_lt_top (μ.restrict s) t
     · rintro t ht -
       obtain (h | h | h | h) := measurableSet_generateFrom_singleton_iff.1 ht

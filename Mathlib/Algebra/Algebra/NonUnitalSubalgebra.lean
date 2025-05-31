@@ -105,7 +105,7 @@ instance instNonUnitalSubsemiringClass :
   zero_mem {s} := s.zero_mem'
 
 instance instSMulMemClass : SMulMemClass (NonUnitalSubalgebra R A) R A where
-  smul_mem := @fun s => s.smul_mem'
+  smul_mem {s} := s.smul_mem'
 
 theorem mem_carrier {s : NonUnitalSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -178,7 +178,7 @@ variable [Module R A] [Module R B] [Module R C]
 
 instance instNonUnitalSubringClass : NonUnitalSubringClass (NonUnitalSubalgebra R A) A :=
   { NonUnitalSubalgebra.instNonUnitalSubsemiringClass with
-    neg_mem := @fun _ x hx => neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
+    neg_mem {_ x} hx := neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
 
 /-- A non-unital subalgebra over a ring is also a `Subring`. -/
 def toNonUnitalSubring (S : NonUnitalSubalgebra R A) : NonUnitalSubring A where
@@ -295,7 +295,7 @@ instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
 instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
   ⟨fun {c x} h =>
     have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg ((↑) : S → A) h)
-    this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
+    this.imp_right Subtype.ext⟩
 
 end
 
@@ -473,8 +473,7 @@ theorem mem_range_self (φ : F) (x : A) :
 theorem coe_range (φ : F) :
     ((NonUnitalAlgHom.range φ : NonUnitalSubalgebra R B) : Set B) = Set.range (φ : A → B) := by
   ext
-  rw [SetLike.mem_coe, mem_range]
-  rfl
+  rw [SetLike.mem_coe, mem_range, Set.mem_range]
 
 theorem range_comp (f : A →ₙₐ[R] B) (g : B →ₙₐ[R] C) :
     NonUnitalAlgHom.range (g.comp f) = (NonUnitalAlgHom.range f).map g :=
@@ -554,7 +553,7 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 def adjoin (s : Set A) : NonUnitalSubalgebra R A :=
   { Submodule.span R (NonUnitalSubsemiring.closure s : Set A) with
     mul_mem' :=
-      @fun a b (ha : a ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A))
+      fun {a b} (ha : a ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A))
         (hb : b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A)) =>
       show a * b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A) by
         refine Submodule.span_induction ?_ ?_ ?_ ?_ ha

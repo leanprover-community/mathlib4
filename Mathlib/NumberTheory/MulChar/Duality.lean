@@ -16,7 +16,7 @@ where `n` is the exponent of `M`. Then the main results of this file are as foll
   `M → R` separate elements of `Mˣ`.
 
 * `MulChar.mulEquiv_units`: the group of multiplicative characters `M → R` is
-   (noncanonically) isomorphic to `Mˣ`.
+  (noncanonically) isomorphic to `Mˣ`.
 -/
 
 namespace MulChar

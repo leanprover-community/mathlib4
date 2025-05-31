@@ -52,8 +52,8 @@ above version with a sum, as it is simpler and more relevant for algorithms.
 ## TODO
 
 * Specialize this theorem to the very common case where the recurrence is of the form
-`T(n) = ℓT(r_i(n)) + g(n)`
-where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
+  `T(n) = ℓT(r_i(n)) + g(n)`
+  where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
 * Add the original version of the theorem with an integral instead of a sum.
 
 ## References
