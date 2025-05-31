@@ -542,17 +542,15 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
   refine @ae_le_of_ae_le_trim _ _ _ _ _ _ hm (0 : α → ℝ) _ ?_
   refine ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite ?_ ?_
   · rintro t - -
-    refine @Integrable.integrableOn _ _ m _ _ _ _ ?_
-    refine Integrable.trim hm ?_ ?_
-    · rw [integrable_congr h.ae_eq_mk.symm]
-      exact integrable_condExpL2_indicator hm hs hμs _
-    · exact h.stronglyMeasurable_mk
+    refine @Integrable.integrableOn _ _ m _ _ _ _ _ ?_
+    refine Integrable.trim hm ?_ h.stronglyMeasurable_mk
+    rw [integrable_congr h.ae_eq_mk.symm]
+    exact integrable_condExpL2_indicator hm hs hμs _
   · intro t ht hμt
     rw [← setIntegral_trim hm h.stronglyMeasurable_mk ht]
     have h_ae :
-      ∀ᵐ x ∂μ, x ∈ t → h.mk _ x = (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) x := by
-      filter_upwards [h.ae_eq_mk] with x hx
-      exact fun _ => hx.symm
+        ∀ᵐ x ∂μ, x ∈ t → h.mk _ x = (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) x := by
+      filter_upwards [h.ae_eq_mk] with x hx using fun _ => hx.symm
     rw [setIntegral_congr_ae (hm t ht) h_ae,
       setIntegral_condExpL2_indicator ht hs ((le_trim hm).trans_lt hμt).ne hμs]
     exact ENNReal.toReal_nonneg
