@@ -443,6 +443,14 @@ of a root / coroot. -/
       mul_neg, sub_neg_eq_add]
     module
 
+lemma ne_neg [NeZero (2 : R)] [IsDomain R] :
+    letI := P.indexNeg
+    i ≠ -i := by
+  have := P.reflexive_left
+  intro contra
+  replace contra : P.root i = -P.root i := by simpa using congr_arg P.root contra
+  simp [eq_neg_iff_add_eq_zero, ← two_smul R, NeZero.out, P.ne_zero i] at contra
+
 variable {i j} in
 @[simp]
 lemma root_eq_neg_iff :

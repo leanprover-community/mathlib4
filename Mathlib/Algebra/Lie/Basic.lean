@@ -554,6 +554,8 @@ theorem coe_toLieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ 
 theorem coe_toLinearEquiv (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ ≃ₗ[R] L₂) = e :=
   rfl
 
+@[simp] theorem coe_coe (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑e.toLieHom = e := rfl
+
 @[deprecated (since := "2024-12-30")] alias coe_to_linearEquiv := coe_toLinearEquiv
 
 @[simp]
