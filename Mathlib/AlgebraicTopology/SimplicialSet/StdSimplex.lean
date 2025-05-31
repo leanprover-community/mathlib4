@@ -34,7 +34,7 @@ def stdSimplex : CosimplicialObject SSet.{u} :=
 @[deprecated (since := "2025-01-23")] alias standardSimplex := stdSimplex
 
 @[inherit_doc SSet.stdSimplex]
-scoped[Simplicial] notation3 "Δ[" n "]" => SSet.stdSimplex.obj ⦋n⦌
+scoped[Simplicial] notation3 "Δ[" n "]" => SSet.stdSimplex.obj (SimplexCategory.mk n)
 
 instance : Inhabited SSet :=
   ⟨Δ[0]⟩
