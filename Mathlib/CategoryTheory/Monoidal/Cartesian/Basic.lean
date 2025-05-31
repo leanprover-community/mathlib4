@@ -404,6 +404,22 @@ theorem braiding_inv_fst (X Y : C) : (β_ X Y).inv ≫ fst _ _ = snd _ _ := by
 theorem braiding_inv_snd (X Y : C) : (β_ X Y).inv ≫ snd _ _ = fst _ _ := by
   simp [fst_def, snd_def, ← BraidedCategory.braiding_inv_naturality_right_assoc]
 
+@[reassoc (attr := simp)]
+lemma tensorμ_fst (W X Y Z : C) :  tensorμ W X Y Z ≫ fst (W ⊗ Y) (X ⊗ Z) = fst W X ⊗ fst Y Z := by
+  ext <;> simp [tensorμ]
+
+@[reassoc (attr := simp)]
+lemma tensorμ_snd (W X Y Z : C) : tensorμ W X Y Z ≫ snd (W ⊗ Y) (X ⊗ Z) = snd W X ⊗ snd Y Z := by
+  ext <;> simp [tensorμ]
+
+@[reassoc (attr := simp)]
+lemma tensorδ_fst (W X Y Z : C) : tensorδ W X Y Z ≫ fst (W ⊗ X) (Y ⊗ Z) = fst W Y ⊗ fst X Z := by
+  ext <;> simp [tensorδ]
+
+@[reassoc (attr := simp)]
+lemma tensorδ_snd (W X Y Z : C) : tensorδ W X Y Z ≫ snd (W ⊗ X) (Y ⊗ Z) = snd W Y ⊗ snd X Z := by
+  ext <;> simp [tensorδ]
+
 theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := by aesop_cat
 
 @[simp, reassoc]
