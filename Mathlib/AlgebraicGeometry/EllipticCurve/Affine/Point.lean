@@ -265,7 +265,8 @@ lemma XYIdeal_add_eq (x₁ x₂ y₁ ℓ : R) : XYIdeal W' (W'.addX x₁ x₂ �
       XIdeal W' (W'.addX x₁ x₂ ℓ) := by
   simp only [XYIdeal, XIdeal, XClass, YClass, addY, negAddY, negY, negPolynomial, linePolynomial]
   rw [sub_sub <| -(Y : R[X][Y]), neg_sub_left (Y : R[X][Y]), map_neg, span_singleton_neg, sup_comm,
-    ← span_insert, ← span_pair_add_mul_right <| mk W' <| C <| C <| W'.a₁ + ℓ, ← map_mul, ← map_add]
+    ← span_insert, ← span_pair_add_mul_right _ _ <| mk W' <| C <| C <| W'.a₁ + ℓ, ← map_mul,
+    ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   C_simp
   ring1
