@@ -18,16 +18,15 @@ of the bundle is a continuous function.
 
 If one wants to endow an existing vector bundle with a Riemannian metric, there is a subtlety:
 the inner product space structure on the fibers should give rise to a topology on the fibers
-which is defeq to the original one, to avoid diamonds.
-
-Therefore, we introduce a class `[RiemannianBundle E]` containing the data of a scalar
+which is defeq to the original one, to avoid diamonds. To do this, we introduce a
+class `[RiemannianBundle E]` containing the data of a scalar
 product on the fibers defining the same topology as the original one. Given this class, we can
 construct `NormedAddCommGroup` and `InnerProductSpace` instances on the fibers, compatible in a
 defeq way with the initial topology. If the data used to register the instance `RiemannianBundle E`
 depends continuously on the base point, we register automatically an instance of
 `[IsContinuousRiemannianBundle F E]` (and similarly if the data is smooth).
 
-The general theory should be built assuming `[IsContinuousRiemannianBundle IB n F E]`, while the
+The general theory should be built assuming `[IsContinuousRiemannianBundle F E]`, while the
 `[RiemannianBundle E]` mechanism is only to build data in specific situations.
 -/
 
@@ -143,8 +142,13 @@ open Bornology
 variable (E) in
 /-- A family of inner product space structure on the fibers of a fiber bundle, defining the same
 topology as the already existing one. Used to create an instance of `[RiemannianBundle E]`, which
-registers the inner product space structure without creating diamonds. -/
+registers the inner product space structure without creating diamonds. One should more often
+use `ContinuousRiemannianMetric` or `ContMDiffRiemannianMetric` to guarantee continuity or
+smoothness of the scalar product as a function of the base point.
+
+This structure is used through `RiemannianBundle` for typeclass inference. -/
 structure RiemannianMetric where
+  /-- The scalar product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
   symm (b : B) (v w : E b) : inner b v w = inner b w v
   pos (b : B) (v : E b) (hv : v ≠ 0) : 0 < inner b v v
@@ -175,12 +179,14 @@ creating diamonds. Use as follows:
 space on the fibers;
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
 `g : ContinuousRiemannianMetric F E` registers the inner product space on the fibers, and the fact
-that it varies continuously.
+that it varies continuously (i.e., a `[IsContinuousRiemannianBundle]` instance).
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
 `g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
-fact that it varies smoothly (and continuously).
+fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
+`[IsContinuousRiemannianBundle]` instances.
 -/
 class RiemannianBundle where
+  /-- The family of inner products on the fibers -/
   out : RiemannianMetric E
 
 noncomputable instance [h : RiemannianBundle E] (b : B) : NormedAddCommGroup (E b) :=
@@ -195,6 +201,7 @@ topology as the already existing one, and varying continuously with the base poi
 Used to create an instance of `[RiemannianBundle E]`, which registers the inner product space
 structure, and the fact that it varies continuously, without creating diamonds. -/
 structure ContinuousRiemannianMetric where
+  /-- The scalar product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
   symm (b : B) (v w : E b) : inner b v w = inner b w v
   pos (b : B) (v : E b) (hv : v ≠ 0) : 0 < inner b v v
@@ -222,10 +229,8 @@ def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetri
 instance (g : ContinuousRiemannianMetric F E) :
     letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩;
     IsContinuousRiemannianBundle F E := by
-  sorry
-
-
-
+  letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
+  exact ⟨⟨g.inner, g.continuous, fun b v w ↦ rfl⟩⟩
 
 end Construction
 
