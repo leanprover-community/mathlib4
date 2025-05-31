@@ -59,7 +59,7 @@ def _root_.Set.zeroOfFactMem {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)] :
     Zero s where
   zero := ⟨0, Fact.out⟩
 
-scoped[ContinuousMapZero] attribute [instance] Set.zeroOffFactMem
+scoped[ContinuousMapZero] attribute [instance] Set.zeroOfFactMem
 
 @[ext]
 lemma ext {f g : C(X, R)₀} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
