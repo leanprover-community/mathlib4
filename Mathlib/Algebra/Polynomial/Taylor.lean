@@ -43,11 +43,7 @@ theorem taylor_apply : taylor r f = f.comp (X + C r) :=
 theorem taylor_X : taylor r X = X + C r := X_comp
 
 @[simp]
-<<<<<<< HEAD
-theorem taylor_X_pow (n) : taylor r (X ^ n) = (X + C r) ^ n := X_pow_comp
-=======
 theorem taylor_X_pow (n : ℕ) : taylor r (X ^ n) = (X + C r) ^ n := X_pow_comp
->>>>>>> master
 
 @[simp]
 theorem taylor_C (x : R) : taylor r (C x) = C x := C_comp
@@ -109,13 +105,8 @@ theorem taylor_eq_zero : taylor r f = 0 ↔ f = 0 := by
 theorem degree_taylor (p : R[X]) (r : R) : degree (taylor r p) = degree p := by
   by_cases hp : p = 0
   · rw [hp, map_zero]
-<<<<<<< HEAD
-  · have ht := (taylor_eq_zero r p).not.2 hp
-    exact degree_eq_natDegree hp ▸ (degree_eq_iff_natDegree_eq ht).2 (natDegree_taylor ..)
-=======
   · rw [degree_eq_natDegree hp, degree_eq_iff_natDegree_eq ((taylor_eq_zero r p).not.2 hp),
       natDegree_taylor]
->>>>>>> master
 
 theorem eq_zero_of_hasseDeriv_eq_zero (f : R[X]) (r : R)
     (h : ∀ k, (hasseDeriv k f).eval r = 0) : f = 0 := by
@@ -132,30 +123,17 @@ variable {R : Type*} [Ring R]
 theorem taylor_injective (r : R) : Function.Injective (taylor r) :=
   (injective_iff_map_eq_zero' _).2 (taylor_eq_zero r)
 
-<<<<<<< HEAD
-@[simp] lemma taylor_inj {r : R} (p q : R[X]) :
-  taylor r p = taylor r q ↔ p = q := (taylor_injective r).eq_iff
-=======
 @[simp] lemma taylor_inj {r : R} {p q : R[X]} :
     taylor r p = taylor r q ↔ p = q := (taylor_injective r).eq_iff
->>>>>>> master
 
 end Ring
 
 section CommSemiring
 
-<<<<<<< HEAD
-variable {R : Type*} [CommSemiring R] (r : R) (p q : R[X])
-
-@[simp]
-theorem taylor_mul : taylor r (p * q) = taylor r p * taylor r q := by
-  simp only [taylor_apply, mul_comp]
-=======
 variable {R : Type*} [CommSemiring R] (r : R) (f : R[X])
 
 @[simp]
 theorem taylor_mul (p q : R[X]) : taylor r (p * q) = taylor r p * taylor r q := mul_comp ..
->>>>>>> master
 
 /-- `Polynomial.taylor` as an `AlgHom` for commutative semirings -/
 @[simps!]
@@ -163,29 +141,19 @@ def taylorAlgHom (r : R) : R[X] →ₐ[R] R[X] :=
   AlgHom.ofLinearMap (taylor r) (taylor_one r) (taylor_mul r)
 
 @[simp]
-<<<<<<< HEAD
-theorem taylor_pow (n : ℕ) : taylor r (p ^ n) = taylor r p ^ n :=
-  (taylorAlgHom r).map_pow ..
-
-=======
 theorem taylor_pow (n : ℕ) : taylor r (f ^ n) = taylor r f ^ n :=
   (taylorAlgHom r).map_pow ..
 
 @[simp, norm_cast] lemma coe_taylorAlgHom : taylorAlgHom r = taylor r :=
   rfl
 
->>>>>>> master
 theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r + s) f := by
   simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, C_add, add_assoc]
 
 theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
 
-<<<<<<< HEAD
-theorem eval_add_of_sq_eq_zero {y : R} (hy : y ^ 2 = 0) (p : R[X]) (x : R) :
-=======
 theorem eval_add_of_sq_eq_zero (p : R[X]) (x y : R) (hy : y ^ 2 = 0) :
->>>>>>> master
     p.eval (x + y) = p.eval x + p.derivative.eval x * y := by
   rw [add_comm, ← Polynomial.taylor_eval,
     Polynomial.eval_eq_sum_range' ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)),
@@ -196,40 +164,23 @@ end CommSemiring
 
 section CommRing
 
-<<<<<<< HEAD
-variable {R : Type*} [CommRing R] (r : R) {f : R[X]} {s : R}
-
-/-- `Polynomial.taylor` as a `RingEquiv` for commutative rings. -/
-=======
 variable {R : Type*} [CommRing R] (r : R) (f : R[X])
 
 /-- `Polynomial.taylor` as an `AlgEquiv` for commutative rings. -/
->>>>>>> master
 noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   invFun      := taylorAlgHom (-r)
   left_inv P  := by simp [taylor, comp_assoc]
   right_inv P := by simp [taylor, comp_assoc]
   __ := taylorAlgHom r
 
-<<<<<<< HEAD
-@[simp, norm_cast] lemma coe_taylorEquiv : taylorEquiv r = taylor r :=
-=======
 @[simp, norm_cast] lemma coe_taylorEquiv : taylorEquiv r = taylorAlgHom r :=
->>>>>>> master
   rfl
 
 @[simp] lemma taylorEquiv_symm : (taylorEquiv r).symm = taylorEquiv (-r) :=
   AlgEquiv.ext fun _ ↦ rfl
 
-<<<<<<< HEAD
-variable (f s)
-
-theorem taylor_eval_sub (s : R) : (taylor r f).eval (s - r) = f.eval s := by
-  rw [taylor_eval, sub_add_cancel]
-=======
 theorem taylor_eval_sub (s : R) :
     (taylor r f).eval (s - r) = f.eval s := by rw [taylor_eval, sub_add_cancel]
->>>>>>> master
 
 /-- Taylor's formula. -/
 theorem sum_taylor_eq (f : R[X]) (r : R) :
