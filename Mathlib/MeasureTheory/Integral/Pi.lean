@@ -21,7 +21,7 @@ namespace MeasureTheory
 
 namespace Integrable
 
-variable {𝕜 : Type*} [NormedCommRing 𝕜] {ι : Type*} [Fintype ι]
+variable {𝕜 ι : Type*} [NormedCommRing 𝕜] [Fintype ι]
 
 /-- On a finite product space in `n` variables, for a natural number `n`, a product of integrable
 functions depending on each coordinate is integrable. -/
