@@ -127,6 +127,12 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M
   supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal
     (fun _ ↦ notMem_minimalPrimes_of_isSMulRegular reg) hx
 
+open Pointwise in
+lemma ringKrullDim_quotSMulTop_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
+    (hx : x ∈ maximalIdeal R) : ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 = ringKrullDim R := by
+  rw [← Module.supportDim_quotient_eq_ringKrullDim, ← Module.supportDim_self_eq_ringKrullDim]
+  exact supportDim_quotSMulTop_succ_eq_supportDim reg hx
+
 /-- If $M$ is a finite module over a Noetherian local ring $R$, $r_1, \dots, r_n$ is an
   $M$-sequence, then $\dim M/(r_1, \dots, r_n)M + n = \dim M$. -/
 theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
@@ -150,5 +156,12 @@ theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
       rw [supportDim_eq_of_equiv (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
         ← supportDim_quotSMulTop_succ_eq_supportDim this mem,
         ← hn rs' ((isRegular_cons_iff M _ _).mp reg).2 len, add_assoc]
+
+lemma ringKrullDim_regular_sequence_add_length_eq_ringKrullDim (rs : List R)
+    (reg : IsRegular R rs) : ringKrullDim (R ⧸ Ideal.ofList rs) + rs.length = ringKrullDim R := by
+  have eq : Ideal.ofList rs = Ideal.ofList rs • (⊤ : Ideal R) := by simp
+  rw [ringKrullDim_eq_of_ringEquiv (Ideal.quotientEquivAlgOfEq R eq).toRingEquiv,
+    ← Module.supportDim_quotient_eq_ringKrullDim, ← Module.supportDim_self_eq_ringKrullDim]
+  exact supportDim_regular_sequence_add_length_eq_supportDim rs reg
 
 end Module
