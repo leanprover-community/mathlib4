@@ -52,7 +52,7 @@ Show:
   See [Stacks: Finite projective modules](https://stacks.math.columbia.edu/tag/00NX).
 - Connect to invertible sheaves on `Spec R`. More generally, connect projective `R`-modules of
   constant finite rank to locally free sheaves on `Spec R`.
-- Exhibit isomorphism with sheaf cohomology `H¹(Spec R, Oˣ_R)`.
+- Exhibit isomorphism with sheaf cohomology `H¹(Spec R, 𝓞ˣ)`.
 
 -/
 
