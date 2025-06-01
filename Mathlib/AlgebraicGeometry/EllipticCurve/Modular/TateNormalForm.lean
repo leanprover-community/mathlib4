@@ -116,8 +116,8 @@ def pY_inv [P.TwiceNeZero] : Rˣ :=
 @[simp] lemma pY_inv_mul [P.TwiceNeZero] : P.pY_inv * P.pY = 1 :=
   (mul_comm ..).trans P.pY_mul_inv
 
-@[simp] lemma pY_inv_inv [P.TwiceNeZero] : P.pY_inv⁻¹ = P.pY :=
-  by rw [pY_inv, inv_inv]; rfl
+@[simp] lemma pY_inv_inv [P.TwiceNeZero] : P.pY_inv⁻¹ = P.pY := by
+  rw [pY_inv, inv_inv]; rfl
 
 /-- A quantity that determines whether `3 • P = 0`. -/
 def μ [P.TwiceNeZero] : R :=
@@ -133,7 +133,8 @@ lemma thriceNeZero_isUnit [P.ThriceNeZero] :
   ThriceNeZero.thriceNeZero
 
 lemma isUnit_μ [P.TwiceNeZero] [P.ThriceNeZero] : IsUnit P.μ := by
-  convert P.thriceNeZero_isUnit.mul (P.pY_inv ^ 2).isUnit using 1; calc
+  convert P.thriceNeZero_isUnit.mul (P.pY_inv ^ 2).isUnit using 1
+  calc
   _ = (W.a₂ + 3 * P.X) * (P.pY * P.pY_inv) ^ 2
         + P.pX * P.pY_inv * (P.pY * P.pY_inv) * W.a₁ - (P.pX * P.pY_inv) ^ 2 :=
     by rw [P.pY_mul_inv, μ]; simp
@@ -150,8 +151,8 @@ def μ_inv [P.TwiceNeZero] [P.ThriceNeZero] : Rˣ :=
 @[simp] lemma μ_inv_mul [P.TwiceNeZero] [P.ThriceNeZero] : P.μ_inv * P.μ = 1 :=
   (mul_comm ..).trans P.μ_mul_inv
 
-@[simp] lemma μ_inv_inv [P.TwiceNeZero] [P.ThriceNeZero] : P.μ_inv⁻¹ = P.μ :=
-  by rw [μ_inv, inv_inv]; rfl
+@[simp] lemma μ_inv_inv [P.TwiceNeZero] [P.ThriceNeZero] : P.μ_inv⁻¹ = P.μ := by
+  rw [μ_inv, inv_inv]; rfl
 
 end Affine.Point
 
@@ -199,8 +200,8 @@ def ofTwiceNeZero [P.TwiceNeZero] : VariableChange R where
   t := P.Y
 
 lemma ofTwiceNeZero_eq [P.TwiceNeZero] : W.ofTwiceNeZero P =
-    W.ofTwiceNeZero_aux P * W.ofNeZero P :=
-  by simp [ofTwiceNeZero, ofTwiceNeZero_aux, ofNeZero, VariableChange.mul_def]
+    W.ofTwiceNeZero_aux P * W.ofNeZero P := by
+  simp [ofTwiceNeZero, ofTwiceNeZero_aux, ofNeZero, VariableChange.mul_def]
 
 @[simp] lemma ofTwiceNeZero_a₆ [P.TwiceNeZero] : (W.ofTwiceNeZero P • W).a₆ = 0 := by
   rw [ofTwiceNeZero_eq, mul_smul, variableChange_a₆, ofTwiceNeZero_aux]
@@ -238,8 +239,8 @@ def toTateNF [P.TwiceNeZero] [P.ThriceNeZero] : VariableChange R where
   t := P.Y
 
 lemma toTateNF_eq [P.TwiceNeZero] [P.ThriceNeZero] : W.toTateNF P =
-    W.toTateNF_aux P * W.ofTwiceNeZero P :=
-  by simp [toTateNF, toTateNF_aux, ofTwiceNeZero, VariableChange.mul_def]
+    W.toTateNF_aux P * W.ofTwiceNeZero P := by
+  simp [toTateNF, toTateNF_aux, ofTwiceNeZero, VariableChange.mul_def]
 
 lemma toTateNF_a₆ [P.TwiceNeZero] [P.ThriceNeZero] : (W.toTateNF P • W).a₆ = 0 := by
   rw [toTateNF_eq, mul_smul, variableChange_a₆, ofTwiceNeZero_a₆, ofTwiceNeZero_a₄]
