@@ -21,7 +21,7 @@ open CategoryTheory
 
 section sectionOver
 
-variable {C : Type u} [Category.{v,u} C] (F : C ⥤ Type w) -- Type w ???
+variable {C : Type u} [Category.{v,u} C] (F : C ⥤ Type w)
 
 def sectionOver : Type max u w :=  (X : C) × F.obj X
 
@@ -53,18 +53,48 @@ lemma id_fst : (𝟙 s : sectionOverMorphism F s s).fst = 𝟙 (s.fst) := rfl
 @[simp]
 lemma comp_fst : (f ≫ g).fst = f.fst ≫ g.fst := rfl
 
-noncomputable def sectionOverFunctor (G : C ⥤ Type w) : sectionOver F ⥤ Type w where
+end
+
+end sectionOver
+
+section
+
+variable (G : C ⥤ Type w)
+
+def sectionOverFunctor : sectionOver F ⥤ Type w where
   obj s := G.obj s.fst
   map f := G.map f.fst
+
+def morphismsEquivSectionsSectionOverFunctor :
+    (F ⟶ G) ≃ (sectionOverFunctor F G).sections where
+  toFun α := ⟨
+      fun s => α.app s.fst s.snd,
+      fun {s s'} f => by
+        show (α.app s.fst ≫ G.map f.fst) s.snd = α.app s'.fst s'.snd
+        rw [← α.naturality]
+        simp
+    ⟩
+  invFun σ := {
+      app X x := σ.val (⟨X, x⟩ : sectionOver F),
+      naturality {X Y} f := by
+        ext x
+        simp only [types_comp_apply,
+          ← σ.prop ({fst := f} : sectionOverMorphism F ⟨X, x⟩ ⟨Y, F.map f x⟩)]
+        rfl
+    }
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+def morphismsEquivLimitSectionOver [UnivLE.{max w u, w}] :
+    (F ⟶ G) ≃ Limits.limit (sectionOverFunctor F G) :=
+  sorry
 
 end
 
 end sectionOver
 
-end sectionOver
 
-
-
+/-
 section
 
 variable {C : Type u} [Category.{v,u} C] (F G : Cᵒᵖ ⥤ Type v)
@@ -95,4 +125,4 @@ noncomputable def sectionsOverFunctor : (sectionsOverCategory F)ᵒᵖ ⥤ Type 
 /- def morphismsEquivSections :
     (F ⟶ G) ≃ Limits.limit (sectionsOverFunctor F G) -/
 
-end
+end-/
