@@ -301,7 +301,7 @@ instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
 /-- See Note [custom simps projection] -/
 def Simps.apply (proj : Z → B) (e : Trivialization F proj) : Z → B × F := e
 
--- See Note [custom simps projection] -/
+/-- See Note [custom simps projection] -/
 noncomputable def Simps.symm_apply (proj : Z → B) (e : Trivialization F proj) : B × F → Z :=
   e.toPartialHomeomorph.symm
 
