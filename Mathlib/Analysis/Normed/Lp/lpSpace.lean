@@ -470,9 +470,6 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           have hg₁ : ∀ i, 0 ≤ ‖g i‖ := fun i => norm_nonneg _
           have hf₂ := lp.hasSum_norm hp'' f
           have hg₂ := lp.hasSum_norm hp'' g
-          #adaptation_note /-- 2025-05-31 (kmill) Needed to add this `show`, otherwise the kernel
-          checking was getting stuck. -/
-          show ‖f + g‖ ≤ ‖f‖ + ‖g‖
           -- apply Minkowski's inequality
           obtain ⟨C, hC₁, hC₂, hCfg⟩ :=
             Real.Lp_add_le_hasSum_of_nonneg hp' hf₁ hg₁ (norm_nonneg' _) (norm_nonneg' _) hf₂ hg₂
