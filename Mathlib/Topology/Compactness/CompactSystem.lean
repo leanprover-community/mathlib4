@@ -282,6 +282,432 @@ theorem of_isCompact [T2Space α] :
 
 end IsCompactIsClosed
 
+end IsCompactSystem
+
+section PrefixInduction
+
+variable {β : Type*}
+variable (q : ∀ n, (k : Fin n → β) → Prop)
+variable (step0 : q 0 Fin.elim0)
+variable (step :
+    ∀ n (k : Fin n → β) (_ : q n k),
+    { a : β // q (n+1) (Fin.snoc k a)})
+
+/-- In this section, we prove a general induction principle, which we need for the construction
+`Nat.prefixInduction q step0 step : ℕ →  β` based on some `q : (n : ℕ) → (Fin n → β) → Prop`. For
+the inducation start, `step0 : q 0 _` requires that `Fin 0` cannot be satisfied, and
+`step : (n : ℕ) → (k : Fin n → β) → q n k → { a : β // q (n + 1) (Fin.snoc k a) }) (n : ℕ) : β`
+constructs the next element satisfying `q (n + 1) _` from a proof of `q n k` and finding the next
+element.
+
+In comparisong to other induction principles, the proofs of `q n k` are needed in order to find
+the next element. -/
+
+def Nat.prefixInduction.aux : ∀ (n : Nat), { k : Fin n → β // q n k }
+    | 0 => ⟨Fin.elim0, step0⟩
+    | n+1 =>
+      let ⟨k, hk⟩ := aux n
+      let ⟨a, ha⟩ := step n k hk
+      ⟨Fin.snoc k a, ha⟩
+
+theorem Nat.prefixInduction.auxConsistent :
+  ∀ n (i : Fin n),
+    (Nat.prefixInduction.aux q step0 step (i+1)).1 (Fin.last i) =
+    (Nat.prefixInduction.aux q step0 step n).1 i := by
+  intro n
+  induction n
+  next => simp
+  next n ih =>
+    apply Fin.lastCases
+    case last => simp
+    case cast =>
+      intro i
+      simp only [Fin.coe_castSucc]
+      rw [ih, aux]
+      simp
+
+def Nat.prefixInduction (n : Nat) : β :=
+  (Nat.prefixInduction.aux q step0 step (n+1)).1 (Fin.last n)
+
+theorem Nat.prefixInduction_spec (n : Nat) : q n (Nat.prefixInduction q step0 step ·) := by
+  cases n
+  next =>
+    convert step0
+  next n =>
+    have hk := (Nat.prefixInduction.aux q step0 step (n+1)).2
+    convert hk with i
+    apply Nat.prefixInduction.auxConsistent
+
+/- Often, `step` can only be proved by showing an `∃` statement. For this case, we use `step'`. -/
+variable (step' : ∀ n (k : Fin n → β) (_ : q n k), ∃ a, q (n + 1) (Fin.snoc k a))
+
+noncomputable def step_of : (n : ℕ) → (k : Fin n → β) → (hn : q n k) →
+    { a : β // q (n + 1) (Fin.snoc k a) } :=
+  fun n k hn ↦ ⟨(step' n k hn).choose, (step' n k hn).choose_spec⟩
+
+noncomputable def Nat.prefixInduction' (n : Nat) : β :=
+  (Nat.prefixInduction.aux q step0 (fun n k hn ↦ step_of q step' n k hn) (n+1)).1 (Fin.last n)
+
+theorem Nat.prefixInduction'_spec (n : Nat) : q n (Nat.prefixInduction' q step0 step' ·) := by
+  apply prefixInduction_spec
+
+end PrefixInduction
+
+namespace IsCompactSystem
+
+section Union
+
+-- (hp : IsCompactSystem p)
+-- (L : ℕ → Finset (Set α))
+--   (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d)
+
+/-- `q n K` is the joint property that `∀ (k : Fin n), K k ∈ L k` and
+`∀ N, (⋂ (j : Fin n), K j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet) ≠ ∅`.` holds. -/
+def q (L : ℕ → Finset (Set α))
+  : ∀ n, (Fin n → Set α) → Prop := fun n K ↦ (∀ (k : Fin n), K k ∈ L k ∧
+  (∀ N, (⋂ j, K j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet) ≠ ∅))
+
+lemma step0 {L : ℕ → Finset (Set α)} : q L 0 Fin.elim0 := by
+  simp [q]
+
+lemma step' (hp : IsCompactSystem p) {L : ℕ → Finset (Set α)}
+    (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d)
+    : ∀ n (k : Fin n → Set α), (q L n k) → ∃ a, q L (n + 1) (Fin.snoc k a) := by
+  sorry
+
+noncomputable def mem_of_union (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
+    (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d) : ℕ → Set α := by
+  exact Nat.prefixInduction' (q L) step0 (step' hp hL)
+
+theorem mem_of_union_spec (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
+    (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d) (n : ℕ) :
+    q (L := L) n (mem_of_union hp L hL · ) :=
+  Nat.prefixInduction'_spec (q L) step0 (step' hp hL) n
+
+
+
+
+def get_element_zero (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
+    { K : Fin 0 → Set α // (q L) 0 K} := by
+  exists fun _ => ∅
+  simp [q, h]
+
+#check Fin.snoc_castSucc
+
+example {n : ℕ} (f : Fin n → α) (a : α) (k : Fin n) : Fin.snoc (α := fun _ ↦ α)
+  f a k.castSucc = f k := by
+  exact Fin.snoc_castSucc (α := fun _ ↦ α) a f k
+
+example {n : ℕ} (f : Fin n → α) (a : α) : (Fin.snoc (α := fun _ ↦ Set α) f a) (Fin.last _) = a := by
+  sorry
+
+def find0 (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) : (q L) 0 Fin.elim0 := by
+  sorry
+
+def findSucc (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) : ∀ n (k : Fin n → Set α)
+    (_ : (q L) n k), { a : Set α // (q L) (n + 1) (Fin.snoc k a) } := by
+  sorry
+-- ∀ n (k : Fin n → α) (_ : q n k), { a : α // q (n+1) (Fin.snoc k a)})
+
+
+/-- For `L : ℕ → Finset (Set α)` such that `∀ K ∈ L n, p K` and
+`h : ∀ N, ⋂ k < N, ⋃₀ L k ≠ ∅`, `mem_of_union h n` is some `K : ℕ → Set α` such that `K n ∈ L n`
+for all `n` (this is `prop₀`) and `∀ N, ⋂ (j < n, K j) ∩ ⋂ (k < N), (⋃₀ L (n + k)) ≠ ∅`
+(this is `prop₁`.) -/
+noncomputable def mem_of_union (L : ℕ → Finset (Set α)) (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :=
+  Nat.prefixInduction (α := (fun _ ↦ Set α)) (q L) (find0 L h) (findSucc L h)
+
+
+#exit
+
+
+
+
+lemma l2 {ι : Type*} (s t : Set α) (u : Set ι) (L : (i : ι) → (hi : i ∈ u) → Set α)
+  (h : s ⊆ ⋃ (n : ι) (hn : n ∈ u), L n hn) (h' : ∀ (n : ι) (hn : n ∈ u), t ∩ (L n hn) = ∅) :
+    t ∩ s = ∅ := by
+  have j : ⋃ (n : ι) (hn : n ∈ u), t ∩ (L n hn) = ∅ := by
+    simp_rw [iUnion_eq_empty]
+    exact h'
+  simp_rw [← subset_empty_iff] at h' j ⊢
+  have j' : ⋃ (n : u), t ∩ L n.val n.prop = ⋃ n, ⋃ (hn : n ∈ u), t ∩ L n hn := by
+    exact iUnion_coe_set u fun i ↦ t ∩ L (↑i) (Subtype.prop i)
+  rw [← j', ← inter_iUnion, iUnion_coe_set] at j
+  have gf := inter_subset_inter (t₁ := t) (fun ⦃a_1⦄ a ↦ a) h
+  apply le_trans gf j
+
+
+-- variable (p : {n : ℕ} → ((k : Fin (n + 1)) → (β k)) → Prop)
+
+/-- `r n K` is the property which must hold for compact systems:
+`∀ N, (⋂ (j < n), (K j)) ∩ (⋂ (k < N), (⋃₀ (L (n + k)).toSet)) ≠ ∅`. -/
+noncomputable def r (n : ℕ) (K : ℕ → Set α) : Prop :=
+  ∀ N, (⋂ (j < n), (K j)) ∩ (⋂ (k < N), (⋃₀ (L (n + k)).toSet)) ≠ ∅
+
+-- h0 -> (get_element_zero hL hc)
+-- (h0 : ∃ x : (ℕ → α), x 0 ∈ β 0 ∧ p 0 x)
+
+lemma nonempty' (n : ℕ) (K : ℕ → Set α)
+    (hc : ∀ N, (⋂ (k < n), K k) ∩ (⋂ k < N, ⋃₀ (L (n + k))) ≠ ∅) : (L n).Nonempty := by
+  specialize hc 1
+  by_contra! h
+  simp only [Finset.not_nonempty_iff_eq_empty] at h
+  apply hc
+  simp [h]
+
+lemma nonempty (k : ℕ) (hc : ∀ N, ⋂ k < N, ⋃₀ (L k : Set (Set α)) ≠ ∅) : (L k).Nonempty := by
+  specialize hc (k + 1)
+  by_contra! h
+  simp only [Finset.not_nonempty_iff_eq_empty] at h
+  apply hc
+  apply iInter_eq_empty_iff.mpr fun x ↦ ⟨k, ?_⟩
+  -- simp only [Nat.lt_add_one, iInter_true, mem_sUnion, Finset.mem_coe, not_exists, not_and]
+  simp only [Nat.lt_add_one, iInter_true, Finset.mem_coe, not_exists, not_and]
+  have hg : ⋃₀ (L k : Set (Set α)) = ∅ := by
+    rw [h]
+    simp only [Finset.coe_empty, sUnion_empty]
+  exact of_eq_false (congrFun hg x)
+
+/-- `q n K` is the joint property that `(∀ k < n, K k ∈ L k)` and `r n K)` holds. -/
+def q : ℕ → (ℕ → Set α) → Prop := fun n K ↦ (∀ k < n, K k ∈ L k) ∧ (r L n K)
+
+lemma get_element_zero' (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
+    ∃ (K : ℕ → Set α), q L 0 K := by
+  simp [q, r, h]
+
+def get_element_zero (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
+    { K : ℕ → Set α // q L 0 K} := by
+  exists fun _ => ∅
+  simp [q, r, h]
+
+lemma get_element_succ' (n : ℕ)
+  (K : ℕ → Set α) (hK : q L n K) : ∃ y, q L (n + 1) (Function.update K n y) := by
+  simp_rw [q, r] at hK ⊢
+  by_contra! h
+  choose b hb using h
+  have hn : ∀ y ∈ L n, ∀ k < n + 1, Function.update K n y k ∈ L k := by
+    intro y hy k hk
+    by_cases d : n = k
+    · rw [d]
+      simp only [Function.update_self]
+      exact d ▸ hy
+    · have d' : k < n := by
+        by_contra h
+        apply d
+        simp only [not_lt] at h
+        apply Eq.symm
+        exact Nat.eq_of_le_of_lt_succ h hk
+      simp only [ne_eq, d'.ne, not_false_eq_true, Function.update_of_ne]
+      exact hK.1 k d'
+  classical
+  let b' := fun y ↦ dite (y ∈ L n) (fun hy ↦ (b y (hn y hy))) (fun _ ↦ 0)
+  have hb' := fun y hy ↦ hb y (hn y hy)
+  have hb'' (y : Set α) (hy : y ∈ L n) : b y (hn y hy) = b' y  := by
+    simp [b', hy]
+  obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L n) b' (nonempty' L n K hK.2)
+  apply hK.2 (b' K0Max + 1)
+  have h₁ (y s : Set α): (⋂ j, ⋂ (_ : j < n + 1), Function.update K n y j) ∩ s =
+      (⋂ j, ⋂ (_ : j < n), K j) ∩ y ∩ s := by
+    apply congrFun (congrArg Inter.inter _) s
+    ext x
+    refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ ?_⟩ <;> simp only [mem_iInter, mem_inter_iff] at h ⊢
+    · intro i hi
+      have h' := h i (le_trans hi (le_succ n))
+      simp only [ne_eq, hi.ne, not_false_eq_true, Function.update_of_ne] at h'
+      exact h'
+    · have h'' := h n (Nat.lt_add_one n)
+      simp only [Function.update_self] at h''
+      exact h''
+    · intro i hi
+      by_cases h₁ : i < n
+      · simp only [ne_eq, h₁.ne, not_false_eq_true, Function.update_of_ne]
+        exact h.1 i h₁
+      · simp only [not_lt] at h₁
+        have h₂ := Nat.eq_of_le_of_lt_succ h₁ hi
+        rw [h₂]
+        simp only [Function.update_self]
+        exact h.2
+  simp_rw [h₁] at hb'
+
+  have h₂ : ⋂ k < b' K0Max + 1, ⋃₀ (L (n + k)).toSet ⊆
+    ⋃ (y : Set α) (hy : y ∈ L n), y ∩ ⋂ (k < b y (hn y hy)), ⋃₀ (L (n + 1 + k)).toSet := by
+    obtain ⟨y, hy⟩ := nonempty' L n K hK.2
+    intro x hx
+    simp only [mem_iInter, mem_sUnion, Finset.mem_coe, mem_iUnion, mem_inter_iff,
+      exists_and_left] at hx ⊢
+    obtain ⟨i, hi⟩ := hx 0 (zero_lt_succ (b' K0Max))
+    rw [add_zero] at hi
+    use i, hi.2, hi.1
+    intro k hk
+    have hk' : 1 + k < b' K0Max + 1:= by
+      rw [add_comm]
+      simp only [Nat.add_lt_add_iff_right]
+      apply lt_of_lt_of_le hk
+      rw [hb'']
+      apply hK0₂ i hi.1
+      exact hi.1
+    obtain ⟨t, ht⟩ := hx (1 + k) hk'
+    rw [← add_assoc] at ht
+    use t, ht.1, ht.2
+  simp_rw [inter_assoc] at hb'
+  apply l2 (s := ⋂ k < b' K0Max + 1, ⋃₀ (L (n + k)).toSet) (t := (⋂ j < n, K j)) (u := L n)
+    (L := fun (y : Set α) (hy : y ∈ L n) ↦ (y ∩ ⋂ k, ⋂ (hk : k < b y (hn y hy)),
+      ⋃₀ (L (n + 1 + k)).toSet)) h₂ hb'
+
+/-- `mem_of_union_aux h n` is the product of some `K : ℕ → Set α)` and `q n K`.
+Constructing `(mem_of_union_aux h n).1` works inductively. When constructing
+`(mem_of_union_aux h (n + 1)).1`, we update `(mem_of_union_aux h n).1` only at position `n`. -/
+noncomputable def mem_of_union_aux (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :
+    (n : ℕ) → {K : ℕ → Set α | q L n K}
+  | 0 => get_element_zero L h
+  | n + 1 => by
+    have g := (get_element_succ' L) n (mem_of_union_aux h n).1 (mem_of_union_aux h n).2
+    exact ⟨Function.update (mem_of_union_aux h n).1 n g.choose, g.choose_spec⟩
+
+namespace mem_of_union
+
+lemma constantEventually (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n k : ℕ) (hkn : k < n) :
+    (mem_of_union_aux L h n).1 k = (mem_of_union_aux L h (n + 1)).1 k := by
+  simp [mem_of_union_aux, hkn.ne]
+
+lemma constantEventually' (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n k : ℕ) (hkn : k < n) :
+    (mem_of_union_aux L h n).1 k = (mem_of_union_aux L h (k + 1)).1 k := by
+  induction n with
+  | zero =>
+    cases hkn
+  | succ n hn =>
+    by_cases h' : k < n
+    · rw [← hn h']
+      exact (constantEventually L h n k h').symm
+    · have hkn' : k = n := by
+        exact Nat.eq_of_lt_succ_of_not_lt hkn h'
+      rw [hkn']
+
+lemma constantEventually'' (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (m n k : ℕ)
+  (hkn : k < n) (hkm : k < m) : (mem_of_union_aux L h n).1 k
+      = (mem_of_union_aux L h m).1 k := by
+  rw [constantEventually' L h n k hkn, constantEventually' L h m k hkm]
+
+end mem_of_union
+
+/-- For `L : ℕ → Finset (Set α)` such that `∀ K ∈ L n, p K` and
+`h : ∀ N, ⋂ k < N, ⋃₀ L k ≠ ∅`, `mem_of_union h n` is some `K : ℕ → Set α` such that `K n ∈ L n`
+for all `n` (this is `prop₀`) and `∀ N, ⋂ (j < n, K j) ∩ ⋂ (k < N), (⋃₀ L (n + k)) ≠ ∅`
+(this is `prop₁`.) -/
+noncomputable def mem_of_union (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :=
+  fun n ↦ (mem_of_union_aux L h (n + 1)).1 n
+
+namespace mem_of_union
+
+lemma prop₀ (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) : mem_of_union L h n ∈ L n := by
+  exact (mem_of_union_aux L h (n + 1)).2.1 n (Nat.lt_add_one n)
+
+lemma isSubset (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n N : ℕ) :
+    (⋂ j < n, mem_of_union L h j) ∩ ⋂ (k < N), (⋃₀ L (n + k)) ⊆
+      ⋂ (k < n + N), (⋃₀ (L k).toSet) := by
+  have h' : ⋂ (k < n + N), (⋃₀ (L k).toSet) =
+    (⋂ (k < n), (⋃₀ (L k).toSet)) ∩ ⋂ (k <  N), (⋃₀ (L (n + k)).toSet) := by
+    ext x
+    simp only [mem_iInter, mem_sUnion, Finset.mem_coe, mem_inter_iff]
+    refine ⟨fun h ↦ ⟨fun i hi ↦ ?_, fun i hi ↦ ?_⟩, fun h i hi ↦ ?_⟩
+    · refine h i (lt_of_lt_of_le hi (Nat.le_add_right n N))
+    · refine h (n + i) (Nat.add_lt_add_left hi n)
+    · by_cases hin : i < n
+      · exact h.1 i hin
+      · have h₁ : i - n < N := Nat.sub_lt_left_of_lt_add (Nat.le_of_not_lt hin) hi
+        have h₂ : n + (i - n) = i := by
+          exact add_sub_of_le <| Nat.le_of_not_lt hin
+        exact h₂ ▸ h.2 (i - n) h₁
+  rw [h']
+  apply inter_subset_inter _ fun ⦃a⦄ a ↦ a
+  have h'' (j : ℕ) (hj : j < n) : mem_of_union L h j ⊆ ⋃₀ (L j).toSet := by
+    exact subset_sUnion_of_mem <| prop₀ L h j
+  exact iInter₂_mono h''
+
+lemma isSubsetN0 (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :
+    (⋂ j, mem_of_union L h j) ⊆
+      ⋂ k, (⋃₀ (L k).toSet) := by
+  exact iInter_mono <| fun n ↦
+  subset_sUnion_of_subset (↑(L n)) (mem_of_union L h n) (fun ⦃a⦄ a ↦ a) (prop₀ L h n)
+
+lemma has_p (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d)
+    (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) : p (mem_of_union L h n) := by
+  exact hL n (mem_of_union L h n) (prop₀ L h n)
+
+lemma prop₁ (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) :
+    ∀ N, (⋂ (j < n), (mem_of_union L h j)) ∩ (⋂ (k < N), (⋃₀ (L (n + k)).toSet)) ≠ ∅ := by
+  have h' : r L n (mem_of_union_aux L h n).val := (mem_of_union_aux L h n).2.2
+  simp only [r] at h'
+  simp only [mem_of_union]
+  intro N
+  specialize h' N
+  conv at h' =>
+    lhs
+    enter [1,1]
+    intro j
+    enter[1]
+    intro hj
+    rw [constantEventually' L h n j hj]
+  exact h'
+
+lemma prop₁N0 (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) (n : ℕ) :
+    (⋂ (j < n), (mem_of_union L h j)) ≠ ∅ := by
+  have h' : (⋂ (k < 0), (⋃₀ (L (n + k)).toSet)) = univ := by
+    simp
+  have d (s : Set α) : s = s ∩ univ := by exact left_eq_inter.mpr fun ⦃a⦄ a ↦ trivial
+  rw [d (⋂ j, ⋂ (_ : j < n), mem_of_union L h j)]
+  rw [← h']
+  exact prop₁ L h n 0
+
+end mem_of_union
+
+/-- Finite unions of sets in a compact system. -/
+def union (p : Set α → Prop) : Set α → Prop :=
+  (sUnion '' ({ L : Set (Set α) | L.Finite ∧ ∀ K ∈ L, p K}))
+
+namespace union
+
+lemma mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = ⋃₀ L ∧ ∀ K ∈ L, p K := by
+  refine ⟨fun ⟨L, hL⟩ ↦ ?_, fun h ↦ ?_⟩
+  · simp only [mem_setOf_eq] at hL
+    let L' := (hL.1.1).toFinset
+    use L'
+    rw [← hL.2, Finite.coe_toFinset]
+    refine ⟨rfl, fun K hK ↦ ?_⟩
+    rw [Finite.mem_toFinset] at hK
+    apply hL.1.2 K hK
+  · obtain ⟨L, hL⟩ := h
+    use L
+    simp only [mem_setOf_eq, Finset.finite_toSet, Finset.mem_coe, true_and]
+    refine ⟨hL.2, hL.1.symm⟩
+
+theorem isCompactSystem (p : Set α → Prop)(hp : IsCompactSystem p) : IsCompactSystem (union p) := by
+  have hp' := (IsCompactSystem.iff_of_not_empty p).mp hp
+  rw [IsCompactSystem.iff_of_not_empty]
+  intro C hi
+  simp_rw [mem_iff] at hi
+  choose L' hL' using hi
+  have hL'1 := fun n ↦ (hL' n).1
+  have hL'2 := fun n ↦ (hL' n).2
+  simp_rw [hL'1]
+  intro hL
+  let K := mem_of_union L' hL
+  have h₁ : ⋂ i, K i ⊆ ⋂ i, ⋃₀ (L' i).toSet := by
+    apply mem_of_union.isSubsetN0 L'
+  have h₂ : ⋂ i, K i ≠ ∅ := by
+    apply hp' _
+    · apply mem_of_union.has_p
+      exact hL'2
+    · apply mem_of_union.prop₁N0
+  rw [← nonempty_iff_ne_empty] at h₂ ⊢
+  exact Nonempty.mono h₁ h₂
+
+end union
+
+end Union
+
+end IsCompactSystem
+
 section pi
 
 variable {ι : Type*}  {α : ι → Type*}
