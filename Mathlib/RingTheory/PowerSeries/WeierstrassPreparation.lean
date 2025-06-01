@@ -658,29 +658,6 @@ its maximal ideal. -/
 abbrev IsWeierstrassFactorization (g : A⟦X⟧) (f : A[X]) (h : A⟦X⟧) [IsLocalRing A] : Prop :=
   g.IsWeierstrassFactorizationAt f h (IsLocalRing.maximalIdeal A)
 
-theorem _root_.Polynomial.IsWeaklyEisensteinAt.mul
-    {R : Type*} [CommSemiring R] {𝓟 : Ideal R} {f f' : R[X]}
-    (hf : f.IsWeaklyEisensteinAt 𝓟) (hf' : f'.IsWeaklyEisensteinAt 𝓟) :
-    (f * f').IsWeaklyEisensteinAt 𝓟 := by
-  rw [Polynomial.isWeaklyEisensteinAt_iff] at hf hf' ⊢
-  intro n hn
-  rw [Polynomial.coeff_mul]
-  refine Ideal.sum_mem _ fun x hx ↦ ?_
-  rcases lt_or_le x.1 f.natDegree with hx1 | hx1
-  · exact Ideal.mul_mem_right _ _ (hf hx1)
-  replace hx1 : x.2 < f'.natDegree := by
-    by_contra!
-    rw [Finset.HasAntidiagonal.mem_antidiagonal] at hx
-    replace hn := hn.trans_le Polynomial.natDegree_mul_le
-    linarith
-  exact Ideal.mul_mem_left _ _ (hf' hx1)
-
-theorem _root_.Polynomial.IsDistinguishedAt.mul
-    {R : Type*} [CommRing R] {f f' : R[X]} {I : Ideal R}
-    (hf : f.IsDistinguishedAt I) (hf' : f'.IsDistinguishedAt I) :
-    (f * f').IsDistinguishedAt I :=
-  ⟨hf.toIsWeaklyEisensteinAt.mul hf'.toIsWeaklyEisensteinAt, hf.monic.mul hf'.monic⟩
-
 namespace IsWeierstrassFactorizationAt
 
 variable {g : A⟦X⟧} {f : A[X]} {h : A⟦X⟧} {I : Ideal A} (H : g.IsWeierstrassFactorizationAt f h I)
