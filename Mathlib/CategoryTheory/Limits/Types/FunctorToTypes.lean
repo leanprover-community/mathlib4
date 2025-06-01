@@ -57,7 +57,7 @@ end
 
 end sectionOver
 
-section
+section morphismsEquiv
 
 variable (G : C ⥤ Type w)
 
@@ -85,11 +85,12 @@ def morphismsEquivSectionsSectionOverFunctor :
   left_inv _ := rfl
   right_inv _ := rfl
 
-def morphismsEquivLimitSectionOver [UnivLE.{max w u, w}] :
+noncomputable def morphismsEquivLimitSectionOver [UnivLE.{max w u, w}] :
     (F ⟶ G) ≃ Limits.limit (sectionOverFunctor F G) :=
-  sorry
+  (morphismsEquivSectionsSectionOverFunctor F G).trans
+    (Limits.Types.limitEquivSections (sectionOverFunctor F G)).symm
 
-end
+end morphismsEquiv
 
 end sectionOver
 
