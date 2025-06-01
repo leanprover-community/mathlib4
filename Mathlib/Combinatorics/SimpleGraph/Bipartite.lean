@@ -27,10 +27,8 @@ This file proves results about bipartite simple graphs, including several double
 * `SimpleGraph.IsBipartite`: Predicate for a simple graph to be bipartite.
   `G.IsBipartite` is defined as an abbreviation for `G.Colorable 2`.
 
-* `twocol_iff_bipartition` is the proof that a twocoloring implies a bipartition and vice versa.
-
-* `bipartite_iff_bipartition` proves that `G.IsBipartite` iff there exist sets
-  `s t : Set V` such that `G.IsBipartiteWith s t`.
+* `SimpleGraph.isBipartite_iff_exists_isBipartiteWith` is the proof that `G.IsBipartite` iff
+  `G.IsBipartiteWith s t`.
 
 * `SimpleGraph.isBipartiteWith_sum_degrees_eq` is the proof that if `G.IsBipartiteWith s t`, then
   the sum of the degrees of the vertices in `s` is equal to the sum of the degrees of the vertices
@@ -248,13 +246,11 @@ theorem isBipartiteWith_sum_degrees_eq_card_edges' (h : G.IsBipartiteWith s t) :
 end IsBipartiteWith
 variable {V : Type*} (G : SimpleGraph V)
 
-/-- A simple graph is bipartite if it admits a 2-coloring. -/
+/-- A graph is bipartite if it is `Colorable G 2`. -/
 abbrev IsBipartite (G : SimpleGraph V) : Prop := G.Colorable 2
 
-/--
-From a 2-coloring of G, produce two color classes s and t witnessing bipartiteness:
-Disjoint s t where every edge goes between s and t.
--/
+/-- If a graph is bipartite, then there exist disjoint sets `s` and `t`
+such that all edges connect a vertex in `s` to a vertex in `t`. -/
 lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) :
     ∃ s t, G.IsBipartiteWith s t := by
   rcases h with ⟨c, hc_adj⟩
@@ -274,10 +270,7 @@ lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) :
   exact ⟨s, t, h₁, h₂⟩
 
 
-/--
-Given a bipartition s, t of G, construct an explicit 2-coloring by sending vertices in s to 0
-and vertices in t to 1. Show adjacent vertices get different colors (through the pattern match).
--/
+/-- If a graph has a bipartition, then it is 2-colorable. -/
 lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) :
     G.IsBipartite := by
   classical
@@ -291,10 +284,7 @@ lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) :
   · have hv_not_s : v ∉ s := h_disj.subset_compl_left hv_t
     simp [hv_not_s, hw_s]
 
-/--
-Putting the two previous lemmas together to show a biimplication between having a twocoloring
-and having a bipartition.
--/
+/-- `G.IsBipartite` if and only if `G.IsBipartiteWith s t`. -/
 theorem isBipartite_iff_exists_isBipartiteWith :
   G.IsBipartite ↔ ∃ s t : Set V, G.IsBipartiteWith s t where
   mp := IsBipartite.exists_isBipartiteWith G
