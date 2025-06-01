@@ -105,6 +105,10 @@ abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
 noncomputable def preCounitIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
   Nonempty.some (Quotient.mk_out X)
 
+alias fromSkeleton_toSkeleton_iso := preCounitIso
+
+-- lemma preCounitIso_hom (X : C) : eqToHom (C := Skeleton C) _ = (preCounitIso X).hom := _
+
 variable (C)
 
 /-- An inverse to `fromSkeleton C` that forms an equivalence with it. -/
@@ -134,9 +138,69 @@ lemma skeleton_isSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
   skel := skeleton_skeletal C
   eqv := fromSkeleton.isEquivalence C
 
-section
-
 variable {C D}
+
+section API
+
+lemma toSkeleton_fromSkeleton_eq_self (X : Skeleton C) : toSkeleton ((fromSkeleton C).obj X) = X :=
+  Quotient.out_eq _
+
+lemma toSkeleton_eq_toSkeleton_iff {X Y : C} : toSkeleton X = toSkeleton Y ↔ Nonempty (X ≅ Y) :=
+  Quotient.eq
+
+lemma toSkeleton_eq_toSkeleton_of {X Y : C} (e : X ≅ Y) : toSkeleton X = toSkeleton Y :=
+  Quotient.sound ⟨e⟩
+
+/-- Provides a (noncomputable) isomorphism `X ≅ Y` given that `toSkeleton X = toSkeleton Y`. -/
+noncomputable def Iso.of_toSkeleton_eq_toSkeleton {X Y : C} (h : toSkeleton X = toSkeleton Y) :
+    X ≅ Y :=
+  Quotient.exact h |>.some
+
+lemma toSkeleton_eq_iff {X : C} {Y : Skeleton C} :
+    toSkeleton X = Y ↔ Nonempty (X ≅ (fromSkeleton C).obj Y) :=
+  Quotient.mk_eq_iff_out
+
+lemma toSkeleton_eq_of {X : C} {Y : Skeleton C} (e : (fromSkeleton C).obj Y ≅ X) :
+    toSkeleton X = Y :=
+  toSkeleton_eq_iff.2 ⟨e.symm⟩
+
+/-- Provides a (noncomputable) isomorphism `(fromSkeleton C).obj X ≅ Y` given that
+`toSkeleton Y = X`. -/
+noncomputable def Iso.of_toSkeleton_eq {X : Skeleton C} {Y : C} (h : toSkeleton Y = X) :
+    (fromSkeleton C).obj X ≅ Y :=
+  toSkeleton_eq_iff.1 h |>.some.symm
+
+end API
+
+namespace Functor
+
+/-- From a functor `C ⥤ D`, construct a map of skeletons `Skeleton C → Skeleton D`. -/
+noncomputable def mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D :=
+  (skeletonEquivalence C).functor ⋙ F ⋙ (skeletonEquivalence D).inverse
+
+variable (F : C ⥤ D)
+
+instance [F.Full] : F.mapSkeleton.Full := by unfold mapSkeleton; infer_instance
+
+instance [F.Faithful] : F.mapSkeleton.Faithful := by unfold mapSkeleton; infer_instance
+
+instance [F.EssSurj] : F.mapSkeleton.EssSurj := by unfold mapSkeleton; infer_instance
+
+noncomputable def toSkeletonFunctor_comp_mapSkeleton_natIso :
+    toSkeletonFunctor C ⋙ F.mapSkeleton ≅ F ⋙ toSkeletonFunctor D :=
+  NatIso.ofComponents (fun X ↦ (toSkeletonFunctor D).mapIso <| F.mapIso <| preCounitIso X)
+    (fun {X Y} f ↦ show (_ ≫ _) ≫ _ = _ ≫ _ by simp [assoc])
+
+lemma mapSkeleton_toSkeleton (X : C) : F.mapSkeleton.obj (toSkeleton X) = toSkeleton (F.obj X) :=
+  toSkeleton_eq_toSkeleton_of <| F.mapIso <| preCounitIso X
+
+lemma mapSkeleton_injective [F.Full] [F.Faithful] : Function.Injective F.mapSkeleton.obj :=
+  fun _ _ h ↦ skeleton_skeletal C ⟨F.mapSkeleton.preimageIso <| eqToIso h⟩
+
+lemma mapSkeleton_surjective [F.EssSurj] : Function.Surjective F.mapSkeleton.obj :=
+  fun Y ↦ let ⟨X, h⟩ := EssSurj.mem_essImage Y; ⟨X, skeleton_skeletal D h⟩
+
+end Functor
 
 /-- Two categories which are categorically equivalent have skeletons with equivalent objects.
 -/
@@ -147,7 +211,7 @@ noncomputable def Equivalence.skeletonEquiv (e : C ≌ D) : Skeleton C ≃ Skele
     left_inv := fun X => skeleton_skeletal C ⟨(f.unitIso.app X).symm⟩
     right_inv := fun Y => skeleton_skeletal D ⟨f.counitIso.app Y⟩ }
 
-end
+variable (C D)
 
 /-- Construct the skeleton category by taking the quotient of objects. This construction gives a
 preorder with nice definitional properties, but is only really appropriate for thin categories.
