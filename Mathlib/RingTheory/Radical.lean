@@ -206,7 +206,7 @@ theorem radical_pow_of_prime (ha : Prime a) {n : ℕ} (hn : n ≠ 0) :
 
 /--
 An irreducible `a` divides the radical of `b` if and only if it divides `b` itself.
-Note this generalises to radical elements `a`, see `dvd_radical_iff`.
+Note this generalises to radical elements `a`, see `UniqueFactorizationMonoid.dvd_radical_iff`.
 -/
 lemma dvd_radical_iff_of_irreducible (ha : Irreducible a) (hb : b ≠ 0) :
     a ∣ radical b ↔ a ∣ b := by
@@ -236,7 +236,7 @@ lemma squarefree_radical : Squarefree (radical a) := by
   nontriviality M
   exact isRadical_radical.squarefree (by simp [radical_ne_zero])
 
-lemma primeFactors_radical : primeFactors (radical a) = primeFactors a := by
+@[simp] lemma primeFactors_radical : primeFactors (radical a) = primeFactors a := by
   obtain rfl | ha₀ := eq_or_ne a 0
   · simp [primeFactors]
   have : Nontrivial M := ⟨a, 0, ha₀⟩
@@ -425,38 +425,26 @@ lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
 
 namespace Nat
 
-theorem radical_le_self {n : ℕ} (hn : n ≠ 0) : radical n ≤ n :=
-  Nat.le_of_dvd (by omega) radical_dvd_self
+@[simp] theorem radical_le_self_iff {n : ℕ} : radical n ≤ n ↔ n ≠ 0 :=
+  ⟨by aesop, fun h ↦ Nat.le_of_dvd (by omega) radical_dvd_self⟩
 
-theorem two_le_radical {n : ℕ} (hn : 2 ≤ n) : 2 ≤ radical n := by
-  obtain ⟨p, hp, hpn⟩ := Nat.exists_prime_and_dvd (show n ≠ 1 by omega)
-  trans p
-  · apply hp.two_le
-  · apply Nat.le_of_dvd (Nat.pos_of_ne_zero radical_ne_zero)
-    rwa [dvd_radical_iff_of_irreducible hp.prime.irreducible (by omega)]
+@[simp] theorem two_le_radical_iff {n : ℕ} : 2 ≤ radical n ↔ 2 ≤ n := by
+  refine ⟨?_, ?_⟩
+  · match n with | 0 | 1 | _ + 2 => simp
+  · intro hn
+    obtain ⟨p, hp, hpn⟩ := Nat.exists_prime_and_dvd (show n ≠ 1 by omega)
+    trans p
+    · apply hp.two_le
+    · apply Nat.le_of_dvd (Nat.pos_of_ne_zero radical_ne_zero)
+      rwa [dvd_radical_iff_of_irreducible hp.prime.irreducible (by omega)]
+
+@[simp] theorem one_lt_radical_iff {n : ℕ} : 1 < radical n ↔ 1 < n := two_le_radical_iff
+
+@[simp] theorem radical_le_one_iff {n : ℕ} : radical n ≤ 1 ↔ n ≤ 1 := by
+  simpa only [not_lt] using one_lt_radical_iff.not
 
 theorem radical_pos (n : ℕ) : 0 < radical n := pos_of_ne_zero radical_ne_zero
 
 end Nat
-
-open Qq Lean Mathlib.Meta Finset
-
-namespace Mathlib.Meta.Positivity
-open Positivity
-
-attribute [local instance] monadLiftOptionMetaM in
-/-- Positivity extension for radical. Proves radicals are nonzero. -/
-@[positivity UniqueFactorizationMonoid.radical _]
-def evalRadical : PositivityExt where eval {u α} _ _ e := do
-  match e with
-  | ~q(@radical _ $inst $inst' $inst'' $n) =>
-    have _ := ← synthInstanceQ q(Nontrivial $α)
-    assertInstancesCommute
-    return .nonzero q(radical_ne_zero)
-  | _ => throwError "not radical"
-
-example : 0 < radical 100 := by positivity
-
-end Mathlib.Meta.Positivity
 
 end Nat
