@@ -36,7 +36,7 @@ sequence mentioned in the previous paragraph (see `succ_mono` and `succ_exact`).
 the penultimate paragraph of the proof in [scholze2019condensed]. The second one, `GoodProducts`
 corresponds to the last paragraph in the proof in [scholze2019condensed].
 
-For the overall proof outline see `Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
 ## Main definitions
 
@@ -530,7 +530,6 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   rw [Finsupp.mem_span_image_iff_linearCombination, ← max_eq_eval C hsC ho] at h
   obtain ⟨m, ⟨hmmem, hmsum⟩⟩ := h
   rw [Finsupp.linearCombination_apply] at hmsum
-
   -- Write the image of `l` under `Linear_CC'` as `Linear_CC'` applied to the linear combination
   -- above, with leading `term I ho`'s added to each term:
   have : (Linear_CC' C hsC ho) (l.val.eval C) = (Linear_CC' C hsC ho)
@@ -553,7 +552,6 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   have hse := succ_exact C hC hsC ho
   rw [ShortComplex.moduleCat_exact_iff_range_eq_ker] at hse
   dsimp [ModuleCat.ofHom] at hse
-
   -- Rewrite `this` using exact sequence manipulations to conclude that a term is in the range of
   -- the linear map `πs`:
   rw [← LinearMap.sub_mem_ker_iff, ← hse] at this
@@ -565,7 +563,6 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   rw [← hc, map_finsuppSum] at hn
   apply l.prop.1
   rw [← hn]
-
   -- Now we just need to prove that a sum of two terms belongs to a span:
   apply Submodule.add_mem
   · apply Submodule.finsuppSum_mem

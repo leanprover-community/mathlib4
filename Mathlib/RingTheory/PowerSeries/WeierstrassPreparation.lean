@@ -176,7 +176,7 @@ variable {g} in
 its image in the residue field is not zero, then `g` can be used as a Weierstrass divisor. -/
 theorem IsWeierstrassDivisor.of_map_ne_zero [IsLocalRing A]
     (hg : g.map (IsLocalRing.residue A) ≠ 0) : g.IsWeierstrassDivisor := by
-  rw [IsWeierstrassDivisor, IsWeierstrassDivisorAt, ← IsLocalRing.not_mem_maximalIdeal]
+  rw [IsWeierstrassDivisor, IsWeierstrassDivisorAt, ← IsLocalRing.notMem_maximalIdeal]
   have h := coeff_order hg
   contrapose! h
   rwa [coeff_map, IsLocalRing.residue_eq_zero_iff]
@@ -763,14 +763,14 @@ theorem IsWeierstrassDivision.isUnit_of_map_ne_zero
   simp_rw [map_pow, map_X, coeff_X_pow_self, map_add, map_mul, coeff_map,
     Polynomial.coeff_coe, Polynomial.coeff_eq_zero_of_degree_lt H1, map_zero, add_zero] at H2
   rw [isUnit_iff_constantCoeff, ← isUnit_map_iff (IsLocalRing.residue A)]
-  rw [coeff_mul, ← Finset.sum_subset (s₁ := {(n, 0)}) (by simp) (fun p hp hnmem ↦ ?_),
+  rw [coeff_mul, ← Finset.sum_subset (s₁ := {(n, 0)}) (by simp) (fun p hp hnotMem ↦ ?_),
     Finset.sum_singleton, coeff_map, coeff_map, coeff_zero_eq_constantCoeff, mul_comm] at H2
   · exact isUnit_of_mul_eq_one _ _ H2.symm
   · rw [coeff_of_lt_order p.1 ?_]
     · rw [zero_mul]
     · rw [← ENat.lt_lift_iff (h := order_finite_iff_ne_zero.2 hg), ENat.lift_eq_toNat_of_lt_top]
       refine (Finset.antidiagonal.fst_le hp).lt_of_ne ?_
-      contrapose! hnmem
+      contrapose! hnotMem
       rwa [Finset.mem_singleton, Finset.antidiagonal_congr hp (by simp)]
 
 theorem IsWeierstrassDivision.isWeierstrassFactorization

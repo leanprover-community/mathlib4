@@ -265,7 +265,7 @@ theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
   rw [hd, ← ENNReal.coe_rpow_of_nonneg _ d.coe_nonneg, top_le_iff] at this
   have Hrd : μH[(r * d : ℝ≥0)] s = ⊤ := by
     contrapose this
-    exact ENNReal.mul_ne_top ENNReal.coe_ne_top this
+    finiteness
   rw [ENNReal.le_div_iff_mul_le, mul_comm, ← ENNReal.coe_mul]
   exacts [le_dimH_of_hausdorffMeasure_eq_top Hrd, Or.inl (mt ENNReal.coe_eq_zero.1 hr.ne'),
     Or.inl ENNReal.coe_ne_top]
