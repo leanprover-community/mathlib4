@@ -260,9 +260,9 @@ theorem realize_inf : (φ ⊓ ψ).Realize v xs ↔ φ.Realize v xs ∧ ψ.Realiz
 @[simp]
 theorem realize_foldr_inf (l : List (L.BoundedFormula α n)) (v : α → M) (xs : Fin n → M) :
     (l.foldr (· ⊓ ·) ⊤).Realize v xs ↔ ∀ φ ∈ l, BoundedFormula.Realize φ v xs := by
-  induction' l with φ l ih
-  · simp
-  · simp [ih]
+  induction l with
+  | nil => simp
+  | cons φ l ih => simp [ih]
 
 @[simp]
 theorem realize_imp : (φ.imp ψ).Realize v xs ↔ φ.Realize v xs → ψ.Realize v xs := by
@@ -297,9 +297,10 @@ theorem realize_sup : (φ ⊔ ψ).Realize v xs ↔ φ.Realize v xs ∨ ψ.Realiz
 @[simp]
 theorem realize_foldr_sup (l : List (L.BoundedFormula α n)) (v : α → M) (xs : Fin n → M) :
     (l.foldr (· ⊔ ·) ⊥).Realize v xs ↔ ∃ φ ∈ l, BoundedFormula.Realize φ v xs := by
-  induction' l with φ l ih
-  · simp
-  · simp_rw [List.foldr_cons, realize_sup, ih, List.mem_cons, or_and_right, exists_or,
+  induction l with
+  | nil => simp
+  | cons φ l ih =>
+    simp_rw [List.foldr_cons, realize_sup, ih, List.mem_cons, or_and_right, exists_or,
       exists_eq_left]
 
 @[simp]
@@ -691,7 +692,7 @@ theorem LHom.onTheory_model [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionO
 variable {T}
 
 instance model_empty : M ⊨ (∅ : L.Theory) :=
-  ⟨fun φ hφ => (Set.not_mem_empty φ hφ).elim⟩
+  ⟨fun φ hφ => (Set.notMem_empty φ hφ).elim⟩
 
 namespace Theory
 
@@ -740,17 +741,19 @@ namespace BoundedFormula
 @[simp]
 theorem realize_alls {φ : L.BoundedFormula α n} {v : α → M} :
     φ.alls.Realize v ↔ ∀ xs : Fin n → M, φ.Realize v xs := by
-  induction' n with n ih
-  · exact Unique.forall_iff.symm
-  · simp only [alls, ih, Realize]
+  induction n with
+  | zero => exact Unique.forall_iff.symm
+  | succ n ih =>
+    simp only [alls, ih, Realize]
     exact ⟨fun h xs => Fin.snoc_init_self xs ▸ h _ _, fun h xs x => h (Fin.snoc xs x)⟩
 
 @[simp]
 theorem realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
     φ.exs.Realize v ↔ ∃ xs : Fin n → M, φ.Realize v xs := by
-  induction' n with n ih
-  · exact Unique.exists_iff.symm
-  · simp only [BoundedFormula.exs, ih, realize_ex]
+  induction n with
+  | zero => exact Unique.exists_iff.symm
+  | succ n ih =>
+    simp only [BoundedFormula.exs, ih, realize_ex]
     constructor
     · rintro ⟨xs, x, h⟩
       exact ⟨_, h⟩
