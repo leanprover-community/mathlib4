@@ -46,7 +46,7 @@ variable {R : Type*} [Semiring R] {m n : ℕ} (i : Fin n) (P : R[X]_n)
 variable (R) in
 /-- Basis for `R[X]_n` given by `X^i` with `i < n`. -/
 noncomputable def basis (n : ℕ) : Basis (Fin n) R R[X]_n :=
-  .ofEquivFun (Polynomial.degreeLTEquiv R n)
+  .ofEquivFun (degreeLTEquiv R n)
 
 instance : Module.Finite R R[X]_n :=
   .of_basis <| basis ..
@@ -54,13 +54,10 @@ instance : Module.Finite R R[X]_n :=
 instance : Module.Free R R[X]_n :=
   .of_basis <| basis ..
 
-lemma X_pow_mem (i : Fin n) : X ^ i.val ∈ R[X]_n :=
-  mem_degreeLT.2 <| (degree_X_pow_le i).trans_lt <| Nat.cast_lt.2 i.is_lt
-
 variable (R) in
 /-- The element `X^i` in `R[X]_n`. This is equal to `basis R n i`. -/
 noncomputable def xpow (n : ℕ) (i : Fin n) : R[X]_n :=
-  ⟨X ^ (i : ℕ), X_pow_mem i⟩
+  ⟨X ^ (i : ℕ), mem_degreeLT.2 <| (degree_X_pow_le i).trans_lt <| Nat.cast_lt.2 i.is_lt⟩
 
 @[simp] lemma xpow_val : (xpow R n i : R[X]) = X ^ (i : ℕ) :=
   rfl
@@ -165,7 +162,7 @@ section taylor
 
 variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
 
-lemma map_taylorEquiv_eq_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n :=
+lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n :=
   le_antisymm (Submodule.map_le_iff_le_comap.2
       fun _ hf ↦ mem_degreeLT.2 <| (degree_taylor ..).trans_lt <| mem_degreeLT.1 hf)
     (fun f hf ↦ (taylorEquiv r).apply_symm_apply f ▸ Submodule.mem_map_of_mem
@@ -173,30 +170,34 @@ lemma map_taylorEquiv_eq_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n :=
 
 /-- The map `taylor r` induces an automorphism of the module `R[X]_n` of polynomials of
 degree `< n`. -/
-noncomputable def taylorLinear (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n :=
-  (taylorEquiv r : R[X] ≃ₗ[R] R[X]).ofSubmodules _ _ map_taylorEquiv_eq_degreeLT
+noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n :=
+  (taylorEquiv r : R[X] ≃ₗ[R] R[X]).ofSubmodules _ _ map_taylorEquiv_degreeLT
 
-@[simp] lemma taylorLinear_apply (P : R[X]_n) :
-    (taylorLinear r n P : R[X]) = (P : R[X]).taylor r :=
+@[simp] lemma taylorLinearEquiv_apply (P : R[X]_n) :
+    (taylorLinearEquiv r n P : R[X]) = (P : R[X]).taylor r :=
   rfl
 
-@[simp] theorem det_taylorLinear_toLinearMap :
-    (taylorLinear r n).toLinearMap.det = 1 := by
+@[simp] lemma taylorLinearEquiv_symm (r : R) :
+    (taylorLinearEquiv r n).symm = taylorLinearEquiv (-r) n :=
+  LinearEquiv.ext <| fun _ ↦ rfl
+
+@[simp] theorem det_taylorLinearEquiv_toLinearMap :
+    (taylorLinearEquiv r n).toLinearMap.det = 1 := by
   nontriviality R
   rw [← LinearMap.det_toMatrix (degreeLT.basis R n),
     Matrix.det_of_upperTriangular, Fintype.prod_eq_one]
   · intro i
     rw [LinearMap.toMatrix_apply, degreeLT.basis_repr, ← natDegree_X_pow (R:=R) (i:ℕ),
-      LinearEquiv.coe_coe, taylorLinear_apply, degreeLT.basis_val, coeff_taylor_natDegree,
+      LinearEquiv.coe_coe, taylorLinearEquiv_apply, degreeLT.basis_val, coeff_taylor_natDegree,
       leadingCoeff_X_pow]
   · intro i j hji
-    rw [LinearMap.toMatrix_apply, LinearEquiv.coe_coe, degreeLT.basis_repr, taylorLinear_apply,
+    rw [LinearMap.toMatrix_apply, LinearEquiv.coe_coe, degreeLT.basis_repr, taylorLinearEquiv_apply,
       degreeLT.basis_val, coeff_eq_zero_of_degree_lt]
     · rwa [degree_taylor, degree_X_pow, Nat.cast_lt, Fin.val_fin_lt]
 
-@[simp] theorem det_taylorLinear :
-    (taylorLinear r n).det = 1 :=
-  Units.ext <| by rw [LinearEquiv.coe_det, det_taylorLinear_toLinearMap, Units.val_one]
+@[simp] theorem det_taylorLinearEquiv :
+    (taylorLinearEquiv r n).det = 1 :=
+  Units.ext <| by rw [LinearEquiv.coe_det, det_taylorLinearEquiv_toLinearMap, Units.val_one]
 
 end taylor
 
