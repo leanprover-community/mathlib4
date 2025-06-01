@@ -5,8 +5,6 @@ Authors: Andrew Yang, Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
