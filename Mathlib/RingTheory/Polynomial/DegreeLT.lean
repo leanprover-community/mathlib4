@@ -96,7 +96,7 @@ variable (R m n) in
 /-- An isomorphism between `R[X]_(m+n)` and `R[X]_m × R[X]_n` given by the fact that the bases are
 both indexed by `Fin (m+n)`. -/
 noncomputable def addLinearEquiv :
-    (R[X]_(m + n)) ≃ₗ[R] (R[X]_m) × (R[X]_n) :=
+    R[X]_(m + n) ≃ₗ[R] R[X]_m × R[X]_n :=
   Basis.equiv (basis ..) (basisProd ..) (Equiv.refl _)
 
 lemma addLinearEquiv_castAdd (i : Fin m) :
