@@ -54,14 +54,13 @@ theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
 theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
 
-theorem derivedSeries_antitone {G : Type*} [Group G] : Antitone (derivedSeries G) := by
+theorem derivedSeries_antitone : Antitone (derivedSeries G) := by
   refine antitone_nat_of_succ_le fun n => ?_
   simp only [derivedSeries_succ]
   rw [← Subgroup.map_subtype_commutator]
   exact Subgroup.map_subtype_le _
 
-instance derivedSeries_characteristic {G : Type*} [Group G] (n : ℕ) :
-    (derivedSeries G n).Characteristic := by
+instance derivedSeries_characteristic (n : ℕ) : (derivedSeries G n).Characteristic := by
   induction n with
   | zero => simp [Subgroup.topCharacteristic]
   | succ n _ =>
