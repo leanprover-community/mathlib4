@@ -14,37 +14,37 @@ import Mathlib.RingTheory.Polynomial.Basic
 # Polynomials with degree less than `n`
 
 This file contains the properties of the submodule of polynomials of degree less than `n` in a
-commutative ring `R`, denoted `R[X]_n`.
+(semi)ring `R`, denoted `R[X]_n`.
 
 ## Main definitions/lemmas
 
 * `degreeLT.basis R n`: a basis for `R[X]_n` the submodule of polynomials with degree `< n`,
   given by the monomials `X^i` for `i < n`.
 
-* `degreeLT.basisProd R m n`: a basis for `(R[X]_m) × (R[X]_n)` as above, which is the sum
-of the two bases.
+* `degreeLT.basisProd R m n`: a basis for `R[X]_m × R[X]_n`, which is the sum of two instances of
+  the basis given above.
 
-* `degreeLT.addLinearEquiv R m n`: an isomorphism between `(R[X]_(m+n))` and `(R[X]_m) × (R[X]_n)`
-given by the fact that the bases are both indexed by `Fin (m+n)`. This is used for the Sylvester
-matrix, which is the matrix representing the Sylvester map between these two spaces, in a future
-file.
+* `degreeLT.addLinearEquiv R m n`: an isomorphism between `R[X]_(m+n)` and `R[X]_m × R[X]_n`,
+  given by the fact that the bases are both indexed by `Fin (m+n)`. This is used for the Sylvester
+  matrix, which is the matrix representing the Sylvester map between these two spaces, in a future
+  file.
 
-* `taylorLinear r n`: The linear automorphism induced by `taylor r` on `R[X]_n`.
+* `taylorLinear r n`: The linear automorphism induced by `taylor r` on `R[X]_n` which sends `X` to
+  `X + r` and preserves degrees.
 
 -/
 
 
 namespace Polynomial
 
-/-- R[X]_n is notation for the submodule of polynomials of degree strictly less than n. -/
-scoped notation:9000 R "[X]_" n => Polynomial.degreeLT R n
+@[inherit_doc] scoped notation:9000 R "[X]_" n:arg => Polynomial.degreeLT R n
 
 namespace degreeLT
 
 variable {R : Type*} [Semiring R] {m n : ℕ} (i : Fin n) (P : R[X]_n)
 
 variable (R) in
-/-- Basis for R[X]_n given by the `X^i` with `i < n`. -/
+/-- Basis for `R[X]_n` given by `X^i` with `i < n`. -/
 noncomputable def basis (n : ℕ) : Basis (Fin n) R R[X]_n :=
   .ofEquivFun (Polynomial.degreeLTEquiv R n)
 
@@ -54,14 +54,13 @@ instance : Module.Finite R R[X]_n :=
 instance : Module.Free R R[X]_n :=
   .of_basis <| basis ..
 
-lemma X_pow_mem_degreeLT (i : Fin n) : X ^ i.val ∈ R[X]_n := by
-  nontriviality R using mem_degreeLT, WithBot.bot_lt_iff_ne_bot
-  simp only [Polynomial.mem_degreeLT, Polynomial.degree_X_pow, Nat.cast_lt, Fin.is_lt]
+lemma X_pow_mem (i : Fin n) : X ^ i.val ∈ R[X]_n :=
+  mem_degreeLT.2 <| (degree_X_pow_le i).trans_lt <| Nat.cast_lt.2 i.is_lt
 
 variable (R) in
 /-- The element `X^i` in `R[X]_n`. This is equal to `basis R n i`. -/
 noncomputable def xpow (n : ℕ) (i : Fin n) : R[X]_n :=
-  ⟨X ^ (i : ℕ), X_pow_mem_degreeLT i⟩
+  ⟨X ^ (i : ℕ), X_pow_mem i⟩
 
 @[simp] lemma xpow_val : (xpow R n i : R[X]) = X ^ (i : ℕ) :=
   rfl
@@ -79,8 +78,8 @@ lemma basis_val (i : Fin n) : (basis R n i : R[X]) = X ^ (i : ℕ) := by
   rw [basis_apply, xpow_val]
 
 variable (R m n) in
-/-- Basis for `(R[X]_m) × (R[X]_n)`. -/
-noncomputable def basisProd : Basis (Fin (m + n)) R ((R[X]_m) × (R[X]_n)) :=
+/-- Basis for `R[X]_m × R[X]_n`. -/
+noncomputable def basisProd : Basis (Fin (m + n)) R (R[X]_m × R[X]_n) :=
   ((basis R m).prod (basis R n)).reindex finSumFinEquiv
 
 @[simp] lemma basisProd_castAdd (m n : ℕ) (i : Fin m) :
@@ -94,8 +93,8 @@ noncomputable def basisProd : Basis (Fin (m + n)) R ((R[X]_m) × (R[X]_n)) :=
     Sum.elim_inr, LinearMap.coe_inr, Function.comp_apply, basis_apply]
 
 variable (R m n) in
-/-- An isomorphism between `(R[X]_(m+n))` and `(R[X]_m) × (R[X]_n)` given by the fact that
-the bases are both indexed by `Fin (m+n)`. -/
+/-- An isomorphism between `R[X]_(m+n)` and `R[X]_m × R[X]_n` given by the fact that the bases are
+both indexed by `Fin (m+n)`. -/
 noncomputable def addLinearEquiv :
     (R[X]_(m + n)) ≃ₗ[R] (R[X]_m) × (R[X]_n) :=
   Basis.equiv (basis ..) (basisProd ..) (Equiv.refl _)
@@ -108,23 +107,23 @@ lemma addLinearEquiv_natAdd (i : Fin n) :
     addLinearEquiv R m n (xpow R (m+n) (i.natAdd m)) = (0, xpow R n i) := by
   rw [addLinearEquiv, ← basis_apply, Basis.equiv_apply, Equiv.refl_apply, basisProd_natAdd]
 
-lemma addLinearEquiv_symm_apply_xpow_left (i : Fin m) :
+lemma addLinearEquiv_symm_apply_inl_xpow (i : Fin m) :
     (addLinearEquiv R m n).symm (LinearMap.inl R _ _ (xpow R m i)) = xpow R (m+n) (i.castAdd n) :=
   (LinearEquiv.symm_apply_eq _).2 (addLinearEquiv_castAdd i).symm
 
-lemma addLinearEquiv_symm_apply_xpow_right (j : Fin n) :
+lemma addLinearEquiv_symm_apply_inr_xpow (j : Fin n) :
     (addLinearEquiv R m n).symm (LinearMap.inr R _ _ (xpow R n j)) = xpow R (m+n) (j.natAdd m) :=
   (LinearEquiv.symm_apply_eq _).2 (addLinearEquiv_natAdd j).symm
 
-lemma addLinearEquiv_symm_apply_left (P : R[X]_m) :
+lemma addLinearEquiv_symm_apply_inl (P : R[X]_m) :
     ((addLinearEquiv R m n).symm (LinearMap.inl R _ _ P) : R[X]) = (P : R[X]) := by
   rw [← (basis ..).sum_repr P]
-  simp [-LinearMap.coe_inl, addLinearEquiv_symm_apply_xpow_left]
+  simp [-LinearMap.coe_inl, addLinearEquiv_symm_apply_inl_xpow]
 
-lemma addLinearEquiv_symm_apply_right (Q : R[X]_n) :
+lemma addLinearEquiv_symm_apply_inr (Q : R[X]_n) :
     ((addLinearEquiv R m n).symm (LinearMap.inr R _ _ Q) : R[X]) = (Q : R[X]) * X ^ (m : ℕ) := by
   rw [← (basis ..).sum_repr Q]
-  simp [-LinearMap.coe_inr, Finset.sum_mul, addLinearEquiv_symm_apply_xpow_right,
+  simp [-LinearMap.coe_inr, Finset.sum_mul, addLinearEquiv_symm_apply_inr_xpow,
     smul_eq_C_mul, mul_assoc, ← pow_add, add_comm]
 
 lemma addLinearEquiv_symm_apply (PQ) :
@@ -132,7 +131,7 @@ lemma addLinearEquiv_symm_apply (PQ) :
   _ = ((addLinearEquiv R m n).symm (LinearMap.inl R _ _ PQ.1 + LinearMap.inr R _ _ PQ.2) : R[X]) :=
       by rw [LinearMap.inl_apply, LinearMap.inr_apply, Prod.add_def, add_zero, zero_add]
   _ = _ := by rw [map_add, Submodule.coe_add,
-        addLinearEquiv_symm_apply_left, addLinearEquiv_symm_apply_right]
+        addLinearEquiv_symm_apply_inl, addLinearEquiv_symm_apply_inr]
 
 lemma addLinearEquiv_symm_apply' (PQ) :
     ((addLinearEquiv R m n).symm PQ : R[X]) = (PQ.1 : R[X]) + X ^ (m : ℕ) * (PQ.2 : R[X]) := by
@@ -166,7 +165,7 @@ section taylor
 
 variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
 
-lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n :=
+lemma map_taylorEquiv_eq_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n :=
   le_antisymm (Submodule.map_le_iff_le_comap.2
       fun _ hf ↦ mem_degreeLT.2 <| (degree_taylor ..).trans_lt <| mem_degreeLT.1 hf)
     (fun f hf ↦ (taylorEquiv r).apply_symm_apply f ▸ Submodule.mem_map_of_mem
@@ -174,14 +173,14 @@ lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n :=
 
 /-- The map `taylor r` induces an automorphism of the module `R[X]_n` of polynomials of
 degree `< n`. -/
-noncomputable def taylorLinear (r : R) (n : ℕ) : (R[X]_n) ≃ₗ[R] (R[X]_n) :=
-  (taylorEquiv r : R[X] ≃ₗ[R] R[X]).ofSubmodules _ _ map_taylorEquiv_degreeLT
+noncomputable def taylorLinear (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n :=
+  (taylorEquiv r : R[X] ≃ₗ[R] R[X]).ofSubmodules _ _ map_taylorEquiv_eq_degreeLT
 
 @[simp] lemma taylorLinear_apply (P : R[X]_n) :
     (taylorLinear r n P : R[X]) = (P : R[X]).taylor r :=
   rfl
 
-@[simp] theorem det_taylor_toLinearMap :
+@[simp] theorem det_taylorLinear_toLinearMap :
     (taylorLinear r n).toLinearMap.det = 1 := by
   nontriviality R
   rw [← LinearMap.det_toMatrix (degreeLT.basis R n),
@@ -195,9 +194,9 @@ noncomputable def taylorLinear (r : R) (n : ℕ) : (R[X]_n) ≃ₗ[R] (R[X]_n) :
       degreeLT.basis_val, coeff_eq_zero_of_degree_lt]
     · rwa [degree_taylor, degree_X_pow, Nat.cast_lt, Fin.val_fin_lt]
 
-@[simp] theorem det_taylor :
+@[simp] theorem det_taylorLinear :
     (taylorLinear r n).det = 1 :=
-  Units.ext <| by rw [LinearEquiv.coe_det, det_taylor_toLinearMap, Units.val_one]
+  Units.ext <| by rw [LinearEquiv.coe_det, det_taylorLinear_toLinearMap, Units.val_one]
 
 end taylor
 
