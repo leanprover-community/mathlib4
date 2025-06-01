@@ -22,26 +22,6 @@ variable (R : Type u) [CommRing R]
 
 open CategoryTheory
 
-namespace FGModuleCat
-
-/-- Universe lifting as a functor on `FGModuleCat`. -/
-def ulift : FGModuleCat.{v,u} R ⥤ FGModuleCat.{max v w,u} R where
-  obj M := .of R <| _root_.ULift M
-  map f := ofHom <| ULift.moduleEquiv.symm.toLinearMap ∘ₗ f.hom ∘ₗ ULift.moduleEquiv.toLinearMap
-
-/-- Universe lifting is fully faithful. -/
-def fullyFaithful : (ulift R).FullyFaithful where
-  preimage f := ofHom <| ULift.moduleEquiv.toLinearMap ∘ₗ f.hom ∘ₗ
-    ULift.moduleEquiv.symm.toLinearMap
-
-instance : (ulift R).Faithful :=
-  (fullyFaithful R).faithful
-
-instance : (ulift R).Full :=
-  (fullyFaithful R).full
-
-end FGModuleCat
-
 /-- A (category-theoretically) small version of `FGModuleCat R`. This is used to prove that
 `FGModuleCat R` is essentially small. For actual use, it might be recommended to use the canonical
 `CategoryTheory.SmallModel` instead of this construction. -/
@@ -101,8 +81,12 @@ instance : (embed R).IsEquivalence where
 
 end FGModuleRepr
 
-instance : EssentiallySmall.{u} (FGModuleCat.{max u v} R) :=
+theorem FGModuleCat.essentiallySmall : EssentiallySmall.{u} (FGModuleCat.{max u v} R) :=
   ⟨_, _, ⟨(FGModuleRepr.embed R).asEquivalence.symm⟩⟩
+
+instance : EssentiallySmall.{u} (FGModuleCat.{v} R) :=
+  letI := FGModuleCat.essentiallySmall.{v} R
+  essentiallySmall_of_fully_faithful (FGModuleCat.ulift.{v, max u v} R)
 
 open FGModuleRepr in
 -- There is probably a proof using `embedIsEquivalence` or `EssentiallySmall`.

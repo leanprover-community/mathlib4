@@ -119,13 +119,13 @@ instance (V : FGModuleCat.{v} R) : Module.Finite R V :=
 instance : (forget₂ (FGModuleCat.{v} R) (ModuleCat.{v} R)).Full where
   map_surjective f := ⟨f, rfl⟩
 
-variable {R}
-
+variable {R} in
 /-- Converts and isomorphism in the category `FGModuleCat R` to
 a `LinearEquiv` between the underlying modules. -/
 def isoToLinearEquiv {V W : FGModuleCat.{v} R} (i : V ≅ W) : V ≃ₗ[R] W :=
   ((forget₂ (FGModuleCat.{v} R) (ModuleCat.{v} R)).mapIso i).toLinearEquiv
 
+variable {R} in
 /-- Converts a `LinearEquiv` to an isomorphism in the category `FGModuleCat R`. -/
 @[simps]
 def _root_.LinearEquiv.toFGModuleCatIso
@@ -136,6 +136,22 @@ def _root_.LinearEquiv.toFGModuleCatIso
   inv := ModuleCat.ofHom e.symm.toLinearMap
   hom_inv_id := by ext x; exact e.left_inv x
   inv_hom_id := by ext x; exact e.right_inv x
+
+/-- Universe lifting as a functor on `FGModuleCat`. -/
+def ulift : FGModuleCat.{v} R ⥤ FGModuleCat.{max v w} R where
+  obj M := .of R <| ULift M
+  map f := ofHom <| ULift.moduleEquiv.symm.toLinearMap ∘ₗ f.hom ∘ₗ ULift.moduleEquiv.toLinearMap
+
+/-- Universe lifting is fully faithful. -/
+def fullyFaithful : (ulift R).FullyFaithful where
+  preimage f := ofHom <| ULift.moduleEquiv.toLinearMap ∘ₗ f.hom ∘ₗ
+    ULift.moduleEquiv.symm.toLinearMap
+
+instance : (ulift R).Faithful :=
+  (fullyFaithful R).faithful
+
+instance : (ulift R).Full :=
+  (fullyFaithful R).full
 
 end Ring
 
