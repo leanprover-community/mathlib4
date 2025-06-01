@@ -102,9 +102,21 @@ lemma normalizedFactors_nodup (ha : IsRadical a) : (normalizedFactors a).Nodup :
   · simp
   rwa [← squarefree_iff_nodup_normalizedFactors ha₀, ← isRadical_iff_squarefree_of_ne_zero ha₀]
 
+/--
+If `x` is a unit, then the finset of prime factors of `x` is empty.
+The converse is true with a nonzero assumption, see `normalizedFactors_eq_zero_iff`.
+-/
 lemma primeFactors_of_isUnit (h : IsUnit a) : primeFactors a = ∅ := by
   classical
   rw [primeFactors, normalizedFactors_of_isUnit h, Multiset.toFinset_zero]
+
+/--
+The finset of prime factors of `x` is empty if and only if `x` is a unit.
+The converse is true without the nonzero assumption, see `primeFactors_of_isUnit`.
+-/
+theorem primeFactors_eq_empty_iff (ha : a ≠ 0) : primeFactors a = ∅ ↔ IsUnit a := by
+  classical
+  rw [primeFactors, Multiset.toFinset_eq_empty, normalizedFactors_eq_zero_iff ha]
 
 lemma primeFactors_val_eq_normalizedFactors (ha : IsRadical a) :
     (primeFactors a).val = normalizedFactors a := by
@@ -241,8 +253,16 @@ lemma squarefree_radical : Squarefree (radical a) := by
   · simp [primeFactors]
   have : Nontrivial M := ⟨a, 0, ha₀⟩
   ext p
-  simp +contextual [mem_primeFactors, mem_normalizedFactors_iff' ha₀, mem_normalizedFactors_iff',
-    and_congr_right_iff, and_imp, dvd_radical_iff_of_irreducible, ha₀]
+  simp +contextual [mem_primeFactors, mem_normalizedFactors_iff',
+    dvd_radical_iff_of_irreducible, ha₀]
+
+theorem radical_eq_one_iff : radical a = 1 ↔ a = 0 ∨ IsUnit a := by
+  refine ⟨?_, (Or.elim · (by simp +contextual) radical_of_isUnit)⟩
+  intro h
+  rw [or_iff_not_imp_left]
+  intro ha
+  have : primeFactors a = ∅ := by rw [← primeFactors_radical, h, primeFactors_one]
+  rwa [primeFactors_eq_empty_iff ha] at this
 
 @[simp]
 lemma radical_radical : radical (radical a) = radical a :=
