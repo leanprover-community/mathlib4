@@ -107,8 +107,6 @@ noncomputable def preCounitIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅
 
 alias fromSkeleton_toSkeleton_iso := preCounitIso
 
--- lemma preCounitIso_hom (X : C) : eqToHom (C := Skeleton C) _ = (preCounitIso X).hom := _
-
 variable (C)
 
 /-- An inverse to `fromSkeleton C` that forms an equivalence with it. -/
