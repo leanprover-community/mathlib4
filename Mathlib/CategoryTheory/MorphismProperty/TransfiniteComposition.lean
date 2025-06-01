@@ -3,13 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
 import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.Order.Shrink
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Order.Interval.Set.SuccOrder
-import Mathlib.Logic.UnivLE
+import Mathlib.Order.Shrink
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
