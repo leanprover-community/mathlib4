@@ -3,9 +3,9 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Hom
+import Mathlib.Topology.VectorBundle.Riemannian
 
 /-! # Riemannian vector bundles
 
@@ -16,24 +16,17 @@ We introduce a typeclass `[IsContMDiffRiemannianBundle IB n F E]` registering th
 Under this assumption, we show that the scalar product of two smooth maps into the same fibers of
 the bundle is a smooth function.
 
-If one wants to endow an existing vector bundle with a Riemannian metric, there are two
-subtleties:
-* The inner product space structure on the fibers should give rise to a topology on the fibers
-which is defeq to the original one, to avoid diamonds;
-* This should be somewhat accessible to typeclass inference, so it should not involve an arbitrary
-smoothness that typeclass inference could not guess.
-
-Therefore, we introduce a class `[RiemannianBundle F E]` containing the data of a scalar
-product on the fibers depending continuously on the basepoint. Given this class, we can construct
-`NormedAddCommGroup` and `InnerProductSpace` instances on the fibers, compatible in a defeq way with
-the initial topology. However, we can not register these as general instances, because there is
-no way that typeclass inference could guess `F` out of `E`. We should only use these
-in specific situations like the tangent bundle, and the general theory should instead be built
-assuming `[IsContMDiffRiemannianBundle IB n F E]`
+If the fibers of a bundle `E` have a preexisting topology (like the tangent bundle), one can not
+assume additionally `[∀ b, InnerProductSpace ℝ (E b)]` as this would create diamonds. Instead,
+use `[RiemannianBundle E]`, which endows the fibers with a scalar product while ensuring that
+there is no diamond. We provide a constructor for `[RiemannianBundle E]` from a smooth family
+of metrics, which registers automatically `[IsContMDiffRiemannianBundle IB n F E]`
 -/
 
-open Manifold Bundle ContinuousLinearMap ENat
+open Manifold Bundle ContinuousLinearMap ENat Bornology
 open scoped ContDiff Topology
+
+section
 
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
@@ -49,33 +42,35 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 variable (IB n F E) in
 /-- Consider a real vector bundle in which each fiber is endowed with a scalar product.
 We that the bundle is Riemannian if the scalar product depends smoothly on the base point.
-This assumption is spelled `IsRiemannianBundle IB n F E` where `IB` is the model space of the base,
-`n` is the smoothness, `F` is the model fiber, and `E : B → Type*` is the bundle. -/
-class IsRiemannianBundle : Prop where
-  exists_contMDiff : ∃ g : Cₛ^n⟮IB; F →L[ℝ] F →L[ℝ] ℝ, fun (x : B) ↦ E x →L[ℝ] E x →L[ℝ] ℝ⟯,
-    ∀ (x : B) (v w : E x), ⟪v, w⟫ = g x v w
+This assumption is spelled `IsContMDiffRiemannianBundle IB n F E` where `IB` is the model space of
+the base, `n` is the smoothness, `F` is the model fiber, and `E : B → Type*` is the bundle. -/
+class IsContMDiffRiemannianBundle : Prop where
+  exists_contMDiff : ∃ g : Π (x : B), E x →L[ℝ] E x →L[ℝ] ℝ,
+    ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) n
+      (fun b ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) b (g b))
+    ∧ ∀ (x : B) (v w : E x), ⟪v, w⟫ = g x v w
 
-lemma IsRiemannianBundle.of_le [h : IsRiemannianBundle IB n F E] (h' : n' ≤ n) :
-    IsRiemannianBundle IB n' F E := by
-  rcases h.exists_contMDiff with ⟨⟨g, g_smooth⟩, hg⟩
-  exact ⟨⟨g, g_smooth.of_le h'⟩, hg⟩
+lemma IsContMDiffRiemannianBundle.of_le [h : IsContMDiffRiemannianBundle IB n F E] (h' : n' ≤ n) :
+    IsContMDiffRiemannianBundle IB n' F E := by
+  rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
+  exact ⟨g, g_smooth.of_le h', hg⟩
 
-instance {a : WithTop ℕ∞} [IsRiemannianBundle IB ∞ F E] [h : LEInfty a] :
-    IsRiemannianBundle IB a F E :=
-  IsRiemannianBundle.of_le h.out
+instance {a : WithTop ℕ∞} [IsContMDiffRiemannianBundle IB ∞ F E] [h : LEInfty a] :
+    IsContMDiffRiemannianBundle IB a F E :=
+  IsContMDiffRiemannianBundle.of_le h.out
 
-instance {a : WithTop ℕ∞} [IsRiemannianBundle IB ω F E] :
-    IsRiemannianBundle IB a F E :=
-  IsRiemannianBundle.of_le le_top
+instance {a : WithTop ℕ∞} [IsContMDiffRiemannianBundle IB ω F E] :
+    IsContMDiffRiemannianBundle IB a F E :=
+  IsContMDiffRiemannianBundle.of_le le_top
 
-instance [IsRiemannianBundle IB 1 F E] : IsRiemannianBundle IB 0 F E :=
-  IsRiemannianBundle.of_le zero_le_one
+instance [IsContMDiffRiemannianBundle IB 1 F E] : IsContMDiffRiemannianBundle IB 0 F E :=
+  IsContMDiffRiemannianBundle.of_le zero_le_one
 
-instance [IsRiemannianBundle IB 2 F E] : IsRiemannianBundle IB 1 F E :=
-  IsRiemannianBundle.of_le one_le_two
+instance [IsContMDiffRiemannianBundle IB 2 F E] : IsContMDiffRiemannianBundle IB 1 F E :=
+  IsContMDiffRiemannianBundle.of_le one_le_two
 
-instance [IsRiemannianBundle IB 3 F E] : IsRiemannianBundle IB 2 F E :=
-  IsRiemannianBundle.of_le (n := 3) (by norm_cast)
+instance [IsContMDiffRiemannianBundle IB 3 F E] : IsContMDiffRiemannianBundle IB 2 F E :=
+  IsContMDiffRiemannianBundle.of_le (n := 3) (by norm_cast)
 
 section Trivial
 
@@ -83,8 +78,8 @@ variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
 /-- A trivial vector bundle, in which the model fiber has a scalar product,
 is a Riemannian bundle. -/
-instance : IsRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
-  refine ⟨⟨fun x ↦ innerSL ℝ, fun x ↦ ?_⟩, fun x v w ↦ rfl⟩
+instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
+  refine ⟨fun x ↦ innerSL ℝ, fun x ↦ ?_, fun x v w ↦ rfl⟩
   simp only [contMDiffAt_section]
   convert contMDiffAt_const (c := innerSL ℝ)
   ext v w
@@ -99,16 +94,16 @@ variable
   {EM : Type*} [NormedAddCommGroup EM] [NormedSpace ℝ EM]
   {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners ℝ EM HM}
   {M : Type*} [TopologicalSpace M] [ChartedSpace HM M]
-  [h : IsRiemannianBundle IB n F E]
+  [h : IsContMDiffRiemannianBundle IB n F E]
   {b : M → B} {v w : ∀ x, E (b x)} {s : Set M} {x : M}
 
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
 their scalar product is smooth. -/
-lemma ContMDiffWithinAt.inner
+lemma ContMDiffWithinAt.inner_bundle
     (hv : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)) s x)
     (hw : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E)) s x) :
     ContMDiffWithinAt IM 𝓘(ℝ) n (fun m ↦ ⟪v m, w m⟫) s x := by
-  rcases h.exists_contMDiff with ⟨⟨g, g_smooth⟩, hg⟩
+  rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
   have hf : ContMDiffWithinAt IM IB n b s x := by
     simp only [contMDiffWithinAt_totalSpace] at hv
     exact hv.1
@@ -124,29 +119,31 @@ lemma ContMDiffWithinAt.inner
 
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
 their scalar product is smooth. -/
-lemma ContMDiffAt.inner
+lemma ContMDiffAt.inner_bundle
     (hv : ContMDiffAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)) x)
     (hw : ContMDiffAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E)) x) :
     ContMDiffAt IM 𝓘(ℝ) n (fun b ↦ ⟪v b, w b⟫) x :=
-  ContMDiffWithinAt.inner hv hw
+  ContMDiffWithinAt.inner_bundle hv hw
 
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
 their scalar product is smooth. -/
-lemma ContMDiffOn.inner
+lemma ContMDiffOn.inner_bundle
     (hv : ContMDiffOn IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)) s)
     (hw : ContMDiffOn IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E)) s) :
     ContMDiffOn IM 𝓘(ℝ) n (fun b ↦ ⟪v b, w b⟫) s :=
-  fun x hx ↦ (hv x hx).inner (hw x hx)
+  fun x hx ↦ (hv x hx).inner_bundle (hw x hx)
 
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
 their scalar product is smooth. -/
-lemma ContMDiff.inner
+lemma ContMDiff.inner_bundle
     (hv : ContMDiff IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)))
     (hw : ContMDiff IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E))) :
     ContMDiff IM 𝓘(ℝ) n (fun b ↦ ⟪v b, w b⟫) :=
-  fun x ↦ (hv x).inner (hw x)
+  fun x ↦ (hv x).inner_bundle (hw x)
 
 end ContMDiff
+
+end
 
 namespace Bundle
 
@@ -159,19 +156,45 @@ variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
   [∀ b, TopologicalSpace (E b)] [∀ b, AddCommGroup (E b)] [∀ b, Module ℝ (E b)]
+  [∀ b, IsTopologicalAddGroup (E b)] [∀ b, ContinuousConstSMul ℝ (E b)]
   [FiberBundle F E] [VectorBundle ℝ F E]
 
 variable (IB n F E) in
-structure riemannianMetric where
+/-- A family of inner product space structures on the fibers of a fiber bundle, defining the same
+topology as the already existing one, and varying continuously with the base point. See also
+`ContinuousRiemannianMetric` for a continuous version.
+
+This structure is used through `RiemannianBundle` for typeclass inference, to register the inner
+product space structure on the fibers without creating diamonds. -/
+structure ContMDiffRiemannianMetric where
+  /-- The scalar product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
-  contMDiff : ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) n
-    (fun b ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) (E := fun b ↦ (E b →L[ℝ] E b →L[ℝ] ℝ)) b (inner b))
   symm (b : B) (v w : E b) : inner b v w = inner b w v
   pos (b : B) (v : E b) (hv : v ≠ 0) : 0 < inner b v v
-  inducing (b : B) : {v : E b | inner b v v < 1} ∈ 𝓝 (0 : E b)
+  isVonNBounded (b : B) : IsVonNBounded ℝ {v : E b | inner b v v < 1}
+  contMDiff : ContMDiff IB (IB.prod 𝓘(ℝ, F →L[ℝ] F →L[ℝ] ℝ)) n
+    (fun b ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) b (inner b))
 
+/-- A smooth Riemannian metric defines in particular a continuous Riemannian metric. -/
+def ContMDiffRiemannianMetric.toContinuousRiemannianMetric
+    (g : ContMDiffRiemannianMetric IB n F E) :
+    ContinuousRiemannianMetric F E where
+  inner := g.inner
+  symm := g.symm
+  pos := g.pos
+  isVonNBounded := g.isVonNBounded
+  continuous := g.contMDiff.continuous
 
-#check InnerProductSpace.Core
+/-- A smooth Riemannian metric defines in particular a Riemannian metric. -/
+def ContMDiffRiemannianMetric.toRiemannianMetric
+    (g : ContMDiffRiemannianMetric IB n F E) : RiemannianMetric E :=
+  g.toContinuousRiemannianMetric.toRiemannianMetric
+
+instance (g : ContMDiffRiemannianMetric IB n F E) :
+    letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩;
+    IsContMDiffRiemannianBundle IB n F E := by
+  letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
+  exact ⟨g.inner, g.contMDiff, fun b v w ↦ rfl⟩
 
 end Construction
 

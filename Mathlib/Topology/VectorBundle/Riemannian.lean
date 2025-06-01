@@ -140,13 +140,13 @@ variable
 open Bornology
 
 variable (E) in
-/-- A family of inner product space structure on the fibers of a fiber bundle, defining the same
-topology as the already existing one. Used to create an instance of `[RiemannianBundle E]`, which
-registers the inner product space structure without creating diamonds. One should more often
-use `ContinuousRiemannianMetric` or `ContMDiffRiemannianMetric` to guarantee continuity or
-smoothness of the scalar product as a function of the base point.
+/-- A family of inner product space structures on the fibers of a fiber bundle, defining the same
+topology as the already existing one. One should more often use `ContinuousRiemannianMetric`
+or `ContMDiffRiemannianMetric` to guarantee continuity or smoothness of the scalar product as a
+function of the base point.
 
-This structure is used through `RiemannianBundle` for typeclass inference. -/
+This structure is used through `RiemannianBundle` for typeclass inference, to register the inner
+product space structure on the fibers without creating diamonds. -/
 structure RiemannianMetric where
   /-- The scalar product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
@@ -187,19 +187,21 @@ fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBu
 -/
 class RiemannianBundle where
   /-- The family of inner products on the fibers -/
-  out : RiemannianMetric E
+  g : RiemannianMetric E
 
 noncomputable instance [h : RiemannianBundle E] (b : B) : NormedAddCommGroup (E b) :=
-  (h.out.toCore b).toNormedAddCommGroupOfTopology (h.out.continuousAt b) (h.out.isVonNBounded b)
+  (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
 
 noncomputable instance [h : RiemannianBundle E] (b : B) : InnerProductSpace ℝ (E b) :=
-  .ofCoreOfTopology (h.out.toCore b) (h.out.continuousAt b) (h.out.isVonNBounded b)
+  .ofCoreOfTopology (h.g.toCore b) (h.g.continuousAt b) (h.g.isVonNBounded b)
 
 variable (F E) in
-/-- A family of inner product space structure on the fibers of a fiber bundle, defining the same
-topology as the already existing one, and varying continuously with the base point.
-Used to create an instance of `[RiemannianBundle E]`, which registers the inner product space
-structure, and the fact that it varies continuously, without creating diamonds. -/
+/-- A family of inner product space structures on the fibers of a fiber bundle, defining the same
+topology as the already existing one, and varying continuously with the base point. See also
+`ContMDiffRiemannianMetric` for a smooth version.
+
+This structure is used through `RiemannianBundle` for typeclass inference, to register the inner
+product space structure on the fibers without creating diamonds. -/
 structure ContinuousRiemannianMetric where
   /-- The scalar product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
