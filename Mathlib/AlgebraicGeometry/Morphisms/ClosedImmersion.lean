@@ -349,6 +349,14 @@ instance IsClosedImmersion.isStableUnderBaseChange :
   exact ⟨inferInstance, RingHom.surjective_isStableUnderBaseChange.pullback_fst_appTop _
     RingHom.surjective_respectsIso f _ hsurj⟩
 
+instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion g] :
+    IsClosedImmersion (Limits.pullback.fst f g) :=
+  MorphismProperty.pullback_fst _ _ ‹_›
+
+instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] :
+    IsClosedImmersion (Limits.pullback.snd f g) :=
+  MorphismProperty.pullback_snd _ _ ‹_›
+
 /-- Closed immersions are locally of finite type. -/
 instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
     LocallyOfFiniteType f := by
@@ -369,6 +377,12 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
   rw [IsClosedImmersion.isIso_iff_ker_eq_bot, ← Scheme.IdealSheafData.support_eq_top_iff,
     ← SetLike.coe_injective.eq_iff, Scheme.Hom.support_ker]
   simp
+
+lemma isClosed_singleton_iff_isClosedImmersion {X : Scheme} {x : X} :
+    IsClosed ({x} : Set X) ↔ IsClosedImmersion (X.fromSpecResidueField x) := by
+  rw [← Scheme.range_fromSpecResidueField]
+  exact ⟨fun H ↦ .of_isPreimmersion _ H,
+    fun _ ↦ (X.fromSpecResidueField x).isClosedEmbedding.isClosed_range⟩
 
 section Section
 
