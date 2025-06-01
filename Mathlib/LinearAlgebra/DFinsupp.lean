@@ -442,6 +442,36 @@ section Semiring
 
 variable [DecidableEq ι] [Semiring R] [AddCommMonoid N] [Module R N]
 
+/-- `DFinsupp.lsum` as a linear map to iSup of submodules,
+whose surjectivity is implied by `Submodule.mem_iSup_iff_exists_dfinsupp`. -/
+def lsumMap (p : ι → Submodule R N) :
+    (Π₀ i : ι, p i) →ₗ[R] ((⨆ i : ι, p i) : Submodule R N) where
+  toFun (f) := ⟨((lsum ℕ) fun (i : ι) => (p i).subtype) f, by
+    rw [lsum_apply_apply]
+    apply Submodule.dfinsuppSumAddHom_mem
+    intro i h0
+    apply Submodule.mem_iSup_of_mem i
+    simp
+  ⟩
+  map_add' := by
+    intro a b
+    simp
+  map_smul' := by
+    intro s a
+    simp
+
+@[simp]
+theorem DFinsupp.lsumMap_val_apply {p : ι → Submodule R N} (f :  Π₀ (i : ι), (p i)) :
+    ((lsumMap p) f).val = ((lsum ℕ) fun (i : ι) => (p i).subtype) f := by rfl
+
+theorem DFinsupp.lsumMap_surjective (p : ι → Submodule R N) :
+    Function.Surjective (lsumMap p) := by
+  intro x
+  obtain ⟨f, hf⟩ := (Submodule.mem_iSup_iff_exists_dfinsupp p x.val).mp x.prop
+  use f
+  rw [Subtype.eq_iff]
+  exact hf
+
 /-- Independence of a family of submodules can be expressed as a quantifier over `DFinsupp`s.
 
 This is an intermediate result used to prove
@@ -583,6 +613,23 @@ alias iSupIndep_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAdd
 
 @[deprecated (since := "2024-11-24")]
 alias independent_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
+
+theorem DFinsupp.lsumMap_injective {p : ι → Submodule R N} (h : iSupIndep p) :
+    Function.Injective (lsumMap p) := by
+  intro a b hab
+  rw [Subtype.eq_iff] at hab
+  exact iSupIndep.dfinsupp_lsum_injective h hab
+
+/-- `DFinsupp.lsum` as a linear equivalence between `Submodule`s. -/
+noncomputable
+def DFinsupp.lsumEquiv {p : ι → Submodule R N} (h : iSupIndep p) :
+    (Π₀ i : ι, p i) ≃ₗ[R] ((⨆ i : ι, p i) : Submodule R N) :=
+  LinearEquiv.ofBijective (lsumMap p) ⟨lsumMap_injective h, lsumMap_surjective p⟩
+
+@[simp]
+theorem DFinsupp.linearEquiv_val_apply {p : ι → Submodule R N} (h : iSupIndep p)
+    (f : Π₀ (i : ι), (p i)) :
+    ((lsumEquiv h) f).val = ((lsum ℕ) fun (i : ι) => (p i).subtype) f := by rfl
 
 /-- If a family of submodules is independent, then a choice of nonzero vector from each submodule
 forms a linearly independent family.
