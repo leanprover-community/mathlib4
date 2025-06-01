@@ -790,6 +790,34 @@ lemma IsLocalRing.depth_quotient_regular_succ_eq_depth  [IsLocalRing R] [IsNoeth
     use rs', reg', mem'
     simpa [← hrs'] using len
 
+omit [Small.{v, u} R] in
+lemma IsLocalRing.depth_quotient_span_regular_succ_eq_depth  [IsLocalRing R] [IsNoetherianRing R]
+    (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
+    letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
+      have : Nontrivial (R ⧸ Ideal.span {x}) :=
+        Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+      have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
+        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+      IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
+    IsLocalRing.depth (ModuleCat.of (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x})) + 1 =
+    IsLocalRing.depth (ModuleCat.of R R) := by
+  let _ : IsLocalRing (R ⧸ Ideal.span {x}) :=
+    have : Nontrivial (R ⧸ Ideal.span {x}) :=
+      Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+    have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
+      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+    IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
+  letI : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
+    have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
+      Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+    have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
+      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+    IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
+  have := Submodule.ideal_span_singleton_smul x (⊤ :Ideal R)
+  simp only [smul_eq_mul, mul_top] at this
+  rw [IsLocalRing.depth_eq_of_ringEquiv (Ideal.quotientEquivAlgOfEq R this).toRingEquiv,
+    IsLocalRing.depth_quotient_regular_succ_eq_depth x reg mem]
+
 lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth  [IsLocalRing R]
     [IsNoetherianRing R] (rs : List R) (reg : RingTheory.Sequence.IsWeaklyRegular R rs)
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R):
