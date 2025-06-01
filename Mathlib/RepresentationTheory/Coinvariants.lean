@@ -187,7 +187,7 @@ noncomputable def coinvariantsFinsuppLEquiv :
     (by ext; simp) (by ext; simp)
 
 @[simp]
-lemma coinvariantsFinsuppLEquiv_apply (x) :
+lemma coinvariantsFinsuppLEquiv_apply (x : Coinvariants (ρ.finsupp α)) :
     coinvariantsFinsuppLEquiv ρ α x = coinvariantsToFinsupp ρ α x := by rfl
 
 end Finsupp
@@ -198,6 +198,8 @@ open TensorProduct Coinvariants Finsupp
 
 variable {k G V W : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
   [AddCommGroup W] [Module k W] (ρ : Representation k G V) (τ : Representation k G W)
+
+-- the next two lemmas eliminate inverses
 
 @[simp]
 lemma Coinvariants.mk_inv_tmul (x : V) (y : W) (g : G) :
@@ -227,13 +229,11 @@ lemma ofCoinvariantsTprodLeftRegular_mk_tmul_single (x : V) (g : G) (r : k) :
 noncomputable def coinvariantsTprodLeftRegularLEquiv :
     Coinvariants (ρ.tprod (leftRegular k G)) ≃ₗ[k] V :=
   LinearEquiv.ofLinear (ofCoinvariantsTprodLeftRegular ρ)
-    (Coinvariants.mk _ ∘ₗ (TensorProduct.mk k V (G →₀ k)).flip (single 1 1)) (by ext; simp) <| by
-      ext x g
-      exact (mk_eq_iff _).2 <| mem_ker_of_eq g⁻¹ (x ⊗ₜ single g 1) _ <| by
-        simp [smul_tmul', smul_tmul]
+    (Coinvariants.mk _ ∘ₗ (TensorProduct.mk k V (G →₀ k)).flip (single 1 1))
+    (by ext; simp) (by ext; simp)
 
 @[simp]
-lemma coinvariantsTprodLeftRegularLEquiv_apply (x) :
+lemma coinvariantsTprodLeftRegularLEquiv_apply (x : (ρ.tprod (leftRegular k G)).Coinvariants) :
     coinvariantsTprodLeftRegularLEquiv ρ x = ofCoinvariantsTprodLeftRegular ρ x := by
   rfl
 
@@ -337,7 +337,7 @@ lemma coinvariantsTensor_hom_ext {M : ModuleCat k}
     f = g := coinvariantsFunctor_hom_ext <| ModuleCat.hom_ext <| TensorProduct.ext <| hfg
 
 instance (A : Rep k G) : ((coinvariantsTensor k G).obj A).Additive where
-  map_add := by intros; ext; simp
+instance (A : Rep k G) : ((coinvariantsTensor k G).obj A).Linear k where
 
 section Finsupp
 
@@ -394,15 +394,15 @@ noncomputable abbrev coinvariantsTensorFreeLEquiv :
     Coinvariants (A ⊗ free k G α).ρ ≃ₗ[k] (α →₀ A) :=
   LinearEquiv.ofLinear (coinvariantsTensorFreeToFinsupp A α) (finsuppToCoinvariantsTensorFree A α)
     (lhom_ext fun i x => by
-      simp [finsuppToCoinvariantsTensorFree_single i x,
-        coinvariantsTensorFreeToFinsupp_mk_tmul_single x i 1 1]) <|
+      simp [finsuppToCoinvariantsTensorFree_single i,
+        coinvariantsTensorFreeToFinsupp_mk_tmul_single x]) <|
     Coinvariants.hom_ext <| TensorProduct.ext <| LinearMap.ext fun a => lhom_ext' fun i =>
       lhom_ext fun g r => by
-        simp [coinvariantsTensorFreeToFinsupp_mk_tmul_single a i g r,
+        simp [coinvariantsTensorFreeToFinsupp_mk_tmul_single a,
           finsuppToCoinvariantsTensorFree_single (A := A) i, TensorProduct.smul_tmul]
 
 @[simp]
-lemma coinvariantsTensorFreeLEquiv_apply (x) :
+lemma coinvariantsTensorFreeLEquiv_apply (x : (A ⊗ free k G α).ρ.Coinvariants) :
     DFunLike.coe (F := (A.ρ.tprod (Representation.free k G α)).Coinvariants →ₗ[k] α →₀ A)
       (A.coinvariantsTensorFreeToFinsupp α) x = coinvariantsTensorFreeToFinsupp A α x := by
   rfl
