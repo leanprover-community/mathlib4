@@ -205,9 +205,8 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     haveI := g.symm.surjective.nontrivial
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 
-set_option synthInstance.maxHeartbeats 30000 in
--- without the previous line, the simpNF linter fails
-@[simp]
+-- the simpNF linter fails with a heartbeats timeout
+@[simp, nolint simpNF]
 theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
