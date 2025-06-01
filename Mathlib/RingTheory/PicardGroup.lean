@@ -44,16 +44,16 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 
 Show:
 - The Picard group of a commutative domain is isomorphic to its ideal class group.
-- All commutative semi-local rings, in particular Artinian rings, has trivial Picard group.
+- All commutative semi-local rings, in particular Artinian rings, have trivial Picard group.
 - All unique factorization domains have trivial Picard group.
+- Invertible modules over a commutative ring have the same cardinality as the ring.
 
 - Establish other characterizations of invertible modules, e.g. they are modules that
-  becomes free of rank one when localized at every prime ideal.
+  become free of rank one when localized at every prime ideal.
   See [Stacks: Finite projective modules](https://stacks.math.columbia.edu/tag/00NX).
 - Connect to invertible sheaves on `Spec R`. More generally, connect projective `R`-modules of
   constant finite rank to locally free sheaves on `Spec R`.
 - Exhibit isomorphism with sheaf cohomology `H¹(Spec R, 𝓞ˣ)`.
-
 -/
 
 open TensorProduct
@@ -256,17 +256,6 @@ open CommRing (Pic)
 
 noncomputable instance : CommGroup (Pic R) := (equivShrink _).symm.commGroup
 
-variable {R} in
-/-- A representative of an element in the Picard group. -/
-abbrev CommRing.Pic.AsModule (M : Pic R) : Type u := ((equivShrink _).symm M).val
-
-noncomputable instance : CoeSort (Pic R) (Type u) := ⟨Pic.AsModule⟩
-
-private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| ModuleCat.{u} R)ˣ) :
-    (id <| equivShrink _ M : Pic R) ≃ₗ[R] M :=
-  have {M N : Skeleton (ModuleCat.{u} R)} : M = N → M ≃ₗ[R] N := by rintro rfl; exact .refl ..
-  this (by simp)
-
 section CommRing
 
 variable (M N : Type*) [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
@@ -275,6 +264,17 @@ variable (M N : Type*) [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R 
 instance : Module.Invertible R (Finite.repr R M) := .congr (Finite.reprEquiv R M).symm
 
 namespace CommRing.Pic
+
+variable {R} in
+/-- A representative of an element in the Picard group. -/
+abbrev AsModule (M : Pic R) : Type u := ((equivShrink _).symm M).val
+
+noncomputable instance : CoeSort (Pic R) (Type u) := ⟨AsModule⟩
+
+private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| ModuleCat.{u} R)ˣ) :
+    (id <| equivShrink _ M : Pic R) ≃ₗ[R] M :=
+  have {M N : Skeleton (ModuleCat.{u} R)} : M = N → M ≃ₗ[R] N := by rintro rfl; exact .refl ..
+  this (by simp)
 
 /-- The class of an invertible module in the Picard group. -/
 protected noncomputable def mk : Pic R := equivShrink _ <|
