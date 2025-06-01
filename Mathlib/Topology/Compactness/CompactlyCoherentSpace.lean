@@ -151,6 +151,8 @@ lemma mk_symm_preimage {X : Type*} (A : Set X) :
   ext
   exact mem_preimage
 
+/-- For a map `f : X → Y` of topological spaces, `CompactCoherentification.map f` is the
+corresponding map between the compact coherentifications of `X` and `Y`. -/
 protected def map {X Y : Type*} (f : X → Y) : k X → k Y :=
   CompactCoherentification.mk Y ∘ f ∘ (CompactCoherentification.mk X).symm
 
