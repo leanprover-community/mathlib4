@@ -276,7 +276,7 @@ lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) :
 
 /--
 Given a bipartition s, t of G, construct an explicit 2-coloring by sending vertices in s to 0
-and those in t to 1. Show adjacent vertices get different colors (through the pattern match).
+and vertices in t to 1. Show adjacent vertices get different colors (through the pattern match).
 -/
 lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) :
     G.IsBipartite := by
@@ -295,11 +295,9 @@ lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) :
 Putting the two previous lemmas together to show a biimplication between having a twocoloring
 and having a bipartition.
 -/
-theorem twocol_iff_bipartition :
-  G.Colorable 2 ↔ ∃ s t : Set V, G.IsBipartiteWith s t := by
-  constructor
-  · exact twocol_imp_bipartition G
-  · rintro ⟨s, t, h⟩
-    exact bipartition_imp_twocol G h
+theorem isBipartite_iff_exists_isBipartiteWith :
+  G.IsBipartite ↔ ∃ s t : Set V, G.IsBipartiteWith s t where
+  mp := IsBipartite.exists_isBipartiteWith G
+  mpr := by rintro ⟨s, t, h⟩; exact h.isBipartite
 
 end SimpleGraph
