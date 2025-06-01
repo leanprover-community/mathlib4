@@ -421,7 +421,7 @@ def toSeminormedSpace : NormedSpace 𝕜 F where
     · positivity
 
 /-- Seminormed space core structure constructed from a `PreInnerProductSpace.Core` structure -/
-def toSeminormedSpaceCore : SeminormedSpace.Core 𝕜 F where
+lemma toSeminormedSpaceCore : SeminormedSpace.Core 𝕜 F where
   norm_nonneg x := norm_nonneg x
   norm_smul c x := by
     letI : NormedSpace 𝕜 F := toSeminormedSpace
@@ -493,7 +493,7 @@ def toNormedSpace : NormedSpace 𝕜 F where
     · positivity
 
 /-- Normed space core structure constructed from an `InnerProductSpace.Core` structure -/
-def toNormedSpaceCore : NormedSpace.Core 𝕜 F where
+lemma toNormedSpaceCore : NormedSpace.Core 𝕜 F where
   norm_nonneg x := norm_nonneg x
   norm_eq_zero_iff x := norm_eq_zero
   norm_smul c x := by
