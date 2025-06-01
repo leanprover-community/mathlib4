@@ -733,10 +733,13 @@ theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=
 theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
   isClosed_Icc.closure_eq
 
+theorem le_of_tendsto_of_tendsto_of_frequently {f g : β → α} {b : Filter β} {a₁ a₂ : α}
+    (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∃ᶠ x in b, f x ≤ g x) : a₁ ≤ a₂ :=
+  t.isClosed_le'.mem_of_frequently_of_tendsto h (hf.prodMk_nhds hg)
+
 theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
-  have : Tendsto (fun b => (f b, g b)) b (𝓝 (a₁, a₂)) := hf.prodMk_nhds hg
-  show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
+  le_of_tendsto_of_tendsto_of_frequently hf hg <| Eventually.frequently h
 
 alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
 
@@ -781,16 +784,10 @@ theorem IsClosed.hypograph [TopologicalSpace β] {f : β → α} {s : Set β} (h
 
 /-- The set of monotone functions on a set is closed. -/
 theorem isClosed_monotoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | MonotoneOn f s} := by
-  rw [isClosed_iff_forall_filter]
-  intro f l hl hl₁ hl₂
-  have hmain : ∀ x, Tendsto (fun f' ↦ f' x) l (𝓝 (f x)) :=
-    fun x => (continuousAt_apply x f).mono_left hl₂
-  intro a ha b hb hab
-  refine le_of_tendsto_of_tendsto (f := fun f' : β → α => f' a) (g := fun f' : β → α => f' b)
-    (b := l) (hmain a) (hmain b) ?_
-  rw [Filter.le_principal_iff] at hl₁
-  filter_upwards [hl₁] with g hg
-  exact hg ha hb hab
+  simp only [isClosed_iff_clusterPt, clusterPt_principal_iff_frequently]
+  intro g hg a ha b hb hab
+  have hmain (x) : Tendsto (fun f' ↦ f' x) (𝓝 g) (𝓝 (g x)) := continuousAt_apply x _
+  exact le_of_tendsto_of_tendsto_of_frequently (hmain a) (hmain b) (hg.mono fun g h ↦ h ha hb hab)
 
 /-- The set of monotone functions is closed. -/
 theorem isClosed_monotone [Preorder β] : IsClosed {f : β → α | Monotone f} := by
