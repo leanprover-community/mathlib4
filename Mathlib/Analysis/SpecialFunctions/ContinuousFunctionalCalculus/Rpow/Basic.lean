@@ -365,7 +365,7 @@ lemma rpow_algebraMap {x : ℝ≥0} {y : ℝ} :
 
 lemma rpow_add {a : A} {x y : ℝ} (ha : IsUnit a) :
     a ^ (x + y) = a ^ x * a ^ y := by
-  have ha' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_not_mem _ ha
+  have ha' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha
   simp only [rpow_def, NNReal.rpow_eq_pow]
   rw [← cfc_mul _ _ a]
   refine cfc_congr ?_
@@ -376,7 +376,7 @@ lemma rpow_add {a : A} {x y : ℝ} (ha : IsUnit a) :
 lemma rpow_rpow [IsTopologicalRing A] [T2Space A]
     (a : A) (x y : ℝ) (ha₁ : IsUnit a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
     (a ^ x) ^ y = a ^ (x * y) := by
-  have ha₁' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_not_mem _ ha₁
+  have ha₁' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha₁
   simp only [rpow_def]
   rw [← cfc_comp _ _ a ha₂]
   refine cfc_congr fun _ _ => ?_
@@ -456,7 +456,7 @@ lemma isUnit_rpow (a : A) (y : ℝ) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc
   by_cases hy : y = 0
   · simp [hy, rpow_zero a ha]
   rw [rpow_def]
-  rw [← spectrum.zero_not_mem_iff (R := ℝ≥0)] at ha_unit
+  rw [← spectrum.zero_notMem_iff (R := ℝ≥0)] at ha_unit
   refine isUnit_cfc _ _ (NNReal.continuousOn_rpow_const (.inl ha_unit)) ha ?_
   intro x hx
   have hx' : x ≠ 0 := by
@@ -474,7 +474,7 @@ lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_t
   rw [rpow_def] at h
   by_cases hf : ContinuousOn (fun x : ℝ≥0 => x ^ y) (spectrum ℝ≥0 a)
   · rw [isUnit_cfc_iff _ a hf] at h
-    refine spectrum.isUnit_of_zero_not_mem ℝ≥0 ?_
+    refine spectrum.isUnit_of_zero_notMem ℝ≥0 ?_
     intro h0
     specialize h 0 h0
     simp only [ne_eq, NNReal.rpow_eq_zero_iff, true_and, Decidable.not_not] at h
@@ -497,8 +497,8 @@ products, hence the direct use of `rpow` here. -/
 lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : IsUnit a) (hb : IsUnit b)
     (ha' : 0 ≤ a := by cfc_tac) (hb' : 0 ≤ b := by cfc_tac) :
     rpow (a, b) x = (a ^ x, b ^ x) := by
-  have ha'' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_not_mem _ ha
-  have hb'' : 0 ∉ spectrum ℝ≥0 b := spectrum.zero_not_mem _ hb
+  have ha'' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha
+  have hb'' : 0 ∉ spectrum ℝ≥0 b := spectrum.zero_notMem _ hb
   simp only [rpow_def]
   unfold rpow
   refine cfc_map_prod (R := ℝ≥0) (S := ℝ) _ a b (by cfc_cont_tac) ?_
@@ -529,7 +529,7 @@ instance for pi types, hence the direct use of `rpow` here. -/
 lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, IsUnit (c i))
     (hc' : ∀ i, 0 ≤ c i := by cfc_tac) :
     rpow c x = fun i => (c i) ^ x := by
-  have hc'' : ∀ i, 0 ∉ spectrum ℝ≥0 (c i) := fun i => spectrum.zero_not_mem _ (hc i)
+  have hc'' : ∀ i, 0 ∉ spectrum ℝ≥0 (c i) := fun i => spectrum.zero_notMem _ (hc i)
   simp only [rpow_def]
   unfold rpow
   exact cfc_map_pi (S := ℝ) _ c
