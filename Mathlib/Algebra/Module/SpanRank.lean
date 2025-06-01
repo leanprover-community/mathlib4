@@ -242,4 +242,80 @@ theorem rank_le_spanRank [StrongRankCondition R] :
 
 end rank
 
+open Cardinal
+
+lemma spanRank_injective_map_le.{u} {R : Type*} [CommRing R] {M : Type u} {N : Type u}
+[AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (σ : M →ₗ[R] N) (p : Submodule R M)
+(hσ : Function.Injective σ) :
+    (map σ p).spanRank ≤ p.spanRank := by
+  obtain ⟨s, hs1, hs2⟩ := exists_span_set_card_eq_spanRank p
+  let s' : Set N := σ '' s
+  have : #s = #s' := Eq.symm (mk_image_eq hσ)
+  have a := map_span σ s
+  rw[hs2] at a
+  rw[← hs1]
+  have b := @spanRank_span_le_card R N _ _ _ s'
+  rw[← a] at b
+  rw[this]
+  exact b
+
+lemma spanRank_injective_map_le'.{u} {R : Type*} [CommRing R] {M : Type u} {N : Type u}
+[AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (σ : M →ₗ[R] N) (p : Submodule R M)
+(hσ : Function.Injective σ) :
+    p.spanRank ≤ (map σ p).spanRank := by
+  obtain ⟨s, hs1, hs2⟩ := exists_span_set_card_eq_spanRank (map σ p)
+  let s' : Set M := σ⁻¹' s
+  have hss' : σ '' s' = s := by
+    ext x
+    constructor
+    · rintro ⟨a, ⟨ha1, ha2⟩ ⟩
+      rw [← ha2]
+      exact ha1
+    · intro hx
+      have a : x ∈ span R s := mem_span.mpr fun p a ↦ a hx
+      rw[hs2] at a
+      obtain ⟨y, hy1, hy2⟩ := mem_map.mp a
+      have : y ∈ s' := by
+        refine Set.mem_preimage.mpr ?_
+        rw[hy2]
+        exact hx
+      use y
+  have s's : #s' = #s := by
+    rw[← hss']
+    exact Eq.symm (mk_image_eq hσ)
+  have b := @spanRank_span_le_card R M _ _ _ s'
+  have a := map_span σ s'
+  rw[hss', hs2] at a
+  rw[map_injective_of_injective hσ a] at b
+  rw[s's, hs1] at b
+  exact b
+
+theorem spanRank_injective_map.{u} {R : Type*} [CommRing R] {M : Type u} {N : Type u}
+[AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (σ : M →ₗ[R] N) (p : Submodule R M)
+(hσ : Function.Injective σ) :
+    p.spanRank = (map σ p).spanRank :=
+  le_antisymm_iff.mpr
+    ⟨spanRank_injective_map_le' σ p hσ, spanRank_injective_map_le σ p hσ⟩
+
+lemma spanRank_eq_spanRank_Top {R : Type*} [CommRing R] {M : Type*}
+[AddCommGroup M] [Module R M] (N : Submodule R M) :
+    spanRank N = (⊤ : Submodule R N).spanRank := by
+  have h1 := map_subtype_top N
+  have h2 := spanRank_injective_map N.subtype
+    (⊤ : Submodule R N) (injective_subtype N)
+  rw[h2, h1]
+
+lemma SpanFinRankOfSubmodule_eq_spanFinrankOfTop
+    (R : Type*) [CommRing R] [IsNoetherianRing R] (M : Type*)
+    [AddCommGroup M] [Module R M] [Module.Finite R M] (N : Submodule R M) :
+    spanFinrank N = (⊤ : Submodule R N).spanFinrank := by
+  have a : N.FG := IsNoetherian.noetherian N
+  have b : (⊤ : Submodule R N).FG := IsNoetherian.noetherian ⊤
+  have : @Nat.cast Cardinal.{u_2} instNatCast N.spanFinrank =
+      @Nat.cast Cardinal.{u_2} instNatCast (⊤ : Submodule R N).spanFinrank := by
+    rw[← fg_iff_spanRank_eq_spanFinrank.mpr a]
+    rw[← fg_iff_spanRank_eq_spanFinrank.mpr b]
+    exact spanRank_eq_spanRank_Top N
+  exact Nat.cast_injective this
+
 end Submodule
