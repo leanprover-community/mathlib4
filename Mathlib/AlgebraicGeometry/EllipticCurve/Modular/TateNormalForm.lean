@@ -61,13 +61,13 @@ instance : DecidablePred (Affine.Point.NeZero (W:=W))
 | zero   => isFalse (fun ⟨h⟩ ↦ h rfl)
 | some _ => isTrue ⟨Point.noConfusion⟩
 
-/-- The `X` coordinate of a given point. For the point of infinity, this returns `0`
+/-- The `X` coordinate of a given point. For the point at infinity, this returns `0`
 (junk value). -/
 def X : W.toAffine.Point → R
   | 0 => 0
   | @some _ _ _ x _ _ => x
 
-/-- The `Y` coordinate of a given point. For the point of infinity, this returns `0`
+/-- The `Y` coordinate of a given point. For the point at infinity, this returns `0`
 (junk value). -/
 def Y : W.toAffine.Point → R
   | 0 => 0
