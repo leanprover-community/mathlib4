@@ -185,7 +185,6 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
     · apply pow_dvd_pow
       apply Nat.mod_le
   · --Otherwise, we have `0 < μ (x ^ (n % ↑m1))`.
-    have hxn' : 0 < μ (x ^ (n % ↑m1)) := lt_of_le_of_ne (apply_nonneg _ _) (Ne.symm hxn)
     simp only [smoothingSeminormSeq]
     nth_rw 1 [← div_add_mod n m1]
     /- We use the submultiplicativity of `μ` to deduce
@@ -232,8 +231,6 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
       nth_rw 3 [← mul_one (L + ε / 2)]
       rw [mul_assoc, ← mul_sub, mul_comm, ← le_div_iff₀ hL0', div_div]
       exact hm2 n (le_trans (le_max_right (m1 : ℕ) m2) hn)
-    have h4 : 0 < μ (x ^ (n % ↑m1)) ^ (1 / (n : ℝ)) := rpow_pos_of_pos hxn' _
-    have h5 : 0 < (L + ε / 2) * (L + ε / 2) ^ (-(↑(n % ↑m1) / (n : ℝ))) := by positivity
     /- We combine the previous steps to deduce that
      `μ (x ^ (↑m1 * (n / ↑m1) + n % ↑m1)) ^ (1 / ↑n) < L + ε`. -/
     calc μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)) + n % m1)) ^ (1 / (n : ℝ)) =

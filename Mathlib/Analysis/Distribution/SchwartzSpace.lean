@@ -64,6 +64,7 @@ Schwartz space, tempered distributions
 
 noncomputable section
 
+open Asymptotics Filter
 open scoped Nat NNReal ContDiff
 
 variable {𝕜 𝕜' D E F G V : Type*}
@@ -124,34 +125,52 @@ open Asymptotics Filter
 
 variable (f : 𝓢(E, F))
 
+/-- For a real `s`, iterated derivatives of a Schwartz map
+decay faster than `‖x‖ ^ s` as `‖x‖ → ∞`. -/
+theorem isBigO_iteratedFDeriv_cobounded_rpow (n : ℕ) (s : ℝ) :
+    iteratedFDeriv ℝ n f =O[Bornology.cobounded E] fun x => ‖x‖ ^ s := by
+  rcases exists_nat_ge (-s) with ⟨k, hk⟩
+  rcases f.decay k n with ⟨C, hC₀, hC⟩
+  apply IsBigO.of_bound C
+  filter_upwards [eventually_cobounded_le_norm 1] with x hx
+  calc
+    ‖iteratedFDeriv ℝ n f x‖ ≤ ‖x‖ ^ (k + s) * ‖iteratedFDeriv ℝ n f x‖ :=
+      le_mul_of_one_le_left (norm_nonneg _) (Real.one_le_rpow hx <| by linear_combination hk)
+    _ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ * ‖x‖ ^ s := by
+      rw [Real.rpow_add (by positivity), Real.rpow_natCast, mul_right_comm]
+    _ ≤ _ := by
+      rw [Real.norm_of_nonneg (by positivity)]
+      gcongr
+      apply hC
+
+/-- For an integer `m`, iterated derivatives of a Schwartz map
+decay faster than `‖x‖ ^ m` as `‖x‖ → ∞`. -/
+theorem isBigO_iteratedFDeriv_cobounded_zpow (n : ℕ) (m : ℤ) :
+    iteratedFDeriv ℝ n f =O[Bornology.cobounded E] fun x => ‖x‖ ^ m := by
+  simpa using f.isBigO_iteratedFDeriv_cobounded_rpow n m
+
+/-- For a real `s`, a Schwartz map decays faster than `‖x‖ ^ s` as `‖x‖ → ∞`. -/
+theorem isBigO_cobounded_rpow (s : ℝ) : f =O[Bornology.cobounded E] fun x => ‖x‖ ^ s :=
+  .of_norm_left <| (f.isBigO_iteratedFDeriv_cobounded_rpow 0 s).norm_left.congr_left fun _ ↦
+    norm_iteratedFDeriv_zero
+
+/-- For an integer `m`, a Schwartz map decays faster than `‖x‖ ^ m` as `‖x‖ → ∞`. -/
+theorem isBigO_cobounded_zpow (m : ℤ) : f =O[Bornology.cobounded E] fun x => ‖x‖ ^ m := by
+  simpa using f.isBigO_cobounded_rpow m
+
+/-- For a real `s`, a Schwartz map decays faster than `‖x‖ ^ s` away from compact sets. -/
+theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) : f =O[cocompact E] fun x => ‖x‖ ^ s :=
+  Metric.cobounded_eq_cocompact (α := E) ▸ f.isBigO_cobounded_rpow s
+
+/-- For an integer `m`, a Schwartz map decays faster than `‖x‖ ^ m` away from compact sets. -/
+theorem isBigO_cocompact_zpow [ProperSpace E] (m : ℤ) : f =O[cocompact E] fun x => ‖x‖ ^ m :=
+  Metric.cobounded_eq_cocompact (α := E) ▸ f.isBigO_cobounded_zpow m
+
 /-- Auxiliary lemma, used in proving the more general result `isBigO_cocompact_rpow`. -/
-theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ (-k : ℤ) := by
-  obtain ⟨d, _, hd'⟩ := f.decay k 0
-  simp only [norm_iteratedFDeriv_zero] at hd'
-  simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
-  refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
-  refine (Filter.eventually_cofinite_ne 0).mono fun x hx => ?_
-  rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg _) _), zpow_neg, ← div_eq_mul_inv, le_div_iff₀']
-  exacts [hd' x, zpow_pos (norm_pos_iff.mpr hx) _]
-
-theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ s := by
-  let k := ⌈-s⌉₊
-  have hk : -(k : ℝ) ≤ s := neg_le.mp (Nat.le_ceil (-s))
-  refine (isBigO_cocompact_zpow_neg_nat f k).trans ?_
-  suffices (fun x : ℝ => x ^ (-k : ℤ)) =O[atTop] fun x : ℝ => x ^ s
-    from this.comp_tendsto tendsto_norm_cocompact_atTop
-  simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
-  refine ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => ?_⟩
-  rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg (zero_le_one.trans hx) _),
-    Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_intCast, Int.cast_neg,
-    Int.cast_natCast]
-  exact Real.rpow_le_rpow_of_exponent_le hx hk
-
-theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ k := by
-  simpa only [Real.rpow_intCast] using isBigO_cocompact_rpow f k
+@[deprecated isBigO_cocompact_zpow (since := "2025-05-31")]
+theorem isBigO_cocompact_zpow_neg_nat [ProperSpace E] (k : ℕ) :
+    f =O[cocompact E] fun x => ‖x‖ ^ (-k : ℤ) :=
+  f.isBigO_cocompact_zpow (-k)
 
 end IsBigO
 
