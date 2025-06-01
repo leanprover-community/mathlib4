@@ -289,26 +289,28 @@ theorem of_isCompact [T2Space α] :
 
 end IsCompactIsClosed
 
+end IsCompactSystem
+
 section PrefixInduction
 
-variable {α : Type}
-variable (q : ∀ n, (Fin n → α) → Prop)
+variable {β : Type*}
+variable (q : ∀ n, (k : Fin n → β) → Prop)
 variable (step0 : q 0 Fin.elim0)
 variable (step :
-    ∀ n (k : Fin n → α) (_ : q n k),
-    { a : α // q (n+1) (Fin.snoc k a)})
+    ∀ n (k : Fin n → β) (_ : q n k),
+    { a : β // q (n+1) (Fin.snoc k a)})
 
 /-- In this section, we prove a general induction principle, which we need for the construction
-`Nat.prefixInduction q step0 step : ℕ →  α` based on some `q : (n : ℕ) → (Fin n → α) → Prop`. For
+`Nat.prefixInduction q step0 step : ℕ →  β` based on some `q : (n : ℕ) → (Fin n → β) → Prop`. For
 the inducation start, `step0 : q 0 _` requires that `Fin 0` cannot be satisfied, and
-`step : (n : ℕ) → (k : Fin n → α) → q n k → { a // q (n + 1) (Fin.snoc k a) }) (n : ℕ) : α`
+`step : (n : ℕ) → (k : Fin n → β) → q n k → { a : β // q (n + 1) (Fin.snoc k a) }) (n : ℕ) : β`
 constructs the next element satisfying `q (n + 1) _` from a proof of `q n k` and finding the next
 element.
 
 In comparisong to other induction principles, the proofs of `q n k` are needed in order to find
 the next element. -/
 
-def Nat.prefixInduction.aux : ∀ (n : Nat), { k : Fin n -> α // q n k }
+def Nat.prefixInduction.aux : ∀ (n : Nat), { k : Fin n → β // q n k }
     | 0 => ⟨Fin.elim0, step0⟩
     | n+1 =>
       let ⟨k, hk⟩ := aux n
@@ -331,7 +333,7 @@ theorem Nat.prefixInduction.auxConsistent :
       rw [ih, aux]
       simp
 
-def Nat.prefixInduction (n : Nat) : α :=
+def Nat.prefixInduction (n : Nat) : β :=
   (Nat.prefixInduction.aux q step0 step (n+1)).1 (Fin.last n)
 
 theorem Nat.prefixInduction_spec (n : Nat) : q n (Nat.prefixInduction q step0 step ·) := by
@@ -343,24 +345,68 @@ theorem Nat.prefixInduction_spec (n : Nat) : q n (Nat.prefixInduction q step0 st
     convert hk with i
     apply Nat.prefixInduction.auxConsistent
 
+/- Often, `step` can only be proved by showing an `∃` statement. For this case, we use `step'`. -/
+variable (step' : ∀ n (k : Fin n → β) (_ : q n k), ∃ a, q (n + 1) (Fin.snoc k a))
+
+noncomputable def step_of : (n : ℕ) → (k : Fin n → β) → (hn : q n k) →
+    { a : β // q (n + 1) (Fin.snoc k a) } :=
+  fun n k hn ↦ ⟨(step' n k hn).choose, (step' n k hn).choose_spec⟩
+
+noncomputable def Nat.prefixInduction' (n : Nat) : β :=
+  (Nat.prefixInduction.aux q step0 (fun n k hn ↦ step_of q step' n k hn) (n+1)).1 (Fin.last n)
+
+theorem Nat.prefixInduction'_spec (n : Nat) : q n (Nat.prefixInduction' q step0 step' ·) := by
+  apply prefixInduction_spec
+
 end PrefixInduction
 
 namespace IsCompactSystem
 
 section Union
 
-variable {p : Set α → Prop} (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
-  (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d)
+-- (hp : IsCompactSystem p)
+-- (L : ℕ → Finset (Set α))
+--   (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d)
 
 /-- `q n K` is the joint property that `∀ (k : Fin n), K k ∈ L k` and
 `∀ N, (⋂ (j : Fin n), K j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet) ≠ ∅`.` holds. -/
-def q : ∀ n, (Fin n → Set α) → Prop := fun n K ↦ (∀ (k : Fin n), K k ∈ L k) ∧
-  (∀ N, (⋂ j, K j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet) ≠ ∅)
+def q (L : ℕ → Finset (Set α))
+  : ∀ n, (Fin n → Set α) → Prop := fun n K ↦ (∀ (k : Fin n), K k ∈ L k ∧
+  (∀ N, (⋂ j, K j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet) ≠ ∅))
+
+lemma step0 {L : ℕ → Finset (Set α)} : q L 0 Fin.elim0 := by
+  simp [q]
+
+lemma step' (hp : IsCompactSystem p) {L : ℕ → Finset (Set α)}
+    (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d)
+    : ∀ n (k : Fin n → Set α), (q L n k) → ∃ a, q L (n + 1) (Fin.snoc k a) := by
+  sorry
+
+noncomputable def mem_of_union (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
+    (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d) : ℕ → Set α := by
+  exact Nat.prefixInduction' (q L) step0 (step' hp hL)
+
+theorem mem_of_union_spec (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
+    (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d) (n : ℕ) :
+    q (L := L) n (mem_of_union hp L hL · ) :=
+  Nat.prefixInduction'_spec (q L) step0 (step' hp hL) n
+
+
+
 
 def get_element_zero (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) :
     { K : Fin 0 → Set α // (q L) 0 K} := by
   exists fun _ => ∅
   simp [q, h]
+
+#check Fin.snoc_castSucc
+
+example {n : ℕ} (f : Fin n → α) (a : α) (k : Fin n) : Fin.snoc (α := fun _ ↦ α)
+  f a k.castSucc = f k := by
+  exact Fin.snoc_castSucc (α := fun _ ↦ α) a f k
+
+example {n : ℕ} (f : Fin n → α) (a : α) : (Fin.snoc (α := fun _ ↦ Set α) f a) (Fin.last _) = a := by
+  sorry
 
 def find0 (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) : (q L) 0 Fin.elim0 := by
   sorry
@@ -371,13 +417,12 @@ def findSucc (h : ∀ N, ⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet ≠ ∅) : �
 -- ∀ n (k : Fin n → α) (_ : q n k), { a : α // q (n+1) (Fin.snoc k a)})
 
 
-
 /-- For `L : ℕ → Finset (Set α)` such that `∀ K ∈ L n, p K` and
 `h : ∀ N, ⋂ k < N, ⋃₀ L k ≠ ∅`, `mem_of_union h n` is some `K : ℕ → Set α` such that `K n ∈ L n`
 for all `n` (this is `prop₀`) and `∀ N, ⋂ (j < n, K j) ∩ ⋂ (k < N), (⋃₀ L (n + k)) ≠ ∅`
 (this is `prop₁`.) -/
 noncomputable def mem_of_union (L : ℕ → Finset (Set α)) (h : ∀ N, ⋂ k < N, ⋃₀ (L k).toSet ≠ ∅) :=
-  Nat.prefixInduction (q L) (find0 L h) (findSucc L h)
+  Nat.prefixInduction (α := (fun _ ↦ Set α)) (q L) (find0 L h) (findSucc L h)
 
 
 #exit
