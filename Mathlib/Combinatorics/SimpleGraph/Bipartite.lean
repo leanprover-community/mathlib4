@@ -246,11 +246,11 @@ theorem isBipartiteWith_sum_degrees_eq_card_edges' (h : G.IsBipartiteWith s t) :
 end IsBipartiteWith
 variable {V : Type*} (G : SimpleGraph V)
 
-/-- A graph is bipartite if it is `Colorable G 2`. -/
+/-- The predicate for a simple graph to be bipartite. -/
 abbrev IsBipartite (G : SimpleGraph V) : Prop := G.Colorable 2
 
-/-- If a graph is bipartite, then there exist disjoint sets `s` and `t`
-such that all edges connect a vertex in `s` to a vertex in `t`. -/
+/-- If a simple graph `G` is bipartite, then there exist disjoint sets `s` and `t`
+such that all edges in `G` connect a vertex in `s` to a vertex in `t`. -/
 lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) :
     ∃ s t, G.IsBipartiteWith s t := by
   rcases h with ⟨c, hc_adj⟩
@@ -270,7 +270,7 @@ lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) :
   exact ⟨s, t, h₁, h₂⟩
 
 
-/-- If a graph has a bipartition, then it is 2-colorable. -/
+/-- If a simple graph `G` has a bipartition, then it is bipartite. -/
 lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) :
     G.IsBipartite := by
   classical
