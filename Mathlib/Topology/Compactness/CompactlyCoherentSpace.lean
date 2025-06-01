@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Hannah Scholz
 
 import Mathlib.Topology.Coherent
 import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Data.Set.Subset
 
 /-!
 # Compactly coherent spaces and the compact coherentification
