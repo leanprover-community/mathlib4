@@ -1494,6 +1494,7 @@ import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
+import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.Convex.Function.Basic
 import Mathlib.Analysis.Convex.Function.Continuous
 import Mathlib.Analysis.Convex.Function.Deriv
