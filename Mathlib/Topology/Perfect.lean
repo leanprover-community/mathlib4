@@ -14,8 +14,8 @@ including a version of the Cantor-Bendixson Theorem.
 
 ## Main Definitions
 
-* `Preperfect C`: A set `C` is preperfect if every point of it is an accumulation point
-  of itself. Equivalently, if it has no isolated points in the induced topology.
+* `Preperfect C`: A set `C` is preperfect if every point of `C` is an accumulation point
+  of `C`. Equivalently, if it has no isolated points in the induced topology.
   This property is also called dense-in-itself.
 * `Perfect C`: A set `C` is perfect, meaning it is closed and every point of it
   is an accumulation point of itself.
