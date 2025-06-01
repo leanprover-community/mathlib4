@@ -293,6 +293,24 @@ theorem normalizedFactors_pos (x : α) (hx : x ≠ 0) : 0 < normalizedFactors x 
       bot_lt_iff_ne_bot.mpr
         (mt Multiset.eq_zero_iff_forall_notMem.mp (not_forall.mpr ⟨p, not_not.mpr hp⟩))
 
+/--
+The multiset of normalized factors of `x` is nil if and only if `x` is a unit.
+The converse is true without the nonzero assumption, see `normalizedFactors_of_isUnit`.
+-/
+theorem normalizedFactors_eq_zero_iff {x : α} (hx : x ≠ 0) :
+    normalizedFactors x = 0 ↔ IsUnit x := by
+  rw [← not_iff_not, ← normalizedFactors_pos _ hx, pos_iff_ne_zero]
+
+/--
+If `x` is a unit, then the multiset of normalized factors of `x` is nil.
+The converse is true with a nonzero assumption, see `normalizedFactors_eq_zero_iff`.
+-/
+theorem normalizedFactors_of_isUnit {x : α} (hx : IsUnit x) :
+    normalizedFactors x = 0 := by
+  obtain rfl | hx₀ := eq_or_ne x 0
+  · simp
+  rwa [normalizedFactors_eq_zero_iff hx₀]
+
 theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     DvdNotUnit x y ↔ normalizedFactors x < normalizedFactors y := by
   constructor

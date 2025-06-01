@@ -27,7 +27,7 @@ The proof uses the Mason-Stothers theorem (Polynomial ABC theorem) and infinite 
 (in the characteristic p case).
 -/
 
-open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain
+open Polynomial UniqueFactorizationMonoid
 
 variable {k R : Type*} [Field k] [CommRing R] [IsDomain R] [NormalizationMonoid R]
   [UniqueFactorizationMonoid R]
