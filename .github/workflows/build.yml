@@ -325,7 +325,7 @@ jobs:
 
       - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
         name: If `bench-after-CI` is present, add a `!bench` comment.
-        uses: GrantBirki/comment@f524ee31407667c05061bad41e1758b40298bd82 # v2.1.0
+        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
           token: ${{ secrets.AUTO_MERGE_TOKEN }}
           issue-number: ${{ steps.PR.outputs.number }}
@@ -343,7 +343,7 @@ jobs:
 
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
-        uses: GrantBirki/comment@f524ee31407667c05061bad41e1758b40298bd82 # v2.1.0
+        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
           token: ${{ secrets.AUTO_MERGE_TOKEN }}
           issue-number: ${{ steps.PR.outputs.number }}
