@@ -37,8 +37,7 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 - https://qchu.wordpress.com/2014/10/19/the-picard-groups/
 - https://mathoverflow.net/questions/13768/what-is-the-right-definition-of-the-picard-group-of-a-commutative-ring
 - https://mathoverflow.net/questions/375725/picard-group-vs-class-group
-- Charles A. Weibel, *The K-book: an introduction to algebraic K-theory*,
-  https://sites.math.rutgers.edu/~weibel/Kbook/Kbook.I.pdf, Proposition 3.5.
+- [Weibel2013], https://sites.math.rutgers.edu/~weibel/Kbook/Kbook.I.pdf, Proposition 3.5.
 - [Stacks: Picard groups of rings](https://stacks.math.columbia.edu/tag/0AFW)
 
 ## TODO
@@ -50,9 +49,9 @@ Show:
 
 - Establish other characterizations of invertible modules, e.g. they are modules that
   becomes free of rank one when localized at every prime ideal.
+  See [Stacks: Finite projective modules](https://stacks.math.columbia.edu/tag/00NX).
 - Connect to invertible sheaves on `Spec R`. More generally, connect projective `R`-modules of
   constant finite rank to locally free sheaves on `Spec R`.
-  [Stacks: Finite projective modules](https://stacks.math.columbia.edu/tag/00NX)
 - Exhibit isomorphism with sheaf cohomology `H¹(Spec R, Oˣ_R)`.
 
 -/
