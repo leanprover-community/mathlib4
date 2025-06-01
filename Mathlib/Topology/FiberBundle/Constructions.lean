@@ -48,6 +48,7 @@ theorem isInducing_toProd : IsInducing (TotalSpace.toProd B F) :=
 @[deprecated (since := "2024-10-28")] alias inducing_toProd := isInducing_toProd
 
 /-- Homeomorphism between the total space of the trivial bundle and the Cartesian product. -/
+@[simps!]
 def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
   (TotalSpace.toProd _ _).toHomeomorphOfIsInducing (isInducing_toProd B F)
 
@@ -60,10 +61,6 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   source_eq := rfl
   target_eq := univ_prod_univ.symm
   proj_toFun _ _ := rfl
-
-variable {B F} in
-@[simp] lemma trivialization_apply (v : TotalSpace F (Bundle.Trivial B F)) :
-    trivialization B F v = ⟨v.1, v.2⟩ := rfl
 
 @[simp] lemma trivialization_symm_apply [Zero F] (b : B) (f : F) :
     (trivialization B F).symm b f = f := by
@@ -217,9 +214,6 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   source_eq := rfl
   target_eq := rfl
   proj_toFun _ _ := rfl
-
-@[simp]
-theorem baseSet_prod : (prod e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet := rfl
 
 theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl

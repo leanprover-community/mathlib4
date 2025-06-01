@@ -298,6 +298,15 @@ instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
 instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
 
+/-- See Note [custom simps projection] -/
+def Simps.apply (proj : Z → B) (e : Trivialization F proj) : Z → B × F := e
+
+-- See Note [custom simps projection] -/
+noncomputable def Simps.symm_apply (proj : Z → B) (e : Trivialization F proj) : B × F → Z :=
+  e.toPartialHomeomorph.symm
+
+initialize_simps_projections Trivialization (toFun → apply, invFun → symm_apply)
+
 theorem toPretrivialization_injective :
     Function.Injective fun e : Trivialization F proj => e.toPretrivialization := fun e e' h => by
   ext1
