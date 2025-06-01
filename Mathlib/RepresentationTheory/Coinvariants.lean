@@ -7,7 +7,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Rep
 
 /-!
-# Coinvariants a group representation
+# Coinvariants of a group representation
 
 Given a commutative ring `k` and a monoid `G`, this file introduces the coinvariants of a
 `k`-linear `G`-representation `(V, ρ)`.
@@ -140,7 +140,7 @@ lemma Coinvariants.le_comap_ker (g : G) :
       ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem ‹_› s.1 s.2 g⟩ (ρ g x) _ <| by simp
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
-the augmentation submodule of `ρ|_S`. -/
+the kernel of the quotient map to the coinvariants of `ρ|_S`. -/
 noncomputable abbrev toCoinvariantsKer :
     Representation k G (ker <| ρ.comp S.subtype) :=
   subrepresentation ρ (ker <| ρ.comp S.subtype) fun g => le_comap_ker ρ S g
@@ -177,11 +177,11 @@ noncomputable section
 variable [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` restricts to a `G`-representation on
-the kernel of `A → A_S`. -/
+the kernel of the quotient map to the `S`-coinvariants `A_S`. -/
 abbrev toCoinvariantsKer : Rep k G := Rep.of (A.ρ.toCoinvariantsKer S)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a `G`-representation on
-`A_S`. -/
+the `S`-coinvariants `A_S`. -/
 abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
@@ -189,7 +189,8 @@ the coinvariants of `ρ|_S`. -/
 abbrev quotientToCoinvariants : Rep k (G ⧸ S) := ofQuotient (toCoinvariants A S) S
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
-`G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map `A → A_S`. -/
+`G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map to the
+`S`-coinvariants `A_S`. -/
 @[simps X₁ X₂ X₃ f g]
 def coinvariantsShortComplex : ShortComplex (Rep k G) where
   X₁ := toCoinvariantsKer A S
