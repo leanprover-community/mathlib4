@@ -509,7 +509,7 @@ which together form a strength that equips the tensor product functor with a mon
 and the monoid axioms for the tensor product follow from the monoid axioms for the tensor factors
 plus the properties of the strength (i.e., monoidal functor axioms).
 The strength `tensorμ` of the tensor product functor has been defined in
-`Mathlib.CategoryTheory.Monoidal.Braided`.
+`Mathlib/CategoryTheory/Monoidal/Braided.lean`.
 Its properties, stated as independent lemmas in that module,
 are used extensively in the proofs below.
 Notice that we could have followed the above plan not only conceptually
@@ -523,7 +523,7 @@ The obvious candidates are the associator and unitors from `C`,
 but we need to prove that they are monoid morphisms, i.e., compatible with unit and multiplication.
 These properties translate to the monoidality of the associator and unitors
 (with respect to the monoidal structures on the functors they relate),
-which have also been proved in `Mathlib.CategoryTheory.Monoidal.Braided`.
+which have also been proved in `Mathlib/CategoryTheory/Monoidal/Braided.lean`.
 
 -/
 
@@ -618,6 +618,8 @@ theorem mul_rightUnitor {M : C} [Mon_Class M] :
   slice_lhs 1 3 => rw [← rightUnitor_monoidal]
   simp only [Category.assoc, Category.id_comp]
 
+namespace tensorObj
+
 @[simps]
 instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) where
   one := (λ_ (𝟙_ C)).inv ≫ (η ⊗ η)
@@ -625,6 +627,8 @@ instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) where
   one_mul' := Mon_tensor_one_mul M N
   mul_one' := Mon_tensor_mul_one M N
   mul_assoc' := Mon_tensor_mul_assoc M N
+
+end tensorObj
 
 open IsMon_Hom
 
@@ -660,7 +664,7 @@ instance : IsMon_Hom (ρ_ X).hom :=
   ⟨one_rightUnitor, mul_rightUnitor⟩
 
 theorem one_braiding (X Y : C) [Mon_Class X] [Mon_Class Y] : η ≫ (β_ X Y).hom = η := by
-  simp only [instTensorObj_one, Category.assoc, BraidedCategory.braiding_naturality,
+  simp only [tensorObj.one_def, Category.assoc, BraidedCategory.braiding_naturality,
     braiding_tensorUnit_right, Iso.cancel_iso_inv_left]
   monoidal
 
@@ -844,7 +848,7 @@ Projects:
 * Check that `Mon_ TopCat ≌ [bundled topological monoids]`.
 * Check that `Mon_ AddCommGrp ≌ RingCat`.
   (We've already got `Mon_ (ModuleCat R) ≌ AlgCat R`,
-  in `Mathlib.CategoryTheory.Monoidal.Internal.Module`.)
+  in `Mathlib/CategoryTheory/Monoidal/Internal/Module.lean`.)
 * Can you transport this monoidal structure to `RingCat` or `AlgCat R`?
   How does it compare to the "native" one?
 * Show that when `F` is a lax braided functor `C ⥤ D`, the functor `map_Mon F : Mon_ C ⥤ Mon_ D`

@@ -10,7 +10,7 @@ import Mathlib.Data.Num.Lemmas
 /-!
 # Properties of the `ZNum` representation of integers
 
-This file was split from `Mathlib.Data.Num.Lemmas` to keep the former under 1500 lines.
+This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under 1500 lines.
 -/
 
 open Int
