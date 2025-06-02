@@ -306,7 +306,6 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : ker f x y ↔ x ∈ f ⁻¹
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
   toFun f := Quotient.lift (f : α → β) f.2
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
-  left_inv := fun ⟨_, _⟩ => Subtype.eq <| funext fun _ => rfl
   right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
 
 /-- The uniqueness part of the universal property for quotients of an arbitrary type. -/

@@ -257,7 +257,6 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)
-    left_inv := fun _ => rfl
     right_inv := by
       rintro ⟨a⟩
       rfl }

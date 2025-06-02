@@ -221,17 +221,13 @@ lemma nonempty_leftResolution_iff_op (X₂ : C₂) :
     Nonempty (Φ.LeftResolution X₂) ↔ Nonempty (Φ.op.RightResolution (Opposite.op X₂)) :=
   Equiv.nonempty_congr
     { toFun := fun L => L.op
-      invFun := fun R => R.unop
-      left_inv := fun _ => rfl
-      right_inv := fun _ => rfl }
+      invFun := fun R => R.unop }
 
 lemma nonempty_rightResolution_iff_op (X₂ : C₂) :
     Nonempty (Φ.RightResolution X₂) ↔ Nonempty (Φ.op.LeftResolution (Opposite.op X₂)) :=
   Equiv.nonempty_congr
     { toFun := fun R => R.op
-      invFun := fun L => L.unop
-      left_inv := fun _ => rfl
-      right_inv := fun _ => rfl }
+      invFun := fun L => L.unop }
 
 lemma hasLeftResolutions_iff_op : Φ.HasLeftResolutions ↔ Φ.op.HasRightResolutions :=
   ⟨fun _ X₂ => ⟨(Classical.arbitrary (Φ.LeftResolution X₂.unop)).op⟩,

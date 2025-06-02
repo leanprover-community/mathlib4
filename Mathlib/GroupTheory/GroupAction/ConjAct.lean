@@ -67,8 +67,6 @@ instance : Inhabited (ConjAct G) :=
 def ofConjAct : ConjAct G ≃* G where
   toFun := id
   invFun := id
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
   map_mul' := fun _ _ => rfl
 
 /-- Reinterpret `g : G` as an element of `ConjAct G`. -/

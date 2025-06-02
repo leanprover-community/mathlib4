@@ -406,9 +406,7 @@ example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun <| myNatEquiv.invFun n) =
 /- test that we don't recursively take projections of `prod` and `PProd` -/
 @[simps] def pprodEquivProd2 : PProd ℕ ℕ ≃ ℕ × ℕ :=
   { toFun := fun x ↦ ⟨x.1, x.2⟩
-    invFun := fun x ↦ ⟨x.1, x.2⟩
-    left_inv := fun ⟨_, _⟩ ↦ rfl
-    right_inv := fun ⟨_, _⟩ ↦ rfl }
+    invFun := fun x ↦ ⟨x.1, x.2⟩ }
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
@@ -1035,8 +1033,6 @@ initialize_simps_projections DecoratedEquiv (toFun → apply, invFun → symm_ap
 @[simps] def foo (α : Type) : DecoratedEquiv α α :=
   { toFun     := fun x ↦ x
     invFun    := fun x ↦ x
-    left_inv  := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl
     P_toFun   := fun _ _ h ↦ h
     P_invFun  := fun _ _ h ↦ h }
 
@@ -1089,8 +1085,6 @@ initialize_simps_projections FurtherDecoratedEquiv
 @[simps] def ffoo (α : Type) : FurtherDecoratedEquiv α α :=
   { toFun     := fun x ↦ x
     invFun    := fun x ↦ x
-    left_inv  := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl
     P_toFun   := fun _ _ h ↦ h
     P_invFun  := fun _ _ h ↦ h
     Q_toFun   := fun y ↦ ⟨y, rfl⟩
@@ -1126,8 +1120,6 @@ initialize_simps_projections OneMore (toFun → apply, invFun → symm_apply,
 @[simps] def fffoo (α : Type) : OneMore α α :=
   { toFun     := fun x ↦ x
     invFun    := fun x ↦ x
-    left_inv  := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl
     P_toFun   := fun _ _ h ↦ h
     P_invFun  := fun _ _ h ↦ h
     Q_toFun   := fun y ↦ ⟨y, rfl⟩
