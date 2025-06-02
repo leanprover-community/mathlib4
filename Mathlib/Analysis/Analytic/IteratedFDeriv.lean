@@ -284,7 +284,6 @@ theorem AnalyticOn.domDomCongr_iteratedFDeriv (h : AnalyticOn 𝕜 f univ) {n : 
   rw [← iteratedFDerivWithin_univ]
   exact h.domDomCongr_iteratedFDerivWithin uniqueDiffOn_univ (mem_univ x) _
 
-
 /-- The `n`-th iterated derivative of an analytic function is symmetric. -/
 theorem ContDiffAt.iteratedFDeriv_comp_perm
     (h : ContDiffAt 𝕜 ω f x) {n : ℕ} (v : Fin n → E) (σ : Perm (Fin n)) :
