@@ -32,8 +32,8 @@ open scoped ENNReal NNReal
 
 namespace MeasureTheory.Measure
 
-
 noncomputable section
+
 variable {X : Type*} {mX : MeasurableSpace X}
 variable {s : Set X}
 variable {μ ν : Measure X}
