@@ -91,7 +91,9 @@ import Mathlib.Algebra.Category.BoolRing
 import Mathlib.Algebra.Category.CoalgCat.Basic
 import Mathlib.Algebra.Category.CoalgCat.ComonEquivalence
 import Mathlib.Algebra.Category.CoalgCat.Monoidal
+import Mathlib.Algebra.Category.CommAlgCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
+import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.Algebra.Category.Grp.Abelian
@@ -3132,6 +3134,7 @@ import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.Rank
 import Mathlib.Data.Matrix.Reflection
 import Mathlib.Data.Matrix.RowCol
+import Mathlib.Data.Matrix.Vec
 import Mathlib.Data.Matroid.Basic
 import Mathlib.Data.Matroid.Circuit
 import Mathlib.Data.Matroid.Closure
