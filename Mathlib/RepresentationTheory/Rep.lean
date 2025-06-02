@@ -410,7 +410,6 @@ variable (A B : Rep k G) (α : Type u) [DecidableEq α]
 
 open ModuleCat.MonoidalCategory
 
--- the proof below can be simplified after #24823 is merged
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
 @[simps! hom_hom inv_hom]
@@ -419,9 +418,7 @@ def finsuppTensorLeft :
   Action.mkIso (TensorProduct.finsuppLeft k A B α).toModuleIso
     fun _ => ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => by
       ext
-      simp [Action_ρ_eq_ρ, TensorProduct.finsuppLeft_apply_tmul,
-        tensorObj_def, ModuleCat.MonoidalCategory.tensorHom_def,
-        ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv]
+      simp [Action_ρ_eq_ρ, TensorProduct.finsuppLeft_apply_tmul, ModuleCat.endRingEquiv]
 
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `A ⊗ (α →₀ B) ≅ (A ⊗ B) →₀ α` sending `a ⊗ₜ single x b ↦ single x (a ⊗ₜ b)`. -/
@@ -431,8 +428,7 @@ def finsuppTensorRight :
   Action.mkIso (TensorProduct.finsuppRight k A B α).toModuleIso fun _ => ModuleCat.hom_ext <|
       TensorProduct.ext <| LinearMap.ext fun _ => lhom_ext fun _ _ => by
       ext
-      simp [Action_ρ_eq_ρ, TensorProduct.finsuppRight_apply_tmul, ModuleCat.endRingEquiv,
-        tensorObj_def, ModuleCat.MonoidalCategory.tensorObj]
+      simp [Action_ρ_eq_ρ, TensorProduct.finsuppRight_apply_tmul, ModuleCat.endRingEquiv]
 
 variable (k G) in
 /-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
@@ -443,9 +439,7 @@ def leftRegularTensorTrivialIsoFree :
     finsuppProdLEquiv k).toModuleIso fun _ =>
       ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => lhom_ext fun _ _ => by
         ext
-        simp [Action_ρ_eq_ρ, tensorObj_def, ModuleCat.endRingEquiv,
-          whiskerRight_def, ModuleCat.MonoidalCategory.whiskerRight,
-          ModuleCat.MonoidalCategory.tensorObj]
+        simp [Action_ρ_eq_ρ, ModuleCat.endRingEquiv]
 
 variable {α}
 
@@ -454,16 +448,14 @@ lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G
     DFunLike.coe (F := ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k (α →₀ k)) →ₗ[k] α →₀ G →₀ k)
     (leftRegularTensorTrivialIsoFree k G α).hom.hom.hom (single g r ⊗ₜ[k] single i s) =
       single i (single g (r * s)) := by
-  simp [leftRegularTensorTrivialIsoFree, tensorObj_def,
-    ModuleCat.MonoidalCategory.tensorObj]
+  simp [leftRegularTensorTrivialIsoFree]
 
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
     DFunLike.coe (F := (α →₀ G →₀ k) →ₗ[k] ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k (α →₀ k)))
     (leftRegularTensorTrivialIsoFree k G α).inv.hom.hom (single i (single g r)) =
       single g r ⊗ₜ[k] single i 1 := by
-  simp [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one,
-    tensorObj_def, ModuleCat.MonoidalCategory.tensorObj]
+  simp [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one]
 
 end
 end Finsupp
