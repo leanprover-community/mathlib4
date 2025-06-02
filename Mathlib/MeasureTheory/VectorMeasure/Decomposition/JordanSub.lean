@@ -3,9 +3,9 @@ Copyright (c) 2025 Loic Simon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Loic Simon
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
-import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+import Mathlib.MeasureTheory.Measure.Sub
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 
 /-!
 # Jordan Decomposition from Signed Measure Subtraction
