@@ -65,7 +65,7 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
     μ.toSignedMeasure - ν.toSignedMeasure =
       (μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure := by
   obtain ⟨s, hs⟩ := exists_isHahnDecomposition μ ν
-  let hsc := hs.compl
+  have hsc := hs.compl
   have h₁ := toSignedMeasure_restrict_sub hs
   have h₂ := toSignedMeasure_restrict_sub hsc
   have h₁' := toSignedMeasure_congr <| restrict_eq_zero.mpr <|
