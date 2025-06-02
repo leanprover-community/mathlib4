@@ -44,7 +44,7 @@ We comment on these as follows:
 3. This construction takes a root system with base as input and is implemented here.
 
 There seems to be no known construction of a Lie algebra from a root system without first choosing
-a base.
+a base: https://mathoverflow.net/questions/495434/
 
 ## TODO
 * Lemma stating `LinearIndependent R h` (easy using `RootPairing.Base.cartanMatrix_nondegenerate`.)
