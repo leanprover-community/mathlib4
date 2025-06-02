@@ -633,6 +633,7 @@ end ContinuousAdd
 section
 
 variable {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+
 theorem restrict_neg (v : VectorMeasure α M) (i : Set α) :
     (-v).restrict i = -(v.restrict i) := by
   by_cases hi : MeasurableSet i
