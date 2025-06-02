@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Iso
 /-!
 # Extension of `reassoc` to isomorphisms.
 
-We extend `reassoc` for equality of isomorphisms.
+We extend `reassoc` and `reassoc_of%` for equality of isomorphisms.
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
 where `f g : X ≅ Y` in some category will create a new lemma named `F_assoc` of shape
 `∀ .. {Z : C} (h : Y ≅ Z), f ≪≫ h = g ≪≫ h`
@@ -18,8 +18,6 @@ but with the conclusions simplified using basic propertions in isomorphisms in a
 
 This is useful for generating lemmas which the simplifier can use even on expressions
 that are already right associated.
-
-We also extend the `reassoc_of%` term elaborator.
 -/
 
 open Lean Meta Elab Tactic
@@ -40,47 +38,13 @@ def categoryIsoSimp (e : Expr) : MetaM Simp.Result :=
     (config := { decide := false })
 
 /--
-Given an equation `f = g` between isomorphisms `X ≅ Y` in a category (possibly after a `∀` binder),
+Given an equation `f = g` between isomorphisms `X ≅ Y` in a category,
 produce the equation `∀ {Z} (h : Y ≅ Z), f ≪≫ h = g ≪≫ h`,
 but with compositions fully right associated, identities removed, and functors applied.
 -/
-def isoReassocExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType categoryIsoSimp (← mkAppM ``Iso.eq_whisker #[e])) e
+def reassocExprIso (e : Expr) : MetaM Expr := do
+  simpType categoryIsoSimp (← mkAppM ``Iso.eq_whisker #[e])
 
-/--
-Update the `reassoc` attribute to use `isoReassocExpr` on equality of isomorphisms, and
-`reassocExpr` on equality of morphisms.
--/
-initialize reassocImplRef.set fun src ref kind => match ref with
-  | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
-    if (kind != AttributeKind.global) then
-      throwError "`iso_reassoc` can only be used as a global attribute"
-    addRelatedDecl src "_assoc" ref stx? fun type value levels => do
-      let e ← mkExpectedTypeHint value type
-      let t ← forallTelescope type (fun _ e' => do
-        match e'.eq? with
-        | some (t, _, _) =>
-          match t.app4? ``Iso with
-          | some _ => isoReassocExpr e
-          | _ => reassocExpr e
-        | _ =>
-          throwError "`iso_reassoc` can only be used on terms about equality of (iso)morphisms.")
-      pure (t, levels)
-  | _ => throwUnsupportedSyntax
-
-open Term in
-/--
-Update the `reassoc_of%` elaborator to use `isoReassocExpr` on equality of isos, and
-`reassocExpr` otherwise.
--/
-initialize reassocOfImplRef.set fun t => do
-  let e ← elabTerm t none
-  forallTelescope (← inferType e) (fun _ e' => do
-    match (← whnfR e').eq? with
-    | some (t, _, _) =>
-      match t.app4? ``Iso with
-      | some _ => isoReassocExpr e
-      | _ => reassocExpr e
-    | _ => throwError "`reassoc` can only be used on terms about equality of (iso)morphisms.")
+initialize registerReassocExpr reassocExprIso
 
 end CategoryTheory

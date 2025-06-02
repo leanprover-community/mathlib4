@@ -31,23 +31,12 @@ info: Tests.Reassoc.foo_iso_assoc.{v₁, u₁} {C : Type u₁} [Category.{v₁, 
 #guard_msgs in
 #check foo_iso_assoc
 
-/--
-error: `iso_reassoc` can only be used on terms about equality of (iso)morphisms.
--/
+/-- error: `reassoc` can only be used on terms about equality of (iso)morphisms -/
 #guard_msgs in
 @[reassoc]
 def one : Nat := 1
 
-/--
-error: application type mismatch
-  @eq_whisker' ?C ?inst✝ ?X ?Y ?f ?g (id rfl)
-argument
-  id rfl
-has type
-  1 + 1 = 2 : Prop
-but is expected to have type
-  ?f = ?g : Prop
--/
+/-- error: `reassoc` can only be used on terms about equality of (iso)morphisms -/
 #guard_msgs in
 @[reassoc]
 def one_plus_one : 1 + 1 = 2 := rfl
