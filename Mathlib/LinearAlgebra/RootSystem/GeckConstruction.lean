@@ -47,11 +47,13 @@ There seems to be no known construction of a Lie algebra from a root system with
 a base: https://mathoverflow.net/questions/495434/
 
 ## TODO
-* Lemma stating `LinearIndependent R h` (easy using `RootPairing.Base.cartanMatrix_nondegenerate`.)
-* Lemma stating `⁅e i, f j⁆ = 0` when `i ≠ j` (Lemma 3.5 from [Geck](Geck2017).)
+* Lemma stating `LinearIndependent R h` (easy using `RootPairing.Base.cartanMatrix_nondegenerate`).
+* Lemma stating `⁅e i, f j⁆ = 0` when `i ≠ j` (Lemma 3.5 from [Geck](Geck2017)).
 * Instance stating `LieModule.IsIrreducible R (lieAlgebra b) (b.support ⊕ ι → R)`
-  (Lemma 4.2 from [Geck](Geck2017).). This will immediately yield that the Geck construction is
+  (Lemma 4.2 from [Geck](Geck2017)). This will immediately yield that the Geck construction is
   semisimple via `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful`.
+* Instance stating `((cartanSubalgebra b).comap (lieAlgebra b).incl).IsCartanSubalgebra`
+  (included in Lemma 4.6 from [Geck](Geck2017)).
 
 -/
 
