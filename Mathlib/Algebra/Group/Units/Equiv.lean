@@ -167,8 +167,6 @@ variable (α) in
 def unitsEquivProdSubtype [Monoid α] : αˣ ≃ {p : α × α // p.1 * p.2 = 1 ∧ p.2 * p.1 = 1} where
   toFun u := ⟨(u, ↑u⁻¹), u.val_inv, u.inv_val⟩
   invFun p := Units.mk (p : α × α).1 (p : α × α).2 p.prop.1 p.prop.2
-  left_inv _ := Units.ext rfl
-  right_inv _ := Subtype.ext <| Prod.ext rfl rfl
 
 /-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/

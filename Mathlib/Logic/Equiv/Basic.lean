@@ -42,7 +42,6 @@ def piOptionEquivProd {α} {β : Option α → Type*} :
   toFun f := (f none, fun a => f (some a))
   invFun x a := Option.casesOn a x.fst x.snd
   left_inv f := funext fun a => by cases a <;> rfl
-  right_inv x := by simp
 
 section subtypeCongr
 
@@ -414,7 +413,6 @@ def piEquivSubtypeSigma (ι) (π : ι → Type*) :
     (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } where
   toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun _ => rfl⟩
   invFun := fun f i => by rw [← f.2 i]; exact (f.1 i).2
-  left_inv := fun _ => funext fun _ => rfl
   right_inv := fun ⟨f, hf⟩ =>
     Subtype.eq <| funext fun i =>
       Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp

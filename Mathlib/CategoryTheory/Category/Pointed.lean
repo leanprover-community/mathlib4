@@ -119,8 +119,7 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
             funext x
             cases x
             · exact f.map_point.symm
-            · rfl
-          right_inv := fun _ => funext fun _ => rfl }
+            · rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Pointed.Hom.ext
         funext x

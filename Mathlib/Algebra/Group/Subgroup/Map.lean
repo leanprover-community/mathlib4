@@ -280,8 +280,6 @@ def subgroupOfEquivOfLe {G : Type*} [Group G] {H K : Subgroup G} (h : H ≤ K) :
     H.subgroupOf K ≃* H where
   toFun g := ⟨g.1, g.2⟩
   invFun g := ⟨⟨g.1, h g.2⟩, g.2⟩
-  left_inv _g := Subtype.ext (Subtype.ext rfl)
-  right_inv _g := Subtype.ext rfl
   map_mul' _g _h := rfl
 
 @[to_additive (attr := simp)]

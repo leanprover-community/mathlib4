@@ -84,8 +84,6 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
   toFun e := ⟨e.toFun, e.symm.toFun, e.self_comp_symm, e.symm_comp_self⟩
   invFun u :=
     ⟨(u : Function.End α), (↑u⁻¹ : Function.End α), congr_fun u.inv_val, congr_fun u.val_inv⟩
-  left_inv _ := ext fun _ => rfl
-  right_inv _ := Units.ext rfl
   map_mul' _ _ := rfl
 
 /-- Lift a monoid homomorphism `f : G →* Function.End α` to a monoid homomorphism

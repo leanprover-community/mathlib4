@@ -127,7 +127,6 @@ section NormedAddCommGroup
 noncomputable def AddEquiv.lpBCF : lp (fun _ : α ↦ E) ∞ ≃+ (α →ᵇ E) where
   toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.prop)
   invFun f := ⟨⇑f, f.bddAbove_range_norm_comp⟩
-  left_inv _f := lp.ext rfl
   map_add' _f _g := rfl
 
 

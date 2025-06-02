@@ -52,7 +52,6 @@ def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
     G ≃g completeMultipartiteGraph (fun (c : Quotient h.setoid) ↦ {x // h.setoid.r c.out x}) where
   toFun := fun x ↦ ⟨_, ⟨_, Quotient.mk_out x⟩⟩
   invFun := fun ⟨_, x⟩ ↦  x.1
-  left_inv := fun _ ↦ rfl
   right_inv := fun ⟨_, x⟩ ↦ Sigma.subtype_ext (Quotient.mk_eq_iff_out.2 <| h.setoid.symm x.2) rfl
   map_rel_iff' := by
     simp_rw [Equiv.coe_fn_mk, comap_adj, top_adj, ne_eq, Quotient.eq]
