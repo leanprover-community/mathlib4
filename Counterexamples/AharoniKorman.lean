@@ -98,6 +98,7 @@ open Hollom
 @[simps]
 def equivHollom : ℕ × ℕ × ℕ ≃ Hollom where
   toFun := toHollom; invFun := ofHollom
+
 namespace Hollom
 
 @[simp] lemma «forall» {p : Hollom → Prop} : (∀ x, p x) ↔ ∀ x, p (toHollom x) := by aesop
