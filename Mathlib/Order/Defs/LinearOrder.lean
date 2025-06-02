@@ -119,6 +119,7 @@ lemma eq_or_lt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
   if h : x < y then h₁ h
   else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
