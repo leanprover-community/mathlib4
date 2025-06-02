@@ -444,8 +444,6 @@ theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
 
 section Correctness
 
-open Perm
-
 theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
   | [] => Perm.refl _
   | b :: l => by
