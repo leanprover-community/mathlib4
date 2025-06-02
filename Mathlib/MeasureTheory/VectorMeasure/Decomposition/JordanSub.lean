@@ -97,8 +97,7 @@ def jordanDecompositionOfToSignedMeasureSub
   mutuallySingular := mutually_singular_measure_sub
 
 lemma jordanDecompositionOfToSignedMeasureSub_posPart :
-    (jordanDecompositionOfToSignedMeasureSub μ ν).posPart = μ - ν := by
-      trivial
+    (jordanDecompositionOfToSignedMeasureSub μ ν).posPart = μ - ν := rfl
 
 lemma jordanDecompositionOfToSignedMeasureSub_negPart :
     (jordanDecompositionOfToSignedMeasureSub μ ν).negPart = ν - μ := by
