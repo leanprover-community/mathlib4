@@ -41,7 +41,7 @@ theorem zipWith_tail (x : Vector α n) (y : Vector β n) :
 theorem prod_mul_prod_eq_prod_zipWith [CommMonoid α] (x y : Vector α n) :
     x.toList.prod * y.toList.prod = (Vector.zipWith (· * ·) x y).toList.prod :=
   List.prod_mul_prod_eq_prod_zipWith_of_length_eq x.toList y.toList
-    ((toList_length x).trans (toList_length y).symm)
+    ((length_toList x).trans (length_toList y).symm)
 
 end ZipWith
 

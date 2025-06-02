@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Data.List.Defs
+import Batteries.Data.Vector.Lemmas
 import Mathlib.Tactic.Common
 
 /-!
@@ -27,34 +28,54 @@ which is the type of *arrays* of length `n` with elements of type `α`.
 Typically, if you are doing programming or verification, you will primarily use `Vector α n`,
 and if you are doing mathematics, you may want to use `List.Vector α n` instead.
 -/
-def List.Vector (α : Type u) (n : ℕ) :=
-  { l : List α // l.length = n }
+structure List.Vector (α : Type u) (n : ℕ) where
+  /-- The list obtained from a vector. -/
+  toList : List α
+  /-- The length of the list to which a vector of length `n` maps is `n`. -/
+  length_toList' : toList.length = n
+
+initialize_simps_projections List.Vector (as_prefix toList)
 
 namespace List.Vector
 
 variable {α β σ φ : Type*} {n : ℕ} {p : α → Prop}
 
-/-- The list obtained from a vector. -/
-def toList (v : Vector α n) : List α :=
-  v.1
+/-! ### Basic Theorems -/
+/-- Vector is determined by the underlying list. -/
+protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
+@[simp] theorem toList_injective : Function.Injective (toList (α := α) (n := n)) := Vector.eq
+
+@[simp] theorem toList_inj {u v : List.Vector α n} : u.toList = v.toList ↔ u = v := by
+  cases u; cases v; rw [mk.injEq]
+
+instance [DecidableEq α] : DecidableEq (Vector α n) := toList_injective.decidableEq
+
+/-- Vector of length from a list `v`
+with witness that `v` has length `n` maps to `v` under `toList`. -/
+@[simp]
+theorem toList_mk (v : List α) (P : List.length v = n) : toList (Vector.mk v P) = v := rfl
+
+@[simp]
+theorem length_toList {v : Vector α n} : v.toList.length = n := v.2
 
 /-- Convert a `List.Vector` to a `Vector`. -/
 @[simps!]
-def toVector (v : List.Vector α n) : _root_.Vector α n := ⟨v.1.toArray, v.2⟩
+def toVector (v : List.Vector α n) : _root_.Vector α n := ⟨v.toList.toArray, v.length_toList⟩
 
 theorem toVector_mk (a : List α) (h : a.length = n) :
     toVector ⟨a, h⟩ = ⟨a.toArray, h⟩ := rfl
 
 /-- Convert a `Vector` to a `List.Vector`. -/
-def ofVector {α : Type*} {n : ℕ} (v : _root_.Vector α n) : List.Vector α n := ⟨v.toList, v.2⟩
+@[simps!]
+def ofVector {α : Type*} {n : ℕ} (v : _root_.Vector α n) : List.Vector α n :=
+  ⟨v.toList, v.length_toList⟩
 
 theorem ofVector_mk (a : Array α) (h : a.size = n) :
     ofVector ⟨a, h⟩ = ⟨a.toList, h⟩ := rfl
 
 alias _root_.Vector.toListVector := ofVector
-
-@[simp] theorem ofVector_toList (v : _root_.Vector α n) : (ofVector v).toList = v.toArray.toList :=
-  rfl
 
 @[simp] theorem mem_toVector (a : α) : ∀ (v : Vector α n), a ∈ v.toVector ↔ a ∈ v.toList :=
   fun ⟨_, _⟩ => Vector.mem_mk.trans Array.mem_toArray
@@ -68,36 +89,28 @@ theorem mem_toList_ofVector (a : α) : ∀ (v : _root_.Vector α n),
 theorem toVector_inj {u v : List.Vector α n} : u.toVector = v.toVector ↔ u = v :=
   Function.Injective.eq_iff (Function.LeftInverse.injective ofVector_toVector)
 
-theorem toVector_surj : ∀ v, ∃ u : Vector α n, u.toVector = v :=
-  (Function.LeftInverse.surjective toVector_ofVector)
-
 theorem ofVector_inj {u v : _root_.Vector α n} : ofVector u = ofVector v ↔ u = v :=
   Function.Injective.eq_iff (Function.LeftInverse.injective toVector_ofVector)
 
-theorem ofVector_surj : ∀ v, ∃ u : _root_.Vector α n, ofVector u = v :=
-  (Function.LeftInverse.surjective ofVector_toVector)
-
-instance [DecidableEq α] : DecidableEq (Vector α n) :=
-  inferInstanceAs (DecidableEq {l : List α // l.length = n})
-
 /-- The empty vector with elements of type `α` -/
-@[match_pattern]
-def nil : Vector α 0 :=
-  ⟨[], rfl⟩
+@[match_pattern, simps!]
+def nil : Vector α 0 := ⟨[], rfl⟩
 
 @[simp] theorem toVector_nil : toVector nil (α := α) = #v[] := rfl
 @[simp] theorem ofVector_empty : ofVector #v[] (α := α) = nil := rfl
 
+/-- A vector of length `0` is a `nil` vector. -/
+protected theorem eq_nil (v : Vector α 0) : v = nil :=
+  v.eq nil (List.eq_nil_of_length_eq_zero v.2)
+
 /-- If `a : α` and `l : Vector α n`, then `cons a l`, is the vector of length `n + 1`
 whose first element is a and with l as the rest of the list. -/
-@[match_pattern]
-def cons : α → Vector α n → Vector α (Nat.succ n)
-  | a, ⟨v, h⟩ => ⟨a :: v, congrArg Nat.succ h⟩
+@[match_pattern, simps!]
+def cons : α → Vector α n → Vector α (Nat.succ n) | a, ⟨v, h⟩ => ⟨a :: v, congrArg Nat.succ h⟩
 
 /-- The length of a vector. -/
 @[reducible, nolint unusedArguments]
-def length (_ : Vector α n) : ℕ :=
-  n
+def length (_ : Vector α n) : ℕ := n
 
 open Nat
 
@@ -116,25 +129,24 @@ theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
   | ⟨_, _⟩ => rfl
 
 /-- The tail of a vector, with an empty vector having empty tail. -/
-def tail : Vector α n → Vector α (n - 1)
-  | ⟨[], h⟩ => ⟨[], congrArg pred h⟩
-  | ⟨_ :: v, h⟩ => ⟨v, congrArg pred h⟩
+@[simps!]
+def tail  : (v : Vector α n) → Vector α (n - 1) | ⟨v, h⟩ => ⟨v.tail, h ▸ List.length_tail⟩
 
 @[simp] theorem toVector_tail :
-    ∀ {n} (v : Vector α n), (v.tail).toVector = v.toVector.tail
+    ∀ {n} (v : Vector α n), v.tail.toVector = v.toVector.tail
   | 0, ⟨[], h⟩ => _root_.Vector.toList_inj.mp rfl
   | _ + 1, ⟨_ :: v, h⟩ => _root_.Vector.toList_inj.mp <| by
     unfold tail _root_.Vector.tail
     simp_rw [toVector_mk, zero_lt_succ, dite_true, Vector.eraseIdx_mk,
-      eraseIdx_toArray, eraseIdx_zero, tail_cons]
+      eraseIdx_toArray, eraseIdx_zero]
 
 @[simp] theorem ofVector_tail :
     ∀ {n} (v : _root_.Vector α n), ofVector v.tail = (ofVector v).tail
-  | 0, ⟨⟨[]⟩, _⟩ => Subtype.ext rfl
-  | _ + 1, ⟨⟨_ :: v⟩, h⟩ => Subtype.ext <| by
+  | 0, ⟨⟨[]⟩, _⟩ => toList_injective rfl
+  | _ + 1, ⟨⟨_ :: v⟩, h⟩ => toList_injective <| by
     unfold tail _root_.Vector.tail
     simp_rw [Nat.add_one_sub_one, zero_lt_succ, dite_true, Vector.eraseIdx_mk,
-      eraseIdx_toArray, eraseIdx_zero, tail_cons, ofVector_mk]
+      eraseIdx_toArray, eraseIdx_zero, tail_cons, ofVector_mk, tail_cons]
 
 /-- The tail of a vector obtained by prepending is the vector prepended. to -/
 theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
@@ -154,6 +166,7 @@ def get (l : Vector α n) (i : Fin n) : α :=
 @[simp] theorem get_ofVector (v : _root_.Vector α n) : (ofVector v).get = v.get := rfl
 
 /-- Appending a vector to another. -/
+@[simps!]
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
   | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 
@@ -163,7 +176,7 @@ def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
 
 @[simp] theorem ofVector_append :
     ∀ v u : _root_.Vector α n, ofVector (v ++ u) = (ofVector v).append (ofVector u) :=
-  fun ⟨_, _⟩ ⟨_, _⟩ => Subtype.ext Array.toList_append
+  fun ⟨_, _⟩ ⟨_, _⟩ => toList_injective Array.toList_append
 
 /-- Elimination rule for `Vector`. -/
 @[elab_as_elim]
@@ -174,6 +187,7 @@ def elim {α} {C : ∀ {n}, Vector α n → Sort u}
     | _, rfl => H l
 
 /-- Map a vector under a function. -/
+@[simps!]
 def map (f : α → β) : Vector α n → Vector β n
   | ⟨l, h⟩ => ⟨List.map f l, by simp [*]⟩
 
@@ -183,7 +197,7 @@ def map (f : α → β) : Vector α n → Vector β n
 
 @[simp] theorem ofVector_map (f : α → β) : ∀ (v : _root_.Vector α n),
     ofVector (v.map f) = (ofVector v).map f :=
-  fun ⟨⟨_⟩, _⟩ => Subtype.ext Array.toList_map
+  fun ⟨⟨_⟩, _⟩ => toList_injective Array.toList_map
 
 /-- A `nil` vector maps to a `nil` vector. -/
 @[simp]
@@ -196,6 +210,7 @@ theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v
   | ⟨_, _⟩ => rfl
 
 /-- Map a vector under a partial function. -/
+@[simps!]
 def pmap (f : (a : α) → p a → β) :
     (v : Vector α n) → (∀ x ∈ v.toList, p x) → Vector β n
   | ⟨l, h⟩, hp => ⟨List.pmap f l hp, by simp [h]⟩
@@ -215,10 +230,12 @@ theorem pmap_nil (f : (a : α) → p a → β) (hp : ∀ x ∈ nil.toList, p x) 
     nil.pmap f hp = nil := rfl
 
 /-- Mapping two vectors under a curried function of two variables. -/
+@[simps!]
 def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
   | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.zipWith f x y, by simp [*]⟩
 
 /-- Vector obtained by repeating an element. -/
+@[simps!]
 def replicate (n : ℕ) (a : α) : Vector α n :=
   ⟨List.replicate n a, List.length_replicate⟩
 
@@ -229,14 +246,17 @@ def replicate (n : ℕ) (a : α) : Vector α n :=
     ofVector (_root_.Vector.replicate n a) = replicate n a := rfl
 
 /-- Drop `i` elements from a vector of length `n`; we can have `i > n`. -/
+@[simps!]
 def drop (i : ℕ) : Vector α n → Vector α (n - i)
   | ⟨l, p⟩ => ⟨List.drop i l, by simp [*]⟩
 
 /-- Take `i` elements from a vector of length `n`; we can have `i > n`. -/
+@[simps!]
 def take (i : ℕ) : Vector α n → Vector α (min i n)
   | ⟨l, p⟩ => ⟨List.take i l, by simp [*]⟩
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
+@[simps!]
 def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
   | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx_of_lt] <;> rw [p]; exact i.2⟩
 
@@ -262,6 +282,7 @@ open Prod
 /-- Runs a function over a vector returning the intermediate results and a
 final result.
 -/
+@[simps!]
 def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector β n
   | ⟨x, px⟩, c =>
     let res := List.mapAccumr f x c
@@ -270,6 +291,7 @@ def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector
 /-- Runs a function over a pair of vectors returning the intermediate results and a
 final result.
 -/
+@[simps!]
 def mapAccumr₂ (f : α → β → σ → σ × φ) : Vector α n → Vector β n → σ → σ × Vector φ n
   | ⟨x, px⟩, ⟨y, py⟩, c =>
     let res := List.mapAccumr₂ f x y c
@@ -282,67 +304,18 @@ section Shift
 
 /-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the
     `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
+@[simps!]
 def shiftLeftFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
   Vector.congr (by simp) <|
     append (drop i v) (replicate (min n i) fill)
 
 /-- `shiftRightFill v i` is the vector obtained by right-shifting `v` `i` times and padding with the
     `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
+@[simps!]
 def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
   Vector.congr (by omega) <| append (replicate (min n i) fill) (take (n - i) v)
 
 end Shift
-
-/-! ### Basic Theorems -/
-/-- Vector is determined by the underlying list. -/
-protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
-  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
-
-/-- A vector of length `0` is a `nil` vector. -/
-protected theorem eq_nil (v : Vector α 0) : v = nil :=
-  v.eq nil (List.eq_nil_of_length_eq_zero v.2)
-
-/-- Vector of length from a list `v`
-with witness that `v` has length `n` maps to `v` under `toList`. -/
-@[simp]
-theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P) = v :=
-  rfl
-
-/-- A nil vector maps to a nil list. -/
-@[simp]
-theorem toList_nil : toList nil = @List.nil α :=
-  rfl
-
-/-- The length of the list to which a vector of length `n` maps is `n`. -/
-@[simp]
-theorem toList_length (v : Vector α n) : (toList v).length = n :=
-  v.2
-
-/-- `toList` of `cons` of a vector and an element is
-the `cons` of the list obtained by `toList` and the element -/
-@[simp]
-theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList v := by
-  cases v; rfl
-
-/-- Appending of vectors corresponds under `toList` to appending of lists. -/
-@[simp]
-theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
-    toList (append v w) = toList v ++ toList w := by
-  cases v
-  cases w
-  rfl
-
-/-- `drop` of vectors corresponds under `toList` to `drop` of lists. -/
-@[simp]
-theorem toList_drop {n m : ℕ} (v : Vector α m) : toList (drop n v) = List.drop n (toList v) := by
-  cases v
-  rfl
-
-/-- `take` of vectors corresponds under `toList` to `take` of lists. -/
-@[simp]
-theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.take n (toList v) := by
-  cases v
-  rfl
 
 instance : GetElem (Vector α n) Nat α fun _ i => i < n where
   getElem := fun x i h => get x ⟨i, h⟩
