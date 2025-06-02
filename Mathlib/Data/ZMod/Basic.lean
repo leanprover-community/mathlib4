@@ -272,7 +272,7 @@ section CharDvd
 
 variable {m : ℕ} [CharP R m]
 
--- @[simp] -- `m` can not be inferred by `simp`.
+-- Cannot be @[simp] because `m` can not be inferred by `simp`.
 theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   rcases n with - | n
   · exact Int.cast_one
@@ -320,15 +320,15 @@ def castHom (h : m ∣ n) (R : Type*) [Ring R] [CharP R m] : ZMod n →+* R wher
 theorem castHom_apply {h : m ∣ n} (i : ZMod n) : castHom h R i = cast i :=
   rfl
 
--- @[simp] -- `m` can not be inferred by `simp`.
+-- Cannot be @[simp] because `m` can not be inferred by `simp`.
 theorem cast_sub (h : m ∣ n) (a b : ZMod n) : (cast (a - b : ZMod n) : R) = cast a - cast b :=
   (castHom h R).map_sub a b
 
--- @[simp] -- `m` can not be inferred by `simp`.
+-- Cannot be @[simp] because `m` can not be inferred by `simp`.
 theorem cast_neg (h : m ∣ n) (a : ZMod n) : (cast (-a : ZMod n) : R) = -(cast a) :=
   (castHom h R).map_neg a
 
--- @[simp] -- `m` can not be inferred by `simp`.
+-- Cannot be @[simp] because `m` can not be inferred by `simp`.
 theorem cast_pow (h : m ∣ n) (a : ZMod n) (k : ℕ) : (cast (a ^ k : ZMod n) : R) = (cast a) ^ k :=
   (castHom h R).map_pow a k
 
