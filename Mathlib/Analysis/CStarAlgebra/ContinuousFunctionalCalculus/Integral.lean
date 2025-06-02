@@ -598,9 +598,11 @@ lemma integrable_cfcₙ' (f : X → 𝕜 → 𝕜)
     (hf₃ : AEStronglyMeasurable
       (fun x : X => mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) μ)
     (bound_ge : ∀ᵐ x ∂μ, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ bound x)
-    (bound_nonneg : 0 ≤ᵐ[μ] bound) -- not necessary
     (bound_int : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     Integrable (fun x => cfcₙ (f x) a) μ := by
+  have bound_nonneg : 0 ≤ᵐ[μ] bound := by
+    filter_upwards [bound_ge] with x bound_x
+    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   refine integrable_cfcₙ₀ _ _ ⟨hf₃, ?_⟩ ha
   exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ hf₂ bound bound_nonneg bound_int bound_ge
 
@@ -610,11 +612,9 @@ lemma integrableOn_cfcₙ' {s : Set X} (f : X → 𝕜 → 𝕜)
     (hf₃ : AEStronglyMeasurable
       (fun x : X => mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) (μ.restrict s))
     (bound_ge : ∀ᵐ x ∂(μ.restrict s), ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ bound x)
-    (bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound)
-      -- not necessary
     (bound_int : HasFiniteIntegral bound (μ.restrict s)) (ha : p a := by cfc_tac) :
     IntegrableOn (fun x => cfcₙ (f x) a) s μ :=
-  integrable_cfcₙ' f bound a hf₁ hf₂ hf₃ bound_ge bound_nonneg bound_int ha
+  integrable_cfcₙ' f bound a hf₁ hf₂ hf₃ bound_ge bound_int ha
 
 open Set Function in
 lemma integrable_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
@@ -624,9 +624,11 @@ lemma integrable_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] (f : X →
     (hf : ContinuousOn (uncurry f) (univ ×ˢ quasispectrum 𝕜 a))
     (f_zero : ∀ᵐ x ∂μ, f x 0 = 0)
     (bound_ge : ∀ᵐ x ∂μ, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ bound x)
-    (bound_nonneg : 0 ≤ᵐ[μ] bound) -- not necessary
     (bound_int : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     Integrable (fun x => cfcₙ (f x) a) μ := by
+  have bound_nonneg : 0 ≤ᵐ[μ] bound := by
+    filter_upwards [bound_ge] with x bound_x
+    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   refine integrable_cfcₙ₀ _ _ ⟨?_, ?_⟩ ha
   · exact aeStronglyMeasurable_mkD_restrict_of_uncurry _ _ hf f_zero
   · refine hasFiniteIntegral_mkD_restrict_of_bound f _ ?_ f_zero
@@ -642,10 +644,11 @@ lemma integrableOn_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set
     (hf : ContinuousOn (uncurry f) (s ×ˢ quasispectrum 𝕜 a))
     (f_zero : ∀ᵐ x ∂(μ.restrict s), f x 0 = 0)
     (bound_ge : ∀ᵐ x ∂(μ.restrict s), ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ bound x)
-    (bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound)
-      -- not necessary
     (bound_int : HasFiniteIntegral bound (μ.restrict s)) (ha : p a := by cfc_tac) :
     IntegrableOn (fun x => cfcₙ (f x) a) s μ := by
+  have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
+    filter_upwards [bound_ge] with x bound_x
+    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   refine integrableOn_cfcₙ₀ _ _ ⟨?_, ?_⟩ ha
   · exact aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry hs _ _ hf f_zero
   · refine hasFiniteIntegral_mkD_restrict_of_bound f _ ?_ f_zero
@@ -698,9 +701,11 @@ lemma cfcₙ_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (bound : X 
     (hf₂ : ∀ᵐ x ∂μ, f x 0 = 0)
     (hf₃ : AEStronglyMeasurable (fun x ↦ mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) μ)
     (bound_ge : ∀ᵐ x ∂μ, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ bound x)
-    (bound_nonneg : 0 ≤ᵐ[μ] bound)
     (bound_int : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfcₙ (fun z => ∫ x, f x z ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
+  have bound_nonneg : 0 ≤ᵐ[μ] bound := by
+    filter_upwards [bound_ge] with x bound_x
+    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   refine cfcₙ_integral₀ _ _ hf₁ hf₂ ⟨hf₃, ?_⟩ ha
   exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ hf₂ bound bound_nonneg bound_int bound_ge
 
@@ -711,9 +716,11 @@ lemma cfcₙ_setIntegral' [NormedSpace ℝ A] {s : Set X} (f : X → 𝕜 → �
     (hf₂ : ∀ᵐ x ∂(μ.restrict s), f x 0 = 0)
     (hf₃ : AEStronglyMeasurable (fun x ↦ mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) (μ.restrict s))
     (bound_ge : ∀ᵐ x ∂(μ.restrict s), ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ bound x)
-    (bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound)
     (bound_int : HasFiniteIntegral bound (μ.restrict s)) (ha : p a := by cfc_tac) :
     cfcₙ (fun r => ∫ x in s, f x r ∂μ) a = ∫ x in s, cfcₙ (f x) a ∂μ := by
+  have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
+    filter_upwards [bound_ge] with x bound_x
+    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   refine cfcₙ_setIntegral₀ _ _ hf₁ hf₂ ⟨hf₃, ?_⟩ ha
   exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ hf₂ bound bound_nonneg bound_int bound_ge
 
@@ -726,9 +733,11 @@ lemma cfcₙ_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableS
     (hf : ContinuousOn (uncurry f) (univ ×ˢ quasispectrum 𝕜 a))
     (f_zero : ∀ᵐ x ∂μ, f x 0 = 0)
     (bound_ge : ∀ᵐ x ∂μ, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ bound x)
-    (bound_nonneg : 0 ≤ᵐ[μ] bound)
     (bound_int : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfcₙ (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
+  have bound_nonneg : 0 ≤ᵐ[μ] bound := by
+    filter_upwards [bound_ge] with x bound_x
+    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   have : ∀ᵐ (x : X) ∂μ, ContinuousOn (f x) (quasispectrum 𝕜 a) := .of_forall fun x ↦
     hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
   refine cfcₙ_integral₀ _ _ this f_zero ⟨?_, ?_⟩ ha
@@ -745,9 +754,11 @@ lemma cfcₙ_setIntegral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurab
     (hf : ContinuousOn (uncurry f) (s ×ˢ quasispectrum 𝕜 a))
     (f_zero : ∀ᵐ x ∂(μ.restrict s), f x 0 = 0)
     (bound_ge : ∀ᵐ x ∂(μ.restrict s), ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ bound x)
-    (bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound)
     (bound_int : HasFiniteIntegral bound (μ.restrict s)) (ha : p a := by cfc_tac) :
     cfcₙ (fun r => ∫ x in s, f x r ∂μ) a = ∫ x in s, cfcₙ (f x) a ∂μ := by
+  have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
+    filter_upwards [bound_ge] with x bound_x
+    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   have : ∀ᵐ (x : X) ∂(μ.restrict s), ContinuousOn (f x) (quasispectrum 𝕜 a) :=
     ae_restrict_of_forall_mem hs fun x hx ↦
       hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
