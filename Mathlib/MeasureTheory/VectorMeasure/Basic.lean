@@ -621,7 +621,6 @@ theorem restrict_add (v w : VectorMeasure α M) (i : Set α) :
     simp [restrict_apply _ hi hj]
   · simp [restrict_not_measurable _ hi]
 
-
 /-- `VectorMeasure.restrict` as an additive monoid homomorphism. -/
 @[simps]
 def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
