@@ -52,14 +52,10 @@ section CompleteLinearOrder
 
 variable {α : Type*}{ι : Type*} [CompleteLinearOrder α] {s : Set α} {a b : α}
 
+
+/-- This has a very short proof but might still be useful in mathlib. -/
 theorem lt_biSup_iff {s : Set ι} {f : ι → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨i, hi⟩ := lt_iSup_iff.mp h
-    obtain ⟨his, ha⟩ := lt_iSup_iff.mp hi
-    exact ⟨i, ⟨his, ha⟩⟩
-  · obtain ⟨i, hi⟩ := h
-    apply lt_iSup_iff.mpr
-    exact ⟨i , lt_iSup_iff.mpr (by simpa [exists_prop])⟩
+  simp [lt_iSup_iff]
 
 end CompleteLinearOrder
 
@@ -196,8 +192,7 @@ lemma variation_aux_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (hs₁ : Me
 
 lemma variation_aux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < variation_aux μ s) :
     ∃ P ∈ partitions s, a < varOfPart μ P := by
-  simp only [variation_aux, hs, reduceIte] at ha
-  exact lt_biSup_iff.mp ha
+  simp_all [variation_aux, lt_iSup_iff]
 
 lemma variation_aux_le' {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
     (h : variation_aux μ s ≠ ⊤) :
@@ -341,9 +336,8 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
             simpa
   · -- Variation of the union, `variation_aux μ (⋃ i, s i)` le the sum of `variation_aux μ (s i)`.
     intro b hb
-    -- simp only [variation_aux, hs, reduceIte]
-    simp only [variation_aux, MeasurableSet.iUnion hs, reduceIte] at hb
-    obtain ⟨Q, hQ, hbQ⟩ := lt_biSup_iff.mp hb
+    simp only [variation_aux, MeasurableSet.iUnion hs, reduceIte, lt_iSup_iff] at hb
+    obtain ⟨Q, hQ, hbQ⟩ := hb
     -- Take the partitions defined as intersection of `Q` and `s i`.
     classical
     let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
