@@ -446,10 +446,20 @@ class CategoryStruct (obj : Type u) : Type (max u (v+1)) extends has_hom.{v} obj
 notation "𝟙" => CategoryStruct.id -- type as \b1
 infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
-@[simps] instance types : CategoryStruct (Type u) :=
+namespace types
+
+@[simps] instance : CategoryStruct (Type u) :=
   { hom  := fun a b ↦ (a → b)
     id   := fun _ ↦ id
     comp := fun f g ↦ g ∘ f }
+
+end types
+
+/--
+info: types.comp_def.{u} {X✝ Y✝ Z✝ : Type u} (f : X✝ → Y✝) (g : Y✝ → Z✝) (a✝ : X✝) : (f ≫ g) a✝ = (g ∘ f) a✝
+-/
+#guard_msgs in
+#check types.comp_def
 
 @[ext] theorem types.ext {X Y : Type u} {f g : X ⟶ Y} : (∀ x, f x = g x) → f = g := funext
 
@@ -484,8 +494,8 @@ def IdentityPreunctor : Prefunctor (Type u) Nat where
 namespace coercing
 
 structure FooStr where
- (c : Type)
- (x : c)
+  (c : Type)
+  (x : c)
 
 instance : CoeSort FooStr Type := ⟨FooStr.c⟩
 
@@ -496,8 +506,8 @@ example {x : Type} (h : ℕ = x) : foo = x := by simp only [foo_c]; rw [h]
 example {x : ℕ} (h : (3 : ℕ) = x) : foo.x = x := by simp only [foo_x]; rw [h]
 
 structure VooStr (n : ℕ) where
- (c : Type)
- (x : c)
+  (c : Type)
+  (x : c)
 
 instance (n : ℕ) : CoeSort (VooStr n) Type := ⟨VooStr.c⟩
 
@@ -927,17 +937,17 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 
 -- set_option trace.simps.debug true
 
-@[to_additive (attr := simps) instAddProd]
-instance instMulProd {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨fun p q ↦ ⟨p.1 * q.1, p.2 * q.2⟩⟩
+@[to_additive (attr := simps)]
+instance Prod.instMul {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨fun p q ↦ ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `instMulProd_mul |>.isSome
-  guard <| env.find? `instAddProd_add |>.isSome
-  -- hasAttribute `to_additive `instMulProd
-  -- hasAttribute `to_additive `instMulProd_mul
-  guard <| hasSimpAttribute env `instMulProd_mul
-  guard <| hasSimpAttribute env `instAddProd_add
+  guard <| env.find? `Prod.mul_def |>.isSome
+  guard <| env.find? `Prod.add_def |>.isSome
+  -- hasAttribute `to_additive `Prod.instMul
+  -- hasAttribute `to_additive `Prod.mul_def
+  guard <| hasSimpAttribute env `Prod.mul_def
+  guard <| hasSimpAttribute env `Prod.add_def
 
 example {M N} [Mul M] [Mul N] (p q : M × N) : p * q = ⟨p.1 * q.1, p.2 * q.2⟩ := by simp
 example {M N} [Add M] [Add N] (p q : M × N) : p + q = ⟨p.1 + q.1, p.2 + q.2⟩ := by simp

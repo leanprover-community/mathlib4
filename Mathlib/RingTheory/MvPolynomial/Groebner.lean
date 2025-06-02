@@ -84,7 +84,7 @@ variable (m) in
 noncomputable
 def reduce {b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
     MvPolynomial σ R :=
- f - monomial (m.degree f - m.degree b) (hb.unit⁻¹ * m.leadingCoeff f) * b
+  f - monomial (m.degree f - m.degree b) (hb.unit⁻¹ * m.leadingCoeff f) * b
 
 theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff b))
     (hbf : m.degree b ≤ m.degree f) (hf : m.degree f ≠ 0) :

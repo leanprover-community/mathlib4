@@ -47,12 +47,12 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
       · exact (hf x hx).congr (fun y hy => if_pos hy.2) (if_pos hx.2)
       · have : x ∉ closure { a | p a }ᶜ := fun h => hx' ⟨subset_closure hx.2, by
           rwa [closure_compl] at h⟩
-        exact continuousWithinAt_of_not_mem_closure fun h =>
+        exact continuousWithinAt_of_notMem_closure fun h =>
           this (closure_inter_subset_inter_closure _ _ h).2
     · apply ContinuousWithinAt.union
       · have : x ∉ closure { a | p a } := fun h =>
           hx' ⟨h, fun h' : x ∈ interior { a | p a } => hx.2 (interior_subset h')⟩
-        exact continuousWithinAt_of_not_mem_closure fun h =>
+        exact continuousWithinAt_of_notMem_closure fun h =>
           this (closure_inter_subset_inter_closure _ _ h).2
       · exact (hg x hx).congr (fun y hy => if_neg hy.2) (if_neg hx.2)
 

@@ -12,7 +12,7 @@ import Mathlib.Algebra.GroupWithZero.Hom
 
 -/
 
-assert_not_exists DenselyOrdered MulAction
+assert_not_exists DenselyOrdered MulAction Ring
 
 variable {M M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]

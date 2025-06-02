@@ -308,6 +308,8 @@ end NonemptyInterval
 
 Subtraction is defined more generally than division so that it applies to `ℕ` (and `OrderedDiv`
 is not a thing and probably should not become one).
+
+However, this means that we can't use `to_additive` in this section.
 -/
 
 
@@ -373,11 +375,9 @@ section Div
 
 variable [Preorder α] [CommGroup α] [MulLeftMono α]
 
-@[to_additive existing]
 instance : Div (NonemptyInterval α) :=
   ⟨fun s t => ⟨(s.fst / t.snd, s.snd / t.fst), div_le_div'' s.fst_le_snd t.fst_le_snd⟩⟩
 
-@[to_additive existing]
 instance : Div (Interval α) :=
   ⟨Option.map₂ (· / ·)⟩
 
@@ -385,23 +385,22 @@ namespace NonemptyInterval
 
 variable (s t : NonemptyInterval α) (a b : α)
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem fst_div : (s / t).fst = s.fst / t.snd :=
   rfl
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem snd_div : (s / t).snd = s.snd / t.fst :=
   rfl
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem coe_div_interval : (↑(s / t) : Interval α) = s / t :=
   rfl
 
-@[to_additive existing]
 theorem div_mem_div (ha : a ∈ s) (hb : b ∈ t) : a / b ∈ s / t :=
   ⟨div_le_div'' ha.1 hb.2, div_le_div'' ha.2 hb.1⟩
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem pure_div_pure : pure a / pure b = pure (a / b) :=
   rfl
 
@@ -411,11 +410,11 @@ namespace Interval
 
 variable (s t : Interval α)
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem bot_div : ⊥ / t = ⊥ :=
   rfl
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem div_bot : s / ⊥ = ⊥ :=
   Option.map₂_none_right _ _
 

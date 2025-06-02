@@ -341,7 +341,6 @@ lemma IsMulFreimanHom.mulRothNumber_mono (hf : IsMulFreimanHom 2 A B f) (hf' : S
   rw [← hcard, ← s.card_image_of_injOn ((invFunOn_injOn_image f _).mono hfsA)]
   refine ThreeGPFree.le_mulRothNumber ?_ (mod_cast hsA)
   rw [coe_image]
-
   simpa using (hf.subset hsA hfsA.bijOn_subset.mapsTo).threeGPFree (hf'.injOn.mono hsA) hs
 
 /-- Arithmetic progressions are preserved under 2-Freiman isos. -/

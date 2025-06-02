@@ -473,13 +473,13 @@ abbrev ltTrichotomy (x y : α) (p q r : P) := ltByCases x y (fun _ => p) (fun _ 
 
 variable {p q r s : P}
 
-@[simp]
+-- @[simp] -- simp can prove this
 lemma ltTrichotomy_lt (h : x < y) : ltTrichotomy x y p q r = p := ltByCases_lt h
 
-@[simp]
+-- @[simp] -- simp can prove this
 lemma ltTrichotomy_gt (h : y < x) : ltTrichotomy x y p q r = r := ltByCases_gt h
 
-@[simp]
+-- @[simp] -- simp can prove this
 lemma ltTrichotomy_eq (h : x = y) : ltTrichotomy x y p q r = q := ltByCases_eq h
 
 lemma ltTrichotomy_not_lt (h : ¬ x < y) :
@@ -1067,6 +1067,8 @@ lemma le_def : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 := .rfl
 
 @[simp] lemma mk_le_mk : (a₁, b₁) ≤ (a₂, b₂) ↔ a₁ ≤ a₂ ∧ b₁ ≤ b₂ := .rfl
 
+@[gcongr] lemma GCongr.mk_le_mk (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) : (a₁, b₁) ≤ (a₂, b₂) := ⟨ha, hb⟩
+
 @[simp] lemma swap_le_swap : x.swap ≤ y.swap ↔ x ≤ y := and_comm
 @[simp] lemma swap_le_mk : x.swap ≤ (b, a) ↔ x ≤ (a, b) := and_comm
 @[simp] lemma mk_le_swap : (b, a) ≤ x.swap ↔ (a, b) ≤ x := and_comm
@@ -1094,6 +1096,9 @@ theorem mk_le_mk_iff_left : (a₁, b) ≤ (a₂, b) ↔ a₁ ≤ a₂ :=
 
 theorem mk_le_mk_iff_right : (a, b₁) ≤ (a, b₂) ↔ b₁ ≤ b₂ :=
   and_iff_right le_rfl
+
+@[gcongr] alias ⟨_, GCongr.mk_le_mk_left⟩ := mk_le_mk_iff_left
+@[gcongr] alias ⟨_, GCongr.mk_le_mk_right⟩ := mk_le_mk_iff_right
 
 theorem mk_lt_mk_iff_left : (a₁, b) < (a₂, b) ↔ a₁ < a₂ :=
   lt_iff_lt_of_le_iff_le' mk_le_mk_iff_left mk_le_mk_iff_left
