@@ -9,6 +9,7 @@ import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
 import Mathlib.Order.Interval.Finset.Box
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
+import Mathlib.Analysis.Asymptotics.Defs
 
 /-!
 # Uniform convergence of Eisenstein series
@@ -29,9 +30,9 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 
 noncomputable section
 
-open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology
+open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology Filter
 
-open scoped UpperHalfPlane
+open scoped UpperHalfPlane Topology BigOperators Nat
 
 
 variable (z : ℍ)
@@ -42,6 +43,37 @@ lemma norm_eq_max_natAbs (x : Fin 2 → ℤ) : ‖x‖ = max (x 0).natAbs (x 1).
   rw [← coe_nnnorm, ← NNReal.coe_natCast, NNReal.coe_inj, Nat.cast_max]
   refine eq_of_forall_ge_iff fun c ↦ ?_
   simp only [pi_nnnorm_le_iff, Fin.forall_fin_two, max_le_iff, NNReal.natCast_natAbs]
+
+
+lemma norm_symm (x y : ℤ) : ‖![x, y]‖ = ‖![y,x]‖ := by
+  simp_rw [EisensteinSeries.norm_eq_max_natAbs]
+  simp [max_comm]
+
+theorem abs_le_left_of_norm (m n : ℤ) : |n| ≤ ‖![n, m]‖ := by
+  rw [EisensteinSeries.norm_eq_max_natAbs]
+  simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
+    Nat.cast_max, le_sup_iff]
+  left
+  rw [Int.abs_eq_natAbs]
+  rfl
+
+theorem le_left_of_norm (m n : ℤ) : n ≤ ‖![n, m]‖ := by
+  apply le_trans _ (abs_le_left_of_norm m n)
+  norm_cast
+  exact le_abs_self n
+
+theorem abs_le_right_of_norm (m n : ℤ) : |m| ≤ ‖![n, m]‖ := by
+  rw [EisensteinSeries.norm_eq_max_natAbs]
+  simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
+    Nat.cast_max, le_sup_iff]
+  right
+  rw [Int.abs_eq_natAbs]
+  rfl
+
+theorem le_right_of_norm (m n : ℤ) : m ≤ ‖![n, m]‖ := by
+  apply le_trans _ (abs_le_right_of_norm m n)
+  norm_cast
+  exact le_abs_self m
 
 section bounding_functions
 
