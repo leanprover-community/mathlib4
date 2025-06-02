@@ -141,6 +141,64 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
   exact Real.rpow_le_rpow_of_nonpos (r_pos _) (r_lower_bound_on_verticalStrip z hB hz)
     (neg_nonpos.mpr hk)
 
+lemma Eis_isBigO (m : ℤ) (z : ℍ) : (fun (n : ℤ) => ((m : ℂ) * z + n)⁻¹) =O[cofinite]
+    (fun n => ((r z * ‖![n, m]‖))⁻¹) := by
+    rw [Asymptotics.isBigO_iff']
+    refine ⟨1, Real.zero_lt_one, ?_⟩
+    filter_upwards with n
+    have := EisensteinSeries.summand_bound z (k := 1) (by norm_num) ![m, n]
+    simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
+      Real.rpow_neg_one, norm_inv, Nat.succ_eq_add_one, Nat.reduceAdd, mul_inv_rev, norm_mul,
+      norm_norm, Real.norm_eq_abs, one_mul, ge_iff_le] at *
+    apply le_trans this
+    rw [abs_norm, mul_comm, show |r z| = r z by rw [abs_eq_self];  exact (r_pos z).le, norm_symm]
+
+lemma linear_bigO2 (m : ℤ) (z : ℍ) : (fun (n : ℤ) => ((m : ℂ) * z + n)⁻¹) =O[cofinite]
+    fun n => ((n : ℝ)⁻¹)  := by
+  have h1 := Eis_isBigO m z
+  apply  Asymptotics.IsBigO.trans h1
+  rw [@Asymptotics.isBigO_iff']
+  refine ⟨|(r z)|⁻¹, by simp [ne_of_gt (r_pos z)], ?_⟩
+  rw [eventually_iff_exists_mem]
+  refine ⟨{0}ᶜ, Set.Finite.compl_mem_cofinite (Set.finite_singleton 0), ?_⟩
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff, Nat.succ_eq_add_one, Nat.reduceAdd,
+    mul_inv_rev, norm_mul, norm_inv, norm_norm, Real.norm_eq_abs, abs_norm]
+  intro n hn
+  rw [mul_comm]
+  gcongr
+  simpa using abs_le_left_of_norm m n
+
+lemma linear_bigO (m : ℤ) (z : ℍ) : (fun (n : ℤ) => ((m : ℂ) * z + n)⁻¹) =O[cofinite]
+    fun n => (|(n : ℝ)|⁻¹)  := by
+  have := Asymptotics.IsBigO.abs_right (linear_bigO2 m z)
+  simp_rw [abs_inv] at this
+  exact this
+
+lemma linear_bigO_pow (m : ℤ) (z : ℍ) (k : ℕ) :
+    (fun (n : ℤ) => ((((m : ℂ) * z + n)) ^ k )⁻¹) =O[cofinite] fun n => ((|(n : ℝ)| ^ k)⁻¹)  := by
+  simp_rw [← inv_pow]
+  apply Asymptotics.IsBigO.pow
+  apply linear_bigO m z
+
+
+lemma summable_hammerTime  {α : Type} [NormedField α] [CompleteSpace α] (f  : ℤ → α) (a : ℝ)
+    (hab : 1 < a) (hf : (fun n => (f n)⁻¹) =O[cofinite] fun n => (|(n : ℝ)| ^ (a : ℝ))⁻¹) :
+    Summable fun n => (f n)⁻¹ := by
+  apply summable_of_isBigO _ hf
+  have := Real.summable_abs_int_rpow hab
+  apply this.congr
+  intro b
+  refine Real.rpow_neg ?_ a
+  exact abs_nonneg (b : ℝ)
+
+lemma G2_summable_aux (n : ℤ) (z : ℍ) (k : ℤ) (hk : 2 ≤ k) :
+    Summable fun d : ℤ => ((((n : ℂ) * z) + d) ^ k)⁻¹ := by
+  apply summable_hammerTime _ k
+  · norm_cast
+  · lift k to ℕ using (by linarith)
+    have := linear_bigO_pow n z k
+    norm_cast at *
+
 end bounding_functions
 
 section summability
