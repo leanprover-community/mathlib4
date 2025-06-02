@@ -183,6 +183,10 @@ lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
   obtain ⟨rfl⟩ := (sigmaι_eq_iff _ _ _ _ _).mp hy
   cases h rfl
 
+/-- The open cover of the coproduct. -/
+@[deprecated (since := "2025-06-02")]
+noncomputable alias sigmaOpenCover := Scheme.IsLocallyDirected.openCover
+
 /-- The underlying topological space of the coproduct is homeomorphic to the disjoint union. -/
 noncomputable
 def sigmaMk : (Σ i, f i) ≃ₜ (∐ f :) :=
