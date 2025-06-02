@@ -3,7 +3,8 @@ import Mathlib
 
 section lineMap
 
-variable {k E} [LinearOrderedField k] [OrderedAddCommGroup E]
+variable {k E} [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
+variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
 variable [Module k E] [OrderedSMul k E]
 
 variable {a b : E} {r r' : k}
@@ -79,11 +80,11 @@ theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → �
   have : f p ∉ interval i := by
     by_cases ha : a < f p; by_cases hb : f p < b
     · exact h p hp ha hb
-    · apply Set.not_mem_Ioo_of_ge
+    · apply Set.notMem_Ioo_of_ge
       push_neg at hb
       rw [AffineMap.lineMap_apply_ring']
       linear_combination ineq₁ * (b - a) + hb
-    · apply Set.not_mem_Ioo_of_le
+    · apply Set.notMem_Ioo_of_le
       push_neg at ha
       rw [AffineMap.lineMap_apply_ring']
       have ineq₃ : (0:ℝ) ≤ i / n := by positivity
@@ -147,11 +148,11 @@ theorem exists_affine_between_and_separated {ι : Type*} (S : Finset ι) (f : ι
       ext x
       rw [Submodule.mem_orthogonal_singleton_iff_inner_right]; rfl
     rw [AffineSubspace.direction_mk', this]
-    apply finrank_orthogonal_span_singleton (by rwa [vsub_ne_zero])
+    apply Submodule.finrank_orthogonal_span_singleton (by rwa [vsub_ne_zero])
   have : 0 < ‖a -ᵥ b‖ := by
     rwa [norm_pos_iff, vsub_ne_zero]
   constructor
-  · refine Sbtw.sOppSide_of_not_mem_of_mem ?_ ?_ (AffineSubspace.self_mem_mk' _ _)
+  · refine Sbtw.sOppSide_of_notMem_of_mem ?_ ?_ (AffineSubspace.self_mem_mk' _ _)
     · simp [hab, lt_of_le_of_lt hi x_ioo.1, lt_of_lt_of_le x_ioo.2 hj, div_lt_one]
     · simp [hab, (lt_of_le_of_lt hi x_ioo.1).ne.symm]
 
@@ -283,11 +284,11 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
   obtain ⟨a, ha, b, hb, h_max⟩ : ∃ᵉ (a ∈ S) (b ∈ S), ∀ᵉ (x ∈ S) (y ∈ S), dist x y ≤ dist a b := by
     have : Nonempty S := Nonempty.to_subtype (Finset.card_pos.mp (by omega))
     obtain ⟨⟨⟨a, ha⟩, ⟨b, hb⟩⟩, _, hab⟩ :=
-      Set.Finite.exists_maximal_wrt (fun xy : S × S => dist xy.1.val xy.2.val)
-        Set.univ Set.finite_univ Set.univ_nonempty
+      Set.finite_univ.exists_maximalFor (fun xy : S × S => dist xy.1.val xy.2.val)
+        Set.univ Set.univ_nonempty
     use a, ha, b, hb
     intro x hx y hy
-    specialize hab ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ (Set.mem_univ _)
+    specialize hab (Set.mem_univ (⟨x, hx⟩, ⟨y, hy⟩))
     dsimp at hab
     contrapose! hab
     constructor <;> linarith only [hab]
