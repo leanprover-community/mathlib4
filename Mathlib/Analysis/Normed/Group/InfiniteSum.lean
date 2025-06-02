@@ -100,7 +100,7 @@ theorem hasSum_iff_tendsto_nat_of_summable_norm {f : ℕ → E} {a : E} (hf : Su
 
 /-- The direct comparison test for series:  if the norm of `f` is bounded by a real function `g`
 which is summable, then `f` is summable. -/
-theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} {g : ι → ℝ} (hg : Summable g)
+theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} (g : ι → ℝ) (hg : Summable g)
     (h : ∀ i, ‖f i‖ ≤ g i) : Summable f := by
   rw [summable_iff_cauchySeq_finset]
   exact cauchySeq_finset_of_norm_bounded g hg h
@@ -176,10 +176,10 @@ theorem Summable.of_norm_bounded_eventually_nat {f : ℕ → E} (g : ℕ → ℝ
 
 theorem Summable.of_nnnorm_bounded {f : ι → E} (g : ι → ℝ≥0) (hg : Summable g)
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
-  .of_norm_bounded (NNReal.summable_coe.2 hg) h
+  .of_norm_bounded _ (NNReal.summable_coe.2 hg) h
 
 theorem Summable.of_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=
-  .of_norm_bounded hf fun _i => le_rfl
+  .of_norm_bounded _ hf fun _i => le_rfl
 
 theorem Summable.of_nnnorm {f : ι → E} (hf : Summable fun a => ‖f a‖₊) : Summable f :=
   .of_nnnorm_bounded _ hf fun _i => le_rfl
