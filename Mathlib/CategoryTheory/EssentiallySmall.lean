@@ -225,23 +225,10 @@ theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w
 instance small_skeleton_of_essentiallySmall [h : EssentiallySmall.{w} C] : Small.{w} (Skeleton C) :=
   essentiallySmall_iff C |>.1 h |>.1
 
-section
-
-variable {C} {D : Type u'} [Category.{v'} D] (F : C ⥤ D) [F.Full] [F.Faithful]
-
-include F in
-theorem small_skeleton_of_fully_faithful [h : Small.{w} (Skeleton D)] :
-    Small.{w} (Skeleton C) :=
-  small_of_injective (f := toSkeleton ∘ F.obj ∘ (fromSkeleton C).obj)
-    (fun _ _ h ↦ skeleton_skeletal C ⟨(skeletonEquivalence C).functor.preimageIso <|
-      F.preimageIso <| (skeletonEquivalence D).inverse.preimageIso <| eqToIso h⟩)
-
-include F in
-theorem essentiallySmall_of_fully_faithful [EssentiallySmall.{w} D] :
-    EssentiallySmall.{w} C :=
-  essentiallySmall_iff C |>.2 ⟨small_skeleton_of_fully_faithful F, locallySmall_of_faithful F⟩
-
-end
+theorem essentiallySmall_of_fully_faithful {D : Type u'} [Category.{v'} D] (F : C ⥤ D)
+    [F.Full] [F.Faithful] [EssentiallySmall.{w} D] : EssentiallySmall.{w} C :=
+  (essentiallySmall_iff C).2 ⟨small_of_injective F.mapSkeleton_injective,
+    locallySmall_of_faithful F⟩
 
 section FullSubcategory
 

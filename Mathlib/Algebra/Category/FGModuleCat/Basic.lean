@@ -143,15 +143,15 @@ def ulift : FGModuleCat.{v} R ⥤ FGModuleCat.{max v w} R where
   map f := ofHom <| ULift.moduleEquiv.symm.toLinearMap ∘ₗ f.hom ∘ₗ ULift.moduleEquiv.toLinearMap
 
 /-- Universe lifting is fully faithful. -/
-def fullyFaithful : (ulift R).FullyFaithful where
+def fullyFaithfulULift : (ulift R).FullyFaithful where
   preimage f := ofHom <| ULift.moduleEquiv.toLinearMap ∘ₗ f.hom ∘ₗ
     ULift.moduleEquiv.symm.toLinearMap
 
 instance : (ulift R).Faithful :=
-  (fullyFaithful R).faithful
+  (fullyFaithfulULift R).faithful
 
 instance : (ulift R).Full :=
-  (fullyFaithful R).full
+  (fullyFaithfulULift R).full
 
 end Ring
 

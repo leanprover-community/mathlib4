@@ -81,11 +81,9 @@ instance : (embed R).IsEquivalence where
 
 end FGModuleRepr
 
-theorem FGModuleCat.essentiallySmall : EssentiallySmall.{u} (FGModuleCat.{max u v} R) :=
-  ⟨_, _, ⟨(FGModuleRepr.embed R).asEquivalence.symm⟩⟩
-
 instance : EssentiallySmall.{u} (FGModuleCat.{v} R) :=
-  letI := FGModuleCat.essentiallySmall.{v} R
+  letI : EssentiallySmall.{u} (FGModuleCat.{max u v} R) :=
+    ⟨_, _, ⟨(FGModuleRepr.embed R).asEquivalence.symm⟩⟩
   essentiallySmall_of_fully_faithful (FGModuleCat.ulift.{v, max u v} R)
 
 open FGModuleRepr in
