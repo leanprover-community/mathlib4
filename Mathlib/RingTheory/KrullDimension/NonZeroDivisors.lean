@@ -28,7 +28,7 @@ noncomputable def PrimeSpectrum.quotientOrderIso (I : Ideal R) :
     Ideal.Quotient.mk_surjective)).trans (Equiv.setCongr
       (by rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
         Ideal.mk_ker]))
-  map_rel_iff' {a b} := Ideal.comap_le_comap_iff_of_surjective _ Quotient.mk_surjective ..
+  map_rel_iff' := Ideal.comap_le_comap_iff_of_surjective _ Quotient.mk_surjective ..
 
 lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
