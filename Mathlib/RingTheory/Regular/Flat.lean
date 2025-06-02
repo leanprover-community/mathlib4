@@ -263,9 +263,35 @@ theorem TensorProduct.tsmul_eq_smul_one_tuml (s : S) (m : M) : s ⊗ₜ[R] m = s
   rfl
 
 variable (S) (M) in
+noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor' :
+    S ⊗[R] QuotSMulTop x M ≃ₗ[S] QuotSMulTop ((algebraMap R S) x) (S ⊗[R] M) := by
+  let f := tensorQuotSMulTopLinearMapQuotSMulTopAlgebraMapTensor S M x
+  let N : Submodule S (S ⊗[R] M) := (algebraMap R S) x • ⊤
+  refine LinearEquiv.ofBijective f ⟨?_, ?_⟩
+  · refine LinearMap.ker_eq_bot.mp ?_
+    refine LinearMap.ker_eq_bot'.mpr ?_
+    intro m h
+    induction' m with s m m₁ m₂
+    · rfl
+    · have hsm : f (s ⊗ₜ[R] m) = N.mkQ (s ⊗ₜ[R] Quotient.out m) := by
+        nth_rw 1 [← Quotient.out_eq m]
+        simp only [LinearMap.liftBaseChange_tmul, tsmul_eq_smul_one_tuml s (Quotient.out m)]
+        rfl
+      rw [hsm] at h
+      obtain ⟨b, _, h⟩ := (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp <|
+        (Submodule.Quotient.mk_eq_zero N).mp h
+
+      sorry
+    · sorry
+  · intro m
+    use LinearMap.lTensor S (Submodule.mkQ (x • ⊤)) (Quotient.out m)
+    sorry
+
+variable (S) (M) in
 noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor :
     S ⊗[R] QuotSMulTop x M ≃ₗ[S] QuotSMulTop ((algebraMap R S) x) (S ⊗[R] M) :=
   let f := tensorQuotSMulTopLinearMapQuotSMulTopAlgebraMapTensor S M x
+  let N : Submodule S (S ⊗[R] M) := (algebraMap R S) x • ⊤
 { __ := f
   invFun m := LinearMap.lTensor S (Submodule.mkQ (x • ⊤)) (Quotient.out m)
   left_inv := by
@@ -279,7 +305,6 @@ noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor :
           (Submodule.Quotient.mk_eq_zero _).mpr (Submodule.smul_mem_pointwise_smul m x ⊤ trivial)]
       exact tmul_zero _ s
     have hx (m : S ⊗[R] QuotSMulTop x M) : x • m = 0 := congrFun (congrArg DFunLike.coe h) m
-    let N : Submodule S (S ⊗[R] M) := (algebraMap R S) x • ⊤
     induction' m with s m m₁ m₂
     · obtain ⟨b, _, h⟩ := (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp <|
         (Submodule.Quotient.mk_eq_zero N).mp (Quotient.out_eq (0 : _ ⧸ N))
