@@ -24,6 +24,8 @@ In a complete (semi)normed group,
 - `tsum_of_norm_bounded`, `HasSum.norm_le_of_bounded`: if `‖f i‖ ≤ g i`, where `∑' i, g i` is a
   summable series, then `‖∑' i, f i‖ ≤ ∑' i, g i`.
 
+- versions of these lemmas for `nnnorm` and `enorm`.
+
 ## Tags
 
 infinite series, absolute convergence, normed group
