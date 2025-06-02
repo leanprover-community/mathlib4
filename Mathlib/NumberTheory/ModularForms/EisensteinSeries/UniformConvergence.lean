@@ -199,6 +199,23 @@ lemma G2_summable_aux (n : ℤ) (z : ℍ) (k : ℤ) (hk : 2 ≤ k) :
     have := linear_bigO_pow n z k
     norm_cast at *
 
+lemma Asymptotics.IsBigO.map {α β ι γ : Type*} [Norm α] [Norm β] {f : ι → α} {g : ι → β}
+  {p : Filter ι} (hf : f =O[p] g) (c : γ → ι)  :
+    (fun (n : γ) => f (c n)) =O[p.comap c] fun n => g (c n) := by
+  rw [isBigO_iff] at *
+  obtain ⟨C, hC⟩ := hf
+  refine ⟨C, ?_⟩
+  simp only [eventually_comap] at *
+  filter_upwards [hC] with n hn
+  exact fun a ha ↦ Eq.mpr (id (congrArg (fun _a ↦ ‖f _a‖ ≤ C * ‖g _a‖) ha)) hn
+
+lemma Asymptotics.IsBigO.nat_of_int {α β: Type*} [Norm α] [SeminormedAddCommGroup β] {f : ℤ → α}
+    {g : ℤ → β}  (hf : f =O[cofinite] g) :   (fun (n : ℕ) => f n) =O[cofinite] fun n => g n := by
+  have := Asymptotics.IsBigO.map hf Nat.cast
+  simp only [Int.cofinite_eq, isBigO_sup, comap_sup, Asymptotics.isBigO_sup] at *
+  rw [Nat.cofinite_eq_atTop]
+  simpa using this.2
+
 end bounding_functions
 
 section summability
