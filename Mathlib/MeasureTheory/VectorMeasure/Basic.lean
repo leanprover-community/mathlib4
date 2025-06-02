@@ -1263,7 +1263,7 @@ theorem toSignedMeasure_restrict_eq_restrict_toSignedMeasure (hs : MeasurableSet
   simp [VectorMeasure.restrict_apply, toSignedMeasure_apply, hA, hs, restrict_apply]
 
 theorem toSignedMeasure_le_toSignedMeasure_iff :
-    μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ μ ≤ ν   := by
+    μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ μ ≤ ν := by
   rw [Measure.le_iff, VectorMeasure.le_iff]
   congrm ∀ s, (hs : MeasurableSet s) → ?_
   simp_rw [toSignedMeasure_apply_measurable hs, real_def]
