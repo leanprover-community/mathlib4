@@ -15,3 +15,18 @@ section
 -- An unused `open` is allowed.
 open Nat
 end
+
+namespace X
+namespace Y
+namespace X
+end X
+end Y
+end X
+
+variable {a : Nat} in
+/--
+warning: The namespace 'X' is already open.
+note: this linter can be disabled with `set_option linter.dupOpen false`
+-/
+#guard_msgs in
+open X Y X -- This should be allowed, but the linter flags it.
