@@ -40,7 +40,7 @@ def toList (v : Vector α n) : List α :=
 
 /-- Convert a `List.Vector` to a `Vector`. -/
 @[simps!]
-def toVector (v : List.Vector α n) : _root_.Vector α n := ⟨v.1.toArray, v.2⟩
+def toVector (v : List.Vector α n) : _root_.Vector α n := ⟨v.toList.toArray, v.2⟩
 
 theorem toVector_mk (a : List α) (h : a.length = n) :
     toVector ⟨a, h⟩ = ⟨a.toArray, h⟩ := rfl
@@ -68,14 +68,8 @@ theorem mem_toList_ofVector (a : α) : ∀ (v : _root_.Vector α n),
 theorem toVector_inj {u v : List.Vector α n} : u.toVector = v.toVector ↔ u = v :=
   Function.Injective.eq_iff (Function.LeftInverse.injective ofVector_toVector)
 
-theorem toVector_surj : ∀ v, ∃ u : Vector α n, u.toVector = v :=
-  (Function.LeftInverse.surjective toVector_ofVector)
-
 theorem ofVector_inj {u v : _root_.Vector α n} : ofVector u = ofVector v ↔ u = v :=
   Function.Injective.eq_iff (Function.LeftInverse.injective toVector_ofVector)
-
-theorem ofVector_surj : ∀ v, ∃ u : _root_.Vector α n, ofVector u = v :=
-  (Function.LeftInverse.surjective ofVector_toVector)
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
   inferInstanceAs (DecidableEq {l : List α // l.length = n})
