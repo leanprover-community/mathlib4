@@ -128,14 +128,15 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M
     (fun _ ↦ notMem_minimalPrimes_of_isSMulRegular reg) hx
 
 open Pointwise in
-lemma ringKrullDim_quotSMulTop_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
+lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
     (hx : x ∈ maximalIdeal R) : ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 = ringKrullDim R := by
   rw [← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
   exact supportDim_quotSMulTop_succ_eq_supportDim reg hx
 
 open Pointwise in
-lemma ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
-    (hx : x ∈ maximalIdeal R) : ringKrullDim (R ⧸ Ideal.span {x}) + 1 = ringKrullDim R := by
+lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
+    (reg : IsSMulRegular R x) (hx : x ∈ maximalIdeal R) :
+    ringKrullDim (R ⧸ Ideal.span {x}) + 1 = ringKrullDim R := by
   have := Submodule.ideal_span_singleton_smul x (⊤ : Ideal R)
   simp only [smul_eq_mul, mul_top] at this
   rw [ringKrullDim_eq_of_ringEquiv (Ideal.quotientEquivAlgOfEq R this).toRingEquiv,
