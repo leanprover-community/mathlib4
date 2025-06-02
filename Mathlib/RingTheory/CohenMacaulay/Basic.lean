@@ -510,3 +510,38 @@ lemma isCohenMacaulayRing_iff [IsNoetherianRing R] : IsCohenMacaulayRing R ↔
   exact (isCohenMacaulayLocalRing_iff _).mpr
     (isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay (p.map (algebraMap R Rₘ))
     (ModuleCat.of Rₘ Rₘ) (ModuleCat.of Rₚ Rₚ) (Algebra.linearMap Rₘ Rₚ))
+
+open Ideal
+
+lemma quotient_span_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
+    (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
+    IsCohenMacaulayLocalRing R ↔ IsCohenMacaulayLocalRing (R ⧸ Ideal.span {x}) := by
+  let _  : IsLocalRing (R ⧸ Ideal.span {x}) :=
+    have : Nontrivial (R ⧸ Ideal.span {x}) :=
+      Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+    have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
+      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+    IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
+  simp only [isCohenMacaulayLocalRing_def,
+    ← ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim reg mem,
+    ← depth_quotient_span_regular_succ_eq_depth x reg mem, WithBot.coe_add, WithBot.coe_one]
+  exact withBotENat_add_coe_cancel _ _ 1
+
+lemma quotient_regular_sequence_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R]
+    [IsNoetherianRing R] (rs : List R) (reg : IsWeaklyRegular R rs)
+    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) : IsCohenMacaulayLocalRing R ↔
+    IsCohenMacaulayLocalRing (R ⧸ Ideal.ofList rs) := by
+  let _ : IsLocalRing (R ⧸ Ideal.ofList rs) :=
+    have : Nontrivial (R ⧸ Ideal.ofList rs) :=
+      Submodule.Quotient.nontrivial_of_lt_top _
+        (lt_of_le_of_lt (span_le.mpr mem) (Ne.lt_top IsPrime.ne_top'))
+    have : IsLocalHom (Ideal.Quotient.mk (Ideal.ofList rs)) :=
+      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+    IsLocalRing.of_surjective (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
+  have reg' : IsRegular R rs := by
+    refine ⟨reg, ?_⟩
+    simpa using (ne_top_of_lt (lt_of_le_of_lt (span_le.mpr mem) (Ne.lt_top IsPrime.ne_top'))).symm
+  simp only [isCohenMacaulayLocalRing_def,
+    ← ringKrullDim_regular_sequence_add_length_eq_ringKrullDim rs reg',
+    ← depth_quotient_regular_sequence_add_length_eq_depth rs reg mem, WithBot.coe_add]
+  exact withBotENat_add_coe_cancel _ _ rs.length
