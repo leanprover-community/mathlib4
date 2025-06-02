@@ -175,7 +175,7 @@ theorem map_update_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
 
 @[deprecated (since := "2024-11-03")] protected alias map_smul := map_update_smul
 
-@[simp]
+-- @[simp] -- `i` and `j` can not be inferred by `simp`.
 theorem map_eq_zero_of_eq (v : ι → M) {i j : ι} (h : v i = v j) (hij : i ≠ j) : f v = 0 :=
   f.map_eq_zero_of_eq' v i j h hij
 
