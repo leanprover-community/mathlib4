@@ -16,12 +16,8 @@ section
 open Nat
 end
 
-namespace X
-namespace Y
-namespace X
-end X
-end Y
-end X
+namespace X.Y.X
+end X.Y.X
 
 variable {a : Nat} in
 /--
