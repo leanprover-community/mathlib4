@@ -43,7 +43,7 @@ lemma sub_apply_eq_zero_of_isHahnDecomposition
   rw [← restrict_eq_zero, restrict_sub_eq_restrict_sub_restrict hs.measurableSet]
   exact sub_eq_zero_of_le hs.le_on
 
-variable  [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 theorem mutually_singular_measure_sub :
     (μ - ν).MutuallySingular (ν - μ) := by
