@@ -343,14 +343,12 @@ noncomputable def coinvariantsMk : Action.forget (ModuleCat k) G ⟶ coinvariant
 instance (X : Rep k G) : Epi ((coinvariantsMk k G).app X) :=
   (ModuleCat.epi_iff_surjective _).2 <| Representation.Coinvariants.mk_surjective X.ρ
 
-variable {k G}
+variable {k G A B}
 
 @[ext]
 lemma coinvariantsFunctor_hom_ext {M : ModuleCat k} {f g : (coinvariantsFunctor k G).obj A ⟶ M}
     (hfg : (coinvariantsMk k G).app A ≫ f = (coinvariantsMk k G).app A ≫ g) :
     f = g := (cancel_epi _).1 hfg
-
-variable {A B}
 
 /-- The linear map underlying a `G`-representation morphism `A ⟶ B`, where `B` has the trivial
 representation, factors through `A_G`. -/
