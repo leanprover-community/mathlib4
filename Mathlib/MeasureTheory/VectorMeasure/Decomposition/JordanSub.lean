@@ -105,10 +105,8 @@ lemma jordanDecompositionOfToSignedMeasureSub_negPart :
 lemma jordanDecompositionOfToSignedMeasureSub_toSignedMeasure :
     (jordanDecompositionOfToSignedMeasureSub μ ν).toSignedMeasure =
     μ.toSignedMeasure - ν.toSignedMeasure := by
-      unfold JordanDecomposition.toSignedMeasure
-      simp [jordanDecompositionOfToSignedMeasureSub_posPart]
-      simp [jordanDecompositionOfToSignedMeasureSub_negPart]
-      rw [← sub_toSignedMeasure_eq_toSignedMeasure_sub]
+  simp_rw [JordanDecomposition.toSignedMeasure, jordanDecompositionOfToSignedMeasureSub_posPart,
+    jordanDecompositionOfToSignedMeasureSub_negPart, ← sub_toSignedMeasure_eq_toSignedMeasure_sub]
 
 /-- The Jordan decomposition of `μ.toSignedMeasure - ν.toSignedMeasure` is `(μ - ν, ν - μ)`. -/
 @[simp]
