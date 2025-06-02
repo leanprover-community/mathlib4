@@ -274,11 +274,11 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
     -- Porting note: was `apply isLocalHom_of_comp _ (PresheafedSpace.stalkMap ...)`, this
     -- used to allow you to provide the proof that `... ≫ ...` is a local ring homomorphism later,
     -- but this is no longer possible
-    set h := _
+    set h := (coequalizer.desc s.π.toShHom e).stalkMap ((coequalizer.π f.toShHom g.toShHom).base y)
     change IsLocalHom h
-    suffices _ : IsLocalHom (((coequalizerCofork f g).π.1.stalkMap _).hom.comp h) by
+    suffices _ : IsLocalHom (((coequalizerCofork f g).π.1.stalkMap _).hom.comp h.hom) by
       apply isLocalHom_of_comp _ ((coequalizerCofork f g).π.1.stalkMap _).hom
-    rw [← CommRingCat.hom_ofHom h, ← CommRingCat.hom_comp]
+    rw [← CommRingCat.hom_comp]
     erw [← PresheafedSpace.stalkMap.comp]
     apply isLocalHom_stalkMap_congr _ _ (coequalizer.π_desc s.π.toShHom e).symm y
     infer_instance
