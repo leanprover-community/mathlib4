@@ -6,6 +6,12 @@ Authors: Paul Lezeau, Oliver Nash
 import Mathlib.Order.Circular
 import Mathlib.Order.Fin.Basic
 
+/-! # The circular order on `Fin n`
+
+This file adds a few results about the circular order on `Fin n`.
+
+-/
+
 instance (n : ℕ) : CircularOrder (Fin n) := LinearOrder.toCircularOrder _
 
 lemma sbtw_iff {n : ℕ} (i j k : Fin n) :
