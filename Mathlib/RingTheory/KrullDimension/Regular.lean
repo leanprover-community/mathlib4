@@ -166,7 +166,7 @@ theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
         ← supportDim_quotSMulTop_succ_eq_supportDim this mem,
         ← hn rs' ((isRegular_cons_iff M _ _).mp reg).2 len, add_assoc]
 
-lemma ringKrullDim_regular_sequence_add_length_eq_ringKrullDim (rs : List R)
+lemma _root_.ringKrullDim_regular_sequence_add_length_eq_ringKrullDim (rs : List R)
     (reg : IsRegular R rs) : ringKrullDim (R ⧸ Ideal.ofList rs) + rs.length = ringKrullDim R := by
   have eq : Ideal.ofList rs = Ideal.ofList rs • (⊤ : Ideal R) := by simp
   rw [ringKrullDim_eq_of_ringEquiv (Ideal.quotientEquivAlgOfEq R eq).toRingEquiv,
