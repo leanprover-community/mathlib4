@@ -202,8 +202,6 @@ namespace IntegrationParams
 def equivProd : IntegrationParams ≃ Bool × Boolᵒᵈ × Boolᵒᵈ where
   toFun l := ⟨l.1, OrderDual.toDual l.2, OrderDual.toDual l.3⟩
   invFun l := ⟨l.1, OrderDual.ofDual l.2.1, OrderDual.ofDual l.2.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 instance : PartialOrder IntegrationParams :=
   PartialOrder.lift equivProd equivProd.injective

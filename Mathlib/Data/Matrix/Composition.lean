@@ -33,8 +33,6 @@ variable (I J K L R R' : Type*)
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2
   invFun n i j k l := n (i, k) (j, l)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 section Basic
 variable {R I J K L}

@@ -707,8 +707,6 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
       left_inv := (fun x ↦ show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_cancel]; rfl)
       right_inv := (fun x ↦ show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_cancel]; rfl) }
   invFun := fun f ↦ ⟨f, f.symm, f.comp_symm, f.symm_comp⟩
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
   map_mul' := fun _ _ ↦ rfl
 
 /-- See also `Finite.algHom` -/

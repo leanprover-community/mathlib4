@@ -784,8 +784,6 @@ Here we formulate it as a `UniformEquiv`. -/
 def uniformEquivUniformFun (h : univ ∈ 𝔖) : (α →ᵤ[𝔖] β) ≃ᵤ (α →ᵤ β) where
   toFun f := UniformFun.ofFun <| toFun _ f
   invFun f := ofFun _ <| UniformFun.toFun f
-  left_inv _ := rfl
-  right_inv _ := rfl
   uniformContinuous_toFun := by
     simp only [UniformContinuous, (UniformFun.hasBasis_uniformity _ _).tendsto_right_iff]
     intro U hU

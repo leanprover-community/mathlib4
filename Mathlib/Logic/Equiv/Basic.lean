@@ -973,8 +973,6 @@ end
     (∀ i : {i // i ∈ s}, W i) ≃ (∀ i : {i // i ∈ t}, W i) where
   toFun f i := f ⟨i, h ▸ i.2⟩
   invFun f i := f ⟨i, h.symm ▸ i.2⟩
-  left_inv f := rfl
-  right_inv f := rfl
 
 lemma eq_conj {α α' β β' : Sort*} (ε₁ : α ≃ α') (ε₂ : β' ≃ β)
     (f : α → β) (f' : α' → β') : ε₂.symm ∘ f ∘ ε₁.symm = f' ↔ f = ε₂ ∘ f' ∘ ε₁ := by

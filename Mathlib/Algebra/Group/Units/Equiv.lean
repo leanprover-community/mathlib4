@@ -20,8 +20,6 @@ variable {F α M N G : Type*}
 def toUnits [Group G] : G ≃* Gˣ where
   toFun x := ⟨x, x⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩
   invFun x := x
-  left_inv _ := rfl
-  right_inv _ := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
 
 @[to_additive (attr := simp)]

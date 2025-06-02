@@ -32,8 +32,6 @@ def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast]
 lemma AddMonoidHom.coe_toMultiplicative [AddZeroClass α] [AddZeroClass β] (f : α →+ β) :
@@ -53,8 +51,6 @@ def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast]
 lemma MonoidHom.coe_toMultiplicative [MulOneClass α] [MulOneClass β] (f : α →* β) :
@@ -74,8 +70,6 @@ def AddMonoidHom.toMultiplicative' [MulOneClass α] [AddZeroClass β] :
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast]
 lemma AddMonoidHom.coe_toMultiplicative' [MulOneClass α] [AddZeroClass β] (f : Additive α →+ β) :
@@ -105,8 +99,6 @@ def AddMonoidHom.toMultiplicative'' [AddZeroClass α] [MulOneClass β] :
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast]
 lemma AddMonoidHom.coe_toMultiplicative'' [AddZeroClass α] [MulOneClass β] (f : α →+ Additive β) :

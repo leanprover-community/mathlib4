@@ -23,8 +23,6 @@ namespace MaximalSpectrum
 def equivSubtype : MaximalSpectrum R ≃ {I : Ideal R // I.IsMaximal} where
   toFun I := ⟨I.asIdeal, I.2⟩
   invFun I := ⟨I, I.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 theorem range_asIdeal : Set.range MaximalSpectrum.asIdeal = {J : Ideal R | J.IsMaximal} :=
   Set.ext fun J ↦

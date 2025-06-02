@@ -116,8 +116,6 @@ def equivFunctorToCodiscrete {C : Type u} [Category.{v} C] {A : Type w} :
     (C → A) ≃ (C ⥤ Codiscrete A) where
   toFun := functor
   invFun := invFunctor
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The functor that turns a type into a codiscrete category is right adjoint to the objects
 functor. -/

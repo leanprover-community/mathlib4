@@ -92,7 +92,6 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
     dsimp at H ⊢
     rw [← H]
     apply presheafHom_map_app_op_mk_id
-  right_inv _ := rfl
 
 variable {F G}
 

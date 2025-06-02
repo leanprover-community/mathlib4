@@ -137,8 +137,6 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
         · simp
         · simp
         · simpa using f.map_eq_zero_of_eq v hm hij }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The universal property of the exterior power. -/
 noncomputable def isPresentationCore :

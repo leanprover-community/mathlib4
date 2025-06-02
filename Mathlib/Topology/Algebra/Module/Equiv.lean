@@ -687,12 +687,6 @@ equivalent to the type of continuous linear equivalences between `M` and itself.
 def unitsEquiv : (M →L[R] M)ˣ ≃* M ≃L[R] M where
   toFun := ofUnit
   invFun := toUnit
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
   map_mul' x y := by
     ext
     rfl

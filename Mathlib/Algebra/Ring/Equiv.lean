@@ -380,12 +380,6 @@ protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
     α ≃+* β ≃ (αᵐᵒᵖ ≃+* βᵐᵒᵖ) where
   toFun f := { AddEquiv.mulOp f.toAddEquiv, MulEquiv.op f.toMulEquiv with }
   invFun f := { AddEquiv.mulOp.symm f.toAddEquiv, MulEquiv.op.symm f.toMulEquiv with }
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 /-- The 'unopposite' of a ring iso `αᵐᵒᵖ ≃+* βᵐᵒᵖ`. Inverse to `RingEquiv.op`. -/
 @[simp]

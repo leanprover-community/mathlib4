@@ -440,7 +440,6 @@ def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i where
   toFun := (⇑)
   invFun f := ⟨f, Trunc.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
   left_inv _ := DFunLike.coe_injective rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem equivFunOnFintype_symm_coe [Fintype ι] (f : Π₀ i, β i) : equivFunOnFintype.symm f = f :=
