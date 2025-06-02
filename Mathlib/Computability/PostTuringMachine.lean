@@ -979,7 +979,7 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
       (Tape.move Dir.left)^[l₁.length]
       (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
       Tape.mk' L' (ListBlank.append (Vector.toList (enc a)) R') by
-    simpa only [List.length_reverse, Vector.length_toList] using this (List.reverse_reverse _).symm
+    simpa only [List.length_reverse, Vector.toList_length] using this (List.reverse_reverse _).symm
   intro _ _ l₁ l₂ e
   induction' l₁ with b l₁ IH generalizing l₂
   · cases e

@@ -27,8 +27,8 @@ theorem get_mem (i : Fin n) (v : Vector α n) : v.get i ∈ v.toList := List.get
 theorem mem_iff_get (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a := by
   simp only [List.mem_iff_get, Fin.exists_iff, Vector.get_eq_get_toList]
   exact
-    ⟨fun ⟨i, hi, h⟩ => ⟨i, by rwa [length_toList] at hi, h⟩, fun ⟨i, hi, h⟩ =>
-      ⟨i, by rwa [length_toList], h⟩⟩
+    ⟨fun ⟨i, hi, h⟩ => ⟨i, by rwa [toList_length] at hi, h⟩, fun ⟨i, hi, h⟩ =>
+      ⟨i, by rwa [toList_length], h⟩⟩
 
 theorem not_mem_nil : a ∉ (Vector.nil : Vector α 0).toList := by
   unfold Vector.nil

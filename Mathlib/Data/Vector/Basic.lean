@@ -134,7 +134,7 @@ theorem getElem_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector
   simp only [getElem_def, toList_pmap, List.getElem_pmap]
 
 theorem get_eq_get_toList (v : Vector α n) (i : Fin n) :
-    v.get i = v.toList.get (Fin.cast v.length_toList.symm i) :=
+    v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
 
 @[deprecated (since := "2024-12-20")]
@@ -302,7 +302,7 @@ variable (v : Vector α n)
 from the "left", that is, from 0 to `Fin.last n`, using `b : β` as the starting value.
 -/
 def scanl : Vector β (n + 1) :=
-  ⟨List.scanl f b v.toList, by rw [List.length_scanl, length_toList]⟩
+  ⟨List.scanl f b v.toList, by rw [List.length_scanl, toList_length]⟩
 
 /-- Providing an empty vector to `scanl` gives the starting value `b : β`. -/
 @[simp]
