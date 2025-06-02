@@ -72,8 +72,4 @@ instance (priority := 100) PriestleySpace.toTotallySeparatedSpace : TotallySepar
       ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hx, hy,
         union_compl_self U ▸ subset_rfl, disjoint_compl_right⟩
 
--- See note [lower instance priority]
-instance (priority := 100) PriestleySpace.toT2Space : T2Space α :=
-  inferInstance
-
 end PartialOrder
