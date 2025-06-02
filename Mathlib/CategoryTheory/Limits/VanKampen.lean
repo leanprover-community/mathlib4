@@ -693,7 +693,7 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
           Cofan.mk_pt, Cofan.mk_ι_app, Fin.cases_succ]
   induction' j using Fin.inductionOn with j _
   · exact t₂' ⟨WalkingPair.left⟩
-  · have t₁' := (@t₁ (Discrete.functor (fun j ↦ F.obj ⟨j.succ⟩)) (Cofan.mk _ _) (Discrete.natTrans
+  · have t₁' := (t₁ (Cofan.mk _ (Sigma.ι fun j : Fin n ↦ F.obj ⟨j.succ⟩)) (Discrete.natTrans
       fun i ↦ α.app _) (Sigma.desc (fun j ↦ α.app _ ≫ c₁.inj _)) ?_
       (NatTrans.equifibered_of_discrete _)).mp ⟨coproductIsCoproduct _⟩ ⟨j⟩
     rotate_left
