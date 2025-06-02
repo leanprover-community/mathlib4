@@ -221,7 +221,7 @@ theorem intValuation_lt_one_iff_dvd (r : R) :
     v.intValuation r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
   classical
   by_cases hr : r = 0
-  · simp [hr]
+  · simp_rw [hr, map_zero, zero_lt_one, Ideal.dvd_span_singleton, Submodule.zero_mem]
   · rw [v.intValuation_if_neg hr, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_lt_coe, ofAdd_lt,
       neg_lt_zero, ← Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
     have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
