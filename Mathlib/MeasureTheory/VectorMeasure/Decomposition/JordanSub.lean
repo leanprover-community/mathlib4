@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 
 /-!
-# Jordan Decomposition from Signed Measure Subtraction
+# Jordan decomposition from signed measure subtraction
 
 This file develops the Jordan decomposition of the signed measure `μ - ν` for finite measures `μ`
 and `ν`, expressing it as the pair `(μ - ν, ν - μ)` of mutually singular finite measures.
