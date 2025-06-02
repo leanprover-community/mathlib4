@@ -464,6 +464,11 @@ theorem comap_map_eq (f : F) (p : Submodule R M) : comap f (map f p) = p ⊔ Lin
   rintro x ⟨y, hy, e⟩
   exact mem_sup.2 ⟨y, hy, x - y, by simpa using sub_eq_zero.2 e.symm, by simp⟩
 
+theorem map_lt_map_of_le_of_sup_lt_sup {A B : Submodule R M} {f : F} (hab : A ≤ B)
+    (h : A ⊔ LinearMap.ker f < B ⊔ LinearMap.ker f) : Submodule.map f A < Submodule.map f B := by
+  simp_rw [←Submodule.comap_map_eq] at h
+  apply lt_of_le_of_ne (Submodule.map_mono hab) fun h' ↦ by simp [h'] at h
+
 theorem comap_map_eq_self {f : F} {p : Submodule R M} (h : LinearMap.ker f ≤ p) :
     comap f (map f p) = p := by rw [Submodule.comap_map_eq, sup_of_le_left h]
 
@@ -550,6 +555,29 @@ lemma biSup_comap_eq_top_of_range_eq_biSup
   exact hf ▸ biSup_comap_subtype_eq_top s p
 
 end AddCommGroup
+
+section Ring
+
+variable [Ring R] [Semiring R₂]
+variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
+variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+
+theorem map_lt_map_or {A B : Submodule R M} (f : F) (hab : A < B) :
+    Submodule.map f A < Submodule.map f B ∨ LinearMap.ker f ⊓ A < LinearMap.ker f ⊓ B := by
+  obtain (⟨h, -⟩ | ⟨-, h⟩) := Prod.mk_lt_mk.mp <| strictMono_inf_prod_sup (z := LinearMap.ker f) hab
+  · simpa [inf_comm] using Or.inr h
+  · apply Or.inl <| map_lt_map_of_le_of_sup_lt_sup hab.le h
+
+theorem ker_inf_lt_ker_inf {A B : Submodule R M} {f : F} (hab : A < B)
+    (q : Submodule.map f A = Submodule.map f B) : LinearMap.ker f ⊓ A < LinearMap.ker f ⊓ B :=
+  map_lt_map_or f hab |>.resolve_left q.not_lt
+
+theorem map_lt_map_of_ker_inf_eq {A B : Submodule R M} {f : F} (hab : A < B)
+    (q : LinearMap.ker f ⊓ A = LinearMap.ker f ⊓ B) : Submodule.map f A < Submodule.map f B :=
+  map_lt_map_or f hab |>.resolve_right q.not_lt
+
+end Ring
 
 section DivisionRing
 
@@ -687,34 +715,6 @@ theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x �
   aesop
 
 end
-
-section AddCommGroup
-
-variable [Ring R] [AddCommGroup M] [AddCommGroup M₂]
-variable [Module R M] [Module R M₂] {A B : Submodule R M}
-variable {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] {f : F}
-
-theorem _root_.Submodule.map_lt_map_of_le_of_sup_lt_sup (hab : A ≤ B) (h : A ⊔ ker f < B ⊔ ker f) :
-    Submodule.map f A < Submodule.map f B := by
-  simp_rw [←Submodule.comap_map_eq] at h
-  apply lt_of_le_of_ne (Submodule.map_mono hab) fun h' ↦ by simp [h'] at h
-
-variable (f) in
-theorem _root_.Submodule.map_lt_map_or (hab : A < B) :
-    Submodule.map f A < Submodule.map f B ∨ LinearMap.ker f ⊓ A < LinearMap.ker f ⊓ B := by
-  obtain (⟨h, -⟩ | ⟨-, h⟩) := Prod.mk_lt_mk.mp <| strictMono_inf_prod_sup (z := LinearMap.ker f) hab
-  · simpa [inf_comm] using Or.inr h
-  · apply Or.inl <| map_lt_map_of_le_of_sup_lt_sup hab.le h
-
-theorem _root_.Submodule.ker_inf_lt_ker_inf (hab : A < B)
-    (q : Submodule.map f A = Submodule.map f B) : LinearMap.ker f ⊓ A < LinearMap.ker f ⊓ B :=
-  map_lt_map_or f hab |>.resolve_left q.not_lt
-
-theorem _root_.Submodule.map_lt_map_of_ker_inf_eq (hab : A < B)
-    (q : LinearMap.ker f ⊓ A = LinearMap.ker f ⊓ B) : Submodule.map f A < Submodule.map f B :=
-  map_lt_map_or f hab |>.resolve_right q.not_lt
-
-end AddCommGroup
 
 section AddCommMonoid
 
