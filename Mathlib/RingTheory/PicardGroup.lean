@@ -83,11 +83,28 @@ section LinearEquiv
 
 variable (e : M ⊗[R] N ≃ₗ[R] R)
 
-open TensorProduct (assoc rid) in
+/-- Tensoring from the left by two mutually dual invertible modules does nothing. -/
+noncomputable abbrev leftCancelEquiv : M ⊗[R] (N ⊗[R] P) ≃ₗ[R] P :=
+  (TensorProduct.assoc R M N P).symm ≪≫ₗ e.rTensor P ≪≫ₗ TensorProduct.lid R P
+
+/-- Tensoring from the right by two mutually dual invertible modules does nothing. -/
+noncomputable abbrev rightCancelEquiv : (P ⊗[R] M) ⊗[R] N ≃ₗ[R] P :=
+  TensorProduct.assoc R P M N ≪≫ₗ e.lTensor P ≪≫ₗ TensorProduct.rid R P
+
+variable {P Q} in
+theorem leftCancelEquiv_comp_lTensor_comp_symm (f : P →ₗ[R] Q) :
+    leftCancelEquiv Q e ∘ₗ (f.lTensor N).lTensor M ∘ₗ (leftCancelEquiv P e).symm = f := by
+  rw [← LinearMap.comp_assoc, LinearEquiv.comp_toLinearMap_symm_eq]; ext; simp
+
+variable {P Q} in
+theorem rightCancelEquiv_comp_rTensor_comp_symm (f : P →ₗ[R] Q) :
+    rightCancelEquiv Q e ∘ₗ (f.rTensor M).rTensor N ∘ₗ (rightCancelEquiv P e).symm = f := by
+  rw [← LinearMap.comp_assoc, LinearEquiv.comp_toLinearMap_symm_eq]; ext; simp
+
 /-- If M is invertible, `rTensorHom M` admits an inverse. -/
 noncomputable def rTensorInv : (P ⊗[R] M →ₗ[R] Q ⊗[R] M) →ₗ[R] (P →ₗ[R] Q) :=
-  ((assoc R Q M N ≪≫ₗ e.lTensor Q ≪≫ₗ rid R Q).congrRight ≪≫ₗ
-    (assoc R P M N ≪≫ₗ e.lTensor P ≪≫ₗ rid R P).congrLeft _ R) ∘ₗ LinearMap.rTensorHom N
+  ((rightCancelEquiv Q e).congrRight ≪≫ₗ (rightCancelEquiv P e).congrLeft _ R) ∘ₗ
+    LinearMap.rTensorHom N
 
 theorem rTensorInv_leftInverse : Function.LeftInverse (rTensorInv P Q e) (.rTensorHom M) :=
   fun _ ↦ by
@@ -104,8 +121,7 @@ of `R`-modules. -/
   __ := LinearMap.rTensorHom M
   invFun := rTensorInv P Q e
   left_inv := rTensorInv_leftInverse P Q e
-  right_inv _ := rTensorInv_injective P Q e <| by
-    rw [LinearMap.toFun_eq_coe, rTensorInv_leftInverse]
+  right_inv _ := rTensorInv_injective P Q e (by rw [LinearMap.toFun_eq_coe, rTensorInv_leftInverse])
 
 open LinearMap in
 /-- If there is an `R`-isomorphism between `M ⊗[R] N` and `R`, where `M` is not assumed to be
@@ -125,7 +141,7 @@ include e
 
 protected theorem right : Module.Invertible R N where
   bijective := by
-    rw [show contractLeft R N = .symm (.rTensor N (linearEquivDual e)) ≪≫ₗ e by
+    rw [show contractLeft R N = ((linearEquivDual e).rTensor N).symm ≪≫ₗ e by
       rw [LinearEquiv.coe_trans, LinearEquiv.eq_comp_toLinearMap_symm]; ext; rfl]
     apply LinearEquiv.bijective
 
@@ -172,6 +188,40 @@ instance : Module.Finite R M := (finite_projective R M).1
 instance : Projective R M := (finite_projective R M).2
 example : IsReflexive R M := inferInstance
 
+section inj_surj_bij
+
+variable {R N P}
+
+theorem lTensor_injective_iff {f : N →ₗ[R] P} :
+    Function.Injective (f.lTensor M) ↔ Function.Injective f := by
+  refine ⟨fun h ↦ ?_, Flat.lTensor_preserves_injective_linearMap _⟩
+  rw [← leftCancelEquiv_comp_lTensor_comp_symm (linearEquiv R M) f]
+  simpa using Flat.lTensor_preserves_injective_linearMap _ h
+
+theorem rTensor_injective_iff {f : N →ₗ[R] P} :
+    Function.Injective (f.rTensor M) ↔ Function.Injective f := by
+  rw [← LinearMap.lTensor_inj_iff_rTensor_inj, lTensor_injective_iff]
+
+theorem lTensor_surjective_iff {f : N →ₗ[R] P} :
+    Function.Surjective (f.lTensor M) ↔ Function.Surjective f := by
+  refine ⟨fun h ↦ ?_, LinearMap.lTensor_surjective _⟩
+  rw [← leftCancelEquiv_comp_lTensor_comp_symm (linearEquiv R M) f]
+  simpa using LinearMap.lTensor_surjective _ h
+
+theorem rTensor_surjective_iff {f : N →ₗ[R] P} :
+    Function.Surjective (f.rTensor M) ↔ Function.Surjective f := by
+  rw [← LinearMap.lTensor_surj_iff_rTensor_surj, lTensor_surjective_iff]
+
+theorem lTensor_bijective_iff {f : N →ₗ[R] P} :
+    Function.Bijective (f.lTensor M) ↔ Function.Bijective f := by
+  simp_rw [Function.Bijective, lTensor_injective_iff, lTensor_surjective_iff]
+
+theorem rTensor_bijective_iff {f : N →ₗ[R] P} :
+    Function.Bijective (f.rTensor M) ↔ Function.Bijective f := by
+  simp_rw [Function.Bijective, rTensor_injective_iff, rTensor_surjective_iff]
+
+end inj_surj_bij
+
 open Finsupp in
 variable {R M} in
 theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
@@ -199,6 +249,26 @@ theorem toModuleEnd_bijective : Function.Bijective (toModuleEnd R (S := R) M) :=
       (comm .. ≪≫ₗ linearEquiv R M) ∘ RingEquiv.moduleEndSelf R ∘ MulOpposite.opEquiv := by
     ext; simp [LinearEquiv.conj, liftAux]
   simpa [this] using MulOpposite.opEquiv.bijective
+
+instance : FaithfulSMul R M where
+  eq_of_smul_eq_smul {_ _} h := (toModuleEnd_bijective R M).injective <| LinearMap.ext h
+
+variable {R M N} in
+private theorem bijective_self_of_surjective (f : R →ₗ[R] M) (hf : Function.Surjective f) :
+    Function.Bijective f where
+  left {r₁ r₂} eq := smul_left_injective' (α := M) <| funext fun m ↦ by
+    obtain ⟨r, rfl⟩ := hf m
+    simp_rw [← map_smul, smul_eq_mul, mul_comm _ r, ← smul_eq_mul, map_smul, eq]
+  right := hf
+
+variable {R M N} in
+/- Not true if `surjective` is replaced by `injective`: any nonzero element in an invertible
+module over a domain generates a submodule isomorphic to the domain, which is not the whole
+module unless the module is free. -/
+theorem bijective_of_surjective [Module.Invertible R N] (f : M →ₗ[R] N)
+    (hf : Function.Surjective f) : Function.Bijective f := by
+  simpa [lTensor_bijective_iff] using bijective_self_of_surjective
+    (f.lTensor _ ∘ₗ (linearEquiv R M).symm.toLinearMap) (by simpa [lTensor_surjective_iff] using hf)
 
 section Algebra
 
