@@ -178,6 +178,11 @@ theorem Module.Flat.isBaseChange_preserves_injective_linearMap :
 
 end
 
+@[simp]
+theorem Submodule.Quotient.mk_out {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {p : Submodule R M} (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
+  Quotient.out_eq m
+
 section flat
 
 variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
@@ -199,19 +204,108 @@ theorem IsSMulRegular.of_flat_isBaseChange (reg : IsSMulRegular M x) :
   convert Module.Flat.isBaseChange_preserves_injective_linearMap hf hf ((LinearMap.lsmul R M) x) reg
   rw [eq]
   rfl
-
+/-
 noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapAux :
     (S ⊗[R] QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop ((algebraMap R S) x) N) :=
-  have h : x • (⊤ : Submodule R N) = (algebraMap R S) x • ⊤ := by
-    sorry
-  tensorQuotSMulTopEquivQuotSMulTop x S M ≪≫ₗ QuotSMulTop.congr x (hf.equiv.restrictScalars R)
-    ≪≫ₗ Submodule.quotEquivOfEq (x • ⊤) ((algebraMap R S) x • ⊤) h
+  tensorQuotSMulTopEquivQuotSMulTop x S M ≪≫ₗ QuotSMulTop.congr x (hf.equiv.restrictScalars R) ≪≫ₗ
+    Submodule.quotEquivOfEq (x • ⊤) ((algebraMap R S) x • ⊤)
+      (Submodule.ext <| fun _ ↦ by simp [Submodule.mem_smul_pointwise_iff_exists])
+ -/
+
+variable (S) (M) in
+noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensorAux :
+    S ⊗[R] QuotSMulTop x M ≃ₗ[R] QuotSMulTop ((algebraMap R S) x) (S ⊗[R] M) :=
+  tensorQuotSMulTopEquivQuotSMulTop x S M ≪≫ₗ
+      Submodule.quotEquivOfEq (x • ⊤) ((algebraMap R S) x • ⊤)
+        (Submodule.ext <| fun _ ↦ by simp [Submodule.mem_smul_pointwise_iff_exists])
+
+
+/- variable (S) (M) in
+noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor :
+    S ⊗[R] QuotSMulTop x M ≃ₗ[S] QuotSMulTop ((algebraMap R S) x) (S ⊗[R] M) where
+  __ := tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensorAux S M x
+  map_smul' := by
+    intro s m
+    simp [tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensorAux, tensorQuotSMulTopEquivQuotSMulTop]
+    have h : ((LinearEquiv.lTensor S (equivTensorQuot x M)) (s • m)) =
+    s • ((LinearEquiv.lTensor S (equivTensorQuot x M)) m) := sorry
+    simp [h]
+    rfl
+    /- let f₁ := (LinearMap.lsmul S (S ⊗[R] QuotSMulTop x M) s).restrictScalars R
+    let f := (tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensorAux S M x).toLinearMap
+    let g := f ∘ₗ ((LinearMap.lsmul S (S ⊗[R] QuotSMulTop x M) s).restrictScalars R)
+    let h :=
+      ((LinearMap.lsmul S (QuotSMulTop ((algebraMap R S) x) (S ⊗[R] M)) s).restrictScalars R) ∘ₗ f
+    have h : f ∘ₗ ((LinearMap.lsmul S (S ⊗[R] QuotSMulTop x M) s).restrictScalars R) =
+        ((LinearMap.lsmul S (QuotSMulTop ((algebraMap R S) x) (S ⊗[R] M)) s).restrictScalars R) ∘ₗ f
+        := by
+      apply TensorProduct.ext
+      ext t m
+      simp [f, tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensorAux,
+      tensorQuotSMulTopEquivQuotSMulTop]
+      --show f ((s • t) ⊗ₜ[R] Submodule.Quotient.mk m) = _
+
+    exact congrFun (congrArg DFunLike.coe h) m -/ -/
+
+variable (S) (M) in
+noncomputable def tensorQuotSMulTopLinearMapQuotSMulTopAlgebraMapTensor :
+    S ⊗[R] QuotSMulTop x M →ₗ[S] QuotSMulTop ((algebraMap R S) x) (S ⊗[R] M) := by
+  apply LinearMap.liftBaseChange S ?_
+  apply Submodule.mapQ (x • ⊤) ((algebraMap R S) x • ⊤) (TensorProduct.mk R S M 1) (fun _ ↦ ?_)
+  simp only [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_top, true_and,
+    Submodule.mem_comap, forall_exists_index]
+  intro _ hm
+  simp [← hm]
+
+omit [Flat R S] [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N] hf in
+theorem TensorProduct.tsmul_eq_smul_one_tuml (s : S) (m : M) : s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
+  nth_rw 1 [show s = s • 1 from by simp]
+  rfl
+
+variable (S) (M) in
+noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor :
+    S ⊗[R] QuotSMulTop x M ≃ₗ[S] QuotSMulTop ((algebraMap R S) x) (S ⊗[R] M) :=
+  let f := tensorQuotSMulTopLinearMapQuotSMulTopAlgebraMapTensor S M x
+{ __ := f
+  invFun m := LinearMap.lTensor S (Submodule.mkQ (x • ⊤)) (Quotient.out m)
+  left_inv := by
+    intro m
+    have h : (LinearMap.lsmul R (S ⊗[R] QuotSMulTop x M)) x = 0 := by
+      apply TensorProduct.ext
+      ext s m
+      simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.compr₂_apply, mk_apply,
+        LinearMap.lsmul_apply, LinearMap.zero_apply]
+      rw [← tmul_smul, show x • _ = (0 : QuotSMulTop x M) from
+          (Submodule.Quotient.mk_eq_zero _).mpr (Submodule.smul_mem_pointwise_smul m x ⊤ trivial)]
+      exact tmul_zero _ s
+    have hx (m : S ⊗[R] QuotSMulTop x M) : x • m = 0 := congrFun (congrArg DFunLike.coe h) m
+    let N : Submodule S (S ⊗[R] M) := (algebraMap R S) x • ⊤
+    induction' m with s m m₁ m₂
+    · obtain ⟨b, _, h⟩ := (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp <|
+        (Submodule.Quotient.mk_eq_zero N).mp (Quotient.out_eq (0 : _ ⧸ N))
+      simp [← h, hx]
+    · have hsm : N.mkQ (s ⊗ₜ[R] Quotient.out m) = f (s ⊗ₜ[R] m) := by
+        nth_rw 2 [← Quotient.out_eq m]
+        simp only [tensorQuotSMulTopLinearMapQuotSMulTopAlgebraMapTensor,
+          LinearMap.liftBaseChange_tmul, tsmul_eq_smul_one_tuml s (Quotient.out m)]
+        rfl
+      obtain ⟨b, _, h⟩ := (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp <|
+        (Submodule.Quotient.eq' N).mp (hsm.trans (Quotient.out_eq _).symm)
+      simp only [← add_eq_of_eq_sub <| h.trans (neg_add_eq_sub _ _), hx, LinearMap.coe_toAddHom,
+        AddHom.toFun_eq_coe, algebraMap_smul, map_add, map_smul, LinearMap.lTensor_tmul, zero_add]
+      congr 1
+      exact Quotient.out_eq m
+    · have hm : N.mkQ (Quotient.out (f m₁ + f m₂)) =
+        N.mkQ (Quotient.out (f m₁) + Quotient.out (f m₂)) := by simp
+      obtain ⟨b, _, h⟩ := (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp <|
+        (Submodule.Quotient.eq' N).mp hm.symm
+      simpa [← add_eq_of_eq_sub <| h.trans (neg_add_eq_sub _ _), hx] using by congr 1
+  right_inv := sorry }
 
 noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMap :
-    (S ⊗[R] QuotSMulTop x M) ≃ₗ[S] (QuotSMulTop ((algebraMap R S) x) N) where
-  __ := tensorQuotSMulTopEquivQuotSMulTopAlgebraMapAux hf x
-  map_smul' := sorry
-
+    (S ⊗[R] QuotSMulTop x M) ≃ₗ[S] (QuotSMulTop ((algebraMap R S) x) N) :=
+  tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor S M x ≪≫ₗ
+    QuotSMulTop.congr ((algebraMap R S) x) hf.equiv
 
 theorem RingTheory.Sequence.isWeaklyRegular.of_flat_isBaseChange (rs : List R)
     (reg : IsWeaklyRegular M rs) : IsWeaklyRegular N (rs.map (algebraMap R S)) := by
