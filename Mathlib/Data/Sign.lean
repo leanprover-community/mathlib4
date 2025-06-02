@@ -145,6 +145,11 @@ def fin3Equiv : SignType ≃* Fin 3 where
   map_mul' a b := by
     cases a <;> cases b <;> rfl
 
+theorem pow_odd (s : SignType) (n : ℕ) (hn : Odd n) : s ^ n = s := by
+  obtain ⟨k, rfl⟩ := hn
+  rw [pow_add, pow_one, pow_mul, sq]
+  cases s <;> simp
+
 section CaseBashing
 
 theorem nonneg_iff {a : SignType} : 0 ≤ a ↔ a = 0 ∨ a = 1 := by decide +revert
