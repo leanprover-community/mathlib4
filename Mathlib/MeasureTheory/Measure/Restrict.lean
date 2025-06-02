@@ -341,9 +341,11 @@ theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
     μ.restrict (⋃ i ∈ s, t i) = ν.restrict (⋃ i ∈ s, t i) ↔
       ∀ i ∈ s, μ.restrict (t i) = ν.restrict (t i) := by
   classical
-  induction' s using Finset.induction_on with i s _ hs; · simp
-  simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
-  rw [restrict_union_congr, ← hs]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s _ hs =>
+    simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
+    rw [restrict_union_congr, ← hs]
 
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
@@ -648,7 +650,7 @@ theorem le_ae_restrict : ae μ ⊓ 𝓟 s ≤ ae (μ.restrict s) := fun _s hs =>
 theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s := by
   ext t
   simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs, compl_setOf,
-    Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := ¬a ∈ t)]
+    Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := a ∉ t)]
   rfl
 
 lemma ae_restrict_le : ae (μ.restrict s) ≤ ae μ :=
@@ -913,12 +915,15 @@ theorem mem_map_indicator_ae_iff_mem_map_restrict_ae_of_zero_mem [Zero β] {t : 
     Set.preimage_const]
   simp_rw [Set.union_inter_distrib_right, Set.compl_inter_self s, Set.union_empty]
 
-theorem mem_map_indicator_ae_iff_of_zero_nmem [Zero β] {t : Set β} (ht : (0 : β) ∉ t) :
+theorem mem_map_indicator_ae_iff_of_zero_notMem [Zero β] {t : Set β} (ht : (0 : β) ∉ t) :
     t ∈ Filter.map (s.indicator f) (ae μ) ↔ μ ((f ⁻¹' t)ᶜ ∪ sᶜ) = 0 := by
   classical
   rw [mem_map, mem_ae_iff, Set.indicator_preimage, Set.ite, Set.compl_union, Set.compl_inter]
   change μ (((f ⁻¹' t)ᶜ ∪ sᶜ) ∩ ((fun _ => (0 : β)) ⁻¹' t \ s)ᶜ) = 0 ↔ μ ((f ⁻¹' t)ᶜ ∪ sᶜ) = 0
   simp only [ht, if_false, Set.compl_empty, Set.empty_diff, Set.inter_univ, Set.preimage_const]
+
+@[deprecated (since := "2025-05-24")]
+alias mem_map_indicator_ae_iff_of_zero_nmem := mem_map_indicator_ae_iff_of_zero_notMem
 
 theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
     Filter.map f (ae <| μ.restrict s) ≤ Filter.map (s.indicator f) (ae μ) := by
@@ -926,7 +931,7 @@ theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
   by_cases ht : (0 : β) ∈ t
   · rw [mem_map_indicator_ae_iff_mem_map_restrict_ae_of_zero_mem ht hs]
     exact id
-  rw [mem_map_indicator_ae_iff_of_zero_nmem ht, mem_map_restrict_ae_iff hs]
+  rw [mem_map_indicator_ae_iff_of_zero_notMem ht, mem_map_restrict_ae_iff hs]
   exact fun h => measure_mono_null (Set.inter_subset_left.trans Set.subset_union_left) h
 
 variable [Zero β]
