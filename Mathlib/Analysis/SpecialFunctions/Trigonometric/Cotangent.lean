@@ -177,8 +177,8 @@ theorem logDeriv_sinTerm_eq_cotTerm (x : ℂ) (hx: x ∈ ℂ_ℤ) (i : ℕ) :
   have h2 : ((x : ℂ) - (i + 1)) ≠ 0 := by
     simpa [sub_eq_add_neg] using integerComplement_add_ne_zero hx (-(i + 1))
   have h3 := sinTerm_ne_zero hx i
-  simp [sinTerm] at *
-  have h4 : ((↑i + 1) ^ 2 * (1 + -x ^ 2 / (↑i + 1) ^ 2)) ≠ 0 := by
+  simp only [Int.cast_add, Int.cast_natCast, Int.cast_one, ne_eq, sinTerm, one_div] at *
+  have h4 : ((i + 1) ^ 2 * (1 + -x ^ 2 / (i + 1) ^ 2)) ≠ 0 := by
     simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, h3,
       or_false]
     exact Nat.cast_add_one_ne_zero i
@@ -196,10 +196,7 @@ lemma logDeriv_prod_sinTerm_eq_sum_cotTerm {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : �
     ext i
     apply logDeriv_sinTerm_eq_cotTerm x hx i
   · exact fun i _ ↦ sinTerm_ne_zero hx i
-  · intro i _
-    simp only [sinTerm, differentiableAt_const, differentiableAt_const_add_iff,
-      differentiableAt_neg_iff, differentiableAt_id', DifferentiableAt.pow,
-      DifferentiableAt.div_const]
+  · simp [sinTerm]
 
 theorem tendsto_logDeriv_euler_cot_sub (x : ℂ) (hx : x ∈ ℂ_ℤ) :
     Tendsto (fun n : ℕ => ∑ j ∈ Finset.range n, cotTerm x j) atTop
