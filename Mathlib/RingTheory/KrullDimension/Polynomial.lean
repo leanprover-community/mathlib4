@@ -26,5 +26,5 @@ theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
   · rw [show C = (algebraMap R (Polynomial R)) from rfl, Order.krullDim_eq_of_orderIso
       (PrimeSpectrum.preimageOrderIsoTensorResidueField R (Polynomial R) p), ← ringKrullDim,
       ← ringKrullDim_eq_of_ringEquiv (polyEquivTensor R (p.asIdeal.ResidueField)).toRingEquiv,
-      ← Ring.KrullDimLE_iff_ringKrullDim_le]
+      ← Ring.KrullDimLE_iff]
     infer_instance
