@@ -468,15 +468,12 @@ theorem continuous_coe :
   continuous_iSup_dom.mpr fun _ ↦ continuous_iSup_dom.mpr fun _ ↦
     continuous_coinduced_dom.mpr continuous_induced_dom
 
-
-
 @[fun_prop]
-
 theorem continuous_eval (i : ι) :
     Continuous (fun (x : Πʳ i, [R i, A i]_[𝓕]) ↦ x i) :=
   continuous_apply _ |>.comp continuous_coe
 
-
+@[fun_prop]
 theorem continuous_inclusion {𝓖 : Filter ι} (h : 𝓕 ≤ 𝓖) :
     Continuous (inclusion R A h) := by
   simp_rw [continuous_iff_coinduced_le, topologicalSpace, coinduced_iSup, coinduced_compose]
