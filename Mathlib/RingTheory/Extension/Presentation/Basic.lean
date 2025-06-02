@@ -138,7 +138,7 @@ def ofFinitePresentation [FinitePresentation R S] : Presentation.{0, 0} R S :=
   letI H' := Submodule.fg_iff_exists_fin_generating_family.mp hf'
   let m : ℕ := H'.choose
   let v : Fin m → MvPolynomial (Fin n) R := H'.choose_spec.choose
-  let hv : Ideal.span (Set.range v) = RingHom.ker f := H'.choose_spec.choose_spec
+  have hv : Ideal.span (Set.range v) = RingHom.ker f := H'.choose_spec.choose_spec
   { __ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert hf; ext; simp)
     rels := Fin m
     relation := v
