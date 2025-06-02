@@ -4,29 +4,32 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emily Riehl, Dominic Verity
 -/
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 import Mathlib.CategoryTheory.Category.Cat.Limit
+import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
+import Mathlib.CategoryTheory.Monoidal.Functor
 /-!
 
-# The homotopy category functor preserves binary products.
+# The homotopy category functor preserves finite products.
 
 The functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is the left adjoint of a reflective subcategory
 inclusion, whose right adjoint is the fully faithful `nerveFunctor : Cat ⥤ SSet`;
 see `nerveAdjunction : hoFunctor ⊣ nerveFunctor`.
 
 Both `Cat.{u, u}` and `SSet.{u}` are cartesian closed categories. This files proves that
-`hoFunctor` preserves binary cartesian products; note it fails to preserve infinite products.
+`hoFunctor` preserves finite cartesian products; note it fails to preserve infinite products.
 
 -/
 
 -- Where do these belong?
 namespace OrderHom
 
-open CategoryTheory Functor
+open CategoryTheory Functor SSet
 
 def toFunctor {X Y} [Preorder X] [Preorder Y] (f : X →o Y) : X ⥤ Y where
   obj := f
@@ -60,7 +63,7 @@ def SimplexCategory.homIsoFunctor {a b : SimplexCategory} :
     (a ⟶ b) ≅ (Fin (a.len + 1) ⥤ Fin (b.len + 1)) :=
   SimplexCategory.homIsoOrderHom ≪≫ OrderHom.isoFunctor
 
--- Extra; feel free to (re)move!
+/-- Nerves of finite non-empty ordinals are representable functors. -/
 def nerve.RepresentableBySimplex (n : ℕ) : (nerve (Fin (n + 1))).RepresentableBy ⦋n⦌ where
   homEquiv := SimplexCategory.homIsoFunctor.toEquiv
   homEquiv_comp {_ _} _ _ := rfl
@@ -74,6 +77,27 @@ def simplexIsNerve (n : ℕ) : Δ[n] ≅ nerve (Fin (n + 1)) := NatIso.ofCompone
 -- Alternate definition:
 -- `:= SSet.stdSimplex.isoOfRepresentableBy <| nerve.RepresentableBySimplex n`
 -- Though slightly shorter, this would essentially have us convert to an equiv then back to an iso.
+
+def simplexIsNerve' (n : ℕ) : Δ[n] ≅ nerve (ULiftFin (n + 1)) := sorry
+
+section preservesTerminal
+
+
+noncomputable def hoFunctor.terminalIso : (hoFunctor.obj (⊤_ SSet)) ≅ (⊤_ Cat) :=
+  hoFunctor.mapIso (terminalIsoIsTerminal isTerminalDeltaZero) ≪≫
+    hoFunctor.mapIso (simplexIsNerve' 0) ≪≫
+    nerveFunctorCompHoFunctorIso.app (Cat.of (ULiftFin 1)) ≪≫
+    ULiftFinDiscretePUnitIso ≪≫ TerminalCatDiscretePUnitIso.symm
+
+instance hoFunctor.preservesTerminal : PreservesLimit (empty.{0} SSet) hoFunctor :=
+  preservesTerminal_of_iso hoFunctor hoFunctor.terminalIso
+
+instance hoFunctor.preservesTerminal' :
+    PreservesLimitsOfShape (Discrete PEmpty.{1}) hoFunctor :=
+  preservesLimitsOfShape_pempty_of_preservesTerminal _
+
+end preservesTerminal
+
 
 /-- Via the whiskered counit (or unit) of `nerveAdjunction`, the triple composite
 `nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor` is naturally isomorphic to `nerveFunctor`.
@@ -157,6 +181,13 @@ instance hoFunctor.preservesBinaryProducts' :
     PreservesLimitsOfShape (Discrete Limits.WalkingPair) hoFunctor where
   preservesLimit :=
     fun {F} ↦ preservesLimit_of_iso_diagram hoFunctor (id (diagramIsoPair F).symm)
+
+instance hoFunctor.preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
+  Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal _
+
+/-- A product preserving functor between cartesian closed categories is lax monoidal. -/
+noncomputable instance hoFunctor.laxMonoidal : LaxMonoidal hoFunctor :=
+  (Monoidal.ofChosenFiniteProducts hoFunctor).toLaxMonoidal
 
 /--
 QCat is the category of quasi-categories defined as the full subcategory of the category of `SSet`.
