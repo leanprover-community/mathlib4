@@ -957,6 +957,7 @@ theorem coe_prodComm_symm [Module R E₂] :
     ((prodComm R E E₂).symm : E₂ × E → E × E₂) = (Equiv.prodComm E E₂).symm :=
   rfl
 
+@[simp]
 theorem prodComm_symm [Module R E₂] : (prodComm R E E₂).symm = prodComm R E₂ E :=
   rfl
 
