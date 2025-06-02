@@ -10,6 +10,7 @@ open Lean Elab Command
 
 namespace Mathlib.Linter
 
+/-- Returns the array of repetitions in the input `l`. -/
 def getReps {α} [BEq α] [Hashable α] (l : List α) : Array α := Id.run do
   let mut seen : Std.HashSet α := ∅
   let mut reps := #[]
