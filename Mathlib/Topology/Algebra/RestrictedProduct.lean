@@ -549,8 +549,8 @@ def homeoTop : (Π i, A i) ≃ₜ (Πʳ i, [R i, A i]_[⊤]) where
   toFun f := ⟨fun i ↦ f i, fun i ↦ (f i).2⟩
   invFun f i := ⟨f i, f.2 i⟩
   continuous_toFun := continuous_rng_of_top.mpr <| continuous_pi fun i ↦
-    continuous_subtype_val.comp <| _root_.continuous_apply i
-  continuous_invFun := continuous_pi fun i ↦ continuous_induced_rng.mpr <| continuous_apply i
+    continuous_subtype_val.comp <| continuous_apply i
+  continuous_invFun := continuous_pi fun i ↦ continuous_induced_rng.mpr <| continuous_eval i
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -558,8 +558,8 @@ def homeoTop : (Π i, A i) ≃ₜ (Πʳ i, [R i, A i]_[⊤]) where
 def homeoBot : (Π i, R i) ≃ₜ (Πʳ i, [R i, A i]_[⊥]) where
   toFun f := ⟨fun i ↦ f i, eventually_bot⟩
   invFun f i := f i
-  continuous_toFun := continuous_rng_of_bot.mpr <| continuous_pi fun i ↦ _root_.continuous_apply i
-  continuous_invFun := continuous_pi continuous_apply
+  continuous_toFun := continuous_rng_of_bot.mpr <| continuous_pi fun i ↦ continuous_apply i
+  continuous_invFun := continuous_pi continuous_eval
   left_inv _ := rfl
   right_inv _ := rfl
 
