@@ -160,6 +160,14 @@ theorem span_pair_comm {x y : α} : (span {x, y} : Ideal α) = span {y, x} := by
 theorem mem_span_pair {x y z : α} : z ∈ span ({x, y} : Set α) ↔ ∃ a b, a * x + b * y = z :=
   Submodule.mem_span_pair
 
+@[simp]
+theorem span_insert_zero (s : Set α) : span (insert 0 s) = span s :=
+  Submodule.span_insert_zero
+
+@[simp]
+theorem span_pair_zero (x : α) : span {x, 0} = span {x} := by
+  rw [span_pair_comm, span_insert_zero]
+
 end Ideal
 
 end Semiring
@@ -208,39 +216,64 @@ section Ring
 
 namespace Ideal
 
-variable [Ring α] (I : Ideal α) {a b : α}
+variable [Ring α] (x y : α) (s : Set α)
 
-theorem mem_span_insert' {s : Set α} {x y} : x ∈ span (insert y s) ↔ ∃ a, x + a * y ∈ span s :=
+theorem mem_span_insert' : x ∈ span (insert y s) ↔ ∃ a, x + a * y ∈ span s :=
   Submodule.mem_span_insert'
 
 @[simp]
-theorem span_singleton_neg (x : α) : span {-x} = span {x} := by
+theorem span_singleton_neg : span {-x} = span {x} := by
   ext
   simp only [mem_span_singleton']
   exact ⟨fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_comm y x⟩, fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_neg y x⟩⟩
 
 @[simp]
-theorem span_pair_neg_left (x y : α) : span {-x, y} = span {x, y} := by
+theorem span_insert_neg : span (insert (-x) s) = span (insert x s) := by
   rw [span_insert, span_singleton_neg, span_insert]
 
 @[simp]
-theorem span_pair_neg_right (x y : α) : span {x, -y} = span {x, y} := by
-  rw [span_pair_comm, span_pair_neg_left, span_pair_comm]
+theorem span_pair_neg : span {x, -y} = span {x, y} := by
+  rw [span_pair_comm, span_insert_neg, span_pair_comm]
 
 @[simp]
-theorem span_singleton_abs [LinearOrder α] (x : α) : span {|x|} = span {x} := by
+theorem span_pair_add_right : span {x + y, y} = span {x, y} := by
+  ext
+  simp_rw [mem_span_pair]
+  exact ⟨fun ⟨a, b, h⟩ => ⟨a, b + a, by rw [add_comm b, add_mul, ← add_assoc, ← mul_add, h]⟩,
+    fun ⟨a, b, h⟩ => ⟨a, b - a, by rw [mul_add, sub_mul, add_add_sub_cancel, h]⟩⟩
+
+@[simp]
+theorem span_pair_add_left : span {x, y + x} = span {x, y} := by
+  rw [span_pair_comm, span_pair_add_right, span_pair_comm]
+
+@[simp]
+theorem span_pair_right_add : span {y + x, y} = span {x, y} := by
+  rw [add_comm, span_pair_add_right]
+
+@[simp]
+theorem span_pair_left_add : span {x, x + y} = span {x, y} := by
+  rw [add_comm, span_pair_add_left]
+
+@[simp]
+theorem span_pair_sub_right : span {x - y, y} = span {x, y} := by
+  rw [← span_pair_add_right, sub_add_cancel]
+
+@[simp]
+theorem span_pair_sub_left : span {x, y - x} = span {x, y} := by
+  rw [← span_pair_add_left, sub_add_cancel]
+
+@[simp]
+theorem span_singleton_abs [LinearOrder α] : span {|x|} = span {x} := by
   obtain h | h := abs_choice x <;>
   simp [h]
 
 @[simp]
-theorem span_pair_abs_left [LinearOrder α] (x y : α) : span {|x|, y} = span {x, y} := by
-  obtain h | h := abs_choice x <;>
-  simp [h]
+theorem span_insert_abs [LinearOrder α] : span (insert |x| s) = span (insert x s) := by
+  rw [span_insert, span_singleton_abs, span_insert]
 
 @[simp]
-theorem span_pair_abs_right [LinearOrder α] (x y : α) : span {x, |y|} = span {x, y} := by
-  obtain h | h := abs_choice y <;>
-  simp [h]
+theorem span_pair_abs [LinearOrder α] : span {x, |y|} = span {x, y} := by
+  rw [span_pair_comm, span_insert_abs, span_pair_comm]
 
 end Ideal
 
@@ -250,35 +283,58 @@ section CommRing
 
 namespace Ideal
 
-variable [CommRing α]
+variable [CommRing α] (x y z : α)
 
 @[simp]
-theorem span_pair_add_mul_left (x y z : α) : span {x + y * z, y} = span {x, y} := by
+theorem span_pair_add_right_mul : span {x + y * z, y} = span {x, y} := by
   ext
   simp_rw [mem_span_pair]
   exact ⟨fun ⟨a, b, h⟩ => ⟨a, b + a * z, by rw [← h]; ring1⟩,
     fun ⟨a, b, h⟩ => ⟨a, b - a * z, by rw [← h]; ring1⟩⟩
 
 @[simp]
-theorem span_pair_add_mul_right (x y z : α) : span {x, y + x * z} = span {x, y} := by
-  rw [span_pair_comm, span_pair_add_mul_left, span_pair_comm]
+theorem span_pair_add_left_mul : span {x, y + x * z} = span {x, y} := by
+  rw [span_pair_comm, span_pair_add_right_mul, span_pair_comm]
 
 @[simp]
-theorem span_pair_add_left (x y : α) : span {x + y, y} = span {x, y} := by
-  nth_rw 1 [← mul_one y, span_pair_add_mul_left]
+theorem span_pair_right_mul_add : span {y * z + x, y} = span {x, y} := by
+  rw [add_comm, span_pair_add_right_mul]
 
 @[simp]
-theorem span_pair_add_right (x y : α) : span {x, y + x} = span {x, y} := by
-  nth_rw 2 [← mul_one x]
-  rw [span_pair_add_mul_right]
+theorem span_pair_left_mul_add : span {x, x * z + y} = span {x, y} := by
+  rw [add_comm, span_pair_add_left_mul]
 
 @[simp]
-theorem span_pair_zero_left (x : α) : span {0, x} = span {x} := by
-  rw [← span_pair_add_left, zero_add, Set.pair_eq_singleton]
+theorem span_pair_add_mul_right : span {x + z * y, y} = span {x, y} := by
+  rw [mul_comm, span_pair_add_right_mul]
 
 @[simp]
-theorem span_pair_zero_right (x : α) : span {x, 0} = span {x} := by
-  rw [← span_pair_add_right, zero_add, Set.pair_eq_singleton]
+theorem span_pair_add_mul_left : span {x, y + z * x} = span {x, y} := by
+  rw [mul_comm, span_pair_add_left_mul]
+
+@[simp]
+theorem span_pair_mul_right_add : span {z * y + x, y} = span {x, y} := by
+  rw [mul_comm, span_pair_right_mul_add]
+
+@[simp]
+theorem span_pair_mul_left_add : span {x, z * x + y} = span {x, y} := by
+  rw [mul_comm, span_pair_left_mul_add]
+
+@[simp]
+theorem span_pair_sub_right_mul : span {x - y * z, y} = span {x, y} := by
+  rw [← span_pair_add_right_mul, sub_add_cancel]
+
+@[simp]
+theorem span_pair_sub_left_mul : span {x, y - x * z} = span {x, y} := by
+  rw [← span_pair_add_left_mul, sub_add_cancel]
+
+@[simp]
+theorem span_pair_sub_mul_right : span {x - z * y, y} = span {x, y} := by
+  rw [mul_comm, span_pair_sub_right_mul]
+
+@[simp]
+theorem span_pair_sub_mul_left : span {x, y - z * x} = span {x, y} := by
+  rw [mul_comm, span_pair_sub_left_mul]
 
 end Ideal
 
