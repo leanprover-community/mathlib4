@@ -154,7 +154,7 @@ theorem tendsto_logDeriv_euler_sin_div (x : ℂ) (hx : x ∈ ℂ_ℤ) :
 
 theorem logDeriv_sin_div (z : ℂ) (hz : z ∈ ℂ_ℤ) :
     logDeriv (fun t ↦ (Complex.sin (π * t) / (π * t))) z = π * cot (π * z) - 1 / z := by
-  have : (fun t ↦ (Complex.sin (π * t)/ (π * t))) = fun z =>
+  have : (fun t ↦ (Complex.sin (π * t)/ (π * t))) = fun z ↦
     (Complex.sin ∘ fun t ↦ π * t) z / (π * z) := by rfl
   rw [this, logDeriv_div _ (by apply sin_pi_z_ne_zero hz) ?_
     (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
