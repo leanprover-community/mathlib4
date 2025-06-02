@@ -404,17 +404,12 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
 
 section
 
-variable {α : Type*} [LinearOrder α] (i j k : α)
+variable {α : Type*} [LinearOrder α] {a b c : α}
 
 attribute [local instance] LinearOrder.toCircularOrder
 
-lemma sbtw_iff : sbtw i j k
-    ↔ (i < j ∧ j < k) ∨ (j < k ∧ k < i) ∨ (k < i ∧ i < j) :=
-  Iff.rfl
-
-lemma btw_iff : btw i j k
-    ↔ (i ≤ j ∧ j ≤ k) ∨ (j ≤ k ∧ k ≤ i) ∨ (k ≤ i ∧ i ≤ j) :=
-  Iff.rfl
+lemma sbtw_iff : sbtw i j k ↔ i < j ∧ j < k ∨ j < k ∧ k < i ∨ k < i ∧ i < j := .rfl
+lemma btw_iff : btw i j k ↔ i ≤ j ∧ j ≤ k ∨ j ≤ k ∧ k ≤ i ∨ k ≤ i ∧ i ≤ j := .rfl
 
 end
 
