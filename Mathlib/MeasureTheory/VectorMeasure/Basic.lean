@@ -45,7 +45,7 @@ vector measure, signed measure, complex measure
 
 noncomputable section
 
-open NNReal ENNReal MeasureTheory
+open NNReal ENNReal
 
 open scoped Function -- required for scoped `on` notation
 namespace MeasureTheory
@@ -70,7 +70,7 @@ structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMo
 abbrev SignedMeasure (α : Type*) [MeasurableSpace α] :=
   VectorMeasure α ℝ
 
-open Set MeasureTheory
+open Set
 
 namespace VectorMeasure
 
