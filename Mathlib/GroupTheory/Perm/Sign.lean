@@ -125,14 +125,15 @@ theorem mclosure_swap_castSucc_succ (n : ℕ) :
   rintro _ ⟨i, j, ne, rfl⟩
   wlog lt : i < j generalizing i j
   · rw [swap_comm]; exact this _ _ ne.symm (ne.lt_or_lt.resolve_left lt)
-  induction' j using Fin.induction with j ih
-  · cases lt
-  have mem : swap j.castSucc j.succ ∈ Submonoid.closure
+  induction j using Fin.induction with
+  | zero => cases lt
+  | succ j ih =>
+    have mem : swap j.castSucc j.succ ∈ Submonoid.closure
       (Set.range fun (i : Fin n) ↦ swap i.castSucc i.succ) := Submonoid.subset_closure ⟨_, rfl⟩
-  obtain rfl | lts := (Fin.le_castSucc_iff.mpr lt).eq_or_lt
-  · exact mem
-  rw [swap_comm, ← swap_mul_swap_mul_swap (y := Fin.castSucc j) lts.ne lt.ne]
-  exact mul_mem (mul_mem mem <| ih lts.ne lts) mem
+    obtain rfl | lts := (Fin.le_castSucc_iff.mpr lt).eq_or_lt
+    · exact mem
+    rw [swap_comm, ← swap_mul_swap_mul_swap (y := Fin.castSucc j) lts.ne lt.ne]
+    exact mul_mem (mul_mem mem <| ih lts.ne lts) mem
 
 /-- Like `swap_induction_on`, but with the composition on the right of `f`.
 
@@ -353,7 +354,7 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
 theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : Perm α) (e : α ≃ β)
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
     signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
-  induction' t, s using Quotient.inductionOn₂ with t s ht hs
+  induction t, s using Quotient.inductionOn₂
   show signAux2 _ _ = signAux2 _ _
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
   rw [← signAux_eq_signAux2 _ _ e' fun _ _ => ht _,
@@ -513,20 +514,22 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
     obtain ⟨_, prod_eq⟩ := Or.resolve_right this (not_and.mpr fun h _ => h (mem_l a))
     rw [prod_eq, prodCongrRight_apply]
   clear mem_l
-  induction' l with a' l ih
-  · refine Or.inr ⟨List.not_mem_nil, ?_⟩
+  induction l with
+  | nil =>
+    refine Or.inr ⟨List.not_mem_nil, ?_⟩
     rw [List.map_nil, List.prod_nil, one_apply]
-  rw [List.map_cons, List.prod_cons, mul_apply]
-  rcases ih (List.nodup_cons.mp hl).2 with (⟨mem_l, prod_eq⟩ | ⟨notMem_l, prod_eq⟩) <;>
-    rw [prod_eq]
-  · refine Or.inl ⟨List.mem_cons_of_mem _ mem_l, ?_⟩
-    rw [prodExtendRight_apply_ne _ fun h : a = a' => (List.nodup_cons.mp hl).1 (h ▸ mem_l)]
-  by_cases ha' : a = a'
-  · rw [← ha'] at *
-    refine Or.inl ⟨l.mem_cons_self, ?_⟩
-    rw [prodExtendRight_apply_eq]
-  · refine Or.inr ⟨fun h => not_or_intro ha' notMem_l ((List.mem_cons).mp h), ?_⟩
-    rw [prodExtendRight_apply_ne _ ha']
+  | cons a' l ih =>
+    rw [List.map_cons, List.prod_cons, mul_apply]
+    rcases ih (List.nodup_cons.mp hl).2 with (⟨mem_l, prod_eq⟩ | ⟨notMem_l, prod_eq⟩) <;>
+      rw [prod_eq]
+    · refine Or.inl ⟨List.mem_cons_of_mem _ mem_l, ?_⟩
+      rw [prodExtendRight_apply_ne _ fun h : a = a' => (List.nodup_cons.mp hl).1 (h ▸ mem_l)]
+    by_cases ha' : a = a'
+    · rw [← ha'] at *
+      refine Or.inl ⟨l.mem_cons_self, ?_⟩
+      rw [prodExtendRight_apply_eq]
+    · refine Or.inr ⟨fun h => not_or_intro ha' notMem_l ((List.mem_cons).mp h), ?_⟩
+      rw [prodExtendRight_apply_ne _ ha']
 
 section congr
 
