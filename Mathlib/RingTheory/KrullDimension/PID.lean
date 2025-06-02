@@ -24,7 +24,6 @@ theorem IsPrincipalIdealRing.ringKrullDim_eq_one (R : Type*) [CommRing R] [IsDom
   apply eq_of_le_of_not_lt ?_ fun h' ↦ h ?_
   · rw [← Nat.cast_one, ← Ring.KrullDimLE_iff]
     infer_instance
-  · suffices h'' : ringKrullDim R ≤ 0 by
-      rw [← Nat.cast_zero, ← Ring.KrullDimLE_iff] at h''
-      exact Ring.KrullDimLE.isField_of_isDomain
-    exact Order.le_of_lt_succ h'
+  · have h'' : ringKrullDim R ≤ 0 := Order.le_of_lt_succ h'
+    rw [← Nat.cast_zero, ← Ring.KrullDimLE_iff] at h''
+    exact Ring.KrullDimLE.isField_of_isDomain
