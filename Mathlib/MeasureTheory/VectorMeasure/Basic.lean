@@ -854,7 +854,6 @@ theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
   ext A hA
   rw [add_apply, restrict_apply _ hi hA, restrict_apply _ hi.compl hA,
     ← of_union _ (hA.inter hi) (hA.inter hi.compl)]
-
   · simp
   · exact disjoint_compl_right.inter_right' A |>.inter_left' A
 
