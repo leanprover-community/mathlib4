@@ -106,7 +106,7 @@ noncomputable instance H1ofAutOnUnitsUnique :
     induction a using groupCohomology_induction with | @h x =>
     refine (H1π_eq_zero_iff _).2 <| (oneCoboundariesOfIsMulOneCoboundary ?_).2
     rcases isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units x
-      (isMulOneCocycle_of_memOneCocycles _ <| memOneCocycles_coe_oneCocycles x) with ⟨β, hβ⟩
+      (isMulOneCocycle_of_memOneCocycles _ <| memOneCocycles x) with ⟨β, hβ⟩
     use β
 
 end groupCohomology
