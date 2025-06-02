@@ -404,7 +404,7 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
 
 section
 
-variable (α : Type*) [LinearOrder α] (i j k : α)
+variable {α : Type*} [LinearOrder α] (i j k : α)
 
 attribute [local instance] LinearOrder.toCircularOrder
 
