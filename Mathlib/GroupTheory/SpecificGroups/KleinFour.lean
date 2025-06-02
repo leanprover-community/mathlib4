@@ -3,7 +3,7 @@ Copyright (c) 2023 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.GroupTheory.SpecificGroups.Alternating
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
@@ -26,11 +26,6 @@ produces the third one.
 * https://en.wikipedia.org/wiki/Alternating_group
 
 ## TODO
-
-* Prove an `IsKleinFour` group is isomorphic to the normal subgroup of `alternatingGroup (Fin 4)`
-  with the permutation cycles `V = {(), (1 2)(3 4), (1 3)(2 4), (1 4)(2 3)}`.  This is the kernel
-  of the surjection of `alternatingGroup (Fin 4)` onto `alternatingGroup (Fin 3) ≃ (ZMod 3)`.
-  In other words, we have the exact sequence `V → A₄ → A₃`.
 
 * The outer automorphism group of `A₆` is the Klein four-group `V = (ZMod 2) × (ZMod 2)`,
   and is related to the outer automorphism of `S₆`. The extra outer automorphism in `A₆`
@@ -63,6 +58,13 @@ instance : IsAddKleinFour (ZMod 2 × ZMod 2) where
 instance : IsKleinFour (DihedralGroup 2) where
   card_four := by simp only [Nat.card_eq_fintype_card]; rfl
   exponent_two := by simp [DihedralGroup.exponent]
+
+instance : IsKleinFour ↥kleinFour where
+  card_four := Nat.card_kleinFour
+  exponent_two := by
+    rw [← Monoid.lcm_orderOf_eq_exponent]
+    conv => enter [1, 2, g]; rw [← Subgroup.orderOf_coe, ← Equiv.Perm.lcm_cycleType]
+    rfl
 
 instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G) where
   card_four := by rw [← IsKleinFour.card_four (G := G)]; congr!

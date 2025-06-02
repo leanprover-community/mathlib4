@@ -3,13 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.Logic.Equiv.Fin.Rotate
-import Mathlib.Tactic.IntervalCases
+import Mathlib.GroupTheory.Perm.Cycle.Concrete
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Alternating Groups
@@ -24,7 +21,7 @@ consisting of the even permutations.
 ## Main results
 * `alternatingGroup.index_eq_two` shows that the index of the alternating group is two.
 
-* `two_mul_card_alternatingGroup` shows that the alternating group is half as large as
+* `Fintype.card_alternatingGroup` shows that the alternating group is half as large as
   the permutation group it is a subgroup of.
 
 * `closure_three_cycles_eq_alternating` shows that the alternating group is
@@ -32,7 +29,14 @@ consisting of the even permutations.
 
 * `alternatingGroup.isSimpleGroup_five` shows that the alternating group on `Fin 5` is simple.
   The proof shows that the normal closure of any non-identity element of this group contains a
-  3-cycle.
+  3-cycle, this theorem is used in `alternatingGroup.isSimpleGroup_of_five_le` as the induction
+  base.
+
+* `alternatingGroup.isSimpleGroup_of_five_le` shows that the alternating group on
+  `Fin n (5 ≤ n)` is simple.
+
+* `alternatingGroup.isSimpleGroup_iff_card_eq_three_or_card_ge_five` shows that the alternating
+  group on `α` is simple if and only if `card α = 3 ∨ 5 ≤ card α`.
 
 * `Equiv.Perm.eq_alternatingGroup_of_index_eq_two` shows that a subgroup of index 2
   of `Equiv.Perm α` is the alternating group.
@@ -48,16 +52,14 @@ consisting of the even permutations.
 alternating group permutation simple characteristic index
 
 
-## TODO
-* Show that `alternatingGroup α` is simple if and only if `Fintype.card α ≠ 4`.
-
 -/
 
 -- An example on how to determine the order of an element of a finite group.
 example : orderOf (-1 : ℤˣ) = 2 :=
   orderOf_eq_prime (Int.units_sq _) (by decide)
 
-open Equiv Equiv.Perm Subgroup Fintype
+open Equiv Equiv.Perm Subgroup Fintype MulAction Fin
+open scoped Nat
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
@@ -108,9 +110,45 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
 
-theorem two_mul_card_alternatingGroup [Nontrivial α] :
-    2 * card (alternatingGroup α) = card (Perm α) := by
-  simp only [← Nat.card_eq_fintype_card, ← alternatingGroup.index_eq_two (α := α), index_mul_card]
+/-- The group isomorphism between `alternatingGroup (Fin n)` and `alternatingGroup (Fin (n + 1))`
+  which fixes one element. -/
+@[simps apply_coe symm_apply_coe]
+def Fin.altExtendSuccAboveMulEquiv {n} (i : Fin (n + 1)) :
+    ↥(alternatingGroup (Fin n)) ≃*
+      ↥(alternatingGroup (Fin (n + 1)) ⊓ stabilizer (Perm (Fin (n + 1))) i) where
+  toFun σs :=
+    ⟨σs.1.extendDomain (finSuccAboveEquiv i),
+      by simp [mem_alternatingGroup.mp σs.2, extendDomain_apply_not_subtype]⟩
+  invFun σs :=
+    ⟨(finSuccAboveEquiv i).permCongr.symm (subtypePerm σs.1 <|
+        by simp [not_iff_not, σs.1.injective.eq_iff' σs.2.2]), by
+      simp only [ne_eq, permCongr_symm, mem_alternatingGroup, sign_permCongr]
+      rw [sign_subtypePerm _ _ (by simpa [not_imp_not] using σs.2.2), σs.2.1]⟩
+  left_inv σs := by ext j : 2; simp
+  right_inv σs := by
+    ext j : 2
+    by_cases hj : j = i
+    case pos => subst hj; simpa [extendDomain_apply_not_subtype] using σs.2.2.symm
+    case neg => simp [extendDomain_apply_subtype, hj]
+  map_mul' _ _ := by simp
+
+/-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
+@[simps ! apply_coe]
+def Equiv.altCongrMulEquiv {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
+    ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
+  e.permCongrMulEquiv.subgroupMap (alternatingGroup α) |>.trans <|
+    MulEquiv.subgroupCongr <| by
+      ext1 p
+      simp [e.permCongr.symm.surjective.exists,
+        show sign (e.permCongr.symm p) = sign p by simp, - permCongr_symm]
+
+theorem Fintype.two_mul_card_alternatingGroup [Nontrivial α] :
+    2 * card (alternatingGroup α) = (card α)! := by
+  simp_rw [← Nat.card_eq_fintype_card, ← alternatingGroup.index_eq_two (α := α), index_mul_card,
+    Nat.card_perm]
+
+lemma Fintype.card_alternatingGroup [Nontrivial α] : card (alternatingGroup α) = (card α)! / 2 := by
+  rw [← two_mul_card_alternatingGroup]; omega
 
 namespace alternatingGroup
 
@@ -149,6 +187,41 @@ theorem isThreeCycle_isConj (h5 : 5 ≤ Fintype.card α) {σ τ : alternatingGro
     (by rwa [hσ.card_support])
 
 end alternatingGroup
+
+/-- The normal proper subgroup of $A_4$, used to prove that $A_4$ is not simple. -/
+def kleinFour : Subgroup (Perm (Fin 4)) where
+  carrier := {1, swap 0 1 * swap 2 3, swap 0 2 * swap 1 3, swap 0 3 * swap 1 2}
+  mul_mem' := by simp_rw [← forall_cond_comm, SetCoe.forall']; decide
+  one_mem' := by decide
+  inv_mem' := by simp_rw [SetCoe.forall']; decide
+
+instance : Fintype ↥kleinFour :=
+  inferInstanceAs (Fintype
+    ↥({1, swap 0 1 * swap 2 3, swap 0 2 * swap 1 3, swap 0 3 * swap 1 2} : Set (Perm (Fin 4))))
+
+lemma _root_.Fintype.card_kleinFour : Fintype.card ↥kleinFour = 4 := rfl
+
+lemma _root_.Nat.card_kleinFour : Nat.card ↥kleinFour = 4 := by
+  rw [Nat.card_eq_fintype_card, Fintype.card_kleinFour]
+
+lemma mem_kleinFour {p : Perm (Fin 4)} :
+    p ∈ kleinFour ↔ p.cycleType ∈ ({0, {2, 2}} : Set (Multiset ℕ)) := by
+  revert p; simp_rw [kleinFour, mem_mk, iff_def, forall_and, SetCoe.forall']; decide
+
+instance : kleinFour.Normal where
+  conj_mem := by simp [mem_kleinFour]
+
+lemma kleinFour_ne_bot : kleinFour ≠ ⊥ := by
+  rw [ne_bot_iff_exists_ne_one]; exists ⟨swap 0 1 * swap 2 3, mem_kleinFour.mpr <| by decide⟩
+
+lemma kleinFour_le_alternatingGroup : kleinFour ≤ alternatingGroup (Fin 4) := by
+  simp_rw [SetLike.le_def, mem_kleinFour, mem_alternatingGroup, sign_of_cycleType,
+    Set.mem_insert_iff, Set.mem_singleton_iff]
+  rintro p (hp | hp) <;> simp (disch := decide) [hp]
+
+lemma kleinFour_lt_alternatingGroup : kleinFour < alternatingGroup (Fin 4) := by
+  simp_rw [SetLike.lt_iff_le_and_exists, and_iff_right kleinFour_le_alternatingGroup, mem_kleinFour]
+  exists Fin.cycleRange 2
 
 namespace Equiv.Perm
 
@@ -197,6 +270,15 @@ theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f :
       rw [Group.mem_conjugatesOfSet_iff]
       exact ⟨⟨f, hf.mem_alternatingGroup⟩, Set.mem_singleton _, isThreeCycle_isConj h5 hf h⟩)
 
+/-- A key lemma to prove $A_n(5 \leq n)$ is simple. Shows that any normal subgroup of an alternating
+  group on at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
+theorem IsThreeCycle.normal_alternating_subgroup_eq_alternating_of_mem (h5 : 5 ≤ Fintype.card α)
+    {f : Perm α} (hf : IsThreeCycle f) {H : Subgroup (Perm α)} (hH : H ≤ alternatingGroup α)
+    [(H.subgroupOf (alternatingGroup α)).Normal] (hfH : f ∈ H) : H = alternatingGroup α := by
+  rw [← hH.ge_iff_eq, ← subgroupOf_eq_top, eq_top_iff]
+  refine eq_top_iff.mp (hf.alternating_normalClosure h5) |>.trans ?_
+  rwa [← normalClosure_subset_iff, Set.singleton_subset_iff, SetLike.mem_coe, mem_subgroupOf]
+
 /-- Part of proving $A_5$ is simple. Shows that the square of any element of $A_5$ with a 3-cycle in
   its cycle decomposition is a 3-cycle, so the normal closure of the original element must be
   $A_5$. -/
@@ -215,6 +297,82 @@ theorem isThreeCycle_sq_of_three_mem_cycleType_five {g : Perm (Fin 5)} (h : 3 �
   rw [← hd.card_support_mul, h3]
   exact (c * g').support.card_le_univ
 
+/-- A key lemma to prove $A_n(5 \leq n)$ is simple. Shows that any nontrivial normal subgroup of an
+  alternating group on at least 6 elements contains an nontrivial element which fixes the specific
+  element. -/
+theorem normal_alternating_subgroup_inf_stabilizer_ne_bot (h6 : 6 ≤ Fintype.card α)
+    {H : Subgroup (Perm α)} (hH : H ≤ alternatingGroup α)
+    [iH : (H.subgroupOf (alternatingGroup α)).Normal] (nH : H ≠ ⊥) (a : α) :
+    H ⊓ stabilizer (Perm α) a ≠ ⊥ := by
+  -- The proof method is from https://arbital.com/p/alternating_group_is_simple/
+  rw [← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one] at nH ⊢
+  simp_rw [mem_inf, mem_stabilizer_iff, Perm.smul_def, and_assoc]
+  obtain ⟨σ, hσH, hσ⟩ := nH
+  by_cases hσa : σ a = a; (case pos => exact ⟨σ, hσH, hσa, hσ⟩); clear hσ; rw [← ne_eq] at hσa
+  suffices ∃ τ ∈ H, τ a = σ a ∧ τ ≠ σ by
+    obtain ⟨τ, hτH, hτσ, hnτσ⟩ := this
+    rw [eq_comm, apply_eq_iff_eq_symm_apply, ← Perm.inv_def, eq_comm, ← mul_apply] at hτσ
+    rw [ne_eq, eq_comm, ← inv_mul_eq_one, ← ne_eq] at hnτσ
+    exact ⟨σ⁻¹ * τ, mul_mem (inv_mem hσH) hτH, hτσ, hnτσ⟩
+  have hσs : ¬σ.support ⊆ ({a, σ a} : Finset α) := by
+    by_contra! hσs
+    replace hσs := congr_arg Finset.card <| subset_antisymm hσs
+      (by rwa [Finset.insert_subset_iff, Finset.singleton_subset_iff, apply_mem_support,
+        and_self, mem_support])
+    rw [Finset.card_pair hσa.symm, card_support_eq_two] at hσs
+    replace hσH := hH hσH; rw [mem_alternatingGroup, hσs.sign_eq] at hσH
+    contradiction
+  simp_rw [Finset.not_subset, mem_support] at hσs; obtain ⟨j, hjσ, hja⟩ := hσs
+  have hxy := calc (2 : ℕ)
+    _ = 6 - Multiset.card {a, σ a, j, σ j} := rfl
+    _ ≤ card α - Multiset.card {a, σ a, j, σ j} := by
+      apply Nat.sub_le_sub_right; omega
+    _ ≤ card α - Finset.card {a, σ a, j, σ j} := by
+      apply Nat.sub_le_sub_left
+      convert Multiset.toFinset_card_le {a, σ a, j, σ j} using 2
+      simp
+    _ ≤ ({a, σ a, j, σ j}ᶜ : Finset α).card := by
+      rw [Finset.card_compl]
+  simp_rw [Finset.le_card_iff_exists_subset_card, Finset.card_eq_two] at hxy
+  obtain ⟨_, hxys, x, y, hnxy, rfl⟩ := hxy
+  have hcnd : (↑[j, x, y] : Cycle α).Nodup := by
+    rw [Finset.subset_compl_comm, Finset.subset_iff] at hxys; simp at hxys ⊢; tauto
+  have hcnt : (↑[j, x, y] : Cycle α).Nontrivial := by
+    rw [Cycle.nontrivial_coe_nodup_iff hcnd]; simp
+  let c := Cycle.formPerm (↑[j, x, y] : Cycle α) hcnd
+  have ecs : c.support = {j, x, y} := by
+    rw [Cycle.support_formPerm _ hcnd hcnt, Cycle.coe_toFinset]; simp
+  have hcma : c ∈ alternatingGroup α := by
+    rw [mem_alternatingGroup, Cycle.isCycle_formPerm _ hcnd hcnt |>.sign,
+      Cycle.support_formPerm _ hcnd hcnt, Cycle.coe_toFinset, ← List.toFinset_eq hcnd]; rfl
+  use c * σ * c⁻¹
+  use by
+    simp_rw [normal_subgroupOf_iff_le_normalizer hH, SetLike.le_def, mem_normalizer_iff] at iH
+    exact (@iH c hcma σ).mp hσH
+  use by
+    have hanmcs : a ∉ (c⁻¹).support := by
+      simp_rw [support_inv, ecs]
+      simp [Finset.subset_iff] at hja hxys ⊢; tauto
+    have hσanmcs : σ a ∉ c.support := by
+      simp [ecs, Finset.subset_iff] at hja hxys ⊢; tauto
+    simp [notMem_support.mp hanmcs, notMem_support.mp hσanmcs]
+  rw [DFunLike.ne_iff]; use j
+  have ecij : c⁻¹ j = y := by
+    simp_rw [c, ← Cycle.formPerm_reverse, Cycle.reverse_coe,
+      show [j, x, y].reverse = [y, x, j] from rfl,
+      Cycle.formPerm_apply_mem_eq_next (↑[y, x, j])
+        (Cycle.nodup_reverse_iff.mpr hcnd) j (by simp)]
+    simp only [Cycle.next, Cycle.ofList, Quot.hrecOn, Quot.recOn, Quot.rec]
+    apply List.next_getLast_cons <;> [simp; skip; rfl; skip] <;>
+      simp [Finset.subset_iff] at hxys ⊢ <;> tauto
+  simp_rw [Perm.mul_apply, ecij]
+  by_cases hσy : σ y ∈ c.support
+  case neg =>
+    rw [notMem_support.mp hσy, σ.injective.ne_iff]; simp [Finset.subset_iff] at hxys; tauto
+  case pos =>
+    intro ecσy; rw [← apply_mem_support, ecσy, ecs] at hσy
+    revert hσy; simp [Finset.subset_iff] at hxys ⊢; tauto
+
 end Equiv.Perm
 
 namespace alternatingGroup
@@ -223,17 +381,15 @@ open Equiv.Perm
 
 theorem eq_bot_of_card_le_two (h2 : card α ≤ 2) : alternatingGroup α = ⊥ := by
   nontriviality α
-  suffices hα' : card α = 2 by
-    rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by norm_num),
-      Nat.card_eq_fintype_card, two_mul_card_alternatingGroup, mul_one, card_perm, hα',
-      Nat.factorial_two]
-  exact h2.antisymm Fintype.one_lt_card
+  rw [Subgroup.eq_bot_iff_card, Nat.card_eq_fintype_card, card_alternatingGroup,
+    h2.antisymm Fintype.one_lt_card]
+  rfl
 
 theorem nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternatingGroup α) := by
   haveI := Fintype.one_lt_card_iff_nontrivial.1 (lt_trans (by decide) h3)
   rw [← Fintype.one_lt_card_iff_nontrivial]
   refine lt_of_mul_lt_mul_left ?_ (le_of_lt Nat.prime_two.pos)
-  rw [two_mul_card_alternatingGroup, card_perm, ← Nat.succ_le_iff]
+  rw [two_mul_card_alternatingGroup, ← Nat.succ_le_iff]
   exact le_trans h3 (card α).self_le_factorial
 
 instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
@@ -241,6 +397,20 @@ instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
     (by
       rw [card_fin]
       exact le_add_left (le_refl 3))
+
+lemma eq_bot_iff_card_le_two : alternatingGroup α = ⊥ ↔ card α ≤ 2 where
+  mp := by
+    conv => rw [← not_imp_not, ← ne_eq, ← nontrivial_iff_ne_bot, not_le, ← Nat.succ_le_iff]
+    exact nontrivial_of_three_le_card
+  mpr := eq_bot_of_card_le_two
+
+lemma isCyclic_of_card_le_three (h3 : card α ≤ 3) : IsCyclic ↥(alternatingGroup α) := by
+  rw [le_iff_lt_or_eq, Nat.lt_succ] at h3
+  obtain (h2 | h3) := h3; case inl => rw [eq_bot_of_card_le_two h2]; infer_instance
+  haveI : Nontrivial α := Fintype.one_lt_card_iff_nontrivial.1 (by rw [h3]; omega)
+  haveI : Fact (Nat.Prime 3) := by decide
+  apply isCyclic_of_prime_card (p := 3)
+  rw [Nat.card_eq_fintype_card, card_alternatingGroup, h3]; rfl
 
 /-- The normal closure of the 5-cycle `finRotate 5` within $A_5$ is the whole group. This will be
   used to show that the normal closure of any 5-cycle within $A_5$ is the whole group. -/
@@ -312,9 +482,30 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
       decide
   · contradiction
 
+lemma isSimpleGroup_of_card_eq_three (h3 : card α = 3) : IsSimpleGroup ↥(alternatingGroup α) := by
+  haveI : Nontrivial α := Fintype.one_lt_card_iff_nontrivial.1 (by rw [h3]; omega)
+  haveI : Fact (Nat.Prime 3) := by decide
+  apply isSimpleGroup_of_prime_card (p := 3)
+  rw [Nat.card_eq_fintype_card, card_alternatingGroup, h3]; rfl
+
+instance isSimpleGroup_three : IsSimpleGroup ↥(alternatingGroup (Fin 3)) := by
+  apply isSimpleGroup_of_card_eq_three; simp
+
+set_option push_neg.use_distrib true in
+theorem not_isSimpleGroup_four : ¬IsSimpleGroup ↥(alternatingGroup (Fin 4)) := by
+  simp_rw [Subgroup.isSimpleGroup_iff]; push_neg; right
+  exact ⟨kleinFour, kleinFour_le_alternatingGroup, inferInstance,
+    kleinFour_ne_bot, kleinFour_lt_alternatingGroup.ne⟩
+
+theorem not_isSimpleGroup_of_card_eq_four (h4 : card α = 4) :
+    ¬IsSimpleGroup ↥(alternatingGroup α) := by
+  obtain ⟨e⟩ := Fintype.truncEquivFin α |>.nonempty.map Equiv.altCongrMulEquiv
+  rw [h4] at e; rw [e.isSimpleGroup_congr]; exact not_isSimpleGroup_four
+
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
-  on its cycle type that its normal closure is all of $A_5$. -/
-instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
+  on its cycle type that its normal closure is all of $A_5$.
+  This theorem is used in `isSimpleGroup_of_five_le` as the induction base. -/
+theorem isSimpleGroup_five : IsSimpleGroup ↥(alternatingGroup (Fin 5)) :=
   ⟨fun H => by
     intro Hn
     refine or_not.imp id fun Hb => ?_
@@ -362,6 +553,40 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
       refine (isConj_iff_cycleType_eq.2 ?_).normalClosure_eq_top_of normalClosure_finRotate_five
       rw [cycleType_of_card_le_mem_cycleType_add_two (by decide) ng, cycleType_finRotate]⟩
 
+/-- $A_n (5 \leq n)$ is simple. -/
+theorem isSimpleGroup_of_five_le {n} (h5 : 5 ≤ n) :
+    IsSimpleGroup ↥(alternatingGroup (Fin n)) := by
+  induction n, h5 using Nat.le_induction with
+  | base => exact isSimpleGroup_five
+  | succ m hmn hm =>
+    rw [Subgroup.isSimpleGroup_iff]; constructor
+    · rw [ne_eq, eq_bot_iff_card_le_two, card_fin]; omega
+    intro H hHa hHn; rw [Classical.or_iff_not_imp_left, ← ne_eq]; intro hHb
+    rw [(last m).altExtendSuccAboveMulEquiv.isSimpleGroup_congr, Subgroup.isSimpleGroup_iff] at hm
+    replace hm := hm.2 _ (inf_le_inf_right _ hHa) (inf_subgroupOf_inf_normal_of_left _)
+    simp_rw [normal_alternating_subgroup_inf_stabilizer_ne_bot (by rw [card_fin]; omega) hHa hHb,
+      false_or, inf_eq_inf_iff_right] at hm
+    refine IsThreeCycle.normal_alternating_subgroup_eq_alternating_of_mem (by rw [card_fin]; omega)
+        (f := cycleRange ⟨2, by omega⟩) (by simp [IsThreeCycle]) hHa (hm.1 ?_)
+    simp [cycleRange_of_gt (show ⟨2, _⟩ < last m by
+        simp_rw [Fin.lt_iff_val_lt_val, Fin.val_last]; omega)]
+
+theorem isSimpleGroup_of_five_le_card (h5 : 5 ≤ card α) : IsSimpleGroup ↥(alternatingGroup α) := by
+  obtain ⟨e⟩ := Fintype.truncEquivFin α |>.nonempty.map Equiv.altCongrMulEquiv
+  rw [e.isSimpleGroup_congr]; exact isSimpleGroup_of_five_le h5
+
+instance isSimpleGroup_add_five (n : ℕ) : IsSimpleGroup ↥(alternatingGroup (Fin (n + 5))) :=
+  isSimpleGroup_of_five_le (Nat.le_add_left 5 n)
+
+/-- $A_n$ is simple if and only if $n = 3$ or $5 \leq n$. -/
+theorem isSimpleGroup_iff_card_eq_three_or_card_ge_five :
+    IsSimpleGroup ↥(alternatingGroup α) ↔ card α = 3 ∨ 5 ≤ card α where
+  mp := by
+    conv => rw [← not_imp_not]; arg 1; equals card α ≤ 2 ∨ card α = 4 => ext1; omega
+    refine Or.rec (fun h2 => ?_) not_isSimpleGroup_of_card_eq_four
+    simp [Subgroup.isSimpleGroup_iff, eq_bot_of_card_le_two h2]
+  mpr := Or.rec isSimpleGroup_of_card_eq_three isSimpleGroup_of_five_le_card
+
 end alternatingGroup
 
 namespace Equiv.Perm
@@ -398,7 +623,7 @@ end Equiv.Perm
 
 /-- The alternating group is a characteristic subgroup of the permutation group. -/
 instance : (alternatingGroup α).Characteristic where
-  fixed φ := by
+  fixed _ := by
     nontriviality α
     apply eq_alternatingGroup_of_index_eq_two
     rw [index_comap_of_surjective _ (Equiv.surjective _), alternatingGroup.index_eq_two]
