@@ -400,7 +400,7 @@ theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
     obtain ⟨b, hb₁, hb₂⟩ :=
       p.support.exists_mem_eq_sup (Finsupp.support_nonempty_iff.mpr hp) fun m : σ →₀ ℕ =>
         Multiset.card (toMultiset m)
-    have hb : ¬b ∈ q.support := by
+    have hb : b ∉ q.support := by
       contrapose! h
       rw [totalDegree_eq p, hb₂, totalDegree_eq]
       apply Finset.le_sup h
@@ -521,6 +521,10 @@ theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
     rw [Finset.mem_image] at h'
     rcases h' with ⟨s, hs, rfl⟩
     exact (sum_mapDomain_index (fun _ => rfl) (fun _ _ _ => rfl)).trans_le (le_totalDegree hs)
+
+lemma totalDegree_renameEquiv (f : σ ≃ τ) (p : MvPolynomial σ R) :
+    (renameEquiv R f p).totalDegree = p.totalDegree :=
+  (totalDegree_rename_le f p).antisymm (le_trans (by simp) (totalDegree_rename_le f.symm _))
 
 end TotalDegree
 

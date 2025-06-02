@@ -28,7 +28,7 @@ the data that is not used for the construction of the homotopy category) and the
 analogously defined `SSet.hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u}` implemented relative to
 the syntax of the 2-truncated simplex category.
 
-In the file `Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction` we show the functor
+In the file `Mathlib/AlgebraicTopology/SimplicialSet/NerveAdjunction.lean` we show the functor
 `SSet.hoFunctor` to be left adjoint to the nerve by providing an analogous decomposition of the
 nerve functor, made by possible by the fact that nerves of categories are 2-coskeletal, and then
 composing a pair of adjunctions, which factor through the category of 2-truncated simplicial sets.
@@ -164,10 +164,11 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
     nerveEquiv_apply, Nat.reduceAdd, id_edge, SimplexCategory.len_mk, id_eq, eqToHom_refl, comp_id,
     id_comp, ReflQuiver.id_eq_id]
   unfold nerve truncation SimplicialObject.truncation SimplexCategory.Truncated.inclusion
-  simp only [fullSubcategoryInclusion.obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
+  -- the following was obtained by `simp?`
+  simp only [ObjectProperty.ι_obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
     SimplexCategory.toCat_map, whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map,
-    Quiver.Hom.unop_op, fullSubcategoryInclusion.map, ComposableArrows.whiskerLeft_map,
-    Fin.zero_eta, Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
+    Quiver.Hom.unop_op, ObjectProperty.ι_map, ComposableArrows.whiskerLeft_map, Fin.zero_eta,
+    Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
   show X.map (𝟙 _) = _
   rw [X.map_id]
   rfl

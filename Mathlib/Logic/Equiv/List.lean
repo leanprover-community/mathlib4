@@ -54,7 +54,7 @@ def decodeList : ℕ → Option (List α)
 `Data.Nat.Pairing`. -/
 instance _root_.List.encodable : Encodable (List α) :=
   ⟨encodeList, decodeList, fun l => by
-    induction' l with a l IH <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩
+    induction l <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩
 
 instance _root_.List.countable {α : Type*} [Countable α] : Countable (List α) := by
   haveI := Encodable.ofCountable α
@@ -167,7 +167,7 @@ def listUniqueEquiv (α : Type*) [Unique α] : List α ≃ ℕ where
   toFun := List.length
   invFun n := List.replicate n default
   left_inv u := List.length_injective (by simp)
-  right_inv n := List.length_replicate n _
+  right_inv n := List.length_replicate
 
 /-- The type lists on unit is canonically equivalent to the natural numbers. -/
 @[deprecated listUniqueEquiv (since := "2025-02-17")]

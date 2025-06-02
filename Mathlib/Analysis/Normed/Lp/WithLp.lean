@@ -54,6 +54,16 @@ namespace WithLp
 back and forth between the representations. -/
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
+/-- A recursor for `WithLp p V`, that reduces to the underlying space `V`.
+
+This unfortunately cannot be registered with `cases_eliminator`, but it can still be used as
+`cases v using WithLp.rec with | toLp v =>`. -/
+@[elab_as_elim]
+protected def rec {motive : WithLp p V → Sort*}
+    (toLp : ∀ v : V, motive ((WithLp.equiv p _).symm v)) :
+    ∀ v, motive v :=
+  fun v => toLp ((WithLp.equiv p _) v)
+
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
 instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
@@ -68,7 +78,7 @@ instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V]
 instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
   ‹Module K V›
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
     IsScalarTower K K' (WithLp p V) :=
   ‹IsScalarTower K K' V›

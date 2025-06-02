@@ -238,7 +238,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
   obtain ⟨q, hq⟩ : ∃ q, F q = (n, z, p) := hF _
   -- then `x` belongs to `t q`.
   apply mem_iUnion.2 ⟨q, _⟩
-  simp (config := { zeta := false }) only [K, hq, mem_inter_iff, hp, and_true]
+  simp -zeta only [K, hq, mem_inter_iff, hp, and_true]
   exact subset_closure hnz
 
 variable [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ]
@@ -508,7 +508,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
     exact ⟨a, az, by simp only [ha, add_neg_cancel_left]⟩
   have norm_a : ‖a‖ ≤ ‖z‖ + ε :=
     calc
-      ‖a‖ = ‖z + (a - z)‖ := by simp only [_root_.add_sub_cancel]
+      ‖a‖ = ‖z + (a - z)‖ := by simp only [add_sub_cancel]
       _ ≤ ‖z‖ + ‖a - z‖ := norm_add_le _ _
       _ ≤ ‖z‖ + ε := add_le_add_left (mem_closedBall_iff_norm.1 az) _
   -- use the approximation properties to control `(f' x - A) a`, and then `(f' x - A) z` as `z` is

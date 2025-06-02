@@ -139,9 +139,6 @@ theorem omega0_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
   refine le_trans ?_ (le_add_right _ _)
   simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e) omega0_pos).2 (Nat.cast_le.2 n.2)
 
-@[deprecated (since := "2024-09-30")]
-alias omega_le_oadd := omega0_le_oadd
-
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
   @lt_of_lt_of_le _ _ _ (ω ^ repr e) _ (opow_pos (repr e) omega0_pos) (omega0_le_oadd e n a)
 
@@ -332,15 +329,9 @@ theorem NF.of_dvd_omega0_opow {b e n a} (h : NF (ONote.oadd e n a))
   simp only [repr] at d
   exact ⟨L, (dvd_add_iff <| (opow_dvd_opow _ L).mul_right _).1 d⟩
 
-@[deprecated (since := "2024-09-30")]
-alias NF.of_dvd_omega_opow := NF.of_dvd_omega0_opow
-
 theorem NF.of_dvd_omega0 {e n a} (h : NF (ONote.oadd e n a)) :
     ω ∣ repr (ONote.oadd e n a) → repr e ≠ 0 ∧ ω ∣ repr a := by
   (rw [← opow_one ω, ← one_le_iff_ne_zero]; exact h.of_dvd_omega0_opow)
-
-@[deprecated (since := "2024-09-30")]
-alias NF.of_dvd_omega := NF.of_dvd_omega0
 
 /-- `TopBelow b o` asserts that the largest exponent in `o`, if it exists, is less than `b`. This is
 an auxiliary definition for decidability of `NF`. -/
@@ -498,7 +489,8 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
                 le_of_lt <|
                   oadd_lt_oadd_2 h₁ <|
                     lt_of_le_of_ne (tsub_eq_zero_iff_le.1 mn) (mt PNat.eq en)).symm
-      · simp [Nat.succPNat]
+      · simp only [Nat.succPNat, Nat.succ_eq_add_one, repr, PNat.mk_coe, Nat.cast_add,
+          Nat.cast_one, add_one_eq_succ]
         rw [(tsub_eq_iff_eq_add_of_le <| le_of_lt <| Nat.lt_of_sub_eq_succ mn).1 mn, add_comm,
           Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
         refine
@@ -664,7 +656,8 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
 theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ repr o = ω * repr o' + m
   | 0, o', m, _, p => by injection p; substs o' m; simp [NF.zero]
   | oadd e n a, o', m, h, p => by
-    by_cases e0 : e = 0 <;> simp [e0, split, split'] at p ⊢
+    by_cases e0 : e = 0 <;>
+      simp only [split', e0, ↓reduceIte, Prod.mk.injEq, repr, repr_zero, opow_zero, one_mul] at p ⊢
     · rcases p with ⟨rfl, rfl⟩
       simp [h.zero_of_zero e0, NF.zero]
     · revert p
@@ -998,7 +991,9 @@ theorem fundamentalSequenceProp_inr (o f) :
   Iff.rfl
 
 theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamentalSequence o) := by
-  induction' o with a m b iha ihb; · exact rfl
+  induction o with
+  | zero => exact rfl
+  | oadd a m b iha ihb
   rw [fundamentalSequence]
   rcases e : b.fundamentalSequence with (⟨_ | b'⟩ | f) <;>
     simp only [FundamentalSequenceProp] <;>
@@ -1225,9 +1220,9 @@ actually be defined this way due to conflicting dependencies. -/
 @[elab_as_elim]
 def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
     (H1 : ∀ e n a h, C e → C a → C (oadd e n a h)) : C o := by
-  obtain ⟨o, h⟩ := o; induction' o with e n a IHe IHa
-  · exact H0
-  · exact H1 ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd' (IHe _) (IHa _)
+  obtain ⟨o, h⟩ := o; induction o with
+  | zero => exact H0
+  | oadd e n a IHe IHa => exact H1 ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd' (IHe _) (IHa _)
 
 /-- Addition of ordinal notations -/
 instance : Add NONote :=

@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.HomCongr
 Basic properties of reflective functors, especially those relating to their essential image.
 
 Note properties of reflective functors relating to limits and colimits are included in
-`Mathlib.CategoryTheory.Monad.Limits`.
+`Mathlib/CategoryTheory/Monad/Limits.lean`.
 -/
 
 
@@ -156,16 +156,16 @@ Functor.essImage.unit_isIso X.property
 -- These attributes are necessary to make automation work in `equivEssImageOfReflective`.
 -- Making them global doesn't break anything elsewhere, but this is enough for now.
 -- TODO: investigate further.
-attribute [local simp 900] Functor.essImageInclusion_map in
+attribute [local simp 900] ObjectProperty.ι_map in
 attribute [local ext] Functor.essImage_ext in
 /-- If `i : D ⥤ C` is reflective, the inverse functor of `i ≌ F.essImage` can be explicitly
 defined by the reflector. -/
 @[simps]
 def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
   functor := i.toEssImage
-  inverse := i.essImageInclusion ⋙ reflector i
+  inverse := i.essImage.ι ⋙ reflector i
   unitIso := (asIso <| (reflectorAdjunction i).counit).symm
-  counitIso := Functor.fullyFaithfulCancelRight i.essImageInclusion <|
+  counitIso := Functor.fullyFaithfulCancelRight i.essImage.ι <|
     NatIso.ofComponents (fun X ↦ (asIso ((reflectorAdjunction i).unit.app X.obj)).symm)
 
 /--

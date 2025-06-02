@@ -10,8 +10,8 @@ import Mathlib.Tactic.Positivity.Basic
 /-!
 # Some exiled lemmas about casting
 
-These lemmas have been removed from `Mathlib.Data.Rat.Cast.Defs`
-to avoiding needing to import `Mathlib.Algebra.Field.Basic` there.
+These lemmas have been removed from `Mathlib/Data/Rat/Cast/Defs.lean`
+to avoiding needing to import `Mathlib/Algebra/Field/Basic.lean` there.
 
 In fact, these lemmas don't appear to be used anywhere in Mathlib,
 so perhaps this file can simply be deleted.
@@ -75,7 +75,8 @@ theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (h
     rw [cast_inv_of_ne_zero hq]
 
 open OfScientific in
-theorem Nonneg.coe_ofScientific {K} [LinearOrderedField K] (m : ℕ) (s : Bool) (e : ℕ) :
+theorem Nonneg.coe_ofScientific {K} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+    (m : ℕ) (s : Bool) (e : ℕ) :
     (ofScientific m s e : {x : K // 0 ≤ x}).val = ofScientific m s e := rfl
 
 end NNRat

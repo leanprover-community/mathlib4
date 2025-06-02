@@ -521,8 +521,11 @@ theorem mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∈ f ↔ f
     ⟨fun h hs => by simpa [Set.not_nonempty_empty] using h s hs, fun hs t ht =>
       inter_compl_nonempty_iff.2 fun hts => hs <| mem_of_superset ht hts⟩
 
-theorem not_mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 sᶜ) :=
+theorem notMem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 sᶜ) :=
   (not_congr mem_iff_inf_principal_compl).trans neBot_iff.symm
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_iff_inf_principal_compl := notMem_iff_inf_principal_compl
 
 @[simp]
 theorem disjoint_principal_right {f : Filter α} {s : Set α} : Disjoint f (𝓟 s) ↔ sᶜ ∈ f := by
@@ -687,6 +690,22 @@ theorem HasBasis.prod {ι ι' : Type*} {pa : ι → Prop} {sa : ι → Set α} {
     {sb : ι' → Set β} (hla : la.HasBasis pa sa) (hlb : lb.HasBasis pb sb) :
     (la ×ˢ lb).HasBasis (fun i : ι × ι' => pa i.1 ∧ pb i.2) fun i => sa i.1 ×ˢ sb i.2 :=
   (hla.comap Prod.fst).inf (hlb.comap Prod.snd)
+
+protected theorem HasBasis.principal_prod (sa : Set α) (h : lb.HasBasis pb sb) :
+    (𝓟 sa ×ˢ lb).HasBasis pb (sa ×ˢ sb ·) := by
+  simpa only [prod_eq_inf, comap_principal, prod_eq] using (h.comap Prod.snd).principal_inf _
+
+protected theorem HasBasis.prod_principal (h : la.HasBasis pa sa) (sb : Set β) :
+    (la ×ˢ 𝓟 sb).HasBasis pa (sa · ×ˢ sb) := by
+  simpa only [prod_eq_inf, comap_principal, prod_eq] using (h.comap Prod.fst).inf_principal _
+
+protected theorem HasBasis.top_prod (h : lb.HasBasis pb sb) :
+    (⊤ ×ˢ lb : Filter (α × β)).HasBasis pb (univ ×ˢ sb ·) := by
+  simpa only [principal_univ] using h.principal_prod univ
+
+protected theorem HasBasis.prod_top (h : la.HasBasis pa sa) :
+    (la ×ˢ ⊤ : Filter (α × β)).HasBasis pa (sa · ×ˢ univ) := by
+  simpa only [principal_univ] using h.prod_principal univ
 
 theorem HasBasis.prod_same_index {p : ι → Prop} {sb : ι → Set β} (hla : la.HasBasis p sa)
     (hlb : lb.HasBasis p sb) (h_dir : ∀ {i j}, p i → p j → ∃ k, p k ∧ sa k ⊆ sa i ∧ sb k ⊆ sb j) :

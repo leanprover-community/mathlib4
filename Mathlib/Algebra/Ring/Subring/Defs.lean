@@ -164,14 +164,37 @@ instance : SetLike (Subring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
+initialize_simps_projections Subring (carrier → coe, as_prefix coe)
+
+/-- The actual `Subring` obtained from an element of a `SubringClass`. -/
+@[simps]
+def ofClass {S R : Type*} [Ring R] [SetLike S R] [SubringClass S R]
+    (s : S) : Subring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  neg_mem' := neg_mem
+  one_mem' := one_mem _
+
+instance (priority := 100) : CanLift (Set R) (Subring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ 1 ∈ s ∧
+      (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ {x}, x ∈ s → -x ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        one_mem' := h.2.2.1
+        mul_mem' := h.2.2.2.1
+        neg_mem' := h.2.2.2.2 },
+      rfl ⟩
+
 instance : SubringClass (Subring R) R where
   zero_mem s := s.zero_mem'
   add_mem {s} := s.add_mem'
   one_mem s := s.one_mem'
   mul_mem {s} := s.mul_mem'
   neg_mem {s} := s.neg_mem'
-
-initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
 /-- Turn a `Subring` into a `NonUnitalSubring` by forgetting that it contains `1`. -/
 def toNonUnitalSubring (S : Subring R) : NonUnitalSubring R where __ := S

@@ -99,7 +99,12 @@ def mathlibLabels : Array Label := #[
   { label := "t-combinatorics" },
   { label := "t-computability" },
   { label := "t-condensed" },
-  { label := "t-data" },
+  { label := "t-convex-geometry",
+    dirs := #["Mathlib" / "Geometry" / "Convex"] },
+  { label := "t-data"
+    dirs := #[
+      "Mathlib" / "Control",
+      "Mathlib" / "Data",] },
   { label := "t-differential-geometry",
     dirs := #["Mathlib" / "Geometry" / "Manifold"] },
   { label := "t-dynamics" },
@@ -120,7 +125,6 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "InformationTheory"] },
   { label := "t-meta",
     dirs := #[
-      "Mathlib" / "Control",
       "Mathlib" / "Lean",
       "Mathlib" / "Mathport",
       "Mathlib" / "Tactic",

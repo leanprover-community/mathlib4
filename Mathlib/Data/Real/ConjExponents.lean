@@ -42,7 +42,7 @@ namespace Real
 and `p⁻¹ + q⁻¹ = r⁻¹`. -/
 @[mk_iff]
 structure HolderTriple (p q r : ℝ) : Prop where
-  inv_add_inv' : p⁻¹ + q⁻¹ = r⁻¹
+  inv_add_inv_eq_inv : p⁻¹ + q⁻¹ = r⁻¹
   left_pos : 0 < p
   right_pos : 0 < q
 
@@ -61,18 +61,16 @@ variable {a b p q r : ℝ}
 namespace HolderTriple
 
 lemma of_pos (hp : 0 < p) (hq : 0 < q) : HolderTriple p q (p⁻¹ + q⁻¹)⁻¹ where
-  inv_add_inv' := inv_inv _ |>.symm
+  inv_add_inv_eq_inv := inv_inv _ |>.symm
   left_pos := hp
   right_pos := hq
 
 variable (h : p.HolderTriple q r)
 include h
 
-lemma inv_add_inv_eq_inv : p⁻¹ + q⁻¹ = r⁻¹ := h.inv_add_inv'
-
 @[symm]
 protected lemma symm : q.HolderTriple p r where
-  inv_add_inv' := add_comm p⁻¹ q⁻¹ ▸ h.inv_add_inv_eq_inv
+  inv_add_inv_eq_inv := add_comm p⁻¹ q⁻¹ ▸ h.inv_add_inv_eq_inv
   left_pos := h.right_pos
   right_pos := h.left_pos
 
@@ -117,12 +115,18 @@ protected lemma inv_lt_inv : p⁻¹ < r⁻¹ := calc
 lemma lt : r < p := by simpa using inv_strictAnti₀ h.inv_pos h.inv_lt_inv
 lemma inv_sub_inv_eq_inv : r⁻¹ - q⁻¹ = p⁻¹ := sub_eq_of_eq_add h.inv_eq
 
+lemma holderConjugate_div_div : (p / r).HolderConjugate (q / r) where
+  inv_add_inv_eq_inv := by
+    simp [inv_div, div_eq_mul_inv, ← mul_add, h.inv_add_inv_eq_inv, h.ne_zero']
+  left_pos := by have := h.left_pos; have := h.pos'; positivity
+  right_pos := by have := h.right_pos; have := h.pos'; positivity
+
 end HolderTriple
 
 namespace HolderConjugate
 
 lemma two_two : HolderConjugate 2 2 where
-  inv_add_inv' := by norm_num
+  inv_add_inv_eq_inv := by norm_num
   left_pos := zero_lt_two
   right_pos := zero_lt_two
 
@@ -173,7 +177,7 @@ lemma _root_.Real.holderConjugate_iff : p.HolderConjugate q ↔ 1 < p ∧ p⁻¹
   exact inv_pos.mp <| eq_sub_of_add_eq' h ▸ hp
 
 protected lemma inv_inv (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a⁻¹.HolderConjugate b⁻¹ where
-  inv_add_inv' := by simpa using hab
+  inv_add_inv_eq_inv := by simpa using hab
   left_pos := inv_pos.mpr ha
   right_pos := inv_pos.mpr hb
 
@@ -204,7 +208,7 @@ namespace NNReal
 positive and `p⁻¹ + q⁻¹ = r⁻¹`. -/
 @[mk_iff]
 structure HolderTriple (p q r : ℝ≥0) : Prop where
-  inv_add_inv' : p⁻¹ + q⁻¹ = r⁻¹
+  inv_add_inv_eq_inv : p⁻¹ + q⁻¹ = r⁻¹
   left_pos : 0 < p
   right_pos : 0 < q
 
@@ -237,18 +241,16 @@ variable {a b p q r : ℝ≥0}
 namespace HolderTriple
 
 lemma of_pos (hp : 0 < p) (hq : 0 < q) : HolderTriple p q (p⁻¹ + q⁻¹)⁻¹ where
-  inv_add_inv' := inv_inv _ |>.symm
+  inv_add_inv_eq_inv := inv_inv _ |>.symm
   left_pos := hp
   right_pos := hq
 
 variable (h : p.HolderTriple q r)
 include h
 
-lemma inv_add_inv_eq_inv : p⁻¹ + q⁻¹ = r⁻¹ := h.inv_add_inv'
-
 @[symm]
 protected lemma symm : q.HolderTriple p r where
-  inv_add_inv' := add_comm p⁻¹ q⁻¹ ▸ h.inv_add_inv_eq_inv
+  inv_add_inv_eq_inv := add_comm p⁻¹ q⁻¹ ▸ h.inv_add_inv_eq_inv
   left_pos := h.right_pos
   right_pos := h.left_pos
 
@@ -292,12 +294,18 @@ lemma inv_sub_inv_eq_inv : r⁻¹ - q⁻¹ = p⁻¹ := by
   have := h.symm.inv_lt_inv.le
   exact_mod_cast h.coe.inv_sub_inv_eq_inv
 
+lemma holderConjugate_div_div : (p / r).HolderConjugate (q / r) where
+  inv_add_inv_eq_inv := by
+    simp [inv_div, div_eq_mul_inv, ← mul_add, h.inv_add_inv_eq_inv, h.ne_zero']
+  left_pos := by have := h.left_pos; have := h.pos'; positivity
+  right_pos := by have := h.right_pos; have := h.pos'; positivity
+
 end HolderTriple
 
 namespace HolderConjugate
 
 lemma two_two : HolderConjugate 2 2 where
-  inv_add_inv' := by simpa using add_halves (1 : ℝ≥0)
+  inv_add_inv_eq_inv := by simpa using add_halves (1 : ℝ≥0)
   left_pos := zero_lt_two
   right_pos := zero_lt_two
 
@@ -340,7 +348,7 @@ lemma _root_.NNReal.holderConjugate_iff : p.HolderConjugate q ↔ 1 < p ∧ p⁻
   exact_mod_cast Iff.rfl
 
 protected lemma inv_inv (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a⁻¹.HolderConjugate b⁻¹ where
-  inv_add_inv' := by simpa using hab
+  inv_add_inv_eq_inv := by simpa using hab
   left_pos := inv_pos.mpr ha
   right_pos := inv_pos.mpr hb
 
@@ -548,7 +556,7 @@ lemma div_conj_eq_sub_one : p / q = p - 1 := by
 end
 
 protected lemma inv_inv (hab : a + b = 1) : a⁻¹.HolderConjugate b⁻¹ where
-  inv_add_inv' := by simpa [inv_inv] using hab
+  inv_add_inv_eq_inv := by simpa [inv_inv] using hab
 
 lemma inv_one_sub_inv (ha : a ≤ 1) : a⁻¹.HolderConjugate (1 - a)⁻¹ :=
   .inv_inv <| add_tsub_cancel_of_le ha

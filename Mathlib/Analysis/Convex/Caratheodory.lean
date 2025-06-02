@@ -41,7 +41,8 @@ open Set Finset
 
 universe u
 
-variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 : Type*} {E : Type u} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E]
 
 namespace Caratheodory
 
@@ -69,7 +70,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
   have ksum : ∑ e ∈ t.erase i₀, k e = 1 := by
     calc
       ∑ e ∈ t.erase i₀, k e = ∑ e ∈ t, k e := by
-        conv_rhs => rw [← insert_erase hi₀, sum_insert (not_mem_erase i₀ t), hk, zero_add]
+        conv_rhs => rw [← insert_erase hi₀, sum_insert (notMem_erase i₀ t), hk, zero_add]
       _ = ∑ e ∈ t, (f e - f i₀ / g i₀ * g e) := rfl
       _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
   refine ⟨⟨i₀, hi₀⟩, k, ?_, by convert ksum, ?_⟩

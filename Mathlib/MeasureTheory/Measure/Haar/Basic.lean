@@ -177,7 +177,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
     obtain ⟨g, hg⟩ := K.interior_nonempty
     show g ∈ (∅ : Set G)
     convert h1t (interior_subset hg); symm
-    simp only [Finset.not_mem_empty, iUnion_of_empty, iUnion_empty]
+    simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
   · exact index_defined K.isCompact hV
 
 @[to_additive addIndex_mono]
@@ -206,11 +206,9 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   classical
   apply le_antisymm (index_union_le K₁ K₂ hV)
   rcases index_elim (K₁.2.union K₂.2) hV with ⟨s, h1s, h2s⟩; rw [← h2s]
-  have :
-    ∀ K : Set G,
-      (K ⊆ ⋃ g ∈ s, (fun h => g * h) ⁻¹' V) →
-        index K V ≤ (s.filter fun g => ((fun h : G => g * h) ⁻¹' V ∩ K).Nonempty).card := by
-    intro K hK; apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
+  have (K : Set G) (hK : K ⊆ ⋃ g ∈ s, (g * ·) ⁻¹' V) :
+      index K V ≤ {g ∈ s | ((g * ·) ⁻¹' V ∩ K).Nonempty}.card := by
+    apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
     intro g hg; rcases hK hg with ⟨_, ⟨g₀, rfl⟩, _, ⟨h1g₀, rfl⟩, h2g₀⟩
     simp only [mem_preimage] at h2g₀
     simp only [mem_iUnion]; use g₀; constructor; swap

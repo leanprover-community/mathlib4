@@ -21,9 +21,6 @@ note: this linter can be disabled with `set_option linter.style.header false`
 warning: 'Mathlib.Tactic.Have' defines a deprecated form of the 'have' tactic; please do not use it in mathlib.
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
-warning: Files in the `Deprecated` directory are not supposed to be imported.
-note: this linter can be disabled with `set_option linter.style.header false`
----
 warning: Duplicate imports: 'Mathlib.Tactic.Linter.Header' already imported
 note: this linter can be disabled with `set_option linter.style.header false`
 ---

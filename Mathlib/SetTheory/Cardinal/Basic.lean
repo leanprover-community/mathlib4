@@ -259,22 +259,6 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
 theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
   simp [Pow.pow]
 
-@[deprecated Nat.cast_le (since := "2024-10-16")]
-theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := Nat.cast_le
-
-@[deprecated Nat.cast_lt (since := "2024-10-16")]
-theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := Nat.cast_lt
-
-@[deprecated Nat.cast_inj (since := "2024-10-16")]
-theorem natCast_inj {m n : ℕ} : (m : Cardinal) = n ↔ m = n := Nat.cast_inj
-
-@[deprecated Nat.cast_injective (since := "2024-10-16")]
-theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) := Nat.cast_injective
-
-@[deprecated Nat.cast_pow (since := "2024-10-16")]
-theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) :=
-  Nat.cast_pow m n
-
 @[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [Nat.cast_succ]
@@ -598,8 +582,11 @@ theorem exists_nat_eq_of_le_nat {c : Cardinal} {n : ℕ} (h : c ≤ n) : ∃ m, 
 theorem mk_int : #ℤ = ℵ₀ :=
   mk_denumerable ℤ
 
-theorem mk_pNat : #ℕ+ = ℵ₀ :=
+theorem mk_pnat : #ℕ+ = ℵ₀ :=
   mk_denumerable ℕ+
+
+@[deprecated (since := "2025-04-27")]
+alias mk_pNat := mk_pnat
 
 /-! ### Cardinalities of basic sets and types -/
 
@@ -639,7 +626,7 @@ theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ :
   constructor
   · intro h
     rw [mk_eq_zero_iff] at h
-    exact eq_empty_iff_forall_not_mem.2 fun x hx => h.elim' ⟨x, hx⟩
+    exact eq_empty_iff_forall_notMem.2 fun x hx => h.elim' ⟨x, hx⟩
   · rintro rfl
     exact mk_emptyCollection _
 
@@ -940,7 +927,7 @@ theorem mk_eq_two_iff' (x : α) : #α = 2 ↔ ∃! y, y ≠ x := by
   · rintro ⟨y, hne, hy⟩
     exact ⟨x, y, hne.symm, eq_univ_of_forall fun z => or_iff_not_imp_left.2 (hy z)⟩
 
-theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length < #α) :
+theorem exists_notMem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length < #α) :
     ∃ z : α, z ∉ l := by
   classical
   contrapose! h
@@ -950,10 +937,13 @@ theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length 
     _ = l.toFinset.card := Cardinal.mk_coe_finset
     _ ≤ l.length := Nat.cast_le.mpr (List.toFinset_card_le l)
 
+@[deprecated (since := "2025-05-23")]
+alias exists_not_mem_of_length_lt := exists_notMem_of_length_lt
+
 theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α := by simpa using h
   have : ↑(2 : ℕ) < #α := by rwa [← succ_le_iff, ← Cardinal.nat_succ]
-  have := exists_not_mem_of_length_lt [x, y] this
+  have := exists_notMem_of_length_lt [x, y] this
   simpa [not_or] using this
 
 /-! ### `powerlt` operation -/

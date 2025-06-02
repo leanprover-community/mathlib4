@@ -14,7 +14,7 @@ import Mathlib.Order.SuccPred.Limit
 
 open Order Set
 
-variable {ι α : Type*}
+variable {ι : Sort*} {α : Type*}
 
 section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s : Set α} {x : α}

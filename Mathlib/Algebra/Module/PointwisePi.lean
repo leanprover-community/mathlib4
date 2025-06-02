@@ -5,7 +5,7 @@ Authors: Alex J. Best
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Pointwise actions on sets in Pi types

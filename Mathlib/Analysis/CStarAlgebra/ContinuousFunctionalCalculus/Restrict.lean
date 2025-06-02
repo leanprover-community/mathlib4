@@ -90,9 +90,6 @@ lemma isClosedEmbedding_starAlgHom {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S]
     (ContinuousMap.isUniformEmbedding_comp _ halg)
     (UniformEquiv.arrowCongr h.homeomorph.symm (.refl _) |>.isUniformEmbedding)
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_starAlgHom := isClosedEmbedding_starAlgHom
-
 /-- Given a `ContinuousFunctionalCalculus S A q`. If we form the predicate `p` for `a : A`
 characterized by: `q a` and the spectrum of `a` restricts to the scalar subring `R` via
 `f : C(S, R)`, then we can get a restricted functional calculus
@@ -233,9 +230,6 @@ lemma isClosedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →
   refine hφ.comp <| IsUniformEmbedding.isClosedEmbedding <| .comp
     (ContinuousMapZero.isUniformEmbedding_comp _ halg)
     (UniformEquiv.arrowCongrLeft₀ h.homeomorph.symm this |>.isUniformEmbedding)
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_nonUnitalStarAlgHom := isClosedEmbedding_nonUnitalStarAlgHom
 
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 

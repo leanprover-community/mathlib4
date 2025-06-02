@@ -37,9 +37,7 @@ Definition of the Fibonacci sequence `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + F�
 - `Nat.fib_succ_eq_sum_choose`: `fib` is given by the sum of `Nat.choose` along an antidiagonal.
 - `Nat.fib_succ_eq_succ_sum`: shows that `F₀ + F₁ + ⋯ + Fₙ = Fₙ₊₂ - 1`.
 - `Nat.fib_two_mul` and `Nat.fib_two_mul_add_one` are the basis for an efficient algorithm to
-  compute `fib` (see `Nat.fastFib`). There are `bit0`/`bit1` variants of these can be used to
-  simplify `fib` expressions: `simp only [Nat.fib_bit0, Nat.fib_bit1, Nat.fib_bit0_succ,
-  Nat.fib_bit1_succ, Nat.fib_one, Nat.fib_two]`.
+  compute `fib` (see `Nat.fastFib`).
 
 ## Implementation Notes
 
@@ -240,7 +238,7 @@ theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
     rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
 
 theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
-  rwa [gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mp]
+  rwa [← gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mpr]
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=

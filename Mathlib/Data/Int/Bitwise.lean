@@ -142,7 +142,7 @@ theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   rcases m with m | m <;> rcases n with n | n <;>
   simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
              negSucc_mul_negSucc] <;>
-  simp only [negSucc_coe, bodd_neg, bodd_coe, Nat.bodd_mul]
+  simp only [negSucc_eq, ← Int.natCast_succ, bodd_neg, bodd_coe, Nat.bodd_mul]
 
 theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | (n : ℕ) => by
@@ -370,10 +370,10 @@ theorem shiftRight_negSucc (m n : ℕ) : -[m+1] >>> (n : ℤ) = -[m >>> n+1] := 
 /-- Compare with `Int.shiftRight_add`, which doesn't have the coercions `ℕ → ℤ`. -/
 theorem shiftRight_add' : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>> (n : ℤ)) >>> (k : ℤ)
   | (m : ℕ), n, k => by
-    rw [shiftRight_natCast, shiftRight_natCast, ← Int.ofNat_add, shiftRight_natCast,
+    rw [shiftRight_natCast, shiftRight_natCast, ← Int.natCast_add, shiftRight_natCast,
       Nat.shiftRight_add]
   | -[m+1], n, k => by
-    rw [shiftRight_negSucc, shiftRight_negSucc, ← Int.ofNat_add, shiftRight_negSucc,
+    rw [shiftRight_negSucc, shiftRight_negSucc, ← Int.natCast_add, shiftRight_negSucc,
       Nat.shiftRight_add]
 
 /-! ### bitwise ops -/
