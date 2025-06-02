@@ -88,7 +88,8 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
   repeat rw [sub_eq_add_neg]
   abel
 
-/-- The Jordan decomposition associated to the pair of mutually singular measures `μ - ν` and `ν - μ`. -/
+/-- The Jordan decomposition associated to the pair of mutually singular measures `μ - ν`
+and `ν - μ`. -/
 def jordanDecompositionOfToSignedMeasureSub
     (μ ν : Measure X) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : JordanDecomposition X where
   posPart := μ - ν
