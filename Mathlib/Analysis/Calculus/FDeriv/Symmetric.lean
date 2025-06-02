@@ -188,7 +188,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt_of_omega (hf : ContDiffWithinAt
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
   rw [isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin hs hx]
-  exact hf.iteratedFDerivWithin_domDomCongr hs hx _
+  exact hf.domDomCongr_iteratedFDerivWithin hs hx _
 
 /-- If a function is analytic at a point, then its second derivative is symmetric. -/
 theorem ContDiffAt.isSymmSndFDerivAt_of_omega (hf : ContDiffAt 𝕜 ω f x) :
