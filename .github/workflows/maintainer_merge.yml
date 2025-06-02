@@ -101,7 +101,7 @@ jobs:
 
       - name: Add comment to PR
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
-        uses: GrantBirki/comment@f524ee31407667c05061bad41e1758b40298bd82 # v2.1.0
+        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
           # if a comment triggers the action, then `issue.number` is set
           # if a review or review comment triggers the action, then `pull_request.number` is set

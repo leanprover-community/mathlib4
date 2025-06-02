@@ -373,7 +373,7 @@ where
     if hx : g x = x then go l g (by
         intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (hg hy)) hfg
     else
-      let ⟨m, hm₁, hm₂, hm₃⟩ :=
+      let ⟨m, hm⟩ :=
         go l ((cycleOf f x)⁻¹ * g) (by
             rw [hfg hx]
             intro y hy
@@ -397,6 +397,7 @@ where
               · simp [cycleOf_apply_of_not_sameCycle, hz]
             · exact cycleOf_apply_of_not_sameCycle hy.left)
       ⟨cycleOf f x :: m, by
+        obtain ⟨hm₁, hm₂, hm₃⟩ := hm
         rw [hfg hx] at hm₁ ⊢
         constructor
         · rw [List.prod_cons, hm₁]
@@ -486,11 +487,11 @@ variable [DecidableEq α] [Fintype α] (f : Perm α)
 def cycleFactorsFinset : Finset (Perm α) :=
   (truncCycleFactors f).lift
     (fun l : { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } =>
-      l.val.toFinset)
+      ⟨↑l.val, nodup_of_pairwise_disjoint (fun h1 => not_isCycle_one <| l.2.2.1 _ h1) l.2.2.2⟩)
     fun ⟨_, hl⟩ ⟨_, hl'⟩ =>
-    List.toFinset_eq_of_perm _ _
-      (list_cycles_perm_list_cycles (hl'.left.symm ▸ hl.left) hl.right.left hl'.right.left
-        hl.right.right hl'.right.right)
+    Finset.eq_of_veq <| Multiset.coe_eq_coe.mpr <|
+      list_cycles_perm_list_cycles (hl'.left.symm ▸ hl.left) hl.right.left hl'.right.left
+        hl.right.right hl'.right.right
 
 open scoped List in
 theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} (hn : l.Nodup) :
@@ -498,7 +499,7 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
       (∀ f : Perm α, f ∈ l → f.IsCycle) ∧ l.Pairwise Disjoint ∧ l.prod = σ := by
   obtain ⟨⟨l', hp', hc', hd'⟩, hl⟩ := Trunc.exists_rep σ.truncCycleFactors
   have ht : cycleFactorsFinset σ = l'.toFinset := by
-    rw [cycleFactorsFinset, ← hl, Trunc.lift_mk]
+    rw [cycleFactorsFinset, ← hl, Trunc.lift_mk, Multiset.toFinset_eq, List.toFinset_coe]
   rw [ht]
   constructor
   · intro h
