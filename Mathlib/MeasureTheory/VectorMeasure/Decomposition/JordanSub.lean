@@ -100,8 +100,7 @@ lemma jordanDecompositionOfToSignedMeasureSub_posPart :
     (jordanDecompositionOfToSignedMeasureSub μ ν).posPart = μ - ν := rfl
 
 lemma jordanDecompositionOfToSignedMeasureSub_negPart :
-    (jordanDecompositionOfToSignedMeasureSub μ ν).negPart = ν - μ := by
-      trivial
+    (jordanDecompositionOfToSignedMeasureSub μ ν).negPart = ν - μ := rfl
 
 lemma jordanDecompositionOfToSignedMeasureSub_toSignedMeasure :
     (jordanDecompositionOfToSignedMeasureSub μ ν).toSignedMeasure =
