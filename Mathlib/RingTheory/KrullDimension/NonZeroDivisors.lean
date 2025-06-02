@@ -18,24 +18,23 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 - `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
 
-open nonZeroDivisors
-
 variable {R S : Type*} [CommRing R] [CommRing S]
+
+/-- The prime spectrum of a quotient of a ring by an ideal is in order-preserving bijection
+with the zero locus of the ideal. -/
+noncomputable def PrimeSpectrum.quotientOrderIso (I : Ideal R) :
+    PrimeSpectrum (R ⧸ I) ≃o PrimeSpectrum.zeroLocus (R := R) I where
+  toEquiv := (Equiv.ofInjective _ (PrimeSpectrum.comap_injective_of_surjective _
+    Ideal.Quotient.mk_surjective)).trans (Equiv.setCongr
+      (by rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
+        Ideal.mk_ker]))
+  map_rel_iff' {a b} := Ideal.comap_le_comap_iff_of_surjective _ Quotient.mk_surjective ..
 
 lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
-  let e : PrimeSpectrum (R ⧸ I) ≃ (PrimeSpectrum.zeroLocus (R := R) I) :=
-    (Equiv.ofInjective _ (PrimeSpectrum.comap_injective_of_surjective _
-      Ideal.Quotient.mk_surjective)).trans (Equiv.setCongr
-      (by rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
-        Ideal.mk_ker]))
-  let e' : PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) :=
-    { __ := e, map_rel_iff' := fun {a b} ↦ by
-        show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
-        rw [← Ideal.map_le_iff_le_comap,
-          Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective,
-          PrimeSpectrum.asIdeal_le_asIdeal] }
-  rw [ringKrullDim, Order.krullDim_eq_of_orderIso e']
+  rw [ringKrullDim, Order.krullDim_eq_of_orderIso (PrimeSpectrum.quotientOrderIso I)]
+
+open scoped nonZeroDivisors
 
 lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     {r : R} (hr : r ∈ R⁰) :
