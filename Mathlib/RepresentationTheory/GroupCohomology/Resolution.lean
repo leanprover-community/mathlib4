@@ -90,6 +90,36 @@ open scoped TensorProduct
 
 open Representation
 
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.actionDiagonalSucc := Action.diagonalSuccIsoTensorTrivial
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.actionDiagonalSucc_hom_apply :=
+  Action.diagonalSuccIsoTensorTrivial_hom_hom_apply
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.actionDiagonalSucc_inv_apply :=
+  Action.diagonalSuccIsoTensorTrivial_inv_hom_apply
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.diagonalSucc := Rep.diagonalSuccIsoTensorTrivial
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.diagonalSucc_hom_single :=
+  Rep.diagonalSuccIsoTensorTrivial_hom_hom_single
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.diagonalSucc_inv_single_single :=
+  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_single
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.diagonalSucc_inv_single_left :=
+  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_left
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.diagonalSucc_inv_single_right :=
+  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_right
+
 /-- The `k[G]`-linear isomorphism `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹]`, where the `k[G]`-module structure on
 the lefthand side is `TensorProduct.leftModule`, whilst that of the righthand side comes from
 `Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis

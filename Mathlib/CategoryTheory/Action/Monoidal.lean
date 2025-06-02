@@ -203,13 +203,16 @@ noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
     diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
   mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
 
+@[deprecated (since := "2025-06-02")] alias diagonalSucc := diagonalSuccIsoTensorDiagonal
+
 variable [Group G]
 
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
 The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
-noncomputable abbrev leftRegularTensorIso (X : Action (Type u) G) :
+@[simps!]
+noncomputable def leftRegularTensorIso (X : Action (Type u) G) :
     leftRegular G ⊗ X ≅ leftRegular G ⊗ trivial G X.V :=
   mkIso (Equiv.toIso {
     toFun g := ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
@@ -238,21 +241,20 @@ noncomputable def diagonalSuccIsoTensorTrivial :
 variable {G}
 
 @[simp]
-theorem diagonalSuccIsoTensorTrivial_hom_hom {n : ℕ} (f : Fin (n + 1) → G) :
+theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) → G) :
     (diagonalSuccIsoTensorTrivial G n).hom.hom f =
       (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
   · refine Prod.ext rfl (funext fun x => ?_)
     induction' x using Fin.cases
-    <;> simp_all only [tensorObj_V, diagonalSuccIsoTensorTrivial,
-        Iso.trans_hom, tensorIso_hom, Iso.refl_hom, id_tensorHom, comp_hom,
-        whiskerLeft_hom, mkIso_hom_hom, tensor_ρ, tensor_apply,
-        ofMulAction_apply, types_comp_apply, whiskerLeft_apply]
-    <;> simp [types_tensorObj_def, Fin.tail, Fin.castSucc_fin_succ, ofMulAction_V]
+    <;> simp_all only [tensorObj_V, diagonalSuccIsoTensorTrivial, Iso.trans_hom, tensorIso_hom,
+      Iso.refl_hom, id_tensorHom, comp_hom, whiskerLeft_hom, types_comp_apply, whiskerLeft_apply,
+      leftRegularTensorIso_hom_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
+    <;> simp [ofMulAction_V, types_tensorObj_def, Fin.tail, Fin.castSucc_fin_succ]
 
 @[simp]
-theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G) :
+theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
     (diagonalSuccIsoTensorTrivial G n).inv.hom (g, f) =
       (g • Fin.partialProd f : Fin (n + 1) → G) := by
   induction' n with n hn generalizing g
@@ -261,8 +263,9 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G)
       ofMulAction_V]
   · funext x
     induction' x using Fin.cases
-    <;> simp_all only [diagonalSuccIsoTensorTrivial, tensorObj_V, Iso.trans_inv, comp_hom,
-      mkIso_inv_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
+    <;> simp_all only [diagonalSuccIsoTensorTrivial, Iso.trans_inv, comp_hom, mkIso_inv_hom,
+        tensorObj_V, types_comp_apply, leftRegularTensorIso_inv_hom, tensor_ρ, tensor_apply,
+        ofMulAction_apply]
     <;> simp_all [types_tensorObj_def, mul_assoc, Fin.partialProd_succ', ofMulAction_V]
 
 end

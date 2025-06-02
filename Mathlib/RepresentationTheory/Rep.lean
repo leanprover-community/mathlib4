@@ -225,6 +225,12 @@ theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
   simp
 
+@[deprecated "Use `Rep.linearization_single` instead" (since := "2025-06-02")]
+theorem linearization_of (X : Action (Type u) G) (g : G) (x : X.V) :
+    ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k))
+      = Finsupp.single (X.ρ g x) (1 : k) := by
+  simp
+
 variable {X Y : Action (Type u) G} (f : X ⟶ Y)
 
 @[simp]
@@ -503,7 +509,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a :
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g a ⊗ₜ single f b) =
       single (g • Fin.partialProd f) (a * b) := by
-  have := Action.diagonalSuccIsoTensorTrivial_inv_hom (G := G) (n := n)
+  have := Action.diagonalSuccIsoTensorTrivial_inv_hom_apply (G := G) (n := n)
   simp_all [diagonalSuccIsoTensorTrivial, ModuleCat.MonoidalCategory.tensorHom_def,
     tensorObj_def, ModuleCat.MonoidalCategory.tensorObj, types_tensorObj_def,
     ModuleCat.hom_id (M := ((linearization k G).obj _).V), Action.ofMulAction_V]
