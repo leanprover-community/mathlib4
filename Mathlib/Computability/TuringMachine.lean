@@ -630,24 +630,28 @@ theorem tr_respects_aux₁ {k} (o q v) {S : List (Γ k)} {L : ListBlank (∀ k, 
     (hL : L.map (proj k) = ListBlank.mk (S.map some).reverse) (n) (H : n ≤ S.length) :
     Reaches₀ (TM1.step (tr M)) ⟨some (go k o q), v, Tape.mk' ∅ (addBottom L)⟩
       ⟨some (go k o q), v, (Tape.move Dir.right)^[n] (Tape.mk' ∅ (addBottom L))⟩ := by
-  induction' n with n IH; · rfl
-  apply (IH (le_of_lt H)).tail
-  rw [iterate_succ_apply']
-  simp only [TM1.step, TM1.stepAux, tr, Tape.mk'_nth_nat, Tape.move_right_n_head,
-    addBottom_nth_snd, Option.mem_def]
-  rw [stk_nth_val _ hL, List.getElem?_eq_getElem]
-  · rfl
-  · rwa [List.length_reverse]
+  induction n with
+  | zero => rfl
+  | succ n IH =>
+    apply (IH (le_of_lt H)).tail
+    rw [iterate_succ_apply']
+    simp only [TM1.step, TM1.stepAux, tr, Tape.mk'_nth_nat, Tape.move_right_n_head,
+      addBottom_nth_snd, Option.mem_def]
+    rw [stk_nth_val _ hL, List.getElem?_eq_getElem]
+    · rfl
+    · rwa [List.length_reverse]
 
 theorem tr_respects_aux₃ {q v} {L : ListBlank (∀ k, Option (Γ k))} (n) : Reaches₀ (TM1.step (tr M))
     ⟨some (ret q), v, (Tape.move Dir.right)^[n] (Tape.mk' ∅ (addBottom L))⟩
     ⟨some (ret q), v, Tape.mk' ∅ (addBottom L)⟩ := by
-  induction' n with n IH; · rfl
-  refine Reaches₀.head ?_ IH
-  simp only [Option.mem_def, TM1.step]
-  rw [Option.some_inj, tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat,
-    addBottom_nth_succ_fst, TM1.stepAux, iterate_succ', Function.comp_apply, Tape.move_right_left]
-  rfl
+  induction n with
+  | zero => rfl
+  | succ n IH =>
+    refine Reaches₀.head ?_ IH
+    simp only [Option.mem_def, TM1.step]
+    rw [Option.some_inj, tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat,
+      addBottom_nth_succ_fst, TM1.stepAux, iterate_succ', Function.comp_apply, Tape.move_right_left]
+    rfl
 
 theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
     (hT : ∀ k, ListBlank.map (proj k) T = ListBlank.mk ((S k).map some).reverse)
