@@ -312,7 +312,7 @@ theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := b
 instance partialOrder : PartialOrder ℝ where
   le := (· ≤ ·)
   lt := (· < ·)
-  lt_iff_le_not_le a b := by
+  lt_iff_le_not_ge a b := by
     induction a using Real.ind_mk
     induction b using Real.ind_mk
     simpa using lt_iff_le_not_le
