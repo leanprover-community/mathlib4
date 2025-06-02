@@ -23,7 +23,7 @@ section Semiring
 
 variable [Semiring R]
 
-lemma op_iff : IsVonNeumannRegularRing R ↔ IsVonNeumannRegularRing Rᵐᵒᵖ := by
+lemma mop_iff : IsVonNeumannRegularRing R ↔ IsVonNeumannRegularRing Rᵐᵒᵖ := by
   rw [isVonNeumannRegularRing_iff, isVonNeumannRegularRing_iff]
   refine ⟨fun h a ↦ ?_, fun h a ↦ ?_⟩
   · obtain ⟨x, hx⟩ := h (MulOpposite.unop a)
