@@ -402,6 +402,22 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
       · exact Or.inr (Or.inl ⟨hcb, hba⟩)
       · exact Or.inr (Or.inr <| Or.inl ⟨hba, hac⟩) }
 
+section
+
+variable (α : Type*) [LinearOrder α] (i j k : α)
+
+attribute [local instance] LinearOrder.toCircularOrder
+
+lemma sbtw_iff : sbtw i j k
+    ↔ (i < j ∧ j < k) ∨ (j < k ∧ k < i) ∨ (k < i ∧ i < j) :=
+  Iff.rfl
+
+lemma btw_iff : btw i j k
+    ↔ (i ≤ j ∧ j ≤ k) ∨ (j ≤ k ∧ k ≤ i) ∨ (k ≤ i ∧ i ≤ j) :=
+  Iff.rfl
+
+end
+
 /-! ### Dual constructions -/
 
 
