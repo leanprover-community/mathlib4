@@ -10,6 +10,11 @@ import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 This file proves the unsigned version of the Hahn decomposition theorem.
 
+## Main definitions
+
+* `MeasureTheory.IsHahnDecomposition`: characterizes a set where `μ ≤ ν` (and the
+reverse inequality on the complement),
+
 ## Main statements
 
 * `hahn_decomposition` : Given two finite measures `μ` and `ν`, there exists a measurable set `s`

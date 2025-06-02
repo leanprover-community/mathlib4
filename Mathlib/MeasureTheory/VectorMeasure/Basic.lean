@@ -614,6 +614,7 @@ def mapGm (f : α → β) : VectorMeasure α M →+ VectorMeasure β M where
   map_zero' := map_zero f
   map_add' _ _ := map_add _ _ f
 
+@[simp]
 theorem restrict_add (v w : VectorMeasure α M) (i : Set α) :
     (v + w).restrict i = v.restrict i + w.restrict i := by
   by_cases hi : MeasurableSet i
@@ -630,21 +631,39 @@ def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
 
 end ContinuousAdd
 
-section
+section Partition
+
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] [ContinuousAdd M]
+variable (v : VectorMeasure α M) {i : Set α}
+
+@[simp]
+theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
+    v.restrict i + v.restrict iᶜ = v := by
+  ext A hA
+  rw [add_apply, restrict_apply _ hi hA, restrict_apply _ hi.compl hA,
+    ← of_union _ (hA.inter hi) (hA.inter hi.compl)]
+  · simp
+  · exact disjoint_compl_right.inter_right' A |>.inter_left' A
+
+end Partition
+
+section Sub
 
 variable {M : Type*} [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M]
 
+@[simp]
 theorem restrict_neg (v : VectorMeasure α M) (i : Set α) :
     (-v).restrict i = -(v.restrict i) := by
   by_cases hi : MeasurableSet i
   · ext j hj; simp [restrict_apply _ hi hj]
   · simp [restrict_not_measurable _ hi]
 
+@[simp]
 theorem restrict_sub (v w : VectorMeasure α M) (i : Set α) :
     (v - w).restrict i = v.restrict i - w.restrict i := by
   simp [sub_eq_add_neg, restrict_add, restrict_neg]
 
-end
+end Sub
 
 end
 
@@ -840,22 +859,6 @@ theorem restrict_le_restrict_union (hi₁ : MeasurableSet i) (hi₂ : v ≤[i] w
   refine restrict_le_restrict_countable_iUnion v w ?_ ?_
   · measurability
   · rintro (_ | _) <;> simpa
-
-end
-
-section
-
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] [ContinuousAdd M]
-variable (v : VectorMeasure α M) {i : Set α}
-
-@[simp]
-theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
-    v.restrict i + v.restrict iᶜ = v := by
-  ext A hA
-  rw [add_apply, restrict_apply _ hi hA, restrict_apply _ hi.compl hA,
-    ← of_union _ (hA.inter hi) (hA.inter hi.compl)]
-  · simp
-  · exact disjoint_compl_right.inter_right' A |>.inter_left' A
 
 end
 
