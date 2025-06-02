@@ -106,11 +106,7 @@ which is summable, then `f` is summable. -/
 theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} {g : ι → ℝ} (hg : Summable g)
     (h : ∀ i, ‖f i‖ ≤ g i) : Summable f := by
   rw [summable_iff_cauchySeq_finset]
-  exact cauchySeq_finset_of_norm_bounded hg h
-
-theorem HasSum.enorm_le_of_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ε} {b : ℝ≥0∞} (hf : HasSum f a)
-    (hg : HasSum g b) (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖a‖ₑ ≤ b := by
-  exact le_of_tendsto_of_tendsto' hf.enorm hg fun _s ↦ enorm_sum_le_of_le _ fun i _hi ↦ h i
+  exact cauchySeq_finset_of_norm_bounded g hg h
 
 theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : ℝ} (hf : HasSum f a)
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b := by
@@ -138,6 +134,10 @@ theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : Has
   · exact hf.hasSum.norm_le_of_bounded hg h
   · rw [tsum_eq_zero_of_not_summable hf, norm_zero]
     classical exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)
+
+theorem enorm_tsum_le_tsum_enorm {f : ι → ε} :
+    ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ :=
+  tsum_of_enorm_bounded ENNReal.summable.hasSum fun _i => le_rfl
 
 /-- If `∑' i, ‖f i‖` is summable, then `‖∑' i, f i‖ ≤ (∑' i, ‖f i‖)`. Note that we do not assume
 that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete space. -/
