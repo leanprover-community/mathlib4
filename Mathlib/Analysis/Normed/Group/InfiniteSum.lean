@@ -24,6 +24,8 @@ In a complete (semi)normed group,
 - `tsum_of_norm_bounded`, `HasSum.norm_le_of_bounded`: if `‖f i‖ ≤ g i`, where `∑' i, g i` is a
   summable series, then `‖∑' i, f i‖ ≤ ∑' i, g i`.
 
+- versions of these lemmas for `nnnorm` and `enorm`.
+
 ## Tags
 
 infinite series, absolute convergence, normed group
@@ -105,9 +107,25 @@ theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} (g : ι → �
   rw [summable_iff_cauchySeq_finset]
   exact cauchySeq_finset_of_norm_bounded g hg h
 
+open ENNReal
+variable  {ε : Type*} [TopologicalSpace ε] [ENormedAddCommMonoid ε]
+
+theorem HasSum.enorm_le_of_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ε} {b : ℝ≥0∞} (hf : HasSum f a)
+    (hg : HasSum g b) (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖a‖ₑ ≤ b := by
+  exact le_of_tendsto_of_tendsto' hf.enorm hg fun _s ↦ enorm_sum_le_of_le _ fun i _hi ↦ h i
+
 theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : ℝ} (hf : HasSum f a)
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b := by
-  classical exact le_of_tendsto_of_tendsto' hf.norm hg fun _s ↦ norm_sum_le_of_le _ fun i _hi ↦ h i
+  exact le_of_tendsto_of_tendsto' hf.norm hg fun _s ↦ norm_sum_le_of_le _ fun i _hi ↦ h i
+
+/-- Quantitative result associated to the direct comparison test for series:  If, for all `i`,
+`‖f i‖ₑ ≤ g i`, then `‖∑' i, f i‖ₑ ≤ ∑' i, g i`. Note that we do not assume that `∑' i, f i` is
+summable, and it might not be the case if `α` is not a complete space. -/
+theorem tsum_of_enorm_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ℝ≥0∞} (hg : HasSum g a)
+    (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖∑' i : ι, f i‖ₑ ≤ a := by
+  by_cases hf : Summable f
+  · exact hf.hasSum.enorm_le_of_bounded hg h
+  · simp [tsum_eq_zero_of_not_summable hf]
 
 /-- Quantitative result associated to the direct comparison test for series:  If `∑' i, g i` is
 summable, and for all `i`, `‖f i‖ ≤ g i`, then `‖∑' i, f i‖ ≤ ∑' i, g i`. Note that we do not
@@ -118,6 +136,10 @@ theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : Has
   · exact hf.hasSum.norm_le_of_bounded hg h
   · rw [tsum_eq_zero_of_not_summable hf, norm_zero]
     classical exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)
+
+theorem enorm_tsum_le_tsum_enorm {f : ι → ε} :
+    ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ :=
+  tsum_of_enorm_bounded ENNReal.summable.hasSum fun _i => le_rfl
 
 /-- If `∑' i, ‖f i‖` is summable, then `‖∑' i, f i‖ ≤ (∑' i, ‖f i‖)`. Note that we do not assume
 that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete space. -/
@@ -197,7 +219,7 @@ theorem Summable.of_norm_bounded_eventually_nat {f : ℕ → E} (g : ℕ → ℝ
 
 theorem Summable.of_nnnorm_bounded {f : ι → E} (g : ι → ℝ≥0) (hg : Summable g)
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
-  .of_norm_bounded (fun i => (g i : ℝ)) (NNReal.summable_coe.2 hg) h
+  .of_norm_bounded _ (NNReal.summable_coe.2 hg) h
 
 theorem Summable.of_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=
   .of_norm_bounded _ hf fun _i => le_rfl

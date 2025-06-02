@@ -157,6 +157,22 @@ theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
     (TensorProduct.map (g : A →ₗ[R] B) (h : A →ₗ[R] B)) at this
   simp_all only [map_sum, TensorProduct.map_tmul, LinearMap.coe_coe]
 
+variable (R A) in
+/-- A coalgebra `A` is cocommutative if its comultiplication `δ : A → A ⊗ A` commutes with the
+swapping `β : A ⊗ A ≃ A ⊗ A` of the factors in the tensor product. -/
+class IsCocomm where
+  protected comm_comp_comul : (TensorProduct.comm R A A).comp comul = comul
+
+variable [IsCocomm R A]
+
+variable (R A) in
+@[simp] lemma comm_comp_comul : (TensorProduct.comm R A A).comp comul = comul :=
+  IsCocomm.comm_comp_comul
+
+variable (R) in
+@[simp] lemma comm_comul (a : A) : TensorProduct.comm R A A (comul a) = comul a :=
+  congr($(comm_comp_comul R A) a)
+
 end Coalgebra
 
 open Coalgebra
@@ -177,6 +193,8 @@ theorem comul_apply (r : R) : comul r = 1 ⊗ₜ[R] r := rfl
 
 @[simp]
 theorem counit_apply (r : R) : counit r = r := rfl
+
+instance : IsCocomm R R where comm_comp_comul := by ext; simp
 
 end CommSemiring
 
@@ -255,6 +273,9 @@ instance instCoalgebra : Coalgebra R (A × B) where
         ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
 
+instance [IsCocomm R A] [IsCocomm R B] : IsCocomm R (A × B) where
+  comm_comp_comul := by ext <;> simp [← TensorProduct.map_comm]
+
 end Prod
 
 namespace DFinsupp
@@ -317,6 +338,14 @@ instance instCoalgebra : Coalgebra R (Π₀ i, A i) where
       ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc comul, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq]
 
+instance instIsCocomm [∀ i, IsCocomm R (A i)] : IsCocomm R (Π₀ i, A i) where
+  comm_comp_comul := by
+    ext i : 1
+    -- TODO: Add `reassoc` for `LinearMap`. Then we wouldn't need to reassociate back and forth.
+    simp only [comp_assoc, comul_comp_lsingle]
+    simp only [← comp_assoc, ← TensorProduct.map_comp_comm_eq]
+    simp [LinearMap.comp_assoc]
+
 end DFinsupp
 
 namespace Finsupp
@@ -375,5 +404,13 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
       comp_assoc, ← comp_assoc comul, rTensor_comp_map, comul_comp_lsingle, ← map_comp_rTensor,
       ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc comul, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq]
+
+instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
+  comm_comp_comul := by
+    ext i : 1
+    -- TODO: Add `reassoc` for `LinearMap`. Then we wouldn't need to reassociate back and forth.
+    simp only [comp_assoc, comul_comp_lsingle]
+    simp only [← comp_assoc, ← TensorProduct.map_comp_comm_eq]
+    simp [LinearMap.comp_assoc]
 
 end Finsupp
