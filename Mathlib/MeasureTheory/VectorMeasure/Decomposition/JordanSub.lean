@@ -114,8 +114,8 @@ theorem toJordanDecomposition_toSignedMeasure_sub :
     (μ.toSignedMeasure - ν.toSignedMeasure).toJordanDecomposition =
       jordanDecompositionOfToSignedMeasureSub μ ν := by
   apply JordanDecomposition.toSignedMeasure_injective
-  rw [SignedMeasure.toSignedMeasure_toJordanDecomposition]
-  rw [jordanDecompositionOfToSignedMeasureSub_toSignedMeasure]
+  rw [SignedMeasure.toSignedMeasure_toJordanDecomposition,
+    jordanDecompositionOfToSignedMeasureSub_toSignedMeasure]
 
 end
 end MeasureTheory.Measure
