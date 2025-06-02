@@ -1046,9 +1046,9 @@ lemma krullDim_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [Partial
     obtain ⟨q, hq⟩ := h
     apply le_trans (Nat.mono_cast hq)
     rw [Nat.cast_add, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
-    apply add_le_add_right <| WithBot.mul_right_mono (n := m + 1) ?_ ?_
-    · exact Ne.symm (not_eq_of_beq_eq_false rfl)
+    apply add_le_add_right <| mul_le_mul_of_nonneg_left ?_ ?_
     · exact le_iSup (fun p ↦ (p.length : WithBot ℕ∞)) q
+    · exact right_eq_inf.mp rfl
   let q : List β := List.dedup (List.map f p.toList)
   have hq_lt : List.Chain' (· < ·) q := by
     apply List.Pairwise.chain'

@@ -580,13 +580,3 @@ lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n 
   · simp
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
-
-lemma WithBot.mul_left_mono {n : WithBot ℕ∞} (h : n ≠ ⊥) : Monotone (· * n) := fun x y h' ↦ by
-  cases x <;> cases y <;> cases n <;> simp_all
-  · rw [bot_mul']
-    split <;> simp_all
-  · norm_cast
-    exact mul_le_mul_right' h' _
-
-lemma WithBot.mul_right_mono {n : WithBot ℕ∞} (h : n ≠ ⊥) : Monotone (n * ·) := fun x y h' ↦ by
-  simpa only [mul_comm n x, mul_comm n y] using WithBot.mul_left_mono h h'
