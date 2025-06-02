@@ -106,12 +106,6 @@ end Mathlib.Meta.Positivity
 
 open BoundingSieve
 
-variable {s : BoundingSieve}
-
--- private abbrev BoundingSieve.ν := BoundingSieve.nu
-
--- private abbrev BoundingSieve.P := BoundingSieve.prodPrimes
-
 set_option quotPrecheck false
 set_option hygiene false
 
@@ -162,12 +156,12 @@ def unexpanderLevel : Unexpander
   | `($_level $_s) => `(y)
   | `($level) => `($level)
 
-
-
 theorem SelbergSieve.one_le_y {s : SelbergSieve} : 1 ≤ y := s.one_le_level
 
+variable {s : BoundingSieve}
 
 namespace BoundingSieve
+
 /-! Lemmas about $P$. -/
 
 theorem prodPrimes_ne_zero : P ≠ 0 := by
