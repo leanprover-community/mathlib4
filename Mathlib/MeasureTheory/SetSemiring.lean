@@ -317,7 +317,7 @@ section disjointOfUnion
 
 variable {j : Set α} {J : Finset (Set α)}
 
-open Set MeasureTheory Order
+open MeasureTheory Order
 
 theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     ∃ K : Set α → Finset (Set α),
