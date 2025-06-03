@@ -557,8 +557,9 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     (e : splitAtPred p (S k₁) = (L₁, o, L₂)) :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.move p k₁ k₂ q), s, S⟩
       ⟨some q, o, update (update S k₁ L₂) k₂ (L₁.reverseAux (S k₂))⟩ := by
-  induction' L₁ with a L₁ IH generalizing S s
-  · rw [(_ : [].reverseAux _ = _), Function.update_eq_self]
+  induction L₁ generalizing S s with
+  | nil =>
+    rw [(_ : [].reverseAux _ = _), Function.update_eq_self]
     swap
     · rw [Function.update_of_ne h₁.symm, List.reverseAux_nil]
     refine TransGen.head' rfl ?_
@@ -571,7 +572,8 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
       simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and, reduceCtorEq] at e ⊢
     simp only [e]
     rfl
-  · refine TransGen.head rfl ?_
+  | cons a L₁ IH =>
+    refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', Option.elim, TM2.stepAux, push']
     rcases e₁ : S k₁ with - | ⟨a', Sk⟩ <;> rw [e₁, splitAtPred] at e
     · cases e
@@ -614,8 +616,9 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
 
 theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p (S k) = (L₁, o, L₂)) :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.clear p k q), s, S⟩ ⟨some q, o, update S k L₂⟩ := by
-  induction' L₁ with a L₁ IH generalizing S s
-  · refine TransGen.head' rfl ?_
+  induction L₁ generalizing S s with
+  | nil =>
+    refine TransGen.head' rfl ?_
     rw [tr]; simp only [pop', TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
     revert e; rcases S k with - | ⟨a, Sk⟩ <;> intro e
     · cases e
@@ -625,7 +628,8 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
       simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and, reduceCtorEq] at e ⊢
     rcases e with ⟨e₁, e₂⟩
     rw [e₁, e₂]
-  · refine TransGen.head rfl ?_
+  | cons a L₁ IH =>
+    refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
     rcases e₁ : S k with - | ⟨a', Sk⟩ <;> rw [e₁, splitAtPred] at e
     · cases e
@@ -641,15 +645,17 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
 theorem copy_ok (q s a b c d) :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.copy q), s, K'.elim a b c d⟩
       ⟨some q, none, K'.elim (List.reverseAux b a) [] c (List.reverseAux b d)⟩ := by
-  induction' b with x b IH generalizing a d s
-  · refine TransGen.single ?_
+  induction b generalizing a d s with
+  | nil =>
+    refine TransGen.single ?_
     simp
-  refine TransGen.head rfl ?_
-  rw [tr]
-  simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_rev, List.head?_cons, Option.isSome_some,
-    List.tail_cons, elim_update_rev, ne_eq, Function.update_of_ne, elim_main, elim_update_main,
-    elim_stack, elim_update_stack, cond_true, List.reverseAux_cons, pop', push']
-  exact IH _ _ _
+  | cons x b IH =>
+    refine TransGen.head rfl ?_
+    rw [tr]
+    simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_rev, List.head?_cons, Option.isSome_some,
+      List.tail_cons, elim_update_rev, ne_eq, Function.update_of_ne, elim_main, elim_update_main,
+      elim_stack, elim_update_stack, cond_true, List.reverseAux_cons, pop', push']
+    exact IH _ _ _
 
 theorem trPosNum_natEnd : ∀ (n), ∀ x ∈ trPosNum n, natEnd x = false
   | PosNum.one, _, List.Mem.head _ => rfl
@@ -746,14 +752,17 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     refine h.trans ?_
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
-  induction' a with m IH m _ generalizing s <;> intro l₁
-  · refine ⟨Γ'.bit0 :: l₁, [Γ'.bit1], some Γ'.cons, rfl, TransGen.head rfl (TransGen.single ?_)⟩
+  induction a generalizing s with intro l₁
+  | one =>
+    refine ⟨Γ'.bit0 :: l₁, [Γ'.bit1], some Γ'.cons, rfl, TransGen.head rfl (TransGen.single ?_)⟩
     simp [trPosNum]
-  · obtain ⟨l₁', l₂', s', e, h⟩ := IH (Γ'.bit0 :: l₁)
+  | bit1 m IH =>
+    obtain ⟨l₁', l₂', s', e, h⟩ := IH (Γ'.bit0 :: l₁)
     refine ⟨l₁', l₂', s', e, TransGen.head ?_ h⟩
     simp [PosNum.succ, trPosNum]
     rfl
-  · refine ⟨l₁, _, some Γ'.bit0, rfl, TransGen.single ?_⟩
+  | bit0 m _ =>
+    refine ⟨l₁, _, some Γ'.bit0, rfl, TransGen.single ?_⟩
     simp only [TM2.step]; rw [tr]
     simp only [TM2.stepAux, pop', elim_main, elim_update_main, ne_eq, Function.update_of_ne,
       elim_rev, elim_update_rev, Function.update_self, Option.mem_def, Option.some.injEq]
@@ -788,14 +797,17 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     refine h.trans ?_
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
-  induction' a with m IH m IH generalizing s <;> intro l₁
-  · refine ⟨Γ'.bit1::l₁, [], some Γ'.cons, rfl, TransGen.head rfl (TransGen.single ?_)⟩
+  induction a generalizing s with intro l₁
+  | one =>
+    refine ⟨Γ'.bit1::l₁, [], some Γ'.cons, rfl, TransGen.head rfl (TransGen.single ?_)⟩
     simp [trPosNum, show PosNum.one.succ = PosNum.one.bit0 from rfl]
-  · obtain ⟨l₁', l₂', s', e, h⟩ := IH (some Γ'.bit0) (Γ'.bit1 :: l₁)
+  | bit1 m IH =>
+    obtain ⟨l₁', l₂', s', e, h⟩ := IH (some Γ'.bit0) (Γ'.bit1 :: l₁)
     refine ⟨l₁', l₂', s', e, TransGen.head ?_ h⟩
     simp
     rfl
-  · obtain ⟨a, l, e, h⟩ : ∃ a l, (trPosNum m = a::l) ∧ natEnd a = false := by
+  | bit0 m IH =>
+    obtain ⟨a, l, e, h⟩ : ∃ a l, (trPosNum m = a::l) ∧ natEnd a = false := by
       cases m <;> refine ⟨_, _, rfl, rfl⟩
     refine ⟨Γ'.bit0 :: l₁, _, some a, rfl, TransGen.single ?_⟩
     simp [trPosNum, PosNum.succ, e, h, show some Γ'.bit1 ≠ some Γ'.bit0 by decide,
@@ -855,7 +867,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
         (fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, rfl⟩
     refine (move₂_ok (by decide) ?_ (splitAtPred_false _)).trans ?_; · rfl
     simp only [TM2.step, Option.mem_def, Option.elim, elim_update_stack, elim_main,
-      List.append_nil, elim_update_main,  id_eq, elim_update_aux, ne_eq, Function.update_of_ne,
+      List.append_nil, elim_update_main, id_eq, elim_update_aux, ne_eq, Function.update_of_ne,
       elim_aux, elim_stack]
     exact h₂
   | cons₂ ns k IH =>

@@ -27,8 +27,8 @@ file, but the category-theoretic adjunction statement is in
 Here we use the following variables: `(α β : Type*) (A : Type*) [AddCommGroup A]`
 
 * `FreeAbelianGroup α` : the free abelian group on a type `α`. As an abelian
-group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
-many elements get mapped to zero, however this is not how it is implemented.
+  group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
+  many elements get mapped to zero, however this is not how it is implemented.
 
 * `lift f : FreeAbelianGroup α →+ A` : the group homomorphism induced
   by the map `f : α → A`.

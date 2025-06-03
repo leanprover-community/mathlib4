@@ -13,10 +13,10 @@ The definition of Lie algebras uses the `Bracket` typeclass for multiplication w
 separate `Mul` typeclass used for general algebras.
 
 It is useful to have a special typeclass for Lie algebras because:
- * it enables us to use the traditional notation `⁅x, y⁆` for the Lie multiplication,
- * associative algebras carry a natural Lie algebra structure via the ring commutator and so we
-   need them to carry both `Mul` and `Bracket` simultaneously,
- * more generally, Poisson algebras (not yet defined) need both typeclasses.
+* it enables us to use the traditional notation `⁅x, y⁆` for the Lie multiplication,
+* associative algebras carry a natural Lie algebra structure via the ring commutator and so we
+  need them to carry both `Mul` and `Bracket` simultaneously,
+* more generally, Poisson algebras (not yet defined) need both typeclasses.
 
 However there are times when it is convenient to be able to regard a Lie algebra as a general
 algebra and we provide some basic definitions for doing so here.

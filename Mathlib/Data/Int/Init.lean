@@ -101,8 +101,7 @@ where
   pos : ∀ n : ℕ, C (b + n)
   | 0 => cast (by simp) H0
   | n+1 => cast (by rw [Int.add_assoc]; rfl) <|
-    Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
-
+    Hs _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
   /-- The negative case of `Int.inductionOn'`. -/
   neg : ∀ n : ℕ, C (b + -[n+1])
   | 0 => Hp _ Int.le_rfl H0
@@ -272,8 +271,8 @@ lemma mul_dvd_of_dvd_div (hcb : c ∣ b) (h : a ∣ b / c) : c * a ∣ b :=
 lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
   dvd_ediv_of_mul_dvd h
 
-@[simp] lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
-  dvd_ediv_iff_mul_dvd hbc
+lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b := by
+  simp [hbc]
 
 /-- If `n > 0` then `m` is not divisible by `n` iff it is between `n * k` and `n * (k + 1)`
   for some `k`. -/
@@ -319,7 +318,7 @@ def natMod (m n : ℤ) : ℕ := (m % n).toNat
 lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
   (toNat_lt'' hn).2 <| emod_lt_of_pos _ <| by omega
 
-/-- For use in `Mathlib.Tactic.NormNum.Pow` -/
+/-- For use in `Mathlib/Tactic/NormNum/Pow.lean` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
 
 end Int

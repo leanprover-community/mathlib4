@@ -18,21 +18,21 @@ This file defines the group law on nonsingular projective points.
 
 ## Main definitions
 
- * `WeierstrassCurve.Projective.neg`: the negation of a point representative.
- * `WeierstrassCurve.Projective.negMap`: the negation of a point class.
- * `WeierstrassCurve.Projective.add`: the addition of two point representatives.
- * `WeierstrassCurve.Projective.addMap`: the addition of two point classes.
- * `WeierstrassCurve.Projective.Point`: a nonsingular projective point.
- * `WeierstrassCurve.Projective.Point.neg`: the negation of a nonsingular projective point.
- * `WeierstrassCurve.Projective.Point.add`: the addition of two nonsingular projective points.
- * `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the type of
+* `WeierstrassCurve.Projective.neg`: the negation of a point representative.
+* `WeierstrassCurve.Projective.negMap`: the negation of a point class.
+* `WeierstrassCurve.Projective.add`: the addition of two point representatives.
+* `WeierstrassCurve.Projective.addMap`: the addition of two point classes.
+* `WeierstrassCurve.Projective.Point`: a nonsingular projective point.
+* `WeierstrassCurve.Projective.Point.neg`: the negation of a nonsingular projective point.
+* `WeierstrassCurve.Projective.Point.add`: the addition of two nonsingular projective points.
+* `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the type of
     nonsingular projective points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
 
 ## Main statements
 
- * `WeierstrassCurve.Projective.nonsingular_neg`: negation preserves the nonsingular condition.
- * `WeierstrassCurve.Projective.nonsingular_add`: addition preserves the nonsingular condition.
- * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular projective points
+* `WeierstrassCurve.Projective.nonsingular_neg`: negation preserves the nonsingular condition.
+* `WeierstrassCurve.Projective.nonsingular_add`: addition preserves the nonsingular condition.
+* `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular projective points
     forms an abelian group under addition.
 
 ## Implementation notes

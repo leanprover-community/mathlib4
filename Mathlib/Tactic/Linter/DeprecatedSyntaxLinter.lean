@@ -28,7 +28,7 @@ This linter is an incentive to discourage uses of such deprecated syntax, withou
 It is not inherently limited to tactics.
 -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter.Style
 
@@ -77,8 +77,7 @@ register_option linter.style.maxHeartbeats : Bool := {
 where `<option>` contains `maxHeartbeats`, then it returns
 * the `<option>`, as a name (typically, `maxHeartbeats` or `synthInstance.maxHeartbeats`);
 * the number `num` and
-* whatever is in `<string>`.
-Note that `<string>` can only consist of whitespace and comments.
+* whatever is in `<string>`. Note that `<string>` can only consist of whitespace and comments.
 
 Otherwise, it returns `none`.
 -/
@@ -140,10 +139,10 @@ replacement syntax. For each individual case, linting can be turned on or off se
   (controlled by `linter.style.maxHeartbeats`)
 -/
 def deprecatedSyntaxLinter : Linter where run stx := do
-  unless Linter.getLinterValue linter.style.refine (← getOptions) ||
-      Linter.getLinterValue linter.style.cases (← getOptions) ||
-      Linter.getLinterValue linter.style.admit (← getOptions) ||
-      Linter.getLinterValue linter.style.maxHeartbeats (← getOptions) do
+  unless getLinterValue linter.style.refine (← getLinterOptions) ||
+      getLinterValue linter.style.cases (← getLinterOptions) ||
+      getLinterValue linter.style.admit (← getLinterOptions) ||
+      getLinterValue linter.style.maxHeartbeats (← getLinterOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
