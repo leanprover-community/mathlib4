@@ -79,8 +79,8 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       exact le_iSup_iff.mpr fun _ h ↦ h q'
 
 omit [IsNoetherianRing R] [IsLocalRing R] in
-/-- If $M$ is a finite module over a comm ring $R$, then $\dim M/xM + 1 \le \dim M$
-  for all $M$-regular element $x$. -/
+/-- If $M$ is a finite module over a comm ring $R$, $x \in M$ is not in any minimal prime of $M$,
+  then $\dim M/xM + 1 \le \dim M$. -/
 theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) :
     supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
