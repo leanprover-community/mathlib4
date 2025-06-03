@@ -1066,6 +1066,36 @@ lemma three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S
 
 set_option maxHeartbeats 600000
 
+
+lemma closure_iterate_mulact (T: Type*) [Group T] [DecidableEq T] (a b: T) (n: ℕ)
+  (conj_in: (a^n * b * a^(-n : ℤ)) ∈ (Subgroup.closure (G := T) (Set.image (fun (m: ℕ) => a^m * b * a^(-m : ℤ)) (Set.Ico 0 n)))) :
+ (Subgroup.closure (G := T) (Set.image (fun (m: ℕ) => a^m * b * a^(-m : ℤ)) (Set.Ico 0 n) )) = (Subgroup.closure (G := T) (Set.range (fun (m : ℕ) => a^m * b * a^(-m : ℤ)))) := by
+  ext x
+  refine ⟨?_, ?_⟩
+  .
+    intro hx
+    apply Subgroup.closure_mono (h := (fun (m: ℕ) ↦ a ^ m * b * a ^ (-m : ℤ)) '' Set.Ico 0 n)
+    .
+      intro y hy
+      simp at hy
+      simp
+      obtain ⟨m, hm, y_eq⟩ := hy
+      use m
+    . exact hx
+  .
+    intro hx
+    induction hx using Subgroup.closure_induction with
+    | mem y hy => sorry
+    | one => apply Subgroup.one_mem
+    | mul y z hy hz y_mem z_mem =>
+      apply Subgroup.mul_mem
+      . exact y_mem
+      . exact z_mem
+    | inv y hy y_mem =>
+      apply Subgroup.inv_mem _ y_mem
+
+
+
 --- Consequence of `three_two_poly_growth` - the set of all 'γ^n *e_i γ^(-n)' is contained the closure of S_n
 lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1)
   : ∃ n, ∀ m, (Finset.image (gamma_m_helper (S := S) (G := G) φ γ m) Finset.univ).toSet ⊆ Subgroup.closure (three_two_S_n (G := G) (S := S) φ γ (n)).toSet := by
