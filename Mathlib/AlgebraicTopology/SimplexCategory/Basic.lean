@@ -368,10 +368,8 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   | cast k =>
     cases k using Fin.cases with
     | zero =>
-      rw [Fin.castSucc_zero, Fin.predAbove_of_le_castSucc _ 0 (Fin.zero_le _),
-      Fin.predAbove_of_le_castSucc _ _ (Fin.zero_le _), Fin.castPred_zero,
-      Fin.predAbove_of_le_castSucc _ 0 (Fin.zero_le _),
-      Fin.predAbove_of_le_castSucc _ _ (Fin.zero_le _)]
+      ext
+      simp
     | succ k =>
       rcases le_or_lt i k with (h | h)
       · simp_rw [Fin.predAbove_of_castSucc_lt i.castSucc _ (Fin.castSucc_lt_castSucc_iff.mpr
@@ -411,11 +409,15 @@ lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n+1⦌) (j : Fin (n+2))
   dsimp [factor_δ, δ, σ]
   cases j using cases with
   | zero =>
-    rw [predAbove_of_le_castSucc _ _ (zero_le _), castPred_zero, predAbove_of_castSucc_lt 0 _
-    (castSucc_zero ▸ pos_of_ne_zero hj),
-    zero_succAbove, succ_pred]
+    ext
+    unfold predAbove
+    simp only [castSucc_zero, lt_self_iff_false, ↓reduceDIte]
+    split
+    · simp
+    · simp only [zero_succAbove, val_succ, coe_castPred]
+      simp_all
   | succ j =>
-    rw [predAbove_of_castSucc_lt 0 _ (castSucc_zero ▸ succ_pos _), pred_succ]
+    rw [predAbove_of_castSucc_lt 0 _ (by simp), pred_succ]
     rcases hj.lt_or_lt with (hj | hj)
     · rw [predAbove_of_le_castSucc j _]
       swap

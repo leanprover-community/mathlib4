@@ -181,8 +181,7 @@ theorem multiple_mem_span_of_mem_localization_span
   rcases hs _ hz with ⟨t, ht⟩
   refine ⟨t * s', t * y', _, (Submodule.span R (s : Set N)).smul_mem s' ht, ?_⟩
   rw [smul_add, ← smul_smul, mul_comm, ← smul_smul, ← smul_smul, ← e, mul_comm, ← Algebra.smul_def]
-  simp
-  rfl
+  simp [Submonoid.smul_def]
 
 /-- If `S` is an `R' = M⁻¹R` algebra, and `x ∈ adjoin R' s`,
 then `t • x ∈ adjoin R s` for some `t : M`. -/

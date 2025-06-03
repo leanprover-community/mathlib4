@@ -3,8 +3,8 @@ Copyright (c) 2021 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Geometry.Convex.Cone.Basic
 
 /-!
 # Convex cones in inner product spaces
