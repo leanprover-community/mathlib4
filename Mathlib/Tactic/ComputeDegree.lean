@@ -134,7 +134,7 @@ theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coef
 
 section congr_lemmas
 
-/--  The following two lemmas should be viewed as a hand-made "congr"-lemmas.
+/-- The following two lemmas should be viewed as a hand-made "congr"-lemmas.
 They achieve the following goals.
 * They introduce *two* fresh metavariables replacing the given one `deg`,
   one for the `natDegree ≤` computation and one for the `coeff =` computation.
@@ -152,7 +152,7 @@ theorem natDegree_eq_of_le_of_coeff_ne_zero' {deg m o : ℕ} {c : R} {p : R[X]}
   exact natDegree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
 theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R[X]}
-    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p (WithBot.unbot' 0 deg) = c)
+    (h_deg_le : degree p ≤ m) (coeff_eq : coeff p (WithBot.unbotD 0 deg) = c)
     (coeff_ne_zero : c ≠ 0) (deg_eq_deg : m = deg) (coeff_eq_deg : o = deg) :
     degree p = deg := by
   subst coeff_eq coeff_eq_deg deg_eq_deg
@@ -161,10 +161,13 @@ theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R
   · obtain ⟨m, rfl⟩ := WithBot.ne_bot_iff_exists.mp hh
     exact degree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
-variable {m n : ℕ} {f : R[X]} {r : R} (h : coeff f m = r) (natDeg_eq_coeff : m = n)
+variable {m n : ℕ} {f : R[X]} {r : R}
 
-theorem coeff_congr_lhs : coeff f n = r := natDeg_eq_coeff ▸ h
-theorem coeff_congr {s : R} (rs : r = s) : coeff f n = s := natDeg_eq_coeff ▸ rs ▸ h
+theorem coeff_congr_lhs (h : coeff f m = r) (natDeg_eq_coeff : m = n) : coeff f n = r :=
+  natDeg_eq_coeff ▸ h
+theorem coeff_congr (h : coeff f m = r) (natDeg_eq_coeff : m = n) {s : R} (rs : r = s) :
+    coeff f n = s :=
+  natDeg_eq_coeff ▸ rs ▸ h
 
 end congr_lemmas
 
@@ -211,7 +214,7 @@ Sample outputs:
 * `degree (f * g) = d => (degree, Eq, HMul.hMul, d.isMVar, none)` (similarly for `≤`);
 * `coeff (1 : ℕ[X]) c = x => (coeff, Eq, one, x.isMVar, c.isMVar)` (no `≤` option!).
 -/
-def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.run do
+def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id.run do
   let (eq_or_le, lhs, rhs) ← match e.getAppFnArgs with
     | (na@``Eq, #[_, lhs, rhs])       => pure (na, lhs, rhs)
     | (na@``LE.le, #[_, _, lhs, rhs]) => pure (na, lhs, rhs)
@@ -288,7 +291,7 @@ Using the information contained in `twoH`, it decides which lemma is the most ap
 --  Internally, `dispatchLemma` produces 3 names: these are the lemmas that are appropriate
 --  for goals of the form `natDegree f ≤ d`, `degree f ≤ d`, `coeff f d = a`, in this order.
 def dispatchLemma
-    (twoH : Name × Name × Sum Name Name × List Bool) (debug : Bool := false) : Name :=
+    (twoH : Name × Name × (Name ⊕ Name) × List Bool) (debug : Bool := false) : Name :=
   match twoH with
     | (.anonymous, _, _) => ``id -- `twoH` gave default value, so we do nothing
     | (_, .anonymous, _) => ``id -- `twoH` gave default value, so we do nothing
@@ -367,7 +370,7 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
         else pure [g]
       | none =>
         return [g]
-  return (assignable.join ++ tried_rfl.join)
+  return (assignable.flatten ++ tried_rfl.flatten)
 
 /--
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
@@ -385,22 +388,22 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
   let progress := ← can_progress.mapM fun mv => do
     let lem := dispatchLemma <| twoHeadsArgs (← mv.getType'')
     mv.applyConst <| lem
-  return (progress.join, static ++ curr_static)
+  return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
-   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
+  (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
 *  a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
 if `norm_num`med.
 `miscomputedDegree?` extracts error information from goals of the form
 *  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
-   -- reducing to `False` means that the coefficient that was supposed to vanish, does not;
+  --- reducing to `False` means that the coefficient that was supposed to vanish, does not;
 *  `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
-   -- reducing to `False` means that there is a term of degree that is apparently too large;
+  --- reducing to `False` means that there is a term of degree that is apparently too large;
 *  `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree`
-   -- reducing to `False` means that there is a term of degree that is apparently too large.
+  --- reducing to `False` means that there is a term of degree that is apparently too large.
 
 The cases `a ≠ b` and `a = b` are not a perfect match with the top coefficient:
 reducing to `False` is not exactly correlated with a coefficient being non-zero.
@@ -428,14 +431,14 @@ def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
 *  `degree f ≤ d`,
 *  `coeff f d = r`, if `d` is the degree of `f`.
 
-The tactic may leave goals of the form `d' = d` `d' ≤ d`, or `r ≠ 0`, where `d'` in `ℕ` or
+The tactic may leave goals of the form `d' = d`, `d' ≤ d`, or `r ≠ 0`, where `d'` in `ℕ` or
 `WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the
 leading coefficient of `f`.
 
-`compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to clos them.
+`compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to close them.
 
 The variant `compute_degree!` first applies `compute_degree`.
-Then it uses `norm_num` on all the whole remaining goals and tries `assumption`.
+Then it uses `norm_num` on all the remaining goals and tries `assumption`.
 -/
 syntax (name := computeDegree) "compute_degree" "!"? : tactic
 
@@ -468,7 +471,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
       evalTactic
         (← `(tactic| try any_goals conv_lhs =>
-                       (simp (config := {decide := true}) only [Nat.cast_withBot]; norm_num)))
+                       (simp +decide only [Nat.cast_withBot]; norm_num)))
       if bang.isSome then
         let mut false_goals : Array MVarId := #[]
         let mut new_goals : Array MVarId := #[]

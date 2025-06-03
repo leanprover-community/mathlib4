@@ -3,6 +3,7 @@ Copyright (c) 2023 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
+import Mathlib.Logic.Small.Set
 import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
@@ -64,13 +65,15 @@ theorem finallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : FinallySmall
   FinallySmall.mk' (equivSmallModel.{w} J).inverse
 
 variable {J}
-variable {K : Type u₁} [Category.{v₁} K] (F : K ⥤ J) [Final F]
+variable {K : Type u₁} [Category.{v₁} K]
 
-theorem finallySmall_of_final_of_finallySmall [FinallySmall.{w} K] : FinallySmall.{w} J :=
+theorem finallySmall_of_final_of_finallySmall [FinallySmall.{w} K] (F : K ⥤ J) [Final F] :
+    FinallySmall.{w} J :=
   suffices Final ((fromFinalModel K) ⋙ F) from .mk' ((fromFinalModel K) ⋙ F)
   final_comp _ _
 
-theorem finallySmall_of_final_of_essentiallySmall [EssentiallySmall.{w} K] : FinallySmall.{w} J :=
+theorem finallySmall_of_final_of_essentiallySmall [EssentiallySmall.{w} K] (F : K ⥤ J) [Final F] :
+    FinallySmall.{w} J :=
   have := finallySmall_of_essentiallySmall K
   finallySmall_of_final_of_finallySmall F
 
@@ -111,14 +114,15 @@ theorem initiallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : InitiallyS
   InitiallySmall.mk' (equivSmallModel.{w} J).inverse
 
 variable {J}
-variable {K : Type u₁} [Category.{v₁} K] (F : K ⥤ J) [Initial F]
+variable {K : Type u₁} [Category.{v₁} K]
 
-theorem initiallySmall_of_initial_of_initiallySmall [InitiallySmall.{w} K] : InitiallySmall.{w} J :=
+theorem initiallySmall_of_initial_of_initiallySmall [InitiallySmall.{w} K]
+    (F : K ⥤ J) [Initial F] : InitiallySmall.{w} J :=
   suffices Initial ((fromInitialModel K) ⋙ F) from .mk' ((fromInitialModel K) ⋙ F)
   initial_comp _ _
 
-theorem initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K] :
-    InitiallySmall.{w} J :=
+theorem initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K]
+    (F : K ⥤ J) [Initial F] : InitiallySmall.{w} J :=
   have := initiallySmall_of_essentiallySmall K
   initiallySmall_of_initial_of_initiallySmall F
 
@@ -138,8 +142,8 @@ theorem FinallySmall.exists_small_weakly_terminal_set [FinallySmall.{w} J] :
 variable {J} in
 theorem finallySmall_of_small_weakly_terminal_set [IsFilteredOrEmpty J] (s : Set J) [Small.{v} s]
     (hs : ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j)) : FinallySmall.{v} J := by
-  suffices Functor.Final (fullSubcategoryInclusion (· ∈ s)) from
-    finallySmall_of_final_of_essentiallySmall (fullSubcategoryInclusion (· ∈ s))
+  suffices Functor.Final (ObjectProperty.ι (· ∈ s)) from
+    finallySmall_of_final_of_essentiallySmall (ObjectProperty.ι (· ∈ s))
   refine Functor.final_of_exists_of_isFiltered_of_fullyFaithful _ (fun i => ?_)
   obtain ⟨j, hj₁, hj₂⟩ := hs i
   exact ⟨⟨j, hj₁⟩, hj₂⟩
@@ -156,7 +160,7 @@ section WeaklyInitial
 
 variable (J : Type u) [Category.{v} J]
 
-/-- The converse is true if `J` is cofiltered, see `intiallySmall_of_small_weakly_initial_set`. -/
+/-- The converse is true if `J` is cofiltered, see `initiallySmall_of_small_weakly_initial_set`. -/
 theorem InitiallySmall.exists_small_weakly_initial_set [InitiallySmall.{w} J] :
     ∃ (s : Set J) (_ : Small.{w} s), ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i) := by
   refine ⟨Set.range (fromInitialModel J).obj, inferInstance, fun i => ?_⟩
@@ -166,8 +170,8 @@ theorem InitiallySmall.exists_small_weakly_initial_set [InitiallySmall.{w} J] :
 variable {J} in
 theorem initiallySmall_of_small_weakly_initial_set [IsCofilteredOrEmpty J] (s : Set J) [Small.{v} s]
     (hs : ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i)) : InitiallySmall.{v} J := by
-  suffices Functor.Initial (fullSubcategoryInclusion (· ∈ s)) from
-    initiallySmall_of_initial_of_essentiallySmall (fullSubcategoryInclusion (· ∈ s))
+  suffices Functor.Initial (ObjectProperty.ι (· ∈ s)) from
+    initiallySmall_of_initial_of_essentiallySmall (ObjectProperty.ι (· ∈ s))
   refine Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful _ (fun i => ?_)
   obtain ⟨j, hj₁, hj₂⟩ := hs i
   exact ⟨⟨j, hj₁⟩, hj₂⟩

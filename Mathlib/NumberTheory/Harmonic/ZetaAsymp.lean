@@ -3,8 +3,8 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.ZetaFunction
-import Mathlib.NumberTheory.Harmonic.EulerMascheroni
+import Mathlib.NumberTheory.LSeries.RiemannZeta
+import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
 /-!
 # Asymptotics of `ζ s` as `s → 1`
@@ -15,6 +15,8 @@ The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s →
 
 * `tendsto_riemannZeta_sub_one_div`: the limit of `ζ s - 1 / (s - 1)`, at the filter of punctured
   neighbourhoods of 1 in `ℂ`, exists and is equal to the Euler-Mascheroni constant `γ`.
+* `riemannZeta_one_ne_zero`: with our definition of `ζ 1` (which is characterised as the limit of
+  `ζ s - 1 / (s - 1) / Gammaℝ s` as `s → 1`), we have `ζ 1 ≠ 0`.
 
 ### Outline of arguments
 
@@ -27,13 +29,15 @@ exists and is equal to `γ`. Finally, using this and the Riemann removable singu
 we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 -/
 
-open Real BigOperators Set MeasureTheory Filter Topology
+open Real Set MeasureTheory Filter Topology
+
+@[inherit_doc] local notation "γ" => eulerMascheroniConstant
 
 namespace ZetaAsymptotics
 -- since the intermediate lemmas are of little interest in themselves we put them in a namespace
 
 /-!
-## Definitions
+## Definitions
 -/
 
 /-- Auxiliary function used in studying zeta-function asymptotics. -/
@@ -54,7 +58,7 @@ lemma term_nonneg (n : ℕ) (s : ℝ) : 0 ≤ term n s := by
 lemma term_welldef {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 0 < s) :
     IntervalIntegrable (fun x : ℝ ↦ (x - n) / x ^ (s + 1)) volume n (n + 1) := by
   rw [intervalIntegrable_iff_integrableOn_Icc_of_le (by linarith)]
-  refine (ContinuousAt.continuousOn fun x hx ↦ ContinuousAt.div ?_ ?_ ?_).integrableOn_Icc
+  refine (continuousOn_of_forall_continuousAt fun x hx ↦ ContinuousAt.div ?_ ?_ ?_).integrableOn_Icc
   · fun_prop
   · apply continuousAt_id.rpow_const (Or.inr <| by linarith)
   · exact (rpow_pos_of_pos ((Nat.cast_pos.mpr hn).trans_le hx.1) _).ne'
@@ -98,17 +102,19 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
       rw [integral_rpow]
       · simp_rw [sub_div, (by norm_num : (-2 : ℝ) + 1 = -1), div_neg, div_one, neg_sub_neg,
           rpow_neg_one, ← one_div]
-      · refine Or.inr ⟨by norm_num, not_mem_uIcc_of_lt ?_ ?_⟩
+      · refine Or.inr ⟨by norm_num, notMem_uIcc_of_lt ?_ ?_⟩
         all_goals positivity
     _ = log (↑n + 1) - log ↑n - 1 / (↑n + 1) := by
       congr 1
       field_simp
 
 lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
-  induction' N with N hN
-  · simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
+  induction N with
+  | zero =>
+    simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
       Nat.cast_zero, zero_add, Nat.cast_one, inv_one, Rat.cast_one, log_one, sub_add_cancel]
-  · unfold term_sum at hN ⊢
+  | succ N hN =>
+    unfold term_sum at hN ⊢
     rw [Finset.sum_range_succ, hN, harmonic_succ (N + 1),
       term_one (by positivity : 0 < N + 1)]
     push_cast
@@ -117,14 +123,14 @@ lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1
 /-- The topological sum of `ZetaAsymptotics.term (n + 1) 1` over all `n : ℕ` is `1 - γ`. This is
 proved by directly evaluating the sum of the first `N` terms and using the limit definition of `γ`.
 -/
-lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - eulerMascheroniConstant) := by
+lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - γ) := by
   rw [hasSum_iff_tendsto_nat_of_nonneg (fun n ↦ term_nonneg (n + 1) 1)]
   show Tendsto (fun N ↦ term_sum 1 N) atTop _
   simp_rw [term_sum_one, sub_eq_neg_add]
   refine Tendsto.add ?_ tendsto_const_nhds
   have := (tendsto_eulerMascheroniSeq'.comp (tendsto_add_atTop_nat 1)).neg
-  refine this.congr' (eventually_of_forall (fun n ↦ ?_))
-  simp_rw [Function.comp_apply, eulerMascheroniSeq', if_false]
+  refine this.congr' (Eventually.of_forall (fun n ↦ ?_))
+  simp_rw [Function.comp_apply, eulerMascheroniSeq', reduceCtorEq, if_false]
   push_cast
   abel
 
@@ -153,7 +159,7 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
     _ = (∫ x : ℝ in n..(n + 1), x ^ (-s)) - n * (∫ x : ℝ in n..(n + 1), x ^ (-(s + 1))) := by
       rw [intervalIntegral.integral_sub, intervalIntegral.integral_const_mul] <;>
       [skip; apply IntervalIntegrable.const_mul] <;>
-      · refine intervalIntegral.intervalIntegrable_rpow (Or.inr <| not_mem_uIcc_of_lt ?_ ?_)
+      · refine intervalIntegral.intervalIntegrable_rpow (Or.inr <| notMem_uIcc_of_lt ?_ ?_)
         · exact_mod_cast hn
         · linarith
     _ = 1 / (s - 1) * (1 / n ^ (s - 1) - 1 / (n + 1) ^ (s - 1))
@@ -173,15 +179,17 @@ lemma term_sum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
   conv => enter [1, 2, n]; rw [term_of_lt (by simp) hs]
   rw [Finset.sum_sub_distrib]
   congr 1
-  · induction' N with N hN
-    · simp
-    · rw [Finset.sum_range_succ, hN, Nat.cast_add_one]
+  · induction N with
+    | zero => simp
+    | succ N hN =>
+      rw [Finset.sum_range_succ, hN, Nat.cast_add_one]
       ring_nf
   · simp_rw [mul_comm (_ / _), ← mul_div_assoc, div_eq_mul_inv _ s, ← Finset.sum_mul, mul_one]
     congr 1
-    induction' N with N hN
-    · simp
-    · simp_rw [Finset.sum_range_succ, hN, Nat.cast_add_one, sub_eq_add_neg, add_assoc]
+    induction N with
+    | zero => simp
+    | succ N hN =>
+      simp_rw [Finset.sum_range_succ, hN, Nat.cast_add_one, sub_eq_add_neg, add_assoc]
       congr 1
       ring_nf
 
@@ -240,24 +248,24 @@ section continuity
 lemma continuousOn_term (n : ℕ) :
     ContinuousOn (fun x ↦ term (n + 1) x) (Ici 1) := by
   -- TODO: can this be shortened using the lemma
-  -- `continuous_parametric_intervalIntegral_of_continuous'` from #11185?
+  -- `continuous_parametric_intervalIntegral_of_continuous'` from https://github.com/leanprover-community/mathlib4/pull/11185?
   simp only [term, intervalIntegral.integral_of_le (by linarith : (↑(n + 1) : ℝ) ≤ ↑(n + 1) + 1)]
   apply continuousOn_of_dominated (bound := fun x ↦ (x - ↑(n + 1)) / x ^ (2 : ℝ))
   · exact fun s hs ↦ (term_welldef (by simp) (zero_lt_one.trans_le hs)).1.1
   · intro s (hs : 1 ≤ s)
     rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
-    have : 0 < x := lt_trans (by positivity) hx.1
+    have : 1 < x := lt_of_le_of_lt (by simp) hx.1
     rw [norm_of_nonneg (div_nonneg (sub_nonneg.mpr hx.1.le) (by positivity)), Nat.cast_add_one]
-    apply div_le_div_of_nonneg_left
+    gcongr
     · exact_mod_cast sub_nonneg.mpr hx.1.le
-    · positivity
-    · exact rpow_le_rpow_of_exponent_le (le_trans (by simp) hx.1.le) (by linarith)
+    · exact this.le
+    · linarith
   · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
-    exact_mod_cast term_welldef (by linarith : 0 < (n + 1)) zero_lt_one
+    exact_mod_cast term_welldef (by omega : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
-    refine ContinuousAt.continuousOn (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)
+    refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)
     · exact continuousAt_const.rpow (continuousAt_id.add continuousAt_const) (Or.inr (by linarith))
     · exact (rpow_pos_of_pos ((Nat.cast_pos.mpr (by simp)).trans hx.1) _).ne'
 
@@ -270,21 +278,20 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     refine setIntegral_mono_on ?_ ?_ measurableSet_Ioc (fun x hx ↦ ?_)
     · exact (term_welldef n.succ_pos (zero_lt_one.trans_le hs)).1
     · exact (term_welldef n.succ_pos zero_lt_one).1
-    · rw [div_le_div_left] -- leave side-goals to end and kill them all together
-      · apply rpow_le_rpow_of_exponent_le
-        · exact (lt_of_le_of_lt (by simp) hx.1).le
-        · linarith [mem_Ici.mp hs]
-      · linarith [hx.1]
-      all_goals apply rpow_pos_of_pos ((Nat.cast_nonneg _).trans_lt hx.1)
+    · have : 1 ≤ x := le_trans (by simp) hx.1.le
+      gcongr
+      · exact sub_nonneg.mpr hx.1.le
+      · assumption
+      · exact hs
   · rw [intervalIntegral.integral_of_le (by linarith)]
     refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
     all_goals linarith [hx.1]
 
 /-- First version of the limit formula, with a limit over real numbers tending to 1 from above. -/
 lemma tendsto_riemannZeta_sub_one_div_nhds_right :
-    Tendsto (fun s : ℝ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[>] 1) (𝓝 eulerMascheroniConstant) := by
+    Tendsto (fun s : ℝ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[>] 1) (𝓝 γ) := by
   suffices Tendsto (fun s : ℝ ↦ (∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) - 1 / (s - 1))
-    (𝓝[>] 1) (𝓝 eulerMascheroniConstant) by
+    (𝓝[>] 1) (𝓝 γ) by
     apply ((Complex.continuous_ofReal.tendsto _).comp this).congr'
     filter_upwards [self_mem_nhdsWithin] with s hs
     simp only [Function.comp_apply, Complex.ofReal_sub, Complex.ofReal_div,
@@ -308,12 +315,12 @@ lemma tendsto_riemannZeta_sub_one_div_nhds_right :
 
 /-- The function `ζ s - 1 / (s - 1)` tends to `γ` as `s → 1`. -/
 theorem _root_.tendsto_riemannZeta_sub_one_div :
-    Tendsto (fun s : ℂ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[≠] 1) (𝓝 eulerMascheroniConstant) := by
+    Tendsto (fun s : ℂ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[≠] 1) (𝓝 γ) := by
   -- We use the removable-singularity theorem to show that *some* limit over `𝓝[≠] (1 : ℂ)` exists,
   -- and then use the previous result to deduce that this limit must be `γ`.
   let f (s : ℂ) := riemannZeta s - 1 / (s - 1)
   suffices ∃ C, Tendsto f (𝓝[≠] 1) (𝓝 C) by
-    cases' this with C hC
+    obtain ⟨C, hC⟩ := this
     suffices Tendsto (fun s : ℝ ↦ f s) _ _
       from (tendsto_nhds_unique this tendsto_riemannZeta_sub_one_div_nhds_right) ▸ hC
     refine hC.comp (tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_)
@@ -346,5 +353,72 @@ lemma _root_.isBigO_riemannZeta_sub_one_div {F : Type*} [Norm F] [One F] [NormOn
      tendsto_riemannZeta_sub_one_div.isBigO_one (F := F)
 
 end continuity
+
+section val_at_one
+
+open Complex
+
+lemma tendsto_Gamma_term_aux : Tendsto (fun s ↦ 1 / (s - 1) - 1 / Gammaℝ s / (s - 1)) (𝓝[≠] 1)
+    (𝓝 (-(γ + Complex.log (4 * ↑π)) / 2)) := by
+  have h := hasDerivAt_Gammaℝ_one
+  rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, Gammaℝ_one] at h
+  have := h.div (hasDerivAt_Gammaℝ_one.continuousAt.tendsto.mono_left nhdsWithin_le_nhds)
+    (Gammaℝ_one.trans_ne one_ne_zero)
+  rw [Gammaℝ_one, div_one] at this
+  refine this.congr' ?_
+  have : {z | 0 < re z} ∈ 𝓝 (1 : ℂ) := by
+    apply (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds
+    simp only [mem_preimage, one_re, mem_Ioi, zero_lt_one]
+  rw [EventuallyEq, eventually_nhdsWithin_iff]
+  filter_upwards [this] with a ha _
+  rw [Pi.div_apply, ← sub_div, div_right_comm, sub_div' (Gammaℝ_ne_zero_of_re_pos ha), one_mul]
+
+lemma tendsto_riemannZeta_sub_one_div_Gammaℝ :
+    Tendsto (fun s ↦ riemannZeta s - 1 / Gammaℝ s / (s - 1)) (𝓝[≠] 1)
+    (𝓝 ((γ - Complex.log (4 * ↑π)) / 2)) := by
+  have := tendsto_riemannZeta_sub_one_div.add tendsto_Gamma_term_aux
+  simp_rw [sub_add_sub_cancel] at this
+  convert this using 2
+  ring_nf
+
+/-- Formula for `ζ 1`. Note that mathematically `ζ 1` is undefined, but our construction ascribes
+this particular value to it. -/
+lemma _root_.riemannZeta_one : riemannZeta 1 = (γ - Complex.log (4 * ↑π)) / 2 := by
+  have := (HurwitzZeta.tendsto_hurwitzZetaEven_sub_one_div_nhds_one 0).mono_left
+    <| nhdsWithin_le_nhds (s := {1}ᶜ)
+  simp only [HurwitzZeta.hurwitzZetaEven_zero, div_right_comm _ _ (Gammaℝ _)] at this
+  exact tendsto_nhds_unique this tendsto_riemannZeta_sub_one_div_Gammaℝ
+
+/-- Formula for `Λ 1`. Note that mathematically `Λ 1` is undefined, but our construction ascribes
+this particular value to it. -/
+lemma _root_.completedRiemannZeta_one :
+    completedRiemannZeta 1 = (γ - Complex.log (4 * ↑π)) / 2 :=
+  (riemannZeta_one ▸ div_one (_ : ℂ) ▸ Gammaℝ_one ▸ riemannZeta_def_of_ne_zero one_ne_zero).symm
+
+/-- Formula for `Λ₀ 1`, where `Λ₀` is the entire function satisfying
+`Λ₀ s = π ^ (-s / 2) Γ(s / 2) ζ(s) + 1 / s + 1 / (1 - s)` away from `s = 0, 1`.
+
+Note that `s = 1` is _not_ a pole of `Λ₀`, so this statement (unlike `riemannZeta_one`) is
+a mathematically meaningful statement and is not dependent on Mathlib's particular conventions for
+division by zero. -/
+lemma _root_.completedRiemannZeta₀_one :
+    completedRiemannZeta₀ 1 = (γ - Complex.log (4 * ↑π)) / 2 + 1 := by
+  have := completedRiemannZeta_eq 1
+  rw [sub_self, div_zero, div_one, sub_zero, eq_sub_iff_add_eq] at this
+  rw [← this, completedRiemannZeta_one]
+
+/-- With Mathlib's particular conventions, we have `ζ 1 ≠ 0`. -/
+lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
+  -- This one's for you, Kevin.
+  suffices (γ - (4 * π).log) / 2 ≠ 0 by
+    simpa only [riemannZeta_one, ← ofReal_ne_zero, ofReal_log (by positivity : 0 ≤ 4 * π),
+      push_cast]
+  refine div_ne_zero (sub_lt_zero.mpr (lt_trans ?_ ?_ (b := 1))).ne two_ne_zero
+  · exact Real.eulerMascheroniConstant_lt_two_thirds.trans (by norm_num)
+  · rw [lt_log_iff_exp_lt (by positivity)]
+    exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
+      <| mul_le_mul_of_nonneg_left two_le_pi (by norm_num)
+
+end val_at_one
 
 end ZetaAsymptotics

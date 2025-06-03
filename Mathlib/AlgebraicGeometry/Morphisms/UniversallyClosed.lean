@@ -3,16 +3,16 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.Topology.LocalAtTarget
-
-#align_import algebraic_geometry.morphisms.universally_closed from "leanprover-community/mathlib"@"a8ae1b3f7979249a0af6bc7cf20c1f6bf656ca73"
 
 /-!
 # Universally closed morphism
 
 A morphism of schemes `f : X ⟶ Y` is universally closed if `X ×[Y] Y' ⟶ Y'` is a closed map
 for all base change `Y' ⟶ Y`.
+This implies that `f` is topologically proper (`AlgebraicGeometry.Scheme.Hom.isProperMap`).
 
 We show that being universally closed is local at the target, and is stable under compositions and
 base changes.
@@ -32,77 +32,139 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 open CategoryTheory.MorphismProperty
 
-open AlgebraicGeometry.MorphismProperty (topologically)
-
 /-- A morphism of schemes `f : X ⟶ Y` is universally closed if the base change `X ×[Y] Y' ⟶ Y'`
 along any morphism `Y' ⟶ Y` is (topologically) a closed map.
 -/
 @[mk_iff]
 class UniversallyClosed (f : X ⟶ Y) : Prop where
   out : universally (topologically @IsClosedMap) f
-#align algebraic_geometry.universally_closed AlgebraicGeometry.UniversallyClosed
+
+lemma Scheme.Hom.isClosedMap {X Y : Scheme} (f : X.Hom Y) [UniversallyClosed f] :
+    IsClosedMap f.base := UniversallyClosed.out _ _ _ IsPullback.of_id_snd
 
 theorem universallyClosed_eq : @UniversallyClosed = universally (topologically @IsClosedMap) := by
   ext X Y f; rw [universallyClosed_iff]
-#align algebraic_geometry.universally_closed_eq AlgebraicGeometry.universallyClosed_eq
+
+instance (priority := 900) [IsClosedImmersion f] : UniversallyClosed f := by
+  rw [universallyClosed_eq]
+  intro X' Y' i₁ i₂ f' hf
+  have hf' : IsClosedImmersion f' :=
+    MorphismProperty.of_isPullback hf.flip inferInstance
+  exact hf'.base_closed.isClosedMap
 
 theorem universallyClosed_respectsIso : RespectsIso @UniversallyClosed :=
   universallyClosed_eq.symm ▸ universally_respectsIso (topologically @IsClosedMap)
-#align algebraic_geometry.universally_closed_respects_iso AlgebraicGeometry.universallyClosed_respectsIso
 
-theorem universallyClosed_stableUnderBaseChange : StableUnderBaseChange @UniversallyClosed :=
-  universallyClosed_eq.symm ▸ universally_stableUnderBaseChange (topologically @IsClosedMap)
-#align algebraic_geometry.universally_closed_stable_under_base_change AlgebraicGeometry.universallyClosed_stableUnderBaseChange
+instance universallyClosed_isStableUnderBaseChange : IsStableUnderBaseChange @UniversallyClosed :=
+  universallyClosed_eq.symm ▸ universally_isStableUnderBaseChange (topologically @IsClosedMap)
 
 instance isClosedMap_isStableUnderComposition :
     IsStableUnderComposition (topologically @IsClosedMap) where
-  comp_mem f g hf hg := IsClosedMap.comp (f := f.1.base) (g := g.1.base) hg hf
+  comp_mem f g hf hg := IsClosedMap.comp (f := f.base) (g := g.base) hg hf
 
 instance universallyClosed_isStableUnderComposition :
     IsStableUnderComposition @UniversallyClosed := by
   rw [universallyClosed_eq]
   infer_instance
-#align algebraic_geometry.universally_closed_stable_under_composition AlgebraicGeometry.universallyClosed_isStableUnderComposition
+
+lemma UniversallyClosed.of_comp_surjective {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [UniversallyClosed (f ≫ g)] [Surjective f] : UniversallyClosed g := by
+  constructor
+  intro X' Y' i₁ i₂ f' H
+  have := UniversallyClosed.out _ _ _ ((IsPullback.of_hasPullback i₁ f).paste_horiz H)
+  exact IsClosedMap.of_comp_surjective (MorphismProperty.pullback_fst (P := @Surjective) _ _ ‹_›).1
+    (Scheme.Hom.continuous _) this
 
 instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : UniversallyClosed f] [hg : UniversallyClosed g] : UniversallyClosed (f ≫ g) :=
   comp_mem _ _ _ hf hg
-#align algebraic_geometry.universally_closed_type_comp AlgebraicGeometry.universallyClosedTypeComp
 
-theorem topologically_isClosedMap_respectsIso : RespectsIso (topologically @IsClosedMap) := by
-  apply MorphismProperty.respectsIso_of_isStableUnderComposition
-  intro _ _ f hf
-  have : IsIso f := hf
-  exact (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso (asIso f))).isClosedMap
+instance : MorphismProperty.IsMultiplicative @UniversallyClosed where
+  id_mem _ := inferInstance
 
-instance universallyClosedFst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
-    UniversallyClosed (pullback.fst : pullback f g ⟶ _) :=
-  universallyClosed_stableUnderBaseChange.fst f g hg
-#align algebraic_geometry.universally_closed_fst AlgebraicGeometry.universallyClosedFst
+instance universallyClosed_fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
+    UniversallyClosed (pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g hg
 
-instance universallyClosedSnd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
-    UniversallyClosed (pullback.snd : pullback f g ⟶ _) :=
-  universallyClosed_stableUnderBaseChange.snd f g hf
-#align algebraic_geometry.universally_closed_snd AlgebraicGeometry.universallyClosedSnd
+instance universallyClosed_snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
+    UniversallyClosed (pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g hf
 
-theorem morphismRestrict_base {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) :
-    ⇑(f ∣_ U).1.base = U.1.restrictPreimage f.1.1 :=
-  funext fun x => Subtype.ext <| morphismRestrict_base_coe f U x
-#align algebraic_geometry.morphism_restrict_base AlgebraicGeometry.morphismRestrict_base
-
-theorem universallyClosed_is_local_at_target : PropertyIsLocalAtTarget @UniversallyClosed := by
+instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed := by
   rw [universallyClosed_eq]
-  apply universallyIsLocalAtTargetOfMorphismRestrict
-  · exact topologically_isClosedMap_respectsIso
-  · intro X Y f ι U hU H
-    simp_rw [topologically, morphismRestrict_base] at H
-    exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H
-#align algebraic_geometry.universally_closed_is_local_at_target AlgebraicGeometry.universallyClosed_is_local_at_target
+  apply universally_isLocalAtTarget
+  intro X Y f ι U hU H
+  simp_rw [topologically, morphismRestrict_base] at H
+  exact hU.isClosedMap_iff_restrictPreimage.mpr H
 
-theorem UniversallyClosed.openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y)
-    (𝒰 : Scheme.OpenCover.{u} Y) :
-    UniversallyClosed f ↔ ∀ i, UniversallyClosed (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
-  universallyClosed_is_local_at_target.openCover_iff f 𝒰
-#align algebraic_geometry.universally_closed.open_cover_iff AlgebraicGeometry.UniversallyClosed.openCover_iff
+open Scheme.Pullback _root_.PrimeSpectrum MvPolynomial in
+/-- If `X` is universally closed over a field, then `X` is quasi-compact. -/
+lemma compactSpace_of_universallyClosed
+    {K} [Field K] (f : X ⟶ Spec (.of K)) [UniversallyClosed f] : CompactSpace X := by
+  classical
+  let 𝒰 : X.OpenCover := X.affineCover
+  let U (i : 𝒰.J) : X.Opens := (𝒰.map i).opensRange
+  let T : Scheme := Spec (.of <| MvPolynomial 𝒰.J K)
+  let q : T ⟶ Spec (.of K) := Spec.map (CommRingCat.ofHom MvPolynomial.C)
+  let Ti (i : 𝒰.J) : T.Opens := basicOpen (MvPolynomial.X i)
+  let fT : pullback f q ⟶ T := pullback.snd f q
+  let p : pullback f q ⟶ X := pullback.fst f q
+  let Z : Set (pullback f q :) := (⨆ i, fT ⁻¹ᵁ (Ti i) ⊓ p ⁻¹ᵁ (U i) : (pullback f q).Opens)ᶜ
+  have hZ : IsClosed Z := by
+    simp only [Z, isClosed_compl_iff, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe]
+    exact isOpen_iUnion fun i ↦ (fT.continuous.1 _ (Ti i).2).inter (p.continuous.1 _ (U i).2)
+  let Zc : T.Opens := ⟨(fT.base '' Z)ᶜ, (fT.isClosedMap _ hZ).isOpen_compl⟩
+  let ψ : MvPolynomial 𝒰.J K →ₐ[K] K := MvPolynomial.aeval (fun _ ↦ 1)
+  let t : T := (Spec.map <| CommRingCat.ofHom ψ.toRingHom).base default
+  have ht (i : 𝒰.J) : t ∈ Ti i := show ψ (.X i) ≠ 0 by simp [ψ]
+  have htZc : t ∈ Zc := by
+    intro ⟨z, hz, hzt⟩
+    suffices ∃ i, fT.base z ∈ Ti i ∧ p.base z ∈ U i from hz (by simpa)
+    exact ⟨𝒰.f (p.base z), hzt ▸ ht _, by simpa [U] using 𝒰.covers (p.base z)⟩
+  obtain ⟨U', ⟨g, rfl⟩, htU', hU'le⟩ := Opens.isBasis_iff_nbhd.mp isBasis_basic_opens htZc
+  let σ : Finset 𝒰.J := MvPolynomial.vars g
+  let φ : MvPolynomial 𝒰.J K →+* MvPolynomial 𝒰.J K :=
+    (MvPolynomial.aeval fun i : 𝒰.J ↦ if i ∈ σ then MvPolynomial.X i else 0).toRingHom
+  let t' : T := (Spec.map (CommRingCat.ofHom φ)).base t
+  have ht'g : t' ∈ PrimeSpectrum.basicOpen g :=
+    show φ g ∉ t.asIdeal from (show φ g = g from aeval_ite_mem_eq_self g subset_rfl).symm ▸ htU'
+  have h : t' ∉ fT.base '' Z := hU'le ht'g
+  suffices ⋃ i ∈ σ, (U i).1 = Set.univ from
+    ⟨this ▸ Finset.isCompact_biUnion _ fun i _ ↦ isCompact_range (𝒰.map i).continuous⟩
+  rw [Set.iUnion₂_eq_univ_iff]
+  contrapose! h
+  obtain ⟨x, hx⟩ := h
+  obtain ⟨z, rfl, hzr⟩ := exists_preimage_pullback x t' (Subsingleton.elim (f.base x) (q.base t'))
+  suffices ∀ i, t ∈ (Ti i).comap (comap φ) → p.base z ∉ U i from ⟨z, by simpa [Z, p, fT, hzr], hzr⟩
+  intro i hi₁ hi₂
+  rw [comap_basicOpen, show φ (.X i) = 0 by simpa [φ] using (hx i · hi₂), basicOpen_zero] at hi₁
+  cases hi₁
+
+@[stacks 04XU]
+lemma Scheme.Hom.isProperMap (f : X.Hom Y) [UniversallyClosed f] : IsProperMap f.base := by
+  rw [isProperMap_iff_isClosedMap_and_compact_fibers]
+  refine ⟨Scheme.Hom.continuous f, ?_, ?_⟩
+  · exact MorphismProperty.universally_le (P := topologically @IsClosedMap) _ UniversallyClosed.out
+  · intro y
+    have := compactSpace_of_universallyClosed (pullback.snd f (Y.fromSpecResidueField y))
+    rw [← Scheme.range_fromSpecResidueField, ← Scheme.Pullback.range_fst]
+    exact isCompact_range (Scheme.Hom.continuous _)
+
+instance (priority := 900) [UniversallyClosed f] : QuasiCompact f where
+  isCompact_preimage _ _ := f.isProperMap.isCompact_preimage
+
+lemma universallyClosed_eq_universallySpecializing :
+    @UniversallyClosed = (topologically @SpecializingMap).universally ⊓ @QuasiCompact := by
+  rw [← universally_eq_iff (P := @QuasiCompact).mpr inferInstance, ← universally_inf]
+  apply le_antisymm
+  · rw [← universally_eq_iff (P := @UniversallyClosed).mpr inferInstance]
+    exact universally_mono fun X Y f H ↦ ⟨f.isClosedMap.specializingMap, inferInstance⟩
+  · rw [universallyClosed_eq]
+    exact universally_mono fun X Y f ⟨h₁, h₂⟩ ↦ (isClosedMap_iff_specializingMap _).mpr h₁
+
+instance (priority := low) Surjective.of_universallyClosed_of_isDominant
+    [UniversallyClosed f] [IsDominant f] : Surjective f := by
+  rw [surjective_iff, ← Set.range_eq_univ, ← f.denseRange.closure_range,
+    f.isClosedMap.isClosed_range.closure_eq]
 
 end AlgebraicGeometry

@@ -3,16 +3,14 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
 import Lean.Elab.Term
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Batteries.Data.List.Basic
-import Batteries.Logic
+import Batteries.CodeAction -- to enable the hole code action
 
 /-! ## Additional utilities in `Lean.MVarId` -/
-
-set_option autoImplicit true
 
 open Lean Meta
 
@@ -53,11 +51,6 @@ end Lean.MVarId
 
 namespace Lean.Meta
 
-/-- Count how many local hypotheses appear in an expression. -/
-def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
-  let e' ← instantiateMVars e
-  return (← getLocalHyps).toList.countP fun h => h.occurs e'
-
 /-- Get the type the given metavariable after instantiating metavariables and cleaning up
 annotations. -/
 def _root_.Lean.MVarId.getType'' (mvarId : MVarId) : MetaM Expr :=
@@ -72,6 +65,8 @@ namespace Lean.Elab.Tactic
 -- but that is taken in core by a function that lifts a `tac : MVarId → MetaM (Option MVarId)`.
 def liftMetaTactic' (tac : MVarId → MetaM MVarId) : TacticM Unit :=
   liftMetaTactic fun g => do pure [← tac g]
+
+variable {α : Type}
 
 @[inline] private def TacticM.runCore (x : TacticM α) (ctx : Context) (s : State) :
     TermElabM (α × State) :=

@@ -5,8 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.FieldTheory.Finite.Basic
 
-#align_import field_theory.chevalley_warning from "leanprover-community/mathlib"@"e001509c11c4d0f549d91d89da95b4a0b43c714f"
-
 /-!
 # The Chevalley–Warning theorem
 
@@ -37,8 +35,6 @@ and `q` is notation for the cardinality of `K`.
 
 
 universe u v
-
-open scoped BigOperators
 
 section FiniteField
 
@@ -80,14 +76,14 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     _ = (∏ j, x₀ j ^ d j) * ∑ a : K, a ^ d i := by rw [mul_sum]
     _ = 0 := by rw [sum_pow_lt_card_sub_one K _ hi, mul_zero]
   intro a
-  let e' : Sum { j // j = i } { j // j ≠ i } ≃ σ := Equiv.sumCompl _
+  let e' : { j // j = i } ⊕ { j // j ≠ i } ≃ σ := Equiv.sumCompl _
   letI : Unique { j // j = i } :=
     { default := ⟨i, rfl⟩
       uniq := fun ⟨j, h⟩ => Subtype.val_injective h }
   calc
     (∏ j : σ, (e a : σ → K) j ^ d j) =
-        (e a : σ → K) i ^ d i * ∏ j : { j // j ≠ i }, (e a : σ → K) j ^ d j :=
-      by rw [← e'.prod_comp, Fintype.prod_sum_type, univ_unique, prod_singleton]; rfl
+        (e a : σ → K) i ^ d i * ∏ j : { j // j ≠ i }, (e a : σ → K) j ^ d j := by
+      rw [← e'.prod_comp, Fintype.prod_sum_type, univ_unique, prod_singleton]; rfl
     _ = a ^ d i * ∏ j : { j // j ≠ i }, (e a : σ → K) j ^ d j := by
       rw [Equiv.subtypeEquivCodomain_symm_apply_eq]
     _ = a ^ d i * ∏ j, x₀ j ^ d j := congr_arg _ (Fintype.prod_congr _ _ ?_)
@@ -97,7 +93,6 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
   rintro ⟨j, hj⟩
   show (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
   rw [Equiv.subtypeEquivCodomain_symm_apply_ne]
-#align mv_polynomial.sum_eval_eq_zero MvPolynomial.sum_eval_eq_zero
 
 variable [DecidableEq K] (p : ℕ) [CharP K p]
 
@@ -110,10 +105,8 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     (h : (∑ i ∈ s, (f i).totalDegree) < Fintype.card σ) :
     p ∣ Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 } := by
   have hq : 0 < q - 1 := by rw [← Fintype.card_units, Fintype.card_pos_iff]; exact ⟨1⟩
-  let S : Finset (σ → K) := { x ∈ univ | ∀ i ∈ s, eval x (f i) = 0 }.toFinset
-  have hS : ∀ x : σ → K, x ∈ S ↔ ∀ i : ι, i ∈ s → eval x (f i) = 0 := by
-    intro x
-    simp only [S, Set.toFinset_setOf, mem_univ, true_and, mem_filter]
+  let S : Finset (σ → K) := {x | ∀ i ∈ s, eval x (f i) = 0}
+  have hS (x : σ → K) : x ∈ S ↔ ∀ i ∈ s, eval x (f i) = 0 := by simp [S]
   /- The polynomial `F = ∏ i ∈ s, (1 - (f i)^(q - 1))` has the nice property
     that it takes the value `1` on elements of `{x : σ → K // ∀ i ∈ s, (f i).eval x = 0}`
     while it is `0` outside that locus.
@@ -160,7 +153,6 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
         max (1 : MvPolynomial σ K).totalDegree (f i ^ (q - 1)).totalDegree := totalDegree_sub _ _
     _ ≤ (f i ^ (q - 1)).totalDegree := by simp
     _ ≤ (q - 1) * (f i).totalDegree := totalDegree_pow _ _
-#align char_dvd_card_solutions_of_sum_lt char_dvd_card_solutions_of_sum_lt
 
 /-- The **Chevalley–Warning theorem**, `Fintype` version.
 Let `(f i)` be a finite family of multivariate polynomials
@@ -171,7 +163,6 @@ theorem char_dvd_card_solutions_of_fintype_sum_lt [Fintype ι] {f : ι → MvPol
     (h : (∑ i, (f i).totalDegree) < Fintype.card σ) :
     p ∣ Fintype.card { x : σ → K // ∀ i, eval x (f i) = 0 } := by
   simpa using char_dvd_card_solutions_of_sum_lt p h
-#align char_dvd_card_solutions_of_fintype_sum_lt char_dvd_card_solutions_of_fintype_sum_lt
 
 /-- The **Chevalley–Warning theorem**, unary version.
 Let `f` be a multivariate polynomial in finitely many variables (`X s`, `s : σ`)
@@ -183,12 +174,8 @@ theorem char_dvd_card_solutions {f : MvPolynomial σ K} (h : f.totalDegree < Fin
     p ∣ Fintype.card { x : σ → K // eval x f = 0 } := by
   let F : Unit → MvPolynomial σ K := fun _ => f
   have : (∑ i : Unit, (F i).totalDegree) < Fintype.card σ := h
-  -- Porting note: was
-  -- `simpa only [F, Fintype.univ_punit, forall_eq, mem_singleton] using`
-  -- `  char_dvd_card_solutions_of_sum_lt p this`
   convert char_dvd_card_solutions_of_sum_lt p this
   aesop
-#align char_dvd_card_solutions char_dvd_card_solutions
 
 /-- The **Chevalley–Warning theorem**, binary version.
 Let `f₁`, `f₂` be two multivariate polynomials in finitely many variables (`X s`, `s : σ`) over a
@@ -201,6 +188,5 @@ theorem char_dvd_card_solutions_of_add_lt {f₁ f₂ : MvPolynomial σ K}
   let F : Bool → MvPolynomial σ K := fun b => cond b f₂ f₁
   have : (∑ b : Bool, (F b).totalDegree) < Fintype.card σ := (add_comm _ _).trans_lt h
   simpa only [Bool.forall_bool] using char_dvd_card_solutions_of_fintype_sum_lt p this
-#align char_dvd_card_solutions_of_add_lt char_dvd_card_solutions_of_add_lt
 
 end FiniteField

@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Floris van Doorn
 -/
 
+import Mathlib.Init
 /-!
 ## Definitions on Arrays
 
 This file contains various definitions on `Array`. It does not contain
-proofs about these definitions, those are contained in other files in `Mathlib.Data.Array`.
+proofs about these definitions, those are contained in other files in `Mathlib/Data/Array.lean`.
 -/
 
 namespace Array
@@ -31,3 +32,5 @@ where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
 /-- Permute the array using a list of cycles. -/
 def permute! [Inhabited α] (a : Array α) (ls : List (List Nat)) : Array α :=
 ls.foldl (init := a) (·.cyclicPermute! ·)
+
+end Array

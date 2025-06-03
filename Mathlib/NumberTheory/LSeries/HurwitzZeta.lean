@@ -28,7 +28,7 @@ This file gives the definition and properties of the following two functions:
 
 * `hurwitzZeta`: the Hurwitz zeta function (defined to be periodic in `a` with period 1)
 * `expZeta`: the exponential zeta function
-* `hasSum_nat_hurwitzZeta_of_mem_Icc` and `hasSum_expZeta_of_one_lt_re`:
+* `hasSum_hurwitzZeta_of_one_lt_re` and `hasSum_expZeta_of_one_lt_re`:
   relation to Dirichlet series for `1 < re s`
 * ` hurwitzZeta_residue_one` shows that the residue at `s = 1` equals `1`
 * `differentiableAt_hurwitzZeta` and `differentiableAt_expZeta`: analyticity away from `s = 1`
@@ -36,6 +36,8 @@ This file gives the definition and properties of the following two functions:
 -/
 
 open Set Real Complex Filter Topology
+
+namespace HurwitzZeta
 
 /-!
 ## The Hurwitz zeta function
@@ -90,14 +92,14 @@ determining what that value is). -/
 lemma tendsto_hurwitzZeta_sub_one_div_nhds_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ hurwitzZeta a s - 1 / (s - 1) / Gammaℝ s) (𝓝 1) (𝓝 (hurwitzZeta a 1)) := by
   simp only [hurwitzZeta, add_sub_right_comm]
-  refine (tendsto_hurwitzZetaEven_sub_one_div_nhds_one a).add ?_
-  exact (differentiable_hurwitzZetaOdd a 1).continuousAt.tendsto
+  refine (tendsto_hurwitzZetaEven_sub_one_div_nhds_one a).add
+    (differentiable_hurwitzZetaOdd a 1).continuousAt.tendsto
 
 /-- The difference of two Hurwitz zeta functions is differentiable everywhere. -/
 lemma differentiable_hurwitzZeta_sub_hurwitzZeta (a b : UnitAddCircle) :
     Differentiable ℂ (fun s ↦ hurwitzZeta a s - hurwitzZeta b s) := by
   simp only [hurwitzZeta, add_sub_add_comm]
-  refine (differentiable_hurwitzZetaEven_sub_hurwitzZetaEven a b).add (Differentiable.sub ?_ ?_)
+  refine (differentiable_hurwitzZetaEven_sub_hurwitzZetaEven a b).add (.sub ?_ ?_)
   all_goals apply differentiable_hurwitzZetaOdd
 
 /-!
@@ -140,11 +142,9 @@ lemma differentiable_expZeta_of_ne_zero {a : UnitAddCircle} (ha : a ≠ 0) :
 
 /-- Reformulation of `hasSum_expZeta_of_one_lt_re` using `LSeriesHasSum`. -/
 lemma LSeriesHasSum_exp (a : ℝ) {s : ℂ} (hs : 1 < re s) :
-    LSeriesHasSum (cexp <| 2 * π * I * a * ·) s (expZeta a s) := by
-  refine (hasSum_expZeta_of_one_lt_re a hs).congr_fun (fun n ↦ ?_)
-  rcases eq_or_ne n 0 with rfl | hn
-  · rw [LSeries.term_zero, Nat.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs), div_zero]
-  · apply LSeries.term_of_ne_zero hn
+    LSeriesHasSum (cexp <| 2 * π * I * a * ·) s (expZeta a s) :=
+  (hasSum_expZeta_of_one_lt_re a hs).congr_fun
+    (LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs) _)
 
 /-!
 ## The functional equation
@@ -185,3 +185,5 @@ lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
   ring_nf
   rw [I_sq]
   ring_nf
+
+end HurwitzZeta

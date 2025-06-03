@@ -3,12 +3,10 @@ Copyright (c) 2016 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init.Set
 import Mathlib.Control.Basic
-import Mathlib.Lean.Expr.ExtraRecognizers
-
-#align_import data.set.functor from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
+import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Notation
 
 /-!
 # Functoriality of `Set`
@@ -18,11 +16,11 @@ This file defines the functor structure of `Set`.
 
 universe u
 
-open Function
+open Function Set.Notation
 
 namespace Set
 
-variable {α β : Type u} {s : Set α} {f : α → Set β} {g : Set (α → β)}
+variable {α β : Type u} {s : Set α} {f : α → Set β}
 
 /-- The `Set` functor is a monad.
 
@@ -43,22 +41,18 @@ attribute [local instance] Set.monad
 @[simp]
 theorem bind_def : s >>= f = ⋃ i ∈ s, f i :=
   rfl
-#align set.bind_def Set.bind_def
 
 @[simp]
 theorem fmap_eq_image (f : α → β) : f <$> s = f '' s :=
   rfl
-#align set.fmap_eq_image Set.fmap_eq_image
 
 @[simp]
 theorem seq_eq_set_seq (s : Set (α → β)) (t : Set α) : s <*> t = s.seq t :=
   rfl
-#align set.seq_eq_set_seq Set.seq_eq_set_seq
 
 @[simp]
 theorem pure_def (a : α) : (pure a : Set α) = {a} :=
   rfl
-#align set.pure_def Set.pure_def
 
 /-- `Set.image2` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
@@ -66,7 +60,6 @@ theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : 
     image2 f s t = f <$> s <*> t := by
   ext
   simp
-#align set.image2_def Set.image2_def
 
 instance : LawfulMonad Set := LawfulMonad.mk'
   (id_map := image_id)
@@ -106,32 +99,11 @@ theorem image_coe_eq_restrict_image {δ : Type*} {f : α → δ} : f '' γ = β.
 end with_instance
 
 /-! ### Coercion applying functoriality for `Subtype.val`
-
 The `Monad` instance gives a coercion using the internal function `Lean.Internal.coeM`.
-In practice this is only used for applying the `Set` functor to `Subtype.val`.
-We define this coercion here.  -/
+In practice this is only used for applying the `Set` functor to `Subtype.val`,
+as was defined in `Data.Set.Notation`. -/
 
-/-- Coercion using `(Subtype.val '' ·)` -/
-instance : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
-
-namespace Notation
-
-open Lean PrettyPrinter Delaborator SubExpr in
-/--
-If the `Set.Notation` namespace is open, sets of a subtype coerced to the ambient type are
-represented with `↑`.
--/
-@[scoped delab app.Set.image]
-def delab_set_image_subtype : Delab := whenPPOption getPPCoercions do
-  let #[α, _, f, _] := (← getExpr).getAppArgs | failure
-  guard <| f.isAppOfArity ``Subtype.val 2
-  let some _ := α.coeTypeSet? | failure
-  let e ← withAppArg delab
-  `(↑$e)
-
-end Notation
-
-/-- The coercion from `Set.monad` as an instance is equal to the coercion defined above. -/
+/-- The coercion from `Set.monad` as an instance is equal to the coercion in `Data.Set.Notation`. -/
 theorem coe_eq_image_val (t : Set s) :
     @Lean.Internal.coeM Set s α _ Set.monad t = (t : Set α) := by
   change ⋃ (x ∈ t), {x.1} = _

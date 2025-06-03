@@ -5,8 +5,6 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Order.Bounds.Basic
 
-#align_import order.lattice_intervals from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
-
 /-!
 # Intervals in Lattices
 
@@ -40,7 +38,6 @@ instance semilatticeInf [SemilatticeInf α] {a b : α} : SemilatticeInf (Ico a b
 /-- `Ico a b` has a bottom element whenever `a < b`. -/
 protected abbrev orderBot [PartialOrder α] {a b : α} (h : a < b) : OrderBot (Ico a b) :=
   (isLeast_Ico h).orderBot
-#align set.Ico.order_bot Set.Ico.orderBot
 
 end Ico
 
@@ -59,7 +56,6 @@ instance semilatticeSup [SemilatticeSup α] {a b : α} : SemilatticeSup (Ioc a b
 /-- `Ioc a b` has a top element whenever `a < b`. -/
 protected abbrev orderTop [PartialOrder α] {a b : α} (h : a < b) : OrderTop (Ioc a b) :=
   (isGreatest_Ioc h).orderTop
-#align set.Ioc.order_top Set.Ioc.orderTop
 
 end Ioc
 
@@ -101,7 +97,6 @@ instance orderTop [Preorder α] :
 @[simp]
 theorem coe_top [Preorder α] : (⊤ : Iic a) = a :=
   rfl
-#align set.Iic.coe_top Set.Iic.coe_top
 
 protected lemma eq_top_iff [Preorder α] {x : Iic a} :
     x = ⊤ ↔ (x : α) = a := by
@@ -115,7 +110,6 @@ instance orderBot [Preorder α] [OrderBot α] :
 @[simp]
 theorem coe_bot [Preorder α] [OrderBot α] : (⊥ : Iic a) = (⊥ : α) :=
   rfl
-#align set.Iic.coe_bot Set.Iic.coe_bot
 
 instance [Preorder α] [OrderBot α] : BoundedOrder (Iic a) :=
   { Iic.orderTop, Iic.orderBot with }
@@ -128,9 +122,19 @@ protected lemma codisjoint_iff [SemilatticeSup α] {x y : Iic a} :
     Codisjoint x y ↔ (x : α) ⊔ (y : α) = a := by
   simpa only [_root_.codisjoint_iff] using Iic.eq_top_iff
 
-protected lemma isCompl_iff [Lattice α] [BoundedOrder α] {x y : Iic a} :
+protected lemma isCompl_iff [Lattice α] [OrderBot α] {x y : Iic a} :
     IsCompl x y ↔ Disjoint (x : α) (y : α) ∧ (x : α) ⊔ (y : α) = a := by
   rw [_root_.isCompl_iff, Iic.disjoint_iff, Iic.codisjoint_iff]
+
+protected lemma complementedLattice_iff [Lattice α] [OrderBot α] :
+    ComplementedLattice (Iic a) ↔ ∀ b, b ≤ a → ∃ c ≤ a, b ⊓ c = ⊥ ∧ b ⊔ c = a := by
+  refine ⟨fun h b hb ↦ ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ↦ ?_⟩⟩
+  · obtain ⟨⟨c, hc₁⟩, hc⟩ := exists_isCompl (⟨b, hb⟩ : Iic a)
+    obtain ⟨hc₂, hc₃⟩ := Set.Iic.isCompl_iff.mp hc
+    exact ⟨c, hc₁, disjoint_iff.mp hc₂, hc₃⟩
+  · simp_rw [Set.Iic.isCompl_iff]
+    obtain ⟨c, hc₁, hc₂, hc₃⟩ := h x hx
+    exact ⟨⟨c, hc₁⟩, disjoint_iff.mpr hc₂, hc₃⟩
 
 end Iic
 
@@ -156,7 +160,6 @@ instance orderBot [Preorder α] {a : α} :
 @[simp]
 theorem coe_bot [Preorder α] {a : α} : ↑(⊥ : Ici a) = a :=
   rfl
-#align set.Ici.coe_bot Set.Ici.coe_bot
 
 instance orderTop [Preorder α] [OrderTop α] {a : α} :
     OrderTop (Ici a) where
@@ -166,7 +169,6 @@ instance orderTop [Preorder α] [OrderTop α] {a : α} :
 @[simp]
 theorem coe_top [Preorder α] [OrderTop α] {a : α} : ↑(⊤ : Ici a) = (⊤ : α) :=
   rfl
-#align set.Ici.coe_top Set.Ici.coe_top
 
 instance boundedOrder [Preorder α] [OrderTop α] {a : α} : BoundedOrder (Ici a) :=
   { Ici.orderTop, Ici.orderBot with }
@@ -175,29 +177,35 @@ end Ici
 
 namespace Icc
 
-instance semilatticeInf [SemilatticeInf α] {a b : α} : SemilatticeInf (Icc a b) :=
+variable {a b : α}
+
+instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (Icc a b) :=
   Subtype.semilatticeInf fun _ _ hx hy => ⟨le_inf hx.1 hy.1, le_trans inf_le_left hx.2⟩
 
-instance semilatticeSup [SemilatticeSup α] {a b : α} : SemilatticeSup (Icc a b) :=
+instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (Icc a b) :=
   Subtype.semilatticeSup fun _ _ hx hy => ⟨le_trans hx.1 le_sup_left, sup_le hx.2 hy.2⟩
 
-instance lattice [Lattice α] {a b : α} : Lattice (Icc a b) :=
+instance lattice [Lattice α] : Lattice (Icc a b) :=
   { Icc.semilatticeInf, Icc.semilatticeSup with }
 
+variable [Preorder α] [Fact (a ≤ b)]
+
 /-- `Icc a b` has a bottom element whenever `a ≤ b`. -/
-protected abbrev orderBot [Preorder α] {a b : α} (h : a ≤ b) : OrderBot (Icc a b) :=
-  (isLeast_Icc h).orderBot
-#align set.Icc.order_bot Set.Icc.orderBot
+instance : OrderBot (Icc a b) :=
+  (isLeast_Icc Fact.out).orderBot
+
+@[simp, norm_cast]
+theorem coe_bot : ↑(⊥ : Icc a b) = a := rfl
 
 /-- `Icc a b` has a top element whenever `a ≤ b`. -/
-protected abbrev orderTop [Preorder α] {a b : α} (h : a ≤ b) : OrderTop (Icc a b) :=
-  (isGreatest_Icc h).orderTop
-#align set.Icc.order_top Set.Icc.orderTop
+instance : OrderTop (Icc a b) :=
+  (isGreatest_Icc Fact.out).orderTop
+
+@[simp, norm_cast]
+theorem coe_top : ↑(⊤ : Icc a b) = b := rfl
 
 /-- `Icc a b` is a `BoundedOrder` whenever `a ≤ b`. -/
-protected abbrev boundedOrder [Preorder α] {a b : α} (h : a ≤ b) : BoundedOrder (Icc a b) :=
-  { Icc.orderTop h, Icc.orderBot h with }
-#align set.Icc.bounded_order Set.Icc.boundedOrder
+instance : BoundedOrder (Icc a b) where
 
 end Icc
 

@@ -3,12 +3,11 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.PathCategory
+import Mathlib.CategoryTheory.PathCategory.Basic
 import Mathlib.Combinatorics.Quiver.Path
-
-#align_import category_theory.groupoid.vertex_group from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
 /-!
 # Vertex group
@@ -45,13 +44,11 @@ instance vertexGroup (c : C) : Group (c ⟶ c) where
   one_mul := Category.id_comp
   mul_one := Category.comp_id
   inv := Groupoid.inv
-  mul_left_inv := inv_comp
-#align category_theory.groupoid.vertex_group CategoryTheory.Groupoid.vertexGroup
+  inv_mul_cancel := inv_comp
 
 /-- The inverse in the group is equal to the inverse given by `CategoryTheory.inv`. -/
 theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory.inv γ :=
   Groupoid.inv_eq_inv γ
-#align category_theory.groupoid.vertex_group.inv_eq_inv CategoryTheory.Groupoid.vertexGroup.inv_eq_inv
 
 /-- An arrow in the groupoid defines, by conjugation, an isomorphism of groups between
 its endpoints.
@@ -68,13 +65,11 @@ def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d) wher
       Category.comp_id]
   map_mul' γ₁ γ₂ := by
     simp only [vertexGroup_mul, inv_eq_inv, Category.assoc, IsIso.hom_inv_id_assoc]
-#align category_theory.groupoid.vertex_group_isom_of_map CategoryTheory.Groupoid.vertexGroupIsomOfMap
 
 /-- A path in the groupoid defines an isomorphism between its endpoints.
 -/
 def vertexGroupIsomOfPath {c d : C} (p : Quiver.Path c d) : (c ⟶ c) ≃* (d ⟶ d) :=
   vertexGroupIsomOfMap (composePath p)
-#align category_theory.groupoid.vertex_group_isom_of_path CategoryTheory.Groupoid.vertexGroupIsomOfPath
 
 /-- A functor defines a morphism of vertex group. -/
 @[simps]
@@ -83,7 +78,6 @@ def CategoryTheory.Functor.mapVertexGroup {D : Type v} [Groupoid D] (φ : C ⥤ 
   toFun := φ.map
   map_one' := φ.map_id c
   map_mul' := φ.map_comp
-#align category_theory.functor.map_vertex_group CategoryTheory.Groupoid.CategoryTheory.Functor.mapVertexGroup
 
 end Groupoid
 

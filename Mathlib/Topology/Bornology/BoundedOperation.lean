@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Bounded operations
@@ -23,54 +24,6 @@ we can equip bounded continuous functions with the corresponding operations.
 -/
 
 open scoped NNReal
-
-section bounded_add
-/-!
-### Bounded addition
--/
-
-open Pointwise
-
-/-- A typeclass saying that `(p : R × R) ↦ p.1 + p.2` maps any product of bounded sets to a bounded
-set. This property follows from `LipschitzAdd`, and thus automatically holds, e.g., for seminormed
-additive groups. -/
-class BoundedAdd (R : Type*) [Bornology R] [Add R] : Prop where
-  isBounded_add : ∀ {s t : Set R},
-    Bornology.IsBounded s → Bornology.IsBounded t → Bornology.IsBounded (s + t)
-
-variable {R : Type*}
-
-lemma isBounded_add [Bornology R] [Add R] [BoundedAdd R] {s t : Set R}
-    (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
-    Bornology.IsBounded (s + t) := BoundedAdd.isBounded_add hs ht
-
-lemma add_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Add R] [BoundedAdd R]
-    {f g : X → R} (f_bdd : ∃ C, ∀ x y, dist (f x) (f y) ≤ C)
-    (g_bdd : ∃ C, ∀ x y, dist (g x) (g y) ≤ C) :
-    ∃ C, ∀ x y, dist ((f + g) x) ((f + g) y) ≤ C := by
-  obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <|
-    isBounded_add (Metric.isBounded_range_iff.mpr f_bdd) (Metric.isBounded_range_iff.mpr g_bdd)
-  use C
-  intro x y
-  exact hC (Set.add_mem_add (Set.mem_range_self (f := f) x) (Set.mem_range_self (f := g) x))
-           (Set.add_mem_add (Set.mem_range_self (f := f) y) (Set.mem_range_self (f := g) y))
-
-instance [PseudoMetricSpace R] [AddMonoid R] [LipschitzAdd R] : BoundedAdd R where
-  isBounded_add := by
-    intro s t s_bdd t_bdd
-    have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
-    obtain ⟨C, add_lip⟩ := ‹LipschitzAdd R›.lipschitz_add
-    convert add_lip.isBounded_image bdd
-    ext p
-    simp only [Set.mem_image, Set.mem_prod, Prod.exists]
-    constructor
-    · intro ⟨a, a_in_s, b, b_in_t, eq_p⟩
-      exact ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
-    · intro ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
-      simpa [← eq_p] using Set.add_mem_add a_in_s b_in_t
-
-end bounded_add
-
 
 section bounded_sub
 /-!
@@ -106,8 +59,7 @@ lemma sub_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Sub R
 lemma boundedSub_of_lipschitzWith_sub [PseudoMetricSpace R] [Sub R] {K : NNReal}
     (lip : LipschitzWith K (fun (p : R × R) ↦ p.1 - p.2)) :
     BoundedSub R where
-  isBounded_sub := by
-    intro s t s_bdd t_bdd
+  isBounded_sub {s t} s_bdd t_bdd := by
     have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
     convert lip.isBounded_image bdd
     ext p
@@ -123,33 +75,45 @@ end bounded_sub
 
 section bounded_mul
 /-!
-### Bounded multiplication
+### Bounded multiplication and addition
 -/
 
 open Pointwise Set
 
+/-- A typeclass saying that `(p : R × R) ↦ p.1 + p.2` maps any product of bounded sets to a bounded
+set. This property follows from `LipschitzAdd`, and thus automatically holds, e.g., for seminormed
+additive groups. -/
+class BoundedAdd (R : Type*) [Bornology R] [Add R] : Prop where
+  isBounded_add : ∀ {s t : Set R},
+    Bornology.IsBounded s → Bornology.IsBounded t → Bornology.IsBounded (s + t)
+
 /-- A typeclass saying that `(p : R × R) ↦ p.1 * p.2` maps any product of bounded sets to a bounded
 set. This property automatically holds for non-unital seminormed rings, but it also holds, e.g.,
 for `ℝ≥0`. -/
+@[to_additive]
 class BoundedMul (R : Type*) [Bornology R] [Mul R] : Prop where
   isBounded_mul : ∀ {s t : Set R},
     Bornology.IsBounded s → Bornology.IsBounded t → Bornology.IsBounded (s * t)
 
 variable {R : Type*}
 
+@[to_additive]
 lemma isBounded_mul [Bornology R] [Mul R] [BoundedMul R] {s t : Set R}
     (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
     Bornology.IsBounded (s * t) := BoundedMul.isBounded_mul hs ht
 
+@[to_additive]
 lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set R}
     (s_bdd : Bornology.IsBounded s) (n : ℕ) :
     Bornology.IsBounded ((fun x ↦ x ^ n) '' s) := by
-  induction' n with n hn
-  · by_cases s_empty : s = ∅
+  induction n with
+  | zero =>
+    by_cases s_empty : s = ∅
     · simp [s_empty]
     simp_rw [← nonempty_iff_ne_empty] at s_empty
     simp [s_empty]
-  · have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by
+  | succ n hn =>
+    have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by
       intro x hx
       simp only [mem_image] at hx
       obtain ⟨y, y_in_s, ypow_eq_x⟩ := hx
@@ -158,6 +122,7 @@ lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set
       use y
     exact (isBounded_mul hn s_bdd).subset obs
 
+@[to_additive]
 lemma mul_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Mul R] [BoundedMul R]
     {f g : X → R} (f_bdd : ∃ C, ∀ x y, dist (f x) (f y) ≤ C)
     (g_bdd : ∃ C, ∀ x y, dist (g x) (g y) ≤ C) :
@@ -168,6 +133,20 @@ lemma mul_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Mul R
   intro x y
   exact hC (Set.mul_mem_mul (Set.mem_range_self (f := f) x) (Set.mem_range_self (f := g) x))
            (Set.mul_mem_mul (Set.mem_range_self (f := f) y) (Set.mem_range_self (f := g) y))
+
+@[to_additive]
+instance [PseudoMetricSpace R] [Monoid R] [LipschitzMul R] : BoundedMul R where
+  isBounded_mul {s t} s_bdd t_bdd := by
+    have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
+    obtain ⟨C, mul_lip⟩ := ‹LipschitzMul R›.lipschitz_mul
+    convert mul_lip.isBounded_image bdd
+    ext p
+    simp only [Set.mem_image, Set.mem_prod, Prod.exists]
+    constructor
+    · intro ⟨a, a_in_s, b, b_in_t, eq_p⟩
+      exact ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
+    · intro ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
+      simpa [← eq_p] using Set.mul_mem_mul a_in_s b_in_t
 
 end bounded_mul
 
@@ -195,8 +174,7 @@ section NonUnitalSeminormedRing
 variable {R : Type*} [NonUnitalSeminormedRing R]
 
 instance : BoundedMul R where
-  isBounded_mul := by
-    intro s t hs ht
+  isBounded_mul {s t} hs ht := by
     obtain ⟨Af, hAf⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp hs
     obtain ⟨Ag, hAg⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp ht
     rw [Metric.isBounded_iff] at hs ht ⊢
@@ -205,12 +183,10 @@ instance : BoundedMul R where
     obtain ⟨x₁, hx₁, y₁, hy₁, z_eq⟩ := Set.mem_mul.mp hz
     obtain ⟨x₂, hx₂, y₂, hy₂, w_eq⟩ := Set.mem_mul.mp hw
     rw [← w_eq, ← z_eq, dist_eq_norm]
-    by_cases absurd_Af : Af < 0
-    · simpa [Metric.closedBall_eq_empty.mpr absurd_Af] using hAf hx₁
-    simp only [not_lt] at absurd_Af
+    have hAf' : 0 ≤ Af := Metric.nonempty_closedBall.mp ⟨_, hAf hx₁⟩
     have aux : ∀ {x y}, x ∈ s → y ∈ t → ‖x * y‖ ≤ Af * Ag := by
       intro x y x_in_s y_in_t
-      apply (norm_mul_le _ _).trans (mul_le_mul _ _ (norm_nonneg _) absurd_Af)
+      apply (norm_mul_le _ _).trans (mul_le_mul _ _ (norm_nonneg _) hAf')
       · exact mem_closedBall_zero_iff.mp (hAf x_in_s)
       · exact mem_closedBall_zero_iff.mp (hAg y_in_t)
     calc ‖x₁ * y₁ - x₂ * y₂‖
@@ -229,8 +205,7 @@ instance : BoundedSub ℝ≥0 := boundedSub_of_lipschitzWith_sub NNReal.lipschit
 
 open Metric in
 instance : BoundedMul ℝ≥0 where
-  isBounded_mul := by
-    intro s t hs ht
+  isBounded_mul {s t} hs ht := by
     obtain ⟨Af, hAf⟩ := (isBounded_iff_subset_closedBall 0).mp hs
     obtain ⟨Ag, hAg⟩ := (isBounded_iff_subset_closedBall 0).mp ht
     have key : IsCompact (closedBall (0 : ℝ≥0) Af ×ˢ closedBall (0 : ℝ≥0) Ag) :=
