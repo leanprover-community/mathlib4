@@ -3,13 +3,8 @@ Copyright (c) 2025 Benoît Guillemet. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benoît Guillemet
 -/
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.IndYoneda
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Natural transformations of presheaves as limits
@@ -195,8 +190,7 @@ def overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver :
               Opposite.op_unop, Equiv.invFun_as_coe, types_comp_apply, uliftFunctor_map,
               Functor.flip_obj_map, Functor.op_map, coyoneda_map_app, Quiver.Hom.unop_op,
               FunctorToTypes.comp, yoneda_map_app]
-            rw [yonedaEquiv_symm_app_apply]
-            rw [yonedaEquiv_symm_app_apply]
+            rw [yonedaEquiv_symm_app_apply, yonedaEquiv_symm_app_apply]
             simp
         }
       naturality _ _ _ := by
