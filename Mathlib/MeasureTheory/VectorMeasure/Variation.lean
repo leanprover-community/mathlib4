@@ -319,15 +319,78 @@ lemma le_var_aux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
 
 -- To do, new versions of:
 -- Here I believe we need the subadditivity of `f`. Maybe countable?
+-- And that empty sets take value zero
 variable (hf : ∀ s t, f (s ∪ t) ≤ f s + f t)
+-- f (⋃ i, p ∩ s i) ≤ ∑' (i : ℕ), f (p ∩ s i)
+
+
 
 -- varOfPart_le_tsum
 /-- Given a partition `Q`, `varOfPart μ Q` is bounded by the sum of the `varOfPart μ (P i)` where
 the `P i` are the partitions formed by restricting to a disjoint set of sets `s i`. -/
-lemma sum_part_le_tsum_sum_part {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
+lemma sum_part_le_tsum_sum_part (hf' : f ∅ = 0) {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) {Q : Finset (Set X)} (hQ : Q ∈ partitions (⋃ i, s i)) :
     ∑ q ∈ Q, f q ≤ ∑' i, ∑ p ∈ (restriction (s i) Q), f p := by
-  sorry
+
+  let P (i : ℕ) := restriction (s i) Q
+  calc ∑ q ∈ Q, f q
+    _ = ∑ q ∈ Q, f q := by simp
+    _ = ∑ q ∈ Q, f (⋃ i, q ∩ s i) := ?_
+    _ ≤ ∑ q ∈ Q, ∑' i, f (q ∩ s i) := ?_
+    _ = ∑' i, ∑ q ∈ Q, f (q ∩ s i) := ?_
+    _ ≤ ∑' i, ∑ p ∈ (P i), f p := ?_
+    -- _ = ∑' i, (varOfPart μ (P i)) := by simp [varOfPart]
+  · -- Each `q` is equal to the union of `q ∩ s i`.
+    suffices h : ∀ q ∈ Q, q = ⋃ i, q ∩ s i by
+      refine Finset.sum_congr rfl (fun q hq ↦ ?_)
+      simp_rw [← h q hq]
+    intro q hq
+    ext x
+    constructor
+    · intro hx
+      obtain ⟨_, hs⟩ := (hQ.1 q hq) hx
+      obtain ⟨i, _⟩ := Set.mem_range.mp hs.1
+      simp_all [Set.mem_iUnion_of_mem i]
+    · intro _
+      simp_all
+  · -- Additivity of the measure since the `s i` are pairwise disjoint.
+    gcongr with p hp
+    sorry
+    -- have : μ (⋃ i, p ∩ s i) = ∑' i, μ (p ∩ s i) := by
+    --   have hps : ∀ i, MeasurableSet (p ∩ s i) := by
+    --     intro i
+    --     refine MeasurableSet.inter (hQ.2.1 p hp) (hs i)
+    --   have hps' : Pairwise (Disjoint on fun i ↦ p ∩ s i) := by
+    --     refine (Symmetric.pairwise_on (fun ⦃x y⦄ a ↦ Disjoint.symm a) fun i ↦ p ∩ s i).mpr ?_
+    --     intro _ _ _
+    --     refine Disjoint.inter_left' p (Disjoint.inter_right' p ?_)
+    --     exact hs' (by omega)
+    --   exact VectorMeasure.of_disjoint_iUnion hps hps'
+    -- rw [this]
+    -- exact enorm_tsum_le_tsum_enorm
+  · -- Swapping the order of the sum.
+    refine Eq.symm (Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable))
+  · -- By defintion of the restricted partition
+    refine ENNReal.tsum_le_tsum ?_
+    intro i
+    classical
+    calc ∑ q ∈ Q, f (q ∩ s i)
+      _ = ∑ p ∈ (Finset.image (fun q ↦ q ∩ s i) Q), f p := by
+        refine Eq.symm (Finset.sum_image_of_disjoint ?_ ?_)
+        · simp [hf']
+        · intro p hp q hq hpq
+          refine Disjoint.inter_left (s i) (Disjoint.inter_right (s i) ?_)
+          exact hQ.2.2.1 hp hq hpq
+      _ ≤  ∑ p ∈ P i, f p := by
+        refine Finset.sum_le_sum_of_ne_zero ?_
+        intro p hp hp'
+        dsimp [P]
+        obtain hc | hc : p = ∅ ∨ ¬p = ∅ := eq_or_ne p ∅
+        · simp [hc, hf'] at hp'
+        · rw [restriction, Finset.mem_filter, Finset.mem_image]
+          refine ⟨?_, hc⟩
+          obtain ⟨q, _, _⟩ := Finset.mem_image.mp hp
+          use q
 
 -- variation_m_iUnion'
 /-- Aditivity of `variation_aux` for disjoint measurable sets. -/
