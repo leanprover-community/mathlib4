@@ -42,12 +42,12 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   obtain ⟨hxp, le⟩ : x ∈ p.last.1.1 ∧ q.length ≤ p.length := by
     by_cases lt : (q.last).1.1 < 𝔪
     · rw [show p = q.snoc ⟨⟨𝔪, IsMaximal.isPrime' 𝔪⟩, hm⟩ lt from dif_pos lt]
-      simp only [q.last_snoc, hx, RelSeries.snoc_length, le_add_iff_nonneg_right, zero_le, and_self]
+      simp [hx]
     · have hq : q.last.1.1 = 𝔪 := by
         contrapose! lt
         exact lt_of_le_of_ne (le_maximalIdeal_of_isPrime q.last.1.1) lt
       simp only [show p = q from dif_neg lt, hq, hx, le_refl, and_self]
-  obtain ⟨q, hxq, hq, h0, _⟩ := PrimeSpectrum.exist_lTSeries_mem_one_of_mem_last
+  obtain ⟨q, hxq, hq, h0, _⟩ := PrimeSpectrum.exist_ltSeries_mem_one_of_mem_last
     (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)) hxp
   refine (Nat.cast_le.mpr le).trans ?_
   by_cases h : p.length = 0
@@ -102,7 +102,7 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
       exact ⟨(p i).1, hq.1⟩
     step := by
       intro i
-      simp only [Subtype.mk_lt_mk, Subtype.coe_lt_coe, p.3 i]
+      simp [p.3 i]
   }
   have hx : x ∈ q.head.1.1 := by
     have hp := p.head.2

@@ -386,9 +386,9 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
         ∑ d ∈ compPartialSumTarget 2 (n + 1) n,
           ∏ j : Fin d.2.length, r * (a ^ d.2.blocksFun j * p (d.2.blocksFun j)) := by
       rw [sum_sigma']
-      refine
-        sum_le_sum_of_subset_of_nonneg ?_ fun x _ _ =>
-          prod_nonneg fun j _ => mul_nonneg hr (mul_nonneg (pow_nonneg ha _) (hp _))
+      gcongr
+      · intro x _ _
+        exact prod_nonneg fun j _ => mul_nonneg hr (mul_nonneg (pow_nonneg ha _) (hp _))
       rintro ⟨k, c⟩ hd
       simp only [Set.mem_toFinset (s := {c | 1 < Composition.length c}), mem_Ico, mem_sigma,
         Set.mem_setOf_eq] at hd
@@ -581,7 +581,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
       (f (x + y)) := by
     have cau : CauchySeq fun s : Finset (Σ n, Composition n) =>
         ∑ i ∈ s, q.compAlongComposition p i.2 fun _j => y := by
-      apply cauchySeq_finset_of_norm_bounded _ (NNReal.summable_coe.2 hr1) _
+      apply cauchySeq_finset_of_norm_bounded (NNReal.summable_coe.2 hr1) _
       simp only [coe_nnnorm, NNReal.coe_mul, NNReal.coe_pow]
       rintro ⟨n, c⟩
       calc
@@ -646,7 +646,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp  {f : E → F} {g : F → G}
     filter_upwards [Ici_mem_atTop b₀] with b hb using vu (hab _ _ ha hb)
   have C : CauchySeq (fun (s : Finset ℕ) ↦ ∑ n ∈ s, q n fun _ : Fin n => (f (x + y) - f x)) := by
     have Z := q.summable_norm_apply (x := f (x + y) - f x) h''y
-    exact cauchySeq_finset_of_norm_bounded _ Z (fun i ↦ le_rfl)
+    exact cauchySeq_finset_of_norm_bounded Z (fun i ↦ le_rfl)
   exact tendsto_nhds_of_cauchySeq_of_subseq C tendsto_finset_range L
 
 /-- If a partial homeomorphism `f` is defined at `a` and has a power series expansion there with

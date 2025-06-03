@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 ## Main results
 
-* `PrimeSpectrum.exist_lTSeries_mem_one_of_mem_last`: Let $R$ be a Noetherian ring,
+* `PrimeSpectrum.exist_ltSeries_mem_one_of_mem_last`: Let $R$ be a Noetherian ring,
   $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a chain of primes, $x \in \mathfrak{p}_n$.
   Then we can find another chain of primes $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that
   $x \in \mathfrak{q}_1$, $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$.
@@ -48,7 +48,7 @@ theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpe
   refine ENat.not_lt_zero (e ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
   simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₀]
 
-theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
+theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.asIdeal) :
       ∃ q : (PrimeSpectrum R), x ∈ q.asIdeal ∧ p₀ < q ∧ q < p₂ := by
   let e := p₂.1.primeSpectrumLocalizationAtPrime (Localization.AtPrime p₂.1)
@@ -72,7 +72,7 @@ theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
   chain of primes, $x \in \mathfrak{p}_n$. Then we can find another chain of primes
   $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that $x \in \mathfrak{q}_1$,
   $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$. -/
-theorem exist_lTSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
+theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     {x : R} (hx : x ∈ p.last.asIdeal) : ∃ q : LTSeries (PrimeSpectrum R),
       x ∈ (q 1).asIdeal ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
   generalize hp : p.length = n
@@ -86,8 +86,7 @@ theorem exist_lTSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     have h1 : 1 = Fin.last p.length := by
       rw [Fin.last, hp, h0, zero_add]
       exact Fin.natCast_eq_mk (Nat.one_lt_succ_succ 0)
-    simp only [h1, hp, Nat.add_left_cancel_iff, and_self, and_true]
-    exact hx
+    simpa [h1, hp] using hx
   obtain ⟨q, hxq, hq2, hq⟩ : ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧
       p ⟨p.length - 2, p.length.sub_lt_succ 2⟩ < q ∧ q < p.last := by
     refine (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two ?_ ?_ hx
