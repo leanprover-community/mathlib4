@@ -222,7 +222,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
 
   (`Mathlib.Logic, `Batteries),
-  -- XXX: should this import be allowed on a more fine-grained level?
+  -- TODO: should the next import direction be flipped?
   (`Mathlib.Logic, `Mathlib.Control),
   (`Mathlib.Logic, `Mathlib.Lean),
   (`Mathlib.Logic, `Mathlib.Util),
@@ -231,9 +231,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
   (`Mathlib.Logic, `Mathlib.Algebra.Notation),
   (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
-  -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
   (`Mathlib.Logic, `Mathlib.Data),
-  -- XXX: should this import be allowed only on a more fine-grained level (or at all)?
+  -- TODO: this next dependency should be made more fine-grained.
   (`Mathlib.Logic, `Mathlib.Order),
   -- Particular modules with larger imports.
   (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
@@ -246,9 +245,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic.Small.List, `Mathlib.Algebra),
 
   (`Mathlib.Testing, `Batteries),
-  -- XXX: is this intended? just a single transitive import
+  -- TODO: this next import should be eliminated.
   (`Mathlib.Testing, `Mathlib.GroupTheory),
-  -- XXX: is this intended? just a handful of transitive imports
   (`Mathlib.Testing, `Mathlib.Control),
   (`Mathlib.Testing, `Mathlib.Algebra),
   (`Mathlib.Testing, `Mathlib.Data),
@@ -639,7 +637,7 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
       |>.filter (!initImports.contains ·)
 
     -- Find all prefixes which are allowed for one of these directories.
-    let mut allRules := allowedImportDirs.getAllLeft mainModule
+    let allRules := allowedImportDirs.getAllLeft mainModule
     -- Error about those imports which are not covered by allowedImportDirs.
     let mut messages := #[]
     for imported in importsToCheck do
