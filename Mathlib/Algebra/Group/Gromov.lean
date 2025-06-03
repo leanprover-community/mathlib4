@@ -1030,6 +1030,7 @@ lemma gamma_m_eq_mulAt (φ: (Additive G) →+ ℤ) (γ: G) (m: ℤ) (s: S): gamm
   dsimp [gamma_m_helper]
   simp
 
+
 -- The set {γ_m_i}_{m ≤ n}
 def three_two_S_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset G := Finset.image (Function.uncurry (gamma_m_helper (S := S) φ γ)) ((Finset.Icc (-n : ℤ) n).product S.attach)
 --def three_two_S_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset G := (Function.uncurry (gamma_m_helper (S := S) φ γ)) '' ({ m: ℤ | |m| ≤ n} ×ˢ Set.univ)
@@ -1330,8 +1331,33 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
                 use s'
                 use s'_mem
 
+            .
+              have p_eq_neg_natabs: p = -p.natAbs := by
+                omega
+              have p_gt := hp.2
+              rw [p_eq_neg_natabs] at p_gt
+              by_cases p_gt_n: n < p.natAbs
+              .
+                specialize ih (p.natAbs) (by omega) p_gt_n
+                rw [Set.range_subset_iff] at ih
+                specialize ih ⟨s', s'_mem⟩
+                simp only [SetLike.mem_coe] at ih
+                rw [← Subgroup.inv_mem_iff] at ih
+                rw [p_eq_neg_natabs] at x_eq_gamma
+                rw [x_eq_gamma] at ih
+                simp at ih
+                exact ih
+              .
+                simp at p_gt_n
+                apply Subgroup.subset_closure
+                simp
+                use p
+                refine ⟨by omega, ?_⟩
+                use s'
+                use s'_mem
 
-            sorry
+
+              sorry
           . sorry
 
           rw [← Subgroup.mem_toSubmonoid]
