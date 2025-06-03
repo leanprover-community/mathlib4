@@ -3,7 +3,7 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.WithTerminal
+import Mathlib.CategoryTheory.WithTerminal.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
@@ -54,7 +54,7 @@ def equivAugmentedCosimplicialObject :
 dropping the augmentation corresponds to precomposition with
 `inclusion : SimplexCategory ⥤ AugmentedSimplexCategory`. -/
 @[simps!]
-def equivAugmentedCosimplicialObjectDrop :
+def equivAugmentedCosimplicialObjectFunctorCompDropIso :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.drop ≅
     (whiskeringLeft _ _ C).obj inclusion :=
   .refl _
@@ -62,7 +62,7 @@ def equivAugmentedCosimplicialObjectDrop :
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 taking the point of the augmentation corresponds to evaluation at the initial object. -/
 @[simps!]
-def equivAugmentedCosimplicialObjectPoint :
+def equivAugmentedCosimplicialObjecFunctorCompPointIso :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.point ≅
     ((evaluation _ _).obj .star : (AugmentedSimplexCategory ⥤ C) ⥤ C) :=
   .refl _
@@ -71,7 +71,7 @@ def equivAugmentedCosimplicialObjectPoint :
 the arrow attached to the cosimplicial object is the one obtained by evaluation at the unique arrow
 `star ⟶ of [0]`. -/
 @[simps!]
-def equivAugmentedCosimplicialObjectToArrow :
+def equivAugmentedCosimplicialObjectFunctorCompToArrowIso :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.toArrow ≅
     Functor.mapArrowFunctor _ C ⋙
       (evaluation _ _ |>.obj <| .mk <| WithInitial.homTo <| .mk 0) :=
@@ -88,7 +88,7 @@ def equivAugmentedSimplicialObject :
 dropping the augmentation corresponds to precomposition with
 `inclusionᵒᵖ : SimplexCategoryᵒᵖ ⥤ AugmentedSimplexCategoryᵒᵖ`. -/
 @[simps!]
-def equivAugmentedSimplicialObjectDrop :
+def equivAugmentedSimplicialObjectFunctorCompDropIso :
     equivAugmentedSimplicialObject.functor ⋙ SimplicialObject.Augmented.drop ≅
     (whiskeringLeft _ _ C).obj inclusion.op :=
   .refl _
@@ -96,7 +96,7 @@ def equivAugmentedSimplicialObjectDrop :
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 taking the point of the augmentation corresponds to evaluation at the initial object. -/
 @[simps!]
-def equivAugmentedSimplicialObjectPoint :
+def equivAugmentedSimplicialObjectFunctorCompPointIso :
     equivAugmentedSimplicialObject.functor ⋙ SimplicialObject.Augmented.point ≅
     (evaluation _ C).obj (.op .star) :=
   .refl _
@@ -105,7 +105,7 @@ def equivAugmentedSimplicialObjectPoint :
 the arrow attached to the cosimplicial object is the one obtained by evaluation at the unique arrow
 `star ⟶ of [0]`. -/
 @[simps!]
-def equivAugmentedSimplicialObjectToArrow :
+def equivAugmentedSimplicialObjectFunctorCompToArrowIso :
     equivAugmentedSimplicialObject.functor ⋙ SimplicialObject.Augmented.toArrow ≅
     Functor.mapArrowFunctor _ C ⋙
       (evaluation _ _ |>.obj <| .mk <| .op <| WithInitial.homTo <| .mk 0) :=

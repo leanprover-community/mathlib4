@@ -94,7 +94,6 @@ noncomputable instance : (fromSkeleton C).Faithful := by
 
 instance : (fromSkeleton C).EssSurj where mem_essImage X := ⟨Quotient.mk' X, Quotient.mk_out X⟩
 
--- Porting note: named this instance
 noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
 
 variable {C}
@@ -138,6 +137,23 @@ lemma skeleton_isSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
 section
 
 variable {C D}
+
+namespace Functor
+
+/-- From a functor `C ⥤ D`, construct a map of skeletons `Skeleton C → Skeleton D`. -/
+noncomputable def mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D :=
+  (skeletonEquivalence C).functor ⋙ F ⋙ (skeletonEquivalence D).inverse
+
+variable (F : C ⥤ D)
+
+instance [F.Full] : F.mapSkeleton.Full := by unfold mapSkeleton; infer_instance
+
+instance [F.Faithful] : F.mapSkeleton.Faithful := by unfold mapSkeleton; infer_instance
+
+lemma mapSkeleton_injective [F.Full] [F.Faithful] : Function.Injective F.mapSkeleton.obj :=
+  fun _ _ h ↦ skeleton_skeletal C ⟨F.mapSkeleton.preimageIso <| eqToIso h⟩
+
+end Functor
 
 /-- Two categories which are categorically equivalent have skeletons with equivalent objects.
 -/

@@ -139,17 +139,15 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} (u : X ⟶ P) (v : Y 
   right := v
   w := w
 
-/- Porting note: was warned simp could prove reassoc'd version. Found simp could not.
-Added nolint. -/
-@[reassoc (attr := simp, nolint simpNF)]
-theorem w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right :=
-  sq.w
-
 -- `w_mk_left` is not needed, as it is a consequence of `w` and `mk_hom`.
 @[reassoc (attr := simp)]
 theorem w_mk_right {f : Arrow T} {X Y : T} {g : X ⟶ Y} (sq : f ⟶ mk g) :
     sq.left ≫ g = f.hom ≫ sq.right :=
   sq.w
+
+@[reassoc]
+theorem w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right := by
+  simp
 
 theorem isIso_of_isIso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso ff.left]
     [IsIso ff.right] : IsIso ff where
@@ -175,9 +173,8 @@ abbrev isoMk' {W X Y Z : T} (f : W ⟶ X) (g : Y ⟶ Z) (e₁ : W ≅ Y) (e₂ :
 theorem hom.congr_left {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ₂) : φ₁.left = φ₂.left := by
   rw [h]
 
-@[simp]
 theorem hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ₂) : φ₁.right = φ₂.right := by
-  rw [h]
+  simp [h]
 
 theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.hom = e.inv.left ≫ f.hom ≫ e.hom.right := by
   have eq := Arrow.hom.congr_right e.inv_hom_id

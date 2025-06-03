@@ -193,8 +193,6 @@ theorem Prod.snd_toSigma {α β} (x : α × β) : (Prod.toSigma x).snd = x.snd :
 theorem Prod.toSigma_mk {α β} (x : α) (y : β) : (x, y).toSigma = ⟨x, y⟩ :=
   rfl
 
--- Porting note: the meta instance `has_reflect (Σa, β a)` was removed here.
-
 end Sigma
 
 namespace PSigma

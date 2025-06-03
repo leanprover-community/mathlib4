@@ -150,7 +150,7 @@ a pretriangulated category. It is a scoped instance, so that we need to
 to use it: the reason is that it relies on the definition of the shift
 on the opposite category `Cᵒᵖ`, for which it is unclear whether it should
 be a global instance or not. -/
-scoped instance : Pretriangulated Cᵒᵖ where
+noncomputable scoped instance : Pretriangulated Cᵒᵖ where
   distinguishedTriangles := distinguishedTriangles C
   isomorphic_distinguished := isomorphic_distinguished
   contractible_distinguished := contractible_distinguished

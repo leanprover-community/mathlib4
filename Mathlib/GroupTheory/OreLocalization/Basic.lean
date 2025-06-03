@@ -480,9 +480,7 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
       simp only [one_mul, Units.inv_mul]
   map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
-    -- Porting note: `simp only []` required, not just for beta reductions
     beta_reduce
-    simp only [] -- TODO more!
     induction' x with r₁ s₁
     induction' y with r₂ s₂
     rcases oreDivMulChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'

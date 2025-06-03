@@ -31,9 +31,10 @@ lemma pow_ssubset_pow_succ_of_pow_ne_closure (hX₁ : (1 : G) ∈ X) (hX : X.Non
   wlog hn₁ : n = 1
   · simp +contextual only [pow_one] at this
     replace hXn d : X ^ (n + d) = X ^ n := by
-      induction' d with d hd
-      · rw [add_zero]
-      · rw [pow_add, pow_one] at hXn
+      induction d with
+      | zero => rw [add_zero]
+      | succ d hd =>
+        rw [pow_add, pow_one] at hXn
         rw [← add_assoc, pow_add, pow_one, hd, ← hXn]
     exact mod_cast this (one_mem_pow hX₁) (hX.pow hn) one_ne_zero
       (by simp [hXn, ← pow_mul, mul_two]) (by simp [hXn, ← pow_mul, mul_two])
@@ -46,7 +47,6 @@ lemma pow_ssubset_pow_succ_of_pow_ne_closure (hX₁ : (1 : G) ∈ X) (hX : X.Non
       simpa [← hXn, ← sq] using mul_mem_mul hx hy
     one_mem' := hX₁
     inv_mem' := fun {x} hx ↦ by
-      dsimp at *
       norm_cast at *
       have : x • X ⊆ X := by
         simpa [← hXn, add_assoc, ← sq] using smul_finset_subset_mul (t := X) hx

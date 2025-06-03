@@ -112,8 +112,8 @@ lemma preservesBinaryProducts_of_isIso_prodComparison
     PreservesLimitsOfShape (Discrete WalkingPair) G where
   preservesLimit := by
     intro K
-    have : PreservesLimit (pair (K.obj ⟨WalkingPair.left⟩) (K.obj ⟨WalkingPair.right⟩)) G := by
-        apply PreservesLimitPair.of_iso_prod_comparison
+    have : PreservesLimit (pair (K.obj ⟨WalkingPair.left⟩) (K.obj ⟨WalkingPair.right⟩)) G :=
+      PreservesLimitPair.of_iso_prod_comparison ..
     apply preservesLimit_of_iso_diagram G (diagramIsoPair K).symm
 
 end
@@ -193,8 +193,8 @@ lemma preservesBinaryCoproducts_of_isIso_coprodComparison
     PreservesColimitsOfShape (Discrete WalkingPair) G where
   preservesColimit := by
     intro K
-    have : PreservesColimit (pair (K.obj ⟨WalkingPair.left⟩) (K.obj ⟨WalkingPair.right⟩)) G := by
-        apply PreservesColimitPair.of_iso_coprod_comparison
+    have : PreservesColimit (pair (K.obj ⟨WalkingPair.left⟩) (K.obj ⟨WalkingPair.right⟩)) G :=
+      PreservesColimitPair.of_iso_coprod_comparison ..
     apply preservesColimit_of_iso_diagram G (diagramIsoPair K).symm
 
 end

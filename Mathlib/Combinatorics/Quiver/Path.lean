@@ -16,7 +16,7 @@ family. We define composition of paths and the action of prefunctors on paths.
 
 open Function
 
-universe v v₁ v₂ u u₁ u₂
+universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 namespace Quiver
 
@@ -152,7 +152,7 @@ lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
   | nil => simp at hp
   | @cons c d p q h =>
     cases n
-    · rw [length_cons, Nat.zero_add, Nat.add_left_eq_self] at hp
+    · rw [length_cons, Nat.zero_add, Nat.add_eq_right] at hp
       obtain rfl := eq_of_length_zero p hp
       obtain rfl := eq_nil_of_length_zero p hp
       exact ⟨d, q, nil, rfl, rfl⟩
@@ -226,5 +226,19 @@ theorem mapPath_comp {a b : V} (p : Path a b) :
 @[simp]
 theorem mapPath_toPath {a b : V} (f : a ⟶ b) : F.mapPath f.toPath = (F.map f).toPath :=
   rfl
+
+@[simp]
+theorem mapPath_id {a b : V} : (p : Path a b) → (𝟭q V).mapPath p = p
+  | Path.nil => rfl
+  | Path.cons q e => by dsimp; rw [mapPath_id q]
+
+variable {U : Type u₃} [Quiver.{v₃} U] (G : W ⥤q U)
+
+@[simp]
+theorem mapPath_comp_apply {a b : V} (p : Path a b) :
+    (F ⋙q G).mapPath p = G.mapPath (F.mapPath p) := by
+  induction p with
+  | nil => rfl
+  | cons x y h => simp [h]
 
 end Prefunctor

@@ -175,14 +175,6 @@ theorem toSetoid_inj {c d : Con M} (H : c.toSetoid = d.toSetoid) : c = d :=
 are equal."]
 theorem coe_inj {c d : Con M} : ⇑c = ⇑d ↔ c = d := DFunLike.coe_injective.eq_iff
 
-/-- The kernel of a multiplication-preserving function as a congruence relation. -/
-@[to_additive "The kernel of an addition-preserving function as an additive congruence relation."]
-def mulKer (f : M → P) (h : ∀ x y, f (x * y) = f x * f y) : Con M where
-  toSetoid := Setoid.ker f
-  mul' h1 h2 := by
-    dsimp [Setoid.ker, onFun] at *
-    rw [h, h1, h2, h]
-
 variable (c)
 
 -- Quotients
@@ -283,12 +275,6 @@ protected theorem eq {a b : M} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :
 with an addition."]
 instance hasMul : Mul c.Quotient :=
   ⟨Quotient.map₂ (· * ·) fun _ _ h1 _ _ h2 => c.mul h1 h2⟩
-
-/-- The kernel of the quotient map induced by a congruence relation `c` equals `c`. -/
-@[to_additive (attr := simp) "The kernel of the quotient map induced by an additive congruence
-relation `c` equals `c`."]
-theorem mul_ker_mk_eq : (mulKer ((↑) : M → c.Quotient) fun _ _ => rfl) = c :=
-  ext fun _ _ => Quotient.eq''
 
 variable {c}
 
@@ -487,36 +473,6 @@ protected def gi : @GaloisInsertion (M → M → Prop) (Con M) _ _ conGen DFunLi
 
 variable {M} (c)
 
-/-- Given a function `f`, the smallest congruence relation containing the binary relation on `f`'s
-    image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)`
-    by a congruence relation `c`.' -/
-@[to_additive "Given a function `f`, the smallest additive congruence relation containing the
-binary relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the
-elements of `f⁻¹(y)` by an additive congruence relation `c`.'"]
-def mapGen (f : M → N) : Con N :=
-  conGen fun x y => ∃ a b, f a = x ∧ f b = y ∧ c a b
-
-/-- Given a surjective multiplicative-preserving function `f` whose kernel is contained in a
-    congruence relation `c`, the congruence relation on `f`'s codomain defined by '`x ≈ y` iff the
-    elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)` by `c`.' -/
-@[to_additive "Given a surjective addition-preserving function `f` whose kernel is contained in
-an additive congruence relation `c`, the additive congruence relation on `f`'s codomain defined
-by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)` by `c`.'"]
-def mapOfSurjective (f : M → N) (H : ∀ x y, f (x * y) = f x * f y) (h : mulKer f H ≤ c)
-    (hf : Surjective f) : Con N :=
-  { c.toSetoid.mapOfSurjective f h hf with
-    mul' := fun h₁ h₂ => by
-      rcases h₁ with ⟨a, b, rfl, rfl, h1⟩
-      rcases h₂ with ⟨p, q, rfl, rfl, h2⟩
-      exact ⟨a * p, b * q, by rw [H], by rw [H], c.mul h1 h2⟩ }
-
-/-- A specialization of 'the smallest congruence relation containing a congruence relation `c`
-    equals `c`'. -/
-@[to_additive "A specialization of 'the smallest additive congruence relation containing
-an additive congruence relation `c` equals `c`'."]
-theorem mapOfSurjective_eq_mapGen {c : Con M} {f : M → N} (H : ∀ x y, f (x * y) = f x * f y)
-    (h : mulKer f H ≤ c) (hf : Surjective f) : c.mapGen f = c.mapOfSurjective f H h hf := by
-  rw [← conGen_of_con (c.mapOfSurjective f H h hf)]; rfl
 
 /-- Given types with multiplications `M, N` and a congruence relation `c` on `N`, a
     multiplication-preserving map `f : M → N` induces a congruence relation on `f`'s domain
@@ -536,40 +492,6 @@ theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N}
 section
 
 open Quotient
-
-/-- Given a congruence relation `c` on a type `M` with a multiplication, the order-preserving
-    bijection between the set of congruence relations containing `c` and the congruence relations
-    on the quotient of `M` by `c`. -/
-@[to_additive "Given an additive congruence relation `c` on a type `M` with an addition,
-the order-preserving bijection between the set of additive congruence relations containing `c` and
-the additive congruence relations on the quotient of `M` by `c`."]
-def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
-  toFun d :=
-    d.1.mapOfSurjective (↑) (fun _ _ => rfl) (by rw [mul_ker_mk_eq]; exact d.2) <|
-      @Quotient.exists_rep _ c.toSetoid
-  invFun d :=
-    ⟨comap ((↑) : M → c.Quotient) (fun _ _ => rfl) d, fun x y h =>
-      show d x y by rw [c.eq.2 h]; exact d.refl _⟩
-  left_inv d :=
-    Subtype.ext_iff_val.2 <|
-      ext fun x y =>
-        ⟨fun ⟨a, b, hx, hy, H⟩ =>
-          d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
-          fun h => ⟨_, _, rfl, rfl, h⟩⟩
-  right_inv d :=
-    ext fun x y =>
-      ⟨fun ⟨_, _, hx, hy, H⟩ =>
-        hx ▸ hy ▸ H,
-        Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
-  map_rel_iff' {s t} := by
-    constructor
-    · intros h x y hs
-      rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
-      exact t.1.trans (t.1.symm <| t.2 <| Quotient.eq'.1 hx)
-        (t.1.trans ht (t.2 <| Quotient.eq'.1 hy))
-    · intros h _ _ hs
-      rcases hs with ⟨a, b, hx, hy, Hs⟩
-      exact ⟨a, b, hx, hy, h Hs⟩
 
 end
 

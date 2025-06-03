@@ -13,12 +13,12 @@ This file defines fractional ideals of an integral domain and proves basic facts
 
 ## Main definitions
 Let `S` be a submonoid of an integral domain `R` and `P` the localization of `R` at `S`.
- * `IsFractional` defines which `R`-submodules of `P` are fractional ideals
- * `FractionalIdeal S P` is the type of fractional ideals in `P`
- * a coercion `coeIdeal : Ideal R → FractionalIdeal S P`
- * `CommSemiring (FractionalIdeal S P)` instance:
-   the typical ideal operations generalized to fractional ideals
- * `Lattice (FractionalIdeal S P)` instance
+* `IsFractional` defines which `R`-submodules of `P` are fractional ideals
+* `FractionalIdeal S P` is the type of fractional ideals in `P`
+* a coercion `coeIdeal : Ideal R → FractionalIdeal S P`
+* `CommSemiring (FractionalIdeal S P)` instance:
+  the typical ideal operations generalized to fractional ideals
+* `Lattice (FractionalIdeal S P)` instance
 
 ## Main statements
 
@@ -293,7 +293,7 @@ section
 variable [loc : IsLocalization S P]
 
 variable (P) in
-@[simp]
+-- Cannot be @[simp] because `S` can not be inferred by `simp`.
 theorem exists_mem_algebraMap_eq {x : R} {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (∃ x', x' ∈ I ∧ algebraMap R P x' = algebraMap R P x) ↔ x ∈ I :=
   ⟨fun ⟨_, hx', Eq⟩ => IsLocalization.injective _ h Eq ▸ hx', fun h => ⟨x, h, rfl⟩⟩

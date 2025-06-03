@@ -67,14 +67,15 @@ instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α]
   ⟨⟨1, fun _ => ⟨0, Subsingleton.elim _ _⟩⟩⟩
 
 @[simp]
-theorem isCyclic_multiplicative_iff [AddGroup α] : IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
+theorem isCyclic_multiplicative_iff [SubNegMonoid α] :
+    IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
   ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
 
 instance isCyclic_multiplicative [AddGroup α] [IsAddCyclic α] : IsCyclic (Multiplicative α) :=
   isCyclic_multiplicative_iff.mpr inferInstance
 
 @[simp]
-theorem isAddCyclic_additive_iff [Group α] : IsAddCyclic (Additive α) ↔ IsCyclic α :=
+theorem isAddCyclic_additive_iff [DivInvMonoid α] : IsAddCyclic (Additive α) ↔ IsCyclic α :=
   ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
 
 instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
@@ -97,7 +98,7 @@ proof of `CommGroup`. -/
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
   { hg with mul_comm := commutative.comm }
 
-instance [Group G] (H : Subgroup G) [IsCyclic H] : H.IsCommutative :=
+instance [Group G] (H : Subgroup G) [IsCyclic H] : IsMulCommutative H :=
   ⟨IsCyclic.commutative⟩
 
 variable [Group α] [Group G] [Group G']
@@ -224,6 +225,11 @@ alias orderOf_generator_eq_natCard := orderOf_eq_card_of_forall_mem_zpowers
 
 @[deprecated (since := "2024-11-15")]
 alias addOrderOf_generator_eq_natCard := addOrderOf_eq_card_of_forall_mem_zmultiples
+
+@[to_additive]
+theorem orderOf_eq_card_of_zpowers_eq_top {g : G} (h : Subgroup.zpowers g = ⊤) :
+    orderOf g = Nat.card G :=
+  orderOf_eq_card_of_forall_mem_zpowers fun _ ↦ h.ge (Subgroup.mem_top _)
 
 @[to_additive]
 theorem exists_pow_ne_one_of_isCyclic [G_cyclic : IsCyclic G]
@@ -602,7 +608,7 @@ theorem prime_card [Finite α] : (Nat.card α).Prime := by
   refine (IsSimpleOrder.eq_bot_or_eq_top (Subgroup.zpowers (g ^ n))).symm.imp ?_ ?_
   · intro h
     have hgo := orderOf_pow (n := n) g
-    rw [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.gcd_eq_right_iff_dvd.1 hn,
+    rw [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.gcd_eq_right_iff_dvd.2 hn,
       orderOf_eq_card_of_forall_mem_zpowers, eq_comm,
       Nat.div_eq_iff_eq_mul_left (Nat.pos_of_dvd_of_pos hn h0) hn] at hgo
     · exact (mul_left_cancel₀ (ne_of_gt h0) ((mul_one (Nat.card α)).trans hgo)).symm
@@ -779,6 +785,39 @@ theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :
   exact Nat.card_congr (mulAutMulEquiv G)
 
 end ZMod
+
+section powMonoidHom
+
+variable (G)
+
+-- Note. Even though cyclic groups only require `[Group G]`, we need `[CommGroup G]` for
+-- `powMonoidHom` to be defined.
+
+@[to_additive]
+theorem IsCyclic.card_powMonoidHom_range [CommGroup G] [hG : IsCyclic G] [Finite G] (d : ℕ) :
+    Nat.card (powMonoidHom d : G →* G).range = Nat.card G / (Nat.card G).gcd d := by
+  obtain ⟨g, h⟩ := isCyclic_iff_exists_zpowers_eq_top.mp hG
+  rw [MonoidHom.range_eq_map, ← h, MonoidHom.map_zpowers, Nat.card_zpowers, powMonoidHom_apply,
+    orderOf_pow, orderOf_eq_card_of_zpowers_eq_top h]
+
+@[to_additive]
+theorem IsCyclic.index_powMonoidHom_ker [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+    (powMonoidHom d : G →* G).ker.index = Nat.card G / (Nat.card G).gcd d := by
+  rw [Subgroup.index_ker, card_powMonoidHom_range]
+
+@[to_additive]
+theorem IsCyclic.card_powMonoidHom_ker [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+    Nat.card (powMonoidHom d : G →* G).ker = (Nat.card G).gcd d := by
+  have h : (powMonoidHom d : G →* G).ker.index ≠ 0 := Subgroup.index_ne_zero_of_finite
+  rw [← mul_left_inj' h, Subgroup.card_mul_index, index_powMonoidHom_ker, Nat.mul_div_cancel']
+  exact Nat.gcd_dvd_left (Nat.card G) d
+
+@[to_additive]
+theorem IsCyclic.index_powMonoidHom_range [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+    (powMonoidHom d : G →* G).range.index = (Nat.card G).gcd d := by
+  rw [Subgroup.index_range, card_powMonoidHom_ker]
+
+end powMonoidHom
 
 section generator
 

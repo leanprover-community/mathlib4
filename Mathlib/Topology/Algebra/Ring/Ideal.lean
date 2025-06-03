@@ -70,4 +70,7 @@ instance topologicalRing_quotient : IsTopologicalRing (R ⧸ N) where
   continuous_mul := (QuotientRing.isQuotientMap_coe_coe N).continuous_iff.2 <|
     continuous_quot_mk.comp continuous_mul
 
+instance [CompactSpace R] : CompactSpace (R ⧸ N) :=
+  Quotient.compactSpace
+
 end CommRing

@@ -234,7 +234,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
           rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
           apply (List.of_mem_zip h₃).2
         simp only [List.NodupKeys, List.keys, comp_def, Prod.fst_toSigma, List.map_map]
-        rwa [List.map_fst_zip _ _ (le_of_eq h₆)]
+        rwa [List.map_fst_zip (le_of_eq h₆)]
 
 theorem List.applyId_eq_self [DecidableEq α] {xs ys : List α} (x : α) :
     x ∉ xs → List.applyId.{u} (xs.zip ys) x = x := by
@@ -367,7 +367,7 @@ instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function
     have Hinj : Injective fun r : ℕ => -(2 * sz + 2 : ℤ) + ↑r := fun _x _y h =>
         Int.ofNat.inj (add_right_injective _ h)
     let r : InjectiveFunction ℤ :=
-      InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| (List.nodup_range _).map Hinj)
+      InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| List.nodup_range.map Hinj)
     pure r
   shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
 

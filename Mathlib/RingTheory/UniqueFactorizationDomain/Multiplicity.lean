@@ -32,7 +32,7 @@ theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {
 
 theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
     (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
-  max_power_factor' h hx.not_unit
+  max_power_factor' h hx.not_isUnit
 
 theorem FiniteMultiplicity.of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMonoid α]
     {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : FiniteMultiplicity a b := by
@@ -122,7 +122,7 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
     (normalizedFactors x).count p = n := by
   rcases hp with (rfl | hp)
   · cases n
-    · exact count_eq_zero.2 (zero_not_mem_normalizedFactors _)
+    · exact count_eq_zero.2 (zero_notMem_normalizedFactors _)
     · rw [zero_pow (Nat.succ_ne_zero _)] at hle hlt
       exact absurd hle hlt
   · exact count_normalizedFactors_eq hp hnorm hle hlt

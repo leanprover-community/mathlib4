@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.Algebra.Module.Rat
 import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # The tensor product of R-algebras
@@ -203,12 +203,31 @@ end liftBaseChange
 
 end LinearMap
 
+namespace Module.End
+
+open LinearMap
+
+variable (R M N : Type*)
+  [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+
+/-- The map `LinearMap.lTensorHom` which sends `f ↦ 1 ⊗ f` as a morphism of algebras. -/
+@[simps!]
+noncomputable def lTensorAlgHom : Module.End R M →ₐ[R] Module.End R (N ⊗[R] M) :=
+  .ofLinearMap (lTensorHom (M := N)) (lTensor_id N M) (lTensor_mul N)
+
+/-- The map `LinearMap.rTensorHom` which sends `f ↦ f ⊗ 1` as a morphism of algebras. -/
+@[simps!]
+noncomputable def rTensorAlgHom : Module.End R M →ₐ[R] Module.End R (M ⊗[R] N) :=
+  .ofLinearMap (rTensorHom (M := N)) (rTensor_id N M) (rTensor_mul N)
+
+end Module.End
+
 namespace Algebra
 
 namespace TensorProduct
 
 universe uR uS uA uB uC uD uE uF
-variable {R : Type uR} {S : Type uS}
+variable {R : Type uR} {R' : Type*} {S : Type uS} {T : Type*}
 variable {A : Type uA} {B : Type uB} {C : Type uC} {D : Type uD} {E : Type uE} {F : Type uF}
 
 /-!
@@ -623,6 +642,19 @@ variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra S C]
 variable [Semiring D] [Algebra R D]
 
+/-- To check a linear map preserves multiplication, it suffices to check it on pure tensors. See
+`algHomOfLinearMapTensorProduct` for a bundled version. -/
+lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
+    (hf : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
+    (x y : A ⊗[R] B) : f (x * y) = f x * f y :=
+  f.map_mul_iff.2 (by
+    -- these instances are needed by the statement of `ext`, but not by the current definition.
+    letI : Algebra R C := RestrictScalars.algebra R S C
+    letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
+    ext
+    dsimp
+    exact hf _ _ _ _) x y
+
 /-- Build an algebra morphism from a linear map out of a tensor product, and evidence that on pure
 tensors, it preserves multiplication and the identity.
 
@@ -632,13 +664,7 @@ tensors can be directly applied by the caller (without needing `TensorProduct.on
 def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
     (h_mul : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
     (h_one : f (1 ⊗ₜ[R] 1) = 1) : A ⊗[R] B →ₐ[S] C :=
-  AlgHom.ofLinearMap f h_one <| (f.map_mul_iff (R := S) (A := A ⊗[R] B)).2 <| by
-    -- these instances are needed by the statement of `ext`, but not by the current definition.
-    letI : Algebra R C := RestrictScalars.algebra R S C
-    letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
-    ext
-    dsimp
-    exact h_mul _ _ _ _
+  AlgHom.ofLinearMap f h_one (f.map_mul_of_map_mul_tmul h_mul)
 
 @[simp]
 theorem algHomOfLinearMapTensorProduct_apply (f h_mul h_one x) :
@@ -843,6 +869,15 @@ def lidOfCompatibleSMul : S ⊗[R] A ≃ₐ[S] A :=
 
 theorem lidOfCompatibleSMul_tmul (s a) : lidOfCompatibleSMul R S A (s ⊗ₜ[R] a) = s • a := rfl
 
+instance {R M N : Type*} [CommSemiring R] [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] [Module ℚ M] [Module ℚ N] : CompatibleSMul R ℚ M N where
+  smul_tmul q m n := by
+    suffices q.den • ((q • m) ⊗ₜ[R] n) = q.den • (m ⊗ₜ[R] (q • n)) from
+      smul_right_injective (M ⊗[R] N) (c := q.den) q.den_nz <| by norm_cast
+    rw [smul_tmul', ← tmul_smul, ← smul_assoc, ← smul_assoc, nsmul_eq_mul, Rat.den_mul_eq_num]
+    norm_cast
+    rw [smul_tmul]
+
 end CompatibleSMul
 
 section
@@ -901,30 +936,53 @@ theorem assoc_aux_1 (a₁ a₂ : A) (b₁ b₂ : B) (c₁ c₂ : C) :
 theorem assoc_aux_2 : (TensorProduct.assoc R A B C) ((1 ⊗ₜ[R] 1) ⊗ₜ[R] 1) = 1 :=
   rfl
 
-variable (R A B C)
+variable (R A C D)
 
 -- Porting note: much nicer than Lean 3 proof
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
-protected def assoc : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] A ⊗[R] B ⊗[R] C :=
-  algEquivOfLinearEquivTripleTensorProduct
-    (_root_.TensorProduct.assoc R A B C)
-    Algebra.TensorProduct.assoc_aux_1
-    Algebra.TensorProduct.assoc_aux_2
+protected def assoc : (A ⊗[S] C) ⊗[R] D ≃ₐ[S] A ⊗[S] C ⊗[R] D :=
+  AlgEquiv.ofLinearEquiv
+    (AlgebraTensorModule.assoc R S S A C D)
+    (by simp [Algebra.TensorProduct.one_def])
+    ((LinearMap.map_mul_iff _).mpr <| by ext; simp)
 
 @[simp] theorem assoc_toLinearEquiv :
-  (Algebra.TensorProduct.assoc R A B C).toLinearEquiv = _root_.TensorProduct.assoc R A B C := rfl
+    (TensorProduct.assoc R S A C D).toLinearEquiv = AlgebraTensorModule.assoc R S S A C D := rfl
 
-variable {A B C}
-
-@[simp]
-theorem assoc_tmul (a : A) (b : B) (c : C) :
-    Algebra.TensorProduct.assoc R A B C ((a ⊗ₜ b) ⊗ₜ c) = a ⊗ₜ (b ⊗ₜ c) :=
-  rfl
+variable {A C D}
 
 @[simp]
-theorem assoc_symm_tmul (a : A) (b : B) (c : C) :
-    (Algebra.TensorProduct.assoc R A B C).symm (a ⊗ₜ (b ⊗ₜ c)) = (a ⊗ₜ b) ⊗ₜ c :=
-  rfl
+theorem assoc_tmul (a : A) (b : C) (c : D) :
+    TensorProduct.assoc R S A C D ((a ⊗ₜ b) ⊗ₜ c) = a ⊗ₜ (b ⊗ₜ c) := rfl
+
+@[simp]
+theorem assoc_symm_tmul (a : A) (b : C) (c : D) :
+    (TensorProduct.assoc R S A C D).symm (a ⊗ₜ (b ⊗ₜ c)) = (a ⊗ₜ b) ⊗ₜ c := rfl
+
+end
+
+section
+
+variable (T A B : Type*) [CommSemiring T] [CommSemiring A] [CommSemiring B]
+  [Algebra R T] [Algebra R A] [Algebra R B] [Algebra T A] [IsScalarTower R T A] [Algebra S A]
+  [IsScalarTower R S A] [Algebra S T] [IsScalarTower S T A]
+
+/-- The natural isomorphism `A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B`. -/
+noncomputable def cancelBaseChange : A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B :=
+  AlgEquiv.symm <| AlgEquiv.ofLinearEquiv
+    (TensorProduct.AlgebraTensorModule.cancelBaseChange R S T A B).symm
+    (by simp [Algebra.TensorProduct.one_def]) <|
+      LinearMap.map_mul_of_map_mul_tmul (fun _ _ _ _ ↦ by simp)
+
+@[simp]
+lemma cancelBaseChange_tmul (a : A) (s : S) (b : B) :
+    Algebra.TensorProduct.cancelBaseChange R S T A B (a ⊗ₜ (s ⊗ₜ b)) = (s • a) ⊗ₜ b :=
+  TensorProduct.AlgebraTensorModule.cancelBaseChange_tmul R S T a b s
+
+@[simp]
+lemma cancelBaseChange_symm_tmul (a : A) (b : B) :
+    (Algebra.TensorProduct.cancelBaseChange R S T A B).symm (a ⊗ₜ b) = a ⊗ₜ (1 ⊗ₜ b) :=
+  TensorProduct.AlgebraTensorModule.cancelBaseChange_symm_tmul R S T a b
 
 end
 
@@ -1029,10 +1087,8 @@ variable (R A B C) in
 
 This is the algebra version of `TensorProduct.leftComm`. -/
 def leftComm : A ⊗[R] B ⊗[R] C ≃ₐ[R] B ⊗[R] A ⊗[R] C :=
-  let e₁ := (Algebra.TensorProduct.assoc R A B C).symm
-  let e₂ := congr (Algebra.TensorProduct.comm R A B) (1 : C ≃ₐ[R] C)
-  let e₃ := Algebra.TensorProduct.assoc R B A C
-  e₁.trans (e₂.trans e₃)
+  (Algebra.TensorProduct.assoc R R A B C).symm.trans <|
+    (congr (Algebra.TensorProduct.comm R A B) .refl).trans <| TensorProduct.assoc R R B A C
 
 @[simp]
 theorem leftComm_tmul (m : A) (n : B) (p : C) :
@@ -1045,39 +1101,43 @@ theorem leftComm_symm_tmul (m : A) (n : B) (p : C) :
   rfl
 
 @[simp]
-theorem leftComm_toLinearEquiv :
-    (leftComm R A B C : _ ≃ₗ[R] _) = _root_.TensorProduct.leftComm R A B C := rfl
+theorem leftComm_toLinearEquiv : ↑(leftComm R A B C) = _root_.TensorProduct.leftComm R A B C :=
+  LinearEquiv.toLinearMap_injective (by ext; rfl)
 
-variable (R S A B C D) in
-set_option maxSynthPendingDepth 2 in
+variable [CommSemiring T] [Algebra R T] [Algebra T A] [IsScalarTower R T A] [SMulCommClass S T A]
+  [Algebra S T] [IsScalarTower S T A] [CommSemiring R'] [Algebra R R'] [Algebra R' T] [Algebra R' A]
+  [Algebra R' B] [IsScalarTower R R' A] [SMulCommClass S R' A] [SMulCommClass R' S A]
+  [IsScalarTower R' T A] [IsScalarTower R R' B]
+
+variable (R R' S T A B C D) in
 /-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
 
 This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`. -/
-def tensorTensorTensorComm : (A ⊗[R] B) ⊗[S] C ⊗[R] D ≃ₐ[S] (A ⊗[S] C) ⊗[R] B ⊗[R] D :=
-  AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D)
+def tensorTensorTensorComm : (A ⊗[R'] B) ⊗[S] C ⊗[R] D ≃ₐ[T] (A ⊗[S] C) ⊗[R'] B ⊗[R] D :=
+  AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R' S T A B C D)
     rfl (LinearMap.map_mul_iff _ |>.mpr <| by ext; simp)
 
 @[simp]
 theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
-    tensorTensorTensorComm R S A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+    tensorTensorTensorComm R R' S T A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
 @[simp]
 theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
-    (tensorTensorTensorComm R S A B C D).symm (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+    (tensorTensorTensorComm R R' S T A B C D).symm (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R R A B C D).symm = tensorTensorTensorComm R R A C B D := by
+    (tensorTensorTensorComm R R' S T A B C D).symm = tensorTensorTensorComm R S R' T A C B D := by
   ext; rfl
 
 theorem tensorTensorTensorComm_toLinearEquiv :
-    (tensorTensorTensorComm R S A B C D).toLinearEquiv =
-      TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D := rfl
+    (tensorTensorTensorComm R R' S T A B C D).toLinearEquiv =
+      TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R' S T A B C D := rfl
 
 @[simp]
 theorem toLinearEquiv_tensorTensorTensorComm :
-    (tensorTensorTensorComm R R A B C D).toLinearEquiv =
+    (tensorTensorTensorComm R R R R A B C D).toLinearEquiv =
       _root_.TensorProduct.tensorTensorTensorComm R A B C D := by
   apply LinearEquiv.toLinearMap_injective
   ext; simp
@@ -1100,6 +1160,9 @@ homomorphism.
 This is just a special case of `Algebra.TensorProduct.lift` for when `C` is commutative. -/
 abbrev productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
   lift f g (fun _ _ => Commute.all _ _)
+
+lemma tmul_one_eq_one_tmul (r : R) : algebraMap R A r ⊗ₜ[R] 1 = 1 ⊗ₜ algebraMap R B r := by
+  rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, smul_tmul]
 
 end
 
@@ -1196,7 +1259,7 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 /-- If `M` is a `B`-module that is also an `A`-module, the canonical map
 `M →ₗ[A] B ⊗[A] M` is injective. -/
-lemma mk_one_injective_of_isScalarTower (M : Type*) [AddCommGroup M]
+lemma mk_one_injective_of_isScalarTower (M : Type*) [AddCommMonoid M]
     [Module R M] [Module S M] [IsScalarTower R S M] :
     Function.Injective (TensorProduct.mk R S M 1) := by
   apply Function.RightInverse.injective (g := LinearMap.liftBaseChange S LinearMap.id)
@@ -1244,7 +1307,7 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
     (fun a b f g ↦ by
       apply LinearMap.ext
       intro x
-      simp only [tensorProduct, mul_comm a b, mul_eq_comp,
+      simp only [tensorProduct, mul_comm a b, Module.End.mul_eq_comp,
         TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lift.tmul, coe_restrictScalars,
         coe_mk, AddHom.coe_mk, mul_smul, smul_apply, baseChangeHom_apply, baseChange_comp,
         comp_apply, Algebra.mul_smul_comm, Algebra.smul_mul_assoc])
@@ -1253,8 +1316,8 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
       intro x
       simp only [tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
         TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
-        baseChangeHom_apply, baseChange_eq_ltensor, one_apply, one_eq_id, lTensor_id,
-        LinearMap.id_apply])
+        baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_apply, Module.End.one_eq_id,
+        lTensor_id, LinearMap.id_apply])
 
 end LinearMap
 
@@ -1372,7 +1435,7 @@ theorem linearMap_comp_mul' :
       map (Algebra.linearMap R A) (Algebra.linearMap R B) := by
   ext
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars, map_tmul,
-    Algebra.linearMap_apply, _root_.map_one, LinearMap.coe_comp, Function.comp_apply,
+    Algebra.linearMap_apply, map_one, LinearMap.coe_comp, Function.comp_apply,
     LinearMap.mul'_apply, mul_one, Algebra.TensorProduct.one_def]
 
 @[simp]
@@ -1396,3 +1459,39 @@ lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMon
   rintro _ ⟨t, rfl⟩
   exact t.induction_on (by simp) (by simp +contextual [Submodule.smul_mem_smul])
     (by simp +contextual [add_mem])
+
+section
+
+variable {R M S T : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  [Semiring S] [Algebra R S] [Ring T] [Algebra R T]
+
+variable (R S M) in
+theorem TensorProduct.mk_surjective (h : Function.Surjective (algebraMap R S)) :
+    Function.Surjective (TensorProduct.mk R S M 1) := by
+  rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
+  rintro _ ⟨x, y, rfl⟩
+  obtain ⟨x, rfl⟩ := h x
+  rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
+  exact ⟨x • y, rfl⟩
+
+variable (S) in
+lemma TensorProduct.flip_mk_surjective (h : Function.Surjective (algebraMap R T)) :
+    Function.Surjective ((TensorProduct.mk R S T).flip 1) := by
+  rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
+  rintro _ ⟨s, t, rfl⟩
+  obtain ⟨r, rfl⟩ := h t
+  rw [Algebra.algebraMap_eq_smul_one, ← smul_tmul]
+  exact ⟨r • s, rfl⟩
+
+variable (T) in
+lemma Algebra.TensorProduct.includeRight_surjective (h : Function.Surjective (algebraMap R S)) :
+    Function.Surjective (includeRight : T →ₐ[R] S ⊗[R] T) :=
+  TensorProduct.mk_surjective _ _ _ h
+
+lemma Algebra.TensorProduct.includeLeft_surjective
+    (S A : Type*) [CommSemiring S] [Semiring A] [Algebra S A] [Algebra R A]
+    [SMulCommClass R S A] (h : Function.Surjective (algebraMap R T)) :
+    Function.Surjective (includeLeft : A →ₐ[S] A ⊗[R] T) :=
+  TensorProduct.flip_mk_surjective _ h
+
+end
