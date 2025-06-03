@@ -131,8 +131,7 @@ def isDecideNative (stx : Syntax ) : Bool :=
 
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
-def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData) := Id.run do
-  fun stx ↦ match stx with
+def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
   | stx@(.node _ kind args) =>
     let rargs := args.flatMap getDeprecatedSyntax
     match kind with

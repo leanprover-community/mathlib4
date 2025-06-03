@@ -1,6 +1,5 @@
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
-import Lean.Parser.Command
 
 set_option linter.style.refine true
 /--
