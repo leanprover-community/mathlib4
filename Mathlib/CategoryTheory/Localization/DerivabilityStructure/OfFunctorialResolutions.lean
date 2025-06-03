@@ -99,22 +99,23 @@ lemma isConnected_rightResolution_of_functorial_resolutions (X₂ : C₂) :
     IsConnected (Φ.RightResolution X₂) := by
   have : W₁.IsMultiplicative := by rw [hW₁]; infer_instance
   have : Nonempty (Φ.RightResolution X₂) := ⟨{ hw := hi X₂, .. }⟩
-  have : IsPreconnected (Φ.RightResolution X₂) := zigzag_isPreconnected (fun R₀ R₄ ↦ by
-    let R₁ : Φ.RightResolution X₂ := { hw := W₂.comp_mem _ _ R₀.hw (hi _), .. }
-    let R₂ : Φ.RightResolution X₂ := { hw := hi X₂, .. }
-    let R₃ : Φ.RightResolution X₂ := { hw := W₂.comp_mem _ _ R₄.hw (hi _), .. }
-    let f₀ : R₀ ⟶ R₁ := { hf := W₁_i'_app hi hW₁ R₀.X₁, .. }
-    let f₁ : R₂ ⟶ R₁ :=
-      { f := ρ.map R₀.w
-        comm := (i.naturality R₀.w).symm
-        hf := (localizerMorphismInv hi hW₁).map _ R₀.hw }
-    let f₂ : R₂ ⟶ R₃ :=
-      { f := ρ.map R₄.w
-        comm := (i.naturality R₄.w).symm
-        hf := (localizerMorphismInv hi hW₁).map _ R₄.hw }
-    let f₃ : R₄ ⟶ R₃ := { hf := W₁_i'_app hi hW₁ R₄.X₁, .. }
-    exact (Zigzag.of_hom f₀).trans ((Zigzag.of_inv f₁).trans
-      ((Zigzag.of_hom f₂).trans (Zigzag.of_inv f₃))) )
+  have : IsPreconnected (Φ.RightResolution X₂) :=
+    zigzag_isPreconnected (fun R₀ R₄ ↦ by
+      let R₁ : Φ.RightResolution X₂ := { hw := W₂.comp_mem _ _ R₀.hw (hi _), .. }
+      let R₂ : Φ.RightResolution X₂ := { hw := hi X₂, .. }
+      let R₃ : Φ.RightResolution X₂ := { hw := W₂.comp_mem _ _ R₄.hw (hi _), .. }
+      let f₀ : R₀ ⟶ R₁ := { hf := W₁_i'_app hi hW₁ R₀.X₁, .. }
+      let f₁ : R₂ ⟶ R₁ :=
+        { f := ρ.map R₀.w
+          comm := (i.naturality R₀.w).symm
+          hf := (localizerMorphismInv hi hW₁).map _ R₀.hw }
+      let f₂ : R₂ ⟶ R₃ :=
+        { f := ρ.map R₄.w
+          comm := (i.naturality R₄.w).symm
+          hf := (localizerMorphismInv hi hW₁).map _ R₄.hw }
+      let f₃ : R₄ ⟶ R₃ := { hf := W₁_i'_app hi hW₁ R₄.X₁, .. }
+      exact (Zigzag.of_hom f₀).trans ((Zigzag.of_inv f₁).trans
+        ((Zigzag.of_hom f₂).trans (Zigzag.of_inv f₃))))
   constructor
 
 lemma isRightDerivabilityStructure_of_functorial_resolutions :
