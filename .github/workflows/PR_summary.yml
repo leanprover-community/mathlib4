@@ -89,19 +89,23 @@ jobs:
       run: |
         touch moved_without_deprecation.txt
         git checkout ${{ github.base_ref }}
-        for file in $(cat removed_files.txt) ; do
+        while IFS= read -r file
+        do
           if grep ^deprecated_module "${file}" ; then
             printf 'info: removed file %s contains a deprecation\n' "${file}"
           else
+            # shellcheck disable=SC2016
             printf '\n⚠️ **warning**: file `%s` was removed without a module deprecation\n' "${file}" |
               tee -a moved_without_deprecation.txt
           fi
-        done
+        done < removed_files.txt
         IFS=$'\n'
-        for file in $(cat renamed_files.txt) ; do
+        while IFS= read -r file
+        do
+          # shellcheck disable=SC2016
           printf '\n⚠️ **warning**: file %s without a module deprecation\n' "${file}" |
             tee -a moved_without_deprecation.txt
-        done
+        done < renamed_files.txt
 
         # we return to the PR branch, since the next step wants it!
         git checkout -
@@ -127,7 +131,7 @@ jobs:
 
     - name: Post or update the summary comment
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH_NAME: ${{ github.head_ref }}
       run: |
         PR="${{ github.event.pull_request.number }}"
