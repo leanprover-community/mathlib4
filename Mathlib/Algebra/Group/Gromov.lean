@@ -1084,6 +1084,42 @@ lemma closure_iterate_mulact (T: Type*) [Group T] [DecidableEq T] (a b: T) (n: �
     . exact hx
   .
     intro hx
+    have closed_under_conj: ∀ y ∈ (Subgroup.closure (G := T) (Set.image (fun (m: ℕ) => a^m * b * a^(-m : ℤ)) (Set.Ico 0 n) )), a * y * a⁻¹ ∈  (Subgroup.closure (G := T) (Set.image (fun (m: ℕ) => a^m * b * a^(-m : ℤ)) (Set.Ico 0 n) )) := by
+      intro y hy
+      induction hy using Subgroup.closure_induction with
+      | mem z hz =>
+        simp at hz
+        obtain ⟨m, hm, z_eq⟩ := hz
+        rw [← z_eq]
+        by_cases m_lt_n_sub: m < n - 1
+        . apply Subgroup.subset_closure
+          simp
+          use (m + 1)
+          refine ⟨by omega, ?_⟩
+          rw [pow_succ']
+          simp
+          repeat rw [← mul_assoc]
+        .
+          have n_minus_eq: n - 1 + 1 = n := by
+            omega
+          have m_eq_n_minus: m = n - 1 := by
+            omega
+          rw [m_eq_n_minus]
+          repeat rw [← mul_assoc]
+          rw [← pow_succ', n_minus_eq]
+          rw [← inv_pow]
+          rw [mul_assoc]
+          rw [← pow_succ]
+          rw [n_minus_eq]
+          simp
+          simp at conj_in
+          exact conj_in
+
+
+
+
+        sorry
+
     induction hx using Subgroup.closure_induction with
     | mem y hy =>
       simp at hy
@@ -1100,7 +1136,23 @@ lemma closure_iterate_mulact (T: Type*) [Group T] [DecidableEq T] (a b: T) (n: �
           simp at conj_in
           simp
           exact conj_in
-        | succ m hsucc ih =>
+        | succ p hsucc ih =>
+
+          conv =>
+            arg 2
+            equals (MulAut.conj a) (a^p * b * a^(-p : ℤ)) =>
+              simp
+              -- TODO - there must be a less ugly way to do this
+              nth_rw 1 [pow_succ']
+              rw [pow_succ']
+              rw [mul_assoc]
+              rw [mul_assoc]
+              nth_rw 2 [← mul_assoc]
+              simp
+              nth_rw 2 [← mul_assoc]
+              nth_rw 1 [← mul_assoc]
+
+
           sorry
     | one => apply Subgroup.one_mem
     | mul y z hy hz y_mem z_mem =>
