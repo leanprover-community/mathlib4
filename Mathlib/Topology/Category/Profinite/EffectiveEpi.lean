@@ -13,7 +13,7 @@ import Mathlib.Topology.Category.Stonean.Basic
 
 This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `Profinite`.
 As a consequence we deduce from the material in
-`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `Profinite` is `Preregular`
+`Mathlib/Topology/Category/CompHausLike/EffectiveEpi.lean` that `Profinite` is `Preregular`
 and `Precoherent`.
 
 We also prove that for a finite family of morphisms in `Profinite` with fixed

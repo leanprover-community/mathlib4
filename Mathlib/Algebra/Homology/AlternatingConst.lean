@@ -35,8 +35,6 @@ def alternatingConst [HasZeroMorphisms C] : C ⥤ ChainComplex C ℕ where
       rintro _ _ i rfl rfl
       by_cases h : Even i <;> simp [Nat.even_add_one, ← Nat.not_even_iff_odd, h] }
   map {X Y} f := { f _ := f }
-  map_id X := by ext; simp
-  map_comp f g := by ext; simp
 
 variable [HasZeroMorphisms C] [HasZeroObject C]
 

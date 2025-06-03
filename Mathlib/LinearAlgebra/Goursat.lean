@@ -33,7 +33,7 @@ considered as a submodule of `M`.
 
 This is the first submodule appearing in Goursat's lemma. See `Subgroup.goursat`. -/
 def goursatFst : Submodule R M :=
-  ((LinearMap.snd R M N).comp L.subtype).ker.map ((LinearMap.fst R M N).comp L.subtype)
+  (LinearMap.ker <| (LinearMap.snd R M N).comp L.subtype).map ((LinearMap.fst R M N).comp L.subtype)
 
 
 variable (L) in
@@ -42,7 +42,7 @@ considered as a subgroup of `N`.
 
 This is the second subgroup appearing in Goursat's lemma. See `Subgroup.goursat`. -/
 def goursatSnd : Submodule R N :=
-  ((LinearMap.fst R M N).comp L.subtype).ker.map ((LinearMap.snd R M N).comp L.subtype)
+  (LinearMap.ker <| (LinearMap.fst R M N).comp L.subtype).map ((LinearMap.snd R M N).comp L.subtype)
 
 lemma goursatFst_toAddSubgroup :
     (goursatFst L).toAddSubgroup = L.toAddSubgroup.goursatFst := by

@@ -43,6 +43,6 @@ theorem IsSemireal.not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] [IsSemireal 
 Linearly ordered semirings with the property `a ≤ b → ∃ c, a + c = b` (e.g. `ℕ`)
 are semireal.
 -/
-instance [LinearOrderedSemiring R] [ExistsAddOfLE R] : IsSemireal R where
+instance [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R] : IsSemireal R where
   one_add_ne_zero hs amo := zero_ne_one' R (le_antisymm zero_le_one
                               (le_of_le_of_eq (le_add_of_nonneg_right hs.nonneg) amo))

@@ -169,24 +169,11 @@ instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd 
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 
-noncomputable instance Lex.orderedAddCancelCommMonoid [OrderedCancelAddCommMonoid N] :
-    OrderedCancelAddCommMonoid (Lex (α →₀ N)) where
+instance Lex.isOrderedCancelAddMonoid
+    [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
+    IsOrderedCancelAddMonoid (Lex (α →₀ N)) where
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (α → N)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (α → N))
-
-noncomputable instance Lex.orderedAddCommGroup [OrderedAddCommGroup N] :
-    OrderedAddCommGroup (Lex (α →₀ N)) where
-  add_le_add_left _ _ := add_le_add_left
-
-noncomputable instance Lex.linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid N] :
-    LinearOrderedCancelAddCommMonoid (Lex (α →₀ N)) where
-  __ : LinearOrder (Lex (α →₀ N)) := inferInstance
-  __ : OrderedCancelAddCommMonoid (Lex (α →₀ N)) := inferInstance
-
-noncomputable instance Lex.linearOrderedAddCommGroup [LinearOrderedAddCommGroup N] :
-    LinearOrderedAddCommGroup (Lex (α →₀ N)) where
-  __ : LinearOrder (Lex (α →₀ N)) := inferInstance
-  add_le_add_left _ _ := add_le_add_left
 
 end OrderedAddMonoid
 

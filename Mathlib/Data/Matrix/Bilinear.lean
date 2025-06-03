@@ -131,6 +131,7 @@ variable [Module R A] [SMulCommClass R A A]
 theorem mulLeftLinearMap_one : mulLeftLinearMap n R (1 : Matrix m m A) = LinearMap.id :=
   LinearMap.ext fun _ => Matrix.one_mul _
 
+omit [DecidableEq m] in
 /-- A version of `LinearMap.mulLeft_eq_zero_iff` for matrix multiplication. -/
 @[simp]
 theorem mulLeftLinearMap_eq_zero_iff [Nonempty n] (a : Matrix l m A) :
@@ -139,7 +140,7 @@ theorem mulLeftLinearMap_eq_zero_iff [Nonempty n] (a : Matrix l m A) :
   · inhabit n
     ext i j
     classical
-    replace h := DFunLike.congr_fun h (Matrix.stdBasisMatrix j (default : n) 1)
+    replace h := DFunLike.congr_fun h (Matrix.single j (default : n) 1)
     simpa using Matrix.ext_iff.2 h i default
   · rw [h]
     exact mulLeftLinearMap_zero_eq_zero _ _
@@ -149,9 +150,9 @@ theorem mulLeftLinearMap_eq_zero_iff [Nonempty n] (a : Matrix l m A) :
 theorem pow_mulLeftLinearMap (a : Matrix m m A) (k : ℕ) :
     mulLeftLinearMap n R a ^ k = mulLeftLinearMap n R (a ^ k) :=
   match k with
-  | 0 => by rw [pow_zero, pow_zero, mulLeftLinearMap_one, LinearMap.one_eq_id]
+  | 0 => by rw [pow_zero, pow_zero, mulLeftLinearMap_one, Module.End.one_eq_id]
   | (n + 1) => by
-    rw [pow_succ, pow_succ, mulLeftLinearMap_mul, LinearMap.mul_eq_comp, pow_mulLeftLinearMap]
+    rw [pow_succ, pow_succ, mulLeftLinearMap_mul, Module.End.mul_eq_comp, pow_mulLeftLinearMap]
 
 end left
 
@@ -163,6 +164,7 @@ variable [Module R A] [IsScalarTower R A A]
 theorem mulRightLinearMap_one : mulRightLinearMap l R (1 : Matrix m m A) = LinearMap.id :=
   LinearMap.ext fun _ => Matrix.mul_one _
 
+omit [DecidableEq m] in
 /-- A version of `LinearMap.mulRight_eq_zero_iff` for matrix multiplication. -/
 @[simp]
 theorem mulRightLinearMap_eq_zero_iff (a : Matrix m n A) [Nonempty l] :
@@ -171,7 +173,7 @@ theorem mulRightLinearMap_eq_zero_iff (a : Matrix m n A) [Nonempty l] :
   · inhabit l
     ext i j
     classical
-    replace h := DFunLike.congr_fun h (Matrix.stdBasisMatrix (default : l) i 1)
+    replace h := DFunLike.congr_fun h (Matrix.single (default : l) i 1)
     simpa using Matrix.ext_iff.2 h default j
   · rw [h]
     exact mulRightLinearMap_zero_eq_zero _ _
@@ -181,9 +183,9 @@ theorem mulRightLinearMap_eq_zero_iff (a : Matrix m n A) [Nonempty l] :
 theorem pow_mulRightLinearMap (a : Matrix m m A) (k : ℕ) :
     mulRightLinearMap l R a ^ k = mulRightLinearMap l R (a ^ k) :=
   match k with
-  | 0 => by rw [pow_zero, pow_zero, mulRightLinearMap_one, LinearMap.one_eq_id]
+  | 0 => by rw [pow_zero, pow_zero, mulRightLinearMap_one, Module.End.one_eq_id]
   | (n + 1) => by
-    rw [pow_succ, pow_succ', mulRightLinearMap_mul, LinearMap.mul_eq_comp, pow_mulRightLinearMap]
+    rw [pow_succ, pow_succ', mulRightLinearMap_mul, Module.End.mul_eq_comp, pow_mulRightLinearMap]
 
 end right
 

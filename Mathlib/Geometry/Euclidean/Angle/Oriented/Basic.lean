@@ -467,7 +467,6 @@ theorem oangle_sub_right {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0
     o.oangle x z - o.oangle y z = o.oangle x y := by rw [sub_eq_iff_eq_add, o.oangle_add hx hy hz]
 
 /-- Given three nonzero vectors, adding the angles between them in cyclic order results in 0. -/
-@[simp]
 theorem oangle_add_cyc3 {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
     o.oangle x y + o.oangle y z + o.oangle z x = 0 := by simp [hx, hy, hz]
 
@@ -519,7 +518,8 @@ theorem oangle_map (x y : V') (f : V ≃ₗᵢ[ℝ] V') :
 
 @[simp]
 protected theorem _root_.Complex.oangle (w z : ℂ) :
-    Complex.orientation.oangle w z = Complex.arg (conj w * z) := by simp [oangle]
+    Complex.orientation.oangle w z = Complex.arg (conj w * z) := by
+  simp [oangle, mul_comm z]
 
 /-- The oriented angle on an oriented real inner product space of dimension 2 can be evaluated in
 terms of a complex-number representation of the space. -/
@@ -541,10 +541,7 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   by_cases hy : y = 0; · simp [hy]
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.norm_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
-    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`; replaced by `simp only ...` to speed up
-    -- Reinstate `field_simp` once it is faster.
-    simp (disch := field_simp_discharge) only [mul_zero, I_im, mul_one, sub_self, add_zero,
-      mul_div_assoc', mul_div_cancel_left₀]
+    field_simp
   · exact o.kahler_ne_zero hx hy
 
 /-- The cosine of the oriented angle between two nonzero vectors is the inner product divided by
@@ -941,7 +938,7 @@ theorem abs_oangle_sub_left_toReal_lt_pi_div_two {x y : V} (h : ‖x‖ = ‖y�
     nth_rw 2 [← one_smul ℝ y] at hr
     rw [← add_smul] at hr
     rw [← hr, norm_smul, Real.norm_eq_abs, abs_of_pos (Left.add_pos_of_nonneg_of_pos hr0 one_pos),
-      mul_left_eq_self₀, or_iff_left (norm_ne_zero_iff.2 hy), add_left_eq_self] at h
+      mul_left_eq_self₀, or_iff_left (norm_ne_zero_iff.2 hy), add_eq_right] at h
     rw [h, zero_add, one_smul] at hr
     exact False.elim (hn hr.symm)
   · exact hs

@@ -183,7 +183,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
 
       let cinfo ← getConstInfo p
       let n ← getExpectedNumArgs cinfo.type
-      let pargs := Array.mkArray n (none : Option Expr)
+      let pargs := Array.replicate n (none : Option Expr)
       /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
       is definitionally the same as the `RingHom` property. Then, we just need to construct its type
       and the local declaration will already give a valid term. -/
@@ -239,7 +239,7 @@ See the `algebraize` tag for instructions on what properties can be added.
 The tactic also comes with a configuration option `properties`. If set to `true` (default), the
 tactic searches through the local context for `RingHom` properties that can be converted to
 `Algebra` properties. The macro `algebraize_only` calls
-`algebraize (config := {properties := false})`,
+`algebraize -properties`,
 so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
 syntax "algebraize " optConfig (algebraizeTermSeq)? : tactic
 

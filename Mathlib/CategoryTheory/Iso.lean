@@ -123,10 +123,8 @@ theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 @[simp]
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 
--- Porting note: It seems that the trans `trans` attribute isn't working properly
--- in this case, so we have to manually add a `Trans` instance (with a `simps` tag).
 /-- Composition of two isomorphisms -/
-@[trans, simps]
+@[simps]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
@@ -280,14 +278,14 @@ noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 
 -- Porting note: the `IsIso f` argument had been instance implicit,
--- but we've changed it to implicit as a `rw` in `Mathlib.CategoryTheory.Closed.Functor`
+-- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
 theorem asIso_hom (f : X ⟶ Y) {_ : IsIso f} : (asIso f).hom = f :=
   rfl
 
 -- Porting note: the `IsIso f` argument had been instance implicit,
--- but we've changed it to implicit as a `rw` in `Mathlib.CategoryTheory.Closed.Functor`
+-- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
 theorem asIso_inv (f : X ⟶ Y) {_ : IsIso f} : (asIso f).inv = inv f :=
@@ -410,8 +408,6 @@ theorem of_isIso_fac_right {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z}
   exact of_isIso_comp_right f g
 
 end IsIso
-
-open IsIso
 
 theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1

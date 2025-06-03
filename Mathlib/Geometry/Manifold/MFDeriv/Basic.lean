@@ -518,7 +518,7 @@ alias Smooth.mdifferentiableWithinAt := ContMDiff.mdifferentiableWithinAt
 theorem MDifferentiableWithinAt.prodMk {f : M → M'} {g : M → M''}
     (hf : MDifferentiableWithinAt I I' f s x) (hg : MDifferentiableWithinAt I I'' g s x) :
     MDifferentiableWithinAt I (I'.prod I'') (fun x => (f x, g x)) s x :=
-  ⟨hf.1.prod hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 @[deprecated (since := "2025-03-08")]
 alias MDifferentiableWithinAt.prod_mk := MDifferentiableWithinAt.prodMk
@@ -526,7 +526,7 @@ alias MDifferentiableWithinAt.prod_mk := MDifferentiableWithinAt.prodMk
 theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDifferentiableAt I I' f x)
     (hg : MDifferentiableAt I I'' g x) :
     MDifferentiableAt I (I'.prod I'') (fun x => (f x, g x)) x :=
-  ⟨hf.1.prod hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 @[deprecated (since := "2025-03-08")]
 alias MDifferentiableAt.prod_mk := MDifferentiableAt.prodMk
@@ -535,7 +535,7 @@ theorem MDifferentiableWithinAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s x)
     (hg : MDifferentiableWithinAt I 𝓘(𝕜, E'') g s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) s x :=
-  ⟨hf.1.prod hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 @[deprecated (since := "2025-03-08")]
 alias MDifferentiableWithinAt.prod_mk_space := MDifferentiableWithinAt.prodMk_space
@@ -543,7 +543,7 @@ alias MDifferentiableWithinAt.prod_mk_space := MDifferentiableWithinAt.prodMk_sp
 theorem MDifferentiableAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableAt I 𝓘(𝕜, E') f x) (hg : MDifferentiableAt I 𝓘(𝕜, E'') g x) :
     MDifferentiableAt I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) x :=
-  ⟨hf.1.prod hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 @[deprecated (since := "2025-03-08")]
 alias MDifferentiableAt.prod_mk_space := MDifferentiableAt.prodMk_space

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Anne Baanen
 -/
 import ImportGraph.Imports
-import Mathlib.Tactic.MinImports
+import Mathlib.Init
 
 /-! # The `upstreamableDecl` linter
 
@@ -12,7 +12,7 @@ The `upstreamableDecl` linter detects declarations that could be moved to a file
 import hierarchy. This is intended to assist with splitting files.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 /-- Does this declaration come from the current file? -/
 def Lean.Name.isLocal (env : Environment) (decl : Name) : Bool :=
@@ -42,7 +42,7 @@ def Lean.Environment.localDefinitionDependencies (env : Environment) (stx id : S
   -- warning on the inductive itself but nothing on its downstream uses.
   -- (There does not seem to be an easy way to determine, given `Syntax` and `ConstInfo`,
   -- whether the `ConstInfo` is a constructor declared in this piece of `Syntax`.)
-  let defs := constInfos.filter (fun constInfo => !(constInfo.isTheorem || constInfo.isCtor))
+  let defs := constInfos.filter (fun constInfo => !(constInfo matches .thmInfo _ | .ctorInfo _))
 
   return defs.any fun constInfo => declName != constInfo.name && constInfo.name.isLocal env
 
@@ -86,12 +86,12 @@ namespace DoubleImports
 
 @[inherit_doc Mathlib.Linter.linter.upstreamableDecl]
 def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.upstreamableDecl (← getOptions) do
+    unless getLinterValue linter.upstreamableDecl (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
-    let skipDef := !Linter.getLinterValue linter.upstreamableDecl.defs (← getOptions)
-    let skipPrivate := !Linter.getLinterValue linter.upstreamableDecl.private (← getOptions)
+    let skipDef := !getLinterValue linter.upstreamableDecl.defs (← getLinterOptions)
+    let skipPrivate := !getLinterValue linter.upstreamableDecl.private (← getLinterOptions)
     if stx == (← `(command| set_option $(mkIdent `linter.upstreamableDecl) true)) then return
     let env ← getEnv
     let id ← getId stx
@@ -99,7 +99,7 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
       -- Skip defs and private decls by default.
       let name ← getDeclName stx
       if (skipDef && if let some constInfo := env.find? name
-         then !(constInfo.isTheorem || constInfo.isCtor)
+         then !(constInfo matches .thmInfo _ | .ctorInfo _)
          else true) ||
        (skipPrivate && isPrivateName name) then
         return

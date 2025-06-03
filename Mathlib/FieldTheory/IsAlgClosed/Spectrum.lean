@@ -3,7 +3,7 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!

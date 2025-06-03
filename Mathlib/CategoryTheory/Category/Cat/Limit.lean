@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
@@ -133,7 +133,6 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
       intro j
       simp [Types.Limit.lift_π_apply', ← w j]
     · intro X Y f
-      dsimp
       simp [fun j => Functor.congr_hom (w j).symm f]
 
 end HasLimits
