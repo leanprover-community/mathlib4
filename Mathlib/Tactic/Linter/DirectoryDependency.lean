@@ -257,14 +257,19 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Testing, `Mathlib.Util),
 ]
 
-/-- Copy-pasted from check-yaml -/
-def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
+/-- Read a file and filter out all lines which do not start
+with (possibly some whitespace and) the string "// ". -/
+def extractNonComments (input: String) : String :=
+  "\n".intercalate <| (input.splitOn "\n").filter fun l ↦ (!l.trimLeft.startsWith "// ")
+
+/-- Copy-pasted from check-yaml, and added the comment filtering -/
+def readJsonFileWithComments (α) [FromJson α] (path : System.FilePath) : IO α := do
   let _ : MonadExceptOf String IO := ⟨throw ∘ IO.userError, fun x _ => x⟩
-  liftExcept <| fromJson? <|← liftExcept <| Json.parse <|← IO.FS.readFile path
+  liftExcept <| fromJson? <|← liftExcept <| Json.parse <| extractNonComments <| ← IO.FS.readFile path
 
 /-- Read forbiddenDirs.json and convert this to an `Array Name × Name`. -/
 def autoforbidden : IO <| Array (Name × Name) := do
-  let basic ← readJsonFile (RBMap String (Array String) compare) ("scripts" / "forbiddenDirs.json")
+  let basic ← readJsonFileWithComments (RBMap String (Array String) compare) ("scripts" / "forbiddenDirs.json")
   let mut res := #[]
   for (k, l) in basic.toArray do
     res := res.append <| l.map (fun n ↦ (k.toName, n.toName))
