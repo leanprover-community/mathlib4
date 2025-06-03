@@ -34,7 +34,7 @@ be a number field such that `K/ℚ` is Galois and let `M K` be the Minkowski bou
 (by definition it is
 `(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`).
 To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
-`p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, there is an ideal `P` above `p` such that
+`p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, there is an ideal `P` above `p` such that either
 `⌊(M K)⌋₊ < p ^ (span ({p}).inertiaDeg P)` or `P` is principal. This is the standard technique to
 prove that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 
