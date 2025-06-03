@@ -22,8 +22,8 @@ instance IsPrincipalIdealRing.krullDimLE_one (R : Type*) [CommRing R] [IsDomain 
 theorem IsPrincipalIdealRing.ringKrullDim_eq_one (R : Type*) [CommRing R] [IsDomain R]
     [IsPrincipalIdealRing R] (h : ¬ IsField R) : ringKrullDim R = 1 := by
   apply eq_of_le_of_not_lt ?_ fun h' ↦ h ?_
-  · rw [← Nat.cast_one, ← Ring.KrullDimLE_iff]
+  · rw [← Nat.cast_one, ← Ring.krullDimLE_iff]
     infer_instance
   · have h'' : ringKrullDim R ≤ 0 := Order.le_of_lt_succ h'
-    rw [← Nat.cast_zero, ← Ring.KrullDimLE_iff] at h''
+    rw [← Nat.cast_zero, ← Ring.krullDimLE_iff] at h''
     exact Ring.KrullDimLE.isField_of_isDomain

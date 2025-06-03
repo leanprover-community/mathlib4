@@ -1065,6 +1065,13 @@ lemma height_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOr
     have : p.length > m := ENat.coe_lt_coe.mp (lt_of_le_of_lt (le_add_left (le_refl _)) h_len)
     omega
 
+lemma coheight_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOrder β]
+    (f : α →o β) {m : ℕ} (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) (x : α):
+    Order.coheight x ≤ (m + 1) * Order.coheight (f x) + m := by
+  rw [Order.coheight, Order.coheight]
+  apply height_le_of_krullDim_preimage_le (f := f.dual) fun x ↦ le_of_eq_of_le
+    (Order.krullDim_orderDual (α := f ⁻¹' {x})) (h x)
+
 lemma krullDim_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOrder β]
     (f : α →o β) {m : ℕ} (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m := by
