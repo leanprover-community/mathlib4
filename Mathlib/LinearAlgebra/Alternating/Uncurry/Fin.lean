@@ -89,8 +89,7 @@ Note that the round-trip with `curryFin` multiplies the form by `n + 1`,
 since we want to avoid division in this definition. -/
 def uncurryFin (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
     M [⋀^Fin (n + 1)]→ₗ[R] N where
-  toMultilinearMap :=
-    ∑ p, (-1) ^ p.val • LinearMap.uncurryMid p ((toMultilinearMapLM (S := R)).comp f)
+  toMultilinearMap := ∑ p, (-1) ^ p.val • LinearMap.uncurryMid p (toMultilinearMapLM ∘ₗ f)
   map_eq_zero_of_eq' := by
     intro v i j hvij hij
     suffices ∑ k : Fin (n + 1), (-1) ^ k.val • f (v k) (k.removeNth v) = 0 by simpa
