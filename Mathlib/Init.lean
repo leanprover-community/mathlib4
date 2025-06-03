@@ -77,3 +77,20 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.setOption
   linter.style.maxHeartbeats
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
+
+open Lean Elab.Command Linter Mathlib.Linter Mathlib.Linter.Style
+
+run_cmd liftTermElabM do
+  let DefinedInScripts : Array Name :=
+    #[`linter.checkInitImports, `linter.allScriptsDocumented]
+  let env ← getEnv
+  let ls := linterSetsExt.getEntries env
+  let some (_, mlLinters) := ls.find? (·.1 == ``linter.mathlibStandardSet) |
+    throwError m!"'linter.mathlibStandardSet' is not defined."
+  for mll in mlLinters do
+    let [(mlRes, _)] ← realizeGlobalName mll |
+      if !DefinedInScripts.contains mll then
+        throwError "Unknown option '{mll}'!"
+    let some cinfo := env.find? mlRes | throwError "{mlRes}: this code should be unreachable."
+    if !cinfo.type.isAppOf ``Lean.Option then
+      throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
