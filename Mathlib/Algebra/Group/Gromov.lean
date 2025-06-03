@@ -1154,23 +1154,6 @@ lemma closure_iterate_mulact (T: Type*) [Group T] [DecidableEq T] (a b: T) (n: �
           simp
           repeat rw [← mul_assoc]
           exact closed_under_conj
-
-          conv =>
-            arg 2
-            equals (MulAut.conj a) (a^p * b * a^(-p : ℤ)) =>
-              simp
-              -- TODO - there must be a less ugly way to do this
-              nth_rw 1 [pow_succ']
-              rw [pow_succ']
-              rw [mul_assoc]
-              rw [mul_assoc]
-              nth_rw 2 [← mul_assoc]
-              simp
-              nth_rw 2 [← mul_assoc]
-              nth_rw 1 [← mul_assoc]
-
-
-          sorry
     | one => apply Subgroup.one_mem
     | mul y z hy hz y_mem z_mem =>
       apply Subgroup.mul_mem
