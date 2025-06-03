@@ -293,15 +293,6 @@ end Inverse
 
 end
 
-section Semiring
-
-variable [Semiring α] [Semiring β]
-
-protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
-  map_dvd f
-
-end Semiring
-
 end RingHom
 
 
