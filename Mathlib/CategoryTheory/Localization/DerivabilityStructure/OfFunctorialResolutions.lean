@@ -66,18 +66,18 @@ induced by `W₂` via the fully faithful functor `Φ.functor` and that we
 have functorial right resolutions given by a functor `ρ : C₂ ⥤ C₁`, then
 this is the natural transformation `𝟭 C₁ ⟶ Φ.functor ⋙ ρ` induced
 by `i : 𝟭 C₂ ⟶ ρ ⋙ Φ.functor`. -/
-noncomputable def i' : 𝟭 C₁ ⟶ Φ.functor ⋙ ρ :=
+noncomputable def ι : 𝟭 C₁ ⟶ Φ.functor ⋙ ρ :=
   ((whiskeringRight C₁ C₁ C₂).obj Φ.functor).preimage (whiskerLeft Φ.functor i)
 
 @[simp]
-lemma Φ_functor_map_i'_app (X₁ : C₁) :
-    Φ.functor.map ((i' i).app X₁) = i.app (Φ.functor.obj X₁) :=
+lemma Φ_functor_map_ι_app (X₁ : C₁) :
+    Φ.functor.map ((ι i).app X₁) = i.app (Φ.functor.obj X₁) :=
   NatTrans.congr_app (((whiskeringRight C₁ C₁ C₂).obj Φ.functor).map_preimage
     (X := 𝟭 C₁) (Y := Φ.functor ⋙ ρ) (whiskerLeft Φ.functor i)) X₁
 
 include hW₁ hi in
-lemma W₁_i'_app (X₁ : C₁) : W₁ ((i' i).app X₁) := by
-  simpa only [hW₁, MorphismProperty.inverseImage_iff, Φ_functor_map_i'_app]
+lemma W₁_i'_app (X₁ : C₁) : W₁ ((ι i).app X₁) := by
+  simpa only [hW₁, MorphismProperty.inverseImage_iff, Φ_functor_map_ι_app]
     using hi (Φ.functor.obj X₁)
 
 end functorialRightResolutions
@@ -89,7 +89,7 @@ include hi hW₁
 
 lemma isLocalizedEquivalence_of_functorial_right_resolutions :
     Φ.IsLocalizedEquivalence :=
-  Φ.isLocalizedEquivalence_of_unit_of_unit (localizerMorphismInv hi hW₁) (i' i) i
+  Φ.isLocalizedEquivalence_of_unit_of_unit (localizerMorphismInv hi hW₁) (ι i) i
     (W₁_i'_app hi hW₁) hi
 
 variable [W₂.IsMultiplicative]
