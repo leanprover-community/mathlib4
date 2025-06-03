@@ -256,18 +256,37 @@ defined is an `ℝ≥0∞`-valued measure.
 
 section supMeasure
 
-variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
-  (f : Set X → ℝ≥0∞)
+variable {X : Type*} [MeasurableSpace X] (f : Set X → ℝ≥0∞)
 
 open Classical in
-noncomputable def supPartSum (s : Set X) :=
+noncomputable def supSumPart (s : Set X) :=
     if (MeasurableSet s) then ⨆ (P : Finset (Set X)) (_ : IsInnerPart s P), ∑ p ∈ P, f p else 0
 
-/-- `supPartSum` of the empty set is equal to zero. -/
-lemma supPartSum_empty' : supPartSum f ∅ = 0 := by
-  simp only [supPartSum, MeasurableSet.empty, reduceIte, ENNReal.iSup_eq_zero]
+/-- `supSumPart` of the empty set is equal to zero. -/
+lemma supSumPart_empty' : supSumPart f ∅ = 0 := by
+  simp only [supSumPart, MeasurableSet.empty, reduceIte, ENNReal.iSup_eq_zero]
   intro _ hP
   simp_all [isInnerPart_of_empty hP]
+
+/-- `supSumPart` of a non-measurable set is equal to zero. -/
+lemma supSumPart_of_not_measurable (s : Set X) (hs : ¬MeasurableSet s) : supSumPart f s = 0 := by
+  simp [supSumPart, hs]
+
+/-- `supSumPart` is monotone in terms of the set. -/
+lemma supSumPart_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂)
+    (hs₂ : MeasurableSet s₂) : supSumPart f s₁ ≤ supSumPart f s₂ := by
+  by_cases hs₁ : MeasurableSet s₁
+  · simp only [supSumPart, hs₁, reduceIte, hs₂]
+    exact iSup_le_iSup_of_subset (partitions_monotone h)
+  · simp [supSumPart, hs₁]
+
+lemma supSumPart_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < supSumPart f s) :
+    ∃ P, IsInnerPart s P ∧ a < supSumPart f s := by
+  obtain ⟨P, hP, hP'⟩ : ∃ P, IsInnerPart s P ∧ a < ∑ p ∈ P, f p := by
+    simp_all [supSumPart, hs, lt_iSup_iff]
+  exact ⟨P, hP, by gcongr⟩
+
+
 
 
 
