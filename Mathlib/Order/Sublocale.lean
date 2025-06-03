@@ -30,9 +30,9 @@ structure Sublocale (X : Type*) [Order.Frame X] where
   /-- The set corresponding to the sublocale. -/
   carrier : Set X
   /-- A sublocale is closed under all meets. -/
-  sInfClosed' : ∀ a ⊆ carrier , sInf a ∈ carrier
+  sInfClosed' : ∀ a ⊆ carrier, sInf a ∈ carrier
   /-- A sublocale is closed under heyting implication. -/
-  HImpClosed' : ∀ a b, b ∈ carrier → a ⇨ b ∈ carrier
+  hImpClosed' : ∀ a b, b ∈ carrier → a ⇨ b ∈ carrier
 
 namespace Sublocale
 
@@ -60,20 +60,17 @@ instance carrier.instCompleteLattice : CompleteLattice S where
     sInf, mem_setOf_eq, Subtype.mk_le_mk, sInf_le_iff, mem_image, Subtype.exists, exists_and_right,
     exists_eq_right, forall_exists_index, implies_true, upperBounds, le_sInf_iff, and_self]
 
-@[norm_cast]
+@[simp, norm_cast]
 lemma coe_inf (a b : S) : (a ⊓ b).val = ↑a ⊓ ↑b := rfl
 
-@[norm_cast]
+@[simp, norm_cast]
 lemma coe_sInf (s : Set S) : (sInf s).val = sInf (Subtype.val '' s) := rfl
 
 instance instHImp : HImp S where
-  himp a b := ⟨a ⇨ b, (S.HImpClosed' a b (Subtype.coe_prop b))⟩
+  himp a b := ⟨a ⇨ b, (S.hImpClosed' a b (Subtype.coe_prop b))⟩
 
-@[norm_cast]
+@[simp, norm_cast]
 lemma coe_himp (a b : S) : (a ⇨ b).val = a.val ⇨ b.val := rfl
-
-lemma coe_himp' (a : X) (b : S) :
-  (⟨(a ⇨ b.val), (S.HImpClosed' _ _ b.coe_prop)⟩ : S).val = a ⇨ b.val  := rfl
 
 instance carrier.instHeytingAlgebra : HeytingAlgebra S where
   le_himp_iff a b c := by simp [← Subtype.coe_le_coe, ← @Sublocale.coe_inf, himp]
@@ -108,7 +105,10 @@ def restrict (S : Sublocale X) : FrameHom X S where
     calc
       _ ↔ (S.restrictAux a ≤ S.restrictAux b ⇨ s) := by simp
       _ ↔ (S.restrictAux b ≤ a ⇨ s) := by rw [S.giAux.gc.le_iff_le, @le_himp_comm, coe_himp]
-      _ ↔ ( b ≤ a ⇨ s) := by rw [← coe_himp', S.giAux.u_le_u_iff, S.giAux.gc.le_iff_le]
+      _ ↔ ( b ≤ a ⇨ s) := by
+        change (↑(Sublocale.restrictAux S b) ≤ (⟨a ⇨ ↑s, (S.hImpClosed' _ _ s.coe_prop)⟩ : S).val
+          ↔  (b ≤ ↑(⟨a ⇨ ↑s, (S.hImpClosed' _ _ s.coe_prop)⟩ : S)))
+        rw [S.giAux.u_le_u_iff, S.giAux.gc.le_iff_le]
       _ ↔ (S.restrictAux (a ⊓ b) ≤ s) := by simp [inf_comm, S.giAux.gc.le_iff_le]
   map_sSup' s := by
     change Sublocale.restrictAux S (sSup s) = _
@@ -158,7 +158,7 @@ def Nucleus.toSublocale (n : Nucleus X) : Sublocale X where
     simp_rw [@subset_def, mem_range] at h
     rw [← h b h1]
     exact n.monotone (sInf_le h1)
-  HImpClosed' a b h := by rw [mem_range, ← h, @map_himp_apply] at *
+  hImpClosed' a b h := by rw [mem_range, ← h, @map_himp_apply] at *
 
 /-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
 The sublocales are ordered dually to the nuclei. -/
