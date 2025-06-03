@@ -496,7 +496,6 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
   counitIso := (NatIso.op e.counitIso).symm
   functor_unitIso_comp X := by
     apply Quiver.Hom.unop_inj
-    dsimp
     simp
 
 /-- An equivalence between opposite categories gives an equivalence between the original categories.
@@ -509,7 +508,6 @@ def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
   counitIso := (NatIso.unop e.counitIso).symm
   functor_unitIso_comp X := by
     apply Quiver.Hom.op_inj
-    dsimp
     simp
 
 /-- An equivalence between `C` and `Dᵒᵖ` gives an equivalence between `Cᵒᵖ` and `D`. -/

@@ -115,7 +115,7 @@ def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
   one := { hom := M.X.one }
   mul :=
   { hom := M.X.mul,
-    hom_comul := by dsimp; simp [tensor_μ] }
+    hom_comul := by simp [tensor_μ] }
 
 attribute [simps] toMon_Comon_obj -- We add this after the fact to avoid a timeout.
 
@@ -133,7 +133,7 @@ def ofMon_Comon_obj (M : Mon_ (Comon_ C)) : Bimon_ C where
   counit := { hom := M.X.counit }
   comul :=
   { hom := M.X.comul,
-    mul_hom := by dsimp; simp [tensor_μ] }
+    mul_hom := by simp [tensor_μ] }
 
 /-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]

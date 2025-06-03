@@ -597,7 +597,6 @@ theorem εToSingle₀_comp_eq :
       (forget₂ToModuleCatHomotopyEquiv k G).hom := by
   dsimp
   ext1
-  dsimp
   simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 
 theorem quasiIso_forget₂_εToSingle₀ :
