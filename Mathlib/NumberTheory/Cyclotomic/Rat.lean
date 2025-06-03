@@ -699,5 +699,3 @@ end IsCyclotomicExtension.Rat
 end absdiscr
 
 end PowerBasis
-
-#min_imports
