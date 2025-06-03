@@ -31,7 +31,7 @@ namespace MeromorphicAt
 -/
 
 /--
-The principle of isolated zeros: If `f` is mermorphic at `x`, then `f` vanishes eventually in a
+The principle of isolated zeros: If `f` is meromorphic at `x`, then `f` vanishes eventually in a
 punctured neighborhood of `x` iff it vanishes frequently in punctured neighborhoods.
 
 See `AnalyticAt.frequently_zero_iff_eventually_zero` for a stronger result in the analytic case.
@@ -69,7 +69,7 @@ theorem eventuallyEq_zero_nhdNE_of_eventuallyEq_zero_codiscreteWithin (hf : Mero
 
 /--
 Formulation of `MeromorphicAt.frequently_zero_iff_eventuallyEq_zero` as an identity principle: If
-`f` and `g` are mermorphic at `x`, then `f` and `g` agree eventually in a punctured neighborhood of
+`f` and `g` are meromorphic at `x`, then `f` and `g` agree eventually in a punctured neighborhood of
 `x` iff they agree at points arbitrarily close to (but different from) `x`.
 -/
 theorem frequently_eq_iff_eventuallyEq (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
