@@ -20,6 +20,8 @@ import Mathlib.RingTheory.Spectrum.Prime.RingHom
 - `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
 
+open scoped nonZeroDivisors
+
 variable {R S : Type*} [CommRing R] [CommRing S]
 
 lemma ringKrullDim_quotient (I : Ideal R) :
