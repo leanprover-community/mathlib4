@@ -7,7 +7,6 @@ import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.PNat.Notation
 import Mathlib.Dynamics.FixedPoints.Basic
