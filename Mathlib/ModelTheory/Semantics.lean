@@ -62,7 +62,7 @@ variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder Cardinal
 
-open Structure Cardinal Fin
+open Structure Fin
 
 namespace Term
 
