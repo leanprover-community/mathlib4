@@ -16,30 +16,28 @@ open Function Metric Module Set Submodule
 
 noncomputable section
 
-variable {n : ℕ} {v : EuclideanSpace ℝ (Fin n.succ)} (hv : ‖v‖ = 1)
-
-/-- The one-point compactification of ℝⁿ, in the form of a codimension 1 subspace,
- is homeomorphic to the n-sphere. -/
-def onePointHyperplaneHomeoUnitSphere :
-    OnePoint (ℝ ∙ v)ᗮ ≃ₜ sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1 :=
+/-- A homeomorphism from the one-point compactification of a hyperplane in Euclidean space to the
+sphere. -/
+def onePointHyperplaneHomeoUnitSphere
+    {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+    {v : E} (hv : ‖v‖ = 1) :
+    OnePoint (ℝ ∙ v)ᗮ ≃ₜ sphere (0 : E) 1 :=
   OnePoint.equivOfIsEmbeddingOfRangeEq _ _
     (isOpenEmbedding_stereographic_symm hv).toIsEmbedding (range_stereographic_symm hv)
 
--- TODO Replace the two defs below with a single `def` stating
--- `OnePoint V ≃ₜ sphere (0 : EuclideanSpace ℝ ι) 1` for any real T2 TVS satisfying
--- `finrank ℝ V + 1 = Fintype.card ι`
-
-/-- The orthogonal complement of the span of a point on the sphere
-is homeomorphic to a Euclidean space of codimension 1. -/
-noncomputable def Submodule_homeo_Euclidean {n : ℕ}
-    (v : sphere (0 : (EuclideanSpace ℝ (Fin n.succ))) 1) :
-    Homeomorph ((span ℝ {v.1})ᗮ) (EuclideanSpace ℝ (Fin n)) :=
-  letI fact {n : ℕ} : Fact (finrank ℝ (EuclideanSpace ℝ (Fin n.succ)) = n + 1) := ⟨by simp⟩
-  (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph
-
-/-- The one-point compactification of Euclidean space is homeomorphic to the sphere. -/
-noncomputable def OnePointEuclidean_homeo_sphere : Homeomorph
-    (OnePoint (EuclideanSpace ℝ (Fin n))) ((sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1)) := by
-  have hv' : v ∈ sphere 0 (1:ℝ) := by simpa
-  exact ((Submodule_homeo_Euclidean ⟨v,hv'⟩).symm.onePointCongr).trans
-    <| onePointHyperplaneHomeoUnitSphere hv
+/-- A homeomorphism from the one-point compactification of a finite-dimensional real vector space to
+the sphere. -/
+def onePointEquivSphereOfFinrankEq {ι V : Type*} [Fintype ι]
+    [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
+    [TopologicalSpace V] [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [T2Space V]
+    (h : finrank ℝ V + 1 = Fintype.card ι) :
+    OnePoint V ≃ₜ sphere (0 : EuclideanSpace ℝ ι) 1 := by
+  classical
+  have : Nonempty ι := Fintype.card_pos_iff.mp <| by omega
+  let v : EuclideanSpace ℝ ι := .single (Classical.arbitrary ι) 1
+  have hv : ‖v‖ = 1 := by simp [v]
+  have hv₀ : v ≠ 0 := fun contra ↦ by simp [contra] at hv
+  have : Fact (finrank ℝ (EuclideanSpace ℝ ι) = finrank ℝ V + 1) := ⟨by simp [h]⟩
+  have hV : finrank ℝ V = finrank ℝ (ℝ ∙ v)ᗮ := (finrank_orthogonal_span_singleton hv₀).symm
+  letI e : V ≃ₜ (ℝ ∙ v)ᗮ := (FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq hV).some
+  exact e.onePointCongr.trans <| onePointHyperplaneHomeoUnitSphere hv
