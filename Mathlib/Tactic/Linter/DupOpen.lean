@@ -40,10 +40,18 @@ def dupOpenLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  if stx.isOfKind ``Parser.Command.open then
+  match stx with
+  | `(open $os*) =>
     let s ← getScope
+    let mut toReport : Std.HashSet (String.Range × Name × String):= ∅
     for rep in getReps (s.openDecls.map (s!"{·}")) do
-      Linter.logLint linter.dupOpen stx m!"The namespace '{rep}' is already open."
+      for o in os do
+        if rep.endsWith o.getId.toString then
+          toReport := toReport.insert (o.raw.getRange?.get!, o.getId, rep)
+    for (rg, o, rep) in toReport do
+      Linter.logLint linter.dupOpen (.ofRange rg)
+        m!"The namespace '{o}' in '{rep}' is already open."
+  | _ => return
 
 initialize addLinter dupOpenLinter
 

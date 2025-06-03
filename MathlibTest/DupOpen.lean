@@ -2,14 +2,18 @@ import Mathlib.Tactic.Linter.DupOpen
 
 set_option linter.dupOpen true
 
-variable {a : Nat} in
+section
 /--
-warning: The namespace 'Nat' is already open.
+warning: The namespace 'Nat' in 'Nat' is already open.
+note: this linter can be disabled with `set_option linter.dupOpen false`
+---
+warning: The namespace 'Nat' in 'Nat' is already open.
 note: this linter can be disabled with `set_option linter.dupOpen false`
 -/
 #guard_msgs in
--- A duplicated `open` namespace is flagged.
-open Nat Nat
+-- The duplicated `open Nat` namespace is flagged.  `Int` is unused, but allowed.
+open Nat Int Nat
+end
 
 section
 -- An unused `open` is allowed.
@@ -17,12 +21,15 @@ open Nat
 end
 
 namespace X.Y.X
-end X.Y.X
 
-variable {a : Nat} in
 /--
-warning: The namespace 'X' is already open.
+warning: The namespace 'X' in 'X.Y.X' is already open.
+note: this linter can be disabled with `set_option linter.dupOpen false`
+---
+warning: The namespace 'X' in 'X.Y.X' is already open.
 note: this linter can be disabled with `set_option linter.dupOpen false`
 -/
 #guard_msgs in
-open X Y X -- This should be allowed, but the linter flags it.
+open X Y X -- Maybe this should be allowed, but the linter flags it.
+
+end X.Y.X
