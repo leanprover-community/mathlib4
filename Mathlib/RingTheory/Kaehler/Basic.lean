@@ -550,7 +550,7 @@ noncomputable def KaehlerDifferential.derivationQuotKerTotal :
   map_one_eq_zero' := KaehlerDifferential.kerTotal_mkQ_single_algebraMap_one _ _ _
   leibniz' a b :=
     (KaehlerDifferential.kerTotal_mkQ_single_mul _ _ _ _ _).trans
-      (by simp_rw [← Finsupp.smul_single_one _ (1 * _ : S)]; simp)
+      (by simp_rw [← Finsupp.smul_single_one _ (1 * _ : S)]; dsimp; simp)
 
 theorem KaehlerDifferential.derivationQuotKerTotal_apply (x) :
     KaehlerDifferential.derivationQuotKerTotal R S x = 1𝖣x :=

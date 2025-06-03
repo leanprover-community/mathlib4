@@ -80,7 +80,8 @@ def componentwiseDiagram (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
   map {j k} f := (F.map f.unop).c.app _ ≫
     (F.obj (unop k)).presheaf.map (eqToHom (by rw [← colimit.w F f.unop, comp_base]; rfl))
   map_comp {i j k} f g := by
-    simp [assoc, CategoryTheory.NatTrans.naturality_assoc]
+    simp only [assoc, CategoryTheory.NatTrans.naturality_assoc]
+    simp
 
 variable [HasColimitsOfShape J TopCat.{v}]
 

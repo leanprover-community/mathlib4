@@ -263,7 +263,7 @@ def unitIso :
         laxBraidedToCommMon C ⋙ commMonToLaxBraided C :=
   NatIso.ofComponents
     (fun F ↦ LaxBraidedFunctor.isoOfComponents (fun _ ↦ F.mapIso (eqToIso (by ext))))
-    (fun f ↦ by ext ⟨⟨⟩⟩; simp)
+    (fun f ↦ by ext ⟨⟨⟩⟩; dsimp; simp)
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
