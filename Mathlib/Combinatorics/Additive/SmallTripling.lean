@@ -20,7 +20,7 @@ This file shows that a set with small tripling has small powers, even in non-abe
 ## See also
 
 In abelian groups, the Plünnecke-Ruzsa inequality is the stronger statement that small doubling
-implies small powers. See `Mathlib.Combinatorics.Additive.PluenneckeRuzsa`.
+implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 -/
 
 open Fin MulOpposite
