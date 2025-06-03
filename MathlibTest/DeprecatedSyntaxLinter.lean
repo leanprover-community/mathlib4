@@ -137,7 +137,8 @@ note: this linter can be disabled with `set_option linter.style.nativeDecide fal
 #guard_msgs in
 example : 1 + 1 = 2 := by decide (config := { native := true })
 example : 1 + 1 = 2 := by decide (config := { native := false })
--- Not handled yet: perhaps this is rare enough to not matter much yet.
+-- Not handled yet: since mathlib hardly uses the old config syntax and this linter is purely
+-- for user information (and not hard guarantees), we deem this acceptable.
 example : 1 + 1 = 2 := by decide (config := { native := false, kernel := false })
 
 set_option linter.style.nativeDecide false
