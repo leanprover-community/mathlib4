@@ -647,7 +647,7 @@ theorem Ideal.dvd_span_singleton {I : Ideal A} {x : A} : I ∣ Ideal.span {x} �
   Ideal.dvd_iff_le.trans (Ideal.span_le.trans Set.singleton_subset_iff)
 
 @[simp]
-theorem Ideal.dvd_span_bot {I : Ideal A} : I ∣ ⊥ :=
+theorem Ideal.dvd_bot {I : Ideal A} : I ∣ ⊥ :=
   dvd_zero I
 
 theorem Ideal.isPrime_of_prime {P : Ideal A} (h : Prime P) : IsPrime P := by
