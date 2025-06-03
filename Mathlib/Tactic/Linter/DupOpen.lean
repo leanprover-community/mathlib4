@@ -11,7 +11,7 @@ import Mathlib.Init
 The "dupOpen" linter emits a warning when an `open` command opens an already open namespace.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -37,7 +37,7 @@ namespace DupOpen
 
 @[inherit_doc Mathlib.Linter.linter.dupOpen]
 def dupOpenLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.dupOpen (← getOptions) do
+  unless Linter.getLinterValue linter.dupOpen (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
