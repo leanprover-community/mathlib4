@@ -52,7 +52,6 @@ section CompleteLinearOrder
 
 variable {α : Type*}{ι : Type*} [CompleteLinearOrder α] {s : Set α} {a b : α}
 
-
 /-- This has a very short proof but might still be useful in mathlib. -/
 theorem lt_biSup_iff {s : Set ι} {f : ι → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
   simp [lt_iSup_iff]
@@ -61,8 +60,8 @@ end CompleteLinearOrder
 
 namespace VectorMeasure
 
-variable {X V 𝕜 : Type*} [MeasurableSpace X] [NormedAddCommGroup V] [NormedField 𝕜]
-  [NormedSpace 𝕜 V] (μ : VectorMeasure X V)
+variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
+  (μ : VectorMeasure X V)
 
 /-!
 ## Inner partitions
@@ -293,6 +292,14 @@ lemma varOfPart_le_tsum {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
 lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ variation_aux μ (s i)) (variation_aux μ (⋃ i, s i)) := by
+  -- suffices h : ∑' i, variation_aux μ (s i) = (variation_aux μ (⋃ i, s i)) by
+  --   exact (Summable.hasSum_iff ENNReal.summable).mpr h
+  -- apply eq_of_le_of_le
+  --
+  -- refine (Summable.hasSum_iff ENNReal.summable).mpr (eq_of_le_of_le ?_ ?_)
+  -- · sorry
+  -- · sorry
+  --
   rw [ENNReal.hasSum_iff_bounds_nat]
   constructor
   · -- The sum of `variation_aux μ (s i)` is le `variation_aux μ (⋃ i, s i)`.
@@ -380,5 +387,9 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E
     have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
     simp_all [varOfPart, variation, variation_aux]
   · simp [hE, μ.not_measurable' hE]
+
+lemma variation_of_ENNReal  (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ := by
+
+  sorry
 
 end VectorMeasure
