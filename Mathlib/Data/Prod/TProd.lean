@@ -141,7 +141,6 @@ theorem mk_preimage_tprod :
     have h : TProd.mk l f ∈ Set.tprod l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i := by
       change f ∈ TProd.mk l ⁻¹' Set.tprod l t ↔ f ∈ { x | x ∈ l }.pi t
       rw [mk_preimage_tprod l t]
-
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
     rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prodMk_mem_set_prod_eq]
     simp_rw [mem_setOf_eq, mem_cons]
