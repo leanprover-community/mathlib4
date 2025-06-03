@@ -243,7 +243,7 @@ noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj (hf : Surjective f)
     rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective f hf,
       PrimeSpectrum.asIdeal_le_asIdeal]
 
-/-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
+/-- `Spec (R / I)` is order-isomorphic to `Z(I)`. -/
 noncomputable def Ideal.primeSpectrumQuotientOrderIsoZeroLocus (I : Ideal R) :
     PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) :=
   primeSpectrumOrderIsoZeroLocusOfSurj (Quotient.mk I) Quotient.mk_surjective I.mk_ker
