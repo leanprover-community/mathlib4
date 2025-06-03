@@ -15,7 +15,7 @@ defined in `AlgebraicTopology.SimplexCategory.Augmented.Monoidal`, the object `�
 admits an internal monoid object structure.
 
 ## TODO
-  - Prove that this is the "universal internal monoid object", i.e that evaluation at
+- Prove that this is the "universal internal monoid object", i.e that evaluation at
   `⦋0⦌` induces an an equivalence of categories between monoidal functors
   `AugmentedSimplexCategory ⥤ C` and internal objects in a monoidal category `C`.
 -/
@@ -26,17 +26,16 @@ open CategoryTheory MonoidalCategory
 open scoped Simplicial
 
 /-- The canonical monoid object of `AugmentedSimplexCategory`. -/
-def mon_ : Mon_ AugmentedSimplexCategory where
-  X := .of ⦋0⦌
+def mon_ : Mon_Class (WithInitial.of ⦋0⦌) where
   one := WithInitial.homTo _
   mul := SimplexCategory.σ (Fin.last _)
-  one_mul := by
+  one_mul' := by
     change (_ : ⦋0⦌ ⟶ ⦋0⦌) = _
     subsingleton
-  mul_one := by
+  mul_one' := by
     change (_ : ⦋0⦌ ⟶ ⦋0⦌) = _
     subsingleton
-  mul_assoc := by
+  mul_assoc' := by
     apply AugmentedSimplexCategory.tensorObj_hom_ext
     · apply AugmentedSimplexCategory.tensorObj_hom_ext
       · change (_ : ⦋0⦌ ⟶ ⦋0⦌) = _
