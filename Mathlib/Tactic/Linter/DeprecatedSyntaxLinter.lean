@@ -68,6 +68,9 @@ register_option linter.style.admit : Bool := {
 
 /-- The option `linter.style.nativeDecide` of the deprecated syntax linter flags usages of
 the `native_decide` tactic, which is disallowed in mathlib. -/
+-- Note: this linter is purely for user information. Running `lean4checker` in CI catches *any*
+-- additional axioms that are introduced (not just `ofReduceBool`): the point of this check is to
+-- alert the user quickly, not to be airtight.
 register_option linter.style.nativeDecide : Bool := {
   defValue := false
   descr := "enable the nativeDecide linter"
@@ -105,7 +108,8 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
         some default
   | _ => none
 
-/-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option enabled. -/
+/-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option
+enabled. This may have false negatives for `decide (config := {<options>})` syntax). -/
 def isDecideNative (stx : Syntax ) : Bool :=
   match stx with
   | .node _ ``Lean.Parser.Tactic.decide args =>
