@@ -1036,6 +1036,26 @@ end calculations
 
 section orderHom
 
+lemma height_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOrder β]
+    (f : α →o β) {m : ℕ} (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) (x : α):
+    Order.height x ≤ (m + 1) * Order.height (f x) + m := by
+  generalize h' : Order.height (f x) = n
+  cases n with | top => simp | coe n =>
+    induction n using Nat.strong_induction_on generalizing x with | h n ih =>
+    apply Order.height_le_iff.mpr fun p hp ↦ le_of_not_lt fun h_len ↦ ?_
+    let i : Fin (p.length + 1) := ⟨p.length - (m + 1), Nat.sub_lt_succ p.length _⟩
+    suffices h'' : f (p i) < f x by
+      obtain ⟨n', hn'⟩ : ∃ (n' : ℕ), n' = height (f (p i)) := ENat.ne_top_iff_exists.mp sorry
+      have h_lt : n' < n := ENat.coe_lt_coe.mp
+        (h' ▸ hn' ▸ height_strictMono h'' (hn' ▸ ENat.coe_lt_top _))
+      have := (length_le_height_last (p := p.take i)).trans <| ih n' h_lt (p i) hn'.symm
+      rw [RelSeries.take_length, ENat.coe_sub, Nat.cast_add, Nat.cast_one, tsub_le_iff_right,
+        add_assoc, add_comm _ (_ + 1), ← add_assoc, ← mul_add_one] at this
+      apply not_lt_of_le ?_ (lt_of_lt_of_le h_len this)
+      gcongr
+      rwa [← ENat.coe_one, ← ENat.coe_add, ENat.coe_le_coe]
+    sorry
+
 lemma krullDim_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOrder β]
     (f : α →o β) {m : ℕ} (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m := by
