@@ -23,7 +23,7 @@ variable {n : ℕ} {v : EuclideanSpace ℝ (Fin n.succ)} (hv : ‖v‖ = 1)
 def onePointHyperplaneHomeoUnitSphere :
     OnePoint (ℝ ∙ v)ᗮ ≃ₜ sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1 :=
   OnePoint.equivOfIsEmbeddingOfRangeEq _ _
-    (isEmbedding_stereographic_symm hv) (range_stereographic_symm hv)
+    (isOpenEmbedding_stereographic_symm hv).toIsEmbedding (range_stereographic_symm hv)
 
 -- TODO Replace the two defs below with a single `def` stating
 -- `OnePoint V ≃ₜ sphere (0 : EuclideanSpace ℝ ι) 1` for any real T2 TVS satisfying
