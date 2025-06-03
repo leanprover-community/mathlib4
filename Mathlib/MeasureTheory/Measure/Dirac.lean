@@ -179,13 +179,11 @@ instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dir
 instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := inferInstance
 instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := inferInstance
 
-theorem mem_dirac_eq_one_iff {a : α} (hs : MeasurableSet s)
-    : dirac a s = 1 ↔ a ∈ s := by
+theorem mem_dirac_eq_one_iff (hs : MeasurableSet s) : dirac a s = 1 ↔ a ∈ s := by
   rw [Iff.symm (prob_compl_eq_zero_iff hs), ← mem_ae_iff]
   apply mem_ae_dirac_iff hs
 
-theorem mem_dirac_eq_zero_iff {a : α} (hs : MeasurableSet s)
-    : dirac a s = 0 ↔ a ∉ s := by
+theorem mem_dirac_eq_zero_iff (hs : MeasurableSet s) : dirac a s = 0 ↔ a ∉ s := by
   rw [Eq.symm (compl_compl s), ← mem_ae_iff, notMem_compl_iff]
   apply mem_ae_dirac_iff (MeasurableSet.compl_iff.mpr hs)
 
