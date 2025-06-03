@@ -224,7 +224,7 @@ theorem range_specComap_of_surjective (hf : Surjective f) :
 
 variable {S}
 
-/-- Let `f : R →+* S` be a surjective ring homomorphisms, then `Spec S` is isomorphic to `Z(I)`
+/-- Let `f : R →+* S` be a surjective ring homomorphism, then `Spec S` is order-isomorphic to `Z(I)`
   where `I = ker f`. -/
 noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj (hf : Surjective f) {I : Ideal R}
     (hI : RingHom.ker f = I) : PrimeSpectrum S ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
@@ -243,7 +243,7 @@ noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj (hf : Surjective f)
     rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective f hf,
       PrimeSpectrum.asIdeal_le_asIdeal]
 
-/-- `Spec (R / I)` is isomorphic to `Z(I)`. -/
+/-- `Spec (R / I)` is order-isomorphic to `Z(I)`. -/
 noncomputable def Ideal.primeSpectrumQuotientOrderIsoZeroLocus (I : Ideal R) :
     PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) :=
   primeSpectrumOrderIsoZeroLocusOfSurj (Quotient.mk I) Quotient.mk_surjective I.mk_ker
