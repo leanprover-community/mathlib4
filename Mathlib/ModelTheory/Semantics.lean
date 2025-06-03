@@ -62,7 +62,7 @@ variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder Cardinal
 
-open Structure Cardinal Fin
+open Structure Fin
 
 namespace Term
 
@@ -692,7 +692,7 @@ theorem LHom.onTheory_model [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionO
 variable {T}
 
 instance model_empty : M ⊨ (∅ : L.Theory) :=
-  ⟨fun φ hφ => (Set.not_mem_empty φ hφ).elim⟩
+  ⟨fun φ hφ => (Set.notMem_empty φ hφ).elim⟩
 
 namespace Theory
 

@@ -284,7 +284,8 @@ theorem radius_eq_top_iff_summable_norm (p : FormalMultilinearSeries 𝕜 E F) :
     obtain ⟨a, ha : a ∈ Ioo (0 : ℝ) 1, C, - : 0 < C, hp⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius
       (show (r : ℝ≥0∞) < p.radius from h.symm ▸ ENNReal.coe_lt_top)
     refine .of_norm_bounded
-      (fun n ↦ (C : ℝ) * a ^ n) ((summable_geometric_of_lt_one ha.1.le ha.2).mul_left _) fun n ↦ ?_
+      (g := fun n ↦ (C : ℝ) * a ^ n) ((summable_geometric_of_lt_one ha.1.le ha.2).mul_left _)
+      fun n ↦ ?_
     specialize hp n
     rwa [Real.norm_of_nonneg (by positivity)]
   · exact p.radius_eq_top_of_summable_norm
@@ -319,7 +320,8 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
   have := ((p.isLittleO_one_of_lt_radius hr.1).add (q.isLittleO_one_of_lt_radius hr.2)).isBigO
   refine (p + q).le_radius_of_isBigO ((isBigO_of_le _ fun n => ?_).trans this)
   rw [← add_mul, norm_mul, norm_mul, norm_norm]
-  exact mul_le_mul_of_nonneg_right ((norm_add_le _ _).trans (le_abs_self _)) (norm_nonneg _)
+  gcongr
+  exact (norm_add_le _ _).trans (le_abs_self _)
 
 @[simp]
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
@@ -356,7 +358,7 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
     · simp
     right
     rw [pow_succ, ← mul_assoc]
-    apply mul_le_mul_of_nonneg_right (h m) zero_le_coe
+    gcongr; apply h
   · apply iSup_mono'
     intro C
     use ‖p 1‖ ⊔ C / r
