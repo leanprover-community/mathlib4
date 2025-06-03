@@ -429,6 +429,14 @@ lemma isMax_iff {x : PrimeSpectrum R} :
   obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
   exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
 
+lemma zeroLocus_eq_singleton (m : Ideal R) [m.IsMaximal] :
+    zeroLocus m = {⟨m, inferInstance⟩} := by
+  ext I
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp only [mem_zeroLocus, SetLike.coe_subset_coe] at h
+    simpa using PrimeSpectrum.ext_iff.mpr (Ideal.IsMaximal.eq_of_le ‹_› I.2.ne_top h).symm
+  · simp [Set.mem_singleton_iff.mp h]
+
 lemma isMin_iff {x : PrimeSpectrum R} :
     IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
   show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
