@@ -158,6 +158,12 @@ lemma ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
   have h1 := z.2
   aesop
 
+lemma pnat_div (n : ℕ+) (z : ℍ) : 0 < (-(n : ℂ) / z).im := by
+  have : (-(n : ℂ) / z).im = n * (-z : ℂ)⁻¹.im := by
+    field_simp [UpperHalfPlane.ne_zero z, Complex.div_im]
+  rw [this]
+  apply mul_pos (by simp) (im_inv_neg_coe_pos z)
+
 section PosRealAction
 
 instance posRealAction : MulAction { x : ℝ // 0 < x } ℍ where
