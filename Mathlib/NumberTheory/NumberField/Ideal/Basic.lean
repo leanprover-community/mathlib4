@@ -9,29 +9,30 @@ import Mathlib.NumberTheory.NumberField.Units.Basic
 /-!
 # Basic results on integral ideals of a number field
 
+We study results about integral ideals of a number field `K`.
+
 ## Main definitions and results
 
-*
+* `Ideal.torsionMapQuot`: For `I` an integral ideal, the group morphism from
+  the torsion of `K` to `(𝓞 K ⧸ I)ˣ`.
+
+* `Ideal.torsionMapQuot_injective`: If the ideal `I` is nontrivial and its norm is coprime with the
+  order of the torsion of `K`, then the map `Ideal.torsionMapQuot` is injective.
+
+* `NumberField.torsionOrder_dvd_absNorm_sub_one`: If the norm of the (nonzero) prime ideal `P` is
+  coprime with the order of the torsion of `K`, then the norm of `P` is congruent to `1` modulo
+  `torsionOrder K`.
+
 -/
 
 section torsionMapQuot
 
 open Ideal NumberField Units
 
-variable {K : Type*} [Field K] (I : Ideal (𝓞 K))
+variable {K : Type*} [Field K] {I : Ideal (𝓞 K)}
 
-def Ideal.torsionMapQuot : (Units.torsion K) →* ((𝓞 K) ⧸ I)ˣ :=
-  (Units.map (Ideal.Quotient.mk I).toMonoidHom).restrict (torsion K)
-
-@[simp]
-theorem Ideal.torsionMapQuot_apply {x : (𝓞 K)ˣ} (hx : x ∈ torsion K) :
-    torsionMapQuot I ⟨x, hx⟩ = Ideal.Quotient.mk I x := rfl
-
-variable {I} [NumberField K]
-
-open Ideal in
-theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one (hI : absNorm I ≠ 1) {n : ℕ} {ζ : K}
-    (hn : 2 ≤ n) (hζ : IsPrimitiveRoot ζ n)
+theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absNorm I ≠ 1) {n : ℕ}
+    {ζ : K} (hn : 2 ≤ n) (hζ : IsPrimitiveRoot ζ n)
     (h : let _ : NeZero n := NeZero.of_gt hn; Ideal.Quotient.mk I hζ.toInteger = 1) :
     ¬ (absNorm I).Coprime n := by
   intro h₁
@@ -41,6 +42,20 @@ theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one (hI : absNorm I ≠ 1) {n 
   refine hp.not_dvd_one <| h₁ ▸ Nat.dvd_gcd h₂ ?_
   exact hζ.prime_dvd_of_dvd_norm_sub_one hn <|
     Int.dvd_trans (Int.natCast_dvd_natCast.mpr h₂) (absNorm_dvd_norm_of_mem h)
+
+variable (I)
+
+/--
+For `I` an integral ideal of `K`, the group morphism from the torsion of `K` to `(𝓞 K ⧸ I)ˣ`.
+-/
+def Ideal.torsionMapQuot : (Units.torsion K) →* ((𝓞 K) ⧸ I)ˣ :=
+  (Units.map (Ideal.Quotient.mk I).toMonoidHom).restrict (torsion K)
+
+@[simp]
+theorem Ideal.torsionMapQuot_apply {x : (𝓞 K)ˣ} (hx : x ∈ torsion K) :
+    torsionMapQuot I ⟨x, hx⟩ = Ideal.Quotient.mk I x := rfl
+
+variable {I} [NumberField K]
 
 theorem Ideal.torsionMapQuot_injective (hI₁ : absNorm I ≠ 1)
     (hI₂ : (absNorm I).Coprime (torsionOrder K)) :
@@ -59,8 +74,12 @@ theorem Ideal.torsionMapQuot_injective (hI₁ : absNorm I ≠ 1)
   · have : t = 1 := le_antisymm (Nat.le_of_lt_succ (not_le.mp ht')) (Nat.pos_of_ne_zero ht₀)
     simpa [this] using hζ
 
-theorem IsPrimitiveRoot.dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀ : P ≠ ⊥) (hP₁ : P.IsPrime)
-    (hP₂ : (absNorm P).Coprime (torsionOrder K)) :
+/--
+If the norm of the (nonzero) prime ideal `P` is coprime with the order of the torsion of `K`, then
+the norm of `P` is congruent to `1` modulo `torsionOrder K`.
+-/
+theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀ : P ≠ ⊥)
+    (hP₁ : P.IsPrime) (hP₂ : (absNorm P).Coprime (torsionOrder K)) :
     torsionOrder K ∣ absNorm P - 1 := by
   have : P.IsMaximal :=  Ring.DimensionLEOne.maximalOfPrime hP₀ hP₁
   let _ := Ideal.Quotient.field P
