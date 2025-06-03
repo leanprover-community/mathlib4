@@ -201,7 +201,7 @@ section lim
 formulate this lemma with a `[Nonempty X]` argument of `lim` derived from `h` to make it useful for
 types without a `[Nonempty X]` instance. Because of the built-in proof irrelevance, Lean will unify
 this instance with any other instance. -/
-theorem le_nhds_lim {f : Filter X} (h : ∃ x, f ≤ 𝓝 x) : f ≤ 𝓝 (@lim _ _ (nonempty_of_exists h) f) :=
+theorem le_nhds_lim {f : Filter X} (h : ∃ x, f ≤ 𝓝 x) : f ≤ 𝓝 (@lim _ _ h.nonempty f) :=
   Classical.epsilon_spec h
 
 /-- If `g` tends to some `𝓝 x` along `f`, then it tends to `𝓝 (Filter.limUnder f g)`. We formulate
@@ -209,7 +209,7 @@ this lemma with a `[Nonempty X]` argument of `lim` derived from `h` to make it u
 without a `[Nonempty X]` instance. Because of the built-in proof irrelevance, Lean will unify this
 instance with any other instance. -/
 theorem tendsto_nhds_limUnder {f : Filter α} {g : α → X} (h : ∃ x, Tendsto g f (𝓝 x)) :
-    Tendsto g f (𝓝 (@limUnder _ _ _ (nonempty_of_exists h) f g)) :=
+    Tendsto g f (𝓝 (@limUnder _ _ _ h.nonempty f g)) :=
   le_nhds_lim h
 
 theorem limUnder_of_not_tendsto [hX : Nonempty X] {f : Filter α} {g : α → X}

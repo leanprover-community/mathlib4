@@ -501,8 +501,7 @@ theorem kerase_append_left {a} :
   | [], _, h => by cases h
   | s :: l₁, l₂, h₁ => by
     if h₂ : a = s.1 then simp [h₂]
-    else simp at h₁; rcases h₁ with h₁ | h₁ <;>
-      [exact absurd h₁ h₂; simp [h₂, kerase_append_left h₁]]
+    else simp_all [kerase_append_left]
 
 theorem kerase_append_right {a} :
     ∀ {l₁ l₂ : List (Sigma β)}, a ∉ l₁.keys → kerase a (l₁ ++ l₂) = l₁ ++ kerase a l₂
@@ -582,7 +581,7 @@ theorem kextract_eq_dlookup_kerase (a : α) :
     ∀ l : List (Sigma β), kextract a l = (dlookup a l, kerase a l)
   | [] => rfl
   | ⟨a', b⟩ :: l => by
-    simp only [kextract]; dsimp; split_ifs with h
+    simp only [kextract]; split_ifs with h
     · subst a'
       simp [kerase]
     · simp [kextract, Ne.symm h, kextract_eq_dlookup_kerase a l, kerase]

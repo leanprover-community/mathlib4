@@ -58,7 +58,6 @@ namespace Nat
 *Note:* We use a stream iterator for better performance when compared to the naive recursive
 implementation.
 -/
-
 @[pp_nodot]
 def fib (n : ℕ) : ℕ :=
   ((fun p : ℕ × ℕ => (p.snd, p.fst + p.snd))^[n] (0, 1)).fst

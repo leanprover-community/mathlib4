@@ -76,7 +76,7 @@ example : False := by simp
 ```
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -90,8 +90,8 @@ register_option linter.globalAttributeIn : Bool := {
 namespace globalAttributeInLinter
 
 /-- Gets the value of the `linter.globalAttributeIn` option. -/
-def getLinterGlobalAttributeIn (o : Options) : Bool :=
-  Linter.getLinterValue linter.globalAttributeIn o
+def getLinterGlobalAttributeIn (o : LinterOptions) : Bool :=
+  getLinterValue linter.globalAttributeIn o
 
 /--
 `getGlobalAttributesIn? cmd` assumes that `cmd` represents a `attribute [...] id in ...` command.
@@ -115,7 +115,7 @@ Despite the `in`, these define *global* instances, which can be rather misleadin
 Instead, remove the `in` or mark them with `local`.
 -/
 def globalAttributeIn : Linter where run := withSetOptionIn fun stx => do
-  unless getLinterGlobalAttributeIn (← getOptions) do
+  unless getLinterGlobalAttributeIn (← getLinterOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return

@@ -59,19 +59,14 @@ open Lean PrettyPrinter.Delaborator SubExpr in
 partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   guard <| (← getExpr).isAppOfArity ``TopCat.carrier 1
   withNaryArg 0 do
-
   guard <| (← getExpr).isAppOfArity ``PresheafedSpace.carrier 3
   withNaryArg 2 do
-
   guard <| (← getExpr).isAppOfArity ``SheafedSpace.toPresheafedSpace 3
   withNaryArg 2 do
-
   guard <| (← getExpr).isAppOfArity ``LocallyRingedSpace.toSheafedSpace 1
   withNaryArg 0 do
-
   guard <| (← getExpr).isAppOfArity ``Scheme.toLocallyRingedSpace 1
   withNaryArg 0 do
-
   `(↥$(← delab))
 
 /-- The type of open sets of a scheme. -/
