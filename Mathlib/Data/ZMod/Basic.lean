@@ -285,6 +285,7 @@ theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   · exact Nat.cast_one
   exact Nat.lt_of_sub_eq_succ rfl
 
+@[simp]
 theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = cast a + cast b := by
   cases n
   · apply Int.cast_add
@@ -294,6 +295,7 @@ theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = ca
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
+@[simp]
 theorem cast_mul (h : m ∣ n) (a b : ZMod n) : (cast (a * b : ZMod n) : R) = cast a * cast b := by
   cases n
   · apply Int.cast_mul
@@ -347,33 +349,21 @@ section CharEq
 
 variable [CharP R n]
 
-@[simp]
-theorem cast_one' : (cast (1 : ZMod n) : R) = 1 :=
-  cast_one dvd_rfl
+theorem cast_one' : (cast (1 : ZMod n) : R) = 1 := by simp
 
-@[simp]
-theorem cast_add' (a b : ZMod n) : (cast (a + b : ZMod n) : R) = cast a + cast b :=
-  cast_add dvd_rfl a b
+theorem cast_add' (a b : ZMod n) : (cast (a + b : ZMod n) : R) = cast a + cast b := by simp
 
-@[simp]
-theorem cast_mul' (a b : ZMod n) : (cast (a * b : ZMod n) : R) = cast a * cast b :=
-  cast_mul dvd_rfl a b
+theorem cast_mul' (a b : ZMod n) : (cast (a * b : ZMod n) : R) = cast a * cast b := by simp
 
-@[simp]
-theorem cast_sub' (a b : ZMod n) : (cast (a - b : ZMod n) : R) = cast a - cast b :=
-  cast_sub dvd_rfl a b
+theorem cast_sub' (a b : ZMod n) : (cast (a - b : ZMod n) : R) = cast a - cast b := by simp
 
-@[simp]
-theorem cast_pow' (a : ZMod n) (k : ℕ) : (cast (a ^ k : ZMod n) : R) = (cast a : R) ^ k :=
-  cast_pow dvd_rfl a k
+theorem cast_pow' (a : ZMod n) (k : ℕ) : (cast (a ^ k : ZMod n) : R) = (cast a : R) ^ k := by simp
 
-@[simp, norm_cast]
-theorem cast_natCast' (k : ℕ) : (cast (k : ZMod n) : R) = k :=
-  cast_natCast dvd_rfl k
+@[norm_cast]
+theorem cast_natCast' (k : ℕ) : (cast (k : ZMod n) : R) = k := by simp
 
-@[simp, norm_cast]
-theorem cast_intCast' (k : ℤ) : (cast (k : ZMod n) : R) = k :=
-  cast_intCast dvd_rfl k
+@[norm_cast]
+theorem cast_intCast' (k : ℤ) : (cast (k : ZMod n) : R) = k := by simp
 
 variable (R)
 
