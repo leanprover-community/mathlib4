@@ -96,7 +96,7 @@ protected def encoding : Encoding (L.Term α) where
   decode_encode t := by
     have h := listDecode_encode_list [t]
     rw [flatMap_singleton] at h
-    simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
+    simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
       id_eq]
 
 theorem listEncode_injective :
@@ -141,7 +141,7 @@ instance [Encodable α] [Encodable (Σ i, L.Functions i)] : Encodable (L.Term α
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
     simp only
     rw [← flatMap_singleton listEncode, listDecode_encode_list]
-    simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
+    simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
       id_eq]
 
 instance [h1 : Countable α] [h2 : Countable (Σ l, L.Functions l)] : Countable (L.Term α) := by

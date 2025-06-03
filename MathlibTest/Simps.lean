@@ -43,7 +43,7 @@ initialize_simps_projections Foo2
 
 
 /--
-info: [simps.verbose] The projections for this structure have already been initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.
+trace: [simps.verbose] The projections for this structure have already been initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.
     Generated projections for Foo2:
     Projection elim: fun α x => (x.elim.1, x.elim.2)
 -/
