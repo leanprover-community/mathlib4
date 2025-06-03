@@ -37,7 +37,7 @@ properties to computational properties of the matrix.
 
 open Matrix
 
-open Finset Matrix SimpleGraph
+open Finset SimpleGraph
 
 variable {V α : Type*}
 
@@ -127,8 +127,6 @@ end IsAdjMatrix
 end Compl
 
 end Matrix
-
-open Matrix
 
 namespace SimpleGraph
 
