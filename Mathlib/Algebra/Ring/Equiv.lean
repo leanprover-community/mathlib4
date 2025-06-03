@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Algebra.Notation.Prod
 
@@ -910,3 +910,34 @@ protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [Is
     exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
 
 end MulEquiv
+
+namespace RingHom
+
+variable {A B C : Type*} [NonAssocSemiring A] [NonAssocSemiring B] [NonAssocSemiring C]
+
+open Function
+
+/-- Given a ring homomorphism `p` with right inverse map `p_inv`,
+  the equivalence between ring homomorphisms `f` from `M` to `N` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`
+  and ring homomorphisms `φ` from M to P. -/
+@[simps!]
+def liftOfRightInverseEquiv
+    (p : A →+* C) (p_inv : C → A) (hp : RightInverse p_inv p) :
+    {f : A →+* B // ∀ x, f (p_inv (p x)) = f x} ≃ (C →+* B) where
+  toFun f := p.liftOfRightInverse p_inv hp f.1 f.2
+  invFun φ := ⟨φ.comp p, fun _ => by simp only [comp_apply, hp (p _)]⟩
+  left_inv f := Subtype.ext liftOfRightInverse_comp
+  right_inv φ := liftOfRightInverse_apply_comp
+
+/-- Given a ring homomorphism `p` with left inverse map `p_inv`,
+  the equivalence between ring homomorphisms `f` from `M` to `N` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`
+  and ring homomorphisms `φ` from M to P. -/
+def liftOfLeftInverseEquiv
+    (p : C →+* B) (p_inv : B → C) (hp : LeftInverse p_inv p)  :
+    {f : A →+* B // ∀ x, p (p_inv (f x)) = f x} ≃ (A →+* C) where
+  toFun f := p.liftOfLeftInverse p_inv hp f.1 f.2
+  invFun φ := ⟨p.comp φ, fun _ => by simp only [comp_apply, hp (φ _)]⟩
+  left_inv f := Subtype.ext comp_liftOfLeftInverse
+  right_inv φ := liftOfLeftInverse_apply_comp
+
+end RingHom
