@@ -32,7 +32,8 @@ to deal with the finite number of primes `p` in the interval.
 be a number field such that `K/ℚ` is Galois. To show that `𝓞 K` is a PID it is enough to show that,
 for all (natural) primes `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, there is an ideal `P` above `p` such that
 either `⌊(M K)⌋₊ < p ^ (span ({p}).inertiaDeg P)` or `P` is principal. This is the standard
-technique to prove that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
+technique to prove that `𝓞 K` is principal in the Galois case, see [marcus1977number], discussion
+after Theorem 37.
 The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
 to deal with the finite number of primes `p` in the interval.
 -/
