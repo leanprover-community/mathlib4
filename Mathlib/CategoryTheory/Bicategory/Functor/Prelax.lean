@@ -41,8 +41,6 @@ namespace CategoryTheory
 
 open Category Bicategory
 
-open Bicategory
-
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
 section

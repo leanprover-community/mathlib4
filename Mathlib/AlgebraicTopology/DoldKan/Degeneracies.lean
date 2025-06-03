@@ -82,12 +82,13 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
           Fin.val_succ, Fin.val_one, P_zero, HomologicalComplex.id_f,
           Fin.val_two, pow_two, mul_neg, one_mul, neg_mul, neg_neg, id_comp, add_comp,
           comp_add, Fin.mk_zero, neg_comp, comp_neg, Fin.succ_zero_eq_one]
-        rw [← Fin.castSucc_one, SimplicialObject.δ_comp_σ_self, ← Fin.castSucc_zero,
+        rw [← Fin.castSucc_one, SimplicialObject.δ_comp_σ_self, ← Fin.castSucc_zero (n := 1),
           SimplicialObject.δ_comp_σ_self_assoc,
-          SimplicialObject.δ_comp_σ_succ, comp_id, ← Fin.castSucc_zero, ← Fin.succ_zero_eq_one,
+          SimplicialObject.δ_comp_σ_succ, comp_id, ← Fin.castSucc_zero (n := 2),
+          ← Fin.succ_zero_eq_one,
           SimplicialObject.δ_comp_σ_of_le X
             (show (0 : Fin 2) ≤ Fin.castSucc 0 by rw [Fin.castSucc_zero]),
-          ← Fin.castSucc_zero, SimplicialObject.δ_comp_σ_self_assoc,
+          ← Fin.castSucc_zero (n := 1), SimplicialObject.δ_comp_σ_self_assoc,
           SimplicialObject.δ_comp_σ_succ_assoc]
         simp only [add_neg_cancel, add_zero, zero_add]
       · rw [← id_comp (X.σ i), ← (P_add_Q_f q n.succ : _ = 𝟙 (X.obj _)), add_comp, add_comp,
