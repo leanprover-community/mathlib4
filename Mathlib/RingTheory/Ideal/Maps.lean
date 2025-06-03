@@ -1001,34 +1001,56 @@ end CommRing
 
 end Ideal
 
+namespace Function
+
+variable {G₁ G₂ G₃ : Type*} [Ring G₁] [Ring G₂] [Ring G₃] {f : G₁ →+* G₂} {f_inv : G₂ → G₁}
+
+open RingHom
+
+namespace RightInverse
+
+variable (g : G₁ →+* G₃)
+
+theorem ker_le_ker_ringHom_iff (hf : RightInverse f_inv f) :
+    ker f ≤ ker g ↔ ∀ x, g (f_inv (f x)) = g x := by
+  refine ⟨fun h x => ?_, fun h x hx => ?_⟩
+  · simpa [add_neg_eq_zero, hf (f x)] using (@h (f_inv (f x) + (-x)))
+  · refine (h x).symm.trans ?_
+    simpa [(mem_ker (f := f)).mp hx] using h 0
+
+@[simp]
+theorem ringHom_subtype_apply_inv_apply (hf : RightInverse f_inv f)
+    (g : { g : G₁ →+* G₃ // ker f ≤ ker g }) :
+    ∀ x, g.1 (f_inv (f x)) = g.1 x := (hf.ker_le_ker_ringHom_iff _).mp g.2
+
+end RightInverse
+
+namespace LeftInverse
+
+variable (g : G₃ →+* G₂)
+
+theorem range_le_range_ringHom_iff (hf : LeftInverse f_inv f) :
+    g.range ≤ f.range ↔ ∀ x, f (f_inv (g x)) = g x := by
+  refine ⟨fun h x => ?_, fun h x hx => ?_⟩
+  · rcases @h (g x) ⟨x, rfl⟩ with ⟨y, hy⟩
+    simp_rw [← hy, hf y]
+  · rcases hx with ⟨y, hy⟩
+    exact ⟨f_inv x, hy ▸ h _⟩
+
+@[to_additive (attr := simp)]
+theorem ringHom_subtype_apply_inv_apply (hf : LeftInverse f_inv f)
+    (g : { g : G₃ →+* G₂ // g.range ≤ f.range }) :
+    ∀ x, f (f_inv (g.1 x)) = g.1 x :=
+  (hf.range_le_range_ringHom_iff _).mp g.2
+
+end LeftInverse
+
+end Function
+
 namespace RingHom
 
 variable {A B C : Type*} [Ring A] [Ring B] [Ring C]
 variable (f : A →+* B) (f_inv : B → A)
-
-/-- Auxiliary definition used to define `liftOfRightInverse` -/
-def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C)
-    (hg : RingHom.ker f ≤ RingHom.ker g) :
-    B →+* C :=
-  { AddMonoidHom.liftOfRightInverse f.toAddMonoidHom f_inv hf ⟨g.toAddMonoidHom, hg⟩ with
-    toFun := fun b => g (f_inv b)
-    map_one' := by
-      rw [← map_one g, ← sub_eq_zero, ← map_sub g, ← mem_ker]
-      apply hg
-      rw [mem_ker, map_sub f, sub_eq_zero, map_one f]
-      exact hf 1
-    map_mul' := by
-      intro x y
-      rw [← map_mul g, ← sub_eq_zero, ← map_sub g, ← mem_ker]
-      apply hg
-      rw [mem_ker, map_sub f, sub_eq_zero, map_mul f]
-      simp only [hf _] }
-
-@[simp]
-theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g : A →+* C)
-    (hg : RingHom.ker f ≤ RingHom.ker g) (a : A) :
-    (f.liftOfRightInverseAux f_inv hf g hg) (f a) = g a :=
-  f.toAddMonoidHom.liftOfRightInverse_comp_apply f_inv hf ⟨g.toAddMonoidHom, hg⟩ a
 
 /-- `liftOfRightInverse f hf g hg` is the unique ring homomorphism `φ`
 
@@ -1048,39 +1070,57 @@ See `RingHom.eq_liftOfRightInverse` for the uniqueness lemma.
       ∃!φ
 ```
 -/
-def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
-    { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) where
-  toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
-  invFun φ := ⟨φ.comp f, fun x hx => mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
-  left_inv g := by
-    ext
-    simp only [comp_apply, liftOfRightInverseAux_comp_apply, Subtype.coe_mk]
-  right_inv φ := by
-    ext b
-    simp [liftOfRightInverseAux, hf b]
+@[simps!]
+def liftOfRightInverseEquivKerLeKer (hf : Function.RightInverse f_inv f) :
+    { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) :=
+  (Equiv.subtypeEquivRight (hf.ker_le_ker_ringHom_iff)).trans
+  (liftOfRightInverseEquiv f f_inv hf)
 
 /-- A non-computable version of `RingHom.liftOfRightInverse` for when no computable right
 inverse is available, that uses `Function.surjInv`. -/
 @[simp]
 noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
     { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) :=
-  f.liftOfRightInverse (Function.surjInv hf) (Function.rightInverse_surjInv hf)
+  f.liftOfRightInverseEquivKerLeKer (Function.surjInv hf) (Function.rightInverse_surjInv hf)
 
-theorem liftOfRightInverse_comp_apply (hf : Function.RightInverse f_inv f)
-    (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) (x : A) :
-    (f.liftOfRightInverse f_inv hf g) (f x) = g.1 x :=
-  f.liftOfRightInverseAux_comp_apply f_inv hf g.1 g.2 x
 
-theorem liftOfRightInverse_comp (hf : Function.RightInverse f_inv f)
-    (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) :
-    (f.liftOfRightInverse f_inv hf g).comp f = g :=
-  RingHom.ext <| f.liftOfRightInverse_comp_apply f_inv hf g
+theorem liftOfRightInverseEquivKerLeKer_comp (hf : Function.RightInverse f_inv f)
+    (g : { g : A →+* C // ker f ≤ ker g }) :
+    (f.liftOfRightInverseEquivKerLeKer f_inv hf g).comp f = g :=
+  RingHom.ext <| hf.ringHom_subtype_apply_inv_apply g
 
-theorem eq_liftOfRightInverse (hf : Function.RightInverse f_inv f) (g : A →+* C)
-    (hg : RingHom.ker f ≤ RingHom.ker g) (h : B →+* C) (hh : h.comp f = g) :
-    h = f.liftOfRightInverse f_inv hf ⟨g, hg⟩ := by
-  simp_rw [← hh]
-  exact ((f.liftOfRightInverse f_inv hf).apply_symm_apply _).symm
+theorem eq_liftOfRightInverseEquivKerLeKer (hf : Function.RightInverse f_inv f) (g : A →+* C)
+    (hg : ker f ≤ ker g) (h : B →+* C) (hh : h.comp f = g) :
+    h = f.liftOfRightInverseEquivKerLeKer f_inv hf ⟨g, hg⟩ := by
+  simp_rw [← hh, ← Equiv.symm_apply_eq, Subtype.ext_iff, RingHom.ext_iff,
+    liftOfRightInverseEquivKerLeKer_symm_apply_coe_apply,
+    comp_apply, implies_true]
+
+/-- TBD -/
+@[simps!]
+def liftOfLeftInverseEquivRangeLeRange (hf : Function.LeftInverse f_inv f) :
+    { g : C →+* B // g.range ≤ f.range } ≃ (C →+* A) :=
+  (Equiv.subtypeEquivRight (hf.range_le_range_ringHom_iff)).trans
+  (liftOfLeftInverseEquiv f f_inv hf)
+
+/-- TBD -/
+@[simp]
+noncomputable abbrev liftOfInjective (hf : Function.Injective f) :
+    { g : C →+* B // g.range ≤ f.range } ≃ (C →+* A) :=
+  f.liftOfLeftInverseEquivRangeLeRange (Function.invFun f) (Function.leftInverse_invFun hf)
+
+@[simp]
+theorem comp_liftOfLeftInverseEquivRangeLeRange (hf : Function.LeftInverse f_inv f)
+    (g : { g : C →+* B // g.range ≤ f.range }) :
+    f.comp (f.liftOfLeftInverseEquivRangeLeRange f_inv hf g) = g :=
+  RingHom.ext <| hf.ringHom_subtype_apply_inv_apply g
+
+theorem eq_liftOfLeftInverseEquivRangeLeRange (hf : Function.LeftInverse f_inv f) (g : C →+* B)
+    (hg : g.range ≤ f.range) (h : C →+* A) (hh : f.comp h = g) :
+    h = f.liftOfLeftInverseEquivRangeLeRange f_inv hf ⟨g, hg⟩ := by
+  simp_rw [← hh, ← Equiv.symm_apply_eq, Subtype.ext_iff, RingHom.ext_iff,
+    liftOfLeftInverseEquivRangeLeRange_symm_apply_coe_apply,
+    comp_apply, implies_true]
 
 end RingHom
 
