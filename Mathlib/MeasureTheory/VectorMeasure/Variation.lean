@@ -115,6 +115,11 @@ lemma partitions_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) : partitions s
   obtain ⟨h1, h2, h3, h4⟩ := hP
   exact ⟨fun p hp ↦ subset_trans (h1 p hp) h, h2, h3, h4⟩
 
+lemma isInnerPart_monotone  {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (P : Finset (Set X))
+    (hP :  IsInnerPart s₁ P) : IsInnerPart s₂ P := by
+  obtain ⟨h1, h2, h3, _⟩ := hP
+  exact ⟨fun p hp ↦ subset_trans (h1 p hp) h, h2, h3, by simp_all⟩
+
 open Classical in
 /-- If each `P i` is a partition of `s i` then the union is a partition of `⋃ i, s i`. -/
 lemma partition_union {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
