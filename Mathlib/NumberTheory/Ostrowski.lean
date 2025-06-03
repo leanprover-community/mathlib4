@@ -62,7 +62,8 @@ private lemma list_mul_sum {R : Type*} [Semiring R] {T : Type*} (l : List T) (y 
 -- Geometric sum for lists
 private lemma list_geom {T : Type*} {F : Type*} [DivisionRing F] (l : List T) {y : F} (hy : y ≠ 1) :
     (l.mapIdx fun i _ => y ^ i).sum = (y ^ l.length - 1) / (y - 1) := by
-  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range, ← Fin.sum_univ_get']
+  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range,
+    ← Fin.sum_univ_fun_getElem]
   simp only [List.getElem_zipIdx, Function.uncurry_apply_pair]
   let e : Fin l.zipIdx.length ≃ Fin l.length := finCongr List.length_zipIdx
   exact Fintype.sum_bijective e e.bijective _ _ fun _ ↦ by simp [e]
@@ -172,7 +173,7 @@ lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
 open Real
 
 include hp0 hp1 hmin bdd in
-/-- A natural number not divible by `p` has absolute value 1. -/
+/-- A natural number not divisible by `p` has absolute value 1. -/
 lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   apply le_antisymm (bdd m)
   by_contra! hm
@@ -247,13 +248,10 @@ theorem equiv_padic_of_bounded :
       congr
       field_simp [h.1.ne']
   · by_contra! hne
-    apply hq_prime.elim.prime.ne_one
+    apply hq_prime.elim.ne_one
     rw [ne_comm, ← Nat.coprime_primes hprime hq_prime.elim, hprime.coprime_iff_not_dvd] at hne
     rcases h_equiv with ⟨c, _, h_eq⟩
-    have h_eq' := h_eq q
-    simp only [eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hne, one_rpow, padic_eq_padicNorm,
-      padicNorm.padicNorm_p_of_prime, cast_inv, cast_natCast, eq_comm, inv_eq_one] at h_eq'
-    exact_mod_cast h_eq'
+    simpa [eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hne] using h_eq q
 
 end Non_archimedean
 

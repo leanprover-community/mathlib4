@@ -52,6 +52,15 @@ instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
 instance instZeroHomClass : ZeroHomClass C(X, R)₀ X R where
   map_zero f := f.map_zero'
 
+/-- not marked as an instance because it would be a bad one in general, but it can
+be useful when working with `ContinuousMapZero` and the non-unital continuous
+functional calculus. -/
+def _root_.Set.zeroOfFactMem {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)] :
+    Zero s where
+  zero := ⟨0, Fact.out⟩
+
+scoped[ContinuousMapZero] attribute [instance] Set.zeroOfFactMem
+
 @[ext]
 lemma ext {f g : C(X, R)₀} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
@@ -369,7 +378,8 @@ noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ 
   norm_mul_le f g := norm_mul_le (f : C(α, R)) g
   mul_comm f g := mul_comm f g
 
-instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] : NormedSpace 𝕜 C(α, R)₀ where
+noncomputable instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] :
+    NormedSpace 𝕜 C(α, R)₀ where
   norm_smul_le r f := norm_smul_le r (f : C(α, R))
 
 instance [NormedCommRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ where

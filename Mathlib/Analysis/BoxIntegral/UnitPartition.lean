@@ -28,10 +28,10 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
   coordinates in `ℤ`
 
 * `BoxIntegral.unitPartition.box`: a `BoxIntegral`, indexed by `ν : ι → ℤ`, with vertices
-`ν i / n` and of side length `1 / n`.
+  `ν i / n` and of side length `1 / n`.
 
 * `BoxIntegral.unitPartition.admissibleIndex`: For `B : BoxIntegral.Box`, the set of indices of
-`unitPartition.box` that are subsets of `B`. This is a finite set.
+  `unitPartition.box` that are subsets of `B`. This is a finite set.
 
 * `BoxIntegral.unitPartition.prepartition_isPartition`: For `B : BoxIntegral.Box`, if `B`
   has integral vertices, then the prepartition of `unitPartition.box` admissible for `B` is a

@@ -11,7 +11,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 # Tensor product and products of algebras
 
 In this file we examine the behaviour of the tensor product with (finite) products. This
-is a direct application of `Mathlib.LinearAlgebra.TensorProduct.Pi` to the algebra case.
+is a direct application of `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` to the algebra case.
 
 -/
 

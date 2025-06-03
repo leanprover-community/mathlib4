@@ -169,7 +169,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
   calc
   ∫ x, f x ∂μ = ∫ x, f x * (D x)⁻¹ * D x ∂μ := by
     congr with x; rw [mul_assoc, inv_mul_cancel₀ (D_pos x).ne', mul_one]
-  _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [D, integral_mul_left]
+  _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [D, integral_const_mul]
   _ = ∫ y, (∫ x, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂μ) ∂ν := by
       apply integral_integral_swap_of_hasCompactSupport
       · apply Continuous.mul
@@ -187,9 +187,9 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
         have : ∀ (p : G × G), p ∉ K ×ˢ closure M → f p.1 * (D p.1)⁻¹ * g (p.2⁻¹ * p.1) = 0 := by
           rintro ⟨x, y⟩ hxy
           by_cases H : x ∈ K; swap
-          · simp [image_eq_zero_of_nmem_tsupport H]
+          · simp [image_eq_zero_of_notMem_tsupport H]
           have : g (y⁻¹ * x) = 0 := by
-            apply image_eq_zero_of_nmem_tsupport
+            apply image_eq_zero_of_notMem_tsupport
             contrapose! hxy
             simp only [mem_prod, H, true_and]
             apply subset_closure
@@ -219,9 +219,9 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
             f (p.2 * p.1) * (D (p.2 * p.1))⁻¹ * g p.1 = 0 := by
           rintro ⟨x, y⟩ hxy
           by_cases H : x ∈ L; swap
-          · simp [image_eq_zero_of_nmem_tsupport H]
+          · simp [image_eq_zero_of_notMem_tsupport H]
           have : f (y * x) = 0 := by
-            apply image_eq_zero_of_nmem_tsupport
+            apply image_eq_zero_of_notMem_tsupport
             contrapose! hxy
             simp only [mem_prod, H, true_and]
             apply subset_closure
@@ -231,10 +231,10 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
         apply HasCompactSupport.intro' (L_comp.prod M'_comp) ?_ this
         exact (isClosed_tsupport g).prod isClosed_closure
   _ = ∫ x, (∫ y, f y * (D y)⁻¹ ∂ν) * g x ∂μ := by
-      simp_rw [integral_mul_right]
+      simp_rw [integral_mul_const]
       congr with x
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
-  _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
+  _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_const_mul _ _
 
 /-- Given two left-invariant measures which are finite on
 compacts, they coincide in the following sense: they give the same value to the integral of
@@ -469,10 +469,10 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
       · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, indicator_of_mem]
         norm_cast
         exact thickenedIndicator_le_one _ _ _
-      · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, not_false_eq_true, indicator_of_not_mem]
+      · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, not_false_eq_true, indicator_of_notMem]
         rw [thickenedIndicator_zero]
         · simp
-        · simpa [image_eq_zero_of_nmem_tsupport hx] using (u_mem n).2.le
+        · simpa [image_eq_zero_of_notMem_tsupport hx] using (u_mem n).2.le
     · filter_upwards with x
       have T := tendsto_pi_nhds.1 (thickenedIndicator_tendsto_indicator_closure
         (fun n ↦ (u_mem n).1) u_lim ({1} : Set ℝ)) (f x)

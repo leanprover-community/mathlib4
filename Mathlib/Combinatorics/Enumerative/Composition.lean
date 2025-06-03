@@ -433,7 +433,7 @@ theorem blocksFun_congr {n₁ n₂ : ℕ} (c₁ : Composition n₁) (c₂ : Comp
 
 /-- Two compositions (possibly of different integers) coincide if and only if they have the
 same sequence of blocks. -/
-theorem sigma_eq_iff_blocks_eq {c : Σn, Composition n} {c' : Σn, Composition n} :
+theorem sigma_eq_iff_blocks_eq {c : Σ n, Composition n} {c' : Σ n, Composition n} :
     c = c' ↔ c.2.blocks = c'.2.blocks := by
   refine ⟨fun H => by rw [H], fun H => ?_⟩
   rcases c with ⟨n, c⟩
@@ -570,7 +570,6 @@ theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
         _ < ∑ k, c.blocksFun k :=
           Finset.single_lt_sum ji (Finset.mem_univ _) (Finset.mem_univ _) (c.one_le_blocksFun j)
             fun _ _ _ => zero_le _
-
     simpa using Fintype.card_eq_one_of_forall_eq this
 
 variable {m : ℕ}

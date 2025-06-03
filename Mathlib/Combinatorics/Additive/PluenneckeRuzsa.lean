@@ -32,7 +32,7 @@ inequality.
 ## See also
 
 In general non-abelian groups, small doubling doesn't imply small powers anymore, but small tripling
-does. See `Mathlib.Combinatorics.Additive.SmallTripling`.
+does. See `Mathlib/Combinatorics/Additive/SmallTripling.lean`.
 -/
 
 open MulOpposite Nat
@@ -120,8 +120,7 @@ theorem pluennecke_petridis_inequality_mul (C : Finset G)
     #(C * A * B) * #A ≤ #(A * B) * #(C * A) := by
   induction C using Finset.induction_on with
   | empty => simp
-  | insert _ ih =>
-    rename_i x C _
+  | insert x C _ ih =>
     set A' := A ∩ ({x}⁻¹ * C * A) with hA'
     set C' := insert x C with hC'
     have h₀ : {x} * A' = {x} * A ∩ (C * A) := by

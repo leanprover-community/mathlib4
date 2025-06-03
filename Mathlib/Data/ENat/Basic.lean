@@ -168,6 +168,11 @@ theorem toNat_top : toNat ⊤ = 0 :=
 
 @[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untopD_eq_self_iff
 
+theorem lift_eq_toNat_of_lt_top {x : ℕ∞} (hx : x < ⊤) : x.lift hx = x.toNat := by
+  rcases x with ⟨⟩ | x
+  · contradiction
+  · rfl
+
 @[simp]
 theorem recTopCoe_zero {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) : @recTopCoe C d f 0 = f 0 :=
   rfl
@@ -222,8 +227,11 @@ theorem top_pos : (0 : ℕ∞) < ⊤ :=
 @[deprecated ENat.top_pos (since := "2024-10-22")]
 alias zero_lt_top := top_pos
 
-theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
-  WithTop.sub_top
+@[simp]
+theorem one_lt_top : (1 : ℕ∞) < ⊤ :=
+  WithTop.one_lt_top
+
+@[simp] theorem sub_top (a : ℕ∞) : a - ⊤ = 0 := WithTop.sub_top
 
 @[simp]
 theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
@@ -251,7 +259,7 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
-theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
+@[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b <;> simp
   · rename_i b; cases b <;> simp
   · rename_i a; cases a <;> simp
@@ -283,6 +291,9 @@ lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
 
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
+
+theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
+  lt_add_one_iff (coe_ne_top n)
 
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff

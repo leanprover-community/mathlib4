@@ -23,7 +23,7 @@ import Mathlib.Tactic.Ring
     ↓     ↓
     R' →  S'
   ```
-    asserting that is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
+  asserting that is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 
 ## Main results
 - `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
@@ -223,7 +223,7 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was simp [smul_tmul', Algebra.ofId_apply]
-        simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, LinearMap.mul_apply,
+        simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, Module.End.mul_apply,
           LinearMap.smul_apply, IsTensorProduct.equiv_apply, Module.algebraMap_end_apply, map_mul,
           smul_tmul', eq_self_iff_true, LinearMap.coe_restrictScalars, LinearMap.flip_apply]
       · intro x y hx hy
@@ -256,10 +256,10 @@ lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f)
   let e : A ⊗[S] M ⊗[R] P ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
     (AlgebraTensorModule.congr hf.equiv (LinearEquiv.refl R P))
   refine IsBaseChange.of_equiv e (fun x ↦ ?_)
-  induction' x with m p _ _ h1 h2
-  · simp
-  · simp [e, IsBaseChange.equiv_tmul]
-  · simp [tmul_add, h1, h2]
+  induction x with
+  | zero => simp
+  | tmul => simp [e, IsBaseChange.equiv_tmul]
+  | add _ _ h1 h2 => simp [tmul_add, h1, h2]
 
 end
 
@@ -390,9 +390,11 @@ open IsScalarTower (toAlgHom algebraMap_apply)
 variable (R S R' S')
 
 /-- A type-class stating that the following diagram of scalar towers
+```
 R  →  S
 ↓     ↓
 R' →  S'
+```
 is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 -/
 @[mk_iff]

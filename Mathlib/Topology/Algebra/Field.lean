@@ -167,7 +167,7 @@ theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ �
     EqOn f g S ∨ EqOn f (-g) S := by
   have hsq : EqOn ((f / g) ^ 2) 1 S := fun x hx => by
     simpa [div_eq_one_iff_eq (pow_ne_zero _ (hg_ne hx)), div_pow] using hsq hx
-  simpa (config := { contextual := true }) [EqOn, div_eq_iff (hg_ne _)]
+  simpa +contextual [EqOn, div_eq_iff (hg_ne _)]
     using hS.eq_one_or_eq_neg_one_of_sq_eq (hf.div hg fun z => hg_ne) hsq
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with

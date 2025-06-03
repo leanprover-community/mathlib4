@@ -211,7 +211,7 @@ theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs
 instance : Bot (SubMulAction R M) where
   bot :=
     { carrier := ∅
-      smul_mem' := fun _c h => Set.not_mem_empty h }
+      smul_mem' := fun _c h => Set.notMem_empty h }
 
 @[to_additive]
 instance : Inhabited (SubMulAction R M) :=
@@ -407,6 +407,12 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
   rw [← Subgroup.toSubmonoid_inj]
   exact stabilizer_of_subMul.submonoid m
 
+/-- SubMulAction on the complement of an invariant subset -/
+instance : HasCompl (SubMulAction R M) where
+  compl s := ⟨sᶜ, by simp⟩
+
+theorem compl_def (s : SubMulAction R M) : sᶜ.carrier = (s : Set M)ᶜ := rfl
+
 end MulActionGroup
 
 section Module
@@ -472,7 +478,7 @@ variable {M α : Type*} [Monoid M] [MulAction M α]
 
 
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
-@[to_additive  "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
+@[to_additive "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
 def inclusion (s : SubMulAction M α) : s →[M] α where
 -- The inclusion map of the inclusion of a SubMulAction
   toFun := Subtype.val

@@ -31,7 +31,7 @@ The Sylow theorems are the following results for every finite group `G` and ever
 * `IsPGroup.exists_le_sylow`: A generalization of Sylow's first theorem:
   Every `p`-subgroup is contained in a Sylow `p`-subgroup.
 * `Sylow.card_eq_multiplicity`: The cardinality of a Sylow subgroup is `p ^ n`
- where `n` is the multiplicity of `p` in the group order.
+  where `n` is the multiplicity of `p` in the group order.
 * `Sylow.isPretransitive_of_finite`: a generalization of Sylow's second theorem:
   If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate.
 * `card_sylow_modEq_one`: a generalization of Sylow's third theorem:
@@ -94,7 +94,7 @@ def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
   .rfl
 
 /-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
- where `n` is the multiplicity of `p` in the group order. -/
+where `n` is the multiplicity of `p` in the group order. -/
 def ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
     (card_eq : Nat.card H = p ^ (Nat.card G).factorization p) : Sylow p G :=
   (IsPGroup.of_card card_eq).toSylow (by
@@ -169,7 +169,7 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
 namespace Sylow
 
 instance nonempty : Nonempty (Sylow p G) :=
-  nonempty_of_exists IsPGroup.of_bot.exists_le_sylow
+  IsPGroup.of_bot.exists_le_sylow.nonempty
 
 noncomputable instance inhabited : Inhabited (Sylow p G) :=
   Classical.inhabited_of_nonempty nonempty
@@ -710,7 +710,7 @@ theorem ne_bot_of_dvd_card [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p
   rwa [h, card_bot] at key
 
 /-- The cardinality of a Sylow subgroup is `p ^ n`
- where `n` is the multiplicity of `p` in the group order. -/
+where `n` is the multiplicity of `p` in the group order. -/
 theorem card_eq_multiplicity [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G) :
     Nat.card P = p ^ Nat.factorization (Nat.card G) p := by
   obtain ⟨n, heq : Nat.card P = _⟩ := IsPGroup.iff_card.mp P.isPGroup'

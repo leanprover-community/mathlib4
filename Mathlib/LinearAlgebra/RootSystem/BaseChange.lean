@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.LinearAlgebra.PerfectPairing.Restrict
-import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Base change for root pairings
@@ -14,15 +14,15 @@ When the coefficients are a field, root pairings behave well with respect to res
 extension of scalars.
 
 ## Main results:
- * `RootPairing.restrict`: if `RootPairing.pairing` takes values in a subfield, we may restrict to
-   get a root _system_ with coefficients in the subfield. Of particular interest is the case when
-   the pairing takes values in its prime subfield (which happens for crystallographic pairings).
+* `RootPairing.restrict`: if `RootPairing.pairing` takes values in a subfield, we may restrict to
+  get a root _system_ with coefficients in the subfield. Of particular interest is the case when
+  the pairing takes values in its prime subfield (which happens for crystallographic pairings).
 
 ## TODO
 
- * Extension of scalars
- * Crystallographic root systems are isomorphic to base changes of root systems over `ℤ`: Take
-   `M₀` and `N₀` to be the `ℤ`-span of roots and coroots.
+* Extension of scalars
+* Crystallographic root systems are isomorphic to base changes of root systems over `ℤ`: Take
+  `M₀` and `N₀` to be the `ℤ`-span of roots and coroots.
 
 -/
 
@@ -39,7 +39,7 @@ complementary.
 All root systems are balanced and all finite root pairings over a field are balanced. -/
 class IsBalanced {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N) : Prop where
-  isPerfectCompl : P.toPerfectPairing.IsPerfectCompl P.rootSpan P.corootSpan
+  isPerfectCompl : P.toPerfectPairing.IsPerfectCompl (P.rootSpan R) (P.corootSpan R)
 
 instance {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [CommRing R] [Module R M] [Module R N] (P : RootSystem ι R M N) :
@@ -78,11 +78,11 @@ def restrictScalars' :
       have : algebraMap K L 2 = 2 := by
         rw [← Int.cast_two (R := K), ← Int.cast_two (R := L), map_intCast]
       exact FaithfulSMul.algebraMap_injective K L <| by simp [this]
-    reflection_perm := P.reflection_perm
-    reflection_perm_root i j := by
-      ext; simpa [algebra_compatible_smul L] using P.reflection_perm_root i j
-    reflection_perm_coroot i j := by
-      ext; simpa [algebra_compatible_smul L] using P.reflection_perm_coroot i j
+    reflectionPerm := P.reflectionPerm
+    reflectionPerm_root i j := by
+      ext; simpa [algebra_compatible_smul L] using P.reflectionPerm_root i j
+    reflectionPerm_coroot i j := by
+      ext; simpa [algebra_compatible_smul L] using P.reflectionPerm_coroot i j
     span_root_eq_top := by
       rw [← span_setOf_mem_eq_top]
       congr

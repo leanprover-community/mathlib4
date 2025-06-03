@@ -51,7 +51,7 @@ counterparts in [Chou1994].
 
 ## Main statements
 
-* `SimpleGraph.isBridge_iff_mem_and_forall_cycle_not_mem` characterizes bridge edges in terms of
+* `SimpleGraph.isBridge_iff_mem_and_forall_cycle_notMem` characterizes bridge edges in terms of
   there being no cycle containing them.
 
 ## Tags
@@ -253,7 +253,7 @@ lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons 
   omega
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
-    (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬s(u, v) ∈ p.edges := by
+    (Walk.cons h p).IsCycle ↔ p.IsPath ∧ s(u, v) ∉ p.edges := by
   simp only [Walk.isCycle_def, Walk.isPath_def, Walk.isTrail_def, edges_cons, List.nodup_cons,
     support_cons, List.tail_cons]
   have : p.support.Nodup → p.edges.Nodup := edges_nodup_of_support_nodup
@@ -395,7 +395,7 @@ lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) 
   exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; omega)
     (by simp only [Set.mem_setOf_eq]; omega) (h.symm ▸ (Walk.getVert_length p).symm)
 
-lemma IsCycle.getVert_sub_one_neq_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
+lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
   have hl := hpc.three_le_length
   by_cases hi' : i ≥ p.length - 1
@@ -407,6 +407,9 @@ lemma IsCycle.getVert_sub_one_neq_getVert_add_one {i : ℕ} {p : G.Walk u u} (hp
   have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; omega)
     (by simp only [Set.mem_setOf_eq]; omega) h'
   omega
+
+@[deprecated (since := "2025-04-27")]
+alias IsCycle.getVert_sub_one_neq_getVert_add_one := IsCycle.getVert_sub_one_ne_getVert_add_one
 
 /-! ### Walk decompositions -/
 
@@ -462,7 +465,7 @@ lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.su
   exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
 
 /-- Taking a strict initial segment of a path removes the end vertex from the support. -/
-lemma endpoint_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
+lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
     (h : v ≠ w) : v ∉ (p.takeUntil w hw).support := by
   intro hv
   rw [Walk.mem_support_iff_exists_getVert] at hv
@@ -472,6 +475,9 @@ lemma endpoint_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : 
   have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
     (hn.symm ▸ p.getVert_length.symm)
   omega
+
+@[deprecated (since := "2025-05-23")]
+alias endpoint_not_mem_support_takeUntil := endpoint_notMem_support_takeUntil
 
 end WalkDecomp
 
@@ -528,11 +534,13 @@ theorem loop_eq {v : V} (p : G.Path v v) : p = Path.nil := by
   · rfl
   · simp at h
 
-theorem not_mem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} :
-    ¬e ∈ (p : G.Walk v v).edges := by simp [p.loop_eq]
+theorem notMem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} :
+    e ∉ (p : G.Walk v v).edges := by simp [p.loop_eq]
+
+@[deprecated (since := "2025-05-23")] alias not_mem_edges_of_loop := notMem_edges_of_loop
 
 theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
-    (he : ¬s(u, v) ∈ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by
+    (he : s(u, v) ∉ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by
   simp [Walk.isCycle_def, Walk.cons_isTrail_iff, he]
 
 end Path
@@ -934,6 +942,50 @@ theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃
   ⟨Preconnected.map e.toHom e.toEquiv.surjective,
     Preconnected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 
+lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
+    (h : G.Preconnected) : G.support = Set.univ := by
+  simp only [Set.eq_univ_iff_forall]
+  intro v
+  obtain ⟨w, hw⟩ := exists_ne v
+  obtain ⟨p⟩ := h v w
+  cases p with
+  | nil => contradiction
+  | @cons _ w => use w
+
+lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
+    (hx : x ∈ p.support) : ∃y ∈ p.support, G.Adj x y := by
+  induction p with
+  | nil =>
+    exact (hp Walk.Nil.nil).elim
+  | @cons u v w h p ih =>
+    cases List.mem_cons.mp hx with
+    | inl hxu =>
+      rw [hxu]
+      exact ⟨v, ⟨((Walk.cons h p).mem_support_iff).mpr (Or.inr p.start_mem_support), h⟩⟩
+    | inr hxp =>
+      cases Decidable.em p.Nil with
+      | inl hnil =>
+        rw [Walk.nil_iff_support_eq.mp hnil] at hxp
+        rw [show (x = v) by simp_all]
+        exact ⟨u, ⟨(Walk.cons h p).start_mem_support, G.adj_symm h⟩⟩
+      | inr hnotnil =>
+        obtain ⟨y, hy⟩ := ih hnotnil hxp
+        refine ⟨y, ⟨?_, hy.right⟩⟩
+        rw [Walk.mem_support_iff]
+        simp only [Walk.support_cons, List.tail_cons]
+        exact Or.inr hy.left
+
+lemma mem_support_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil)
+    {w : V} (hw : w ∈ p.support) : w ∈ G.support := by
+  obtain ⟨y, hy⟩ := adj_of_mem_walk_support p hp hw
+  exact (mem_support G).mpr ⟨y, hy.right⟩
+
+lemma mem_support_of_reachable {G : SimpleGraph V} {u v : V} (huv : u ≠ v) (h : G.Reachable u v) :
+    u ∈ G.support := by
+  let p : G.Walk u v := Classical.choice h
+  have hp : ¬p.Nil := Walk.not_nil_of_ne huv
+  exact mem_support_of_mem_walk_support p hp p.start_mem_support
+
 theorem Preconnected.exists_isPath {G : SimpleGraph V} (h : G.Preconnected) (u v : V) :
     ∃ p : G.Walk u v, p.IsPath :=
   (h u v).exists_isPath
@@ -1300,7 +1352,7 @@ theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
 theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
-    (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', ¬s(v, w) ∈ p.edges := by
+    (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
   constructor
   · rintro ⟨p⟩
     use p.map (.ofLE (by simp))
@@ -1368,7 +1420,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       ?_ (Walk.start_mem_support _)
     rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
 
-theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge s(v, w) ↔
+theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) ↔
     G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
   rw [isBridge_iff, and_congr_right_iff]
   intro h
@@ -1377,9 +1429,15 @@ theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge s(v, w)
   rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
   simp only [h, true_and]
 
-theorem isBridge_iff_mem_and_forall_cycle_not_mem {e : Sym2 V} :
+@[deprecated (since := "2025-05-23")]
+alias isBridge_iff_adj_and_forall_cycle_not_mem := isBridge_iff_adj_and_forall_cycle_notMem
+
+theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
-  Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_not_mem) e
+  Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
+
+@[deprecated (since := "2025-05-23")]
+alias isBridge_iff_mem_and_forall_cycle_not_mem := isBridge_iff_mem_and_forall_cycle_notMem
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
@@ -1394,7 +1452,7 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   · exact ⟨(P.toDeleteEdges {s(x,y)} (by aesop)).reverse⟩
   have hyP := P.snd_mem_support_of_mem_edges heP
   let P₁ := P.takeUntil y hyP
-  have hxP₁ := Walk.endpoint_not_mem_support_takeUntil hP hyP hxy.ne
+  have hxP₁ := Walk.endpoint_notMem_support_takeUntil hP hyP hxy.ne
   have heP₁ : s(x,y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
   exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x,y)} (by aesop)⟩)
 
