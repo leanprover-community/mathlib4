@@ -1,4 +1,5 @@
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Algebra.Field.Power
 
 /-!
 # nth root operations
@@ -17,19 +18,19 @@ section qpow
 
 instance instQPow : Pow ℝ ℚ where
   pow r q :=
-    if Even q.den then r ^ (q : ℝ) else SignType.sign r ^ (q.den * q.num) * abs r ^ (q : ℝ)
+    if Even q.den then r ^ (q : ℝ) else SignType.sign r ^ (q.num * q.den) * abs r ^ (q : ℝ)
 
 theorem qpow_of_even (r : ℝ) {q : ℚ} (hn : Even q.den) : r ^ q = r ^ (q : ℝ) :=
   if_pos hn
 
 theorem qpow_of_den_eq_one (r : ℝ) {q : ℚ} (hq : q.den = 1) : r ^ q = r ^ q.num := by
   refine if_neg (by simp [hq]) |>.trans ?_
-  rw [hq, Nat.cast_one, one_mul]
+  rw [hq, Nat.cast_one, mul_one]
   conv_lhs => enter [2]; rw [← Rat.coe_int_num_of_den_eq_one hq, Rat.cast_intCast, rpow_intCast]
   rw [← mul_zpow, sign_mul_abs]
 
 theorem qpow_of_odd (r : ℝ) {q : ℚ} (hn : Odd q.den) :
-    r ^ q = SignType.sign r ^ (q.den * q.num) * abs r ^ (q : ℝ) :=
+    r ^ q = SignType.sign r ^ (q.num * q.den) * abs r ^ (q : ℝ) :=
   if_neg <| Nat.not_even_iff_odd.mpr hn
 
 @[simp, norm_cast]
@@ -50,42 +51,50 @@ theorem qpow_zero (r : ℝ) : r ^ (0 : ℚ) = 1 := by
 theorem qpow_one (r : ℝ) : r ^ (1 : ℚ) = r := by
   rw [qpow_ofNat, pow_one]
 
-theorem qpow_of_odd_of_nonpos {q : ℚ} (hn : Odd q.den) {r : ℝ} (hr : r ≤ 0) :
-    r ^ q = (-1) ^ (q.den * q.num) * (-r) ^ (q : ℝ) := by
-  rw [qpow_of_odd _ hn]
-  obtain rfl | hr := hr.eq_or_lt
-  · simp
-    obtain rfl | hq := eq_or_ne q 0
-    · simp
-    have hn0 : q ≠ 0 := sorry
-    rw [zero_rpow (mod_cast hn0)]
-  · rw [abs_of_neg hr, _root_.sign_neg hr]
-    simp
-
 theorem qpow_of_nonneg {q : ℚ} {r : ℝ} (hr : 0 ≤ r) :
     r ^ q = r ^ (q : ℝ) := by
   cases Nat.even_or_odd q.den with
   | inl he =>
-    rw [qpow_of_even he]
+    rw [qpow_of_even _ he]
   | inr ho =>
+    rw [qpow_of_odd _ ho]
     obtain rfl | hq := eq_or_ne q 0
-    · simp_rw [qpow_of_odd ho, Rat.den_ofNat, pow_one, Rat.cast_zero, rpow_zero, mul_one,
-        SignType.cast_eq]
+    · simp
     have hn0 : q.den ≠ 0 := Nat.ne_of_odd_add ho
-    rw [qpow_of_odd ho, abs_of_nonneg hr]
+    rw [abs_of_nonneg hr]
     obtain rfl | hr := hr.eq_or_lt
-    · simp [qpow_of_odd ho]
-      rw [zero_rpow]
+    · simp [hq, qpow_of_odd _ ho]
     rw [_root_.sign_pos hr]
     simp
 
 @[simp]
-theorem qpow_neg_of_odd {q : ℚ} (hn : Odd q.den) {r : ℝ} :
+theorem one_qpow (q : ℚ) : (1 : ℝ) ^ q = 1 := by
+  simp [qpow_of_nonneg <| zero_le_one]
+
+@[simp]
+theorem zero_qpow {q : ℚ} (hq : q ≠ 0) : (0 : ℝ) ^ q = 0 := by
+  simp [qpow_of_nonneg le_rfl, hq]
+
+theorem qpow_of_odd_of_nonpos {q : ℚ} (hn : Odd q.den) {r : ℝ} (hr : r ≤ 0) :
+    r ^ q = (-1) ^ (q.num * q.den) * (-r) ^ (q : ℝ) := by
+  rw [qpow_of_odd _ hn]
+  obtain rfl | hr := hr.eq_or_lt
+  · obtain rfl | hq := eq_or_ne q 0
+    · simp
+    simp
+    right
+    simp [hq, zero_rpow]
+  · rw [abs_of_neg hr, _root_.sign_neg hr]
+    simp
+
+@[simp]
+theorem qpow_neg_of_odd {q : ℚ} (hn : Odd q.num) (hn' : Odd q.den) {r : ℝ} :
     (-r) ^ q = -r ^ q := by
+  have : Odd (q.num * q.den) := hn.mul <| (Int.odd_coe_nat q.den).mpr hn'
   obtain hr | hr := le_total r 0
-  · rw [qpow_of_odd_of_nonpos hn hr, hn.neg_one_pow, neg_one_mul, neg_neg,
+  · rw [qpow_of_odd_of_nonpos hn' hr, this.neg_one_zpow, neg_one_mul, neg_neg,
       qpow_of_nonneg (neg_nonneg.mpr hr)]
-  · rw [qpow_of_odd_of_nonpos hn (neg_nonpos.mpr hr), hn.neg_one_pow, neg_one_mul, neg_neg,
+  · rw [qpow_of_odd_of_nonpos hn' (neg_nonpos.mpr hr), this.neg_one_zpow, neg_one_mul, neg_neg,
       qpow_of_nonneg hr]
 
 theorem qpow_inv_qpow {q : ℚ} (r : ℝ) (h : (q.den ≠ 0 ∧ 0 ≤ r) ∨ Odd q.den) : (r ^ q⁻¹) ^ q = r := by
@@ -126,12 +135,14 @@ end qpow
 abbrev nthRoot (n : ℕ) (r : ℝ) : ℝ :=
   r ^ (n⁻¹ : ℚ)
 
-theorem nthRoot_of_even {n : ℕ} (hn : Even n) (r : ℝ) : r ^ q = r ^ (n⁻¹ : ℝ) :=
-  if_pos hn
+theorem nthRoot_of_even {n : ℕ} (hn : Even n) (r : ℝ) : nthRoot n r = r ^ (n⁻¹ : ℝ) := by
+  obtain rfl | hn' := eq_or_ne n 0
+  · simp [nthRoot]
+  · exact (qpow_of_even _ (by simp [hn', hn])).trans (by simp)
 
 theorem nthRoot_of_odd {n : ℕ} (hn : Odd n) (r : ℝ) :
     nthRoot n r = SignType.sign r ^ n * abs r ^ (n⁻¹ : ℝ) :=
-  if_neg <| Nat.not_even_iff_odd.mpr hn
+  qpow_of_odd _ (by aesop) |>.trans <| by simp +contextual
 
 theorem nthRoot_of_odd_of_nonpos {n : ℕ} (hn : Odd n) {r : ℝ} (hr : r ≤ 0) :
     nthRoot n r = (-1) ^ n * (-r) ^ (n⁻¹ : ℝ) := by
