@@ -1042,10 +1042,11 @@ lemma height_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOr
   generalize h' : Order.height (f x) = n
   cases n with | top => simp | coe n =>
     induction n using Nat.strong_induction_on generalizing x with | h n ih =>
-    apply Order.height_le_iff.mpr fun p hp ↦ le_of_not_lt fun h_len ↦ ?_
+    apply height_le_iff.mpr fun p hp ↦ le_of_not_lt fun h_len ↦ ?_
     let i : Fin (p.length + 1) := ⟨p.length - (m + 1), Nat.sub_lt_succ p.length _⟩
     suffices h'' : f (p i) < f x by
-      obtain ⟨n', hn'⟩ : ∃ (n' : ℕ), n' = height (f (p i)) := ENat.ne_top_iff_exists.mp sorry
+      obtain ⟨n', hn'⟩ : ∃ (n' : ℕ), n' = height (f (p i)) := ENat.ne_top_iff_exists.mp <| ne_of_lt
+        <| lt_of_le_of_lt (height_mono (le_of_lt h'')) (h' ▸ (ENat.coe_lt_top _))
       have h_lt : n' < n := ENat.coe_lt_coe.mp
         (h' ▸ hn' ▸ height_strictMono h'' (hn' ▸ ENat.coe_lt_top _))
       have := (length_le_height_last (p := p.take i)).trans <| ih n' h_lt (p i) hn'.symm
@@ -1054,63 +1055,25 @@ lemma height_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOr
       apply not_lt_of_le ?_ (lt_of_lt_of_le h_len this)
       gcongr
       rwa [← ENat.coe_one, ← ENat.coe_add, ENat.coe_le_coe]
-    sorry
+    apply lt_of_le_not_le (f.monotone (le_trans (p.monotone (Fin.le_last _)) hp)) fun h'' ↦ ?_
+    let q' : LTSeries α := p.drop i
+    let q : LTSeries (f ⁻¹' {f x}) := ⟨q'.length, fun j ↦ ⟨q' j, le_antisymm
+      (f.monotone (le_trans (b := q'.last) (q'.monotone (Fin.le_last _)) ((p.last_drop _) ▸ hp)))
+      (le_trans (b := f q'.head) ((p.head_drop _) ▸ h'')
+        (f.monotone (q'.monotone (Fin.zero_le _))))⟩, fun i ↦ q'.step i⟩
+    have := le_trans (LTSeries.length_le_krullDim q) (h (f x))
+    simp only [RelSeries.drop_length, Nat.cast_le, tsub_le_iff_right, q', i, q] at this
+    have : p.length > m := ENat.coe_lt_coe.mp (lt_of_le_of_lt (le_add_left (le_refl _)) h_len)
+    omega
 
 lemma krullDim_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOrder β]
     (f : α →o β) {m : ℕ} (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m := by
-  classical
-  rw [Order.krullDim, Order.krullDim]
-  apply iSup_le fun p ↦ ?_
-  suffices h : ∃ (q : LTSeries β), p.length ≤ (m + 1) * q.length + m by
-    obtain ⟨q, hq⟩ := h
-    apply le_trans (Nat.mono_cast hq)
-    rw [Nat.cast_add, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
-    apply add_le_add_right <| mul_le_mul_of_nonneg_left ?_ ?_
-    · exact le_iSup (fun p ↦ (p.length : WithBot ℕ∞)) q
-    · exact right_eq_inf.mp rfl
-  let q : List β := List.dedup (List.map f p.toList)
-  have hq_lt : List.Chain' (· < ·) q := by
-    apply List.Pairwise.chain'
-    simp_rw [lt_iff_le_and_ne, List.pairwise_and_iff]
-    exact ⟨List.Pairwise.sublist (List.dedup_sublist _) (List.Pairwise.map _ f.monotone
-      (List.chain'_iff_pairwise.mp (show p.toList.Chain' (· ≤ ·) from
-        List.Chain'.imp (fun _ _ ↦ le_of_lt) (RelSeries.toList_chain' p)))), List.nodup_dedup _⟩
-  have hq_ne_nil : q ≠ [] := by simp [q, RelSeries.toList_ne_nil p]
-  let q' : LTSeries β := RelSeries.Equiv.symm ⟨q, ⟨hq_ne_nil, hq_lt⟩⟩
-  have : q'.toList = q := congr($((RelSeries.Equiv.right_inv ⟨q, ⟨hq_ne_nil, hq_lt⟩⟩)))
-  have h_length : p.length ≤ (m + 1) * q'.length + m := by
-    rw [← Nat.succ_le_succ_iff, Nat.succ_eq_add_one, Nat.succ_eq_add_one, add_assoc]
-    nth_rw 2 [← mul_one (m + 1)]
-    rw [← mul_add, ← RelSeries.length_toList, ← RelSeries.length_toList, this, ← List.length_map f,
-      ← List.sum_map_count_dedup_eq_length, mul_comm]
-    convert List.sum_le_card_nsmul _ (m + 1) ?_
-    · exact Eq.symm (List.length_map fun x ↦ List.count x (List.map f (RelSeries.toList p)))
-    · simp only [List.count_eq_countP, List.countP_eq_length_filter, List.filter_map,
-      List.length_map, List.mem_map, List.mem_dedup, RelSeries.mem_toList, exists_exists_and_eq_and,
-      forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, q]
-      intro a ha
-      set p' := (List.filter ((fun x ↦ x == f a) ∘ f) (RelSeries.toList p))
-      have hp'_ne_nil : p' ≠ [] := List.ne_nil_of_mem <| List.mem_filter.mpr
-        ⟨RelSeries.mem_toList.mpr ha, by simp⟩
-      have hp'_lt : List.Chain' (· < ·) p' := List.Pairwise.chain' <| List.Pairwise.sublist
-        List.filter_sublist (List.chain'_iff_pairwise.mp <| RelSeries.toList_chain' p)
-      let p'' : List (f ⁻¹' {f a}) := List.map (fun x ↦ ⟨x.val, by
-        simpa using (List.mem_filter.mp x.prop).2⟩) p'.attach
-      have hp''_ne_nil : p'' ≠ [] := by simp [p'', hp'_ne_nil]
-      have hp''_lt : List.Chain' (· < ·) p'' := by
-        apply List.chain'_map_of_chain' (R := (· < ·))
-        · simp
-        · apply List.chain'_attach.mpr
-          simp only [Subtype.mk_lt_mk, exists_prop, exists_and_left, p'', q]
-          apply (List.Chain'.iff ?_).mp (List.Chain'.iff_mem.mp hp'_lt)
-          tauto
-      have : p'.length = p''.length := by simp [p'']
-      have := le_trans (Order.LTSeries.length_le_krullDim
-        (RelSeries.fromListChain' p'' hp''_ne_nil hp''_lt)) (h (f a))
-      simp only [RelSeries.fromListChain'_length, Nat.cast_le, tsub_le_iff_right, q] at this
-      omega
-  exact ⟨q', h_length⟩
+  rw [Order.krullDim_eq_iSup_height, Order.krullDim_eq_iSup_height]
+  apply iSup_le fun x ↦ (le_trans (WithBot.coe_mono (height_le_of_krullDim_preimage_le f h x)) ?_)
+  push_cast
+  apply add_le_add_right <| mul_le_mul_of_nonneg_left ?_ (right_eq_inf.mp rfl)
+  exact le_iSup_iff.mpr fun b a ↦ a (f x)
 
 /-- Another version when the `OrderHom` is unbundled -/
 lemma krullDim_le_of_krullDim_preimage_le' {α β : Type*} [Preorder α] [PartialOrder β]
