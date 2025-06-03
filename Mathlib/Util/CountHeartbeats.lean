@@ -247,6 +247,16 @@ register_option linter.countHeartbeatsApprox : Bool := {
 
 namespace CountHeartbeats
 
+/-- Traverse the syntax and add a suffix "ₕₑₐᵣₜ" to any theorem name, i.e. to any
+`ident` of the corresponding `.declId` -/
+partial def renameDeclarations : Syntax → Syntax
+  | Syntax.node info₁ ``Parser.Command.declId
+      (.mk ((Syntax.ident info₂ rawVal val preresolved) :: args)) =>
+    Syntax.node info₁ ``Parser.Command.declId
+      (.mk ((Syntax.ident info₂ rawVal (val.appendAfter "ₕₑₐᵣₜ") preresolved) :: args))
+  | Syntax.node info kind args => Syntax.node info kind (args.map renameDeclarations)
+  | stx => stx
+
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
 def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.countHeartbeats (← getOptions) do
@@ -254,17 +264,22 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   let mut msgs := #[]
-  if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
+  if [``Lean.Parser.Command.declaration, `lemma, ``Lean.Parser.Command.in].contains stx.getKind then
     let s ← get
     if Linter.getLinterValue linter.countHeartbeatsApprox (← getOptions) then
-      elabCommand (← `(command| #count_heartbeats approximately in $(⟨stx⟩)))
+      -- rename declarations to avoid "error: 'myDecl' has already been declared."
+      elabCommand (← `(command| #count_heartbeats approximately in $(⟨renameDeclarations stx⟩)))
     else
-      elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))
-    msgs := (← get).messages.unreported.toArray.filter (·.severity != .error)
+      -- rename declarations to avoid "error: 'myDecl' has already been declared."
+      elabCommand (← `(command| #count_heartbeats in $(⟨renameDeclarations stx⟩)))
+    msgs := (← get).messages.unreported.toArray
     set s
   match stx.find? (·.isOfKind ``Parser.Command.declId) with
     | some decl =>
-      for msg in msgs do logInfoAt decl m!"'{decl[0].getId}' {(← msg.toString).decapitalize}"
+      for msg in msgs do
+        let plain ← msg.toString
+        unless "Try this".isPrefixOf plain do
+          logInfoAt decl m!"'{decl[0].getId}' {plain.decapitalize}"
     | none =>
       for msg in msgs do logInfoAt stx m!"{← msg.toString}"
 
