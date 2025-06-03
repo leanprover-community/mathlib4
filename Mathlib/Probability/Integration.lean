@@ -139,7 +139,7 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
     apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
     · exact (x_mea j).aemeasurable
     · exact s.aemeasurable_prod' (fun i _ ↦ (x_mea i).aemeasurable)
-    · exact (iIndepFun.indepFun_finset_prod_of_not_mem hX x_mea hj).symm
+    · exact (iIndepFun.indepFun_finset_prod_of_notMem hX x_mea hj).symm
 
 /-- The product of two independent, integrable, real-valued random variables is integrable. -/
 theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
@@ -160,7 +160,8 @@ theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → 
 /-- If the product of two independent real-valued random variables is integrable and
 the second one is not almost everywhere zero, then the first one is integrable. -/
 theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
-    [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
+    [NormedDivisionRing β] [OpensMeasurableSpace β]
+    (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'Y : ¬Y =ᵐ[μ] 0) :
     Integrable X μ := by
   refine ⟨hX, ?_⟩
@@ -179,7 +180,8 @@ theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace
 /-- If the product of two independent real-valued random variables is integrable and the
 first one is not almost everywhere zero, then the second one is integrable. -/
 theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
-    [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
+    [NormedDivisionRing β] [OpensMeasurableSpace β]
+    (hXY : IndepFun X Y μ) (h'XY : Integrable (X * Y) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'X : ¬X =ᵐ[μ] 0) :
     Integrable Y μ := by
   refine ⟨hY, ?_⟩

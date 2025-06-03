@@ -16,9 +16,9 @@ measure, which gives measure `1` to the parallelepiped spanned by the basis.
 
 * `parallelepiped v` is the parallelepiped spanned by a finite family of vectors.
 * `Basis.parallelepiped` is the parallelepiped associated to a basis, seen as a compact set with
-nonempty interior.
+  nonempty interior.
 * `Basis.addHaar` is the Lebesgue measure associated to a basis, giving measure `1` to the
-corresponding parallelepiped.
+  corresponding parallelepiped.
 
 In particular, we declare a `MeasureSpace` instance on any finite-dimensional inner product space,
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent

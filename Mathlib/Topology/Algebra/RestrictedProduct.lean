@@ -35,10 +35,10 @@ compact, then `Πʳ i, [R i, A i]` is a locally compact topological ring.
 ## Main definitions
 
 * `RestrictedProduct`: the restricted product of a family `R` of types, relative to a family `A` of
-subsets and a filter `𝓕` on the indexing set. This is denoted `Πʳ i, [R i, A i]_[𝓕]`,
-or simply `Πʳ i, [R i, A i]` when `𝓕 = cofinite`.
+  subsets and a filter `𝓕` on the indexing set. This is denoted `Πʳ i, [R i, A i]_[𝓕]`,
+  or simply `Πʳ i, [R i, A i]` when `𝓕 = cofinite`.
 * `RestrictedProduct.instDFunLike`: interpret an element of `Πʳ i, [R i, A i]_[𝓕]` as an element
-of `Π i, R i` using the `DFunLike` machinery.
+  of `Π i, R i` using the `DFunLike` machinery.
 * `RestrictedProduct.structureMap`: the inclusion map from `Π i, A i` to `Πʳ i, [R i, A i]_[𝓕]`.
 * `RestrictedProduct.topologicalSpace`: the `TopologicalSpace` instance on `Πʳ i, [R i, A i]_[𝓕]`.
 
@@ -54,9 +54,9 @@ inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
-taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
+  taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
-`s` belongs to the indexing set of the inductive limit.
+  `s` belongs to the indexing set of the inductive limit.
 
 Taking advantage of that second remark, we do not actually declare an instance specific to
 principal filters. Instead, we provide directly the general instance (corresponding to step 2 above)
@@ -68,10 +68,10 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
 ## Main statements
 
 * `RestrictedProduct.isEmbedding_coe_of_principal`: for any set `S`, `Πʳ i, [R i, A i]_[𝓟 S]`
-is endowed with the subset topology coming from `Π i, R i`.
+  is endowed with the subset topology coming from `Π i, R i`.
 * `RestrictedProduct.topologicalSpace_eq_iSup`: the topology on `Πʳ i, [R i, A i]_[𝓕]` is the
-inductive limit / final topology associated to the natural maps
-`Πʳ i, [R i, A i]_[𝓟 S] → Πʳ i, [R i, A i]_[𝓕]`, where `𝓕 ≤ 𝓟 S`.
+  inductive limit / final topology associated to the natural maps
+  `Πʳ i, [R i, A i]_[𝓟 S] → Πʳ i, [R i, A i]_[𝓕]`, where `𝓕 ≤ 𝓟 S`.
 * `RestrictedProduct.continuous_dom`: a map from `Πʳ i, [R i, A i]_[𝓕]` is continuous
 *if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
 * `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
@@ -80,20 +80,20 @@ inductive limit / final topology associated to the natural maps
 is continuous.
 
 * `RestrictedProduct.isTopologicalGroup`: if each `R i` is a topological group and each `A i` is an
-open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
+  open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
 * `RestrictedProduct.isTopologicalRing`: if each `R i` is a topological ring and each `A i` is an
-open subring of `R i`, then `Πʳ i, [R i, A i]` is a topological ring.
+  open subring of `R i`, then `Πʳ i, [R i, A i]` is a topological ring.
 * `RestrictedProduct.continuousSMul`: if some topological monoid `G` acts on each `M i`, and each
-`A i` is stable for that action, then the natural action of `G` on `Πʳ i, [M i, A i]` is also
-continuous. In particular, if each `M i` is a topological `R`-module and each `A i` is an open
-sub-`R`-module of `M i`, then `Πʳ i, [M i, A i]` is a topological `R`-module.
+  `A i` is stable for that action, then the natural action of `G` on `Πʳ i, [M i, A i]` is also
+  continuous. In particular, if each `M i` is a topological `R`-module and each `A i` is an open
+  sub-`R`-module of `M i`, then `Πʳ i, [M i, A i]` is a topological `R`-module.
 
 * `RestrictedProduct.weaklyLocallyCompactSpace_of_cofinite`:  if each `R i` is weakly locally
-compact, each `A i` is open, and all but finitely many `A i`s are also compact, then the
-restricted product `Πʳ i, [R i, A i]` is weakly locally compact.
+  compact, each `A i` is open, and all but finitely many `A i`s are also compact, then the
+  restricted product `Πʳ i, [R i, A i]` is weakly locally compact.
 * `RestrictedProduct.locallyCompactSpace_of_group`: assume that each `R i` is a locally compact
-group with `A i` an open subgroup. Assume also that all but finitely many `A i`s are compact.
-Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group.
+  group with `A i` an open subgroup. Assume also that all but finitely many `A i`s are compact.
+  Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group.
 
 ## Notation
 
@@ -336,7 +336,7 @@ variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
 section set
 
-variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, Set.MapsTo (φ j) (A₁ (f j)) (A₂ j))
+variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (A₁ (f j)) (A₂ j))
 
 /--
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, A₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, A₂ j]_[𝓕₂]`,
@@ -360,7 +360,7 @@ section monoid
 
 variable [Π i, Monoid (R₁ i)] [Π i, Monoid (R₂ i)] [∀ i, SubmonoidClass (S₁ i) (R₁ i)]
     [∀ i, SubmonoidClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →* R₂ j)
-    (hφ : ∀ᶠ j in 𝓕₂, Set.MapsTo (φ j) (B₁ (f j)) (B₂ j))
+    (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (B₁ (f j)) (B₂ j))
 
 /--
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
@@ -395,7 +395,7 @@ section ring
 
 variable [Π i, Ring (R₁ i)] [Π i, Ring (R₂ i)] [∀ i, SubringClass (S₁ i) (R₁ i)]
     [∀ i, SubringClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →+* R₂ j)
-    (hφ : ∀ᶠ j in 𝓕₂, Set.MapsTo (φ j) (B₁ (f j)) (B₂ j))
+    (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (B₁ (f j)) (B₂ j))
 
 /--
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
@@ -430,9 +430,9 @@ inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
-taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
+  taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
-`s` belongs to the indexing set of the inductive limit.
+  `s` belongs to the indexing set of the inductive limit.
 
 Taking advantage of that second remark, we do not actually declare an instance specific to
 principal filters. Instead, we provide directly the general instance (corresponding to step 2 above)
@@ -464,6 +464,10 @@ theorem continuous_coe :
     Continuous ((↑) : Πʳ i, [R i, A i]_[𝓕] → Π i, R i) :=
   continuous_iSup_dom.mpr fun _ ↦ continuous_iSup_dom.mpr fun _ ↦
     continuous_coinduced_dom.mpr continuous_induced_dom
+
+theorem continuous_eval (i : ι) :
+    Continuous (fun (x : Πʳ i, [R i, A i]_[𝓕]) ↦ x i) :=
+  continuous_apply _ |>.comp continuous_coe
 
 theorem continuous_inclusion {𝓖 : Filter ι} (h : 𝓕 ≤ 𝓖) :
     Continuous (inclusion R A h) := by
@@ -920,5 +924,34 @@ instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopolo
 end cofinite
 
 end Compatibility
+
+section map_continuous
+
+variable {ι₁ ι₂ : Type*}
+variable (R₁ : ι₁ → Type*) (R₂ : ι₂ → Type*)
+variable [∀ i, TopologicalSpace (R₁ i)] [∀ i, TopologicalSpace (R₂ i)]
+variable {𝓕₁ : Filter ι₁} {𝓕₂ : Filter ι₂}
+variable {A₁ : (i : ι₁) → Set (R₁ i)} {A₂ : (i : ι₂) → Set (R₂ i)}
+variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
+
+variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (A₁ (f j)) (A₂ j))
+
+theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R₁ R₂ f hf φ hφ) := by
+  rw [continuous_dom]
+  intro S hS
+  set T := f ⁻¹' S ∩ {j | MapsTo (φ j) (A₁ (f j)) (A₂ j)}
+  have hT : 𝓕₂ ≤ 𝓟 T := by
+    rw [le_principal_iff] at hS ⊢
+    exact inter_mem (hf hS) hφ
+  have hf' : Tendsto f (𝓟 T) (𝓟 S) := by aesop
+  have hφ' : ∀ᶠ j in 𝓟 T, MapsTo (φ j) (A₁ (f j)) (A₂ j) := by aesop
+  have key : map R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
+      inclusion R₂ A₂ hT ∘ map R₁ R₂ f hf' φ hφ' := rfl
+  rw [key]
+  exact continuous_inclusion _ |>.comp <|
+    continuous_rng_of_principal.mpr <|
+    continuous_pi fun j ↦ φ_cont j |>.comp <| continuous_eval (f j)
+
+end map_continuous
 
 end RestrictedProduct

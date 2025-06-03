@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Tactic.Common
 import Mathlib.Data.Set.Insert
@@ -50,7 +49,7 @@ theorem enumerate_eq_none :
       | zero => contradiction
       | succ m' =>
         simp? [hs, enumerate] at h ⊢ says
-          simp only [enumerate, hs, Option.bind_eq_bind, Option.some_bind] at h ⊢
+          simp only [enumerate, hs, Option.bind_eq_bind, Option.bind_some] at h ⊢
         have hm : n ≤ m' := Nat.le_of_succ_le_succ hm
         exact enumerate_eq_none h hm
 

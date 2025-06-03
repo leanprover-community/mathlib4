@@ -56,6 +56,10 @@ theorem Subgroup.map_subtype_commutator (H : Subgroup G) :
     (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
   rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
 
+variable {G} in
+theorem Subgroup.commutator_le_self (H : Subgroup G) : ⁅H, H⁆ ≤ H :=
+  H.map_subtype_commutator.symm.trans_le (map_subtype_le _)
+
 instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
 

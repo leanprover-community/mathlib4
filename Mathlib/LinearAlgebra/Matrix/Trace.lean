@@ -164,7 +164,7 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
-    (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = dotProduct a b := by
+    (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = a ⬝ᵥ b := by
   apply Finset.sum_congr rfl
   simp [mul_apply]
 
@@ -232,21 +232,27 @@ theorem trace_fin_three_of (a b c d e f g h i : R) :
 
 end Fin
 
-namespace StdBasisMatrix
+section single
 
 variable {l m n : Type*} {R α : Type*} [DecidableEq l] [DecidableEq m] [DecidableEq n]
 variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]
-theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
+theorem trace_single_eq_of_ne (h : i ≠ j) : trace (single i j c) = 0 := by
   -- Porting note: added `-diag_apply`
   simp [trace, -diag_apply, h]
 
+@[deprecated (since := "2025-05-05")]
+alias StdBasisMatrix.trace_zero := trace_single_eq_of_ne
+
 @[simp]
-theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
+theorem trace_single_eq_same : trace (single i i c) = c := by
   -- Porting note: added `-diag_apply`
   simp [trace, -diag_apply]
 
-end StdBasisMatrix
+@[deprecated (since := "2025-05-05")]
+alias StdBasisMatrix.trace_eq := trace_single_eq_same
+
+end single
 
 end Matrix

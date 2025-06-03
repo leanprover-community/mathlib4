@@ -154,6 +154,10 @@ theorem circleMap_preimage_codiscrete {c : ℂ} {R : ℝ} (hR : R ≠ 0) :
     simp [hR] at this
   · rwa [Set.image_univ, range_circleMap]
 
+theorem circleMap_neg_radius {r x : ℝ} {c : ℂ} :
+    circleMap c (-r) x = circleMap c r (x + π) := by
+  simp [circleMap, add_mul, Complex.exp_add]
+
 /-!
 ### Integrability of a function on a circle
 -/
@@ -319,7 +323,7 @@ theorem integral_sub_inv_smul_sub_smul (f : ℂ → E) (c w : ℂ) (R : ℝ) :
     (∮ z in C(c, R), (z - w)⁻¹ • (z - w) • f z) = ∮ z in C(c, R), f z := by
   rcases eq_or_ne R 0 with (rfl | hR); · simp only [integral_radius_zero]
   have : (circleMap c R ⁻¹' {w}).Countable := (countable_singleton _).preimage_circleMap c hR
-  refine intervalIntegral.integral_congr_ae ((this.ae_not_mem _).mono fun θ hθ _' => ?_)
+  refine intervalIntegral.integral_congr_ae ((this.ae_notMem _).mono fun θ hθ _' => ?_)
   change circleMap c R θ ≠ w at hθ
   simp only [inv_smul_smul₀ (sub_ne_zero.2 <| hθ)]
 
