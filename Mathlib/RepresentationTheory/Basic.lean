@@ -18,6 +18,7 @@ representations.
   * `Representation.tprod`
   * `Representation.linHom`
   * `Representation.dual`
+  * `Representation.free`
 
 ## Implementation notes
 
@@ -79,6 +80,27 @@ theorem isTrivial_apply (ρ : Representation k G V) [IsTrivial ρ] (g : G) (x : 
     ρ g x = x := congr($(isTrivial_def ρ g) x)
 
 end trivial
+
+section Group
+
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+  (ρ : Representation k G V)
+
+@[simp]
+theorem inv_self_apply (g : G) (x : V) :
+    ρ g⁻¹ (ρ g x) = x := by
+  simp [← Module.End.mul_apply, ← map_mul]
+
+@[simp]
+theorem self_inv_apply (g : G) (x : V) :
+    ρ g (ρ g⁻¹ x) = x := by
+  simp [← Module.End.mul_apply, ← map_mul]
+
+lemma apply_bijective (g : G) :
+    Function.Bijective (ρ g) :=
+  Equiv.bijective ⟨ρ g, ρ g⁻¹, inv_self_apply ρ g, self_inv_apply ρ g⟩
+
+end Group
 
 section MonoidAlgebra
 
@@ -250,6 +272,69 @@ instance : IsScalarTower k (MonoidAlgebra k G) ρ.asModule where
 
 end MonoidAlgebra
 
+section Subrepresentation
+
+variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+  (ρ : Representation k G V)
+
+/-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
+restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
+@[simps]
+def subrepresentation (W : Submodule k V) (le_comap : ∀ g, W ≤ W.comap (ρ g)) :
+    Representation k G W where
+  toFun g := (ρ g).restrict <| le_comap g
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+
+end Subrepresentation
+
+section Quotient
+
+variable {k G V : Type*} [CommRing k] [Monoid G] [AddCommGroup V] [Module k V]
+  (ρ : Representation k G V)
+
+/-- Given a `k`-linear `G`-representation `(V, ρ)` and a `G`-invariant `k`-submodule `W ≤ V`, this
+is the representation induced on `V ⧸ W` by `ρ`. -/
+@[simps]
+def quotient (W : Submodule k V) (le_comap : ∀ g, W ≤ W.comap (ρ g)) :
+    Representation k G (V ⧸ W) where
+  toFun g := Submodule.mapQ _ _ (ρ g) <| le_comap g
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+
+end Quotient
+
+section OfQuotient
+
+variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
+variable (ρ : Representation k G V) (S : Subgroup G)
+
+lemma apply_eq_of_coe_eq [IsTrivial (ρ.comp S.subtype)] (g h : G) (hgh : (g : G ⧸ S) = h) :
+    ρ g = ρ h := by
+  ext x
+  apply (ρ.apply_bijective g⁻¹).1
+  simpa [← Module.End.mul_apply, ← map_mul, -isTrivial_def] using
+    (congr($(isTrivial_def (ρ.comp S.subtype) ⟨g⁻¹ * h, QuotientGroup.eq.1 hgh⟩) x)).symm
+
+variable [S.Normal]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
+through `G ⧸ S`. -/
+def ofQuotient [IsTrivial (ρ.comp S.subtype)] :
+    Representation k (G ⧸ S) V :=
+  (QuotientGroup.con S).lift ρ <| by
+    rintro x y ⟨⟨z, hz⟩, rfl⟩
+    ext w
+    show ρ (_ * z.unop) _ = _
+    exact congr($(apply_eq_of_coe_eq ρ S _ _ (by simp_all)) w)
+
+@[simp]
+lemma ofQuotient_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :
+    ofQuotient ρ S (g : G ⧸ S) x = ρ g x :=
+  rfl
+
+end OfQuotient
+
 section AddCommGroup
 
 variable {k G V : Type*} [CommRing k] [Monoid G] [I : AddCommGroup V] [Module k V]
@@ -274,6 +359,12 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
   map_mul' x y := by
     ext z w
     simp [mul_smul]
+
+/-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication in `G`. -/
+noncomputable abbrev leftRegular := ofMulAction k G G
+
+/-- The natural `k`-linear `G`-representation on `k[Gⁿ]` induced by left multiplication in `G`. -/
+noncomputable abbrev diagonal (n : ℕ) := ofMulAction k G (Fin n → G)
 
 variable {k G H}
 
@@ -460,7 +551,7 @@ theorem dual_apply (g : G) : (dual ρV) g = Module.Dual.transpose (R := k) (ρV 
   rfl
 
 /-- Given $k$-modules $V, W$, there is a homomorphism $φ : V^* ⊗ W → Hom_k(V, W)$
-(implemented by `dualTensorHom` in `Mathlib.LinearAlgebra.Contraction`).
+(implemented by `dualTensorHom` in `Mathlib/LinearAlgebra/Contraction.lean`).
 Given representations of $G$ on $V$ and $W$,there are representations of $G$ on $V^* ⊗ W$ and on
 $Hom_k(V, W)$.
 This lemma says that $φ$ is $G$-linear.
@@ -472,4 +563,66 @@ theorem dualTensorHom_comm (g : G) :
 
 end LinearHom
 
+section
+
+variable {k G : Type*} [CommSemiring k] [Monoid G] {α A B : Type*}
+  [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
+  [AddCommMonoid B] [Module k B] (τ : Representation k G B)
+
+open Finsupp
+
+/-- The representation on `α →₀ A` defined pointwise by a representation on `A`. -/
+@[simps -isSimp]
+noncomputable def finsupp (α : Type*) :
+    Representation k G (α →₀ A) where
+  toFun g := lsum k fun i => (lsingle i).comp (ρ g)
+  map_one' := lhom_ext (fun _ _ => by simp)
+  map_mul' _ _ := lhom_ext (fun _ _ => by simp)
+
+@[simp]
+lemma finsupp_single (g : G) (x : α) (a : A) :
+    ρ.finsupp α g (single x a) = single x (ρ g a) := by
+  simp [finsupp_apply]
+
+/-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation. -/
+noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
+    Representation k G (α →₀ G →₀ k) :=
+  finsupp (leftRegular k G) α
+
+noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
+    AddCommGroup (free k G α).asModule :=
+  Finsupp.instAddCommGroup
+
+lemma free_single_single (g h : G) (i : α) (r : k) :
+    free k G α g (single i (single h r)) = single i (single (g * h) r) := by
+  simp
+
+variable (k G) (α : Type*)
+
+/-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`. -/
+noncomputable def finsuppLEquivFreeAsModule :
+    (α →₀ MonoidAlgebra k G) ≃ₗ[MonoidAlgebra k G] (free k G α).asModule :=
+  { AddEquiv.refl _ with
+    map_smul' _ x := by
+      simp only [AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+        AddEquiv.refl_apply, RingHom.id_apply]
+      induction x using Finsupp.induction with
+      | zero => simp only [smul_zero]
+      | single_add _ _ _ _ _ h =>
+        rw [smul_add, h]
+        show _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
+        simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
+          asAlgebraHom_def, MonoidAlgebra.lift_apply]
+        simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum] }
+
+/-- `α` gives a `k[G]`-basis of the representation `free k G α`. -/
+noncomputable def freeAsModuleBasis :
+    Basis α (MonoidAlgebra k G) (free k G α).asModule where
+  repr := (finsuppLEquivFreeAsModule k G α).symm
+
+theorem free_asModule_free :
+    Module.Free (MonoidAlgebra k G) (free k G α).asModule :=
+  Module.Free.of_basis (freeAsModuleBasis k G α)
+
+end
 end Representation
