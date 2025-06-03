@@ -82,7 +82,7 @@ theorem neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq (f : M [⋀^Fin n]→�
   exact hvij.symm
 
 /-- Given a function which is linear in the first argument
-and is alternating form in the other `n` arguments,
+and is alternating in the other `n` arguments,
 build an alternating form in `n + 1` arguments.
 
 Note that the round-trip with `curryFin` multiplies the form by `n + 1`,
