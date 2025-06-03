@@ -12,7 +12,7 @@ The "emptyLine" linter emits a warning on empty lines inside a command, but outs
 doc-string/module-doc.
 -/
 
-open Lean Elab
+open Lean Elab Linter
 
 /-- Retrieve the `String.Range` of a `Substring`. -/
 def Lean.Substring.getRange : Substring → String.Range
@@ -88,9 +88,10 @@ abbrev SkippedFileSegments : Std.HashSet Name := Std.HashSet.emptyWithCapacity
 
 @[inherit_doc Mathlib.Linter.linter.style.emptyLine]
 def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.emptyLine (← getOptions) do
+  unless Linter.getLinterValue linter.style.emptyLine (← getLinterOptions) do
     return
-  -- The linter does not report anything on incomplete proofs.
+  -- The linter does not report anything on incomplete proofs, e.g. proofs containing `sorry`
+  -- or `stop`.
   if (← get).messages.reportedPlusUnreported.any (!·.severity matches .information) then
     return
   if !((← getMainModule).components.filter SkippedFileSegments.contains).isEmpty then
@@ -101,6 +102,7 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let allowedRanges := allowed.filterMap (·.getRange?)
   if let some str := stx.getSubstring? then
     if let one::rest := str.toString.trimRight.splitOn "\n\n" then
+      if rest.isEmpty then return
       -- We extract all trailing ranges of all syntax nodes in `stx`, after we remove
       -- leading and trailing whitespace from them.
       -- These ranges typically represent embedded comments and we ignore line breaks inside them.
