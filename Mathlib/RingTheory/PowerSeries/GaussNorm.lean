@@ -3,8 +3,10 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+
 import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.RingTheory.PowerSeries.Order
+
 /-!
 # Gauss norm for power series
 This file defines the Gauss norm for power series. Given a power series `f` in `R⟦X⟧`, a function
@@ -13,12 +15,12 @@ values of `v (f.coeff R i) * c ^ i` for all `i : ℕ`.
 
 
 ## Main Definitions and Results
-* `PowerSeries.gaussNormC` is the supremum of the set of all values of `v (f.coeff R i) * c ^ i`
+* `PowerSeries.gaussNorm` is the supremum of the set of all values of `v (f.coeff R i) * c ^ i`
   for all `i : ℕ`, where `f` is a power series in `R⟦X⟧`, `v : R → ℝ` is a function and `c` is a
   real number.
-* `PowerSeries.gaussNormC_nonneg`: if `v` is a non-negative function, then the Gauss norm is
+* `PowerSeries.gaussNorm_nonneg`: if `v` is a non-negative function, then the Gauss norm is
   non-negative.
-* `PowerSeries.gaussNormC_eq_zero_iff`: if `v` is a non-negative function and `v x = 0 ↔ x = 0` for
+* `PowerSeries.gaussNorm_eq_zero_iff`: if `v` is a non-negative function and `v x = 0 ↔ x = 0` for
   all `x : R` and `c` is positive, then the Gauss norm is zero if and only if the power series is
   zero.
 -/
@@ -29,27 +31,27 @@ variable {R F : Type*} [Semiring R] [FunLike F R ℝ] (v : F) (c : ℝ) (f : R�
 
 /-- Given a power series `f` in `R⟦X⟧`, a function `v : R → ℝ` and a real number `c`, the Gauss norm
 is defined as the supremum of the set of all values of `v (f.coeff R i) * c ^ i` for all `i : ℕ`. -/
-noncomputable def gaussNormC : ℝ := ⨆ i : ℕ, v (f.coeff R i) * c ^ i
+noncomputable def gaussNorm : ℝ := ⨆ i : ℕ, v (f.coeff R i) * c ^ i
 
-lemma le_gaussNormC (hbd : BddAbove {x | ∃ i, v (f.coeff R i) * c ^ i = x}) (i : ℕ) :
-    v (f.coeff R i) * c ^ i ≤ f.gaussNormC v c := le_ciSup hbd i
+lemma le_gaussNorm (hbd : BddAbove {x | ∃ i, v (f.coeff R i) * c ^ i = x}) (i : ℕ) :
+    v (f.coeff R i) * c ^ i ≤ f.gaussNorm v c := le_ciSup hbd i
 
 @[simp]
-theorem gaussNormC_zero [ZeroHomClass F R ℝ] : gaussNormC v c 0 = 0 := by simp [gaussNormC]
+theorem gaussNorm_zero [ZeroHomClass F R ℝ] : gaussNorm v c 0 = 0 := by simp [gaussNorm]
 
-theorem gaussNormC_nonneg [NonnegHomClass F R ℝ] : 0 ≤ f.gaussNormC v c := by
+theorem gaussNorm_nonneg [NonnegHomClass F R ℝ] : 0 ≤ f.gaussNorm v c := by
   by_cases h : BddAbove (Set.range fun i ↦ v (f.coeff R i) * c ^ i)
   · calc
     0 ≤ v (f.coeff R 0) * c ^ 0 :=
       mul_nonneg (apply_nonneg v (f.coeff R 0)) <| pow_nonneg (le_of_lt (zero_lt_one)) 0
-    _ ≤ f.gaussNormC v c := le_ciSup h 0
-  · simp [gaussNormC, h]
+    _ ≤ f.gaussNorm v c := le_ciSup h 0
+  · simp [gaussNorm, h]
 
 @[simp]
-theorem gaussNormC_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {v : F}
+theorem gaussNorm_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {v : F}
     (h_eq_zero : ∀ x : R, v x = 0 → x = 0) {f : R⟦X⟧} {c : ℝ} (hc : 0 < c)
     (hbd : BddAbove (Set.range fun i ↦ v (f.coeff R i) * c ^ i)) :
-    f.gaussNormC v c = 0 ↔ f = 0 := by
+    f.gaussNorm v c = 0 ↔ f = 0 := by
   refine ⟨?_, fun hf ↦ by simp [hf]⟩
   contrapose!
   intro hf
@@ -59,6 +61,6 @@ theorem gaussNormC_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {
   0 < v (f.coeff R n) * c ^ n := by
     have := fun h ↦ hn (h_eq_zero ((coeff R n) f) h)
     positivity
-  _ ≤ gaussNormC v c f := le_ciSup hbd n
+  _ ≤ gaussNorm v c f := le_ciSup hbd n
 
 end PowerSeries
