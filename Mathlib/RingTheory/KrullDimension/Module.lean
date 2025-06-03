@@ -93,9 +93,10 @@ lemma zeroLocus_eq_singleton (m : Ideal R) [max : m.IsMaximal] :
     simpa using PrimeSpectrum.ext_iff.mpr (Ideal.IsMaximal.eq_of_le max I.2.ne_top h).symm
   · simp [Set.mem_singleton_iff.mp h]
 
-lemma support_of_dimension_zero [IsLocalRing R] [Module.Finite R N] [Nontrivial N]
+lemma support_of_dimension_zero [IsLocalRing R] [Module.Finite R N]
     (dim : Module.supportDim R N = 0) :
     Module.support R N = PrimeSpectrum.zeroLocus (maximalIdeal R) := by
+  let _ : Nontrivial N := by simp [← Module.supportDim_ne_bot_iff_nontrivial R, dim]
   rw [zeroLocus_eq_singleton]
   apply le_antisymm
   · intro p hp
@@ -107,6 +108,6 @@ lemma support_of_dimension_zero [IsLocalRing R] [Module.Finite R N] [Nontrivial 
       simp only [Module.supportDim, gt_iff_lt, Order.krullDim_pos_iff, Subtype.exists,
         Subtype.mk_lt_mk, exists_prop]
       use p
-      simpa only [hp, true_and] using ⟨_, IsLocalRing.maximalIdeal_mem_support R N, this⟩
+      simpa [hp] using ⟨_, IsLocalRing.maximalIdeal_mem_support R N, this⟩
     exact (ne_of_lt this) dim.symm
   · simpa using IsLocalRing.maximalIdeal_mem_support R N
