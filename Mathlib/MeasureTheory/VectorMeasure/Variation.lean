@@ -310,12 +310,16 @@ lemma supSumPart_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < �
 
 lemma le_supSumPart {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ supSumPart f s := by
-  simp only [supSumPart, hs, reduceIte]
-  exact le_biSup (fun P ↦ ∑ p ∈ P, f p) hP
+  simpa [supSumPart, hs] using le_biSup (fun P ↦ ∑ p ∈ P, f p) hP
 
 
 
--- To do...
+-- To do, new versions of:
+
+-- varOfPart_le_tsum
+-- variation_m_iUnion'
+
+-- Here I believe we need the subadditivity of `f`.
 
 
 end supMeasure
@@ -545,11 +549,11 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E
   wlog hE' : E ≠ ∅
   · push_neg at hE'
     simp [hE', varOfPart, partitions_empty]
-  by_cases hE : MeasurableSet E
-  · have h : {E} ∈ partitions E := ⟨by simp, by simpa, by simp, by simpa⟩
-    have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
-    simp_all [varOfPart, variation, variation_aux]
+  wlog hE : MeasurableSet E
   · simp [hE, μ.not_measurable' hE]
+  have h : {E} ∈ partitions E := ⟨by simp, by simpa, by simp, by simpa⟩
+  have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
+  simp_all [varOfPart, variation, variation_aux]
 
 lemma variation_of_ENNReal  (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ := by
   ext s hs
