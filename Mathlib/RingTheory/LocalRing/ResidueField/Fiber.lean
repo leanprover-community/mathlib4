@@ -29,12 +29,12 @@ noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (R S : Type*)
   let Rp := Localization.AtPrime p.asIdeal
   refine .trans ?_ <| comapEquiv
     ((Algebra.TensorProduct.comm ..).trans <| cancelBaseChange R Rp ..).toRingEquiv
-  refine .trans (.symm ((quotientOrderIso _).trans ?_)) <|
+  refine .trans (.symm ((Ideal.primeSpectrumQuotientOrderIsoZeroLocus _).trans ?_)) <|
     comapEquiv (quotIdealMapEquivTensorQuot ..).toRingEquiv
   letI := rightAlgebra (R := R) (A := Rp) (B := S)
   let e := IsLocalization.primeSpectrumOrderIso
     (algebraMapSubmonoid S p.asIdeal.primeCompl) (Rp ⊗[R] S) |>.trans <|
-    .setCongr _ {q | q.comap (algebraMap R S) ≤ p} <| Set.ext fun _ ↦
+    .setCongr _ {q | (algebraMap R S).specComap q ≤ p} <| Set.ext fun _ ↦
       disjoint_comm.trans (Ideal.disjoint_map_primeCompl_iff_comap_le ..)
   have {q : PrimeSpectrum (Rp ⊗[R] S)} :
       q ∈ zeroLocus ((IsLocalRing.maximalIdeal _).map (algebraMap Rp (Rp ⊗[R] S))) ↔
