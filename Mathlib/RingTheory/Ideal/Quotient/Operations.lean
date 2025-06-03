@@ -464,7 +464,7 @@ theorem Quotient.span_singleton_one (I : Ideal A) [I.IsTwoSided] :
     Ideal.span, Submodule.map_span, Set.image_singleton, Submodule.mkQ_apply, Quotient.mk_eq_mk]
 
 open Pointwise in
-lemma Quotient.smul_top {R} [CommRing R] (a : R) (I : Ideal R) :
+lemma Quotient.smul_top {R : Type*} [CommRing R] (a : R) (I : Ideal R) :
     (a • ⊤ : Submodule R (R ⧸ I)) = Submodule.span R {Submodule.Quotient.mk a} := by
   simp [← Ideal.Quotient.span_singleton_one, Algebra.smul_def, Submodule.smul_span]
 
