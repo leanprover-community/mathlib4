@@ -243,10 +243,10 @@
     "Mathlib.MeasureTheory",
     "Mathlib.Probability",
     "Mathlib.RepresentationTheory",
-    "Mathlib.Testing"
+    "Mathlib.Testing",
+    "Mathlib.Topology"
   ],
   "Mathlib.NumberTheory": [
-    "Mathlib.Topology",
     "Mathlib.AlgebraicGeometry",
     "Mathlib.AlgebraicTopology",
     "Mathlib.Computability",
