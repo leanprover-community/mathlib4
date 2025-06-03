@@ -223,6 +223,7 @@ lemma partition_restrict {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitio
     exact (Finset.mem_filter.mp hp).2
 
 open Classical in
+/-- The restriction of a partition `P` to the set `t`. -/
 noncomputable def restriction (t : Set X) (P : Finset (Set X)) : Finset (Set X) :=
   (P.image (fun p ↦ p ∩ t)).filter (· ≠ ∅)
 
@@ -254,53 +255,55 @@ defined is an `ℝ≥0∞`-valued measure.
 
 -/
 
-section supMeasure
+section var_aux
 
 variable {X : Type*} [MeasurableSpace X] (f : Set X → ℝ≥0∞)
 
 open Classical in
-noncomputable def supSumPart (s : Set X) :=
+/-- If `s` is measurable then `var_aux s f` is the supremum over partitions `P` of `s` of the
+quantity `∑ p ∈ P, f p`. If `s` is not measurable then it is set to `0`. -/
+noncomputable def var_aux (s : Set X) :=
     if (MeasurableSet s) then ⨆ (P : Finset (Set X)) (_ : IsInnerPart s P), ∑ p ∈ P, f p else 0
 
-/-- `supSumPart` of the empty set is equal to zero. -/
-lemma supSumPart_empty' : supSumPart f ∅ = 0 := by
-  simp only [supSumPart, MeasurableSet.empty, reduceIte, ENNReal.iSup_eq_zero]
+/-- `var_aux` of the empty set is equal to zero. -/
+lemma var_aux_empty' : var_aux f ∅ = 0 := by
+  simp only [var_aux, MeasurableSet.empty, reduceIte, ENNReal.iSup_eq_zero]
   intro _ hP
   simp_all [isInnerPart_of_empty hP]
 
-/-- `supSumPart` of a non-measurable set is equal to zero. -/
-lemma supSumPart_of_not_measurable (s : Set X) (hs : ¬MeasurableSet s) : supSumPart f s = 0 := by
-  simp [supSumPart, hs]
+/-- `var_aux` of a non-measurable set is equal to zero. -/
+lemma var_aux_of_not_measurable (s : Set X) (hs : ¬MeasurableSet s) : var_aux f s = 0 := by
+  simp [var_aux, hs]
 
-/-- `supSumPart` is monotone in terms of the set. -/
-lemma supSumPart_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂)
-    (hs₂ : MeasurableSet s₂) : supSumPart f s₁ ≤ supSumPart f s₂ := by
+/-- `var_aux` is monotone in terms of the set. -/
+lemma var_aux_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂)
+    (hs₂ : MeasurableSet s₂) : var_aux f s₁ ≤ var_aux f s₂ := by
   by_cases hs₁ : MeasurableSet s₁
-  · simp only [supSumPart, hs₁, reduceIte, hs₂]
+  · simp only [var_aux, hs₁, reduceIte, hs₂]
     exact iSup_le_iSup_of_subset (partitions_monotone h)
-  · simp [supSumPart, hs₁]
+  · simp [var_aux, hs₁]
 
-lemma supSumPart_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < supSumPart f s) :
+lemma var_aux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < var_aux f s) :
     ∃ P, IsInnerPart s P ∧ a < ∑ p ∈ P, f p := by
   obtain ⟨P, hP, hP'⟩ : ∃ P, IsInnerPart s P ∧ a < ∑ p ∈ P, f p := by
-    simp_all [supSumPart, hs, lt_iSup_iff]
+    simp_all [var_aux, hs, lt_iSup_iff]
   exact ⟨P, hP, by gcongr⟩
 
-lemma supSumPart_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
-    (h : supSumPart f s ≠ ⊤) :
-    ∃ P, IsInnerPart s P ∧ supSumPart f s ≤ ∑ p ∈ P, f p + ε := by
-  let ε' := min ε (supSumPart f s).toNNReal
-  have hε1 : ε' ≤ supSumPart f s := by simp_all [ε']
+lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
+    (h : var_aux f s ≠ ⊤) :
+    ∃ P, IsInnerPart s P ∧ var_aux f s ≤ ∑ p ∈ P, f p + ε := by
+  let ε' := min ε (var_aux f s).toNNReal
+  have hε1 : ε' ≤ var_aux f s := by simp_all [ε']
   have : ε' ≤ ε := by simp_all [ε']
-  obtain hw | hw : supSumPart f s ≠ 0 ∨ supSumPart f s = 0 := ne_or_eq _ _
+  obtain hw | hw : var_aux f s ≠ 0 ∨ var_aux f s = 0 := ne_or_eq _ _
   · have : 0 < ε' := by
       simp only [lt_inf_iff, ε']
       exact ⟨hε, toNNReal_pos hw h⟩
-    let a := supSumPart f s - ε'
-    have ha : a < supSumPart f s := by exact ENNReal.sub_lt_self h hw (by positivity)
-    obtain ⟨P, hP, hP'⟩ := supSumPart_lt f hs ha
+    let a := var_aux f s - ε'
+    have ha : a < var_aux f s := by exact ENNReal.sub_lt_self h hw (by positivity)
+    obtain ⟨P, hP, hP'⟩ := var_aux_lt f hs ha
     refine ⟨P, hP, ?_⟩
-    calc supSumPart f s
+    calc var_aux f s
       _ = a + ε' := (tsub_add_cancel_of_le hε1).symm
       _ ≤  ∑ p ∈ P, f p + ε' := by
         exact (ENNReal.add_le_add_iff_right coe_ne_top).mpr (le_of_lt hP')
@@ -308,21 +311,44 @@ lemma supSumPart_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < �
   · simp_rw [hw, zero_le, and_true]
     exact ⟨{}, by simp, by simp [hs], by simp, by simp⟩
 
-lemma le_supSumPart {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
-    (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ supSumPart f s := by
-  simpa [supSumPart, hs] using le_biSup (fun P ↦ ∑ p ∈ P, f p) hP
+lemma le_var_aux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
+    (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ var_aux f s := by
+  simpa [var_aux, hs] using le_biSup (fun P ↦ ∑ p ∈ P, f p) hP
 
 
 
 -- To do, new versions of:
+-- Here I believe we need the subadditivity of `f`. Maybe countable?
+variable (hf : ∀ s t, f (s ∪ t) ≤ f s + f t)
 
 -- varOfPart_le_tsum
+/-- Given a partition `Q`, `varOfPart μ Q` is bounded by the sum of the `varOfPart μ (P i)` where
+the `P i` are the partitions formed by restricting to a disjoint set of sets `s i`. -/
+lemma sum_part_le_tsum_sum_part {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
+    (hs' : Pairwise (Disjoint on s)) {Q : Finset (Set X)} (hQ : Q ∈ partitions (⋃ i, s i)) :
+    ∑ q ∈ Q, f q ≤ ∑' i, ∑ p ∈ (restriction (s i) Q), f p := by
+  sorry
+
 -- variation_m_iUnion'
+/-- Aditivity of `variation_aux` for disjoint measurable sets. -/
+lemma var_aux_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
+    (hs' : Pairwise (Disjoint on s)) :
+    HasSum (fun i ↦ var_aux f (s i)) (var_aux f (⋃ i, s i)) := by
+  refine (Summable.hasSum_iff ENNReal.summable).mpr (eq_of_le_of_le ?_ ?_)
+  · sorry
+  · sorry
 
--- Here I believe we need the subadditivity of `f`.
+-- Two separate lemmas for the two directions.
+-- Rename `var_aux` to `var_aux`?
 
+/-- The variation of a vector-valued measure as a `VectorMeasure`. -/
+noncomputable def supSum : VectorMeasure X ℝ≥0∞ where
+  measureOf'          := var_aux f
+  empty'              := var_aux_empty' f
+  not_measurable' _ h := if_neg h
+  m_iUnion'           := var_aux_m_iUnion' f
 
-end supMeasure
+end var_aux
 
 /-!
 ## Definition of variation
@@ -459,14 +485,6 @@ lemma varOfPart_le_tsum {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
 lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ variation_aux μ (s i)) (variation_aux μ (⋃ i, s i)) := by
-  -- suffices h : ∑' i, variation_aux μ (s i) = (variation_aux μ (⋃ i, s i)) by
-  --   exact (Summable.hasSum_iff ENNReal.summable).mpr h
-  -- apply eq_of_le_of_le
-  --
-  -- refine (Summable.hasSum_iff ENNReal.summable).mpr (eq_of_le_of_le ?_ ?_)
-  -- · sorry
-  -- · sorry
-  --
   rw [ENNReal.hasSum_iff_bounds_nat]
   constructor
   · -- The sum of `variation_aux μ (s i)` is le `variation_aux μ (⋃ i, s i)`.
