@@ -76,7 +76,7 @@ lemma Φ_functor_map_ι_app (X₁ : C₁) :
     (X := 𝟭 C₁) (Y := Φ.functor ⋙ ρ) (whiskerLeft Φ.functor i)) X₁
 
 include hW₁ hi in
-lemma W₁_i'_app (X₁ : C₁) : W₁ ((ι i).app X₁) := by
+lemma W₁_ι_app (X₁ : C₁) : W₁ ((ι i).app X₁) := by
   simpa only [hW₁, MorphismProperty.inverseImage_iff, Φ_functor_map_ι_app]
     using hi (Φ.functor.obj X₁)
 
@@ -90,7 +90,7 @@ include hi hW₁
 lemma isLocalizedEquivalence_of_functorial_right_resolutions :
     Φ.IsLocalizedEquivalence :=
   Φ.isLocalizedEquivalence_of_unit_of_unit (localizerMorphismInv hi hW₁) (ι i) i
-    (W₁_i'_app hi hW₁) hi
+    (W₁_ι_app hi hW₁) hi
 
 variable [W₂.IsMultiplicative]
 
@@ -104,7 +104,7 @@ lemma isConnected_rightResolution_of_functorial_resolutions (X₂ : C₂) :
       let R₁ : Φ.RightResolution X₂ := { hw := W₂.comp_mem _ _ R₀.hw (hi _), .. }
       let R₂ : Φ.RightResolution X₂ := { hw := hi X₂, .. }
       let R₃ : Φ.RightResolution X₂ := { hw := W₂.comp_mem _ _ R₄.hw (hi _), .. }
-      let f₀ : R₀ ⟶ R₁ := { hf := W₁_i'_app hi hW₁ R₀.X₁, .. }
+      let f₀ : R₀ ⟶ R₁ := { hf := W₁_ι_app hi hW₁ R₀.X₁, .. }
       let f₁ : R₂ ⟶ R₁ :=
         { f := ρ.map R₀.w
           comm := (i.naturality R₀.w).symm
@@ -113,7 +113,7 @@ lemma isConnected_rightResolution_of_functorial_resolutions (X₂ : C₂) :
         { f := ρ.map R₄.w
           comm := (i.naturality R₄.w).symm
           hf := (localizerMorphismInv hi hW₁).map _ R₄.hw }
-      let f₃ : R₄ ⟶ R₃ := { hf := W₁_i'_app hi hW₁ R₄.X₁, .. }
+      let f₃ : R₄ ⟶ R₃ := { hf := W₁_ι_app hi hW₁ R₄.X₁, .. }
       exact (Zigzag.of_hom f₀).trans ((Zigzag.of_inv f₁).trans
         ((Zigzag.of_hom f₂).trans (Zigzag.of_inv f₃))))
   constructor
