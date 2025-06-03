@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -262,7 +260,7 @@ lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
 open TensorProduct
 
 /-- A prime `p` is in the range of `Spec S → Spec R` if the fiber over `p` is nontrivial. -/
-lemma PrimeSpectrum.mem_rangeComap_iff_nontrivial {S : Type*} [CommRing S]
+lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
     [Algebra R S] (p : PrimeSpectrum R) :
     Nontrivial (p.asIdeal.ResidueField ⊗[R] S) ↔ p ∈ Set.range (algebraMap R S).specComap := by
   let k := p.asIdeal.ResidueField

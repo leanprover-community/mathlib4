@@ -101,7 +101,7 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
 
 end IsLocalRing
 
-lemma Module.Finite.mem_support_iff_nontrivial_residueField_tensorProduct [Module.Finite R M]
+lemma Module.mem_support_iff_nontrivial_residueField_tensorProduct [Module.Finite R M]
     (p : PrimeSpectrum R) :
     p ∈ Module.support R M ↔ Nontrivial (p.asIdeal.ResidueField ⊗[R] M) := by
   let K := p.asIdeal.ResidueField
