@@ -34,13 +34,6 @@ This file contains the properties of the submodule of polynomials of degree less
 
 -/
 
-namespace AlgEquiv
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-
-@[simp] lemma toLinearMap_toLinearEquiv (f : A ≃ₐ[R] B) : (f.toLinearEquiv : A →ₗ[R] B) = f := by
-
-end AlgEquiv
-
 namespace Polynomial
 
 @[inherit_doc] scoped notation:9000 R "[X]_" n:arg => Polynomial.degreeLT R n
