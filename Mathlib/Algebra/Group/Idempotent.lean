@@ -28,7 +28,7 @@ projection, idempotent
 
 assert_not_exists GroupWithZero
 
-variable {M N S : Type*}
+variable {M S : Type*}
 
 /-- An element `a` is said to be idempotent if `a * a = a`. -/
 def IsIdempotentElem [Mul M] (a : M) : Prop := a * a = a

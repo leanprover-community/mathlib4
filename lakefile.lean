@@ -26,6 +26,7 @@ require "leanprover-community" / "plausible" @ git "main"
 /-- These options are used as `leanOptions`, prefixed by `` `weak``, so that
 `lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
+  ⟨`Elab.async, false⟩, -- temporary: for the unusedVariable linter
   ⟨`linter.allScriptsDocumented, true⟩,
   ⟨`linter.checkInitImports, true⟩,
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560

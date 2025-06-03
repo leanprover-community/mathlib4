@@ -23,7 +23,7 @@ variable {α : Type u} {β : Type v}
 
 section OrderTop
 
-variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α}
+variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a : α}
 
 theorem StrictMono.apply_eq_top_iff (hf : StrictMono f) : f a = f ⊤ ↔ a = ⊤ :=
   ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne h, congr_arg _⟩
@@ -43,7 +43,7 @@ theorem StrictMono.maximal_preimage_top [LinearOrder α] [Preorder β] [OrderTop
 
 section OrderBot
 
-variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α}
+variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a : α}
 
 theorem StrictMono.apply_eq_bot_iff (hf : StrictMono f) : f a = f ⊥ ↔ a = ⊥ :=
   hf.dual.apply_eq_top_iff

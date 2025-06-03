@@ -16,12 +16,11 @@ This file concerns the canonical homomorphism `ℤ → F`, where `F` is a field.
 * `Int.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
 -/
 
-
 namespace Int
 
 open Nat
 
-variable {α : Type*}
+variable {R : Type*} [DivisionRing R]
 
 /-- Auxiliary lemma for norm_cast to move the cast `-↑n` upwards to `↑-↑n`.
 
@@ -29,11 +28,12 @@ variable {α : Type*}
 `R = ℤ` and cause nontermination.)
 -/
 @[norm_cast]
-theorem cast_neg_natCast {R} [DivisionRing R] (n : ℕ) : ((-n : ℤ) : R) = -n := by simp
+theorem cast_neg_natCast (n : ℕ) : ((-n : ℤ) : R) = -n := by simp
+
 
 @[simp]
-theorem cast_div [DivisionRing α] {m n : ℤ} (n_dvd : n ∣ m) (hn : (n : α) ≠ 0) :
-    ((m / n : ℤ) : α) = m / n := by
+theorem cast_div {m n : ℤ} (n_dvd : n ∣ m) (hn : (n : R) ≠ 0) :
+    ((m / n : ℤ) : R) = m / n := by
   rcases n_dvd with ⟨k, rfl⟩
   have : n ≠ 0 := by rintro rfl; simp at hn
   rw [Int.mul_ediv_cancel_left _ this, mul_comm n, Int.cast_mul, mul_div_cancel_right₀ _ hn]
