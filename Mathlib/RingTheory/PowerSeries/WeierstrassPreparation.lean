@@ -71,15 +71,15 @@ such ring has only one maximal ideal, and hence it is a complete local ring.
   theorem are unique.
 
 - `Polynomial.IsDistinguishedAt.algEquivQuotient`: a distinguished polynomial `g` induces a
-  natural isomorphism `A[X] / (g) ≃ A⟦X⟧ / (g)`.
+  natural isomorphism `A[X] / (g) ≃ₐ[A] A⟦X⟧ / (g)`.
 
 - `PowerSeries.IsWeierstrassFactorizationAt.algEquivQuotient`: a Weierstrass factorization
-  `g = f * h` induces a natural isomorphism `A[X] / (f) ≃ A⟦X⟧ / (g)`.
+  `g = f * h` induces a natural isomorphism `A[X] / (f) ≃ₐ[A] A⟦X⟧ / (g)`.
 
 - `PowerSeries.algEquivQuotientWeierstrassDistinguished`:
   if `g` is a power series over a complete local ring,
   such that its image in the residue field is not zero, then there is a natural isomorphism
-  `A[X] / (f) ≃ A⟦X⟧ / (g)` where `f` is `PowerSeries.weierstrassDistinguished g`.
+  `A[X] / (f) ≃ₐ[A] A⟦X⟧ / (g)` where `f` is `PowerSeries.weierstrassDistinguished g`.
 
 ## References
 
@@ -453,7 +453,7 @@ section Equiv
 variable {g : A[X]} {I : Ideal A} (H : g.IsDistinguishedAt I) [IsAdicComplete I A]
 include H
 
-/-- A distinguished polynomial `g` induces a natural isomorphism `A[X] / (g) ≃ A⟦X⟧ / (g)`. -/
+/-- A distinguished polynomial `g` induces a natural isomorphism `A[X] / (g) ≃ₐ[A] A⟦X⟧ / (g)`. -/
 @[simps! apply symm_apply]
 noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
     (A[X] ⧸ Ideal.span {g}) ≃ₐ[A] A⟦X⟧ ⧸ Ideal.span {(g : A⟦X⟧)} where
@@ -683,7 +683,7 @@ theorem natDegree_eq_toNat_order_map_of_ne_top (hI : I ≠ ⊤) :
   exact WithBot.unbotD_coe _ _
 
 /-- If `g = f * h` is a Weierstrass factorization, then there is a
-natural isomorphism `A[X] / (f) ≃ A⟦X⟧ / (g)`. -/
+natural isomorphism `A[X] / (f) ≃ₐ[A] A⟦X⟧ / (g)`. -/
 @[simps! apply]
 noncomputable def algEquivQuotient [IsAdicComplete I A] :
     (A[X] ⧸ Ideal.span {f}) ≃ₐ[A] A⟦X⟧ ⧸ Ideal.span {g} :=
@@ -830,7 +830,7 @@ theorem isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit
 
 /-- If `g` is a power series over a complete local ring,
 such that its image in the residue field is not zero, then there is a natural isomorphism
-`A[X] / (f) ≃ A⟦X⟧ / (g)` where `f` is `PowerSeries.weierstrassDistinguished g`. -/
+`A[X] / (f) ≃ₐ[A] A⟦X⟧ / (g)` where `f` is `PowerSeries.weierstrassDistinguished g`. -/
 noncomputable abbrev algEquivQuotientWeierstrassDistinguished
     (hg : g.map (IsLocalRing.residue A) ≠ 0) :=
   (g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg).algEquivQuotient
