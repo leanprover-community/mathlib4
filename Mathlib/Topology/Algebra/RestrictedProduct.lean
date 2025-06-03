@@ -167,6 +167,8 @@ lemma range_coe_principal {S : Set ι} :
     range ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) = S.pi A :=
   range_coe R A
 
+@[simp] lemma eventually (x : Πʳ i, [R i, A i]_[𝓕]) : ∀ᶠ i in 𝓕, x i ∈ A i := x.2
+
 variable (𝓕) in
 /-- The *structure map* of the restricted product is the obvious inclusion from `Π i, A i`
 into `Πʳ i, [R i, A i]_[𝓕]`. -/
@@ -460,15 +462,18 @@ instance topologicalSpace : TopologicalSpace (Πʳ i, [R i, A i]_[𝓕]) :=
   ⨆ (S : Set ι) (hS : 𝓕 ≤ 𝓟 S), .coinduced (inclusion R A hS)
     (.induced ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) inferInstance)
 
+@[fun_prop]
 theorem continuous_coe :
     Continuous ((↑) : Πʳ i, [R i, A i]_[𝓕] → Π i, R i) :=
   continuous_iSup_dom.mpr fun _ ↦ continuous_iSup_dom.mpr fun _ ↦
     continuous_coinduced_dom.mpr continuous_induced_dom
 
+@[fun_prop]
 theorem continuous_eval (i : ι) :
     Continuous (fun (x : Πʳ i, [R i, A i]_[𝓕]) ↦ x i) :=
   continuous_apply _ |>.comp continuous_coe
 
+@[fun_prop]
 theorem continuous_inclusion {𝓖 : Filter ι} (h : 𝓕 ≤ 𝓖) :
     Continuous (inclusion R A h) := by
   simp_rw [continuous_iff_coinduced_le, topologicalSpace, coinduced_iSup, coinduced_compose]
@@ -534,14 +539,18 @@ theorem continuous_rng_of_bot {X : Type*} [TopologicalSpace X]
     Continuous f ↔ Continuous ((↑) ∘ f : X → Π i, R i) :=
   isEmbedding_coe_of_bot.continuous_iff
 
+lemma continuous_rng_of_principal_iff_forall {X : Type*} [TopologicalSpace X]
+    {f : X → Πʳ (i : ι), [R i, A i]_[𝓟 S]} :
+    Continuous f ↔ ∀ i : ι, Continuous ((fun x ↦ x i) ∘ f) :=
+  continuous_rng_of_principal.trans continuous_pi_iff
+
 /-- The obvious bijection between `Πʳ i, [R i, A i]_[⊤]` and `Π i, A i` is a homeomorphism. -/
 def homeoTop : (Π i, A i) ≃ₜ (Πʳ i, [R i, A i]_[⊤]) where
   toFun f := ⟨fun i ↦ f i, fun i ↦ (f i).2⟩
   invFun f i := ⟨f i, f.2 i⟩
   continuous_toFun := continuous_rng_of_top.mpr <| continuous_pi fun i ↦
-      continuous_subtype_val.comp <| continuous_apply i
-  continuous_invFun := continuous_pi fun i ↦ continuous_induced_rng.mpr <|
-    (continuous_apply i).comp continuous_coe
+    continuous_subtype_val.comp <| continuous_apply i
+  continuous_invFun := continuous_pi fun i ↦ continuous_induced_rng.mpr <| continuous_eval i
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -550,7 +559,7 @@ def homeoBot : (Π i, R i) ≃ₜ (Πʳ i, [R i, A i]_[⊥]) where
   toFun f := ⟨fun i ↦ f i, eventually_bot⟩
   invFun f i := f i
   continuous_toFun := continuous_rng_of_bot.mpr <| continuous_pi fun i ↦ continuous_apply i
-  continuous_invFun := continuous_pi fun i ↦ (continuous_apply i).comp continuous_coe
+  continuous_invFun := continuous_pi continuous_eval
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -789,6 +798,29 @@ theorem continuous_dom_prod {R' : ι → Type*} {A' : (i : ι) → Set (R' i)}
   have hSU : 𝓟 U ≤ 𝓟 S := principal_mono.mpr inter_subset_left
   have hTU : 𝓟 U ≤ 𝓟 T := principal_mono.mpr inter_subset_right
   exact (H U hU).comp ((continuous_inclusion hSU).prodMap (continuous_inclusion hTU))
+
+/-- A finitary (instead of binary) version of `continuous_dom_prod`. -/
+theorem continuous_dom_pi {n : Type*} [Fintype n] {X : Type*}
+    [TopologicalSpace X] {A : n → ι → Type*}
+    [∀ j i, TopologicalSpace (A j i)]
+    {C : (j : n) → (i : ι) → Set (A j i)}
+    (hCopen : ∀ j i, IsOpen (C j i))
+    {f : (Π j : n, Πʳ i : ι, [A j i, C j i]) → X} :
+    Continuous f ↔
+      ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S), Continuous (f ∘ Pi.map fun _ ↦ inclusion _ _ hS) := by
+  refine ⟨by fun_prop, fun H ↦ ?_⟩
+  simp_rw [continuous_iff_continuousAt, ContinuousAt]
+  intro x
+  set S : Set ι := {i | ∀ j, x j i ∈ C j i}
+  have hS : cofinite ≤ 𝓟 S := by
+    rw [le_principal_iff]
+    change ∀ᶠ i in cofinite, ∀ j : n, x j i ∈ C j i
+    simp [- eventually_cofinite]
+  let x' (j : n) : Πʳ i : ι, [A j i, C j i]_[𝓟 S] := .mk (fun i ↦ x j i) (fun i hi ↦ hi _)
+  have hxx' : Pi.map (fun j ↦ inclusion _ _ hS) x' = x := rfl
+  simp_rw [← hxx', nhds_pi, Pi.map_apply, nhds_eq_map_inclusion (hCopen _), ← map_piMap_pi_finite,
+    tendsto_map'_iff, ← nhds_pi]
+  exact (H _ _).tendsto _
 
 end cofinite
 
