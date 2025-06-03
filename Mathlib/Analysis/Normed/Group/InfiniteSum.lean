@@ -106,7 +106,10 @@ which is summable, then `f` is summable. -/
 theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} {g : ι → ℝ} (hg : Summable g)
     (h : ∀ i, ‖f i‖ ≤ g i) : Summable f := by
   rw [summable_iff_cauchySeq_finset]
-  exact cauchySeq_finset_of_norm_bounded hg h
+  exact cauchySeq_finset_of_norm_bounded g hg h
+
+open ENNReal
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddCommMonoid ε]
 
 theorem HasSum.enorm_le_of_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ε} {b : ℝ≥0∞} (hf : HasSum f a)
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖a‖ₑ ≤ b := by
