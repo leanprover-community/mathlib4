@@ -1064,10 +1064,13 @@ noncomputable def three_two_B_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Fi
 lemma three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1): ∃ n, three_two_S_n (S := S) φ γ (n + 1) ⊆ ((three_two_B_n (S := S) φ γ n) * (three_two_B_n (S := S) φ γ n)⁻¹)  := by
   sorry
 
+lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1): ∃ n, three_two_S_n (S := S) φ γ (n + 1) ⊆ ((three_two_B_n (S := S) φ γ n) * (three_two_B_n (S := S) φ γ n)⁻¹)  := by
+  sorry
+
 set_option maxHeartbeats 600000
 
 
-lemma closure_iterate_mulact (T: Type*) [Group T] [DecidableEq T] (a b: T) (n: ℕ)
+lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: ℕ)
   (conj_in: (a^n * b * a^(-n : ℤ)) ∈ (Subgroup.closure (G := T) (Set.image (fun (m: ℕ) => a^m * b * a^(-m : ℤ)) (Set.Ico 0 n)))) :
  (Subgroup.closure (G := T) (Set.image (fun (m: ℕ) => a^m * b * a^(-m : ℤ)) (Set.Ico 0 n) )) = (Subgroup.closure (G := T) (Set.range (fun (m : ℕ) => a^m * b * a^(-m : ℤ)))) := by
   ext x
@@ -1170,6 +1173,30 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
   obtain ⟨n, s_n_subset⟩ := three_two_poly_growth (G := G) (S := S) d hd hG γ φ hφ hγ
   use n
   intro m
+  intro x hx
+  simp [gamma_m_helper] at hx
+  simp [three_two_S_n, gamma_m_helper]
+  obtain ⟨s, hs, x_eq_conj⟩ := hx
+
+  have my_iter := closure_iterate_mulact γ (e_i_regular_helper φ γ ⟨s, hs⟩) (n + 1)
+  simp [three_two_S_n, gamma_m_helper] at s_n_subset
+  specialize s_n_subset (n + 1) (by omega) (by omega) s hs
+  simp [three_two_B_n] at s_n_subset
+  have closure_eq := my_iter ?_
+  .
+    have x_mem_closure_range: x ∈ Subgroup.closure (Set.range fun (m : ℕ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) := by
+      sorry
+    rw [← closure_eq] at x_mem_closure_range
+    apply Subgroup.closure_mono (h := ((fun (m : ℕ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) '' Set.Ico 0 (n + 1)))
+    . sorry
+    . exact x_mem_closure_range
+  . sorry
+
+
+
+
+
+
 
   by_cases m_le_n: Int.natAbs m ≤ n
   .
