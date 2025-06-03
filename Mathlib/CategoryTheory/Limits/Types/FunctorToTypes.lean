@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benoît Guillemet
 -/
 import Mathlib.CategoryTheory.Limits.Types.Limits
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.IndYoneda
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
@@ -18,6 +22,8 @@ sections of `G` over sections of `F`.
 universe u v w
 
 open CategoryTheory
+
+namespace Category
 
 section sectionOver
 
@@ -53,20 +59,21 @@ lemma id_fst : (𝟙 s : sectionOverMorphism F s s).fst = 𝟙 (s.fst) := rfl
 @[simp]
 lemma comp_fst : (f ≫ g).fst = f.fst ≫ g.fst := rfl
 
+@[simps]
+def over : sectionOver F ⥤ C where
+  obj s := s.fst
+  map f := f.fst
+
 end
 
 end sectionOver
 
-section morphismsEquiv
+section homEquiv
 
 variable (G : C ⥤ Type w)
 
-def sectionOverFunctor : sectionOver F ⥤ Type w where
-  obj s := G.obj s.fst
-  map f := G.map f.fst
-
-def morphismsEquivSectionsSectionOverFunctor :
-    (F ⟶ G) ≃ (sectionOverFunctor F G).sections where
+def homEquivOverCompSections :
+    (F ⟶ G) ≃ (sectionOver.over F ⋙ G).sections where
   toFun α := ⟨
       fun s => α.app s.fst s.snd,
       fun {s s'} f => by
@@ -85,15 +92,56 @@ def morphismsEquivSectionsSectionOverFunctor :
   left_inv _ := rfl
   right_inv _ := rfl
 
-noncomputable def morphismsEquivLimitSectionOver [UnivLE.{max w u, w}] :
-    (F ⟶ G) ≃ Limits.limit (sectionOverFunctor F G) :=
-  (morphismsEquivSectionsSectionOverFunctor F G).trans
-    (Limits.Types.limitEquivSections (sectionOverFunctor F G)).symm
+noncomputable def homEquivLimitOverComp [UnivLE.{max w u, w}] :
+    (F ⟶ G) ≃ Limits.limit (sectionOver.over F ⋙ G) :=
+  (homEquivOverCompSections F G).trans
+    (Limits.Types.limitEquivSections (sectionOver.over F ⋙ G)).symm
 
-end morphismsEquiv
+end homEquiv
 
 end sectionOver
 
+
+section presheaf
+
+variable {C : Type u} [Category.{v, u} C] (F : Cᵒᵖ ⥤ Type v)
+
+@[simps]
+def overYoneda : (sectionOver F)ᵒᵖ ⥤ (Cᵒᵖ ⥤ Type v) where
+  obj s := yoneda.obj s.unop.fst.unop
+  map f := yoneda.map f.unop.fst.unop
+
+-- ne sert à rien
+lemma overYonedaRightOpIso : (overYoneda F).rightOp = sectionOver.over F ⋙ yoneda.op := by
+  rfl
+
+variable [UnivLE.{max v u, v}] (G : Cᵒᵖ ⥤ Type v)
+
+noncomputable def homColimitOverYonedaIsoLimitOverComp :
+    (Limits.colimit (overYoneda F) ⟶ G) ≅ Limits.limit (sectionOver.over F ⋙ G ⋙ uliftFunctor) :=
+  (Limits.colimitHomIsoLimitYoneda' (overYoneda F) G).trans
+    (Limits.HasLimit.isoOfNatIso (isoWhiskerLeft (sectionOver.over F) (yonedaOpCompYonedaObj G)))
+
+noncomputable def homColimitOverYonedaIsoLimitOverComp' :
+    (Limits.colimit (overYoneda F) ⟶ G) ≅ ULift.{u, v} (Limits.limit (sectionOver.over F ⋙ G)) :=
+  (homColimitOverYonedaIsoLimitOverComp F G).trans
+    (preservesLimitIso uliftFunctor (sectionOver.over F ⋙ G)).symm
+
+noncomputable def homColimitOverYonedaEquivLimitOverComp :
+    (Limits.colimit (overYoneda F) ⟶ G) ≃ (Limits.limit (sectionOver.over F ⋙ G)) :=
+  (homColimitOverYonedaIsoLimitOverComp' F G).toEquiv.trans Equiv.ulift
+
+noncomputable def homEquivHomColimitOverYoneda :
+    (F ⟶ G) ≃ (Limits.colimit (overYoneda F) ⟶ G) :=
+  (homEquivLimitOverComp F G).trans (homColimitOverYonedaEquivLimitOverComp F G).symm
+
+/- noncomputable def isoColimitSectionOverYoneda :
+    F ≅ Limits.colimit (overYoneda F) := by
+  apply Coyoneda.ext _ _ () -/
+
+end presheaf
+
+end Category
 
 /-
 section
