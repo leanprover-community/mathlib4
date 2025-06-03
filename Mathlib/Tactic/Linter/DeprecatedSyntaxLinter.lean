@@ -106,33 +106,23 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
   | _ => none
 
 /-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option enabled. -/
-def isDecideNative (stx : Syntax ): Bool := Id.run do
+def isDecideNative (stx : Syntax ) : Bool :=
   match stx with
   | .node _ ``Lean.Parser.Tactic.decide args =>
     -- The configuration passed to the tactic call.
     let config := args[1]![0]
     -- Check all configuration arguments in order to determine the final
     -- toggling of the native decide option.
-    let mut enabled := false
     if let (.node _ _ config_args) := config then
-      for arg in config_args do
-        match arg[0] with
-        | (.node _ ``Lean.Parser.Tactic.posConfigItem args') =>
-          if args'[1]! matches (.ident _ _ `native _) then
-            enabled := true
-        | (.node _ ``Lean.Parser.Tactic.negConfigItem args') =>
-          if args'[1]! matches (.ident _ _ `native _) then
-            enabled := false
-        | (.node _ ``Lean.Parser.Tactic.valConfigItem args') =>
-          if args'[1]! matches (.ident _ _ `config _) then
-            match args'[3]! with
-            |  `({ native := true }) => return true
-            |  `({ native := false }) => return false
-            | _ =>
-              dbg_trace "warning: unhandled config {args'[3]!}"
-              return false
-        | _ => let _n := 0
-    return enabled
+      let natives := config_args.filterMap (match ·[0] with
+        | `(Parser.Tactic.posConfigItem| +native) => some true
+        | `(Parser.Tactic.negConfigItem| -native) => some false
+        | `(Parser.Tactic.valConfigItem| (config := {native := true})) => some true
+        | `(Parser.Tactic.valConfigItem| (config := {native := false})) => some false
+        | _ => none)
+      natives.back? == some true
+    else
+      false
   | _ => false
 
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
