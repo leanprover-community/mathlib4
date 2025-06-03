@@ -137,9 +137,6 @@ lemma isZero_iff_isStrictlySupported_and_isStrictlySupportedOutside :
       exact h₂.isZero i
     · exact K.isZero_X_of_isStrictlySupported e _ (by simpa using hn)
 
-instance [K.IsStrictlySupported e] : K.op.IsStrictlySupported e.op where
-  isZero j hj' := (K.isZero_X_of_isStrictlySupported e j hj').op
-
 end
 
 section

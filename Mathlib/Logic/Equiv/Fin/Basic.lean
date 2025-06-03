@@ -344,13 +344,13 @@ def Fin.castLEquiv {n m : ℕ} (h : n ≤ m) : Fin n ≃ { i : Fin m // (i : ℕ
   left_inv _ := by simp
   right_inv _ := by simp
 
-/-- `Fin 0` is a subsingleton. -/
-instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
-  finZeroEquiv.subsingleton
+@[deprecated Fin.subsingleton_zero (since := "2025-06-03")]
+def subsingleton_fin_zero : Subsingleton (Fin 0) :=
+  Fin.subsingleton_zero
 
-/-- `Fin 1` is a subsingleton. -/
-instance subsingleton_fin_one : Subsingleton (Fin 1) :=
-  finOneEquiv.subsingleton
+@[deprecated Fin.subsingleton_one (since := "2025-06-03")]
+def subsingleton_fin_one : Subsingleton (Fin 1) :=
+  Fin.subsingleton_one
 
 /-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α` -/
 @[simps]
