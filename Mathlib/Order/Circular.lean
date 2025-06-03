@@ -343,6 +343,18 @@ See note [reducible non-instances]. -/
 abbrev LT.toSBtw (α : Type*) [LT α] : SBtw α where
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
 
+section
+
+variable {α : Type*} {a b c : α}
+
+attribute [local instance] LE.toBtw LT.toSBtw
+
+-- The following lemmas are about the non-instances `LE.toBtw` and `LT.toSBtw`.
+lemma btw_iff [LE α] : btw a b c ↔ a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b := .rfl
+lemma sbtw_iff [LT α] : sbtw a b c ↔ a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b := .rfl
+
+end
+
 /-- The circular preorder obtained from "looping around" a preorder.
 See note [reducible non-instances]. -/
 abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
@@ -401,17 +413,6 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
       · exact Or.inr (Or.inr <| Or.inl ⟨hba, hac⟩)
       · exact Or.inr (Or.inl ⟨hcb, hba⟩)
       · exact Or.inr (Or.inr <| Or.inl ⟨hba, hac⟩) }
-
-section
-
-variable {α : Type*} [LinearOrder α] {a b c : α}
-
-attribute [local instance] LinearOrder.toCircularOrder
-
-lemma sbtw_iff : sbtw a b c ↔ a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b := .rfl
-lemma btw_iff : btw a b c ↔ a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b := .rfl
-
-end
 
 /-! ### Dual constructions -/
 
