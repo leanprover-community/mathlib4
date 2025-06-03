@@ -262,8 +262,6 @@ private theorem toFunAux_eq {s : Set ℕ} [DecidablePred (· ∈ s)] (x : s) :
   rw [toFunAux, List.countP_eq_length_filter]
   rfl
 
-open Finset
-
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_notMem]

@@ -48,8 +48,6 @@ abbrev TProd (l : List ι) : Type v :=
 
 namespace TProd
 
-open List
-
 /-- Turning a function `f : ∀ i, α i` into an element of the iterated product `TProd α l`. -/
 protected def mk : ∀ (l : List ι) (_f : ∀ i, α i), TProd α l
   | [] => fun _ => PUnit.unit
@@ -128,8 +126,6 @@ end TProd
 end List
 
 namespace Set
-
-open List
 
 /-- A product of sets in `TProd α l`. -/
 @[simp]

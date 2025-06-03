@@ -15,7 +15,7 @@ function on `ℕ`.
 assert_not_exists Monoid Multiset.sort
 
 open List
-open Nat List
+open Nat
 
 namespace Equiv
 

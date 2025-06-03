@@ -1366,8 +1366,6 @@ theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f
 
 section AddGroup
 
-open Nat Int
-
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
 lemma eq_one_of_ne_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by fin_omega
