@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.Support
 
 /-!
@@ -16,12 +17,13 @@ the krull dimension of its support. It is equal to the krull dimension of `R / A
 
 -/
 
+variable (R : Type*) [CommRing R]
+
+variable (M : Type*) [AddCommGroup M] [Module R M] (N : Type*) [AddCommGroup N] [Module R N]
+
 namespace Module
 
 open Order
-
-variable (R : Type*) [CommRing R]
-variable (M : Type*) [AddCommGroup M] [Module R M] (N : Type*) [AddCommGroup N] [Module R N]
 
 /-- The krull dimension of module, defined as `krullDim` of its support. -/
 noncomputable def supportDim : WithBot ℕ∞ :=
@@ -75,3 +77,38 @@ lemma supportDim_eq_of_equiv (e : M ≃ₗ[R] N) :
     (supportDim_le_of_surjective e e.surjective)
 
 end Module
+
+open Ideal IsLocalRing
+
+lemma IsLocalRing.maximalIdeal_mem_support [IsLocalRing R] [Module.Finite R M] [Nontrivial M] :
+    IsLocalRing.closedPoint R ∈ Module.support R M := by
+  simp only [Module.support_eq_zeroLocus, PrimeSpectrum.mem_zeroLocus, SetLike.coe_subset_coe]
+  apply IsLocalRing.le_maximalIdeal
+  simpa [Module.annihilator_eq_top_iff.not, not_subsingleton_iff_nontrivial]
+
+lemma zeroLocus_eq_singleton (m : Ideal R) [max : m.IsMaximal] :
+    PrimeSpectrum.zeroLocus m = {⟨m, IsMaximal.isPrime' m⟩} := by
+  ext I
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp only [PrimeSpectrum.mem_zeroLocus, SetLike.coe_subset_coe] at h
+    simpa using PrimeSpectrum.ext_iff.mpr (Ideal.IsMaximal.eq_of_le max I.2.ne_top h).symm
+  · simp [Set.mem_singleton_iff.mp h]
+
+lemma support_of_dimension_zero [IsLocalRing R] [Module.Finite R N]
+    (dim : Module.supportDim R N = 0) :
+    Module.support R N = PrimeSpectrum.zeroLocus (maximalIdeal R) := by
+  let _ : Nontrivial N := by simp [← Module.supportDim_ne_bot_iff_nontrivial R, dim]
+  rw [zeroLocus_eq_singleton]
+  apply le_antisymm
+  · intro p hp
+    by_contra nmem
+    simp at nmem
+    have : p < ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩ :=
+      lt_of_le_of_ne (IsLocalRing.le_maximalIdeal IsPrime.ne_top') nmem
+    have : Module.supportDim R N > 0 := by
+      simp only [Module.supportDim, gt_iff_lt, Order.krullDim_pos_iff, Subtype.exists,
+        Subtype.mk_lt_mk, exists_prop]
+      use p
+      simpa [hp] using ⟨_, IsLocalRing.maximalIdeal_mem_support R N, this⟩
+    exact (ne_of_lt this) dim.symm
+  · simpa using IsLocalRing.maximalIdeal_mem_support R N

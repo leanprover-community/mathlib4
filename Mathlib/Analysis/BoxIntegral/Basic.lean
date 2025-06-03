@@ -820,8 +820,10 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
       refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_ (fun hH => hπδ.2 hH J hJ)
         fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
       convert hπδ.1 J hJ using 3; exact (if_neg hJs).symm
-    _ ≤ ∑ J ∈ π.boxes, ε' * B J := sum_le_sum_of_subset_of_nonneg (filter_subset _ _) fun _ _ _ ↦
-      mul_nonneg ε'0.le (hB0 _)
+    _ ≤ ∑ J ∈ π.boxes, ε' * B J := by
+      gcongr
+      · exact fun _ _ _ ↦ mul_nonneg ε'0.le (hB0 _)
+      · apply filter_subset
     _ = B I * ε' := by rw [← mul_sum, B.sum_partition_boxes le_rfl hπp, mul_comm]
     _ ≤ ε / 2 := hεI.le
 
