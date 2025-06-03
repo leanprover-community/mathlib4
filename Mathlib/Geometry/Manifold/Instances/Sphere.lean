@@ -303,6 +303,38 @@ theorem continuous_stereographic_symm (hv : ‖v‖ = 1) :
     Continuous (stereographic hv).symm :=
   (stereographic hv).symm.continuous_of_source_eq_univ rfl
 
+@[simp]
+theorem range_stereographic_symm (hv : ‖v‖ = 1) (hv' : v ∈ sphere 0 1 := by simpa) :
+    Set.range (stereographic hv).symm = {⟨v, hv'⟩}ᶜ :=
+  -- TODO: Golf this proof
+  (Set.ext <| fun x => ⟨fun ⟨y,hy⟩ => hy ▸ (fun _ => (stereographic hv).map_target) y (by trivial),
+    fun h => ⟨(stereographic hv).toFun' x, (stereographic hv).left_inv h⟩⟩)
+
+lemma isEmbedding_stereographic_symm (hv : ‖v‖ = 1) :
+    Topology.IsEmbedding (stereographic hv).symm  := by
+  -- TODO: Golf this proof
+  constructor
+  · apply (Topology.isInducing_iff _).mpr
+    ext s
+    constructor
+    · exact fun h => isOpen_mk.mpr <| by
+        use (stereographic hv).symm '' s
+        constructor
+        · obtain ⟨b,hb⟩ := (
+            (stereographic hv).isOpenEmbedding_restrict.continuous).isOpen_preimage s h
+          have hv' : v ∈ sphere 0 (1:ℝ) := by simpa
+          have hh : (stereographic hv) ⁻¹' s ∩ {⟨v, hv'⟩}ᶜ = b ∩ {⟨v, hv'⟩}ᶜ := Set.ext <| fun x =>
+            ⟨fun h => ⟨(congrFun hb.2 ⟨x, h.2⟩).mpr h.1, h.2⟩,
+              fun h => ⟨(congrFun hb.2 ⟨x, h.2⟩).mp  h.1, h.2⟩⟩
+          exact (stereographic hv).isOpen_image_symm_of_subset_target h <| by simp
+        · exact (injective_stereographic_symm hv).preimage_image s
+    · intro ⟨t,ht⟩
+      rw [isOpen_mk] at ht
+      exact ht.2 ▸ ((stereographic hv).continuousOn_invFun.mono
+                    fun _ _ ↦ trivial).isOpen_preimage
+        ((continuous_stereographic_symm hv).isOpen_preimage t ht.1) (fun ⦃a⦄ a ↦ a) ht.1
+  · exact injective_stereographic_symm hv
+
 end StereographicProjection
 
 section ChartedSpace
