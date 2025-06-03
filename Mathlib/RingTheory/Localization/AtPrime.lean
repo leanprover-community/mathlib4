@@ -308,6 +308,7 @@ lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization.AtPrime S p (hp := hp.1.1)] :
     Subsingleton (PrimeSpectrum S) :=
   have := hp.1.1
-  have : Unique { q : PrimeSpectrum R // q.1 ≤ p } := ⟨⟨⟨p, hp.1.1⟩, le_rfl⟩, fun i ↦ Subtype.ext <|
-    PrimeSpectrum.ext <| (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
-  (p.primeSpectrumLocalizationAtPrime S).subsingleton
+  have : Unique (Set.Iic (⟨p, hp.1.1⟩ : PrimeSpectrum R)) := ⟨⟨⟨p, hp.1.1⟩, by exact
+    fun ⦃x⦄ a ↦ a⟩, fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
+    (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
+  (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
