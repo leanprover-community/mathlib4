@@ -374,7 +374,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
 
 namespace classifyingSpaceUniversalCover
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory.Limits
 
 variable [Monoid G]
 
@@ -449,7 +449,7 @@ def groupCohomology.resolution [Monoid G] :=
 
 namespace groupCohomology.resolution
 
-open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory CategoryTheory.Limits
+open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
 
 variable [Monoid G]
 
