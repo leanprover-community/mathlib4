@@ -281,12 +281,32 @@ lemma supSumPart_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂)
   · simp [supSumPart, hs₁]
 
 lemma supSumPart_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < supSumPart f s) :
-    ∃ P, IsInnerPart s P ∧ a < supSumPart f s := by
+    ∃ P, IsInnerPart s P ∧ a < ∑ p ∈ P, f p := by
   obtain ⟨P, hP, hP'⟩ : ∃ P, IsInnerPart s P ∧ a < ∑ p ∈ P, f p := by
     simp_all [supSumPart, hs, lt_iSup_iff]
   exact ⟨P, hP, by gcongr⟩
 
-
+lemma supSumPart_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
+    (h : supSumPart f s ≠ ⊤) :
+    ∃ P, IsInnerPart s P ∧ supSumPart f s ≤ ∑ p ∈ P, f p + ε := by
+  let ε' := min ε (supSumPart f s).toNNReal
+  have hε1 : ε' ≤ supSumPart f s := by simp_all [ε']
+  have : ε' ≤ ε := by simp_all [ε']
+  obtain hw | hw : supSumPart f s ≠ 0 ∨ supSumPart f s = 0 := ne_or_eq _ _
+  · have : 0 < ε' := by
+      simp only [lt_inf_iff, ε']
+      exact ⟨hε, toNNReal_pos hw h⟩
+    let a := supSumPart f s - ε'
+    have ha : a < supSumPart f s := by exact ENNReal.sub_lt_self h hw (by positivity)
+    obtain ⟨P, hP, hP'⟩ := supSumPart_lt f hs ha
+    refine ⟨P, hP, ?_⟩
+    calc supSumPart f s
+      _ = a + ε' := (tsub_add_cancel_of_le hε1).symm
+      _ ≤  ∑ p ∈ P, f p + ε' := by
+        exact (ENNReal.add_le_add_iff_right coe_ne_top).mpr (le_of_lt hP')
+      _ ≤  ∑ p ∈ P, f p + ε := by gcongr
+  · simp_rw [hw, zero_le, and_true]
+    exact ⟨{}, by simp, by simp [hs], by simp, by simp⟩
 
 
 
@@ -332,7 +352,7 @@ lemma variation_aux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha :
   simp_all [variation_aux, lt_iSup_iff]
 
 omit [T2Space V] in
-lemma variation_aux_le' {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
+lemma variation_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
     (h : variation_aux μ s ≠ ⊤) :
     ∃ P ∈ partitions s, variation_aux μ s ≤ varOfPart μ P + ε := by
   let ε' := min ε (variation_aux μ s).toNNReal
@@ -456,7 +476,7 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
       exact lt_top_iff_ne_top.mp <| lt_of_le_of_lt this hsnetop
     -- For each set `s i` we choose a partition `P i` such that, for each `i`,
     -- `variation_aux μ (s i) ≤ varOfPart μ (P i) + ε`.
-    choose P hP using fun i ↦ variation_aux_le' μ (hs i) (hε) (hs'' i)
+    choose P hP using fun i ↦ variation_aux_le μ (hs i) (hε) (hs'' i)
     calc ∑ i ∈ Finset.range n, variation_aux μ (s i)
       _ ≤ ∑ i ∈ Finset.range n, (varOfPart μ (P i) + ε) := by
         gcongr with i hi
