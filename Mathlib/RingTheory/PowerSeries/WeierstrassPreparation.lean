@@ -217,7 +217,7 @@ noncomputable def seq (H : g.IsWeierstrassDivisorAt I) (f : A⟦X⟧) : ℕ → 
     H.seq f k + (mk fun i ↦ coeff A (i + (g.map (Ideal.Quotient.mk I)).order.toNat)
       (f - g * H.seq f k)) * H.isUnit_shift.unit⁻¹
 
-variable {f : A⟦X⟧}
+variable (a : A) (f f' : A⟦X⟧)
 
 theorem coeff_seq_mem (k : ℕ) {i : ℕ} (hi : i ≥ (g.map (Ideal.Quotient.mk I)).order.toNat) :
     coeff A i (f - g * H.seq f k) ∈ I ^ k := by
@@ -253,7 +253,7 @@ theorem coeff_seq_succ_sub_seq_mem (k i : ℕ) :
   rw [seq, add_sub_cancel_left]
   refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' (fun i ↦ ?_) i
   rw [coeff_mk]
-  exact H.coeff_seq_mem k (by simp)
+  exact H.coeff_seq_mem f k (by simp)
 
 @[simp]
 theorem seq_zero : H.seq f 0 = 0 := rfl
@@ -261,8 +261,6 @@ theorem seq_zero : H.seq f 0 = 0 := rfl
 theorem seq_one : H.seq f 1 = (PowerSeries.mk fun i ↦ coeff A
     (i + (g.map (Ideal.Quotient.mk I)).order.toNat) f) * H.isUnit_shift.unit⁻¹ := by
   simp_rw [seq, mul_zero, zero_add, sub_zero]
-
-variable (f)
 
 /-- The (bundled version of) coefficient of the limit `q` of the
 inductively constructed sequence `qₖ` in the proof of Weierstrass division. -/
@@ -274,13 +272,11 @@ noncomputable def divCoeff [IsPrecomplete I A] (i : ℕ) :=
       | succ n hn ih =>
         refine ih.trans (SModEq.symm ?_)
         rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top, ← map_sub]
-        exact Ideal.pow_le_pow_right hn (H.coeff_seq_succ_sub_seq_mem n i)
+        exact Ideal.pow_le_pow_right hn (H.coeff_seq_succ_sub_seq_mem f n i)
 
 /-- The limit `q` of the
 inductively constructed sequence `qₖ` in the proof of Weierstrass division. -/
 noncomputable def div [IsPrecomplete I A] : A⟦X⟧ := PowerSeries.mk fun i ↦ (H.divCoeff f i).1
-
-variable {f}
 
 theorem coeff_div [IsPrecomplete I A] (i : ℕ) : coeff A i (H.div f) = (H.divCoeff f i).1 := by
   simp [div]
@@ -288,8 +284,6 @@ theorem coeff_div [IsPrecomplete I A] (i : ℕ) : coeff A i (H.div f) = (H.divCo
 theorem coeff_div_sub_seq_mem [IsPrecomplete I A] (k i : ℕ) :
     coeff A i (H.div f - (H.seq f k)) ∈ I ^ k := by
   simpa [coeff_div, SModEq.sub_mem] using ((H.divCoeff f i).2 k).symm
-
-variable (f)
 
 /-- The remainder `r` in the proof of Weierstrass division. -/
 noncomputable def mod [IsPrecomplete I A] : A[X] :=
@@ -312,8 +306,8 @@ theorem isWeierstrassDivisionAt_div_mod [IsAdicComplete I A] :
     refine IsHausdorff.haus' (I := I) _ fun k ↦ ?_
     rw [SModEq.zero, smul_eq_mul, Ideal.mul_top, show f - g * H.div f =
       f - g * (H.seq f k) - g * (H.div f - (H.seq f k)) by ring, map_sub]
-    exact Ideal.sub_mem _ (H.coeff_seq_mem k (not_lt.1 hi)) <|
-      coeff_mul_mem_ideal_of_coeff_right_mem_ideal' (H.coeff_div_sub_seq_mem k) i
+    exact Ideal.sub_mem _ (H.coeff_seq_mem f k (not_lt.1 hi)) <|
+      coeff_mul_mem_ideal_of_coeff_right_mem_ideal' (H.coeff_div_sub_seq_mem f k) i
 
 /-- If `g * q = r` for some power series `q` and some polynomial `r` whose degree is `< n`,
 then `q` and `r` are all zero. This implies the uniqueness of Weierstrass division. -/
@@ -371,14 +365,14 @@ theorem eq_of_mul_add_eq_mul_add [IsHausdorff I A] {q q' : A⟦X⟧} {r r' : A[X
   exact ⟨h.1, h.2.symm⟩
 
 @[simp]
-theorem div_add [IsAdicComplete I A] {f f' : A⟦X⟧} : H.div (f + f') = H.div f + H.div f' := by
+theorem div_add [IsAdicComplete I A] : H.div (f + f') = H.div f + H.div f' := by
   have H1 := (H.isWeierstrassDivisionAt_div_mod f).add (H.isWeierstrassDivisionAt_div_mod f')
   have H2 := H.isWeierstrassDivisionAt_div_mod (f + f')
   exact (H.eq_of_mul_add_eq_mul_add H2.degree_lt H1.degree_lt
     (H2.eq_mul_add.symm.trans H1.eq_mul_add)).1
 
 @[simp]
-theorem div_smul [IsAdicComplete I A] {a : A} {f : A⟦X⟧} : H.div (a • f) = a • H.div f := by
+theorem div_smul [IsAdicComplete I A] : H.div (a • f) = a • H.div f := by
   have H1 := (H.isWeierstrassDivisionAt_div_mod f).smul a
   have H2 := H.isWeierstrassDivisionAt_div_mod (a • f)
   exact (H.eq_of_mul_add_eq_mul_add H2.degree_lt H1.degree_lt
@@ -386,17 +380,17 @@ theorem div_smul [IsAdicComplete I A] {a : A} {f : A⟦X⟧} : H.div (a • f) =
 
 @[simp]
 theorem div_zero [IsAdicComplete I A] : H.div 0 = 0 := by
-  simpa using H.div_smul (a := 0) (f := 0)
+  simpa using H.div_smul 0 0
 
 @[simp]
-theorem mod_add [IsAdicComplete I A] {f f' : A⟦X⟧} : H.mod (f + f') = H.mod f + H.mod f' := by
+theorem mod_add [IsAdicComplete I A] : H.mod (f + f') = H.mod f + H.mod f' := by
   have H1 := (H.isWeierstrassDivisionAt_div_mod f).add (H.isWeierstrassDivisionAt_div_mod f')
   have H2 := H.isWeierstrassDivisionAt_div_mod (f + f')
   exact (H.eq_of_mul_add_eq_mul_add H2.degree_lt H1.degree_lt
     (H2.eq_mul_add.symm.trans H1.eq_mul_add)).2
 
 @[simp]
-theorem mod_smul [IsAdicComplete I A] {a : A} {f : A⟦X⟧} : H.mod (a • f) = a • H.mod f := by
+theorem mod_smul [IsAdicComplete I A] : H.mod (a • f) = a • H.mod f := by
   have H1 := (H.isWeierstrassDivisionAt_div_mod f).smul a
   have H2 := H.isWeierstrassDivisionAt_div_mod (a • f)
   exact (H.eq_of_mul_add_eq_mul_add H2.degree_lt H1.degree_lt
@@ -404,10 +398,10 @@ theorem mod_smul [IsAdicComplete I A] {a : A} {f : A⟦X⟧} : H.mod (a • f) =
 
 @[simp]
 theorem mod_zero [IsAdicComplete I A] : H.mod 0 = 0 := by
-  simpa using H.mod_smul (a := 0) (f := 0)
+  simpa using H.mod_smul 0 0
 
 /-- The remainder map `PowerSeries.IsWeierstrassDivisorAt.mod` induces a linear map
-`A⟦X⟧ / (g) → A[X]`. -/
+`A⟦X⟧ / (g) →ₗ[A] A[X]`. -/
 noncomputable def mod' [IsAdicComplete I A] : A⟦X⟧ ⧸ Ideal.span {g} →ₗ[A] A[X] where
   toFun := Quotient.lift (fun f ↦ H.mod f) fun f f' hf ↦ by
     simp_rw [HasEquiv.Equiv, Submodule.quotientRel_def, Ideal.mem_span_singleton'] at hf
@@ -419,10 +413,10 @@ noncomputable def mod' [IsAdicComplete I A] : A⟦X⟧ ⧸ Ideal.span {g} →ₗ
   map_add' f f' := by
     obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
     obtain ⟨f', rfl⟩ := Ideal.Quotient.mk_surjective f'
-    exact H.mod_add
+    exact H.mod_add f f'
   map_smul' a f := by
     obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
-    exact H.mod_smul
+    exact H.mod_smul a f
 
 @[simp]
 theorem mod'_mk_eq_mod [IsAdicComplete I A] {f : A⟦X⟧} :
@@ -457,12 +451,11 @@ include H
 @[simps! apply symm_apply]
 noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
     (A[X] ⧸ Ideal.span {g}) ≃ₐ[A] A⟦X⟧ ⧸ Ideal.span {(g : A⟦X⟧)} where
-  __ := show (A[X] ⧸ Ideal.span {g}) →ₐ[A] A⟦X⟧ ⧸ Ideal.span {(g : A⟦X⟧)} from
-    Ideal.quotientMapₐ _ (Polynomial.coeToPowerSeries.algHom A) fun a ha ↦ by
-      obtain ⟨b, hb⟩ := Ideal.mem_span_singleton'.1 ha
-      simp only [Ideal.mem_comap, Polynomial.coeToPowerSeries.algHom_apply, Algebra.id.map_eq_id,
-        map_id, id_eq, Ideal.mem_span_singleton']
-      exact ⟨b, by simp [← hb]⟩
+  __ := Ideal.quotientMapₐ _ (Polynomial.coeToPowerSeries.algHom A) fun a ha ↦ by
+    obtain ⟨b, hb⟩ := Ideal.mem_span_singleton'.1 ha
+    simp only [Ideal.mem_comap, Polynomial.coeToPowerSeries.algHom_apply, Algebra.id.map_eq_id,
+      map_id, id_eq, Ideal.mem_span_singleton']
+    exact ⟨b, by simp [← hb]⟩
   invFun := Ideal.Quotient.mk _ ∘ H.isWeierstrassDivisorAt'.mod'
   left_inv f := by
     rcases subsingleton_or_nontrivial A with _ | _
@@ -485,7 +478,7 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
     dsimp
     rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
     exact ⟨0, by simp [H.isWeierstrassDivisorAt'.mod_coe_eq_self (hfdeg.trans_eq h1)]⟩
-  right_inv f := H.isWeierstrassDivisorAt'.mk_mod'_eq_self
+  right_inv f := by exact H.isWeierstrassDivisorAt'.mk_mod'_eq_self
 
 end Equiv
 
