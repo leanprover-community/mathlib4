@@ -24,7 +24,7 @@ noncomputable section
 
 universe v u
 open CategoryTheory Limits Functor
-open TopCat Presheaf Functor SheafCondition
+open TopCat Presheaf SheafCondition
 open TopologicalSpace Topology
 
 variable

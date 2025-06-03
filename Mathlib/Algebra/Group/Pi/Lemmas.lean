@@ -176,7 +176,7 @@ homomorphism `f` between `α` and `β`. -/
 protected def MonoidHom.compLeft {α β : Type*} [MulOneClass α] [MulOneClass β] (f : α →* β)
     (I : Type*) : (I → α) →* I → β where
   toFun h := f ∘ h
-  map_one' := by ext; dsimp; simp
+  map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
 
 end MonoidHom
