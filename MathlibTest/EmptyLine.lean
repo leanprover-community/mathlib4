@@ -162,24 +162,6 @@ example : True := by  -- The following empty line is not reported, since the com
   stop
   sorry
 
-open Lean Elab Command in
-elab "ff " cmd:command : command => do
-  elabCommand cmd
-  let trails := cmd.raw.filterMap fun s =>
-    if let some str := s.getTrailing?
-    then
-      let strim := str.trim
-      if (strim.splitOn "\n\n").length != 1 then
-        some strim.getRange
-      else none
-    else none
-  let trails : Std.HashSet String.Range := .ofArray trails
-  --dbg_trace trails.fold (init := #[]) (fun acc r => acc.push s!"({r.1}, {r.2})")
-  for r in trails do
-    logInfoAt (.ofRange r) "Start!"
-    logInfoAt (.ofRange ⟨r.2, r.2⟩) "End!"
-  --logInfo m!"{cmd}"
-
 /--
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
