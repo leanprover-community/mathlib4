@@ -107,6 +107,9 @@ lemma isInnerPart_of_empty (P : Finset (Set X)) (hP : IsInnerPart ∅ P) : P = �
   obtain ⟨p, hp⟩ := hc
   exact h' p hp <| Set.subset_eq_empty (h p hp) rfl
 
+lemma isInnerPart_self (s : Set X) (hs : MeasurableSet s) (hs' : s ≠ ∅) : IsInnerPart s {s} := by
+  simpa [IsInnerPart] using ⟨hs, hs'⟩
+
 lemma partitions_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) : partitions s₁ ⊆ partitions s₂ := by
   intro P hP
   obtain ⟨h1, h2, h3, h4⟩ := hP
