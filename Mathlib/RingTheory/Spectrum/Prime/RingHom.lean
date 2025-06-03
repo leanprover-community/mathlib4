@@ -5,7 +5,7 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Spectrum.Prime.Basic
-
+import Mathlib.Data.DFinsupp.Defs
 /-!
 # Functoriality of the prime spectrum
 

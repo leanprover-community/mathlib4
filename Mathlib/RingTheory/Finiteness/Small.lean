@@ -63,8 +63,9 @@ theorem small_span [Small.{u} R] (s : Set M) [Small.{u} s] :
     Small.{u} (span R s) := by
   suffices span R s = iSup (fun i : s ↦ span R ({(↑i : M)} : Set M)) by
     rw [this]
-    apply small_iSup
+  apply small_iSup
   simp [← Submodule.span_iUnion]
+
 
 end Submodule
 

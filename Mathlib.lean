@@ -5383,6 +5383,7 @@ import Mathlib.RingTheory.Presentation
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+import Mathlib.RingTheory.Pure
 import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.Radical
 import Mathlib.RingTheory.ReesAlgebra
@@ -5449,6 +5450,8 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.SurjectiveOnStalks
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.DirectLimit.FG
+import Mathlib.RingTheory.TensorProduct.DirectLimit.Small
 import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.RingTheory.TensorProduct.Free
 import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
