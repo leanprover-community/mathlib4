@@ -168,14 +168,6 @@ theorem span_insert_zero (s : Set α) : span (insert 0 s) = span s :=
 theorem span_pair_zero (x : α) : span {x, 0} = span {x} := by
   rw [span_pair_comm, span_insert_zero]
 
-@[simp]
-theorem span_pair_zero_left {R : Type u} [CommRing R] {x : R} : span {0, x} = span {x} := by
-  rw [← span_pair_add_mul_left, zero_add, mul_one, Set.pair_eq_singleton]
-
-@[simp]
-theorem span_pair_zero_right {R : Type u} [CommRing R] {x : R} : span {x, 0} = span {x} := by
-  rw [span_pair_comm, span_pair_zero_left]
-
 end Ideal
 
 end Semiring

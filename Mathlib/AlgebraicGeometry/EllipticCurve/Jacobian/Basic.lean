@@ -211,7 +211,7 @@ lemma equiv_of_X_eq_of_Y_eq {P Q : Fin 3 → R} (hPz : IsUnit <| P z) (hQz : IsU
 
 lemma equiv_some_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
     P ≈ ![P x * hPz.unit⁻¹ ^ 2, P y * hPz.unit⁻¹ ^ 3, 1] := by
-  simp_rw [← Units.inv_pow_eq_pow_inv, hPz.unit_pow]
+  simp_rw [← Units.inv_pow_eq_pow_inv, ← hPz.unit_pow]
   exact equiv_of_X_eq_of_Y_eq hPz isUnit_one
     (by linear_combination (norm := (matrix_simp; ring1)) -P x * (hPz.pow 2).mul_val_inv)
     (by linear_combination (norm := (matrix_simp; ring1)) -P y * (hPz.pow 3).mul_val_inv)
@@ -220,12 +220,12 @@ lemma equiv_some_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
 
 lemma X_eq_iff {P Q : Fin 3 → R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
     P x * Q z ^ 2 = Q x * P z ^ 2 ↔ P x * hPz.unit⁻¹ ^ 2 = Q x * hQz.unit⁻¹ ^ 2 := by
-  simp_rw [← Units.inv_pow_eq_pow_inv, hPz.unit_pow, hQz.unit_pow]
+  simp_rw [← Units.inv_pow_eq_pow_inv, ← hPz.unit_pow, ← hQz.unit_pow]
   exact ((hPz.pow 2).mul_val_inv_eq_mul_val_inv <| hQz.pow 2).symm
 
 lemma Y_eq_iff {P Q : Fin 3 → R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
     P y * Q z ^ 3 = Q y * P z ^ 3 ↔ P y * hPz.unit⁻¹ ^ 3 = Q y * hQz.unit⁻¹ ^ 3 := by
-  simp_rw [← Units.inv_pow_eq_pow_inv, hPz.unit_pow, hQz.unit_pow]
+  simp_rw [← Units.inv_pow_eq_pow_inv, ← hPz.unit_pow, ← hQz.unit_pow]
   exact ((hPz.pow 3).mul_val_inv_eq_mul_val_inv <| hQz.pow 3).symm
 
 /-! ## Weierstrass equations in Jacobian coordinates -/
@@ -250,7 +250,7 @@ lemma eval_polynomial_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
     eval P W'.polynomial * hPz.unit⁻¹ ^ 6 =
       W'.toAffine.polynomial.evalEval (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) := by
   rw [eval_polynomial, Affine.evalEval_polynomial]
-  linear_combination (norm := (simp_rw [← hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
+  linear_combination (norm := (simp_rw [hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
     W'.a₁ * P x * P y * hPz.unit⁻¹ ^ 5 * hPz.mul_val_inv
       + W'.a₃ * P y * hPz.unit⁻¹ ^ 3 * (hPz.pow 3).mul_val_inv
       - W'.a₂ * P x ^ 2 * hPz.unit⁻¹ ^ 4 * (hPz.pow 2).mul_val_inv
@@ -321,7 +321,7 @@ lemma eval_polynomialX_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
     eval P W'.polynomialX * hPz.unit⁻¹ ^ 4 =
       W'.toAffine.polynomialX.evalEval (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) := by
   rw [eval_polynomialX, Affine.evalEval_polynomialX]
-  linear_combination (norm := (simp_rw [← hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
+  linear_combination (norm := (simp_rw [hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
     W'.a₁ * P y * hPz.unit⁻¹ ^ 3 * hPz.mul_val_inv
       - 2 * W'.a₂ * P x * hPz.unit⁻¹ ^ 2 * (hPz.pow 2).mul_val_inv - W'.a₄ * (hPz.pow 4).mul_val_inv
 
@@ -348,7 +348,7 @@ lemma eval_polynomialY_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
     eval P W'.polynomialY * hPz.unit⁻¹ ^ 3 =
       W'.toAffine.polynomialY.evalEval (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) := by
   rw [eval_polynomialY, Affine.evalEval_polynomialY]
-  linear_combination (norm := (simp_rw [← hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
+  linear_combination (norm := (simp_rw [hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
     W'.a₁ * P x * hPz.unit⁻¹ ^ 2 * hPz.mul_val_inv + W'.a₃ * (hPz.pow 3).mul_val_inv
 
 @[deprecated (since := "2025-05-26")] alias eval_polynomialY_of_Z_ne_zero :=

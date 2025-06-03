@@ -215,14 +215,14 @@ lemma nonsingular_iff (x y : R) : W.Nonsingular x y ↔ W.Equation x y ∧
 
 @[simp]
 lemma nonsingular_zero : W.Nonsingular 0 0 ↔ W.a₆ = 0 ∧ Ideal.span {W.a₃, W.a₄} = ⊤ := by
-  rw [Nonsingular, equation_zero, evalEval_polynomialX_zero, Ideal.span_pair_neg_left,
+  rw [Nonsingular, equation_zero, evalEval_polynomialX_zero, Ideal.span_insert_neg,
     evalEval_polynomialY_zero, Ideal.span_pair_comm]
 
 lemma nonsingular_iff_variableChange (x y : R) :
     W.Nonsingular x y ↔ (VariableChange.mk 1 x 0 y • W).toAffine.Nonsingular 0 0 := by
-  rw [nonsingular_iff, equation_iff_variableChange, equation_zero, ← neg_sub,
-    Ideal.span_pair_neg_left, Ideal.span_pair_comm, nonsingular_zero, variableChange_a₃,
-    variableChange_a₄, inv_one, Units.val_one]
+  rw [nonsingular_iff, equation_iff_variableChange, equation_zero, ← neg_sub, Ideal.span_insert_neg,
+    Ideal.span_pair_comm, nonsingular_zero, variableChange_a₃, variableChange_a₄, inv_one,
+    Units.val_one]
   ring_nf
 
 private lemma equation_zero_iff_nonsingular_zero_of_isUnit_Δ (hΔ : IsUnit W.Δ) :

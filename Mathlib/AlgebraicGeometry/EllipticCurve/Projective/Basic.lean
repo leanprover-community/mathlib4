@@ -236,7 +236,7 @@ lemma eval_polynomial_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
     eval P W'.polynomial * hPz.unit⁻¹ ^ 3 =
       W'.toAffine.polynomial.evalEval (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) := by
   rw [eval_polynomial, Affine.evalEval_polynomial]
-  linear_combination (norm := (simp_rw [← hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
+  linear_combination (norm := (simp_rw [hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
     P y ^ 2 * hPz.unit⁻¹ ^ 2 * hPz.mul_val_inv
       + W'.a₁ * P x * P y * hPz.unit⁻¹ ^ 2 * hPz.mul_val_inv
       + W'.a₃ * P y * ↑hPz.unit⁻¹ * (hPz.pow 2).mul_val_inv
@@ -312,7 +312,7 @@ lemma eval_polynomialX_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
     eval P W'.polynomialX * hPz.unit⁻¹ ^ 2 =
       W'.toAffine.polynomialX.evalEval (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) := by
   rw [eval_polynomialX, Affine.evalEval_polynomialX]
-  linear_combination (norm := (simp_rw [← hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
+  linear_combination (norm := (simp_rw [hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
     W'.a₁ * P y * ↑hPz.unit⁻¹ * hPz.mul_val_inv - 2 * W'.a₂ * P x * ↑hPz.unit⁻¹ * hPz.mul_val_inv
       - W'.a₄ * (hPz.pow 2).mul_val_inv
 
@@ -340,7 +340,7 @@ lemma eval_polynomialY_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
     eval P W'.polynomialY * hPz.unit⁻¹ ^ 2 =
       W'.toAffine.polynomialY.evalEval (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) := by
   rw [eval_polynomialY, Affine.evalEval_polynomialY]
-  linear_combination (norm := (simp_rw [← hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
+  linear_combination (norm := (simp_rw [hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
     2 * P y * ↑hPz.unit⁻¹ * hPz.mul_val_inv + W'.a₁ * P x * ↑hPz.unit⁻¹ * hPz.mul_val_inv
       + W'.a₃ * (hPz.pow 2).mul_val_inv
 
@@ -444,7 +444,7 @@ lemma nonsingular_iff_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) : W'.N
 lemma isUnit_Y_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Nonsingular P)
     (hPz : P z = 0) : IsUnit <| P y := by
   simp_rw [nonsingular_of_Z_eq_zero hPz, X_eq_zero_of_Z_eq_zero hP.left hPz, zero_pow two_ne_zero,
-    mul_zero, zero_mul, add_zero, sub_zero, Ideal.span_pair_zero_left, Ideal.span_singleton_eq_top,
+    mul_zero, zero_mul, add_zero, sub_zero, Ideal.span_insert_zero, Ideal.span_singleton_eq_top,
     isUnit_pow_succ_iff] at hP
   exact hP.right
 
