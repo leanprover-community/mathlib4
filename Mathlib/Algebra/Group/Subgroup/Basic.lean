@@ -797,7 +797,7 @@ theorem eq_liftOfRightInverseEquivKerLeKer (hf : Function.RightInverse f_inv f) 
     h = f.liftOfRightInverseEquivKerLeKer f_inv hf ⟨g, hg⟩ := by
   simp_rw [← hh, ← Equiv.symm_apply_eq, Subtype.ext_iff, MonoidHom.ext_iff,
     liftOfRightInverseEquivKerLeKer_symm_apply_coe_apply,
-    MonoidHom.comp_apply, implies_true]
+    comp_apply, implies_true]
 
 /-- TBD -/
 @[to_additive (attr := simps!) "TBD"]
@@ -825,7 +825,7 @@ theorem eq_liftOfLeftInverseEquivRangeLeRange (hf : Function.LeftInverse f_inv f
     h = f.liftOfLeftInverseEquivRangeLeRange f_inv hf ⟨g, hg⟩ := by
   simp_rw [← hh, ← Equiv.symm_apply_eq, Subtype.ext_iff, MonoidHom.ext_iff,
     liftOfLeftInverseEquivRangeLeRange_symm_apply_coe_apply,
-    MonoidHom.comp_apply, implies_true]
+    comp_apply, implies_true]
 
 end MonoidHom
 
