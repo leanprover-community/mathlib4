@@ -499,7 +499,10 @@ theorem comap_le_iff_le_map : comap f K ≤ I ↔ K ≤ map f I :=
   ⟨fun h => le_map_of_comap_le_of_surjective f hf.right h, fun h =>
     (relIsoOfBijective f hf).right_inv I ▸ comap_mono h⟩
 
-lemma comap_map_of_bijective : (I.map f).comap f = I :=
+theorem map_eq_top_of_bijective : I.map f = ⊤ ↔ I = ⊤ := by
+  rw [eq_top_iff, ← comap_le_iff_le_map f hf, comap_top, top_le_iff]
+
+theorem comap_map_of_bijective : (I.map f).comap f = I :=
   le_antisymm ((comap_le_iff_le_map f hf).mpr fun _ ↦ id) le_comap_map
 
 theorem isMaximal_map_iff_of_bijective : IsMaximal (map f I) ↔ IsMaximal I := by
