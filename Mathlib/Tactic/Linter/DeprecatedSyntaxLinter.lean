@@ -189,7 +189,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       getLinterValue linter.style.cases (← getLinterOptions) ||
       getLinterValue linter.style.admit (← getLinterOptions) ||
       getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
-      Linter.getLinterValue linter.style.nativeDecide (← getLinterOptions) do
+      getLinterValue linter.style.nativeDecide (← getLinterOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
