@@ -47,11 +47,8 @@ variable (R) in
 noncomputable def basis (n : ℕ) : Basis (Fin n) R R[X]_n :=
   .ofEquivFun (degreeLTEquiv R n)
 
-instance : Module.Finite R R[X]_n :=
-  .of_basis <| basis ..
-
-instance : Module.Free R R[X]_n :=
-  .of_basis <| basis ..
+instance : Module.Finite R R[X]_n := .of_basis <| basis ..
+instance : Module.Free R R[X]_n := .of_basis <| basis ..
 
 variable (R) in
 /-- The element `X^i` in `R[X]_n`. This is equal to `basis R n i`. -/
@@ -160,6 +157,11 @@ end degreeLT
 section taylor
 
 variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
+
+@[simp]
+lemma taylor_mem_degreeLT : taylor r f ∈ R[X]_n ↔ f ∈ R[X]_n := by simp [mem_degreeLT]
+
+lemma comap_taylorEquiv_degreeLT : (R[X]_n).comap (taylorEquiv r) = R[X]_n := by ext; simp
 
 lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n :=
   le_antisymm (Submodule.map_le_iff_le_comap.2
