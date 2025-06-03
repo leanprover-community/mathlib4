@@ -83,7 +83,7 @@ open LawfulBitraversable
 instance LawfulBitraversable.flip [LawfulBitraversable t] : LawfulBitraversable (flip t) := by
   constructor <;> intros <;> casesm LawfulBitraversable t <;> apply_assumption only [*]
 
-open Bitraversable Functor
+open Bitraversable
 
 instance (priority := 10) Bitraversable.traversable {α} : Traversable (t α) where
   traverse := @tsnd t _ _
