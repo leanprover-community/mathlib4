@@ -50,18 +50,19 @@ points. If `f` is meromorphic at `x` and vanishes on `U`, then it will vanish in
 neighbourhood of `x`, which intersects `U` non-trivally but is not contained in `U`.
 
 The assumption that `x` is not an isolated point of `U` is expressed as `AccPt x (𝓟 U)`. See
-`accPt_iff_frequently` and `accPt_iff_frequently_nhdNE` for useful reformulations.
+`accPt_iff_frequently` and `accPt_iff_frequently_nhdsNE` for useful reformulations.
 -/
-theorem eventuallyEq_zero_nhdNE_of_eventuallyEq_zero_codiscreteWithin (hf : MeromorphicAt f x)
+theorem eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin (hf : MeromorphicAt f x)
     (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U)) (h : f =ᶠ[codiscreteWithin U] 0) :
     f =ᶠ[𝓝[≠] x] 0 := by
   rw [← hf.frequently_zero_iff_eventuallyEq_zero]
-  apply ((accPt_iff_frequently_nhdNE.1 h₂x).and_eventually
-    (mem_codiscreteWithin_iff_all_nhdNE.1 h x h₁x)).mp
+  apply ((accPt_iff_frequently_nhdsNE.1 h₂x).and_eventually
+    (mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h x h₁x)).mp
   filter_upwards
-  simp only [ne_eq, Set.mem_compl_iff, Set.mem_singleton_iff, Pi.zero_apply, Set.mem_union,
-    Set.mem_setOf_eq, and_imp]
-  tauto
+  intro a
+  simp_rw [Pi.zero_apply]
+  rw [(by rfl : ({x | f x = 0} ∪ Uᶜ) a ↔ a ∈ {x | f x = 0} ∪ Uᶜ)]
+  simp_all
 
 /-!
 ## Identity Principles
@@ -78,7 +79,7 @@ theorem frequently_eq_iff_eventuallyEq (hf : MeromorphicAt f x) (hg : Meromorphi
   simp_rw [Pi.sub_apply, sub_eq_zero]
 
 /--
-Formulation of `MeromorphicAt.eventuallyEq_zero_nhdNE_of_eventuallyEq_zero_codiscreteWithin` as an
+Formulation of `MeromorphicAt.eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin` as an
 identity principle: Let `U` be a subset of `𝕜` and assume that `x ∈ U` is not an isolated point of
 `U`. If function `f` and `g` are meromorphic at `x` and agree along a subset that is codiscrete
 within `U`, then `f` and `g` agree in a punctured neighbourhood of `f`.
@@ -87,6 +88,6 @@ theorem eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf : MeromorphicAt
     (hg : MeromorphicAt g x) (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U)) (h : f =ᶠ[codiscreteWithin U] g) :
     f =ᶠ[𝓝[≠] x] g := by
   rw [eventuallyEq_iff_sub] at *
-  apply (hf.sub hg).eventuallyEq_zero_nhdNE_of_eventuallyEq_zero_codiscreteWithin h₁x h₂x h
+  apply (hf.sub hg).eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin h₁x h₂x h
 
 end MeromorphicAt

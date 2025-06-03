@@ -115,7 +115,6 @@ A set `s` is codiscrete within `U` iff `s ∪ Uᶜ` is a punctured neighborhood 
 theorem mem_codiscreteWithin_iff_forall_mem_nhdsNE {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, S ∪ Tᶜ ∈ 𝓝[≠] x := by
   simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_diff]
-  rfl
 
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by

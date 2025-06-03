@@ -187,8 +187,8 @@ theorem accPt_iff_frequently {x : X} {C : Set X} : AccPt x (𝓟 C) ↔ ∃ᶠ y
 Variant of `accPt_iff_frequently`: A point `x` is an accumulation point of a set `C` iff points in
 punctured neighborhoods are frequently contained in `C`.
 -/
-theorem accPt_iff_frequently_nhdNE {X : Type*} [TopologicalSpace X] {x : X} {C : Set X} :
-    AccPt x (Filter.principal C) ↔ ∃ᶠ (y : X) in 𝓝[≠] x, y ∈ C := by
+theorem accPt_iff_frequently_nhdsNE {X : Type*} [TopologicalSpace X] {x : X} {C : Set X} :
+    AccPt x (𝓟 C) ↔ ∃ᶠ (y : X) in 𝓝[≠] x, y ∈ C := by
   have : (∃ᶠ z in 𝓝[≠] x, z ∈ C) ↔ ∃ᶠ z in 𝓝 x, z ∈ C ∧ z ∈ ({x} : Set X)ᶜ :=
     frequently_inf_principal.trans <| by simp only [and_comm]
   rw [accPt_iff_frequently, this]
