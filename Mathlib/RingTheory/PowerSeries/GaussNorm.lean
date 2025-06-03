@@ -13,6 +13,9 @@ This file defines the Gauss norm for power series. Given a power series `f` in `
 `v : R → ℝ` and a real number `c`, the Gauss norm is defined as the supremum of the set of all
 values of `v (f.coeff R i) * c ^ i` for all `i : ℕ`.
 
+In case `f` is a polynomial, `v` is a non-negative function with `v 0 = 0` and `c ≥ 0`,
+`f.gaussNorm v c` reduces to the Gauss norm defined in `RingTheory/Polynomial/GaussNorm`, see
+`Polynomial.gaussNorm_coe_powerSeries`.
 
 ## Main Definitions and Results
 * `PowerSeries.gaussNorm` is the supremum of the set of all values of `v (f.coeff R i) * c ^ i`
