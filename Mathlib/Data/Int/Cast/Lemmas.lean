@@ -214,8 +214,6 @@ namespace MonoidHom
 
 variable {M : Type*} [Monoid M]
 
-open Multiplicative
-
 @[ext]
 theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 1)) : f = g :=
   MonoidHom.toAdditive''.injective <| AddMonoidHom.ext_int <| Additive.toMul.injective h1
