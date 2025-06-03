@@ -77,7 +77,7 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
       Int.cast_natCast, ← mul_assoc, shiftedLegendre, mul_sum]
 
 /-- The coefficient of the shifted Legendre polynomial at `k` is
-  `(-1) ^ k * (n.choose k) * (n + k).choose n`. -/
+`(-1) ^ k * (n.choose k) * (n + k).choose n`. -/
 theorem coeff_shiftedLegendre (n k : ℕ) :
     (shiftedLegendre n).coeff k = (-1) ^ k * n.choose k * (n + k).choose n := by
   rw [shiftedLegendre, finset_sum_coeff]
