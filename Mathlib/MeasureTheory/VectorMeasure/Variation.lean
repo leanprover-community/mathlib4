@@ -158,26 +158,18 @@ lemma isInnerPart_iUnion {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
     {P : ℕ → Finset (Set X)} (hP : ∀ i, IsInnerPart (s i) (P i)) (n : ℕ) :
     IsInnerPart (⋃ i, s i) (Finset.biUnion (Finset.range n) P) := by
   simp [IsInnerPart]
-  refine ⟨?_, ?_, ?_, ?_⟩
-  · intro p i _ hp
-    exact Set.subset_iUnion_of_subset i ((hP i).1 p hp)
-  · intro p i _ hp
-    exact (hP i).2.1 p hp
-  · intro p hp q hq hpq r hrp hrq
-    simp only [Set.bot_eq_empty, Set.le_eq_subset, Set.subset_empty_iff]
-    simp only [id_eq, Set.le_eq_subset] at hrp hrq
-    simp only [Finset.coe_biUnion, Finset.coe_range, Set.mem_Iio, Set.mem_iUnion, Finset.mem_coe,
-      exists_prop] at hp hq
-    obtain ⟨i, hi, hp⟩ := hp
-    obtain ⟨j, hj, hq⟩ := hq
+  refine ⟨fun p i _ hp ↦ ?_, fun p i _ hp ↦ ?_, fun p hp q hq hpq _ hrp hrq ↦ ?_, fun _ i _ h' ↦ ?_⟩
+  · exact Set.subset_iUnion_of_subset i ((hP i).1 p hp)
+  · exact (hP i).2.1 p hp
+  · obtain ⟨i, hi, hp⟩ : ∃ i < n, p ∈ P i := by simp_all
+    obtain ⟨j, hj, hq⟩ : ∃ i < n, q ∈ P i := by simp_all
     obtain hc | hc : i = j ∨ i ≠ j := by omega
     · rw [hc] at hp
-      exact Set.subset_eq_empty ((hP j).2.2.1 hp hq hpq hrp hrq) rfl
+      simpa using Set.subset_eq_empty ((hP j).2.2.1 hp hq hpq hrp hrq) rfl
     · have hp' := (hP i).1 p hp
       have hq' := (hP j).1 q hq
-      exact Set.subset_eq_empty (hs hc (subset_trans hrp hp') (subset_trans hrq hq')) rfl
-  · intro _ i _ h'
-    refine ne_of_mem_of_not_mem h' <| fun a ↦ ((hP i).2.2.2 ∅) a rfl
+      simpa using Set.subset_eq_empty (hs hc (subset_trans hrp hp') (subset_trans hrq hq')) rfl
+  · exact ne_of_mem_of_not_mem h' <| fun a ↦ ((hP i).2.2.2 ∅) a rfl
 
 /-- If P, Q are partitions of two disjoint sets then P and Q are disjoint. -/
 lemma partitions_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set X)}
@@ -192,9 +184,14 @@ lemma partitions_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set 
 
 /-- If P, Q are partitions of two disjoint sets then P and Q are disjoint. -/
 lemma isInnerPart_of_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set X)}
-    (hP : IsInnerPart s P) (hQ : IsInnerPart s Q) : Disjoint P Q := by
-
-  sorry
+    (hP : IsInnerPart s P) (hQ : IsInnerPart t Q) : Disjoint P Q := by
+  intro R hRP hRQ
+  simp only [Finset.bot_eq_empty, Finset.le_eq_subset, Finset.subset_empty]
+  by_contra! hc
+  obtain ⟨r, hr⟩ := Finset.Nonempty.exists_mem <| Finset.nonempty_iff_ne_empty.mpr hc
+  have := hst (hP.1 r <| hRP hr) (hQ.1 r <| hRQ hr)
+  have := hP.2.2.2 r (hRP hr)
+  simp_all
 
 open Classical in
 /-- If `P` is a partition then the restriction of `P` to a set `s` is a partition of `s`. -/
