@@ -5,10 +5,8 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
 import Mathlib.Order.Interval.Finset.Box
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.Analysis.Asymptotics.Defs
 
 /-!
@@ -30,7 +28,7 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 
 noncomputable section
 
-open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology Filter Asymptotics
+open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
 
 open scoped UpperHalfPlane Topology BigOperators Nat
 
