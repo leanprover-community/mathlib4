@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Multilinear.Curry
+
 /-!
 # Currying alternating forms
 
@@ -13,13 +14,11 @@ which interprets an alternating map in `n + 1` variables
 as a linear map in the 0th variable taking values in the alternating maps in `n` variables.
 -/
 
-open Function Fin
-
-namespace AlternatingMap
-
 variable {R : Type*} {M M₂ N N₂ : Type*} [CommSemiring R] [AddCommMonoid M]
   [AddCommMonoid M₂] [AddCommMonoid N] [AddCommMonoid N₂] [Module R M] [Module R M₂]
   [Module R N] [Module R N₂] {n : ℕ}
+
+namespace AlternatingMap
 
 /-- Given an alternating map `f` in `n+1` variables, split the first variable to obtain
 a linear map into alternating maps in `n` variables, given by `x ↦ (m ↦ f (Matrix.vecCons x m))`.

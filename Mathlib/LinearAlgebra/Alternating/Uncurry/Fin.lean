@@ -51,13 +51,13 @@ variable {R : Type*} {M M₂ N N₂ : Type*} [CommRing R] [AddCommGroup M]
 and `v` is an `n`-vector, then the value of `f` at `v` with `x` inserted at the `p`th place
 equals `(-1) ^ p` times the value of `f` at `v` with `x` prepended. -/
 theorem map_insertNth (f : M [⋀^Fin (n + 1)]→ₗ[R] N) (p : Fin (n + 1)) (x : M) (v : Fin n → M) :
-    f (p.insertNth x v) = (-1) ^ p.val • f (Matrix.vecCons x v) := by
+    f (p.insertNth x v) = (-1) ^ (p : ℕ) • f (Matrix.vecCons x v) := by
   rw [← cons_comp_cycleRange, map_perm, Matrix.vecCons]
   simp [Units.smul_def]
 
 theorem neg_one_pow_smul_map_insertNth (f : M [⋀^Fin (n + 1)]→ₗ[R] N) (p : Fin (n + 1)) (x : M)
     (v : Fin n → M) :
-    (-1) ^ p.val • f (p.insertNth x v) = f (Matrix.vecCons x v) := by
+    (-1) ^ (p : ℕ) • f (p.insertNth x v) = f (Matrix.vecCons x v) := by
   rw [map_insertNth, smul_smul, ← pow_add, Even.neg_one_pow, one_smul]
   use p
 
@@ -70,7 +70,7 @@ These are the only two nonzero terms in the proof of `map_eq_zero_of_eq`
 in the definition of `uncurryFin` below. -/
 theorem neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq (f : M [⋀^Fin n]→ₗ[R] N)
     {v : Fin (n + 1) → M} {i j : Fin (n + 1)} (hvij : v i = v j) (hij : i ≠ j) :
-    (-1) ^ i.val • f (i.removeNth v) + (-1) ^ j.val • f (j.removeNth v) = 0 := by
+    (-1) ^ (i : ℕ) • f (i.removeNth v) + (-1) ^ (j : ℕ) • f (j.removeNth v) = 0 := by
   rcases exists_succAbove_eq hij with ⟨i, rfl⟩
   obtain ⟨m, rfl⟩ : ∃ m, m + 1 = n := by simp [i.pos]
   rw [← (i.predAbove j).insertNth_self_removeNth (removeNth _ _), ← removeNth_removeNth_eq_swap,
@@ -85,16 +85,22 @@ theorem neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq (f : M [⋀^Fin n]→�
 and is alternating in the other `n` arguments,
 build an alternating form in `n + 1` arguments.
 
+The function is given by
+```
+uncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v)
+```
+
 Note that the round-trip with `curryFin` multiplies the form by `n + 1`,
 since we want to avoid division in this definition. -/
 def uncurryFin (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
     M [⋀^Fin (n + 1)]→ₗ[R] N where
-  toMultilinearMap := ∑ p, (-1) ^ p.val • LinearMap.uncurryMid p (toMultilinearMapLM ∘ₗ f)
+  toMultilinearMap :=
+    ∑ p : Fin (n + 1), (-1) ^ (p : ℕ) • LinearMap.uncurryMid p (toMultilinearMapLM ∘ₗ f)
   map_eq_zero_of_eq' := by
     intro v i j hvij hij
-    suffices ∑ k : Fin (n + 1), (-1) ^ k.val • f (v k) (k.removeNth v) = 0 by simpa
+    suffices ∑ k : Fin (n + 1), (-1) ^ (k : ℕ) • f (v k) (k.removeNth v) = 0 by simpa
     calc
-      _ = (-1) ^ i.val • f (v i) (i.removeNth v) + (-1) ^ j.val • f (v j) (j.removeNth v) := by
+      _ = (-1) ^ (i : ℕ) • f (v i) (i.removeNth v) + (-1) ^ (j : ℕ) • f (v j) (j.removeNth v) := by
         refine Fintype.sum_eq_add _ _ hij fun k ⟨hki, hkj⟩ ↦ ?_
         rcases exists_succAbove_eq hki.symm with ⟨i, rfl⟩
         rcases exists_succAbove_eq hkj.symm with ⟨j, rfl⟩
@@ -103,7 +109,7 @@ def uncurryFin (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
         rw [hvij, neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq] <;> assumption
 
 theorem uncurryFin_apply (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) (v : Fin (n + 1) → M) :
-    uncurryFin f v = ∑ i, (-1) ^ i.val • f (v i) (removeNth i v) := by
+    uncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v) := by
   simp [uncurryFin]
 
 @[simp]
