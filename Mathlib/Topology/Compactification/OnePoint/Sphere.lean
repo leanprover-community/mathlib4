@@ -18,6 +18,17 @@ noncomputable section
 
 variable {n : ℕ} {v : EuclideanSpace ℝ (Fin n.succ)} (hv : ‖v‖ = 1)
 
+/-- The one-point compactification of ℝⁿ, in the form of a codimension 1 subspace,
+ is homeomorphic to the n-sphere. -/
+def onePointHyperplaneHomeoUnitSphere :
+    OnePoint (ℝ ∙ v)ᗮ ≃ₜ sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1 :=
+  OnePoint.equivOfIsEmbeddingOfRangeEq _ _
+    (isEmbedding_stereographic_symm hv) (range_stereographic_symm hv)
+
+-- TODO Replace the two defs below with a single `def` stating
+-- `OnePoint V ≃ₜ sphere (0 : EuclideanSpace ℝ ι) 1` for any real T2 TVS satisfying
+-- `finrank ℝ V + 1 = Fintype.card ι`
+
 /-- The orthogonal complement of the span of a point on the sphere
 is homeomorphic to a Euclidean space of codimension 1. -/
 noncomputable def Submodule_homeo_Euclidean {n : ℕ}
@@ -25,13 +36,6 @@ noncomputable def Submodule_homeo_Euclidean {n : ℕ}
     Homeomorph ((span ℝ {v.1})ᗮ) (EuclideanSpace ℝ (Fin n)) :=
   letI fact {n : ℕ} : Fact (finrank ℝ (EuclideanSpace ℝ (Fin n.succ)) = n + 1) := ⟨by simp⟩
   (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph
-
-/-- The one-point compactification of ℝⁿ, in the form of a codimension 1 subspace,
- is homeomorphic to the n-sphere. -/
-def onePointHyperplaneHomeoUnitSphere :
-    OnePoint (ℝ ∙ v)ᗮ ≃ₜ sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1 :=
-  OnePoint.equivOfIsEmbeddingOfRangeEq _ _
-    (isEmbedding_stereographic_symm hv) (range_stereographic_symm hv)
 
 /-- The one-point compactification of Euclidean space is homeomorphic to the sphere. -/
 noncomputable def OnePointEuclidean_homeo_sphere : Homeomorph
