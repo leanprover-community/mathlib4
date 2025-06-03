@@ -408,8 +408,8 @@ variable {α : Type*} [LinearOrder α] {a b c : α}
 
 attribute [local instance] LinearOrder.toCircularOrder
 
-lemma sbtw_iff : sbtw i j k ↔ i < j ∧ j < k ∨ j < k ∧ k < i ∨ k < i ∧ i < j := .rfl
-lemma btw_iff : btw i j k ↔ i ≤ j ∧ j ≤ k ∨ j ≤ k ∧ k ≤ i ∨ k ≤ i ∧ i ≤ j := .rfl
+lemma sbtw_iff : sbtw a b c ↔ a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b := .rfl
+lemma btw_iff : btw a b c ↔ a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b := .rfl
 
 end
 
