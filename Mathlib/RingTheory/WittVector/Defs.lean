@@ -52,7 +52,10 @@ structure WittVector (p : ℕ) (R : Type*) where mk' ::
   -/
   coeff : ℕ → R
 
-/-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`. -/
+/-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`.
+
+This is preferred over `WittVector.mk'` because it has `p` explicit.
+-/
 def WittVector.mk (p : ℕ) {R : Type*} (coeff : ℕ → R) : WittVector p R := mk' coeff
 
 variable {p : ℕ}
