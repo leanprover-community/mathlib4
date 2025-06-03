@@ -79,7 +79,7 @@ end Module
 
 open Ideal IsLocalRing
 
-lemma support_of_supportDim_eq_zero [IsLocalRing R] [Module.Finite R N]
+lemma support_of_supportDim_eq_zero [IsLocalRing R]
     (dim : Module.supportDim R N = 0) :
     Module.support R N = PrimeSpectrum.zeroLocus (maximalIdeal R) := by
   let _ : Nontrivial N := by simp [← Module.supportDim_ne_bot_iff_nontrivial R, dim]
