@@ -315,12 +315,6 @@ lemma le_var_aux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ var_aux f s := by
   simpa [var_aux, hs] using le_biSup (fun P ↦ ∑ p ∈ P, f p) hP
 
-
-
--- To do, new versions of:
--- Here I believe we need the subadditivity of `f`. Maybe countable?
--- And that empty sets take value zero
-
 /-- A set function is subadditive if the value assigned to the union of disjoint sets is bounded
 above by the sum of the values assigned to the individual sets. -/
 def IsSubadditive (f : Set X → ℝ≥0∞) := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
@@ -393,6 +387,18 @@ noncomputable def funVar : VectorMeasure X ℝ≥0∞ where
   m_iUnion'           := var_aux_m_iUnion' f
 
 end var_aux
+
+section variation
+
+variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V]
+
+-- Does the lemma really need T2Space? This doesn't: `μ.hasSum_of_disjoint_iUnion hs hs'`.
+lemma isSubadditive_enorm_measure (μ : VectorMeasure X V) [T2Space V] :
+    IsSubadditive fun s ↦ ‖μ s‖ₑ := by
+  intro _ hs hs'
+  simpa [VectorMeasure.of_disjoint_iUnion hs hs'] using enorm_tsum_le_tsum_enorm
+
+end variation
 
 /-!
 ## Definition of variation
