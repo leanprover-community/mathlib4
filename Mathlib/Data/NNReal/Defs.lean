@@ -932,8 +932,6 @@ end Real
 
 section StrictMono
 
-open NNReal
-
 variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
@@ -971,7 +969,7 @@ unsafe instance : Repr ℝ≥0 where
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Meta Qq
 
 private alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 

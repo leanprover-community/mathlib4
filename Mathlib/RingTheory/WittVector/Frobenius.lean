@@ -206,7 +206,6 @@ variable (p) in
 /-- `frobeniusFun` is tautologically a polynomial function.
 
 See also `frobenius_isPoly`. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :=
   ⟨⟨frobeniusPoly p, by intros; funext n; apply coeff_frobeniusFun⟩⟩
 
@@ -254,7 +253,6 @@ theorem ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
 variable (p)
 
 /-- `frobenius` is tautologically a polynomial function. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
   frobeniusFun_isPoly _
 
