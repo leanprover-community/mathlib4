@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.Ring.Action.Rat
 import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
@@ -113,7 +114,7 @@ instance : Inhabited (SummableFamily Γ R α) :=
   ⟨0⟩
 
 @[simp]
-theorem coe_add {s t : SummableFamily Γ R α} : ⇑(s + t) = s + t :=
+theorem coe_add (s t : SummableFamily Γ R α) : ⇑(s + t) = s + t :=
   rfl
 
 theorem add_apply {s t : SummableFamily Γ R α} {a : α} : (s + t) a = s a + t a :=
@@ -126,21 +127,35 @@ theorem coe_zero : ((0 : SummableFamily Γ R α) : α → HahnSeries Γ R) = 0 :
 theorem zero_apply {a : α} : (0 : SummableFamily Γ R α) a = 0 :=
   rfl
 
-instance : AddCommMonoid (SummableFamily Γ R α) where
-  zero := 0
-  nsmul := nsmulRec
-  zero_add s := by
-    ext
-    apply zero_add
-  add_zero s := by
-    ext
-    apply add_zero
-  add_comm s t := by
-    ext
-    apply add_comm
-  add_assoc r s t := by
-    ext
-    apply add_assoc
+
+section SMul
+
+variable {M} [SMulZeroClass M R]
+
+instance : SMul M (SummableFamily Γ R β) :=
+  ⟨fun r t =>
+    { toFun := r • t
+      isPWO_iUnion_support' := t.isPWO_iUnion_support.mono (Set.iUnion_mono fun i =>
+        Pi.smul_apply r t i ▸ Function.support_const_smul_subset r _)
+      finite_co_support' := by
+        intro g
+        refine (t.finite_co_support g).subset ?_
+        intro i hi
+        simp only [Pi.smul_apply, coeff_smul, ne_eq, Set.mem_setOf_eq] at hi
+        simp only [Function.mem_support, ne_eq]
+        exact right_ne_zero_of_smul hi } ⟩
+
+@[simp]
+theorem coe_smul' (m : M) (s : SummableFamily Γ R α) : ⇑(m • s) = m • s :=
+  rfl
+
+theorem smul_apply' (m : M) (s : SummableFamily Γ R α) (a : α) : (m • s) a = m • s a :=
+  rfl
+
+end SMul
+
+instance : AddCommMonoid (SummableFamily Γ R α) := fast_instance%
+  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ => coe_smul' _ _)
 
 /-- The coefficient function of a summable family, as a finsupp on the parameter type. -/
 @[simps]
@@ -258,55 +273,50 @@ section AddCommGroup
 
 variable [PartialOrder Γ] [AddCommGroup R] {s t : SummableFamily Γ R α} {a : α}
 
-instance : Neg (SummableFamily Γ R α) :=
-  ⟨fun s =>
+instance : Neg (SummableFamily Γ R α) where
+  neg s :=
     { toFun := fun a => -s a
       isPWO_iUnion_support' := by
         simp_rw [support_neg]
         exact s.isPWO_iUnion_support
       finite_co_support' := fun g => by
         simp only [coeff_neg', Pi.neg_apply, Ne, neg_eq_zero]
-        exact s.finite_co_support g }⟩
-
-instance : AddCommGroup (SummableFamily Γ R α) :=
-  { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
-    zsmul := zsmulRec
-    neg_add_cancel := fun a => by
-      ext
-      apply neg_add_cancel }
+        exact s.finite_co_support g }
 
 @[simp]
-theorem coe_neg : ⇑(-s) = -s :=
+theorem coe_neg (s : SummableFamily Γ R α) : ⇑(-s) = -s :=
   rfl
 
 theorem neg_apply : (-s) a = -s a :=
   rfl
 
+instance : Sub (SummableFamily Γ R α) where
+  sub s s' :=
+    { toFun := s - s'
+      isPWO_iUnion_support' := by
+        simp_rw [sub_eq_add_neg]
+        exact (s + -s').isPWO_iUnion_support
+      finite_co_support' g := by
+        simp_rw [sub_eq_add_neg]
+        exact (s + -s').finite_co_support' _ }
+
 @[simp]
-theorem coe_sub : ⇑(s - t) = s - t :=
+theorem coe_sub (s t : SummableFamily Γ R α) : ⇑(s - t) = s - t :=
   rfl
 
 theorem sub_apply : (s - t) a = s a - t a :=
   rfl
+
+
+instance : AddCommGroup (SummableFamily Γ R α) := fast_instance%
+  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
+    (fun _ _ => coe_smul' _ _) (fun _ _ => coe_smul' _ _)
 
 end AddCommGroup
 
 section SMul
 
 variable [PartialOrder Γ] [PartialOrder Γ'] [AddCommMonoid V]
-
-instance [Zero R] [SMulWithZero R V] : SMul R (SummableFamily Γ' V β) :=
-  ⟨fun r t =>
-    { toFun := r • t
-      isPWO_iUnion_support' := t.isPWO_iUnion_support.mono (Set.iUnion_mono fun i =>
-        Pi.smul_apply r t i ▸ Function.support_const_smul_subset r _)
-      finite_co_support' := by
-        intro g
-        refine (t.finite_co_support g).subset ?_
-        intro i hi
-        simp only [Pi.smul_apply, coeff_smul, ne_eq, Set.mem_setOf_eq] at hi
-        simp only [Function.mem_support, ne_eq]
-        exact right_ne_zero_of_smul hi } ⟩
 
 variable [AddCommMonoid R] [SMulWithZero R V]
 
@@ -769,11 +779,11 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) 
 
 end IsDomain
 
-open Classical in
 instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R] :
     Field (HahnSeries Γ R) where
   __ : IsDomain (HahnSeries Γ R) := inferInstance
   inv x :=
+    open Classical in
     if x0 : x = 0 then 0
     else
       (single (IsAddUnit.addUnit (AddGroup.isAddUnit x.order)).neg) (x.leadingCoeff)⁻¹ *
@@ -785,10 +795,10 @@ instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [F
         (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)) (AddGroup.isAddUnit x.order))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
-  nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
-  qsmul := _
-  qsmul_def := fun _ _ => rfl
+  nnqsmul := (· • ·)
+  nnqsmul_def _ _ := by ext; simp
+  qsmul := (· • ·)
+  qsmul_def _ _ := rfl
 
 end Inversion
 
