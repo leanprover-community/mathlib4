@@ -108,11 +108,6 @@ protected theorem continuousOn : ContinuousOn e e.source :=
 theorem continuousOn_symm : ContinuousOn e.symm e.target :=
   e.continuousOn_invFun
 
-theorem continuous_of_source_eq_univ (h : e.source = univ) :
-    Continuous e := by
-  rw [continuous_iff_continuousOn_univ]
-  simpa [h] using e.continuousOn
-
 @[simp, mfld_simps]
 theorem mk_coe (e : PartialEquiv X Y) (a b c d) : (PartialHomeomorph.mk e a b c d : X → Y) = e :=
   rfl
