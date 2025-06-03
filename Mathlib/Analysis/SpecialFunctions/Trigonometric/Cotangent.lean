@@ -9,6 +9,7 @@ import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
 
 /-!
