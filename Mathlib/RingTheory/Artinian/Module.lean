@@ -100,6 +100,27 @@ theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f
       show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
     (InvImage.wf (Submodule.comap f) IsWellFounded.wf)⟩
 
+/--
+If `M` is an Artinian `R` module, and `S` is an `R`-algebra with a surjective
+algebra map, then `M` is an Artinian `S` module.
+-/
+theorem isArtinian_of_surjective_algebraMap {R S M : Type*}
+    [CommRing R] [CommRing S] [AddCommGroup M] [Algebra R S] [Module R M] [Module S M]
+    [IsArtinian S M] [IsScalarTower R S M] (H : Function.Surjective (algebraMap R S)) :
+    IsArtinian R M := by
+  apply (OrderEmbedding.wellFoundedLT (β := Submodule S M))
+  refine ⟨⟨?_, ?_⟩, ?_⟩
+  · intro N
+    refine {toAddSubmonoid := N.toAddSubmonoid, smul_mem' := ?_}
+    intro c x hx
+    obtain ⟨r, rfl⟩ := H c
+    suffices r • x ∈ N by simpa [Algebra.algebraMap_eq_smul_one, smul_assoc]
+    apply N.smul_mem _ hx
+  · intro N1 N2 h
+    rwa [Submodule.ext_iff] at h ⊢
+  · intro N1 N2
+    rfl
+
 instance isArtinian_range (f : M →ₗ[R] P) [IsArtinian R M] : IsArtinian R (LinearMap.range f) :=
   isArtinian_of_surjective _ _ f.surjective_rangeRestrict
 

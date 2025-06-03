@@ -439,12 +439,12 @@ theorem mem_mul_span_singleton {x y : R} {I : Ideal R} : x ∈ I * span {y} ↔ 
 theorem mem_span_singleton_mul {x y : R} {I : Ideal R} : x ∈ span {y} * I ↔ ∃ z ∈ I, y * z = x := by
   simp only [mul_comm, mem_mul_span_singleton]
 
+@[simp]
 lemma range_mul (A : Type*) [CommSemiring A] [Module R A]
     [SMulCommClass R A A] [IsScalarTower R A A] (a : A) : LinearMap.range (LinearMap.mul R A a) =
     (Ideal.span {a}).restrictScalars R := by
   aesop (add simp Ideal.mem_span_singleton) (add simp dvd_def)
 
-@[simp]
 lemma range_mul' (a : R) : LinearMap.range (LinearMap.mul R R a) = Ideal.span {a} := range_mul ..
 
 theorem le_span_singleton_mul_iff {x : R} {I J : Ideal R} :
@@ -1264,6 +1264,9 @@ lemma span_smul_eq
 theorem set_smul_top_eq_span (s : Set R) :
     s • ⊤ = Ideal.span s :=
   (span_smul_eq s ⊤).symm.trans (Ideal.span s).mul_top
+
+lemma smul_le_span (s : Set R) (I : Ideal R) : s • I ≤ Ideal.span s :=
+  by simp [← Submodule.set_smul_top_eq_span, Submodule.singleton_set_smul, smul_le_smul_left]
 
 variable {A B} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
