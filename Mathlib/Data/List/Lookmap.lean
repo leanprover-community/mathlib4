@@ -23,7 +23,7 @@ private theorem lookmap.go_append (l : List α) (acc : Array α) :
     rw [lookmap, go, go]
     cases f hd with
     | none =>
-      simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.push_toList]
+      simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.toList_push]
       rfl
     | some a => rfl
 

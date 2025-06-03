@@ -223,7 +223,7 @@ theorem HasBasis.ex_mem (h : l.HasBasis p s) : ∃ i, p i :=
   (h.mem_iff.mp univ_mem).imp fun _ => And.left
 
 protected theorem HasBasis.nonempty (h : l.HasBasis p s) : Nonempty ι :=
-  nonempty_of_exists h.ex_mem
+  h.ex_mem.nonempty
 
 protected theorem IsBasis.hasBasis (h : IsBasis p s) : HasBasis h.filter p s :=
   ⟨fun t => by simp only [h.mem_filter_iff, exists_prop]⟩
