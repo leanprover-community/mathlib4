@@ -482,7 +482,7 @@ protected noncomputable def unit (h : IsUnit a) : Mˣ :=
 
 @[to_additive (attr := simp)]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
-  Units.ext <| rfl
+  Units.ext rfl
 
 @[to_additive (attr := simp)]
 theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
@@ -493,11 +493,11 @@ theorem unit_one (h : IsUnit (1 : M)) : h.unit = 1 :=
   Units.eq_iff.1 rfl
 
 @[to_additive (attr := simp)]
-theorem unit_mul (ha : IsUnit a) (hb : IsUnit b) : ha.unit * hb.unit = (ha.mul hb).unit :=
+theorem unit_mul (ha : IsUnit a) (hb : IsUnit b) : (ha.mul hb).unit = ha.unit * hb.unit :=
   Units.ext rfl
 
 @[to_additive (attr := simp)]
-theorem unit_pow (h : IsUnit a) (n : ℕ) : h.unit ^ n = (h.pow n).unit :=
+theorem unit_pow (h : IsUnit a) (n : ℕ) : (h.pow n).unit = h.unit ^ n :=
   Units.ext rfl
 
 @[to_additive (attr := simp)]
@@ -557,17 +557,17 @@ lemma inv (h : IsUnit a) : IsUnit a⁻¹ := by
   rw [← hu, ← Units.val_inv_eq_inv_val]
   exact Units.isUnit _
 
+@[to_additive (attr := simp)]
+lemma unit_inv (h : IsUnit a) : h.inv.unit = h.unit⁻¹ :=
+  Units.ext h.unit.val_inv_eq_inv_val.symm
+
 @[to_additive]
 lemma div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
   rw [div_eq_mul_inv]; exact ha.mul hb.inv
 
 @[to_additive (attr := simp)]
-lemma unit_inv (ha : IsUnit a) : ha.unit⁻¹ = ha.inv.unit :=
-  Units.ext <| ha.unit.val_inv_eq_inv_val
-
-@[to_additive (attr := simp)]
-lemma unit_div (ha : IsUnit a) (hb : IsUnit b) : ha.unit / hb.unit = (ha.div hb).unit :=
-  Units.ext <| ha.unit.val_div_eq_div_val hb.unit
+lemma unit_div (ha : IsUnit a) (hb : IsUnit b) : (ha.div hb).unit = ha.unit / hb.unit :=
+  Units.ext (ha.unit.val_div_eq_div_val hb.unit).symm
 
 @[to_additive]
 protected lemma div_mul_cancel_right (h : IsUnit b) (a : α) : b / (a * b) = a⁻¹ := by

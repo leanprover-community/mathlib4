@@ -42,11 +42,18 @@ section GroupWithZero
 
 namespace Commute
 
-variable [GroupWithZero G₀] {a b c d : G₀}
-
 /-- The `MonoidWithZero` version of `div_eq_div_iff_mul_eq_mul`. -/
-protected lemma div_eq_div_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
-    a / b = c / d ↔ a * d = c * b := hbd.div_eq_div_iff_of_isUnit hb.isUnit hd.isUnit
+protected lemma div_eq_div_iff [GroupWithZero G₀] {a b c d : G₀} (hbd : Commute b d) (hb : b ≠ 0)
+    (hd : d ≠ 0) : a / b = c / d ↔ a * d = c * b :=
+  hbd.div_eq_div_iff_of_isUnit hb.isUnit hd.isUnit
+
+protected lemma mul_inv_eq_mul_inv_iff [GroupWithZero G₀] {a b c d : G₀} (hbd : Commute b d)
+    (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b :=
+  hbd.mul_inv_eq_mul_inv_iff_of_isUnit hb.isUnit hd.isUnit
+
+protected lemma inv_mul_eq_inv_mul_iff [CommGroupWithZero G₀] {a b c d : G₀} (hbd : Commute b d)
+    (hb : b ≠ 0) (hd : d ≠ 0) : b⁻¹ * a = d⁻¹ * c ↔ a * d = c * b :=
+  hbd.inv_mul_eq_inv_mul_iff_of_isUnit hb.isUnit hd.isUnit
 
 end Commute
 
