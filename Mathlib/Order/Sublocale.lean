@@ -47,7 +47,8 @@ lemma inf_mem (a b : X) (h1 : a ∈ S) (h2 : b ∈ S) : a ⊓ b ∈ S := by
   exact S.sInfClosed' _ (pair_subset h1 h2)
 
 instance : InfSet S where
-  sInf x := ⟨sInf (Subtype.val '' x), S.sInfClosed' _ (by simp; simp [@subset_def])⟩
+  sInf x := ⟨sInf (Subtype.val '' x), S.sInfClosed' _
+    (by simp_rw [image_subset_iff, subset_def]; simp)⟩
 
 instance carrier.instCompleteLattice : CompleteLattice S where
   inf x y := ⟨x.val ⊓ y.val, S.inf_mem ↑x ↑y (SetLike.coe_mem x) (SetLike.coe_mem y)⟩
@@ -59,8 +60,10 @@ instance carrier.instCompleteLattice : CompleteLattice S where
     sInf, mem_setOf_eq, Subtype.mk_le_mk, sInf_le_iff, mem_image, Subtype.exists, exists_and_right,
     exists_eq_right, forall_exists_index, implies_true, upperBounds, le_sInf_iff, and_self]
 
+@[norm_cast]
 lemma coe_inf (a b : S) : (a ⊓ b).val = ↑a ⊓ ↑b := rfl
 
+@[norm_cast]
 lemma coe_sInf (s : Set S) : (sInf s).val = sInf (Subtype.val '' s) := rfl
 
 instance instHImp : HImp S where
