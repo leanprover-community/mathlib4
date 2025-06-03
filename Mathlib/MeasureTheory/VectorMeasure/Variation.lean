@@ -149,6 +149,14 @@ lemma partition_union {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
   · intro i _ h
     exact (hP i).2.2.2 ∅ h rfl
 
+open Classical in
+/-- If each `P i` is a partition of `s i` then the union is a partition of `⋃ i, s i`. -/
+lemma isInnerPart_iUnion {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
+    {P : ℕ → Finset (Set X)} (hP : ∀ i, IsInnerPart (s i) (P i)) (n : ℕ) :
+    IsInnerPart (⋃ i, s i) (Finset.biUnion (Finset.range n) P) := by
+
+  sorry
+
 /-- If P, Q are partitions of two disjoint sets then P and Q are disjoint. -/
 lemma partitions_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set X)}
     (hP : P ∈ partitions s) (hQ : Q ∈ partitions t) : Disjoint P Q := by
@@ -159,6 +167,12 @@ lemma partitions_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set 
   have := hst (hP.1 r <| hRP hr) (hQ.1 r <| hRQ hr)
   have := hP.2.2.2 r (hRP hr)
   simp_all
+
+/-- If P, Q are partitions of two disjoint sets then P and Q are disjoint. -/
+lemma isInnerPart_of_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set X)}
+    (hP : IsInnerPart s P) (hQ : IsInnerPart s Q) : Disjoint P Q := by
+
+  sorry
 
 open Classical in
 /-- If `P` is a partition then the restriction of `P` to a set `s` is a partition of `s`. -/
@@ -188,6 +202,17 @@ lemma partition_restrict {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitio
     exact hs.2.2.1 hp hq hpq hap haq
   · intro _ hp
     exact (Finset.mem_filter.mp hp).2
+
+open Classical in
+noncomputable def restriction (t : Set X) (P : Finset (Set X)) : Finset (Set X) :=
+  (P.image (fun p ↦ p ∩ t)).filter (· ≠ ∅)
+
+open Classical in
+/-- If `P` is a partition then the restriction of `P` to a set `s` is a partition of `s`. -/
+lemma restriction_isInnerPart {s t : Set X} {P : Finset (Set X)} (hs : IsInnerPart s P)
+    (ht : MeasurableSet t) : IsInnerPart t (restriction t P) := by
+
+  sorry
 
 end IsInnerPartition
 
