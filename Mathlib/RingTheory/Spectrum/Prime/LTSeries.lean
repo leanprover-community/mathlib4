@@ -72,7 +72,7 @@ theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
   chain of primes, $x \in \mathfrak{p}_n$. Then we can find another chain of primes
   $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that $x \in \mathfrak{q}_1$,
   $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$. -/
-theorem exist_lTSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
+theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     {x : R} (hx : x ∈ p.last.asIdeal) : ∃ q : LTSeries (PrimeSpectrum R),
       x ∈ (q 1).asIdeal ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
   generalize hp : p.length = n
