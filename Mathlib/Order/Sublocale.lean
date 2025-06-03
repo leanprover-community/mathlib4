@@ -69,10 +69,11 @@ lemma coe_sInf (s : Set S) : (sInf s).val = sInf (Subtype.val '' s) := rfl
 instance instHImp : HImp S where
   himp a b := ⟨a ⇨ b, (S.HImpClosed' a b (Subtype.coe_prop b))⟩
 
-lemma coe_himp (a b : S) : a.val ⇨ b.val = (a ⇨ b).val := rfl
+@[norm_cast]
+lemma coe_himp (a b : S) : (a ⇨ b).val = a.val ⇨ b.val := rfl
 
-lemma coe_himp' (a : X) (b : S) : a ⇨ b.val =
-    (⟨(a ⇨ b.val), (S.HImpClosed' _ _ b.coe_prop)⟩ : S).val := rfl
+lemma coe_himp' (a : X) (b : S) :
+  (⟨(a ⇨ b.val), (S.HImpClosed' _ _ b.coe_prop)⟩ : S).val = a ⇨ b.val  := rfl
 
 instance carrier.instHeytingAlgebra : HeytingAlgebra S where
   le_himp_iff a b c := by simp [← Subtype.coe_le_coe, ← @Sublocale.coe_inf, himp]
@@ -107,7 +108,7 @@ def restrict (S : Sublocale X) : FrameHom X S where
     calc
       _ ↔ (S.restrictAux a ≤ S.restrictAux b ⇨ s) := by simp
       _ ↔ (S.restrictAux b ≤ a ⇨ s) := by rw [S.giAux.gc.le_iff_le, @le_himp_comm, coe_himp]
-      _ ↔ ( b ≤ a ⇨ s) := by rw [coe_himp', S.giAux.u_le_u_iff, S.giAux.gc.le_iff_le]
+      _ ↔ ( b ≤ a ⇨ s) := by rw [← coe_himp', S.giAux.u_le_u_iff, S.giAux.gc.le_iff_le]
       _ ↔ (S.restrictAux (a ⊓ b) ≤ s) := by simp [inf_comm, S.giAux.gc.le_iff_le]
   map_sSup' s := by
     change Sublocale.restrictAux S (sSup s) = _
