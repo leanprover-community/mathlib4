@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 
@@ -20,21 +22,9 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
-/-- The prime spectrum of a quotient of a ring by an ideal is in order-preserving bijection
-with the zero locus of the ideal. -/
-noncomputable def PrimeSpectrum.quotientOrderIso (I : Ideal R) :
-    PrimeSpectrum (R ⧸ I) ≃o PrimeSpectrum.zeroLocus (R := R) I where
-  toEquiv := (Equiv.ofInjective _ (PrimeSpectrum.comap_injective_of_surjective _
-    Ideal.Quotient.mk_surjective)).trans (Equiv.setCongr
-      (by rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
-        Ideal.mk_ker]))
-  map_rel_iff' := Ideal.comap_le_comap_iff_of_surjective _ Quotient.mk_surjective ..
-
 lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
-  rw [ringKrullDim, Order.krullDim_eq_of_orderIso (PrimeSpectrum.quotientOrderIso I)]
-
-open scoped nonZeroDivisors
+  rw [ringKrullDim, Order.krullDim_eq_of_orderIso I.primeSpectrumQuotientOrderIsoZeroLocus]
 
 lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     {r : R} (hr : r ∈ R⁰) :
