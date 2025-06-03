@@ -46,8 +46,19 @@ theorem exists_eq_gaussNorm [ZeroHomClass F R ℝ] :
     exact ⟨i, hi2⟩
   · simp_all
 
+@[simp]
+lemma gaussNorm_C [ZeroHomClass F R ℝ] (r : R) : (C r).gaussNorm v c = v r := by
+  by_cases hr : r = 0 <;> simp [gaussNorm, support_C, hr]
+
+@[simp]
+theorem gaussNorm_monomial [ZeroHomClass F R ℝ] (n : ℕ) (r : R) :
+    (monomial n r).gaussNorm v c = v r * c ^ n := by
+  by_cases hr : r = 0 <;> simp [gaussNorm, support_monomial, hr]
+
+variable {c}
+
 private lemma sup'_nonneg_of_ne_zero [NonnegHomClass F R ℝ] {p : R[X]} (h : p.support.Nonempty)
-    {c : ℝ} (hc : 0 ≤ c) : 0 ≤ p.support.sup' h fun i ↦ (v (p.coeff i) * c ^ i) := by
+    (hc : 0 ≤ c) : 0 ≤ p.support.sup' h fun i ↦ (v (p.coeff i) * c ^ i) := by
   simp only [Finset.le_sup'_iff, mem_support_iff]
   use p.natDegree
   simp_all only [support_nonempty, ne_eq, coeff_natDegree, leadingCoeff_eq_zero, not_false_eq_true,
@@ -74,7 +85,7 @@ private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i
 
 @[simp]
 theorem gaussNorm_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
-    {c : ℝ} (hc : 0 ≤ c) : (p.toPowerSeries).gaussNorm v c = p.gaussNorm v c := by
+    (hc : 0 ≤ c) : (p.toPowerSeries).gaussNorm v c = p.gaussNorm v c := by
   by_cases hp : p = 0
   · simp [hp]
   · simp only [PowerSeries.gaussNorm, coeff_coe, gaussNorm, support_nonempty, ne_eq, hp,
@@ -88,46 +99,39 @@ theorem gaussNorm_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ
     · obtain ⟨i, hi⟩ := exists_eq_gaussNorm v c p
       simp only [gaussNorm, support_nonempty.mpr hp, ↓reduceDIte] at hi
       rw [hi]
-      exact le_ciSup (aux_bdd v c p) i
+      exact le_ciSup (aux_bdd v p) i
 
 @[simp]
 theorem gaussNorm_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
-    (h_eq_zero : ∀ x : R, v x = 0 → x = 0) {c : ℝ} (hc : 0 < c) : p.gaussNorm v c = 0 ↔ p = 0 := by
+    (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : 0 < c) : p.gaussNorm v c = 0 ↔ p = 0 := by
   rw [← gaussNorm_coe_powerSeries _ _ (le_of_lt hc),
-    PowerSeries.gaussNorm_eq_zero_iff h_eq_zero hc (by simpa only [coeff_coe] using aux_bdd v c p),
+    PowerSeries.gaussNorm_eq_zero_iff h_eq_zero hc (by simpa only [coeff_coe] using aux_bdd v p),
     coe_eq_zero_iff]
 
-theorem gaussNorm_nonneg {c : ℝ} (hc : 0 ≤ c) [NonnegHomClass F R ℝ] : 0 ≤ p.gaussNorm v c := by
+theorem gaussNorm_nonneg (hc : 0 ≤ c) [NonnegHomClass F R ℝ] : 0 ≤ p.gaussNorm v c := by
   by_cases hp : p.support.Nonempty <;>
   simp_all [gaussNorm, sup'_nonneg_of_ne_zero, -Finset.le_sup'_iff]
 
-@[simp]
-lemma gaussNorm_C [ZeroHomClass F R ℝ] (r : R) : (C r).gaussNorm v c = v r := by
-  by_cases hr : r = 0 <;> simp [gaussNorm, support_C, hr]
-
-@[simp]
-theorem gaussNorm_monomial [ZeroHomClass F R ℝ] (n : ℕ) (r : R) :
-    (monomial n r).gaussNorm v c = v r * c ^ n := by
-  by_cases hr : r = 0 <;> simp [gaussNorm, support_monomial, hr]
-
-lemma le_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (p : R[X]) {c : ℝ}
-    (hc : 0 ≤ c) (i : ℕ) : v (p.coeff i) * c ^ i ≤ p.gaussNorm v c := by
+lemma le_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) (i : ℕ) :
+    v (p.coeff i) * c ^ i ≤ p.gaussNorm v c := by
   rw [← gaussNorm_coe_powerSeries _ _ hc, ← coeff_coe]
   apply PowerSeries.le_gaussNorm
-  simpa using aux_bdd v c p
+  simpa using aux_bdd v p
 
 end Polynomial
 
 namespace PowerSeries
 
+variable {c} (r : R)
+
 @[simp]
-theorem gaussNorm_C [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {c : ℝ} (hc : 0 ≤ c) (r : R) :
+theorem gaussNorm_C [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) :
     (C R r).gaussNorm v c = v r := by
   simp [← Polynomial.coe_C, hc]
 
 @[simp]
-theorem gaussNorm_monomial [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {c : ℝ} (hc : 0 ≤ c)
-    (n : ℕ) (r : R) : (monomial R n r).gaussNorm v c = v r * c ^ n := by
+theorem gaussNorm_monomial [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) (n : ℕ):
+    (monomial R n r).gaussNorm v c = v r * c ^ n := by
   simp [← Polynomial.coe_monomial, hc]
 
 end PowerSeries
