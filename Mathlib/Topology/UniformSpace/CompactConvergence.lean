@@ -426,7 +426,7 @@ instance instCompleteSpaceOfCompactlyCoherentSpace [CompactlyCoherentSpace α] :
     isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing,
     range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
   exact (UniformOnFun.isClosed_setOf_continuous
-    (CompactlyCoherentSpace.isCoherentWith)).completeSpace_coe
+    CompactlyCoherentSpace.isCoherentWith).completeSpace_coe
 
 @[deprecated (since := "2025-06-03")]
 alias completeSpace_of_isCoherentWith := instCompleteSpaceOfCompactlyCoherentSpace
