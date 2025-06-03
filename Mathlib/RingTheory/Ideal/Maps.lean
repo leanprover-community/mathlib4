@@ -1089,6 +1089,12 @@ theorem liftOfRightInverseEquivKerLeKer_comp (hf : Function.RightInverse f_inv f
     (f.liftOfRightInverseEquivKerLeKer f_inv hf g).comp f = g :=
   RingHom.ext <| hf.ringHom_subtype_apply_inv_apply g
 
+@[to_additive (attr := simp)]
+theorem liftOfRightInverseEquivKerLeKer_comp_apply (hf : Function.RightInverse f_inv f)
+    (g : { g : G₁ →* G₃ // f.ker ≤ g.ker }) (x) :
+    (f.liftOfRightInverseEquivKerLeKer f_inv hf g) (f x) = g.1 x := by
+  simp_rw [liftOfRightInverseEquivKerLeKer_apply_apply, hf.ringHom_subtype_apply_inv_apply g]
+
 theorem eq_liftOfRightInverseEquivKerLeKer (hf : Function.RightInverse f_inv f) (g : A →+* C)
     (hg : ker f ≤ ker g) (h : B →+* C) (hh : h.comp f = g) :
     h = f.liftOfRightInverseEquivKerLeKer f_inv hf ⟨g, hg⟩ := by
@@ -1114,6 +1120,12 @@ theorem comp_liftOfLeftInverseEquivRangeLeRange (hf : Function.LeftInverse f_inv
     (g : { g : C →+* B // g.range ≤ f.range }) :
     f.comp (f.liftOfLeftInverseEquivRangeLeRange f_inv hf g) = g :=
   RingHom.ext <| hf.ringHom_subtype_apply_inv_apply g
+
+@[simp]
+theorem comp_liftOfRightInverseEquivKerLeKer_apply (hf : Function.LeftInverse f_inv f)
+    (g : { g : C →+* B // g.range ≤ f.range}) (x) :
+    f ((f.liftOfLeftInverseEquivRangeLeRange f_inv hf g) x) = g.1 x := by
+  simp_rw [liftOfLeftInverseEquivRangeLeRange_apply_apply, hf.ringHom_subtype_apply_inv_apply g]
 
 theorem eq_liftOfLeftInverseEquivRangeLeRange (hf : Function.LeftInverse f_inv f) (g : C →+* B)
     (hg : g.range ≤ f.range) (h : C →+* A) (hh : f.comp h = g) :

@@ -791,6 +791,12 @@ theorem liftOfRightInverseEquivKerLeKer_comp (hf : Function.RightInverse f_inv f
     (f.liftOfRightInverseEquivKerLeKer f_inv hf g).comp f = g :=
   MonoidHom.ext <| hf.monoidHom_subtype_apply_inv_apply g
 
+@[to_additive (attr := simp)]
+theorem liftOfRightInverseEquivKerLeKer_comp_apply (hf : Function.RightInverse f_inv f)
+    (g : { g : G₁ →* G₃ // f.ker ≤ g.ker }) (x) :
+    (f.liftOfRightInverseEquivKerLeKer f_inv hf g) (f x) = g.1 x := by
+  simp_rw [liftOfRightInverseEquivKerLeKer_apply_apply, hf.monoidHom_subtype_apply_inv_apply g]
+
 @[to_additive]
 theorem eq_liftOfRightInverseEquivKerLeKer (hf : Function.RightInverse f_inv f) (g : G₁ →* G₃)
     (hg : f.ker ≤ g.ker) (h : G₂ →* G₃) (hh : h.comp f = g) :
@@ -818,6 +824,12 @@ theorem comp_liftOfLeftInverseEquivRangeLeRange (hf : Function.LeftInverse f_inv
     (g : { g : G₃ →* G₂ // g.range ≤ f.range }) :
     f.comp (f.liftOfLeftInverseEquivRangeLeRange f_inv hf g) = g :=
   MonoidHom.ext <| hf.monoidHom_subtype_apply_inv_apply g
+
+@[to_additive (attr := simp)]
+theorem comp_liftOfRightInverseEquivKerLeKer_apply (hf : Function.LeftInverse f_inv f)
+    (g : { g : G₃ →* G₂ // g.range ≤ f.range }) (x) :
+    f ((f.liftOfLeftInverseEquivRangeLeRange f_inv hf g) x) = g.1 x := by
+  simp_rw [liftOfLeftInverseEquivRangeLeRange_apply_apply, hf.monoidHom_subtype_apply_inv_apply g]
 
 @[to_additive]
 theorem eq_liftOfLeftInverseEquivRangeLeRange (hf : Function.LeftInverse f_inv f) (g : G₃ →* G₂)

@@ -1121,16 +1121,16 @@ def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
           simp only [f.map_zsmul, zsmul_zero, f.mem_ker, hf]
         · intro h
           exact h (AddSubgroup.mem_zmultiples _)).trans <|
-    (Int.castAddHom (ZMod n)).liftOfRightInverse cast intCast_zmod_cast
+    (Int.castAddHom (ZMod n)).liftOfRightInverseEquivKerLeKer cast intCast_zmod_cast
 
 variable (f : { f : ℤ →+ A // f n = 0 })
 
 @[simp]
 theorem lift_coe (x : ℤ) : lift n f (x : ZMod n) = f.val x :=
-  AddMonoidHom.liftOfRightInverse_comp_apply _ _ (fun _ => intCast_zmod_cast _) _ _
+  AddMonoidHom.liftOfRightInverseEquivKerLeKer_comp_apply _ _ (fun _ => intCast_zmod_cast _) _
 
 theorem lift_castAddHom (x : ℤ) : lift n f (Int.castAddHom (ZMod n) x) = f.1 x :=
-  AddMonoidHom.liftOfRightInverse_comp_apply _ _ (fun _ => intCast_zmod_cast _) _ _
+  AddMonoidHom.liftOfRightInverseEquivKerLeKer_comp_apply _ _ (fun _ => intCast_zmod_cast _) _ _
 
 @[simp]
 theorem lift_comp_coe : ZMod.lift n f ∘ ((↑) : ℤ → _) = f :=
