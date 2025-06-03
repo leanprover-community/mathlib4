@@ -303,18 +303,6 @@ lemma Ideal.under_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : 
     simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
   exact IsLocalization.comap_map_of_isPrime_disjoint _ _ p (by simpa) disj
 
-variable (S) in
-/-- The prime spectrum of the localization of a commutative ring at `M` are in
-  order-preserving bijection with the prime ideals that are disjoint from `M`. -/
-noncomputable def IsLocalization.primeSpectrumOrderIso [IsLocalization M S] :
-    PrimeSpectrum S ≃o { p : PrimeSpectrum R // Disjoint (M : Set R) p.1 } :=
-  let e := IsLocalization.orderIsoOfPrime M S
-{ toFun p := ⟨⟨(e ⟨p.1, p.2⟩).1, (e ⟨p.1, p.2⟩).2.1⟩, (e ⟨p.1, p.2⟩).2.2⟩
-  invFun p := ⟨(e.symm ⟨p.1.1, p.1.2, p.2⟩).1, (e.symm ⟨p.1.1, p.1.2, p.2⟩).2⟩
-  left_inv p := by simp
-  right_inv p := by simp
-  map_rel_iff' := e.le_iff_le }
-
 lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     {R : Type*} [CommSemiring R] (p : Ideal R) (hp : p ∈ minimalPrimes R)
     (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization.AtPrime S p (hp := hp.1.1)] :
