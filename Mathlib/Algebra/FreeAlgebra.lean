@@ -349,7 +349,6 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
     rintro ⟨⟩ ⟨⟩
     rfl
   map_zero' := by
-    dsimp
     change algebraMap _ _ _ = _
     simp
   map_add' := by

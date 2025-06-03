@@ -31,8 +31,6 @@ open Bicategory
 
 open MonoidalCategory
 
-open Bicategory
-
 attribute [local simp] EndMonoidal in
 instance (X : C) : MonoidalCategory (EndMonoidal X) where
   tensorObj f g := f ≫ g
