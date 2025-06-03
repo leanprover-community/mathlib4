@@ -48,7 +48,7 @@ theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpe
   refine ENat.not_lt_zero (e ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
   simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₀]
 
-theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : (PrimeSpectrum R)}
+theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.asIdeal) :
       ∃ q : (PrimeSpectrum R), x ∈ q.asIdeal ∧ p₀ < q ∧ q < p₂ := by
   let e := p₂.1.primeSpectrumLocalizationAtPrime (Localization.AtPrime p₂.1)
