@@ -68,6 +68,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax
+  linter.style.emptyLine
   linter.style.lambdaSyntax
   linter.style.header
   linter.style.longLine
