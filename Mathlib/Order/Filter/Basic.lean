@@ -143,6 +143,8 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {ι : Sort x}
 
 theorem mem_principal_self (s : Set α) : s ∈ 𝓟 s := Subset.rfl
 
+theorem eventually_mem_principal (s : Set α) : ∀ᶠ x in 𝓟 s, x ∈ s := mem_principal_self s
+
 section Lattice
 
 variable {f g : Filter α} {s t : Set α}
