@@ -103,7 +103,7 @@ lemma partitions_empty : partitions (∅ : Set X) = {∅} := by
   · intro hp
     simp [hp]
 
-lemma isInnerPart_of_empty (P : Finset (Set X)) (hP : IsInnerPart ∅ P) : P = ∅ := by
+lemma isInnerPart_of_empty {P : Finset (Set X)} (hP : IsInnerPart ∅ P) : P = ∅ := by
   obtain ⟨h, _, _, h'⟩ := hP
   refine Finset.eq_empty_of_forall_notMem ?_
   by_contra! hc
@@ -247,18 +247,43 @@ end IsInnerPartition
 
 /-!
 ## Definition of the sup measure of a subadditive `ℝ≥0∞` valued function
+
+Given a set function `f : Set X → ℝ≥0∞` we can define another set function by taking the supremum
+over all partitions `E i` of the sum of `∑ i, f (E i)`. If `f` is sub-additive then the function
+defined is an `ℝ≥0∞`-valued measure.
+
 -/
 
+section supMeasure
+
 variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
-  (μ : VectorMeasure X V)
+  (f : Set X → ℝ≥0∞)
+
+open Classical in
+noncomputable def supPartSum (s : Set X) :=
+    if (MeasurableSet s) then ⨆ (P : Finset (Set X)) (_ : IsInnerPart s P), ∑ p ∈ P, f p else 0
+
+/-- `supPartSum` of the empty set is equal to zero. -/
+lemma supPartSum_empty' : supPartSum f ∅ = 0 := by
+  simp only [supPartSum, MeasurableSet.empty, reduceIte, ENNReal.iSup_eq_zero]
+  intro _ hP
+  simp_all [isInnerPart_of_empty hP]
+
+
+
+
 
 -- To do...
 
 
+end supMeasure
 
 /-!
 ## Definition of variation
 -/
+
+variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
+  (μ : VectorMeasure X V)
 
 /-- Given a partition `E` of a set `s`, this returns the sum of the norm of the measure of the
 elements of that partition. -/
