@@ -467,6 +467,10 @@ theorem disjoint_image_left {f : α → β} {s : Set α} {t : Set β} :
     Disjoint (f '' s) t ↔ Disjoint s (f ⁻¹' t) := by
   simp_rw [disjoint_iff_inter_eq_empty, ← not_nonempty_iff_eq_empty, image_inter_nonempty_iff]
 
+theorem disjoint_image_right {f : α → β} {s : Set α} {t : Set β} :
+    Disjoint t (f '' s) ↔ Disjoint (f ⁻¹' t) s := by
+  rw [disjoint_comm, disjoint_comm (b := s), disjoint_image_left]
+
 theorem image_diff_preimage {f : α → β} {s : Set α} {t : Set β} :
     f '' (s \ f ⁻¹' t) = f '' s \ t := by simp_rw [diff_eq, ← preimage_compl, image_inter_preimage]
 
