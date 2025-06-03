@@ -63,8 +63,19 @@ lemma Ideal.ofList_height_eq_length_of_isRegular [IsLocalRing R] (rs : List R)
     apply hp.1.2 (Ideal.subset_span _)
     simp
 
-lemma Ideal.maximalIdeal_mem_ofList_append_of_ofList_height_eq_length [IsLocalRing R] (rs : List R)
-    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (ht : (Ideal.ofList rs).height = rs.length) :
+lemma IsLocalRing.height_eq_height_maximalIdea_of_maximalIdeal_mem_minimalPrimes [IsLocalRing R]
+    (I : Ideal R) (mem : maximalIdeal R ∈ I.minimalPrimes) :
+    I.height = (maximalIdeal R).height := by
+  rw [Ideal.height_eq_primeHeight (maximalIdeal R)]
+  have : I.minimalPrimes = {maximalIdeal R} := by
+    ext J
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · simp [Minimal.eq_of_le mem.out ⟨h.1.1, h.1.2⟩ (IsLocalRing.le_maximalIdeal h.1.1.ne_top)]
+    · simpa [Set.mem_singleton_iff.mp h] using mem
+  simp [Ideal.height, this]
+
+lemma Ideal.maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [IsLocalRing R]
+    (rs : List R) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (ht : (Ideal.ofList rs).height = rs.length) :
     ∃ rs' : List R, maximalIdeal R ∈ (Ideal.ofList (rs ++ rs')).minimalPrimes ∧
     rs.length + rs'.length = ringKrullDim R := by
   have ne : ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤ :=
@@ -106,8 +117,10 @@ lemma Ideal.maximalIdeal_mem_ofList_append_of_ofList_height_eq_length [IsLocalRi
         let _ := hp.1.1
         have eq := Ideal.IsMaximal.eq_of_le inferInstance IsPrime.ne_top' le
         rw [← eq] at hp
-
-        sorry
+        rw [IsLocalRing.height_eq_height_maximalIdea_of_maximalIdeal_mem_minimalPrimes _ hp,
+          ← WithBot.coe_inj, IsLocalRing.maximalIdeal_height_eq_ringKrullDim, hd] at ht
+        simp only [coe_eq, WithBot.coe_inj, Nat.cast_inj] at ht
+        simp [ht] at len
       rcases Set.not_subset.mp this with ⟨x, hx1, hx2⟩
       simp at hx2
       use x
