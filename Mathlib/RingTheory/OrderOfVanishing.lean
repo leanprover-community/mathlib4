@@ -38,7 +38,7 @@ lemma ord_one : ord R 1 = 0 := by
 
 end Ring
 
-section CommRing
+
 
 variable [CommRing R] [Module R M]
 
@@ -98,12 +98,13 @@ lemma Ideal.exact_mulQuot_quotOfMul {a : R} (I : Ideal R) :
   simp [this, Ideal.mulQuot, Submodule.mapQ.eq_1, Submodule.range_liftQ,
    range_comp, Ideal.Quotient.smul_top, ← Ideal.submodule_span_eq, LinearMap.map_span]
 
+namespace Ring
 variable (R)
 /--
 The order of vanishing of `a * b` is the order of vanishing of `a` plus the order
 of vanishing of `b`.
 -/
-theorem CommRing.ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
+theorem ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
     Ring.ord R (a * b) = Ring.ord R a + Ring.ord R b := by
   have :=  Module.length_eq_add_of_exact (Ideal.mulQuot b (Ideal.span {a}))
           (Ideal.quotOfMul b (Ideal.span {a})) (Ideal.mulQuotInjective (Ideal.span {a}) hb)
@@ -127,7 +128,7 @@ meaning in this case `0` will not be mapped to `⊤`.
 -/
 @[stacks 02MD]
 noncomputable
-def CommRing.ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℕₘ₀ where
+def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℕₘ₀ where
   toFun x := if x ∈ nonZeroDivisors R then Ring.ord R x else 0
   map_zero' := by
     simp [nonZeroDivisors, exists_ne]
@@ -138,14 +139,14 @@ def CommRing.ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℕₘ₀ where
     intro x y
     split_ifs
     · rename_i _ b
-      exact CommRing.ord_mul R b
+      exact ord_mul R b
     all_goals simp_all [mul_mem_nonZeroDivisors]
 
 /--
 The quotient of a Noetherian ring of krull dimension less than or equal to `1` by a principal ideal
 is of finite length.
 -/
-theorem CommRing.isFiniteLength_quotient_span_singleton [IsNoetherianRing R]
+theorem isFiniteLength_quotient_span_singleton [IsNoetherianRing R]
     [Ring.KrullDimLE 1 R] {x : R} (hx : x ∈ nonZeroDivisors R) :
     IsFiniteLength R (R ⧸ Ideal.span {x}) := by
   rw [isFiniteLength_iff_isNoetherian_isArtinian]
@@ -163,26 +164,26 @@ Order of vanishing function for elements of the fraction field defined as the ex
 -/
 @[stacks 02MD]
 noncomputable
-def CommRing.ordFrac [Nontrivial R] {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+def ordFrac [Nontrivial R] {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
     [IsNoetherianRing R] [Ring.KrullDimLE 1 R] : K →*₀ ℤₘ₀ :=
   letI f := Submonoid.LocalizationWithZeroMap.lift (toLocalizationWithZeroMap (nonZeroDivisors R) K)
     (MonoidWithZeroHom.comp (WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative)
-    (CommRing.ordMonoidWithZeroHom R))
+    (ordMonoidWithZeroHom R))
   haveI : (∀ (y : ↥(nonZeroDivisors R)),
     IsUnit (((WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative).comp
-    (CommRing.ordMonoidWithZeroHom R)) ↑y)) := by
+    (ordMonoidWithZeroHom R)) ↑y)) := by
     intro y
     simp only [ Equiv.toFun_as_coe, MonoidWithZeroHom.coe_comp, MonoidWithZeroHom.coe_mk,
       ZeroHom.coe_mk, Function.comp_apply, isUnit_iff_ne_zero, ne_eq]
     intro a
-    have : ∃ a : Multiplicative ℕ, WithZero.coe a = ((CommRing.ordMonoidWithZeroHom R) y.1) := by
+    have : ∃ a : Multiplicative ℕ, WithZero.coe a = ((ordMonoidWithZeroHom R) y.1) := by
       simp only [ordMonoidWithZeroHom, Ring.ord, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
         SetLike.coe_mem, ↓reduceIte, Multiplicative.exists]
-      have := Module.length_ne_top_iff.mpr <| CommRing.isFiniteLength_quotient_span_singleton R y.2
+      have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
       exact ENat.ne_top_iff_exists.mp this
     obtain ⟨m, hm⟩ := this
     rw [← hm] at a
     simp at a
   f this
 
-end CommRing
+end Ring
