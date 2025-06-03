@@ -152,14 +152,15 @@ theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     let r : Fin (c.blocksFun k) → Fin n := c.embedding k
     change p (c.blocksFun k) (Function.update v j z ∘ r) = p (c.blocksFun k) (v ∘ r)
     suffices B : Function.update v j z ∘ r = v ∘ r by rw [B]
-    apply Function.update_comp_eq_of_not_mem_range
+    apply Function.update_comp_eq_of_notMem_range
     rwa [c.mem_range_embedding_iff']
 
 @[simp]
 theorem compContinuousLinearMap_applyComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 F G)
     (f : E →L[𝕜] F) (c : Composition n) (v : Fin n → E) :
     (p.compContinuousLinearMap f).applyComposition c v = p.applyComposition c (f ∘ v) := by
-  simp (config := {unfoldPartialApp := true}) [applyComposition]; rfl
+  ext
+  simp [applyComposition, Function.comp_def]
 
 end FormalMultilinearSeries
 
@@ -291,8 +292,7 @@ theorem compAlongComposition_bound {n : ℕ} (p : FormalMultilinearSeries 𝕜 E
     ‖f.compAlongComposition p c v‖ = ‖f (p.applyComposition c v)‖ := rfl
     _ ≤ ‖f‖ * ∏ i, ‖p.applyComposition c v i‖ := ContinuousMultilinearMap.le_opNorm _ _
     _ ≤ ‖f‖ * ∏ i, ‖p (c.blocksFun i)‖ * ∏ j : Fin (c.blocksFun i), ‖(v ∘ c.embedding i) j‖ := by
-      apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
-      refine Finset.prod_le_prod (fun i _hi => norm_nonneg _) fun i _hi => ?_
+      gcongr with i
       apply ContinuousMultilinearMap.le_opNorm
     _ = (‖f‖ * ∏ i, ‖p (c.blocksFun i)‖) *
         ∏ i, ∏ j : Fin (c.blocksFun i), ‖(v ∘ c.embedding i) j‖ := by

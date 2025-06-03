@@ -27,7 +27,7 @@ For right multiplication (`a ↦ a * b`) we define the following typeclasses:
 
 We then provide statements and instances about these typeclasses not requiring `MulZeroClass`
 or higher on the underlying type – those that do can be found in
-`Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic`.
+`Mathlib/Algebra/Order/GroupWithZero/Unbundled/Basic.lean`.
 
 Less granular typeclasses like `OrderedAddCommMonoid` and `LinearOrderedField` should be enough for
 most purposes, and the system is set up so that they imply the correct granular typeclasses here.
@@ -36,7 +36,7 @@ most purposes, and the system is set up so that they imply the correct granular 
 
 As the underlying type `α` gets more structured, some of the above typeclasses become equivalent.
 The commonly used implications are:
-* When `α` is a partial order (in `Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic`):
+* When `α` is a partial order (in `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Basic.lean`):
   * `PosMulStrictMono.toPosMulMono`
   * `MulPosStrictMono.toMulPosMono`
   * `PosMulReflectLE.toPosMulReflectLT`

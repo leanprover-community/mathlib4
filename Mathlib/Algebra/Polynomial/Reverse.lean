@@ -126,7 +126,7 @@ theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c 
   rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]
   split_ifs with h
   · rw [h, revAt_invol, coeff_X_pow_self]
-  · rw [not_mem_support_iff.mp]
+  · rw [notMem_support_iff.mp]
     intro a
     rw [← one_mul (X ^ n), ← C_1] at a
     apply h
