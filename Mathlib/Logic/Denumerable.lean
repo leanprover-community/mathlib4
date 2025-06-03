@@ -51,9 +51,8 @@ def ofNat (α) [Denumerable α] (n : ℕ) : α :=
 theorem decode_eq_ofNat (α) [Denumerable α] (n : ℕ) : decode (α := α) n = some (ofNat α n) :=
   Option.eq_some_of_isSome _
 
-@[simp]
-theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b :=
-  Option.some.inj <| (decode_eq_ofNat _ _).symm.trans h
+theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b := by
+  simpa using h
 
 @[simp]
 theorem encode_ofNat (n) : encode (ofNat α n) = n := by
