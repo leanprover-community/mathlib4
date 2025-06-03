@@ -3,7 +3,7 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.WithTerminal
+import Mathlib.CategoryTheory.WithTerminal.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
