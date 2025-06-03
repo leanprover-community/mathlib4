@@ -169,38 +169,49 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
   exact Real.rpow_le_rpow_of_nonpos (r_pos _) (r_lower_bound_on_verticalStrip z hB hz)
     (neg_nonpos.mpr hk)
 
-lemma linear_isBigO_r (m : ℤ) (z : ℍ) : (fun (n : ℤ) ↦ ((m : ℂ) * z + n)⁻¹) =O[cofinite]
-    (fun n ↦ ((r z * ‖![n, m]‖))⁻¹) := by
+lemma linear_isBigO_r_right (c : ℤ) (z : ℍ) : (fun (d : ℤ) ↦ ((c : ℂ) * z + d)⁻¹) =O[cofinite]
+    (fun d ↦ ((r z * ‖![c, d]‖))⁻¹) := by
     rw [Asymptotics.isBigO_iff']
     refine ⟨1, Real.zero_lt_one, ?_⟩
-    filter_upwards with n
-    have := EisensteinSeries.summand_bound z (k := 1) (by norm_num) ![m, n]
-    simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
-      Real.rpow_neg_one, norm_inv, Nat.succ_eq_add_one, Nat.reduceAdd, mul_inv_rev, norm_mul,
-      norm_norm, Real.norm_eq_abs, one_mul, ge_iff_le] at *
-    apply le_trans this
-    rw [abs_norm, mul_comm, show |r z| = r z by rw [abs_eq_self];  exact (r_pos z).le, norm_symm]
+    filter_upwards with d
+    simpa only [norm_inv, Nat.succ_eq_add_one, Nat.reduceAdd, mul_inv_rev, mul_comm, norm_mul,
+      Real.norm_eq_abs, abs_eq_self.mpr (r_pos z).le, abs_norm, one_mul, ge_iff_le, Fin.isValue,
+      Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one, Real.rpow_neg_one] using
+      EisensteinSeries.summand_bound z (k := 1) (by norm_num) ![c, d]
 
-lemma linear_isBigO (m : ℤ) (z : ℍ) : (fun (n : ℤ) => ((m : ℂ) * z + n)⁻¹) =O[cofinite]
-    fun n => ((n : ℝ)⁻¹)  := by
-  apply Asymptotics.IsBigO.trans (linear_isBigO_r m z)
+lemma linear_isBigO_r_left (d : ℤ) (z : ℍ) : (fun (c : ℤ) ↦ ((c : ℂ) * z + d)⁻¹) =O[cofinite]
+    (fun c ↦ ((r z * ‖![c, d]‖))⁻¹) := by
+    rw [Asymptotics.isBigO_iff']
+    refine ⟨1, Real.zero_lt_one, ?_⟩
+    filter_upwards with c
+    simpa only [norm_inv, Nat.succ_eq_add_one, Nat.reduceAdd, mul_inv_rev, mul_comm, norm_mul,
+      Real.norm_eq_abs, abs_eq_self.mpr (r_pos z).le, abs_norm, one_mul, ge_iff_le, Fin.isValue,
+      Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one, Real.rpow_neg_one] using
+      EisensteinSeries.summand_bound z (k := 1) (by norm_num) ![c, d]
+
+lemma linear_isBigO_right (c : ℤ) (z : ℍ) : (fun (d : ℤ) => ((c : ℂ) * z + d)⁻¹) =O[cofinite]
+    fun n => ((n : ℝ)⁻¹) := by
+  apply Asymptotics.IsBigO.trans (linear_isBigO_r_right c z)
   simp_rw [Asymptotics.isBigO_iff', eventually_iff_exists_mem]
-  refine ⟨|(r z)|⁻¹, by simp [ne_of_gt (r_pos z)], ?_⟩
-  refine ⟨{0}ᶜ, Set.Finite.compl_mem_cofinite (Set.finite_singleton 0), ?_⟩
+  refine ⟨|(r z)|⁻¹, by simp [ne_of_gt (r_pos z)], {0}ᶜ,
+    Set.Finite.compl_mem_cofinite (Set.finite_singleton 0), ?_⟩
   simp only [Set.mem_compl_iff, Set.mem_singleton_iff, Nat.succ_eq_add_one, Nat.reduceAdd,
-    mul_inv_rev, norm_mul, norm_inv, norm_norm, Real.norm_eq_abs, abs_norm]
-  intro n hn
-  rw [mul_comm]
+    mul_inv_rev, norm_mul, norm_inv, norm_norm, Real.norm_eq_abs, abs_norm, mul_comm]
+  intro d _
   gcongr
-  simpa using abs_le_left_of_norm m n
+  simpa using abs_le_right_of_norm d c
 
-lemma linear_isBigO_pow (m : ℤ) (z : ℍ) (k : ℕ) :
-    (fun (n : ℤ) ↦ (((m : ℂ) * z + n) ^ k )⁻¹) =O[cofinite] fun n ↦ (|(n : ℝ)| ^ k)⁻¹  := by
-  simp_rw [← inv_pow]
-  apply Asymptotics.IsBigO.pow
-  have := Asymptotics.IsBigO.abs_right (linear_isBigO m z)
-  simp_rw [abs_inv] at this
-  apply this
+  lemma linear_isBigO_left (d : ℤ) (z : ℍ) : (fun (c : ℤ) => ((c : ℂ) * z + d)⁻¹) =O[cofinite]
+    fun n => ((n : ℝ)⁻¹) := by
+  apply Asymptotics.IsBigO.trans (linear_isBigO_r_left d z)
+  simp_rw [Asymptotics.isBigO_iff', eventually_iff_exists_mem]
+  refine ⟨|(r z)|⁻¹, by simp [ne_of_gt (r_pos z)], {0}ᶜ,
+    Set.Finite.compl_mem_cofinite (Set.finite_singleton 0), ?_⟩
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff, Nat.succ_eq_add_one, Nat.reduceAdd,
+    mul_inv_rev, norm_mul, norm_inv, norm_norm, Real.norm_eq_abs, abs_norm, mul_comm]
+  intro c _
+  gcongr
+  simpa using abs_le_left_of_norm d c
 
 end bounding_functions
 
@@ -226,28 +237,31 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
 lemma summable_of_inv_isBigO_riemannZeta {α : Type} [NormedField α] [CompleteSpace α]
     {f  : ℤ → α} {a : ℝ} (hab : 1 < a)
     (hf : (fun n => (f n)⁻¹) =O[cofinite] fun n => (|(n : ℝ)| ^ a)⁻¹) :
-    Summable fun n => (f n)⁻¹ := by
-  apply summable_of_isBigO _ hf
-  have := Real.summable_abs_int_rpow hab
-  apply this.congr
-  intro b
-  refine Real.rpow_neg ?_ a
-  exact abs_nonneg (b : ℝ)
+    Summable fun n => (f n)⁻¹ :=
+    summable_of_isBigO
+      (Summable.congr (Real.summable_abs_int_rpow hab) fun b ↦ Real.rpow_neg (abs_nonneg ↑b) a) hf
 
 /-- This says that for `z : ℍ` the function `d : ℤ ↦ ((c z + d) ^ k)⁻¹ is Summable for `2 ≤ k`. -/
-lemma UpperHalfPlane.linear_right_summable (z : ℍ) (c k : ℤ) (hk : 2 ≤ k) :
+lemma linear_right_summable (z : ℍ) (c k : ℤ) (hk : 2 ≤ k) :
     Summable fun d : ℤ ↦ (((c : ℂ) * z + d) ^ k)⁻¹ := by
   apply summable_of_inv_isBigO_riemannZeta (a := k) (by norm_cast)
   lift k to ℕ using (by linarith)
-  simpa using linear_isBigO_pow c z k
+  simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
+  apply Asymptotics.IsBigO.pow (Asymptotics.IsBigO.abs_right (linear_isBigO_right c z))
 
-lemma UpperHalfPlane.linear_left_summable (z : ℍ) (d k : ℤ) (hk : 2 ≤ k) :
+lemma linear_left_summable (z : ℍ) (d k : ℤ) (hk : 2 ≤ k) :
   Summable fun c : ℤ ↦ (((c : ℂ) * z + d) ^ k)⁻¹ := by
-  apply ((UpperHalfPlane.linear_right_summable
+  apply ((linear_right_summable
     ⟨-1 /z, by simpa using UpperHalfPlane.pnat_div 1 z⟩ (-d) k hk).mul_left ((z : ℂ)^k)⁻¹).congr
   intro b
   rw [← mul_inv, ← mul_zpow]
-  congr
   field_simp [UpperHalfPlane.ne_zero z, add_comm]
+
+lemma summable_diff (z : ℍ) (c₁ c₂ : ℤ) :
+    Summable fun (n : ℤ) => ((c₁ * (z : ℂ) - n) * (c₂ * z + n))⁻¹  := by
+  apply summable_of_inv_isBigO_riemannZeta (a := 2) (by norm_cast)
+  simp only [Real.rpow_two, sq_abs, abs_mul_abs_self, ← mul_inv, pow_two]
+  simpa [sub_eq_add_neg] using Asymptotics.IsBigO.mul (linear_isBigO_right c₂ z)
+    (linear_isBigO_right c₁ z).of_neg_int
 
 end EisensteinSeries
