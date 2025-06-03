@@ -492,11 +492,11 @@ theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
 theorem unit_one (h : IsUnit (1 : M)) : h.unit = 1 :=
   Units.eq_iff.1 rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem unit_mul (ha : IsUnit a) (hb : IsUnit b) : (ha.mul hb).unit = ha.unit * hb.unit :=
   Units.ext rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem unit_pow (h : IsUnit a) (n : ℕ) : (h.pow n).unit = h.unit ^ n :=
   Units.ext rfl
 
@@ -557,7 +557,7 @@ lemma inv (h : IsUnit a) : IsUnit a⁻¹ := by
   rw [← hu, ← Units.val_inv_eq_inv_val]
   exact Units.isUnit _
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma unit_inv (h : IsUnit a) : h.inv.unit = h.unit⁻¹ :=
   Units.ext h.unit.val_inv_eq_inv_val.symm
 
@@ -565,7 +565,7 @@ lemma unit_inv (h : IsUnit a) : h.inv.unit = h.unit⁻¹ :=
 lemma div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
   rw [div_eq_mul_inv]; exact ha.mul hb.inv
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma unit_div (ha : IsUnit a) (hb : IsUnit b) : (ha.div hb).unit = ha.unit / hb.unit :=
   Units.ext (ha.unit.val_div_eq_div_val hb.unit).symm
 
