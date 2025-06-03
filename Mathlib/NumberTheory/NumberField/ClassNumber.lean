@@ -125,8 +125,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime
     absNorm_dvd_absNorm_of_le <| le_of_dvd <|
       UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hJ).trans hI
 
-/-- Let `K` be a number field and let `M K` be the Minkowski bound of `K` (by definition it is
-`(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`).
+/-- Let `K` be a number field and let `M K` be the Minkowski bound of `K`.
 To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
 `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P` above `p` such that
 `p ^ (span ({p}).inertiaDeg P) ≤ ⌊(M K)⌋₊` are principal. This is the standard technique to prove
@@ -164,9 +163,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_I
     exact hspan ▸ inertiaDeg_pos ..
   · exact hspan ▸ hlies
 
-/-- Let `K` be a number field such that `K/ℚ` is Galois and let `M K` be the Minkowski bound of `K`
-(by definition it is
-`(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`).
+/-- Let `K` be a number field such that `K/ℚ` is Galois and let `M K` be the Minkowski bound of `K`.
 To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
 `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, there is an ideal `P` above `p` such that
 either `⌊(M K)⌋₊ < p ^ (span ({p}).inertiaDeg P)` or `P` is principal. This is the standard
