@@ -49,6 +49,7 @@ attribute itself to hook any new command elaborators it declares.
 
 namespace Mathlib.Util.SuppressSorry
 
+/-- Suppresses the warning `declaration uses 'sorry'` that normally appears when using `sorry`. -/
 register_option suppressSorry : Bool := {
   defValue := false
   descr := "suppress sorry warnings"
