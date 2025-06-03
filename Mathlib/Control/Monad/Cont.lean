@@ -16,7 +16,7 @@ import Batteries.Control.OptionT
 Monad encapsulating continuation passing programming style, similar to
 Haskell's `Cont`, `ContT` and `MonadCont`:
 <https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
-<https://hub.darcs.net/ross/transformers/browse/Control/Monad/Trans/Cont.hs>
+<https://hackage.haskell.org/package/transformers-0.6.2.0/docs/Control-Monad-Trans-Cont.html>
 -/
 
 universe u v w u₀ u₁ v₀ v₁
