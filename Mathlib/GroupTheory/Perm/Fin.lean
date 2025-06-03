@@ -197,7 +197,7 @@ theorem cycleRange_apply {n : ℕ} [NeZero n] (i j : Fin n) :
 @[simp]
 theorem cycleRange_zero (n : ℕ) [NeZero n] : cycleRange (0 : Fin n) = 1 := by
   ext j
-  rcases (Fin.zero_le' j).eq_or_lt with rfl | hj
+  rcases (Fin.zero_le j).eq_or_lt with rfl | hj
   · simp
   · rw [cycleRange_of_gt hj, one_apply]
 

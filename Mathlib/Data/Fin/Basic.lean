@@ -44,7 +44,7 @@ Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 
 assert_not_exists Monoid Finset
 
-open Fin Nat Function
+open Nat Function
 
 attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
 
@@ -199,20 +199,9 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem mk_zero' (n : ℕ) [NeZero n] : (⟨0, pos_of_neZero n⟩ : Fin n) = 0 := rfl
 
-/--
-The `Fin.zero_le` in `Lean` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.
--/
-@[simp]
+@[deprecated Fin.zero_le (since := "2025-05-13")]
 protected theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
   Nat.zero_le a.val
-
-@[simp, norm_cast]
-theorem val_eq_zero_iff [NeZero n] {a : Fin n} : a.val = 0 ↔ a = 0 := by
-  rw [Fin.ext_iff, val_zero]
-
-theorem val_ne_zero_iff [NeZero n] {a : Fin n} : a.val ≠ 0 ↔ a ≠ 0 :=
-  val_eq_zero_iff.not
 
 @[simp, norm_cast]
 theorem val_pos_iff [NeZero n] {a : Fin n} : 0 < a.val ↔ 0 < a := by
@@ -326,7 +315,7 @@ theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
   rfl
 
 instance instNatCast [NeZero n] : NatCast (Fin n) where
-  natCast i := Fin.ofNat' n i
+  natCast i := Fin.ofNat n i
 
 lemma natCast_def [NeZero n] (a : ℕ) : (a : Fin n) = ⟨a % n, mod_lt _ n.pos_of_neZero⟩ := rfl
 
@@ -360,8 +349,11 @@ lemma val_sub_one_of_ne_zero [NeZero n] {i : Fin n} (hi : i ≠ 0) : (i - 1).val
 section OfNatCoe
 
 @[simp]
-theorem ofNat'_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat' n a = a :=
+theorem ofNat_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat n a = a :=
   rfl
+
+@[deprecated ofNat_eq_cast (since := "2025-05-30")]
+alias ofNat'_eq_cast := ofNat_eq_cast
 
 @[simp] lemma val_natCast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
@@ -653,25 +645,18 @@ The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
 alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
-/--
-The `Fin.castSucc_eq_zero_iff` in `Lean` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.
--/
-@[simp]
+@[deprecated Fin.castSucc_eq_zero_iff (since := "2025-05-13")]
 theorem castSucc_eq_zero_iff' [NeZero n] (a : Fin n) : castSucc a = 0 ↔ a = 0 :=
   Fin.ext_iff.trans <| (Fin.ext_iff.trans <| by simp).symm
 
-/--
-The `Fin.castSucc_ne_zero_iff` in `Lean` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis.
--/
+@[deprecated Fin.castSucc_ne_zero_iff (since := "2025-05-13")]
 theorem castSucc_ne_zero_iff' [NeZero n] (a : Fin n) : castSucc a ≠ 0 ↔ a ≠ 0 :=
-  not_iff_not.mpr <| castSucc_eq_zero_iff' a
+  not_iff_not.mpr <| castSucc_eq_zero_iff
 
 theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := by
   cases n
   · exact i.elim0
-  · rw [castSucc_ne_zero_iff', Ne, Fin.ext_iff]
+  · rw [castSucc_ne_zero_iff, Ne, Fin.ext_iff]
     exact ((zero_le _).trans_lt h).ne'
 
 theorem succ_ne_last_iff (a : Fin (n + 1)) : succ a ≠ last (n + 1) ↔ a ≠ last n :=
@@ -714,8 +699,6 @@ def natAddEmb (n) {m} : Fin m ↪ Fin (n + m) where
   inj' a b := by simp [Fin.ext_iff]
 
 theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
-
-theorem castSucc_natAdd (i : Fin m) : castSucc (natAdd n i) = natAdd n (castSucc i) := rfl
 
 theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
     if h : i.succ = last _ then natAdd n (0 : Fin (m + 1))
@@ -1240,7 +1223,7 @@ lemma predAbove_castPred_self (p : Fin (n + 1)) (hp : p ≠ last n) :
   · rw [predAbove_of_le_castSucc _ _ (zero_le _), castPred_zero]
 
 lemma predAbove_zero_succ [NeZero n] {i : Fin n} : predAbove 0 i.succ = i := by
-  rw [predAbove_succ_of_le _ _ (Fin.zero_le' _)]
+  rw [predAbove_succ_of_le _ _ (Fin.zero_le _)]
 
 @[simp] lemma predAbove_zero_of_ne_zero [NeZero n] {i : Fin (n + 1)} (hi : i ≠ 0) :
     predAbove 0 i = i.pred hi := by
@@ -1375,15 +1358,6 @@ theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f
       · exact _root_.trans (ihj hij) (H j)
 
 section AddGroup
-
-/-- Negation on `Fin n` -/
-instance neg (n : ℕ) : Neg (Fin n) :=
-  ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
-
-theorem neg_def (a : Fin n) : -a = ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩ := rfl
-
-protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
-  rfl
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
