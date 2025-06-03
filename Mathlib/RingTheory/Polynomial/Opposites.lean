@@ -14,7 +14,7 @@ over a semiring and the polynomial ring over the opposite semiring. -/
 
 open Polynomial
 
-open Polynomial MulOpposite
+open MulOpposite
 
 variable {R : Type*} [Semiring R]
 
