@@ -81,6 +81,12 @@ def partitions (s : Set X) : Set (Finset (Set X)) :=
     {P | (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ (P.toSet.PairwiseDisjoint id) ∧
     (∀ p ∈ P, p ≠ ∅)}
 
+/-- An inner partition is a finite collection of pairwise disjoint sets which are all contained
+within a given set. Different to `Setoid.IsPartition` there is no requirement for the union to be
+the entire set and the the number of partition elements is required to be finite. -/
+def IsInnerPart (s : Set X) (P : Finset (Set X)) : Prop :=
+    (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ (P.toSet.PairwiseDisjoint id) ∧ (∀ p ∈ P, p ≠ ∅)
+
 lemma partitions_empty : partitions (∅ : Set X) = {∅} := by
   dsimp [partitions]
   ext P
@@ -93,6 +99,13 @@ lemma partitions_empty : partitions (∅ : Set X) = {∅} := by
     simp_all [hP' p hp, ne_eq]
   · intro hp
     simp [hp]
+
+lemma isInnerPart_of_empty (P : Finset (Set X)) (hP : IsInnerPart ∅ P) : P = ∅ := by
+  obtain ⟨h, _, _, h'⟩ := hP
+  refine Finset.eq_empty_of_forall_notMem ?_
+  by_contra! hc
+  obtain ⟨p, hp⟩ := hc
+  exact h' p hp <| Set.subset_eq_empty (h p hp) rfl
 
 lemma partitions_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) : partitions s₁ ⊆ partitions s₂ := by
   intro P hP
