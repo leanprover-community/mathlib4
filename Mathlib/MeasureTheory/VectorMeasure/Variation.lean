@@ -389,7 +389,25 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E
   · simp [hE, μ.not_measurable' hE]
 
 lemma variation_of_ENNReal  (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ := by
-
-  sorry
+  ext s hs
+  simp only [variation, variation_aux, hs, reduceIte]
+  apply eq_of_le_of_le
+  · simp only [varOfPart, enorm_eq_self, iSup_le_iff]
+    intro P hP
+    have : ∑ x ∈ P, μ x  =  μ (⋃ p ∈ P, p) := by
+      have := μ.m_iUnion'
+      -- need to move from m_iUnion' to union over a Finset
+      sorry
+    rw [this]
+    have : ⋃ p ∈ P, p ⊆ s := Set.iUnion₂_subset hP.1
+    -- ENNReal valued measure is monotone
+    sorry
+  · by_cases hc : s ≠ ∅
+    · have : {s} ∈ partitions s := by -- Extract as separate lemma
+        refine ⟨by simp, by simp [hs], by simp, by simp [hc]⟩
+      have := le_biSup (fun P ↦ ∑ x ∈ P, μ x) this
+      simp_all [varOfPart]
+    · push_neg at hc
+      simp [hc]
 
 end VectorMeasure
