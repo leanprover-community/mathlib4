@@ -853,10 +853,10 @@ protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M �
     (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
     f (a ^ n) = f a ^ n := map_zpow' f hf a n
 
-/-- If `M` and `N` have multiplications, `f : M →ₙ* N` is a surjective multiplicative map,
+/-- If `M` and `N` have multiplications, `f` is a surjective multiplicative map,
 and `M` is commutative, then `N` is commutative. -/
 @[to_additive
-"If `M` and `N` have additions, `f : M →ₙ+ N` is a surjective additive map,
+"If `M` and `N` have additions, `f` is a surjective additive map,
 and `M` is commutative, then `N` is commutative."]
 theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N}
     (is_surj : Function.Surjective f) (is_comm : Std.Commutative (· * · : M → M → M)) :
@@ -873,36 +873,36 @@ namespace OneHom
 
 variable [One M] [One N] [One P]
 
-/-- If `p : OneHom M P` is a `MulHom`, `g : P → N` is a map, and `f : OneHom M N`
+/-- If `p` is a `MulHom`, `g` is a map, and `f`
   is a `OneHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `OneHom`. -/
-@[to_additive (attr := simps) " If `p : ZeroHom M P` is a `ZeroHom`, `g : P → N`
-  is a map, and `f : ZeroHom M N` is an `ZeroHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+@[to_additive (attr := simps) " If `p` is a `ZeroHom`, `g`
+  is a map, and `f` is an `ZeroHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
   `ZeroHom`. "]
 def liftLeft (f : OneHom M N) (p : OneHom M P) (g : P → N) (hg : ∀ x, g (p x) = f x) :
     OneHom P N where toFun := g; map_one' := by simpa only [hg, map_one] using hg 1
 
-/-- If `p : OneHom P N` is an injective `OneHom`, `g : M → P` is a map, and `f : OneHom M N`
+/-- If `p` is an injective `OneHom`, `p_inv` is a map, and `f`
   is a `OneHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `OneHom`. -/
-@[to_additive (attr := simps) " If `p : ZeroHom P N` is an injective `ZeroHom`, `g : M → P`
-  is a map, and `f : ZeroHom M N` is a `ZeroHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+@[to_additive (attr := simps) " If `p` is an injective `ZeroHom`, `p_inv`
+  is a map, and `f` is a `ZeroHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
   `ZeroHom`. "]
 def liftRight (f : OneHom M N) {p : OneHom P N} (hp : Injective p) (g : M → P)
     (hg : ∀ x, p (g x) = f x) : OneHom M P where
   toFun := g; map_one' := hp <| by simpa only [map_one] using hg 1
 
-/-- If `p : OneHom M P` is a `OneHom`, `p_inv : P → M` a map, and `f : OneHom M N`
+/-- If `p` is a `OneHom`, `p_inv` a map, and `f`
   is a `OneHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also a `OneHom`. -/
 @[to_additive (attr := simps!)
-  " If `p : ZeroHom P N` is a `ZeroHom`, `p_inv : P → M` a map, and `f : ZeroHom M N`
+  " If `p` is a `ZeroHom`, `p_inv` a map, and `f`
   is a `ZeroHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also a `ZeroHom`. "]
 def liftOfRightInverse (p : OneHom M P) (p_inv : P → M) (f : OneHom M N) :
     (hf : ∀ x, f (p_inv (p x)) = f x) → OneHom P N := f.liftLeft p (f ∘ p_inv)
 
-/-- If `p : OneHom P N` is a `MulHom` with `p_inv : N → P` a left inverse map, and `f : OneHom M N`
+/-- If `p` is a `MulHom` with `p_inv` a left inverse map, and `f`
   is a `OneHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is also a `OneHom`. -/
 @[to_additive (attr := simps!)
-  " If `p : ZeroHom P N` is a `ZeroHom` with `p_inv : N → P` a left inverse map, and
-  `f : ZeroHom M N` is a `ZeroHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f`
+  " If `p` is a `ZeroHom` with `p_inv` a left inverse map, and
+  `f` is a `ZeroHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f`
   is also a `ZeroHom`. "]
 def liftOfLeftInverse (p : OneHom P N) (p_inv : N → P) (hp : LeftInverse p_inv p) (f : OneHom M N) :
     (hf : ∀ x, p (p_inv (f x)) = f x) → OneHom M P := f.liftRight hp.injective (p_inv ∘ f)
@@ -919,10 +919,10 @@ namespace MulHom
 
 variable [Mul M] [Mul N] [Mul P]
 
-/-- If `p : M →ₙ* P` is a surjective `MulHom`, `g : P → N` is a map, and `f : M →ₙ* N`
+/-- If `p` is a surjective `MulHom`, `g` is a map, and `f`
   is a `MulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MulHom`. -/
-@[to_additive (attr := simps) " If `p : M →ₙ+ P` is a surjective `AddMulHom`, `g : P → N`
-  is a map, and `f : M →ₙ+ N` is an `AddMulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+@[to_additive (attr := simps) " If `p : M →ₙ+ P` is a surjective `AddMulHom`, `g`
+  is a map, and `f` is an `AddMulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
   `AddMulHom`. "]
 def liftLeft (f : M →ₙ* N) {p : M →ₙ* P} (hp : Surjective p) (g : P → N)
     (hg : ∀ x, g (p x) = f x) : P →ₙ* N where
@@ -931,27 +931,27 @@ def liftLeft (f : M →ₙ* N) {p : M →ₙ* P} (hp : Surjective p) (g : P → 
     rcases hp y with ⟨y, rfl⟩
     simp only [← map_mul p x y, hg, map_mul f]
 
-/-- If `p : P →ₙ* N` is an injective `MulHom`, `g : M → P` is a map, and `f : M →ₙ* N`
+/-- If `p` is an injective `MulHom`, `p_inv` is a map, and `f`
   is a `MulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MulHom`. -/
-@[to_additive (attr := simps) " If `p : P →ₙ+ N` is an injective `AddMulHom`, `g : M → P`
-  is a map, and `f : M →ₙ+ N` is an `AddMulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+@[to_additive (attr := simps) " If `p` is an injective `AddMulHom`, `p_inv`
+  is a map, and `f` is an `AddMulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
   `AddMulHom`. "]
 def liftRight (f : M →ₙ* N)
     {p : P →ₙ* N} (hp : Injective p) (g : M → P) (hg : ∀ x, p (g x) = f x) : M →ₙ* P where
   toFun := g; map_mul' x y := hp <| by simp only [hg, map_mul]
 
-/-- If `p : M →ₙ* P` is a `MulHom` with `p_inv : P → M` a right inverse map, and `f : M →ₙ* N`
+/-- If `p` is a `MulHom` with `p_inv` a right inverse map, and `f`
   is a `MulHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also a `MulHom`. -/
 @[to_additive (attr := simps!)
-  " If `p : P →ₙ+ N` is an `AddHom` with `p_inv : P → M` a right inverse map, and `f : M →ₙ+ N`
+  " If `p` is an `AddHom` with `p_inv` a right inverse map, and `f`
   is an `AddHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also an `AddHom`. "]
 def liftOfRightInverse (p : M →ₙ* P) (p_inv : P → M) (hp : RightInverse p_inv p) (f : M →ₙ* N):
     (hf : ∀ x, f (p_inv (p x)) = f x) → P →ₙ* N := f.liftLeft hp.surjective (f ∘ p_inv)
 
-/-- If `p : P →ₙ* N` is a `MulHom` with `p_inv : N → P` a left inverse map, and `f : M →ₙ* N`
+/-- If `p` is a `MulHom` with `p_inv` a left inverse map, and `f`
   is a `MulHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is also a `MulHom`. -/
 @[to_additive (attr := simps!)
-  " If `p : P →ₙ+ N` is an `AddHom` with `p_inv : N → P` a left inverse map, and `f : M →ₙ+ N`
+  " If `p` is an `AddHom` with `p_inv` a left inverse map, and `f`
   is an `AddHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is also an `AddHom`. "]
 def liftOfLeftInverse (p : P →ₙ* N) (p_inv : N → P) (hp : LeftInverse p_inv p) (f : M →ₙ* N) :
     (hf : ∀ x, p (p_inv (f x)) = f x) → M →ₙ* P := f.liftRight hp.injective (p_inv ∘ f)
@@ -969,43 +969,38 @@ namespace MonoidHom
 
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
-/-- If `p : M →* P` is a surjective `MonoidHom`, `g : P → N` is a map, and `f : M →* N`
+/-- If `p` is a surjective `MonoidHom`, `g` is a map, and `f`
   is a `MonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MonoidHom`. -/
-@[to_additive (attr := simps) " If `p : M →+ P` is a surjective `AddMonoidHom`, `g : P → N`
-  is a map, and `f : M →+ N` is an `AddMonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+@[to_additive (attr := simps) " If `p` is a surjective `AddMonoidHom`, `g`
+  is a map, and `f` is an `AddMonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
   `AddMonoidHom`. "]
 def liftLeft (f : M →* N) {p : M →* P} (hp : Surjective p) (g : P → N) (hg : ∀ x, g (p x) = f x) :
-    P →* N where
-  toFun := g; map_one' := by simpa only [hg, map_one] using hg 1
-  map_mul' x y := by
-    rcases hp x with ⟨x, rfl⟩
-    rcases hp y with ⟨y, rfl⟩
-    simp only [← map_mul p x y, hg, map_mul f]
+    P →* N :=
+  { (f : M →ₙ* N).liftLeft (p := p) hp g hg, (f : OneHom M N).liftLeft p g hg with toFun := g }
 
-/-- If `p : P →* N` is an injective `MonoidHom`, `g : M → P` is a map, and `f : M →* N`
+/-- If `p` is an injective `MonoidHom`, `g` is a map, and `f`
   is a `MonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MonoidHom`. -/
-@[to_additive (attr := simps) " If `p : P →+ N` is an injective `AddMonoidHom`, `g : M → P`
-  is a map, and `f : M →+ N` is an `AddMonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+@[to_additive (attr := simps) " If `p` is an injective `AddMonoidHom`, `g`
+  is a map, and `f` is an `AddMonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
   `AddMonoidHom`. "]
 def liftRight (f : M →* N) {p : P →* N} (hp : Injective p) (g : M → P) (hg : ∀ x, p (g x) = f x) :
-    M →* P where
-  toFun := g; map_one' := hp <| by simpa only [map_one] using hg 1
-  map_mul' x y := hp <| by simp only [hg, map_mul]
+    M →* P :=
+  { (f : M →ₙ* N).liftRight (p := p) hp g hg, (f : OneHom M N).liftRight hp g hg with toFun := g }
 
-/-- If `p : M →* P` is a `MonoidHom` with `p_inv : P → M` a right inverse map, and `f : M →* N`
+/-- If `p` is a `MonoidHom` with `p_inv` a right inverse map, and `f`
   is a `MonoidHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also a `MonoidHom`. -/
 @[to_additive (attr := simps!)
-  " If `p : P →+ N` is an `AddMonoidHom` with `p_inv : P → M` a right inverse map, and
-    `f : M →+ N` is an `AddMonoidHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is
+  " If `p` is an `AddMonoidHom` with `p_inv` a right inverse map, and
+    `f` is an `AddMonoidHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is
     also an `AddMonoidHom`. "]
 def liftOfRightInverse (p : M →* P) (p_inv : P → M) (hp : RightInverse p_inv p) (f : M →* N) :
     (hf : ∀ x, f (p_inv (p x)) = f x) → P →* N := f.liftLeft hp.surjective (f ∘ p_inv)
 
-/-- If `p : P →* N` is a `MonoidHom` with `p_inv : N → P` a left inverse map, and `f : M →* N`
+/-- If `p` is a `MonoidHom` with `p_inv` a left inverse map, and `f`
   is a `MonoidHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is also a `MonoidHom`. -/
 @[to_additive (attr := simps!)
-  " If `p : P →+ N` is an `AddMonoidHom` with `p_inv : N → P` a left inverse map, and
-    `f : M →+ N` is an `AddMonoidHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is
+  " If `p` is an `AddMonoidHom` with `p_inv` a left inverse map, and
+    `f` is an `AddMonoidHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is
     also an `AddMonoidHom`. "]
 def liftOfLeftInverse (p : P →* N) (p_inv : N → P) (hp : LeftInverse p_inv p) (f : M →* N) :
     (hf : ∀ x, p (p_inv (f x)) = f x) → M →* P := f.liftRight hp.injective (p_inv ∘ f)
