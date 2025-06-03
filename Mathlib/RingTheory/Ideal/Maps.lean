@@ -1089,9 +1089,9 @@ theorem liftOfRightInverseEquivKerLeKer_comp (hf : Function.RightInverse f_inv f
     (f.liftOfRightInverseEquivKerLeKer f_inv hf g).comp f = g :=
   RingHom.ext <| hf.ringHom_subtype_apply_inv_apply g
 
-@[to_additive (attr := simp)]
+@[simp]
 theorem liftOfRightInverseEquivKerLeKer_comp_apply (hf : Function.RightInverse f_inv f)
-    (g : { g : G₁ →* G₃ // f.ker ≤ g.ker }) (x) :
+    (g : { g : A →+* C // ker f ≤ ker g }) (x) :
     (f.liftOfRightInverseEquivKerLeKer f_inv hf g) (f x) = g.1 x := by
   simp_rw [liftOfRightInverseEquivKerLeKer_apply_apply, hf.ringHom_subtype_apply_inv_apply g]
 
