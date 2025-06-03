@@ -153,8 +153,6 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
     s ≃ Σx : α, { y : β | (x, y) ∈ s } where
   toFun x := ⟨x.1.1, x.1.2, by simp⟩
   invFun x := ⟨(x.1, x.2.1), x.2.2⟩
-  left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
-  right_inv := fun ⟨_, _, _⟩ => rfl
 
 /-- The subtypes corresponding to equal sets are equivalent. -/
 @[simps! apply symm_apply]
@@ -409,12 +407,6 @@ protected def univPi {α : Type*} {β : α → Type*} (s : ∀ a, Set (β a)) :
     pi univ s ≃ ∀ a, s a where
   toFun f a := ⟨(f : ∀ a, β a) a, f.2 a (mem_univ a)⟩
   invFun f := ⟨fun a => f a, fun a _ => (f a).2⟩
-  left_inv := fun ⟨f, hf⟩ => by
-    ext a
-    rfl
-  right_inv f := by
-    ext a
-    rfl
 
 /-- If a function `f` is injective on a set `s`, then `s` is equivalent to `f '' s`. -/
 protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H : InjOn f s) :
@@ -456,7 +448,7 @@ protected def powerset {α} (S : Set α) :
     𝒫 S ≃ Set S where
   toFun := fun x : 𝒫 S => Subtype.val ⁻¹' (x : Set α)
   invFun := fun x : Set S => ⟨Subtype.val '' x, by rintro _ ⟨a : S, _, rfl⟩; exact a.2⟩
-  left_inv x := by ext y;exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨_, x.2 h⟩, h, rfl⟩⟩
+  left_inv x := by ext y; exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨_, x.2 h⟩, h, rfl⟩⟩
   right_inv x := by ext; simp
 
 /-- If `s` is a set in `range f`,
@@ -483,7 +475,6 @@ def rangeInl (α β : Type*) : Set.range (Sum.inl : α → α ⊕ β) ≃ α whe
   | ⟨.inr _, h⟩ => False.elim <| by rcases h with ⟨x, h'⟩; cases h'
   invFun x := ⟨.inl x, mem_range_self _⟩
   left_inv := fun ⟨_, _, rfl⟩ => rfl
-  right_inv _ := rfl
 
 @[simp] lemma rangeInl_apply_inl {α : Type*} (β : Type*) (x : α) :
     (rangeInl α β) ⟨.inl x, mem_range_self _⟩ = x :=
@@ -497,7 +488,6 @@ def rangeInr (α β : Type*) : Set.range (Sum.inr : β → α ⊕ β) ≃ β whe
   | ⟨.inr x, _⟩ => x
   invFun x := ⟨.inr x, mem_range_self _⟩
   left_inv := fun ⟨_, _, rfl⟩ => rfl
-  right_inv _ := rfl
 
 @[simp] lemma rangeInr_apply_inr (α : Type*) {β : Type*} (x : β) :
     (rangeInr α β) ⟨.inr x, mem_range_self _⟩ = x :=

@@ -323,9 +323,7 @@ def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
     map_smul' _ _ := rfl
     invFun f :=
       { val := f
-        property := mem_oneCocycles_of_addMonoidHom f }
-    left_inv f := by ext; rfl
-    right_inv f := by ext; rfl }
+        property := mem_oneCocycles_of_addMonoidHom f } }
 
 @[deprecated (since := "2025-05-09")]
 noncomputable alias oneCocyclesLequivOfIsTrivial := oneCocyclesIsoOfIsTrivial

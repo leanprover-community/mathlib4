@@ -260,8 +260,6 @@ to `SkewMonoidAlgebra`. -/
 def toFinsuppAddEquiv : SkewMonoidAlgebra k G ≃+ (G →₀ k) where
   toFun        := toFinsupp
   invFun       := ofFinsupp
-  left_inv     := fun ⟨_p⟩ ↦ rfl
-  right_inv _p := rfl
   map_add'     := toFinsupp_add
 
 theorem smul_single {S} [SMulZeroClass S k] (s : S) (a : G) (b : k) :

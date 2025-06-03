@@ -333,8 +333,6 @@ def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddCommMonoid 
   invFun := LinearMap.toAddMonoidHom
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /--
 The `R`-linear equivalence between additive morphisms `A →+ B` and `ℤ`-linear morphisms `A →ₗ[ℤ] B`.
@@ -346,8 +344,6 @@ def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A
   invFun := LinearMap.toAddMonoidHom
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- Ring equivalence between additive group endomorphisms of an `AddCommGroup` `A` and
 `ℤ`-module endomorphisms of `A.` -/

@@ -128,7 +128,6 @@ def obj₀Equiv {n : ℕ} : Δ[n] _⦋0⦌ ≃ Fin (n + 1) where
   toFun x := x 0
   invFun i := const _ i _
   left_inv x := by ext i : 1; fin_cases i; rfl
-  right_inv _ := rfl
 
 /-- The edge of the standard simplex with endpoints `a` and `b`. -/
 def edge (n : ℕ) (a b : Fin (n + 1)) (hab : a ≤ b) : Δ[n] _⦋1⦌ := by

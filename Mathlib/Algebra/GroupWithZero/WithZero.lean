@@ -101,8 +101,6 @@ noncomputable nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
         | (_ : α), 0 => (mul_zero _).symm
         | (_ : α), (_ : α) => map_mul f _ _ }
   invFun F := F.toMonoidHom.comp coeMonoidHom
-  left_inv _ := rfl
-  right_inv _ := monoidWithZeroHom_ext rfl
 
 lemma lift'_zero (f : α →* β) : lift' f (0 : WithZero α) = 0 := rfl
 
@@ -249,7 +247,6 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   toFun a := unzero a.ne_zero
   invFun a := Units.mk0 a coe_ne_zero
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
-  right_inv _ := rfl
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
 
 theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :

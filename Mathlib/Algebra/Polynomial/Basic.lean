@@ -340,8 +340,6 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 def toFinsuppIso : R[X] ≃+* R[ℕ] where
   toFun := toFinsupp
   invFun := ofFinsupp
-  left_inv := fun ⟨_p⟩ => rfl
-  right_inv _p := rfl
   map_mul' := toFinsupp_mul
   map_add' := toFinsupp_add
 

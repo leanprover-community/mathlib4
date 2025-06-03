@@ -440,7 +440,6 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
         have := LeftInverse.iterate (frobeniusEquiv_symm_apply_frobenius L p)
         rw [iterate_add_apply, this _ _, add_comm n, iterate_add_apply, this _ _] }
   invFun f := f.comp (of K p)
-  left_inv f := by ext x; rfl
   right_inv f := by
     ext ⟨n, x⟩
     simp only [quot_mk_eq_mk, RingHom.comp_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,

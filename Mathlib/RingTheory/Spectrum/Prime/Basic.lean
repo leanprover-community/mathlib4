@@ -73,8 +73,6 @@ variable (R S)
 def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
   toFun I := ⟨I.asIdeal, I.2⟩
   invFun I := ⟨I, I.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
   Set.ext fun J ↦
