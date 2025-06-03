@@ -14,7 +14,7 @@ The `commandStart` linter emits a warning if
 * the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -260,7 +260,7 @@ def mkWindow (orig : String) (start ctx length : Nat) : String :=
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.commandStart (← getOptions) do
+  unless Linter.getLinterValue linter.style.commandStart (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
