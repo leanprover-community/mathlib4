@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 ## Main results
 
-* `PrimeSpectrum.exist_lTSeries_mem_one_of_mem_last`: Let $R$ be a Noetherian ring,
+* `PrimeSpectrum.exist_ltSeries_mem_one_of_mem_last`: Let $R$ be a Noetherian ring,
   $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a chain of primes, $x \in \mathfrak{p}_n$.
   Then we can find another chain of primes $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that
   $x \in \mathfrak{q}_1$, $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$.
@@ -86,8 +86,7 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     have h1 : 1 = Fin.last p.length := by
       rw [Fin.last, hp, h0, zero_add]
       exact Fin.natCast_eq_mk (Nat.one_lt_succ_succ 0)
-    simp only [h1, hp, Nat.add_left_cancel_iff, and_self, and_true]
-    exact hx
+    simpa [h1, hp] using hx
   obtain ⟨q, hxq, hq2, hq⟩ : ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧
       p ⟨p.length - 2, p.length.sub_lt_succ 2⟩ < q ∧ q < p.last := by
     refine (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two ?_ ?_ hx
