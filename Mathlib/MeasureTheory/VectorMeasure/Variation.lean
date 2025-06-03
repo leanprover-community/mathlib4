@@ -62,9 +62,6 @@ end CompleteLinearOrder
 
 namespace VectorMeasure
 
-variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
-  (μ : VectorMeasure X V)
-
 /-!
 ## Inner partitions
 
@@ -73,6 +70,10 @@ contained within `s` since the same value will be achieved in the supremum.
 
 The empty set is forbidden so that partitions of disjoint sets are disjoint sets of sets.
 -/
+
+section IsInnerPartition
+
+variable {X : Type*} [MeasurableSpace X]
 
 /-- An inner partition is a finite collection of pairwise disjoint sets which are all contained
 within a given set. Different to `Setoid.IsPartition` there is no requirement for the union to be
@@ -187,6 +188,19 @@ lemma partition_restrict {s t : Set X} {P : Finset (Set X)} (hs : P ∈ partitio
     exact hs.2.2.1 hp hq hpq hap haq
   · intro _ hp
     exact (Finset.mem_filter.mp hp).2
+
+end IsInnerPartition
+
+/-!
+## Definition of the sup measure of a subadditive `ℝ≥0∞` valued function
+-/
+
+variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
+  (μ : VectorMeasure X V)
+
+-- To do...
+
+
 
 /-!
 ## Definition of variation
