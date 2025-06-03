@@ -308,7 +308,10 @@ lemma supSumPart_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < �
   · simp_rw [hw, zero_le, and_true]
     exact ⟨{}, by simp, by simp [hs], by simp, by simp⟩
 
-
+lemma le_supSumPart {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
+    (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ supSumPart f s := by
+  simp only [supSumPart, hs, reduceIte]
+  exact le_biSup (fun P ↦ ∑ p ∈ P, f p) hP
 
 
 
