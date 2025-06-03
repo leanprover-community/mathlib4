@@ -6,7 +6,7 @@ Authors: Chriara Cimino, Christian Krause
 import Mathlib.Order.Nucleus
 
 /-!
-# Nucleus
+# Sublocale
 
 Locales are the dual concept to frames. Locale theory is a branch of point-free topology, where
 intuitively locales are like topological spaces which may or may not have enough points.
@@ -20,7 +20,7 @@ https://ncatlab.org/nlab/show/nucleus
 variable {X : Type*} [Order.Frame X]
 open Set
 
---TODO create separate Defintions for sInfClosed and HImpClosed (also useful for CompleteSublattice)
+--TODO create separate Definitions for sInfClosed and HImpClosed (also useful for CompleteSublattice)
 /--
 A sublocale is a subset S of a locale X, which is closed under all meets and for any
 s ∈ S and x ∈ X, we have x ⇨ s ∈ S.
@@ -58,9 +58,9 @@ instance carrier.instCompleteLattice : CompleteLattice S where
     sInf, mem_setOf_eq, Subtype.mk_le_mk, sInf_le_iff, mem_image, Subtype.exists, exists_and_right,
     exists_eq_right, forall_exists_index, implies_true, upperBounds, le_sInf_iff, and_self]
 
-lemma coe_inf (a b : S) : (a ⊓ b).val = ↑a ⊓ ↑b :=  rfl
+lemma coe_inf (a b : S) : (a ⊓ b).val = ↑a ⊓ ↑b := rfl
 
-lemma coe_sInf (a : Set S) : (sInf a).val = sInf (Subtype.val '' a) := rfl
+lemma coe_sInf (s : Set S) : (sInf s).val = sInf (Subtype.val '' s) := rfl
 
 instance instHImp : HImp S where
   himp a b := ⟨a ⇨ b, (S.HImpClosed' a b (Subtype.coe_prop b))⟩
@@ -83,7 +83,7 @@ instance carrrier.instFrame : Order.Frame S where
 private def restrictAux (S : Sublocale X) (x : X) : S := sInf {s : S | x ≤ s}
 
 /-- See `Sublocale.giRestrict` for the public-facing version. -/
-private def giAux(S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val where
+private def giAux (S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val where
   choice x _ := S.restrictAux x
   gc a b := by
     rw [restrictAux]
@@ -98,17 +98,21 @@ private def giAux(S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val w
 def restrict (S : Sublocale X) : FrameHom X S where
   toFun x := sInf {s : S | x ≤ s}
   map_inf' a b := by
-    repeat rw [← restrictAux]
-    refine eq_of_forall_ge_iff (fun s ↦ Iff.symm (iff_eq_eq.mpr ?_))
+    change Sublocale.restrictAux S (a ⊓ b) = Sublocale.restrictAux S a ⊓ Sublocale.restrictAux S b
+    refine eq_of_forall_ge_iff (fun s ↦ Iff.symm ?_)
     calc
-      _ = (S.restrictAux a ≤ S.restrictAux b ⇨ s) := by simp
-      _ = (S.restrictAux b ≤ a ⇨ s) := by rw [S.giAux.gc.le_iff_le, @le_himp_comm, coe_himp]
-      _ = ( b ≤ a ⇨ s) := by rw [coe_himp', S.giAux.u_le_u_iff, S.giAux.gc.le_iff_le]
-      _ = (S.restrictAux (a ⊓ b) ≤ s) := by simp [inf_comm, S.giAux.gc.le_iff_le]
-  map_sSup' s := by rw [← restrictAux, S.giAux.gc.l_sSup, sSup_image]; simp_rw [restrictAux]
+      _ ↔ (S.restrictAux a ≤ S.restrictAux b ⇨ s) := by simp
+      _ ↔ (S.restrictAux b ≤ a ⇨ s) := by rw [S.giAux.gc.le_iff_le, @le_himp_comm, coe_himp]
+      _ ↔ ( b ≤ a ⇨ s) := by rw [coe_himp', S.giAux.u_le_u_iff, S.giAux.gc.le_iff_le]
+      _ ↔ (S.restrictAux (a ⊓ b) ≤ s) := by simp [inf_comm, S.giAux.gc.le_iff_le]
+  map_sSup' s := by
+    change Sublocale.restrictAux S (sSup s) = _
+    rw [S.giAux.gc.l_sSup, sSup_image]
+    rfl
   map_top' := by
     refine le_antisymm (by simp) ?_
-    rw [← Subtype.coe_le_coe, ← restrictAux, S.giAux.gc.u_top]
+    change _ ≤ restrictAux S ⊤
+    rw [← Subtype.coe_le_coe, S.giAux.gc.u_top]
     simp [restrictAux, sInf]
 
 /-- The restriction corresponding to a sublocale forms a Galois insertion with the forgetful map
@@ -134,15 +138,13 @@ lemma toNucleus.range : range S.toNucleus = S.carrier := by
     simp_all [hx', @Subtype.ext_iff_val]
     exact Exists.intro x' hx'
 
-lemma mem_iff (x : X) : x ∈ S ↔ x ∈ S.carrier := Eq.to_iff rfl
+lemma mem_iff (x : X) : x ∈ S ↔ x ∈ S.carrier := refl _
 
-lemma le_iff' (s1 s2 : Sublocale X) : s1 ≤ s2 ↔ s1.carrier ⊆ s2.carrier where
-  mp h := h
-  mpr h := h
+lemma le_iff' (S1 S2 : Sublocale X) : S1 ≤ S2 ↔ S1.carrier ⊆ S2.carrier := refl _
 
 end Sublocale
 
-/-- The range of a nucleus is a sublcoale. -/
+/-- The range of a nucleus is a sublocale. -/
 def Nucleus.toSublocale (n : Nucleus X) : Sublocale X where
   carrier := range n
   sInfClosed' a h := by
@@ -154,7 +156,7 @@ def Nucleus.toSublocale (n : Nucleus X) : Sublocale X where
   HImpClosed' a b h := by rw [mem_range, ← h, @map_himp_apply] at *
 
 /-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
-The subloacles are ordered dually to the nuclei. -/
+The sublocales are ordered dually to the nuclei. -/
 def orderiso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
   toFun n := n.toSublocale
   invFun s := s.toNucleus
@@ -192,8 +194,8 @@ instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
   orderiso.toGaloisInsertion.liftCompleteLattice
 
 instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
-  iInf_sup_le_sup_sInf a s := by simp [Sublocale.le_iff, orderiso.symm_eq_toNucleus,
-    orderiso.symm.map_sup, orderiso.symm.map_sInf, orderiso.symm.map_iInf, sup_iInf_eq]
+  iInf_sup_le_sup_sInf a s := by simp only [le_iff, orderiso.symm_eq_toNucleus,
+    orderiso.symm.map_sup, orderiso.symm.map_sInf, sup_iInf_eq, orderiso.symm.map_iInf, le_refl]
 
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms instCoframeMinimalAxioms
