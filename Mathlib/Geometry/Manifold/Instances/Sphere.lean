@@ -14,8 +14,6 @@ import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Tactic.Module
-import Mathlib.Topology.PartialHomeomorph
-import Mathlib.Logic.Equiv.PartialEquiv
 
 /-!
 # Manifold structure on the sphere
@@ -299,7 +297,7 @@ theorem injective_stereographic_symm (hv : ‖v‖ = 1) :
 /-- The stereographic projection is surjective. -/
 theorem surjective_stereographic (hv : ‖v‖ = 1) :
     Surjective (stereographic hv) :=
-  PartialEquiv.surjective_of_target_eq_univ _ rfl
+  (stereographic hv).surjective_of_target_eq_univ rfl
 
 end StereographicProjection
 
