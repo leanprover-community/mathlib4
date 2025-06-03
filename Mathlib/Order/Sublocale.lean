@@ -20,7 +20,8 @@ https://ncatlab.org/nlab/show/nucleus
 variable {X : Type*} [Order.Frame X]
 open Set
 
---TODO create separate Definitions for sInfClosed and HImpClosed (also useful for CompleteSublattice)
+-- TODO create separate definitions for sInfClosed and HImpClosed (also useful for
+-- CompleteSublattice)
 /--
 A sublocale is a subset S of a locale X, which is closed under all meets and for any
 s ∈ S and x ∈ X, we have x ⇨ s ∈ S.
