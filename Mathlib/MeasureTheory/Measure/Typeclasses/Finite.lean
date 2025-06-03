@@ -337,6 +337,11 @@ theorem measure_ball_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measur
     [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.ball x r) < ∞ :=
   Metric.isBounded_ball.measure_lt_top
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+theorem measure_ball_ne_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measure α}
+    [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.ball x r) ≠ ∞ :=
+  measure_ball_lt_top.ne
+
 protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Measure α)
     [IsFiniteMeasureOnCompacts μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : IsFiniteMeasureOnCompacts (c • μ) :=
   ⟨fun _K hK => ENNReal.mul_lt_top hc.lt_top hK.measure_lt_top⟩

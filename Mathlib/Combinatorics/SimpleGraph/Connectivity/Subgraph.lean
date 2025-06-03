@@ -411,7 +411,7 @@ lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
     (h : {x ∈ s | x ∈ p.support}.Nonempty) :
     ∃ x ∈ s, ∃ hx : x ∈ p.support, {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support} = ∅ := by
   simp only [← Finset.subset_empty]
-  induction' hp : p.length + #s using Nat.strong_induction_on with n ih generalizing s v
+  induction hp : p.length + #s using Nat.strong_induction_on generalizing s v with | _ n ih
   simp only [Finset.Nonempty, mem_filter] at h
   obtain ⟨x, hxs, hx⟩ := h
   obtain h | h := Finset.eq_empty_or_nonempty {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support}

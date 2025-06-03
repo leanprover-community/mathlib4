@@ -119,7 +119,7 @@ def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
     { one := { hom := η[M.X.X] }
       mul :=
         { hom := μ[M.X.X],
-          hom_comul := by dsimp; simp [tensor_μ] } }
+          hom_comul := by simp [tensor_μ] } }
 
 /-- The forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
@@ -153,7 +153,7 @@ def ofMon_Comon_Obj (M : Mon_ (Comon_ C)) : Bimon_ C where
         { hom := ε[M.X.X] }
       comul :=
         { hom := Δ[M.X.X]
-          mul_hom := by dsimp; simp [tensorμ] } }
+          mul_hom := by simp [tensorμ] } }
 
 variable (C) in
 /-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/

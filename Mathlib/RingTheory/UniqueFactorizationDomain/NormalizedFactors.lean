@@ -79,7 +79,7 @@ theorem normalize_normalized_factor {a : α} :
   obtain ⟨y, _, rfl⟩ := Multiset.mem_map.1 hx
   apply normalize_idem
 
-theorem dvd_of_normalized_factor {a x : α} (hx : x ∈ normalizedFactors a ) :
+theorem dvd_of_normalized_factor {a x : α} (hx : x ∈ normalizedFactors a) :
     x ∣ a := by
   obtain ⟨y, hy, rfl⟩ := Multiset.mem_map.mp hx
   exact normalize_dvd_iff.mpr <| dvd_of_mem_factors hy
@@ -247,6 +247,15 @@ theorem mem_normalizedFactors_iff' {p x : α} (h : x ≠ 0) :
   exact Multiset.mem_map.mpr ⟨y, hy₁, by
     rwa [← h₂, normalize_eq_normalize_iff_associated, Associated.comm]⟩
 
+/-- Relatively prime elements have disjoint prime factors (as multisets). -/
+theorem disjoint_normalizedFactors {a b : α} (hc : IsRelPrime a b) :
+    Disjoint (normalizedFactors a) (normalizedFactors b) := by
+  rw [Multiset.disjoint_left]
+  intro x hxa hxb
+  have x_dvd_a := dvd_of_mem_normalizedFactors hxa
+  have x_dvd_b := dvd_of_mem_normalizedFactors hxb
+  exact (prime_of_normalized_factor x hxa).not_unit (hc x_dvd_a x_dvd_b)
+
 theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
     (h : ∀ {m}, m ∈ normalizedFactors r → m = p) (hr : r ≠ 0) : ∃ i : ℕ, Associated (p ^ i) r := by
   use (normalizedFactors r).card
@@ -283,6 +292,24 @@ theorem normalizedFactors_pos (x : α) (hx : x ≠ 0) : 0 < normalizedFactors x 
     exact
       bot_lt_iff_ne_bot.mpr
         (mt Multiset.eq_zero_iff_forall_notMem.mp (not_forall.mpr ⟨p, not_not.mpr hp⟩))
+
+/--
+The multiset of normalized factors of `x` is nil if and only if `x` is a unit.
+The converse is true without the nonzero assumption, see `normalizedFactors_of_isUnit`.
+-/
+theorem normalizedFactors_eq_zero_iff {x : α} (hx : x ≠ 0) :
+    normalizedFactors x = 0 ↔ IsUnit x := by
+  rw [← not_iff_not, ← normalizedFactors_pos _ hx, pos_iff_ne_zero]
+
+/--
+If `x` is a unit, then the multiset of normalized factors of `x` is nil.
+The converse is true with a nonzero assumption, see `normalizedFactors_eq_zero_iff`.
+-/
+theorem normalizedFactors_of_isUnit {x : α} (hx : IsUnit x) :
+    normalizedFactors x = 0 := by
+  obtain rfl | hx₀ := eq_or_ne x 0
+  · simp
+  rwa [normalizedFactors_eq_zero_iff hx₀]
 
 theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     DvdNotUnit x y ↔ normalizedFactors x < normalizedFactors y := by
