@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Group.Submonoid.Units
+import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Topology.Algebra.Group.Defs
@@ -1249,6 +1251,11 @@ instance [T1Space α] [ContinuousMul α] [WeaklyLocallyCompactSpace α] :
 @[to_additive]
 instance [T1Space α] [ContinuousMul α] [LocallyCompactSpace α] : LocallyCompactSpace αˣ :=
   isClosedEmbedding_embedProduct.locallyCompactSpace
+
+lemma _root_.Submonoid.units_isCompact [T1Space α] [ContinuousMul α] {S : Submonoid α}
+    (hS : IsCompact (S : Set α)) : IsCompact (S.units : Set αˣ) := by
+  have : IsCompact (S ×ˢ S.op) := hS.prod (opHomeomorph.isCompact_preimage.mp hS)
+  exact isClosedEmbedding_embedProduct.isCompact_preimage this
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/
