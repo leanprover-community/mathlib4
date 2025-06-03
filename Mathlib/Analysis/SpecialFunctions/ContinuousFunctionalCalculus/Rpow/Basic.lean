@@ -440,6 +440,7 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
 noncomputable def _root_.Units.cfcRpow (a : Aˣ) (x : ℝ) (ha : (0 : A) ≤ a := by cfc_tac) : Aˣ :=
   ⟨(a : A) ^ x, (a : A) ^ (-x), rpow_mul_rpow_neg x (by simp), rpow_neg_mul_rpow x (by simp)⟩
 
+@[aesop safe apply]
 lemma _root_.IsUnit.cfcRpow {a : A} (ha : IsUnit a) (x : ℝ) (ha_nonneg : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ x) :=
   ha.unit.cfcRpow x |>.isUnit
@@ -450,27 +451,10 @@ lemma spectrum_rpow (a : A) (x : ℝ)
     spectrum ℝ≥0 (a ^ x) = (· ^ x) '' spectrum ℝ≥0 a :=
   cfc_map_spectrum (· ^ x : ℝ≥0 → ℝ≥0) a ha h
 
-@[aesop safe apply]
-lemma isUnit_rpow (a : A) (y : ℝ) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :
-    IsUnit (a ^ y) := by
-  by_cases hy : y = 0
-  · simp [hy, rpow_zero a ha]
-  rw [rpow_def]
-  rw [← spectrum.zero_notMem_iff (R := ℝ≥0)] at ha_unit
-  refine isUnit_cfc _ _ (NNReal.continuousOn_rpow_const (.inl ha_unit)) ha ?_
-  intro x hx
-  have hx' : x ≠ 0 := by
-    intro H
-    rw [H] at hx
-    exact ha_unit hx
-  intro H
-  rw [NNReal.rpow_eq_zero hy] at H
-  exact hx' H
-
 lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) ↔ IsUnit a := by
   nontriviality A
-  refine ⟨fun h => ?_, fun h => isUnit_rpow a y h ha⟩
+  refine ⟨fun h => ?_, fun h => h.cfcRpow y ha⟩
   rw [rpow_def] at h
   by_cases hf : ContinuousOn (fun x : ℝ≥0 => x ^ y) (spectrum ℝ≥0 a)
   · rw [isUnit_cfc_iff _ a hf] at h
@@ -614,15 +598,17 @@ lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by
   exact_mod_cast hy
 
 @[aesop safe apply]
-lemma isUnit_nnrpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
-    IsUnit (a ^ y) := (isUnit_nnrpow_iff a y hy ha).mpr ha_unit
+lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y ≠ 0)
+    (ha : 0 ≤ a := by cfc_tac) : IsUnit (a ^ y) :=
+  (isUnit_nnrpow_iff a y hy ha).mpr ha_unit
 
 lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔ IsUnit a := by
   rw [sqrt_eq_rpow]
   exact isUnit_rpow_iff a _ (by norm_num) ha
 
 @[aesop safe apply]
-lemma isUnit_sqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) :=
+lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :
+    IsUnit (sqrt a) :=
   (isUnit_sqrt_iff a ha).mpr ha_unit
 
 end unital_vs_nonunital
