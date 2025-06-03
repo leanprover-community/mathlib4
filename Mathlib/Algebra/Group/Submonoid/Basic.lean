@@ -121,8 +121,14 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Submonoid M, s ⊆ S �
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
 @[to_additive]
-theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.AddSubmonoid.not_mem_of_not_mem_closure := AddSubmonoid.notMem_of_notMem_closure
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 variable {S}
 
@@ -154,28 +160,27 @@ is preserved under multiplication, then `p` holds for all elements of the closur
       "An induction principle for additive closure membership. If `p` holds for `0` and all
       elements of `s`, and is preserved under addition, then `p` holds for all elements of the
       additive closure of `s`."]
-theorem closure_induction {s : Set M} {p : (x : M) → x ∈ closure s → Prop}
-    (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (one : p 1 (one_mem _))
-    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
-    p x hx :=
+theorem closure_induction {s : Set M} {motive : (x : M) → x ∈ closure s → Prop}
+    (mem : ∀ (x) (h : x ∈ s), motive x (subset_closure h)) (one : motive 1 (one_mem _))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem hx hy)) {x}
+    (hx : x ∈ closure s) : motive x hx :=
   let S : Submonoid M :=
-    { carrier := { x | ∃ hx, p x hx }
+    { carrier := { x | ∃ hx, motive x hx }
       one_mem' := ⟨_, one⟩
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩ }
   closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
-@[deprecated closure_induction (since := "2024-10-10")]
-alias closure_induction' := closure_induction
-
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership for predicates with two arguments."]
-theorem closure_induction₂ {p : (x y : M) → x ∈ closure s → y ∈ closure s → Prop}
-    (mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
-    (one_left : ∀ x hx, p 1 x (one_mem _) hx) (one_right : ∀ x hx, p x 1 hx (one_mem _))
-    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
-    (mul_right : ∀ x y z hx hy hz, p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
-    {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x y hx hy := by
+theorem closure_induction₂ {motive : (x y : M) → x ∈ closure s → y ∈ closure s → Prop}
+    (mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), motive x y (subset_closure hx) (subset_closure hy))
+    (one_left : ∀ x hx, motive 1 x (one_mem _) hx) (one_right : ∀ x hx, motive x 1 hx (one_mem _))
+    (mul_left : ∀ x y z hx hy hz,
+      motive x z hx hz → motive y z hy hz → motive (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x y z hx hy hz,
+      motive z x hz hx → motive z y hz hy → motive z (x * y) hz (mul_mem hx hy))
+    {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : motive x y hx hy := by
   induction hy using closure_induction with
   | mem z hz => induction hx using closure_induction with
     | mem _ h => exact mem _ _ h hz
@@ -191,8 +196,9 @@ and verify that `p x` and `p y` imply `p (x * y)`. -/
       "If `s` is a dense set in an additive monoid `M`, `AddSubmonoid.closure s = ⊤`, then in
       order to prove that some predicate `p` holds for all `x : M` it suffices to verify `p x` for
       `x ∈ s`, verify `p 0`, and verify that `p x` and `p y` imply `p (x + y)`."]
-theorem dense_induction {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x ∈ s, p x)
-    (one : p 1) (mul : ∀ x y, p x → p y → p (x * y)) (x : M) : p x := by
+theorem dense_induction {motive : M → Prop} (s : Set M) (closure : closure s = ⊤)
+    (mem : ∀ x ∈ s, motive x) (one : motive 1) (mul : ∀ x y, motive x → motive y → motive (x * y))
+    (x : M) : motive x := by
   induction closure.symm ▸ mem_top x using closure_induction with
   | mem _ h => exact mem _ h
   | one => exact one
@@ -373,7 +379,7 @@ def ofClosureMEqTopLeft {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (h
   toFun := f
   map_one' := h1
   map_mul' x :=
-    dense_induction (p := _) _ hs hmul fun y => by rw [one_mul, h1, one_mul]
+    dense_induction (motive := _) _ hs hmul fun y => by rw [one_mul, h1, one_mul]
       (fun a b ha hb y => by rw [mul_assoc, ha, ha, hb, mul_assoc]) x
 
 @[to_additive (attr := simp, norm_cast)]

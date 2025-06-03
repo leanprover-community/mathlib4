@@ -47,6 +47,9 @@ theorem isSuccPrelimit_apply_iff (f : α ≤i β) : IsSuccPrelimit (f a) ↔ IsS
 theorem isSuccLimit_apply_iff (f : α ≤i β) : IsSuccLimit (f a) ↔ IsSuccLimit a := by
   simp [IsSuccLimit]
 
+alias ⟨_, map_isSuccPrelimit⟩ := isSuccPrelimit_apply_iff
+alias ⟨_, map_isSuccLimit⟩ := isSuccLimit_apply_iff
+
 end InitialSeg
 
 namespace PrincipalSeg
@@ -74,5 +77,8 @@ theorem isSuccPrelimit_apply_iff (f : α <i β) : IsSuccPrelimit (f a) ↔ IsSuc
 @[simp]
 theorem isSuccLimit_apply_iff (f : α <i β) : IsSuccLimit (f a) ↔ IsSuccLimit a :=
   (f : α ≤i β).isSuccLimit_apply_iff
+
+alias ⟨_, map_isSuccPrelimit⟩ := isSuccPrelimit_apply_iff
+alias ⟨_, map_isSuccLimit⟩ := isSuccLimit_apply_iff
 
 end PrincipalSeg

@@ -47,7 +47,7 @@ Both statements are combined to give an equivalence,
 There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
 `Real.convergent`, a simple recursive definition of the convergents that is also defined
 in this file, whereas the other, `Real.exists_convs_eq_rat` defined in the file
-`Mathlib.NumberTheory.DiophantineApproximation.ContinuedFraction`, uses
+`Mathlib/NumberTheory/DiophantineApproximation/ContinuedFraction.lean`, uses
 `GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
@@ -542,7 +542,7 @@ This version uses `Real.convergent`. -/
 theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
     ∃ n, q = ξ.convergent n := by
   refine q.num_div_den ▸ exists_rat_eq_convergent' ⟨?_, fun hd => ?_, ?_⟩
-  · exact isCoprime_iff_nat_coprime.mpr (natAbs_ofNat q.den ▸ q.reduced)
+  · exact isCoprime_iff_nat_coprime.mpr (natAbs_natCast q.den ▸ q.reduced)
   · rw [← q.den_eq_one_iff.mp (Nat.cast_eq_one.mp hd)] at h
     simpa only [Rat.den_intCast, Nat.cast_one, one_pow, mul_one] using (abs_lt.mp h).1
   · obtain ⟨hq₀, hq₁⟩ := aux₀ (Nat.cast_pos.mpr q.pos)

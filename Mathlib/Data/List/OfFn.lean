@@ -54,20 +54,11 @@ theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
   · rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]
     congr
 
-/-- Note this matches the convention of `List.ofFn_succ'`, putting the `Fin m` elements first. -/
-theorem ofFn_add {m n} (f : Fin (m + n) → α) :
-    List.ofFn f =
-      (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
-  induction' n with n IH
-  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.cast_refl]
-    rfl
-  · rw [ofFn_succ', ofFn_succ', IH, append_concat]
-    rfl
-
 @[simp]
 theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
     List.ofFn (Fin.append a b) = List.ofFn a ++ List.ofFn b := by
-  simp_rw [ofFn_add, Fin.append_left, Fin.append_right]
+  simp_rw [ofFn_add]
+  simp [Fin.append_left', Fin.append_right]
 
 /-- This breaks a list of `m*n` items into `m` groups each containing `n` elements. -/
 theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
@@ -135,12 +126,12 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
   simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
-    (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, Fin.forall_iff, Fin.cast_mk,
+    (Fin.rightInverse_cast length_ofFn).surjective.forall, Fin.forall_iff, Fin.cast_mk,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
     (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=
-  getLast_ofFn f _
+  getLast_ofFn _
 
 @[deprecated getLast_ofFn (since := "2024-11-06")]
 theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
@@ -161,9 +152,9 @@ lemma find?_ofFn_eq_some {n} {f : Fin n → α} {p : α → Bool} {b : α} :
     (ofFn f).find? p = some b ↔ p b = true ∧ ∃ i, f i = b ∧ ∀ j < i, ¬(p (f j) = true) := by
   rw [find?_eq_some_iff_getElem]
   exact ⟨fun ⟨hpb, i, hi, hfb, h⟩ ↦
-      ⟨hpb, ⟨⟨i, (length_ofFn f) ▸ hi⟩, by simpa using hfb, fun j hj ↦ by simpa using h j hj⟩⟩,
+      ⟨hpb, ⟨⟨i, length_ofFn (f := f) ▸ hi⟩, by simpa using hfb, fun j hj ↦ by simpa using h j hj⟩⟩,
     fun ⟨hpb, i, hfb, h⟩ ↦
-      ⟨hpb, ⟨i, (length_ofFn f).symm ▸ i.isLt, by simpa using hfb,
+      ⟨hpb, ⟨i, (length_ofFn (f := f)).symm ▸ i.isLt, by simpa using hfb,
         fun j hj ↦ by simpa using h ⟨j, by omega⟩ (by simpa using hj)⟩⟩⟩
 
 lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {i : Fin n}
@@ -178,7 +169,7 @@ def equivSigmaTuple : List α ≃ Σn, Fin n → α where
   invFun f := List.ofFn f.2
   left_inv := List.ofFn_get
   right_inv := fun ⟨_, f⟩ =>
-    Fin.sigma_eq_of_eq_comp_cast (length_ofFn _) <| funext fun i => get_ofFn f i
+    Fin.sigma_eq_of_eq_comp_cast length_ofFn <| funext fun i => get_ofFn f i
 
 /-- A recursor for lists that expands a list into a function mapping to its elements.
 

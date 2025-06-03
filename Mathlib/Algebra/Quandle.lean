@@ -658,7 +658,6 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
         simp only [Quotient.lift_mk, mapAux]
       map_mul' := fun x y =>
         Quotient.inductionOn₂ x y fun x y => by
-          simp only [toEnvelGroup.mapAux]
           change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
           simp [toEnvelGroup.mapAux] }
   invFun F := (Quandle.Conj.map F).comp (toEnvelGroup R)

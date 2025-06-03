@@ -18,53 +18,61 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type*}
+variable {α : Type u} {β : Type*} [CommMonoid α] [PartialOrder α]
 
-/-- Pullback an `OrderedCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
-@[to_additive "Pullback an `OrderedAddCommMonoid` under an injective map."]
-abbrev Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type*} [One β] [Mul β]
+/-- Pullback an `IsOrderedMonoid` under an injective map. -/
+@[to_additive "Pullback an `IsOrderedAddMonoid` under an injective map."]
+lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [One β] [Mul β]
     [Pow β ℕ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    OrderedCommMonoid β where
-  toCommMonoid := hf.commMonoid f one mul npow
-  toPartialOrder := PartialOrder.lift f hf
-  mul_le_mul_left a b ab c := show f (c * a) ≤ f (c * b) by
-    rw [mul, mul]; apply mul_le_mul_left'; exact ab
+    let _ : CommMonoid β := hf.commMonoid f one mul npow
+    let _ : PartialOrder β := PartialOrder.lift f hf
+    IsOrderedMonoid β :=
+  let _ : CommMonoid β := hf.commMonoid f one mul npow
+  let _ : PartialOrder β := PartialOrder.lift f hf
+  { mul_le_mul_left a b ab c := show f (c * a) ≤ f (c * b) by
+      rw [mul, mul]; apply mul_le_mul_left'; exact ab }
 
-/-- Pullback an `OrderedCancelCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
-@[to_additive Function.Injective.orderedCancelAddCommMonoid
-    "Pullback an `OrderedCancelAddCommMonoid` under an injective map."]
-abbrev Function.Injective.orderedCancelCommMonoid [OrderedCancelCommMonoid α] [One β] [Mul β]
+/-- Pullback an `IsOrderedCancelMonoid` under an injective map. -/
+@[to_additive Function.Injective.isOrderedCancelAddMonoid
+    "Pullback an `IsOrderedCancelAddMonoid` under an injective map."]
+lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [One β] [Mul β]
     [Pow β ℕ] (f : β → α) (hf : Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : OrderedCancelCommMonoid β where
-  toOrderedCommMonoid := hf.orderedCommMonoid f one mul npow
-  le_of_mul_le_mul_left a b c (bc : f (a * b) ≤ f (a * c)) :=
-    (mul_le_mul_iff_left (f a)).1 (by rwa [← mul, ← mul])
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    let _ : CommMonoid β := hf.commMonoid f one mul npow
+    let _ : PartialOrder β := PartialOrder.lift f hf
+    IsOrderedCancelMonoid β :=
+  let _ : CommMonoid β := hf.commMonoid f one mul npow
+  let _ : PartialOrder β := PartialOrder.lift f hf
+  { __ := hf.isOrderedMonoid f one mul npow
+    le_of_mul_le_mul_left a b c (bc : f (a * b) ≤ f (a * c)) :=
+      (mul_le_mul_iff_left (f a)).1 (by rwa [← mul, ← mul]) }
 
-/-- Pullback a `LinearOrderedCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
-@[to_additive "Pullback an `OrderedAddCommMonoid` under an injective map."]
-abbrev Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β : Type*} [One β]
-    [Mul β] [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (sup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (inf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
-    LinearOrderedCommMonoid β where
-  toOrderedCommMonoid := hf.orderedCommMonoid f one mul npow
-  __ := LinearOrder.lift f hf sup inf
-
-/-- Pullback a `LinearOrderedCancelCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
-@[to_additive Function.Injective.linearOrderedCancelAddCommMonoid
-    "Pullback a `LinearOrderedCancelAddCommMonoid` under an injective map."]
-abbrev Function.Injective.linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] [One β]
-    [Mul β] [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Injective f) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
-    LinearOrderedCancelCommMonoid β where
-  toOrderedCancelCommMonoid := hf.orderedCancelCommMonoid f one mul npow
-  __ := hf.linearOrderedCommMonoid f one mul npow hsup hinf
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedCommMonoid := Function.Injective.isOrderedMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedAddCommMonoid := Function.Injective.isOrderedAddMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedCancelCommMonoid := Function.Injective.isOrderedCancelMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedCancelAddCommMonoid := Function.Injective.isOrderedCancelAddMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedCommMonoid := Function.Injective.isOrderedMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedAddCommMonoid := Function.Injective.isOrderedAddMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedCancelCommMonoid := Function.Injective.isOrderedCancelMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedCancelAddCommMonoid :=
+  Function.Injective.isOrderedCancelAddMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedCommGroup := Function.Injective.isOrderedMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.orderedAddCommGroup := Function.Injective.isOrderedAddMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedCommGroup := Function.Injective.isOrderedMonoid
+@[deprecated (since := "2025-04-10")]
+alias Function.Injective.linearOrderedAddCommGroup := Function.Injective.isOrderedAddMonoid
 
 -- TODO find a better home for the next two constructions.
 /-- The order embedding sending `b` to `a * b`, for some fixed `a`.

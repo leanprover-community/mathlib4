@@ -255,11 +255,18 @@ theorem exists_algHom_adjoin_of_splits' :
     · simp_rw [← SetLike.coe_subset_coe, coe_restrictScalars, adjoin_subset_adjoin_iff]
       exact ⟨subset_adjoin_of_subset_left S (F := L'.toSubfield) le_rfl, subset_adjoin _ _⟩
     · ext x
-      exact congr($hφ _).trans (congr_arg f <| AlgEquiv.symm_apply_apply _ _)
+      let y := (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) x
+      refine Eq.trans congr($hφ y) ?_
+      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply, f']
+      exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
   letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
-  convert (hK s hs).2; ext; exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
+  convert (hK s hs).2
+  ext
+  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+    AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply, f']
+  exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
 
 include hK in
 theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :

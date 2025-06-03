@@ -3,9 +3,12 @@ Copyright (c) 2022 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Field.Rat
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Data.NNRat.Order
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Lubell-Yamamoto-Meshalkin inequality and Sperner's theorem
@@ -45,7 +48,7 @@ shadow, lym, slice, sperner, antichain
 open Finset Nat
 open scoped FinsetFamily
 
-variable {𝕜 α : Type*} [LinearOrderedSemifield 𝕜]
+variable {𝕜 α : Type*} [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 namespace Finset
 
@@ -72,7 +75,7 @@ theorem local_lubell_yamamoto_meshalkin_inequality_mul (h𝒜 : (𝒜 : Set (Fin
     rw [← mem_coe, h𝒜.empty_mem_iff, coe_eq_singleton]
     rintro rfl
     rw [shadow_singleton_empty] at hs
-    exact not_mem_empty s hs
+    exact notMem_empty s hs
   have h := exists_eq_insert_iff.2 ⟨ht.2, by
     rw [(sized_shadow_iff this).1 (Set.Sized.shadow h𝒜) ht.1, (Set.Sized.shadow h𝒜) hs]⟩
   rcases h with ⟨a, ha, rfl⟩
@@ -147,9 +150,9 @@ theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜
   · rintro ⟨⟨t, ht, hst⟩, hs⟩
     by_cases h : s ∈ 𝒜
     · exact Or.inl ⟨h, hs⟩
-    obtain ⟨a, ha, hst⟩ := ssubset_iff.1 (ssubset_of_subset_of_ne hst (ht.ne_of_not_mem h).symm)
+    obtain ⟨a, ha, hst⟩ := ssubset_iff.1 (ssubset_of_subset_of_ne hst (ht.ne_of_notMem h).symm)
     refine Or.inr ⟨insert a s, ⟨⟨t, ht, hst⟩, ?_⟩, a, mem_insert_self _ _, erase_insert ha⟩
-    rw [card_insert_of_not_mem ha, hs]
+    rw [card_insert_of_notMem ha, hs]
 
 variable {𝒜 k}
 
@@ -162,7 +165,7 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     obtain ⟨s, ⟨⟨t, ht, hst⟩, _⟩, a, ha, rfl⟩ := h₁
     refine h𝒜 (slice_subset h₂) ht ?_ ((erase_subset _ _).trans hst)
     rintro rfl
-    exact not_mem_erase _ _ (hst ha)
+    exact notMem_erase _ _ (hst ha)
 
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)

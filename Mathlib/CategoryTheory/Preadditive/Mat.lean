@@ -100,10 +100,10 @@ instance : Category.{v₁} (Mat_ C) where
   comp f g := f.comp g
   id_comp f := by
     classical
-    simp (config := { unfoldPartialApp := true }) [dite_comp]
+    simp +unfoldPartialApp [dite_comp]
   comp_id f := by
     classical
-    simp (config := { unfoldPartialApp := true }) [comp_dite]
+    simp +unfoldPartialApp [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
     intros
@@ -404,7 +404,6 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
   obj X := ⨁ fun i => F.obj (X.X i)
   map f := biproduct.matrix fun i j => F.map (f i j)
   map_id X := by
-    dsimp
     ext i j
     by_cases h : j = i
     · subst h; simp

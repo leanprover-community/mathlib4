@@ -184,7 +184,6 @@ def smul {R : Type*} [Semiring R] [Linear R V] (h : Homotopy f g) (a : R) :
     Homotopy (a • f) (a • g) where
   hom i j := a • h.hom i j
   zero i j hij := by
-    dsimp
     rw [h.zero i j hij, smul_zero]
   comm i := by
     dsimp
@@ -196,7 +195,7 @@ def smul {R : Type*} [Semiring R] [Linear R V] (h : Homotopy f g) (a : R) :
 @[simps]
 def compRight {e f : C ⟶ D} (h : Homotopy e f) (g : D ⟶ E) : Homotopy (e ≫ g) (f ≫ g) where
   hom i j := h.hom i j ≫ g.f j
-  zero i j w := by dsimp; rw [h.zero i j w, zero_comp]
+  zero i j w := by rw [h.zero i j w, zero_comp]
   comm i := by rw [comp_f, h.comm i, dNext_comp_right, prevD_comp_right, Preadditive.add_comp,
     comp_f, Preadditive.add_comp]
 
@@ -204,7 +203,7 @@ def compRight {e f : C ⟶ D} (h : Homotopy e f) (g : D ⟶ E) : Homotopy (e ≫
 @[simps]
 def compLeft {f g : D ⟶ E} (h : Homotopy f g) (e : C ⟶ D) : Homotopy (e ≫ f) (e ≫ g) where
   hom i j := e.f i ≫ h.hom i j
-  zero i j w := by dsimp; rw [h.zero i j w, comp_zero]
+  zero i j w := by rw [h.zero i j w, comp_zero]
   comm i := by rw [comp_f, h.comm i, dNext_comp_left, prevD_comp_left, comp_f,
     Preadditive.comp_add, Preadditive.comp_add]
 
@@ -243,7 +242,6 @@ def nullHomotopicMap (hom : ∀ i j, C.X i ⟶ D.X j) : C ⟶ D where
       simp only [prevD, AddMonoidHom.mk'_apply, assoc, d_comp_d, comp_zero]
     have eq2 : C.d i j ≫ dNext j hom = 0 := by
       simp only [dNext, AddMonoidHom.mk'_apply, d_comp_d_assoc, zero_comp]
-    dsimp only
     rw [dNext_eq hom hij, prevD_eq hom hij, Preadditive.comp_add, Preadditive.add_comp, eq1, eq2,
       add_zero, zero_add, assoc]
 
@@ -343,14 +341,14 @@ the degreewise morphisms induced by the null homotopic maps constructed
 with `nullHomotopicMap` or `nullHomotopicMap'` -/
 
 
-@[simp]
+-- Cannot be @[simp] because `k₀` and `k₂` can not be inferred by `simp`.
 theorem nullHomotopicMap_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r₁₀ : c.Rel k₁ k₀)
     (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₁ = C.d k₁ k₀ ≫ hom k₀ k₁ + hom k₁ k₂ ≫ D.d k₂ k₁ := by
   dsimp only [nullHomotopicMap]
   rw [dNext_eq hom r₁₀, prevD_eq hom r₂₁]
 
-@[simp]
+-- Cannot be @[simp] because `k₀` and `k₂` can not be inferred by `simp`.
 theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r₁₀ : c.Rel k₁ k₀)
     (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ + h k₁ k₂ r₂₁ ≫ D.d k₂ k₁ := by
@@ -359,7 +357,7 @@ theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r
   split_ifs
   rfl
 
-@[simp]
+-- Cannot be @[simp] because `k₁` can not be inferred by `simp`.
 theorem nullHomotopicMap_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₀ : ∀ l : ι, ¬c.Rel k₀ l) (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₀ = hom k₀ k₁ ≫ D.d k₁ k₀ := by
@@ -367,7 +365,7 @@ theorem nullHomotopicMap_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   rw [prevD_eq hom r₁₀, dNext, AddMonoidHom.mk'_apply, C.shape, zero_comp, zero_add]
   exact hk₀ _
 
-@[simp]
+-- Cannot be @[simp] because `k₁` can not be inferred by `simp`.
 theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₀ : ∀ l : ι, ¬c.Rel k₀ l) (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₀ = h k₀ k₁ r₁₀ ≫ D.d k₁ k₀ := by
@@ -376,7 +374,7 @@ theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   split_ifs
   rfl
 
-@[simp]
+-- Cannot be @[simp] because `k₀` can not be inferred by `simp`.
 theorem nullHomotopicMap_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₁ : ∀ l : ι, ¬c.Rel l k₁) (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₁ = C.d k₁ k₀ ≫ hom k₀ k₁ := by
@@ -384,7 +382,7 @@ theorem nullHomotopicMap_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   rw [dNext_eq hom r₁₀, prevD, AddMonoidHom.mk'_apply, D.shape, comp_zero, add_zero]
   exact hk₁ _
 
-@[simp]
+-- Cannot be @[simp] because `k₀` can not be inferred by `simp`.
 theorem nullHomotopicMap'_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₁ : ∀ l : ι, ¬c.Rel l k₁) (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ := by
@@ -524,7 +522,7 @@ def mkInductive : Homotopy e 0 where
     if h : i + 1 = j then
       (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom
     else 0
-  zero i j w := by dsimp; rw [dif_neg]; exact w
+  zero i j w := by rw [dif_neg]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
@@ -652,7 +650,7 @@ def mkCoinductive : Homotopy e 0 where
     if h : j + 1 = i then
       (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).2.1
     else 0
-  zero i j w := by dsimp; rw [dif_neg]; exact w
+  zero i j w := by rw [dif_neg]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
