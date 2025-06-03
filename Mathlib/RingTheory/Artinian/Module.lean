@@ -104,11 +104,10 @@ theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f
 If `M` is an Artinian `R` module, and `S` is an `R`-algebra with a surjective
 algebra map, then `M` is an Artinian `S` module.
 -/
-theorem isArtinian_of_surjective_algebraMap {R S M : Type*}
-    [CommRing R] [CommRing S] [AddCommGroup M] [Algebra R S] [Module R M] [Module S M]
-    [IsArtinian S M] [IsScalarTower R S M] (H : Function.Surjective (algebraMap R S)) :
-    IsArtinian R M := by
-  apply (OrderEmbedding.wellFoundedLT (β := Submodule S M))
+theorem isArtinian_of_surjective_algebraMap {S : Type*} [CommSemiring S] [Algebra S R]
+    [Module S M] [IsArtinian R M] [IsScalarTower S R M]
+    (H : Function.Surjective (algebraMap S R)) : IsArtinian S M := by
+  apply (OrderEmbedding.wellFoundedLT (β := Submodule R M))
   refine ⟨⟨?_, ?_⟩, ?_⟩
   · intro N
     refine {toAddSubmonoid := N.toAddSubmonoid, smul_mem' := ?_}

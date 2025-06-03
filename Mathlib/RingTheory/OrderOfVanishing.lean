@@ -42,10 +42,6 @@ section CommRing
 
 variable [CommRing R] [Module R M]
 
-lemma Ideal.Quotient.smul_top (a : R) (I : Ideal R) :
-    (a • ⊤ : Submodule R (R ⧸ I)) = Submodule.span R {Submodule.Quotient.mk a} := by
-  simp [← Ideal.Quotient.span_singleton_one, Algebra.smul_def, Submodule.smul_span]
-
 /--
 The map `R ⧸ I →ₗ[R] R ⧸ (a • I)` defined by multiplication by `a`
 -/
