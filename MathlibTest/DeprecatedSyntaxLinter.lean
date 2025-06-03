@@ -138,7 +138,7 @@ example : 1 + 1 = 2 := by decide (config := { native := true })
 example : 1 + 1 = 2 := by decide (config := { native := false })
 -- Not handled yet: since mathlib hardly uses the old config syntax and this linter is purely
 -- for user information (and not hard guarantees), we deem this acceptable.
-example : 1 + 1 = 2 := by decide (config := { native := false, kernel := false })
+example : 1 + 1 = 2 := by decide (config := { native := true, kernel := false })
 
 set_option linter.style.nativeDecide false
 
