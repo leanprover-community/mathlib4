@@ -18,7 +18,7 @@ It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 /-!
 #  The "minImports" linter
@@ -100,7 +100,7 @@ macro "#import_bumps" : command => `(
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.minImports (← getOptions) do
+    unless getLinterValue linter.minImports (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
@@ -155,7 +155,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
       -- to make `test` files more stable, we suppress the exact count of import changes if
       -- the `linter.minImports.increases` option is `false`
-      let byCount :=  if Linter.getLinterValue linter.minImports.increases (← getOptions) then
+      let byCount :=  if getLinterValue linter.minImports.increases (← getLinterOptions) then
                       m!"by {newCumulImps - oldCumulImps} "
                     else
                       m!""

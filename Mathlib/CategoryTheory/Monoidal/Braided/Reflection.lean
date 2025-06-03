@@ -26,9 +26,9 @@ apply Day's reflection theorem to prove that `C` is also closed monoidal.
 - The original paper is [day1972] *A reflection theorem for closed categories*, by Day, 1972.
 -/
 
-open CategoryTheory Category MonoidalCategory MonoidalClosed BraidedCategory Functor
-
 namespace CategoryTheory.Monoidal.Reflective
+
+open Category MonoidalCategory MonoidalClosed BraidedCategory Functor
 
 variable {C D : Type*} [Category C] [Category D]
 
