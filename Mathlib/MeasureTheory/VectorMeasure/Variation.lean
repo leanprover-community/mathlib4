@@ -230,8 +230,18 @@ open Classical in
 /-- If `P` is a partition then the restriction of `P` to a set `s` is a partition of `s`. -/
 lemma restriction_isInnerPart {s t : Set X} {P : Finset (Set X)} (hs : IsInnerPart s P)
     (ht : MeasurableSet t) : IsInnerPart t (restriction t P) := by
-
-  sorry
+  refine ⟨fun _ h ↦ ?_, fun r hr ↦ ?_, fun _ hr _ hr' ↦ ?_, fun _ hp ↦ ?_⟩
+  · obtain ⟨_, _, hp⟩ := Finset.mem_image.mp (Finset.mem_filter.mp h).1
+    simp [← hp]
+  · obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp (Finset.mem_filter.mp hr).1
+    simpa [← hp'] using MeasurableSet.inter (hs.2.1 p hp) ht
+  · obtain ⟨p, hp, hp'⟩ := Finset.mem_image.mp (Finset.mem_filter.mp hr).1
+    obtain ⟨q, hq, hq'⟩ := Finset.mem_image.mp (Finset.mem_filter.mp hr').1
+    rw [← hp', ← hq']
+    intro hpqt _ h h'
+    have hpq : p ≠ q := fun h ↦ hpqt (congrFun (congrArg Inter.inter h) t)
+    exact hs.2.2.1 hp hq hpq (Set.subset_inter_iff.mp h).1 (Set.subset_inter_iff.mp h').1
+  · exact (Finset.mem_filter.mp hp).2
 
 end IsInnerPartition
 
