@@ -34,6 +34,12 @@ This file contains the properties of the submodule of polynomials of degree less
 
 -/
 
+namespace AlgEquiv
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+@[simp] lemma toLinearMap_toLinearEquiv (f : A ≃ₐ[R] B) : (f.toLinearEquiv : A →ₗ[R] B) = f := by
+
+end AlgEquiv
 
 namespace Polynomial
 
@@ -170,12 +176,9 @@ lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n :=
 
 /-- The map `taylor r` induces an automorphism of the module `R[X]_n` of polynomials of
 degree `< n`. -/
+@[simps! apply_coe]
 noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n :=
   (taylorEquiv r : R[X] ≃ₗ[R] R[X]).ofSubmodules _ _ map_taylorEquiv_degreeLT
-
-@[simp] lemma taylorLinearEquiv_apply (P : R[X]_n) :
-    (taylorLinearEquiv r n P : R[X]) = (P : R[X]).taylor r :=
-  rfl
 
 @[simp] lemma taylorLinearEquiv_symm (r : R) :
     (taylorLinearEquiv r n).symm = taylorLinearEquiv (-r) n :=
@@ -188,11 +191,11 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
     Matrix.det_of_upperTriangular, Fintype.prod_eq_one]
   · intro i
     rw [LinearMap.toMatrix_apply, degreeLT.basis_repr, ← natDegree_X_pow (R:=R) (i:ℕ),
-      LinearEquiv.coe_coe, taylorLinearEquiv_apply, degreeLT.basis_val, coeff_taylor_natDegree,
+      LinearEquiv.coe_coe, taylorLinearEquiv_apply_coe, degreeLT.basis_val, coeff_taylor_natDegree,
       leadingCoeff_X_pow]
   · intro i j hji
-    rw [LinearMap.toMatrix_apply, LinearEquiv.coe_coe, degreeLT.basis_repr, taylorLinearEquiv_apply,
-      degreeLT.basis_val, coeff_eq_zero_of_degree_lt]
+    rw [LinearMap.toMatrix_apply, LinearEquiv.coe_coe, degreeLT.basis_repr,
+      taylorLinearEquiv_apply_coe, degreeLT.basis_val, coeff_eq_zero_of_degree_lt]
     · rwa [degree_taylor, degree_X_pow, Nat.cast_lt, Fin.val_fin_lt]
 
 @[simp] theorem det_taylorLinearEquiv :
