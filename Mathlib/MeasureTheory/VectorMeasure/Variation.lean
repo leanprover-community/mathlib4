@@ -6,6 +6,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 
 /-!
 # Variation and total variation for vector-valued measures
@@ -39,11 +40,12 @@ complex measures.
 ## To do
 
 * Total variation is a norm on the space of vector-valued measures.
-* If `μ` is a `ℝ≥0∞`-valued `VectorMeasure` then `variation μ = μ`.
+* If `μ` is a `SignedMeasure`, i.e., a `ℝ≥0∞`-valued `VectorMeasure`, then `variation μ = μ`.
 * Variation is equivalent to that defined via the Hahn–Jordan decomposition for signed measures.
 * If `μ` is a complex measure then `variation univ < ∞`.
 * Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`.
   Then `variation μ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
+* Remove the assumption of `[T2Space V]`?
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
@@ -179,20 +181,24 @@ of the measure of each partition element. -/
 noncomputable def variation_aux (s : Set X) :=
     if (MeasurableSet s) then ⨆ P ∈ partitions s, varOfPart μ P else 0
 
+omit [T2Space V] in
 /-- `variation_aux` of the empty set is equal to zero. -/
 lemma variation_empty' : variation_aux μ ∅ = 0 := by
   simp [variation_aux, varOfPart, partitions_empty]
 
+omit [T2Space V] in
 /-- variation_aux is monotone as a function of the set. -/
 lemma variation_aux_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (hs₁ : MeasurableSet s₁)
     (hs₂ : MeasurableSet s₂) : variation_aux μ s₁ ≤ variation_aux μ s₂ := by
   simp only [variation_aux, hs₁, reduceIte, hs₂]
   exact iSup_le_iSup_of_subset (partitions_monotone h)
 
+omit [T2Space V] in
 lemma variation_aux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < variation_aux μ s) :
     ∃ P ∈ partitions s, a < varOfPart μ P := by
   simp_all [variation_aux, lt_iSup_iff]
 
+omit [T2Space V] in
 lemma variation_aux_le' {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
     (h : variation_aux μ s ≠ ⊤) :
     ∃ P ∈ partitions s, variation_aux μ s ≤ varOfPart μ P + ε := by
@@ -219,6 +225,7 @@ lemma variation_aux_le' {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0
   · simp_rw [hw, zero_le, and_true]
     exact ⟨{}, by simp, by simp [hs], by simp, by simp⟩
 
+omit [T2Space V] in
 lemma le_variation_aux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : P ∈ partitions s) : varOfPart μ P ≤ variation_aux μ s := by
   simp only [variation_aux, hs, reduceIte]
@@ -409,5 +416,12 @@ lemma variation_of_ENNReal  (μ : VectorMeasure X ℝ≥0∞) : variation μ = �
       simp_all [varOfPart]
     · push_neg at hc
       simp [hc]
+
+open VectorMeasure SignedMeasure in
+/-- For signed measures, variation defined by the Hahn–Jordan decomposition coincides with variation
+defined as a sup. -/
+lemma variation_SignedMeasure (μ : SignedMeasure X) :
+    totalVariation μ = ennrealToMeasure (variation μ) := by
+  sorry
 
 end VectorMeasure
