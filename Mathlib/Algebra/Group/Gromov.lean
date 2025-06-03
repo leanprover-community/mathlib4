@@ -1085,7 +1085,23 @@ lemma closure_iterate_mulact (T: Type*) [Group T] [DecidableEq T] (a b: T) (n: �
   .
     intro hx
     induction hx using Subgroup.closure_induction with
-    | mem y hy => sorry
+    | mem y hy =>
+      simp at hy
+      obtain ⟨m, hm, y_eq⟩ := hy
+      by_cases m_lt_n: m < n
+      .
+        apply Subgroup.subset_closure
+        simp
+        use m
+      .
+        simp at m_lt_n
+        induction m, m_lt_n using Nat.le_induction with
+        | base =>
+          simp at conj_in
+          simp
+          exact conj_in
+        | succ m hsucc ih =>
+          sorry
     | one => apply Subgroup.one_mem
     | mul y z hy hz y_mem z_mem =>
       apply Subgroup.mul_mem
