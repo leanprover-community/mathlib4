@@ -246,6 +246,10 @@ instance Scheme.isAffine_affineOpenCover (X : Scheme) (𝒰 : X.AffineOpenCover)
     IsAffine (𝒰.openCover.obj i) :=
   inferInstanceAs (IsAffine (Spec (𝒰.obj i)))
 
+instance (X : Scheme) [CompactSpace X] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (i) :
+    IsAffine (𝒰.finiteSubcover.obj i) :=
+  inferInstanceAs (IsAffine (𝒰.obj _))
+
 instance {X} [IsAffine X] (i) :
     IsAffine ((Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 X)).obj i) := by
   dsimp; infer_instance
@@ -1023,7 +1027,7 @@ lemma IsAffineOpen.fromSpec_preimage_zeroLocus {X : Scheme.{u}} {U : X.Opens}
     (hU : IsAffineOpen U) (s : Set Γ(X, U)) :
     hU.fromSpec.base ⁻¹' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
   ext x
-  suffices (∀ f ∈ s, ¬¬ f ∈ x.asIdeal) ↔ s ⊆ x.asIdeal by
+  suffices (∀ f ∈ s, ¬f ∉ x.asIdeal) ↔ s ⊆ x.asIdeal by
     simpa [← hU.fromSpec_image_basicOpen, -not_not] using this
   simp_rw [not_not]
   rfl

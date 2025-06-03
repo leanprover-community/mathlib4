@@ -382,7 +382,7 @@ theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin
     rw [finSumEquivOfFinset_inl, Finset.piecewise_eq_of_mem]
     apply Finset.orderEmbOfFin_mem
   · ext
-    rw [finSumEquivOfFinset_inr, Finset.piecewise_eq_of_not_mem]
+    rw [finSumEquivOfFinset_inr, Finset.piecewise_eq_of_notMem]
     exact Finset.mem_compl.1 (Finset.orderEmbOfFin_mem _ _ _)
 
 @[simp]

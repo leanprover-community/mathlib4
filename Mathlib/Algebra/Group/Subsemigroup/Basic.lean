@@ -85,7 +85,7 @@ instance : CompleteLattice (Subsemigroup M) :=
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥
-    bot_le := fun _ _ hx => (not_mem_bot hx).elim
+    bot_le := fun _ _ hx => (notMem_bot hx).elim
     top := ⊤
     le_top := fun _ x _ => mem_top x
     inf := (· ⊓ ·)
@@ -109,8 +109,14 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Subsemigroup M, s ⊆ 
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
 @[to_additive]
-theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.AddSubsemigroup.not_mem_of_not_mem_closure := AddSubsemigroup.notMem_of_notMem_closure
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 variable {S}
 
