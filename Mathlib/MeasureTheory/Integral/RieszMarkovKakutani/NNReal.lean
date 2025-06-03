@@ -38,15 +38,21 @@ namespace NNRealRMK
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the (lower) Lebesgue integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal
 to `Λ f`. -/
+theorem integral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫ (x : X), (f x : ℝ) ∂(rieszMeasure Λ) = Λ f := by
+  rw [← eq_toRealLinear_toReal Λ f,
+      ← RealRMK.integral_rieszMeasure (@nonneg_toRealLinear _ _ Λ) f.toReal]
+  simp only [toReal_apply]
+  congr
+  exact Eq.symm (eq_toNNRealLinear_toRealLinear Λ)
+
+/-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
+the (lower) Lebesgue integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal
+to `Λ f`. -/
 theorem lintegral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫⁻ (x : X), f x ∂(rieszMeasure Λ) = Λ f := by
   rw [lintegral_coe_eq_integral, ← ENNReal.ofNNReal_toNNReal]
-  · simp only [ENNReal.coe_inj]
-    rw [Real.toNNReal_of_nonneg (by apply integral_nonneg; intro x; simp),
-      ← NNReal.coe_inj, ← eq_toRealLinear_toReal Λ f,
-      ← RealRMK.integral_rieszMeasure (@nonneg_toRealLinear _ _ Λ) f.toReal]
-    simp only [toReal_apply, NNReal.coe_mk]
-    congr
-    exact Eq.symm (eq_toNNRealLinear_toRealLinear Λ)
+  · rw [ENNReal.coe_inj, Real.toNNReal_of_nonneg (MeasureTheory.integral_nonneg (by intro a; simp)),
+       NNReal.eq_iff, NNReal.coe_mk]
+    exact integral_rieszMeasure Λ f
   rw [rieszMeasure]
   exact Continuous.integrable_of_hasCompactSupport (by continuity)
     (HasCompactSupport.comp_left f.hasCompactSupport rfl)
