@@ -180,7 +180,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOv
         ⌊(M K)⌋₊ < p ^ ((span ({↑p} : Set ℤ)).inertiaDeg P) ∨
           Submodule.IsPrincipal P) :
       IsPrincipalIdealRing (𝓞 K) := by
-refine isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc
+  refine isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc
     (fun p hpmem hp P ⟨hP1, hP2⟩ hple ↦ ?_)
   obtain ⟨Q, ⟨hQ1, hQ2⟩, H⟩ := h p hpmem hp
   have := (isPrime_of_prime (prime_span_singleton_iff.mpr (prime_iff_prime_int.mp hp))).isMaximal
