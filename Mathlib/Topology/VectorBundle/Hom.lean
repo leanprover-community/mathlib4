@@ -25,12 +25,6 @@ necessary.
 Similar constructions should be possible (but are yet to be formalized) for tensor products of
 topological vector bundles, exterior algebras, and so on, where again the topology can be defined
 using a norm on the fiber model if this helps.
-
-## Main Definitions
-
-* `Bundle.ContinuousLinearMap.vectorBundle`: continuous semilinear maps between
-  vector bundles form a vector bundle.
-
 -/
 
 
@@ -59,7 +53,7 @@ namespace Pretrivialization
 (`i ∈ {1,2}`), then `Pretrivialization.continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂'` is the
 coordinate change function between the two induced (pre)trivializations
 `Pretrivialization.continuousLinearMap σ e₁ e₂` and
-`Pretrivialization.continuousLinearMap σ e₁' e₂'` of `Bundle.ContinuousLinearMap`. -/
+`Pretrivialization.continuousLinearMap σ e₁' e₂'` of the bundle of continuous linear maps. -/
 def continuousLinearMapCoordChange [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜₁] [e₂.IsLinear 𝕜₂]
     [e₂'.IsLinear 𝕜₂] (b : B) : (F₁ →SL[σ] F₂) →L[𝕜₂] F₁ →SL[σ] F₂ :=
   ((e₁'.coordChangeL 𝕜₁ e₁ b).symm.arrowCongrSL (e₂.coordChangeL 𝕜₂ e₂' b) :
