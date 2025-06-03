@@ -304,6 +304,9 @@ theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
     Zigzag j₁ j₃ :=
   zigzag_equivalence.trans h₁ h₂
 
+instance : Trans (α := J) (Zigzag · ·) (Zigzag · ·) (Zigzag · ·) where
+  trans := Zigzag.trans
+
 theorem Zigzag.of_zag {j₁ j₂ : J} (h : Zag j₁ j₂) : Zigzag j₁ j₂ :=
   Relation.ReflTransGen.single h
 
