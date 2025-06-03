@@ -299,6 +299,10 @@ theorem surjective_stereographic (hv : ‖v‖ = 1) :
     Surjective (stereographic hv) :=
   (stereographic hv).surjective_of_target_eq_univ rfl
 
+theorem continuous_stereographic_symm (hv : ‖v‖ = 1) :
+    Continuous (stereographic hv).symm :=
+  (stereographic hv).symm.continuous_of_source_eq_univ rfl
+
 end StereographicProjection
 
 section ChartedSpace
