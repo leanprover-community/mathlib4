@@ -496,8 +496,8 @@ lemma toNormedSpaceCore : NormedSpace.Core 𝕜 F where
 
 end
 
-/-- In a topological vector space, if the unit ball of a continuous scalar product is von Neumann
-bounded, then the scalar product defines the same topology as the original one. -/
+/-- In a topological vector space, if the unit ball of a continuous inner product is von Neumann
+bounded, then the inner product defines the same topology as the original one. -/
 lemma topology_eq
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
