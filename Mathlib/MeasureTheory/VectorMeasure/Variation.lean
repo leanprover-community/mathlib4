@@ -39,10 +39,12 @@ complex measures.
 
 ## To do
 
-* Total variation is a norm on the space of vector-valued measures.
+* Total variation is a enorm on the space of vector-valued measures.
+* If `variation μ univ < ∞` for each `μ` then variation is a norm on the space of vector-valued
+  measures.
 * If `μ` is a `SignedMeasure`, i.e., a `ℝ≥0∞`-valued `VectorMeasure`, then `variation μ = μ`.
 * Variation is equivalent to that defined via the Hahn–Jordan decomposition for signed measures.
-* If `μ` is a complex measure then `variation univ < ∞`.
+* If `μ` is a complex measure then `variation μ univ < ∞`.
 * Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`.
   Then `variation μ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
 * Remove the assumption of `[T2Space V]`?
@@ -150,12 +152,32 @@ lemma partition_union {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
     exact (hP i).2.2.2 ∅ h rfl
 
 open Classical in
-/-- If each `P i` is a partition of `s i` then the union is a partition of `⋃ i, s i`. -/
+/-- If the `s i` are pairwise disjoint sets and each `P i` is a partition of `s i` then the union of
+the `P i` is a partition of `⋃ i, s i`. -/
 lemma isInnerPart_iUnion {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
     {P : ℕ → Finset (Set X)} (hP : ∀ i, IsInnerPart (s i) (P i)) (n : ℕ) :
     IsInnerPart (⋃ i, s i) (Finset.biUnion (Finset.range n) P) := by
-
-  sorry
+  simp [IsInnerPart]
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro p i _ hp
+    exact Set.subset_iUnion_of_subset i ((hP i).1 p hp)
+  · intro p i _ hp
+    exact (hP i).2.1 p hp
+  · intro p hp q hq hpq r hrp hrq
+    simp only [Set.bot_eq_empty, Set.le_eq_subset, Set.subset_empty_iff]
+    simp only [id_eq, Set.le_eq_subset] at hrp hrq
+    simp only [Finset.coe_biUnion, Finset.coe_range, Set.mem_Iio, Set.mem_iUnion, Finset.mem_coe,
+      exists_prop] at hp hq
+    obtain ⟨i, hi, hp⟩ := hp
+    obtain ⟨j, hj, hq⟩ := hq
+    obtain hc | hc : i = j ∨ i ≠ j := by omega
+    · rw [hc] at hp
+      exact Set.subset_eq_empty ((hP j).2.2.1 hp hq hpq hrp hrq) rfl
+    · have hp' := (hP i).1 p hp
+      have hq' := (hP j).1 q hq
+      exact Set.subset_eq_empty (hs hc (subset_trans hrp hp') (subset_trans hrq hq')) rfl
+  · intro _ i _ h'
+    refine ne_of_mem_of_not_mem h' <| fun a ↦ ((hP i).2.2.2 ∅) a rfl
 
 /-- If P, Q are partitions of two disjoint sets then P and Q are disjoint. -/
 lemma partitions_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set X)}
