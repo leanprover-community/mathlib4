@@ -397,7 +397,7 @@ instance Pi.normedCommGroup [∀ i, NormedCommGroup (G i)] : NormedCommGroup (�
 
 theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖₊ = ‖y‖₊ := by
-  have H : ∀ b, ‖single i y b‖₊ = single (f := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
+  have H : ∀ b, ‖single i y b‖₊ = single (M := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
     intro b
     refine Pi.apply_single (fun i (x : G i) ↦ ‖x‖₊) ?_ i y b
     simp
