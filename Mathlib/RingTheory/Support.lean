@@ -3,11 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.QuotSMulTop
 
 /-!
 
@@ -250,7 +249,7 @@ theorem Module.support_quotient (I : Ideal R) :
 
 open Pointwise in
 theorem Module.support_quotSMulTop (x : R) :
-    Module.support R (M ⧸ x • (⊤ : Submodule R M)) = Module.support R M ∩ zeroLocus {x} := by
+    Module.support R (QuotSMulTop x M) = Module.support R M ∩ zeroLocus {x} := by
   refine (x • (⊤ : Submodule R M)).quotEquivOfEq (Ideal.span {x} • ⊤)
     ((⊤ : Submodule R M).ideal_span_singleton_smul x).symm |>.support_eq.trans <|
       (Module.support_quotient _).trans ?_
