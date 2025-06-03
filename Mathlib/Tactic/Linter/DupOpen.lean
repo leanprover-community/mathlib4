@@ -16,8 +16,9 @@ open Lean Elab Command
 namespace Mathlib.Linter
 
 /-- Returns the array of repetitions in the input `l`. -/
-def getReps {α} [BEq α] [Hashable α] (l : List α) : Array α := Id.run do
-  let mut seen : Std.HashSet α := ∅
+def getReps {α} [BEq α] [Hashable α] (l : List α) (init := (∅ : Std.HashSet α)) :
+    Array α := Id.run do
+  let mut seen := init
   let mut reps := #[]
   for a in l do
     if seen.contains a then
@@ -40,18 +41,29 @@ def dupOpenLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  match stx with
-  | `(open $os*) =>
-    let s ← getScope
-    let mut toReport : Std.HashSet (String.Range × Name × String):= ∅
-    for rep in getReps (s.openDecls.map (s!"{·}")) do
-      for o in os do
-        if rep.endsWith o.getId.toString then
-          toReport := toReport.insert (o.raw.getRange?.get!, o.getId, rep)
-    for (rg, o, rep) in toReport do
-      Linter.logLint linter.dupOpen (.ofRange rg)
-        m!"The namespace '{o}' in '{rep}' is already open."
-  | _ => return
+  let s ← getScope
+  let (reps, os, isNamespace?) :=
+    match stx with
+    | `(namespace $ns) =>
+      let stringSegments := s.openDecls.flatMap (s!"{·}".splitOn ".")
+      let os := stringSegments.map (mkIdentFrom ns <| .str .anonymous ·)
+      let names := ns.getId.components.map (·.toString)
+      let reps := getReps names (.ofList stringSegments)
+      (reps, os.toArray, true)
+    | `(open $os*) =>
+      let reps := getReps (s.openDecls.map (s!"{·}"))
+      (reps, os, false)
+    | _ => default
+  let mut toReport : Std.HashSet (String.Range × Name × String):= ∅
+  for rep in reps do
+    for o in os do
+      if rep.endsWith o.getId.toString then
+        toReport := toReport.insert (o.raw.getRange?.get!, o.getId, rep)
+  let nsMsg (o : Name) :=
+    if isNamespace? then m!"  Probably, a previous `open {o}` is still in scope!" else m!""
+  for (rg, o, rep) in toReport do
+    Linter.logLint linter.dupOpen (.ofRange rg)
+      m!"The namespace '{o}' in '{rep}' is already open.{nsMsg o}"
 
 initialize addLinter dupOpenLinter
 
