@@ -138,8 +138,15 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
   algebraMap.coe_zero
 
 @[rclike_simps]
-theorem zero_re' : re (0 : K) = (0 : ℝ) :=
+theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
+
+@[deprecated (since := "2025-05-29")]
+alias zero_re' := zero_re
+
+@[rclike_simps]
+theorem zero_im : im (0 : K) = (0 : ℝ) :=
+  map_zero im
 
 @[norm_cast]
 theorem ofReal_one : ((1 : ℝ) : K) = 1 :=
@@ -695,6 +702,10 @@ theorem norm_sq_re_add_conj (x : K) : ‖x + conj x‖ ^ 2 = re (x + conj x) ^ 2
 theorem norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2 := by
   rw [add_comm, norm_sq_re_add_conj]
 
+instance : NormSMulClass ℤ K where
+  norm_smul r x := by
+    rw [zsmul_eq_mul, norm_mul, ← ofReal_intCast, norm_ofReal, Int.norm_eq_abs]
+
 /-! ### Cauchy sequences -/
 
 theorem isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n => re (f n) := fun _ ε0 =>
@@ -1076,6 +1087,20 @@ theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
 
 theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
   ofRealLI.lipschitz
+
+lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
+  intro x y
+  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  calc ‖re x - re y‖ₑ
+  _ = ‖re (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub re x y]
+  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
+
+lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
+  intro x y
+  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  calc ‖im x - im y‖ₑ
+  _ = ‖im (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub im x y]
+  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
 
 end LinearMaps
 

@@ -100,7 +100,7 @@ instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z) where
+instance fullSubcategory (Z : ObjectProperty C) : Linear.{w, v} R Z.FullSubcategory where
   homModule X Y := @Linear.homModule R _ C _ _ _ X.obj Y.obj
   smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
   comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _

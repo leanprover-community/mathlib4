@@ -86,9 +86,6 @@ namespace WellOrder
 instance inhabited : Inhabited WellOrder :=
   ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
 
-@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
-theorem eta (o : WellOrder) : mk o.α o.r o.wo = o := rfl
-
 end WellOrder
 
 /-- Equivalence relation on well orders on arbitrary types in universe `u`, given by order
@@ -142,20 +139,8 @@ instance inhabited : Inhabited Ordinal :=
 instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
-@[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
-  (since := "2024-10-24")]
-theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := rfl
-
-@[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
-  (since := "2024-10-24")]
-theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := rfl
-
 @[simp]
 theorem type_toType (o : Ordinal) : typeLT o.toType = o :=
-  o.out_eq
-
-@[deprecated type_toType (since := "2024-10-22")]
-theorem type_lt (o : Ordinal) : typeLT o.toType = o :=
   o.out_eq
 
 theorem type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s] :
@@ -634,12 +619,6 @@ theorem type_lift_preimage (r : α → α → Prop) [IsWellOrder α r]
     (f : β ≃ α) : lift.{u} (type (f ⁻¹'o r)) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 
-@[deprecated type_lift_preimage_aux (since := "2024-10-22")]
-theorem type_lift_preimage_aux (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
-    lift.{u} (@type _ (fun x y => r (f x) (f y))
-      (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
-  type_lift_preimage r f
-
 /-- `lift.{max u v, u}` equals `lift.{v, u}`.
 
 Unfortunately, the simp lemma doesn't seem to work. -/
@@ -647,13 +626,6 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
     inductionOn a fun _ r _ =>
       Quotient.sound ⟨(RelIso.preimage Equiv.ulift r).trans (RelIso.preimage Equiv.ulift r).symm⟩
-
-/-- `lift.{max v u, u}` equals `lift.{v, u}`.
-
-Unfortunately, the simp lemma doesn't seem to work. -/
-@[deprecated lift_umax (since := "2024-10-24")]
-theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
-  lift_umax
 
 /-- An ordinal lifted to a lower or equal universe equals itself.
 

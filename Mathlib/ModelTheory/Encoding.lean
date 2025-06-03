@@ -44,7 +44,7 @@ variable {α : Type u'}
 
 open FirstOrder Cardinal
 
-open Computability List Structure Cardinal Fin
+open Computability List Structure Fin
 
 namespace Term
 
@@ -67,9 +67,9 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
     listDecode (l.flatMap listEncode) = l := by
   suffices h : ∀ (t : L.Term α) (l : List (α ⊕ (Σ i, L.Functions i))),
       listDecode (t.listEncode ++ l) = t::listDecode l by
-    induction' l with t l lih
-    · rfl
-    · rw [flatMap_cons, h t (l.flatMap listEncode), lih]
+    induction l with
+    | nil => rfl
+    | cons t l lih => rw [flatMap_cons, h t (l.flatMap listEncode), lih]
   intro t l
   induction t generalizing l with
   | var => rw [listEncode, singleton_append, listDecode]
@@ -77,9 +77,9 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
     rw [listEncode, cons_append, listDecode]
     have h : listDecode (((finRange n).flatMap fun i : Fin n => (ts i).listEncode) ++ l) =
         (finRange n).map ts ++ listDecode l := by
-      induction' finRange n with i l' l'ih
-      · rfl
-      · rw [flatMap_cons, List.append_assoc, ih, map_cons, l'ih, cons_append]
+      induction finRange n with
+      | nil => rfl
+      | cons i l' l'ih => rw [flatMap_cons, List.append_assoc, ih, map_cons, l'ih, cons_append]
     simp only [h, length_append, length_map, length_finRange, le_add_iff_nonneg_right,
       _root_.zero_le, ↓reduceDIte, getElem_fin, cons.injEq, func.injEq, heq_eq_eq, true_and]
     refine ⟨funext (fun i => ?_), ?_⟩
@@ -96,7 +96,7 @@ protected def encoding : Encoding (L.Term α) where
   decode_encode t := by
     have h := listDecode_encode_list [t]
     rw [flatMap_singleton] at h
-    simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
+    simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
       id_eq]
 
 theorem listEncode_injective :
@@ -141,7 +141,7 @@ instance [Encodable α] [Encodable (Σ i, L.Functions i)] : Encodable (L.Term α
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
     simp only
     rw [← flatMap_singleton listEncode, listDecode_encode_list]
-    simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
+    simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
       id_eq]
 
 instance [h1 : Countable α] [h2 : Countable (Σ l, L.Functions l)] : Countable (L.Term α) := by
@@ -215,10 +215,11 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
   suffices h : ∀ (φ : Σ n, L.BoundedFormula α n)
       (l' : List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ))),
       (listDecode (listEncode φ.2 ++ l')) = φ::(listDecode l') by
-    induction' l with φ l ih
-    · rw [List.flatMap_nil]
+    induction l with
+    | nil =>
+      rw [List.flatMap_nil]
       simp [listDecode]
-    · rw [flatMap_cons, h φ _, ih]
+    | cons φ l ih => rw [flatMap_cons, h φ _, ih]
   rintro ⟨n, φ⟩
   induction φ with
   | falsum => intro l; rw [listEncode, singleton_append, listDecode]
@@ -234,7 +235,7 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
       Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σ n, L.BoundedFormula α n).fst, ts i⟩ :
         Σ n, L.Term (α ⊕ (Fin n)))) (finRange φ_l) ++ l))[↑i]?).join = some ⟨_, ts i⟩ := by
       intro i
-      simp only [Option.join, map_append, map_map, getElem?_fin, id, Option.bind_eq_some,
+      simp only [Option.join, map_append, map_map, getElem?_fin, id, Option.bind_eq_some_iff,
         getElem?_eq_some_iff, length_append, length_map, length_finRange, exists_eq_right]
       refine ⟨lt_of_lt_of_le i.2 le_self_add, ?_⟩
       rw [getElem_append_left, getElem_map]

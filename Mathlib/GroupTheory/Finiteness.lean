@@ -6,7 +6,6 @@ Authors: Riccardo Brasca
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Finitely generated monoids and groups
@@ -18,13 +17,14 @@ finitely-generated modules.
 
 * `Submonoid.FG S`, `AddSubmonoid.FG S` : A submonoid `S` is finitely generated.
 * `Monoid.FG M`, `AddMonoid.FG M` : A typeclass indicating a type `M` is finitely generated as a
-monoid.
+  monoid.
 * `Subgroup.FG S`, `AddSubgroup.FG S` : A subgroup `S` is finitely generated.
 * `Group.FG M`, `AddGroup.FG M` : A typeclass indicating a type `M` is finitely generated as a
-group.
+  group.
 
 -/
 
+assert_not_exists MonoidWithZero
 
 /-! ### Monoids and submonoids -/
 
@@ -52,6 +52,11 @@ theorem Submonoid.fg_iff (P : Submonoid M) :
     Submonoid.FG P ↔ ∃ S : Set M, Submonoid.closure S = P ∧ S.Finite :=
   ⟨fun ⟨S, hS⟩ => ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ =>
     ⟨Set.Finite.toFinset hf, by simp [hS]⟩⟩
+
+/-- A finitely generated submonoid has a minimal generating set. -/
+@[to_additive "A finitely generated submonoid has a minimal generating set."]
+lemma Submonoid.FG.exists_minimal_closure_eq (hP : P.FG) :
+    ∃ S : Finset M, Minimal (closure ·.toSet = P) S := exists_minimal_of_wellFoundedLT _ hP
 
 theorem Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG :=
   ⟨fun h =>
@@ -103,6 +108,13 @@ theorem Monoid.fg_def : Monoid.FG M ↔ (⊤ : Submonoid M).FG :=
 theorem Monoid.fg_iff :
     Monoid.FG M ↔ ∃ S : Set M, Submonoid.closure S = (⊤ : Submonoid M) ∧ S.Finite :=
   ⟨fun _ => (Submonoid.fg_iff ⊤).1 FG.fg_top, fun h => ⟨(Submonoid.fg_iff ⊤).2 h⟩⟩
+
+variable (M) in
+/-- A finitely generated monoid has a minimal generating set. -/
+@[to_additive "A finitely generated monoid has a minimal generating set."]
+lemma Submonoid.exists_minimal_closure_eq_top [Monoid.FG M] :
+    ∃ S : Finset M, Minimal (Submonoid.closure ·.toSet = ⊤) S :=
+  Monoid.FG.fg_top.exists_minimal_closure_eq
 
 theorem Monoid.fg_iff_add_fg : Monoid.FG M ↔ AddMonoid.FG (Additive M) where
   mp _ := ⟨(Submonoid.fg_iff_add_fg ⊤).1 FG.fg_top⟩
@@ -317,79 +329,7 @@ instance Group.closure_finite_fg (s : Set G) [Finite s] : Group.FG (Subgroup.clo
   haveI := Fintype.ofFinite s
   s.coe_toFinset ▸ Group.closure_finset_fg s.toFinset
 
-variable (G)
-
-/-- The minimum number of generators of a group. -/
-@[to_additive "The minimum number of generators of an additive group"]
-noncomputable def Group.rank [h : Group.FG G] :=
-  @Nat.find _ (Classical.decPred _) (Group.fg_iff'.mp h)
-
-@[to_additive]
-theorem Group.rank_spec [h : Group.FG G] :
-    ∃ S : Finset G, S.card = Group.rank G ∧ Subgroup.closure (S : Set G) = ⊤ :=
-  @Nat.find_spec _ (Classical.decPred _) (Group.fg_iff'.mp h)
-
-@[to_additive]
-theorem Group.rank_le [h : Group.FG G] {S : Finset G} (hS : Subgroup.closure (S : Set G) = ⊤) :
-    Group.rank G ≤ S.card :=
-  @Nat.find_le _ _ (Classical.decPred _) (Group.fg_iff'.mp h) ⟨S, rfl, hS⟩
-
-variable {G} {G' : Type*} [Group G']
-
-@[to_additive]
-theorem Group.rank_le_of_surjective [Group.FG G] [Group.FG G'] (f : G →* G')
-    (hf : Function.Surjective f) : Group.rank G' ≤ Group.rank G := by
-  classical
-    obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
-    trans (S.image f).card
-    · apply Group.rank_le
-      rw [Finset.coe_image, ← MonoidHom.map_closure, hS2, Subgroup.map_top_of_surjective f hf]
-    · exact Finset.card_image_le.trans_eq hS1
-
-@[to_additive]
-theorem Group.rank_range_le [Group.FG G] {f : G →* G'} : Group.rank f.range ≤ Group.rank G :=
-  Group.rank_le_of_surjective f.rangeRestrict f.rangeRestrict_surjective
-
-@[to_additive]
-theorem Group.rank_congr [Group.FG G] [Group.FG G'] (f : G ≃* G') : Group.rank G = Group.rank G' :=
-  le_antisymm (Group.rank_le_of_surjective f.symm f.symm.surjective)
-    (Group.rank_le_of_surjective f f.surjective)
-
 end Group
-
-namespace Subgroup
-
-@[to_additive]
-theorem rank_congr {H K : Subgroup G} [Group.FG H] [Group.FG K] (h : H = K) :
-    Group.rank H = Group.rank K := by subst h; rfl
-
-@[to_additive]
-theorem rank_closure_finset_le_card (s : Finset G) : Group.rank (closure (s : Set G)) ≤ s.card := by
-  classical
-  let t : Finset (closure (s : Set G)) := s.preimage Subtype.val Subtype.coe_injective.injOn
-  have ht : closure (t : Set (closure (s : Set G))) = ⊤ := by
-    rw [Finset.coe_preimage]
-    exact closure_preimage_eq_top (s : Set G)
-  apply (Group.rank_le (closure (s : Set G)) ht).trans
-  suffices H : Set.InjOn Subtype.val (t : Set (closure (s : Set G))) by
-    rw [← Finset.card_image_of_injOn H, Finset.image_preimage]
-    apply Finset.card_filter_le
-  apply Subtype.coe_injective.injOn
-
-@[to_additive]
-theorem rank_closure_finite_le_nat_card (s : Set G) [Finite s] :
-    Group.rank (closure s) ≤ Nat.card s := by
-  haveI := Fintype.ofFinite s
-  rw [Nat.card_eq_fintype_card, ← s.toFinset_card, ← rank_congr (congr_arg _ s.coe_toFinset)]
-  exact rank_closure_finset_le_card s.toFinset
-
-theorem nat_card_centralizer_nat_card_stabilizer (g : G) :
-    Nat.card (Subgroup.centralizer {g}) =
-      Nat.card (MulAction.stabilizer (ConjAct G) g) := by
-  rw [Subgroup.centralizer_eq_comap_stabilizer]
-  rfl
-
-end Subgroup
 
 section QuotientGroup
 

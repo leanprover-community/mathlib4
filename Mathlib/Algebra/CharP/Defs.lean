@@ -12,9 +12,9 @@ import Mathlib.Order.Lattice
 # Characteristic of semirings
 
 ## Main definitions
- * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
- * `ringChar`: the characteristic of a ring
- * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
+* `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
+* `ringChar`: the characteristic of a ring
+* `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
     exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
     prime characteristic `p`)
 -/
@@ -38,7 +38,7 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
 @[mk_iff]
-class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : ℕ) : Prop where
+class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : outParam ℕ) : Prop where
   cast_eq_zero_iff (R p) : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
 
 variable [CharP R p] {a b : ℕ}
@@ -64,9 +64,9 @@ lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
 -- @[simp]
 lemma ofNat_eq_zero [p.AtLeastTwo] : (ofNat(p) : R) = 0 := cast_eq_zero R p
 
-lemma eq {p q : ℕ} (_hp : CharP R p) (_hq : CharP R q) : p = q :=
-  Nat.dvd_antisymm ((cast_eq_zero_iff R p q).1 (cast_eq_zero _ _))
-    ((cast_eq_zero_iff R q p).1 (cast_eq_zero _ _))
+lemma eq {p q : ℕ} (hp : CharP R p) (hq : CharP R q) : p = q :=
+  Nat.dvd_antisymm ((cast_eq_zero_iff (self := hp) R p q).1 (@cast_eq_zero _ _ _ hq))
+    ((cast_eq_zero_iff (self := hq) R q p).1 (@cast_eq_zero _ _ _ hp))
 
 instance ofCharZero [CharZero R] : CharP R 0 where
   cast_eq_zero_iff x := by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]
@@ -144,7 +144,7 @@ lemma spec : ∀ x : ℕ, (x : R) = 0 ↔ ringChar R ∣ x := by
 lemma eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
   ((Classical.choose_spec (CharP.existsUnique R)).2 p C).symm
 
-instance charP : CharP R (ringChar R) :=
+instance (priority := low) charP : CharP R (ringChar R) :=
   ⟨spec R⟩
 
 variable {R}
@@ -166,7 +166,8 @@ lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 
 end ringChar
 
-lemma CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1 : R) ≠ (1 : R) := by
+lemma CharP.neg_one_ne_one [AddGroupWithOne R] (p : ℕ) [CharP R p] [Fact (2 < p)] :
+    (-1 : R) ≠ (1 : R) := by
   rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two, ← Nat.cast_two, Ne,
     CharP.cast_eq_zero_iff R p 2]
   exact fun h ↦ (Fact.out : 2 < p).not_le <| Nat.le_of_dvd Nat.zero_lt_two h
@@ -340,7 +341,7 @@ lemma expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q
 /-- The characteristic equals the exponential characteristic iff the former is prime. -/
 lemma char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] : p = q ↔ p.Prime := by
   rcases hq with q | hq_prime
-  · rw [(CharP.eq R hp inferInstance : p = 0)]
+  · rw [(CharP.eq R hp (.ofCharZero R) : p = 0)]
     decide
   · exact ⟨fun hpq => hpq.symm ▸ hq_prime, fun _ => CharP.eq R hp ‹CharP R q›⟩
 
@@ -384,7 +385,7 @@ variable [Nontrivial R]
 /-- The exponential characteristic is one if the characteristic is zero. -/
 lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 := by
   cases hq
-  · exact CharP.eq R hp inferInstance
+  · exact CharP.eq R hp (.ofCharZero R)
   · exact False.elim (CharP.char_ne_one R 1 rfl)
 
 -- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.

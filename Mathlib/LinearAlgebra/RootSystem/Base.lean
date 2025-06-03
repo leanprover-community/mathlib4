@@ -3,7 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Bases for root pairings / systems
@@ -29,12 +29,12 @@ For infinite root systems, `RootSystem.Base` is usually not the right notion: li
 is too strong.
 
 ## Main definitions / results:
- * `RootSystem.Base`: a base of a root pairing.
+* `RootSystem.Base`: a base of a root pairing.
 
 ## TODO
 
- * Develop a theory of base / separation / positive roots for infinite systems which specialises to
-   the concept here for finite systems.
+* Develop a theory of base / separation / positive roots for infinite systems which specialises to
+  the concept here for finite systems.
 
 -/
 
@@ -54,8 +54,8 @@ doc string for further remarks. -/
 structure Base (P : RootPairing ι R M N) where
   /-- The set of roots / coroots belonging to the base. -/
   support : Set ι
-  linInd_root : LinearIndependent R fun i : support ↦ P.root i
-  linInd_coroot : LinearIndependent R fun i : support ↦ P.coroot i
+  linearIndepOn_root : LinearIndepOn R P.root support
+  linearIndepOn_coroot : LinearIndepOn R P.coroot support
   root_mem_or_neg_mem (i : ι) : P.root i ∈ AddSubmonoid.closure (P.root '' support) ∨
                               - P.root i ∈ AddSubmonoid.closure (P.root '' support)
   coroot_mem_or_neg_mem (i : ι) : P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support) ∨
@@ -71,10 +71,20 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 @[simps] protected def flip :
     P.flip.Base where
   support := b.support
-  linInd_root := b.linInd_coroot
-  linInd_coroot := b.linInd_root
+  linearIndepOn_root := b.linearIndepOn_coroot
+  linearIndepOn_coroot := b.linearIndepOn_root
   root_mem_or_neg_mem := b.coroot_mem_or_neg_mem
   coroot_mem_or_neg_mem := b.root_mem_or_neg_mem
+
+include b in
+lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
+    (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
+    P.root i ≠ - P.root j := by
+  classical
+  intro contra
+  have := linearIndepOn_iff'.mp b.linearIndepOn_root ({i, j} : Finset ι) 1
+    (by simp [Set.insert_subset_iff, hi, hj]) (by simp [Finset.sum_pair hij, contra])
+  aesop
 
 lemma root_mem_span_int (i : ι) :
     P.root i ∈ span ℤ (P.root '' b.support) := by
@@ -104,12 +114,12 @@ lemma span_int_coroot_support :
 
 @[simp]
 lemma span_root_support :
-    span R (P.root '' b.support) = P.rootSpan := by
+    span R (P.root '' b.support) = P.rootSpan R := by
   rw [← span_span_of_tower (R := ℤ), span_int_root_support, span_span_of_tower]
 
 @[simp]
 lemma span_coroot_support :
-    span R (P.coroot '' b.support) = P.corootSpan :=
+    span R (P.coroot '' b.support) = P.corootSpan R :=
   b.flip.span_root_support
 
 open Finsupp in
@@ -135,7 +145,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
   let g : b.support →₀ R := single ⟨i, h⟩ 1
   have hg : P.coroot i = linearCombination R (fun k : b.support ↦ P.coroot k) g := by simp [g]
   rw [hg] at hf
-  have : Injective (linearCombination R fun k : b.support ↦ P.coroot k) := b.linInd_coroot
+  have : Injective (linearCombination R fun k : b.support ↦ P.coroot k) := b.linearIndepOn_coroot
   simpa [g, linearEquivFunOnFinite, mul_comm t] using (DFunLike.congr_fun (this hf) ⟨i, h⟩).symm
 
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι] [CharZero R]
@@ -178,7 +188,7 @@ lemma pos_or_neg_of_sum_smul_root_mem [CharZero R] [Fintype ι] (f : ι → ℤ)
     Fintype.mem_span_image_iff_exists_fun] at hf
   obtain ⟨c, hc⟩ := hf
   replace hc (i : b.support) : c i = f' i := Fintype.linearIndependent_iffₛ.mp
-    (b.linInd_root.restrict_scalars' ℤ) (Int.ofNat ∘ c) f' (by simpa) i
+    (b.linearIndepOn_root.restrict_scalars' ℤ) (Int.ofNat ∘ c) f' (by simpa) i
   intro i
   by_cases hi : i ∈ b.support
   · change 0 ≤ f' ⟨i, hi⟩
@@ -186,7 +196,7 @@ lemma pos_or_neg_of_sum_smul_root_mem [CharZero R] [Fintype ι] (f : ι → ℤ)
   · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
     aesop
 
-lemma sub_nmem_range_root [CharZero R] [Finite ι]
+lemma sub_notMem_range_root [CharZero R] [Finite ι]
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.root i - P.root j ∉ range P.root := by
   rcases eq_or_ne j i with rfl | hij
@@ -203,10 +213,14 @@ lemma sub_nmem_range_root [CharZero R] [Finite ι]
   · simpa [hij, f] using pos j
   · simpa [hij, f] using neg i
 
-lemma sub_nmem_range_coroot [CharZero R] [Finite ι]
+@[deprecated (since := "2025-05-24")] alias sub_nmem_range_root := sub_notMem_range_root
+
+lemma sub_notMem_range_coroot [CharZero R] [Finite ι]
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.coroot i - P.coroot j ∉ range P.coroot :=
-  b.flip.sub_nmem_range_root hi hj
+  b.flip.sub_notMem_range_root hi hj
+
+@[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
 
 end RootPairing
 
@@ -215,17 +229,33 @@ section RootSystem
 variable {P : RootSystem ι R M N} (b : P.Base)
 
 /-- A base of a root system yields a basis of the root space. -/
-@[simps!] def toWeightBasis :
+def toWeightBasis :
     Basis b.support R M :=
-  Basis.mk b.linInd_root <| by
+  Basis.mk b.linearIndepOn_root <| by
     change ⊤ ≤ span R (range <| P.root ∘ ((↑) : b.support → ι))
     rw [top_le_iff, range_comp, Subtype.range_coe_subtype, setOf_mem_eq, b.span_root_support]
     exact P.span_root_eq_top
+
+@[simp] lemma toWeightBasis_apply (i : b.support) :
+    b.toWeightBasis i = P.root i := by
+  simp [toWeightBasis]
+
+@[simp] lemma toWeightBasis_repr_root (i : b.support) :
+    b.toWeightBasis.repr (P.root i) = Finsupp.single i 1 := by
+  simp [← LinearEquiv.eq_symm_apply]
 
 /-- A base of a root system yields a basis of the coroot space. -/
 def toCoweightBasis :
     Basis b.support R N :=
   Base.toWeightBasis (P := P.flip) b.flip
+
+@[simp] lemma toCoweightBasis_apply (i : b.support) :
+    b.toCoweightBasis i = P.coroot i :=
+  b.flip.toWeightBasis_apply (P := P.flip) i
+
+@[simp] lemma toCoweightBasis_repr_coroot (i : b.support) :
+    b.toCoweightBasis.repr (P.coroot i) = Finsupp.single i 1 := by
+  simp [← LinearEquiv.eq_symm_apply]
 
 include b
 variable [Fintype ι]

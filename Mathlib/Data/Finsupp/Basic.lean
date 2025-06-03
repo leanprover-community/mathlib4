@@ -79,8 +79,10 @@ theorem apply_eq_of_mem_graph {a : α} {m : M} {f : α →₀ M} (h : (a, m) ∈
   (mem_graph_iff.1 h).1
 
 @[simp 1100] -- Higher priority shortcut instance for `mem_graph_iff`.
-theorem not_mem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
+theorem notMem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
   (mem_graph_iff.1 h).2.irrefl
+
+@[deprecated (since := "2025-05-23")] alias not_mem_graph_snd_zero := notMem_graph_snd_zero
 
 @[simp]
 theorem image_fst_graph [DecidableEq α] (f : α →₀ M) : f.graph.image Prod.fst = f.support := by
@@ -491,7 +493,7 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
       convert add_zero (x a)
       refine Finset.sum_eq_zero fun i hi => if_neg ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
-    · rw [not_mem_support_iff.1 hax]
+    · rw [notMem_support_iff.1 hax]
       refine Finset.sum_eq_zero fun i hi => if_neg ?_
       exact hf.ne (hS hi) ha (ne_of_mem_of_not_mem hi hax)
 
@@ -546,6 +548,12 @@ theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
   ext a
   have : mapDomain f v₁ (f a) = mapDomain f v₂ (f a) := by rw [eq]
   rwa [mapDomain_apply hf, mapDomain_apply hf] at this
+
+theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
+    (mapDomain (M := M) f).Surjective := by
+  intro x
+  use mapDomain (surjInv hf) x
+  rw [← mapDomain_comp, (rightInverse_surjInv hf).id, mapDomain_id]
 
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
@@ -629,7 +637,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
 theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
-  simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
+  simp only [Finset.ext_iff, Finset.notMem_empty, iff_false, mem_preimage]
   intro h a ha
   obtain ⟨b, hb⟩ := hf.2.2 ha
   exact h b (hb.2.symm ▸ ha)
@@ -646,7 +654,7 @@ lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg : ↑g.support
   by_cases hb : b ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hb
     rw [embDomain_apply, comapDomain_apply]
-  · replace hg : g b = 0 := not_mem_support_iff.mp <| mt (hg ·) hb
+  · replace hg : g b = 0 := notMem_support_iff.mp <| mt (hg ·) hb
     rw [embDomain_notin_range _ _ _ hb, hg]
 
 /-- Note the `hif` argument is needed for this to work in `rw`. -/
@@ -702,6 +710,10 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
     mapDomain f (comapDomain f l hf.injOn) = l := by
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
   rfl
+
+theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
+    comapDomain f (mapDomain f l) hf.injOn = l := by
+  ext; rw [comapDomain_apply, mapDomain_apply hf]
 
 end FInjective
 
@@ -773,6 +785,12 @@ theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m
     intro
     simp only [coe_update, ne_eq, reduceCtorEq, not_false_eq_true, update_of_ne, some_apply]
     rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
+
+@[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
+  ext; rw [some_apply]; exact embDomain_apply _ _ _
+
+@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some .none = 0 :=
+  embDomain_notin_range _ _ _ (by simp)
 
 end Option
 
@@ -877,7 +895,9 @@ theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ �
   exact ⟨fun ⟨x, hx1, hx2⟩ => ⟨hx2 ▸ mem_support_iff.1 hx1, x, hx2⟩, fun ⟨hy, x, hx⟩ =>
     ⟨x, mem_support_iff.2 (hx.symm ▸ hy), hx⟩⟩
 
-theorem zero_not_mem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
+theorem zero_notMem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
+
+@[deprecated (since := "2025-05-23")] alias zero_not_mem_frange := zero_notMem_frange
 
 theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr =>
   let ⟨t, ht1, ht2⟩ := mem_frange.1 hr
@@ -929,7 +949,7 @@ theorem subtypeDomain_eq_iff {f g : α →₀ M}
     f.subtypeDomain p = g.subtypeDomain p ↔ f = g :=
   subtypeDomain_eq_iff_forall.trans
     ⟨fun H ↦ Finsupp.ext fun _a ↦ (em _).elim (H _ <| hf _ ·) fun haf ↦ (em _).elim (H _ <| hg _ ·)
-        fun hag ↦ (not_mem_support_iff.mp haf).trans (not_mem_support_iff.mp hag).symm,
+        fun hag ↦ (notMem_support_iff.mp haf).trans (notMem_support_iff.mp hag).symm,
       fun H _ _ ↦ congr($H _)⟩
 
 theorem subtypeDomain_eq_zero_iff' {f : α →₀ M} : f.subtypeDomain p = 0 ↔ ∀ x, p x → f x = 0 :=
@@ -1032,7 +1052,7 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
       intro f s ih ha
       by_cases h : a ∈ f.support
       · exact ⟨f, Multiset.mem_cons_self _ _, h⟩
-      · simp only [Multiset.sum_cons, mem_support_iff, add_apply, not_mem_support_iff.1 h,
+      · simp only [Multiset.sum_cons, mem_support_iff, add_apply, notMem_support_iff.1 h,
           zero_add] at ha
         rcases ih (mem_support_iff.2 ha) with ⟨f', h₀, h₁⟩
         exact ⟨f', Multiset.mem_cons_of_mem h₀, h₁⟩)
@@ -1046,67 +1066,88 @@ theorem mem_support_finset_sum [AddCommMonoid M] {s : Finset ι} {h : ι → α 
 /-! ### Declarations about `curry` and `uncurry` -/
 
 
-section CurryUncurry
+section Uncurry
 
-variable [AddCommMonoid M] [AddCommMonoid N]
-
-/-- Given a finitely supported function `f` from a product type `α × β` to `γ`,
-`curry f` is the "curried" finitely supported function from `α` to the type of
-finitely supported functions from `β` to `γ`. -/
-protected def curry (f : α × β →₀ M) : α →₀ β →₀ M :=
-  f.sum fun p c => single p.1 (single p.2 c)
-
-@[simp]
-theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f (x, y) := by
-  classical
-    have : ∀ b : α × β, single b.fst (single b.snd (f b)) x y = if b = (x, y) then f b else 0 := by
-      rintro ⟨b₁, b₂⟩
-      simp only [ne_eq, single_apply, Prod.ext_iff, ite_and]
-      split_ifs <;> simp [single_apply, *]
-    rw [Finsupp.curry, sum_apply, sum_apply, sum_eq_single, this, if_pos rfl]
-    · intro b _ b_ne
-      rw [this b, if_neg b_ne]
-    · intro _
-      rw [single_zero, single_zero, coe_zero, Pi.zero_apply, coe_zero, Pi.zero_apply]
-
-theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg₀ : ∀ a b, g a b 0 = 0)
-    (hg₁ : ∀ a b c₀ c₁, g a b (c₀ + c₁) = g a b c₀ + g a b c₁) :
-    (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
-  rw [Finsupp.curry]
-  trans
-  · exact
-      sum_sum_index (fun a => sum_zero_index) fun a b₀ b₁ =>
-        sum_add_index' (fun a => hg₀ _ _) fun c d₀ d₁ => hg₁ _ _ _ _
-  congr; funext p c
-  trans
-  · exact sum_single_index sum_zero_index
-  exact sum_single_index (hg₀ _ _)
+variable [Zero M]
 
 /-- Given a finitely supported function `f` from `α` to the type of
 finitely supported functions from `β` to `M`,
 `uncurry f` is the "uncurried" finitely supported function from `α × β` to `M`. -/
-protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
-  f.sum fun a g => g.sum fun b c => single (a, b) c
+protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M where
+  toFun x := f x.1 x.2
+  support := f.support.disjiUnion (fun a ↦ (f a).support.map <| .sectR a _) <| by
+    intro a₁ _ a₂ _ hne
+    simp [Finset.disjoint_iff_ne, hne]
+  mem_support_toFun := by aesop
+
+protected theorem uncurry_apply (f : α →₀ β →₀ M) (x : α × β) : f.uncurry x = f x.1 x.2 := rfl
 
 @[simp]
-protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α) (y : β) :
-    f.uncurry (x, y) = f x y := by
-  rw [← curry_apply (f.uncurry) x y]
-  simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
-    forall_true_iff, sum_single_index, single_zero, ← single_sum, sum_single]
+protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (a : α) (b : β) :
+    f.uncurry (a, b) = f a b :=
+  rfl
+
+@[simp]
+lemma uncurry_single (a : α) (b : β) (m : M) :
+    (single a (single b m)).uncurry = single (a, b) m := by
+  ext ⟨x, y⟩
+  rcases eq_or_ne a x with rfl | hne <;> classical simp [single_apply, *]
+
+theorem sum_uncurry_index [AddCommMonoid N] (f : α →₀ β →₀ M) (g : α × β → M → N) :
+    f.uncurry.sum (fun p c => g p c) = f.sum fun a f => f.sum fun b ↦ g (a, b) := by
+  simp only [Finsupp.sum, Finsupp.uncurry, Finset.sum_disjiUnion]
+  simp
+
+theorem sum_uncurry_index' [AddCommMonoid N] (f : α →₀ β →₀ M) (g : α → β → M → N) :
+    f.uncurry.sum (fun p c => g p.1 p.2 c) = f.sum fun a f => f.sum (g a) :=
+  sum_uncurry_index ..
+
+end Uncurry
+
+section Curry
+
+variable [DecidableEq α] [Zero M]
+
+/-- Given a finitely supported function `f` from a product type `α × β` to `γ`,
+`curry f` is the "curried" finitely supported function from `α` to the type of
+finitely supported functions from `β` to `γ`. -/
+protected def curry (f : α × β →₀ M) : α →₀ β →₀ M where
+  toFun a :=
+    { toFun b := f (a, b)
+      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) <| by simp +contextual
+      mem_support_toFun := by simp }
+  support := f.support.image Prod.fst
+  mem_support_toFun := by simp [DFunLike.ext_iff]
+
+@[simp]
+theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f (x, y) := rfl
+
+@[simp]
+theorem support_curry (f : α × β →₀ M) : f.curry.support = f.support.image Prod.fst :=
+  rfl
 
 @[simp]
 theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
   ext a b
-  rw [curry_apply, Finsupp.uncurry_apply_pair]
+  simp
 
 @[simp]
 theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
   ext ⟨a, b⟩
-  rw [Finsupp.uncurry_apply_pair, curry_apply]
+  simp
+
+@[simp]
+lemma curry_single (a : α × β) (m : M) :
+    (single a m).curry = single a.1 (single a.2 m) := by
+  rw [← curry_uncurry (single _ _), uncurry_single]
+
+theorem sum_curry_index [AddCommMonoid N] (f : α × β →₀ M) (g : α → β → M → N) :
+    (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
+  rw [← sum_uncurry_index', uncurry_curry]
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
+@[simps]
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
@@ -1115,22 +1156,10 @@ def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
 
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
-  classical
-    rw [Finsupp.curry, Finsupp.curry, Finsupp.sum, Finsupp.sum, filter_sum, support_filter,
-      sum_filter]
-    refine Finset.sum_congr rfl ?_
-    rintro ⟨a₁, a₂⟩ _
-    split_ifs with h
-    · rw [filter_apply_pos, filter_single_of_pos] <;> exact h
-    · rwa [filter_single_of_neg]
+  ext a b
+  simp [filter_apply, apply_ite (DFunLike.coe · b)]
 
-theorem support_curry [DecidableEq α] (f : α × β →₀ M) :
-    f.curry.support ⊆ f.support.image Prod.fst := by
-  rw [← Finset.biUnion_singleton]
-  refine Finset.Subset.trans support_sum ?_
-  exact Finset.biUnion_mono fun a _ => support_single_subset
-
-end CurryUncurry
+end Curry
 
 /-! ### Declarations about finitely supported functions whose support is a `Sum` type -/
 
@@ -1299,11 +1328,8 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
   ext a
   by_cases h : P a
   · exact dif_pos h
-  · #adaptation_note /-- nightly-2024-06-18
-    this `rw` was done by `dsimp`. -/
-    rw [extendDomain_toFun]
-    dsimp
-    rw [if_neg h, eq_comm, ← not_mem_support_iff]
+  · dsimp [extendDomain_toFun]
+    rw [if_neg h, eq_comm, ← notMem_support_iff]
     refine mt ?_ h
     exact @hf _
 
@@ -1311,9 +1337,7 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
 theorem extendDomain_single (a : Subtype P) (m : M) :
     (single a m).extendDomain = single a.val m := by
   ext a'
-  #adaptation_note /-- nightly-2024-06-18
-  this `rw` was instead `dsimp only`. -/
-  rw [extendDomain_toFun]
+  dsimp only [extendDomain_toFun]
   obtain rfl | ha := eq_or_ne a.val a'
   · simp_rw [single_eq_same, dif_pos a.prop]
   · simp_rw [single_eq_of_ne ha, dite_eq_right_iff]
@@ -1394,7 +1418,7 @@ theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ (i : ι), αs i` to `β`,
 `split_support l` is the finset of indices in `ι` that appear in the support of `l`. -/
-def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
+def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
   haveI := Classical.decEq ι
   l.support.image Sigma.fst
 

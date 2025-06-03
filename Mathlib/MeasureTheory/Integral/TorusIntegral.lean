@@ -219,7 +219,7 @@ theorem torusIntegral_succAbove
   rw [torusIntegral, ← hem.map_eq, setIntegral_map_equiv, heπ, Measure.volume_eq_prod,
     setIntegral_prod, circleIntegral_def_Icc]
   · refine setIntegral_congr_fun measurableSet_Icc fun θ _ => ?_
-    simp (config := { unfoldPartialApp := true }) only [e, torusIntegral, ← integral_smul,
+    simp +unfoldPartialApp only [e, torusIntegral, ← integral_smul,
       deriv_circleMap, i.prod_univ_succAbove _, smul_smul, torusMap, circleMap_zero]
     refine setIntegral_congr_fun measurableSet_Icc fun Θ _ => ?_
     simp only [MeasurableEquiv.piFinSuccAbove_symm_apply, i.insertNth_apply_same,

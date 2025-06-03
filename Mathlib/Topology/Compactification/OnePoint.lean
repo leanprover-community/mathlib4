@@ -150,14 +150,20 @@ theorem ne_infty_iff_exists {x : OnePoint X} : x ≠ ∞ ↔ ∃ y : X, (y : One
 instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
   WithTop.canLift
 
-theorem not_mem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
+theorem notMem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
   rw [← mem_compl_iff, compl_range_coe, mem_singleton_iff]
 
-theorem infty_not_mem_range_coe : ∞ ∉ range ((↑) : X → OnePoint X) :=
-  not_mem_range_coe_iff.2 rfl
+@[deprecated (since := "2025-05-23")] alias not_mem_range_coe_iff := notMem_range_coe_iff
 
-theorem infty_not_mem_image_coe {s : Set X} : ∞ ∉ ((↑) : X → OnePoint X) '' s :=
-  not_mem_subset (image_subset_range _ _) infty_not_mem_range_coe
+theorem infty_notMem_range_coe : ∞ ∉ range ((↑) : X → OnePoint X) :=
+  notMem_range_coe_iff.2 rfl
+
+@[deprecated (since := "2025-05-23")] alias infty_not_mem_range_coe := infty_notMem_range_coe
+
+theorem infty_notMem_image_coe {s : Set X} : ∞ ∉ ((↑) : X → OnePoint X) '' s :=
+  notMem_subset (image_subset_range _ _) infty_notMem_range_coe
+
+@[deprecated (since := "2025-05-23")] alias infty_not_mem_image_coe := infty_notMem_image_coe
 
 @[simp]
 theorem coe_preimage_infty : ((↑) : X → OnePoint X) ⁻¹' {∞} = ∅ := by
@@ -225,25 +231,29 @@ theorem isOpen_iff_of_mem (h : ∞ ∈ s) :
     IsOpen s ↔ IsClosed ((↑) ⁻¹' s : Set X)ᶜ ∧ IsCompact ((↑) ⁻¹' s : Set X)ᶜ := by
   simp only [isOpen_iff_of_mem' h, isClosed_compl_iff, and_comm]
 
-theorem isOpen_iff_of_not_mem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹' s : Set X) := by
+theorem isOpen_iff_of_notMem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹' s : Set X) := by
   simp [isOpen_def, h]
+
+@[deprecated (since := "2025-05-23")] alias isOpen_iff_of_not_mem := isOpen_iff_of_notMem
 
 theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) := by
   have : ∞ ∉ sᶜ := fun H => H h
-  rw [← isOpen_compl_iff, isOpen_iff_of_not_mem this, ← isOpen_compl_iff, preimage_compl]
+  rw [← isOpen_compl_iff, isOpen_iff_of_notMem this, ← isOpen_compl_iff, preimage_compl]
 
-theorem isClosed_iff_of_not_mem (h : ∞ ∉ s) :
+theorem isClosed_iff_of_notMem (h : ∞ ∉ s) :
     IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) ∧ IsCompact ((↑) ⁻¹' s : Set X) := by
   rw [← isOpen_compl_iff, isOpen_iff_of_mem (mem_compl h), ← preimage_compl, compl_compl]
 
+@[deprecated (since := "2025-05-23")] alias isClosed_iff_of_not_mem := isClosed_iff_of_notMem
+
 @[simp]
 theorem isOpen_image_coe {s : Set X} : IsOpen ((↑) '' s : Set (OnePoint X)) ↔ IsOpen s := by
-  rw [isOpen_iff_of_not_mem infty_not_mem_image_coe, preimage_image_eq _ coe_injective]
+  rw [isOpen_iff_of_notMem infty_notMem_image_coe, preimage_image_eq _ coe_injective]
 
 theorem isOpen_compl_image_coe {s : Set X} :
     IsOpen ((↑) '' s : Set (OnePoint X))ᶜ ↔ IsClosed s ∧ IsCompact s := by
   rw [isOpen_iff_of_mem, ← preimage_compl, compl_compl, preimage_image_eq _ coe_injective]
-  exact infty_not_mem_image_coe
+  exact infty_notMem_image_coe
 
 @[simp]
 theorem isClosed_image_coe {s : Set X} :
@@ -257,7 +267,7 @@ def opensOfCompl (s : Set X) (h₁ : IsClosed s) (h₂ : IsCompact s) :
 
 theorem infty_mem_opensOfCompl {s : Set X} (h₁ : IsClosed s) (h₂ : IsCompact s) :
     ∞ ∈ opensOfCompl s h₁ h₂ :=
-  mem_compl infty_not_mem_image_coe
+  mem_compl infty_notMem_image_coe
 
 @[continuity]
 theorem continuous_coe : Continuous ((↑) : X → OnePoint X) :=
@@ -267,9 +277,6 @@ theorem isOpenMap_coe : IsOpenMap ((↑) : X → OnePoint X) := fun _ => isOpen_
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : X → OnePoint X) :=
   .of_continuous_injective_isOpenMap continuous_coe coe_injective isOpenMap_coe
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_coe := isOpenEmbedding_coe
 
 theorem isOpen_range_coe : IsOpen (range ((↑) : X → OnePoint X)) :=
   isOpenEmbedding_coe.isOpen_range
@@ -305,7 +312,7 @@ theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedComp
     refine ⟨_, (isOpen_iff_of_mem hs).mp hso, ?_⟩
     simp [Subset.rfl]
   · rintro s ⟨h₁, h₂⟩
-    refine ⟨_, ⟨mem_compl infty_not_mem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
+    refine ⟨_, ⟨mem_compl infty_notMem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
     simp [compl_image_coe, ← diff_eq, subset_preimage_image]
 
 @[deprecated (since := "2025-03-02")]
@@ -350,7 +357,7 @@ theorem le_nhds_infty {f : Filter (OnePoint X)} :
 theorem ultrafilter_le_nhds_infty {f : Ultrafilter (OnePoint X)} :
     (f : Filter (OnePoint X)) ≤ 𝓝 ∞ ↔ ∀ s : Set X, IsClosed s → IsCompact s → (↑) '' s ∉ f := by
   simp only [le_nhds_infty, ← compl_image_coe, Ultrafilter.mem_coe,
-    Ultrafilter.compl_mem_iff_not_mem]
+    Ultrafilter.compl_mem_iff_notMem]
 
 theorem tendsto_nhds_infty' {α : Type*} {f : OnePoint X → α} {l : Filter α} :
     Tendsto f (𝓝 ∞) l ↔ Tendsto f (pure ∞) l ∧ Tendsto (f ∘ (↑)) (coclosedCompact X) l := by
@@ -574,12 +581,12 @@ instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     | infty =>
       refine ⟨{y}ᶜ, {y}, isOpen_compl_singleton, ?_, hxy, rfl, (compl_union_self _).symm.subset,
         disjoint_compl_left⟩
-      rw [OnePoint.isOpen_iff_of_not_mem]
+      rw [OnePoint.isOpen_iff_of_notMem]
       exacts [isOpen_discrete _, hxy]
     | coe val =>
       refine ⟨{some val}, {some val}ᶜ, ?_, isOpen_compl_singleton, rfl, hxy.symm, by simp,
         disjoint_compl_right⟩
-      rw [OnePoint.isOpen_iff_of_not_mem]
+      rw [OnePoint.isOpen_iff_of_notMem]
       exacts [isOpen_discrete _, (Option.some_ne_none val).symm]
 
 section Uniqueness

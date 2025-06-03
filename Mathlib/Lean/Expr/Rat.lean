@@ -14,8 +14,8 @@ This file defines some operations involving `Expr` and rational numbers.
 
 ## Main definitions
 
- * `Lean.Expr.isExplicitNumber`: is an expression a number in normal form?
-   This includes natural numbers, integers and rationals.
+* `Lean.Expr.isExplicitNumber`: is an expression a number in normal form?
+  This includes natural numbers, integers and rationals.
 -/
 
 namespace Lean.Expr

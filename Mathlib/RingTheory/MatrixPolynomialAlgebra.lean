@@ -68,22 +68,22 @@ open Finset
 
 unseal Algebra.TensorProduct.mul in
 theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
-    matPolyEquiv (stdBasisMatrix i j <| monomial k x) = monomial k (stdBasisMatrix i j x) := by
-  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_stdBasisMatrix]
+    matPolyEquiv (single i j <| monomial k x) = monomial k (single i j x) := by
+  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_single]
   apply (polyEquivTensor R (Matrix n n R)).injective
   simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]
   simp only [Algebra.TensorProduct.tmul_mul_tmul, one_pow, one_mul, Matrix.mul_one,
     Algebra.TensorProduct.tmul_pow, Algebra.TensorProduct.includeLeft_apply]
   rw [← smul_X_eq_monomial, ← TensorProduct.smul_tmul]
-  congr with i' <;> simp [stdBasisMatrix]
+  congr with i' <;> simp [single]
 
 theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
-    coeff (matPolyEquiv (stdBasisMatrix i j p)) k = stdBasisMatrix i j (coeff p k) := by
+    coeff (matPolyEquiv (single i j p)) k = single i j (coeff p k) := by
   refine Polynomial.induction_on' p ?_ ?_
   · intro p q hp hq
     ext
-    simp [hp, hq, coeff_add, add_apply, stdBasisMatrix_add]
+    simp [hp, hq, coeff_add, add_apply, single_add]
   · intro k x
     simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
     split_ifs <;>
@@ -99,11 +99,11 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
     simp [hp, hq]
   · intro i' j' x
     rw [matPolyEquiv_coeff_apply_aux_2]
-    dsimp [stdBasisMatrix]
+    dsimp [single]
     split_ifs <;> rename_i h
     · rcases h with ⟨rfl, rfl⟩
-      simp [stdBasisMatrix]
-    · simp [stdBasisMatrix, h]
+      simp [single]
+    · simp [single, h]
 
 @[simp]
 theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ) :
@@ -128,7 +128,7 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
     support (m i j) ⊆ support (matPolyEquiv m) := by
   intro k
   contrapose
-  simp only [not_mem_support_iff]
+  simp only [notMem_support_iff]
   intro hk
   rw [← matPolyEquiv_coeff_apply, hk, zero_apply]
 

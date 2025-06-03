@@ -131,9 +131,13 @@ lemma MonsterData.reflect_reflect (m : MonsterData N) : m.reflect.reflect = m :=
   ext i
   simp [MonsterData.reflect]
 
-lemma MonsterData.not_mem_monsterCells_of_fst_eq_zero (m : MonsterData N)
+lemma MonsterData.notMem_monsterCells_of_fst_eq_zero (m : MonsterData N)
     {c : Cell N} (hc : c.1 = 0) : c ∉ m.monsterCells := by
   simp [monsterCells, Prod.ext_iff, hc]
+
+@[deprecated (since := "2025-05-23")]
+alias MonsterData.not_mem_monsterCells_of_fst_eq_zero :=
+  MonsterData.notMem_monsterCells_of_fst_eq_zero
 
 lemma MonsterData.le_N_of_mem_monsterCells {m : MonsterData N} {c : Cell N}
     (hc : c ∈ m.monsterCells) : (c.1 : ℕ) ≤ N := by
@@ -327,7 +331,7 @@ lemma Path.tail_firstMonster (p : Path N) (m : MonsterData N) :
     rcases cells with ⟨⟩ | ⟨head, tail⟩
     · simp at nonempty
     · simp only [List.head_cons] at head_first_row
-      simp [List.find?_cons, head_first_row, m.not_mem_monsterCells_of_fst_eq_zero head_first_row,
+      simp [List.find?_cons, head_first_row, m.notMem_monsterCells_of_fst_eq_zero head_first_row,
         firstMonster]
   · simp_rw [Path.tail, if_neg h]
 
@@ -350,7 +354,7 @@ lemma Path.firstMonster_eq_of_findFstEq_mem {p : Path N} {m : MonsterData N}
     · simp only [List.head_cons] at head_first_row
       simp only [List.getElem_cons_succ] at h1
       simp only [List.length_cons, lt_add_iff_pos_left, List.length_pos_iff_ne_nil] at hl
-      simp only [m.not_mem_monsterCells_of_fst_eq_zero head_first_row, decide_false,
+      simp only [m.notMem_monsterCells_of_fst_eq_zero head_first_row, decide_false,
         Bool.false_eq_true, not_false_eq_true, List.find?_cons_of_neg, head_first_row,
         Fin.zero_eq_one_iff, Nat.reduceEqDiff, Option.some_get]
       simp only [findFstEq, head_first_row, Fin.zero_eq_one_iff, Nat.reduceEqDiff, decide_false,
@@ -801,7 +805,7 @@ lemma path1_firstMonster_of_not_edge (hN : 2 ≤ N) {m : MonsterData N} (hc₁0 
   · rcases j with ⟨j, hj⟩
     simp only at h
     interval_cases j
-    · exact .inl (m.not_mem_monsterCells_of_fst_eq_zero rfl)
+    · exact .inl (m.notMem_monsterCells_of_fst_eq_zero rfl)
     · simp only [Fin.mk_one, Prod.mk.injEq, Fin.ext_iff, Fin.val_one, OfNat.one_ne_ofNat,
         and_true, or_false]
       have hN' : 1 ≤ N := by omega
@@ -840,7 +844,7 @@ lemma path2_firstMonster_of_not_edge (hN : 2 ≤ N) {m : MonsterData N} (hc₁0 
   · rcases j with ⟨j, hj⟩
     simp only at h
     interval_cases j
-    · exact .inl (m.not_mem_monsterCells_of_fst_eq_zero rfl)
+    · exact .inl (m.notMem_monsterCells_of_fst_eq_zero rfl)
     · simp only [Fin.mk_one, Prod.mk.injEq, Fin.ext_iff, Fin.val_one, OfNat.one_ne_ofNat,
         and_true, or_false]
       have hN' : 1 ≤ N := by omega
@@ -937,7 +941,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
       · simp at h
         omega
       · simp at hm
-        exact m.not_mem_monsterCells_of_fst_eq_zero rfl hm
+        exact m.notMem_monsterCells_of_fst_eq_zero rfl hm
       · simp at h
         omega
       · dsimp only [Nat.reduceAdd, Nat.reduceDiv, Fin.mk_one] at hm
@@ -1000,7 +1004,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_N (hN : 2 ≤
     (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ = none ∨
       (winningStrategy hN).play m 3 ⟨2, by norm_num⟩ = none := by
   simp_rw [winningStrategy_play_one_of_edge_N hN hc₁N, winningStrategy_play_two_of_edge_N hN hc₁N,
-    Option.map_eq_none']
+    Option.map_eq_none_iff]
   have hc₁r0 : m.reflect (row1 hN) = 0 := by
     simp only [MonsterData.reflect, Function.Embedding.coeFn_mk, Function.comp_apply,
       ← Fin.rev_last, Fin.rev_inj]
