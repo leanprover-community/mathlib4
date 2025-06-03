@@ -536,6 +536,8 @@ the unit ball for this seminorm is a bounded neighborhood of `0`. -/
 theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
     [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} :
     WithSeminorms (fun (_ : Fin 1) ↦ p) ↔ p.ball 0 1 ∈ 𝓝 0 ∧ IsVonNBounded 𝕜 (p.ball 0 1) := by
+  /- The nontrivial direction is from right to left. With `SeminormFamily.withSeminorms_of_nhds`,
+  we need to see that the neighborhoods of zero for the initial topology and for `p` coincide. -/
   refine ⟨fun h ↦ ⟨?_, ?_⟩, ?_⟩
   · apply (h.mem_nhds_iff _ _).2
     exact ⟨Finset.univ, 1, zero_lt_one, by simp⟩
@@ -545,19 +547,25 @@ theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
   apply SeminormFamily.withSeminorms_of_nhds
   ext s
   refine ⟨fun hs ↦ ?_, fun hs ↦ ?_⟩
-  · obtain ⟨c, hc, c_ne⟩ : ∃ (c : 𝕜), p.ball 0 1 ⊆ c • s ∧ c ≠ 0 :=
+  · /- Show that a neighborhood `s` of zero for the topology is a neighborhood for `p`, by using the
+    boundedess of `p.ball 0 1`: this ensures that, for some nonzero `c`, we have
+    `p.ball 0 1 ⊆ c • s`, and therefore `p.ball 0 (‖c‖⁻¹) ⊆ s`. -/
+    obtain ⟨c, hc, c_ne⟩ : ∃ (c : 𝕜), p.ball 0 1 ⊆ c • s ∧ c ≠ 0 :=
       ((h' hs).and (eventually_ne_cobounded 0)).exists
     have : p.ball 0 (‖c⁻¹‖) ⊆ s := by
       have : c • p.ball 0 (‖c⁻¹‖) ⊆ c • s := by
-        simpa only [smul_ball_zero c_ne, ← norm_mul, isUnit_iff_ne_zero, ne_eq, c_ne,
-          not_false_eq_true, IsUnit.mul_inv_cancel, norm_one] using hc
+        simpa [smul_ball_zero c_ne, ← norm_mul, c_ne] using hc
       rwa [smul_set_subset_smul_set_iff₀ c_ne] at this
     apply Filter.mem_of_superset _ this
     apply FilterBasis.mem_filter_of_mem
     change p.ball 0 (‖c⁻¹‖) ∈ SeminormFamily.basisSets (fun (i : Fin 1) ↦ p)
     apply SeminormFamily.basisSets_singleton_mem _ 0
     simpa using c_ne
-  · rcases (FilterBasis.mem_filter_iff _).1 hs with ⟨t, ht, ts⟩
+  · /- Show that a neighborhood `s` for `p` is a neighborhood for the topology, by using the
+    fact that `p.ball 0 1` is a neighborhood of `0`. Indeed, `s` contains a ball `p.ball 0 r`,
+    which contains `c • p.ball 0 1` for some nonzero `c`. The latter set is a neighborhood of zero
+    for the topology thanks to the topological vector space assumption. -/
+    rcases (FilterBasis.mem_filter_iff _).1 hs with ⟨t, ht, ts⟩
     suffices t ∈ 𝓝 0 from Filter.mem_of_superset this ts
     rcases (SeminormFamily.basisSets_iff _).1 ht with ⟨w, r, r_pos, hw⟩
     rcases eq_or_ne w ∅ with rfl | w_ne

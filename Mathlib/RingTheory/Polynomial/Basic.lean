@@ -957,12 +957,10 @@ theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X
       aeval f (q * (p * p')) v = aeval f (p' * (p * q)) v := by
         rw [mul_comm, mul_assoc, mul_comm, mul_assoc, mul_comm q p]
       _ = 0 := by rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hv, LinearMap.map_zero]
-
   have h_eval₂_pqq' :=
     calc
       aeval f (p * (q * q')) v = aeval f (q' * (p * q)) v := by rw [← mul_assoc, mul_comm]
       _ = 0 := by rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hv, LinearMap.map_zero]
-
   rw [aeval_mul] at h_eval₂_qpp' h_eval₂_pqq'
   refine
     ⟨aeval f (q * q') v, LinearMap.mem_ker.1 h_eval₂_pqq', aeval f (p * p') v,

@@ -29,7 +29,6 @@ section NormedSpace
 variable {f g : 𝕜 → E} {n : ℕ} {z₀ : 𝕜}
 
 open scoped Classical in
-
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
 The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
