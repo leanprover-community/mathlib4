@@ -30,7 +30,7 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 
 noncomputable section
 
-open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology Filter
+open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology Filter Asymptotics
 
 open scoped UpperHalfPlane Topology BigOperators Nat
 
@@ -234,7 +234,7 @@ lemma G2_summable_aux (n : ℤ) (z : ℍ) (k : ℤ) (hk : 2 ≤ k) :
 lemma Asymptotics.IsBigO.map {α β ι γ : Type*} [Norm α] [Norm β] {f : ι → α} {g : ι → β}
   {p : Filter ι} (hf : f =O[p] g) (c : γ → ι)  :
     (fun (n : γ) => f (c n)) =O[p.comap c] fun n => g (c n) := by
-  rw [isBigO_iff] at *
+  rw [Asymptotics.isBigO_iff ] at *
   obtain ⟨C, hC⟩ := hf
   refine ⟨C, ?_⟩
   simp only [eventually_comap] at *
