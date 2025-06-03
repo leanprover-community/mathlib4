@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
-import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 import Mathlib.NumberTheory.ModularForms.Identities
 
@@ -27,7 +27,7 @@ we then use our bounds for Eisenstein series in these vertical strips to get the
 
 noncomputable section
 
-open ModularForm UpperHalfPlane  Matrix SlashInvariantForm CongruenceSubgroup
+open ModularForm UpperHalfPlane Matrix SlashInvariantForm CongruenceSubgroup EisensteinSeries
 open scoped MatrixGroups
 
 namespace EisensteinSeries
