@@ -12,7 +12,7 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 In this file, we proved some results about the dimension of a principal ideal domain.
 -/
 
-instance IsPrincipalIdealRing.KrullDimLE_one (R : Type*) [CommRing R] [IsDomain R]
+instance IsPrincipalIdealRing.krullDimLE_one (R : Type*) [CommRing R] [IsDomain R]
     [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by
   rw [Ring.krullDimLE_one_iff]
   apply fun I hI ↦ Classical.or_iff_not_imp_left.mpr fun hI' ↦
