@@ -97,7 +97,6 @@ noncomputable def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) �
       apply funext
       rintro ⟨φ, ψ⟩
       refine ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => ?_
-      dsimp
       simp)
 
 variable {M₁ M₂ M₃ M₄}

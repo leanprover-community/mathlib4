@@ -128,7 +128,6 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
       Functor.associator _ _ _ ≪≫ isoWhiskerLeft R₁ eR.unitIso.symm ≪≫ R₁.rightUnitor
     have : w = (w ≫ᵥ w'.hom).vComp' w''.hom α β := by
       ext X₁
-      dsimp
       simp? [w'', α, β] says
         simp only [vComp'_app, Functor.comp_obj, Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv,
           assoc, NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app,
