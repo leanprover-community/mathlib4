@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kenny Lau
 -/
 
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Taylor
+import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
@@ -50,25 +50,14 @@ noncomputable def basis (n : ℕ) : Basis (Fin n) R R[X]_n :=
 instance : Module.Finite R R[X]_n := .of_basis <| basis ..
 instance : Module.Free R R[X]_n := .of_basis <| basis ..
 
-variable (R) in
-/-- The element `X^i` in `R[X]_n`. This is equal to `basis R n i`. -/
-noncomputable def xpow (n : ℕ) (i : Fin n) : R[X]_n :=
-  ⟨X ^ (i : ℕ), mem_degreeLT.2 <| (degree_X_pow_le i).trans_lt <| Nat.cast_lt.2 i.is_lt⟩
-
-@[simp] lemma xpow_val : (xpow R n i : R[X]) = X ^ (i : ℕ) :=
-  rfl
-
 @[simp] lemma basis_repr : (basis R n).repr P i = (P : R[X]).coeff i :=
   rfl
 
-@[simp] lemma basis_apply (i : Fin n) :
-    basis R n i = xpow R n i := by
-  rw [Basis.apply_eq_iff]
-  ext j
-  simp only [basis_repr, xpow_val, coeff_X_pow, eq_comm, Finsupp.single_apply, Fin.ext_iff]
-
-lemma basis_val (i : Fin n) : (basis R n i : R[X]) = X ^ (i : ℕ) := by
-  rw [basis_apply, xpow_val]
+@[simp] lemma basis_val : (basis R n i : R[X]) = X ^ (i : ℕ) := by
+  change _ = ((⟨X ^ (i : ℕ), mem_degreeLT.2 <| (degree_X_pow_le i).trans_lt <|
+      Nat.cast_lt.2 i.is_lt⟩ : R[X]_n) : R[X])
+  refine congr_arg _ (Basis.apply_eq_iff.2 <| Finsupp.ext fun j ↦ ?_)
+  simp only [basis_repr, coeff_X_pow, eq_comm, Finsupp.single_apply, Fin.ext_iff]
 
 variable (R m n) in
 /-- Basis for `R[X]_m × R[X]_n`. -/
@@ -76,14 +65,14 @@ noncomputable def basisProd : Basis (Fin (m + n)) R (R[X]_m × R[X]_n) :=
   ((basis R m).prod (basis R n)).reindex finSumFinEquiv
 
 @[simp] lemma basisProd_castAdd (m n : ℕ) (i : Fin m) :
-    basisProd R m n (i.castAdd n) = (xpow R m i, 0) := by
+    basisProd R m n (i.castAdd n) = (basis R m i, 0) := by
   rw [basisProd, Basis.reindex_apply, finSumFinEquiv_symm_apply_castAdd, Basis.prod_apply,
-    Sum.elim_inl, LinearMap.coe_inl, Function.comp_apply, basis_apply]
+    Sum.elim_inl, LinearMap.coe_inl, Function.comp_apply]
 
 @[simp] lemma basisProd_natAdd (m n : ℕ) (i : Fin n) :
-    basisProd R m n (i.natAdd m) = (0, xpow R n i) := by
+    basisProd R m n (i.natAdd m) = (0, basis R n i) := by
   rw [basisProd, Basis.reindex_apply, finSumFinEquiv_symm_apply_natAdd, Basis.prod_apply,
-    Sum.elim_inr, LinearMap.coe_inr, Function.comp_apply, basis_apply]
+    Sum.elim_inr, LinearMap.coe_inr, Function.comp_apply]
 
 variable (R m n) in
 /-- An isomorphism between `R[X]_(m+n)` and `R[X]_m × R[X]_n` given by the fact that the bases are
@@ -93,30 +82,30 @@ noncomputable def addLinearEquiv :
   Basis.equiv (basis ..) (basisProd ..) (Equiv.refl _)
 
 lemma addLinearEquiv_castAdd (i : Fin m) :
-    addLinearEquiv R m n (xpow R (m+n) (i.castAdd n)) = (xpow R m i, 0) := by
-  rw [addLinearEquiv, ← basis_apply, Basis.equiv_apply, Equiv.refl_apply, basisProd_castAdd]
+    addLinearEquiv R m n (basis R (m+n) (i.castAdd n)) = (basis R m i, 0) := by
+  rw [addLinearEquiv, Basis.equiv_apply, Equiv.refl_apply, basisProd_castAdd]
 
 lemma addLinearEquiv_natAdd (i : Fin n) :
-    addLinearEquiv R m n (xpow R (m+n) (i.natAdd m)) = (0, xpow R n i) := by
-  rw [addLinearEquiv, ← basis_apply, Basis.equiv_apply, Equiv.refl_apply, basisProd_natAdd]
+    addLinearEquiv R m n (basis R (m+n) (i.natAdd m)) = (0, basis R n i) := by
+  rw [addLinearEquiv, Basis.equiv_apply, Equiv.refl_apply, basisProd_natAdd]
 
-lemma addLinearEquiv_symm_apply_inl_xpow (i : Fin m) :
-    (addLinearEquiv R m n).symm (LinearMap.inl R _ _ (xpow R m i)) = xpow R (m+n) (i.castAdd n) :=
+lemma addLinearEquiv_symm_apply_inl_basis (i : Fin m) :
+    (addLinearEquiv R m n).symm (LinearMap.inl R _ _ (basis R m i)) = basis R (m+n) (i.castAdd n) :=
   (LinearEquiv.symm_apply_eq _).2 (addLinearEquiv_castAdd i).symm
 
-lemma addLinearEquiv_symm_apply_inr_xpow (j : Fin n) :
-    (addLinearEquiv R m n).symm (LinearMap.inr R _ _ (xpow R n j)) = xpow R (m+n) (j.natAdd m) :=
+lemma addLinearEquiv_symm_apply_inr_basis (j : Fin n) :
+    (addLinearEquiv R m n).symm (LinearMap.inr R _ _ (basis R n j)) = basis R (m+n) (j.natAdd m) :=
   (LinearEquiv.symm_apply_eq _).2 (addLinearEquiv_natAdd j).symm
 
 lemma addLinearEquiv_symm_apply_inl (P : R[X]_m) :
     ((addLinearEquiv R m n).symm (LinearMap.inl R _ _ P) : R[X]) = (P : R[X]) := by
   rw [← (basis ..).sum_repr P]
-  simp [-LinearMap.coe_inl, addLinearEquiv_symm_apply_inl_xpow]
+  simp [-LinearMap.coe_inl, addLinearEquiv_symm_apply_inl_basis]
 
 lemma addLinearEquiv_symm_apply_inr (Q : R[X]_n) :
     ((addLinearEquiv R m n).symm (LinearMap.inr R _ _ Q) : R[X]) = (Q : R[X]) * X ^ (m : ℕ) := by
   rw [← (basis ..).sum_repr Q]
-  simp [-LinearMap.coe_inr, Finset.sum_mul, addLinearEquiv_symm_apply_inr_xpow,
+  simp [-LinearMap.coe_inr, Finset.sum_mul, addLinearEquiv_symm_apply_inr_basis,
     smul_eq_C_mul, mul_assoc, ← pow_add, add_comm]
 
 lemma addLinearEquiv_symm_apply (PQ) :

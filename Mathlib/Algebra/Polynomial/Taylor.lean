@@ -167,7 +167,7 @@ section CommRing
 variable {R : Type*} [CommRing R] (r : R) (f : R[X])
 
 /-- `Polynomial.taylor` as an `AlgEquiv` for commutative rings. -/
-@[simps!] noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
+noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   invFun      := taylorAlgHom (-r)
   left_inv P  := by simp [taylor, comp_assoc]
   right_inv P := by simp [taylor, comp_assoc]
