@@ -424,7 +424,6 @@ theorem comap_symm {I : Ideal R} (f : R ≃+* S) : I.comap f.symm = I.map f :=
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm I = comap f I`. -/
 @[simp]
-
 theorem map_symm {I : Ideal S} (f : R ≃+* S) : I.map f.symm = I.comap f :=
   map_comap_of_equiv (RingEquiv.symm f)
 
