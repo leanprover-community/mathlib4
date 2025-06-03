@@ -6,6 +6,32 @@ set_option linter.style.commandStart true
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
 
+section
+variable [h : Add Nat] [Add Nat]
+
+/--
+warning: extra space in the source
+
+This part of the code
+  'omit  [h :'
+should be written as
+  'omit [h :'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space in the source
+
+This part of the code
+  'Nat]  [Add'
+should be written as
+  'Nat] [Add'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+omit  [h : Add Nat]  [Add Nat]
+end
+
 run_cmd
   for _ in [0] do
     let _ ← `(

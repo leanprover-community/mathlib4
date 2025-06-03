@@ -60,7 +60,7 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
       | none => match cmd.find? (·.isOfKind ``Parser.Command.declValSimple) with
         | some s => s.getPos?
         | none => none
-  else if stx.isOfKind ``Parser.Command.variable then
+  else if stx.isOfKind ``Parser.Command.variable || stx.isOfKind ``Parser.Command.omit then
     stx.getTailPos?
   else none
 
@@ -209,9 +209,6 @@ abbrev unlintedNodes := #[
 
   -- The docString linter already takes care of formatting doc-strings.
   ``Parser.Command.docComment,
-
-  -- `omit [A] [B]` prints as `omit [A][B]`, see https://github.com/leanprover/lean4/pull/8169
-  ``Parser.Command.omit,
   ]
 
 /--
@@ -289,6 +286,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let st := fmt.pretty
     let origSubstring := stx.getSubstring?.getD default
     let orig := origSubstring.toString
+
     let scan := parallelScan orig st
 
     let some upTo := lintUpTo stx | return
