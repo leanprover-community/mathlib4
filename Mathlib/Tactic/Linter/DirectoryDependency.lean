@@ -280,18 +280,9 @@ because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mat
 outside `Mathlib/Algebra/Notation.lean`.
 -/
 def forbiddenImportDirs : IO NamePrefixRel :=
-  let deliberate := #[(`Mathlib.Algebra.Notation, `Mathlib.Algebra),
-  (`Mathlib, `Mathlib.Deprecated),
-
   -- This is used to test the linter.
-  (`MathlibTest.Header, `Mathlib.Deprecated),
-
-  -- TODO:
-  -- (`Mathlib.Data, `Mathlib.Dynamics),
-  -- (`Mathlib.Topology, `Mathlib.Algebra),
-  ]
-  -- The following are a list of existing non-dependent top-level directory pairs.
-  return .ofArray <| deliberate.append (← autoforbidden)
+  let testing := #[(`MathlibTest.Header, `Mathlib.Deprecated)]
+  return .ofArray <| testing.append (← autoforbidden)
 
 /-- `overrideAllowedImportDirs` relates module prefixes, specifying that modules with the first
 prefix are allowed to import modules with the second prefix, even if disallowed in
