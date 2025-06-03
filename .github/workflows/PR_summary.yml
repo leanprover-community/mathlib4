@@ -103,7 +103,7 @@ jobs:
         while IFS= read -r file
         do
           # shellcheck disable=SC2016
-          printf '\n⚠️ **warning**: file `%s` was renamed without a module deprecation\n' "${file}" |
+          printf '\n⚠️ **warning**: file %s without a module deprecation\n' "${file}" |
             tee -a moved_without_deprecation.txt
         done < renamed_files.txt
 
