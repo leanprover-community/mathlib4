@@ -46,8 +46,16 @@ namespace ContinuousMap
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 open scoped Classical in
-noncomputable def mkD (f : α → β) (g : C(α, β)) : C(α, β) :=
-  if h : Continuous f then ⟨_, h⟩ else g
+/--
+Interpret `f : α → β` as an element of `C(α, β)`, falling back to the default value
+`default : C(α, β)` if `f` is not continuous.
+
+This is mainly intended to be used for `C(α, β)`-valued integration. For example, if a family of
+functions `f : ι → α → β` satisfies that `f i` is continuous for almost every `i`, you can write
+the `C(α, β)`-valued integral "`∫ i, f i`" as `∫ i, ContinuousMap.mkD (f i) 0`.
+-/
+noncomputable def mkD (f : α → β) (default : C(α, β)) : C(α, β) :=
+  if h : Continuous f then ⟨_, h⟩ else default
 
 lemma mkD_of_continuous {f : α → β} {g : C(α, β)} (hf : Continuous f) :
     mkD f g = ⟨f, hf⟩ := by
@@ -81,6 +89,11 @@ lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x :
 
 section Continuity
 
+/-- A variant of `ContinuousMap.continuous_of_continuous_uncurry` in terms of
+`ContinuousMap.mkD`.
+
+Of course, in this particular setting, `fun x ↦ mkD (f x) g` is just `f`,
+but the `mkD` spelling appears naturally in the context of `C(α, β)`-valued integration. -/
 lemma continuous_mkD_of_uncurry
     (f : γ → α → β) (g : C(α, β)) (f_cont : Continuous (Function.uncurry f)) :
     Continuous (fun x ↦ mkD (f x) g) := by
@@ -89,6 +102,7 @@ lemma continuous_mkD_of_uncurry
   conv in mkD _ _ => rw [mkD_of_continuous (this x)]
   exact f_cont
 
+-- Note: there should be a non-`mkD` version of this
 open Set in
 lemma continuousOn_mkD_of_uncurry {s : Set γ}
     (f : γ → α → β) (g : C(α, β)) (f_cont : ContinuousOn (Function.uncurry f) (s ×ˢ univ)) :
@@ -133,6 +147,11 @@ variable {X : Type*} [MeasurableSpace X] {μ : Measure X}
 variable {E : Type*} [NormedAddCommGroup E]
 
 -- This should probably exist for `BoundedContinuousFunction` as well...
+/-- A natural criterion for `HasFiniteIntegral` of a `C(α, E)`-valued function is the existence
+of some positive function with finite integral such that `∀ᵐ x ∂μ, ∀ z : α, ‖f x z‖ ≤ bound x`.
+
+Note that there is no dominated convergence here (hence no first-countability assumption
+on `α`). We are just using the properties of Banach-space-valued integration. -/
 lemma hasFiniteIntegral_of_bound [CompactSpace α] (f : X → C(α, E)) (bound : X → ℝ)
     (bound_nonneg : 0 ≤ᵐ[μ] bound)
     (bound_int : HasFiniteIntegral bound μ)
@@ -142,6 +161,8 @@ lemma hasFiniteIntegral_of_bound [CompactSpace α] (f : X → C(α, E)) (bound :
   filter_upwards [bound_ge, bound_nonneg] with x bound_ge_x bound_nonneg_x
   exact ContinuousMap.norm_le _ bound_nonneg_x |>.mpr bound_ge_x
 
+/-- A variant of `ContinuousMap.hasFiniteIntegral_of_bound` spelled in terms of
+`ContinuousMap.mkD`. -/
 lemma hasFiniteIntegral_mkD_of_bound [CompactSpace α] (f : X → α → E) (g : C(α, E))
     (f_ae_cont : ∀ᵐ x ∂μ, Continuous (f x))
     (bound : X → ℝ)
@@ -153,6 +174,8 @@ lemma hasFiniteIntegral_mkD_of_bound [CompactSpace α] (f : X → α → E) (g :
   filter_upwards [bound_ge, f_ae_cont] with x bound_ge_x cont_x
   simpa only [mkD_apply_of_continuous cont_x] using bound_ge_x
 
+/-- A variant of `ContinuousMap.hasFiniteIntegral_of_bound` spelled in terms of
+`ContinuousMap.mkD`. -/
 lemma hasFiniteIntegral_mkD_restrict_of_bound {s : Set α} [CompactSpace s]
     (f : X → α → E) (g : C(s, E))
     (f_ae_contOn : ∀ᵐ x ∂μ, ContinuousOn (f x) s)
@@ -206,6 +229,7 @@ variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
   [ContinuousFunctionalCalculus 𝕜 A p]
 
+/-- A version of `cfc_apply` in terms of `ContinuousMapZero.mkD` -/
 lemma cfc_apply_mkD {f : 𝕜 → 𝕜} {a : A} (ha : p a := by cfc_tac) :
     cfc f a = cfcHom (a := a) ha (mkD ((spectrum 𝕜 a).restrict f) 0) := by
   by_cases hf : ContinuousOn f (spectrum 𝕜 a)
@@ -213,6 +237,7 @@ lemma cfc_apply_mkD {f : 𝕜 → 𝕜} {a : A} (ha : p a := by cfc_tac) :
   · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf,
       map_zero]
 
+/-- A version of `cfc_eq_cfcL` in terms of `ContinuousMapZero.mkD` -/
 lemma cfc_eq_cfcL_mkD {f : 𝕜 → 𝕜} {a : A} (ha : p a := by cfc_tac) :
     cfc f a = cfcL (a := a) ha (mkD ((spectrum 𝕜 a).restrict f) 0) :=
   cfc_apply_mkD
@@ -434,8 +459,17 @@ variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [Topolog
 variable [Zero β]
 
 open scoped Classical in
-noncomputable def mkD [Zero α] (f : α → β) (g : C(α, β)₀) : C(α, β)₀ :=
-  if h : Continuous f ∧ f 0 = 0 then ⟨⟨_, h.1⟩, h.2⟩ else g
+/--
+Interpret `f : α → β` as an element of `C(α, β)₀`, falling back to the default value
+`default : C(α, β)₀` if `f` is not continuous or does not map `0` to `0`.
+
+This is mainly intended to be used for `C(α, β)₀`-valued integration. For example, if a family of
+functions `f : ι → α → β` satisfies that `f i` is continuous and maps `0` to `0` for almost every
+`i`, you can write the `C(α, β)₀`-valued integral "`∫ i, f i`" as
+`∫ i, ContinuousMapZero.mkD (f i) 0`.
+-/
+noncomputable def mkD [Zero α] (f : α → β) (default : C(α, β)₀) : C(α, β)₀ :=
+  if h : Continuous f ∧ f 0 = 0 then ⟨⟨_, h.1⟩, h.2⟩ else default
 
 lemma mkD_of_continuous [Zero α] {f : α → β} {g : C(α, β)₀} (hf : Continuous f) (hf₀ : f 0 = 0) :
     mkD f g = ⟨⟨f, hf⟩, hf₀⟩ := by
@@ -473,6 +507,7 @@ lemma mkD_apply_of_continuousOn {s : Set α} [Zero s] {f : α → β} {g : C(s, 
   rfl
 
 open ContinuousMap in
+/-- Link between `ContinuousMapZero.mkD` and `ContinuousMap.mkD`. -/
 lemma mkD_eq_mkD_of_map_zero [Zero α] (f : α → β) (g : C(α, β)₀) (f_zero : f 0 = 0) :
     mkD f g = ContinuousMap.mkD f g := by
   by_cases f_cont : Continuous f
@@ -486,7 +521,11 @@ variable {X : Type*} [MeasurableSpace X] {μ : Measure X}
 variable {E : Type*} [NormedCommRing E]
 -- `[NormedAddCommGroup E]` doesn't work because of lack of instances for `C(α, E)₀`
 
--- This should probably exist for `BoundedContinuousFunction` as well...
+/-- A natural criterion for `HasFiniteIntegral` of a `C(α, E)₀`-valued function is the existence
+of some positive function with finite integral such that `∀ᵐ x ∂μ, ∀ z : α, ‖f x z‖ ≤ bound x`.
+
+Note that there is no dominated convergence here (hence no first-countability assumption
+on `α`). We are just using the properties of Banach-space-valued integration. -/
 lemma hasFiniteIntegral_of_bound [CompactSpace α] [Zero α] (f : X → C(α, E)₀) (bound : X → ℝ)
     (bound_nonneg : 0 ≤ᵐ[μ] bound)
     (bound_int : HasFiniteIntegral bound μ)
@@ -496,6 +535,8 @@ lemma hasFiniteIntegral_of_bound [CompactSpace α] [Zero α] (f : X → C(α, E)
   filter_upwards [bound_ge, bound_nonneg] with x bound_ge_x bound_nonneg_x
   exact ContinuousMap.norm_le _ bound_nonneg_x |>.mpr bound_ge_x
 
+/-- A variant of `ContinuousMapZero.hasFiniteIntegral_of_bound` spelled in terms of
+`ContinuousMapZero.mkD`. -/
 lemma hasFiniteIntegral_mkD_of_bound [CompactSpace α] [Zero α] (f : X → α → E) (g : C(α, E)₀)
     (f_ae_cont : ∀ᵐ x ∂μ, Continuous (f x))
     (f_ae_zero : ∀ᵐ x ∂μ, f x 0 = 0)
@@ -508,6 +549,8 @@ lemma hasFiniteIntegral_mkD_of_bound [CompactSpace α] [Zero α] (f : X → α �
   filter_upwards [bound_ge, f_ae_cont, f_ae_zero] with x bound_ge_x cont_x zero_x
   simpa only [mkD_apply_of_continuous cont_x zero_x] using bound_ge_x
 
+/-- A variant of `ContinuousMapZero.hasFiniteIntegral_of_bound` spelled in terms of
+`ContinuousMapZero.mkD`. -/
 lemma hasFiniteIntegral_mkD_restrict_of_bound {s : Set α} [CompactSpace s] [Zero s]
     (f : X → α → E) (g : C(s, E)₀)
     (f_ae_contOn : ∀ᵐ x ∂μ, ContinuousOn (f x) s)
@@ -585,6 +628,7 @@ variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
   [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
 
+/-- A version of `cfcₙ_apply` in terms of `ContinuousMapZero.mkD` -/
 lemma cfcₙ_apply_mkD {f : 𝕜 → 𝕜} {a : A} (ha : p a := by cfc_tac) :
     cfcₙ f a = cfcₙHom (a := a) ha (mkD ((quasispectrum 𝕜 a).restrict f) 0) := by
   by_cases f_cont : ContinuousOn f (quasispectrum 𝕜 a)
