@@ -779,11 +779,11 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) 
 
 end IsDomain
 
+open Classical in
 instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R] :
     Field (HahnSeries Γ R) where
   __ : IsDomain (HahnSeries Γ R) := inferInstance
   inv x :=
-    open Classical in
     if x0 : x = 0 then 0
     else
       (single (IsAddUnit.addUnit (AddGroup.isAddUnit x.order)).neg) (x.leadingCoeff)⁻¹ *
@@ -795,10 +795,11 @@ instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [F
         (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)) (AddGroup.isAddUnit x.order))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
-  nnqsmul := (· • ·)
-  nnqsmul_def _ _ := by ext; simp
-  qsmul := (· • ·)
-  qsmul_def _ _ := rfl
+  -- TODO: use `(· • ·)` here to avoid diamonds
+  nnqsmul := _
+  nnqsmul_def := fun _ _ => rfl
+  qsmul := _
+  qsmul_def := fun _ _ => rfl
 
 end Inversion
 
