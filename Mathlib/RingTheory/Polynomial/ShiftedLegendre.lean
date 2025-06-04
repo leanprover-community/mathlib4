@@ -26,12 +26,14 @@ polynomial in `ℤ[X]`. We prove some basic properties of the Legendre polynomia
 shifted Legendre polynomials, derivative
 -/
 
-open scoped Nat
-open BigOperators Finset
+open Nat BigOperators Finset
 
 namespace Polynomial
 
-/-- `shiftedLegendre n` is the polynomial defined as the sum of integer monomials. -/
+/-- `shiftedLegendre n` is an integer polynomial for each `n : ℕ`, defined by:
+`Pₙ(x) = ∑ k ∈ Finset.range (n + 1), (-1)ᵏ * choose n k * choose (n + k) n * xᵏ`
+These polynomials appear in combinatorics and the theory of orthogonal polynomials.
+-/
 noncomputable def shiftedLegendre (n : ℕ) : ℤ[X] :=
   ∑ k ∈ Finset.range (n + 1), C ((-1 : ℤ) ^ k * n.choose k * (n + k).choose n) * X ^ k
 
@@ -57,7 +59,7 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
     congr! 1 with x _
     rw [show (n.choose x • (-1) ^ x : ℤ[X]) = C (n.choose x • (-1) ^ x) by simp,
       iterate_derivative_C_mul, iterate_derivative_X_pow_eq_smul,
-      Nat.descFactorial_eq_div (by omega), show n + x - n = x by omega]
+      descFactorial_eq_div (by omega), show n + x - n = x by omega]
     simp only [Int.reduceNeg, nsmul_eq_mul, eq_intCast, Int.cast_mul, Int.cast_natCast,
       Int.cast_pow, Int.cast_neg, Int.cast_one, zsmul_eq_mul]
     ring
@@ -66,15 +68,13 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
     rw [C_mul (b := ((n + x).choose n : ℤ)), mul_comm, mul_comm (n ! : ℤ[X]), mul_comm _ ((-1) ^ x),
       mul_assoc]
     congr 1
-    rw [add_comm, Nat.add_choose]
-    simp only [Int.natCast_ediv, Nat.cast_mul, eq_intCast]
+    rw [add_comm, add_choose]
+    simp only [Int.natCast_ediv, cast_mul, eq_intCast]
     norm_cast
     rw [mul_comm, ← Nat.mul_div_assoc]
     · rw [mul_comm, Nat.mul_div_mul_right _ _ (by positivity)]
-    · simp only [Nat.factorial_mul_factorial_dvd_factorial_add]
-  _ = (n ! : ℤ[X]) * (shiftedLegendre n) := by
-    simp only [Int.reduceNeg, eq_intCast, Int.cast_mul, Int.cast_pow, Int.cast_neg, Int.cast_one,
-      Int.cast_natCast, ← mul_assoc, shiftedLegendre, mul_sum]
+    · simp only [factorial_mul_factorial_dvd_factorial_add]
+  _ = (n ! : ℤ[X]) * (shiftedLegendre n) := by simp [← mul_assoc, shiftedLegendre, mul_sum]
 
 /-- The coefficient of the shifted Legendre polynomial at `k` is
 `(-1) ^ k * (n.choose k) * (n + k).choose n`. -/
@@ -82,7 +82,7 @@ theorem coeff_shiftedLegendre (n k : ℕ) :
     (shiftedLegendre n).coeff k = (-1) ^ k * n.choose k * (n + k).choose n := by
   rw [shiftedLegendre, finset_sum_coeff]
   simp_rw [coeff_C_mul_X_pow]
-  simp +contextual [Nat.choose_eq_zero_of_lt, Nat.add_one_le_iff]
+  simp +contextual [choose_eq_zero_of_lt, add_one_le_iff]
 
 /-- The degree of `shiftedLegendre n` is `n`. -/
 @[simp] theorem degree_shiftedLegendre (n : ℕ) : (shiftedLegendre n).degree = n := by
@@ -90,18 +90,17 @@ theorem coeff_shiftedLegendre (n k : ℕ) :
   · rw [degree_le_iff_coeff_zero]
     intro k h
     norm_cast at h
-    simp [coeff_shiftedLegendre, Nat.choose_eq_zero_of_lt h]
-  · simp [coeff_shiftedLegendre, (Nat.choose_pos (show n ≤ n + n by simp)).ne']
+    simp [coeff_shiftedLegendre, choose_eq_zero_of_lt h]
+  · simp [coeff_shiftedLegendre, (choose_pos (show n ≤ n + n by simp)).ne']
 
 @[simp] theorem natDegree_shiftedLegendre (n : ℕ) : (shiftedLegendre n).natDegree = n :=
   natDegree_eq_of_degree_eq_some (degree_shiftedLegendre n)
 
 theorem neg_one_pow_mul_shiftedLegendre_comp_one_sub_X_eq (n : ℕ) :
     (-1) ^ n * (shiftedLegendre n).comp (1 - X) = shiftedLegendre n := by
-  refine nat_mul_inj' ?_ (Nat.factorial_ne_zero n)
+  refine nat_mul_inj' ?_ (factorial_ne_zero n)
   rw [← mul_assoc, mul_comm (n ! : ℤ[X]), mul_assoc, ← natCast_mul_comp,
     factorial_mul_shiftedLegendre_eq, ← iterate_derivative_comp_one_sub_X]
-  congr 1
   simp [mul_comm]
 
 /-- The values ​​of the Legendre polynomial at `x` and `1 - x` differ by a factor `(-1)ⁿ`. -/
