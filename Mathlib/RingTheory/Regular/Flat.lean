@@ -17,34 +17,6 @@ import Mathlib.RingTheory.Regular.RegularSequence
 
 open RingTheory.Sequence Pointwise Module TensorProduct QuotSMulTop
 
-section
-
-variable {R S M N M' N' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
-  [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M'] [Module S M'] [IsScalarTower R S M']
-  {gm : M →ₗ[R] M'} (hm : IsBaseChange S gm)
-  [AddCommGroup N] [Module R N] [AddCommGroup N'] [Module R N'] [Module S N'] [IsScalarTower R S N']
-  {gn : N →ₗ[R] N'} (hn : IsBaseChange S gn)
-  (f : M →ₗ[R] N) (hf : Function.Injective f)
-
-include hn hf
-theorem Module.Flat.isBaseChange_preserves_injective_linearMap :
-    Function.Injective (hm.lift (gn ∘ₗ f)) := by
-  have h : hm.lift (gn ∘ₗ f) = hn.equiv ∘ ((LinearMap.lTensor S f) ∘ hm.equiv.symm) := by
-    ext x
-    refine hm.inductionOn x _ ?_ ?_ ?_ ?_
-    · simp only [map_zero, Function.comp_apply]
-    · intro _
-      simp [hm.lift_eq, hm.equiv_symm_apply, hn.equiv_tmul]
-    · intro s m h
-      simp only [map_smul, h, Function.comp_apply]
-      rw [← map_smul, f.smul_lTensor s (hm.equiv.symm m)]
-    · intro _ _ h₁ h₂
-      simp only [map_add, h₁, Function.comp_apply, h₂]
-  simp only [h, EmbeddingLike.comp_injective, EquivLike.injective_comp]
-  exact Module.Flat.lTensor_preserves_injective_linearMap f hf
-
-end
-
 @[simp]
 theorem Submodule.Quotient.mk_out {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     {p : Submodule R M} (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=

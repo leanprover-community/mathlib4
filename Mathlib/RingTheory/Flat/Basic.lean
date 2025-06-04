@@ -4,16 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang, Yongle Hu
 -/
 import Mathlib.Algebra.Colimit.TensorProduct
-import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Finiteness.Small
+import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
@@ -247,6 +242,25 @@ theorem linearIndependent_one_tmul {S} [Semiring S] [Algebra R S] [Flat R S] {ι
   classical rw [LinearIndependent, ← LinearMap.coe_restrictScalars R,
     Finsupp.linearCombination_one_tmul]
   simpa using lTensor_preserves_injective_linearMap _ hv
+
+theorem isBaseChange_preserves_injective_linearMap
+    {S : Type*} [CommSemiring S] [Algebra R S] [Flat R S]
+    {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module S M'] [IsScalarTower R S M']
+    {gm : M →ₗ[R] M'} (hm : IsBaseChange S gm)
+    {N' : Type*} [AddCommMonoid N'] [Module R N'] [Module S N'] [IsScalarTower R S N']
+    {gn : N →ₗ[R] N'} (hn : IsBaseChange S gn)
+    (f : M →ₗ[R] N) (hf : Function.Injective f) : Function.Injective (hm.lift (gn ∘ₗ f)) := by
+  have h : hm.lift (gn ∘ₗ f) = hn.equiv ∘ ((LinearMap.lTensor S f) ∘ hm.equiv.symm) := by
+    ext x
+    refine hm.inductionOn x _ (by simp) ?_ ?_ ?_
+    · intro _
+      simp [hm.lift_eq, hm.equiv_symm_apply, hn.equiv_tmul]
+    · intro s m h
+      simp only [map_smul, h, Function.comp_apply]
+      rw [← map_smul, f.smul_lTensor s (hm.equiv.symm m)]
+    · intro _ _ h₁ h₂
+      simp [h₁, h₂]
+  simpa [h] using lTensor_preserves_injective_linearMap f hf
 
 end Flat
 
