@@ -5225,6 +5225,8 @@ import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.KrullDimension.Field
 import Mathlib.RingTheory.KrullDimension.Module
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.KrullDimension.PID
+import Mathlib.RingTheory.KrullDimension.Polynomial
 import Mathlib.RingTheory.KrullDimension.Zero
 import Mathlib.RingTheory.Lasker
 import Mathlib.RingTheory.LaurentSeries
@@ -5247,6 +5249,7 @@ import Mathlib.RingTheory.LocalRing.NonLocalRing
 import Mathlib.RingTheory.LocalRing.Quotient
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.LocalRing.Subring
@@ -6083,8 +6086,8 @@ import Mathlib.Topology.Closure
 import Mathlib.Topology.ClusterPt
 import Mathlib.Topology.Coherent
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Compactification.OnePoint
-import Mathlib.Topology.Compactification.OnePointEquiv
+import Mathlib.Topology.Compactification.OnePoint.Basic
+import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.CompactlyCoherentSpace
