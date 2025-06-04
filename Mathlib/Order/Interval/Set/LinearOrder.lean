@@ -173,10 +173,10 @@ theorem Iio_subset_Iic_iff [DenselyOrdered α] : Iio a ⊆ Iic b ↔ a ≤ b := 
 /-! ### Two infinite intervals -/
 
 theorem Iic_union_Ioi_of_le (h : a ≤ b) : Iic b ∪ Ioi a = univ :=
-  eq_univ_of_forall fun x => (h.lt_or_ge x).symm
+  eq_univ_of_forall fun x => (h.gt_or_le x).symm
 
 theorem Iio_union_Ici_of_le (h : a ≤ b) : Iio b ∪ Ici a = univ :=
-  eq_univ_of_forall fun x => (h.le_or_gt x).symm
+  eq_univ_of_forall fun x => (h.ge_or_lt x).symm
 
 theorem Iic_union_Ici_of_le (h : a ≤ b) : Iic b ∪ Ici a = univ :=
   eq_univ_of_forall fun x => (h.ge_or_le x).symm

@@ -123,8 +123,6 @@ lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
 
 @[deprecated (since := "2025-05-11")] alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
 
-/-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
-almost exclusively in mathlib. -/
 lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
 
 @[simp] lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
@@ -150,7 +148,7 @@ alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LT.lt.le := le_of_lt
 alias LT.lt.ne := ne_of_lt
 alias Eq.le := le_of_eq
-@[inherit_doc ge_of_eq] alias Eq.ge := ge_of_eq
+alias Eq.ge := ge_of_eq
 alias LT.lt.asymm := lt_asymm
 alias LT.lt.not_lt := lt_asymm
 
