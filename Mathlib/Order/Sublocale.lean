@@ -62,11 +62,12 @@ lemma top_mem : ⊤ ∈ S := by simpa using S.sInf_mem <| empty_subset _
 lemma himp_mem (hb : b ∈ S) : a ⇨ b ∈ S := S.himp_mem' _ _ hb
 
 instance carrier.instSemilatticeInf : SemilatticeInf S := Subtype.semilatticeInf fun _ _ ↦ inf_mem
+
 instance carrier.instOrderTop : OrderTop S := Subtype.orderTop top_mem
 
 instance carrier.instHImp : HImp S where himp a b := ⟨a ⇨ b, S.himp_mem b.2⟩
 
-instance : InfSet S where
+instance carrier.instInfSet : InfSet S where
   sInf x := ⟨sInf (Subtype.val '' x), S.sInf_mem' _
     (by simp_rw [image_subset_iff, subset_def]; simp)⟩
 
@@ -127,7 +128,7 @@ def restrict (S : Sublocale X) : FrameHom X S where
     rw [S.giAux.gc.l_sSup, sSup_image]
     rfl
   map_top' := by
-    refine le_antisymm (by simp) ?_
+    refine le_antisymm le_top ?_
     change _ ≤ restrictAux S ⊤
     rw [← Subtype.coe_le_coe, S.giAux.gc.u_top]
     simp [restrictAux, sInf]
@@ -196,7 +197,7 @@ def orderIso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
     rw [@Subtype.ext_iff_val] at hx'
     exact Exists.intro x' hx'
   map_rel_iff' := by
-    simpa [Sublocale.le_iff', ← Nucleus.range_subset_range] using fun _ _ ↦ (by rfl)
+    simpa [Sublocale.le_iff', ← Nucleus.range_subset_range] using fun _ _ ↦ by rfl
 
 lemma orderIso.eq_toSublocale : Nucleus.toSublocale = (@orderIso X _) := rfl
 lemma orderIso.symm_eq_toNucleus : Sublocale.toNucleus = (@orderIso X _).symm := rfl
