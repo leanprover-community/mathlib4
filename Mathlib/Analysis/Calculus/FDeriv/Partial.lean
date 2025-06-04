@@ -36,29 +36,10 @@ open Set Function Metric Real
 
 section PartialFDeriv
 
-/-- Like `Prod.swap`, but for `ContinuousLinearMap`. -/
-abbrev ContinuousLinearMap.prodComm (R : Type*) [Semiring R]
-  (M₁ : Type*) [TopologicalSpace M₁] [AddCommMonoid M₁]
-  (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂]
-  [Module R M₁] [Module R M₂] := (ContinuousLinearEquiv.prodComm R M₁ M₂).toContinuousLinearMap
-
-open ContinuousLinearMap in
-theorem ContinousLinearMap.coprod_comp_prodComm
-  (R : Type*) [Semiring R]
-  (M₁ : Type*) [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R M₁]
-  (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
-  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousAdd M]
-  (f : M₁ →L[R] M) (g : M₂ →L[R] M) :
-    (f.coprod g).comp (prodComm R M₂ M₁) = (g.coprod f) := by
-  ext; all_goals
-  simp only [coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply, inl_apply, inr_apply,
-    ContinuousLinearEquiv.prodComm_apply, Prod.swap_prod_mk, coprod_apply, map_zero,
-    zero_add, add_zero, coprod_comp_inl, coprod_comp_inr]
-
-theorem continuousOn_swap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (s : Set (X × Y)) : ContinuousOn Prod.swap s := by
-  unfold ContinuousOn; intro z hz
-  apply continuous_swap.continuousWithinAt
+--theorem continuousOn_swap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+--    (s : Set (X × Y)) : ContinuousOn Prod.swap s := by
+--  unfold ContinuousOn; intro z hz
+--  apply continuous_swap.continuousWithinAt
 
 open ContinuousLinearMap in
 theorem ContinuousLinearMap.coprod_fst_snd
@@ -84,6 +65,8 @@ theorem ContinuousOn.clm_coprod {X : Type*} [TopologicalSpace X]
   simp only [coprod_fst_snd]
   exact (hf.clm_comp continuousOn_const).add (hg.clm_comp continuousOn_const)
 
+--#min_imports
+
 theorem hasFDerivWithinAt_swap
   (𝕜 : Type*) [NontriviallyNormedField 𝕜]
   (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -95,6 +78,8 @@ theorem hasFDerivWithinAt_swap
       s z
     := by
   convert hasFDerivWithinAt_snd.prodMk (hasFDerivWithinAt_fst (𝕜 := 𝕜) (p := z))
+
+--#min_imports
 
 theorem HasFDerivWithinAt.partial_fst
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -302,7 +287,10 @@ theorem hasFDerivWithinAt_of_partial_fst_continuousOn_prod_open
     HasFDerivWithinAt f ((f'x z).coprod f'yz) (s ×ˢ t) z := by
   have hmt_st := mapsTo_swap_prod s t
   have hmt_ts := mapsTo_swap_prod t s
-  have hf'x_swap_cont := hf'x_cont.comp (continuousOn_swap (t ×ˢ s)) hmt_ts
+  --have hf'x_swap_cont := hf'x_cont.comp (continuousOn_swap (t ×ˢ s)) hmt_ts
+  have hf'x_swap_cont := hf'x_cont.comp
+    (fun z hz => continuous_swap.continuousWithinAt)
+    hmt_ts
   -- exchange `E` and `F` to use a previous result
   have hswap := hasFDerivWithinAt_of_partial_snd_continuousOn_prod_open
     (f := f ∘ Prod.swap)
