@@ -49,6 +49,10 @@ theorem nrComplexPlaces_eq_zero_iff :
     nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
 
+theorem IsTotallyReal.complexEmbedding_isReal [IsTotallyReal K] (φ : K →+* ℂ) :
+    ComplexEmbedding.IsReal φ :=
+  isReal_mk_iff.mp <| isReal (InfinitePlace.mk φ)
+
 theorem IsTotallyReal.ofRingEquiv [IsTotallyReal F] (f : F ≃+* K) : IsTotallyReal K where
   isReal _ := (isReal_comap_iff f).mp <| IsTotallyReal.isReal _
 
@@ -152,10 +156,9 @@ theorem nrRealPlaces_eq_zero_iff :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
 
-theorem IsTotallyComplex.isConj_ne_one [IsTotallyComplex K] {φ : K →+* ℂ} {σ : K ≃ₐ[F] K}
-    (hφ : ComplexEmbedding.IsConj φ σ) : σ ≠ 1 := by
-  rw [ComplexEmbedding.isConj_ne_one_iff hφ, ← isReal_mk_iff, not_isReal_iff_isComplex]
-  exact isComplex (InfinitePlace.mk φ)
+theorem IsTotallyComplex.complexEmbedding_not_isReal [IsTotallyComplex K] (φ : K →+* ℂ) :
+    ¬ ComplexEmbedding.IsReal φ :=
+  isReal_mk_iff.not.mp <| not_isReal_iff_isComplex.mpr <| isComplex (InfinitePlace.mk φ)
 
 variable (K)
 
