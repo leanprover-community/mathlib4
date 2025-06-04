@@ -40,8 +40,9 @@ variable {k G H : Type*} [CommRing k] [Group G] [Group H] (φ : G →* H) {A B :
   [AddCommGroup A] [Module k A] (ρ : Representation k G A)
   [AddCommGroup B] [Module k B] (τ : Representation k G B)
 
-/-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is
-`(k[H] ⊗[k] A)_G` with the `G`-representation on `k[H]` defined by `φ`. -/
+/-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is the
+`k`-module `(k[H] ⊗[k] A)_G` with the `G`-representation on `k[H]` defined by `φ`.
+See `Representation.ind` for the induced `H`-representation on `IndV φ ρ`. -/
 abbrev IndV := Coinvariants (V := TensorProduct k (H →₀ k) A)
   (Representation.tprod ((leftRegular k H).comp φ) ρ)
 
@@ -116,7 +117,7 @@ variable (B : Rep k H)
 `A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
 the `G`-representation morphisms `A ⟶ B`. -/
 @[simps]
-noncomputable def indResHomLEquiv :
+noncomputable def indResHomEquiv :
     (ind φ A ⟶ B) ≃ₗ[k] (A ⟶ (Action.res _ φ).obj B) where
   toFun f := {
     hom := ModuleCat.ofHom (f.hom.hom ∘ₗ IndV.mk φ A.ρ 1)
@@ -141,7 +142,7 @@ adjoint to the restriction functor along `φ`. -/
 @[simps! unit_app_hom_hom counit_app_hom_hom]
 noncomputable def indResAdjunction : indFunctor k φ ⊣ Action.res _ φ :=
   Adjunction.mkOfHomEquiv {
-    homEquiv A B := (indResHomLEquiv φ A B).toEquiv
+    homEquiv A B := (indResHomEquiv φ A B).toEquiv
     homEquiv_naturality_left_symm _ _ :=
       Action.hom_ext _ _ <| ModuleCat.hom_ext <| IndV.hom_ext _ _ fun _ => by ext; simp
     homEquiv_naturality_right := by intros; rfl }
