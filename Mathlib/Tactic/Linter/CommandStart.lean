@@ -285,6 +285,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- We skip `macro_rules`, since they cause parsing issues.
   if stx.find? (·.isOfKind ``Lean.Parser.Command.macro_rules) |>.isSome then
     return
+  let some upTo := CommandStart.endPos stx | return
 
   let fmt : Option Format := ←
       try
@@ -301,7 +302,6 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
     let scan := parallelScan orig st
 
-    let some upTo := CommandStart.endPos stx | return
     let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
     let docStringEnd := docStringEnd.getTailPos? |>.getD default
     let forbidden := getUnlintedRanges unlintedNodes ∅ stx
