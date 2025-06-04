@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-import Mathlib.Tactic.FunProp.ContDiff
 
 /-!
 # Diffeological spaces
@@ -393,7 +392,7 @@ instance {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
     [FiniteDimensional ℝ X] : @IsDTopCompatible X _ euclideanDiffeology :=
   let _ := euclideanDiffeology (X := X); ⟨rfl⟩
 
-instance : DiffeologicalSpace ℝ := euclideanDiffeology
+noncomputable instance : DiffeologicalSpace ℝ := euclideanDiffeology
 
 example : IsContDiffCompatible ℝ := inferInstance
 
