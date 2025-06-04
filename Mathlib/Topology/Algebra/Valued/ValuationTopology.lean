@@ -34,16 +34,13 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      simp only [ltAddSubgroup, Units.min_val, Units.val_le_val, lt_min_iff,
-        AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
-        forall_const, and_true]
-      tauto
+      simp [SetLike.le_def]
     mul := by
       rintro γ
       obtain ⟨γ₀, h⟩ := exists_square_le γ
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
-      simp only [ltAddSubgroup, AddSubgroup.coe_set_mk, mem_setOf_eq] at r_in s_in
+      simp only [SetLike.mem_coe, mem_ltAddSubgroup_iff] at r_in s_in
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
         _ < γ₀ * γ₀ := by gcongr <;> exact zero_le'
@@ -52,30 +49,17 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use (1 : Γ₀ˣ)
-        rintro y _
-        change v (x * y) < _
-        rw [Valuation.map_mul, Hx, zero_mul]
-        exact Units.zero_lt γ
+        rintro y
+        simp [Hx]
       · use γx⁻¹ * γ
-        rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
-        change (v (x * y) : Γ₀) < γ
-        rw [Valuation.map_mul, Hx, mul_comm]
-        rw [Units.val_mul, mul_comm] at vy_lt
-        simpa using mul_inv_lt_of_lt_mul₀ vy_lt
+        simp [subset_def, lt_inv_mul_iff₀, Hx]
     rightMul := by
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use 1
-        rintro y _
-        change v (y * x) < _
-        rw [Valuation.map_mul, Hx, mul_zero]
-        exact Units.zero_lt γ
+        simp [subset_def, Hx]
       · use γx⁻¹ * γ
-        rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
-        change (v (y * x) : Γ₀) < γ
-        rw [Valuation.map_mul, Hx]
-        rw [Units.val_mul, mul_comm] at vy_lt
-        simpa using mul_inv_lt_of_lt_mul₀ vy_lt }
+        simp [subset_def, lt_mul_inv_iff₀, Hx, mul_comm] }
 
 end Valuation
 

@@ -378,12 +378,29 @@ theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1
   · simp only [h, map_zero, zero_le', inv_zero, or_self]
   · simp only [← one_le_val_iff v h, le_total]
 
+/-- The subgroup of elements whose valuation is less than or equal to a certain value. -/
+def leAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀) : AddSubgroup R where
+  carrier := { x | v x ≤ γ }
+  zero_mem' := by simp
+  add_mem' {x y} x_in y_in := (v.map_add x y).trans (max_le x_in y_in)
+  neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
+
+@[simp]
+lemma mem_leAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀} {x : R} :
+    x ∈ v.leAddSubgroup γ ↔ v x ≤ γ :=
+  Iff.rfl
+
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   carrier := { x | v x < γ }
   zero_mem' := by simp
   add_mem' {x y} x_in y_in := lt_of_le_of_lt (v.map_add x y) (max_lt x_in y_in)
   neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
+
+@[simp]
+lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀ˣ} {x : R} :
+    x ∈ v.ltAddSubgroup γ ↔ v x < γ :=
+  Iff.rfl
 
 end Group
 
