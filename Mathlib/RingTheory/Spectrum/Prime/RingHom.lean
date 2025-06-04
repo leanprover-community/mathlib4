@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -74,7 +75,7 @@ theorem specComap_injective_of_surjective (f : R →+* S) (hf : Function.Surject
 
 /-- `RingHom.specComap` of an isomorphism of rings as an equivalence of their prime spectra. -/
 @[simps apply symm_apply]
-def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ PrimeSpectrum S where
+def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
   toFun := e.symm.toRingHom.specComap
   invFun := e.toRingHom.specComap
   left_inv x := by
@@ -85,6 +86,7 @@ def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ PrimeSpectrum S where
     rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
     rfl
+  map_rel_iff' {I J} := Ideal.comap_le_comap_iff_of_surjective _ e.symm.surjective ..
 
 section Pi
 
@@ -278,3 +280,14 @@ lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
     exact RingHom.domain_nontrivial f.toRingHom
 
 end SpecOfSurjective
+
+section ResidueField
+
+variable {R : Type*} [CommRing R]
+
+lemma PrimeSpectrum.residueField_specComap (I : PrimeSpectrum R) :
+    Set.range (algebraMap R I.asIdeal.ResidueField).specComap = {I} := by
+  rw [Set.range_unique, Set.singleton_eq_singleton_iff]
+  exact PrimeSpectrum.ext (Ideal.ext fun x ↦ Ideal.algebraMap_residueField_eq_zero)
+
+end ResidueField
