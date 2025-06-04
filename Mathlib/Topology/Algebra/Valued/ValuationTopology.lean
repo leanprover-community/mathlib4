@@ -334,13 +334,8 @@ lemma leSubmodule_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
   rcases eq_or_ne x 0 with rfl | hx0
   · simp
   intro y hy
-  simp only [mem_leSubmodule_iff] at hy
-  have hyx : v ((y : K) / x) ≤ 1 := by
-    simp [map_div₀,div_le_one_of_le₀ hy]
-  have : y = (⟨_, hyx⟩ : v.integer) • x := by
-    rw [Subring.smul_def, smul_eq_mul, mul_comm, mul_div_cancel₀ _ (by simpa using hx0)]
-  rw [this]
-  exact Submodule.smul_mem _ _ hx
+  have : v ((y : K) / x) ≤ 1 := by simp [div_le_one_of_le₀ hy]
+  simpa [Subring.smul_def, div_mul_cancel₀ _ hx0] using S.smul_mem ⟨_, this⟩ hx
 
 lemma ltSubmodule_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
     {S : Submodule v.integer K} {x : K} (hx : x ∈ S) (hxv : Valued.v x ≠ 0) :
@@ -404,14 +399,9 @@ lemma leIdeal_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
   rcases eq_or_ne x 0 with rfl | hx0
   · simp
   intro y hy
-  simp only [mem_leIdeal_iff] at hy
-  have hyx : v ((y : K) / x) ≤ 1 := by
-    simp [map_div₀,div_le_one_of_le₀ hy]
-  have : y = (⟨_, hyx⟩ : v.integer) * x := by
-    ext
-    rw [Subring.coe_mul, mul_comm, mul_div_cancel₀ _ (by simpa using hx0)]
-  rw [this]
-  exact I.mul_mem_left _ hx
+  have : v ((y : K) / x) ≤ 1 := by simpa using div_le_one_of_le₀ hy zero_le'
+  convert I.smul_mem ⟨_, this⟩ hx using 1
+  simp [Subtype.ext_iff, div_mul_cancel₀ _ (ZeroMemClass.coe_eq_zero.not.mpr hx0)]
 
 lemma ltIdeal_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
     {I : Ideal v.integer} {x : v.integer} (hx : x ∈ I) (hxv : Valued.v (x : K) ≠ 0) :
