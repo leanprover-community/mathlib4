@@ -8,7 +8,7 @@ set_option linter.style.header false
 open NumberField Module NumberField.InfinitePlace Nat Real RingOfIntegers Finset Multiset
   IsCyclotomicExtension.Rat Polynomial cyclotomic UniqueFactorizationMonoid Ideal
 
-variable {n : ℕ+} {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {n} ℚ K]
+variable {n : ℕ} [NeZero n] {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {n} ℚ K]
 
 local notation "M " K:70 => (4 / π) ^ nrComplexPlaces K *
   ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)
@@ -19,7 +19,7 @@ local notation3 "θ" => (zeta_spec n ℚ K).toInteger
 
 variable (n K) in
 lemma minpoly : minpoly ℤ θ = cyclotomic n ℤ := by
-  have := cyclotomic_eq_minpoly (zeta_spec n ℚ K) (by norm_num)
+  have := cyclotomic_eq_minpoly (zeta_spec n ℚ K) (NeZero.pos n)
   rw [← (zeta_spec n ℚ K).coe_toInteger] at this
   simpa [this] using (minpoly.algebraMap_eq RingOfIntegers.coe_injective θ).symm
 
@@ -51,8 +51,8 @@ theorem pid1 (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, (hp : p.Prime) → p �
         minpoly n K ▸ monic ↑n ℤ).ne_zero)).mpr ⟨irreducible_of_degree_eq_one (by compute_degree!),
         by monicity, ⟨(X - 1) ^ (p - 2), ?_⟩⟩
       simp only [minpoly n K, map_cyclotomic]
-      rw [← mul_one n, PNat.mul_coe, PNat.one_coe, ←pow_one (n : ℕ), ← hpn,
-        cyclotomic_mul_prime_pow_eq (ZMod p) hp.not_dvd_one one_pos]
+      rw [← mul_one n, ←pow_one (n : ℕ), ← hpn, cyclotomic_mul_prime_pow_eq (ZMod p) hp.not_dvd_one
+        one_pos]
       simp only [cyclotomic_one, pow_one, tsub_self, pow_zero]
       rw [← pow_succ' (X - 1)]
       congr
@@ -65,7 +65,7 @@ theorem pid1 (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, (hp : p.Prime) → p �
     refine ⟨θ - 1, le_antisymm (span_le.mpr <| fun x hx ↦ ?_) (span_le.mpr ?_)⟩
     · rcases hx with rfl | rfl
       · subst hpn
-        simp [mem_span_singleton, (zeta_spec n ℚ K).toInteger_sub_one_dvd_prime']
+        simp [mem_span_singleton, (zeta_spec _ ℚ K).toInteger_sub_one_dvd_prime']
       · exact subset_span (by simp)
     · simp only [Set.singleton_subset_iff, SetLike.mem_coe, Q]
       exact subset_span (by simp)
@@ -146,7 +146,7 @@ theorem pid5 (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, (hp : p.Prime) → (hpn
   have : Fact (p.Prime) := ⟨hp⟩
   rcases h p hple hp hpn with H | H
   · obtain ⟨P', hP'⟩ := exists_mem_normalizedFactors (cyclotomic_ne_zero n (ZMod p))
-      (not_isUnit_of_degree_pos _ <| degree_cyclotomic_pos _ _ n.pos)
+      (not_isUnit_of_degree_pos _ <| degree_cyclotomic_pos _ _ (NeZero.pos n))
     obtain ⟨hP'irr, hP'mo, Q', hQ'⟩ :=
       (Polynomial.mem_normalizedFactors_iff (cyclotomic_ne_zero n (ZMod p))).mp hP'
     obtain ⟨P, hP, hPdeg, hPmo⟩ := lifts_and_degree_eq_and_monic ((mem_lifts P').mpr

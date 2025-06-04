@@ -16,13 +16,7 @@ variable {K : Type*} [Field K] [NumberField K]
 local notation "M " K:70 => (4 / π) ^ nrComplexPlaces K *
   ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)
 
-theorem PNat.prime_eleven : (11 : ℕ+).Prime :=
-  Nat.prime_eleven
-
 instance Nat.fact_prime_eleven : Fact (Nat.Prime 11) :=
-  ⟨prime_eleven⟩
-
-instance PNat.fact_prime_eleven : Fact (11 : ℕ+).Prime :=
   ⟨prime_eleven⟩
 
 lemma crazy11 : ⌊(4 / π) ^ 5 * (10! / 10 ^ 10 * √2357947691)⌋₊ = 58 := by
@@ -45,12 +39,12 @@ variable [IsCyclotomicExtension {11} ℚ K]
 theorem M11 : ⌊(M K)⌋₊ = 58 := by
   rw [absdiscr_prime 11 K, IsCyclotomicExtension.finrank (n := 11) K
     (irreducible_rat (by norm_num)), nrComplexPlaces_eq_totient_div_two 11, totient_prime
-      PNat.prime_eleven]
-  simp only [PNat.val_ofNat, Nat.add_one_sub_one, reduceDiv, cast_ofNat, Int.reduceNeg,
-    Int.reducePow, reduceSub, neg_mul, one_mul, Int.cast_neg, Int.cast_ofNat, abs_neg, abs_ofNat]
+      Nat.prime_eleven]
+  simp only [Nat.add_one_sub_one, reduceDiv, cast_ofNat, Int.reduceNeg, Int.reducePow,
+    reduceSub, neg_mul, one_mul, Int.cast_neg, Int.cast_ofNat, abs_neg, abs_ofNat]
   exact crazy11
 
-theorem cyclotomic_11 : cyclotomic ((11 : ℕ+) : ℕ) ℤ =
+theorem cyclotomic_11 : cyclotomic 11 ℤ =
     X^10 + X^9 + X^8 + X^7 + X^6 + X^5 + X^4 + X^3 + X^2 + X + 1 := by
   simp [cyclotomic_prime, sum_range_succ]
   ring

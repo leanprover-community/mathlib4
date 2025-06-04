@@ -190,9 +190,6 @@ theorem FinitePlace.norm_eq_one_iff_notMem (x : 𝓞 (WithVal (v.valuation K))) 
 @[deprecated (since := "2025-05-23")]
 alias FinitePlace.norm_eq_one_iff_not_mem := FinitePlace.norm_eq_one_iff_notMem
 
-@[deprecated (since := "2025-05-23")]
-alias FinitePlace.norm_eq_one_iff_not_mem := FinitePlace.norm_eq_one_iff_notMem
-
 @[deprecated (since := "2025-02-28")]
   alias norm_eq_one_iff_not_mem := FinitePlace.norm_eq_one_iff_not_mem
 

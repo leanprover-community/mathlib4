@@ -19,13 +19,7 @@ local notation "M " K:70 => (4 / π) ^ nrComplexPlaces K *
 theorem Nat.prime_thirteen : Nat.Prime 13 := by
   norm_num
 
-theorem PNat.prime_thirteen : (13 : ℕ+).Prime :=
-  Nat.prime_thirteen
-
 instance Nat.fact_prime_thirteen : Fact (Nat.Prime 13) :=
-  ⟨prime_thirteen⟩
-
-instance PNat.fact_prime_thirteen : Fact (13 : ℕ+).Prime :=
   ⟨prime_thirteen⟩
 
 lemma crazy13 : ⌊(4 / π) ^ 6 * (12! / 12 ^ 12 * √1792160394037)⌋₊ = 306 := by
@@ -48,12 +42,12 @@ variable [IsCyclotomicExtension {13} ℚ K]
 theorem M13 : ⌊(M K)⌋₊ = 306 := by
   rw [absdiscr_prime 13 K, IsCyclotomicExtension.finrank (n := 13) K
     (irreducible_rat (by norm_num)), nrComplexPlaces_eq_totient_div_two 13, totient_prime
-      PNat.prime_thirteen]
-  simp only [PNat.val_ofNat, Nat.add_one_sub_one, reduceDiv, cast_ofNat, Int.reduceNeg,
-    Int.reducePow, reduceSub, neg_mul, one_mul, Int.cast_neg, Int.cast_ofNat, abs_neg, abs_ofNat]
+      Nat.prime_thirteen]
+  simp only [Nat.add_one_sub_one, reduceDiv, cast_ofNat, Int.reduceNeg, Int.reducePow,
+    reduceSub, neg_mul, one_mul, Int.cast_neg, Int.cast_ofNat, abs_neg, abs_ofNat]
   exact crazy13
 
-theorem cyclotomic_13 : cyclotomic ((13 : ℕ+) : ℕ) ℤ =
+theorem cyclotomic_13 : cyclotomic 13 ℤ =
     X^12 + X^11 + X^10 + X^9 + X^8 + X^7 + X^6 + X^5 + X^4 + X^3 + X^2 + X + 1 := by
   simp [cyclotomic_prime, sum_range_succ]
   ring
