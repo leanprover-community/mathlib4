@@ -21,20 +21,6 @@ structure foo (name: Lean.Name) where
 #guard_msgs in
 def bar (_param : List (foo ``String)) := 1
 
--- Line breaks, where and comments.
-
--- also errors in mathlib
-def test2 :=
-  aux 37
-where  /-- `aux n` always returns 42, since `aux` is just a dummy function -/
-  aux (_depth : Nat) : Nat := 42
-
--- this version is accepted (but does not match mathlib style)
-def test3 :=
-  aux 37
-where/-- `aux n` always returns 42, since `aux` is just a dummy function -/
-  aux (_depth : Nat) : Nat := 42
-
 -- For structure fields, all field definitions are linted.
 /--
 warning: extra space in the source
