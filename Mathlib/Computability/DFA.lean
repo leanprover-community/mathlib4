@@ -203,10 +203,10 @@ theorem compl_accept_eq_accept_compl : Mᶜ.accept = M.acceptᶜ := rfl
 @[simp]
 theorem compl_accepts_eq_accepts_compl : Mᶜ.accepts = M.acceptsᶜ := rfl
 
-theorem compl_accept_iff (s : σ) : s ∈ Mᶜ.accept ↔ s ∉ M.accept := by simp
+theorem mem_accept_compl {s : σ} : s ∈ Mᶜ.accept ↔ s ∉ M.accept := by simp
 
-theorem compl_accepts_iff (x : List α) : x ∈ Mᶜ.accepts ↔ x ∉ M.accepts :=
-  compl_accept_iff M _
+theorem mem_accepts_compl {x : List α} : x ∈ Mᶜ.accepts ↔ x ∉ M.accepts :=
+  mem_accept_compl M
 
 /--
 Cartesian product of two DFAs with an arbitrary acceptance condition given by the binary Boolean
