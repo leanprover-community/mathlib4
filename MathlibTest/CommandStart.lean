@@ -343,7 +343,6 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 #guard_msgs in
 example {a: Nat} : a = a := rfl
 
-set_option linter.style.commandStart.verbose true in
 /--
 a
 b
@@ -479,11 +478,6 @@ info: #[srcNat: 4, srcPos: 4, fmtPos: 5, msg: missing space, length: 1
   let l := "hac d"
   let m := "h  acd"
   Mathlib.Linter.parallelScan l m
-
-#eval
-  Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" (4 + 1) 1
-#eval
-  Mathlib.Linter.Style.CommandStart.mkWindow "ab cd e fgh" (4 + 1) 3
 
 -- Starting from `c` (due to the `"d ef gh".length` input), form a "window" of successive sizes
 -- `1, 2,..., 6`.  The output is trimmed and contains only full words, even partially overlapping
