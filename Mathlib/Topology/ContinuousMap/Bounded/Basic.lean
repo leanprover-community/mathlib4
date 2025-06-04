@@ -626,7 +626,7 @@ instance instLipschitzAdd : LipschitzAdd (α →ᵇ β) where
       rw [dist_le (mul_nonneg C_nonneg dist_nonneg)]
       intro x
       refine le_trans (lipschitz_with_lipschitz_const_add ⟨f₁ x, g₁ x⟩ ⟨f₂ x, g₂ x⟩) ?_
-      refine mul_le_mul_of_nonneg_left ?_ C_nonneg
+      gcongr
       apply max_le_max <;> exact dist_coe_le_dist x⟩
 
 end LipschitzAdd
@@ -697,8 +697,8 @@ instance instSMul : SMul 𝕜 (α →ᵇ β) where
         let ⟨b, hb⟩ := f.bounded
         ⟨dist c 0 * b, fun x y => by
           refine (dist_smul_pair c (f x) (f y)).trans ?_
-          refine mul_le_mul_of_nonneg_left ?_ dist_nonneg
-          exact hb x y⟩ }
+          gcongr
+          apply hb⟩ }
 
 @[simp]
 theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x => c • f x := rfl
@@ -723,14 +723,14 @@ instance instIsBoundedSMul : IsBoundedSMul 𝕜 (α →ᵇ β) where
     rw [dist_le (mul_nonneg dist_nonneg dist_nonneg)]
     intro x
     refine (dist_smul_pair c (f₁ x) (f₂ x)).trans ?_
-    exact mul_le_mul_of_nonneg_left (dist_coe_le_dist x) dist_nonneg
+    gcongr
+    apply dist_coe_le_dist
   dist_pair_smul' c₁ c₂ f := by
-    rw [dist_le (mul_nonneg dist_nonneg dist_nonneg)]
+    rw [dist_le (by positivity)]
     intro x
     refine (dist_pair_smul c₁ c₂ (f x)).trans ?_
-    refine mul_le_mul_of_nonneg_left ?_ dist_nonneg
-    convert dist_coe_le_dist (β := β) x
-    simp
+    gcongr
+    apply dist_coe_le_dist (g := 0)
 
 end SMul
 
