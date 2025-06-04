@@ -149,8 +149,8 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
          please strongly consider using the synonymous `sorry` instead.")
     | ``Lean.Parser.Tactic.decide =>
       if isDecideNative stx then
-        rargs.push (kind, stx, "Using `decide +native` is not allowed in mathlib:\n\
-        because it trusts the entire Lean compiler (not just the Lean kernel),\n\
+        rargs.push (kind, stx, "Using `decide +native` is not allowed in mathlib: \
+        because it trusts the entire Lean compiler (not just the Lean kernel), \
         it could quite possibly be used to prove false.")
       else
         rargs
