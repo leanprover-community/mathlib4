@@ -1,4 +1,6 @@
-import Mathlib
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Tactic.Ring.RingNF
 
 universe u
 
