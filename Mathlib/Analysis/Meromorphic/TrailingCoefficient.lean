@@ -53,23 +53,31 @@ If `f` is meromorphic of infinite order at `x`, the trailing coefficient is zero
 -/
 
 /--
-Definition of the trailing coefficient in case where `f` is meromorphic of finite order and a
-presentation is given.
+Definition of the trailing coefficient in case where `f` is meromorphic and a presentation of the
+form `f = (z - x) ^ order • g z` is given, with `g` analytic at `x`.
 -/
 @[simp]
-lemma MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_finite (h₁ : MeromorphicAt f x)
-    (h₂ : AnalyticAt 𝕜 g x) (h₃ : meromorphicOrderAt f x ≠ ⊤)
-    (h₄ : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ (meromorphicOrderAt f x).untop₀ • g z) :
+lemma meromorphicTrailingCoeffAt_of_presentation (hg : AnalyticAt 𝕜 g x)
+    (h : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ (meromorphicOrderAt f x).untop₀ • g z) :
     meromorphicTrailingCoeffAt f x = g x := by
-  unfold meromorphicTrailingCoeffAt
-  simp only [h₁, not_true_eq_false, reduceDIte, h₃, ne_eq]
-  obtain ⟨h'₁, h'₂, h'₃⟩ := ((meromorphicOrderAt_ne_top_iff h₁).1 h₃).choose_spec
-  apply Filter.EventuallyEq.eq_of_nhds
-  rw [← h'₁.continuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE h₂.continuousAt]
-  filter_upwards [h₄, h'₃, self_mem_nhdsWithin] with y h₁y h₂y h₃y
-  rw [← sub_eq_zero]
-  rwa [h₂y, ← sub_eq_zero, ← smul_sub, smul_eq_zero_iff_right] at h₁y
-  simp_all [zpow_ne_zero, sub_ne_zero]
+  have h₁f : MeromorphicAt f x := by
+    rw [MeromorphicAt.meromorphicAt_congr h]
+    fun_prop
+  by_cases h₃ : meromorphicOrderAt f x = ⊤
+  · simp only [h₃, WithTop.untop₀_top, zpow_zero, one_smul,
+      MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_top] at ⊢ h
+    apply EventuallyEq.eq_of_nhds (f := 0)
+    rw [← ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE (by fun_prop) (by fun_prop)]
+    apply (h.symm.trans (meromorphicOrderAt_eq_top_iff.1 h₃)).symm
+  · unfold meromorphicTrailingCoeffAt
+    simp only [h₁f, not_true_eq_false, reduceDIte, h₃, ne_eq]
+    obtain ⟨h'₁, h'₂, h'₃⟩ := ((meromorphicOrderAt_ne_top_iff h₁f).1 h₃).choose_spec
+    apply Filter.EventuallyEq.eq_of_nhds
+    rw [← h'₁.continuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE hg.continuousAt]
+    filter_upwards [h, h'₃, self_mem_nhdsWithin] with y h₁y h₂y h₃y
+    rw [← sub_eq_zero]
+    rwa [h₂y, ← sub_eq_zero, ← smul_sub, smul_eq_zero_iff_right] at h₁y
+    simp_all [zpow_ne_zero, sub_ne_zero]
 
 /--
 Variant of `meromorphicTrailingCoeffAt_of_order_eq_finite`: Definition of the trailing coefficient
@@ -86,7 +94,7 @@ lemma AnalyticAt.meromorphicTrailingCoeffAt_of_order_eq_finite₁ (h₁ : Analyt
     simp only [meromorphicOrderAt_eq_int_iff h₄, ne_eq, zpow_natCast]
     use g, h₁, h₂
     exact h₃
-  simp_all [h₄.meromorphicTrailingCoeffAt_of_order_eq_finite h₁, this]
+  simp_all [meromorphicTrailingCoeffAt_of_presentation h₁, this]
 
 /--
 If `f` is analytic and does not vanish at `x`, then the trailing coefficient of `f` at `x` is `f x`.
@@ -119,7 +127,7 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_eq_limit (h : MeromorphicAt f x) 
       ← zpow_neg, ← zpow_add', neg_add_cancel, zpow_zero, one_smul]
     left
     simp_all [sub_ne_zero]
-  · rw [meromorphicTrailingCoeffAt_of_order_eq_finite h h₁g h₂ h₃g]
+  · rw [meromorphicTrailingCoeffAt_of_presentation h₁g h₃g]
     apply h₁g.continuousAt.continuousWithinAt
 
 /-!
@@ -178,8 +186,7 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_smul {f₁ : 𝕜 → 𝕜} {f₂
     ring_nf
   rw [h₁g₁.meromorphicTrailingCoeffAt_of_order_eq_finite₁ h₂g₁ h₃g₁,
     h₁g₂.meromorphicTrailingCoeffAt_of_order_eq_finite₁ h₂g₂ h₃g₂,
-    meromorphicTrailingCoeffAt_of_order_eq_finite (hf₁.smul hf₂) (h₁g₁.smul h₁g₂)
-      (by simp_all [meromorphicOrderAt_smul hf₁ hf₂]) this]
+    meromorphicTrailingCoeffAt_of_presentation (h₁g₁.smul h₁g₂) this]
   simp
 
 /--
