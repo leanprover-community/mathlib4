@@ -19,7 +19,7 @@ defines the limit value of an eventually-constant sequence.
 ## Main declarations
 
 * `natLT`/`natGT`: Make an order embedding `Nat ↪ α` from
-   an increasing/decreasing function `Nat → α`.
+  an increasing/decreasing function `Nat → α`.
 * `monotonicSequenceLimit`: The limit of an eventually-constant monotone sequence `Nat →o α`.
 * `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.
@@ -168,7 +168,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       rw [Nat.orderEmbeddingOfSet_range bad] at h
       exact h _ ((OrderEmbedding.lt_iff_lt _).2 mn)
     · rw [Set.infinite_coe_iff, Set.Infinite, not_not] at hbad
-      obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → ¬n ∈ bad := by
+      obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → n ∉ bad := by
         by_cases he : hbad.toFinset.Nonempty
         · refine
             ⟨(hbad.toFinset.max' he).succ, fun n hn nbad =>
@@ -197,9 +197,10 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
   obtain ⟨g, hr | hnr⟩ := exists_increasing_or_nonincreasing_subseq' r f
   · refine ⟨g, Or.intro_left _ fun m n mn => ?_⟩
     obtain ⟨x, rfl⟩ := Nat.exists_eq_add_of_le (Nat.succ_le_iff.2 mn)
-    induction' x with x ih
-    · apply hr
-    · apply IsTrans.trans _ _ _ _ (hr _)
+    induction x with
+    | zero => apply hr
+    | succ x ih =>
+      apply IsTrans.trans _ _ _ _ (hr _)
       exact ih (lt_of_lt_of_le m.lt_succ_self (Nat.le_add_right _ _))
   · exact ⟨g, Or.intro_right _ hnr⟩
 
@@ -259,15 +260,21 @@ partially-ordered type. -/
 noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
   a (monotonicSequenceLimitIndex a)
 
--- TODO: generalize to a conditionally complete lattice
-theorem WellFoundedGT.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
-    [WellFoundedGT α] (a : ℕ →o α) : iSup a = monotonicSequenceLimit a := by
-  refine (iSup_le fun m => ?_).antisymm (le_iSup a _)
+theorem le_monotonicSequenceLimit [PartialOrder α] [WellFoundedGT α] (a : ℕ →o α) (m : ℕ) :
+    a m ≤ monotonicSequenceLimit a := by
   rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
-  · obtain ⟨n, hn⟩ := WellFoundedGT.monotone_chain_condition' a
-    have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
-    exact (Nat.sInf_mem ⟨n, this⟩ m hm.le).ge
+  · obtain h := WellFoundedGT.monotone_chain_condition a
+    exact (Nat.sInf_mem (s := {n | ∀ m, n ≤ m → a n = a m}) h m hm.le).ge
+
+theorem WellFoundedGT.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
+    [WellFoundedGT α] (a : ℕ →o α) : iSup a = monotonicSequenceLimit a :=
+  (iSup_le (le_monotonicSequenceLimit a)).antisymm (le_iSup a _)
+
+theorem WellFoundedGT.ciSup_eq_monotonicSequenceLimit [ConditionallyCompleteLattice α]
+    [WellFoundedGT α] (a : ℕ →o α) (ha : BddAbove (Set.range a)) :
+    iSup a = monotonicSequenceLimit a :=
+  (ciSup_le (le_monotonicSequenceLimit a)).antisymm (le_ciSup ha _)
 
 @[deprecated WellFoundedGT.iSup_eq_monotonicSequenceLimit (since := "2025-01-15")]
 theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]

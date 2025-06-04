@@ -211,8 +211,7 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
   have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
       (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
   rw [this]
-  have t := @integral_const_mul 0 X volume _ _ s fun x : ℝ => (-x).exp * x ^ (s - 1)
-  rw [← t, ofReal_zero, zero_cpow]
+  rw [← intervalIntegral.integral_const_mul, ofReal_zero, zero_cpow]
   · rw [mul_zero, add_zero]; congr 2; ext1; ring
   · contrapose! hs; rw [hs, zero_re]
 

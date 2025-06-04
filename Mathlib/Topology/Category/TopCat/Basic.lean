@@ -12,7 +12,8 @@ import Mathlib.Topology.ContinuousMap.Basic
 We introduce the bundled category `TopCat` of topological spaces together with the functors
 `TopCat.discrete` and `TopCat.trivial` from the category of types to `TopCat` which equip a type
 with the corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
-resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
+resp. right adjoint to the forgetful functor, see
+`Mathlib/Topology/Category/TopCat/Adjunctions.lean`.
 -/
 
 assert_not_exists Module
@@ -209,6 +210,11 @@ lemma isIso_of_bijective_of_isClosedMap {X Y : TopCat.{u}} (f : X ⟶ Y)
   let e : X ≃ₜ Y :=
     (Equiv.ofBijective f hfbij).toHomeomorphOfContinuousClosed f.hom.continuous hfcl
   inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
+
+lemma isIso_iff_isHomeomorph {X Y : TopCat.{u}} (f : X ⟶ Y) :
+    IsIso f ↔ IsHomeomorph f :=
+  ⟨fun _ ↦ (homeoOfIso (asIso f)).isHomeomorph,
+    fun H ↦ isIso_of_bijective_of_isOpenMap _ H.bijective H.isOpenMap⟩
 
 theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding f :=

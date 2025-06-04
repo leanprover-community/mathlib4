@@ -180,7 +180,7 @@ theorem coe_of_mul_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r
     simp_rw [DFinsupp.sum, H, Finset.sum_ite_eq']
     split_ifs with h
     · rfl
-    rw [DFinsupp.not_mem_support_iff.mp h, ZeroMemClass.coe_zero, mul_zero]
+    rw [DFinsupp.notMem_support_iff.mp h, ZeroMemClass.coe_zero, mul_zero]
 
 theorem coe_mul_of_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i, A i) {i : ι}
     (r' : A i) {j n : ι} (H : ∀ x : ι, x + i = n ↔ x = j) :
@@ -194,7 +194,7 @@ theorem coe_mul_of_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i,
     simp_rw [DFinsupp.sum, H, Finset.sum_ite_eq']
     split_ifs with h
     · rfl
-    rw [DFinsupp.not_mem_support_iff.mp h, ZeroMemClass.coe_zero, zero_mul]
+    rw [DFinsupp.notMem_support_iff.mp h, ZeroMemClass.coe_zero, zero_mul]
 
 theorem coe_of_mul_apply_add [AddLeftCancelMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r : A i)
     (r' : ⨁ i, A i) (j : ι) : ((of (fun i => A i) i r * r') (i + j) : R) = r * r' j :=

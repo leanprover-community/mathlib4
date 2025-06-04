@@ -31,19 +31,15 @@ variable (v : Valuation R Γ₀)
 
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgroup γ : AddSubgroup R) :=
-  { inter := by
-      rintro γ₀ γ₁
-      use min γ₀ γ₁
-      simp only [ltAddSubgroup, Units.min_val, Units.val_le_val, lt_min_iff,
-        AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
-        forall_const, and_true]
-      tauto
+  { inter _ _ :=
+      ⟨_, le_inf
+        (ltAddSubgroup_mono _ (min_le_left _ _)) (ltAddSubgroup_mono _ (min_le_right _ _))⟩
     mul := by
       rintro γ
       obtain ⟨γ₀, h⟩ := exists_square_le γ
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
-      simp only [ltAddSubgroup, AddSubgroup.coe_set_mk, mem_setOf_eq] at r_in s_in
+      simp only [SetLike.mem_coe, mem_ltAddSubgroup_iff] at r_in s_in
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
         _ < γ₀ * γ₀ := by gcongr <;> exact zero_le'
@@ -52,30 +48,17 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use (1 : Γ₀ˣ)
-        rintro y _
-        change v (x * y) < _
-        rw [Valuation.map_mul, Hx, zero_mul]
-        exact Units.zero_lt γ
+        rintro y
+        simp [Hx]
       · use γx⁻¹ * γ
-        rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
-        change (v (x * y) : Γ₀) < γ
-        rw [Valuation.map_mul, Hx, mul_comm]
-        rw [Units.val_mul, mul_comm] at vy_lt
-        simpa using mul_inv_lt_of_lt_mul₀ vy_lt
+        simp [subset_def, lt_inv_mul_iff₀, Hx]
     rightMul := by
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use 1
-        rintro y _
-        change v (y * x) < _
-        rw [Valuation.map_mul, Hx, mul_zero]
-        exact Units.zero_lt γ
+        simp [subset_def, Hx]
       · use γx⁻¹ * γ
-        rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
-        change (v (y * x) : Γ₀) < γ
-        rw [Valuation.map_mul, Hx]
-        rw [Units.val_mul, mul_comm] at vy_lt
-        simpa using mul_inv_lt_of_lt_mul₀ vy_lt }
+        simp [subset_def, lt_mul_inv_iff₀, Hx, mul_comm] }
 
 end Valuation
 
@@ -177,14 +160,29 @@ theorem isClosed_ball (r : Γ₀) : IsClosed (X := R) {x | v x < r} := by
 theorem isClopen_ball (r : Γ₀) : IsClopen (X := R) {x | v x < r} :=
   ⟨isClosed_ball _ _, isOpen_ball _ _⟩
 
+lemma isOpen_ltAddSubgroup (γ : Γ₀ˣ) :
+    IsOpen ((v.ltAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isOpen_ball _ _
+
+lemma isClosed_ltAddSubgroup (γ : Γ₀ˣ) :
+    IsClosed ((v.ltAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isClosed_ball _ _
+
+lemma isClopen_ltAddSubgroup (γ : Γ₀ˣ) :
+    IsClopen ((v.ltAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isClopen_ball _ _
+
 /-- A closed ball centred at the origin in a valued ring is open. -/
-theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
+theorem isOpen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
   rw [mem_nhds]
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr,
     fun y hy => (sub_add_cancel y x).symm ▸ le_trans (v.map_add _ _) (max_le (le_of_lt hy) hx)⟩
+
+@[deprecated (since := "2025-06-04")]
+alias isOpen_closedball := isOpen_closedBall
 
 /-- A closed ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := by
@@ -197,7 +195,19 @@ theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := b
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x ≤ r} :=
-  ⟨isClosed_closedBall _ _, isOpen_closedball _ hr⟩
+  ⟨isClosed_closedBall _ _, isOpen_closedBall _ hr⟩
+
+lemma isOpen_leAddSubgroup {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsOpen ((v.leAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isOpen_closedBall _ hγ
+
+lemma isClosed_leAddSubgroup (γ : Γ₀) :
+    IsClosed ((v.leAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isClosed_closedBall _ _
+
+lemma isClopen_leAddSubgroup {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsClopen ((v.leAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isClopen_closedBall _ hγ
 
 /-- A sphere centred at the origin in a valued ring is clopen. -/
 theorem isClopen_sphere {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x = r} := by
@@ -219,7 +229,7 @@ theorem isClosed_sphere (r : Γ₀) : IsClosed (X := R) {x | v x = r} := by
 
 /-- The closed unit ball in a valued ring is open. -/
 theorem isOpen_integer : IsOpen (_i.v.integer : Set R) :=
-  isOpen_closedball _ one_ne_zero
+  isOpen_closedBall _ one_ne_zero
 
 @[deprecated (since := "2025-04-25")]
 alias integer_isOpen := isOpen_integer
@@ -253,5 +263,189 @@ theorem isClopen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
 lemma isOpenEmbedding_subtype_integer :
     Topology.IsOpenEmbedding (Subtype.val : _i.v.integer → R) :=
   ⟨.subtypeVal, by simpa using isOpen_integer _⟩
+
+section Ideal
+
+local notation "𝓞" => _i.v.integer
+
+/-- The submodule of over the valuation subring whose valuation is less than or equal to a
+certain value. -/
+def leSubmodule (γ : Γ₀) : Submodule 𝓞 R where
+  __ := leAddSubgroup v γ
+  smul_mem' r x h := by
+    simpa [Subring.smul_def] using mul_le_of_le_one_of_le r.prop h
+
+/-- The submodule of over the valuation subring whose valuation is less than a certain unit. -/
+def ltSubmodule (γ : Γ₀ˣ) : Submodule 𝓞 R where
+  __ := ltAddSubgroup v γ
+  smul_mem' r x h := by
+    simpa [Subring.smul_def] using mul_lt_of_le_one_of_lt r.prop h
+
+lemma leSubmodule_mono : Monotone (leSubmodule R) :=
+  leAddSubgroup_mono v
+
+lemma ltSubmodule_mono : Monotone (ltSubmodule R) :=
+  ltAddSubgroup_mono v
+
+lemma ltSubmodule_le_leSubmodule (γ : Γ₀ˣ) :
+    ltSubmodule R γ ≤ leSubmodule R (γ : Γ₀) :=
+  ltAddSubgroup_le_leAddSubgroup v γ
+
+lemma isOpen_ltSubmodule (γ : Γ₀ˣ) :
+    IsOpen (ltSubmodule R γ : Set R) :=
+  isOpen_ball _ _
+
+lemma isClosed_ltSubmodule (γ : Γ₀ˣ) :
+    IsClosed (ltSubmodule R γ : Set R) :=
+  isClosed_ball _ _
+
+lemma isClopen_ltSubmodule (γ : Γ₀ˣ) :
+    IsClopen (ltSubmodule R γ : Set R) :=
+  isClopen_ball _ _
+
+lemma isOpen_leSubmodule {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsOpen (leSubmodule R γ : Set R) :=
+  isOpen_closedBall _ hγ
+
+lemma isClosed_leSubmodule (γ : Γ₀) :
+    IsClosed (leSubmodule R γ : Set R) :=
+  isClosed_closedBall _ _
+
+lemma isClopen_leSubmodule {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsClopen (leSubmodule R γ : Set R) :=
+  isClopen_closedBall _ hγ
+
+variable {R} in
+@[simp]
+lemma mem_leSubmodule_iff {γ : Γ₀} {x : R} :
+    x ∈ leSubmodule R γ ↔ v x ≤ γ :=
+  Iff.rfl
+
+variable {R} in
+@[simp]
+lemma mem_ltSubmodule_iff {γ : Γ₀ˣ} {x : R} :
+    x ∈ ltSubmodule R γ ↔ v x < γ :=
+  Iff.rfl
+
+@[simp]
+lemma leSubmodule_zero (K : Type*) [Field K] [Valued K Γ₀] :
+    leSubmodule K (0 : Γ₀) = ⊥ := by
+  ext; simp
+
+lemma leSubmodule_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
+    {S : Submodule v.integer K} {x : K} (hx : x ∈ S) :
+    leSubmodule K (v x) ≤ S := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp
+  intro y hy
+  simp only [mem_leSubmodule_iff] at hy
+  have hyx : v ((y : K) / x) ≤ 1 := by
+    simp [map_div₀,div_le_one_of_le₀ hy]
+  have : y = (⟨_, hyx⟩ : v.integer) • x := by
+    rw [Subring.smul_def, smul_eq_mul, mul_comm, mul_div_cancel₀ _ (by simpa using hx0)]
+  rw [this]
+  exact Submodule.smul_mem _ _ hx
+
+lemma ltSubmodule_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
+    {S : Submodule v.integer K} {x : K} (hx : x ∈ S) (hxv : Valued.v x ≠ 0) :
+    ltSubmodule K (Units.mk0 _ hxv) ≤ S :=
+  (leSubmodule_v_le_of_mem hx).trans' (ltSubmodule_le_leSubmodule _ _)
+
+-- the ideals do not use the submodules due to `Submodule.comap _ (Algebra.linearMap _ _)`
+-- requiring commutativity
+
+/-- The ideal of elements of the valuation subring whose valuation is less than or equal to a
+certain value. -/
+def leIdeal (γ : Γ₀) : Ideal 𝓞 where
+  __ := AddSubgroup.addSubgroupOf (leAddSubgroup v γ) _i.v.integer.toAddSubgroup
+  smul_mem' r x h := by
+    change v ((r : R) * x) ≤ γ -- not sure why simp can't get us to here
+    simpa [Subring.smul_def] using mul_le_of_le_one_of_le r.prop h
+
+/-- The ideal of elements of the valuation subring whose valuation is less than a certain unit. -/
+def ltIdeal (γ : Γ₀ˣ) : Ideal 𝓞 where
+  __ := AddSubgroup.addSubgroupOf (ltAddSubgroup v γ) _i.v.integer.toAddSubgroup
+  smul_mem' r x h := by
+    change v ((r : R) * x) < γ -- not sure why simp can't get us to here
+    simpa [Subring.smul_def] using mul_lt_of_le_one_of_lt r.prop h
+
+-- Can't use `leAddSubgroup` because `addSubgroupOf` is a dependent function
+lemma leIdeal_mono : Monotone (leIdeal R) :=
+  fun _ _ h _ ↦ h.trans'
+
+lemma ltIdeal_mono : Monotone (ltIdeal R) :=
+  fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
+
+lemma ltIdeal_le_leIdeal (γ : Γ₀ˣ) :
+    ltIdeal R γ ≤ leIdeal R (γ : Γ₀) :=
+  fun _ h ↦ h.le
+
+variable {R} in
+@[simp]
+lemma mem_leIdeal_iff {γ : Γ₀} {x : 𝓞} :
+    x ∈ leIdeal R γ ↔ v (x : R) ≤ γ :=
+  Iff.rfl
+
+variable {R} in
+@[simp]
+lemma mem_ltIdeal_iff {γ : Γ₀ˣ} {x : 𝓞} :
+    x ∈ ltIdeal R γ ↔ v (x : R) < γ :=
+  Iff.rfl
+
+@[simp]
+lemma leIdeal_zero (K : Type*) [Field K] [hv : Valued K Γ₀] :
+    leIdeal K (0 : Γ₀) = ⊥ := by
+  ext; simp
+
+lemma leSubmodule_comap_algebraMap_eq_leIdeal {K : Type*} [Field K] [Valued K Γ₀] (γ : Γ₀) :
+    (leSubmodule K γ).comap (Algebra.linearMap _ _) = leIdeal K γ :=
+  Submodule.ext fun _ ↦ Iff.rfl
+
+-- Ideally, this would follow from `leSubmodule_v_le_of_mem`
+lemma leIdeal_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
+    {I : Ideal v.integer} {x : v.integer} (hx : x ∈ I) :
+    leIdeal K (v (x : K)) ≤ I := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp
+  intro y hy
+  simp only [mem_leIdeal_iff] at hy
+  have hyx : v ((y : K) / x) ≤ 1 := by
+    simp [map_div₀,div_le_one_of_le₀ hy]
+  have : y = (⟨_, hyx⟩ : v.integer) * x := by
+    ext
+    rw [Subring.coe_mul, mul_comm, mul_div_cancel₀ _ (by simpa using hx0)]
+  rw [this]
+  exact I.mul_mem_left _ hx
+
+lemma ltIdeal_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
+    {I : Ideal v.integer} {x : v.integer} (hx : x ∈ I) (hxv : Valued.v (x : K) ≠ 0) :
+    ltIdeal K (Units.mk0 _ hxv) ≤ I :=
+  (leIdeal_v_le_of_mem hx).trans' (ltIdeal_le_leIdeal _ _)
+
+lemma isOpen_ltIdeal (γ : Γ₀ˣ) :
+    IsOpen (ltIdeal R γ : Set 𝓞) :=
+  isOpen_ball _ _ |>.preimage continuous_subtype_val
+
+lemma isClosed_ltIdeal (γ : Γ₀ˣ) :
+    IsClosed (ltIdeal R γ : Set 𝓞) :=
+  isClosed_ball _ _ |>.preimage continuous_subtype_val
+
+lemma isClopen_ltIdeal (γ : Γ₀ˣ) :
+    IsClopen (ltIdeal R γ : Set 𝓞) :=
+  isClopen_ball _ _ |>.preimage continuous_subtype_val
+
+lemma isOpen_leIdeal {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsOpen (leIdeal R γ : Set 𝓞) :=
+  isOpen_closedBall _ hγ |>.preimage continuous_subtype_val
+
+lemma isClosed_leIdeal (γ : Γ₀) :
+    IsClosed (leIdeal R γ : Set 𝓞) :=
+  isClosed_closedBall _ _ |>.preimage continuous_subtype_val
+
+lemma isClopen_leIdeal {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsClopen (leIdeal R γ : Set 𝓞) :=
+  isClopen_closedBall _ hγ |>.preimage continuous_subtype_val
+
+end Ideal
 
 end Valued

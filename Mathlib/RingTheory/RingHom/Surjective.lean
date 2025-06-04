@@ -42,7 +42,7 @@ theorem surjective_respectsIso : RespectsIso surjective := by
   exact e.surjective
 
 theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective := by
-  refine IsStableUnderBaseChange.mk _ surjective_respectsIso ?_
+  refine IsStableUnderBaseChange.mk surjective_respectsIso ?_
   classical
   introv h x
   induction x with

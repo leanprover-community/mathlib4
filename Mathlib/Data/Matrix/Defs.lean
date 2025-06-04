@@ -16,9 +16,9 @@ with `Matrix m n α`. For the typical approach of counting rows and columns,
 
 ## Main definitions
 
- * `Matrix.transpose`: transpose of a matrix, turning rows into columns and vice versa
- * `Matrix.submatrix`: take a submatrix by reindexing rows and columns
- * `Matrix.module`: matrices are a module over the ring of entries
+* `Matrix.transpose`: transpose of a matrix, turning rows into columns and vice versa
+* `Matrix.submatrix`: take a submatrix by reindexing rows and columns
+* `Matrix.module`: matrices are a module over the ring of entries
 
 ## Notation
 
@@ -334,8 +334,6 @@ namespace Matrix
 
 section Transpose
 
-open Matrix
-
 @[simp]
 theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
   ext
@@ -500,7 +498,7 @@ abbrev subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
 section RowCol
 
 /-- For an `m × n` `α`-matrix `A`, `A.row i` is the `i`th row of `A` as a vector in `n → α`.
-`A.row` is defeq to `A`, but explicitly refers to the 'row function` of `A`
+`A.row` is defeq to `A`, but explicitly refers to the 'row function' of `A`
 while avoiding defeq abuse and noisy eta-expansions,
 such as in expressions like `Set.Injective A.row` and `Set.range A.row`.
 (Note 2025-04-07 : the identifier `Matrix.row` used to refer to a matrix with all rows equal;

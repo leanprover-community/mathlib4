@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Unique products and related notions
@@ -516,7 +517,6 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
     simp_rw [mem_product, mem_image, ← filter_nonempty_iff] at h1 h2
     replace h1 := uniqueMul_of_twoUniqueMul ?_ h1.1 h1.2
     on_goal 1 => replace h2 := uniqueMul_of_twoUniqueMul ?_ h2.1 h2.2
-
     · obtain ⟨a1, ha1, b1, hb1, hu1⟩ := h1
       obtain ⟨a2, ha2, b2, hb2, hu2⟩ := h2
       rw [mem_filter] at ha1 hb1 ha2 hb2

@@ -493,12 +493,10 @@ def Lattice.mk' {α : Type*} [Max α] [Min α] (sup_comm : ∀ a b : α, a ⊔ b
     calc
       b ⊔ b = b ⊔ b ⊓ (b ⊔ b) := by rw [inf_sup_self]
       _ = b := by rw [sup_inf_self]
-
   have inf_idem : ∀ b : α, b ⊓ b = b := fun b =>
     calc
       b ⊓ b = b ⊓ (b ⊔ b ⊓ b) := by rw [sup_inf_self]
       _ = b := by rw [inf_sup_self]
-
   let semilatt_inf_inst := SemilatticeInf.mk' inf_comm inf_assoc inf_idem
   let semilatt_sup_inst := SemilatticeSup.mk' sup_comm sup_assoc sup_idem
   have partial_order_eq : @SemilatticeSup.toPartialOrder _ semilatt_sup_inst =
@@ -1284,5 +1282,5 @@ instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
 end ULift
 
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
-instance Bool.instDistribLattice : DistribLattice Bool :=
-  inferInstance
+instance Bool.instPartialOrder : PartialOrder Bool := inferInstance
+instance Bool.instDistribLattice : DistribLattice Bool := inferInstance

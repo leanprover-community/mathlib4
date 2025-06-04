@@ -673,7 +673,7 @@ lemma chevalley_mvPolynomialC
   · refine ⟨(S.map (isEmptyRingEquiv _ _).toRingHom), ?_, ?_⟩
     · rw [ConstructibleSetData.toSet_map]
       show _ = (comapEquiv (isEmptyRingEquiv _ _)).symm ⁻¹' _
-      rw [← Equiv.image_eq_preimage]
+      rw [← OrderIso.image_eq_preimage]
       rfl
     · simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe, Finset.mem_image, comp_apply,
         BasicConstructibleSetData.map, RingHom.coe_coe, isEmptyRingEquiv_eq_coeff_zero, pow_one,
@@ -757,7 +757,7 @@ lemma chevalley_mvPolynomialC
     rw [← hU₁, ← hT₁, ← Set.image_comp, ← ContinuousMap.coe_comp, ← comap_comp,
       ConstructibleSetData.toSet_map]
     show _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
-    rw [← Equiv.image_eq_preimage, Set.image_image]
+    rw [← OrderIso.image_eq_preimage, Set.image_image]
     simp only [comapEquiv_apply, ← comap_apply, ← comap_comp_apply]
     congr!
     exact e.symm.toAlgHom.comp_algebraMap.symm
@@ -790,8 +790,8 @@ A constructible set of complexity at most `M` in `Spec R[X₁, ..., Xₘ]` gets 
 `f : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ]` to a constructible set of complexity `O_{M, m, n}(1)` in
 `Spec R[Y₁, ..., Yₙ]`.
 
-See the module doc of `Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity` for an explanation of
-this notion of complexity. -/
+See the module doc of `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean` for an
+explanation of this notion of complexity. -/
 lemma chevalley_mvPolynomial_mvPolynomial
     {m n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] MvPolynomial (Fin m) R)
     (k : ℕ) (d : Multiset (Fin m))

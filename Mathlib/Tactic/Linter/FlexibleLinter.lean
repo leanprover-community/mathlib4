@@ -89,7 +89,7 @@ We then propagate all the `FVarId`s that were present in the "before" goals to t
 while leaving untouched the ones in the "inert" goals.
 -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
@@ -145,10 +145,10 @@ variable (take? : Syntax → Bool) in
 an `InfoTree` and returns the array of pairs `(stx, mvars)`,
 where `stx` is a syntax node such that `take? stx` is `true` and
 `mvars` indicates the goal state:
- * the context before `stx`
- * the context after `stx`
- * a list of metavariables closed by `stx`
- * a list of metavariables created by `stx`
+* the context before `stx`
+* the context after `stx`
+* a list of metavariables closed by `stx`
+* a list of metavariables created by `stx`
 
 A typical usage is to find the goals following a `simp` application.
 -/
@@ -370,7 +370,7 @@ def reallyPersist
 
 /-- The main implementation of the flexible linter. -/
 def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless Linter.getLinterValue linter.flexible (← getOptions) && (← getInfoState).enabled do
+  unless getLinterValue linter.flexible (← getLinterOptions) && (← getInfoState).enabled do
     return
   if (← MonadState.get).messages.hasErrors then
     return
