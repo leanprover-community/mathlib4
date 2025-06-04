@@ -58,8 +58,9 @@ theorem fold_singleton : ({a} : Finset α).fold op b f = f a * b :=
 theorem fold_map {g : γ ↪ α} {s : Finset γ} : (s.map g).fold op b f = s.fold op b (f ∘ g) := by
   simp only [fold, map, Multiset.map_map]
 
+@[simp]
 theorem fold_image [DecidableEq α] {g : γ → α} {s : Finset γ}
-    (H : ∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
+    (H : Set.InjOn g s) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
   simp only [fold, image_val_of_injOn H, Multiset.map_map]
 
 @[congr]
