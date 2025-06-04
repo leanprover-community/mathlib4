@@ -1285,13 +1285,8 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
           obtain ⟨m_abs, m_eq_abs⟩ := exists_nat_abs
           have abs_n_le: |n| ≤ m_abs := by
             by_contra!
-            .
-              infer_instance
-            .
-              norm_cast at this
-              simp at this
-              rw [← m_eq_abs] at this
-              omega
+            rw [← m_eq_abs] at this
+            omega
           have nat_abs_n_le: n.natAbs ≤ m_abs := by
             rw [Int.abs_eq_natAbs] at abs_n_le
             omega
@@ -1337,9 +1332,7 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
           obtain ⟨m_abs, m_eq_abs⟩ := exists_nat_abs
           have abs_n_le: |n| ≤ m_abs := by
             by_contra!
-            . infer_instance
-            . simp at this
-              omega
+            omega
           have nat_abs_n_le: n.natAbs ≤ m_abs := by
             rw [Int.abs_eq_natAbs] at abs_n_le
             omega
@@ -1391,7 +1384,7 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
     | inv y hy y_mem =>
       apply Subgroup.inv_mem _ y_mem
 
-
+#print axioms closure_iterate_mulact
 
 --- Consequence of `three_two_poly_growth` - the set of all 'γ^n *e_i γ^(-n)' is contained the closure of S_n
 lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1)
