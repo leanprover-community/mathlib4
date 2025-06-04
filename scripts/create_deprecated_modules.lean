@@ -22,7 +22,7 @@ namespace DeprecatedModule
 
 /--
 This file interacts with `git ...` quite a bit. `runCmd` takes as input the command-line
-function `git ...` and returns it stdout string as its output.
+function `git ...` and returns its stdout string as its output.
 
 This is convenient to get both the output of the function, but also re-producing the exact
 command-line text that produced the output for better reproducibility and error reporting.
@@ -55,13 +55,13 @@ def getHeader (fname fileContent : String) (keepTrailing : Bool) : IO String := 
 def getHeaderFromFileName (fname : String) (keepTrailing : Bool) : IO String := do
   getHeader fname (← IO.FS.readFile fname) keepTrailing
 
-
 /--
 `mkDeprecationWithDate date customMessage` returns the formatted syntax
 `deprecated_module "customMessage" (since := "date")`,
 where the date is of the form `YYYY-MM-DD`.
 -/
-def mkDeprecationWithDate (date : String) (customMessage : Option String := some "Auto-generated deprecation") :
+def mkDeprecationWithDate (date : String)
+    (customMessage : Option String := some "Auto-generated deprecation") :
     CommandElabM Format := do
   let msgStx := customMessage.map Syntax.mkStrLit
   let dateStx := Syntax.mkStrLit date
@@ -120,11 +120,10 @@ def processPrettyOneLine (log msg fname : String) : IO (String × MessageData) :
   let hash := log.takeWhile (!·.isWhitespace)
   let PRdescr := (log.drop hash.length).trim
   let gitDiffCLI := s!"git diff {hash}^...{hash} -- {fname}"
-  let diff ← runCmd gitDiffCLI <|>
-        pure s!"{hash}: Error in computing '{gitDiffCLI}'"
+  let diff ← runCmd gitDiffCLI <|> pure s!"{hash}: Error in computing '{gitDiffCLI}'"
   let diffCollapsed := .trace {cls := .str .anonymous s!"{hash}"} m!"{gitDiffCLI}" #[m!"{diff}"]
   return (hash, m!"{msg} in " ++
-        .trace {cls := .str .anonymous ("_" ++ hash.take 7)} m!"{PRdescr}" #[diffCollapsed])
+    .trace {cls := .str .anonymous ("_" ++ hash.take 7)} m!"{PRdescr}" #[diffCollapsed])
 
 /--
 `mkRenamesDict pct` takes as optional input a natural number.
@@ -140,7 +139,6 @@ If no input is provided, the default percentage is `100`.
 def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
   let mut dict := ∅
   let gitDiffCLI := s!"git diff --name-status origin/master...HEAD"
-  --dbg_trace gitDiffCLI
   let gitDiff ← runCmd gitDiffCLI
   let lines := gitDiff.trim.splitOn "\n"
   for git in lines do
@@ -166,8 +164,6 @@ def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
           We treat this file as a removal."
   return dict
 
---#eval mkRenamesDict 10
-
 /--
 `mkModName fname` takes as input a file path and returns the guessed module name:
 the dir-separators get converted to `.` and a trailing `.lean` gets removed, if it exists.
@@ -181,7 +177,7 @@ def mkModName (fname : System.FilePath) : String :=
       cpts.dropLast ++ [if last.endsWith ".lean" then last.dropRight ".lean".length else last]
   ".".intercalate cpts
 
---#eval mkModName "Mathlib/Data/Nat/Basic.lean"
+#guard mkModName ("Mathlib" / "Data" / "Nat" / "Basic.lean") == "Mathlib.Data.Nat.Basic"
 
 /--
 `deprecateFilePath fname comment` takes as input
