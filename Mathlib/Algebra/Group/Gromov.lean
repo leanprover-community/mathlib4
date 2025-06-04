@@ -1170,7 +1170,7 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
         simp at hz
         obtain ⟨m, hm, z_eq⟩ := hz
         rw [← z_eq]
-        by_cases m_lt_n_sub: m < (-n.natAbs : ℤ) + 1
+        by_cases m_lt_n_sub: m < (n.natAbs : ℤ) + 1
         . apply Subgroup.subset_closure
           simp
           use (-1 + m)
@@ -1199,13 +1199,15 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
           -- TODO - there must be an easier way to do this
           rw [m_eq_n_minus]
           repeat rw [← mul_assoc]
-          rw [mul_self_zpow]
+          rw [← mul_self_zpow]
           simp
           rw [← zpow_neg]
-          rw [← inv_zpow']
+          rw [← zpow_neg_one]
           rw [mul_assoc]
-          rw [← zpow_add_one]
+          rw [mul_assoc]
+          rw [mul_assoc]
           simp
+          repeat rw [← mul_assoc]
           simp at conj_in
           by_cases n_pos: 0 < n
           .
