@@ -22,7 +22,8 @@ namespace DeprecatedModule
 
 /--
 This file interacts with `git ...` quite a bit. `runCmd` takes as input the command-line
-function `git ...` and returns its stdout string as its output.
+function `git ...` and returns its stdout string as its output, although technically the
+command need not be `git ...`, this is the only situation where we use it.
 
 This is convenient to get both the output of the function, but also for reproducing the exact
 command-line text that produced the output for better reproducibility and error reporting.
@@ -138,8 +139,7 @@ If no input is provided, the default percentage is `100`.
 -/
 def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
   let mut dict := ∅
-  let gitDiffCLI := s!"git diff --name-status origin/master...HEAD"
-  let gitDiff ← runCmd gitDiffCLI
+  let gitDiff ← runCmd s!"git diff --name-status origin/master...HEAD"
   let lines := gitDiff.trim.splitOn "\n"
   for git in lines do
     -- If `git` corresponds to a rename, it contains `3` segments, separated by a
@@ -199,8 +199,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
     throwError m!"The file {fname} exists: I cannot deprecate it!"
   -- Retrieve the last two commits that modified `fname`:
   -- the last one is the deletion, the previous one is the last file modification.
-  let gitLogFnameCLI := s!"git log --pretty=oneline -2 -- {fname}"
-  let log ← runCmd gitLogFnameCLI
+  let log ← runCmd s!"git log --pretty=oneline -2 -- {fname}"
   let [deleted, lastModified] := log.trim.splitOn "\n" |
     throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2! \
       Please make sure the file {fname} actually exists"
@@ -210,14 +209,12 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   msgs := msgs.push modifiedMsg
   msgs := msgs.push deletedMsg
   -- Get the commit date, in `YYYY-MM-DD` format, of the commit deleting the file.
-  let gitLogDatesCLI := s!"git log --format=%cs -2 -- {fname}"
-  let log' ← runCmd gitLogDatesCLI
+  let log' ← runCmd s!"git log --format=%cs -2 -- {fname}"
   let deletionDate := (log'.trim.splitOn "\n")[0]!
   let deprecation ← mkDeprecationWithDate deletionDate comment
   msgs := msgs.push ""
   -- Retrieves the final version of the file, before it was deleted.
-  let gitShowCLI := s!"git show {modifiedHash}:{fname}"
-  let file ← runCmd gitShowCLI
+  let file ← runCmd s!"git show {modifiedHash}:{fname}"
   -- Generate a module deprecation for the file `fname`.
   let fileHeader := ← match rename with
     | some rename => do
@@ -276,15 +273,13 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
   -- Get the hash and the commit message of the commit at `git log -n`
   -- (and throw an error if that doesn't exist).
   let getHashAndMessage (n : Nat) : CommandElabM (String × MessageData) := do
-    let gitLogCLI := s!"git log --pretty=oneline -{n}"
-    let log ← runCmd gitLogCLI
+    let log ← runCmd s!"git log --pretty=oneline -{n}"
     let some last := log.trim.splitOn "\n" |>.getLast? | throwError "Found no commits!"
     let commitHash := last.takeWhile (!·.isWhitespace)
     let PRdescr := (last.drop commitHash.length).trim
     return (commitHash, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
   let getFilesAtHash (hash : String) := do
-    let gitLSTreeCLI := s!"git ls-tree -r --name-only {hash} Mathlib/"
-    let files ← runCmd gitLSTreeCLI
+    let files ← runCmd s!"git ls-tree -r --name-only {hash} Mathlib/"
     let h : Std.HashSet String := .ofList <| files.splitOn "\n"
     return h
   let (currentHash, currentPRdescr) ← getHashAndMessage 1
