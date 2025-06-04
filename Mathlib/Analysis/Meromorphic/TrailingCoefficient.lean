@@ -44,8 +44,8 @@ If `f` is not meromorphic at `x`, the trailing coefficient is zero by definition
 /--
 If `f` is meromorphic of infinite order at `x`, the trailing coefficient is zero by definition.
 -/
-@[simp] lemma MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_top (h₁ : MeromorphicAt f x)
-    (h₂ : meromorphicOrderAt f x = ⊤) :
+@[simp] lemma MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_top
+    (h : meromorphicOrderAt f x = ⊤) :
     meromorphicTrailingCoeffAt f x = 0 := by simp_all [meromorphicTrailingCoeffAt]
 
 /-!
