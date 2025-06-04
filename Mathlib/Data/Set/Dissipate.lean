@@ -23,11 +23,10 @@ variable {α β : Type*} {s : α → Set β}
 
 namespace Set
 
-/-- `Dissipate s` is the intersection of `s y` for `y ≤ x`. -/
+/-- `Dissipate s x` is the intersection of `s y` for `y ≤ x`. -/
 def Dissipate [LE α] (s : α → Set β) (x : α) : Set β :=
   ⋂ y ≤ x, s y
 
-@[simp]
 theorem dissipate_def [LE α] {x : α} : Dissipate s x = ⋂ y ≤ x, s y := rfl
 
 theorem dissipate_eq {s : ℕ → Set β} {n : ℕ} : Dissipate s n = ⋂ k < n + 1, s k := by
@@ -44,17 +43,17 @@ theorem dissipate_subset_iInter [Preorder α] (x : α) : ⋂ i, s i ⊆ Dissipat
   simp only [Dissipate, subset_iInter_iff]
   exact fun x h ↦ iInter_subset_of_subset x fun ⦃a⦄ a ↦ a
 
-theorem antitone_dissipate [Preorder α] : Antitone (Dissipate s) :=
+theorem dissipate_antitone [Preorder α] : Antitone (Dissipate s) :=
   fun _ _ hab ↦ biInter_subset_biInter_left fun _ hz => le_trans hz hab
 
 @[gcongr]
 theorem dissipate_subset_dissipate [Preorder α] {x y} (h : y ≤ x) :
     Dissipate s x ⊆ Dissipate s y :=
-  antitone_dissipate h
+  dissipate_antitone h
 
 @[simp]
 theorem biInter_dissipate [Preorder α] {s : α → Set β} {x : α} :
-    ⋂ y, ⋂ (_ : y ≤ x), ⋂ y_1, ⋂ (_ : y_1 ≤ y), s y_1 = ⋂ y, ⋂ (_ : y ≤ x), s y := by
+    Dissipate (Dissipate s) x = Dissipate s x := by
   apply Subset.antisymm
   · apply iInter_mono fun z y hy ↦ ?_
     simp only [dissipate_def, mem_iInter] at *
@@ -63,11 +62,13 @@ theorem biInter_dissipate [Preorder α] {s : α → Set β} {x : α} :
     exact fun i hi z hz ↦ biInter_subset_of_mem <| le_trans hz hi
 
 @[simp]
-theorem iInter_dissipate [Preorder α] : ⋂ x, ⋂ y, ⋂ (_ : y ≤ x), s y = ⋂ x, s x := by
+theorem iInter_dissipate [Preorder α] : ⋂ x, Dissipate s x = ⋂ x, s x := by
+  simp_rw [dissipate_def]
   apply Subset.antisymm <;> simp_rw [subset_def, mem_iInter]
   · exact fun z h x' ↦ h x' x' (le_refl x')
   · exact fun z h x' y hy ↦ h y
 
+@[simp]
 lemma dissipate_bot [PartialOrder α] [OrderBot α] (s : α → Set β) : Dissipate s ⊥ = s ⊥ := by
   simp only [dissipate_def, le_bot_iff, iInter_iInter_eq_left]
 
@@ -95,7 +96,7 @@ lemma dissipate_zero (s : ℕ → Set β) : Dissipate s 0 = s 0 := by
 lemma exists_subset_dissipate_of_directed {s : ℕ → Set α}
   (hd : Directed (fun (x1 x2 : Set α) => x2 ⊆ x1) s) (n : ℕ) : ∃ m, s m ⊆ Dissipate s n := by
   induction n with
-  | zero => use 0; simp
+  | zero => use 0; simp [dissipate_def]
   | succ n hn =>
     obtain ⟨m, hm⟩ := hn
     simp_rw [dissipate_def, dissipate_succ]
@@ -122,7 +123,7 @@ lemma exists_dissipate_eq_empty_iff {s : ℕ → Set α}
 
 lemma directed_dissipate {s : ℕ → Set α} :
     Directed (fun (x1 x2 : Set α) => x2 ⊆ x1) (Dissipate s) :=
-     antitone_dissipate.directed_ge
+     dissipate_antitone.directed_ge
 
 lemma exists_dissipate_eq_empty_iff_of_directed (C : ℕ → Set α)
     (hd : Directed (fun (x1 x2 : Set α) => x2 ⊆ x1) C) :

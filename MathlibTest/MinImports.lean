@@ -32,7 +32,7 @@ end X
 /-- info: import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
 #min_imports in
--- If `#min_imports` were parsing just the syntax, the imports would be `Mathlib.Algebra.Ring.Defs`.
+-- If `#min_imports` were parsing just the syntax, the imports would be `Mathlib/Algebra/Ring/Defs.lean`.
 instance : Semiring Nat := inferInstance
 
 /-- info: import Mathlib.Algebra.Ring.Nat -/
@@ -80,7 +80,7 @@ info: import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.Lemma
 import Mathlib.Data.Nat.Notation
 ---
-info: theorem extracted_1 (n : ℕ) : n = n := sorry
+info: theorem hi.extracted_1_1 (n : ℕ) : n = n := sorry
 -/
 #guard_msgs in
 #min_imports in
