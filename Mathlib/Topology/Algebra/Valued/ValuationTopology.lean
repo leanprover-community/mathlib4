@@ -233,4 +233,85 @@ theorem isClopen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
     IsClopen (hv.v.valuationSubring : Set K) :=
   isClopen_integer K
 
+section Ideal
+
+local notation "𝓞" => _i.v.integer
+
+/-- The submodule of over the valuation subring whose valuation is less than or equal to a
+certain value. -/
+def leSubmodule (γ : Γ₀) : Submodule 𝓞 R where
+  __ := leAddSubgroup v γ
+  smul_mem' r x h := by
+    simpa [Subring.smul_def] using mul_le_of_le_one_of_le r.prop h
+
+/-- The submodule of over the valuation subring whose valuation is less than a certain unit. -/
+def ltSubmodule (γ : Γ₀ˣ) : Submodule 𝓞 R where
+  __ := ltAddSubgroup v γ
+  smul_mem' r x h := by
+    simpa [Subring.smul_def] using mul_lt_of_le_one_of_lt r.prop h
+
+lemma leSubmodule_mono : Monotone (leSubmodule R) :=
+  leAddSubgroup_mono v
+
+lemma ltSubmodule_mono : Monotone (ltSubmodule R) :=
+  ltAddSubgroup_mono v
+
+lemma ltSubmodule_le_leSubmodule (γ : Γ₀ˣ) :
+    ltSubmodule R γ ≤ leSubmodule R (γ : Γ₀) :=
+  ltAddSubgroup_le_leAddSubgroup v γ
+
+variable {R} in
+@[simp]
+lemma mem_leSubmodule_iff {γ : Γ₀} {x : R} :
+    x ∈ leSubmodule R γ ↔ v x ≤ γ :=
+  Iff.rfl
+
+variable {R} in
+@[simp]
+lemma mem_ltSubmodule_iff {γ : Γ₀ˣ} {x : R} :
+    x ∈ ltSubmodule R γ ↔ v x < γ :=
+  Iff.rfl
+
+-- the ideals do not use the submodules due to `Ideal.comap` requiring commutativity
+
+/-- The ideal of elements of the valuation subring whose valuation is less than or equal to a
+certain value. -/
+def leIdeal (γ : Γ₀) : Ideal 𝓞 where
+  __ := AddSubgroup.addSubgroupOf (leAddSubgroup v γ) _i.v.integer.toAddSubgroup
+  smul_mem' r x h := by
+    change v ((r : R) * x) ≤ γ -- not sure why simp can't get us to here
+    simpa [Subring.smul_def] using mul_le_of_le_one_of_le r.prop h
+
+/-- The ideal of elements of the valuation subring whose valuation is less than a certain unit. -/
+def ltIdeal (γ : Γ₀ˣ) : Ideal 𝓞 where
+  __ := AddSubgroup.addSubgroupOf (ltAddSubgroup v γ) _i.v.integer.toAddSubgroup
+  smul_mem' r x h := by
+    change v ((r : R) * x) < γ -- not sure why simp can't get us to here
+    simpa [Subring.smul_def] using mul_lt_of_le_one_of_lt r.prop h
+
+-- Can't use `leAddSubgroup` because `addSubgroupOf` is a dependent function
+lemma leIdeal_mono : Monotone (leIdeal R) :=
+  fun _ _ h _ ↦ h.trans'
+
+lemma ltIdeal_mono : Monotone (ltIdeal R) :=
+  fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
+
+lemma ltIdeal_le_leIdeal (γ : Γ₀ˣ) :
+    ltIdeal R γ ≤ leIdeal R (γ : Γ₀) :=
+  fun _ h ↦ h.le
+
+variable {R} in
+@[simp]
+lemma mem_leIdeal_iff {γ : Γ₀} {x : 𝓞} :
+    x ∈ leIdeal R γ ↔ v (x : R) ≤ γ :=
+  Iff.rfl
+
+variable {R} in
+@[simp]
+lemma mem_ltIdeal_iff {γ : Γ₀ˣ} {x : 𝓞} :
+    x ∈ ltIdeal R γ ↔ v (x : R) < γ :=
+  Iff.rfl
+
+end Ideal
+
 end Valued
