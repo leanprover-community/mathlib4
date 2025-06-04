@@ -117,12 +117,11 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       show moduleDepth N M ≥ IsLocalRing.depth M - r
       simp only [eq0, ENat.toNat_eq_zero, WithBot.unbot_eq_iff, WithBot.coe_zero, eqtop,
         or_false] at dim
-      have hsupp := support_of_dimension_zero R N dim
       have smul_lt : (maximalIdeal R) • (⊤ : Submodule R M) < (⊤ : Submodule R M) :=
         Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
           (IsLocalRing.maximalIdeal_le_jacobson (Module.annihilator R M)))
-      simp [eq0, IsLocalRing.depth,
-        moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M smul_lt hsupp]
+      simp [eq0, IsLocalRing.depth, moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M smul_lt
+        <| support_of_supportDim_eq_zero R N dim]
   · have eqr (n : ℕ∞) : n.toNat = r → n = r := by
       let _ : NeZero r := ⟨eq0⟩
       simp
