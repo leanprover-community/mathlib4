@@ -1170,15 +1170,18 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
         simp at hz
         obtain ⟨m, hm, z_eq⟩ := hz
         rw [← z_eq]
-        by_cases m_lt_n_sub: m < (n.natAbs : ℤ) + 1
+        by_cases m_lt_n_sub: (-n.natAbs : ℤ) < m - 1
         . apply Subgroup.subset_closure
           simp
-          use (-1 + m)
+          use (m - 1)
           refine ⟨?_, ?_⟩
           .
             refine ⟨?_, ?_⟩
-            . simp at m_lt_n_sub
+            .
+              simp at m_lt_n_sub
+              have ⟨m_gt, other⟩ := hm
               omega
+
             .
               apply_fun (fun (z: ℤ) => z - 1) at m_lt_n_sub
               .
@@ -1186,6 +1189,8 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
                 omega
               . exact add_right_strictMono
           .
+            repeat rw [← mul_self_zpow]
+            rw [zpow_sub_one]
             rw [zpow_add]
             simp
             repeat rw [← mul_assoc]
@@ -1194,7 +1199,7 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
           have n_minus_eq: n - 1 + 1 = n := by
             omega
           simp at m_lt_n_sub
-          have m_eq_n_minus: m = (|n|) + 1 := by
+          have m_eq_n_minus: m = (-|n|) + 1 := by
             omega
           -- TODO - there must be an easier way to do this
           rw [m_eq_n_minus]
@@ -1208,14 +1213,14 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
           rw [mul_assoc]
           simp
           repeat rw [← mul_assoc]
-          simp at conj_in
+          simp at conj_inv_in
           by_cases n_pos: 0 < n
           .
             have n_eq_abs: n = |n| := by
               exact Eq.symm (abs_of_pos n_pos)
             nth_rw 3 [← n_eq_abs]
             nth_rw 3 [← n_eq_abs]
-            exact conj_in
+            exact conj_inv_in
           .
             have n_eq_neg_abs: |n| = -n := by
               apply abs_of_nonpos
@@ -1224,8 +1229,8 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
             nth_rw 3 [n_eq_neg_abs]
             nth_rw 3 [n_eq_neg_abs]
             simp
-            simp at conj_inv_in
-            exact conj_inv_in
+            simp at conj_in
+            exact conj_in
       | one =>
         simp
         apply Subgroup.one_mem
