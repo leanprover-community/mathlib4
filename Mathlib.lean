@@ -6201,7 +6201,11 @@ import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.Topology.Algebra.Localization
+<<<<<<< HEAD
 import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+=======
+import Mathlib.Topology.Algebra.IsUniformGroup.Order
+>>>>>>> 6afe6111526 (Update Mathlib.lean)
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
 import Mathlib.Topology.Algebra.Module.Alternating.Topology
 import Mathlib.Topology.Algebra.Module.Basic
