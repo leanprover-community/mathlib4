@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Init
+import Mathlib.Tactic.Linter.Header
 
 /-!
 #  The `commandStart` linter
@@ -283,7 +283,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
         m!"'{stx}' starts on column {colStart}, \
           but all commands should start at the beginning of the line."
   -- We skip `macro_rules`, since they cause parsing issues.
-  if stx.find? (·.isOfKind ``Lean.Parser.Command.macro_rules) |>.isSome then
+  if stx.find? (·.isOfKind `Lean.Parser.Command.macro_rules) |>.isSome then
     return
   let some upTo := CommandStart.endPos stx | return
 

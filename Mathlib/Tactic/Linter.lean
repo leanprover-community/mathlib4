@@ -7,9 +7,6 @@ This file is ignored by `shake`:
 * it is in `ignoreAll`, meaning that all its imports are considered necessary;
 * it is in `ignoreImport`, meaning that where it is imported, it is considered necessary.
 -/
-
-import Mathlib.Tactic.Linter.CommandStart
-import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Linter.MinImports
