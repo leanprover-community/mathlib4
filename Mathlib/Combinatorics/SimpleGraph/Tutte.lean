@@ -52,7 +52,7 @@ private lemma tutte_exists_isAlternating_isCycles {x b a c : V} {M : Subgraph (G
   · simp +contextual [hnpxb, edge_adj, hnab.symm]
   · simpa [edge_adj, adj_congr_of_sym2 _ ((adj_edge _ _).mp hvw).1.symm] using .inl hgadj
 
-variable [Fintype V]
+variable [Finite V]
 
 lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u) :
     G.IsTutteViolator u := by
@@ -120,6 +120,7 @@ theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
       G.deleteUniversalVerts.coe.IsClique K.supp) :
     ∃ (M : Subgraph G), M.IsPerfectMatching := by
   classical
+  cases nonempty_fintype V
   obtain ⟨M, hM, hsub⟩ := IsMatching.exists_verts_compl_subset_universalVerts h h'
   obtain ⟨M', hM'⟩ := ((G.isClique_universalVerts.subset hsub).even_iff_exists_isMatching
     (Set.toFinite _)).mp (by simpa [Set.even_ncard_compl_iff hveven, -Set.toFinset_card,
@@ -269,6 +270,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     (hvEven : Even (Nat.card V)) :
     ∃ u, G.IsTutteViolator u := by
   classical
+  cases nonempty_fintype V
   -- It suffices to consider the edge-maximal case
   obtain ⟨Gmax, hSubgraph, hMatchingFree, hMaximal⟩ := exists_maximal_isMatchingFree h
   refine ⟨Gmax.universalVerts, .mono hSubgraph ?_⟩

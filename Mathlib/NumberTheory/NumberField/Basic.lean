@@ -73,6 +73,10 @@ instance of_intermediateField [NumberField K] [NumberField L] [Algebra K L]
     (E : IntermediateField K L) : NumberField E :=
   of_module_finite K E
 
+variable {K} in
+instance of_subfield [NumberField K] (E : Subfield K) : NumberField E where
+  to_finiteDimensional := FiniteDimensional.left ℚ E K
+
 theorem of_tower [NumberField K] [NumberField L] [Algebra K L] (E : Type*) [Field E]
     [Algebra K E] [Algebra E L] [IsScalarTower K E L] : NumberField E :=
   letI := Module.Finite.left K E L

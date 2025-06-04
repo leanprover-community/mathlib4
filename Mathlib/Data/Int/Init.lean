@@ -101,8 +101,7 @@ where
   pos : ∀ n : ℕ, C (b + n)
   | 0 => cast (by simp) H0
   | n+1 => cast (by rw [Int.add_assoc]; rfl) <|
-    Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
-
+    Hs _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
   /-- The negative case of `Int.inductionOn'`. -/
   neg : ∀ n : ℕ, C (b + -[n+1])
   | 0 => Hp _ Int.le_rfl H0
@@ -311,15 +310,18 @@ lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign
 @[simp] lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
   simp only [lt_toNat, Int.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
 
-lemma toNat_lt'' {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by omega
+lemma toNat_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by omega
+
+@[deprecated (since := "2025-05-24")]
+alias toNat_lt'' := toNat_lt_of_ne_zero
 
 /-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
 def natMod (m n : ℤ) : ℕ := (m % n).toNat
 
 lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
-  (toNat_lt'' hn).2 <| emod_lt_of_pos _ <| by omega
+  (toNat_lt_of_ne_zero hn).2 <| emod_lt_of_pos _ <| by omega
 
-/-- For use in `Mathlib.Tactic.NormNum.Pow` -/
+/-- For use in `Mathlib/Tactic/NormNum/Pow.lean` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
 
 end Int

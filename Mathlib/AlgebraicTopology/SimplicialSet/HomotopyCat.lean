@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+import Mathlib.CategoryTheory.Category.Cat.Terminal
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 
@@ -28,7 +29,7 @@ the data that is not used for the construction of the homotopy category) and the
 analogously defined `SSet.hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u}` implemented relative to
 the syntax of the 2-truncated simplex category.
 
-In the file `Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction` we show the functor
+In the file `Mathlib/AlgebraicTopology/SimplicialSet/NerveAdjunction.lean` we show the functor
 `SSet.hoFunctor` to be left adjoint to the nerve by providing an analogous decomposition of the
 nerve functor, made by possible by the fact that nerves of categories are 2-coskeletal, and then
 composing a pair of adjunctions, which factor through the category of 2-truncated simplicial sets.
@@ -352,5 +353,32 @@ def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ Truncated.hoFun
 end
 
 end
+section
+
+instance instUniqueOneTruncation₂DeltaZero : Unique (OneTruncation₂ ((truncation 2).obj Δ[0])) where
+  default := stdSimplex.const _ 0 _
+  uniq := by
+    unfold OneTruncation₂ truncation SimplicialObject.truncation
+    dsimp
+    intro x
+    have f : ⦋0⦌ ⟶ ⦋0⦌ := sorry -- want this to be x
+    let eq := stdSimplex.objEquiv.{u} (n := ⦋0⦌) (m := op ⦋0⦌)
+    have := SimplexCategory.eq_const_to_zero f
+    -- morally the proof is this
+    sorry
+
+instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) where
+  default := by
+--    let ans := OneTruncation₂.Hom.edge (𝟙rq instUniqueOneTruncation₂DeltaZero.default)
+    sorry
+  uniq := sorry
+
+def goal : IsTerminal (hoFunctor.obj (Δ[0])) := by
+  letI : Unique ((truncation 2).obj Δ[0]).HomotopyCategory := by sorry
+  letI : IsDiscrete ((truncation 2).obj Δ[0]).HomotopyCategory := sorry
+  apply Cat.isDiscreteUnique.isTerminal
+
+end
+
 
 end SSet
