@@ -412,6 +412,11 @@ lemma ltAddSubgroup_le_leAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) :
     v.ltAddSubgroup γ ≤ v.leAddSubgroup γ :=
   fun _ h ↦ h.le
 
+@[simp]
+lemma leAddSubgroup_zero {K : Type*} [Field K] (v : Valuation K Γ₀) :
+    v.leAddSubgroup 0 = ⊥ := by
+  ext; simp
+
 end Group
 
 end Basic

@@ -323,7 +323,12 @@ lemma mem_ltSubmodule_iff {γ : Γ₀ˣ} {x : R} :
     x ∈ ltSubmodule R γ ↔ v x < γ :=
   Iff.rfl
 
--- the ideals do not use the submodules due to `Ideal.comap` requiring commutativity
+@[simp]
+lemma leSubmodule_zero (K : Type u) [Field K] [hv : Valued K Γ₀] :
+    leSubmodule K (0 : Γ₀) = ⊥ := by
+  ext; simp
+
+--- the ideals do not use the submodules due to `Ideal.comap` requiring commutativity
 
 /-- The ideal of elements of the valuation subring whose valuation is less than or equal to a
 certain value. -/
@@ -362,6 +367,11 @@ variable {R} in
 lemma mem_ltIdeal_iff {γ : Γ₀ˣ} {x : 𝓞} :
     x ∈ ltIdeal R γ ↔ v (x : R) < γ :=
   Iff.rfl
+
+@[simp]
+lemma leIdeal_zero (K : Type u) [Field K] [hv : Valued K Γ₀] :
+    leIdeal K (0 : Γ₀) = ⊥ := by
+  ext; simp
 
 lemma isOpen_ltIdeal (γ : Γ₀ˣ) :
     IsOpen (ltIdeal R γ : Set 𝓞) :=
