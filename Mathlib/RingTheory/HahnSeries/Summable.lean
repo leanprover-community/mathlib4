@@ -12,29 +12,29 @@ function. This theory is applied to characterize invertible Hahn series whose co
 commutative domain.
 
 ## Main Definitions
-  * `HahnSeries.SummableFamily` is a family of Hahn series such that the union of the supports
+* `HahnSeries.SummableFamily` is a family of Hahn series such that the union of the supports
   is partially well-ordered and only finitely many are nonzero at any given coefficient. Note that
   this is different from `Summable` in the valuation topology, because there are topologically
   summable families that do not satisfy the axioms of `HahnSeries.SummableFamily`, and formally
   summable families whose sums do not converge topologically.
-  * `HahnSeries.SummableFamily.hsum` is the formal sum of a summable family.
-  * `HahnSeries.SummableFamily.lsum` is the formal sum bundled as a `LinearMap`.
-  * `HahnSeries.SummableFamily.smul` is the summable family given by pointwise scalar multiplication
+* `HahnSeries.SummableFamily.hsum` is the formal sum of a summable family.
+* `HahnSeries.SummableFamily.lsum` is the formal sum bundled as a `LinearMap`.
+* `HahnSeries.SummableFamily.smul` is the summable family given by pointwise scalar multiplication
   of component Hahn series.
-  * `HahnSeries.SummableFamily.mul` is the summable family given by pointwise multiplication.
-  * `HahnSeries.SummableFamily.powers` is the summable family given by non-negative powers of a
+* `HahnSeries.SummableFamily.mul` is the summable family given by pointwise multiplication.
+* `HahnSeries.SummableFamily.powers` is the summable family given by non-negative powers of a
   Hahn series, if the series has strictly positive order. If the series has non-positive order, then
   the summable family takes the junk value of zero.
 
 ## Main results
-  * `HahnSeries.isUnit_iff`: If `R` is a commutative domain, and `Γ` is a linearly ordered additive
+* `HahnSeries.isUnit_iff`: If `R` is a commutative domain, and `Γ` is a linearly ordered additive
   commutative group, then a Hahn series is a unit if and only if its leading term is a unit in `R`.
-  * `HahnSeries.SummableFamily.hsum_smul`:   `smul` is compatible with `hsum`.
-  * `HahnSeries.SummableFamily.hsum_mul`: `mul` is compatible with `hsum`.  That is, the product of
+* `HahnSeries.SummableFamily.hsum_smul`:   `smul` is compatible with `hsum`.
+* `HahnSeries.SummableFamily.hsum_mul`: `mul` is compatible with `hsum`.  That is, the product of
   sums is equal to the sum of pointwise products.
 
 ## TODO
-  * Summable Pi families
+* Summable Pi families
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
