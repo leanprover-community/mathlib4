@@ -68,7 +68,7 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
 A `FormatError` is the main structure for keeping track of how different the user syntax is
 from the pretty-printed version of itself.
 
-It contains information about position within an ambient string of where the exception lies.
+In case of deviations, it contains the deviation's location within an ambient string.
 -/
 structure FormatError where
   /-- The distance to the end of the source string, as number of characters. -/
@@ -114,7 +114,7 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
   fs.pop.push {back with length := back.length + f.length, srcStartPos := f.srcEndPos}
 
 /--
-It scans the two input strings `L` and `M`, assuming that they `M` is the pretty-printed version
+Scan the two input strings `L` and `M`, assuming `M` is the pretty-printed version of `L`.
 of `L`.
 This almost means that `L` and `M` only differ in whitespace.
 
