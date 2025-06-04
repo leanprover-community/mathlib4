@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+import Mathlib.Topology.MetricSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Continuity of the continuous functional calculus in each variable
@@ -40,6 +41,8 @@ open Filter Topology
 section Unital
 
 section Left
+
+section Generic
 
 variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
@@ -113,6 +116,28 @@ theorem Continuous.cfc_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     Continuous fun x ↦ cfc (f x) a := by
   rw [continuous_iff_continuousOn_univ] at h_cont ⊢
   exact h_cont.cfc_fun (fun x _ ↦ hf x)
+
+end Generic
+
+section Isometric
+
+open scoped UniformConvergence
+
+variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
+    [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
+
+open UniformOnFun
+lemma lipschitzOnWith_cfc_fun (a : A) :
+    LipschitzOnWith 1 (fun f ↦ cfc (toFun {spectrum R a} f) a)
+      {f | ContinuousOn f (spectrum R a)} := by
+  by_cases ha : p a
+  · sorry
+  · simpa [cfc_apply_of_not_predicate a ha] using LipschitzWith.const' 0 |>.lipschitzOnWith
+
+end Isometric
+
+#exit
 
 end Left
 
@@ -223,6 +248,13 @@ protected theorem Continuous.cfc [TopologicalSpace X] {s : Set 𝕜} (hs : IsCom
     Continuous (fun x ↦ cfc f (a x)) := by
   rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfc hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
+
+open scoped UniformConvergence
+open UniformOnFun in
+theorem continuousOn_cfc_setProd {s : Set 𝕜} (hs : IsCompact s) :
+    ContinuousOn (fun fa : (𝕜 →ᵤ[{s}] 𝕜) × A ↦ cfc (toFun {s} fa.1) fa.2)
+      ({f | ContinuousOn (toFun {s} f) s} ×ˢ {a | p a ∧ spectrum 𝕜 a ⊆ s}) :=
+  sorry
 
 end RCLike
 
