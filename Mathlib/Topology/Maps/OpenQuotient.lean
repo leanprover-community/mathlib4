@@ -71,6 +71,18 @@ theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻�
 
 end IsOpenQuotientMap
 
+theorem Topology.IsInducing.isOpenQuotientMap_of_surjective (ind : IsInducing f)
+    (surj : Function.Surjective f) : IsOpenQuotientMap f where
+  surjective := surj
+  continuous := ind.continuous
+  isOpenMap U U_open := by
+    obtain ⟨V, hV, rfl⟩ := ind.isOpen_iff.mp U_open
+    rwa [V.image_preimage_eq surj]
+
+theorem Topology.IsInducing.isQuotientMap_of_surjective (ind : IsInducing f)
+    (surj : Function.Surjective f) : IsQuotientMap f :=
+  (ind.isOpenQuotientMap_of_surjective surj).isQuotientMap
+
 section Subquotient
 
 variable {A B C D : Type*}

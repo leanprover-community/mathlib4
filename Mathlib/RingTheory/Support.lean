@@ -70,6 +70,11 @@ lemma Module.mem_support_iff_exists_annihilator :
   rw [Module.mem_support_iff']
   simp_rw [not_imp_not, SetLike.le_def, Submodule.mem_annihilator_span_singleton]
 
+lemma Module.mem_support_mono {p q : PrimeSpectrum R} (H : p ≤ q) (hp : p ∈ Module.support R M) :
+    q ∈ Module.support R M := by
+  rw [Module.mem_support_iff_exists_annihilator] at hp ⊢
+  exact ⟨_, hp.choose_spec.trans H⟩
+
 lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s = ⊤) :
     p ∈ Module.support R M ↔ ∃ m ∈ s, (R ∙ m).annihilator ≤ p.asIdeal := by
   constructor
@@ -115,6 +120,11 @@ lemma Module.support_eq_empty_iff :
     ← LocalizedModule.subsingleton_iff_support_subset, LocalizedModule.subsingleton_iff,
     subsingleton_iff_forall_eq 0]
   simp only [Submonoid.powers_one, Submonoid.mem_bot, exists_eq_left, one_smul]
+
+lemma Module.nonempty_support_iff :
+    (Module.support R M).Nonempty ↔ Nontrivial M := by
+  rw [Set.nonempty_iff_ne_empty, ne_eq,
+    Module.support_eq_empty_iff, ← not_subsingleton_iff_nontrivial]
 
 instance [Nontrivial M] : Nonempty (Module.support R M) :=
   Set.nonempty_iff_ne_empty'.mpr ((Module.support_eq_empty_iff).not.mpr (not_subsingleton M))
