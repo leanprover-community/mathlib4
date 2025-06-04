@@ -390,6 +390,9 @@ lemma mem_leAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀} {x : R} :
     x ∈ v.leAddSubgroup γ ↔ v x ≤ γ :=
   Iff.rfl
 
+lemma leAddSubgroup_mono (v : Valuation R Γ₀) : Monotone v.leAddSubgroup :=
+  fun _ _ h _ ↦ h.trans'
+
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   carrier := { x | v x < γ }
@@ -401,6 +404,9 @@ def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
 lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀ˣ} {x : R} :
     x ∈ v.ltAddSubgroup γ ↔ v x < γ :=
   Iff.rfl
+
+lemma ltAddSubgroup_mono (v : Valuation R Γ₀) : Monotone v.ltAddSubgroup :=
+  fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
 
 end Group
 

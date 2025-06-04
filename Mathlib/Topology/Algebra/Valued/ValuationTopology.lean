@@ -31,10 +31,9 @@ variable (v : Valuation R Γ₀)
 
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgroup γ : AddSubgroup R) :=
-  { inter := by
-      rintro γ₀ γ₁
-      use min γ₀ γ₁
-      simp [SetLike.le_def]
+  { inter _ _ :=
+      ⟨_, le_inf
+        (ltAddSubgroup_mono _ (min_le_left _ _)) (ltAddSubgroup_mono _ (min_le_right _ _))⟩
     mul := by
       rintro γ
       obtain ⟨γ₀, h⟩ := exists_square_le γ
