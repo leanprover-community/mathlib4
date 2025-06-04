@@ -1206,6 +1206,29 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         simp [List.unattach, -List.map_subtype]
     exact l_prod
 
+  have smul_subset: p • three_two_B_n (S := {s}) φ γ N ⊆ three_two_B_n (S := {s}) φ γ (N + 1) := by
+    intro a ha
+    simp [three_two_B_n] at ha
+    simp [three_two_B_n]
+    simp only [Finset.smul_finset_def, smul_eq_mul, Finset.mem_image] at ha
+    obtain ⟨list_prod, ⟨list, list_mem, list_prod_eq⟩, p_mul_eq⟩ := ha
+    simp [list_len_n] at list_mem
+    use (⟨p, p_mem⟩ :: (list.map (fun s => ⟨s.val, by (
+      exact s_n_subset s.property
+    )⟩)))
+    refine ⟨?_, ?_⟩
+    .
+      simp [list_len_n, list_mem]
+
+    .
+      simp
+      conv =>
+        lhs
+        arg 2
+        arg 1
+        equals list.unattach =>
+          simp [List.unattach, -List.map_subtype]
+      rw [list_prod_eq, p_mul_eq]
 
 
 
