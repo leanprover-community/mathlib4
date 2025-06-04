@@ -301,7 +301,7 @@ theorem hasFDerivWithinAt_of_partial_fst_continuousOn_prod_open
     (fun z' hz' => (hf'x z'.swap (hmt_ts hz')))
   -- exchange `E` and `F` back in the result to satisfy the goal
   convert hswap.comp z (hasFDerivWithinAt_swap 𝕜 E F (s ×ˢ t) z) hmt_st
-  simp only [Prod.swap_swap, comp_apply, ContinousLinearMap.coprod_comp_prodComm]
+  simp only [Prod.swap_swap, comp_apply, ContinuousLinearMap.coprod_comp_prodComm]
 
 /-- If a function `f : E × F → G` has partial derivative `f'x` or `f'y` continuous
 on an open set `u`, then `f` is continously differentiable on this set, with
