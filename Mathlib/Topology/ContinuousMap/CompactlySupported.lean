@@ -663,27 +663,18 @@ lemma nnrealPart_smul_pos (f : C_c(α, ℝ)) {a : ℝ} (ha : 0 ≤ a) :
   simp only [nnrealPart_apply, coe_smul, Pi.smul_apply, Real.coe_toNNReal', smul_eq_mul,
     NNReal.coe_mul, ha, sup_of_le_left]
   rcases le_total 0 (f x) with hfx | hfx
-  · rw [sup_of_le_left (by positivity), sup_of_le_left hfx]
-  · rw [sup_of_le_right (by simp [mul_nonpos_iff, ha, hfx]), sup_of_le_right hfx]
-    simp only [mul_zero]
+  · simp [ha, hfx]
+    exact Left.mul_nonneg ha hfx
+  · simp [mul_nonpos_iff, ha, hfx]
 
 lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
     (a • f).nnrealPart = (-a).toNNReal • (-f).nnrealPart := by
   ext x
   simp only [nnrealPart_apply, coe_smul, Pi.smul_apply, smul_eq_mul, Real.coe_toNNReal', coe_neg,
     Pi.neg_apply, NNReal.coe_mul]
-  by_cases hfx : 0 ≤ f x
-  · rw [sup_of_le_right _, sup_of_le_left (neg_nonneg.mpr ha),
-      sup_of_le_right (neg_nonpos.mpr hfx)]
-    · simp only [mul_zero]
-    apply mul_nonpos_iff.mpr
-    right
-    exact ⟨ha, hfx⟩
-  · push_neg at hfx
-    rw [sup_of_le_left _, sup_of_le_left (neg_nonneg.mpr ha),
-      sup_of_le_left (neg_nonneg.mpr (le_of_lt hfx))]
-    · ring
-    exact mul_nonneg_of_nonpos_of_nonpos ha (le_of_lt hfx)
+  rcases le_total 0 (f x) with hfx | hfx
+  · simp [mul_nonpos_iff, ha, hfx]
+  · simp [mul_nonneg_of_nonpos_of_nonpos ha hfx, ha, neg_nonneg.mpr hfx]
 
 lemma nnrealPart_add_le_add_nnrealPart (f g : C_c(α, ℝ)) :
     (f + g).nnrealPart ≤ f.nnrealPart + g.nnrealPart := by
@@ -699,62 +690,50 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
   refine ⟨hh, ?_⟩
   ext x
   simp only [coe_add, Pi.add_apply, nnrealPart_apply, coe_neg, Pi.neg_apply, NNReal.coe_add,
-    Real.coe_toNNReal']
-  rw [← neg_add]
+    Real.coe_toNNReal', ← neg_add]
   have hhx : (f x + g x) ⊔ 0 + ↑(h x) = f x ⊔ 0 + g x ⊔ 0 := by
     rw [← Real.coe_toNNReal', ← Real.coe_toNNReal', ← Real.coe_toNNReal', ← NNReal.coe_add,
       ← NNReal.coe_add]
     have hhx' : ((f + g).nnrealPart + h) x = (f.nnrealPart + g.nnrealPart) x := by congr
     simp only [coe_add, Pi.add_apply, nnrealPart_apply, Real.coe_toNNReal'] at hhx'
     exact congrArg toReal hhx'
-  by_cases hfx : 0 ≤ f x
-  · by_cases hgx : 0 ≤ g x
-    · rw [sup_eq_left.mpr hfx, sup_eq_left.mpr hgx, sup_eq_left.mpr (add_nonneg hfx hgx)] at hhx
-      simp only [add_eq_left, coe_eq_zero] at hhx
-      rw [sup_eq_right.mpr (neg_nonpos.mpr hfx), sup_eq_right.mpr (neg_nonpos.mpr hgx),
-        sup_eq_right.mpr (neg_nonpos.mpr (add_nonneg hfx hgx))]
-      simp only [zero_add, add_zero, coe_eq_zero]
-      exact hhx
-    · push_neg at hgx
-      by_cases hfgx : 0 ≤ f x + g x
-      · rw [sup_eq_left.mpr hfx, sup_eq_right.mpr (le_of_lt hgx), sup_eq_left.mpr hfgx] at hhx
-        simp only [add_zero, add_assoc, add_eq_left] at hhx
-        rw [sup_eq_right.mpr (neg_nonpos.mpr hfx), sup_eq_left.mpr (le_of_lt (neg_pos.mpr hgx)),
-          sup_eq_right.mpr (neg_nonpos.mpr hfgx)]
-        ring_nf
-        exact Eq.symm (neg_eq_of_add_eq_zero_right hhx)
-      · push_neg at hfgx
-        rw [sup_eq_left.mpr hfx, sup_eq_right.mpr (le_of_lt hgx), sup_eq_right.mpr (le_of_lt hfgx)]
+  rcases le_total 0 (f x) with hfx | hfx
+  · rcases le_total 0 (g x) with hgx | hgx
+    · simp only [hfx, hgx, add_nonneg, sup_of_le_left, add_eq_left, coe_eq_zero] at hhx
+      rw [hhx]
+      simp only [neg_add_rev, NNReal.coe_zero, add_zero, sup_of_le_right (neg_nonpos.mpr hfx),
+        sup_of_le_right (neg_nonpos.mpr hgx),
+        sup_of_le_right (add_nonpos (neg_nonpos.mpr hgx) (neg_nonpos.mpr hfx)), add_zero]
+    · rcases le_total 0 (f x + g x) with hfgx | hfgx
+      · rw [sup_of_le_left hfx, sup_of_le_right hgx, sup_of_le_left hfgx, add_zero, add_assoc,
+          add_eq_left] at hhx
+        rw [sup_of_le_right (neg_nonpos.mpr hfx), sup_of_le_left (neg_nonneg.mpr hgx),
+          sup_of_le_right (neg_nonpos.mpr hfgx)]
+        linarith
+      · rw [sup_of_le_left hfx, sup_of_le_right hgx, sup_of_le_right hfgx, zero_add, add_zero]
           at hhx
-        simp only [zero_add, add_zero] at hhx
-        rw [sup_eq_right.mpr (neg_nonpos.mpr hfx), sup_eq_left.mpr (le_of_lt (neg_pos.mpr hgx)),
-          sup_eq_left.mpr (neg_nonneg.mpr (le_of_lt hfgx)), hhx]
+        rw [sup_of_le_right (neg_nonpos.mpr hfx), sup_of_le_left (neg_nonneg.mpr hgx),
+          sup_of_le_left (neg_nonneg.mpr hfgx), hhx]
         ring
-  · push_neg at hfx
-    by_cases hgx : 0 ≤ g x
-    · by_cases hfgx : 0 ≤ f x + g x
-      · rw [sup_eq_right.mpr (le_of_lt hfx), sup_eq_left.mpr hgx, sup_eq_left.mpr hfgx, zero_add,
-          add_comm, ← add_assoc] at hhx
-        simp only [add_eq_right] at hhx
-        rw [sup_eq_left.mpr (neg_nonneg.mpr (le_of_lt hfx)), sup_eq_right.mpr (neg_nonpos.mpr hgx),
-          sup_eq_right.mpr (neg_nonpos.mpr hfgx)]
-        simp only [zero_add, add_zero]
-        exact eq_neg_of_add_eq_zero_left hhx
-      · push_neg at hfgx
-        rw [sup_eq_right.mpr (le_of_lt hfx), sup_eq_left.mpr hgx, sup_eq_right.mpr (le_of_lt hfgx),
+  · rcases le_total 0 (g x) with hgx | hgx
+    · rcases le_total 0 (f x + g x) with hfgx | hfgx
+      · rw [sup_of_le_right hfx, sup_of_le_left hgx, sup_of_le_left hfgx, zero_add,
+          add_comm, ← add_assoc, add_eq_right] at hhx
+        rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
+          sup_of_le_right (neg_nonpos.mpr hfgx), zero_add, add_zero]
+        linarith
+      · rw [sup_of_le_right hfx, sup_of_le_left hgx, sup_of_le_right hfgx,
           zero_add, add_comm, add_zero] at hhx
-        rw [sup_eq_left.mpr (neg_nonneg.mpr (le_of_lt hfx)), sup_eq_right.mpr (neg_nonpos.mpr hgx),
-          sup_eq_left.mpr (neg_nonneg.mpr (le_of_lt hfgx)), hhx]
+        rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
+          sup_of_le_left (neg_nonneg.mpr hfgx), hhx]
         simp
-    · push_neg at hgx
-      rw [sup_eq_right.mpr (le_of_lt hfx), sup_eq_right.mpr (le_of_lt hgx),
-        sup_eq_right.mpr (le_of_lt (add_neg hfx hgx))] at hhx
-      simp only [zero_add, add_zero, coe_eq_zero] at hhx
-      rw [sup_eq_left.mpr (neg_nonneg.mpr (le_of_lt hfx)),
-        sup_eq_left.mpr (le_of_lt (neg_pos.mpr hgx)),
-        sup_eq_left.mpr (neg_nonneg.mpr (le_of_lt (add_neg hfx hgx))), hhx]
-      simp only [neg_add_rev, NNReal.coe_zero, add_zero]
-      exact AddCommMagma.add_comm (-g x) (-f x)
+    · rw [sup_of_le_right hfx, sup_of_le_right hgx,
+        sup_of_le_right (add_nonpos hfx hgx), zero_add, add_zero, coe_eq_zero] at hhx
+      rw [sup_of_le_left (neg_nonneg.mpr hfx),
+        sup_of_le_left (neg_nonneg.mpr hgx),
+        sup_of_le_left (neg_nonneg.mpr (add_nonpos hfx hgx)), hhx, neg_add_rev, NNReal.coe_zero,
+        add_zero]
+      ring
 
 /-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
 function. -/
