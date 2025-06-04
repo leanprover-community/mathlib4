@@ -576,7 +576,7 @@ where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
   let relevantArg : Name → ℕ := fun nm ↦ (relevantArgAttr.find? env nm).getD 0
-  Lean.Expr.replaceRec fun r e ↦ Id.run do
+  Lean.Expr.replaceRec' fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with

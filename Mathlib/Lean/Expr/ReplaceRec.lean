@@ -31,4 +31,10 @@ def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :
     | some x => x
     | none   => Id.run <| traverseChildren (pure <| r ·) e
 
+partial def replaceRec' (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :=
+  fun e => match f? (replaceRec' f?) e with
+  | some x => x
+  | none   => Id.run <| traverseChildren (pure <| replaceRec' f? ·) e
+
+
 end Lean.Expr
