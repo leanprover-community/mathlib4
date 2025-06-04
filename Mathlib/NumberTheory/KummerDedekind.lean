@@ -80,17 +80,17 @@ theorem mem_conductor_iff {y : S} : y ∈ conductor R x ↔ ∀ b : S, y * b ∈
 theorem conductor_eq_top_of_adjoin_eq_top (h : R<x> = ⊤) : conductor R x = ⊤ := by
   simp only [Ideal.eq_top_iff_one, mem_conductor_iff, h, mem_top, forall_const]
 
+theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.gen = ⊤ :=
+  conductor_eq_top_of_adjoin_eq_top pb.adjoin_gen_eq_top
+
 theorem adjoin_eq_top_of_conductor_eq_top {x : S} (h : conductor R x = ⊤) :
     Algebra.adjoin R {x} = ⊤ :=
-    Algebra.eq_top_iff.mpr fun y ↦
-      one_mul y ▸ (mem_conductor_iff).mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
+  Algebra.eq_top_iff.mpr fun y ↦
+    one_mul y ▸ (mem_conductor_iff).mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
 
 theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
     conductor R x = ⊤ ↔ Algebra.adjoin R {x} = ⊤ :=
   ⟨fun h ↦ adjoin_eq_top_of_conductor_eq_top h, fun h ↦ conductor_eq_top_of_adjoin_eq_top h⟩
-
-theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.gen = ⊤ :=
-  conductor_eq_top_of_adjoin_eq_top pb.adjoin_gen_eq_top
 
 open IsLocalization in
 lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
@@ -385,7 +385,7 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
     normalizedFactorsEquivSpanNormalizedFactors]
   rw [normalizedFactorsEquivOfQuotEquiv_symm]
   dsimp [normalizedFactorsEquivOfQuotEquiv, idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
-  simp only [map_span, image_singleton, coe_coe,quotMapEquivQuotQuotMap_symm_apply hx hx' Q]
+  simp only [map_span, image_singleton, coe_coe, quotMapEquivQuotQuotMap_symm_apply hx hx' Q]
   refine le_antisymm (fun a ha ↦ ?_) (span_le.mpr <| union_subset_iff.mpr <|
     ⟨le_comap_of_map_le (by simp), by simp [mem_span_singleton]⟩)
   rw [mem_comap, Ideal.mem_span_singleton] at ha

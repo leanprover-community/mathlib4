@@ -129,7 +129,7 @@ theorem exponent_eq_sInf :
     rw [Monoid.exponent, dif_pos h, Nat.sInf_def h']
     congr
   · have : {d | 0 < d ∧ ∀ (x : G), x ^ d = 1} = ∅ :=
-      Set.eq_empty_of_forall_not_mem fun n hn ↦ h ⟨n, hn⟩
+      Set.eq_empty_of_forall_notMem fun n hn ↦ h ⟨n, hn⟩
     rw [Monoid.exponent_eq_zero_iff.mpr h, this, Nat.sInf_empty]
 
 /-- The exponent is zero iff for all nonzero `n`, one can find a `g` such that `g ^ n ≠ 1`. -/

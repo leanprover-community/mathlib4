@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 /-!
 # Ideal of `ℤ`
 
-We prove results about ideals of `ℤ` or ideals in extension of `ℤ`.
+We prove results about ideals of `ℤ` or ideals of extensions of `ℤ`.
 
 In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several results about
 `absNorm (under ℤ I)` which is the smallest positive integer contained in `I`.
@@ -24,7 +24,7 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 
 -/
 
-theorem Int.ideal_span_isMaximal_of_prime (p : ℕ) [Fact (Nat.Prime p)] :
+instance Int.ideal_span_isMaximal_of_prime (p : ℕ) [Fact (Nat.Prime p)] :
     (Ideal.span {(p : ℤ)}).IsMaximal :=
   Ideal.Quotient.maximal_of_isField _ <|
     (Int.quotientSpanNatEquivZMod p).toMulEquiv.isField _ (Field.toIsField _)
@@ -53,7 +53,7 @@ theorem Int.absNorm_under_eq_sInf {R : Type*} [Ring R] [Algebra ℤ R] (I : Idea
     absNorm (under ℤ I) = sInf {d : ℕ | 0 < d ∧ (d : R) ∈ I} := by
   by_cases h : absNorm (under ℤ I) = 0
   · have : {d : ℕ | 0 < d ∧ ↑d ∈ I} = ∅ := by
-      refine Set.eq_empty_of_forall_not_mem ?_
+      refine Set.eq_empty_of_forall_notMem ?_
       intro x ⟨hx₁, hx₂⟩
       rw [← Int.cast_natCast, Int.cast_mem_ideal_iff, h, Int.natCast_dvd_natCast,
         Nat.zero_dvd] at hx₂

@@ -54,6 +54,16 @@ namespace WithLp
 back and forth between the representations. -/
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
+/-- A recursor for `WithLp p V`, that reduces to the underlying space `V`.
+
+This unfortunately cannot be registered with `cases_eliminator`, but it can still be used as
+`cases v using WithLp.rec with | toLp v =>`. -/
+@[elab_as_elim]
+protected def rec {motive : WithLp p V → Sort*}
+    (toLp : ∀ v : V, motive ((WithLp.equiv p _).symm v)) :
+    ∀ v, motive v :=
+  fun v => toLp ((WithLp.equiv p _) v)
+
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
 instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
