@@ -31,7 +31,6 @@ open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology
 
 open scoped UpperHalfPlane Topology BigOperators Nat
 
-
 variable (z : ℍ)
 
 namespace EisensteinSeries
