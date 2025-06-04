@@ -1,0 +1,67 @@
+/-
+Copyright (c) 2025 Emily Riehl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robin Carlier and Emily Riehl
+-/
+import Mathlib.CategoryTheory.Category.Cat.Limit
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.PUnit
+
+/-!
+# Terminal categories
+
+We prove that a category is terminal if its underlying type has a `Unique` structure and the
+category has an `IsDiscrete` instance.
+
+We then use this to provide various examples of terminal categories.
+-/
+
+universe v u v' u'
+
+open CategoryTheory Limits Functor
+
+namespace CategoryTheory
+
+namespace Cat
+
+section
+variable {T : Type u} [Category.{v} T] [Unique T] [IsDiscrete T]
+
+/-- The unique functor to the discrete category on a unique object. -/
+def toDiscreteUnique (X : Type u') [Category.{v'} X] : X ⥤ T where
+  obj := fun _ ↦ default
+  map := fun _ ↦ 𝟙 _
+
+/-- Any two functors to a discrete category on a unique object are *equal*. -/
+theorem toDiscreteUnique_ext {X : Type u'} [Category.{v'} X] (F G : X ⥤ T) : F = G :=
+  Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
+
+def isDiscreteUnique.isTerminal : IsTerminal (Cat.of T) :=
+  IsTerminal.ofUniqueHom (fun X ↦ toDiscreteUnique (T := T) X)
+    (fun _ _ ↦ toDiscreteUnique_ext (T := T) _ _)
+
+end
+
+/-- Any `T : Cat.{u, u}` with a unique object and discrete homs is isomorphic to `⊤_ Cat.{u, u}.` -/
+noncomputable def terminalDiscreteUniqueIso
+    {T : Type u} [Category.{u} T] [Unique T] [IsDiscrete T] : ⊤_ Cat.{u, u} ≅ Cat.of T :=
+  terminalIsoIsTerminal isDiscreteUnique.isTerminal
+
+/-- The discrete category on `PUnit` is terminal. -/
+def DiscretePUnit.isTerminal : IsTerminal (Cat.of (Discrete PUnit)) :=
+  isDiscreteUnique.isTerminal
+
+section
+
+variable {T : Type u} [Category.{u} T] (H : IsTerminal (Cat.of T))
+
+/-- Any terminal object `T : Cat.{u, u}` is isomorphic to `Cat.of (Discrete PUnit)`. -/
+def isTerminalDiscretePUnitIso : Cat.of T ≅ Cat.of (Discrete PUnit) := by
+  refine (IsTerminal.uniqueUpToIso H DiscretePUnit.isTerminal)
+
+end
+
+end Cat
+
+
+end CategoryTheory
