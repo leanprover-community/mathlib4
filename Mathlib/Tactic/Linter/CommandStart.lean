@@ -10,8 +10,8 @@ import Mathlib.Init
 #  The `commandStart` linter
 
 The `commandStart` linter emits a warning if
-* a command does not start at the beginning of a line;
-* the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
+* either a command does not start at the beginning of a line;
+* or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
 
 open Lean Elab Command Linter
@@ -20,8 +20,8 @@ namespace Mathlib.Linter
 
 /--
 The `commandStart` linter emits a warning if
-* a command does not start at the beginning of a line;
-* the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
+* either a command does not start at the beginning of a line;
+* or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 
 In practice, this makes sure that the spacing in a typical declaration looks like
 ```lean
@@ -37,18 +37,20 @@ register_option linter.style.commandStart : Bool := {
   descr := "enable the commandStart linter"
 }
 
-/-- If the `linter.style.commandStart.verbose` is `true`, the `commandStart` linter
+/-- If the `linter.style.commandStart.verbose` option is `true`, the `commandStart` linter
 reports some helpful diagnostic information. -/
 register_option linter.style.commandStart.verbose : Bool := {
   defValue := false
   descr := "enable the commandStart linter"
 }
 
-/-- `lintUpTo stx` returns the position up until the `commandStart` linter checks the formatting.
+/--
+`CommandStart.endPos stx` returns the position up until the `commandStart` linter checks the
+formatting.
 This is every declaration until the type-specification, if there is one, or the value,
 as well as all `variable` commands.
 -/
-def lintUpTo (stx : Syntax) : Option String.Pos :=
+def CommandStart.endPos (stx : Syntax) : Option String.Pos :=
   if let some cmd := stx.find? (·.isOfKind ``Parser.Command.declaration) then
     if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
       match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
@@ -65,19 +67,21 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
   else none
 
 /--
-A `FormatError` is the main structure for keeping track of how different the user syntax is
-from the pretty-printed version of itself.
+A `FormatError` is the main structure tracking how some surface syntax differs from its
+pretty-printed version.
 
 It contains information about position within an ambient string of where the exception lies.
 -/
+-- Some of the information contained in `FormatError` is redundant, however, it is useful to convert
+-- between the `String.pos` and `String` length conveniently.
 structure FormatError where
-  /-- The distance to the end of the source string, as number of characters. -/
+  /-- The distance to the end of the source string, as number of characters -/
   srcNat : Nat
-  /-- The distance to the end of the source string, as number of string positions. -/
+  /-- The distance to the end of the source string, as number of string positions -/
   srcEndPos : String.Pos
-  /-- The distance to the end of the formatted string, as number of characters. -/
+  /-- The distance to the end of the formatted string, as number of characters -/
   fmtPos : Nat
-  /-- The kind of formatting error: `extra space`, `remove line break` or `missing space`. -/
+  /-- The kind of formatting error: `extra space`, `remove line break` or `missing space` -/
   msg : String
   /-- The length of the mismatch, as number of characters. -/
   length : Nat
@@ -90,8 +94,16 @@ instance : ToString FormatError where
     s!"srcNat: {f.srcNat}, srcPos: {f.srcEndPos}, fmtPos: {f.fmtPos}, \
       msg: {f.msg}, length: {f.length}\n"
 
-/-- Produces a `FormatError` from the input data.  In particular, it extracts the position
-information within the string, both as number of characters and as `String.Pos`. -/
+/--
+Produces a `FormatError` from the input data.  It expects
+* `ls` to be a "user-typed" string;
+* `ms` to be a "pretty-printed" string;
+* `msg` to be a custom error message, such as `extra space` or `remove line break`;
+* `length` (optional with default `1`), how many characters the error spans.
+
+In particular, it extracts the position information within the string, both as number of characters
+and as `String.Pos`.
+-/
 def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatError where
   srcNat := ls.length
   srcEndPos := ls.endPos
@@ -118,9 +130,9 @@ It scans the two input strings `L` and `M`, assuming that they `M` is the pretty
 of `L`.
 This almost means that `L` and `M` only differ in whitespace.
 
-While it scans the two strings, it accumulates the discrepancies that it finds with some heuristics
-for not flagging all line-break changes, since the pretty-printer does not always produce desirably
-formatted code.
+While scanning the two strings, accumulate any discrepancies --- with some heuristics to avoid
+flagging some line-breaking changes.
+(The pretty-printer does not always produce desirably formatted code.)
 -/
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
@@ -289,7 +301,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
     let scan := parallelScan orig st
 
-    let some upTo := lintUpTo stx | return
+    let some upTo := CommandStart.endPos stx | return
     let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
     let docStringEnd := docStringEnd.getTailPos? |>.getD default
     let forbidden := getUnlintedRanges unlintedNodes ∅ stx
