@@ -215,7 +215,7 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 /-- General theorem about a function property used for transition and morphism theorems -/
 structure GeneralTheorem where
   /-- function property name -/
-  funPropName   : Name
+  funPropName : Name
   /-- theorem name -/
   thmName     : Name
   /-- discrimination tree keys used to index this theorem -/
@@ -231,7 +231,7 @@ def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
 /-- Structure holding transition or morphism theorems for `fun_prop` tactic. -/
 structure GeneralTheorems where
   /-- Discrimination tree indexing theorems. -/
-  theorems     : RefinedDiscrTree GeneralTheorem := {}
+  theorems : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 
 /-- Extendions for transition or morphism theorems -/
