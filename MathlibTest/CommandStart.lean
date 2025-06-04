@@ -83,21 +83,6 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 #guard_msgs in
  section
 
-/-
-#eval
-  let s := "example        f   g"
-  let t := "example fg"
-  Mathlib.Linter.parallelScan s t
-
-
-#eval
-  let s := "example  :   True :=trivial"
-  let t := "example : True :=
-    trivial"
-  Mathlib.Linter.parallelScan s t
--/
-
-
 /--
 warning: extra space in the source
 
@@ -110,6 +95,10 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 -/
 #guard_msgs in
 example    : True := trivial
+
+-- Additional spaces after the colon are not linted yet.
+#guard_msgs in
+example :     True := trivial
 
 /-- A doc string -/
 -- comment
@@ -166,13 +155,6 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 -/
 #guard_msgs in
 example {a: Nat} : a = a := rfl
-
-/-
-#eval
-  let l := "hac d"
-  let m := "h  acd"
-  Mathlib.Linter.parallelScan l m
--/
 
 set_option linter.style.commandStart.verbose true in
 /--
@@ -308,3 +290,43 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 #guard_msgs in
 /-- Check that doc/strings do not get removed as comments. -/
 example  : True := trivial
+
+-- Unit tests for internal functions in the linter.
+section internal
+
+/--
+info: #[srcNat: 12, srcPos: 12, fmtPos: 2, msg: extra space, length: 7
+, srcNat: 4, srcPos: 4, fmtPos: 1, msg: extra space, length: 3
+]
+-/
+#guard_msgs in
+#eval
+  let s := "example        f   g"
+  let t := "example fg"
+  Mathlib.Linter.parallelScan s t
+
+/--
+info: #[srcNat: 19, srcPos: 19, fmtPos: 21, msg: extra space, length: 1
+, srcNat: 16, srcPos: 16, fmtPos: 19, msg: extra space, length: 2
+, srcNat: 7, srcPos: 7, fmtPos: 12, msg: missing space, length: 1
+]
+-/
+#guard_msgs in
+#eval
+  let s := "example  :   True :=trivial"
+  let t := "example : True :=
+    trivial"
+  Mathlib.Linter.parallelScan s t
+
+/--
+info: #[srcNat: 4, srcPos: 4, fmtPos: 5, msg: missing space, length: 1
+, srcNat: 2, srcPos: 2, fmtPos: 1, msg: extra space, length: 1
+]
+-/
+#guard_msgs in
+#eval
+  let l := "hac d"
+  let m := "h  acd"
+  Mathlib.Linter.parallelScan l m
+
+end internal
