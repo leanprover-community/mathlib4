@@ -50,7 +50,7 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon_ (Type u) where
           mul := fun p => p.1 * p.2
           one_mul' := by ext ⟨_, _⟩; simp
           mul_one' := by ext ⟨_, _⟩; simp
-          mul_assoc' := by ext ⟨⟨x, y⟩, z⟩; simp [mul_assoc] } }
+          mul_assoc' := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
   map f := { hom := f }
 
 end MonTypeEquivalenceMon

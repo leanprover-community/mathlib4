@@ -280,12 +280,12 @@ instance (M : Bimon_ C) : Bimon_Class M.X.X where
 @[reassoc]
 theorem one_comul (M : C) [Bimon_Class M] :
     η[M] ≫ Δ[M] = (λ_ _).inv ≫ (η[M] ⊗ η[M]) := by
-  simp only [Bimon_Class.one_comul, Mon_Class.instTensorObj_one]
+  simp
 
 @[reassoc]
 theorem mul_counit (M : C) [Bimon_Class M] :
     μ[M] ≫ ε[M] = (ε[M] ⊗ ε[M]) ≫ (λ_ _).hom := by
-  simp only [Bimon_Class.mul_counit, Comon_.tensorObj_counit]
+  simp
 
 /-- Compatibility of the monoid and comonoid structures, in terms of morphisms in `C`. -/
 @[reassoc (attr := simp)] theorem compatibility (M : C) [Bimon_Class M] :
