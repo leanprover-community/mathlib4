@@ -61,6 +61,23 @@ open Command in elab_rules : command
 
 syntax irredDefLemma := atomic(" (" &"lemma" " := ") ident ")"
 
+/-- Like `theorem`, but allows defining reserved names. -/
+local elab "reserved_theorem_alias" declIdent:ident suffix:str " := " srcIdent:ident : command => do
+  let declName ← resolveGlobalConstNoOverload declIdent
+  let src ← resolveGlobalConstNoOverload srcIdent
+  let info ← getConstVal src
+  let tgt := .str declName suffix.getString
+  liftTermElabM do
+    realizeConst declName tgt do
+      addDecl <| Declaration.thmDecl {
+        name := tgt,
+        type := info.type,
+        value := .const src (info.levelParams.map mkLevelParam),
+        levelParams := info.levelParams
+      }
+  pure ()
+
+
 /--
 Introduces an irreducible definition.
 `irreducible_def foo := 42` generates
@@ -100,8 +117,9 @@ elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
       delta $n:ident
       rw [show wrapped = ⟨@definition.{$us',*}, rfl⟩ from Subtype.ext wrapped.2.symm]
       rfl
+    reserved_theorem_alias $n "eq_def" := $n_def:ident
+    reserved_theorem_alias $n "eq_1" := $n_def:ident
     attribute [irreducible] $n definition
-    attribute [eqns $n_def] $n
     attribute [$attrs:attrInstance,*] $n)
   if prot.isSome then
     modifyEnv (addProtected · ((← getCurrNamespace) ++ n.getId))
