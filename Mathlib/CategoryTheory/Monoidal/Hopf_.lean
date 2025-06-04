@@ -273,14 +273,14 @@ theorem antipode_comul (A : C) [Hopf_Class A] :
     (M := Conv A (A ⊗ A))
     (a := Δ[A])
   · rw [Conv.mul_eq, Conv.one_eq]
-    simp only [comp_whiskerRight, tensor_whiskerLeft, Mon_Class.instTensorObj_mul, Category.assoc,
-      Mon_Class.instTensorObj_one]
+    simp only [comp_whiskerRight, tensor_whiskerLeft, Mon_Class.tensorObj.mul_def, Category.assoc,
+      Mon_Class.tensorObj.one_def]
     simp only [tensorμ]
     simp only [Category.assoc, Iso.inv_hom_id_assoc]
     exact antipode_comul₁ A
   · rw [Conv.mul_eq, Conv.one_eq]
     simp only [MonoidalCategory.whiskerLeft_comp, tensor_whiskerLeft, Category.assoc,
-      Iso.inv_hom_id_assoc, Mon_Class.instTensorObj_mul, Mon_Class.instTensorObj_one]
+      Iso.inv_hom_id_assoc, Mon_Class.tensorObj.mul_def, Mon_Class.tensorObj.one_def]
     simp only [tensorμ]
     simp only [Category.assoc, Iso.inv_hom_id_assoc]
     exact antipode_comul₂ A

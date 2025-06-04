@@ -126,9 +126,9 @@ theorem tensorObj_comul (K L : CoalgCat R) :
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
   simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
-    comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe,
-    instComon_ClassModuleCatOfCarrier_comul, tensorμ_eq_tensorTensorTensorComm, ModuleCat.hom_comp,
-    ModuleCat.hom_ofHom, LinearEquiv.comp_toLinearMap_eq_iff]
+    comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe, comul_def,
+    tensorμ_eq_tensorTensorTensorComm, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
+    LinearEquiv.comp_toLinearMap_eq_iff]
   rfl
 
 theorem tensorHom_toLinearMap (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
