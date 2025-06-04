@@ -155,8 +155,8 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       else
         rargs
     | ``Lean.Parser.Tactic.nativeDecide =>
-      rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib:\n\
-        because it trusts the entire Lean compiler (not just the Lean kernel),\n\
+      rargs.push (kind, stx, "Using `native_decide` is not allowed in mathlib: \
+        because it trusts the entire Lean compiler (not just the Lean kernel), \
         it could quite possibly be used to prove false.")
     | ``Lean.Parser.Command.in =>
       match getSetOptionMaxHeartbeatsComment stx with

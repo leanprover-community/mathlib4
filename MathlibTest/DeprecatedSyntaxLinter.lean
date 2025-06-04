@@ -86,9 +86,8 @@ example : False := by admit
 set_option linter.style.nativeDecide true
 
 /--
-warning: Using `native_decide` is not allowed in mathlib:
-because it trusts the entire Lean compiler (not just the Lean kernel),
-it could quite possibly be used to prove false.
+warning: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler
+(not just the Lean kernel), it could quite possibly be used to prove false.
 note: this linter can be disabled with `set_option linter.style.nativeDecide false`
 -/
 #guard_msgs in
