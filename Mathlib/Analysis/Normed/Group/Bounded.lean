@@ -139,12 +139,6 @@ theorem Filter.Tendsto.op_one_isBoundedUnder_le {f : α → E} {g : α → F} {l
     (h_op : ∀ x y, ‖op x y‖ ≤ ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) :=
   hf.op_one_isBoundedUnder_le' hg op ⟨1, fun x y => (one_mul ‖x‖).symm ▸ h_op x y⟩
 
-lemma tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding {X E : Type*} [TopologicalSpace X]
-    [DiscreteTopology X] [SeminormedAddGroup E] [ProperSpace E] {e : X → E}
-    (he : Topology.IsClosedEmbedding e) : Tendsto (norm ∘ e) cofinite atTop := by
-  rw [← Filter.cocompact_eq_cofinite X]
-  apply tendsto_norm_cocompact_atTop.comp (Topology.IsClosedEmbedding.tendsto_cocompact he)
-
 end SeminormedGroup
 
 section NormedAddGroup
