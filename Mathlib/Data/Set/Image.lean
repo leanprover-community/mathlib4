@@ -1386,26 +1386,22 @@ theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (ra
     exact h x hy,
   preimage_eq_empty⟩
 
-section
-
 @[simp]
 theorem disjoint_image_inl_image_inr {u : Set α} {v : Set β} :
     Disjoint (Sum.inl '' u) (Sum.inr '' v) :=
   disjoint_image_image <| by simp
 
 @[simp]
-theorem disjoint_range_inl_image_inr (v : Set β) :
+theorem disjoint_range_inl_image_inr {v : Set β} :
     Disjoint (α := Set (α ⊕ β)) (range Sum.inl) (Sum.inr '' v) := by
   rw [← image_univ]
   apply disjoint_image_inl_image_inr
 
 @[simp]
-theorem disjoint_image_inl_range_inr (u : Set α) :
+theorem disjoint_image_inl_range_inr {u : Set α} :
     Disjoint (α := Set (α ⊕ β)) (Sum.inl '' u) (range Sum.inr) := by
   rw [← image_univ]
   apply disjoint_image_inl_image_inr
-
-end
 
 end Set
 
