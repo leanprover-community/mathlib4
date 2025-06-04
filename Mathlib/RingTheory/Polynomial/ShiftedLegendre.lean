@@ -32,8 +32,7 @@ namespace Polynomial
 
 /-- `shiftedLegendre n` is an integer polynomial for each `n : ℕ`, defined by:
 `Pₙ(x) = ∑ k ∈ Finset.range (n + 1), (-1)ᵏ * choose n k * choose (n + k) n * xᵏ`
-These polynomials appear in combinatorics and the theory of orthogonal polynomials.
--/
+These polynomials appear in combinatorics and the theory of orthogonal polynomials. -/
 noncomputable def shiftedLegendre (n : ℕ) : ℤ[X] :=
   ∑ k ∈ Finset.range (n + 1), C ((-1 : ℤ) ^ k * n.choose k * (n + k).choose n) * X ^ k
 
