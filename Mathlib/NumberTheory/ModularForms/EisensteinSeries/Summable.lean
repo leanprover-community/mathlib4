@@ -211,7 +211,7 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
       Real.rpow_add (Nat.cast_pos.mpr hn), Real.rpow_one, Nat.cast_mul, Nat.cast_ofNat, mul_assoc]
   · exact fun n ↦ Real.rpow_nonneg (norm_nonneg _) _
 
-lemma summable_of_inv_isBigO_riemannZeta {α : Type} [NormedField α] [CompleteSpace α]
+lemma summable_inv_of_isBigO_rpow_inv {α : Type} [NormedField α] [CompleteSpace α]
     {f  : ℤ → α} {a : ℝ} (hab : 1 < a)
     (hf : (fun n => (f n)⁻¹) =O[cofinite] fun n => (|(n : ℝ)| ^ a)⁻¹) :
     Summable fun n => (f n)⁻¹ :=
@@ -221,21 +221,21 @@ lemma summable_of_inv_isBigO_riemannZeta {α : Type} [NormedField α] [CompleteS
 /-- This says that for `z : ℂ` the function `d : ℤ ↦ ((c z + d) ^ k)⁻¹ is Summable for `2 ≤ k`. -/
 lemma linear_right_summable (z : ℂ) (c k : ℤ) (hk : 2 ≤ k) :
     Summable fun d : ℤ ↦ (((c : ℂ) * z + d) ^ k)⁻¹ := by
-  apply summable_of_inv_isBigO_riemannZeta (a := k) (by norm_cast)
+  apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
   lift k to ℕ using (by linarith)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply Asymptotics.IsBigO.pow (Asymptotics.IsBigO.abs_right (linear_inv_isBigO_right c z))
 
 lemma linear_left_summable (z : ℂ) (hz : z ≠ 0) (d k : ℤ) (hk : 2 ≤ k) :
   Summable fun c : ℤ ↦ (((c : ℂ) * z + d) ^ k)⁻¹ := by
-  apply summable_of_inv_isBigO_riemannZeta (a := k) (by norm_cast)
+  apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
   lift k to ℕ using (by linarith)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply Asymptotics.IsBigO.pow (Asymptotics.IsBigO.abs_right (linear_inv_isBigO_left d hz))
 
 lemma summable_diff (z : ℂ) (c₁ c₂ : ℤ) :
     Summable fun (n : ℤ) => ((c₁ * (z : ℂ) - n) * (c₂ * z + n))⁻¹  := by
-  apply summable_of_inv_isBigO_riemannZeta (a := 2) (by norm_cast)
+  apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, sq_abs, abs_mul_abs_self, ← mul_inv, pow_two]
   simpa [sub_eq_add_neg] using Asymptotics.IsBigO.mul (linear_inv_isBigO_right c₂ z)
     (linear_inv_isBigO_right c₁ z).of_neg_int
