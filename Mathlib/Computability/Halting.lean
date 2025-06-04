@@ -51,11 +51,11 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
   simp only [dom_iff_mem, Code.evaln_complete, Option.mem_def] at h
   obtain ⟨x, k, e⟩ | ⟨x, k, e⟩ := h
   · refine ⟨k, x, ?_⟩
-    simp only [e, Option.some_orElse, Option.mem_def, Option.orElse_eq_orElse]
+    simp only [e, Option.orElse_some, Option.mem_def, Option.orElse_eq_orElse]
   · refine ⟨k, ?_⟩
     rcases cf.evaln k n with - | y
-    · exact ⟨x, by simp only [e, Option.mem_def, Option.orElse_eq_orElse, Option.none_orElse]⟩
-    · exact ⟨y, by simp only [Option.orElse_eq_orElse, Option.some_orElse, Option.mem_def]⟩
+    · exact ⟨x, by simp only [e, Option.mem_def, Option.orElse_eq_orElse, Option.orElse_none]⟩
+    · exact ⟨y, by simp only [Option.orElse_eq_orElse, Option.orElse_some, Option.mem_def]⟩
 
 end Nat.Partrec
 
@@ -143,11 +143,11 @@ def REPred {α} [Primcodable α] (p : α → Prop) :=
 
 @[deprecated (since := "2025-02-06")] alias RePred := REPred
 
-@[deprecated (since := "2025-02-06")] alias RePred.of_eq := RePred
-
 theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (H : ∀ a, p a ↔ q a) :
     REPred q :=
   (funext fun a => propext (H a) : p = q) ▸ hp
+
+@[deprecated (since := "2025-02-06")] alias RePred.of_eq := REPred.of_eq
 
 theorem Partrec.dom_re {α β} [Primcodable α] [Primcodable β] {f : α →. β} (h : Partrec f) :
     REPred fun a => (f a).Dom :=

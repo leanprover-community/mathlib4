@@ -541,10 +541,12 @@ theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a 
       exact succ_inj
 
 @[simp]
-theorem idxOf_of_not_mem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
+theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
   idxOf_eq_length_iff.2
 
-@[deprecated (since := "2025-01-30")] alias indexOf_of_not_mem := idxOf_of_not_mem
+@[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
+
+@[deprecated (since := "2025-01-30")] alias indexOf_of_not_mem := idxOf_of_notMem
 
 theorem idxOf_le_length {a : α} {l : List α} : idxOf a l ≤ length l := by
   induction l with | nil => rfl | cons b l ih => ?_
@@ -574,7 +576,7 @@ theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) =
 
 @[deprecated (since := "2025-01-30")] alias indexOf_append_of_mem := idxOf_append_of_mem
 
-theorem idxOf_append_of_not_mem {a : α} (h : a ∉ l₁) :
+theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by
   induction l₁ with
   | nil => rw [List.nil_append, List.length, Nat.zero_add]
@@ -582,7 +584,9 @@ theorem idxOf_append_of_not_mem {a : α} (h : a ∉ l₁) :
     rw [List.cons_append, idxOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
       ih (not_mem_of_not_mem_cons h), Nat.succ_add]
 
-@[deprecated (since := "2025-01-30")] alias indexOf_append_of_not_mem := idxOf_append_of_not_mem
+@[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
+
+@[deprecated (since := "2025-01-30")] alias indexOf_append_of_not_mem := idxOf_append_of_notMem
 
 end IndexOf
 
@@ -590,7 +594,6 @@ end IndexOf
 
 section deprecated
 
-@[simp]
 theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_eq_none le_rfl
 
 /-- A version of `getElem_map` that can be used for rewriting. -/
@@ -870,7 +873,7 @@ theorem injective_foldl_comp {l : List (α → α)} {f : α → α}
 Assume the designated element `a₂` is present in neither `x₁` nor `z₁`.
 We conclude that the lists are equal (`l₁ = l₂`) if and only if their respective parts are equal
 (`x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂`). -/
-lemma append_cons_inj_of_not_mem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
+lemma append_cons_inj_of_notMem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
     (notin_x : a₂ ∉ x₁) (notin_z : a₂ ∉ z₁) :
     x₁ ++ a₁ :: z₁ = x₂ ++ a₂ :: z₂ ↔ x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂ := by
   constructor
@@ -879,6 +882,8 @@ lemma append_cons_inj_of_not_mem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α
       ⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩) <;> simp_all
   · rintro ⟨rfl, rfl, rfl⟩
     rfl
+
+@[deprecated (since := "2025-05-23")] alias append_cons_inj_of_not_mem := append_cons_inj_of_notMem
 
 section FoldlEqFoldr
 
@@ -1114,7 +1119,7 @@ section eraseP
 
 variable {p : α → Bool}
 
-@[simp]
+-- Cannot be @[simp] because `a` can not be inferred by `simp`.
 theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
     (l.eraseP p).length + 1 = l.length := by
   let ⟨_, l₁, l₂, _, _, h₁, h₂⟩ := exists_of_eraseP al pa
@@ -1129,7 +1134,8 @@ section Erase
 
 variable [DecidableEq α]
 
-@[simp] theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) :
+-- @[simp] -- removed because LHS is not in simp normal form
+theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) :
     (l.erase a).length + 1 = l.length := by
   rw [erase_eq_eraseP, length_eraseP_add_one h (decide_eq_true rfl)]
 

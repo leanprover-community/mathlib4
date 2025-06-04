@@ -40,7 +40,7 @@ example (p : ℕ) (h2 : 2 < p) (h5 : p < 5) : p = 3 ∨ p = 4 := by
 
 -- Check naming of cases
 /--
-info: case «0».«0»
+trace: case «0».«0»
 ⊢ True
 
 case «0».«1»
