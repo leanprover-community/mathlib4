@@ -104,6 +104,12 @@ def toOplax {a : B} (t : a ⟶ a) [Comonad t] :
 
 end Comonad
 
+/- In this section, we define bicategory structure on comonads by using the bicategory structure on
+oplax functors. We may use oplax, lax, or pseudonatural transformations to provide the bicategory
+structure, and the namespace below indicates that we use oplax transformations here. The
+constructions for the other two cases would be given in the corresponding namespaces. -/
+namespace OplaxTrans
+
 /-- The bicategory of comonads in `B`. -/
 def ComonadBicat (B : Type u) [Bicategory.{w, v} B] :=
   OplaxFunctor (LocallyDiscrete (Discrete PUnit.{u₀ + 1})) B
@@ -111,7 +117,7 @@ def ComonadBicat (B : Type u) [Bicategory.{w, v} B] :=
 namespace ComonadBicat
 
 open scoped Oplax.OplaxTrans.OplaxFunctor in
-instance : Bicategory (ComonadBicat B) :=
+scoped instance : Bicategory (ComonadBicat B) :=
   inferInstanceAs <| Bicategory (OplaxFunctor (LocallyDiscrete (Discrete PUnit.{u₀ + 1})) B)
 
 /-- The oplax functor from the trivial bicategory to `B` associated with the comonad. -/
@@ -150,6 +156,8 @@ theorem mkOfComonad_comul : Δ[(mkOfComonad.{u₀} g).hom] = Δ[g] := by
 end
 
 end ComonadBicat
+
+end OplaxTrans
 
 end Bicategory
 
