@@ -25,7 +25,7 @@ and this notation should be used instead of projections by `@[simps]`.
     `+` uses `HAdd.hAdd`, not `Add.add` and `0` uses `OfNat.ofNat` not `Zero.zero`.
     We also add it to non-heterogenous notation classes, like `Neg`, but it doesn't do much for any
     class that extends `Neg`.
-  * `@[notation_class * <projName> Simps.findCoercionArgs]` is used to configure the
+  * `@[notation_class* <projName> Simps.findCoercionArgs]` is used to configure the
     `SetLike` and `DFunLike` coercions.
   * The first name argument is the projection name we use as the key to search for this class
     (default: name of first projection of the class).

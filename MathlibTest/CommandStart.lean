@@ -3,34 +3,101 @@ import Mathlib.Tactic.Linter.CommandStart
 
 set_option linter.style.commandStart true
 
--- Strings are ignored by the linter.
-variable (a : String := "  ")
+-- Constructs that are ignored by the linter, and (former) false positives.
+section noFalsePositives
 
-section
-variable [h : Add Nat] [Add Nat]
+-- Explicit name literals: used to error (and the suggested replacement is invalid syntax).
+
+structure foo (name: Lean.Name) where
 
 /--
-warning: extra space in the source
+warning: missing space in the source
 
 This part of the code
-  'omit  [h :'
+  '``String))'
 should be written as
-  'omit [h :'
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: extra space in the source
-
-This part of the code
-  'Nat]  [Add'
-should be written as
-  'Nat] [Add'
+  '`` String))'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-omit  [h : Add Nat]  [Add Nat]
-end
+def bar (_param : List (foo ``String)) := 1
+
+-- For structure fields, all field definitions are linted.
+/--
+warning: extra space in the source
+
+This part of the code
+  'field1     : Nat'
+should be written as
+  'field1 : Nat'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+structure A where
+  field1     : Nat
+  field2 : Nat
+
+-- TODO: this is not linted yet!
+structure B where
+  field1 : Nat
+  field2     : Nat
+
+-- TODO: this is not linted yet!
+structure C where
+  field1 :     Nat
+  field2     : Nat
+
+-- Note that the linter does not attempt to recognise or respect manual alignment of fields:
+-- this is often brittle and should usually be removed.
+/--
+warning: extra space in the source
+
+This part of the code
+  'field1    :  '
+should be written as
+  'field1 : Nat'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+structure D where
+  field1    :     Nat
+  field2    : Nat
+
+-- This also applies to consecutive declarations.
+/--
+warning: declaration uses 'sorry'
+---
+warning: extra space in the source
+
+This part of the code
+  'instance   : Add'
+should be written as
+  'instance : Add'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+instance   : Add Nat := sorry
+/--
+warning: declaration uses 'sorry'
+---
+warning: extra space in the source
+
+This part of the code
+  'instance   : Add'
+should be written as
+  'instance : Add'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+instance   : Add Nat := sorry
+
+-- Strings are ignored by the linter.
+variable (a : String := "  ")
 
 -- The linter skips double-quoted names.
 variable (d : Lean.Name := ``Nat) in open Nat
@@ -79,6 +146,131 @@ example : True := trivial
 -- The notation `0::[]` disables the linter
 variable (h : 0::[] = [])
 
+/-- A doc string -/
+-- comment
+example : True := trivial
+
+-- Test that `Prop` and `Type` that are not escaped with `«...»` do not cause problems.
+def Prop.Hello := 0
+def Type.Hello := 0
+
+namespace List
+
+variable {α β : Type} (r : α → α → Prop) (s : β → β → Prop)
+
+-- The two infix are needed.  They "hide" a `quotPrecheck`
+local infixl:50 " ≼ " => r
+-- The two infix are needed.  They "hide" a `quotPrecheck`
+local infixl:50 " ≼ " => s
+
+/--
+warning: The `commandStart` linter had some parsing issues: feel free to silence it and report this error!
+note: this linter can be disabled with `set_option linter.style.commandStart.verbose false`
+-/
+#guard_msgs in
+set_option linter.style.commandStart.verbose true in
+example {a : α} (_ : a ≼ a) : 0 = 0 := rfl
+
+end List
+
+end noFalsePositives
+
+-- Miscellaneous constructs: variable, include, omit statements; aesop rulesets
+section misc
+
+variable [h : Add Nat] [Add Nat]
+
+/--
+warning: extra space in the source
+
+This part of the code
+  'variable    [ h'
+should be written as
+  'variable [h :'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space in the source
+
+This part of the code
+  '[ h  '
+should be written as
+  '[h : Add'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space in the source
+
+This part of the code
+  'h    : Add'
+should be written as
+  '[h : Add'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space in the source
+
+This part of the code
+  'Nat   ] ['
+should be written as
+  'Nat] [Add'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space in the source
+
+This part of the code
+  '[ Add'
+should be written as
+  '[Add Nat]'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+variable    [ h    : Add Nat   ] [ Add Nat]
+
+/--
+warning: extra space in the source
+
+This part of the code
+  'omit  [h :'
+should be written as
+  'omit [h :'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space in the source
+
+This part of the code
+  'Nat]  [Add'
+should be written as
+  'Nat] [Add'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+omit  [h : Add Nat]  [Add Nat]
+
+def foo := 1
+
+-- Include statements are not linted.
+include     h
+
+/--
+warning: extra space in the source
+
+This part of the code
+  '@[aesop  (rule_sets'
+should be written as
+  '@[aesop (rule_sets'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+@[aesop  (rule_sets := [builtin]) safe apply] example : True := trivial
+
+end misc
+
 /--
 warning: 'section' starts on column 1, but all commands should start at the beginning of the line.
 note: this linter can be disabled with `set_option linter.style.commandStart false`
@@ -102,10 +294,6 @@ example    : True := trivial
 -- Additional spaces after the colon are not linted yet.
 #guard_msgs in
 example :     True := trivial
-
-/-- A doc string -/
--- comment
-example : True := trivial
 
 /--
 warning: extra space in the source
@@ -243,42 +431,6 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 -/
 #guard_msgs in
 example {alpha} [Neg alpha   ] {a : Nat} : a = a := rfl
-
-namespace List
-
-variable {α β : Type} (r : α → α → Prop) (s : β → β → Prop)
-
--- The two infix are needed.  They "hide" a `quotPrecheck`
-local infixl:50 " ≼ " => r
--- The two infix are needed.  They "hide" a `quotPrecheck`
-local infixl:50 " ≼ " => s
-
-/--
-warning: The `commandStart` linter had some parsing issues: feel free to silence it and report this error!
-note: this linter can be disabled with `set_option linter.style.commandStart.verbose false`
--/
-#guard_msgs in
-set_option linter.style.commandStart.verbose true in
-example {a : α} (_ : a ≼ a) : 0 = 0 := rfl
-
-end List
-
-/--
-warning: extra space in the source
-
-This part of the code
-  '@[aesop  (rule_sets'
-should be written as
-  '@[aesop (rule_sets'
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-@[aesop  (rule_sets := [builtin]) safe apply] example : True := trivial
-
--- Test that `Prop` and `Type` that are not escaped with `«...»` do not cause problems.
-def Prop.Hello := 0
-def Type.Hello := 0
 
 /--
 warning: extra space in the source
