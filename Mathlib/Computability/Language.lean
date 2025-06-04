@@ -84,6 +84,10 @@ instance : Add (Language α) :=
 instance : Inter (Language α) :=
   ⟨((· ∩ ·) : Set (List α) → Set (List α) → Set (List α))⟩
 
+/-- Language union is just set union. -/
+instance : Union (Language α) :=
+  ⟨((· ∪ ·) : Set (List α) → Set (List α) → Set (List α))⟩
+
 /-- The product of two languages `l` and `m` is the language made of the strings `x ++ y` where
 `x ∈ l` and `y ∈ m`. -/
 instance : Mul (Language α) :=

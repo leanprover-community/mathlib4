@@ -7,6 +7,7 @@ import Mathlib.Computability.Language
 import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Tactic.NormNum
+import Mathlib.Data.Fintype.Prod
 
 /-!
 # Deterministic Finite Automata
@@ -373,6 +374,8 @@ end Maps
 
 end DFA
 
+variable {α : Type u}
+
 /-- A regular language is a language that is defined by a DFA with finite states. -/
 def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
   ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
@@ -394,3 +397,41 @@ This is more general than using the definition of `Language.IsRegular` directly,
 theorem Language.isRegular_iff {T : Type u} {L : Language T} :
     L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L :=
   ⟨Language.isRegular_iff.helper, Language.isRegular_iff.helper⟩
+
+/-- Regular languages are closed under complement. -/
+theorem Language.isRegular_compl_iff {L : Language α} : Lᶜ.IsRegular ↔ L.IsRegular := by
+  constructor
+  · rintro ⟨σ, _, M, hM⟩
+    rw [<- compl_compl M.accepts] at hM
+    apply compl_inj_iff.mp at hM
+    rw [<- DFA.compl_accepts_eq_accepts_compl] at hM
+    exact ⟨σ, inferInstance, Mᶜ, hM⟩
+  · rintro ⟨σ, _, M, hM⟩
+    use σ, inferInstance, Mᶜ
+    rw [DFA.compl_accepts_eq_accepts_compl, hM]
+
+/-- Regular languages are closed under binary set operations. -/
+theorem Language.isRegular_prod (p : Prop → Prop → Prop) {L₁ L₂ : Language α}
+    {h₁ : L₁.IsRegular} {h₂ : L₂.IsRegular} : IsRegular ({ x : List α | p (x ∈ L₁) (x ∈ L₂) }) := by
+  have ⟨σ₁, _, M₁, hM₁⟩ := h₁
+  have ⟨σ₂, _, M₂, hM₂⟩ := h₂
+  use σ₁ × σ₂, inferInstance, M₁.prod M₂ p
+  rw [<- hM₁, <- hM₂]
+  apply Set.ext
+  intro x
+  simp
+  apply DFA.prod_accepts_iff
+
+/-- Regular languages are closed under intersection. -/
+theorem Language.isRegular_inter {L₁ L₂ : Language α} {h₁ : L₁.IsRegular} {h₂ : L₂.IsRegular} :
+    (L₁ ∩ L₂).IsRegular := by
+  apply Language.isRegular_prod And
+  · exact h₁
+  · exact h₂
+
+/-- Regular languages are closed under union. -/
+theorem Language.isRegular_union {L₁ L₂ : Language α} {h₁ : L₁.IsRegular} {h₂ : L₂.IsRegular} :
+    (L₁ ∪ L₂).IsRegular := by
+  apply Language.isRegular_prod Or
+  · exact h₁
+  · exact h₂
