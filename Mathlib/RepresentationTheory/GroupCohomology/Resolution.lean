@@ -48,10 +48,10 @@ inhomogeneous cochains of a representation, useful for computing group cohomolog
 
 ## Main definitions
 
+ * `groupCohomology.resolution.ofMulActionBasis`
  * `classifyingSpaceUniversalCover`
- * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
- * `Rep.standardResolution`
- * `Rep.barResolution`
+ * `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
+ * `groupCohomology.projectiveResolution`
 
 -/
 
@@ -76,6 +76,36 @@ open MonoidalCategory
 open Fin (partialProd)
 open scoped TensorProduct
 
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.actionDiagonalSucc := Action.diagonalSuccIsoTensorTrivial
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.actionDiagonalSucc_hom_apply :=
+  Action.diagonalSuccIsoTensorTrivial_hom_hom_apply
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.actionDiagonalSucc_inv_apply :=
+  Action.diagonalSuccIsoTensorTrivial_inv_hom_apply
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.diagonalSucc := Rep.diagonalSuccIsoTensorTrivial
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.diagonalSucc_hom_single :=
+  Rep.diagonalSuccIsoTensorTrivial_hom_hom_single
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.diagonalSucc_inv_single_single :=
+  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_single
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.diagonalSucc_inv_single_left :=
+  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_left
+
+@[deprecated (since := "2025-02-06")]
+alias groupCohomology.resolution.diagonalSucc_inv_single_right :=
+  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_right
+
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
@@ -91,7 +121,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
 
 namespace classifyingSpaceUniversalCover
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory.Limits
 
 variable [Monoid G]
 
@@ -166,7 +196,7 @@ def Rep.standardComplex [Monoid G] :=
 
 namespace Rep.standardComplex
 
-open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory CategoryTheory.Limits
+open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
 
 section Differentials
 
@@ -199,12 +229,11 @@ instance x_projective [Group G] [DecidableEq (Fin n → G)] :
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq [Monoid G] : ((standardComplex k G).d (n + 1) n).hom.hom = d k G (n + 1) := by
-  refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp_all [standardComplex, SimplicialObject.δ, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ),
-    SimplexCategory.δ, Fin.succAboveOrderEmb, Action.ofMulAction_V]
-
-end Differentials
+theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom =
+    ModuleCat.ofHom (d k G (n + 1)) := by
+  refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
+  simp [Action.ofMulAction_V, groupCohomology.resolution, SimplicialObject.δ,
+    ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
 
 section Exactness
 
@@ -278,7 +307,6 @@ theorem εToSingle₀_comp_eq :
       (forget₂ToModuleCatHomotopyEquiv k G).hom := by
   dsimp
   ext1
-  dsimp
   simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 
 theorem quasiIso_forget₂_εToSingle₀ :
