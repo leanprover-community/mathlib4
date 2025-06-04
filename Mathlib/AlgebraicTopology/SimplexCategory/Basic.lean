@@ -116,7 +116,7 @@ lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the "diagonal composite" edge -/
 def diag (n : ℕ) : ⦋1⦌ ⟶ ⦋n⦌ :=
-  mkOfLe 0 n (Fin.zero_le _)
+  mkOfLe 0 (Fin.ofNat (n + 1) n) (Fin.zero_le _)
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the edge spanning the interval from `j` to `j + l`. -/
 def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ⦋1⦌ ⟶ ⦋n⦌ :=
@@ -204,6 +204,7 @@ lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
       Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
     rw [Nat.add_comm]
+    simp only [Fin.isValue, Fin.ofNat_eq_cast, Fin.natCast_eq_last]
     rfl
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
@@ -443,7 +444,7 @@ lemma δ_zero_mkOfSucc {n : ℕ} (i : Fin n) :
 
 @[simp]
 lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
-    δ 1 ≫ mkOfSucc i = SimplexCategory.const _ _ i.castSucc := by
+    δ 1 ≫ mkOfSucc i = SimplexCategory.const _ ⦋n⦌ i.castSucc := by
   ext x
   fin_cases x
   aesop
@@ -664,10 +665,10 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   intro b
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
   by_cases h : b ≤ i
-  · use b
+  · use b.castSucc
     -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     dsimp
-    rw [Fin.predAbove_of_le_castSucc i b (by simpa only [Fin.coe_eq_castSucc] using h)]
+    rw [Fin.predAbove_of_le_castSucc i b.castSucc (by simpa only [Fin.coe_eq_castSucc] using h)]
     simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
   · use b.succ
     -- This was not needed before https://github.com/leanprover/lean4/pull/2644
