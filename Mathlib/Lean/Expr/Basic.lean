@@ -206,6 +206,8 @@ def type? : Expr → Option Level
   | .sort u => u.dec
   | _ => none
 
+-- TODO: investigate why this fails and fix the linter!
+set_option linter.style.commandStart false in
 /-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
 `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
 it does a syntactic check that the expression does not depend on `yₙ`. -/
