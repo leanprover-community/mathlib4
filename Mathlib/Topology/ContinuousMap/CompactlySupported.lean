@@ -699,8 +699,7 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
   rcases le_total 0 (f x) with hfx | hfx
   · rcases le_total 0 (g x) with hgx | hgx
     · simp only [hfx, hgx, add_nonneg, sup_of_le_left, add_eq_left, coe_eq_zero] at hhx
-      rw [hhx]
-      simp [hfx, hgx, add_nonpos]
+      simp [hhx, hfx, hgx, add_nonpos]
     · rcases le_total 0 (f x + g x) with hfgx | hfgx
       · simp only [hfgx, sup_of_le_left, add_assoc, hfx, hgx, sup_of_le_right, add_zero,
         add_eq_left] at hhx
