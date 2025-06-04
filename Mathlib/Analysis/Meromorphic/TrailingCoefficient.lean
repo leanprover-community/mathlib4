@@ -39,7 +39,7 @@ noncomputable def meromorphicTrailingCoeffAt : E := by
 If `f` is not meromorphic at `x`, the trailing coefficient is zero by definition.
 -/
 @[simp] lemma meromorphicTrailingCoeffAt_of_not_MeromorphicAt (h : ¬MeromorphicAt f x) :
-    meromorphicTrailingCoeffAt f x = 0 := by simp_all [meromorphicTrailingCoeffAt]
+    meromorphicTrailingCoeffAt f x = 0 := by simp [meromorphicTrailingCoeffAt, h]
 
 /--
 If `f` is meromorphic of infinite order at `x`, the trailing coefficient is zero by definition.
@@ -188,8 +188,8 @@ The trailing coefficient of a product is the product of the trailing coefficient
 lemma MeromorphicAt.meromorphicTrailingCoeffAt_mul {f₁ f₂ : 𝕜 → 𝕜} (hf₁ : MeromorphicAt f₁ x)
     (hf₂ : MeromorphicAt f₂ x) :
     meromorphicTrailingCoeffAt (f₁ * f₂) x =
-      (meromorphicTrailingCoeffAt f₁ x) * (meromorphicTrailingCoeffAt f₂ x) := by
-  exact meromorphicTrailingCoeffAt_smul hf₁ hf₂
+      (meromorphicTrailingCoeffAt f₁ x) * (meromorphicTrailingCoeffAt f₂ x) :=
+  meromorphicTrailingCoeffAt_smul hf₁ hf₂
 
 /--
 The trailing coefficient of the inverse function is the inverse of the trailing coefficient.
