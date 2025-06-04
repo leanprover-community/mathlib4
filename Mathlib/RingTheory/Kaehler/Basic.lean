@@ -573,7 +573,7 @@ theorem KaehlerDifferential.kerTotal_eq :
     rw [← KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination]
     exact LinearMap.ker_le_ker_comp _ _
   · rw [KaehlerDifferential.kerTotal, Submodule.span_le]
-    rintro _ ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩) <;> dsimp <;> simp [LinearMap.mem_ker]
+    rintro _ ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩) <;> simp [LinearMap.mem_ker]
 
 theorem KaehlerDifferential.linearCombination_surjective :
     Function.Surjective (Finsupp.linearCombination S (KaehlerDifferential.D R S)) := by
