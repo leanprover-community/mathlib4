@@ -26,7 +26,7 @@ lemma limsSup_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≤
 lemma limsSup_of_not_isBounded {f : Filter ℝ} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
   rw [limsSup]
   convert sInf_empty
-  simpa [Set.eq_empty_iff_forall_not_mem, IsBounded] using hf
+  simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
 lemma limsInf_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≥ ·)) :
@@ -36,7 +36,7 @@ lemma limsInf_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≥
 lemma limsInf_of_not_isBounded {f : Filter ℝ} (hf : ¬ f.IsBounded (· ≥ ·)) : limsInf f = 0 := by
   rw [limsInf]
   convert sSup_empty
-  simpa [Set.eq_empty_iff_forall_not_mem, IsBounded] using hf
+  simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
 lemma limsup_of_not_isCoboundedUnder (hf : ¬ f.IsCoboundedUnder (· ≤ ·) u) : limsup u f = 0 :=
@@ -104,7 +104,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
 lemma limsSup_of_not_isBounded {f : Filter ℝ≥0} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
   rw [limsSup, ← bot_eq_zero]
   convert sInf_empty
-  simpa [Set.eq_empty_iff_forall_not_mem, IsBounded] using hf
+  simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
 lemma limsInf_of_not_isCobounded {f : Filter ℝ≥0} (hf : ¬ f.IsCobounded (· ≥ ·)) :

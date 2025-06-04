@@ -46,7 +46,7 @@ instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidableEq V] :
     DecidableRel (G.deleteEdges s).Adj :=
   inferInstanceAs <| DecidableRel (G \ fromEdgeSet s).Adj
 
-@[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ ¬s(v, w) ∈ s :=
+@[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ s(v, w) ∉ s :=
   and_congr_right fun h ↦ (and_iff_left h.ne).not
 
 @[simp] lemma deleteEdges_edgeSet (G G' : SimpleGraph V) : G.deleteEdges G'.edgeSet = G \ G' := by
@@ -122,11 +122,14 @@ theorem support_deleteIncidenceSet_subset (G : SimpleGraph V) (x : V) :
 
 /-- If the vertex `x` is not in the set `s`, then the induced subgraph in `G.deleteIncidenceSet x`
 by `s` is equal to the induced subgraph in `G` by `s`. -/
-theorem induce_deleteIncidenceSet_of_not_mem (G : SimpleGraph V) {s : Set V} {x : V} (h : x ∉ s) :
+theorem induce_deleteIncidenceSet_of_notMem (G : SimpleGraph V) {s : Set V} {x : V} (h : x ∉ s) :
     (G.deleteIncidenceSet x).induce s = G.induce s := by
   ext v₁ v₂
   simp_rw [comap_adj, Function.Embedding.coe_subtype, deleteIncidenceSet_adj, and_iff_left_iff_imp]
-  exact fun _ ↦ ⟨v₁.prop.ne_of_not_mem h, v₂.prop.ne_of_not_mem h⟩
+  exact fun _ ↦ ⟨v₁.prop.ne_of_notMem h, v₂.prop.ne_of_notMem h⟩
+
+@[deprecated (since := "2025-05-23")]
+alias induce_deleteIncidenceSet_of_not_mem := induce_deleteIncidenceSet_of_notMem
 
 variable [Fintype V] [DecidableEq V]
 
@@ -138,9 +141,9 @@ instance {G : SimpleGraph V} [DecidableRel G.Adj] {x : V} :
 subgraph of the vertices `{x}ᶜ`. -/
 theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     #(G.induce {x}ᶜ).edgeFinset = #(G.deleteIncidenceSet x).edgeFinset := by
-  have h_not_mem : x ∉ ({x}ᶜ : Set V) := Set.not_mem_compl_iff.mpr (Set.mem_singleton x)
+  have h_notMem : x ∉ ({x}ᶜ : Set V) := Set.notMem_compl_iff.mpr (Set.mem_singleton x)
   simp_rw [Set.toFinset_card,
-    ← G.induce_deleteIncidenceSet_of_not_mem h_not_mem, ← Set.toFinset_card]
+    ← G.induce_deleteIncidenceSet_of_notMem h_notMem, ← Set.toFinset_card]
   apply card_edgeFinset_induce_of_support_subset
   trans G.support \ {x}
   · exact support_deleteIncidenceSet_subset G x

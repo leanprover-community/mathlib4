@@ -20,7 +20,7 @@ universe u v
 
 variable {α β : Type*}
 
-open Finset Function
+open Finset
 
 instance {α : Type*} [Fintype α] : Fintype (Option α) :=
   ⟨Finset.insertNone univ, fun a => by simp⟩
