@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Find long files
-        id: long_files
+        id: long_files_comment
         run: |
           echo "PR author: ${PR_AUTHOR}"
           COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
@@ -52,17 +52,17 @@ jobs:
           printf $'mOrD=%s\n' "${l_f}" > "${GITHUB_OUTPUT}"
 
       - name: Checkout code
-        if: ${{ ! steps.long_files.outputs.mOrD == '' }}
+        if: ${{ ! steps.long_files_comment.outputs.mOrD == '' }}
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Run script
-        if: ${{ ! steps.long_files.outputs.mOrD == '' }}
+        if: ${{ ! steps.long_files_comment.outputs.mOrD == '' }}
         id: long_files
         run: |
           printf $'summary<<EOF\n%s\nEOF' "$(./scripts/long_file_report.sh)" | tee "$GITHUB_OUTPUT"
 
       - name: Post output to Zulip
-        if: ${{ ! steps.long_files.outputs.mOrD == '' }}
+        if: ${{ ! steps.long_files_comment.outputs.mOrD == '' }}
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
