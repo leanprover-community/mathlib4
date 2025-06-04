@@ -241,6 +241,12 @@ def getUnlintedRanges (a : Array SyntaxNodeKind) :
       new.insert (s.getRange?.getD default)
     else
       new
+  -- We special case `where` statements, since they may be followed by an indented doc-string.
+  | curr, .atom info "where" =>
+    if let some trail := info.getRangeWithTrailing? then
+      curr.insert trail
+    else
+      curr
   | curr, _ => curr
 
 /-- Given a `HashSet` of `String.Ranges` `rgs` and a further `String.Range` `rg`,

@@ -3,6 +3,14 @@ import Mathlib.Tactic.Linter.CommandStart
 
 set_option linter.style.commandStart true
 
+-- This example would trigger the linter if we did not special case
+-- `where` in `Mathlib.Linter.Style.CommandStart.getUnlintedRanges`.
+/-- A -/
+example := aux
+where
+  /-- A -/
+  aux : Unit := ()
+
 -- Constructs that are ignored by the linter, and (former) false positives.
 section noFalsePositives
 
@@ -14,13 +22,6 @@ structure foo (name: Lean.Name) where
 def bar (_param : List (foo ``String)) := 1
 
 -- Line breaks, where and comments.
-
--- XXX: this errors in mathlib, why not here?
-def test1 :=
-  aux 37
-where
-  /-- `aux n` always returns 42, since `aux` is just a dummy function -/
-  aux (_depth : Nat) : Nat := 42
 
 -- also errors in mathlib
 def test2 :=
