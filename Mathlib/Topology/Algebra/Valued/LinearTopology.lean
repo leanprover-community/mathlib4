@@ -29,19 +29,13 @@ instance IsLinearTopology.of_valued :
 instance IsLinearTopology.of_valued' :
     IsLinearTopology 𝒪[K] 𝒪[K] := by
   have : IsLinearTopology 𝒪[K] K := inferInstance
-  rw [isLinearTopology_iff_hasBasis_open_submodule] at this
-  have := this.comap (Subtype.val : 𝒪[K] → K)
+  rw [isLinearTopology_iff_hasBasis_open_submodule] at this ⊢
+  replace := this.comap (Subtype.val : 𝒪[K] → K)
   -- we need to convert the comap-ed neighborhood of zero of the field to the neighborhood of zero
   -- of the valuation ring,
-  have hn0 : 𝓝 (0 : 𝒪[K]) = comap Subtype.val (𝓝 0) := nhds_induced Subtype.val 0
-  rw [← hn0] at this
-  rw [isLinearTopology_iff_hasBasis_open_submodule]
-  refine this.to_hasBasis ?_ ?_
-  · intro I hI
-    exact ⟨I.comap (Algebra.linearMap 𝒪[K] K), continuous_subtype_val.isOpen_preimage _ hI,
-      subset_refl _⟩
-  · intro I hI
-    refine ⟨Submodule.map (Algebra.linearMap 𝒪[K] K) I, ?_,
-      (Set.preimage_image_eq _ (Subtype.val_injective)).le⟩
-    simp only [Submodule.map_coe, Algebra.linearMap_apply]
-    rwa [← (isOpenEmbedding_algebraMap_integer _).isOpen_iff_image_isOpen]
+  rw [show (0 : K) = ↑(0 : 𝒪[K]) by rfl, ← nhds_induced] at this
+  refine this.to_hasBasis (fun I hI ↦ ⟨I.comap (Algebra.linearMap 𝒪[K] K),
+      continuous_subtype_val.isOpen_preimage _ hI, subset_rfl⟩) ?_
+  refine fun I hI ↦ ⟨I.map (Algebra.linearMap 𝒪[K] K), ?_,
+    (Set.preimage_image_eq _ (Subtype.val_injective)).le⟩
+  simpa [(isOpenEmbedding_algebraMap_integer _).isOpen_iff_image_isOpen] using hI
