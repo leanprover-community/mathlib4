@@ -136,14 +136,14 @@ variable {G : Type u} [Group G] {N : Subgroup G} [Normal N]
 include h1 h3
 
 /-! We will arrive at a contradiction via the following steps:
- * step 0: `N` (the normal Hall subgroup) is nontrivial.
- * step 1: If `K` is a subgroup of `G` with `K ⊔ N = ⊤`, then `K = ⊤`.
- * step 2: `N` is a minimal normal subgroup, phrased in terms of subgroups of `G`.
- * step 3: `N` is a minimal normal subgroup, phrased in terms of subgroups of `N`.
- * step 4: `p` (`min_fact (Fintype.card N)`) is prime (follows from step0).
- * step 5: `P` (a Sylow `p`-subgroup of `N`) is nontrivial.
- * step 6: `N` is a `p`-group (applies step 1 to the normalizer of `P` in `G`).
- * step 7: `N` is abelian (applies step 3 to the center of `N`).
+* step 0: `N` (the normal Hall subgroup) is nontrivial.
+* step 1: If `K` is a subgroup of `G` with `K ⊔ N = ⊤`, then `K = ⊤`.
+* step 2: `N` is a minimal normal subgroup, phrased in terms of subgroups of `G`.
+* step 3: `N` is a minimal normal subgroup, phrased in terms of subgroups of `N`.
+* step 4: `p` (`min_fact (Fintype.card N)`) is prime (follows from step0).
+* step 5: `P` (a Sylow `p`-subgroup of `N`) is nontrivial.
+* step 6: `N` is a `p`-group (applies step 1 to the normalizer of `P` in `G`).
+* step 7: `N` is abelian (applies step 3 to the center of `N`).
 -/
 
 

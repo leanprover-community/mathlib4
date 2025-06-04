@@ -39,12 +39,12 @@ standard projective resolution of `k` as a trivial `k`-linear `G`-representation
 
 ## Main definitions
 
- * `groupCohomology.resolution.actionDiagonalSucc`
- * `groupCohomology.resolution.diagonalSucc`
- * `groupCohomology.resolution.ofMulActionBasis`
- * `classifyingSpaceUniversalCover`
- * `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
- * `groupCohomology.projectiveResolution`
+* `groupCohomology.resolution.actionDiagonalSucc`
+* `groupCohomology.resolution.diagonalSucc`
+* `groupCohomology.resolution.ofMulActionBasis`
+* `classifyingSpaceUniversalCover`
+* `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
+* `groupCohomology.projectiveResolution`
 
 ## Implementation notes
 
@@ -374,7 +374,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
 
 namespace classifyingSpaceUniversalCover
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory.Limits
 
 variable [Monoid G]
 
@@ -449,7 +449,7 @@ def groupCohomology.resolution [Monoid G] :=
 
 namespace groupCohomology.resolution
 
-open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory CategoryTheory.Limits
+open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
 
 variable [Monoid G]
 
@@ -597,7 +597,6 @@ theorem εToSingle₀_comp_eq :
       (forget₂ToModuleCatHomotopyEquiv k G).hom := by
   dsimp
   ext1
-  dsimp
   simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 
 theorem quasiIso_forget₂_εToSingle₀ :

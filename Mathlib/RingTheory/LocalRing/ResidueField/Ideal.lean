@@ -62,7 +62,7 @@ lemma Ideal.ker_algebraMap_residueField :
   Ideal.ext fun _ ↦ Ideal.algebraMap_residueField_eq_zero
 
 attribute [-instance] IsLocalRing.ResidueField.field in
-instance : Algebra (R ⧸ I) I.ResidueField :=
+noncomputable instance : Algebra (R ⧸ I) I.ResidueField :=
   (Ideal.Quotient.liftₐ I (Algebra.ofId _ _)
     fun _ ↦ Ideal.algebraMap_residueField_eq_zero.mpr).toRingHom.toAlgebra
 

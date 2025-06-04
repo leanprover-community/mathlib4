@@ -14,7 +14,7 @@ This is a mirror of the corresponding notion for localizations of rings.
 
 ## Main definitions
 
- * `IsLocalizedModule.IsInteger` is a predicate stating that `m : M'` is in the image of `M`
+* `IsLocalizedModule.IsInteger` is a predicate stating that `m : M'` is in the image of `M`
 
 ## Implementation details
 
@@ -66,7 +66,7 @@ theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (g : ι → M') :
     rw [← hsec, ← mul_smul, Submonoid.smul_def]
     congr
     simp only [Submonoid.coe_mul, Submonoid.coe_finset_prod, mul_comm]
-    rw [← Finset.prod_insert (f := fun i ↦ ((sec i).snd).val) (s.not_mem_erase i),
+    rw [← Finset.prod_insert (f := fun i ↦ ((sec i).snd).val) (s.notMem_erase i),
       Finset.insert_erase hi]
 
 /-- We can clear the denominators of a finite indexed family of fractions. -/

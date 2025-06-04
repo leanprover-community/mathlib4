@@ -15,7 +15,7 @@ function on `ℕ`.
 assert_not_exists Monoid Multiset.sort
 
 open List
-open Nat List
+open Nat
 
 namespace Equiv
 
@@ -54,7 +54,7 @@ def decodeList : ℕ → Option (List α)
 `Data.Nat.Pairing`. -/
 instance _root_.List.encodable : Encodable (List α) :=
   ⟨encodeList, decodeList, fun l => by
-    induction' l with a l IH <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩
+    induction l <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩
 
 instance _root_.List.countable {α : Type*} [Countable α] : Countable (List α) := by
   haveI := Encodable.ofCountable α

@@ -22,7 +22,6 @@ In this file we gather more miscellaneous results about Eisenstein polynomials
 
 -/
 
-
 universe u v w z
 
 variable {R : Type u}
@@ -41,7 +40,7 @@ open Polynomial
 
 theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     ((cyclotomic p ℤ).comp (X + 1)).IsEisensteinAt 𝓟 := by
-  refine Monic.isEisensteinAt_of_mem_of_not_mem ?_
+  refine Monic.isEisensteinAt_of_mem_of_notMem ?_
       (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (mod_cast hp.out.ne_zero)).2 <|
         Nat.prime_iff_prime_int.1 hp.out) (fun {i hi} => ?_) ?_
   · rw [show (X + 1 : ℤ[X]) = X + C 1 by simp]
@@ -74,7 +73,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
 
 theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (n : ℕ) :
     ((cyclotomic (p ^ (n + 1)) ℤ).comp (X + 1)).IsEisensteinAt 𝓟 := by
-  refine Monic.isEisensteinAt_of_mem_of_not_mem ?_
+  refine Monic.isEisensteinAt_of_mem_of_notMem ?_
       (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (mod_cast hp.out.ne_zero)).2 <|
         Nat.prime_iff_prime_int.1 hp.out) ?_ ?_
   · rw [show (X + 1 : ℤ[X]) = X + C 1 by simp]
@@ -146,19 +145,17 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     hei.isWeaklyEisensteinAt.exists_mem_adjoin_mul_eq_pow_natDegree_le (minpoly.aeval R B.gen)
       (minpoly.monic hBint)
   simp only [P, (minpoly.monic hBint).natDegree_map, deg_R_P] at hf
-
   -- The Eisenstein condition shows that `p` divides `Q.coeff 0`
   -- if `p^n.succ` divides the following multiple of `Q.coeff 0^n.succ`:
   suffices
       p ^ n.succ ∣ Q.coeff 0 ^ n.succ * ((-1) ^ (n.succ * n) * (minpoly R B.gen).coeff 0 ^ n) by
     have hndiv : ¬p ^ 2 ∣ (minpoly R B.gen).coeff 0 := fun h =>
-      hei.not_mem ((span_singleton_pow p 2).symm ▸ Ideal.mem_span_singleton.2 h)
+      hei.notMem ((span_singleton_pow p 2).symm ▸ Ideal.mem_span_singleton.2 h)
     refine @Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd R _ _ _ _ n hp (?_ : _ ∣ _) hndiv
     convert (IsUnit.dvd_mul_right ⟨(-1) ^ (n.succ * n), rfl⟩).mpr this using 1
     push_cast
     ring_nf
     rw [mul_comm _ 2, pow_mul, neg_one_sq, one_pow, mul_one]
-
   -- We claim the quotient of `Q^n * _` by `p^n` is the following `r`:
   have aux : ∀ i ∈ (range (Q.natDegree + 1)).erase 0, B.dim ≤ i + n := by
     intro i hi
@@ -172,7 +169,6 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     exact adjoin_le_integralClosure hBint (hf _ (aux i hi)).1
   obtain ⟨r, hr⟩ := isIntegral_iff.1 (isIntegral_norm K hintsum)
   use r
-
   -- Do the computation in `K` so we can work in terms of `z` instead of `r`.
   apply IsFractionRing.injective R K
   simp only [map_mul, map_pow, map_neg, map_one]
@@ -234,7 +230,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     z ∈ adjoin R ({B.gen} : Set L) := by
   -- First define some abbreviations.
   have hndiv : ¬p ^ 2 ∣ (minpoly R B.gen).coeff 0 := fun h =>
-    hei.not_mem ((span_singleton_pow p 2).symm ▸ Ideal.mem_span_singleton.2 h)
+    hei.notMem ((span_singleton_pow p 2).symm ▸ Ideal.mem_span_singleton.2 h)
   have := B.finite
   set P := minpoly R B.gen with hP
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
@@ -306,7 +302,6 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       · refine one_le_iff_ne_zero.2 fun h => ?_
         rw [h] at hk
         simp at hk
-
     -- The Eisenstein condition shows that `p` divides `Q.coeff j`
     -- if `p^n.succ` divides the following multiple of `Q.coeff (succ j)^n.succ`:
     suffices
@@ -319,7 +314,6 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, natDegree_minpoly, hn, Nat.sub_one,
         Nat.pred_succ]
       omega
-
     -- Using `hQ : aeval B.gen Q = p • z`, we write `p • z` as a sum of terms of degree less than
     -- `j+1`, that are multiples of `p` by induction, and terms of degree at least `j+1`.
     rw [aeval_eq_sum_range, Hj, range_add, sum_union (disjoint_range_addLeftEmbedding _ _),
@@ -330,10 +324,9 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     simp_rw [sum_map, addLeftEmbedding_apply, add_mul, sum_mul, mul_assoc] at hQ
     rw [← insert_erase
       (mem_range.2 (tsub_pos_iff_lt.2 <| Nat.lt_of_succ_lt_succ <| mem_range.1 hj)),
-      sum_insert (not_mem_erase 0 _), add_zero, sum_congr rfl hf₁, ← mul_sum, ← mul_sum, add_assoc,
+      sum_insert (notMem_erase 0 _), add_zero, sum_congr rfl hf₁, ← mul_sum, ← mul_sum, add_assoc,
       ← mul_add, smul_mul_assoc, ← pow_add, Algebra.smul_def] at hQ
     replace hQ := congr_arg (norm K) (eq_sub_of_add_eq hQ)
-
     -- We obtain an equality of elements of `K`, but everything is integral, so we can move to `R`
     -- and simplify `hQ`.
     have hintsum : IsIntegral R (z * B.gen ^ (P.natDegree - (j + 2)) -

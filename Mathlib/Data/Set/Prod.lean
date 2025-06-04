@@ -39,7 +39,7 @@ theorem Subsingleton.prod (hs : s.Subsingleton) (ht : t.Subsingleton) :
     (s ×ˢ t).Subsingleton := fun _x hx _y hy ↦
   Prod.ext (hs hx.1 hy.1) (ht hx.2 hy.2)
 
-noncomputable instance decidableMemProd [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
+instance decidableMemProd [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
     DecidablePred (· ∈ s ×ˢ t) := fun x => inferInstanceAs (Decidable (x.1 ∈ s ∧ x.2 ∈ t))
 
 @[gcongr]
@@ -321,6 +321,9 @@ theorem snd_image_prod {s : Set α} (hs : s.Nonempty) (t : Set β) : Prod.snd ''
   (snd_image_prod_subset _ _).antisymm fun y y_in =>
     let ⟨x, x_in⟩ := hs
     ⟨(x, y), ⟨x_in, y_in⟩, rfl⟩
+
+theorem subset_fst_image_prod_snd_image {s : Set (α × β)} :
+    s ⊆ (Prod.fst '' s) ×ˢ (Prod.snd '' s) := fun ⟨p₁, p₂⟩ _ => by aesop
 
 lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo Prod.snd (s ×ˢ t) t :=
   fun _ hx ↦ (mem_prod.1 hx).2
@@ -665,7 +668,7 @@ theorem pi_eq_empty_iff : s.pi t = ∅ ↔ ∃ i, IsEmpty (α i) ∨ i ∈ s ∧
   rw [← not_nonempty_iff_eq_empty, pi_nonempty_iff]
   push_neg
   refine exists_congr fun i => ?_
-  cases isEmpty_or_nonempty (α i) <;> simp [*, forall_and, eq_empty_iff_forall_not_mem]
+  cases isEmpty_or_nonempty (α i) <;> simp [*, forall_and, eq_empty_iff_forall_notMem]
 
 @[simp]
 theorem univ_pi_eq_empty_iff : pi univ t = ∅ ↔ ∃ i, t i = ∅ := by
@@ -755,11 +758,13 @@ theorem union_pi_inter
 theorem pi_inter_compl (s : Set ι) : pi s t ∩ pi sᶜ t = pi univ t := by
   rw [← union_pi, union_compl_self]
 
-theorem pi_update_of_not_mem [DecidableEq ι] (hi : i ∉ s) (f : ∀ j, α j) (a : α i)
+theorem pi_update_of_notMem [DecidableEq ι] (hi : i ∉ s) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) : (s.pi fun j => t j (update f i a j)) = s.pi fun j => t j (f j) :=
   (pi_congr rfl) fun j hj => by
     rw [update_of_ne]
     exact fun h => hi (h ▸ hj)
+
+@[deprecated (since := "2025-05-23")] alias pi_update_of_not_mem := pi_update_of_notMem
 
 theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
@@ -768,7 +773,7 @@ theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : 
     (s.pi fun j => t j (update f i a j)) = ({i} ∪ s \ {i}).pi fun j => t j (update f i a j) := by
         rw [union_diff_self, union_eq_self_of_subset_left (singleton_subset_iff.2 hi)]
     _ = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) := by
-        rw [union_pi, singleton_pi', update_self, pi_update_of_not_mem]; simp
+        rw [union_pi, singleton_pi', update_self, pi_update_of_notMem]; simp
 
 theorem univ_pi_update [DecidableEq ι] {β : ι → Type*} (i : ι) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
@@ -794,7 +799,7 @@ theorem subset_eval_image_pi (ht : (s.pi t).Nonempty) (i : ι) : t i ⊆ eval i 
 theorem eval_image_pi (hs : i ∈ s) (ht : (s.pi t).Nonempty) : eval i '' s.pi t = t i :=
   (eval_image_pi_subset hs).antisymm (subset_eval_image_pi ht i)
 
-lemma eval_image_pi_of_not_mem [Decidable (s.pi t).Nonempty] (hi : i ∉ s) :
+lemma eval_image_pi_of_notMem [Decidable (s.pi t).Nonempty] (hi : i ∉ s) :
     eval i '' s.pi t = if (s.pi t).Nonempty then univ else ∅ := by
   classical
   ext xᵢ
@@ -804,7 +809,9 @@ lemma eval_image_pi_of_not_mem [Decidable (s.pi t).Nonempty] (hi : i ∉ s) :
     exact ⟨x, hx⟩
   · rintro ⟨x, hx⟩
     refine ⟨Function.update x i xᵢ, ?_⟩
-    simpa (config := { contextual := true }) [(ne_of_mem_of_not_mem · hi)]
+    simpa +contextual [(ne_of_mem_of_not_mem · hi)]
+
+@[deprecated (since := "2025-05-23")] alias eval_image_pi_of_not_mem := eval_image_pi_of_notMem
 
 @[simp]
 theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :

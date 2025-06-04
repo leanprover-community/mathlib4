@@ -5,8 +5,11 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Algebra.Order.Interval.Finset.Basic
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Tactic.Linarith
 
 /-!
 # Results about big operators over intervals
@@ -19,70 +22,6 @@ open Nat
 variable {α M : Type*}
 
 namespace Finset
-section PartialOrder
-variable [PartialOrder α] [CommMonoid M] {f : α → M} {a b : α}
-
-section LocallyFiniteOrder
-variable [LocallyFiniteOrder α]
-
-@[to_additive]
-lemma mul_prod_Ico_eq_prod_Icc (h : a ≤ b) : f b * ∏ x ∈ Ico a b, f x = ∏ x ∈ Icc a b, f x := by
-  rw [Icc_eq_cons_Ico h, prod_cons]
-
-@[to_additive]
-lemma prod_Ico_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ico a b, f x) * f b = ∏ x ∈ Icc a b, f x := by
-  rw [mul_comm, mul_prod_Ico_eq_prod_Icc h]
-
-@[to_additive]
-lemma mul_prod_Ioc_eq_prod_Icc (h : a ≤ b) : f a * ∏ x ∈ Ioc a b, f x = ∏ x ∈ Icc a b, f x := by
-  rw [Icc_eq_cons_Ioc h, prod_cons]
-
-@[to_additive]
-lemma prod_Ioc_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ioc a b, f x) * f a = ∏ x ∈ Icc a b, f x := by
-  rw [mul_comm, mul_prod_Ioc_eq_prod_Icc h]
-
-end LocallyFiniteOrder
-
-section LocallyFiniteOrderTop
-variable [LocallyFiniteOrderTop α]
-
-@[to_additive]
-lemma mul_prod_Ioi_eq_prod_Ici (a : α) : f a * ∏ x ∈ Ioi a, f x = ∏ x ∈ Ici a, f x := by
-  rw [Ici_eq_cons_Ioi, prod_cons]
-
-@[to_additive]
-lemma prod_Ioi_mul_eq_prod_Ici (a : α) : (∏ x ∈ Ioi a, f x) * f a = ∏ x ∈ Ici a, f x := by
-  rw [mul_comm, mul_prod_Ioi_eq_prod_Ici]
-
-end LocallyFiniteOrderTop
-
-section LocallyFiniteOrderBot
-variable [LocallyFiniteOrderBot α]
-
-@[to_additive]
-lemma mul_prod_Iio_eq_prod_Iic (a : α) : f a * ∏ x ∈ Iio a, f x = ∏ x ∈ Iic a, f x := by
-  rw [Iic_eq_cons_Iio, prod_cons]
-
-@[to_additive]
-lemma prod_Iio_mul_eq_prod_Iic (a : α) : (∏ x ∈ Iio a, f x) * f a = ∏ x ∈ Iic a, f x := by
-  rw [mul_comm, mul_prod_Iio_eq_prod_Iic]
-
-end LocallyFiniteOrderBot
-end PartialOrder
-
-section LinearOrder
-variable [Fintype α] [LinearOrder α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
-  [CommMonoid M]
-
-@[to_additive]
-lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
-    ∏ i, ∏ j ∈ Ioi i, f j i * f i j = ∏ i, ∏ j ∈ {i}ᶜ, f j i := by
-  simp_rw [← Ioi_disjUnion_Iio, prod_disjUnion, prod_mul_distrib]
-  congr 1
-  rw [prod_sigma', prod_sigma']
-  refine prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) ?_ ?_ ?_ ?_ ?_ <;> simp
-
-end LinearOrder
 
 section Generic
 variable [CommMonoid M] {s₂ s₁ s : Finset α} {a : α} {g f : α → M}
@@ -110,13 +49,13 @@ theorem prod_Ico_add_right_sub_eq [AddCommMonoid α] [PartialOrder α] [IsOrdere
 @[to_additive]
 theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
     (∏ k ∈ Ico a (b + 1), f k) = (∏ k ∈ Ico a b, f k) * f b := by
-  rw [Nat.Ico_succ_right_eq_insert_Ico hab, prod_insert right_not_mem_Ico, mul_comm]
+  rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_notMem_Ico, mul_comm]
 
 @[to_additive]
 theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → M) :
     ∏ k ∈ Ico a b, f k = f a * ∏ k ∈ Ico (a + 1) b, f k := by
   have ha : a ∉ Ico (a + 1) b := by simp
-  rw [← prod_insert ha, Nat.Ico_insert_succ_left hab]
+  rw [← prod_insert ha, ← Finset.insert_Ico_add_one_left_eq_Ico  hab]
 
 @[to_additive]
 theorem prod_Ico_consecutive (f : ℕ → M) {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
@@ -139,7 +78,7 @@ theorem prod_Ioc_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
 @[to_additive]
 theorem prod_Icc_succ_top {a b : ℕ} (hab : a ≤ b + 1) (f : ℕ → M) :
     (∏ k ∈ Icc a (b + 1), f k) = (∏ k ∈ Icc a b, f k) * f (b + 1) := by
-  rw [← Nat.Ico_succ_right, prod_Ico_succ_top hab, Nat.Ico_succ_right]
+  rw [← Ico_add_one_right_eq_Icc, prod_Ico_succ_top hab, Ico_add_one_right_eq_Icc]
 
 @[to_additive]
 theorem prod_range_mul_prod_Ico (f : ℕ → M) {m n : ℕ} (h : m ≤ n) :
@@ -259,7 +198,7 @@ theorem sum_range_id_mul_two (n : ℕ) : (∑ i ∈ range n, i) * 2 = n * (n - 1
 
 /-- Gauss' summation formula -/
 theorem sum_range_id (n : ℕ) : ∑ i ∈ range n, i = n * (n - 1) / 2 := by
-  rw [← sum_range_id_mul_two n, Nat.mul_div_cancel _ zero_lt_two]
+  rw [← sum_range_id_mul_two n, Nat.mul_div_cancel _ Nat.zero_lt_two]
 
 end GaussSum
 

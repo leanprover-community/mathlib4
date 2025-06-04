@@ -149,6 +149,10 @@ theorem AnalyticAt.fun_neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z �
 theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
   hf.fun_neg
 
+@[simp] lemma analyticAt_neg : AnalyticAt 𝕜 (-f) x ↔ AnalyticAt 𝕜 f x where
+  mp hf := by simpa using hf.neg
+  mpr := .neg
+
 @[deprecated (since := "2025-03-11")] alias AnalyticAt.neg' := AnalyticAt.fun_neg
 
 theorem HasFPowerSeriesWithinOnBall.sub (hf : HasFPowerSeriesWithinOnBall f pf s x r)
@@ -1129,7 +1133,7 @@ theorem AnalyticOnNhd.div {f g : E → 𝕝} {s : Set E}
 -/
 
 /-- Finite sums of analytic functions are analytic -/
-theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
+theorem Finset.analyticWithinAt_fun_sum {f : α → E → F} {c : E} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
   classical
@@ -1141,27 +1145,54 @@ theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
     exact (h a (Or.inl rfl)).add (hB fun b m ↦ h b (Or.inr m))
 
 /-- Finite sums of analytic functions are analytic -/
+theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
+    (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
+    AnalyticWithinAt 𝕜 (∑ n ∈ N, f n) s c := by
+  convert N.analyticWithinAt_fun_sum h
+  simp
+
+/-- Finite sums of analytic functions are analytic -/
 @[fun_prop]
-theorem Finset.analyticAt_sum {f : α → E → F} {c : E}
+theorem Finset.analyticAt_fun_sum {f : α → E → F} {c : E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) c := by
   simp_rw [← analyticWithinAt_univ] at h ⊢
-  exact N.analyticWithinAt_sum h
+  exact N.analyticWithinAt_fun_sum h
+
+/-- Finite sums of analytic functions are analytic -/
+@[fun_prop]
+theorem Finset.analyticAt_sum {f : α → E → F} {c : E}
+    (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
+    AnalyticAt 𝕜 (∑ n ∈ N, f n) c := by
+  convert N.analyticAt_fun_sum h
+  simp
+
+/-- Finite sums of analytic functions are analytic -/
+theorem Finset.analyticOn_fun_sum {f : α → E → F} {s : Set E}
+    (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
+    AnalyticOn 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
+  fun z zs ↦ N.analyticWithinAt_fun_sum (fun n m ↦ h n m z zs)
 
 /-- Finite sums of analytic functions are analytic -/
 theorem Finset.analyticOn_sum {f : α → E → F} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
-    AnalyticOn 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
+    AnalyticOn 𝕜 (∑ n ∈ N, f n) s :=
   fun z zs ↦ N.analyticWithinAt_sum (fun n m ↦ h n m z zs)
+
+/-- Finite sums of analytic functions are analytic -/
+theorem Finset.analyticOnNhd_fun_sum {f : α → E → F} {s : Set E}
+    (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
+    AnalyticOnNhd 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
+  fun z zs ↦ N.analyticAt_fun_sum (fun n m ↦ h n m z zs)
 
 /-- Finite sums of analytic functions are analytic -/
 theorem Finset.analyticOnNhd_sum {f : α → E → F} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
-    AnalyticOnNhd 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
+    AnalyticOnNhd 𝕜 (∑ n ∈ N, f n) s :=
   fun z zs ↦ N.analyticAt_sum (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticWithinAt_fun_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s c := by
   classical
@@ -1173,24 +1204,61 @@ theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgeb
     exact (h a (Or.inl rfl)).mul (hB fun b m ↦ h b (Or.inr m))
 
 /-- Finite products of analytic functions are analytic -/
+theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+    {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
+    AnalyticWithinAt 𝕜 (∏ n ∈ N, f n) s c := by
+  convert N.analyticWithinAt_fun_prod h
+  simp
+
+/-- Finite products of analytic functions are analytic -/
 @[fun_prop]
-theorem Finset.analyticAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+theorem Finset.analyticAt_fun_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) c := by
   simp_rw [← analyticWithinAt_univ] at h ⊢
-  exact N.analyticWithinAt_prod h
+  exact N.analyticWithinAt_fun_prod h
+
+/-- Finite products of analytic functions are analytic -/
+@[fun_prop]
+theorem Finset.analyticAt_prod {α : Type*} {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+    {f : α → E → A} {c : E} (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
+    AnalyticAt 𝕜 (∏ n ∈ N, f n) c := by
+  convert N.analyticAt_fun_prod h
+  simp
+
+/-- Finite products of analytic functions are analytic -/
+theorem Finset.analyticOn_fun_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+    {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
+    AnalyticOn 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
+  fun z zs ↦ N.analyticWithinAt_fun_prod (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
 theorem Finset.analyticOn_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
-    AnalyticOn 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
+    AnalyticOn 𝕜 (∏ n ∈ N, f n) s :=
   fun z zs ↦ N.analyticWithinAt_prod (fun n m ↦ h n m z zs)
+
+/-- Finite products of analytic functions are analytic -/
+theorem Finset.analyticOnNhd_fun_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+    {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
+    AnalyticOnNhd 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
+  fun z zs ↦ N.analyticAt_fun_prod (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
 theorem Finset.analyticOnNhd_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
-    AnalyticOnNhd 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
+    AnalyticOnNhd 𝕜 (∏ n ∈ N, f n) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)
+
+/-- Finproducts of analytic functions are analytic -/
+@[fun_prop]
+theorem analyticAt_finprod {α : Type*} {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+    {f : α → E → A} {c : E} (h : ∀ a, AnalyticAt 𝕜 (f a) c) :
+    AnalyticAt 𝕜 (∏ᶠ n, f n) c := by
+  by_cases hf : (Function.mulSupport f).Finite
+  · simp_all [finprod_eq_prod _ hf, Finset.analyticAt_prod]
+  · rw [finprod_of_infinite_mulSupport hf]
+    apply analyticAt_const
 
 /-!
 ### Unshifting
