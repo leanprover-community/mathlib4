@@ -464,10 +464,19 @@ lemma counit_map_of_comp :
       _ ◁ (F.mapComp' f g fg hfg).hom.τl ≫
       (α_ _ _ _).inv ≫
       (α_ _ _ _).hom ▷ (F.map g).l ≫
-      (_ ◁ (F.map f).adj.counit) ▷ (F.map g).l ≫
+      ((F.map g).r ◁ (F.map f).adj.counit) ▷ (F.map g).l ≫
       (ρ_ _).hom ▷ (F.map g).l ≫
       (F.map g).adj.counit := by
-  sorry
+  rw [← cancel_epi ((F.mapComp' f g fg hfg).hom.τr ▷ (F.map fg).l), ← cancel_epi (α_ _ _ _).inv]
+  apply (F.map g).adj.homEquiv₁.symm.injective
+  rw [Adjunction.homEquiv₁_symm_apply]
+  simp only [whiskerRight_comp, comp_r, whiskerLeft_comp, Category.assoc,
+    pentagon_hom_hom_inv_hom_hom_assoc, comp_l, comp_whiskerLeft, whisker_assoc,
+    triangle_assoc_comp_right_assoc, pentagon_inv_hom_hom_hom_inv_assoc, Iso.inv_hom_id_assoc,
+    Iso.cancel_iso_inv_left, unit_comp_mapComp'_hom_τr_comp_counit]
+  apply (F.map g).adj.homEquiv₁.injective
+  rw [Adjunction.homEquiv₁_apply, ← comp_whiskerRight_assoc]
+  simp
 
 end
 
