@@ -6,7 +6,6 @@ Authors: Chris Birkbeck, David Loeffler
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
-import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 # Uniform convergence of Eisenstein series
