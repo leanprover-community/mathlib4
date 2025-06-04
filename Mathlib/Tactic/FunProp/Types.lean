@@ -125,7 +125,7 @@ structure State where
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
   msgLog : List String := []
   /-- `RefinedDiscrTree` is lazy, so we store the partially evaluated tree. -/
-  morTheorems        : GeneralTheorems
+  morTheorems : GeneralTheorems
   /-- `RefinedDiscrTree` is lazy, so we store the partially evaluated tree. -/
   transitionTheorems : GeneralTheorems
 
