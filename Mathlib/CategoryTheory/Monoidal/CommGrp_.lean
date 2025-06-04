@@ -192,7 +192,7 @@ theorem mapCommGrp_id_one (A : CommGrp_ C) :
   rfl
 
 @[simp]
-theorem maCommpGrp_id_mul (A : CommGrp_ C) :
+theorem mapCommpGrp_id_mul (A : CommGrp_ C) :
     μ[((𝟭 C).mapCommGrp.obj A).X] = 𝟙 _ ≫ μ[A.X] :=
   rfl
 
