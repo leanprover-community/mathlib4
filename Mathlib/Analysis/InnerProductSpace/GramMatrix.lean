@@ -13,8 +13,8 @@ Results require `RCLike 𝕜`.
 
 ## Main definition
 
-* `Matrix.Gram` : the `Matrix n n 𝕜` with `⟪v i, v j⟫` at `i j : n`, where `v : n → α` for an
-`InnerProductSpace 𝕜 α`.
+* `Matrix.gram` : the `Matrix n n 𝕜` with `⟪v i, v j⟫` at `i j : n`, where `v : n → E` for an
+`Inner 𝕜 E`.
 
 ## Main results
 
@@ -44,7 +44,7 @@ lemma gram_apply {v : n → E} (i j : n) : (gram _ v) i j = ⟪v i, v j⟫ := by
   rw [gram, of_apply]
 
 /-- A Gram matrix is Hermitian. -/
-lemma gram_isHermitian {v : n → E} : (gram 𝕜 v).IsHermitian := by
+lemma isHermitian_gram {v : n → E} : (gram 𝕜 v).IsHermitian := by
   refine IsHermitian.ext_iff.mpr (fun i j ↦ ?_)
   rw [gram, of_apply, of_apply]
   simp only [RCLike.star_def, inner_conj_symm]
@@ -52,7 +52,7 @@ lemma gram_isHermitian {v : n → E} : (gram 𝕜 v).IsHermitian := by
 /-- A Gram matrix is positive semidefinite. -/
 theorem gram_posSemidef [Fintype n] {v : n → E} :
     PosSemidef (gram 𝕜 v) := by
-  refine ⟨gram_isHermitian, fun x ↦ ?_⟩
+  refine ⟨isHermitian_gram, fun x ↦ ?_⟩
   let y := ∑ (i : n), x i • v i
   have h : ⟪y, y⟫ = star x ⬝ᵥ (gram 𝕜 v) *ᵥ x := by
     simp [y]

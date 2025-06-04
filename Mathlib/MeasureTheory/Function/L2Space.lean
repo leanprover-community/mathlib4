@@ -260,11 +260,10 @@ local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
 
 /- The inner product in `L2` of multiples `a` and `b` of indicators of two sets with finite measure
 is `a * b` times the measure of the intersection. -/
-lemma inner_indicatorConstLp_indicatorConstLp
- {v w : (Set α)} (hv : MeasurableSet v)
-  (hw : MeasurableSet w) (hμv : μ v ≠ ∞) (hμw : μ w ≠ ∞) (a b : ℝ):
-  ⟪((indicatorConstLp 2 hv hμv (a : ℝ))), (indicatorConstLp 2 hw hμw (b : ℝ))⟫ =
-    a * b * (μ.real (v ∩ w)) := by
+lemma inner_indicatorConstLp_indicatorConstLp {v w : Set α} (hv : MeasurableSet v)
+    (hw : MeasurableSet w) (hμv : μ v ≠ ∞ := by finiteness) (hμw : μ w ≠ ∞ := by finiteness)
+    (a b : ℝ) :
+    ⟪indicatorConstLp 2 hv hμv a, indicatorConstLp 2 hw hμw b⟫ = a * b * μ.real (v ∩ w) := by
   rw [inner_indicatorConstLp_eq_inner_setIntegral]
   have h : ((indicatorConstLp 2 hw hμw (b : ℝ)) : α → ℝ) =ᶠ[ae μ] w.indicator fun x ↦ (b : ℝ) :=
     indicatorConstLp_coeFn (hs := hw) (hμs := hμw)
