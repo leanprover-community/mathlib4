@@ -214,6 +214,13 @@ theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymm
   simp_rw [h _]
   ring
 
+theorem ker_le_ker_of_range {A B : E →ₗ[𝕜] E} (hA : A.IsSymmetric) (hB : B.IsSymmetric)
+    (h : range A ≤ range B) : ker B ≤ ker A := by
+  intro v hv
+  rw [mem_ker] at hv ⊢
+  obtain ⟨y, hy⟩ : ∃ y, B y = A (A v) := by simpa using @h (A (A v))
+  rw [← inner_self_eq_zero (𝕜 := 𝕜), ← hA, ← hy, hB, hv, inner_zero_right]
+
 end LinearMap
 
 end Normed
