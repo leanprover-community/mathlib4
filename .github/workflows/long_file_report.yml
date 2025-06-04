@@ -1,4 +1,4 @@
-name: Weekly Technical Debt Counters
+name: Weekly Long File Report
 
 on:
   schedule:
