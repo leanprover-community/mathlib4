@@ -6083,6 +6083,7 @@ import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 import Mathlib.Topology.Compactness.DeltaGeneratedSpace
 import Mathlib.Topology.Compactness.Exterior

@@ -398,7 +398,7 @@ theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
   let finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) :=
   { toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
     invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
-    left_inv x := by rcases x with y | y <;> dsimp <;> simp
+    left_inv x := by rcases x with y | y <;> simp
     right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp }
   rw [← Sum.elim_injective, ← append_comp_sumElim, ← finSumFinEquiv.injective_comp,
     Equiv.coe_fn_mk]
