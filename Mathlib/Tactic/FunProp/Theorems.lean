@@ -217,7 +217,7 @@ structure GeneralTheorem where
   /-- function property name -/
   funPropName : Name
   /-- theorem name -/
-  thmName     : Name
+  thmName : Name
   /-- discrimination tree keys used to index this theorem -/
   keys        : List RefinedDiscrTree.DTExpr
   /-- priority -/
