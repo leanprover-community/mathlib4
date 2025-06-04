@@ -324,6 +324,7 @@ lemma not_isUnramified_iff_card_stabilizer_eq_two [IsGalois k K] :
   rw [isUnramified_iff_card_stabilizer_eq_one]
   obtain (e|e) := nat_card_stabilizer_eq_one_or_two k w <;> rw [e] <;> decide
 
+@[simp]
 lemma isRamified_iff_card_stabilizer_eq_two [IsGalois k K] :
     IsRamified k w ↔ Nat.card (Stab w) = 2 :=
   not_isUnramified_iff_card_stabilizer_eq_two
