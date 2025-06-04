@@ -18,7 +18,7 @@ Results require `RCLike 𝕜`.
 
 ## Main results
 
-* `Matrix.IsGram.PosSemidef` Gram matrices are positive semi-definite.
+* `Matrix.gram_posSemidef` Gram matrices are positive semi-definite.
 -/
 
 open RCLike Real Matrix
@@ -35,8 +35,7 @@ variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 namespace Matrix
 
 /-- The entries of a Gram matrix are inner products of vectors in an inner product space. -/
-def gram (𝕜 : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    (v : n → E) : Matrix n n 𝕜 := of fun i j ↦ inner 𝕜 (v i) (v j)
+def gram (𝕜 : Type*) [Inner 𝕜 E] (v : n → E) : Matrix n n 𝕜 := of fun i j ↦ inner 𝕜 (v i) (v j)
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜  _ _ x y
 
