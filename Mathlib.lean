@@ -992,6 +992,7 @@ import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Algebra.Quandle
 import Mathlib.Algebra.Quaternion
 import Mathlib.Algebra.QuaternionBasis
+import Mathlib.Algebra.QuadraticAlgebra
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Regular.Pow
