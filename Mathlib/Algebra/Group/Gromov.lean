@@ -1142,7 +1142,48 @@ noncomputable def three_two_B_n_single_s (φ: (Additive G) →+ ℤ) (γ: G) (n:
 
 -- If G has polynomial growth, than we can find an N such that S_n ⊆ B_n * B_n⁻¹
 lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1) (s: G): ∃ n, three_two_S_n (S := {s}) φ γ (n + 1) ⊆ ((three_two_B_n (S := {s}) φ γ n) * (three_two_B_n (S := {s}) φ γ n)⁻¹)  := by
-  sorry
+  by_contra!
+  simp [HasPolynomialGrowthD] at hG
+  have little_o_poly := isLittleO_pow_exp_pos_mul_atTop d (b := Real.log 2) (Real.log_pos (by simp))
+  simp at little_o_poly
+  simp_rw [Real.exp_mul] at little_o_poly
+  rw [Real.exp_log (by simp)] at little_o_poly
+  apply Asymptotics.IsLittleO.eventuallyLE at little_o_poly
+  apply Filter.Eventually.natCast_atTop at little_o_poly
+  simp at little_o_poly
+  -- Find an N such that N^D < 2^N, and N ≥ 2 (so that we can apply the polynomial growth hypothesis)
+  obtain ⟨N', hN⟩ := little_o_poly
+  let N := max N' 2
+  specialize hN N (by simp [N])
+  specialize this N
+  specialize hG N (by simp [N])
+  rw [Finset.not_subset] at this
+  obtain ⟨p, ⟨p_mem, p_not_prod⟩⟩ := this
+  rw [Finset.mem_mul.not] at p_not_prod
+  push_neg at p_not_prod
+
+  have disjoint_smul: (p • three_two_B_n (S := {s}) φ γ N) ∩ (three_two_B_n (S := {s}) φ γ N) = ∅ := by
+    ext a
+    simp only [Finset.mem_inter, Finset.not_mem_empty, iff_false, not_and]
+    intro ha
+    simp only [Finset.smul_finset_def, smul_eq_mul, Finset.mem_image] at ha
+    obtain ⟨b, b_mem, s_b_eq⟩ := ha
+    apply_fun (fun g => g * b⁻¹ ) at s_b_eq
+    simp at s_b_eq
+    apply Finset.inv_mem_inv at b_mem
+    by_contra!
+    specialize p_not_prod a this b⁻¹ b_mem
+    rw [ne_comm] at p_not_prod
+    contradiction
+
+
+
+
+    rw [Finset.mem_smul] at ha
+
+
+
+
 
 set_option maxHeartbeats 600000
 
