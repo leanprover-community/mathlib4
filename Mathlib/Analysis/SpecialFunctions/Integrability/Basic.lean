@@ -8,43 +8,17 @@ import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
-# Integration of specific interval integrals
+# Integrability of Special Functions
 
-This file contains proofs of the integrals of various specific functions. This includes:
-* Integrals of simple functions, such as `id`, `pow`, `inv`, `exp`, `log`
-* Integrals of some trigonometric functions, such as `sin`, `cos`, `1 / (1 + x^2)`
-* The integral of `cos x ^ 2 - sin x ^ 2`
-* Reduction formulae for the integrals of `sin x ^ n` and `cos x ^ n` for `n ≥ 2`
-* The computation of `∫ x in 0..π, sin x ^ n` as a product for even and odd `n` (used in proving the
-  Wallis product for pi)
-* Integrals of the form `sin x ^ m * cos x ^ n`
-
-With these lemmas, many simple integrals can be computed by `simp` or `norm_num`.
-
-This file also contains some facts about the interval integrability of specific functions.
-
-This file is still being developed.
-
-## Tags
-
-integrate, integration, integrable, integrability
+This file establishes basic facts about the interval integrability of special functions, including
+powers and the logarithm.
 -/
 
+open Interval MeasureTheory Real Set
 
-open Real Set Finset
-
-open scoped Real Interval
-
-variable {a b : ℝ} (n : ℕ)
+variable {a b c d : ℝ} (n : ℕ) {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
 
 namespace intervalIntegral
-
-open MeasureTheory
-
-variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
-
-/-! ### Interval integrability -/
-
 
 @[simp]
 theorem intervalIntegrable_pow : IntervalIntegrable (fun x => x ^ n) μ a b :=
