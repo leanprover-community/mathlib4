@@ -1303,7 +1303,7 @@ end «Prop»
 
 
 /-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)` -/
-def AsLinearOrder (α : Type*)  :=
+def AsLinearOrder (α : Type*) :=
   α
 
 instance [Inhabited α] : Inhabited (AsLinearOrder α) :=
