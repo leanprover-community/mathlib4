@@ -146,7 +146,7 @@ def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℕₘ₀ where
 The quotient of a Noetherian ring of krull dimension less than or equal to `1` by a principal ideal
 is of finite length.
 -/
-theorem isFiniteLength_quotient_span_singleton [IsNoetherianRing R]
+theorem _root_.isFiniteLength_quotient_span_singleton [IsNoetherianRing R]
     [Ring.KrullDimLE 1 R] {x : R} (hx : x ∈ nonZeroDivisors R) :
     IsFiniteLength R (R ⧸ Ideal.span {x}) := by
   rw [isFiniteLength_iff_isNoetherian_isArtinian]
@@ -181,7 +181,7 @@ def ordFrac : K →*₀ ℤₘ₀ :=
     have : ∃ a : Multiplicative ℕ, WithZero.coe a = ((ordMonoidWithZeroHom R) y.1) := by
       simp only [ordMonoidWithZeroHom, Ring.ord, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
         SetLike.coe_mem, ↓reduceIte, Multiplicative.exists]
-      have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
+      have := Module.length_ne_top_iff.mpr <| _root_.isFiniteLength_quotient_span_singleton R y.2
       exact ENat.ne_top_iff_exists.mp this
     obtain ⟨m, hm⟩ := this
     rw [← hm] at a
