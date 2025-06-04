@@ -68,7 +68,7 @@ theorem comul_assoc_flip : Δ ≫ Δ ▷ t = Δ ≫ t ◁ Δ ≫ (α_ t t t).inv
 
 end
 
-@[simps!]
+@[simps! counit]
 instance {a : B} : Comonad (𝟙 a) :=
   inferInstanceAs <| Comon_Class (MonoidalCategory.tensorUnit (a ⟶ a))
 
@@ -117,6 +117,7 @@ def ComonadBicat (B : Type u) [Bicategory.{w, v} B] :=
 namespace ComonadBicat
 
 open scoped Oplax.OplaxTrans.OplaxFunctor in
+/-- The bicategory of comonads in `B`. -/
 scoped instance : Bicategory (ComonadBicat B) :=
   inferInstanceAs <| Bicategory (OplaxFunctor (LocallyDiscrete (Discrete PUnit.{u₀ + 1})) B)
 
