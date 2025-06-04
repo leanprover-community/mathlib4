@@ -1466,7 +1466,13 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
 --- Consequence of `three_two_poly_growth` - the set of all 'γ^n *e_i γ^(-n)' is contained the closure of S_n
 lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1)
   : ∃ n, ∀ m, (Finset.image (gamma_m_helper (S := S) (G := G) φ γ m) Finset.univ).toSet ⊆ Subgroup.closure (three_two_S_n (G := G) (S := S) φ γ (n)).toSet := by
-  have r: ℕ := by sorry
+  let r: ℕ := Finset.max' (Finset.image (fun s => (by
+    exact sInf { n: ℕ | three_two_S_n (S := {s}) φ γ (n + 1) ⊆ ((three_two_B_n (S := {s}) φ γ n) * (three_two_B_n (S := {s}) φ γ n)⁻¹) }
+    --exact {Classical.choose (new_three_two_poly_growth (G := G) (S := S) d hd hG γ φ hφ hγ s)}
+  )) S) (by
+    simp
+    exact S_nonempty
+  )
   use r
   intro m
   intro x hx
@@ -1474,9 +1480,22 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
   simp [three_two_S_n, gamma_m_helper]
   obtain ⟨s, hs, x_eq_conj⟩ := hx
 
-  obtain ⟨n, s_n_subset⟩ := new_three_two_poly_growth (G := G) (S := S) d hd hG γ φ hφ hγ s
+  let all_n_vals := { n : ℕ | three_two_S_n (S := {s}) φ γ (n + 1) ⊆ ((three_two_B_n (S := {s}) φ γ n) * (three_two_B_n (S := {s}) φ γ n)⁻¹)}
+  let n := sInf all_n_vals
+  have set_nonempty: all_n_vals.Nonempty := by
+    exact new_three_two_poly_growth (G := G) (S := S) d hd hG γ φ hφ hγ s
+  have temp_s_n_subset := Nat.sInf_mem set_nonempty
+  have s_n_subset: n ∈ all_n_vals := by
+    exact temp_s_n_subset
+  simp [all_n_vals] at s_n_subset
+  --obtain ⟨n, s_n_subset⟩ := new_three_two_poly_growth (G := G) (S := S) d hd hG γ φ hφ hγ s
   have n_le_r: n ≤ r := by
-    sorry
+    simp [r]
+    apply Finset.le_max'
+    simp
+    use s
+
+
   have my_iter := closure_iterate_mulact γ (e_i_regular_helper φ γ ⟨s, hs⟩) (n + 1)
   simp [three_two_S_n, gamma_m_helper] at s_n_subset
   have closure_eq := my_iter ?_ ?_
