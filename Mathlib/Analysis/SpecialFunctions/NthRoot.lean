@@ -23,15 +23,14 @@ instance instQPow : Pow ℝ ℚ where
 theorem qpow_of_even (r : ℝ) {q : ℚ} (hn : Even q.den) : r ^ q = r ^ (q : ℝ) :=
   if_pos hn
 
-theorem qpow_of_den_eq_one (r : ℝ) {q : ℚ} (hq : q.den = 1) : r ^ q = r ^ q.num := by
-  refine if_neg (by simp [hq]) |>.trans ?_
-  rw [hq, Nat.cast_one, mul_one]
-  conv_lhs => enter [2]; rw [← Rat.coe_int_num_of_den_eq_one hq, Rat.cast_intCast, rpow_intCast]
-  rw [← mul_zpow, sign_mul_abs]
-
 theorem qpow_of_odd (r : ℝ) {q : ℚ} (hn : Odd q.den) :
     r ^ q = SignType.sign r ^ (q.num * q.den) * abs r ^ (q : ℝ) :=
   if_neg <| Nat.not_even_iff_odd.mpr hn
+
+theorem qpow_of_den_eq_one (r : ℝ) {q : ℚ} (hq : q.den = 1) : r ^ q = r ^ q.num := by
+  rw [qpow_of_odd _ (by simp [hq]), hq, Nat.cast_one, mul_one]
+  conv_lhs => enter [2]; rw [← Rat.coe_int_num_of_den_eq_one hq, Rat.cast_intCast, rpow_intCast]
+  rw [← mul_zpow, sign_mul_abs]
 
 @[simp, norm_cast]
 theorem qpow_intCast (r : ℝ) (z : ℤ) : r ^ (z : ℚ) = r ^ z :=
@@ -101,17 +100,19 @@ lemma SignType.pow_even {n : ℕ} (hn : Even n) (s : SignType) (hs : s ≠ 0) :
     s ^ n = 1 := by
   sorry
 
-@[simp]
-theorem qpow_neg_of_even_of_odd {q : ℚ} (hn : Even q.num) (hn' : Odd q.den) {r : ℝ} :
-    (-r) ^ q = -r ^ q := by
-  have : Even (q.num * q.den) := sorry --hn.mul <| (Int.odd_coe_nat q.den).mpr hn'
-  obtain hr | hr := le_total r 0
-  · rw [qpow_of_odd_of_nonpos hn' hr, this.neg_one_zpow, one_mul,  neg_neg,
-      qpow_of_nonneg (neg_nonneg.mpr hr)]
-  · rw [qpow_of_odd_of_nonpos hn' (neg_nonpos.mpr hr), this.neg_one_zpow, neg_one_mul, neg_neg,
-      qpow_of_nonneg hr]
+lemma SignType.zpow_even {n : ℤ} (hn : Even n) (s : SignType) (hs : s ≠ 0) :
+    s ^ n = 1 := by
+  sorry
 
-#check Rat.den
+@[simp]
+theorem neg_qpow_of_even_of_odd {q : ℚ} (hn : Even q.num) (hn' : Odd q.den) {r : ℝ} :
+    (-r) ^ q = r ^ q := by
+  have : Even (q.num * q.den) := hn.mul_right _
+  obtain hr | hr := le_total r 0
+  · rw [qpow_of_odd_of_nonpos hn' hr, this.neg_one_zpow, one_mul,
+      qpow_of_nonneg (neg_nonneg.mpr hr)]
+  · rw [qpow_of_odd_of_nonpos hn' (neg_nonpos.mpr hr), this.neg_one_zpow, neg_neg,
+      qpow_of_nonneg hr, one_mul]
 
 theorem qpow_inv_qpow {q : ℚ} (r : ℝ) (hq : q ≠ 0) (h : 0 ≤ r ∨ Odd q.den) : (r ^ q⁻¹) ^ q = r := by
   cases Nat.even_or_odd q.den with
@@ -129,7 +130,7 @@ theorem qpow_inv_qpow {q : ℚ} (r : ℝ) (hq : q ≠ 0) (h : 0 ≤ r ∨ Odd q.
         simp
         assumption_mod_cast
         simpa
-      · rw [SignType.pow_even]
+      · rw [← SignType.coe_zpow, SignType.zpow_even, SignType.coe_one, one_mul]
       rw [qpow_of_even, SignType.]
     rw [qpow_of_odd _ ho, mul_pow, ←pow_mul, rpow_inv_natCast_pow (abs_nonneg _) hn,
       ←SignType.coe_pow, SignType.pow_odd, sign_mul_abs]
