@@ -33,7 +33,7 @@ with respect to the neighbourhood filter `𝓝 x`.
 
 open scoped Topology
 
-open Filter Set
+open Set
 
 variable {X Y Z : Type*} [TopologicalSpace X] {f g : X → Y} {A : Set X} {x : X}
 
@@ -75,6 +75,8 @@ def valueOrderRingHom {X E : Type*} [Semiring E] [PartialOrder E] [TopologicalSp
 end Filter.Germ
 
 section RestrictGermPredicate
+open Filter
+
 /-- Given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and `A : set X`,
 build a new predicate on germs `RestrictGermPredicate P A` such that
 `(∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x near A, P x f`, see
@@ -119,6 +121,7 @@ theorem forall_restrictGermPredicate_of_forall
 end RestrictGermPredicate
 
 namespace Filter.Germ
+
 /-- Map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y` to the corresponding germ
   of functions `X → Z` at `x ∈ X` -/
 def sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
@@ -145,6 +148,8 @@ lemma isConstant_comp_subtype {s : Set X} {f : X → Y} {x : s}
   isConstant_comp_tendsto hf continuousAt_subtype_val
 
 end Filter.Germ
+
+open Filter
 
 /-- If the germ of `f` w.r.t. each `𝓝 x` is constant, `f` is locally constant. -/
 lemma IsLocallyConstant.of_germ_isConstant (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) :

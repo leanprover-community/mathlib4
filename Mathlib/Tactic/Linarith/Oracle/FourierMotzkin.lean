@@ -30,9 +30,6 @@ We recursively eliminate all variables from the system. If we derive an empty cl
 we conclude that the original system was unsatisfiable.
 -/
 
-open Batteries
-open Std (format ToFormat TreeSet)
-
 namespace Std.TreeSet
 
 variable {α : Type*} {cmp}
@@ -56,6 +53,9 @@ instance : SDiff (TreeSet α cmp) := ⟨TreeSet.sdiff⟩
 end Std.TreeSet
 
 namespace Linarith
+
+open Batteries
+open Std (format ToFormat TreeSet)
 
 /-!
 ### Datatypes

@@ -34,11 +34,11 @@ universe v
 
 noncomputable section
 
-open TopCat Opposite TopologicalSpace CategoryTheory
+namespace TopCat.Presheaf
+
+open Opposite TopologicalSpace CategoryTheory
 
 variable {X : TopCat.{v}} (F : Presheaf (Type v) X)
-
-namespace TopCat.Presheaf
 
 namespace Sheafify
 

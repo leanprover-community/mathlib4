@@ -26,11 +26,9 @@ assert_not_exists RelIso
 set_option autoImplicit true
 
 namespace Mathlib
-open Lean
-open Meta
-
 namespace Meta.NormNum
-open Qq
+
+open Lean Qq
 
 /-- Represents and proves equalities of the form `a^b % m = c` for natural numbers. -/
 structure IsNatPowModT (p : Prop) (a b m c : Nat) : Prop where

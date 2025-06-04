@@ -49,7 +49,7 @@ of the lower topology to the spectrum of a complete lattice coincides with the h
 lower topology, upper topology, preorder
 -/
 
-open Set TopologicalSpace Topology
+open Set TopologicalSpace
 
 namespace Topology
 
@@ -548,7 +548,7 @@ lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ �
 end Topology
 
 /-- The Sierpiński topology on `Prop` is the upper topology -/
-instance : IsUpper Prop where
+instance : Topology.IsUpper Prop where
   topology_eq_upperTopology := by
     rw [Topology.upper, sierpinskiSpace, ← generateFrom_insert_empty]
     congr
