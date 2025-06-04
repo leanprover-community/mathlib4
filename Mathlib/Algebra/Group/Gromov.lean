@@ -1047,16 +1047,93 @@ lemma gamma_helper_subset_S_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Set.
   simp at hval
   exact hval
 
+instance simple_finite_list (P: Finset G) (n: ℕ): Finite { l: List P | l.length ≤ n } := by
+  apply List.finite_length_le
 
 -- List.finite_length_le
-lemma finite_list (P: Finset G) (n: ℕ): Finite { l: List G | l.length ≤ n ∧ ∀ x ∈ l, x ∈ P } := by
-  --apply Finite.of_injective (fun l => ⟨l.val, l.property.1⟩ )
-  --apply List.finite_length_le G n
+instance finite_list (P: Finset G) (n: ℕ): Finite { l: List G | l.length ≤ n ∧ ∀ x ∈ l, x ∈ P } := by
+  apply Finite.of_injective (β := { l: List P | l.length ≤ n }) (f := fun l => by (
+    have l_prop := l.property
+    simp only [Set.mem_setOf_eq] at l_prop
+    have mem_prop := l_prop.2
+    exact ⟨l.val.attach.map (fun g => ⟨g.val, mem_prop g.val g.property⟩), by (
+      simp
+      exact l_prop.1
+    )⟩
+  ))
+  simp
+  intro a b
+  induction a.val
+  .
+    simp
+    simp
+  . sorry
+  hint
+  intro hab
+  simp_rw [List.map_eq_iff] at hab
+  ext n g
+  specialize hab n
+  simp at hab
+  simp [Option.map] at hab
+  split at hab
+  .
+    split at hab
+    .
+      rename _ => some_eq
+      simp at some_eq
+      simp at hab
+      sorry
+    . sorry
+  . sorry
+
+  -- convert (Finset.range n).finite_toSet.biUnion (fun i _ => by (
+
+  --   sorry
+  -- ))
+  -- . sorry
+  -- . sorry
+  -- . sorry
+  -- . sorry
+  apply @Finite.of_injective _ (β := { l: List P | l.length ≤ n }) (List.finite_length_le _ _) (f := fun l => by (
+    simp at l
+    simp
+    let other: { l: List P // l.length ≤ n} := ⟨l.val.attach.map (fun q => ⟨q.val, ?_⟩), ?_⟩
+    . exact other
+    .
+      have prop := q.property
+      have l_prop := l.property.2
+      exact l_prop q prop
+    . simp
+      exact l.property.1
+  ))
+  simp
+  intro a b hab
+
+  simp at hab
+
+  rw [Subtype.eq_iff]
+  rw [List.map_eq_iff] at hab
+  ext n g
+  specialize hab n
+  simp only [List.getElem?_map] at hab
+
+  rw [List.eq_iff]
+  induction ha: a.val with
+  | nil =>
+
+
+      simp [ha]
+  | cons c =>
+    simp_rw [ha] at hab
+
+
+
+
+
+  --apply
   sorry
 
-noncomputable def list_len_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset (List G) := @Set.toFinset _ { l: List G | l.length ≤ n ∧ ∀ x ∈ l, x ∈ (three_two_S_n φ γ n (S := S)) } (@Fintype.ofFinite _ (by
-  exact finite_list _ n
-))
+noncomputable def list_len_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset (List G) := @Set.toFinset _ { l: List G | l.length ≤ n ∧ ∀ x ∈ l, x ∈ (three_two_S_n φ γ n (S := S)) } (@Fintype.ofFinite _ _)
 
 noncomputable def three_two_B_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset G := Finset.image List.prod (list_len_n φ γ n (S := S))
 
@@ -1064,9 +1141,6 @@ noncomputable def three_two_B_n_single_s (φ: (Additive G) →+ ℤ) (γ: G) (n:
 
 
 -- If G has polynomial growth, than we can find an N such that S_n ⊆ B_n * B_n⁻¹
-lemma three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1): ∃ n, three_two_S_n (S := S) φ γ (n + 1) ⊆ ((three_two_B_n (S := S) φ γ n) * (three_two_B_n (S := S) φ γ n)⁻¹)  := by
-  sorry
-
 lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1) (s: G): ∃ n, three_two_S_n (S := {s}) φ γ (n + 1) ⊆ ((three_two_B_n (S := {s}) φ γ n) * (three_two_B_n (S := {s}) φ γ n)⁻¹)  := by
   sorry
 
