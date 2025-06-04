@@ -3852,6 +3852,7 @@ import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Alternating.Curry
 import Mathlib.LinearAlgebra.Alternating.DomCoprod
+import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Basis.Bilinear
@@ -4577,7 +4578,7 @@ import Mathlib.NumberTheory.NumberField.EquivReindex
 import Mathlib.NumberTheory.NumberField.FinitePlaces
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.House
-import Mathlib.NumberTheory.NumberField.Ideal
+import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
@@ -5343,6 +5344,7 @@ import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
 import Mathlib.RingTheory.Polynomial.Eisenstein.Generalized
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Polynomial.GaussLemma
+import Mathlib.RingTheory.Polynomial.GaussNorm
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
 import Mathlib.RingTheory.Polynomial.Hermite.Gaussian
 import Mathlib.RingTheory.Polynomial.HilbertPoly
@@ -5358,6 +5360,7 @@ import Mathlib.RingTheory.Polynomial.RationalRoot
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Selmer
 import Mathlib.RingTheory.Polynomial.SeparableDegree
+import Mathlib.RingTheory.Polynomial.ShiftedLegendre
 import Mathlib.RingTheory.Polynomial.SmallDegreeVieta
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
@@ -5371,6 +5374,7 @@ import Mathlib.RingTheory.PowerSeries.Binomial
 import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 import Mathlib.RingTheory.PowerSeries.Derivative
 import Mathlib.RingTheory.PowerSeries.Evaluation
+import Mathlib.RingTheory.PowerSeries.GaussNorm
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.PowerSeries.Order
