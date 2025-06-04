@@ -3,6 +3,15 @@ import Mathlib.Tactic.Linter.CommandStart
 
 set_option linter.style.commandStart true
 
+-- Constructs that are ignored by the linter, and (former) false positives.
+section noFalsePositives
+
+-- Explicit name literals: used to error (and the suggested replacement is invalid syntax).
+structure foo (name: Lean.Name) where
+
+#guard_msgs in
+def bar (_param : List (foo ``String)) := 1
+
 -- This example would trigger the linter if we did not special case
 -- `where` in `Mathlib.Linter.Style.CommandStart.getUnlintedRanges`.
 /-- A -/
@@ -11,17 +20,8 @@ where
   /-- A -/
   aux : Unit := ()
 
--- Constructs that are ignored by the linter, and (former) false positives.
-section noFalsePositives
-
--- Explicit name literals: used to error (and the suggested replacement is invalid syntax).
-
-structure foo (name: Lean.Name) where
-
-#guard_msgs in
-def bar (_param : List (foo ``String)) := 1
-
 -- For structure fields, all field definitions are linted.
+-- TODO: currently, only the first field is linted
 /--
 warning: extra space in the source
 
