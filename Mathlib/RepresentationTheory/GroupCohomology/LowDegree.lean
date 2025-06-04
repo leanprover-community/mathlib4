@@ -271,6 +271,8 @@ section Cocycles
 instance : FunLike (cocycles A 1) G A :=
   ⟨iCocycles A 1 ≫ (oneCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
 
+/-- The natural inclusion `cocycles A 1 ⟶ (inhomogeneousCochains A).X 1`, defined to be
+`(Fin 1 → G) → A`, composed with an isomorphism to `G → A`. -/
 def iOneCocycles : cocycles A 1 ⟶ ModuleCat.of k (G → A) :=
   iCocycles A 1 ≫ (oneCochainsIso A).hom
 
@@ -279,8 +281,7 @@ instance : Mono (iOneCocycles A) := by unfold iOneCocycles; infer_instance
 variable {A}
 
 @[simp]
-lemma iOneCocycles_apply (f : cocycles A 1) :
-    iOneCocycles A f = f := rfl
+lemma iOneCocycles_apply (f : cocycles A 1) : iOneCocycles A f = f := rfl
 
 /-- Given a `G`-representation `A`, we say a function `f : G → A` is a member of the 1-cocycles
 if the function `(g, h) ↦ A.ρ(g)(f(h)) - f(gh) + f(g)` is 0. -/
@@ -366,7 +367,7 @@ variable (A)
 
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
-@[simps!]
+@[simps! hom_hom_apply_apply inv_hom_apply]
 def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
     cocycles A 1 ≅ ModuleCat.of k (Additive G →+ A) :=
   LinearEquiv.toModuleIso
@@ -383,6 +384,8 @@ def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
 instance : FunLike (cocycles A 2) (G × G) A :=
   ⟨iCocycles A 2 ≫ (twoCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
 
+/-- The natural inclusion `cocycles A 2 ⟶ (inhomogeneousCochains A).X 2`, defined to be
+`(Fin 2 → G) → A`, composed with an isomorphism to `G × G → A`. -/
 def iTwoCocycles : cocycles A 2 ⟶ ModuleCat.of k (G × G → A) :=
   iCocycles A 2 ≫ (twoCochainsIso A).hom
 
@@ -848,6 +851,8 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rw [← sub_eq_zero]
   exact congr_fun hx g
 
+/-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
+`A.ρ.invariants`, which is a simpler type. -/
 def zeroCocyclesIso : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
   KernelFork.mapIsoOfIsLimit
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
@@ -892,6 +897,7 @@ lemma pOpcocycles_hom_comp_zeroOpcocyclesIso :
 def isoZeroCocycles : groupCohomology A 0 ≅ cocycles A 0 :=
   (CochainComplex.isoHomologyπ₀ _).symm
 
+/-- The inclusion `H⁰(G, A) ≅ Z⁰(G, A) ⟶ ((Fin 0 → G) → A) ≅ A`. -/
 abbrev iZero : groupCohomology A 0 ⟶ A.V :=
   (isoZeroCocycles A).hom ≫ iCocycles A 0 ≫ (zeroCochainsIso A).hom
 
@@ -902,6 +908,8 @@ theorem π_isoZeroCocycles_hom :
     groupCohomologyπ A 0 ≫ (isoZeroCocycles A).hom = 𝟙 _ := by
   simp [isoZeroCocycles, groupCohomologyπ]
 
+/-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
+cochains, is isomorphic to the invariants of the representation on `A`. -/
 def H0Iso : groupCohomology A 0 ≅ ModuleCat.of k A.ρ.invariants :=
   isoZeroCocycles A ≪≫ zeroCocyclesIso A
 
@@ -937,35 +945,17 @@ open ShortComplex
 /-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
 abbrev H1π : cocycles A 1 ⟶ groupCohomology A 1 := groupCohomologyπ A 1
 
-open ShortComplex
-
-theorem _root_.CategoryTheory.ShortComplex.moduleCat_ker_homologyπ_eq
-    (S : ShortComplex (ModuleCat k)) :
-    LinearMap.ker S.homologyπ.hom = (LinearMap.range S.f.hom).comap S.iCycles.hom := by
-  ext x
-  constructor
-  · intro (h : _ = _)
-    apply_fun S.moduleCatHomologyIso.hom.hom at h
-    simp only [moduleCatLeftHomologyData_H, S.π_moduleCatCyclesIso_hom_apply x, map_zero,
-      Submodule.Quotient.mk_eq_zero] at h
-    rcases h with ⟨y, hy⟩
-    use y
-    simpa using congr(S.moduleCatLeftHomologyData.i $hy)
-  · rintro ⟨y, hy⟩
-    have := congr($(S.liftCycles_homologyπ_eq_zero_of_boundary S.f (𝟙 _)
-      (Category.id_comp _).symm) <| y)
-    simp only [← S.leftHomologyData.f'_i] at hy
-    simpa [← (ModuleCat.mono_iff_injective S.leftHomologyData.i).1 inferInstance hy]
-
-theorem _root_.CategoryTheory.HomologicalComplex.moduleCat_ker_homologyπ_eq
-    {ι : Type*} (c : ComplexShape ι) (X : HomologicalComplex (ModuleCat k) c) (i : ι) :
-    LinearMap.ker (X.homologyπ i).hom =
-      (LinearMap.range (X.dTo i).hom).comap (X.iCycles i).hom :=
-  (X.sc i).moduleCat_ker_homologyπ_eq
-
 variable {A} in
 lemma H1π_eq_zero_iff (x : cocycles A 1) : H1π A x = 0 ↔ ⇑x ∈ oneCoboundaries A := by
-  sorry
+  have h₁ := leftHomologyπ_naturality' (shortComplexH1Iso A).hom (leftHomologyData _)
+    (shortComplexH1 A).moduleCatLeftHomologyData
+  have h₂ : _ = iCocycles A 1 ≫ (oneCochainsIso A).hom := cyclesMap'_i (shortComplexH1Iso A).hom
+    ((inhomogeneousCochains A).sc 1).leftHomologyData (shortComplexH1 A).moduleCatLeftHomologyData
+  simp_all only [HomologicalComplex.homologyπ, homologyπ, leftHomologyπ, ← leftHomologyMapIso'_hom,
+    ← Iso.eq_comp_inv, ModuleCat.hom_comp]
+  simp [LinearMap.range_codRestrict, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective <|  _).1
+    inferInstance), moduleCatToCycles, ← iOneCocycles_apply, iOneCocycles, ← h₂, oneCoboundaries,
+    -cyclesMap'_i, shortComplexH1]
 
 variable {A} in
 lemma H1π_eq_iff (x y : cocycles A 1) : H1π A x = H1π A y ↔ ⇑(x - y) ∈ oneCoboundaries A := by
@@ -982,18 +972,19 @@ theorem H1_induction {C : groupCohomology A 1 → Prop}
 group homs `G → A`. -/
 def H1IsoOfIsTrivial [A.IsTrivial] :
     groupCohomology A 1 ≅ ModuleCat.of k (Additive G →+ A) :=
-    (((inhomogeneousCochains A).sc 1).asIsoHomologyπ <| sorry).symm ≪≫ oneCocyclesIsoOfIsTrivial A
+  ((inhomogeneousCochains A).isoHomologyπ 0 1 (by simp) <| by
+    ext; simp [inhomogeneousCochains.d_def, inhomogeneousCochains.d,
+      Unique.eq_default (α := Fin 0 → G), Pi.zero_apply (M := fun _ => A)]).symm ≪≫
+    oneCocyclesIsoOfIsTrivial A
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem H1π_comp_H1IsoOfIsTrivial [A.IsTrivial] :
     H1π A ≫ (H1IsoOfIsTrivial A).hom = (oneCocyclesIsoOfIsTrivial A).hom := by
-  simp [H1IsoOfIsTrivial, HomologicalComplex.homologyπ]
+  simp [H1IsoOfIsTrivial]
 
-theorem H1IsoOfIsTrivial_H1π_apply_apply
-    [A.IsTrivial] (f : cocycles A 1) (x : Additive G) :
+theorem H1IsoOfIsTrivial_H1π_apply_apply [A.IsTrivial] (f : cocycles A 1) (x : Additive G) :
     (H1IsoOfIsTrivial A).hom (H1π A f) x = f x.toMul := by
-  simp only [H1π_comp_H1IsoOfIsTrivial_apply]
-  exact oneCocyclesIsoOfIsTrivial_hom_hom_apply_apply A f x
+  simp [oneCocyclesIsoOfIsTrivial]
 
 @[simp]
 theorem H1IsoOfIsTrivial_inv_apply [A.IsTrivial] (f : Additive G →+ A) :
@@ -1010,7 +1001,15 @@ abbrev H2π : cocycles A 2 ⟶ groupCohomology A 2 := groupCohomologyπ A 2
 
 variable {A} in
 lemma H2π_eq_zero_iff (x : cocycles A 2) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
-  sorry
+  have h₁ := leftHomologyπ_naturality' (shortComplexH2Iso A).hom (leftHomologyData _)
+    (shortComplexH2 A).moduleCatLeftHomologyData
+  have h₂ : _ = iCocycles A 2 ≫ (twoCochainsIso A).hom := cyclesMap'_i (shortComplexH2Iso A).hom
+    ((inhomogeneousCochains A).sc 2).leftHomologyData (shortComplexH2 A).moduleCatLeftHomologyData
+  simp_all only [HomologicalComplex.homologyπ, homologyπ, leftHomologyπ, ← leftHomologyMapIso'_hom,
+    ← Iso.eq_comp_inv, ModuleCat.hom_comp]
+  simp [LinearMap.range_codRestrict, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective <|  _).1
+    inferInstance), moduleCatToCycles, ← iTwoCocycles_apply, iTwoCocycles, ← h₂, twoCoboundaries,
+    -cyclesMap'_i, shortComplexH2]
 
 variable {A} in
 lemma H2π_eq_iff (x y : cocycles A 2) : H2π A x = H2π A y ↔ ⇑(x - y) ∈ twoCoboundaries A := by

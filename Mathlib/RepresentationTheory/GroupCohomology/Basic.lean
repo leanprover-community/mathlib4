@@ -218,6 +218,11 @@ def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolu
     LinearMap.id_comp, LinearEquiv.coe_coe]
   rfl
 
+variable {A n} in
+@[ext]
+theorem inhomogeneousCochains.ext {x y : (inhomogeneousCochains A).X n} (h : ∀ g, x g = y g) :
+    x = y := funext h
+
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/
 abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
