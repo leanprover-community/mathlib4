@@ -243,9 +243,9 @@ lemma CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts {A : Type*} [No
     [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     {a : A} (ha₁ : IsSelfAdjoint a) (ha₂ : QuasispectrumRestricts a ContinuousMap.realToNNReal) :
     ∃ x : A, IsSelfAdjoint x ∧ QuasispectrumRestricts x ContinuousMap.realToNNReal ∧ x * x = a := by
-  use cfcₙ Real.sqrt a, cfcₙ_predicate Real.sqrt a
+  use cfcₙ (√·) a, cfcₙ_predicate (√·) a
   constructor
-  · simpa only [QuasispectrumRestricts.nnreal_iff, cfcₙ_map_quasispectrum Real.sqrt a,
+  · simpa only [QuasispectrumRestricts.nnreal_iff, cfcₙ_map_quasispectrum (√·) a,
       Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
         using fun x _ ↦ Real.sqrt_nonneg x
   · rw [← cfcₙ_mul ..]
@@ -290,9 +290,9 @@ lemma CFC.exists_sqrt_of_isSelfAdjoint_of_spectrumRestricts {A : Type*} [Ring A]
     [TopologicalSpace A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     {a : A} (ha₁ : IsSelfAdjoint a) (ha₂ : SpectrumRestricts a ContinuousMap.realToNNReal) :
     ∃ x : A, IsSelfAdjoint x ∧ SpectrumRestricts x ContinuousMap.realToNNReal ∧ x ^ 2 = a := by
-  use cfc Real.sqrt a, cfc_predicate Real.sqrt a
+  use cfc (√·) a, cfc_predicate (√·) a
   constructor
-  · simpa only [SpectrumRestricts.nnreal_iff, cfc_map_spectrum Real.sqrt a, Set.mem_image,
+  · simpa only [SpectrumRestricts.nnreal_iff, cfc_map_spectrum (√·) a, Set.mem_image,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using fun x _ ↦ Real.sqrt_nonneg x
   · rw [← cfc_pow ..]
     nth_rw 2 [← cfc_id ℝ a]

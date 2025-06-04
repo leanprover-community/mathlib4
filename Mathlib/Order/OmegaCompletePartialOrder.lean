@@ -25,33 +25,33 @@ supremum helps define the meaning of recursive procedures.
 
 ## Main definitions
 
- * class `OmegaCompletePartialOrder`
- * `ite`, `map`, `bind`, `seq` as continuous morphisms
+* class `OmegaCompletePartialOrder`
+* `ite`, `map`, `bind`, `seq` as continuous morphisms
 
 ## Instances of `OmegaCompletePartialOrder`
 
- * `Part`
- * every `CompleteLattice`
- * pi-types
- * product types
- * `OrderHom`
- * `ContinuousHom` (with notation →𝒄)
-   * an instance of `OmegaCompletePartialOrder (α →𝒄 β)`
- * `ContinuousHom.ofFun`
- * `ContinuousHom.ofMono`
- * continuous functions:
-   * `id`
-   * `ite`
-   * `const`
-   * `Part.bind`
-   * `Part.map`
-   * `Part.seq`
+* `Part`
+* every `CompleteLattice`
+* pi-types
+* product types
+* `OrderHom`
+* `ContinuousHom` (with notation →𝒄)
+  * an instance of `OmegaCompletePartialOrder (α →𝒄 β)`
+* `ContinuousHom.ofFun`
+* `ContinuousHom.ofMono`
+* continuous functions:
+  * `id`
+  * `ite`
+  * `const`
+  * `Part.bind`
+  * `Part.map`
+  * `Part.seq`
 
 ## References
 
- * [Chain-complete posets and directed sets with applications][markowsky1976]
- * [Recursive definitions of partial functions and their computations][cadiou1972]
- * [Semantics of Programming Languages: Structures and Techniques][gunter1992]
+* [Chain-complete posets and directed sets with applications][markowsky1976]
+* [Recursive definitions of partial functions and their computations][cadiou1972]
+* [Semantics of Programming Languages: Structures and Techniques][gunter1992]
 -/
 
 assert_not_exists OrderedCommMonoid
@@ -420,12 +420,12 @@ variable [OmegaCompletePartialOrder γ]
 
 /-- The supremum of a chain in the product `ω`-CPO. -/
 @[simps]
-protected def ωSup (c : Chain (α × β)) : α × β :=
+protected def ωSupImpl (c : Chain (α × β)) : α × β :=
   (ωSup (c.map OrderHom.fst), ωSup (c.map OrderHom.snd))
 
 @[simps! ωSup_fst ωSup_snd]
 instance : OmegaCompletePartialOrder (α × β) where
-  ωSup := Prod.ωSup
+  ωSup := Prod.ωSupImpl
   ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
   le_ωSup c i := ⟨le_ωSup (c.map OrderHom.fst) i, le_ωSup (c.map OrderHom.snd) i⟩
 
@@ -737,9 +737,6 @@ def apply : (α →𝒄 β) × α →𝒄 β where
       rfl
 
 end Prod
-
-theorem ωSup_def (c : Chain (α →𝒄 β)) (x : α) : ωSup c x = ContinuousHom.ωSup c x :=
-  rfl
 
 theorem ωSup_apply_ωSup (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) :
     ωSup c₀ (ωSup c₁) = Prod.apply (ωSup (c₀.zip c₁)) := by simp [Prod.apply_apply, Prod.ωSup_zip]

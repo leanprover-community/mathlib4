@@ -23,9 +23,9 @@ properties about separable polynomials here.
 
 * `Polynomial.Separable f`: a polynomial `f` is separable iff it is coprime with its derivative.
 * `IsSeparable K x`: an element `x` is separable over `K` iff the minimal polynomial of `x`
-over `K` is separable.
+  over `K` is separable.
 * `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable
-over `K`.
+  over `K`.
 
 -/
 
@@ -223,8 +223,8 @@ theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R
     (hfxy : f x = f y) : x = y := by
   classical
   by_contra hxy
-  rw [← insert_erase hx, prod_insert (not_mem_erase _ _), ←
-    insert_erase (mem_erase_of_ne_of_mem (Ne.symm hxy) hy), prod_insert (not_mem_erase _ _), ←
+  rw [← insert_erase hx, prod_insert (notMem_erase _ _), ←
+    insert_erase (mem_erase_of_ne_of_mem (Ne.symm hxy) hy), prod_insert (notMem_erase _ _), ←
     mul_assoc, hfxy, ← sq] at hfs
   cases (hfs.of_mul_left.of_pow (not_isUnit_X_sub_C _) two_ne_zero).2
 
@@ -365,7 +365,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
 theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p ≠ 0) :
     ∃ (n : ℕ) (g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
   replace hp : p.Prime := (CharP.char_is_prime_or_zero F p).resolve_right hp
-  induction' hn : f.natDegree using Nat.strong_induction_on with N ih generalizing f
+  induction hn : f.natDegree using Nat.strong_induction_on generalizing f with | _ N ih
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)
   · refine ⟨0, f, h, ?_⟩
     rw [pow_zero, expand_one]
@@ -586,6 +586,11 @@ theorem Algebra.isSeparable_iff :
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
     fun h => ⟨fun x => (h x).2⟩⟩
 
+variable {L} in
+lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : Function.Injective f)
+    (H : IsSeparable F x) : IsSeparable F (f x) := by
+  rwa [IsSeparable, minpoly.algHom_eq _ hf]
+
 variable {E : Type*}
 
 section AlgEquiv
@@ -616,7 +621,7 @@ over `L`. -/
 @[stacks 09H2 "first part"]
 theorem IsSeparable.tower_top
     {x : E} (h : IsSeparable F x) : IsSeparable L x :=
-  h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
+  .of_dvd (.map h) (minpoly.dvd_map_of_isScalarTower ..)
 
 variable (F E) in
 /-- If `E / K / F` is an extension tower, `E` is separable over `F`, then it's also separable
