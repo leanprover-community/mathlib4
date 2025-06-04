@@ -109,9 +109,8 @@ noncomputable def pathIntegral (ω : E → E →L[𝕜] F) (γ : Path a b) : F :
   ∫ t in (0)..1, pathIntegralFun ω γ t
 
 -- TODO: use `∈`
--- TODO: fix priorities
 @[inherit_doc pathIntegral]
-notation3 "∫ᵖ "(...)" in " γ ", "r:60:(scoped ω => pathIntegral ω γ) => r
+notation3 "∫ᵖ "(...)" in " γ ", "r:67:(scoped ω => pathIntegral ω γ) => r
 
 /-- Path integral is defined using Bochner integral,
 thus it is defined as zero whenever the codomain is not a complete space. -/
@@ -204,7 +203,7 @@ theorem pathIntegralFun_trans_of_lt_half (ω : E → E →L[𝕜] F) (γab : Pat
   have H₂ : (2 : ℝ) • I =ᶠ[𝓝 (2 * t)] I := by
     rw [LinearOrderedField.smul_Icc two_pos, mul_zero, mul_one, ← nhdsWithin_eq_iff_eventuallyEq]
     rcases lt_trichotomy t 0 with ht₀ | rfl | ht₀
-    · rw [not_mem_closure_iff_nhdsWithin_eq_bot.mp, not_mem_closure_iff_nhdsWithin_eq_bot.mp] <;>
+    · rw [notMem_closure_iff_nhdsWithin_eq_bot.mp, notMem_closure_iff_nhdsWithin_eq_bot.mp] <;>
         simp_intro h <;> linarith
     · simp
     · rw [nhdsWithin_eq_nhds.2, nhdsWithin_eq_nhds.2] <;> simp [*] <;> linarith
@@ -338,13 +337,13 @@ protected nonrec theorem PathIntegrable.add (h₁ : PathIntegrable ω₁ γ) (h�
   simpa [PathIntegrable] using h₁.add h₂
 
 theorem pathIntegral_add (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
-    pathIntegral (ω₁ + ω₂) γ = (∫ᵖ x in γ, ω₁ x) + ∫ᵖ x in γ, ω₂ x := by
+    pathIntegral (ω₁ + ω₂) γ = ∫ᵖ x in γ, ω₁ x + ∫ᵖ x in γ, ω₂ x := by
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   simp only [pathIntegral, pathIntegralFun_add]
   exact intervalIntegral.integral_add h₁ h₂
 
 theorem pathIntegral_fun_add (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
-    ∫ᵖ x in γ, ω₁ x + ω₂ x = (∫ᵖ x in γ, ω₁ x) + ∫ᵖ x in γ, ω₂ x :=
+    ∫ᵖ x in γ, (ω₁ x + ω₂ x) = ∫ᵖ x in γ, ω₁ x + ∫ᵖ x in γ, ω₂ x :=
   pathIntegral_add h₁ h₂
 
 @[simp]
@@ -401,11 +400,11 @@ protected nonrec theorem PathIntegrable.sub (h₁ : PathIntegrable ω₁ γ) (h�
   sub_eq_add_neg ω₁ ω₂ ▸ h₁.add h₂.neg
 
 theorem pathIntegral_sub (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
-    pathIntegral (ω₁ - ω₂) γ = (∫ᵖ x in γ, ω₁ x) - ∫ᵖ x in γ, ω₂ x := by
+    pathIntegral (ω₁ - ω₂) γ = ∫ᵖ x in γ, ω₁ x - ∫ᵖ x in γ, ω₂ x := by
   rw [sub_eq_add_neg, sub_eq_add_neg, pathIntegral_add h₁ h₂.neg, pathIntegral_neg]
 
 theorem pathIntegral_fun_sub (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
-    ∫ᵖ x in γ, ω₁ x - ω₂ x = (∫ᵖ x in γ, ω₁ x) - ∫ᵖ x in γ, ω₂ x :=
+    ∫ᵖ x in γ, (ω₁ x - ω₂ x) = ∫ᵖ x in γ, ω₁ x - ∫ᵖ x in γ, ω₂ x :=
   pathIntegral_sub h₁ h₂
 
 
