@@ -156,12 +156,9 @@ def adj : T.free ⊣ T.forget :=
         { toFun := fun f => T.η.app X ≫ f.f
           invFun := fun f =>
             { f := T.map f ≫ Y.a
-              h := by
-                dsimp
-                simp [← Y.assoc, ← T.μ.naturality_assoc] }
+              h := by simp [← Y.assoc, ← T.μ.naturality_assoc] }
           left_inv := fun f => by
             ext
-            dsimp
             simp
           right_inv := fun f => by
             dsimp only [forget_obj]
@@ -205,12 +202,8 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
   obj A :=
     { A := A.A
       a := h.app A.A ≫ A.a
-      unit := by
-        dsimp
-        simp [A.unit]
-      assoc := by
-        dsimp
-        simp [A.assoc] }
+      unit := by simp [A.unit]
+      assoc := by simp [A.assoc] }
   map f := { f := f.f }
 
 /--
@@ -386,9 +379,7 @@ def adj : G.forget ⊣ G.cofree :=
     { homEquiv := fun X Y =>
         { toFun := fun f =>
             { f := X.a ≫ G.map f
-              h := by
-                dsimp
-                simp [← Coalgebra.coassoc_assoc] }
+              h := by simp [← Coalgebra.coassoc_assoc] }
           invFun := fun g => g.f ≫ G.ε.app Y
           left_inv := fun f => by
             dsimp

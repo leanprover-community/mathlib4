@@ -1022,7 +1022,7 @@ theorem CompositionAsSet.toComposition_boundaries (c : CompositionAsSet n) :
     · simpa [c.card_boundaries_eq_succ_length] using i.2
     · simp [Composition.boundary, Composition.sizeUpTo, ← hi]
   · rintro ⟨i, i_lt, hi⟩
-    refine ⟨i, by simp, ?_⟩
+    refine ⟨Fin.ofNat _ i, by simp, ?_⟩
     rw [c.card_boundaries_eq_succ_length] at i_lt
     simp [Composition.boundary, Nat.mod_eq_of_lt i_lt, Composition.sizeUpTo, hi]
 
