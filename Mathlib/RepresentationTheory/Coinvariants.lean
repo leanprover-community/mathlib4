@@ -343,7 +343,7 @@ section Finsupp
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (α : Type u) [DecidableEq α]
 
-open MonoidalCategory Finsupp Representation ModuleCat.MonoidalCategory
+open MonoidalCategory Finsupp ModuleCat.MonoidalCategory
 
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the map
 `(A ⊗ (α →₀ k[G]))_G →ₗ[k] (α →₀ A)` sending

@@ -5440,6 +5440,7 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 import Mathlib.RingTheory.Spectrum.Prime.Homeomorph
 import Mathlib.RingTheory.Spectrum.Prime.IsOpenComapC
 import Mathlib.RingTheory.Spectrum.Prime.Jacobson
+import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 import Mathlib.RingTheory.Spectrum.Prime.Module
 import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 import Mathlib.RingTheory.Spectrum.Prime.Polynomial
@@ -6081,6 +6082,7 @@ import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 import Mathlib.Topology.Compactness.DeltaGeneratedSpace
 import Mathlib.Topology.Compactness.Exterior
