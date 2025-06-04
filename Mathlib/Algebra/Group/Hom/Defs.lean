@@ -883,10 +883,10 @@ theorem MulHom.comp_inverse [Mul M] [Mul N] {f : M →ₙ* N} {g : N → M}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     f.comp (f.inverse g h₁ h₂) = id N := MulHom.ext h₂
 
-/-- If `M` and `N` have multiplications, `f : M →ₙ* N` is a surjective multiplicative map,
+/-- If `M` and `N` have multiplications, `f` is a surjective multiplicative map,
 and `M` is commutative, then `N` is commutative. -/
 @[to_additive
-"If `M` and `N` have additions, `f : M →ₙ+ N` is a surjective additive map,
+"If `M` and `N` have additions, `f` is a surjective additive map,
 and `M` is commutative, then `N` is commutative."]
 theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N}
     (is_surj : Function.Surjective f) (is_comm : Std.Commutative (· * · : M → M → M)) :
@@ -919,18 +919,18 @@ namespace OneHom
 
 variable [One M] [One N] [One P]
 
-/-- If `p : OneHom M P` is a `MulHom`, `g : P → N` is a map, and `f : OneHom M N`
+/-- If `p` is a `MulHom`, `g` is a map, and `f`
   is a `OneHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `OneHom`. -/
-@[to_additive (attr := simps) " If `p : ZeroHom M P` is a `ZeroHom`, `g : P → N`
-  is a map, and `f : ZeroHom M N` is an `ZeroHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+@[to_additive (attr := simps) " If `p` is a `ZeroHom`, `g`
+  is a map, and `f` is an `ZeroHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
   `ZeroHom`. "]
 def liftLeft (f : OneHom M N) (p : OneHom M P) (g : P → N) (hg : ∀ x, g (p x) = f x) :
     OneHom P N where toFun := g; map_one' := by simpa only [hg, map_one] using hg 1
 
-/-- If `p : OneHom P N` is an injective `OneHom`, `g : M → P` is a map, and `f : OneHom M N`
+/-- If `p` is an injective `OneHom`, `p_inv` is a map, and `f`
   is a `OneHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `OneHom`. -/
-@[to_additive (attr := simps) " If `p : ZeroHom P N` is an injective `ZeroHom`, `g : M → P`
-  is a map, and `f : ZeroHom M N` is a `ZeroHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+@[to_additive (attr := simps) " If `p` is an injective `ZeroHom`, `p_inv`
+  is a map, and `f` is a `ZeroHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
   `ZeroHom`. "]
 def liftRight (f : OneHom M N) {p : OneHom P N} (hp : Injective p) (g : M → P)
     (hg : ∀ x, p (g x) = f x) : OneHom M P where
@@ -942,10 +942,10 @@ namespace MulHom
 
 variable [Mul M] [Mul N] [Mul P]
 
-/-- If `p : M →ₙ* P` is a surjective `MulHom`, `g : P → N` is a map, and `f : M →ₙ* N`
+/-- If `p` is a surjective `MulHom`, `g` is a map, and `f`
   is a `MulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MulHom`. -/
-@[to_additive (attr := simps) " If `p : M →ₙ+ P` is a surjective `AddMulHom`, `g : P → N`
-  is a map, and `f : M →ₙ+ N` is an `AddMulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+@[to_additive (attr := simps) " If `p : M →ₙ+ P` is a surjective `AddMulHom`, `g`
+  is a map, and `f` is an `AddMulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
   `AddMulHom`. "]
 def liftLeft (f : M →ₙ* N) {p : M →ₙ* P} (hp : Surjective p) (g : P → N)
     (hg : ∀ x, g (p x) = f x) : P →ₙ* N where
