@@ -24,7 +24,7 @@ namespace DeprecatedModule
 This file interacts with `git ...` quite a bit. `runCmd` takes as input the command-line
 function `git ...` and returns its stdout string as its output.
 
-This is convenient to get both the output of the function, but also re-producing the exact
+This is convenient to get both the output of the function, but also for reproducing the exact
 command-line text that produced the output for better reproducibility and error reporting.
 -/
 def runCmd (s : String) : IO String := do
