@@ -23,6 +23,49 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 #guard_msgs in
 def bar (_param : List (foo ``String)) := 1
 
+-- For structure fields, all field definitions are linted.
+/--
+warning: extra space in the source
+
+This part of the code
+  'field1     : Nat'
+should be written as
+  'field1 : Nat'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+structure A where
+  field1     : Nat
+  field2 : Nat
+
+-- TODO: this is not linted yet!
+structure B where
+  field1 : Nat
+  field2     : Nat
+
+-- TODO: this is not linted yet!
+structure C where
+  field1 :     Nat
+  field2     : Nat
+
+-- Note that the linter does not attempt to recognise or respect manual alignment of fields:
+-- this is often brittle and should usually be removed.
+/--
+warning: extra space in the source
+
+This part of the code
+  'field1    :  '
+should be written as
+  'field1 : Nat'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+structure D where
+  field1    :     Nat
+  field2    : Nat
+
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
 
