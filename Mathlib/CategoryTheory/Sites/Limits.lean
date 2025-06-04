@@ -139,9 +139,7 @@ instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
   createsLimitOfReflectsIso fun E hE =>
     { liftedCone := ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
         ⟨fun _ => ⟨E.π.app _⟩, fun _ _ _ => Sheaf.Hom.ext <| E.π.naturality _⟩⟩
-      validLift := Cones.ext (eqToIso rfl) fun j => by
-        dsimp
-        simp
+      validLift := Cones.ext (eqToIso rfl) fun j => by simp
       makesLimit :=
         { lift := fun S => ⟨hE.lift ((sheafToPresheaf J D).mapCone S)⟩
           fac := fun S j => by
