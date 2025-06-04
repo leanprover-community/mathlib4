@@ -1171,54 +1171,48 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
       .
         apply Subgroup.subset_closure
         simp
-        by_cases m_pos: 0 < m
-        .
-          use m
-          simp
-          simp at m_in_range
-
         use m
         simp at m_in_range
-        obtain ⟨m_gt, m_lt⟩ := m_in_range
-        simp
-        rw [lt_abs] at m_lt
-        by_cases m_pos: 0 < m
-        .
-          by_cases n_pos: 0 < n
-          .
-            simp
-            refine ⟨?_, ?_⟩
-            . omega
-            .
-              rw [lt_abs] at m_lt
-              match m_lt with
-              | .inl m_lt_neg_n =>
-                exact m_lt_neg_n
-              | .inr m_lt_n =>
-                omega
-          . sorry
-
-
+        refine ⟨by omega, by simp⟩
       .
         simp only [Set.mem_Ioo] at m_in_range
         rw [not_and_or] at m_in_range
         simp at m_in_range
-        match m_in_range with
-        | .inl m_le_neg_n => sorry
-        | .inr m_ge_n =>
+        by_cases m_pos: 0 < m
+        .
           -- TODO - why is this needed?
           have exists_nat_abs: ∃ m_abs: ℕ, m = m_abs := by
             use m.natAbs
             omega
           obtain ⟨m_abs, m_eq_abs⟩ := exists_nat_abs
-          have n_le_m_abs: n.natAbs ≤ m_abs := by
-            sorry
+          have abs_n_le: |n| ≤ m_abs := by
+            by_contra!
+            omega
+          have nat_abs_n_le: n.natAbs ≤ m_abs := by
+            rw [Int.abs_eq_natAbs] at abs_n_le
+            omega
           rw [m_eq_abs]
-          induction m_abs, n_le_m_abs using Nat.le_induction with
+          induction m_abs, nat_abs_n_le using Nat.le_induction with
           | base =>
             simp at conj_in
             simp
-            exact conj_in
+            by_cases n_pos: 0 < n
+            .
+              have n_eq_abs: n = |n| := by
+                exact Eq.symm (abs_of_pos n_pos)
+              nth_rw 3 [← n_eq_abs]
+              nth_rw 3 [← n_eq_abs]
+              exact conj_in
+            .
+              have n_eq_neg_abs: |n| = -n := by
+                apply abs_of_nonpos
+                omega
+              simp at conj_inv_in
+              rw [n_eq_neg_abs] at conj_inv_in
+              simp at conj_inv_in
+              rw [n_eq_neg_abs]
+              simp
+              exact conj_inv_in
           | succ p hsucc ih =>
             specialize closed_under_conj _ ih
             rw [pow_succ']
