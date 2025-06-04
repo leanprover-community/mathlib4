@@ -160,6 +160,18 @@ theorem isClosed_ball (r : Γ₀) : IsClosed (X := R) {x | v x < r} := by
 theorem isClopen_ball (r : Γ₀) : IsClopen (X := R) {x | v x < r} :=
   ⟨isClosed_ball _ _, isOpen_ball _ _⟩
 
+lemma isOpen_ltAddSubgroup (γ : Γ₀ˣ) :
+    IsOpen ((v.ltAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isOpen_ball _ _
+
+lemma isClosed_ltAddSubgroup (γ : Γ₀ˣ) :
+    IsClosed ((v.ltAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isClosed_ball _ _
+
+lemma isClopen_ltAddSubgroup (γ : Γ₀ˣ) :
+    IsClopen ((v.ltAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isClopen_ball _ _
+
 /-- A closed ball centred at the origin in a valued ring is open. -/
 theorem isOpen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
@@ -183,7 +195,19 @@ theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := b
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x ≤ r} :=
-  ⟨isClosed_closedBall _ _, isOpen_closedball _ hr⟩
+  ⟨isClosed_closedBall _ _, isOpen_closedBall _ hr⟩
+
+lemma isOpen_leAddSubgroup {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsOpen ((v.leAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isOpen_closedBall _ hγ
+
+lemma isClosed_leAddSubgroup (γ : Γ₀) :
+    IsClosed ((v.leAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isClosed_closedBall _ _
+
+lemma isClopen_leAddSubgroup {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsClopen ((v.leAddSubgroup γ : AddSubgroup R) : Set R) :=
+  isClopen_closedBall _ hγ
 
 /-- A sphere centred at the origin in a valued ring is clopen. -/
 theorem isClopen_sphere {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x = r} := by
@@ -263,6 +287,30 @@ lemma ltSubmodule_le_leSubmodule (γ : Γ₀ˣ) :
     ltSubmodule R γ ≤ leSubmodule R (γ : Γ₀) :=
   ltAddSubgroup_le_leAddSubgroup v γ
 
+lemma isOpen_ltSubmodule (γ : Γ₀ˣ) :
+    IsOpen (ltSubmodule R γ : Set R) :=
+  isOpen_ball _ _
+
+lemma isClosed_ltSubmodule (γ : Γ₀ˣ) :
+    IsClosed (ltSubmodule R γ : Set R) :=
+  isClosed_ball _ _
+
+lemma isClopen_ltSubmodule (γ : Γ₀ˣ) :
+    IsClopen (ltSubmodule R γ : Set R) :=
+  isClopen_ball _ _
+
+lemma isOpen_leSubmodule {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsOpen (leSubmodule R γ : Set R) :=
+  isOpen_closedBall _ hγ
+
+lemma isClosed_leSubmodule (γ : Γ₀) :
+    IsClosed (leSubmodule R γ : Set R) :=
+  isClosed_closedBall _ _
+
+lemma isClopen_leSubmodule {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsClopen (leSubmodule R γ : Set R) :=
+  isClopen_closedBall _ hγ
+
 variable {R} in
 @[simp]
 lemma mem_leSubmodule_iff {γ : Γ₀} {x : R} :
@@ -314,6 +362,30 @@ variable {R} in
 lemma mem_ltIdeal_iff {γ : Γ₀ˣ} {x : 𝓞} :
     x ∈ ltIdeal R γ ↔ v (x : R) < γ :=
   Iff.rfl
+
+lemma isOpen_ltIdeal (γ : Γ₀ˣ) :
+    IsOpen (ltIdeal R γ : Set 𝓞) :=
+  isOpen_ball _ _ |>.preimage continuous_subtype_val
+
+lemma isClosed_ltIdeal (γ : Γ₀ˣ) :
+    IsClosed (ltIdeal R γ : Set 𝓞) :=
+  isClosed_ball _ _ |>.preimage continuous_subtype_val
+
+lemma isClopen_ltIdeal (γ : Γ₀ˣ) :
+    IsClopen (ltIdeal R γ : Set 𝓞) :=
+  isClopen_ball _ _ |>.preimage continuous_subtype_val
+
+lemma isOpen_leIdeal {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsOpen (leIdeal R γ : Set 𝓞) :=
+  isOpen_closedBall _ hγ |>.preimage continuous_subtype_val
+
+lemma isClosed_leIdeal (γ : Γ₀) :
+    IsClosed (leIdeal R γ : Set 𝓞) :=
+  isClosed_closedBall _ _ |>.preimage continuous_subtype_val
+
+lemma isClopen_leIdeal {γ : Γ₀} (hγ : γ ≠ 0) :
+    IsClopen (leIdeal R γ : Set 𝓞) :=
+  isClopen_closedBall _ hγ |>.preimage continuous_subtype_val
 
 end Ideal
 
