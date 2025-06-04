@@ -169,7 +169,7 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
 namespace Sylow
 
 instance nonempty : Nonempty (Sylow p G) :=
-  nonempty_of_exists IsPGroup.of_bot.exists_le_sylow
+  IsPGroup.of_bot.exists_le_sylow.nonempty
 
 noncomputable instance inhabited : Inhabited (Sylow p G) :=
   Classical.inhabited_of_nonempty nonempty
