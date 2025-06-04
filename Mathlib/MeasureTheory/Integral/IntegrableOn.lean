@@ -146,9 +146,9 @@ theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
 theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ := h.restrict
 
 @[simp]
-lemma integrableOn_of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
+lemma IntegrableOn.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
     IntegrableOn f s μ :=
-  integrable_of_subsingleton_codomain
+  Integrable.of_subsingleton_codomain
 
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) : IntegrableOn f s (μ.restrict t) := by
   dsimp only [IntegrableOn] at h ⊢
@@ -308,6 +308,8 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
   rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
     integrable_const_iff, isFiniteMeasure_restrict]
   exact .inr hμs
+
+#lint
 
 end indicator
 

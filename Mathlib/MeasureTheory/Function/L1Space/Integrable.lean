@@ -155,11 +155,9 @@ lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMe
     Integrable f μ := ⟨.of_discrete, .of_finite⟩
 
 /-- This lemma is a special case of `Integrable.of_finite`. -/
-@[simp]
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
 /-- This lemma is a special case of `Integrable.of_finite`. -/
-@[simp]
 lemma Integrable.of_subsingleton [Subsingleton α] [IsFiniteMeasure μ] {f : α → β} :
     Integrable f μ :=
   .of_finite
@@ -392,7 +390,7 @@ theorem Integrable.add'' [ContinuousAdd ε']
     Integrable (fun x ↦ f x + g x) μ := hf.add hg
 
 @[simp]
-lemma integrable_of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
+lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
     Integrable f μ :=
   integrable_zero _ _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
 
