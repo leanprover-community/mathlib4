@@ -32,7 +32,7 @@ mkMDtable () {
         if(longTotal == "0")
         { printf("\nAll files are within the length limit!\n") }
         else
-        { printf("\n%s file%s exceed the length limit (%s).\n", longTotal, (longTotal == 1) ? "" : "s", limit) }
+        { printf("\n%s file%s exceed%s the length limit (%s).\n", longTotal, (longTotal == 1) ? "" : "s", (longTotal == 1) ? "s" : "", limit) }
     }' "${2}"
 }
 
