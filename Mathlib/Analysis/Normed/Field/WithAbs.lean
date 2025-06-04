@@ -19,7 +19,7 @@ open Topology
 
 noncomputable section
 
-variable {R S : Type*} [OrderedSemiring S]
+variable {R S : Type*} [Semiring S] [PartialOrder S] [IsOrderedRing S]
 
 namespace WithAbs
 
@@ -117,7 +117,7 @@ theorem isClosedEmbedding_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 that is locally compact, then the completion of the first normed field is also locally compact. -/
-theorem locallyCompactSpace [LocallyCompactSpace L] (h : ∀ x, ‖f x‖ = v x)  :
+theorem locallyCompactSpace [LocallyCompactSpace L] (h : ∀ x, ‖f x‖ = v x) :
     LocallyCompactSpace (v.Completion) :=
   (isClosedEmbedding_extensionEmbedding_of_comp h).locallyCompactSpace
 

@@ -160,6 +160,7 @@ protected lemma Eq.not_gt (hab : a = b) : ¬b < a := hab.symm.not_lt
 @[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
 -- Making this a @[simp] lemma causes confluence problems downstream.
+@[nontriviality]
 lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
 
 namespace LT.lt
@@ -397,32 +398,43 @@ theorem eq_of_forall_gt_iff (h : ∀ c, a < c ↔ b < c) : a = b :=
 section ltByCases
 variable {P : Sort*} {x y : α}
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_lt (h : x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
     ltByCases x y h₁ h₂ h₃ = h₁ h := dif_pos h
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_gt (h : y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
     ltByCases x y h₁ h₂ h₃ = h₃ h := (dif_neg h.not_lt).trans (dif_pos h)
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_eq (h : x = y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
     ltByCases x y h₁ h₂ h₃ = h₂ h := (dif_neg h.not_lt).trans (dif_neg h.not_gt)
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_not_lt (h : ¬ x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
     (p : ¬ y < x → x = y := fun h' => (le_antisymm (le_of_not_gt h') (le_of_not_gt h))) :
     ltByCases x y h₁ h₂ h₃ = if h' : y < x then h₃ h' else h₂ (p h') := dif_neg h
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_not_gt (h : ¬ y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
     (p : ¬ x < y → x = y := fun h' => (le_antisymm (le_of_not_gt h) (le_of_not_gt h'))) :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₂ (p h') :=
   dite_congr rfl (fun _ => rfl) (fun _ => dif_neg h)
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_ne (h : x ≠ y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
     (p : ¬ x < y → y < x := fun h' => h.lt_or_lt.resolve_left h') :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₃ (p h') :=
   dite_congr rfl (fun _ => rfl) (fun _ => dif_pos _)
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_comm {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
     (p : y = x → x = y := fun h' => h'.symm) :
     ltByCases x y h₁ h₂ h₃ = ltByCases y x h₃ (h₂ ∘ p) h₁ := by
@@ -435,6 +447,8 @@ lemma eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt {x' y' : α}
     (ltc : (x < y) ↔ (x' < y')) (gtc : (y < x) ↔ (y' < x')) :
     x = y ↔ x' = y' := by simp_rw [eq_iff_le_not_lt, ← not_lt, ltc, gtc]
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_rec {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} (p : P)
     (hlt : (h : x < y) → h₁ h = p) (heq : (h : x = y) → h₂ h = p)
     (hgt : (h : y < x) → h₃ h = p) :
@@ -444,6 +458,8 @@ lemma ltByCases_rec {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → 
     (fun h => ltByCases_eq h ▸ heq h)
     (fun h => ltByCases_gt h ▸ hgt h)
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_eq_iff {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} {p : P} :
     ltByCases x y h₁ h₂ h₃ = p ↔ (∃ h, h₁ h = p) ∨ (∃ h, h₂ h = p) ∨ (∃ h, h₃ h = p) := by
   refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
@@ -454,6 +470,8 @@ lemma ltByCases_eq_iff {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x �
   · simp only [ltByCases_gt, exists_prop_of_true, h, h.not_lt, not_false_eq_true,
     exists_prop_of_false, false_or, h.ne']
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_congr {x' y' : α} {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
     {h₁' : x' < y' → P} {h₂' : x' = y' → P} {h₃' : y' < x' → P} (ltc : (x < y) ↔ (x' < y'))
     (gtc : (y < x) ↔ (y' < x')) (hh'₁ : ∀ (h : x' < y'), h₁ (ltc.mpr h) = h₁' h)
@@ -466,35 +484,52 @@ lemma ltByCases_congr {x' y' : α} {h₁ : x < y → P} {h₂ : x = y → P} {h�
     rw [ltByCases_eq h, hh'₂]
   · rw [ltByCases_gt (gtc.mp h), hh'₃]
 
+set_option linter.deprecated false in
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order,
 non-dependently. -/
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 abbrev ltTrichotomy (x y : α) (p q r : P) := ltByCases x y (fun _ => p) (fun _ => q) (fun _ => r)
 
 variable {p q r s : P}
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_lt (h : x < y) : ltTrichotomy x y p q r = p := ltByCases_lt h
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_gt (h : y < x) : ltTrichotomy x y p q r = r := ltByCases_gt h
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_eq (h : x = y) : ltTrichotomy x y p q r = q := ltByCases_eq h
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_not_lt (h : ¬ x < y) :
     ltTrichotomy x y p q r = if y < x then r else q := ltByCases_not_lt h
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_not_gt (h : ¬ y < x) :
     ltTrichotomy x y p q r = if x < y then p else q := ltByCases_not_gt h
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_ne (h : x ≠ y) :
     ltTrichotomy x y p q r = if x < y then p else r := ltByCases_ne h
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_comm : ltTrichotomy x y p q r = ltTrichotomy y x r q p := ltByCases_comm
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_self {p : P} : ltTrichotomy x y p p p = p :=
   ltByCases_rec p (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_eq_iff : ltTrichotomy x y p q r = s ↔
     (x < y ∧ p = s) ∨ (x = y ∧ q = s) ∨ (y < x ∧ r = s) := by
   refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
@@ -502,6 +537,8 @@ lemma ltTrichotomy_eq_iff : ltTrichotomy x y p q r = s ↔
   · simp only [ltTrichotomy_eq, false_and, true_and, or_false, false_or, h, lt_irrefl]
   · simp only [ltTrichotomy_gt, false_and, true_and, false_or, h, h.not_lt, h.ne']
 
+set_option linter.deprecated false in
+@[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltTrichotomy_congr {x' y' : α} {p' q' r' : P} (ltc : (x < y) ↔ (x' < y'))
     (gtc : (y < x) ↔ (y' < x')) (hh'₁ : x' < y' → p = p')
     (hh'₂ : x' = y' → q = q') (hh'₃ : y' < x' → r = r') :
@@ -584,11 +621,11 @@ lemma PartialOrder.toPreorder_injective : Function.Injective (@PartialOrder.toPr
 lemma LinearOrder.toPartialOrder_injective : Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun
   | { le := A_le, lt := A_lt,
-      decidableLE := A_decidableLE, decidableEq := A_decidableEq, decidableLT := A_decidableLT
+      toDecidableLE := A_decidableLE, toDecidableEq := A_decidableEq, toDecidableLT := A_decidableLT
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
       compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical, .. },
     { le := B_le, lt := B_lt,
-      decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
+      toDecidableLE := B_decidableLE, toDecidableEq := B_decidableEq, toDecidableLT := B_decidableLT
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
       compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
     rintro ⟨⟩
@@ -673,9 +710,9 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
-  decidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
-  decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
-  decidableEq := (inferInstance : DecidableEq α)
+  toDecidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
+  toDecidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
+  toDecidableEq := (inferInstance : DecidableEq α)
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
@@ -913,9 +950,9 @@ abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj 
   letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj, instOrdα with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidableLE := decidableLE
-    decidableLT := decidableLT
-    decidableEq := decidableEq
+    toDecidableLE := decidableLE
+    toDecidableLT := decidableLT
+    toDecidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -957,9 +994,9 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
   letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidableLE := decidableLE
-    decidableLT := decidableLT
-    decidableEq := decidableEq
+    toDecidableLE := decidableLE
+    toDecidableLT := decidableLT
+    toDecidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -1054,30 +1091,31 @@ type synonym `α ×ₗ β = α × β`.
 
 
 namespace Prod
+section LE
+variable [LE α] [LE β] {x y : α × β} {a a₁ a₂ : α} {b b₁ b₂ : β}
 
-instance (α β : Type*) [LE α] [LE β] : LE (α × β) :=
-  ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
+instance : LE (α × β) where le p q := p.1 ≤ q.1 ∧ p.2 ≤ q.2
 
-instance instDecidableLE (α β : Type*) [LE α] [LE β] (x y : α × β)
-    [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
+instance instDecidableLE [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
   inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
 
-theorem le_def [LE α] [LE β] {x y : α × β} : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 :=
-  Iff.rfl
+lemma le_def : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 := .rfl
 
-@[simp]
-theorem mk_le_mk [LE α] [LE β] {x₁ x₂ : α} {y₁ y₂ : β} : (x₁, y₁) ≤ (x₂, y₂) ↔ x₁ ≤ x₂ ∧ y₁ ≤ y₂ :=
-  Iff.rfl
+@[simp] lemma mk_le_mk : (a₁, b₁) ≤ (a₂, b₂) ↔ a₁ ≤ a₂ ∧ b₁ ≤ b₂ := .rfl
 
-@[simp]
-theorem swap_le_swap [LE α] [LE β] {x y : α × β} : x.swap ≤ y.swap ↔ x ≤ y :=
-  and_comm
+@[gcongr] lemma GCongr.mk_le_mk (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) : (a₁, b₁) ≤ (a₂, b₂) := ⟨ha, hb⟩
+
+@[simp] lemma swap_le_swap : x.swap ≤ y.swap ↔ x ≤ y := and_comm
+@[simp] lemma swap_le_mk : x.swap ≤ (b, a) ↔ x ≤ (a, b) := and_comm
+@[simp] lemma mk_le_swap : (b, a) ≤ x.swap ↔ (a, b) ≤ x := and_comm
+
+end LE
 
 section Preorder
 
 variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
 
-instance (α β : Type*) [Preorder α] [Preorder β] : Preorder (α × β) where
+instance : Preorder (α × β) where
   __ := inferInstanceAs (LE (α × β))
   le_refl := fun ⟨a, b⟩ ↦ ⟨le_refl a, le_refl b⟩
   le_trans := fun ⟨_, _⟩ ⟨_, _⟩ ⟨_, _⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ ↦ ⟨le_trans hac hce, le_trans hbd hdf⟩
@@ -1086,11 +1124,17 @@ instance (α β : Type*) [Preorder α] [Preorder β] : Preorder (α × β) where
 theorem swap_lt_swap : x.swap < y.swap ↔ x < y :=
   and_congr swap_le_swap (not_congr swap_le_swap)
 
+@[simp] lemma swap_lt_mk : x.swap < (b, a) ↔ x < (a, b) := by rw [← swap_lt_swap]; simp
+@[simp] lemma mk_lt_swap : (b, a) < x.swap ↔ (a, b) < x := by rw [← swap_lt_swap]; simp
+
 theorem mk_le_mk_iff_left : (a₁, b) ≤ (a₂, b) ↔ a₁ ≤ a₂ :=
   and_iff_left le_rfl
 
 theorem mk_le_mk_iff_right : (a, b₁) ≤ (a, b₂) ↔ b₁ ≤ b₂ :=
   and_iff_right le_rfl
+
+@[gcongr] alias ⟨_, GCongr.mk_le_mk_left⟩ := mk_le_mk_iff_left
+@[gcongr] alias ⟨_, GCongr.mk_le_mk_right⟩ := mk_le_mk_iff_right
 
 theorem mk_lt_mk_iff_left : (a₁, b) < (a₂, b) ↔ a₁ < a₂ :=
   lt_iff_lt_of_le_iff_le' mk_le_mk_iff_left mk_le_mk_iff_left
@@ -1244,9 +1288,9 @@ instance instLinearOrder : LinearOrder PUnit where
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit
   min := fun _ _ ↦ unit
-  decidableEq := inferInstance
-  decidableLE := fun _ _ ↦ Decidable.isTrue trivial
-  decidableLT := fun _ _ ↦ Decidable.isFalse id
+  toDecidableEq := inferInstance
+  toDecidableLE := fun _ _ ↦ Decidable.isTrue trivial
+  toDecidableLT := fun _ _ ↦ Decidable.isFalse id
   le_refl     := by intros; trivial
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
@@ -1295,7 +1339,7 @@ end «Prop»
 
 
 /-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)` -/
-def AsLinearOrder (α : Type*)  :=
+def AsLinearOrder (α : Type*) :=
   α
 
 instance [Inhabited α] : Inhabited (AsLinearOrder α) :=
@@ -1305,4 +1349,4 @@ noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (
     LinearOrder (AsLinearOrder α) where
   __ := inferInstanceAs (PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
-  decidableLE := Classical.decRel _
+  toDecidableLE := Classical.decRel _

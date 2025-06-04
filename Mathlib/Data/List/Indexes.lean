@@ -36,8 +36,6 @@ theorem list_reverse_induction (p : List α → Prop) (base : p [])
     (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) :=
   fun l => l.reverseRecOn base ind
 
-@[deprecated (since := "2024-10-15")] alias mapIdxGo_length := mapIdx_go_length
-
 theorem mapIdx_append_one : ∀ {f : ℕ → α → β} {l : List α} {e : α},
     mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] :=
   mapIdx_concat
@@ -66,8 +64,6 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
         funext n' a
         simp only [comp, Nat.add_assoc, Nat.add_comm, Nat.add_succ]
       simp only [length_cons, Nat.succ.injEq] at e; exact e
-
-@[deprecated (since := "2024-10-15")] alias mapIdx_eq_nil := mapIdx_eq_nil_iff
 
 set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
@@ -119,14 +115,14 @@ set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
     indexesValues p as = filter (p ∘ Prod.snd) (enum as) := by
-  simp (config := { unfoldPartialApp := true }) [indexesValues, foldrIdx_eq_foldr_enum, uncurry,
+  simp +unfoldPartialApp [indexesValues, foldrIdx_eq_foldr_enum, uncurry,
     filter_eq_foldr, cond_eq_if]
 
 set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :
     findIdxs p as = map Prod.fst (indexesValues p as) := by
-  simp (config := { unfoldPartialApp := true }) only [indexesValues_eq_filter_enum,
+  simp +unfoldPartialApp only [indexesValues_eq_filter_enum,
     map_filter_eq_foldr, findIdxs, uncurry, foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply,
     Bool.cond_decide]
 
@@ -170,7 +166,7 @@ set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-01-29")]
 theorem foldrIdxM_eq_foldrM_enum {β} (f : ℕ → α → β → m β) (b : β) (as : List α) [LawfulMonad m] :
     foldrIdxM f b as = foldrM (uncurry f) b (enum as) := by
-  simp (config := { unfoldPartialApp := true }) only [foldrIdxM, foldrM_eq_foldr,
+  simp +unfoldPartialApp only [foldrIdxM, foldrM_eq_foldr,
     foldrIdx_eq_foldr_enum, uncurry]
 
 set_option linter.deprecated false in
@@ -222,7 +218,7 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec
       congr
       conv => { lhs; intro x; rw [ih _ _ h]; }
       funext x
-      simp only [Array.push_toList, append_assoc, singleton_append, Array.size_push,
+      simp only [Array.toList_push, append_assoc, singleton_append, Array.size_push,
         map_eq_pure_bind]
 
 set_option linter.deprecated false in

@@ -96,7 +96,6 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
     suffices (fun x => truncate (y x)) = f
       by simp [this]
     funext y
-
     apply n_ih
     apply h₁
 
@@ -123,8 +122,6 @@ def Path (F : PFunctor.{u}) :=
 
 instance Path.inhabited : Inhabited (Path F) :=
   ⟨[]⟩
-
-open List Nat
 
 instance CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
@@ -487,12 +484,10 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     iterate 3 (have := mk_inj ‹_›; cases this)
     rename_i n_ih a f₃ f₂ hAgree₂ _ _ h₂ _ _ f₁ h₁ hAgree₁ clr
     simp only [approx_mk, eq_self_iff_true, heq_iff_eq]
-
     have := mk_inj h₁
     cases this; clear h₁
     have := mk_inj h₂
     cases this; clear h₂
-
     congr
     ext i
     apply n_ih
@@ -503,11 +498,8 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     simp only [iselect_cons] at hrec
     exact hrec
 
-open PFunctor.Approx
-
-attribute [local instance] Classical.propDecidable
-
-theorem ext [Inhabited (M F)] (x y : M F) (H : ∀ ps : Path F, iselect ps x = iselect ps y) :
+theorem ext [Inhabited (M F)] [DecidableEq F.A] (x y : M F)
+    (H : ∀ ps : Path F, iselect ps x = iselect ps y) :
     x = y := by
   apply ext'; intro i
   induction' i with i i_ih
@@ -538,7 +530,8 @@ structure IsBisimulation : Prop where
   /-- The tails are equal -/
   tail : ∀ {a} {f f' : F.B a → M F}, M.mk ⟨a, f⟩ ~ M.mk ⟨a, f'⟩ → ∀ i : F.B a, f i ~ f' i
 
-theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (ps : Path F) :
+theorem nth_of_bisim [Inhabited (M F)] [DecidableEq F.A]
+    (bisim : IsBisimulation R) (s₁ s₂) (ps : Path F) :
     (R s₁ s₂) →
       IsPath ps s₁ ∨ IsPath ps s₂ →
         iselect ps s₁ = iselect ps s₂ ∧
@@ -567,6 +560,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
 
 theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂, R s₁ s₂ → s₁ = s₂ := by
   inhabit M F
+  classical
   introv Hr; apply ext
   introv
   by_cases h : IsPath ps s₁ ∨ IsPath ps s₂

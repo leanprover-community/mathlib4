@@ -103,7 +103,7 @@ theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {
 /-- A one-dimensional formal multilinear series representing the zero function is zero. -/
 theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x : 𝕜}
     (h : HasFPowerSeriesAt 0 p x) : p = 0 := by
-  ext n x
+  ext n
   rw [← mkPiRing_apply_one_eq_self (p n)]
   simp [h.apply_eq_zero n 1]
 

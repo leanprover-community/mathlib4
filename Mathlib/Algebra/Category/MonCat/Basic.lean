@@ -17,6 +17,7 @@ We introduce the bundled categories:
 * `AddMonCat`
 * `CommMonCat`
 * `AddCommMonCat`
+
 along with the relevant forgetful functors between them.
 -/
 

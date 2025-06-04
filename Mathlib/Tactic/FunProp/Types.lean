@@ -98,19 +98,19 @@ structure Context where
 /-- General theorem about a function property used for transition and morphism theorems -/
 structure GeneralTheorem where
   /-- function property name -/
-  funPropName   : Name
+  funPropName : Name
   /-- theorem name -/
-  thmName     : Name
+  thmName : Name
   /-- discrimination tree keys used to index this theorem -/
-  keys        : List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry)
+  keys : List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry)
   /-- priority -/
-  priority    : Nat  := eval_prio default
+  priority : Nat  := eval_prio default
   deriving Inhabited
 
 /-- Structure holding transition or morphism theorems for `fun_prop` tactic. -/
 structure GeneralTheorems where
   /-- Discrimination tree indexing theorems. -/
-  theorems     : RefinedDiscrTree GeneralTheorem := {}
+  theorems : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 
 /-- `fun_prop` state -/
@@ -136,6 +136,7 @@ def Context.increaseTransitionDepth (ctx : Context) : Context :=
 /-- Monad to run `fun_prop` tactic in. -/
 abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
 
+set_option linter.style.docString false in
 /-- Result of `funProp`, it is a proof of function property `P f` -/
 structure Result where
   /-- -/

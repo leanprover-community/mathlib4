@@ -719,7 +719,7 @@ section ProgMeasurable
 variable [MeasurableSpace ι] [TopologicalSpace ι] [OrderTopology ι] [SecondCountableTopology ι]
   [BorelSpace ι] [TopologicalSpace β] {u : ι → Ω → β} {τ : Ω → ι} {f : Filtration ι m}
 
-theorem progMeasurable_min_stopping_time [MetrizableSpace ι] (hτ : IsStoppingTime f τ) :
+theorem progMeasurable_min_stopping_time [PseudoMetrizableSpace ι] (hτ : IsStoppingTime f τ) :
     ProgMeasurable f fun i ω => min i (τ ω) := by
   intro i
   let m_prod : MeasurableSpace (Set.Iic i × Ω) := Subtype.instMeasurableSpace.prod (f i)
@@ -756,15 +756,15 @@ theorem progMeasurable_min_stopping_time [MetrizableSpace ι] (hτ : IsStoppingT
     convert ω.prop
     simp only [sc, s, not_le, Set.mem_compl_iff, Set.mem_setOf_eq]
 
-theorem ProgMeasurable.stoppedProcess [MetrizableSpace ι] (h : ProgMeasurable f u)
+theorem ProgMeasurable.stoppedProcess [PseudoMetrizableSpace ι] (h : ProgMeasurable f u)
     (hτ : IsStoppingTime f τ) : ProgMeasurable f (stoppedProcess u τ) :=
   h.comp (progMeasurable_min_stopping_time hτ) fun _ _ => min_le_left _ _
 
-theorem ProgMeasurable.adapted_stoppedProcess [MetrizableSpace ι] (h : ProgMeasurable f u)
+theorem ProgMeasurable.adapted_stoppedProcess [PseudoMetrizableSpace ι] (h : ProgMeasurable f u)
     (hτ : IsStoppingTime f τ) : Adapted f (MeasureTheory.stoppedProcess u τ) :=
   (h.stoppedProcess hτ).adapted
 
-theorem ProgMeasurable.stronglyMeasurable_stoppedProcess [MetrizableSpace ι]
+theorem ProgMeasurable.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace ι]
     (hu : ProgMeasurable f u) (hτ : IsStoppingTime f τ) (i : ι) :
     StronglyMeasurable (MeasureTheory.stoppedProcess u τ i) :=
   (hu.adapted_stoppedProcess hτ i).mono (f.le _)
@@ -778,7 +778,7 @@ theorem stronglyMeasurable_stoppedValue_of_le (h : ProgMeasurable f u) (hτ : Is
   refine StronglyMeasurable.comp_measurable (h n) ?_
   exact (hτ.measurable_of_le hτ_le).subtype_mk.prodMk measurable_id
 
-theorem measurable_stoppedValue [MetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
+theorem measurable_stoppedValue [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     (hf_prog : ProgMeasurable f u) (hτ : IsStoppingTime f τ) :
     Measurable[hτ.measurableSpace] (stoppedValue u τ) := by
   have h_str_meas : ∀ i, StronglyMeasurable[f i] (stoppedValue u fun ω => min (τ ω) i) := fun i =>
@@ -827,17 +827,17 @@ theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : 
   rcases le_or_lt n (τ ω) with h | h
   · rw [stoppedProcess_eq_of_le h, Set.indicator_of_mem, Finset.sum_eq_zero, add_zero]
     · intro m hm
-      refine Set.indicator_of_not_mem ?_ _
+      refine Set.indicator_of_notMem ?_ _
       rw [Finset.mem_filter] at hm
       exact (hm.2.trans_le h).ne'
     · exact h
   · rw [stoppedProcess_eq_of_ge (le_of_lt h), Finset.sum_eq_single_of_mem (τ ω)]
-    · rw [Set.indicator_of_not_mem, zero_add, Set.indicator_of_mem] <;> rw [Set.mem_setOf]
+    · rw [Set.indicator_of_notMem, zero_add, Set.indicator_of_mem] <;> rw [Set.mem_setOf]
       exact not_le.2 h
     · rw [Finset.mem_filter]
       exact ⟨hbdd ω h, h⟩
     · intro b _ hneq
-      rw [Set.indicator_of_not_mem]
+      rw [Set.indicator_of_notMem]
       rw [Set.mem_setOf]
       exact hneq.symm
 
@@ -990,7 +990,7 @@ theorem stoppedProcess_eq' (n : ℕ) : stoppedProcess u τ n = Set.indicator {a 
   have : {a | n ≤ τ a}.indicator (u n) =
       {a | n + 1 ≤ τ a}.indicator (u n) + {a | τ a = n}.indicator (u n) := by
     ext x
-    rw [add_comm, Pi.add_apply, ← Set.indicator_union_of_not_mem_inter]
+    rw [add_comm, Pi.add_apply, ← Set.indicator_union_of_notMem_inter]
     · simp_rw [@eq_comm _ _ n, @le_iff_eq_or_lt _ _ n, Nat.succ_le_iff, Set.setOf_or]
     · rintro ⟨h₁, h₂⟩
       rw [Set.mem_setOf] at h₁ h₂

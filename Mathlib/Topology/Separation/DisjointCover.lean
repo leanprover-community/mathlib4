@@ -3,6 +3,7 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Order.Disjointed
 import Mathlib.Topology.Separation.Profinite
@@ -166,7 +167,7 @@ lemma exists_finite_sum_const_mulIndicator_approximation_of_mem_nhds_diagonal [C
   obtain ⟨n, g, h, hg, hgh⟩ := exists_finite_approximation_of_mem_nhds_diagonal f hS
   refine ⟨n, fun i ↦ ⟨_, (isClopen_discrete {i}).preimage hg⟩, h, fun x ↦ ?_⟩
   convert hgh x
-  exact (Fintype.prod_eq_single _ fun i hi ↦ mulIndicator_of_not_mem hi.symm _).trans
+  exact (Fintype.prod_eq_single _ fun i hi ↦ mulIndicator_of_notMem hi.symm _).trans
     (mulIndicator_of_mem rfl _)
 
 end ContinuousMap

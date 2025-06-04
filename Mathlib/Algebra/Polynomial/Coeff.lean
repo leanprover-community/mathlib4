@@ -6,6 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Theory of univariate polynomials
@@ -206,14 +207,14 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     #(support (C x * X ^ k + C y * X ^ m)) = 2 := by
-  rw [support_binomial h hx hy, card_insert_of_not_mem (mt mem_singleton.mp h), card_singleton]
+  rw [support_binomial h hx hy, card_insert_of_notMem (mt mem_singleton.mp h), card_singleton]
 
 theorem card_support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hz : z ≠ 0) : #(support (C x * X ^ k + C y * X ^ m + C z * X ^ n)) = 3 := by
   rw [support_trinomial hkm hmn hx hy hz,
-    card_insert_of_not_mem
+    card_insert_of_notMem
       (mt mem_insert.mp (not_or_intro hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
-    card_insert_of_not_mem (mt mem_singleton.mp hmn.ne), card_singleton]
+    card_insert_of_notMem (mt mem_singleton.mp hmn.ne), card_singleton]
 
 end Fewnomials
 
@@ -362,5 +363,9 @@ theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]
 end cast
 
 instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := natCast_inj.mp
+
+instance charP {p : ℕ} [CharP R p] : CharP R[X] p where
+  cast_eq_zero_iff n := by
+    rw [← CharP.cast_eq_zero_iff R, ← C_inj (R := R), map_natCast, C_0]
 
 end Polynomial
