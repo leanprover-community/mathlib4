@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
-# takes a comma-separated list of headers and a file/stdin input and returns
-# a md-style table. The file/stdin is expected to be space-separated entries.
+# The line length limit of each file
+limit=1500
+
+# takes as input
+# * a comma-separated list of headers, i.e. `"Lines,File"` and
+# * a file/stdin input;
+# returns an md-style table, introducing an empty line to separate long files from short ones.
+# The file/stdin is expected to consist of space-separated entries.
 mkMDtable () {
-  awk -v limit=1500 -v heads="${1}" '
+  awk -v limit="${limit}" -v heads="${1}" '
     function mkRow(m,str)
     { printf("|")
       for(i=1; i<=m; i++) {printf("%s|", str)}
