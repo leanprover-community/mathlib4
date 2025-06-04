@@ -102,14 +102,6 @@ noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor :
     · simp [← hsm]
     · simpa using by congr 1 }
 
-/-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be an `R`-algebra, `N` be an
-  `S`-module. If `N` is the base change of `M` to `S`, then `S ⊗[R] (M/xM)` is isomorphic to `N/xN`
-  as `S`-modules. -/
-noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMap :
-    S ⊗[R] QuotSMulTop x M ≃ₗ[S] QuotSMulTop ((algebraMap R S) x) N :=
-  tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor S M x ≪≫ₗ
-    QuotSMulTop.congr ((algebraMap R S) x) hf.equiv
-
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a flat `R`-algebra.
   If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `M ⊗[R] S` is a
   weakly regular `M ⊗[R] S`-sequence. -/
@@ -123,7 +115,8 @@ theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange {rs : List R}
     | x :: rs' =>
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
       simp only [isWeaklyRegular_cons_iff, List.map_cons] at reg ⊢
-      let e := (tensorQuotSMulTopEquivQuotSMulTopAlgebraMap hf x)
+      have e := tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor S M x ≪≫ₗ
+        QuotSMulTop.congr ((algebraMap R S) x) hf.equiv
       have hg : IsBaseChange S <|
           e.toLinearMap.restrictScalars R ∘ₗ TensorProduct.mk R S (QuotSMulTop x M) 1 :=
         IsBaseChange.of_equiv e (fun _ ↦ by simp)
