@@ -49,6 +49,8 @@ lemma toFin_pow (x : BitVec w) (n : ℕ)    : toFin (x ^ n) = x.toFin ^ n := by
 ## Ring
 -/
 
+attribute [local instance] Fin.instCommRing
+
 -- Verify that the `HPow` instance from Lean agrees definitionally with the instance via `Monoid`.
 example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toNatPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
 

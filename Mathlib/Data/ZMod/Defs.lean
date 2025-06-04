@@ -63,14 +63,14 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
 /-- Commutative ring structure on `Fin n`. -/
-instance instDistrib (n : ℕ) : Distrib (Fin n) :=
+def instDistrib (n : ℕ) : Distrib (Fin n) :=
   { Fin.addCommSemigroup n, Fin.instCommSemigroup n with
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
       rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
 
 /-- Commutative ring structure on `Fin n`. -/
-instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
+def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
   { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
     intCast n := Fin.intCast n
     one_mul := Fin.one_mul'
@@ -78,8 +78,9 @@ instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
     zero_mul := Fin.zero_mul'
     mul_zero := Fin.mul_zero' }
 
+attribute [local instance] Fin.instCommRing in
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
-instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
+def instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
   { toInvolutiveNeg := Fin.instInvolutiveNeg n
     mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
     neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
@@ -116,6 +117,7 @@ theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   | zero => exact (not_finite (ZMod 0)).elim
   | succ n => convert Fintype.card_fin (n + 1) using 2
 
+attribute [local instance] Fin.instCommRing in
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
 field. -/
