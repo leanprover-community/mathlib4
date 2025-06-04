@@ -1192,6 +1192,8 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: ‚
             rw [Int.abs_eq_natAbs] at abs_n_le
             omega
           rw [m_eq_abs]
+          clear m_eq_abs
+          clear abs_n_le
           induction m_abs, nat_abs_n_le using Nat.le_induction with
           | base =>
             simp at conj_in
@@ -1215,6 +1217,7 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: ‚
               exact conj_inv_in
           | succ p hsucc ih =>
             specialize closed_under_conj _ ih
+            norm_cast
             rw [pow_succ']
             repeat rw [‚Üê mul_assoc] at closed_under_conj
             simp at closed_under_conj
