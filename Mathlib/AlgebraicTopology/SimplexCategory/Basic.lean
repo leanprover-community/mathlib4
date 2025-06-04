@@ -441,7 +441,7 @@ lemma δ_zero_mkOfSucc {n : ℕ} (i : Fin n) :
 
 @[simp]
 lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
-    δ 1 ≫ mkOfSucc i = SimplexCategory.const _ _ i.castSucc := by
+    δ 1 ≫ mkOfSucc i = SimplexCategory.const _ ⦋n⦌ i.castSucc := by
   ext x
   fin_cases x
   aesop
@@ -662,10 +662,10 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   intro b
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
   by_cases h : b ≤ i
-  · use b
+  · use b.castSucc
     -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     dsimp
-    rw [Fin.predAbove_of_le_castSucc i b (by simpa only [Fin.coe_eq_castSucc] using h)]
+    rw [Fin.predAbove_of_le_castSucc i b.castSucc (by simpa only [Fin.coe_eq_castSucc] using h)]
     simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
   · use b.succ
     -- This was not needed before https://github.com/leanprover/lean4/pull/2644
