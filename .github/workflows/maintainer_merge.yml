@@ -117,3 +117,50 @@ jobs:
           script: |
             const { owner, repo, number: issue_number } = context.issue;
             await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['maintainer-merge'] });
+
+
+
+
+
+      - name: Find long files
+        id: long_files_comment
+        run: |
+          echo "PR author: ${PR_AUTHOR}"
+          COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
+
+          # we strip `\r` since line endings from GitHub contain this character
+          COMMENT="${COMMENT//$'\r'/}"
+
+          # for debugging, we print some information
+          printf '%s' "${COMMENT}" | hexdump -cC
+          printf 'Comment:"%s"\n' "${COMMENT}"
+
+          l_f="$(printf '%s' "${COMMENT}" |
+            # captures `long files`, ignoring subsequent spaces
+            sed -n 's=^\(long files\) *$=\1=p' | head -1)"
+
+          printf $'"long files" found? \'%s\'\n' "${l_f}"
+
+          printf $'mOrD=%s\n' "${l_f}" > "${GITHUB_OUTPUT}"
+
+      - name: Checkout code
+        if: ${{ ! steps.long_files_comment.outputs.mOrD == '' }}
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run script
+        if: ${{ ! steps.long_files_comment.outputs.mOrD == '' }}
+        id: long_files
+        run: |
+          printf $'summary<<EOF\n%s\nEOF' "$(./scripts/long_file_report.sh)" | tee "$GITHUB_OUTPUT"
+
+      - name: Post output to Zulip
+        if: ${{ ! steps.long_files_comment.outputs.mOrD == '' }}
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib4'
+          type: 'stream'
+          topic: long files
+          content: ${{ steps.long_files.outputs.summary }}
