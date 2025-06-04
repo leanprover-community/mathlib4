@@ -3286,7 +3286,8 @@ import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Matrix.Vec
 import Mathlib.Data.Matroid.Basic
 import Mathlib.Data.Matroid.Circuit
-import Mathlib.Data.Matroid.Closure
+import Mathlib.Data.Matrix.Vec
+import Mathlib.Data.Matrix.Reflection
 import Mathlib.Data.Matroid.Constructions
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.IndepAxioms
