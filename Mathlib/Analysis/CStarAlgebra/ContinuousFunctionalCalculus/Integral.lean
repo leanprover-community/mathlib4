@@ -33,11 +33,19 @@ that the integral commutes with the continuous functional calculus under appropr
 open MeasureTheory Topology
 open scoped ContinuousMapZero
 
+@[simp]
 lemma integrable_of_subsingleton_codomain {X E : Type*} [Subsingleton E]
     [MeasurableSpace X] [TopologicalSpace E] [ENormedAddMonoid E] {f : X → E}
     {μ : Measure X} :
     Integrable f μ :=
   integrable_congr (.of_forall fun _ ↦ Subsingleton.eq_zero _) |>.mpr (integrable_zero _ _ _)
+
+@[simp]
+lemma integrableOn_of_subsingleton_codomain {X E : Type*} [Subsingleton E]
+    [MeasurableSpace X] [TopologicalSpace E] [ENormedAddMonoid E] {f : X → E}
+    {μ : Measure X} {s : Set X} :
+    IntegrableOn f s μ :=
+  integrable_of_subsingleton_codomain
 
 section unital
 
@@ -281,14 +289,12 @@ lemma integrable_cfc' (f : X → 𝕜 → 𝕜)
     (bound_ge : ∀ᵐ x ∂μ, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ bound x)
     (bound_int : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     Integrable (fun x => cfc (f x) a) μ := by
-  rcases subsingleton_or_nontrivial A with (hA|hA)
-  · refine integrable_of_subsingleton_codomain
-  · have bound_nonneg : 0 ≤ᵐ[μ] bound := by
-      filter_upwards [bound_ge] with x bound_x
-      rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
-      exact le_trans (norm_nonneg _) (bound_x z hz)
-    refine integrable_cfc₀ _ _ ⟨hf₂, ?_⟩ ha
-    exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ bound bound_nonneg bound_int bound_ge
+  nontriviality A
+  have bound_nonneg : 0 ≤ᵐ[μ] bound := by
+    rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
+    filter_upwards [bound_ge] with x bound_x using le_trans (norm_nonneg _) (bound_x z hz)
+  refine integrable_cfc₀ _ _ ⟨hf₂, ?_⟩ ha
+  exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ bound bound_nonneg bound_int bound_ge
 
 lemma integrableOn_cfc' {s : Set X} (f : X → 𝕜 → 𝕜)
     (bound : X → ℝ) (a : A) (hf₁ : ∀ᵐ x ∂(μ.restrict s), ContinuousOn (f x) (spectrum 𝕜 a))
@@ -306,17 +312,15 @@ lemma integrable_cfc [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
     (bound_ge : ∀ᵐ x ∂μ, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ bound x)
     (bound_int : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     Integrable (fun x => cfc (f x) a) μ := by
-  rcases subsingleton_or_nontrivial A with (hA|hA)
-  · refine integrable_of_subsingleton_codomain
-  · have bound_nonneg : 0 ≤ᵐ[μ] bound := by
-      filter_upwards [bound_ge] with x bound_x
-      rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
-      exact le_trans (norm_nonneg _) (bound_x z hz)
-    refine integrable_cfc₀ _ _ ⟨?_, ?_⟩ ha
-    · exact aeStronglyMeasurable_mkD_restrict_of_uncurry _ _ hf
-    · refine hasFiniteIntegral_mkD_restrict_of_bound f _ ?_ bound bound_nonneg bound_int bound_ge
-      exact .of_forall fun x ↦
-        hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
+  nontriviality A
+  have bound_nonneg : 0 ≤ᵐ[μ] bound := by
+    rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
+    filter_upwards [bound_ge] with x bound_x using le_trans (norm_nonneg _) (bound_x z hz)
+  refine integrable_cfc₀ _ _ ⟨?_, ?_⟩ ha
+  · exact aeStronglyMeasurable_mkD_restrict_of_uncurry _ _ hf
+  · refine hasFiniteIntegral_mkD_restrict_of_bound f _ ?_ bound bound_nonneg bound_int bound_ge
+    exact .of_forall fun x ↦
+      hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
 
 open Set Function in
 lemma integrableOn_cfc [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
@@ -326,17 +330,15 @@ lemma integrableOn_cfc [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
     (bound_ge : ∀ᵐ x ∂(μ.restrict s), ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ bound x)
     (bound_int : HasFiniteIntegral bound (μ.restrict s)) (ha : p a := by cfc_tac) :
     IntegrableOn (fun x => cfc (f x) a) s μ := by
-  rcases subsingleton_or_nontrivial A with (hA|hA)
-  · refine integrable_of_subsingleton_codomain
-  · have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
-      filter_upwards [bound_ge] with x bound_x
-      rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
-      exact le_trans (norm_nonneg _) (bound_x z hz)
-    refine integrableOn_cfc₀ _ _ ⟨?_, ?_⟩ ha
-    · exact aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry hs _ _ hf
-    · refine hasFiniteIntegral_mkD_restrict_of_bound f _ ?_ bound bound_nonneg bound_int bound_ge
-      exact ae_restrict_of_forall_mem hs fun x hx ↦
-        hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
+  nontriviality A
+  have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
+    rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
+    filter_upwards [bound_ge] with x bound_x using le_trans (norm_nonneg _) (bound_x z hz)
+  refine integrableOn_cfc₀ _ _ ⟨?_, ?_⟩ ha
+  · exact aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry hs _ _ hf
+  · refine hasFiniteIntegral_mkD_restrict_of_bound f _ ?_ bound bound_nonneg bound_int bound_ge
+    exact ae_restrict_of_forall_mem hs fun x hx ↦
+      hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
 
 open Set in
 /-- The continuous functional calculus commutes with integration. -/
@@ -381,14 +383,12 @@ lemma cfc_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (bound : X →
     (bound_ge : ∀ᵐ x ∂μ, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ bound x)
     (bound_int : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfc (fun z => ∫ x, f x z ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
-  rcases subsingleton_or_nontrivial A with (hA|hA)
-  · exact Subsingleton.elim _ _
-  · have bound_nonneg : 0 ≤ᵐ[μ] bound := by
-      filter_upwards [bound_ge] with x bound_x
-      rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
-      exact le_trans (norm_nonneg _) (bound_x z hz)
-    refine cfc_integral₀ _ _ hf₁ ⟨hf₂, ?_⟩ ha
-    exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ bound bound_nonneg bound_int bound_ge
+  nontriviality A
+  have bound_nonneg : 0 ≤ᵐ[μ] bound := by
+    rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
+    filter_upwards [bound_ge] with x bound_x using le_trans (norm_nonneg _) (bound_x z hz)
+  refine cfc_integral₀ _ _ hf₁ ⟨hf₂, ?_⟩ ha
+  exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ bound bound_nonneg bound_int bound_ge
 
 open Set in
 /-- The continuous functional calculus commutes with integration. -/
@@ -398,14 +398,12 @@ lemma cfc_setIntegral' [NormedSpace ℝ A] {s : Set X} (f : X → 𝕜 → 𝕜)
     (bound_ge : ∀ᵐ x ∂(μ.restrict s), ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ bound x)
     (bound_int : HasFiniteIntegral bound (μ.restrict s)) (ha : p a := by cfc_tac) :
     cfc (fun r => ∫ x in s, f x r ∂μ) a = ∫ x in s, cfc (f x) a ∂μ := by
-  rcases subsingleton_or_nontrivial A with (hA|hA)
-  · exact Subsingleton.elim _ _
-  · have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
-      filter_upwards [bound_ge] with x bound_x
-      rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
-      exact le_trans (norm_nonneg _) (bound_x z hz)
-    refine cfc_setIntegral₀ _ _ hf₁ ⟨hf₂, ?_⟩ ha
-    exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ bound bound_nonneg bound_int bound_ge
+  nontriviality A
+  have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
+    rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
+    filter_upwards [bound_ge] with x bound_x using le_trans (norm_nonneg _) (bound_x z hz)
+  refine cfc_setIntegral₀ _ _ hf₁ ⟨hf₂, ?_⟩ ha
+  exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ bound bound_nonneg bound_int bound_ge
 
 open Function Set in
 /-- The continuous functional calculus commutes with integration. -/
@@ -415,17 +413,15 @@ lemma cfc_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpac
     (bound_ge : ∀ᵐ x ∂μ, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ bound x)
     (bound_int : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfc (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
-  rcases subsingleton_or_nontrivial A with (hA|hA)
-  · exact Subsingleton.elim _ _
-  · have bound_nonneg : 0 ≤ᵐ[μ] bound := by
-      filter_upwards [bound_ge] with x bound_x
-      rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
-      exact le_trans (norm_nonneg _) (bound_x z hz)
-    have : ∀ᵐ (x : X) ∂μ, ContinuousOn (f x) (spectrum 𝕜 a) := .of_forall fun x ↦
-      hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
-    refine cfc_integral₀ _ _ this ⟨?_, ?_⟩ ha
-    · exact aeStronglyMeasurable_mkD_restrict_of_uncurry _ _ hf
-    · exact hasFiniteIntegral_mkD_restrict_of_bound f _ this bound bound_nonneg bound_int bound_ge
+  nontriviality A
+  have bound_nonneg : 0 ≤ᵐ[μ] bound := by
+    rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
+    filter_upwards [bound_ge] with x bound_x using le_trans (norm_nonneg _) (bound_x z hz)
+  have : ∀ᵐ (x : X) ∂μ, ContinuousOn (f x) (spectrum 𝕜 a) := .of_forall fun x ↦
+    hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
+  refine cfc_integral₀ _ _ this ⟨?_, ?_⟩ ha
+  · exact aeStronglyMeasurable_mkD_restrict_of_uncurry _ _ hf
+  · exact hasFiniteIntegral_mkD_restrict_of_bound f _ this bound bound_nonneg bound_int bound_ge
 
 open Function Set in
 /-- The continuous functional calculus commutes with integration. -/
@@ -436,18 +432,16 @@ lemma cfc_setIntegral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableS
     (bound_ge : ∀ᵐ x ∂(μ.restrict s), ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ bound x)
     (bound_int : HasFiniteIntegral bound (μ.restrict s)) (ha : p a := by cfc_tac) :
     cfc (fun r => ∫ x in s, f x r ∂μ) a = ∫ x in s, cfc (f x) a ∂μ := by
-  rcases subsingleton_or_nontrivial A with (hA|hA)
-  · exact Subsingleton.elim _ _
-  · have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
-      filter_upwards [bound_ge] with x bound_x
-      rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
-      exact le_trans (norm_nonneg _) (bound_x z hz)
-    have : ∀ᵐ (x : X) ∂(μ.restrict s), ContinuousOn (f x) (spectrum 𝕜 a) :=
-      ae_restrict_of_forall_mem hs fun x hx ↦
-        hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
-    refine cfc_setIntegral₀ _ _ this ⟨?_, ?_⟩ ha
-    · exact aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry hs _ _ hf
-    · exact hasFiniteIntegral_mkD_restrict_of_bound f _ this bound bound_nonneg bound_int bound_ge
+  nontriviality A
+  have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
+    rcases CFC.spectrum_nonempty 𝕜 a ha with ⟨z, hz⟩
+    filter_upwards [bound_ge] with x bound_x using le_trans (norm_nonneg _) (bound_x z hz)
+  have : ∀ᵐ (x : X) ∂(μ.restrict s), ContinuousOn (f x) (spectrum 𝕜 a) :=
+    ae_restrict_of_forall_mem hs fun x hx ↦
+      hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
+  refine cfc_setIntegral₀ _ _ this ⟨?_, ?_⟩ ha
+  · exact aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry hs _ _ hf
+  · exact hasFiniteIntegral_mkD_restrict_of_bound f _ this bound bound_nonneg bound_int bound_ge
 
 end unital
 
@@ -566,7 +560,6 @@ lemma hasFiniteIntegral_mkD_restrict_of_bound {s : Set α} [CompactSpace s] [Zer
 
 lemma aeStronglyMeasurable_mkD_of_uncurry [CompactSpace α] [Zero α] [TopologicalSpace X]
     [OpensMeasurableSpace X] [SecondCountableTopologyEither X (C(α, E))]
-    [SecondCountableTopologyEither X (C(α, E)₀)]
     (f : X → α → E) (g : C(α, E)₀) (f_cont : Continuous (Function.uncurry f))
     (f_zero : ∀ᵐ x ∂μ, f x 0 = 0) :
     AEStronglyMeasurable (fun x ↦ mkD (f x) g) μ := by
@@ -579,7 +572,6 @@ lemma aeStronglyMeasurable_mkD_of_uncurry [CompactSpace α] [Zero α] [Topologic
 open Set in
 lemma aeStronglyMeasurable_restrict_mkD_of_uncurry [CompactSpace α] [Zero α] {s : Set X}
     [TopologicalSpace X] [OpensMeasurableSpace X] [SecondCountableTopologyEither X (C(α, E))]
-    [SecondCountableTopologyEither X (C(α, E)₀)]
     (hs : MeasurableSet s) (f : X → α → E) (g : C(α, E)₀)
     (f_cont : ContinuousOn (Function.uncurry f) (s ×ˢ univ))
     (f_zero : ∀ᵐ x ∂(μ.restrict s), f x 0 = 0) :
@@ -593,7 +585,6 @@ lemma aeStronglyMeasurable_restrict_mkD_of_uncurry [CompactSpace α] [Zero α] {
 open Set in
 lemma aeStronglyMeasurable_mkD_restrict_of_uncurry {t : Set α} [CompactSpace t] [Zero t]
     [TopologicalSpace X] [OpensMeasurableSpace X] [SecondCountableTopologyEither X (C(t, E))]
-    [SecondCountableTopologyEither X (C(t, E)₀)]
     (f : X → α → E) (g : C(t, E)₀) (f_cont : ContinuousOn (Function.uncurry f) (univ ×ˢ t))
     (f_zero : ∀ᵐ x ∂μ, f x (0 : t) = 0) :
     AEStronglyMeasurable (fun x ↦ mkD (t.restrict (f x)) g) μ := by
@@ -606,7 +597,7 @@ lemma aeStronglyMeasurable_mkD_restrict_of_uncurry {t : Set α} [CompactSpace t]
 open Set in
 lemma aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry {s : Set X} {t : Set α}
     [CompactSpace t] [Zero t] [TopologicalSpace X] [OpensMeasurableSpace X]
-    [SecondCountableTopologyEither X (C(t, E))] [SecondCountableTopologyEither X (C(t, E)₀)]
+    [SecondCountableTopologyEither X (C(t, E))]
     (hs : MeasurableSet s) (f : X → α → E) (g : C(t, E)₀)
     (f_cont : ContinuousOn (Function.uncurry f) (s ×ˢ t))
     (f_zero : ∀ᵐ x ∂(μ.restrict s), f x (0 : t) = 0) :
@@ -684,7 +675,7 @@ lemma integrable_cfcₙ' (f : X → 𝕜 → 𝕜)
     Integrable (fun x => cfcₙ (f x) a) μ := by
   have bound_nonneg : 0 ≤ᵐ[μ] bound := by
     filter_upwards [bound_ge] with x bound_x
-    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
+    exact le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   refine integrable_cfcₙ₀ _ _ ⟨hf₃, ?_⟩ ha
   exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ hf₂ bound bound_nonneg bound_int bound_ge
 
@@ -701,7 +692,6 @@ lemma integrableOn_cfcₙ' {s : Set X} (f : X → 𝕜 → 𝕜)
 open Set Function in
 lemma integrable_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
     (bound : X → ℝ) (a : A)
-    [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
     [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)]
     (hf : ContinuousOn (uncurry f) (univ ×ˢ quasispectrum 𝕜 a))
     (f_zero : ∀ᵐ x ∂μ, f x 0 = 0)
@@ -710,7 +700,7 @@ lemma integrable_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] (f : X →
     Integrable (fun x => cfcₙ (f x) a) μ := by
   have bound_nonneg : 0 ≤ᵐ[μ] bound := by
     filter_upwards [bound_ge] with x bound_x
-    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
+    exact le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   refine integrable_cfcₙ₀ _ _ ⟨?_, ?_⟩ ha
   · exact aeStronglyMeasurable_mkD_restrict_of_uncurry _ _ hf f_zero
   · refine hasFiniteIntegral_mkD_restrict_of_bound f _ ?_ f_zero
@@ -721,7 +711,6 @@ lemma integrable_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] (f : X →
 open Set Function in
 lemma integrableOn_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
     (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
-    [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
     [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)]
     (hf : ContinuousOn (uncurry f) (s ×ˢ quasispectrum 𝕜 a))
     (f_zero : ∀ᵐ x ∂(μ.restrict s), f x 0 = 0)
@@ -730,7 +719,7 @@ lemma integrableOn_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set
     IntegrableOn (fun x => cfcₙ (f x) a) s μ := by
   have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
     filter_upwards [bound_ge] with x bound_x
-    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
+    exact le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   refine integrableOn_cfcₙ₀ _ _ ⟨?_, ?_⟩ ha
   · exact aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry hs _ _ hf f_zero
   · refine hasFiniteIntegral_mkD_restrict_of_bound f _ ?_ f_zero
@@ -787,7 +776,7 @@ lemma cfcₙ_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (bound : X 
     cfcₙ (fun z => ∫ x, f x z ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
   have bound_nonneg : 0 ≤ᵐ[μ] bound := by
     filter_upwards [bound_ge] with x bound_x
-    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
+    exact le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   refine cfcₙ_integral₀ _ _ hf₁ hf₂ ⟨hf₃, ?_⟩ ha
   exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ hf₂ bound bound_nonneg bound_int bound_ge
 
@@ -802,7 +791,7 @@ lemma cfcₙ_setIntegral' [NormedSpace ℝ A] {s : Set X} (f : X → 𝕜 → �
     cfcₙ (fun r => ∫ x in s, f x r ∂μ) a = ∫ x in s, cfcₙ (f x) a ∂μ := by
   have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
     filter_upwards [bound_ge] with x bound_x
-    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
+    exact le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   refine cfcₙ_setIntegral₀ _ _ hf₁ hf₂ ⟨hf₃, ?_⟩ ha
   exact hasFiniteIntegral_mkD_restrict_of_bound _ _ hf₁ hf₂ bound bound_nonneg bound_int bound_ge
 
@@ -810,7 +799,6 @@ open Function Set in
 /-- The continuous functional calculus commutes with integration. -/
 lemma cfcₙ_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X]
     (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
-    [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
     [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)]
     (hf : ContinuousOn (uncurry f) (univ ×ˢ quasispectrum 𝕜 a))
     (f_zero : ∀ᵐ x ∂μ, f x 0 = 0)
@@ -819,7 +807,7 @@ lemma cfcₙ_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableS
     cfcₙ (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
   have bound_nonneg : 0 ≤ᵐ[μ] bound := by
     filter_upwards [bound_ge] with x bound_x
-    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
+    exact le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   have : ∀ᵐ (x : X) ∂μ, ContinuousOn (f x) (quasispectrum 𝕜 a) := .of_forall fun x ↦
     hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
   refine cfcₙ_integral₀ _ _ this f_zero ⟨?_, ?_⟩ ha
@@ -831,7 +819,6 @@ open Function Set in
 /-- The continuous functional calculus commutes with integration. -/
 lemma cfcₙ_setIntegral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
     (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
-    [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
     [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)]
     (hf : ContinuousOn (uncurry f) (s ×ˢ quasispectrum 𝕜 a))
     (f_zero : ∀ᵐ x ∂(μ.restrict s), f x 0 = 0)
@@ -840,7 +827,7 @@ lemma cfcₙ_setIntegral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurab
     cfcₙ (fun r => ∫ x in s, f x r ∂μ) a = ∫ x in s, cfcₙ (f x) a ∂μ := by
   have bound_nonneg : 0 ≤ᵐ[μ.restrict s] bound := by
     filter_upwards [bound_ge] with x bound_x
-    refine le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
+    exact le_trans (norm_nonneg _) (bound_x 0 <| quasispectrum.zero_mem _ _)
   have : ∀ᵐ (x : X) ∂(μ.restrict s), ContinuousOn (f x) (quasispectrum 𝕜 a) :=
     ae_restrict_of_forall_mem hs fun x hx ↦
       hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
