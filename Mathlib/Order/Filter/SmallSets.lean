@@ -22,7 +22,7 @@ then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way
 
 open Filter
 
-open Filter Set
+open Set
 
 variable {α β : Type*} {ι : Sort*}
 
