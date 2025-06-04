@@ -20,15 +20,15 @@ subfield `F` is (isomorphic to) the maximal real subfield of `K`.
 * `NumberField.CMExtension.isConj_complexConj`: the complex conjugation is the conjugation
   of any complex embedding of a `CM`-extension.
 
-* `NumberField.IsCMField`: A predicate that says that a number field is CM, that is it a totally
+* `NumberField.IsCMField`: A predicate that says that if a number field is CM, then it is a totally
   complex quadratic extension of its totally real subfield
 
 ## Implementation note
 
 Most result are proved under the general hypothesis: `K/F` quadratic extension of number fields
 with `F` totally real and `K` totally complex and then, if relevant, we deduce the special case
-`F = maximalRealSubfield K`. Results of the first kind lives in the `NumberField.CMExtension`
-namespace whereas results of the second kind lives in the `NumberField.IsCMField` namespace.
+`F = maximalRealSubfield K`. Results of the first kind live in the `NumberField.CMExtension`
+namespace whereas results of the second kind live in the `NumberField.IsCMField` namespace.
 
 -/
 
@@ -150,6 +150,12 @@ theorem card_infinitePlace_eq_card_infinitePlace :
 theorem units_rank_eq_units_rank :
     Units.rank (maximalRealSubfield K) = Units.rank K :=
   CMExtension.units_rank_eq_units_rank _ _
+
+noncomputable instance starRing : StarRing K where
+  star := CMExtension.complexConj (maximalRealSubfield K) K
+  star_involutive := fun _ ↦ CMExtension.complexConj_apply_apply _ _
+  star_mul := fun _ _ ↦ by rw [map_mul, mul_comm]
+  star_add := fun _ _ ↦ by rw [map_add]
 
 end IsCMField
 
