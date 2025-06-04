@@ -328,7 +328,8 @@ lemma leSubmodule_zero (K : Type u) [Field K] [hv : Valued K Γ₀] :
     leSubmodule K (0 : Γ₀) = ⊥ := by
   ext; simp
 
---- the ideals do not use the submodules due to `Ideal.comap` requiring commutativity
+-- the ideals do not use the submodules due to `Submodule.comap _ (Algebra.linearMap _ _)`
+-- requiring commutativity
 
 /-- The ideal of elements of the valuation subring whose valuation is less than or equal to a
 certain value. -/
