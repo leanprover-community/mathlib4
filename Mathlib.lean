@@ -1312,6 +1312,7 @@ import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.CStarAlgebra.CompletelyPositiveMap
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
