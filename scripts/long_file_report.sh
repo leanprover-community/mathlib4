@@ -3,22 +3,31 @@
 # takes a comma-separated list of headers and a file/stdin input and returns
 # a md-style table. The file/stdin is expected to be space-separated entries.
 mkMDtable () {
-  awk -v limit=1500 -v heads="${1}" 'BEGIN{
+  awk -v limit=1500 -v heads="${1}" '
+    function mkRow(m,str)
+    { printf("|")
+      for(i=1; i<=m; i++) {printf("%s|", str)}
+      print "" }
+    BEGIN{
     longTotal=0
+    foundShort=0
     n=split(heads, headers, ",")
+    # mkRow, with the header entries
     printf("|")
     for(i=1; i<=n; i++) {printf(" %s |", headers[i])}
     print ""
-
-    printf("|")
-    for(i=1; i<=n; i++) {printf("-|")}
-    print ""
-  } ((longTotal == "0") && ($1+0 <= limit)) {longTotal=1; print "here"}
-    {
-    printf("|")
-    for(i=1; i<=n; i++) {printf(" %s |", $i)}
-    print ""
-  } END{if(longTotal == "0") {printf("All files are within the length limit!\n")}{printf("There are long files.\n")}}' "${2}"
+    mkRow(n, "-")
+  } (limit < $1+0) {longTotal++}
+    ((foundShort == "0") && (0 < longTotal) && ($1+0 <= limit) && ($1+0 == $1)) {mkRow(n, " "); foundShort=1}
+    # mkRow, with the entries of each line
+    { printf("|")
+      for(i=1; i<=n; i++) {printf(" %s |", $i)}
+      print "" } END{
+      if(longTotal == "0")
+      { printf("\nAll files are within the length limit!\n") }
+      else
+      { printf("\n%s file%s exceed the length limit (%s).\n", longTotal, (longTotal == 1) ? "" : "s", limit) }
+    }' "${2}"
 }
 
 git ls-files 'Mathlib/*.lean' | # list the git-managed `Mathlib/` lean files
