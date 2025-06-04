@@ -245,7 +245,7 @@ section absNorm
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`. -/
 lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
-      (P : Ideal R) [P.LiesOver (span {p})] (hp: Prime p) :
+    (P : Ideal R) [P.LiesOver (span {p})] (hp: Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
   have : (span {p}).IsMaximal :=
     (isPrime_of_prime (prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
@@ -393,7 +393,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
   simp only [linearIndependent_iff', not_forall] at hb ⊢
   obtain ⟨s, g, eq, j', hj's, hj'g⟩ := hb
   use s
-  obtain ⟨a, hag, j, hjs, hgI⟩ := Ideal.exist_integer_multiples_not_mem hRS s g hj's hj'g
+  obtain ⟨a, hag, j, hjs, hgI⟩ := Ideal.exist_integer_multiples_notMem hRS s g hj's hj'g
   choose g'' hg'' using hag
   letI := Classical.propDecidable
   let g' i := if h : i ∈ s then g'' i h else 0
@@ -562,7 +562,7 @@ theorem quotientToQuotientRangePowQuotSucc_mk {i : ℕ} {a : S} (a_mem : a ∈ P
   quotientToQuotientRangePowQuotSuccAux_mk p P a_mem x
 
 theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsPrime]
-    {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i) (a_not_mem : a ∉ P ^ (i + 1)) :
+    {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i) (a_notMem : a ∉ P ^ (i + 1)) :
     Function.Injective (quotientToQuotientRangePowQuotSucc p P a_mem) := fun x =>
   Quotient.inductionOn' x fun x y =>
     Quotient.inductionOn' y fun y h => by
@@ -578,11 +578,11 @@ theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsP
       exact
         (Ideal.IsPrime.mem_pow_mul _
               ((Submodule.sub_mem_iff_right _ hz).mp (Pe_le_Pi1 h))).resolve_left
-          a_not_mem
+          a_notMem
 
 theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     (hP0 : P ≠ ⊥) [hP : P.IsPrime] {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i)
-    (a_not_mem : a ∉ P ^ (i + 1)) :
+    (a_notMem : a ∉ P ^ (i + 1)) :
     Function.Surjective (quotientToQuotientRangePowQuotSucc p P a_mem) := by
   rintro ⟨⟨⟨x⟩, hx⟩⟩
   have Pe_le_Pi : P ^ e ≤ P ^ i := Ideal.pow_le_pow_right hi.le
@@ -602,10 +602,10 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
   rw [sup_eq_prod_inf_factors _ (pow_ne_zero _ hP0), normalizedFactors_pow,
     normalizedFactors_irreducible ((Ideal.prime_iff_isPrime hP0).mpr hP).irreducible, normalize_eq,
     Multiset.nsmul_singleton, Multiset.inter_replicate, Multiset.prod_replicate]
-  · rw [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq] at a_mem a_not_mem
-    rwa [Ideal.count_normalizedFactors_eq a_mem a_not_mem, min_eq_left i.le_succ]
+  · rw [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq] at a_mem a_notMem
+    rwa [Ideal.count_normalizedFactors_eq a_mem a_notMem, min_eq_left i.le_succ]
   · intro ha
-    rw [Ideal.span_singleton_eq_bot.mp ha] at a_not_mem
+    rw [Ideal.span_singleton_eq_bot.mp ha] at a_notMem
     have := (P ^ (i + 1)).zero_mem
     contradiction
 
@@ -615,13 +615,13 @@ noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
     [P.IsPrime] (hP : P ≠ ⊥) {i : ℕ} (hi : i < e) :
     ((P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion p P i))
       ≃ₗ[R ⧸ p] S ⧸ P := by
-  choose a a_mem a_not_mem using
+  choose a a_mem a_notMem using
     SetLike.exists_of_lt
       (Ideal.pow_right_strictAnti P hP (Ideal.IsPrime.ne_top inferInstance) (le_refl i.succ))
   refine (LinearEquiv.ofBijective ?_ ⟨?_, ?_⟩).symm
   · exact quotientToQuotientRangePowQuotSucc p P a_mem
-  · exact quotientToQuotientRangePowQuotSucc_injective p P hi a_mem a_not_mem
-  · exact quotientToQuotientRangePowQuotSucc_surjective p P hP hi a_mem a_not_mem
+  · exact quotientToQuotientRangePowQuotSucc_injective p P hi a_mem a_notMem
+  · exact quotientToQuotientRangePowQuotSucc_surjective p P hP hi a_mem a_notMem
 
 /-- Since the inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)` has a kernel isomorphic to `P / S`,
 `[P^i / P^e : R / p] = [P^(i+1) / P^e : R / p] + [P / S : R / p]` -/

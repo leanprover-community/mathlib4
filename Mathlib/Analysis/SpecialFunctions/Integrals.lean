@@ -255,7 +255,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
     apply Real.continuousOn_log.mono
-    apply Set.not_mem_uIcc_of_lt zero_lt_one at hx
+    apply Set.notMem_uIcc_of_lt zero_lt_one at hx
     simpa
 
 @[simp]
@@ -445,11 +445,11 @@ theorem integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log 
 
 @[simp]
 theorem integral_inv_of_pos (ha : 0 < a) (hb : 0 < b) : ∫ x in a..b, x⁻¹ = log (b / a) :=
-  integral_inv <| not_mem_uIcc_of_lt ha hb
+  integral_inv <| notMem_uIcc_of_lt ha hb
 
 @[simp]
 theorem integral_inv_of_neg (ha : a < 0) (hb : b < 0) : ∫ x in a..b, x⁻¹ = log (b / a) :=
-  integral_inv <| not_mem_uIcc_of_gt ha hb
+  integral_inv <| notMem_uIcc_of_gt ha hb
 
 theorem integral_one_div (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x : ℝ in a..b, 1 / x = log (b / a) := by
   simp only [one_div, integral_inv h]
@@ -762,9 +762,8 @@ theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
       simp only [_root_.pow_zero, _root_.pow_succ, mul_assoc, pow_mul, one_mul]
       congr! 5
       rw [← sq, ← sq, cos_sq']
-    _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n := by
-      -- Note(kmill): Didn't need `by exact`, but elaboration order seems to matter here.
-      exact integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
+    _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n :=
+      integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
 
 /-- The integral of `sin x * cos x`, given in terms of sin².
   See `integral_sin_mul_cos₂` below for the integral given in terms of cos². -/

@@ -21,7 +21,7 @@ compact open set is compact open.
 
 ## TODO
 
-Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib.Topology.Spectral.Basic`.
+Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib/Topology/Spectral/Basic.lean`.
 -/
 
 

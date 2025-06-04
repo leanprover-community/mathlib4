@@ -25,7 +25,7 @@ where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In t
 
 namespace Mathlib.Tactic
 
-open Lean Meta Elab Tactic Term Qq Int
+open Lean Meta Elab Term Qq Int
 
 namespace IntervalCases
 
@@ -317,7 +317,7 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
 
 end IntervalCases
 
-open IntervalCases
+open IntervalCases Tactic
 
 /--
 `interval_cases n` searches for upper and lower bounds on a variable `n`,

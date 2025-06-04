@@ -12,7 +12,7 @@ import Mathlib.SetTheory.Ordinal.Family
 The goal of this file is to define the nimbers, constructed as ordinals endowed with new
 arithmetical operations. The nim sum `a + b` is recursively defined as the least ordinal not equal
 to any `a' + b` or `a + b'` for `a' < a` and `b' < b`. There is also a nim product, defined in the
-`Mathlib.SetTheory.Nimber.Field` file.
+`Mathlib/SetTheory/Nimber/Field.lean` file.
 
 Nim addition arises within the context of impartial games. By the Sprague-Grundy theorem, each
 impartial game is equivalent to some game of nim. If `x ≈ nim o₁` and `y ≈ nim o₂`, then
@@ -235,7 +235,7 @@ private theorem add_nonempty (a b : Nimber.{u}) :
 
 theorem exists_of_lt_add (h : c < a + b) : (∃ a' < a, a' + b = c) ∨ ∃ b' < b, a + b' = c := by
   rw [add_def] at h
-  have := not_mem_of_lt_csInf' h
+  have := notMem_of_lt_csInf' h
   rwa [Set.mem_compl_iff, not_not] at this
 
 theorem add_le_of_forall_ne (h₁ : ∀ a' < a, a' + b ≠ c) (h₂ : ∀ b' < b, a + b' ≠ c) :

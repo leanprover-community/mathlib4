@@ -562,6 +562,12 @@ end Real
 def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
 
+lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
+    f 1 ≤ 1 := by
+  have hf1 : (f 1)^2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
+  rcases eq_zero_or_one_of_sq_eq_self hf1 with h | h <;> rw [h]
+  exact zero_le_one
+
 /-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
   `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,
   `nβ (f x) ≤ C * nα x`. -/

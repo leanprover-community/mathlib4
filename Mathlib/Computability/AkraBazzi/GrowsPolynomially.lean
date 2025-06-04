@@ -275,7 +275,6 @@ protected lemma abs (hf : GrowsPolynomially f) : GrowsPolynomially (fun x => |f 
     have hmain : -f =ᶠ[atTop] fun x => |f x| := by
       filter_upwards [hf'] with x hx
       simp only [Pi.neg_apply, abs_of_nonpos hx]
-
     rw [← iff_eventuallyEq hmain]
     exact hf.neg
 

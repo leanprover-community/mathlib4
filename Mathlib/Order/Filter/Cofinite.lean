@@ -78,19 +78,25 @@ alias ⟨_, _root_.Set.Infinite.cofinite_inf_principal_neBot⟩ := cofinite_inf_
 theorem _root_.Set.Finite.compl_mem_cofinite {s : Set α} (hs : s.Finite) : sᶜ ∈ @cofinite α :=
   mem_cofinite.2 <| (compl_compl s).symm ▸ hs
 
-theorem _root_.Set.Finite.eventually_cofinite_nmem {s : Set α} (hs : s.Finite) :
+theorem _root_.Set.Finite.eventually_cofinite_notMem {s : Set α} (hs : s.Finite) :
     ∀ᶠ x in cofinite, x ∉ s :=
   hs.compl_mem_cofinite
 
-theorem _root_.Finset.eventually_cofinite_nmem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
-  s.finite_toSet.eventually_cofinite_nmem
+@[deprecated (since := "2025-05-24")]
+alias _root_.Set.Finite.eventually_cofinite_nmem := _root_.Set.Finite.eventually_cofinite_notMem
+
+theorem _root_.Finset.eventually_cofinite_notMem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
+  s.finite_toSet.eventually_cofinite_notMem
+
+@[deprecated (since := "2025-05-24")]
+alias _root_.Finset.eventually_cofinite_nmem := _root_.Finset.eventually_cofinite_notMem
 
 theorem _root_.Set.infinite_iff_frequently_cofinite {s : Set α} :
     Set.Infinite s ↔ ∃ᶠ x in cofinite, x ∈ s :=
   frequently_cofinite_iff_infinite.symm
 
 theorem eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
-  (Set.finite_singleton x).eventually_cofinite_nmem
+  (Set.finite_singleton x).eventually_cofinite_notMem
 
 theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ ∈ l := by
   refine ⟨fun h x => h (finite_singleton x).compl_mem_cofinite, fun h s (hs : sᶜ.Finite) => ?_⟩

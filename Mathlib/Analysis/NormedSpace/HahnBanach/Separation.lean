@@ -73,7 +73,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
   · exact h.trans (gauge_nonneg _)
   · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, le_mul_iff_one_le_right h]
     exact
-      one_le_gauge_of_not_mem (hs₁.starConvex hs₀)
+      one_le_gauge_of_notMem (hs₁.starConvex hs₀)
         (absorbent_nhds_zero <| hs₂.mem_nhds hs₀).absorbs hx₀
 
 variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
@@ -98,7 +98,7 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
   have : x₀ ∉ C := by
     intro hx₀
     rw [← add_zero x₀] at hx₀
-    exact disj.zero_not_mem_sub_set (vadd_mem_vadd_set_iff.1 hx₀)
+    exact disj.zero_notMem_sub_set (vadd_mem_vadd_set_iff.1 hx₀)
   obtain ⟨f, hf₁, hf₂⟩ := separate_convex_open_set ‹0 ∈ C› ‹_› (hs₂.sub_right.vadd _) ‹x₀ ∉ C›
   have : f b₀ = f a₀ + 1 := by simp [x₀, ← hf₁]
   have forall_le : ∀ a ∈ s, ∀ b ∈ t, f a ≤ f b := by

@@ -45,7 +45,7 @@ in which case `piContent μ` is known to be a true measure (see `piContent_eq_me
 infinite product measure
 -/
 
-open MeasureTheory ProbabilityTheory Finset Filter Preorder MeasurableEquiv
+open ProbabilityTheory Finset Filter Preorder MeasurableEquiv
 
 open scoped ENNReal Topology
 

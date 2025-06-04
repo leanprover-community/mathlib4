@@ -299,7 +299,6 @@ protected theorem Associated.irreducible [Monoid M] {p q : M} (h : p ~ᵤ q) (hp
       calc
         p = p * u * (u⁻¹ : Mˣ) := by simp
         _ = _ := by rw [hu]; simp [hab, mul_assoc]
-
     (hp.isUnit_or_isUnit hpab).elim Or.inl fun ⟨v, hv⟩ => Or.inr ⟨v * u, by simp [hv]⟩⟩
 
 protected theorem Associated.irreducible_iff [Monoid M] {p q : M} (h : p ~ᵤ q) :

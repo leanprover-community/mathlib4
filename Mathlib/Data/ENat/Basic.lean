@@ -227,6 +227,10 @@ theorem top_pos : (0 : ℕ∞) < ⊤ :=
 @[deprecated ENat.top_pos (since := "2024-10-22")]
 alias zero_lt_top := top_pos
 
+@[simp]
+theorem one_lt_top : (1 : ℕ∞) < ⊤ :=
+  WithTop.one_lt_top
+
 @[simp] theorem sub_top (a : ℕ∞) : a - ⊤ = 0 := WithTop.sub_top
 
 @[simp]
@@ -554,6 +558,8 @@ protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder 
     [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
   {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
+
+instance : NoZeroDivisors ℕ∞ := inferInstanceAs (NoZeroDivisors (WithTop ℕ))
 
 end ENat
 

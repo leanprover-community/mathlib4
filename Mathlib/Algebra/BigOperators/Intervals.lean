@@ -49,7 +49,7 @@ theorem prod_Ico_add_right_sub_eq [AddCommMonoid α] [PartialOrder α] [IsOrdere
 @[to_additive]
 theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
     (∏ k ∈ Ico a (b + 1), f k) = (∏ k ∈ Ico a b, f k) * f b := by
-  rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_not_mem_Ico, mul_comm]
+  rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_notMem_Ico, mul_comm]
 
 @[to_additive]
 theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → M) :

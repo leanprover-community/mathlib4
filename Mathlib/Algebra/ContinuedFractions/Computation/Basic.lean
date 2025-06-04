@@ -155,7 +155,7 @@ extract it and put the tail of the stream in the sequence part.
 
 This is just an intermediate representation and users should not (need to) directly interact with
 it. The setup of rewriting/simplification lemmas that make the definitions easy to use is done in
-`Mathlib.Algebra.ContinuedFractions.Computation.Translations`.
+`Mathlib/Algebra/ContinuedFractions/Computation/Translations.lean`.
 -/
 protected def seq1 (v : K) : Stream'.Seq1 <| IntFractPair K :=
   ⟨IntFractPair.of v, -- the head
@@ -169,7 +169,7 @@ end IntFractPair
 
 /-- Returns the `GenContFract` of a value. In fact, the returned gcf is also a `ContFract` that
 terminates if and only if `v` is rational
-(see `Mathlib.Algebra.ContinuedFractions.Computation.TerminatesIffRat`).
+(see `Mathlib/Algebra/ContinuedFractions/Computation/TerminatesIffRat.lean`).
 
 The continued fraction representation of `v` is given by `[⌊v⌋; b₀, b₁, b₂,...]`, where
 `[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`. This

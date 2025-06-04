@@ -33,6 +33,9 @@ abbrev Ring.KrullDimLE (n : ℕ) (R : Type*) [CommSemiring R] : Prop :=
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S]
 
+lemma Ring.krullDimLE_iff {n : ℕ} :
+    KrullDimLE n R ↔ ringKrullDim R ≤ n := Order.krullDimLE_iff n (PrimeSpectrum R)
+
 @[nontriviality]
 lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] :
     ringKrullDim R = ⊥ :=
@@ -78,9 +81,6 @@ lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
 lemma finiteRingKrullDim_iff_ne_bot_and_top :
     FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
   (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
-
-proof_wanted Polynomial.ringKrullDim_le :
-    ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
 
 proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
     [IsNoetherianRing R] (n : ℕ) :
