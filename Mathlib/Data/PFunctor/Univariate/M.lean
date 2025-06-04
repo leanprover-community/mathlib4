@@ -123,6 +123,8 @@ def Path (F : PFunctor.{u}) :=
 instance Path.inhabited : Inhabited (Path F) :=
   ⟨[]⟩
 
+open List Nat
+
 instance CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
 
@@ -497,6 +499,8 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     specialize hrec (⟨_, i⟩ :: ps) (congr_arg _ h)
     simp only [iselect_cons] at hrec
     exact hrec
+
+open PFunctor.Approx
 
 theorem ext [Inhabited (M F)] [DecidableEq F.A] (x y : M F)
     (H : ∀ ps : Path F, iselect ps x = iselect ps y) :

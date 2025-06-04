@@ -133,11 +133,17 @@ end LiftP'
 
 end MvFunctor
 
+open Nat
+
 namespace MvFunctor
+
+open TypeVec
 
 section LiftPLastPredIff
 
 variable {F : TypeVec.{u} (n + 1) → Type*} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
+
+open MvFunctor
 
 variable {β : Type u}
 variable (pp : β → Prop)

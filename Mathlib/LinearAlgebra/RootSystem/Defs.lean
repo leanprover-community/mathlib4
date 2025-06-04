@@ -223,11 +223,6 @@ lemma coroot_root_eq_pairing : P.toLinearMap.flip (P.coroot i) (P.root j) = P.pa
 @[simp]
 lemma pairing_same : P.pairing i i = 2 := P.root_coroot_two i
 
-variable {P} in
-lemma pairing_eq_add_of_root_eq_add {i j k l : ι} (h : P.root k = P.root i + P.root j) :
-    P.pairing k l = P.pairing i l + P.pairing j l := by
-  simp only [← root_coroot_eq_pairing, h, map_add, LinearMap.add_apply]
-
 lemma coroot_root_two :
     P.toLinearMap.flip (P.coroot i) (P.root i) = 2 := by
   simp

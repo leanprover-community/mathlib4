@@ -80,7 +80,7 @@ instance : LawfulMonad Multiset := LawfulMonad.mk'
 
 open Functor
 
-open Traversable
+open Traversable LawfulTraversable
 
 @[simp]
 theorem map_comp_coe {α β} (h : α → β) :
