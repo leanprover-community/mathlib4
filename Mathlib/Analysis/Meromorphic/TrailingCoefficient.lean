@@ -108,7 +108,7 @@ lemma AnalyticAt.meromorphicTrailingCoeffAt_of_nonvanish (h₁ : AnalyticAt 𝕜
 
 /--
 If `f` is meromorphic at `x`, then the trailing coefficient of `f` at `x` is the limit of the
-function `(· - x) ^ (-h₁.order.untop₀) • f`.
+function `(· - x) ^ (-order) • f`.
 -/
 lemma MeromorphicAt.meromorphicTrailingCoeffAt_eq_limit (h : MeromorphicAt f x) :
     Tendsto ((· - x) ^ (-(meromorphicOrderAt f x).untop₀) • f) (𝓝[≠] x)
