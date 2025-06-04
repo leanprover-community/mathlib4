@@ -204,10 +204,11 @@ theorem coeff_hsum_eq_sum {s : SummableFamily Γ R α} {g : Γ} :
 
 /-- The summable family made of a single Hahn series. -/
 @[simps]
-def single (x : HahnSeries Γ R) : SummableFamily Γ R Unit where
-  toFun _ := x
-  isPWO_iUnion_support' :=
-    Eq.mpr (congrArg (fun s ↦ s.IsPWO) (Set.iUnion_const x.support)) x.isPWO_support
+def single {ι} [DecidableEq ι] (i : ι) (x : HahnSeries Γ R) : SummableFamily Γ R ι where
+  toFun := Pi.single i x
+  isPWO_iUnion_support' := by
+    rw [Set.iUnion_eq_]
+    -- Eq.mpr (congrArg (fun s ↦ s.IsPWO) (Set.iUnion_const x.support)) x.isPWO_support
   finite_co_support' g := Set.toFinite {a | ((fun _ ↦ x) a).coeff g ≠ 0}
 
 @[simp]
@@ -676,6 +677,9 @@ theorem powers_of_not_orderTop_pos {x : HahnSeries Γ R} (hx : ¬ 0 < x.orderTop
     powers x n = 0 ^ n := by
   simp [hx]
 
+@[simp]
+theorem powers_zero : powers (0 : HahnSeries Γ R) = .single _ := sorry
+
 variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
 include hx in
@@ -767,21 +771,33 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) 
     exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h)
 
 end IsDomain
+section Inv
+
+variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
+
+@[simps -isSimp]
+instance [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R] :
+    Inv (HahnSeries Γ R) where
+  inv x :=
+    single (-x.order) (x.leadingCoeff)⁻¹ *
+      (SummableFamily.powers <| 1 - single (-x.order) (x.leadingCoeff)⁻¹ * x).hsum
+
+@[simp]
+theorem inv_single (a : Γ) (r : R) : (single a r)⁻¹ = single (-a) r⁻¹ := by
+  obtain rfl | hr := eq_or_ne r 0
+  · simp [inv_def]
+  · simp [inv_def, hr]
 
 instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R] :
     Field (HahnSeries Γ R) where
   __ : IsDomain (HahnSeries Γ R) := inferInstance
-  inv x :=
-    open Classical in
-    if x0 : x = 0 then 0
-    else single (-x.order) (x.leadingCoeff)⁻¹ * (SummableFamily.powers _).hsum
-  inv_zero := dif_pos rfl
-  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
+  inv_zero := by simp [inv_def]
+  mul_inv_cancel x x0 := by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
         (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)) _ (neg_add_cancel x.order))
     rw [sub_sub_cancel] at h
-    rw [← mul_assoc, mul_comm x, h]
+    rw [inv_def, ← mul_assoc, mul_comm x, h]
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
