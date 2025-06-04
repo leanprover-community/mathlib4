@@ -140,9 +140,9 @@ replacement syntax. For each individual case, linting can be turned on or off se
 -/
 def deprecatedSyntaxLinter : Linter where run stx := do
   unless getLinterValue linter.style.refine (← getLinterOptions) ||
-      Linter.getLinterValue linter.style.cases (← getLinterOptions) ||
-      Linter.getLinterValue linter.style.admit (← getLinterOptions) ||
-      Linter.getLinterValue linter.style.maxHeartbeats (← getLinterOptions) do
+      getLinterValue linter.style.cases (← getLinterOptions) ||
+      getLinterValue linter.style.admit (← getLinterOptions) ||
+      getLinterValue linter.style.maxHeartbeats (← getLinterOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
