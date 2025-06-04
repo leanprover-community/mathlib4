@@ -3,40 +3,27 @@ Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu, Nailin Guan
 -/
-import Mathlib
+import Mathlib.RingTheory.Flat.Localization
+import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
 # `RingTheory.Sequence.IsWeaklyRegular` is stable under flat base change
 
 ## Main results
-* `RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange`: Let `R` be a comm ring, `M` is an
-  `R`-module, `S` is a flat $R$-algebra. If `[r₁, …, rₙ]` is a weakly regular `M`-sequence,
-  then its image in `M ⊗[R] S` is a weakly regular `M ⊗[R] S`-sequence.
+* `RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange`: Let `R` be a commutative ring,
+  `M` be an `R`-module, `S` be a flat `R`-algebra. If `[r₁, …, rₙ]` is a weakly regular
+  `M`-sequence, then its image in `M ⊗[R] S` is a weakly regular `M ⊗[R] S`-sequence.
 -/
 
-abbrev SemiLinearMapAlgebraMapOfLinearMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-    {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
-    [IsScalarTower R A N] (f : M →ₗ[R] N) : M →ₛₗ[algebraMap R A] N where
-  __ := f
-  map_smul' m r := by simp
-
-abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-    {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
-    [IsScalarTower R A N] (f : M →ₛₗ[algebraMap R A] N) : M →ₗ[R] N where
-  __ := f
-  map_smul' m r := by simp
-
-open RingTheory.Sequence Pointwise Module
+open RingTheory.Sequence Pointwise Module TensorProduct QuotSMulTop
 
 section
 
-open TensorProduct
-
-variable {R S M N Ms Ns : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
-  [AddCommGroup M] [Module R M] [AddCommGroup Ms] [Module R Ms] [Module S Ms] [IsScalarTower R S Ms]
-  {gm : M →ₗ[R] Ms} (hm : IsBaseChange S gm)
-  [AddCommGroup N] [Module R N] [AddCommGroup Ns] [Module R Ns] [Module S Ns] [IsScalarTower R S Ns]
-  {gn : N →ₗ[R] Ns} (hn : IsBaseChange S gn)
+variable {R S M N M' N' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
+  [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M'] [Module S M'] [IsScalarTower R S M']
+  {gm : M →ₗ[R] M'} (hm : IsBaseChange S gm)
+  [AddCommGroup N] [Module R N] [AddCommGroup N'] [Module R N'] [Module S N'] [IsScalarTower R S N']
+  {gn : N →ₗ[R] N'} (hn : IsBaseChange S gn)
   (f : M →ₗ[R] N) (hf : Function.Injective f)
 
 omit [Flat R S] in
@@ -77,11 +64,10 @@ variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
   [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R)
 
+/-- If `M` is isomorphic to `N` as `R`-modules, then `M/xM` is isomorphic to `N/xN`. -/
 def QuotSMulTop.congr (e : M ≃ₗ[R] N) : QuotSMulTop x M ≃ₗ[R] QuotSMulTop x N :=
   Submodule.Quotient.equiv (x • ⊤) (x • ⊤) e <|
     (Submodule.map_pointwise_smul x _ e.toLinearMap).trans (by simp)
-
-open TensorProduct QuotSMulTop
 
 include hf
 
@@ -100,6 +86,8 @@ theorem TensorProduct.tsmul_eq_smul_one_tuml (s : S) (m : M) : s ⊗ₜ[R] m = s
   rfl
 
 variable (S) (M) in
+/-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be an `R`-algebra, then
+  `S ⊗[R] (M/xM)` is isomorphic to `(S ⊗[R] M)⧸x(S ⊗[R] M)` as `S`-modules. -/
 noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor :
     S ⊗[R] QuotSMulTop x M ≃ₗ[S] QuotSMulTop ((algebraMap R S) x) (S ⊗[R] M) :=
   let f : S ⊗[R] QuotSMulTop x M →ₗ[S] QuotSMulTop ((algebraMap R S) x) (S ⊗[R] M) := by
@@ -150,11 +138,17 @@ noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor :
     · simp [← hsm]
     · simpa using by congr 1 }
 
+/-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be an `R`-algebra, `N` be an
+  `S`-module. If `N` is the base change of `M` to `S`, then `S ⊗[R] (M/xM)` is isomorphic to `N/xN`
+  as `S`-modules. -/
 noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMap :
-    (S ⊗[R] QuotSMulTop x M) ≃ₗ[S] (QuotSMulTop ((algebraMap R S) x) N) :=
+    S ⊗[R] QuotSMulTop x M ≃ₗ[S] QuotSMulTop ((algebraMap R S) x) N :=
   tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor S M x ≪≫ₗ
     QuotSMulTop.congr ((algebraMap R S) x) hf.equiv
 
+/-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a flat `R`-algebra.
+  If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `M ⊗[R] S` is a
+  weakly regular `M ⊗[R] S`-sequence. -/
 theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange {rs : List R}
     (reg : IsWeaklyRegular M rs) : IsWeaklyRegular N (rs.map (algebraMap R S)) := by
   generalize len : rs.length = n
@@ -183,33 +177,14 @@ variable {R : Type*} [CommRing R] (S : Submonoid R)
 
 include S f
 
-lemma IsSMulRegular.of_isLocalizedModule (reg : IsSMulRegular M x) :
+theorem IsSMulRegular.of_isLocalizedModule (reg : IsSMulRegular M x) :
     IsSMulRegular M' (algebraMap R R' x) :=
   have : Flat R R' := IsLocalization.flat R' S
   reg.of_flat_isBaseChange (IsLocalizedModule.isBaseChange S R' f)
 
-lemma RingTheory.Sequence.IsWeaklyRegular.of_isLocalizedModule
+theorem RingTheory.Sequence.IsWeaklyRegular.of_isLocalizedModule
     (reg : IsWeaklyRegular M rs) : IsWeaklyRegular M' (rs.map (algebraMap R R')) :=
   have : Flat R R' := IsLocalization.flat R' S
   reg.of_flat_isBaseChange (IsLocalizedModule.isBaseChange S R' f)
 
 end IsLocalizedModule
-
-section IsLocalizedModule.AtPrime
-
-variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime]
-  (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
-  {M : Type*} [AddCommGroup M] [Module R M] {Mₚ : Type*} [AddCommGroup Mₚ] [Module R Mₚ]
-  [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f]
-
-include p f
-
-lemma IsSMulRegular.of_isLocalizedModule_atPrime {x : R} (reg : IsSMulRegular M x) :
-    IsSMulRegular Mₚ (algebraMap R Rₚ x) :=
-  reg.of_isLocalizedModule p.primeCompl Rₚ f
-
-lemma RingTheory.Sequence.IsWeaklyRegular.of_isLocalizedModule_atPrime {rs : List R}
-    (reg : IsWeaklyRegular M rs) : IsWeaklyRegular Mₚ (rs.map (algebraMap R Rₚ)) :=
-  reg.of_isLocalizedModule p.primeCompl Rₚ f
-
-end IsLocalizedModule.AtPrime
