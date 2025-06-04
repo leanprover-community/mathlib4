@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Int.GCD
@@ -22,9 +23,15 @@ when needed. To construct instances for concrete numbers,
 
 variable {R K : Type*}
 
-@[simp low]
+/-- When two is invertible, every element is `Even`. -/
+@[simp]
 theorem Even.all [Semiring R] [Invertible (2 : R)] (a : R) : Even a :=
-  .of_isUnit_two _
+  .of_isUnit_two (isUnit_of_invertible _) _
+
+/-- When two is invertible in a ring, every element is `Odd`. -/
+@[simp low]
+theorem Odd.all [Ring R] [Invertible (2 : R)] (a : R) : Odd a :=
+  .of_isUnit_two (isUnit_of_invertible _) _
 
 section Ring
 variable [Ring R] {p : ℕ} [CharP R p]
