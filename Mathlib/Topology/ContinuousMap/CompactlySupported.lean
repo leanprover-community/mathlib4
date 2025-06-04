@@ -663,8 +663,7 @@ lemma nnrealPart_smul_pos (f : C_c(α, ℝ)) {a : ℝ} (ha : 0 ≤ a) :
   simp only [nnrealPart_apply, coe_smul, Pi.smul_apply, Real.coe_toNNReal', smul_eq_mul,
     NNReal.coe_mul, ha, sup_of_le_left]
   rcases le_total 0 (f x) with hfx | hfx
-  · simp [ha, hfx]
-    exact Left.mul_nonneg ha hfx
+  · simp [ha, hfx, mul_nonneg]
   · simp [mul_nonpos_iff, ha, hfx]
 
 lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
@@ -674,7 +673,7 @@ lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
     Pi.neg_apply, NNReal.coe_mul]
   rcases le_total 0 (f x) with hfx | hfx
   · simp [mul_nonpos_iff, ha, hfx]
-  · simp [mul_nonneg_of_nonpos_of_nonpos ha hfx, ha, neg_nonneg.mpr hfx]
+  · simp [ha, hfx, mul_nonneg_of_nonpos_of_nonpos]
 
 lemma nnrealPart_add_le_add_nnrealPart (f g : C_c(α, ℝ)) :
     (f + g).nnrealPart ≤ f.nnrealPart + g.nnrealPart := by
@@ -701,9 +700,7 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
   · rcases le_total 0 (g x) with hgx | hgx
     · simp only [hfx, hgx, add_nonneg, sup_of_le_left, add_eq_left, coe_eq_zero] at hhx
       rw [hhx]
-      simp only [neg_add_rev, NNReal.coe_zero, add_zero, sup_of_le_right (neg_nonpos.mpr hfx),
-        sup_of_le_right (neg_nonpos.mpr hgx),
-        sup_of_le_right (add_nonpos (neg_nonpos.mpr hgx) (neg_nonpos.mpr hfx)), add_zero]
+      simp [hfx, hgx, add_nonpos]
     · rcases le_total 0 (f x + g x) with hfgx | hfgx
       · simp only [hfgx, sup_of_le_left, add_assoc, hfx, hgx, sup_of_le_right, add_zero,
         add_eq_left] at hhx
@@ -716,8 +713,7 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
         ring
   · rcases le_total 0 (g x) with hgx | hgx
     · rcases le_total 0 (f x + g x) with hfgx | hfgx
-      · rw [sup_of_le_right hfx, sup_of_le_left hgx, sup_of_le_left hfgx, zero_add,
-          add_comm, ← add_assoc, add_eq_right] at hhx
+      · simp only [hfgx, sup_of_le_left, add_comm, hfx, sup_of_le_right, hgx, zero_add] at hhx
         rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
           sup_of_le_right (neg_nonpos.mpr hfgx), zero_add, add_zero]
         linarith
