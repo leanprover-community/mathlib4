@@ -207,7 +207,6 @@ theorem coeff_hsum_eq_sum {s : SummableFamily Γ R α} {g : Γ} :
 
 @[deprecated (since := "2025-01-31")] alias hsum_coeff_eq_sum := coeff_hsum_eq_sum
 
-
 /-- The summable family made of a single Hahn series. -/
 @[simps]
 def single {ι} [DecidableEq ι] (i : ι) (x : HahnSeries Γ R) : SummableFamily Γ R ι where
