@@ -368,9 +368,24 @@ lemma sum_part_le_tsum_sum_part (hf : IsSubadditive f) (hf' : f ∅ = 0) {s : �
           exact ⟨⟨q, hq, hq'⟩, hc⟩
 
 open Classical in
+lemma le_var_aux_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
+    (hs' : Pairwise (Disjoint on s)) (P : ℕ → Finset (Set X))
+    (hP : ∀ (i : ℕ), IsInnerPart (s i) (P i)) (n : ℕ) :
+    ∑ i ∈ Finset.range n, ∑ p ∈ (P i), f p ≤ var_aux f (⋃ i, s i) := by
+  let Q := Finset.biUnion (Finset.range n) P
+  have hQ : Q ∈ partitions (⋃ i, s i) := partition_union hs' (fun i ↦ hP i) n
+  calc
+    _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, f p := by simp
+    _ = ∑ q ∈ Q, f q := by
+      refine Eq.symm (Finset.sum_biUnion fun l _ m _ hlm ↦ ?_)
+      exact partitions_disjoint (hs' hlm) (hP l) (hP m)
+    _ ≤ var_aux f (⋃ i, s i) := by
+      simpa using le_var_aux f (MeasurableSet.iUnion hs) hQ
+
+open Classical in
 lemma le_var_aux_iUnion (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
-    ∑' (b : ℕ), var_aux f (s b) ≤ var_aux f (⋃ i, s i) := by
+    ∑' i, var_aux f (s i) ≤ var_aux f (⋃ i, s i) := by
   refine ENNReal.tsum_le_of_sum_range_le fun n ↦ ?_
   wlog hn : n ≠ 0
   · simp [show n = 0 by omega]
@@ -392,40 +407,53 @@ lemma le_var_aux_iUnion (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
       norm_cast
       simp [show n * ε = ε' by rw [mul_div_cancel₀ _ (by positivity)]]
     _ ≤ var_aux f (⋃ i, s i) + ε' := by
-      -- Since the union of the partitions `P i` is a partition of `⋃ i, s i`, we know that
-      -- `∑' i, varOfPart μ (E i) ≤ variation_aux μ (⋃ i, s i)`.
-      -- TO DO: extract this as a separate lemma
-      suffices h : ∑ i ∈ Finset.range n, ∑ p ∈ (P i), f p ≤ var_aux f (⋃ i, s i) by gcongr
-      let Q := Finset.biUnion (Finset.range n) P
-      have hQ : Q ∈ partitions (⋃ i, s i) := partition_union hs' (fun i ↦ (hP i).1) n
-      calc
-        _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, f p := by simp
-        _ = ∑ q ∈ Q, f q := by
-          refine Eq.symm (Finset.sum_biUnion fun l _ m _ hlm ↦ ?_)
-          exact partitions_disjoint (hs' hlm) (hP l).1 (hP m).1
-        _ ≤ var_aux f (⋃ i, s i) := by
-          simpa using le_var_aux f (MeasurableSet.iUnion hs) hQ
+      have := le_var_aux_iUnion' f hs hs' P (fun i ↦ (hP i).1) n
+      gcongr
 
+lemma ENNReal.le_tsum {f : ℕ → ℝ≥0∞} {a : ℝ≥0∞} (h : ∀ b < a, ∃ n, b < ∑ i ∈ Finset.range n, f i) :
+    a ≤ ∑' i, f i := by
+  obtain ha | ha | ha := a.trichotomy
+  · simp [ha]
+  · sorry
+  · sorry
+
+open Classical in
 lemma var_aux_iUnion_le (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
-    (hs' : Pairwise (Disjoint on s)) :
-    var_aux f (⋃ i, s i) ≤ ∑' (b : ℕ), var_aux f (s b) := by
-  sorry
+    (hs' : Pairwise (Disjoint on s)) (hf : IsSubadditive f) (hf' : f ∅ = 0) :
+    var_aux f (⋃ i, s i) ≤ ∑' i, var_aux f (s i) := by
+  refine ENNReal.le_tsum fun b hb ↦ ?_
+  simp only [var_aux, MeasurableSet.iUnion hs, reduceIte, lt_iSup_iff] at hb
+  obtain ⟨Q, hQ, hbQ⟩ := hb
+  -- Take the partitions defined as intersection of `Q` and `s i`.
+  let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
+  have hP (i : ℕ) : P i ∈ partitions (s i) := partition_restrict hQ (hs i)
+  have hP' := calc
+    b < ∑ q ∈ Q, f q := hbQ
+    _ ≤ ∑' i, ∑ p ∈ (P i), f p := by exact sum_part_le_tsum_sum_part f hf hf' hs hs' hQ
+  have := tendsto_nat_tsum fun i ↦ ∑ p ∈ (P i), f p
+  obtain ⟨n, hn, _⟩ := (((tendsto_order.mp this).1 b hP').and (Ici_mem_atTop 1)).exists
+  use n
+  calc
+    b < ∑ i ∈ Finset.range n, ∑ p ∈ (P i), f p := hn
+    _ ≤ ∑ i ∈ Finset.range n, var_aux f (s i) := by
+      gcongr with i hi
+      exact le_var_aux f (hs i) (hP i)
 
 -- variation_m_iUnion'
 /-- Aditivity of `variation_aux` for disjoint measurable sets. -/
-lemma var_aux_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
-    (hs' : Pairwise (Disjoint on s)) :
+lemma var_aux_iUnion (hf : IsSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X)
+    (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ var_aux f (s i)) (var_aux f (⋃ i, s i)) := by
   refine (Summable.hasSum_iff ENNReal.summable).mpr (eq_of_le_of_le ?_ ?_)
   · exact le_var_aux_iUnion f s hs hs'
-  · exact var_aux_iUnion_le f s hs hs'
+  · exact var_aux_iUnion_le f s hs hs' hf hf'
 
 /-- The variation of a subadditive function as a `VectorMeasure`. -/
-noncomputable def funVar : VectorMeasure X ℝ≥0∞ where
+noncomputable def funVar (hf : IsSubadditive f) (hf' : f ∅ = 0) : VectorMeasure X ℝ≥0∞ where
   measureOf'          := var_aux f
   empty'              := var_aux_empty' f
   not_measurable' _ h := if_neg h
-  m_iUnion'           := var_aux_m_iUnion' f
+  m_iUnion'           := var_aux_iUnion f hf hf'
 
 end var_aux
 
