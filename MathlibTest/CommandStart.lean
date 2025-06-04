@@ -6,6 +6,23 @@ set_option linter.style.commandStart true
 -- Constructs that are ignored by the linter, and (former) false positives.
 section noFalsePositives
 
+-- Explicit name literals: used to error (and the suggested replacement is invalid syntax).
+
+structure foo (name: Lean.Name) where
+
+/--
+warning: missing space in the source
+
+This part of the code
+  '``String))'
+should be written as
+  '`` String))'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+def bar (_param : List (foo ``String)) := 1
+
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
 
