@@ -18,6 +18,7 @@ class HasCanonicalBasis (𝕜 : Type u) (V : Type v) (ι : outParam <| Type w)
     --TODO: can some of these be `semiOutParam`/regular params?
     (f : outParam <| ι → V) [Semiring 𝕜] [AddCommGroup V]
     [Module 𝕜 V] where
+  /-- The underlying basis -/
   basis : Basis ι 𝕜 V
   coe_basis_eq : basis = f
 
@@ -43,7 +44,7 @@ variable [Ring 𝕜]
 
 noncomputable instance Pi.hasCanonicalBasis : HasCanonicalBasis 𝕜 (ι → 𝕜) ι (Pi.single · 1) where
   basis := Pi.basisFun 𝕜 ι
-  coe_basis_eq := by ext ; simp
+  coe_basis_eq := by ext; simp
 
 /-
 Note: this could be generalised to a product of vector spaces that each have a
@@ -66,14 +67,12 @@ noncomputable abbrev reindex {V : Type v} {κ : Type w'}
     (hc : HasCanonicalBasis 𝕜 V ι f) (e : ι ≃ κ) (he : ∀ (i : κ), g i = hc.basis (e.symm i)) :
     HasCanonicalBasis 𝕜 V κ g where
   basis := Basis.reindex (HasCanonicalBasis.basis) e
-  coe_basis_eq := by ext ; simp [Basis.reindex_apply, he]
+  coe_basis_eq := by ext; simp [Basis.reindex_apply, he]
 
-/-
-The following isn't an instance since have a sum as the index type for our
-bases is in general undesirable (e.g. this would force `𝕜 × 𝕜`  to have basis
-`Fin 1 ⊕ Fin 1` rather than `Fin 2`)
--/
 variable (𝕜) in
+/-- Constructs a "canonical basis" on a product of two modules equipped with a canonical basis.
+This isn't an instance since have a sum as the index type for our bases is in general undesirable
+(e.g. this would force `𝕜 × 𝕜`  to have basis `Fin 1 ⊕ Fin 1` rather than `Fin 2`) -/
 noncomputable abbrev prod {V : Type v} {W : Type v'} {κ : Type w'}
     [AddCommGroup V] [AddCommGroup W] [Module 𝕜 V] [Module 𝕜 W]
     (f : ι → V) (g : κ → W) [HasCanonicalBasis 𝕜 V ι f] [HasCanonicalBasis 𝕜 W κ g] :
