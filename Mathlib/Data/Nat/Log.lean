@@ -336,7 +336,7 @@ theorem log_le_clog (b n : ℕ) : log b n ≤ clog b n := by
     exact (Nat.pow_le_pow_iff_right hb).1
       ((pow_log_le_self b n.succ_ne_zero).trans <| le_pow_clog hb _)
 
-theorem clog_lt_clog_succ_iff {b n : ℕ} (hb : 1 < b) (hn : 1 ≤ n) :
+theorem clog_lt_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
     clog b n < clog b (n + 1) ↔ n  = b ^ (clog b n) := by
   refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
   · apply le_antisymm (le_pow_clog hb n)
@@ -345,9 +345,9 @@ theorem clog_lt_clog_succ_iff {b n : ℕ} (hb : 1 < b) (hn : 1 ≤ n) :
   · rw [← pow_lt_iff_lt_clog hb, ← H]
     exact n.lt_add_one
 
-theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) (hn : 1 ≤ n) :
+theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
     clog b n = clog b (n + 1) ↔ n ≠ b ^ (clog b n) := by
-  rw [ne_eq, ← clog_lt_clog_succ_iff hb hn, not_lt]
+  rw [ne_eq, ← clog_lt_clog_succ_iff hb, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun _ ↦ clog_monotone b (le_add_right n 1)
 
