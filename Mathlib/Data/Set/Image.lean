@@ -831,7 +831,7 @@ theorem preimage_sumElim (s : Set γ) (f : α → γ) (g : β → γ) :
 
 theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
-  rw [← preimage_sumElim_eq, Sum.elim_inl_inr, preimage_id]
+  rw [← preimage_sumElim, Sum.elim_inl_inr, preimage_id]
 
 theorem image_sumElim (s : Set (α ⊕ β)) (f : α → γ) (g : β → γ) :
     Sum.elim f g '' s = f '' (Sum.inl ⁻¹' s) ∪ g '' (Sum.inr ⁻¹' s) := by
