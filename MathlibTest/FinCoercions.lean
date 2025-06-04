@@ -10,7 +10,6 @@ set_option pp.mvars false
 -- We first verify that there is no global coercion from `Nat` to `Fin n`.
 -- Such a coercion would frequently introduce unexpected modular arithmetic.
 
-#check Fin.instNatCast
 #synth NatCast (Fin 3)
 
 /-- info: fun n => ↑n : ℕ → Fin 3 -/
