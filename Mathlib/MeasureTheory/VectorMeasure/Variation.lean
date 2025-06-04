@@ -247,12 +247,11 @@ lemma restriction_isInnerPart {s t : Set X} {P : Finset (Set X)} (hs : IsInnerPa
 end IsInnerPartition
 
 /-!
-## Definition of the sup measure of a subadditive `ℝ≥0∞` valued function
+## Definition of the variation of a subadditive `ℝ≥0∞` valued function
 
 Given a set function `f : Set X → ℝ≥0∞` we can define another set function by taking the supremum
 over all partitions `E i` of the sum of `∑ i, f (E i)`. If `f` is sub-additive then the function
 defined is an `ℝ≥0∞`-valued measure.
-
 -/
 
 section var_aux
@@ -334,6 +333,7 @@ lemma sum_part_le_tsum_sum_part (hf : IsSubadditive f) (hf' : f ∅ = 0) {s : �
     _ = ∑' i, ∑ q ∈ Q, f (q ∩ s i) := ?_
     _ ≤ ∑' i, ∑ p ∈ (P i), f p := ?_
   · -- Each `q` is equal to the union of `q ∩ s i`.
+    -- TO DO: This only needs one direction of the argument.
     suffices h : ∀ q ∈ Q, q = ⋃ i, q ∩ s i by
       exact Finset.sum_congr rfl (fun q hq ↦ (by simp [← h q hq]))
     intro q hq
@@ -367,17 +367,58 @@ lemma sum_part_le_tsum_sum_part (hf : IsSubadditive f) (hf' : f ∅ = 0) {s : �
           obtain ⟨q, hq, hq'⟩ := Finset.mem_image.mp hp
           exact ⟨⟨q, hq, hq'⟩, hc⟩
 
+open Classical in
+lemma le_var_aux_iUnion (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
+    (hs' : Pairwise (Disjoint on s)) :
+    ∑' (b : ℕ), var_aux f (s b) ≤ var_aux f (⋃ i, s i) := by
+  refine ENNReal.tsum_le_of_sum_range_le fun n ↦ ?_
+  wlog hn : n ≠ 0
+  · simp [show n = 0 by omega]
+  refine ENNReal.le_of_forall_pos_le_add fun ε' hε' hsnetop ↦ ?_
+  let ε := ε' / n
+  have hε : 0 < ε := by positivity
+  have hs'' i : var_aux f (s i) ≠ ⊤ := by
+    refine lt_top_iff_ne_top.mp <| lt_of_le_of_lt ?_ hsnetop
+    exact var_aux_monotone f (Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a) (MeasurableSet.iUnion hs)
+  -- For each set `s i` we choose a partition `P i` such that, for each `i`,
+  -- `var_aux f (s i) ≤ ∑ p ∈ (P i), f p + ε`.
+  choose P hP using fun i ↦ var_aux_le f (hs i) (hε) (hs'' i)
+  calc ∑ i ∈ Finset.range n, var_aux f (s i)
+    _ ≤ ∑ i ∈ Finset.range n, (∑ p ∈ (P i), f p + ε) := by
+      gcongr with i _
+      exact (hP i).2
+    _ = ∑ i ∈ Finset.range n, ∑ p ∈ (P i), f p + ε' := by
+      rw [Finset.sum_add_distrib]
+      norm_cast
+      simp [show n * ε = ε' by rw [mul_div_cancel₀ _ (by positivity)]]
+    _ ≤ var_aux f (⋃ i, s i) + ε' := by
+      -- Since the union of the partitions `P i` is a partition of `⋃ i, s i`, we know that
+      -- `∑' i, varOfPart μ (E i) ≤ variation_aux μ (⋃ i, s i)`.
+      -- TO DO: extract this as a separate lemma
+      suffices h : ∑ i ∈ Finset.range n, ∑ p ∈ (P i), f p ≤ var_aux f (⋃ i, s i) by gcongr
+      let Q := Finset.biUnion (Finset.range n) P
+      have hQ : Q ∈ partitions (⋃ i, s i) := partition_union hs' (fun i ↦ (hP i).1) n
+      calc
+        _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, f p := by simp
+        _ = ∑ q ∈ Q, f q := by
+          refine Eq.symm (Finset.sum_biUnion fun l _ m _ hlm ↦ ?_)
+          exact partitions_disjoint (hs' hlm) (hP l).1 (hP m).1
+        _ ≤ var_aux f (⋃ i, s i) := by
+          simpa using le_var_aux f (MeasurableSet.iUnion hs) hQ
+
+lemma var_aux_iUnion_le (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
+    (hs' : Pairwise (Disjoint on s)) :
+    var_aux f (⋃ i, s i) ≤ ∑' (b : ℕ), var_aux f (s b) := by
+  sorry
+
 -- variation_m_iUnion'
 /-- Aditivity of `variation_aux` for disjoint measurable sets. -/
 lemma var_aux_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ var_aux f (s i)) (var_aux f (⋃ i, s i)) := by
   refine (Summable.hasSum_iff ENNReal.summable).mpr (eq_of_le_of_le ?_ ?_)
-  · sorry
-  · sorry
-
--- Two separate lemmas for the two directions.
--- Rename `var_aux` to `var_aux`?
+  · exact le_var_aux_iUnion f s hs hs'
+  · exact var_aux_iUnion_le f s hs hs'
 
 /-- The variation of a subadditive function as a `VectorMeasure`. -/
 noncomputable def funVar : VectorMeasure X ℝ≥0∞ where
