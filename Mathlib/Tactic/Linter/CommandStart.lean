@@ -127,7 +127,6 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
 
 /--
 Scan the two input strings `L` and `M`, assuming `M` is the pretty-printed version of `L`.
-of `L`.
 This almost means that `L` and `M` only differ in whitespace.
 
 While scanning the two strings, accumulate any discrepancies --- with some heuristics to avoid
@@ -136,7 +135,6 @@ flagging some line-breaking changes.
 -/
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
-  --dbg_trace "'{L}'\n'{M}'\n---\n"
   if M.trim.isEmpty then as else
   if L.take 3 == "/--" && M.take 3 == "/--" then
     parallelScanAux as (L.drop 3) (M.drop 3) else
@@ -169,6 +167,8 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
       if m.isWhitespace then
         parallelScanAux (pushFormatError as (mkFormatError L M "missing space")) L ms.trimLeft
     else
+      -- If this code is reached, L and M differ in other changes but whitespace.
+      -- This should not happen in practice.
       pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)")
 
 @[inherit_doc parallelScanAux]
@@ -230,7 +230,7 @@ input syntax whose kind is in `a`.
 The linter uses this information to avoid emitting a warning for nodes with kind contained in
 `unlintedNodes`.
 -/
-def getUnlintedRanges(a : Array SyntaxNodeKind) :
+def getUnlintedRanges (a : Array SyntaxNodeKind) :
     Std.HashSet String.Range → Syntax → Std.HashSet String.Range
   | curr, s@(.node _ kind args) =>
     let new := args.foldl (init := curr) (·.union <| getUnlintedRanges a curr ·)
@@ -247,7 +247,7 @@ def getUnlintedRanges(a : Array SyntaxNodeKind) :
 The linter uses this to figure out which nodes should be ignored.
 -/
 def outside? (rgs : Std.HashSet String.Range) (rg : String.Range) : Bool :=
-  let superRanges := rgs.filter fun {start := a, stop := b} => (a ≤ rg.start && rg.stop ≤ b)
+  let superRanges := rgs.filter fun {start := a, stop := b} ↦ (a ≤ rg.start && rg.stop ≤ b)
   superRanges.isEmpty
 
 /-- `mkWindow orig start ctx length` extracts from `orig` a string that starts at the first
@@ -262,7 +262,7 @@ cutting into "words".
 -/
 def mkWindow (orig : String) (start ctx length : Nat) : String :=
   let head := orig.dropRight (start + 1) -- `orig`, up to one character before the discrepancy
-  let middle := orig.takeRight (start + 1) --
+  let middle := orig.takeRight (start + 1)
   let headCtx := head.takeRightWhile (!·.isWhitespace)
   let tail := middle.drop (length + ctx) |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take (length + ctx)}{tail}"

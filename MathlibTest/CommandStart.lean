@@ -32,6 +32,7 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 omit  [h : Add Nat]  [Add Nat]
 end
 
+-- Code inside `run_cmd` is not checked at all.
 run_cmd
   for _ in [0] do
     let _ ← `(
