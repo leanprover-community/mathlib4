@@ -90,33 +90,33 @@ open scoped TensorProduct
 
 open Representation
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.actionDiagonalSucc := Action.diagonalSuccIsoTensorTrivial
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.actionDiagonalSucc_hom_apply :=
   Action.diagonalSuccIsoTensorTrivial_hom_hom_apply
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.actionDiagonalSucc_inv_apply :=
   Action.diagonalSuccIsoTensorTrivial_inv_hom_apply
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.diagonalSucc := Rep.diagonalSuccIsoTensorTrivial
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.diagonalSucc_hom_single :=
   Rep.diagonalSuccIsoTensorTrivial_hom_hom_single
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.diagonalSucc_inv_single_single :=
   Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_single
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.diagonalSucc_inv_single_left :=
   Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_left
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.diagonalSucc_inv_single_right :=
   Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_right
 
@@ -124,6 +124,7 @@ alias groupCohomology.resolution.diagonalSucc_inv_single_right :=
 the lefthand side is `TensorProduct.leftModule`, whilst that of the righthand side comes from
 `Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
 of the righthand side. -/
+@[deprecated "We now favour `Representation.finsuppLEquivFreeAsModule`" (since := "2025-06-04")]
 def ofMulActionBasisAux :
     MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
       (ofMulAction k G (Fin (n + 1) → G)).asModule :=
@@ -150,6 +151,7 @@ def ofMulActionBasisAux :
 
 /-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
 `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
+@[deprecated "We now favour `Representation.freeAsModuleBasis`" (since := "2025-06-04")]
 def ofMulActionBasis :
     Basis (Fin n → G) (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
   Basis.map
@@ -157,6 +159,7 @@ def ofMulActionBasis :
       (Finsupp.basisSingleOne : Basis (Fin n → G) k ((Fin n → G) →₀ k)))
     (ofMulActionBasisAux k G n)
 
+@[deprecated "We now favour `Representation.free_asModule_free`" (since := "2025-06-04")]
 theorem ofMulAction_free :
     Module.Free (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
   Module.Free.of_basis (ofMulActionBasis k G n)
@@ -173,6 +176,7 @@ open groupCohomology.resolution
 
 /-- Given a `k`-linear `G`-representation `A`, the set of representation morphisms
 `Hom(k[Gⁿ⁺¹], A)` is `k`-linearly isomorphic to the set of functions `Gⁿ → A`. -/
+@[deprecated "We now favour `Rep.freeLiftEquiv`" (since := "2025-06-04")]
 noncomputable def diagonalHomEquiv :
     (Rep.diagonal k G (n + 1) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
   Linear.homCongr k
