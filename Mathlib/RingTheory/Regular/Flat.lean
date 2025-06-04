@@ -26,14 +26,6 @@ variable {R S M N M' N' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R
   {gn : N →ₗ[R] N'} (hn : IsBaseChange S gn)
   (f : M →ₗ[R] N) (hf : Function.Injective f)
 
-omit [Flat R S] in
-theorem smul_lTensor (s : S) (m : S ⊗[R] M) :
-    s • (LinearMap.lTensor S f) m = (LinearMap.lTensor S f) (s • m) := by
-  have h : s • (LinearMap.lTensor S f) =
-      (LinearMap.lTensor S f).comp ((LinearMap.lsmul S (S ⊗[R] M) s).restrictScalars R) :=
-    TensorProduct.ext rfl
-  exact congrFun (congrArg DFunLike.coe h) m
-
 include hn hf
 theorem Module.Flat.isBaseChange_preserves_injective_linearMap :
     Function.Injective (hm.lift (gn ∘ₗ f)) := by
@@ -45,7 +37,7 @@ theorem Module.Flat.isBaseChange_preserves_injective_linearMap :
       simp [hm.lift_eq, hm.equiv_symm_apply, hn.equiv_tmul]
     · intro s m h
       simp only [map_smul, h, Function.comp_apply]
-      rw [← map_smul, smul_lTensor f s (hm.equiv.symm m)]
+      rw [← map_smul, f.smul_lTensor s (hm.equiv.symm m)]
     · intro _ _ h₁ h₂
       simp only [map_add, h₁, Function.comp_apply, h₂]
   simp only [h, EmbeddingLike.comp_injective, EquivLike.injective_comp]
@@ -58,7 +50,7 @@ theorem Submodule.Quotient.mk_out {R M : Type*} [Ring R] [AddCommGroup M] [Modul
     {p : Submodule R M} (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
   Quotient.out_eq m
 
-section flat
+section Flat
 
 variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
@@ -165,7 +157,7 @@ theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange {rs : List R}
         IsBaseChange.of_equiv e (fun _ ↦ by simp)
       exact ⟨reg.1.of_flat_isBaseChange hf, ih hg reg.2 len⟩
 
-end flat
+end Flat
 
 section IsLocalizedModule
 

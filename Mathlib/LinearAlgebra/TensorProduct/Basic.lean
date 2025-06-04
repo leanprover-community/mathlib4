@@ -977,6 +977,14 @@ theorem lTensor_bij_iff_rTensor_bij :
     Function.Bijective (lTensor M f) ↔ Function.Bijective (rTensor M f) := by
   simp [← comm_comp_rTensor_comp_comm_eq]
 
+variable {M} in
+theorem smul_lTensor {S : Type*} [CommSemiring S] [SMul R S] [Module S M] [IsScalarTower R S M]
+    [SMulCommClass R S M] (s : S) (m : M ⊗[R] N) : s • (f.lTensor M) m = (f.lTensor M) (s • m) := by
+  have h : s • (LinearMap.lTensor M f) =
+      (f.lTensor M) ∘ₗ ((LinearMap.lsmul S (M ⊗[R] N) s).restrictScalars R) :=
+    TensorProduct.ext rfl
+  exact congrFun (congrArg DFunLike.coe h) m
+
 open TensorProduct
 
 attribute [local ext high] TensorProduct.ext
