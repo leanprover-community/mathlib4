@@ -30,11 +30,10 @@ This can be written using the following notations:
 - `(∂ᵢ[ℝ] f) tx` if the index `i` is subscriptable,
 - `(∂[i;ℝ] f) tx` in general.
 -/
-@[simp]
+@[simp, nolint unusedArguments] -- we need `HasCanonicalBasis 𝕜 V ι f` to make the notation work
 noncomputable def partialDeriv (𝕜 : Type u) {V : Type v} {ι : Type w} {E : Type*}
     {f : ι → V} [NontriviallyNormedField 𝕜] [AddCommGroup V]
-    [Module 𝕜 V] [HasCanonicalBasis 𝕜 V ι f] [TopologicalSpace V]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [Module 𝕜 V] [HasCanonicalBasis 𝕜 V ι f] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (F : V → E) (i : ι) (tx : V) : E :=
   lineDeriv 𝕜 F tx (f i)
 
