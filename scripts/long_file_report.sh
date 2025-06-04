@@ -27,7 +27,7 @@ mkMDtable () {
       ((foundShort == "0") && (0 < longTotal) && ($1+0 <= limit) && ($1+0 == $1)) {mkRow(n, " "); foundShort=1}
       # mkRow, with the entries of each line
       { printf("|")
-        for(i=1; i<=n; i++) {printf(" %s |", $i)}
+        for(i=1; i<=n; i++) { printf(" %s |", $i) }
         print "" } END{
         if(longTotal == "0")
         { printf("\nAll files are within the length limit!\n") }
