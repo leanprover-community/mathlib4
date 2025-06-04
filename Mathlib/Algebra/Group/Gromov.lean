@@ -1458,8 +1458,11 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
   .
 
     rw [Finset.mem_mul] at s_n_subset
-    obtain ⟨val, val_in_image, other_val, ⟨other_val_in, prod_vals_eq⟩⟩ := s_n_subset
+    obtain ⟨val, val_in_image, other_val, ⟨other_val_in_image, prod_vals_eq⟩⟩ := s_n_subset
     rw [← zpow_neg] at prod_vals_eq
+    -- todo - avoid needing to do these simps
+    simp [e_i_regular_helper] at prod_vals_eq
+    simp [e_i_regular_helper]
     rw [← prod_vals_eq]
     apply Subgroup.mul_mem
     .
@@ -1471,29 +1474,37 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
       simp [list_len_n] at hlist
       have z_in_s_n := hlist.2 z hz
       simp [three_two_S_n] at z_in_s_n
-      --apply Subgroup.subset_closure
-      --simp
+      apply Subgroup.subset_closure
+      simp
       obtain ⟨p, p_in_range, e_i_eq⟩ := z_in_s_n
       use p
       norm_cast
       refine ⟨⟨by omega, by omega⟩, ?_⟩
       simp [gamma_m_helper] at e_i_eq
       obtain ⟨q, q_mem, e_i_eq'⟩ := e_i_eq
-      rw [← e_i_eq']
+      simp [e_i_regular_helper]
+    .
+      simp at other_val_in_image
+      obtain ⟨list, hlist, list_prod_eq⟩ := other_val_in_image
+      apply_fun Inv.inv at list_prod_eq
+      simp at list_prod_eq
+      rw [← list_prod_eq]
+      apply Subgroup.inv_mem
+      apply Subgroup.list_prod_mem
+      intro z hz
+      simp [list_len_n] at hlist
+      have z_in_s_n := hlist.2 z hz
+      simp [three_two_S_n] at z_in_s_n
+      apply Subgroup.subset_closure
       simp
-
-
-
-    . sorry
-
-    simp at s_n_subset
-    obtain ⟨list_left, list_left_in, g, list_right, list_right_in⟩ := s_n_subset
+      obtain ⟨p, p_in_range, e_i_eq⟩ := z_in_s_n
+      use p
+      norm_cast
+      refine ⟨⟨by omega, by omega⟩, ?_⟩
+      simp [gamma_m_helper] at e_i_eq
+      obtain ⟨q, q_mem, e_i_eq'⟩ := e_i_eq
+      simp [e_i_regular_helper]
   . sorry
-
-
-
-
-
 
 
   by_cases m_le_n: Int.natAbs m ≤ n
