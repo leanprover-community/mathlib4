@@ -54,7 +54,7 @@ def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n) where
   toFun := i.insertNth none some
   invFun x := x.casesOn' i (Fin.succAbove i)
   left_inv x := Fin.succAboveCases i (by simp) (fun j => by simp) x
-  right_inv x := by cases x <;> dsimp <;> simp
+  right_inv x := by cases x <;> simp
 
 @[simp]
 theorem finSuccEquiv'_at (i : Fin (n + 1)) : (finSuccEquiv' i) i = none := by
@@ -220,7 +220,7 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
 def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
-  left_inv x := by rcases x with y | y <;> dsimp <;> simp
+  left_inv x := by rcases x with y | y <;> simp
   right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
 
 @[simp]
