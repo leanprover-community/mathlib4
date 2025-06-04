@@ -11,7 +11,8 @@ import Mathlib.CategoryTheory.CofilteredSystem
 /-!
 # Invariant Extensions of Rings
 
-In this file we generalize the results in `RingTheory/Invariant/Basic.lean` to profinite groups.
+In this file we generalize the results in `Mathlib/RingTheory/Invariant/Basic.lean` to profinite
+groups.
 
 ## Main statements
 

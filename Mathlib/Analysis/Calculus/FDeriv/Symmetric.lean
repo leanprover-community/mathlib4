@@ -155,16 +155,40 @@ theorem IsSymmSndFDerivAt.isSymmSndFDerivWithinAt (h : IsSymmSndFDerivAt 𝕜 f 
   simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at h hf
   exact h.mono_of_mem_nhdsWithin univ_mem hf hs uniqueDiffOn_univ hx
 
+theorem isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    IsSymmSndFDerivWithinAt 𝕜 f s x ↔
+      (iteratedFDerivWithin 𝕜 2 f s x).domDomCongr Fin.revPerm =
+        iteratedFDerivWithin 𝕜 2 f s x := by
+  simp_rw [IsSymmSndFDerivWithinAt, ContinuousMultilinearMap.ext_iff, Fin.forall_fin_succ_pi,
+    Fin.forall_fin_zero_pi]
+  simp [iteratedFDerivWithin_two_apply f hs hx, eq_comm]
+
+theorem isSymmSndFDerivAt_iff_iteratedFDeriv :
+    IsSymmSndFDerivAt 𝕜 f x ↔
+      (iteratedFDeriv 𝕜 2 f x).domDomCongr Fin.revPerm = iteratedFDeriv 𝕜 2 f x := by
+  simp only [← isSymmSndFDerivWithinAt_univ, ← iteratedFDerivWithin_univ]
+  exact isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin uniqueDiffOn_univ (mem_univ _)
+
+theorem IsSymmSndFDerivWithinAt.iteratedFDerivWithin_cons {x v w : E}
+    {hf : IsSymmSndFDerivWithinAt 𝕜 f s x} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 2 f s x ![v, w] = iteratedFDerivWithin 𝕜 2 f s x ![w, v] := by
+  simp_rw [isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin hs hx, ContinuousMultilinearMap.ext_iff,
+    ContinuousMultilinearMap.domDomCongr_apply] at hf
+  convert hf ![w, v] using 2
+  ext i
+  fin_cases i <;> simp
+
+theorem IsSymmSndFDerivAt.iteratedFDeriv_cons {x v w : E} {hf : IsSymmSndFDerivAt 𝕜 f x} :
+    iteratedFDeriv 𝕜 2 f x ![v, w] = iteratedFDeriv 𝕜 2 f x ![w, v] := by
+  simp only [← isSymmSndFDerivWithinAt_univ, ← iteratedFDerivWithin_univ] at *
+  exact hf.iteratedFDerivWithin_cons uniqueDiffOn_univ (mem_univ _)
+
 /-- If a function is analytic within a set at a point, then its second derivative is symmetric. -/
 theorem ContDiffWithinAt.isSymmSndFDerivWithinAt_of_omega (hf : ContDiffWithinAt 𝕜 ω f s x)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
-  intro v w
-  rw [← iteratedFDerivWithin_two_apply' f hs hx, ← iteratedFDerivWithin_two_apply' f hs hx,
-    ← hf.iteratedFDerivWithin_comp_perm hs hx _ (Equiv.swap 0 1)]
-  congr
-  ext i
-  fin_cases i <;> rfl
+  rw [isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin hs hx]
+  exact hf.domDomCongr_iteratedFDerivWithin hs hx _
 
 /-- If a function is analytic at a point, then its second derivative is symmetric. -/
 theorem ContDiffAt.isSymmSndFDerivAt_of_omega (hf : ContDiffAt 𝕜 ω f x) :
