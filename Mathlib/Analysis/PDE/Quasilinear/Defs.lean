@@ -76,23 +76,6 @@ class FirstOrderQuasiLinearPDE.RegularBy (E : FirstOrderQuasiLinearPDE 𝕜 V) (
 
 end
 
-namespace HasCanonicalBasis
-
-/-- A constructor to build a term of type `FirstOrderQuasiLinearPDE` from a coordinate representation.
-
-Given a `𝕜`-vector space `V` with a canonical basis indexed by `ι`, coefficient functions
-`coeffs i : V × 𝕜 → 𝕜` indexed by `i : ι`, and a constant term function `const : V × 𝕜 → V`,
-`ofCanonicalBasis coeffs const` is the first order quasilinear PDE corresponding to
-`E : ∑ i, coeff i ∂ᵢu = const`
--/
-noncomputable def FirstOrderQuasiLinearPDE.ofCanonicalBasis {ι 𝕜 : Type*} [Fintype ι] [Field 𝕜] [AddCommGroup V]
-    [Module 𝕜 V] {f : ι → V} [HasCanonicalBasis 𝕜 V ι f] (coeffs : ι → V × 𝕜 → 𝕜)
-    (const : V × 𝕜 → 𝕜) : FirstOrderQuasiLinearPDE 𝕜 V where
-  coeff := fun x ↦ Fintype.linearCombination 𝕜 𝕜 (HasCanonicalBasis.basis (𝕜:=𝕜)) (fun i ↦ coeffs i x)
-  const := const
-
-end HasCanonicalBasis
-
 namespace FirstOrderQuasiLinearPDE
 
 section Notation
@@ -104,8 +87,6 @@ scoped notation "a[" E "]" => FirstOrderQuasiLinearPDE.coeff E
 scoped notation "c[" E "]" => FirstOrderQuasiLinearPDE.const E
 
 end Notation
-
-open HasCanonicalBasis
 
 section Solutions
 
@@ -125,7 +106,6 @@ def HasSolutionAt (u : V → 𝕜) (x : V) : Prop :=
 
 end Solutions
 
-open HasCanonicalBasis
 
 section Characteristics
 
