@@ -545,7 +545,7 @@ theorem map_one {f : ArithmeticFunction R} (h : f.IsMultiplicative) : f 1 = 1 :=
 
 @[simp]
 theorem map_mul_of_coprime {f : ArithmeticFunction R} (hf : f.IsMultiplicative) {m n : ℕ}
-    (h : m.Coprime n) : f (m * n) = f m * f n :=
+    (h : m.gcd n = 1) : f (m * n) = f m * f n :=
   hf.2 h
 
 end MonoidWithZero

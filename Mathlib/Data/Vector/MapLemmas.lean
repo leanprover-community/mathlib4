@@ -346,9 +346,9 @@ If `f` returns the same output and next state for every value of it's first argu
 `xs : Vector` is ignored, and we can rewrite `mapAccumr₂` into `map`.
 -/
 @[simp]
-theorem mapAccumr₂_unused_input_left [Inhabited α] (f : α → β → σ → σ × γ)
-    (h : ∀ a b s, f default b s = f a b s) :
-    mapAccumr₂ f xs ys s = mapAccumr (fun b s => f default b s) ys s := by
+theorem mapAccumr₂_unused_input_left (f : α → β → σ → σ × γ) (f' : β → σ → σ × γ)
+    (h : ∀ a b s, f a b s = f' b s) :
+    mapAccumr₂ f xs ys s = mapAccumr f' ys s := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s with
   | nil => rfl
   | snoc xs ys x y ih => simp [h x y s, ih]
@@ -358,9 +358,9 @@ If `f` returns the same output and next state for every value of it's second arg
 `ys : Vector` is ignored, and we can rewrite `mapAccumr₂` into `map`.
 -/
 @[simp]
-theorem mapAccumr₂_unused_input_right [Inhabited β] (f : α → β → σ → σ × γ)
-    (h : ∀ a b s, f a default s = f a b s) :
-    mapAccumr₂ f xs ys s = mapAccumr (fun a s => f a default s) xs s := by
+theorem mapAccumr₂_unused_input_right (f : α → β → σ → σ × γ) (f' : α → σ → σ × γ)
+    (h : ∀ a b s, f a b s = f' a s) :
+    mapAccumr₂ f xs ys s = mapAccumr f' xs s := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s with
   | nil => rfl
   | snoc xs ys x y ih => simp [h x y s, ih]

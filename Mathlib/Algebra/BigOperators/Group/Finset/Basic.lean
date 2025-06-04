@@ -70,7 +70,7 @@ theorem prod_pair [DecidableEq ι] {a b : ι} (h : a ≠ b) :
     (∏ x ∈ ({a, b} : Finset ι), f x) = f a * f b := by
   rw [prod_insert (notMem_singleton.2 h), prod_singleton]
 
-@[to_additive (attr := simp)]
+@[to_additive] -- the assumption is too strong to make this a good simp-lemma
 theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
     (∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
   fold_image
