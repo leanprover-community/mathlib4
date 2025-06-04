@@ -617,7 +617,7 @@ theorem eval₂_modByMonic_eq_self_of_root [CommRing S] {f : R →+* S} {p q : R
 
 theorem sub_dvd_eval_sub (a b : R) (p : R[X]) : a - b ∣ p.eval a - p.eval b := by
   suffices X - C b ∣ p - C (p.eval b) by
-    simpa only [coe_evalRingHom, eval_sub, eval_X, eval_C] using (evalRingHom a).map_dvd this
+    simpa only [coe_evalRingHom, eval_sub, eval_X, eval_C] using (map_dvd (evalRingHom a)) this
   simp [dvd_iff_isRoot]
 
 @[simp]
