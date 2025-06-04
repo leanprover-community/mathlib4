@@ -10,16 +10,6 @@ section noFalsePositives
 
 structure foo (name: Lean.Name) where
 
-/--
-warning: missing space in the source
-
-This part of the code
-  '``String))'
-should be written as
-  '`` String))'
-
-note: this linter can be disabled with `set_option linter.style.commandStart false`
--/
 #guard_msgs in
 def bar (_param : List (foo ``String)) := 1
 
@@ -244,14 +234,12 @@ warning: extra space in the source
 This part of the code
   'Nat]  [Add'
 should be written as
-  'Nat] [Add'
+  ' [Add'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 omit  [h : Add Nat]  [Add Nat]
-
-def foo := 1
 
 -- Include statements are not linted.
 include     h
