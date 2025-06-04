@@ -489,7 +489,7 @@ theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ →
       hξ.stronglyMeasurable.aestronglyMeasurable (hξbdd _)
   have hadp : Adapted 𝒢 fun n => ∑ k ∈ Finset.range n, ξ k * (f (k + 1) - f k) := by
     intro m
-    refine Finset.stronglyMeasurable_sum' _ fun i hi => ?_
+    refine Finset.stronglyMeasurable_fun_sum _ fun i hi => ?_
     rw [Finset.mem_range] at hi
     exact (hξ.stronglyMeasurable_le hi.le).mul
       ((hf.adapted.stronglyMeasurable_le (Nat.succ_le_of_lt hi)).sub

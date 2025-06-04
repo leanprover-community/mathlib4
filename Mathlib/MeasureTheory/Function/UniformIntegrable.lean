@@ -887,7 +887,7 @@ theorem uniformIntegrable_average
     UniformIntegrable (fun (n : ℕ) => (n : ℝ)⁻¹ • (∑ i ∈ Finset.range n, f i)) p μ := by
   obtain ⟨hf₁, hf₂, hf₃⟩ := hf
   refine ⟨fun n => ?_, fun ε hε => ?_, ?_⟩
-  · exact (Finset.aestronglyMeasurable_sum' _ fun i _ => hf₁ i).const_smul _
+  · exact (Finset.aestronglyMeasurable_fun_sum _ fun i _ => hf₁ i).const_smul _
   · obtain ⟨δ, hδ₁, hδ₂⟩ := hf₂ hε
     refine ⟨δ, hδ₁, fun n s hs hle => ?_⟩
     simp_rw [Finset.smul_sum, Finset.indicator_sum]
