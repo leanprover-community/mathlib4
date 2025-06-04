@@ -278,12 +278,10 @@ lemma inner_indicatorConstLp_indicatorConstLp {v w : Set α} (hv : MeasurableSet
 /- The inner product in `L2` of indicators of two sets with finite measure
 is the measure of the intersection. -/
 lemma inner_indicatorConstLp_one_indicatorConstLp_one
- {v w : (Set α)} (hv : MeasurableSet v)
-  (hw : MeasurableSet w) (hμv : μ v ≠ ∞) (hμw : μ w ≠ ∞) :
-  ⟪((indicatorConstLp 2 hv hμv (1 : ℝ))), (indicatorConstLp 2 hw hμw (1 : ℝ))⟫ =
-    (μ.real (v ∩ w)) := by
-  rw [inner_indicatorConstLp_indicatorConstLp]
-  simp
+    {v w : Set α} (hv : MeasurableSet v)
+    (hw : MeasurableSet w) (hμv : μ v ≠ ∞ := by finiteness) (hμw : μ w ≠ ∞ := by finiteness) :
+    ⟪indicatorConstLp 2 hv hμv (1 : ℝ), indicatorConstLp 2 hw hμw (1 : ℝ)⟫ = μ.real (v ∩ w) := by
+  simp [inner_indicatorConstLp_indicatorConstLp]
 
 end IndicatorConstLp
 
