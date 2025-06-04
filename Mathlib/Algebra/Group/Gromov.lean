@@ -1070,14 +1070,15 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 set_option maxHeartbeats 600000
 
 
-lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: ℕ)
-  (conj_in: (a^n * b * a^(-n : ℤ)) ∈ (Subgroup.closure (G := T) (Set.image (fun (m: ℕ) => a^m * b * a^(-m : ℤ)) (Set.Ico 0 n)))) :
- (Subgroup.closure (G := T) (Set.image (fun (m: ℕ) => a^m * b * a^(-m : ℤ)) (Set.Ico 0 n) )) = (Subgroup.closure (G := T) (Set.range (fun (m : ℕ) => a^m * b * a^(-m : ℤ)))) := by
+lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: ℤ)
+  (conj_in: (a^n * b * a^(-n)) ∈ (Subgroup.closure (G := T) (Set.image (fun (m: ℤ) => a^m * b * a^(-m)) (Set.Ioo (-n.natAbs) n.natAbs))))
+  (conj_inv_in: (a^(-n) * b * a^(n)) ∈ (Subgroup.closure (G := T) (Set.image (fun (m: ℤ) => a^m * b * a^(-m)) (Set.Ioo (-n.natAbs) n.natAbs)))) :
+ (Subgroup.closure (G := T) (Set.image (fun (m: ℤ) => a^m * b * a^(-m)) (Set.Ioo (-n.natAbs) n.natAbs) )) = (Subgroup.closure (G := T) (Set.range (fun (m : ℤ) => a^m * b * a^(-m)))) := by
   ext x
   refine ⟨?_, ?_⟩
   .
     intro hx
-    apply Subgroup.closure_mono (h := (fun (m: ℕ) ↦ a ^ m * b * a ^ (-m : ℤ)) '' Set.Ico 0 n)
+    apply Subgroup.closure_mono (h := (fun (m: ℤ) ↦ a ^ m * b * a ^ (-m)) '' Set.Ioo (-n.natAbs) n.natAbs)
     .
       intro y hy
       simp at hy
@@ -1087,36 +1088,65 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
     . exact hx
   .
     intro hx
-    have closed_under_conj: ∀ y ∈ (Subgroup.closure (G := T) (Set.image (fun (m: ℕ) => a^m * b * a^(-m : ℤ)) (Set.Ico 0 n) )), a * y * a⁻¹ ∈  (Subgroup.closure (G := T) (Set.image (fun (m: ℕ) => a^m * b * a^(-m : ℤ)) (Set.Ico 0 n) )) := by
+    have closed_under_conj: ∀ y ∈ (Subgroup.closure (G := T) (Set.image (fun (m: ℤ) => a^m * b * a^(-m)) (Set.Ioo (-n.natAbs) n.natAbs) )), a * y * a⁻¹ ∈  (Subgroup.closure (G := T) (Set.image (fun (m: ℤ) => a^m * b * a^(-m)) (Set.Ioo (-n.natAbs) n.natAbs) )) := by
       intro y hy
       induction hy using Subgroup.closure_induction with
       | mem z hz =>
         simp at hz
         obtain ⟨m, hm, z_eq⟩ := hz
         rw [← z_eq]
-        by_cases m_lt_n_sub: m < n - 1
+        by_cases m_lt_n_sub: m < (n.natAbs : ℤ) - 1
         . apply Subgroup.subset_closure
           simp
           use (m + 1)
-          refine ⟨by omega, ?_⟩
-          rw [pow_succ']
-          simp
-          repeat rw [← mul_assoc]
+          refine ⟨?_, ?_⟩
+          .
+            refine ⟨?_, ?_⟩
+            . omega
+            .
+              apply_fun (fun (z: ℤ) => z + 1) at m_lt_n_sub
+              .
+                simp at m_lt_n_sub
+                exact m_lt_n_sub
+              . exact add_right_strictMono
+          .
+            rw [← mul_self_zpow]
+            simp
+            repeat rw [← mul_assoc]
         .
           have n_minus_eq: n - 1 + 1 = n := by
             omega
-          have m_eq_n_minus: m = n - 1 := by
+          simp at m_lt_n_sub
+          have m_eq_n_minus: m = (|n|) - 1 := by
             omega
+          -- TODO - there must be an easier way to do this
           rw [m_eq_n_minus]
           repeat rw [← mul_assoc]
-          rw [← pow_succ', n_minus_eq]
-          rw [← inv_pow]
+          rw [mul_self_zpow]
+          simp
+          rw [← zpow_neg]
+          rw [← inv_zpow']
           rw [mul_assoc]
-          rw [← pow_succ]
-          rw [n_minus_eq]
+          rw [← zpow_add_one]
           simp
           simp at conj_in
-          exact conj_in
+          by_cases n_pos: 0 < n
+          .
+            have n_eq_abs: n = |n| := by
+              exact Eq.symm (abs_of_pos n_pos)
+            nth_rw 3 [← n_eq_abs]
+            nth_rw 3 [← n_eq_abs]
+            exact conj_in
+          .
+            have n_eq_neg_abs: |n| = -n := by
+              apply abs_of_nonpos
+              omega
+            simp at n_pos
+            nth_rw 3 [n_eq_neg_abs]
+            nth_rw 3 [n_eq_neg_abs]
+            simp
+            simp at conj_inv_in
+            exact conj_inv_in
       | one =>
         simp
         apply Subgroup.one_mem
@@ -1137,26 +1167,66 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
     | mem y hy =>
       simp at hy
       obtain ⟨m, hm, y_eq⟩ := hy
-      by_cases m_lt_n: m < n
+      by_cases m_in_range: m ∈ Set.Ioo (-n.natAbs : ℤ) n.natAbs
       .
         apply Subgroup.subset_closure
         simp
+        by_cases m_pos: 0 < m
+        .
+          use m
+          simp
+          simp at m_in_range
+
         use m
+        simp at m_in_range
+        obtain ⟨m_gt, m_lt⟩ := m_in_range
+        simp
+        rw [lt_abs] at m_lt
+        by_cases m_pos: 0 < m
+        .
+          by_cases n_pos: 0 < n
+          .
+            simp
+            refine ⟨?_, ?_⟩
+            . omega
+            .
+              rw [lt_abs] at m_lt
+              match m_lt with
+              | .inl m_lt_neg_n =>
+                exact m_lt_neg_n
+              | .inr m_lt_n =>
+                omega
+          . sorry
+
+
       .
-        simp at m_lt_n
-        induction m, m_lt_n using Nat.le_induction with
-        | base =>
-          simp at conj_in
-          simp
-          exact conj_in
-        | succ p hsucc ih =>
-          specialize closed_under_conj _ ih
-          rw [pow_succ']
-          repeat rw [← mul_assoc] at closed_under_conj
-          simp at closed_under_conj
-          simp
-          repeat rw [← mul_assoc]
-          exact closed_under_conj
+        simp only [Set.mem_Ioo] at m_in_range
+        rw [not_and_or] at m_in_range
+        simp at m_in_range
+        match m_in_range with
+        | .inl m_le_neg_n => sorry
+        | .inr m_ge_n =>
+          -- TODO - why is this needed?
+          have exists_nat_abs: ∃ m_abs: ℕ, m = m_abs := by
+            use m.natAbs
+            omega
+          obtain ⟨m_abs, m_eq_abs⟩ := exists_nat_abs
+          have n_le_m_abs: n.natAbs ≤ m_abs := by
+            sorry
+          rw [m_eq_abs]
+          induction m_abs, n_le_m_abs using Nat.le_induction with
+          | base =>
+            simp at conj_in
+            simp
+            exact conj_in
+          | succ p hsucc ih =>
+            specialize closed_under_conj _ ih
+            rw [pow_succ']
+            repeat rw [← mul_assoc] at closed_under_conj
+            simp at closed_under_conj
+            simp
+            repeat rw [← mul_assoc]
+            exact closed_under_conj
     | one => apply Subgroup.one_mem
     | mul y z hy hz y_mem z_mem =>
       apply Subgroup.mul_mem
@@ -1184,8 +1254,30 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
   simp [three_two_B_n] at s_n_subset
   have closure_eq := my_iter ?_
   .
-    have x_mem_closure_range: x ∈ Subgroup.closure (Set.range fun (m : ℕ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) := by
-      sorry
+    have x_mem_closure_range: x ∈ Subgroup.closure (Set.range fun (m : ℤ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) := by
+      by_cases m_pos: 0 < m
+      .
+        have m_eq_natabs: m = m.natAbs := by
+          omega
+        apply Subgroup.subset_closure
+        simp
+        use m.natAbs
+        rw [m_eq_natabs] at x_eq_conj
+        rw [← x_eq_conj]
+      .
+        --rw [← Subgroup.closure_inv]
+        --rw [← Subgroup.inv_mem_iff]
+        have m_eq_neg_natabs: m = -m.natAbs := by
+          omega
+        apply Subgroup.subset_closure
+        simp
+        --simp only [zpow_neg, zpow_natCast, Set.mem_range]
+        use m.natAbs
+        rw [← x_eq_conj]
+        rw [m_eq_neg_natabs]
+        simp
+        norm_cast
+
     rw [← closure_eq] at x_mem_closure_range
     apply Subgroup.closure_mono (h := ((fun (m : ℕ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) '' Set.Ico 0 (n + 1)))
     .
