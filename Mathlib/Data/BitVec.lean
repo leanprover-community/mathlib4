@@ -63,6 +63,8 @@ instance : CommSemiring (BitVec w) :=
     (fun _ => rfl) /- toFin_natCast -/
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
+open Fin.IntCast
+
 -- TODO: move to the Lean4 repository.
 @[simp] theorem _root_.Fin.val_intCast {n : Nat} [NeZero n] (x : Int) :
     (x : Fin n).val = (x % n).toNat := by

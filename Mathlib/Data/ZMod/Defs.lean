@@ -72,6 +72,7 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
 /-- Commutative ring structure on `Fin n`. -/
 instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
   { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
+    intCast n := Fin.intCast n
     one_mul := Fin.one_mul'
     mul_one := Fin.mul_one',
     zero_mul := Fin.zero_mul'
