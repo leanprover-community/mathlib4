@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.QuotSMulTop
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 

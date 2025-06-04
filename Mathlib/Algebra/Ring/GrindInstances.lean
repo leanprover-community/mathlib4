@@ -52,6 +52,7 @@ theorem CommRing.toGrindCommRing_ofNat [CommRing α] (n : ℕ) :
   | 1 => simp [one_add_one_eq_two]
   | n + 2 => rfl
 
+attribute [local instance] Grind.Semiring.natCast Grind.Ring.intCast in
 -- Verify that we can construct a `CommRing` from a `Lean.Grind.CommRing`.
 -- This is not an instance (or even a `def`) because this direction should never be used.
 -- There is no reason to expect that using `CommRing.toGrindCommRing` and then this construction
