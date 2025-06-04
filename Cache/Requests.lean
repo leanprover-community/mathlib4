@@ -56,9 +56,6 @@ def getToken : IO String := do
 /-- The full name of the main Mathlib GitHub repository. -/
 def MATHLIBREPO := "leanprover-community/mathlib4"
 
-/-- The full name of the main Mathlib GitHub repository. -/
-def MATHLIBREPO := "leanprover-community/mathlib4"
-
 /--
 Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server.
 
