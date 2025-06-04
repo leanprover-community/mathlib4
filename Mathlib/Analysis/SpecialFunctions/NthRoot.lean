@@ -97,22 +97,49 @@ theorem qpow_neg_of_odd {q : ℚ} (hn : Odd q.num) (hn' : Odd q.den) {r : ℝ} :
   · rw [qpow_of_odd_of_nonpos hn' (neg_nonpos.mpr hr), this.neg_one_zpow, neg_one_mul, neg_neg,
       qpow_of_nonneg hr]
 
-theorem qpow_inv_qpow {q : ℚ} (r : ℝ) (h : (q.den ≠ 0 ∧ 0 ≤ r) ∨ Odd q.den) : (r ^ q⁻¹) ^ q = r := by
+lemma SignType.pow_even {n : ℕ} (hn : Even n) (s : SignType) (hs : s ≠ 0) :
+    s ^ n = 1 := by
+  sorry
+
+@[simp]
+theorem qpow_neg_of_even_of_odd {q : ℚ} (hn : Even q.num) (hn' : Odd q.den) {r : ℝ} :
+    (-r) ^ q = -r ^ q := by
+  have : Even (q.num * q.den) := sorry --hn.mul <| (Int.odd_coe_nat q.den).mpr hn'
+  obtain hr | hr := le_total r 0
+  · rw [qpow_of_odd_of_nonpos hn' hr, this.neg_one_zpow, one_mul,  neg_neg,
+      qpow_of_nonneg (neg_nonneg.mpr hr)]
+  · rw [qpow_of_odd_of_nonpos hn' (neg_nonpos.mpr hr), this.neg_one_zpow, neg_one_mul, neg_neg,
+      qpow_of_nonneg hr]
+
+#check Rat.den
+
+theorem qpow_inv_qpow {q : ℚ} (r : ℝ) (hq : q ≠ 0) (h : 0 ≤ r ∨ Odd q.den) : (r ^ q⁻¹) ^ q = r := by
   cases Nat.even_or_odd q.den with
   | inl he =>
-    obtain ⟨hn, hr⟩ := h.resolve_right (Nat.not_odd_iff_even.mpr he)
-    rw [qpow_of_even he, rpow_inv_natCast_pow hr hn]
+    obtain hr := h.resolve_right (Nat.not_odd_iff_even.mpr he)
+    rw [qpow_of_even _ he, qpow_of_nonneg hr, Rat.cast_inv, rpow_inv_rpow hr]
+    assumption_mod_cast
   | inr ho =>
-    have hn : n ≠ 0 := by exact Nat.ne_of_odd_add ho
-    rw [qpow_of_odd ho, mul_pow, ←pow_mul, rpow_inv_natCast_pow (abs_nonneg _) hn,
+    rw [qpow_of_odd _ ho]
+    by_cases heven : Even q.num
+    · by_cases hr : r = 0
+      · rw [hr, zero_qpow]
+        simp [hr, zero_qpow hq]
+        rw [zero_rpow]
+        simp
+        assumption_mod_cast
+        simpa
+      · rw [SignType.pow_even]
+      rw [qpow_of_even, SignType.]
+    rw [qpow_of_odd _ ho, mul_pow, ←pow_mul, rpow_inv_natCast_pow (abs_nonneg _) hn,
       ←SignType.coe_pow, SignType.pow_odd, sign_mul_abs]
     exact ho.mul ho
 
-theorem qpow_pow {q : ℚ} (r : ℝ) (h : (n ≠ 0 ∧ 0 ≤ r) ∨ Odd n) : qpow n (r ^ n) = r := by
-  cases Nat.even_or_odd n with
+theorem qpow_pow {q : ℚ} (r : ℝ) (h : (q.den ≠ 0 ∧ 0 ≤ r) ∨ Odd q.den) : (r ^ q) ^ q⁻¹ = r := by
+  cases Nat.even_or_odd q.den with
   | inl he =>
     obtain ⟨hn, hr⟩ := h.resolve_right (Nat.not_odd_iff_even.mpr he)
-    rw [qpow_of_even he, pow_rpow_inv_natCast hr hn]
+    rw [qpow_of_even _ he, pow_rpow_inv_natCast hr hn]
   | inr ho =>
     have hn : n ≠ 0 := Nat.ne_of_odd_add ho
     rw [qpow_of_odd ho, abs_pow, pow_rpow_inv_natCast (abs_nonneg _) hn,
@@ -121,7 +148,7 @@ theorem qpow_pow {q : ℚ} (r : ℝ) (h : (n ≠ 0 ∧ 0 ≤ r) ∨ Odd n) : qpo
 
 theorem qpow_mul_of_even_of_nonneg {q : ℚ} {a b : ℝ} (hn : Even q.den) (ha : 0 ≤ a) (hb : 0 ≤ b) :
     (a * b) ^ q = a ^ q * b ^ q := by
-  simp only [Real.qpow_of_even hn, Real.mul_rpow ha hb]
+  simp only [Real.qpow_of_even _ hn, Real.mul_rpow ha hb]
 
 theorem qpow_mul_of_odd {q : ℚ} {a b : ℝ} (hn : Odd q.den) :
     (a * b) ^ q = a ^ q * b ^ q := by
