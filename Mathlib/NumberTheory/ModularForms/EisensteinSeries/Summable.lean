@@ -23,7 +23,6 @@ open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
 
 open scoped UpperHalfPlane Topology BigOperators Nat
 
-
 variable (z : ℍ)
 
 namespace EisensteinSeries
