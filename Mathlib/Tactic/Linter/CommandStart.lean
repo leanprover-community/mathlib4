@@ -70,7 +70,7 @@ def CommandStart.endPos (stx : Syntax) : Option String.Pos :=
 A `FormatError` is the main structure tracking how some surface syntax differs from its
 pretty-printed version.
 
-It contains information about position within an ambient string of where the exception lies.
+In case of deviations, it contains the deviation's location within an ambient string.
 -/
 -- Some of the information contained in `FormatError` is redundant, however, it is useful to convert
 -- between the `String.pos` and `String` length conveniently.
@@ -126,7 +126,7 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
   fs.pop.push {back with length := back.length + f.length, srcStartPos := f.srcEndPos}
 
 /--
-It scans the two input strings `L` and `M`, assuming that they `M` is the pretty-printed version
+Scan the two input strings `L` and `M`, assuming `M` is the pretty-printed version of `L`.
 of `L`.
 This almost means that `L` and `M` only differ in whitespace.
 
