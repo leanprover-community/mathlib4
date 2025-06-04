@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.Ring.Action.Rat
 import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
@@ -799,6 +800,12 @@ instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [F
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
   qsmul_def := fun _ _ => rfl
+  nnratCast_def q := by
+    simp [← single_zero_nnratCast, ← single_zero_natCast, Semifield.nnratCast_def]
+    sorry
+  ratCast_def q := by
+    simp [← single_zero_ratCast, ← single_zero_intCast, ← single_zero_natCast, Field.ratCast_def]
+    sorry
 
 end Inversion
 

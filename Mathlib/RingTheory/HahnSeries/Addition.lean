@@ -100,6 +100,10 @@ theorem coeff_add' (x y : HahnSeries Γ R) : (x + y).coeff = x.coeff + y.coeff :
 theorem coeff_add {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
   rfl
 
+@[simp] theorem single_add (a : Γ) (r s : R) : single a (r + s) = single a r + single a s := by
+  classical
+  ext : 1; exact Pi.single_add (f := fun _ => R) a r s
+
 @[deprecated (since := "2025-01-31")] alias add_coeff := coeff_add
 
 instance : AddMonoid (HahnSeries Γ R) := fast_instance%
@@ -287,9 +291,7 @@ theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [Add
 @[simps!]
 def single.addMonoidHom (a : Γ) : R →+ HahnSeries Γ R :=
   { single a with
-    map_add' := fun x y => by
-      ext b
-      by_cases h : b = a <;> simp [h] }
+    map_add' := single_add _ }
 
 /-- `coeff g` as an additive monoid/group homomorphism -/
 @[simps]
@@ -353,6 +355,9 @@ theorem coeff_neg' (x : HahnSeries Γ R) : (-x).coeff = -x.coeff :=
 theorem coeff_neg {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
   rfl
 
+
+@[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
+
 instance : Sub (HahnSeries Γ R) where
   sub x y :=
     { coeff := x.coeff - y.coeff
@@ -369,12 +374,19 @@ theorem coeff_sub {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a
 
 @[deprecated (since := "2025-01-31")] alias sub_coeff := coeff_sub
 
+
 instance : AddGroup (HahnSeries Γ R) := fast_instance%
   coeff_injective.addGroup _
     coeff_zero' coeff_add' (coeff_neg') (coeff_sub')
     (fun _ _ => coeff_smul' _ _) (fun _ _ => coeff_smul' _ _)
 
-@[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
+@[simp]
+theorem single_sub (a : Γ) (r s : R) : single a (r - s) = single a r - single a s :=
+  map_sub (single.addMonoidHom a) _ _
+
+@[simp]
+theorem single_neg (a : Γ) (r : R) : single a (-r) = -single a r :=
+  map_neg (single.addMonoidHom a) _
 
 @[simp]
 theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
