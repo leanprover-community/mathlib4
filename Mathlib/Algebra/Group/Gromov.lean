@@ -1060,11 +1060,14 @@ noncomputable def list_len_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finse
 
 noncomputable def three_two_B_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Finset G := Finset.image List.prod (list_len_n φ γ n (S := S))
 
+noncomputable def three_two_B_n_single_s (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ) (s: G): Finset G := Finset.image List.prod (list_len_n φ γ n (S := {s}))
+
+
 -- If G has polynomial growth, than we can find an N such that S_n ⊆ B_n * B_n⁻¹
 lemma three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1): ∃ n, three_two_S_n (S := S) φ γ (n + 1) ⊆ ((three_two_B_n (S := S) φ γ n) * (three_two_B_n (S := S) φ γ n)⁻¹)  := by
   sorry
 
-lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1): ∃ n, three_two_S_n (S := S) φ γ (n + 1) ⊆ ((three_two_B_n (S := S) φ γ n) * (three_two_B_n (S := S) φ γ n)⁻¹)  := by
+lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1) (s: G): ∃ n, three_two_S_n (S := {s}) φ γ (n + 1) ⊆ ((three_two_B_n (S := {s}) φ γ n) * (three_two_B_n (S := {s}) φ γ n)⁻¹)  := by
   sorry
 
 set_option maxHeartbeats 600000
@@ -1389,17 +1392,20 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
 --- Consequence of `three_two_poly_growth` - the set of all 'γ^n *e_i γ^(-n)' is contained the closure of S_n
 lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1)
   : ∃ n, ∀ m, (Finset.image (gamma_m_helper (S := S) (G := G) φ γ m) Finset.univ).toSet ⊆ Subgroup.closure (three_two_S_n (G := G) (S := S) φ γ (n)).toSet := by
-  obtain ⟨n, s_n_subset⟩ := three_two_poly_growth (G := G) (S := S) d hd hG γ φ hφ hγ
-  use n
+  have r: ℕ := by sorry
+  use r
   intro m
   intro x hx
   simp [gamma_m_helper] at hx
   simp [three_two_S_n, gamma_m_helper]
   obtain ⟨s, hs, x_eq_conj⟩ := hx
 
+  obtain ⟨n, s_n_subset⟩ := new_three_two_poly_growth (G := G) (S := S) d hd hG γ φ hφ hγ s
+  have n_le_r: n ≤ r := by
+    sorry
   have my_iter := closure_iterate_mulact γ (e_i_regular_helper φ γ ⟨s, hs⟩) (n + 1)
   simp [three_two_S_n, gamma_m_helper] at s_n_subset
-  specialize s_n_subset (n + 1) (by omega) (by omega) s hs
+  specialize s_n_subset (n + 1) (by omega) (by omega) s rfl
   simp [three_two_B_n] at s_n_subset
   have closure_eq := my_iter ?_ ?_
   .
@@ -1424,7 +1430,7 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
         use m
 
     rw [← closure_eq] at x_mem_closure_range
-    apply Subgroup.closure_mono (h := ((fun (m : ℤ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) '' (Set.Ioo (-(n + 1) : ℤ) (n + 1 : ℤ))))
+    apply Subgroup.closure_mono (h := ((fun (m : ℤ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) '' (Set.Ioo (-(r + 1) : ℤ) (r + 1 : ℤ))))
     .
       intro p hp
       simp at hp
@@ -1435,8 +1441,53 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
       use s
       use hs
     .
-      exact x_mem_closure_range
-  . sorry
+      apply (Subgroup.closure_mono _) x_mem_closure_range
+      intro z hz
+      simp at hz
+      simp
+      obtain ⟨a, ⟨a_gt, a_lt⟩, z_eq⟩ := hz
+      use a
+      refine ⟨⟨?_, ?_⟩, z_eq⟩
+      .
+        --have neg_n_gt_r: (-r : ℤ) ≤ (-n : ℤ) := by omega
+        norm_cast at a_gt
+        omega
+      .
+        norm_cast at a_lt
+        omega
+  .
+
+    rw [Finset.mem_mul] at s_n_subset
+    obtain ⟨val, val_in_image, other_val, ⟨other_val_in, prod_vals_eq⟩⟩ := s_n_subset
+    rw [← zpow_neg] at prod_vals_eq
+    rw [← prod_vals_eq]
+    apply Subgroup.mul_mem
+    .
+      simp at val_in_image
+      obtain ⟨list, hlist, list_prod_eq⟩ := val_in_image
+      rw [← list_prod_eq]
+      apply Subgroup.list_prod_mem
+      intro z hz
+      simp [list_len_n] at hlist
+      have z_in_s_n := hlist.2 z hz
+      simp [three_two_S_n] at z_in_s_n
+      --apply Subgroup.subset_closure
+      --simp
+      obtain ⟨p, p_in_range, e_i_eq⟩ := z_in_s_n
+      use p
+      norm_cast
+      refine ⟨⟨by omega, by omega⟩, ?_⟩
+      simp [gamma_m_helper] at e_i_eq
+      obtain ⟨q, q_mem, e_i_eq'⟩ := e_i_eq
+      rw [← e_i_eq']
+      simp
+
+
+
+    . sorry
+
+    simp at s_n_subset
+    obtain ⟨list_left, list_left_in, g, list_right, list_right_in⟩ := s_n_subset
   . sorry
 
 
