@@ -324,9 +324,28 @@ lemma mem_ltSubmodule_iff {γ : Γ₀ˣ} {x : R} :
   Iff.rfl
 
 @[simp]
-lemma leSubmodule_zero (K : Type u) [Field K] [hv : Valued K Γ₀] :
+lemma leSubmodule_zero (K : Type*) [Field K] [Valued K Γ₀] :
     leSubmodule K (0 : Γ₀) = ⊥ := by
   ext; simp
+
+lemma leSubmodule_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
+    {S : Submodule v.integer K} {x : K} (hx : x ∈ S) :
+    leSubmodule K (v x) ≤ S := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp
+  intro y hy
+  simp only [mem_leSubmodule_iff] at hy
+  have hyx : v ((y : K) / x) ≤ 1 := by
+    simp [map_div₀,div_le_one_of_le₀ hy]
+  have : y = (⟨_, hyx⟩ : v.integer) • x := by
+    rw [Subring.smul_def, smul_eq_mul, mul_comm, mul_div_cancel₀ _ (by simpa using hx0)]
+  rw [this]
+  exact Submodule.smul_mem _ _ hx
+
+lemma ltSubmodule_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
+    {S : Submodule v.integer K} {x : K} (hx : x ∈ S) (hxv : Valued.v x ≠ 0) :
+    ltSubmodule K (Units.mk0 _ hxv) ≤ S :=
+  (leSubmodule_v_le_of_mem hx).trans' (ltSubmodule_le_leSubmodule _ _)
 
 -- the ideals do not use the submodules due to `Submodule.comap _ (Algebra.linearMap _ _)`
 -- requiring commutativity
@@ -370,9 +389,34 @@ lemma mem_ltIdeal_iff {γ : Γ₀ˣ} {x : 𝓞} :
   Iff.rfl
 
 @[simp]
-lemma leIdeal_zero (K : Type u) [Field K] [hv : Valued K Γ₀] :
+lemma leIdeal_zero (K : Type*) [Field K] [hv : Valued K Γ₀] :
     leIdeal K (0 : Γ₀) = ⊥ := by
   ext; simp
+
+lemma leSubmodule_comap_algebraMap_eq_leIdeal {K : Type*} [Field K] [Valued K Γ₀] (γ : Γ₀) :
+    (leSubmodule K γ).comap (Algebra.linearMap _ _) = leIdeal K γ :=
+  Submodule.ext fun _ ↦ Iff.rfl
+
+-- Ideally, this would follow from `leSubmodule_v_le_of_mem`
+lemma leIdeal_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
+    {I : Ideal v.integer} {x : v.integer} (hx : x ∈ I) :
+    leIdeal K (v (x : K)) ≤ I := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp
+  intro y hy
+  simp only [mem_leIdeal_iff] at hy
+  have hyx : v ((y : K) / x) ≤ 1 := by
+    simp [map_div₀,div_le_one_of_le₀ hy]
+  have : y = (⟨_, hyx⟩ : v.integer) * x := by
+    ext
+    rw [Subring.coe_mul, mul_comm, mul_div_cancel₀ _ (by simpa using hx0)]
+  rw [this]
+  exact I.mul_mem_left _ hx
+
+lemma ltIdeal_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
+    {I : Ideal v.integer} {x : v.integer} (hx : x ∈ I) (hxv : Valued.v (x : K) ≠ 0) :
+    ltIdeal K (Units.mk0 _ hxv) ≤ I :=
+  (leIdeal_v_le_of_mem hx).trans' (ltIdeal_le_leIdeal _ _)
 
 lemma isOpen_ltIdeal (γ : Γ₀ˣ) :
     IsOpen (ltIdeal R γ : Set 𝓞) :=
