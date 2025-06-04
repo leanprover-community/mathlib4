@@ -1035,8 +1035,11 @@ end calculations
 
 section orderHom
 
-lemma height_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOrder β]
-    (f : α →o β) {m : ℕ} (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) (x : α):
+variable {α β : Type*} [Preorder α] [PartialOrder β]
+variable {m : ℕ} (f : α →o β) (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m)
+
+include h in
+lemma height_le_of_krullDim_preimage_le (x : α) :
     Order.height x ≤ (m + 1) * Order.height (f x) + m := by
   generalize h' : Order.height (f x) = n
   cases n with | top => simp | coe n =>
@@ -1065,15 +1068,15 @@ lemma height_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOr
     have : p.length > m := ENat.coe_lt_coe.mp ((le_add_left le_rfl).trans_lt h_len)
     omega
 
-lemma coheight_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOrder β]
-    (f : α →o β) {m : ℕ} (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) (x : α):
+include h in
+lemma coheight_le_of_krullDim_preimage_le (x : α) :
     Order.coheight x ≤ (m + 1) * Order.coheight (f x) + m := by
   rw [Order.coheight, Order.coheight]
-  apply height_le_of_krullDim_preimage_le (f := f.dual) fun x ↦ le_of_eq_of_le
-    (Order.krullDim_orderDual (α := f ⁻¹' {x})) (h x)
+  apply height_le_of_krullDim_preimage_le (f := f.dual)
+  exact fun x ↦ le_of_eq_of_le (krullDim_orderDual (α := f ⁻¹' {x})) (h x)
 
-lemma krullDim_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOrder β]
-    (f : α →o β) {m : ℕ} (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) :
+include f h in
+lemma krullDim_le_of_krullDim_preimage_le :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m := by
   rw [Order.krullDim_eq_iSup_height, Order.krullDim_eq_iSup_height]
   apply iSup_le fun x ↦ (le_trans (WithBot.coe_mono (height_le_of_krullDim_preimage_le f h x)) ?_)
@@ -1082,8 +1085,8 @@ lemma krullDim_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [Partial
   exact le_iSup_iff.mpr fun b a ↦ a (f x)
 
 /-- Another version when the `OrderHom` is unbundled -/
-lemma krullDim_le_of_krullDim_preimage_le' {α β : Type*} [Preorder α] [PartialOrder β]
-    (f : α → β) (h_mono : Monotone f) {m : ℕ} (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) :
+lemma krullDim_le_of_krullDim_preimage_le' (f : α → β) (h_mono : Monotone f)
+    (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m :=
   Order.krullDim_le_of_krullDim_preimage_le ⟨f, h_mono⟩ h
 
