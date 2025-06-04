@@ -88,8 +88,6 @@ def forget : Mod_ A ⥤ C where
   obj A := A.X
   map f := f.hom
 
-open CategoryTheory.MonoidalCategory
-
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
 we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
 `map_id` and `map_comp`.
@@ -131,7 +129,7 @@ end Mod_
 
 section Mod_Class
 
-open CategoryTheory Mon_Class MonoidalCategory
+open Mon_Class
 
 variable (M : C) [Mon_Class M]
 
@@ -153,8 +151,6 @@ attribute [reassoc (attr := simp)] Mod_Class.mul_smul Mod_Class.one_smul
 @[inherit_doc] scoped[Mon_Class] notation "γ["X"]" => Mod_Class.smul (X := X)
 
 namespace Mod_Class
-
-open Mon_Class
 
 theorem assoc_flip (X : C) [Mod_Class M X] : M ◁ γ ≫ γ[X] = (α_ M M X).inv ≫ μ[M] ▷ X ≫ γ := by
   simp
