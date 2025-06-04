@@ -221,6 +221,9 @@ abbrev unlintedNodes := #[
 
   -- The docString linter already takes care of formatting doc-strings.
   ``Parser.Command.docComment,
+
+  -- The pretty-printer adds a space between the backticks and the actual name.
+  ``Parser.Term.doubleQuotedName,
   ]
 
 /--

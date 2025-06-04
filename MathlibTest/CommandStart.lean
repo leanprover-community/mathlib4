@@ -32,6 +32,9 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 omit  [h : Add Nat]  [Add Nat]
 end
 
+-- The linter skips double-quoted names.
+variable (d : Lean.Name := ``Nat) in open Nat
+
 -- Code inside `run_cmd` is not checked at all.
 run_cmd
   for _ in [0] do
