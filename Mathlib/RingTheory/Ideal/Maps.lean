@@ -1070,19 +1070,10 @@ See `RingHom.eq_liftOfRightInverse` for the uniqueness lemma.
       ∃!φ
 ```
 -/
-@[simps!]
 def liftOfRightInverseEquivKerLeKer (hf : Function.RightInverse f_inv f) :
     { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) :=
   (Equiv.subtypeEquivRight (hf.ker_le_ker_ringHom_iff)).trans
   (liftOfRightInverseEquiv f f_inv hf)
-
-/-- A non-computable version of `RingHom.liftOfRightInverse` for when no computable right
-inverse is available, that uses `Function.surjInv`. -/
-@[simp]
-noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
-    { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) :=
-  f.liftOfRightInverseEquivKerLeKer (Function.surjInv hf) (Function.rightInverse_surjInv hf)
-
 
 theorem liftOfRightInverseEquivKerLeKer_comp (hf : Function.RightInverse f_inv f)
     (g : { g : A →+* C // ker f ≤ ker g }) :
@@ -1092,15 +1083,23 @@ theorem liftOfRightInverseEquivKerLeKer_comp (hf : Function.RightInverse f_inv f
 @[simp]
 theorem liftOfRightInverseEquivKerLeKer_comp_apply (hf : Function.RightInverse f_inv f)
     (g : { g : A →+* C // ker f ≤ ker g }) (x) :
-    (f.liftOfRightInverseEquivKerLeKer f_inv hf g) (f x) = g.1 x := by
-  simp_rw [liftOfRightInverseEquivKerLeKer_apply_apply, hf.ringHom_subtype_apply_inv_apply g]
+    (f.liftOfRightInverseEquivKerLeKer f_inv hf g) (f x) = g.1 x :=
+  hf.ringHom_subtype_apply_inv_apply g _
 
 theorem eq_liftOfRightInverseEquivKerLeKer (hf : Function.RightInverse f_inv f) (g : A →+* C)
     (hg : ker f ≤ ker g) (h : B →+* C) (hh : h.comp f = g) :
     h = f.liftOfRightInverseEquivKerLeKer f_inv hf ⟨g, hg⟩ := by
-  simp_rw [← hh, ← Equiv.symm_apply_eq, Subtype.ext_iff, RingHom.ext_iff,
-    liftOfRightInverseEquivKerLeKer_symm_apply_coe_apply,
-    comp_apply, implies_true]
+  simp_rw [← hh, ← Equiv.symm_apply_eq]
+  rfl
+
+
+/-- A non-computable version of `RingHom.liftOfRightInverse` for when no computable right
+inverse is available, that uses `Function.surjInv`. -/
+noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
+    { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) :=
+  f.liftOfRightInverseEquivKerLeKer (Function.surjInv hf) (Function.rightInverse_surjInv hf)
+
+
 
 /-- TBD -/
 @[simps!]
