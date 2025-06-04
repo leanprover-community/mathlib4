@@ -29,7 +29,7 @@ noncomputable section
 
 open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology
 
-open scoped UpperHalfPlane Topology BigOperators Nat
+open scoped UpperHalfPlane
 
 variable (z : ℍ)
 
