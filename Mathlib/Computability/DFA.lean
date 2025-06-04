@@ -186,10 +186,10 @@ section SetClosure
 variable {σ' : Type v}
 
 /--
- `M.compl` constructs a DFA for the complement of the language of `M`.
+`M.compl` constructs a DFA for the complement of the language of `M`.
 
- Use `Mᶜ` rather than directly using this function.
- -/
+Use `Mᶜ` rather than directly using this function.
+-/
 def compl (M : DFA α σ) : DFA α σ where
   step := M.step
   start := M.start
@@ -209,11 +209,11 @@ theorem compl_accepts_iff (x : List α) : x ∈ Mᶜ.accepts ↔ x ∉ M.accepts
   compl_accept_iff M _
 
 /--
- Cartesian product of two DFAs with an arbitrary acceptance condition given by the binary Boolean
- algebra operation `p`. `p` takes in whether `M₁` and `M₂` accept their respective inputs and
- returns whether the product of the two DFAs should accept the pair of inputs.
+Cartesian product of two DFAs with an arbitrary acceptance condition given by the binary Boolean
+algebra operation `p`. `p` takes in whether `M₁` and `M₂` accept their respective inputs and
+returns whether the product of the two DFAs should accept the pair of inputs.
 
- This is a generalization of the intersection of two DFAs to arbitrary binary set operations.
+This is a generalization of the intersection of two DFAs to arbitrary binary set operations.
 -/
 def prod (M₁ : DFA α σ) (M₂ : DFA α σ') (p : Prop → Prop → Prop) : DFA α (σ × σ') where
   step := fun ⟨s₁, s₂⟩ a => (M₁.step s₁ a, M₂.step s₂ a)
@@ -243,10 +243,10 @@ theorem prod_accepts_iff
   rfl
 
 /--
- Constructs a DFA for the intersection of the languages of two DFAs.
+Constructs a DFA for the intersection of the languages of two DFAs.
 
- There is no instance for this to provide the `M₁ ∩ M₂` syntax, because M₁ and M₂ have
- different state types. -/
+There is no instance for this to provide the `M₁ ∩ M₂` syntax, because M₁ and M₂ have
+different state types. -/
 def inter (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := prod M₁ M₂ And
 
 theorem inter_accept_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
@@ -269,10 +269,10 @@ theorem inter_accepts_eq_inter (M₁ : DFA α σ) (M₂ : DFA α σ') :
   rfl
 
 /--
- Constructs a DFA for the union of the languages of two DFAs.
+Constructs a DFA for the union of the languages of two DFAs.
 
- There is no instance for this to provide the `M₁ ∪ M₂` syntax, because M₁ and M₂ have
- different state types. -/
+There is no instance for this to provide the `M₁ ∪ M₂` syntax, because M₁ and M₂ have
+different state types. -/
 def union (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := prod M₁ M₂ Or
 
 theorem union_accept_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
