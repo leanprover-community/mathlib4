@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
 import Mathlib.LinearAlgebra.Projectivization.Basic
-import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 # One-point compactification and projectivization
