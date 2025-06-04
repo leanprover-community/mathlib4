@@ -829,7 +829,7 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
             ext n
             dsimp
             rw [Category.id_comp, Category.id_comp, η.naturality] }
-      naturality := fun _ _ f => by ext <;> dsimp <;> simp }
+      naturality := fun _ _ f => by ext <;> simp }
 
 variable {C}
 

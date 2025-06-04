@@ -159,8 +159,8 @@ def sc'MapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
     S₁.sc' h₁ i j k ≅ S₂.sc' h₂ i j k where
   hom := sc'Map e.hom h₁ h₂ i j k
   inv := sc'Map e.inv h₂ h₁ i j k
-  hom_inv_id := by ext <;> dsimp <;> simp
-  inv_hom_id := by ext <;> dsimp <;> simp
+  hom_inv_id := by ext <;> simp
+  inv_hom_id := by ext <;> simp
 
 /-- The isomorphism `S₁.sc _ i ≅ S₂.sc _ i` induced by an isomorphism `S₁ ≅ S₂`
 in `ComposableArrows C n`. -/
@@ -171,8 +171,8 @@ def scMapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
     S₁.sc h₁ i ≅ S₂.sc h₂ i where
   hom := scMap e.hom h₁ h₂ i
   inv := scMap e.inv h₂ h₁ i
-  hom_inv_id := by ext <;> dsimp <;> simp
-  inv_hom_id := by ext <;> dsimp <;> simp
+  hom_inv_id := by ext <;> simp
+  inv_hom_id := by ext <;> simp
 
 lemma exact_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) (h₁ : S₁.Exact) :
     S₂.Exact where
