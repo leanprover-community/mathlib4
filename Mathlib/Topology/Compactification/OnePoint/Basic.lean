@@ -130,7 +130,9 @@ theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = uni
 theorem insert_infty_range_coe : insert ∞ (range (@some X)) = univ :=
   insert_none_range_some _
 
-theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅ := by simp
+@[simp]
+theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅ :=
+  range_some_inter_none X
 
 @[simp]
 theorem compl_range_coe : (range ((↑) : X → OnePoint X))ᶜ = {∞} :=
