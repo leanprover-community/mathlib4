@@ -443,6 +443,7 @@ lemma Fin.addRothNumber_eq_rothNumberNat (hkn : 2 * k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k :=
   IsAddFreimanIso.addRothNumber_congr <| mod_cast isAddFreimanIso_Iio two_ne_zero hkn
 
+open Fin.CommRing in
 lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
   suffices h : Set.BijOn (Nat.cast : ℕ → Fin n.succ) (range k) (Iio k : Finset (Fin n.succ)) by

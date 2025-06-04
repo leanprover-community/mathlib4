@@ -173,6 +173,7 @@ lemma addRothNumber_le_ruzsaSzemerediNumber :
   rw [← hscard, ← card_triangleIndices, ← card_triangles]
   exact (locallyLinear hs).le_ruzsaSzemerediNumber
 
+open Fin.CommRing in
 lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
     (2 * n + 1) * rothNumberNat n ≤ ruzsaSzemerediNumberNat (6 * n + 3) := by
   let α := Fin (2 * n + 1)

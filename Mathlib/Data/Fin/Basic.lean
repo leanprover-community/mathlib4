@@ -313,10 +313,28 @@ instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
 theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
   rfl
 
-instance instNatCast [NeZero n] : NatCast (Fin n) where
+namespace NatCast
+
+/--
+This is not a global instance, but can introduced locally using `open Fin.NatCast in ...`.
+
+This is not an instance because the `binop%` elaborator assumes that
+here are no non-trivial coercion loops,
+but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
+Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
+For example, for `x : Fin k` and `n : Nat`,
+it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
+silently introducing wraparound arithmetic.
+-/
+-- Note: this instance duplicates one in Lean, and should be removed later.
+def instNatCast [NeZero n] : NatCast (Fin n) where
   natCast i := Fin.ofNat n i
 
+attribute [scoped instance] instNatCast
+
 lemma natCast_def [NeZero n] (a : ℕ) : (a : Fin n) = ⟨a % n, mod_lt _ n.pos_of_neZero⟩ := rfl
+
+end NatCast
 
 end Monoid
 
