@@ -453,7 +453,7 @@ theorem partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
 
 @[to_additive]
 theorem partialProd_left_inv {G : Type*} [Group G] (f : Fin (n + 1) → G) :
-    (f 0 • partialProd fun i : Fin n => (f i)⁻¹ * f i.succ) = f :=
+    (f 0 • partialProd fun i : Fin n => (f i.castSucc)⁻¹ * f i.succ) = f :=
   funext fun x => Fin.inductionOn x (by simp) fun x hx => by
     simp only [coe_eq_castSucc, Pi.smul_apply, smul_eq_mul] at hx ⊢
     rw [partialProd_succ, ← mul_assoc, hx, mul_inv_cancel_left]

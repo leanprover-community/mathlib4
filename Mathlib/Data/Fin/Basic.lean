@@ -1153,7 +1153,7 @@ simplification using `succAbove_zero` or `succ_succAbove_zero`. -/
 
 @[simp] lemma one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := by
   simpa only [succ_zero_eq_one, val_zero, zero_succAbove, succ_one_eq_two]
-    using succ_succAbove_succ (0 : Fin (n + 2)) (0 : Fin (n + 2))
+    using succ_succAbove_succ (0 : Fin (n + 2)) (0 : Fin (n + 1))
 
 end SuccAbove
 
