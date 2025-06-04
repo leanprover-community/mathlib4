@@ -365,7 +365,8 @@ end var_aux
 
 section variation
 
-variable  {X : Type*} [MeasurableSpace X]
+variable {X : Type*} [MeasurableSpace X]
+variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V]
 
 /-- The variation of a subadditive function as an `ℝ≥0∞`-valued `VectorMeasure`. -/
 noncomputable def variation' {f : Set X → ℝ≥0∞} (hf : IsSubadditive f) (hf' : f ∅ = 0) :
@@ -374,8 +375,6 @@ noncomputable def variation' {f : Set X → ℝ≥0∞} (hf : IsSubadditive f) (
   empty'              := var_aux_empty' f
   not_measurable' _ h := if_neg h
   m_iUnion'           := var_aux_iUnion f hf hf'
-
-variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V]
 
 lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) [T2Space V] :
     IsSubadditive fun s ↦ ‖μ s‖ₑ := by
@@ -395,9 +394,12 @@ end VectorMeasure
 ## Properties of variation
 -/
 
+section properties
+
 namespace VectorMeasure
-variable {X V 𝕜 : Type*} [MeasurableSpace X] [NormedAddCommGroup V] [NormedField 𝕜]
-  [NormedSpace 𝕜 V]
+
+variable {X : Type*} [MeasurableSpace X]
+variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
 theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E‖ₑ ≤ variation μ E := by
   wlog hE' : E ≠ ∅
@@ -405,11 +407,9 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E
     simp [hE']
   wlog hE : MeasurableSet E
   · simp [hE, μ.not_measurable' hE]
-  -- have h : {E} ∈ partitions E := ⟨by simp, by simpa, by simp, by simpa⟩
-  have h := isInnerPart_self E hE (by simpa)
-  -- have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
+  have h : {E} ∈ {P | IsInnerPart E P} := by simpa using isInnerPart_self E hE (by simpa)
+  have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
   simp_all [variation, variation', var_aux]
-  sorry
 
 -- lemma variation_of_ENNReal  (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ := by
 --   ext s hs
@@ -441,3 +441,5 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
   sorry
 
 end VectorMeasure
+
+end properties
