@@ -210,7 +210,7 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
         Term.realize_relabel, Sum.elim_comp_inl, realize_termOfFreeCommRing, map_natCast,
         realize_zero, ← CharP.charP_iff_prime_eq_zero hp]
       intro _
-      exact hqp <| CharP.eq K inferInstance inferInstance
+      exact hqp <| CharP.eq K this inferInstance
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → p ∉ s → Theory.ACF p ⊨ᵇ ψ := by
     intro p ψ hψ hpψ
