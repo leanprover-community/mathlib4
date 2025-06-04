@@ -705,13 +705,12 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
         sup_of_le_right (neg_nonpos.mpr hgx),
         sup_of_le_right (add_nonpos (neg_nonpos.mpr hgx) (neg_nonpos.mpr hfx)), add_zero]
     · rcases le_total 0 (f x + g x) with hfgx | hfgx
-      · rw [sup_of_le_left hfx, sup_of_le_right hgx, sup_of_le_left hfgx, add_zero, add_assoc,
-          add_eq_left] at hhx
+      · simp only [hfgx, sup_of_le_left, add_assoc, hfx, hgx, sup_of_le_right, add_zero,
+        add_eq_left] at hhx
         rw [sup_of_le_right (neg_nonpos.mpr hfx), sup_of_le_left (neg_nonneg.mpr hgx),
           sup_of_le_right (neg_nonpos.mpr hfgx)]
         linarith
-      · rw [sup_of_le_left hfx, sup_of_le_right hgx, sup_of_le_right hfgx, zero_add, add_zero]
-          at hhx
+      · simp only [hfgx, sup_of_le_right, zero_add, hfx, sup_of_le_left, hgx, add_zero] at hhx
         rw [sup_of_le_right (neg_nonpos.mpr hfx), sup_of_le_left (neg_nonneg.mpr hgx),
           sup_of_le_left (neg_nonneg.mpr hfgx), hhx]
         ring
@@ -722,13 +721,12 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
         rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
           sup_of_le_right (neg_nonpos.mpr hfgx), zero_add, add_zero]
         linarith
-      · rw [sup_of_le_right hfx, sup_of_le_left hgx, sup_of_le_right hfgx,
-          zero_add, add_comm, add_zero] at hhx
+      · simp only [hfgx, sup_of_le_right, zero_add, hfx, hgx, sup_of_le_left] at hhx
         rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
           sup_of_le_left (neg_nonneg.mpr hfgx), hhx]
-        simp
-    · rw [sup_of_le_right hfx, sup_of_le_right hgx,
-        sup_of_le_right (add_nonpos hfx hgx), zero_add, add_zero, coe_eq_zero] at hhx
+        ring
+    · simp only [(add_nonpos hfx hgx), sup_of_le_right, zero_add, hfx, hgx, add_zero,
+        coe_eq_zero] at hhx
       rw [sup_of_le_left (neg_nonneg.mpr hfx),
         sup_of_le_left (neg_nonneg.mpr hgx),
         sup_of_le_left (neg_nonneg.mpr (add_nonpos hfx hgx)), hhx, neg_add_rev, NNReal.coe_zero,
