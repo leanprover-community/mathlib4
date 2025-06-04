@@ -87,26 +87,42 @@ theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (
   rw [← hT.inner_left_eq_inner_right]
   exact inner_nonneg_left hT x
 
+@[simp]
 theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := by
   refine ⟨.zero _, fun x => ?_⟩
   change 0 ≤ re ⟪_, _⟫
   rw [zero_apply, inner_zero_left, ZeroHomClass.map_zero]
 
+@[simp]
 theorem isPositive_one : IsPositive (1 : E →L[𝕜] E) :=
   ⟨.one _, fun _ => inner_self_nonneg⟩
 
+@[simp]
+theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →L[𝕜] E) := by
+  refine ⟨IsSelfAdjoint.natCast n, ?_⟩
+  intro x
+  simp [reApplyInnerSelf, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left]
+  exact mul_nonneg n.cast_nonneg' inner_self_nonneg
+
+@[simp]
+theorem isPositive_ofNat {n : ℕ} [n.AtLeastTwo] : IsPositive (ofNat(n) : E →L[𝕜] E) :=
+  isPositive_natCast
+
+@[aesop safe apply]
 theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPositive) :
     (T + S).IsPositive := by
   refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => ?_⟩
   rw [reApplyInnerSelf, add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
+@[aesop safe apply]
 theorem IsPositive.conj_adjoint {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E →L[𝕜] F) :
     (S ∘L T ∘L S†).IsPositive := by
   refine ⟨hT.isSelfAdjoint.conj_adjoint S, fun x => ?_⟩
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 
+@[aesop safe apply]
 theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F →L[𝕜] E) :
     (S† ∘L T ∘L S).IsPositive := by
   convert hT.conj_adjoint (S†)
@@ -169,7 +185,7 @@ section PartialOrder
 `StarOrderedRing`. -/
 instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
   le f g := (g - f).IsPositive
-  le_refl _ := by simpa using isPositive_zero
+  le_refl _ := by simp
   le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
   le_antisymm f₁ f₂ h₁ h₂ := by
     rw [← sub_eq_zero]
@@ -274,17 +290,32 @@ theorem IsPositive.inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive T)
   rw [← hT.isSymmetric]
   exact hT.inner_nonneg_left x
 
+@[simp]
 theorem isPositive_zero : IsPositive (0 : E →ₗ[𝕜] E) := ⟨.zero _, by simp⟩
 
-theorem isPositive_one : IsPositive (1 : E →ₗ[𝕜] E) :=
-  ⟨.one _, fun _ => inner_self_nonneg⟩
+@[simp]
+theorem isPositive_one : IsPositive (1 : E →ₗ[𝕜] E) := ⟨.one _, fun _ => inner_self_nonneg⟩
 
+@[simp]
+theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →ₗ[𝕜] E) := by
+  refine ⟨IsSelfAdjoint.natCast n, ?_⟩
+  intro x
+  simp only [Module.End.natCast_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
+    mul_re, natCast_re, inner_self_im, mul_zero, sub_zero]
+  exact mul_nonneg n.cast_nonneg' inner_self_nonneg
+
+@[simp]
+theorem isPositive_ofNat {n : ℕ} [n.AtLeastTwo] : IsPositive (ofNat(n) : E →ₗ[𝕜] E) :=
+  isPositive_natCast
+
+@[aesop safe apply]
 theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPositive) :
     (T + S).IsPositive := by
   refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => ?_⟩
   rw [add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
+@[aesop safe apply]
 theorem IsPositive.conj_adjoint {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : E →ₗ[𝕜] F) :
     (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
   refine And.intro ?_ ?_
@@ -294,6 +325,7 @@ theorem IsPositive.conj_adjoint {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : 
     rw [comp_apply, ← adjoint_inner_right]
     exact hT.re_inner_nonneg_left _
 
+@[aesop safe apply]
 theorem IsPositive.adjoint_conj {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : F →ₗ[𝕜] E) :
     (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
   convert hT.conj_adjoint S.adjoint
@@ -305,7 +337,7 @@ section PartialOrder
 if and only if `g - f` is a positive linear map (in the sense of `LinearMap.IsPositive`). -/
 instance instLoewnerPartialOrder : PartialOrder (E →ₗ[𝕜] E) where
   le f g := (g - f).IsPositive
-  le_refl _ := by simpa using isPositive_zero
+  le_refl _ := by simp
   le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
   le_antisymm f₁ f₂ h₁ h₂ := by
     rw [← sub_eq_zero]
