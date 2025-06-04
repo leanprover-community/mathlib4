@@ -229,12 +229,13 @@ instance x_projective [Group G] [DecidableEq (Fin n → G)] :
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom =
+theorem d_eq [Monoid G] (n : ℕ) : ((Rep.standardComplex k G).d (n + 1) n).hom =
     ModuleCat.ofHom (d k G (n + 1)) := by
   refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp [Action.ofMulAction_V, groupCohomology.resolution, SimplicialObject.δ,
+  simp [Action.ofMulAction_V, Rep.standardComplex, SimplicialObject.δ,
     ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
 
+end Differentials
 section Exactness
 
 variable [Monoid G]

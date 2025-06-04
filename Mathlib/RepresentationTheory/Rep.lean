@@ -448,9 +448,7 @@ open MonoidalCategory
 variable (A B : Rep k G) (α : Type u) [DecidableEq α]
 
 open ModuleCat.MonoidalCategory
-#check ModuleCat.MonoidalCategory.tensorObj_def
 
-#check tensorObj_def
 -- the proof below can be simplified after #24823 is merged
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
