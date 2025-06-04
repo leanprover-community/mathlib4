@@ -219,7 +219,7 @@ lemma summable_of_inv_isBigO_riemannZeta {α : Type} [NormedField α] [CompleteS
     summable_of_isBigO
       (Summable.congr (Real.summable_abs_int_rpow hab) fun b ↦ Real.rpow_neg (abs_nonneg ↑b) a) hf
 
-/-- This says that for `z : ℍ` the function `d : ℤ ↦ ((c z + d) ^ k)⁻¹ is Summable for `2 ≤ k`. -/
+/-- This says that for `z : ℂ` the function `d : ℤ ↦ ((c z + d) ^ k)⁻¹ is Summable for `2 ≤ k`. -/
 lemma linear_right_summable (z : ℂ) (c k : ℤ) (hk : 2 ≤ k) :
     Summable fun d : ℤ ↦ (((c : ℂ) * z + d) ^ k)⁻¹ := by
   apply summable_of_inv_isBigO_riemannZeta (a := k) (by norm_cast)
