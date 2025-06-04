@@ -1424,7 +1424,7 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
         use m
 
     rw [← closure_eq] at x_mem_closure_range
-    apply Subgroup.closure_mono (h := ((fun (m : ℕ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) '' Set.Ico 0 (n + 1)))
+    apply Subgroup.closure_mono (h := ((fun (m : ℤ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) '' (Set.Ioo (-(n + 1) : ℤ) (n + 1 : ℤ))))
     .
       intro p hp
       simp at hp
@@ -1434,7 +1434,6 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
       refine ⟨by omega, ?_⟩
       use s
       use hs
-      norm_cast
     .
       exact x_mem_closure_range
   . sorry
