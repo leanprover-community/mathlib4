@@ -1151,9 +1151,16 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   apply Asymptotics.IsLittleO.eventuallyLE at little_o_poly
   apply Filter.Eventually.natCast_atTop at little_o_poly
   simp at little_o_poly
-  -- Find an N such that N^D < 2^N, and N ≥ 2 (so that we can apply the polynomial growth hypothesis)
+
+  -- Find an N' such that N^D < 2^N
   obtain ⟨N', hN⟩ := little_o_poly
-  let N := max N' 2
+
+  -- Write γ as a product of elements in S
+  obtain ⟨gamma_list, gamma_list_prod⟩ := mem_S_prod_list γ
+  simp [ProdS] at gamma_list_prod
+
+  -- Choose our N large enough that we can apply all of the above conditions
+  let N := max N' (max gamma_list.length 2)
   specialize hN N (by simp [N])
   specialize this N
   specialize hG N (by simp [N])
@@ -1161,6 +1168,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   obtain ⟨p, ⟨p_mem, p_not_prod⟩⟩ := this
   rw [Finset.mem_mul.not] at p_not_prod
   push_neg at p_not_prod
+
 
   have disjoint_smul: (p • three_two_B_n (S := {s}) φ γ N) ∩ (three_two_B_n (S := {s}) φ γ N) = ∅ := by
     ext a
@@ -1229,6 +1237,51 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         equals list.unattach =>
           simp [List.unattach, -List.map_subtype]
       rw [list_prod_eq, p_mul_eq]
+
+
+  have s_n_bound: ∀ a ∈ three_two_S_n (S := {s}) φ γ N, ∃ l: List S, l.unattach.prod = a ∧ l.length ≤ 3*N := by
+    sorry
+
+  have b_n_subset_s_n_squared: three_two_B_n (S := {s}) φ γ N ⊆ S ^ (N^2) := by
+    intro a ha
+    have orig_ha := ha
+    rw [Finset.mem_pow]
+    simp [three_two_B_n] at ha
+    obtain ⟨l, l_len, l_prod⟩ := ha
+    let nested_list := l.map (fun s => ((s_n_bound s.val s.property).choose))
+    have flat_list_prod: nested_list.flatten.unattach.prod = a := by
+      simp [nested_list]
+      rw [← l_prod]
+      conv =>
+        lhs
+        arg 1
+        equals l.unattach =>
+          sorry
+
+    have flat_list_len: nested_list.flatten.length ≤ nested_list.length • (3 * N) := by
+      simp
+      have foo := List.sum_le_card_nsmul (l := (List.map List.length nested_list)) (3 * N) ?_
+      --simp only [List.length_map, smul_eq_mul, nested_list] at foo
+      .
+        conv at foo =>
+          rhs
+          simp
+        exact foo
+      .
+        intro q hq
+        simp at hq
+        obtain ⟨s_list, h_s_prod, s_len⟩ := hq
+        simp [nested_list] at h_s_prod
+        obtain ⟨gamma_n, gamma_n_mem, gamma_n_mem_l, s_prod_eq⟩ := h_s_prod
+        have s_prod_prop: s_list.unattach.prod = gamma_n ∧ s_list.length ≤ 3*N := by
+          have my_spec := Exists.choose_spec ((s_n_bound gamma_n gamma_n_mem))
+          rw [s_prod_eq] at my_spec
+          exact my_spec
+        rw [← s_len]
+        exact s_prod_prop.2
+
+    use flat_list.get
+    simp [three_two_S_n] at l
 
 
 
