@@ -71,28 +71,28 @@ warning: declaration uses 'sorry'
 warning: extra space in the source
 
 This part of the code
-  'instance   : Add'
+  'instance   {R}'
 should be written as
-  'instance : Add'
+  'instance {R} :'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-instance   : Add Nat := sorry
+instance   {R} : Add R := sorry
 /--
 warning: declaration uses 'sorry'
 ---
 warning: extra space in the source
 
 This part of the code
-  'instance   : Add'
+  'instance   {R}'
 should be written as
-  'instance : Add'
+  'instance {R} :'
 
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-instance   : Add Nat := sorry
+instance   {R} : Add R := sorry
 
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
@@ -479,5 +479,20 @@ info: #[srcNat: 4, srcPos: 4, fmtPos: 5, msg: missing space, length: 1
   let l := "hac d"
   let m := "h  acd"
   Mathlib.Linter.parallelScan l m
+
+#eval
+  Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" (4 + 1) 1
+#eval
+  Mathlib.Linter.Style.CommandStart.mkWindow "ab cd e fgh" (4 + 1) 3
+
+-- Starting from `c` (due to the `"d ef gh".length` input), form a "window" of successive sizes
+-- `1, 2,..., 6`.  The output is trimmed and contains only full words, even partially overlapping
+-- with the given lengths.
+#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 1 == "cd"
+#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 2 == "cd"
+#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 3 == "cd ef"
+#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 4 == "cd ef"
+#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 5 == "cd ef"
+#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 6 == "cd ef gh"
 
 end internal
