@@ -9,6 +9,7 @@ import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
 /-!
 # Cotangent
@@ -204,59 +205,23 @@ theorem tendsto_logDeriv_euler_cot_sub (x : ℂ) (hx : x ∈ ℂ_ℤ) :
   simpa using tendsto_logDeriv_euler_sin_div x hx
 
 lemma cotTerm_identity (z : ℂ) (hz : z ∈ ℂ_ℤ) (n : ℕ) :
-    cotTerm z n = 2 * z * (1 / (z ^ 2 - (n + 1) ^ 2)) := by
+    cotTerm z n = 2 * z * (1 / ((z + (n + 1)) * (z - (n + 1)))) := by
   simp only [cotTerm]
   rw [one_div_add_one_div]
   · ring
   · simpa [sub_eq_add_neg] using integerComplement_add_ne_zero hz (-(n + 1) : ℤ)
   · simpa using (integerComplement_add_ne_zero hz ((n : ℤ) + 1))
 
-theorem Summable_cotTerm {z : ℂ} (hz : z ∈ ℂ_ℤ) : Summable fun n : ℕ => cotTerm z n := by
+theorem Summable_cotTerm {z : ℂ} (hz : z ∈ ℂ_ℤ) : Summable fun n : ℕ ↦ cotTerm z n := by
   rw [funext fun n ↦ cotTerm_identity z hz n]
   apply Summable.mul_left
-  apply summable_norm_iff.mp
-  have := (tendsto_const_div_pow (‖z^2‖) 2 (by omega))
-  simp only [Metric.tendsto_atTop, gt_iff_lt, ge_iff_le, dist_zero_right, norm_div, norm_pow,
-    Real.norm_eq_abs, _root_.sq_abs, RCLike.norm_natCast] at this
-  obtain ⟨B, hB⟩ := this (1/2) (one_half_pos)
-  have hB2 : ∀ (n : ℕ), B ≤ n → 1/2 ≤ |‖z‖^2 / n^2 -1| := fun n hn => by
-    rw [le_abs']
-    left
-    linarith [hB n hn]
-  apply Summable.comp_nat_add (k := B)
-  have hs : Summable fun n : ℕ => (1 / (2 : ℝ) * (n + B + 1) ^ 2)⁻¹ := by
-    simp_rw [mul_inv, inv_eq_one_div, add_assoc]
-    apply Summable.mul_left
-    have := summable_nat_add_iff (f := fun x => 1 / ((x^2) : ℝ)) (B + 1)
+  suffices Summable fun i : ℕ ↦ (z - (↑i : ℂ))⁻¹ * (z + (↑i : ℂ))⁻¹ by
+    rw [← summable_nat_add_iff 1] at this
     simpa using this
-  apply Summable.of_nonneg_of_le (by simp) _ hs
-  simp only [ one_div, norm_inv]
-  intro b
-  have HT := abs_norm_sub_norm_le ((z / (b + B + 1))^2) 1
-  have H2 : 2⁻¹ ≤ ‖(z /(b + B + 1))^2 - 1‖ := by
-    apply le_trans _ HT
-    simp only [ one_div, mul_inv_rev, inv_inv, div_pow, norm_div, norm_pow,
-      norm_one] at *
-    convert (hB2 (b + B + 1) (by omega))
-    norm_cast
-  have : z^2 - (((b + B) : ℕ) + 1)^2 = ((z / ((b + B) + 1))^2 - 1) * ((b + B) + 1)^2 := by
-      have H3 : ((b : ℂ) + (B : ℂ) + 1)^2 ≠ 0 := by
-        norm_cast
-        norm_num
-      field_simp [H3]
-  rw [inv_le_inv₀, this, norm_mul]
-  · gcongr
-    · norm_cast
-  · rw [this, norm_mul]
-    apply mul_pos (by linarith)
-    simp only [norm_pow]
-    apply pow_pos
-    norm_cast
-    omega
-  · simp only [inv_pos, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
-    apply pow_pos
-    norm_cast
-    exact Nat.zero_lt_succ (b + B)
+  suffices Summable fun i : ℤ ↦ (z - (↑i : ℂ))⁻¹ * (z + (↑i : ℂ))⁻¹ by
+    apply this.comp_injective CharZero.cast_injective
+  apply (EisensteinSeries.summable_diff z 1 1).congr
+  simp [mul_comm]
 
 theorem cot_series_rep' {z : ℂ} (hz : z ∈ ℂ_ℤ) : π * Complex.cot (π * z) - 1 / z =
     ∑' n : ℕ, (1 / ((z : ℂ) - (n + 1)) + 1 / (z + (n + 1))) := by
