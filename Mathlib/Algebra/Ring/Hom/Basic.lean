@@ -125,6 +125,9 @@ theorem liftRight_liftRight : f.liftRight hp (f.liftRight hp g hg) comp_liftRigh
 
 end LiftRight
 
+end
+
+
 variable [Semiring α] [Semiring β]
 
 protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=

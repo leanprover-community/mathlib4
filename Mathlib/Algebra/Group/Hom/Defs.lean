@@ -975,12 +975,8 @@ variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
   is a map, and `f : M →+ N` is an `AddMonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
   `AddMonoidHom`. "]
 def liftLeft (f : M →* N) {p : M →* P} (hp : Surjective p) (g : P → N) (hg : ∀ x, g (p x) = f x) :
-    P →* N where
-  toFun := g; map_one' := by simpa only [hg, map_one] using hg 1
-  map_mul' x y := by
-    rcases hp x with ⟨x, rfl⟩
-    rcases hp y with ⟨y, rfl⟩
-    simp only [← map_mul p x y, hg, map_mul f]
+    P →* N :=
+  { f.toMulHom.liftLeft (p := p) hp g hg, f.toOneHom.liftLeft p g hg with toFun := g }
 
 /-- If `p : P →* N` is an injective `MonoidHom`, `g : M → P` is a map, and `f : M →* N`
   is a `MonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MonoidHom`. -/
@@ -988,9 +984,8 @@ def liftLeft (f : M →* N) {p : M →* P} (hp : Surjective p) (g : P → N) (hg
   is a map, and `f : M →+ N` is an `AddMonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
   `AddMonoidHom`. "]
 def liftRight (f : M →* N) {p : P →* N} (hp : Injective p) (g : M → P) (hg : ∀ x, p (g x) = f x) :
-    M →* P where
-  toFun := g; map_one' := hp <| by simpa only [map_one] using hg 1
-  map_mul' x y := hp <| by simp only [hg, map_mul]
+    M →* P :=
+  { f.toMulHom.liftRight (p := p) hp g hg, f.toOneHom.liftRight hp g hg with toFun := g }
 
 end MonoidHom
 
