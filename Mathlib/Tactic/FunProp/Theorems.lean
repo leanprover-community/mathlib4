@@ -219,9 +219,9 @@ structure GeneralTheorem where
   /-- theorem name -/
   thmName : Name
   /-- discrimination tree keys used to index this theorem -/
-  keys        : List RefinedDiscrTree.DTExpr
+  keys : List RefinedDiscrTree.DTExpr
   /-- priority -/
-  priority    : Nat  := eval_prio default
+  priority : Nat  := eval_prio default
   deriving Inhabited, BEq
 
 /-- Get proof of a theorem. -/
