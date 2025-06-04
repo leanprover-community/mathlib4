@@ -18,7 +18,7 @@ The lemma `meromorphicTrailingCoeffAt_eq_limit` expresses the trailing coefficie
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {f g : 𝕜 → E} {x : 𝕜} {n : ℤ}
+  {f g : 𝕜 → E} {x : 𝕜}
 
 open Filter Topology
 
@@ -56,7 +56,6 @@ If `f` is meromorphic of infinite order at `x`, the trailing coefficient is zero
 Definition of the trailing coefficient in case where `f` is meromorphic and a presentation of the
 form `f = (z - x) ^ order • g z` is given, with `g` analytic at `x`.
 -/
-@[simp]
 lemma AnalyticAt.meromorphicTrailingCoeffAt_of_eq_nhdsNE (h₁g : AnalyticAt 𝕜 g x)
     (h : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ (meromorphicOrderAt f x).untop₀ • g z) :
     meromorphicTrailingCoeffAt f x = g x := by
@@ -83,8 +82,7 @@ lemma AnalyticAt.meromorphicTrailingCoeffAt_of_eq_nhdsNE (h₁g : AnalyticAt �
 Variant of `meromorphicTrailingCoeffAt_of_order_eq_finite`: Definition of the trailing coefficient
 in case where `f` is meromorphic of finite order and a presentation is given.
 -/
-@[simp]
-lemma AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE (h₁g : AnalyticAt 𝕜 g x)
+lemma AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE {n : ℤ} (h₁g : AnalyticAt 𝕜 g x)
     (h₂g : g x ≠ 0) (h : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z) :
     meromorphicTrailingCoeffAt f x = g x := by
   have h₄ : MeromorphicAt f x := by
@@ -212,14 +210,15 @@ lemma meromorphicTrailingCoeffAt_inv {f : 𝕜 → 𝕜} :
     rw [← mul_eq_one_iff_eq_inv₀ (h₁.meromorphicTrailingCoeffAt_ne_zero h₂),
       ← h₁.inv.meromorphicTrailingCoeffAt_mul h₁, meromorphicTrailingCoeffAt_congr_nhdsNE this,
       analyticAt_const.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE (n := 0)]
-    <;> simp_all
-    exact eventuallyEq_nhdsWithin_of_eqOn fun _ ↦ congrFun rfl
+    · simp
+    · simp only [zpow_zero, smul_eq_mul, mul_one]
+      exact eventuallyEq_nhdsWithin_of_eqOn fun _ ↦ congrFun rfl
   · simp_all
 
 /--
 The trailing coefficient of the power of a function is the power of the trailing coefficient.
 -/
-lemma MeromorphicAt.meromorphicTrailingCoeffAt_zpow {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x) :
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_zpow {n : ℤ} {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x) :
     meromorphicTrailingCoeffAt (f ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n := by
   by_cases h₂ : meromorphicOrderAt f x = ⊤
   · by_cases h₃ : n = 0
