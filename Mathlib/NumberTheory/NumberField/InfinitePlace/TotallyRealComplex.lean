@@ -154,9 +154,8 @@ theorem nrRealPlaces_eq_zero_iff :
 
 theorem IsTotallyComplex.isConj_ne_one [IsTotallyComplex K] {φ : K →+* ℂ} {σ : K ≃ₐ[F] K}
     (hφ : ComplexEmbedding.IsConj φ σ) : σ ≠ 1 := by
-  by_contra h
-  rw [h, ComplexEmbedding.isConj_one_iff, ← isReal_mk_iff] at hφ
-  exact not_isComplex_iff_isReal.mpr hφ (IsTotallyComplex.isComplex _)
+  rw [ComplexEmbedding.isConj_ne_one_iff hφ, ← isReal_mk_iff, not_isReal_iff_isComplex]
+  exact isComplex (InfinitePlace.mk φ)
 
 variable (K)
 
