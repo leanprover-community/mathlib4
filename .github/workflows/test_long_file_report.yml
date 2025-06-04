@@ -1,0 +1,75 @@
+name: Test long file report
+
+# triggers the action when
+on:
+  # the PR receives a comment
+  issue_comment:
+    types: [created, edited]
+  # the PR receives a review
+  pull_request_review:
+    # whether or not it is accompanied by a comment
+    types: [submitted]
+  # the PR receives a review comment
+  pull_request_review_comment:
+    types: [created, edited]
+
+jobs:
+  ping_zulip:
+    # we set some variables. The ones of the form `${{ X }}${{ Y }}` are typically not
+    # both set simultaneously: depending on the event that triggers the PR, usually only one is set
+    env:
+      AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+      PR_AUTHOR: ${{ github.event.issue.user.login }}${{ github.event.pull_request.user.login }}
+      PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
+      COMMENT_EVENT: ${{ github.event.comment.body }}
+      COMMENT_REVIEW: ${{ github.event.review.body }}
+      PR_TITLE_ISSUE: ${{ github.event.issue.title }}
+      PR_TITLE_PR: ${{ github.event.pull_request.title }}
+      PR_URL: ${{ github.event.issue.html_url }}${{ github.event.pull_request.html_url }}
+      EVENT_NAME: ${{ github.event_name }}
+    name: Ping maintainers on Zulip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find long files
+        id: long_files
+        run: |
+          echo "PR author: ${PR_AUTHOR}"
+          COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
+
+          # we strip `\r` since line endings from GitHub contain this character
+          COMMENT="${COMMENT//$'\r'/}"
+
+          # for debugging, we print some information
+          printf '%s' "${COMMENT}" | hexdump -cC
+          printf 'Comment:"%s"\n' "${COMMENT}"
+
+          l_f="$(printf '%s' "${COMMENT}" |
+            # captures `long files`, ignoring subsequent spaces
+            sed -n 's=^\(long files\) *$=\1=p' | head -1)"
+
+          printf $'"long files" found? \'%s\'\n' "${l_f}"
+
+          printf $'mOrD=%s\n' "${l_f}" > "${GITHUB_OUTPUT}"
+
+    steps:
+    - name: Checkout code
+      if: ${{ ! steps.long_files.outputs.mOrD == '' }}
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+    - name: Run script
+      if: ${{ ! steps.long_files.outputs.mOrD == '' }}
+      id: long_files
+      run: |
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/long_file_report.sh)" | tee "$GITHUB_OUTPUT"
+
+    - name: Post output to Zulip
+      if: ${{ ! steps.long_files.outputs.mOrD == '' }}
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'mathlib4'
+        type: 'stream'
+        topic: long files
+        content: ${{ steps.long_files.outputs.summary }}
