@@ -96,14 +96,6 @@ theorem qpow_neg_of_odd {q : ℚ} (hn : Odd q.num) (hn' : Odd q.den) {r : ℝ} :
   · rw [qpow_of_odd_of_nonpos hn' (neg_nonpos.mpr hr), this.neg_one_zpow, neg_one_mul, neg_neg,
       qpow_of_nonneg hr]
 
-lemma SignType.pow_even {n : ℕ} (hn : Even n) (s : SignType) (hs : s ≠ 0) :
-    s ^ n = 1 := by
-  sorry
-
-lemma SignType.zpow_even {n : ℤ} (hn : Even n) (s : SignType) (hs : s ≠ 0) :
-    s ^ n = 1 := by
-  sorry
-
 @[simp]
 theorem neg_qpow_of_even_of_odd {q : ℚ} (hn : Even q.num) (hn' : Odd q.den) {r : ℝ} :
     (-r) ^ q = r ^ q := by
