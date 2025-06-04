@@ -1162,6 +1162,86 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
         simp at y_mem
         exact y_mem
 
+    -- TODO - deduplicate this
+    have closed_under_conj_inv: ∀ y ∈ (Subgroup.closure (G := T) (Set.image (fun (m: ℤ) => a^m * b * a^(-m)) (Set.Ioo (-n.natAbs) n.natAbs) )), a⁻¹ * y * a ∈  (Subgroup.closure (G := T) (Set.image (fun (m: ℤ) => a^m * b * a^(-m)) (Set.Ioo (-n.natAbs) n.natAbs) )) := by
+      intro y hy
+      induction hy using Subgroup.closure_induction with
+      | mem z hz =>
+        simp at hz
+        obtain ⟨m, hm, z_eq⟩ := hz
+        rw [← z_eq]
+        by_cases m_lt_n_sub: m < (-n.natAbs : ℤ) + 1
+        . apply Subgroup.subset_closure
+          simp
+          use (-1 + m)
+          refine ⟨?_, ?_⟩
+          .
+            refine ⟨?_, ?_⟩
+            . simp at m_lt_n_sub
+              omega
+            .
+              apply_fun (fun (z: ℤ) => z - 1) at m_lt_n_sub
+              .
+                simp at m_lt_n_sub
+                omega
+              . exact add_right_strictMono
+          .
+            rw [zpow_add]
+            simp
+            repeat rw [← mul_assoc]
+
+        .
+          have n_minus_eq: n - 1 + 1 = n := by
+            omega
+          simp at m_lt_n_sub
+          have m_eq_n_minus: m = (|n|) + 1 := by
+            omega
+          -- TODO - there must be an easier way to do this
+          rw [m_eq_n_minus]
+          repeat rw [← mul_assoc]
+          rw [mul_self_zpow]
+          simp
+          rw [← zpow_neg]
+          rw [← inv_zpow']
+          rw [mul_assoc]
+          rw [← zpow_add_one]
+          simp
+          simp at conj_in
+          by_cases n_pos: 0 < n
+          .
+            have n_eq_abs: n = |n| := by
+              exact Eq.symm (abs_of_pos n_pos)
+            nth_rw 3 [← n_eq_abs]
+            nth_rw 3 [← n_eq_abs]
+            exact conj_in
+          .
+            have n_eq_neg_abs: |n| = -n := by
+              apply abs_of_nonpos
+              omega
+            simp at n_pos
+            nth_rw 3 [n_eq_neg_abs]
+            nth_rw 3 [n_eq_neg_abs]
+            simp
+            simp at conj_inv_in
+            exact conj_inv_in
+      | one =>
+        simp
+        apply Subgroup.one_mem
+      | mul y z hy hz y_mem z_mem =>
+        have mul_mem := Subgroup.mul_mem _ y_mem z_mem
+        repeat rw [← mul_assoc] at mul_mem
+        simp at mul_mem
+        simp
+        repeat rw [← mul_assoc]
+        exact mul_mem
+      | inv y hy y_mem =>
+        rw [← Subgroup.inv_mem_iff]
+        simp
+        rw [← mul_assoc]
+        simp at y_mem
+        exact y_mem
+
+
 
     induction hx using Subgroup.closure_induction with
     | mem y hy =>
@@ -1187,7 +1267,13 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
           obtain ⟨m_abs, m_eq_abs⟩ := exists_nat_abs
           have abs_n_le: |n| ≤ m_abs := by
             by_contra!
-            omega
+            .
+              infer_instance
+            .
+              norm_cast at this
+              simp at this
+              rw [← m_eq_abs] at this
+              omega
           have nat_abs_n_le: n.natAbs ≤ m_abs := by
             rw [Int.abs_eq_natAbs] at abs_n_le
             omega
@@ -1224,6 +1310,61 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
             simp
             repeat rw [← mul_assoc]
             exact closed_under_conj
+
+        .
+          -- TODO - why is this needed?
+          have exists_nat_abs: ∃ m_abs: ℕ, m = -m_abs := by
+            use m.natAbs
+            omega
+          obtain ⟨m_abs, m_eq_abs⟩ := exists_nat_abs
+          have abs_n_le: |n| ≤ m_abs := by
+            by_contra!
+            . infer_instance
+            . simp at this
+              omega
+          have nat_abs_n_le: n.natAbs ≤ m_abs := by
+            rw [Int.abs_eq_natAbs] at abs_n_le
+            omega
+          rw [m_eq_abs]
+          clear m_eq_abs
+          clear abs_n_le
+          induction m_abs, nat_abs_n_le using Nat.le_induction with
+          | base =>
+            simp at conj_in
+            simp
+            by_cases n_pos: 0 < n
+            .
+              have n_eq_abs: n = |n| := by
+                exact Eq.symm (abs_of_pos n_pos)
+              nth_rw 3 [← n_eq_abs]
+              nth_rw 3 [← n_eq_abs]
+              simp at conj_inv_in
+              exact conj_inv_in
+            .
+              have n_eq_neg_abs: |n| = -n := by
+                apply abs_of_nonpos
+                omega
+              rw [n_eq_neg_abs] at conj_in
+              simp at conj_in
+              rw [n_eq_neg_abs]
+              simp
+              exact conj_in
+          | succ p hsucc ih =>
+            --rw [← Subgroup.inv_mem_iff]
+            --simp
+            specialize closed_under_conj_inv _ ih
+            simp at ih
+            norm_cast
+            rw [zpow_negSucc]
+            rw [pow_succ]
+            --rw [zpow_add]
+            repeat rw [← mul_assoc] at closed_under_conj_inv
+            simp at closed_under_conj_inv
+            simp
+            repeat rw [← mul_assoc]
+            exact closed_under_conj_inv
+
+
     | one => apply Subgroup.one_mem
     | mul y z hy hz y_mem z_mem =>
       apply Subgroup.mul_mem
