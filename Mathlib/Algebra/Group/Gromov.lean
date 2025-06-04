@@ -1401,7 +1401,7 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
   simp [three_two_S_n, gamma_m_helper] at s_n_subset
   specialize s_n_subset (n + 1) (by omega) (by omega) s hs
   simp [three_two_B_n] at s_n_subset
-  have closure_eq := my_iter ?_
+  have closure_eq := my_iter ?_ ?_
   .
     have x_mem_closure_range: x ∈ Subgroup.closure (Set.range fun (m : ℤ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) := by
       by_cases m_pos: 0 < m
@@ -1421,11 +1421,7 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
         apply Subgroup.subset_closure
         simp
         --simp only [zpow_neg, zpow_natCast, Set.mem_range]
-        use m.natAbs
-        rw [← x_eq_conj]
-        rw [m_eq_neg_natabs]
-        simp
-        norm_cast
+        use m
 
     rw [← closure_eq] at x_mem_closure_range
     apply Subgroup.closure_mono (h := ((fun (m : ℕ) ↦ γ ^ m * e_i_regular_helper φ γ ⟨s, hs⟩ * γ ^ (-m : ℤ)) '' Set.Ico 0 (n + 1)))
@@ -1439,7 +1435,9 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
       use s
       use hs
       norm_cast
-    . exact x_mem_closure_range
+    .
+      exact x_mem_closure_range
+  . sorry
   . sorry
 
 
