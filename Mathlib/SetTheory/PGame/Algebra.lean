@@ -84,7 +84,7 @@ theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
     · apply exists_congr
       intro
       rw [neg_eq_iff_eq_neg]
-      rfl
+      simp only [neg_def, moveRight_mk, moveLeft_mk]
 
 @[simp]
 theorem isOption_neg_neg {x y : PGame} : IsOption (-x) (-y) ↔ IsOption x y := by
