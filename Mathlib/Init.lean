@@ -72,7 +72,6 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.longLine
   linter.style.longFile
   linter.style.multiGoal
-  linter.style.nativeDecide
   linter.style.openClassical
   linter.style.missingEnd
   linter.style.setOption
