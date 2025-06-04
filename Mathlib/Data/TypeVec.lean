@@ -613,8 +613,6 @@ theorem dropFun_RelLast' {α : TypeVec n} {β} (R : β → β → Prop) :
 
 attribute [simp] drop_append1'
 
-open MvFunctor
-
 @[simp]
 theorem dropFun_prod {α α' β β' : TypeVec (n + 1)} (f : α ⟹ β) (f' : α' ⟹ β') :
     dropFun (f ⊗' f') = (dropFun f ⊗' dropFun f') := by

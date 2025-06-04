@@ -50,7 +50,7 @@ instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
   le_top i := Nat.le_pred_of_lt i.is_lt
   bot := 0
-  bot_le := Fin.zero_le'
+  bot_le := Fin.zero_le
 
 instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
   LinearOrder.toBiheytingAlgebra
