@@ -127,17 +127,31 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
 
-open UniformOnFun
+variable (R) in
+open UniformOnFun in
+open scoped ContinuousFunctionalCalculus in
 lemma lipschitzOnWith_cfc_fun (a : A) :
     LipschitzOnWith 1 (fun f ↦ cfc (toFun {spectrum R a} f) a)
-      {f | ContinuousOn f (spectrum R a)} := by
+      {f | ContinuousOn (toFun {spectrum R a} f) (spectrum R a)} := by
   by_cases ha : p a
-  · sorry
+  · intro f hf g hg
+    simp only
+    rw [cfc_apply .., cfc_apply .., isometry_cfcHom (R := R) a ha |>.edist_eq]
+    simp only [ENNReal.coe_one, one_mul]
+    rw [edist_continuousRestrict' hf hg]
   · simpa [cfc_apply_of_not_predicate a ha] using LipschitzWith.const' 0 |>.lipschitzOnWith
 
-end Isometric
+open UniformOnFun in
+open scoped ContinuousFunctionalCalculus in
+lemma lipschitzOnWith_cfc_fun_of_subset (a : A) {s : Set R} (hs : spectrum R a ⊆ s) :
+    LipschitzOnWith 1 (fun f ↦ cfc (toFun {s} f) a)
+      {f | ContinuousOn (toFun {s} f) (s)} := by
+  have h₁ := lipschitzOnWith_cfc_fun R a
+  have h₂ := lipschitzWith_one_ofFun_toFun' (𝔖 := {spectrum R a}) (𝔗 := {s}) (β := R) (by simpa)
+  have h₃ := h₂.lipschitzOnWith (s := {f | ContinuousOn (toFun {s} f) (s)})
+  simpa using h₁.comp h₃ (fun f hf ↦ hf.mono hs)
 
-#exit
+end Isometric
 
 end Left
 
@@ -254,7 +268,9 @@ open UniformOnFun in
 theorem continuousOn_cfc_setProd {s : Set 𝕜} (hs : IsCompact s) :
     ContinuousOn (fun fa : (𝕜 →ᵤ[{s}] 𝕜) × A ↦ cfc (toFun {s} fa.1) fa.2)
       ({f | ContinuousOn (toFun {s} f) s} ×ˢ {a | p a ∧ spectrum 𝕜 a ⊆ s}) :=
-  sorry
+  continuousOn_prod_of_continuousOn_lipschitzOnWith _ 1
+    (fun f hf ↦ continuousOn_cfc A hs ((toFun {s}) f) hf)
+    (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfc_fun_of_subset a ha')
 
 end RCLike
 
