@@ -10,20 +10,11 @@ import Mathlib.Order.Interval.Finset.Box
 import Mathlib.Analysis.Asymptotics.Defs
 
 /-!
-# Uniform convergence of Eisenstein series
+# Summability of Eisenstein series
 
-We show that the sum of `eisSummand` converges locally uniformly on `ℍ` to the Eisenstein series
-of weight `k` and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`.
-
-## Outline of argument
-
-The key lemma `r_mul_max_le` shows that, for `z ∈ ℍ` and `c, d ∈ ℤ` (not both zero),
-`|c z + d|` is bounded below by `r z * max (|c|, |d|)`, where `r z` is an explicit function of `z`
-(independent of `c, d`) satisfying `0 < r z < 1` for all `z`.
-
-We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-k)` over
-`(c, d) ∈ ℤ × ℤ` is convergent for `2 < k`. This is proved by decomposing `ℤ × ℤ` using the
-`Finset.box` lemmas.
+We gather results about the summability of Eisenstein series, particularly
+the summability of the Eisenstein series summands, which are used in the proof of the
+boundedness of Eisenstein series at infinity.
 -/
 
 noncomputable section
