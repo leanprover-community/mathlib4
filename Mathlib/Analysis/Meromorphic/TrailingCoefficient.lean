@@ -57,7 +57,7 @@ Definition of the trailing coefficient in case where `f` is meromorphic and a pr
 form `f = (z - x) ^ order • g z` is given, with `g` analytic at `x`.
 -/
 @[simp]
-lemma AnalyticAt.meromorphicTrailingCoeffAt_of_presentation (h₁g : AnalyticAt 𝕜 g x)
+lemma AnalyticAt.meromorphicTrailingCoeffAt_of_eq_nhdsNE (h₁g : AnalyticAt 𝕜 g x)
     (h : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ (meromorphicOrderAt f x).untop₀ • g z) :
     meromorphicTrailingCoeffAt f x = g x := by
   have h₁f : MeromorphicAt f x := by
@@ -84,7 +84,7 @@ Variant of `meromorphicTrailingCoeffAt_of_order_eq_finite`: Definition of the tr
 in case where `f` is meromorphic of finite order and a presentation is given.
 -/
 @[simp]
-lemma AnalyticAt.meromorphicTrailingCoeffAt_of_order_eq_finite₁ (h₁g : AnalyticAt 𝕜 g x)
+lemma AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE (h₁g : AnalyticAt 𝕜 g x)
     (h₂g : g x ≠ 0) (h : f =ᶠ[𝓝[≠] x] fun z ↦ (z - x) ^ n • g z) :
     meromorphicTrailingCoeffAt f x = g x := by
   have h₄ : MeromorphicAt f x := by
@@ -100,7 +100,7 @@ lemma AnalyticAt.meromorphicTrailingCoeffAt_of_order_eq_finite₁ (h₁g : Analy
 If `f` is analytic and does not vanish at `x`, then the trailing coefficient of `f` at `x` is `f x`.
 -/
 @[simp]
-lemma AnalyticAt.meromorphicTrailingCoeffAt_of_nonvanish (h₁ : AnalyticAt 𝕜 f x) (h₂ : f x ≠ 0) :
+lemma AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero (h₁ : AnalyticAt 𝕜 f x) (h₂ : f x ≠ 0) :
     meromorphicTrailingCoeffAt f x = f x := by
   rw [h₁.meromorphicTrailingCoeffAt_of_order_eq_finite₁ (n := 0) h₂]
   filter_upwards
@@ -110,7 +110,7 @@ lemma AnalyticAt.meromorphicTrailingCoeffAt_of_nonvanish (h₁ : AnalyticAt 𝕜
 If `f` is meromorphic at `x`, then the trailing coefficient of `f` at `x` is the limit of the
 function `(· - x) ^ (-order) • f`.
 -/
-lemma MeromorphicAt.meromorphicTrailingCoeffAt_eq_limit (h : MeromorphicAt f x) :
+lemma MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt (h : MeromorphicAt f x) :
     Tendsto ((· - x) ^ (-(meromorphicOrderAt f x).untop₀) • f) (𝓝[≠] x)
       (𝓝 (meromorphicTrailingCoeffAt f x)) := by
   by_cases h₂ : meromorphicOrderAt f x = ⊤
@@ -150,7 +150,7 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero (h₁ : MeromorphicAt f x
 /--
 If two functions agree in a punctured neighborhood, then their trailing coefficients agree.
 -/
-lemma meromorphicTrailingCoeffAt_congr_nhdNE {f₁ f₂ : 𝕜 → E} (h : f₁ =ᶠ[𝓝[≠] x] f₂) :
+lemma meromorphicTrailingCoeffAt_congr_nhdsNE {f₁ f₂ : 𝕜 → E} (h : f₁ =ᶠ[𝓝[≠] x] f₂) :
     meromorphicTrailingCoeffAt f₁ x = meromorphicTrailingCoeffAt f₂ x := by
   by_cases h₁ : ¬MeromorphicAt f₁ x
   · simp [h₁, (MeromorphicAt.meromorphicAt_congr h).not.1 h₁]
@@ -241,5 +241,4 @@ The trailing coefficient of the power of a function is the power of the trailing
 -/
 lemma MeromorphicAt.meromorphicTrailingCoeffAt_pow {n : ℕ} {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x) :
     meromorphicTrailingCoeffAt (f ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n := by
-  convert h₁.meromorphicTrailingCoeffAt_zpow (n := n)
-  <;> simp
+  convert h₁.meromorphicTrailingCoeffAt_zpow (n := n) <;> simp
