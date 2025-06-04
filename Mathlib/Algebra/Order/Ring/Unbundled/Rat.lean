@@ -117,7 +117,7 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
       dsimp only
       refine ⟨(Int.ediv_nonneg · (Int.natCast_nonneg _)), fun H ↦ ?_⟩
       contrapose! H
-      apply Int.ediv_neg' H
+      apply Int.ediv_neg_of_neg_of_pos H
       simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
       exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
 
@@ -145,9 +145,9 @@ instance linearOrder : LinearOrder ℚ where
     have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
     rwa [neg_neg] at this
   le_total _ _ := Rat.le_total
-  decidableEq := inferInstance
-  decidableLE := inferInstance
-  decidableLT := inferInstance
+  toDecidableEq := inferInstance
+  toDecidableLE := inferInstance
+  toDecidableLT := inferInstance
   lt_iff_le_not_le _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
 
 /-!
@@ -157,13 +157,13 @@ These also prevent non-computable instances being used to construct these instan
 -/
 
 instance instDistribLattice : DistribLattice ℚ := inferInstance
-instance instLattice        : Lattice ℚ        := inferInstance
+instance instLattice : Lattice ℚ := inferInstance
 instance instSemilatticeInf : SemilatticeInf ℚ := inferInstance
 instance instSemilatticeSup : SemilatticeSup ℚ := inferInstance
-instance instInf            : Min ℚ            := inferInstance
-instance instSup            : Max ℚ            := inferInstance
-instance instPartialOrder   : PartialOrder ℚ   := inferInstance
-instance instPreorder       : Preorder ℚ       := inferInstance
+instance instInf : Min ℚ := inferInstance
+instance instSup : Max ℚ := inferInstance
+instance instPartialOrder : PartialOrder ℚ := inferInstance
+instance instPreorder : Preorder ℚ := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 

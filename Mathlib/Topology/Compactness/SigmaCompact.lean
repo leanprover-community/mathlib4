@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Topology.Bases
 import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Compactness.LocallyFinite
+
 /-!
 # Sigma-compactness in topological spaces
 
@@ -270,9 +273,6 @@ protected lemma Topology.IsClosedEmbedding.sigmaCompactSpace {e : Y → X}
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.sigmaCompactSpace := IsClosedEmbedding.sigmaCompactSpace
-
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   hs.isClosedEmbedding_subtypeVal.sigmaCompactSpace
 
@@ -418,7 +418,7 @@ def shiftr : CompactExhaustion X where
 @[simp]
 theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 := by
   classical
-  exact Nat.find_comp_succ _ _ (not_mem_empty _)
+  exact Nat.find_comp_succ _ _ (notMem_empty _)
 
 theorem mem_diff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
   ⟨K.mem_find _,

@@ -63,8 +63,7 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
   refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.ext ?_⟩
   refine (TopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
   rw [nhds_induced, nhds_prod_eq]
-  simp only [Units.embedProduct_apply, Units.val_one, inv_one, MulOpposite.op_one,
-    Prod.mk_one_one, Prod.fst_one, Prod.snd_one]
+  simp only [Units.embedProduct_apply, Units.val_one, inv_one, MulOpposite.op_one]
   intro s hs
   have H := hR ▸ Ideal.hasBasis_nhds_adic I 1
   have := (H.prod (H.comap MulOpposite.opHomeomorph.symm))

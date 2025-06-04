@@ -144,7 +144,7 @@ theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = 
       false_or, iff_self, imp_true_iff]
 
 theorem erase_insert {a : α} {s : Finset α} (h : a ∉ s) : erase (insert a s) a = s := by
-  rw [erase_insert_eq_erase, erase_eq_of_not_mem h]
+  rw [erase_insert_eq_erase, erase_eq_of_notMem h]
 
 theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
     erase (insert a s) b = insert a (erase s b) :=
@@ -172,7 +172,7 @@ lemma insert_erase_invOn :
 
 theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s :=
   calc
-    s.erase a ⊂ insert a (s.erase a) := ssubset_insert <| not_mem_erase _ _
+    s.erase a ⊂ insert a (s.erase a) := ssubset_insert <| notMem_erase _ _
     _ = _ := insert_erase h
 
 theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t.erase a := by
@@ -185,7 +185,7 @@ theorem erase_ssubset_insert (s : Finset α) (a : α) : s.erase a ⊂ insert a s
     ⟨a, mem_insert_self _ _, erase_subset_erase _ <| subset_insert _ _⟩
 
 theorem erase_cons {s : Finset α} {a : α} (h : a ∉ s) : (s.cons a h).erase a = s := by
-  rw [cons_eq_insert, erase_insert_eq_erase, erase_eq_of_not_mem h]
+  rw [cons_eq_insert, erase_insert_eq_erase, erase_eq_of_notMem h]
 
 theorem subset_insert_iff {a : α} {s t : Finset α} : s ⊆ insert a t ↔ erase s a ⊆ t := by
   simp only [subset_iff, or_iff_not_imp_left, mem_erase, mem_insert, and_imp]
@@ -197,8 +197,11 @@ theorem erase_insert_subset (a : α) (s : Finset α) : erase (insert a s) a ⊆ 
 theorem insert_erase_subset (a : α) (s : Finset α) : s ⊆ insert a (erase s a) :=
   subset_insert_iff.2 <| Subset.rfl
 
-theorem subset_insert_iff_of_not_mem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t := by
-  rw [subset_insert_iff, erase_eq_of_not_mem h]
+theorem subset_insert_iff_of_notMem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t := by
+  rw [subset_insert_iff, erase_eq_of_notMem h]
+
+@[deprecated (since := "2025-05-23")]
+alias subset_insert_iff_of_not_mem := subset_insert_iff_of_notMem
 
 theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := by
   rw [← subset_insert_iff, insert_eq_of_mem h]
@@ -247,11 +250,11 @@ lemma disjoint_erase_insert (ha : a ∉ s) : Disjoint (insert a s) (t.erase a) �
 
 theorem disjoint_of_erase_left (ha : a ∉ t) (hst : Disjoint (s.erase a) t) : Disjoint s t := by
   rw [← erase_insert ha, ← disjoint_erase_comm, disjoint_insert_right]
-  exact ⟨not_mem_erase _ _, hst⟩
+  exact ⟨notMem_erase _ _, hst⟩
 
 theorem disjoint_of_erase_right (ha : a ∉ s) (hst : Disjoint s (t.erase a)) : Disjoint s t := by
   rw [← erase_insert ha, disjoint_erase_comm, disjoint_insert_left]
-  exact ⟨not_mem_erase _ _, hst⟩
+  exact ⟨notMem_erase _ _, hst⟩
 
 theorem inter_erase (a : α) (s t : Finset α) : s ∩ t.erase a = (s ∩ t).erase a := by
   simp only [erase_eq, inter_sdiff_assoc]
@@ -281,10 +284,6 @@ theorem erase_union_of_mem (ha : a ∈ t) (s : Finset α) : s.erase a ∪ t = s 
 theorem union_erase_of_mem (ha : a ∈ s) (t : Finset α) : s ∪ t.erase a = s ∪ t := by
   rw [← insert_erase (mem_union_left t ha), erase_union_distrib, ← insert_union, insert_erase ha]
 
-@[simp, deprecated erase_eq_of_not_mem (since := "2024-10-01")]
-theorem sdiff_singleton_eq_self (ha : a ∉ s) : s \ {a} = s := by
-  rw [← erase_eq, erase_eq_of_not_mem ha]
-
 theorem sdiff_union_erase_cancel (hts : t ⊆ s) (ha : a ∈ t) : s \ t ∪ t.erase a = s.erase a := by
   simp_rw [erase_eq, sdiff_union_sdiff_cancel hts (singleton_subset_iff.2 ha)]
 
@@ -292,16 +291,19 @@ theorem sdiff_insert (s t : Finset α) (x : α) : s \ insert x t = (s \ t).erase
   simp_rw [← sdiff_singleton_eq_erase, insert_eq, sdiff_sdiff_left', sdiff_union_distrib,
     inter_comm]
 
-theorem sdiff_insert_insert_of_mem_of_not_mem {s t : Finset α} {x : α} (hxs : x ∈ s) (hxt : x ∉ t) :
+theorem sdiff_insert_insert_of_mem_of_notMem {s t : Finset α} {x : α} (hxs : x ∈ s) (hxt : x ∉ t) :
     insert x (s \ insert x t) = s \ t := by
   rw [sdiff_insert, insert_erase (mem_sdiff.mpr ⟨hxs, hxt⟩)]
+
+@[deprecated (since := "2025-05-23")]
+alias sdiff_insert_insert_of_mem_of_not_mem := sdiff_insert_insert_of_mem_of_notMem
 
 theorem sdiff_erase (h : a ∈ s) : s \ t.erase a = insert a (s \ t) := by
   rw [← sdiff_singleton_eq_erase, sdiff_sdiff_eq_sdiff_union (singleton_subset_iff.2 h), insert_eq,
     union_comm]
 
 theorem sdiff_erase_self (ha : a ∈ s) : s \ s.erase a = {a} := by
-  rw [sdiff_erase ha, Finset.sdiff_self, insert_emptyc_eq]
+  rw [sdiff_erase ha, Finset.sdiff_self, insert_empty_eq]
 
 theorem erase_eq_empty_iff (s : Finset α) (a : α) : s.erase a = ∅ ↔ s = ∅ ∨ s = {a} := by
   rw [← sdiff_singleton_eq_erase, sdiff_eq_empty_iff_subset, subset_singleton_iff]
@@ -333,7 +335,7 @@ protected alias ⟨_, Nonempty.attach⟩ := attach_nonempty_iff
 
 @[simp]
 theorem attach_eq_empty_iff {s : Finset α} : s.attach = ∅ ↔ s = ∅ := by
-  simp [eq_empty_iff_forall_not_mem]
+  simp [eq_empty_iff_forall_notMem]
 
 /-! ### filter -/
 
@@ -370,8 +372,6 @@ theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
     [DecidablePred p] [∀ x, Decidable (¬p x)] :
     Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
   disjoint_filter_filter' s t disjoint_compl_right
-
-@[deprecated (since := "2024-10-01")] alias filter_inter_filter_neg_eq := disjoint_filter_filter_neg
 
 theorem filter_disj_union (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     filter p (disjUnion s t h) = (filter p s).disjUnion (filter p t) (disjoint_filter_filter h) :=
@@ -447,24 +447,6 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
       intro hx hx₂
       exact ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 
-section Classical
-
--- Porting note: The notation `{ x ∈ s | p x }` in Lean 4 is hardcoded to be about `Set`.
--- So at the moment the whole `Sep`-class is useless, as it doesn't have notation.
--- /-- The following instance allows us to write `{x ∈ s | p x}` for `Finset.filter p s`.
---   We don't want to redo all lemmas of `Finset.filter` for `Sep.sep`, so we make sure that `simp`
---   unfolds the notation `{x ∈ s | p x}` to `Finset.filter p s`.
--- -/
--- noncomputable instance {α : Type*} : Sep α (Finset α) :=
---   ⟨fun p x => x.filter p⟩
-
--- -- @[simp] -- Porting note: not a simp-lemma until `Sep`-notation is fixed.
--- theorem sep_def {α : Type*} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p := by
---   ext
---   simp
-
-end Classical
-
 -- This is not a good simp lemma, as it would prevent `Finset.mem_filter` from firing
 -- on, e.g. `x ∈ s.filter (Eq b)`.
 /-- After filtering out everything that does not equal a given value, at most that value remains.
@@ -480,7 +462,7 @@ theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
     rintro rfl
     exact ⟨h, rfl⟩
   · ext
-    simp only [mem_filter, not_and, iff_false, not_mem_empty, decide_eq_true_eq]
+    simp only [mem_filter, not_and, iff_false, notMem_empty, decide_eq_true_eq]
     rintro m rfl
     exact h m
 
@@ -654,7 +636,7 @@ open Finset
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ (s ∪ t : Finset α) :=
-  Equiv.Set.ofEq (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Equiv.setCongr (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.union_symm_inl (h : Disjoint s t) (x : s) :

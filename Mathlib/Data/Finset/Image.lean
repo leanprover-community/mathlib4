@@ -3,9 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.SymmDiff
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Finset.Attach
+import Mathlib.Data.Finset.Disjoint
+import Mathlib.Data.Finset.Erase
+import Mathlib.Data.Finset.Filter
+import Mathlib.Data.Finset.Range
+import Mathlib.Data.Finset.SDiff
 
 /-! # Image and map operations on finite sets
 
@@ -40,8 +44,6 @@ namespace Finset
 
 section Map
 
-open Function
-
 /-- When `f` is an embedding of `α` in `β` and `s` is a finset in `α`, then `s.map f` is the image
 finset in `β`. The embedding condition guarantees that there are no duplicates in the image. -/
 def map (f : α ↪ β) (s : Finset α) : Finset β :=
@@ -61,7 +63,7 @@ variable {f : α ↪ β} {s : Finset α}
 theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
   Multiset.mem_map
 
--- Porting note: Higher priority to apply before `mem_map`.
+-- Higher priority to apply before `mem_map`.
 @[simp 1100]
 theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f.symm b ∈ s := by
   rw [mem_map]
@@ -73,6 +75,11 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
 @[simp 1100]
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
   mem_map_of_injective f.2
+
+@[simp 1100]
+theorem mem_map_mk (f : α → β) {a : α} {s : Finset α} (hf : Function.Injective f) :
+    f a ∈ s.map ⟨f, hf⟩ ↔ a ∈ s :=
+  Finset.mem_map' _
 
 theorem mem_map_of_mem (f : α ↪ β) {a} {s : Finset α} : a ∈ s → f a ∈ s.map f :=
   (mem_map' _).2
@@ -289,7 +296,7 @@ lemma exists_mem_image {p : β → Prop} : (∃ y ∈ s.image f, p y) ↔ ∃ x 
 theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
   eq_of_veq (s.map f).2.dedup.symm
 
---@[simp] Porting note: removing simp, `simp` [Nonempty] can prove it
+-- Not `@[simp]` since `mem_image` already gets most of the way there.
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c := by
   rw [mem_image]
   simp only [exists_prop, const_apply, exists_and_right]
@@ -398,11 +405,6 @@ theorem filter_image {p : β → Prop} [DecidablePred p] :
       ⟨by rintro ⟨⟨x, h1, rfl⟩, h2⟩; exact ⟨x, ⟨h1, h2⟩, rfl⟩,
        by rintro ⟨x, ⟨h1, h2⟩, rfl⟩; exact ⟨⟨x, h1, rfl⟩, h2⟩⟩
 
-@[deprecated filter_mem_eq_inter (since := "2024-09-15")]
-theorem filter_mem_image_eq_image (f : α → β) (s : Finset α) (t : Finset β) (h : ∀ x ∈ s, f x ∈ t) :
-    (t.filter fun y => y ∈ s.image f) = s.image f := by
-  rwa [filter_mem_eq_inter, inter_eq_right, image_subset_iff]
-
 theorem fiber_nonempty_iff_mem_image {y : β} : (s.filter (f · = y)).Nonempty ↔ y ∈ s.image f := by
   simp [Finset.Nonempty]
 
@@ -454,11 +456,6 @@ theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Inj
 lemma image_sdiff_of_injOn [DecidableEq α] {t : Finset α} (hf : Set.InjOn f s) (hts : t ⊆ s) :
     (s \ t).image f = s.image f \ t.image f :=
   mod_cast Set.image_diff_of_injOn hf <| coe_subset.2 hts
-
-open scoped symmDiff in
-theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
-    (s ∆ t).image f = s.image f ∆ t.image f :=
-  mod_cast Set.image_symmDiff hf s t
 
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     (h : Disjoint (s.image f) (t.image f)) : Disjoint s t :=
@@ -562,6 +559,12 @@ theorem filterMap_mono (h : s ⊆ t) :
   rw [← val_le_iff] at h ⊢
   exact Multiset.filterMap_le_filterMap f h
 
+@[simp]
+theorem _root_.List.toFinset_filterMap [DecidableEq α] [DecidableEq β]
+    (f_inj : ∀ (a a' : α) (b : β), f a = some b → f a' = some b → a = a') (s : List α) :
+    (s.filterMap f).toFinset = s.toFinset.filterMap f f_inj := by
+  simp [← Finset.coe_inj]
+
 end FilterMap
 
 /-! ### Subtype -/
@@ -612,9 +615,12 @@ theorem property_of_mem_map_subtype {p : α → Prop} (s : Finset { x // p x }) 
 /-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result does not contain any value that does
 not satisfy the property of the subtype. -/
-theorem not_mem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // p x }) {a : α}
+theorem notMem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // p x }) {a : α}
     (h : ¬p a) : a ∉ s.map (Embedding.subtype _) :=
   mt s.property_of_mem_map_subtype h
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_map_subtype_of_not_property := notMem_map_subtype_of_not_property
 
 /-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result is a subset of the set giving the
@@ -625,32 +631,6 @@ theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.su
   convert property_of_mem_map_subtype s ha
 
 end Subtype
-
-/-! ### Fin -/
-
-
-/-- Given a finset `s` of natural numbers and a bound `n`,
-`s.fin n` is the finset of all elements of `s` less than `n`.
--/
-protected def fin (n : ℕ) (s : Finset ℕ) : Finset (Fin n) :=
-  (s.subtype _).map Fin.equivSubtype.symm.toEmbedding
-
-@[simp]
-theorem mem_fin {n} {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
-  | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
-
-@[simp]
-theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp
-
-@[mono]
-theorem fin_mono {n} : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
-
-@[gcongr]
-theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ t.fin n := fin_mono h
-
-@[simp]
-theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
-  simp [Finset.fin, Finset.map_map]
 
 /-- If a `Finset` is a subset of the image of a `Set` under `f`,
 then it is equal to the `Finset.image` of a `Finset` subset of that `Set`. -/
@@ -680,7 +660,7 @@ theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.s
   induction' n with k hk
   · simp
   conv_rhs => rw [range_succ]
-  rw [range_succ, image_insert, ← hk, insert_sdiff_of_not_mem]
+  rw [range_succ, image_insert, ← hk, insert_sdiff_of_notMem]
   simp
 
 end Finset
@@ -723,7 +703,6 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
 
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
   `Finset {a : α // p a}` and `{s : Finset α // ∀ a ∈ s, p a}`. -/
-
 @[simps]
 protected def finsetSubtypeComm (p : α → Prop) :
     Finset {a : α // p a} ≃ {s : Finset α // ∀ a ∈ s, p a} where

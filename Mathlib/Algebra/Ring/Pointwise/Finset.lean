@@ -3,9 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Ring.Pointwise.Set
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Pointwise operations of sets in a ring
@@ -26,7 +26,8 @@ namespace Finset
 variable {α β : Type*}
 
 /-- `Finset α` has distributive negation if `α` has. -/
-protected def distribNeg [DecidableEq α] [Mul α] [HasDistribNeg α] : HasDistribNeg (Finset α) :=
+protected noncomputable def distribNeg [DecidableEq α] [Mul α] [HasDistribNeg α] :
+    HasDistribNeg (Finset α) :=
   coe_injective.hasDistribNeg _ coe_neg coe_mul
 
 scoped[Pointwise] attribute [instance] Finset.distribNeg

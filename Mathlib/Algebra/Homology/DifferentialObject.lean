@@ -43,7 +43,7 @@ theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
 
 @[reassoc (attr := simp)]
 theorem objEqToHom_d {x y : β} (h : x = y) :
-    X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; dsimp; simp
+    X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; simp
 
 @[reassoc (attr := simp)]
 theorem d_squared_apply {x : β} : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
@@ -89,8 +89,6 @@ def dgoToHomologicalComplex :
         -- Porting note: this `rw` used to be part of the `simp`.
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
         rw [reassoc_of% this] }
-  map_id _ := rfl -- the `aesop_cat` autoparam solves this but it's slow
-  map_comp _ _ := rfl -- the `aesop_cat` autoparam solves this but it's slow
 
 /-- The functor from homological complexes to differential graded objects.
 -/

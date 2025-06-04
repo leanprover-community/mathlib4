@@ -11,10 +11,9 @@ import Batteries.WF
 /-!
 # Unbundled relation classes
 
-In this file we prove some properties of `Is*` classes defined in `Mathlib.Order.Defs`. The main
-difference between these classes and the usual order classes (`Preorder` etc) is that usual classes
-extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
-
+In this file we prove some properties of `Is*` classes defined in `Mathlib/Order/Defs.lean`.
+The main difference between these classes and the usual order classes (`Preorder` etc) is that
+usual classes extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 -/
 
 universe u v
@@ -92,7 +91,7 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,
     toMax := maxOfLe,
-    decidableLE := hD }
+    toDecidableLE := hD }
 
 theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
   { IsTrichotomous.swap r, IsStrictOrder.swap r with }
@@ -123,6 +122,15 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
     IsOrderConnected α r :=
   ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
+
+/-! ### Inverse Image -/
+
+theorem InvImage.isTrichotomous [IsTrichotomous α r] {f : β → α} (h : Function.Injective f) :
+    IsTrichotomous β (InvImage r f)  where
+  trichotomous a b := trichotomous (f a) (f b) |>.imp3 id (h ·) id
+
+instance InvImage.isAsymm [IsAsymm α r] (f : β → α) : IsAsymm β (InvImage r f) where
+  asymm a b h h2 := IsAsymm.asymm (f a) (f b) h h2
 
 /-! ### Well-order -/
 
