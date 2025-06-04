@@ -393,7 +393,7 @@ lemma discreteTopology_valuationRing_iff_discreteTopology :
   refine ⟨fun _ ↦ singletons_open_iff_discrete.mp fun x ↦ ?_, fun _ ↦ inferInstance⟩
   have hk : IsOpen (𝒪[K] : Set K) := isOpen_integer K
   rcases le_total (Valued.v x) 1 with hx | hx
-  · simpa using hk.isOpenMap_subtype_val _ (show IsOpen {⟨x, hx⟩} from isOpen_discrete _)
+  · simpa using hk.isOpenMap_subtype_val _ (isOpen_discrete {⟨x, hx⟩})
   · have hx0 : x ≠ 0 := v.pos_iff.mp <| hx.trans_lt' zero_lt_one
     replace hx : Valued.v x⁻¹ ≤ 1 := by rwa [map_inv₀, inv_le_one₀ (zero_lt_one.trans_le hx)]
     have h1 : IsOpen ({⟨x⁻¹, hx⟩} : Set 𝒪[K]) := isOpen_discrete _
