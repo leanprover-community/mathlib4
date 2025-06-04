@@ -66,8 +66,7 @@ coefficients in linear maps. -/
 def coeff (A : HVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
   toFun v := ((of R).symm (A v)).coeff n
   map_add' _ _ := by simp
-  map_smul' _ _ := by
-    simp only [map_smul, RingHom.id_apply, of_symm_smul, HahnSeries.coeff_smul]
+  map_smul' _ _ := by simp
 
 theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) :
     ((of R).symm (A v)).coeff.support.IsPWO :=
@@ -255,21 +254,22 @@ theorem lexRevSemiEquiv_base_smul (A : HVertexOperator (Γ₁' ×ₗ Γ₁) R V 
 
 end equivDomain
 
-end  Module
+end Module
 
 section CoeffOps
 
 variable [CommRing R] {V W : Type*} [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
-/-- The commutor on functions on a product. -/
+/-- Swap inputs for a function on a product. -/
 @[simps!]
-def commutor_equiv : ((Γ₁ × Γ) → V →ₗ[R] W) ≃ₗ[R] ((Γ × Γ₁) → V →ₗ[R] W) where
+def swapEquiv : ((Γ₁ × Γ) → V) ≃ₗ[R] ((Γ × Γ₁) → V) where
   toFun A g := A (g.2, g.1)
-  map_add' A B := by ext; simp only [Pi.add_apply, LinearMap.add_apply]
-  map_smul' r A := by ext; simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply]
+  map_add' A B := by ext; simp
+  map_smul' r A := by ext; simp
   invFun A g := A (g.2, g.1)
-  left_inv A := by simp only [Prod.mk.eta]
-  right_inv A := by simp only [Prod.mk.eta]
+  left_inv A := by simp
+  right_inv A := by simp
+--#find_home! swapEquiv --Mathlib.Algebra.Module.Equiv.Basic
 
 /-- The commutator of two formal series of endomorphisms. -/
 def commutator (A : Γ → V →ₗ[R] V) (B : Γ₁ → V →ₗ[R] V) : (Γ × Γ₁) → V →ₗ[R] V :=
@@ -280,7 +280,7 @@ theorem Jacobi (A : Γ → V →ₗ[R] V) (B : Γ₁ → V →ₗ[R] V) (C : Γ�
     (commutator (commutator A B) C ((g, g₁), g₂)) +
     (commutator (commutator B C) A ((g₁, g₂), g)) +
     (commutator (commutator C A) B ((g₂, g), g₁)) = 0 := by
-  simp [commutator, sub_mul, mul_sub, mul_assoc]
+  simp only [commutator, sub_mul, mul_assoc, mul_sub]
   abel
 
 /-- The associator on functions on a triple product. -/
@@ -339,6 +339,13 @@ theorem lexComp_apply_apply_coeff (A : HVertexOperator Γ R V W) (B : HVertexOpe
     (lexComp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
   rfl
 
+@[simp]
+theorem lexComp_apply_apply_apply_coeff (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V)
+    (u : U) (g : Γ₁ ×ₗ Γ) :
+    ((HahnModule.of R).symm (lexComp A B u)).coeff g =
+      A.coeff (ofLex g).2 (B.coeff (ofLex g).1 u) := by
+  rfl
+
 /-- The bilinear composition of two heterogeneous vertex operators, yielding a heterogeneous vertex
 operator on the RevLex product. -/
 def revLexComp : HVertexOperator Γ R V W →ₗ[R] HVertexOperator Γ₁ R U V →ₗ[R]
@@ -355,22 +362,16 @@ theorem revLexComp_apply_apply_apply_coeff (A : HVertexOperator Γ R V W)
 -- TODO: comp_assoc
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the left
-factor. -/
-def ResLeft (A : HVertexOperator (Γ₁ ×ₗ Γ) R V W) (g' : Γ₁):  HVertexOperator Γ R V W :=
-  HVertexOperator.of_coeff (fun g => coeff A (toLex (g', g)))
+factor, as a linear map. -/
+def ResLeft (g' : Γ₁) : HVertexOperator (Γ₁ ×ₗ Γ) R V W →ₗ[R] HVertexOperator Γ R V W where
+  toFun A := HVertexOperator.of_coeff (fun g => coeff A (toLex (g', g)))
     (fun v => Set.PartiallyWellOrderedOn.fiberProdLex (A v).isPWO_support' _)
-
-theorem coeff_ResLeft (A : HVertexOperator (Γ₁ ×ₗ Γ) R V W) (g' : Γ₁) (g : Γ) :
-    coeff (ResLeft A g') g = coeff A (toLex (g', g)) :=
-  rfl
-
-/-- The left residue as a linear map. -/
-@[simps]
-def ResLeft.linearMap (g' : Γ₁):
-    HVertexOperator (Γ₁ ×ₗ Γ) R V W →ₗ[R] HVertexOperator Γ R V W where
-  toFun A := ResLeft A g'
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+theorem coeff_ResLeft (A : HVertexOperator (Γ₁ ×ₗ Γ) R V W) (g' : Γ₁) (g : Γ) :
+    coeff (ResLeft g' A) g = coeff A (toLex (g', g)) :=
+  rfl
 
 theorem coeff_left_lex_supp.isPWO (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) (v : V) :
     (Function.support (fun (g : Γ) => (coeff A (toLex (g, g'))) v)).IsPWO := by
@@ -504,7 +505,7 @@ theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g 
     (A : HVertexOperator Γ₁ R V W) (v : V) :
     ∃ (k : ℕ), ∀ (m : ℕ) (_ : k < m),
       (-(n • g) - m • (g' - g)) +ᵥ g₁ ∉ ((HahnModule.of R).symm (A v)).support :=
-  Set.PartiallyWellOrderedOn.exists_not_mem_of_gt ((HahnModule.of R).symm (A v)).isPWO_support
+  Set.PartiallyWellOrderedOn.exists_notMem_of_gt ((HahnModule.of R).symm (A v)).isPWO_support
     fun _ _ hkl ↦ not_le_of_lt <| VAdd.vadd_lt_vadd_of_lt_of_le
       (sub_lt_sub_left (nsmul_lt_nsmul_left (sub_pos.mpr h) hkl) (-(n • g))) <| Preorder.le_refl g₁
 

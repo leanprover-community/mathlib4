@@ -50,14 +50,14 @@ variable {Γ Γ' R V α β σ : Type*}
 theorem sum_eq_top [AddCommMonoid Γ] (s : Finset σ) (f : σ → WithTop Γ)
     (h : ∃i ∈ s, f i = ⊤) : ∑ i ∈ s, f i = ⊤ := by
   induction s using cons_induction with
-  | empty => simp_all only [not_mem_empty, false_and, exists_false]
+  | empty => simp_all only [notMem_empty, false_and, exists_false]
   | cons i s his ih =>
     obtain ⟨j, hj⟩ := h
     by_cases hjs : j ∈ s
     · simp only [sum_cons, WithTop.add_eq_top]
       exact Or.inr <| ih <| Exists.intro j ⟨hjs, hj.2⟩
     · classical
-      have hij : j = i := eq_of_mem_insert_of_not_mem (cons_eq_insert i s his ▸ hj.1) hjs
+      have hij : j = i := eq_of_mem_insert_of_notMem (cons_eq_insert i s his ▸ hj.1) hjs
       rw [sum_cons, ← hij, hj.2, WithTop.add_eq_top]
       exact Or.inl rfl
 -- #find_home! sum_eq_top --[Mathlib.Algebra.BigOperators.Group.Finset]

@@ -22,7 +22,7 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 * locality at order `≤ n` implies locality at order `≤ n + 1`.
 * Boundedness lemmas for defining residue products
 
-## To do:
+## TODO:
 * residue products with identity give Hasse derivatives.
 * Dong's lemma : pairwise locality implies locality with residue products.
 * API for SMul by integer powers of suitable MVPolynomials, like `(X i) - (X j)`
@@ -246,71 +246,75 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V] (A B : VertexO
 
 open HVertexOperator
 
+/-- `(X - Y)^n A(X) B(Y)` as a linear map from `V` to `V((X))((Y))` -/
+def binomCompLeft (n : ℤ) : HVertexOperator (ℤ ×ₗ ℤ) R V V :=
+  HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) n • (lexComp A B)
+
+theorem binomCompLeft_apply_coeff (k l n : ℤ) (v : V) :
+    (binomCompLeft A B n).coeff (toLex (k, l)) v =
+      ∑ᶠ (m : ℕ), Int.negOnePow m • Ring.choose n m • A.coeff (l - n + m) (B.coeff (k - m) v) := by
+  rw [binomCompLeft, coeff_apply, LinearMap.smul_apply, binomialPow_smul_coeff _ lex_basis_lt]
+  exact finsum_congr fun _ ↦ by congr 2; simp; abel_nf
+
+/-- `(X - Y)^n B(Y) A(X)` as a linear map from `V` to `V((Y))((X))` -/
+def binomCompRight (n : ℤ) : HVertexOperator (ℤ ×ₗ ℤ) R V V :=
+  (Int.negOnePow n : R) •
+    HahnSeries.binomialPow R (toLex (1 ,0) : ℤ ×ₗ ℤ) (toLex (0, 1)) n • (lexComp B A)
+
+/-!
+theorem binomCompRight_apply_coeff (k l n : ℤ) (v : V) :
+    (binomCompRight A B n).coeff (toLex (k, l)) v =
+      ∑ᶠ (m : ℕ), Int.negOnePow m • Ring.choose n m • A.coeff (l - n + m) (B.coeff (k - m) v) := by
+  rw [binomCompLeft, coeff_apply, LinearMap.smul_apply, binomialPow_smul_coeff _ lex_basis_lt]
+  exact finsum_congr fun _ ↦ by congr 2; simp; abel_nf
+-/
+
 /-- Two vertex operators commute if composition in the opposite order yields switched
 coefficients. This should be replaced with locality at order zero. -/
-def Commute : Prop := commutor_equiv (lexComp A B).coeff = (lexComp B A).coeff
+def Commute : Prop :=
+  swapEquiv (R := R) ((lexComp A B).coeff ∘ toLex) = (lexComp B A).coeff ∘ toLex
+
+lemma Commute_iff :
+    Commute A B ↔ ∀ (m n : ℤ), A[[n]] ∘ₗ B[[m]] = B[[m]] ∘ₗ A[[n]] := by
+  simp only [Commute, swapEquiv, lexComp, coeff_eq_ncoeff, LinearMap.coe_mk, AddHom.coe_mk,
+    coeff_of_coeff, LinearEquiv.coe_mk, Function.comp_apply, ofLex_toLex]
+  constructor
+  · intro h m n
+    rw [funext_iff] at h
+    specialize h (-1 - n, -1 - m)
+    simpa using h
+  · intro h
+    ext1 g
+    simp [h (-g.2 - 1) (-g.1 - 1)]
 
 lemma commute_symm : Commute A B ↔ Commute B A := by
-  simp only [Commute, commutor_equiv, lexComp, LinearEquiv.coe_mk]
-  constructor
-  · intro h
-    ext g u
-    rw [funext_iff] at h
-    specialize h (g.2, g.1)
-    rw [LinearMap.ext_iff] at h
-    specialize h u
-    simp_all only [Prod.mk.eta, coeff_apply, LinearMap.coe_mk, AddHom.coe_mk,
-      Equiv.symm_apply_apply]
-  · intro h
-    ext g u
-    rw [funext_iff] at h
-    specialize h (g.2, g.1)
-    rw [LinearMap.ext_iff] at h
-    specialize h u
-    simp_all only [Prod.mk.eta, coeff_apply, LinearMap.coe_mk, AddHom.coe_mk,
-      Equiv.symm_apply_apply]
-/-!
+  rw [Commute_iff, Commute_iff]
+  exact ⟨fun h m n ↦ (h n m).symm, fun h m n ↦ (h n m).symm⟩
+
+
 /-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
 vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
 since `BA` takes values in the opposite-order Hahn series. -/
 def IsLocalToOrderLeq (n : ℕ) : Prop :=
-  ∀ (k l : ℤ), ((subLeft R)^n • (comp A B)).coeff (toLex (k, l)) =
-    ((subRight R)^n • (comp B A)).coeff (toLex (l, k))
-
+  ∀ (k l : ℤ), (binomCompLeft A B n).coeff (toLex (k, l)) =
+    (binomCompRight A B n).coeff (toLex (l, k))
+/-!
 theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
     IsLocalToOrderLeq A B (n + m) := by
   induction m with
   | zero => exact h
   | succ m ih =>
     intro k l
-    rw [← add_assoc, pow_succ', mul_smul, subLeft_smul_eq, coeff_subLeft_smul, pow_succ', mul_smul,
-      coeff_subRight_smul, ih, ih]
+    rw [IsLocalToOrderLeq, binomCompLeft] at ih
+    rw [binomCompLeft, ← add_assoc, Nat.cast_add, ← HahnSeries.binomialPow_add, mul_comm, mul_smul]
+    ext v
+    rw [coeff_apply]
+    rw [binomialPow_smul_coeff]
 
 theorem toLex_zero_one_lt : (toLex (0, 1) : ℤ ×ₗ ℤ) < (toLex (1, 0)) := by
   exact lex_basis_lt
 
-/-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
-vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
-since `B(y)A(x)` takes values in the opposite-lex-order Hahn series. -/
-def IsLocalToOrderLeq' (n : ℕ) : Prop :=
-  ∀ (k l : ℤ),
-    ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) R (lex_basis_lt) (n : ℤ)) •
-      (comp A B)).coeff (toLex (k, l)) =
-    Int.negOnePow n • ((HahnSeries.binomialPow (Γ := ℤ ×ₗ ℤ) R (lex_basis_lt) (n : ℤ)) •
-      (comp B A)).coeff (toLex (l, k))
 
-
-theorem isLocalToOrderLeq_add (m n : ℕ) (h : IsLocalToOrderLeq' A B n) :
-    IsLocalToOrderLeq' A B (n + m) := by
-  induction m with
-  | zero => exact h
-  | succ m ih =>
-    intro k l
-    rw [← add_assoc, add_comm, Nat.cast_add, ← HahnSeries.binomialPow_add (Nat.cast (R := ℤ) 1),
-      mul_smul, subLeft_smul_eq, coeff_subLeft_smul, pow_succ', mul_smul,
-      coeff_subRight_smul, ih, ih]
-
-I need to add API about permutations on the indexing set of PiLex!
 def isLocal_symm (h : IsLocalToOrderLeq R V A B n) : IsLocalToOrderLeq R V B A n := by
   intro k l
 

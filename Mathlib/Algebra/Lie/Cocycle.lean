@@ -56,11 +56,12 @@ namespace Fin
 
 lemma succAbove_eq_iff_eq_castPred {n : ℕ} {i j : Fin (n + 1)} (h : i < j) (k : Fin n)
     (h' := Fin.ne_last_of_lt h) : j.succAbove k = i ↔ k = i.castPred h' := by
-  refine ⟨?_, fun hk => hk ▸ Fin.succAbove_castPred_of_lt j i h (Fin.ne_last_of_lt h)⟩
+  refine ⟨?_, fun hk ↦ hk ▸ succAbove_castPred_of_lt j i h⟩
   intro hk
   simp_rw [← hk]
   exact (Fin.castPred_succAbove k j ((Fin.succAbove_lt_iff_castSucc_lt j k).mp <| hk ▸ h)
-      (hk ▸ h')).symm
+    (hk ▸ h')).symm
+
 
 lemma succAbove_eq_iff_eq_pred {n : ℕ} {i j : Fin (n + 1)} (h : j < i) (k : Fin n)
     (h' := Fin.ne_zero_of_lt h) : Fin.succAbove j k = i ↔ k = i.pred h' := by
@@ -212,7 +213,7 @@ lemma List.Ico_mem {n : ℕ} (p q r : Fin (n + 1)) : r ∈ List.Ico p q ↔ p �
 
 lemma formPerm_List_id_of_lt {n : ℕ} {p q r : Fin (n + 1)} (hpq : p < q) :
     (List.formPerm (List.Ico q r)) p = p := by
-  refine List.formPerm_apply_of_not_mem ?_
+  refine List.formPerm_apply_of_notMem ?_
   simp only [List.Ico, List.mem_pmap, List.Ico.mem, not_exists]
   intro s hs
   exact Fin.ne_of_gt (lt_of_lt_of_le hpq (le_def.mpr (by simp [hs.1])))
@@ -222,7 +223,7 @@ lemma formPerm_List_id_of_lt {n : ℕ} {p q r : Fin (n + 1)} (hpq : p < q) :
 
 lemma formPerm_List_id_of_gt {n : ℕ} {p q r : Fin (n + 1)} (hqr : q < r) :
     (List.formPerm (List.Ico p q)) r = r := by
-  refine List.formPerm_apply_of_not_mem ?_
+  refine List.formPerm_apply_of_notMem ?_
   simp only [List.Ico, List.mem_pmap, List.Ico.mem, not_exists]
   intro s hs
   exact Fin.ne_of_lt (LT.lt.trans (lt_def.mpr (by simp [hs.2])) hqr)
@@ -240,15 +241,15 @@ lemma not_injective_of_comp_succAbove {α : Type*} {n : ℕ} {i j k : Fin (n + 1
     by_cases hj : j < k
     · use j.castPred <| Fin.ne_last_of_lt hj
       constructor
-      · rw [Fin.succAbove_castPred_of_lt k i hi (Fin.ne_last_of_lt hi)]
-        rw [Fin.succAbove_castPred_of_lt k j hj (Fin.ne_last_of_lt hj)]
+      · rw [Fin.succAbove_castPred_of_lt k i hi]
+        rw [Fin.succAbove_castPred_of_lt k j hj]
         exact hf
       · exact fun h => hij (Fin.castPred_inj.mp h)
     · have hjk' : k < j := by omega
       use j.pred <| Fin.ne_zero_of_lt hjk'
       constructor
-      · rw [Fin.succAbove_castPred_of_lt k i hi (Fin.ne_last_of_lt hi)]
-        rw [Fin.succAbove_pred_of_lt k j hjk' (Fin.ne_zero_of_lt hjk')]
+      · rw [Fin.succAbove_castPred_of_lt k i hi]
+        rw [Fin.succAbove_pred_of_lt k j hjk']
         exact hf
       · exact Fin.ne_of_lt <| lt_of_lt_of_le hi <| (Fin.castPred_le_pred_iff
           (Fin.ne_last_of_lt hjk') (Fin.ne_zero_of_lt hjk')).mpr hjk'
@@ -257,8 +258,8 @@ lemma not_injective_of_comp_succAbove {α : Type*} {n : ℕ} {i j k : Fin (n + 1
     by_cases hj : j < k
     · use j.castPred <| Fin.ne_last_of_lt hj
       constructor
-      · rw [Fin.succAbove_pred_of_lt k i hi (Fin.ne_zero_of_lt hi)]
-        rw [Fin.succAbove_castPred_of_lt k j hj (Fin.ne_last_of_lt hj)]
+      · rw [Fin.succAbove_pred_of_lt k i hi]
+        rw [Fin.succAbove_castPred_of_lt k j hj]
         exact hf
       · rw [ne_comm]
         exact (Fin.ne_of_lt) <| lt_of_lt_of_le hj <| (Fin.castPred_le_pred_iff
@@ -266,8 +267,8 @@ lemma not_injective_of_comp_succAbove {α : Type*} {n : ℕ} {i j k : Fin (n + 1
     · have hjk' : k < j := by omega
       use j.pred <| Fin.ne_zero_of_lt hjk'
       constructor
-      · rw [Fin.succAbove_pred_of_lt k i hi (Fin.ne_zero_of_lt hi)]
-        rw [Fin.succAbove_pred_of_lt k j hjk' (Fin.ne_zero_of_lt hjk')]
+      · rw [Fin.succAbove_pred_of_lt k i hi]
+        rw [Fin.succAbove_pred_of_lt k j hjk']
         exact hf
       · refine fun h => hij (Fin.pred_inj.mp h)
 
@@ -480,12 +481,12 @@ def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→�
     · simp only [Function.update_of_ne (ne_of_lt (lt_of_eq_of_lt hki h)).symm]
       simp only [Fin.removeNth_update_of_gt (lt_of_eq_of_lt hki h)]
       simp_rw [show ∀ (z : L), Function.update g k z i = z by
-      intros; rw [hki, Function.update_self]]
+        intros; rw [hki, Function.update_self]]
       have : k.castPred (Fin.ne_last_of_lt (lt_of_eq_of_lt hki h)) =
           i.castPred (Fin.ne_last_of_lt h) := Fin.castPred_inj.mpr hki
       simp_rw [this, Fin.removeNth_update]
-      rw [Fin.cons_eq_update_cons 0 ⁅r • x, g j⁆, Fin.cons_eq_update_cons 0 ⁅x, g j⁆]
-      simp
+      rw [Fin.cons_eq_update_cons 0 ⁅r • x, g j⁆, Fin.cons_eq_update_cons 0 ⁅x, g j⁆, smul_lie,
+        AlternatingMap.map_update_smul]
     · simp_rw [Function.update_of_ne (ne_of_lt hki)]
       obtain hkj | hkj | hkj := lt_trichotomy k j
       · simp_rw [Function.update_of_ne (Fin.ne_of_lt hkj).symm]
@@ -497,8 +498,7 @@ def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→�
         simp_rw [this]
         have (z : L) : Function.update g k z j = z := by rw [hkj.symm, Function.update_self]
         rw [this, Fin.cons_eq_update_cons 0 ⁅g i, r • x⁆, this,
-          Fin.cons_eq_update_cons 0 ⁅g i, x⁆]
-        simp
+          Fin.cons_eq_update_cons 0 ⁅g i, x⁆, LieAlgebra.lie_smul, AlternatingMap.map_update_smul]
       · simp_rw [Function.update_of_ne (ne_of_lt hkj), Fin.removeNth_update_of_lt hkj]
         have : i.castPred (Fin.ne_last_of_lt hki) < k.pred (Fin.ne_zero_of_lt hkj) := by
           refine (Fin.lt_pred_iff (Fin.ne_zero_of_lt hkj)).mpr ?_

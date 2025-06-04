@@ -717,7 +717,7 @@ theorem hsum_pi_family (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
   induction s using cons_induction with
   | empty =>
     ext g
-    simp only [coeff_hsum, PiFamily_toFun, not_mem_empty, ↓reduceDIte, prod_const_one, coeff_one,
+    simp only [coeff_hsum, PiFamily_toFun, notMem_empty, ↓reduceDIte, prod_const_one, coeff_one,
       prod_empty]
     classical
     refine finsum_eq_single (fun _ ↦ if g = 0 then 1 else 0)
