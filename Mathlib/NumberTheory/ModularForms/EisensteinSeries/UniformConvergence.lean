@@ -3,6 +3,7 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
+
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
@@ -29,7 +30,7 @@ noncomputable section
 
 open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology
 
-open scoped UpperHalfPlane Topology BigOperators Nat
+open scoped UpperHalfPlane
 
 variable (z : ℍ)
 
@@ -63,12 +64,5 @@ lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤
     apply eisensteinSeries_tendstoLocallyUniformly hk
   · simp only [IsOpenEmbedding.toPartialHomeomorph_target, Set.top_eq_univ, mapsTo_range_iff,
     Set.mem_univ, forall_const]
-
-lemma eisensteinSeries_SummableLocallyUniformlyOn {k : ℤ} {N : ℕ}
-    (hk : 3 ≤ k) (a : Fin 2 → ZMod N) :
-    SummableLocallyUniformlyOn (fun (v : (gammaSet N a)) z ↦ eisSummand k v z) univ := by
-  apply HasSumLocallyUniformlyOn.summableLocallyUniformlyOn
-  rw [hasSumLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn, tendstoLocallyUniformlyOn_univ ]
-  exact eisensteinSeries_tendstoLocallyUniformly hk a
 
 end EisensteinSeries

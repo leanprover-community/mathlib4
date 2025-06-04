@@ -16,13 +16,11 @@ We gather results about the summability of Eisenstein series, particularly
 the summability of the Eisenstein series summands, which are used in the proof of the
 boundedness of Eisenstein series at infinity.
 -/
-
 noncomputable section
 
 open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
 
 open scoped UpperHalfPlane Topology BigOperators Nat
-
 
 variable (z : ℍ)
 
