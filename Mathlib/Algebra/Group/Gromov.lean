@@ -2307,7 +2307,10 @@ lemma three_two_ker_fg (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S
   obtain ⟨γ, phi_gamma⟩ := hφ 1
   --obtain ⟨n, hn⟩ := three_two_poly_growth d hd hG γ φ hφ phi_gamma
   obtain ⟨n, hn⟩ := three_poly_poly_growth_all_s_n d hd hG γ φ hφ phi_gamma
-  use (Finset.preimage (three_two_S_n (S := S) φ γ (n)) Multiplicative.ofAdd (by sorry))
+  use (Finset.preimage (three_two_S_n (S := S) φ γ (n)) Multiplicative.ofAdd (by
+    apply Set.injOn_of_injective
+    exact fun ⦃a₁ a₂⦄ a ↦ a
+  ))
   simp
   ext z
   refine ⟨?_, ?_⟩
