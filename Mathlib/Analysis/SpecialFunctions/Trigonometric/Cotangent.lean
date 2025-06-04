@@ -180,12 +180,9 @@ theorem logDeriv_sineTerm_eq_cotTerm (x : ℂ) (hx: x ∈ ℂ_ℤ) (i : ℕ) :
   simp only [Int.cast_add, Int.cast_natCast, Int.cast_one, ne_eq, sineTerm, one_div] at *
   have h4 : ((i + 1) ^ 2 * (1 + -x ^ 2 / (i + 1) ^ 2)) ≠ 0 := by
     simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, h3,
-      or_false]
-    exact Nat.cast_add_one_ne_zero i
+      or_false, Nat.cast_add_one_ne_zero i]
   field_simp
-  have h5 : (i : ℂ) + 1 ≠ 0 := by
-    exact Nat.cast_add_one_ne_zero i
-  field_simp
+  field_simp [Nat.cast_add_one_ne_zero i]
   ring
 
 lemma logDeriv_prod_sineTerm_eq_sum_cotTerm {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℕ) :
