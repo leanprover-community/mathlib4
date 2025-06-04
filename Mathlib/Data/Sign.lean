@@ -72,7 +72,7 @@ instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
 @[deprecated instDecidableEqSignType (since := "2025-06-03")]
-def decidableEq : DecidableEq SignType := instDecidableEqSignType
+instance (priority := low) decidableEq : DecidableEq SignType := instDecidableEqSignType
 
 private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
 private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := by
@@ -108,7 +108,7 @@ instance : LinearOrder SignType where
   le_antisymm := le_antisymm
   le_trans := le_trans
   toDecidableLE := LE.decidableRel
-  toDecidableEq := SignType.decidableEq
+  toDecidableEq := instDecidableEqSignType
 
 instance : BoundedOrder SignType where
   top := 1

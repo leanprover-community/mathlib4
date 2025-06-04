@@ -52,19 +52,19 @@ theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
 
 @[deprecated commutative_merge (since := "2025-06-03")]
-def merge_isCommutative (f : α → α → α) [Std.Commutative f] :
+theorem merge_isCommutative (f : α → α → α) [Std.Commutative f] :
     Std.Commutative (merge f) := commutative_merge f
 
 @[deprecated associative_merge (since := "2025-06-03")]
-def merge_isAssociative (f : α → α → α) [Std.Associative f] :
+theorem merge_isAssociative (f : α → α → α) [Std.Associative f] :
     Std.Associative (merge f) := associative_merge f
 
 @[deprecated idempotentOp_merge (since := "2025-06-03")]
-def merge_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
+theorem merge_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
     Std.IdempotentOp (merge f) := idempotentOp_merge f
 
 @[deprecated lawfulIdentity_merge (since := "2025-06-03")]
-def merge_isId (f : α → α → α) : Std.LawfulIdentity (merge f) none := lawfulIdentity_merge f
+theorem merge_isId (f : α → α → α) : Std.LawfulIdentity (merge f) none := lawfulIdentity_merge f
 
 @[deprecated (since := "2025-04-04")] alias liftOrGet_isCommutative :=
   merge_isCommutative
