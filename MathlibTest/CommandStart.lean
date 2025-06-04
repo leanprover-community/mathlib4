@@ -66,6 +66,36 @@ structure D where
   field1    :     Nat
   field2    : Nat
 
+-- This also applies to consecutive declarations.
+/--
+warning: declaration uses 'sorry'
+---
+warning: extra space in the source
+
+This part of the code
+  'instance   : Add'
+should be written as
+  'instance : Add'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+instance   : Add Nat := sorry
+/--
+warning: declaration uses 'sorry'
+---
+warning: extra space in the source
+
+This part of the code
+  'instance   : Add'
+should be written as
+  'instance : Add'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+instance   : Add Nat := sorry
+
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
 
