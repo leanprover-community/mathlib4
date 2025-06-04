@@ -29,7 +29,6 @@ section NormedSpace
 variable {f g : 𝕜 → E} {n : ℕ} {z₀ : 𝕜}
 
 open scoped Classical in
-
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
 The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
@@ -389,7 +388,7 @@ theorem exists_analyticOrderAt_ne_top_iff_forall (hU : IsConnected U) :
   have : ConnectedSpace U := Subtype.connectedSpace hU
   obtain ⟨v⟩ : Nonempty U := inferInstance
   suffices (∀ (u : U), analyticOrderAt f u ≠ ⊤) ∨ ∀ (u : U), analyticOrderAt f u = ⊤ by tauto
-  simpa [Set.eq_empty_iff_forall_not_mem, Set.eq_univ_iff_forall] using
+  simpa [Set.eq_empty_iff_forall_notMem, Set.eq_univ_iff_forall] using
       isClopen_iff.1 hf.isClopen_setOf_analyticOrderAt_eq_top
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite

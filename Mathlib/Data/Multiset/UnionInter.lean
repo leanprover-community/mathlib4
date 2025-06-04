@@ -119,7 +119,7 @@ lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
   · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]
     exact IH (erase_le_iff_le_cons.2 h₁) (erase_le_erase _ h₂)
   · rw [cons_inter_of_neg _ h]
-    exact IH ((le_cons_of_not_mem <| mt (mem_of_le h₂) h).1 h₁) h₂
+    exact IH ((le_cons_of_notMem <| mt (mem_of_le h₂) h).1 h₁) h₂
 
 @[simp]
 lemma mem_inter : a ∈ s ∩ t ↔ a ∈ s ∧ a ∈ t :=
@@ -193,7 +193,7 @@ lemma sub_add_inter (s t : Multiset α) : s - t + s ∩ t = s := by
   revert s; refine Multiset.induction_on t (by simp) fun a t IH s => ?_
   by_cases h : a ∈ s
   · rw [cons_inter_of_pos _ h, sub_cons, add_cons, IH, cons_erase h]
-  · rw [cons_inter_of_neg _ h, sub_cons, erase_of_not_mem h, IH]
+  · rw [cons_inter_of_neg _ h, sub_cons, erase_of_notMem h, IH]
 
 lemma sub_inter (s t : Multiset α) : s - s ∩ t = s - t :=
   (Multiset.eq_sub_of_add_eq <| sub_add_inter ..).symm
@@ -253,10 +253,13 @@ protected def Disjoint (s t : Multiset α) : Prop :=
 theorem disjoint_left {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ s → a ∉ t := by
   refine ⟨fun h a hs ht ↦ ?_, fun h u hs ht ↦ ?_⟩
   · simpa using h (singleton_le.mpr hs) (singleton_le.mpr ht)
-  · rw [le_bot_iff, bot_eq_zero, eq_zero_iff_forall_not_mem]
+  · rw [le_bot_iff, bot_eq_zero, eq_zero_iff_forall_notMem]
     exact fun a ha ↦ h (subset_of_le hs ha) (subset_of_le ht ha)
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_left_multiset, _⟩ := disjoint_left
+alias ⟨_root_.Disjoint.notMem_of_mem_left_multiset, _⟩ := disjoint_left
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.not_mem_of_mem_left_multiset := Disjoint.notMem_of_mem_left_multiset
 
 @[simp, norm_cast]
 theorem coe_disjoint (l₁ l₂ : List α) : Disjoint (l₁ : Multiset α) l₂ ↔ l₁.Disjoint l₂ :=
@@ -268,7 +271,10 @@ theorem coe_disjoint (l₁ l₂ : List α) : Disjoint (l₁ : Multiset α) l₂ 
 theorem disjoint_right {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ t → a ∉ s :=
   disjoint_comm.trans disjoint_left
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_right_multiset, _⟩ := disjoint_right
+alias ⟨_root_.Disjoint.notMem_of_mem_right_multiset, _⟩ := disjoint_right
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.not_mem_of_mem_right_multiset := Disjoint.notMem_of_mem_right_multiset
 
 theorem disjoint_iff_ne {s t : Multiset α} : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp [disjoint_left, imp_not_comm]
