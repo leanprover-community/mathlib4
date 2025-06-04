@@ -15,24 +15,24 @@ mkMDtable () {
       for(i=1; i<=m; i++) {printf("%s|", str)}
       print "" }
     BEGIN{
-    longTotal=0
-    foundShort=0
-    n=split(heads, headers, ",")
-    # mkRow, with the header entries
-    printf("|")
-    for(i=1; i<=n; i++) {printf(" %s |", headers[i])}
-    print ""
-    mkRow(n, "-")
-  } (limit < $1+0) {longTotal++}
-    ((foundShort == "0") && (0 < longTotal) && ($1+0 <= limit) && ($1+0 == $1)) {mkRow(n, " "); foundShort=1}
-    # mkRow, with the entries of each line
-    { printf("|")
-      for(i=1; i<=n; i++) {printf(" %s |", $i)}
-      print "" } END{
-      if(longTotal == "0")
-      { printf("\nAll files are within the length limit!\n") }
-      else
-      { printf("\n%s file%s exceed the length limit (%s).\n", longTotal, (longTotal == 1) ? "" : "s", limit) }
+      longTotal=0
+      foundShort=0
+      n=split(heads, headers, ",")
+      # mkRow, with the header entries
+      printf("|")
+      for(i=1; i<=n; i++) {printf(" %s |", headers[i])}
+      print ""
+      mkRow(n, "-")
+    } (limit < $1+0) {longTotal++}
+      ((foundShort == "0") && (0 < longTotal) && ($1+0 <= limit) && ($1+0 == $1)) {mkRow(n, " "); foundShort=1}
+      # mkRow, with the entries of each line
+      { printf("|")
+        for(i=1; i<=n; i++) {printf(" %s |", $i)}
+        print "" } END{
+        if(longTotal == "0")
+        { printf("\nAll files are within the length limit!\n") }
+        else
+        { printf("\n%s file%s exceed the length limit (%s).\n", longTotal, (longTotal == 1) ? "" : "s", limit) }
     }' "${2}"
 }
 
