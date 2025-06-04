@@ -1189,11 +1189,22 @@ lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: �
                 omega
               . exact add_right_strictMono
           .
-            repeat rw [← mul_self_zpow]
-            rw [zpow_sub_one]
-            rw [zpow_add]
-            simp
             repeat rw [← mul_assoc]
+            nth_rw 2 [← zpow_neg_one]
+            rw [← zpow_add]
+            rw [add_comm, ← sub_eq_add_neg]
+            conv =>
+              rhs
+              rw [mul_assoc]
+              rhs
+              rw [← inv_zpow]
+              rw [inv_zpow']
+              rw [mul_zpow_self]
+              rw [add_comm]
+            simp
+            rw [← inv_zpow]
+            simp
+            rw [sub_eq_add_neg]
 
         .
           have n_minus_eq: n - 1 + 1 = n := by
