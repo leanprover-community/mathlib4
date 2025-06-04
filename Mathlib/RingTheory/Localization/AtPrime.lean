@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal

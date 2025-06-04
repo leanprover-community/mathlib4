@@ -3,7 +3,6 @@ Copyright (c) 2025 Jingting Wang, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang, Junyan Xu
 -/
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.TensorProduct.Quotient
