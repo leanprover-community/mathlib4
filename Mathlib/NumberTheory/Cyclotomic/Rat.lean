@@ -401,8 +401,7 @@ lemma norm_toInteger_pow_sub_one_of_prime_ne_two [IsCyclotomicExtension {p ^ (k 
   rwa [pow_one]
 
 /--
-The norm, relative to `ℤ`, of `ζ - 1` in a `2 ^ (k + 2)`-th cyclotomic extension of `ℚ` is
-`2` if `p ≠ 2`.
+The norm, relative to `ℤ`, of `ζ - 1` in a `2 ^ (k + 2)`-th cyclotomic extension of `ℚ` is `2`.
 -/
 theorem norm_toInteger_sub_one_of_eq_two_pow {k : ℕ} {K : Type*} [Field K]
     {ζ : K} [CharZero K] [IsCyclotomicExtension {2 ^ (k + 2)} ℚ K]
@@ -585,6 +584,10 @@ lemma toInteger_sub_one_not_dvd_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     exact Nat.prime_iff_prime_int.1 hp.1
 
 open IntermediateField in
+/--
+Let `ζ` be a primitive root of unity of order `n` with `2 ≤ n`. Any prime number that divides the
+norm, relative to `ℤ`, of `ζ - 1` divides also `n`.
+-/
 theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
     [Field K] [NumberField K] {ζ : K} {p : ℕ} [hF : Fact (Nat.Prime p)] (hζ : IsPrimitiveRoot ζ n)
     (hp : let _ : NeZero n := NeZero.of_gt hn; (p : ℤ) ∣ norm ℤ (hζ.toInteger - 1)) :
