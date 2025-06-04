@@ -250,14 +250,13 @@ def getUnlintedRanges (a : Array SyntaxNodeKind) :
   | curr, _ => curr
 
 /-- Given a `HashSet` of `String.Ranges` `rgs` and a further `String.Range` `rg`,
-`outside rgs rg` returns `true` if and only if `rgs` contains a range the completely contains
+`isOutside rgs rg` returns `false` if and only if `rgs` contains a range that completely contains
 `rg`.
 
 The linter uses this to figure out which nodes should be ignored.
 -/
-def outside? (rgs : Std.HashSet String.Range) (rg : String.Range) : Bool :=
-  let superRanges := rgs.filter fun {start := a, stop := b} ↦ (a ≤ rg.start && rg.stop ≤ b)
-  superRanges.isEmpty
+def isOutside (rgs : Std.HashSet String.Range) (rg : String.Range) : Bool :=
+  rgs.all fun {start := a, stop := b} ↦ !(a ≤ rg.start && rg.stop ≤ b)
 
 /-- `mkWindow orig start ctx length` extracts from `orig` a string that starts at the first
 non-whitespace character before `start`, then expands to cover `length + ctx` more characters
@@ -323,7 +322,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
         Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
           m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
         continue
-      unless outside? forbidden rg do
+      unless isOutside forbidden rg do
         continue
       unless rg.stop ≤ upTo do return
       unless docStringEnd ≤ rg.start do return
