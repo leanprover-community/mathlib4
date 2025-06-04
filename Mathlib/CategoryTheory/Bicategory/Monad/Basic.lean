@@ -90,7 +90,7 @@ def ofOplaxFromPUnit (F : OplaxFunctor (LocallyDiscrete (Discrete PUnit.{u₀ + 
     simp only [tensorUnit_def, tensorObj_def, whiskerLeft_def, rightUnitor_def]
     rw [Category.assoc, F.mapComp_id_right, F.map₂_inv_hom_assoc]
 
-/-- A comonad in `B` defines a oplax functor from the trivial bicategory to `B`. -/
+/-- A comonad in `B` defines an oplax functor from the trivial bicategory to `B`. -/
 def toOplax {a : B} (t : a ⟶ a) [Comonad t] :
     OplaxFunctor (LocallyDiscrete (Discrete PUnit.{u₀ + 1})) B where
   obj _ := a
