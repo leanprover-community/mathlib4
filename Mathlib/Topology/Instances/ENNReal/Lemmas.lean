@@ -1008,56 +1008,6 @@ theorem tsum_le_of_sum_range_le {f : ℕ → ℝ≥0∞} {c : ℝ≥0∞}
     (h : ∀ n, ∑ i ∈ Finset.range n, f i ≤ c) : ∑' n, f n ≤ c :=
   ENNReal.summable.tsum_le_of_sum_range_le h
 
-/-- A series of extended non-negative real numbers converges to `a` in the sense of `HasSum` if and
-only if the sequence of partial sums is bounded above by `a` and, for each `b < a` there exists an
-`n` such that the partial sum exceeds `b`. -/
-lemma hasSum_iff_bounds_nat (f : ℕ → ℝ≥0∞) (a : ℝ≥0∞) : HasSum f a ↔
-    (∀ (n : ℕ), ∑ i ∈ Finset.range n, f i ≤ a) ∧
-    (∀ b < a, ∃ (n : ℕ), b < ∑ i ∈ Finset.range n, f i) := by
-  obtain ha | ha | ha := a.trichotomy
-  · -- The case `a = 0`.
-    suffices h : (∀ x, f x = 0) ↔ ∀ n i, i < n → f i = 0 by simpa [ha, hasSum_zero_iff]
-    exact ⟨fun h _ i _ ↦ h i, fun h i ↦  h (i + 1) i (by omega)⟩
-  · -- The case `a = ∞`.
-    suffices h: (∀ i, ¬i = ∞ → ∃ a, ∀ (b : ℕ), a ≤ b → i < ∑ i ∈ Finset.range b, f i) ↔
-        ∀ b < ⊤, ∃ n, b < ∑ i ∈ Finset.range n, f i by
-      simpa [ha, hasSum_iff_tendsto_nat, nhds_top]
-    refine ⟨fun h b hb ↦ ?_, fun h b hb ↦ ?_⟩
-    · obtain ⟨n, hn⟩ := h b (LT.lt.ne_top hb)
-      exact ⟨n, hn n n.le_refl⟩
-    · obtain ⟨n, hn⟩ := h b (Ne.lt_top' <| Ne.symm hb)
-      exact ⟨n, fun m _ ↦ gt_of_ge_of_gt (Finset.sum_le_sum_of_subset (by simpa)) hn⟩
-  · -- The case `0 < a ∧ a < ∞`.
-    obtain ⟨ha'', ha'⟩ := (a.toReal_pos_iff).mp ha
-    rw [hasSum_iff_tendsto_nat]
-    constructor
-    · refine fun h ↦ ⟨fun n ↦ ?_, fun b hb ↦ ?_⟩
-      · rw [tendsto_atTop_nhds] at h
-        by_contra! hc
-        have hn : ∀ m, n ≤ m → ∑ i ∈ Finset.range n, f i ≤  ∑ i ∈ Finset.range m, f i :=
-          fun _ _ ↦ Finset.sum_le_sum_of_subset (by simpa)
-        let s := Set.Ico 0 (∑ i ∈ Finset.range n, f i)
-        obtain ⟨ℓ, hℓ⟩ := h s ⟨by simp, hc⟩ isOpen_Ico_zero
-        exact (lt_self_iff_false _).mp <|
-          lt_of_lt_of_le ((hℓ (max n ℓ) (by omega)).2) (hn (max n ℓ) (by omega))
-      · rw [tendsto_atTop_nhds] at h
-        let s := Set.Ioo b (a + 1)
-        have hs : a ∈ s := by simpa [s, hb] using lt_add_right (LT.lt.ne_top ha') one_ne_zero
-        obtain ⟨n, hn⟩ := h s hs isOpen_Ioo
-        exact ⟨n, (hn n (Nat.le_refl _)).1⟩
-    · intro ⟨hf, hf'⟩
-      rw [ENNReal.tendsto_nhds ha'.ne_top]
-      intro ε hε
-      simp only [Set.mem_Icc, tsub_le_iff_right, Filter.eventually_atTop, ge_iff_le]
-      have hε' := (ENNReal.sub_lt_self_iff (LT.lt.ne_top ha')).mpr ⟨ha'', hε⟩
-      obtain ⟨n, hn⟩ := hf' (a - ε) hε'
-      refine ⟨n, fun m hm ↦ ⟨?_, ?_⟩⟩
-      · calc a
-        _ ≤ a - ε + ε := by exact le_tsub_add
-        _ ≤ ∑ i ∈ Finset.range n, f i + ε := add_le_add_right (le_of_lt hn) ε
-        _ ≤ ∑ i ∈ Finset.range m, f i + ε := by gcongr
-      · exact le_add_right (hf m)
-
 theorem hasSum_lt {f g : α → ℝ≥0∞} {sf sg : ℝ≥0∞} {i : α} (h : ∀ a : α, f a ≤ g a) (hi : f i < g i)
     (hsf : sf ≠ ∞) (hf : HasSum f sf) (hg : HasSum g sg) : sf < sg := by
   by_cases hsg : sg = ∞
