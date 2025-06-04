@@ -303,11 +303,9 @@ theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
   simp [ιMulti, Matrix.vecTail]
 
 theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
-    (ιMulti R n.succ).curryLeft m = (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) :=
-  AlternatingMap.ext fun v =>
-    (ιMulti_succ_apply _).trans <| by
-      simp_rw [Matrix.tail_cons]
-      rfl
+    (ιMulti R n.succ).curryLeft m =
+      (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) := by
+  ext; simp
 
 variable (R)
 
