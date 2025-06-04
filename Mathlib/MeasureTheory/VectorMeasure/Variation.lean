@@ -47,7 +47,6 @@ complex measures.
 * If `μ` is a complex measure then `variation μ univ < ∞`.
 * Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`.
   Then `variation μ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
-* Remove the assumption of `[T2Space V]`?
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
@@ -68,12 +67,11 @@ namespace VectorMeasure
 ## Inner partitions
 
 Instead of working with partitions of a set `s`, we work with finite sets of disjoints sets
-contained within `s` since the same value will be achieved in the supremum.
-
-The empty set is forbidden so that partitions of disjoint sets are disjoint sets of sets.
+contained within `s` since the same value will be achieved in the supremum. The empty set is
+forbidden so that partitions of disjoint sets are disjoint sets of sets.
 -/
 
-section IsInnerPartition
+section IsInnerPart
 
 variable {X : Type*} [MeasurableSpace X]
 
@@ -244,7 +242,7 @@ lemma restriction_isInnerPart {s t : Set X} {P : Finset (Set X)} (hs : IsInnerPa
     exact hs.2.2.1 hp hq hpq (Set.subset_inter_iff.mp h).1 (Set.subset_inter_iff.mp h').1
   · exact (Finset.mem_filter.mp hp).2
 
-end IsInnerPartition
+end IsInnerPart
 
 /-!
 ## Definition of the variation of a subadditive `ℝ≥0∞` valued function
@@ -464,13 +462,6 @@ lemma var_aux_iUnion (hf : IsSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X
   · exact le_var_aux_iUnion f s hs hs'
   · exact var_aux_iUnion_le f s hs hs' hf hf'
 
-/-- The variation of a subadditive function as a `VectorMeasure`. -/
-noncomputable def funVar (hf : IsSubadditive f) (hf' : f ∅ = 0) : VectorMeasure X ℝ≥0∞ where
-  measureOf'          := var_aux f
-  empty'              := var_aux_empty' f
-  not_measurable' _ h := if_neg h
-  m_iUnion'           := var_aux_iUnion f hf hf'
-
 end var_aux
 
 /-!
@@ -479,13 +470,26 @@ end var_aux
 
 section variation
 
-variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V]
+variable  {X : Type*} [MeasurableSpace X]
 
--- Does the lemma really need T2Space? This doesn't: `μ.hasSum_of_disjoint_iUnion hs hs'`.
+/-- The variation of a subadditive function as an `ℝ≥0∞` valued `VectorMeasure`. -/
+noncomputable def variation' {f : Set X → ℝ≥0∞} (hf : IsSubadditive f) (hf' : f ∅ = 0) :
+    VectorMeasure X ℝ≥0∞ where
+  measureOf'          := var_aux f
+  empty'              := var_aux_empty' f
+  not_measurable' _ h := if_neg h
+  m_iUnion'           := var_aux_iUnion f hf hf'
+
+variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V]
+
 lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) [T2Space V] :
     IsSubadditive fun s ↦ ‖μ s‖ₑ := by
   intro _ hs hs'
   simpa [VectorMeasure.of_disjoint_iUnion hs hs'] using enorm_tsum_le_tsum_enorm
+
+-- TO DO: define using `variation'` or directly?
+noncomputable def variation [T2Space V] (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ :=
+  variation' (isSubadditive_enorm_vectorMeasure μ) (by simp)
 
 end variation
 
@@ -685,12 +689,12 @@ lemma variation_m_iUnion' (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
         gcongr with i hi
         exact le_variation_aux μ (hs i) (hP i)
 
-/-- The variation of a vector-valued measure as a `VectorMeasure`. -/
-noncomputable def variation : VectorMeasure X ℝ≥0∞ where
-  measureOf'          := variation_aux μ
-  empty'              := variation_empty' μ
-  not_measurable' _ h := if_neg h
-  m_iUnion'           := variation_m_iUnion' μ
+-- /-- The variation of a vector-valued measure as a `VectorMeasure`. -/
+-- noncomputable def variation : VectorMeasure X ℝ≥0∞ where
+--   measureOf'          := variation_aux μ
+--   empty'              := variation_empty' μ
+--   not_measurable' _ h := if_neg h
+--   m_iUnion'           := variation_m_iUnion' μ
 
 end VectorMeasure
 
