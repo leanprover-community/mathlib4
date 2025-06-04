@@ -121,7 +121,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   refine
     not_irreducible_of_not_unit_dvdNotUnit
       (DvdNotUnit.not_unit
-        (Associates.dvdNotUnit_iff_lt.2 (h₁ (show (0 : Fin (n + 2)) < j from ?_))))
+        (Associates.dvdNotUnit_iff_lt.2 (h₁ (show (0 : Fin (n + 2)) < j.castSucc from ?_))))
       ?_ hp.irreducible
   · simpa using Fin.lt_def.mp hi
   · refine Associates.dvdNotUnit_iff_lt.2 (h₁ ?_)
