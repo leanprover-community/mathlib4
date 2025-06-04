@@ -36,8 +36,8 @@ variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 namespace NNRealRMK
 
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
-the (lower) Lebesgue integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal
-to `Λ f`. -/
+the (Bochner) integral of `f` (as a `ℝ`-valued function) with respect to the `rieszMeasure`
+associated to `Λ` is equal to `Λ f`. -/
 theorem integral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫ (x : X), (f x : ℝ) ∂(rieszMeasure Λ) = Λ f := by
   rw [← eq_toRealLinear_toReal Λ f,
       ← RealRMK.integral_rieszMeasure (@nonneg_toRealLinear _ _ Λ) f.toReal]
