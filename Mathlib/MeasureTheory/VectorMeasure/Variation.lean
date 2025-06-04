@@ -314,6 +314,7 @@ lemma le_var_aux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ var_aux f s := by
   simpa [var_aux, hs] using le_biSup (fun P ↦ ∑ p ∈ P, f p) hP
 
+-- TO DO: should this be rephrased as `HasSum`?
 /-- A set function is subadditive if the value assigned to the union of disjoint sets is bounded
 above by the sum of the values assigned to the individual sets. -/
 def IsSubadditive (f : Set X → ℝ≥0∞) := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
@@ -410,18 +411,33 @@ lemma le_var_aux_iUnion (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
       have := le_var_aux_iUnion' f hs hs' P (fun i ↦ (hP i).1) n
       gcongr
 
-lemma ENNReal.le_tsum {f : ℕ → ℝ≥0∞} {a : ℝ≥0∞} (h : ∀ b < a, ∃ n, b < ∑ i ∈ Finset.range n, f i) :
-    a ≤ ∑' i, f i := by
+lemma ENNReal.sum_le_tsum' {f : ℕ → ℝ≥0∞} {a : ℝ≥0∞}
+    (h : ∀ b < a, ∃ n, b < ∑ i ∈ Finset.range n, f i) : a ≤ ∑' i, f i := by
   obtain ha | ha | ha := a.trichotomy
   · simp [ha]
-  · sorry
-  · sorry
+  · rw [ha] at h
+    simp only [ha, top_le_iff]
+    by_contra! hc
+    obtain ⟨n, hn⟩ := h (∑' (i : ℕ), f i) hc.symm.lt_top'
+    exact not_le_of_lt hn <| ENNReal.sum_le_tsum _
+  · obtain ⟨ha, ha'⟩ := (a.toReal_pos_iff).mp ha
+    suffices hs : ∀ ε > 0, a ≤ ∑' i, f i + ε by
+      exact le_of_forall_pos_le_add hs
+    intro ε hε
+    have hε' := (ENNReal.sub_lt_self_iff (LT.lt.ne_top ha')).mpr ⟨ha, hε⟩
+    obtain ⟨n, hn⟩ := h (a - ε) hε'
+    calc
+      a ≤ a - ε + ε := by exact le_tsub_add
+      _ ≤ ∑ i ∈ Finset.range n, f i + ε := add_le_add_right (le_of_lt hn) ε
+      _ ≤ ∑' i, f i + ε := by
+        gcongr
+        exact ENNReal.sum_le_tsum (Finset.range n)
 
 open Classical in
 lemma var_aux_iUnion_le (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) (hf : IsSubadditive f) (hf' : f ∅ = 0) :
     var_aux f (⋃ i, s i) ≤ ∑' i, var_aux f (s i) := by
-  refine ENNReal.le_tsum fun b hb ↦ ?_
+  refine ENNReal.sum_le_tsum' fun b hb ↦ ?_
   simp only [var_aux, MeasurableSet.iUnion hs, reduceIte, lt_iSup_iff] at hb
   obtain ⟨Q, hQ, hbQ⟩ := hb
   -- Take the partitions defined as intersection of `Q` and `s i`.
@@ -457,12 +473,16 @@ noncomputable def funVar (hf : IsSubadditive f) (hf' : f ∅ = 0) : VectorMeasur
 
 end var_aux
 
+/-!
+## Definition of variation
+-/
+
 section variation
 
 variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V]
 
 -- Does the lemma really need T2Space? This doesn't: `μ.hasSum_of_disjoint_iUnion hs hs'`.
-lemma isSubadditive_enorm_measure (μ : VectorMeasure X V) [T2Space V] :
+lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) [T2Space V] :
     IsSubadditive fun s ↦ ‖μ s‖ₑ := by
   intro _ hs hs'
   simpa [VectorMeasure.of_disjoint_iUnion hs hs'] using enorm_tsum_le_tsum_enorm
@@ -470,7 +490,7 @@ lemma isSubadditive_enorm_measure (μ : VectorMeasure X V) [T2Space V] :
 end variation
 
 /-!
-## Definition of variation
+## Older Definition of variation
 -/
 
 variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
@@ -675,7 +695,7 @@ noncomputable def variation : VectorMeasure X ℝ≥0∞ where
 end VectorMeasure
 
 /-!
-## Section : properties of variation
+## Properties of variation
 -/
 
 namespace VectorMeasure
