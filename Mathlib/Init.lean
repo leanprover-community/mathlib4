@@ -78,6 +78,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.maxHeartbeats
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
+-- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Mathlib.Linter.Style
 
 run_cmd liftTermElabM do
