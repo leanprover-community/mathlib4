@@ -355,6 +355,27 @@ alias DifferentiableAt.prod_map := DifferentiableAt.prodMap
 
 end prodMap
 
+section swap
+--@[fun_prop]
+--theorem hasFDerivWithinAt_snd {s : Set (E × F)} :
+--    HasFDerivWithinAt (@Prod.snd E F) (snd 𝕜 E F) s p :=
+--  hasFDerivAtFilter_snd
+
+@[fun_prop]
+theorem hasFDerivWithinAt_swap
+  --(𝕜 : Type*) [NontriviallyNormedField 𝕜]
+  --(E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  --(F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  (s : Set (E × F)) (p : E × F) :
+    HasFDerivWithinAt
+      (Prod.swap : E × F → F × E)
+      (ContinuousLinearMap.prodComm 𝕜 E F)
+      s p
+    := by
+  convert hasFDerivWithinAt_snd.prodMk (hasFDerivWithinAt_fst (𝕜 := 𝕜) (p := p))
+
+end swap
+
 section Pi
 
 /-!

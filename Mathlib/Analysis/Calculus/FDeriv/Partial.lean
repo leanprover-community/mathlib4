@@ -41,44 +41,46 @@ section PartialFDeriv
 --  unfold ContinuousOn; intro z hz
 --  apply continuous_swap.continuousWithinAt
 
-open ContinuousLinearMap in
-theorem ContinuousLinearMap.coprod_fst_snd
-  (R : Type*) [Semiring R]
-  (M₁ : Type*) [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R M₁]
-  (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
-  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousAdd M]
-  (f : M₁ →L[R] M) (g : M₂ →L[R] M) :
-    (f.coprod g) = f.comp (fst R M₁ M₂) + g.comp (snd R M₁ M₂) := by
-  ext; all_goals
-  simp only [coprod_comp_inl, coprod_comp_inr, add_comp, add_apply, coe_comp', Function.comp_apply,
-    coe_fst', coe_snd', inl_apply, inr_apply, map_zero, add_zero, zero_add]
-
-open ContinuousLinearMap in
-theorem ContinuousOn.clm_coprod {X : Type*} [TopologicalSpace X]
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
-    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X}
-    (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => (f x).coprod (g x)) s := by
-  simp only [coprod_fst_snd]
-  exact (hf.clm_comp continuousOn_const).add (hg.clm_comp continuousOn_const)
+-- moved to Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+--open ContinuousLinearMap in
+--theorem ContinuousLinearMap.coprod_fst_snd
+--  (R : Type*) [Semiring R]
+--  (M₁ : Type*) [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R M₁]
+--  (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
+--  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousAdd M]
+--  (f : M₁ →L[R] M) (g : M₂ →L[R] M) :
+--    (f.coprod g) = f.comp (fst R M₁ M₂) + g.comp (snd R M₁ M₂) := by
+--  ext; all_goals
+--  simp only [coprod_comp_inl, coprod_comp_inr, add_comp, add_apply, coe_comp', Function.comp_apply,
+--    coe_fst', coe_snd', inl_apply, inr_apply, map_zero, add_zero, zero_add]
+--
+--open ContinuousLinearMap in
+--theorem ContinuousOn.clm_coprod {X : Type*} [TopologicalSpace X]
+--  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+--  {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+--  {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+--  {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+--    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X}
+--    (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
+--    ContinuousOn (fun x => (f x).coprod (g x)) s := by
+--  simp only [coprod_fst_snd]
+--  exact (hf.clm_comp continuousOn_const).add (hg.clm_comp continuousOn_const)
 
 --#min_imports
 
-theorem hasFDerivWithinAt_swap
-  (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-  (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  (s : Set (E × F)) (z : E × F) :
-    HasFDerivWithinAt
-      (Prod.swap : E × F → F × E)
-      (ContinuousLinearMap.prodComm 𝕜 E F)
-      s z
-    := by
-  convert hasFDerivWithinAt_snd.prodMk (hasFDerivWithinAt_fst (𝕜 := 𝕜) (p := z))
-
+-- moved to Mathlib.Analysis.Calculus.FDeriv.Prod
+--theorem hasFDerivWithinAt_swap
+--  (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+--  (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+--  (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+--  (s : Set (E × F)) (z : E × F) :
+--    HasFDerivWithinAt
+--      (Prod.swap : E × F → F × E)
+--      (ContinuousLinearMap.prodComm 𝕜 E F)
+--      s z
+--    := by
+--  convert hasFDerivWithinAt_snd.prodMk (hasFDerivWithinAt_fst (𝕜 := 𝕜) (p := z))
+--
 --#min_imports
 
 theorem HasFDerivWithinAt.partial_fst
