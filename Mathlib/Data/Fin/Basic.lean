@@ -1311,7 +1311,7 @@ lemma predAbove_succAbove (p : Fin n) (i : Fin n) : p.predAbove ((castSucc p).su
 
 theorem predAbove_predAbove_succAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     (j.predAbove i).predAbove (i.succAbove j) = j := by
-  cases j.castSucc.lt_or_le i with
+  cases j.castSucc.gt_or_le i with
   | inl h =>
     rw [predAbove_of_castSucc_lt _ _ h, succAbove_of_castSucc_lt _ _ h, predAbove_of_le_castSucc,
       castPred_castSucc]
@@ -1323,7 +1323,7 @@ theorem predAbove_predAbove_succAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
 
 theorem succAbove_succAbove_predAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     (i.succAbove j).succAbove (j.predAbove i) = i := by
-  cases Fin.lt_or_le j.castSucc i with
+  cases Fin.gt_or_le j.castSucc i with
   | inl h => rw [succAbove_of_castSucc_lt _ _ h, succAbove_predAbove (Fin.ne_of_gt h)]
   | inr h =>
     rw [succAbove_of_le_castSucc _ _ h,

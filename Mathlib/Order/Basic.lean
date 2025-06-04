@@ -328,12 +328,13 @@ variable [LinearOrder α] {a b : α}
 
 namespace LE.le
 
-nonrec lemma lt_or_ge (h : a ≤ b) (c : α) : a < c ∨ c ≤ b := (lt_or_ge a c).imp id h.trans'
-nonrec lemma le_or_gt (h : a ≤ b) (c : α) : a ≤ c ∨ c < b := (le_or_gt a c).imp id h.trans_lt'
-lemma le_or_le (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b := (h.lt_or_ge c).imp le_of_lt id
+lemma gt_or_le (h : a ≤ b) (c : α) : a < c ∨ c ≤ b := (lt_or_ge a c).imp id h.trans'
+lemma ge_or_lt (h : a ≤ b) (c : α) : a ≤ c ∨ c < b := (le_or_gt a c).imp id h.trans_lt'
+lemma ge_or_le (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b := (h.gt_or_le c).imp le_of_lt id
 
-@[deprecated (since := "2025-05-11")] alias lt_or_le := lt_or_ge
-@[deprecated (since := "2025-05-11")] alias le_or_lt := le_or_gt
+@[deprecated (since := "2025-05-11")] alias lt_or_le := gt_or_le
+@[deprecated (since := "2025-05-11")] alias le_or_lt := ge_or_lt
+@[deprecated (since := "2025-05-11")] alias le_or_le := ge_or_le
 
 end LE.le
 
