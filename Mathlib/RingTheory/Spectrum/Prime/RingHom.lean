@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -279,3 +280,14 @@ lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
     exact RingHom.domain_nontrivial f.toRingHom
 
 end SpecOfSurjective
+
+section ResidueField
+
+variable {R : Type*} [CommRing R]
+
+lemma PrimeSpectrum.residueField_specComap (I : PrimeSpectrum R) :
+    Set.range (algebraMap R I.asIdeal.ResidueField).specComap = {I} := by
+  rw [Set.range_unique, Set.singleton_eq_singleton_iff]
+  exact PrimeSpectrum.ext (Ideal.ext fun x ↦ Ideal.algebraMap_residueField_eq_zero)
+
+end ResidueField
