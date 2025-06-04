@@ -37,6 +37,8 @@ multiplicative group actions).
 
 -/
 
+assert_not_exists MonoidWithZero
+
 /-- An `AddTorsor G P` gives a structure to the nonempty type `P`,
 acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
@@ -50,7 +52,7 @@ class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction 
   /-- Torsor addition and subtraction with the same element cancels out. -/
   vadd_vsub' : ∀ (g : G) (p : P), (g +ᵥ p) -ᵥ p = g
 
- -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed `nolint instance_priority`; lint not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed `nolint instance_priority`; lint not ported yet
 attribute [instance 100] AddTorsor.nonempty
 
 /-- An `AddGroup G` is a torsor for itself. -/

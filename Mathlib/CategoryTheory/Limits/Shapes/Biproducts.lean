@@ -32,7 +32,7 @@ a binary biproduct. We introduce `⨁ f` for the indexed biproduct.
 Prior to https://github.com/leanprover-community/mathlib3/pull/14046,
 `HasFiniteBiproducts` required a `DecidableEq` instance on the indexing type.
 As this had no pay-off (everything about limits is non-constructive in mathlib),
- and occasional cost
+and occasional cost
 (constructing decidability instances appropriate for constructions involving the indexing type),
 we made everything classical.
 -/
@@ -374,19 +374,19 @@ instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [
 
 instance (priority := 100) hasFiniteProducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
     HasFiniteProducts C where
-  out _ := ⟨fun _ => hasLimitOfIso Discrete.natIsoFunctor.symm⟩
+  out _ := ⟨fun _ => hasLimit_of_iso Discrete.natIsoFunctor.symm⟩
 
 instance (priority := 100) hasFiniteCoproducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
     HasFiniteCoproducts C where
-  out _ := ⟨fun _ => hasColimitOfIso Discrete.natIsoFunctor⟩
+  out _ := ⟨fun _ => hasColimit_of_iso Discrete.natIsoFunctor⟩
 
 instance (priority := 100) hasProductsOfShape_of_hasBiproductsOfShape [HasBiproductsOfShape J C] :
     HasProductsOfShape J C where
-  has_limit _ := hasLimitOfIso Discrete.natIsoFunctor.symm
+  has_limit _ := hasLimit_of_iso Discrete.natIsoFunctor.symm
 
 instance (priority := 100) hasCoproductsOfShape_of_hasBiproductsOfShape [HasBiproductsOfShape J C] :
     HasCoproductsOfShape J C where
-  has_colimit _ := hasColimitOfIso Discrete.natIsoFunctor
+  has_colimit _ := hasColimit_of_iso Discrete.natIsoFunctor
 
 variable {C}
 
@@ -435,11 +435,12 @@ theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
     biproduct.ι f j ≫ biproduct.π f j = 𝟙 _ := by simp [biproduct.ι_π]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ j') :
-    biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [biproduct.ι_π, h]
+    biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [h]
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
+-- It seems the side condition `w` is not applied by `simpNF`.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `biproduct.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
@@ -449,6 +450,7 @@ theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w :
   simp
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
+-- It seems the side condition `w` is not applied by `simpNF`.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `biproduct.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]

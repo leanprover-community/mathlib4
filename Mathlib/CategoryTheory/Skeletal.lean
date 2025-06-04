@@ -68,11 +68,12 @@ variable (C D)
 its category structure.
 -/
 def Skeleton : Type u₁ := InducedCategory (C := Quotient (isIsomorphicSetoid C)) C Quotient.out
+-- The `Category` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance [Inhabited C] : Inhabited (Skeleton C) :=
   ⟨⟦default⟧⟩
 
--- Porting note: previously `Skeleton` used `deriving Category`
 noncomputable instance : Category (Skeleton C) := by
   apply InducedCategory.category
 
@@ -83,8 +84,9 @@ noncomputable instance {α} [CoeSort C α] : CoeSort (Skeleton C) α :=
 @[simps!]
 noncomputable def fromSkeleton : Skeleton C ⥤ C :=
   inducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: previously `fromSkeleton` used `deriving Faithful, Full`
 noncomputable instance : (fromSkeleton C).Full := by
   apply InducedCategory.full
 noncomputable instance : (fromSkeleton C).Faithful := by
@@ -92,7 +94,6 @@ noncomputable instance : (fromSkeleton C).Faithful := by
 
 instance : (fromSkeleton C).EssSurj where mem_essImage X := ⟨Quotient.mk' X, Quotient.mk_out X⟩
 
--- Porting note: named this instance
 noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
 
 variable {C}
@@ -136,6 +137,23 @@ lemma skeleton_isSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
 section
 
 variable {C D}
+
+namespace Functor
+
+/-- From a functor `C ⥤ D`, construct a map of skeletons `Skeleton C → Skeleton D`. -/
+noncomputable def mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D :=
+  (skeletonEquivalence C).functor ⋙ F ⋙ (skeletonEquivalence D).inverse
+
+variable (F : C ⥤ D)
+
+instance [F.Full] : F.mapSkeleton.Full := by unfold mapSkeleton; infer_instance
+
+instance [F.Faithful] : F.mapSkeleton.Faithful := by unfold mapSkeleton; infer_instance
+
+lemma mapSkeleton_injective [F.Full] [F.Faithful] : Function.Injective F.mapSkeleton.obj :=
+  fun _ _ h ↦ skeleton_skeletal C ⟨F.mapSkeleton.preimageIso <| eqToIso h⟩
+
+end Functor
 
 /-- Two categories which are categorically equivalent have skeletons with equivalent objects.
 -/

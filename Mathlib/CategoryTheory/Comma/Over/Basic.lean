@@ -94,6 +94,17 @@ end
 def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by aesop_cat) : U ⟶ V :=
   CostructuredArrow.homMk f w
 
+@[simp]
+lemma homMk_eta {U V : Over X} (f : U ⟶ V) (h) :
+    homMk f.left h = f := by
+  rfl
+
+/-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
+lemma homMk_comp {U V W : Over X} (f : U.left ⟶ V.left) (g : V.left ⟶ W.left) (w_f w_g) :
+    homMk (f ≫ g) (by aesop) = homMk f w_f ≫ homMk g w_g := by
+  ext
+  simp
+
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
@@ -341,7 +352,7 @@ def postComp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
 /-- A natural transformation `F ⟶ G` induces a natural transformation on
-`Over X` up to `Under.map`. -/
+`Over X` up to `Over.map`. -/
 @[simps]
 def postMap {F G : T ⥤ D} (e : F ⟶ G) : post F ⋙ map (e.app X) ⟶ post G where
   app Y := Over.homMk (e.app Y.left)
@@ -373,6 +384,25 @@ instance [F.Full] [F.EssSurj] : (Over.post (X := X) F).EssSurj where
 
 instance [F.IsEquivalence] : (Over.post (X := X) F).IsEquivalence where
 
+/-- If `F` is fully faithful, then so is `Over.post F`. -/
+def _root_.CategoryTheory.Functor.FullyFaithful.over (h : F.FullyFaithful) :
+    (post (X := X) F).FullyFaithful where
+  preimage {A B} f := Over.homMk (h.preimage f.left) <| h.map_injective (by simpa using Over.w f)
+
+/-- If `G` is a right adjoint, then so is `post G : Over Y ⥤ Over (G Y)`.
+
+If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
+`(X ⟶ G Y) ↦ (F X ⟶ F G Y ⟶ Y)`. -/
+@[simps]
+def postAdjunctionRight {Y : D} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
+    post F ⋙ map (a.counit.app Y) ⊣ post G where
+  unit.app A := homMk <| a.unit.app A.left
+  counit.app A := homMk <| a.counit.app A.left
+
+instance isRightAdjoint_post {Y : D} {G : D ⥤ T} [G.IsRightAdjoint] :
+    (post (X := Y) G).IsRightAdjoint :=
+  let ⟨F, ⟨a⟩⟩ := ‹G.IsRightAdjoint›; ⟨_, ⟨postAdjunctionRight a⟩⟩
+
 /-- An equivalence of categories induces an equivalence on over categories. -/
 @[simps]
 def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
@@ -380,6 +410,17 @@ def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
   inverse := Over.post (X := F.functor.obj X) F.inverse ⋙ Over.map (F.unitIso.inv.app X)
   unitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.unitIso.app A.left))
   counitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.counitIso.app A.left))
+
+open Limits
+
+variable {X} in
+/-- If `X : T` is terminal, then the over category of `X` is equivalent to `T`. -/
+@[simps]
+def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
+  functor := forget X
+  inverse := { obj Y := mk (hX.from Y), map f := homMk f }
+  unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
+  counitIso := NatIso.ofComponents fun _ ↦ .refl _
 
 end Over
 
@@ -455,6 +496,17 @@ def mk {X Y : T} (f : X ⟶ Y) : Under X :=
 @[simps! right]
 def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := by aesop_cat) : U ⟶ V :=
   StructuredArrow.homMk f w
+
+@[simp]
+lemma homMk_eta {U V : Under X} (f : U ⟶ V) (h) :
+    homMk f.right h = f := by
+  rfl
+
+/-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
+lemma homMk_comp {U V W : Under X} (f : U.right ⟶ V.right) (g : V.right ⟶ W.right) (w_f w_g) :
+    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g])  = homMk f w_f ≫ homMk g w_g := by
+  ext
+  simp
 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
@@ -645,8 +697,7 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   refine ⟨fun {Y : T} l m a => ?_⟩
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
-  -- Porting note: add type ascription here to `homMk m`
-  suffices l' = (homMk m : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
+  suffices l' = (homMk m) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 
 /-- A functor `F : T ⥤ D` induces a functor `Under X ⥤ Under (F.obj X)` in the obvious way. -/
@@ -700,6 +751,24 @@ instance [F.Full] [F.EssSurj] : (Under.post (X := X) F).EssSurj where
 
 instance [F.IsEquivalence] : (Under.post (X := X) F).IsEquivalence where
 
+/-- If `F` is fully faithful, then so is `Under.post F`. -/
+def _root_.CategoryTheory.Functor.FullyFaithful.under (h : F.FullyFaithful) :
+    (post (X := X) F).FullyFaithful where
+  preimage {A B} f := Under.homMk (h.preimage f.right) <| h.map_injective (by simpa using Under.w f)
+
+/-- If `F` is a left adjoint, then so is `post F : Under X ⥤ Under (F X)`.
+
+If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
+`(F X ⟶ Y) ↦ (X ⟶ G F X ⟶ G Y)`. -/
+@[simps]
+def postAdjunctionLeft {X : T} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
+    post F ⊣ post G ⋙ map (a.unit.app X) where
+  unit.app A := homMk <| a.unit.app A.right
+  counit.app A := homMk <| a.counit.app A.right
+
+instance isLeftAdjoint_post [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
+  let ⟨G, ⟨a⟩⟩ := ‹F.IsLeftAdjoint›; ⟨_, ⟨postAdjunctionLeft a⟩⟩
+
 /-- An equivalence of categories induces an equivalence on under categories. -/
 @[simps]
 def postEquiv (F : T ≌ D) : Under X ≌ Under (F.functor.obj X) where
@@ -707,6 +776,17 @@ def postEquiv (F : T ≌ D) : Under X ≌ Under (F.functor.obj X) where
   inverse := post (X := F.functor.obj X) F.inverse ⋙ Under.map (F.unitIso.hom.app X)
   unitIso := NatIso.ofComponents (fun A ↦ Under.isoMk (F.unitIso.app A.right))
   counitIso := NatIso.ofComponents (fun A ↦ Under.isoMk (F.counitIso.app A.right))
+
+open Limits
+
+variable {X} in
+/-- If `X : T` is initial, then the under category of `X` is equivalent to `T`. -/
+@[simps]
+def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
+  functor := forget X
+  inverse := { obj Y := mk (hX.to Y), map f := homMk f }
+  unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
+  counitIso := NatIso.ofComponents fun _ ↦ .refl _
 
 end Under
 
@@ -737,6 +817,29 @@ instance isEquivalence_toUnder (X : T) (F : D ⥤ T) [F.IsEquivalence] :
 end StructuredArrow
 
 namespace Functor
+variable {X : T} {F : T ⥤ D}
+
+lemma essImage.of_overPost {Y : Over (F.obj X)} :
+    (Over.post F (X := X)).essImage Y → F.essImage Y.left :=
+  fun ⟨Z, ⟨e⟩⟩ ↦ ⟨Z.left, ⟨(Over.forget _).mapIso e⟩⟩
+
+lemma essImage.of_underPost {Y : Under (F.obj X)} :
+    (Under.post F (X := X)).essImage Y → F.essImage Y.right :=
+  fun ⟨Z, ⟨e⟩⟩ ↦ ⟨Z.right, ⟨(Under.forget _).mapIso e⟩⟩
+
+/-- The essential image of `Over.post F` where `F` is full is the same as the essential image of
+`F`. -/
+@[simp] lemma essImage_overPost [F.Full] {Y : Over (F.obj X)} :
+    (Over.post F (X := X)).essImage Y ↔ F.essImage Y.left where
+  mp := .of_overPost
+  mpr := fun ⟨Z, ⟨e⟩⟩ ↦ let ⟨f, hf⟩ := F.map_surjective (e.hom ≫ Y.hom); ⟨.mk f, ⟨Over.isoMk e⟩⟩
+
+/-- The essential image of `Under.post F` where `F` is full is the same as the essential image of
+`F`. -/
+@[simp] lemma essImage_underPost [F.Full] {Y : Under (F.obj X)} :
+    (Under.post F (X := X)).essImage Y ↔ F.essImage Y.right where
+  mp := .of_underPost
+  mpr := fun ⟨Z, ⟨e⟩⟩ ↦ let ⟨f, hf⟩ := F.map_surjective (Y.hom ≫ e.inv); ⟨.mk f, ⟨Under.isoMk e⟩⟩
 
 variable {S : Type u₂} [Category.{v₂} S]
 
@@ -982,45 +1085,41 @@ open Opposite
 
 variable (X : T)
 
-/-- The canonical functor by reversing structure arrows. -/
-@[simps]
-def Over.opToOpUnder : Over (op X) ⥤ (Under X)ᵒᵖ where
-  obj Y := ⟨Under.mk Y.hom.unop⟩
-  map {Z Y} f := ⟨Under.homMk (f.left.unop) (by dsimp; rw [← unop_comp, Over.w])⟩
-
-/-- The canonical functor by reversing structure arrows. -/
-@[simps]
-def Under.opToOverOp : (Under X)ᵒᵖ ⥤ Over (op X) where
-  obj Y := Over.mk (Y.unop.hom.op)
-  map {Z Y} f := Over.homMk f.unop.right.op <| by dsimp; rw [← Under.w f.unop, op_comp]
-
-/-- `Over.opToOpUnder` is an equivalence of categories. -/
+/-- The canonical equivalence between over and under categories by reversing structure arrows. -/
 @[simps]
 def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
-  functor := Over.opToOpUnder X
-  inverse := Under.opToOverOp X
+  functor.obj Y := ⟨Under.mk Y.hom.unop⟩
+  functor.map {Z Y} f := ⟨Under.homMk (f.left.unop) (by dsimp; rw [← unop_comp, Over.w])⟩
+  inverse.obj Y := Over.mk (Y.unop.hom.op)
+  inverse.map {Z Y} f := Over.homMk f.unop.right.op <| by dsimp; rw [← Under.w f.unop, op_comp]
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-/-- The canonical functor by reversing structure arrows. -/
-@[simps]
-def Under.opToOpOver : Under (op X) ⥤ (Over X)ᵒᵖ where
-  obj Y := ⟨Over.mk Y.hom.unop⟩
-  map {Z Y} f := ⟨Over.homMk (f.right.unop) (by dsimp; rw [← unop_comp, Under.w])⟩
-
-/-- The canonical functor by reversing structure arrows. -/
-@[simps]
-def Over.opToUnderOp : (Over X)ᵒᵖ ⥤ Under (op X) where
-  obj Y := Under.mk (Y.unop.hom.op)
-  map {Z Y} f := Under.homMk f.unop.left.op <| by dsimp; rw [← Over.w f.unop, op_comp]
-
-/-- `Under.opToOpOver` is an equivalence of categories. -/
+/-- The canonical equivalence between under and over categories by reversing structure arrows. -/
 @[simps]
 def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
-  functor := Under.opToOpOver X
-  inverse := Over.opToUnderOp X
+  functor.obj Y := ⟨Over.mk Y.hom.unop⟩
+  functor.map {Z Y} f := ⟨Over.homMk (f.right.unop) (by dsimp; rw [← unop_comp, Under.w])⟩
+  inverse.obj Y := Under.mk (Y.unop.hom.op)
+  inverse.map {Z Y} f := Under.homMk f.unop.left.op <| by dsimp; rw [← Over.w f.unop, op_comp]
   unitIso := Iso.refl _
   counitIso := Iso.refl _
+
+/-- The canonical functor by reversing structure arrows. -/
+@[deprecated Over.opEquivOpUnder (since := "2025-04-08")]
+def Over.opToOpUnder : Over (op X) ⥤ (Under X)ᵒᵖ := (Over.opEquivOpUnder X).functor
+
+/-- The canonical functor by reversing structure arrows. -/
+@[deprecated Over.opEquivOpUnder (since := "2025-04-08")]
+def Under.opToOverOp : (Under X)ᵒᵖ ⥤ Over (op X) := (Over.opEquivOpUnder X).inverse
+
+/-- The canonical functor by reversing structure arrows. -/
+@[deprecated Under.opEquivOpOver (since := "2025-04-08")]
+def Under.opToOpOver : Under (op X) ⥤ (Over X)ᵒᵖ := (Under.opEquivOpOver X).functor
+
+/-- The canonical functor by reversing structure arrows. -/
+@[deprecated Under.opEquivOpOver (since := "2025-04-08")]
+def Over.opToUnderOp : (Over X)ᵒᵖ ⥤ Under (op X) := (Under.opEquivOpOver X).inverse
 
 end Opposite
 

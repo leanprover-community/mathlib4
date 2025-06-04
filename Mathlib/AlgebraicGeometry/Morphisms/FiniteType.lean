@@ -39,7 +39,7 @@ class LocallyOfFiniteType (f : X ⟶ Y) : Prop where
     ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).hom.FiniteType
 
 instance : HasRingHomProperty @LocallyOfFiniteType RingHom.FiniteType where
-  isLocal_ringHomProperty := RingHom.finiteType_is_local
+  isLocal_ringHomProperty := RingHom.finiteType_isLocal
   eq_affineLocally' := by
     ext X Y f
     rw [locallyOfFiniteType_iff, affineLocally_iff_affineOpens_le]
@@ -84,8 +84,7 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
     have inst : JacobsonSpace Y := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
     have inst : JacobsonSpace (Y.affineCover.obj i) :=
       .of_isOpenEmbedding (Y.affineCover.map i).isOpenEmbedding
-    let e := Homeomorph.ofIsEmbedding _
-      ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.isEmbedding
+    let e := ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.isEmbedding.toHomeomorph
     have := this (Y.affineCover.pullbackHom f i) ⟨_, rfl⟩
     exact .of_isClosedEmbedding e.symm.isClosedEmbedding
   obtain ⟨R, rfl⟩ := hY
@@ -94,7 +93,7 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
     rw [X.affineCover.isOpenCover_opensRange.jacobsonSpace_iff]
     intro i
     have := this _ (X.affineCover.map i ≫ f) ⟨_, rfl⟩
-    let e := Homeomorph.ofIsEmbedding _ (X.affineCover.map i).isOpenEmbedding.isEmbedding
+    let e := (X.affineCover.map i).isOpenEmbedding.isEmbedding.toHomeomorph
     exact .of_isClosedEmbedding e.symm.isClosedEmbedding
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl : Spec.map φ = f⟩ := Spec.homEquiv.symm.surjective f

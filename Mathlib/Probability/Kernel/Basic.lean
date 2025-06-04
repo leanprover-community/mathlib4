@@ -188,10 +188,7 @@ lemma const_add (β : Type*) [MeasurableSpace β] (μ ν : Measure α) :
     const β (μ + ν) = const β μ + const β ν := by ext; simp
 
 lemma sum_const [Countable ι] (μ : ι → Measure β) :
-    Kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := by
-  ext x s hs
-  rw [const_apply, Measure.sum_apply _ hs, Kernel.sum_apply' _ _ hs]
-  simp only [const_apply]
+    Kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := rfl
 
 instance const.instIsFiniteKernel {μβ : Measure β} [IsFiniteMeasure μβ] :
     IsFiniteKernel (const α μβ) :=
@@ -404,7 +401,7 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := by
     contrapose! h'; simpa [μs, h'] using measure_univ_le_add_compl s (μ := μ)
   refine ⟨Kernel.piecewise s_meas (Kernel.const _ (κ a)) κ, ?_, ?_⟩
-  · filter_upwards [measure_zero_iff_ae_nmem.1 μs] with b hb
+  · filter_upwards [measure_zero_iff_ae_notMem.1 μs] with b hb
     simp [hb, piecewise]
   · refine ⟨fun b ↦ ?_⟩
     by_cases hb : b ∈ s

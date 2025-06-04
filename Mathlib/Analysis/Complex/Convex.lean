@@ -3,8 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Theorems about convexity on the complex plane

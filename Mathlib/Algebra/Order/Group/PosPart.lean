@@ -138,7 +138,7 @@ lemma oneLePart_leOnePart_injective : Injective fun a : α ↦ (a⁺ᵐ, a⁻ᵐ
 
 @[to_additive]
 lemma oneLePart_leOnePart_inj : a⁺ᵐ = b⁺ᵐ ∧ a⁻ᵐ = b⁻ᵐ ↔ a = b :=
-  Prod.mk.inj_iff.symm.trans oneLePart_leOnePart_injective.eq_iff
+  Prod.mk_inj.symm.trans oneLePart_leOnePart_injective.eq_iff
 
 section MulRightMono
 variable [MulRightMono α]

@@ -139,11 +139,6 @@ lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   ring_nf at this ⊢
   linarith
 
-@[deprecated (since := "2024-08-29")] alias two_div_pi_mul_le_sin := mul_le_sin
-@[deprecated (since := "2024-08-29")] alias sin_le_two_div_pi_mul := sin_le_mul
-@[deprecated (since := "2024-08-29")] alias one_sub_two_div_pi_mul_le_cos := one_sub_mul_le_cos
-@[deprecated (since := "2024-08-29")] alias cos_quadratic_upper_bound := cos_le_one_sub_mul_cos_sq
-
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 
 This is also true for x > 1, but it's nontrivial for x just above 1. This inequality is not
@@ -207,7 +202,7 @@ theorem le_tan {x : ℝ} (h1 : 0 ≤ x) (h2 : x < π / 2) : x ≤ tan x := by
 
 theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2)
     (hx3 : x ≠ 0) : cos x < (1 / √(x ^ 2 + 1) : ℝ) := by
-  suffices ∀ {y : ℝ}, 0 < y → y ≤ 3 * π / 2 → cos y < 1 / sqrt (y ^ 2 + 1) by
+  suffices ∀ {y : ℝ}, 0 < y → y ≤ 3 * π / 2 → cos y < 1 / √(y ^ 2 + 1) by
     rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨h⟩
     · exact this h hx2
     · convert this (by linarith : 0 < -x) (by linarith) using 1

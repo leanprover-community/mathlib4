@@ -33,7 +33,7 @@ pullback.snd f g                       g
 * `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
   express the fact that a given pair of morphisms has a pushout.
 * `HasPushouts`: expresses the fact that `C` admits all pushouts, it is implemented as an
-abbreviation for `HasColimitsOfShape WalkingSpan C`
+  abbreviation for `HasColimitsOfShape WalkingSpan C`
 * `pushout f g`: Given a `HasPushout f g` instance, this function returns the choice of a colimit
   object corresponding to the pushout of `f` and `g`. It fits into the following diagram:
 ```
@@ -47,13 +47,13 @@ abbreviation for `HasColimitsOfShape WalkingSpan C`
 
 # Main results & API
 * The following API is available for using the universal property of `pullback f g`:
-`lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
+  `lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
 
 * `pullback.map` is the induced map between pullbacks `W ×ₛ X ⟶ Y ×ₜ Z` given pointwise
-(compatible) maps `W ⟶ Y`, `X ⟶ Z` and `S ⟶ T`.
+  (compatible) maps `W ⟶ Y`, `X ⟶ Z` and `S ⟶ T`.
 
 * `pullbackComparison`: Given a functor `G`, this is the natural morphism
-`G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g)`
+  `G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g)`
 
 * `pullbackSymmetry` provides the natural isomorphism `pullback f g ≅ pullback g f`
 
@@ -524,12 +524,12 @@ abbrev HasPushouts :=
 /-- If `C` has all limits of diagrams `cospan f g`, then it has all pullbacks -/
 theorem hasPullbacks_of_hasLimit_cospan
     [∀ {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z}, HasLimit (cospan f g)] : HasPullbacks C :=
-  { has_limit := fun F => hasLimitOfIso (diagramIsoCospan F).symm }
+  { has_limit := fun F => hasLimit_of_iso (diagramIsoCospan F).symm }
 
 /-- If `C` has all colimits of diagrams `span f g`, then it has all pushouts -/
 theorem hasPushouts_of_hasColimit_span
     [∀ {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}, HasColimit (span f g)] : HasPushouts C :=
-  { has_colimit := fun F => hasColimitOfIso (diagramIsoSpan F) }
+  { has_colimit := fun F => hasColimit_of_iso (diagramIsoSpan F) }
 
 /-- The duality equivalence `WalkingSpanᵒᵖ ≌ WalkingCospan` -/
 @[simps!]

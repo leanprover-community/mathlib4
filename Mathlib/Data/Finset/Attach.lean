@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.Multiset.MapFold
 
 /-!
 # Attaching a proof of membership to a finite set
@@ -49,5 +49,8 @@ theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
 @[simp]
 theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
   Multiset.mem_attach _
+
+@[simp, norm_cast]
+theorem coe_attach (s : Finset α) : s.attach.toSet = Set.univ := by ext; simp
 
 end Finset

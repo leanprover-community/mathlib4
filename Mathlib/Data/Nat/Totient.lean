@@ -78,21 +78,17 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   conv_lhs => rw [← Nat.mod_add_div n a]
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
-    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
-      zero_add]
+    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos), zero_add]
     gcongr
-    exact Ico_subset_Ico rfl.le (add_le_add_left (le_of_lt (mod_lt n a_pos)) k)
+    exact le_of_lt (mod_lt n a_pos)
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
     #{x ∈ Ico k (k + n % a + a * i + a) | a.Coprime x}
-      = #{x ∈ Ico k (k + n % a + a * i) ∪
+      ≤ #{x ∈ Ico k (k + n % a + a * i) ∪
         Ico (k + n % a + a * i) (k + n % a + a * i + a) | a.Coprime x} := by
-      congr
-      rw [Ico_union_Ico_eq_Ico]
-      · rw [add_assoc]
-        exact le_self_add
-      exact le_self_add
+      gcongr
+      apply Ico_subset_Ico_union_Ico
     _ ≤ #{x ∈ Ico k (k + n % a + a * i) | a.Coprime x} + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
       apply card_union_le
@@ -216,11 +212,12 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
     · rintro rfl
       rw [totient_one, tsub_self] at h
       exact one_ne_zero h
-  rw [totient_eq_card_coprime, range_eq_Ico, ← Ico_insert_succ_left hp.le, Finset.filter_insert,
-    if_neg (not_coprime_of_dvd_of_dvd hp (dvd_refl p) (dvd_zero p)), ← Nat.card_Ico 1 p] at h
+  rw [totient_eq_card_coprime, range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico hp.le,
+    Finset.filter_insert, if_neg (not_coprime_of_dvd_of_dvd hp (dvd_refl p) (dvd_zero p)),
+    ← Nat.card_Ico 1 p] at h
   refine
     p.prime_of_coprime hp fun n hn hnz => Finset.filter_card_eq h n <| Finset.mem_Ico.mpr ⟨?_, hn⟩
-  rwa [succ_le_iff, pos_iff_ne_zero]
+  omega
 
 theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
     Fintype.card (ZMod p)ˣ ≤ p - 1 := by

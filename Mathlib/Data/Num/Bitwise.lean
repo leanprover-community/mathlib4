@@ -109,9 +109,7 @@ instance : HShiftLeft PosNum Nat PosNum where hShiftLeft := PosNum.shiftl
 
 @[simp] lemma shiftl_eq_shiftLeft (p : PosNum) (n : Nat) : p.shiftl n = p <<< n := rfl
 
-
--- Porting note: `PosNum.shiftl` is defined as tail-recursive in Lean4.
---               This theorem ensures the definition is same to one in Lean3.
+-- This shows that the tail-recursive definition is the same as the more naïve recursion.
 theorem shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), p <<< n.succ = bit0 (p <<< n)
   | _, 0       => rfl
   | p, .succ n => shiftl_succ_eq_bit0_shiftl p.bit0 n
@@ -211,7 +209,7 @@ inductive NzsNum : Type
   | msb : Bool → NzsNum
   /-- Add a bit at the end of a `NzsNum`. -/
   | bit : Bool → NzsNum → NzsNum
-  deriving DecidableEq  -- Porting note: Removed `deriving has_reflect`.
+  deriving DecidableEq
 
 /-- Alternative representation of integers using a sign bit at the end.
   The convention on sign here is to have the argument to `msb` denote
@@ -230,7 +228,7 @@ inductive NzsNum : Type
 inductive SNum : Type
   | zero : Bool → SNum
   | nz : NzsNum → SNum
-  deriving DecidableEq  -- Porting note: Removed `deriving has_reflect`.
+  deriving DecidableEq
 
 instance : Coe NzsNum SNum :=
   ⟨SNum.nz⟩
@@ -311,7 +309,7 @@ def not : SNum → SNum
   | zero z => zero (Not z)
   | nz p => ~p
 
--- Porting note: Defined `priority` so that `~1 : SNum` is unambiguous.
+-- Higher `priority` so that `~1 : SNum` is unambiguous.
 @[inherit_doc]
 scoped prefix:100 (priority := default + 1) "~" => not
 

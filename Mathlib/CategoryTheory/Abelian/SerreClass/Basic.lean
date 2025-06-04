@@ -40,9 +40,9 @@ namespace ObjectProperty
 
 /-- A Serre class in an abelian category consists of predicate which
 hold for the zero object and is closed under subobjects, quotients, extensions. -/
-class IsSerreClass extends P.ContainsZero,
+class IsSerreClass : Prop extends P.ContainsZero,
     P.IsClosedUnderSubobjects, P.IsClosedUnderQuotients,
-    P.IsClosedUnderExtensions : Prop where
+    P.IsClosedUnderExtensions where
 
 variable [P.IsSerreClass]
 

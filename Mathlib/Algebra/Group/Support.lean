@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.ZeroOne.Prod
-import Mathlib.Order.Cover
+import Mathlib.Algebra.Notation.Prod
+import Mathlib.Data.Set.Image
 
 /-!
 # Support of a function
@@ -15,7 +15,7 @@ In this file we define `Function.support f = {x | f x ≠ 0}` and prove its basi
 We also define `Function.mulSupport f = {x | f x ≠ 1}`.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists CompleteLattice MonoidWithZero
 
 open Set
 
@@ -35,12 +35,17 @@ theorem mulSupport_eq_preimage (f : α → M) : mulSupport f = f ⁻¹' {1}ᶜ :
   rfl
 
 @[to_additive]
-theorem nmem_mulSupport {f : α → M} {x : α} : x ∉ mulSupport f ↔ f x = 1 :=
+theorem notMem_mulSupport {f : α → M} {x : α} : x ∉ mulSupport f ↔ f x = 1 :=
   not_not
+
+@[deprecated (since := "2025-05-24")] alias nmem_support := notMem_support
+
+@[to_additive existing, deprecated (since := "2025-05-24")]
+alias nmem_mulSupport := notMem_mulSupport
 
 @[to_additive]
 theorem compl_mulSupport {f : α → M} : (mulSupport f)ᶜ = { x | f x = 1 } :=
-  ext fun _ => nmem_mulSupport
+  ext fun _ => notMem_mulSupport
 
 @[to_additive (attr := simp)]
 theorem mem_mulSupport {f : α → M} {x : α} : x ∈ mulSupport f ↔ f x ≠ 1 :=
@@ -66,7 +71,7 @@ theorem ext_iff_mulSupport {f g : α → M} :
     f = g ↔ f.mulSupport = g.mulSupport ∧ ∀ x ∈ f.mulSupport, f x = g x :=
   ⟨fun h ↦ h ▸ ⟨rfl, fun _ _ ↦ rfl⟩, fun ⟨h₁, h₂⟩ ↦ funext fun x ↦ by
     if hx : x ∈ f.mulSupport then exact h₂ x hx
-    else rw [nmem_mulSupport.1 hx, nmem_mulSupport.1 (mt (Set.ext_iff.1 h₁ x).2 hx)]⟩
+    else rw [notMem_mulSupport.1 hx, notMem_mulSupport.1 (mt (Set.ext_iff.1 h₁ x).2 hx)]⟩
 
 @[to_additive]
 theorem mulSupport_update_of_ne_one [DecidableEq α] (f : α → M) (x : α) {y : M} (hy : y ≠ 1) :
@@ -88,7 +93,7 @@ theorem mulSupport_extend_one_subset {f : α → M'} {g : α → N} :
     mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
   mulSupport_subset_iff'.mpr fun x hfg ↦ by
     by_cases hf : ∃ a, f a = x
-    · rw [extend, dif_pos hf, ← nmem_mulSupport]
+    · rw [extend, dif_pos hf, ← notMem_mulSupport]
       rw [← Classical.choose_spec hf] at hfg
       exact fun hg ↦ hfg ⟨_, hg, rfl⟩
     · rw [extend_apply' _ _ _ hf]; rfl
@@ -102,7 +107,7 @@ theorem mulSupport_extend_one {f : α → M'} {g : α → N} (hf : f.Injective) 
 @[to_additive]
 theorem mulSupport_disjoint_iff {f : α → M} {s : Set α} :
     Disjoint (mulSupport f) s ↔ EqOn f 1 s := by
-  simp_rw [← subset_compl_iff_disjoint_right, mulSupport_subset_iff', not_mem_compl_iff, EqOn,
+  simp_rw [← subset_compl_iff_disjoint_right, mulSupport_subset_iff', notMem_compl_iff, EqOn,
     Pi.one_apply]
 
 @[to_additive]
@@ -128,8 +133,12 @@ theorem range_subset_insert_image_mulSupport (f : α → M) :
 @[to_additive]
 lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mulSupport f ⊆ k) :
     range f = f '' k ∨ range f = insert 1 (f '' k) := by
-  apply (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _)
-  exact (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
+  have : range f ⊆ insert 1 (f '' k) :=
+    (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
+  by_cases h1 : 1 ∈ range f
+  · exact Or.inr (subset_antisymm this (insert_subset h1 (image_subset_range _ _)))
+  refine Or.inl (subset_antisymm ?_ (image_subset_range _ _))
+  rwa [← diff_singleton_eq_self h1, diff_singleton_subset_iff]
 
 @[to_additive (attr := simp)]
 theorem mulSupport_one' : mulSupport (1 : α → M) = ∅ :=

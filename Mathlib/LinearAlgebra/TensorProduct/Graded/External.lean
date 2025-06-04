@@ -84,7 +84,6 @@ theorem gradedCommAux_lof_tmul (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedCommAux R 𝒜 ℬ (lof R _ 𝒜ℬ (i, j) (a ⊗ₜ b)) =
       (-1 : ℤˣ)^(j * i) • lof R _ ℬ𝒜 (j, i) (b ⊗ₜ a) := by
   rw [gradedCommAux]
-  dsimp
   simp [mul_comm i j]
 
 @[simp]
@@ -142,29 +141,29 @@ theorem gradedComm_of_zero_tmul (a : 𝒜 0) (b : ⨁ i, ℬ i) :
   dsimp
   rw [gradedComm_of_tmul_of, mul_zero, uzpow_zero, one_smul]
 
-theorem gradedComm_tmul_one [DirectSum.GRing ℬ] (a : ⨁ i, 𝒜 i) :
+theorem gradedComm_tmul_one [GradedMonoid.GOne ℬ] (a : ⨁ i, 𝒜 i) :
     gradedComm R 𝒜 ℬ (a ⊗ₜ 1) = 1 ⊗ₜ a :=
   gradedComm_tmul_of_zero _ _ _ _ _
 
-theorem gradedComm_one_tmul [DirectSum.GRing 𝒜] (b : ⨁ i, ℬ i) :
+theorem gradedComm_one_tmul [GradedMonoid.GOne 𝒜] (b : ⨁ i, ℬ i) :
     gradedComm R 𝒜 ℬ (1 ⊗ₜ b) = b ⊗ₜ 1 :=
   gradedComm_of_zero_tmul _ _ _ _ _
 
-@[simp, nolint simpNF] -- linter times out
-theorem gradedComm_one [DirectSum.GRing 𝒜] [DirectSum.GRing ℬ] : gradedComm R 𝒜 ℬ 1 = 1 :=
+@[simp]
+theorem gradedComm_one [DirectSum.GSemiring 𝒜] [DirectSum.GSemiring ℬ] : gradedComm R 𝒜 ℬ 1 = 1 :=
   gradedComm_one_tmul _ _ _ _
 
-theorem gradedComm_tmul_algebraMap [DirectSum.GRing ℬ] [DirectSum.GAlgebra R ℬ]
+theorem gradedComm_tmul_algebraMap [DirectSum.GSemiring ℬ] [DirectSum.GAlgebra R ℬ]
     (a : ⨁ i, 𝒜 i) (r : R) :
     gradedComm R 𝒜 ℬ (a ⊗ₜ algebraMap R _ r) = algebraMap R _ r ⊗ₜ a :=
   gradedComm_tmul_of_zero _ _ _ _ _
 
-theorem gradedComm_algebraMap_tmul [DirectSum.GRing 𝒜] [DirectSum.GAlgebra R 𝒜]
+theorem gradedComm_algebraMap_tmul [DirectSum.GSemiring 𝒜] [DirectSum.GAlgebra R 𝒜]
     (r : R) (b : ⨁ i, ℬ i) :
     gradedComm R 𝒜 ℬ (algebraMap R _ r ⊗ₜ b) = b ⊗ₜ algebraMap R _ r :=
   gradedComm_of_zero_tmul _ _ _ _ _
 
-theorem gradedComm_algebraMap [DirectSum.GRing 𝒜] [DirectSum.GRing ℬ]
+theorem gradedComm_algebraMap [DirectSum.GSemiring 𝒜] [DirectSum.GSemiring ℬ]
     [DirectSum.GAlgebra R 𝒜] [DirectSum.GAlgebra R ℬ] (r : R) :
     gradedComm R 𝒜 ℬ (algebraMap R _ r) = algebraMap R _ r :=
   (gradedComm_algebraMap_tmul R 𝒜 ℬ r 1).trans (Algebra.TensorProduct.algebraMap_apply' r).symm

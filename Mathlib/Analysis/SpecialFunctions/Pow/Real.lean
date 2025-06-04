@@ -69,9 +69,8 @@ theorem rpow_eq_zero_iff_of_nonneg (hx : 0 ≤ x) : x ^ y = 0 ↔ x = 0 ∧ y �
 lemma rpow_eq_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y = 0 ↔ x = 0 := by
   simp [rpow_eq_zero_iff_of_nonneg, *]
 
-@[simp]
-lemma rpow_ne_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y ≠ 0 ↔ x ≠ 0 :=
-  Real.rpow_eq_zero hx hy |>.not
+lemma rpow_ne_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y ≠ 0 ↔ x ≠ 0 := by
+  simp [hx, hy]
 
 open Real
 
@@ -210,7 +209,6 @@ theorem le_rpow_add {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ y * x ^ z ≤ x ^
         (0 : ℝ) ^ y * 0 ^ z ≤ 1 * 1 :=
           mul_le_mul (zero_rpow_le_one y) (zero_rpow_le_one z) (zero_rpow_nonneg z) zero_le_one
         _ = 1 := by simp
-
     · simp [rpow_add', ← H, h]
   · simp [rpow_add pos]
 
@@ -427,15 +425,6 @@ lemma rpow_sub_intCast' (hx : 0 ≤ x) {n : ℤ} (h : y - n ≠ 0) : x ^ (y - n)
 
 lemma rpow_sub_natCast' (hx : 0 ≤ x) (h : y - n ≠ 0) : x ^ (y - n) = x ^ y / x ^ n := by
   rw [rpow_sub' hx h, rpow_natCast]
-
-@[deprecated (since := "2024-08-28")] alias rpow_add_int := rpow_add_intCast
-@[deprecated (since := "2024-08-28")] alias rpow_add_nat := rpow_add_natCast
-@[deprecated (since := "2024-08-28")] alias rpow_sub_int := rpow_sub_intCast
-@[deprecated (since := "2024-08-28")] alias rpow_sub_nat := rpow_sub_natCast
-@[deprecated (since := "2024-08-28")] alias rpow_add_int' := rpow_add_intCast'
-@[deprecated (since := "2024-08-28")] alias rpow_add_nat' := rpow_add_natCast'
-@[deprecated (since := "2024-08-28")] alias rpow_sub_int' := rpow_sub_intCast'
-@[deprecated (since := "2024-08-28")] alias rpow_sub_nat' := rpow_sub_natCast'
 
 theorem rpow_add_one {x : ℝ} (hx : x ≠ 0) (y : ℝ) : x ^ (y + 1) = x ^ y * x := by
   simpa using rpow_add_natCast hx y 1
@@ -1004,13 +993,13 @@ end Real
 
 namespace Complex
 
-lemma cpow_inv_two_re (x : ℂ) : (x ^ (2⁻¹ : ℂ)).re = sqrt ((‖x‖ + x.re) / 2) := by
+lemma cpow_inv_two_re (x : ℂ) : (x ^ (2⁻¹ : ℂ)).re = √((‖x‖ + x.re) / 2) := by
   rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_re, ← div_eq_mul_inv, ← one_div,
     ← Real.sqrt_eq_rpow, cos_half, ← sqrt_mul, ← mul_div_assoc, mul_add, mul_one, norm_mul_cos_arg]
   exacts [norm_nonneg _, (neg_pi_lt_arg _).le, arg_le_pi _]
 
 lemma cpow_inv_two_im_eq_sqrt {x : ℂ} (hx : 0 ≤ x.im) :
-    (x ^ (2⁻¹ : ℂ)).im = sqrt ((‖x‖ - x.re) / 2) := by
+    (x ^ (2⁻¹ : ℂ)).im = √((‖x‖ - x.re) / 2) := by
   rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
     ← Real.sqrt_eq_rpow, sin_half_eq_sqrt, ← sqrt_mul (norm_nonneg _), ← mul_div_assoc, mul_sub,
     mul_one, norm_mul_cos_arg]
@@ -1018,14 +1007,14 @@ lemma cpow_inv_two_im_eq_sqrt {x : ℂ} (hx : 0 ≤ x.im) :
   · linarith [pi_pos, arg_le_pi x]
 
 lemma cpow_inv_two_im_eq_neg_sqrt {x : ℂ} (hx : x.im < 0) :
-    (x ^ (2⁻¹ : ℂ)).im = -sqrt ((‖x‖ - x.re) / 2) := by
+    (x ^ (2⁻¹ : ℂ)).im = -√((‖x‖ - x.re) / 2) := by
   rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
     ← Real.sqrt_eq_rpow, sin_half_eq_neg_sqrt, mul_neg, ← sqrt_mul (norm_nonneg _),
     ← mul_div_assoc, mul_sub, mul_one, norm_mul_cos_arg]
   · linarith [pi_pos, neg_pi_lt_arg x]
   · exact (arg_neg_iff.2 hx).le
 
-lemma abs_cpow_inv_two_im (x : ℂ) : |(x ^ (2⁻¹ : ℂ)).im| = sqrt ((‖x‖ - x.re) / 2) := by
+lemma abs_cpow_inv_two_im (x : ℂ) : |(x ^ (2⁻¹ : ℂ)).im| = √((‖x‖ - x.re) / 2) := by
   rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
     ← Real.sqrt_eq_rpow, abs_mul, abs_of_nonneg (sqrt_nonneg _), abs_sin_half,
     ← sqrt_mul (norm_nonneg _), ← mul_div_assoc, mul_sub, mul_one, norm_mul_cos_arg]

@@ -176,7 +176,7 @@ variable (W : MorphismProperty C)
 any right fraction can be turned into a left fraction and that two morphisms
 that can be equalized by precomposition with a morphism in `W` can also
 be equalized by postcomposition with a morphism in `W`. -/
-class HasLeftCalculusOfFractions extends W.IsMultiplicative : Prop where
+class HasLeftCalculusOfFractions : Prop extends W.IsMultiplicative where
   exists_leftFraction ⦃X Y : C⦄ (φ : W.RightFraction X Y) :
     ∃ (ψ : W.LeftFraction X Y), φ.f ≫ ψ.s = φ.s ≫ ψ.f
   ext : ∀ ⦃X' X Y : C⦄ (f₁ f₂ : X ⟶ Y) (s : X' ⟶ X) (_ : W s)
@@ -186,7 +186,7 @@ class HasLeftCalculusOfFractions extends W.IsMultiplicative : Prop where
 any left fraction can be turned into a right fraction and that two morphisms
 that can be equalized by postcomposition with a morphism in `W` can also
 be equalized by precomposition with a morphism in `W`. -/
-class HasRightCalculusOfFractions extends W.IsMultiplicative : Prop where
+class HasRightCalculusOfFractions : Prop extends W.IsMultiplicative where
   exists_rightFraction ⦃X Y : C⦄ (φ : W.LeftFraction X Y) :
     ∃ (ψ : W.RightFraction X Y), ψ.s ≫ φ.f = ψ.f ≫ φ.s
   ext : ∀ ⦃X Y Y' : C⦄ (f₁ f₂ : X ⟶ Y) (s : Y ⟶ Y') (_ : W s)
@@ -470,7 +470,7 @@ variable (W) in
 /-- The localization functor to the constructed localized category for a morphism property
 that has left calculus of fractions. -/
 @[simps obj]
-def Q : C ⥤ Localization W where
+noncomputable def Q : C ⥤ Localization W where
   obj X := X
   map f := Hom.mk (ofHom W f)
   map_id _ := rfl
@@ -480,7 +480,8 @@ def Q : C ⥤ Localization W where
     simp only [ofHom, comp₀, comp_id]
 
 /-- The morphism on `Localization W` that is induced by a left fraction. -/
-abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y := Hom.mk f
+noncomputable abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y :=
+  Hom.mk f
 
 lemma homMk_eq_hom_mk {X Y : C} (f : W.LeftFraction X Y) : homMk f = Hom.mk f := rfl
 
@@ -507,7 +508,8 @@ lemma homMk_eq_iff_leftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y) :
 
 /-- The morphism in `Localization W` that is the formal inverse of a morphism
 which belongs to `W`. -/
-def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X := homMk (ofInv s hs)
+noncomputable def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X :=
+  homMk (ofInv s hs)
 
 lemma Q_map_comp_Qinv {X Y Y' : C} (f : X ⟶ Y') (s : Y ⟶ Y') (hs : W s) :
     (Q W).map f ≫ Qinv s hs = homMk (mk f s hs) := by
@@ -517,7 +519,7 @@ lemma Q_map_comp_Qinv {X Y Y' : C} (f : X ⟶ Y') (s : Y ⟶ Y') (hs : W s) :
 
 /-- The isomorphism in `Localization W` that is induced by a morphism in `W`. -/
 @[simps]
-def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
+noncomputable def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
   hom := (Q W).map s
   inv := Qinv s hs
   hom_inv_id := by
@@ -578,7 +580,6 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
   map {_ _ : C} f := f.map F hF
   map_id := by
     intro (X : C)
-    dsimp
     change (Hom.mk (ofHom W (𝟙 X))).map F hF = _
     rw [Hom.map_mk, map_ofHom, F.map_id]
   map_comp := by

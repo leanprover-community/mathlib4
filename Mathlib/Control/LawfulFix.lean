@@ -17,7 +17,7 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 ## Main definition
 
- * class `LawfulFix`
+* class `LawfulFix`
 -/
 
 universe u v
@@ -35,14 +35,9 @@ sense of `ω`-complete partial orders, which excludes the example because it is 
 class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α → α}, ωScottContinuous f → Fix.fix f = f (Fix.fix f)
 
-@[deprecated LawfulFix.fix_eq (since := "2024-08-26")]
-theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
-    (hf : ωScottContinuous f) : Fix.fix f = f (Fix.fix f) :=
-  LawfulFix.fix_eq hf
-
 namespace Part
 
-open Part Nat Nat.Upto
+open Nat Nat.Upto
 
 namespace Fix
 
@@ -54,11 +49,11 @@ theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   | succ _ i_ih => intro; apply f.monotone; apply i_ih
 
 theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
-  induction' j with j ih
-  · cases hij
-    exact le_rfl
-  cases hij; · exact le_rfl
-  exact le_trans (ih ‹_›) (approx_mono' f)
+  induction j with
+  | zero => cases hij; exact le_rfl
+  | succ j ih =>
+    cases hij; · exact le_rfl
+    exact le_trans (ih ‹_›) (approx_mono' f)
 
 theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx f i a := by
   classical
@@ -79,7 +74,7 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     · rcases le_total i j with H | H <;> [skip; symm] <;> apply_assumption <;> assumption
     replace hh := approx_mono f case _ _ hh
     apply Part.mem_unique h₁ hh
-  · simp only [fix_def' (⇑f) h₀, not_exists, false_iff, not_mem_none]
+  · simp only [fix_def' (⇑f) h₀, not_exists, false_iff, notMem_none]
     simp only [dom_iff_mem, not_exists] at h₀
     intro; apply h₀
 
@@ -120,14 +115,6 @@ open Fix
 
 variable {α : Type*}
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
-
-open OmegaCompletePartialOrder
-
-open Part hiding ωSup
-
-open Nat
-
-open Nat.Upto OmegaCompletePartialOrder
 
 theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
   apply le_antisymm
@@ -179,8 +166,6 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
 
 variable {f}
 
-@[deprecated (since := "2024-08-26")] alias fix_eq := fix_eq_of_ωScottContinuous
-
 end Part
 
 namespace Part
@@ -195,11 +180,11 @@ theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottCont
     ωScottContinuous (toUnitMono ⟨f,hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
   ext ⟨⟩ : 1
   dsimp [OmegaCompletePartialOrder.ωSup]
-  erw [hc.map_ωSup, Chain.map_comp]; rfl
+  erw [hc.map_ωSup]
+  rw [Chain.map_comp]
+  rfl
 
-@[deprecated (since := "2024-08-26")] alias to_unit_cont := ωScottContinuous_toUnitMono
-
-instance lawfulFix : LawfulFix (Part α) :=
+noncomputable instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f,hc.monotone⟩) () = _ by
     rw [Part.fix_eq_of_ωScottContinuous (ωScottContinuous_toUnitMono f hc)]; rfl⟩
 
@@ -209,7 +194,7 @@ open Sigma
 
 namespace Pi
 
-instance lawfulFix {β} : LawfulFix (α → Part β) :=
+noncomputable instance lawfulFix {β} : LawfulFix (α → Part β) :=
   ⟨fun {_f} ↦ Part.fix_eq_of_ωScottContinuous⟩
 
 variable {γ : ∀ a : α, β a → Type*}
@@ -244,8 +229,6 @@ theorem ωScottContinuous_curry :
     rw [map_comp, map_comp]
     rfl
 
-@[deprecated (since := "2024-08-26")] alias continuous_curry := ωScottContinuous_curry
-
 theorem ωScottContinuous_uncurry :
     ωScottContinuous (monotoneUncurry α β γ) :=
     .of_map_ωSup_of_orderHom fun c ↦ by
@@ -253,8 +236,6 @@ theorem ωScottContinuous_uncurry :
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
   rfl
-
-@[deprecated (since := "2024-08-26")] alias continuous_uncurry := ωScottContinuous_uncurry
 
 end Monotone
 
@@ -274,9 +255,6 @@ theorem uncurry_curry_ωScottContinuous (hc : ωScottContinuous f) :
       (⟨f,hc.monotone⟩ : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y).comp <|
       monotoneCurry α β γ :=
   (ωScottContinuous_uncurry _ _ _).comp (hc.comp (ωScottContinuous_curry _ _ _))
-
-@[deprecated (since := "2024-08-26")]
-alias uncurry_curry_continuous := uncurry_curry_ωScottContinuous
 
 end Curry
 

@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
@@ -37,9 +38,12 @@ lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
   rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
-lemma small [Module.Finite R M] [Small.{v} R] : Small.{v} M :=
-  have ⟨_, _, h⟩ := exists_fin' R M
-  small_of_surjective h
+/-- A finite module can be realised as a quotient of `Fin n → R` (i.e. `R^n`). -/
+theorem exists_fin_quot_equiv (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
+      [Module.Finite R M] :
+    ∃ (n : ℕ) (S : Submodule R (Fin n → R)), Nonempty ((_ ⧸ S) ≃ₗ[R] M) :=
+  let ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
+  ⟨n, LinearMap.ker f, ⟨f.quotKerEquivOfSurjective hf⟩⟩
 
 variable {M}
 
@@ -47,9 +51,6 @@ lemma _root_.Module.finite_of_finite [Finite R] [Module.Finite R M] : Finite M :
   obtain ⟨n, f, hf⟩ := exists_fin' R M; exact .of_surjective f hf
 
 variable {R}
-
-@[deprecated (since := "2024-10-13")]
-alias _root_.FiniteDimensional.finite_of_finite := finite_of_finite
 
 /-- A finite dimensional vector space over a finite field is finite -/
 @[deprecated (since := "2024-10-22")]
@@ -72,7 +73,7 @@ lemma finite_basis [Nontrivial R] {ι} [Module.Finite R M]
     (b : Basis ι R M) :
     _root_.Finite ι :=
   let ⟨s, hs⟩ := ‹Module.Finite R M›
-  basis_finite_of_finite_spans (↑s) s.finite_toSet hs b
+  basis_finite_of_finite_spans s.finite_toSet hs b
 
 end Finite
 

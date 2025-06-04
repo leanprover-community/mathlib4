@@ -71,14 +71,34 @@ lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b =
 @[to_additive (attr := simp)]
 lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := rfl
 
-/-- Type class for additive monoid actions. -/
+/--
+Type class for additive monoid actions on types, with notation `g +ᵥ p`.
+
+The `AddAction G P` typeclass says that the additive monoid `G` acts additively on a type `P`.
+More precisely this means that the action satisfies the two axioms `0 +ᵥ p = p` and
+`(g₁ + g₂) +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)`. A mathematician might simply say that the additive monoid `G`
+acts on `P`.
+
+For example, if `A` is an additive group and `X` is a type, if a mathematician says
+say "let `A` act on the set `X`" they will usually mean `[AddAction A X]`.
+-/
 class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
   /-- Associativity of `+` and `+ᵥ` -/
   add_vadd : ∀ (g₁ g₂ : G) (p : P), (g₁ + g₂) +ᵥ p = g₁ +ᵥ g₂ +ᵥ p
 
-/-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
+/--
+Type class for monoid actions on types, with notation `g • p`.
+
+The `MulAction G P` typeclass says that the monoid `G` acts multiplicatively on a type `P`.
+More precisely this means that the action satisfies the two axioms `1 • p = p` and
+`(g₁ * g₂) • p = g₁ • (g₂ • p)`. A mathematician might simply say that the monoid `G`
+acts on `P`.
+
+For example, if `G` is a group and `X` is a type, if a mathematician says
+say "let `G` act on the set `X`" they will probably mean  `[AddAction G X]`.
+-/
 @[to_additive (attr := ext)]
 class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
   /-- One is the neutral element for `•` -/
@@ -156,7 +176,7 @@ class VAddAssocClass (M N α : Type*) [VAdd M N] [VAdd N α] [VAdd M α] : Prop 
 /-- An instance of `IsScalarTower M N α` states that the multiplicative
 action of `M` on `α` is determined by the multiplicative actions of `M` on `N`
 and `N` on `α`. -/
-@[to_additive VAddAssocClass] -- TODO auto-translating
+@[to_additive]
 class IsScalarTower (M N α : Type*) [SMul M N] [SMul N α] [SMul M α] : Prop where
   /-- Associativity of `•` -/
   smul_assoc : ∀ (x : M) (y : N) (z : α), (x • y) • z = x • y • z
@@ -310,12 +330,6 @@ lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
 
 @[to_additive]
 alias smul_mul_smul := smul_mul_smul_comm
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated smul_mul_smul_comm (since := "2024-08-29")] smul_mul_smul
-attribute [deprecated vadd_add_vadd_comm (since := "2024-08-29")] vadd_add_vadd
-
 
 /-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
 satisfied by `Algebra α β`. -/
@@ -493,8 +507,15 @@ lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
 
 end CompatibleScalar
 
-/-- Typeclass for multiplicative actions on multiplicative structures. This generalizes
-conjugation actions. -/
+/-- Typeclass for multiplicative actions on multiplicative structures.
+
+The key axiom here is `smul_mul : g • (x * y) = (g • x) * (g • y)`.
+If `G` is a group (with group law multiplication) and `Γ` is its automorphism
+group then there is a natural instance of `MulDistribMulAction Γ G`.
+
+The axiom is also satisfied by a Galois group $Gal(L/K)$ acting on the field `L`,
+but here you can use the even stronger class `MulSemiringAction`, which captures
+how the action plays with both multiplication and addition. -/
 @[ext]
 class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
   /-- Distributivity of `•` across `*` -/

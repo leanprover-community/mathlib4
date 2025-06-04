@@ -24,7 +24,8 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R]
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both an additive submonoid and also a multiplicative subsemigroup. -/
 class NonUnitalSubsemiringClass (S : Type*) (R : outParam (Type u)) [NonUnitalNonAssocSemiring R]
-  [SetLike S R] extends AddSubmonoidClass S R : Prop where
+    [SetLike S R] : Prop
+  extends AddSubmonoidClass S R where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 
 -- See note [lower instance priority]
@@ -103,6 +104,25 @@ namespace NonUnitalSubsemiring
 instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+/-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
+@[simps]
+def ofClass {S R : Type*} [NonUnitalNonAssocSemiring R] [SetLike S R]
+    [NonUnitalSubsemiringClass S R] (s : S) : NonUnitalSubsemiring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+
+instance (priority := 100) : CanLift (Set R) (NonUnitalSubsemiring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s)
+    where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        mul_mem' := h.2.2 },
+      rfl ⟩
 
 instance : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
   zero_mem {s} := AddSubmonoid.zero_mem' s.toAddSubmonoid
