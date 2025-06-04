@@ -396,7 +396,6 @@ the statement only requires `[Star R] [Star A] [SMul R A]`.
 If used as `[CommRing R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]`, this represents a
 star algebra.
 -/
-
 class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop where
   /-- `star` commutes with scalar multiplication -/
   star_smul : ∀ (r : R) (a : A), star (r • a) = star r • star a

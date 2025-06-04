@@ -23,23 +23,23 @@ multiplication from `HahnSeries Γ R`. The scalar action of `R` on `HahnSeries �
 with the action of `HahnSeries Γ R` on `HahnModule Γ' R V`.
 
 ## Main Definitions
-  * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
+* `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
   of `HahnSeries Γ R` on `HahnModule Γ' R V` for an `R`-module `V`, where `Γ'` admits an ordered
   cancellative vector addition operation from `Γ`. The type alias allows us to avoid a potential
   instance diamond.
-  * `HahnModule.of` is the isomorphism from `HahnSeries Γ V` to `HahnModule Γ R V`.
-  * `HahnSeries.C` is the `constant term` ring homomorphism `R →+* HahnSeries Γ R`.
-  * `HahnSeries.embDomainRingHom` is the ring homomorphism `HahnSeries Γ R →+* HahnSeries Γ' R`
+* `HahnModule.of` is the isomorphism from `HahnSeries Γ V` to `HahnModule Γ R V`.
+* `HahnSeries.C` is the `constant term` ring homomorphism `R →+* HahnSeries Γ R`.
+* `HahnSeries.embDomainRingHom` is the ring homomorphism `HahnSeries Γ R →+* HahnSeries Γ' R`
   induced by an order embedding `Γ ↪o Γ'`.
 
 ## Main results
-  * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
-  * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `HahnSeries Γ R`-module.
+* If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
+* If `V` is an `R`-module, then `HahnModule Γ' R V` is a `HahnSeries Γ R`-module.
 
 ## TODO
 The following may be useful for composing vertex operators, but they seem to take time.
-  * rightTensorMap: `HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
-  * leftTensorMap: `U ⊗[R] HahnModule Γ' R V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
+* rightTensorMap: `HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
+* leftTensorMap: `U ⊗[R] HahnModule Γ' R V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]

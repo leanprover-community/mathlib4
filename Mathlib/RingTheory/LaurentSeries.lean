@@ -878,7 +878,7 @@ section Dense
 
 open scoped Multiplicative
 
-open HahnSeries LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum WithZero
+open LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum WithZero
 
 theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤₘ₀ˣ) :
     ∃ P : K[X], (PowerSeries.idealX K).intValuation (F - P) < η := by

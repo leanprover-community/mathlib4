@@ -195,7 +195,7 @@ return an array of all style errors with line numbers. If possible,
 also return the collection of all lines, changed as needed to fix the linter errors.
 (Such automatic fixes are only possible for some kinds of `StyleError`s.)
 -/
-abbrev TextbasedLinter := Lean.Options → Array String →
+abbrev TextbasedLinter := LinterOptions → Array String →
   Array (StyleError × ℕ) × (Option (Array String))
 
 /-! Definitions of the actual text-based linters. -/
@@ -270,7 +270,7 @@ def allLinters : Array TextbasedLinter := #[
 Return a list of all unexpected errors, and, if some errors could be fixed automatically,
 the collection of all lines with every automatic fix applied.
 `exceptions` are any pre-existing style exceptions for this file. -/
-def lintFile (opts : Lean.Options) (path : FilePath) (exceptions : Array ErrorContext) :
+def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorContext) :
     IO (Array ErrorContext × Option (Array String)) := do
   let mut errors := #[]
   -- Whether any changes were made by auto-fixes.
@@ -317,7 +317,7 @@ Return the number of files which had new style errors.
 `moduleNames` are the names of all the modules to lint,
 `mode` specifies what kind of output this script should produce,
 `fix` configures whether fixable errors should be corrected in-place. -/
-def lintModules (opts : Lean.Options) (nolints : Array String) (moduleNames : Array Lean.Name)
+def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : Array Lean.Name)
     (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
   let styleExceptions := parseStyleExceptions nolints
   let mut numberErrorFiles : UInt32 := 0
@@ -361,7 +361,7 @@ register_option linter.modulesUpperCamelCase : Bool := { defValue := true }
 /-- Verifies that all modules in `modules` are named in `UpperCamelCase`
 (except for explicitly discussed exceptions, which are hard-coded here).
 Return the number of modules violating this. -/
-def modulesNotUpperCamelCase (opts : Lean.Options) (modules : Array Lean.Name) : IO Nat := do
+def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
   unless getLinterValue linter.modulesUpperCamelCase opts do return 0
 
   -- Exceptions to this list should be discussed on zulip!
