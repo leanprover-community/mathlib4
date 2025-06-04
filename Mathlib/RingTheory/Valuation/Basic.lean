@@ -408,6 +408,10 @@ lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀ˣ} {x : R} :
 lemma ltAddSubgroup_mono (v : Valuation R Γ₀) : Monotone v.ltAddSubgroup :=
   fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
 
+lemma ltAddSubgroup_le_leAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) :
+    v.ltAddSubgroup γ ≤ v.leAddSubgroup γ :=
+  fun _ h ↦ h.le
+
 end Group
 
 end Basic
