@@ -265,6 +265,22 @@ theorem hasFiniteIntegral_norm_iff (f : α → β) :
     HasFiniteIntegral (fun a => ‖f a‖) μ ↔ HasFiniteIntegral f μ :=
   hasFiniteIntegral_congr' <| Eventually.of_forall fun x => norm_norm (f x)
 
+@[simp]
+theorem HasFiniteIntegral.of_subsingleton [Subsingleton α] [IsFiniteMeasure μ] {f : α → β} :
+    HasFiniteIntegral f μ :=
+  .of_finite
+
+@[simp]
+theorem HasFiniteIntegral.of_isEmpty [IsEmpty α] {f : α → β} :
+    HasFiniteIntegral f μ :=
+  .of_finite
+
+@[simp]
+theorem HasFiniteIntegral.of_subsingleton_codomain
+    {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [Subsingleton ε] {f : α → ε} :
+    HasFiniteIntegral f μ :=
+  hasFiniteIntegral_zero _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
+
 theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ := by
   have h x : ‖(f x).toReal‖ₑ = .ofReal (f x).toReal := by

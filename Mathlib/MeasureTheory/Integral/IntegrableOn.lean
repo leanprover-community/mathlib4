@@ -145,6 +145,11 @@ theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
 
 theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ := h.restrict
 
+@[simp]
+lemma integrableOn_of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
+    IntegrableOn f s μ :=
+  integrable_of_subsingleton_codomain
+
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) : IntegrableOn f s (μ.restrict t) := by
   dsimp only [IntegrableOn] at h ⊢
   exact h.mono_measure <| Measure.restrict_mono_measure Measure.restrict_le_self _
@@ -221,6 +226,11 @@ lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFin
 lemma IntegrableOn.of_finite [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
     {s : Set α} (hs : s.Finite) {f : α → E} : IntegrableOn f s μ := by
   simpa using IntegrableOn.finset (s := hs.toFinset)
+
+lemma IntegrableOn.of_subsingleton [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
+    {s : Set α} (hs : s.Subsingleton) {f : α → E} :
+    IntegrableOn f s μ :=
+  .of_finite hs.finite
 
 theorem IntegrableOn.add_measure [PseudoMetrizableSpace ε]
     (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
