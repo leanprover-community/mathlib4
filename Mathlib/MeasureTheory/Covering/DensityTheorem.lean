@@ -20,7 +20,7 @@ doubling measures with results about differentiation along a Vitali family to ob
 form of Lebesgue's density theorem.
 
 ## Main results
-  * `IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div`: a version of Lebesgue's density
+* `IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div`: a version of Lebesgue's density
   theorem for sequences of balls converging on a point but whose centres are not required to be
   fixed.
 
