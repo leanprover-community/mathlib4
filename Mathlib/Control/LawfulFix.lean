@@ -37,7 +37,7 @@ class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
 
 namespace Part
 
-open Part Nat Nat.Upto
+open Nat Nat.Upto
 
 namespace Fix
 

@@ -139,10 +139,6 @@ theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : Has
   · rw [tsum_eq_zero_of_not_summable hf, norm_zero]
     classical exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)
 
-theorem enorm_tsum_le_tsum_enorm {f : ι → ε} :
-    ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ :=
-  tsum_of_enorm_bounded ENNReal.summable.hasSum fun _i => le_rfl
-
 /-- If `∑' i, ‖f i‖` is summable, then `‖∑' i, f i‖ ≤ (∑' i, ‖f i‖)`. Note that we do not assume
 that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete space. -/
 theorem norm_tsum_le_tsum_norm {f : ι → E} (hf : Summable fun i => ‖f i‖) :
