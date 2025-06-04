@@ -388,6 +388,10 @@ lemma isOpenEmbedding_algebraMap_integer :
     Topology.IsOpenEmbedding (algebraMap 𝒪[K] K) :=
   isOpenEmbedding_subtype_integer _
 
+lemma isClosedEmbedding_algebraMap_integer :
+    Topology.IsClosedEmbedding (algebraMap 𝒪[K] K) :=
+  isClosedEmbedding_subtype_integer _
+
 lemma discreteTopology_valuationRing_iff_discreteTopology :
     DiscreteTopology 𝒪[K] ↔ DiscreteTopology K := by
   refine ⟨fun _ ↦ singletons_open_iff_discrete.mp fun x ↦ ?_, fun _ ↦ inferInstance⟩

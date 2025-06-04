@@ -264,6 +264,10 @@ lemma isOpenEmbedding_subtype_integer :
     Topology.IsOpenEmbedding (Subtype.val : _i.v.integer → R) :=
   ⟨.subtypeVal, by simpa using isOpen_integer _⟩
 
+lemma isClosedEmbedding_subtype_integer :
+    Topology.IsClosedEmbedding (Subtype.val : _i.v.integer → R) :=
+  ⟨.subtypeVal, by simpa using isClosed_integer _⟩
+
 section Ideal
 
 local notation "𝓞" => _i.v.integer
