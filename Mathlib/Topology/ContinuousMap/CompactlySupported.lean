@@ -661,17 +661,11 @@ lemma nnrealPart_smul_pos (f : C_c(α, ℝ)) {a : ℝ} (ha : 0 ≤ a) :
     (a • f).nnrealPart = a.toNNReal • f.nnrealPart := by
   ext x
   simp only [nnrealPart_apply, coe_smul, Pi.smul_apply, Real.coe_toNNReal', smul_eq_mul,
-    NNReal.coe_mul]
-  by_cases hfx : 0 ≤ f x
-  · rw [sup_of_le_left _, sup_of_le_left hfx]
-    · rw [sup_of_le_left ha]
-    · exact mul_nonneg ha hfx
-  · push_neg at hfx
-    rw [sup_of_le_right, sup_of_le_right (le_of_lt hfx)]
-    · simp only [mul_zero]
-    apply mul_nonpos_iff.mpr
-    left
-    exact ⟨ha, le_of_lt hfx⟩
+    NNReal.coe_mul, ha, sup_of_le_left]
+  rcases le_total 0 (f x) with hfx | hfx
+  · rw [sup_of_le_left (by positivity), sup_of_le_left hfx]
+  · rw [sup_of_le_right (by simp [mul_nonpos_iff, ha, hfx]), sup_of_le_right hfx]
+    simp only [mul_zero]
 
 lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
     (a • f).nnrealPart = (-a).toNNReal • (-f).nnrealPart := by
