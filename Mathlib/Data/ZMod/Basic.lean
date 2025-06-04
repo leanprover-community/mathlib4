@@ -1223,6 +1223,7 @@ variable {α : Type*} [AddGroup α] {n : ℕ}
 @[simp]
 lemma nsmul_zmod_val_inv_nsmul (hn : (Nat.card α).gcd n = 1) (a : α) :
     n • (n⁻¹ : ZMod (Nat.card α)).val • a = a := by
+  replace hn : (Nat.card α).Coprime n := hn
   rw [← mul_nsmul', ← mod_natCard_nsmul, ← ZMod.val_natCast, Nat.cast_mul,
     ZMod.mul_val_inv hn.symm, ZMod.val_one_eq_one_mod, mod_natCard_nsmul, one_nsmul]
 
@@ -1240,6 +1241,7 @@ variable {α : Type*} [Group α] {n : ℕ}
 @[simp]
 lemma pow_zmod_val_inv_pow (hn : (Nat.card α).gcd n = 1) (a : α) :
     (a ^ (n⁻¹ : ZMod (Nat.card α)).val) ^ n = a := by
+  replace hn : (Nat.card α).Coprime n := hn
   rw [← pow_mul', ← pow_mod_natCard, ← ZMod.val_natCast, Nat.cast_mul, ZMod.mul_val_inv hn.symm,
     ZMod.val_one_eq_one_mod, pow_mod_natCard, pow_one]
 
