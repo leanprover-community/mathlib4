@@ -238,6 +238,8 @@ end ENNReal
 
 section EReal
 
+variable {a b : EReal}
+
 example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b := by positivity
 example (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b := by positivity
 example (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b := by positivity
