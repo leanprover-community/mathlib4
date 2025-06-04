@@ -82,7 +82,7 @@ instance prod.isLinear [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] : (e₁.prod e�
 
 @[simp]
 theorem coordChangeL_prod [e₁.IsLinear 𝕜] [e₁'.IsLinear 𝕜] [e₂.IsLinear 𝕜] [e₂'.IsLinear 𝕜] ⦃b⦄
-    (hb : b ∈ (e₁.prod e₂).baseSet ∩ (e₁'.prod e₂').baseSet) :
+    (hb : (b ∈ e₁.baseSet ∧ b ∈ e₂.baseSet) ∧ b ∈ e₁'.baseSet ∧ b ∈ e₂'.baseSet) :
     ((e₁.prod e₂).coordChangeL 𝕜 (e₁'.prod e₂') b : F₁ × F₂ →L[𝕜] F₁ × F₂) =
       (e₁.coordChangeL 𝕜 e₁' b : F₁ →L[𝕜] F₁).prodMap (e₂.coordChangeL 𝕜 e₂' b) := by
   rw [ContinuousLinearMap.ext_iff, ContinuousLinearMap.coe_prodMap']
