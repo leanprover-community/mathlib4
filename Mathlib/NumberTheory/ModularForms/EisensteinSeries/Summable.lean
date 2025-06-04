@@ -8,7 +8,6 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.PSeries
 import Mathlib.Order.Interval.Finset.Box
 import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Analysis.Complex.IntegerCompl
 
 /-!
 # Uniform convergence of Eisenstein series
