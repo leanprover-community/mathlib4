@@ -56,7 +56,7 @@ theorem cast_zero : ((0 : ℤ) : R) = 0 :=
   (AddGroupWithOne.intCast_ofNat 0).trans Nat.cast_zero
 
 -- This lemma competes with `Int.ofNat_eq_natCast` to come later
-@[simp high, nolint simpNF, norm_cast]
+@[simp high, norm_cast]
 theorem cast_natCast (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 
