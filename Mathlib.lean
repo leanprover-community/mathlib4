@@ -5703,6 +5703,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 import Mathlib.RingTheory.Spectrum.Prime.Module
 import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 import Mathlib.RingTheory.Spectrum.Prime.RingHom
 import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
