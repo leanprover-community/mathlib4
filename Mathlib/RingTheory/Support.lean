@@ -22,7 +22,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Basic
 - `LocalizedModule.exists_subsingleton_away`:
   If `M` is `R`-finite and `Mₚ = 0`, then `M[1/f] = 0` for some `p ∈ D(f)`.
 
-Also see `Mathlib.RingTheory.Spectrum.Prime.Module` for other results
+Also see `Mathlib/RingTheory/Spectrum/Prime/Module.lean` for other results
 depending on the Zariski topology.
 
 ## TODO
@@ -32,7 +32,7 @@ depending on the Zariski topology.
 -/
 
 -- Basic files in `RingTheory` should avoid depending on the Zariski topology
--- See `Mathlib.RingTheory.Spectrum.Prime.Module`
+-- See `Mathlib/RingTheory/Spectrum/Prime/Module.lean`
 assert_not_exists TopologicalSpace
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {p : PrimeSpectrum R}
@@ -46,18 +46,23 @@ def Module.support : Set (PrimeSpectrum R) :=
 lemma Module.mem_support_iff :
     p ∈ Module.support R M ↔ Nontrivial (LocalizedModule p.asIdeal.primeCompl M) := Iff.rfl
 
-lemma Module.not_mem_support_iff :
+lemma Module.notMem_support_iff :
     p ∉ Module.support R M ↔ Subsingleton (LocalizedModule p.asIdeal.primeCompl M) :=
   not_nontrivial_iff_subsingleton
 
-lemma Module.not_mem_support_iff' :
+@[deprecated (since := "2025-05-23")] alias Module.not_mem_support_iff := Module.notMem_support_iff
+
+lemma Module.notMem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
-  simp only [not_mem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
+  simp only [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
     Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff, SetLike.mem_coe]
+
+@[deprecated (since := "2025-05-23")]
+alias Module.not_mem_support_iff' := Module.notMem_support_iff'
 
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
-  rw [← @not_not (_ ∈ _), not_mem_support_iff']
+  rw [← @not_not (_ ∈ _), notMem_support_iff']
   push_neg
   rfl
 
@@ -66,11 +71,16 @@ lemma Module.mem_support_iff_exists_annihilator :
   rw [Module.mem_support_iff']
   simp_rw [not_imp_not, SetLike.le_def, Submodule.mem_annihilator_span_singleton]
 
+lemma Module.mem_support_mono {p q : PrimeSpectrum R} (H : p ≤ q) (hp : p ∈ Module.support R M) :
+    q ∈ Module.support R M := by
+  rw [Module.mem_support_iff_exists_annihilator] at hp ⊢
+  exact ⟨_, hp.choose_spec.trans H⟩
+
 lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s = ⊤) :
     p ∈ Module.support R M ↔ ∃ m ∈ s, (R ∙ m).annihilator ≤ p.asIdeal := by
   constructor
   · contrapose
-    rw [not_mem_support_iff, LocalizedModule.subsingleton_iff_ker_eq_top, ← top_le_iff,
+    rw [notMem_support_iff, LocalizedModule.subsingleton_iff_ker_eq_top, ← top_le_iff,
       ← hs, Submodule.span_le, Set.subset_def]
     simp_rw [SetLike.le_def, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
       LocalizedModule.mem_ker_mkLinearMap_iff]
@@ -111,6 +121,11 @@ lemma Module.support_eq_empty_iff :
     ← LocalizedModule.subsingleton_iff_support_subset, LocalizedModule.subsingleton_iff,
     subsingleton_iff_forall_eq 0]
   simp only [Submonoid.powers_one, Submonoid.mem_bot, exists_eq_left, one_smul]
+
+lemma Module.nonempty_support_iff :
+    (Module.support R M).Nonempty ↔ Nontrivial M := by
+  rw [Set.nonempty_iff_ne_empty, ne_eq,
+    Module.support_eq_empty_iff, ← not_subsingleton_iff_nontrivial]
 
 lemma Module.support_eq_empty [Subsingleton M] :
     Module.support R M = ∅ :=
@@ -158,7 +173,7 @@ lemma Module.support_of_exact (h : Function.Exact f g)
     (Module.support_subset_of_surjective g hg))
   intro x
   contrapose
-  simp only [Set.mem_union, not_or, and_imp, not_mem_support_iff']
+  simp only [Set.mem_union, not_or, and_imp, notMem_support_iff']
   intro H₁ H₂ m
   obtain ⟨r, hr, e₁⟩ := H₂ (g m)
   rw [← map_smul, h] at e₁
@@ -204,7 +219,7 @@ lemma LocalizedModule.exists_subsingleton_away (p : Ideal R) [p.IsPrime]
     [Subsingleton (LocalizedModule p.primeCompl M)] :
     ∃ f ∉ p, Subsingleton (LocalizedModule (.powers f) M) := by
   have : ⟨p, inferInstance⟩ ∈ (Module.support R M)ᶜ := by
-    simpa [Module.not_mem_support_iff]
+    simpa [Module.notMem_support_iff]
   rw [Module.support_eq_zeroLocus, ← Set.biUnion_of_singleton (Module.annihilator R M : Set R),
     PrimeSpectrum.zeroLocus_iUnion₂, Set.compl_iInter₂, Set.mem_iUnion₂] at this
   obtain ⟨f, hf, hf'⟩ := this

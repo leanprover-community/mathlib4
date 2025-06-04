@@ -286,7 +286,7 @@ section
   NNReal.eq <| norm_ofSubsingleton i f
 
 /-- `ContinuousAlternatingMap.ofSubsingleton` as a linear isometry. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def ofSubsingletonLIE [Subsingleton ι] (i : ι) : (E →L[𝕜] F) ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] F) where
   __ := ofSubsingleton 𝕜 E F i
   map_add' _ _ := rfl
@@ -406,7 +406,7 @@ def compContinuousAlternatingMapCLM : (F →L[𝕜] G) →L[𝕜] (E [⋀^ι]→
     simpa using f.norm_compContinuousAlternatingMap_le g
 
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous linear equiv. -/
-@[simps (config := { simpRhs := true }) apply]
+@[simps +simpRhs apply]
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRight (g : F ≃L[𝕜] G) :
     (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G) where
   __ := g.continuousAlternatingMapCongrRightEquiv
@@ -452,7 +452,10 @@ def ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F) :
       (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
 
 /-- Given a continuous linear isomorphism between the domains,
-generate a continuous linear isomorphism between the spaces of continuous alternating maps. -/
+generate a continuous linear isomorphism between the spaces of continuous alternating maps.
+
+This is `ContinuousAlternatingMap.compContinuousLinearMap` as an equivalence,
+and is the continuous version of `AlternatingMap.domLCongr`. -/
 @[simps apply]
 def ContinuousLinearEquiv.continuousAlternatingMapCongrLeft (f : E ≃L[𝕜] F) :
     E [⋀^ι]→L[𝕜] G ≃L[𝕜] (F [⋀^ι]→L[𝕜] G) where

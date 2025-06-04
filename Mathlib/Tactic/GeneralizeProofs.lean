@@ -94,8 +94,8 @@ structure AState where
 /--
 Monad used to abstract proofs, to prepare for generalization.
 Has a cache (of expr/type? pairs),
-and it also has a reader context `Mathlib.Tactic.GeneralizeProofs.AContext`
-and a state `Mathlib.Tactic.GeneralizeProofs.AState`.
+and it also has a reader context `Mathlib/Tactic/GeneralizeProofs/AContext.lean`
+and a state `Mathlib/Tactic/GeneralizeProofs/AState.lean`.
 -/
 abbrev MAbs := ReaderT AContext <| MonadCacheT (Expr × Option Expr) Expr <| StateRefT AState MetaM
 
@@ -488,7 +488,7 @@ and furthermore if `h` duplicates a preceding local hypothesis then it is elimin
 
 The tactic is able to abstract proofs from under binders, creating universally quantified
 proofs in the local context.
-To disable this, use `generalize_proofs (config := { abstract := false })`.
+To disable this, use `generalize_proofs -abstract`.
 The tactic is also set to recursively abstract proofs from the types of the generalized proofs.
 This can be controlled with the `maxDepth` configuration option,
 with `generalize_proofs (config := { maxDepth := 0 })` turning this feature off.

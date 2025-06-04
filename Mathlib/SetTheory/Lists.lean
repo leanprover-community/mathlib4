@@ -236,10 +236,11 @@ def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
         | false, _ => PUnit)
     by exact ⟨fun ⟨b, l⟩ => (this _).1, fun l => (this l).2⟩
   intros b l
-  induction' l with a b a l IH₁ IH
-  · exact ⟨C0 _, ⟨⟩⟩
-  · exact ⟨C1 _ D0, D0⟩
-  · have : D (Lists'.cons' a l) := D1 ⟨_, _⟩ _ IH₁.1 IH.2
+  induction l with
+  | atom => exact ⟨C0 _, ⟨⟩⟩
+  | nil => exact ⟨C1 _ D0, D0⟩
+  | cons' a l IH₁ IH =>
+    have : D (Lists'.cons' a l) := D1 ⟨_, _⟩ _ IH₁.1 IH.2
     exact ⟨C1 _ this, this⟩
 
 /-- Membership of ZFA list. A ZFA list belongs to a proper ZFA list if it belongs to the latter as a
