@@ -38,6 +38,7 @@ lemma neg_one_pow_succAbove_add_predAbove {R : Type*} [Monoid R] [HasDistribNeg 
   rw [← neg_one_mul (_ ^ _), ← pow_succ', neg_one_pow_congr]
   rw [even_succAbove_add_predAbove, Nat.even_add_one, Nat.not_even_iff_odd]
 
+open Fin.NatCast in
 lemma even_of_val (h : Even k.val) : Even k := by
   have : NeZero n := ⟨k.pos.ne'⟩
   rw [← Fin.cast_val_eq_self k]
@@ -48,6 +49,7 @@ lemma odd_of_val [NeZero n] (h : Odd k.val) : Odd k := by
   rw [← Fin.cast_val_eq_self k]
   exact h.natCast
 
+open Fin.NatCast in
 lemma even_of_odd (hn : Odd n) (k : Fin n) : Even k := by
   have : NeZero n := ⟨k.pos.ne'⟩
   rcases k.val.even_or_odd with hk | hk

@@ -39,11 +39,18 @@ instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   nsmul := nsmulRec
   __ := Fin.addCommSemigroup n
 
-instance instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
+namespace NatCast
+
+/-- This isn't a global instance ... -/
+def instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
   natCast i := Fin.ofNat n i
   natCast_zero := rfl
   natCast_succ _ := Fin.ext (add_mod _ _ _)
+
+attribute [scoped instance] instAddMonoidWithOne
+
+end NatCast
 
 instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
   __ := addCommMonoid n
@@ -131,6 +138,7 @@ lemma sub_one_lt_iff {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
 
 @[simp] lemma neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 
+open Fin.NatCast in
 lemma neg_natCast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
   simp only [natCast_eq_last, neg_last]
 

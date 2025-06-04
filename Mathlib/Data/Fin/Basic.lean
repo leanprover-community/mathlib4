@@ -313,29 +313,6 @@ instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
 theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
   rfl
 
-namespace NatCast
-
-/--
-This is not a global instance, but can introduced locally using `open Fin.NatCast in ...`.
-
-This is not an instance because the `binop%` elaborator assumes that
-here are no non-trivial coercion loops,
-but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
-Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
-For example, for `x : Fin k` and `n : Nat`,
-it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
-silently introducing wraparound arithmetic.
--/
--- Note: this instance duplicates one in Lean, and should be removed later.
-def instNatCast [NeZero n] : NatCast (Fin n) where
-  natCast i := Fin.ofNat n i
-
-attribute [scoped instance] instNatCast
-
-lemma natCast_def [NeZero n] (a : ℕ) : (a : Fin n) = ⟨a % n, mod_lt _ n.pos_of_neZero⟩ := rfl
-
-end NatCast
-
 end Monoid
 
 theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
@@ -365,8 +342,11 @@ lemma val_sub_one_of_ne_zero [NeZero n] {i : Fin n} (hi : i ≠ 0) : (i - 1).val
 
 section OfNatCoe
 
+-- We allow the coercion from `Nat` to `Fin` in this section.
+open Fin.NatCast
+
 @[simp]
-theorem ofNat_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat n a = a :=
+theorem ofNat_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat n a = (a : Fin n) :=
   rfl
 
 @[deprecated ofNat_eq_cast (since := "2025-05-30")]
@@ -693,12 +673,14 @@ theorem succ_ne_last_of_lt {p i : Fin n} (h : i < p) : succ i ≠ last n := by
   · rw [succ_ne_last_iff, Ne, Fin.ext_iff]
     exact ((le_last _).trans_lt' h).ne
 
+open Fin.NatCast in
 @[norm_cast, simp]
-theorem coe_eq_castSucc {a : Fin n} : (a : Fin (n + 1)) = castSucc a := by
+theorem coe_eq_castSucc {a : Fin n} : ((a : Nat) : Fin (n + 1)) = castSucc a := by
   ext
   exact val_cast_of_lt (Nat.lt.step a.is_lt)
 
-theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin <| n + 1) < k ↔ j < k := by
+open Fin.NatCast in
+theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j < k := by
   simp only [coe_eq_castSucc, castSucc_lt_castSucc_iff]
 
 @[simp]
@@ -1474,6 +1456,7 @@ lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u +
 
 end AddGroup
 
+open Fin.NatCast in
 @[simp]
 theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
     ((n : Fin m) : ℕ) = n % m :=
