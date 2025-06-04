@@ -47,8 +47,7 @@ noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
       simp only [Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_left, exists_prop,
         exists_eq_right_right, Pi.ofNat_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero, and_imp]
       tauto
-    · simp only [hf, false_and, ↓reduceDIte]
-      exact (Eq.eventuallyEq rfl)
+    · simp [hf, Pi.zero_def]
 
 open Classical in
 /-- Definition of the divisor -/
