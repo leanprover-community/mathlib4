@@ -90,7 +90,6 @@ theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
     refine Finset.sum_congr rfl fun c cuniv => ?_
     rcases c with ⟨c, hc⟩
     ext v
-    dsimp
     simp [IH _ hc]
 
 /-- The left inverse to a formal multilinear series is indeed a left inverse, provided its linear
@@ -581,7 +580,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
       (f (x + y)) := by
     have cau : CauchySeq fun s : Finset (Σ n, Composition n) =>
         ∑ i ∈ s, q.compAlongComposition p i.2 fun _j => y := by
-      apply cauchySeq_finset_of_norm_bounded _ (NNReal.summable_coe.2 hr1) _
+      apply cauchySeq_finset_of_norm_bounded (NNReal.summable_coe.2 hr1) _
       simp only [coe_nnnorm, NNReal.coe_mul, NNReal.coe_pow]
       rintro ⟨n, c⟩
       calc
@@ -646,7 +645,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp  {f : E → F} {g : F → G}
     filter_upwards [Ici_mem_atTop b₀] with b hb using vu (hab _ _ ha hb)
   have C : CauchySeq (fun (s : Finset ℕ) ↦ ∑ n ∈ s, q n fun _ : Fin n => (f (x + y) - f x)) := by
     have Z := q.summable_norm_apply (x := f (x + y) - f x) h''y
-    exact cauchySeq_finset_of_norm_bounded _ Z (fun i ↦ le_rfl)
+    exact cauchySeq_finset_of_norm_bounded Z (fun i ↦ le_rfl)
   exact tendsto_nhds_of_cauchySeq_of_subseq C tendsto_finset_range L
 
 /-- If a partial homeomorphism `f` is defined at `a` and has a power series expansion there with
