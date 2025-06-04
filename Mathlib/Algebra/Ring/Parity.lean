@@ -3,6 +3,7 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
@@ -154,7 +155,36 @@ lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
       rw [add_mul, ← pow_add, add_right_comm]; rfl
     _ = _ := by rw [ih, zero_mul, zero_add, zero_add, this, ← pow_add]
 
+theorem Even.of_isUnit_two (h : IsUnit (2 : α)) (a : α) : Even a :=
+  let ⟨u, hu⟩ := h; ⟨u⁻¹ * a, by rw [← mul_add, ← two_mul, ← hu, Units.inv_mul_cancel_left]⟩
+
+theorem isUnit_two_iff_forall_even : IsUnit (2 : α) ↔ ∀ a : α, Even a := by
+  refine ⟨Even.of_isUnit_two, fun h => ?_⟩
+  obtain ⟨a, ha⟩ := h 1
+  rw [← two_mul, eq_comm] at ha
+  exact ⟨⟨2, a, ha, .trans (Commute.ofNat_right _ _).eq ha⟩, rfl⟩
+
+/-- When two is invertible, every element is `Even`. -/
+@[simp]
+theorem Even.all [Invertible (2 : α)] (a : α) : Even a :=
+  .of_isUnit_two (isUnit_of_invertible _) _
+
+
 end Semiring
+
+section Ring
+variable [Ring α]
+
+theorem Odd.of_isUnit_two (h : IsUnit (2 : α)) (a : α) : Odd a := by
+  rw [← sub_add_cancel a 1]
+  exact (Even.of_isUnit_two h _).add_one
+
+/-- When two is invertible in a ring, every element is `Odd`. -/
+@[simp low]
+theorem Odd.all [Invertible (2 : α)] (a : α) : Odd a :=
+  .of_isUnit_two (isUnit_of_invertible _) _
+
+end Ring
 
 section Monoid
 variable [Monoid α] [HasDistribNeg α] {n : ℕ}
