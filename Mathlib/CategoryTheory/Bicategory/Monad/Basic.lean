@@ -72,7 +72,7 @@ end
 instance {a : B} : Comonad (𝟙 a) :=
   inferInstanceAs <| Comon_Class (MonoidalCategory.tensorUnit (a ⟶ a))
 
-/-- Construct a comonad in `B` from an oplax functor from the trivial bicategory to `B`. -/
+/-- An oplax functor from the trivial bicategory to `B` defines a comonad in `B`. -/
 def ofOplaxFromPUnit (F : OplaxFunctor (LocallyDiscrete (Discrete PUnit.{u₀ + 1})) B) :
     Comonad (F.map (𝟙 ⟨⟨PUnit.unit⟩⟩)) where
   comul := F.map₂ (ρ_ _).inv ≫ F.mapComp _ _
