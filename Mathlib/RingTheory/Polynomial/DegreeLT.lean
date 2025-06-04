@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
-# Polynomials with degree less than `n`
+# Polynomials with degree strictly less than `n`
 
 This file contains the properties of the submodule of polynomials of degree less than `n` in a
 (semi)ring `R`, denoted `R[X]_n`.
