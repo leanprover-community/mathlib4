@@ -801,7 +801,8 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) 
     exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h)
 
 end IsDomain
-section Inv
+
+section Field
 
 variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
 
@@ -836,7 +837,7 @@ instance instField : Field (HahnSeries Γ R) where
   qsmul := _
   qsmul_def := fun _ _ => rfl
 
-end Inv
+end Field
 
 end Inversion
 
