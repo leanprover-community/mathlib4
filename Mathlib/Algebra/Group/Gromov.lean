@@ -2318,7 +2318,12 @@ lemma three_two_ker_fg (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S
       obtain ⟨m, m_in_range, s, s_mem_s, prod_eq_x⟩ := hx
       apply_fun ofMul at prod_eq_x
       simp only [ofMul_mul, ofMul_zpow, ofMul_inv, ofMul_toMul] at prod_eq_x
-      simp [← prod_eq_x]
+      simp
+      conv at prod_eq_x =>
+        rhs
+        equals x => rfl
+      rw [← prod_eq_x]
+      simp [phi_gamma]
       conv =>
         lhs
         arg 2
