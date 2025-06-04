@@ -979,11 +979,11 @@ theorem lTensor_bij_iff_rTensor_bij :
 
 variable {M} in
 theorem smul_lTensor {S : Type*} [CommSemiring S] [SMul R S] [Module S M] [IsScalarTower R S M]
-    [SMulCommClass R S M] (s : S) (m : M ⊗[R] N) : s • (f.lTensor M) m = (f.lTensor M) (s • m) := by
+    [SMulCommClass R S M] (s : S) (m : M ⊗[R] N) : s • (f.lTensor M) m = (f.lTensor M) (s • m) :=
   have h : s • (LinearMap.lTensor M f) =
       (f.lTensor M) ∘ₗ ((LinearMap.lsmul S (M ⊗[R] N) s).restrictScalars R) :=
     TensorProduct.ext rfl
-  exact congrFun (congrArg DFunLike.coe h) m
+  congrFun (congrArg DFunLike.coe h) m
 
 open TensorProduct
 
