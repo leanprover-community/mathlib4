@@ -36,53 +36,7 @@ open Set Function Metric Real
 
 section PartialFDeriv
 
---theorem continuousOn_swap {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
---    (s : Set (X × Y)) : ContinuousOn Prod.swap s := by
---  unfold ContinuousOn; intro z hz
---  apply continuous_swap.continuousWithinAt
-
--- moved to Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
---open ContinuousLinearMap in
---theorem ContinuousLinearMap.coprod_fst_snd
---  (R : Type*) [Semiring R]
---  (M₁ : Type*) [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R M₁]
---  (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
---  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousAdd M]
---  (f : M₁ →L[R] M) (g : M₂ →L[R] M) :
---    (f.coprod g) = f.comp (fst R M₁ M₂) + g.comp (snd R M₁ M₂) := by
---  ext; all_goals
---  simp only [coprod_comp_inl, coprod_comp_inr, add_comp, add_apply, coe_comp', Function.comp_apply,
---    coe_fst', coe_snd', inl_apply, inr_apply, map_zero, add_zero, zero_add]
---
---open ContinuousLinearMap in
---theorem ContinuousOn.clm_coprod {X : Type*} [TopologicalSpace X]
---  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
---  {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
---  {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
---  {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
---    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X}
---    (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
---    ContinuousOn (fun x => (f x).coprod (g x)) s := by
---  simp only [coprod_fst_snd]
---  exact (hf.clm_comp continuousOn_const).add (hg.clm_comp continuousOn_const)
-
---#min_imports
-
--- moved to Mathlib.Analysis.Calculus.FDeriv.Prod
---theorem hasFDerivWithinAt_swap
---  (𝕜 : Type*) [NontriviallyNormedField 𝕜]
---  (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
---  (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
---  (s : Set (E × F)) (z : E × F) :
---    HasFDerivWithinAt
---      (Prod.swap : E × F → F × E)
---      (ContinuousLinearMap.prodComm 𝕜 E F)
---      s z
---    := by
---  convert hasFDerivWithinAt_snd.prodMk (hasFDerivWithinAt_fst (𝕜 := 𝕜) (p := z))
---
---#min_imports
-
+/-- Differentiable implies also that the first partial derivative exists. -/
 theorem HasFDerivWithinAt.partial_fst
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -99,6 +53,7 @@ theorem HasFDerivWithinAt.partial_fst
     convert HasFDerivWithinAt.comp z.1 (hf) (hleft z.1)
       (fun x hx => mem_prod.mpr ⟨hx, (mem_prod.mp hz).right⟩)
 
+/-- Differentiable implies also that the second partial derivative exists. -/
 theorem HasFDerivWithinAt.partial_snd
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -123,7 +78,7 @@ See `hasFDerivWithinAt_of_partial_fst_continuousOn_prod_open` for the order of d
 -/
 theorem hasFDerivWithinAt_of_partial_snd_continuousOn_prod_open
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f : E × F → G} {s : Set E} {t : Set F} {z : E × F}
@@ -278,7 +233,7 @@ See `hasFDerivWithinAt_of_partial_snd_continuousOn_prod_open` for the order of d
 theorem hasFDerivWithinAt_of_partial_fst_continuousOn_prod_open
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f : E × F → G} {s : Set E} {t : Set F} {z : E × F}
   (hz : z ∈ s ×ˢ t) (hs : IsOpen s)
@@ -302,7 +257,7 @@ theorem hasFDerivWithinAt_of_partial_fst_continuousOn_prod_open
     hf'yz
     (fun z' hz' => (hf'x z'.swap (hmt_ts hz')))
   -- exchange `E` and `F` back in the result to satisfy the goal
-  convert hswap.comp z (hasFDerivWithinAt_swap 𝕜 E F (s ×ˢ t) z) hmt_st
+  convert hswap.comp z (hasFDerivWithinAt_swap (s ×ˢ t) z) hmt_st
   simp only [Prod.swap_swap, comp_apply, ContinuousLinearMap.coprod_comp_prodComm]
 
 /-- If a function `f : E × F → G` has partial derivative `f'x` or `f'y` continuous
@@ -311,7 +266,10 @@ the derivative given by `f' = f'x.coprod f'y`.
 -/
 theorem hasFDerivWithinAt_continuousOn_of_partial_continuousOn_open
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+  --NB: [NormedSpace ℝ E] is not needed because the proof eventually applies
+  --    the Mean Value Theorem only in the F direction. But it could have been
+  --    the other way around and it is odd to not have symmetry in the hypotheses
+  {E : Type*} [NormedAddCommGroup E] /-[NormedSpace ℝ E]-/ [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f : E × F → G} {u : Set (E × F)} (hu : IsOpen u)
@@ -338,7 +296,6 @@ theorem hasFDerivWithinAt_continuousOn_of_partial_continuousOn_open
     have htu (z : E × F) (hz : z ∈ s ×ˢ t) : t ⊆ ((z.1,·) ⁻¹' u) := by
       apply HasSubset.Subset.trans _ (preimage_mono hst)
       rw [mk_preimage_prod_right (mem_prod.mpr hz).1]
-    replace hf'x_cont := hf'x_cont.mono hst
     replace hf'y_cont := hf'y_cont.mono hst
     -- now apply the weaker criteria to get differentiability
     apply hasFDerivWithinAt_of_partial_snd_continuousOn_prod_open
