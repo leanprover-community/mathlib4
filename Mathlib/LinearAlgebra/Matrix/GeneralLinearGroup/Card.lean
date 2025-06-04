@@ -31,6 +31,7 @@ local notation "n" => Module.finrank K V
 
 attribute [local instance] Fintype.ofFinite in
 open Fintype in
+open Fin.NatCast in
 /-- The cardinal of the set of linearly independent vectors over a finite dimensional vector space
 over a finite field. -/
 theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
