@@ -92,7 +92,6 @@ theorem ordProj_of_not_prime (n p : ℕ) (hp : ¬p.Prime) : ordProj[p] n = 1 := 
 
 @[deprecated (since := "2024-10-24")] alias ord_proj_of_not_prime := ordProj_of_not_prime
 
-@[simp]
 theorem ordCompl_of_not_prime (n p : ℕ) (hp : ¬p.Prime) : ordCompl[p] n = n := by
   simp [hp]
 
