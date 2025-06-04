@@ -143,6 +143,12 @@ variable (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] [IsCMField K
 instance isQuadraticExtension : IsQuadraticExtension (maximalRealSubfield K) K :=
   IsCMField.is_quadratic
 
+noncomputable instance starRing : StarRing K where
+  star := CMExtension.complexConj (maximalRealSubfield K) K
+  star_involutive := fun _ ↦ CMExtension.complexConj_apply_apply _ _
+  star_mul := fun _ _ ↦ by rw [map_mul, mul_comm]
+  star_add := fun _ _ ↦ by rw [map_add]
+
 theorem card_infinitePlace_eq_card_infinitePlace :
     Fintype.card (InfinitePlace (maximalRealSubfield K)) = Fintype.card (InfinitePlace K) :=
   CMExtension.card_infinitePlace_eq_card_infinitePlace _ _
@@ -150,12 +156,6 @@ theorem card_infinitePlace_eq_card_infinitePlace :
 theorem units_rank_eq_units_rank :
     Units.rank (maximalRealSubfield K) = Units.rank K :=
   CMExtension.units_rank_eq_units_rank _ _
-
-noncomputable instance starRing : StarRing K where
-  star := CMExtension.complexConj (maximalRealSubfield K) K
-  star_involutive := fun _ ↦ CMExtension.complexConj_apply_apply _ _
-  star_mul := fun _ _ ↦ by rw [map_mul, mul_comm]
-  star_add := fun _ _ ↦ by rw [map_add]
 
 end IsCMField
 
