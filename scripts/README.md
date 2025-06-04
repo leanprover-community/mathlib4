@@ -84,6 +84,9 @@ to learn about it as well!
 - `technical-debt-metrics.sh`
   Prints information on certain kind of technical debt in Mathlib.
   This output is automatically posted to zulip once a week.
+- `long_file_report.sh`
+  Prints the list of the 10 longest Lean files in `Mathlib`.
+  This output is automatically posted to zulip once a week.
 
 **Mathlib tactics**
 - `polyrith_sage.py`, `polyrith_sage_helper.py` are required for `polyrith`

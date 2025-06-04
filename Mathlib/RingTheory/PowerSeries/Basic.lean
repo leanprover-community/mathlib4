@@ -27,10 +27,10 @@ The file sets up the (semi)ring structure on univariate power series.
 We provide the natural inclusion from polynomials to formal power series.
 
 Additional results can be found in:
-* `Mathlib.RingTheory.PowerSeries.Trunc`, truncation of power series;
-* `Mathlib.RingTheory.PowerSeries.Inverse`, about inverses of power series,
+* `Mathlib/RingTheory/PowerSeries/Trunc.lean`, truncation of power series;
+* `Mathlib/RingTheory/PowerSeries/Inverse.lean`, about inverses of power series,
   and the fact that power series over a local ring form a local ring;
-* `Mathlib.RingTheory.PowerSeries.Order`, the order of a power series at 0,
+* `Mathlib/RingTheory/PowerSeries/Order.lean`, the order of a power series at 0,
   and application to the fact that power series over an integral domain form an integral domain.
 
 ## Implementation notes
@@ -386,8 +386,8 @@ theorem coeff_zero_X_mul (φ : R⟦X⟧) : coeff R 0 (X * φ) = 0 := by simp
 theorem constantCoeff_surj : Function.Surjective (constantCoeff R) :=
   fun r => ⟨(C R) r, constantCoeff_C r⟩
 
--- The following section duplicates the API of `Data.Polynomial.Coeff` and should attempt to keep
--- up to date with that
+-- The following section duplicates the API of `Mathlib.Data.Polynomial.Coeff` and should attempt
+-- to keep up to date with that
 section
 
 theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :

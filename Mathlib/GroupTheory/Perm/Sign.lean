@@ -24,7 +24,7 @@ import Mathlib.Data.Finset.Sigma
 The main definition of this file is `Equiv.Perm.sign`,
 associating a `ℤˣ` sign with a permutation.
 
-Other lemmas have been moved to `Mathlib.GroupTheory.Perm.Fintype`
+Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Fintype.lean`
 
 -/
 
@@ -460,7 +460,7 @@ theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) :
     rw [← hl₁, ← l.prod_hom s, List.eq_replicate_length.2 hsl, List.length_map, List.prod_replicate,
       sign_prod_list_swap hl₂]
 
-theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁ : ∀ x, p x ↔ p (f x))
+theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁ : ∀ x, p (f x) ↔ p x)
     (h₂ : ∀ x, f x ≠ x → p x) : sign (subtypePerm f h₁) = sign f := by
   let l := (truncSwapFactors (subtypePerm f h₁)).out
   have hl' : ∀ g' ∈ l.1.map ofSubtype, IsSwap g' := fun g' hg' =>
@@ -517,7 +517,7 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
   · refine Or.inr ⟨List.not_mem_nil, ?_⟩
     rw [List.map_nil, List.prod_nil, one_apply]
   rw [List.map_cons, List.prod_cons, mul_apply]
-  rcases ih (List.nodup_cons.mp hl).2 with (⟨mem_l, prod_eq⟩ | ⟨not_mem_l, prod_eq⟩) <;>
+  rcases ih (List.nodup_cons.mp hl).2 with (⟨mem_l, prod_eq⟩ | ⟨notMem_l, prod_eq⟩) <;>
     rw [prod_eq]
   · refine Or.inl ⟨List.mem_cons_of_mem _ mem_l, ?_⟩
     rw [prodExtendRight_apply_ne _ fun h : a = a' => (List.nodup_cons.mp hl).1 (h ▸ mem_l)]
@@ -525,7 +525,7 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
   · rw [← ha'] at *
     refine Or.inl ⟨l.mem_cons_self, ?_⟩
     rw [prodExtendRight_apply_eq]
-  · refine Or.inr ⟨fun h => not_or_intro ha' not_mem_l ((List.mem_cons).mp h), ?_⟩
+  · refine Or.inr ⟨fun h => not_or_intro ha' notMem_l ((List.mem_cons).mp h), ?_⟩
     rw [prodExtendRight_apply_ne _ ha']
 
 section congr
