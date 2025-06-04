@@ -1041,28 +1041,28 @@ lemma height_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOr
   generalize h' : Order.height (f x) = n
   cases n with | top => simp | coe n =>
     induction n using Nat.strong_induction_on generalizing x with | h n ih =>
-    apply height_le_iff.mpr fun p hp ↦ le_of_not_lt fun h_len ↦ ?_
+    refine height_le_iff.mpr fun p hp ↦ le_of_not_lt fun h_len ↦ ?_
     let i : Fin (p.length + 1) := ⟨p.length - (m + 1), Nat.sub_lt_succ p.length _⟩
     suffices h'' : f (p i) < f x by
-      obtain ⟨n', hn'⟩ : ∃ (n' : ℕ), n' = height (f (p i)) := ENat.ne_top_iff_exists.mp <| ne_of_lt
-        <| lt_of_le_of_lt (height_mono (le_of_lt h'')) (h' ▸ (ENat.coe_lt_top _))
+      obtain ⟨n', hn'⟩ : ∃ (n' : ℕ), n' = height (f (p i)) := ENat.ne_top_iff_exists.mp
+        ((height_mono h''.le).trans_lt (h' ▸ ENat.coe_lt_top _)).ne
       have h_lt : n' < n := ENat.coe_lt_coe.mp
         (h' ▸ hn' ▸ height_strictMono h'' (hn' ▸ ENat.coe_lt_top _))
       have := (length_le_height_last (p := p.take i)).trans <| ih n' h_lt (p i) hn'.symm
       rw [RelSeries.take_length, ENat.coe_sub, Nat.cast_add, Nat.cast_one, tsub_le_iff_right,
         add_assoc, add_comm _ (_ + 1), ← add_assoc, ← mul_add_one] at this
-      apply not_lt_of_le ?_ (lt_of_lt_of_le h_len this)
+      refine not_lt_of_le ?_ (h_len.trans_le this)
       gcongr
       rwa [← ENat.coe_one, ← ENat.coe_add, ENat.coe_le_coe]
-    apply lt_of_le_not_le (f.monotone (le_trans (p.monotone (Fin.le_last _)) hp)) fun h'' ↦ ?_
+    refine (f.monotone ((p.monotone (Fin.le_last _)).trans hp)).lt_of_not_le fun h'' ↦ ?_
     let q' : LTSeries α := p.drop i
     let q : LTSeries (f ⁻¹' {f x}) := ⟨q'.length, fun j ↦ ⟨q' j, le_antisymm
-      (f.monotone (le_trans (b := q'.last) (q'.monotone (Fin.le_last _)) ((p.last_drop _) ▸ hp)))
-      (le_trans (b := f q'.head) ((p.head_drop _) ▸ h'')
+      (f.monotone (le_trans (b := q'.last) (q'.monotone (Fin.le_last _)) (p.last_drop _ ▸ hp)))
+      (le_trans (b := f q'.head) (p.head_drop _ ▸ h'')
         (f.monotone (q'.monotone (Fin.zero_le _))))⟩, fun i ↦ q'.step i⟩
-    have := le_trans (LTSeries.length_le_krullDim q) (h (f x))
+    have := (LTSeries.length_le_krullDim q).trans (h (f x))
     simp only [RelSeries.drop_length, Nat.cast_le, tsub_le_iff_right, q', i, q] at this
-    have : p.length > m := ENat.coe_lt_coe.mp (lt_of_le_of_lt (le_add_left (le_refl _)) h_len)
+    have : p.length > m := ENat.coe_lt_coe.mp ((le_add_left le_rfl).trans_lt h_len)
     omega
 
 lemma coheight_le_of_krullDim_preimage_le {α β : Type*} [Preorder α] [PartialOrder β]
