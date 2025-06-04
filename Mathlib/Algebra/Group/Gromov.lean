@@ -1177,9 +1177,34 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     contradiction
 
 
+  have s_n_subset: three_two_S_n (S := {s}) φ γ N ⊆ three_two_S_n (S := {s}) φ γ (N + 1) := by
+    intro a ha
+    simp [three_two_S_n] at ha
+    simp [three_two_S_n]
+    obtain ⟨n, hn, s_n_eq⟩ := ha
+    use n
+    refine ⟨by omega, s_n_eq⟩
 
 
-    rw [Finset.mem_smul] at ha
+
+  have b_n_subset_b_n_succ: three_two_B_n (S := {s}) φ γ N ⊆ three_two_B_n (S := {s}) φ γ (N + 1) := by
+    intro a ha
+    simp [three_two_B_n] at ha
+    simp [three_two_B_n]
+    obtain ⟨l, l_len, l_prod⟩ := ha
+    simp [list_len_n]
+    use l.map (fun s => ⟨s.val, by (
+      exact s_n_subset s.property
+    )⟩)
+    simp
+    simp [list_len_n] at l_len
+    refine ⟨by omega, ?_⟩
+    conv =>
+      lhs
+      arg 1
+      equals l.unattach =>
+        simp [List.unattach, -List.map_subtype]
+    exact l_prod
 
 
 
