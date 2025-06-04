@@ -227,7 +227,7 @@ theorem hsum_single {ι} [DecidableEq ι] (i : ι) (x : HahnSeries Γ R) : (sing
   rw [coeff_hsum, finsum_eq_single _ i, single_toFun, Pi.single_eq_same]
   simp +contextual
 
-/-- The summable family made of a single Hahn series. -/
+/-- The summable family made of a constant Hahn series. -/
 @[simps]
 def const (ι) [Finite ι] (x : HahnSeries Γ R) : SummableFamily Γ R ι where
   toFun _ := x
@@ -238,7 +238,7 @@ def const (ι) [Finite ι] (x : HahnSeries Γ R) : SummableFamily Γ R ι where
   finite_co_support' g := Set.toFinite {a | ((fun _ ↦ x) a).coeff g ≠ 0}
 
 @[simp]
-theorem hsum_const {ι} [Unique ι] (x : HahnSeries Γ R) : (const ι x).hsum = x := by
+theorem hsum_unique {ι} [Unique ι] (x : SummableFamily Γ R ι) : x.hsum = x default := by
   ext g
   simp only [coeff_hsum, const_toFun, finsum_unique]
 
@@ -466,7 +466,7 @@ theorem smul_apply {x : HahnSeries Γ R} {s : SummableFamily Γ' V α} {a : α} 
 theorem hsum_smul_module {R} {V} [Semiring R] [AddCommMonoid V] [Module R V] {x : HahnSeries Γ R}
     {s : SummableFamily Γ' V α} :
     (x • s).hsum = (of R).symm (x • of R s.hsum) := by
-  rw [smul_eq, hsum_equiv, smul_hsum, hsum_const]
+  rw [smul_eq, hsum_equiv, smul_hsum, hsum_unique, const_toFun]
 
 end SMul
 
@@ -805,9 +805,8 @@ section Inv
 
 variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
 
-@[simps -isSimp]
-instance [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R] :
-    Inv (HahnSeries Γ R) where
+@[simps -isSimp inv]
+instance : DivInvMonoid (HahnSeries Γ R) where
   inv x :=
     single (-x.order) (x.leadingCoeff)⁻¹ *
       (SummableFamily.powers <| 1 - single (-x.order) (x.leadingCoeff)⁻¹ * x).hsum
@@ -818,8 +817,12 @@ theorem inv_single (a : Γ) (r : R) : (single a r)⁻¹ = single (-a) r⁻¹ := 
   · simp [inv_def]
   · simp [inv_def, hr]
 
-instance instField [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R] :
-    Field (HahnSeries Γ R) where
+@[simp]
+theorem single_div_single (a b : Γ) (r s : R) :
+    single a r / single b s = single (a - b) (r / s) := by
+  rw [div_eq_mul_inv, sub_eq_add_neg, div_eq_mul_inv, inv_single, single_mul_single]
+
+instance instField : Field (HahnSeries Γ R) where
   __ : IsDomain (HahnSeries Γ R) := inferInstance
   inv_zero := by simp [inv_def]
   mul_inv_cancel x x0 := by
