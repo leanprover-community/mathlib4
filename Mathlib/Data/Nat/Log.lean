@@ -176,15 +176,15 @@ theorem log_monotone {b : ℕ} : Monotone (log b) := by
 theorem log_mono_right {b n m : ℕ} (h : n ≤ m) : log b n ≤ log b m :=
   log_monotone h
 
-theorem log_lt_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : 1 ≤ n) :
+theorem log_lt_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
     log b n < Nat.log b (n + 1) ↔ b ^ (Nat.log b (n + 1)) = n + 1:= by
   refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
   · apply le_antisymm _ (Nat.lt_pow_of_log_lt hb H)
     exact Nat.pow_log_le_self b (Ne.symm (Nat.zero_ne_add_one n))
-  · apply Nat.log_lt_of_lt_pow (Nat.ne_zero_of_lt hn)
+  · apply Nat.log_lt_of_lt_pow hn
     simp [H]
 
-theorem log_eq_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : 1 ≤ n) :
+theorem log_eq_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
     log b n = log b (n + 1) ↔ b ^ (log b (n + 1)) ≠ n + 1 := by
   rw [ne_eq, ← log_lt_log_succ_iff hb hn, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
