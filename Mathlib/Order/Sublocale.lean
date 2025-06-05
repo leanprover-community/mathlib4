@@ -19,8 +19,9 @@ Create separate definitions for `sInf_mem` and `HImpClosed` (also useful for `Co
 
 ## References
 
-https://ncatlab.org/nlab/show/sublocale
-https://ncatlab.org/nlab/show/nucleus
+* [J. Picada A. Pultr, *Frames and Locales*][picado2012]
+* https://ncatlab.org/nlab/show/sublocale
+* https://ncatlab.org/nlab/show/nucleus
 -/
 
 namespace OrderDual
@@ -35,7 +36,7 @@ open Set
 
 /--
 A sublocale is a subset S of a locale X, which is closed under all meets and for any
-s ∈ S and x ∈ X, we have x ⇨ s ∈ S.
+s ∈ S and x ∈ X, we have x ⇨ s ∈ S [picado2012].
 -/
 structure Sublocale (X : Type*) [Order.Frame X] where
   /-- The set corresponding to the sublocale. -/
