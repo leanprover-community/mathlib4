@@ -151,18 +151,13 @@ def ofMulActionBasisAux :
 
 /-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
 `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
-@[deprecated "We now favour `Representation.freeAsModuleBasis`" (since := "2025-06-04")]
-def ofMulActionBasis :
-    Basis (Fin n → G) (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  Basis.map
-    (Algebra.TensorProduct.basis (MonoidAlgebra k G)
-      (Finsupp.basisSingleOne : Basis (Fin n → G) k ((Fin n → G) →₀ k)))
-    (ofMulActionBasisAux k G n)
+@[deprecated "We now favour `Representation.freeAsModuleBasis`; the old definition can be derived
+from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
+alias ofMulActionBasis := Representation.freeAsModuleBasis
 
-@[deprecated "We now favour `Representation.free_asModule_free`" (since := "2025-06-04")]
-theorem ofMulAction_free :
-    Module.Free (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  Module.Free.of_basis (ofMulActionBasis k G n)
+@[deprecated "We now favour `Representation.free_asModule_free`; the old theorem can be derived
+from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
+alias ofMulAction_free := Representation.free_asModule_free
 
 end Basis
 
@@ -491,5 +486,82 @@ def _root_.groupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       ((standardComplex k G).linearYonedaObj k V).homology n :=
   (standardResolution k G).isoExt n V
+
+namespace barComplex
+
+open Rep Finsupp
+
+variable (n)
+
+/-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
+`k`-linear `G`-representation. It sends `(g₀, ..., gₙ)` to
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
+`j = 0, ... , n - 1`. -/
+def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
+  freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
+    Finset.univ.sum fun j : Fin (n + 1) =>
+      single (Fin.contractNth j (· * ·) g) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1)))
+
+variable {k G} in
+lemma d_single (x : Gⁿ⁺¹) :
+    (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
+      Finset.univ.sum fun j : Fin (n + 1) =>
+        single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
+  simp [d]
+
+lemma d_comp_diagonalSuccIsoFree_inv_eq :
+    d k G n ≫ (diagonalSuccIsoFree k G n).inv =
+      (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
+  free_ext _ _ fun i => by
+    have := d_single (k := k) (G := G)
+    have := @diagonalSuccIsoFree_inv_hom_single_single k G _
+    simp_all only [ModuleCat.hom_comp, Action.comp_hom, LinearMap.coe_comp, Function.comp_apply,
+      map_add, map_sum]
+    simpa [standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i),
+      Fin.sum_univ_succ, Fin.partialProd_contractNth]
+      using congr(single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
+
+end barComplex
+
+open barComplex
+
+/-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
+differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
+`j = 0, ... , n - 1`. -/
+noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
+  ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun _ => by
+    ext x
+    simp [(diagonalSuccIsoFree k G _).comp_inv_eq.1 (d_comp_diagonalSuccIsoFree_inv_eq k G _)]
+
+namespace barComplex
+
+@[simp]
+theorem d_def : (barComplex k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ _ _
+
+/-- Isomorphism between the bar resolution and standard resolution, with `n`th map
+`(Gⁿ →₀ k[G]) → k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ) ↦ (1, g₁, g₁g₂, ..., g₁...gₙ)`. -/
+def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
+  HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
+    rintro (rfl : j + 1 = i)
+    simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
+
+end barComplex
+
+/-- The chain complex `barComplex k G` as a projective resolution of `k` as a trivial
+`k`-linear `G`-representation. -/
+@[simps complex]
+def barResolution : ProjectiveResolution (Rep.trivial k G k) where
+  complex := barComplex k G
+  projective n := inferInstanceAs <| Projective (free k G (Fin n → G))
+  π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
+
+/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
+`G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
+bar resolution of `k`. -/
+def barResolution.extIso (V : Rep k G) (n : ℕ) :
+    ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
+      ((barComplex k G).linearYonedaObj k V).homology n :=
+  (barResolution k G).isoExt n V
 
 end Rep
