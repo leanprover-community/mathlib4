@@ -1564,7 +1564,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         exact disjoint_smul
 
 
-  have little_o_poly := isLittleO_pow_exp_pos_mul_atTop d (b := (Real.log 2)) (by
+  have little_o_poly := isLittleO_pow_exp_pos_mul_atTop (3 * d) (b := (Real.log 2)) (by
     --simp
     apply Real.log_pos
     simp
@@ -1573,8 +1573,9 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   simp_rw [Real.exp_mul] at little_o_poly
   rw [Real.exp_log (by simp)] at little_o_poly
 
-  --have mul_four := Asymptotics.IsLittleO.const_mul_left little_o_poly 4
-  have mul_four := little_o_poly
+  have mul_four := Asymptotics.IsLittleO.const_mul_left little_o_poly (4^d)
+  rw [← Asymptotics.isLittleO_const_mul_right_iff (c := 2^(-N : ℤ)) (hc := (by simp))] at mul_four
+  --have mul_four := little_o_poly
 
 
   --rw [Asymptotics.IsLittleO.tendsto_zero_of_tendsto] at little_o_poly
@@ -1583,7 +1584,8 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   simp at mul_four
   obtain ⟨M', hM⟩ := mul_four
   let M: ℕ := max N M'
-  have m_pow_lt := hM (M) (by omega)
+
+
 
 
 
@@ -1605,6 +1607,20 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     omega
   )
 
+  have m_pow_lt := hM (M) (by omega)
+  rw [pow_mul] at m_pow_lt
+  conv at m_pow_lt =>
+    rhs
+    equals 2^(M - N) =>
+      have m_minu_n_pos: N ≤ M := by omega
+      field_simp
+      rw [← pow_add]
+      simp
+      omega
+
+
+  norm_cast at m_pow_lt
+  rw [← mul_pow] at m_pow_lt
 
   have eventually_lt_double: (4 * M ^ 3) ^ d < 2 ^ (M - N) := by
     sorry
