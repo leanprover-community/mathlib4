@@ -66,14 +66,13 @@ def MonsterData.monsterCells (m : MonsterData N) :
 def Adjacent (x y : Cell N) : Prop :=
   Nat.dist x.1 y.1 + Nat.dist x.2 y.2 = 1
 
-open Fin.NatCast in -- TODO: can this be refactor to avoid using a cast from `Nat` to `Fin (N + 1)`?
 /-- A valid path from the first to the last row. -/
 structure Path (N : ℕ) where
   /-- The cells on the path. -/
   cells : List (Cell N)
   nonempty : cells ≠ []
   head_first_row : (cells.head nonempty).1 = 0
-  last_last_row : (cells.getLast nonempty).1 = (N : Fin (N + 1)) + 1
+  last_last_row : (cells.getLast nonempty).1 = Fin.last (N + 1)
   valid_move_seq : cells.Chain' Adjacent
 
 /-- The first monster on a path, or `none`. -/
@@ -184,12 +183,11 @@ lemma Path.exists_mem_fst_eq (p : Path N) (r : Fin (N + 2)) : ∃ c ∈ p.cells,
   let i : ℕ := p.cells.findIdx fun c ↦ r ≤ c.1
   have hi : i < p.cells.length := by
     refine List.findIdx_lt_length_of_exists ⟨p.cells.getLast p.nonempty, ?_⟩
-    simp only [List.getLast_mem, p.last_last_row, decide_eq_true_eq, true_and]
-    rw [Fin.le_def, Fin.add_def]
+    simp only [List.getLast_mem, p.last_last_row, decide_eq_true_eq, true_and, Fin.last]
+    rw [Fin.le_def]
     have h := r.isLt
     rw [Nat.lt_succ_iff] at h
     convert h
-    simp
   have hig : r ≤ (p.cells[i]).1 := of_decide_eq_true (List.findIdx_getElem (w := hi))
   refine ⟨p.cells[i], List.getElem_mem _, ?_⟩
   refine (hig.lt_or_eq.resolve_left fun h => ?_).symm
@@ -422,7 +420,7 @@ def Path.ofFn {m : ℕ} (f : Fin m → Cell N) (hm : m ≠ 0)
   head_first_row := by
     rw [List.head_ofFn, hf]
   last_last_row := by
-    simp [List.getLast_ofFn, hl, Fin.add_def]
+    simp [Fin.last, List.getLast_ofFn, hl]
   valid_move_seq := by
     rwa [List.chain'_ofFn]
 
