@@ -33,6 +33,14 @@ to the `Free` constructor. They are equipped with interpreters and helper functi
 Freee monad, freer monad, state monad, writer monad, continuation monad
 -/
 
+/-- The Freer monad over a functor `f`.
+
+A `Freer f a` is a tree of operations from the functor `f`, with leaves of type `a`.
+It has two constructors: `pure` for wrapping a value of type `a`, and `bind` for
+representing a functor operation followed by a continuation.
+
+This construction provides a free monad for any functor `f`, allowing for composable
+effect descriptions that can be interpreted later. -/
 inductive Freer (f : Type → Type) (a : Type) where
 | pure : a → Freer f a
 | bind : ∀ x, f x → (x → Freer f a) → Freer f a
