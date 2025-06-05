@@ -308,25 +308,9 @@ lemma le_var_aux_iUnion (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
 
 lemma ENNReal.sum_le_tsum' {f : ℕ → ℝ≥0∞} {a : ℝ≥0∞}
     (h : ∀ b < a, ∃ n, b < ∑ i ∈ Finset.range n, f i) : a ≤ ∑' i, f i := by
-  obtain ha | ha | ha := a.trichotomy
-  · simp [ha]
-  · rw [ha] at h
-    simp only [ha, top_le_iff]
-    by_contra! hc
-    obtain ⟨n, hn⟩ := h (∑' (i : ℕ), f i) hc.symm.lt_top'
-    exact not_le_of_lt hn <| ENNReal.sum_le_tsum _
-  · obtain ⟨ha, ha'⟩ := (a.toReal_pos_iff).mp ha
-    suffices hs : ∀ ε > 0, a ≤ ∑' i, f i + ε by
-      exact le_of_forall_pos_le_add hs
-    intro ε hε
-    have hε' := (ENNReal.sub_lt_self_iff (LT.lt.ne_top ha')).mpr ⟨ha, hε⟩
-    obtain ⟨n, hn⟩ := h (a - ε) hε'
-    calc
-      a ≤ a - ε + ε := by exact le_tsub_add
-      _ ≤ ∑ i ∈ Finset.range n, f i + ε := add_le_add_right (le_of_lt hn) ε
-      _ ≤ ∑' i, f i + ε := by
-        gcongr
-        exact ENNReal.sum_le_tsum (Finset.range n)
+  refine le_of_forall_lt fun b hb ↦ ?_
+  obtain ⟨n, hn⟩ := h b hb
+  exact lt_of_lt_of_le hn (ENNReal.sum_le_tsum <| Finset.range n)
 
 open Classical in
 lemma var_aux_iUnion_le (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
@@ -350,7 +334,7 @@ lemma var_aux_iUnion_le (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
       gcongr with i hi
       exact le_var_aux f (hs i) (hP i)
 
-/-- Aditivity of `variation_aux` for disjoint measurable sets. -/
+/-- Additivity of `variation_aux` for disjoint measurable sets. -/
 lemma var_aux_iUnion (hf : IsSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ var_aux f (s i)) (var_aux f (⋃ i, s i)) := by
