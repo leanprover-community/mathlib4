@@ -1338,6 +1338,8 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
           have inv_list_len_eq: gamma_inv_list.length = gamma_list.length := by
             simp [gamma_inv_list]
           simp [inv_list_len_eq]
+          have n_squared_pos: 1 ≤ N * N := by
+            simp [N]
           have phi_s_le_: (φ (ofMul s)).natAbs ≤ N := by omega
           calc
             _ ≤ N * N + ((φ (ofMul s)).natAbs * gamma_list.length + N * N + 1) := by
