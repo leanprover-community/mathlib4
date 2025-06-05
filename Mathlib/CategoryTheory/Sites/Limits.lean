@@ -6,6 +6,7 @@ Authors: Adam Topaz
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Types.FunctorToTypes
 
 /-!
 
@@ -240,6 +241,18 @@ variable {D : Type w} [Category.{max v u} D]
 example [HasLimits D] : HasLimits (Sheaf J D) := inferInstance
 
 end Colimits
+
+section isoColimitOverYoneda
+
+variable [UnivLE.{max u v, v}] [HasWeakSheafify J (Type v)] (F : Sheaf J (Type v))
+
+noncomputable def isoColimitOverYonedaCompPresheafToSheaf :
+    F ≅ colimit (overYoneda F.val ⋙ (presheafToSheaf J (Type v))) :=
+  (sheafificationIso F).trans
+    (((presheafToSheaf J (Type v)).mapIso (isoColimitOverYoneda F.val)).trans
+    (preservesColimitIso (presheafToSheaf J (Type v)) (overYoneda F.val)))
+
+end isoColimitOverYoneda
 
 end Sheaf
 

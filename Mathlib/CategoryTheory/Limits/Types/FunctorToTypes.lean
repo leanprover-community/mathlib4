@@ -18,7 +18,7 @@ universe u v w
 
 open CategoryTheory Limits
 
-namespace Category
+namespace CategoryTheory
 
 section sectionOver
 
@@ -238,4 +238,4 @@ noncomputable def isoColimitOverYoneda :
 
 end presheaf
 
-end Category
+end CategoryTheory

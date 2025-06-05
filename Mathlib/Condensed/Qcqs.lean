@@ -9,6 +9,8 @@ import Mathlib.Condensed.Functors
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Types.FunctorToTypes
 
 /-!
 # Quasicompact and quasiseparated condensed sets
@@ -17,7 +19,7 @@ We give properties of quasicompact, quasiseparated and qcqs condensed sets.
 
 -/
 
-universe u w
+universe u v w
 
 open CategoryTheory
 
@@ -31,8 +33,11 @@ lemma useless : HasSheafify (coherentTopology CompHaus.{u}) (Type (u + 1)) :=
     Limits.id_preservesLimitsOfSize
     (Functor.FullyFaithful.reflectsIsomorphisms (Functor.FullyFaithful.id _)) _
 
+#check Limits.sigmaMapColim
+
 theorem isQuasicompact_iff_compHaus_cover (X : CondensedSet.{u}) :
     have := useless
-    (Sheaf.canonicalTopology CondensedSet).Quasicompact X
-    ↔ ∃ S : CompHaus.{u}, ∃ f : compHausToCondensed.obj S ⟶ X, Epi f :=
-  sorry
+    Quasicompact' X ↔ ∃ S : CompHaus.{u}, ∃ f : compHausToCondensed.obj S ⟶ X, Epi f := by
+  constructor
+  · intro hX
+    obtain ⟨J, hJ⟩ := hX

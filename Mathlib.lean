@@ -2226,6 +2226,7 @@ import Mathlib.CategoryTheory.Limits.Sifted
 import Mathlib.CategoryTheory.Limits.SmallComplete
 import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.Limits.Types.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.Types.Images
 import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.Limits.Types.Shapes
@@ -2713,6 +2714,7 @@ import Mathlib.Condensed.Light.TopCatAdjunction
 import Mathlib.Condensed.Light.TopComparison
 import Mathlib.Condensed.Limits
 import Mathlib.Condensed.Module
+import Mathlib.Condensed.Qcqs
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopCatAdjunction
 import Mathlib.Condensed.TopComparison

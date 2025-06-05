@@ -66,8 +66,10 @@ structure Quasicompact' (F : Sheaf J A) : Prop where
 
 lemma quasicompact_of_finite_presieve_quasicompact (F : Sheaf J A) (I : Type v') (hI : Fintype I)
     (G : I → Sheaf J A) (hG : ∀ i : I, Quasicompact' (G i)) (f : ∐ G ⟶ F) (hf : Epi f) :
-    Quasicompact' F := by
-  sorry
+    Quasicompact' F where
+  isQuasicompact I' G' f' hf' := by
+    sorry
+    --choose J' hJ' using (fun i : I => hG i I' (fun i' => Limits.pullback (Sigma.ι i ≫ f) f') _)
 
 end Quasicompact
 
