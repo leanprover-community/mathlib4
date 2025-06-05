@@ -24,7 +24,7 @@ type synonym.
 ## Notation
 
 * `_root_.Lex (Sigma α)`: Sigma type equipped with the lexicographic order.
-Type synonym of `Σ i, α i`.
+  Type synonym of `Σ i, α i`.
 
 ## See also
 
@@ -53,7 +53,7 @@ protected inductive LE [∀ i, LE (α i)] : ∀ _a _b : Σ i, α i, Prop
   | fiber (i : ι) (a b : α i) : a ≤ b → Sigma.LE ⟨i, a⟩ ⟨i, b⟩
 
 /-- Disjoint sum of orders. `⟨i, a⟩ < ⟨j, b⟩` iff `i = j` and `a < b`. -/
-protected inductive LT [∀ i, LT (α i)] : ∀ _a _b : Σi, α i, Prop
+protected inductive LT [∀ i, LT (α i)] : ∀ _a _b : Σ i, α i, Prop
   | fiber (i : ι) (a b : α i) : a < b → Sigma.LT ⟨i, a⟩ ⟨i, b⟩
 
 protected instance [∀ i, LE (α i)] : LE (Σi, α i) where
@@ -70,7 +70,7 @@ theorem mk_le_mk_iff [∀ i, LE (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Si
 theorem mk_lt_mk_iff [∀ i, LT (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Sigma α) < ⟨i, b⟩ ↔ a < b :=
   ⟨fun ⟨_, _, _, h⟩ => h, Sigma.LT.fiber _ _ _⟩
 
-theorem le_def [∀ i, LE (α i)] {a b : Σi, α i} : a ≤ b ↔ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 := by
+theorem le_def [∀ i, LE (α i)] {a b : Σ i, α i} : a ≤ b ↔ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 := by
   constructor
   · rintro ⟨i, a, b, h⟩
     exact ⟨rfl, h⟩
@@ -79,7 +79,7 @@ theorem le_def [∀ i, LE (α i)] {a b : Σi, α i} : a ≤ b ↔ ∃ h : a.1 = 
     rintro ⟨rfl : i = j, h⟩
     exact LE.fiber _ _ _ h
 
-theorem lt_def [∀ i, LT (α i)] {a b : Σi, α i} : a < b ↔ ∃ h : a.1 = b.1, h.rec a.2 < b.2 := by
+theorem lt_def [∀ i, LT (α i)] {a b : Σ i, α i} : a < b ↔ ∃ h : a.1 = b.1, h.rec a.2 < b.2 := by
   constructor
   · rintro ⟨i, a, b, h⟩
     exact ⟨rfl, h⟩
@@ -165,8 +165,9 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
     LinearOrder (Σₗ i, α i) :=
   { Lex.partialOrder with
     le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
-    decidableEq := Sigma.instDecidableEqSigma,
-    decidableLE := Lex.decidable _ _ }
+    toDecidableEq := Sigma.instDecidableEqSigma
+    toDecidableLE := Lex.decidable _ _
+    toDecidableLT := Lex.decidable _ _ }
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

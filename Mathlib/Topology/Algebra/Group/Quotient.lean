@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Pointwise
 import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
@@ -37,7 +37,7 @@ theorem isQuotientMap_mk (N : Subgroup G) : IsQuotientMap (mk : G → G ⧸ N) :
 @[deprecated (since := "2024-10-22")]
 alias quotientMap_mk := isQuotientMap_mk
 
-@[to_additive]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_mk {N : Subgroup G} : Continuous (mk : G → G ⧸ N) :=
   continuous_quot_mk
 
@@ -75,10 +75,6 @@ instance instContinuousConstSMul : ContinuousConstSMul G (G ⧸ N) := inferInsta
 instance instLocallyCompactSpace [LocallyCompactSpace G] (N : Subgroup G) :
     LocallyCompactSpace (G ⧸ N) :=
   QuotientGroup.isOpenQuotientMap_mk.locallyCompactSpace
-
-@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-10-05"))]
-theorem continuous_smul₁ (x : G ⧸ N) : Continuous fun g : G => g • x :=
-  continuous_id.smul continuous_const
 
 variable (N)
 

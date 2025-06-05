@@ -68,7 +68,7 @@ Let `J` be injective and `g` a morphism into `J`, then `g` can be factored throu
 def factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] : Y ⟶ J :=
   (Injective.factors g f).choose
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem comp_factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] :
     f ≫ factorThru g f = g :=
   (Injective.factors g f).choose_spec
@@ -218,7 +218,9 @@ variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y) [HasCokernel f]
 an arbitrarily chosen injective object under `cokernel f`.
 -/
 def syzygies : C :=
-  under (cokernel f) -- Porting note: no deriving Injective
+  under (cokernel f)
+-- The `Injective` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance : Injective <| syzygies f := injective_under (cokernel f)
 

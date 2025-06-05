@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Finitely supported functions on exactly one point
@@ -57,8 +58,7 @@ def single (a : α) (b : M) : α →₀ M where
 
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical
-  simp_rw [@eq_comm _ a a']
-  convert Pi.single_apply a b a'
+  simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
@@ -70,7 +70,7 @@ theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
-  classical exact Pi.single_eq_same (f := fun _ ↦ M) a b
+  classical exact Pi.single_eq_same (M := fun _ ↦ M) a b
 
 @[simp]
 theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
@@ -101,7 +101,9 @@ theorem support_single_ne_zero (a : α) (hb : b ≠ 0) : (single a b).support = 
   if_neg hb
 
 theorem support_single_subset : (single a b).support ⊆ {a} := by
-  classical show ite _ _ _ ⊆ _; split_ifs <;> [exact empty_subset _; exact Subset.refl _]
+  classical
+  simp only [single]
+  split_ifs <;> [exact empty_subset _; exact Subset.refl _]
 
 theorem single_apply_mem (x) : single a b x ∈ ({0, b} : Set M) := by
   rcases em (a = x) with (rfl | hx) <;> [simp; simp [single_eq_of_ne hx]]
@@ -129,7 +131,7 @@ theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆
   rintro ⟨h, rfl⟩
   ext x
   by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
-  exact not_mem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
+  exact notMem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
 
 theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     single a₁ b₁ = single a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ b₁ = 0 ∧ b₂ = 0 := by
@@ -155,6 +157,9 @@ theorem single_left_injective (h : b ≠ 0) : Function.Injective fun a : α => s
 theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
   (single_left_injective h).eq_iff
 
+lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
+  RightInverse.surjective fun _ ↦ single_eq_same
+
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
   simpa only [support_single_ne_zero _ h] using singleton_ne_empty _
 
@@ -165,6 +170,9 @@ theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : 
 @[simp]
 theorem single_eq_zero : single a b = 0 ↔ b = 0 := by
   simp [DFunLike.ext_iff, single_eq_set_indicator]
+
+theorem single_ne_zero : single a b ≠ 0 ↔ b ≠ 0 :=
+  single_eq_zero.not
 
 theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ b a₁ := by
   classical simp only [single_apply, eq_comm]
@@ -381,7 +389,7 @@ theorem erase_ne {a a' : α} {f : α →₀ M} (h : a' ≠ a) : (f.erase a) a' =
 theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
     f.erase a a' = if a' = a then 0 else f a' := by
   rw [erase, coe_mk]
-  convert rfl
+  simp only [ite_eq_ite]
 
 @[simp]
 theorem erase_single {a : α} {b : M} : erase a (single a b) = 0 := by
@@ -396,10 +404,12 @@ theorem erase_single_ne {a a' : α} {b : M} (h : a ≠ a') : erase a (single a' 
   · rw [erase_ne hs]
 
 @[simp]
-theorem erase_of_not_mem_support {f : α →₀ M} {a} (haf : a ∉ f.support) : erase a f = f := by
+theorem erase_of_notMem_support {f : α →₀ M} {a} (haf : a ∉ f.support) : erase a f = f := by
   ext b; by_cases hab : b = a
-  · rwa [hab, erase_same, eq_comm, ← not_mem_support_iff]
+  · rwa [hab, erase_same, eq_comm, ← notMem_support_iff]
   · rw [erase_ne hab]
+
+@[deprecated (since := "2025-05-23")] alias erase_of_not_mem_support := erase_of_notMem_support
 
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   simp
@@ -413,7 +423,7 @@ theorem erase_update_of_ne (f : α →₀ M) {a a' : α} (ha : a ≠ a') (b : M)
     erase a (update f a' b) = update (erase a f) a' b := by
   rw [erase_eq_update_zero, erase_eq_update_zero, update_comm _ ha]
 
--- not `simp` as `erase_of_not_mem_support` can prove this
+-- not `simp` as `erase_of_notMem_support` can prove this
 theorem erase_idem (f : α →₀ M) (a : α) :
     erase a (erase a f) = erase a f := by
   rw [erase_eq_update_zero, erase_eq_update_zero, update_idem]
@@ -532,7 +542,8 @@ lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
-See `Finsupp.lsingle` in `LinearAlgebra/Finsupp` for the stronger version as a linear map. -/
+See `Finsupp.lsingle` in `Mathlib/LinearAlgebra/Finsupp/Defs.lean` for the stronger version as a
+linear map. -/
 @[simps]
 def singleAddHom (a : α) : M →+ α →₀ M where
   toFun := single a
@@ -575,14 +586,15 @@ def eraseAddHom (a : α) : (α →₀ M) →+ α →₀ M where
   map_add' := erase_add a
 
 @[elab_as_elim]
-protected theorem induction {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
-    (ha : ∀ (a b) (f : α →₀ M), a ∉ f.support → b ≠ 0 → p f → p (single a b + f)) : p f :=
-  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+protected theorem induction {motive : (α →₀ M) → Prop} (f : α →₀ M) (zero : motive 0)
+    (single_add : ∀ (a b) (f : α →₀ M),
+      a ∉ f.support → b ≠ 0 → motive f → motive (single a b + f)) : motive f :=
+  suffices ∀ (s) (f : α →₀ M), f.support = s → motive f from this _ _ rfl
   fun s =>
   Finset.cons_induction_on s (fun f hf => by rwa [support_eq_empty.1 hf]) fun a s has ih f hf => by
-    suffices p (single a (f a) + f.erase a) by rwa [single_add_erase] at this
+    suffices motive (single a (f a) + f.erase a) by rwa [single_add_erase] at this
     classical
-      apply ha
+      apply single_add
       · rw [support_erase, mem_erase]
         exact fun H => H.1 rfl
       · rw [← mem_support_iff, hf]
@@ -590,14 +602,16 @@ protected theorem induction {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 :
       · apply ih _ _
         rw [support_erase, hf, Finset.erase_cons]
 
-theorem induction₂ {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
-    (ha : ∀ (a b) (f : α →₀ M), a ∉ f.support → b ≠ 0 → p f → p (f + single a b)) : p f :=
-  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+@[elab_as_elim]
+theorem induction₂ {motive : (α →₀ M) → Prop} (f : α →₀ M) (zero : motive 0)
+    (add_single : ∀ (a b) (f : α →₀ M),
+      a ∉ f.support → b ≠ 0 → motive f → motive (f + single a b)) : motive f :=
+  suffices ∀ (s) (f : α →₀ M), f.support = s → motive f from this _ _ rfl
   fun s =>
   Finset.cons_induction_on s (fun f hf => by rwa [support_eq_empty.1 hf]) fun a s has ih f hf => by
-    suffices p (f.erase a + single a (f a)) by rwa [erase_add_single] at this
+    suffices motive (f.erase a + single a (f a)) by rwa [erase_add_single] at this
     classical
-      apply ha
+      apply add_single
       · rw [support_erase, mem_erase]
         exact fun H => H.1 rfl
       · rw [← mem_support_iff, hf]
@@ -605,9 +619,11 @@ theorem induction₂ {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
       · apply ih _ _
         rw [support_erase, hf, Finset.erase_cons]
 
-theorem induction_linear {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
-    (hadd : ∀ f g : α →₀ M, p f → p g → p (f + g)) (hsingle : ∀ a b, p (single a b)) : p f :=
-  induction₂ f h0 fun _a _b _f _ _ w => hadd _ _ w (hsingle _ _)
+@[elab_as_elim]
+theorem induction_linear {motive : (α →₀ M) → Prop} (f : α →₀ M) (zero : motive 0)
+    (add : ∀ f g : α →₀ M, motive f → motive g → motive (f + g))
+    (single : ∀ a b, motive (single a b)) : motive f :=
+  induction₂ f zero fun _a _b _f _ _ w => add _ _ w (single _ _)
 
 section LinearOrder
 

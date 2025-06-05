@@ -25,13 +25,14 @@ namespace Filter.Germ
 variable {α : Type*} {β : Type*} {l : Filter α}
 
 @[to_additive]
-instance instOrderedCommMonoid [OrderedCommMonoid β] : OrderedCommMonoid (Germ l β) where
+instance instIsOrderedMonoid [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
+    IsOrderedMonoid (Germ l β) where
   mul_le_mul_left f g := inductionOn₂ f g fun _ _ H h ↦ inductionOn h fun _ ↦ H.mono
     fun _ H ↦ mul_le_mul_left' H _
 
 @[to_additive]
-instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid β] :
-    OrderedCancelCommMonoid (Germ l β) where
+instance instIsOrderedCancelMonoid [CommMonoid β] [PartialOrder β] [IsOrderedCancelMonoid β] :
+    IsOrderedCancelMonoid (Germ l β) where
   le_of_mul_le_mul_left f g h := inductionOn₃ f g h fun _ _ _ H ↦ H.mono
     fun _ ↦ le_of_mul_le_mul_left'
 
