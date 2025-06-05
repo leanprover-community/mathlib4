@@ -409,10 +409,12 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E
   have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
   simp_all [variation, variation', var_aux]
 
+-- TO DO: move this to a good home or incorporate in proof.
 lemma monotone_of_ENNReal  {s₁ s₂ : Set X} (hs₁ : MeasurableSet s₁) (hs₂ : MeasurableSet s₂)
     (h : s₁ ⊆ s₂) (μ : VectorMeasure X ℝ≥0∞) : μ s₁ ≤ μ s₂ := by
   simp [← VectorMeasure.of_add_of_diff (v := μ) hs₁ hs₂ h]
 
+-- TO DO: move this to a good home or incorporate in proof.
 open Classical in
 lemma biUnion_Finset (μ : VectorMeasure X ℝ≥0∞) {S : Finset (Set X)} (hS : ∀ s ∈ S, MeasurableSet s)
     (hS' : S.toSet.PairwiseDisjoint id) : ∑ s ∈ S, μ s = μ (⋃ s ∈ S, s) := by
@@ -432,11 +434,6 @@ lemma biUnion_Finset (μ : VectorMeasure X ℝ≥0∞) {S : Finset (Set X)} (hS 
     have := ih h h'
     rw [← this]
     exact Finset.sum_insert ha
-
-
-  -- have := MeasureTheory.VectorMeasure.of_union (v := μ)
-
-  -- have := μ.m_iUnion'
 
 lemma variation_of_ENNReal (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ := by
   ext s hs
