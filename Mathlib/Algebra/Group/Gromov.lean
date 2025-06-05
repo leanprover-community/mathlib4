@@ -1378,6 +1378,11 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
       simp [inv_list_len_eq]
       have n_squared_pos: 1 ≤ N * N := by
         simp [N]
+      have phi_choice_len: phi_list_choice.length = gamma_list.length := by
+        simp [phi_list_choice]
+        simp_rw [apply_ite]
+        simp [inv_list_len_eq]
+      rw [phi_choice_len]
       have phi_s_le_: (φ (ofMul s)).natAbs ≤ N := by omega
       calc
         _ ≤ N * N + ((φ (ofMul s)).natAbs * gamma_list.length + N * N + 1) := by
