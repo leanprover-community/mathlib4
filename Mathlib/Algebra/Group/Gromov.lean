@@ -1404,7 +1404,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         _ = 4 * N^2 := by nlinarith
 
 
-  have b_n_subset_s_n_squared: three_two_B_n (S := {s}) φ γ N ⊆ S ^ (N * (3 * N)) := by
+  have b_n_subset_s_n_squared: three_two_B_n (S := {s}) φ γ N ⊆ S ^ (N * (4 * N^2)) := by
     intro a ha
     have orig_ha := ha
     rw [Finset.mem_pow]
@@ -1418,11 +1418,12 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         lhs
         arg 1
         equals l.unattach =>
+
           sorry
 
-    have flat_list_len: nested_list.flatten.length ≤ nested_list.length • (3 * N) := by
+    have flat_list_len: nested_list.flatten.length ≤ nested_list.length • (4 * N^2) := by
       simp
-      have foo := List.sum_le_card_nsmul (l := (List.map List.length nested_list)) (3 * N) ?_
+      have foo := List.sum_le_card_nsmul (l := (List.map List.length nested_list)) (4 * N^2) ?_
       --simp only [List.length_map, smul_eq_mul, nested_list] at foo
       .
         conv at foo =>
@@ -1435,7 +1436,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         obtain ⟨s_list, h_s_prod, s_len⟩ := hq
         simp [nested_list] at h_s_prod
         obtain ⟨gamma_n, gamma_n_mem, gamma_n_mem_l, s_prod_eq⟩ := h_s_prod
-        have s_prod_prop: s_list.unattach.prod = gamma_n ∧ s_list.length ≤ 3*N := by
+        have s_prod_prop: s_list.unattach.prod = gamma_n ∧ s_list.length ≤ 4*N^2 := by
           have my_spec := Exists.choose_spec ((s_n_bound gamma_n gamma_n_mem))
           rw [s_prod_eq] at my_spec
           exact my_spec
@@ -1448,19 +1449,19 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     rw [nested_len_eq] at flat_list_len
     simp [list_len_n] at l_len
     simp only [smul_eq_mul] at flat_list_len
-    have nested_list_le_n_squared: nested_list.flatten.length ≤ N * (3 * N) := by
+    have nested_list_le_n_squared: nested_list.flatten.length ≤ N * (4 * N^2) := by
       apply le_mul_of_le_mul_right (b := l.length)
       . omega
       . omega
 
 
-    let filled_list := nested_list.flatten ++ (List.replicate ((N * (3 * N)) - nested_list.flatten.length) ⟨1, hGS.one_mem⟩)
+    let filled_list := nested_list.flatten ++ (List.replicate ((N * (4 * N^2)) - nested_list.flatten.length) ⟨1, hGS.one_mem⟩)
 
     have filled_list_prod: filled_list.unattach.prod = nested_list.flatten.unattach.prod := by
       simp [filled_list]
 
 
-    have len_eq: filled_list.length = N * (3 * N) := by
+    have len_eq: filled_list.length = N * (4 * N^2) := by
       simp [filled_list]
       apply Nat.add_sub_of_le
       simp at nested_list_le_n_squared
