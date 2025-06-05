@@ -67,9 +67,8 @@ theorem CharP.isUnit_intCast_iff {z : ℤ} (hp : p.Prime) : IsUnit (z : R) ↔ �
 
 end Ring
 
-section Field
-
-variable [Field K]
+section Semifield
+variable [Semifield K]
 
 /-- A natural number `t` is invertible in a field `K` if the characteristic of `K` does not divide
 `t`. -/
@@ -90,11 +89,10 @@ def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t
 instance invertibleOfPos [CharZero K] (n : ℕ) [NeZero n] : Invertible (n : K) :=
   invertibleOfNonzero <| NeZero.out
 
-end Field
+end Semifield
 
-section DivisionRing
-
-variable [DivisionRing K] [CharZero K]
+section DivisionSemiring
+variable [DivisionSemiring K] [CharZero K]
 
 instance invertibleSucc (n : ℕ) : Invertible (n.succ : K) :=
   invertibleOfNonzero (Nat.cast_ne_zero.mpr (Nat.succ_ne_zero _))
@@ -111,4 +109,4 @@ instance invertibleTwo : Invertible (2 : K) :=
 instance invertibleThree : Invertible (3 : K) :=
   invertibleOfNonzero (mod_cast (by decide : 3 ≠ 0))
 
-end DivisionRing
+end DivisionSemiring
