@@ -931,7 +931,7 @@ namespace OneHom
 variable [One M] [One N] [One P]
 
 /-- If `p` is a `MulHom`, `g` is a map, and `f`
-  is a `OneHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `OneHom`. -/
+is a `OneHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `OneHom`. -/
 @[to_additive (attr := simps) " If `p` is a `ZeroHom`, `g`
   is a map, and `f` is an `ZeroHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
   `ZeroHom`. "]
@@ -939,10 +939,10 @@ def liftLeft (f : OneHom M N) (p : OneHom M P) (g : P → N) (hg : ∀ x, g (p x
     OneHom P N where toFun := g; map_one' := by simpa only [hg, map_one] using hg 1
 
 /-- If `p` is an injective `OneHom`, `p_inv` is a map, and `f`
-  is a `OneHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `OneHom`. -/
+is a `OneHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `OneHom`. -/
 @[to_additive (attr := simps) " If `p` is an injective `ZeroHom`, `p_inv`
-  is a map, and `f` is a `ZeroHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
-  `ZeroHom`. "]
+is a map, and `f` is a `ZeroHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+`ZeroHom`. "]
 def liftRight (f : OneHom M N) {p : OneHom P N} (hp : Injective p) (g : M → P)
     (hg : ∀ x, p (g x) = f x) : OneHom M P where
   toFun := g; map_one' := hp <| by simpa only [map_one] using hg 1
@@ -954,10 +954,10 @@ namespace MulHom
 variable [Mul M] [Mul N] [Mul P]
 
 /-- If `p` is a surjective `MulHom`, `g` is a map, and `f`
-  is a `MulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MulHom`. -/
+is a `MulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MulHom`. -/
 @[to_additive (attr := simps) " If `p : M →ₙ+ P` is a surjective `AddMulHom`, `g`
-  is a map, and `f` is an `AddMulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
-  `AddMulHom`. "]
+is a map, and `f` is an `AddMulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+`AddMulHom`. "]
 def liftLeft (f : M →ₙ* N) {p : M →ₙ* P} (hp : Surjective p) (g : P → N)
     (hg : ∀ x, g (p x) = f x) : P →ₙ* N where
   toFun := g; map_mul' x y := by
@@ -966,10 +966,10 @@ def liftLeft (f : M →ₙ* N) {p : M →ₙ* P} (hp : Surjective p) (g : P → 
     simp only [← map_mul p x y, hg, map_mul f]
 
 /-- If `p : P →ₙ* N` is an injective `MulHom`, `g : M → P` is a map, and `f : M →ₙ* N`
-  is a `MulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MulHom`. -/
+is a `MulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MulHom`. -/
 @[to_additive (attr := simps) " If `p : P →ₙ+ N` is an injective `AddMulHom`, `g : M → P`
-  is a map, and `f : M →ₙ+ N` is an `AddMulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
-  `AddMulHom`. "]
+is a map, and `f : M →ₙ+ N` is an `AddMulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+`AddMulHom`. "]
 def liftRight (f : M →ₙ* N)
     {p : P →ₙ* N} (hp : Injective p) (g : M → P) (hg : ∀ x, p (g x) = f x) : M →ₙ* P where
   toFun := g; map_mul' x y := hp <| by simp only [hg, map_mul]
@@ -981,19 +981,19 @@ namespace MonoidHom
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
 /-- If `p : M →* P` is a surjective `MonoidHom`, `g : P → N` is a map, and `f : M →* N`
-  is a `MonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MonoidHom`. -/
+is a `MonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MonoidHom`. -/
 @[to_additive (attr := simps) " If `p : M →+ P` is a surjective `AddMonoidHom`, `g : P → N`
-  is a map, and `f : M →+ N` is an `AddMonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
-  `AddMonoidHom`. "]
+is a map, and `f : M →+ N` is an `AddMonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+`AddMonoidHom`. "]
 def liftLeft (f : M →* N) {p : M →* P} (hp : Surjective p) (g : P → N) (hg : ∀ x, g (p x) = f x) :
     P →* N :=
   { f.toMulHom.liftLeft (p := p) hp g hg, f.toOneHom.liftLeft p g hg with toFun := g }
 
 /-- If `p : P →* N` is an injective `MonoidHom`, `g : M → P` is a map, and `f : M →* N`
-  is a `MonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MonoidHom`. -/
+is a `MonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MonoidHom`. -/
 @[to_additive (attr := simps) " If `p : P →+ N` is an injective `AddMonoidHom`, `g : M → P`
-  is a map, and `f : M →+ N` is an `AddMonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
-  `AddMonoidHom`. "]
+is a map, and `f : M →+ N` is an `AddMonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+`AddMonoidHom`. "]
 def liftRight (f : M →* N) {p : P →* N} (hp : Injective p) (g : M → P) (hg : ∀ x, p (g x) = f x) :
     M →* P :=
   { f.toMulHom.liftRight (p := p) hp g hg, f.toOneHom.liftRight hp g hg with toFun := g }

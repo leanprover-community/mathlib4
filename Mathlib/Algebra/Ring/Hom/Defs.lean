@@ -599,7 +599,7 @@ namespace NonUnitalRingHom
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalNonAssocSemiring γ]
 
 /-- If `p` is a surjective `NonUnitalRingHom`, `g` is a map, and `f`
-  is a `NonUnitalRingHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `NonUnitalRingHom`. -/
+is a `NonUnitalRingHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `NonUnitalRingHom`. -/
 @[simps]
 def liftLeft (f : α →ₙ+* β) {p : α →ₙ+* γ} (hp : Surjective p) (g : γ → β)
     (hg : ∀ x, g (p x) = f x) : γ →ₙ+* β :=
@@ -607,7 +607,7 @@ def liftLeft (f : α →ₙ+* β) {p : α →ₙ+* γ} (hp : Surjective p) (g : 
     f.toZeroHom.liftLeft p g hg with toFun := g }
 
 /-- If `p` is an injective `NonUnitalRingHom`, `g` is a map, and `f`
-  is a `NonUnitalRingHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `NonUnitalRingHom`. -/
+is a `NonUnitalRingHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `NonUnitalRingHom`. -/
 @[simps]
 def liftRight (f : α →ₙ+* β) {p : γ →ₙ+* β} (hp : Injective p) (g : α → γ)
     (hg : ∀ x, p (g x) = f x) : α →ₙ+* γ :=
@@ -621,7 +621,7 @@ namespace RingHom
 variable [NonAssocSemiring α] [NonAssocSemiring β] [NonAssocSemiring γ]
 
 /-- If `p` is a surjective `RingHom`, `g` is a map, and `f`
-  is a `RingHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `RingHom`. -/
+is a `RingHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `RingHom`. -/
 @[simps]
 def liftLeft (f : α →+* β) {p : α →+* γ} (hp : Surjective p) (g : γ → β)
     (hg : ∀ x, g (p x) = f x) : γ →+* β :=
@@ -629,7 +629,7 @@ def liftLeft (f : α →+* β) {p : α →+* γ} (hp : Surjective p) (g : γ →
     f.toOneHom.liftLeft p g hg, f.toZeroHom.liftLeft p g hg with toFun := g }
 
 /-- If `p` is an injective `RingHom`, `g` is a map, and `f`
-  is a `RingHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `RingHom`. -/
+is a `RingHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `RingHom`. -/
 @[simps]
 def liftRight (f : α →+* β) {p : γ →+* β} (hp : Injective p) (g : α → γ)
     (hg : ∀ x, p (g x) = f x) : α →+* γ :=
