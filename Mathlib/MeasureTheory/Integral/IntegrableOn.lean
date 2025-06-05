@@ -309,8 +309,6 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
     integrable_const_iff, isFiniteMeasure_restrict]
   exact .inr hμs
 
-#lint
-
 end indicator
 
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
