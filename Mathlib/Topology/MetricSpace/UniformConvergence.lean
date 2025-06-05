@@ -3,42 +3,13 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Order.CompleteLattice.Group
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
 import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
-
 /-! # Metric structure on `α →ᵤ β` -/
-
-section iSupMul
-
-variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
-  [CompleteLattice α] [Mul α] [MulLeftMono α] [MulRightMono α]
-
-@[to_additive]
-lemma iSup_mul_le (u v : ι → α) :
-    ⨆ i, u i * v i ≤ (⨆ i, u i) * ⨆ i, v i :=
-  iSup_le fun _ ↦ mul_le_mul' (le_iSup _ _) (le_iSup _ _)
-
-@[to_additive]
-lemma le_iInf_mul (u v : ι → α) :
-    (⨅ i, u i) * ⨅ i, v i ≤ ⨅ i, u i * v i :=
-  iSup_mul_le (α := αᵒᵈ) _ _
-
-@[to_additive]
-lemma iSup₂_mul_le (u v : (i : ι) → κ i → α) :
-    ⨆ (i) (j), u i j * v i j ≤ (⨆ (i) (j), u i j) * ⨆ (i) (j), v i j := by
-  refine le_trans ?_ (iSup_mul_le _ _)
-  gcongr
-  exact iSup_mul_le _ _
-
-@[to_additive]
-lemma le_iInf₂_mul (u v : (i : ι) → κ i → α) :
-    (⨅ (i) (j), u i j) * ⨅ (i) (j), v i j ≤ ⨅ (i) (j), u i j * v i j :=
-  iSup₂_mul_le (α := αᵒᵈ) _ _
-
-end iSupMul
 
 theorem BoundedContinuousFunction.edist_eq_iSup {α β : Type*} [TopologicalSpace α]
     [PseudoMetricSpace β] {f g : BoundedContinuousFunction α β} :
